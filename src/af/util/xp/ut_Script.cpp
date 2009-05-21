@@ -59,12 +59,12 @@ UT_ScriptLibrary::UT_ScriptLibrary ()
     m_stErrMsg("")
 {
   m_pInstance = this;
-  UT_DEBUGMSG(("Construct a scriptlibrary %x \n",this));
+  UT_DEBUGMSG(("Construct a scriptlibrary %p \n",this));
 }
 
 UT_ScriptLibrary::~UT_ScriptLibrary ()
 {
-  UT_DEBUGMSG(("Delete the scriptlibrary %x \n",this));
+  UT_DEBUGMSG(("Delete the scriptlibrary %p \n",this));
 	DELETEP(mSniffers);
 }
 

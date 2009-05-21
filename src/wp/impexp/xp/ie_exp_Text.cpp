@@ -561,7 +561,7 @@ void Text_Listener::_handleDirMarker(PT_AttrPropIndex api)
 	}
 	else
 	{
-		UT_DEBUGMSG(("Text_Listener::_handleDirMarker: no props! (bHaveProp %d, pAP 0x%x)\n",
+		UT_DEBUGMSG(("Text_Listener::_handleDirMarker: no props! (bHaveProp %d, pAP %p)\n",
 					 bHaveProp, pAP));
 		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 	}

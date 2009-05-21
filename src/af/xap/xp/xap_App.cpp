@@ -412,7 +412,7 @@ bool XAP_App::addListener(AV_Listener * pListener,
 	UT_sint32 k;
 
 	// see if we can recycle a cell in the vector.
-	UT_DEBUGMSG(("Asked to register pListener %x \n",pListener));
+	UT_DEBUGMSG(("Asked to register pListener %p \n",pListener));
 	
 	for (k=0; k<kLimit; k++)
 		if (m_vecPluginListeners.getNthItem(k) == 0)

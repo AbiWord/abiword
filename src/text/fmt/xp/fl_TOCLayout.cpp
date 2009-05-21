@@ -77,13 +77,13 @@ TOCEntry::TOCEntry(fl_BlockLayout * pBlock,
 	m_bInherit(bInherit),
 	m_iStartAt(iStartAt)
 {
-	UT_DEBUGMSG(("created entry %x \n",this));
+	UT_DEBUGMSG(("created entry %p \n",this));
 }
 
 TOCEntry::~TOCEntry(void)
 {
 	m_iLevel = -1;
-	UT_DEBUGMSG(("Deleteing entry %x \n",this));
+	UT_DEBUGMSG(("Deleteing entry %p \n",this));
 }
 
 PT_DocPosition TOCEntry::getPositionInDoc(void)
@@ -152,7 +152,7 @@ fl_TOCLayout::fl_TOCLayout(FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, P
 fl_TOCLayout::~fl_TOCLayout()
 {
 	// NB: be careful about the order of these
-	UT_DEBUGMSG(("Deleting TOClayout %x \n",this));
+	UT_DEBUGMSG(("Deleting TOClayout %p \n",this));
 	_purgeLayout();
 	fp_TOCContainer * pTC = static_cast<fp_TOCContainer *>(getFirstContainer());
 	while(pTC)
@@ -684,7 +684,7 @@ void fl_TOCLayout::_createAndFillTOCEntry(PT_DocPosition posStart, PT_DocPositio
 			pNewBlock = static_cast<fl_BlockLayout *>(pNewBlock->getNext());
 		}
 	}
-	UT_DEBUGMSG(("New TOC block in TOCLayout %x \n",pNewBlock));
+	UT_DEBUGMSG(("New TOC block in TOCLayout %p \n",pNewBlock));
 
 	// OK Now add the block to our vector.
 	TOCEntry *pNewEntry = createNewEntry(pNewBlock);
@@ -930,7 +930,7 @@ void fl_TOCLayout::_removeBlockInVec(fl_BlockLayout * pBlock, bool /*bDontRecurs
 	//
 	// Clear it!
 	//
-	UT_DEBUGMSG(("Removing block %x Entry %x \n",pThisBL,pThisEntry));
+	UT_DEBUGMSG(("Removing block %p Entry %p \n",pThisBL,pThisEntry));
 	if(!pBlock->isContainedByTOC())
 	{
 		// we only clear if the block passed to us is not one of our TOC blocks (i.e., if we are not
@@ -1035,7 +1035,7 @@ void fl_TOCLayout::_calculateLabels(void)
 			UT_ASSERT(stEntry.getDepth() > 0);
 			stEntry.viewTop(&pTmp);
 			TOCEntry * pPrevLevel = static_cast<TOCEntry*>(pTmp);
-			UT_DEBUGMSG(("Using prevLevel %x thisentry %x \n",pPrevLevel,pThisEntry));
+			UT_DEBUGMSG(("Using prevLevel %p thisentry %p \n",pPrevLevel,pThisEntry));
 			if(pPrevLevel && pPrevLevel->getLevel() < pThisEntry->getLevel())
 			{
 				UT_ASSERT(pPrevLevel->getLevel() >= 0);
@@ -2293,7 +2293,7 @@ bool fl_TOCListener::populate(PL_StruxFmtHandle sfh,
 	}
 
 	UT_ASSERT(m_pTOCL);
-	UT_DEBUGMSG(("fl_TOCListener::populate block %x \n",m_pCurrentBL));
+	UT_DEBUGMSG(("fl_TOCListener::populate block %p \n",m_pCurrentBL));
 
 	bool bResult = false;
 	//FV_View* pView = m_pTOCL->getDocLayout()->getView();
@@ -2365,7 +2365,7 @@ bool fl_TOCListener::populateStrux(PL_StruxDocHandle sdh,
 		{
 			// append a new BlockLayout to that SectionLayout
 			fl_ContainerLayout*	pBL = m_pTOCL->insert(sdh,pMyBL, iTOC,FL_CONTAINER_BLOCK);
-			UT_DEBUGMSG(("New TOC block %x created and set as current \n",pBL));
+			UT_DEBUGMSG(("New TOC block %p created and set as current \n",pBL));
 			if (!pBL)
 			{
 				UT_DEBUGMSG(("no memory for BlockLayout"));

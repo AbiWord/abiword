@@ -250,7 +250,7 @@ void GR_Caret::setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
 	m_bPositionSet = true;
 	if(m_bRemote)
 	  {
-	    UT_DEBUGMSG(("Remote caret %x set to x %d \n",this,x)); 
+	    UT_DEBUGMSG(("Remote caret %p set to x %d \n",this,x)); 
 	  }
 	if(x < m_pG->tlu(3)+1 || y <= 0 || x > static_cast<UT_sint32>(m_iWindowWidth) || y > static_cast<UT_sint32>(m_iWindowHeight))
 		m_bCaret1OnScreen = false;

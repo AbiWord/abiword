@@ -234,7 +234,7 @@ UT_Error AP_Frame::_loadDocument(const char * szFilename, IEFileType ieft,
 			{
 				errorCode = 0;
 			}
-			UT_DEBUGMSG(("errocode after save is \n",errorCode));
+			UT_DEBUGMSG(("errocode after save is %d\n",errorCode));
 		}
 	  }
 	if (!errorCode)

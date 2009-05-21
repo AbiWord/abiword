@@ -125,7 +125,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 		}
 	} else {
 		UT_ASSERT_HARMLESS(binaryLen);
-		UT_DEBUGMSG(("Loading binary data image of %d bytes\n", binaryLen));
+		UT_DEBUGMSG(("Loading binary data image of %ld bytes\n", binaryLen));
 		for (long i = 0; i < binaryLen; i++) {
 			if (!ReadCharFromFileWithCRLF(&ch)) {
 				retval = false;

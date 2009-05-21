@@ -682,7 +682,7 @@ void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 	if(!isActive())
 	{
 		setDragType(x,y,true);
-		UT_DEBUGMSG(("Was not active now %d FrameLayout %x \n",getFrameEditMode(),getFrameLayout()));
+		UT_DEBUGMSG(("Was not active now %d FrameLayout %p \n",getFrameEditMode(),getFrameLayout()));
 		return;
 	}
 //
@@ -853,7 +853,7 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		(pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_SHADOW) ||
 		(pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_HDRFTR)))
 		{
-		  UT_DEBUGMSG(("Skipping Block %x \n",pBL));
+		  UT_DEBUGMSG(("Skipping Block %p \n",pBL));
 		     pPrevBL = pBL;
 		     pBL = pBL->getPrevBlockInDocument();
 		}

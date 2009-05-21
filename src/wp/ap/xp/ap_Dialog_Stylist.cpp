@@ -219,7 +219,7 @@ Stylist_tree::Stylist_tree(PD_Document *pDoc)
 
 Stylist_tree::~Stylist_tree(void)
 {
-	UT_DEBUGMSG(("Deleteing Stylist_tree %x \n",this));
+	UT_DEBUGMSG(("Deleteing Stylist_tree %p \n",this));
 	UT_VECTOR_PURGEALL(Stylist_row *, m_vecStyleRows);
 }
 
@@ -524,12 +524,12 @@ Stylist_row::Stylist_row(void):
 	m_sRowName("")
 {
 	m_vecStyles.clear();
-	UT_DEBUGMSG(("Creating Stylist_row %x \n",this));
+	UT_DEBUGMSG(("Creating Stylist_row %p \n",this));
 }
 
 Stylist_row::~Stylist_row(void)
 {
-	UT_DEBUGMSG(("Deleteing Stylist_row %x num styles %d\n",this,m_vecStyles.getItemCount()));
+	UT_DEBUGMSG(("Deleteing Stylist_row %p num styles %d\n",this,m_vecStyles.getItemCount()));
 	UT_VECTOR_PURGEALL(UT_UTF8String *, m_vecStyles);
 }
 

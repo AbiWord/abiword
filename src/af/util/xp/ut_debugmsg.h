@@ -32,7 +32,7 @@
 #include "ut_types.h"
 #endif
 
-ABI_EXPORT void _UT_OutputMessage(const char *s, ...);
+ABI_EXPORT void _UT_OutputMessage(const char *s, ...) ABI_PRINTF_FORMAT(1,2);
 
 #ifdef DEBUG
 #define UT_DEBUGMSG(M) _UT_OutputMessage M

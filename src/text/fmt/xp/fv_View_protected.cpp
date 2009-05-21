@@ -5954,7 +5954,7 @@ void FV_View::_removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr)
 	{
 		return;
 	}
-	UT_DEBUGMSG(("view_protected: Removing HdrFtr %x \n",pHdrFtr));
+	UT_DEBUGMSG(("view_protected: Removing HdrFtr %p \n",pHdrFtr));
 //
 // Need this to remove the HdrFtr attributes in the section strux.
 //

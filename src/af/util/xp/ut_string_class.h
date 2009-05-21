@@ -138,9 +138,10 @@ ABI_EXPORT size_t UT_String_findRCh(const UT_String &st, char ch);
  * Fill \inStr with the results of evaulating the printf formatted string 
  * \inFormat and return the reference to \inStr
  */
-ABI_EXPORT UT_String& UT_String_sprintf(UT_String & inStr, const char * inFormat, ...);
+ABI_EXPORT UT_String& UT_String_sprintf(UT_String & inStr, const char * inFormat, ...) ABI_PRINTF_FORMAT(2,3);
 ABI_EXPORT UT_String& UT_String_vprintf (UT_String & inStr, const char *format,
-				   va_list      args1);
+                                         va_list      args1) 
+    ABI_PRINTF_FORMAT(2,0);
 ABI_EXPORT UT_String& UT_String_vprintf (UT_String & inStr, const UT_String & format,
 					 va_list      args1);
 
@@ -148,8 +149,10 @@ ABI_EXPORT UT_String& UT_String_vprintf (UT_String & inStr, const UT_String & fo
  * Returns a new UT_String object with the results of evaluating the printf
  * formatted string \inFormat
  */
-ABI_EXPORT UT_String UT_String_sprintf(const char * inFormat, ...);
-ABI_EXPORT UT_String UT_String_vprintf(const char * inFormat, va_list args1);
+ABI_EXPORT UT_String UT_String_sprintf(const char * inFormat, ...)
+    ABI_PRINTF_FORMAT(1,2);
+ABI_EXPORT UT_String UT_String_vprintf(const char * inFormat, va_list args1)
+    ABI_PRINTF_FORMAT(1,0);
 ABI_EXPORT UT_String UT_String_vprintf(const UT_String & inFormat, va_list args1);
 
 /***************************************************************************/

@@ -102,7 +102,7 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 	m_draggingCell = 0;
 	m_lidTopRuler = 0;
 	m_bIsHidden = false;
-	UT_DEBUGMSG(("Created TopRuler %x \n",this));
+	UT_DEBUGMSG(("Created TopRuler %p \n",this));
 }
 
 AP_TopRuler::~AP_TopRuler(void)
@@ -132,7 +132,7 @@ AP_TopRuler::~AP_TopRuler(void)
 	}
 	m_pView = NULL;
 	m_pG = NULL;
-	UT_DEBUGMSG(("Deleting TopRuler %x \n",this));
+	UT_DEBUGMSG(("Deleting TopRuler %p \n",this));
 }
 
 /*****************************************************************/
@@ -166,7 +166,7 @@ void AP_TopRuler::setViewHidden(AV_View *pView)
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return;
 	}
-	UT_DEBUGMSG(("setViewHidden View is set to %x \n",pView));
+	UT_DEBUGMSG(("setViewHidden View is set to %p \n",pView));
 	m_pView = pView;
 	m_bIsHidden = true;
 }
@@ -186,7 +186,7 @@ void AP_TopRuler::setView(AV_View * pView)
 	}
 	if(m_pView == NULL)
 	  bNewView = true;
-	UT_DEBUGMSG(("setView is set to %x \n",pView));
+	UT_DEBUGMSG(("setView is set to %p \n",pView));
 
 	m_pView = pView;
 
@@ -209,7 +209,7 @@ void AP_TopRuler::setView(AV_View * pView)
 	  // from column to column.
 	  
 	     m_pView->addListener(static_cast<AV_Listener *>(this),&m_lidTopRuler);
-	     UT_DEBUGMSG(("Ruler attached as view listener %d \n",&m_lidTopRuler));
+	     UT_DEBUGMSG(("Ruler attached as view listener %p \n",&m_lidTopRuler));
 	}
 }
 
@@ -3666,7 +3666,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState /*ems*/, UT_sint32 x, UT_sint
 			// Check the column width.
 
 			UT_sint32 columnWidth = xAbsRightGap - xgrid - xAbsLeft;
-			UT_DEBUGMSG(("[Column width %ld]\n",columnWidth));
+			UT_DEBUGMSG(("[Column width %d]\n",columnWidth));
 
 			if(columnWidth < m_minColumnWidth)
 			{
@@ -3679,7 +3679,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState /*ems*/, UT_sint32 x, UT_sint
 			_getColumnMarkerRect(&m_infoCache,0,m_draggingCenter,&m_draggingRect);
 
 
-			UT_DEBUGMSG(("Gap: [x %ld][xAbsRight %ld][xrel %ld][xgrid %ld][width %ld]\n",x,xAbsRight2,xrel,xgrid,m_draggingRect.width));
+			UT_DEBUGMSG(("Gap: [x %d][xAbsRight %d][xrel %d][xgrid %d][width %d]\n",x,xAbsRight2,xrel,xgrid,m_draggingRect.width));
 
 
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))

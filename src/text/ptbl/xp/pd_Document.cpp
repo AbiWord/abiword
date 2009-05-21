@@ -1926,7 +1926,7 @@ bool PD_Document::changeDocPropeties(const gchar ** pAtts,const gchar ** pProps)
 	{
 		const gchar * szInt=NULL;
 		AP.getProperty("id",szInt);
-		UT_DEBUGMSG(("addauthor docprop CR received int %d \n",szInt));
+		UT_DEBUGMSG(("addauthor docprop CR received int %s \n",szInt));
 		if(szInt)
 		{
 			UT_sint32 iAuthor = atoi(szInt);
@@ -2775,15 +2775,15 @@ void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
 			szStrux = "Other Strux";
 		if(i< nstruxes)
 		{
-			UT_DEBUGMSG(("MiniDump Before Frag %x Type %s \n",pfs,szStrux));
+			UT_DEBUGMSG(("MiniDump Before Frag %p Type %s \n",pfs,szStrux));
 		}
 		else if(i > nstruxes)
 		{
-			UT_DEBUGMSG(("MiniDump After Frag %x Type %s \n",pfs,szStrux));
+			UT_DEBUGMSG(("MiniDump After Frag %p Type %s \n",pfs,szStrux));
 		}
 		if(pfs == static_cast<const pf_Frag_Strux *>(sdh))
 		{
-			UT_DEBUGMSG(("MiniDump Actual Frag %x Type %s \n",pfs,szStrux));
+			UT_DEBUGMSG(("MiniDump Actual Frag %p Type %s \n",pfs,szStrux));
 		}
 		const char * szLeft=NULL;
 		const char * szRight=NULL;
@@ -2800,7 +2800,7 @@ void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
 		pf = pf->getNext();
 		while(pf && pf->getType() != pf_Frag::PFT_Strux)
 		{
-			UT_DEBUGMSG(("MiniDump: Other Frag %x of Type %d \n",pf,pf->getType()));
+			UT_DEBUGMSG(("MiniDump: Other Frag %p of Type %d \n",pf,pf->getType()));
 			pf = pf->getNext();
 		}
 		if(pf)
@@ -3657,7 +3657,7 @@ static void s_BindHandles(PL_StruxDocHandle sdhNew,
 	UT_return_if_fail (sfhNew);
 
 	pf_Frag_Strux * pfsNew = const_cast<pf_Frag_Strux *>(static_cast<const pf_Frag_Strux *>(sdhNew));
-	UT_DEBUGMSG(("Set Format handle number %d of strux %x to format %x \n",lid,pfsNew,sfhNew));
+	UT_DEBUGMSG(("Set Format handle number %d of strux %p to format %p \n",lid,pfsNew,sfhNew));
 	pfsNew->setFmtHandle(lid,sfhNew);
 }
 
@@ -4459,7 +4459,7 @@ bool PD_Document::getDataItemDataByName(const char * szName,
 		return false;
 	struct _dataItemPair* pPair = const_cast<struct _dataItemPair*>(static_cast<const struct _dataItemPair*>(pHashEntry));
 	UT_return_val_if_fail (pPair, false);
-	UT_DEBUGMSG(("Found data item name %s buf %x \n",szName,pPair->pBuf));
+	UT_DEBUGMSG(("Found data item name %s buf %p \n",szName,pPair->pBuf));
 
 	if (ppByteBuf)
 	{

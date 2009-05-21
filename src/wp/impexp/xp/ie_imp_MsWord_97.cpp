@@ -2061,7 +2061,8 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 						textOff = *cTextBox.textid;
 						UT_DEBUGMSG(("Found a Text box! text offset is.. %d \n",textOff));
 					}
-					UT_DEBUGMSG((" clienttextbox %x clientdata %x \n",answer->clienttextbox,answer->clientdata));
+                    // passing struct to format parameter. WTF?
+					xxx_UT_DEBUGMSG((" clienttextbox %x clientdata %x \n",answer->clienttextbox,answer->clientdata));
 				}
 				if(isTextBox || bPositionObject)
 				{

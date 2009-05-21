@@ -171,12 +171,12 @@ IE_Imp_RTF::StandardKeywordParser(IE_Imp_RTFGroupParser *parser)
 			break;
 		}
 		case RTF_TOKEN_OPEN_BRACE:
-			UT_DEBUGMSG(("Nesting %d ++ <%x>\n", parser->nested(), parser));
+			UT_DEBUGMSG(("Nesting %d ++ <%p>\n", parser->nested(), parser));
 			parser->tokenOpenBrace(this);
 			break;
 		case RTF_TOKEN_CLOSE_BRACE:
 			parser->tokenCloseBrace(this);
-			UT_DEBUGMSG(("Nesting %d -- <%x>\n", parser->nested(), parser));
+			UT_DEBUGMSG(("Nesting %d -- <%p>\n", parser->nested(), parser));
 			// oh oh we catched the last brace from the group
 			if (parser->nested() == 0) {
 				finalBrace = true;

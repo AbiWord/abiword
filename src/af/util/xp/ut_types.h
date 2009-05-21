@@ -94,8 +94,10 @@ typedef UT_uint8 UT_Confidence_t;
 
 #if __GNUC__
   #define ABI_NORETURN __attribute__((noreturn))
+  #define ABI_PRINTF_FORMAT(f,a) __attribute__ ((format (printf, f, a)))
 #else
   #define ABI_NORETURN
+  #define ABI_PRINTF_FORMAT(f,a)
 #endif
 
 /* ABI_FAR_CALL: C function that we want to expose across plugin boundaries */

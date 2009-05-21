@@ -4805,7 +4805,7 @@ void fp_TableContainer::draw(dg_DrawArgs* pDA)
 //
 // Don't draw if the table is still being constructed.
 //
-	UT_DEBUGMSG(("TablecONTAINER enter draw table yoff %d \n",pDA->yoff));
+	UT_DEBUGMSG(("TablecONTAINER enter draw table yoff %ld \n",pDA->yoff));
 	if(getSectionLayout()->getDocument()->isDontImmediateLayout())
 	{
 		xxx_UT_DEBUGMSG(("TablecONTAINER leave draw dont immediately layout \n"));
@@ -5277,7 +5277,7 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 		iCount++;
 		pPrev = static_cast<fp_TableContainer *>(pPrev->getPrev());
 	}
-	UT_DEBUGMSG(("Drawing %d table in broken chain yoff %d \n",iCount,pDA->yoff));
+	UT_DEBUGMSG(("Drawing %d table in broken chain yoff %ld \n",iCount,pDA->yoff));
 	if(iCount > 0)
 	{
 		xxx_UT_DEBUGMSG(("Draw the repeated Row here \n"));
@@ -5301,7 +5301,7 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 	if(m_pFirstBrokenCell)
 	{
 		pCell = m_pFirstBrokenCell;
-		UT_DEBUGMSG(("Doing FirstBrokenCell Starting at cell %x \n",pCell));
+		UT_DEBUGMSG(("Doing FirstBrokenCell Starting at cell %p \n",pCell));
 		while(pCell)
 		{
 			xxx_UT_DEBUGMSG(("Look at Cell %x isdirty %d \n",pCell,pCell->isDirty()));
@@ -5313,7 +5313,7 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 			if(!bIsNested)
 			{
 				da.yoff = da.yoff - getYBreak();
-				UT_DEBUGMSG((" -1- Not Nested yoff %d \n",da.yoff));
+				UT_DEBUGMSG((" -1- Not Nested yoff %ld \n",da.yoff));
 			}
 			if(bDirtyOnly)
 			{

@@ -110,7 +110,7 @@ fl_FrameLayout::fl_FrameLayout(FL_DocLayout* pLayout,
 fl_FrameLayout::~fl_FrameLayout()
 {
 	// NB: be careful about the order of these
-	UT_DEBUGMSG(("Deleting Framelayout %x \n",this));
+	UT_DEBUGMSG(("Deleting Framelayout %p \n",this));
 	_purgeLayout();
 	fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(getFirstContainer());
 	while(pFC)
@@ -506,7 +506,7 @@ bool fl_FrameLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 //
 	fl_ContainerLayout * pCL = getPrev();
 	myContainingLayout()->remove(this);
-	UT_DEBUGMSG(("Unlinking frame Layout %x \n",this));
+	UT_DEBUGMSG(("Unlinking frame Layout %p \n",this));
 //
 // Remove from the list of frames in the previous block
 //

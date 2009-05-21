@@ -461,9 +461,9 @@ void fp_AnnotationContainer::draw(dg_DrawArgs* pDA)
 	if(!pDL->displayAnnotations())
 	  return;
 
-	UT_DEBUGMSG(("Annotation: Drawing unbroken annotation %x x %d, y %d width %d height %d \n",this,getX(),getY(),getWidth(),getHeight()));
+	UT_DEBUGMSG(("Annotation: Drawing unbroken annotation %p x %d, y %d width %d height %d \n",this,getX(),getY(),getWidth(),getHeight()));
 
-	UT_DEBUGMSG(("Annotation: Drawing PDA->xoff %d, pDA->yoff  %d \n",pDA->xoff,pDA->yoff));
+	UT_DEBUGMSG(("Annotation: Drawing PDA->xoff %d, pDA->yoff  %ld \n",pDA->xoff,pDA->yoff));
 
 //
 // Only draw the lines in the clipping region.
@@ -658,7 +658,7 @@ UT_sint32 fp_EndnoteContainer::getValue(void)
 
 void fp_EndnoteContainer::clearScreen(void)
 {
-	UT_DEBUGMSG(("Clearscreen on Endnote container %x , height = %d \n",this,getHeight()));
+	UT_DEBUGMSG(("Clearscreen on Endnote container %p , height = %d \n",this,getHeight()));
 	fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(getSectionLayout());
 	pCL->setNeedsRedraw();
 	if(!m_bOnPage)

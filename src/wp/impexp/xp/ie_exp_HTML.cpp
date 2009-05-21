@@ -4377,7 +4377,7 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 
 s_HTML_Listener::~s_HTML_Listener()
 {
-	UT_DEBUGMSG(("deleteing lisnter %x \n",this));
+	UT_DEBUGMSG(("deleteing lisnter %p \n",this));
 	_closeTag ();
 
 	listPopToDepth (0);

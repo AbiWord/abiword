@@ -34,13 +34,13 @@ AP_UnixPreview_Annotation::AP_UnixPreview_Annotation(XAP_DialogFactory * pDlgFac
 
 AP_UnixPreview_Annotation::~AP_UnixPreview_Annotation(void)
 {
-  UT_DEBUGMSG(("Preview Annotation deleted %x \n",this));
+  UT_DEBUGMSG(("Preview Annotation deleted %p \n",this));
   destroy();
 }
 
 void AP_UnixPreview_Annotation::runModeless(XAP_Frame * pFrame)
 {
-	UT_DEBUGMSG(("Preview Annotation runModeless %x \n",this));
+	UT_DEBUGMSG(("Preview Annotation runModeless %p \n",this));
 	setActiveFrame(pFrame);
 	if(m_pPreviewWindow)
 	{
@@ -69,7 +69,7 @@ void AP_UnixPreview_Annotation::runModeless(XAP_Frame * pFrame)
 
 void AP_UnixPreview_Annotation::notifyActiveFrame(XAP_Frame * /*pFrame*/)
 {
-	//UT_DEBUGMSG(("notifyActiveFrame: trying to activate... %x \n",this));
+	//UT_DEBUGMSG(("notifyActiveFrame: trying to activate... %p \n",this));
 	//activate();
 }
 

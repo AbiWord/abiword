@@ -460,10 +460,10 @@ s_drag_data_get_cb (GtkWidget        * /*widget*/,
 	if(emc == EV_EMC_VISUALTEXTDRAG )
 	{
 		const UT_ByteBuf * pBuf = pView->getLocalBuf();
-		UT_DEBUGMSG(("pBuf %x \n",pBuf));
+		UT_DEBUGMSG(("pBuf %p \n",pBuf));
 		if(pBuf)
 			{
-				UT_DEBUGMSG((" data length %d \n", pBuf->getPointer(0)));
+				UT_DEBUGMSG((" data length %p \n", pBuf->getPointer(0)));
 			}
 		gtk_selection_data_set (selection,
 								selection->target,
@@ -1109,7 +1109,7 @@ gint XAP_UnixFrameImpl::_fe::key_release_event(GtkWidget* w, GdkEventKey* e)
 
 	// Let IM handle the event first.
 	if (gtk_im_context_filter_keypress(pUnixFrameImpl->getIMContext(), e)) {
-	    UT_DEBUGMSG(("IMCONTEXT keyevent swallow: %lu\n", e->keyval));
+	    UT_DEBUGMSG(("IMCONTEXT keyevent swallow: %u\n", e->keyval));
 		pUnixFrameImpl->queueIMReset ();
 	    return 0;
 	}

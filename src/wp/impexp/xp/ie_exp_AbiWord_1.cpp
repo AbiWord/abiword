@@ -1699,9 +1699,9 @@ void s_AbiWord_1_Listener::_handleRevisions(void)
 			bWroteOpenRevisionsSection = true;
 		}
 
-		UT_String_sprintf(s, "<r id=\"%d\" time-started=\"%d\" version=\"%d\">",
+		UT_String_sprintf(s, "<r id=\"%d\" time-started=\"%lld\" version=\"%d\">",
 						  pRev->getId(),
-						  pRev->getStartTime(),
+						  (UT_uint64)pRev->getStartTime(),
 						  pRev->getVersion());
 		
 		m_pie->write(s.c_str());

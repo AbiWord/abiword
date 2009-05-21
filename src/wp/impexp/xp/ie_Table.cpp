@@ -1232,7 +1232,7 @@ void ie_imp_table::writeAllCellPropsInDoc(void)
 				//				removeOnThisCellRow(pCell);
 				continue;
 			}
-			UT_DEBUGMSG(("writeallcellprops: pCell %d row %d left %d right %d top %d bot %d sdh %x \n",i,pCell->getRow(),pCell->getLeft(),pCell->getRight(),pCell->getTop(),pCell->getBot(),pCell->getCellSDH())); 
+			UT_DEBUGMSG(("writeallcellprops: pCell %d row %d left %d right %d top %d bot %d sdh %p \n",i,pCell->getRow(),pCell->getLeft(),pCell->getRight(),pCell->getTop(),pCell->getBot(),pCell->getCellSDH())); 
 		}
 		if(pCell->isMergedAbove() && (pCell->getCellSDH() != NULL))
 		{
@@ -1640,7 +1640,7 @@ void ie_imp_table::deleteRow(UT_sint32 row)
 		PL_StruxDocHandle sdhMyEnd= m_pDoc->getEndCellStruxFromCellSDH(sdhCell);
 		if((sdhMyEnd != NULL) && (sdhEndCell != sdhMyEnd))
 		{
-			UT_DEBUGMSG(("Delete extraneous endCell strux 1 sdhEndCell %x sdhMyEnd %x \n",sdhEndCell,sdhMyEnd));
+			UT_DEBUGMSG(("Delete extraneous endCell strux 1 sdhEndCell %p sdhMyEnd %p \n",sdhEndCell,sdhMyEnd));
 			m_pDoc->deleteStruxNoUpdate(sdhEndCell);
 			m_pDoc->appendStrux(PTX_Block,NULL);
 		}
@@ -1710,13 +1710,13 @@ void ie_imp_table::_removeAllStruxes(void)
 		pCell = m_vecCells.getNthItem(i);
 		if(pCell->getCellSDH())
 		{
-			UT_DEBUGMSG(("SEVIOR: Removing cell strux %x from PT \n",pCell->getCellSDH())); 
+			UT_DEBUGMSG(("SEVIOR: Removing cell strux %p from PT \n",pCell->getCellSDH())); 
 			m_pDoc->deleteStruxNoUpdate(pCell->getCellSDH());
 		}
 	}
 	if(m_tableSDH)
 	{
-		UT_DEBUGMSG(("SEVIOR: Removing table strux %x from PT \n",m_tableSDH)); 
+		UT_DEBUGMSG(("SEVIOR: Removing table strux %p from PT \n",m_tableSDH)); 
 		m_pDoc->deleteStruxNoUpdate(m_tableSDH);
 	}
 }
@@ -1744,7 +1744,7 @@ bool ie_imp_table::removeRow(UT_sint32 row)
 	i = iFound;
 	while(pCell != NULL && i < m_vecCells.getItemCount())
 	{
-		xxx_UT_DEBUGMSG(("SEVIOR: Removing cell %x from row %d \n",pCell,row));
+		xxx_UT_DEBUGMSG(("SEVIOR: Removing cell %p from row %d \n",pCell,row));
 		m_vecCells.deleteNthItem(i);
 		if(i<m_vecCells.getItemCount())
 		{
@@ -1836,7 +1836,7 @@ ie_imp_table_control::~ie_imp_table_control(void)
 			pT->writeTablePropsInDoc();
 			pT->writeAllCellPropsInDoc();
 		}			
-		UT_DEBUGMSG(("SEVIOR: Deleting table %x \n",pT));
+		UT_DEBUGMSG(("SEVIOR: Deleting table %p \n",pT));
 		delete pT;
 	}
 }
@@ -2017,7 +2017,7 @@ IE_Imp_TableHelper::IE_Imp_TableHelper (PD_Document * pDocument, pf_Frag_Strux *
 	m_thead.clear();
 	m_tfoot.clear();
 	m_tbody.clear();
-	UT_DEBUGMSG(("TableHelper created document = %x \n",m_pDocument)); 
+	UT_DEBUGMSG(("TableHelper created document = %p \n",m_pDocument)); 
 }
 
 IE_Imp_TableHelper::~IE_Imp_TableHelper ()
@@ -2597,7 +2597,7 @@ IE_Imp_TableHelperStack::IE_Imp_TableHelperStack (void) :
 	m_max(0),
 	m_stack(0)
 {
-	UT_DEBUGMSG(("TableHelperStack created document = %x \n",m_pDocument)); 
+	UT_DEBUGMSG(("TableHelperStack created document = %p \n",m_pDocument)); 
 }
 
 IE_Imp_TableHelperStack::~IE_Imp_TableHelperStack ()

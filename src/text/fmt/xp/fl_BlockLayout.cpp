@@ -241,7 +241,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	m_bIsTOC = (pSectionLayout->getContainerType() == FL_CONTAINER_TOC);
 	if(m_bIsTOC)
 	{
-		UT_DEBUGMSG(("TOC BLOck created %x \n",this));
+		UT_DEBUGMSG(("TOC BLOck created %p \n",this));
 		fl_TOCLayout * pTOCL= static_cast<fl_TOCLayout *>(getSectionLayout());
 		m_iTOCLevel = pTOCL->getCurrentLevel();
 	}
@@ -5329,7 +5329,7 @@ bool	fl_BlockLayout::_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset)
 	if(getPrev()!= NULL && getPrev()->getLastContainer()==NULL)
 	{
 		UT_DEBUGMSG(("In fl_BlockLayout::_doInsertForcedPageBreakRun  no LastLine \n"));
-		UT_DEBUGMSG(("getPrev = %d this = %d \n",getPrev(),this));
+		UT_DEBUGMSG(("getPrev = %p this = %p \n",getPrev(),this));
 		//UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 
@@ -7676,7 +7676,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 	fl_SectionLayout* pSL = NULL;
 	const gchar* pszNewID = NULL;
 
-	UT_DEBUGMSG(("Insert section at pos %d sdh of section =%x sdh of block =%x \n",getPosition(true),sdh,getStruxDocHandle()));
+	UT_DEBUGMSG(("Insert section at pos %d sdh of section =%p sdh of block =%p \n",getPosition(true),sdh,getStruxDocHandle()));
 
 	switch (iType)
 	{
@@ -9853,7 +9853,7 @@ void	fl_BlockLayout::StartList( FL_ListType lType, UT_uint32 start,const gchar *
 	if(bGetPrevAuto)
 	{
 		pAutoNum = m_pDoc->getListByID(id);
-		UT_DEBUGMSG(("SEVIOR: found autonum %x from id %d \n",pAutoNum,id));
+		UT_DEBUGMSG(("SEVIOR: found autonum %p from id %d \n",pAutoNum,id));
 		if(pAutoNum != NULL)
 		{
 			m_pAutoNum = pAutoNum;

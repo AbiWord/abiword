@@ -129,7 +129,7 @@ AP_BindingSet::AP_BindingSet(EV_EditMethodContainer * pemc)
 	: XAP_BindingSet(pemc)
 {
   loadBuiltin();
-  UT_DEBUGMSG(("Created binding set %x \n",this));
+  UT_DEBUGMSG(("Created binding set %p \n",this));
 }
 
 AP_BindingSet::~AP_BindingSet(void)

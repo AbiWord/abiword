@@ -1225,7 +1225,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 
 	bool bFound = getFragsFromPositions(dpos1,dpos2,&pf_First,&fragOffset_First,&pf_End,&fragOffset_End);
 	UT_return_val_if_fail (bFound, false);
-	UT_DEBUGMSG(("deleteComplex span dpos1 %d dpos2 %d pf_First %x pf_First pos %d \n",dpos1,dpos2,pf_First,pf_First->getPos()));
+	UT_DEBUGMSG(("deleteComplex span dpos1 %d dpos2 %d pf_First %p pf_First pos %d \n",dpos1,dpos2,pf_First,pf_First->getPos()));
 	pf_Frag_Strux * pfsContainer = NULL;
 	bool bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
 	UT_return_val_if_fail (bFoundStrux, false);

@@ -190,7 +190,7 @@ bool fl_SectionLayout::bl_doclistener_populateSpan(fl_ContainerLayout* pBL, cons
 	if(pBL->getPrev()!= NULL && pBL->getPrev()->getLastContainer()==NULL)
 	{
 		UT_DEBUGMSG(("In bl_doclistner_pop no LastLine \n"));
-		UT_DEBUGMSG(("getPrev = %d this = %d \n",pBL->getPrev(),pBL));
+		UT_DEBUGMSG(("getPrev = %p this = %p \n",pBL->getPrev(),pBL));
 		//  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 	bool bres = true;
@@ -1490,7 +1490,7 @@ fp_Container* fl_DocSectionLayout::getLastContainer() const
 
 void fl_DocSectionLayout::setFirstContainer(fp_Container * pCon)
 {
-	UT_DEBUGMSG(("docSectionLayout: DocSec %x First container set to %x \n",this,pCon));
+	UT_DEBUGMSG(("docSectionLayout: DocSec %p First container set to %p \n",this,pCon));
 	m_pFirstColumn = static_cast<fp_Column *>(pCon);
 }
 
@@ -2597,7 +2597,7 @@ fl_DocSectionLayout* fl_DocSectionLayout::getPrevDocSection(void) const
 
 void fl_DocSectionLayout::collapse(void)
 {
-	UT_DEBUGMSG(("DocSectionLayout: Collapsing all content in %x \n",this));
+	UT_DEBUGMSG(("DocSectionLayout: Collapsing all content in %p \n",this));
 	fp_Column* pCol2 = m_pFirstColumn;
 	m_bDoingCollapse = true;
 	while (pCol2)
@@ -2655,7 +2655,7 @@ void fl_DocSectionLayout::collapse(void)
 			{
 				fp_Column * pCol = static_cast<fp_Column *>(pCon->getColumn());
 				UT_DEBUGMSG(("Got and endnote in this section!! \n"));
-				UT_DEBUGMSG(("Remove Endnote con %x from col %x \n",pCon,pCol));
+				UT_DEBUGMSG(("Remove Endnote con %p from col %p \n",pCon,pCol));
 				pCol->removeContainer(pCon);
 			}
 		}
@@ -2672,7 +2672,7 @@ void fl_DocSectionLayout::collapse(void)
 		{
 			for(i = 0; i < pCol2->countCons(); i++)
 			{
-				UT_DEBUGMSG(("Still have a pointer to a container %lx -removing pointer \n",pCol2->getNthCon(i)));
+				UT_DEBUGMSG(("Still have a pointer to a container %p -removing pointer \n",pCol2->getNthCon(i)));
 				pCol2->justRemoveNthCon(i);
 			}
 		}
@@ -2704,7 +2704,7 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 	UT_ASSERT(pcrx->getStruxType()==PTX_Section);
 	UT_DEBUGMSG(("Doing Section delete \n"));
 	fl_DocSectionLayout* pPrevSL = getPrevDocSection();
-	UT_DEBUGMSG(("Deleting DocSec %x Prev DocSec %x \n",this,pPrevSL));
+	UT_DEBUGMSG(("Deleting DocSec %p Prev DocSec %p \n",this,pPrevSL));
 	if (!pPrevSL)
 	{
 		// TODO shouldn't this just assert?
@@ -3057,7 +3057,7 @@ void fl_DocSectionLayout::deleteOwnedPage(fp_Page* pPage, bool bReallyDeleteIt)
 	{
 		if(m_pLayout->findPage(pPage) > 0)
 		{
-			UT_DEBUGMSG(("fl_DocSec: deleting page %x ReallyDeleteIt %d \n",pPage,bReallyDeleteIt));
+			UT_DEBUGMSG(("fl_DocSec: deleting page %p ReallyDeleteIt %d \n",pPage,bReallyDeleteIt));
 			m_pLayout->deletePage(pPage,true);
 		}
 		while(pDSL != NULL)
@@ -3294,7 +3294,7 @@ void fl_HdrFtrSectionLayout::collapseBlock(fl_ContainerLayout *pBlock)
 		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 		fl_ContainerLayout * pShadowBL = pPair->getShadow()->findMatchingContainer(pBlock);
 		UT_ASSERT(pShadowBL);
-		UT_DEBUGMSG(("Doing collapseBlock %x \n",pBlock));
+		UT_DEBUGMSG(("Doing collapseBlock %p \n",pBlock));
 		if(pShadowBL)
 		{
 #ifdef ENABLE_SPELL
@@ -3592,7 +3592,7 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 	//
 	fl_ShadowListener* pShadowListener = new fl_ShadowListener(this, pPair->getShadow());
 	UT_return_if_fail( pShadowListener );
-	UT_DEBUGMSG(("shadow listener %x created \n",pShadowListener));
+	UT_DEBUGMSG(("shadow listener %p created \n",pShadowListener));
 //
 // Populate with just this section so find the start and end of it
 //
@@ -5645,7 +5645,7 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 		{
 			// append a new BlockLayout to that SectionLayout
 			fl_ContainerLayout*	pTL = m_pShadow->append(sdh, pcr->getIndexAP(),FL_CONTAINER_TABLE);
-			UT_DEBUGMSG(("New Shadow Table %x created and set as current \n",pTL));
+			UT_DEBUGMSG(("New Shadow Table %p created and set as current \n",pTL));
 			m_pCurrentTL = static_cast<fl_TableLayout *>(pTL);
 			*psfh = static_cast<PL_StruxFmtHandle>(pTL);
 		}
@@ -5661,7 +5661,7 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 
 			// append a new BlockLayout to that SectionLayout
 			fl_ContainerLayout*	pCell = m_pCurrentTL->append(sdh, pcr->getIndexAP(),FL_CONTAINER_CELL);
-			UT_DEBUGMSG(("New Shadow Cell %x created and set as current \n",pCell));
+			UT_DEBUGMSG(("New Shadow Cell %p created and set as current \n",pCell));
 			m_pCurrentCell = static_cast<fl_CellLayout *>(pCell);
 			*psfh = static_cast<PL_StruxFmtHandle>(m_pCurrentCell);
 		}

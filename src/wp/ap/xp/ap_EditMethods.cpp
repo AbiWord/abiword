@@ -1874,7 +1874,7 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 	// pathname the user entered -- ownership of this goes
 	// to the caller (so g_free it when you're done with it).
 
-	UT_DEBUGMSG(("s_AskForPathname: frame %p, bSaveAs %ld, suggest=[%s]\n",
+	UT_DEBUGMSG(("s_AskForPathname: frame %p, bSaveAs %d, suggest=[%s]\n",
 				 pFrame,bSaveAs,((pSuggestedName) ? pSuggestedName : "")));
 
 	UT_return_val_if_fail (ppPathname, false);
@@ -5387,7 +5387,7 @@ Defun1(selectTable)
 		return false;
 	}
 	posStartTab = pDoc->getStruxPosition(tableSDH); //was -1
-	UT_DEBUGMSG(("PosStart %d TableSDH %x \n",posStartTab,tableSDH));
+	UT_DEBUGMSG(("PosStart %d TableSDH %p \n",posStartTab,tableSDH));
 	bRes = pDoc->getNextStruxOfType(tableSDH,PTX_EndTable,&endTableSDH);
 	if(!bRes)
 	{
@@ -5395,7 +5395,7 @@ Defun1(selectTable)
 		return false;
 	}
 	posEndTab = pDoc->getStruxPosition(endTableSDH)+1; //was +1
-	UT_DEBUGMSG(("PosEndTab %d endTableSDH %x \n",posEndTab,endTableSDH));
+	UT_DEBUGMSG(("PosEndTab %d endTableSDH %p \n",posEndTab,endTableSDH));
 	pView->cmdSelect(posStartTab,posEndTab);
 	return true;
 }

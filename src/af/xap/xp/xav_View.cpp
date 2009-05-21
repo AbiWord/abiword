@@ -45,7 +45,7 @@ AV_View::AV_View(XAP_App * pApp, void* pParentData)
 
 AV_View::~AV_View()
 {
-	UT_DEBUGMSG(("Deleting view %x \n",this));
+	UT_DEBUGMSG(("Deleting view %p \n",this));
 }
 
 void* AV_View::getParentData() const
@@ -81,7 +81,7 @@ bool AV_View::addListener(AV_Listener * pListener,
 	
 	*pListenerId = k;
 
-	UT_DEBUGMSG(("Adding listener %x type %d id %d \n",pListener,pListener->getType(),k));
+	UT_DEBUGMSG(("Adding listener %p type %d id %d \n",pListener,pListener->getType(),k));
 	return true;
 }
 
@@ -215,7 +215,7 @@ void AV_View::removeScrollListener(AV_ScrollObj* pObj)
 
 		if (obj == pObj)
 		{
-		  UT_DEBUGMSG(("Removing scroll listener %x in av_view %x \n",obj,this));
+		  UT_DEBUGMSG(("Removing scroll listener %p in av_view %p \n",obj,this));
 			m_scrollListeners.deleteNthItem(i);
 		}
 	}

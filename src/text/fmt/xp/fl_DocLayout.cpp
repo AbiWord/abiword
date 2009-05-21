@@ -168,7 +168,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 
 FL_DocLayout::~FL_DocLayout()
 {
-        UT_DEBUGMSG(("Deleting DocLayout %x DocListener %x lid %d\n",this,m_pDocListener,m_lid));
+        UT_DEBUGMSG(("Deleting DocLayout %p DocListener %p lid %d\n",this,m_pDocListener,m_lid));
 
 	m_bDeletingLayout = true;
 	if (m_pPrefs)
@@ -2462,7 +2462,7 @@ void FL_DocLayout::formatAll()
 
 void FL_DocLayout::rebuildFromHere( fl_DocSectionLayout * pFirstDSL)
 {
-  UT_DEBUGMSG(("Rebuilding DocLAyout %x doc %d \n",this,m_pDoc));
+  UT_DEBUGMSG(("Rebuilding DocLAyout %p doc %p \n",this,m_pDoc));
 	UT_ASSERT(m_pDoc);
 	if(isLayoutFilling())
 	{
@@ -2483,7 +2483,7 @@ void FL_DocLayout::rebuildFromHere( fl_DocSectionLayout * pFirstDSL)
 	fl_DocSectionLayout * pDSL = pStart;
 	// add page view dimensions
 #if 1
-	UT_DEBUGMSG(("SEVIOR: Rebuild from section %x \n",pFirstDSL));
+	UT_DEBUGMSG(("SEVIOR: Rebuild from section %p \n",pFirstDSL));
 	for(UT_sint32 k=0; k< m_vecPages.getItemCount(); k++)
 	{
 		fp_Page * pPage = m_vecPages.getNthItem(k);
@@ -2514,7 +2514,7 @@ void FL_DocLayout::rebuildFromHere( fl_DocSectionLayout * pFirstDSL)
 	pDSL= pStart;
 	while (pDSL)
 	{
-		UT_DEBUGMSG(("SEVIOR: Building section %x \n",pDSL));
+		UT_DEBUGMSG(("SEVIOR: Building section %p \n",pDSL));
 		pDSL->updateDocSection();
 		pDSL->clearRebuild();
 		pDSL = pDSL->getNextDocSection();
@@ -4100,7 +4100,7 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 	// something other than '?' if '?' ever shows up as UT_isSmartQuotableCharacter()
 	UT_UCSChar c = '?';
 	if (pgb.getLength() > offset) c = *pgb.getPointer(offset);
-	UT_DEBUGMSG(("FL_DocLayout::considerSmartQuoteCandidateAt(%x, %d)  |%c|\n", block, offset, c));
+	UT_DEBUGMSG(("FL_DocLayout::considerSmartQuoteCandidateAt(%p, %d)  |%c|\n", block, offset, c));
 
 	//  there are some operations that leave a dangling pending
 	//  smart quote, so just double check before plunging onward

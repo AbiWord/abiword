@@ -1467,7 +1467,7 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_posSavedDocPosition(0),
 	m_bInAnnotation(false)
 {
-	UT_DEBUGMSG(("New ie_imp_RTF %x \n",this));
+	UT_DEBUGMSG(("New ie_imp_RTF %p \n",this));
 	m_sImageName.clear();
 	if (!IE_Imp_RTF::keywordSorted) {
 		_initialKeywordSort();
@@ -1486,17 +1486,17 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 IE_Imp_RTF::~IE_Imp_RTF()
 {
 	// Empty the state stack
-	UT_DEBUGMSG(("In RTF destructor %x \n",this));
+	UT_DEBUGMSG(("In RTF destructor %p \n",this));
 	while (m_stateStack.getDepth() > 0)
 	{
 		RTFStateStore* pItem = NULL;
 		m_stateStack.pop((void**)(&pItem));
-		UT_DEBUGMSG(("Deleting item %x in RTF destructor \n",pItem));
+		UT_DEBUGMSG(("Deleting item %p in RTF destructor \n",pItem));
 		delete pItem;
 	}
-	UT_DEBUGMSG(("Closing pastetable In RTF destructor %x \n",this));
+	UT_DEBUGMSG(("Closing pastetable In RTF destructor %p \n",this));
 	closePastedTableIfNeeded();
-	UT_DEBUGMSG(("Deleting fonts In RTF destructor %x \n",this));
+	UT_DEBUGMSG(("Deleting fonts In RTF destructor %p \n",this));
 
 	// and the font table (can't use the macro as we allow NULLs in the vector
 	UT_sint32 size = m_fontTable.getItemCount();
@@ -1508,7 +1508,7 @@ IE_Imp_RTF::~IE_Imp_RTF()
 	}
 
 	// and the styleName table.
-	UT_DEBUGMSG(("Deleting styles In RTF destructor %x \n",this));
+	UT_DEBUGMSG(("Deleting styles In RTF destructor %p \n",this));
 
 	size = m_styleTable.getItemCount();
 	for (i = 0; i < size; i++)
@@ -1516,7 +1516,7 @@ IE_Imp_RTF::~IE_Imp_RTF()
 		char * pItem = m_styleTable.getNthItem(i);
 		FREEP(pItem);
 	}
-	UT_DEBUGMSG(("Purging In RTF destructor %x \n",this));
+	UT_DEBUGMSG(("Purging In RTF destructor %p \n",this));
 	UT_VECTOR_PURGEALL(_rtfAbiListTable *,m_vecAbiListTable);
 	UT_VECTOR_PURGEALL(RTFHdrFtr *, m_hdrFtrTable);
 	UT_VECTOR_PURGEALL(RTF_msword97_list *, m_vecWord97Lists);
@@ -1676,7 +1676,7 @@ void IE_Imp_RTF::OpenTable(bool bDontFlush)
 	PT_DocPosition posEnd=0;
 	getDoc()->getBounds(true,posEnd); // clean frags!
 	PL_StruxDocHandle sdh = getDoc()->getLastStruxOfType(PTX_SectionTable);
-	UT_DEBUGMSG(("SEVIOR: Table strux sdh is %x \n",sdh));
+	UT_DEBUGMSG(("SEVIOR: Table strux sdh is %p \n",sdh));
 	getTable()->setTableSDH(sdh);
 	getTable()->OpenCell();
 	if(!bDontFlush)
@@ -1981,9 +1981,9 @@ void IE_Imp_RTF::HandleCell(void)
 //
 		UT_sint32 pos  = getTable()->OpenCell();
 		getTable()->setPosOnRow(pos);
-		xxx_UT_DEBUGMSG(("SEVIOR: created cell %x for posOnRow %d \n",getCell(),getTable()->getPosOnRow()));
+		xxx_UT_DEBUGMSG(("SEVIOR: created cell %p for posOnRow %d \n",getCell(),getTable()->getPosOnRow()));
 	}
-	xxx_UT_DEBUGMSG(("SEVIOR: set cell %x sdh %x  at pos %d on row %d \n",getCell(),sdh,getTable()->getPosOnRow(),getTable()->getRow()));
+	xxx_UT_DEBUGMSG(("SEVIOR: set cell %p sdh %p  at pos %d on row %d \n",getCell(),sdh,getTable()->getPosOnRow(),getTable()->getRow()));
 	getTable()->setNthCellOnThisRow(getTable()->getPosOnRow());
 	if(getCell()->isMergedAbove())
 	{
@@ -2032,11 +2032,11 @@ void IE_Imp_RTF::FlushCellProps(void)
 	}
 	if(m_currentRTFState.m_cellProps.m_bVerticalMerged)
 	{
-		UT_DEBUGMSG(("Set merged above to cell %x \n",getCell()));
+		UT_DEBUGMSG(("Set merged above to cell %p \n",getCell()));
 	}
 	if(m_currentRTFState.m_cellProps.m_bHorizontalMerged)
 	{
-		UT_DEBUGMSG(("Set merged left to cell %x \n",getCell()));
+		UT_DEBUGMSG(("Set merged left to cell %p \n",getCell()));
 	}
 	getCell()->setMergeAbove( m_currentRTFState.m_cellProps.m_bVerticalMerged );
 	getCell()->setFirstVerticalMerge( m_currentRTFState.m_cellProps.m_bVerticalMergedFirst );
@@ -2124,7 +2124,7 @@ void IE_Imp_RTF::HandleCellX(UT_sint32 cellx)
 	if(!pOldCell)
 	{
 		pOldCell = getTable()->getNthCellOnRow(getTable()->getCellXOnRow());
-		xxx_UT_DEBUGMSG(("SEVIOR: Looking for cellx num %d on row %d found %x \n",getTable()->getCellXOnRow(),iRow,pOldCell));
+		xxx_UT_DEBUGMSG(("SEVIOR: Looking for cellx num %d on row %d found %p \n",getTable()->getCellXOnRow(),iRow,pOldCell));
 		if(pOldCell)
 		{
 			bNewCell = false;
@@ -2134,11 +2134,11 @@ void IE_Imp_RTF::HandleCellX(UT_sint32 cellx)
 	if(bNewCell)
 	{
 		getTable()->OpenCell();
-		xxx_UT_DEBUGMSG(("SEVIOR: created cell %x for cellx %d on row \n",getCell(),cellx,getTable()->getRow()));
+		xxx_UT_DEBUGMSG(("SEVIOR: created cell %p for cellx %d on row \n",getCell(),cellx,getTable()->getRow()));
 	}
 	UT_ASSERT_HARMLESS(cellx>1);
 	getTable()->setCellX(cellx);
-	UT_DEBUGMSG(("set cellx for class %x to %d \n",getCell(),cellx));
+	UT_DEBUGMSG(("set cellx for class %p to %d \n",getCell(),cellx));
 	getTable()->incCellXOnRow();
 	FlushCellProps();
 	ResetCellAttributes();
@@ -2366,7 +2366,7 @@ void IE_Imp_RTF::HandleAnnotation(void)
 	if(!bUseInsertNotAppend())
 	{
 		m_pDelayedFrag = m_pAnnotation->m_pInsertFrag->getNext();
-		UT_DEBUGMSG(("Delayed Frag set to %x \n",m_pDelayedFrag));
+		UT_DEBUGMSG(("Delayed Frag set to %p \n",m_pDelayedFrag));
 		ann_attrs[2] = PT_PROPS_ATTRIBUTE_NAME;
 		UT_sint32 k = 0;
 		UT_UTF8String sProperties;
@@ -4784,7 +4784,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		m_currentRTFState.m_sectionProps.m_bColumnLine = true;
 		return true;
 	case RTF_KW_lang:
-		xxx_UT_DEBUGMSG(("DOM: lang code (0x%x, %s)\n", param, wvLIDToLangConverter(static_cast<unsigned short>(param))));
+		xxx_UT_DEBUGMSG(("DOM: lang code (0x%p, %s)\n", param, wvLIDToLangConverter(static_cast<unsigned short>(param))));
 		// mark language for spell checking
 		m_currentRTFState.m_charProps.m_szLang = wvLIDToLangConverter(static_cast<unsigned short>(param));
 		return true;
@@ -5691,7 +5691,7 @@ bool IE_Imp_RTF::HandleStarKeyword()
 				{
 					//
 					// date of the annotation
-					UT_DEBUGMSG(("Found annotation date %d \n",m_pAnnotation));
+					UT_DEBUGMSG(("Found annotation date %p \n",m_pAnnotation));
 					if(NULL == m_pAnnotation)
 					{
 						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -5707,7 +5707,7 @@ bool IE_Imp_RTF::HandleStarKeyword()
 				{
 					//
 					// Annotation content
-					UT_DEBUGMSG(("Found annotation content m_pAnnotation %x \n",m_pAnnotation));
+					UT_DEBUGMSG(("Found annotation content m_pAnnotation %p \n",m_pAnnotation));
 					if(m_pAnnotation == NULL)
 					{
 						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -5737,7 +5737,7 @@ bool IE_Imp_RTF::HandleStarKeyword()
 					// Start of Annotated region
 					if(m_pAnnotation == NULL)
 						m_pAnnotation = new ABI_RTF_Annotation();
-					UT_DEBUGMSG(("created m_pAnnotation %x \n",m_pAnnotation));
+					UT_DEBUGMSG(("created m_pAnnotation %p \n",m_pAnnotation));
 					m_pAnnotation->m_iAnnNumber = parameter_star;
 					UT_String sAnnNum;
 					UT_String_sprintf(sAnnNum,"%d",parameter_star);
@@ -6076,7 +6076,7 @@ bool IE_Imp_RTF::_appendSpan()
 						{
 							    if(!getDoc()->insertFmtMarkBeforeFrag(m_pDelayedFrag,propsArray))
 									return false;
-								UT_DEBUGMSG(("Appending span before %x \n",m_pDelayedFrag));
+								UT_DEBUGMSG(("Appending span before %p \n",m_pDelayedFrag));
 								if(!getDoc()->insertSpanBeforeFrag(m_pDelayedFrag,p, i- iLast))
 									return false;
 						}
@@ -7054,7 +7054,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 		{
 			UT_String_sprintf(tempBuffer, " font-size:%spt;", std_size_string(static_cast<float>(pOver->getFontSize(iLevel))));
 			propBuffer += tempBuffer;
-			UT_DEBUGMSG(("RTF: IMPORT!!!!! font sized changed in override %d \n",pOver->getFontSize(iLevel)));
+			UT_DEBUGMSG(("RTF: IMPORT!!!!! font sized changed in override %f \n",pOver->getFontSize(iLevel)));
 		}
 		// typeface
 		if(pOver->isFontNumberChanged(iLevel))
@@ -7353,7 +7353,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 				//
 				if(bisListItem)
 				{
-					UT_DEBUGMSG(("SEVIOR: Stopping list at %x \n",sdh));
+					UT_DEBUGMSG(("SEVIOR: Stopping list at %p \n",sdh));
 					getDoc()->StopList(sdh);
 				}
 				iLoop--;
@@ -8550,7 +8550,7 @@ bool IE_Imp_RTF::ReadFontTable()
 	UT_Stack stateStack;
 	// RTF state pointers.
 	struct SFontTableState *currentState = new SFontTableState;
-	UT_DEBUGMSG(("Made new currentState -1 %x \n",currentState));
+	UT_DEBUGMSG(("Made new currentState -1 %p \n",currentState));
 	struct SFontTableState *oldState = NULL;
 	UT_sint32 i;                         // Generic loop index.
 
@@ -8582,7 +8582,7 @@ bool IE_Imp_RTF::ReadFontTable()
 			stateStack.push(reinterpret_cast<void*>(currentState));
 			// ...allocate a new one...
 			currentState = new SFontTableState;
-			UT_DEBUGMSG(("Made new currentState -2 %x \n",currentState));
+			UT_DEBUGMSG(("Made new currentState -2 %p \n",currentState));
 			if (!currentState) {
 				UT_DEBUGMSG(("RTF: Out of memory.\n"));
 				goto IEImpRTF_ReadFontTable_ErrorExit;
@@ -8595,7 +8595,7 @@ bool IE_Imp_RTF::ReadFontTable()
 			break;
 		case RTF_TOKEN_CLOSE_BRACE:
 			// Throw away the current state.
-			UT_DEBUGMSG(("Deleting currentState -4 %x \n",currentState));
+			UT_DEBUGMSG(("Deleting currentState -4 %p \n",currentState));
 			DELETEP(currentState);
 			// Pop an old state off the stack .
 			if (!stateStack.pop(reinterpret_cast<void**>(&currentState))) 
@@ -8795,7 +8795,7 @@ bool IE_Imp_RTF::ReadFontTable()
 			break;
 		} // Token type switch
 	}; // while (we've finished reading the font entry).
-	UT_DEBUGMSG(("Deleting currentState -2 %x \n",currentState));
+	UT_DEBUGMSG(("Deleting currentState -2 %p \n",currentState));
 	DELETEP(currentState);
 	return true;
 
@@ -8806,11 +8806,11 @@ bool IE_Imp_RTF::ReadFontTable()
 IEImpRTF_ReadFontTable_ErrorExit:
 	UT_DEBUGMSG(("RTF: ReadFontTable: Freeing memory due to error.\n"));
 	// Delete the current state and everything on the state stack.
-	UT_DEBUGMSG(("Deleting currentState -2 %x \n",currentState));
+	UT_DEBUGMSG(("Deleting currentState -2 %p \n",currentState));
 	DELETEP(currentState);
 	while (stateStack.pop(reinterpret_cast<void**>(&currentState))) 
 	{
-		UT_DEBUGMSG(("Deleting currentState -3  %x \n",currentState));
+		UT_DEBUGMSG(("Deleting currentState -3  %p \n",currentState));
 		DELETEP(currentState);
 	}
 	return false;
@@ -9027,7 +9027,7 @@ bool IE_Imp_RTF::ReadColourTable()
 					}
 				}
 				colour = static_cast<UT_uint32>(red << 16) | static_cast<UT_uint32>(green << 8) | static_cast<UT_uint32>(blue);
-				UT_DEBUGMSG(("colour %d red %d green %d blue %d \n",colour,red,green,blue)); 
+				UT_DEBUGMSG(("colour %d red %ld green %ld blue %ld \n",colour,red,green,blue)); 
 				bValidColor = true;
 			}
 			else {
@@ -9326,13 +9326,13 @@ bool IE_Imp_RTF::HandleLists(_rtfListTable & rtfTable )
 			}
 			else if (strcmp(reinterpret_cast<char*>(&keyword[0]), "ls") == 0)
 			{
-				UT_DEBUGMSG(("FOUND ls in stream - override number \n",parameter));
+				UT_DEBUGMSG(("FOUND ls in stream - override number %d\n",parameter));
 				rtfTable.iWord97Override =  static_cast<UT_uint32>(parameter);
 				// Word 97 list table identifier
 			}
 			else if (strcmp(reinterpret_cast<char*>(&keyword[0]), "ilvl") == 0)
 			{
-				UT_DEBUGMSG(("FOUND ilvl in stream - levelnumber \n",parameter));
+				UT_DEBUGMSG(("FOUND ilvl in stream - levelnumber %d\n",parameter));
 				rtfTable.iWord97Level = static_cast<UT_uint32>(parameter);
 				// Word 97 list level
 			}

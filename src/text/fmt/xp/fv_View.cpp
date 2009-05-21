@@ -1193,7 +1193,7 @@ void FV_View::convertInLineToPositioned(PT_DocPosition pos,const gchar ** attrib
 	fl_BlockLayout * pPrevBL = pBL;
 	while(pBL && ((pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_ENDNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_ANNOTATION) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_TOC)|| (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FRAME)))
 	{
-	        UT_DEBUGMSG(("Skipping Block %x \n",pBL));
+		UT_DEBUGMSG(("Skipping Block %p \n",pBL));
 		pPrevBL = pBL;
 		pBL = pBL->getPrevBlockInDocument();
 	}
@@ -8238,7 +8238,7 @@ void FV_View::setYScrollOffset(UT_sint32 v)
 
 void FV_View::draw(int page, dg_DrawArgs* da)
 {
-	UT_DEBUGMSG(("FV_View::draw_1: [page %ld]\n",page));
+	UT_DEBUGMSG(("FV_View::draw_1: [page %d]\n",page));
 	calculateNumHorizPages();
 
 	if(getPoint() == 0) {

@@ -481,7 +481,7 @@ bool EV_EditBindingMap::setBinding(EV_EditBits eb, EV_EditBinding * peb)
 			UT_uint32 n_ems = EV_EMS_ToNumberNoShift(eb);
 			if (m_pebChar->m_peb[n_evk][n_ems]) 
 			{
-			        UT_DEBUGMSG(("Removing and Deleting previous keybinding %x \n",m_pebChar->m_peb[n_evk][n_ems]));
+			        UT_DEBUGMSG(("Removing and Deleting previous keybinding %p \n",m_pebChar->m_peb[n_evk][n_ems]));
 				delete m_pebChar->m_peb[n_evk][n_ems];
 			}
 			m_pebChar->m_peb[n_evk][n_ems] = peb;

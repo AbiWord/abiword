@@ -386,7 +386,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 						UT_ASSERT(pCurContainer->getContainerType() == FP_CONTAINER_TOC);
 						fp_TOCContainer * pTOCOffend = static_cast<fp_TOCContainer *>(pOffendingContainer);
 						pLastContainerToKeep = pTOCOffend->getPrevContainerInSection();
-					    UT_DEBUGMSG(("Can't break TOC. pCurContainer %x pTabOffend %x pLastContainerToKeep %x \n",pCurContainer,pTOCOffend,pLastContainerToKeep));
+					    UT_DEBUGMSG(("Can't break TOC. pCurContainer %p pTabOffend %p pLastContainerToKeep %p \n",pCurContainer,pTOCOffend,pLastContainerToKeep));
 						break;
 					}
 				}
@@ -922,8 +922,8 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				if((pLastContainerToKeep!=NULL) && (_getNext(pCurContainer) == NULL))
 				{
 					UT_DEBUGMSG(("Non null LastContainerToKeep yet next container is NULL!!!!!!!!!!!! \n"));
-					UT_DEBUGMSG((" CurContainer %x type %d \n",pCurContainer,pCurContainer->getContainerType()));
-					UT_DEBUGMSG((" FirstContainer to keep %x Last container to keep %x \n",pTab,pLastContainerToKeep));
+					UT_DEBUGMSG((" CurContainer %p type %d \n",pCurContainer,pCurContainer->getContainerType()));
+					UT_DEBUGMSG((" FirstContainer to keep %p Last container to keep %p \n",pTab,pLastContainerToKeep));
 					UT_DEBUGMSG(("Try to recover.... \n"));
 					//	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 					pLastContainerToKeep = NULL;
@@ -1320,7 +1320,7 @@ bool fb_ColumnBreaker::_breakTOC(fp_Container*& pOffendingContainer,
 {
 	bool bDoTOCBreak;
 
-    UT_DEBUGMSG(("breakTOC:!!!!!!!!!!!! Offending TOC is %x \n",pOffendingContainer));
+    UT_DEBUGMSG(("breakTOC:!!!!!!!!!!!! Offending TOC is %p \n",pOffendingContainer));
 	fp_TOCContainer * pTOC = static_cast<fp_TOCContainer *>(pOffendingContainer);
 	if(!pTOC->isThisBroken())
 	{

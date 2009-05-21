@@ -371,7 +371,7 @@ static UT_UCSChar try_CToU(UT_UCSChar c,UT_iconv_t iconv_handle)
 	 */
 	if (c > 255)
 		{
-			UT_DEBUGMSG(("WARNING: character code %lx received, substituting 'E'\n", c));
+			UT_DEBUGMSG(("WARNING: character code %x received, substituting 'E'\n", c));
 			c = 'E'; // was return 0, but that can be dangerous...
 		}
 
@@ -443,7 +443,7 @@ static UT_UCSChar try_UToC(UT_UCSChar c,UT_iconv_t iconv_handle)
 	{
 		if (obuflen != 5) // grr... [TODO: ugh.]
 			{
-				UT_DEBUGMSG(("WARNING: character code %lx received, substituting 'E'\n", c));
+				UT_DEBUGMSG(("WARNING: character code %x received, substituting 'E'\n", c));
 				byte = static_cast<UT_UCSChar>(static_cast<unsigned char>('E'));
 			}
 		else byte = static_cast<UT_UCSChar>(static_cast<unsigned char>(obuf[0]));

@@ -271,7 +271,7 @@ bool fp_PageSize::Set(const gchar ** attributes)
 			Set(m_iHeight, m_iWidth, FUND);
 		}
 	}
-	UT_DEBUGMSG(("PageSize - Height %d Width %d \n",m_iHeight,m_iWidth));
+	UT_DEBUGMSG(("PageSize - Height %lf Width %lf \n",m_iHeight,m_iWidth));
 	return true;
 }
 

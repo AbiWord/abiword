@@ -420,7 +420,7 @@ void XAP_UnixDialog_FileOpenSaveAs::fileTypeChanged(GtkWidget * w)
 		return;
 
 	UT_sint32 nFileType = XAP_comboBoxGetActiveInt(GTK_COMBO_BOX(w));
-	UT_DEBUGMSG(("File type widget is %x filetype number is %d \n",w,nFileType));
+	UT_DEBUGMSG(("File type widget is %p filetype number is %d \n",w,nFileType));
 	if(nFileType == 0)
 	{
 		return;

@@ -307,7 +307,7 @@ void GR_CairoGraphics::_initPango()
 	pango_cairo_font_map_set_resolution(PANGO_CAIRO_FONT_MAP(m_pLayoutFontMap), getResolution());	
 	m_pLayoutContext = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(m_pLayoutFontMap));
 
-	UT_DEBUGMSG(("Created LayoutFontMap %x Layout Context %x \n", m_pLayoutFontMap,	m_pLayoutContext));
+	UT_DEBUGMSG(("Created LayoutFontMap %p Layout Context %p \n", m_pLayoutFontMap,	m_pLayoutContext));
 
 }
 
@@ -3010,7 +3010,7 @@ GR_PangoFont::GR_PangoFont(const char * pDesc, double dSize,
 	m_sDesc = pDesc;
 	setLanguage(pLang);
 	reloadFont(pG);
-	UT_DEBUGMSG(("Created UnixPangOFont %x \n",this));
+	UT_DEBUGMSG(("Created UnixPangOFont %p \n",this));
 }
 
 GR_PangoFont::~GR_PangoFont()

@@ -54,7 +54,7 @@ AP_UnixFrameImpl::AP_UnixFrameImpl(AP_UnixFrame *pUnixFrame) :
 	m_iHScrollSignal(0),
 	m_iVScrollSignal(0)
 {
-	UT_DEBUGMSG(("Created AP_UnixFrameImpl %x \n",this));
+	UT_DEBUGMSG(("Created AP_UnixFrameImpl %p \n",this));
 }
 
 XAP_FrameImpl * AP_UnixFrameImpl::createInstance(XAP_Frame *pFrame)
@@ -202,7 +202,7 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 	m_dArea = ap_DocView_new();
 	setupDrawingArea(m_dArea);
 	g_object_set_data(G_OBJECT(m_dArea), "user_data", this);
-	UT_DEBUGMSG(("!!! drawing area m_dArea created! %x for %x \n",m_dArea,this));
+	UT_DEBUGMSG(("!!! drawing area m_dArea created! %p for %p \n",m_dArea,this));
 	GTK_WIDGET_SET_FLAGS (m_dArea, GTK_CAN_FOCUS);	// allow it to be focussed
 
 	gtk_widget_set_events(GTK_WIDGET(m_dArea), (GDK_EXPOSURE_MASK |

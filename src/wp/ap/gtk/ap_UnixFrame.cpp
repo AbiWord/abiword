@@ -213,7 +213,7 @@ bool AP_UnixFrame::initialize(XAP_FrameMode frameMode)
 #if DEBUG
 	if(frameMode == XAP_NormalFrame)
 	{
-		UT_DEBUGMSG(("AP_UnixFrame::initialize!!!! NormalFrame this %x \n",this));
+		UT_DEBUGMSG(("AP_UnixFrame::initialize!!!! NormalFrame this %p \n",this));
 	}
 	else if(frameMode == XAP_NoMenusWindowLess)
 	{
@@ -373,7 +373,7 @@ void AP_UnixFrame::toggleTopRuler(bool bRulerOn)
 		
 	AP_UnixTopRuler * pUnixTopRuler = NULL;
 
-	UT_DEBUGMSG(("AP_UnixFrame::toggleTopRuler %d, %d\n", 
+	UT_DEBUGMSG(("AP_UnixFrame::toggleTopRuler %d, %p\n", 
 		     bRulerOn, pFrameData->m_pTopRuler));
 
 	if ( bRulerOn )
@@ -428,7 +428,7 @@ void AP_UnixFrame::toggleLeftRuler(bool bRulerOn)
 	UT_ASSERT(pFrameData);
 	AP_UnixFrameImpl * pFrameImpl = static_cast<AP_UnixFrameImpl *>(getFrameImpl());
 
-	UT_DEBUGMSG(("AP_UnixFrame::toggleLeftRuler %d, %d\n", 
+	UT_DEBUGMSG(("AP_UnixFrame::toggleLeftRuler %d, %p\n", 
 		     bRulerOn, pFrameData->m_pLeftRuler));
 
 	if (bRulerOn)
@@ -513,7 +513,7 @@ bool AP_UnixFrame::_createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom)
 	//gtk_widget_show(static_cast<AP_UnixFrameImpl *>(m_pFrameImpl)->m_dArea);
 	AP_UnixFrameImpl * pImpl = static_cast<AP_UnixFrameImpl *>(getFrameImpl());
 	UT_ASSERT(pImpl);
-	UT_DEBUGMSG(("Got FrameImpl %x area %x \n",pImpl,pImpl->m_dArea));
+	UT_DEBUGMSG(("Got FrameImpl %p area %p \n",pImpl,pImpl->m_dArea));
 	GR_UnixCairoAllocInfo ai(pImpl->m_dArea->window);
 	pG = (GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 

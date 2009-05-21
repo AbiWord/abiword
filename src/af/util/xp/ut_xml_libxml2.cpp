@@ -39,6 +39,13 @@
 #endif
 #define gchar xmlChar
 
+static void _fatalErrorSAXFunc(void *xmlp,
+                               const char *msg,
+                               ...) ABI_PRINTF_FORMAT(2, 3);
+static void _errorSAXFunc(void *xmlp,
+			  const char *msg,
+			  ...)  ABI_PRINTF_FORMAT(2, 3);
+
 
 static void _startElement (void * userData, const gchar * name, const gchar ** atts)
 {
@@ -124,8 +131,8 @@ static void _errorSAXFunc(void *xmlp,
 }
 
 static void _fatalErrorSAXFunc(void *xmlp,
-			       const char *msg,
-			       ...)
+                               const char *msg,
+                               ...)
 {
   va_list args;
   va_start (args, msg);
@@ -135,7 +142,7 @@ static void _fatalErrorSAXFunc(void *xmlp,
 
   UT_DEBUGMSG(("%s", errorMessage.c_str()));
   UT_XML * pXML = reinterpret_cast<UT_XML *>(xmlp);
-  UT_DEBUGMSG((" userData pointer is %x \n",pXML));
+  UT_DEBUGMSG((" userData pointer is %p \n",pXML));
   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
   pXML->stop();
 

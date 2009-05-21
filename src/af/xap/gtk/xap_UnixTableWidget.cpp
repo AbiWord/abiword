@@ -66,7 +66,7 @@ g_cclosure_user_marshal_VOID__UINT_UINT (GClosure     *closure,
       data2 = closure->data;
     }
   callback = (GMarshalFunc_VOID__UINT_UINT) (marshal_data ? marshal_data : cc->callback);
-  UT_DEBUGMSG(("Calling callback marshell data %x cc %x \n",callback,cc));
+  UT_DEBUGMSG(("Calling callback marshell data %p cc %p \n",callback,cc));
 
   callback (data1,
             g_value_get_uint (param_values + 1),
@@ -688,7 +688,7 @@ abi_table_init (AbiTable* table)
 		// We actually never want this label in toolbar
 		//		gtk_box_pack_end(GTK_BOX(table->button_box), table->label, FALSE, FALSE, 0);
 		gtk_box_pack_end(GTK_BOX(table->button_box), table->icon, FALSE, FALSE, 0);
-		UT_DEBUGMSG(("abi-table icon loaded %x !\n",table->icon));
+		UT_DEBUGMSG(("abi-table icon loaded %p !\n",table->icon));
 	}
 	else
 	{

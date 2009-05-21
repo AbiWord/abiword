@@ -99,7 +99,7 @@ void pt_PieceTable::setPieceTableState(PTState pts)
 bool pt_PieceTable::deleteStruxNoUpdate(PL_StruxDocHandle sdh)
 {
 	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
-	UT_DEBUGMSG(("SEVIOR: deleting strux no update %x \n",sdh));
+	UT_DEBUGMSG(("SEVIOR: deleting strux no update %p \n",sdh));
 	pf_Frag * pf = pfs->getNext();
 	if(pf != NULL && pf->getType() == pf_Frag::PFT_FmtMark)
 	{
@@ -237,7 +237,7 @@ bool pt_PieceTable::deleteFmtMark(PT_DocPosition dpos)
 bool pt_PieceTable::insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType pts,const gchar ** attributes )
 {
 	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
-	UT_DEBUGMSG(("SEVIOR: Inserting strux of type %d no update %x \n",pts,sdh));
+	UT_DEBUGMSG(("SEVIOR: Inserting strux of type %d no update %p \n",pts,sdh));
 //
 // Create an indexAP
 //

@@ -91,7 +91,7 @@ AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
 	// install top_ruler_prefs_listener as this lister for this func
 	XAP_App::getApp()->getPrefs()->addListener( AP_LeftRuler::_prefsListener, static_cast<void *>(this) );
 	m_lidLeftRuler = 9999999;
-	UT_DEBUGMSG(("Created LeftRuler %x lid is %d \n",this,m_lidLeftRuler));
+	UT_DEBUGMSG(("Created LeftRuler %p lid is %d \n",this,m_lidLeftRuler));
 }
 
 AP_LeftRuler::~AP_LeftRuler(void)
@@ -99,7 +99,7 @@ AP_LeftRuler::~AP_LeftRuler(void)
 	if(m_pView) 
 	{
 		// don't receive anymore scroll messages
-	  UT_DEBUGMSG(("Remove scroll listener %x \n",m_pScrollObj));
+	  UT_DEBUGMSG(("Remove scroll listener %p \n",m_pScrollObj));
 		m_pView->removeScrollListener(m_pScrollObj);
 
 		// no more view messages
@@ -113,7 +113,7 @@ AP_LeftRuler::~AP_LeftRuler(void)
 	}
 	// no more prefs 
 	XAP_App::getApp()->getPrefs()->removeListener( AP_LeftRuler::_prefsListener, static_cast<void *>(this) );
-	UT_DEBUGMSG(("Deleted LeftRuler %x \n",this));
+	UT_DEBUGMSG(("Deleted LeftRuler %p \n",this));
 	m_lidLeftRuler = 0;
 	UT_DEBUGMSG(("AP_LeftRuler::~AP_LeftRuler (this=%p scroll=%p)\n", this, m_pScrollObj));
 
@@ -962,7 +962,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 	}		
 	m_bEventIgnored = false;
 
-	UT_DEBUGMSG(("mouseMotion: [ems 0x%08lx][x %ld][y %ld]\n",ems,x,y));
+	UT_DEBUGMSG(("mouseMotion: [ems 0x%08x][x %d][y %d]\n",(int)ems,x,y));
 	ap_RulerTicks tick(pG,m_dim);
 
 	// if they drag vertically off the ruler, we ignore the whole thing.

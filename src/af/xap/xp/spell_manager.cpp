@@ -72,7 +72,7 @@ SpellChecker::SpellCheckResult SpellChecker::checkWord(const UT_UCSChar* word, s
 	
     if (m_BarbarismChecker.checkWord (word, len))
 	{
-		UT_DEBUGMSG(("SPELL:  spell %lx %s barb \"%s\"\n",
+		UT_DEBUGMSG(("SPELL:  spell %p %s barb \"%s\"\n",
 					 this, getLanguage().c_str(), UT_UTF8String (word, len).utf8_str()));
 		m_bIsBarbarism = true;
 		return SpellChecker::LOOKUP_FAILED;

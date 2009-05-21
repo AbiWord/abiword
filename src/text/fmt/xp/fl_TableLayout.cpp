@@ -107,7 +107,7 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh,
 	  m_bDoingDestructor(false)
 
 {
-	UT_DEBUGMSG(("Created Table Layout %x \n",this));
+	UT_DEBUGMSG(("Created Table Layout %p \n",this));
 	UT_ASSERT(pLayout);
 	m_vecColProps.clear();
 	m_vecRowProps.clear();

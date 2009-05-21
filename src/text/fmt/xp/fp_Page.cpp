@@ -99,7 +99,7 @@ fp_Page::~fp_Page()
 		 if(pHdrFtr != NULL && pHdrFtr->isPageHere(this))
 		 {
 		   pHdrFtr->deletePage(this);
-		   UT_DEBUGMSG(("Remove Page from Hdr %x in page destructor \n",pHdrFtr));
+		   UT_DEBUGMSG(("Remove Page from Hdr %p in page destructor \n",pHdrFtr));
 		 }
 	    }
 	    if(m_pFooter != NULL)
@@ -108,7 +108,7 @@ fp_Page::~fp_Page()
 		 if(pHdrFtr != NULL && pHdrFtr->isPageHere(this))
 		 {
 		   pHdrFtr->deletePage(this);
-		   UT_DEBUGMSG(("Remove Page from Ftr %x in page destructor \n",pHdrFtr));
+		   UT_DEBUGMSG(("Remove Page from Ftr %p in page destructor \n",pHdrFtr));
 		 }
 	    }
 	}
@@ -352,7 +352,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 // SOMETHING HAS GONE HORRIBALLY WRONG. Try to recover by collapsing the
 // content in this column and rebuilding
 //
-						UT_DEBUGMSG(("-ve width here!!!! %x left %d right %d \n",pLine,recLeft.width,recRight.width));
+						UT_DEBUGMSG(("-ve width here!!!! %p left %d right %d \n",pLine,recLeft.width,recRight.width));
 						UT_VECTOR_PURGEALL(_BL *, vecBL);
 						fl_BlockLayout * pBL = pLine->getBlock();
 						fl_BlockLayout * pFirst = pBL;
@@ -2013,7 +2013,7 @@ void fp_Page::removeColumnLeader(fp_Column* pLeader)
 // Change ownership of the page. First remove this page from the set owned by
 // the old docSectionLayout.
 //
-		UT_DEBUGMSG(("fp_Page: Remove page %x from DSL %x \n",this,m_pOwner)); 
+		UT_DEBUGMSG(("fp_Page: Remove page %p from DSL %p \n",this,m_pOwner)); 
 		m_pOwner->deleteOwnedPage(this,false);
 		fl_DocSectionLayout * pDSLNew = pFirstColumnLeader->getDocSectionLayout();
 //
