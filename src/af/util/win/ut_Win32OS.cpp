@@ -257,6 +257,37 @@ HDC  UT_GetDefaultPrinterDC()
 	return hdc;
 }
 
+
+
+ATOM UT_RegisterClassEx(UINT style, WNDPROC wndproc, HINSTANCE hInstance,
+ 						HICON hIcon, HCURSOR hCursor, HBRUSH hbrBackground, HICON hIconSm,
+						const wchar_t * menu, const wchar_t * name)
+ 
+{
+    ATOM atom;
+	WNDCLASSEXW  wndclass;
+	memset(&wndclass, 0, sizeof(wndclass));
+	wndclass.cbSize        = sizeof(wndclass);
+	wndclass.style         = style;
+	wndclass.lpfnWndProc   = wndproc;
+	wndclass.cbClsExtra    = 0;
+	wndclass.cbWndExtra    = 0;
+	wndclass.hInstance     = hInstance;
+	wndclass.hIcon         = hIcon;
+	wndclass.hCursor       = hCursor;
+	wndclass.hbrBackground = hbrBackground;
+	wndclass.lpszMenuName  = menu;
+	wndclass.lpszClassName = name;
+	wndclass.hIconSm       = hIconSm;
+	
+	atom = RegisterClassExW (&wndclass);	
+	UT_ASSERT(atom);
+	return atom;
+}
+
+
+
+
 ATOM UT_RegisterClassEx(UINT style, WNDPROC wndproc, HINSTANCE hInstance,
 						HICON hIcon, HCURSOR hCursor, HBRUSH hbrBackground, HICON hIconSm,
 						const char * menu, const char * name,
@@ -409,4 +440,17 @@ LRESULT UT_DispatchMessage(const MSG *lpmsg, bool bForceANSI)
 	else
 		return DispatchMessageA(lpmsg);
 }
+
+
+HWND UT_CreateWindowEx(DWORD dwExStyle, const wchar_t * pszClassName, const wchar_t * pszWindowName, DWORD dwStyle,
+ 					   int x, int y, int nWidth, int nHeight,
+					   HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam)
+					   
+ {	
+	HWND hwnd =  CreateWindowExW(dwExStyle, pszClassName, pszWindowName,
+		dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);	
+			
+	UT_ASSERT(hwnd);
+	return hwnd;	
+ }
 

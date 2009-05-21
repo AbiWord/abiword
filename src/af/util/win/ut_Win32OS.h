@@ -23,6 +23,7 @@
 
 #include <windows.h>
 #include "ut_types.h"
+#include <wchar.h>
 
 OSVERSIONINFO& UT_GetWinVersion(void);
 bool UT_IsWinVista(void);
@@ -38,13 +39,23 @@ HDC  UT_GetDefaultPrinterDC();
 
 ATOM UT_RegisterClassEx(UINT style, WNDPROC wndproc, HINSTANCE hInstance,
 						HICON hIcon, HCURSOR hCursor, HBRUSH hbrBackground, HICON hIconSm,
-						const char * menu, const char * name, bool bForceANSI = false);
+						const char * menu, const char * name, bool bForceANSI = false);         //TODO - remove
+
+
+ATOM UT_RegisterClassEx(UINT style, WNDPROC wndproc, HINSTANCE hInstance,
+ 						HICON hIcon, HCURSOR hCursor, HBRUSH hbrBackground, HICON hIconSm,
+						const wchar_t * menu, const wchar_t * name);
+
 
 // NB: the default value for bForceANSI is intentionally set to true, otherwise the
 // tooltips do not work, see bug 8976
+HWND UT_CreateWindowEx(DWORD dwExStyle, const wchar_t* lpClassName, const wchar_t* lpWindowName, DWORD dwStyle,
+					   int x, int y, int nWidth, int nHeight,
+					   HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam);
+
 HWND UT_CreateWindowEx(DWORD dwExStyle, LPCTSTR lpClassName, LPCTSTR lpWindowName, DWORD dwStyle,
 					   int x, int y, int nWidth, int nHeight,
-					   HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam, bool bForceANSI = true);
+					   HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam, bool bForceANSI = true); //TODO - remove
 
 LRESULT UT_DefWindowProc(HWND hWnd, UINT Msg, WPARAM wParam,LPARAM lParam, bool bForceANSI = false);
 
