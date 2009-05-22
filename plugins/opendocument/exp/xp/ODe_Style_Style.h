@@ -189,6 +189,7 @@ private:
         UT_UTF8String m_fontWeight;      // fo:font-weight
         UT_UTF8String m_backgroundColor; // fo:background-color
         UT_UTF8String m_display;         // text:display
+        std::string m_transform;         // fo:text-transform
     } *m_pTextProps;
 
 

@@ -351,7 +351,7 @@ private:
     UT_UTF8String m_fontStyle;
     UT_UTF8String m_fontWeight;
     UT_UTF8String m_display; //text:display
-    std::string m_transform; //text:transform
+    std::string m_transform; //fo:text-transform
 
 
     // fo:background-color

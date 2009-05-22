@@ -202,6 +202,11 @@ bool ODe_Style_Style::hasTextStyleProps(const PP_AttrProp* pAP) {
     if (ok && pValue != NULL) {
         return true;
     }
+
+    ok = pAP->getProperty("text-transform", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
     
     return false;
 }
@@ -1048,7 +1053,8 @@ bool ODe_Style_Style::TextProps::isEmpty() const {
            m_fontStyle.empty() &&
            m_fontWeight.empty() &&
            m_backgroundColor.empty() &&
-           m_display.empty();
+           m_display.empty() && 
+           m_transform.empty();
 }
 
 
@@ -1179,6 +1185,15 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
             m_display = "true";
         }
     }
+
+    ok = rAP.getProperty("text-transform", pValue);
+    if (ok && pValue && *pValue && 
+       (!strcmp(pValue, "none") || !strcmp(pValue, "lowercase") ||
+        !strcmp(pValue, "uppercase") || !strcmp(pValue, "capitalize"))) {
+
+       m_transform = pValue;
+    }
+
 }
 
 
@@ -1207,6 +1222,7 @@ write(UT_UTF8String& rOutput, const UT_UTF8String& rSpacesOffset) const {
     ODe_writeAttribute(rOutput, "fo:font-weight", m_fontWeight);
     ODe_writeAttribute(rOutput, "fo:background-color", m_backgroundColor);
     ODe_writeAttribute(rOutput, "text:display", m_display);
+    ODe_writeAttribute(rOutput, "fo:text-transform", m_transform.c_str());
     
     rOutput += "/>\n";
 }
@@ -1230,6 +1246,7 @@ ODe_Style_Style::TextProps& ODe_Style_Style::TextProps::operator=(
     m_fontWeight = rTextProps.m_fontWeight;
     m_backgroundColor = rTextProps.m_backgroundColor;
     m_display = rTextProps.m_display;
+    m_transform = rTextProps.m_transform;
     
     return *this;
 }
@@ -1253,7 +1270,8 @@ bool ODe_Style_Style::TextProps::operator==(
         m_fontStyle       == rTextProps.m_fontStyle &&
         m_fontWeight      == rTextProps.m_fontWeight &&
         m_backgroundColor == rTextProps.m_backgroundColor &&
-        m_display         == rTextProps.m_display;
+        m_display         == rTextProps.m_display &&
+        m_transform       == rTextProps.m_transform;
 }
 
 
