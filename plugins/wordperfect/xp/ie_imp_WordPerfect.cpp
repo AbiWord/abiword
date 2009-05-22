@@ -497,7 +497,7 @@ void IE_Imp_WordPerfect::openParagraph(const WPXPropertyList &propList, const WP
 	if (tabStops.count() > 0) // Append the tabstop information
 	{
 		propBuffer += "; tabstops:";
-		UT_String_sprintf(tmpBuffer, "");
+		tmpBuffer = "";
                 WPXPropertyListVector::Iter i(tabStops);
                 for (i.rewind(); i.next();)
                 {
@@ -530,7 +530,7 @@ void IE_Imp_WordPerfect::openParagraph(const WPXPropertyList &propList, const WP
 			else
 				propBuffer += "0";
 
-			UT_String_sprintf(tmpBuffer, ",");
+			tmpBuffer = ",";
                 }
         }
 
@@ -1175,7 +1175,7 @@ UT_Error IE_Imp_WordPerfect::_updateDocumentOrderedListDefinition(ABI_ListDefini
 	// not in document yet, we should create a list for it
 	if (pAuto == NULL) 
 	{	
-		UT_DEBUGMSG(("AbiWordPerfect: pAuto is NULL: creating a list\n", iLevel));
+		UT_DEBUGMSG(("AbiWordPerfect: pAuto is NULL: creating a list\n"));
 		if (iLevel > 1) 
 		{	
 			pAuto = new fl_AutoNum(pListDefinition->getListID(iLevel), 
@@ -1204,7 +1204,7 @@ UT_Error IE_Imp_WordPerfect::_updateDocumentOrderedListDefinition(ABI_ListDefini
 	// we should update what we have
 	else 
 	{
-		UT_DEBUGMSG(("AbiWordPerfect: pAuto already exists\n", iLevel));
+		UT_DEBUGMSG(("AbiWordPerfect: pAuto already exists\n"));
 	}
 
 	pAuto->fixHierarchy();
@@ -1221,7 +1221,7 @@ UT_Error IE_Imp_WordPerfect::_updateDocumentUnorderedListDefinition(ABI_ListDefi
 	// not in document yet, we should create a list for it
 	if (pAuto == NULL) 
 	{	
-		UT_DEBUGMSG(("AbiWordPerfect: pAuto is NULL: creating a list\n", iLevel));
+		UT_DEBUGMSG(("AbiWordPerfect: pAuto is NULL: creating a list\n"));
 		if (iLevel > 1) 
 		{	
 			pAuto = new fl_AutoNum(pListDefinition->getListID(iLevel), pListDefinition->getListID((iLevel-1)), 
@@ -1236,7 +1236,7 @@ UT_Error IE_Imp_WordPerfect::_updateDocumentUnorderedListDefinition(ABI_ListDefi
 	// we should update what we have
 	else 
 	{	
-		UT_DEBUGMSG(("AbiWordPerfect: pAuto already exists\n", iLevel));
+		UT_DEBUGMSG(("AbiWordPerfect: pAuto already exists\n"));
 	}
 
 	pAuto->fixHierarchy();
