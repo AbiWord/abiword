@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE abiword PUBLIC "-//ABISOURCE//DTD AWML 1.0 Strict//EN" "http://www.abisource.com/awml.dtd">
+<abiword template="true" styles="unlocked" version="2.0.5" xmlns:svg="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/" fileformat="1.1" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:math="http://www.w3.org/1998/Math/MathML" xmlns:awml="http://www.abisource.com/awml.dtd" xmlns="http://www.abisource.com/awml.dtd" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" props="lang:en-US; dom-dir:ltr">
+<!-- ======================================================================== -->
+<!-- This file is an AbiWord document.                                        -->
+<!-- AbiWord is a free, Open Source word processor.                           -->
+<!-- More information about AbiWord is available at http://www.abisource.com/ -->
+<!-- You should not edit this file by hand.                                   -->
+<!-- ======================================================================== -->
+
+<metadata>
+<m key="dc.format">application/x-abiword</m>
+<m key="abiword.generator">AbiWord</m>
+<m key="abiword.date_last_changed">Fri Mar 12 22:08:25 2004</m>
+</metadata>
+<styles>
+<s followedby="Current Settings" name="Normal" type="P" props="font-weight:normal; font-family:Arial; margin-top:0pt; font-style:normal; margin-left:0pt; lang:en-US; font-variant:normal; text-indent:0in; margin-bottom:0pt; text-decoration:none; bgcolor:transparent; margin-right:0pt; color:000000; font-size:9pt; line-height:1.0; text-align:left; widows:2; font-stretch:normal"/>
+<s followedby="Normal" name="Heading 1" basedon="Normal" type="P" props="font-weight:bold; margin-top:22pt; keep-with-next:1; margin-bottom:3pt; font-family:Arial; font-size:20pt"/>
+<s followedby="Normal" name="Heading 2" basedon="Normal" type="P" props="margin-top:22pt; font-size:11pt; margin-bottom:3pt; font-weight:normal; text-align:right; font-family:Arial; keep-with-next:1"/>
+<s followedby="Normal" name="Heading 3" basedon="Normal" type="P" props="font-weight:bold; margin-top:22pt; keep-with-next:1; margin-bottom:3pt; font-family:Arial; font-size:9pt"/>
+<s followedby="Heading 3" name="Brief" basedon="Normal" type="P" props="font-weight:normal; font-family:Arial; margin-top:0pt; font-style:normal; margin-left:0.2500in; lang:en-US; font-variant:normal; text-indent:0in; margin-bottom:9pt; text-decoration:none; bgcolor:transparent; margin-right:0pt; color:000000; font-size:9pt; line-height:1.0; text-align:left; widows:2; font-stretch:normal"/>
+</styles>
+<pagesize pagetype="Letter" orientation="portrait" width="8.500000" height="11.000000" units="in" page-scale="1.000000"/>
+<section header="0" props="page-margin-footer:0.5in; page-margin-header:0.4375in; page-margin-top:1.1250in">
+<p style="Normal" props="tabstops:0.0000in/L0"></p>
+<table props="table-column-props:1.5625in/4.8750in/; table-column-leftpos:0.0000in; list-tag:1">
+<cell props="bg-style:1; left-color:000000; right-attach:1; right-color:000000; top-color:000000; left-attach:0; left-style:0; right-style:0; top-attach:0; bot-attach:1; top-style:0">
+<p style="Normal" props="tabstops:0.0000in/L0"><c></c></p>
+</cell>
+<cell props="bot-attach:1; left-attach:1; right-attach:2; top-attach:0">
+<p style="Heading 1" props="tabstops:0.0000in/L0">Abi the Ant</p>
+</cell>
+<cell props="bg-style:1; left-color:000000; right-attach:1; right-color:000000; top-color:000000; left-attach:0; left-style:1; bot-attach:2; top-style:1; right-style:0; top-attach:1">
+<p style="Heading 2" props="default-tab-interval:0; tabstops: ">Objective</p>
+</cell>
+<cell props="bg-style:1; left-color:000000; right-attach:2; right-color:000000; top-color:000000; left-attach:1; left-style:1; right-style:0; top-attach:1; bot-attach:2; top-style:1">
+<p style="Normal" props="default-tab-interval:0; tabstops: ">To become spokes-ant for a leading open source volunteer development group</p>
+</cell>
+<cell props="bg-style:1; left-color:000000; right-attach:1; right-color:000000; top-color:000000; left-attach:0; left-style:1; bot-attach:3; top-style:1; right-style:0; top-attach:2">
+<p style="Heading 2" props="default-tab-interval:0; tabstops: ">Experience</p>
+</cell>
+<cell props="bg-style:1; left-color:000000; right-attach:2; right-color:000000; top-color:000000; left-attach:1; left-style:1; right-style:0; top-attach:2; bot-attach:3; top-style:1">
+<p style="Heading 3" props="default-tab-interval:0; tabstops: ">1996-1998: TCP-IP, inc, Planet Earth, Sol.</p>
+<p style="Brief" props="default-tab-interval:0; tabstops: ">Worker ant assigned to menial data transport tasks.</p>
+<p style="Heading 3" props="default-tab-interval:0; tabstops: ">1998-2000: SourceGear Corporation, Champaign, IL</p>
+<p style="Brief" props="default-tab-interval:0; tabstops: ">Spokes-ant and logo for AbiSuite and AbiSource projects, including AbiWord</p>
+<p style="Heading 3" props="default-tab-interval:0; tabstops: ">2000-2003: AbiSource</p>
+<p style="Brief" props="default-tab-interval:0; tabstops: ">Spokes-ant for AbiWord word processor, version 1.0 and revisions</p>
+<p style="Heading 3" props="default-tab-interval:0; tabstops: ">2003-2004: AbiSource</p>
+<p style="Brief" props="default-tab-interval:0; tabstops: ">Spokes-ant for AbiWord word processor, version 2.0 and revisions</p>
+<p style="Heading 3" props="default-tab-interval:0; tabstops: ">2004-Present: AbiSource/Dom Lachowicz</p>
+<p style="Brief" props="default-tab-interval:0; tabstops: ">Spokes-ant for AbiWord word processor, version 2.2 and revisions</p>
+</cell>
+<cell props="bg-style:1; left-color:000000; right-attach:1; right-color:000000; top-color:000000; left-attach:0; left-style:1; bot-attach:4; top-style:1; right-style:0; top-attach:3">
+<p style="Heading 2" props="tabstops:0.0000in/L0">Education</p>
+</cell>
+<cell props="bg-style:1; left-color:000000; right-attach:2; right-color:000000; top-color:000000; left-attach:1; left-style:1; right-style:0; top-attach:3; bot-attach:4; top-style:1">
+<p style="Heading 3" props="tabstops:0.0000in/L0">1965-1985: ARPAnet</p>
+<p style="Brief" props="tabstops:0.0000in/L0">Underwent prototype world-wide data transfer training</p>
+<p style="Heading 3" props="tabstops:0.0000in/L0">1985-1995: Internet</p>
+<p style="Brief" props="tabstops:0.0000in/L0">Received a W.S..(Worker of Sciences) degree in Data Transfer and Storage</p>
+<p style="Heading 3" props="tabstops:0.0000in/L0">1995-1998: Internet</p>
+<p style="Brief" props="tabstops:0.0000in/L0">Received a Q.S. Comp.Sci. (Queen of Sciences-Computer Science) for work in World Wide Web branding techniques</p>
+</cell>
+<cell props="bg-style:1; left-color:000000; right-attach:1; right-color:000000; top-color:000000; left-attach:0; left-style:1; bot-attach:5; top-style:1; right-style:0; top-attach:4">
+<p style="Heading 2" props="tabstops:0.0000in/L0">Interests</p>
+</cell>
+<cell props="bg-style:1; left-color:000000; right-attach:2; right-color:000000; top-color:000000; left-attach:1; left-style:1; right-style:0; top-attach:4; bot-attach:5; top-style:1">
+<p style="Brief" props="tabstops:0.0000in/L0">Surfing the web, debating with fellow spokes-beings from other office products, dancing at open-source convention parties</p>
+</cell>
+<cell props="bg-style:1; left-color:000000; right-attach:1; right-color:000000; top-color:000000; left-attach:0; left-style:1; bot-attach:6; top-style:1; right-style:0; top-attach:5">
+<p style="Heading 2" props="tabstops:0.0000in/L0">Other</p>
+</cell>
+<cell props="bg-style:1; left-color:000000; right-attach:2; right-color:000000; top-color:000000; left-attach:1; left-style:1; right-style:0; top-attach:5; bot-attach:6; top-style:1">
+<p style="Brief" props="tabstops:0.0000in/L0">It ain't no joke, I'm the Ant for you!</p>
+<p style="Brief" props="tabstops:0.0000in/L0">Ants can lift over 50 times their own weight.</p>
+</cell>
+</table>
+<p style="Normal" props="tabstops:0.0000in/L0"></p>
+</section>
+<section id="0" listid="0" parentid="0" type="header">
+<p props="text-align:left; margin-left:5.0000in">&lt;address 1&gt;</p>
+<p props="text-align:left; margin-left:5.0000in">&lt;address 2&gt;</p>
+<p props="text-align:left; margin-left:5.0000in">&lt;phone&gt;</p>
+<p props="text-align:left; margin-left:5.0000in">&lt;email&gt;</p>
+</section>
+</abiword>
