@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<!DOCTYPE abiword PUBLIC "-//ABISOURCE//DTD AWML 1.0 Strict//EN" "http://www.abisource.com/awml.dtd">
+<abiword xmlns="http://www.abisource.com/awml.dtd" xmlns:awml="http://www.abisource.com/awml.dtd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svg="http://www.w3.org/2000/svg" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:math="http://www.w3.org/1998/Math/MathML" xmlns:dc="http://purl.org/dc/elements/1.1/" version="0.99.3" fileformat="1.0" template="true" styles="unlocked">
+<!-- =====================================================================  -->
+<!-- This file is an AbiWord document.                                      -->
+<!-- AbiWord is a free, Open Source word processor.                         -->
+<!-- You may obtain more information about AbiWord at www.abisource.com     -->
+<!-- You should not edit this file by hand.                                 -->
+<!-- =====================================================================  -->
+
+<pagesize pagetype="Letter" orientation="portrait" width="8.500000" height="11.000000" units="in" page-scale="1.000000"/>
+<section props="page-margin-footer:0.5in; page-margin-header:0.5in">
+<p style="Normal" props="tabstops:6.2500in/R0,2.7500in/L0,4.5000in/C0"><c props="lang:en-US">	</c><c props="bgcolor:000000; lang:en-US; font-size:24pt; font-family:Arial Black; color:ffffff">	Company Name	</c><c props="bgcolor:000000; lang:en-US; font-size:12pt; font-family:Arial Black; color:ffffff"></c></p>
+<p style="Normal"><c props="bgcolor:ffffff; lang:en-US; font-size:12pt; font-family:Arial; color:000000">Company Address Line 1</c></p>
+<p style="Normal"><c props="bgcolor:ffffff; lang:en-US; font-size:12pt; font-family:Arial; color:000000">Company Address Line 2</c></p>
+<p style="Normal"><c props="bgcolor:ffffff; lang:en-US; font-size:12pt; font-family:Arial; color:000000">Company Address Line 3</c></p>
+<p style="Normal"><c props="bgcolor:ffffff; lang:en-US; font-size:12pt; font-family:Arial; color:000000"></c></p>
+<p style="Normal"><c props="bgcolor:ffffff; lang:en-US; font-size:72pt; font-family:Arial Black; color:000000">FAX</c></p>
+<p style="Normal" props="tabstops:4.0000in/L0,0.7500in/L0,3.2500in/L0"><c props="bgcolor:ffffff; lang:en-US; font-weight:bold; color:000000; font-family:Arial; font-size:12pt">TO:	</c><c props="bgcolor:ffffff; lang:en-US; font-size:12pt; font-family:Arial; color:000000">	</c><c props="bgcolor:ffffff; lang:en-US; font-weight:bold; color:000000; font-family:Arial; font-size:12pt">From:	</c></p>
+<p style="Normal" props="tabstops:4.0000in/L0,0.7500in/L0,3.2500in/L0"><image dataid="C:\Documents and Settings\jgz\Desktop\bar.bmp_0" props="height:0.15in; width:8.23in"/><c props="bgcolor:ffffff; lang:en-US; font-weight:bold; color:000000; font-family:Arial; font-size:12pt">Fax:	</c><c props="bgcolor:ffffff; lang:en-US; font-size:12pt; font-family:Arial; color:000000">	</c><c props="bgcolor:ffffff; lang:en-US; font-weight:bold; color:000000; font-family:Arial; font-size:12pt">Pages:	</c></p>
+<p style="Normal" props="tabstops:4.0000in/L0,0.7500in/L0,3.2500in/L0"><image dataid="C:\Documents and Settings\jgz\Desktop\bar.bmp_1" props="height:0.15in; width:8.23in"/><c props="bgcolor:ffffff; lang:en-US; font-weight:bold; color:000000; font-family:Arial; font-size:12pt">Phone:	</c><c props="bgcolor:ffffff; lang:en-US; font-size:12pt; font-family:Arial; color:000000">	</c><c props="bgcolor:ffffff; lang:en-US; font-weight:bold; color:000000; font-family:Arial; font-size:12pt">Date:	</c><field type="date_mdy" param=""></field></p>
+<p style="Normal" props="tabstops:4.0000in/L0,0.7500in/L0,3.2500in/L0; margin-left:0.0000in"><image dataid="C:\Documents and Settings\jgz\Desktop\bar.bmp_2" props="height:0.15in; width:8.23in"/></p>
+<p style="Normal" props="tabstops:4.0000in/L0,0.7500in/L0,3.2500in/L0; margin-left:0.0000in"><c type="date_mdy" param="" props="font-weight:bold">Re:	</c><c type="date_mdy" param="">	</c><c type="date_mdy" param="" props="font-weight:bold">CC:		</c></p>
+<p style="Normal" props="tabstops:4.0000in/L0,0.7500in/L0,3.2500in/L0; margin-left:0.0000in"><c type="date_mdy" param="" props="font-weight:bold"></c><image dataid="C:\Documents and Settings\jgz\Desktop\bar.bmp_4" props="height:0.15in; width:8.23in"/></p>
+<p style="Normal" props="tabstops:2.2500in/L0,1.0000in/L0,3.7500in/L0,5.0000in/L0; margin-left:0.0000in"></p>
+<p style="Normal" props="tabstops:2.2500in/L0,1.0000in/L0,3.7500in/L0,5.0000in/L0; margin-left:0.0000in"><c type="date_mdy" param="" props="font-family:Symbol; font-weight:bold"></c><c type="date_mdy" param="" props="font-family:Times New Roman; font-weight:bold"> </c><c type="date_mdy" param="" props="font-weight:bold">Urgent	</c><c type="date_mdy" param="" props="font-family:Symbol; font-weight:bold"> </c><c type="date_mdy" param="" props="font-weight:bold">For Review	</c><c type="date_mdy" param="" props="font-family:Symbol; font-weight:bold"></c><c type="date_mdy" param="" props="font-family:Times New Roman; font-weight:bold"> </c><c type="date_mdy" param="" props="font-weight:bold">Please Comment	</c><c type="date_mdy" param="" props="font-family:Symbol; font-weight:bold"></c><c type="date_mdy" param="" props="font-family:Times New Roman; font-weight:bold"> </c><c type="date_mdy" param="" props="font-weight:bold">Please Reply	</c><c type="date_mdy" param="" props="font-family:Symbol; font-weight:bold"></c><c type="date_mdy" param="" props="font-family:Times New Roman; font-weight:bold"> </c><c type="date_mdy" param="" props="font-weight:bold">Please Recycle</c><c props="bgcolor:ffffff; lang:en-US; font-weight:bold; color:000000; font-family:Arial; font-size:12pt">	</c></p>
+<p style="Normal" props="tabstops:2.2500in/L0,1.0000in/L0,3.7500in/L0,5.0000in/L0; margin-left:0.0000in"><c props="bgcolor:ffffff; lang:en-US; font-weight:bold; color:000000; font-family:Arial; font-size:12pt"></c><image dataid="C:\Documents and Settings\jgz\Desktop\bar.bmp_5" props="height:0.15in; width:8.23in"/></p>
+<p style="Normal"></p>
+<p style="Normal"></p>
+<p style="Normal" props="text-align:center"><c props="font-family:Arial; text-decoration:underline; color:000000; lang:en-US; bgcolor:ffffff; font-weight:bold; font-size:16pt">Comments</c></p>
+<p style="Normal" props="margin-left:0.0000in"></p>
+<p style="Normal" props="margin-left:0.0000in"><c props="font-family:Arial; color:000000; font-size:10pt; text-position:normal; lang:en-US; bgcolor:ffffff; font-weight:normal; font-style:normal; text-decoration:none">This text should the replaced with your comments about the fax and any </c><c props="font-family:Arial; bgcolor:ffffff; font-size:10pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">additional</c><c props="font-family:Arial; color:000000; font-size:10pt; text-position:normal; lang:en-US; bgcolor:ffffff; font-weight:normal; font-style:normal; text-decoration:none"> comment to the receiver. </c></p>
+</section>
+<data>
+<d name="C:\Documents and Settings\jgz\Desktop\bar.bmp_0" mime-type="image/png" base64="yes">
+iVBORw0KGgoAAAANSUhEUgAAAxYAAAAOCAIAAAA9sR2bAAAAa0lEQVR4nO3cMQqAQAwAQSP+
+/8tnd/1WpzBTpUy5EMistS4AAIr79AIAAP8joQAAMgkFAJBJKACATEIBAGQSCgAge/Y0Mwf3
+AAD4vv0NavyFAgCoHPIAADIJBQCQSSgAgExCAQBkEgoAIHsBc54JF03wrVsAAAAASUVORK5C
+YII=
+</d>
+<d name="C:\Documents and Settings\jgz\Desktop\bar.bmp_1" mime-type="image/png" base64="yes">
+iVBORw0KGgoAAAANSUhEUgAAAxYAAAAOCAIAAAA9sR2bAAAAa0lEQVR4nO3cMQqAQAwAQSP+
+/8tnd/1WpzBTpUy5EMistS4AAIr79AIAAP8joQAAMgkFAJBJKACATEIBAGQSCgAge/Y0Mwf3
+AAD4vv0NavyFAgCoHPIAADIJBQCQSSgAgExCAQBkEgoAIHsBc54JF03wrVsAAAAASUVORK5C
+YII=
+</d>
+<d name="C:\Documents and Settings\jgz\Desktop\bar.bmp_2" mime-type="image/png" base64="yes">
+iVBORw0KGgoAAAANSUhEUgAAAxYAAAAOCAIAAAA9sR2bAAAAa0lEQVR4nO3cMQqAQAwAQSP+
+/8tnd/1WpzBTpUy5EMistS4AAIr79AIAAP8joQAAMgkFAJBJKACATEIBAGQSCgAge/Y0Mwf3
+AAD4vv0NavyFAgCoHPIAADIJBQCQSSgAgExCAQBkEgoAIHsBc54JF03wrVsAAAAASUVORK5C
+YII=
+</d>
+<d name="C:\Documents and Settings\jgz\Desktop\bar.bmp_4" mime-type="image/png" base64="yes">
+iVBORw0KGgoAAAANSUhEUgAAAxYAAAAOCAIAAAA9sR2bAAAAa0lEQVR4nO3cMQqAQAwAQSP+
+/8tnd/1WpzBTpUy5EMistS4AAIr79AIAAP8joQAAMgkFAJBJKACATEIBAGQSCgAge/Y0Mwf3
+AAD4vv0NavyFAgCoHPIAADIJBQCQSSgAgExCAQBkEgoAIHsBc54JF03wrVsAAAAASUVORK5C
+YII=
+</d>
+<d name="C:\Documents and Settings\jgz\Desktop\bar.bmp_5" mime-type="image/png" base64="yes">
+iVBORw0KGgoAAAANSUhEUgAAAxYAAAAOCAIAAAA9sR2bAAAAa0lEQVR4nO3cMQqAQAwAQSP+
+/8tnd/1WpzBTpUy5EMistS4AAIr79AIAAP8joQAAMgkFAJBJKACATEIBAGQSCgAge/Y0Mwf3
+AAD4vv0NavyFAgCoHPIAADIJBQCQSSgAgExCAQBkEgoAIHsBc54JF03wrVsAAAAASUVORK5C
+YII=
+</d>
+</data>
+</abiword>
