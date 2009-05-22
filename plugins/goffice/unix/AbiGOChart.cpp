@@ -36,7 +36,7 @@
 #include "xap_Menu_Layouts.h"
 #include "ap_Menu_Id.h"
 
-#include <gtk/gtkentry.h>
+#include <gtk/gtk.h>
 #include <goffice/graph/gog-data-allocator.h>
 #include <goffice/graph/gog-series.h>
 #include <goffice/graph/gog-guru.h>
@@ -187,6 +187,37 @@ cb_graph_dim_editor_update (GtkEntry *gee,
 }
 
 static void
+abi_data_editor_set_format (G_GNUC_UNUSED GogDataEditor *editor, G_GNUC_UNUSED GOFormat const *fmt)
+{
+	// don't do anything for now
+}
+
+static void
+abi_data_editor_set_value_double (GogDataEditor *editor, double val,
+				      G_GNUC_UNUSED GODateConventions const *date_conv)
+{
+	GtkEntry *entry = GTK_ENTRY (editor);
+	char *buf = g_strdup_printf ("%g", val);
+	gtk_entry_set_text (entry, buf);
+	g_free (buf);
+}
+
+static void
+abi_data_editor_init (GogDataEditorClass *iface)
+{
+	iface->set_format = abi_data_editor_set_format;
+	iface->set_value_double = abi_data_editor_set_value_double;
+}
+
+typedef GtkEntry AbiDataEntry;
+typedef GtkEntryClass AbiDataEntryClass;
+
+GSF_CLASS_FULL (AbiDataEntry, abi_data_entry,
+		NULL, NULL, NULL, NULL,
+		NULL, GTK_TYPE_ENTRY, 0,
+		GSF_INTERFACE (abi_data_editor_init, GOG_TYPE_DATA_EDITOR))
+
+static void
 cb_graph_dim_entry_unmap (GtkEntry *gee, GraphDimEditor *editor)
 {
 	cb_graph_dim_editor_update (gee, /*FALSE, */editor);
@@ -214,7 +245,7 @@ graph_dim_editor_free (GraphDimEditor *editor)
 	g_free (editor);
 }
 
-static gpointer
+static GogDataEditor *
 abi_data_allocator_editor (G_GNUC_UNUSED GogDataAllocator *dalloc,
 			    GogDataset *dataset, int dim_i, GogDataType data_type)
 {
@@ -226,7 +257,7 @@ abi_data_allocator_editor (G_GNUC_UNUSED GogDataAllocator *dalloc,
 	editor->dataset		= dataset;
 	editor->dim_i		= dim_i;
 	editor->data_type	= data_type;
-	editor->entry  		= GTK_ENTRY (gtk_entry_new ());
+	editor->entry  		= GTK_ENTRY (g_object_new (abi_data_entry_get_type (), NULL));
 	g_object_weak_ref (G_OBJECT (editor->dataset),
 		(GWeakNotify) cb_dim_editor_weakref_notify, editor);
 
@@ -257,7 +288,7 @@ abi_data_allocator_editor (G_GNUC_UNUSED GogDataAllocator *dalloc,
 	g_object_set_data_full (G_OBJECT (editor->entry),
 		"editor", editor, (GDestroyNotify) graph_dim_editor_free);
 
-	return editor->entry;
+	return GOG_DATA_EDITOR (editor->entry);
 }
 
 static void

@@ -200,7 +200,7 @@ AbiGOComponent_FileInsert(G_GNUC_UNUSED AV_View* v, G_GNUC_UNUSED EV_EditMethodC
 	
     if (!bOK || !pNewFile)
     {
-      UT_DEBUGMSG(("ARRG! bOK = %d pNewFile = %x \n",bOK,pNewFile));
+      UT_DEBUGMSG(("ARRG! bOK = %d pNewFile = %s \n",bOK,pNewFile));
       return false;
     }
     UT_UTF8String sNewFile = pNewFile;
@@ -503,7 +503,7 @@ void GR_GOComponentManager::loadEmbedData(G_GNUC_UNUSED UT_sint32 uid)
 							(const void**) (&mime_type), NULL);
 		UT_return_if_fail(bFoundDataID);
 		UT_return_if_fail(pszDataID);
-		UT_DEBUGMSG(("GO Component string is... \n %s \n",pByteBuf));
+		UT_DEBUGMSG(("GO Component string is... \n %s \n", (char*)pByteBuf));
 		pGOComponentView->loadBuffer(pByteBuf, mime_type);
 	}
 }
