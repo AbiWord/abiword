@@ -1,6 +1,17 @@
 
 templatesdir = $(ABIWORD_DATADIR)/templates
 templates_DATA = \
+	A4.awt \
+	Business-Letter.awt \
+	Business-Report.awt \
+	Employee-Directory.awt \
+	Fax-Coversheet.awt \
+	Friendly-Letter.awt \
+	Memo.awt \
+	Press-Release.awt \
+	Resume.awt \
+	Two-Columns.awt \
+	US-Letter.awt \
 	normal.awt \
 	normal.awt-am_ET \
 	normal.awt-ar \
