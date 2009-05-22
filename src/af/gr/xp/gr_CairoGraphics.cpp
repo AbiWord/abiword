@@ -627,7 +627,8 @@ bool GR_CairoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	}
 	
 	UT_UTF8String utf8;
-	
+	bool previousWasSpace = si.m_previousWasSpace;
+
 	UT_sint32 i;
 	for(i = 0; i < si.m_iLength; ++i, ++si.m_Text)
 	{
@@ -644,11 +645,13 @@ bool GR_CairoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 			else if (si.m_TextTransform == GR_ShapingInfo::UPPERCASE)
 				c = g_unichar_toupper(c);
 			else if (si.m_TextTransform == GR_ShapingInfo::CAPITALIZE) {
-				// TODO: can we do anything about capitalization here? remember if the
-				// TODO: last character was a word boundary?
+				if (previousWasSpace) {
+					c = g_unichar_toupper(c);
+				}
 			} // else si.m_TextTransform == GR_ShapingInfo::NONE
 			
 			utf8 += c;
+			previousWasSpace = g_unichar_isspace(c);
 		}
 
 		if (pfs)

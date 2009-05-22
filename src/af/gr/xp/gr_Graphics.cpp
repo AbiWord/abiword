@@ -1102,7 +1102,8 @@ bool GR_Graphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& pri)
 
 	UT_UCS4Char glyph, current;
 	UT_UCS4Char * dst_ptr = pRI->m_pChars;
-	
+	bool previousWasSpace = si.m_previousWasSpace;
+
 	for(UT_sint32 i = 0; i < si.m_iLength; ++i, ++si.m_Text)
 	{
 		UT_return_val_if_fail(si.m_Text.getStatus() == UTIter_OK, false);
@@ -1113,9 +1114,12 @@ bool GR_Graphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& pri)
 		else if (si.m_TextTransform == GR_ShapingInfo::UPPERCASE)
 			current = g_unichar_toupper(current);
 		else if (si.m_TextTransform == GR_ShapingInfo::CAPITALIZE) {
-			// TODO: can we do anything about capitalization here? remember if the
-			// TODO: last character was a word boundary?
+				if (previousWasSpace) {
+					current = g_unichar_toupper(current);
+				}
 		} // else si.m_TextTransform == GR_ShapingInfo::NONE
+
+		previousWasSpace = g_unichar_isspace(current);
 
 		if(si.m_iVisDir == UT_BIDI_RTL)
 			glyph = s_getMirrorChar(current);

@@ -324,12 +324,17 @@ class ABI_EXPORT GR_ShapingInfo
 				   GRShapingResult eShapingRequired,
 				   const GR_Font * pFont,
 				   const GR_Item * pItem,
-				   TextTransform textTransform = NONE)
+				   TextTransform textTransform = NONE,
+				   bool previousWasSpace = false)
 		:m_Text(text), m_iLength(iLen), m_pLang(pLang), m_iVisDir(iVisDir),
 		 m_eShapingRequired(eShapingRequired),
 	     m_pFont(pFont),
-	     m_iJustifyBy(0),
-		m_pItem(pItem), m_TextTransform(textTransform){};
+		m_iJustifyBy(0),
+		m_pItem(pItem), 
+		m_TextTransform(textTransform),
+		m_previousWasSpace(previousWasSpace)
+	{
+	}
 	
 	virtual ~GR_ShapingInfo() {};
 
@@ -346,6 +351,7 @@ class ABI_EXPORT GR_ShapingInfo
 	const GR_Item *     m_pItem;
 
 	TextTransform       m_TextTransform;
+	bool                m_previousWasSpace;
 };
 
 

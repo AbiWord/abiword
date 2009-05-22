@@ -2148,6 +2148,16 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 	xxx_UT_DEBUGMSG(("part Rect left %d width %d \n",pRect->left,pRect->width));
 }
 
+static fp_Run* getPreviousInterestingRunForCapitalization(fp_Run* self) {
+	if (self == NULL)
+		return NULL;
+
+	if (self->getType() == FPRUN_FMTMARK)
+		return getPreviousInterestingRunForCapitalization(self->getPrevRun());
+
+	return self;
+}
+
 /*!
     Determines if the draw buffer (the run's cache of the text it
     draws on screen) is uptodate or not and recalculates it as
@@ -2182,9 +2192,29 @@ bool fp_TextRun::_refreshDrawBuffer()
 		PD_StruxIterator text(getBlock()->getStruxDocHandle(),
 							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 
+		bool lastWasSpace = false;
+		if (getTextTransform() == GR_ShapingInfo::CAPITALIZE) {
+			fp_Run* prevRun = getPreviousInterestingRunForCapitalization(this->getPrevRun());
+			if (prevRun == NULL) {
+				lastWasSpace = true;
+			}
+			else if (prevRun->getType() != FPRUN_TEXT) {
+				lastWasSpace = true;
+			} 
+			else if (prevRun->getType() == FPRUN_TEXT) {
+				UT_GrowBuf buf;
+				static_cast<fp_TextRun*>(prevRun)->appendTextToBuf(buf);
+				
+				if (buf.getLength() != 0) {
+					UT_GrowBufElement* elem = buf.getPointer(buf.getLength() - 1);
+					lastWasSpace = g_unichar_isspace(*elem);
+				}
+			}
+		}
+
 		GR_ShapingInfo si(text,iLen, m_pLanguage, iVisDir,
 						  m_pRenderInfo ? m_pRenderInfo->m_eShapingResult : GRSR_Unknown,
-						  _getFont(), m_pItem, getTextTransform());		
+						  _getFont(), m_pItem, getTextTransform(), lastWasSpace);		
 		getGraphics()->shape(si, m_pRenderInfo);
 		
 		UT_ASSERT(m_pRenderInfo && m_pRenderInfo->m_eShapingResult != GRSR_Error );
