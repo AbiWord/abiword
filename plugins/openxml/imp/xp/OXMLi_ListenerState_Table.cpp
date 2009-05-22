@@ -155,45 +155,76 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 	{
 		rqst->handled = true;
 		const gchar* color = attrMatches(NS_W_KEY, "color", rqst->ppAtts);
+		const gchar* sz = attrMatches(NS_W_KEY, "sz", rqst->ppAtts);
+		const gchar* val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
+
+		UT_Error ret = UT_OK;
+
+		std::string borderName(rqst->pName);
+		borderName = borderName.substr(strlen(NS_W_KEY)+1);
+		if(!borderName.compare("bottom"))
+			borderName = "bot";
+
+		std::string borderStyle = borderName + "-style";
+		std::string borderColor = borderName + "-color";
+		std::string borderThickness = borderName + "-thickness";
+
+		OXML_Element* element = NULL;
+
+		if(contextMatches(rqst->context->back(), NS_W_KEY, "tcBorders"))
+			element = m_cellStack.top();
+		else if(contextMatches(rqst->context->back(), NS_W_KEY, "tblBorders"))
+			element = m_tableStack.top();
+
+		if(!element)
+			return;
+
 		if(color && strcmp(color, "auto")) 
 		{
-			UT_Error ret = UT_OK;
-			std::string borderName(rqst->pName);
-			borderName = borderName.substr(strlen(NS_W_KEY)+1);
-			if(!borderName.compare("bottom"))
-				borderName = "bot";
-			std::string borderStyle = borderName + "-style";
-			borderName += "-color";
-
-			OXML_Element* element = NULL;
-
-			if(contextMatches(rqst->context->back(), NS_W_KEY, "tcBorders"))
-			{
-				element = m_cellStack.top();
-				if(!element)
-					return;	
-
-				ret = element->setProperty(borderStyle, "0");
-				if(ret != UT_OK)
-					UT_DEBUGMSG(("FRT:OpenXML importer can't set %s:0\n", borderStyle.c_str()));				
-			}
-			else if(contextMatches(rqst->context->back(), NS_W_KEY, "tblBorders"))
-			{
-				element = m_tableStack.top();
-				if(!element)
-					return;	
-
-				ret = element->setProperty(borderStyle, "1");
-				if(ret != UT_OK)
-					UT_DEBUGMSG(("FRT:OpenXML importer can't set %s:0\n", borderStyle.c_str()));				
-			}
-
-			if(!element)
-				return;
-	
-			ret = element->setProperty(borderName, color);
+			ret = element->setProperty(borderColor, color);
 			if(ret != UT_OK)
-				UT_DEBUGMSG(("FRT:OpenXML importer can't set %s:%s\n", borderName.c_str(), color));				
+				UT_DEBUGMSG(("FRT:OpenXML importer can't set %s:%s\n", borderColor.c_str(), color));	
+		}
+		if(sz) 
+		{
+			std::string szVal(_EighthPointsToPoints(sz));
+			szVal += "pt";
+			ret = element->setProperty(borderThickness, szVal);
+			if(ret != UT_OK)
+				UT_DEBUGMSG(("FRT:OpenXML importer can't set %s:%s\n", borderThickness.c_str(), color));	
+		}
+
+		std::string styleValue = "1"; //single line border by default
+		if(val)
+		{
+			if(!strcmp(val, "dashed"))
+				styleValue = "0"; 
+			ret = element->setProperty(borderStyle, styleValue);
+			if(ret != UT_OK)
+				UT_DEBUGMSG(("FRT:OpenXML importer can't set %s:0\n", borderStyle.c_str()));
+		}
+	}
+	else if(nameMatches(rqst->pName, NS_W_KEY, "shd"))
+	{
+		rqst->handled = true;
+		const gchar* fill = attrMatches(NS_W_KEY, "fill", rqst->ppAtts);
+
+		UT_Error ret = UT_OK;
+		OXML_Element* element = NULL;
+
+		if(contextMatches(rqst->context->back(), NS_W_KEY, "tcPr"))
+			element = m_cellStack.top();
+		else if(contextMatches(rqst->context->back(), NS_W_KEY, "tblPr"))
+			element = m_tableStack.top();
+
+		if(!element)
+			return;
+
+		if(fill && strcmp(fill, "auto")) 
+		{
+			ret = element->setProperty("background-color", fill);
+			if(ret != UT_OK)
+				UT_DEBUGMSG(("FRT:OpenXML importer can't set background-color:%s\n", fill));	
 		}
 	}
 	//TODO: more coming here
@@ -259,7 +290,8 @@ void OXMLi_ListenerState_Table::endElement (OXMLi_EndElementRequest * rqst)
 			nameMatches(rqst->pName, NS_W_KEY, "left") ||
 			nameMatches(rqst->pName, NS_W_KEY, "right") ||
 			nameMatches(rqst->pName, NS_W_KEY, "top") ||
-			nameMatches(rqst->pName, NS_W_KEY, "bottom"))
+			nameMatches(rqst->pName, NS_W_KEY, "bottom") ||
+			nameMatches(rqst->pName, NS_W_KEY, "shd"))
 	{
 		rqst->handled = true;
 	}	

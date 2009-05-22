@@ -92,6 +92,12 @@ const gchar * OXMLi_ListenerState::_TwipsToPoints(const gchar * twips)
 	return UT_convertToDimensionlessString(pt);
 }
 
+const gchar * OXMLi_ListenerState::_EighthPointsToPoints(const gchar * eights)
+{
+	double pt = UT_convertDimensionless(eights) / 8;
+	return UT_convertToDimensionlessString(pt);
+}
+
 void OXMLi_ListenerState::getFontLevelRange(const gchar * val, OXML_FontLevel& level, OXML_CharRange& range)
 {
 	if (NULL != strstr(val, "major")) {

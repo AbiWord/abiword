@@ -113,6 +113,13 @@ UT_Error OXML_Element_Table::serializeProperties(IE_Exp_OpenXML* exporter)
 	if(err != UT_OK)
 		return err;
 
+	if(getProperty("background-color", szValue) == UT_OK)
+	{
+		err = exporter->setBackgroundColor(TARGET_DOCUMENT, szValue);
+		if(err != UT_OK)
+			return err;
+	}
+
 	err = exporter->startTableBorderProperties(TARGET_DOCUMENT);
 	if(err != UT_OK)
 		return err;

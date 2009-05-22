@@ -1757,7 +1757,7 @@ const gchar * IE_Exp_OpenXML::convertToLines(const gchar* str)
 const gchar * IE_Exp_OpenXML::computeBorderWidth(const gchar* str)
 {
 	//in eighths of a point
-	double pt = UT_convertDimensionless(str) * 160;
+	double pt = UT_convertToPoints(str) * 8;
 	if(pt < 1.0 && pt > -1.0)
 		return "0";
 	return UT_convertToDimensionlessString(pt, ".0");

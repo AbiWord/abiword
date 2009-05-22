@@ -61,6 +61,7 @@ protected:
 	bool _error_if_fail(bool val);
 	UT_Error _flushTopLevel(OXMLi_ElementStack * stck);
 	const gchar * _TwipsToPoints(const gchar * twips);
+	const gchar * _EighthPointsToPoints(const gchar * eights);
 	void getFontLevelRange(const gchar * val, OXML_FontLevel& level, OXML_CharRange& range);
 
 private:
