@@ -1,0 +1,358 @@
+<?xml version="1.0"?>
+<!DOCTYPE abiword PUBLIC "-//ABISOURCE//DTD AWML 1.0 Strict//EN" "http://www.abisource.com/awml.dtd">
+<abiword xmlns="http://www.abisource.com/awml.dtd" xmlns:awml="http://www.abisource.com/awml.dtd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svg="http://www.w3.org/2000/svg" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:math="http://www.w3.org/1998/Math/MathML" xmlns:dc="http://purl.org/dc/elements/1.1/" version="0.99.3" fileformat="1.0" template="true" styles="unlocked">
+<!-- =====================================================================  -->
+<!-- This file is an AbiWord document.                                      -->
+<!-- AbiWord is a free, Open Source word processor.                         -->
+<!-- You may obtain more information about AbiWord at www.abisource.com     -->
+<!-- You should not edit this file by hand.                                 -->
+<!-- =====================================================================  -->
+
+<pagesize pagetype="Letter" orientation="portrait" width="8.500000" height="11.000000" units="in" page-scale="1.000000"/>
+<section props="page-margin-footer:0.5in; page-margin-header:0.5in">
+<p style="Normal" props="text-align:left"><c props="lang:en-US; font-size:20pt; font-family:Times New Roman">Company Name</c></p>
+<p style="Normal" props="text-align:left"><c props="lang:en-US; font-size:26pt; font-family:Times New Roman">Directory of Employees</c></p>
+<p style="Normal" props="text-align:left"><c props="lang:en-US; font-size:12pt; font-family:Times New Roman"></c><image dataid="C:\Documents and Settings\jgz\Desktop\bar.bmp_0" props="height:0.15in; font-size:12pt; width:8.23in"/></p>
+<p style="Normal" props="text-align:center"><c props="lang:en-US; font-size:12pt"></c></p>
+<p style="Normal" props="text-align:center"><c props="lang:en-US; font-size:12pt"></c></p>
+<p style="Normal" props="text-align:center"><c props="lang:en-US"></c></p>
+<p style="Normal" props="text-align:center"><c props="lang:en-US"></c></p>
+<p style="Normal" props="text-align:center"><c props="lang:en-US"></c></p>
+<p style="Normal" props="text-align:center"><c props="lang:en-US"></c></p>
+<p style="Normal" props="text-align:center"><c props="lang:en-US"></c><image dataid="C:\Documents and Settings\jgz\Desktop\bookopen.bmp_0" props="height:4.93in; width:5.41in"/></p>
+<p style="Normal" props="text-align:center"></p>
+<p style="Normal" props="text-align:center"></p>
+<p style="Normal" props="text-align:center"></p>
+<p style="Normal" props="text-align:center"></p>
+<p style="Normal" props="text-align:center"></p>
+<p style="Normal" props="text-align:center"></p>
+<p style="Normal" props="text-align:center"></p>
+<p style="Normal" props="text-align:center"></p>
+<p style="Normal" props="text-align:right"><field type="date" props="font-size:14pt; font-weight:bold; font-style:italic"></field></p>
+</section>
+<section props="columns:2">
+<p style="Heading 3" props="text-align:center"><c type="date" props="list-tag:2085557032; text-decoration:underline">Heading 3 Style</c></p>
+<p style="Normal" props="tabstops:2.0000in/L0"><c type="date" props="font-weight:bold">Normal Style - Bold	(123) 555-1212</c></p>
+<p style="Normal" props="tabstops:2.0000in/L0"><c type="date">Normal Style	(123) 555-1212</c></p>
+<p style="Normal" props="text-align:left; tabstops:2.0000in/L0"><c type="date" props="font-weight:normal; font-size:11pt; font-style:normal"></c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-weight:normal; font-size:11pt; font-style:normal"></c></p>
+<p style="Heading 3" props="margin-top:0.3056in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0417in; text-indent:0.0000in; line-height:1.000000; text-align:center; margin-right:0.0000in"><c type="date" props="font-family:Arial; font-size:12pt; color:000000; text-decoration:underline ; text-position:normal; font-weight:bold; font-style:normal; lang:en-US">Department Name</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:bold; font-style:normal; lang:en-US">The big boss upstairs	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; lang:en-US; text-position:normal; font-weight:normal; font-style:normal; text-decoration:none"></c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US"></c></p>
+<p style="Heading 3" props="margin-top:0.3056in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0417in; text-indent:0.0000in; line-height:1.000000; text-align:center; margin-right:0.0000in"><c type="date" props="font-family:Arial; font-size:12pt; color:000000; text-decoration:underline ; text-position:normal; font-weight:bold; font-style:normal; lang:en-US">Department Name</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:bold; font-style:normal; lang:en-US">The big boss upstairs	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US"></c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US"></c></p>
+<p style="Heading 3" props="margin-top:0.3056in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0417in; text-indent:0.0000in; line-height:1.000000; text-align:center; margin-right:0.0000in"><c type="date" props="font-family:Arial; font-size:12pt; color:000000; text-decoration:underline ; text-position:normal; font-weight:bold; font-style:normal; lang:en-US">Department Name</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:bold; font-style:normal; lang:en-US">The big boss upstairs	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US"></c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US"></c></p>
+<p style="Heading 3" props="margin-top:0.3056in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0417in; text-indent:0.0000in; line-height:1.000000; text-align:center; margin-right:0.0000in"><c type="date" props="font-family:Arial; font-size:12pt; color:000000; text-decoration:underline ; text-position:normal; font-weight:bold; font-style:normal; lang:en-US">Department Name</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:bold; font-style:normal; lang:en-US">The big boss upstairs	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Last Name, First Name	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US"></c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US"></c></p>
+<p style="Heading 3" props="margin-top:0.3056in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0417in; text-indent:0.0000in; line-height:1.000000; text-align:center; margin-right:0.0000in"><c type="date" props="font-family:Arial; font-size:12pt; color:000000; lang:en-US; text-position:normal; font-weight:bold; font-style:normal; text-decoration:underline ">General Numbers</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Front Desk	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Security	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">Building Management	(123) 555-1212</c></p>
+<p style="Normal" props="margin-top:0.0000in; margin-left:0.0000in; tabstops:2.000000in/L0; margin-bottom:0.0000in; text-indent:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"><c type="date" props="font-family:Times New Roman; font-size:12pt; color:000000; lang:en-US; text-position:normal; font-weight:normal; font-style:normal; text-decoration:none">Other General Numbers	(123) 555-1212</c></p>
+</section>
+<data>
+<d name="C:\Documents and Settings\jgz\Desktop\bookopen.bmp_0" mime-type="image/png" base64="yes">
+iVBORw0KGgoAAAANSUhEUgAAAgcAAAHZCAMAAAAlo2jLAAADAFBMVEX////39/fv7+/m5ube
+3t7W1tbMzMzFxcW9vb21tbWtra2lpaWZmZmMjIyEhIR7e3tzc3NmZmZaWlpSUlJKSkpCQkI6
+OjozMzMpKSkhISEZGRkQEBAICAgAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACf
+Ff/yAAAgAElEQVR4nO2d54KjIBeGV40ao8benfu/zRVNEQSkWZLw/PjKzoxB8wqHwyn//mk0
+Go1Go9FoNBqNRqPRaDQajUaj0Wg0Go1Go9FoNBqNRqPRaDQajUaj0Wg0Go1Go9FoNBqNRqPR
+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
+</d>
+<d name="C:\Documents and Settings\jgz\Desktop\bar.bmp_0" mime-type="image/png" base64="yes">
+iVBORw0KGgoAAAANSUhEUgAAAxYAAAAOCAIAAAA9sR2bAAAAa0lEQVR4nO3cMQqAQAwAQSP+
+/8tnd/1WpzBTpUy5EMistS4AAIr79AIAAP8joQAAMgkFAJBJKACATEIBAGQSCgAge/Y0Mwf3
+AAD4vv0NavyFAgCoHPIAADIJBQCQSSgAgExCAQBkEgoAIHsBc54JF03wrVsAAAAASUVORK5C
+YII=
+</d>
+</data>
+</abiword>
