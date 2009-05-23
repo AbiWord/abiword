@@ -54,6 +54,7 @@
 #include "pt_PieceTable.h"
 #include "ap_Win32Toolbar_FontCombo.h"
 #include "ap_Win32App.h"
+#include "ut_Win32LocaleString.h"
 
 
 #ifndef TBSTYLE_EX_DRAWDDARROWS
@@ -300,17 +301,18 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 			}
 
 			HFONT hFont, hUIFont;
-			LOGFONT logfont;
+			LOGFONTW logfont;
 			SIZE size;
 			HFONT hfontSave;
+            UT_Win32LocaleString str;
 			const UT_GenericVector<const char*> * v = t->m_pFontCtrl->getContents();
-			const char * sz  = (const char *)v->getNthItem(dis->itemData);			
-			
+			str.fromUTF8 (v->getNthItem(dis->itemData));
+
 			if(dis->itemState & ODS_COMBOBOXEDIT)
 			{
 				HFONT hUIFont = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
 				hfontSave = (HFONT) SelectObject (dis->hDC, hUIFont);
-				ExtTextOut(dis->hDC, dis->rcItem.left, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, 0, sz, lstrlen(sz), 0);
+				ExtTextOutW(dis->hDC, dis->rcItem.left, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, 0, str.c_str(), str.size(), 0);
 				SelectObject (dis->hDC, hfontSave);				
 			}
 			else
@@ -330,9 +332,9 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 				logfont.lfOutPrecision = OUT_DEFAULT_PRECIS;
 				logfont.lfClipPrecision = CLIP_DEFAULT_PRECIS;
 				logfont.lfQuality = DEFAULT_QUALITY;
-				logfont.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;			  
-				strcpy (logfont.lfFaceName, sz);   
-				hFont = CreateFontIndirect (&logfont);			
+				logfont.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
+                wcscpy (logfont.lfFaceName, str.c_str());			  
+				hFont = CreateFontIndirectW (&logfont);			
 
 				if(dis->itemState & ODS_SELECTED) /* HighLight the selected text*/
 				{
@@ -351,13 +353,13 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 
 				/*Fontname in regular font*/
 				hfontSave = (HFONT) SelectObject (dis->hDC, hUIFont);
-				ExtTextOut(dis->hDC, dis->rcItem.left, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, 0, sz, lstrlen(sz), 0);
+                ExtTextOutW(dis->hDC, dis->rcItem.left, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, 0, str.c_str(), str.size(), 0);
 				
 				/*Font example after the name*/
-				const char* szSample="AbCdEfGhIj";
-				GetTextExtentPoint32(dis->hDC, sz, lstrlen(sz), &size);
+				wchar_t* szSample = L"AbCdEfGhIj";
+                GetTextExtentPoint32W(dis->hDC, str.c_str(), str.size(), &size);
 				SelectObject (dis->hDC, hFont);
-				ExtTextOut(dis->hDC, dis->rcItem.left+size.cx+5, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, 0, szSample, lstrlen(szSample), 0);					
+				ExtTextOutW(dis->hDC, dis->rcItem.left+size.cx+5, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, 0, szSample, wcslen(szSample), 0);
 				SelectObject (dis->hDC, hfontSave);									
 				DeleteObject(hFont); 
 			}
@@ -397,11 +399,13 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 					if(iSelected != -1)
 					{							
 						static UT_UCSChar ucs_buf[COMBO_BUF_LEN];
+                        UT_Win32LocaleString str;
 						UT_uint32 bufLength = SendMessage(hWnd, CB_GETLBTEXTLEN, iSelected, (LPARAM)0) + 1;
-						char* buf = (char*)g_try_malloc(bufLength);
+						wchar_t* buf = (wchar_t*)g_try_malloc(bufLength * sizeof (wchar_t));
 						UT_uint32 dataLength = SendMessage(hWnd, CB_GETLBTEXT, iSelected, (LPARAM)buf);
+                        str.fromLocale (buf);
 
-						UT_UCS4_strncpy_char(ucs_buf, buf, COMBO_BUF_LEN-1);
+                        UT_UCS4_strncpy_char(ucs_buf, str.utf8_str().utf8_str(), COMBO_BUF_LEN-1);
 						UT_UCSChar * pData = (UT_UCSChar *) ucs_buf;	// HACK: should be void *
 
 						EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLong(hWnd, GWL_USERDATA);
@@ -531,8 +535,8 @@ bool EV_Win32Toolbar::synthesize(void)
 	// NOTE: this toolbar will get placed later, by frame or rebar
 
 	m_hwnd = UT_CreateWindowEx(0, 
-							   TOOLBARCLASSNAME, // window class name
-							   (LPSTR) NULL,			// window caption
+							   TOOLBARCLASSNAMEW, // window class name
+							   NULL,			// window caption
 							   WS_CHILD | WS_VISIBLE 
 							   | WS_CLIPCHILDREN | WS_CLIPSIBLINGS 
 							   | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT
@@ -673,8 +677,8 @@ bool EV_Win32Toolbar::synthesize(void)
 							dwStyle |= CBS_OWNERDRAWFIXED;
 
 						HWND hwndCombo = UT_CreateWindowEx ( 0L,   // No extended styles.
-							"COMBOBOX",						// Class name.
-							"",								// Default text.
+							L"COMBOBOX",						// Class name.
+							L"",								// Default text.
 							dwStyle,						// Styles and defaults.
 							0, 2, iWidth, 250,				// Size and position.
 							m_hwnd,							// Parent window.
@@ -710,11 +714,12 @@ bool EV_Win32Toolbar::synthesize(void)
 							{
 								UT_uint32 items = v->getItemCount();
 								int nIndex;
+                                UT_Win32LocaleString localised;
 								for (UT_uint32 k=0; k < items; k++)
 								{
-									char * sz = (char *)v->getNthItem(k);
-									nIndex = SendMessage(hwndCombo, CB_ADDSTRING,(WPARAM)0, (LPARAM)sz);
-									SendMessage(hwndCombo,CB_SETITEMDATA, nIndex, k);
+									localised.fromUTF8(v->getNthItem(k));									
+    								nIndex = SendMessage(hwndCombo, CB_ADDSTRING,(WPARAM)0, (LPARAM)localised.c_str());
+ 	     							SendMessage(hwndCombo,CB_SETITEMDATA, nIndex, k);
 								}
 							}
 
@@ -731,18 +736,20 @@ bool EV_Win32Toolbar::synthesize(void)
 
 						if (hwndTT)
 						{
+                            UT_Win32LocaleString str;	
 							const char * szToolTip = pLabel->getToolTip();
 							if (!szToolTip || !*szToolTip)
 							{
 								szToolTip = pLabel->getStatusMsg();
 							}
 
+                            str.fromUTF8 (szToolTip);
 
 							// Fill in the TOOLINFO structure.
-							TOOLINFO ti;
+							TOOLINFOW ti;
 							ti.cbSize = sizeof(ti);
 							ti.uFlags = TTF_IDISHWND | TTF_CENTERTIP;
-							ti.lpszText = (char *) szToolTip;
+							ti.lpszText = (wchar_t *) str.c_str();
 							ti.hwnd = m_hwnd;		// TODO: should this be the frame?
 							ti.uId = (UINT)hwndCombo;
 							// Set up tooltips for the combo box.
@@ -1081,17 +1088,16 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 				szState = XAP_EncodingManager::get_instance()->strToNative(szState, "UTF-8");
 				
 				// Find the proper non-localised text
-				const char* pLocalised = szState;
+                UT_Win32LocaleString localised;
 				if (id==AP_TOOLBAR_ID_FMT_STYLE)
 				{
-						pt_PieceTable::s_getLocalisedStyleName(pLocalised, utf8);
-						pLocalised = utf8.utf8_str();
-						str = AP_Win32App::s_fromUTF8ToWinLocale(pLocalised);
-						pLocalised = str.c_str();						
-				}
+                        pt_PieceTable::s_getLocalisedStyleName(szState, utf8);
+						localised.fromUTF8 (utf8.utf8_str());
+                }       
+                 else
+    					localised.fromUTF8 (szState);
 					
-												
-				int idx = SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)pLocalised);
+                int idx = SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)localised.c_str());												
 				/*
 				 * If the string didn't exist within the combos list, we handle things differently for
 				 * different combos.
@@ -1108,7 +1114,7 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 					 */
 					case AP_TOOLBAR_ID_FMT_SIZE:
 					case AP_TOOLBAR_ID_FMT_FONT:
-						idx = SendMessage(hwndCombo, WM_SETTEXT, (WPARAM)-1, (LPARAM)pLocalised);
+						idx = SendMessage(hwndCombo, WM_SETTEXT, (WPARAM)-1, (LPARAM)localised.c_str());
 						if (idx == CB_ERR)
 						{
 							UT_DEBUGMSG(("refreshToolbar: Failed to set text for font combo.\n"));
@@ -1119,7 +1125,8 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 					 */
 					case AP_TOOLBAR_ID_ZOOM:
 						pSS = XAP_App::getApp()->getStringSet();
-						idx = SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)pSS->getValue(XAP_STRING_ID_TB_Zoom_Percent));
+                        localised.fromUTF8 (pSS->getValue(XAP_STRING_ID_TB_Zoom_Percent));
+						idx = SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)localised.c_str());
 						break;
 
 					case AP_TOOLBAR_ID_FMT_STYLE:
@@ -1158,7 +1165,7 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 bool EV_Win32Toolbar::getToolTip(LPARAM lParam)
 {
 	UT_ASSERT(lParam);
-	LPTOOLTIPTEXT lpttt = (LPTOOLTIPTEXT) lParam;
+	LPTOOLTIPTEXTW lpttt = (LPTOOLTIPTEXTW) lParam;
 
 	// who's asking?
 	UINT idButton = lpttt->hdr.idFrom;
@@ -1183,7 +1190,9 @@ bool EV_Win32Toolbar::getToolTip(LPARAM lParam)
 	if (szToolTip && *szToolTip)
 	{
 		// here 'tis
-		strncpy(lpttt->lpszText, szToolTip, 80);
+		UT_Win32LocaleString str;
+		str.fromUTF8 (szToolTip);
+		wcscpy(lpttt->lpszText, str.c_str());
 	}
 	else
 	{
@@ -1367,14 +1376,13 @@ bool EV_Win32Toolbar::repopulateStyles(void)
 	for (UT_uint32 k=0; k < v->getItemCount(); k++)
 	{
 		const char*	sz = (char *)v->getNthItem(k);
-		const char*	pLocalised = sz;
-
-		pt_PieceTable::s_getLocalisedStyleName(sz, utf8);
-		pLocalised = utf8.utf8_str();
-		str = AP_Win32App::s_fromUTF8ToWinLocale(pLocalised);
-		pLocalised = str.c_str();
+		//const char*	pLocalised = sz;
+        UT_Win32LocaleString localised;
 		
-		nItem = SendMessage(hwndCombo, CB_ADDSTRING,(WPARAM)0, (LPARAM)pLocalised);
+        pt_PieceTable::s_getLocalisedStyleName(sz, utf8);
+		localised.fromUTF8 (utf8.utf8_str());
+		
+		nItem = SendMessage(hwndCombo, CB_ADDSTRING,(WPARAM)0, (LPARAM)localised.c_str());
 		m_vecOrgStylesNames.addItem (new UT_UTF8String ((char *)v->getNthItem(k)));
 		SendMessage(hwndCombo, CB_SETITEMDATA,(WPARAM)nItem, (LPARAM)m_vecOrgStylesNames.getItemCount()-1);
 	}
