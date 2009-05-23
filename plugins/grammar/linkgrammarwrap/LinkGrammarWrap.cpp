@@ -39,6 +39,8 @@
 */
 /********************************************************************************/
 
+#include "xap_App.h"
+#include "ut_locale.h"
 #include "ut_string_class.h"
 #include "ut_types.h"
 #include "ut_debugmsg.h"
@@ -51,8 +53,13 @@
 LinkGrammarWrap::LinkGrammarWrap(void) 
 {
   m_Opts = parse_options_create();
-  m_Dict = dictionary_create((char*)"en/4.0.dict", (char*)"en/4.0.knowledge",
-	(char*)"en/4.0.constituent-knowledge", (char*)"en/4.0.affix");
+#ifdef _MSC_VER
+  gchar* dict_path = g_build_filename (XAP_App::getApp()->getAbiSuiteLibDir(), "grammar", NULL); 
+  dictionary_set_data_dir(dict_path);
+  g_free(dict_path);
+#endif
+  UT_LocaleTransactor t(LC_ALL, "");
+  m_Dict = dictionary_create_lang("en");
   parse_options_set_max_parse_time(m_Opts, 1); // 1 second max parse time
 }
 
