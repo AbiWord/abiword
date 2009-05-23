@@ -295,8 +295,9 @@ void AbiCollabSessionManager::loadProfile()
 
 	in = UT_go_file_open(uri, NULL); // TODO: shouldn't use NULL here, but check for errors
 	FREEP(uri);
-	UT_return_if_fail(in);
-	
+	if (!in)
+		return;
+
 	guint8 const* contents = gsf_input_read(in, gsf_input_size(in), NULL);
 	if (contents)
 	{
