@@ -79,7 +79,7 @@ UT_Error IE_Imp_Hancom::_loadFile(GsfInput * input) {
 
   size_t len = gsf_input_size(textStream);
 
-  UT_DEBUGMSG(("HANCOM: Text length = %lu bytes\n", len));
+  UT_DEBUGMSG(("HANCOM: Text length = %zd bytes\n", len));
   unsigned char* buf = new unsigned char[len];
 
   if (!buf) {

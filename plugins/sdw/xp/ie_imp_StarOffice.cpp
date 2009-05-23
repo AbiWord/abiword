@@ -370,7 +370,7 @@ void streamRead(GsfInput* aStream, TextAttr& aAttr, gsf_off_t aEoa) UT_THROWS((U
       }
       break;
     default:
-      UT_DEBUGMSG(("SDW: unknown attribute 0x%lx, compressed %li\n", aAttr.which, lcl_sw3io__CompressWhich(aAttr.which)));
+      UT_DEBUGMSG(("SDW: unknown attribute 0x%x, compressed %d\n", aAttr.which, lcl_sw3io__CompressWhich(aAttr.which)));
 	}
 
 }
@@ -444,7 +444,7 @@ void readByteString(GsfInput* stream, UT_UCS4Char*& str, UT_iconv_t converter, S
 	str = reinterpret_cast<UT_UCS4Char*>(UT_convert_cd(rawString, len + 1, converter, NULL, NULL));
 #ifdef DEBUG
 	if (!str) {
-		UT_DEBUGMSG(("SDW: UT_convert_cd returned %i (%s)\n", errno, strerror(errno)));
+		UT_DEBUGMSG(("SDW: UT_convert_cd returned %d (%s)\n", errno, strerror(errno)));
 		UT_DEBUGMSG(("SDW: Failed string was: \"%s\"\n", rawString));
 	}
 #endif
@@ -563,7 +563,7 @@ void DocHdr::load(GsfInput* stream) UT_THROWS((UT_Error)) {
 	streamRead(stream, cGui);
 	streamRead(stream, nDate);
 	streamRead(stream, nTime);
-	UT_DEBUGMSG(("SDW: nDate %lu nTime %lu\n", nDate, nTime));
+	UT_DEBUGMSG(("SDW: nDate %u nTime %u\n", nDate, nTime));
 
 	// Find the name of the used encoding
 	converter = findConverter(cSet);
@@ -723,7 +723,7 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input) UT_THROWS(()) {
 								readByteString(mDocStream, str);
 								UT_UCS4String textNode(str);
 								free(str);
-								UT_DEBUGMSG(("SDW: ...length=%lu contents are: |%s|\n", textNode.length(), textNode.utf8_str()));
+								UT_DEBUGMSG(("SDW: ...length=%u contents are: |%s|\n", textNode.length(), textNode.utf8_str()));
 
 								// now get the attributes
 								UT_String attrs;
@@ -738,7 +738,7 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input) UT_THROWS(()) {
 									if (attVal == SWG_ATTRIBUTE) {
 										TextAttr* a = new TextAttr;
 										streamRead(mDocStream, *a, eoa);
-										UT_DEBUGMSG(("SDW: ...found text-sub-node, which=0x%x, ver=0x%x, start=%u, end=%u - data:%s len:%lu data is:", a->which, a->ver, a->start, a->end, a->data?"Yes":"No", a->dataLen));
+										UT_DEBUGMSG(("SDW: ...found text-sub-node, which=0x%x, ver=0x%x, start=%u, end=%u - data:%s len:%u data is:", a->which, a->ver, a->start, a->end, a->data?"Yes":"No", a->dataLen));
 #ifdef DEBUG
 										hexdump(a->data, a->dataLen);
                     putc('\n', stderr);
@@ -762,7 +762,7 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input) UT_THROWS(()) {
 		  										else
 			  										UT_String_setProperty(attrs, a.attrName, a.attrVal);
                         }
-												UT_DEBUGMSG(("SDW: ......found paragraph attr, which=0x%x, ver=0x%x, start=%u, end=%u (string now %s) Data:%s Len=%lu Data:", a.which, a.ver, (a.startSet?a.start:0), (a.endSet?a.end:0), attrs.c_str(), (a.data ? "Yes" : "No"), a.dataLen));
+												UT_DEBUGMSG(("SDW: ......found paragraph attr, which=0x%x, ver=0x%x, start=%u, end=%u (string now %s) Data:%s Len=%u Data:", a.which, a.ver, (a.startSet?a.start:0), (a.endSet?a.end:0), attrs.c_str(), (a.data ? "Yes" : "No"), a.dataLen));
 #ifdef DEBUG
 												hexdump(a.data, a.dataLen);
                         putc('\n', stderr);
@@ -826,7 +826,7 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input) UT_THROWS(()) {
 										UT_DEBUGMSG(("SDW: Going to appendFmt with %s\n", attributes[1]));
 										if (!appendFmt((const gchar **) attributes))
 											return UT_IE_NOMEMORY; /* leave cast alone! */
-										UT_DEBUGMSG(("SDW: About to insert %lu-%lu\n", lastInsPos, i));
+										UT_DEBUGMSG(("SDW: About to insert %u-%u\n", lastInsPos, i));
 										size_t spanLen = i - lastInsPos;
 										if (i == (len - 1)) spanLen++;
 										UT_UCS4String span = textNode.substr(lastInsPos, spanLen);
@@ -873,7 +873,7 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input) UT_THROWS(()) {
 									UT_uint32 width, height;
 									streamRead(mDocStream, width);
 									streamRead(mDocStream, height);
-									UT_DEBUGMSG(("SDW: orient %u bin %u format %u width %lu height %lu\n", orient, paperBin, paperFormat, width, height));
+									UT_DEBUGMSG(("SDW: orient %u bin %u format %u width %u height %u\n", orient, paperBin, paperFormat, width, height));
 									// rest of the data is ignored, seems to be printer specific anyway.
 									// Use A4, Portrait by default
 									const char* attributes[] = {
@@ -923,7 +923,7 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input) UT_THROWS(()) {
 								done2 = true;
 								break;
 							default:
-								UT_DEBUGMSG(("SDW: SWG_CONTENT: Skipping %lu bytes for record type '%c' (starting at 0x%08lX)\n", size2, type, gsf_input_tell(mDocStream)));
+								UT_DEBUGMSG(("SDW: SWG_CONTENT: Skipping %u bytes for record type '%c' (starting at 0x%08llX)\n", size2, type, gsf_input_tell(mDocStream)));
 						}
 						if (gsf_input_seek(mDocStream, eor2, G_SEEK_SET))
 							return UT_IE_BOGUSDOCUMENT;
@@ -969,7 +969,7 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input) UT_THROWS(()) {
 					done = true;
 					break;
 				default:
-					UT_DEBUGMSG(("SDW: Skipping %lu bytes for record type '%c' (starting at 0x%08lX)\n", recSize, type, gsf_input_tell(mDocStream)));
+					UT_DEBUGMSG(("SDW: Skipping %u bytes for record type '%c' (starting at 0x%08llX)\n", recSize, type, gsf_input_tell(mDocStream)));
 			}
 			// Seek to the end of the record, in case it wasn't read completely
 			if (gsf_input_seek(mDocStream, eor, G_SEEK_SET))
@@ -981,7 +981,7 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input) UT_THROWS(()) {
 		return UT_OK;
 	}
 	UT_CATCH(UT_Error e) {
-		UT_DEBUGMSG(("SDW: error %li\n", e));
+		UT_DEBUGMSG(("SDW: error %d\n", e));
 		return e;
 	} UT_END_CATCH
 	UT_CATCH(...) {

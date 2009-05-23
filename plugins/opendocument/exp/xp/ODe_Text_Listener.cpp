@@ -899,7 +899,7 @@ void ODe_Text_Listener::insertPositionedImage(const gchar* pImageName,
 	// Won't work for x in multi-columned docs
 	//
 
-	UT_DEBUGMSG(("InsertPosionedObject TextListener %x AutoStyle %x \n",this,&m_rAutomatiStyles));
+	UT_DEBUGMSG(("InsertPosionedObject TextListener %p AutoStyle %p \n",this,&m_rAutomatiStyles));
 	ODe_Style_PageLayout * pPageL = NULL;
 	UT_uint32 numPStyles =  m_rAutomatiStyles.getSectionStylesCount();
 	UT_UTF8String stylePName;
@@ -910,7 +910,7 @@ void ODe_Text_Listener::insertPositionedImage(const gchar* pImageName,
 	{
 	    pPageL = m_rAutomatiStyles.getPageLayout("Standard");
 	}
-	UT_DEBUGMSG(("Got PageLayoutStyle %x \n",pPageL));
+	UT_DEBUGMSG(("Got PageLayoutStyle %p \n",pPageL));
 	double xPageL = 0.;
 	double yPageL = 0.;
 	

@@ -57,7 +57,7 @@ bool SDWCryptor::SetPassword(const char* aPassword) {
 	// Check password if we have valid date and/or time
 	if (mDate || mTime) {
 		char testString[17];
-		UT_String needle = UT_String_sprintf("%08lx%08lx", mDate, mTime);
+		UT_String needle = UT_String_sprintf("%08x%08x", mDate, mTime);
 		Encrypt(needle.c_str(), testString, 16);
 		if (memcmp(testString, mFilePass, 16) != 0) {
 			return false; // wrong password

@@ -89,7 +89,7 @@ void ODe_Main_Listener::openSection(const PP_AttrProp* pAP,
 
             pPageLayout = m_rDocumentData.m_stylesAutoStyles.getPageLayout("Standard");
             pMPStyle = m_rDocumentData.m_masterStyles.pick("Standard");
-            UT_DEBUGMSG(("Got PageLayout %x AutoStyles %x \n",pPageLayout,&m_rDocumentData.m_stylesAutoStyles));
+            UT_DEBUGMSG(("Got PageLayout %p AutoStyles %p \n",pPageLayout,&m_rDocumentData.m_stylesAutoStyles));
             m_isFirstSection = false;
 
         } else {
