@@ -51,7 +51,18 @@ EnchantChecker::EnchantChecker()
 	: m_dict(0)
 {
 	if (s_enchant_broker_count == 0)
+	{
 		s_enchant_broker = enchant_broker_init ();
+#ifdef _MSC_VER
+		gchar* ispell_path = g_build_filename (XAP_App::getApp()->getAbiSuiteLibDir(), "dictionary", "ispell", NULL);
+		enchant_broker_set_param(s_enchant_broker,  "enchant.ispell.dictionary.path", ispell_path);
+		g_free(ispell_path);
+
+		gchar* myspell_path = g_build_filename (XAP_App::getApp()->getAbiSuiteLibDir(), "dictionary", "myspell", NULL);
+		enchant_broker_set_param(s_enchant_broker,  "enchant.myspell.dictionary.path", myspell_path);
+		g_free(myspell_path);
+#endif
+	}
 	s_enchant_broker_count++;
 }
 
