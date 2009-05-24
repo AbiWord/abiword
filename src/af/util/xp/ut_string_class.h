@@ -54,13 +54,6 @@ class UT_String;
 class UT_UTF8String;
 class UT_UCS4String;
 
-class ABI_EXPORT UT_GenericBase
-{
-public:
-	virtual const char *	GenericBaseID () const = 0;
-
-	virtual ~UT_GenericBase () { }
-};
 
 // yes, this is screaming for a template
 
@@ -177,11 +170,9 @@ ABI_EXPORT void UT_String_addPropertyString(UT_String & sPropertyString, const U
 //	UT_UTF8String, a simple wrapper for zero terminated 'UTF-8' strings.
 //
 
-class ABI_EXPORT UT_UTF8String : public UT_GenericBase
+class ABI_EXPORT UT_UTF8String
 {
 public:
-	virtual const char *	GenericBaseID () const;
-
 	UT_UTF8String ();
 	UT_UTF8String (const char * sz, size_t n = 0 /* 0 == null-termination */);
 	UT_UTF8String (const char *sz, const char *encoding);

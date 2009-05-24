@@ -632,13 +632,6 @@ UT_uint32 hashcode(const char *p)
 //
 ////////////////////////////////////////////////////////////////////////
 
-static const char * s_UTF8_GenericBaseID = "UT_UTF8String";
-
-const char * UT_UTF8String::GenericBaseID () const
-{
-	return s_UTF8_GenericBaseID;
-}
-
 UT_UTF8String::UT_UTF8String () :
 	pimpl(new UT_UTF8Stringbuf)
 {
@@ -666,8 +659,7 @@ UT_UTF8String::UT_UTF8String (const char *str, const char *encoding)
 
 
 UT_UTF8String::UT_UTF8String (const UT_UTF8String & rhs)
-	: UT_GenericBase(),
-	  pimpl(new UT_UTF8Stringbuf(*rhs.pimpl))
+	: pimpl(new UT_UTF8Stringbuf(*rhs.pimpl))
 {
 	// 
 }
