@@ -137,6 +137,8 @@ public:
 	XAP_ResourceManager &	resourceManager () const { return *m_pResourceManager; }
 
 	const char *			getFilename(void) const;
+	const UT_UTF8String     getPrintFilename(void) const;
+	void                    setPrintFilename(UT_UTF8String & sFile);
 	void                    clearFilename(void) {_setFilename(NULL); forceDirty();}
 	// TODO - this should be returning IEFileType, 
 	// but that's AP stuff, so it's not here
@@ -340,6 +342,7 @@ private:
 	bool            m_bAfterFirstSave;
  	UT_UTF8String   m_sMyUUIDString;
  	UT_UTF8String   m_sOrigUUIDString;
+	UT_UTF8String   m_sPrintFilename;
 };
 
 

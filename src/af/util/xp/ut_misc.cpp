@@ -153,6 +153,35 @@ const char * UT_pathSuffix(const char * path)
 	  return strchr (path, '.');
 }
 
+/*!
+ * Take a path name and search for the suffix. replace it the supplied 
+ * suffix.
+ */
+bool         UT_addOrReplacePathSuffix(UT_UTF8String & sPath,UT_UTF8String & sSuffix)
+{
+  UT_sint32 i = sPath.length() -1;
+  const UT_UTF8String sSlash = "/";
+  const UT_UTF8String sBSlash = "\\";
+  const UT_UTF8String sDot = ".";
+  UT_UTF8String s = sPath.substr(i,1);
+  while(i>0 &&  (s != sDot) && (s!= sBSlash) && (s!=sSlash))
+  {
+      i -=1;
+      s = sPath.substr(i,1);
+  }
+  if((s == sSlash) || (s == sBSlash) || (i<=0))
+  {
+      sPath += sSuffix;
+  }
+  else
+  {
+      UT_UTF8String sLeader = sPath.substr(0,i);
+      sPath = sLeader;
+      sPath += sSuffix;
+  }
+  return true;
+}
+ 
 
 bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar, UT_UCSChar prevChar)
 {

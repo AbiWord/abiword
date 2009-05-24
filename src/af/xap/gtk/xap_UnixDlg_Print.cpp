@@ -30,6 +30,7 @@
 #include "xap_Frame.h"
 #include "ut_misc.h"
 #include "xad_Document.h"
+#include "pd_Document.h"
 
 #include "gr_CairoPrintGraphics.h"
 #include "fl_DocLayout.h"
@@ -106,6 +107,8 @@ void XAP_UnixDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics
 	if(m_pPO)
 		g_object_unref(m_pPO);
 	m_pPO=  NULL;
+	if(	m_pPC)
+		g_object_unref(m_pPC);
 	m_pPC = NULL;
 }
 
@@ -183,6 +186,26 @@ void XAP_UnixDialog_Print::setupPrint()
 	bool portrait;
 
 	m_pView = static_cast<FV_View*>(m_pFrame->getCurrentView());
+	m_pPO = gtk_print_operation_new();
+	//
+	// Set filename if it's not present already
+	//
+	UT_UTF8String sURI = m_pView->getDocument()->getPrintFilename();
+	GtkPrintSettings * pSettings =  gtk_print_settings_new();
+	
+	if(sURI.size() ==0)
+	{
+
+		UT_UTF8String sFilename = m_pView->getDocument()->getFilename();
+		UT_UTF8String sSuffix = ".pdf";
+		UT_addOrReplacePathSuffix(sFilename,sSuffix);
+		sURI = sFilename;
+	}
+	gtk_print_settings_set(pSettings,
+						   GTK_PRINT_SETTINGS_OUTPUT_URI,
+						   sURI.utf8_str() );
+	gtk_print_operation_set_print_settings(m_pPO,pSettings);
+	g_object_unref(pSettings);
 
 	mrgnTop = m_pView->getPageSize().MarginTop(DIM_MM);
 	mrgnBottom = m_pView->getPageSize().MarginBottom(DIM_MM);
@@ -338,7 +361,6 @@ void XAP_UnixDialog_Print::setupPrint()
 		gtk_page_setup_set_orientation(m_pPageSetup,GTK_PAGE_ORIENTATION_PORTRAIT);
 	else
 		gtk_page_setup_set_orientation(m_pPageSetup,GTK_PAGE_ORIENTATION_LANDSCAPE);
-	m_pPO = gtk_print_operation_new();
 	gtk_print_operation_set_default_page_setup(m_pPO,m_pPageSetup);
 	gtk_print_operation_set_use_full_page (m_pPO, true);
 
@@ -380,6 +402,19 @@ void XAP_UnixDialog_Print::runModal(XAP_Frame * pFrame)
 
 void XAP_UnixDialog_Print::cleanup(void)
 {
+	//
+	// Get the filename we printed to
+	//
+	GtkPrintSettings *  pSettings = gtk_print_operation_get_print_settings(m_pPO);
+	const gchar * szFname =  gtk_print_settings_get(pSettings,GTK_PRINT_SETTINGS_OUTPUT_URI);
+	if((szFname != NULL) && (strcmp(szFname,"output.pdf") != 0))
+	{
+		UT_UTF8String sURI = szFname;
+		m_pView->getDocument()->setPrintFilename(sURI);
+	}
+	g_object_unref(pSettings);
+	g_object_unref(m_pPO);
+	m_pPO= NULL;
 	if(!m_bDidQuickPrint)
 	{
 		DELETEP(m_pPrintLayout);
@@ -387,7 +422,8 @@ void XAP_UnixDialog_Print::cleanup(void)
 	}
 	else
 	{
-		m_pPrintLayout->setQuickPrint(NULL);
+		if(m_pPrintLayout)
+			m_pPrintLayout->setQuickPrint(NULL);
 		m_pPrintLayout = NULL;
 		m_pPrintView = NULL;
 

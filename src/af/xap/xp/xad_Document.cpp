@@ -102,6 +102,7 @@ AD_Document::AD_Document() :
 	m_pMyUUID->toString(m_sMyUUIDString);
 	UT_DEBUGMSG(("!!!!!!!!!!----------------- Created string %s \n",s.utf8_str()));
 	UT_DEBUGMSG(("!!!!!!!!!!----------------- Orig string %s \n",OrigS.utf8_str()));
+	m_sPrintFilename ="";
 }
 
 AD_Document::~AD_Document()
@@ -124,6 +125,16 @@ AD_Document::~AD_Document()
 	DELETEP(m_pUUID);
 	DELETEP(m_pOrigUUID);
 	DELETEP(m_pMyUUID);
+}
+
+const UT_UTF8String  AD_Document::getPrintFilename(void) const
+{
+	return m_sPrintFilename;
+}
+
+void AD_Document::setPrintFilename(UT_UTF8String & sFilename)
+{
+	m_sPrintFilename = sFilename;
 }
 
 bool AD_Document::isOrigUUID(void) const
