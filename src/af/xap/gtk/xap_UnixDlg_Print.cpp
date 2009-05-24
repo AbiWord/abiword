@@ -190,22 +190,24 @@ void XAP_UnixDialog_Print::setupPrint()
 	//
 	// Set filename if it's not present already
 	//
-	UT_UTF8String sURI = m_pView->getDocument()->getPrintFilename();
-	GtkPrintSettings * pSettings =  gtk_print_settings_new();
+    std::string sURI = m_pView->getDocument()->getPrintFilename();
 	
-	if(sURI.size() ==0)
+	if(sURI.empty())
 	{
-
-		UT_UTF8String sFilename = m_pView->getDocument()->getFilename();
-		UT_UTF8String sSuffix = ".pdf";
-		UT_addOrReplacePathSuffix(sFilename,sSuffix);
-		sURI = sFilename;
+        const char * filename = m_pView->getDocument()->getFilename();
+        if(filename) {
+            sURI = filename;
+            UT_addOrReplacePathSuffix(sURI, ".pdf");
+        }
 	}
-	gtk_print_settings_set(pSettings,
-						   GTK_PRINT_SETTINGS_OUTPUT_URI,
-						   sURI.utf8_str() );
-	gtk_print_operation_set_print_settings(m_pPO,pSettings);
-	g_object_unref(pSettings);
+    if(!sURI.empty()) {
+        GtkPrintSettings * pSettings =  gtk_print_settings_new();
+        gtk_print_settings_set(pSettings,
+                               GTK_PRINT_SETTINGS_OUTPUT_URI,
+                               sURI.c_str() );
+        gtk_print_operation_set_print_settings(m_pPO,pSettings);
+        g_object_unref(pSettings);
+    }
 
 	mrgnTop = m_pView->getPageSize().MarginTop(DIM_MM);
 	mrgnBottom = m_pView->getPageSize().MarginBottom(DIM_MM);
@@ -378,11 +380,6 @@ void XAP_UnixDialog_Print::runModal(XAP_Frame * pFrame)
 	m_pFrame = pFrame;
 	setupPrint();
     gtk_print_operation_set_show_progress(m_pPO, TRUE);
-	//
-	// Implement this later to give the user a sane default *.pdf name
-	//
-	// gtk_print_operation_set_export_filename(m_pPO, const gchar *filename);
-
 
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl());
 	
@@ -409,8 +406,7 @@ void XAP_UnixDialog_Print::cleanup(void)
 	const gchar * szFname =  gtk_print_settings_get(pSettings,GTK_PRINT_SETTINGS_OUTPUT_URI);
 	if((szFname != NULL) && (strcmp(szFname,"output.pdf") != 0))
 	{
-		UT_UTF8String sURI = szFname;
-		m_pView->getDocument()->setPrintFilename(sURI);
+		m_pView->getDocument()->setPrintFilename(szFname);
 	}
 	g_object_unref(pSettings);
 	g_object_unref(m_pPO);

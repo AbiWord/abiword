@@ -74,7 +74,7 @@ struct ABI_EXPORT UT_Point
 #define UT_ABS(A)	( ((A) < 0) ? (-(A)) : (A) )
 
 const char * UT_pathSuffix(const char * path);
-bool         UT_addOrReplacePathSuffix(UT_UTF8String & sPath,UT_UTF8String & sSuffix);
+bool         UT_addOrReplacePathSuffix(std::string & sPath, const char* sSuffix);
  
 bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar, UT_UCSChar prevChar);
 ABI_EXPORT const gchar* UT_getAttribute(const gchar* name,

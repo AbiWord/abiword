@@ -157,13 +157,13 @@ const char * UT_pathSuffix(const char * path)
  * Take a path name and search for the suffix. replace it the supplied 
  * suffix.
  */
-bool         UT_addOrReplacePathSuffix(UT_UTF8String & sPath,UT_UTF8String & sSuffix)
+bool UT_addOrReplacePathSuffix(std::string & sPath, const char * sSuffix)
 {
-  UT_sint32 i = sPath.length() -1;
-  const UT_UTF8String sSlash = "/";
-  const UT_UTF8String sBSlash = "\\";
-  const UT_UTF8String sDot = ".";
-  UT_UTF8String s = sPath.substr(i,1);
+  UT_sint32 i = sPath.length() - 1;
+  const char *sSlash = "/";
+  const char *sBSlash = "\\";
+  const char *sDot = ".";
+  std::string s = sPath.substr(i,1);
   while(i>0 &&  (s != sDot) && (s!= sBSlash) && (s!=sSlash))
   {
       i -=1;
@@ -175,7 +175,7 @@ bool         UT_addOrReplacePathSuffix(UT_UTF8String & sPath,UT_UTF8String & sSu
   }
   else
   {
-      UT_UTF8String sLeader = sPath.substr(0,i);
+      std::string sLeader = sPath.substr(0,i);
       sPath = sLeader;
       sPath += sSuffix;
   }
