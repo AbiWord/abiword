@@ -8336,6 +8336,8 @@ void FV_View::drawSelectionBox(UT_Rect & inBox, bool drawHandles)
 	}
 }
 
+#define SELDOWNCOLOR(v,w)(v > w ? v - w : 0)
+#define SELUPCOLOR(v,w)(v > (255-w) ? 255 : v + w)
 /*!
 * Draw a nice 3d resize handle at box.
 * \param box Where to draw.
@@ -8358,22 +8360,26 @@ inline void FV_View::_drawResizeHandle(UT_Rect & box)
 	UT_RGBColor color = getColorSelBackground();
 	pG->setColor(color);
 
+	UT_RGBColor downColor1 = UT_RGBColor(SELDOWNCOLOR(color.m_red, 40), SELDOWNCOLOR(color.m_grn, 40), SELDOWNCOLOR(color.m_blu, 40));
+	UT_RGBColor downColor2 = UT_RGBColor(SELDOWNCOLOR(color.m_red, 20), SELDOWNCOLOR(color.m_grn, 20), SELDOWNCOLOR(color.m_blu, 20));
+	UT_RGBColor upColor1 = UT_RGBColor(SELUPCOLOR(color.m_red, 40), SELUPCOLOR(color.m_grn, 40), SELUPCOLOR(color.m_blu, 40));
+	UT_RGBColor upColor2 = UT_RGBColor(SELUPCOLOR(color.m_red, 20), SELUPCOLOR(color.m_grn, 20), SELUPCOLOR(color.m_blu, 20));
+
 	painter.fillRect(color,box.left + pG->tlu(1), box.top + pG->tlu(1), box.width - pG->tlu(3), box.height - pG->tlu(3));
 
-	// west
-	pG->setColor(UT_RGBColor(color.m_red - 40,color.m_grn - 40,color.m_blu - 40));
+	// east & south
+	pG->setColor(downColor1);
 	painter.drawLine(right, top, right, bottom);
 	painter.drawLine(left, bottom, right, bottom);
-	pG->setColor(UT_RGBColor(color.m_red - 20,color.m_grn - 20,color.m_blu - 20));
+	pG->setColor(downColor2);
 	painter.drawLine(right - pG->tlu(1), top + pG->tlu(1), right - pG->tlu(1), bottom - pG->tlu(1));
 	painter.drawLine(left + pG->tlu(1), bottom - pG->tlu(1), right - pG->tlu(1), bottom - pG->tlu(1));
 
-
-	// north
-	pG->setColor(UT_RGBColor(color.m_red + 40,color.m_grn + 40,color.m_blu + 40));
+	// north & west
+	pG->setColor(upColor1);
 	painter.drawLine(left, top, right, top);
 	painter.drawLine(left, top, left, bottom);
-	pG->setColor(UT_RGBColor(color.m_red + 20,color.m_grn + 20,color.m_blu + 20));
+	pG->setColor(upColor2);
 	painter.drawLine(left + pG->tlu(1), top + pG->tlu(1), right - pG->tlu(1), top + pG->tlu(1));
 	painter.drawLine(left + pG->tlu(1), top + pG->tlu(1), left + pG->tlu(1), bottom - pG->tlu(1));
 
