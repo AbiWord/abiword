@@ -638,7 +638,7 @@ void GR_MathManager::initialize(void)
 			= GR_Abi_MathGraphicDevice::create(logger, configuration, getGraphics());
 	m_pMathGraphicDevice = mathGraphicDevice;
 	m_pAbiContext = new GR_Abi_RenderingContext(getGraphics());
-	UT_DEBUGMSG(("MAthView New rendering context %x Graphics %x \n",m_pAbiContext,getGraphics()));
+	UT_DEBUGMSG(("MAthView New rendering context %p Graphics %p \n",m_pAbiContext,getGraphics()));
 	m_pOperatorDictionary = initOperatorDictionary<libxml2_MathView>(logger, configuration);
 }
 
@@ -865,7 +865,7 @@ UT_sint32 GR_MathManager::getAscent(UT_sint32 uid)
 {
 	SmartPtr<libxml2_MathView>  pMathView = m_vecMathView.getNthItem(uid);
 	BoundingBox box = pMathView->getBoundingBox();
-	UT_DEBUGMSG(("GetAscent New rendering context %x Graphics %x Device resolution %d \n",m_pAbiContext,getGraphics(),getGraphics()->getDeviceResolution()));
+	UT_DEBUGMSG(("GetAscent New rendering context %p Graphics %p Device resolution %d \n",m_pAbiContext,getGraphics(),getGraphics()->getDeviceResolution()));
 	return m_pAbiContext->toAbiLayoutUnits(box.height);
 }
 

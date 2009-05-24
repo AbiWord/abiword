@@ -1254,7 +1254,7 @@ bool PL_Psion_Listener::_processStyles(void)
 	// Just in case we somehow lost the Normal style (unlikely, but well...)
 	if (!m_styles->normal) {
 		// TODO: Perhaps we need better defaults here?
-		UT_DEBUGMSG(("PSION: Creating our own Normal style\n",pStyle->getName()));
+		UT_DEBUGMSG(("PSION: Creating our own Normal style %s\n",pStyle->getName()));
 		if (!(style->character = psiconv_basic_character_layout()))
 			goto ERROR2;
 		if (!(style->paragraph = psiconv_basic_paragraph_layout()))
@@ -1362,7 +1362,7 @@ bool PL_Psion_Listener::_insertImage(const PT_AttrPropIndex api)
 	resy = png_get_y_pixels_per_meter(png_ptr,info_ptr);
 	if (resy <= 0)
 		resy = 72*40;
-	UT_DEBUGMSG(("PSION: Width %d, height %d, bitdepth %d, colortype %d, rowbytes: %d\n", 
+	UT_DEBUGMSG(("PSION: Width %d, height %d, bitdepth %d, colortype %d, rowbytes: %lu\n", 
 	             width,height,png_get_bit_depth(png_ptr,info_ptr),
 	             png_get_color_type(png_ptr,info_ptr),
 	             png_get_rowbytes(png_ptr,info_ptr)));
