@@ -512,7 +512,7 @@ ap_bs_Char CharTable[] =
 	{0x49, /* I      */ { "insertData",			"toggleItalic",		DO_NOT_USE,		""					}},
 	{0x4a, /* J      */ { "insertData",			"alignJustify",		DO_NOT_USE,		""					}},
 	{0x4b, /* K      */ { "insertData",			"toggleStrike",		DO_NOT_USE,		""					}},
-	{0x4c, /* L      */ { "insertData",			"alignLeft",		DO_NOT_USE,		""					}},
+	{0x4c, /* L      */ { "insertData",			"doBullets",		DO_NOT_USE,		""					}},
 	{0x4d, /* M      */ { "insertData",			"insSymbol",		DO_NOT_USE,		""					}},
 	{0x4e, /* N      */ { "insertData",			"fileNewUsingTemplate",	DO_NOT_USE,		""					}},
 	{0x4f, /* O      */ { "insertData",			"fileOpen",			DO_NOT_USE,		""					}},
