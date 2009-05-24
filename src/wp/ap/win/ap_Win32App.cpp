@@ -1167,7 +1167,7 @@ try
 		}	
 
 		// do dispatch loop
-		while(UT_GetMessage(&msg, NULL, 0, 0))
+		while(UT_GetMessage(&msg, NULL, 0, 0, m_bForceAnsi))
 	    {
    	      	// TranslateMessage is not called because AbiWord
 	      	// has its own way of decoding keyboard accelerators
@@ -1320,8 +1320,18 @@ bool AP_Win32App::handleModelessDialogMessage( MSG * msg )
 		{
 			hWnd = (HWND) m_IdTable[ iCounter ].pDialog->pGetWindowHandle();
 
-			if( hWnd && IsDialogMessage( hWnd, msg ) )
-				return true;
+			if(!m_bForceAnsi && UT_IsWinNT())
+			{
+				// Since the message was fetched with GetMessageW,
+				// it must be processed with Unicode functions
+				if( hWnd && IsDialogMessageW( hWnd, msg ) )
+					return true;
+			}
+			else
+			{
+				if( hWnd && IsDialogMessage( hWnd, msg ) )
+					return true;
+			}
 		}
 		else
 			break;

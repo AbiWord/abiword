@@ -128,6 +128,7 @@ protected:
 
 	XAP_StringSet *			m_pStringSet;
 	AP_Win32Clipboard *		m_pClipboard;
+	static const bool		m_bForceAnsi = false; // boolean flag used for compatibility with UT_GetMessage
 };
 
 #endif /* AP_WIN32APP_H */

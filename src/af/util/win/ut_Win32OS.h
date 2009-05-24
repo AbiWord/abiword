@@ -50,6 +50,7 @@ LRESULT UT_DefWindowProc(HWND hWnd, UINT Msg, WPARAM wParam,LPARAM lParam, bool 
 
 BOOL UT_SetWindowText(HWND hWnd, const char * lpString, bool bForceANSI = false);
 
+// If you change bForceANSI, you must also change m_bForceAnsi in ap_Win32App.h
 BOOL UT_GetMessage(LPMSG lpMsg,HWND hWnd,UINT wMsgFilterMin,UINT wMsgFilterMax, bool bForceANSI = false);
 
 LRESULT UT_DispatchMessage(const MSG *lpmsg, bool bForceANSI = false);
