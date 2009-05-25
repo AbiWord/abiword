@@ -1148,8 +1148,8 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 				 getVal("color").c_str(),				((m_bChangedColor) ? "(chg)" : ""),
 				 m_bUnderline,							((m_bChangedUnderline) ? "(chg)" : ""),
 				 m_bStrikeout,							((m_bChangedStrikeOut) ? "(chg)" : ""),
-				 m_checkSubScript,						((m_bChangedSubScript) ? "(chg)" : ""),
-				 m_checkSuperScript,					((m_bChangedSuperScript) ? "(chg)" : "")
+				 m_bSubScript,							((m_bChangedSubScript) ? "(chg)" : ""),
+				 m_bSuperScript,						((m_bChangedSuperScript) ? "(chg)" : "")
 	            ));
 
 	// answer should be set by the appropriate callback
