@@ -359,8 +359,8 @@ SubSectionEnd ; core
 
 ; OPTIONAL plugins
 ;SubSection /e "$(TITLE_ssection_plugins)" ssection_plugins
-!include "${NSIS_SCRIPT_PATH}\NSISv2\plugins\section_opt_tools.nsh"
-!include "${NSIS_SCRIPT_PATH}\NSISv2\plugins\section_opt_importexport.nsh"
+!include "section_opt_tools.nsh"
+!include "section_opt_importexport.nsh"
 ;SubSectionEnd ; plugins
 ;!macro Remove_${ssection_plugins}
 	; Note: subsection removes called unless every section contained is selected
