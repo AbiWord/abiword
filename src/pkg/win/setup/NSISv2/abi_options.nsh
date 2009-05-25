@@ -32,7 +32,7 @@
 ; Define this to include the standard set of plugins
 ; if NODOWNLOADS is defined then the files must be locally available
 ; if you enable this, you must build make toolsplugins, make impexpplugins, then finally make distribution
-;!define OPT_PLUGINS
+!define OPT_PLUGINS
 
 ; If you have upx available in your PATH, enable this for a smaller setup file
 ;!define HAVE_UPX
