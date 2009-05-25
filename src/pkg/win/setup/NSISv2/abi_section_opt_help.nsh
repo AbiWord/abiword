@@ -6,13 +6,10 @@
 ; OPTIONAL Installation of Help Files
 Section "$(TITLE_section_help)" section_help
   SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT}
-  SetOutPath $INSTDIR\AbiWord
+  SetOutPath $INSTDIR\help
 
   ; help documents may not be created if peer abiword-docs not found
   File /nonfatal /r "..\abisuite\abiword\help"
-
-  SetOutPath $INSTDIR\AbiWord\help\en-US
-  File "..\..\..\credits.txt"
 
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     !define HelpFileIndex "$INSTDIR\AbiWord\help\en-US\index.html"
@@ -26,7 +23,7 @@ SectionEnd
 	DetailPrint "*** Removing help files..."
 
 	; remove help files
-      RMDir /r "$INSTDIR\AbiWord\help"
+	RMDir /r "$INSTDIR\help"
 
 	; remove help start menu entry
 	Delete "$SMPROGRAMS\$STARTMENU_FOLDER\$(SHORTCUT_NAME_HELP).lnk"

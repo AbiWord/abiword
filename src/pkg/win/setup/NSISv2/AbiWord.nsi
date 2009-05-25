@@ -49,17 +49,17 @@ SetCompressor /SOLID lzma
 
 ; Specify the icons to use
 !ifndef TRADEMARKED_BUILD
-; Personal build (to be used by all!!! except SourceGear Inc.)
-!define MUI_ICON "..\..\pkg\win\setup\setup.ico"
-!define MUI_UNICON "..\..\pkg\win\setup\setup.ico"
+; Personal build (to be used by all!!! except AbiSource Corporation B.V.)
+!define MUI_ICON "${NSIS_SCRIPT_PATH}\setup.ico"
+!define MUI_UNICON "${NSIS_SCRIPT_PATH}\setup.ico"
 !else
 ; Trademarked build
-!define MUI_ICON "..\..\pkg\win\setup\setup_tm.ico"
-!define MUI_UNICON "..\..\pkg\win\setup\setup_tm.ico"
+!define MUI_ICON "${NSIS_SCRIPT_PATH}\setup_tm.ico"
+!define MUI_UNICON "${NSIS_SCRIPT_PATH}\setup_tm.ico"
 !endif
 
 ; Specify the bitmap to use
-!define MUI_CHECKBITMAP "..\..\pkg\win\setup\modern.bmp"
+!define MUI_CHECKBITMAP "${NSIS_SCRIPT_PATH}\modern.bmp"
 
 ; Specify filename of resulting installer
 OutFile "${INSTALLERNAME}"
@@ -69,10 +69,10 @@ Name "${PRODUCT} ${VERSION}"
 BrandingText "${PRODUCT} ${VERSION}"
 
 ; The default installation directory
-InstallDir $PROGRAMFILES\${APPSET}${VERSION_MAJOR}      ; e.g. "C:\Program Files\AbiSuite2"
+InstallDir $PROGRAMFILES\${PRODUCT}      ; e.g. "C:\Program Files\AbiWord"
 
 ; Registry key to check for directory (so if you install again, it will overwrite the old one automatically)
-InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_Dir"
+InstallDirRegKey HKLM SOFTWARE\${PRODUCT} "Install_Dir"
 
 
 ; Useful inclusions
@@ -155,7 +155,7 @@ Section "" section_abi
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	; Set output path to the installation directory.
-	SetOutPath $INSTDIR\${PRODUCT}\bin
+	SetOutPath $INSTDIR\bin
 
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -165,18 +165,18 @@ Section "" section_abi
 	; Else in normal install mode, we expect it to NOT exist
 	; (where existing is a possible error condition)
 	StrCpy $R0 1	; flag we want to install main program
-	${If} ${FileExists} "$INSTDIR\${MAINPROGRAM}"
+	${If} ${FileExists} "$INSTDIR\${PROGRAMEXE}"
 		${If} $v_modifyinstall == 1 
-			DetailPrint "Modify mode: successfully found $INSTDIR\${MAINPROGRAM}"
+			DetailPrint "Modify mode: successfully found $INSTDIR\${PROGRAMEXE}"
 			StrCpy $R0 0	; skip extraction if already there
 		${Else}
-			DetailPrint "Install mode: Warning found $INSTDIR\${MAINPROGRAM}"
+			DetailPrint "Install mode: Warning found $INSTDIR\${PROGRAMEXE}"
 			MessageBox MB_YESNO "$(PROMPT_OVERWRITE)" /SD IDYES IDYES +2
 				Abort "$(MSG_ABORT)"
 		${EndIf}
 	${Else}	; we need to install the main program
 		${If} $v_modifyinstall == 1 
-			DetailPrint "Modify mode: Warning failed to find $INSTDIR\${MAINPROGRAM}"
+			DetailPrint "Modify mode: Warning failed to find $INSTDIR\${PROGRAMEXE}"
 			MessageBox MB_YESNO "$(PROMPT_NOMAINPROGRAM_CONTINUEANYWAY)" /SD IDYES IDYES +2
 				Abort "$(MSG_ABORT)"
 		${Else}
@@ -187,46 +187,46 @@ Section "" section_abi
 	; Actually perform the installation
 	${If} $R0 == 1
 		; Install main executable
-		File "${PROGRAMEXE}"
-		File "..\..\..\..\libs\zlib\zlib1.dll"
-		File "libglib-2.0-0.dll"
-		File "libgobject-2.0-0.dll"
-		File "libgthread-2.0-0.dll"
-		File "libgsf-1-114.dll"
-		File "mingwm10.dll"
-		File "bzip2.dll"
-		File "iconv.dll"
-		File "intl.dll"
-		File "libxml2-2.dll"
-		
-
+		File "${ABIWORD_COMPILED_PATH}\bin\${PROGRAMEXE}"
+		File "${ABIWORD_COMPILED_PATH}\bin\LibAbiWord.dll"
+		File "${ABIWORD_COMPILED_PATH}\bin\bz2-1.dll"
+		File "${ABIWORD_COMPILED_PATH}\bin\libenchant.dll"
+		File "${ABIWORD_COMPILED_PATH}\bin\libfribidi-0.dll"
+		File "${ABIWORD_COMPILED_PATH}\bin\libglib-2.0-0.dll"
+		File "${ABIWORD_COMPILED_PATH}\bin\libgobject-2.0-0.dll"
+		File "${ABIWORD_COMPILED_PATH}\bin\libgio-2.0-0.dll"
+		File "${ABIWORD_COMPILED_PATH}\bin\libgthread-2.0-0.dll"
+		File "${ABIWORD_COMPILED_PATH}\bin\libgsf-1-114.dll"
+		File "${ABIWORD_COMPILED_PATH}\bin\libintl-8.dll"
+		File "${ABIWORD_COMPILED_PATH}\bin\libpng12-0.dll"
+		File "${ABIWORD_COMPILED_PATH}\bin\libxml2-2.dll"
+		File "${ABIWORD_COMPILED_PATH}\bin\libwv-1-2-3.dll"
+		File "${ABIWORD_COMPILED_PATH}\bin\zlib1.dll"
 	${EndIf}
 SectionEnd
 !macro Remove_${section_abi}
 	;Removes this component
 	DetailPrint "*** Removing Main Component..."
-	Delete "$INSTDIR\${MAINPROGRAM}"
-	Delete "$INSTDIR\${PRODUCT}\bin\zlib1.dll"
-	Delete "$INSTDIR\${PRODUCT}\bin\libglib-2.0-0.dll"
-	Delete "$INSTDIR\${PRODUCT}\bin\libgobject-2.0-0.dll"
-	Delete "$INSTDIR\${PRODUCT}\bin\libgsf-1-114.dll"
-	Delete "$INSTDIR\${PRODUCT}\bin\bzip2.dll"
-
-	; only for MinGW builds
-	${IfExists} "iconv.dll"
-		Delete "$INSTDIR\${PRODUCT}\bin\iconv.dll"
-	${IfExistsEnd}
-	${IfExists} "intl.dll"
-		Delete "$INSTDIR\${PRODUCT}\bin\intl.dll"
-	${IfExistsEnd}
-	${IfExists} "libxml2-2.dll"
-		Delete "$INSTDIR\${PRODUCT}\bin\libxml2-2.dll"
-	${IfExistsEnd}
+	Delete "$INSTDIR\bin\${PROGRAMEXE}"
+	Delete "$INSTDIR\bin\LibAbiWord.dll"
+	Delete "$INSTDIR\bin\bz2-1.dll"
+	Delete "$INSTDIR\bin\libenchant.dll"
+	Delete "$INSTDIR\bin\libfribidi-0.dll"
+	Delete "$INSTDIR\bin\libglib-2.0-0.dll"
+	Delete "$INSTDIR\bin\libgobject-2.0-0.dll"
+	Delete "$INSTDIR\bin\libgio-2.0-0.dll"
+	Delete "$INSTDIR\bin\libgthread-2.0-0.dll"
+	Delete "$INSTDIR\bin\libgsf-1-114.dll"
+	Delete "$INSTDIR\bin\libintl-8.dll"
+	Delete "$INSTDIR\bin\libpng12-0.dll"
+	Delete "$INSTDIR\bin\libxml2-2.dll"
+	Delete "$INSTDIR\bin\libwv-1-2-3.dll"
+	Delete "$INSTDIR\bin\zlib1.dll"
 
 	; delete the BIN subdirectory
-	RMDir "$INSTDIR\${PRODUCT}\bin"
-	IfFileExists "$INSTDIR\${PRODUCT}\bin" 0 +2
-	DetailPrint "Unable to remove $INSTDIR\${PRODUCT}\bin directory."
+	RMDir "$INSTDIR\bin"
+	IfFileExists "$INSTDIR\bin" 0 +2
+	DetailPrint "Unable to remove $INSTDIR\bin directory."
 !macroend
 
 
@@ -237,11 +237,11 @@ Section "" section_core_inv ; invisible section that must also be installed, set
 	; or see if user has permission and ask them...
 
 	; Write the installation path into the registry
-	WriteRegStr HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_Dir" "$INSTDIR"
+	WriteRegStr HKLM SOFTWARE\${PRODUCT}\v${VERSION_MAJOR} "Install_Dir" "$INSTDIR"
 
 	; (User Informational Purposes ONLY!!!)
 	; Write the current version installed to the registery
-	WriteRegStr HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Version" "${VERSION}"
+	WriteRegStr HKLM SOFTWARE\${PRODUCT}\v${VERSION_MAJOR} "Version" "${VERSION}"
 
 	; Write the uninstall keys for Windows
 	!include "abi_util_reg_uninst.nsh"
@@ -255,7 +255,7 @@ SectionEnd
 	DeleteRegKey HKLM "${REG_UNINSTALL_KEY}"
 
 	; removes all the stuff we store concerning this major revision of AbiWord
-	DeleteRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR}
+	DeleteRegKey HKLM SOFTWARE\${PRODUCT}\v${VERSION_MAJOR}
 
 !macroend
 
@@ -264,22 +264,21 @@ Section "" section_abi_req
 	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${MINIMALSECT} ${FULLSECT} ${DLSECT} RO	; included in Typical, Full, Minimal, Required
 
 	; Image plugin for importers & cut-n-paste of 
-      ; various standard image formats (BMP, WMF, JPEG) on Windows
-	SetOutPath $INSTDIR\AbiWord\plugins
-	File "..\plugins\Abi_IEG_Win32Native.dll"
+	; various standard image formats (BMP, WMF, JPEG) on Windows
+	SetOutPath $INSTDIR\plugins
+	File "${ABIWORD_COMPILED_PATH}\plugins\PluginWin32gfx.dll"
 
-	SetOutPath $INSTDIR\${PRODUCT}
-	File "..\AbiSuite\AbiWord\system.*"
-	File /r "..\AbiSuite\AbiWord\strings"
+	SetOutPath $INSTDIR\profiles
+	File "${ABIWORD_COMPILED_PATH}\profiles\system.profile*"
+	SetOutPath $INSTDIR\strings
+	File "${ABIWORD_COMPILED_PATH}\strings\*.strings"
 
 	SetOutPath $INSTDIR
-	File /oname=copying.txt "..\AbiSuite\Copying"
-	File "..\AbiSuite\readme.txt"
-	File "..\AbiSuite\readme.abw"
+	File /oname=copying.txt "${ABIWORD_MODULE_PATH}\Copying"
 
 	; Special Install of Dingbats font
 	SetOutPath $TEMP
-	File "..\..\pkg\win\setup\Dingbats.ttf"
+	File "${NSIS_SCRIPT_PATH}\Dingbats.ttf"
 	IfFileExists "$WINDIR\Fonts\Dingbats.ttf" EraseTemp 0
 		CopyFiles /SILENT "$TEMP\Dingbats.ttf" "$WINDIR\Fonts" 
 	EraseTemp:
@@ -289,8 +288,8 @@ Section "" section_abi_req
 	!insertmacro MUI_STARTMENU_WRITE_BEGIN Application
 		;SetShellVarContext current|all???
 		${lngCreateSMGroup}  "$STARTMENU_FOLDER"
-		SetOutPath $INSTDIR\AbiWord\bin
-		${lngCreateShortCut} "$SMPROGRAMS" "$STARTMENU_FOLDER" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
+		SetOutPath $INSTDIR\bin
+		${lngCreateShortCut} "$SMPROGRAMS" "$STARTMENU_FOLDER" "$(SHORTCUT_NAME)" "$INSTDIR\${PROGRAMEXE}" "" "$INSTDIR\${PROGRAMEXE}" 0
 		SetOutPath $TEMP ; needed for removing the directories on uninstall
 		${lngCreateShortCut} "$SMPROGRAMS" "$STARTMENU_FOLDER" "$(SHORTCUT_NAME_UNINSTALL)" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" "" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" 0
 	!insertmacro MUI_STARTMENU_WRITE_END
@@ -320,16 +319,17 @@ SectionEnd
 	Delete "$INSTDIR\readme.abw"
 
 	; remove string sets
-	Delete "$INSTDIR\${PRODUCT}\strings\*.strings"
-	${DeleteDirIfEmpty} "$INSTDIR\${PRODUCT}\strings"
+	Delete "$INSTDIR\strings\*.strings"
+	${DeleteDirIfEmpty} "$INSTDIR\strings"
 
 	; remove profile sets
-	Delete "$INSTDIR\${PRODUCT}\system.profile*"
+	Delete "$INSTDIR\profiles\system.profile*"
+	${DeleteDirIfEmpty} "$INSTDIR\profiles"
 
 	; remove always (for interoperability) installed plugins 
-	Delete "$INSTDIR\${PRODUCT}\plugins\Abi_IEG_Win32Native.dll"
-	${DeleteDirIfEmpty} "$INSTDIR\${PRODUCT}\plugins"
-	IfFileExists "$INSTDIR\${PRODUCT}\plugins" 0 +2
+	Delete "$INSTDIR\plugins\PluginWin32gfx.dll"
+	${DeleteDirIfEmpty} "$INSTDIR\plugins"
+	IfFileExists "$INSTDIR\plugins" 0 +2
 	DetailPrint "Unable to remove plugin directory, please use plugin uninstaller or manually delete."
 !macroend
 
@@ -357,12 +357,10 @@ SubSectionEnd ; core
 ; *********************************************************************
 !ifdef OPT_PLUGINS
 
-;!include "plugins\abi_misc_plugins.nsh"
- 
 ; OPTIONAL plugins
 ;SubSection /e "$(TITLE_ssection_plugins)" ssection_plugins
-!include "plugins\section_opt_tools.nsh"
-!include "plugins\section_opt_importexport.nsh"
+!include "${NSIS_SCRIPT_PATH}\NSISv2\plugins\section_opt_tools.nsh"
+!include "${NSIS_SCRIPT_PATH}\NSISv2\plugins\section_opt_importexport.nsh"
 ;SubSectionEnd ; plugins
 ;!macro Remove_${ssection_plugins}
 	; Note: subsection removes called unless every section contained is selected
@@ -533,7 +531,7 @@ Section "Uninstall"
   StrCmp $R0 "" doneIEPlugins
  
   ClearErrors
-  ExecWait '$R0 /S _?=$INSTDIR\AbiWord\plugins' ;Do not copy the uninstaller to a temp files
+  ExecWait '$R0 /S _?=$INSTDIR\plugins' ;Do not copy the uninstaller to a temp files
  
   IfErrors no_remove_uninstaller_IEPlugins
     ;You can either use Delete /REBOOTOK in the uninstaller or add some code
@@ -553,7 +551,7 @@ doneIEPlugins:
   StrCmp $R0 "" doneToolsPlugins
 
   ClearErrors
-  ExecWait '$R0 /S _?=$INSTDIR\AbiWord\plugins'  ;Do not copy the uninstaller to a temp files
+  ExecWait '$R0 /S _?=$INSTDIR\plugins'  ;Do not copy the uninstaller to a temp files
  
   IfErrors no_remove_uninstaller_ToolsPlugins
     ;You can either use Delete /REBOOTOK in the uninstaller or add some code
@@ -572,9 +570,9 @@ doneToolsPlugins:
       Delete "$INSTDIR\${REG_UNINSTALL_FNAME}"
 
 	; attempt to remove actual product directory
-	${DeleteDirIfEmpty} "$INSTDIR\AbiWord"
-	IfFileExists "$INSTDIR\AbiWord" 0 +2
-	DetailPrint "Unable to remove $INSTDIR\AbiWord"
+	${DeleteDirIfEmpty} "$INSTDIR"
+	IfFileExists "$INSTDIR" 0 +2
+	DetailPrint "Unable to remove $INSTDIR"
 
 	; attempt to remove install directory
 	${DeleteDirIfEmpty} "$INSTDIR"

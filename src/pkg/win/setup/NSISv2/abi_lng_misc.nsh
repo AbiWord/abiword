@@ -44,7 +44,7 @@
       !insertmacro MUI_LANGUAGE "${LANG}"
       !echo "Loading language ${LANG} ( ${LANG_${LANG}} )"
       ; Specify the license text to use (for multilang support, must come after MUI_LANGUAGE)
-      LicenseLangString LicenseTXT "${LANG_${LANG}}" "..\AbiSuite\Copying"
+      LicenseLangString LicenseTXT "${LANG_${LANG}}" "${ABIWORD_MODULE_PATH}\Copying"
       !verbose push
       !verbose 3
       !include "lang\${LANG}.nsh"   ; Localized Installer Messages (Language Strings)

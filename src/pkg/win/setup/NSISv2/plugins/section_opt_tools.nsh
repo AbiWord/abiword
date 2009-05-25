@@ -14,7 +14,7 @@ Section "$(TITLE_section_toolsplugins_mathview)" section_toolsplugins_mathview
 	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	; Unzip libmathview into same directory as AbiWord.exe
-	SetOutPath $INSTDIR\${PRODUCT}\bin
+	SetOutPath $INSTDIR\bin
 	File /r "libmathview-0.dll"
 	File /r "libmathview_frontend_libxml2-0.dll"
 	
@@ -24,7 +24,7 @@ Section "$(TITLE_section_toolsplugins_mathview)" section_toolsplugins_mathview
 	File /r "..\AbiSuite\math\dictionary-local.xml"
 	File /r "..\AbiSuite\math\dictionary.xml"
 	
-	SetOutPath $INSTDIR\${PRODUCT}\plugins
+	SetOutPath $INSTDIR\plugins
 	File "..\plugins\AbiMathView.dll"
 SectionEnd
 
@@ -33,7 +33,7 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of tool plugin: Equation Editor ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\${PRODUCT}\AbiMathView.dll"
+	Delete "$INSTDIR\AbiMathView.dll"
 
 !macroend
 
@@ -41,10 +41,10 @@ SectionEnd
 ;;  
 Section "$(TITLE_section_toolsplugins_abicollab)" section_toolsplugins_abicollab
 	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
-	SetOutPath $INSTDIR\${PRODUCT}\bin
+	SetOutPath $INSTDIR\bin
 	File "libsoup-2.4-1.dll"
 	
-	SetOutPath $INSTDIR\${PRODUCT}\plugins
+	SetOutPath $INSTDIR\plugins
 	File "..\plugins\AbiCollab.dll"
 	
 	WriteRegStr HKCR ".abicollab" "" "AbiSuite.AbiWord"
@@ -56,9 +56,9 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of tool plugin: AbiCollab ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\${PRODUCT}\plugins\AbiCollab.dll"
-	Delete "$INSTDIR\${PRODUCT}\bin\libsoup-2.4-1.dll"
-	Delete "$INSTDIR\${PRODUCT}\bin\libgthread-2.0-0.dll"
+	Delete "$INSTDIR\plugins\AbiCollab.dll"
+	Delete "$INSTDIR\bin\libsoup-2.4-1.dll"
+	Delete "$INSTDIR\bin\libgthread-2.0-0.dll"
 	DeleteRegKey HKCR ".abicollab"
 !macroend
 
@@ -67,12 +67,12 @@ SectionEnd
 Section "$(TITLE_section_toolsplugins_grammar)" section_toolsplugins_grammar
 	SectionIn ${FULLSECT} ${FULLASSOCSECT} ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
 	
-	SetOutPath $INSTDIR\${PRODUCT}\bin
+	SetOutPath $INSTDIR\bin
 	File /r "liblink-grammar-4.dll"
-	SetOutPath $INSTDIR\${PRODUCT}\bin\en
+	SetOutPath $INSTDIR\bin\en
 	File /r "en\*"
 	
-	SetOutPath $INSTDIR\${PRODUCT}\plugins
+	SetOutPath $INSTDIR\plugins
 	File "..\plugins\AbiGrammar.dll"
 SectionEnd
 
@@ -81,16 +81,16 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of tool plugin: grammar ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\${PRODUCT}\plugins\AbiGrammar.dll"
-	Delete "$INSTDIR\${PRODUCT}\bin\liblink-grammar-4.dll"
-	RMDir /r "$INSTDIR\${PRODUCT}\bin\en\"
+	Delete "$INSTDIR\plugins\AbiGrammar.dll"
+	Delete "$INSTDIR\bin\liblink-grammar-4.dll"
+	RMDir /r "$INSTDIR\bin\en\"
 !macroend
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  URLDict
 Section "$(TITLE_section_toolsplugins_urldict)" section_toolsplugins_urldict
 	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
-	SetOutPath $INSTDIR\${PRODUCT}\plugins
+	SetOutPath $INSTDIR\plugins
 	File "..\plugins\AbiURLDict.dll"
 SectionEnd
 
@@ -99,14 +99,14 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of tool plugin: urldict ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\${PRODUCT}\plugins\AbiURLDict.dll"
+	Delete "$INSTDIR\plugins\AbiURLDict.dll"
 !macroend
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  Google
 Section "$(TITLE_section_toolsplugins_google)" section_toolsplugins_google
 	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
-	SetOutPath $INSTDIR\${PRODUCT}\plugins
+	SetOutPath $INSTDIR\plugins
 	File "..\plugins\AbiGoogle.dll"
 SectionEnd
 
@@ -115,14 +115,14 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of tool plugin: google ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\${PRODUCT}\plugins\AbiGoogle.dll"
+	Delete "$INSTDIR\plugins\AbiGoogle.dll"
 !macroend
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  wikipedia
 Section "$(TITLE_section_toolsplugins_wikipedia)" section_toolsplugins_wikipedia
 	SectionIn ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
-	SetOutPath $INSTDIR\${PRODUCT}\plugins
+	SetOutPath $INSTDIR\plugins
 	File "..\plugins\AbiWikipedia.dll"
 SectionEnd
 
@@ -131,14 +131,14 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of tool plugin: wikipedia ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\${PRODUCT}\plugins\AbiWikipedia.dll"
+	Delete "$INSTDIR\plugins\AbiWikipedia.dll"
 !macroend
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  babelfish
 Section "$(TITLE_section_toolsplugins_babelfish)" section_toolsplugins_babelfish
 	SectionIn ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
-	SetOutPath $INSTDIR\${PRODUCT}\plugins
+	SetOutPath $INSTDIR\plugins
 	File "..\plugins\AbiBabelfish.dll"
 SectionEnd
 
@@ -147,14 +147,14 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of tool plugin: babelfish ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\${PRODUCT}\plugins\AbiBabelfish.dll"
+	Delete "$INSTDIR\plugins\AbiBabelfish.dll"
 !macroend
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  freetranslation
 Section "$(TITLE_section_toolsplugins_freetranslation)" section_toolsplugins_freetranslation
 	SectionIn ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
-	SetOutPath $INSTDIR\${PRODUCT}\plugins
+	SetOutPath $INSTDIR\plugins
 	File "..\plugins\Abifreetranslation.dll"
 SectionEnd
 
@@ -163,14 +163,14 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of tool plugin: freetranslation ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\${PRODUCT}\plugins\Abifreetranslation.dll"
+	Delete "$INSTDIR\plugins\Abifreetranslation.dll"
 !macroend
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  scripthappy
 Section "$(TITLE_section_toolsplugins_scripthappy)" section_toolsplugins_scripthappy
 	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
-	SetOutPath $INSTDIR\${PRODUCT}\plugins
+	SetOutPath $INSTDIR\plugins
 	File "..\plugins\Abiscripthappy.dll"
 SectionEnd
 
@@ -179,7 +179,7 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of tool plugin: scripthappy ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\${PRODUCT}\plugins\Abiscripthappy.dll"
+	Delete "$INSTDIR\plugins\Abiscripthappy.dll"
 !macroend
 
 

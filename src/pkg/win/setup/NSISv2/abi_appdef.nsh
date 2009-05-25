@@ -9,10 +9,10 @@
 !define VERSION_MAJOR "2"
 !endif
 !ifndef VERSION_MINOR
-!define VERSION_MINOR "1"
+!define VERSION_MINOR "7"
 !endif
 !ifndef VERSION_MICRO
-!define VERSION_MICRO "0"
+!define VERSION_MICRO "2"
 !endif
 !ifdef VERSION
 !undef VERSION
@@ -21,7 +21,10 @@
 
 !define INSTALLERNAME "abiword-setup-${VERSION}.exe"
 
-!define APPSET  "AbiSuite"
 !define PROGRAMEXE "AbiWord.exe"
-!define MAINPROGRAM "${PRODUCT}\bin\${PROGRAMEXE}"
+!define MAINPROGRAM ${PROGRAMEXE}
 
+; make some variables to be able to adapt to changing directory locations easier
+!define NSIS_SCRIPT_PATH ".."
+!define ABIWORD_MODULE_PATH "..\..\..\..\.."
+!define ABIWORD_COMPILED_PATH "..\..\..\..\..\abiword-msvc2008\Debug"

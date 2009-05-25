@@ -96,7 +96,7 @@ doneIEPlugins:
 ;Run the uninstaller
 uninstToolsPlugins:
   ClearErrors
- ExecWait '$R0 /S _?=$INSTDIR\AbiWord\plugins' ;Do not copy the uninstaller to a temp file
+ ExecWait '$R0 /S _?=$INSTDIR\plugins' ;Do not copy the uninstaller to a temp file
  
   IfErrors no_remove_uninstaller_ToolsPlugins
     ;You can either use Delete /REBOOTOK in the uninstaller or add some code

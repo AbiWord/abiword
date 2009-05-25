@@ -14,7 +14,7 @@ SubSection /e "$(TITLE_ssection_loadsaveplugins)" ssection_loadsaveplugins
 ;;  applix
 Section "$(TITLE_section_impexpplugins_applix)" section_impexpplugins_applix
 	SectionIn ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
-	SetOutPath $INSTDIR\${PRODUCT}\plugins
+	SetOutPath $INSTDIR\plugins
 	File "..\plugins\abiapplix.dll"
 SectionEnd
 
@@ -23,14 +23,14 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of import/export plugin: applix ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\${PRODUCT}\plugins\abiapplix.dll"
+	Delete "$INSTDIR\plugins\abiapplix.dll"
 !macroend
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  clarisworks
 Section "$(TITLE_section_impexpplugins_clarisworks)" section_impexpplugins_clarisworks
 	SectionIn ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
-	SetOutPath $INSTDIR\${PRODUCT}\plugins
+	SetOutPath $INSTDIR\plugins
 	File "..\plugins\abiclarisworks.dll"
 SectionEnd
 
@@ -39,14 +39,14 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of import/export plugin: clarisworks ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\${PRODUCT}\plugins\abiclarisworks.dll"
+	Delete "$INSTDIR\plugins\abiclarisworks.dll"
 !macroend
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  docbook
 Section "$(TITLE_section_impexpplugins_docbook)" section_impexpplugins_docbook
 	SectionIn ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
-	SetOutPath $INSTDIR\${PRODUCT}\plugins
+	SetOutPath $INSTDIR\plugins
 	File "..\plugins\abidocbook.dll"
 SectionEnd
 
@@ -55,14 +55,14 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of import/export plugin: docbook ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\${PRODUCT}\plugins\abidocbook.dll"
+	Delete "$INSTDIR\plugins\abidocbook.dll"
 !macroend
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  office open xml
 Section "$(TITLE_section_impexpplugins_openxml)" section_impexpplugins_officeopenxml
 	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
-	SetOutPath $INSTDIR\${PRODUCT}\plugins
+	SetOutPath $INSTDIR\plugins
 	File "..\plugins\abiopenxml.dll"
 SectionEnd
 
@@ -71,14 +71,14 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of import/export plugin: office open xml ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\${PRODUCT}\plugins\abiopenxml.dll"
+	Delete "$INSTDIR\plugins\abiopenxml.dll"
 !macroend
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  opendocument
 Section "$(TITLE_section_impexpplugins_opendocument)" section_impexpplugins_opendocument
 	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
-	SetOutPath $INSTDIR\${PRODUCT}\plugins
+	SetOutPath $INSTDIR\plugins
 	File "..\plugins\abiopendocument.dll"
 SectionEnd
 
@@ -87,14 +87,14 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of import/export plugin: opendocument ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\${PRODUCT}\plugins\abiopendocument.dll"
+	Delete "$INSTDIR\plugins\abiopendocument.dll"
 !macroend
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  openwriter
 Section "$(TITLE_section_impexpplugins_openwriter)" section_impexpplugins_openwriter
 	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
-	SetOutPath $INSTDIR\${PRODUCT}\plugins
+	SetOutPath $INSTDIR\plugins
 	File "..\plugins\abiopenwriter.dll"
 SectionEnd
 
@@ -103,14 +103,14 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of import/export plugin: openwriter ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\${PRODUCT}\plugins\abiopenwriter.dll"
+	Delete "$INSTDIR\plugins\abiopenwriter.dll"
 !macroend
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  iscii_text
 Section "$(TITLE_section_impexpplugins_iscii_text)" section_impexpplugins_iscii_text
 	SectionIn ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
-	SetOutPath $INSTDIR\${PRODUCT}\plugins
+	SetOutPath $INSTDIR\plugins
 	File "..\plugins\abiiscii_text.dll"
 SectionEnd
 
@@ -119,14 +119,14 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of import/export plugin: iscii_text ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\${PRODUCT}\plugins\abiiscii_text.dll"
+	Delete "$INSTDIR\plugins\abiiscii_text.dll"
 !macroend
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  eml
 Section "$(TITLE_section_impexpplugins_eml)" section_impexpplugins_eml
 	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
-	SetOutPath $INSTDIR\${PRODUCT}\plugins
+	SetOutPath $INSTDIR\plugins
 	File "..\plugins\abieml.dll"
 SectionEnd
 
@@ -135,14 +135,14 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of import/export plugin: eml ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\${PRODUCT}\plugins\abieml.dll"
+	Delete "$INSTDIR\plugins\abieml.dll"
 !macroend
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  palmdoc
 Section "$(TITLE_section_impexpplugins_palmdoc)" section_impexpplugins_palmdoc
 	SectionIn ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
-	SetOutPath $INSTDIR\${PRODUCT}\plugins
+	SetOutPath $INSTDIR\plugins
 	File "..\plugins\abipalmdoc.dll"
 SectionEnd
 
@@ -151,14 +151,14 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of import/export plugin: palmdoc ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\${PRODUCT}\plugins\abipalmdoc.dll"
+	Delete "$INSTDIR\plugins\abipalmdoc.dll"
 !macroend
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  wml
 Section "$(TITLE_section_impexpplugins_wml)" section_impexpplugins_wml
 	SectionIn ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
-	SetOutPath $INSTDIR\${PRODUCT}\plugins
+	SetOutPath $INSTDIR\plugins
 	File "..\plugins\abiwml.dll"
 SectionEnd
 
@@ -167,14 +167,14 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of import/export plugin: wml ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\${PRODUCT}\plugins\abiwml.dll"
+	Delete "$INSTDIR\plugins\abiwml.dll"
 !macroend
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  xslfo
 Section "$(TITLE_section_impexpplugins_xslfo)" section_impexpplugins_xslfo
 	SectionIn ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
-	SetOutPath $INSTDIR\${PRODUCT}\plugins
+	SetOutPath $INSTDIR\plugins
 	File "..\plugins\abixslfo.dll"
 SectionEnd
 
@@ -183,7 +183,7 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of import/export plugin: xslfo ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\${PRODUCT}\plugins\abixslfo.dll"
+	Delete "$INSTDIR\plugins\abixslfo.dll"
 !macroend
 
 SubSectionEnd ; both import/export
@@ -197,7 +197,7 @@ SubSection /e "$(TITLE_ssection_loadplugins)" ssection_loadplugins
 ;;  mswrite
 Section "$(TITLE_section_impexpplugins_mswrite)" section_impexpplugins_mswrite
 	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
-	SetOutPath $INSTDIR\${PRODUCT}\plugins
+	SetOutPath $INSTDIR\plugins
 	File "..\plugins\abimswrite.dll"
 SectionEnd
 
@@ -206,14 +206,14 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of import/export plugin: mswrite ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\${PRODUCT}\plugins\abimswrite.dll"
+	Delete "$INSTDIR\plugins\abimswrite.dll"
 !macroend
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  opml
 Section "$(TITLE_section_impexpplugins_opml)" section_impexpplugins_opml
 	SectionIn ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
-	SetOutPath $INSTDIR\${PRODUCT}\plugins
+	SetOutPath $INSTDIR\plugins
 	File "..\plugins\abiopml.dll"
 SectionEnd
 
@@ -222,14 +222,14 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of import/export plugin: opml ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\${PRODUCT}\plugins\abiopml.dll"
+	Delete "$INSTDIR\plugins\abiopml.dll"
 !macroend
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  sdw
 Section "$(TITLE_section_impexpplugins_sdw)" section_impexpplugins_sdw
 	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
-	SetOutPath $INSTDIR\${PRODUCT}\plugins
+	SetOutPath $INSTDIR\plugins
 	File "..\plugins\abisdw.dll"
 SectionEnd
 
@@ -238,14 +238,14 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of import/export plugin: sdw ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\${PRODUCT}\plugins\abisdw.dll"
+	Delete "$INSTDIR\plugins\abisdw.dll"
 !macroend
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  t602
 Section "$(TITLE_section_impexpplugins_t602)" section_impexpplugins_t602
 	SectionIn ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
-	SetOutPath $INSTDIR\${PRODUCT}\plugins
+	SetOutPath $INSTDIR\plugins
 	File "..\plugins\abit602.dll"
 SectionEnd
 
@@ -254,14 +254,14 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of import/export plugin: t602 ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\${PRODUCT}\plugins\abit602.dll"
+	Delete "$INSTDIR\plugins\abit602.dll"
 !macroend
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  wordperfect
 Section "$(TITLE_section_impexpplugins_wordperfect)" section_impexpplugins_wordperfect
 	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
-	SetOutPath $INSTDIR\${PRODUCT}\plugins
+	SetOutPath $INSTDIR\plugins
 	File "..\plugins\abiwordperfect.dll"
 SectionEnd
 
@@ -270,7 +270,7 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of import/export plugin: wordperfect ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\${PRODUCT}\plugins\abiwordperfect.dll"
+	Delete "$INSTDIR\plugins\abiwordperfect.dll"
 !macroend
 
 SubSectionEnd ; import only
@@ -283,7 +283,7 @@ SubSection /e "$(TITLE_ssection_saveplugins)" ssection_saveplugins
 ;;  hrtext
 Section "$(TITLE_section_impexpplugins_hrtext)" section_impexpplugins_hrtext
 	SectionIn ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
-	SetOutPath $INSTDIR\${PRODUCT}\plugins
+	SetOutPath $INSTDIR\plugins
 	File "..\plugins\abihrtext.dll"
 SectionEnd
 
@@ -292,14 +292,14 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of import/export plugin: hrtext ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\${PRODUCT}\plugins\abihrtext.dll"
+	Delete "$INSTDIR\plugins\abihrtext.dll"
 !macroend
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  latex
 Section "$(TITLE_section_impexpplugins_latex)" section_impexpplugins_latex
 	SectionIn ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
-	SetOutPath $INSTDIR\${PRODUCT}\plugins
+	SetOutPath $INSTDIR\plugins
 	File "..\plugins\abilatex.dll"
 SectionEnd
 
@@ -308,7 +308,7 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of import/export plugin: latex ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\${PRODUCT}\plugins\abilatex.dll"
+	Delete "$INSTDIR\plugins\abilatex.dll"
 !macroend
 
 

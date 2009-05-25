@@ -6,8 +6,8 @@
 ; OPTIONAL Installation of Clipart
 Section "$(TITLE_section_clipart)" section_clipart
 	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT}
-	SetOutPath $INSTDIR
-	File /r "..\AbiSuite\clipart"
+	SetOutPath $INSTDIR\clipart
+	File "${ABIWORD_COMPILED_PATH}\clipart\*.png"
 SectionEnd
 !macro Remove_${section_clipart}
 	;Removes this component

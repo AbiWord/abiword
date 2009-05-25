@@ -5,22 +5,21 @@
 
 SubSection /e "$(TITLE_ssection_dictionary)" ssection_dictionary
 Section "" section_dictionary_required
-	SetOutPath $INSTDIR\dictionary
-	File "..\AbiSuite\dictionary\ispell_dictionary_list.xml"
+; nothing is required atm
 SectionEnd
 
 ; OPTIONAL Installation of Default Dictionary
 Section "$(TITLE_section_dictinary_def_English)" section_dictinary_def_English
 	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT}
-	SetOutPath $INSTDIR\dictionary
-	File "..\AbiSuite\dictionary\american.hash"
+	SetOutPath $INSTDIR\dictionary\ispell
+	File "${ABIWORD_COMPILED_PATH}\dictionary\ispell\american.hash"
 SectionEnd
 !macro Remove_${section_dictinary_def_English}
 	;Removes this component
-	DetailPrint "*** Removing or skipping install of en-US dictionary..."
+	DetailPrint "*** Removing en-US dictionary..."
 
 	; remove dictionary
-	Delete "$INSTDIR\dictionary\american.hash"
+	Delete "$INSTDIR\dictionary\ispell\american.hash"
 	;Delete "$INSTDIR\dictionary\*.hash"
 !macroend
 
@@ -37,11 +36,9 @@ SubSectionEnd ; Dictionaries
 	;       if subsection is only partially selected
 	DetailPrint "*** ssection_dictionary"
 
-	; remove ispell dictionary info file
-	${DoIfDirLacks} "*.hash"  "$INSTDIR\dictionary" 'Delete "$INSTDIR\dictionary\ispell_dictionary_list.xml"'
-
 	; attempt to remove dictionary directory, if no more are present
+	${DeleteDirIfEmpty} "$INSTDIR\dictionary\ispell"
+	IfFileExists "$INSTDIR\dictionary\ispell" 0 +2
+		DetailPrint "Unable to remove $INSTDIR\dictionary\ispell"
 	${DeleteDirIfEmpty} "$INSTDIR\dictionary"
-	IfFileExists "$INSTDIR\dictionary" 0 +2
-	DetailPrint "Unable to remove $INSTDIR\dictionary"
 !macroend

@@ -13,8 +13,8 @@
 ; OPTIONAL Installation of Templates
 Section "$(TITLE_section_templates)" section_templates
 	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT}
-	SetOutPath $INSTDIR
-	File /r "..\AbiSuite\templates"
+	SetOutPath $INSTDIR\templates
+	File "${ABIWORD_COMPILED_PATH}\templates\*.awt*"
 
 	; generate and store md5 of each template so we can determine if user updated or not
 	${DoDirForEach} *.awt "$INSTDIR\templates" "${StoreMD5}"
@@ -25,7 +25,7 @@ SectionEnd
 
 	; remove templates
 	; TODO: don't delete modified templates without asking user 1st
-	Delete "$INSTDIR\templates\*.awt"
+	Delete "$INSTDIR\templates\*.awt*"
 
 	; attempt to remove install directory
 	${DeleteDirIfEmpty} "$INSTDIR\templates"
