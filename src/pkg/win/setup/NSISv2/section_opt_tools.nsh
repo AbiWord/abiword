@@ -45,9 +45,13 @@ Section "$(TITLE_section_toolsplugins_abicollab)" section_toolsplugins_abicollab
 	File "${ABIWORD_COMPILED_PATH}\bin\libsoup-2.4-1.dll"
 	File "${ABIWORD_COMPILED_PATH}\bin\libgcrypt-11.dll"
 	File "${ABIWORD_COMPILED_PATH}\bin\libgnutls-26.dll"
+	File "${ABIWORD_COMPILED_PATH}\bin\libgpg-error-0.dll"
 	
 	SetOutPath $INSTDIR\plugins
 	File "${ABIWORD_COMPILED_PATH}\plugins\PluginCollab.dll"
+	
+	SetOutPath $INSTDIR\certs
+	File "${ABIWORD_COMPILED_PATH}\certs\cacert.pem"
 	
 	WriteRegStr HKCR ".abicollab" "" "AbiSuite.AbiWord"
 	WriteRegStr HKCR ".abicollab" "Content Type" "application/abiword"
@@ -58,10 +62,16 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of tool plugin: AbiCollab ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\plugins\${ABIWORD_COMPILED_PATH}.dll"
+	Delete "$INSTDIR\plugins\PluginCollab.dll"
 	Delete "$INSTDIR\bin\libsoup-2.4-1.dll"
 	Delete "$INSTDIR\bin\libgcrypt-11.dll"
 	Delete "$INSTDIR\bin\libgnutls-26.dll"
+	Delete "$INSTDIR\bin\libgpg-error-0.dll"
+	
+	Delete "$INSTDIR\certs\cacert.pem"
+	${DeleteDirIfEmpty} "$INSTDIR\certs"
+	IfFileExists "$INSTDIR\certs" 0 +2
+	DetailPrint "Unable to remove $INSTDIR\certs"	
 	
 	DeleteRegKey HKCR ".abicollab"
 !macroend
