@@ -249,13 +249,13 @@ UT_Error OXML_Element_Field::serialize(IE_Exp_OpenXML* exporter)
 		}	
 		case fd_Field::FD_App_CompileTime: 
 		{
-			//TODO
-			return UT_OK;
+			format = "TIME";
+			break;
 		}	
 		case fd_Field::FD_App_CompileDate: 
 		{
-			//TODO
-			return UT_OK;
+			format = "DATE";
+			break;
 		}	
 		case fd_Field::FD_PageReference:
 		{
@@ -462,6 +462,87 @@ UT_Error OXML_Element_Field::addToPT(PD_Document * pDocument)
 			format = "datetime_custom";
 			break;
 		}
+		case fd_Field::FD_FileName:
+		{
+			format = "file_name";
+			break;
+		}
+		case fd_Field::FD_App_ID:
+		{
+			format = "app_id";
+			break;
+		}	
+		case fd_Field::FD_PageNumber:
+		{
+			format = "page_number";
+			break;
+		}	
+		case fd_Field::FD_PageCount:
+		{
+			format = "page_count";
+			break;
+		}	
+		case fd_Field::FD_Doc_WordCount:
+		{
+			format = "word_count";
+			break;
+		}	
+		case fd_Field::FD_Doc_CharCount:
+		{
+			format = "char_count";
+			break;
+		}	
+		case fd_Field::FD_Doc_LineCount: 
+		{
+			format = "line_count";
+			break;
+		}	
+		case fd_Field::FD_Doc_ParaCount:
+		{
+			format = "para_count";
+			break;
+		}	
+		case fd_Field::FD_Doc_NbspCount:
+		{
+			format = "nbsp_count";
+			break;
+		}	
+		case fd_Field::FD_Meta_Title:
+		{
+			format = "meta_title";
+			break;
+		}	
+		case fd_Field::FD_Meta_Creator:
+		{
+			format = "meta_creator";
+			break;
+		}	
+		case fd_Field::FD_Meta_Subject:
+		{
+			format = "meta_subject";
+			break;
+		}	
+		case fd_Field::FD_Meta_Publisher:
+		{
+			format = "meta_publisher";
+			break;
+		}	
+		case fd_Field::FD_Meta_Date:
+		{
+			format = "meta_date";
+			break;
+		}	
+		case fd_Field::FD_Meta_Keywords:
+		{
+			format = "meta_keywords";
+			break;
+		}	
+		case fd_Field::FD_Meta_Description:
+		{
+			format = "meta_comments";
+			break;
+		}
+
 		//TODO: more to come here	
 		default:
 		{ 
@@ -538,6 +619,44 @@ void OXML_Element_Field::setFieldType(const std::string & type)
 		fieldType = fd_Field::FD_Time_AMPM;
 	else if(!type.compare("TIME \\@ \"MM/dd/yy HH:mm:ss am/pm\""))
 		fieldType = fd_Field::FD_DateTime_Custom;
+
+	//application fields
+	else if(!type.compare("FILENAME \\* MERGEFORMAT"))
+		fieldType = fd_Field::FD_FileName;
+	else if(!type.compare("NAMEOFAPPLICATION \\* MERGEFORMAT"))
+		fieldType = fd_Field::FD_App_ID;
+
+	//number fields
+	else if(!type.compare("PAGE \\* MERGEFORMAT"))
+		fieldType = fd_Field::FD_PageNumber;
+	else if(!type.compare("NUMPAGES \\* MERGEFORMAT"))
+		fieldType = fd_Field::FD_PageCount;
+	else if(!type.compare("NUMWORDS \\* MERGEFORMAT"))
+		fieldType = fd_Field::FD_Doc_WordCount;
+	else if(!type.compare("DOCPROPERTY CHARACTERSWITHSPACES \\* MERGEFORMAT"))
+		fieldType = fd_Field::FD_Doc_CharCount;
+	else if(!type.compare("DOCPROPERTY LINES \\* MERGEFORMAT"))
+		fieldType = fd_Field::FD_Doc_LineCount;
+	else if(!type.compare("DOCPROPERTY PARAGRAPHS \\* MERGEFORMAT"))
+		fieldType = fd_Field::FD_Doc_ParaCount;
+	else if(!type.compare("NUMCHARS \\* MERGEFORMAT"))
+		fieldType = fd_Field::FD_Doc_NbspCount;
+
+	//meta fields
+	else if(!type.compare("TITLE \\* MERGEFORMAT"))
+		fieldType = fd_Field::FD_Meta_Title;
+	else if(!type.compare("AUTHOR \\* MERGEFORMAT"))
+		fieldType = fd_Field::FD_Meta_Creator;
+	else if(!type.compare("SUBJECT \\* MERGEFORMAT"))
+		fieldType = fd_Field::FD_Meta_Subject;
+	else if(!type.compare("LASTSAVEDBY \\* MERGEFORMAT"))
+		fieldType = fd_Field::FD_Meta_Publisher;
+	else if(!type.compare("SAVEDATE \\@ \"HH:mm:ss am/pm\""))
+		fieldType = fd_Field::FD_Meta_Date;
+	else if(!type.compare("KEYWORDS \\* MERGEFORMAT"))
+		fieldType = fd_Field::FD_Meta_Keywords;
+	else if(!type.compare("COMMENTS \\* MERGEFORMAT"))
+		fieldType = fd_Field::FD_Meta_Description;
 
 	//TODO: more to come here		
 }
