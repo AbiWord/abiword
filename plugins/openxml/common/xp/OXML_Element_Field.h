@@ -37,10 +37,12 @@ class OXML_Element_Field: public OXML_Element
 {
 public:
 	OXML_Element_Field(const std::string & id, fd_Field::FieldType type, const gchar* value);
+	OXML_Element_Field(const std::string & id, const std::string & type, const gchar* value);
 	virtual ~OXML_Element_Field();
 
 	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
 	virtual UT_Error addToPT(PD_Document * pDocument);
+	void setFieldType(const std::string & type); 
 
 private:
 	virtual UT_Error serializeProperties(IE_Exp_OpenXML* exporter);

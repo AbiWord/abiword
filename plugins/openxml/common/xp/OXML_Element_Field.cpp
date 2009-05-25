@@ -33,6 +33,12 @@ OXML_Element_Field::OXML_Element_Field(const std::string & id, fd_Field::FieldTy
 {
 }
 
+OXML_Element_Field::OXML_Element_Field(const std::string & id, const std::string & type, const gchar* value) : 
+	OXML_Element(id, FLD_TAG, FIELD), fieldValue(value)
+{
+	setFieldType(type);
+}
+
 OXML_Element_Field::~OXML_Element_Field()
 {
 
@@ -99,7 +105,7 @@ UT_Error OXML_Element_Field::serialize(IE_Exp_OpenXML* exporter)
 		case fd_Field::FD_Time_MilTime:
 		{
 			format = "DATE \\@ \"HH:mm:ss\"";
-			return UT_OK;
+			break;
 		}	
 		case fd_Field::FD_Time_AMPM:
 		{
@@ -390,8 +396,148 @@ UT_Error OXML_Element_Field::serializeProperties(IE_Exp_OpenXML* /*exporter*/)
 }
 
 
-UT_Error OXML_Element_Field::addToPT(PD_Document * /*pDocument*/)
+UT_Error OXML_Element_Field::addToPT(PD_Document * pDocument)
 {
-	//TODO
-	return UT_OK;
+	const char* format = "";
+	
+	switch(fieldType)
+	{
+		case fd_Field::FD_Time:
+		{
+			format = "time";
+			break;
+		}	
+		case fd_Field::FD_Date:
+		{
+			format = "date";
+			break;
+		}	
+		case fd_Field::FD_Date_MMDDYY:
+		{
+			format = "date_mmddyy";
+			break;
+		}	
+		case fd_Field::FD_Date_DDMMYY:
+		{
+			format = "date_ddmmyy";
+			break;
+		}	
+		case fd_Field::FD_Date_MDY:
+		{
+			format = "date_mdy";
+			break;
+		}	
+		case fd_Field::FD_Date_MthDY:
+		{
+			format = "date_mthdy";
+			break;
+		}	
+		case fd_Field::FD_Date_DFL:
+		{
+			format = "date_dfl"; 
+			break;
+		}	
+		case fd_Field::FD_Date_NTDFL:
+		{
+			format = "date_ntdfl";
+			break;
+		}	
+		case fd_Field::FD_Date_Wkday:
+		{
+			format = "date_wkday";
+			break;
+		}	
+		case fd_Field::FD_Time_MilTime:
+		{
+			format = "time_miltime";
+			break;
+		}	
+		case fd_Field::FD_Time_AMPM:
+		{
+			format = "time_ampm";
+			break;
+		}	
+		case fd_Field::FD_DateTime_Custom:
+		{
+			format = "datetime_custom";
+			break;
+		}
+		//TODO: more to come here	
+		default:
+		{ 
+			//unsupported type, added as a simple text
+			return addChildrenToPT(pDocument);
+		}
+	};
+
+	const gchar *field_fmt[3];
+	field_fmt[0] = "type";
+	field_fmt[1] = format;
+	field_fmt[2] = 0;
+
+	return pDocument->appendObject(PTO_Field, field_fmt) ? UT_OK : UT_ERROR;
+}
+
+void OXML_Element_Field::setFieldType(const std::string & type)
+{
+	fieldType = fd_Field::FD_None;
+	
+	if(!type.compare("DATE"))
+		fieldType = fd_Field::FD_Date;
+	else if(!type.compare("TIME"))
+		fieldType = fd_Field::FD_Time;
+
+	//date fields
+	else if(!type.compare("DATE \\@ \"dddd MMMM dd, yyyy\""))
+		fieldType = fd_Field::FD_Date;
+	else if(!type.compare("DATE \\@ \"MM/dd/yy\""))
+		fieldType = fd_Field::FD_Date_MMDDYY;
+	else if(!type.compare("DATE \\@ \"dd/MM/yy\""))
+		fieldType = fd_Field::FD_Date_DDMMYY;
+	else if(!type.compare("DATE \\@ \"MMMM d, yyyy\""))
+		fieldType = fd_Field::FD_Date_MDY;
+	else if(!type.compare("DATE \\@ \"MMM d, yyyy\""))
+		fieldType = fd_Field::FD_Date_MthDY;
+	else if(!type.compare("DATE \\@ \"ddd dd MMM yyyy HH:mm:ss am/pm\""))
+		fieldType = fd_Field::FD_Date_DFL;
+	else if(!type.compare("DATE \\@ \"MM/dd/yyyy\""))
+		fieldType = fd_Field::FD_Date_NTDFL;
+	else if(!type.compare("DATE \\@ \"dddd\""))
+		fieldType = fd_Field::FD_Date_Wkday;
+	else if(!type.compare("DATE \\@ \"HH:mm:ss am/pm\""))
+		fieldType = fd_Field::FD_Time;
+	else if(!type.compare("DATE \\@ \"HH:mm:ss\""))
+		fieldType = fd_Field::FD_Time_MilTime;
+	else if(!type.compare("DATE \\@ \"am/pm\""))
+		fieldType = fd_Field::FD_Time_AMPM;
+	else if(!type.compare("DATE \\@ \"MM/dd/yy HH:mm:ss am/pm\""))
+		fieldType = fd_Field::FD_DateTime_Custom;
+
+	//time fields
+	else if(!type.compare("TIME \\@ \"dddd MMMM dd, yyyy\""))
+		fieldType = fd_Field::FD_Date;
+	else if(!type.compare("TIME \\@ \"MM/dd/yy\""))
+		fieldType = fd_Field::FD_Date_MMDDYY;
+	else if(!type.compare("TIME \\@ \"dd/MM/yy\""))
+		fieldType = fd_Field::FD_Date_DDMMYY;
+	else if(!type.compare("TIME \\@ \"MMMM d, yyyy\""))
+		fieldType = fd_Field::FD_Date_MDY;
+	else if(!type.compare("TIME \\@ \"MMM d, yyyy\""))
+		fieldType = fd_Field::FD_Date_MthDY;
+	else if(!type.compare("TIME \\@ \"ddd dd MMM yyyy HH:mm:ss am/pm\""))
+		fieldType = fd_Field::FD_Date_DFL;
+	else if(!type.compare("TIME \\@ \"MM/dd/yyyy\""))
+		fieldType = fd_Field::FD_Date_NTDFL;
+	else if(!type.compare("TIME \\@ \"dddd\""))
+		fieldType = fd_Field::FD_Date_Wkday;
+	else if(!type.compare("TIME \\@ \"HH:mm:ss am/pm\""))
+		fieldType = fd_Field::FD_Time;
+	else if(!type.compare("TIME \\@ \"HH:mm:ss\""))
+		fieldType = fd_Field::FD_Time_MilTime;
+	else if(!type.compare("TIME \\@ \"am/pm\""))
+		fieldType = fd_Field::FD_Time_AMPM;
+	else if(!type.compare("TIME \\@ \"MM/dd/yy HH:mm:ss am/pm\""))
+		fieldType = fd_Field::FD_DateTime_Custom;
+
+	//TODO: more to come here		
 }
