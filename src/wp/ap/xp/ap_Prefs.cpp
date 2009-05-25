@@ -163,8 +163,13 @@ void AP_Prefs::overlaySystemPrefs(void)
 	UT_String path;
 	while(*items) {
 	    const char * item = *items++;
-	    if (XAP_App::getApp()->findAbiSuiteAppFile(path,item))
-		loadSystemDefaultPrefsFile(path.c_str());
+#ifdef _MSC_VER
+		const char* subdir = "profiles";
+#else
+		const char* subdir = NULL;
+#endif
+	    if (XAP_App::getApp()->findAbiSuiteAppFile(path, item, subdir))
+			loadSystemDefaultPrefsFile(path.c_str());
 	};
 }
 
