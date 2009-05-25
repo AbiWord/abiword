@@ -42,9 +42,9 @@ SectionEnd
 Section "$(TITLE_section_toolsplugins_abicollab)" section_toolsplugins_abicollab
 	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
 	SetOutPath $INSTDIR\bin
-	File "libsoup-2.4-1.dll"
-	File "libgcrypt-11.dll"
-	File "libgnutls-26.dll"
+	File "${ABIWORD_COMPILED_PATH}\bin\libsoup-2.4-1.dll"
+	File "${ABIWORD_COMPILED_PATH}\bin\libgcrypt-11.dll"
+	File "${ABIWORD_COMPILED_PATH}\bin\libgnutls-26.dll"
 	
 	SetOutPath $INSTDIR\plugins
 	File "${ABIWORD_COMPILED_PATH}\plugins\PluginCollab.dll"
@@ -72,10 +72,10 @@ Section "$(TITLE_section_toolsplugins_grammar)" section_toolsplugins_grammar
 	SectionIn ${FULLSECT} ${FULLASSOCSECT} ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
 	
 	SetOutPath $INSTDIR\bin
-	File "liblink-grammar-4.dll"
-	File "libgnurx-0.dll"
-	SetOutPath $INSTDIR\bin\en
-	File /r "en\*"
+	File "${ABIWORD_COMPILED_PATH}\bin\liblink-grammar-4.dll"
+	File "${ABIWORD_COMPILED_PATH}\bin\libgnurx-0.dll"
+	;SetOutPath $INSTDIR\bin\en
+	;File /r "en\*"
 	
 	SetOutPath $INSTDIR\plugins
 	File "${ABIWORD_COMPILED_PATH}\plugins\PluginGrammar.dll"
@@ -89,7 +89,7 @@ SectionEnd
 	Delete "$INSTDIR\plugins\PluginGrammar.dll"
 	Delete "$INSTDIR\bin\liblink-grammar-4.dll"
 	Delete "$INSTDIR\bin\libgnurx-0.dll"
-	RMDir /r "$INSTDIR\bin\en\"
+	;RMDir /r "$INSTDIR\bin\en\"
 !macroend
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -97,7 +97,7 @@ SectionEnd
 Section "$(TITLE_section_toolsplugins_urldict)" section_toolsplugins_urldict
 	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
 	SetOutPath $INSTDIR\plugins
-	File "..\plugins\PluginUrldict.dll"
+	File "${ABIWORD_COMPILED_PATH}\plugins\PluginUrldict.dll"
 SectionEnd
 
 !macro Remove_${section_toolsplugins_urldict}

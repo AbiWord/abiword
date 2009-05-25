@@ -216,7 +216,7 @@ SubSection /e "$(TITLE_ssection_loadplugins)" ssection_loadplugins
 Section "$(TITLE_section_impexpplugins_opml)" section_impexpplugins_opml
 	SectionIn ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
 	SetOutPath $INSTDIR\plugins
-	File "${ABIWORD_COMPILED_PATH}\plugins\PluginsOpml.dll"
+	File "${ABIWORD_COMPILED_PATH}\plugins\PluginOpml.dll"
 SectionEnd
 
 !macro Remove_${section_impexpplugins_opml}

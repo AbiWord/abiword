@@ -452,7 +452,7 @@ SubSectionEnd ; helper files
 
   ; Tools plugins
   ${MarkSubSectionStart} "*** ssection_toolsplugins:"
-  !insertmacro "${MacroName}" "section_toolsplugins_mathview"
+  ;!insertmacro "${MacroName}" "section_toolsplugins_mathview"
   !insertmacro "${MacroName}" "section_toolsplugins_abicollab"
   !insertmacro "${MacroName}" "section_toolsplugins_grammar"
   !insertmacro "${MacroName}" "section_toolsplugins_urldict"
@@ -460,7 +460,7 @@ SubSectionEnd ; helper files
   !insertmacro "${MacroName}" "section_toolsplugins_wikipedia"
   !insertmacro "${MacroName}" "section_toolsplugins_babelfish"
   !insertmacro "${MacroName}" "section_toolsplugins_freetranslation"
-  !insertmacro "${MacroName}" "section_toolsplugins_scripthappy"
+  ;!insertmacro "${MacroName}" "section_toolsplugins_scripthappy"
   
   ; Imp/exp plugins
   ${MarkSubSectionStart} "*** ssection_impexpplugins:"
@@ -470,14 +470,14 @@ SubSectionEnd ; helper files
   !insertmacro "${MacroName}" "section_impexpplugins_docbook"
   !insertmacro "${MacroName}" "section_impexpplugins_officeopenxml"
   !insertmacro "${MacroName}" "section_impexpplugins_opendocument"
-  !insertmacro "${MacroName}" "section_impexpplugins_openwriter"
+  ;!insertmacro "${MacroName}" "section_impexpplugins_openwriter"
   !insertmacro "${MacroName}" "section_impexpplugins_iscii_text"
   !insertmacro "${MacroName}" "section_impexpplugins_eml"
-  !insertmacro "${MacroName}" "section_impexpplugins_palmdoc"
+  ;!insertmacro "${MacroName}" "section_impexpplugins_palmdoc"
   !insertmacro "${MacroName}" "section_impexpplugins_wml"
   !insertmacro "${MacroName}" "section_impexpplugins_xslfo"
 
-  !insertmacro "${MacroName}" "section_impexpplugins_mswrite"
+  ;!insertmacro "${MacroName}" "section_impexpplugins_mswrite"
   !insertmacro "${MacroName}" "section_impexpplugins_opml"
   !insertmacro "${MacroName}" "section_impexpplugins_sdw"
   !insertmacro "${MacroName}" "section_impexpplugins_t602"
