@@ -42,6 +42,8 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	void                    underlineChanged(void);
 	void                    overlineChanged(void);
+	void                    subscriptChanged(void);
+	void                    superscriptChanged(void);
 	void                    strikeoutChanged(void);
 	void                    hiddenChanged(void);
 	void                    transparencyChanged(void);
@@ -60,8 +62,12 @@ public:
 	GtkWidget * 			m_checkStrikeOut;
 	GtkWidget *				m_checkUnderline;
 	GtkWidget *				m_checkOverline;
-	GtkWidget *                             m_checkHidden;
+	GtkWidget *				m_checkHidden;
 	GtkWidget *				m_checkTransparency;
+	GtkWidget *				m_checkSubScript;
+	guint					m_iSubScriptId;
+	GtkWidget *				m_checkSuperScript;
+	guint					m_iSuperScriptId;
 	GtkWidget *				m_colorSelector;
 	GtkWidget *				m_bgcolorSelector;
 	GtkWidget * 			m_preview;

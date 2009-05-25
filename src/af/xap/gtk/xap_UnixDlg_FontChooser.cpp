@@ -140,6 +140,10 @@ XAP_UnixDialog_FontChooser::XAP_UnixDialog_FontChooser(XAP_DialogFactory * pDlgF
 	m_checkOverline = NULL;
 	m_checkHidden = NULL;
 	m_checkTransparency = NULL;
+	m_checkSubScript = NULL;
+	m_iSubScriptId = 0;
+	m_checkSuperScript = NULL;
+	m_iSuperScriptId = 0;
 	m_colorSelector = NULL;
 	m_bgcolorSelector = NULL;
 	m_preview = NULL;
@@ -225,6 +229,18 @@ static void s_overline_toggled(GtkWidget * ,  XAP_UnixDialog_FontChooser * dlg)
 }
 
 
+static void s_subscript_toggled(GtkWidget * ,  XAP_UnixDialog_FontChooser * dlg) 
+{ 
+    dlg->subscriptChanged(); 
+} 
+ 
+ 
+static void s_superscript_toggled(GtkWidget * ,  XAP_UnixDialog_FontChooser * dlg) 
+{ 
+    dlg->superscriptChanged(); 
+} 
+ 
+ 
 static void s_strikeout_toggled(GtkWidget * ,  XAP_UnixDialog_FontChooser * dlg)
 {
 	dlg->strikeoutChanged();
@@ -269,6 +285,46 @@ void XAP_UnixDialog_FontChooser::overlineChanged(void)
 	updatePreview();
 }
 
+ 
+void XAP_UnixDialog_FontChooser::subscriptChanged(void) 
+{ 
+    m_bSubScript = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkSubScript)); 
+    m_bChangedSubScript = !m_bChangedSubScript; 
+    if (m_bSubScript)
+	{
+		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkSuperScript)))
+		{
+			g_signal_handler_block(G_OBJECT(m_checkSuperScript), m_iSuperScriptId);
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkSuperScript), false);
+			g_signal_handler_unblock(G_OBJECT(m_checkSuperScript), m_iSuperScriptId);
+			m_bChangedSuperScript = !m_bChangedSuperScript;
+			setSuperScript(false);
+		}
+	}
+    setSubScript(m_bSubScript); 
+    updatePreview(); 
+} 
+ 
+void XAP_UnixDialog_FontChooser::superscriptChanged(void) 
+{ 
+    m_bSuperScript = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkSuperScript)); 
+    m_bChangedSuperScript = !m_bChangedSuperScript; 
+    if (m_bSuperScript)
+	{
+		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkSubScript)))
+		{
+			g_signal_handler_block(G_OBJECT(m_checkSubScript), m_iSubScriptId);
+    		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkSubScript), false);
+			g_signal_handler_unblock(G_OBJECT(m_checkSubScript), m_iSubScriptId);
+			m_bChangedSubScript = !m_bChangedSubScript;
+			setSubScript(false);
+		}
+	}
+    setSuperScript(m_bSuperScript); 
+    updatePreview(); 
+} 
+ 
+ 
 void XAP_UnixDialog_FontChooser::hiddenChanged(void)
 {
 	m_bHidden = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkHidden));
@@ -434,11 +490,15 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	GtkWidget *listFonts;
 	GtkWidget *labelSize;
 	GtkWidget *frameEffects;
+	GtkWidget *vboxEffectRows;
 	GtkWidget *hboxDecorations;
+	GtkWidget *hboxAdvDecorations;
 	GtkWidget *checkbuttonStrikeout;
 	GtkWidget *checkbuttonUnderline;
 	GtkWidget *checkbuttonOverline;
 	GtkWidget *checkbuttonHidden;
+	GtkWidget *checkbuttonSubscript;
+	GtkWidget *checkbuttonSuperscript;
  	GtkWidget *listStyles;
 	GtkWidget *listSizes;
 	GtkWidget *hbox1;
@@ -621,9 +681,13 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	gtk_widget_show (frameEffects);
 	gtk_box_pack_start(GTK_BOX (vboxmisc), frameEffects, 0,0, 2);
 
+	vboxEffectRows = gtk_vbox_new (FALSE, 0);
+	gtk_widget_show (vboxEffectRows);
+	gtk_container_add (GTK_CONTAINER (frameEffects), vboxEffectRows);
+
 	hboxDecorations = gtk_hbox_new (FALSE, 0);
 	gtk_widget_show (hboxDecorations);
-	gtk_container_add (GTK_CONTAINER (frameEffects), hboxDecorations);
+	gtk_box_pack_start (GTK_BOX (vboxEffectRows), hboxDecorations, FALSE, FALSE, 0);
 
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StrikeoutCheck,s);
 	checkbuttonStrikeout = gtk_check_button_new_with_label (s.utf8_str());
@@ -648,6 +712,24 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	gtk_container_set_border_width (GTK_CONTAINER (checkbuttonHidden), 5);
 	gtk_widget_show (checkbuttonHidden);
 	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonHidden, TRUE, TRUE, 0);
+
+	/* subscript/superscript */
+
+	hboxAdvDecorations = gtk_hbox_new (FALSE, 0);
+	gtk_widget_show (hboxAdvDecorations);
+	gtk_box_pack_start (GTK_BOX (vboxEffectRows), hboxAdvDecorations, FALSE, FALSE, 0);
+
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_SubScript,s);
+	checkbuttonSubscript = gtk_check_button_new_with_label (s.utf8_str());
+	gtk_container_set_border_width (GTK_CONTAINER (checkbuttonSubscript), 5);
+	gtk_widget_show (checkbuttonSubscript);
+	gtk_box_pack_start (GTK_BOX (hboxAdvDecorations), checkbuttonSubscript, TRUE, TRUE, 0);
+
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_SuperScript,s);
+	checkbuttonSuperscript = gtk_check_button_new_with_label (s.utf8_str());
+	gtk_container_set_border_width (GTK_CONTAINER (checkbuttonSuperscript), 5);
+	gtk_widget_show (checkbuttonSuperscript);
+	gtk_box_pack_start (GTK_BOX (hboxAdvDecorations), checkbuttonSuperscript, TRUE, TRUE, 0);
 
 	/* Notebook page for ForeGround Color Selector */
 
@@ -728,6 +810,8 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	m_checkStrikeOut = checkbuttonStrikeout;
 	m_checkUnderline = checkbuttonUnderline;
 	m_checkOverline = checkbuttonOverline;
+	m_checkSubScript = checkbuttonSubscript;
+	m_checkSuperScript = checkbuttonSuperscript;
 	m_checkHidden = checkbuttonHidden;
 	m_checkTransparency = checkbuttonTrans;
 
@@ -752,6 +836,15 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 					   G_CALLBACK(s_hidden_toggled),
 					   static_cast<gpointer>(this));
 
+	m_iSubScriptId = g_signal_connect(G_OBJECT(m_checkSubScript),
+					   "toggled",
+					   G_CALLBACK(s_subscript_toggled),
+					   static_cast<gpointer>(this));
+
+	m_iSuperScriptId = g_signal_connect(G_OBJECT(m_checkSuperScript),
+					   "toggled",
+					   G_CALLBACK(s_superscript_toggled),
+					   static_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_checkTransparency),
 					   "toggled",
@@ -997,12 +1090,16 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	m_bChangedUnderline = m_bUnderline;
 	m_bChangedOverline = m_bOverline;
 	m_bChangedHidden = m_bHidden;
+	m_bChangedSubScript = m_bSubScript;
+	m_bChangedSuperScript = m_bSuperScript;
 
 	// set the strikeout, underline, overline, and hidden check buttons
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkStrikeOut), m_bStrikeout);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkUnderline), m_bUnderline);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkOverline), m_bOverline);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkHidden), m_bHidden);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkSubScript), m_bSubScript);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkSuperScript), m_bSuperScript);
 
 	m_doneFirstFont = true;
 
@@ -1043,14 +1140,17 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	// and this variable needs to get set back
 	m_doneFirstFont = false;
 
-	UT_DEBUGMSG(("FontChooserEnd: Family[%s%s] Size[%s%s] Weight[%s%s] Style[%s%s] Color[%s%s] Underline[%d%s] StrikeOut[%d%s]\n",
+	UT_DEBUGMSG(("FontChooserEnd: Family[%s%s] Size[%s%s] Weight[%s%s] Style[%s%s] Color[%s%s] Underline[%d%s] StrikeOut[%d%s] SubScript[%d%s] SuperScript[%d%s]\n",
 				 getVal("font-family").c_str(),			((m_bChangedFontFamily) ? "(chg)" : ""),
 				 getVal("font-size").c_str(),			((m_bChangedFontSize) ? "(chg)" : ""),
 				 getVal("font-weight").c_str(),			((m_bChangedFontWeight) ? "(chg)" : ""),
 				 getVal("font-style").c_str(),			((m_bChangedFontStyle) ? "(chg)" : ""),
 				 getVal("color").c_str(),				((m_bChangedColor) ? "(chg)" : ""),
 				 m_bUnderline,							((m_bChangedUnderline) ? "(chg)" : ""),
-				 m_bStrikeout,							((m_bChangedStrikeOut) ? "(chg)" : "")));
+				 m_bStrikeout,							((m_bChangedStrikeOut) ? "(chg)" : ""),
+				 m_checkSubScript,						((m_bChangedSubScript) ? "(chg)" : ""),
+				 m_checkSuperScript,					((m_bChangedSuperScript) ? "(chg)" : "")
+	            ));
 
 	// answer should be set by the appropriate callback
 	// the caller can get the answer from getAnswer().

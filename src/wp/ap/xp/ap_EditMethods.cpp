@@ -7862,28 +7862,30 @@ UT_return_val_if_fail(pDialog, false);
 			else
 			{
 				props_out[k++] = "text-position";
-				props_out[k++] ="";
+				props_out[k++] = "";
 			}
 		}
 		
 		bool bSubScript = false;
 		bool bChangedSubScript = pDialog->getChangedSubScript(&bSubScript);
 
-		if (bChangedSubScript)
+		if (!(bChangedSuperScript && bSuperScript)) /* skip setting subscript if we just enabled superscript */
 		{
-			if(bSubScript)
+			if (bChangedSubScript)
 			{
-				props_out[k++] = "text-position";
-				props_out[k++] = "subscript";
+				if(bSubScript)
+				{
+					props_out[k++] = "text-position";
+					props_out[k++] = "subscript";
 				
-			}
-			else
-			{
-				props_out[k++] = "text-position";
-				props_out[k++] ="";
+				}
+				else
+				{
+					props_out[k++] = "text-position";
+					props_out[k++] = "";
+				}
 			}
 		}
-
 
 		props_out[k] = 0;						// put null after last pair.
 		UT_return_val_if_fail (k < G_N_ELEMENTS(props_out), false);
