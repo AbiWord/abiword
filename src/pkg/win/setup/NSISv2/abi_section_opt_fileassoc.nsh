@@ -8,7 +8,7 @@
 !include "abi_util_fileassoc.nsh"
 
 ; Application entry for all types registered to AbiWord
-!define appType "${APPSET}.${PRODUCT}"
+!define appType "${PRODUCT}"
 
 
 ; OPTIONAL File associations
