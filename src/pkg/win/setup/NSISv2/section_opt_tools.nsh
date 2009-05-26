@@ -53,7 +53,7 @@ Section "$(TITLE_section_toolsplugins_abicollab)" section_toolsplugins_abicollab
 	SetOutPath $INSTDIR\certs
 	File "${ABIWORD_COMPILED_PATH}\certs\cacert.pem"
 	
-	WriteRegStr HKCR ".abicollab" "" "AbiSuite.AbiWord"
+	WriteRegStr HKCR ".abicollab" "" "AbiWord"
 	WriteRegStr HKCR ".abicollab" "Content Type" "application/abiword"
 SectionEnd
 
