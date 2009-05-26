@@ -18,13 +18,14 @@
     ; set default start menu name and where we store this value (for uninstallation)
       !define MUI_STARTMENUPAGE_DEFAULTFOLDER "$(SM_PRODUCT_GROUP)"
       !define MUI_STARTMENUPAGE_REGISTRY_ROOT HKLM
-      !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\${APPSET}\${PRODUCT}\v${VERSION_MAJOR}"
+      !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\${PRODUCT}\v${VERSION_MAJOR}"
       !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
       Var STARTMENU_FOLDER     ; holds SM name chosen so we can create it and add shortcuts to it
     ; specify Finish Page settings
       ; prompt to run AbiWord (start with readme.txt)
-      !define MUI_FINISHPAGE_RUN "$INSTDIR\${MAINPROGRAM}"
-      !define MUI_FINISHPAGE_RUN_PARAMETERS  $\"$INSTDIR\readme.abw$\"
+      !define MUI_FINISHPAGE_RUN "$INSTDIR\bin\${MAINPROGRAM}"
+      ; we don't seem to have a readme anymore
+      ;!define MUI_FINISHPAGE_RUN_PARAMETERS  $\"$INSTDIR\readme.abw$\"
       ; or uncomment to allow viewing readme with default text editor
       ;!define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\readme.txt"
       ; force user to close so they can see install done & not start readme
@@ -34,7 +35,7 @@
 
     ;Remember the installer language
     !define MUI_LANGDLL_REGISTRY_ROOT "HKLM"
-    !define MUI_LANGDLL_REGISTRY_KEY "Software\${APPSET}\${PRODUCT}\v${VERSION_MAJOR}"
+    !define MUI_LANGDLL_REGISTRY_KEY "Software\${PRODUCT}\v${VERSION_MAJOR}"
     !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
 
     ;Custom help
