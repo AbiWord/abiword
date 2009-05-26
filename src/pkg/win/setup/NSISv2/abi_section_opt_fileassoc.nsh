@@ -18,7 +18,7 @@ Section "" section_fa_shellupdate_inv ; invisible section that sets up general a
   SectionIn ${TYPICALSECT} ${FULLSECT} ${FULLASSOCSECT} ${MINIMALSECT} ${DLSECT}
 
   ; Write the application generic file association keys (define app and how to run it)
-  ;CreateApplicationAssociation ApplicationSuite.FileType AppName AppDesc DefIcon ExeCmd
+  ;CreateApplicationAssociation FileType AppName AppDesc DefIcon ExeCmd
   ${CreateApplicationAssociation} "${appType}" "${PRODUCT}" "${PRODUCT} Document" \
                                   "$INSTDIR\bin\${MAINPROGRAM},1" "$INSTDIR\bin\${MAINPROGRAM}"
 SectionEnd
