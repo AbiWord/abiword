@@ -10,24 +10,6 @@
 ; Include user settable values (compile time options)
 !include "abi_options.nsh"
 
-; Some checks of user defines
-!ifdef NODOWNLOADS & OPT_CRTL_URL
-!warning "OPT_CRTL_URL and NODOWNLOADS both defined, ignoring OPT_CRTL_URL"
-!undef OPT_CRTL_URL
-!endif
-!ifdef OPT_CRTL_URL & OPT_CRTL_LOCAL
-!warning "OPT_CRTL_URL and OPT_CRTL_LOCAL should not both be defined"
-!warning "disabling OPT_CRTL_URL and using OPT_CRTL_LOCAL"
-!undef OPT_CRTL_URL
-!endif
-
-; Print out GPL warning
-!ifdef OPT_CRTL_LOCAL
-!warning "Including a non-GPL compatibly licensed Runtime is probably a violation of GPL!"
-!warning "Do NOT distribute installers that included Microsoft's (R) C Runtime DLL!"
-!endif
-
-
 ; set application defines, i.e. app name/main executable name/...
 !include "abi_appdef.nsh"
 
@@ -204,6 +186,12 @@ Section "" section_abi
 		File "${ABIWORD_COMPILED_PATH}\bin\libwv-1-2-3.dll"
 		File "${ABIWORD_COMPILED_PATH}\bin\zlib1.dll"
 	${EndIf}
+	
+	; install the msvc redistributable; yes, we are allowed
+	; to ship this:
+	File "${NSIS_SCRIPT_PATH}\vcredist_x86.exe"
+	ExecWait '"$INSTDIR\bin\vcredist_x86.exe" /q:a /c:"VCREDI~1.EXE /q:a /c:""msiexec /i vcredist.msi /qb!"" "'
+	Delete "$INSTDIR\bin\vcredist_x86.exe"
 SectionEnd
 !macro Remove_${section_abi}
 	;Removes this component
@@ -387,9 +375,6 @@ SubSection /e "$(TITLE_ssection_helper_files)" ssection_helper_files
 
 ; optional clipart section
 !include "abi_section_opt_clipart.nsh"
-
-; optional sections for redistributable compontents, e.g. CRTL dll
-!include "abi_section_opt_redist.nsh"
 
 ; optional sections for dictionaries
 !include "abi_section_opt_dictionaries.nsh"
