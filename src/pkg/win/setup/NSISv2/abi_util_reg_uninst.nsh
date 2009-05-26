@@ -48,7 +48,7 @@ ${WRSU} "InstallLocation" "$INSTDIR"
 ; DisplayIcon (string) - Path, filename and index of of the icon that will be displayed next to your application name
 ; Publisher (string) - (Company) name of the publisher
 
-${WRSU} "DisplayIcon" "$INSTDIR\${MAINPROGRAM},2"
+${WRSU} "DisplayIcon" "$INSTDIR\bin\${MAINPROGRAM},2"
 ${WRSU} "Publisher" "AbiSource Developers"
 
 ; ModifyPath (string) - Path and filename of the application modify program
