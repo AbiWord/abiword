@@ -148,7 +148,7 @@ bool AD_Document::isOrigUUID(void) const
   return b;
 }
 
-bool AD_Document::isPieceTableChanging(void)
+bool AD_Document::isPieceTableChanging(void) const
 {
         return m_bPieceTableChanging;
 }
@@ -269,7 +269,7 @@ void AD_Document::addRecordToHistory(const AD_VersionData &vd)
 /*!
     Get the version number for n-th record in version history
 */
-UT_uint32 AD_Document::getHistoryNthId(UT_uint32 i)const
+UT_uint32 AD_Document::getHistoryNthId(UT_sint32 i)const
 {
 	if(!m_vHistory.getItemCount())
 		return 0;
@@ -282,7 +282,7 @@ UT_uint32 AD_Document::getHistoryNthId(UT_uint32 i)const
 	return v->getId();
 }
 
-UT_uint32 AD_Document::getHistoryNthTopXID(UT_uint32 i)const
+UT_uint32 AD_Document::getHistoryNthTopXID(UT_sint32 i)const
 {
 	if(!m_vHistory.getItemCount())
 		return 0;
@@ -299,7 +299,7 @@ UT_uint32 AD_Document::getHistoryNthTopXID(UT_uint32 i)const
     Get time stamp for n-th record in version history
     NB: the time stamp represents the last save time
 */
-time_t AD_Document::getHistoryNthTime(UT_uint32 i)const
+time_t AD_Document::getHistoryNthTime(UT_sint32 i)const
 {
 	if(!m_vHistory.getItemCount())
 		return 0;
@@ -312,7 +312,7 @@ time_t AD_Document::getHistoryNthTime(UT_uint32 i)const
 	return v->getTime();
 }
 
-time_t AD_Document::getHistoryNthTimeStarted(UT_uint32 i)const
+time_t AD_Document::getHistoryNthTimeStarted(UT_sint32 i)const
 {
 	if(!m_vHistory.getItemCount())
 		return 0;
@@ -325,7 +325,7 @@ time_t AD_Document::getHistoryNthTimeStarted(UT_uint32 i)const
 	return v->getStartTime();
 }
 
-bool AD_Document::getHistoryNthAutoRevisioned(UT_uint32 i)const
+bool AD_Document::getHistoryNthAutoRevisioned(UT_sint32 i)const
 {
 	if(!m_vHistory.getItemCount())
 		return 0;
@@ -342,7 +342,7 @@ bool AD_Document::getHistoryNthAutoRevisioned(UT_uint32 i)const
 /*!
     Get get cumulative edit time for n-th record in version history
 */
-time_t AD_Document::getHistoryNthEditTime(UT_uint32 i)const
+time_t AD_Document::getHistoryNthEditTime(UT_sint32 i)const
 {
 	if(!m_vHistory.getItemCount() || !m_pUUID)
 		return 0;
@@ -362,7 +362,7 @@ time_t AD_Document::getHistoryNthEditTime(UT_uint32 i)const
 /*!
     Get the UID for n-th record in version history
 */
-const UT_UUID & AD_Document::getHistoryNthUID(UT_uint32 i) const
+const UT_UUID & AD_Document::getHistoryNthUID(UT_sint32 i) const
 {
 	if(!m_vHistory.getItemCount())
 		return UT_UUID::getNull();
@@ -443,7 +443,7 @@ AD_HISTORY_STATE AD_Document::verifyHistoryState(UT_uint32 &iVersion) const
 	AD_HISTORY_STATE eRet = ADHIST_FULL_RESTORE; // be optimistic
 
 	const AD_VersionData * v = NULL;
-	UT_uint32 i;
+	UT_sint32 i;
 	bool bFullRestore = false;
 	bool bFound = false;
 	
@@ -523,7 +523,7 @@ AD_HISTORY_STATE AD_Document::verifyHistoryState(UT_uint32 &iVersion) const
 
 const AD_VersionData * AD_Document::findHistoryRecord(UT_uint32 iVersion) const
 {
-	for(UT_uint32 i = 0; i < getHistoryCount(); ++i)
+	for(UT_sint32 i = 0; i < getHistoryCount(); ++i)
 	{
 		const AD_VersionData * v = (const AD_VersionData*)m_vHistory.getNthItem(i);
 

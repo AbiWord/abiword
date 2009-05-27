@@ -192,7 +192,7 @@ public:
 	void			setEncodingName(const char * szEncodingName);
 	const char *	getEncodingName() const;
 
-	bool			isPieceTableChanging(void);
+	bool			isPieceTableChanging(void) const;
 
 	virtual void setMetaDataProp (const UT_String & key, const UT_UTF8String & value) = 0;
 	virtual bool getMetaDataProp (const UT_String & key, UT_UTF8String & outProp) const = 0;
@@ -204,14 +204,14 @@ public:
 	// history tracking
 	void            addRecordToHistory(const AD_VersionData & v);
 	void            purgeHistory();
-	UT_uint32       getHistoryCount()const {return m_vHistory.getItemCount();}
-	UT_uint32       getHistoryNthId(UT_uint32 i)const;
-	time_t          getHistoryNthTime(UT_uint32 i)const;
-	time_t          getHistoryNthTimeStarted(UT_uint32 i)const;
-	time_t          getHistoryNthEditTime(UT_uint32 i)const;
-	const UT_UUID&  getHistoryNthUID(UT_uint32 i)const;
-	bool            getHistoryNthAutoRevisioned(UT_uint32 i)const;
-	UT_uint32       getHistoryNthTopXID(UT_uint32 i)const;
+	UT_sint32       getHistoryCount()const {return m_vHistory.getItemCount();}
+	UT_uint32       getHistoryNthId(UT_sint32 i)const;
+	time_t          getHistoryNthTime(UT_sint32 i)const;
+	time_t          getHistoryNthTimeStarted(UT_sint32 i)const;
+	time_t          getHistoryNthEditTime(UT_sint32 i)const;
+	const UT_UUID&  getHistoryNthUID(UT_sint32 i)const;
+	bool            getHistoryNthAutoRevisioned(UT_sint32 i)const;
+	UT_uint32       getHistoryNthTopXID(UT_sint32 i)const;
 
 	AD_HISTORY_STATE       verifyHistoryState(UT_uint32 &iVersion) const;
 	const AD_VersionData * findHistoryRecord(UT_uint32 iVersion) const;
@@ -296,8 +296,6 @@ public:
 
 	void            _purgeRevisionTable();
 	void            _adjustHistoryOnSave();
-	UT_UUID *       _getDocUUID()const {return m_pUUID;};
-	char *			_getFilename(void) const;
 	void			_setFilename(char * name) {FREEP(m_szFilename); m_szFilename = name;}
 	void            _setForceDirty(bool b) {m_bForcedDirty = b;}
 	void            _setPieceTableChanging(bool b) {m_bPieceTableChanging = b;}
