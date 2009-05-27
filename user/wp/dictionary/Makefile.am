@@ -1,1 +1,4 @@
-EXRTRA_DIST=american.hash
+dictionary_DATA = \
+	american.hash
+
+EXRTRA_DIST = $(dictionary_DATA)
