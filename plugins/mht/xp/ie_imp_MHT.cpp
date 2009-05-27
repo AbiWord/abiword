@@ -533,7 +533,7 @@ bool UT_Multipart::append_Quoted (const char * buffer, UT_uint32 length)
 
 	if (length > 78) // shouldn't be
 		{
-			str = (char *) malloc (length + 2);
+			str = (char *) g_try_malloc (length + 2);
 			if (str == 0) return false;
 		}
 	else str = m_b64buffer;
