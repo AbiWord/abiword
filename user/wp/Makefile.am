@@ -1,5 +1,5 @@
 
-SUBDIRS = clipart strings templates
+SUBDIRS = clipart dictionary strings templates
 
 EXTRA_DIST = \
 	$(wp_DATA)
