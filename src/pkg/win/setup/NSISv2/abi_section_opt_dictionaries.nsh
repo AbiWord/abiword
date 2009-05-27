@@ -23,6 +23,9 @@ SectionEnd
 	; remove dictionary
 	Delete "$INSTDIR\dictionary\ispell\american.hash"
 	;Delete "$INSTDIR\dictionary\*.hash"
+	
+	Delete "$INSTDIR\lib\enchant\libenchant_ispell.dll"
+	Delete "$INSTDIR\lib\enchant\libenchant_myspell.dll"
 !macroend
 
 
@@ -37,9 +40,14 @@ SubSectionEnd ; Dictionaries
 	;       so do not actually remove anything that may be necessary
 	;       if subsection is only partially selected
 	DetailPrint "*** ssection_dictionary"
-
-	Delete "$INSTDIR\lib\enchant\libenchant_ispell.dll"
-	Delete "$INSTDIR\lib\enchant\libenchant_myspell.dll"
+	
+	${DeleteDirIfEmpty} "$INSTDIR\lib\enchant"
+	IfFileExists "$INSTDIR\lib\enchant" 0 +2
+	DetailPrint "Unable to remove $INSTDIR\lib\enchant"
+	
+	${DeleteDirIfEmpty} "$INSTDIR\lib"
+	IfFileExists "$INSTDIR\lib" 0 +2
+	DetailPrint "Unable to remove $INSTDIR\lib"
 
 	; attempt to remove dictionary directory, if no more are present
 	${DeleteDirIfEmpty} "$INSTDIR\dictionary\ispell"

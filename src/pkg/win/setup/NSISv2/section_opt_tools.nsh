@@ -84,8 +84,8 @@ Section "$(TITLE_section_toolsplugins_grammar)" section_toolsplugins_grammar
 	SetOutPath $INSTDIR\bin
 	File "${ABIWORD_COMPILED_PATH}\bin\liblink-grammar-4.dll"
 	File "${ABIWORD_COMPILED_PATH}\bin\libgnurx-0.dll"
-	;SetOutPath $INSTDIR\bin\en
-	;File /r "en\*"
+	SetOutPath $INSTDIR\grammar
+	File /r "${ABIWORD_COMPILED_PATH}\grammar\en"
 	
 	SetOutPath $INSTDIR\plugins
 	File "${ABIWORD_COMPILED_PATH}\plugins\PluginGrammar.dll"
@@ -99,7 +99,7 @@ SectionEnd
 	Delete "$INSTDIR\plugins\PluginGrammar.dll"
 	Delete "$INSTDIR\bin\liblink-grammar-4.dll"
 	Delete "$INSTDIR\bin\libgnurx-0.dll"
-	;RMDir /r "$INSTDIR\bin\en\"
+	RMDir /r "$INSTDIR\grammar"
 !macroend
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
