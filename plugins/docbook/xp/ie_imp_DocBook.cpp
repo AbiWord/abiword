@@ -2893,7 +2893,9 @@ void IE_Imp_DocBook :: createList (void)
 
 	/* register it in the vector */
 	if(m_utvTitles.setNthItem((m_iTitleDepth - 1), an, NULL) == -1)
+	{
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+	}
 
 	/* increment the id counter, so that it is unique */
 	m_iCurListID++;

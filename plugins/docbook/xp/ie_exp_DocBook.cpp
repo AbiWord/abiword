@@ -298,7 +298,9 @@ void s_DocBook_Listener :: _closeSection(int sub)
 			_tagOpenClose("para",false);  //we can't have empty sections
 
 		if(_tagTop() != TT_SECTION)
+		{
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		}
 
 		_tagClose(TT_SECTION,"section");
 		m_iSectionDepth--;
@@ -317,7 +319,9 @@ void s_DocBook_Listener :: _closeSectionTitle()
 		return;
 
 	if(_tagTop() != TT_TITLE)
+	{
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+	}
 
 	_tagClose(TT_TITLE,"title",true,false);
 	m_bInTitle = false;
@@ -417,7 +421,9 @@ void s_DocBook_Listener :: _closeChapterTitle (void)
 		return;
 
 	if(_tagTop() != TT_TITLE)
+	{
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+	}
 
 	_tagClose(TT_TITLE,"title",true,false);
 	m_bInTitle = false;
@@ -428,7 +434,9 @@ void s_DocBook_Listener :: _openChapter (PT_AttrPropIndex api)
 	_closeChapter(); // close any open chapters (and sections)
 
 	if(_tagTop() != TT_DOCUMENT)
+	{
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+	}
 
 	_tagOpen(TT_CHAPTER,"chapter");
 	m_bInChapter = true;
