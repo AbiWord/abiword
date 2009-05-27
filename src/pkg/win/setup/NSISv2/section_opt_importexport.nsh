@@ -224,7 +224,7 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of import/export plugin: opml ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\plugins\PluginsOpml.dll"
+	Delete "$INSTDIR\plugins\PluginOpml.dll"
 !macroend
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -147,7 +147,7 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of tool plugin: wikipedia ..."
 
 	; remove plugin and related files
-	Delete "$INSTDIR\plugins\AbiWikipedia.dll"
+	Delete "$INSTDIR\plugins\PluginWikipedia.dll"
 !macroend
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
