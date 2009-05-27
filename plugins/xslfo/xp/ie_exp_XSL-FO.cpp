@@ -107,7 +107,7 @@ UT_Error IE_Exp_XSL_FO::_writeDocument()
 static char *_stripSuffix(const char* from, char delimiter)
 {
 	// taken from DocBook exporter
-	char * fremove_s = (char *)malloc(strlen(from)+1);
+	char * fremove_s = (char *)g_try_malloc(strlen(from)+1);
 	strcpy(fremove_s, from);   
 
 	char * p = fremove_s + strlen(fremove_s);
