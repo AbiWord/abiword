@@ -1189,10 +1189,9 @@ bool EV_Win32Toolbar::getToolTip(LPARAM lParam)
 
 	if (szToolTip && *szToolTip)
 	{
-		// here 'tis
 		UT_Win32LocaleString str;
 		str.fromUTF8 (szToolTip);
-		wcscpy(lpttt->lpszText, str.c_str());
+		wcsncpy(lpttt->lpszText, str.c_str(),80);
 	}
 	else
 	{
