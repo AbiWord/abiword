@@ -5,7 +5,9 @@
 
 SubSection /e "$(TITLE_ssection_dictionary)" ssection_dictionary
 Section "" section_dictionary_required
-; nothing is required atm
+	SetOutPath $INSTDIR\lib\enchant
+	File "${ABIWORD_COMPILED_PATH}\lib\enchant\libenchant_ispell.dll
+	File "${ABIWORD_COMPILED_PATH}\lib\enchant\libenchant_myspell.dlls
 SectionEnd
 
 ; OPTIONAL Installation of Default Dictionary
@@ -36,9 +38,12 @@ SubSectionEnd ; Dictionaries
 	;       if subsection is only partially selected
 	DetailPrint "*** ssection_dictionary"
 
+	Delete "$INSTDIR\lib\enchant\libenchant_ispell.dll
+	Delete "$INSTDIR\lib\enchant\libenchant_myspell.dll
+
 	; attempt to remove dictionary directory, if no more are present
 	${DeleteDirIfEmpty} "$INSTDIR\dictionary\ispell"
 	IfFileExists "$INSTDIR\dictionary\ispell" 0 +2
-		DetailPrint "Unable to remove $INSTDIR\dictionary\ispell"
+	DetailPrint "Unable to remove $INSTDIR\dictionary\ispell"
 	${DeleteDirIfEmpty} "$INSTDIR\dictionary"
 !macroend
