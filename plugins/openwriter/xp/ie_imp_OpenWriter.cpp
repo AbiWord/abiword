@@ -150,7 +150,7 @@ private:
     if (val)
     {
       m_pageAtts[propCtr++] = "orientation";
-      m_pageAtts[propCtr++] = strdup (val);
+      m_pageAtts[propCtr++] = g_strdup (val);
     }
     
     m_pageAtts[propCtr++] = "page-scale";

@@ -363,7 +363,7 @@ void OO_StylesContainer::addBlockStyle(UT_String & styleAtts, UT_String & styleP
    {
       UT_DEBUGMSG(("OO_AccumulatorImpl: block atts of this type: '%s' not yet found, adding style at pos: '%s'\n", styleAtts.c_str(), (styleProps.c_str())));
       UT_String *val = new UT_String(styleAtts);
-      const char *key = strdup(styleProps.c_str());
+      const char *key = g_strdup(styleProps.c_str());
       m_blockAttsHash.insert(key, val);
    }
    else 
