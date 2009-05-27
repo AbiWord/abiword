@@ -233,6 +233,22 @@ AC_ARG_ENABLE([vi-keybinding],
 	abi_cv_vi_keybinding="yes"
 ])
 
+AC_ARG_ENABLE([clipart], 
+	[AS_HELP_STRING([--enable-clipart], [Install clipart])], 
+[
+	abi_cv_clipart="$enableval"
+], [
+	abi_cv_clipart="no"
+])
+
+AC_ARG_ENABLE([templates], 
+	[AS_HELP_STRING([--enable-templates], [Install templates])], 
+[
+	abi_cv_templates="$enableval"
+], [
+	abi_cv_templates="no"
+])
+
 # We define EMBEDDED_TARGET to a numerical value so that we can do like
 # #if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #
@@ -669,6 +685,9 @@ if test "$abi_cv_vi_keybinding" == "yes"; then
 fi
 AM_CONDITIONAL(ENABLE_VI_KEYBINDING, test "$abi_cv_vi_keybinding" == "yes")
 
+AM_CONDITIONAL(ENABLE_CLIPART, test "$abi_cv_clipart" == "yes")
+AM_CONDITIONAL(ENABLE_TEMPLATES, test "$abi_cv_templates" == "yes")
+
 if test "$abi_cv_debug" == "yes"; then
 	AC_DEFINE([DEBUG], [1], [Define to enable debugging functionality])
 else
@@ -849,6 +868,8 @@ Optional features:
   status bar            ${abi_cv_statusbar}
   emacs keybinding      ${abi_cv_emacs_keybinding}
   vi keybinding         ${abi_cv_vi_keybinding}
+  clipart               ${abi_cv_clipart}
+  templates             ${abi_cv_templates}
 
 Optional dependencies:
   gtk2 > 2.14           ${abi_cv_gtk214}
