@@ -178,9 +178,11 @@ bool	IE_Imp_MSWrite_Sniffer::getDlgLabels(const char ** pszDesc,
 void IE_Imp_MSWrite::free_ffntb () 
 {
     for (UT_uint32 i=0; i < wri_fonts_count; i++) {
-      FREEP(wri_fonts[i].name);
+      free(wri_fonts[i].name);
+      wri_fonts[i].name = NULL;
     }
-    FREEP(wri_fonts);
+    free(wri_fonts);
+    wri_fonts = NULL;
 }
 
 int IE_Imp_MSWrite::read_ffntb () 
