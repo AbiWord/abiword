@@ -27,4 +27,4 @@
 ; make some variables to be able to adapt to changing directory locations easier
 !define NSIS_SCRIPT_PATH ".."
 !define ABIWORD_MODULE_PATH "..\..\..\..\.."
-!define ABIWORD_COMPILED_PATH "..\..\..\..\..\abiword-msvc2008\Release"
+!define ABIWORD_COMPILED_PATH "..\..\..\..\..\msvc2008\Release"
