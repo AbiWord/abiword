@@ -219,7 +219,7 @@ bool FakeAccountHandler::_loadDocument(UT_UTF8String* pForceSessionId)
 	// create a new documenyt to replay our recorded session in
 	UT_return_val_if_fail(AbiCollabSessionManager::deserializeDocument(&m_pDoc, jsrre.m_sZABW, false) == UT_OK, false);
 	UT_return_val_if_fail(m_pDoc, false);
-	m_pDoc->setFilename(strdup("void"));
+	m_pDoc->setFilename(g_strdup("void"));
 	
 	if (m_bLocallyControlled)
 	{
