@@ -159,7 +159,7 @@ s_WML_Listener::~s_WML_Listener()
 
 static char *_stripSuffix(const char* from, char delimiter)
 {
-    char * fremove_s = static_cast<char *>(malloc(strlen(from)+1));
+    char * fremove_s = static_cast<char *>(g_try_malloc(strlen(from)+1));
     strcpy(fremove_s, from);
 
     char * p = fremove_s + strlen(fremove_s);
