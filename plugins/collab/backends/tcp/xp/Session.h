@@ -84,7 +84,7 @@ public:
 		bool writeInProgress = outgoing.size() > 0;
 
 		// FIXME: inefficient memory copy
-		char* store_data = reinterpret_cast<char*>(malloc(size));
+		char* store_data = reinterpret_cast<char*>(g_malloc(size));
 		memcpy(store_data, data, size);
 		outgoing.push_back(std::pair<int, char*>(size, store_data));
 
@@ -154,7 +154,7 @@ private:
 		
 		UT_DEBUGMSG(("going to read datablock of length: %d\n", packet_size));
 		// now continue reading the packet data
-		packet_data = reinterpret_cast<char*>(malloc(packet_size));
+		packet_data = reinterpret_cast<char*>(g_malloc(packet_size));
 		asio::async_read(socket,
 			asio::buffer(packet_data, packet_size),
 			boost::bind(&Session::asyncReadHandler, this, asio::placeholders::error, asio::placeholders::bytes_transferred));
