@@ -768,8 +768,8 @@ acs::SOAP_ERROR ServiceAccountHandler::_listDocuments(
 	UT_return_val_if_fail(rcp, acs::SOAP_ERROR_GENERIC);
 	
 	// load our own files
-	GetSessionsResponseEvent& gsre = (*sessions_ptr)[email];
-	_parseSessionFiles(rcp->get< soa::Array<soa::GenericPtr> >("files"), gsre);
+	GetSessionsResponseEvent& gsre1 = (*sessions_ptr)[email];
+	_parseSessionFiles(rcp->get< soa::Array<soa::GenericPtr> >("files"), gsre1);
 
 	// load the files from our friends
 	if (soa::ArrayPtr friends_array = rcp->get< soa::Array<soa::GenericPtr> >("friends"))

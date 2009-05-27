@@ -85,7 +85,7 @@ void XMPPUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	gtk_entry_set_text(GTK_ENTRY(port_entry), "5222");	
 }
 
-void XMPPUnixAccountHandler::removeDialogWidgets(void* pEmbeddingParent)
+void XMPPUnixAccountHandler::removeDialogWidgets(void* /*pEmbeddingParent*/)
 {
 	UT_DEBUGMSG(("XMPPUnixAccountHandler::removeDialogWidgets\n"));
 	

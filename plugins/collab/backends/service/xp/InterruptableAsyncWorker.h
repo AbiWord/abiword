@@ -90,15 +90,15 @@ public:
 		return m_cancelled;
 	}
 
-	void progress(uint32_t progress)
+	void progress(uint32_t _progress)
 	{
-		UT_DEBUGMSG(("InterruptableAsyncWorker::_progress_cb() - %d\n", progress));
+		UT_DEBUGMSG(("InterruptableAsyncWorker::_progress_cb() - %d\n", _progress));
 		UT_return_if_fail(m_progressSynchronizerPtr);		
 		
-		if (progress > 100)
-			progress = 100;
+		if (_progress > 100)
+			_progress = 100;
 		
-		m_progress = progress;
+		m_progress = _progress;
 		m_progressSynchronizerPtr->signal();
 	}
 

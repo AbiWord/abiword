@@ -61,8 +61,8 @@ typedef boost::shared_ptr< soa::Array< abicollab::FilePtr > > FileArrayPtr;
 
 class Friend : public soa::Collection {
 public:
-	Friend(const std::string& name)
-		: soa::Collection(name)
+	Friend(const std::string& n)
+		: soa::Collection(n)
 	{}
 
 	static boost::shared_ptr<Friend> construct(soa::GenericPtr value) {
@@ -87,8 +87,8 @@ typedef boost::shared_ptr< soa::Array< FriendPtr > > FriendArrayPtr;
 
 class Group : public soa::Collection {
 public:
-	Group(const std::string& name)
-		: soa::Collection(name)
+	Group(const std::string& n)
+		: soa::Collection(n)
 	{}
 
 	static boost::shared_ptr<Group> construct(soa::GenericPtr value) {

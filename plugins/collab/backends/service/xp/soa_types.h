@@ -53,9 +53,9 @@ enum Type {
 
 class Generic : public boost::enable_shared_from_this<Generic> {
 public:
-	Generic(const std::string& name, Type type)
-		: name_(name),
-		type_(type)
+	Generic(const std::string& n, Type t)
+		: name_(n),
+		type_(t)
 	{}
 
 	virtual ~Generic() {
@@ -79,8 +79,8 @@ public:
 	}
 
 	template <class T>
-	boost::shared_ptr<T> as(const std::string& name) {
-		if (name_ != name)
+	boost::shared_ptr<T> as(const std::string& n) {
+		if (name_ != n)
 			return boost::shared_ptr<T>();
 		return boost::dynamic_pointer_cast<T>(shared_from_this()); 
 	}
@@ -94,8 +94,8 @@ typedef boost::shared_ptr<Generic> GenericPtr;
 template <class T, Type Y>
 class Primitive : public Generic {
 public:
-	Primitive(const std::string& name, T t)
-		: Generic(name, Y),
+	Primitive(const std::string& n, T t)
+		: Generic(n, Y),
 		value_(t)
 	{}
 
@@ -118,8 +118,8 @@ typedef boost::shared_ptr<Bool> BoolPtr;
 
 class Base64Bin : public Generic {
 public:
-	Base64Bin(const std::string& name, boost::shared_ptr<std::string> data)
-		: Generic(name, BASE64BIN_TYPE),
+	Base64Bin(const std::string& n, boost::shared_ptr<std::string> data)
+		: Generic(n, BASE64BIN_TYPE),
 		m_data(data)
 	{}
 	
@@ -137,8 +137,8 @@ typedef boost::shared_ptr<QName> QNamePtr;
 
 class Complex : public Generic {
 public:
-	Complex(const std::string& name, Type t)
-		: Generic(name, t)
+	Complex(const std::string& n, Type t)
+		: Generic(n, t)
 	{}
 
 	virtual bool complex() {
@@ -149,8 +149,8 @@ public:
 template <class T>
 class Array : public Complex {
 public:
-	Array(const std::string& name)
-		: Complex(name, ARRAY_TYPE)
+	Array(const std::string& n)
+		: Complex(n, ARRAY_TYPE)
 	{}
 
 	size_t size() const {
@@ -185,8 +185,8 @@ typedef boost::shared_ptr< Array<GenericPtr> > ArrayPtr;
 
 class Collection : public Complex {
 public:
-	Collection(const std::string& name)
-		: Complex(name, COLLECTION_TYPE)
+	Collection(const std::string& n)
+		: Complex(n, COLLECTION_TYPE)
 	{}
 
 	// TODO: back this by a multimap
@@ -196,9 +196,9 @@ public:
 	}
 
 	template <class T>
-	boost::shared_ptr<T> get(const std::string& name) {
+	boost::shared_ptr<T> get(const std::string& n) {
 		for (std::vector<GenericPtr>::iterator it = values_.begin(); it != values_.end(); it++) {
-			if ((*it)->name() == name) {
+			if ((*it)->name() == n) {
 				return (*it)->as<T>();
 			}
 		}
@@ -206,8 +206,8 @@ public:
 	}
 
 	template <class T>
-	boost::shared_ptr<T> operator[](const std::string& name) {
-		return get<T>(name);
+	boost::shared_ptr<T> operator[](const std::string& n) {
+		return get<T>(n);
 	}
 
 	virtual void add(GenericPtr element) {
@@ -229,8 +229,8 @@ public:
 		: code_(), string_(), detail_() {
 	}
 	
-	SoapFault(QNamePtr code, StringPtr string, StringPtr detail)
-		: code_(code), string_(string), detail_(detail) {
+	SoapFault(QNamePtr c, StringPtr s, StringPtr det)
+		: code_(c), string_(s), detail_(det) {
 	}
 	
 	QNamePtr code() const {

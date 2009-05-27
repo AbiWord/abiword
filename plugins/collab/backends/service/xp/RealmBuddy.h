@@ -37,14 +37,14 @@ class RealmConnection;
 class RealmBuddy : public Buddy , public boost::enable_shared_from_this<RealmBuddy>
 {
 public:
-	RealmBuddy(AccountHandler* handler, uint64_t user_id, const std::string& domain,
-					UT_uint8 realm_connection_id, bool master, boost::shared_ptr<RealmConnection> connection)
+	RealmBuddy(AccountHandler* handler, uint64_t _user_id, const std::string& domain,
+					UT_uint8 realm_conn_id, bool _master, boost::shared_ptr<RealmConnection> conn)
 		: Buddy(handler),
-		m_user_id(user_id),
+		m_user_id(_user_id),
 		m_domain(domain),
-		m_realm_connection_id(realm_connection_id),
-		m_master(master),
-		m_connection(connection)
+		m_realm_connection_id(realm_conn_id),
+		m_master(_master),
+		m_connection(conn)
 	{
 		setVolatile(true);
 	}

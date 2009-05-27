@@ -131,8 +131,8 @@ void Proxy::tls_tunnel_deinit() {
 	gnutls_global_deinit();
 }
 
-Exception::Exception(const std::string& message)
-	: message_(message)
+Exception::Exception(const std::string& msg)
+	: message_(msg)
 {
 }
 	

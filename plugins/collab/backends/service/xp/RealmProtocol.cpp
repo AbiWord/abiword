@@ -37,8 +37,8 @@ PacketPtr Packet::construct(uint8_t type) {
 	return PacketPtr();
 }
 
-Packet::Packet(uint8_t type)
-	: m_type(type)
+Packet::Packet(uint8_t _type)
+	: m_type(_type)
 {}
 
 bool Packet::s_valid(unsigned char type) {

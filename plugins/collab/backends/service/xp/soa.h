@@ -45,9 +45,9 @@ namespace soa {
 
 class function_arg {
 public:
-	function_arg(const std::string& name, Type type)
-		: name_(name),
-		type_(type)
+	function_arg(const std::string& n, Type t)
+		: name_(n),
+		type_(t)
 	{}
 	
 	virtual ~function_arg() {}
@@ -71,8 +71,8 @@ private:
 
 class function_arg_string : public function_arg {
 public:
-	function_arg_string(const std::string& name, const std::string& value)
-		: function_arg(name, STRING_TYPE),
+	function_arg_string(const std::string& n, const std::string& value)
+		: function_arg(n, STRING_TYPE),
 		value_(value)
 	{}
 
@@ -86,8 +86,8 @@ private:
 
 class function_arg_int : public function_arg {
 public:
-	function_arg_int(const std::string& name, int64_t value)
-		: function_arg(name, INT_TYPE),
+	function_arg_int(const std::string& n, int64_t value)
+		: function_arg(n, INT_TYPE),
 		value_(value)
 	{}
 
@@ -105,8 +105,8 @@ private:
 
 class function_arg_bool : public function_arg {
 public:
-	function_arg_bool(const std::string& name, bool value)
-		: function_arg(name, BOOL_TYPE),
+	function_arg_bool(const std::string& n, bool value)
+		: function_arg(n, BOOL_TYPE),
 		value_(value)
 	{}
 
@@ -137,9 +137,9 @@ class function_call {
 public:
 	function_call() {}
 
-	function_call(const std::string& request, const std::string& response)
-		: request_(request),
-		response_(response)
+	function_call(const std::string& req, const std::string& resp)
+		: request_(req),
+		response_(resp)
 	{}
 
 	function_call& operator()(std::string name, const char* value) {

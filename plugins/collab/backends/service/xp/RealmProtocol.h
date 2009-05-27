@@ -86,13 +86,13 @@ public:
 		return m_payload_size;
 	}
 protected:
-	PayloadPacket(uint8_t type, uint32_t min_payload_size, uint32_t payload_size)
-		: Packet(type),
+	PayloadPacket(uint8_t t, uint32_t min_payload_size, uint32_t payload_size)
+		: Packet(t),
 		m_min_payload_size(min_payload_size),
 		m_payload_size(payload_size)
 	{}
-	PayloadPacket(uint8_t type, uint32_t min_payload_size)
-		: Packet(type),
+	PayloadPacket(uint8_t t, uint32_t min_payload_size)
+		: Packet(t),
 		m_min_payload_size(min_payload_size),
 		m_payload_size(0)
 	{}

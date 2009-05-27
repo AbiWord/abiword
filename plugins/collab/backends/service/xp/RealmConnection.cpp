@@ -27,7 +27,7 @@
 namespace rpv1 = realm::protocolv1;
 
 RealmConnection::RealmConnection(const std::string& ca_file, const std::string& address, int port, 
-								 const std::string& cookie, UT_uint64 doc_id, bool master, const std::string& session_id,
+								 const std::string& cookie, UT_uint64 _doc_id, bool _master, const std::string& _session_id,
 								 boost::function<void (boost::shared_ptr<RealmConnection>)> sig)
 	: m_io_service(),
 	m_ca_file(ca_file),
@@ -38,9 +38,9 @@ RealmConnection::RealmConnection(const std::string& ca_file, const std::string& 
 	m_cookie(cookie),
 	m_user_id(0),
 	m_connection_id(0),
-	m_doc_id(doc_id),
-	m_master(master),
-	m_session_id(session_id),
+	m_doc_id(_doc_id),
+	m_master(_master),
+	m_session_id(_session_id),
 	m_pDoc(NULL),
 	m_buf(1024), // always have a reasonable block of free memory available to cut back on the memory allocations a bit,
 	m_packet_queue(boost::bind(&RealmConnection::_signal, this)), // TODO: shouldn't this be a shared pointer? Can't we handle signals in this way while this object has been already deleted? - MARCM
@@ -281,19 +281,19 @@ UserJoinedPacketPtr RealmConnection::_receiveUserJoinedPacket()
 	try {
 		// receive the packet data
 		uint32_t payload_size = 0;
-		uint8_t connection_id = 0;
-		uint8_t master = 0;
+		uint8_t conn_id = 0;
+		uint8_t m = 0;
 
 		boost::array<asio::mutable_buffer, 3> buf = {{
 			asio::buffer(&payload_size, sizeof(payload_size)),
-			asio::buffer(&connection_id, sizeof(connection_id)),
-			asio::buffer(&master, sizeof(master)) }};
+			asio::buffer(&conn_id, sizeof(conn_id)),
+			asio::buffer(&m, sizeof(m)) }};
 		asio::read(m_socket, buf);
 
 		boost::shared_ptr<std::string> userinfo_ptr(new std::string(payload_size - 2, '\0'));
 		asio::read(m_socket, asio::buffer(&(*userinfo_ptr)[0], userinfo_ptr->size()));
 
-		return UserJoinedPacketPtr(new rpv1::UserJoinedPacket(connection_id, static_cast<bool>(master), userinfo_ptr));
+		return UserJoinedPacketPtr(new rpv1::UserJoinedPacket(conn_id, static_cast<bool>(m), userinfo_ptr));
 	} catch (asio::system_error se) {
 		return UserJoinedPacketPtr(); 
 	}
