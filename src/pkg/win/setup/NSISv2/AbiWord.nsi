@@ -147,18 +147,18 @@ Section "" section_abi
 	; Else in normal install mode, we expect it to NOT exist
 	; (where existing is a possible error condition)
 	StrCpy $R0 1	; flag we want to install main program
-	${If} ${FileExists} "$INSTDIR\${PROGRAMEXE}"
+	${If} ${FileExists} "$INSTDIR\bin\${PROGRAMEXE}"
 		${If} $v_modifyinstall == 1 
-			DetailPrint "Modify mode: successfully found $INSTDIR\${PROGRAMEXE}"
+			DetailPrint "Modify mode: successfully found $INSTDIR\bin\${PROGRAMEXE}"
 			StrCpy $R0 0	; skip extraction if already there
 		${Else}
-			DetailPrint "Install mode: Warning found $INSTDIR\${PROGRAMEXE}"
+			DetailPrint "Install mode: Warning found $INSTDIR\bin\${PROGRAMEXE}"
 			MessageBox MB_YESNO "$(PROMPT_OVERWRITE)" /SD IDYES IDYES +2
 				Abort "$(MSG_ABORT)"
 		${EndIf}
 	${Else}	; we need to install the main program
 		${If} $v_modifyinstall == 1 
-			DetailPrint "Modify mode: Warning failed to find $INSTDIR\${PROGRAMEXE}"
+			DetailPrint "Modify mode: Warning failed to find $INSTDIR\bin\${PROGRAMEXE}"
 			MessageBox MB_YESNO "$(PROMPT_NOMAINPROGRAM_CONTINUEANYWAY)" /SD IDYES IDYES +2
 				Abort "$(MSG_ABORT)"
 		${Else}
@@ -279,7 +279,7 @@ Section "" section_abi_req
 		;SetShellVarContext current|all???
 		${lngCreateSMGroup}  "$STARTMENU_FOLDER"
 		SetOutPath $INSTDIR\bin
-		${lngCreateShortCut} "$SMPROGRAMS" "$STARTMENU_FOLDER" "$(SHORTCUT_NAME)" "$INSTDIR\${PROGRAMEXE}" "" "$INSTDIR\${PROGRAMEXE}" 0
+		${lngCreateShortCut} "$SMPROGRAMS" "$STARTMENU_FOLDER" "$(SHORTCUT_NAME)" "$INSTDIR\bin\${PROGRAMEXE}" "" "$INSTDIR\bin\${PROGRAMEXE}" 0
 		SetOutPath $TEMP ; needed for removing the directories on uninstall
 		${lngCreateShortCut} "$SMPROGRAMS" "$STARTMENU_FOLDER" "$(SHORTCUT_NAME_UNINSTALL)" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" "" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" 0
 	!insertmacro MUI_STARTMENU_WRITE_END
