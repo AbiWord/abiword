@@ -23,6 +23,7 @@
 #include "xap_Strings.h"
 #include "xap_Win32DialogBase.h"
 #include "xap_Win32FrameImpl.h"
+#include "ut_Win32LocaleString.h"
 
 void XAP_Win32DialogBase::createModal(XAP_Frame* pFrame, LPCTSTR dlgTemplate)
 {
@@ -414,4 +415,13 @@ BOOL XAP_Win32DialogBase::_callHelp()
 	return TRUE;
 }
 
+
+bool XAP_Win32DialogBase::setDlgItemText(HWND hWnd, int nIDDlgItem,  const char* uft8_str)
+{
+	UT_ASSERT(IsWindow(hWnd));
+	
+	UT_Win32LocaleString str;
+	str.fromUTF8 (uft8_str);
+	return (bool) SetDlgItemTextW (hWnd, nIDDlgItem, str.c_str());
+}
 

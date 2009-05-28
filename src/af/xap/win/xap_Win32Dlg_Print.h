@@ -22,6 +22,7 @@
 
 #include "xap_Dlg_Print.h"
 #include "xap_Frame.h"
+#include "ut_Win32LocaleString.h"
 
 #include <commdlg.h>
 /*****************************************************************/
@@ -52,11 +53,13 @@ protected:
 	void					_extractResults(XAP_Frame *pFrame);
 	
 	PRINTDLG *				m_pPersistPrintDlg;
-	DOCINFO				    m_DocInfo;
+	DOCINFOW				    m_DocInfo;
 	UT_uint32               m_iOrigPrinter;
 	UT_uint32               m_iNewPrinter;
 	bool                    m_bClosed;
-	UT_String				m_docName;
+//	UT_String				m_docName;
+    UT_Win32LocaleString	m_docName;
+	UT_Win32LocaleString	m_fileName;
 };
 
 #endif /* XAP_WIN32DIALOG_PRINT_H */

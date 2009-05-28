@@ -107,16 +107,14 @@ DLGTEMPLATE * WINAPI UT_LockDlgRes(HINSTANCE hinst, LPCTSTR lpszResName)
     The caller must g_free the returned pointer when no longer needed
 */
 
-#ifdef UNICODE
-  #define GETDEFAULTPRINTER "GetDefaultPrinterW"
-#else
-  #define GETDEFAULTPRINTER "GetDefaultPrinterA"
-#endif
 
-char * UT_GetDefaultPrinterName()
+#define GETDEFAULTPRINTER "GetDefaultPrinterW"
+
+
+wchar_t * UT_GetDefaultPrinterName()
 {
 	UT_uint32 iBufferSize = 128; // will become 2x bigger immediately in the loop
-	char * pPrinterName = NULL; 
+	wchar_t * pPrinterName = NULL; 
 	DWORD rc;
 	
 	do
@@ -126,14 +124,14 @@ char * UT_GetDefaultPrinterName()
 		if(pPrinterName)
 			g_free(pPrinterName);
 		
-		pPrinterName = (char *) UT_calloc(sizeof(char),iBufferSize);
+		pPrinterName = (wchar_t *) UT_calloc(sizeof(wchar_t),iBufferSize);
 		UT_return_val_if_fail( pPrinterName, NULL );
 		
 		// the method of obtaining the name is version specific ...
 		OSVERSIONINFO osvi;
 		DWORD iNeeded, iReturned, iBuffSize;
-		LPPRINTER_INFO_5 pPrinterInfo;
-		char* p;
+		LPPRINTER_INFO_5W pPrinterInfo;
+		wchar_t* p;
 
 		osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 		GetVersionEx(&osvi);
@@ -150,7 +148,7 @@ char * UT_GetDefaultPrinterName()
 			}
 
 			// allocate the buffer
-			if ((pPrinterInfo = (LPPRINTER_INFO_5)LocalAlloc(LPTR,iNeeded)) == NULL)
+			if ((pPrinterInfo = (LPPRINTER_INFO_5W)LocalAlloc(LPTR,iNeeded)) == NULL)
 			{
 				rc = GetLastError();
 			}
@@ -167,13 +165,13 @@ char * UT_GetDefaultPrinterName()
 					if (iReturned > 0)
 					{
 						// here we copy the name to our own buffer
-						if ((DWORD) lstrlen(pPrinterInfo->pPrinterName) > iBufferSize-1)
+						if ((DWORD) wcslen(pPrinterInfo->pPrinterName) > iBufferSize-1)
 						{
 							rc = ERROR_INSUFFICIENT_BUFFER;
 						}
 						else
 						{
-							lstrcpy(pPrinterName,pPrinterInfo->pPrinterName);
+							wcscpy(pPrinterName,pPrinterInfo->pPrinterName);
 							rc = ERROR_SUCCESS;
 						}
 					}
@@ -193,12 +191,12 @@ char * UT_GetDefaultPrinterName()
 			{
 				iBuffSize = iBufferSize;
 
-				HMODULE hWinSpool = LoadLibrary("winspool.drv");
+				HMODULE hWinSpool = LoadLibraryW(L"winspool.drv");
 				if (!hWinSpool)
 					return NULL;
 
-				HRESULT (WINAPI * fnGetDefaultPrinter)(LPTSTR, LPDWORD) =
-					(HRESULT (WINAPI * )(LPTSTR, LPDWORD)) GetProcAddress(hWinSpool, GETDEFAULTPRINTER);
+				HRESULT (WINAPI * fnGetDefaultPrinter)(LPWSTR, LPDWORD) =
+					(HRESULT (WINAPI * )(LPWSTR, LPDWORD)) GetProcAddress(hWinSpool, GETDEFAULTPRINTER);
 				
 				if (!fnGetDefaultPrinter)
 				{
@@ -206,7 +204,11 @@ char * UT_GetDefaultPrinterName()
 					return NULL;
 				}
 
+                bool i =false;
 				if (!fnGetDefaultPrinter(pPrinterName,&iBuffSize))
+                        i = true;
+                         
+                if(i)
 					rc = GetLastError();
 				else
 					rc = ERROR_SUCCESS;
@@ -215,14 +217,14 @@ char * UT_GetDefaultPrinterName()
 			}
 			else /* Windows NT 4.0 or earlier */
 			{
-				if (GetProfileString("windows","device","",pPrinterName,iBufferSize) == iBufferSize-1)
+				if (GetProfileStringW(L"windows",L"device",L"",pPrinterName,iBufferSize) == iBufferSize-1)
 				{
 					rc = ERROR_INSUFFICIENT_BUFFER;
 				}
 				else
 				{
 					p = pPrinterName;
-					while (*p != '0' && *p != ',')
+					while (*p != '0' && *p !=L',')
 						++p;
 					*p = '0';
 
@@ -242,7 +244,7 @@ char * UT_GetDefaultPrinterName()
 */
 HDC  UT_GetDefaultPrinterDC()
 {
-	char * pPrinterName  = UT_GetDefaultPrinterName();
+	wchar_t * pPrinterName  = UT_GetDefaultPrinterName();
 
 	if(!pPrinterName || !*pPrinterName)
 		return NULL;
@@ -251,8 +253,8 @@ HDC  UT_GetDefaultPrinterDC()
 	//	if(!OpenPrinter(pPrinterName, &hPrinter, NULL))
 	//		return NULL;
 
-	const char * pDriver = UT_IsWinNT() ? "WINSPOOL" : NULL;
-	HDC hdc = CreateDC(pDriver, pPrinterName, NULL, NULL);
+	const wchar_t * pDriver = UT_IsWinNT() ? L"WINSPOOL" : NULL;
+	HDC hdc = CreateDCW(pDriver, pPrinterName, NULL, NULL);
 	g_free(pPrinterName);
 	return hdc;
 }
@@ -291,7 +293,7 @@ ATOM UT_RegisterClassEx(UINT style, WNDPROC wndproc, HINSTANCE hInstance,
 ATOM UT_RegisterClassEx(UINT style, WNDPROC wndproc, HINSTANCE hInstance,
 						HICON hIcon, HCURSOR hCursor, HBRUSH hbrBackground, HICON hIconSm,
 						const char * menu, const char * name,
-						bool bForceANSI)
+						bool bForceANSI)         //TODO: REMOVE
 {
 	if(!bForceANSI && UT_IsWinNT())
 	{
@@ -361,10 +363,12 @@ ATOM UT_RegisterClassEx(UINT style, WNDPROC wndproc, HINSTANCE hInstance,
 	}
 }
 
+
+
 HWND UT_CreateWindowEx(DWORD dwExStyle, const char * pszClassName, const char * pszWindowName, DWORD dwStyle,
 					   int x, int y, int nWidth, int nHeight,
 					   HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam,
-					   bool bForceANSI)
+					   bool bForceANSI)      //TODO: REMOVE
 {
 	if(!bForceANSI && UT_IsWinNT())
 	{
@@ -401,6 +405,7 @@ HWND UT_CreateWindowEx(DWORD dwExStyle, const char * pszClassName, const char * 
 	
 }
 
+
 LRESULT UT_DefWindowProc(HWND hWnd, UINT Msg, WPARAM wParam,LPARAM lParam, bool bForceANSI)
 {
 	if(!bForceANSI&& UT_IsWinNT())
@@ -408,6 +413,14 @@ LRESULT UT_DefWindowProc(HWND hWnd, UINT Msg, WPARAM wParam,LPARAM lParam, bool 
 	else
 		return DefWindowProcA(hWnd, Msg, wParam, lParam);
 }
+
+
+LRESULT UT_DefWindowProc(HWND hWnd, UINT Msg, WPARAM wParam,LPARAM lParam)
+{
+	return DefWindowProcW(hWnd, Msg, wParam, lParam);	
+}
+
+
 
 BOOL UT_SetWindowText(HWND hWnd, const char * lpString, bool bForceANSI)
 {

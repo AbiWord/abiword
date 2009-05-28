@@ -31,6 +31,7 @@
 
 #include <windows.h>
 #include <commctrl.h>
+#include "ut_Win32LocaleString.h"
 
 #include "ut_types.h"
 /*****************************************************************/
@@ -44,6 +45,9 @@ class ABI_EXPORT XAP_Win32DialogBase
 public:
 	XAP_Win32DialogBase() : m_tag(magic_tag), m_hDlg(0), m_pDlg(0), m_pSS(0) {}
 	// no need for user-defined destructor
+
+
+    static bool setDlgItemText(HWND hWnd, int nIDDlgItem, const char* uft8_str);
 		
 protected:
 	void createModal(XAP_Frame* pFrame, LPCTSTR dlgTemplate);
@@ -67,6 +71,10 @@ protected:
 	int	 showWindow( int Mode );
 	int	 showControl(UT_sint32 controlId, int Mode);
 	int	 bringWindowToTop();
+
+
+    bool setDlgItemText(int nIDDlgItem, const char* uft8_str);
+	bool getDlgItemText(int nIDDlgItem, UT_Win32LocaleString& str);	
 
 	// Combo boxes.
 

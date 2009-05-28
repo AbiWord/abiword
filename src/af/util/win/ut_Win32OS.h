@@ -33,7 +33,7 @@ bool UT_IsWin95(void);
 
 DLGTEMPLATE * WINAPI UT_LockDlgRes(HINSTANCE hinst, LPCTSTR lpszResName);
 
-char * UT_GetDefaultPrinterName();
+wchar_t * UT_GetDefaultPrinterName();
 
 HDC  UT_GetDefaultPrinterDC();
 
@@ -57,7 +57,8 @@ HWND UT_CreateWindowEx(DWORD dwExStyle, LPCTSTR lpClassName, LPCTSTR lpWindowNam
 					   int x, int y, int nWidth, int nHeight,
 					   HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam, bool bForceANSI = true); //TODO - remove
 
-LRESULT UT_DefWindowProc(HWND hWnd, UINT Msg, WPARAM wParam,LPARAM lParam, bool bForceANSI = false);
+//LRESULT UT_DefWindowProc(HWND hWnd, UINT Msg, WPARAM wParam,LPARAM lParam, bool bForceANSI = false); //TODO - remove
+LRESULT UT_DefWindowProc(HWND hWnd, UINT Msg, WPARAM wParam,LPARAM lParam);
 
 BOOL UT_SetWindowText(HWND hWnd, const char * lpString, bool bForceANSI = false);
 

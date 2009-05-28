@@ -82,6 +82,7 @@
 #include "ut_Win32OS.h"
 #include "ut_Win32Idle.h"
 #include "ut_Language.h"
+#include "ut_Win32LocaleString.h"
 
 #include "ie_impexp_Register.h"
 
@@ -1388,8 +1389,11 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 			UT_String s = "AbiWord: ";
 			s+= Args->m_sFiles[0];
 			
-			GR_Graphics * pG = GR_Win32Graphics::getPrinterGraphics(Args->m_sPrintTo, s.c_str());
-			if(!pG)
+            UT_Win32LocaleString prn, doc;
+			prn.fromASCII (Args->m_sPrintTo);
+			doc.fromASCII (s.c_str());
+			GR_Graphics * pG = GR_Win32Graphics::getPrinterGraphics(prn.c_str(), doc.c_str());			
+            if(!pG)
 			{
 				// do not assert here, if the graphics creation failed, the static
 				// constructor has asserted already somewhere more relevant

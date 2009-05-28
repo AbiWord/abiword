@@ -289,7 +289,7 @@ GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, HWND hwnd)
 }
 
 
-GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, const DOCINFO * pDI, HGLOBAL hDevMode)
+GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, const DOCINFOW * pDI, HGLOBAL hDevMode)
 	:GR_Win32Graphics(hdc, pDI, hDevMode),
 	 m_bConstructorSucceeded(false)
 {
@@ -302,7 +302,7 @@ GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, const DOCINFO * pDI, HGLOBAL h
 	m_bConstructorSucceeded = true;
 }
 
-GR_Win32Font * GR_Win32USPGraphics::_newFont(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC)
+GR_Win32Font * GR_Win32USPGraphics::_newFont(LOGFONTW & lf, double fPoints, HDC hdc, HDC printHDC)
 {
 	return GR_Win32USPFont::newFont(lf, fPoints, hdc, printHDC);
 }
@@ -2573,7 +2573,7 @@ bool GR_Win32USPRenderInfo::isJustified() const
 	return (m_pJustify != NULL);
 }
 
-GR_Win32USPFont *  GR_Win32USPFont::newFont(LOGFONT &lf, double fPoints, HDC hdc, HDC printHDC)
+GR_Win32USPFont *  GR_Win32USPFont::newFont(LOGFONTW &lf, double fPoints, HDC hdc, HDC printHDC)
 {
 	GR_Win32USPFont * f = new GR_Win32USPFont(lf, fPoints, hdc, printHDC);
 
@@ -2586,7 +2586,7 @@ GR_Win32USPFont *  GR_Win32USPFont::newFont(LOGFONT &lf, double fPoints, HDC hdc
 	return f;
 }
 
-GR_Win32USPFont::GR_Win32USPFont(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC)
+GR_Win32USPFont::GR_Win32USPFont(LOGFONTW & lf, double fPoints, HDC hdc, HDC printHDC)
 	: GR_Win32Font(lf, fPoints, hdc, printHDC),
 	  m_sc(NULL),
 	  m_printHDC(NULL),

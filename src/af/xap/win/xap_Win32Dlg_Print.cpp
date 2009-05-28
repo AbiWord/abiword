@@ -29,6 +29,7 @@
 #include "xav_View.h"
 #include "gr_Win32Graphics.h"
 #include "ap_Win32App.h"
+#include "xap_Win32DialogBase.h"
 
 /*****************************************************************/
 static UINT CALLBACK s_PrintHookProc(
@@ -36,7 +37,7 @@ static UINT CALLBACK s_PrintHookProc(
   UINT uiMsg,     // message identifier
   WPARAM wParam,  // message parameter
   LPARAM lParam   // message parameter
-  )
+  )                                                                             //TODO - PORTED
 {
 	XAP_Win32Dialog_Print * pThis = NULL;
 	
@@ -81,13 +82,15 @@ static UINT CALLBACK s_PrintHookProc(
 			
 			if(pThis->getNewPrinter() != pThis->getOrigPrinter())
 			{
-				SetDlgItemText(hdlg,IDCANCEL,pSS->getValue(XAP_STRING_ID_DLG_Close));
+				//SetDlgItemText(hdlg,IDCANCEL,pSS->getValue(XAP_STRING_ID_DLG_Close));
+                XAP_Win32DialogBase::setDlgItemText(hdlg,IDCANCEL,pSS->getValue(XAP_STRING_ID_DLG_Close));
 			}
 			else
 			{
 				// the user set the printer back to what it used to be -- revert back to
 				// cancel button
-				SetDlgItemText(hdlg,IDCANCEL,pSS->getValue(XAP_STRING_ID_DLG_Cancel));
+				//SetDlgItemText(hdlg,IDCANCEL,pSS->getValue(XAP_STRING_ID_DLG_Cancel));
+                XAP_Win32DialogBase::setDlgItemText(hdlg,IDCANCEL,pSS->getValue(XAP_STRING_ID_DLG_Cancel));
 			}
 		}
 		else if((int)LOWORD(wParam) == IDCANCEL && HIWORD(wParam) == 0)
@@ -153,10 +156,18 @@ GR_Graphics * XAP_Win32Dialog_Print::getPrinterGraphicsContext(void)
 
 	memset(&m_DocInfo,0,sizeof(m_DocInfo));
 	m_DocInfo.cbSize = sizeof(DOCINFO);
-	m_docName = AP_Win32App::s_fromUTF8ToWinLocale(m_szDocumentPathname);
+	// m_docName = AP_Win32App::s_fromUTF8ToWinLocale(m_szDocumentPathname);
+    m_docName.fromUTF8 (m_szDocumentPathname);
 	m_DocInfo.lpszDocName = m_docName.c_str();
-	m_DocInfo.lpszOutput = ((m_bDoPrintToFile) ? m_szPrintToFilePathname : NULL);
+	//m_DocInfo.lpszOutput = ((m_bDoPrintToFile) ? m_szPrintToFilePathname : NULL);
 	
+    if (m_bDoPrintToFile) {
+		m_fileName.fromUTF8 (m_szPrintToFilePathname);
+		m_DocInfo.lpszOutput = m_fileName.c_str();
+	} else {
+		m_DocInfo.lpszOutput = NULL;	
+	}	
+
 	GR_Win32AllocInfo ai(m_pPersistPrintDlg->hDC,&m_DocInfo, m_pPersistPrintDlg->hDevMode);
 	GR_Win32Graphics *pGr = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
 	UT_ASSERT(pGr);
@@ -235,12 +246,12 @@ void XAP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 		{
 			// create a new hDC for this printer...
 			
-			DEVMODE * pDevMode = (DEVMODE *)GlobalLock(m_pPersistPrintDlg->hDevMode);
+			DEVMODEW * pDevMode = (DEVMODEW *)GlobalLock(m_pPersistPrintDlg->hDevMode);
 			DEVNAMES * pDevNames = (DEVNAMES *)GlobalLock(m_pPersistPrintDlg->hDevNames);
 			UT_return_if_fail(pDevNames); //GlobalLock can return NULL
 
-			char * p = (char *)pDevNames;
-			m_pPersistPrintDlg->hDC = CreateDC(p + pDevNames->wDriverOffset,
+			wchar_t * p = (wchar_t *)pDevNames;
+			m_pPersistPrintDlg->hDC = CreateDCW(p + pDevNames->wDriverOffset,
 											   p + pDevNames->wDeviceOffset,
 											   NULL,
 											   pDevMode);
