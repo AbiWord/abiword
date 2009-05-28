@@ -344,7 +344,7 @@ void OO_StylesContainer::addSpanStyle(UT_String &key)
    //if (!m_spanStylesHash.contains(key.utf8_str(), temp)) 
    if (!m_spanStylesHash.pick(key.c_str())) 
    {
-      UT_DEBUGMSG(("OO_AccumulatorImpl: props of this type: %s not yet found, adding style at num: %i\n", key.c_str(), (m_spanStylesHash.size()+1)));
+      UT_DEBUGMSG(("OO_AccumulatorImpl: props of this type: %s not yet found, adding style at num: %zi\n", key.c_str(), (m_spanStylesHash.size()+1)));
       int *val = new int;
       char *keyCopy = new char[strlen(key.c_str())+1];
       keyCopy = strcpy(keyCopy, key.c_str());

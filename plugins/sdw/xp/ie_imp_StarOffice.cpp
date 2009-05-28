@@ -723,7 +723,7 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input) UT_THROWS(()) {
 								readByteString(mDocStream, str);
 								UT_UCS4String textNode(str);
 								free(str);
-								UT_DEBUGMSG(("SDW: ...length=%u contents are: |%s|\n", textNode.length(), textNode.utf8_str()));
+								UT_DEBUGMSG(("SDW: ...length=%zu contents are: |%s|\n", textNode.length(), textNode.utf8_str()));
 
 								// now get the attributes
 								UT_String attrs;

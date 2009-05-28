@@ -518,7 +518,7 @@ int IE_Imp_MSWrite::read_char (int fcFirst2, int fcLim2) {
 				
 				if (mCharBuf.size() > 0) {
 					appendFmt (propsArray);
-					UT_DEBUGMSG (("Hub: About to append %d chars of text\n", mCharBuf.size()));
+					UT_DEBUGMSG (("Hub: About to append %zd chars of text\n", mCharBuf.size()));
 					appendSpan (reinterpret_cast<const UT_UCSChar *>(mCharBuf.ucs4_str()), mCharBuf.size());
 				}
 				else {

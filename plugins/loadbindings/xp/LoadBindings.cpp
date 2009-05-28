@@ -340,7 +340,7 @@ static bool DumpEditMethods_invoke(AV_View *, EV_EditMethodCallData *)
 	std::sort( list.begin(), list.end(), compareEditMethods );
 	
 	// print them
-	printf("%u bindable edit methods (don't require data)\n", list.size());
+	printf("%zu bindable edit methods (don't require data)\n", list.size());
 	for (size_t i=0; i<list.size(); ++i) printf("%s\n", list[i]->getName());
 
 	return true;
