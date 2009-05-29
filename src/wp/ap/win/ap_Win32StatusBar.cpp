@@ -29,6 +29,7 @@
 #include "xap_Win32App.h"
 #include "ap_Win32Frame.h"
 #include "ap_Win32App.h"
+#include "ut_Win32LocaleString.h"
 
 LRESULT APIENTRY StatusbarWndProc (HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) { 
 
@@ -143,8 +144,9 @@ void ap_usb_TextListener::notify()
 
 	UT_return_if_fail (m_hWnd && m_pSB);	
 	AP_StatusBarField_TextInfo * textInfo = ((AP_StatusBarField_TextInfo *)m_pStatusBarField);
-	UT_String 	s =	AP_Win32App::s_fromUTF8ToWinLocale(textInfo->getBuf().utf8_str());	
-	SendMessage(m_hWnd, SB_SETTEXT, m_nID | m_pSB->getDir(), (LPARAM)  s.c_str());
+	UT_Win32LocaleString str;	
+	str.fromUTF8 (textInfo->getBuf().utf8_str());	
+	SendMessage(m_hWnd, SB_SETTEXT, m_nID | m_pSB->getDir(), (LPARAM)  str.c_str());
 	
 }
 

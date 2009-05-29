@@ -28,6 +28,7 @@
 #include "ap_Win32TopRuler.h"
 #include "ap_Win32LeftRuler.h"
 #include "ap_Win32StatusBar.h"
+#include "ut_Win32LocaleString.h"
 
 #include <winuser.h>
 
@@ -55,8 +56,8 @@
 #define SWL(hwnd, f)	reinterpret_cast<AP_Win32Frame *>(SetWindowLong((hwnd), GWL_USERDATA,(LONG)(f)))
 
 // reserve space for static variables
-char AP_Win32FrameImpl::s_ContainerWndClassName[MAXCNTWNDCLSNMSIZE];
-char AP_Win32FrameImpl::s_DocumentWndClassName[MAXDOCWNDCLSNMSIZE];
+wchar_t AP_Win32FrameImpl::s_ContainerWndClassName[MAXCNTWNDCLSNMSIZE];
+wchar_t AP_Win32FrameImpl::s_DocumentWndClassName[MAXDOCWNDCLSNMSIZE];
 //static char s_LeftRulerWndClassName[256];
 
 AP_Win32FrameImpl::AP_Win32FrameImpl(AP_Frame *pFrame) :
@@ -129,7 +130,7 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 	const int cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
 	const int cxVScroll = GetSystemMetrics(SM_CXVSCROLL);
 
-	m_hWndHScroll = UT_CreateWindowEx(0, "ScrollBar", 0, WS_CHILD | WS_VISIBLE | SBS_HORZ,
+	m_hWndHScroll = UT_CreateWindowEx(0, L"ScrollBar", 0, WS_CHILD | WS_VISIBLE | SBS_HORZ,
 									0, r.bottom - cyHScroll,
 									r.right - cxVScroll, cyHScroll,
 									m_hwndContainer,
@@ -139,7 +140,7 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 	//SWL(m_hWndHScroll, this);
 	SWL(m_hWndHScroll, pFrame);
 
-	m_hWndVScroll = UT_CreateWindowEx(0, "ScrollBar", 0, WS_CHILD | WS_VISIBLE | SBS_VERT,
+	m_hWndVScroll = UT_CreateWindowEx(0, L"ScrollBar", 0, WS_CHILD | WS_VISIBLE | SBS_VERT,
 									r.right - cxVScroll, 0,
 									cxVScroll, r.bottom - cyHScroll,
 									m_hwndContainer,
@@ -155,7 +156,7 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 #  define XX_StyleBits          (SBS_SIZEGRIP)
 #endif
 
-	m_hWndGripperHack = UT_CreateWindowEx(0,"ScrollBar", 0,
+	m_hWndGripperHack = UT_CreateWindowEx(0,L"ScrollBar", 0,
 										WS_CHILD | WS_VISIBLE | XX_StyleBits,
 										r.right-cxVScroll, r.bottom-cyHScroll, cxVScroll, cyHScroll,
 										m_hwndContainer, NULL, static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), NULL);
@@ -627,11 +628,14 @@ bool AP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
 		return false;
 
 	ATOM a;
+    UT_Win32LocaleString str;	
 
 	// register class for the container window (this will contain the document
 	// and the rulers and the scroll bars)
 
-	_snprintf(s_ContainerWndClassName, MAXCNTWNDCLSNMSIZE, "%sContainer", app->getApplicationName());
+    str.fromASCII (app->getApplicationName());	
+	_snwprintf(s_ContainerWndClassName, MAXCNTWNDCLSNMSIZE, L"%sContainer", str.c_str());
+ 	
 
 	a = UT_RegisterClassEx(CS_DBLCLKS | CS_OWNDC, AP_Win32FrameImpl::_ContainerWndProc, app->getInstance(),
 						   NULL, LoadCursor(NULL, IDC_ARROW), NULL, NULL,
@@ -640,8 +644,8 @@ bool AP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
 	UT_return_val_if_fail(a, false);
 
 	// register class for the actual document window
-	_snprintf(s_DocumentWndClassName, MAXDOCWNDCLSNMSIZE, "%sDocument", app->getApplicationName());
-
+	//_snprintf(s_DocumentWndClassName, MAXDOCWNDCLSNMSIZE, "%sDocument", app->getApplicationName());
+    wcscpy (s_DocumentWndClassName, L"Document");
 	a = UT_RegisterClassEx(CS_DBLCLKS | CS_OWNDC, AP_Win32FrameImpl::_DocumentWndProc, app->getInstance(),
 						   NULL, NULL, NULL, NULL,
 						   NULL, s_DocumentWndClassName);
@@ -1241,6 +1245,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 
 		case WM_CHAR:
 		{
+            bool is_uni = IsWindowUnicode (hwnd);
 			UT_DEBUGMSG(("WM_CHAR %d  - %d\n",wParam, lParam));
 			ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(fImpl->m_pKeyboard);
 	    

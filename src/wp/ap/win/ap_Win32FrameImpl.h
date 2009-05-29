@@ -25,6 +25,7 @@
 #include "xap_Win32FrameImpl.h"
 #include "ap_FrameData.h"
 #include "gr_Win32Graphics.h"
+#include <wchar.h>
 
 class AP_Win32Frame;
 
@@ -135,8 +136,8 @@ class ABI_EXPORT AP_Win32FrameImpl : public XAP_Win32FrameImpl
 
 	#define MAXDOCWNDCLSNMSIZE 256
 	#define MAXCNTWNDCLSNMSIZE 256
-	static char s_ContainerWndClassName[MAXCNTWNDCLSNMSIZE];
-	static char s_DocumentWndClassName[MAXDOCWNDCLSNMSIZE];
+	static wchar_t s_ContainerWndClassName[MAXCNTWNDCLSNMSIZE];
+	static wchar_t s_DocumentWndClassName[MAXDOCWNDCLSNMSIZE];
 };
 
 #endif /* AP_WIN32FRAMEIMPL_H */
