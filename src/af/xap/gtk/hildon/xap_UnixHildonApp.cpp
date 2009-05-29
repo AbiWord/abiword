@@ -73,7 +73,9 @@ XAP_UnixHildonApp::~XAP_UnixHildonApp()
 		m_pOsso = NULL;
 	}
 
-	g_object_unref (G_OBJECT (m_imContext));
+    if(m_imContext) {
+        g_object_unref ((GObject*)m_imContext);
+    }
 }
 
 bool XAP_UnixHildonApp::initialize(const char * szKeyBindingsKey,

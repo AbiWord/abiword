@@ -179,7 +179,7 @@ hildondbusdir = @datadir@/dbus-1/services
 hildondbus_DATA = hildon/com.abisource.abiword.service
 
 hildonicondir = @datadir@/pixmaps
-hildonicon_DATA = qgn_list_abiword.png
+hildonicon_DATA = hildon/qgn_list_abiword.png
 
 else 
 
@@ -199,7 +199,7 @@ EXTRA_DIST = \
 	$(ui_DATA) \
 	ap_UnixDialog_Spell.xml \
 	abiword_48.xpm \
-	qgn_list_abiword.png \
+	hildon/qgn_list_abiword.png \
 	hildon/com.abisource.abiword.service.in \
 	hildon/abiword.desktop.in \
 	$(NULL)
