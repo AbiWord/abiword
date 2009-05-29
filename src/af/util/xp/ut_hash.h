@@ -117,9 +117,9 @@ public:
 		
 	private:
 		
-		inline void	_set_index(int i)	
+		inline void	_set_index(UT_sint32 i)	
 			{ m_index = i; }
-		inline int	_get_index()		
+		inline UT_sint32 _get_index()		
 			{ return m_index; }
 		
 		const UT_GenericStringMap<T>*	m_d;
@@ -945,7 +945,7 @@ template <class T> const T
 UT_GenericStringMap<T>::_prev(UT_Cursor& c) const
 {
 	const hash_slot<T>* map = m_pMapping;
-	size_t x;
+	UT_sint32 x;
 	for (x = c._get_index() - 1; x >= 0; --x)
 	{
 		if (!map[x].empty() && !map[x].deleted())
