@@ -11,8 +11,65 @@ AC_CONFIG_HEADERS(config.h)
 
 AM_INIT_AUTOMAKE
 
+
+dnl we use AM_MAINTAINER_MODE and enable it to allow to disable it.
+dnl very usefull to build in scratchbox where the maintainer mode is used for the PC
+dnl build but the embedded build just use pregenerated one (with a different version)
+AM_MAINTAINER_MODE([enable])
+
+
 #
 # Dependency requirements 
+#
+
+#
+# versions requested.
+#
+GTK_VERSION_REQ=2.12.0
+
+
+
+# This check MUST be done early.
+#
+# We define EMBEDDED_TARGET to a numerical value so that we can do like
+# #if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#
+# The following have to be defined unconditionally, because we want 
+# EMBEDDED_TARGET to be undefined if not building for embedded so that we 
+# can use #ifdef and #ifndef on it (two undefined symbols will return 
+# true if tested for equality in #if construct)
+AC_DEFINE([EMBEDDED_TARGET_GENERIC], [1], [Generic embedded platform])
+AC_DEFINE([EMBEDDED_TARGET_HILDON],  [2], [Hildon embedded platform])
+AC_DEFINE([EMBEDDED_TARGET_POKY],    [3], [Poky embedded platform])
+
+AC_ARG_ENABLE([embedded],
+	[AS_HELP_STRING([--enable-embedded], [=generic|hildon|poky, (Gtk+ only), build for embedded platform])],
+[
+	abi_cv_embedded_platform="$enableval"
+	case "$enableval" in
+	hildon) 
+		abi_cv_embedded_target=EMBEDDED_TARGET_HILDON 
+		GTK_VERSION_REQ=2.10.0
+		;;
+	poky)
+		abi_cv_embedded_target=EMBEDDED_TARGET_POKY ;;
+	generic)
+		abi_cv_embedded_target=EMBEDDED_TARGET_GENERIC ;;
+	yes)	
+		abi_cv_embedded_target=EMBEDDED_TARGET_GENERIC 
+		abi_cv_embedded_platform="generic" ;;
+	no)
+		;;
+	*) 
+		AC_MSG_ERROR(bad value $enableval for --enable-embedded) ;;
+	esac
+],[	
+	abi_cv_embedded_platform="no"
+	abi_cv_embedded_target="no"
+])
+
+#
+# setting the deps requirement is done further down
 #
 
 # cross platform deps
@@ -44,7 +101,8 @@ if test "x$goffice_req" = x; then
   goffice_req=libgoffice-0.6
 fi
 gucharmap_req='gucharmap-2'
-hildon_pkgs='hildon-libs hildon-fm dbus-1 libosso libosso-gsf-1'
+hildon_pkgs='hildon-1 hildon-fm-2 dbus-1 libosso'
+dnl libosso-gsf-1'
 # placeholder for accumulated optional deps
 opt_pkgs=''
 
@@ -53,7 +111,7 @@ cocoa_pkgs="$enchant_req"
 
 # gtk deps
 cairo_req='cairo-pdf cairo-ps'
-gtk_req='gtk+-2.0 >= 2.12.0 gtk+-unix-print-2.0 librsvg-2.0 >= 2.16.0'
+gtk_req="gtk+-2.0 >= $GTK_VERSION_REQ gtk+-unix-print-2.0 librsvg-2.0 >= 2.16.0"
 gtk_pkgs="
   ${cairo_req}
   ${gtk_req}
@@ -249,44 +307,13 @@ AC_ARG_ENABLE([templates],
 	abi_cv_templates="no"
 ])
 
-# We define EMBEDDED_TARGET to a numerical value so that we can do like
-# #if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #
-# The following have to be defined unconditionally, because we want 
-# EMBEDDED_TARGET to be undefined if not building for embedded so that we 
-# can use #ifdef and #ifndef on it (two undefined symbols will return 
-# true if tested for equality in #if construct)
-AC_DEFINE([EMBEDDED_TARGET_GENERIC], [1], [Generic embedded platform])
-AC_DEFINE([EMBEDDED_TARGET_HILDON],  [2], [Hildon embedded platform])
-AC_DEFINE([EMBEDDED_TARGET_POKY],    [3], [Poky embedded platform])
-
-AC_ARG_ENABLE([embedded],
-	[AS_HELP_STRING([--enable-embedded], [=generic|hildon|poky, (Gtk+ only), build for embedded platform])],
-[
-	abi_cv_embedded_platform="$enableval"
-	case "$enableval" in
-	hildon) 
-		abi_cv_embedded_target=EMBEDDED_TARGET_HILDON ;;
-	poky)
-		abi_cv_embedded_target=EMBEDDED_TARGET_POKY ;;
-	generic)
-		abi_cv_embedded_target=EMBEDDED_TARGET_GENERIC ;;
-	yes)	
-		abi_cv_embedded_target=EMBEDDED_TARGET_GENERIC 
-		abi_cv_embedded_platform="generic" ;;
-	no)
-		;;
-	*) 
-		AC_MSG_ERROR(bad value $enableval for --enable-embedded) ;;
-	esac
-],[	
-	abi_cv_embedded_platform="no"
-	abi_cv_embedded_target="no"
-])
-
+# deferred from the "enable-embedded"
+#
 if test "$abi_cv_embedded_platform" == "hildon"; then
 	opt_pkgs="$opt_pkgs $hildon_pkgs"
 fi
+
 
 AC_ARG_ENABLE([debug], 
 	[AS_HELP_STRING([--enable-debug], [Enable debugging functionality, verbose terminal output])], 
@@ -830,6 +857,8 @@ AC_OUTPUT(
   src/wp/ap/Makefile
   src/wp/ap/cocoa/Makefile
   src/wp/ap/gtk/Makefile
+  src/wp/ap/gtk/hildon/abiword.desktop
+  src/wp/ap/gtk/hildon/com.abisource.abiword.service
   src/wp/ap/win/Makefile
   src/wp/ap/xp/Makefile
   src/wp/ap/xp/ToolbarIcons/Makefile
