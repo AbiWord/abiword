@@ -1271,7 +1271,10 @@ bool PD_Document::insertSpan(PT_DocPosition dpos,
 		}
 	}
 	
-	result &= m_pPieceTable->insertSpan(cur_pos, pStart, length - (pStart - pbuf));
+	// A length of zero can occur if one of the already-handled characters
+	// in the above switch comprises the entire span.
+	if((length - (pStart - pbuf)) > 0)
+		result &= m_pPieceTable->insertSpan(cur_pos, pStart, length - (pStart - pbuf));
 	return result;
 }
 
