@@ -794,6 +794,8 @@ void
 go_combo_box_set_tooltip_text (GOComboBox *c, char const *text)
 {
 /* FIXME FIXME FIXME this is ugly the tip moves as we jump from preview to arrow */
+#if GTK_CHECK_VERSION(2,12,0)
 	gtk_widget_set_tooltip_text(c->priv->display_widget, text);
 	gtk_widget_set_tooltip_text(c->priv->arrow_button, text);
+#endif
 }
