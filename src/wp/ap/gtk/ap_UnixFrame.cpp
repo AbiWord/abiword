@@ -58,7 +58,7 @@
 
 
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#include "ap_UnixHildonFrameImpl.h"
+#include "hildon/ap_UnixHildonFrameImpl.h"
 #endif
 
 /*****************************************************************/

@@ -133,6 +133,8 @@ libgtk_la_SOURCES = \
 	ap_UnixViewListener.cpp \
 	ap_UnixViewListener.h
 
+
+
 uidir=$(ABIWORD_UIDIR)
 ui_DATA = \
 	ap_UnixDialog_Annotation.xml \
@@ -160,8 +162,32 @@ ui_DATA = \
 	ap_UnixDialog_Tab.xml	\
 	ap_UnixDialog_WordCount.xml \
 	ap_UnixDialog_Latex.xml \
-	ap_UnixDialog_Options.xml \
+	$(NULL)
+
+if EMBEDDED_HILDON
+
+libgtk_la_SOURCES += hildon/ap_UnixHildonFrameImpl.cpp \
+	hildon/ap_UnixHildonFrameImpl.h
+
+ui_DATA += hildon/ap_UnixHildonDialog_HdrFtr.xml \
+	hildon/ap_UnixHildonDialog_Options.xml
+
+hildondesktopdir = @datadir@/applications/hildon
+hildondesktop_DATA = hildon/abiword.desktop
+
+hildondbusdir = @datadir@/dbus-1/services
+hildondbus_DATA = hildon/com.abisource.abiword.service
+
+hildonicondir = @datadir@/pixmaps
+hildonicon_DATA = qgn_list_abiword.png
+
+else 
+
+ui_DATA += ap_UnixDialog_Options.xml \
 	ap_UnixDialog_HdrFtr.xml
+
+endif
+
 
 if ENABLE_SPELL
 optuidir=$(uidir)
@@ -172,5 +198,9 @@ EXTRA_DIST = \
 	$(conditional_src) \
 	$(ui_DATA) \
 	ap_UnixDialog_Spell.xml \
-	abiword_48.xpm
+	abiword_48.xpm \
+	qgn_list_abiword.png \
+	hildon/com.abisource.abiword.service.in \
+	hildon/abiword.desktop.in \
+	$(NULL)
 

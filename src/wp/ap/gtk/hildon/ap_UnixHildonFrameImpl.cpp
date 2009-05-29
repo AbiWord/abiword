@@ -42,7 +42,7 @@
 #include "xap_ViewListener.h"
 #include "xap_Frame.h"
 #include "xap_Prefs.h"
-#include "xap_UnixHildonApp.h"
+#include "hildon/xap_UnixHildonApp.h"
 
 #include "fv_View.h"
 
@@ -59,7 +59,7 @@
 AP_UnixHildonFrameImpl::AP_UnixHildonFrameImpl(AP_UnixFrame *pUnixFrame) 
 :AP_UnixFrameImpl(pUnixFrame)
 {
-	UT_DEBUGMSG(("Created AP_UnixHildonFrameImpl %x \n",this));
+	UT_DEBUGMSG(("Created AP_UnixHildonFrameImpl %p \n",this));
 }
 
 /**

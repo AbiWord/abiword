@@ -105,7 +105,7 @@
 #endif
 
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#   include "xap_UnixHildonDlg_FontChooser.h"
+#   include "hildon/xap_UnixHildonDlg_FontChooser.h"
 #else
 #   include "xap_UnixDlg_FontChooser.h"
 #endif

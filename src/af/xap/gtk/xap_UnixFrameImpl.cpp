@@ -79,7 +79,7 @@
 #endif
 
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#include "xap_UnixHildonApp.h"
+#include "hildon/xap_UnixHildonApp.h"
 #endif
 
 

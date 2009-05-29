@@ -571,11 +571,11 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	/**/ g_object_set_data(G_OBJECT(listSpecial), WIDGET_ID_TAG, (gpointer) id_MENU_SPECIAL_INDENT);
 	gtk_widget_show (GTK_WIDGET(listSpecial));
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-	gtk_table_attach ( GTK_TABLE(boxSpacing), listSpecial, 3, 4, 2, 3,
+	gtk_table_attach ( GTK_TABLE(boxSpacing), (GtkWidget*)listSpecial, 3, 4, 2, 3,
                     (GtkAttachOptions) (GTK_SHRINK),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
 #else
-	gtk_table_attach ( GTK_TABLE(boxSpacing), GTK_WIDGET(listSpecial), 2,3, 3,4,
+	gtk_table_attach ( GTK_TABLE(boxSpacing), (GtkWidget*)listSpecial, 2,3, 3,4,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
 

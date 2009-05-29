@@ -14,7 +14,6 @@ AM_CPPFLAGS = \
 conditional_src = 
 
 
-
 libgtk_la_SOURCES = \
 	xap_GtkObjectHolder.h \
 	xap_GtkSignalBlocker.h \
@@ -40,8 +39,6 @@ libgtk_la_SOURCES = \
 	xap_UnixDlg_Encoding.h \
 	xap_UnixDlg_FileOpenSaveAs.cpp \
 	xap_UnixDlg_FileOpenSaveAs.h \
-	xap_UnixDlg_FontChooser.cpp \
-	xap_UnixDlg_FontChooser.h \
 	xap_UnixDlg_History.cpp \
 	xap_UnixDlg_History.h \
 	xap_UnixDlg_HTMLOptions.cpp \
@@ -82,6 +79,18 @@ libgtk_la_SOURCES = \
 	xap_Unix_TB_CFactory.h \
 	xap_UnixWidget.cpp \
 	xap_UnixWidget.h
+
+if EMBEDDED_HILDON
+libgtk_la_SOURCES += hildon/xap_UnixHildonApp.cpp \
+	hildon/xap_UnixHildonApp.h \
+	hildon/xap_UnixHildonDlg_FontChooser.cpp    \
+	hildon/xap_UnixHildonDlg_FontChooser.h	\
+	$(NULL)
+else
+libgtk_la_SOURCES += 	xap_UnixDlg_FontChooser.cpp \
+	xap_UnixDlg_FontChooser.h \
+	$(NULL)
+endif
 
 uidir=$(ABIWORD_UIDIR)
 ui_DATA = \

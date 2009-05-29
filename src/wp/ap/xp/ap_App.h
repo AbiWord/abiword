@@ -38,7 +38,7 @@ class XAP_Frame;
   #include "xap_CocoaApp.h"
   #define XAP_App_BaseClass XAP_CocoaApp
 #elif defined (EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-  #include "xap_UnixHildonApp.h"
+  #include "hildon/xap_UnixHildonApp.h"
   #define XAP_App_BaseClass XAP_UnixHildonApp
 #else
   #include "xap_UnixApp.h"
