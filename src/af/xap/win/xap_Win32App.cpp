@@ -331,7 +331,7 @@ void XAP_Win32App::_setAbiSuiteLibDir(void)
 #ifdef _MSC_VER
 		XAP_App::_setAbiSuiteLibDir(buf);
 #else
-		dir = g_build_filename(buf, "share", PACKAGE "-" ABIWORD_SERIES, NULL);
+		gchar * dir = g_build_filename(buf, "share", PACKAGE "-" ABIWORD_SERIES, NULL);
 		XAP_App::_setAbiSuiteLibDir(dir);
 		g_free (dir), dir = NULL;
 #endif
