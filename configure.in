@@ -421,7 +421,7 @@ AC_LANG_PUSH(C++)
 if test "$GCC" = "yes"; then
 	for option in -Wall -Wextra -Wsign-compare -Wpointer-arith \
 		      -Wchar-subscripts -Wwrite-strings -Wmissing-noreturn \
-		      -Wunused -Wpointer-arith ; do
+		      -Wunused -Wpointer-arith -Wshadow ; do
 		SAVE_CPPFLAGS="$CPPFLAGS"
 		CPPFLAGS="$CPPFLAGS $option"
 		AC_MSG_CHECKING([whether gcc understands $option])
@@ -838,6 +838,7 @@ AC_OUTPUT(
   src/wp/impexp/gtk/Makefile
   src/wp/impexp/win/Makefile
   src/wp/impexp/xp/Makefile
+  src/wp/main/Makefile
   src/wp/main/cocoa/Makefile
   src/wp/main/cocoa/bundle/Info.plist
   user/Makefile

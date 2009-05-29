@@ -2,5 +2,5 @@
 SUBDIRS = ap impexp
 
 if TOOLKIT_COCOA
-SUBDIRS += main/cocoa
+SUBDIRS += main
 endif
