@@ -37,7 +37,9 @@ EXTRA_DIST = \
 	abiword.desktop \
 	abiword.keys \
 	abiword_48.png \
-	libabiword.pc.in
+	libabiword.pc.in \
+	compile-resource \
+	lt-compile-resource
 
 DISTCLEANFILES = \
 	abiword-$(ABIWORD_SERIES).pc \
