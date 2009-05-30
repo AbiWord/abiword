@@ -445,8 +445,8 @@ void XAP_UnixDialog_FontChooser::fgColorChanged(void)
 
 void XAP_UnixDialog_FontChooser::bgColorChanged(void)
 {
-	gtk_color_selection_get_current_color (GTK_COLOR_SELECTION(m_colorSelector), &m_currentBGColor);
-	UT_RGBColor * rgbcolor = UT_UnixGdkColorToRGBColor(m_currentFGColor);
+	gtk_color_selection_get_current_color (GTK_COLOR_SELECTION(m_bgcolorSelector), &m_currentBGColor);
+	UT_RGBColor * rgbcolor = UT_UnixGdkColorToRGBColor(m_currentBGColor);
 	UT_HashColor hash_color;
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkTransparency), FALSE);
 	m_currentBGColorTransparent = false;
