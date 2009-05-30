@@ -52,10 +52,7 @@ void OXMLi_ListenerState_MainDocument::startElement (OXMLi_StartElementRequest *
 		//This signals the start of the first section.
 		OXML_SharedSection sect(new OXML_Section());
 		sect->setBreakType(CONTINUOUS_BREAK); //First section of the document does not have breaks at beginning and end
-		OXML_Document * doc = OXML_Document::getInstance();
-		UT_return_if_fail(_error_if_fail(doc != NULL)); 
-		UT_return_if_fail(_error_if_fail( UT_OK == doc->appendSection(sect) )); 
-
+		rqst->sect_stck->push(sect);
 		rqst->handled = true;
 	}
 }
@@ -65,7 +62,21 @@ void OXMLi_ListenerState_MainDocument::endElement (OXMLi_EndElementRequest * rqs
 	UT_return_if_fail( this->_error_if_fail(rqst != NULL) );
 
 	if (nameMatches(rqst->pName, NS_W_KEY, "body")) {
-		//end of the body, nothing to do
+		//end of the body, append all sections one by one in reverse order
+		//TODO: there should be a better way of doing this
+		OXMLi_SectionStack reversedStck;
+		while(!rqst->sect_stck->empty()){		
+			OXML_SharedSection sect = rqst->sect_stck->top();
+			rqst->sect_stck->pop();
+			reversedStck.push(sect);
+		}		
+		while(!reversedStck.empty()){		
+			OXML_SharedSection sect = reversedStck.top();
+			reversedStck.pop();
+			OXML_Document * doc = OXML_Document::getInstance();
+			UT_return_if_fail(_error_if_fail(doc != NULL)); 
+			UT_return_if_fail(_error_if_fail( UT_OK == doc->appendSection(sect) )); 
+		}
 		rqst->handled = true;
 	}
 }

@@ -25,12 +25,14 @@
 
 // Internal includes
 #include <OXML_Element.h>
+#include <OXML_Section.h>
 
 // External includes
 #include <stack>
 #include <vector>
 
 typedef std::stack<OXML_SharedElement> OXMLi_ElementStack;
+typedef std::stack<OXML_SharedSection> OXMLi_SectionStack;
 typedef std::vector<std::string> OXMLi_ContextVector;
 
 struct OXMLi_StartElementRequest
@@ -38,6 +40,7 @@ struct OXMLi_StartElementRequest
 	std::string pName;
 	std::map<std::string, std::string>* ppAtts;
 	OXMLi_ElementStack * stck;
+	OXMLi_SectionStack * sect_stck;	
 	OXMLi_ContextVector * context;
 	bool handled;
 };
@@ -46,6 +49,7 @@ struct OXMLi_EndElementRequest
 {
 	std::string pName;
 	OXMLi_ElementStack * stck;
+	OXMLi_SectionStack * sect_stck;	
 	OXMLi_ContextVector * context;
 	bool handled;
 };

@@ -91,6 +91,10 @@ public:
 		\param pDocument A valid reference to the PD_Document object.
 	*/
 	virtual UT_Error addToPT(PD_Document * pDocument);
+	//! Calls the method addToPT() on all children.
+	/*! WARNING: if you derive OXML_Element, you probably shouldn't redefine this method.
+	 */
+	UT_Error addChildrenToPT(PD_Document * pDocument);
 
 	void setTarget(int target);
 
@@ -99,11 +103,7 @@ protected:
 	/*! WARNING: if you derive OXML_Element, you probably shouldn't redefine this method.
 	 */
 	UT_Error serializeChildren(IE_Exp_OpenXML* exporter);
-	//! Calls the method addToPT() on all children.
-	/*! WARNING: if you derive OXML_Element, you probably shouldn't redefine this method.
-	 */
-	UT_Error addChildrenToPT(PD_Document * pDocument);
-
+	
 	int TARGET;
 
 private:

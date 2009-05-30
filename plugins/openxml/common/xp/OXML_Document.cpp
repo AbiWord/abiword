@@ -177,6 +177,13 @@ UT_Error OXML_Document::clearHeaders()
 	return m_headers.size() == 0 ? UT_OK : UT_ERROR;
 }
 
+OXML_SharedSection OXML_Document::getFootnote(const std::string & id)
+{
+	OXML_SectionMap::iterator it;
+	it = m_footnotes.find(id);
+	return it != m_footnotes.end() ? it->second : OXML_SharedSection() ;
+}
+
 UT_Error OXML_Document::addFootnote(const OXML_SharedSection & obj)
 {
 	UT_return_val_if_fail(obj, UT_ERROR);

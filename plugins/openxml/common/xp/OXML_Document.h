@@ -68,6 +68,8 @@ public:
 	UT_Error addImage(const OXML_SharedImage& obj);
 	OXML_SharedList getListById(UT_uint32 id);
 
+	//! Returns a reference to the FIRST footnote with corresponding ID OR empty SharedSection if none found.
+	OXML_SharedSection getFootnote(const std::string & id);
 	UT_Error addFootnote(const OXML_SharedSection & obj);
 	UT_Error clearFootnotes();
 

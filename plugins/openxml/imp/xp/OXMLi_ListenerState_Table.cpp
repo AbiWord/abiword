@@ -238,7 +238,7 @@ void OXMLi_ListenerState_Table::endElement (OXMLi_EndElementRequest * rqst)
 		rqst->stck->pop(); //pop table
 		if(rqst->stck->empty())
 		{
-			OXML_SharedSection last = OXML_Document::getCurrentSection();
+			OXML_SharedSection last = rqst->sect_stck->top();
 			last->appendElement(table);
 		}
 		else

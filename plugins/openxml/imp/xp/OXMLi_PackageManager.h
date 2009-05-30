@@ -88,6 +88,11 @@ public:
 	*/
 	UT_Error parseDocumentNumbering();
 
+	//! Parses the footnotes associated with the Main Document part of the package.
+	/*! The parser automatically adds the information to the OXML_Document singleton.
+	*/
+	UT_Error parseDocumentFootnotes();
+
 private:
 	OXMLi_PackageManager();
 	virtual ~OXMLi_PackageManager();

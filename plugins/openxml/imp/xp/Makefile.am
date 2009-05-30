@@ -31,6 +31,8 @@ libxp_la_SOURCES = \
 	OXMLi_ListenerState_Table.h \
 	OXMLi_ListenerState_Field.cpp \
 	OXMLi_ListenerState_Field.h \
+	OXMLi_ListenerState_Footnote.cpp \
+	OXMLi_ListenerState_Footnote.h \
 	OXMLi_PackageManager.cpp \
 	OXMLi_PackageManager.h \
 	OXMLi_StreamListener.cpp \

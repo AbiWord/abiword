@@ -542,6 +542,12 @@ UT_Error OXML_Element_Field::addToPT(PD_Document * pDocument)
 			format = "meta_comments";
 			break;
 		}
+		
+		case fd_Field::FD_Footnote_Ref:
+		{
+			format = "footnote_ref";
+			break;
+		}
 
 		//TODO: more to come here	
 		default:
@@ -551,12 +557,40 @@ UT_Error OXML_Element_Field::addToPT(PD_Document * pDocument)
 		}
 	};
 
-	const gchar *field_fmt[3];
-	field_fmt[0] = "type";
-	field_fmt[1] = format;
-	field_fmt[2] = 0;
+	if(fieldType != fd_Field::FD_Footnote_Ref)
+	{
+		const gchar *field_fmt[3];
+		field_fmt[0] = "type";
+		field_fmt[1] = format;
+		field_fmt[2] = 0;
 
-	return pDocument->appendObject(PTO_Field, field_fmt) ? UT_OK : UT_ERROR;
+		if(!pDocument->appendObject(PTO_Field, field_fmt))
+			return UT_ERROR;
+	}
+	else
+	{
+		const gchar *field_fmt[5];
+		field_fmt[0] = "type";
+		field_fmt[1] = format;
+		field_fmt[2] = "footnote-id";
+		field_fmt[3] = getId().c_str();
+		field_fmt[4] = 0;
+
+		if(!pDocument->appendObject(PTO_Field, field_fmt))
+			return UT_ERROR;
+
+		OXML_Document* pOXMLDoc = OXML_Document::getInstance();
+		OXML_SharedSection sharedSection = pOXMLDoc->getFootnote(getId());
+		OXML_Section* footnoteSection = sharedSection.get();
+
+		if(footnoteSection && (footnoteSection->addToPTAsFootnote(pDocument) != UT_OK))
+		{
+			UT_DEBUGMSG(("FRT:OpenXML importer can't add section as footnote\n"));
+			return UT_ERROR;			
+		}
+	}
+
+	return addChildrenToPT(pDocument);
 }
 
 void OXML_Element_Field::setFieldType(const std::string & type)

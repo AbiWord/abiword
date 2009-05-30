@@ -86,6 +86,11 @@ UT_Error IE_Imp_OpenXML::_loadFile (GsfInput * oo_src)
 
 	UT_DEBUGMSG(("Building the data model...\n"));
 	//These calls build the data model
+	if (UT_OK != (ret = mgr->parseDocumentFootnotes()))
+	{
+		UT_DEBUGMSG(("OpenXML import: failed to parse the document footnotes\n"));
+	}
+
 	if (UT_OK != (ret = mgr->parseDocumentTheme()))
 	{
 		UT_DEBUGMSG(("OpenXML import: failed to parse the document theme\n"));

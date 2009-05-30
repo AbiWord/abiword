@@ -390,6 +390,47 @@ UT_Error OXML_Section::addToPT(PD_Document * pDocument)
 	return ret;
 }
 
+UT_Error OXML_Section::addToPTAsFootnote(PD_Document * pDocument)
+{
+	UT_Error ret = UT_OK;
+	const gchar *attr[3];
+	attr[0] = "footnote-id";
+	attr[1] = m_id.c_str();
+	attr[2] = 0;
+
+	ret = pDocument->appendStrux(PTX_SectionFootnote, attr) ? UT_OK : UT_ERROR;
+	UT_return_val_if_fail(ret == UT_OK, ret);
+
+	const gchar *field_fmt[5];
+	field_fmt[0] = "type";
+	field_fmt[1] = "footnote_anchor";
+	field_fmt[2] = "footnote-id";
+	field_fmt[3] = m_id.c_str();
+	field_fmt[4] = 0;
+
+	if(!pDocument->appendObject(PTO_Field, field_fmt))
+		return UT_ERROR;
+
+	if((m_children.size() == 1) && m_children[0].get() && ((m_children[0].get())->getTag() == P_TAG))
+	{
+		//skip the paragraph and directly add its children
+		ret = m_children[0]->addChildrenToPT(pDocument);
+		UT_return_val_if_fail(ret == UT_OK, ret);
+	}
+	else
+	{
+		//footnote might include other containers such as tables, so don't skip anything
+		OXML_ElementVector::size_type i;
+		for (i = 0; i < m_children.size(); i++)
+		{
+			ret = m_children[i]->addToPT(pDocument);
+			UT_return_val_if_fail(ret == UT_OK, ret);
+		}
+	}
+
+	return pDocument->appendStrux(PTX_EndFootnote, NULL) ? UT_OK : UT_ERROR;
+}
+
 UT_Error OXML_Section::addToPTAsHdrFtr(PD_Document * pDocument)
 {
 	UT_Error ret = UT_OK;

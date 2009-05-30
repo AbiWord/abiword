@@ -153,6 +153,15 @@ UT_Error OXMLi_PackageManager::parseDocumentNumbering()
 	return parseChildByType(doc, NUMBERING_PART, &listener); 
 }
 
+UT_Error OXMLi_PackageManager::parseDocumentFootnotes()
+{
+	GsfInput * doc = _getDocumentStream();
+	UT_return_val_if_fail(doc != NULL, UT_ERROR);
+	OXMLi_StreamListener listener;
+	listener.setupStates(FOOTNOTES_PART);
+	return parseChildByType(doc, FOOTNOTES_PART, &listener); 
+}
+
 GsfInput* OXMLi_PackageManager::getChildById( GsfInput * parent, const char * id )
 {
 	return gsf_open_pkg_get_rel_by_id(parent, id);

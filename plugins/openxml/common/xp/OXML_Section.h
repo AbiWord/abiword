@@ -97,6 +97,7 @@ public:
 	*/
 	UT_Error addToPT(PD_Document * pDocument);
 	UT_Error addToPTAsHdrFtr(PD_Document * pDocument);
+	UT_Error addToPTAsFootnote(PD_Document * pDocument);
 
 	void setTarget(int target);
 	bool hasFirstPageHdrFtr();

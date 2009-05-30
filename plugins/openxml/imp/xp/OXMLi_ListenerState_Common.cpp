@@ -435,7 +435,7 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				const gchar * val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
 				UT_return_if_fail( this->_error_if_fail(val != NULL) );
 
-				OXML_SharedSection last = OXML_Document::getCurrentSection();
+				OXML_SharedSection last = rqst->sect_stck->top();
 				if (!strcmp(val, "continuous")) {
 					last->setBreakType(CONTINUOUS_BREAK);
 				} else if (!strcmp(val, "evenPage")) {
@@ -448,9 +448,9 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				rqst->handled = true;
 
 			} else if (nameMatches(rqst->pName, NS_W_KEY, "footerReference")) {
-				const gchar * id = attrMatches(NS_W_KEY, "id", rqst->ppAtts);
+				const gchar * id = attrMatches(NS_R_KEY, "id", rqst->ppAtts);
 				UT_return_if_fail( this->_error_if_fail(id != NULL) );
-				OXML_SharedSection last = OXML_Document::getCurrentSection();
+				OXML_SharedSection last = rqst->sect_stck->top();
 
 				OXMLi_PackageManager * mgr = OXMLi_PackageManager::getInstance();
 				UT_return_if_fail( _error_if_fail( UT_OK == mgr->parseDocumentHdrFtr(id) ) );
@@ -475,9 +475,9 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				UT_return_if_fail(_error_if_fail( UT_OK == ftr->setAttribute("type", type) ));
 
 			} else if (nameMatches(rqst->pName, NS_W_KEY, "headerReference")) {
-				const gchar * id = attrMatches(NS_W_KEY, "id", rqst->ppAtts);
+				const gchar * id = attrMatches(NS_R_KEY, "id", rqst->ppAtts);
 				UT_return_if_fail( this->_error_if_fail(id != NULL) );
-				OXML_SharedSection last = OXML_Document::getCurrentSection();
+				OXML_SharedSection last = rqst->sect_stck->top();
 
 				OXMLi_PackageManager * mgr = OXMLi_PackageManager::getInstance();
 				UT_return_if_fail( _error_if_fail( UT_OK == mgr->parseDocumentHdrFtr(id) ) );
@@ -511,11 +511,21 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				if(!sep)
 					sep = "off";
 				
-				OXML_SharedSection last = OXML_Document::getCurrentSection();
+				OXML_SharedSection last = rqst->sect_stck->top();
 				last->setProperty("columns", num);
 				last->setProperty("column-line", sep);
 			}
 		}
+
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "footnoteReference")) {
+		const gchar * id = attrMatches(NS_W_KEY, "id", rqst->ppAtts);
+		if(id)
+		{
+			OXML_SharedElement footnote(new OXML_Element_Field(id, fd_Field::FD_Footnote_Ref, NULL));
+			rqst->stck->push(footnote);
+		}
+		rqst->handled = true;
+				
 
 /******* END OF SECTION FORMATTING ********/
 
@@ -560,7 +570,7 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 		if (rqst->stck->size() == 1) { //Only the paragraph is on the stack, append to section
 			OXML_SharedElement elem = rqst->stck->top();
 			UT_return_if_fail( this->_error_if_fail(elem.get() != NULL) );
-			OXML_SharedSection sect = OXML_Document::getCurrentSection();
+			OXML_SharedSection sect = rqst->sect_stck->top();
 			UT_return_if_fail( this->_error_if_fail(sect.get() != NULL) );
 			UT_return_if_fail( this->_error_if_fail(UT_OK == sect->appendElement(elem) ) );
 			rqst->stck->pop();
@@ -573,7 +583,8 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 			OXML_Document * doc = OXML_Document::getInstance();
 			UT_return_if_fail(_error_if_fail(doc != NULL));
 			OXML_SharedSection sect(new OXML_Section());
-			UT_return_if_fail(_error_if_fail( UT_OK == doc->appendSection(sect) ));
+
+			rqst->sect_stck->push(sect);
 			m_pendingSectBreak = false;
 		}
 
@@ -587,7 +598,7 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 		std::string contextTag = rqst->context->back();
 		if (contextMatches(contextTag, NS_W_KEY, "pPr") ||
 			contextMatches(contextTag, NS_W_KEY, "body")) {
-			OXML_SharedSection sect = OXML_Document::getCurrentSection();
+			OXML_SharedSection sect = rqst->sect_stck->top();
 			UT_return_if_fail(_error_if_fail(sect.get() != NULL));
 			OXML_SharedElement dummy = rqst->stck->top();
 			const gchar ** atts = dummy->getAttributes();
@@ -635,6 +646,9 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 			rqst->handled = true;
 		}
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "br")) {
+		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) );
+		rqst->handled = true;
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "footnoteReference")) {
 		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) );
 		rqst->handled = true;
 	}
