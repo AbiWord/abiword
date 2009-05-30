@@ -173,3 +173,7 @@ endif # TOOLKIT_COCOA
 CLEANFILES = \
 	abiword.dll.a
 
+
+EXTRA_DIST = wp/main/win/Win32Main.rc \
+	wp/main/win/AbiWord.exe.MANIFEST \
+	$(NULL)
