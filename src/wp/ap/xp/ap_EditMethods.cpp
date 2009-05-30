@@ -7657,6 +7657,7 @@ UT_return_val_if_fail(pDialog, false);
 		// to set the field (by passing "").
 
 		const gchar *szFontFamily = UT_getAttribute("font-family", props_in);
+		const gchar *szTextTransform = UT_getAttribute("text-transform", props_in);
 		const gchar *szFontSize = UT_getAttribute("font-size", props_in);
 		const gchar *szFontWeight = UT_getAttribute("font-weight", props_in);
 		const gchar *szFontStyle = UT_getAttribute("font-style", props_in);
@@ -7664,6 +7665,7 @@ UT_return_val_if_fail(pDialog, false);
 		const gchar *szBGColor = UT_getAttribute("bgcolor", props_in);
 
 		const std::string sFontFamily = (szFontFamily ? szFontFamily : "");
+		const std::string sTextTransform = (szTextTransform ? szTextTransform : "");
 		const std::string sFontSize = (szFontSize ? szFontSize : "");
 		const std::string sFontWeight = (szFontWeight ? szFontWeight : "");
 		const std::string sFontStyle = (szFontStyle ? szFontStyle : "");
@@ -7671,6 +7673,7 @@ UT_return_val_if_fail(pDialog, false);
 		const std::string sBGColor = (szBGColor ? szBGColor : "");
 
 		pDialog->setFontFamily(sFontFamily);
+		pDialog->setTextTransform(sTextTransform);
 		pDialog->setFontSize(sFontSize);
 		pDialog->setFontWeight(sFontWeight);
 		pDialog->setFontStyle(sFontStyle);
@@ -7759,12 +7762,18 @@ UT_return_val_if_fail(pDialog, false);
 	if (bOK)
 	{
 		UT_uint32  k = 0;
-		const gchar * props_out[19];
+		const gchar * props_out[21];
 		const gchar * s;
 
 		if (pDialog->getChangedFontFamily(&s))
 		{
 			props_out[k++] = "font-family";
+			props_out[k++] = s;
+		}
+
+		if (pDialog->getChangedTextTransform(&s))
+		{
+			props_out[k++] = "text-transform";
 			props_out[k++] = s;
 		}
 

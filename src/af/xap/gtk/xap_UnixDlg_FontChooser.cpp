@@ -342,6 +342,30 @@ void XAP_UnixDialog_FontChooser::transparencyChanged(void)
 	updatePreview();
 }
 
+void XAP_UnixDialog_FontChooser::textTransformChanged(void)
+{
+#if 0
+	// todo
+	static char szTextTransform[60];
+	GtkTreeSelection *selection;
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	gchar *text;
+
+	model = gtk_tree_view_get_model(GTK_TREE_VIEW(m_fontList));
+	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(m_fontList));
+	if ( gtk_tree_selection_get_selected (selection, &model, &iter) )
+	{
+		gtk_tree_model_get(model, &iter, TEXT_COLUMN, &text, -1);
+		g_snprintf(szTextTransform, 50, "%s",text);
+		g_free(text), text = NULL;
+		addOrReplaceVecProp("text-transform",static_cast<gchar*>(szTextTransform));
+	}
+#endif
+
+	updatePreview();
+}
+
 void XAP_UnixDialog_FontChooser::fontRowChanged(void)
 {
 	static char szFontFamily[60];

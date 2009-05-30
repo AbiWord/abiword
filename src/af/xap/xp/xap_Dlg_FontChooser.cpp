@@ -48,6 +48,7 @@ XAP_Dialog_FontChooser::XAP_Dialog_FontChooser(XAP_DialogFactory * pDlgFactory, 
 	m_bSuperScript			= false;
 	m_bSubScript			= false;
 	m_bChangedFontFamily	= false;
+	m_bChangedTextTransform	= false;
 	m_bChangedFontSize		= false;
 	m_bChangedFontWeight	= false;
 	m_bChangedFontStyle		= false;
@@ -204,6 +205,12 @@ void XAP_Dialog_FontChooser::setFontFamily(const std::string& sFontFamily)
 	addOrReplaceVecProp("font-family",sFontFamily);
 }
 
+void XAP_Dialog_FontChooser::setTextTransform(const std::string& sTextTransform)
+{
+	m_sTextTransform = sTextTransform;
+	addOrReplaceVecProp("text-transform",sTextTransform);
+}
+
 void XAP_Dialog_FontChooser::setFontSize(const std::string& sFontSize)
 {
 	m_sFontSize = sFontSize;
@@ -329,6 +336,17 @@ bool XAP_Dialog_FontChooser::getChangedFontFamily(const gchar ** pszFontFamily) 
 		*pszFontFamily = getVal("font-family").c_str();
 	else if(pszFontFamily)
 		*pszFontFamily = m_sFontFamily.c_str();
+	return bchanged;
+}
+
+bool XAP_Dialog_FontChooser::getChangedTextTransform(const gchar ** pszTextTransform) const
+{
+	bool bchanged = didPropChange(m_sTextTransform,getVal("text-transform"));
+	bool useVal = (bchanged && !m_bChangedTextTransform);
+	if (pszTextTransform && useVal)
+		*pszTextTransform = getVal("text-transform").c_str();
+	else if(pszTextTransform)
+		*pszTextTransform = m_sTextTransform.c_str();
 	return bchanged;
 }
 

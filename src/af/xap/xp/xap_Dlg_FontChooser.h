@@ -83,7 +83,7 @@ public:
 	void                            setSuperScript(bool bSuperScript);
 	void                            setSubScript(bool bSubScript);
 	void                            setBackGroundColor (const gchar * pBackGroundColor);
-
+	void                            setTextTransform (const std::string& pTextTransform);
 
 	XAP_Dialog_FontChooser::tAnswer	getAnswer(void) const;
 
@@ -93,6 +93,7 @@ public:
 	// they changed it or not.  this value is a static string in
 	// the dialog and must be valid only until the dialog is released.
 	bool                            didPropChange(const std::string & v1, const std::string & v2) const;
+	bool							getChangedTextTransform(const gchar ** pszTextTransform) const;
 	bool							getChangedFontFamily(const gchar ** pszFontFamily) const;
 	bool							getChangedFontSize(const gchar ** pszFontSize) const;
 	bool							getChangedFontWeight(const gchar ** pszFontWeight) const;
@@ -130,6 +131,7 @@ protected:
 	bool                            m_bHidden;				/* input/output */
 	bool                            m_bSuperScript;			/* input/output */
 	bool                            m_bSubScript;			/* input/output */
+	std::string                     m_sTextTransform;       /* input/output */
 
 	PropMap                         m_mapProps; // Holds the current
 	XAP_Preview_FontPreview *       m_pFontPreview;
@@ -148,6 +150,7 @@ protected:
 	bool                            m_bChangedHidden;		/* output */
 	bool                            m_bChangedSuperScript;	/* output */
 	bool                            m_bChangedSubScript;	/* output */
+	bool                            m_bChangedTextTransform;	/* output */
 
 	UT_UCSChar *                    m_drawString;
 };

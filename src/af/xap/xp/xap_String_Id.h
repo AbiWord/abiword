@@ -149,6 +149,11 @@ dcl(DLG_UFS_ScriptLabel,		"Script:")
 dcl(DLG_UFS_SampleFrameLabel,	"Sample")
 dcl(DLG_UFS_SuperScript, 		"Superscript")
 dcl(DLG_UFS_SubScript, 			"Subscript")
+dcl(DLG_UFS_Effects_None, "(None)")
+dcl(DLG_UFS_Effects_UpperCase, "Uppercase")
+dcl(DLG_UFS_Effects_LowerCase, "Lowercase")
+dcl(DLG_UFS_Effects_TitleCase, "Title Case")
+dcl(DLG_UFS_Effects_SmallCaps, "Small Capitals")
 
 /* Unix FileOpenSaveAs dialog */
 dcl(DLG_FOSA_OpenTitle, 				"Open File")

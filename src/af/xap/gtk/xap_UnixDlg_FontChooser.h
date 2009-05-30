@@ -53,6 +53,7 @@ public:
 	void                    sizeRowChanged(void);
 	void                    fgColorChanged(void);
 	void                    bgColorChanged(void);
+	void                    textTransformChanged(void);
 
 	// the state of what data is hidden and what is public is
 	// pretty grave here.
