@@ -3706,7 +3706,9 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs,
 			{
 				// verify that the listener used our callback
 				if(pListener->getType() < PTL_CollabExport)
+				{
 					UT_ASSERT_HARMLESS(pfsNew->getFmtHandle(lid));
+				}
 			}
 		}
 	}

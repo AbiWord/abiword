@@ -555,7 +555,7 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND /*hWnd*/
 					// dynamic label has changed
 					XAP_Menu_Id id = MenuIdFromWmCommand(cmd);
 					EV_Menu_Item*	item;
-					for(UT_uint32 i = 0; i< m_vecItems.getItemCount(); i++)
+					for(UT_sint32 i = 0; i< m_vecItems.getItemCount(); i++)
 					{
 						item = (EV_Menu_Item*)m_vecItems.getNthItem(i);
 						if (id==item->id)

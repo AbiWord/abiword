@@ -302,12 +302,16 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 		len_out = sizeof(charData);
 
 		if ((ret = UT_iconv( m_iconv, &In, &len_in, &Out, &len_out )) == -1)
+		{
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
 		if (Out == (char *)charData)
 		{
 			// m_iconv is waiting for a combination keystroke. Flush the buffer
 		    if ((ret = UT_iconv( m_iconv, NULL, &len_in, &Out, &len_out )) == -1)
+			{
 			    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			}
 		}
 	}
 	else
