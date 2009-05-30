@@ -700,7 +700,6 @@ void AP_Win32Dialog_Options_General::_onInitDialog()
 	const gchar *pLangCode;
 	const gchar *pLang;
 	UT_Language	lang;	
-	UT_uint32 i;
 	int nIndex;
 	const XAP_StringSet * pSS = getApp()->getStringSet();	
 	AP_Win32App * pApp = static_cast<AP_Win32App*>(XAP_App::getApp());
@@ -718,7 +717,7 @@ void AP_Win32Dialog_Options_General::_onInitDialog()
 	
 	// Populate values in the _COMBO_UNITS
 	HWND hwndAlign = GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_COMBO_UNITS);
-	for(i = 0; i < SIZE_aAlignUnit; i++ )
+	for (UT_uint32 i = 0; i < SIZE_aAlignUnit; i++)
 	{
 		SendMessage(hwndAlign, CB_ADDSTRING, 0, (LPARAM)pSS->getValue(s_aAlignUnit[i].id));
 	}	
@@ -727,7 +726,7 @@ void AP_Win32Dialog_Options_General::_onInitDialog()
 	UINT boldFields[]={AP_RID_DIALOG_OPTIONS_STATIC_UI, AP_RID_DIALOG_OPTIONS_STATIC_APPSTARTUP, 
 		AP_RID_DIALOG_OPTIONS_STATIC_LANGUAGE, 0};
 
-	for(i=0; boldFields[i]; i++) 
+	for(UT_uint32 i = 0; boldFields[i]; i++) 
 	{
 		SendMessage(GetDlgItem(getHandle(), boldFields[i]), WM_SETFONT, 
 			(WPARAM)(AP_Win32Dialog_Options*)getContainer()->getBoldFontHandle(), MAKELPARAM(FALSE /* Redraw */, 0));
@@ -738,7 +737,7 @@ void AP_Win32Dialog_Options_General::_onInitDialog()
 	if (m_pVecUILangs->getItemCount())		
 	{	
 		/* Fill all up languages names for UI*/
-		for (i=0; i < m_pVecUILangs->getItemCount(); i++)
+		for (UT_sint32 i = 0; i < m_pVecUILangs->getItemCount(); i++)
 		{
 			pLangCode = (const char *) m_pVecUILangs->getNthItem(i);
 			

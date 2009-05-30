@@ -8464,7 +8464,9 @@ static bool _toggleSpanOrBlock(FV_View * pView,
 			{
 				// yep...
 				if (strstr(s, vOff))
+				{
 					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+				}
 
 				// ... take it out
 				int len = strlen(s);
