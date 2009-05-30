@@ -151,146 +151,145 @@ rc2files = \
 	ap_Win32Res_SplitCells.rc2 \
 	ap_Win32Res_Version.rc2
 
-iconfiles = ToolbarIcons/1column.bmp \
-ToolbarIcons/2column.bmp \
-ToolbarIcons/3column.bmp \
-ToolbarIcons/add_column.bmp \
-ToolbarIcons/add_row.bmp \
-ToolbarIcons/align_center.bmp \
-ToolbarIcons/align_justify.bmp \
-ToolbarIcons/align_left.bmp \
-ToolbarIcons/align_right.bmp \
-ToolbarIcons/color_back.bmp \
-ToolbarIcons/color_fore.bmp \
-ToolbarIcons/delete_column.bmp \
-ToolbarIcons/delete_row.bmp \
-ToolbarIcons/double_space.bmp \
-ToolbarIcons/edit_copy.bmp \
-ToolbarIcons/edit_cut.bmp \
-ToolbarIcons/edit_footer.bmp \
-ToolbarIcons/edit_header.bmp \
-ToolbarIcons/edit_paste.bmp \
-ToolbarIcons/edit_redo.bmp \
-ToolbarIcons/edit_removefooter.bmp \
-ToolbarIcons/edit_removeheader.bmp \
-ToolbarIcons/edit_undo.bmp \
-ToolbarIcons/file_new.bmp \
-ToolbarIcons/file_open.bmp \
-ToolbarIcons/file_print.bmp \
-ToolbarIcons/file_print_preview.bmp \
-ToolbarIcons/file_saveas.bmp \
-ToolbarIcons/file_save.bmp \
-ToolbarIcons/fmt_bold.bmp \
-ToolbarIcons/fmt_bookmark.bmp \
-ToolbarIcons/fmt_bottomline.bmp \
-ToolbarIcons/fmt_dir_override_ltr.bmp \
-ToolbarIcons/fmt_dir_override_rtl.bmp \
-ToolbarIcons/fmt_dom_direction.bmp \
-ToolbarIcons/fmt_hyperlink.bmp \
-ToolbarIcons/fmt_italic.bmp \
-ToolbarIcons/fmt_overline.bmp \
-ToolbarIcons/fmtpainter.bmp \
-ToolbarIcons/fmt_strike.bmp \
-ToolbarIcons/fmt_subscript.bmp \
-ToolbarIcons/fmt_superscript.bmp \
-ToolbarIcons/fmt_topline.bmp \
-ToolbarIcons/fmt_underline.bmp \
-ToolbarIcons/ft_linebottom.bmp \
-ToolbarIcons/ft_lineleft.bmp \
-ToolbarIcons/ft_lineright.bmp \
-ToolbarIcons/ft_linetop.bmp \
-ToolbarIcons/help.bmp \
-ToolbarIcons/img.bmp \
-ToolbarIcons/indent.bmp \
-ToolbarIcons/insert_symbol.bmp \
-ToolbarIcons/insert_table.bmp \
-ToolbarIcons/lists_bullets.bmp \
-ToolbarIcons/lists_numbers.bmp \
-ToolbarIcons/menu_abiword_about.bmp \
-ToolbarIcons/menu_abiword_add_column.bmp \
-ToolbarIcons/menu_abiword_add_row.bmp \
-ToolbarIcons/menu_abiword_align_center.bmp \
-ToolbarIcons/menu_abiword_align_justify.bmp \
-ToolbarIcons/menu_abiword_align_left.bmp \
-ToolbarIcons/menu_abiword_align_right.bmp \
-ToolbarIcons/menu_abiword_bold.bmp \
-ToolbarIcons/menu_abiword_book.bmp \
-ToolbarIcons/menu_abiword_bookmark.bmp \
-ToolbarIcons/menu_abiword_bottomline.bmp \
-ToolbarIcons/menu_abiword_clear.bmp \
-ToolbarIcons/menu_abiword_close.bmp \
-ToolbarIcons/menu_abiword_copy.bmp \
-ToolbarIcons/menu_abiword_credits.bmp \
-ToolbarIcons/menu_abiword_cut.bmp \
-ToolbarIcons/menu_abiword_delete_column.bmp \
-ToolbarIcons/menu_abiword_delete_row.bmp \
-ToolbarIcons/menu_abiword_delete_table.bmp \
-ToolbarIcons/menu_abiword_execute.bmp \
-ToolbarIcons/menu_abiword_exit.bmp \
-ToolbarIcons/menu_abiword_export.bmp \
-ToolbarIcons/menu_abiword_font.bmp \
-ToolbarIcons/menu_abiword_goto.bmp \
-ToolbarIcons/menu_abiword_help.bmp \
-ToolbarIcons/menu_abiword_hyperlink.bmp \
-ToolbarIcons/menu_abiword_img.bmp \
-ToolbarIcons/menu_abiword_import.bmp \
-ToolbarIcons/menu_abiword_insert_symbol.bmp \
-ToolbarIcons/menu_abiword_insert_table.bmp \
-ToolbarIcons/menu_abiword_italic.bmp \
-ToolbarIcons/menu_abiword_merge_cells.bmp \
-ToolbarIcons/menu_abiword_new.bmp \
-ToolbarIcons/menu_abiword_open.bmp \
-ToolbarIcons/menu_abiword_overline.bmp \
-ToolbarIcons/menu_abiword_paste.bmp \
-ToolbarIcons/menu_abiword_preferences.bmp \
-ToolbarIcons/menu_abiword_print.bmp \
-ToolbarIcons/menu_abiword_print_preview.bmp \
-ToolbarIcons/menu_abiword_print_setup.bmp \
-ToolbarIcons/menu_abiword_properties.bmp \
-ToolbarIcons/menu_abiword_redo.bmp \
-ToolbarIcons/menu_abiword_replace.bmp \
-ToolbarIcons/menu_abiword_revert.bmp \
-ToolbarIcons/menu_abiword_saveas.bmp \
-ToolbarIcons/menu_abiword_save.bmp \
-ToolbarIcons/menu_abiword_search.bmp \
-ToolbarIcons/menu_abiword_spellcheck.bmp \
-ToolbarIcons/menu_abiword_split_cells.bmp \
-ToolbarIcons/menu_abiword_strike.bmp \
-ToolbarIcons/menu_abiword_subscript.bmp \
-ToolbarIcons/menu_abiword_superscript.bmp \
-ToolbarIcons/menu_abiword_topline.bmp \
-ToolbarIcons/menu_abiword_underline.bmp \
-ToolbarIcons/menu_abiword_undo.bmp \
-ToolbarIcons/mergeabove.bmp \
-ToolbarIcons/mergebelow.bmp \
-ToolbarIcons/merge_cells.bmp \
-ToolbarIcons/mergeleft.bmp \
-ToolbarIcons/mergeright.bmp \
-ToolbarIcons/middle_space.bmp \
-ToolbarIcons/optionsdlg.bmp \
-ToolbarIcons/para_0before.bmp \
-ToolbarIcons/para_12before.bmp \
-ToolbarIcons/script_play.bmp \
-ToolbarIcons/single_space.bmp \
-ToolbarIcons/spellcheck.bmp \
-ToolbarIcons/splitabove.bmp \
-ToolbarIcons/splitbelow.bmp \
-ToolbarIcons/split_cells.bmp \
-ToolbarIcons/splithorimid.bmp \
-ToolbarIcons/splitleft.bmp \
-ToolbarIcons/splitright.bmp \
-ToolbarIcons/splitvertmid.bmp \
-ToolbarIcons/tb_add_column.bmp \
-ToolbarIcons/tb_add_row.bmp \
-ToolbarIcons/tb_delete_column.bmp \
-ToolbarIcons/tb_delete_row.bmp \
-ToolbarIcons/tb_merge_cells.bmp \
-ToolbarIcons/tb_split_cells.bmp \
-ToolbarIcons/transparentlang.bmp \
-ToolbarIcons/unindent.bmp \
-ToolbarIcons/view_showpara.bmp \
-	$(NULL)
-
+iconfiles = \
+	ToolbarIcons/1column.bmp \
+	ToolbarIcons/2column.bmp \
+	ToolbarIcons/3column.bmp \
+	ToolbarIcons/add_column.bmp \
+	ToolbarIcons/add_row.bmp \
+	ToolbarIcons/align_center.bmp \
+	ToolbarIcons/align_justify.bmp \
+	ToolbarIcons/align_left.bmp \
+	ToolbarIcons/align_right.bmp \
+	ToolbarIcons/color_back.bmp \
+	ToolbarIcons/color_fore.bmp \
+	ToolbarIcons/delete_column.bmp \
+	ToolbarIcons/delete_row.bmp \
+	ToolbarIcons/double_space.bmp \
+	ToolbarIcons/edit_copy.bmp \
+	ToolbarIcons/edit_cut.bmp \
+	ToolbarIcons/edit_footer.bmp \
+	ToolbarIcons/edit_header.bmp \
+	ToolbarIcons/edit_paste.bmp \
+	ToolbarIcons/edit_redo.bmp \
+	ToolbarIcons/edit_removefooter.bmp \
+	ToolbarIcons/edit_removeheader.bmp \
+	ToolbarIcons/edit_undo.bmp \
+	ToolbarIcons/file_new.bmp \
+	ToolbarIcons/file_open.bmp \
+	ToolbarIcons/file_print.bmp \
+	ToolbarIcons/file_print_preview.bmp \
+	ToolbarIcons/file_saveas.bmp \
+	ToolbarIcons/file_save.bmp \
+	ToolbarIcons/fmt_bold.bmp \
+	ToolbarIcons/fmt_bookmark.bmp \
+	ToolbarIcons/fmt_bottomline.bmp \
+	ToolbarIcons/fmt_dir_override_ltr.bmp \
+	ToolbarIcons/fmt_dir_override_rtl.bmp \
+	ToolbarIcons/fmt_dom_direction.bmp \
+	ToolbarIcons/fmt_hyperlink.bmp \
+	ToolbarIcons/fmt_italic.bmp \
+	ToolbarIcons/fmt_overline.bmp \
+	ToolbarIcons/fmtpainter.bmp \
+	ToolbarIcons/fmt_strike.bmp \
+	ToolbarIcons/fmt_subscript.bmp \
+	ToolbarIcons/fmt_superscript.bmp \
+	ToolbarIcons/fmt_topline.bmp \
+	ToolbarIcons/fmt_underline.bmp \
+	ToolbarIcons/ft_linebottom.bmp \
+	ToolbarIcons/ft_lineleft.bmp \
+	ToolbarIcons/ft_lineright.bmp \
+	ToolbarIcons/ft_linetop.bmp \
+	ToolbarIcons/help.bmp \
+	ToolbarIcons/img.bmp \
+	ToolbarIcons/indent.bmp \
+	ToolbarIcons/insert_symbol.bmp \
+	ToolbarIcons/insert_table.bmp \
+	ToolbarIcons/lists_bullets.bmp \
+	ToolbarIcons/lists_numbers.bmp \
+	ToolbarIcons/menu_abiword_about.bmp \
+	ToolbarIcons/menu_abiword_add_column.bmp \
+	ToolbarIcons/menu_abiword_add_row.bmp \
+	ToolbarIcons/menu_abiword_align_center.bmp \
+	ToolbarIcons/menu_abiword_align_justify.bmp \
+	ToolbarIcons/menu_abiword_align_left.bmp \
+	ToolbarIcons/menu_abiword_align_right.bmp \
+	ToolbarIcons/menu_abiword_bold.bmp \
+	ToolbarIcons/menu_abiword_book.bmp \
+	ToolbarIcons/menu_abiword_bookmark.bmp \
+	ToolbarIcons/menu_abiword_bottomline.bmp \
+	ToolbarIcons/menu_abiword_clear.bmp \
+	ToolbarIcons/menu_abiword_close.bmp \
+	ToolbarIcons/menu_abiword_copy.bmp \
+	ToolbarIcons/menu_abiword_credits.bmp \
+	ToolbarIcons/menu_abiword_cut.bmp \
+	ToolbarIcons/menu_abiword_delete_column.bmp \
+	ToolbarIcons/menu_abiword_delete_row.bmp \
+	ToolbarIcons/menu_abiword_delete_table.bmp \
+	ToolbarIcons/menu_abiword_execute.bmp \
+	ToolbarIcons/menu_abiword_exit.bmp \
+	ToolbarIcons/menu_abiword_export.bmp \
+	ToolbarIcons/menu_abiword_font.bmp \
+	ToolbarIcons/menu_abiword_goto.bmp \
+	ToolbarIcons/menu_abiword_help.bmp \
+	ToolbarIcons/menu_abiword_hyperlink.bmp \
+	ToolbarIcons/menu_abiword_img.bmp \
+	ToolbarIcons/menu_abiword_import.bmp \
+	ToolbarIcons/menu_abiword_insert_symbol.bmp \
+	ToolbarIcons/menu_abiword_insert_table.bmp \
+	ToolbarIcons/menu_abiword_italic.bmp \
+	ToolbarIcons/menu_abiword_merge_cells.bmp \
+	ToolbarIcons/menu_abiword_new.bmp \
+	ToolbarIcons/menu_abiword_open.bmp \
+	ToolbarIcons/menu_abiword_overline.bmp \
+	ToolbarIcons/menu_abiword_paste.bmp \
+	ToolbarIcons/menu_abiword_preferences.bmp \
+	ToolbarIcons/menu_abiword_print.bmp \
+	ToolbarIcons/menu_abiword_print_preview.bmp \
+	ToolbarIcons/menu_abiword_print_setup.bmp \
+	ToolbarIcons/menu_abiword_properties.bmp \
+	ToolbarIcons/menu_abiword_redo.bmp \
+	ToolbarIcons/menu_abiword_replace.bmp \
+	ToolbarIcons/menu_abiword_revert.bmp \
+	ToolbarIcons/menu_abiword_saveas.bmp \
+	ToolbarIcons/menu_abiword_save.bmp \
+	ToolbarIcons/menu_abiword_search.bmp \
+	ToolbarIcons/menu_abiword_spellcheck.bmp \
+	ToolbarIcons/menu_abiword_split_cells.bmp \
+	ToolbarIcons/menu_abiword_strike.bmp \
+	ToolbarIcons/menu_abiword_subscript.bmp \
+	ToolbarIcons/menu_abiword_superscript.bmp \
+	ToolbarIcons/menu_abiword_topline.bmp \
+	ToolbarIcons/menu_abiword_underline.bmp \
+	ToolbarIcons/menu_abiword_undo.bmp \
+	ToolbarIcons/mergeabove.bmp \
+	ToolbarIcons/mergebelow.bmp \
+	ToolbarIcons/merge_cells.bmp \
+	ToolbarIcons/mergeleft.bmp \
+	ToolbarIcons/mergeright.bmp \
+	ToolbarIcons/middle_space.bmp \
+	ToolbarIcons/optionsdlg.bmp \
+	ToolbarIcons/para_0before.bmp \
+	ToolbarIcons/para_12before.bmp \
+	ToolbarIcons/script_play.bmp \
+	ToolbarIcons/single_space.bmp \
+	ToolbarIcons/spellcheck.bmp \
+	ToolbarIcons/splitabove.bmp \
+	ToolbarIcons/splitbelow.bmp \
+	ToolbarIcons/split_cells.bmp \
+	ToolbarIcons/splithorimid.bmp \
+	ToolbarIcons/splitleft.bmp \
+	ToolbarIcons/splitright.bmp \
+	ToolbarIcons/splitvertmid.bmp \
+	ToolbarIcons/tb_add_column.bmp \
+	ToolbarIcons/tb_add_row.bmp \
+	ToolbarIcons/tb_delete_column.bmp \
+	ToolbarIcons/tb_delete_row.bmp \
+	ToolbarIcons/tb_merge_cells.bmp \
+	ToolbarIcons/tb_split_cells.bmp \
+	ToolbarIcons/transparentlang.bmp \
+	ToolbarIcons/unindent.bmp \
+	ToolbarIcons/view_showpara.bmp
 
 EXTRA_DIST = \
 	$(rc2files) \
@@ -298,4 +297,3 @@ EXTRA_DIST = \
 	abiword_app_16.ico \
 	abiword_app_32.ico \
 	abiword_doc.ico
-
