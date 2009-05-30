@@ -4587,6 +4587,7 @@ void fp_TableContainer::queueResize(void)
 		}
 	}
 }
+
 void fp_TableContainer::layout(void)
 {
 	if(isThisBroken())
@@ -4595,17 +4596,327 @@ void fp_TableContainer::layout(void)
 		return;
 	}
 	xxx_UT_DEBUGMSG(("Doing Table layout %x \n",this));
-	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
+	
+	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());	
 	static fp_Requisition requisition;
 	static fp_Allocation alloc;
+	
 	sizeRequest(&requisition);
+	UT_DEBUGMSG(("ADITYA: Req: width = %d, height = %d\n", requisition.width, requisition.height ));
+
 	setX(m_iBorderWidth);
 	alloc.x = getX();
 	alloc.y = getY() + pTL->getTopOffset();
 	alloc.width = getWidth();
 	alloc.height = requisition.height + pTL->getTopOffset() + pTL->getBottomOffset();
+
+	UT_DEBUGMSG(("ADITYA: Alloc: width = %d, height = %d\n", alloc.width, alloc.height));
+	
 	sizeAllocate(&alloc);
 	setToAllocation();
+}
+
+/*
+ * This function sets the width allocations for the columns and then
+ * sets the widths of all the cells too. The heights of the cells may
+ * thus change.
+ */
+void fp_TableContainer::_size_allocate_pass_1(void)
+{
+	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());	
+	const UT_GenericVector<fl_ColProps*> * pVecColProps = pTL->getVecColProps();
+
+	//First set all fixed width columns to their 'fixed' widths.
+	for (UT_sint32 col = 0; col < pVecColProps->getItemCount(); col++)
+		getNthCol(col)->allocation = pVecColProps->getNthItem(col)->m_iColWidth;
+
+
+	if ( pVecColProps->getItemCount() >= getNumCols() )
+		//Nothing to do, since all columns are fixed width.
+		return;
+	
+	UT_DEBUGMSG(("ADITYA: No. of Col Props: %d\n", pVecColProps->getItemCount()));
+
+	//Adjust the remaining columns now.
+	if ( m_MyAllocation.width >= m_MyRequest.width ) 
+	{
+		/*
+		 * Since we may have extra space, we can expand (and allocate)
+		 * all non-fixed width columns to fill up the allocated width.
+		 * 
+		 * We evenly distribute the available surplus over the
+		 * non-fixed width columns.
+		 */
+
+		UT_sint32 extra_width = m_MyAllocation.width - m_MyRequest.width,
+			expandable_cols = getNumCols() - pVecColProps->getItemCount(),
+			rem, quo;
+
+		UT_DEBUGMSG(("ADITYA: expandable_cols: %d\n", expandable_cols));
+
+		
+		if ( expandable_cols > 0 ) 
+		{
+		
+			rem = extra_width % expandable_cols;
+			quo = extra_width / expandable_cols;
+			
+			for (UT_sint32 col = pVecColProps->getItemCount(); col < getNumCols(); col++)
+			{
+				getNthCol(col)->allocation = getNthCol(col)->requisition + quo + ((rem > 0) ? 1 : 0);
+				rem = ((rem > 0)? rem-- : 0);
+			}
+		}
+	}
+	else
+	{
+		/*
+		 * Here we need to shrink the non-fixed width cols to make it
+		 * fit within the allocated width.
+		 */
+		UT_sint32 shrink_width = m_MyRequest.width - m_MyAllocation.width,
+			shrinkable_cols = getNumCols() - pVecColProps->getItemCount(),
+			rem, quo;
+		
+		if ( shrinkable_cols > 0 )
+		{
+			rem = shrink_width % shrinkable_cols;
+			quo = shrink_width / shrinkable_cols;
+
+			//We will need a min. col. width to avoid getting negative
+			//column widths.
+			UT_sint32 allowed_min_col_width = 1;
+
+			for (UT_sint32 col = pVecColProps->getItemCount(); col < getNumCols(); col++)
+			{
+				getNthCol(col)->allocation = UT_MAX( allowed_min_col_width, getNthCol(col)->requisition - (quo + ((rem > 0) ? 1 : 0)) );
+				rem = ((rem > 0)? rem-- : 0);
+			}
+		}
+	}
+
+	
+	/*
+	 * Now set the widths of all cells. This will give them new heights.
+	 */
+	fp_CellContainer * child = static_cast<fp_CellContainer *>(getNthCon(0));
+	
+	for (; child; child = static_cast<fp_CellContainer *>(child->getNext())) 
+	{
+		UT_sint32 child_width = 0;
+		//for child that spans a single col
+		if ( child->getLeftAttach() == child->getRightAttach() - 1 )
+		{
+			child_width = getNthCol(child->getLeftAttach())->allocation;
+		}
+		else //for child that spans multiple cols
+		{
+			for( UT_sint32 col = child->getLeftAttach(); col < child->getRightAttach(); col++ ) 
+			{
+				child_width += getNthCol(col)->allocation;
+				if ( col + 1 < child->getRightAttach() )
+					child_width += getNthCol(col)->spacing;
+			}
+		}
+		child->setWidth(child_width);							
+		UT_DEBUGMSG(("ADITYA: child width: %d height %d\n", child_width, child->getSpannedHeight()));
+	}
+}
+
+/*
+ * This function sets the height allocation for rows.
+ */
+void fp_TableContainer::_size_allocate_pass_2(void)
+{	
+	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());	
+	const UT_GenericVector<fl_RowProps*> * pVecRowProps = pTL->getVecRowProps();
+
+	//First set all fixed height rows to their 'fixed' heights.
+	for (UT_sint32 row = 0; row < pVecRowProps->getItemCount(); row++)
+		getNthRow(row)->allocation = pVecRowProps->getNthItem(row)->m_iRowHeight;
+
+
+	if ( pVecRowProps->getItemCount() >= getNumRows() )
+		//Nothing to do, since all rows are fixed height.
+		return;
+	
+	//Since table can extend over multiple pages, we always grant the
+	//requested height for cells. The cells' heights need to be
+	//recomputed now - i.e. m_MyRequest.height is potentially
+	//incorrect now.
+
+
+	//So first recompute the requested height of all rows again.
+
+	//clear the old height requisitions.
+	for ( UT_sint32 row = 0; row < getNumRows(); row++ )
+		getNthRow(row)->requisition = 0;
+
+	fp_CellContainer * child = static_cast<fp_CellContainer *>(getNthCon(0));
+	
+	for (; child; child = static_cast<fp_CellContainer *>(child->getNext())) 
+	{
+		UT_sint32 child_height;
+
+		//Now handle the heights.
+		child_height = child->getHeight() + child->getTopPad() + child->getBotPad();
+		
+		//If child spans only one row.
+		if ( child->getTopAttach() == child->getBottomAttach() - 1 )
+		{
+			//ignore cells in fixed height rows.
+			if (child->getTopAttach() < pVecRowProps->getItemCount())
+				continue;
+
+			getNthRow(child->getTopAttach())->requisition = UT_MAX(getNthRow(child->getTopAttach())->requisition, child_height);			
+		}
+		else // child spans multiple rows 
+		{
+			UT_sint32 available_height = 0;
+			for (UT_sint32 row = child->getTopAttach(); row < child->getBottomAttach(); row++)
+			{
+				available_height += getNthRow(row)->requisition;
+				if (row + 1 < child->getBottomAttach())
+					available_height += getNthRow(row)->spacing;
+			}
+			
+			/* 
+			 * If the available height is insufficient, divide up the
+			 * required space evenly among the rows spanned.  If
+			 * the spanned rows include those that are of fixed
+			 * height, then divide up the space among the non-fixed
+			 * height rows only.
+			 */
+			if (available_height < child_height) 
+			{
+				UT_sint32 required_extra_height = child_height - available_height, 
+					rows_spanned = child->getBottomAttach() - child->getTopAttach(),
+					start_index = child->getTopAttach(), rem, quo;
+				
+				if (child->getTopAttach() < pVecRowProps->getItemCount())
+				{
+					rows_spanned = child->getBottomAttach() - pVecRowProps->getItemCount();
+					start_index = pVecRowProps->getItemCount();
+				}
+				
+				if ( rows_spanned > 0 )
+				{
+					rem = required_extra_height % rows_spanned;
+					quo = required_extra_height / rows_spanned;
+				
+					for (UT_sint32 row = start_index; row < child->getBottomAttach(); row++)
+					{
+						getNthRow(row)->requisition += quo + ((rem > 0) ? 1 : 0);
+						rem = ((rem > 0)? rem-- : 0);
+					}
+				}
+			}
+		}
+	}
+
+	/**Debug Code**/
+	for (UT_sint32 row = 0; row < getNumRows(); row++)
+	{
+		UT_DEBUGMSG(("Row height request: %d\n", getNthRow(row)->requisition));
+	}
+	/**End Debug Code**/
+
+	//Calc new height request.
+	UT_sint32 new_height_request = 0;
+	for (UT_sint32 row = 0; row < getNumRows(); row++)
+	{
+		if ( row < pVecRowProps->getItemCount() )
+			new_height_request += pVecRowProps->getNthItem(row)->m_iRowHeight;
+		else
+			new_height_request += getNthRow(row)->requisition;
+	}
+	
+	//Height requisitions have been recomputed.
+	m_MyAllocation.height = new_height_request + pTL->getTopOffset() + pTL->getBottomOffset();
+
+	//Allocate the row heights.
+	for (UT_sint32 row = 0; row < getNumRows(); row++)
+	{
+		if ( row < pVecRowProps->getItemCount() )
+			getNthRow(row)->allocation = pVecRowProps->getNthItem(row)->m_iRowHeight;
+		else
+			getNthRow(row)->allocation = getNthRow(row)->requisition;
+	}
+	
+}
+
+/*
+ * This pass sets the allocations of cells.
+ */
+void fp_TableContainer::_size_allocate_pass_3(void)
+{	
+	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
+	
+	//Cache the x-position of cols
+	getNthCol(0)->x = m_MyAllocation.x + m_iBorderWidth;
+	for ( UT_sint32 col = 1; col < getNumCols(); col++ ) 
+	{
+		getNthCol(col)->x = getNthCol(col-1)->x + getNthCol(col-1)->spacing + getNthCol(col-1)->allocation;
+	}
+	
+	//Cache the y-position of rows
+	getNthRow(0)->y = m_MyAllocation.y + m_iBorderWidth;
+	for ( UT_sint32 row = 1; row < getNumRows(); row++ ) 
+		getNthRow(row)->y = getNthRow(row-1)->y + getNthRow(row-1)->spacing + getNthRow(row)->allocation;
+	
+	fp_CellContainer* child = static_cast<fp_CellContainer *>(getNthCon(0));
+	double dBorder = static_cast<double>(m_iBorderWidth);
+	const UT_GenericVector<fl_ColProps*> * pVecColProps = pTL->getVecColProps();
+	const UT_GenericVector<fl_RowProps*> * pVecRowProps = pTL->getVecRowProps();
+
+	for ( ; child; child = static_cast<fp_CellContainer *>(child->getNext()) )
+	{
+		UT_sint32 scol = child->getLeftAttach(), srow = child->getTopAttach();
+		fp_Allocation allocation;
+		allocation.x = getNthCol(scol)->x, allocation.y = getNthRow(srow)->y;
+		allocation.width = allocation.height = 0;
+
+		if ( child->getLeftAttach() == child->getRightAttach() - 1 )
+		{
+			if ( scol < pVecColProps->getItemCount() )
+				allocation.width = pVecColProps->getNthItem(scol)->m_iColWidth;
+			else
+				allocation.width = getNthCol(scol)->allocation;
+		}
+		else 
+		{
+			for ( UT_sint32 col = scol; col < child->getRightAttach(); col++ )
+			{
+				if ( col < pVecColProps->getItemCount() )
+					allocation.width += pVecColProps->getNthItem(col)->m_iColWidth;
+				else
+					allocation.width += getNthCol(col)->allocation;
+			}
+		}
+		
+		if ( child->getTopAttach() == child->getBottomAttach() - 1 )
+		{
+			if ( srow < pVecRowProps->getItemCount() )
+				allocation.height = pVecRowProps->getNthItem(srow)->m_iRowHeight;
+			else
+				allocation.height = getNthRow(srow)->allocation;
+		}
+		else 
+		{
+			for ( UT_sint32 row = srow; row < child->getBottomAttach(); row++ )
+			{
+				if ( row < pVecRowProps->getItemCount() )
+					allocation.height += pVecRowProps->getNthItem(row)->m_iRowHeight;
+				else
+					allocation.height += getNthRow(row)->allocation;
+			}
+		}
+
+		child->sizeAllocate(&allocation);
+		//UT_DEBUGMSG(("ADITYA: col %d row %d, alloc.w = %d, alloc.h = %d, alloc.x = %d, alloc.y = %d\n", scol, srow, allocation.width, allocation.height, allocation.x, allocation.y));
+
+	}
+	
 }
 
 void fp_TableContainer::setToAllocation(void)
@@ -6147,7 +6458,7 @@ fp_TableRowColumn * fp_TableContainer::getNthRow(UT_sint32 i)
 	return m_vecRows.getNthItem(i);
 }
 
-
+/*
 void fp_TableContainer::sizeRequest(fp_Requisition * pRequisition)
 {
   UT_sint32 row, col;
@@ -6204,7 +6515,166 @@ void fp_TableContainer::sizeRequest(fp_Requisition * pRequisition)
   }
   pRequisition->height += 2 * m_iBorderWidth;
 }
+*/
 
+void fp_TableContainer::sizeRequest(fp_Requisition * pRequisition)
+{
+	
+	_size_request_init();
+
+	/*
+	 * Find the requisition width and height. The height though is not
+	 * going to be useful, because after the width is allocated the
+	 * height will change.
+	 */
+	
+	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());	
+	fp_CellContainer * child = static_cast<fp_CellContainer *>(getNthCon(0));
+	const UT_GenericVector<fl_ColProps*> * pVecColProps = pTL->getVecColProps();
+	const UT_GenericVector<fl_RowProps*> * pVecRowProps = pTL->getVecRowProps();
+
+	for (; child; child = static_cast<fp_CellContainer *>(child->getNext())) 
+	{
+		UT_sint32 child_width, child_height;
+		fp_Requisition child_requisition;
+		child->sizeRequest(&child_requisition);
+
+
+		//First take care of width
+
+		child_width = child_requisition.width + child->getLeftPad() + child->getRightPad();
+		
+		//if child spans a single col.
+		if (child->getLeftAttach() == child->getRightAttach() - 1)
+		{	 
+			//ignore cells in fixed width columns.
+			if (child->getLeftAttach() >= pVecColProps->getItemCount())
+				getNthCol(child->getLeftAttach())->requisition = UT_MAX(getNthCol(child->getLeftAttach())->requisition, child_width);			
+		}
+		else // child spans multiple cols 
+		{
+			UT_sint32 available_width = 0;
+			for (UT_sint32 col = child->getLeftAttach(); col < child->getRightAttach(); col++)
+			{
+				available_width += getNthCol(col)->requisition;
+				if (col + 1 < child->getRightAttach())
+					available_width += getNthCol(col)->spacing;
+			}
+			
+			/* 
+			 * If the available width is insufficient, divide up the
+			 * required space evenly among the columns spanned.  If
+			 * the spanned colums include those that are of fixed
+			 * width, then divide up the space among the non-fixed
+			 * width columns only.
+			 */
+			if (available_width < child_width) 
+			{
+				UT_sint32 required_extra_width = child_width - available_width, 
+					cols_spanned = child->getRightAttach() - child->getLeftAttach(),
+					start_index = child->getLeftAttach(), rem, quo;
+				
+				if (child->getLeftAttach() < pVecColProps->getItemCount())
+				{
+					cols_spanned = child->getRightAttach() - pVecColProps->getItemCount();
+					start_index = pVecColProps->getItemCount();					
+				}
+				
+				if ( cols_spanned > 0 )
+				{
+					rem = required_extra_width % cols_spanned;
+					quo = required_extra_width / cols_spanned;
+				
+					for (UT_sint32 col = start_index; col < child->getRightAttach(); col++)
+					{
+						getNthCol(col)->requisition += quo + ((rem > 0) ? 1 : 0);
+						rem = ((rem > 0)? rem-- : 0);
+					}
+				}
+			}
+		}
+
+		//Now handle the heights.
+		child_height = child_requisition.height + child->getTopPad() + child->getBotPad();
+		
+		//If child spans only one row.
+		if ( child->getTopAttach() == child->getBottomAttach() - 1 )
+		{
+			//ignore cells in fixed height rows.
+			if (child->getTopAttach() < pVecRowProps->getItemCount())
+				continue;
+			getNthRow(child->getTopAttach())->requisition = UT_MAX(getNthRow(child->getTopAttach())->requisition, child_width);			
+		}
+		else // child spans multiple rows 
+		{
+			UT_sint32 available_height = 0;
+			for (UT_sint32 row = child->getTopAttach(); row < child->getBottomAttach(); row++)
+			{
+				available_height += getNthRow(row)->requisition;
+				if (row + 1 < child->getBottomAttach())
+					available_height += getNthRow(row)->spacing;
+			}
+			
+			/* 
+			 * If the available height is insufficient, divide up the
+			 * required space evenly among the rows spanned.  If
+			 * the spanned rows include those that are of fixed
+			 * height, then divide up the space among the non-fixed
+			 * height rows only.
+			 */
+			if (available_height < child_height) 
+			{
+				UT_sint32 required_extra_height = child_height - available_height, 
+					rows_spanned = child->getBottomAttach() - child->getTopAttach(),
+					start_index = child->getTopAttach(), rem, quo;
+				
+				if (child->getTopAttach() < pVecRowProps->getItemCount())
+				{
+					rows_spanned = child->getBottomAttach() - pVecRowProps->getItemCount();
+					start_index = pVecRowProps->getItemCount();
+				}
+				
+				if ( rows_spanned > 0 )
+				{
+					rem = required_extra_height % rows_spanned;
+					quo = required_extra_height / rows_spanned;
+				
+					for (UT_sint32 row = start_index; row < child->getBottomAttach(); row++)
+					{
+						getNthRow(row)->requisition += quo + ((rem > 0) ? 1 : 0);
+						rem = ((rem > 0)? rem-- : 0);
+					}
+				}
+			}
+		}
+	}
+	
+
+	/*	
+	 * Calculate requisition of the table
+	 */
+	pRequisition->height = pRequisition->width = 0;
+	for (UT_sint32 col = 0; col < getNumCols(); col++)
+	{
+		if ( col < pVecColProps->getItemCount() )
+			pRequisition->width += pVecColProps->getNthItem(col)->m_iColWidth;
+		else
+			pRequisition->width += getNthCol(col)->requisition;
+	}
+	for (UT_sint32 row = 0; row < getNumRows(); row++)
+	{
+		if ( row < pVecRowProps->getItemCount() )
+			pRequisition->height += pVecRowProps->getNthItem(row)->m_iRowHeight;
+		else
+			pRequisition->height += getNthRow(row)->requisition;
+	}
+
+	//Set the requisition values in the object too.
+	m_MyRequest = *pRequisition;
+
+}
+
+/*
 void fp_TableContainer::sizeAllocate(fp_Allocation * pAllocation)
 {
 	m_MyAllocation.width = pAllocation->width; 
@@ -6223,4 +6693,21 @@ void fp_TableContainer::sizeAllocate(fp_Allocation * pAllocation)
 //	fp_Requisition pReq;
 //	sizeRequest(&pReq);
 //	m_MyAllocation.height = pReq.height;
+}
+*/
+
+void fp_TableContainer::sizeAllocate(fp_Allocation * pAllocation)
+{
+	m_MyAllocation.width = pAllocation->width; 
+	m_MyAllocation.height = pAllocation->height;
+	m_MyAllocation.x = pAllocation->x;
+	m_MyAllocation.y = pAllocation->y;
+	m_MyAllocation.y = 0;
+	
+	UT_DEBUGMSG(("ADITYA: Initial allocation height is %d \n", pAllocation->height));
+	UT_DEBUGMSG(("ADITYA: Initial allocation width is %d \n", pAllocation->width));
+
+	_size_allocate_pass_1();
+	_size_allocate_pass_2();
+	_size_allocate_pass_3();
 }

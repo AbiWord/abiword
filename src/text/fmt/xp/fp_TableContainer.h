@@ -71,6 +71,8 @@ class ABI_EXPORT fp_TableRowColumn
 public:
 	fp_TableRowColumn(void);
 	virtual ~fp_TableRowColumn(void);
+	UT_sint32 x,y; //Co-ordinates caching - needed to linearize layout
+				   //time.
 	UT_sint32 requisition;
 	UT_sint32 allocation;
 	UT_sint32 spacing;
@@ -467,6 +469,10 @@ fp_Column *         getBrokenColumn(void);
 	void				__dump(FILE * fp) const;
 #endif
 private:
+	void                    _set_column_allocation(UT_sint32, UT_sint32);
+	void                    _size_allocate_pass_1(void);
+	void                    _size_allocate_pass_2(void);
+	void                    _size_allocate_pass_3(void);
 	void                    _size_request_init(void);
 	void                    _size_request_pass1(void);
 	void                    _size_request_pass2(void);
