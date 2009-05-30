@@ -870,6 +870,7 @@ AC_OUTPUT(
   src/wp/main/Makefile
   src/wp/main/cocoa/Makefile
   src/wp/main/cocoa/bundle/Info.plist
+  src/wp/main/win/Makefile
   user/Makefile
   user/wp/Makefile
   user/wp/clipart/Makefile

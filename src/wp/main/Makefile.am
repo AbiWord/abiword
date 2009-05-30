@@ -1,4 +1,4 @@
-
+DIST_SUBDIRS = win
 
 if TOOLKIT_COCOA
 SUBDIRS = cocoa
