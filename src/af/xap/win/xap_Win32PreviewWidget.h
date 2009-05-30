@@ -62,7 +62,7 @@ protected:
 	GR_Win32Graphics *			m_pGraphics;					// GR_Graphics we give to View to draw in our window
 	XAP_Preview *				m_pPreview;						// View which will draw formatted stuff in our window
 	XAP_Win32Dialog_Insert_Symbol *m_pInsertSymbol;				// Insert symbol dialog parent (if applicable)
-	static char					m_bufClassName[100];			// name for RegisterClass()
+	static wchar_t					m_bufClassName[100];			// name for RegisterClass()
 	static UT_uint32			m_iInstanceCount;				// Number of instance of this window type.
 };
 
