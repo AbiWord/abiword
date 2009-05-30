@@ -4648,9 +4648,9 @@ void fp_TableContainer::_size_allocate_pass_1(void)
 		 * non-fixed width columns.
 		 */
 
-		UT_sint32 extra_width = m_MyAllocation.width - m_MyRequest.width,
-			expandable_cols = getNumCols() - pVecColProps->getItemCount(),
-			rem, quo;
+		UT_sint32 extra_width = m_MyAllocation.width - m_MyRequest.width;
+		UT_sint32 expandable_cols = getNumCols() - pVecColProps->getItemCount();
+		UT_sint32 rem = 0, quo = 0;
 
 		UT_DEBUGMSG(("ADITYA: expandable_cols: %d\n", expandable_cols));
 
@@ -4664,7 +4664,7 @@ void fp_TableContainer::_size_allocate_pass_1(void)
 			for (UT_sint32 col = pVecColProps->getItemCount(); col < getNumCols(); col++)
 			{
 				getNthCol(col)->allocation = getNthCol(col)->requisition + quo + ((rem > 0) ? 1 : 0);
-				rem = ((rem > 0)? rem-- : 0);
+				rem--;
 			}
 		}
 	}
@@ -4674,9 +4674,9 @@ void fp_TableContainer::_size_allocate_pass_1(void)
 		 * Here we need to shrink the non-fixed width cols to make it
 		 * fit within the allocated width.
 		 */
-		UT_sint32 shrink_width = m_MyRequest.width - m_MyAllocation.width,
-			shrinkable_cols = getNumCols() - pVecColProps->getItemCount(),
-			rem, quo;
+		UT_sint32 shrink_width = m_MyRequest.width - m_MyAllocation.width;
+		UT_sint32 shrinkable_cols = getNumCols() - pVecColProps->getItemCount();
+		UT_sint32 rem = 0, quo = 0;
 		
 		if ( shrinkable_cols > 0 )
 		{
@@ -4690,7 +4690,7 @@ void fp_TableContainer::_size_allocate_pass_1(void)
 			for (UT_sint32 col = pVecColProps->getItemCount(); col < getNumCols(); col++)
 			{
 				getNthCol(col)->allocation = UT_MAX( allowed_min_col_width, getNthCol(col)->requisition - (quo + ((rem > 0) ? 1 : 0)) );
-				rem = ((rem > 0)? rem-- : 0);
+				rem--;
 			}
 		}
 	}
@@ -4789,9 +4789,10 @@ void fp_TableContainer::_size_allocate_pass_2(void)
 			 */
 			if (available_height < child_height) 
 			{
-				UT_sint32 required_extra_height = child_height - available_height, 
-					rows_spanned = child->getBottomAttach() - child->getTopAttach(),
-					start_index = child->getTopAttach(), rem, quo;
+				UT_sint32 required_extra_height = child_height - available_height; 
+				UT_sint32 rows_spanned = child->getBottomAttach() - child->getTopAttach();
+				UT_sint32 start_index = child->getTopAttach();
+				UT_sint32 rem = 0, quo = 0;
 				
 				if (child->getTopAttach() < pVecRowProps->getItemCount())
 				{
@@ -4807,19 +4808,19 @@ void fp_TableContainer::_size_allocate_pass_2(void)
 					for (UT_sint32 row = start_index; row < child->getBottomAttach(); row++)
 					{
 						getNthRow(row)->requisition += quo + ((rem > 0) ? 1 : 0);
-						rem = ((rem > 0)? rem-- : 0);
+						rem--;
 					}
 				}
 			}
 		}
 	}
 
-	/**Debug Code**/
+#ifdef DEBUG
 	for (UT_sint32 row = 0; row < getNumRows(); row++)
 	{
-		UT_DEBUGMSG(("Row height request: %d\n", getNthRow(row)->requisition));
+		UT_DEBUGMSG(("ADITYA: Row height request: %d\n", getNthRow(row)->requisition));
 	}
-	/**End Debug Code**/
+#endif
 
 	//Calc new height request.
 	UT_sint32 new_height_request = 0;
@@ -6570,9 +6571,11 @@ void fp_TableContainer::sizeRequest(fp_Requisition * pRequisition)
 			 */
 			if (available_width < child_width) 
 			{
-				UT_sint32 required_extra_width = child_width - available_width, 
-					cols_spanned = child->getRightAttach() - child->getLeftAttach(),
-					start_index = child->getLeftAttach(), rem, quo;
+				UT_sint32 required_extra_width = child_width - available_width; 
+				UT_sint32 cols_spanned = child->getRightAttach() - child->getLeftAttach();
+				UT_sint32 start_index = child->getLeftAttach();
+				UT_sint32 rem = 0;
+				UT_sint32 quo = 0;
 				
 				if (child->getLeftAttach() < pVecColProps->getItemCount())
 				{
@@ -6588,7 +6591,7 @@ void fp_TableContainer::sizeRequest(fp_Requisition * pRequisition)
 					for (UT_sint32 col = start_index; col < child->getRightAttach(); col++)
 					{
 						getNthCol(col)->requisition += quo + ((rem > 0) ? 1 : 0);
-						rem = ((rem > 0)? rem-- : 0);
+						rem--;
 					}
 				}
 			}
@@ -6624,9 +6627,10 @@ void fp_TableContainer::sizeRequest(fp_Requisition * pRequisition)
 			 */
 			if (available_height < child_height) 
 			{
-				UT_sint32 required_extra_height = child_height - available_height, 
-					rows_spanned = child->getBottomAttach() - child->getTopAttach(),
-					start_index = child->getTopAttach(), rem, quo;
+				UT_sint32 required_extra_height = child_height - available_height;
+				UT_sint32 rows_spanned = child->getBottomAttach() - child->getTopAttach();
+				UT_sint32 start_index = child->getTopAttach();
+				UT_sint32 rem = 0, quo = 0;
 				
 				if (child->getTopAttach() < pVecRowProps->getItemCount())
 				{
@@ -6642,7 +6646,7 @@ void fp_TableContainer::sizeRequest(fp_Requisition * pRequisition)
 					for (UT_sint32 row = start_index; row < child->getBottomAttach(); row++)
 					{
 						getNthRow(row)->requisition += quo + ((rem > 0) ? 1 : 0);
-						rem = ((rem > 0)? rem-- : 0);
+						rem--;
 					}
 				}
 			}
