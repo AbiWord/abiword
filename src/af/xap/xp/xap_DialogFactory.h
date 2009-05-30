@@ -36,8 +36,10 @@
  */
 
 #if defined(__MINGW32__)
-#undef snprintf
-#define _GLIBCXX_USE_C99_DYNAMIC 1
+#  undef snprintf
+#  if __GNUC__ <= 3
+#    define _GLIBCXX_USE_C99_DYNAMIC 1
+#  endif
 #endif
 
 #include <map>
