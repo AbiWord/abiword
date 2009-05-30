@@ -43,7 +43,7 @@
 #include <io.h>
 #include <fcntl.h>
 
-#if !defined(__WINE__) && (!defined(_MSC_VER) || _MSC_VER < 1310)
+#if !defined(__WINE__) && (!defined(_MSC_VER) || _MSC_VER < 1310) && !defined(__MINGW32__)
 #include <iostream.h>
 #elif _MSC_VER >= 1310
 #include <iostream>
