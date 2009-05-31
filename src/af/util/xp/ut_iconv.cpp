@@ -406,7 +406,7 @@ char * UT_convert_cd(const char *str,
 
 	/* Due to a GLIBC bug, round outbuf_size up to a multiple of 4 */
 	/* + 1 for nul in case len == 1 */
-	size_t outbuf_size = ((len + 3) & ~3) + 15;
+	size_t outbuf_size = (((4*len) + 3) & ~3) + 15;
 	size_t outbytes_remaining = outbuf_size - 4; /* -4 for null (allow for ucs4 0) */
 
 	char* pDest = static_cast<char*>(g_try_malloc(outbuf_size));

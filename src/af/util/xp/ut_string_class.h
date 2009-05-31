@@ -109,7 +109,7 @@ public:
 	// even if to an empty string.
 	const char* c_str() const;
 
-private:
+protected:
 	class UT_StringImpl<char>* pimpl;
 };
 
@@ -369,7 +369,7 @@ public:
 
 	const char * utf8_str ();
 
-private:
+protected:
 	void _loadUtf8(const char * utf8_str, size_t bytelength); // implementation detail for the UTF-8 constructor
 	class UT_StringImpl<UT_UCS4Char>* pimpl;
 };
