@@ -57,7 +57,6 @@ protected:
 	UT_uint32               m_iOrigPrinter;
 	UT_uint32               m_iNewPrinter;
 	bool                    m_bClosed;
-//	UT_String				m_docName;
     UT_Win32LocaleString	m_docName;
 	UT_Win32LocaleString	m_fileName;
 };

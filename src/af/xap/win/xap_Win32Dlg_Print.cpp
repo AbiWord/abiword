@@ -82,15 +82,13 @@ static UINT CALLBACK s_PrintHookProc(
 			
 			if(pThis->getNewPrinter() != pThis->getOrigPrinter())
 			{
-				//SetDlgItemText(hdlg,IDCANCEL,pSS->getValue(XAP_STRING_ID_DLG_Close));
-                XAP_Win32DialogBase::setDlgItemText(hdlg,IDCANCEL,pSS->getValue(XAP_STRING_ID_DLG_Close));
+			    XAP_Win32DialogBase::setDlgItemText(hdlg,IDCANCEL,pSS->getValue(XAP_STRING_ID_DLG_Close));
 			}
 			else
 			{
 				// the user set the printer back to what it used to be -- revert back to
 				// cancel button
-				//SetDlgItemText(hdlg,IDCANCEL,pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-                XAP_Win32DialogBase::setDlgItemText(hdlg,IDCANCEL,pSS->getValue(XAP_STRING_ID_DLG_Cancel));
+			    XAP_Win32DialogBase::setDlgItemText(hdlg,IDCANCEL,pSS->getValue(XAP_STRING_ID_DLG_Cancel));
 			}
 		}
 		else if((int)LOWORD(wParam) == IDCANCEL && HIWORD(wParam) == 0)
@@ -155,11 +153,9 @@ GR_Graphics * XAP_Win32Dialog_Print::getPrinterGraphicsContext(void)
 		return NULL; /* Prevents from passing NULL to GR_Win32Graphics*/
 
 	memset(&m_DocInfo,0,sizeof(m_DocInfo));
-	m_DocInfo.cbSize = sizeof(DOCINFO);
-	// m_docName = AP_Win32App::s_fromUTF8ToWinLocale(m_szDocumentPathname);
-    m_docName.fromUTF8 (m_szDocumentPathname);
+	m_DocInfo.cbSize = sizeof(DOCINFOW);
+	m_docName.fromUTF8 (m_szDocumentPathname);
 	m_DocInfo.lpszDocName = m_docName.c_str();
-	//m_DocInfo.lpszOutput = ((m_bDoPrintToFile) ? m_szPrintToFilePathname : NULL);
 	
     if (m_bDoPrintToFile) {
 		m_fileName.fromUTF8 (m_szPrintToFilePathname);
@@ -308,7 +304,7 @@ void XAP_Win32Dialog_Print::_extractResults(XAP_Frame *pFrame)
 
 	// Most Win32 printer drivers support multicopies and collating, 
 	//however we want Abi to do both by himself, like in the rest of platforms		
-	DEVMODE *pDevMode=(DEVMODE *)GlobalLock(m_pPersistPrintDlg->hDevMode);
+	DEVMODEW *pDevMode=(DEVMODEW *)GlobalLock(m_pPersistPrintDlg->hDevMode);
 	UT_return_if_fail(pDevMode); //GlobalLock can return NULL
 	m_nCopies = pDevMode->dmCopies;
 	m_bCollate	= ((pDevMode->dmCollate  & DMCOLLATE_TRUE) != 0);		
@@ -321,8 +317,8 @@ void XAP_Win32Dialog_Print::_extractResults(XAP_Frame *pFrame)
 	// modified structure can be used !!!
 	GR_Win32Graphics::fixDevMode(m_pPersistPrintDlg->hDevMode);
 
-	pDevMode=(DEVMODE *)GlobalLock(m_pPersistPrintDlg->hDevMode);
-	ResetDC(m_pPersistPrintDlg->hDC,pDevMode);
+	pDevMode=(DEVMODEW *)GlobalLock(m_pPersistPrintDlg->hDevMode);
+	ResetDCW(m_pPersistPrintDlg->hDC,pDevMode);
 	GlobalUnlock(pDevMode);
 	
 	if (m_bDoPrintToFile)

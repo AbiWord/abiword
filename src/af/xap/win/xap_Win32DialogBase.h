@@ -45,20 +45,22 @@ class ABI_EXPORT XAP_Win32DialogBase
 public:
 	XAP_Win32DialogBase() : m_tag(magic_tag), m_hDlg(0), m_pDlg(0), m_pSS(0) {}
 	// no need for user-defined destructor
-
-
+    // static functions
+	static bool setWindowText (HWND hWnd, const char* uft8_str);
+	static bool getDlgItemText(HWND hWnd, int nIDDlgItem, UT_Win32LocaleString& str);
     static bool setDlgItemText(HWND hWnd, int nIDDlgItem, const char* uft8_str);
 		
 protected:
 	void createModal(XAP_Frame* pFrame, LPCTSTR dlgTemplate);
+    void createModal(XAP_Frame* pFrame);
 	HWND createModeless(XAP_Frame* pFrame, LPCTSTR dlgTemplate);
 
-
+    void notifyCloseFrame(XAP_Frame *pFrame);
 	// Subclasses: override this and use it as your DLGPROC
 	virtual BOOL _onDlgMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-	virtual BOOL _onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam) = 0;
-	virtual BOOL _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam) = 0;
-	virtual BOOL _onDeltaPos(NM_UPDOWN * pnmud) = 0;
+	virtual BOOL _onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam) {return FALSE;};
+	virtual BOOL _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam) {return FALSE;};
+	virtual BOOL _onDeltaPos(NM_UPDOWN * pnmud) {return FALSE;};
 	virtual BOOL _callHelp();
 
 
@@ -66,13 +68,11 @@ protected:
 	void checkButton(UT_sint32 controlId, bool bChecked = true);
 	void enableControl(UT_sint32 controlId, bool bEnabled = true);
 	void destroyWindow();
-	void setDialogTitle(LPCSTR p_str);
+    void setDialogTitle(const char* uft8_str);
 	void localizeDialogTitle(UT_uint32 stringId);
 	int	 showWindow( int Mode );
 	int	 showControl(UT_sint32 controlId, int Mode);
 	int	 bringWindowToTop();
-
-
     bool setDlgItemText(int nIDDlgItem, const char* uft8_str);
 	bool getDlgItemText(int nIDDlgItem, UT_Win32LocaleString& str);	
 
@@ -85,6 +85,7 @@ protected:
 	int  getComboItemIndex(UT_sint32 controlId, LPCSTR p_str);
 	int	 getComboSelectedIndex(UT_sint32 controlId) const;
 	void resetComboContent(UT_sint32 controlId);
+    void getComboTextItem(UT_sint32 controlId, int index, UT_Win32LocaleString& str);
 
 	// List boxes
 
