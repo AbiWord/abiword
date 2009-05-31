@@ -276,7 +276,7 @@ GR_Font* GR_Win32Graphics::getGUIFont(void)
 		// lazily grab this (once)
 		HFONT f = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
 		LOGFONTW lf;
-		int iRes = GetObject(f, sizeof(LOGFONT), &lf);
+		int iRes = GetObject(f, sizeof(LOGFONTW), &lf);
 		m_pFontGUI = _newFont(lf, 0, m_hdc, m_hdc);
 		UT_ASSERT(m_pFontGUI);
 		DeleteObject(f);
@@ -289,12 +289,12 @@ GR_Font* GR_Win32Graphics::getGUIFont(void)
 
 extern "C"
 int CALLBACK
-win32Internal_fontEnumProcedure(ENUMLOGFONT* pLogFont,
+win32Internal_fontEnumProcedure(ENUMLOGFONTW* pLogFont,
 								NEWTEXTMETRICEX* /*pTextMetric*/,
 								int /*Font_type*/,
 								LPARAM lParam)
 {
-	LOGFONT *lf = (LOGFONT*)lParam;
+	LOGFONTW *lf = (LOGFONTW*)lParam;
 	lf->lfCharSet = pLogFont->elfLogFont.lfCharSet;
 	return 0;
 }
@@ -419,8 +419,8 @@ void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 	// of the font file is defined.
 	// Reference Microsoft knowledge base:
 	// Q145754 - PRB ExtTextOutW or TextOutW Unicode Text Output Is Blank
-	LOGFONT lf;
-	int iRes = GetObject(m_pFont->getFontHandle(), sizeof(LOGFONT), &lf);
+	LOGFONTW lf;
+	int iRes = GetObject(m_pFont->getFontHandle(), sizeof(LOGFONTW), &lf);
 	UT_ASSERT(iRes);
 	if (UT_IsWinNT() == false && lf.lfCharSet == SYMBOL_CHARSET)
 	{
@@ -512,8 +512,8 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 	// of the font file is defined.
 	// Reference Microsoft knowledge base:
 	// Q145754 - PRB ExtTextOutW or TextOutW Unicode Text Output Is Blank
-	LOGFONT lf;
-	int iRes = GetObject(hFont, sizeof(LOGFONT), &lf);
+	LOGFONTW lf;
+	int iRes = GetObject(hFont, sizeof(LOGFONTW), &lf);
 	UT_ASSERT(iRes);
 
 	if (UT_IsWinNT() == false && lf.lfCharSet == SYMBOL_CHARSET)
@@ -976,7 +976,7 @@ bool GR_Win32Graphics::startPage(const char * /*szPageLabel*/, UT_uint32 /*pageN
 	// Correct for Portrait vs Lanscape mode
 	if (m_hDevMode)
 	{
-		DEVMODE *pDevMode = (DEVMODE*) GlobalLock(m_hDevMode);
+		DEVMODEW *pDevMode = (DEVMODEW*) GlobalLock(m_hDevMode);
 		UT_return_val_if_fail(pDevMode, false); //GlobalLock can return NULL
 		pDevMode->dmFields = DM_ORIENTATION | DM_PAPERLENGTH | DM_PAPERWIDTH;
 		pDevMode->dmOrientation = (bPortrait) ? DMORIENT_PORTRAIT : DMORIENT_LANDSCAPE;
@@ -990,8 +990,8 @@ bool GR_Win32Graphics::startPage(const char * /*szPageLabel*/, UT_uint32 /*pageN
 		// the private part
 		fixDevMode(m_hDevMode);
 		
-		pDevMode = (DEVMODE*) GlobalLock(m_hDevMode);
-		ResetDC(m_hdc, pDevMode);
+		pDevMode = (DEVMODEW*) GlobalLock(m_hDevMode);
+		ResetDCW(m_hdc, pDevMode);
 		GlobalUnlock(m_hDevMode);
 	}
 
@@ -1945,14 +1945,14 @@ void GR_Win32Font::insertFontInCache(UT_uint32 pixelsize, HFONT pFont) const
 
 void GR_Win32Font::fetchFont(UT_uint32 pixelsize) const
 {
-	LOGFONT lf;
+	LOGFONTW lf;
 
-	GetObject(m_layoutFont, sizeof(LOGFONT), &lf);
+	GetObject(m_layoutFont, sizeof(LOGFONTW), &lf);
 	lf.lfHeight = pixelsize;
 
 	if (lf.lfHeight>0) lf.lfHeight = - lf.lfHeight;
 
-	HFONT pFont = CreateFontIndirect(&lf);
+	HFONT pFont = CreateFontIndirectW(&lf);
 
 	insertFontInCache(pixelsize, pFont);
 }
@@ -2524,13 +2524,13 @@ HDC GR_Win32Graphics::createbestmetafilehdc()
 {
   DWORD neededsize;
   DWORD noprinters;
-  LPPRINTER_INFO_5 printerinfo = NULL;
+  LPPRINTER_INFO_5W printerinfo = NULL;
   int bestres = 0;
   HDC besthdc = 0;
   
   EnumPrinters(PRINTER_ENUM_CONNECTIONS|PRINTER_ENUM_LOCAL, NULL, 5, NULL, 0,
 	       &neededsize, &noprinters);
-  printerinfo = (LPPRINTER_INFO_5) malloc(neededsize);
+  printerinfo = (LPPRINTER_INFO_5W) malloc(neededsize);
   
   if (EnumPrinters(PRINTER_ENUM_CONNECTIONS|PRINTER_ENUM_LOCAL, NULL, 5,
 		   (LPBYTE)printerinfo, neededsize, &neededsize, &noprinters)) {
@@ -2543,7 +2543,7 @@ HDC GR_Win32Graphics::createbestmetafilehdc()
     }
       
     for (UT_uint32 i = 0; i < noprinters; i++) {
-      curhdc = CreateDC("WINSPOOL", printerinfo[i].pPrinterName, NULL, NULL);
+      curhdc = CreateDCW(L"WINSPOOL", printerinfo[i].pPrinterName, NULL, NULL);
       if (curhdc) {
 	int curres = GetDeviceCaps(curhdc, LOGPIXELSX) + GetDeviceCaps(curhdc,
 								       LOGPIXELSY);
