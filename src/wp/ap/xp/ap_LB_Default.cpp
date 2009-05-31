@@ -497,7 +497,7 @@ ap_bs_Char CharTable[] =
 	{0x3a, /* :      */ { "insertData",			"",					"",				""					}},
 	{0x3b, /* ;      */ { "insertData",			"",					"",				""					}},
 	{0x3c, /* <      */ { "insertData",			"fontSizeDecrease",	"",				"insertRLM"			}},
-	{0x3d, /* =      */ { "insertData",			"toggleSuper",		"",				""					}},
+	{0x3d, /* =      */ { "insertData",			"toggleSuper",		"toggleSub",	""					}},
 	{0x3e, /* >      */ { "insertData",			"fontSizeIncrease",	"",				"insertLRM"			}},
 	{0x3f, /* ?      */ { "insertData",			"",					"",				""					}},
 	{0x40, /* @      */ { "insertData",			"",					"",				""					}},
