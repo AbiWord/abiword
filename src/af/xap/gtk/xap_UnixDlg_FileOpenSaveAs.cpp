@@ -606,24 +606,19 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 							);
 	xxx_UT_DEBUGMSG(("Have the filechooser now \n"));
 #endif	
-
+    
 	gtk_file_chooser_set_local_only(m_FC, FALSE);
 
 	abiSetupModalDialog(GTK_DIALOG(m_FC), pFrame, this, GTK_RESPONSE_ACCEPT);
 	GtkWidget * filetypes_pulldown = NULL;
 
-	UT_UTF8String s;
+    std::string s;
 	
 	/*
 	  Add a drop-down list of known types to facilitate a file-types selection. 
 	  We store an indexer in the user data for each menu item in the popup, so 
 	  we can read the type we need to return.
 	*/
-
-	// hbox for our pulldown menu (GTK does its pulldown this way */
-	GtkWidget * pulldown_hbox = gtk_hbox_new(FALSE, 15);
-	gtk_widget_show(pulldown_hbox);
-	gtk_file_chooser_set_extra_widget (GTK_FILE_CHOOSER(m_FC), pulldown_hbox);
 
 	if (m_id == XAP_DIALOG_ID_INSERT_PICTURE)
 	{
@@ -649,27 +644,27 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 								G_CALLBACK (s_preview_exposed), static_cast<gpointer>(this));
 	}
 
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+	filetypes_pulldown = gtk_combo_box_new();
+	gtk_widget_show(filetypes_pulldown);
+	GtkWidget * pulldown_hbox = filetypes_pulldown;
+#else
+	// hbox for our pulldown menu (GTK does its pulldown this way */
+	GtkWidget * pulldown_hbox = gtk_hbox_new(FALSE, 15);
+	gtk_widget_show(pulldown_hbox);
+
 	// pulldown label
 	GtkWidget * filetypes_label = gtk_label_new(szFileTypeLabel.utf8_str());
 	gtk_label_set_justify(GTK_LABEL(filetypes_label), GTK_JUSTIFY_RIGHT);
 	gtk_misc_set_alignment(GTK_MISC(filetypes_label), 1.0, 0.5);
 	gtk_widget_show(filetypes_label);
-
-	GtkWidget * vboxTmp = gtk_vbox_new (FALSE, 0);
-	gtk_widget_show (vboxTmp);
-	gtk_box_pack_start (GTK_BOX(vboxTmp), filetypes_label, FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(pulldown_hbox), vboxTmp, FALSE, TRUE, 0);		
+	gtk_box_pack_start(GTK_BOX(pulldown_hbox), filetypes_label, TRUE, TRUE, 0);		
 
 	// pulldown menu
 	filetypes_pulldown = gtk_combo_box_new();
 	gtk_widget_show(filetypes_pulldown);
-
-	// hack so that i can make this widget small vertically
-	vboxTmp = gtk_vbox_new (FALSE, 0);
-	gtk_widget_show (vboxTmp);
-	gtk_box_pack_start (GTK_BOX(vboxTmp), filetypes_pulldown, FALSE, FALSE, 0);
-	gtk_box_pack_end(GTK_BOX(pulldown_hbox), vboxTmp, FALSE, TRUE, 0);
-
+	gtk_box_pack_end(GTK_BOX(pulldown_hbox), filetypes_pulldown, TRUE, TRUE, 0);
+#endif
 	//
 	// add the filters to the dropdown list
 	//
@@ -680,7 +675,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	// a pre-defined constant for the type, and don't use the user-supplied
 	// types yet.
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileTypeAutoDetect,s);
-	XAP_appendComboBoxTextAndInt(combo, s.utf8_str(), XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO);
+	XAP_appendComboBoxTextAndInt(combo, s.c_str(), XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO);
 
 	UT_sint32 activeItemIndex = -1;
 	
@@ -719,6 +714,13 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		gtk_combo_box_set_active(combo, 0);
 	}
 	
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+	hildon_file_chooser_dialog_add_extra ((HildonFileChooserDialog*)m_FC,
+                                          pulldown_hbox);
+#else
+	gtk_file_chooser_set_extra_widget (GTK_FILE_CHOOSER(m_FC), pulldown_hbox);
+#endif
+
 	// connect the signals for OK and CANCEL and the requisite clean-close signals
 	g_signal_connect(G_OBJECT(m_FC),
 							 "delete-event",
@@ -848,13 +850,8 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 		FREEP(m_szFinalPathnameCandidate);
 
-#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 		// what a long ugly line of code
 		m_nFileType = XAP_comboBoxGetActiveInt(GTK_COMBO_BOX(filetypes_pulldown));
-#else
-		// the hildon dlg does not have type selector, so we always need to force autodetect
-		m_nFileType = -1;
-#endif
 	}
 
 	if (m_FC != NULL) {
