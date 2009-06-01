@@ -93,7 +93,6 @@ libxp_la_SOURCES = \
 	xap_Draw_Symbol.cpp \
 	xap_Draw_Symbol.h \
 	xap_EditMethods.h \
-	xap_EmbeddedFeatures.h \
 	xap_EncodingManager.cpp \
 	xap_EncodingManager.h \
 	xap_FakeClipboard.cpp \

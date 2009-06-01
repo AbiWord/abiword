@@ -111,7 +111,7 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	_s(AP_TOOLBAR_ID_FMT_STYLE,		EV_TBIT_ComboBox,		"style",		AV_CHG_FMTSTYLE | AV_CHG_MOTION,	ap_ToolbarGetState_Style);
 	_s(AP_TOOLBAR_ID_FMT_FONT,		EV_TBIT_ComboBox,		"fontFamily",	AV_CHG_FMTCHAR | AV_CHG_MOTION,		ap_ToolbarGetState_CharFmt);
 	
-#if XP_SIMPLE_TOOLBAR
+#if XAP_SIMPLE_TOOLBAR
 	_s(AP_TOOLBAR_ID_FMT_CHOOSE,	EV_TBIT_PushButton,		"dlgFont",		AV_CHG_NONE,		NULL);	
 	_s(AP_TOOLBAR_ID_VIEW_FULL_SCREEN,	EV_TBIT_PushButton,		"viewFullScreen",		AV_CHG_NONE,		NULL);	
 #endif	

@@ -62,7 +62,7 @@ toolbaritem(EDIT_REMOVEFOOTER)
 toolbaritem(SPELLCHECK)
 toolbaritem(IMG)
 toolbaritem(FMT_STYLE)
-#if XP_SIMPLE_TOOLBAR
+#if XAP_SIMPLE_TOOLBAR
 toolbaritem(FMT_CHOOSE)	
 toolbaritem(VIEW_FULL_SCREEN)	
 #else

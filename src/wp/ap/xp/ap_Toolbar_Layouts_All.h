@@ -29,12 +29,14 @@
 #include "config.h"
 #endif
 
+#include "ap_Features.h"
+
 // Include each toolbar layout that we want to build.
 
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 #  include "ap_TB_Layouts_Embedded.h"
 #else
-#  if XP_SIMPLE_TOOLBAR
+#  if XAP_SIMPLE_TOOLBAR
 #    include "ap_TB_Layouts_SimpleOps.h"
 #  else
 #    include "ap_TB_Layouts_FileEditOps.h"

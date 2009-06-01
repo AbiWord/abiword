@@ -89,7 +89,7 @@
 #	define AP_PREF_KEY_ExtraBarVisible					"ExtraBarVisible"			/* is the extra toolbar visible? {0,1} */
 #	define AP_PREF_KEY_TableBarVisible					"TableBarVisible"			/* is the table toolbar visible? {0,1} */
 #	define AP_PREF_DEFAULT_SimpleBarVisible				"0"
-#if XP_SIMPLE_TOOLBAR
+#if XAP_SIMPLE_TOOLBAR
 #	define AP_PREF_DEFAULT_StandardBarVisible			"0"
 #	define AP_PREF_DEFAULT_FormatBarVisible			"0"
 #else
@@ -134,7 +134,7 @@
 #define AP_PREF_KEY_ToolbarLayouts					"ToolbarLayouts"
 #if defined (EMBEDDED_TARGET) && EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 #	define AP_PREF_DEFAULT_ToolbarLayouts				"Embedded"		/* values in BeginLayout() */
-#elif XP_SIMPLE_TOOLBAR
+#elif XAP_SIMPLE_TOOLBAR
 #	define AP_PREF_DEFAULT_ToolbarLayouts				"SimpleOps"		/* values in BeginLayout() */
 #else
 #	define AP_PREF_DEFAULT_ToolbarLayouts				"FileEditOps FormatOps TableOps ExtraOps"		/* values in BeginLayout() */

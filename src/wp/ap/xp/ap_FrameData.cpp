@@ -59,7 +59,7 @@ AP_FrameData::AP_FrameData()
 	if (XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_RulerVisible, &b))
 		m_bShowRuler = b;
 
-#if XP_SIMPLE_TOOLBAR		
+#if XAP_SIMPLE_TOOLBAR		
 	m_bShowBar[0] = true;
 #else		
 	if (XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_StandardBarVisible, &b))

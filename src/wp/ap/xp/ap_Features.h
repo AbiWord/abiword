@@ -42,12 +42,12 @@
 #endif
 
 
-#ifndef XP_SIMPLE_MENU
-#  define XP_SIMPLE_MENU 0
+#ifndef XAP_SIMPLE_MENU
+#  define XAP_SIMPLE_MENU 0
 #endif
 
-#ifndef XP_SIMPLE_TOOLBAR
-#  define XP_SIMPLE_TOOLBAR 0
+#ifndef XAP_SIMPLE_TOOLBAR
+#  define XAP_SIMPLE_TOOLBAR 0
 #endif
 
 #endif

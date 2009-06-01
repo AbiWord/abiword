@@ -179,7 +179,7 @@ toolbariconmap(UNINDENT,tb_text_unindent_xpm)
 toolbariconmap(VIEW_SHOWPARA,tb_view_showpara_xpm)
 toolbariconmap(ZOOM,NoIcon)
 
-#if XP_SIMPLE_TOOLBAR
+#if XAP_SIMPLE_TOOLBAR
 toolbariconmap(FMT_CHOOSE,tb_stock_font_xpm)
 toolbariconmap(VIEW_FULL_SCREEN,tb_view_full_screen_xpm)
 #endif

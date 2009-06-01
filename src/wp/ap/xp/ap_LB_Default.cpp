@@ -516,7 +516,9 @@ ap_bs_Char CharTable[] =
 	{0x4d, /* M      */ { "insertData",			"insSymbol",		DO_NOT_USE,		""					}},
 	{0x4e, /* N      */ { "insertData",			"fileNewUsingTemplate",	DO_NOT_USE,		""					}},
 	{0x4f, /* O      */ { "insertData",			"fileOpen",			DO_NOT_USE,		""					}},
+#ifdef ENABLE_PRINT
 	{0x50, /* P      */ { "insertData",			"print",			DO_NOT_USE,		""					}},
+#endif
 	{0x51, /* Q      */ { "insertData",			"querySaveAndExit",	DO_NOT_USE,		""					}},
 	{0x52, /* R      */ { "insertData",			"alignRight",		DO_NOT_USE,		""					}},
 	{0x53, /* S      */ { "insertData",			"fileSaveAs", 		DO_NOT_USE,		""					}},
@@ -548,7 +550,9 @@ ap_bs_Char CharTable[] =
 	{0x6d, /* m      */ { "insertData",			"insSymbol",		DO_NOT_USE,		""					}},
 	{0x6e, /* n      */ { "insertData",			"fileNew",			DO_NOT_USE,		""					}},
 	{0x6f, /* o      */ { "insertData",			"fileOpen",			DO_NOT_USE,		""					}},
+#ifdef ENABLE_PRINT
 	{0x70, /* p      */ { "insertData",			"print",			DO_NOT_USE,		""					}},
+#endif
 	{0x71, /* q      */ { "insertData",			"querySaveAndExit",	DO_NOT_USE,		""					}},
 	{0x72, /* r      */ { "insertData",			"alignRight",		DO_NOT_USE,		""					}},
 	{0x73, /* s      */ { "insertData",			"fileSave",		    DO_NOT_USE,		""					}},

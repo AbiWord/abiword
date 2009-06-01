@@ -1034,7 +1034,9 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(openTemplate), 0, ""),
 
 	// p
+#ifdef ENABLE_PRINT
 	EV_EditMethod(NF(pageSetup),			0,	""),
+#endif
 	EV_EditMethod(NF(paraBefore0),			0,		""),
 	EV_EditMethod(NF(paraBefore12), 		0,		""),
 		// intended for ^V and Menu[Edit/Paste]
@@ -1043,10 +1045,12 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(pasteSelection),		0,	""),
 	EV_EditMethod(NF(pasteSpecial), 		0,	""),
 	EV_EditMethod(NF(pasteVisualText), 		0,	""),
+#ifdef ENABLE_PRINT
 	EV_EditMethod(NF(print),				0,	""),
 	EV_EditMethod(NF(printDirectly),		0,	""),
 	EV_EditMethod(NF(printPreview),			0,	""),
 	EV_EditMethod(NF(printTB),				0,	""),
+#endif
 	EV_EditMethod(NF(purgeAllRevisions),	0,	""),
 
 	// q
@@ -1205,8 +1209,10 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(viCmd_yb), 	0,	""),
 	EV_EditMethod(NF(viCmd_yw), 	0,	""),
 	EV_EditMethod(NF(viCmd_yy), 	0,	""),
+#if !XAP_SIMPLE_TOOLBAR
 	EV_EditMethod(NF(viewExtra),			0,		""),
 	EV_EditMethod(NF(viewFormat),			0,		""),
+#endif
 	EV_EditMethod(NF(viewFullScreen), 0, ""),
 	EV_EditMethod(NF(viewHeadFoot), 		0,		""),
 	EV_EditMethod(NF(viewLockStyles),   0,		""),
@@ -1215,13 +1221,17 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(viewPrintLayout), 0, ""),
 	EV_EditMethod(NF(viewRuler),			0,		""),
 	EV_EditMethod(NF(viewStatus),			0,		""),
+#if !XAP_SIMPLE_TOOLBAR
 	EV_EditMethod(NF(viewStd),			0,		""),
+#endif
 	// capitals before lowercase ...
 	EV_EditMethod(NF(viewTB1),			0,		""),
 	EV_EditMethod(NF(viewTB2),			0,		""),
 	EV_EditMethod(NF(viewTB3),			0,		""),
 	EV_EditMethod(NF(viewTB4),			0,		""),
+#if !XAP_SIMPLE_TOOLBAR
 	EV_EditMethod(NF(viewTable),			0,		""),	
+#endif
 	EV_EditMethod(NF(viewWebLayout), 0, ""),
 
 	// w
@@ -8646,13 +8656,13 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 	return true;
 }
 
+#ifdef ENABLE_PRINT
 #if defined(TOOLKIT_COCOA)
 /* declare but possibly not implment them */
 bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog, bool bPrintDirectly);
 #else
 static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDirectly)
 {
-#ifdef ENABLE_PRINT
 	UT_return_val_if_fail (pView, false);
 
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
@@ -8803,16 +8813,13 @@ UT_return_val_if_fail(pDialog, false);
 	pDialogFactory->releaseDialog(pDialog);
 
 	return bOK;
-#else
-	UT_DEBUGMSG(("Printing capabilities not included\n"));
-	return true;
-#endif
 }
 #endif
+#endif
 
+#ifdef ENABLE_PRINT
 static bool s_doPrintPreview(FV_View * pView)
 {
-#ifdef ENABLE_PRINT
 	UT_return_val_if_fail(pView, false);
 
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
@@ -8919,12 +8926,10 @@ static bool s_doPrintPreview(FV_View * pView)
 
     // Turn off wait cursor
 	pView->clearCursorWait();
-#else
-	UT_DEBUGMSG(("Printing capabilities not included\n"));
-#endif
 	
 	return true;
 }
+#endif
 
 static bool s_doZoomDlg(FV_View * pView)
 {
@@ -9239,6 +9244,7 @@ static bool s_doBreakDlg(FV_View * pView)
 	return bOK;
 }
 
+#ifdef ENABLE_PRINT
 static bool s_doPageSetupDlg (FV_View * pView)
 {
 	UT_return_val_if_fail(pView, false);
@@ -9575,6 +9581,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	delete pDialog;
 	return true;
 }
+#endif
 
 class ABI_EXPORT FV_View_Insert_symbol_listener : public XAP_Insert_symbol_listener
 	{
@@ -9629,45 +9636,40 @@ UT_return_val_if_fail(pDialog, false);
 /*****************************************************************/
 /*****************************************************************/
 
+#ifdef ENABLE_PRINT
 Defun1(print)
 {
-#ifdef ENABLE_PRINT
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return s_doPrint(pView,false,false);
-#else
-	UT_DEBUGMSG(("Printing support not included\n"));
-	return true;
-#endif
 }
+#endif
 
+
+#ifdef ENABLE_PRINT
 Defun1(printDirectly)
 {
-#ifdef ENABLE_PRINT
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return s_doPrint(pView,false,true);
-#else
-	UT_DEBUGMSG(("Printing support not included\n"));
-	return true;
-#endif
 }
+#endif
 
+
+#ifdef ENABLE_PRINT
 Defun1(printTB)
 {
-#ifdef ENABLE_PRINT
 	CHECK_FRAME;
 // print (intended to be from the tool-bar (where we'd like to
 	// suppress the dialog if possible))
 
 	ABIWORD_VIEW;
 	return s_doPrint(pView,true,false);
-#else
-	UT_DEBUGMSG(("Printing support not included\n"));
-	return true;
-#endif
 }
+#endif
 
+
+#ifdef ENABLE_PRINT
 Defun1(printPreview)
 {
 	CHECK_FRAME;
@@ -9681,6 +9683,7 @@ Defun1(pageSetup)
 	ABIWORD_VIEW;
 	return s_doPageSetupDlg(pView);
 }
+#endif
 
 Defun1(dlgPlugins)
 {
@@ -9742,7 +9745,7 @@ Defun1(dlgSpellPrefs)
 
 /* the array below is a HACK. FIXME */
 static const gchar* s_TBPrefsKeys [] = {
-#if XP_SIMPLE_TOOLBAR
+#if XAP_SIMPLE_TOOLBAR
 	AP_PREF_KEY_SimpleBarVisible,
 #else	
 	AP_PREF_KEY_StandardBarVisible,
@@ -9814,10 +9817,9 @@ Defun1(viewTB4)
 }
 
 
+#if !XAP_SIMPLE_TOOLBAR
 Defun1(viewStd)
 {
-
-#if !XP_SIMPLE_TOOLBAR
 	CHECK_FRAME;
 // TODO: Share this function with viewFormat & viewExtra
 	UT_return_val_if_fail(pAV_View, false);
@@ -9846,14 +9848,13 @@ Defun1(viewStd)
 	UT_return_val_if_fail (pScheme, false);
 
 	pScheme->setValueBool(static_cast<const gchar *>(AP_PREF_KEY_StandardBarVisible), pFrameData->m_bShowBar[0]);
-#endif
 	return true;
 }
+#endif
 
+#if !XAP_SIMPLE_TOOLBAR
 Defun1(viewFormat)
 {
-
-#if !XP_SIMPLE_TOOLBAR
 	CHECK_FRAME;
 	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
@@ -9881,14 +9882,14 @@ Defun1(viewFormat)
 	UT_return_val_if_fail (pScheme, false);
 
 	pScheme->setValueBool(static_cast<const gchar *>(AP_PREF_KEY_FormatBarVisible), pFrameData->m_bShowBar[1]);
-#endif
 	return true;
 }
+#endif
 
 
+#if !XAP_SIMPLE_TOOLBAR
 Defun1(viewTable)
 {
-#if !XP_SIMPLE_TOOLBAR
 	CHECK_FRAME;
 	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
@@ -9915,13 +9916,14 @@ UT_return_val_if_fail(pFrameData, false);
 	UT_return_val_if_fail (pScheme, false);
 
 	pScheme->setValueBool(static_cast<const gchar *>(AP_PREF_KEY_TableBarVisible), pFrameData->m_bShowBar[2]);
-#endif
 	return true;
 }
+#endif
 
+
+#if !XAP_SIMPLE_TOOLBAR
 Defun1(viewExtra)
 {
-#if !XP_SIMPLE_TOOLBAR
 	CHECK_FRAME;
 	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
@@ -9949,9 +9951,9 @@ UT_return_val_if_fail(pScheme, false);
 
 	pScheme->setValueBool(static_cast<const gchar *>(AP_PREF_KEY_ExtraBarVisible), pFrameData->m_bShowBar[3]);
 	
-#endif
 	return true;
 }
+#endif
 
 Defun1(lockToolbarLayout)
 {

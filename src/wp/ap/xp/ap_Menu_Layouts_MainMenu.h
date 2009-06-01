@@ -42,7 +42,7 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_FILE_NEW_USING_TEMPLATE)
 		MenuItem(AP_MENU_ID_FILE_OPEN)
 	
-#if !XP_SIMPLE_MENU	
+#if !XAP_SIMPLE_MENU	
 		MenuItem(AP_MENU_ID_FILE_IMPORTSTYLES)
 #endif	
 		Separator()
@@ -52,13 +52,15 @@ BeginLayout(Main,0)
 //		MenuItem(AP_MENU_ID_FILE_IMPORT)
 		MenuItem(AP_MENU_ID_FILE_EXPORT)
 		MenuItem(AP_MENU_ID_FILE_REVERT)
-#if !XP_SIMPLE_MENU
+#ifdef ENABLE_PRINT
 		Separator()
 		MenuItem(AP_MENU_ID_FILE_PAGESETUP)
 #if defined(TOOLKIT_GTK) || defined (TOOLKIT_WIN)
 		MenuItem(AP_MENU_ID_FILE_PRINT_PREVIEW)
 #endif
 		MenuItem(AP_MENU_ID_FILE_PRINT)
+#endif
+#if !XAP_SIMPLE_MENU
 		Separator()
 		MenuItem(AP_MENU_ID_FILE_PROPERTIES)
 		Separator()
@@ -83,10 +85,10 @@ BeginLayout(Main,0)
 #endif
 		Separator()
 #endif
-#if  !XP_SIMPLE_MENU
+#if  !XAP_SIMPLE_MENU
 		MenuItem(AP_MENU_ID_FILE_CLOSE)
-#endif
 		MenuItem(AP_MENU_ID_FILE_EXIT)
+#endif
 	EndSubMenu()
 
 	BeginSubMenu(AP_MENU_ID_EDIT)
@@ -96,23 +98,23 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_EDIT_CUT)
 		MenuItem(AP_MENU_ID_EDIT_COPY)
 		MenuItem(AP_MENU_ID_EDIT_PASTE)
-#if !XP_SIMPLE_MENU	
+#if !XAP_SIMPLE_MENU	
 		MenuItem(AP_MENU_ID_EDIT_PASTE_SPECIAL)
 #endif	
 		Separator()
-#if !XP_SIMPLE_MENU	
+#if !XAP_SIMPLE_MENU	
 		MenuItem(AP_MENU_ID_EDIT_CLEAR)
 #endif	
 		MenuItem(AP_MENU_ID_EDIT_SELECTALL)
 		Separator()
-#if !XP_SIMPLE_MENU	
+#if !XAP_SIMPLE_MENU	
 		MenuItem(AP_MENU_ID_EDIT_REMOVEHEADER)
 		MenuItem(AP_MENU_ID_EDIT_REMOVEFOOTER)
 		Separator()
 #endif	
 		MenuItem(AP_MENU_ID_EDIT_FIND)
 		MenuItem(AP_MENU_ID_EDIT_REPLACE)
-#if !XP_SIMPLE_MENU	
+#if !XAP_SIMPLE_MENU	
 		MenuItem(AP_MENU_ID_EDIT_GOTO)
 #endif	
 #if !(XAP_PREFSMENU_UNDER_TOOLS)
@@ -125,7 +127,7 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_VIEW_NORMAL)
 		MenuItem(AP_MENU_ID_VIEW_WEB)
 		MenuItem(AP_MENU_ID_VIEW_PRINT)
-#if !XP_SIMPLE_MENU        
+#if !XAP_SIMPLE_MENU        
 		MenuItem(AP_MENU_ID_WEB_WEBPREVIEW)
 		Separator()
 		BeginSubMenu(AP_MENU_ID_VIEW_TOOLBARS)
@@ -144,7 +146,7 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_VIEW_SHOWPARA)
 		Separator()
 
-#if !XP_SIMPLE_MENU
+#if !XAP_SIMPLE_MENU
 		MenuItem(AP_MENU_ID_VIEW_FULLSCREEN)
 #endif  
 		BeginSubMenu(AP_MENU_ID_VIEW_ZOOM_MENU)
@@ -164,7 +166,9 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_INSERT_DATETIME)
 		MenuItem(AP_MENU_ID_INSERT_FIELD)
 		MenuItem(AP_MENU_ID_INSERT_TEXTBOX)
+#if !XAP_SIMPLE_MENU
 		MenuItem(AP_MENU_ID_INSERT_MAILMERGE)
+#endif
 		MenuItem(AP_MENU_ID_INSERT_SYMBOL)
 		
 		Separator()
@@ -178,17 +182,19 @@ BeginLayout(Main,0)
         MenuItem(AP_MENU_ID_INSERT_FOOTNOTE)
 		MenuItem(AP_MENU_ID_INSERT_ENDNOTE)
 
-#ifdef TOOLKIT_GTK
+#if defined(TOOLKIT_GTK) && !XAP_SIMPLE_MENU
 		MenuItem(AP_MENU_ID_INSERT_CLIPART)
 #endif
 		MenuItem(AP_MENU_ID_INSERT_GRAPHIC)
 
+#if !XAP_SIMPLE_MENU
 		Separator()
 
 		BeginSubMenu(AP_MENU_ID_INSERT_DIRECTIONMARKER)
  	        MenuItem(AP_MENU_ID_INSERT_DIRECTIONMARKER_LRM)
 	        MenuItem(AP_MENU_ID_INSERT_DIRECTIONMARKER_RLM)
 	    EndSubMenu()
+#endif
 
 	EndSubMenu()
 
@@ -203,7 +209,7 @@ BeginLayout(Main,0)
 #endif
 		Separator()
 		MenuItem(AP_MENU_ID_FMT_COLUMNS)
-#if !XP_SIMPLE_MENU	
+#if !XAP_SIMPLE_MENU	
 		MenuItem(AP_MENU_ID_FMT_TABS)
 #endif	
 		MenuItem(AP_MENU_ID_FMT_HDRFTR)
@@ -232,10 +238,12 @@ BeginLayout(Main,0)
 			MenuItem(AP_MENU_ID_FMT_SUBSCRIPT)
 		EndSubMenu()
 
+#if !XAP_SIMPLE_MENU	
 		BeginSubMenu(AP_MENU_ID_FMT_BACKGROUND)
 			MenuItem(AP_MENU_ID_FMT_BACKGROUND_PAGE_IMAGE)
 			MenuItem(AP_MENU_ID_FMT_BACKGROUND_PAGE_COLOR)
 		EndSubMenu()
+#endif
 
 		BeginSubMenu(AP_MENU_ID_FMT_DIRECTION)
 			MenuItem(AP_MENU_ID_FMT_DIRECTION_DOCD_RTL)
@@ -245,7 +253,7 @@ BeginLayout(Main,0)
 			MenuItem(AP_MENU_ID_FMT_DIRECTION_DO_RTL)
 		EndSubMenu()
         
-#if !XP_SIMPLE_MENU        
+#if !XAP_SIMPLE_MENU        
 		Separator()
 		MenuItem(AP_MENU_ID_FMT_STYLE_DEFINE)
 #endif
@@ -259,7 +267,7 @@ BeginLayout(Main,0)
 #endif
 		MenuItem(AP_MENU_ID_FMT_LANGUAGE)
 		MenuItem(AP_MENU_ID_TOOLS_WORDCOUNT)
-#if !XP_SIMPLE_MENU	
+#if !XAP_SIMPLE_MENU	
         MenuItem(AP_MENU_ID_FMT_STYLIST)
 #endif	
 
@@ -269,14 +277,14 @@ BeginLayout(Main,0)
 	        MenuItem(AP_MENU_ID_TOOLS_HISTORY_SHOW)
 	        MenuItem(AP_MENU_ID_TOOLS_REVISIONS_COMPARE_DOCUMENTS)
 		    MenuItem(AP_MENU_ID_TOOLS_REVISIONS_AUTO)
-#if !XP_SIMPLE_MENU	
+#if !XAP_SIMPLE_MENU	
 		    MenuItem(AP_MENU_ID_TOOLS_HISTORY_PURGE)
 #endif	
 		EndSubMenu()
 	
 		BeginSubMenu(AP_MENU_ID_TOOLS_REVISIONS)
 			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_MARK)
-#if !XP_SIMPLE_MENU	
+#if !XAP_SIMPLE_MENU	
 			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_NEW_REVISION)
 #endif	
 		    Separator()
@@ -291,7 +299,7 @@ BeginLayout(Main,0)
 	        Separator()
 			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_ACCEPT_REVISION)
 			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_REJECT_REVISION)
-#if !XP_SIMPLE_MENU	
+#if !XAP_SIMPLE_MENU	
 			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_PURGE)
 #endif	
 		EndSubMenu()
@@ -305,7 +313,7 @@ BeginLayout(Main,0)
 
 	    Separator()
 
-#if !XP_SIMPLE_MENU
+#if !XAP_SIMPLE_MENU
 		MenuItem(AP_MENU_ID_TOOLS_PLUGINS)
 		MenuItem(AP_MENU_ID_TOOLS_SCRIPTS)
 		MenuItem(AP_MENU_ID_TOOLS_MAILMERGE)
@@ -369,7 +377,7 @@ BeginLayout(Main,0)
 			MenuItem(AP_MENU_ID_TABLE_SORTCOLSDESCEND)
 	    EndSubMenu()
 #endif
-#if !XP_SIMPLE_MENU
+#if !XAP_SIMPLE_MENU
 	    BeginSubMenu(AP_MENU_ID_TABLE_TABLETOTEXT)
 	       MenuItem(AP_MENU_ID_TABLE_TABLETOTEXTCOMMAS)
 	       MenuItem(AP_MENU_ID_TABLE_TABLETOTEXTTABS)
@@ -385,7 +393,7 @@ BeginLayout(Main,0)
 #endif
 	EndSubMenu()
 
-#if !XP_SIMPLE_MENU 
+#if !XAP_SIMPLE_MENU 
 	BeginSubMenu(AP_MENU_ID_WINDOW)
 		MenuItem(AP_MENU_ID_WINDOW_NEW)
 		Separator()
