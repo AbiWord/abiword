@@ -91,6 +91,11 @@ UT_Error IE_Imp_OpenXML::_loadFile (GsfInput * oo_src)
 		UT_DEBUGMSG(("OpenXML import: failed to parse the document footnotes\n"));
 	}
 
+	if (UT_OK != (ret = mgr->parseDocumentEndnotes()))
+	{
+		UT_DEBUGMSG(("OpenXML import: failed to parse the document endnotes\n"));
+	}
+
 	if (UT_OK != (ret = mgr->parseDocumentTheme()))
 	{
 		UT_DEBUGMSG(("OpenXML import: failed to parse the document theme\n"));

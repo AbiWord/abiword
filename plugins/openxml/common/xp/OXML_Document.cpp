@@ -198,6 +198,13 @@ UT_Error OXML_Document::clearFootnotes()
 	return m_footnotes.size() == 0 ? UT_OK : UT_ERROR;
 }
 
+OXML_SharedSection OXML_Document::getEndnote(const std::string & id)
+{
+	OXML_SectionMap::iterator it;
+	it = m_endnotes.find(id);
+	return it != m_endnotes.end() ? it->second : OXML_SharedSection() ;
+}
+
 UT_Error OXML_Document::addEndnote(const OXML_SharedSection & obj)
 {
 	UT_return_val_if_fail(obj, UT_ERROR);

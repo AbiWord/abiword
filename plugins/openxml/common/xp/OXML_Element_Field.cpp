@@ -549,6 +549,12 @@ UT_Error OXML_Element_Field::addToPT(PD_Document * pDocument)
 			break;
 		}
 
+		case fd_Field::FD_Endnote_Ref:
+		{
+			format = "endnote_ref";
+			break;
+		}
+
 		//TODO: more to come here	
 		default:
 		{ 
@@ -557,17 +563,7 @@ UT_Error OXML_Element_Field::addToPT(PD_Document * pDocument)
 		}
 	};
 
-	if(fieldType != fd_Field::FD_Footnote_Ref)
-	{
-		const gchar *field_fmt[3];
-		field_fmt[0] = "type";
-		field_fmt[1] = format;
-		field_fmt[2] = 0;
-
-		if(!pDocument->appendObject(PTO_Field, field_fmt))
-			return UT_ERROR;
-	}
-	else
+	if(fieldType == fd_Field::FD_Footnote_Ref)
 	{
 		const gchar *field_fmt[5];
 		field_fmt[0] = "type";
@@ -589,6 +585,40 @@ UT_Error OXML_Element_Field::addToPT(PD_Document * pDocument)
 			return UT_ERROR;			
 		}
 	}
+	else if(fieldType == fd_Field::FD_Endnote_Ref)
+	{
+		const gchar *field_fmt[5];
+		field_fmt[0] = "type";
+		field_fmt[1] = format;
+		field_fmt[2] = "endnote-id";
+		field_fmt[3] = getId().c_str();
+		field_fmt[4] = 0;
+
+		if(!pDocument->appendObject(PTO_Field, field_fmt))
+			return UT_ERROR;
+
+		OXML_Document* pOXMLDoc = OXML_Document::getInstance();
+		OXML_SharedSection sharedSection = pOXMLDoc->getEndnote(getId());
+		OXML_Section* endnoteSection = sharedSection.get();
+
+
+		if(endnoteSection && (endnoteSection->addToPTAsEndnote(pDocument) != UT_OK))
+		{
+			UT_DEBUGMSG(("FRT:OpenXML importer can't add section as endnote\n"));
+			return UT_ERROR;			
+		}
+	}	
+	else
+	{
+		const gchar *field_fmt[3];
+		field_fmt[0] = "type";
+		field_fmt[1] = format;
+		field_fmt[2] = 0;
+
+		if(!pDocument->appendObject(PTO_Field, field_fmt))
+			return UT_ERROR;
+	}
+
 
 	return addChildrenToPT(pDocument);
 }

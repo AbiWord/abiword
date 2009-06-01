@@ -73,6 +73,7 @@ public:
 	UT_Error addFootnote(const OXML_SharedSection & obj);
 	UT_Error clearFootnotes();
 
+	OXML_SharedSection getEndnote(const std::string & id);
 	UT_Error addEndnote(const OXML_SharedSection & obj);
 	UT_Error clearEndnotes();
 

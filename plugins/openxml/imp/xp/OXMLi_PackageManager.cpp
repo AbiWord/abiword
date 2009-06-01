@@ -162,6 +162,15 @@ UT_Error OXMLi_PackageManager::parseDocumentFootnotes()
 	return parseChildByType(doc, FOOTNOTES_PART, &listener); 
 }
 
+UT_Error OXMLi_PackageManager::parseDocumentEndnotes()
+{
+	GsfInput * doc = _getDocumentStream();
+	UT_return_val_if_fail(doc != NULL, UT_ERROR);
+	OXMLi_StreamListener listener;
+	listener.setupStates(ENDNOTES_PART);
+	return parseChildByType(doc, ENDNOTES_PART, &listener); 
+}
+
 GsfInput* OXMLi_PackageManager::getChildById( GsfInput * parent, const char * id )
 {
 	return gsf_open_pkg_get_rel_by_id(parent, id);

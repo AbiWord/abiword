@@ -525,7 +525,15 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 			rqst->stck->push(footnote);
 		}
 		rqst->handled = true;
-				
+
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "endnoteReference")) {
+		const gchar * id = attrMatches(NS_W_KEY, "id", rqst->ppAtts);
+		if(id)
+		{
+			OXML_SharedElement endnote(new OXML_Element_Field(id, fd_Field::FD_Endnote_Ref, NULL));
+			rqst->stck->push(endnote);
+		}
+		rqst->handled = true;				
 
 /******* END OF SECTION FORMATTING ********/
 
@@ -648,7 +656,8 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "br")) {
 		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) );
 		rqst->handled = true;
-	} else if (nameMatches(rqst->pName, NS_W_KEY, "footnoteReference")) {
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "footnoteReference") || 
+			   nameMatches(rqst->pName, NS_W_KEY, "endnoteReference")) {
 		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) );
 		rqst->handled = true;
 	}
