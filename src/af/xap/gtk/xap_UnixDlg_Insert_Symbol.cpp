@@ -82,8 +82,7 @@ XAP_UnixDialog_Insert_Symbol::XAP_UnixDialog_Insert_Symbol(XAP_DialogFactory * p
 														   XAP_Dialog_Id id)
 	: XAP_Dialog_Insert_Symbol(pDlgFactory,id),
 	m_windowMain(NULL),
-	m_SymbolMap(NULL),
-	m_InsertS_Font_list(NULL)
+	m_SymbolMap(NULL)
 {
 #ifndef WITH_GUCHARMAP
 	m_areaCurrentSym = NULL;

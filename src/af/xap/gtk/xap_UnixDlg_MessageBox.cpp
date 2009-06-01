@@ -70,9 +70,6 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 
 	GtkWidget * message = 0;	// initialize to prevent compiler warning
 	GtkWindow * toplevel;
-	GtkWidget * label;
-	GtkWidget * hbox;
-	gchar     * msg;
 
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 	toplevel = GTK_WINDOW(gtk_widget_get_parent (pUnixFrameImpl->getTopLevelWindow()));
@@ -80,11 +77,6 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	toplevel = GTK_WINDOW(pUnixFrameImpl->getTopLevelWindow());
 #endif	
 
-	UT_String labelText, separator;
-	
-	const XAP_StringSet * pSS = pApp->getStringSet ();
-	char * tmp_str = NULL;
-	UT_UTF8String s;
 	
 	int dflResponse = GTK_RESPONSE_OK;
 
@@ -120,11 +112,16 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 			break;
 
 		case b_YNC:
+        {
 			// YES - NO - CANCEL
 			// this is only used for saving files.
 #ifndef EMBEDDED_TARGET
+            std::string s;
+            UT_String labelText;
+            const XAP_StringSet * pSS = pApp->getStringSet ();
+
 			pSS->getValueUTF8(XAP_STRING_ID_DLG_Exit_CloseWithoutSaving,s);
-			tmp_str = g_strdup(s.utf8_str());
+            char * tmp_str = g_strdup(s.c_str());
 			convertMnemonics(tmp_str);
 			message = gtk_dialog_new_with_buttons("",
 							      toplevel, 
@@ -140,20 +137,21 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 			dflResponse = GTK_RESPONSE_YES;
 			FREEP(tmp_str);
 			
-			label = gtk_label_new(NULL);
+            GtkWidget * label = gtk_label_new(NULL);
+            const char * separator;
 			if (m_szSecondaryMessage == NULL)
-				separator =UT_String("");
+				separator = "";
 			else
-				separator =UT_String("\n\n");
+				separator = "\n\n";
 			
-			msg = g_markup_escape_text (m_szMessage, -1);
+            gchar     * msg = g_markup_escape_text (m_szMessage, -1);
 			labelText = UT_String_sprintf(labelText, "<span weight=\"bold\" size=\"larger\">%s</span>%s%s", 
-										  msg, separator.c_str(), m_szSecondaryMessage);
+										  msg, separator, m_szSecondaryMessage);
 			g_free (msg); msg = NULL;
 			
 			gtk_label_set_markup(GTK_LABEL(label), labelText.c_str());
 
-			hbox = gtk_hbox_new(FALSE, 12);
+            GtkWidget * hbox = gtk_hbox_new(FALSE, 12);
   
 			gtk_box_pack_start (GTK_BOX (hbox), 
 					    gtk_image_new_from_stock(GTK_STOCK_DIALOG_WARNING, 
@@ -195,7 +193,7 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 							 GTK_RESPONSE_CANCEL);
 			
 			break;
-			
+        }
 		default:
 			UT_ASSERT_NOT_REACHED();
 	}

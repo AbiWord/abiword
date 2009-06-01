@@ -906,7 +906,7 @@ UT_uint32 AP_TopRuler::getTabToggleAreaWidth() const
 		xFixed = pG->tlu(s_iFixedWidth);
 
 #ifdef EMBEDDED_TARGET
-			xFixed = (UT_uint32) (float)xFixed * 0.1;
+    xFixed = (UT_sint32) ((float)xFixed * 0.1);
 #endif
 
 	

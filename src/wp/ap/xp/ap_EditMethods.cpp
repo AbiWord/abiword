@@ -3677,6 +3677,7 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 		// user initiate exit -- clear any state info from previous hibernation
 		pApp->clearStateInfo();
 #endif
+        UT_UNUSED(bCanExit);
 #else
 		if (bCanExit)
 		{

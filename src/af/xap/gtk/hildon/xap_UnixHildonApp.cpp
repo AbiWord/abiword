@@ -103,7 +103,7 @@ bool XAP_UnixHildonApp::initialize(const char * szKeyBindingsKey,
 		return false;
 	}
 
-	UT_DEBUGMSG(("m_pOsso 0x%x\n", m_pOsso));
+	UT_DEBUGMSG(("m_pOsso 0x%p\n", m_pOsso));
 	
 	// Set handling changes in HW states. 
 	ret = osso_hw_set_event_cb (m_pOsso, NULL, osso_hw_event_cb, this);
@@ -253,7 +253,7 @@ _topmost_acquire (XAP_UnixHildonApp *app,
 			pUntitled = p;
 	}
 	
-	for(UT_uint32 i = 0; i < app->getFrameCount(); ++i)
+	for(UT_sint32 i = 0; i < app->getFrameCount(); ++i)
 	{
 		XAP_Frame * pFrame = app->getFrame(i);
 		if(!pFrame)
@@ -298,8 +298,8 @@ _topmost_acquire (XAP_UnixHildonApp *app,
 
 static void
 s_topmost_changed_cb (HildonProgram *program,
-		GParamSpec *property_param,
-		gpointer data)
+                      GParamSpec * /*property_param*/,
+                      gpointer data)
 {
 	XAP_UnixHildonApp *pApp;
 	UT_return_if_fail(data != NULL);
@@ -326,7 +326,7 @@ osso_hw_event_cb (osso_hw_state_t *state,
 
 	//signal shutdown received
 	if (state->shutdown_ind) {
-		for (unsigned int ndx=0; ndx < pApp->getFrameCount(); ndx++) 
+		for (UT_sint32 ndx = 0; ndx < pApp->getFrameCount(); ndx++) 
 			pApp->getFrame(ndx)->close();
 	}
 
@@ -375,9 +375,9 @@ osso_hw_event_cb (osso_hw_state_t *state,
 
 static gint osso_rpc_event_cb (const gchar     *interface,
                                const gchar     *method,
-                               GArray          *arguments,
+                               GArray          * /*arguments*/,
                                gpointer         data,
-                               osso_rpc_t      *retval)
+                               osso_rpc_t      * /*retval*/)
 {
 	UT_DEBUGMSG(("\n+++++++++ osso_rpc_event_cb() called; interface %s, method %s +++++++++++++++\n",
 				 interface, method));

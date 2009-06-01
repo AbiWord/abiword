@@ -19,6 +19,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -50,7 +51,8 @@ static void s_types_clicked(GtkTreeView *treeview,
 	}
 
 	// Get the row and col number
-	GValue value = {0,{{NULL}}};
+	GValue value;
+	memset(&value, 0, sizeof(value));
 	gtk_tree_model_get_value (model, &iter,1,&value);
 	row = g_value_get_int(&value);
 	g_value_unset (&value);

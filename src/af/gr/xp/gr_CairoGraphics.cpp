@@ -1784,7 +1784,7 @@ void GR_CairoGraphics::positionToXY(const GR_RenderInfo & ri,
 		utf8 += RI.m_pText->getChar();
 	}
 
-	UT_sint32 iByteOffset;
+	UT_sint32 iByteOffset = 0;
 	gboolean  bTrailing = TRUE;
 	const char * pUtf8 = utf8.utf8_str();
 	const char * pOffset = NULL;
@@ -1990,7 +1990,7 @@ UT_uint32 GR_CairoGraphics::measureString(const UT_UCSChar * pChars,
 					pGstring);
 
 		pango_glyph_string_extents(pGstring, pf, NULL, &LR);
-		iWidth += ((double) LR.width + (double)LR.x)/PANGO_SCALE;
+		iWidth += (UT_uint32)(((double) LR.width + (double)LR.x)/PANGO_SCALE);
 		UT_uint32 h = LR.height/PANGO_SCALE;
 		xxx_UT_DEBUGMSG(("measure string iWidth %d height %d \n",iWidth,h));
 		if (height && *height < h)

@@ -88,8 +88,13 @@ AP_UnixDialog_Columns::~AP_UnixDialog_Columns(void)
 
 /*****************************************************************/
 
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#else
+#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
+static void s_one_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
+{
+	UT_return_if_fail(widget && dlg);
+	dlg->event_Toggle(1);
+}
+
 static void s_two_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
 {
 	UT_return_if_fail(widget && dlg);
@@ -103,6 +108,7 @@ static void s_three_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
 	dlg->event_Toggle(3);
 }
 #endif
+
 static void s_spin_changed(GtkWidget * widget, AP_UnixDialog_Columns *dlg)
 {
 	UT_return_if_fail(widget && dlg);
@@ -164,11 +170,6 @@ static gboolean s_window_exposed(GtkWidget * widget, gpointer /* data */, AP_Uni
 	return FALSE;
 }
 
-static void s_one_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
-{
-	UT_return_if_fail(widget && dlg);
-	dlg->event_Toggle(1);
-}
 
 
 /*****************************************************************/

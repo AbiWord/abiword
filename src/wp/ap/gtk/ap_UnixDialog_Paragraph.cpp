@@ -114,17 +114,15 @@ static void s_check_toggled(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
 	dlg->event_CheckToggled(widget);
 }
 
+#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 static gboolean do_update(gpointer p)
 {
 //
 // FIXME!!! Could get nasty crash if the dlg is destroyed while 
 // a redraw is pending....
 //
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#else
 	AP_UnixDialog_Paragraph * dlg = (AP_UnixDialog_Paragraph *) p;
 	dlg->event_PreviewAreaExposed();
-#endif
 	return FALSE;
 }
 
@@ -136,6 +134,7 @@ static gint s_preview_exposed(GtkWidget * /* widget */,
 	g_idle_add((GSourceFunc) do_update,(gpointer) dlg);
 	return TRUE;
 }
+#endif
 
 /*****************************************************************/
 
@@ -389,13 +388,6 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	GtkWidget * labelLineSpacing;
 	GtkWidget * labelAt;
 
-	GtkWidget * hboxPreview;
-	GtkWidget * labelPreview;
-	GtkWidget * hboxPreviewFrame;
-	GtkWidget * framePreview;
-	GtkWidget * drawingareaPreview;
-
-	GtkWidget * hseparator4;
 	GtkWidget * hseparator1;
 	GtkWidget * labelBefore;
 	GtkWidget * labelIndents;
@@ -845,8 +837,15 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
                     (GtkAttachOptions) (GTK_FILL), 0, 0 );
 
 	// End of notebook. Next comes the preview area.
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#else
+#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
+	GtkWidget * hboxPreview;
+	GtkWidget * labelPreview;
+	GtkWidget * hboxPreviewFrame;
+	GtkWidget * framePreview;
+	GtkWidget * drawingareaPreview;
+
+	GtkWidget * hseparator4;
+
 	hboxPreview = gtk_hbox_new (FALSE, 5);
 	gtk_widget_show (hboxPreview);
 
@@ -977,8 +976,7 @@ void AP_UnixDialog_Paragraph::_connectCallbackSignals(void)
 	g_signal_connect(G_OBJECT(m_checkbuttonDomDirection), "toggled",
 					   G_CALLBACK(s_check_toggled), (gpointer) this);
 
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#else
+#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 	// the expose event off the preview
 	g_signal_connect(G_OBJECT(m_drawingareaPreview),
 					   "expose_event",

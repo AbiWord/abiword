@@ -1067,6 +1067,9 @@ UT_go_directory_create (char const *uri, int mode, GError **error)
 	return TRUE;
 #else
 	char *filename;
+	if(error) {
+		*error = NULL;
+	}
 
 	filename = UT_go_filename_from_uri (uri);
 	if (filename) {
@@ -1804,6 +1807,7 @@ UT_go_get_mime_type (gchar const *uri)
 	 */
 	return g_strdup ("text/plain");
 #else
+	UT_UNUSED(uri);
 	return g_strdup ("application/octet-stream");
 #endif
 }

@@ -274,15 +274,19 @@ static gint nonmodal_keypress_cb ( GtkWidget * /*wid*/, GdkEventKey * event,
 	return FALSE ;
 }
 
+#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 static void help_button_cb (GObject * /*button*/, XAP_Dialog * pDlg)
 {
   if (pDlg)
     sDoHelp (pDlg);
 }
+#endif
 
 static void sAddHelpButton (GtkDialog * me, XAP_Dialog * pDlg)
 {
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+    UT_UNUSED(me);
+    UT_UNUSED(pDlg);
 #else
   // prevent help button from being added twice
   gint has_button = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (me), "has-help-button"));

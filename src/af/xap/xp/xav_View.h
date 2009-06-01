@@ -155,9 +155,9 @@ public:
 // With a selection in place. (Rather than pure virtual.)
 	virtual void		cmdUnselectSelection(void) {UT_DEBUGMSG(("Just saved a segfault! \n"));}
 
-	virtual UT_uint32   calculateZoomPercentForPageWidth() = 0;
-	virtual UT_uint32   calculateZoomPercentForPageHeight() = 0;
-	virtual UT_uint32   calculateZoomPercentForWholePage() = 0;
+	virtual UT_uint32   calculateZoomPercentForPageWidth() const = 0;
+	virtual UT_uint32   calculateZoomPercentForPageHeight() const = 0;
+	virtual UT_uint32   calculateZoomPercentForWholePage() const = 0;
 	void   setLayoutIsFilling(bool bFill) { m_bIsLayoutFilling = bFill;}
 	bool   isLayoutFilling(void)  const {return  m_bIsLayoutFilling;}
 	virtual UT_uint32	  getPoint(void) const =0;

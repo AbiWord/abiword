@@ -338,6 +338,7 @@ bool EV_UnixMenu::menuEvent(XAP_Menu_Id id)
 	return true;
 }
 
+#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 static guint _ev_get_underlined_char(const char * szString)
 {
 
@@ -353,6 +354,7 @@ static guint _ev_get_underlined_char(const char * szString)
 
 	return GDK_VoidSymbol;
 }
+#endif
 
 static void _ev_strip_underline(char * bufResult,
 								const char * szString)
@@ -1056,9 +1058,9 @@ bool EV_UnixMenuPopup::refreshMenu(AV_View * pView)
 }
 
 GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int 		id, 
-												 const bool isCheckable, 
-												 const bool isRadio, 
-												 const bool isPopup,
+												 bool isCheckable, 
+												 bool isRadio, 
+												 bool isPopup,
 												 const char *szLabelName, 
 												 const char *szMnemonicName)
 {
@@ -1099,6 +1101,8 @@ GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int 		id,
 	  }
 	
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+    UT_UNUSED(szMnemonicName);
+    UT_UNUSED(isPopup);
 #else
 	if (szMnemonicName && *szMnemonicName && !isPopup)
 	  {
