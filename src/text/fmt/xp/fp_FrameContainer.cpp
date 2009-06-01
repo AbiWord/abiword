@@ -386,7 +386,7 @@ void fp_FrameContainer::getBlocksAroundFrame(UT_GenericVector<fl_BlockLayout *> 
   {
     return;
   }
-  UT_uint32 iColLeader = 0;
+  UT_sint32 iColLeader = 0;
   fp_Column * pCol = NULL;
   fl_BlockLayout * pCurBlock = NULL;
   fp_Line * pCurLine = NULL;
@@ -395,40 +395,40 @@ void fp_FrameContainer::getBlocksAroundFrame(UT_GenericVector<fl_BlockLayout *> 
   {
       UT_sint32 iPage = getPreferedPageNo();
       if(iPage >0)
-	setPreferedPageNo(iPage-1);
+          setPreferedPageNo(iPage-1);
       return;
   }
   for(iColLeader = 0; iColLeader < pPage->countColumnLeaders(); iColLeader++)
   {
-    pCol = pPage->getNthColumnLeader(iColLeader);
-    while(pCol)
-    {
-      UT_sint32 i = 0;
-      UT_sint32 iYCol = pCol->getY(); // Vertical position relative to page.
-      for(i=0; i< pCol->countCons(); i++)
+      pCol = pPage->getNthColumnLeader(iColLeader);
+      while(pCol)
       {
-	pCurCon = static_cast<fp_Container *>(pCol->getNthCon(i));
-	if(pCurCon->getContainerType() == FP_CONTAINER_LINE)
-	{
-	  pCurLine = static_cast<fp_Line *>(pCurCon);
-	  UT_sint32 iYLine = iYCol + pCurLine->getY();
-	  xxx_UT_DEBUGMSG(("iYLine %d FullY %d FullHeight %d \n",iYLine,getFullY(),getFullHeight()));
-	  if((iYLine + pCurLine->getHeight() > getFullY()) && (iYLine < (getFullY() + getFullHeight())))
-	  {
-	    //
-	    // Line overlaps frame in Height. Add it's block to the vector.
-	    //
-	    if(pCurLine->getBlock() != pCurBlock)
-	    {
-	      pCurBlock = pCurLine->getBlock();
-	      vecBlocks.addItem(pCurBlock);
-	      xxx_UT_DEBUGMSG(("Add Block %x to vector \n",pCurBlock));
-	    }
-	  }
-	}
+          UT_sint32 i = 0;
+          UT_sint32 iYCol = pCol->getY(); // Vertical position relative to page.
+          for(i=0; i< pCol->countCons(); i++)
+          {
+              pCurCon = static_cast<fp_Container *>(pCol->getNthCon(i));
+              if(pCurCon->getContainerType() == FP_CONTAINER_LINE)
+              {
+                  pCurLine = static_cast<fp_Line *>(pCurCon);
+                  UT_sint32 iYLine = iYCol + pCurLine->getY();
+                  xxx_UT_DEBUGMSG(("iYLine %d FullY %d FullHeight %d \n",iYLine,getFullY(),getFullHeight()));
+                  if((iYLine + pCurLine->getHeight() > getFullY()) && (iYLine < (getFullY() + getFullHeight())))
+                  {
+                      //
+                      // Line overlaps frame in Height. Add it's block to the vector.
+                      //
+                      if(pCurLine->getBlock() != pCurBlock)
+                      {
+                          pCurBlock = pCurLine->getBlock();
+                          vecBlocks.addItem(pCurBlock);
+                          xxx_UT_DEBUGMSG(("Add Block %x to vector \n",pCurBlock));
+                      }
+                  }
+              }
+          }
+          pCol = pCol->getFollower();
       }
-      pCol = pCol->getFollower();
-    }
   }
   if(vecBlocks.getItemCount() == 0)
   {
@@ -437,15 +437,15 @@ void fp_FrameContainer::getBlocksAroundFrame(UT_GenericVector<fl_BlockLayout *> 
       fl_BlockLayout * pB = NULL;
       if(pCon && pCon->getContainerType() == FP_CONTAINER_LINE)
       {
-	  pB = static_cast<fp_Line *>(pCon)->getBlock();
+          pB = static_cast<fp_Line *>(pCon)->getBlock();
       }
       else if(pCon)
       {
-	  fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pCon->getSectionLayout());
-	  pB = pCL->getNextBlockInDocument();
+          fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pCon->getSectionLayout());
+          pB = pCL->getNextBlockInDocument();
       }
       if(pB != NULL)
-	vecBlocks.addItem(pB);
+          vecBlocks.addItem(pB);
   }
 
 }

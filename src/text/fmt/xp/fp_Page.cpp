@@ -1291,7 +1291,7 @@ bool fp_Page::needsRedraw(void) const
 	return m_bNeedsRedraw;
 }
 
-UT_uint32 fp_Page::countColumnLeaders(void) const
+UT_sint32 fp_Page::countColumnLeaders(void) const
 {
 	return m_vecColumnLeaders.getItemCount();
 }
@@ -1336,7 +1336,7 @@ bool fp_Page::TopBotMarginChanged(void)
  */
 bool fp_Page::breakPage(void)
 {
-	UT_uint32 count = countColumnLeaders();
+	UT_sint32 count = countColumnLeaders();
 	if (count == 0)
 	{
 		return true;
@@ -1351,7 +1351,7 @@ bool fp_Page::breakPage(void)
 	UT_sint32 availHeight = getHeight() - iBottomMargin;
 		
 	// we need the height of the footnotes on this page, to deduct.
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	UT_uint32 iFootnoteHeight = 2*pFirstSectionLayout->getFootnoteLineThickness();
 	for (i = 0; i < countFootnoteContainers(); i++)
 	{
@@ -1649,7 +1649,7 @@ void fp_Page::_reformat(void)
 
 void fp_Page::_reformatColumns(void)
 {
-	UT_uint32 count = countColumnLeaders();
+	UT_sint32 count = countColumnLeaders();
 	if (count == 0)
 		return;
 
@@ -1668,7 +1668,7 @@ void fp_Page::_reformatColumns(void)
 	UT_sint32 iY = iTopMargin;
 
 	// we need the height of the footnotes on this page, to deduct.
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	UT_uint32 iFootnoteHeight = 2*pFirstSectionLayout->getFootnoteLineThickness();
 	for (i = 0; i < countFootnoteContainers(); i++)
 	{
@@ -1830,16 +1830,16 @@ void fp_Page::_reformatColumns(void)
 void fp_Page::clearScreenFootnotes(void)
 {
 	UT_sint32 i =0;
-	for (i = 0; i < static_cast<UT_sint32>(countFootnoteContainers()); i++)
+	for (i = 0; i < countFootnoteContainers(); i++)
 	{
 		getNthFootnoteContainer(i)->clearScreen();
 	}
 }
 
-UT_sint32 fp_Page::getFootnoteHeight(void)
+UT_sint32 fp_Page::getFootnoteHeight(void) const
 {
 	UT_uint32 iFootnoteHeight = 0;
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	for (i = 0; i < countFootnoteContainers(); i++)
 	{
 		iFootnoteHeight += getNthFootnoteContainer(i)->getHeight();
@@ -1863,7 +1863,7 @@ void fp_Page::_reformatFootnotes(void)
 	UT_uint32 pageHeight = getHeight() - iBottomMargin;
 	pageHeight -= getAnnotationHeight();
 	UT_uint32 iFootnoteHeight = 0;
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	for (i = 0; i < countFootnoteContainers(); i++)
 	{
 		iFootnoteHeight += getNthFootnoteContainer(i)->getHeight();
@@ -1894,20 +1894,20 @@ void fp_Page::_reformatFootnotes(void)
 void fp_Page::clearScreenAnnotations(void)
 {
 	UT_sint32 i =0;
-	for (i = 0; i < static_cast<UT_sint32>(countAnnotationContainers()); i++)
+	for (i = 0; i < countAnnotationContainers(); i++)
 	{
 		getNthAnnotationContainer(i)->clearScreen();
 	}
 }
 
-UT_sint32 fp_Page::getAnnotationHeight(void)
+UT_sint32 fp_Page::getAnnotationHeight(void) const
 {
 	if(!getDocLayout()->displayAnnotations())
 	{
 			return 0;
 	}
 	UT_uint32 iAnnotationHeight = 0;
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	for (i = 0; i < countAnnotationContainers(); i++)
 	{
 		iAnnotationHeight += getNthAnnotationContainer(i)->getHeight();
@@ -1932,7 +1932,7 @@ void fp_Page::_reformatAnnotations(void)
 	UT_sint32 iBottomMargin = pFirstSectionLayout->getBottomMargin();
 	UT_uint32 pageHeight = getHeight() - iBottomMargin;
 	UT_uint32 iAnnotationHeight = 0;
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	for (i = 0; i < countAnnotationContainers(); i++)
 	{
 		iAnnotationHeight += getNthAnnotationContainer(i)->getHeight();
@@ -2226,7 +2226,7 @@ PT_DocPosition fp_Page::getFirstLastPos(bool bFirst) const
 	return pos;
 }
 
-void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, bool& bBOL, bool& bEOL,bool &isTOC, bool bUseHdrFtr, fl_HdrFtrShadow ** pShadow )
+void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, bool& bBOL, bool& bEOL,bool &isTOC, bool bUseHdrFtr, fl_HdrFtrShadow ** pShadow ) const
 {
 	fl_HdrFtrShadow * pShad = NULL;
 	if(pShadow == NULL)
@@ -2253,9 +2253,9 @@ void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, boo
  \return pos The Document position corresponding the text at location x,y
  \return pShadow A pointer to the shadow corresponding to this header/footer
  */
-void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC, bool bUseHdrFtr, fl_HdrFtrShadow ** pShadow )
+void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC, bool bUseHdrFtr, fl_HdrFtrShadow ** pShadow ) const
 {
-	int count = m_vecColumnLeaders.getItemCount();
+	UT_sint32 count = m_vecColumnLeaders.getItemCount();
 	UT_uint32 iMinDist = 0xffffffff;
 	fp_VerticalContainer * pMinDist = NULL;
 	fp_Column* pColumn = NULL;
@@ -2280,7 +2280,7 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 		// loop from high z to low z
 		// Because we draw from old to new, the new appears on top
 		// and because the new appears on top, it should be treated as such
-		for (i=(static_cast<UT_sint32>(countAboveFrameContainers()-1)); i>=0; i--)
+		for (i = (countAboveFrameContainers()-1); i>=0; i--)
 		{
 			pFrameC = getNthAboveFrameContainer(i);
 			bool isImage = false;
@@ -2337,7 +2337,7 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 				}
 			}
 		}
-		for (i=(static_cast<UT_sint32>(countBelowFrameContainers()-1)); i>=0; i--)
+		for (i = countBelowFrameContainers()-1; i>=0; i--)
 		{
 			pFrameC = getNthBelowFrameContainer(i);
 			bool isImage = false;
@@ -2690,11 +2690,11 @@ void fp_Page::frameHeightChanged(void)
 void fp_Page::clearScreenFrames(void)
 {
 	UT_sint32 i =0;
-	for (i = 0; i < static_cast<UT_sint32>(countAboveFrameContainers()); i++)
+	for (i = 0; i < countAboveFrameContainers(); i++)
 	{
 		getNthAboveFrameContainer(i)->clearScreen();
 	}
-	for (i = 0; i < static_cast<UT_sint32>(countBelowFrameContainers()); i++)
+	for (i = 0; i < countBelowFrameContainers(); i++)
 	{
 		getNthBelowFrameContainer(i)->clearScreen();
 	}
@@ -2781,18 +2781,18 @@ void fp_Page::markDirtyOverlappingRuns(fp_FrameContainer * pFrameC)
 }
 
 
-UT_uint32 fp_Page::countAboveFrameContainers(void) const
+UT_sint32 fp_Page::countAboveFrameContainers(void) const
 {
         return m_vecAboveFrames.getItemCount();
 }
 
 
-UT_uint32 fp_Page::countBelowFrameContainers(void) const
+UT_sint32 fp_Page::countBelowFrameContainers(void) const
 {
         return m_vecBelowFrames.getItemCount();
 }
 
-UT_sint32 fp_Page::findFrameContainer(fp_FrameContainer * pFC)
+UT_sint32 fp_Page::findFrameContainer(fp_FrameContainer * pFC) const
 {
         UT_sint32 i; 
         if(pFC->isAbove())
@@ -2881,12 +2881,12 @@ void fp_Page::removeFrameContainer(fp_FrameContainer * _pFC)
 
 // Footnote methods
 
-UT_uint32 fp_Page::countFootnoteContainers(void) const
+UT_sint32 fp_Page::countFootnoteContainers(void) const
 {
 	return m_vecFootnotes.getItemCount();
 }
 
-UT_sint32 fp_Page::findFootnoteContainer(fp_FootnoteContainer * pFC)
+UT_sint32 fp_Page::findFootnoteContainer(fp_FootnoteContainer * pFC) const
 {
 	UT_sint32 i = m_vecFootnotes.findItem(pFC);
 	return i;
@@ -2960,12 +2960,12 @@ void fp_Page::removeFootnoteContainer(fp_FootnoteContainer * _pFC)
 
 // Annotation methods
 
-UT_uint32 fp_Page::countAnnotationContainers(void) const
+UT_sint32 fp_Page::countAnnotationContainers(void) const
 {
 	return m_vecAnnotations.getItemCount();
 }
 
-UT_sint32 fp_Page::findAnnotationContainer(fp_AnnotationContainer * pAC)
+UT_sint32 fp_Page::findAnnotationContainer(fp_AnnotationContainer * pAC) const
 {
 	UT_sint32 i = m_vecAnnotations.findItem(pAC);
 	return i;
@@ -2976,10 +2976,10 @@ fp_AnnotationContainer* fp_Page::getNthAnnotationContainer(UT_sint32 n) const
 	return m_vecAnnotations.getNthItem(n);
 } 
 
-UT_uint32 fp_Page::getAnnotationPos(UT_uint32 pid)
+UT_sint32 fp_Page::getAnnotationPos(UT_uint32 pid) const
 {
 	fp_AnnotationContainer * pACon = NULL;
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	for(i = 0; i< countAnnotationContainers(); i++)
 	{
 			pACon = getNthAnnotationContainer(i);

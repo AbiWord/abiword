@@ -52,7 +52,7 @@ UT_UCS4Char * fp_Line::s_pPseudoString = 0;
 UT_uint32   * fp_Line::s_pMapOfRunsL2V = 0;
 UT_uint32   * fp_Line::s_pMapOfRunsV2L = 0;
 UT_Byte     * fp_Line::s_pEmbeddingLevels = 0;
-UT_uint32     fp_Line::s_iMapOfRunsSize = 0;
+UT_sint32     fp_Line::s_iMapOfRunsSize = 0;
 fp_Line     * fp_Line::s_pMapOwner = 0;
 #else
 //make sure that any references to the static members are renamed to their non-static versions
@@ -494,8 +494,8 @@ void fp_Line::setContainer(fp_Container* pContainer)
 UT_sint32 fp_Line::getWidthToRun(fp_Run * pLastRun)
 {
 	UT_sint32 width = 0;
-	UT_uint32 count = m_vecRuns.getItemCount();
-	UT_uint32 i = 0;
+	UT_sint32 count = m_vecRuns.getItemCount();
+	UT_sint32 i = 0;
 	for(i=0;i<count;i++)
 	{
 		fp_Run * pRun = m_vecRuns.getNthItem(i);
@@ -511,8 +511,8 @@ UT_sint32 fp_Line::getWidthToRun(fp_Run * pLastRun)
 UT_sint32 fp_Line::getFilledWidth(void)
 {
 	UT_sint32 width = 0;
-	UT_uint32 count = m_vecRuns.getItemCount();
-	UT_uint32 i = 0;
+	UT_sint32 count = m_vecRuns.getItemCount();
+	UT_sint32 i = 0;
 	for(i=0;i<count;i++)
 	{
 		fp_Run * pRun = m_vecRuns.getNthItem(i);
@@ -669,8 +669,8 @@ void fp_Line::remove(void)
 void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 							  bool& bBOL, bool& bEOL, bool &isTOC)
 {
-	UT_uint32 count = m_vecRuns.getItemCount();
-	UT_uint32 i = 0;
+	UT_sint32 count = m_vecRuns.getItemCount();
+	UT_sint32 i = 0;
 	fp_Run* pFirstRun;
 	xxx_UT_DEBUGMSG(("fp_line: mapXYToPosition this %x Y %d \n",this,getY()));
 	do {
@@ -1254,7 +1254,7 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 #endif
 	// if we have a valid index to clear from, let's do it ...
 
-	if(static_cast<UT_sint32>(runIndex) < count)
+	if(runIndex < count)
 	{
 		UT_sint32 xoff, yoff;
 
@@ -2207,9 +2207,7 @@ void fp_Line::layout(void)
 	//reallocated as needed
 #ifdef DEBUG
 	const UT_uint32 iDefinesLine = __LINE__;
-#endif
 
-#ifdef DEBUG
 	UT_uint32 iRealocCount = 0;
 #endif
 	while(static_cast<UT_sint32>(s_iOldXsSize) < iCountRuns + 1)
@@ -2844,8 +2842,8 @@ bool fp_Line::recalculateFields(UT_uint32 iUpdateCount)
 {
 	bool bResult = false;
 
-	UT_uint32 iNumRuns = m_vecRuns.getItemCount();
-	for (UT_uint32 i = 0; i < iNumRuns; i++)
+	UT_sint32 iNumRuns = m_vecRuns.getItemCount();
+	for (UT_sint32 i = 0; i < iNumRuns; i++)
 	{
 		fp_Run* pRun = m_vecRuns.getNthItem(i);
 
@@ -3188,7 +3186,7 @@ bool fp_Line::containsForcedPageBreak(void) const
 void fp_Line::coalesceRuns(void)
 {
 	xxx_UT_DEBUGMSG(("coalesceRuns (line 0x%x)\n", this));
-	UT_uint32 count = m_vecRuns.getItemCount();
+	UT_sint32 count = m_vecRuns.getItemCount();
 	for (UT_sint32 i=0; i < static_cast<UT_sint32>(count-1); i++)
 	{
 		fp_Run* pRun = m_vecRuns.getNthItem(static_cast<UT_uint32>(i));
@@ -3222,13 +3220,13 @@ void fp_Line::coalesceRuns(void)
 
 UT_sint32 fp_Line::calculateWidthOfLine(void)
 {
-	const UT_uint32 iCountRuns = m_vecRuns.getItemCount();
+	const UT_sint32 iCountRuns = m_vecRuns.getItemCount();
 	UT_sint32 iX = 0;
 
 	// first calc the width of the line
-	for (UT_uint32 i = 0; i < iCountRuns; ++i)
+	for (UT_sint32 i = 0; i < iCountRuns; ++i)
 	{
-		fp_Run* pRun = m_vecRuns.getNthItem(i);
+		const fp_Run* pRun = m_vecRuns.getNthItem(i);
 
 		if(pRun->isHidden())
 			continue;
@@ -3363,8 +3361,8 @@ bool fp_Line::isLastCharacter(UT_UCSChar Character) const
 
 void fp_Line::resetJustification(bool bPermanent)
 {
-	UT_uint32 count = m_vecRuns.getItemCount();
-	for (UT_uint32 i=0; i<count; i++)
+	UT_sint32 count = m_vecRuns.getItemCount();
+	for (UT_sint32 i=0; i<count; i++)
 	{
 		fp_Run* pRun = m_vecRuns.getNthItem(i);
 
@@ -3476,13 +3474,13 @@ void fp_Line::justify(UT_sint32 iAmount)
 
 void fp_Line::_splitRunsAtSpaces(void)
 {
-	UT_uint32 count = m_vecRuns.getItemCount();
+	UT_sint32 count = m_vecRuns.getItemCount();
 	if(!count)
 		return;
 
-	UT_uint32 countOrig = count;
+	UT_sint32 countOrig = count;
 
-	for (UT_uint32 i = 0; i < count; i++)
+	for (UT_sint32 i = 0; i < count; i++)
 	{
 		fp_Run* pRun = m_vecRuns.getNthItem(i);
 
@@ -3532,7 +3530,7 @@ void fp_Line::_splitRunsAtSpaces(void)
 */
 UT_sint32 fp_Line::_createMapOfRuns()
 {
-	UT_uint32 i=0;
+	UT_sint32 i=0;
 
 #ifdef USE_STATIC_MAP
 	if((s_pMapOwner != this) || (m_bMapDirty))
@@ -3546,7 +3544,7 @@ UT_sint32 fp_Line::_createMapOfRuns()
 	{
 		m_bMapDirty = false;
 #endif
-		UT_uint32 count = m_vecRuns.getItemCount();
+		UT_sint32 count = m_vecRuns.getItemCount();
 		if(!count)
 			return UT_OK;  // do not even try to map a line with no runs
 
@@ -3750,7 +3748,7 @@ fp_Run * fp_Line::getLastVisRun()
 		return(getLastRun());
 
 	_createMapOfRuns();
-	UT_uint32 count = m_vecRuns.getItemCount();
+	UT_sint32 count = m_vecRuns.getItemCount();
 	UT_ASSERT(count > 0);
 	return m_vecRuns.getNthItem(s_pMapOfRunsV2L[count - 1]);
 }
@@ -3862,13 +3860,13 @@ void fp_Line::_updateContainsFootnoteRef(void)
 {
 	m_bContainsFootnoteRef = false;
 
-	UT_uint32 count = m_vecRuns.getItemCount();
-	for (UT_uint32 i = 0; i < count; i++)
+	UT_sint32 count = m_vecRuns.getItemCount();
+	for (UT_sint32 i = 0; i < count; i++)
 	{
-		fp_Run * r = static_cast<fp_Run *>(m_vecRuns.getNthItem(i));
+		const fp_Run * r = static_cast<const fp_Run *>(m_vecRuns.getNthItem(i));
 		if (r->getType() == FPRUN_FIELD)
 		{
-			fp_FieldRun * fr = static_cast<fp_FieldRun*>(r);
+			const fp_FieldRun * fr = static_cast<const fp_FieldRun*>(r);
 			if (fr->getFieldType() == FPFIELD_endnote_ref)
 				m_bContainsFootnoteRef = true;
 		}
@@ -3879,9 +3877,9 @@ UT_sint32 fp_Line::getDrawingWidth() const
 {
 	if(isLastLineInBlock())
 	{
-		fp_Run * pRun = getLastRun();
+		const fp_Run * pRun = getLastRun();
 		UT_return_val_if_fail(pRun && pRun->getType() == FPRUN_ENDOFPARAGRAPH, m_iWidth);
-		return (m_iWidth + (static_cast<fp_EndOfParagraphRun*>(pRun))->getDrawingWidth());
+		return (m_iWidth + (static_cast<const fp_EndOfParagraphRun*>(pRun))->getDrawingWidth());
 	}
 	else
 	{

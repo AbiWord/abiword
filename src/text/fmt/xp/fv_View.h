@@ -308,8 +308,8 @@ public:
 	PT_DocPosition		mapDocPosSimple( FV_DocPos dp );
 	PT_DocPosition saveSelectedImage (const char * toFile );
 	PT_DocPosition saveSelectedImage (const UT_ByteBuf ** outByteBuf);
-	PT_DocPosition getSelectedImage(const char **dataId);
-	fp_Run *getSelectedObject(void);
+	PT_DocPosition getSelectedImage(const char **dataId) const;
+	fp_Run *getSelectedObject(void) const;
 
 	void            getTextInCurrentBlock(UT_GrowBuf & buf) const;
 	void            getTextInCurrentSection(UT_GrowBuf & buf) const;
@@ -334,12 +334,12 @@ public:
 	virtual UT_sint32 getPageViewSep(void) const;
 
 	bool	setSectionFormat(const gchar * properties[]);
-	bool	getSectionFormat(const gchar *** properties);
+	bool	getSectionFormat(const gchar *** properties) const;
 
 	bool	setBlockIndents(bool doLists, double indentChange, double page_size);
 	bool    setCollapsedRange(PT_DocPosition posLow,PT_DocPosition posHigh, const gchar * properties[]);
 	bool	setBlockFormat(const gchar * properties[]);
-	bool	getBlockFormat(const gchar *** properties,bool bExpandStyles=true);
+	bool	getBlockFormat(const gchar *** properties,bool bExpandStyles=true) const;
 	bool    removeStruxAttrProps(PT_DocPosition ipos1, PT_DocPosition ipos2, PTStruxType iStrux,const gchar * attributes[] ,const gchar * properties[]);
 	bool    isImageAtStrux(PT_DocPosition ipos1, PTStruxType iStrux);
 
@@ -348,8 +348,8 @@ public:
 #ifdef ENABLE_SPELL
 	bool	isTextMisspelled()const ;
 #endif
-	bool	isTabListBehindPoint(UT_sint32 & iNumToDelete);
-	bool	isTabListAheadPoint(void);
+	bool	isTabListBehindPoint(UT_sint32 & iNumToDelete) const;
+	bool	isTabListAheadPoint(void) const;
 	void	processSelectedBlocks(FL_ListType listType);
 	void	getBlocksInSelection(UT_GenericVector<fl_BlockLayout*> * vBlock) const;
 	UT_sint32 getNumColumnsInSelection(void) const;
@@ -383,8 +383,8 @@ public:
 
 	bool	setCharFormat(const gchar * properties[], const gchar * attribs[] = NULL);
 	bool	resetCharFormat(bool bAll);
-	bool	getCharFormat(const gchar *** properties,bool bExpandStyles=true);
-	bool	getCharFormat(const gchar *** properties,bool bExpandStyles, PT_DocPosition posStart);
+	bool	getCharFormat(const gchar *** properties,bool bExpandStyles=true) const;
+	bool	getCharFormat(const gchar *** properties,bool bExpandStyles, PT_DocPosition posStart) const;
 	fl_BlockLayout * getBlockFromSDH(PL_StruxDocHandle sdh);
 	bool	setStyle(const gchar * style, bool bDontGeneralUpdate=false);
 	bool	setStyleAtPos(const gchar * style, PT_DocPosition posStart, PT_DocPosition posEnd, bool bDontGeneralUpdate=false);
@@ -396,7 +396,7 @@ public:
 
 	bool	getEditableBounds(bool bEnd, PT_DocPosition & docPos, bool bOverride=false)const;
 
-	bool    isParaBreakNeededAtPos(PT_DocPosition pos);
+	bool    isParaBreakNeededAtPos(PT_DocPosition pos) const;
 	bool    insertParaBreakIfNeededAtPos(PT_DocPosition pos);
 	void	insertParagraphBreak(void);
 	void	insertParagraphBreaknoListUpdate(void);
@@ -405,7 +405,7 @@ public:
 	void	insertSymbol(UT_UCSChar c, const gchar * symfont);
 
 	// ----------------------
-	bool			isLeftMargin(UT_sint32 xPos, UT_sint32 yPos);
+	bool			isLeftMargin(UT_sint32 xPos, UT_sint32 yPos) const;
 	void			cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocPos dpEnd);
 	void			cmdSelectTOC(UT_sint32 xPos, UT_sint32 yPos);
 	bool            isTOCSelected(void) const;
@@ -416,9 +416,9 @@ public:
 	bool			cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce = false);
 	void			cmdCharDelete(bool bForward, UT_uint32 count);
 	void			delTo(FV_DocPos dp);
-	void            getSelectionText(UT_UCS4Char *& text);
+	void            getSelectionText(UT_UCS4Char *& text) const;
 
-	UT_UCSChar *	getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2);
+	UT_UCSChar *	getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2) const;
 	inline PT_DocPosition  getInsPoint () const { return m_iInsPoint; }
 	void			warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick);
 	void			moveInsPtTo(FV_DocPos dp, bool bClearSelection = true);
@@ -432,7 +432,7 @@ public:
 	void			extSelTo(FV_DocPos dp);
 
 #ifdef ENABLE_SPELL
-	SpellChecker * getDictForSelection ();
+	SpellChecker * getDictForSelection () const;
 #endif
 	void			extSelNextPrevLine(bool bNext);
 	void            extSelNextPrevPage(bool bNext);
@@ -668,11 +668,11 @@ public:
 	inline bool 	getShowPara(void) const { return m_bShowPara; };
 
 	const fp_PageSize&	getPageSize(void) const;
-	UT_uint32			calculateZoomPercentForPageWidth();
-	UT_uint32			calculateZoomPercentForPageHeight();
-	UT_uint32			calculateZoomPercentForWholePage();
+	virtual UT_uint32	calculateZoomPercentForPageWidth() const;
+	virtual UT_uint32	calculateZoomPercentForPageHeight() const;
+	virtual UT_uint32	calculateZoomPercentForWholePage() const;
 	void 			    setViewMode (ViewMode vm);
-	inline ViewMode 		getViewMode (void) const  {return m_viewMode;}
+	ViewMode 			getViewMode (void) const  {return m_viewMode;}
 	bool				isPreview(void) const {return VIEW_PREVIEW == m_viewMode;}
 	void				setPreviewMode(PreViewMode pre) {m_previewMode = pre;}
 	PreViewMode 		getPreviewMode(void) { return m_previewMode;}
@@ -713,15 +713,15 @@ public:
 	/* Table related functions */
 	bool                isPointLegal(PT_DocPosition pos);
 	bool                isPointLegal(void);
-	bool				isInTable();
-	fl_TableLayout *    getTableAtPos(PT_DocPosition);
-	bool				isInTable(PT_DocPosition pos);
-	bool				isInTableForSure(PT_DocPosition pos);
+	bool				isInTable() const;
+	fl_TableLayout *    getTableAtPos(PT_DocPosition) const;
+	bool				isInTable(PT_DocPosition pos) const;
+	bool				isInTableForSure(PT_DocPosition pos) const;
 	bool                cmdAutoSizeCols(void);
 	bool                cmdTextToTable(bool bIgnoreSpaces);
 	bool                cmdAutoSizeRows(void);
 	bool                cmdAdvanceNextPrevCell(bool bGoNext);
-	fp_CellContainer *  getCellAtPos(PT_DocPosition pos);
+	fp_CellContainer *  getCellAtPos(PT_DocPosition pos) const;
 	PT_DocPosition      findCellPosAt(PT_DocPosition posTable, UT_sint32 row, UT_sint32 col);
 	bool                _deleteCellAt(PT_DocPosition posTable,UT_sint32 row, UT_sint32 col);
 	bool                _restoreCellParams(PT_DocPosition posTable, UT_sint32 iLineWidth);
@@ -745,10 +745,10 @@ public:
 	bool				getCellLineStyle(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sint32 * pRight,
 										 UT_sint32 * pTop, UT_sint32 * pBot) const;
 	bool				setCellFormat(const gchar * properties[], FormatTable applyTo, FG_Graphic * pFG, UT_String & sDataID);
-	bool				getCellProperty(const gchar * szPropName, gchar * &szPropValue);
+	bool				getCellProperty(const gchar * szPropName, gchar * &szPropValue) const;
 	bool	            setTableFormat(const gchar * properties[]);
 	bool	            setTableFormat(PT_DocPosition pos,const gchar * properties[]);
-	bool                getCellFormat(PT_DocPosition pos, UT_String & sCellProps);
+	bool                getCellFormat(PT_DocPosition pos, UT_String & sCellProps) const;
 
 	UT_Error            cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, 
 									   const gchar * pPropsArray[]);
@@ -780,8 +780,7 @@ public:
 	UT_RGBColor			getColorAnnotation(const fp_Run * pRun) const; 
 	UT_RGBColor			getColorAnnotation(fp_Page * pPage,UT_uint32 pid) const; 
 	UT_RGBColor			getColorRevisions(int rev) const { 
-		if (rev < 0) rev = 9;
-		if (rev > 9) rev = 9;
+		if ((rev < 0) || (rev > 9)) rev = 9;
 		return m_colorRevisions[rev]; }
 	UT_RGBColor			getColorHdrFtr(void) const { return m_colorHdrFtr; }
 	UT_RGBColor			getColorColumnLine(void) const { return m_colorColumnLine; }
@@ -792,9 +791,9 @@ public:
 	//
 	// image selection && resizing && dragging functions
 	//
-	UT_sint32			getImageSelInfo();
-	GR_Graphics::Cursor getImageSelCursor();
-	bool                isImageSelected(void);
+	UT_sint32			getImageSelInfo() const;
+	GR_Graphics::Cursor getImageSelCursor() const;
+	bool                isImageSelected(void) const;
 
 //
 // Table resizing
@@ -1047,9 +1046,9 @@ private:
 	bool m_bgColorInitted;
 	PT_DocPosition      m_iLowDrawPoint;
 	PT_DocPosition      m_iHighDrawPoint;
-	fv_PropCache        m_CharProps;
-	fv_PropCache        m_BlockProps;
-	fv_PropCache        m_SecProps;
+	mutable fv_PropCache        m_CharProps;
+	mutable fv_PropCache        m_BlockProps;
+	mutable fv_PropCache        m_SecProps;
 	AV_ListenerId       m_CaretListID;
 #ifdef TOOLKIT_GTK
 	FV_UnixFrameEdit    m_FrameEdit;

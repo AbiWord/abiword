@@ -2680,7 +2680,7 @@ PT_DocPosition FV_View::saveSelectedImage (const UT_ByteBuf ** pBytes)
  * Otherwise returns a nonzero value indicating the position of the image
  * and if dataId is not NULL will set value to the image's data ID
  */
-PT_DocPosition FV_View::getSelectedImage(const char **dataId)
+PT_DocPosition FV_View::getSelectedImage(const char **dataId) const
 {
 	// if nothing selected, then an image can't be
 	if (!isSelectionEmpty())
@@ -2722,7 +2722,7 @@ PT_DocPosition FV_View::getSelectedImage(const char **dataId)
 				pos = pBlock->getPosition() +  pRun->getBlockOffset();
 				if (dataId != NULL)
 				{
-					fp_ImageRun * pImRun = static_cast<fp_ImageRun *>(pRun);
+					const fp_ImageRun * pImRun = static_cast<const fp_ImageRun *>(pRun);
 					*dataId = pImRun->getDataId();
 				}
 				return pos;
@@ -2731,7 +2731,9 @@ PT_DocPosition FV_View::getSelectedImage(const char **dataId)
 	}
 
 	// if we made it here, then run type is not an image
-	if (dataId != NULL) *dataId = NULL;
+	if (dataId != NULL) {
+		*dataId = NULL;
+	}
 	return 0;
 }
 
@@ -2739,7 +2741,7 @@ PT_DocPosition FV_View::getSelectedImage(const char **dataId)
  * Otherwise returns a nonzero value indicating the position of the object
  * and if dataId is not NULL will set value to the object's data ID
  */
-fp_Run *FV_View::getSelectedObject()
+fp_Run *FV_View::getSelectedObject() const
 {
 	// if nothing selected, then an image can't be
 	if (!isSelectionEmpty())
@@ -5093,12 +5095,12 @@ bool FV_View::queryCharFormat(const gchar * szProperty, UT_UTF8String & szValue,
 	return okay;
 }
 
-bool FV_View::getCharFormat(const gchar *** pProps, bool bExpandStyles)
+bool FV_View::getCharFormat(const gchar *** pProps, bool bExpandStyles) const
 {
 	return getCharFormat(pProps,bExpandStyles,0);
 }
 
-bool FV_View::getCharFormat(const gchar *** pProps, bool bExpandStyles, PT_DocPosition posStart)
+bool FV_View::getCharFormat(const gchar *** pProps, bool bExpandStyles, PT_DocPosition posStart) const
 {
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
@@ -5945,7 +5947,7 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 }
 
 
-bool FV_View::getSectionFormat(const gchar ***pProps)
+bool FV_View::getSectionFormat(const gchar ***pProps) const
 {
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL;
@@ -6107,7 +6109,7 @@ bool FV_View::getSectionFormat(const gchar ***pProps)
 /*!
  * Set a string with the cell properties of the cell located at position pos
  */
-bool FV_View::getCellFormat(PT_DocPosition pos, UT_String & sCellProps)
+bool FV_View::getCellFormat(PT_DocPosition pos, UT_String & sCellProps) const
 {
 	sCellProps.clear();
 	if(!isInTable(pos))
@@ -6151,7 +6153,7 @@ bool FV_View::getCellFormat(PT_DocPosition pos, UT_String & sCellProps)
 	return true;
 }
 
-bool FV_View::getBlockFormat(const gchar *** pProps,bool bExpandStyles)
+bool FV_View::getBlockFormat(const gchar *** pProps,bool bExpandStyles) const
 {
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL;	// TODO do we care about section-level inheritance?
@@ -6171,7 +6173,7 @@ bool FV_View::getBlockFormat(const gchar *** pProps,bool bExpandStyles)
 
 	// currently there are 69 block level properties
 	UT_GenericVector<_fmtPair *> v(69,4,true);
-	UT_uint32 i;
+	UT_sint32 i;
 	_fmtPair * f = NULL;
 
 	/*
@@ -6277,7 +6279,7 @@ bool FV_View::getBlockFormat(const gchar *** pProps,bool bExpandStyles)
 	}
 
 	// 3. export whatever's left
-	UT_uint32 count = v.getItemCount()*2 + 1;
+	UT_sint32 count = v.getItemCount()*2 + 1;
 
 	// NOTE: caller must g_free this, but not the referenced contents
 	const gchar ** props = static_cast<const gchar **>(UT_calloc(count, sizeof(gchar *)));
@@ -6287,7 +6289,7 @@ bool FV_View::getBlockFormat(const gchar *** pProps,bool bExpandStyles)
 	const gchar ** p = props;
 
 	i = v.getItemCount();
-	UT_uint32 numProps = count;
+	UT_sint32 numProps = count;
 	while (i > 0)
 	{
 		f = v.getNthItem(i-1);
@@ -6356,7 +6358,7 @@ UT_uint32 FV_View::getSelectionLength(void) const
 
 	The caller must g_free the returned pointer !!!
 */
-void FV_View::getSelectionText(UT_UCS4Char * & pText)
+void FV_View::getSelectionText(UT_UCS4Char * & pText) const
 {
 	UT_ASSERT(!isSelectionEmpty());
 
@@ -6365,7 +6367,7 @@ void FV_View::getSelectionText(UT_UCS4Char * & pText)
 	UT_sint32 selLength = getSelectionLength();
 
 	PT_DocPosition low;
-	fl_BlockLayout * block; // the current block the insertion point is in
+	const fl_BlockLayout * block; // the current block the insertion point is in
 	if (m_iInsPoint > m_Selection.getSelectionAnchor())
 	{
 		low = m_Selection.getSelectionAnchor();
@@ -6426,7 +6428,7 @@ void FV_View::getSelectionText(UT_UCS4Char * & pText)
 
    The caller must delete [] the returned pointer !!!
  */
-UT_UCSChar * FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2)
+UT_UCSChar * FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2) const
 {
 	UT_return_val_if_fail(pos2 > pos1, NULL);
 
@@ -6437,7 +6439,7 @@ UT_UCSChar * FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2
 	PT_DocPosition curPos = pos1;
 
 	// get the current block the insertion point is in
-	fl_BlockLayout * pBlock = m_pLayout->findBlockAtPosition(curPos);
+	const fl_BlockLayout * pBlock = m_pLayout->findBlockAtPosition(curPos);
 
 	UT_UCSChar * bufferRet = new UT_UCSChar[iLength+1];
 
@@ -6452,7 +6454,9 @@ UT_UCSChar * FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2
 		buffer.truncate(0);
 		pBlock->getBlockBuf(&buffer);
 
-		if (curPos < pBlock->getPosition(FALSE)) curPos = pBlock->getPosition(FALSE);
+		if (curPos < pBlock->getPosition(FALSE)) {
+			curPos = pBlock->getPosition(FALSE);
+		}
 		PT_DocPosition offset = curPos - pBlock->getPosition(false);
 		UT_uint32 iLenToCopy = UT_MIN(pos2 - curPos, buffer.getLength() - offset);
 		if(curPos < pos2 && (curPos < pBlock->getPosition(false) + pBlock->getLength()))
@@ -6476,7 +6480,7 @@ UT_UCSChar * FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2
 	return bufferRet;
 }
 
-bool FV_View::isTabListBehindPoint(UT_sint32 & iNumToDelete)
+bool FV_View::isTabListBehindPoint(UT_sint32 & iNumToDelete) const
 {
 	PT_DocPosition cpos = getPoint();
 	PT_DocPosition ppos = cpos - 1;
@@ -6520,7 +6524,7 @@ bool FV_View::isTabListBehindPoint(UT_sint32 & iNumToDelete)
 	}
 	if(pRun->getType() == FPRUN_FIELD)
 	{
-		fp_FieldRun * pFRun = static_cast<fp_FieldRun *>(pRun);
+		const fp_FieldRun * pFRun = static_cast<const fp_FieldRun *>(pRun);
 		if (pFRun->getFieldType() != FPFIELD_list_label)
 		{
 			return false;
@@ -6543,7 +6547,7 @@ bool FV_View::isTabListBehindPoint(UT_sint32 & iNumToDelete)
 	}
 	else
 	{
-		fp_FieldRun * pFRun = static_cast<fp_FieldRun *>(pRun);
+		const fp_FieldRun * pFRun = static_cast<const fp_FieldRun *>(pRun);
 		if (pFRun->getFieldType() != FPFIELD_list_label)
 		{
 			return false;
@@ -6554,7 +6558,7 @@ bool FV_View::isTabListBehindPoint(UT_sint32 & iNumToDelete)
 }
 
 
-bool FV_View::isTabListAheadPoint(void)
+bool FV_View::isTabListAheadPoint(void) const
 {
 	//
 	// Return TRUE if the point is immediately ahead of a list label - TAB combination
@@ -6587,7 +6591,7 @@ bool FV_View::isTabListAheadPoint(void)
 		return false;
 	}
 
-	fp_FieldRun * pFRun = static_cast<fp_FieldRun *>(pRun);
+	const fp_FieldRun * pFRun = static_cast<const fp_FieldRun *>(pRun);
 	if(pFRun->getFieldType() != FPFIELD_list_label)
 	{
 		return false;
@@ -8410,14 +8414,14 @@ inline void FV_View::_drawResizeHandle(UT_Rect & box)
 */
 }
 
-bool FV_View::isLeftMargin(UT_sint32 xPos, UT_sint32 yPos)
+bool FV_View::isLeftMargin(UT_sint32 xPos, UT_sint32 yPos) const
 {
 	/*
 	  Figure out which page we clicked on.
 	  Pass the click down to that page.
 	*/
 	UT_sint32 xClick, yClick;
-	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
+	const fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
 
 	PT_DocPosition iNewPoint;
 	bool bBOL = false;
@@ -8917,7 +8921,7 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
  \param col will be set to the cell to the property value, if the requested property exists
  \return True if succesful (ie. the property value is set), false otherwise
  */
-bool FV_View::getCellProperty(const gchar * szPropName, gchar * &szPropValue)
+bool FV_View::getCellProperty(const gchar * szPropName, gchar * &szPropValue) const
 {
 	PT_DocPosition posCell = getPoint();
 	if (!isSelectionEmpty())
@@ -9810,7 +9814,7 @@ bool FV_View::isXYSelected(UT_sint32 xPos, UT_sint32 yPos) const
  * Returns a pointer to the cell container surrounding the supplied point
  * Return NULL if there isn't one.
  */
-fp_CellContainer * FV_View::getCellAtPos(PT_DocPosition pos)
+fp_CellContainer * FV_View::getCellAtPos(PT_DocPosition pos) const
 {
 	bool bEOL = false;
 	UT_uint32 iPointHeight;
@@ -9831,7 +9835,7 @@ fp_CellContainer * FV_View::getCellAtPos(PT_DocPosition pos)
 				return pCell;
 			}
 		}
-		fl_ContainerLayout * pCL = pBlock->myContainingLayout();
+		const fl_ContainerLayout * pCL = pBlock->myContainingLayout();
 		if((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) ||
 		   (pCL->getContainerType() == FL_CONTAINER_ANNOTATION)||
 		   (pCL->getContainerType() == FL_CONTAINER_ENDNOTE))
@@ -11239,7 +11243,7 @@ void FV_View::removeThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
  * Returns true if the point at at the end of a section or document and the
  * previous strux is not a block
  */
-bool FV_View::isParaBreakNeededAtPos(PT_DocPosition pos)
+bool FV_View::isParaBreakNeededAtPos(PT_DocPosition pos) const
 {
 
   PT_DocPosition posEOD = 0;
@@ -13089,7 +13093,7 @@ const fp_PageSize & FV_View::getPageSize(void) const
 }
 
 
-UT_uint32 FV_View::calculateZoomPercentForPageWidth()
+UT_uint32 FV_View::calculateZoomPercentForPageWidth() const
 {
 	const fp_PageSize pageSize = getPageSize();
 	double pageWidth = pageSize.Width(DIM_IN);
@@ -13140,7 +13144,7 @@ UT_uint32 FV_View::calculateZoomPercentForPageWidth()
 	return static_cast<UT_uint32>(scale * 100.0);
 }
 
-UT_uint32 FV_View::calculateZoomPercentForPageHeight()
+UT_uint32 FV_View::calculateZoomPercentForPageHeight() const
 {
 
 	const fp_PageSize pageSize = getPageSize();
@@ -13176,7 +13180,7 @@ UT_uint32 FV_View::calculateZoomPercentForPageHeight()
 	return static_cast<UT_uint32>(scale * 100.0);
 }
 
-UT_uint32 FV_View::calculateZoomPercentForWholePage()
+UT_uint32 FV_View::calculateZoomPercentForWholePage() const
 {
 	return UT_MIN(	calculateZoomPercentForPageWidth(),
 					calculateZoomPercentForPageHeight());
@@ -13282,7 +13286,7 @@ void FV_View::updateRevisionMode()
 /*!
  * returns true if the current insertion point is inside a table.
  */
-bool FV_View::isInTable()
+bool FV_View::isInTable() const
 {
 	PT_DocPosition pos;
 
@@ -13298,7 +13302,7 @@ bool FV_View::isInTable()
 	return isInTableForSure(pos);
 }
 
-fl_TableLayout * FV_View::getTableAtPos(PT_DocPosition pos)
+fl_TableLayout * FV_View::getTableAtPos(PT_DocPosition pos) const
 {
 	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(pos);
 	if(!pBL)
@@ -13327,7 +13331,7 @@ fl_TableLayout * FV_View::getTableAtPos(PT_DocPosition pos)
 	return NULL;
 }
 
-bool FV_View::isInTableForSure(PT_DocPosition pos)
+bool FV_View::isInTableForSure(PT_DocPosition pos) const
 {
 	return (isInTable(pos));
 }
@@ -13335,7 +13339,7 @@ bool FV_View::isInTableForSure(PT_DocPosition pos)
  * Returns true if the point supplied is inside a Table. Use isInTableForSure
  * To cover the case if
  */
-bool FV_View::isInTable( PT_DocPosition pos)
+bool FV_View::isInTable( PT_DocPosition pos) const
 {
 	xxx_UT_DEBUGMSG(("Look in table at pos %d \n",pos));
 	if(m_pDoc->isTableAtPos(pos))
@@ -13604,12 +13608,12 @@ void FV_View:: getVisibleDocumentPagesAndRectangles(UT_GenericVector<UT_Rect*> &
 
 /*! Returns the size of the image selection boxes
 */
-UT_sint32 FV_View::getImageSelInfo()
+UT_sint32 FV_View::getImageSelInfo() const
 {
 	return getGraphics()->tlu(m_InlineImage.getImageSelBoxSize());
 }
 
-GR_Graphics::Cursor FV_View::getImageSelCursor()
+GR_Graphics::Cursor FV_View::getImageSelCursor() const
 {
 	return m_imageSelCursor;
 }
@@ -13620,7 +13624,7 @@ GR_Graphics::Cursor FV_View::getImageSelCursor()
   \return true if an image is selected otherwise false.
   \todo eventually make it faster by not fetching the image data ID.
  */
-bool FV_View::isImageSelected(void)
+bool FV_View::isImageSelected(void) const
 {
 	const char * dataId;
 	PT_DocPosition pos = getSelectedImage(&dataId);
@@ -13635,7 +13639,7 @@ bool FV_View::isImageSelected(void)
 }
 
 #ifdef ENABLE_SPELL
-SpellChecker * FV_View::getDictForSelection ()
+SpellChecker * FV_View::getDictForSelection () const
 {
 	SpellChecker * checker = NULL;
 	const char * szLang = NULL;

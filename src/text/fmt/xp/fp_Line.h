@@ -273,7 +273,7 @@ private:
 	static UT_UCS4Char * s_pPseudoString;
 
 
-	static UT_uint32   s_iMapOfRunsSize;
+	static UT_sint32   s_iMapOfRunsSize;
 	static fp_Line   * s_pMapOwner;
 	bool            m_bMapDirty;
 #else
@@ -281,7 +281,7 @@ private:
 	UT_sint32  *    m_pMapOfRunsL2V;
 	UT_sint32  *    m_pMapOfRunsV2L;
 
-	UT_uint32       m_iMapOfRunsSize;
+	UT_sint32       m_iMapOfRunsSize;
 #endif
 	UT_uint32		m_iRunsRTLcount;
 	UT_uint32		m_iRunsLTRcount;

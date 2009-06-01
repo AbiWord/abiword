@@ -87,8 +87,8 @@ public:
 	inline fl_DocSectionLayout* getOwningSection(void) const { return m_pOwner; }
 
 	PT_DocPosition		getFirstLastPos(bool bFirst) const;
-	void				mapXYToPosition(bool bNotFrames,UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL,bool & isTOC, bool bUseHdrFtr = false, fl_HdrFtrShadow ** pShadow = NULL);
-	void				mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC,bool bUseHdrFtr = false, fl_HdrFtrShadow ** pShadow = NULL);
+	void				mapXYToPosition(bool bNotFrames,UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL,bool & isTOC, bool bUseHdrFtr = false, fl_HdrFtrShadow ** pShadow = NULL) const;
+	void				mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC,bool bUseHdrFtr = false, fl_HdrFtrShadow ** pShadow = NULL) const;
 	void				getScreenOffsets(fp_Container*, UT_sint32& xoff, UT_sint32& yoff) const;
 
 	void				draw(dg_DrawArgs*, bool bAlaysUseWhiteBackground=false);
@@ -101,7 +101,7 @@ public:
 	// Leader (e.g. column) functions.
 	void 				columnHeightChanged(fp_Column* pLeader);
 	bool                breakPage(void);
-	UT_uint32 			countColumnLeaders(void) const;
+	UT_sint32 			countColumnLeaders(void) const;
 	fp_Column*			getNthColumnLeader(UT_sint32 n) const;
 	bool				insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter);
 	void				removeColumnLeader(fp_Column* pLeader);
@@ -116,35 +116,35 @@ public:
 
 	// Footnote functions.
 	void 				footnoteHeightChanged(void);
-	UT_uint32			countFootnoteContainers(void) const;
+	UT_sint32			countFootnoteContainers(void) const;
 	fp_FootnoteContainer* getNthFootnoteContainer(UT_sint32 n) const; 
 	bool				insertFootnoteContainer(fp_FootnoteContainer * pFC);
 	void				removeFootnoteContainer(fp_FootnoteContainer * pFC);
-	UT_sint32           findFootnoteContainer(fp_FootnoteContainer * pFC);
+	UT_sint32           findFootnoteContainer(fp_FootnoteContainer * pFC) const;
 	void                clearScreenFootnotes(void);
-	UT_sint32           getFootnoteHeight(void);
+	UT_sint32           getFootnoteHeight(void) const;
 
 
 	// Annotation functions.
 	void 				annotationHeightChanged(void);
-	UT_uint32			countAnnotationContainers(void) const;
+	UT_sint32			countAnnotationContainers(void) const;
 	fp_AnnotationContainer* getNthAnnotationContainer(UT_sint32 n) const; 
 	bool				insertAnnotationContainer(fp_AnnotationContainer * pFC);
 	void				removeAnnotationContainer(fp_AnnotationContainer * pFC);
-	UT_sint32           findAnnotationContainer(fp_AnnotationContainer * pFC);
+	UT_sint32           findAnnotationContainer(fp_AnnotationContainer * pFC) const;
 	void                clearScreenAnnotations(void);
-	UT_sint32           getAnnotationHeight(void);
-	UT_uint32           getAnnotationPos( UT_uint32 pid);
+	UT_sint32           getAnnotationHeight(void) const;
+	UT_sint32           getAnnotationPos( UT_uint32 pid) const;
 
 	// Frame functions.
 	void 				frameHeightChanged(void);
-	UT_uint32			countAboveFrameContainers(void) const;
-	UT_uint32			countBelowFrameContainers(void) const;
+	UT_sint32			countAboveFrameContainers(void) const;
+	UT_sint32			countBelowFrameContainers(void) const;
 	fp_FrameContainer*  getNthAboveFrameContainer(UT_sint32 n) const; 
 	fp_FrameContainer*  getNthBelowFrameContainer(UT_sint32 n) const; 
 	bool				insertFrameContainer(fp_FrameContainer * pFC);
 	void				removeFrameContainer(fp_FrameContainer * pFC);
-	UT_sint32           findFrameContainer(fp_FrameContainer * pFC);
+	UT_sint32           findFrameContainer(fp_FrameContainer * pFC) const;
 	void                clearScreenFrames(void);
 	void                markDirtyOverlappingRuns(fp_FrameContainer * pFC);
     void                expandDamageRect(UT_sint32 x, UT_sint32 y, 
