@@ -332,8 +332,18 @@ GR_CairoGraphics::~GR_CairoGraphics()
 
 	_destroyFonts();
 	delete m_pPFontGUI;
-	g_object_unref(m_pLayoutFontMap);
-	g_object_unref(m_pLayoutContext);
+	if(m_pLayoutContext)
+		g_object_unref(m_pLayoutContext);
+
+	// MES After much reading and playing I discovered that the
+	// FontMap gets unreferenced after every font that uses it is 
+	// removed provied Context is also unrefed. Leaving the unref of
+	// the FontMap causes an intermitent crash on exit, particularly on 
+	// documents with lots of Math. This fixes those crashes and checks with
+	// valgrind show no measureable increase in leacked memory.
+	// 
+	m_pLayoutFontMap = NULL;
+
 }
 
 void GR_CairoGraphics::resetFontMapResolution(void)
