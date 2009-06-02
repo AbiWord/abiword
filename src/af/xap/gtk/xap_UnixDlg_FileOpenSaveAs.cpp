@@ -486,8 +486,8 @@ void XAP_UnixDialog_FileOpenSaveAs::onDeleteCancel()
 void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	UT_UTF8String szTitle;
-	UT_UTF8String szFileTypeLabel;
+    std::string szTitle;
+    std::string szFileTypeLabel;
 	
 	switch (m_id)
 	{
@@ -583,28 +583,23 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
 	GtkWidget * parent = pUnixFrameImpl->getTopLevelWindow();
 
+	if(parent && (GTK_WIDGET_TOPLEVEL(parent) != TRUE))
+	{
+        parent = gtk_widget_get_toplevel (parent);
+	}
+
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 	m_FC = GTK_FILE_CHOOSER( hildon_file_chooser_dialog_new(GTK_WINDOW(parent),
 							(!m_bSave ? GTK_FILE_CHOOSER_ACTION_OPEN : GTK_FILE_CHOOSER_ACTION_SAVE))
 							);
-	
 #else	
-	if(parent && (GTK_WIDGET_TOPLEVEL(parent) != TRUE))
-	{
-		xxx_UT_DEBUGMSG(("AbiWidget running prev parent %x \n",parent));
-			parent = gtk_widget_get_toplevel (parent);
-		xxx_UT_DEBUGMSG(("AbiWidget running new parent %x \n",parent));
-		xxx_UT_DEBUGMSG(("IS WIDGET_TOP_LEVL %d \n",(GTK_WIDGET_TOPLEVEL(parent))));
-		xxx_UT_DEBUGMSG(("IS WIDGET WINDOW %d \n",(GTK_IS_WINDOW(parent))));
-	}
-	m_FC = GTK_FILE_CHOOSER( gtk_file_chooser_dialog_new (szTitle.utf8_str(),
+	m_FC = GTK_FILE_CHOOSER( gtk_file_chooser_dialog_new (szTitle.c_str(),
 									GTK_WINDOW(parent),
 									(!m_bSave ? GTK_FILE_CHOOSER_ACTION_OPEN : GTK_FILE_CHOOSER_ACTION_SAVE),
 									GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 									(m_bSave ? GTK_STOCK_SAVE : GTK_STOCK_OPEN), GTK_RESPONSE_ACCEPT,
 									(gchar*)NULL)
 							);
-	xxx_UT_DEBUGMSG(("Have the filechooser now \n"));
 #endif	
     
 	gtk_file_chooser_set_local_only(m_FC, FALSE);
@@ -654,7 +649,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	gtk_widget_show(pulldown_hbox);
 
 	// pulldown label
-	GtkWidget * filetypes_label = gtk_label_new(szFileTypeLabel.utf8_str());
+	GtkWidget * filetypes_label = gtk_label_new(szFileTypeLabel.c_str());
 	gtk_label_set_justify(GTK_LABEL(filetypes_label), GTK_JUSTIFY_RIGHT);
 	gtk_misc_set_alignment(GTK_MISC(filetypes_label), 1.0, 0.5);
 	gtk_widget_show(filetypes_label);
@@ -796,25 +791,18 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			if(m_id == XAP_DIALOG_ID_FILE_SAVEAS)
 			{
 				const char * szInitialSuffix = UT_pathSuffix(m_szInitialPathname);
-				const UT_UTF8String szSaveTypeSuffix = IE_Exp::preferredSuffixForFileType(m_nDefaultFileType);
-				if(szInitialSuffix && !szSaveTypeSuffix.empty() && (strcmp(szInitialSuffix,szSaveTypeSuffix.utf8_str()) != 0))
+				std::string szSaveTypeSuffix = IE_Exp::preferredSuffixForFileType(m_nDefaultFileType).utf8_str();
+				if(szInitialSuffix && !szSaveTypeSuffix.empty() 
+					&& (szSaveTypeSuffix != szInitialSuffix))
 				{
-					UT_String sFileName = m_szInitialPathname;
-					bool bFoundSuffix = false;
-					UT_sint32 i = 0;
-					for(i= sFileName.length()-1; i> 0; i--)
+					std::string sFileName = m_szInitialPathname;
+					std::string::size_type i = sFileName.find_last_of('.');
+                    
+					if(i != std::string::npos)
 					{
-						if(sFileName[i] == '.')
-						{
-							bFoundSuffix = true;
-							break;
-						}
-					}
-					if( bFoundSuffix)
-					{
-						sFileName = sFileName.substr(0,i);
-						UT_String sSuffix = szSaveTypeSuffix.utf8_str();
-						sFileName += sSuffix;
+						// erase to the end()
+						sFileName.erase(i);
+						sFileName += szSaveTypeSuffix;
 						FREEP(m_szInitialPathname);
 						m_szInitialPathname = g_strdup(sFileName.c_str());
 					}
