@@ -343,11 +343,38 @@ enum GRShapingResult
 #define GR_OC_LEFT_FLUSHED 0x40000000 // flip bit 31
 #define GR_OC_MAX_WIDTH    0x3fffffff
 
+class ABI_EXPORT AllCarets
+{
+	friend class GR_Graphics;
+ public:
+	AllCarets(GR_Graphics * pG,
+			  GR_Caret ** pCaret,
+			  UT_GenericVector<GR_Caret *>* vecCarets  );
+	virtual ~AllCarets(){}
+	GR_Caret *  getBaseCaret(void);
+	void	    enable(void);
+	void		disable(bool bNoMulti = false);
+	void		setBlink(bool bBlink);
+	void        setWindowSize(UT_uint32 width, UT_uint32 height);
+	void		setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
+						  UT_sint32 x2 = 0, UT_sint32 y2 = 0, UT_uint32 h2 = 0, 
+						  bool bPointDirection = false, 
+						  const UT_RGBColor * pClr = NULL);
+	void		setInsertMode (bool mode);
+	void		forceDraw(void);
+
+ private:
+	GR_Graphics * m_pG;
+	GR_Caret **    m_pLocalCaret;
+	UT_GenericVector<GR_Caret *>* m_vecCarets;
+};
+
+
 class ABI_EXPORT GR_Graphics
 {
 	friend class GR_Painter;
 	friend class GR_Caret;
-
+	friend class AllCarets;
  public:
 	virtual ~GR_Graphics();
 
@@ -364,6 +391,8 @@ class ABI_EXPORT GR_Graphics
 	static const char *    graphicsDescriptor(void){UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED); return "???";}
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&){UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED); return NULL;}
 #endif
+
+	AllCarets *   allCarets(void);
 	
 	UT_sint32	tdu(UT_sint32 layoutUnits) const;
 	UT_sint32	tlu(UT_sint32 deviceUnits) const;
@@ -608,7 +637,6 @@ class ABI_EXPORT GR_Graphics
 			m_pCaret = new GR_Caret(this);
 		}
 
-	GR_Caret *        getCaret() { return m_pCaret; }
 	GR_Caret *        createCaret(UT_sint32 iID);
 	GR_Caret *        getCaret(UT_sint32 iID) const;
 	GR_Caret *        getNthCaret(UT_sint32 i) const;
@@ -715,6 +743,7 @@ class ABI_EXPORT GR_Graphics
  protected:
 
 	GR_Graphics();
+	GR_Caret *        getCaret() { return m_pCaret; }
 
 	// todo: make these pure virtual
 	virtual void _beginPaint () {}
@@ -775,7 +804,6 @@ class ABI_EXPORT GR_Graphics
 											 int* pCharWidths = NULL);
 	
 	virtual GR_Image *	  genImageFromRectangle(const UT_Rect & r) = 0;
-
  private:
 	virtual bool _setTransform(const GR_Transform & /*tr*/)
 		{
@@ -838,6 +866,7 @@ class ABI_EXPORT GR_Graphics
 	static UT_uint32        s_iInstanceCount;
 	static UT_UCS4Char      s_cDefaultGlyph;
 	UT_GenericVector<GR_Caret *>  m_vecCarets;
+	AllCarets               m_AllCarets;
 };
 
 #endif /* GR_GRAPHICS_H */

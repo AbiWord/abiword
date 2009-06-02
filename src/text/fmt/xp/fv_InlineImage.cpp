@@ -670,9 +670,9 @@ void FV_VisualInlineImage::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 				m_iLastX = x;
 				m_iLastY = y;
 			}
-			if(getGraphics() && getGraphics()->getCaret())
+			if(getGraphics())
 			{
-			        getGraphics()->getCaret()->disable();
+			        getGraphics()->allCarets()->disable();
 			        m_pView->m_countDisable++;
 			}
 		}

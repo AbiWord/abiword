@@ -95,9 +95,9 @@ void FV_FrameEdit::setMode(FV_FrameEditMode iEditMode)
 		m_iLastY = 0;
 	}
 	m_iFrameEditMode = iEditMode;
-	if(getGraphics() && getGraphics()->getCaret() && iEditMode !=  FV_FrameEdit_NOT_ACTIVE)
+	if(getGraphics()  && iEditMode !=  FV_FrameEdit_NOT_ACTIVE)
 	{
-	        getGraphics()->getCaret()->disable();
+	        getGraphics()->allCarets()->disable();
 		m_pView->m_countDisable++;
 	}
 }
@@ -495,9 +495,9 @@ void FV_FrameEdit::setDragType(UT_sint32 x, UT_sint32 y, bool bDrawFrame)
 	if(!isActive() && (pFCon == NULL))
 	{
 		m_iFrameEditMode = 	FV_FrameEdit_EXISTING_SELECTED;
-		if(getGraphics() && getGraphics()->getCaret())
+		if(getGraphics())
 		{
-		      getGraphics()->getCaret()->disable();
+		      getGraphics()->allCarets()->disable();
 		      m_pView->m_countDisable++;
 		}
 		fl_ContainerLayout * pCL = pBL->myContainingLayout();
@@ -526,9 +526,9 @@ void FV_FrameEdit::setDragType(UT_sint32 x, UT_sint32 y, bool bDrawFrame)
 	if(!isActive())
 	{
 		m_iFrameEditMode = 	FV_FrameEdit_EXISTING_SELECTED;
-		if(getGraphics() && getGraphics()->getCaret())
+		if(getGraphics())
 		{
-		      getGraphics()->getCaret()->disable();
+		      getGraphics()->allCarets()->disable();
 		      m_pView->m_countDisable++;
 		}
 		m_pFrameLayout = pFL;
@@ -665,9 +665,9 @@ void FV_FrameEdit::setDragType(UT_sint32 x, UT_sint32 y, bool bDrawFrame)
 	xxx_UT_DEBUGMSG(("Initial width %d \n",m_recCurFrame.width));
 	xxx_UT_DEBUGMSG((" Dragging What %d \n",getDragWhat()));
 	m_pView->setCursorToContext();
-	if(getGraphics() && getGraphics()->getCaret())
+	if(getGraphics())
 	{
-	    getGraphics()->getCaret()->disable();
+	    getGraphics()->allCarets()->disable();
 	    m_pView->m_countDisable++;
 	}
 }
@@ -745,9 +745,9 @@ void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 				m_iInitialFrameX = m_pFrameContainer->getFullX();
 				m_iInitialFrameY = m_pFrameContainer->getFullY();
 			}
-			if(getGraphics() && getGraphics()->getCaret())
+			if(getGraphics())
 			{
-			        getGraphics()->getCaret()->disable();
+			        getGraphics()->allCarets()->disable();
 			        m_pView->m_countDisable++;
 			}
 		}
@@ -785,9 +785,9 @@ void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 		setDragWhat( FV_DragBotRightCorner );
 		m_bFirstDragDone = false;
 		m_bInitialClick = true;
-		if(getGraphics() && getGraphics()->getCaret())
+		if(getGraphics())
 		{
-		      getGraphics()->getCaret()->disable();
+		      getGraphics()->allCarets()->disable();
 		      m_pView->m_countDisable++;
 		}
 		getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_SE);
@@ -1105,9 +1105,9 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 
 //
 		m_iFrameEditMode = 	FV_FrameEdit_EXISTING_SELECTED;
-		if(getGraphics() && getGraphics()->getCaret())
+		if(getGraphics())
 		{
-		      getGraphics()->getCaret()->disable();
+		      getGraphics()->allCarets()->disable();
 		      m_pView->m_countDisable++;
 		}
 		fl_BlockLayout * pBL = m_pView->_findBlockAtPosition(posFrame+2);
@@ -1698,9 +1698,9 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		DELETEP(m_pFrameImage);
 		m_pView->updateScreen(false);
 		m_iFrameEditMode = FV_FrameEdit_EXISTING_SELECTED;
-		if(getGraphics() && getGraphics()->getCaret())
+		if(getGraphics())
 		{
-		      getGraphics()->getCaret()->disable();
+		      getGraphics()->allCarets()->disable();
 		      m_pView->m_countDisable++;
 		}
 		if(m_pFrameLayout)

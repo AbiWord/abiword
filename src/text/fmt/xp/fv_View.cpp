@@ -135,7 +135,7 @@ public:
 		  AP_FrameData * pData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
 		  if (pData) 
 		  {
-			  pG->getCaret()->setInsertMode(pData->m_bInsertMode);
+			  pG->allCarets()->setInsertMode(pData->m_bInsertMode);
 			  return true;
 		  }
       }
@@ -143,12 +143,12 @@ public:
 	  if (
 	  		// I hope I have all the signals here that makes sense for re-enabling the caret blink
 	  		// after it was stopped by a cursor blink timeout timer - MARCM
-	  		(mask & AV_CHG_KEYPRESSED) || 
+		  ((mask & AV_CHG_KEYPRESSED) || 
 	  		(mask & AV_CHG_TYPING) || 
-	  		(mask & AV_CHG_MOTION)
+		   (mask & AV_CHG_MOTION) ) && pG->allCarets()->getBaseCaret()
 	     )
       {
-		  pG->getCaret()->resetBlinkTimeout();
+		  pG->allCarets()->getBaseCaret()->resetBlinkTimeout();
 		  return true;
       }
 
@@ -556,7 +556,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	{
 	    pFrame->repopulateCombos();
 	    m_pG->createCaret();
-		m_pG->getCaret()->enable();
+		m_pG->allCarets()->enable();
 		if(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 		{
 			m_caretListener = new FV_Caret_Listener (pFrame);
@@ -652,7 +652,7 @@ void FV_View::setGraphics(GR_Graphics * pG)
 	if(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		m_pG->createCaret();
-		m_pG->getCaret()->enable();
+		m_pG->allCarets()->enable();
 		XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 		m_caretListener = new FV_Caret_Listener (pFrame);
 		addListener(m_caretListener, &m_CaretListID);
@@ -2238,7 +2238,7 @@ void FV_View::setPaperColor(const gchar* clr)
 
 void FV_View::killBlink(void)
 {
-	m_pG->getCaret()->setBlink(false);
+	m_pG->allCarets()->setBlink(false);
 }
 
 void FV_View::focusChange(AV_Focus focus)
@@ -2252,7 +2252,7 @@ void FV_View::focusChange(AV_Focus focus)
 		{
 		  if(m_FrameEdit.getFrameEditMode() != FV_FrameEdit_WAIT_FOR_FIRST_CLICK_INSERT)
 		  {
-			m_pG->getCaret()->enable();
+			m_pG->allCarets()->enable();
 		  }
 		  else
 		  {
@@ -2261,7 +2261,7 @@ void FV_View::focusChange(AV_Focus focus)
 		}
 		if (isSelectionEmpty() && (getPoint() > 0))
 		{
-			m_pG->getCaret()->setBlink(m_bCursorBlink);
+			m_pG->allCarets()->setBlink(m_bCursorBlink);
 			_setPoint(getPoint());
 		}
 		m_pApp->rememberFocussedFrame(m_pParentData);
@@ -2269,21 +2269,21 @@ void FV_View::focusChange(AV_Focus focus)
 	case AV_FOCUS_NEARBY:
 		if (isSelectionEmpty() && (getPoint() > 0))
 		{
-			m_pG->getCaret()->disable(true);
+			m_pG->allCarets()->disable(true);
 			m_countDisable++;
 		}
 		break;
 	case AV_FOCUS_MODELESS:
 		if (isSelectionEmpty() && (getPoint() > 0))
 		{
-			m_pG->getCaret()->setBlink(false);
+			m_pG->allCarets()->setBlink(false);
 			_setPoint(getPoint());
 		}
 		break;
 	case AV_FOCUS_NONE:
 		if (isSelectionEmpty() && (getPoint() > 0))
 		{
-			m_pG->getCaret()->disable(true);
+			m_pG->allCarets()->disable(true);
 			m_countDisable++;
 		}
 		break;
@@ -2613,8 +2613,8 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 		}
 	}
 
-	if (mask & AV_CHG_WINDOWSIZE && m_pG->getCaret())
-		m_pG->getCaret()->setWindowSize(getWindowWidth(), getWindowHeight());
+	if (mask & AV_CHG_WINDOWSIZE)
+		m_pG->allCarets()->setWindowSize(getWindowWidth(), getWindowHeight());
 
 	// base class does the rest
 	xxx_UT_DEBUGMSG(("FV_View: notifyListeners: this %x \n",this));

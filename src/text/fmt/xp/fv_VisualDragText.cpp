@@ -560,7 +560,7 @@ void FV_VisualDragText::clearCursor(void)
 	{
 		if(m_pDocUnderCursor)
 		{
-		        getGraphics()->getCaret()->disable(true);
+		        getGraphics()->allCarets()->disable(true);
 		        m_pView->m_countDisable++;
 			GR_Painter painter(getGraphics());
 			painter.drawImage(m_pDocUnderCursor,m_recDoc.left,m_recCursor.top);
@@ -574,7 +574,7 @@ void FV_VisualDragText::drawCursor(PT_DocPosition newPos)
 {
         if(m_bCursorDrawn)
 	    return;
-	getGraphics()->getCaret()->disable(true);
+	getGraphics()->allCarets()->disable(true);
 	m_pView->m_countDisable++;
 	fp_Run * pRunLow = NULL;
 	fl_BlockLayout * pBlock = NULL;

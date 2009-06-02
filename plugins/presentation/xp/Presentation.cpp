@@ -353,8 +353,8 @@ Presentation_context (AV_View * v, EV_EditMethodCallData * d)
 									   xPos,yPos);
 	pFrame->nullUpdate();
 	GR_Graphics * pG  = pView->getGraphics();
-	if(pG && pG->getCaret())
-	  pG->getCaret()->disable();
+	if(pG)
+	  pG->allCarets()->disable();
 	return res;
 }
 
@@ -473,8 +473,8 @@ bool Presentation::start(AV_View * view)
     pFrame->nullUpdate();
 
   b= showNextPage();
-  if(pG && pG->getCaret())
-    pG->getCaret()->disable();
+  if(pG)
+    pG->allCarets()->disable();
    return b;
 }
 
@@ -524,8 +524,8 @@ bool Presentation::drawNthPage(UT_sint32 iPage)
   fp_Page * pPage = m_pView->getLayout()->getNthPage(iPage);
   UT_sint32 iTotalHeight = (pPage->getHeight() + m_pView->getPageViewSep())*iPage;
   m_pView->setYScrollOffset(iTotalHeight);
-  if(pG && pG->getCaret())
-    pG->getCaret()->disable();
+  if(pG)
+    pG->allCarets()->disable();
 #endif
   return true;
 }

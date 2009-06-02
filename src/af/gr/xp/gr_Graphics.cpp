@@ -127,6 +127,95 @@ GR_CharWidths* GR_Font::newFontWidths(void) const
 #endif
 }
 
+AllCarets::AllCarets(GR_Graphics * pG,
+					 GR_Caret ** pCaret,
+					 UT_GenericVector<GR_Caret *>* vecCarets  ):
+	m_pG(pG),
+	m_pLocalCaret(pCaret),
+	m_vecCarets(vecCarets)
+{
+}
+GR_Caret *  AllCarets::getBaseCaret(void)
+{
+	return *m_pLocalCaret;
+}
+
+void	    AllCarets::enable(void)
+{
+	if(*m_pLocalCaret)
+		(*m_pLocalCaret)->enable();
+	for(UT_sint32 i =0; i< m_vecCarets->getItemCount();i++)
+	{
+		m_vecCarets->getNthItem(i)->enable();
+	}
+			
+}
+void		AllCarets::disable(bool bNoMulti)
+{
+	if((*m_pLocalCaret))
+		(*m_pLocalCaret)->disable(bNoMulti);
+	for(UT_sint32 i =0; i< m_vecCarets->getItemCount();i++)
+	{
+		m_vecCarets->getNthItem(i)->disable(bNoMulti);
+	}
+}
+
+void		AllCarets::setBlink(bool bBlink)
+{
+	if((*m_pLocalCaret))
+		(*m_pLocalCaret)->setBlink(bBlink);
+	for(UT_sint32 i =0; i< m_vecCarets->getItemCount();i++)
+	{
+		m_vecCarets->getNthItem(i)->setBlink(bBlink);;
+	}
+}
+
+void        AllCarets::setWindowSize(UT_uint32 width, UT_uint32 height)
+{
+	if((*m_pLocalCaret))
+		(*m_pLocalCaret)->setWindowSize(width, height);
+	for(UT_sint32 i =0; i< m_vecCarets->getItemCount();i++)
+	{
+		m_vecCarets->getNthItem(i)->setWindowSize(width, height);
+	}
+}
+
+void		AllCarets::setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
+						  UT_sint32 x2, UT_sint32 y2, UT_uint32 h2, 
+						  bool bPointDirection, 
+						  const UT_RGBColor * pClr)
+{
+	if((*m_pLocalCaret))
+		(*m_pLocalCaret)->setCoords(x, y, h, x2, y2, h2, bPointDirection, pClr);
+	for(UT_sint32 i =0; i< m_vecCarets->getItemCount();i++)
+	{
+		m_vecCarets->getNthItem(i)->setCoords(x, y, h, x2, y2, h2, bPointDirection, pClr);
+	}
+}
+
+void		AllCarets::setInsertMode (bool mode)
+{
+	if((*m_pLocalCaret))
+		(*m_pLocalCaret)->setInsertMode(mode);
+	for(UT_sint32 i =0; i< m_vecCarets->getItemCount();i++)
+	{
+		m_vecCarets->getNthItem(i)->setInsertMode(mode);
+	}
+}
+
+void		AllCarets::forceDraw(void)
+{
+	if((*m_pLocalCaret))
+		(*m_pLocalCaret)->forceDraw();
+	for(UT_sint32 i =0; i< m_vecCarets->getItemCount();i++)
+	{
+		m_vecCarets->getNthItem(i)->forceDraw();
+	}
+}
+
+
+
+
 GR_Graphics::GR_Graphics()
 	: m_iZoomPercentage(100),
 	  m_iFontAllocNo(0),
@@ -142,7 +231,8 @@ GR_Graphics::GR_Graphics()
 	  m_iPrevYOffset(0),
 	  m_iPrevXOffset(0),
 	  m_hashFontCache(19),
-	  m_paintCount(0)
+	  m_paintCount(0),
+	  m_AllCarets(this,&m_pCaret,&m_vecCarets)
 {
 }
 
@@ -221,6 +311,11 @@ GR_Caret * GR_Graphics::getCaret(UT_sint32 iID) const
 		}
 	}
 	return NULL;
+}
+
+AllCarets * GR_Graphics::allCarets(void)
+{
+	return &m_AllCarets;
 }
 
 GR_Caret * GR_Graphics::createCaret(UT_sint32 id)

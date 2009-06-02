@@ -4114,12 +4114,12 @@ static void sActualMoveLeft(AV_View *  pAV_View, EV_EditMethodCallData * /*pCall
 		bRTL = pBL->getDominantDirection() == UT_BIDI_RTL;
 	
 	pView->cmdCharMotion(bRTL,1);
-	if(pView->getGraphics() && pView->getGraphics()->getCaret())
+	if(pView->getGraphics() && pView->getGraphics()->allCarets()->getBaseCaret())
 	{
 //
 // Draw fsking caret for sure!!!
 //
-		pView->getGraphics()->getCaret()->forceDraw();
+		pView->getGraphics()->allCarets()->getBaseCaret()->forceDraw();
 	}
 }
 
@@ -4163,12 +4163,12 @@ static void sActualMoveRight(AV_View *  pAV_View, EV_EditMethodCallData * /*pCal
 		bRTL = pBL->getDominantDirection() == UT_BIDI_RTL;
 	
 	pView->cmdCharMotion(!bRTL,1);
-	if(pView->getGraphics() && pView->getGraphics()->getCaret())
+	if(pView->getGraphics() && pView->getGraphics()->allCarets()->getBaseCaret())
 	{
 //
 // Draw the fsking caret for sure!!!
 //
-		pView->getGraphics()->getCaret()->forceDraw();
+		pView->getGraphics()->allCarets()->getBaseCaret()->forceDraw();
 	}
 	return;
 }
@@ -4396,12 +4396,12 @@ Defun1(warpInsPtPrevLine)
 		return true;
 	}
 	pView->warpInsPtNextPrevLine(false);
-	if(pView->getGraphics() && pView->getGraphics()->getCaret())
+	if(pView->getGraphics() && pView->getGraphics()->allCarets()->getBaseCaret())
 	{
 //
 // Draw fsking caret for sure!!!
 //
-		pView->getGraphics()->getCaret()->forceDraw();
+		pView->getGraphics()->allCarets()->getBaseCaret()->forceDraw();
 	}
 	return true;
 }
@@ -4420,12 +4420,12 @@ Defun1(warpInsPtNextLine)
 		return true;
 	}
 	pView->warpInsPtNextPrevLine(true);
-	if(pView->getGraphics() && pView->getGraphics()->getCaret())
+	if(pView->getGraphics() && pView->getGraphics()->allCarets()->getBaseCaret())
 	{
 //
 // Draw fsking caret for sure!!!
 //
-		pView->getGraphics()->getCaret()->forceDraw();
+		pView->getGraphics()->allCarets()->getBaseCaret()->forceDraw();
 	}
 	return true;
 }
