@@ -533,7 +533,35 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 			OXML_SharedElement endnote(new OXML_Element_Field(id, fd_Field::FD_Endnote_Ref, NULL));
 			rqst->stck->push(endnote);
 		}
-		rqst->handled = true;				
+		rqst->handled = true;		
+
+	} else if (nameMatches(rqst->pName, NS_A_KEY, "blip")) {
+		const gchar * id = attrMatches(NS_R_KEY, "embed", rqst->ppAtts);
+		std::string imageId(id);
+		if(id)
+		{
+			OXML_SharedElement imgElem(new OXML_Element_Image(id));
+			rqst->stck->push(imgElem);
+		
+			OXMLi_PackageManager * mgr = OXMLi_PackageManager::getInstance();
+			UT_ByteBuf* imageData = mgr->parseImageStream(id);
+			if(imageData)
+			{
+				OXML_Document * doc = OXML_Document::getInstance();
+				UT_return_if_fail(_error_if_fail(doc != NULL));
+				
+				OXML_Image* img = new OXML_Image();
+				img->setId(imageId.c_str());
+				img->setData(imageData);
+				img->setMimeType("image/png");
+
+				OXML_SharedImage shrImg(img);
+				if(doc->addImage(shrImg) != UT_OK)
+					return;
+			}
+			rqst->handled = true;
+		}
+		
 
 /******* END OF SECTION FORMATTING ********/
 
@@ -659,6 +687,10 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "footnoteReference") || 
 			   nameMatches(rqst->pName, NS_W_KEY, "endnoteReference")) {
 		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) );
+		rqst->handled = true;
+	} else if (nameMatches(rqst->pName, NS_A_KEY, "blip")) {
+		//image is done
+		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) ); 
 		rqst->handled = true;
 	}
 }

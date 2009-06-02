@@ -37,46 +37,48 @@
 
 OXML_Image::OXML_Image() : 
 	OXML_ObjectWithAttrProp(),
-	id(NULL),
-	mimeType(NULL),
-	data(NULL)
+	m_id(""),
+	m_mimeType(""),
+	m_data(NULL)
 {
 
 }
 
 OXML_Image::~OXML_Image()
 {
+	if(m_data)
+		delete m_data;
 }
 
 void OXML_Image::setId(const char* imageId)
 {
-	id = imageId;
+	m_id = imageId;
 }
 
 void OXML_Image::setMimeType(const char* imageMimeType)
 {
-	mimeType = imageMimeType;
+	m_mimeType = imageMimeType;
 }
 
 void OXML_Image::setData(const UT_ByteBuf* imageData)
 {
-	data = imageData;
+	m_data = imageData;
 }
 
 const char* OXML_Image::getId()
 {
-	return id;	
+	return m_id.c_str();	
 }
 
 UT_Error OXML_Image::serialize(IE_Exp_OpenXML* exporter)
 {
-	std::string filename(id);
+	std::string filename = m_id;
 
-	if(!mimeType || !strcmp(mimeType, "image/png"))
+	if(!m_mimeType.compare("") || !m_mimeType.compare("image/png"))
 	{
 		filename += ".png";
 	}
-	else if(!strcmp(mimeType, "image/svg+xml"))
+	else if(!m_mimeType.compare("image/svg+xml"))
 	{
 		filename += ".svg";
 	}
@@ -85,12 +87,16 @@ UT_Error OXML_Image::serialize(IE_Exp_OpenXML* exporter)
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	}
 
-	return exporter->writeImage(filename.c_str(), data);
+	return exporter->writeImage(filename.c_str(), m_data);
 }
 
-UT_Error OXML_Image::addToPT(PD_Document * /*pDocument*/)
+UT_Error OXML_Image::addToPT(PD_Document * pDocument)
 {
-	//TODO
+	if (!pDocument->createDataItem(m_id.c_str(), false, m_data, (void*)m_mimeType.c_str(), NULL))
+	{            
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		return UT_ERROR;
+    }    
 	return UT_OK;
 }
 

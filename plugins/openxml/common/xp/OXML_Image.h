@@ -54,9 +54,9 @@ public:
 	UT_Error addToPT(PD_Document * pDocument);
 
 private:
-	const char* id;
-	const char* mimeType;
-	const UT_ByteBuf* data;
+	std::string m_id;
+	std::string m_mimeType;
+	const UT_ByteBuf* m_data;
 };
 
 typedef boost::shared_ptr<OXML_Image> OXML_SharedImage;

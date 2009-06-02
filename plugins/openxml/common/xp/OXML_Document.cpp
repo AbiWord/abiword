@@ -458,6 +458,13 @@ UT_Error OXML_Document::addToPT(PD_Document * pDocument)
 		if (ret != UT_OK) return ret;
 	}
 
+	//Adding images to PT
+	OXML_ImageMap::iterator it5;
+	for (it5 = m_images_by_id.begin(); it5 != m_images_by_id.end(); it5++) {
+		ret = it5->second->addToPT(pDocument);
+		if (ret != UT_OK) return ret;
+	}
+
 	return ret;
 }
 

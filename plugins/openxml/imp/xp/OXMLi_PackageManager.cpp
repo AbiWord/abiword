@@ -244,6 +244,9 @@ const char * OXMLi_PackageManager::_getFullType( OXML_PartType type )
 	case WEBSETTINGS_PART:
 		ret = WEBSETTINGS_REL_TYPE;
 		break;
+	case IMAGE_PART:
+		ret = IMAGE_REL_TYPE;
+		break;
 	case THEME_PART:
 		ret = THEME_REL_TYPE;
 		break;
@@ -302,5 +305,31 @@ UT_Error OXMLi_PackageManager::_parseStream( GsfInput * stream, OXMLi_StreamList
 
 	//We prioritize the one from UT_XML when returning.
 	return ret == UT_OK ? pListener->getStatus() : ret;
+}
+
+/**
+ * Parses the image stream and returns the image data
+ */
+UT_ByteBuf* OXMLi_PackageManager::parseImageStream(const char * id)
+{
+	GsfInput * parent = _getDocumentStream();
+	GsfInput * stream = getChildById(parent, id);
+
+	//First, we check if this stream has already been parsed before
+	std::string part_name = gsf_input_name(stream); //TODO: determine if part names are truly unique
+	std::map<std::string, bool>::iterator it;
+	it = m_parsedParts.find(part_name);
+	if (it != m_parsedParts.end() && it->second) {
+		//this stream has already been parsed successfully
+		return NULL;
+	}
+
+	UT_ByteBuf* buffer = new UT_ByteBuf();
+	buffer->insertFromInput(0, stream);
+	g_object_unref (G_OBJECT (stream));
+
+	m_parsedParts[part_name] = true;
+
+	return buffer;
 }
 

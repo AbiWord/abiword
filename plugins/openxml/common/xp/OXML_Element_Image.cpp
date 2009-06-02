@@ -81,8 +81,15 @@ UT_Error OXML_Element_Image::serialize(IE_Exp_OpenXML* exporter)
 	return UT_OK;
 }
 
-UT_Error OXML_Element_Image::addToPT(PD_Document * /*pDocument*/)
+UT_Error OXML_Element_Image::addToPT(PD_Document * pDocument)
 {
-	//TODO
+	const gchar *field_fmt[3];
+	field_fmt[0] = "dataid";
+	field_fmt[1] = getId().c_str();
+	field_fmt[2] = 0;
+
+	if(!pDocument->appendObject(PTO_Image, field_fmt))
+		return UT_ERROR;
+
 	return UT_OK;
 }

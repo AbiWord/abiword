@@ -42,6 +42,7 @@
 #define NS_M_URI "http://schemas.openxmlformats.org/officeDocument/2006/math"
 #define NS_W10_URI "urn:schemas-microsoft-com:office:word"
 #define NS_WNE_URI "http://schemas.microsoft.com/office/word/2006/wordml"
+#define NS_PIC_URI "http://schemas.openxmlformats.org/drawingml/2006/picture"
 #define NS_XML_URI "NO_URI_FOR_XML_NAMESPACE"
 //more to come here
 
@@ -56,6 +57,7 @@
 #define NS_M_KEY "M"
 #define NS_W10_KEY "W10"
 #define NS_WNE_KEY "WNE"
+#define NS_PIC_KEY "PIC"
 #define NS_XML_KEY "xml"
 //more to come here
 

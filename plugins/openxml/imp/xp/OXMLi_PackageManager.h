@@ -98,6 +98,8 @@ public:
 	*/
 	UT_Error parseDocumentEndnotes();
 
+	UT_ByteBuf* parseImageStream(const char * id);
+
 private:
 	OXMLi_PackageManager();
 	virtual ~OXMLi_PackageManager();
