@@ -55,7 +55,6 @@ XAP_UnixHildonApp::XAP_UnixHildonApp(const char * szAppName)
 	: XAP_UnixApp(szAppName),
 	  m_pOsso(NULL),
 	  m_pHildonProgram(NULL),
-	  m_imContext(NULL),
 	  m_bHibernate(false)
 {
 }
@@ -72,10 +71,6 @@ XAP_UnixHildonApp::~XAP_UnixHildonApp()
 		osso_deinitialize (m_pOsso);
 		m_pOsso = NULL;
 	}
-
-    if(m_imContext) {
-        g_object_unref ((GObject*)m_imContext);
-    }
 }
 
 bool XAP_UnixHildonApp::initialize(const char * szKeyBindingsKey,

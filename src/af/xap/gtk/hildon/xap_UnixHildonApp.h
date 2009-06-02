@@ -44,7 +44,6 @@ public:
 
 	virtual bool initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue);
 
-	GtkIMContext * getIMContext() const {return m_imContext;}
 	GObject * getHildonProgram() const;
 
 	void         processStartupQueue();
@@ -61,7 +60,6 @@ protected:
 private:
 	osso_context_t *       m_pOsso;
 	mutable GObject *      m_pHildonProgram;
-	mutable GtkIMContext * m_imContext;
 	bool                   m_bHibernate;
 
 

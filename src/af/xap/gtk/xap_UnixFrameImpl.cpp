@@ -789,15 +789,10 @@ gint XAP_UnixFrameImpl::_fe::button_press_event(GtkWidget * w, GdkEventButton * 
 	 */
 	if (e->button == 1)
 	{
-		XAP_UnixHildonApp * pThis =
-			static_cast<XAP_UnixHildonApp*>(XAP_App::getApp());
+		UT_DEBUGMSG(("Hildon button_press_event: pFrameImpl 0x%p\n",
+                     pUnixFrameImpl));
 
-		UT_return_val_if_fail( pThis, FALSE );
-
-		UT_DEBUGMSG(("Hildon button_press_event: pThis 0x%p\n",
-					 pThis));
-
-		hildon_gtk_im_context_show(pThis->getIMContext());
+		hildon_gtk_im_context_show(pUnixFrameImpl->getIMContext());
 	}
 #endif
 
