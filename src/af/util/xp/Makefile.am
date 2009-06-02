@@ -9,8 +9,6 @@ AM_CPPFLAGS = \
 libxp_la_SOURCES = \
 	ut_AdobeEncoding.cpp \
 	ut_AdobeEncoding.h \
-	ut_allocator.cpp \
-	ut_allocator.h \
 	ut_assert.h \
 	ut_base64.cpp \
 	ut_base64.h \
