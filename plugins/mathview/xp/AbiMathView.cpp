@@ -442,7 +442,7 @@ AbiMathView_FileInsert(AV_View* /*v*/, EV_EditMethodCallData */*d*/)
 	
 	if (!bOK || !pNewFile)
 	{
-		UT_DEBUGMSG(("ARRG! bOK = %d pNewFile = %x \n",bOK,pNewFile));
+		UT_DEBUGMSG(("ARRG! bOK = %d pNewFile = %s \n",bOK,pNewFile));
 		return false;
 	}
 	UT_UTF8String sNewFile = pNewFile;
