@@ -44,6 +44,7 @@
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_FileOpenSaveAs.h"
 
+#include <dialogs/xp/ap_Dialog_CollaborationShare.h>
 #include <dialogs/xp/ap_Dialog_CollaborationJoin.h>
 #include <dialogs/xp/ap_Dialog_CollaborationAccounts.h>
 
@@ -223,31 +224,6 @@ Defun_EV_GetMenuItemState_Fn(collab_GetState_ShowAuthors)
 }
 
 /*!
- * returns checked true if current document is part of a collaboration
- */
-Defun_EV_GetMenuItemState_Fn(collab_GetState_Joined)
-{
-	UT_UNUSED(id);
-
-	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	if (!any_accounts_online( pManager->getAccounts() )) return EV_MIS_Gray;
-	
-	ABIWORD_VIEW;
-	UT_return_val_if_fail (pView, EV_MIS_Gray);
-	PD_Document* pDoc = pView->getDocument();
-	UT_return_val_if_fail (pDoc, EV_MIS_Gray);
-	
-	if (pManager->isInSession(pDoc))
-	{
-		if (pManager->isLocallyControlled(pDoc))
-			return EV_MIS_Toggled;
-		else
-			return EV_MIS_Gray;
-	}
-	return EV_MIS_ZERO;
-}
-
-/*!
  * returns checked true if currently recording
  */
 Defun_EV_GetMenuItemState_Fn(collab_GetState_Recording)
@@ -342,10 +318,10 @@ void s_abicollab_add_menus()
 		collabOfferId,   	  // id that the layout said we could use
 		0,                      // no, we don't have a sub menu.
 		0,                      // no, we don't raise a dialog.
-		1,                      // yes, we have a checkbox.
+		0,                      // no, we don't have a checkbox.
 		0,                      // no radio buttons for me, thank you
 		"s_abicollab_offer",    // name of callback function to call.
-		collab_GetState_Joined, // Function for whether not label is enabled/disabled checked/unchecked
+		NULL,                   // Function for whether not label is enabled/disabled checked/unchecked
 		NULL                    // Function to compute Menu Label "Dynamic Label"
 	);
 	pActionSet->addAction(myActionOffer);
@@ -581,27 +557,35 @@ void s_abicollab_remove_menus()
 bool s_abicollab_offer(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 {
 	UT_DEBUGMSG(("s_abicollab_offer\n"));
-	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
-	UT_return_val_if_fail(pFrame, false);
-	PD_Document* pDoc = static_cast<PD_Document *>(pFrame->getCurrentDoc());
-	UT_return_val_if_fail(pDoc, false);
 
- 	if (pManager->isLocallyControlled(pDoc))
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, false);
+	
+	// Get the current view that the user is in.
+	XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
+	// Get an Accounts dialog instance
+	XAP_DialogFactory* pFactory = static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
+	UT_return_val_if_fail(pFactory, false);
+	AP_Dialog_CollaborationShare* pDialog = static_cast<AP_Dialog_CollaborationShare*>(
+				pFactory->requestDialog(AbiCollabSessionManager::getManager()->getDialogShareId())
+			);
+	// Run the dialog
+	pDialog->runModal(pFrame);
+	// Handle the dialog outcome
+	AP_Dialog_CollaborationShare::tAnswer answer = pDialog->getAnswer();
+	
+	switch (answer)
 	{
-		AbiCollab* pSession = pManager->getSessionFromDocumentId(pDoc->getDocUUIDString());
-		if (pSession)
-		{	
-			pManager->closeSession(pSession, true);
-		}
-	}
-	else
-	{
-		UT_UTF8String sSessionId("");
-		// TODO: we could use/generate a proper descriptor when there is only
-		// 1 account where we share this document over
-		pManager->startSession(pDoc, sSessionId, NULL, "");
-	}
+		case AP_Dialog_CollaborationShare::a_OK:
+			// TODO: implement me
+			break;
+		case AP_Dialog_CollaborationShare::a_CANCEL:
+			// TODO: implement me
+			break;
+		default:
+			UT_ASSERT_HARMLESS(UT_NOT_REACHED);
+	}	
+
 	return true;
 }
 
@@ -660,7 +644,6 @@ bool s_abicollab_join(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 	
 	return true;
 }
-
 
 bool s_abicollab_accounts(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 {

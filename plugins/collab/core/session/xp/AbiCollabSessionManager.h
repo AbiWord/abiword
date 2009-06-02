@@ -56,6 +56,8 @@ public:
 	// dialog code
 	bool										registerDialogs(void);
 	bool										unregisterDialogs(void);
+	XAP_Dialog_Id								getDialogShareId()
+		{ return m_iDialogShare; }	
 	XAP_Dialog_Id								getDialogJoinId()
 		{ return m_iDialogJoin; }
 	XAP_Dialog_Id								getDialogAccountsId()
