@@ -121,42 +121,20 @@ AbiWord_SOURCES = \
 
 else
 # not MacOS
-if ENABLE_DYNAMIC
-
-bin_PROGRAMS += abiword-dynamic
-
-abiword_dynamic_CPPFLAGS = \
-	$(libabiword_2_7_la_CPPFLAGS)
-
-abiword_dynamic_LDFLAGS = \
-	$(DEPS_LIBS) \
-	--no-undefined \
-	-avoid-version \
-	-export-dynamic
-
-abiword_dynamic_LDADD = \
-	libabiword-2.7.la
-
-abiword_dynamic_SOURCES = \
-	$(main_cpp)
-
-endif # ENABLE_DYNAMIC
-
-
-if ENABLE_STATIC
 
 bin_PROGRAMS += abiword
 
 abiword_CPPFLAGS = \
 	$(libabiword_2_7_la_CPPFLAGS)
 
-# --no-undefined doesn't work for objc++, is it needed at all?
 abiword_LDFLAGS = \
 	$(platform_ldflags) \
+	--no-undefined      \
+	-avoid-version      \
 	-export-dynamic
 
 abiword_LDADD = \
-	.libs/libabiword-2.7.a \
+	libabiword-2.7.la \
 	$(resources) \
 	$(DEPS_LIBS)
 
@@ -167,7 +145,6 @@ abiword_DEPENDENCIES = \
 abiword_SOURCES = \
 	$(main_cpp)
 
-endif # ENABLE_STATIC
 endif # TOOLKIT_COCOA
 
 CLEANFILES = \
