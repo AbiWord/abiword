@@ -57,6 +57,7 @@
 
 // dialog includes
 #include "xap_DialogFactory.h"
+#include <dialogs/xp/ap_Dialog_CollaborationShare.h>
 #include <dialogs/xp/ap_Dialog_CollaborationJoin.h>
 #include <dialogs/xp/ap_Dialog_CollaborationAccounts.h>
 #include <dialogs/xp/ap_Dialog_CollaborationAddAccount.h>
@@ -208,7 +209,8 @@ UT_Error AbiCollabSessionManager::deserializeDocument(PD_Document** pDoc, const 
 }
 
 AbiCollabSessionManager::AbiCollabSessionManager(void)
-	: m_iDialogJoin(0),
+	: m_iDialogShare(0),
+	m_iDialogJoin(0),
 	m_iDialogAccounts(0),
 	m_iDialogAddAccount(0),
 	m_iDialogAddBuddy(0)
@@ -227,6 +229,7 @@ AbiCollabSessionManager::~AbiCollabSessionManager(void)
 bool AbiCollabSessionManager::registerDialogs(void)
 {
 	XAP_DialogFactory * pFactory = static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
+	m_iDialogShare = pFactory->registerDialog(ap_Dialog_CollaborationShare_Constructor, XAP_DLGT_NON_PERSISTENT);
 	m_iDialogJoin = pFactory->registerDialog(ap_Dialog_CollaborationJoin_Constructor, XAP_DLGT_NON_PERSISTENT);
 	m_iDialogAccounts = pFactory->registerDialog(ap_Dialog_CollaborationAccounts_Constructor, XAP_DLGT_NON_PERSISTENT);
 	m_iDialogAddAccount = pFactory->registerDialog(ap_Dialog_CollaborationAddAccount_Constructor, XAP_DLGT_NON_PERSISTENT);
@@ -273,6 +276,7 @@ bool AbiCollabSessionManager::unregisterAccountHandlers(void)
 bool AbiCollabSessionManager::unregisterDialogs(void)
 {
 	XAP_DialogFactory * pFactory = static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
+	pFactory->unregisterDialog(m_iDialogShare);
 	pFactory->unregisterDialog(m_iDialogJoin);
 	pFactory->unregisterDialog(m_iDialogAccounts);
 	pFactory->unregisterDialog(m_iDialogAddAccount);

@@ -147,6 +147,7 @@ private:
 	static AbiCollabSessionManager* 			m_pManager;	
 	
 	// dialog code
+	XAP_Dialog_Id								m_iDialogShare;
 	XAP_Dialog_Id								m_iDialogJoin;
 	XAP_Dialog_Id								m_iDialogAccounts;
 	XAP_Dialog_Id								m_iDialogAddAccount;
