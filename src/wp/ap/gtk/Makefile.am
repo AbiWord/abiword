@@ -8,22 +8,39 @@ AM_CPPFLAGS = 						\
 	-DSYSCONFDIR=\""$(sysconfdir)"\" 			\
 	-DABIWORD_PLUGINSDIR="\"$(ABIWORD_PLUGINSDIR)"\"
 
+
+
+# source and ui files for Hildon
+hildon_src = hildon/ap_UnixHildonFrameImpl.cpp \
+	hildon/ap_UnixHildonFrameImpl.h
+hildon_ui = hildon/ap_UnixHildonDialog_HdrFtr.xml \
+	hildon/ap_UnixHildonDialog_Options.xml
+# these are alternate file for a plain Gtk build.
+altgtk_ui = ap_UnixDialog_Options.xml \
+	ap_UnixDialog_HdrFtr.xml
+
+spell_src = ap_UnixDialog_Spell.cpp
+spell_ui = ap_UnixDialog_Spell.xml
+
+statusbar_src = ap_UnixStatusBar.cpp
+
+
 # list all conditional source files here so they end up in the dist tarball
 conditional_src = \
-	ap_UnixDialog_Spell.cpp \
-	ap_UnixStatusBar.cpp
-
-if ENABLE_SPELL
-spell_src = ap_UnixDialog_Spell.cpp
-endif
-
-if ENABLE_STATUSBAR
-statusbar_src = ap_UnixStatusBar.cpp
-endif
-
-libgtk_la_SOURCES = \
+	$(hildon_src) \
 	$(spell_src) \
 	$(statusbar_src) \
+	$(NULL)
+
+
+conditional_ui = \
+	$(hildon_ui) \
+	$(altgtk_ui) \
+	$(spell_ui) \
+	$(NULL)
+
+
+libgtk_la_SOURCES = \
 	abiwidget.cpp \
 	abiwidget.h \
 	ap_DocView.cpp \
@@ -164,13 +181,20 @@ ui_DATA = \
 	ap_UnixDialog_Latex.xml \
 	$(NULL)
 
+
+if ENABLE_SPELL
+libgtk_la_SOURCES += $(spell_src)
+ui_DATA += $(spell_ui)
+endif
+
+if ENABLE_STATUSBAR
+libgtk_la_SOURCES += $(statusbar_src)
+endif
+
 if EMBEDDED_HILDON
 
-libgtk_la_SOURCES += hildon/ap_UnixHildonFrameImpl.cpp \
-	hildon/ap_UnixHildonFrameImpl.h
-
-ui_DATA += hildon/ap_UnixHildonDialog_HdrFtr.xml \
-	hildon/ap_UnixHildonDialog_Options.xml
+libgtk_la_SOURCES += $(hildon_src)
+ui_DATA += $(hildon_ui)
 
 hildondesktopdir = @datadir@/applications/hildon
 hildondesktop_DATA = hildon/abiword.desktop
@@ -183,21 +207,16 @@ hildonicon_DATA = hildon/qgn_list_abiword.png
 
 else 
 
-ui_DATA += ap_UnixDialog_Options.xml \
-	ap_UnixDialog_HdrFtr.xml
+ui_DATA += $(altgtk_ui)
 
 endif
 
 
-if ENABLE_SPELL
-optuidir=$(uidir)
-optui_DATA = ap_UnixDialog_Spell.xml
-endif
 
 EXTRA_DIST = \
 	$(conditional_src) \
+	$(conditional_ui) \
 	$(ui_DATA) \
-	ap_UnixDialog_Spell.xml \
 	abiword_48.xpm \
 	hildon/qgn_list_abiword.png \
 	hildon/com.abisource.abiword.service.in \
