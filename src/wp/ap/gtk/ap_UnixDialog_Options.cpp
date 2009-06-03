@@ -53,6 +53,8 @@
 
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #include <hildon/hildon-color-chooser-dialog.h>
+// FIXME this should be more global
+#define _DISABLE_GRAMMAR
 #endif
 
 /*****************************************************************/
@@ -363,6 +365,7 @@ void AP_UnixDialog_Options::_constructWindowContents ( GtkBuilder * builder )
     localizeButtonUnderline ( m_checkbuttonOtherDirectionRtl, pSS,
                               AP_STRING_ID_DLG_Options_Label_DirectionRtl );
 
+#if ENABLE_SPELL
     // Spell Checking
 
     tmp = WID ( "lblSpellChecking" );
@@ -376,6 +379,12 @@ void AP_UnixDialog_Options::_constructWindowContents ( GtkBuilder * builder )
     m_checkbuttonSpellCheckAsType = WID ( "chkSpellCheckAsType" );
     localizeButtonUnderline ( m_checkbuttonSpellCheckAsType, pSS,
                               AP_STRING_ID_DLG_Options_Label_SpellCheckAsType );
+
+    // to enable/disable other controls (hide errors)
+    g_signal_connect ( G_OBJECT ( m_checkbuttonSpellCheckAsType ),
+                       "toggled",
+                       G_CALLBACK ( s_checkbutton_toggle ),
+                       static_cast<gpointer> ( this ) );
 
     m_checkbuttonSpellHideErrors = WID ( "chkHighlightMisspelledWords" );
     localizeButtonUnderline ( m_checkbuttonSpellHideErrors, pSS,
@@ -395,7 +404,6 @@ void AP_UnixDialog_Options::_constructWindowContents ( GtkBuilder * builder )
                               AP_STRING_ID_DLG_Options_Label_SpellNumbers );
 
     // Dictionaries
-
     tmp = WID ( "lblDictionaries" );
     localizeLabelMarkup ( tmp, pSS, AP_STRING_ID_DLG_Options_Label_SpellDictionaries );
 
@@ -407,13 +415,24 @@ void AP_UnixDialog_Options::_constructWindowContents ( GtkBuilder * builder )
     localizeButtonUnderline ( m_checkbuttonSpellMainOnly, pSS,
                               AP_STRING_ID_DLG_Options_Label_SpellMainOnly );
 
+// FIXME: for now we hardcode Hildon embedded as "no grammar"
+#ifdef _DISABLE_GRAMMAR
+    // remove anything related to grammar.
+    tmp = WID ( "tableGrammar" );
+    gtk_widget_destroy( tmp );
+    m_checkbuttonGrammarCheck = NULL;
+#else
     tmp = WID ( "lblGrammar" );
     localizeLabelMarkup ( tmp, pSS, AP_STRING_ID_DLG_Options_Label_Grammar );
 
     m_checkbuttonGrammarCheck = WID ( "chkGrammarCheck" );
     localizeButtonUnderline ( m_checkbuttonGrammarCheck, pSS,
                               AP_STRING_ID_DLG_Options_Label_GrammarCheck );
+#endif /// _DISABLE_GRAMMAR
 
+#else
+    gtk_notebook_remove_page(3);
+#endif
     // Smart Quotes
 
     tmp = WID ( "lblSmartQuotes" );
@@ -441,11 +460,6 @@ void AP_UnixDialog_Options::_constructWindowContents ( GtkBuilder * builder )
 
     //////////////////////////////////////////////////////////////////
 
-    // to enable/disable other controls (hide errors)
-    g_signal_connect ( G_OBJECT ( m_checkbuttonSpellCheckAsType ),
-                       "toggled",
-                       G_CALLBACK ( s_checkbutton_toggle ),
-                       static_cast<gpointer> ( this ) );
 
     // to enable/disable other smart quote widgets
     g_signal_connect ( G_OBJECT ( m_checkbuttonSmartQuotes ),
@@ -682,7 +696,18 @@ DEFINE_GET_SET_BOOL ( SpellSuggest )
 DEFINE_GET_SET_BOOL ( SpellMainOnly )
 DEFINE_GET_SET_BOOL ( SpellUppercase )
 DEFINE_GET_SET_BOOL ( SpellNumbers )
+#ifndef _DISABLE_GRAMMAR
 DEFINE_GET_SET_BOOL ( GrammarCheck )
+#else
+// TODO FIX this hack I do this to avoid the assert.
+bool     AP_UnixDialog_Options::_gatherGrammarCheck(void) 
+{
+    return false;
+}
+void        AP_UnixDialog_Options::_setGrammarCheck(bool) 
+{
+}
+#endif
 DEFINE_GET_SET_BOOL ( SmartQuotes )
 DEFINE_GET_SET_BOOL ( CustomSmartQuotes )
 
@@ -784,6 +809,7 @@ void AP_UnixDialog_Options::_setInnerQuoteStyle ( gint nIndex )
 DEFINE_GET_SET_BOOL ( AutoLoadPlugins )
 
 #undef DEFINE_GET_SET_BOOL
+
 
 int AP_UnixDialog_Options::_gatherNotebookPageNum ( void )
 {
