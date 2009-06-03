@@ -17,7 +17,9 @@ hildon_ui = hildon/ap_UnixHildonDialog_HdrFtr.xml \
 	hildon/ap_UnixHildonDialog_Options.xml
 # these are alternate file for a plain Gtk build.
 altgtk_ui = ap_UnixDialog_Options.xml \
-	ap_UnixDialog_HdrFtr.xml
+	ap_UnixDialog_HdrFtr.xml \
+	ap_UnixDialog_Options_ColorSel.xml \
+	$(NULL)
 
 spell_src = ap_UnixDialog_Spell.cpp
 spell_ui = ap_UnixDialog_Spell.xml
@@ -166,9 +168,6 @@ ui_DATA = \
 	ap_UnixDialog_Insert_DateTime.xml \
 	ap_UnixDialog_MailMerge.xml \
 	ap_UnixDialog_MetaData.xml \
-	ap_UnixDialog_Options.xml \
-	ap_UnixDialog_HdrFtr.xml \
-	ap_UnixDialog_Options_ColorSel.xml \
 	ap_UnixDialog_PageNumbers.xml	\
 	ap_UnixDialog_PageSetup.xml \
 	ap_UnixDialog_Replace.xml \

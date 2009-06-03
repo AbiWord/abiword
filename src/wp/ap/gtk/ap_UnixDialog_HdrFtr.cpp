@@ -176,18 +176,16 @@ GtkWidget * AP_UnixDialog_HdrFtr::_constructWindow (void)
 {
 	GtkWidget * window;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	
-	// get the path where our UI file is located
+
+    const char * uiFileName;
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixHildonDialog_HdrFtr.xml";
+	uiFileName = "ap_UnixHildonDialog_HdrFtr.xml";
 #else
-	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_HdrFtr.xml";
+	uiFileName = "ap_UnixDialog_HdrFtr.xml";
 #endif
-	
-	// load the dialog from the UI file
-	GtkBuilder* builder = gtk_builder_new();
-	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
-	
+
+    GtkBuilder * builder = newDialogBuilder(uiFileName);
+
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
 	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_HdrFtr"));

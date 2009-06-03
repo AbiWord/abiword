@@ -365,18 +365,14 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 	GtkWidget * window;
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	
-	// get the path where our UI file is located
-	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_FormatFootnotes.xml";
-	
-	// load the dialog from the UI file
-	GtkBuilder* builder = gtk_builder_new();
-	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
+    GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_FormatFootnotes.xml");
+
 	// might need to be queried or altered later
 	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_FormatFootnotes"));
 	// set the dialog title
-	UT_UTF8String s;
+    std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_Title,s);
-	abiDialogSetTitle(window, s.utf8_str());
+	abiDialogSetTitle(window, s.c_str());
 	
 	// localize the strings in our dialog, and set tags for some widgets
 	
@@ -425,12 +421,12 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 	UT_ASSERT(m_wFootnoteNumberingMenu );
 	XAP_makeGtkComboBoxText(m_wFootnoteNumberingMenu, G_TYPE_NONE);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootRestartNone,s);
-	gtk_combo_box_append_text(m_wFootnoteNumberingMenu, s.utf8_str());
+	gtk_combo_box_append_text(m_wFootnoteNumberingMenu, s.c_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootRestartSec,s);
-	gtk_combo_box_append_text(m_wFootnoteNumberingMenu, s.utf8_str());
+	gtk_combo_box_append_text(m_wFootnoteNumberingMenu, s.c_str());
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootRestartPage,s);
-	gtk_combo_box_append_text(m_wFootnoteNumberingMenu, s.utf8_str());
+	gtk_combo_box_append_text(m_wFootnoteNumberingMenu, s.c_str());
 //	m_wFootnotesRestartOnPage = gtk_menu_item_new_with_label (s.utf8_str());
 
 
@@ -441,9 +437,9 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 	UT_ASSERT(m_wEndnotesPlaceMenu );
 	XAP_makeGtkComboBoxText(m_wEndnotesPlaceMenu, G_TYPE_NONE);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndSec,s);
-	gtk_combo_box_append_text(m_wEndnotesPlaceMenu, s.utf8_str());
+	gtk_combo_box_append_text(m_wEndnotesPlaceMenu, s.c_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndDoc,s);
-	gtk_combo_box_append_text(m_wEndnotesPlaceMenu, s.utf8_str());
+	gtk_combo_box_append_text(m_wEndnotesPlaceMenu, s.c_str());
 
 //
 // Now grab widgets for the remaining controls.

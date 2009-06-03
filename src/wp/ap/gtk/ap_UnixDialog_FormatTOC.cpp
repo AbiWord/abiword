@@ -350,12 +350,7 @@ GtkWidget * AP_UnixDialog_FormatTOC::_getWidget(const char * szNameBase, UT_sint
 
 GtkWidget * AP_UnixDialog_FormatTOC::_constructWindow(void)
 {
-	// get the path where our UI file is located
-	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_FormatTOC.xml";
-
-	// load the dialog from the UI file
-	m_pBuilder = gtk_builder_new();
-	gtk_builder_add_from_file(m_pBuilder, ui_path.c_str(), NULL);
+    m_pBuilder = newDialogBuilder("ap_UnixDialog_FormatTOC.xml");
 	
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
 

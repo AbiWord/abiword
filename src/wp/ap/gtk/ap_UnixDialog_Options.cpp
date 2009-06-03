@@ -51,6 +51,10 @@
 
 #include "ap_UnixDialog_Options.h"
 
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#include <hildon/hildon-color-chooser-dialog.h>
+#endif
+
 /*****************************************************************/
 
 #define WID(widget)   GTK_WIDGET(gtk_builder_get_object(builder, widget))
@@ -121,15 +125,8 @@ void AP_UnixDialog_Options::runModal ( XAP_Frame * pFrame )
 /// All this color selection code is stolen from the ap_UnixDialog_Background
 /// dialog
 ///
-/* static */ void AP_UnixDialog_Options::s_color_changed ( GtkColorSelection *csel,
-        gpointer data )
+void AP_UnixDialog_Options::s_real_color_changed(GdkColor & gdkcolor, AP_UnixDialog_Options * dlg)
 {
-    AP_UnixDialog_Options * dlg = static_cast<AP_UnixDialog_Options *> ( data );
-    UT_ASSERT ( csel && dlg );
-
-	GdkColor gdkcolor;
-
-	gtk_color_selection_get_current_color(csel, &gdkcolor);
 
 	UT_RGBColor * rgbcolor = UT_UnixGdkColorToRGBColor(gdkcolor);
 	UT_HashColor hash_color;
@@ -146,16 +143,53 @@ void AP_UnixDialog_Options::runModal ( XAP_Frame * pFrame )
     // Update document view through instant apply magic. Emitting the "clicked" 
 	// signal will result in a loop and
     // many dialogs popping up. Hacky, because we directly call a callback.
-    s_control_changed ( dlg->m_pushbuttonNewTransparentColor, data );
+    s_control_changed ( dlg->m_pushbuttonNewTransparentColor, dlg );
 }
+
+#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
+void AP_UnixDialog_Options::s_color_changed ( GtkColorSelection *csel,
+                                              gpointer data )
+{
+    AP_UnixDialog_Options * dlg = static_cast<AP_UnixDialog_Options *> ( data );
+    UT_ASSERT ( csel && dlg );
+
+	GdkColor gdkcolor;
+
+	gtk_color_selection_get_current_color(csel, &gdkcolor);
+
+    s_real_color_changed(gdkcolor, dlg);
+}
+#endif
 
 
 void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
 {
+    GtkWidget *dlg;
+
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+    dlg = hildon_color_chooser_dialog_new ();
+
+    
+    UT_RGBColor c;
+    UT_parseColor ( m_CurrentTransparentColor,c );
+	GdkColor *gcolor = UT_UnixRGBColorToGdkColor(c);
+
+    hildon_color_chooser_dialog_set_color((HildonColorChooserDialog*)dlg, 
+                                          gcolor);
+	gdk_color_free(gcolor);
+
+    if(abiRunModalDialog ((GtkDialog*)(dlg), m_pFrame, this, 
+                          GTK_RESPONSE_OK, FALSE ) == GTK_RESPONSE_OK) {
+
+        GdkColor gdkc;
+        hildon_color_chooser_dialog_get_color((HildonColorChooserDialog*)dlg, 
+                                              &gdkc);
+        s_real_color_changed(gdkc, this);
+    }
+#else
 //
 // Run the Background dialog over the options? No the title is wrong.
 //
-    GtkWidget *dlg;
     GtkWidget *colorsel;
     UT_UTF8String s;
 
@@ -195,12 +229,15 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
         gtk_color_selection_set_current_color ( GTK_COLOR_SELECTION ( colorsel ), gcolor );
 		gdk_color_free(gcolor);
     }
+#endif
 //
 // Finish up here after a close or window delete signal.
 //
     abiDestroyWidget ( dlg );
 
+#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 	g_object_unref((GObject*)(builder));
+#endif
 }
 
 void AP_UnixDialog_Options::addPage ( const XAP_NotebookDialog::Page *page )
