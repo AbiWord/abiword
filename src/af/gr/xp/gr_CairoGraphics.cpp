@@ -299,7 +299,7 @@ void GR_CairoGraphics::_initCairo()
 
 void GR_CairoGraphics::_initPango()
 {
-	m_pFontMap = pango_cairo_font_map_get_default();
+	m_pFontMap =  pango_cairo_font_map_new();
 	pango_cairo_font_map_set_resolution(PANGO_CAIRO_FONT_MAP(m_pFontMap), m_iDeviceResolution);	
 	m_pContext = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(m_pFontMap));
 
