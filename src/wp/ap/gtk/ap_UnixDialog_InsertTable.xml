@@ -113,7 +113,6 @@
                   <object class="GtkLabel" id="lbSpacerTableSize">
                     <property name="width_request">18</property>
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes"/>
                     <property name="use_underline">False</property>
                     <property name="use_markup">False</property>
                     <property name="justify">GTK_JUSTIFY_LEFT</property>
