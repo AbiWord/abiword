@@ -118,6 +118,7 @@ public:
 	void									addBuddy(BuddyPtr pBuddy);
 	std::vector<BuddyPtr>&					getBuddies()
 		{ return m_vBuddies; }
+	virtual void							getBuddiesAsync() {}
 	void									deleteBuddy(BuddyPtr pBuddy);
 	void									deleteBuddies();
 	virtual BuddyPtr						constructBuddy(const PropertyMap& vProps) = 0;

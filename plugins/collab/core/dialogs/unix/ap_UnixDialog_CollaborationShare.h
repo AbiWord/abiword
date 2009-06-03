@@ -39,6 +39,7 @@ private:
 	GtkWidget*	 				_constructWindow(void);
 	void						_populateWindowData(void);
 	void						_populateBuddyModel();
+	AccountHandler*				_getActiveAccountHandler();
 
 	GtkWidget*					m_wWindowMain;
 	GtkWidget*					m_wAccount;

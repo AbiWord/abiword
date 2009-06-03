@@ -134,6 +134,7 @@ GtkWidget * AP_UnixDialog_CollaborationShare::_constructWindow(void)
 							"changed",
 							G_CALLBACK(s_account_changed),
 							static_cast<gpointer>(this));
+
 	g_object_unref(G_OBJECT(builder));
 	return window;
 }
@@ -154,7 +155,7 @@ void AP_UnixDialog_CollaborationShare::_populateWindowData()
 
 		gtk_list_store_append (store, &iter);
 		gtk_list_store_set (store, &iter,
-					0, pAccount->getDisplayType().utf8_str(),
+					0, pAccount->getDescription().utf8_str(),
 					1, pAccount,
 					-1);
 	}
@@ -172,7 +173,7 @@ void AP_UnixDialog_CollaborationShare::_populateWindowData()
 		gtk_combo_box_set_active(GTK_COMBO_BOX(m_wAccount), -1);
 	}
 
-	_populateBuddyModel();
+	//_populateBuddyModel();
 }
 
 void AP_UnixDialog_CollaborationShare::_populateBuddyModel()
@@ -182,10 +183,14 @@ void AP_UnixDialog_CollaborationShare::_populateBuddyModel()
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_if_fail(pManager);
 	
-	// TODO: get active account
-	AccountHandler* pHandler = pManager->getAccounts()[0]; // FIXME
+	AccountHandler* pHandler = _getActiveAccountHandler();
 	UT_return_if_fail(pHandler);
 
+	// signal the account to refresh its buddy list ...
+	pHandler->getBuddiesAsync();
+
+	// ... and while it does that, we'll have to work with the list that 
+	// is currently known
 	GtkTreeIter iter;
 	gtk_list_store_clear(m_pBuddyModel);
 	for (UT_uint32 i = 0; i < pHandler->getBuddies().size(); i++)
@@ -211,6 +216,26 @@ void AP_UnixDialog_CollaborationShare::_populateBuddyModel()
 	gtk_widget_show_all(m_wBuddyTree);
 }
 
+AccountHandler* AP_UnixDialog_CollaborationShare::_getActiveAccountHandler()
+{
+	GtkTreeIter iter;
+	if (gtk_combo_box_get_active_iter(GTK_COMBO_BOX(m_wAccount), &iter))
+	{
+		gchar * str_data;
+		gpointer* ptr_data;
+		AccountHandler* pHandler = 0;
+
+		gtk_tree_model_get (m_pAccountModel, &iter, 
+                          0, &str_data,
+                          1, &ptr_data,
+                          -1);		
+		
+		pHandler = reinterpret_cast<AccountHandler*>(ptr_data);
+		return pHandler;
+	}
+	return 0;
+}
+
 void AP_UnixDialog_CollaborationShare::eventOk()
 {
 	UT_DEBUGMSG(("AP_UnixDialog_CollaborationShare::eventOk()\n"));
@@ -220,5 +245,9 @@ void AP_UnixDialog_CollaborationShare::eventOk()
 void AP_UnixDialog_CollaborationShare::eventAccountChanged()
 {
 	UT_DEBUGMSG(("AP_UnixDialog_CollaborationShare::eventAccountChanged()\n"));
-	// TODO: implement me
+	AccountHandler* pHandler = _getActiveAccountHandler();
+	UT_return_if_fail(pHandler);
+	
+	UT_DEBUGMSG(("Changed account handler to type: %s\n", pHandler->getDisplayType().utf8_str()));
+	_populateBuddyModel();
 }

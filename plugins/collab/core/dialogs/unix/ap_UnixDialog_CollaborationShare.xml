@@ -25,8 +25,8 @@
   </object>
   <object class="GtkDialog" id="ap_UnixDialog_CollaborationShare">
     <property name="border_width">5</property>
-    <property name="title" translatable="yes">Add Account</property>
-    <property name="window_position">center</property>
+    <property name="title" translatable="yes">Share Document</property>
+    <property name="window_position">center-on-parent</property>
     <property name="type_hint">dialog</property>
     <property name="has_separator">False</property>
     <child internal-child="vbox">
@@ -40,7 +40,7 @@
             <child>
               <object class="GtkTable" id="tbLabelDetails">
                 <property name="visible">True</property>
-                <property name="n_rows">4</property>
+                <property name="n_rows">5</property>
                 <property name="n_columns">2</property>
                 <property name="row_spacing">6</property>
                 <child>
@@ -52,48 +52,6 @@
                   </object>
                   <packing>
                     <property name="right_attach">2</property>
-                    <property name="x_options">GTK_FILL</property>
-                    <property name="y_options"></property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="label9">
-                    <property name="visible">True</property>
-                    <property name="xalign">0</property>
-                    <property name="label" translatable="yes">    </property>
-                  </object>
-                  <packing>
-                    <property name="top_attach">1</property>
-                    <property name="bottom_attach">2</property>
-                    <property name="x_options">GTK_FILL</property>
-                    <property name="y_options"></property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="label10">
-                    <property name="visible">True</property>
-                    <property name="xalign">0</property>
-                    <property name="label" translatable="yes">&lt;b&gt;Buddies&lt;/b&gt;
-&lt;i&gt;Select the buddies you want to share this document with&lt;/i&gt;</property>
-                    <property name="use_markup">True</property>
-                  </object>
-                  <packing>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">2</property>
-                    <property name="bottom_attach">3</property>
-                    <property name="x_options">GTK_FILL</property>
-                    <property name="y_options"></property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="label11">
-                    <property name="visible">True</property>
-                    <property name="xalign">0</property>
-                    <property name="label" translatable="yes">    </property>
-                  </object>
-                  <packing>
-                    <property name="top_attach">3</property>
-                    <property name="bottom_attach">4</property>
                     <property name="x_options">GTK_FILL</property>
                     <property name="y_options"></property>
                   </packing>
@@ -116,34 +74,61 @@
                     <property name="bottom_attach">2</property>
                     <property name="x_options">GTK_FILL</property>
                     <property name="y_options">GTK_FILL</property>
+                    <property name="x_padding">6</property>
                     <property name="y_padding">6</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkTreeView" id="tvBuddies">
+                  <object class="GtkLabel" id="label10">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">&lt;b&gt;Buddies&lt;/b&gt;
+&lt;i&gt;Select the buddies you want to share this document with&lt;/i&gt;</property>
+                    <property name="use_markup">True</property>
+                  </object>
+                  <packing>
+                    <property name="right_attach">2</property>
+                    <property name="top_attach">3</property>
+                    <property name="bottom_attach">4</property>
+                    <property name="x_options">GTK_FILL</property>
+                    <property name="y_options"></property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkScrolledWindow" id="scrolledwindow1">
+                    <property name="width_request">300</property>
+                    <property name="height_request">350</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="model">lsBuddies</property>
+                    <property name="extension_events">cursor</property>
+                    <property name="hscrollbar_policy">automatic</property>
+                    <property name="vscrollbar_policy">automatic</property>
+                    <property name="shadow_type">in</property>
                     <child>
-                      <object class="GtkTreeViewColumn" id="clShared">
-                        <property name="title">Shared</property>
+                      <object class="GtkTreeView" id="tvBuddies">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="model">lsBuddies</property>
+                        <property name="headers_clickable">False</property>
+                        <property name="search_column">0</property>
                         <child>
-                          <object class="GtkCellRendererToggle" id="crToggle"/>
-                          <attributes>
-                            <attribute name="activatable">0</attribute>
-                            <attribute name="active">0</attribute>
-                          </attributes>
+                          <object class="GtkTreeViewColumn" id="clShared">
+                            <property name="title">Share</property>
+                            <child>
+                              <object class="GtkCellRendererToggle" id="crToggle"/>
+                            </child>
+                          </object>
                         </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkTreeViewColumn" id="clBuddy">
-                        <property name="title">column</property>
                         <child>
-                          <object class="GtkCellRendererText" id="crBuddy"/>
-                          <attributes>
-                            <attribute name="text">1</attribute>
-                          </attributes>
+                          <object class="GtkTreeViewColumn" id="clBuddy">
+                            <property name="title">Buddy</property>
+                            <child>
+                              <object class="GtkCellRendererText" id="crBuddy"/>
+                              <attributes>
+                                <attribute name="text">1</attribute>
+                              </attributes>
+                            </child>
+                          </object>
                         </child>
                       </object>
                     </child>
@@ -151,8 +136,83 @@
                   <packing>
                     <property name="left_attach">1</property>
                     <property name="right_attach">2</property>
-                    <property name="top_attach">3</property>
-                    <property name="bottom_attach">4</property>
+                    <property name="top_attach">4</property>
+                    <property name="bottom_attach">5</property>
+                    <property name="x_padding">6</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label9">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">    </property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">4</property>
+                    <property name="bottom_attach">5</property>
+                    <property name="x_options"></property>
+                    <property name="y_options"></property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label1">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">    </property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">1</property>
+                    <property name="bottom_attach">2</property>
+                    <property name="x_options"></property>
+                    <property name="y_options"></property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label2">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">    </property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">2</property>
+                    <property name="bottom_attach">3</property>
+                    <property name="x_options"></property>
+                    <property name="y_options"></property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkHBox" id="hbox1">
+                    <property name="visible">True</property>
+                    <property name="extension_events">cursor</property>
+                    <child>
+                      <object class="GtkImage" id="image1">
+                        <property name="visible">True</property>
+                        <property name="stock">gtk-info</property>
+                        <property name="icon-size">1</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="padding">6</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="lbAccountHint">
+                        <property name="visible">True</property>
+                        <property name="xalign">0</property>
+                        <property name="ypad">1</property>
+                      </object>
+                      <packing>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                    <property name="top_attach">2</property>
+                    <property name="bottom_attach">3</property>
+                    <property name="x_padding">6</property>
                   </packing>
                 </child>
               </object>
