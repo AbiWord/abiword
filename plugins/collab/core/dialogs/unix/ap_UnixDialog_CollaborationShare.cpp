@@ -29,11 +29,20 @@
 
 enum
 {
-	SHARED_COLUMN,
-	DESC_COLUMN = 0,
+	SHARED_COLUMN = 0,
+	DESC_COLUMN,
 	BUDDY_COLUMN
 };
 
+// don't ask :X
+struct BuddyPtrWrapper
+{
+public:
+	BuddyPtrWrapper(BuddyPtr pBuddy) : m_pBuddy(pBuddy) {}
+	BuddyPtr getBuddy() { return m_pBuddy; }
+private:
+	BuddyPtr m_pBuddy;
+};
 
 static void s_ok_clicked(GtkWidget * /*wid*/, AP_UnixDialog_CollaborationShare * dlg)
 {
@@ -105,7 +114,8 @@ GtkWidget * AP_UnixDialog_CollaborationShare::_constructWindow(void)
 	// might need to be queried or altered later
 	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_CollaborationShare"));
 	m_wAccount = GTK_WIDGET(gtk_builder_get_object(builder, "cbAccount"));
-	m_wBuddyTree= GTK_WIDGET(gtk_builder_get_object(builder, "tvBuddies"));
+	m_wBuddyTree = GTK_WIDGET(gtk_builder_get_object(builder, "tvBuddies"));
+	m_pBuddyModel = GTK_LIST_STORE(gtk_builder_get_object(builder, "lsBuddies"));
 	m_wOk = GTK_WIDGET(gtk_builder_get_object(builder, "btOK"));
 
 	// set the dialog title
@@ -133,8 +143,6 @@ void AP_UnixDialog_CollaborationShare::_populateWindowData()
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_if_fail(pManager);
 
-	_setBuddyModel(_constructBuddyModel());
-	
 	// populate the account combobox
 	GtkListStore* store = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_POINTER);
 	GtkTreeIter iter;
@@ -163,48 +171,44 @@ void AP_UnixDialog_CollaborationShare::_populateWindowData()
 		// nope, we don't have any account handler :'-(
 		gtk_combo_box_set_active(GTK_COMBO_BOX(m_wAccount), -1);
 	}
+
+	_populateBuddyModel();
 }
 
-GtkListStore* AP_UnixDialog_CollaborationShare::_constructBuddyModel()
+void AP_UnixDialog_CollaborationShare::_populateBuddyModel()
 {
-	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	UT_return_val_if_fail(pManager, NULL);
+	UT_return_if_fail(m_pBuddyModel);
 	
-	GtkTreeIter iter;
-	GtkListStore* model = gtk_list_store_new (3, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_POINTER);
-
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_if_fail(pManager);
+	
 	// TODO: get active account
 	AccountHandler* pHandler = pManager->getAccounts()[0]; // FIXME
-	UT_return_val_if_fail(pHandler, NULL);
-	
+	UT_return_if_fail(pHandler);
+
+	GtkTreeIter iter;
+	gtk_list_store_clear(m_pBuddyModel);
 	for (UT_uint32 i = 0; i < pHandler->getBuddies().size(); i++)
 	{
 		BuddyPtr pBuddy = pHandler->getBuddies()[i];
 		UT_continue_if_fail(pBuddy);
 		
 		UT_DEBUGMSG(("Got buddy: %s\n", pBuddy->getDescription().utf8_str()));
-		
-		gtk_list_store_append (model, &iter);	
-		gtk_list_store_set (model, &iter, 
+	
+		// crap, we can't store shared pointers in the list store; use a 
+		// hack to do it (which kinda defies the whole shared pointer thingy, 
+		// but alas...)
+		// FIXME: memory leak
+		BuddyPtrWrapper* pWrapper = new BuddyPtrWrapper(pBuddy);
+		gtk_list_store_append (m_pBuddyModel, &iter);
+		gtk_list_store_set (m_pBuddyModel, &iter, 
 				SHARED_COLUMN, false, // TODO: implement me 
 				DESC_COLUMN, pBuddy->getDescription().utf8_str(), 
-				BUDDY_COLUMN, /*pBuddy*/ NULL,
+				BUDDY_COLUMN, pWrapper, 
 				-1);
 	}
 	
-	return model;
-}
-
-void AP_UnixDialog_CollaborationShare::_setBuddyModel(GtkListStore* model)
-{
-	if (m_pBuddyModel)
-	{
-		g_object_unref(m_pBuddyModel);
-	}
-	m_pBuddyModel = GTK_TREE_MODEL(model);
-	gtk_tree_view_set_model(GTK_TREE_VIEW (m_wBuddyTree), m_pBuddyModel);
 	gtk_widget_show_all(m_wBuddyTree);
-	// eventSelectAccount();	
 }
 
 void AP_UnixDialog_CollaborationShare::eventOk()

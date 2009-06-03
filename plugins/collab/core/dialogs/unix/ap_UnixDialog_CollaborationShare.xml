@@ -13,7 +13,16 @@
       </row>
     </data>
   </object>
-  <object class="GtkListStore" id="liststore1"/>
+  <object class="GtkListStore" id="lsBuddies">
+    <columns>
+      <!-- column-name Shared -->
+      <column type="gboolean"/>
+      <!-- column-name Buddy -->
+      <column type="gchararray"/>
+      <!-- column-name gpointer1 -->
+      <column type="gpointer"/>
+    </columns>
+  </object>
   <object class="GtkDialog" id="ap_UnixDialog_CollaborationShare">
     <property name="border_width">5</property>
     <property name="title" translatable="yes">Add Account</property>
@@ -114,7 +123,30 @@
                   <object class="GtkTreeView" id="tvBuddies">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="model">liststore1</property>
+                    <property name="model">lsBuddies</property>
+                    <child>
+                      <object class="GtkTreeViewColumn" id="clShared">
+                        <property name="title">Shared</property>
+                        <child>
+                          <object class="GtkCellRendererToggle" id="crToggle"/>
+                          <attributes>
+                            <attribute name="activatable">0</attribute>
+                            <attribute name="active">0</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkTreeViewColumn" id="clBuddy">
+                        <property name="title">column</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="crBuddy"/>
+                          <attributes>
+                            <attribute name="text">1</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
