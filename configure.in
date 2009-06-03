@@ -645,12 +645,13 @@ elif test "$TOOLKIT" == "cocoa"; then
 	enable_static="no"
 else
 	AC_DEFINE([TOOLKIT_GTK], [1], [Build gtk+ user interface])
-	# build static binary by default
-	if test "$enable_dynamic" == "no" && \
-	   test "$enable_static" == "no"; then 
-		enable_dynamic="no"
-		enable_static="yes"
-	fi
+dnl We have no reason to mess with that.
+dnl	# build static binary by default
+dnl	if test "$enable_dynamic" == "no" && \
+dnl	   test "$enable_static" == "no"; then 
+dnl		enable_dynamic="no"
+dnl		enable_static="yes"
+dnl	fi
 fi
 AM_CONDITIONAL([ENABLE_DYNAMIC], test "$enable_dynamic" == "yes")
 AM_CONDITIONAL([ENABLE_STATIC], test "$enable_static" == "yes")
