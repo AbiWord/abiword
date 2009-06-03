@@ -33,6 +33,8 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
+#include <string>
+
 #include <glib.h>
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
@@ -160,6 +162,29 @@ static gboolean focus_in_event_ModelessOther(GtkWidget *widget,GdkEvent */*event
 }
 
 /*****************************************************************/
+
+GtkBuilder * newDialogBuilder(const char * name)
+{
+    UT_ASSERT(name);
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/" + name;
+
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+    GError * error = NULL;
+	guint result = gtk_builder_add_from_file(builder, ui_path.c_str(), &error);
+    if(result == 0) {
+        if(error) {
+            UT_DEBUGMSG(("gtk_builder_add() for %s failed with '%s'.", 
+                         ui_path.c_str(), error->message));
+            g_error_free(error);
+        }
+        g_object_unref((GObject*)builder);
+        return NULL;
+    }
+    return builder;
+}
+
+
 /*****************************************************************/
 
 void connectFocus(GtkWidget *widget,const XAP_Frame *frame)
@@ -719,33 +744,6 @@ void setLabelMarkup(GtkWidget * widget, const gchar * str)
 	gtk_label_set_markup (GTK_LABEL(widget), markupStr.c_str());
 }
 
-/*!
- * Convert the incoming string which is in the user's locale to UTF-8
- */
-UT_String abiLocaleToUTF8(const UT_String & inStr)
-{
-	GError * err = NULL ;
-	gsize bytes_read = 0, bytes_written = 0 ;
-
-	gchar * utf8 = g_locale_to_utf8 ( inStr.c_str(), -1,
-					  &bytes_read, &bytes_written, &err ) ;
-
-	// blissfully ignore errors
-	
-	UT_String rtn_utf8 ( utf8 ) ;
-	g_free ( utf8 ) ;
-
-	return rtn_utf8 ;
-}
-
-/*!
- * Convert the incoming string which is in the user's locale to UTF-8
- */
-UT_String abiLocaleToUTF8(const char * str)
-{
-	UT_String input ( str ) ;
-	return abiLocaleToUTF8 ( input ) ;
-}
 
 /*!
  * For a parented/displayed widget, this will just return

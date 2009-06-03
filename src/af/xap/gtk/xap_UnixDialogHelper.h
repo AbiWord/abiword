@@ -27,7 +27,6 @@
 #include <functional>
 
 #include "ut_types.h"
-#include "ut_string_class.h"
 #include "xap_Strings.h"
 
 class XAP_Frame;
@@ -43,12 +42,18 @@ class XAP_Dialog;
 // be stripped of ampersands (Windows accelerator characters).
 #define	CONVERT_TO_UNIX_STRING(str, id, newstr)		do { \
                                                     FREEP(newstr); \
-													UT_UTF8String _s; \
+                                                    std::string _s;           \
                                                     pSS->getValueUTF8(id,_s); \
                                                     UT_XML_cloneNoAmpersands(newstr, _s.c_str()); \
                                                     } while (0)
 												   
 
+
+/** load a GtkBuilder for a dialog using the standard path.
+ * @param name the filename of the dialog (no path)
+ * @return the GtkBuilder or NULL. The returned object my be freed as usual.
+ */
+GtkBuilder * newDialogBuilder(const char * name);
 void connectFocus(GtkWidget *widget,const XAP_Frame *frame);
 void connectFocusModeless(GtkWidget *widget,const XAP_App *pApp);
 void connectFocusModelessOther(GtkWidget *widget, const XAP_App *pApp, 
@@ -99,8 +104,6 @@ void localizeButtonMarkup(GtkWidget * widget, const XAP_StringSet * pSS, XAP_Str
 void localizeMenu(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id);
 void setLabelMarkup(GtkWidget * widget, const gchar * str);
 
-UT_String abiLocaleToUTF8(const UT_String & inStr);
-UT_String abiLocaleToUTF8(const char * str);
 
 // Returns the root window of the X display, useful for doing
 // pointer or coordinate measurement on an absolute scale.
