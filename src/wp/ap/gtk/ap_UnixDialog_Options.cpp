@@ -161,12 +161,7 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
 
     const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-    // get the path where our UI file is located
-    std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Options_ColorSel.xml";
-
-    // load the dialog from the UI file
-    GtkBuilder* builder = gtk_builder_new();
-    gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
+    GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_Options_ColorSel.xml");
 
     dlg = WID ( "ap_UnixDialog_Options_ColorSel" );
     pSS->getValueUTF8 ( AP_STRING_ID_DLG_Options_Label_ChooseForTransparent, s );
@@ -205,7 +200,7 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
 //
     abiDestroyWidget ( dlg );
 
-	g_object_unref(G_OBJECT(builder));
+	g_object_unref((GObject*)(builder));
 }
 
 void AP_UnixDialog_Options::addPage ( const XAP_NotebookDialog::Page *page )
@@ -219,21 +214,21 @@ void AP_UnixDialog_Options::addPage ( const XAP_NotebookDialog::Page *page )
 void AP_UnixDialog_Options::_setupUnitMenu ( GtkWidget *optionmenu, const XAP_StringSet *pSS )
 {
 	GtkComboBox *combo = GTK_COMBO_BOX(optionmenu);
-    UT_UTF8String s;
+    std::string s;
 
 	XAP_makeGtkComboBoxText(combo, G_TYPE_INT);
     // inches
     pSS->getValueUTF8 ( XAP_STRING_ID_DLG_Unit_inch, s );
-	XAP_appendComboBoxTextAndInt(combo, s.utf8_str(), DIM_IN);
+	XAP_appendComboBoxTextAndInt(combo, s.c_str(), DIM_IN);
     // cm
     pSS->getValueUTF8 ( XAP_STRING_ID_DLG_Unit_cm, s );
-	XAP_appendComboBoxTextAndInt(combo, s.utf8_str(), DIM_CM);
+	XAP_appendComboBoxTextAndInt(combo, s.c_str(), DIM_CM);
     // points
     pSS->getValueUTF8 ( XAP_STRING_ID_DLG_Unit_points, s );
-	XAP_appendComboBoxTextAndInt(combo, s.utf8_str(), DIM_PT);
+	XAP_appendComboBoxTextAndInt(combo, s.c_str(), DIM_PT);
     // picas
     pSS->getValueUTF8 ( XAP_STRING_ID_DLG_Unit_pica, s );
-	XAP_appendComboBoxTextAndInt(combo, s.utf8_str(), DIM_PI);
+	XAP_appendComboBoxTextAndInt(combo, s.c_str(), DIM_PI);
 	gtk_combo_box_set_active(combo, 0);
 }
 
@@ -450,29 +445,29 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 {
     GtkWidget *mainWindow;
     const XAP_StringSet * pSS = m_pApp->getStringSet();
+    const char *dialogFileName;
 
     // get the path where our UI file is located
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-    std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixHildonDialog_Options.xml";
+    dialogFileName = "ap_UnixHildonDialog_Options.xml";
 #else
-    std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Options.xml";
+    dialogFileName = "ap_UnixDialog_Options.xml";
 #endif
+
+    GtkBuilder * builder = newDialogBuilder(dialogFileName);
 
     // Update member variables with the important widgets that
     // might need to be queried or altered later.
 
-    // load the dialog from the UI file
-    GtkBuilder* builder = gtk_builder_new();
-    gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
-
     _constructWindowContents ( builder );
 
     mainWindow = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Options"));
+    UT_ASSERT(mainWindow);
 
     // set the dialog title
-    UT_UTF8String s;
+    std::string s;
     pSS->getValueUTF8(AP_STRING_ID_DLG_Options_OptionsTitle, s);
-    abiDialogSetTitle(mainWindow, s.utf8_str());
+    abiDialogSetTitle(mainWindow, s.c_str());
 
     // the control buttons
     g_signal_connect ( G_OBJECT ( m_buttonDefaults ),
