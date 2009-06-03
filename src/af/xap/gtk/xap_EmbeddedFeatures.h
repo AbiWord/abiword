@@ -21,7 +21,7 @@
 #ifndef __XAP_EMBEDDED_FEATURES_H__
 #define __XAP_EMBEDDED_FEATURES_H__
  
-#define XAP_SINGLE_XAPAPP 1
+#define XAP_SINGLE_XAPAPP 0
 
 #define XAP_SIMPLE_MENU 1
 

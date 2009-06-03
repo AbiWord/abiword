@@ -3683,12 +3683,12 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 		// in single XAPAPP mode we can't close the app when closing the last frame
 		// or reopen a new one.
 #if XAP_SINGLE_XAPAPP
+        UT_UNUSED(bCanExit);
+#else
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 		// user initiate exit -- clear any state info from previous hibernation
 		pApp->clearStateInfo();
 #endif
-        UT_UNUSED(bCanExit);
-#else
 		if (bCanExit)
 		{
 			pApp->reallyExit();
