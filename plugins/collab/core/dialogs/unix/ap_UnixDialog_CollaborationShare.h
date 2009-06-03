@@ -38,11 +38,14 @@ public:
 private:
 	GtkWidget*	 				_constructWindow(void);
 	void						_populateWindowData(void);
-
+	GtkListStore*				_constructBuddyModel();
+	void						_setBuddyModel(GtkListStore* model);
 
 	GtkWidget*					m_wWindowMain;
 	GtkWidget*					m_wAccount;
-	GtkTreeModel*				m_model;
+	GtkWidget*					m_wBuddyTree;
+	GtkTreeModel*				m_pAccountModel;
+	GtkTreeModel*				m_pBuddyModel;
 	GtkWidget*					m_wOk;
 };
 

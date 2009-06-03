@@ -27,6 +27,14 @@
 
 #include "ap_UnixDialog_CollaborationShare.h"
 
+enum
+{
+	SHARED_COLUMN,
+	DESC_COLUMN = 0,
+	BUDDY_COLUMN
+};
+
+
 static void s_ok_clicked(GtkWidget * /*wid*/, AP_UnixDialog_CollaborationShare * dlg)
 {
 	dlg->eventOk();
@@ -46,6 +54,10 @@ pt2Constructor ap_Dialog_CollaborationShare_Constructor = &AP_UnixDialog_Collabo
 AP_UnixDialog_CollaborationShare::AP_UnixDialog_CollaborationShare(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: AP_Dialog_CollaborationShare(pDlgFactory, id),
 	m_wWindowMain(NULL),
+	m_wAccount(NULL),
+	m_wBuddyTree(NULL),
+	m_pAccountModel(NULL),
+	m_pBuddyModel(NULL),
 	m_wOk(NULL)
 {
 }
@@ -93,6 +105,7 @@ GtkWidget * AP_UnixDialog_CollaborationShare::_constructWindow(void)
 	// might need to be queried or altered later
 	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_CollaborationShare"));
 	m_wAccount = GTK_WIDGET(gtk_builder_get_object(builder, "cbAccount"));
+	m_wBuddyTree= GTK_WIDGET(gtk_builder_get_object(builder, "tvBuddies"));
 	m_wOk = GTK_WIDGET(gtk_builder_get_object(builder, "btOK"));
 
 	// set the dialog title
@@ -117,42 +130,81 @@ GtkWidget * AP_UnixDialog_CollaborationShare::_constructWindow(void)
 
 void AP_UnixDialog_CollaborationShare::_populateWindowData()
 {
-/*
-	// populate the account type combobox
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_if_fail(pManager);
+
+	_setBuddyModel(_constructBuddyModel());
+	
+	// populate the account combobox
 	GtkListStore* store = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_POINTER);
 	GtkTreeIter iter;
-	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 
-	for (std::map<UT_UTF8String, AccountHandlerConstructor>::const_iterator cit = pManager->getRegisteredAccountHandlers().begin(); cit != pManager->getRegisteredAccountHandlers().end(); cit++)
+	for (std::vector<AccountHandler*>::const_iterator cit = pManager->getAccounts().begin(); cit != pManager->getAccounts().end(); cit++)
 	{
-		AccountHandlerConstructor pConstructor = cit->second;
-		UT_continue_if_fail(pConstructor);
+		AccountHandler* pAccount = *cit;
+		UT_continue_if_fail(pAccount);
 
-		// TODO: we need to free these somewhere
-		AccountHandler* pHandler = pConstructor();
-		if (pHandler)
-		{
-			gtk_list_store_append (store, &iter);
-			gtk_list_store_set (store, &iter,
-						0, pHandler->getDisplayType().utf8_str(),
-						1, pHandler,
-						-1);
-		}
+		gtk_list_store_append (store, &iter);
+		gtk_list_store_set (store, &iter,
+					0, pAccount->getDisplayType().utf8_str(),
+					1, pAccount,
+					-1);
 	}
-	m_model = GTK_TREE_MODEL (store);
-	gtk_combo_box_set_model(GTK_COMBO_BOX(m_wAccountType), m_model);
+	m_pAccountModel = GTK_TREE_MODEL (store);
+	gtk_combo_box_set_model(GTK_COMBO_BOX(m_wAccount), m_pAccountModel);
 
 	// if we have at least one account handler, then make sure the first one is selected
 	if (pManager->getRegisteredAccountHandlers().size() > 0)
 	{
-		gtk_combo_box_set_active(GTK_COMBO_BOX(m_wAccountType), 0);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(m_wAccount), 0);
 	}
 	else
 	{
 		// nope, we don't have any account handler :'-(
-		gtk_combo_box_set_active(GTK_COMBO_BOX(m_wAccountType), -1);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(m_wAccount), -1);
 	}
-*/
+}
+
+GtkListStore* AP_UnixDialog_CollaborationShare::_constructBuddyModel()
+{
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, NULL);
+	
+	GtkTreeIter iter;
+	GtkListStore* model = gtk_list_store_new (3, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_POINTER);
+
+	// TODO: get active account
+	AccountHandler* pHandler = pManager->getAccounts()[0]; // FIXME
+	UT_return_val_if_fail(pHandler, NULL);
+	
+	for (UT_uint32 i = 0; i < pHandler->getBuddies().size(); i++)
+	{
+		BuddyPtr pBuddy = pHandler->getBuddies()[i];
+		UT_continue_if_fail(pBuddy);
+		
+		UT_DEBUGMSG(("Got buddy: %s\n", pBuddy->getDescription().utf8_str()));
+		
+		gtk_list_store_append (model, &iter);	
+		gtk_list_store_set (model, &iter, 
+				SHARED_COLUMN, false, // TODO: implement me 
+				DESC_COLUMN, pBuddy->getDescription().utf8_str(), 
+				BUDDY_COLUMN, /*pBuddy*/ NULL,
+				-1);
+	}
+	
+	return model;
+}
+
+void AP_UnixDialog_CollaborationShare::_setBuddyModel(GtkListStore* model)
+{
+	if (m_pBuddyModel)
+	{
+		g_object_unref(m_pBuddyModel);
+	}
+	m_pBuddyModel = GTK_TREE_MODEL(model);
+	gtk_tree_view_set_model(GTK_TREE_VIEW (m_wBuddyTree), m_pBuddyModel);
+	gtk_widget_show_all(m_wBuddyTree);
+	// eventSelectAccount();	
 }
 
 void AP_UnixDialog_CollaborationShare::eventOk()

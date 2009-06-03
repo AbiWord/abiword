@@ -13,6 +13,7 @@
       </row>
     </data>
   </object>
+  <object class="GtkListStore" id="liststore1"/>
   <object class="GtkDialog" id="ap_UnixDialog_CollaborationShare">
     <property name="border_width">5</property>
     <property name="title" translatable="yes">Add Account</property>
@@ -89,22 +90,6 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkVBox" id="vbWidgetEmbedding">
-                    <property name="visible">True</property>
-                    <child>
-                      <placeholder/>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">3</property>
-                    <property name="bottom_attach">4</property>
-                    <property name="x_options">GTK_EXPAND | GTK_SHRINK | GTK_FILL</property>
-                    <property name="y_padding">6</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkComboBox" id="cbAccount">
                     <property name="visible">True</property>
                     <property name="model">model1</property>
@@ -123,6 +108,19 @@
                     <property name="x_options">GTK_FILL</property>
                     <property name="y_options">GTK_FILL</property>
                     <property name="y_padding">6</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkTreeView" id="tvBuddies">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="model">liststore1</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                    <property name="top_attach">3</property>
+                    <property name="bottom_attach">4</property>
                   </packing>
                 </child>
               </object>
