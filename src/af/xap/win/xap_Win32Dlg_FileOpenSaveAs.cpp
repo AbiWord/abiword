@@ -813,36 +813,26 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 UINT XAP_Win32Dialog_FileOpenSaveAs::_initPreviewDlg(HWND hDlg)
 {
 	HWND hFOSADlg	= GetParent(hDlg);
-    UT_Win32LocaleString str;
 	setHandle (hDlg);
 
 	const XAP_StringSet*  pSS		  = XAP_App::getApp()->getStringSet();
 	UT_return_val_if_fail(pSS, false);
 
-    str.fromUTF8 (pSS->getValue(XAP_STRING_ID_DLG_IP_Height_Label));    
-    SetDlgItemTextW( hDlg,
-					XAP_RID_DIALOG_INSERT_PICTURE_IMAGE_PREVIEW,
-					str.c_str() );
-    
-    str.fromUTF8 (pSS->getValue(XAP_STRING_ID_DLG_IP_Activate_Label));
-	SetDlgItemTextW( hDlg,
-					XAP_RID_DIALOG_INSERT_PICTURE_CHECK_ACTIVATE_PREVIEW,
-					str.c_str());
+    setDlgItemText( XAP_RID_DIALOG_INSERT_PICTURE_IMAGE_PREVIEW,
+					pSS->getValue(XAP_STRING_ID_DLG_IP_Height_Label));
+  
+    setDlgItemText( XAP_RID_DIALOG_INSERT_PICTURE_CHECK_ACTIVATE_PREVIEW,
+					pSS->getValue(XAP_STRING_ID_DLG_IP_Activate_Label));
 
-    str.fromUTF8 (pSS->getValue(XAP_STRING_ID_DLG_IP_Height_Label));
-	SetDlgItemTextW( hDlg,
-					XAP_RID_DIALOG_INSERT_PICTURE_TEXT_HEIGHT,
-					str.c_str());
+    setDlgItemText( XAP_RID_DIALOG_INSERT_PICTURE_TEXT_HEIGHT,
+					pSS->getValue(XAP_STRING_ID_DLG_IP_Height_Label));
     
-    str.fromUTF8 (pSS->getValue(XAP_STRING_ID_DLG_IP_Height_Label));
-	SetDlgItemTextW( hDlg,
-					XAP_RID_DIALOG_INSERT_PICTURE_TEXT_WIDTH,
-					str.c_str());
+    setDlgItemText( XAP_RID_DIALOG_INSERT_PICTURE_TEXT_WIDTH,
+					pSS->getValue(XAP_STRING_ID_DLG_IP_Height_Label));
     
-    str.fromUTF8 (pSS->getValue(XAP_STRING_ID_DLG_IP_Button_Label));
-	SetDlgItemTextW( hFOSADlg,
+    setDlgItemText( hFOSADlg,
 					IDOK,
-					str.c_str());
+					pSS->getValue(XAP_STRING_ID_DLG_IP_Button_Label));
 
 	return true;
 
