@@ -137,6 +137,7 @@ public:
 	// session management
 	virtual void							getSessionsAsync();
 	virtual void							getSessionsAsync(BuddyPtr pBuddy);
+	virtual void							startSession(PD_Document* /*pDoc*/) {}
 	virtual void							joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHandle);
 	virtual bool							hasSession(const UT_UTF8String& sSessionId);
 	virtual bool							allowsSessionTakeover() = 0;

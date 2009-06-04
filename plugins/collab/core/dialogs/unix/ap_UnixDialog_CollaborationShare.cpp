@@ -239,7 +239,11 @@ AccountHandler* AP_UnixDialog_CollaborationShare::_getActiveAccountHandler()
 void AP_UnixDialog_CollaborationShare::eventOk()
 {
 	UT_DEBUGMSG(("AP_UnixDialog_CollaborationShare::eventOk()\n"));
-	// TODO: implement me
+	AccountHandler*	pHandler = _getActiveAccountHandler();
+	UT_return_if_fail(pHandler);
+	
+	std::vector<BuddyPtr> acl; // TODO: fill this
+	_share(pHandler, acl);
 }
 
 void AP_UnixDialog_CollaborationShare::eventAccountChanged()

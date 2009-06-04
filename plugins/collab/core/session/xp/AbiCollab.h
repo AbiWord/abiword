@@ -119,6 +119,7 @@ public:
 		{ return m_vCollaborators; }
 	bool								isController(BuddyPtr pCollaborator) const
 		{ return m_pController == pCollaborator; }
+	void								setACL(const std::vector<BuddyPtr> vACL);
 
 	// import/export management
 	ABI_Collab_Import*					getImport(void)

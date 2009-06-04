@@ -261,6 +261,13 @@ void AbiCollab::removeCollaboratorsForAccount(AccountHandler* pHandler)
 	}
 }
 
+void AbiCollab::setACL(const std::vector<BuddyPtr> vACL)
+{
+	UT_DEBUGMSG(("AbiCollab::setACL()\n"));
+
+	// TODO: implement me
+}
+
 void AbiCollab::_setDocument(PD_Document* pDoc, XAP_Frame* pFrame)
 {
 	UT_DEBUGMSG(("AbiCollab::setDocument()\n"));
