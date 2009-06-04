@@ -87,7 +87,8 @@ void AP_Dialog_CollaborationShare::_share(AccountHandler* pHandler, const std::v
 		
 		// tell the account handler that we start a new session, so
 		// it set up things if needed
-		pHandler->startSession(pDoc);
+		bool b = pHandler->startSession(pDoc, acl);
+		UT_return_if_fail(b); // TODO: notify the user?
 		
 		// ... and start the session!
 		UT_UTF8String sSessionId("");

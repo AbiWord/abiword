@@ -97,8 +97,9 @@ public:
 	// session management
 	virtual void							getSessionsAsync();
 	virtual void							getSessionsAsync(const Buddy& buddy);
-	virtual bool							hasSession(const UT_UTF8String& sSessionId);
+	virtual bool							startSession(PD_Document* pDoc, const std::vector<BuddyPtr>& acl);	
 	virtual void							joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHandle);
+	virtual bool							hasSession(const UT_UTF8String& sSessionId);
 	acs::SOAP_ERROR							openDocument(UT_uint64 doc_id, UT_uint64 revision, const std::string& session_id, PD_Document** pDoc, XAP_Frame* pFrame);
 	UT_Error								saveDocument(PD_Document* pDoc, ConnectionPtr connection_ptr);
 	void									removeExporter(void);

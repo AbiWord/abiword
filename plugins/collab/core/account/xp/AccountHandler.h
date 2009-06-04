@@ -137,7 +137,8 @@ public:
 	// session management
 	virtual void							getSessionsAsync();
 	virtual void							getSessionsAsync(BuddyPtr pBuddy);
-	virtual void							startSession(PD_Document* /*pDoc*/) {}
+	virtual bool							startSession(PD_Document* /*pDoc*/, const std::vector<BuddyPtr>& /*acl*/)
+		{ return true; }
 	virtual void							joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHandle);
 	virtual bool							hasSession(const UT_UTF8String& sSessionId);
 	virtual bool							allowsSessionTakeover() = 0;

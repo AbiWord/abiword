@@ -31,6 +31,7 @@
 #include <libxml/tree.h>
 #include "xap_App.h"
 #include "xap_Frame.h"
+#include "ut_go_file.h"
 #include "xap_DialogFactory.h"
 #include "ut_debugmsg.h"
 #include "ut_sleep.h"
@@ -370,16 +371,58 @@ void ServiceAccountHandler::getSessionsAsync(const Buddy& /*buddy*/)
 	async_list_docs_ptr->start();	
 }
 
-bool ServiceAccountHandler::hasSession(const UT_UTF8String& sSessionId)
+bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<BuddyPtr>& /*acl*/)
 {
-	for (std::vector<boost::shared_ptr<RealmConnection> >::iterator it = m_connections.begin(); it != m_connections.end(); it++)
-	{
-		boost::shared_ptr<RealmConnection> connection_ptr = *it;
-		UT_continue_if_fail(connection_ptr);
-		if (connection_ptr->session_id() == sSessionId.utf8_str())
-			return true;
+	UT_DEBUGMSG(("ServiceAccountHandler::startSession()\n"));
+	
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, false);
+
+	// publish the document to abicollab.net
+	// TODO: implement me
+
+	const std::string uri = getProperty("uri");
+	const std::string email = getProperty("email");
+	const std::string password = getProperty("password");
+	bool verify_webapp_host = (getProperty("verify-webapp-host") == "true");
+
+	std::string filename = "New document";
+	if (pDoc->getFilename())
+		filename = UT_go_basename_from_uri(pDoc->getFilename());
+	
+	boost::shared_ptr<std::string> document(new std::string(""));
+	UT_return_val_if_fail(AbiCollabSessionManager::serializeDocument(pDoc, *document, true) == UT_OK, false);
+	
+	// construct a SOAP method call to gets our documents
+	soa::function_call fc("publishDocument", "publishDocumentResponse");
+	fc("email", email)
+		("password", password)
+		("filename", filename)
+		(soa::Base64Bin("data", document));
+
+	// execute the call; we do this synchronous for simplicity for now
+	// TODO: handle bad passwords
+	soa::GenericPtr soap_result;
+	try {
+		UT_DEBUGMSG(("Publishing document %s...\n", filename.c_str()));
+		soap_result = soup_soa::invoke(uri, 
+							soa::method_invocation("urn:AbiCollabSOAP", fc),
+							verify_webapp_host?m_ssl_ca_file:"");
+	} catch (soa::SoapFault& fault) {
+		UT_DEBUGMSG(("Caught a soap fault: %s (error code: %s)!\n", 
+					 fault.detail() ? fault.detail()->value().c_str() : "(null)",
+					 fault.string() ? fault.string()->value().c_str() : "(null)"));
+		return /*acs::error(fault)*/ false;
 	}
-	return AccountHandler::hasSession(sSessionId);
+	UT_return_val_if_fail(soap_result, false);
+	
+	// handle the result
+	soa::CollectionPtr rcp = soap_result->as<soa::Collection>("return");
+	UT_return_val_if_fail(rcp, false);
+
+	// TODO: handle the result
+	
+	return true;
 }
 
 // NOTE: we don't implement the opening of documents asynchronous; we block on it,
@@ -435,6 +478,18 @@ void ServiceAccountHandler::joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHand
 			}
 			break;
 	}
+}
+
+bool ServiceAccountHandler::hasSession(const UT_UTF8String& sSessionId)
+{
+	for (std::vector<boost::shared_ptr<RealmConnection> >::iterator it = m_connections.begin(); it != m_connections.end(); it++)
+	{
+		boost::shared_ptr<RealmConnection> connection_ptr = *it;
+		UT_continue_if_fail(connection_ptr);
+		if (connection_ptr->session_id() == sSessionId.utf8_str())
+			return true;
+	}
+	return AccountHandler::hasSession(sSessionId);
 }
 
 acs::SOAP_ERROR ServiceAccountHandler::openDocument(UT_uint64 doc_id, UT_uint64 revision, const std::string& session_id, PD_Document** pDoc, XAP_Frame* pFrame)
