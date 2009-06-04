@@ -399,7 +399,7 @@ void AP_Win32Dialog_FormatTOC_General::_onInitDialog()
 }
 
 
-void AP_Win32Dialog_FormatTOC_General::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_FormatTOC_General::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
@@ -425,20 +425,20 @@ void AP_Win32Dialog_FormatTOC_General::_onCommand(HWND hWnd, WPARAM wParam, LPAR
 				EnableWindow(GetDlgItem(hWnd,AP_RID_DIALOG_FORMATTOC_GENERAL_TEXT_HEADINGSTYLEVALUE), true);			
 			}
 			getContainer()->setTOCProperty(sProp,sVal);			
-			break;
+			return TRUE;
 		}
 				
 		case AP_RID_DIALOG_FORMATTOC_GENERAL_BUTTON_HEADINGSTYLE:						   
 			getContainer()->setStyle(hWnd, AP_RID_DIALOG_FORMATTOC_GENERAL_TEXT_HEADINGSTYLEVALUE);
-			break;
+			return TRUE;
 
 		case AP_RID_DIALOG_FORMATTOC_GENERAL_BUTTON_FILLSTYLE:						   
 			getContainer()->setStyle(hWnd, AP_RID_DIALOG_FORMATTOC_GENERAL_TEXT_FILLSTYLEVALUE);
-			break;
+			return TRUE;
 
 		case AP_RID_DIALOG_FORMATTOC_GENERAL_BUTTON_DISPLAYSTYLE:						   
 			getContainer()->setStyle(hWnd, AP_RID_DIALOG_FORMATTOC_GENERAL_TEXT_DISPLAYSTYLEVALUE);
-			break;
+			return TRUE;
 
 		case AP_RID_DIALOG_FORMATTOC_GENERAL_COMBO_LEVEL:
 		{
@@ -455,7 +455,7 @@ void AP_Win32Dialog_FormatTOC_General::_onCommand(HWND hWnd, WPARAM wParam, LPAR
 					getContainer()->setMainLevel (nLevel);
 				}
 			}
-			break;
+			return TRUE;
 			
 		}
 
@@ -475,12 +475,13 @@ void AP_Win32Dialog_FormatTOC_General::_onCommand(HWND hWnd, WPARAM wParam, LPAR
 				
 			sProp += sNum.c_str();			
 			getContainer()->setTOCProperty(sProp,sVal);	
-			break;
+			return TRUE;
 		}
 			
 		default:
 			break;
 	}
+	return FALSE;
 }
 
 void AP_Win32Dialog_FormatTOC_General::_onApply()
@@ -649,7 +650,7 @@ void AP_Win32Dialog_FormatTOC_Layout::_onInitDialog()
 }
 
 
-void AP_Win32Dialog_FormatTOC_Layout::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_FormatTOC_Layout::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
@@ -677,11 +678,12 @@ void AP_Win32Dialog_FormatTOC_Layout::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 				}
 			}
 
-			break;			
+			return TRUE;			
 		}					
 		default:
 			break;
 	}
+	return FALSE;
 }
 
 // Spin control notification

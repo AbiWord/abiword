@@ -65,7 +65,7 @@ private:
 
 	void						_onInitDialog();
 	void						_onKillActive(){};
-	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 		
 	AP_Win32Dialog_PageSetup*	m_pParent;	
     int							m_nCentered;	
@@ -91,7 +91,7 @@ private:
 
 	void						_onInitDialog();
 	void						_onKillActive(){};
-	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 		
 	AP_Win32Dialog_PageSetup*	m_pParent;	
 	

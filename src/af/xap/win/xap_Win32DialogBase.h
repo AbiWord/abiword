@@ -114,6 +114,9 @@ protected:
 	void setHandle(HWND hWnd) { m_hDlg = hWnd; };
 	void setDialog(XAP_Dialog * pDlg) { m_pDlg = pDlg; };
 	bool isDialogValid() const;
+
+protected:
+HWND m_hDlg;
 	
 private:
 	static BOOL CALLBACK s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
@@ -126,8 +129,7 @@ private:
 		magic_tag = 0x327211
 	};
 
-	int m_tag;	// all for safety
-	HWND m_hDlg;
+	int m_tag;	// all for safety	
 	XAP_Dialog* m_pDlg;
 	const XAP_StringSet* m_pSS;
 };

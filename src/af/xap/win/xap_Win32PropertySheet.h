@@ -36,10 +36,11 @@ class XAP_Win32PropertySheet;
 #define WHICHPROC	FARPROC
 #endif
 
+#include "xap_Win32DialogBase.h"
 #define ID_APPLY_NOW                    0x3021
 
 
-class ABI_EXPORT XAP_Win32PropertyPage
+class ABI_EXPORT XAP_Win32PropertyPage : public XAP_Win32DialogBase
 {
 public:
 	
@@ -55,7 +56,7 @@ public:
 	virtual	void				_onKillActive(){}; 	
 	virtual	void				_onOK(){}; 		
 	virtual	void				_onApply(){}; 
-	virtual void				_onCommand(HWND /*hWnd*/, WPARAM /*wParam*/, LPARAM /*lParam*/){};
+	// virtual void				_onCommand(HWND /*hWnd*/, WPARAM /*wParam*/, LPARAM /*lParam*/){};  //TODO
 	virtual void				_onNotify(LPNMHDR /*hdr*/, int /*iCtrlID*/){};
 	static int CALLBACK			s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,LPARAM lParam);
 	void						setChanged (bool bChanged); // Unables or disables apply button
@@ -69,6 +70,7 @@ private:
 	XAP_Win32App*				m_pWin32App;
 	XAP_Win32PropertySheet*		m_pParent;
 	DLGPROC						m_pfnDlgProc;
+    UT_Win32LocaleString 		m_title;
 		
 };
 
@@ -85,7 +87,7 @@ public:
 	void 						addPage(XAP_Win32PropertyPage* pPage);
 	PROPSHEETPAGE* 				_buildPageArray(void);	
 	static int CALLBACK			s_sheetWndProc(HWND hWnd, UINT msg, WPARAM wParam,LPARAM lParam);	
-	virtual	void				_onInitDialog(HWND /*hwnd*/){};	
+	virtual	 void				_onInitDialog(HWND /*hwnd*/){};	
 	virtual void 				destroy(void);
 	virtual void 				cleanup(void);
 	HWND						getHandle(){return m_hWnd;}
@@ -97,10 +99,10 @@ public:
 	void						setCancelButton(bool b){m_bCancelButton=b;};
 	
 
-	virtual int					_onCommand(HWND /*hWnd*/, WPARAM /*wParam*/, LPARAM /*lParam*/){return 1;};
-	virtual	void				_onOK(){}; 
-	virtual	void				_onApply(){}; 
-	virtual	void				_onCancel(){}; 
+	virtual BOOL				_onCommand(HWND /*hWnd*/, WPARAM /*wParam*/, LPARAM /*lParam*/){return 1;};
+	virtual	 void				_onOK(){}; 
+	virtual	 void				_onApply(){}; 
+	virtual	 void				_onCancel(){}; 
 	
 	int							m_nRslt;
 private:	

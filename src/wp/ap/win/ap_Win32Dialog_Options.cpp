@@ -31,6 +31,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_Win32OS.h"
+#include "ut_Win32LocaleString.h"
 
 #include "gr_Win32Graphics.h"
 
@@ -74,14 +75,14 @@ AP_Win32Dialog_Options::AP_Win32Dialog_Options(XAP_DialogFactory * pDlgFactory,
 	: AP_Dialog_Options(pDlgFactory,id),m_pDialogFactory(pDlgFactory)
 {
 	m_langchanged = FALSE;	
-	LOGFONT	logFont;
+	LOGFONTW	logFont;
 
 	// Create bold font
 	HFONT hFont = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
-	GetObject (hFont, sizeof(LOGFONT), &logFont); 	
+	GetObjectW (hFont, sizeof(LOGFONTW), &logFont); 	
 													
 	logFont.lfWeight  = FW_BOLD;
-	m_hFont = CreateFontIndirect(&logFont);
+	m_hFont = CreateFontIndirectW(&logFont);
 }
 
 AP_Win32Dialog_Options::~AP_Win32Dialog_Options(void)
@@ -146,9 +147,11 @@ void AP_Win32Dialog_Options::runModal(XAP_Frame * pFrame)
 
 	if (m_langchanged) 
 	{
-		const XAP_StringSet * pSS = getApp()->getStringSet();	
-		::MessageBox(NULL, pSS->getValue(AP_STRING_ID_DLG_Options_Prompt_YouMustRestart), 
-			"Abiword",MB_OK);
+		const XAP_StringSet * pSS = getApp()->getStringSet();
+		UT_Win32LocaleString str;
+			
+		str.fromUTF8 (pSS->getValue(AP_STRING_ID_DLG_Options_Prompt_YouMustRestart));
+		::MessageBoxW(NULL, str.c_str(), L"Abiword",MB_OK);
 	}
 	
 }	
@@ -164,10 +167,12 @@ struct {
 	{ DIM_PI, XAP_STRING_ID_DLG_Unit_pica },
 };
 #define SIZE_aAlignUnit  (sizeof(s_aAlignUnit)/sizeof(s_aAlignUnit[0]))
-#define _CDB(c,i)	CheckDlgButton(hWnd,AP_RID_DIALOG_##c,_getCheckItemValue(i))
-#define _DS2(c,s)	SetDlgItemText(getHandle(),AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX2(c,s)	SetDlgItemText(getHandle(),AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
-
+//#define _CDB(c,i)	CheckDlgButton(hWnd,AP_RID_DIALOG_##c,_getCheckItemValue(i))
+//#define _DS2(c,s)	SetDlgItemText(getHandle(),AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+//#define _DSX2(c,s)	SetDlgItemText(getHandle(),AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+#define _CDB(c,i)	checkDlgButton(AP_RID_DIALOG_##c,_getCheckItemValue(i))
+#define _DS2(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX2(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 /*
 	Gets the property page by its index
@@ -346,16 +351,14 @@ void AP_Win32Dialog_Options::_setAutoSaveFile(const bool b)
 
 void AP_Win32Dialog_Options::_gatherAutoSaveFileExt(UT_String &stRetVal)
 {
-	char szExtension[ 10 ];
-
-	GetDlgItemText( (HWND)getPage(PG_DOCUMENT), AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension, szExtension, 7 );
-
-	stRetVal = szExtension;
+	UT_Win32LocaleString str;
+	XAP_Win32DialogBase::getDlgItemText(getPage(PG_DOCUMENT), AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension, str);
+    stRetVal = str.ascii_str();
 }
 
 void AP_Win32Dialog_Options::_setAutoSaveFileExt(const UT_String &stExt)
 {
-	SetDlgItemText( (HWND)getPage(PG_DOCUMENT), AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension, stExt.c_str() );
+	XAP_Win32DialogBase::setDlgItemText(getPage(PG_DOCUMENT), AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension, stExt.c_str());
 }
 
 void AP_Win32Dialog_Options::_gatherAutoSaveFilePeriod(UT_String &stRetVal)
@@ -506,7 +509,7 @@ XAP_Win32PropertySheet()
 /*
 	Sheet window procedure
 */
-int AP_Win32Dialog_Options_Sheet::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
+BOOL AP_Win32Dialog_Options_Sheet::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wID = LOWORD(wParam); 
 	
@@ -558,9 +561,9 @@ void AP_Win32Dialog_Options_Sheet::_onInitDialog(HWND hwnd)
 	// Apply button -> save 
 	const XAP_StringSet * pSS = getParent()->getApp()->getStringSet();	
 	EnableWindow(GetDlgItem(hwnd, ID_APPLY_NOW), TRUE);
-	SetWindowText(GetDlgItem(hwnd, ID_APPLY_NOW), pSS->getValue(AP_STRING_ID_DLG_Options_Btn_Default));
-	SetWindowText(GetDlgItem(hwnd, IDOK), pSS->getValue(XAP_STRING_ID_DLG_OK));
-	SetWindowText(GetDlgItem(hwnd, IDCANCEL), pSS->getValue(XAP_STRING_ID_DLG_Cancel));	
+	XAP_Win32DialogBase::setWindowText(GetDlgItem(hwnd, ID_APPLY_NOW), pSS->getValue(AP_STRING_ID_DLG_Options_Btn_Default));
+	XAP_Win32DialogBase::setWindowText(GetDlgItem(hwnd, IDOK), pSS->getValue(XAP_STRING_ID_DLG_OK));
+	XAP_Win32DialogBase::setWindowText(GetDlgItem(hwnd, IDCANCEL), pSS->getValue(XAP_STRING_ID_DLG_Cancel));	
 
 	AP_Win32Dialog_Options*	 pParent=  (AP_Win32Dialog_Options*)getParent();		
 	int nDefPage = pParent->getInitialPageNum();		
@@ -585,10 +588,10 @@ AP_Win32Dialog_Options_Spelling::~AP_Win32Dialog_Options_Spelling()
 	
 }
 
-void AP_Win32Dialog_Options_Spelling::_onCommand(HWND /*hWnd*/, WPARAM /*wParam*/, LPARAM /*lParam*/)
-{
+//void AP_Win32Dialog_Options_Spelling::_onCommand(HWND /*hWnd*/, WPARAM /*wParam*/, LPARAM /*lParam*/)
+//{
 
-}
+//}
 
 /*
 	
@@ -661,7 +664,7 @@ AP_Win32Dialog_Options_General::~AP_Win32Dialog_Options_General()
 /*
 	
 */	
-void AP_Win32Dialog_Options_General::_onCommand(HWND /*hWnd*/, WPARAM wParam, LPARAM /*lParam*/)
+BOOL AP_Win32Dialog_Options_General::_onCommand(HWND /*hWnd*/, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wId = LOWORD(wParam);
 	AP_Win32Dialog_Options*	 pParent=  (AP_Win32Dialog_Options*)getContainer();	
@@ -673,7 +676,8 @@ void AP_Win32Dialog_Options_General::_onCommand(HWND /*hWnd*/, WPARAM wParam, LP
 		case AP_RID_DIALOG_OPTIONS_BTN_BGColor:
 		{
 			pColorDialog = (AP_Dialog_Background *)(pParent->getDialogFactory()->requestDialog(AP_DIALOG_ID_BACKGROUND));
-			UT_return_if_fail (pColorDialog);
+            if (pColorDialog == NULL)
+		    	return FALSE;
 	
 			UT_parseColor(pParent->_gatherColorForTransparent(), rgbColor );
 			pColorDialog->setColor(rgbColor);
@@ -683,13 +687,13 @@ void AP_Win32Dialog_Options_General::_onCommand(HWND /*hWnd*/, WPARAM wParam, LP
 				pParent->_setColorForTransparent(pColorDialog->getColor());
 				
 			pParent->getDialogFactory()->releaseDialog(pColorDialog);
+            return TRUE;
 		}
-
-		return;
 
 		default:
 			break;
 	}
+    return FALSE;
 }
 
 /*
@@ -704,7 +708,7 @@ void AP_Win32Dialog_Options_General::_onInitDialog()
 	int nIndex;
 	const XAP_StringSet * pSS = getApp()->getStringSet();	
 	AP_Win32App * pApp = static_cast<AP_Win32App*>(XAP_App::getApp());
-	HWND hCtrlUILang	= GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_COMBO_UILANG);
+    //	HWND hCtrlUILang	= GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_COMBO_UILANG);
 	
 	// localize controls	
 	_DS2(OPTIONS_LBL_UNITS,					DLG_Options_Label_ViewUnits);	
@@ -717,10 +721,11 @@ void AP_Win32Dialog_Options_General::_onInitDialog()
 	_DS2(OPTIONS_STATIC_LANGUAGE, 			DLG_Options_Label_LangSettings);
 	
 	// Populate values in the _COMBO_UNITS
-	HWND hwndAlign = GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_COMBO_UNITS);
+	// HWND hwndAlign = GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_COMBO_UNITS);
+    // Populate values in the _COMBO_UNITS	
 	for(i = 0; i < SIZE_aAlignUnit; i++ )
 	{
-		SendMessage(hwndAlign, CB_ADDSTRING, 0, (LPARAM)pSS->getValue(s_aAlignUnit[i].id));
+		addItemToCombo(AP_RID_DIALOG_OPTIONS_COMBO_UNITS, pSS->getValue(s_aAlignUnit[i].id));
 	}	
 	
 	// Setup bold font for some controls	
@@ -745,15 +750,20 @@ void AP_Win32Dialog_Options_General::_onInitDialog()
 			int id = lang.getIndxFromCode(pLangCode);
 			pLang  = lang.getNthLangName(id);
 			
-			nIndex = SendMessage(hCtrlUILang, CB_ADDSTRING, 0, (LPARAM)pLang);
-			SendMessage(hCtrlUILang, CB_SETITEMDATA, nIndex, id);
+			nIndex = addItemToCombo (AP_RID_DIALOG_OPTIONS_COMBO_UILANG, pLang);
+			setComboDataItem (AP_RID_DIALOG_OPTIONS_COMBO_UILANG, nIndex, id);		
 		}							
 	}
 	else
-		EnableWindow(hCtrlUILang, FALSE);
+		EnableWindow(GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_COMBO_UILANG), FALSE);
 
 
 	SetWindowLong(getHandle(), GWL_USERDATA, (LONG)this);
+    SendMessage(GetDlgItem (m_hDlg, AP_RID_DIALOG_OPTIONS_COMBO_UNITS), 
+		WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), MAKELPARAM(TRUE, 0));
+		
+	SendMessage(GetDlgItem (m_hDlg, AP_RID_DIALOG_OPTIONS_COMBO_UILANG), 
+		WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), MAKELPARAM(TRUE, 0));	
 	
 }
 
@@ -798,7 +808,7 @@ AP_Win32Dialog_Options_Document::~AP_Win32Dialog_Options_Document()
 /*
 	
 */	
-void AP_Win32Dialog_Options_Document::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
+BOOL AP_Win32Dialog_Options_Document::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wId = LOWORD(wParam);	
 	AP_Win32Dialog_Options*	 pParent=  (AP_Win32Dialog_Options*)getContainer();	
@@ -812,15 +822,17 @@ void AP_Win32Dialog_Options_Document::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 			EnableWindow( GetDlgItem( hWnd, AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod), bChecked );
 			EnableWindow( GetDlgItem( hWnd, AP_RID_DIALOG_OPTIONS_SPN_AutoSavePeriodSpin), bChecked );
 			EnableWindow( GetDlgItem( hWnd, AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension), bChecked );
-		return;
+		return TRUE;
 
-	case AP_RID_DIALOG_OPTIONS_CHK_LanguageWithKeyboard:  pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_LANG_WITH_KEYBOARD);return;
+	    case AP_RID_DIALOG_OPTIONS_CHK_LanguageWithKeyboard:  
+            pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_LANG_WITH_KEYBOARD);
+            return TRUE;
 
 		
 		default:
-		break;
+		    break;
 	}
-
+    return FALSE;
 }
 
 /*
@@ -871,9 +883,11 @@ bool AP_Win32Dialog_Options_Document::isAutoSaveInRange()
 	
 	if (iValue<MINAUTOSAVEPERIOD || iValue>MAXAUTOSAVEPERIOD)
 	{				
-			const XAP_StringSet * pSS = getApp()->getStringSet();	
-			::MessageBox(NULL, pSS->getValue(AP_STRING_ID_DLG_Options_Label_InvalidRangeForAutoSave), 
-				"",MB_OK);
+		UT_Win32LocaleString str;			
+			const XAP_StringSet * pSS = getApp()->getStringSet();
+			
+			str.fromUTF8 (pSS->getValue(AP_STRING_ID_DLG_Options_Label_InvalidRangeForAutoSave));
+			MessageBoxW(NULL, str.c_str(),L"Abiword",MB_OK);
 		
 		return false;
 	}
@@ -942,7 +956,7 @@ void AP_Win32Dialog_Options_SmartQuotes::_onInitDialog()
 /*
 	
 */	
-void AP_Win32Dialog_Options_SmartQuotes::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
+BOOL AP_Win32Dialog_Options_SmartQuotes::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wId = LOWORD(wParam);
 	
@@ -952,7 +966,7 @@ void AP_Win32Dialog_Options_SmartQuotes::_onCommand(HWND hWnd, WPARAM wParam, LP
 		{
 			bool bChecked = (IsDlgButtonChecked( hWnd, AP_RID_DIALOG_OPTIONS_CHK_SmartQuotes ) == BST_CHECKED);
 			EnableWindow( GetDlgItem( hWnd, AP_RID_DIALOG_OPTIONS_CHK_CustomSmartQuotes), bChecked );
-			return;
+			return TRUE;
 		}
 
 		case AP_RID_DIALOG_OPTIONS_CHK_CustomSmartQuotes:
@@ -960,10 +974,11 @@ void AP_Win32Dialog_Options_SmartQuotes::_onCommand(HWND hWnd, WPARAM wParam, LP
 			bool bChecked = (IsDlgButtonChecked( hWnd, AP_RID_DIALOG_OPTIONS_CHK_CustomSmartQuotes ) == BST_CHECKED);
 			EnableWindow( GetDlgItem( hWnd, AP_RID_DIALOG_OPTIONS_COMBO_OUTERQUOTE), bChecked );
 			EnableWindow( GetDlgItem( hWnd, AP_RID_DIALOG_OPTIONS_COMBO_INNERQUOTE), bChecked );
-			return;
+			return TRUE;
 		}
 
 		default:
 			break;
 	}
+    return FALSE;
 }

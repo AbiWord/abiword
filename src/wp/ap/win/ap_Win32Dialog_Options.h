@@ -45,7 +45,7 @@ public:
 		
 		void setParent(AP_Win32Dialog_Options*	pData){m_pParent=pData;};
 		AP_Win32Dialog_Options* getParent(){return m_pParent;};
-		int _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+		BOOL _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 		static int CALLBACK s_sheetInit(HWND hwnd,  UINT uMsg,  LPARAM lParam);
 		
 private:		
@@ -74,7 +74,7 @@ private:
 
 	void						_onInitDialog();
 	void						_onKillActive(){};
-	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+//	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);            //TODO
 		
 	AP_Win32Dialog_Options*		m_pParent;		
 	
@@ -100,7 +100,7 @@ private:
 
 	void						_onInitDialog();
 	void						_onKillActive(){};
-	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 		
 	AP_Win32Dialog_Options*		m_pParent;
 	int							m_nCentered;
@@ -128,7 +128,7 @@ private:
 
 	void						_onInitDialog();
 	void						_onKillActive(){};
-	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 		
 	AP_Win32Dialog_Options*		m_pParent;	
 	
@@ -151,7 +151,7 @@ private:
 
 	void						_onInitDialog();
 	void						_onKillActive(){};
-	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 		
 	AP_Win32Dialog_Options*		m_pParent;
 	
@@ -254,8 +254,8 @@ public:
 	HWND						m_hwndDlg;		// parent dialog
 	HWND						m_hwndTab;		// tab control in parent dialog
 
-	int 						m_nrSubDlgs;		// number of tabs on tab control
-	UT_Vector					m_vecSubDlgHWnd;	// hwnd to each sub-dialog
+	int 					        m_nrSubDlgs;		// number of tabs on tab control
+	UT_Vector				m_vecSubDlgHWnd;	// hwnd to each sub-dialog
 
 private:
 	XAP_DialogFactory * 		m_pDialogFactory;

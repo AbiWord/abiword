@@ -261,7 +261,7 @@ void AP_Win32Dialog_PageSetup_Page::doSpinControl(UT_uint32 id, UT_sint32 delta)
 	}
 }
 
-void AP_Win32Dialog_PageSetup_Page::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_PageSetup_Page::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
@@ -296,7 +296,7 @@ void AP_Win32Dialog_PageSetup_Page::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 				m_pParent->updatePreview();
 			}
 		}
-		return;
+		return TRUE;
 
 	case AP_RID_DIALOG_PAGE_SETUP_LBX_UNITS:
 		if( wNotifyCode == CBN_SELCHANGE )
@@ -310,7 +310,7 @@ void AP_Win32Dialog_PageSetup_Page::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 				m_pParent->updatePreview();
 			}
 		}
-		return;
+		return TRUE;
 
 	case AP_RID_DIALOG_PAGE_SETUP_EBX_WIDTH:
 		if( wNotifyCode == EN_KILLFOCUS )
@@ -328,7 +328,7 @@ void AP_Win32Dialog_PageSetup_Page::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 			}
 			m_pParent->updateWidth();		
 		}
-		return;
+		return TRUE;
 
 	case AP_RID_DIALOG_PAGE_SETUP_EBX_HEIGHT:
 		if( wNotifyCode == EN_KILLFOCUS )
@@ -345,7 +345,7 @@ void AP_Win32Dialog_PageSetup_Page::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 			}
 			m_pParent->updateHeight();
 		}
-		return;
+		return TRUE;
 
 	case AP_RID_DIALOG_PAGE_SETUP_EBX_SCALE:
 		if( wNotifyCode == EN_KILLFOCUS )
@@ -360,7 +360,7 @@ void AP_Win32Dialog_PageSetup_Page::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 			SetDlgItemText( hWnd, wId, itoa( m_pParent->getPageScale() , buf, 10 ) );
 
 		}
-		return;
+		return TRUE;
 
 	case AP_RID_DIALOG_PAGE_SETUP_RDO_PORTRAIT:
 		if( m_pParent->getPageOrientation() != m_pParent->PORTRAIT )
@@ -376,7 +376,7 @@ void AP_Win32Dialog_PageSetup_Page::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 			m_pParent->updateHeight();
 			m_pParent->updatePreview();
 		}
-		return;
+		return TRUE;
 		
 	case AP_RID_DIALOG_PAGE_SETUP_RDO_LANDSCAPE:
 		if( m_pParent->getPageOrientation() != m_pParent->LANDSCAPE )
@@ -392,12 +392,13 @@ void AP_Win32Dialog_PageSetup_Page::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 			m_pParent->updateHeight();
 			m_pParent->updatePreview();
 		}
-		return;
+		return TRUE;
 
 	default:
 		UT_DEBUGMSG(("WM_Command for id %ld for Page sub-dialog\n",wId));
-		return;
+		return TRUE;
 	}
+	return FALSE;
 }
 
 void AP_Win32Dialog_PageSetup_Page::_onInitDialog()
@@ -528,7 +529,7 @@ AP_Win32Dialog_PageSetup_Margin::~AP_Win32Dialog_PageSetup_Margin()
 
 }
 
-void AP_Win32Dialog_PageSetup_Margin::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_PageSetup_Margin::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
@@ -555,7 +556,7 @@ void AP_Win32Dialog_PageSetup_Margin::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 				m_pParent->setMarginUnits( (UT_Dimension) selected );
 			}
 		}
-		return;
+		return TRUE;
 
 	case AP_RID_DIALOG_PAGE_SETUP_EBX_TOP:
 		if( wNotifyCode == EN_KILLFOCUS )
@@ -569,7 +570,7 @@ void AP_Win32Dialog_PageSetup_Margin::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 			}
 			m_pParent->updateTopMargin();
 		}
-		return;
+		return TRUE;
 
 	case AP_RID_DIALOG_PAGE_SETUP_EBX_BOTTOM:
 		if( wNotifyCode == EN_KILLFOCUS )
@@ -583,7 +584,7 @@ void AP_Win32Dialog_PageSetup_Margin::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 			}
 			m_pParent->updateBottomMargin();
 		}
-		return;
+		return TRUE;
 
 	case AP_RID_DIALOG_PAGE_SETUP_EBX_LEFT:
 		if( wNotifyCode == EN_KILLFOCUS )
@@ -597,7 +598,7 @@ void AP_Win32Dialog_PageSetup_Margin::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 			}
 			m_pParent->updateLeftMargin();
 		}
-		return;
+		return TRUE;
 
 	case AP_RID_DIALOG_PAGE_SETUP_EBX_RIGHT:
 		if( wNotifyCode == EN_KILLFOCUS )
@@ -611,7 +612,7 @@ void AP_Win32Dialog_PageSetup_Margin::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 			}
 			m_pParent->updateRightMargin();
 		}
-		return;
+		return TRUE;
 
 	case AP_RID_DIALOG_PAGE_SETUP_EBX_HEADER:
 		if( wNotifyCode == EN_KILLFOCUS )
@@ -625,7 +626,7 @@ void AP_Win32Dialog_PageSetup_Margin::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 			}
 			m_pParent->updateHeaderMargin();
 		}
-		return;
+		return TRUE;
 
 	case AP_RID_DIALOG_PAGE_SETUP_EBX_FOOTER:
 		if( wNotifyCode == EN_KILLFOCUS )
@@ -639,12 +640,13 @@ void AP_Win32Dialog_PageSetup_Margin::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 			}
 			m_pParent->updateFooterMargin();
 		}
-		return;
+		return TRUE;
 
 	default:
 		UT_DEBUGMSG(("WM_Command for id %ld for Page sub-dialog\n",wId));
-		return;
+		return TRUE;
 	}
+	return FALSE;
 }
 
 void AP_Win32Dialog_PageSetup_Margin::_onInitDialog()
