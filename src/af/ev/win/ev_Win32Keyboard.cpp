@@ -21,6 +21,7 @@
 #include <windows.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <wchar.h>
 
 #include "ut_assert.h"
 #include "ut_types.h"
@@ -79,7 +80,7 @@ ev_Win32Keyboard::ev_Win32Keyboard(EV_EditEventMapper * pEEM)
 	  m_bIsUnicodeInput(false),
 	  m_bWasAnAbiCommand(false)
 {
-	HINSTANCE hInstUser = LoadLibrary("USER32.DLL");
+	HINSTANCE hInstUser = LoadLibraryW(L"USER32.DLL");
 	if (hInstUser)
 	{
 		m_pToUnicodeEx = reinterpret_cast<int (*)(UINT,UINT,CONST PBYTE,LPWSTR,int,UINT,HKL)>
@@ -109,7 +110,7 @@ void ev_Win32Keyboard::remapKeyboard(HKL hKeyboardLayout)
 	if( hKeyboardLayout != 0 )
 	{
 		strcpy( szCodePage, "CP" );
-		if( GetLocaleInfo( LOWORD( hKeyboardLayout ),
+		if( GetLocaleInfoA( LOWORD( hKeyboardLayout ),
 						   LOCALE_IDEFAULTANSICODEPAGE,
 						   &szCodePage[2],
 						   sizeof( szCodePage ) / sizeof( szCodePage[0] ) - 2 ))
