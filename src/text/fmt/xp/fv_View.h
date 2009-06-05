@@ -183,6 +183,7 @@ public:
 	UT_uint32                       m_ListenerID;
 	FV_View *                       m_pView;
 	UT_sint32                       m_iAuthorId;
+	UT_UTF8String       m_sCaretID;
 };
 								
 class ABI_EXPORT FV_View : public AV_View
@@ -656,8 +657,8 @@ public:
 	bool				insertPageNum(const gchar ** props, HdrFtrType hfType);
 	virtual void        setPoint(UT_uint32 pt);
 	void                ensureInsertionPointOnScreen(void);
-        void                removeCaret(UT_UTF8String & sDocUUID);
-		void                addCaret(PT_DocPosition docPos,UT_sint32 iAuthorId);
+    void                removeCaret(UT_UTF8String & sCaretID);
+	void                addCaret(PT_DocPosition docPos,UT_sint32 iAuthorId);
 	void                setPointRemote(PT_DocPosition docPos);
 	void                updateCarets(PT_DocPosition docPos, UT_sint32 iLen);   
 	void		    fixInsertionPointCoords(void);

@@ -330,6 +330,19 @@ bool PD_Document::isMarginChangeOnly(void) const
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
+
+void PD_Document::removeCaret(UT_UTF8String & sCaretID)
+{
+	UT_GenericVector<AV_View *> vecViews;
+	getAllViews(&vecViews);
+	UT_sint32 i = 0;
+	for(i = 0; i<vecViews.getItemCount(); i++)
+	{
+		FV_View * pView = static_cast<FV_View *>(vecViews.getNthItem(i));
+		pView->removeCaret(sCaretID);
+	}
+}
+
 UT_sint32 PD_Document::getNumAuthors() const
 {
 	return m_vecAuthors.getItemCount();

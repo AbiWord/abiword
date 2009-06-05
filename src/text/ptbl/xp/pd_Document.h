@@ -194,6 +194,10 @@ public:
 	virtual bool			redoCmd(UT_uint32 repeatCount);
 	bool                    isDoingTheDo(void) const;
 
+	// Caret Methods
+
+	void                    removeCaret(UT_UTF8String & sCaretID);
+
 	// Author methods
 
 	void                    setShowAuthors(bool bAuthors);

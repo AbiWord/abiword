@@ -675,13 +675,12 @@ void FV_View::updateCarets(PT_DocPosition docPos, UT_sint32 iLen)
 	UT_UTF8String sUUID = m_pDoc->getMyUUIDString();
 	bool bLocal = (sUUID == m_sDocUUID);
 	UT_sint32 i = 0;
-	UT_sint32 iLastAuthor = m_pDoc->getLastAuthorInt();
 	bool bFoundID = false;
 	for(i=0; i<iCount;i++)
 	{
 			pCaretProps = m_vecCarets.getNthItem(i);
 			pCaretProps->m_pCaret->resetBlinkTimeout();
-			if((pCaretProps->m_iAuthorId == iLastAuthor) && (iLen > 0))
+			if((pCaretProps->m_sCaretID == sUUID) && (iLen > 0))
 			{
 				_setPoint(pCaretProps,docPos,iLen);
 				bFoundID = true;
@@ -697,7 +696,27 @@ void FV_View::updateCarets(PT_DocPosition docPos, UT_sint32 iLen)
 	}
 	if(iLen > 0 && !bFoundID && !bLocal)
 	{
-			addCaret(docPos, iLastAuthor);
+		UT_DEBUGMSG(("Could find a caret to match UUID! \n"));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		//		addCaret(docPos, iLastAuthor,sUUID);
+	}
+}
+
+void FV_View::removeCaret(UT_UTF8String & sUUID)
+{
+	fv_CaretProps * pCaretProps = NULL;
+	UT_sint32 iCount = m_vecCarets.getItemCount();
+	bool bFoundID = false;
+	for(UT_sint32 i=0; i<iCount;i++)
+	{
+		pCaretProps = m_vecCarets.getNthItem(i);
+		if(pCaretProps->m_sCaretID == sUUID)
+		{
+			bFoundID = true;
+			//
+			// TODO remove it!
+			//
+		}
 	}
 }
 
@@ -719,8 +738,9 @@ void FV_View::addCaret(PT_DocPosition docPos,UT_sint32 iAuthorId)
 	pCaretProps->m_pCaret->enable();
 	pCaretProps->m_iAuthorId = iAuthorId;
 	UT_sint32 icnt = iAuthorId;
+	pCaretProps->m_sCaretID = m_pDoc->getMyUUIDString();
 	icnt = icnt % 12;
-	pCaretProps->m_caretColor = m_colorRevisions[icnt];
+	pCaretProps->m_caretColor = getColorRevisions(icnt);
 	pCaretProps->m_pCaret->setRemoteColor(pCaretProps->m_caretColor);
 	_setPoint(pCaretProps,docPos,0);
 
