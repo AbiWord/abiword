@@ -40,6 +40,8 @@
 #include <ut_units.h>
 #include <ut_misc.h>
 #include <ut_debugmsg.h>
+#include <ie_impGraphic.h>
+#include <fg_GraphicRaster.h>
 
 // External includes
 #include <cstring>
@@ -540,19 +542,33 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 		std::string imageId(id);
 		if(id)
 		{
+			UT_Error err = UT_OK;
+			FG_Graphic* pFG = NULL;
+			const UT_ByteBuf* convImageData;
+
 			OXML_SharedElement imgElem(new OXML_Element_Image(id));
 			rqst->stck->push(imgElem);
 		
 			OXMLi_PackageManager * mgr = OXMLi_PackageManager::getInstance();
 			UT_ByteBuf* imageData = mgr->parseImageStream(id);
-			if(imageData)
+
+			err = IE_ImpGraphic::loadGraphic (imageData, IEGFT_Unknown, &pFG);
+			if ((err != UT_OK) || !pFG) 
+			{
+				UT_DEBUGMSG(("FRT:OpenXML importer can't import the picture with id:%s\n", id));
+				return;
+			}
+
+			convImageData = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
+		
+			if(convImageData)
 			{
 				OXML_Document * doc = OXML_Document::getInstance();
 				UT_return_if_fail(_error_if_fail(doc != NULL));
 				
 				OXML_Image* img = new OXML_Image();
 				img->setId(imageId.c_str());
-				img->setData(imageData);
+				img->setData(convImageData);
 				img->setMimeType("image/png");
 
 				OXML_SharedImage shrImg(img);
