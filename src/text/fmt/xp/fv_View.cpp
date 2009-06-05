@@ -179,7 +179,8 @@ fv_CaretProps::fv_CaretProps(FV_View * pView, PT_DocPosition InsPoint):
 	m_pCaret(NULL),
 	m_ListenerID(0),
 	m_pView(pView),
-	m_iAuthorId(-1)
+	m_iAuthorId(-1),
+	m_sCaretID("")
 {
 }
 
@@ -615,6 +616,7 @@ FV_View::~FV_View()
 	FREEP(m_chg.propsBlock);
 	FREEP(m_chg.propsSection);
 	DELETEP(m_pLocalBuf);
+	UT_VECTOR_PURGEALL(fv_CaretProps *,m_vecCarets);
 }
 
 bool FV_View::isActive(void) 
@@ -713,9 +715,10 @@ void FV_View::removeCaret(UT_UTF8String & sUUID)
 		if(pCaretProps->m_sCaretID == sUUID)
 		{
 			bFoundID = true;
-			//
-			// TODO remove it!
-			//
+			m_pG->removeCaret(pCaretProps->m_sCaretID);
+			removeListener(pCaretProps->m_ListenerID);
+			delete pCaretProps;
+			m_vecCarets.deleteNthItem(i);
 		}
 	}
 }
@@ -729,8 +732,9 @@ void FV_View::addCaret(PT_DocPosition docPos,UT_sint32 iAuthorId)
 		return;
 	fv_CaretProps * pCaretProps = new fv_CaretProps(this,docPos);
 	m_vecCarets.addItem(pCaretProps);
-	UT_DEBUGMSG((" add caret num %d id %d position %d \n",m_vecCarets.getItemCount(),iAuthorId,docPos));
-	pCaretProps->m_pCaret = m_pG->createCaret( iAuthorId);
+	UT_DEBUGMSG((" add caret num %d id %d position %d \n",m_vecCarets.getItemCount(),iAuthorId,docPos));	
+	pCaretProps->m_sCaretID = m_pDoc->getMyUUIDString();
+	pCaretProps->m_pCaret = m_pG->createCaret(pCaretProps->m_sCaretID );
 	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 	pCaretProps->m_PropCaretListner = new FV_Caret_Listener (pFrame);
 	addListener(pCaretProps->m_PropCaretListner,&pCaretProps->m_ListenerID);

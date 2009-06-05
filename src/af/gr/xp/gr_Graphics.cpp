@@ -300,12 +300,12 @@ GR_Caret * GR_Graphics::getNthCaret(UT_sint32 i) const
 	return m_vecCarets.getNthItem(i);
 }
 
-GR_Caret * GR_Graphics::getCaret(UT_sint32 iID) const
+GR_Caret * GR_Graphics::getCaret(UT_UTF8String & sID) const
 {
 	UT_sint32 i= 0;
 	for(i=0; i<m_vecCarets.getItemCount();i++)
 	{
-		if(m_vecCarets.getNthItem(i)->getID() == iID)
+		if(m_vecCarets.getNthItem(i)->getID() == sID)
 		{
 			return m_vecCarets.getNthItem(i);
 		}
@@ -318,11 +318,24 @@ AllCarets * GR_Graphics::allCarets(void)
 	return &m_AllCarets;
 }
 
-GR_Caret * GR_Graphics::createCaret(UT_sint32 id)
+GR_Caret * GR_Graphics::createCaret(UT_UTF8String & sID)
 {
-	GR_Caret * pCaret = new GR_Caret(this,id);
+	GR_Caret * pCaret = new GR_Caret(this,sID);
 	m_vecCarets.addItem(pCaret);
 	return pCaret;
+}
+
+void GR_Graphics::removeCaret(UT_UTF8String & sID)
+{
+	UT_sint32 i= 0;
+	for(i=0; i<m_vecCarets.getItemCount();i++)
+	{
+		if(m_vecCarets.getNthItem(i)->getID() == sID)
+		{
+			delete m_vecCarets.getNthItem(i);
+			m_vecCarets.deleteNthItem(i);
+		}
+	}
 }
 
 /*!

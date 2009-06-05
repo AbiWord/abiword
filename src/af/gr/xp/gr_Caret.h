@@ -36,7 +36,7 @@ class ABI_EXPORT GR_Caret
 
 public:
 	explicit						GR_Caret(GR_Graphics * pG);
-	explicit						GR_Caret(GR_Graphics * pG, UT_sint32 iID);
+	explicit						GR_Caret(GR_Graphics * pG, UT_UTF8String & sID);
 	~GR_Caret();
 	
 	void							enable();
@@ -62,7 +62,7 @@ public:
 
 	bool							getInsertMode () { return m_insertMode; }
 	void							setInsertMode (bool mode) { m_insertMode = mode; }
-	UT_sint32                       getID(void) const { return m_iID; } 
+	UT_UTF8String                   getID(void) const { return m_sID; } 
 	void                            setRemoteColor(UT_RGBColor clrRemote);
 	
 	void							resetBlinkTimeout(void);
@@ -118,7 +118,7 @@ private:
 	bool							m_insertMode;
 	bool							m_bRemote;
 	UT_RGBColor						m_clrRemote;
-	UT_sint32					        m_iID;
+	UT_UTF8String					        m_sID;
 	UT_sint32						m_iCaretNumber;
 };
 
