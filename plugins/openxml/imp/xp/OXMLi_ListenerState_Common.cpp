@@ -537,6 +537,19 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 		}
 		rqst->handled = true;		
 
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "hyperlink")) {
+		const gchar * id = attrMatches(NS_R_KEY, "id", rqst->ppAtts);
+		if(id)
+		{
+			OXMLi_PackageManager * mgr = OXMLi_PackageManager::getInstance();
+			std::string target = mgr->getPartName(id);
+			OXML_Element_Hyperlink* hyperlink = new OXML_Element_Hyperlink("");
+			hyperlink->setHyperlinkTarget(target);				
+			OXML_SharedElement elem(hyperlink);
+			rqst->stck->push(elem);
+		}
+		rqst->handled = true;
+
 	} else if (nameMatches(rqst->pName, NS_A_KEY, "blip")) {
 		const gchar * id = attrMatches(NS_R_KEY, "embed", rqst->ppAtts);
 		std::string imageId(id);
@@ -702,6 +715,9 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 		rqst->handled = true;
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "footnoteReference") || 
 			   nameMatches(rqst->pName, NS_W_KEY, "endnoteReference")) {
+		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) );
+		rqst->handled = true;
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "hyperlink")) {
 		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) );
 		rqst->handled = true;
 	} else if (nameMatches(rqst->pName, NS_A_KEY, "blip")) {

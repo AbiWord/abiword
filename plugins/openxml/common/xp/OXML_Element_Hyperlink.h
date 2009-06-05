@@ -40,6 +40,11 @@ public:
 
 	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
 	virtual UT_Error addToPT(PD_Document * pDocument);
+
+	void setHyperlinkTarget(const std::string & target);
+
+private:
+	std::string m_target;
 };
 
 #endif //_OXML_ELEMENT_HYPERLINK_H_

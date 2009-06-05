@@ -333,3 +333,13 @@ UT_ByteBuf* OXMLi_PackageManager::parseImageStream(const char * id)
 	return buffer;
 }
 
+/**
+ * This function is needed for external targets. Ex: hyperlinks, bookmarks.
+ */
+std::string OXMLi_PackageManager::getPartName(const char * id)
+{
+	GsfInput * parent = _getDocumentStream();
+	const char* target = gsf_open_pkg_rel_get_target(gsf_open_pkg_lookup_rel_by_id(parent, id));	
+	return std::string(target);
+}
+

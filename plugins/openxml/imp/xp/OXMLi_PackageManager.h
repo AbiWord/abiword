@@ -99,6 +99,7 @@ public:
 	UT_Error parseDocumentEndnotes();
 
 	UT_ByteBuf* parseImageStream(const char * id);
+	std::string getPartName(const char * id);
 
 private:
 	OXMLi_PackageManager();
