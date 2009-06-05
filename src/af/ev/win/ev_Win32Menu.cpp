@@ -276,7 +276,7 @@ EV_Win32Menu::~EV_Win32Menu()
 }
 
 bool EV_Win32Menu::onCommand(AV_View * pView,
-							 HWND /*hWnd*/, WPARAM wParam)
+							 HWND /*hWnd*/, WPARAM wParam)         
 {
 	// TODO do we need the hWnd parameter....
 
@@ -445,7 +445,7 @@ bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 				UT_ASSERT(bResult);
 				UT_ASSERT(m);
 
-				AppendMenu(m, MF_SEPARATOR, 0, NULL);
+				AppendMenuW(m, MF_SEPARATOR, 0, NULL);
 				UT_DEBUGMSG(("menu::synthesize [separator appended to submenu 0x%08lx]\n",m));
 			}
 			break;
@@ -710,11 +710,11 @@ bool EV_Win32Menu::_isAMenuBar(XAP_Menu_Id id, HMENU hMenu)
 		if (ids[i]==id)
 		{		
 			
-			MENUITEMINFO menuInfo;	 
-			memset (&menuInfo, 0, sizeof(MENUITEMINFO));
-			menuInfo.cbSize = sizeof(MENUITEMINFO);
+			MENUITEMINFOW menuInfo;	 
+			memset (&menuInfo, 0, sizeof(MENUITEMINFOW));
+			menuInfo.cbSize = sizeof(MENUITEMINFOW);
 			menuInfo.fMask = MIIM_DATA;
-			GetMenuItemInfo(hMenu, 0, TRUE, &menuInfo);		
+			GetMenuItemInfoW(hMenu, 0, TRUE, &menuInfo);		
 			EV_Menu_Item*	item = (EV_Menu_Item *) menuInfo.dwItemData;            			           				
 
 			if (item && id==item->id)		
@@ -732,7 +732,7 @@ bool EV_Win32Menu::_isAMenuBar(XAP_Menu_Id id, HMENU hMenu)
 
 
 /*
-	Process message WM_MEASUREITEM
+	Process message WM_MEASUREITEM                          
 */
 void EV_Win32Menu::onMeasureItem(HWND hwnd, WPARAM /*wParam*/, LPARAM lParam)
 {
@@ -763,17 +763,17 @@ void EV_Win32Menu::onMeasureItem(HWND hwnd, WPARAM /*wParam*/, LPARAM lParam)
 LPARAM EV_Win32Menu::onMenuChar(HWND /*hwnd*/, WPARAM wParam, LPARAM lParam)
 {	
 	HMENU hMenu = (HMENU) lParam;
-	MENUITEMINFO	menuInfo;
+	MENUITEMINFOW	menuInfo;
 	int nItems = GetMenuItemCount(hMenu);
 	wchar_t szBuff[1024];
 	
 	for (int i=0; i<nItems; i++)
 	{					
-		memset (&menuInfo, 0, sizeof(MENUITEMINFO));
-		menuInfo.cbSize = sizeof(MENUITEMINFO);
+		memset (&menuInfo, 0, sizeof(MENUITEMINFOW));
+		menuInfo.cbSize = sizeof(MENUITEMINFOW);
 		menuInfo.fMask = MIIM_DATA;
 
-		GetMenuItemInfo(hMenu, i, TRUE, &menuInfo);		
+		GetMenuItemInfoW(hMenu, i, TRUE, &menuInfo);		
 
 		EV_Menu_Item*	item = (EV_Menu_Item *) menuInfo.dwItemData;            			           	
 
@@ -1045,15 +1045,10 @@ bool EV_Win32MenuBar::synthesizeMenuBar(XAP_Frame * pFrame)
 	memset(buff,80 * sizeof (wchar_t) , L' ');
 	buff[80* sizeof (wchar_t)] = 0;
 	
- /*   TCHAR buff[81];
-    memset(buff, 80 * sizeof (TCHAR), _T(' '));
-	buff[80* sizeof (TCHAR)] = 0;           */
-
 	mii.cbSize = sizeof(mii);
 	mii.dwTypeData = buff;
 	mii.fType = MF_STRING;
     mii.cch = 80* sizeof (wchar_t);
-//	mii.cch = 80* sizeof (TCHAR);
 	mii.fState = MFS_DEFAULT;
 	mii.fMask = MIIM_ID | MIIM_DATA | MIIM_TYPE | MIIM_SUBMENU;
 	
