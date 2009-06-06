@@ -158,24 +158,24 @@ UT_sint32 ABI_Collab_Import::_getIncomingAdjustmentForState(const UT_GenericVect
 				else if (pPrev->getLocalAdjust() < 0)
 				{
 					// TODO: is the < 0 case correctly handled like this?
-					UT_DEBUGMSG(("ADJUSTMENT influence by delete by queue pos: %d, pPrev->m_iProgDocPos: %d, pPrev->getRemoteDocPos()\n", j, pPrev->getRemoteDocPos(), pPrev->getRemoteDocPos()));
+					UT_DEBUGMSG(("ADJUSTMENT influence by delete by queue pos: %d, pPrev->m_iProgDocPos: %d, pPrev->getRemoteDocPos()\n", j, pPrev->getRemoteDocPos()));
 					iAdjust -= pPrev->getLocalAdjust();
 					incAdjs.push_front(pPrev->getLocalAdjust());		
 				}
 				else
 				{
-					UT_DEBUGMSG(("ADJUSTMENT influence of 0 by queue pos: %d, pPrev->m_iProgDocPos: %d, pPrev->getRemoteDocPos()\n", j, pPrev->getRemoteDocPos(), pPrev->getRemoteDocPos()));
+					UT_DEBUGMSG(("ADJUSTMENT influence of 0 by queue pos: %d, pPrev->m_iProgDocPos: %d, pPrev->getRemoteDocPos()\n", j, pPrev->getRemoteDocPos()));
 					incAdjs.push_front(0);
 				}
 			}
 			else if (static_cast<UT_sint32>(pPrev->getRemoteDocPos()) > iIncomingPos+iAdjust)
 			{
-				UT_DEBUGMSG(("no ADJUSTMENT influence (insertion point smaller than checkpoint) by queue pos: %d, pPrev->m_iProgDocPos: %d, pPrev->getRemoteDocPos()\n", j, pPrev->getRemoteDocPos(), pPrev->getRemoteDocPos()));
+				UT_DEBUGMSG(("no ADJUSTMENT influence (insertion point smaller than checkpoint) by queue pos: %d, pPrev->m_iProgDocPos: %d, pPrev->getRemoteDocPos()\n", j, pPrev->getRemoteDocPos()));
 				incAdjs.push_front(0);
 			}
 			else
 			{
-				UT_DEBUGMSG(("no ADJUSTMENT influence (insertion point equals checkpoint) by queue pos: %d, pPrev->m_iProgDocPos: %d, pPrev->getRemoteDocPos()\n", j, pPrev->getRemoteDocPos(), pPrev->getRemoteDocPos()));
+				UT_DEBUGMSG(("no ADJUSTMENT influence (insertion point equals checkpoint) by queue pos: %d, pPrev->m_iProgDocPos: %d, pPrev->getRemoteDocPos()\n", j, pPrev->getRemoteDocPos()));
 				incAdjs.push_front(0);
 			}
 		}
@@ -844,7 +844,7 @@ bool ABI_Collab_Import::_import(const SessionPacket& packet, UT_sint32 iImportAd
 						void * pHandle = NULL;
 						char * pToken = dp->m_bTokenSet ? g_strdup(dp->m_sToken.c_str()) : NULL;
 						UT_ByteBuf * pBuf= new UT_ByteBuf();
-						UT_DEBUGMSG(("PXT_CreateDataItem: append image buffer @ 0x%x, %u bytes, pToken %s\n", &dp->m_vecData[0], dp->m_vecData.size(), pToken?pToken:"NULL"));
+						UT_DEBUGMSG(("PXT_CreateDataItem: append image buffer @ 0x%p, %u bytes, pToken %s\n", &dp->m_vecData[0], dp->m_vecData.size(), pToken?pToken:"NULL"));
 						pBuf->append(reinterpret_cast<const UT_Byte *>( &dp->m_vecData[0] ), dp->m_vecData.size() );
 						bool res = m_pDoc->createDataItem(szNameV,false,pBuf,pToken,&pHandle);
 						delete pBuf;

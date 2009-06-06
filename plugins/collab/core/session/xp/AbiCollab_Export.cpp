@@ -49,7 +49,7 @@ ABI_Collab_Export::ABI_Collab_Export(AbiCollab * pAbiCollab, PD_Document* pDoc)
 
 ABI_Collab_Export::~ABI_Collab_Export()
 {
-	UT_DEBUGMSG(("AbiCollab Export deleted %x \n",this));
+	UT_DEBUGMSG(("AbiCollab Export deleted %p \n",this));
 	_cleanup();
 }
 

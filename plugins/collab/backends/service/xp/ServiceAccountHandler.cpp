@@ -229,7 +229,7 @@ BuddyPtr ServiceAccountHandler::constructBuddy(const std::string& descriptor, Bu
 	uint8_t descr_conn_id;
 	std::string descr_domain;
 	UT_return_val_if_fail(_splitDescriptor(descriptor, descr_user_id, descr_conn_id, descr_domain), BuddyPtr());
-	UT_DEBUGMSG(("Constructing realm buddy - user_id: %lu, conn_id: %d, domain: %s\n", 
+	UT_DEBUGMSG(("Constructing realm buddy - user_id: %llu, conn_id: %d, domain: %s\n", 
 					descr_user_id, descr_conn_id, descr_domain.c_str()));
 
 	// verify that the uri matches ours
@@ -403,7 +403,7 @@ void ServiceAccountHandler::joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHand
 		return;
 	}
 	UT_return_if_fail(doc_id != 0);
-	UT_DEBUGMSG(("doc_id: %lu\n", doc_id));	
+	UT_DEBUGMSG(("doc_id: %llu\n", doc_id));	
 
 	PD_Document* pDoc = NULL;
 	acs::SOAP_ERROR err = openDocument(doc_id, 0, docHandle.getSessionId().utf8_str(), &pDoc, NULL);
@@ -439,7 +439,7 @@ void ServiceAccountHandler::joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHand
 
 acs::SOAP_ERROR ServiceAccountHandler::openDocument(UT_uint64 doc_id, UT_uint64 revision, const std::string& session_id, PD_Document** pDoc, XAP_Frame* pFrame)
 {
-	UT_DEBUGMSG(("ServiceAccountHandler::openDocument() - doc_id: %lu\n", doc_id));
+	UT_DEBUGMSG(("ServiceAccountHandler::openDocument() - doc_id: %llu\n", doc_id));
 	
 	const std::string uri = getProperty("uri");
 	const std::string email = getProperty("email");
@@ -494,7 +494,7 @@ acs::SOAP_ERROR ServiceAccountHandler::openDocument(UT_uint64 doc_id, UT_uint64 
 	std::string filename = filename_ptr->value().size() > 0 ? filename_ptr->value() : "Untitled";
 	
 	// open the realm connection!
-	UT_DEBUGMSG(("realm_address: %s, realm_port: %ld, cookie: %s\n", realm_address->value().c_str(), realm_port->value(), cookie->value().c_str()));
+	UT_DEBUGMSG(("realm_address: %s, realm_port: %lld, cookie: %s\n", realm_address->value().c_str(), realm_port->value(), cookie->value().c_str()));
 	ConnectionPtr connection = 
 		boost::shared_ptr<RealmConnection>(new RealmConnection(m_ssl_ca_file, realm_address->value(), 
 								realm_port->value(), cookie->value(), doc_id, master->value(), session_id,
@@ -504,7 +504,7 @@ acs::SOAP_ERROR ServiceAccountHandler::openDocument(UT_uint64 doc_id, UT_uint64 
 	// display a progress bar in that case
 	if (!connection->connect())
 	{
-		UT_DEBUGMSG(("Error connecting to realm %s:%ld\n", realm_address->value().c_str(), realm_port->value()));
+		UT_DEBUGMSG(("Error connecting to realm %s:%lld\n", realm_address->value().c_str(), realm_port->value()));
 		return acs::SOAP_ERROR_GENERIC;
 	}
 	
@@ -621,7 +621,7 @@ UT_Error ServiceAccountHandler::saveDocument(PD_Document* pDoc, ConnectionPtr co
 {
 	UT_return_val_if_fail(pDoc, UT_ERROR);
 	UT_return_val_if_fail(connection_ptr, UT_ERROR);		
-	UT_DEBUGMSG(("Saving document with id %lu, session id %s to webservice!\n",
+	UT_DEBUGMSG(("Saving document with id %llu, session id %s to webservice!\n",
 	             connection_ptr->doc_id(), connection_ptr->session_id().c_str()));
 	
 	const std::string uri = getProperty("uri");
@@ -1062,7 +1062,7 @@ void ServiceAccountHandler::_handleMessages(ConnectionPtr connection)
 
 					uint64_t user_id;
 					UT_return_if_fail(ServiceAccountHandler::parseUserInfo(*ujp->getUserInfo(), user_id));
-					UT_DEBUGMSG(("Adding buddy, uid: %lu, cid: %d\n", user_id, ujp->getConnectionId()));
+					UT_DEBUGMSG(("Adding buddy, uid: %llu, cid: %d\n", user_id, ujp->getConnectionId()));
 					RealmBuddyPtr buddy(
 								new RealmBuddy(this, user_id, _getDomain(), static_cast<UT_uint8>(ujp->getConnectionId()), ujp->isMaster(), connection));
 					connection->addBuddy(buddy);

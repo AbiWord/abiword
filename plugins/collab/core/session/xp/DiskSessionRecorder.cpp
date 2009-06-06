@@ -207,7 +207,7 @@ bool DiskSessionRecorder::dumpSession(const std::string& filename)
 
 void DiskSessionRecorder::destroy()
 {
-	UT_DEBUGMSG(("DiskSessionRecorder::destroy: closing file 0x%x\n", m_GsfStream));
+	UT_DEBUGMSG(("DiskSessionRecorder::destroy: closing file 0x%p\n", m_GsfStream));
 	if (m_GsfStream) 
 	{
 		gsf_output_close(m_GsfStream);
@@ -222,7 +222,7 @@ void DiskSessionRecorder::destroy()
 
 void DiskSessionRecorder::store(bool incoming, const Packet* pPacket, BuddyPtr pBuddy)
 {
-	UT_DEBUGMSG(("DiskSessionRecorder::store: %d 0x%x %s\n", incoming, pPacket, pBuddy ? pBuddy->getDescriptor().utf8_str() : "none"));
+	UT_DEBUGMSG(("DiskSessionRecorder::store: %d 0x%p %s\n", incoming, pPacket, pBuddy ? pBuddy->getDescriptor().utf8_str() : "none"));
 	UT_return_if_fail(pPacket);
 	UT_return_if_fail(m_GsfStream);
 	OStrArchive os;
@@ -258,7 +258,7 @@ void DiskSessionRecorder::store(bool incoming, const Packet* pPacket, BuddyPtr p
 
 void DiskSessionRecorder::write(const void* data, int count)
 {
-	UT_DEBUGMSG(("DiskSessionRecorder::write: 0x%x %d\n", data,count));
+	UT_DEBUGMSG(("DiskSessionRecorder::write: 0x%p %d\n", data,count));
 	UT_return_if_fail(m_GsfStream);
 	gsf_output_write(m_GsfStream, size_t(count), reinterpret_cast<const guint8*>(data));
 }
