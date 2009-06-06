@@ -2971,7 +2971,10 @@ UT_uint32 FV_View::getCurrentPageNumber(void) const
 	bool bDirection;
 	fp_Run* pRun;
 	_findPositionCoords(pos, m_bPointEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection,&pBlock, &pRun);
-
+	if(!pRun)
+	{
+		return 1;
+	}
 	fp_Line * pLine = pRun->getLine();
 	if (pLine && pLine->getContainer() && pLine->getContainer()->getPage())
 	{

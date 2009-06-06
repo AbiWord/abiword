@@ -718,7 +718,12 @@ protected:
 	UT_Error _importFile(GsfInput * input, int ieft,
 						 bool markClean, bool bImportStylesFirst,
 						 bool bIsImportFile, const char* impProps);
-	
+
+	bool     _removeRepeatedHdrFtr(pf_Frag_Strux * pfs ,UT_GenericVector<pf_Frag_Strux *> * vecHdrFtrs, UT_sint32 i);
+	bool     _pruneSectionAPI(pf_Frag_Strux * pfs,const char * szHType, UT_GenericVector<pf_Frag_Strux *> *vecHdrFtrs);
+	bool     _matchSection(pf_Frag_Strux * pfs, UT_GenericVector<pf_Frag_Strux *> *vecSections);
+	bool     _removeHdrFtr(pf_Frag_Strux * pfs);
+
 public:
 	// these functions allow us to retrieve visual direction at document
 	// position pos from an associated layout. They are intended to be

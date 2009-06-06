@@ -1506,18 +1506,16 @@ bool PD_Document::appendStruxFmt(pf_Frag_Strux * pfs, const gchar ** attributes)
 bool PD_Document::repairDoc(void)
 {
 	checkForSuspect(); // Look at last frag. If it's an endtable we need a block
-	if(m_vecSuspectFrags.getItemCount() == 0)
-	{
-		return true;
-	}
 	bool bRepaired = false;
 	UT_sint32 i = 0;
+	pf_Frag * pf = NULL;
+	pf_Frag_Strux * pfs = NULL;
 	for(i=0; i< m_vecSuspectFrags.getItemCount(); i++)
 	{
-		pf_Frag * pf = m_vecSuspectFrags.getNthItem(i);
+		pf = m_vecSuspectFrags.getNthItem(i);
 		if(pf->getType() == pf_Frag::PFT_Strux)
 		{
-			pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
+			pfs = static_cast<pf_Frag_Strux *>(pf);
 			if((pfs->getStruxType() != PTX_Block) && (pfs->getStruxType() != PTX_EndFootnote) && (pfs->getStruxType() != PTX_EndEndnote)  && (pfs->getStruxType() != PTX_EndAnnotation) )
 			{
 				pf_Frag * pfNext = pf->getNext();
@@ -1572,7 +1570,217 @@ bool PD_Document::repairDoc(void)
 			}
 		}
 	}
+	//
+	// Now Obtain a list of sections/headers and footers.
+	// remove unreferenced headers/footer
+	// Remove references to headers and footers in sections that are not
+	// Present.
+	// Remove repeated HdrFtr's
+	//
+	UT_GenericVector<pf_Frag_Strux *> vecSections;
+	UT_GenericVector<pf_Frag_Strux *> vecHdrFtrs;
+	pf = m_pPieceTable->getFragments().getFirst();
+	while(pf)
+	{
+		if(pf->getType() == pf_Frag::PFT_Strux)
+		{
+			pfs = static_cast<pf_Frag_Strux *>(pf);
+			if(pfs->getStruxType() == PTX_Section)
+			{
+				vecSections.addItem(pfs);
+			}
+			else if(pfs->getStruxType() == PTX_SectionHdrFtr)
+			{
+				vecHdrFtrs.addItem(pfs);
+			}
+		}
+		pf = pf->getNext();
+	}
+	for(i = 0; i< vecSections.getItemCount(); i++)
+	{
+		pfs = vecSections.getNthItem(i);
+		bRepaired = bRepaired | _pruneSectionAPI(pfs,"header",&vecHdrFtrs);
+		bRepaired = bRepaired | _pruneSectionAPI(pfs,"header-even",&vecHdrFtrs);
+		bRepaired = bRepaired | _pruneSectionAPI(pfs,"header-first",&vecHdrFtrs);
+		bRepaired = bRepaired | _pruneSectionAPI(pfs,"header-last",&vecHdrFtrs);
+		bRepaired = bRepaired | _pruneSectionAPI(pfs,"footer",&vecHdrFtrs);
+		bRepaired = bRepaired | _pruneSectionAPI(pfs,"footer-even",&vecHdrFtrs);
+		bRepaired = bRepaired | _pruneSectionAPI(pfs,"footer-first",&vecHdrFtrs);
+		bRepaired = bRepaired | _pruneSectionAPI(pfs,"footer-last",&vecHdrFtrs);
+	}
+	for(i = 0; i< vecHdrFtrs.getItemCount(); i++)
+	{
+		pfs = vecHdrFtrs.getNthItem(i);
+		if(!_matchSection(pfs,&vecSections))
+		{
+			//
+			// Now we have to delete this whole Header/Footer
+			//
+			_removeHdrFtr(pfs);
+			bRepaired = true;
+			vecHdrFtrs.deleteNthItem(i);
+			i--;
+		}
+	}
+	//
+	// Now remove repeated HdrFtr's ie Header/Footers with identical ID's
+	//
+	for(i = 0; i< vecHdrFtrs.getItemCount(); i++)
+	{
+		pfs = vecHdrFtrs.getNthItem(i);
+		if(!_removeRepeatedHdrFtr(pfs,&vecHdrFtrs,i+1))
+		{
+			bRepaired = true;
+		}
+	}
 	return !bRepaired;
+}
+
+/*!
+ * Look for a Hdr/Ftr with exactly the same identification as that of the 
+ * input strux.
+ * If we find a match delete the HdrFtr
+ */
+bool PD_Document::_removeRepeatedHdrFtr(pf_Frag_Strux * pfs ,UT_GenericVector<pf_Frag_Strux *> * vecHdrFtrs,UT_sint32 iStart)
+{
+	const char * pszMyHdrFtr = NULL;
+	const char * pszMyID = NULL;
+	const char * pszThisID = NULL;
+	const char * pszThisHdrFtr = NULL;
+	UT_sint32 i=0;
+	pf_Frag_Strux * pfsS = NULL;
+	getAttributeFromSDH((PL_StruxDocHandle) pfs,false,0,"type",&pszMyHdrFtr);
+	getAttributeFromSDH((PL_StruxDocHandle) pfs,false,0,"id",&pszMyID);
+	if(pszMyHdrFtr && *pszMyHdrFtr && pszMyID && *pszMyID)
+	{
+		for(i = iStart; i<vecHdrFtrs->getItemCount(); i++)
+		{
+			pfsS = vecHdrFtrs->getNthItem(i);
+			getAttributeFromSDH((PL_StruxDocHandle) pfsS,false,0,"type",&pszThisHdrFtr);
+			getAttributeFromSDH((PL_StruxDocHandle) pfsS,false,0,"id",&pszThisID);
+			if(pszThisHdrFtr && *pszThisHdrFtr && pszThisID && *pszThisID)
+			{
+				if((strcmp(pszMyHdrFtr,pszThisHdrFtr) == 0) &&
+				   (strcmp(pszMyID,pszThisID) == 0))
+				{
+					_removeHdrFtr(pfsS);
+					vecHdrFtrs->deleteNthItem(i);
+				}
+			}
+
+		}
+	}
+	return false;
+}
+
+/*!
+ * This scans the HdrFtrs to see if there is a match for the header/footer type
+ * in the section strux pfs.
+ * Return true of a prune happened
+ */
+bool PD_Document::_pruneSectionAPI(pf_Frag_Strux * pfs,const char * szHType, UT_GenericVector<pf_Frag_Strux *> *vecHdrFtrs)
+{
+	const char * pszHdrFtr = NULL;
+	const char * pszHFID = NULL;
+	const char * pszID = NULL;
+	UT_sint32 i = 0;
+	getAttributeFromSDH((PL_StruxDocHandle) pfs,false,0,szHType,&pszID);
+	if(!pszID)
+		return false;
+	if(!(*pszID))
+		return false;
+	for(i= 0; i< vecHdrFtrs->getItemCount(); i++)
+	{
+		pf_Frag_Strux * pfsS = vecHdrFtrs->getNthItem(i);
+		getAttributeFromSDH((PL_StruxDocHandle) pfsS,false,0,"type",&pszHdrFtr);
+		if(pszHdrFtr && *pszHdrFtr)
+		{
+			if(strcmp(szHType,pszHdrFtr) == 0)
+			{
+				getAttributeFromSDH((PL_StruxDocHandle) pfsS,false,0,"id",&pszHFID);
+				if(pszHFID && *pszHFID)
+				{
+					if(strcmp(pszHFID,pszID) == 0)
+					{
+						return false;
+					} 
+				}
+			}
+		}
+	}
+	//
+	// No matching HdrFtr was found. Remove the property.
+	//
+	const char * atts[3] = {szHType,pszID,NULL};
+	UT_DEBUGMSG(("Pruning HdrFtr %s ID %s From section \n",szHType,pszID));
+	m_pPieceTable->changeStruxFormatNoUpdate(PTC_RemoveFmt ,pfs,atts);
+	return true;
+}
+
+/*!
+ * Remove the HdrFtr starting at pfs. No changeRecords are cre created. 
+ * Only used for document repair during import.
+ */
+bool PD_Document::_removeHdrFtr(pf_Frag_Strux * pfs)
+{
+	UT_DEBUGMSG(("Removing HdrFtr %p \n",pfs));
+	pf_Frag * pf = NULL;
+	pf_Frag * pfNext = NULL;
+	pfNext = pfs->getNext();
+	pf = static_cast<pf_Frag *>(pfs);
+	while(pf )
+	{
+		m_pPieceTable->deleteFragNoUpdate(pf);
+		pf = pfNext;
+		if(pf)
+		{
+			pfNext = pf->getNext();
+			if(pf->getType() == pf_Frag::PFT_Strux)
+			{
+				pfs = static_cast<pf_Frag_Strux *>(pf);
+				if(pfs->getStruxType() == PTX_SectionHdrFtr)
+					break;
+			}
+		}
+	} 
+	return true;
+}
+
+/*!
+ * pfs point to a header footer section. This Method returns true if there
+ * is a section that has a reference to it's HdrFtr type and id
+ */
+bool PD_Document::_matchSection(pf_Frag_Strux * pfs, UT_GenericVector<pf_Frag_Strux *> *vecSections)
+{
+	const char * pszHdrFtr = NULL;
+	const char * pszHFID = NULL;
+	const char * pszID = NULL;
+	UT_sint32 i = 0;
+	bool bFound = false;
+	getAttributeFromSDH((PL_StruxDocHandle) pfs,false,0,"type",&pszHdrFtr);
+	if(!pszHdrFtr)
+		return false;
+	if(!(*pszHdrFtr))
+		return false;
+	getAttributeFromSDH((PL_StruxDocHandle) pfs,false,0,"id",&pszHFID);
+	if(!pszHFID)
+		return false;
+	if(!(*pszHFID))
+		return false;
+	for(i= 0; i< vecSections->getItemCount(); i++)
+	{
+		pf_Frag_Strux * pfsS = vecSections->getNthItem(i);
+		getAttributeFromSDH((PL_StruxDocHandle) pfsS,false,0,pszHdrFtr,&pszID);
+		if(pszID && *pszID)
+		{
+			if(strcmp(pszID,pszHFID) == 0)
+			{
+				bFound = true;
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 /*!

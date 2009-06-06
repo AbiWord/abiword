@@ -111,6 +111,19 @@ bool pt_PieceTable::deleteStruxNoUpdate(PL_StruxDocHandle sdh)
 	return true;
 }
 
+
+/*!
+ * Use this for deleting unused sections of the document during import.
+ * In Particular use this to remove unused headers/footers.
+ */
+bool pt_PieceTable::deleteFragNoUpdate(pf_Frag * pf)
+{
+	UT_DEBUGMSG(("SEVIOR: deleting frag no update %p \n",pf));
+	getFragments().unlinkFrag(pf);
+	delete pf;
+	return true;
+}
+
 bool pt_PieceTable::createAndSendDocPropCR( const gchar ** pAtts, const gchar ** pProps)
 {
 	PT_AttrPropIndex indexAP = 0;
