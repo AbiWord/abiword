@@ -27,15 +27,15 @@
 /*!
  Returns Windows's OSVERSIONINFO structure
  */
-OSVERSIONINFO& UT_GetWinVersion(void)
+OSVERSIONINFOW& UT_GetWinVersion(void)
 {
 	static bool bInitialized = false;
-	static OSVERSIONINFO os;
+	static OSVERSIONINFOW os;
 
 	if (!bInitialized)
 	{
 		os.dwOSVersionInfoSize = sizeof(os);
-		BOOL bSuccess = GetVersionEx(&os);
+		BOOL bSuccess = GetVersionExW(&os);
 		UT_ASSERT(bSuccess);
 		bInitialized = true;
 	}
@@ -128,13 +128,13 @@ wchar_t * UT_GetDefaultPrinterName()
 		UT_return_val_if_fail( pPrinterName, NULL );
 		
 		// the method of obtaining the name is version specific ...
-		OSVERSIONINFO osvi;
+		OSVERSIONINFOW osvi;
 		DWORD iNeeded, iReturned, iBuffSize;
 		LPPRINTER_INFO_5W pPrinterInfo;
 		wchar_t* p;
 
-		osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-		GetVersionEx(&osvi);
+		osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOW);
+		GetVersionExW(&osvi);
 
 		if (osvi.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
 		{
@@ -155,7 +155,7 @@ wchar_t * UT_GetDefaultPrinterName()
 			else
 			{
 				// now get the default printer
-				if (!EnumPrinters(PRINTER_ENUM_DEFAULT,NULL,5,
+				if (!EnumPrintersW(PRINTER_ENUM_DEFAULT,NULL,5,
 								  (LPBYTE) pPrinterInfo,iNeeded,&iNeeded,&iReturned))
 				{
 					rc = GetLastError();
@@ -406,23 +406,20 @@ HWND UT_CreateWindowEx(DWORD dwExStyle, const char * pszClassName, const char * 
 }
 
 
-LRESULT UT_DefWindowProc(HWND hWnd, UINT Msg, WPARAM wParam,LPARAM lParam, bool bForceANSI)
-{
-	if(!bForceANSI&& UT_IsWinNT())
-		return DefWindowProcW(hWnd, Msg, wParam, lParam);
-	else
-		return DefWindowProcA(hWnd, Msg, wParam, lParam);
-}
-
-
 LRESULT UT_DefWindowProc(HWND hWnd, UINT Msg, WPARAM wParam,LPARAM lParam)
 {
 	return DefWindowProcW(hWnd, Msg, wParam, lParam);	
 }
 
 
+BOOL UT_SetWindowText(HWND hWnd, const wchar_t * lpString)
+{
+	return SetWindowTextW(hWnd, lpString);
+}
 
-BOOL UT_SetWindowText(HWND hWnd, const char * lpString, bool bForceANSI)
+
+
+BOOL UT_SetWindowText(HWND hWnd, const char * lpString, bool bForceANSI)            //TODO: remove
 {
 	if(!bForceANSI&& UT_IsWinNT())
 	{
@@ -438,22 +435,16 @@ BOOL UT_SetWindowText(HWND hWnd, const char * lpString, bool bForceANSI)
 	}
 }
 
-BOOL UT_GetMessage(LPMSG lpMsg,HWND hWnd,UINT wMsgFilterMin,UINT wMsgFilterMax, bool bForceANSI)
+
+BOOL UT_GetMessage(LPMSG lpMsg,HWND hWnd,UINT wMsgFilterMin,UINT wMsgFilterMax)
 {
-	if(!bForceANSI&& UT_IsWinNT())
-		return GetMessageW(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax);
-	else
-		return GetMessageA(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax);
+	return GetMessageW(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax);
 }
 
-LRESULT UT_DispatchMessage(const MSG *lpmsg, bool bForceANSI)
+LRESULT UT_DispatchMessage(const MSG *lpmsg)
 {
-	if(!bForceANSI&& UT_IsWinNT())
-		return DispatchMessageW(lpmsg);
-	else
-		return DispatchMessageA(lpmsg);
+	return DispatchMessageW(lpmsg);
 }
-
 
 HWND UT_CreateWindowEx(DWORD dwExStyle, const wchar_t * pszClassName, const wchar_t * pszWindowName, DWORD dwStyle,
  					   int x, int y, int nWidth, int nHeight,
@@ -466,4 +457,3 @@ HWND UT_CreateWindowEx(DWORD dwExStyle, const wchar_t * pszClassName, const wcha
 	UT_ASSERT(hwnd);
 	return hwnd;	
  }
-

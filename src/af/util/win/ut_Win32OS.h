@@ -25,7 +25,7 @@
 #include "ut_types.h"
 #include <wchar.h>
 
-OSVERSIONINFO& UT_GetWinVersion(void);
+OSVERSIONINFOW& UT_GetWinVersion(void);
 bool UT_IsWinVista(void);
 bool UT_IsWinNT(void);
 bool UT_IsWin2K(void);
@@ -57,12 +57,14 @@ HWND UT_CreateWindowEx(DWORD dwExStyle, LPCTSTR lpClassName, LPCTSTR lpWindowNam
 					   int x, int y, int nWidth, int nHeight,
 					   HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam, bool bForceANSI = true); //TODO - remove
 
-//LRESULT UT_DefWindowProc(HWND hWnd, UINT Msg, WPARAM wParam,LPARAM lParam, bool bForceANSI = false); //TODO - remove
+BOOL UT_SetWindowText(HWND hWnd, const char * lpString, bool bForceANSI = false); //TODO -remove
+
+
 LRESULT UT_DefWindowProc(HWND hWnd, UINT Msg, WPARAM wParam,LPARAM lParam);
+BOOL UT_SetWindowText(HWND hWnd, const wchar_t * lpString);
 
-BOOL UT_SetWindowText(HWND hWnd, const char * lpString, bool bForceANSI = false);
+BOOL UT_GetMessage(LPMSG lpMsg,HWND hWnd,UINT wMsgFilterMin,UINT wMsgFilterMax);
 
-BOOL UT_GetMessage(LPMSG lpMsg,HWND hWnd,UINT wMsgFilterMin,UINT wMsgFilterMax, bool bForceANSI = false);
-
-LRESULT UT_DispatchMessage(const MSG *lpmsg, bool bForceANSI = false);
+LRESULT UT_DispatchMessage(const MSG *lpmsg);
+//LRESULT UT_DispatchMessage(const MSG *lpmsg, bool bForceANSI = false);
 #endif /* UT_Win32OS_H */
