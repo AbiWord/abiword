@@ -90,7 +90,7 @@ GR_Caret::GR_Caret(GR_Graphics * pG)
 
 // TODO: fix this code duplication just for the extra sDocUUID (what 
 // is it doing here anyway? - MARCM
-GR_Caret::GR_Caret(GR_Graphics * pG, UT_UTF8String & sId)
+GR_Caret::GR_Caret(GR_Graphics * pG, const std::string& sId)
 	:  	m_xPoint(0), // init the x and y point to some value, since we don't have a sane value here
 		m_yPoint(0),
 		m_xPoint2(0),

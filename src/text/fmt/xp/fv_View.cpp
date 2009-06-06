@@ -704,12 +704,12 @@ void FV_View::updateCarets(PT_DocPosition docPos, UT_sint32 iLen)
 	}
 }
 
-void FV_View::removeCaret(UT_UTF8String & sUUID)
+void FV_View::removeCaret(const std::string& sUUID)
 {
-	fv_CaretProps * pCaretProps = NULL;
+	fv_CaretProps* pCaretProps = NULL;
 	UT_sint32 iCount = m_vecCarets.getItemCount();
 	bool bFoundID = false;
-	for(UT_sint32 i=0; i<iCount;i++)
+	for (UT_sint32 i = 0; i < iCount; i++)
 	{
 		pCaretProps = m_vecCarets.getNthItem(i);
 		if(pCaretProps->m_sCaretID == sUUID)
@@ -717,7 +717,7 @@ void FV_View::removeCaret(UT_UTF8String & sUUID)
 			bFoundID = true;
 			m_pG->removeCaret(pCaretProps->m_sCaretID);
 			removeListener(pCaretProps->m_ListenerID);
-			delete pCaretProps;
+			DELETEP(pCaretProps);
 			m_vecCarets.deleteNthItem(i);
 		}
 	}
@@ -733,7 +733,7 @@ void FV_View::addCaret(PT_DocPosition docPos,UT_sint32 iAuthorId)
 	fv_CaretProps * pCaretProps = new fv_CaretProps(this,docPos);
 	m_vecCarets.addItem(pCaretProps);
 	UT_DEBUGMSG((" add caret num %d id %d position %d \n",m_vecCarets.getItemCount(),iAuthorId,docPos));	
-	pCaretProps->m_sCaretID = m_pDoc->getMyUUIDString();
+	pCaretProps->m_sCaretID = m_pDoc->getMyUUIDString().utf8_str();
 	pCaretProps->m_pCaret = m_pG->createCaret(pCaretProps->m_sCaretID );
 	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 	pCaretProps->m_PropCaretListner = new FV_Caret_Listener (pFrame);
@@ -742,7 +742,7 @@ void FV_View::addCaret(PT_DocPosition docPos,UT_sint32 iAuthorId)
 	pCaretProps->m_pCaret->enable();
 	pCaretProps->m_iAuthorId = iAuthorId;
 	UT_sint32 icnt = iAuthorId;
-	pCaretProps->m_sCaretID = m_pDoc->getMyUUIDString();
+	pCaretProps->m_sCaretID = m_pDoc->getMyUUIDString().utf8_str();
 	icnt = icnt % 12;
 	pCaretProps->m_caretColor = getColorRevisions(icnt);
 	pCaretProps->m_pCaret->setRemoteColor(pCaretProps->m_caretColor);

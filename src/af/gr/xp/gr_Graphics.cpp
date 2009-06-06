@@ -300,7 +300,7 @@ GR_Caret * GR_Graphics::getNthCaret(UT_sint32 i) const
 	return m_vecCarets.getNthItem(i);
 }
 
-GR_Caret * GR_Graphics::getCaret(UT_UTF8String & sID) const
+GR_Caret * GR_Graphics::getCaret(const std::string& sID) const
 {
 	UT_sint32 i= 0;
 	for(i=0; i<m_vecCarets.getItemCount();i++)
@@ -318,21 +318,21 @@ AllCarets * GR_Graphics::allCarets(void)
 	return &m_AllCarets;
 }
 
-GR_Caret * GR_Graphics::createCaret(UT_UTF8String & sID)
+GR_Caret * GR_Graphics::createCaret(const std::string& sID)
 {
 	GR_Caret * pCaret = new GR_Caret(this,sID);
 	m_vecCarets.addItem(pCaret);
 	return pCaret;
 }
 
-void GR_Graphics::removeCaret(UT_UTF8String & sID)
+void GR_Graphics::removeCaret(const std::string& sID)
 {
-	UT_sint32 i= 0;
-	for(i=0; i<m_vecCarets.getItemCount();i++)
+	for(UT_sint32 i = 0; i < m_vecCarets.getItemCount(); i++)
 	{
-		if(m_vecCarets.getNthItem(i)->getID() == sID)
-		{
-			delete m_vecCarets.getNthItem(i);
+		GR_Caret* pC = m_vecCarets.getNthItem(i);
+		if (pC->getID() == sID)
+		{			
+			DELETEP(pC);
 			m_vecCarets.deleteNthItem(i);
 		}
 	}

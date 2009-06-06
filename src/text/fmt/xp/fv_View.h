@@ -167,23 +167,23 @@ class ABI_EXPORT fv_CaretProps
 public:
         fv_CaretProps(FV_View * pView, PT_DocPosition InsPoint);
 	virtual ~fv_CaretProps(void);
-	PT_DocPosition		        m_iInsPoint;
+	PT_DocPosition		m_iInsPoint;
 	UT_sint32			m_xPoint;
 	UT_sint32			m_yPoint;
 	UT_sint32			m_xPoint2;
 	UT_sint32			m_yPoint2;
-	bool			        m_bPointDirection;
+	bool				m_bPointDirection;
 	bool				m_bDefaultDirectionRtl;
 	bool				m_bUseHebrewContextGlyphs;
-	bool                            m_bPointEOL;
+	bool				m_bPointEOL;
 	UT_uint32			m_iPointHeight;
-	UT_RGBColor                     m_caretColor;
-	FV_Caret_Listener *             m_PropCaretListner;
-	GR_Caret *                      m_pCaret;
-	UT_uint32                       m_ListenerID;
-	FV_View *                       m_pView;
-	UT_sint32                       m_iAuthorId;
-	UT_UTF8String       m_sCaretID;
+	UT_RGBColor			m_caretColor;
+	FV_Caret_Listener*  m_PropCaretListner;
+	GR_Caret*			m_pCaret;
+	UT_uint32			m_ListenerID;
+	FV_View*			m_pView;
+	UT_sint32			m_iAuthorId;
+	std::string			m_sCaretID;
 };
 								
 class ABI_EXPORT FV_View : public AV_View
@@ -657,7 +657,7 @@ public:
 	bool				insertPageNum(const gchar ** props, HdrFtrType hfType);
 	virtual void        setPoint(UT_uint32 pt);
 	void                ensureInsertionPointOnScreen(void);
-    void                removeCaret(UT_UTF8String & sCaretID);
+    void                removeCaret(const std::string& sCaretID);
 	void                addCaret(PT_DocPosition docPos,UT_sint32 iAuthorId);
 	void                setPointRemote(PT_DocPosition docPos);
 	void                updateCarets(PT_DocPosition docPos, UT_sint32 iLen);   

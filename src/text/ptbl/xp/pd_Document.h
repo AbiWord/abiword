@@ -196,7 +196,7 @@ public:
 
 	// Caret Methods
 
-	void                    removeCaret(UT_UTF8String & sCaretID);
+	void                    removeCaret(const std::string& sCaretID);
 
 	// Author methods
 

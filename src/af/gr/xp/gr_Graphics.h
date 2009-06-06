@@ -637,10 +637,10 @@ class ABI_EXPORT GR_Graphics
 			m_pCaret = new GR_Caret(this);
 		}
 
-	GR_Caret *        createCaret(UT_UTF8String & sID);
-	GR_Caret *        getCaret(UT_UTF8String & sID) const;
+	GR_Caret *        createCaret(const std::string& sID);
+	GR_Caret *        getCaret(const std::string& sID) const;
 	GR_Caret *        getNthCaret(UT_sint32 i) const;
-	void              removeCaret(UT_UTF8String & sID);
+	void              removeCaret(const std::string& sID);
 
 	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx) = 0;
 	virtual void	  restoreRectangle(UT_uint32 iIndx) = 0;

@@ -331,7 +331,7 @@ bool PD_Document::isMarginChangeOnly(void) const
 //////////////////////////////////////////////////////////////////
 
 
-void PD_Document::removeCaret(UT_UTF8String & sCaretID)
+void PD_Document::removeCaret(const std::string& sCaretID)
 {
 	UT_GenericVector<AV_View *> vecViews;
 	getAllViews(&vecViews);
