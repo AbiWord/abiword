@@ -545,8 +545,13 @@ void AbiCollabSessionManager::disconnectSession(AbiCollab* pSession)
 		session to; we just hand it over to the first buddy in the list.
 		*/
 		if (_canInitiateSessionTakeover(pSession))
+		{
 			if (pSession->getCollaborators().size() > 0)
-				pSession->initiateSessionTakeover(pSession->getCollaborators()[0]);
+			{
+				std::map<BuddyPtr, std::string>::const_iterator cit = pSession->getCollaborators().begin();
+				pSession->initiateSessionTakeover((*cit).first);
+			}
+		}
 
 		closeSession(pSession, false);
 	}
@@ -828,15 +833,16 @@ void AbiCollabSessionManager::disjoinSession(const UT_UTF8String& sSessionId)
 	AbiCollab* pSession = getSessionFromSessionId(sSessionId);
 	UT_return_if_fail(pSession);
 	
-	const std::vector<BuddyPtr>& vCollaborators = pSession->getCollaborators();
+	const std::map<BuddyPtr, std::string> vCollaborators = pSession->getCollaborators();
 
 	if (!isLocallyControlled(pSession->getDocument()))
 	{		
 		// we are joined to a session, so there should only be one collaborator:
 		// the person sharing the document
 		UT_return_if_fail(vCollaborators.size() == 1);
-		BuddyPtr pCollaborator = vCollaborators[0];
-
+		
+		std::map<BuddyPtr, std::string>::const_iterator cit = vCollaborators.begin();
+		BuddyPtr pCollaborator = (*cit).first;
 		destroySession(pSession);
 			
 		DisjoinSessionEvent event(sSessionId);
@@ -1447,7 +1453,7 @@ bool AbiCollabSessionManager::_canInitiateSessionTakeover(AbiCollab* pSession)
 	UT_return_val_if_fail(pSession, false);
 	UT_return_val_if_fail(pSession->isLocallyControlled(), false);
 
-	const std::vector<BuddyPtr> collaborators = pSession->getCollaborators();
+	const std::map<BuddyPtr, std::string> collaborators = pSession->getCollaborators();
 
 	if (collaborators.size() == 0)
 		return false;
@@ -1462,12 +1468,12 @@ bool AbiCollabSessionManager::_canInitiateSessionTakeover(AbiCollab* pSession)
 	Condition 1 and 2 are ok, but 3 needs fixing soon.
 	*/
 
-	AccountHandler* pHandler = collaborators[0]->getHandler();
+	AccountHandler* pHandler = (*collaborators.begin()).first->getHandler();
 	if (!pHandler->allowsSessionTakeover())
 		return false;
 
-	for (std::vector<BuddyPtr>::const_iterator cit = ++collaborators.begin(); cit != collaborators.end(); cit++)
-		if ((*cit)->getHandler() != pHandler)
+	for (std::map<BuddyPtr, std::string>::const_iterator cit = ++collaborators.begin(); cit != collaborators.end(); cit++)
+		if (((*cit).first)->getHandler() != pHandler)
 			return false;
 
 	return true;

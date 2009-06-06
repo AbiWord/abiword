@@ -183,30 +183,36 @@ void AbiCollab::removeCollaborator(BuddyPtr pCollaborator)
 {
 	UT_return_if_fail(pCollaborator);
 
-	for (UT_sint32 i = UT_sint32(m_vCollaborators.size()) - 1; i >= 0; i--)
+	std::map<BuddyPtr, std::string>::iterator nit;
+	for (std::map<BuddyPtr, std::string>::iterator it = m_vCollaborators.begin(); it != m_vCollaborators.end(); it = nit)
 	{
-		BuddyPtr pBuddy = m_vCollaborators[i];
+		nit = it;
+		nit++;
+		
+		BuddyPtr pBuddy = (*it).first;
 		UT_continue_if_fail(pBuddy);
 		if (pBuddy == pCollaborator)
-			_removeCollaborator(i);
+		{
+			_removeCollaborator(pBuddy, (*it).second);
+			m_vCollaborators.erase(it);
+		}
 	}
 }
 
-void AbiCollab::_removeCollaborator(UT_sint32 index)
+void AbiCollab::_removeCollaborator(BuddyPtr pCollaborator, const std::string& docUUID)
 {
-	UT_DEBUGMSG(("AbiCollab::_removeCollaborator() - index: %d\n", index));
-	UT_return_if_fail(index >= 0 && index < UT_sint32(m_vCollaborators.size()));
+	UT_DEBUGMSG(("AbiCollab::_removeCollaborator()\n"));
+	UT_return_if_fail(pCollaborator);
+	UT_return_if_fail(m_pDoc);
 
 	// TODO: signal the removal of the buddy!!!
 	// ...
 	
-	BuddyPtr pCollaborator = m_vCollaborators[index];
-	UT_return_if_fail(pCollaborator);
-	
 	// remove this buddy from the import 'seen revision list'
 	m_Import.getRemoteRevisions()[pCollaborator] = 0;
-	
-	m_vCollaborators.erase(m_vCollaborators.begin() + size_t(index) );
+
+	// remove the caret belonging to this buddy
+	m_pDoc->removeCaret(docUUID.c_str());
 }
 
 void AbiCollab::addCollaborator(BuddyPtr pCollaborator)
@@ -215,33 +221,36 @@ void AbiCollab::addCollaborator(BuddyPtr pCollaborator)
 	UT_return_if_fail(pCollaborator)
 
 	// check for duplicates (as long as we assume a collaborator can only be part of a collaboration session once)
-	for (UT_uint32 i = 0; i < m_vCollaborators.size(); i++)
+	std::map<BuddyPtr, std::string>::iterator it = m_vCollaborators.find(pCollaborator);
+	if (it != m_vCollaborators.end())
 	{
-		BuddyPtr pBuddy = m_vCollaborators[i];
-		UT_continue_if_fail(pBuddy);
-		if (pBuddy == pCollaborator)
-		{
-			UT_DEBUGMSG(("Attempting to add buddy '%s' twice to a collaboration session!", pCollaborator->getDescription().utf8_str()));
-			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-			return;
-		}
-	}	
+		UT_DEBUGMSG(("Attempting to add buddy '%s' twice to a collaboration session!", pCollaborator->getDescription().utf8_str()));
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		return;
+	}
 
-	m_vCollaborators.push_back(pCollaborator);
+	m_vCollaborators[pCollaborator] = ""; // will fill the remote document UUID later once we receive a packet from this buddy
 }
 
 void AbiCollab::removeCollaboratorsForAccount(AccountHandler* pHandler)
 {
 	UT_DEBUGMSG(("AbiCollab::removeCollaboratorsForAccount()\n"));
 	UT_return_if_fail(pHandler);
-	
-	for (UT_sint32 i = UT_sint32(m_vCollaborators.size())-1; i >= 0; i--)
+
+	std::map<BuddyPtr, std::string>::iterator nit;
+	for (std::map<BuddyPtr, std::string>::iterator it = m_vCollaborators.begin(); it != m_vCollaborators.end(); it = nit)
 	{
-		BuddyPtr pBuddy = m_vCollaborators[i];
+		nit = it;
+		nit++;
+		
+		BuddyPtr pBuddy = (*it).first;
 		UT_continue_if_fail(pBuddy);
 		
 		if (pBuddy->getHandler() == pHandler)
-			_removeCollaborator(i);
+		{
+			_removeCollaborator(pBuddy, (*it).second);
+			m_vCollaborators.erase(it);
+		}
 	}
 }
 
@@ -338,9 +347,9 @@ void AbiCollab::push(SessionPacket* pPacket)
 		
 	// TODO: this could go in the session manager
 	UT_DEBUGMSG(("Pusing packet to %d collaborators\n", m_vCollaborators.size()));
-	for (UT_uint32 i = 0; i < m_vCollaborators.size(); i++)
+	for (std::map<BuddyPtr, std::string>::iterator it = m_vCollaborators.begin(); it != m_vCollaborators.end(); it++)
 	{
-		BuddyPtr pCollaborator = m_vCollaborators[i];
+		BuddyPtr pCollaborator = (*it).first;
 		UT_continue_if_fail(pCollaborator);
 
 		UT_DEBUGMSG(("Pushing packet to collaborator with descriptor: %s\n", pCollaborator->getDescriptor(true).utf8_str()));
@@ -449,6 +458,7 @@ void AbiCollab::import(SessionPacket* pPacket, BuddyPtr collaborator)
 	maskExport();
 	if (AbstractChangeRecordSessionPacket::isInstanceOf(*pPacket))
 		m_pActivePacket = static_cast<const AbstractChangeRecordSessionPacket*>(pPacket);
+	m_vCollaborators[collaborator] = pPacket->getDocUUID().utf8_str(); // FIXME: this is redunant after we set this the first time
 	m_Import.import(*pPacket, collaborator);
 	m_pActivePacket = NULL;
 	const std::vector<SessionPacket*>& maskedPackets = unmaskExport();
@@ -459,11 +469,11 @@ void AbiCollab::import(SessionPacket* pPacket, BuddyPtr collaborator)
 		
 		// It seems we are in the center of a collaboration session.
 		// It's our duty to reroute the packets to the other collaborators
-		for (UT_uint32 i = 0; i < m_vCollaborators.size(); i++)
+		for (std::map<BuddyPtr, std::string>::iterator it = m_vCollaborators.begin(); it != m_vCollaborators.end(); it++)
 		{
 			// send all masked packets during import to everyone, except to the
 			// person who initialy sent us the packet
-			BuddyPtr pBuddy = m_vCollaborators[i];
+			BuddyPtr pBuddy = (*it).first;
 			UT_continue_if_fail(pBuddy);
 			if (pBuddy != collaborator)
 			{
@@ -518,9 +528,9 @@ void AbiCollab::initiateSessionTakeover(BuddyPtr pNewMaster)
 
 	// send a SessionTakeoverRequest packet to the new master
 	std::vector<std::string> buddyIdentifiers;
-	for (std::vector<BuddyPtr>::iterator it = m_vCollaborators.begin(); it != m_vCollaborators.end(); it++)
+	for (std::map<BuddyPtr, std::string>::iterator it = m_vCollaborators.begin(); it != m_vCollaborators.end(); it++)
 	{
-		BuddyPtr pBuddy = *it;
+		BuddyPtr pBuddy = (*it).first;
 		UT_continue_if_fail(pBuddy);
 		if (pNewMaster != pBuddy)
 			buddyIdentifiers.push_back(pBuddy->getDescriptor(true).utf8_str());
@@ -532,9 +542,9 @@ void AbiCollab::initiateSessionTakeover(BuddyPtr pNewMaster)
 	buddyIdentifiers.clear();
 	buddyIdentifiers.push_back(pNewMaster->getDescriptor(true).utf8_str());
 	SessionTakeoverRequestPacket strp_normal(m_sId, m_pDoc->getDocUUIDString(), false, buddyIdentifiers);
-	for (std::vector<BuddyPtr>::iterator it = m_vCollaborators.begin(); it != m_vCollaborators.end(); it++)
+	for (std::map<BuddyPtr, std::string>::iterator it = m_vCollaborators.begin(); it != m_vCollaborators.end(); it++)
 	{
-		BuddyPtr pBuddy = *it;
+		BuddyPtr pBuddy = (*it).first;
 		UT_continue_if_fail(pBuddy);
 		if (pNewMaster != pBuddy)
 			pBuddy->getHandler()->send(&strp_normal, pBuddy);
@@ -835,13 +845,14 @@ void AbiCollab::_becomeMaster()
 	UT_return_if_fail(m_bProposedController);
 
 	// remove the old master from our buddy list and make ourselves the master
-	for (std::vector<BuddyPtr>::iterator it = m_vCollaborators.begin(); it != m_vCollaborators.end(); it++)
+	std::map<BuddyPtr, std::string>::iterator it = m_vCollaborators.find(m_pController);
+	if (it != m_vCollaborators.end())
 	{
-		if (m_pController == *it)
-		{
-			m_vCollaborators.erase(it);
-			break;
-		}
+		m_vCollaborators.erase(it);
+	}
+	else
+	{
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN); // i think ;)
 	}
 	m_pController = BuddyPtr();
 }
@@ -873,9 +884,9 @@ void AbiCollab::_shutdownAsMaster()
 	// the session takeover is complete; inform everyone that all session data
 	// is flushed, and that everyone should talk to the new master from now on
 	SessionFlushedPacket sfp(m_sId, m_pDoc->getDocUUIDString());
-	for (std::vector<BuddyPtr>::iterator it = m_vCollaborators.begin(); it != m_vCollaborators.end(); it++)
+	for (std::map<BuddyPtr, std::string>::iterator it = m_vCollaborators.begin(); it != m_vCollaborators.end(); it++)
 	{
-		BuddyPtr pBuddy = *it;
+		BuddyPtr pBuddy = (*it).first;
 		UT_continue_if_fail(pBuddy);
 		pBuddy->getHandler()->send(&sfp, pBuddy);
 	}
@@ -923,9 +934,9 @@ void AbiCollab::_restartAsMaster()
 
 	// inform everyone that we can restart this session
 	SessionReconnectAckPacket srap(m_sId, m_pDoc->getDocUUIDString(), m_pDoc->getCRNumber());
-	for (std::vector<BuddyPtr>::iterator it = m_vCollaborators.begin(); it != m_vCollaborators.end(); it++)
+	for (std::map<BuddyPtr, std::string>::iterator it = m_vCollaborators.begin(); it != m_vCollaborators.end(); it++)
 	{
-		BuddyPtr pBuddy = *it;
+		BuddyPtr pBuddy = (*it).first;
 		UT_continue_if_fail(pBuddy);
 
 		AccountHandler* pHandler = pBuddy->getHandler();
