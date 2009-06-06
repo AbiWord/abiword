@@ -112,6 +112,9 @@ public:
 	std::string getMappedNumberingId(const std::string & numId);
 	bool setMappedNumberingId(const std::string & numId, const std::string & abstractNumId);
 
+	std::string getBookmarkName(const std::string & bookmarkId);
+	bool setBookmarkName(const std::string & bookmarkId, const std::string & bookmarkName);
+
 private:
 	static OXML_Document* s_docInst;
 	OXML_Document();
@@ -134,6 +137,7 @@ private:
 	OXML_ImageMap m_images_by_id;
 
 	std::map<std::string, std::string> m_numberingMap;
+	std::map<std::string, std::string> m_bookmarkMap;
 
 	void _assignHdrFtrIds();
 };

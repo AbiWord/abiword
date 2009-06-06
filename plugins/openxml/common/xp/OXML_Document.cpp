@@ -496,3 +496,17 @@ bool OXML_Document::setMappedNumberingId(const std::string & numId, const std::s
 	return m_numberingMap.find(numId) != m_numberingMap.end();
 }
 
+std::string OXML_Document::getBookmarkName(const std::string & bookmarkId)
+{
+	std::map<std::string, std::string>::iterator iter = m_bookmarkMap.find(bookmarkId);
+	if(iter == m_bookmarkMap.end())
+		return "";
+	return iter->second; 
+}
+
+bool OXML_Document::setBookmarkName(const std::string & bookmarkId, const std::string & bookmarkName)
+{
+	m_bookmarkMap.insert(std::make_pair(bookmarkId, bookmarkName));
+	return m_bookmarkMap.find(bookmarkId) != m_bookmarkMap.end();
+}
+

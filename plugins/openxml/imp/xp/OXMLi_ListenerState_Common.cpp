@@ -539,6 +539,7 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "hyperlink")) {
 		const gchar * id = attrMatches(NS_R_KEY, "id", rqst->ppAtts);
+		const gchar * anchor = attrMatches(NS_W_KEY, "anchor", rqst->ppAtts);
 		if(id)
 		{
 			OXMLi_PackageManager * mgr = OXMLi_PackageManager::getInstance();
@@ -546,6 +547,47 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 			OXML_Element_Hyperlink* hyperlink = new OXML_Element_Hyperlink("");
 			hyperlink->setHyperlinkTarget(target);				
 			OXML_SharedElement elem(hyperlink);
+			rqst->stck->push(elem);
+		}
+		else if(anchor)
+		{
+			std::string bookmarkAnchor("#");
+			bookmarkAnchor += anchor;
+			OXML_Element_Hyperlink* hyperlink = new OXML_Element_Hyperlink("");
+			hyperlink->setHyperlinkTarget(bookmarkAnchor);				
+			OXML_SharedElement elem(hyperlink);
+			rqst->stck->push(elem);
+		}
+		rqst->handled = true;
+
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "bookmarkStart")) {
+		const gchar * id = attrMatches(NS_W_KEY, "id", rqst->ppAtts);
+		const gchar * name = attrMatches(NS_W_KEY, "name", rqst->ppAtts);
+		if(id && name)
+		{
+			std::string bookmarkId(id);
+			std::string bookmarkName(name);
+			OXML_Element_Bookmark* bookmark = new OXML_Element_Bookmark(bookmarkId);
+			bookmark->setType("start");		
+			bookmark->setName(bookmarkName);		
+			OXML_SharedElement elem(bookmark);
+			rqst->stck->push(elem);
+			OXML_Document* pDoc = OXML_Document::getInstance();
+			if(!pDoc->setBookmarkName(bookmarkId, bookmarkName))
+				return;
+		}
+		rqst->handled = true;
+
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "bookmarkEnd")) {
+		const gchar * id = attrMatches(NS_W_KEY, "id", rqst->ppAtts);
+		if(id)
+		{
+			std::string bookmarkId(id);
+			OXML_Element_Bookmark* bookmark = new OXML_Element_Bookmark(bookmarkId);
+			bookmark->setType("end");				
+			OXML_Document* pDoc = OXML_Document::getInstance();
+			bookmark->setName(pDoc->getBookmarkName(bookmarkId));
+			OXML_SharedElement elem(bookmark);
 			rqst->stck->push(elem);
 		}
 		rqst->handled = true;
@@ -720,6 +762,10 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "hyperlink")) {
 		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) );
 		rqst->handled = true;
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "bookmarkStart") ||
+				nameMatches(rqst->pName, NS_W_KEY, "bookmarkEnd")) {
+		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) );
+		rqst->handled = true;		
 	} else if (nameMatches(rqst->pName, NS_A_KEY, "blip")) {
 		//image is done
 		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) ); 

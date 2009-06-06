@@ -40,6 +40,13 @@ public:
 
 	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
 	virtual UT_Error addToPT(PD_Document * pDocument);
+	
+	void setType(const std::string & type);
+	void setName(const std::string & name);
+
+private:
+	std::string m_type;
+	std::string m_name;
 };
 
 #endif //_OXML_ELEMENT_BOOKMARK_H_
