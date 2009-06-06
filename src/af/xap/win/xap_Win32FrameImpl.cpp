@@ -249,7 +249,7 @@ void XAP_Win32FrameImpl::_createTopLevelWindow(void)
 	//SetWindowLong(m_hwndFrame, GWL_USERDATA,(LONG)this);
 	SetWindowLong(m_hwndFrame, GWL_USERDATA,(LONG)getFrame());
 
-	m_mouseWheelMessage = RegisterWindowMessage(MSH_MOUSEWHEEL);
+	m_mouseWheelMessage = RegisterWindowMessageW(MSH_MOUSEWHEEL);
 
 	// synthesize a menu from the info in our
 	// base class and install it into the window.

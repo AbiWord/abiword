@@ -772,8 +772,8 @@ int AP_Win32FrameImpl::_getMouseWheelLines()
  		Info.dwMinorVersion == 0)
  	{
  		// Win95
- 		UINT msgMSHWheelGetScrollLines = RegisterWindowMessage(MSH_SCROLL_LINES);
- 		HWND hdlMSHWheel = FindWindow(MSH_WHEELMODULE_CLASS, MSH_WHEELMODULE_TITLE);
+ 		UINT msgMSHWheelGetScrollLines = RegisterWindowMessageW(MSH_SCROLL_LINES);
+ 		HWND hdlMSHWheel = FindWindowW(MSH_WHEELMODULE_CLASS, MSH_WHEELMODULE_TITLE);
  		if (hdlMSHWheel && msgMSHWheelGetScrollLines)
  		{
  			return SendMessage(hdlMSHWheel, msgMSHWheelGetScrollLines, 0, 0);
