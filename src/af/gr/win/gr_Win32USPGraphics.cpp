@@ -354,7 +354,7 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 		s_sDescription = "Uniscribe-based graphics";
 		s_Version.set(0,1,0,0);
 		
-		s_hUniscribe = LoadLibrary("usp10.dll");
+		s_hUniscribe = LoadLibraryW(L"usp10.dll");
 
 		if(!s_hUniscribe)
 		{
@@ -363,21 +363,21 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 		}
 		
 #if 1 //def DEBUG
-		char FileName[250];
-		if(GetModuleFileName(s_hUniscribe,&FileName[0],250))
+		wchar_t FileName[250];
+		if(GetModuleFileNameW(s_hUniscribe,&FileName[0],250))
 		{
 			DWORD dummy;
-			DWORD iSize = GetFileVersionInfoSize(FileName,&dummy);
+			DWORD iSize = GetFileVersionInfoSizeW(FileName,&dummy);
 
 			if(iSize)
 			{
 				char * pBuff = (char*)g_try_malloc(iSize);
-				if(pBuff && GetFileVersionInfo(FileName, 0, iSize, pBuff))
+				if(pBuff && GetFileVersionInfoW(FileName, 0, iSize, pBuff))
 				{
 					LPVOID buff2;
 					UINT   buff2size;
 					
-					if(VerQueryValue(pBuff,"\\",
+					if(VerQueryValueW(pBuff,L"\\",
 									 &buff2,
 									 &buff2size))
 					{
