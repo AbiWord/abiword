@@ -28,6 +28,7 @@
 #include "ut_debugmsg.h"
 #include "ut_Win32Resources.rc2"
 #include "ut_Win32Timer.h"
+#include "ut_Win32LocaleString.h"
 
 /*!
     UT_gettimeofday() fills in the timeval structure with current
@@ -97,7 +98,7 @@ bool UT_getEthernetAddress(UT_EthernetAddress &A)
 	// I adjusted it, so all the libs are dynamically loaded and unloaded
 
 	HINSTANCE m_hWSInst = NULL;
-	m_hWSInst = LoadLibrary("ws2_32.dll");
+	m_hWSInst = LoadLibraryW(L"ws2_32.dll");
 	pWSAStartup m_WSAStartup = NULL;
 	
 	if(m_hWSInst < (HINSTANCE) HINSTANCE_ERROR)
@@ -164,7 +165,7 @@ bool UT_getEthernetAddress(UT_EthernetAddress &A)
 
 		/* Load the SNMP dll and get the addresses of the functions
 		   necessary */
-		m_hSNMPInst = LoadLibrary("snmpapi.dll");
+		m_hSNMPInst = LoadLibraryW(L"snmpapi.dll");
 		if(m_hSNMPInst < (HINSTANCE) HINSTANCE_ERROR)
 		{
 			UT_DEBUGMSG(("UT_getEthernetAddress: could not load snmpapi.dll\n"));
@@ -191,7 +192,7 @@ bool UT_getEthernetAddress(UT_EthernetAddress &A)
 
 
 		// load the SNMP extension library
-		m_hInst = LoadLibrary("inetmib1.dll");
+		m_hInst = LoadLibraryW(L"inetmib1.dll");
 
 		if(m_hInst < (HINSTANCE) HINSTANCE_ERROR)
 		{
@@ -339,7 +340,7 @@ bool UT_getEthernetAddress(UT_EthernetAddress &A)
 
 		HINSTANCE m_hInst;
 
-		m_hInst = LoadLibrary("netapi32.dll");
+		m_hInst = LoadLibraryW(L"netapi32.dll");
 		if(m_hInst < (HINSTANCE) HINSTANCE_ERROR)
 		{
 			UT_DEBUGMSG(("UT_getEthernetAddress: could not load netapi32.dll\n"));
@@ -488,11 +489,11 @@ BOOL CALLBACK UT_Win32AssertDlg::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPAR
 	switch (msg){
 	case WM_INITDIALOG:
 		pThis = (UT_Win32AssertDlg *)lParam;
-		SetWindowLong(hWnd,DWL_USER,lParam);
+		SetWindowLongW(hWnd,DWL_USER,lParam);
 		return pThis->_onInitDialog(hWnd,wParam,lParam);
 		
 	case WM_COMMAND:
-		pThis = (UT_Win32AssertDlg *)GetWindowLong(hWnd,DWL_USER);
+		pThis = (UT_Win32AssertDlg *)GetWindowLongW(hWnd,DWL_USER);
 		return pThis->_onCommand(hWnd,wParam,lParam);
 		
 	default:
@@ -502,9 +503,9 @@ BOOL CALLBACK UT_Win32AssertDlg::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPAR
 
 UT_Win32AssertDlg::answer UT_Win32AssertDlg::runModal()
 {
-	LPCTSTR lpTemplate = MAKEINTRESOURCE(UT_RID_DIALOG_ASSERT);
+	LPSTR lpTemplate = MAKEINTRESOURCEA(UT_RID_DIALOG_ASSERT);
 	
-	int result = DialogBoxParam(GetModuleHandle(NULL),
+	int result = DialogBoxParamA(GetModuleHandleA(NULL),
 								lpTemplate,
 								NULL,
 								(DLGPROC)s_dlgProc,(LPARAM)this);
@@ -587,15 +588,15 @@ BOOL UT_Win32AssertDlg::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM lPara
 	EnumThreadWindows(GetCurrentThreadId(),	s_DisableWindows, lParam);
 
 	// set initial state
-	SetDlgItemText(hWnd,UT_RID_DIALOG_ASSERT_FILE,m_pFile);
-	SetDlgItemText(hWnd,UT_RID_DIALOG_ASSERT_CONDITION,m_pCond);
+	SetDlgItemTextA(hWnd,UT_RID_DIALOG_ASSERT_FILE,m_pFile);
+	SetDlgItemTextA(hWnd,UT_RID_DIALOG_ASSERT_CONDITION,m_pCond);
 
 	char buff[20];
 	_snprintf(buff, 19, "%d",m_iLine);
-	SetDlgItemText(hWnd,UT_RID_DIALOG_ASSERT_LINE,buff);
+	SetDlgItemTextA(hWnd,UT_RID_DIALOG_ASSERT_LINE,buff);
 
 	_snprintf(buff, 19, "%d",m_iCount);
-	SetDlgItemText(hWnd,UT_RID_DIALOG_ASSERT_COUNT,buff);
+	SetDlgItemTextA(hWnd,UT_RID_DIALOG_ASSERT_COUNT,buff);
 	
 	return 1;				// 1 == we did not call SetFocus()
 }
