@@ -39,7 +39,11 @@ BeginLayout(SimpleOps, AP_STRING_ID_TB_Simple, AP_PREF_KEY_SimpleBarVisible)
 	ToolbarItem(AP_TOOLBAR_ID_ALIGN_CENTER)
 	ToolbarItem(AP_TOOLBAR_ID_ALIGN_RIGHT)
 	ToolbarItem(AP_TOOLBAR_ID_ALIGN_JUSTIFY)
-	
+
+	Spacer()
+	ToolbarItem(AP_TOOLBAR_ID_UNINDENT)
+	ToolbarItem(AP_TOOLBAR_ID_INDENT)
+
 	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_UNDO)
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_REDO)
