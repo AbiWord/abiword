@@ -733,7 +733,20 @@ void FV_View::addCaret(PT_DocPosition docPos,UT_sint32 iAuthorId)
 	//
 	if(m_pDoc->getMyUUIDString() == m_sDocUUID)
 		return;
-	fv_CaretProps * pCaretProps = new fv_CaretProps(this,docPos);
+	//
+	// Check we're not adding a duplicated caret
+	//
+	fv_CaretProps* pCaretProps = NULL;
+	UT_sint32 iCount = m_vecCarets.getItemCount();
+	for (UT_sint32 i = 0; i < iCount; i++)
+	{
+		pCaretProps = m_vecCarets.getNthItem(i);
+		if(pCaretProps->m_sCaretID == m_pDoc->getMyUUIDString())
+		{
+			return;
+		}
+	}
+	pCaretProps = new fv_CaretProps(this,docPos);
 	m_vecCarets.addItem(pCaretProps);
 	UT_DEBUGMSG((" add caret num %d id %d position %d \n",m_vecCarets.getItemCount(),iAuthorId,docPos));	
 	pCaretProps->m_sCaretID = m_pDoc->getMyUUIDString().utf8_str();
