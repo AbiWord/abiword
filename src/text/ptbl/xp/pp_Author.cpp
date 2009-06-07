@@ -1,5 +1,6 @@
+/* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiWord
- * Copyright (C) 2008 Martin Sevior <msevior@gmail.com>
+ * Copyright (C) 2009 Martin Sevior <msevior@gmail.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,32 +18,38 @@
  * 02111-1307, USA.
  */
 
-#ifndef PT_AUTHOR_H
-#define PT_AUTHOR_H
-
-#include "ut_types.h"
-#include "ut_string_class.h"
-#include "ut_vector.h"
+#include "pp_Author.h"
 #include "pp_AttrProp.h"
+#include "pd_Style.h"
+#include "pd_Document.h"
+#include "ut_debugmsg.h"
+#include "ut_misc.h"
 
-class PD_Document;
-
-class ABI_EXPORT pp_Author
+pp_Author::pp_Author(PD_Document * pDoc, UT_sint32 iID):
+  m_pDoc(pDoc), m_iAuthorInt(iID) 
 {
-public:
-  pp_Author(PD_Document * pDoc, UT_sint32 iID);
-  virtual ~pp_Author();
+}
 
-  PP_AttrProp *      getAttrProp(void);
-  const PP_AttrProp *      getAttrProp(void) const;
+pp_Author::~pp_Author(void)
+{
+}
 
-  bool      getProperty(const gchar * szName, const gchar *& szValue) const;
-  UT_sint32          getAuthorInt(void) const;
+PP_AttrProp *      pp_Author::getAttrProp(void)
+{ 
+    return & m_AP;
+}
 
-private:
-  PD_Document *     m_pDoc;
-  UT_sint32         m_iAuthorInt;
-  PP_AttrProp       m_AP;
-};
+const PP_AttrProp * pp_Author::getAttrProp(void) const
+{
+  return & m_AP;
+}
+  
+bool pp_Author::getProperty(const gchar * szName, const gchar *& szValue) const
+{ 
+  return  m_AP.getProperty(szName,szValue);
+}
 
-#endif // #ifndef PT_AUTHOR_H
+UT_sint32 pp_Author::getAuthorInt(void) const
+{ 
+  return m_iAuthorInt;
+}
