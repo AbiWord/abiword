@@ -618,6 +618,10 @@ void FL_DocLayout::fillLayouts(void)
 	
 	fl_TOCLayout* pBadTOC = NULL;
 	
+	//
+	// Maybe one day we can fill TOC's directly from the 
+	// PT before doing the layout of the rest of the document.
+	//
 	for (UT_sint32 i = 0; i < getNumTOCs(); ++i)
 	{
 		fl_TOCLayout * pTOC = getNthTOC(i);
@@ -673,7 +677,7 @@ void FL_DocLayout::fillLayouts(void)
 			m_pView->updateLayout();
 			if(!pG->queryProperties(GR_Graphics::DGP_PAPER))
 			{
-				m_pView->updateScreen(false);
+			  //				m_pView->updateScreen(false);
 				XAP_Frame * pFrame = static_cast<XAP_Frame *>(m_pView->getParentData());
 				if(pFrame)
 				{
@@ -683,60 +687,18 @@ void FL_DocLayout::fillLayouts(void)
 		}
 	}
 	if(m_pView)
+	//
+	// Verify that the document is fully layed out. If not try to
+	// recover
 	{
-	        fl_DocSectionLayout * pLastSec = getLastSection();
-		if(pLastSec)
+	    if(needsRebreak())
+	    {
+	        Rebreak();
+		if(needsRebreak())
 		{
-			fl_ContainerLayout * pCL = pLastSec->getLastLayout();
-			fl_BlockLayout * pBL = NULL;
-			bool bRebreak = false;
-			if(pCL && (pCL->getContainerType() == FL_CONTAINER_BLOCK))
-			{
-		              pBL = static_cast<fl_BlockLayout *>(pCL);
-			}
-			else if(pCL)
-			{
-		              pBL = pCL->getPrevBlockInDocument();
-			}
-			else
-			{
-				UT_ASSERT_HARMLESS(pCL);
-			}
-			if(pBL)
-			{
-			      fp_Line * pLine = static_cast<fp_Line *>(pBL->getLastContainer());
-			      if(pLine == NULL)
-			      {
-				    bRebreak = true;
-			      }
-			      else if(pLine->getPage() == NULL)
-			      {
-				    bRebreak = true;
-			      }
-			      else
-			      {
-				    fp_Page * pPage = getFirstPage();
-				    while(pPage && pPage != pLine->getPage())
-				    {
-				         pPage = pPage->getNext();
-				    }
-				    if(pLine->getPage() != pPage)
-				    {
-				         bRebreak = true;
-				    }
-				    if(pLine->getPage() == getFirstPage())
-				    {
-					bRebreak = true;
-				    }
-			      }
-			}
-			if(bRebreak)
-			{
-			      getFirstSection()->completeBreakSection();
-			}
+		     rebuildFromHere(getFirstSection());
 		}
-		else
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	    }
 	}
 	//
 	// Finally set all page numbers in frames
@@ -744,6 +706,87 @@ void FL_DocLayout::fillLayouts(void)
 	setFramePageNumbers(0);
 }
 
+/*!
+ * This method returns true of the document is not completely layed out.
+ */
+bool FL_DocLayout::needsRebreak(void)
+{
+    bool bRebreak = false;
+    fl_DocSectionLayout * pLastSec = getLastSection();
+    if(pLastSec)
+    {
+        fl_ContainerLayout * pCL = pLastSec->getLastLayout();
+	fl_BlockLayout * pBL = NULL;
+	if(pCL && (pCL->getContainerType() == FL_CONTAINER_BLOCK))
+        {
+	    pBL = static_cast<fl_BlockLayout *>(pCL);
+	}
+	else if(pCL)
+	{
+	    pBL = pCL->getPrevBlockInDocument();
+	}
+	else
+	{
+	    UT_ASSERT_HARMLESS(pCL);
+	}
+	if(pBL)
+	{
+	    fp_Line * pLine = static_cast<fp_Line *>(pBL->getLastContainer());
+	    fp_Page * pPage = pLine->getPage();
+	    if(pLine == NULL)
+	    {
+	        return true;
+	    }
+	    else if(pPage == NULL)
+	    {
+	        return true;
+	    }
+	    else if(pLine->getY() > pPage->getHeight())
+	    {
+		fl_DocSectionLayout * pDSL= pPage->getOwningSection();
+		pDSL->setNeedsSectionBreak(true,pPage);
+		pDSL->format();
+		return true;
+	    }
+	    else
+	    {
+	        UT_sint32 iPage = 1;
+		pPage = getFirstPage();
+		while(pPage && pPage != pLine->getPage())
+		{
+		    pPage = pPage->getNext();
+		    iPage++;
+		}
+		iPage--;
+		if(iPage != countPages())
+		{
+		    return true;
+		}
+		if(pLine->getPage() != pPage)
+		{
+		    return true;
+		}
+	    }
+	}
+	
+    }
+    return bRebreak;
+}
+
+void FL_DocLayout::Rebreak(void)
+{
+    fl_DocSectionLayout * pDSL = getFirstSection();
+    while(pDSL)
+    {
+	pDSL->completeBreakSection();
+	pDSL = pDSL->getNextDocSection();
+    }
+
+    //
+    // Finally set all page numbers in frames
+    //
+    setFramePageNumbers(0);
+}
 /*!
  *  This method is used to reset the colorization such as what occurs
  * when showAuthors state is changed.
