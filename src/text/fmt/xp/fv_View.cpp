@@ -676,6 +676,7 @@ void FV_View::updateCarets(PT_DocPosition docPos, UT_sint32 iLen)
 	UT_sint32 iCount = m_vecCarets.getItemCount();
 	UT_UTF8String sUUID = m_pDoc->getMyUUIDString();
 	bool bLocal = (sUUID == m_sDocUUID);
+	UT_DEBUGMSG(("bLocal %d Cur UUID %s local UUID %s \n",bLocal,sUUID.utf8_str(),m_sDocUUID.utf8_str()));
 	UT_sint32 i = 0;
 	bool bFoundID = false;
 	for(i=0; i<iCount;i++)
@@ -696,11 +697,12 @@ void FV_View::updateCarets(PT_DocPosition docPos, UT_sint32 iLen)
 				_setPoint(pCaretProps,pCaretProps->m_iInsPoint,iLen);
 			}
 	}
-	if(iLen > 0 && !bFoundID && !bLocal)
+	if((iLen > 0) && !bFoundID && !bLocal)
 	{
-		UT_DEBUGMSG(("Could find a caret to match UUID! \n"));
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		//		addCaret(docPos, iLastAuthor,sUUID);
+		UT_DEBUGMSG(("Could find a caret to match UUID! Creating one now! \n"));
+		UT_sint32 iNewAuthor = m_pDoc->getLastAuthorInt();
+		UT_DEBUGMSG(("Creating Caret for author %d UUID %s \n",iNewAuthor,sUUID.utf8_str()));
+		addCaret(docPos, iNewAuthor);
 	}
 }
 
@@ -715,6 +717,7 @@ void FV_View::removeCaret(const std::string& sUUID)
 		if(pCaretProps->m_sCaretID == sUUID)
 		{
 			bFoundID = true;
+			pCaretProps->m_pCaret->disable(false);
 			m_pG->removeCaret(pCaretProps->m_sCaretID);
 			removeListener(pCaretProps->m_ListenerID);
 			DELETEP(pCaretProps);
@@ -735,6 +738,7 @@ void FV_View::addCaret(PT_DocPosition docPos,UT_sint32 iAuthorId)
 	UT_DEBUGMSG((" add caret num %d id %d position %d \n",m_vecCarets.getItemCount(),iAuthorId,docPos));	
 	pCaretProps->m_sCaretID = m_pDoc->getMyUUIDString().utf8_str();
 	pCaretProps->m_pCaret = m_pG->createCaret(pCaretProps->m_sCaretID );
+	UT_DEBUGMSG(("m_sCaretID %s OrigDocID %s \n",pCaretProps->m_sCaretID.c_str(),m_sDocUUID.utf8_str()));
 	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 	pCaretProps->m_PropCaretListner = new FV_Caret_Listener (pFrame);
 	addListener(pCaretProps->m_PropCaretListner,&pCaretProps->m_ListenerID);

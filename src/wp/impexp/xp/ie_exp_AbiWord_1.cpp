@@ -393,11 +393,13 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 		UT_uint32 k = 0;
 		while (pAP->getNthAttribute (k++, szName, szValue))
 		{
+#if 0
 			//
 			// Strip out Author attributes for now.
 			//
 			if( !m_pDocument->isExportAuthorAtts() && strcmp(szName,PT_AUTHOR_NAME) == 0)
 				continue;
+#endif
 			tag += " ";
 			tag += szName;
 			tag += "=\"";
