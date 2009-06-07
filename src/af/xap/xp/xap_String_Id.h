@@ -280,6 +280,9 @@ dcl(DLG_ABOUT_Title,					"About %s")
 
 /* image size dialog */
 dcl(DLG_Image_Title, "Image Properties")
+dcl(DLG_Image_DescTabLabel, "&Description")
+dcl(DLG_Image_WrapTabLabel, "&Wrapping")
+dcl(DLG_Image_PlacementTabLabel, "&Placement")
 dcl(DLG_Image_Width, "Width:")
 dcl(DLG_Image_Height, "Height:")
 dcl(DLG_Image_Aspect, "Preserve aspect ratio")
