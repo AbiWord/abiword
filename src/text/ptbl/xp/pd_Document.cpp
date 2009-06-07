@@ -195,7 +195,7 @@ PD_Document::PD_Document()
 	  m_bIgnoreSignals(false),
 	  m_bCoalescingMask(false),
 	  m_bShowAuthors(true),
-	  m_bExportAuthorAtts(false), //should be false by default. Set true to test
+	  m_bExportAuthorAtts(true), //should be false by default. Set true to test
 	  m_iMyAuthorInt(-1),
 	  m_iLastAuthorInt(-1)
 {
