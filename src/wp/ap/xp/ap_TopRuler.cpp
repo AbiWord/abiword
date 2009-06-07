@@ -285,7 +285,11 @@ bool AP_TopRuler::notify(AV_View * _pView, const AV_ChangeMask mask)
 	{
 		return true;
 	}
+#ifdef DEBUG
 	UT_ASSERT_HARMLESS(_pView==m_pView);
+#else
+	UT_UNUSED(_pView);
+#endif
 	xxx_UT_DEBUGMSG(("!! AP_TopRuler::notify [view %p][mask %p]\n",_pView,mask));
 
 	// if the column containing the caret has changed or any
@@ -971,9 +975,12 @@ void AP_TopRuler::_getTabStopXAnchor(AP_TopRulerInfo * pInfo,
 		UT_ASSERT_HARMLESS(k<pInfo->m_iTabStops);
 
 		fl_TabStop TabInfo;
-		bool bRes = pInfo->m_pfnEnumTabStops(pInfo->m_pVoidEnumTabStopsData,
-												k, &TabInfo);
+		bool bRes = pInfo->m_pfnEnumTabStops(pInfo->m_pVoidEnumTabStopsData, k, &TabInfo);
+#ifdef DEBUG
 		UT_ASSERT_HARMLESS(bRes);
+#else
+		UT_UNUSED(bRes);
+#endif
 		iPosition = TabInfo.getPosition();
 		iType = TabInfo.getType();
 		iLeader = TabInfo.getLeader();
@@ -2487,8 +2494,10 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 		// this is a new widget, so it needs more work to get started
 		m_dragStart = xgrid;
 
+#ifdef DEBUG
 		double dgrid = tick.scalePixelDistanceToUnits(xrel);
 		UT_DEBUGMSG(("SettingTabStop: %s\n",m_pG->invertDimension(tick.dimType,dgrid)));
+#endif
 
 		UT_sint32 oldDraggingCenter = m_draggingCenter;
 		UT_Rect oldDraggingRect = m_draggingRect;
@@ -3724,8 +3733,10 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState /*ems*/, UT_sint32 x, UT_sint
 			}
 
 			UT_sint32 xgrid = tick.snapPixelToGrid(xrel);
+#ifdef DEBUG
 			double dgrid = tick.scalePixelDistanceToUnits(xrel);
 			UT_DEBUGMSG(("SettingLeftIndent: %s\n",pView->getGraphics()->invertDimension(tick.dimType,dgrid)));
+#endif
 			UT_Rect oldDraggingRect = m_draggingRect;
 
 			UT_sint32 iRightPos;
@@ -3816,9 +3827,10 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState /*ems*/, UT_sint32 x, UT_sint
 			    xgridTagAlong = xgrid + m_infoCache.m_xrFirstLineIndent;
 			}
 
-
+#ifdef DEBUG
 			double dgrid = tick.scalePixelDistanceToUnits(xrel);
 			UT_DEBUGMSG(("SettingLeftIndent: %s\n",pView->getGraphics()->invertDimension(tick.dimType,dgrid)));
+#endif
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
 			UT_sint32 oldDragging2Center = m_dragging2Center;
 			UT_Rect oldDraggingRect = m_draggingRect;
@@ -3926,8 +3938,10 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState /*ems*/, UT_sint32 x, UT_sint
 			}
 
 			UT_sint32 xgrid = tick.snapPixelToGrid(xrel);
+#ifdef DEBUG
 			double dgrid = tick.scalePixelDistanceToUnits(xrel);
 			UT_DEBUGMSG(("SettingRightIndent: %s\n",pView->getGraphics()->invertDimension(tick.dimType,dgrid)));
+#endif
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
 			UT_Rect oldDraggingRect = m_draggingRect;
 			UT_sint32 iLeftIndentPos;
