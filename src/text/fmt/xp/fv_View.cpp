@@ -748,7 +748,17 @@ void FV_View::addCaret(PT_DocPosition docPos,UT_sint32 iAuthorId)
 	UT_sint32 icnt = iAuthorId;
 	pCaretProps->m_sCaretID = m_pDoc->getMyUUIDString().utf8_str();
 	icnt = icnt % 12;
-	pCaretProps->m_caretColor = getColorRevisions(icnt);
+	if(m_pDoc->getMyAuthorInt() != iAuthorId)
+	{
+		pCaretProps->m_caretColor = getColorRevisions(icnt);
+	}
+	else
+	{
+		//
+		// Primary author carets are black
+		//
+		pCaretProps->m_caretColor =  UT_RGBColor(0,0,0);
+	}
 	pCaretProps->m_pCaret->setRemoteColor(pCaretProps->m_caretColor);
 	_setPoint(pCaretProps,docPos,0);
 
