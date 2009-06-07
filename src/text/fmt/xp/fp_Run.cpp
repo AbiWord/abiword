@@ -1167,7 +1167,10 @@ const UT_RGBColor fp_Run::getFGColor(void) const
 		else
 			return _getColorFG();
 	}
-	else if(m_iAuthorColor > 0)
+	//
+	// FIXME make priniting author colours a preference.
+	//
+	else if((m_iAuthorColor > 0) && !m_bPrinting)
 	{
 		UT_sint32 iRange = m_iAuthorColor % 12;
 		//
