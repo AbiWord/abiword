@@ -71,7 +71,6 @@ XAP_UnixDialog_Print::XAP_UnixDialog_Print(XAP_DialogFactory * pDlgFactory,
 	  m_pPageSetup(NULL),
 	  m_pGtkPageSize(NULL),
 	  m_pPO(NULL),
-	  m_pPC(NULL),
 	  m_pView(NULL),
 	  m_iNumberPages(0),
 	  m_iCurrentPage(0),
@@ -107,9 +106,6 @@ void XAP_UnixDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics
 	if(m_pPO)
 		g_object_unref(m_pPO);
 	m_pPO=  NULL;
-	if(	m_pPC)
-		g_object_unref(m_pPC);
-	m_pPC = NULL;
 }
 
 /*****************************************************************/
@@ -117,8 +113,7 @@ void XAP_UnixDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics
 
 void XAP_UnixDialog_Print::BeginPrint(GtkPrintContext   *context)
 {
-	m_pPC= context;
-	cairo_t* cr = gtk_print_context_get_cairo_context (m_pPC);
+	cairo_t* cr = gtk_print_context_get_cairo_context (context);
 	//
 	// The cairo context is automatically unref'd at the end of the print
 	// so we need to reference it to allow it to be deleted by the PrintGraphics
@@ -408,7 +403,6 @@ void XAP_UnixDialog_Print::cleanup(void)
 	{
 		m_pView->getDocument()->setPrintFilename(szFname);
 	}
-	g_object_unref(pSettings);
 	g_object_unref(m_pPO);
 	m_pPO= NULL;
 	if(!m_bDidQuickPrint)
@@ -459,7 +453,6 @@ void XAP_UnixDialog_Print::PrintDirectly(XAP_Frame * pFrame, const char * szFile
 		gtk_print_operation_set_print_settings(m_pPO,pSettings);
 		gtk_print_operation_run (m_pPO,GTK_PRINT_OPERATION_ACTION_PRINT,
 								 NULL,NULL);
-		g_object_unref(pSettings);
 	}
 	cleanup();
 }
