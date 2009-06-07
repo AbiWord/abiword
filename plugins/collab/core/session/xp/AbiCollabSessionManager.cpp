@@ -191,6 +191,7 @@ UT_Error AbiCollabSessionManager::deserializeDocument(PD_Document** pDoc, const 
 			}
 			IE_Imp* imp = (IE_Imp*)new IE_Imp_AbiWord_1(*pDoc);
 			imp->importFile(gzabwBuf); // todo: check for errors
+			(*pDoc)->repairDoc();
 			if (create)
 				(*pDoc)->finishRawCreation();
 			DELETEP(imp);
