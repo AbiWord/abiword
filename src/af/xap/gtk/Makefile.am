@@ -86,9 +86,13 @@ libgtk_la_SOURCES += hildon/xap_UnixHildonApp.cpp \
 	hildon/xap_UnixHildonDlg_FontChooser.cpp    \
 	hildon/xap_UnixHildonDlg_FontChooser.h	\
 	$(NULL)
+alt_ui = hildon/xap_UnixHildonDlg_Image.xml \
+	$(NULL)
 else
 libgtk_la_SOURCES += 	xap_UnixDlg_FontChooser.cpp \
 	xap_UnixDlg_FontChooser.h \
+	$(NULL)
+alt_ui = xap_UnixDlg_Image.xml \
 	$(NULL)
 endif
 
@@ -99,11 +103,12 @@ ui_DATA = \
 	xap_UnixDlg_Password.xml \
 	xap_UnixDlg_PluginManager.xml \
 	xap_UnixDlg_WindowMore.xml \
-	xap_UnixDlg_Image.xml	\
 	xap_UnixDlg_Zoom.xml \
 	xap_UnixDlg_History.xml \
 	xap_UnixDlg_DocComparison.xml \
-	xap_UnixDlg_ListDocuments.xml
+	xap_UnixDlg_ListDocuments.xml \
+	$(alt_ui) \
+	$(NULL)
 
 EXTRA_DIST = \
 	$(conditional_src) \

@@ -455,13 +455,15 @@ void XAP_UnixDialog_Image::_connectSignals (void)
 GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	
-	// get the path where our UI file is located
-	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/xap_UnixDlg_Image.xml";
-	
-	// load the dialog from the UI file
-	GtkBuilder* builder = gtk_builder_new();
-	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
+	const char * ui_file;
+
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+    ui_file = "xap_UnixHildonDlg_Image.xml";
+#else
+    ui_file = "xap_UnixDlg_Image.xml";
+#endif
+
+    GtkBuilder * builder = newDialogBuilder(ui_file);
 	
 	mMainWindow = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_Image"));
 	m_wHeightSpin = GTK_WIDGET(gtk_builder_get_object(builder, "sbHeight"));
@@ -484,9 +486,15 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 	gtk_widget_set_size_request(m_wWidthSpin,13,-1);  
 	gtk_spin_button_set_adjustment (GTK_SPIN_BUTTON(m_wWidthSpin), GTK_ADJUSTMENT(m_oWidthSpin_adj));
 	
-	UT_UTF8String s;
+    std::string s;
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_Image_Title,s);
-	abiDialogSetTitle(mMainWindow, s.utf8_str());
+	abiDialogSetTitle(mMainWindow, s.c_str());
+
+    localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbDescTab")), pSS, XAP_STRING_ID_DLG_Image_DescTabLabel);
+    localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbWrapTab")), pSS, XAP_STRING_ID_DLG_Image_WrapTabLabel);
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+    localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbPlacementTab")), pSS, XAP_STRING_ID_DLG_Image_PlacementTabLabel);
+#endif
 
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbSize")), pSS, XAP_STRING_ID_DLG_Image_ImageSize);
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbImageDescription")), pSS, XAP_STRING_ID_DLG_Image_ImageDesc);
@@ -533,7 +541,7 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 
 	gtk_container_remove(GTK_CONTAINER(m_wAspectCheck), gtk_bin_get_child(GTK_BIN(m_wAspectCheck)));
 	pSS->getValueUTF8 (XAP_STRING_ID_DLG_Image_Aspect,s);
-	gtk_button_set_label(GTK_BUTTON(m_wAspectCheck), s.utf8_str());
+	gtk_button_set_label(GTK_BUTTON(m_wAspectCheck), s.c_str());
 
 	m_iWidth = gtk_spin_button_get_value_as_int( GTK_SPIN_BUTTON(m_wWidthSpin));
 	m_iHeight = gtk_spin_button_get_value_as_int( GTK_SPIN_BUTTON(m_wHeightSpin));

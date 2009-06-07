@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <interface>
-  <requires lib="gtk+" version="2.16"/>
+  <!-- interface-requires gtk+ 2.10 -->
   <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkAdjustment" id="adjustment1">
     <property name="value">1</property>
@@ -335,6 +335,7 @@
                   </object>
                   <packing>
                     <property name="expand">False</property>
+                    <property name="fill">False</property>
                     <property name="padding">6</property>
                     <property name="position">1</property>
                   </packing>
@@ -494,6 +495,26 @@
                     <property name="position">0</property>
                   </packing>
                 </child>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child type="tab">
+              <object class="GtkLabel" id="lbWrapTab">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Wrapping</property>
+              </object>
+              <packing>
+                <property name="position">1</property>
+                <property name="tab_fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkVBox" id="vbox3">
+                <property name="visible">True</property>
+                <property name="border_width">6</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkTable" id="tbPlacement">
                     <property name="visible">True</property>
@@ -587,7 +608,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="padding">6</property>
-                    <property name="position">1</property>
+                    <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
@@ -661,27 +682,26 @@
                   </object>
                   <packing>
                     <property name="expand">False</property>
-                    <property name="position">2</property>
+                    <property name="position">1</property>
                   </packing>
                 </child>
               </object>
               <packing>
-                <property name="position">1</property>
+                <property name="position">2</property>
               </packing>
             </child>
             <child type="tab">
-              <object class="GtkLabel" id="lbWrapTab">
+              <object class="GtkLabel" id="lbPlacementTab">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">Wrapping</property>
+                <property name="label" translatable="yes">Placement</property>
               </object>
               <packing>
-                <property name="position">1</property>
+                <property name="position">2</property>
                 <property name="tab_fill">False</property>
               </packing>
             </child>
           </object>
           <packing>
-            <property name="padding">6</property>
             <property name="position">1</property>
           </packing>
         </child>
