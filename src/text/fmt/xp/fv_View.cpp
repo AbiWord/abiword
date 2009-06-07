@@ -8850,7 +8850,9 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 					bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt,posStart,posStart,NULL,properties,PTX_SectionCell);
 				}
 				else
+				{
 					UT_DEBUGMSG(("MARCM: Yikes! There is no cell at position (%dx%d)!\n", j, i));
+				}
 			}
 		}
 	}
@@ -8941,7 +8943,9 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 					}
 				}
 				else
+				{
 					UT_DEBUGMSG(("MARCM: Yikes! There is no cell at position (%dx%d)!\n", j, i));
+				}
 			}
 		}
 	}
