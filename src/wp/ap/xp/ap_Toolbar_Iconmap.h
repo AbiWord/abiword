@@ -68,6 +68,9 @@ toolbariconmap(FILE_SAVEAS,tb_save_as_xpm)
 toolbariconmap(FMT_BOLD,tb_text_bold_xpm)
 toolbariconmap(FMT_BOOKMARK,tb_anchor)
 toolbariconmap(FMT_BOTTOMLINE,tb_text_bottomline_xpm)
+#if XAP_SIMPLE_TOOLBAR
+toolbariconmap(FMT_CHOOSE,tb_stock_font_xpm)
+#endif
 toolbariconmap(FMT_DIR_OVERRIDE_LTR,tb_text_direction_ltr_xpm)
 toolbariconmap(FMT_DIR_OVERRIDE_RTL,tb_text_direction_rtl_xpm)
 toolbariconmap(FMT_DOM_DIRECTION,tb_text_dom_direction_rtl_xpm)
@@ -176,11 +179,10 @@ toolbariconmap(TB_MERGE_CELLS, tb_merge_cells_xpm)
 toolbariconmap(TB_SPLIT_CELLS, tb_split_cells_xpm)
 toolbariconmap(TRANSPARENTLANG,tb_transparent_xpm)
 toolbariconmap(UNINDENT,tb_text_unindent_xpm)
+#if XAP_SIMPLE_TOOLBAR
+toolbariconmap(VIEW_FULL_SCREEN,tb_view_full_screen_xpm)
+#endif
 toolbariconmap(VIEW_SHOWPARA,tb_view_showpara_xpm)
 toolbariconmap(ZOOM,NoIcon)
 
-#if XAP_SIMPLE_TOOLBAR
-toolbariconmap(FMT_CHOOSE,tb_stock_font_xpm)
-toolbariconmap(VIEW_FULL_SCREEN,tb_view_full_screen_xpm)
-#endif
 

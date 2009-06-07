@@ -201,6 +201,7 @@ static struct AbiStockMapping {
   { ABIWORD_FMT_BOLD,				AP_MENU_ID_FMT_BOLD,			GTK_STOCK_BOLD },
   { ABIWORD_FMT_ITALIC,				AP_MENU_ID_FMT_ITALIC,			GTK_STOCK_ITALIC },
   { ABIWORD_FMT_UNDERLINE,			AP_MENU_ID_FMT_UNDERLINE,		GTK_STOCK_UNDERLINE },
+  { ABIWORD_FMT_CHOOSE,             0,                              GTK_STOCK_SELECT_FONT },
 
   { ABIWORD_ALIGN_LEFT,				AP_MENU_ID_ALIGN_LEFT,			GTK_STOCK_JUSTIFY_LEFT },
   { ABIWORD_ALIGN_CENTER,			AP_MENU_ID_ALIGN_CENTER,		GTK_STOCK_JUSTIFY_CENTER },
@@ -212,6 +213,7 @@ static struct AbiStockMapping {
 
   { ABIWORD_SCRIPT_PLAY,			AP_MENU_ID_TOOLS_SCRIPTS,		GTK_STOCK_EXECUTE },
   { ABIWORD_FMT_STRIKE,				AP_MENU_ID_FMT_STRIKE,			GTK_STOCK_STRIKETHROUGH },
+  { ABIWORD_VIEW_FULL_SCREEN,       0,                              GTK_STOCK_FULLSCREEN },
   { NULL, 					0,					NULL }
 };
 
@@ -327,7 +329,7 @@ abi_stock_from_toolbar_id (const gchar *toolbar_id)
 		g_free (stock_id);
 		stock_id = g_strdup (tmp2);
 	} else {
-		xxx_UT_DEBUGMSG(("abi_stock_get_gtk_stock_id returned NULL for stock_id: %s\n", stock_id));
+		UT_DEBUGMSG(("abi_stock_get_gtk_stock_id returned NULL for stock_id: %s\n", stock_id));
 	}
 
 	return stock_id;
