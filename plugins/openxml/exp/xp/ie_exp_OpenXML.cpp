@@ -1590,7 +1590,7 @@ UT_Error IE_Exp_OpenXML::setImageRelation(const char* filename, const char* id)
 /**
  * Sets the simple field
  */
-UT_Error IE_Exp_OpenXML::setSimpleField(const char* instr, const char* value)
+UT_Error IE_Exp_OpenXML::setSimpleField(int target, const char* instr, const char* value)
 {
 	UT_UTF8String sEscInstr = instr;
 	sEscInstr.escapeXML();
@@ -1607,7 +1607,7 @@ UT_Error IE_Exp_OpenXML::setSimpleField(const char* instr, const char* value)
 	str += "</w:t>";
 	str += "</w:r>";
 	str += "</w:fldSimple>";
-	return writeTargetStream(TARGET_DOCUMENT, str.c_str());
+	return writeTargetStream(target, str.c_str());
 }
 
 /**

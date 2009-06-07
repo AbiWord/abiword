@@ -286,6 +286,7 @@ UT_Error OXML_Section::serializeFooter(IE_Exp_OpenXML* exporter)
 	OXML_ElementVector::size_type i;
 	for (i = 0; i < m_children.size(); i++)
 	{
+		m_children[i]->setTarget(TARGET_FOOTER);
 		ret = m_children[i]->serialize(exporter);
 		if(ret != UT_OK)
 			return ret;

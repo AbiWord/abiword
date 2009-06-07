@@ -170,7 +170,7 @@ public:
 	UT_Error setImage(const char* id, const char* relId, const char* filename, const char* width, const char* height);
 	UT_Error setImageRelation(const char* filename, const char* id);
 	UT_Error writeImage(const char* filename, const UT_ByteBuf* data);
-	UT_Error setSimpleField(const char* instr, const char* value);
+	UT_Error setSimpleField(int target, const char* instr, const char* value);
 	UT_Error setHeaderReference(const char* id, const char* type);
 	UT_Error setFooterReference(const char* id, const char* type);
 	UT_Error setFootnoteReference(const char* id);

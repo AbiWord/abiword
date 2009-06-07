@@ -386,7 +386,7 @@ UT_Error OXML_Element_Field::serialize(IE_Exp_OpenXML* exporter)
 			return UT_OK;
 	}
 	
-	return exporter->setSimpleField(format, fieldValue);
+	return exporter->setSimpleField(TARGET, format, fieldValue);
 }
 
 UT_Error OXML_Element_Field::serializeProperties(IE_Exp_OpenXML* /*exporter*/)
@@ -619,12 +619,13 @@ UT_Error OXML_Element_Field::addToPT(PD_Document * pDocument)
 			return UT_ERROR;
 	}
 
-
-	return addChildrenToPT(pDocument);
+	return UT_OK;
 }
 
-void OXML_Element_Field::setFieldType(const std::string & type)
+void OXML_Element_Field::setFieldType(const std::string & typ)
 {
+	std::string type = removeExtraSpaces(typ);
+
 	fieldType = fd_Field::FD_None;
 	
 	if(!type.compare("DATE"))
@@ -723,4 +724,25 @@ void OXML_Element_Field::setFieldType(const std::string & type)
 		fieldType = fd_Field::FD_Meta_Description;
 
 	//TODO: more to come here		
+}
+
+std::string OXML_Element_Field::removeExtraSpaces(const std::string & str)
+{
+	std::string s("");
+	char lastChar = ' ';
+	int i;
+	for(i=0; i<str.length(); i++)
+	{
+		if((str[i] != ' ') || (lastChar != ' '))
+		{
+			s += str[i];		
+		}
+		lastChar = str[i];
+	}
+	//now let's trim string s
+	size_t firstCharIndex = s.find_first_not_of(" ");
+	size_t lastCharIndex = s.find_last_not_of(" ");
+	if(firstCharIndex == std::string::npos)
+		return ""; //all whitespace
+	return s.substr(firstCharIndex, lastCharIndex-firstCharIndex+1);
 }
