@@ -52,7 +52,10 @@
 #include "ap_UnixDialog_Options.h"
 
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+// we need the extern "C" for Chinook.
+extern "C" {
 #include <hildon/hildon-color-chooser-dialog.h>
+}
 // FIXME this should be more global
 #define _DISABLE_GRAMMAR
 #endif
