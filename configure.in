@@ -6,7 +6,7 @@ m4_define([abi_series], [abi_version_major.abi_version_minor])
 m4_define([abi_version], [abi_version_major.abi_version_minor.abi_version_micro])
 
 AC_INIT([abiword],[abi_version],[http://www.abisource.com/])
-AC_CANONICAL_TARGET
+AC_CANONICAL_HOST
 AC_CONFIG_HEADERS(config.h)
 
 AM_INIT_AUTOMAKE
@@ -136,7 +136,7 @@ DOLT
 AC_PROG_LN_S
 
 AC_MSG_CHECKING([for platform and toolkit])
-case ${target_os} in
+case ${host_os} in
   *darwin*)
     PLATFORM="unix"
     TOOLKIT="cocoa"
@@ -490,7 +490,7 @@ if test "$TOOLKIT" == "win"; then
 	deps_pkgs="$deps_pkgs $win_pkgs"
 	# nonstandard dlls go below the blank line
 	SYSTEM_LIBS="-ladvapi32 -lcomctl32 -lcomdlg32 -lgdi32 -lkernel32 -lole32 -lshell32 -luser32 -luuid -lversion -lwinspool \
-		     -lpng13 -lzlib1"
+		     -lpng12 -lz"
 	SYSTEM_CFLAGS="-mthreads"
 elif test "$TOOLKIT" == "cocoa"; then
 	deps_pkgs="$deps_pkgs $cocoa_pkgs"
@@ -886,7 +886,7 @@ AC_OUTPUT(
 
 echo "
 Configuration:
-  target                ${target}
+  host                  ${host}
   dynamic binary        ${enable_dynamic}
   static binary         ${enable_static}
   platform              ${PLATFORM} (embedded: $abi_cv_embedded_platform)
