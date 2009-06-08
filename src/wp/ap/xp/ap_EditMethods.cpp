@@ -1045,8 +1045,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(pasteSelection),		0,	""),
 	EV_EditMethod(NF(pasteSpecial), 		0,	""),
 	EV_EditMethod(NF(pasteVisualText), 		0,	""),
-#ifdef ENABLE_PRINT
 	EV_EditMethod(NF(print),				0,	""),
+#ifdef ENABLE_PRINT
 	EV_EditMethod(NF(printDirectly),		0,	""),
 	EV_EditMethod(NF(printPreview),			0,	""),
 	EV_EditMethod(NF(printTB),				0,	""),
@@ -9636,14 +9636,17 @@ UT_return_val_if_fail(pDialog, false);
 /*****************************************************************/
 /*****************************************************************/
 
-#ifdef ENABLE_PRINT
 Defun1(print)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+#ifdef ENABLE_PRINT
 	return s_doPrint(pView,false,false);
-}
+#else
+    UT_UNUSED(pView);
+    return false;
 #endif
+}
 
 
 #ifdef ENABLE_PRINT
