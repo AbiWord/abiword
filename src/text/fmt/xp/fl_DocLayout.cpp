@@ -694,10 +694,6 @@ void FL_DocLayout::fillLayouts(void)
 	    if(needsRebreak())
 	    {
 	        Rebreak();
-		if(needsRebreak())
-		{
-		     rebuildFromHere(getFirstSection());
-		}
 	    }
 	}
 	//
