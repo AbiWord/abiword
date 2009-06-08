@@ -1398,17 +1398,6 @@ bool AbiCollabSessionManager::_setupFrame(XAP_Frame** pFrame, PD_Document* pDoc)
 	{
 		UT_DEBUGMSG(("Loading the document in the frame\n"));
 		(*pFrame)->loadDocument(pDoc);
-		FV_View * pView = static_cast<FV_View *>((*pFrame)->getCurrentView());
-		if(pView)
-		{
-			FL_DocLayout * pDL = pView->getLayout();
-			if(pDL->needsRebreak())
-			{
-				pDL->Rebreak();
-				(*pFrame)->updateZoom();
-				(*pFrame)->show();
-			}
-		}
 	}
 	else
     {
