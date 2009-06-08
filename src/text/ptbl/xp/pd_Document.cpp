@@ -3578,7 +3578,20 @@ bool PD_Document::addListener(PL_Listener * pListener,
 bool PD_Document::removeListener(PL_ListenerId listenerId)
 {
 	xxx_UT_DEBUGMSG(("Removing lid %d from document %x \n",listenerId,this));
-	return (m_vecListeners.setNthItem(listenerId,NULL,NULL) == 0);
+	bool res = (m_vecListeners.setNthItem(listenerId,NULL,NULL) == 0);
+
+	// clear out all format handles that this listener has created
+	pf_Frag* pFrag = m_pPieceTable->getFragments().getFirst();
+	for (; pFrag; pFrag = pFrag->getNext())
+	{
+		if (pFrag->getType() == pf_Frag::PFT_Strux)
+		{
+			pf_Frag_Strux* pFS = static_cast<pf_Frag_Strux*>(pFrag);
+			pFS->setFmtHandle(listenerId, NULL);
+		}
+	}
+
+	return res;
 }
 
 bool PD_Document::signalListeners(UT_uint32 iSignal) const
