@@ -703,7 +703,12 @@ void FL_DocLayout::fillLayouts(void)
 }
 
 /*!
- * This method returns true of the document is not completely layed out.
+ * This method returns true of the document is not completely layed out. This
+ * happens in documents with for example a large TOC and a bunch of footnotes
+ * (the RTF 1.7 spec is a good example).
+ *
+ * This is a hack; BreakSection should automatically detect this. For now
+ * it works though :) - MARCM
  */
 bool FL_DocLayout::needsRebreak(void)
 {
