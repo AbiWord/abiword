@@ -28,7 +28,7 @@ endif
 if TOOLKIT_WIN
 main_cpp = $(top_srcdir)/src/wp/main/win/Win32Main.cpp
 opt_libs += Win32Resources.lo
-platform_ldflags += -Wl,--gc-sections -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--out-implib,abiword.dll.a
+platform_ldflags += -mwindows -Wl,--gc-sections -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--out-implib,abiword.dll.a
 resources += Win32Resources.lo
 endif
 
