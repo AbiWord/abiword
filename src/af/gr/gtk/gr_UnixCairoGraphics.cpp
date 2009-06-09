@@ -88,11 +88,13 @@ GR_UnixCairoGraphics::~GR_UnixCairoGraphics()
 {
 	UT_VECTOR_SPARSEPURGEALL( UT_Rect*, m_vSaveRect);
 
-	// purge saved pixbufs
+	// purge saved pixbufs (SPARSE)
 	for (UT_sint32 i = 0; i < m_vSaveRectBuf.size (); i++)
 	{
-		GdkPixbuf * pix = static_cast<GdkPixbuf *>(m_vSaveRectBuf.getNthItem(i));
-		g_object_unref (G_OBJECT (pix));
+		GdkPixbuf * pix = m_vSaveRectBuf.getNthItem(i);
+		if(pix) {
+			g_object_unref (G_OBJECT (pix));
+		}
 	}
 }
 
