@@ -198,7 +198,7 @@ fv_CaretProps::~fv_CaretProps(void)
 #endif
 FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	:	AV_View(pApp, pParentData),
-		m_iNumHorizPages(3), /* This should probably be grabbed from a prefrence or something */
+		m_iNumHorizPages(1), /* This should probably be grabbed from a preference or something */
 		m_autoNumHorizPages(true), /* Same here */
 		m_horizPageSpacing(500),
 		m_iInsPoint(0),
@@ -13902,7 +13902,8 @@ void FV_View::fontMetricsChange()
 
 UT_uint32 FV_View::getNumHorizPages() const
 {
-	//To update m_iNumHorizPages, call FV_View::calculateNumHorizPages() first
+	if(!getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
+		return 1;
 	return m_iNumHorizPages;
 }
 
