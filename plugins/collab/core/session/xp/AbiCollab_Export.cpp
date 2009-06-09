@@ -564,12 +564,20 @@ bool ABI_Collab_Export::signal(UT_uint32 iSignal)
  */
 void ABI_Collab_Export::setNewDocument(PD_Document * /*pDoc*/)
 {
-	UT_DEBUGMSG(("ABI_Collab_Export::setNewDocument() - ignored\n"));
-	// we are connected to a session, we can't just replace the document!
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_DEBUGMSG(("ABI_Collab_Export::setNewDocument()\n"));
 	
-	// TODO: inform the session manager to kill off this session, as it has seriously gone bad
-	// ...
+	// inform the session manager to kill off this session, as that is the only
+	// thing we can do if the document is replaced
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_if_fail(pManager);
+
+	// WARNING: Don't do anything after this line, as the disconnectSession() call will
+	// have destroyed ourselves (yes, that is ugly).
+	pManager->disconnectSession(m_pAbiCollab);
+
+	// FIXME: The AbiCollab destructor will unregister this object as a PD_Document listener,
+	// while the PD_Document will also unregister us as soon as this function returns.
+	// Unregistering the same object twice works, but it is ugly as hell. Fix this someday.
 }
 
 /*!
@@ -584,7 +592,8 @@ void ABI_Collab_Export::removeDocument(void)
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_if_fail(pManager);
 	
-	// NOTE: don't do anything after this line anymore, as this will self-destruct us!
+	// WARNING: Don't do anything after this line, as the disconnectSession() call will
+	// have destroyed ourselves (yes, that is ugly).
 	pManager->disconnectSession(m_pAbiCollab);
 }
 
