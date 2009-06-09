@@ -28,12 +28,12 @@
 
 #define dcl(id,s)					AP_STRING_ID_##id,
 
-typedef enum _AP_String_Id_Enum
+/*typedef enum _AP_String_Id_Enum
 {
 	AP_STRING_ID__FIRST__			= 1000,	/* must be first -- must be >= XAP_STRING_ID__LAST__ */
-#include "ap_String_Id.h"
+#include "ap_String_Id.h" /*
 	AP_STRING_ID__LAST__					/* must be last */
-} AP_String_Id_Enum;
+//} AP_String_Id_Enum;
 
 #undef dcl
 
@@ -68,7 +68,7 @@ public:
 	virtual ~AP_DiskStringSet(void);
 
 	virtual bool				setValue(XAP_String_Id id, const gchar * szString);
-	virtual bool				setValue(const gchar * szId, const gchar * szString);
+//	virtual bool				setValue(const gchar * szId, const gchar * szString);
 	virtual const gchar *	getValue(XAP_String_Id id) const;
 	virtual bool				loadStringsFromDisk(const char * szFilename);
 

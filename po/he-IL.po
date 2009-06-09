@@ -46,7 +46,7 @@ msgstr " "
 msgid ""
 " - Reserved. \n"
 " You cannot use this name. Choose Another \n"
-msgstr "אין באפשרותך לבחור שם זה. אנא בחר אחר "
+msgstr "אין באפשרותך לבחור שם זה. אנא בחר אחר \n"
 
 #. DLG_WordCount_Auto_Update
 #: po/tmp/ap_String_Id.h.h:27

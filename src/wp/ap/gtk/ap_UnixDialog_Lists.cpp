@@ -609,7 +609,7 @@ GtkWidget * AP_UnixDialog_Lists::_constructWindow(void)
 }
 
 static void addToStore(GtkListStore * store, const XAP_StringSet * pSS,
-					   int stringID, int itemID)
+					   const char *stringID, int itemID)
 {
 	GtkTreeIter iter;
 	UT_UTF8String s;

@@ -44,7 +44,7 @@ XAP_Dialog_MessageBox::~XAP_Dialog_MessageBox(void)
 	FREEP(m_szMessage);
 }
 
-void XAP_Dialog_MessageBox::setMessage(const char * szMessage, ...)
+/*void XAP_Dialog_MessageBox::setMessage(const char * szMessage, ...)
 {
 	va_list args;
 
@@ -55,7 +55,7 @@ void XAP_Dialog_MessageBox::setMessage(const char * szMessage, ...)
 	vsprintf(m_szMessage, szMessage, args);
 
 	va_end(args);
-}
+}*/
 
 void XAP_Dialog_MessageBox::setMessage(XAP_String_Id id, ...)
 {
@@ -76,7 +76,7 @@ void XAP_Dialog_MessageBox::setMessage(XAP_String_Id id, ...)
 	va_end(args);
 }
 
-void XAP_Dialog_MessageBox::setSecondaryMessage(const char * szMessage, ...)
+/*void XAP_Dialog_MessageBox::setSecondaryMessage(const char * szMessage, ...)
 {
 	va_list args;
 
@@ -87,7 +87,7 @@ void XAP_Dialog_MessageBox::setSecondaryMessage(const char * szMessage, ...)
 	vsprintf(m_szSecondaryMessage, szMessage, args);
 
 	va_end(args);
-}
+}*/
 
 void XAP_Dialog_MessageBox::setSecondaryMessage(XAP_String_Id id, ...)
 {

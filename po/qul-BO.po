@@ -67,9 +67,6 @@ msgstr ""
 " - Uqpaqña. \n"
 " Mana kay suti apaykachata atinkichu.  Waj sutita aqllakuy. \n"
 "\n"
-" - Reservado. \n"
-" No puede usar este nombre. Elija otro. \n"
-" "
 
 #  [es] " Actualizar automáticamente"
 #. DLG_WordCount_Auto_Update

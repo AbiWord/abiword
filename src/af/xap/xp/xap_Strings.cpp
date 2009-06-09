@@ -37,6 +37,8 @@
 #include "xap_Strings.h"
 #include "xap_EncodingManager.h"
 
+#include "gettext.h"
+
 //////////////////////////////////////////////////////////////////
 // base class provides interface regardless of how we got the strings
 //////////////////////////////////////////////////////////////////
@@ -49,6 +51,10 @@ XAP_StringSet::XAP_StringSet(XAP_App * pApp, const gchar * szLanguageName)
 	m_szLanguageName = NULL;
 	if (szLanguageName && *szLanguageName)
 		m_szLanguageName = g_strdup(szLanguageName);
+
+  setlocale(LC_ALL, "");
+  bindtextdomain(GETTEXT_PACKAGE, LOCALE_DIR);
+  textdomain(GETTEXT_PACKAGE);
 }
 
 XAP_StringSet::~XAP_StringSet(void)
@@ -64,7 +70,7 @@ const gchar * XAP_StringSet::getLanguageName(void) const
 
 bool XAP_StringSet::getValue(XAP_String_Id id, const char * inEncoding, UT_String &s) const
 {
-	const char * toTranslate = getValue(id);
+	const char * toTranslate = /*getValue(id)*/gettext(id);
 
 	UT_return_val_if_fail(toTranslate != NULL, false);
 
@@ -131,14 +137,14 @@ XAP_BuiltinStringSet::XAP_BuiltinStringSet(XAP_App * pApp, const gchar * szLangu
 {
 #define dcl(id,s)					static_cast<const gchar *>(s),
 
-	static const gchar * s_a[] =
+	/*static const gchar * s_a[] =
 	{
 		dcl(__FIRST__,0)			// bogus entry for zero
 #include "xap_String_Id.h"
 		dcl(__LAST__,0)				// bogus entry for end
 	};
 
-	m_arrayXAP = s_a;
+	m_arrayXAP = s_a;*/
 
 #undef dcl
 }
@@ -149,10 +155,11 @@ XAP_BuiltinStringSet::~XAP_BuiltinStringSet(void)
 
 const gchar * XAP_BuiltinStringSet::getValue(XAP_String_Id id) const
 {
-	if ( (id > XAP_STRING_ID__FIRST__) && (id < XAP_STRING_ID__LAST__) )
+	/*if ( (id > XAP_STRING_ID__FIRST__) && (id < XAP_STRING_ID__LAST__) )
 		return m_arrayXAP[id];
 
-	return NULL;
+	return NULL;*/
+  return id;
 }
 
 //////////////////////////////////////////////////////////////////
@@ -168,7 +175,7 @@ XAP_DiskStringSet::XAP_DiskStringSet(XAP_App * pApp)
 {
 	m_pFallbackStringSet = NULL;
 
-	XAP_DiskStringSet::setValue(XAP_STRING_ID__FIRST__,0);			// bogus zero element
+	//XAP_DiskStringSet::setValue(XAP_STRING_ID__FIRST__,0);			// bogus zero element
 }
 
 XAP_DiskStringSet::~XAP_DiskStringSet(void)
@@ -277,7 +284,7 @@ bool XAP_DiskStringSet::setValue(XAP_String_Id id, const gchar * szString)
 	}
 
     gchar* pOldValue = NULL;
-	bool bResult = (m_vecStringsXAP.setNthItem(id,szDup,&pOldValue) == 0);
+	bool bResult = true; // = (m_vecStringsXAP.setNthItem(id,szDup,&pOldValue) == 0);
 	UT_ASSERT(pOldValue == NULL);		// duplicate string for this id
 
 	if (bFoundMultiByte)
@@ -292,9 +299,9 @@ const gchar * XAP_DiskStringSet::getValue(XAP_String_Id id) const
 {
 	UT_uint32 kLimit = m_vecStringsXAP.getItemCount();
 
-	if (id < kLimit)
+	if (id /*< kLimit*/)
 	{
-		const gchar * szValue = m_vecStringsXAP.getNthItem(id);
+		const gchar * szValue; //= m_vecStringsXAP.getNthLangName(id);
 		if (szValue)
 			return szValue;
 	}
@@ -320,7 +327,7 @@ static struct { const gchar * szName; XAP_String_Id id; } s_map[] =
 
 //////////////////////////////////////////////////////////////////
 
-bool XAP_DiskStringSet::setValue(const gchar * szId, const gchar * szString)
+/*bool XAP_DiskStringSet::setValue(const gchar * szId, const gchar * szString)
 {
 	if (!szId || !*szId || !szString || !*szString)
 		return true;
@@ -349,7 +356,7 @@ bool XAP_DiskStringSet::setValue(const gchar * szId, const gchar * szString)
 	// TODO should we promote this message to a message box ??
 	UT_DEBUGMSG(("Unknown ID in string file [%s=\"%s\"]\n",szId,szString));
 	return false;
-}
+}*/
 
 /*****************************************************************/
 

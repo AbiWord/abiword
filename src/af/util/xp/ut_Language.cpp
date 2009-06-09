@@ -36,7 +36,7 @@
 // (3) add it here, using the ID corresponding to the one
 //     from xap_String_Id.h
 
-static UT_LangRecord s_Table[] = 
+static UT_LangRecord s_Table[] = {{}}; /* 
 {
 	//language code, localised language name, numerical id, text
 	//direction
@@ -160,7 +160,7 @@ static UT_LangRecord s_Table[] =
 	{"zh-HK",		NULL, XAP_STRING_ID_LANG_ZH_HK, UTLANG_VERTICAL},	// TODO also UTLANG_LTR
 	{"zh-SG",		NULL, XAP_STRING_ID_LANG_ZH_SG, UTLANG_VERTICAL},	// TODO also UTLANG_LTR
 	{"zh-TW",		NULL, XAP_STRING_ID_LANG_ZH_TW, UTLANG_VERTICAL},	// TODO also UTLANG_LTR
-};
+}; */
 
 /*!
  Compare function used by qsort()
@@ -230,7 +230,7 @@ void UT_Language_updateLanguageNames()
     
     for(UT_uint32 i = 0; i < G_N_ELEMENTS(s_Table); i++)
     {
-        s_Table[i].m_szLangName = pSS->getValue(s_Table[i].m_nID);
+        s_Table[i].m_szLangName; // = pSS->getValue(s_Table[i].m_nID);
     }
 
     qsort(&s_Table[0], G_N_ELEMENTS(s_Table), sizeof(UT_LangRecord), s_compareQ);

@@ -45,14 +45,14 @@ AP_BuiltinStringSet::AP_BuiltinStringSet(XAP_App * pApp, const gchar * szLanguag
 {
 #define dcl(id,s)					s,
 
-	static const gchar * s_a[] =
+	/*static const gchar * s_a[] =
 	{
 		dcl(__FIRST__,0)			// bogus entry for zero
 #include "ap_String_Id.h"
 		dcl(__LAST__,0)				// bogus entry for end
 	};
 
-	m_arrayAP = s_a;
+	m_arrayAP = s_a;*/
 
 #undef dcl
 }
@@ -66,8 +66,8 @@ const gchar * AP_BuiltinStringSet::getValue(XAP_String_Id id) const
 	// if it's in our range, we fetch it.
 	// otherwise, we hand it down to the base class.
 	
-	if ( (id > AP_STRING_ID__FIRST__) && (id < AP_STRING_ID__LAST__) )
-		return m_arrayAP[id-AP_STRING_ID__FIRST__];
+	/*if ( (id > AP_STRING_ID__FIRST__) && (id < AP_STRING_ID__LAST__) )
+		return m_arrayAP[id-AP_STRING_ID__FIRST__];*/
 
 	return XAP_BuiltinStringSet::getValue(id);
 }
@@ -197,10 +197,10 @@ bool AP_BuiltinStringSet::dumpBuiltinSet(const char * szFilename) const
 //////////////////////////////////////////////////////////////////
 
 AP_DiskStringSet::AP_DiskStringSet(XAP_App * pApp)
-	: XAP_DiskStringSet(pApp),
-	  m_vecStringsAP(AP_STRING_ID__LAST__ - AP_STRING_ID__FIRST__ + 1, 4, true)
+	: XAP_DiskStringSet(pApp)//,
+	  //m_vecStringsAP(AP_STRING_ID__LAST__ - AP_STRING_ID__FIRST__ + 1, 4, true)
 {
-	setValue(AP_STRING_ID__FIRST__,0);			// bogus zero element
+	//setValue(AP_STRING_ID__FIRST__,0);			// bogus zero element
 }
 
 AP_DiskStringSet::~AP_DiskStringSet(void)
@@ -218,7 +218,7 @@ AP_DiskStringSet::~AP_DiskStringSet(void)
 
 bool AP_DiskStringSet::setValue(XAP_String_Id id, const gchar * szString)
 {
-	if (id < AP_STRING_ID__FIRST__)
+	if (id/* < AP_STRING_ID__FIRST__*/)
 		return XAP_DiskStringSet::setValue(id,szString);
 
 	bool bFoundMultiByte = false;
@@ -280,7 +280,7 @@ bool AP_DiskStringSet::setValue(XAP_String_Id id, const gchar * szString)
 	}
 
 	gchar * pOldValue = NULL;
-	bool bResult = (m_vecStringsAP.setNthItem(id-AP_STRING_ID__FIRST__,szDup,&pOldValue) == 0);
+	bool bResult; // = (m_vecStringsAP.setNthItem(id-AP_STRING_ID__FIRST__,szDup,&pOldValue) == 0);
 	UT_ASSERT_HARMLESS(pOldValue == NULL);		// duplicate string for this id
 
 	if (bFoundMultiByte)
@@ -295,16 +295,16 @@ const gchar * AP_DiskStringSet::getValue(XAP_String_Id id) const
 {
 	// dispatch to XAP code if not in our range
 	
-	if (id < AP_STRING_ID__FIRST__)
+	if (id /*< AP_STRING_ID__FIRST__*/)
 		return XAP_DiskStringSet::getValue(id);
 
 	// if it is in our range, look it up in our table
 	
 	UT_uint32 kLimit = m_vecStringsAP.getItemCount();
 
-	if (id-AP_STRING_ID__FIRST__ < kLimit)
+	if (/*id-AP_STRING_ID__FIRST__ <*/ kLimit)
 	{
-		const gchar * szValue = (const gchar *) m_vecStringsAP.getNthItem(id-AP_STRING_ID__FIRST__);
+		const gchar * szValue; // = (const gchar *) m_vecStringsAP.getNthItem(id-AP_STRING_ID__FIRST__);
 		if (szValue)
 			return szValue;
 	}
@@ -332,7 +332,7 @@ static struct { const gchar * szName; XAP_String_Id id; } s_map[] =
 
 //////////////////////////////////////////////////////////////////
 
-bool AP_DiskStringSet::setValue(const gchar * szId, const gchar * szString)
+/*bool AP_DiskStringSet::setValue(const gchar * szId, const gchar * szString)
 {
 	if (!szId || !*szId || !szString || !*szString)
 		return true;
@@ -349,7 +349,7 @@ bool AP_DiskStringSet::setValue(const gchar * szId, const gchar * szString)
 	// the name (szId) is not in our table, see if the base class knows about it.
 
 	return XAP_DiskStringSet::setValue(szId,szString);
-}
+}*/
 
 bool AP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 {

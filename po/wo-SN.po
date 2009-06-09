@@ -4063,7 +4063,7 @@ msgstr ""
 msgid ""
 "New Starting \n"
 "Value"
-msgstr "Door beneen dayo\n"
+msgstr "Door beneen dayo"
 
 #. DLG_Styles_NewTitle
 #: po/tmp/ap_String_Id.h.h:1670

@@ -77,6 +77,8 @@ AC_PROG_LIBTOOL
 DOLT
 AC_PROG_LN_S
 
+AC_PATH_PROGS(MSGFMT, msgfmt)
+
 AC_MSG_CHECKING([for platform and toolkit])
 case ${target_os} in
   *darwin*)
@@ -772,6 +774,7 @@ AC_OUTPUT(
   libabiword.pc
   Makefile
   goffice-bits/Makefile
+  po/Makefile
   src/Makefile
   src/af/Makefile
   src/af/ev/Makefile
@@ -798,6 +801,7 @@ AC_OUTPUT(
   src/af/xap/gtk/t/Makefile
   src/af/xap/win/Makefile
   src/af/xap/xp/Makefile
+  src/af/xap/xp/gettext.h
   src/plugins/Makefile
   src/text/Makefile
   src/text/fmt/Makefile

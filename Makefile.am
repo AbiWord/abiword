@@ -10,6 +10,8 @@ SUBDIRS =
 endif
 SUBDIRS += src plugins user
 
+SUBDIRS += po
+
 if TOOLKIT_GTK
 desktopdir = @ABIWORD_DATADIR@/applications
 desktop_DATA = abiword.desktop
@@ -24,7 +26,7 @@ endif
 icondir= @ABIWORD_DATADIR@/icons
 icon_DATA = abiword_48.png
 
-EXTRA_DIST = \
+EXTRA_DIST = gettext.m4 iconv.m4 lib-ld.m4 lib-link.m4 lib-prefix.m4 nls.m4 po.m4 progtest.m4 \
 	AUTHORS \
 	BiDiReadme.txt \
 	BUILD.TXT \
@@ -61,3 +63,6 @@ zip:
 	rm -rf $(PACKAGE)-$(VERSION) ./zip
 endif
 
+gettext-dist:
+	rm -fv ../gettext-dist.zip
+	zip ../gettext-dist.zip `cat keith-bowes-changed-files`

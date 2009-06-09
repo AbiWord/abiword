@@ -67,8 +67,8 @@
  */
 static struct AbiStockEntry {
 	const gchar 		 *abi_stock_id;
-	const XAP_Menu_Id	  menu_id; 		
-	const guint32 		  string_id;
+	const guint32	  menu_id; 		
+	const gchar * 		  string_id;
 	const gchar 		**xpm_data;
 } const stock_entries[] = { 
   { ABIWORD_FMTPAINTER,								AP_MENU_ID_FILE_NEW,

@@ -1093,7 +1093,6 @@ msgstr "AbiWord finis traserĉi la dokumenton kaj faris %d anstataŭigojn."
 #. DLG_FR_FinishedFind
 #: po/tmp/ap_String_Id.h.h:452
 msgid "AbiWord has finished searching the document."
-msgstr "AbiWord hat das Dokument durchsucht."
 msgstr "AbiWord finis traserĉi la dokumenton."
 
 #. WINDOWS_COMCTL_WARNING
@@ -1170,7 +1169,7 @@ msgstr "Enmetu vertikalon poste"
 #: po/tmp/ap_String_Id.h.h:474
 msgid "Add or modify bullets and numbering for selected paragraphs"
 msgstr ""
-"Enmetu aŭ ŝanĝu bulojn/numeradojn por la elektitaj paragrafoj.
+"Enmetu aŭ ŝanĝu bulojn/numeradojn por la elektitaj paragrafoj."
 
 #. TOOLBAR_LABEL_ADD_ROW
 #: po/tmp/ap_String_Id.h.h:476
@@ -1535,7 +1534,7 @@ msgstr "Oni ne povas emeti impozadon en tabelo"
 #. MSG_NoBreakInsideFrame
 #: po/tmp/ap_String_Id.h.h:623
 msgid "Can not insert a Break inside a text box"
-msgstr "Oni ne povas emeti impozadon en teksta kadro”
+msgstr "Oni ne povas emeti impozadon en teksta kadro"
 
 #. DLG_Styles_ErrStyleCantDelete
 #: po/tmp/ap_String_Id.h.h:625
@@ -1545,7 +1544,7 @@ msgstr "Ne povas viŝsigi tiun stilon"
 #. DLG_Styles_ErrStyleBuiltin
 #: po/tmp/ap_String_Id.h.h:627
 msgid "Cannot modify a builtin style"
-msgstr "Ne povas modifii instalitan stilon”
+msgstr "Ne povas modifii instalitan stilon"
 
 #. PRINT_CANNOTSTARTPRINTJOB
 #: po/tmp/ap_String_Id.h.h:629
@@ -1567,7 +1566,7 @@ msgstr "Centrigu"
 #. TabToggleCenterTab
 #: po/tmp/ap_String_Id.h.h:637
 msgid "Center Tab"
-msgstr "Centrigu tabon”
+msgstr "Centrigu tabon"
 
 #. TOOLBAR_STATUSLINE_ALIGN_CENTER
 #. TOOLBAR_TOOLTIP_ALIGN_CENTER

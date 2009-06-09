@@ -143,7 +143,7 @@ static const gchar * enc_utf32be[]	= {"UTF-32BE","UTF-32-BE",0};
 static const gchar * enc_utf32le[]	= {"UTF-32LE","UTF-32-LE",0};
 static const gchar * enc_viscii[]	= {"VISCII",0};
 
-static enc_entry s_Table[] = 
+static enc_entry s_Table[] = {{}};/*
 {
 	//the property value, the localised translation, the numerical id
 	{enc_armscii,			NULL, XAP_STRING_ID_ENC_ARME_ARMSCII},
@@ -224,7 +224,7 @@ static enc_entry s_Table[] =
 	{enc_utf32be,			NULL, XAP_STRING_ID_ENC_UNIC_UTF_32BE},
 	{enc_utf32le,			NULL, XAP_STRING_ID_ENC_UNIC_UTF_32LE},
 	{enc_viscii,			NULL, XAP_STRING_ID_ENC_VIET_VISCII},
-};
+};*/
 
 static int s_compareQ(const void * a, const void *b)
 {
@@ -274,7 +274,7 @@ UT_Encoding::UT_Encoding()
 
 		while (iCheckIndex < G_N_ELEMENTS(s_Table))
 		{
-			const gchar * szName = pSS->getValue(s_Table[iCheckIndex].id);
+			const gchar * szName; // = pSS->getValue(s_Table[iCheckIndex].id);
 			const gchar * szEnc;
 			UT_uint32 iAltIndex;
 			bool bFound = false;

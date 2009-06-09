@@ -1618,7 +1618,7 @@ msgid ""
 "Change Current \n"
 "List"
 msgstr ""
-"Cambia la lista attuale \n"
+"Cambia la lista attuale"
 
 #. DLG_Background_TitleHighlight
 #: po/tmp/ap_String_Id.h.h:658

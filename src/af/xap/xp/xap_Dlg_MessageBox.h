@@ -35,9 +35,9 @@ public:
 	typedef enum { a_OK, a_CANCEL, a_YES, a_NO }	tAnswer;
 	
 	void							setMessage(XAP_String_Id id, ...);
-	void							setMessage(const char * sz, ...);
+	//void							setMessage(const char * sz, ...);
 	void							setSecondaryMessage(XAP_String_Id id, ...);
-	void							setSecondaryMessage(const char * sz, ...);
+	//void							setSecondaryMessage(const char * sz, ...);
 	void							setButtons(XAP_Dialog_MessageBox::tButtons buttons);
 	void							setDefaultAnswer(XAP_Dialog_MessageBox::tAnswer answer);
 	XAP_Dialog_MessageBox::tAnswer	getAnswer(void) const;

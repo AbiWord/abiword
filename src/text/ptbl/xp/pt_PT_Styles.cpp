@@ -51,7 +51,7 @@
 typedef struct
 {
 	const char*	pStyle;
-	int		nID;	
+	const char *		nID;	
 	
 } ST_LOCALISED_STYLES;
 
@@ -62,7 +62,7 @@ typedef struct
 //  s_translateStyleId() in ie_imp_MSWord_97.cpp and if there is a
 //  corresponding Word style make sure that it gets translated into
 //  this unlocalised name. Tomas, May 10, 2003
-ST_LOCALISED_STYLES stLocalised[] =
+ST_LOCALISED_STYLES stLocalised[] = 
 {
 	
 	{"Numbered List",			XAP_STRING_ID_STYLE_NUMBER_LIST},       

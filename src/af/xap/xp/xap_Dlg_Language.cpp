@@ -70,8 +70,8 @@ XAP_Dialog_Language::XAP_Dialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Di
 	is_utf8_encoding = g_ascii_strcasecmp (XAP_App::getApp()->getDefaultEncoding(), "UTF-8") == 0;
 	
 	for(i=0; i<m_iLangCount; i++)                                           
-	{                                                                       
-		if (m_pLangTable->getNthId(i)==XAP_STRING_ID_LANG_0) // Unsorted languages
+	{       
+		if (m_pLangTable->getNthLangName(i)==XAP_STRING_ID_LANG_0) // Unsorted languages
 		{
 			m_ppLanguages[nDontSort]=m_pLangTable->getNthLangName(i);                                                    
 			nDontSort++;                                             
@@ -215,10 +215,10 @@ void XAP_Dialog_Language::setDocumentLanguage(const gchar * pLang)
 	UT_return_if_fail( pLang );
 	UT_return_if_fail(m_pLangTable);
 	
-	UT_uint32 indx = m_pLangTable->getIdFromCode(pLang);
+	//UT_uint32 indx = m_pLangTable->getIdFromCode(pLang);
 
 	// NB: m_docLang holds the translated language name, not the tag
-	XAP_App::getApp()->getStringSet()->getValueUTF8(indx, m_docLang);
+	XAP_App::getApp()->getStringSet()->getValueUTF8(pLang, m_docLang);
 }
 
 

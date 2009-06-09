@@ -46,10 +46,12 @@ class XAP_App;
 
 typedef enum _XAP_String_Id_Enum
 {
-	XAP_STRING_ID__FIRST__			= 0,	/* must be first */
-#include "xap_String_Id.h"
+	XAP_STRING_ID__FIRST__			= NULL,	/* must be first */
 	XAP_STRING_ID__LAST__					/* must be last */
 } XAP_String_Id_Enum;
+
+
+#include "xap_String_Id.h"
 
 #undef dcl
 
@@ -57,7 +59,8 @@ typedef enum _XAP_String_Id_Enum
 // Both XAP_ and AP_ enum sets fold into XAP_String_Id
 //////////////////////////////////////////////////////////////////
 
-typedef UT_uint32			XAP_String_Id;
+//typedef UT_uint32			XAP_String_Id;
+typedef const char*     XAP_String_Id;
 
 //////////////////////////////////////////////////////////////////
 // base class provides interface regardless of how we got the strings
@@ -115,7 +118,7 @@ public:
 	virtual ~XAP_DiskStringSet(void);
 
 	virtual bool				setValue(XAP_String_Id id, const gchar * szString);
-	virtual bool				setValue(const gchar * szId, const gchar * szString);
+//	virtual bool				setValue(const gchar * szId, const gchar * szString);
 	virtual const gchar *	getValue(XAP_String_Id id) const;
 	virtual bool				loadStringsFromDisk(const char * szFilename);
 
