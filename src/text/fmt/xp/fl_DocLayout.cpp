@@ -1824,6 +1824,10 @@ bool FL_DocLayout::updateTOCsOnBookmarkChange(const gchar * pBookmark)
 }
 
 
+/**
+ * Calculates the total height of the layout. Includes the 
+ * vertical page margins when not printing.
+ */
 UT_sint32 FL_DocLayout::getHeight()
 {
 	UT_sint32 iHeight = 0;
@@ -1862,6 +1866,10 @@ UT_sint32 FL_DocLayout::getHeight()
 	return iHeight;
 }
 
+/**
+ * Calculates the maximum width a page has in the layout. Includes the 
+ * left page margin when not printing.
+ */
 UT_sint32 FL_DocLayout::getWidth()
 {
 	UT_sint32 iWidth = 0;
