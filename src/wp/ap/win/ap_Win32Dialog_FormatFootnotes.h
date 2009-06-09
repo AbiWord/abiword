@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_WIN32DIALOG_STUB_H
-#define AP_WIN32DIALOG_STUB_H
+#ifndef AP_WIN32DIALOG_FORMATFOOTNOTES_H
+#define AP_WIN32DIALOG_FORMATFOOTNOTES_H
 
 #include "ap_Dialog_FormatFootnotes.h"
 #include "xap_Frame.h"
@@ -44,4 +44,4 @@ protected:
 
 };
 
-#endif /* AP_WIN32DIALOG_STUB_H */
+#endif /* AP_WIN32DIALOG_FORMATFOOTNOTES_H */
