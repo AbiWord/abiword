@@ -26,7 +26,7 @@ endif
 icondir= @ABIWORD_DATADIR@/icons
 icon_DATA = abiword_48.png
 
-EXTRA_DIST = gettext.m4 iconv.m4 lib-ld.m4 lib-link.m4 lib-prefix.m4 nls.m4 po.m4 progtest.m4 \
+EXTRA_DIST = \
 	AUTHORS \
 	BiDiReadme.txt \
 	BUILD.TXT \
@@ -63,6 +63,8 @@ zip:
 	rm -rf $(PACKAGE)-$(VERSION) ./zip
 endif
 
+# Files for Google's final submission
+# Remove from SVN before merge
 gettext-dist:
 	rm -fv ../gettext-dist.zip
 	zip ../gettext-dist.zip `cat keith-bowes-changed-files`
