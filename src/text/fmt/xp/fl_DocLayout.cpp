@@ -686,22 +686,12 @@ void FL_DocLayout::fillLayouts(void)
 			}
 		}
 	}
-	if(m_pView)
-	//
-	// Verify that the document is fully layed out. If not try to
-	// recover
-	{
-	    if(needsRebreak())
-	    {
-	        Rebreak();
-	    }
-	}
-	//
-	// Finally set all page numbers in frames
-	//
 	setFramePageNumbers(0);
 }
 
+#if 0
+// Don't think we need this code after moving this functionality to
+// fp_ColumnBreaker::breakSection()! FIXME remove if we're sure we dont!
 /*!
  * This method returns true of the document is not completely layed out. This
  * happens in documents with for example a large TOC and a bunch of footnotes
@@ -733,12 +723,12 @@ bool FL_DocLayout::needsRebreak(void)
 	if(pBL)
 	{
 	    fp_Line * pLine = static_cast<fp_Line *>(pBL->getLastContainer());
-	    fp_Page * pPage = pLine->getPage();
 	    if(pLine == NULL)
 	    {
 	        return true;
 	    }
-	    else if(pPage == NULL)
+	    fp_Page * pPage = pLine->getPage();
+	    if(pPage == NULL)
 	    {
 	        return true;
 	    }
@@ -788,6 +778,9 @@ void FL_DocLayout::Rebreak(void)
     //
     setFramePageNumbers(0);
 }
+#endif
+
+
 /*!
  *  This method is used to reset the colorization such as what occurs
  * when showAuthors state is changed.

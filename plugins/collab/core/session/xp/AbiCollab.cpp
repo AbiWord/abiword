@@ -263,18 +263,6 @@ void AbiCollab::_setDocument(PD_Document* pDoc, XAP_Frame* pFrame)
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_if_fail(pManager);
 
-	// HACK: relayout the document if needed
-	FV_View* pView = static_cast<FV_View *>(pFrame->getCurrentView());
-	UT_return_if_fail(pView);
-
-	FL_DocLayout * pDL = pView->getLayout();
-	if (pDL->needsRebreak())
-	{
-		pDL->Rebreak();
-		pFrame->updateZoom();
-		pFrame->show();
-	}
-	
 	// assume clean state
 	UT_return_if_fail(m_iDocListenerId==0);
 

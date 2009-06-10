@@ -297,6 +297,8 @@ ABI_EXPORT void UT_UTF8String_setProperty(UT_UTF8String & sPropertyString, const
 
 ABI_EXPORT void UT_UTF8String_addPropertyString(UT_UTF8String & sPropertyString, const UT_UTF8String & sNewProp);
 
+ABI_EXPORT void UT_UTF8String_replaceString(UT_UTF8String & sString, const UT_UTF8String & sOldValue,const UT_UTF8String & sNewValue );
+
 ////////////////////////////////////////////////////////////////////////
 //
 //  UCS-4 string

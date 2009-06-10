@@ -38,7 +38,10 @@ public:
 	UT_sint32 breakSection(fl_DocSectionLayout * pSL);
 	void   setStartPage(fp_Page * pPage);
 	fp_Page * getStartPage(void) { return m_pStartPage;}
+	fp_Page * needsRebreak(fl_DocSectionLayout * pSL);
 private:
+	fp_Page *               _getLastValidPage(fl_DocSectionLayout * pSL);
+	UT_sint32               _breakSection(fl_DocSectionLayout * pSL, fp_Page * pStartPage);
 	bool                    _isThisBroken(fp_Container * pCon);
 	void                    _setLastWantedVBreak(fp_Container * pCon, UT_sint32 iBreakAt);
 	UT_sint32               _getLastWantedVBreak(fp_Container * pCon);

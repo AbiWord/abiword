@@ -18,6 +18,7 @@
  */
 
 #include "fb_ColumnBreaker.h"
+#include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
 #include "fp_ContainerObject.h"
 #include "fp_TableContainer.h"
@@ -81,6 +82,48 @@ bool fb_ColumnBreaker::_displayAnnotations(void)
 {
   return m_pDocSec->getDocLayout()->displayAnnotations();
 }
+
+/*!
+ * Returns NULL if no rebreak is required. 
+ Otherwise returns a pointer to the page requiring the rebreak.
+*/
+fp_Page * fb_ColumnBreaker::needsRebreak(fl_DocSectionLayout * pSL)
+{
+    fl_ContainerLayout * pCL = pSL->getLastLayout();
+    fl_BlockLayout * pBL = NULL;
+    if(pCL && (pCL->getContainerType() == FL_CONTAINER_BLOCK))
+    {
+        pBL = static_cast<fl_BlockLayout *>(pCL);
+    }
+    else if(pCL)
+    {
+        pBL = pCL->getPrevBlockInDocument();
+    }
+    else
+    {
+        UT_ASSERT_HARMLESS(pCL);
+	return _getLastValidPage(pSL);
+    }
+    if(pBL)
+    {
+        fp_Line * pLine = static_cast<fp_Line *>(pBL->getLastContainer());
+	if(pLine == NULL)
+	{
+	     return _getLastValidPage(pSL);
+	}
+	fp_Page * pPage = pLine->getPage();
+	if(pPage == NULL)
+	{
+	     return _getLastValidPage(pSL);
+	}
+	else if(pLine->getY() > pPage->getHeight())
+	{
+	     return pPage;
+	}
+    }
+    return NULL;
+}
+
 	
 /*!
   Layout sections on pages
@@ -90,8 +133,51 @@ bool fb_ColumnBreaker::_displayAnnotations(void)
   blocks, and lines are laid out on the pages. Doing so it refers to
   the various layout configurations such as orphan/widow controls and
   break Runs embedded in the text.
+  At the eof the break we check to see that that all the text has been layed
+ out.
+ If it hasn't we rebreak from invalid page forward.
+ FIXME we should try to detect the error in the code rather than rebreak.
 */
+
 UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
+{
+  fp_Page * pStartPage = m_pStartPage;
+  pSL->setNeedsSectionBreak(false,m_pStartPage);
+  UT_sint32 iVal = _breakSection(pSL, pStartPage);
+  UT_sint32 icnt = 0;
+  pStartPage = needsRebreak(pSL);
+  while(pStartPage && (icnt < 10))
+  {
+      iVal = _breakSection(pSL,pStartPage);
+      pStartPage = needsRebreak(pSL);
+      icnt++;
+  }
+  FL_DocLayout * pDL = pSL->getDocLayout();
+  pDL->deleteEmptyColumnsAndPages();
+  return iVal;
+}
+
+fp_Page * fb_ColumnBreaker::_getLastValidPage(fl_DocSectionLayout * pSL)
+{
+  fp_Page * pPage = NULL;
+  fp_Page * pFoundPage = NULL;
+  UT_sint32 i = 0;
+  FL_DocLayout * pDL = pSL->getDocLayout();
+  for(i=0; i<pDL->countPages();i++)
+  {
+      pPage = pDL->getNthPage(i);
+      if(pPage->getOwningSection() == pSL)
+      {
+	  pFoundPage = pPage;
+      }
+      else if(pFoundPage != NULL)
+	break;
+  }
+  return pFoundPage;
+}
+
+
+UT_sint32 fb_ColumnBreaker::_breakSection(fl_DocSectionLayout * pSL, fp_Page * pStartPage)
 {
 	m_bReBreak = false;
 	m_pDocSec = pSL;
@@ -101,7 +187,6 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 	fp_Column* pPrevColumn = NULL;
 	xxx_UT_DEBUGMSG(("Doing ColumnBreak for section %x at page %x \n",pSL,m_pStartPage));
 //	UT_ASSERT(pSL->needsSectionBreak());
-	pSL->setNeedsSectionBreak(false,m_pStartPage);
 	pFirstLayout = pSL->getFirstLayout();
 	if (!pFirstLayout)
 	{
@@ -122,10 +207,10 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 	}
 	pCurColumn = static_cast<fp_Column*>(pSL->getFirstContainer());
 	xxx_UT_DEBUGMSG(("fb_ColumnBreaker: For DocSec %x first column %x \n",pSL,pCurColumn));
-	if(m_pStartPage)
+	if(pStartPage)
 	{
-		xxx_UT_DEBUGMSG(("Layout from page %x \n",m_pStartPage));
-		pCurColumn = m_pStartPage->getNthColumnLeader(0);
+		xxx_UT_DEBUGMSG(("Layout from page %x \n",pStartPage));
+		pCurColumn = pStartPage->getNthColumnLeader(0);
 		pOuterContainer = pCurColumn->getFirstContainer();
 		if(pOuterContainer && pOuterContainer->getContainerType() == FP_CONTAINER_LINE)
 		{
