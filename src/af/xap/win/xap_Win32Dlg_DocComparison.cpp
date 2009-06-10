@@ -111,22 +111,22 @@ BOOL CALLBACK XAP_Win32Dialog_DocComparison::s_dlgProc(HWND hWnd,UINT msg,WPARAM
 BOOL XAP_Win32Dialog_DocComparison::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	// set the window title
-	SetWindowText(hWnd, getWindowLabel());
+	setDialogTitle (getWindowLabel());	
 	
 	// localize buttons
-	SetDlgItemText(hWnd,XAP_RID_DIALOG_DOCCOMPARISON_BTN_OK,getButtonLabel());
+	setDlgItemText(XAP_RID_DIALOG_DOCCOMPARISON_BTN_OK,getButtonLabel());
 
 	// set frame titles
-	SetDlgItemText(hWnd, XAP_RID_DIALOG_DOCCOMPARISON_FRAME1,getFrame1Label());
-	SetDlgItemText(hWnd, XAP_RID_DIALOG_DOCCOMPARISON_FRAME2,getFrame2Label());
+	setDlgItemText(XAP_RID_DIALOG_DOCCOMPARISON_FRAME1,getFrame1Label());
+	setDlgItemText(XAP_RID_DIALOG_DOCCOMPARISON_FRAME2,getFrame2Label());
 
 	// fill frame 1
 	char * p = getPath1();
-	SetDlgItemText(hWnd,XAP_RID_DIALOG_DOCCOMPARISON_PATH1,p);
+    setDlgItemText(XAP_RID_DIALOG_DOCCOMPARISON_PATH1,p);
 	FREEP(p);
 
 	p = getPath2();
-	SetDlgItemText(hWnd,XAP_RID_DIALOG_DOCCOMPARISON_PATH2,p);
+	setDlgItemText(XAP_RID_DIALOG_DOCCOMPARISON_PATH2,p);
 	FREEP(p);
 	
 	// fill frame 2
@@ -136,15 +136,15 @@ BOOL XAP_Win32Dialog_DocComparison::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, 
 								  
 	for(i = 0; i < getResultCount(); i++)
 	{
-		SetDlgItemText(hWnd,k1 + i,getResultLabel(i));
+		setDlgItemText(k1 + i,getResultLabel(i));
 		
 		char * t = getResultValue(i);
-		SetDlgItemText(hWnd,k2 + i, t);
+		setDlgItemText(k2 + i, t);
 		FREEP(t);
 	}
 
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
-
+//	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
+    centerDialog();
 	return 1;							// 1 == we did not call SetFocus()
 }
 

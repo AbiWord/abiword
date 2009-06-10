@@ -116,14 +116,9 @@ BOOL XAP_Win32Dialog_History::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM
 {
     UT_Win32LocaleString str;
 	// set the window title
-	SetWindowText(hWnd, getWindowLabel());
+	setDialogTitle(getWindowLabel());
 	
 	// localize buttons
-//    str.fromUTF8(getButtonLabel(0)); 
-//    SetDlgItemTextW(hWnd,XAP_RID_DIALOG_HISTORY_BTN_OK,str.c_str());
-	
-//    str.fromUTF8(getButtonLabel(getButtonCount()-1)); 
-//    SetDlgItemText(hWnd,XAP_RID_DIALOG_HISTORY_BTN_CANCEL,str.c_str());
 
 	setDlgItemText(XAP_RID_DIALOG_HISTORY_BTN_OK,getButtonLabel(0));
    	//SetDlgItemText(hWnd,XAP_RID_DIALOG_HISTORY_BTN_SHOW,getButtonLabel(1));
