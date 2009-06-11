@@ -1591,10 +1591,12 @@ GR_Win32Font::GR_Win32Font(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC)
 
 			_updateFontYMetrics(hdc, printHDC);
 
-			UT_String_sprintf(m_hashKey, "%s-%d-%d-%d-%d-%d",
+			UT_String_sprintf(m_hashKey, "%s-%d-%d-%d-%d-%d-%d-%d",
 							  lpFaceName,
 							  m_tm.tmHeight, m_tm.tmWeight, m_tm.tmItalic, m_tm.tmUnderlined,
-							  m_tm.tmStruckOut);
+							  m_tm.tmStruckOut,
+							  GetDeviceCaps(hdc, LOGPIXELSX),
+							  GetDeviceCaps(hdc, LOGPIXELSY));
 
 			// now we measure the default character
 			// 
