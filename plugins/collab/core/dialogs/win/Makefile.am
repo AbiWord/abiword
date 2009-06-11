@@ -3,6 +3,11 @@ noinst_LTLIBRARIES = libwin.la
 
 AM_CPPFLAGS = \
 	$(COLLAB_CFLAGS)
+	-I$(srcdir)/.. \
+	-I$(srcdir)/../.. \
+	-I$(srcdir)/../../.. \
+	-I$(srcdir)/../../packet \
+	-I$(srcdir)/../../session
 
 libwin_la_SOURCES = \
 	ap_Win32Dialog_CollaborationAccounts.cpp \
