@@ -74,8 +74,6 @@ libwin_la_SOURCES = \
 	ap_Win32Dialog_Spell.h \
 	ap_Win32Dialog_SplitCells.cpp \
 	ap_Win32Dialog_SplitCells.h \
-	ap_Win32Dialog_Stub.cpp \
-	ap_Win32Dialog_Stub.h \
 	ap_Win32Dialog_Styles.cpp \
 	ap_Win32Dialog_Styles.h \
 	ap_Win32Dialog_Stylist.cpp \

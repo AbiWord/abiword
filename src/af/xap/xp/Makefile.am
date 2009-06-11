@@ -85,7 +85,6 @@ libxp_la_SOURCES = \
 	xap_Dlg_Print.h \
 	xap_Dlg_PrintPreview.cpp \
 	xap_Dlg_PrintPreview.h \
-	xap_Dlg_Stub.h \
 	xap_Dlg_WindowMore.cpp \
 	xap_Dlg_WindowMore.h \
 	xap_Dlg_Zoom.cpp \

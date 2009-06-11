@@ -53,8 +53,6 @@ libwin_la_SOURCES = \
 	xap_Win32Dlg_Print.h \
 	xap_Win32Dlg_PrintPreview.cpp \
 	xap_Win32Dlg_PrintPreview.h \
-	xap_Win32Dlg_Stub.cpp \
-	xap_Win32Dlg_Stub.h \
 	xap_Win32Dlg_WindowMore.cpp \
 	xap_Win32Dlg_WindowMore.h \
 	xap_Win32Dlg_Zoom.cpp \
