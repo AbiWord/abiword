@@ -100,7 +100,8 @@ void XAP_Win32Dialog_Insert_Symbol::activate(void)
 
 	// Update the caption
 	ConstructWindowName();
-	SetWindowText(m_hDlg, (AP_Win32App::s_fromUTF8ToWinLocale(m_WindowName)).c_str());
+	//SetWindowText(m_hDlg, (AP_Win32App::s_fromUTF8ToWinLocale(m_WindowName)).c_str());
+    setDialogTitle(m_WindowName);
 
 	iResult = ShowWindow( m_hDlg, SW_SHOW );
 
@@ -119,7 +120,8 @@ void XAP_Win32Dialog_Insert_Symbol::notifyActiveFrame(XAP_Frame *pFrame)
 	{
 		// Update the caption
 		ConstructWindowName();
-		SetWindowText(m_hDlg, (AP_Win32App::s_fromUTF8ToWinLocale(m_WindowName)).c_str());
+		//SetWindowText(m_hDlg, (AP_Win32App::s_fromUTF8ToWinLocale(m_WindowName)).c_str());
+        setDialogTitle(m_WindowName);
 
 		SetWindowLong(m_hDlg, GWL_HWNDPARENT, (long)frameHWND);
 		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
@@ -187,16 +189,16 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, 
 
 	// Fill the list box with symbol fonts.
 
-	HDC hDCScreen = CreateDC("DISPLAY", NULL, NULL, NULL);
+	HDC hDCScreen = CreateDCW(L"DISPLAY", NULL, NULL, NULL);
 
 #if 1
-	EnumFontFamilies(hDCScreen, (const char *)NULL, (FONTENUMPROC)fontEnumProcedure, (LPARAM)this);
+	EnumFontFamiliesW(hDCScreen, (const wchar_t *)NULL, (FONTENUMPROCW)fontEnumProcedure, (LPARAM)this);
 #else
-	LOGFONT LogFont;
+	LOGFONTW LogFont;
 //	LogFont.lfCharSet = SYMBOL_CHARSET; - all fonts enum is more inline with XP nature
 	LogFont.lfCharSet = DEFAULT_CHARSET;
 	LogFont.lfFaceName[0] = '\0';
-	EnumFontFamiliesEx(hDCScreen, &LogFont, (FONTENUMPROC)fontEnumProcedure, (LPARAM)this, 0);
+	EnumFontFamiliesExW(hDCScreen, &LogFont, (FONTENUMPROCW)fontEnumProcedure, (LPARAM)this, 0);
 #endif	
 	
 	DeleteDC(hDCScreen);
@@ -216,8 +218,9 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, 
 
 	// Update the caption
 	ConstructWindowName();
-	setDialogTitle((LPCSTR)(AP_Win32App::s_fromUTF8ToWinLocale(m_WindowName)).c_str());
-	centerDialog();	
+	//setDialogTitle((LPCSTR)(AP_Win32App::s_fromUTF8ToWinLocale(m_WindowName)).c_str());
+    setDialogTitle(m_WindowName);	
+    centerDialog();	
 
 	return 1;							// 1 == we did not call SetFocus()
 }
