@@ -84,8 +84,7 @@ public:
 	UT_GenericVector<T>* enumerate(bool strip_null_values = true) const;
 	UT_GenericVector<const UT_String*>* keys(bool strip_null_values = true) const;
 	
-	// these are synonyms - for getting the # keys
-	inline size_t cardinality() const { return n_keys; }
+	// getting the # keys
 	inline size_t size() const { return n_keys; }
 
 	class UT_Cursor
