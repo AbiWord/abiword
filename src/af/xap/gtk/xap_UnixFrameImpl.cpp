@@ -258,7 +258,7 @@ s_loadImage (const UT_UTF8String & file, FV_View * pView, XAP_Frame * pF, gint x
 }
 
 static void
-s_loadImage (UT_ByteBuf * bytes, FV_View * pView, XAP_Frame * pF, gint x, gint y)
+s_loadImage (const UT_ByteBuf & bytes, FV_View * pView, XAP_Frame * pF, gint x, gint y)
 {
 	FG_Graphic    * pFG  = 0;
 	UT_Error error = IE_ImpGraphic::loadGraphic(bytes, 0, &pFG);
@@ -539,10 +539,10 @@ s_dndDropEvent(GtkWidget        *widget,
 	}
 	else if (info == TARGET_IMAGE)
 	{
-		UT_ByteBuf * bytes = new UT_ByteBuf( selection_data->length );
+		UT_ByteBuf bytes( selection_data->length );
 
 		UT_DEBUGMSG(("JK: Image target\n"));
-		bytes->append (selection_data->data, selection_data->length);
+		bytes.append (selection_data->data, selection_data->length);
 		s_loadImage (bytes, pView,pFrame,x,y);
 	}
 	else if (info == TARGET_URL)
