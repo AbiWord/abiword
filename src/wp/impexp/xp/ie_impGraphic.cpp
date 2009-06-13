@@ -381,7 +381,7 @@ UT_Error IE_ImpGraphic::constructImporterWithDescription(const char * szDesc, IE
 	return err;
 }
 
-UT_Error IE_ImpGraphic:: constructImporter(const UT_ByteBuf * bytes,
+UT_Error IE_ImpGraphic:: constructImporter(const UT_ByteBuf & bytes,
 					   IEGraphicFileType ft,
 					   IE_ImpGraphic **ppieg)
 {
@@ -389,15 +389,14 @@ UT_Error IE_ImpGraphic:: constructImporter(const UT_ByteBuf * bytes,
 	// caller is responsible for deleting the importer object
 	// when finished with it.
 	UT_return_val_if_fail(ppieg, UT_ERROR);
-	UT_return_val_if_fail(bytes, UT_ERROR);
 
 	// no filter will support IEGFT_Unknown, so we detect from the
 	// suffix of the filename and the contents of the file, the real 
         // importer to use and assign that back to ieft.
 	if (ft == IEGFT_Unknown)
 	{
-	  ft = IE_ImpGraphic::fileTypeForContents( reinterpret_cast<const char *>(bytes->getPointer(0)),
-						   bytes->getLength() );
+	  ft = IE_ImpGraphic::fileTypeForContents( reinterpret_cast<const char *>(bytes.getPointer(0)),
+						   bytes.getLength() );
 	}
 
 	// use the importer for the specified file type
