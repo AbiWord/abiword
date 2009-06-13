@@ -685,15 +685,14 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 		  IEGraphicFileType iegft = IEGFT_Unknown;
 		  UT_Error error = UT_OK;
 		  
-		  UT_ByteBuf * bytes = new UT_ByteBuf( iLen );
+		  UT_ByteBuf bytes( iLen );
 		  
-		  bytes->append (pData, iLen);
+		  bytes.append (pData, iLen);
 		  
 		  error = IE_ImpGraphic::loadGraphic(bytes, iegft, &pFG);
 		  if(!pFG || error)
 		  {
 			  UT_DEBUGMSG(("DOM: could not import graphic (%d)\n", error));
-			  DELETEP(bytes);
 			  goto retry_text;
 		  }
 		  

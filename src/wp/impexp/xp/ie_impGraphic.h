@@ -126,12 +126,12 @@ public:
   static UT_Error loadGraphic(GsfInput * input,
 							  IEGraphicFileType iegft,
 							  FG_Graphic ** ppfg);
-  static UT_Error loadGraphic(UT_ByteBuf *pBB,
+  static UT_Error loadGraphic(const UT_ByteBuf &pBB,
 							  IEGraphicFileType iegft,
 							  FG_Graphic ** ppfg);
 
   //  Note subclassers:  ownership of pBB is passes here, so
-  //  g_free pBB if you don't need it.
+  //  free pBB if you don't need it.
 
   // you must override at least one of the importGraphic calls
   virtual UT_Error	importGraphic(UT_ByteBuf* pBB, 

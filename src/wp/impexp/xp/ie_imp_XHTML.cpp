@@ -1958,14 +1958,9 @@ FG_Graphic * IE_Imp_XHTML::importDataURLImage (const gchar * szData)
 		}
 	binlength = binmaxlen - binlength;
 
-	UT_ByteBuf * pBB = new UT_ByteBuf;
-	if (pBB == 0)
-		{
-			UT_DEBUGMSG(("importDataURLImage: out of memory\n"));
-			FREEP(binbuffer);
-			return 0;
-		}
-	pBB->ins (0, reinterpret_cast<const UT_Byte *>(binbuffer), binlength);
+	UT_ByteBuf pBB;
+
+	pBB.ins (0, reinterpret_cast<const UT_Byte *>(binbuffer), binlength);
 	FREEP(binbuffer);
 
 	FG_Graphic * pfg = 0;

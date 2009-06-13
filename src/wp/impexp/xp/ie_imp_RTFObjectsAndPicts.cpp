@@ -86,7 +86,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 	const UT_uint16 BITS_PER_BYTE = 8;
 	const UT_uint16 bits_per_char = BITS_PER_BYTE / chars_per_byte;
 
-	UT_ByteBuf *pictData = new UT_ByteBuf();
+	UT_ByteBuf pictData;
 	UT_uint16 chLeft = chars_per_byte;
 	UT_Byte pic_byte = 0;
 	FG_Graphic* pFG = NULL;
@@ -113,7 +113,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 			// if we have a complete byte, we put it in the buffer
 			if (--chLeft == 0)
 			{
-				pictData->append(&pic_byte, 1);
+				pictData.append(&pic_byte, 1);
 				chLeft = chars_per_byte;
 				pic_byte = 0;
 			}
@@ -131,23 +131,17 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 				retval = false;
 				goto cleanup;
 			}
-			pictData->append(&ch, 1);
+			pictData.append(&ch, 1);
 		}
 	}
 
 	// We let the caller handle this
 	SkipBackChar(ch);
 
-	// TODO: investigate whether pictData is leaking memory or not
-
 	error = IE_ImpGraphic::loadGraphic(pictData, iegftForRTF(format), &pFG);
 
 	if ((error == UT_OK) && pFG)
 	{
-		// TODO: according with IE_ImpGraphic header, we shouldn't g_free
-		// TODO: the buffer. Confirm that.
-		pictData = NULL;
-
 		const UT_ByteBuf * buf = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
 		imgProps.width = static_cast<UT_uint32>(pFG->getWidth ());
 		imgProps.height = static_cast<UT_uint32>(pFG->getHeight ());
@@ -174,7 +168,6 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 	}
 
  cleanup:
-	DELETEP(pictData);
 	return retval;
 }
 

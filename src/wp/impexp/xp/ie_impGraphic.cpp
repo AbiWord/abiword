@@ -578,7 +578,7 @@ UT_Error IE_ImpGraphic::convertGraphic(UT_ByteBuf* pBB,
 	FG_Graphic * graphic = NULL;
 	UT_Error result;
 
-	result = IE_ImpGraphic::loadGraphic(pBB, IEGFT_Unknown, &graphic);
+	result = IE_ImpGraphic::loadGraphic(*pBB, IEGFT_Unknown, &graphic);
 
 	// method assumes that we take ownership of pBB
 	DELETEP(pBB);
@@ -654,13 +654,13 @@ UT_Error IE_ImpGraphic::loadGraphic(GsfInput * input,
 	return result;
 }
 
-UT_Error IE_ImpGraphic::loadGraphic(UT_ByteBuf *pBB,
+UT_Error IE_ImpGraphic::loadGraphic(const UT_ByteBuf &pBB,
 									IEGraphicFileType iegft,
 									FG_Graphic ** ppfg)
 {
 	GsfInput * input;
 
-	input = gsf_input_memory_new (pBB->getPointer (0), pBB->getLength(), FALSE);
+	input = gsf_input_memory_new (pBB.getPointer (0), pBB.getLength(), FALSE);
 	if (!input)
 		return UT_IE_NOMEMORY;
 
