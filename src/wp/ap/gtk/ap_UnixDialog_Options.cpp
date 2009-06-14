@@ -434,7 +434,7 @@ void AP_UnixDialog_Options::_constructWindowContents ( GtkBuilder * builder )
 #endif /// _DISABLE_GRAMMAR
 
 #else
-    gtk_notebook_remove_page(3);
+    gtk_notebook_remove_page((GtkNotebook*)m_notebook, 3);
 #endif
     // Smart Quotes
 
