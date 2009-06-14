@@ -61,17 +61,23 @@ UT_Error OXML_Element_Paragraph::serializeChildren(IE_Exp_OpenXML* exporter)
 {
 	UT_Error ret = UT_OK;
 
+	bool includesList = false;
+
 	OXML_ElementVector::size_type i;
 	OXML_ElementVector children = getChildren();
 	for (i = 0; i < children.size(); i++)
 	{
 		// LIST children are handled in serializeProperties function
 		if(children[i]->getType() != LIST)
-		{
+		{	
+			if(includesList)
+				children[i]->setType(LIST);
 			ret = children[i]->serialize(exporter);
 			if(ret != UT_OK)
 				return ret;
 		}
+		else 
+			includesList = true;
 	}
 
 	return ret;
@@ -263,18 +269,17 @@ UT_Error OXML_Element_Paragraph::addToPT(PD_Document * pDocument)
 
 	if(pListId && pListLevel)
 	{
-		const gchar* ppAttr[3];
-		ppAttr[0] = "type";
-		ppAttr[1] = "list_label";
-		ppAttr[2] = 0;
+		ret = setAttribute("type", "list_label");
+		if(ret != UT_OK)
+			return ret;
+
+		const gchar ** ppAttr = getAttributesWithProps();
     
 		if(!pDocument->appendObject(PTO_Field, ppAttr))
 			return ret;
 
-		const gchar** ppAtts = getAttributesWithProps();
-
-		pDocument->appendFmt(ppAtts);
-		
+		pDocument->appendFmt(ppAttr);
+	
 		UT_UCS4String string = "\t";
 		pDocument->appendSpan(string.ucs4_str(), string.size());
 	}

@@ -850,6 +850,8 @@ UT_Error IE_Exp_OpenXML::setFontFamily(int target, const gchar* family)
 	str += sEscFamily.utf8_str();
 	str += "\" w:cs=\"";
 	str += sEscFamily.utf8_str();
+	str += "\" w:hAnsi=\"";
+	str += sEscFamily.utf8_str();
 	str += "\"/>";
 	return writeTargetStream(target, str.c_str());
 }
@@ -1463,12 +1465,22 @@ UT_Error IE_Exp_OpenXML::setListStartValue(int target, UT_uint32 startValue)
 UT_Error IE_Exp_OpenXML::setListLevelText(int target, const char* text)
 {
 	UT_UTF8String sEscText = text;
-	sEscText.escapeXML();
+	if(!isListBullet(text))
+		sEscText.escapeXML();
 
 	std::string str("<w:lvlText w:val=\"");
 	str += sEscText.utf8_str();
 	str += "\"/>";
 	return writeTargetStream(target, str.c_str());
+}
+
+/**
+ * Checks whether given a string is a special list bullet symbol
+ */
+bool IE_Exp_OpenXML::isListBullet(const char* str)
+{
+	return !strcmp(str, BULLET) || !strcmp(str, SQUARE) || !strcmp(str, TRIANGLE) || !strcmp(str, TICK) || !strcmp(str, IMPLIES) || 
+			!strcmp(str, DIAMOND) || !strcmp(str, BOX) || !strcmp(str, HAND) || !strcmp(str, HEART) || !strcmp(str, DASH);
 }
 
 /**

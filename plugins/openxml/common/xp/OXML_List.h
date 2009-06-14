@@ -39,14 +39,15 @@
 //bullet characters
 #define BULLET "&#8226;"
 #define SQUARE "&#9632;"
-#define TRIANGLE "&#9654;"
-#define DIAMOND "&#x25C6;"
+#define TRIANGLE "&#61656;"
+#define DIAMOND "&#61558;"
 #define BOX "&#9633;"
 #define HAND "&#9758;"
 #define HEART "&#9829;"
 #define STAR "*"
-#define IMPLIES "->"
-#define DASH "-"
+#define IMPLIES "&#8658;"
+#define DASH "&#8211;"
+#define TICK "&#61692;"
 
 class IE_Exp_OpenXML;
 
@@ -60,8 +61,8 @@ public:
 	virtual void setId(UT_uint32 id);
 	virtual void setParentId(UT_uint32 id);
 	virtual void setLevel(UT_uint32 id);
-	virtual void setDelim(const gchar* delim);
-	virtual void setDecimal(const gchar* decimal);
+	virtual void setDelim(const std::string & delim);
+	virtual void setDecimal(const std::string & decimal);
 	virtual void setStartValue(UT_uint32 id);
 	virtual void setType(FL_ListType type);
 
@@ -82,8 +83,8 @@ private:
 	UT_uint32 parentId;
 	UT_uint32 level;
 	UT_uint32 startValue;
-	const gchar* delim;
-	const gchar* decimal;
+	std::string delim;
+	std::string decimal;
 	FL_ListType type;
 };
 

@@ -254,6 +254,8 @@ private:
 	GsfOutput* getTargetStream(int target);
 	UT_Error writeTargetStream(int target, const char* str);
 
+	bool isListBullet(const char* str);
+
 	void _cleanup();
 };
 

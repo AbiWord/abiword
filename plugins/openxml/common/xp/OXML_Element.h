@@ -68,6 +68,7 @@ public:
 	inline std::string getId() { return m_id; }
 	inline OXML_ElementTag getTag() { return m_tag; }
 	inline OXML_ElementType getType() { return m_type; }
+	inline void setType(OXML_ElementType type) { m_type = type; }
 
 	bool operator ==(const std::string id);
 	friend bool operator ==(const OXML_SharedElement& lhs, const std::string id) { return (*lhs) == id; }

@@ -108,7 +108,8 @@ void OXMLi_ListenerState_Numbering::startElement (OXMLi_StartElementRequest * rq
 		const gchar* val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
 		if(val)
 		{
-			m_currentList->setDelim(val);
+			std::string delim(val);
+			m_currentList->setDelim(delim);
 		}
 		rqst->handled = true;
 	}

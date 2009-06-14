@@ -42,6 +42,24 @@ OXML_Element_Run::~OXML_Element_Run()
 
 }
 
+UT_Error OXML_Element_Run::serializeChildren(IE_Exp_OpenXML* exporter)
+{
+	UT_Error ret = UT_OK;
+
+	OXML_ElementVector children = getChildren();
+	OXML_ElementVector::size_type i;
+	for (i = 0; i < children.size(); i++)
+	{
+		if(getType() == LIST)
+			children[i]->setType(LIST);
+		ret = children[i]->serialize(exporter);
+		if(ret != UT_OK)
+			return ret;
+	}
+
+	return ret;
+}
+
 UT_Error OXML_Element_Run::serialize(IE_Exp_OpenXML* exporter)
 {
 	UT_Error err = UT_OK;
