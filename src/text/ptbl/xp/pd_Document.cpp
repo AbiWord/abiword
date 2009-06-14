@@ -4288,6 +4288,52 @@ PTStruxType PD_Document::getStruxType(PL_StruxDocHandle sdh) const
 	return pfs->getStruxType();
 }
 
+/*!
+ * Returns true if the document as any math or SVG runs within it.
+ */
+bool PD_Document::hasMathorSVG(void)
+{
+	pf_Frag *  pf = getPieceTable()->getFragments().getFirst();
+	while(pf)
+	{
+		if(pf->getType() == pf_Frag::PFT_Object)
+		{
+			pf_Frag_Object * po = (pf_Frag_Object*) pf;
+			if(po->getObjectType() == PTO_Math)
+			{
+				return true;
+			}
+			else if(po->getObjectType() ==  PTO_Image)
+			{
+				const PP_AttrProp* pAP = NULL;
+				PT_AttrPropIndex indexAP = po->getIndexAP();
+				m_pPieceTable->getAttrProp(indexAP,&pAP);
+				if (pAP)
+				{
+					const gchar *pszDataID;
+					bool bFoundDataID = pAP->getAttribute("dataid", pszDataID);
+					if (bFoundDataID && pszDataID)
+					{
+						const char * pszMimeType = NULL;
+						const char **ppszMimeType = &pszMimeType;
+						bFoundDataID = getDataItemDataByName(pszDataID, NULL,
+															 reinterpret_cast<const void**>(ppszMimeType), NULL);
+	   
+						// figure out what type of image
+	   
+						if (bFoundDataID && pszMimeType && (strcmp(pszMimeType, "image/svg+xml") == 0)) 
+						{
+							return true;
+						}
+					}
+				}				
+			}
+		}
+		pf = pf->getNext();
+	}
+	return false;
+}
+
 pf_Frag * PD_Document::findBookmark(const char * pName, bool bEnd, pf_Frag * pfStart)
 {
 	if(!pfStart)

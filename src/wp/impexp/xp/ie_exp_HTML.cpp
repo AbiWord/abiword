@@ -87,6 +87,11 @@
 #define MYEOL "\n"
 #define MAX_LINE_LEN 200
 
+// This defines sMathSVGScript which when embedded in html4 documents
+// displays MathML and SVG
+
+#include "MathSVGScript.h"
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -1437,11 +1442,19 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 		}
 		tagComment (delimiter);
 	}
+	//
+	// Export the script to enable mathml and SVG in HTML4
+	//
+	if(m_pDocument->hasMathorSVG())
+	{
+		m_pie->write(sMathSVGScript.utf8_str(),sMathSVGScript.size());
+	}
 	
 	/* we add a meta tag describing the document's charset as UTF-8
 	 * even with XHTML because Safari and Camino fail to recognize
 	 * charset. This still validate W3C.
 	 */
+
 	m_utf8_1 = "meta http-equiv=\"content-type\" content=\"text/html;charset=UTF-8\"";
 	tagOpenClose (m_utf8_1, get_HTML4 ());
 

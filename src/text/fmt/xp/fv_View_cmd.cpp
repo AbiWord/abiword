@@ -5488,6 +5488,7 @@ bool FV_View::cmdInsertLatexMath(UT_UTF8String & sLatex,
 	UT_UTF8String_sprintf(sUID,"%d",uid);
 	sMathName += sUID;
 	sLatexName += sUID;
+	UT_DEBUGMSG(("Inserting latex id name %s \n",sLatexName.utf8_str()));
 	//
 	// Insert these into the Piece Table
 	//
