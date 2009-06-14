@@ -59,6 +59,7 @@ msgstr "خپله اوسمهالول"
 
 #. DLG_PageSetup_Percent
 #: po/tmp/ap_String_Id.h.h:29
+#, fuzzy, c-format
 msgid "% of normal size"
 msgstr "له لېوې کچه %"
 
@@ -536,8 +537,7 @@ msgstr "&Inherit label"
 #. MENU_LABEL_INSERT
 #. MENU_LABEL_TABLE_INSERT
 #. DLG_Insert
-#: po/tmp/ap_String_Id.h.h:226
-#: po/tmp/xap_String_Id.h.h:15
+#: po/tmp/ap_String_Id.h.h:226 po/tmp/xap_String_Id.h.h:15
 msgid "&Insert"
 msgstr "ورننويستل&"
 
@@ -954,8 +954,7 @@ msgstr ":يوون&"
 
 #. MENU_LABEL_VIEW
 #. DLG_MW_ViewButton
-#: po/tmp/ap_String_Id.h.h:396
-#: po/tmp/xap_String_Id.h.h:21
+#: po/tmp/ap_String_Id.h.h:396 po/tmp/xap_String_Id.h.h:21
 msgid "&View"
 msgstr "ليد&"
 
@@ -1090,7 +1089,8 @@ msgstr ".ابيورډ د ټاکنې کتل بشپړ کړل"
 #. DLG_FR_FinishedReplace
 #: po/tmp/ap_String_Id.h.h:452
 #, c-format
-msgid "AbiWord has finished its search of the document and has made %d replacements."
+msgid ""
+"AbiWord has finished its search of the document and has made %d replacements."
 msgstr ".ځاېناستې يې وکړې %d ابيورډ د لاسوند لټون بشپړ کړو او"
 
 #. DLG_FR_FinishedFind
@@ -1103,7 +1103,8 @@ msgstr ".ابيورډ د لاسوند لټون بشپړ کړو"
 msgid ""
 "AbiWord is designed for a newer version of the system file COMCTL32.DLL\n"
 "than the one currently on your system. (COMCTL32.DLL version 4.72 or newer)\n"
-"A solution to this problem is explained in the FAQ on the AbiSource web site\n"
+"A solution to this problem is explained in the FAQ on the AbiSource web "
+"site\n"
 "\n"
 "\thttp://www.abisource.com\n"
 "\n"
@@ -1111,7 +1112,8 @@ msgid ""
 msgstr ""
 "AbiWord is designed for a newer version of the system file COMCTL32.DLL\n"
 "than the one currently on your system. (COMCTL32.DLL version 4.72 or newer)\n"
-"A solution to this problem is explained in the FAQ on the AbiSource web site\n"
+"A solution to this problem is explained in the FAQ on the AbiSource web "
+"site\n"
 "\n"
 "\thttp://www.abisource.com\n"
 "\n"
@@ -1122,10 +1124,12 @@ msgstr ""
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/msdownload/"
+"platformsdk/sdkupdate/psdkredist.htm"
 msgstr ""
 "دوتنې ته اړتيا لري %s.dll ابيورډ\n"
-"څخه يې راولېښﺉ او ويې لګوﺉ http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm مهرباني وکړﺉ له"
+"څخه يې راولېښﺉ او ويې لګوﺉ http://www.microsoft.com/msdownload/platformsdk/"
+"sdkupdate/psdkredist.htm مهرباني وکړﺉ له"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h.h:460
@@ -1207,8 +1211,7 @@ msgstr ":پرليکتيا"
 
 #. DLG_Styles_LBL_All
 #. DLG_UP_All
-#: po/tmp/ap_String_Id.h.h:493
-#: po/tmp/xap_String_Id.h.h:51
+#: po/tmp/ap_String_Id.h.h:493 po/tmp/xap_String_Id.h.h:51
 msgid "All"
 msgstr "ټول"
 
@@ -1239,8 +1242,7 @@ msgstr "کاريال پېلنګ"
 
 #. DLG_Options_Btn_Apply
 #. DLG_Apply
-#: po/tmp/ap_String_Id.h.h:505
-#: po/tmp/xap_String_Id.h.h:63
+#: po/tmp/ap_String_Id.h.h:505 po/tmp/xap_String_Id.h.h:63
 msgid "Apply"
 msgstr "کارول"
 
@@ -1248,7 +1250,8 @@ msgstr "کارول"
 #. TOOLBAR_TOOLTIP_FMTPAINTER
 #: po/tmp/ap_String_Id.h.h:508
 msgid "Apply the previously copied paragraph formatting onto the selected text"
-msgstr "Apply the previously copied paragraph formatting onto the selected text"
+msgstr ""
+"Apply the previously copied paragraph formatting onto the selected text"
 
 #. DLG_Lists_Apply_Current
 #: po/tmp/ap_String_Id.h.h:510
@@ -1267,8 +1270,12 @@ msgstr "عربي لړ"
 
 #. MSG_AutoRevisionOffWarning
 #: po/tmp/ap_String_Id.h.h:516
-msgid "Are you sure you do not want to maintain full history record? If you proceed, you will not be able to restore earlier versions of this document."
-msgstr "Are you sure you do not want to maintain full history record? If you proceed, you will not be able to restore earlier versions of this document."
+msgid ""
+"Are you sure you do not want to maintain full history record? If you "
+"proceed, you will not be able to restore earlier versions of this document."
+msgstr ""
+"Are you sure you do not want to maintain full history record? If you "
+"proceed, you will not be able to restore earlier versions of this document."
 
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h.h:518
@@ -1282,8 +1289,7 @@ msgstr "مخکښني لړ سره نښلول "
 
 #. DLG_MetaData_Author_LBL
 #. DLG_PLUGIN_MANAGER_AUTHOR
-#: po/tmp/ap_String_Id.h.h:522
-#: po/tmp/xap_String_Id.h.h:83
+#: po/tmp/ap_String_Id.h.h:522 po/tmp/xap_String_Id.h.h:83
 msgid "Author:"
 msgstr ":ليکوال"
 
@@ -1408,8 +1414,7 @@ msgstr "دوه لوري غوراوي"
 #. TOOLBAR_STATUSLINE_FMT_BOLD
 #. TOOLBAR_TOOLTIP_FMT_BOLD
 #. DLG_UFS_StyleBold
-#: po/tmp/ap_String_Id.h.h:574
-#: po/tmp/xap_String_Id.h.h:111
+#: po/tmp/ap_String_Id.h.h:574 po/tmp/xap_String_Id.h.h:111
 msgid "Bold"
 msgstr "ډبل"
 
@@ -1457,15 +1462,13 @@ msgstr "[%s] لاندې مورګه"
 #. TOOLBAR_STATUSLINE_FMT_BOTTOMLINE
 #. TOOLBAR_TOOLTIP_FMT_BOTTOMLINE
 #. DLG_UFS_BottomlineCheck
-#: po/tmp/ap_String_Id.h.h:595
-#: po/tmp/xap_String_Id.h.h:115
+#: po/tmp/ap_String_Id.h.h:595 po/tmp/xap_String_Id.h.h:115
 msgid "Bottomline"
 msgstr "Bottomline"
 
 #. DLG_Lists_Box_List
 #. STYLE_BOXLIST
-#: po/tmp/ap_String_Id.h.h:597
-#: po/tmp/xap_String_Id.h.h:117
+#: po/tmp/ap_String_Id.h.h:597 po/tmp/xap_String_Id.h.h:117
 msgid "Box List"
 msgstr "بکس لړ"
 
@@ -1491,8 +1494,7 @@ msgstr "ګولۍ"
 
 #. DLG_Lists_Bullet_List
 #. STYLE_BULLETLIST
-#: po/tmp/ap_String_Id.h.h:607
-#: po/tmp/xap_String_Id.h.h:125
+#: po/tmp/ap_String_Id.h.h:607 po/tmp/xap_String_Id.h.h:125
 msgid "Bullet List"
 msgstr "ګولۍ لړ"
 
@@ -1784,10 +1786,16 @@ msgstr "کومه بياکتنه چې ليدل غواړﺉ ويې ټاکﺉ"
 #: po/tmp/ap_String_Id.h.h:730
 msgid ""
 "Choose your target in the left side.\n"
-"If you want to use the \"Go To\" button, just fill the Number Entry with the desired number.  You can use + and - to perform relative movement.\tI.e., if you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines below your current position."
+"If you want to use the \"Go To\" button, just fill the Number Entry with the "
+"desired number.  You can use + and - to perform relative movement.\tI.e., if "
+"you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines "
+"below your current position."
 msgstr ""
 "Choose your target in the left side.\n"
-"If you want to use the \"Go To\" button, just fill the Number Entry with the desired number.  You can use + and - to perform relative movement.\tI.e., if you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines below your current position."
+"If you want to use the \"Go To\" button, just fill the Number Entry with the "
+"desired number.  You can use + and - to perform relative movement.\tI.e., if "
+"you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines "
+"below your current position."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h.h:732
@@ -1837,8 +1845,7 @@ msgstr "ست&ن"
 #. DLG_FormatFrame_Color
 #. DLG_FormatTable_Color
 #. DLG_UFS_ColorLabel
-#: po/tmp/ap_String_Id.h.h:751
-#: po/tmp/xap_String_Id.h.h:177
+#: po/tmp/ap_String_Id.h.h:751 po/tmp/xap_String_Id.h.h:177
 msgid "Color:"
 msgstr ":رنګ"
 
@@ -2162,8 +2169,7 @@ msgstr "ل&وريز"
 
 #. DLG_Lists_Dashed_List
 #. STYLE_DASHEDLIST
-#: po/tmp/ap_String_Id.h.h:881
-#: po/tmp/xap_String_Id.h.h:225
+#: po/tmp/ap_String_Id.h.h:881 po/tmp/xap_String_Id.h.h:225
 msgid "Dashed List"
 msgstr "کرښک لړ"
 
@@ -2249,8 +2255,7 @@ msgstr "د ټاکنې لپاره ډول ټاکل يا کارول"
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
 #. DLG_Delete
-#: po/tmp/ap_String_Id.h.h:918
-#: po/tmp/xap_String_Id.h.h:239
+#: po/tmp/ap_String_Id.h.h:918 po/tmp/xap_String_Id.h.h:239
 msgid "Delete"
 msgstr "ړنګول"
 
@@ -2354,15 +2359,13 @@ msgstr "سپړاوي"
 #. DLG_MetaData_Description_LBL
 #. DLG_PLUGIN_MANAGER_DESC
 #. DLG_Image_LblDescription
-#: po/tmp/ap_String_Id.h.h:963
-#: po/tmp/xap_String_Id.h.h:242
+#: po/tmp/ap_String_Id.h.h:963 po/tmp/xap_String_Id.h.h:242
 msgid "Description:"
 msgstr ":سپړاوي"
 
 #. DLG_Lists_Diamond_List
 #. STYLE_DIAMONLIST
-#: po/tmp/ap_String_Id.h.h:965
-#: po/tmp/xap_String_Id.h.h:244
+#: po/tmp/ap_String_Id.h.h:965 po/tmp/xap_String_Id.h.h:244
 msgid "Diamond List"
 msgstr "هېرا لړ"
 
@@ -2760,8 +2763,12 @@ msgstr "د ۴ کچې لاندې پوښول"
 
 #. DLG_Para_PreviewFollowParagraph
 #: po/tmp/ap_String_Id.h.h:1125
-msgid "Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph"
-msgstr "لاندنی پېرېګراف لاندنی پېرېګراف لاندنی پېرېګراف لاندنی پېرېګراف لاندنی پېرېګراف لاندنی پېرېګراف لاندنی پېرېګراف"
+msgid ""
+"Following Paragraph Following Paragraph Following Paragraph Following "
+"Paragraph Following Paragraph Following Paragraph Following Paragraph"
+msgstr ""
+"لاندنی پېرېګراف لاندنی پېرېګراف لاندنی پېرېګراف لاندنی پېرېګراف لاندنی "
+"پېرېګراف لاندنی پېرېګراف لاندنی پېرېګراف"
 
 #. DLG_Styles_ModifyFont
 #. TOOLBAR_LABEL_FMT_FONT
@@ -2769,8 +2776,7 @@ msgstr "لاندنی پېرېګراف لاندنی پېرېګراف لاندنی
 #. TOOLBAR_TOOLTIP_FMT_FONT
 #. DLG_UFS_FontTitle
 #. DLG_UFS_FontTab
-#: po/tmp/ap_String_Id.h.h:1130
-#: po/tmp/xap_String_Id.h.h:315
+#: po/tmp/ap_String_Id.h.h:1130 po/tmp/xap_String_Id.h.h:315
 msgid "Font"
 msgstr "ليکبڼه"
 
@@ -2795,8 +2801,7 @@ msgstr "...ليکبڼه"
 
 #. DLG_Lists_Font
 #. DLG_UFS_FontLabel
-#: po/tmp/ap_String_Id.h.h:1142
-#: po/tmp/xap_String_Id.h.h:317
+#: po/tmp/ap_String_Id.h.h:1142 po/tmp/xap_String_Id.h.h:317
 msgid "Font:"
 msgstr ":ليکبڼه"
 
@@ -2948,8 +2953,7 @@ msgstr "د ډولونو په کارولو خپل لاسوند بڼول"
 
 #. DLG_Lists_Format
 #. DLG_DocComparison_Fmt
-#: po/tmp/ap_String_Id.h.h:1205
-#: po/tmp/xap_String_Id.h.h:323
+#: po/tmp/ap_String_Id.h.h:1205 po/tmp/xap_String_Id.h.h:323
 msgid "Format:"
 msgstr ":بڼول"
 
@@ -2997,8 +3001,7 @@ msgstr "س&ريز ليک"
 
 #. DLG_Lists_Hand_List
 #. STYLE_HANDLIST
-#: po/tmp/ap_String_Id.h.h:1225
-#: po/tmp/xap_String_Id.h.h:363
+#: po/tmp/ap_String_Id.h.h:1225 po/tmp/xap_String_Id.h.h:363
 msgid "Hand List"
 msgstr "لاس لړ"
 
@@ -3032,11 +3035,13 @@ msgstr "سرۍ/پښۍ"
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h.h:1238
 msgid ""
-"Headers and Footers can only be created and edited while in Print View Mode. \n"
+"Headers and Footers can only be created and edited while in Print View "
+"Mode. \n"
 " To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
-"Headers and Footers can only be created and edited while in Print View Mode. \n"
+"Headers and Footers can only be created and edited while in Print View "
+"Mode. \n"
 " To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 
@@ -3052,8 +3057,7 @@ msgstr ":سريز ډول"
 
 #. DLG_Lists_Heart_List
 #. STYLE_HEARTLIST
-#: po/tmp/ap_String_Id.h.h:1244
-#: po/tmp/xap_String_Id.h.h:379
+#: po/tmp/ap_String_Id.h.h:1244 po/tmp/xap_String_Id.h.h:379
 msgid "Heart List"
 msgstr "زړه لړ"
 
@@ -3149,8 +3153,7 @@ msgstr "د شاليد انځور"
 
 #. DLG_Lists_Implies_List
 #. STYLE_IMPLIES_LIST
-#: po/tmp/ap_String_Id.h.h:1285
-#: po/tmp/xap_String_Id.h.h:413
+#: po/tmp/ap_String_Id.h.h:1285 po/tmp/xap_String_Id.h.h:413
 msgid "Implies List"
 msgstr "Implies لړ"
 
@@ -3204,8 +3207,7 @@ msgstr "تيار پښېيادښت ارزښت"
 #. DLG_Break_Insert
 #. MENU_STATUSLINE_TABLE_INSERT
 #. DLG_IP_Button_Label
-#: po/tmp/ap_String_Id.h.h:1308
-#: po/tmp/xap_String_Id.h.h:423
+#: po/tmp/ap_String_Id.h.h:1308 po/tmp/xap_String_Id.h.h:423
 msgid "Insert"
 msgstr "ورننويستل"
 
@@ -3489,8 +3491,7 @@ msgstr "ناښکارنده &هډوانه نښې"
 #. TOOLBAR_STATUSLINE_FMT_ITALIC
 #. TOOLBAR_TOOLTIP_FMT_ITALIC
 #. DLG_UFS_StyleItalic
-#: po/tmp/ap_String_Id.h.h:1429
-#: po/tmp/xap_String_Id.h.h:453
+#: po/tmp/ap_String_Id.h.h:1429 po/tmp/xap_String_Id.h.h:453
 msgid "Italic"
 msgstr "کوږ"
 
@@ -3732,15 +3733,13 @@ msgstr "د اوسني توکپټو هډوانه بدلول"
 
 #. DLG_Lists_Lower_Case_List
 #. STYLE_LOWERCASELIST
-#: po/tmp/ap_String_Id.h.h:1529
-#: po/tmp/xap_String_Id.h.h:489
+#: po/tmp/ap_String_Id.h.h:1529 po/tmp/xap_String_Id.h.h:489
 msgid "Lower Case List"
 msgstr "کوچنيو تورو لړ"
 
 #. DLG_Lists_Lower_Roman_List
 #. STYLE_LOWERROMANLIST
-#: po/tmp/ap_String_Id.h.h:1531
-#: po/tmp/xap_String_Id.h.h:491
+#: po/tmp/ap_String_Id.h.h:1531 po/tmp/xap_String_Id.h.h:491
 msgid "Lower Roman List"
 msgstr "کوچنی روماني لړ"
 
@@ -4070,8 +4069,7 @@ msgstr "شمېرلی"
 
 #. DLG_Lists_Numbered_List
 #. STYLE_NUMBER_LIST
-#: po/tmp/ap_String_Id.h.h:1665
-#: po/tmp/xap_String_Id.h.h:531
+#: po/tmp/ap_String_Id.h.h:1665 po/tmp/xap_String_Id.h.h:531
 msgid "Numbered List"
 msgstr "شمېر لړ"
 
@@ -4170,8 +4168,7 @@ msgstr "Out of memory attempting to open %s"
 #. TOOLBAR_STATUSLINE_FMT_OVERLINE
 #. TOOLBAR_TOOLTIP_FMT_OVERLINE
 #. DLG_UFS_OverlineCheck
-#: po/tmp/ap_String_Id.h.h:1714
-#: po/tmp/xap_String_Id.h.h:545
+#: po/tmp/ap_String_Id.h.h:1714 po/tmp/xap_String_Id.h.h:545
 msgid "Overline"
 msgstr "پاسکرښه"
 
@@ -4405,8 +4402,7 @@ msgstr "غوراوي"
 #. DLG_Lists_Preview
 #. DLG_PageNumbers_Preview
 #. DLG_Zoom_PreviewFrame
-#: po/tmp/ap_String_Id.h.h:1814
-#: po/tmp/xap_String_Id.h.h:575
+#: po/tmp/ap_String_Id.h.h:1814 po/tmp/xap_String_Id.h.h:575
 msgid "Preview"
 msgstr "مخليد"
 
@@ -4425,14 +4421,17 @@ msgstr "د چاپ نه مخکښې د لاسوند مخليد"
 
 #. DLG_Para_PreviewPrevParagraph
 #: po/tmp/ap_String_Id.h.h:1823
-msgid "Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph"
-msgstr "مخکښنی پېرېګراف مخکښنی پېرېګراف مخکښنی پېرېګراف مخکښنی پېرېګراف مخکښنی پېرېګراف مخکښنی پېرېګراف مخکښنی پېرېګراف"
+msgid ""
+"Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph "
+"Previous Paragraph Previous Paragraph Previous Paragraph"
+msgstr ""
+"مخکښنی پېرېګراف مخکښنی پېرېګراف مخکښنی پېرېګراف مخکښنی پېرېګراف مخکښنی "
+"پېرېګراف مخکښنی پېرېګراف مخکښنی پېرېګراف"
 
 #. TOOLBAR_LABEL_FILE_PRINT
 #. DLG_UP_PrintTitle
 #. DLG_UP_PrintButton
-#: po/tmp/ap_String_Id.h.h:1825
-#: po/tmp/xap_String_Id.h.h:580
+#: po/tmp/ap_String_Id.h.h:1825 po/tmp/xap_String_Id.h.h:580
 msgid "Print"
 msgstr "چاپول"
 
@@ -4921,8 +4920,7 @@ msgstr "د اوسني لاسوند مخينه کتل"
 
 #. MENU_STATUSLINE_TABLE_SELECT
 #. DLG_Select
-#: po/tmp/ap_String_Id.h.h:2029
-#: po/tmp/xap_String_Id.h.h:630
+#: po/tmp/ap_String_Id.h.h:2029 po/tmp/xap_String_Id.h.h:630
 msgid "Select"
 msgstr "ټاکل"
 
@@ -4984,8 +4982,7 @@ msgstr "بشپړ لاسوند ټاکل"
 
 #. DLG_FormatTable_Apply_To_Selection
 #. DLG_UP_Selection
-#: po/tmp/ap_String_Id.h.h:2054
-#: po/tmp/xap_String_Id.h.h:638
+#: po/tmp/ap_String_Id.h.h:2054 po/tmp/xap_String_Id.h.h:638
 msgid "Selection"
 msgstr "ټاکنه"
 
@@ -5128,8 +5125,7 @@ msgstr "لنډلارې کيلۍ"
 
 #. DLG_Options_Label_Show
 #. DLG_Show
-#: po/tmp/ap_String_Id.h.h:2112
-#: po/tmp/xap_String_Id.h.h:650
+#: po/tmp/ap_String_Id.h.h:2112 po/tmp/xap_String_Id.h.h:650
 msgid "Show"
 msgstr "ښودل"
 
@@ -5418,8 +5414,7 @@ msgstr "دا خونه چول"
 
 #. DLG_Lists_Square_List
 #. STYLE_SQUARELIST
-#: po/tmp/ap_String_Id.h.h:2235
-#: po/tmp/xap_String_Id.h.h:662
+#: po/tmp/ap_String_Id.h.h:2235 po/tmp/xap_String_Id.h.h:662
 msgid "Square List"
 msgstr "څلورګوټی لړ"
 
@@ -5440,8 +5435,7 @@ msgstr "کره توکپټه"
 
 #. DLG_Lists_Star_List
 #. STYLE_STARLIST
-#: po/tmp/ap_String_Id.h.h:2243
-#: po/tmp/xap_String_Id.h.h:666
+#: po/tmp/ap_String_Id.h.h:2243 po/tmp/xap_String_Id.h.h:666
 msgid "Star List"
 msgstr "ستوری لړ"
 
@@ -5495,8 +5489,7 @@ msgstr "لګې&دل"
 #. TOOLBAR_STATUSLINE_FMT_STRIKE
 #. TOOLBAR_TOOLTIP_FMT_STRIKE
 #. DLG_UFS_StrikeoutCheck
-#: po/tmp/ap_String_Id.h.h:2266
-#: po/tmp/xap_String_Id.h.h:668
+#: po/tmp/ap_String_Id.h.h:2266 po/tmp/xap_String_Id.h.h:668
 msgid "Strike"
 msgstr "لګېدل"
 
@@ -5544,8 +5537,7 @@ msgstr "ډول نوم تش نه شﺉ پرېښودلی"
 
 #. DLG_Lists_Style
 #. DLG_UFS_StyleLabel
-#: po/tmp/ap_String_Id.h.h:2286
-#: po/tmp/xap_String_Id.h.h:670
+#: po/tmp/ap_String_Id.h.h:2286 po/tmp/xap_String_Id.h.h:670
 msgid "Style:"
 msgstr ":ډول"
 
@@ -5574,8 +5566,7 @@ msgstr ":سرليک"
 #. TOOLBAR_STATUSLINE_FMT_SUBSCRIPT
 #. TOOLBAR_TOOLTIP_FMT_SUBSCRIPT
 #. DLG_UFS_SubScript
-#: po/tmp/ap_String_Id.h.h:2299
-#: po/tmp/xap_String_Id.h.h:674
+#: po/tmp/ap_String_Id.h.h:2299 po/tmp/xap_String_Id.h.h:674
 msgid "Subscript"
 msgstr "Subscript"
 
@@ -5623,8 +5614,7 @@ msgstr "Supe&rscript"
 #. TOOLBAR_STATUSLINE_FMT_SUPERSCRIPT
 #. TOOLBAR_TOOLTIP_FMT_SUPERSCRIPT
 #. DLG_UFS_SuperScript
-#: po/tmp/ap_String_Id.h.h:2319
-#: po/tmp/xap_String_Id.h.h:676
+#: po/tmp/ap_String_Id.h.h:2319 po/tmp/xap_String_Id.h.h:676
 msgid "Superscript"
 msgstr "Superscript"
 
@@ -5662,8 +5652,7 @@ msgstr ":د پاکېدو لپاره ټوپ تمونه"
 #. DLG_FormatTable_Apply_To_Table
 #. MENU_STATUSLINE_TABLE
 #. TB_Table
-#: po/tmp/ap_String_Id.h.h:2335
-#: po/tmp/xap_String_Id.h.h:686
+#: po/tmp/ap_String_Id.h.h:2335 po/tmp/xap_String_Id.h.h:686
 msgid "Table"
 msgstr "لښتيال"
 
@@ -5758,8 +5747,12 @@ msgstr "ليک او انځورن"
 
 #. MSG_MergeDocsNotRelated
 #: po/tmp/ap_String_Id.h.h:2375
-msgid "The documents you are trying to merge are unrelated. AbiWord will attempt to merge them, but the result might be meaningless."
-msgstr ".کوم لاسوندونه چې تاسو غواړﺉ سره ننباسﺉ بې تړاوه دي. ابيورډ بې د سره ننويستلو هڅه وکړي، خو کېدی شي چې پاېله يې بې مانا وي"
+msgid ""
+"The documents you are trying to merge are unrelated. AbiWord will attempt to "
+"merge them, but the result might be meaningless."
+msgstr ""
+".کوم لاسوندونه چې تاسو غواړﺉ سره ننباسﺉ بې تړاوه دي. ابيورډ بې د سره "
+"ننويستلو هڅه وکړي، خو کېدی شي چې پاېله يې بې مانا وي"
 
 #. DLG_PageSetup_ErrBigMargins
 #: po/tmp/ap_String_Id.h.h:2377
@@ -5768,7 +5761,9 @@ msgstr ".ټاکل شوې مورګې د مخ له لويوالي څخه لويې 
 
 #. DLG_Options_Prompt_YouMustRestart
 #: po/tmp/ap_String_Id.h.h:2379
-msgid "The new user interface language will take effect the next time that you start the application"
+msgid ""
+"The new user interface language will take effect the next time that you "
+"start the application"
 msgstr "نوې کارن برسېر ژبه به د کاريال د بيا پېلېدو سره اغېزه وکړي"
 
 #. MSG_SpellDone
@@ -5778,7 +5773,9 @@ msgstr ".ليکدود کتنه بشپړه شوه"
 
 #. MSG_HyperlinkCrossesBoundaries
 #: po/tmp/ap_String_Id.h.h:2383
-msgid "The text to which the hyperlink is to be attached must be within a single paragraph."
+msgid ""
+"The text to which the hyperlink is to be attached must be within a single "
+"paragraph."
 msgstr ".د لوپېوند سره نښلولو لپاره ليک بايد په يو پېرېګراف کښې وي"
 
 #. FIELD_DateTime_Wkday
@@ -5793,18 +5790,32 @@ msgstr ":پرېړوالی"
 
 #. MSG_AfterRestartNew
 #: po/tmp/ap_String_Id.h.h:2389
-msgid "This change will only take effect when you restart AbiWord or create a new document."
-msgstr ".دا بدلون به يوازې هله اغېزه وکړي چې تاسې ابيورډ بيا پېل يا نوی لاسوند جوړ کړﺉ"
+msgid ""
+"This change will only take effect when you restart AbiWord or create a new "
+"document."
+msgstr ""
+".دا بدلون به يوازې هله اغېزه وکړي چې تاسې ابيورډ بيا پېل يا نوی لاسوند جوړ "
+"کړﺉ"
 
 #. MSG_HiddenRevisions
 #: po/tmp/ap_String_Id.h.h:2391
-msgid "This document contains revisions which are currently hidden from view. Please see AbiWord documentation for information on working with revisions."
-msgstr ".دا لاسوند بياکتنې لري کومې چې د ليدنې پټې دي. مهرباني وکړﺉ بياکتنو سره کار کولو په اړه د نورو خبرتياوو لپاره د ابيورډ لارښود وګورﺉ"
+msgid ""
+"This document contains revisions which are currently hidden from view. "
+"Please see AbiWord documentation for information on working with revisions."
+msgstr ""
+".دا لاسوند بياکتنې لري کومې چې د ليدنې پټې دي. مهرباني وکړﺉ بياکتنو سره کار "
+"کولو په اړه د نورو خبرتياوو لپاره د ابيورډ لارښود وګورﺉ"
 
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h.h:2393
-msgid "This paragraph represents words as they might appear in your document.  To see text from your document used in this preview, position your cursor in a document paragraph with some text in it and open this dialog."
-msgstr "This paragraph represents words as they might appear in your document.  To see text from your document used in this preview, position your cursor in a document paragraph with some text in it and open this dialogue."
+msgid ""
+"This paragraph represents words as they might appear in your document.  To "
+"see text from your document used in this preview, position your cursor in a "
+"document paragraph with some text in it and open this dialog."
+msgstr ""
+"This paragraph represents words as they might appear in your document.  To "
+"see text from your document used in this preview, position your cursor in a "
+"document paragraph with some text in it and open this dialogue."
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h.h:2395
@@ -5822,8 +5833,7 @@ msgstr "درې"
 
 #. DLG_Lists_Tick_List
 #. STYLE_TICKLIST
-#: po/tmp/ap_String_Id.h.h:2399
-#: po/tmp/xap_String_Id.h.h:718
+#: po/tmp/ap_String_Id.h.h:2399 po/tmp/xap_String_Id.h.h:718
 msgid "Tick List"
 msgstr "ټک لړ"
 
@@ -5844,8 +5854,7 @@ msgstr "سرليک کېس"
 
 #. DLG_MetaData_Title_LBL
 #. DLG_Image_LblTitle
-#: po/tmp/ap_String_Id.h.h:2407
-#: po/tmp/xap_String_Id.h.h:722
+#: po/tmp/ap_String_Id.h.h:2407 po/tmp/xap_String_Id.h.h:722
 msgid "Title:"
 msgstr ":سرليک"
 
@@ -5865,15 +5874,13 @@ msgstr "[%s] بره مورګه"
 #. TOOLBAR_STATUSLINE_FMT_TOPLINE
 #. TOOLBAR_TOOLTIP_FMT_TOPLINE
 #. DLG_UFS_ToplineCheck
-#: po/tmp/ap_String_Id.h.h:2416
-#: po/tmp/xap_String_Id.h.h:728
+#: po/tmp/ap_String_Id.h.h:2416 po/tmp/xap_String_Id.h.h:728
 msgid "Topline"
 msgstr "برکرښه"
 
 #. DLG_Lists_Triangle_List
 #. STYLE_TRIANGLELIST
-#: po/tmp/ap_String_Id.h.h:2418
-#: po/tmp/xap_String_Id.h.h:730
+#: po/tmp/ap_String_Id.h.h:2418 po/tmp/xap_String_Id.h.h:730
 msgid "Triangle List"
 msgstr "درېګوټه لړ"
 
@@ -5906,8 +5913,7 @@ msgstr "لوتوري"
 #. TOOLBAR_STATUSLINE_FMT_UNDERLINE
 #. TOOLBAR_TOOLTIP_FMT_UNDERLINE
 #. DLG_UFS_UnderlineCheck
-#: po/tmp/ap_String_Id.h.h:2432
-#: po/tmp/xap_String_Id.h.h:750
+#: po/tmp/ap_String_Id.h.h:2432 po/tmp/xap_String_Id.h.h:750
 msgid "Underline"
 msgstr "لاندکرښه"
 
@@ -5930,15 +5936,13 @@ msgstr "سمون ناکړول"
 
 #. DLG_Lists_Upper_Case_List
 #. STYLE_UPPERCASTELIST
-#: po/tmp/ap_String_Id.h.h:2442
-#: po/tmp/xap_String_Id.h.h:784
+#: po/tmp/ap_String_Id.h.h:2442 po/tmp/xap_String_Id.h.h:784
 msgid "Upper Case List"
 msgstr "لوتوري لړ"
 
 #. DLG_Lists_Upper_Roman_List
 #. STYLE_UPPERROMANLIST
-#: po/tmp/ap_String_Id.h.h:2444
-#: po/tmp/xap_String_Id.h.h:786
+#: po/tmp/ap_String_Id.h.h:2444 po/tmp/xap_String_Id.h.h:786
 msgid "Upper Roman List"
 msgstr "لو رومن لړ"
 
@@ -5979,8 +5983,7 @@ msgstr "کارن-پېژندلي ډولونه"
 
 #. FIELD_Application_Version
 #. DLG_History_Version_Version
-#: po/tmp/ap_String_Id.h.h:2460
-#: po/tmp/xap_String_Id.h.h:792
+#: po/tmp/ap_String_Id.h.h:2460 po/tmp/xap_String_Id.h.h:792
 msgid "Version"
 msgstr "نسخه"
 
@@ -6098,7 +6101,8 @@ msgstr "You have changed the direction mode."
 #. MSG_HyperlinkNoSelection
 #: po/tmp/ap_String_Id.h.h:2511
 msgid "You must select a portion of the document before inserting a hyperlink."
-msgstr "You must select a portion of the document before inserting a hyperlink."
+msgstr ""
+"You must select a portion of the document before inserting a hyperlink."
 
 #. DLG_Options_Label_InvalidRangeForAutoSave
 #: po/tmp/ap_String_Id.h.h:2513
@@ -6114,8 +6118,7 @@ msgstr "Your changes will be lost if you don't save them."
 #. TOOLBAR_STATUSLINE_ZOOM
 #. TOOLBAR_TOOLTIP_ZOOM
 #. DLG_Zoom_ZoomTitle
-#: po/tmp/ap_String_Id.h.h:2519
-#: po/tmp/xap_String_Id.h.h:839
+#: po/tmp/ap_String_Id.h.h:2519 po/tmp/xap_String_Id.h.h:839
 msgid "Zoom"
 msgstr "لويول"
 
@@ -6271,14 +6274,22 @@ msgstr ""
 #. MSG_HistoryPartRestore1
 #: po/tmp/xap_String_Id.h.h:35
 #, c-format
-msgid "AbiWord cannot fully restore version %d of the document because the version information is incomplete."
-msgstr "AbiWord cannot fully restore version %d of the document because the version information is incomplete."
+msgid ""
+"AbiWord cannot fully restore version %d of the document because the version "
+"information is incomplete."
+msgstr ""
+"AbiWord cannot fully restore version %d of the document because the version "
+"information is incomplete."
 
 #. MSG_HistoryNoRestore
 #: po/tmp/xap_String_Id.h.h:37
 #, c-format
-msgid "AbiWord cannot restore version %d of the document because the version information is missing."
-msgstr "AbiWord cannot restore version %d of the document because the version information is missing."
+msgid ""
+"AbiWord cannot restore version %d of the document because the version "
+"information is missing."
+msgstr ""
+"AbiWord cannot restore version %d of the document because the version "
+"information is missing."
 
 #. DLG_UP_PrintPreviewTitle
 #: po/tmp/xap_String_Id.h.h:39
@@ -7782,8 +7793,12 @@ msgstr "The directory '%s' is write-protected."
 #. MSG_HistoryPartRestore2
 #: po/tmp/xap_String_Id.h.h:712
 #, c-format
-msgid "The nearest version that can be restored fully is %d. Would you like to restore this version instead? To partially restore version %d press No."
-msgstr "The nearest version that can be restored fully is %d. Would you like to restore this version instead? To partially restore version %d press No."
+msgid ""
+"The nearest version that can be restored fully is %d. Would you like to "
+"restore this version instead? To partially restore version %d press No."
+msgstr ""
+"The nearest version that can be restored fully is %d. Would you like to "
+"restore this version instead? To partially restore version %d press No."
 
 #. DLG_UP_InvalidPrintString
 #: po/tmp/xap_String_Id.h.h:714
@@ -8111,8 +8126,7 @@ msgid "mm"
 msgstr "مم"
 
 #. DLG_Unit_pica
-#: po/tmp/xap_String_Id.h.h:8Greek,
-#: ISO-8859-761
+#: po/tmp/xap_String_Id.h.h:8Greek, ISO-8859-761
 msgid "pica"
 msgstr "پيکا"
 
@@ -8133,42 +8147,60 @@ msgstr "بې تړاوه"
 
 #~ msgid "&Autotext"
 #~ msgstr "&Autotext"
+
 #~ msgid "About &Open Source"
 #~ msgstr "About &Open Source"
+
 #~ msgid "Attention:"
 #~ msgstr "Attention:"
+
 #~ msgid "Best regards,"
 #~ msgstr "Yours faithfully,"
+
 #~ msgid "CERTIFIED MAIL"
 #~ msgstr "RECORDED DELIVERY"
+
 #~ msgid "Check &Version"
 #~ msgstr "Check &Version"
+
 #~ msgid "Closing:"
 #~ msgstr "Closing:"
+
 #~ msgid "Dear Mom and Dad,"
 #~ msgstr "Dear Mum and Dad,"
+
 #~ msgid "Display information about Open Source"
 #~ msgstr "Display information about Open Source"
+
 #~ msgid "Display program version number"
 #~ msgstr "Display program version number"
+
 #~ msgid "Email:"
 #~ msgstr "Email:"
+
 #~ msgid "Mail Instructions:"
 #~ msgstr "Mail Instructions:"
+
 #~ msgid "Reference:"
 #~ msgstr "Reference:"
+
 #~ msgid "Respectfully yours,"
 #~ msgstr "Respectfully,"
+
 #~ msgid "Respectfully,"
 #~ msgstr "Take care,"
+
 #~ msgid "Salutation:"
 #~ msgstr "Salutation:"
+
 #~ msgid "Sincerely yours,"
 #~ msgstr "Thank you,"
+
 #~ msgid "Thank you,"
 #~ msgstr "Yours faithfully,"
+
 #~ msgid "Thanks,"
 #~ msgstr "Yours sincerely,"
+
 #~ msgid "Yours truly,"
 #~ msgstr "Yours truly,"
-

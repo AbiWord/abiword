@@ -447,7 +447,10 @@ void XAP_DiskStringSet::charData(const gchar * /* s */, int /* len */)
 
 bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 {
-	bool bResult = false;			// assume failure
+	bool bResult = true;			// As we no longer need to parse .strings files
+                            // We need to make sure this is successful
+                            // Until we can remove all instances of this class
+                            // from the code.
 
 	m_parserState.m_parserStatus = true;
 

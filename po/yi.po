@@ -8171,7 +8171,7 @@ msgid "mm"
 msgstr "ממ"
 
 #. DLG_Unit_pica
-#: po/tmp/xap_String_Id.h.h:861
+#: po/tmp/xap_String_Id.h.h:8Greek, ISO-8859-761
 msgid "pica"
 msgstr "פּיקאַ"
 

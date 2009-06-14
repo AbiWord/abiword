@@ -828,7 +828,6 @@ AC_OUTPUT(
   user/Makefile
   user/wp/Makefile
   user/wp/clipart/Makefile
-  user/wp/strings/Makefile
   user/wp/templates/Makefile
 )
 

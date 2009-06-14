@@ -20,7 +20,7 @@ uninstall:
 	-$(foreach lang, $(subst .mo,, $(mo_files)), file=$(localedir)/$(subst -,_,$(lang))/LC_MESSAGES/abiword.mo; if test -f $$file; then rm -f $$file; fi; )
 
 update-po:
-	@echo "TODO: make -C po update-po"
+	-$(foreach file, $(po_files), msgmerge -UN --backup=none $(file) abiword.POT; )
 
 %.mo: %.po
-	$(MSGFMT) -o $@ $<
+	-$(MSGFMT) -o $@ $<
