@@ -33,6 +33,7 @@
 #include "xap_App.h"
 #include "xap_Frame.h"
 #include "fv_View.h"
+#include "fl_DocLayout.h"
 #include "ev_EditMethod.h"
 #include "ie_imp.h"
 #include "ie_exp.h"
