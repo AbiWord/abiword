@@ -2,7 +2,8 @@
 grammar_pkgs='link-grammar >= 4.2.1'
 grammar_deps="no"
 
-if test "$enable_grammar" != ""; then
+dnl make sure we enable grammar only if spell is enabled. At least in auto mode.
+if test "$enable_grammar" != "" && test  "$abi_cv_spell" == "yes"; then
 
 PKG_CHECK_EXISTS([ $grammar_pkgs ], 
 [
