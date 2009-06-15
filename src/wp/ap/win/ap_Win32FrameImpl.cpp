@@ -628,12 +628,12 @@ bool AP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
 		return false;
 
 	ATOM a;
-    UT_Win32LocaleString str;	
+    	UT_Win32LocaleString str;	
 
 	// register class for the container window (this will contain the document
 	// and the rulers and the scroll bars)
 
-    str.fromASCII (app->getApplicationName());	
+    	str.fromASCII (app->getApplicationName());	
 	_snwprintf(s_ContainerWndClassName, MAXCNTWNDCLSNMSIZE, L"%sContainer", str.c_str());
  	
 
@@ -645,7 +645,7 @@ bool AP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
 
 	// register class for the actual document window
 	//_snprintf(s_DocumentWndClassName, MAXDOCWNDCLSNMSIZE, "%sDocument", app->getApplicationName());
-    wcscpy (s_DocumentWndClassName, L"Document");
+  	wcscpy (s_DocumentWndClassName, L"Document");
 	a = UT_RegisterClassEx(CS_DBLCLKS | CS_OWNDC, AP_Win32FrameImpl::_DocumentWndProc, app->getInstance(),
 						   NULL, NULL, NULL, NULL,
 						   NULL, s_DocumentWndClassName);
@@ -762,11 +762,11 @@ void AP_Win32FrameImpl::_getVerticalScrollInfo(SCROLLINFO * psi)
 
 int AP_Win32FrameImpl::_getMouseWheelLines()
 {
- 	OSVERSIONINFO Info = { 0 };
+ 	OSVERSIONINFOW Info = { 0 };
 
  	Info.dwOSVersionInfoSize = sizeof(Info);
 
- 	if (GetVersionEx(&Info) &&
+ 	if (GetVersionExW(&Info) &&
  		Info.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS &&
  		Info.dwMajorVersion == 4 &&
  		Info.dwMinorVersion == 0)
