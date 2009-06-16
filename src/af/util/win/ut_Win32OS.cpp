@@ -91,9 +91,9 @@ bool UT_IsWin95(void)
  This function is used by the various tabbed dialogs to load
  the sub-dialogs.
  */
-DLGTEMPLATE * WINAPI UT_LockDlgRes(HINSTANCE hinst, LPCTSTR lpszResName)
+DLGTEMPLATE * WINAPI UT_LockDlgRes(HINSTANCE hinst, LPCWSTR lpszResName)
 { 
-    HRSRC hrsrc = FindResource(NULL, lpszResName, RT_DIALOG); 
+    HRSRC hrsrc = FindResourceW(NULL, lpszResName,  (LPWSTR)RT_DIALOG); 
     HGLOBAL hglb = LoadResource(hinst, hrsrc); 
     return (DLGTEMPLATE *) LockResource(hglb); 	
 } 
@@ -139,7 +139,7 @@ wchar_t * UT_GetDefaultPrinterName()
 		if (osvi.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
 		{
 			// get size of the buffer needed to call enum printers
-			if (!EnumPrinters(PRINTER_ENUM_DEFAULT,NULL,5,NULL,0,&iNeeded,&iReturned))
+			if (!EnumPrintersW(PRINTER_ENUM_DEFAULT,NULL,5,NULL,0,&iNeeded,&iReturned))
 			{
 				if ((rc = GetLastError()) != ERROR_INSUFFICIENT_BUFFER)
 				{
@@ -288,124 +288,6 @@ ATOM UT_RegisterClassEx(UINT style, WNDPROC wndproc, HINSTANCE hInstance,
 }
 
 
-
-
-ATOM UT_RegisterClassEx(UINT style, WNDPROC wndproc, HINSTANCE hInstance,
-						HICON hIcon, HCURSOR hCursor, HBRUSH hbrBackground, HICON hIconSm,
-						const char * menu, const char * name,
-						bool bForceANSI)         //TODO: REMOVE
-{
-	if(!bForceANSI && UT_IsWinNT())
-	{
-		// first, transfer the menu and class name into wchar array
-		// this code assumes that these are ASCII strings; this is true both for the win32
-		// system names and our own
-		WCHAR buff1[100];
-		WCHAR buff2[100];
-		
-		const char * p = name;
-		UT_uint32 i = 0;
-		
-		while(p && *p && i < 99) //don't overflow buff1 below
-		{
-			buff1[i] = *p;
-			++p;
-			++i;
-		}
-		buff1[i] = 0;
-		
-		p = menu;
-		i = 0;
-		
-		while(p && *p && i < 99) //don't overflow buff2 below
-		{
-			buff2[i] = *p;
-			++p;
-			++i;
-		}
-		buff2[i] = 0;
-		
-		WNDCLASSEXW  wndclass;
-		memset(&wndclass, 0, sizeof(wndclass));
-		wndclass.cbSize        = sizeof(wndclass);
-		wndclass.style         = style;
-		wndclass.lpfnWndProc   = wndproc;
-		wndclass.cbClsExtra    = 0;
-		wndclass.cbWndExtra    = 0;
-		wndclass.hInstance     = hInstance;
-		wndclass.hIcon         = hIcon;
-		wndclass.hCursor       = hCursor;
-		wndclass.hbrBackground = hbrBackground;
-		wndclass.lpszMenuName  = buff2;
-		wndclass.lpszClassName = buff1;
-		wndclass.hIconSm       = hIconSm;
-		
-		return RegisterClassExW(&wndclass);
-	}
-	else
-	{
-		WNDCLASSEXA  wndclass;
-		memset(&wndclass, 0, sizeof(wndclass));
-		wndclass.cbSize        = sizeof(wndclass);
-		wndclass.style         = style;
-		wndclass.lpfnWndProc   = wndproc;
-		wndclass.cbClsExtra    = 0;
-		wndclass.cbWndExtra    = 0;
-		wndclass.hInstance     = hInstance;
-		wndclass.hIcon         = hIcon;
-		wndclass.hCursor       = hCursor;
-		wndclass.hbrBackground = hbrBackground;
-		wndclass.lpszMenuName  = menu;
-		wndclass.lpszClassName = name;
-		wndclass.hIconSm       = hIconSm;
-		
-		return RegisterClassExA(&wndclass);
-	}
-}
-
-
-
-HWND UT_CreateWindowEx(DWORD dwExStyle, const char * pszClassName, const char * pszWindowName, DWORD dwStyle,
-					   int x, int y, int nWidth, int nHeight,
-					   HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam,
-					   bool bForceANSI)      //TODO: REMOVE
-{
-	if(!bForceANSI && UT_IsWinNT())
-	{
-		WCHAR buff1[100];
-
-		// see comments in UT_RegisterClassEx
-		const char * p = pszClassName;
-		UT_uint32 i = 0;
-		
-		while(p && *p && i < 99) //don't overflow buff1 below
-		{
-			buff1[i] = *p;
-			++p;
-			++i;
-		}
-		buff1[i] = 0;
-
-		// we need to use iconv here, because the name of the window might be localised
-		// (in practice this matters very little, because this only sets the initial name
-		// for the frame, which we immediately change once the windows is created)
-		auto_iconv aic (UT_LocaleInfo::system().getEncoding().utf8_str(), ucs2Internal());
-		WCHAR * ucs2str = (WCHAR*) UT_convert_cd(pszWindowName, strlen(pszWindowName), aic, NULL, NULL);
-		
-		HWND hwnd = CreateWindowExW(dwExStyle, buff1, ucs2str, dwStyle,
-									x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
-		g_free(ucs2str);
-		return hwnd;
-	}
-	else
-	{
-		return CreateWindowExA(dwExStyle, pszClassName, pszWindowName,
-							   dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
-	}
-	
-}
-
-
 LRESULT UT_DefWindowProc(HWND hWnd, UINT Msg, WPARAM wParam,LPARAM lParam)
 {
 	return DefWindowProcW(hWnd, Msg, wParam, lParam);	
@@ -417,23 +299,6 @@ BOOL UT_SetWindowText(HWND hWnd, const wchar_t * lpString)
 	return SetWindowTextW(hWnd, lpString);
 }
 
-
-
-BOOL UT_SetWindowText(HWND hWnd, const char * lpString, bool bForceANSI)            //TODO: remove
-{
-	if(!bForceANSI&& UT_IsWinNT())
-	{
-		auto_iconv aic("UTF-8", ucs2Internal());
-		WCHAR * ucs2 = (WCHAR*)UT_convert_cd(lpString, strlen(lpString), aic, NULL, NULL);
-		BOOL bRet = SetWindowTextW(hWnd, ucs2);
-		g_free(ucs2);
-		return bRet;
-	}
-	else
-	{
-		return SetWindowTextA(hWnd, lpString);
-	}
-}
 
 
 BOOL UT_GetMessage(LPMSG lpMsg,HWND hWnd,UINT wMsgFilterMin,UINT wMsgFilterMax)

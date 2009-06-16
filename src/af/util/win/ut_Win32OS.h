@@ -31,15 +31,11 @@ bool UT_IsWinNT(void);
 bool UT_IsWin2K(void);
 bool UT_IsWin95(void);
 
-DLGTEMPLATE * WINAPI UT_LockDlgRes(HINSTANCE hinst, LPCTSTR lpszResName);
+DLGTEMPLATE * WINAPI UT_LockDlgRes(HINSTANCE hinst, LPCWSTR lpszResName);
 
 wchar_t * UT_GetDefaultPrinterName();
 
 HDC  UT_GetDefaultPrinterDC();
-
-ATOM UT_RegisterClassEx(UINT style, WNDPROC wndproc, HINSTANCE hInstance,
-						HICON hIcon, HCURSOR hCursor, HBRUSH hbrBackground, HICON hIconSm,
-						const char * menu, const char * name, bool bForceANSI = false);         //TODO - remove
 
 
 ATOM UT_RegisterClassEx(UINT style, WNDPROC wndproc, HINSTANCE hInstance,
@@ -53,12 +49,6 @@ HWND UT_CreateWindowEx(DWORD dwExStyle, const wchar_t* lpClassName, const wchar_
 					   int x, int y, int nWidth, int nHeight,
 					   HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam);
 
-HWND UT_CreateWindowEx(DWORD dwExStyle, LPCTSTR lpClassName, LPCTSTR lpWindowName, DWORD dwStyle,
-					   int x, int y, int nWidth, int nHeight,
-					   HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam, bool bForceANSI = true); //TODO - remove
-
-BOOL UT_SetWindowText(HWND hWnd, const char * lpString, bool bForceANSI = false); //TODO -remove
-
 
 LRESULT UT_DefWindowProc(HWND hWnd, UINT Msg, WPARAM wParam,LPARAM lParam);
 BOOL UT_SetWindowText(HWND hWnd, const wchar_t * lpString);
@@ -66,5 +56,4 @@ BOOL UT_SetWindowText(HWND hWnd, const wchar_t * lpString);
 BOOL UT_GetMessage(LPMSG lpMsg,HWND hWnd,UINT wMsgFilterMin,UINT wMsgFilterMax);
 
 LRESULT UT_DispatchMessage(const MSG *lpmsg);
-//LRESULT UT_DispatchMessage(const MSG *lpmsg, bool bForceANSI = false);
 #endif /* UT_Win32OS_H */
