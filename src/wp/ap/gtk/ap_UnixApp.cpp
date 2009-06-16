@@ -199,63 +199,6 @@ static bool s_createDirectoryIfNecessary(const char * szDir)
     
     UT_DEBUGMSG(("Could not create Directory [%s].\n",szDir));
     return false;
-}	
-
-/*!
-* Try loading a string-set.
-* \param szStringSet Language id, e.g. de_AT
-* \param pDefaultStringSet String set to be used for untranslated strings.
-* \return AP_DiskStringSet * on success, NULL if not found
-*/
-AP_DiskStringSet * 
-AP_UnixApp::loadStringsFromDisk(const char 			* szStringSet, 
-								AP_BuiltinStringSet * pDefaultStringSet)
-{
-	UT_ASSERT(pDefaultStringSet);
-
-	const char * szDirectory = NULL;
-	getPrefsValueDirectory(true,
-			       static_cast<const gchar*>(AP_PREF_KEY_StringSetDirectory),
-			       static_cast<const gchar**>(&szDirectory));
-	UT_return_val_if_fail((szDirectory) && (*szDirectory), NULL);
-
-	// fo_BA.strings
-	UT_String szPath = szDirectory;
-	if (szDirectory[szPath.size()-1]!='/')
-		szPath += "/";
-	szPath += szStringSet;
-	szPath += ".strings";
-
-	// fo.strings
-	UT_String szFallbackPath;
-	if (szStringSet && strlen(szStringSet) > 2) {
-		szFallbackPath = szDirectory;
-		if (szDirectory[szFallbackPath.size()-1]!='/')
-			szFallbackPath += "/";
-		szFallbackPath += szStringSet[0];
-		szFallbackPath += szStringSet[1];
-		szFallbackPath += ".strings";
-	}
-
-	AP_DiskStringSet * pDiskStringSet = new AP_DiskStringSet(this);
-	if (pDiskStringSet->loadStringsFromDisk(szPath.c_str()))
-	{
-		pDiskStringSet->setFallbackStringSet(pDefaultStringSet);
-		UT_DEBUGMSG(("Using StringSet [%s]\n",szPath.c_str()));
-		return pDiskStringSet;
-	}
-	else if (szFallbackPath.size() && pDiskStringSet->loadStringsFromDisk(szFallbackPath.c_str())) 
-	{
-		pDiskStringSet->setFallbackStringSet(pDefaultStringSet);
-		UT_DEBUGMSG(("Using StringSet [%s]\n",szFallbackPath.c_str()));
-		return pDiskStringSet;
-	}
-	else
-	{
-		DELETEP(pDiskStringSet);
-		UT_DEBUGMSG(("Unable to load StringSet [%s] -- using builtin strings instead.\n",szPath.c_str()));
-		return NULL;
-	}
 }
 
 /*!
@@ -274,51 +217,13 @@ bool AP_UnixApp::initialize(bool has_display)
       {
 		  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
       }
+    
+    m_pStringSet = new AP_StringSet(this, "");
 
     // load the preferences.
     
     m_prefs = new AP_UnixPrefs();
     m_prefs->fullInit();
-
-    //////////////////////////////////////////////////////////////////
-    // load the dialog and message box strings
-    //
-    // (we want to do this as soon as possible so that any errors in
-    // the initialization could be properly localized before being
-    // reported to the user)
-    //////////////////////////////////////////////////////////////////
-	
-    {	
-		// Loading default string set for untranslated messages
-		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this, 
-													static_cast<const gchar*>(AP_PREF_DEFAULT_StringSet));
-		UT_ASSERT(pBuiltinStringSet);
-
-		// try loading strings by preference
-		const char * szStringSet = NULL;
-		if (   (getPrefsValue(AP_PREF_KEY_StringSet,
-							  static_cast<const gchar**>(&szStringSet)))
-			   && (szStringSet)
-			   && (*szStringSet)
-			   && (strcmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
-		{
-			m_pStringSet = loadStringsFromDisk(szStringSet, pBuiltinStringSet);
-		}
-
-		// try loading fallback strings for the language, e.g. es-ES for es-AR
-		if (m_pStringSet == NULL) 
-		{
-			const char *szFallbackStringSet = UT_getFallBackStringSetLocale(szStringSet);
-			m_pStringSet = loadStringsFromDisk(szFallbackStringSet, pBuiltinStringSet);
-		}
-
-		// load the builtin string set
-		// this is the default
-		if (m_pStringSet == NULL) 
-		{
-			m_pStringSet = pBuiltinStringSet;
-		}
-    }
 
     // now that preferences are established, let the xap init
 	if (has_display) {	   
@@ -352,11 +257,11 @@ bool AP_UnixApp::initialize(bool has_display)
     // Now we have the strings loaded we can populate the field names correctly
     int i;
 	
-    for (i = 0; fp_FieldTypes[i].m_Type != FPFIELDTYPE_END; i++)
+    /*for (i = 0; fp_FieldTypes[i].m_Type != FPFIELDTYPE_END; i++)
       (&fp_FieldTypes[i])->m_Desc = m_pStringSet->getValue(fp_FieldTypes[i].m_DescId);
 
     for (i = 0; fp_FieldFmts[i].m_Tag != NULL; i++)
-      (&fp_FieldFmts[i])->m_Desc = m_pStringSet->getValue(fp_FieldFmts[i].m_DescId);
+      (&fp_FieldFmts[i])->m_Desc = m_pStringSet->getValue(fp_FieldFmts[i].m_DescId);*/
 
     ///////////////////////////////////////////////////////////////////////
     /// Build a labelset so the plugins can add themselves to something ///

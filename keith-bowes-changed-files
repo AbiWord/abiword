@@ -2,6 +2,7 @@ Makefile.am
 configure.in
 keith-bowes-changed-files
 po/Makefile.in
+po/abiword.POT
 po/eo.po
 po/gl.po
 po/he-IL.po
@@ -21,8 +22,12 @@ src/af/xap/xp/xap_String_Id.h
 src/af/xap/xp/xap_Strings.cpp
 src/af/xap/xp/xap_Strings.h
 src/text/ptbl/xp/pt_PT_Styles.cpp
+src/wp/ap/gtk/ap_UnixApp.cpp
+src/wp/ap/gtk/ap_UnixApp.h
 src/wp/ap/gtk/ap_UnixDialog_Lists.cpp
 src/wp/ap/gtk/ap_UnixStockIcons.cpp
+src/wp/ap/xp/ap_Args.cpp
+src/wp/ap/xp/ap_Menu_Layouts.cpp
 src/wp/ap/xp/ap_String_Id.h
 src/wp/ap/xp/ap_Strings.cpp
 src/wp/ap/xp/ap_Strings.h

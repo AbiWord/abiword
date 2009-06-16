@@ -37,47 +37,12 @@
 
 #undef dcl
 
-//////////////////////////////////////////////////////////////////
-// a sub-class to wrap the compiled-in (english) strings
-//////////////////////////////////////////////////////////////////
-
-class ABI_EXPORT AP_BuiltinStringSet : public XAP_BuiltinStringSet
-{
-public:
-	AP_BuiltinStringSet(XAP_App * pApp, const gchar * szLanguageName);
-	virtual ~AP_BuiltinStringSet(void);
-
-	virtual const gchar *	getValue(XAP_String_Id id) const;
-
-#ifdef DEBUG
-	bool						dumpBuiltinSet(const char * szFilename) const;
-#endif
-
-protected:
-	const gchar **			m_arrayAP;
-};
-
-//////////////////////////////////////////////////////////////////
-// a sub-class to deal with disk-based string sets (translations)
-//////////////////////////////////////////////////////////////////
-
-class ABI_EXPORT AP_DiskStringSet : public XAP_DiskStringSet
-{
-public:
-	AP_DiskStringSet(XAP_App * pApp);
-	virtual ~AP_DiskStringSet(void);
-
-	virtual bool				setValue(XAP_String_Id id, const gchar * szString);
-//	virtual bool				setValue(const gchar * szId, const gchar * szString);
-	virtual const gchar *	getValue(XAP_String_Id id) const;
-	virtual bool				loadStringsFromDisk(const char * szFilename);
-
-protected:
-	UT_GenericVector<gchar*>					m_vecStringsAP;
-};
-
-
-
 #endif /* AP_STRINGS_H */
 
-
+class ABI_EXPORT AP_StringSet : public XAP_StringSet
+{
+  public:
+    AP_StringSet(XAP_App *pApp, char *szLanguageName);
+    virtual ~AP_StringSet(void);
+    const char *getValue(XAP_String_Id id) const;
+};

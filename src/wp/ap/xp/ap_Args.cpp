@@ -142,19 +142,6 @@ bool AP_Args::doWindowlessArgs(bool & bSuccessful)
   // start out optimistic
   bSuccessful = true;
 
-#ifdef DEBUG
-	if (m_iDumpstrings)
-	{
-		// dump the string table in english as a template for translators.
-		// see abi/docs/AbiSource_Localization.abw for details.
-		AP_BuiltinStringSet * pBuiltinStringSet = 
-			new AP_BuiltinStringSet(getApp(),
-									static_cast<const gchar*>(AP_PREF_DEFAULT_StringSet));
-		pBuiltinStringSet->dumpBuiltinSet("en-US.strings");
-		delete pBuiltinStringSet;
-	}
-#endif
-
  	if (m_iVersion)
  	{		
  		printf("%s\n", PACKAGE_VERSION);

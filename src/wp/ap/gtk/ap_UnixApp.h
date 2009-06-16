@@ -45,8 +45,6 @@ class XAP_StringSet;
 class AV_View;
 class GR_Image;
 class AP_Args;
-class AP_BuiltinStringSet;
-class AP_DiskStringSet;
 
 class ABI_EXPORT AP_UnixApp : public AP_App
 {
@@ -103,8 +101,6 @@ public:
 								 UT_Error error);
 	virtual bool doWindowlessArgs (const AP_Args *, bool & bSuccess);
 	bool makePngPreview(const char * pszInFile,const char * pszPNGFile,  UT_sint32 iWidth, UT_sint32 iHeight);
-	AP_DiskStringSet * loadStringsFromDisk(const char 		   * szStringSet, 
-										   AP_BuiltinStringSet * pFallbackStringSet);
 
 	virtual XAP_UnixClipboard * getClipboard () { return m_pClipboard; }
 

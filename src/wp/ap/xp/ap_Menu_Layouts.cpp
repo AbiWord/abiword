@@ -679,11 +679,6 @@ bool  XAP_Menu_Factory::buildMenuLabelSet(const char * szLanguage_)
 */
 bool  XAP_Menu_Factory::buildBuiltInMenuLabelSet(EV_Menu_LabelSet *& pLabelSet)
 {
-	if(m_pBSS == NULL)
-	{
-		AP_BuiltinStringSet * pBSS = new AP_BuiltinStringSet(m_pApp,"en-US");
-		m_pBSS = (XAP_StringSet *) pBSS;
-	}
 	pLabelSet = new EV_Menu_LabelSet("en-US",AP_MENU_ID__BOGUS1__,AP_MENU_ID__BOGUS2__);	
     UT_UTF8String s1, s2;
     #define menuitem(id)                                                       \
