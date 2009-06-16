@@ -263,13 +263,13 @@ BOOL AP_Win32Dialog_Paragraph::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 		// finally, create the (modeless) child dialogs
 
 		tp.which = AP_RID_DIALOG_PARA_TAB1;
-		pTemplate = UT_LockDlgRes(hinst, MAKEINTRESOURCE(tp.which));
+		pTemplate = UT_LockDlgRes(hinst, MAKEINTRESOURCEW(tp.which));
 		w = CreateDialogIndirectParam(hinst, pTemplate, m_hwndTab,
 										(DLGPROC)s_tabProc, (LPARAM)&tp);
 		UT_ASSERT_HARMLESS((w && (w == m_hwndSpacing)));
 
 		tp.which = AP_RID_DIALOG_PARA_TAB2;
-		pTemplate = UT_LockDlgRes(hinst, MAKEINTRESOURCE(tp.which));
+		pTemplate = UT_LockDlgRes(hinst, MAKEINTRESOURCEW(tp.which));
 		w = CreateDialogIndirectParam(hinst, pTemplate, m_hwndTab,
 										(DLGPROC)s_tabProc, (LPARAM)&tp);
 		UT_ASSERT_HARMLESS((w && (w == m_hwndBreaks)));
