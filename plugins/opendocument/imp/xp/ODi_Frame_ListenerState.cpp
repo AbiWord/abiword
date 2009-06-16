@@ -438,7 +438,6 @@ static bool _convertBorderThickness(const char* szIncoming, UT_UTF8String& sConv
  */
 void ODi_Frame_ListenerState::_drawTextBox (const gchar** ppAtts,
                                            ODi_ListenerStateAction& rAction) {
-
     const gchar* attribs[3];
     const gchar* pStyleName = NULL;
     const ODi_Style_Style* pGraphicStyle = NULL;
@@ -563,7 +562,7 @@ void ODi_Frame_ListenerState::_drawTextBox (const gchar** ppAtts,
     attribs[0] = "props";
     attribs[1] = props.utf8_str();
     attribs[2] = 0;
-
+		   
     if(!m_pAbiDocument->appendStrux(PTX_SectionFrame, attribs)) {
         UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
     } else {
@@ -652,10 +651,25 @@ bool ODi_Frame_ListenerState::_getFrameProperties(UT_UTF8String& rProps,
         rProps += "; frame-page-ypos:";
         rProps += pVal;
         
-    } else {
-        // "char" or "as-char"
-        // AbiWord doesn't have this kind of inlined frame/textbox.
+    } else if (pVal && (!strcmp(pVal, "char") || !strcmp(pVal, "as-char"))) {
+		// AbiWord does not support anchoring frames/texboxes to chars; 
+		// let's just convert it to paragraph anchoring, so we don't loose the 
+		// entire frame
+		rProps += "; position-to:block-above-text";
 
+	    pVal = m_rElementStack.getStartTag(0)->getAttributeValue("svg:x");
+        if (pVal) {
+            rProps += "; xpos:";
+            rProps += pVal;
+        }
+        
+        pVal = m_rElementStack.getStartTag(0)->getAttributeValue("svg:y");
+        if (pVal) {
+            rProps += "; ypos:";
+            rProps += pVal;
+        }
+	} else {	
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
         return false;
     }
     
