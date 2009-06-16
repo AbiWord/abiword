@@ -62,6 +62,7 @@ protected:
 	UT_Error _flushTopLevel(OXMLi_ElementStack * stck);
 	const gchar * _TwipsToPoints(const gchar * twips);
 	const gchar * _EighthPointsToPoints(const gchar * eights);
+	const gchar * _EmusToInches(const gchar * emus);
 	void getFontLevelRange(const gchar * val, OXML_FontLevel& level, OXML_CharRange& range);
 
 private:

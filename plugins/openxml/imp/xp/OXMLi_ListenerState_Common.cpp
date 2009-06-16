@@ -40,8 +40,6 @@
 #include <ut_units.h>
 #include <ut_misc.h>
 #include <ut_debugmsg.h>
-#include <ie_impGraphic.h>
-#include <fg_GraphicRaster.h>
 
 // External includes
 #include <cstring>
@@ -592,48 +590,6 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 		}
 		rqst->handled = true;
 
-	} else if (nameMatches(rqst->pName, NS_A_KEY, "blip")) {
-		const gchar * id = attrMatches(NS_R_KEY, "embed", rqst->ppAtts);
-		std::string imageId(id);
-		if(id)
-		{
-			UT_Error err = UT_OK;
-			FG_Graphic* pFG = NULL;
-			const UT_ByteBuf* convImageData;
-
-			OXML_SharedElement imgElem(new OXML_Element_Image(id));
-			rqst->stck->push(imgElem);
-		
-			OXMLi_PackageManager * mgr = OXMLi_PackageManager::getInstance();
-			UT_ByteBuf* imageData = mgr->parseImageStream(id);
-
-			err = IE_ImpGraphic::loadGraphic (imageData, IEGFT_Unknown, &pFG);
-			if ((err != UT_OK) || !pFG) 
-			{
-				UT_DEBUGMSG(("FRT:OpenXML importer can't import the picture with id:%s\n", id));
-				return;
-			}
-
-			convImageData = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
-		
-			if(convImageData)
-			{
-				OXML_Document * doc = OXML_Document::getInstance();
-				UT_return_if_fail(_error_if_fail(doc != NULL));
-				
-				OXML_Image* img = new OXML_Image();
-				img->setId(imageId.c_str());
-				img->setData(convImageData);
-				img->setMimeType("image/png");
-
-				OXML_SharedImage shrImg(img);
-				if(doc->addImage(shrImg) != UT_OK)
-					return;
-			}
-			rqst->handled = true;
-		}
-		
-
 /******* END OF SECTION FORMATTING ********/
 
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "tab")) {
@@ -766,10 +722,6 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 				nameMatches(rqst->pName, NS_W_KEY, "bookmarkEnd")) {
 		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) );
 		rqst->handled = true;		
-	} else if (nameMatches(rqst->pName, NS_A_KEY, "blip")) {
-		//image is done
-		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) ); 
-		rqst->handled = true;
 	}
 }
 

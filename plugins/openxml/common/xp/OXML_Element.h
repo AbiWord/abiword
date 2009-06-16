@@ -66,6 +66,7 @@ public:
 	virtual ~OXML_Element();
 
 	inline std::string getId() { return m_id; }
+	inline void setId(const std::string & id) { m_id = id; }
 	inline OXML_ElementTag getTag() { return m_tag; }
 	inline OXML_ElementType getType() { return m_type; }
 	inline void setType(OXML_ElementType type) { m_type = type; }

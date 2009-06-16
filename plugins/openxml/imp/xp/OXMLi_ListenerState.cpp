@@ -98,6 +98,12 @@ const gchar * OXMLi_ListenerState::_EighthPointsToPoints(const gchar * eights)
 	return UT_convertToDimensionlessString(pt);
 }
 
+const gchar * OXMLi_ListenerState::_EmusToInches(const gchar * emus)
+{
+	double in = UT_convertDimensionless(emus) / 914400;
+	return UT_convertToDimensionlessString(in);
+}
+
 void OXMLi_ListenerState::getFontLevelRange(const gchar * val, OXML_FontLevel& level, OXML_CharRange& range)
 {
 	if (NULL != strstr(val, "major")) {
