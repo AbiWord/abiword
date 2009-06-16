@@ -37,43 +37,6 @@
 
 #include "gettext.h"
 
-#ifdef DEBUG
-static void s_dumpXMLpair(FILE * fp, const gchar *szID, const gchar *sz)
-{
-	fprintf(fp,"%s=\"",szID);
-
-	for (; *sz; ++sz) 
-	{
-		switch (*sz) 
-		{
-		case '&':
-			fputs("&amp;", fp);
-			break;
-		case '<':
-			fputs("&lt;", fp);
-			break;
-		case '>':
-			fputs("&gt;", fp);
-			break;
-		case '"':
-			fputs("&quot;", fp);
-			break;
-		case 9:
-		case 10:
-		case 13:
-			fprintf(fp, "&#%d;", *sz);
-			break;
-		default:
-			putc(*sz, fp);
-			break;
-		}
-	}
-
-	fprintf(fp,"\"\n");
-}
-
-#endif // DEBUG
-
 AP_StringSet::AP_StringSet(XAP_App *pApp, char *szLanguageName) :
   XAP_StringSet(pApp, szLanguageName)
 {

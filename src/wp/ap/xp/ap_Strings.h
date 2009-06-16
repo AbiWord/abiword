@@ -22,22 +22,7 @@
 
 #include "xap_Strings.h"
 
-//////////////////////////////////////////////////////////////////
-// build a table of AP ID values
-//////////////////////////////////////////////////////////////////
-
-#define dcl(id,s)					AP_STRING_ID_##id,
-
-/*typedef enum _AP_String_Id_Enum
-{
-	AP_STRING_ID__FIRST__			= 1000,	/* must be first -- must be >= XAP_STRING_ID__LAST__ */
-#include "ap_String_Id.h" /*
-	AP_STRING_ID__LAST__					/* must be last */
-//} AP_String_Id_Enum;
-
-#undef dcl
-
-#endif /* AP_STRINGS_H */
+#include "ap_String_Id.h"
 
 class ABI_EXPORT AP_StringSet : public XAP_StringSet
 {
@@ -46,3 +31,5 @@ class ABI_EXPORT AP_StringSet : public XAP_StringSet
     virtual ~AP_StringSet(void);
     const char *getValue(XAP_String_Id id) const;
 };
+
+#endif /* AP_STRINGS_H */

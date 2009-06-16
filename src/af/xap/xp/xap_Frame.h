@@ -205,10 +205,6 @@ public:
 													   XAP_Dialog_MessageBox::tButtons buttons,
 													   XAP_Dialog_MessageBox::tAnswer default_answer);
 
-	/*XAP_Dialog_MessageBox::tAnswer		showMessageBox(const char * sz,
-													   XAP_Dialog_MessageBox::tButtons buttons,
-													   XAP_Dialog_MessageBox::tAnswer default_answer);*/
-													   
 	XAP_Dialog_MessageBox::tAnswer		showMessageBox(XAP_String_Id id,
 													   XAP_Dialog_MessageBox::tButtons buttons,
 													   XAP_Dialog_MessageBox::tAnswer default_answer,

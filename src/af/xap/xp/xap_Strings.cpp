@@ -70,7 +70,7 @@ const gchar * XAP_StringSet::getLanguageName(void) const
 
 bool XAP_StringSet::getValue(XAP_String_Id id, const char * inEncoding, UT_String &s) const
 {
-	const char * toTranslate = /*getValue(id)*/gettext(id);
+	const char * toTranslate = getValue(id);
 
 	UT_return_val_if_fail(toTranslate != NULL, false);
 

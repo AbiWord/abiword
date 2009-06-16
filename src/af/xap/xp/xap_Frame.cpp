@@ -838,15 +838,6 @@ XAP_Dialog_MessageBox::tAnswer XAP_Frame::showMessageBox(const std::string & msg
 	return showMessageBox(msg.c_str(), buttons, default_answer);
 }
 
-/*XAP_Dialog_MessageBox::tAnswer XAP_Frame::showMessageBox(const char * szMessage,
-							 XAP_Dialog_MessageBox::tButtons buttons,
-							 XAP_Dialog_MessageBox::tAnswer default_answer)
-{
-  XAP_Dialog_MessageBox * pDialog = createMessageBox(0, buttons, default_answer);
-  pDialog->setMessage(szMessage);
-  return showMessageBox(pDialog);
-}*/
-
 UT_String XAP_Frame::makeBackupName(const char* szExt)
 {
   UT_String ext(szExt ? szExt : m_stAutoSaveExt.c_str());

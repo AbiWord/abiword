@@ -10,8 +10,8 @@ po/it-IT.po
 po/ko.po
 po/quh-BO.po
 po/wo-SN.po
-src/af/util/ut_Encoding.cpp
-src/af/util/ut_Language.cpp
+src/af/util/xp/ut_Encoding.cpp
+src/af/util/xp/ut_Language.cpp
 src/af/xap/xp/gettext.h.in
 src/af/xap/xp/xap_Dlg_Language.cpp
 src/af/xap/xp/xap_Dlg_MessageBox.cpp

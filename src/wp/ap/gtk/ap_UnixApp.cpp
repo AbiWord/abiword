@@ -253,15 +253,6 @@ bool AP_UnixApp::initialize(bool has_display)
 	// Initialize the importers/exporters
 	//////////////////////////////////////////////////////////////////
 	IE_ImpExp_RegisterXP ();
-	
-    // Now we have the strings loaded we can populate the field names correctly
-    int i;
-	
-    /*for (i = 0; fp_FieldTypes[i].m_Type != FPFIELDTYPE_END; i++)
-      (&fp_FieldTypes[i])->m_Desc = m_pStringSet->getValue(fp_FieldTypes[i].m_DescId);
-
-    for (i = 0; fp_FieldFmts[i].m_Tag != NULL; i++)
-      (&fp_FieldFmts[i])->m_Desc = m_pStringSet->getValue(fp_FieldFmts[i].m_DescId);*/
 
     ///////////////////////////////////////////////////////////////////////
     /// Build a labelset so the plugins can add themselves to something ///
