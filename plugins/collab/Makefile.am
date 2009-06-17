@@ -4,6 +4,12 @@ SUBDIRS =
 else
 SUBDIRS = backends core
 
+if TOOLKIT_WIN
+SYSTEM_LIBS=-lwsock32 -lws2_32 -lcomdlg32 -lgdi32 -lcomctl32
+else
+SYSTEM_LIBS=
+endif
+
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = collab.la
 
@@ -13,6 +19,7 @@ collab_la_LIBADD = \
 
 collab_la_LDFLAGS = \
 	$(COLLAB_LIBS) \
+	$(SYSTEM_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
@@ -33,8 +40,8 @@ CLEANFILES = \
 	collab.dll \
 	collab.dll.a
 
-collab.dll: .libs/libcollab.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(COLLAB_LIBS)
+collab.dll: .libs/collab.a
+	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(COLLAB_LIBS) $(SYSTEM_LIBS)
 
 endif # TOOLKIT_WIN
 

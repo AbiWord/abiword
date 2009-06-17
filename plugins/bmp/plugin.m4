@@ -26,7 +26,7 @@ if test "$enable_bmp" == "yes" || \
 # TODO check for libpng, well abiword links to it anyways
 
 BMP_CFLAGS="$BMP_CFLAGS "'${PLUGIN_CFLAGS}'
-BMP_LIBS="$BMP_LIBS "'${PLUGIN_LIBS} -lpng13'
+BMP_LIBS="$BMP_LIBS "'${PLUGIN_LIBS} -lpng12'
 
 if test "$enable_bmp_builtin" == "yes"; then
 	BMP_CFLAGS="$BMP_CFLAGS -DABI_PLUGIN_BUILTIN"

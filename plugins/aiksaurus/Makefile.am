@@ -32,7 +32,7 @@ CLEANFILES = \
 	aiksaurus.dll \
 	aiksaurus.dll.a
 
-aiksaurus.dll: .libs/libaiksaurus.a
+aiksaurus.dll: .libs/aiksaurus.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(AIKSAURUS_LIBS)
 
 endif # TOOLKIT_WIN

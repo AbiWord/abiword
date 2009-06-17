@@ -19,7 +19,7 @@ CLEANFILES = \
 	wikipedia.dll \
 	wikipedia.dll.a
 
-wikipedia.dll: .libs/libwikipedia.a
+wikipedia.dll: .libs/wikipedia.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 
 endif # TOOLKIT_WIN

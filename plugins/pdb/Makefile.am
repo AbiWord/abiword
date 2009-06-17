@@ -19,7 +19,7 @@ CLEANFILES = \
 	pdb.dll \
 	pdb.dll.a
 
-pdb.dll: .libs/libpdb.a
+pdb.dll: .libs/pdb.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PDB_LIBS)
 
 endif # TOOLKIT_WIN

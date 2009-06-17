@@ -19,7 +19,7 @@ CLEANFILES = \
 	jpeg.dll \
 	jpeg.dll.a
 
-jpeg.dll: .libs/libjpeg.a
+jpeg.dll: .libs/jpeg.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(JPEG_LIBS)
 
 endif # TOOLKIT_WIN
@@ -35,6 +35,7 @@ jpeg_la_LDFLAGS = \
 	-module \
 	-no-undefined
 
+nodist_EXTRA_jpeg_la_SOURCES = dummy.cpp
 jpeg_la_SOURCES = 
 
 EXTRA_DIST = \

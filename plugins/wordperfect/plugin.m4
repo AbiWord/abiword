@@ -5,6 +5,7 @@ wordperfect_deps="no"
 
 WORDPERFECT_CFLAGS=
 WORDPERFECT_LIBS=
+WPS_DEFINE=
 
 if test "$enable_wordperfect" != ""; then
 
@@ -29,13 +30,14 @@ deps_pkgs="$wordperfect_pkgs"
 PKG_CHECK_EXISTS([ $wordperfect_wps_pkgs ],
 [
 	deps_pkgs="$deps_pkgs $wordperfect_wps_pkgs"
+	WPS_DEFINE=" -DHAVE_LIBWPS"
 ])
 
 PKG_CHECK_MODULES(WORDPERFECT,[ $deps_pkgs ])
 
 test "$enable_wordperfect" == "auto" && PLUGINS="$PLUGINS wordperfect"
 
-WORDPERFECT_CFLAGS="$WORDPERFECT_CFLAGS "'${PLUGIN_CFLAGS}'
+WORDPERFECT_CFLAGS="$WORDPERFECT_CFLAGS "'${PLUGIN_CFLAGS}'"$WPS_DEFINE"
 WORDPERFECT_LIBS="$WORDPERFECT_LIBS "'${PLUGIN_LIBS}'
 
 fi

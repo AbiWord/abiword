@@ -28,7 +28,7 @@ CLEANFILES = \
 	ots.dll \
 	ots.dll.a
 
-ots.dll: .libs/libots.a
+ots.dll: .libs/ots.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(OTS_LIBS)
 
 endif # TOOLKIT_WIN

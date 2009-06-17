@@ -29,7 +29,7 @@ CLEANFILES = \
 	rsvg.dll \
 	rsvg.dll.a
 
-rsvg.dll: .libs/librsvg.a
+rsvg.dll: .libs/rsvg.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(RSVG_LIBS)
 
 endif # TOOLKIT_WIN

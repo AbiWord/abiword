@@ -43,7 +43,7 @@ if test "$enable_jpeg" == "yes" || \
 test "$enable_jpeg" == "auto" && PLUGINS="$PLUGINS jpeg"
 
 JPEG_CFLAGS='${PLUGIN_CFLAGS}'
-JPEG_LIBS="-ljpeg "'${PLUGIN_LIBS}'
+JPEG_LIBS="-ljpeg -lpng12 "'${PLUGIN_LIBS}'
 
 if test "$enable_jpeg_builtin" == "yes"; then
 	JPEG_CFLAGS="$JPEG_CFLAGS -DABI_PLUGIN_BUILTIN"

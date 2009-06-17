@@ -92,7 +92,7 @@ libabiword_2_7_la_SOURCES = \
 
 # TODO is it possible to track dependencies for that?
 WINDRES_CPPFLAGS = -I$(top_srcdir)/src/af/xap/win -I$(top_srcdir)/src/af/util/win -I$(top_srcdir)/src/wp/ap/win
-Win32Resources.lo: $(top_srcdir)/src/wp/main/win/Win32Main.rc
+Win32Resources.lo: $(top_srcdir)/src/wp/main/win/Win32Main.rc $(libabiword_2_7_la_OBJECTS)
 	CPPFLAGS="$(WINDRES_CPPFLAGS)" $(top_srcdir)/lt-compile-resource $< $@
 
 bin_PROGRAMS =

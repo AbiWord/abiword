@@ -26,7 +26,7 @@ CLEANFILES = \
 	grammar.dll \
 	grammar.dll.a
 
-grammar.dll: .libs/libgrammar.a
+grammar.dll: .libs/grammar.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(GRAMMAR_LIBS)
 
 endif # TOOLKIT_WIN

@@ -19,7 +19,7 @@ CLEANFILES = \
 	bmp.dll \
 	bmp.dll.a
 
-bmp.dll: .libs/libbmp.a
+bmp.dll: .libs/bmp.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(BMP_LIBS)
 
 endif # TOOLKIT_WIN
@@ -36,6 +36,7 @@ bmp_la_LDFLAGS = \
 	-no-undefined
 
 bmp_la_SOURCES = 
+nodist_EXTRA_bmp_la_SOURCES = dummy.cpp
 
 EXTRA_DIST = \
 	plugin.m4

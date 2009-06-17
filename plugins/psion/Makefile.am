@@ -28,7 +28,7 @@ CLEANFILES = \
 	psion.dll \
 	psion.dll.a
 
-psion.dll: .libs/libpsion.a
+psion.dll: .libs/psion.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PSION_LIBS)
 
 endif # TOOLKIT_WIN

@@ -19,7 +19,7 @@ CLEANFILES = \
 	win32gfx.dll \
 	win32gfx.dll.a
 
-win32gfx.dll: .libs/libwin32gfx.a
+win32gfx.dll: .libs/win32gfx.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(WIN32GFX_LIBS)
 
 endif # TOOLKIT_WIN
@@ -36,6 +36,7 @@ win32gfx_la_LDFLAGS = \
 	-no-undefined
 
 win32gfx_la_SOURCES = 
+nodist_EXTRA_win32gfx_la_SOURCES = dummy.cpp
 
 EXTRA_DIST = \
 	plugin.m4

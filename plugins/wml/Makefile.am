@@ -19,7 +19,7 @@ CLEANFILES = \
 	wml.dll \
 	wml.dll.a
 
-wml.dll: .libs/libwml.a
+wml.dll: .libs/wml.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(WML_LIBS)
 
 endif # TOOLKIT_WIN

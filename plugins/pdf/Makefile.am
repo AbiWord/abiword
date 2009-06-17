@@ -19,7 +19,7 @@ CLEANFILES = \
 	pdf.dll \
 	pdf.dll.a
 
-pdf.dll: .libs/libpdf.a
+pdf.dll: .libs/pdf.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PDF_LIBS)
 
 endif # TOOLKIT_WIN

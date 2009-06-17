@@ -1,5 +1,5 @@
 
-collab_req="libxml-2.0 >= 2.4.0"
+collab_req="libgsf-1 >= 1.12 libxml-2.0 >= 2.4.0"
 collab_xmpp_req="loudmouth-1.0 >= 1.0.1"
 collab_sugar_req="dbus-glib-1 >= 0.70"
 collab_service_req="libsoup-2.4"

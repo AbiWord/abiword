@@ -19,7 +19,7 @@ CLEANFILES = \
 	hancom.dll \
 	hancom.dll.a
 
-hancom.dll: .libs/libhancom.a
+hancom.dll: .libs/hancom.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(HANCOM_LIBS)
 
 endif # TOOLKIT_WIN

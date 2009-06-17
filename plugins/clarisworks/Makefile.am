@@ -19,7 +19,7 @@ CLEANFILES = \
 	clarisworks.dll \
 	clarisworks.dll.a
 
-clarisworks.dll: .libs/libclarisworks.a
+clarisworks.dll: .libs/clarisworks.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(CLARISWORKS_LIBS)
 
 endif # TOOLKIT_WIN

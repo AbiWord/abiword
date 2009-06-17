@@ -29,7 +29,7 @@ CLEANFILES = \
 	wmf.dll \
 	wmf.dll.a
 
-wmf.dll: .libs/libwmf.a
+wmf.dll: .libs/wmf.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(WMF_LIBS)
 
 endif # TOOLKIT_WIN

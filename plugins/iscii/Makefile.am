@@ -19,7 +19,7 @@ CLEANFILES = \
 	iscii.dll \
 	iscii.dll.a
 
-iscii.dll: .libs/libiscii.a
+iscii.dll: .libs/iscii.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 
 endif # TOOLKIT_WIN

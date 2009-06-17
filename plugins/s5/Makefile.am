@@ -19,7 +19,7 @@ CLEANFILES = \
 	s5.dll \
 	s5.dll.a
 
-s5.dll: .libs/libs5.a
+s5.dll: .libs/s5.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 
 endif # TOOLKIT_WIN

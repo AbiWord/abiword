@@ -19,7 +19,7 @@ CLEANFILES = \
 	sdw.dll \
 	sdw.dll.a
 
-sdw.dll: .libs/libsdw.a
+sdw.dll: .libs/sdw.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(SDW_LIBS)
 
 endif # TOOLKIT_WIN
