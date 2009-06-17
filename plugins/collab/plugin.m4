@@ -2,7 +2,7 @@
 collab_req="libgsf-1 >= 1.12 libxml-2.0 >= 2.4.0"
 collab_xmpp_req="loudmouth-1.0 >= 1.0.1"
 collab_sugar_req="dbus-glib-1 >= 0.70"
-collab_service_req="libsoup-2.4"
+collab_service_req="libsoup-2.4 gnutls"
 collab_pkgs="$collab_req" 	# accumulate required packages
 
 AC_ARG_ENABLE([collab-backend-fake], 
@@ -140,7 +140,7 @@ fi
 
 if test "$enable_collab_backend_tcp" == "yes" || \
    test "$enable_collab_backend_service" == "yes"; then
-	COLLAB_LIBS="$COLLAB_LIBS -lpthread"
+	COLLAB_LIBS="$COLLAB_LIBS -lgcrypt -lpthread"
 fi
 
 test "$enable_collab" == "auto" && PLUGINS="$PLUGINS collab"
