@@ -35,8 +35,6 @@
 
 #include "ap_Strings.h"
 
-#include "gettext.h"
-
 AP_StringSet::AP_StringSet(XAP_App *pApp, char *szLanguageName) :
   XAP_StringSet(pApp, szLanguageName)
 {

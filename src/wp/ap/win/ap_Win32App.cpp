@@ -185,7 +185,7 @@ bool AP_Win32App::initialize(void)
 		// assume we will be using the builtin set (either as the main
 		// set or as the fallback set).
 		
-		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,AP_PREF_DEFAULT_StringSet);
+		AP_BuiltinStringSet * pBuiltinStringSet = new AP_StringSet(this,AP_PREF_DEFAULT_StringSet);
 		UT_return_val_if_fail (pBuiltinStringSet, false);
 		m_pStringSet = pBuiltinStringSet;
 
@@ -205,20 +205,6 @@ bool AP_Win32App::initialize(void)
 			char * szPathname = (char *)UT_calloc(sizeof(char),strlen(szDirectory)+strlen(szStringSet)+100);
 			UT_return_val_if_fail (szPathname, false);
 
-			sprintf(szPathname,"%s%s%s.strings",
-					szDirectory,
-					((szDirectory[strlen(szDirectory)-1]=='\\') ? "" : "\\"),
-					szStringSet);
-
-			AP_DiskStringSet * pDiskStringSet = new AP_DiskStringSet(this);
-			UT_return_val_if_fail (pDiskStringSet, false);
-
-			if (pDiskStringSet->loadStringsFromDisk(szPathname))
-			{
-				pDiskStringSet->setFallbackStringSet(m_pStringSet);
-				m_pStringSet = pDiskStringSet;
-                UT_Language_updateLanguageNames();
-				UT_DEBUGMSG(("Using StringSet [%s]\n",szPathname));
 			}
 			else
 			{
@@ -259,21 +245,6 @@ bool AP_Win32App::initialize(void)
 	}
 	
 	
-	// Now we have the strings loaded we can populate the field names correctly
-	int i;
-	
-	for (i = 0; fp_FieldTypes[i].m_Type != FPFIELDTYPE_END; i++)
-	{
-	    (&fp_FieldTypes[i])->m_Desc = m_pStringSet->getValue(fp_FieldTypes[i].m_DescId);
-	    UT_DEBUGMSG(("Setting field type desc for type %d, desc=%s\n", fp_FieldTypes[i].m_Type, fp_FieldTypes[i].m_Desc));
-	}
-
-	for (i = 0; fp_FieldFmts[i].m_Tag != NULL; i++)
-	{
-	    (&fp_FieldFmts[i])->m_Desc = m_pStringSet->getValue(fp_FieldFmts[i].m_DescId);
-	    UT_DEBUGMSG(("Setting field desc for field %s, desc=%s\n", fp_FieldFmts[i].m_Tag, fp_FieldFmts[i].m_Desc));
-	}
-
     ///////////////////////////////////////////////////////////////////////
     /// Build a labelset so the plugins can add themselves to something ///
     ///////////////////////////////////////////////////////////////////////

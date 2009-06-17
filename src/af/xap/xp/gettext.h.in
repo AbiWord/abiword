@@ -1,5 +1,0 @@
-#define GETTEXT_PACKAGE "abiword"
-#define LOCALE_DIR "@prefix@/share/locale"
-
-#include <glib/gi18n.h>
-#include <clocale>

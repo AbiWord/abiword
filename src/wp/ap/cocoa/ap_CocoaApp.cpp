@@ -300,7 +300,7 @@ bool AP_CocoaApp::initialize(void)
 		// assume we will be using the builtin set (either as the main
 		// set or as the fallback set).
 	    
-		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,(gchar*)AP_PREF_DEFAULT_StringSet);
+		AP_BuiltinStringSet * pBuiltinStringSet = new AP_StringSet(this,(gchar*)AP_PREF_DEFAULT_StringSet);
 		UT_ASSERT(pBuiltinStringSet);
 		m_pStringSet = pBuiltinStringSet;
 	    
@@ -327,40 +327,6 @@ bool AP_CocoaApp::initialize(void)
 			szPathname += szStringSet;
 			szPathname += ".strings";
 #endif
-
-			NSString* stringSet = [resources stringByAppendingPathComponent:[NSString stringWithFormat:@"AbiWord/strings/%s%@",szStringSet,@".strings"]];
-
-			AP_DiskStringSet * pDiskStringSet = new AP_DiskStringSet(this);
-			UT_ASSERT(pDiskStringSet);
-		
-			if (pDiskStringSet->loadStringsFromDisk([stringSet UTF8String]))
-			{
-				pDiskStringSet->setFallbackStringSet(m_pStringSet);
-				m_pStringSet = pDiskStringSet;
-				UT_DEBUGMSG(("Using StringSet [%s]\n",[stringSet UTF8String]));
-			}
-			else
-			{
-				DELETEP(pDiskStringSet);
-				UT_DEBUGMSG(("Unable to load StringSet [%s] -- using builtin strings instead.\n",[stringSet UTF8String]));
-			}
-		}
-    }
-	
-    // Now we have the strings loaded we can populate the field names correctly
-    int i;
-	
-    for (i = 0; fp_FieldTypes[i].m_Type != FPFIELDTYPE_END; i++)
-    {
-		(&fp_FieldTypes[i])->m_Desc = m_pStringSet->getValue(fp_FieldTypes[i].m_DescId);
-		UT_DEBUGMSG(("Setting field type desc for type %d, desc=%s\n", fp_FieldTypes[i].m_Type, fp_FieldTypes[i].m_Desc));
-    }
-
-    for (i = 0; fp_FieldFmts[i].m_Tag != NULL; i++)
-    {
-		(&fp_FieldFmts[i])->m_Desc = m_pStringSet->getValue(fp_FieldFmts[i].m_DescId);
-		UT_DEBUGMSG(("Setting field desc for field %s, desc=%s\n", fp_FieldFmts[i].m_Tag, fp_FieldFmts[i].m_Desc));
-    }
 
     ///////////////////////////////////////////////////////////////////////
     /// Build a labelset so the plugins can add themselves to something ///

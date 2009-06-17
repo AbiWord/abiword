@@ -801,7 +801,6 @@ AC_OUTPUT(
   src/af/xap/gtk/t/Makefile
   src/af/xap/win/Makefile
   src/af/xap/xp/Makefile
-  src/af/xap/xp/gettext.h
   src/plugins/Makefile
   src/text/Makefile
   src/text/fmt/Makefile

@@ -21,8 +21,13 @@
 #ifndef XAP_STRINGS_H
 #define XAP_STRINGS_H
 
+#define GETTEXT_PACKAGE "abiword"
+
 #include <map>
 #include <string>
+
+#include <glib/gi18n.h>
+#include <clocale>
 
 /* pre-emptive dismissal; ut_types.h is needed by just about everything,
  * so even if it's commented out in-file that's still a lot of work for
@@ -40,7 +45,7 @@ class XAP_App;
 
 typedef enum _XAP_String_Id_Enum
 {
-	XAP_STRING_ID__FIRST__			= NULL,	/* must be first */
+	XAP_STRING_ID__FIRST__			= 0,	/* must be first */
 	XAP_STRING_ID__LAST__					/* must be last */
 } XAP_String_Id_Enum;
 

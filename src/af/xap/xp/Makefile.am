@@ -2,7 +2,8 @@
 noinst_LTLIBRARIES = libxp.la
 
 AM_CPPFLAGS = \
-	$(AF_CPPFLAGS)
+	$(AF_CPPFLAGS) \
+	-DLOCALE_DIR=\"@prefix@/share/locale\"
 
 # list all conditional source files here so they end up in the dist tarball
 conditional_src = \
