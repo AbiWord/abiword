@@ -12,6 +12,8 @@ AC_ARG_ENABLE([collab-backend-fake],
 ], [
 	enable_collab_backend_fake="no"
 ])
+AC_MSG_CHECKING([for collab fake backend])
+AC_MSG_RESULT([$enable_collab_backend_fake])
 
 AC_ARG_ENABLE([collab-backend-xmpp], 
     [AS_HELP_STRING([--enable-collab-backend-xmpp], [Jabber backend (default: auto)])], 
@@ -24,6 +26,8 @@ AC_ARG_ENABLE([collab-backend-xmpp],
 	])
 ])
 test "$enable_collab_backend_xmpp" == "yes" && collab_pkgs="$collab_pkgs $collab_xmpp_req"
+AC_MSG_CHECKING([for collab xmpp backend])
+AC_MSG_RESULT([$enable_collab_backend_xmpp])
 
 AC_ARG_ENABLE([collab-backend-tcp], 
     [AS_HELP_STRING([--enable-collab-backend-tcp], [TCP backend (default: auto)])], 
@@ -43,13 +47,19 @@ AC_ARG_ENABLE([collab-backend-tcp],
 	])
 	AC_LANG_POP
 ])
+AC_MSG_CHECKING([for collab tcp backend])
+AC_MSG_RESULT([$enable_collab_backend_tcp])
 
 AC_ARG_ENABLE([collab-backend-sugar], 
     [AS_HELP_STRING([--enable-collab-backend-sugar], [Sugar/OLPC backend (default: off)])], 
 [
 	enable_collab_backend_sugar=$enableval
-], [])
+], [
+	enable_collab_backend_sugar="no"
+])
 test "$enable_collab_backend_sugar" == "yes" && collab_pkgs="$collab_pkgs $collab_sugar_req"
+AC_MSG_CHECKING([for collab sugar backend])
+AC_MSG_RESULT([$enable_collab_backend_sugar])
 
 AC_ARG_ENABLE([collab-backend-service], 
     [AS_HELP_STRING([--enable-collab-backend-service], [abicollab.net backend (default: off); NOTE to packagers: do NOT enable this, the service is not publically available yet])], 
@@ -70,6 +80,8 @@ AC_ARG_ENABLE([collab-backend-service],
 	AC_LANG_POP
 ])
 test "$enable_collab_backend_service" == "yes" && collab_pkgs="$collab_pkgs $collab_service_req"
+AC_MSG_CHECKING([for collab service backend])
+AC_MSG_RESULT([$enable_collab_backend_service])
 
 AC_ARG_ENABLE([collab-record-always], 
     [AS_HELP_STRING([--enable-collab-record-always], [Always record AbiCollab sessions (default: off)])], 
@@ -78,6 +90,8 @@ AC_ARG_ENABLE([collab-record-always],
 ], [
 	enable_collab_record_always="no"
 ])
+AC_MSG_CHECKING([for collab always recording backend])
+AC_MSG_RESULT([$enable_collab_record_always])
 
 collab_deps="no"
 
