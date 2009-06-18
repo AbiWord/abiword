@@ -5483,11 +5483,15 @@ bool FV_View::cmdInsertLatexMath(UT_UTF8String & sLatex,
         UT_UTF8String sLatexName;
         sMathName = "MathLatex";
 	sLatexName = "LatexMath";
-	UT_uint32 uid = m_pDoc->getUID(UT_UniqueId::Image);
-	UT_UTF8String sUID;
-	UT_UTF8String_sprintf(sUID,"%d",uid);
-	sMathName += sUID;
-	sLatexName += sUID;
+	/*
+	  Create a unique identifier for the data item.
+	*/
+	UT_UUID *uuid = m_pDoc->getNewUUID();
+	UT_return_val_if_fail(uuid != NULL, UT_ERROR);
+	UT_UTF8String s;
+	uuid->toString(s);
+	sMathName += s;
+	sLatexName += s;
 	UT_DEBUGMSG(("Inserting latex id name %s \n",sLatexName.utf8_str()));
 	//
 	// Insert these into the Piece Table

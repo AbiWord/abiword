@@ -2377,6 +2377,78 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 {
 			 return;
 		 }
+		 //
+		 // Export the MathML associated with this
+		 //
+		 const UT_ByteBuf * pbb = NULL;
+		 const void * pToken = NULL;
+		 void * pHandle = NULL;
+		 bool bFoundDataItem = false;
+		 UT_uint32 lenData = 0;
+		 const UT_Byte * pData = NULL;
+		 UT_uint32 k = 0;
+		 UT_String buf;
+		 if(pszDataId)
+		 {
+			bFoundDataItem = m_pDocument->getDataItemDataByName(static_cast<const char*>(pszDataId),&pbb,&pToken,&pHandle);
+			if (!bFoundDataItem)
+			{
+
+				UT_DEBUGMSG(("RTF_Export: cannot get dataitem for math\n"));
+				return;
+			}
+		        m_pie->_rtf_open_brace();
+			m_pie->_rtf_keyword("*");
+			m_pie->_rtf_keyword("abimathmldata ");
+			buf = pszDataId;
+			buf += " ";
+			m_pie->_rtf_chardata(buf.c_str(),buf.size());
+
+			lenData = pbb->getLength();
+			pData = pbb->getPointer(0);
+			for (k=0; k<lenData; k++)
+			{
+				if (k%32==0)
+					m_pie->_rtf_nl();
+				UT_String_sprintf(buf,"%02x",pData[k]);
+				m_pie->_rtf_chardata(buf.c_str(),2);
+			}
+			m_pie->_rtf_close_brace();
+
+		 }
+		 //
+		 // Now export the Latex associated with this
+		 //
+		 if(pszLatexId)
+		 {
+		        bFoundDataItem = m_pDocument->getDataItemDataByName(static_cast<const char*>(pszLatexId),&pbb,&pToken,&pHandle);
+			if (!bFoundDataItem)
+			{
+
+				UT_DEBUGMSG(("RTF_Export: cannot get dataitem for latex\n"));
+				return;
+			}
+		        m_pie->_rtf_open_brace();
+			m_pie->_rtf_keyword("*");
+			m_pie->_rtf_keyword("abilatexdata ");
+			buf = pszLatexId;
+			buf += " ";
+			m_pie->_rtf_chardata(buf.c_str(),buf.size());
+
+			lenData = pbb->getLength();
+			pData = pbb->getPointer(0);
+			for (k=0; k<lenData; k++)
+			{
+				if (k%32==0)
+					m_pie->_rtf_nl();
+				UT_String_sprintf(buf,"%02x",pData[k]);
+				m_pie->_rtf_chardata(buf.c_str(),2);
+			}
+			m_pie->_rtf_close_brace();
+		 }
+		 //
+		 // Now export math codes into the RTF stream
+		 //
 		 m_pie->_rtf_open_brace();
 		 m_pie->_rtf_keyword("*");
 		 m_pie->_rtf_keyword("abimathml ");
@@ -2388,28 +2460,28 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 const gchar * szVal = NULL;
 		 for(i = 0; i < 50; i++)
 		 {
-		   szProp = NULL;
-		   szVal = NULL;
-		   pSpanAP->getNthProperty(i,szProp,szVal);
-		   if((szProp != NULL) && (szVal != NULL))
-		   { 
-		     sPropName = szProp;
-		     sPropVal = szVal;
-		     UT_UTF8String_setProperty(sAllProps,sPropName,sPropVal);
-		   }
-		   else
-		   {
-		     break;
-		   }
+		       szProp = NULL;
+		       szVal = NULL;
+		       pSpanAP->getNthProperty(i,szProp,szVal);
+		       if((szProp != NULL) && (szVal != NULL))
+		       { 
+			   sPropName = szProp;
+			   sPropVal = szVal;
+			   UT_UTF8String_setProperty(sAllProps,sPropName,sPropVal);
+		       }
+		       else
+		       {
+		           break;
+		       }
 		 }
 		 sPropName = "dataid";
 		 sPropVal =pszDataId;
 		 UT_UTF8String_setProperty(sAllProps,sPropName,sPropVal);
 		 if(pszLatexId)
 		 {
-		   sPropName = "latexid";
-		   sPropVal =pszLatexId;
-		   UT_UTF8String_setProperty(sAllProps,sPropName,sPropVal);
+		       sPropName = "latexid";
+		       sPropVal =pszLatexId;
+		       UT_UTF8String_setProperty(sAllProps,sPropName,sPropVal);
 		 }
 		 m_pie->write(sAllProps.utf8_str());
 		 m_pie->_rtf_close_brace();

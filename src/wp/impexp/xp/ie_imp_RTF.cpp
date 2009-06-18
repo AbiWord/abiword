@@ -5517,6 +5517,12 @@ bool IE_Imp_RTF::HandleStarKeyword()
 				case RTF_KW_abimathml:
 					return HandleAbiMathml();
 					break;
+				case RTF_KW_abimathmldata:
+					return HandleAbiMathmlData();
+					break;
+				case RTF_KW_abilatexdata:
+					return HandleAbiLatexData();
+					break;
 				case RTF_KW_abiembed:
 					return HandleAbiEmbed();
 					break;
@@ -9424,7 +9430,103 @@ bool IE_Imp_RTF::HandleAbiMathml(void)
 	}
 	return true;
 }
+//
+// Now import the MathML data object into the PT
+//
+bool IE_Imp_RTF::HandleAbiMathmlData(void)
+{
+	return CreateDataItemfromSteam();
+}
+//
+// Now import the Latex data object into the PT
+//
+bool IE_Imp_RTF::HandleAbiLatexData(void)
+{
+	return CreateDataItemfromSteam();
+}
 
+bool IE_Imp_RTF::CreateDataItemfromSteam(void)
+{
+	UT_String sName;
+	unsigned char ch;
+	if (!ReadCharFromFile(&ch))
+		return false;
+	//
+	// Skip leading spaces
+	//
+	while(ch == ' ')
+	{
+		if (!ReadCharFromFile(&ch))
+			return false;
+	}
+	while (ch != ' ') // extract name of name item
+	{
+		sName += ch;
+		if (!ReadCharFromFile(&ch))
+			return false;
+	}
+	//
+	// skip trailing spaces
+	//
+	while(ch == ' ')
+	{
+		if (!ReadCharFromFile(&ch))
+			return false;
+	}
+	//
+	// We're at the start of the data item. 
+	//
+
+	const UT_uint16 chars_per_byte = 2;
+	const UT_uint16 BITS_PER_BYTE = 8;
+	const UT_uint16 bits_per_char = BITS_PER_BYTE / chars_per_byte;
+	bool retval = true;
+	bool bFound = true;
+
+	UT_ByteBuf BinData;
+	UT_uint16 chLeft = chars_per_byte;
+	UT_Byte bin_byte = 0;
+	const UT_ByteBuf * pDum = NULL;
+	const void * pToken = NULL;
+	void * pHandle = NULL;
+	while (ch != '}')
+	{
+		int digit;
+		if (!hexVal(ch, digit)) 
+		{
+			return false;
+		}
+			
+		bin_byte = (bin_byte << bits_per_char) + digit;
+			
+		// if we have a complete byte, we put it in the buffer
+		if (--chLeft == 0)
+		{
+			BinData.append(&bin_byte, 1);
+			chLeft = chars_per_byte;
+			bin_byte = 0;
+		}
+			
+		if (!ReadCharFromFile(&ch)) 
+		{
+			return false;
+		}
+	}
+	// Put the '}' back into the input stream
+	SkipBackChar(ch);
+	bFound = getDoc()->getDataItemDataByName(sName.c_str(),&pDum,const_cast<const void **>(&pToken),&pHandle);
+	if(bFound)
+	{
+		return true;
+	}
+	//
+	// Now create the data item from the RTF data stream
+	//
+	
+	retval = getDoc()->createDataItem(sName.c_str(),false,&BinData,NULL,NULL);
+	return retval;
+
+}
 
 /////////////////////////////////////////////////////////////////////////
 // Handle copy/paste of Embedded Objects by extending RTF
