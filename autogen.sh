@@ -8,7 +8,7 @@ cd $srcdir
 
 ./autogen-common.sh
 
-autoreconf --force --install --symlink
+autoreconf --force --install
 
 cd $olddir
 
