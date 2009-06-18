@@ -83,7 +83,7 @@ void ODe_Frame_Listener::closeFrame(ODe_ListenerAction& rAction) {
         _printSpacesOffset(output);
         output += "</draw:frame>";
     
-        ODe_writeToFile(m_pTextOutput, output);
+        ODe_writeUTF8String(m_pTextOutput, output);
         
         rAction.popListenerImpl();
 }
@@ -229,7 +229,7 @@ void ODe_Frame_Listener::_openODTextbox(const PP_AttrProp& rAP,
     
     output += ">\n";
     
-    ODe_writeToFile(m_pTextOutput, output);
+    ODe_writeUTF8String(m_pTextOutput, output);
     m_spacesOffset++;
     
     ////
@@ -246,6 +246,6 @@ void ODe_Frame_Listener::_openODTextbox(const PP_AttrProp& rAP,
     
     output += ">\n";
     
-    ODe_writeToFile(m_pTextOutput, output);
+    ODe_writeUTF8String(m_pTextOutput, output);
     m_spacesOffset++;
 }

@@ -141,7 +141,7 @@ void ODe_Note_Listener::_openNote(const gchar* pNoteClass,
     
     output += "</text:note-citation><text:note-body>";                                    
     
-    ODe_writeToFile(m_pTextOutput, output);
+    ODe_writeUTF8String(m_pTextOutput, output);
     
     m_rAuxiliaryData.m_noteCount++;
 }
@@ -151,6 +151,6 @@ void ODe_Note_Listener::_openNote(const gchar* pNoteClass,
  * 
  */
 void ODe_Note_Listener::_closeNote(ODe_ListenerAction& rAction) {
-    ODe_writeToFile(m_pTextOutput, "</text:note-body></text:note>");
+    ODe_writeUTF8String(m_pTextOutput, "</text:note-body></text:note>");
     rAction.popListenerImpl();
 }

@@ -150,7 +150,7 @@ void ODe_Main_Listener::openSection(const PP_AttrProp* pAP,
         	pSectionStyle->getName().utf8_str(),
             m_rDocumentData.m_contentAutoStyles.getSectionStylesCount());
         
-        ODe_writeToFile(m_rDocumentData.m_pOfficeTextTemp, output);
+        ODe_writeUTF8String(m_rDocumentData.m_pOfficeTextTemp, output);
         
         m_openedODSection = true;
     }
@@ -180,7 +180,7 @@ void ODe_Main_Listener::closeSection(ODe_ListenerAction& /*rAction*/)
 {
 	if (m_openedODSection) {
 
-		ODe_writeToFile(m_rDocumentData.m_pOfficeTextTemp, "   </text:section>\n");
+		ODe_writeUTF8String(m_rDocumentData.m_pOfficeTextTemp, "   </text:section>\n");
 		m_openedODSection = false;
         
 	} else if (m_onHeaderFooterSection) {

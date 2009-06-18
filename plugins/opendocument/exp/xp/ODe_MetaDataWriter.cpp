@@ -71,7 +71,7 @@ bool ODe_MetaDataWriter::writeMetaData(PD_Document* pDoc, GsfOutfile* oo) {
 #define WRITE_METADATA_ELEMENT(abiwordKey, odElementName) if (pDoc->getMetaDataProp(abiwordKey, meta_val) && meta_val.size()) { \
                                                                meta_val.escapeXML(); \
                                                                val = UT_UTF8String_sprintf("<%s>%s</%s>\n", odElementName, meta_val.utf8_str(), odElementName); \
-                                                               ODe_gsf_output_write(meta, val.size(), reinterpret_cast<const guint8*>(val.utf8_str())); \
+                                                               ODe_writeUTF8String (meta, val); \
                                                           }
     
     WRITE_METADATA_ELEMENT(PD_META_KEY_TITLE, "dc:title");
@@ -99,7 +99,7 @@ bool ODe_MetaDataWriter::writeMetaData(PD_Document* pDoc, GsfOutfile* oo) {
 
                 buf.escapeXML();
                 val = UT_UTF8String_sprintf("<meta:keyword>%s</meta:keyword>\n", buf.utf8_str());
-                ODe_gsf_output_write(meta, val.size(), reinterpret_cast<const guint8*>(val.utf8_str()));
+                ODe_writeUTF8String(meta, val);
                 buf.clear();
             }
         }
@@ -108,7 +108,7 @@ bool ODe_MetaDataWriter::writeMetaData(PD_Document* pDoc, GsfOutfile* oo) {
         {
             buf.escapeXML();
             val = UT_UTF8String_sprintf("<meta:keyword>%s</meta:keyword>\n", buf.utf8_str());
-            ODe_gsf_output_write(meta, val.size(), reinterpret_cast<const guint8*>(val.utf8_str()));
+            ODe_writeUTF8String(meta, val);
         }
     }
 

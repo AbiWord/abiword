@@ -189,7 +189,7 @@ void ODe_Table_Listener::closeTable(ODe_ListenerAction& rAction) {
     ODe_writeAttribute(output, "table:style-name", m_tableStyleName);
     output += ">\n";
     
-    ODe_writeToFile(m_pTextOutput, output);
+    ODe_writeUTF8String(m_pTextOutput, output);
     m_spacesOffset++;
 
     
@@ -209,7 +209,7 @@ void ODe_Table_Listener::closeTable(ODe_ListenerAction& rAction) {
     m_spacesOffset--;
     _printSpacesOffset(output);
     output += "</table:table>\n";
-    ODe_writeToFile(m_pTextOutput, output);
+    ODe_writeUTF8String(m_pTextOutput, output);
 
     rAction.popListenerImpl();
 }
@@ -411,13 +411,13 @@ void ODe_Table_Cell::write(GsfOutput* pTableOutput, const UT_UTF8String& rSpaces
       ODe_writeAttribute(output, "table:number-rows-spanned", m_numberRowsSpanned);
 
     output += ">\n";
-    ODe_writeToFile(pTableOutput, output);
+    ODe_writeUTF8String(pTableOutput, output);
     gsf_output_write (pTableOutput, gsf_output_size (m_pTextContent),
 		      gsf_output_memory_get_bytes (GSF_OUTPUT_MEMORY (m_pTextContent)));
 
     output = rSpacesOffset;
     output += "</table:table-cell>\n";
-    ODe_writeToFile(pTableOutput, output);
+    ODe_writeUTF8String(pTableOutput, output);
 }
 
 
@@ -432,7 +432,7 @@ void ODe_Table_Column::write(GsfOutput* pTableOutput, const UT_UTF8String& rSpac
     ODe_writeAttribute(output, "table:style-name", m_styleName);
     output += "/>\n";
                           
-    ODe_writeToFile(pTableOutput, output);
+    ODe_writeUTF8String(pTableOutput, output);
 }
 
 
@@ -449,7 +449,7 @@ void ODe_Table_Row::write(GsfOutput* pTableOutput, const UT_UTF8String& rSpacesO
     ODe_writeAttribute(output, "table:style-name", m_styleName);
     output += ">\n";
     
-    ODe_writeToFile(pTableOutput, output);
+    ODe_writeUTF8String(pTableOutput, output);
     
     cellsOffset = rSpacesOffset;
     cellsOffset += " ";
@@ -461,13 +461,13 @@ void ODe_Table_Row::write(GsfOutput* pTableOutput, const UT_UTF8String& rSpacesO
             // It's a covered cell.
             output = cellsOffset;
             output += "<table:covered-table-cell/>\n";
-            ODe_writeToFile(pTableOutput, output);
+            ODe_writeUTF8String(pTableOutput, output);
         }
     }
 
     output = rSpacesOffset;
     output += "</table:table-row>\n";
-    ODe_writeToFile(pTableOutput, output);
+    ODe_writeUTF8String(pTableOutput, output);
 }
 
 

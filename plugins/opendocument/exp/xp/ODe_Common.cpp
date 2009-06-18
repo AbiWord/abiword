@@ -127,13 +127,6 @@ void ODe_writeAttribute(UT_UTF8String& rOutput,
 }
 
 
-/**
- * 
- */
-void ODe_writeToFile(GsfOutput* pFile, const UT_UTF8String& rString) {
-    ODe_gsf_output_write (pFile, rString.byteLength(), (const guint8*)rString.utf8_str());
-}
-
 
 /**
  * The source file is rewinded before writing its contents into the destination
