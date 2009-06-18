@@ -78,7 +78,8 @@ ODi_StreamListener::~ODi_StreamListener()
     UT_ASSERT(m_currentAction == ODI_NONE);
     UT_ASSERT(m_postponedParsing.getItemCount() == 0);
     UT_ASSERT(m_stateStack.getItemCount() == 0);
-    UT_ASSERT(m_pCurrentState == NULL);
+//  Having a state is perfectly valid as we allow recovering from an error.
+//    UT_ASSERT(m_pCurrentState == NULL);
     UT_VECTOR_PURGEALL(ODi_Postpone_ListenerState*, m_postponedParsing);
     _clear();
 }

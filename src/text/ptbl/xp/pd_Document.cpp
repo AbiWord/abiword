@@ -741,7 +741,7 @@ UT_Error PD_Document::_importFile(GsfInput * input, int ieft,
 	
 	m_bLoading = false;
 
-	if (errorCode)
+	if (!UT_IS_IE_SUCCESS(errorCode))
 	{
 		UT_DEBUGMSG(("PD_Document::importFile -- could not import file\n"));
 		DELETEP(m_pPieceTable);
@@ -798,7 +798,7 @@ UT_Error PD_Document::_importFile(GsfInput * input, int ieft,
 	}
 	UT_ASSERT(isOrigUUID());
 
-	return UT_OK;
+	return errorCode;
 }
 
 UT_Error PD_Document::createRawDocument(void)

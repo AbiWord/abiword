@@ -29,6 +29,7 @@
 #include "ap_App.h"
 #include "ap_Args.h"
 #include "ap_Prefs_SchemeIds.h"
+#include "ap_Strings.h"
 #include "xap_Frame.h"
 #include "xap_ModuleManager.h"
 #include "pd_Document.h"
@@ -85,9 +86,14 @@ bool AP_App::openCmdLineFiles(const AP_Args * args)
 		UT_Error error = pFrame->loadDocument (uri, IEFT_Unknown, true);
 		g_free (uri);
 
-		if (!error)
+		if (UT_IS_IE_SUCCESS(error))
 		{
 			kWindowsOpened++;
+			if (error == UT_IE_TRY_RECOVER) {
+				pFrame->showMessageBox(AP_STRING_ID_MSG_OpenRecovered,
+                           XAP_Dialog_MessageBox::b_O,
+                           XAP_Dialog_MessageBox::a_OK);
+			}
 		}
 		else
 		{

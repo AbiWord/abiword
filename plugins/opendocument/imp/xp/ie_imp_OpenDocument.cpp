@@ -80,28 +80,49 @@ UT_Error IE_Imp_OpenDocument::_loadFile (GsfInput * oo_src)
     _setDocumentProperties();
           
     UT_Error err = UT_OK;
+    bool try_recover = false;
     
-    if ( UT_OK != (err = _handleManifestStream ())) {
+    err = _handleManifestStream ();
+    if ( UT_IE_TRY_RECOVER == err ) {
+        try_recover = true;
+    }
+    else if ( UT_OK != err ) {
+        return err;
+    }
+    err = _handleMimetype ();
+    if ( UT_IE_TRY_RECOVER == err ) {
+        try_recover = true;        
+    }
+    else if ( UT_OK != err ) {
+        return err;
+    }
+    err = _handleMetaStream ();
+    if ( UT_IE_TRY_RECOVER == err ) {
+        try_recover = true;        
+    }
+    else if ( UT_OK != err ) {
+        return err;
+    }
+    err = _handleStylesStream ();
+    if ( UT_IE_TRY_RECOVER == err ) {
+        try_recover = true;        
+    }
+    else if ( UT_OK != err ) {
         return err;
     }
     
-    if ( UT_OK != (err = _handleMimetype ())) {
+    err = _handleContentStream ();
+    if ( UT_IE_TRY_RECOVER == err ) {
+        try_recover = true;        
+    }
+    else if ( UT_OK != err ) {
         return err;
     }
     
-    if ( UT_OK != (err = _handleMetaStream ())) {
-        return err;
+    if((err == UT_OK) && try_recover) {
+        err = UT_IE_TRY_RECOVER;
     }
-    
-    if ( UT_OK != (err = _handleStylesStream ())) {
-        return err;
-    }
-    
-    if ( UT_OK != (err = _handleContentStream ())) {
-        return err;
-    }
-        
-    return UT_OK;
+    return err;
 }
 
 
@@ -296,6 +317,10 @@ UT_Error IE_Imp_OpenDocument::_parseStream ( GsfInfile* pGsfInfile,
                 return UT_ERROR;
             }
             ret = parser.parse ((const char *)data, len);
+        }
+        // if there is an error we think we can recover.
+        if(ret != UT_OK) {
+            ret = UT_IE_TRY_RECOVER;
         }
     }
   

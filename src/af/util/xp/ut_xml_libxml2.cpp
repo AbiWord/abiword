@@ -125,7 +125,8 @@ static void _errorSAXFunc(void *xmlp,
   {
       UT_DEBUGMSG(("SAX function error here \n"));
       UT_DEBUGMSG(("%s", errorMessage.c_str()));
-      UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+// This is a runtime error, an ASSERT is out of place.
+//      UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
   }
   FREEP(szErr);
 }

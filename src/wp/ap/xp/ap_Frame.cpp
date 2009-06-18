@@ -26,6 +26,7 @@
 #include "ap_Features.h"
 
 #include "ap_FrameData.h"
+#include "ap_Strings.h"
 #include "fv_View.h"
 #include "xav_View.h"
 #include "xad_Document.h"
@@ -198,16 +199,16 @@ UT_Error AP_Frame::_loadDocument(const char * szFilename, IEFileType ieft,
 	}
 	AD_Document * pNewDoc = new PD_Document();
 	UT_return_val_if_fail (pNewDoc, UT_ERROR);
-	
+	UT_Error errorCode = UT_OK;
+
 	if (!szFilename || !*szFilename)
 	{
 		pNewDoc->newDocument();
 		m_iUntitled = _getNextUntitledNumber();
 		goto ReplaceDocument;
 	}
-	UT_Error errorCode;
 	errorCode = pNewDoc->readFromFile(szFilename, ieft);
-	if (!errorCode)
+	if (UT_IS_IE_SUCCESS(errorCode))
 		goto ReplaceDocument;
 
 	if (createNew)
@@ -250,7 +251,7 @@ ReplaceDocument:
 	
 	// NOTE: prior document is discarded in _showDocument()
 	m_pDoc = pNewDoc;
-	return UT_OK;
+	return errorCode;
 }
 
 UT_Error AP_Frame::_loadDocument(GsfInput * input, IEFileType ieft)
@@ -415,7 +416,7 @@ UT_Error AP_Frame::loadDocument(GsfInput * input, int ieft)
 	}
 	UT_Error errorCode;
 	errorCode =  _loadDocument(input, static_cast<IEFileType>(ieft));
-	if (errorCode)
+	if (!UT_IS_IE_SUCCESS(errorCode))
 	{
 		// we could not load the document.
 		// we cannot complain to the user here, we don't know
@@ -470,7 +471,7 @@ UT_Error AP_Frame::loadDocument(const char * szFilename, int ieft, bool createNe
 	}
 	UT_Error errorCode;
 	errorCode =  _loadDocument(szFilename, static_cast<IEFileType>(ieft), createNew);
-	if (errorCode)
+	if (!UT_IS_IE_SUCCESS(errorCode))
 	{
 		// we could not load the document.
 		// we cannot complain to the user here, we don't know
@@ -497,7 +498,12 @@ UT_Error AP_Frame::loadDocument(const char * szFilename, int ieft, bool createNe
 		}
 	}
 
-	return _showDocument(iZoom);
+	UT_Error errorCode2 =  _showDocument(iZoom);
+    if((errorCode2 == UT_OK) && (errorCode == UT_IE_TRY_RECOVER)) 
+    {
+        return errorCode;
+    }
+    return errorCode2;
 }
 
 UT_Error AP_Frame::loadDocument(const char * szFilename, int ieft)
@@ -518,7 +524,7 @@ UT_Error AP_Frame::importDocument(const char * szFilename, int ieft, bool markCl
 	}
 	UT_Error errorCode;
 	errorCode =  _importDocument(szFilename, static_cast<IEFileType>(ieft), markClean);
-	if (errorCode)
+	if (!UT_IS_IE_SUCCESS(errorCode))
 	{
 		return errorCode;
 	}
@@ -537,7 +543,12 @@ UT_Error AP_Frame::importDocument(const char * szFilename, int ieft, bool markCl
 	XAP_Frame::tZoomType iZoomType;
 	UT_uint32 iZoom = getNewZoom(&iZoomType);
 	setZoomType(iZoomType);
-	return _showDocument(iZoom);
+	UT_Error errorCode2 =  _showDocument(iZoom);
+    if((errorCode2 == UT_OK) && (errorCode == UT_IE_TRY_RECOVER)) 
+    {
+        return errorCode;
+    }
+    return errorCode2;
 }
 
 /*!

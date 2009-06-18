@@ -1770,24 +1770,25 @@ static void s_StartStopLoadingCursor( bool bStartStop, XAP_Frame * pFrame)
 }
 
 
-static void s_TellOpenFailed(XAP_Frame * pFrame, const char * fileName, UT_Error /*errorCode*/)
+static void s_TellOpenFailed(XAP_Frame * pFrame, const char * fileName, UT_Error errorCode)
 {
-  XAP_String_Id String_id = AP_STRING_ID_MSG_OpenFailed;
+    XAP_String_Id String_id;
 
-// TODO use switch statement for more error codes
-#if 0  
-  switch(errorCode)
+    switch(errorCode)
 	{
-	default:
-	  String_id = AP_STRING_ID_MSG_OpenFailed;
-	  break;
+    case UT_IE_TRY_RECOVER:
+        String_id = AP_STRING_ID_MSG_OpenRecovered;
+        break;
+    default:
+        String_id = AP_STRING_ID_MSG_OpenFailed;
+        break;
 	}
-#endif
+    
   
-  pFrame->showMessageBox(String_id,
-			 XAP_Dialog_MessageBox::b_O,
-			 XAP_Dialog_MessageBox::a_OK,
-			 fileName);
+    pFrame->showMessageBox(String_id,
+                           XAP_Dialog_MessageBox::b_O,
+                           XAP_Dialog_MessageBox::a_OK,
+                           fileName);
 }
 
 static void s_TellSaveFailed(XAP_Frame * pFrame, const char * fileName, UT_Error errorCode)
@@ -10574,13 +10575,17 @@ Defun1(insFile)
 	    PD_Document * newDoc = new PD_Document();
 	    UT_Error err = newDoc->readFromFile(pathName, IEFT_Unknown);
 	    
-	    if ( err != UT_OK )
+	    if (!UT_IS_IE_SUCCESS(err))
 		{
 			UNREFP(newDoc);
 			s_TellOpenFailed(pFrame, pathName, err);
 			return false;
 		}
-	    
+        if ( err == UT_IE_TRY_RECOVER ) 
+        {
+            s_TellOpenFailed(pFrame, pathName, err);
+        }
+
 	    // create a new layout and view object for the doc
 	    FL_DocLayout *pDocLayout = new FL_DocLayout(newDoc,pGraphics);
 	    FV_View copyView(pApp,0,pDocLayout);
