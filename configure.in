@@ -665,6 +665,7 @@ if test "$TOOLKIT" == "gtk" &&
 	# derived classes in dlopened modules
 	PLUGIN_LIBS="$PLUGIN_LIBS "'-L${top_builddir}/src'" -labiword-$ABIWORD_SERIES"
 elif test "$TOOLKIT" == "win"; then
+	PLUGIN_CFLAGS="$PLUGIN_CFLAGS "'-D_WIN32_IE=0x0300 -D_WIN32_WINNT=0x0500'
 	# link plugins to the executable so they can be loaded
 	PLUGIN_LIBS="$PLUGIN_LIBS "'-L${top_builddir}/src -labiword'
 elif test "$TOOLKIT" == "cocoa" ; then 
