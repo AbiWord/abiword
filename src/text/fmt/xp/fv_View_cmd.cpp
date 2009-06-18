@@ -5492,6 +5492,7 @@ bool FV_View::cmdInsertLatexMath(UT_UTF8String & sLatex,
 	uuid->toString(s);
 	sMathName += s;
 	sLatexName += s;
+	delete uuid;
 	UT_DEBUGMSG(("Inserting latex id name %s \n",sLatexName.utf8_str()));
 	//
 	// Insert these into the Piece Table
