@@ -14,6 +14,7 @@ mathview_la_LDFLAGS = \
 	-module \
 	-no-undefined
 
+nodist_EXTRA_mathview_la_SOURCES = dummy.cpp
 mathview_la_SOURCES = 
 
 EXTRA_DIST = \

@@ -2,7 +2,7 @@
 noinst_LTLIBRARIES = libwin.la
 
 AM_CPPFLAGS = \
-	$(COLLAB_CPPFLAGS) \
+	$(COLLAB_CFLAGS) \
 	-I$(srcdir)/../../.. \
 	-I$(srcdir)/../../../core
 
