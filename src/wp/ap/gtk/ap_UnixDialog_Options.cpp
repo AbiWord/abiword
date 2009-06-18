@@ -60,6 +60,10 @@ extern "C" {
 #define _DISABLE_GRAMMAR
 #endif
 
+#if !defined(ENABLE_SPELL) && !defined(_DISABLE_GRAMMAR)
+#define _DISABLE_GRAMMAR
+#endif
+
 /*****************************************************************/
 
 #define WID(widget)   GTK_WIDGET(gtk_builder_get_object(builder, widget))
@@ -434,7 +438,14 @@ void AP_UnixDialog_Options::_constructWindowContents ( GtkBuilder * builder )
 #endif /// _DISABLE_GRAMMAR
 
 #else
-    gtk_notebook_remove_page((GtkNotebook*)m_notebook, 3);
+    m_checkbuttonSpellCheckAsType = NULL;
+    m_checkbuttonSpellHideErrors = NULL;
+    m_checkbuttonSpellUppercase = NULL;
+    m_checkbuttonSpellNumbers = NULL;
+    m_checkbuttonSpellSuggest = NULL;
+    m_checkbuttonSpellMainOnly = NULL;
+    m_checkbuttonGrammarCheck = NULL;
+    gtk_notebook_remove_page((GtkNotebook*)m_notebook, 2);
 #endif
     // Smart Quotes
 
@@ -681,6 +692,12 @@ void AP_UnixDialog_Options::_controlEnable ( tControl id, bool value )
         gtk_toggle_button_set_active (          \
                                                 GTK_TOGGLE_BUTTON(m_checkbutton##button), b ); }
 
+#define DEFINE_GET_SET_BOOL_D(button) \
+    bool     AP_UnixDialog_Options::_gather##button(void) {    \
+                return false; }   \
+    void        AP_UnixDialog_Options::_set##button(bool) { \
+               }
+
 #define DEFINE_GET_SET_TEXT(widget) \
     char *  AP_UnixDialog_Options::_gather##widget() {    \
         UT_ASSERT(m_text##widget && GTK_IS_EDITABLE(m_text##widget)); \
@@ -693,12 +710,21 @@ void AP_UnixDialog_Options::_controlEnable ( tControl id, bool value )
         gtk_editable_insert_text(GTK_EDITABLE(m_text##widget), t, strlen(t), &pos); \
     }
 
+#ifdef ENABLE_SPELL
 DEFINE_GET_SET_BOOL ( SpellCheckAsType )
 DEFINE_GET_SET_BOOL ( SpellHideErrors )
 DEFINE_GET_SET_BOOL ( SpellSuggest )
 DEFINE_GET_SET_BOOL ( SpellMainOnly )
 DEFINE_GET_SET_BOOL ( SpellUppercase )
 DEFINE_GET_SET_BOOL ( SpellNumbers )
+#else
+DEFINE_GET_SET_BOOL_D ( SpellCheckAsType )
+DEFINE_GET_SET_BOOL_D ( SpellHideErrors )
+DEFINE_GET_SET_BOOL_D ( SpellSuggest )
+DEFINE_GET_SET_BOOL_D ( SpellMainOnly )
+DEFINE_GET_SET_BOOL_D ( SpellUppercase )
+DEFINE_GET_SET_BOOL_D ( SpellNumbers )
+#endif
 #ifndef _DISABLE_GRAMMAR
 DEFINE_GET_SET_BOOL ( GrammarCheck )
 #else
