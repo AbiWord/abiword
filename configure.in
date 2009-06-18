@@ -634,6 +634,7 @@ fi
 if test "$TOOLKIT" == "win"; then
 	AC_DEFINE([TOOLKIT_WIN], [1], [Build win32 user interface])
 	AC_DEFINE([_WIN32_IE], [0x0300], [minimal comctl.dll v4.70 for toolbars])
+	AC_DEFINE([_WIN32_WINNT], [0x0500], [support collaboration plugin in Windows 2000 or higher])
 	# override static/dynamic, on win32 only static is possible
 	enable_dynamic="no"
 	enable_static="yes"
