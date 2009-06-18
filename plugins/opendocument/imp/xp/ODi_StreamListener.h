@@ -141,6 +141,7 @@ private:
     
     ODi_ListenerState* m_pCurrentState;
     bool m_deleteCurrentWhenPop;
+    bool m_ownStack;
     
     UT_GenericVector <ODi_StreamListener::StackCell> m_stateStack;
     UT_GenericVector <ODi_Postpone_ListenerState*> m_postponedParsing;

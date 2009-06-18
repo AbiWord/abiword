@@ -179,6 +179,7 @@ void ODi_Style_Style_Family::fixStyles() {
 
         if (!noneFound) {
             removeStyleStyle(pStyle, false);
+            DELETEP(pStyle);
         }
     } while (!noneFound);
     
@@ -203,6 +204,7 @@ void ODi_Style_Style_Family::fixStyles() {
         DELETEP(pStylesVec);
         if (!noneFound) {
             removeStyleStyle(pStyle, true);
+            DELETEP(pStyle);
         }
     } while (!noneFound);
 }

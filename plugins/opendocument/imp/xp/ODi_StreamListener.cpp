@@ -45,15 +45,15 @@ ODi_StreamListener::ODi_StreamListener(PD_Document* pAbiDocument,
                                      ODi_Office_Styles* pStyles,
                                      ODi_Abi_Data& rAbiData,
                                      ODi_ElementStack* pElementStack)
-                                     :
-                                     m_pAbiDocument(pAbiDocument),
-                                     m_pGsfInfile(pGsfInfile),
-                                     m_pStyles(pStyles),
-                                     m_rAbiData(rAbiData),
-                                     m_fontFaceDecls(*pElementStack),
-                                     m_currentAction(ODI_NONE),
-                                     m_pCurrentState(NULL),
-                                     m_deleteCurrentWhenPop(false)
+    : m_pAbiDocument(pAbiDocument),
+      m_pGsfInfile(pGsfInfile),
+      m_pStyles(pStyles),
+      m_rAbiData(rAbiData),
+      m_fontFaceDecls(*pElementStack),
+      m_currentAction(ODI_NONE),
+      m_pCurrentState(NULL),
+      m_deleteCurrentWhenPop(false),
+      m_ownStack(false)
 {
     UT_ASSERT_HARMLESS(m_pAbiDocument);
     UT_ASSERT_HARMLESS(m_pGsfInfile);
@@ -63,8 +63,10 @@ ODi_StreamListener::ODi_StreamListener(PD_Document* pAbiDocument,
     // This is done for supporting nested StreamListeners, used when we are
     // resuming postponed elements.    
     if (pElementStack == NULL) {
-        m_pElementStack = new ODi_ElementStack();
-    } else {
+        m_pElementStack = new ODi_ElementStack;
+        m_ownStack = true;
+    } 
+    else {
         m_pElementStack = pElementStack;
     }
 }
@@ -81,6 +83,9 @@ ODi_StreamListener::~ODi_StreamListener()
 //  Having a state is perfectly valid as we allow recovering from an error.
 //    UT_ASSERT(m_pCurrentState == NULL);
     UT_VECTOR_PURGEALL(ODi_Postpone_ListenerState*, m_postponedParsing);
+    if(m_ownStack) {
+        DELETEP(m_pElementStack);
+    }
     _clear();
 }
 
