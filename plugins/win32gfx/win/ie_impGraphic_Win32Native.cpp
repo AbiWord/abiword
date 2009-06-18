@@ -582,7 +582,6 @@ private:
     
     const UT_Byte*  row_data;
     UT_sint32 row;
-    UT_uint32 col;
     UT_uint32 position;
     UT_uint32 row_width = m_iWidth * m_iBitsPerPlane / 8;
     while ((row_width & 3) != 0) row_width++;
@@ -609,7 +608,7 @@ private:
 	    /* Calculating the start of each row */
 	    position=m_iOffset + row*row_width;
 	    /* Transforming the b/r to r/b */
-	    for (UT_uint32 i=0, col=0; i < m_iWidth; i++,col+=3)
+	    for (UT_sint32 i=0, col=0; i < m_iWidth; i++,col+=3)
 	      {
 		row_transformed_data[col+0] = (UT_Byte)*pBB->getPointer(position+col+2);
 		row_transformed_data[col+1] = (UT_Byte)*pBB->getPointer(position+col+1);
@@ -625,7 +624,7 @@ private:
 	    /* Calculating the start of each row */
 	    position=m_iOffset + row*row_width;
 	    /* Transforming the b/r to r/b */
-	    for (UT_uint32 i=0, col=0; i < m_iWidth; i++,col+=4)
+	    for (UT_sint32 i=0, col=0; i < m_iWidth; i++,col+=4)
 	      {
 		row_transformed_data[col+0] = (UT_Byte)*pBB->getPointer(position+col+2);
 		row_transformed_data[col+1] = (UT_Byte)*pBB->getPointer(position+col+1);
