@@ -1047,7 +1047,11 @@ cb_print_property (char const *name, GsfDocProp const *prop, DocAndLid * doc)
 			  char const * abi_metadata_name = metadata_names[i].abi_metadata_name;
 			
 			  if(abi_metadata_name != NULL) {
-				  const char * encoding = wvLIDToCodePageConverter(doc->lid);
+				  const char * encoding = NULL;
+				  if (doc->lid >> 8 != 0x04) {
+					// header is not utf8 encoded
+				  	encoding = wvLIDToCodePageConverter(doc->lid);
+				  }
 				  char *tmp;
 
 				  if (G_VALUE_HOLDS(val, G_TYPE_STRING))
