@@ -421,7 +421,9 @@ void XAP_UnixDialog_FileOpenSaveAs::fileTypeChanged(GtkWidget * w)
 
 	UT_sint32 nFileType = XAP_comboBoxGetActiveInt(GTK_COMBO_BOX(w));
 	UT_DEBUGMSG(("File type widget is %p filetype number is %d \n",w,nFileType));
-	if(nFileType == 0)
+    // I have no idea for 0, but XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO
+    // definitely means "skip this"
+	if((nFileType == 0) || (nFileType == XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO))
 	{
 		return;
 	}
@@ -446,6 +448,7 @@ void XAP_UnixDialog_FileOpenSaveAs::fileTypeChanged(GtkWidget * w)
 	{
 		sSuffix = sSuffix.substr(0,i);
 	}
+
 //
 // Hard code a suffix
 //
