@@ -947,7 +947,7 @@ bool AP_Win32App::_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const 
  		AP_FrameData* 			pFrameData;		
  		FL_DocLayout*			pDocLy;	
  		FV_View* 				pView;						
-		UT_ByteBuf				bBufBMP;
+		UT_ByteBuf*				bBufBMP = new UT_ByteBuf;
  		
  		hBitmap = (HBITMAP)hData;					
  		hWnd =  GetDesktopWindow();
@@ -955,21 +955,24 @@ bool AP_Win32App::_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const 
  		
  		// Create a BMP file from a BITMAP
  		bi =  CreateBitmapInfoStruct(hBitmap);						
- 		CreateBMP(hWnd, bBufBMP, bi, hBitmap,hdc);                  										
+ 		CreateBMP(hWnd, *bBufBMP, bi, hBitmap,hdc);                  										
  		
  		// Since we are providing the file type, there is not need to pass the bytebuff filled up
- 		errorCode = IE_ImpGraphic::constructImporter(&bBufBMP, iegft, &pIEG);				 				
+ 		errorCode = IE_ImpGraphic::constructImporter(*bBufBMP, iegft, &pIEG);				 				
 		 				
  		if(errorCode != UT_OK)		
 			return false;				  	
 		 				 			
- 		errorCode = pIEG->importGraphic(&bBufBMP, &pFG); 		
+ 		errorCode = pIEG->importGraphic(bBufBMP, &pFG); 		
  		
  		if(errorCode != UT_OK || !pFG)
 		{
+			DELETEP(bBufBMP);
 			DELETEP(pIEG);
  			return false;
 		}
+		// sunk in importGraphic
+		bBufBMP = NULL;
  		 
  		// Insert graphic in the view
  		pFrame = getLastFocussedFrame(); 						
