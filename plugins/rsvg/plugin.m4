@@ -1,23 +1,12 @@
 
-rsvg_pkgs="librsvg-2.0 >= 2.0"
+rsvg_pkgs="librsvg-2.0 >= 2.0 glib-2.0"
 rsvg_deps="no"
 
 if test "$enable_rsvg" != ""; then
 
 PKG_CHECK_EXISTS([ $rsvg_pkgs ], 
 [
-	AC_MSG_CHECKING([for gtk toolkit])
-	if test "$TOOLKIT" == "gtk"; then
-	  AC_MSG_RESULT([yes])
-	  rsvg_deps="yes"
-	else
-	  AC_MSG_RESULT([no])
-	  if test "$enable_rsvg" == "auto"; then
-	    AC_MSG_WARN([rsvg plugin: only supported with gtk])
-	  else
-	    AC_MSG_ERROR([rsvg plugin: only supported with gtk])
-	  fi
-	fi
+	rsvg_deps="yes"
 ], [
 	test "$enable_rsvg" == "auto" && AC_MSG_WARN([rsvg plugin: dependencies not satisfied - $rsvg_pkgs])
 ])

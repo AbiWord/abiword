@@ -1,14 +1,14 @@
 
-SUBDIRS = unix
+SUBDIRS = xp
 
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = rsvg.la
 
 rsvg_la_LIBADD = \
-	unix/libunix.la
+	xp/libxp.la \
+	$(RSVG_LIBS) -lpng12
 
 rsvg_la_LDFLAGS = \
-	$(RSVG_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
@@ -30,7 +30,7 @@ CLEANFILES = \
 	rsvg.dll.a
 
 rsvg.dll: .libs/rsvg.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(RSVG_LIBS)
+	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(RSVG_LIBS) -lpng12
 
 endif # TOOLKIT_WIN
 
