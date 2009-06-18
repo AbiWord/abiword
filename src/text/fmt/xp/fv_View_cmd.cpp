@@ -5487,7 +5487,7 @@ bool FV_View::cmdInsertLatexMath(UT_UTF8String & sLatex,
 	  Create a unique identifier for the data item.
 	*/
 	UT_UUID *uuid = m_pDoc->getNewUUID();
-	UT_return_val_if_fail(uuid != NULL, UT_ERROR);
+	UT_return_val_if_fail(uuid != NULL, false);
 	UT_UTF8String s;
 	uuid->toString(s);
 	sMathName += s;
