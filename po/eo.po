@@ -75,7 +75,7 @@ msgstr "% de la normala grandeco"
 #: po/tmp/ap_String_Id.h.h:39
 #, c-format
 msgid "%s"
-msgstr "$s"
+msgstr "%s"
 
 #. MSG_DlgNotImp
 #: po/tmp/ap_String_Id.h.h:41

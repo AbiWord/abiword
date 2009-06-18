@@ -136,7 +136,6 @@ AP_CocoaApp::~AP_CocoaApp(void)
 
     IE_ImpExp_UnRegisterXP ();
 }
-
 /*!
   Creates a directory if the specified one does not yet exist.
   /param A character string representing the to-be-created directory. 
@@ -296,30 +295,6 @@ bool AP_CocoaApp::initialize(void)
 		UT_ASSERT(pBuiltinStringSet);
 		m_pStringSet = pBuiltinStringSet;
 	    
-		// see if we should load an alternative set from the disk
-	    
-//		const char * szDirectory = NULL;
-		const char * szStringSet = NULL;
-	    
-		if (   (getPrefsValue(AP_PREF_KEY_StringSet,
-							  (const gchar**)&szStringSet))
-			   && (szStringSet)
-			   && (*szStringSet)
-			   && (strcmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
-		{
-#if 0			
-			getPrefsValueDirectory(true,
-								   (const gchar*)AP_PREF_KEY_StringSetDirectory,
-								   (const gchar**)&szDirectory);
-			UT_ASSERT((szDirectory) && (*szDirectory));
-
-			std::string szPathname = szDirectory;
-			if (szDirectory[szPathname.size()-1]!='/')
-				szPathname += "/";
-			szPathname += szStringSet;
-			szPathname += ".strings";
-#endif
-
     ///////////////////////////////////////////////////////////////////////
     /// Build a labelset so the plugins can add themselves to something ///
     ///////////////////////////////////////////////////////////////////////
@@ -328,7 +303,6 @@ bool AP_CocoaApp::initialize(void)
 	if (getPrefsValue( AP_PREF_KEY_StringSet, (const gchar**)&szMenuLabelSetName)
 		&& (szMenuLabelSetName) && (*szMenuLabelSetName))
 	{
-		;
 	}
 	else {
 		szMenuLabelSetName = AP_PREF_DEFAULT_StringSet;
@@ -343,7 +317,6 @@ bool AP_CocoaApp::initialize(void)
 	const char * szMenuLayoutName = NULL;
 	if ((getPrefsValue(AP_PREF_KEY_MenuLayout, static_cast<const gchar**>(&szMenuLayoutName))) &&
 	    (szMenuLayoutName) && (*szMenuLayoutName)) {
-		;
 	}
 	else {
 		szMenuLayoutName = AP_PREF_DEFAULT_MenuLayout;
