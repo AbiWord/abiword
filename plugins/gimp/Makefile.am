@@ -19,6 +19,8 @@ CLEANFILES = \
 	gimp.dll \
 	gimp.dll.a
 
+.libs/gimp.a: gimp.la
+
 gimp.dll: .libs/gimp.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 

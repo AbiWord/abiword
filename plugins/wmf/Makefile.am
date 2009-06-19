@@ -29,6 +29,8 @@ CLEANFILES = \
 	wmf.dll \
 	wmf.dll.a
 
+.libs/wmf.a: wmf.la
+
 wmf.dll: .libs/wmf.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(WMF_LIBS)
 

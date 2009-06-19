@@ -19,6 +19,8 @@ CLEANFILES = \
 	opendocument.dll \
 	opendocument.dll.a
 
+.libs/opendocument.a: opendocument.la
+
 opendocument.dll: .libs/opendocument.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(OPENDOCUMENT_LIBS)
 

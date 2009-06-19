@@ -27,6 +27,8 @@ CLEANFILES = \
 	command.dll \
 	command.dll.a
 
+.libs/command.a: command.la
+
 command.dll: .libs/command.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(COMMAND_LIBS)
 

@@ -23,6 +23,8 @@ CLEANFILES = \
 	latex.dll \
 	latex.dll.a
 
+.libs/latex.a: latex.la
+
 latex.dll: .libs/latex.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(LATEX_LIBS)
 

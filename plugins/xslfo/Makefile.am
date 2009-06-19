@@ -18,6 +18,8 @@ CLEANFILES = \
 	xslfo.def \
 	xslfo.dll \
 	xslfo.dll.a
+	
+.libs/xslfo.a: xslfo.la
 
 xslfo.dll: .libs/xslfo.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(XSLFO_LIBS)

@@ -29,6 +29,8 @@ CLEANFILES = \
 	wpg.dll \
 	wpg.dll.a
 
+.libs/wpg.a: wpg.la
+
 wpg.dll: .libs/wpg.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(WPG_LIBS)
 

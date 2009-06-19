@@ -28,6 +28,8 @@ CLEANFILES = \
 	gda.dll \
 	gda.dll.a
 
+.libs/gda.a: gda.la
+
 gda.dll: .libs/gda.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(GDA_LIBS)
 

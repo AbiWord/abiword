@@ -19,6 +19,8 @@ CLEANFILES = \
 	applix.dll \
 	applix.dll.a
 
+.libs/applix.a: applix.la
+
 applix.dll: .libs/applix.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(APPLIX_LIBS)
 

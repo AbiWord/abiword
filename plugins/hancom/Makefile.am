@@ -19,6 +19,8 @@ CLEANFILES = \
 	hancom.dll \
 	hancom.dll.a
 
+.libs/hancom.a: hancom.la
+
 hancom.dll: .libs/hancom.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(HANCOM_LIBS)
 

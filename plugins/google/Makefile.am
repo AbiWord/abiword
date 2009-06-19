@@ -19,6 +19,8 @@ CLEANFILES = \
 	google.dll \
 	google.dll.a
 
+.libs/google.a: google.la
+
 google.dll: .libs/google.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 

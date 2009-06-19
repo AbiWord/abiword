@@ -19,6 +19,8 @@ CLEANFILES = \
 	eml.dll \
 	eml.dll.a
 
+.libs/eml.a: eml.la
+
 eml.dll: .libs/eml.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 

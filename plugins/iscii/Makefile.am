@@ -19,6 +19,8 @@ CLEANFILES = \
 	iscii.dll \
 	iscii.dll.a
 
+.libs/iscii.a: iscii.la
+
 iscii.dll: .libs/iscii.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 

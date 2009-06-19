@@ -28,6 +28,8 @@ CLEANFILES = \
 	ots.dll \
 	ots.dll.a
 
+.libs/ots.a: ots.la
+
 ots.dll: .libs/ots.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(OTS_LIBS)
 

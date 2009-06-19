@@ -19,6 +19,8 @@ CLEANFILES = \
 	jpeg.dll \
 	jpeg.dll.a
 
+.libs/jpeg.a: jpeg.la
+
 jpeg.dll: .libs/jpeg.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(JPEG_LIBS)
 

@@ -19,6 +19,8 @@ CLEANFILES = \
 	bmp.dll \
 	bmp.dll.a
 
+.libs/bmp.a: bmp.la
+
 bmp.dll: .libs/bmp.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(BMP_LIBS)
 

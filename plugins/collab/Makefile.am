@@ -40,6 +40,8 @@ CLEANFILES = \
 	collab.dll \
 	collab.dll.a
 
+.libs/collab.a: collab.la
+
 collab.dll: .libs/collab.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(COLLAB_LIBS) $(SYSTEM_LIBS)
 

@@ -19,6 +19,8 @@ CLEANFILES = \
 	urldict.dll \
 	urldict.dll.a
 
+.libs/urldict.a: urldict.la
+
 urldict.dll: .libs/urldict.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 

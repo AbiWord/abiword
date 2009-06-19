@@ -19,6 +19,8 @@ CLEANFILES = \
 	t602.dll \
 	t602.dll.a
 
+.libs/t602.a: t602.la
+
 t602.dll: .libs/t602.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(T602_LIBS)
 

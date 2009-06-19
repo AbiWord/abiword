@@ -19,6 +19,8 @@ CLEANFILES = \
 	babelfish.dll \
 	babelfish.dll.a
 
+.libs/babelfish.a: babelfish.la
+
 babelfish.dll: .libs/babelfish.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 

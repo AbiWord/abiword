@@ -29,6 +29,8 @@ CLEANFILES = \
 	wordperfect.dll \
 	wordperfect.dll.a
 
+.libs/wordperfect.a: wordperfect.la
+
 wordperfect.dll: .libs/wordperfect.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(WORDPERFECT_LIBS)
 

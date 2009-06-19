@@ -19,6 +19,8 @@ CLEANFILES = \
 	kword.dll \
 	kword.dll.a
 
+.libs/kword.a: kword.la
+
 kword.dll: .libs/kword.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(KWORD_LIBS)
 

@@ -20,6 +20,8 @@ CLEANFILES = \
 	paint.dll \
 	paint.dll.a
 
+.libs/paint.a: paint.la
+
 paint.dll: .libs/paint.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PAINT_LIBS)
 

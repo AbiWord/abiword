@@ -29,6 +29,8 @@ CLEANFILES = \
 	rsvg.dll \
 	rsvg.dll.a
 
+.libs/rsvg.a: rsvg.la
+
 rsvg.dll: .libs/rsvg.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(RSVG_LIBS) -lpng12
 

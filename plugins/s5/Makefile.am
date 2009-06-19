@@ -19,6 +19,8 @@ CLEANFILES = \
 	s5.dll \
 	s5.dll.a
 
+.libs/s5.a: s5.la
+
 s5.dll: .libs/s5.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 

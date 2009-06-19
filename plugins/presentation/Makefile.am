@@ -19,6 +19,8 @@ CLEANFILES = \
 	presentation.dll \
 	presentation.dll.a
 
+.libs/presentation.a: presentation.la
+
 presentation.dll: .libs/presentation.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PRESENTATION_LIBS)
 

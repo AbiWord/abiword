@@ -29,6 +29,8 @@ CLEANFILES = \
 	mht.dll \
 	mht.dll.a
 
+.libs/mht.a: mht.la
+
 mht.dll: .libs/mht.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(MHT_LIBS)
 

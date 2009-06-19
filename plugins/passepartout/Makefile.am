@@ -19,6 +19,8 @@ CLEANFILES = \
 	passepartout.dll \
 	passepartout.dll.a
 
+.libs/passepartout.a: passepartout.la
+
 passepartout.dll: .libs/passepartout.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 
