@@ -30,7 +30,6 @@
 #include "ut_bytebuf.h"
 #include "ut_wctomb.h"
 #include "ut_iconv.h"
-#include "ut_exception.h"
 #include "ut_Language.h"
 
 #include "xap_App.h"

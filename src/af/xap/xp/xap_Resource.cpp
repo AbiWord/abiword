@@ -24,7 +24,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ut_exception.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_base64.h"
@@ -69,11 +68,11 @@ const char * XAP_InternalResource::buffer (const char * new_buffer, UT_uint32 ne
 	UT_uint32 buffer_length = new_buffer_length;
 	if (base64_encoded) buffer_length -= buffer_length >> 2;
 
-	UT_TRY
+	try
 		{
 			m_buffer = new char[buffer_length];
 		}
-	UT_CATCH (...)
+	catch (...)
 		{
 			m_buffer = 0;
 		}
