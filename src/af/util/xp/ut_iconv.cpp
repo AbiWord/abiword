@@ -33,7 +33,6 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include <errno.h>
 
 #include "ut_iconv.h"
 #include "ut_assert.h"
