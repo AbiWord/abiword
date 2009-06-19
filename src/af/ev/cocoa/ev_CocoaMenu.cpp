@@ -29,7 +29,6 @@
 
 #include "ut_types.h"
 #include "ut_debugmsg.h"
-#include "ut_exception.h"
 #include "ut_string.h"
 
 #include "xap_CocoaApp.h"

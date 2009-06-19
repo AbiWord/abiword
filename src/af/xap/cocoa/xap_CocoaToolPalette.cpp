@@ -23,7 +23,6 @@
 
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-#include "ut_exception.h"
 #include "ut_string_class.h"
 
 #import "xap_CocoaApp.h"
@@ -891,20 +890,20 @@ static XAP_CocoaToolPalette * s_instance = nil;
 	{
 		UT_DEBUGMSG(("XAP_CocoaToolPalette -init: no available font families?\n"));
 	}
-	UT_TRY
+	try
 	{
 		m_ToolChest = new struct XAP_CocoaToolRef[XAP_COCOA_TOOL_ID__COUNT_];
 	}
-	UT_CATCH(...)
+	catch(...)
 	{
 		m_ToolChest = nil;
 	}
 	m_PaletteView = [[XAP_CocoaPaletteView alloc] init];
-	UT_TRY
+	try
 	{
 		m_Listener = new XAP_CocoaToolPaletteListener(self);
 	}
-	UT_CATCH(...)
+	catch(...)
 	{
 		m_Listener = 0;
 	}

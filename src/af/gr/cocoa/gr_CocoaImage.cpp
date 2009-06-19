@@ -27,7 +27,6 @@
 #include "ut_assert.h"
 #include "ut_bytebuf.h"
 #include "ut_debugmsg.h"
-#include "ut_exception.h"
 
 #import "xap_CocoaAbiConversions.h"
 

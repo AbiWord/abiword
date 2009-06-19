@@ -21,7 +21,6 @@
  
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-#include "ut_exception.h"
 
 #include "xap_CocoaWindow.h"
 
