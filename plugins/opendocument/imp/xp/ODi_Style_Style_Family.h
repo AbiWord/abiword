@@ -63,7 +63,7 @@ public:
     void linkStyles();
     
     const ODi_Style_Style* getStyle(const gchar* pStyleName,
-                                   bool bOnContentStream);
+                                   bool bOnContentStream) const;
                                    
     const ODi_Style_Style* getDefaultStyle() const {
         return m_pDefaultStyle;

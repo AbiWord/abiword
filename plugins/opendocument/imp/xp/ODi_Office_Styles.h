@@ -2,6 +2,7 @@
  * 
  * Copyright (C) 2005 Daniel d'Andrada T. de Carvalho
  * <daniel.carvalho@indt.org.br>
+ * Copyright (C) 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,12 +23,11 @@
 #ifndef _ODI_OFFICE_STYLES_H_
 #define _ODI_OFFICE_STYLES_H_
 
+#include <string>
+#include <map>
+
 // Internal includes
 #include "ODi_Style_Style_Family.h"
-
-// AbiWord includes
-#include <ut_hash.h>
-#include <ut_vector.h>
 
 // Internal classes
 class ODi_FontFaceDecls;
@@ -94,51 +94,76 @@ public:
     }
     
     const ODi_Style_Style* getTextStyle(const gchar* pStyleName,
-                                       bool bOnContentStream);
+                                       bool bOnContentStream) const;
     
     const ODi_Style_Style* getParagraphStyle(const gchar* pStyleName,
-                                            bool bOnContentStream);
+                                            bool bOnContentStream) const;
     
     const ODi_Style_Style* getSectionStyle(const gchar* pStyleName,
-                                          bool bOnContentStream);
+                                          bool bOnContentStream) const;
                                           
     const ODi_Style_Style* getGraphicStyle(const gchar* pStyleName,
-                                          bool bOnContentStream);
+                                          bool bOnContentStream) const;
                                           
     const ODi_Style_Style* getTableStyle(const gchar* pStyleName,
-                                        bool bOnContentStream);
+                                        bool bOnContentStream) const;
                                         
     const ODi_Style_Style* getTableColumnStyle(const gchar* pStyleName,
-                                              bool bOnContentStream);
+                                              bool bOnContentStream) const;
                                               
     const ODi_Style_Style* getTableRowStyle(const gchar* pStyleName,
-                                           bool bOnContentStream);
+                                           bool bOnContentStream) const;
                                            
     const ODi_Style_Style* getTableCellStyle(const gchar* pStyleName,
-                                            bool bOnContentStream);
+                                            bool bOnContentStream) const;
     
-    const ODi_Style_Style* getDefaultParagraphStyle() const {
-        return m_paragraphStyleStyles.getDefaultStyle();
-    }
+    const ODi_Style_Style* getDefaultParagraphStyle() const 
+        {
+            return m_paragraphStyleStyles.getDefaultStyle();
+        }
     
     const ODi_Style_PageLayout* getPageLayoutStyle(
-                                             const gchar* pStyleName) const {
-        return m_pageLayoutStyles.pick(pStyleName);
-    }
+                                             const gchar* pStyleName) const 
+        {
+            std::map<std::string, ODi_Style_PageLayout*>::const_iterator
+                iter = m_pageLayoutStyles.find(pStyleName);
+            if(iter != m_pageLayoutStyles.end()) {
+                return iter->second;
+            }
+            return NULL;
+        }
     
     const ODi_Style_MasterPage* getMasterPageStyle(
-                                             const gchar* pStyleName) const {
-        return m_masterPageStyles.pick(pStyleName);
-    }
+                                             const gchar* pStyleName) const 
+        {
+            std::map<std::string, ODi_Style_MasterPage*>::const_iterator
+                iter = m_masterPageStyles.find(pStyleName);
+            if(iter != m_masterPageStyles.end()) {
+                return iter->second;
+            }
+            return NULL;
+        }
     
-    ODi_Style_List* getList(const gchar* pStyleName) {
-        return m_listStyles.pick(pStyleName);
-    }
+    ODi_Style_List* getList(const gchar* pStyleName) const
+        {
+            std::map<std::string, ODi_Style_List*>::const_iterator
+                iter = m_listStyles.find(pStyleName);
+            if(iter != m_listStyles.end()) {
+                return iter->second;
+            }
+            return NULL;
+        }
     
     const ODi_NotesConfiguration* getNotesConfiguration(
-                                               const gchar* pNoteClass) const {
-        return m_notesConfigurations.pick(pNoteClass);
-    }
+                                               const gchar* pNoteClass) const 
+        {
+            std::map<std::string, ODi_NotesConfiguration*>::const_iterator
+                iter = m_notesConfigurations.find(pNoteClass);
+            if(iter != m_notesConfigurations.end()) {
+                return iter->second;
+            }
+            return NULL;
+        }
     
 private:
 
@@ -148,7 +173,7 @@ private:
     void _defineAbiStyles(PD_Document* pDocument) const;
     
     void _linkMasterStyles();
-    void _linkListStyles();
+    void _linkListStyles() const;
 
 
     ////
@@ -181,16 +206,20 @@ private:
 
 
     // <text:list-style> 
-    UT_GenericStringMap<ODi_Style_List*> m_listStyles;
+    typedef std::map<std::string, ODi_Style_List*> ListMap;
+    ListMap m_listStyles;
     
     // <style:page-layout>
-    UT_GenericStringMap<ODi_Style_PageLayout*> m_pageLayoutStyles;
+    typedef std::map<std::string, ODi_Style_PageLayout*> PageLayoutMap;
+    PageLayoutMap m_pageLayoutStyles;
     
     // <style:master-page>
-    UT_GenericStringMap<ODi_Style_MasterPage*> m_masterPageStyles;
+    typedef std::map<std::string, ODi_Style_MasterPage*> MasterPageMap;
+    MasterPageMap m_masterPageStyles;
     
     // <text:notes-configuration>
-    UT_GenericStringMap<ODi_NotesConfiguration*> m_notesConfigurations;
+    typedef std::map<std::string, ODi_NotesConfiguration*> NotesConfigMap;
+    NotesConfigMap m_notesConfigurations;
 };
 
 #endif //_ODI_OFFICE_STYLES_H_

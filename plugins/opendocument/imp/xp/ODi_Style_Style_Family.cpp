@@ -396,8 +396,8 @@ void ODi_Style_Style_Family::linkStyles()
  * 
  */
 const ODi_Style_Style* ODi_Style_Style_Family::getStyle(const gchar* pStyleName,
-                                                      bool bOnContentStream) {
-
+                                                      bool bOnContentStream) const
+{
     UT_return_val_if_fail(pStyleName, NULL);
 
     const ODi_Style_Style* pStyle = NULL;
@@ -432,11 +432,19 @@ const ODi_Style_Style* ODi_Style_Style_Family::getStyle(const gchar* pStyleName,
         std::string replacementName;
         
         if (bOnContentStream) {
-            replacementName = m_removedStyleStyles_contentStream[pStyleName];
+            std::map<std::string, std::string>::const_iterator iter
+                = m_removedStyleStyles_contentStream.find(pStyleName);
+            if(iter != m_removedStyleStyles_contentStream.end()) {
+                replacementName = iter->second;
+            }
         }
 
         if (replacementName.empty()) {
-            replacementName = m_removedStyleStyles[pStyleName];
+            std::map<std::string, std::string>::const_iterator iter
+                = m_removedStyleStyles.find(pStyleName);
+            if(iter != m_removedStyleStyles.end()) {
+                replacementName = iter->second;
+            }
         }
         
         if (!replacementName.empty()) {

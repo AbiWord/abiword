@@ -2,6 +2,7 @@
  * 
  * Copyright (C) 2005 Daniel d'Andrada T. de Carvalho
  * <daniel.carvalho@indt.org.br>
+ * Copyright (C) 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,6 +20,8 @@
  * 02111-1307, USA.
  */
  
+#include "ut_std_map.h"
+
 // Class definition include
 #include "ODi_Office_Styles.h"
 
@@ -40,46 +43,12 @@
 /**
  * Destructor
  */
-ODi_Office_Styles::~ODi_Office_Styles() {
-    
-    UT_GenericVector<ODi_Style_PageLayout*>* pPageLayoutVector;
-    UT_GenericVector<ODi_Style_MasterPage*>* pMasterPageVector;
-    UT_GenericVector<ODi_Style_List*>* pListStyleVector;
-    UT_GenericVector<ODi_NotesConfiguration*>* pNotesConfigVector;
-    UT_uint32 i, count;
-    
-  
-    
-    pListStyleVector = m_listStyles.enumerate();
-    count = pListStyleVector->getItemCount();
-    for (i=0; i<count; i++) {
-        delete (*pListStyleVector)[i];
-    }
-	DELETEP(pListStyleVector);
-    
-    
-    pPageLayoutVector = m_pageLayoutStyles.enumerate();
-    count = pPageLayoutVector->getItemCount();
-    for (i=0; i<count; i++) {
-        delete (*pPageLayoutVector)[i];
-    }
-	DELETEP(pPageLayoutVector);
-    
-    
-    pMasterPageVector = m_masterPageStyles.enumerate();
-    count = pMasterPageVector->getItemCount();
-    for (i=0; i<count; i++) {
-        delete (*pMasterPageVector)[i];
-    }
-	DELETEP(pMasterPageVector);
-    
-    
-    pNotesConfigVector = m_notesConfigurations.enumerate();
-    count = pNotesConfigVector->getItemCount();
-    for (i=0; i<count; i++) {
-        delete (*pNotesConfigVector)[i];
-    }
-	DELETEP(pNotesConfigVector);
+ODi_Office_Styles::~ODi_Office_Styles() 
+{
+    UT_map_delete_all_second(m_listStyles);
+    UT_map_delete_all_second(m_pageLayoutStyles);
+    UT_map_delete_all_second(m_masterPageStyles);
+    UT_map_delete_all_second(m_notesConfigurations);
 }
 
 
@@ -92,7 +61,8 @@ ODi_Office_Styles::~ODi_Office_Styles() {
  *         specified style is not currently supported (like graphic styles).
  */
 ODi_Style_Style* ODi_Office_Styles::addStyle(const gchar** ppAtts,
-                                           ODi_ElementStack& rElementStack) {
+                                           ODi_ElementStack& rElementStack) 
+{
 
     const gchar* pFamily;
     const gchar* pName;
@@ -189,13 +159,10 @@ ODi_Style_PageLayout* ODi_Office_Styles::addPageLayout(const gchar** ppAtts,
                                
     const gchar* pAttrValue;
     ODi_Style_PageLayout* pStyle;
-    bool ok;
                              
     pStyle = new ODi_Style_PageLayout(rElementStack, rAbiData);
     pAttrValue = UT_getAttribute("style:name", ppAtts);
-    ok = m_pageLayoutStyles.insert(pAttrValue, pStyle);
-    
-    UT_ASSERT(ok);
+    m_pageLayoutStyles.insert(std::make_pair(pAttrValue, pStyle));
     
     return pStyle;
 }
@@ -212,13 +179,10 @@ ODi_Style_MasterPage* ODi_Office_Styles::addMasterPage(const gchar** ppAtts,
                                                         
     const gchar* pAttrValue;
     ODi_Style_MasterPage* pStyle;
-    bool ok;
                              
     pStyle = new ODi_Style_MasterPage(pDocument, rElementStack);
     pAttrValue = UT_getAttribute("style:name", ppAtts);
-    ok = m_masterPageStyles.insert(pAttrValue, pStyle);
-    
-    UT_ASSERT(ok);
+    m_masterPageStyles.insert(std::make_pair(pAttrValue, pStyle));
     
     return pStyle;
 }
@@ -273,71 +237,57 @@ void ODi_Office_Styles::_linkStyles() {
  */
 void ODi_Office_Styles::_linkMasterStyles() {
     
-    UT_GenericVector<ODi_Style_MasterPage*>* pMasterStylesVec;
-    UT_uint32 i, count;
     ODi_Style_MasterPage* pMasterStyle;
-    ODi_Style_PageLayout* pLayout;
-    
-    pMasterStylesVec = m_masterPageStyles.enumerate();
-    UT_return_if_fail(pMasterStylesVec);
-    
-    count = pMasterStylesVec->getItemCount();
-    for (i=0; i<count; i++) {
-        pMasterStyle = (*pMasterStylesVec)[i];
+
+    for(MasterPageMap::const_iterator iter = m_masterPageStyles.begin();
+        iter != m_masterPageStyles.end(); ++iter) {
+
+        pMasterStyle = iter->second;
         
-        pLayout = m_pageLayoutStyles.pick(pMasterStyle->getLayoutName().utf8_str());
-        UT_ASSERT(pLayout);
-        
-        pMasterStyle->setLayoutStylePointer(pLayout);
+        PageLayoutMap::const_iterator l_iter 
+            = m_pageLayoutStyles.find(pMasterStyle->getLayoutName().utf8_str());
+        if(l_iter != m_pageLayoutStyles.end()) {
+            pMasterStyle->setLayoutStylePointer(l_iter->second);
+        }
     }
-	DELETEP(pMasterStylesVec);
 }
 
 
 /**
  * Link list level styles to the text styles that they refer to.
  */
-void ODi_Office_Styles::_linkListStyles() {
-    
-    UT_uint32 i, j, count, count2;
-    UT_GenericVector<ODi_Style_List*>* pStylesVec;
+void ODi_Office_Styles::_linkListStyles() const
+{
+    UT_sint32 count2;
     ODi_ListLevelStyle* pLevelStyle;
     ODi_Style_List* pListStyle;
     const ODi_Style_Style* pStyle;
     
-    pStylesVec = m_listStyles.enumerate();
-    UT_return_if_fail(pStylesVec);
-    
-    count = pStylesVec->getItemCount();
-    for (i=0; i<count; i++) {
+    for(ListMap::const_iterator iter = m_listStyles.begin();
+        iter != m_listStyles.end(); ++iter) {
 
-        pListStyle = (*pStylesVec)[i];
+        pListStyle = iter->second;
         UT_continue_if_fail(pListStyle);
         
         count2 = pListStyle->getLevelCount();
 
         // List levels start from 1.        
-        for (j=1; j<=count2; j++) {
+        for (UT_sint32 j = 1; j <= count2; j++) {
             pLevelStyle = pListStyle->getLevelStyle(j);
             
-            pStyle = this->getTextStyle(
+            pStyle = getTextStyle(
                 pLevelStyle->getTextStyleName()->utf8_str(), false);
             pLevelStyle->setTextStyle(pStyle);
         }
     }
-	DELETEP(pStylesVec);
 }
 
 
 /**
  * 
  */
-void ODi_Office_Styles::_defineAbiStyles(PD_Document* pDocument) const {
-    
-    UT_uint32 i, count;
-    UT_GenericVector<ODi_Style_List*>* pListVec;
-    bool ok;
-    
+void ODi_Office_Styles::_defineAbiStyles(PD_Document* pDocument) const 
+{
     m_textStyleStyles.defineAbiStyles(pDocument);
     m_paragraphStyleStyles.defineAbiStyles(pDocument);
     
@@ -346,35 +296,22 @@ void ODi_Office_Styles::_defineAbiStyles(PD_Document* pDocument) const {
     // All styles defined on the content stream are automatic, so, I'm not
     // defining them.
 
+    for(ListMap::const_iterator iter = m_listStyles.begin();
+        iter != m_listStyles.end(); ++iter) {
 
-    pListVec = m_listStyles.enumerate();
-    UT_return_if_fail(pListVec);
-    
-    count = pListVec->getItemCount();
-    for (i=0; i<count; i++) {
-        (*pListVec)[i]->defineAbiList(pDocument);
+        iter->second->defineAbiList(pDocument);
     }
     
-    if (count > 0) {
-        ok = pDocument->fixListHierarchy();
+    if (!m_listStyles.empty()) {
+        bool ok = pDocument->fixListHierarchy();
         UT_ASSERT(ok);
     }
-    DELETEP(pListVec);
-    
-
 
     // I will just use the first master page style (if there is one).
-    if (m_masterPageStyles.size() > 0) {
-        UT_GenericVector<ODi_Style_MasterPage*>* pMasterStylesVec;
-	    
-        pMasterStylesVec = m_masterPageStyles.enumerate();
+    if (!m_masterPageStyles.empty()) {
 
-        if ((*pMasterStylesVec)[0] && (*pMasterStylesVec)[0]->getPageLayout()) {
-        // make sure m_pPageLayoutStyle is not NULL
-            (*pMasterStylesVec)[0]->definePageSizeTag(pDocument);
-        }
-	
-        DELETEP(pMasterStylesVec);
+        ODi_Style_MasterPage* masterPage = m_masterPageStyles.begin()->second;
+        masterPage->definePageSizeTag(pDocument);
     }
 }
 
@@ -383,25 +320,19 @@ void ODi_Office_Styles::_defineAbiStyles(PD_Document* pDocument) const {
  * 
  */
 void ODi_Office_Styles::_buildAbiPropsAttrString(
-                                            ODi_FontFaceDecls& rFontFaceDecls) {
-    
-    UT_uint32 i, count;
-    UT_GenericVector<ODi_Style_List*>* pListVec;
-    
+                                            ODi_FontFaceDecls& rFontFaceDecls) 
+{
     m_textStyleStyles.buildAbiPropsAttrString(rFontFaceDecls);
     m_paragraphStyleStyles.buildAbiPropsAttrString(rFontFaceDecls);
     m_sectionStyleStyles.buildAbiPropsAttrString(rFontFaceDecls);
     m_tableStyleStyles.buildAbiPropsAttrString(rFontFaceDecls);
     
 
-    pListVec = m_listStyles.enumerate();
-    UT_return_if_fail(pListVec);
-    
-    count = pListVec->getItemCount();
-    for (i=0; i<count; i++) {
-        (*pListVec)[i]->buildAbiPropertiesString();
+    for(ListMap::const_iterator iter = m_listStyles.begin();
+        iter != m_listStyles.end(); ++iter) {
+
+        iter->second->buildAbiPropertiesString();
     }
-	DELETEP(pListVec);
 }
 
 
@@ -421,8 +352,8 @@ void ODi_Office_Styles::_fixStyles() {
  */
 const ODi_Style_Style* ODi_Office_Styles::getParagraphStyle(
                                              const gchar* pStyleName,
-                                             bool bOnContentStream) {
-                                                
+                                             bool bOnContentStream) const
+{
     return m_paragraphStyleStyles.getStyle(pStyleName, bOnContentStream);
 }
 
@@ -431,7 +362,8 @@ const ODi_Style_Style* ODi_Office_Styles::getParagraphStyle(
  * 
  */
 const ODi_Style_Style* ODi_Office_Styles::getTextStyle(const gchar* pStyleName,
-                                              bool bOnContentStream) {
+                                              bool bOnContentStream) const
+{
     return m_textStyleStyles.getStyle(pStyleName, bOnContentStream);
 }
     
@@ -440,7 +372,8 @@ const ODi_Style_Style* ODi_Office_Styles::getTextStyle(const gchar* pStyleName,
  * 
  */ 
 const ODi_Style_Style* ODi_Office_Styles::getSectionStyle(const gchar* pStyleName,
-                                                 bool bOnContentStream) {
+                                                 bool bOnContentStream) const
+{
     return m_sectionStyleStyles.getStyle(pStyleName, bOnContentStream);
 }
 
@@ -449,7 +382,8 @@ const ODi_Style_Style* ODi_Office_Styles::getSectionStyle(const gchar* pStyleNam
  * 
  */
 const ODi_Style_Style* ODi_Office_Styles::getGraphicStyle(const gchar* pStyleName,
-                                          bool bOnContentStream) {
+                                          bool bOnContentStream) const
+{
     return m_graphicStyleStyles.getStyle(pStyleName, bOnContentStream);
 }
 
@@ -458,8 +392,8 @@ const ODi_Style_Style* ODi_Office_Styles::getGraphicStyle(const gchar* pStyleNam
  * 
  */
 const ODi_Style_Style* ODi_Office_Styles::getTableStyle(const gchar* pStyleName,
-                                                  bool bOnContentStream) {
-                                                    
+                                                  bool bOnContentStream) const
+{
     return m_tableStyleStyles.getStyle(pStyleName, bOnContentStream);
 }
 
@@ -469,8 +403,8 @@ const ODi_Style_Style* ODi_Office_Styles::getTableStyle(const gchar* pStyleName,
  */
 const ODi_Style_Style* ODi_Office_Styles::getTableColumnStyle(
                                                   const gchar* pStyleName,
-                                                  bool bOnContentStream) {
-                                                    
+                                                  bool bOnContentStream) const
+{
     return m_tableColumnStyleStyles.getStyle(pStyleName, bOnContentStream);
 }
 
@@ -480,8 +414,8 @@ const ODi_Style_Style* ODi_Office_Styles::getTableColumnStyle(
  */
 const ODi_Style_Style* ODi_Office_Styles::getTableRowStyle(
                                                   const gchar* pStyleName,
-                                                  bool bOnContentStream) {
-                                                    
+                                                  bool bOnContentStream) const
+{
     return m_tableRowStyleStyles.getStyle(pStyleName, bOnContentStream);
 }
 
@@ -491,8 +425,8 @@ const ODi_Style_Style* ODi_Office_Styles::getTableRowStyle(
  */
 const ODi_Style_Style* ODi_Office_Styles::getTableCellStyle(
                                                   const gchar* pStyleName,
-                                                  bool bOnContentStream) {
-                                                    
+                                                  bool bOnContentStream) const
+{
     return m_tableCellStyleStyles.getStyle(pStyleName, bOnContentStream);
 }
 
@@ -501,18 +435,16 @@ const ODi_Style_Style* ODi_Office_Styles::getTableCellStyle(
  * Adds a list style (<text:list-style>)
  */
 ODi_Style_List* ODi_Office_Styles::addList(const gchar** ppAtts,
-                                         ODi_ElementStack& rElementStack) {
-    bool ok;
+                                         ODi_ElementStack& rElementStack)
+{
     const gchar* pAttrValue = NULL;
     ODi_Style_List* pStyle = NULL;
 
     pStyle = new ODi_Style_List(rElementStack);
     pAttrValue = UT_getAttribute("style:name", ppAtts);
                                             
-    ok = m_listStyles.insert(pAttrValue, pStyle);
+    m_listStyles.insert(std::make_pair(pAttrValue, pStyle));
             
-    UT_ASSERT(ok);
-    
     return pStyle;
 }
 
@@ -522,16 +454,15 @@ ODi_Style_List* ODi_Office_Styles::addList(const gchar** ppAtts,
  */
 ODi_NotesConfiguration* ODi_Office_Styles::addNotesConfiguration(
                                                const gchar** ppAtts,
-                                               ODi_ElementStack& rElementStack) {
-    bool ok;
+                                               ODi_ElementStack& rElementStack) 
+{
     const gchar* pAttrValue = NULL;
     ODi_NotesConfiguration* pNotesConfig = NULL;
 
     pNotesConfig = new ODi_NotesConfiguration(rElementStack);
     pAttrValue = UT_getAttribute("text:note-class", ppAtts);
                                             
-    ok = m_notesConfigurations.insert(pAttrValue, pNotesConfig);
-    UT_ASSERT(ok);
+    m_notesConfigurations.insert(std::make_pair(pAttrValue, pNotesConfig));
     
     return pNotesConfig;
 }
