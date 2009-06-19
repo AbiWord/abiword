@@ -31,7 +31,6 @@
 // AbiWord includes
 #include <ut_types.h>
 #include <ut_string_class.h>
-#include <ut_hash.h>
 
 // Internal classes
 class ODi_ElementStack;
@@ -77,18 +76,25 @@ public:
     
 private:
 
+    typedef std::map<std::string, ODi_Style_Style*> StyleMap;
+
+    void _buildAbiPropsAttrString(ODi_FontFaceDecls& rFontFaceDecls,
+                                  const StyleMap & map);
     void _findSuitableReplacement(UT_UTF8String& rReplacementName,
                     const ODi_Style_Style* pRemovedStyle,
                     bool bOnContentStream);
-                    
-    void _linkStyles(bool onContentStream);
-    
+    void _reparentStyles(const StyleMap & map, const UT_UTF8String & removedName,
+                         const UT_UTF8String & replacementName);
+
+    void _linkStyles(const StyleMap & map, bool onContentStream);
+    void _removeEmptyStyles(const StyleMap & map, bool bOnContentStream);
+
     // Styles define inside the styles stream (<office:document-styles>).
-    UT_GenericStringMap<ODi_Style_Style*> m_styles;
+    StyleMap m_styles;
     
     // Styles defined inside the content stream, only automatic styles.
     // (<office:document-content> element)
-    UT_GenericStringMap<ODi_Style_Style*> m_styles_contentStream;
+    StyleMap m_styles_contentStream;
     
     // <style:default-style style:family="...">
     ODi_Style_Style* m_pDefaultStyle;
