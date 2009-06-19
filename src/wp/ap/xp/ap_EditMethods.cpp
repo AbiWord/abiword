@@ -6432,7 +6432,7 @@ static bool s_doMergeCellsDlg(FV_View * pView)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
 
 	AP_Dialog_MergeCells * pDialog
 		= static_cast<AP_Dialog_MergeCells *>(pDialogFactory->requestDialog(AP_DIALOG_ID_MERGE_CELLS));
@@ -6468,7 +6468,7 @@ static bool s_doSplitCellsDlg(FV_View * pView)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
 
 	AP_Dialog_SplitCells * pDialog
 		= static_cast<AP_Dialog_SplitCells *>(pDialogFactory->requestDialog(AP_DIALOG_ID_SPLIT_CELLS));
@@ -6505,7 +6505,7 @@ static bool s_doFormatTableDlg(FV_View * pView)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
 
 	AP_Dialog_FormatTable * pDialog
 		= static_cast<AP_Dialog_FormatTable *>(pDialogFactory->requestDialog(AP_DIALOG_ID_FORMAT_TABLE));
@@ -6546,7 +6546,7 @@ Defun1(formatTOC)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
 
 	AP_Dialog_FormatTOC * pDialog
 		= static_cast<AP_Dialog_FormatTOC *>(pDialogFactory->requestDialog(AP_DIALOG_ID_FORMAT_TOC));
@@ -7385,7 +7385,7 @@ static bool s_doGotoDlg(FV_View * pView, XAP_Dialog_Id id)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
 
 	AP_Dialog_Goto * pDialog
 		= static_cast<AP_Dialog_Goto *>(pDialogFactory->requestDialog(id));
@@ -7465,7 +7465,7 @@ static bool s_doFindOrFindReplaceDlg(FV_View * pView, XAP_Dialog_Id id)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
 
 	AP_Dialog_Replace * pDialog
 		= static_cast<AP_Dialog_Replace *>(pDialogFactory->requestDialog(id));
@@ -9606,7 +9606,7 @@ static bool s_InsertSymbolDlg(FV_View * pView, XAP_Dialog_Id id  )
 
 	pFrame->raise();
 	XAP_DialogFactory * pDialogFactory
-	  = static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+	  = static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
 
 	XAP_Dialog_Insert_Symbol * pDialog
 		= static_cast<XAP_Dialog_Insert_Symbol *>(pDialogFactory->requestDialog(id));
@@ -10523,7 +10523,7 @@ Defun1(insMailMerge)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
 
 	AP_Dialog_MailMerge * pDialog
 		= static_cast<AP_Dialog_MailMerge *>(pDialogFactory->requestDialog(AP_DIALOG_ID_MAILMERGE));
@@ -10779,7 +10779,7 @@ static bool s_doBullets(FV_View *pView)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
 	AP_Dialog_Lists * pDialog
 		= static_cast<AP_Dialog_Lists *>(pDialogFactory->requestDialog(AP_DIALOG_ID_LISTS));
 UT_return_val_if_fail(pDialog, false);
@@ -11916,7 +11916,7 @@ Defun1(dlgStylist)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
 
 	AP_Dialog_Stylist * pDialog
 		= static_cast<AP_Dialog_Stylist *>(pDialogFactory->requestDialog(AP_DIALOG_ID_STYLIST));
@@ -11958,7 +11958,7 @@ static bool s_doWordCountDlg(FV_View * pView)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
 
 	AP_Dialog_WordCount * pDialog
 		= static_cast<AP_Dialog_WordCount *>(pDialogFactory->requestDialog(AP_DIALOG_ID_WORDCOUNT));
@@ -13885,7 +13885,7 @@ Defun(hyperlinkStatusBar)
 	//pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
 
 	AP_Preview_Annotation * pAnnPview
 		= static_cast<AP_Preview_Annotation *>(pDialogFactory->requestDialog(AP_DIALOG_ID_ANNOTATION_PREVIEW));
@@ -14844,7 +14844,7 @@ Defun1(dlgFormatFrame)
 
 
 	XAP_DialogFactory * pDialogFactory
-		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
 
 	AP_Dialog_FormatFrame * pDialog
 		= static_cast<AP_Dialog_FormatFrame *>(pDialogFactory->requestDialog(AP_DIALOG_ID_FORMAT_FRAME));
