@@ -20,7 +20,6 @@
 
 #include <string.h>
 #include <limits.h>
-#include <errno.h>
 
 #include "ut_mbtowc.h"
 #include "ut_locale.h"
@@ -79,41 +78,43 @@ void UT_UCS2_mbtowc::setInCharset (const char * from_charset)
 
 int UT_UCS2_mbtowc::mbtowc (UT_UCS2Char & wc, char mb)
 {
-  if(++m_bufLen > iMbLenMax)
-    {
-      initialize ();
-      return 0;
-    }
-  m_buf[m_bufLen-1] = mb;
+	if(++m_bufLen > iMbLenMax)
+	{
+		initialize ();
+		return 0;
+	}
+	m_buf[m_bufLen-1] = mb;
+	const char * inptr = m_buf;
+	size_t inlen = m_bufLen;
 
-  const char * inptr = m_buf;
+	const UT_iconv_t cd = m_converter->cd ();
+	if (!UT_iconv_isValid ( cd ) )
+	{
+		initialize(true);
+		return 0;
+	}
 
-  UT_UCS2Char ucs2;
-  char * outptr = reinterpret_cast<char *>(&ucs2);
+	gsize bytes_read = 0;
+	gsize bytes_written = 0;
+	GError* error = NULL;
+	gchar* out = g_convert_with_iconv(inptr, inlen, (GIConv)cd, &bytes_read, &bytes_written, &error);
+	if (out && bytes_written == 2)
+	{
+		memcpy(&wc, out, 2);
+		m_bufLen = 0;
+		return 1;
+	}
 
-  size_t inlen = m_bufLen;
-  size_t outlen = sizeof (UT_UCS2Char);
+	if (bytes_written != 2 || (out == NULL && !error))
+	{
+		// reset iconv, pointer might be messed up; need more chars...
+		initialize (false);
+		return 0;
+	}
 
-  const UT_iconv_t cd = m_converter->cd ();
-
-  size_t len = UT_iconv (const_cast<UT_iconv_t>(cd), &inptr, &inlen, &outptr, &outlen);
-  if (len != (size_t)-1)
-    {
-      wc = ucs2;
-      m_bufLen = 0;
-      return 1;
-    }
-  if (errno == EINVAL)
-    {
-      /* reset iconv, pointer might be messed up; need more chars...
-       */
-      initialize (false);
-    }
-  else
-    {
-      initialize (true); /* wrong seq */
-    }
-  return 0;
+	// wrong seq
+	initialize (true);
+	return 0;
 }
 
 UT_UCS4_mbtowc::Converter::Converter (const char * from_charset) :
@@ -169,63 +170,41 @@ void UT_UCS4_mbtowc::setInCharset (const char * from_charset)
 
 int UT_UCS4_mbtowc::mbtowc (UT_UCS4Char & wc, char mb)
 {
-  if(++m_bufLen > iMbLenMax)
-    {
-      initialize ();
-      return 0;
-    }
-  m_buf[m_bufLen-1] = mb;
+	if(++m_bufLen > iMbLenMax)
+	{
+		initialize ();
+		return 0;
+	}
+	m_buf[m_bufLen-1] = mb;
+	const char * inptr = m_buf;
+	size_t inlen = m_bufLen;
 
-  const char * inptr = m_buf;
+	const UT_iconv_t cd = m_converter->cd ();
+	if (!UT_iconv_isValid ( cd ) )
+	{
+		initialize(true);
+		return 0;
+	}
 
-  // need eight bytes in order for the hack below to work (see below)
-  UT_UCS4Char ucs4[2];
-  char * outptr = reinterpret_cast<char *>(&ucs4);
+	gsize bytes_read = 0;
+	gsize bytes_written = 0;
+	GError* error = NULL;
+	gchar* out = g_convert_with_iconv(inptr, inlen, (GIConv)cd, &bytes_read, &bytes_written, &error);
+	if (out && bytes_written == 4)
+	{
+		memcpy(&wc, out, 4);
+		m_bufLen = 0;
+		return 1;
+	}
 
-  size_t inlen = m_bufLen;
-  size_t outlen = sizeof (ucs4[0]);
+	if (bytes_written != 4 || (out == NULL && !error))
+	{
+		// reset iconv, pointer might be messed up; need more chars...
+		initialize (false);
+		return 0;
+	}
 
-  const UT_iconv_t cd = m_converter->cd ();
-
-  size_t len = UT_iconv (const_cast<UT_iconv_t>(cd), &inptr, &inlen, &outptr, &outlen);
-
-  // This is a nasty hack I would prefer not to have to do
-  // here. Sometimes iconv does not write the translated value out,
-  // and it sits somewhere internatlly until the next call; on the
-  // next call it issues the previous character and the new one sits
-  // somewhere in. I discovered this in the rtf importer when trying
-  // to hanlde cp1255, and it is caused by the fact that some
-  // combinations of characters in 1255 can translate into a
-  // precombined Unicode glyph, and iconv is waiting for the next
-  // character. I flush it out by feeding it a NULL character.
-  // (The output buffer in that case needs to be 8 bytes, so that the
-  // iconv can output both the cached charcter and the NULL, otherwise
-  // it will complain.)
-  // Tomas, May 2, 2003
-  if(len == 0 && outlen == sizeof(ucs4[0]))
-  {
-	  char c = 0;
-	  inptr = &c;
-	  inlen = 1;
-	  outlen = sizeof (ucs4);
-	  len = UT_iconv (const_cast<UT_iconv_t>(cd), &inptr, &inlen, &outptr, &outlen);
-  }
-  
-  if (len != (size_t)-1)
-    {
-      wc = ucs4[0];
-      m_bufLen = 0;
-      return 1;
-    }
-  if (errno == EINVAL)
-    {
-      /* reset iconv, pointer might be messed up; need more chars...
-       */
-      initialize (false);
-    }
-  else
-    {
-      initialize (true); /* wrong seq */
-    }
-  return 0;
+	// wrong seq
+	initialize (true);
+	return 0;
 }
