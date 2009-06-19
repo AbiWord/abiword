@@ -69,5 +69,6 @@ libxp_la_SOURCES = \
 	ie_Table.h \
 	ie_TOC.cpp \
 	ie_TOC.h \
-	ie_types.h
+	ie_types.h \
+	MathSVGScript.h
 
