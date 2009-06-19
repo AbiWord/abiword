@@ -22,7 +22,6 @@
 #define IE_EXP_RTF_H
 
 #include "ie_exp.h"
-#include "ut_exception.h"
 #include "ut_vector.h"
 #include "ut_hash.h"
 #include "ut_misc.h"

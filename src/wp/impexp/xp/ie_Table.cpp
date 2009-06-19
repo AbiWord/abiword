@@ -41,7 +41,6 @@ current table via ie_Table::get* methods.
 
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-#include "ut_exception.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
 #include "ut_units.h"
@@ -2640,7 +2639,7 @@ bool IE_Imp_TableHelperStack::push (const char * style)
 	IE_Imp_TableHelper * th = 0;
 
 	// TODO: not sure this needs to happen...
-	UT_TRY
+	try
 		{
 			IE_Imp_TableHelper * prev = top();
 			pf_Frag_Strux * pfs = NULL;
@@ -2650,11 +2649,10 @@ bool IE_Imp_TableHelperStack::push (const char * style)
 			}
 			th = new IE_Imp_TableHelper(m_pDocument,pfs,style);
 		}
-	UT_CATCH(UT_CATCH_ANY)
+    catch(...)
 		{
 			th = 0;
 		}
-	UT_END_CATCH
 
 	if (th == 0)
 		return false;

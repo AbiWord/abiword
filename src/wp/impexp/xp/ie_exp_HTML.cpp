@@ -33,7 +33,6 @@
 #include "ut_locale.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
-#include "ut_exception.h"
 #include "ut_string.h"
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
@@ -6062,15 +6061,14 @@ bool s_StyleTree::add (const char * _style_name, PD_Style * style)
 
 	s_StyleTree * tree = 0;
 
-	UT_TRY
+    try
 		{
 			tree = new s_StyleTree(this,_style_name,style);
 		}
-	UT_CATCH(UT_CATCH_ANY)
+	catch(...)
 		{
 			tree = 0;
 		}
-	UT_END_CATCH
 
 	if (tree == 0) return false;
 

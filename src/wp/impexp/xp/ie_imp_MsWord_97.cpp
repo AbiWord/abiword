@@ -3519,15 +3519,14 @@ int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 			
 		}
 
-		UT_TRY
+		try
 		{		
 			f = new field;
 		}
-		UT_CATCH(UT_CATCH_ANY)
+		catch(...)
 		{
 			f = NULL;
 		}
-		UT_END_CATCH
 
 		UT_return_val_if_fail(f,0);
 		f->fieldWhich = f->command;
@@ -5552,15 +5551,14 @@ int IE_Imp_MsWord_97::_handleBookmarks(const wvParseStruct *ps)
 	UT_return_val_if_fail(nobkl == nobkf, 0);
 	if(m_iBookmarksCount > 0)
 	{
-		UT_TRY
+		try
 		{
 			m_pBookmarks = new bookmark[m_iBookmarksCount];
 		}
-		UT_CATCH(UT_CATCH_ANY)
+		catch(...)
 		{
 			m_pBookmarks = NULL;
 		}
-		UT_END_CATCH
 
 		UT_return_val_if_fail(m_pBookmarks, 0);
 		for(i = 0; i < nobkf; i++)
@@ -5620,15 +5618,14 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 	{
 		/* the docs say -1, but that is an error */
 		m_iFootnotesCount = ps->fib.lcbPlcffndTxt/4 - 2;
-		UT_TRY
+		try
 		{
 			m_pFootnotes = new footnote[m_iFootnotesCount];
 		}
-		UT_CATCH(UT_CATCH_ANY)
+		catch(...)
 		{
 			m_pFootnotes = NULL;
 		}
-		UT_END_CATCH
 
 		UT_return_if_fail(m_pFootnotes);
 		
@@ -5728,15 +5725,14 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 	if(ps->fib.lcbPlcfendTxt)
 	{
 		m_iEndnotesCount  = ps->fib.lcbPlcfendTxt/4 - 2;
-		UT_TRY
+		try
 		{
 			m_pEndnotes  = new footnote[m_iEndnotesCount];
 		}
-		UT_CATCH(UT_CATCH_ANY)
+		catch(...)
 		{
 			m_pEndnotes = NULL;
 		}
-		UT_END_CATCH
 
 		UT_return_if_fail(m_pEndnotes);
 
@@ -6721,15 +6717,14 @@ void IE_Imp_MsWord_97::_handleHeaders(const wvParseStruct *ps)
 		/* the docs are ambiguous, at one place saying the PLCF
 		   contains n+2 entries, another n+1; I think the former is correct*/
 		m_iHeadersCount = ps->fib.lcbPlcfhdd/4 - 2;
-		UT_TRY
+		try
 		{
 			m_pHeaders = new header[m_iHeadersCount];
 		}
-		UT_CATCH(UT_CATCH_ANY)
+		catch(...)
 		{
 			m_pHeaders = NULL;
 		}
-		UT_END_CATCH
 
 		UT_return_if_fail(m_pHeaders);
 		
