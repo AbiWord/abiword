@@ -33,7 +33,6 @@
 
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-#include "ut_exception.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
 #include "ut_units.h"

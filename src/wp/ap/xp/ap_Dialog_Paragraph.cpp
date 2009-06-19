@@ -27,7 +27,6 @@
 #include "ap_Features.h"
 
 #include "ut_assert.h"
-#include "ut_exception.h"
 #include "ut_string.h"
 #include "ut_growbuf.h"
 #include "ut_debugmsg.h"
@@ -1237,11 +1236,11 @@ void AP_Dialog_Paragraph::_addPropertyItem (tControl index, const sControlData &
 {
 	sControlData * pDataCopy = 0;
 
-	UT_TRY
+	try
 		{
 			pDataCopy = new sControlData(control_data);
 		}
-	UT_CATCH(...)
+	catch(...)
 		{
 			pDataCopy = 0;
 		}
@@ -1304,11 +1303,11 @@ AP_Dialog_Paragraph::sControlData & AP_Dialog_Paragraph::sControlData::operator=
 		{
 			if (!m_szData)
 				{
-					UT_TRY
+					try
 						{
 							m_szData = new gchar[SPIN_BUF_TEXT_SIZE];
 						}
-					UT_CATCH(...)
+					catch(...)
 						{
 							m_szData = 0;
 						}
@@ -1329,11 +1328,11 @@ bool AP_Dialog_Paragraph::sControlData::setData (const gchar * data)
 {
 	if (!m_szData)
 		{
-			UT_TRY
+			try
 				{
 					m_szData = new gchar[SPIN_BUF_TEXT_SIZE];
 				}
-			UT_CATCH(...)
+			catch(...)
 				{
 					m_szData = 0;
 				}
