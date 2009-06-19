@@ -42,7 +42,6 @@
 #include "ut_string_class.h"
 #include "ut_growbuf.h"
 #include "ut_mbtowc.h"
-#include "ut_hash.h"
 #include "pd_Document.h"
 #include "fl_AutoNum.h"
 #include "fl_TableLayout.h"
