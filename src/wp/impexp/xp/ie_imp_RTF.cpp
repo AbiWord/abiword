@@ -9402,31 +9402,55 @@ bool IE_Imp_RTF::HandleAbiMathml(void)
 		attrs[3] = sProps.utf8_str();
 	}
 	getDoc()->getUID(UT_UniqueId::Image); // Increment the image uid counter
-	if(bUseInsertNotAppend())
+	//
+	// OK put in all the complex handling we need. Code taken from insert field
+	//
+	bool ok = FlushStoredChars(true);
+	UT_return_val_if_fail (ok, false);
+	if (!bUseInsertNotAppend() || m_bAppendAnyway)
 	{
-		if(getDoc()->isFrameAtPos(m_dposPaste-1) || getDoc()->isTableAtPos(m_dposPaste-1) || getDoc()->isCellAtPos(m_dposPaste-1))
+		UT_DEBUGMSG(("SEVIOR: Appending Math Object m_bCellBlank %d m_bEndTableOpen %d \n",m_bCellBlank,m_bEndTableOpen));
+		if(m_bCellBlank || m_bEndTableOpen)
 		{
-			getDoc()->insertStrux(m_dposPaste,PTX_Block);
-			m_dposPaste++;
-			if(m_posSavedDocPosition > 0)
-				m_posSavedDocPosition++;
-		}
-
-		getDoc()->insertObject(m_dposPaste, PTO_Math, attrs,NULL);
-		m_dposPaste++;
-		if(m_posSavedDocPosition > 0)
-			m_posSavedDocPosition++;
-	}
-	else
-	{
+			UT_DEBUGMSG(("Append block 5 \n"));
 			if(m_pDelayedFrag)
 			{
-				getDoc()->insertObjectBeforeFrag(m_pDelayedFrag,PTO_Math,attrs);
+				getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,NULL);
 			}
 			else
 			{
-				getDoc()->appendObject(PTO_Math,attrs);
+				getDoc()->appendStrux(PTX_Block,NULL);
 			}
+			m_bCellBlank = false;
+			m_bEndTableOpen = false;
+		}
+		if(m_pDelayedFrag)
+	    {
+			getDoc()->insertObjectBeforeFrag(m_pDelayedFrag,PTO_Math, attrs);
+		}
+		else
+		{
+			getDoc()->appendObject(PTO_Math, attrs);
+		}
+	}
+	else
+	{
+		XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+		if(pFrame == NULL)
+		{
+			 m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+			 return true;
+		}
+		FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
+		if(pView == NULL)
+		{
+			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+			return true;
+		}
+		getDoc()->insertObject(m_dposPaste, PTO_Math, attrs, NULL);
+		m_dposPaste++;
+		if(m_posSavedDocPosition > 0)
+			m_posSavedDocPosition++;
 	}
 	return true;
 }
