@@ -26,7 +26,7 @@ EXTRA_DIST = \
 	test-itex.html
 	y.tab.h.msvc \
 	lex.yy.c.msvc \
-	y.tab.c.msvc \
+	y.tab.c.msvc
 
 DISTCLEANFILES = \
 	$(BUILT_SOURCES) \
