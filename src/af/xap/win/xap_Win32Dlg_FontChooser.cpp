@@ -113,7 +113,8 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 	cf.lCustData = (LPARAM) this;
 	cf.hInstance = pApp->getInstance();
 
-	if (m_pFontFamily && *m_pFontFamily){
+	if (m_pFontFamily && *m_pFontFamily)
+    {
 		//strcpy(lf.lfFaceName,pEncMan->strToNative(m_pFontFamily, "UTF-8"));
         family.fromUTF8 (m_pFontFamily);
 		wcscpy(lf.lfFaceName,family.c_str());
