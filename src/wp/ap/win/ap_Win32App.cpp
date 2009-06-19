@@ -315,11 +315,11 @@ bool AP_Win32App::initialize(void)
 #endif
 
 	// Ensure that common control DLL is loaded
-	HINSTANCE hinstCC = LoadLibrary("comctl32.dll");
+	HINSTANCE hinstCC = LoadLibraryW(L"comctl32.dll");
 	UT_return_val_if_fail (hinstCC, false);
 	InitCommonControlsEx_fn  pInitCommonControlsEx = NULL;
 	if( hinstCC != NULL )
-		pInitCommonControlsEx = (InitCommonControlsEx_fn)GetProcAddress( hinstCC, "InitCommonControlsEx" );
+		pInitCommonControlsEx = (InitCommonControlsEx_fn)GetProcAddress( hinstCC, "InitCommonControlsEx");
 	if( pInitCommonControlsEx != NULL )
 	{
 		INITCOMMONCONTROLSEX icex;
@@ -333,10 +333,9 @@ bool AP_Win32App::initialize(void)
 	{
 		InitCommonControls();
 
-		UT_String sErr(UT_String_sprintf(m_pStringSet->getValue(AP_STRING_ID_WINDOWS_COMCTL_WARNING),
-										 "Unicows"));
-
-		MessageBox(NULL, sErr.c_str(), NULL, MB_OK);
+	    UT_Win32LocaleString err;
+		err.fromUTF8 (m_pStringSet->getValue(AP_STRING_ID_WINDOWS_COMCTL_WARNING));		
+		MessageBoxW(NULL, err.c_str(), NULL, MB_OK);
 	}
 
 	//////////////////////////////////////////////////////////////////
@@ -1075,9 +1074,9 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	// TODO: fix Spell dlg so we don't rely on this
 	// ALT:  make it a Preview widget instead
 
-	HINSTANCE hinstRich = LoadLibrary("riched32.dll");
+	HINSTANCE hinstRich = LoadLibraryW(L"riched32.dll");
 	if (!hinstRich)
-		hinstRich = LoadLibrary("riched20.dll");
+		hinstRich = LoadLibraryW(L"riched20.dll");
 	UT_return_val_if_fail (hinstRich, 1);
 	
 	AP_Win32App * pMyWin32App;
@@ -1530,12 +1529,14 @@ bool	AP_Win32App::doesStringSetExist(const char* pLocale)
 	return false;
 }
 
+//TODO: CHECK THIS
 /* From UCS4 To WinLocale */
 UT_String  	AP_Win32App::s_fromUCS4ToWinLocale(const UT_UCS4Char * szIn)
 {		
-	UT_UCS4String sUCS4(szIn);
+//	UT_UCS4String sUCS4(szIn);
 	UT_String sRslt;
-	
+
+/*	
 	char *pText = UT_convert ((char *)sUCS4.ucs4_str(),
 							  sUCS4.length()*sizeof(UT_UCS4Char),
 							  ucs4Internal(),
@@ -1543,6 +1544,7 @@ UT_String  	AP_Win32App::s_fromUCS4ToWinLocale(const UT_UCS4Char * szIn)
 							  NULL, NULL);
 	sRslt = pText;
 	g_free(pText);
+*/
 	return sRslt;
 
 }
