@@ -336,9 +336,16 @@ void XAP_UnixDialog_Print::setupPrint()
 	}
 	else
 	{
-		m_pGtkPageSize = gtk_paper_size_new_custom ("custom",
-												"custom",
-												width,height,GTK_UNIT_MM);
+        /*
+         * Width() and Height() will return the paper size as shown in the UI.
+         * Gtk wants the real paper size, however, and will swap the two
+         * itself when we specify the orientation.
+         */
+        m_pGtkPageSize = gtk_paper_size_new_custom("custom",
+                                                   "custom",
+                                                   portrait ? width : height,
+                                                   portrait ? height : width,
+                                                   GTK_UNIT_MM);
 	}
 	//
 	// Set the Page Size
