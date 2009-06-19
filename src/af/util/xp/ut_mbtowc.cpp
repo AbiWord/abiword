@@ -102,8 +102,11 @@ int UT_UCS2_mbtowc::mbtowc (UT_UCS2Char & wc, char mb)
 	{
 		memcpy(&wc, out, 2);
 		m_bufLen = 0;
+		FREEP(out);
 		return 1;
 	}
+
+	FREEP(out);
 
 	if (bytes_written != 2 || (out == NULL && !error))
 	{
@@ -194,8 +197,11 @@ int UT_UCS4_mbtowc::mbtowc (UT_UCS4Char & wc, char mb)
 	{
 		memcpy(&wc, out, 4);
 		m_bufLen = 0;
+		FREEP(out);
 		return 1;
 	}
+
+	FREEP(out);
 
 	if (bytes_written != 4 || (out == NULL && !error))
 	{
