@@ -123,7 +123,7 @@ UT_String makeColor(UT_uint8* aData, UT_uint32 aDataLen) {
 
 	UT_String rv;
 	if (aDataLen < 2)
-		UT_THROW((UT_IE_BOGUSDOCUMENT));
+		throw UT_IE_BOGUSDOCUMENT;
 	UT_uint16 colorName = GSF_LE_GET_GUINT16(aData);
 	if (colorName & COL_NAME_USER) {
 		// XXX TODO. Awaiting reply in mailinglist about what CompressMode is.
@@ -182,7 +182,9 @@ static UT_uint16 lcl_sw3io__CompressWhich(UT_uint16 nWhich)
 }
 #endif
 
-void streamRead(GsfInput* aStream, TextAttr& aAttr, gsf_off_t aEoa) UT_THROWS((UT_Error)) {
+void streamRead(GsfInput* aStream, TextAttr& aAttr, gsf_off_t aEoa)
+    throw(UT_Error)
+{
 	UT_uint8 flags;
 	gsf_off_t newPos;
 	readFlagRec(aStream, flags, &newPos);
@@ -204,7 +206,7 @@ void streamRead(GsfInput* aStream, TextAttr& aAttr, gsf_off_t aEoa) UT_THROWS((U
 		aAttr.endSet = false;
 
 	if (gsf_input_seek(aStream, newPos, G_SEEK_SET))
-		UT_THROW(UT_IE_BOGUSDOCUMENT);
+		throw UT_IE_BOGUSDOCUMENT;
 
 	gsf_off_t curPos = gsf_input_tell(aStream);
 	if (curPos != aEoa) {
@@ -420,7 +422,9 @@ static UT_String _getPassword (XAP_Frame * pFrame)
   return password;
 }
 
-void readByteString(GsfInput* stream, char*& str, UT_uint16* aLength) UT_THROWS((UT_Error)) {
+void readByteString(GsfInput* stream, char*& str, UT_uint16* aLength) 
+    throw(UT_Error) 
+{
 	UT_uint16 length;
 	str = NULL;
 	streamRead(stream, length);
@@ -432,7 +436,8 @@ void readByteString(GsfInput* stream, char*& str, UT_uint16* aLength) UT_THROWS(
 		*aLength = length;
 }
 
-void readByteString(GsfInput* stream, UT_UCS4Char*& str, UT_iconv_t converter, SDWCryptor* cryptor) UT_THROWS((UT_Error)) {
+void readByteString(GsfInput* stream, UT_UCS4Char*& str, UT_iconv_t converter, SDWCryptor* cryptor) throw(UT_Error) 
+{
 	UT_uint16 len;
 	char* rawString;
 	str = NULL;
@@ -450,7 +455,7 @@ void readByteString(GsfInput* stream, UT_UCS4Char*& str, UT_iconv_t converter, S
 #endif
 	delete[] rawString;
 	if (!str)
-		UT_THROW(UT_IE_NOMEMORY);
+	    throw UT_IE_NOMEMORY;
 }
 
 
@@ -527,7 +532,8 @@ bool IE_Imp_StarOffice_Sniffer::getDlgLabels(const char** pszDesc, const char** 
 // ********************************************************************************
 // Header Class
 
-void DocHdr::load(GsfInput* stream) UT_THROWS((UT_Error)) {
+void DocHdr::load(GsfInput* stream) throw(UT_Error) 
+{
 	UT_DEBUGMSG(("SDW: entering DocHdr::load\n"));
 	static const char sw3hdr[] = "SW3HDR";
 	static const char sw4hdr[] = "SW4HDR";
@@ -537,7 +543,7 @@ void DocHdr::load(GsfInput* stream) UT_THROWS((UT_Error)) {
 	if (memcmp(header, sw3hdr, sizeof(sw3hdr)) != 0 &&
 	    memcmp(header, sw4hdr, sizeof(sw4hdr)) != 0 &&
 	    memcmp(header, sw5hdr, sizeof(sw5hdr)) != 0)
-		UT_THROW(UT_IE_BOGUSDOCUMENT);
+		throw UT_IE_BOGUSDOCUMENT;
 
 	streamRead(stream, cLen);
 	streamRead(stream, nVersion);
@@ -555,7 +561,7 @@ void DocHdr::load(GsfInput* stream) UT_THROWS((UT_Error)) {
 	// (see sw/source/core/sw3io/sw3doc.cxx line 700)
 	if (nVersion >= SWG_MAJORVERSION && nCompatVer > 0) {
 		// File is in a too new format
-		UT_THROW(UT_IE_BOGUSDOCUMENT);
+		throw UT_IE_BOGUSDOCUMENT;
 	}
 	streamRead(stream, cPasswd, 16);
 
@@ -568,7 +574,7 @@ void DocHdr::load(GsfInput* stream) UT_THROWS((UT_Error)) {
 	// Find the name of the used encoding
 	converter = findConverter(cSet);
 	if (!UT_iconv_isValid(converter))
-		UT_THROW(UT_ERROR);
+		throw UT_ERROR;
 
 	if (nFileFlags & SWGF_BLOCKNAME) {
 		char buf[64];
@@ -585,7 +591,7 @@ void DocHdr::load(GsfInput* stream) UT_THROWS((UT_Error)) {
 	}
 
 	if (nFileFlags & SWGF_BAD_FILE)
-		UT_THROW(UT_IE_BOGUSDOCUMENT);
+		throw UT_IE_BOGUSDOCUMENT;
 
 	if (nFileFlags & SWGF_HAS_PASSWD)
 		cryptor = new SDWCryptor(nDate, nTime, cPasswd);
@@ -608,7 +614,7 @@ IE_Imp_StarOffice::~IE_Imp_StarOffice() {
 		g_object_unref(G_OBJECT(mOle));
 }
 
-void IE_Imp_StarOffice::readRecSize(GsfInput* aStream, UT_uint32& aSize, gsf_off_t* aEOR) UT_THROWS((UT_Error)) {
+void IE_Imp_StarOffice::readRecSize(GsfInput* aStream, UT_uint32& aSize, gsf_off_t* aEOR) throw(UT_Error) {
 	// Yes, that's correct, only 3 bytes.
 	guint8 buf [3];
 	aSize = 0;
@@ -624,7 +630,8 @@ void IE_Imp_StarOffice::readRecSize(GsfInput* aStream, UT_uint32& aSize, gsf_off
 		*aEOR = gsf_input_tell(aStream) + aSize;
 }
 
-void readFlagRec(GsfInput* stream, UT_uint8& flags, gsf_off_t* newPos) UT_THROWS((UT_Error)) {
+void readFlagRec(GsfInput* stream, UT_uint8& flags, gsf_off_t* newPos) throw(UT_Error) 
+{
 	streamRead(stream, flags);
 	if (newPos)
 		*newPos = gsf_input_tell(stream) + (flags & 0xF);

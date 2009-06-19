@@ -33,7 +33,6 @@
 // AbiWord includes
 #include <ut_types.h>
 #include <pd_Document.h>
-#include <ut_exception.h>
 
 // External includes
 #include <string>
@@ -105,12 +104,13 @@ UT_Error OXML_Document::addStyle(const std::string & id, const std::string & nam
 								 const gchar ** attributes)
 {
 	OXML_SharedStyle obj;
-	UT_TRY {
+	try {
 		obj.reset( new OXML_Style(id, name) );
-	} UT_CATCH (UT_CATCH_ANY) {
+	} 
+    catch(...) {
 		UT_DEBUGMSG(("Object creation failed!\n"));
 		return UT_OUTOFMEM;
-	} UT_END_CATCH
+	}
 	obj->setAttributes(attributes);
 	return addStyle(obj);
 }
@@ -236,12 +236,13 @@ UT_Error OXML_Document::appendSection(const OXML_SharedSection & obj)
 {
 	UT_return_val_if_fail(obj, UT_ERROR);
 
-	UT_TRY {
+	try {
 		m_sections.push_back(obj);
-	} UT_CATCH (UT_CATCH_ANY) {
+	} 
+    catch(...) {
 		UT_DEBUGMSG(("Bad alloc!\n"));
 		return UT_OUTOFMEM;
-	} UT_END_CATCH
+	}
 	return UT_OK;
 }
 
@@ -254,12 +255,13 @@ UT_Error OXML_Document::clearSections()
 OXML_SharedTheme OXML_Document::getTheme()
 {
 	if (m_theme.get() == NULL) {
-		UT_TRY {
+		try {
 			m_theme.reset(new OXML_Theme());
-		} UT_CATCH (UT_CATCH_ANY) {
+		} 
+        catch(...) {
 			UT_DEBUGMSG(("Bad alloc!\n"));
 			return OXML_SharedTheme();
-		} UT_END_CATCH
+		}
 	}
 	return m_theme;
 }
@@ -267,12 +269,13 @@ OXML_SharedTheme OXML_Document::getTheme()
 OXML_SharedFontManager OXML_Document::getFontManager()
 {
 	if (m_fontManager.get() == NULL) {
-		UT_TRY {
+		try {
 			m_fontManager.reset(new OXML_FontManager());
-		} UT_CATCH (UT_CATCH_ANY) {
+		} 
+        catch(...) {
 			UT_DEBUGMSG(("Bad alloc!\n"));
 			return OXML_SharedFontManager();
-		} UT_END_CATCH
+		}
 	}
 	return m_fontManager;
 }

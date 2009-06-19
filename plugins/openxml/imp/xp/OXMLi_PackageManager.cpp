@@ -35,7 +35,6 @@
 #include <ut_assert.h>
 #include <ut_debugmsg.h>
 #include <ut_xml.h>
-#include <ut_exception.h>
 
 // External includes
 #include <gsf/gsf-input.h>
@@ -53,12 +52,12 @@ OXMLi_PackageManager* OXMLi_PackageManager::getNewInstance()
 OXMLi_PackageManager* OXMLi_PackageManager::getInstance()
 {
 	if (s_pInst == NULL) {
-		UT_TRY {
+		try {
 			s_pInst = new OXMLi_PackageManager();
-		} UT_CATCH (UT_CATCH_ANY) {
+		} catch(...) {
 			UT_DEBUGMSG(("Could not allocate memory!\n"));
 			return NULL;
-		} UT_END_CATCH
+		}
 	}
 	return s_pInst;
 }

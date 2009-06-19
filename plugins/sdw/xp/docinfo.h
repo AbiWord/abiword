@@ -24,7 +24,6 @@
 #define DOCINFO_H__
 
 #include "ut_types.h"
-#include "ut_exception.h"
 #include <gsf/gsf.h>
 
 class PD_Document;
@@ -42,7 +41,7 @@ class SDWDocInfo {
 		 * @param aDoc The OLE Document which contains the stream
 		 * @param aPDDoc The PD_Document on which the metadata will be set.
 		 * Should be called as load(mDoc, getDoc()); */
-		static void load(GsfInfile *aDoc, PD_Document* aPDDoc) UT_THROWS((UT_Error));
+		static void load(GsfInfile *aDoc, PD_Document* aPDDoc) throw(UT_Error);
 };
 
 #endif

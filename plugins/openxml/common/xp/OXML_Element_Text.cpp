@@ -27,7 +27,6 @@
 #include <ut_types.h>
 #include <ut_string.h>
 #include <pd_Document.h>
-#include <ut_exception.h>
 
 OXML_Element_Text::OXML_Element_Text() : 
 	OXML_Element("", T_TAG, SPAN), 
@@ -49,11 +48,11 @@ OXML_Element_Text::OXML_Element_Text(const gchar * text, int length) :
 
 void OXML_Element_Text::setText(const gchar * text, int length)
 {
-	UT_TRY {
+	try {
 		m_pString = new UT_UCS4String(text, length);
-	} UT_CATCH (UT_CATCH_ANY) {
+	} catch(...) {
 		m_pString = NULL;
-	} UT_END_CATCH
+	}
 }
 
 const UT_UCS4Char * OXML_Element_Text::getText_UCS4String()

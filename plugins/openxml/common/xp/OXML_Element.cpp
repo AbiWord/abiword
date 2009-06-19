@@ -30,7 +30,6 @@
 #include <ut_types.h>
 #include <pd_Document.h>
 #include <pt_Types.h>
-#include <ut_exception.h>
 
 // External includes
 #include <string>
@@ -66,12 +65,12 @@ UT_Error OXML_Element::appendElement(OXML_SharedElement obj)
 {
 	UT_return_val_if_fail(obj.get() != NULL, UT_ERROR);
 
-	UT_TRY {
+	try {
 		m_children.push_back(obj);
-	} UT_CATCH (UT_CATCH_ANY) {
+	} catch(...) {
 		UT_DEBUGMSG(("Bad alloc!\n"));
 		return UT_OUTOFMEM;
-	} UT_END_CATCH
+	}
 
 	obj->setTarget(TARGET); //propagate the target
 

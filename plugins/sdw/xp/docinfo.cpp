@@ -37,7 +37,9 @@ SDWDocInfo::~SDWDocInfo() {}
 
 /** Reads a bytestring, followed by a padding. aMaxlen is the max. number of bytes to read. */
 static void readPaddedByteString(GsfInput* aStream, UT_UCS4String& aString,
-				 UT_iconv_t aConverter, UT_uint32 aMaxlen) UT_THROWS((UT_Error)) {
+                                 UT_iconv_t aConverter, UT_uint32 aMaxlen)
+    throw(UT_Error) 
+{
 	UT_UCS4Char* str;
 	readByteString(aStream, str, aConverter);
 	aString = str;
@@ -46,9 +48,9 @@ static void readPaddedByteString(GsfInput* aStream, UT_UCS4String& aString,
 	// XXX need original length, not ucs4 length
 	UT_uint32 len = aString.size();
 	if (len > aMaxlen)
-		UT_THROW(UT_IE_BOGUSDOCUMENT);
+		throw UT_IE_BOGUSDOCUMENT;
 	if (gsf_input_seek(aStream, aMaxlen-len, G_SEEK_CUR))
-		UT_THROW(UT_IE_BOGUSDOCUMENT);
+		throw UT_IE_BOGUSDOCUMENT;
 }
 
 class AutoGsfInput {
@@ -114,7 +116,7 @@ static inline void do_SetMetadata(PD_Document* aDoc, const UT_String& aKey, UT_U
 }
 
 void SDWDocInfo::load(GsfInfile* aDoc, PD_Document* aPDDoc) 
-	UT_THROWS((UT_Error)) 
+	throw(UT_Error)
 {
 	char* headStr = NULL;
 
@@ -124,11 +126,11 @@ void SDWDocInfo::load(GsfInfile* aDoc, PD_Document* aPDDoc)
 		aPDDoc->setMetaDataProp(PD_META_KEY_GENERATOR, UT_UTF8String("StarOffice"));
 		AutoGsfInput docInfo =  gsf_infile_child_by_name(aDoc, "SfxDocumentInfo");
 		if (!(GsfInput*)docInfo)
-			UT_THROW(UT_IE_BOGUSDOCUMENT);
+			throw UT_IE_BOGUSDOCUMENT;
 
 		readByteString(docInfo, headStr);
 		if (strcmp(headStr, "SfxDocumentInfo") != 0)
-			UT_THROW(UT_IE_BOGUSDOCUMENT);
+			throw UT_IE_BOGUSDOCUMENT;
 
 		UT_uint16 version;
 		streamRead(docInfo, version);
@@ -138,7 +140,7 @@ void SDWDocInfo::load(GsfInfile* aDoc, PD_Document* aPDDoc)
 		streamRead(docInfo, charset);
 		auto_iconv converter(findConverter((UT_uint8)charset));
 		if (!UT_iconv_isValid(converter))
-			UT_THROW(UT_IE_BOGUSDOCUMENT);
+			throw UT_IE_BOGUSDOCUMENT;
 
 		bool graphPortable, queryTemplateReload;
 		streamRead(docInfo, graphPortable);
