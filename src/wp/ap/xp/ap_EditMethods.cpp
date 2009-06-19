@@ -1770,46 +1770,30 @@ static void s_StartStopLoadingCursor( bool bStartStop, XAP_Frame * pFrame)
 }
 
 
-static void s_TellOpenFailed(XAP_Frame * pFrame, const char * fileName, UT_Error errorCode)
-{
-    XAP_String_Id String_id;
-
-    switch(errorCode)
-	{
-    case UT_IE_TRY_RECOVER:
-        String_id = AP_STRING_ID_MSG_OpenRecovered;
-        break;
-    default:
-        String_id = AP_STRING_ID_MSG_OpenFailed;
-        break;
-	}
-    
-  
-    pFrame->showMessageBox(String_id,
-                           XAP_Dialog_MessageBox::b_O,
-                           XAP_Dialog_MessageBox::a_OK,
-                           fileName);
-}
-
 static void s_TellSaveFailed(XAP_Frame * pFrame, const char * fileName, UT_Error errorCode)
 {
-	if (errorCode == UT_SAVE_CANCELLED) // We actually don't have a write error
-	  return;
-
 	XAP_String_Id String_id;
 
-	if (errorCode == -201) // We have a write error
-	  String_id = AP_STRING_ID_MSG_SaveFailedWrite;
+    switch(errorCode) {
+    case UT_SAVE_CANCELLED: // We actually don't have a write error
+        return;
 
-	else if (errorCode == -202) // We have a name error
-	  String_id = AP_STRING_ID_MSG_SaveFailedName;
+    case UT_SAVE_WRITEERROR: // We have a write error
+        String_id = AP_STRING_ID_MSG_SaveFailedWrite;
+        break;
 
-	else if (errorCode == -203) // We have an export error
-	  String_id = AP_STRING_ID_MSG_SaveFailedExport;
+	case UT_SAVE_NAMEERROR: // We have a name error
+        String_id = AP_STRING_ID_MSG_SaveFailedName;
+        break;
 
-	else // The generic case - should be eliminated eventually
-	  String_id = AP_STRING_ID_MSG_SaveFailed;
+	case UT_SAVE_EXPORTERROR: // We have an export error
+        String_id = AP_STRING_ID_MSG_SaveFailedExport;
+        break;
 
+	default: // The generic case - should be eliminated eventually
+        String_id = AP_STRING_ID_MSG_SaveFailed;
+        break;
+    }
 	pFrame->showMessageBox(String_id,
 			       XAP_Dialog_MessageBox::b_O,
 			       XAP_Dialog_MessageBox::a_OK,
@@ -2215,38 +2199,42 @@ XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, con
 
 	switch (errorCode)
 	  {
-	  case -301:
+	  case UT_IE_FILENOTFOUND:
 		String_id = AP_STRING_ID_MSG_IE_FileNotFound;
 		break;
 
-	  case -302:
+	  case UT_IE_NOMEMORY:
 		String_id = AP_STRING_ID_MSG_IE_NoMemory;
 		break;
 
-	  case -303:
+	  case UT_IE_UNKNOWNTYPE:
 		String_id = AP_STRING_ID_MSG_IE_UnsupportedType;
 		//AP_STRING_ID_MSG_IE_UnknownType;
 		break;
 
-	  case -304:
+	  case UT_IE_BOGUSDOCUMENT:
 		String_id = AP_STRING_ID_MSG_IE_BogusDocument;
 		break;
 
-	  case -305:
+	  case UT_IE_COULDNOTOPEN:
 		String_id = AP_STRING_ID_MSG_IE_CouldNotOpen;
 		break;
 
-	  case -306:
+	  case UT_IE_COULDNOTWRITE:
 		String_id = AP_STRING_ID_MSG_IE_CouldNotWrite;
 		break;
 
-	  case -307:
+	  case UT_IE_FAKETYPE:
 		String_id = AP_STRING_ID_MSG_IE_FakeType;
 		break;
 
-	  case -311:
+	  case UT_IE_UNSUPTYPE:
 		String_id = AP_STRING_ID_MSG_IE_UnsupportedType;
 		break;
+
+      case UT_IE_TRY_RECOVER:
+		String_id = AP_STRING_ID_MSG_OpenRecovered;
+		break;        
 
 	  default:
 		String_id = AP_STRING_ID_MSG_ImportError;
@@ -2281,11 +2269,12 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 			// re-load the document in pNewFrame
 			s_StartStopLoadingCursor( true,pNewFrame);
 			errorCode = pNewFrame->loadDocument(pNewFile, ieft);
-			if (!errorCode)
+			if (UT_IS_IE_SUCCESS(errorCode))
 			{
 				pNewFrame->show();
 			}
-			else
+			// even UT_IE_TRY_RECORVER
+			if (errorCode)
 			{
 				s_CouldNotLoadFileMessage(pNewFrame,pNewFile, errorCode);
 			}
@@ -2317,12 +2306,12 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 
 			 s_StartStopLoadingCursor( true,pFrame);
 			 errorCode = pFrame->loadDocument(pNewFile, ieft);
-			 if (!errorCode)
+			 if (UT_IS_IE_SUCCESS(errorCode))
 			 {
 				 pFrame->updateZoom();
 				 pFrame->show();
 			 }
-			 else
+			 if (errorCode)
 			 {
 				 s_CouldNotLoadFileMessage(pFrame,pNewFile, errorCode);
 			 }
@@ -2354,7 +2343,7 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 // Open a complete but blank frame, then load the document into it
 
 		errorCode = pNewFrame->loadDocument((const char *)NULL, IEFT_Unknown);
-		if (!errorCode)
+		if (UT_IS_IE_SUCCESS(errorCode))
 		{
 			pNewFrame->show();
 		}
@@ -2366,7 +2355,7 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 
 		s_StartStopLoadingCursor( true,pNewFrame);
 		errorCode = pNewFrame->loadDocument(pNewFile, ieft);
-		if (!errorCode)
+		if (UT_IS_IE_SUCCESS(errorCode))
 		{
 			pNewFrame->show();
 		}
@@ -2396,9 +2385,10 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 
 			// the IEFileType here doesn't really matter since the file name is NULL
 			errorCode = pNewFrame->loadDocument((const char *)NULL, IEFT_Unknown);
-			if (!errorCode)
+			if (UT_IS_IE_SUCCESS(errorCode)) {
 				pNewFrame->updateZoom();
 				pNewFrame->show();
+			}
 			s_CouldNotLoadFileMessage(pNewFrame,pNewFile, errorCode);
 		}
 #endif
@@ -2412,12 +2402,12 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 	// new untitled document.
 	s_StartStopLoadingCursor( true,pFrame);
 	errorCode = pFrame->loadDocument(pNewFile, ieft);
-	if (!errorCode)
+	if (UT_IS_IE_SUCCESS(errorCode))
 	{
 		pFrame->updateZoom();
 		pFrame->show();
 	}
-	else
+	if (errorCode)
 	{
 		s_CouldNotLoadFileMessage(pFrame,pNewFile, errorCode);
 	}
@@ -2533,11 +2523,11 @@ s_importFile (XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 	// new untitled document.
 	s_StartStopLoadingCursor( true,pFrame);
 	errorCode = pFrame->importDocument(pNewFile, ieft);
-	if (!errorCode)
+	if (UT_IS_IE_SUCCESS(errorCode))
 	{
 		pFrame->show(); // don't add to the MRU
 	}
-	else
+	if (errorCode)
 	{
 		s_CouldNotLoadFileMessage(pFrame,pNewFile, errorCode);
 	}
@@ -3067,7 +3057,7 @@ static bool _openRecent(AV_View* pAV_View, UT_sint32 ndx)
 
 	UT_Error error = fileOpen(pFrame, szRecent, IEFT_Unknown);
 
-	if (error)
+    if (!UT_IS_IE_SUCCESS(error))
 		pPrefs->removeRecent(ndx);
 
 	return E2B(error);
@@ -10575,15 +10565,15 @@ Defun1(insFile)
 	    PD_Document * newDoc = new PD_Document();
 	    UT_Error err = newDoc->readFromFile(pathName, IEFT_Unknown);
 	    
-	    if (!UT_IS_IE_SUCCESS(err))
+		if (!UT_IS_IE_SUCCESS(err))
 		{
 			UNREFP(newDoc);
-			s_TellOpenFailed(pFrame, pathName, err);
+			s_CouldNotLoadFileMessage(pFrame, pathName, err);
 			return false;
 		}
         if ( err == UT_IE_TRY_RECOVER ) 
         {
-            s_TellOpenFailed(pFrame, pathName, err);
+            s_CouldNotLoadFileMessage(pFrame, pathName, err);
         }
 
 	    // create a new layout and view object for the doc

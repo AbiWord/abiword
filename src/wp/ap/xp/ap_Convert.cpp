@@ -247,7 +247,7 @@ bool AP_Convert::convertTo(const char * szSourceFilename,
 	error = pNewDoc->readFromFile(uri, sourceFormat, m_impProps.utf8_str());
 	g_free (uri);
 
-	if (error != UT_OK) {
+	if (!UT_IS_IE_SUCCESS(error)) {
 		switch (error) {
 		case UT_INVALIDFILENAME:
 			if (m_iVerbose > 0)
@@ -304,7 +304,7 @@ bool AP_Convert::convertTo(const char * szSourceFilename,
 
 	UNREFP(pNewDoc);
 
-	return (error == UT_OK);
+	return UT_IS_IE_SUCCESS(error);
 }
 
 bool AP_Convert::convertTo(const char * szFilename, 
