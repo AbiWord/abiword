@@ -182,7 +182,7 @@ class IE_Imp_StarOffice : public IE_Imp
 		~IE_Imp_StarOffice();
 
 	protected:
-		virtual UT_Error _loadFile(GsfInput * input) UT_THROWS(());
+		virtual UT_Error _loadFile(GsfInput * input);
 
 	private:
 		FILE* mFile;

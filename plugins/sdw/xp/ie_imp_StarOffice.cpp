@@ -631,8 +631,9 @@ void readFlagRec(GsfInput* stream, UT_uint8& flags, gsf_off_t* newPos) UT_THROWS
 }
 
 
-UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input) UT_THROWS(()) {
-	UT_TRY {
+UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input)
+{
+	try {
 		UT_DEBUGMSG(("SDW: Starting import\n"));
 		mOle = GSF_INFILE (gsf_infile_msole_new(input, NULL));
 		if (!mOle)
@@ -980,14 +981,14 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input) UT_THROWS(()) {
 
 		return UT_OK;
 	}
-	UT_CATCH(UT_Error e) {
+	catch(UT_Error e) {
 		UT_DEBUGMSG(("SDW: error %d\n", e));
 		return e;
-	} UT_END_CATCH
-	UT_CATCH(...) {
+	}
+	catch(...) {
 		UT_DEBUGMSG(("SDW: Unknown error\n"));
 		return UT_IE_BOGUSDOCUMENT;
-	} UT_END_CATCH
+	}
 }
 
 /*******************************************************/
