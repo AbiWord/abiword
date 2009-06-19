@@ -176,14 +176,6 @@ bool AP_Win32App::initialize(void)
 
 	m_pToolbarActionSet = AP_CreateToolbarActionSet();
 	UT_return_val_if_fail (m_pToolbarActionSet,false);
-
-	//////////////////////////////////////////////////////////////////
-	// load the dialog and message box strings
-	//////////////////////////////////////////////////////////////////
-	
-	{
-		// assume we will be using the builtin set (either as the main
-		// set or as the fallback set).
 		
 		AP_BuiltinStringSet * pBuiltinStringSet = new AP_StringSet(this,AP_PREF_DEFAULT_StringSet);
 		UT_return_val_if_fail (pBuiltinStringSet, false);
@@ -213,8 +205,6 @@ bool AP_Win32App::initialize(void)
 			}
 				
 			g_free(szPathname);
-		}
-	}
 
 	// AP_App::initilize() calls for us XAP_Win32App::initialize()
 	if (! AP_App::initialize())
