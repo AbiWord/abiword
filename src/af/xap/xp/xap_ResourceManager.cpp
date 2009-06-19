@@ -24,7 +24,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ut_exception.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string_class.h"
@@ -149,14 +148,14 @@ bool XAP_ResourceManager::ref (const char * href)
 	if (!grow ()) return false;
 
 	XAP_Resource * r = 0;
-	UT_TRY
+	try
 		{
 			if (bInternal)
 				r = new XAP_InternalResource (href);
 			else
 				r = new XAP_ExternalResource (href);
 		}
-	UT_CATCH (...)
+	catch (...)
 		{
 			r = 0;
 		}
