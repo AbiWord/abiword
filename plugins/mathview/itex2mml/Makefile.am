@@ -24,6 +24,9 @@ EXTRA_DIST = \
 	itex2MML.y \
 	README.itex2MML \
 	test-itex.html
+	y.tab.h.msvc \
+	lex.yy.c.msvc \
+	y.tab.c.msvc \
 
 DISTCLEANFILES = \
 	$(BUILT_SOURCES) \
