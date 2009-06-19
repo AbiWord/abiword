@@ -33,6 +33,7 @@
 #include "ap_UnixDialog_Latex.h"
 #include "xap_Dlg_MessageBox.h"
 
+
 static gboolean s_delete_clicked(GtkWidget * /*widget*/, GdkEvent * /*event*/, AP_UnixDialog_Latex * dlg)
 {
 	UT_ASSERT(dlg);
@@ -63,9 +64,14 @@ XAP_Dialog * AP_UnixDialog_Latex::static_constructor(XAP_DialogFactory * pFactor
 	return new AP_UnixDialog_Latex(pFactory,id);
 }
 
-AP_UnixDialog_Latex::AP_UnixDialog_Latex(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: AP_Dialog_Latex(pDlgFactory,id)
+AP_UnixDialog_Latex::AP_UnixDialog_Latex(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id) : 
+  AP_Dialog_Latex(pDlgFactory,id),
+  m_wClose(NULL), 
+  m_wInsert(NULL),
+  m_wText(NULL),
+  m_windowMain(NULL)
 {
+  UT_DEBUGMSG(("Constructing Latex dialog %p \n",this));
 }
 
 AP_UnixDialog_Latex::~AP_UnixDialog_Latex(void)

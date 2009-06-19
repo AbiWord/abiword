@@ -4636,15 +4636,15 @@ static bool dlgEditLatexEquation(AV_View *pAV_View, EV_EditMethodCallData * /*pC
 	pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,height,bDir);
 	while(pRun && pRun->getLength() == 0)
 	{
-	  pRun = pRun->getNextRun();
+		pRun = pRun->getNextRun();
 	}
 	if(pRun == NULL)
 	{
-	  return false;
+		return false;
 	}
 	if(pRun->getType() != FPRUN_MATH)
-        {
-	  return false;
+    {
+		return false;
 	}
 	pMathRun = static_cast<fp_MathRun *>(pRun);
 	const PP_AttrProp * pSpanAP = pMathRun->getSpanAP();
@@ -4652,46 +4652,46 @@ static bool dlgEditLatexEquation(AV_View *pAV_View, EV_EditMethodCallData * /*pC
 	pSpanAP->getAttribute("latexid",pszLatexID);
 	if(pszLatexID == NULL || *pszLatexID == 0)
 	{
-	  return false;
+		return false;
 	}
-       const UT_ByteBuf * pByteBuf = NULL;
-       UT_UTF8String sLatex;
-       PD_Document * pDoc= pView->getDocument();
-       bool bFoundLatexID = pDoc->getDataItemDataByName(pszLatexID, 
-						    &pByteBuf,
-						    NULL, NULL);
+	const UT_ByteBuf * pByteBuf = NULL;
+	UT_UTF8String sLatex;
+	PD_Document * pDoc= pView->getDocument();
+	bool bFoundLatexID = pDoc->getDataItemDataByName(pszLatexID, 
+													 &pByteBuf,
+													 NULL, NULL);
 
-       if(!bFoundLatexID)
-       {
-	 return true;
-       }
-       UT_UCS4_mbtowc myWC;
-       sLatex.appendBuf( *pByteBuf, myWC);
-       UT_DEBUGMSG(("Loaded Latex %s from PT \n",sLatex.utf8_str()));
-       XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
-       pFrame->raise();
+	if(!bFoundLatexID)
+	{
+		return true;
+	}
+	UT_UCS4_mbtowc myWC;
+	sLatex.appendBuf( *pByteBuf, myWC);
+	UT_DEBUGMSG(("Loaded Latex %s from PT \n",sLatex.utf8_str()));
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+	pFrame->raise();
 
-       XAP_DialogFactory * pDialogFactory
-	 = static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
 
-       AP_Dialog_Latex * pDialog
-	 = static_cast<AP_Dialog_Latex *>(pDialogFactory->requestDialog(AP_DIALOG_ID_LATEX));
-       UT_return_val_if_fail(pDialog, false);
-       if(pDialog->isRunning())
-       {
-	   pDialog->fillLatex(sLatex);
-	   pDialog->activate();
-       }
-       else if(bStartDlg)
-       {
-	   pDialog->runModeless(pFrame);
-	   pDialog->fillLatex(sLatex);
-       }
-       else
-       {
-	   pDialogFactory->releaseDialog(pDialog);
-       }
-       return true;
+	AP_Dialog_Latex * pDialog
+		= static_cast<AP_Dialog_Latex *>(pDialogFactory->requestDialog(AP_DIALOG_ID_LATEX));
+	UT_return_val_if_fail(pDialog, false);
+	if(pDialog->isRunning())
+	{
+		pDialog->activate();
+		pDialog->fillLatex(sLatex);
+	}
+	else if(bStartDlg)
+	{
+		pDialog->runModeless(pFrame);
+		pDialog->fillLatex(sLatex);
+	}
+	else
+	{
+		pDialogFactory->releaseDialog(pDialog);
+	}
+	return true;
 
 }
 

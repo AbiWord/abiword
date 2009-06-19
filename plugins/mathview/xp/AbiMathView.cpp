@@ -494,7 +494,7 @@ AbiMathView_LatexInsert(AV_View* v, EV_EditMethodCallData */*d*/)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+	  = static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
 
 	AP_Dialog_Latex * pDialog 
 		= static_cast<AP_Dialog_Latex *>(pDialogFactory->requestDialog(AP_DIALOG_ID_LATEX));
