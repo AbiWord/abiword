@@ -250,7 +250,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	_buildFilterList(sFilter);
     filter.fromASCII (sFilter.c_str(), sFilter.size());
 
-	ofn.lStructSize = sizeof(OPENFILENAME);		// Old size
+	ofn.lStructSize = sizeof(OPENFILENAMEW);		// Old size
 	ofn.hwndOwner = hFrame;
 	ofn.lpstrFile = szFile;
 	ofn.nMaxFile = sizeof(szFile);
@@ -416,7 +416,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		ofn.lpstrTitle = title.c_str();
 		ofn.nFilterIndex = g_strv_length((gchar **) m_szDescriptions) + 1;
 		ofn.Flags |= OFN_FILEMUSTEXIST;
-		bDialogResult = GetOpenFileName((OPENFILENAME *)&ofn);
+		bDialogResult = GetOpenFileNameW((OPENFILENAMEW *)&ofn);
 		break;
 
 	case XAP_DIALOG_ID_FILE_EXPORT:
@@ -434,7 +434,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		ofn.lpstrTitle = title.c_str();		
 		ofn.Flags |= OFN_FILEMUSTEXIST;
 		ofn.nFilterIndex = g_strv_length((gchar **) m_szDescriptions) + 1;
-		bDialogResult = GetOpenFileName((OPENFILENAME *)&ofn);
+		bDialogResult = GetOpenFileNameW((OPENFILENAMEW *)&ofn);
 		break;
 
 	default:
@@ -533,7 +533,7 @@ UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookSaveAsProc(HWND hDlg, UINT m
 	{
 		case WM_NOTIFY:
 			{
-				const OFNOTIFY * pNotify = reinterpret_cast<OFNOTIFY *>(lParam);
+				const OFNOTIFYW * pNotify = reinterpret_cast<OFNOTIFYW *>(lParam);
 				switch (pNotify->hdr.code)
 				{
 					case CDN_TYPECHANGE:
@@ -609,7 +609,7 @@ UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookInsertPicProc(HWND hDlg, UIN
 	case WM_NOTIFY:
 		// Only bother if Preview Image is selected
 		if ( !bPreviewImage ) return false;
-		switch ( ((OFNOTIFY*) lParam)->hdr.code )
+		switch ( ((OFNOTIFYW*) lParam)->hdr.code )
 		{
 		case CDN_FOLDERCHANGE:
 			UT_DEBUGMSG(("Folder Changed File Name Cleared\n"));
@@ -677,7 +677,7 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 
 	// Check if File Name is for a file
 	wchar_t buf[MAX_DLG_INS_PICT_STRING];
-	SendMessage( hFOSADlg, CDM_GETFILEPATH, sizeof(buf), (LPARAM) buf );
+	SendMessageW( hFOSADlg, CDM_GETFILEPATH, sizeof(buf), (LPARAM) buf );
 	// If a Directory stop
 	if ( GetFileAttributesW( buf ) == FILE_ATTRIBUTE_DIRECTORY )
 	{
