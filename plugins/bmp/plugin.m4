@@ -5,18 +5,7 @@ bmp_deps="no"
 
 if test "$enable_bmp" != ""; then
 
-AC_MSG_CHECKING([for win32 toolkit])
-if test "$TOOLKIT" == "win"; then
-	AC_MSG_RESULT([yes])
-	bmp_deps="yes"
-else
-	AC_MSG_RESULT([no])
-	if test "$enable_bmp" == "auto"; then
-	  AC_MSG_WARN([bmp plugin: only supported on win32])
-	else
-	  AC_MSG_ERROR([bmp plugin: only supported on win32])
-	fi
-fi
+   bmp_deps="yes"
 
 fi
 

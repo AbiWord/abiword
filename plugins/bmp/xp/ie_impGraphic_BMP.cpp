@@ -83,8 +83,8 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 }
 
 ABI_BUILTIN_FAR_CALL
-int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
-				 UT_uint32 release)
+int abi_plugin_supports_version (UT_uint32 /*major*/, UT_uint32 /*minor*/,
+                                 UT_uint32 /*release*/)
 {
   return 1;
 }
@@ -100,7 +100,7 @@ static void _write_png( png_structp png_ptr,
 	bb->append(data, length);
 }
 
-static void _write_flush(png_structp png_ptr) { } // Empty Fuction.
+static void _write_flush(png_structp /*png_ptr*/) { } // Empty Fuction.
 
 // supported suffixes
 static IE_SuffixConfidence IE_ImpGraphicBMP_Sniffer__SuffixConfidence[] = {
@@ -113,7 +113,7 @@ const IE_SuffixConfidence * IE_ImpGraphicBMP_Sniffer::getSuffixConfidence ()
 	return IE_ImpGraphicBMP_Sniffer__SuffixConfidence;
 }
 
-UT_Confidence_t IE_ImpGraphicBMP_Sniffer::recognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+UT_Confidence_t IE_ImpGraphicBMP_Sniffer::recognizeContents(const char * szBuf, UT_uint32 /*iNumbytes*/)
 {
 	if ( !(strncmp(szBuf, "BM", 2)) )
 	  return UT_CONFIDENCE_PERFECT;
@@ -393,7 +393,6 @@ UT_Error IE_ImpGraphic_BMP::Convert_BMP(UT_ByteBuf* pBB)
 
 	const UT_Byte*  row_data;
 	UT_sint32 row;
-	UT_uint32 col;
 	UT_uint32 position;
 	UT_uint32 row_width = m_iWidth * m_iBitsPerPlane / 8;
 	while ((row_width & 3) != 0) row_width++;
@@ -420,7 +419,7 @@ UT_Error IE_ImpGraphic_BMP::Convert_BMP(UT_ByteBuf* pBB)
 			/* Calculating the start of each row */
 			position=m_iOffset + row*row_width;
 			/* Transforming the b/r to r/b */
-			for (UT_uint32 i=0, col=0; i < m_iWidth; i++,col+=3)
+			for (UT_sint32 i=0, col=0; i < m_iWidth; i++,col+=3)
 			{
 				row_transformed_data[col+0] = (UT_Byte)*pBB->getPointer(position+col+2);
 				row_transformed_data[col+1] = (UT_Byte)*pBB->getPointer(position+col+1);
@@ -436,7 +435,7 @@ UT_Error IE_ImpGraphic_BMP::Convert_BMP(UT_ByteBuf* pBB)
 			/* Calculating the start of each row */
 			position=m_iOffset + row*row_width;
 			/* Transforming the b/r to r/b */
-			for (UT_uint32 i=0, col=0; i < m_iWidth; i++,col+=4)
+			for (UT_sint32 i=0, col=0; i < m_iWidth; i++,col+=4)
 			{
 				row_transformed_data[col+0] = (UT_Byte)*pBB->getPointer(position+col+2);
 				row_transformed_data[col+1] = (UT_Byte)*pBB->getPointer(position+col+1);
