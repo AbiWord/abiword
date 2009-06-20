@@ -1336,6 +1336,11 @@ bool IE_Imp_RTF::HandleObject()
 				// handle a paragraph.
 				beginResult = nested;
 				break;
+			case RTF_KW_pict:
+				if (beginResult <= nested) {
+					HandlePicture();
+				}
+				break;
 			case RTF_KW_shppict:
 				if (beginResult <= nested) {
 					HandleShapePict();
