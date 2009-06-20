@@ -209,8 +209,7 @@ void ODi_Frame_ListenerState::_drawImage (const gchar** ppAtts,
     pChar = m_rElementStack.getStartTag(0)->getAttributeValue("text:anchor-type");
     UT_ASSERT_HARMLESS(pChar);
     
-    if ( pChar && (!strcmp(pChar, "as-char") ||
-         !strcmp(pChar, "char"))) {
+    if ( pChar && !strcmp(pChar, "as-char" )) {
         // In-line wrapping.
         // No frames are used on AbiWord for in-line wrapping.
         // It uses a <image> tag right in the paragraph text.
@@ -655,6 +654,7 @@ bool ODi_Frame_ListenerState::_getFrameProperties(UT_UTF8String& rProps,
 		// AbiWord does not support anchoring frames/texboxes to chars; 
 		// let's just convert it to paragraph anchoring, so we don't loose the 
 		// entire frame
+		// FIXME: "char" means an inline thing in AbiWord terms, NOT a positioned thing
 		rProps += "; position-to:block-above-text";
 
 	    pVal = m_rElementStack.getStartTag(0)->getAttributeValue("svg:x");
