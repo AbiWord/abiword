@@ -11,7 +11,7 @@ endif
 SUBDIRS += src plugins user
 
 if TOOLKIT_GTK
-desktopdir = @ABIWORD_DATADIR@/applications
+desktopdir = $(datadir)/applications
 desktop_DATA = abiword.desktop
 
 mimedir = @ABIWORD_DATADIR@/mime-info
@@ -21,7 +21,7 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = abiword-$(ABIWORD_SERIES).pc
 endif
 
-icondir= @ABIWORD_DATADIR@/icons
+icondir= $(datadir)/icons
 icon_DATA = abiword_48.png
 
 EXTRA_DIST = \
