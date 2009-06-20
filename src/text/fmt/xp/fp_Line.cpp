@@ -1049,7 +1049,10 @@ void fp_Line::recalcHeight(fp_Run * pLastRun)
 		m_iAscent = pLastRun->getAscent();
 		m_iDescent = pLastRun->getDescent();
 	}
-	UT_ASSERT(getHeight() > 0);
+// See bug 11158
+// According to TF this happen for hidden text.
+// Disable the assert.
+//	UT_ASSERT(getHeight() > 0);
 }
 
 /*!
