@@ -209,15 +209,19 @@ void ODi_Frame_ListenerState::_drawImage (const gchar** ppAtts,
     pChar = m_rElementStack.getStartTag(0)->getAttributeValue("text:anchor-type");
     UT_ASSERT_HARMLESS(pChar);
     
-    if ( pChar && !strcmp(pChar, "as-char" )) {
-        // In-line wrapping.
-        // No frames are used on AbiWord for in-line wrapping.
-        // It uses a <image> tag right in the paragraph text.
-
+	// as-char anchoring maps to abiword's inline images
+	// Note: AbiWord does not support positioned images in Headers and Footers,
+	// so convert those to inlined images.
+    if ( pChar && 
+		 (!strcmp(pChar, "as-char" ) || 
+		   m_rElementStack.hasElement("style:header") || 
+		   m_rElementStack.hasElement("style:footer") )) {
+        // No frames are used on AbiWord for in-line wrapping: it
+        // uses a <image> tag right in the paragraph text.
         _drawInlineImage(ppAtts);
-        
     } else {
-        // We define a frame with the image in it.
+        // This is a positiioned image. In AbiWord we define a frame 
+		// and place the image in it.
 
         if (m_rElementStack.hasElement("draw:text-box")) {
             // AbiWord can't have nested frames (a framed image inside a textbox),
