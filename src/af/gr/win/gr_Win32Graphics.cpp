@@ -978,8 +978,8 @@ bool GR_Win32Graphics::startPage(const char * /*szPageLabel*/, UT_uint32 /*pageN
 		pDevMode->dmFields = DM_ORIENTATION | DM_PAPERLENGTH | DM_PAPERWIDTH;
 		pDevMode->dmOrientation = (bPortrait) ? DMORIENT_PORTRAIT : DMORIENT_LANDSCAPE;
 		pDevMode->dmPaperSize = 0;
-		pDevMode->dmPaperLength = iHeight;
-		pDevMode->dmPaperWidth = iWidth;
+		pDevMode->dmPaperLength = (bPortrait) ? iHeight : iWidth;
+		pDevMode->dmPaperWidth = (bPortrait) ? iWidth : iHeight;
 		
 		GlobalUnlock(m_hDevMode);
 
