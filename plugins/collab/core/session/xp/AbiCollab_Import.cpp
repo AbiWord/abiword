@@ -269,7 +269,9 @@ bool ABI_Collab_Import::_checkForCollision(const AbstractChangeRecordSessionPack
 	}
 
 	if (!bDenied && !incAdjs.empty())
+	{
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+	}
 
 	while (!incAdjs.empty())
 	{
@@ -554,7 +556,9 @@ bool ABI_Collab_Import::_import(const SessionPacket& packet, UT_sint32 iImportAd
 					{
 						bool res = _import(*pGlobPacket, iImportAdjustment, pCollaborator, true); // yay for recursion :)
 						if (!res)
+						{
 							UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+						}
 					}
 				}
 

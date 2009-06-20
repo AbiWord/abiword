@@ -1245,7 +1245,9 @@ bool AbiCollabSessionManager::processPacket(AccountHandler& /*handler*/, Packet*
 					
 					// the server hosting this session is gone, so let's disconnect as well
 					if (!destroySession(pSession))
+					{
 						UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+					}
 
 					// signal all 
 					CloseSessionEvent event( destroyedSessionId );
