@@ -13884,8 +13884,10 @@ Defun(hyperlinkStatusBar)
 	// PLEASE DOOOON'T UNCOMMENT THIS EVIL LINE (unexpectedly will hide the pop-up)
 	//pFrame->raise();
 
+	// Annotation Preview windows are per frame!
+
 	XAP_DialogFactory * pDialogFactory
-		= static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	AP_Preview_Annotation * pAnnPview
 		= static_cast<AP_Preview_Annotation *>(pDialogFactory->requestDialog(AP_DIALOG_ID_ANNOTATION_PREVIEW));
