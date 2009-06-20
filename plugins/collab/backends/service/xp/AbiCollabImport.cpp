@@ -34,17 +34,9 @@ public:
             }
 };
 
-IE_Imp_AbiCollabSniffer abicollab_sniffer; // FIXME: this is not really nice if we allow plugin-unloading in the future again
-
 IE_Imp_AbiCollabSniffer::IE_Imp_AbiCollabSniffer()
 	: IE_ImpSniffer("AbiWord::AbiCollab-1.0")
 {
-	IE_Imp::registerImporter(this);
-}
-
-IE_Imp_AbiCollabSniffer::~IE_Imp_AbiCollabSniffer()
-{
-	IE_Imp::unregisterImporter(this);
 }
 
 static IE_SuffixConfidence IE_Imp_AbiCollabSniffer__SuffixConfidence[] = {

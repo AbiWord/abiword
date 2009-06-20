@@ -81,6 +81,7 @@
 #include <backends/sugar/unix/SugarUnixAccountHandler.h>
 #endif
 #ifdef ABICOLLAB_HANDLER_SERVICE
+#include <backends/service/xp/AbiCollabImport.h>
 #include <backends/service/xp/ServiceAccountHandler.h>
 #include <backends/service/xp/tls_tunnel.h>
 #endif
@@ -259,12 +260,14 @@ bool AbiCollabSessionManager::registerAccountHandlers()
 #ifdef ABICOLLAB_HANDLER_SERVICE
 	if (tls_tunnel::Proxy::tls_tunnel_init())
 		m_regAccountHandlers[ServiceAccountHandler::getStaticStorageType()] = ServiceAccountHandlerConstructor;
+	IE_Imp::registerImporter(new IE_Imp_AbiCollabSniffer()); // will be deleted again by IE_Imp::unregisterAllImporters()
 #endif
 	return true;
 }
 
 bool AbiCollabSessionManager::unregisterAccountHandlers(void)
 {
+	UT_DEBUGMSG(("AbiCollabSessionManager::unregisterAccountHandlers()\n"));
 	// no need to "free/delete" items, as they are just function pointers (ie. basic types)
 	m_regAccountHandlers.clear();
 #ifdef ABICOLLAB_HANDLER_SERVICE

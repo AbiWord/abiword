@@ -22,11 +22,13 @@
 #include "ie_imp.h"
 #include "ut_types.h"
 
+class ServiceAccountHandler;
+
 class IE_Imp_AbiCollabSniffer : public IE_ImpSniffer
 {
 public:
 	IE_Imp_AbiCollabSniffer();
-	virtual ~IE_Imp_AbiCollabSniffer();
+	virtual ~IE_Imp_AbiCollabSniffer() {}
 
 	virtual const IE_SuffixConfidence * getSuffixConfidence ();
 	virtual UT_Confidence_t recognizeContents(const char * szBuf, UT_uint32 iNumbytes);
