@@ -13889,6 +13889,9 @@ Defun(hyperlinkStatusBar)
 
 	AP_Preview_Annotation * pAnnPview
 		= static_cast<AP_Preview_Annotation *>(pDialogFactory->requestDialog(AP_DIALOG_ID_ANNOTATION_PREVIEW));
+
+	if(!pAnnPview)
+		return false;
 		
 	UT_DEBUGMSG(("hyperlinkStatusBar: Previewing annotation text %s \n",sText.utf8_str()));
 	
