@@ -610,8 +610,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
       // Later we will handle textboxes.
 
 	  m_bPageReferencePending = false;
-	  //	  rAction.ignoreElement();
-	  rAction.popState();
+	  rAction.ignoreElement();
     }
     else if (!strcmp(pName, "draw:text-box")) 
     {
