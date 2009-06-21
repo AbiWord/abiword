@@ -371,6 +371,15 @@ TextboxPage * PD_Document::getNthTextboxPage(UT_sint32 iTextboxPage)
 	return NULL;
 }
 
+void PD_Document::clearAllPendingObjects(void)
+{
+	UT_VECTOR_PURGEALL(ImagePage *, m_pPendingImagePage);
+	UT_VECTOR_PURGEALL(TextboxPage *, m_pPendingTextboxPage);
+	m_pPendingImagePage.clear();
+	m_pPendingTextboxPage.clear();
+}
+
+
 UT_sint32 PD_Document::getNumAuthors() const
 {
 	return m_vecAuthors.getItemCount();

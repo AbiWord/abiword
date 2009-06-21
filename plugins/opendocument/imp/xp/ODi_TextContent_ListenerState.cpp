@@ -460,28 +460,13 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
 	  // First acquired the info we need
 	  const gchar* pVal = NULL;
 	  pVal = UT_getAttribute("draw:name", ppAtts);
-	  bool bImage = false;
+	  bool bImage = true;
 	  bool bCont = true;
 	  m_iPageNum = 0;
 	  m_dXpos = 0.0;
 	  m_dYpos = 0.0;
 	  m_sProps.clear();
 	  m_bPageReferencePending = false;
-	  if(!pVal || !*pVal )
-	  {
-	       rAction.ignoreElement();
-	       bCont = false;
-	  }
-	  else if(strstr(pVal,"graphics")!= NULL)
-	  {
-	       bImage = true;
-	  }
-	  else
-	  {
-	    // FIXME handle Textboxes
-               rAction.ignoreElement();
-	       bCont = false;
-	  }
 	  if(bImage && bCont)
 	  {
 	        pVal = UT_getAttribute("text:anchor-page-number", ppAtts);

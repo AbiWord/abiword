@@ -243,6 +243,7 @@ public:
 	void                    addPageReferencedTextbox(UT_UTF8String & sContent,UT_sint32 iPage, double xInch, double yInch,const char * pzProps);
 	ImagePage *             getNthImagePage(UT_sint32 iImagePage);
 	TextboxPage *           getNthTextboxPage(UT_sint32 iTextboxPage);
+	void                    clearAllPendingObjects(void);
 
 	// Author methods
 

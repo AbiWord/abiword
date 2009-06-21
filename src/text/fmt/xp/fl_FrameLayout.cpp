@@ -982,7 +982,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_iXPage = UT_convertToLogicalUnits(pszPageXpos);
 	}
-	UT_DEBUGMSG(("PageXpos for frame is %s \n",pszPageXpos));
+	UT_DEBUGMSG(("PageXpos for frame is %s units %d \n",pszPageXpos,m_iXPage));
 // PageYpos
 
 	if(!pSectionAP || !pSectionAP->getProperty("frame-page-ypos",pszPageYpos))
@@ -993,7 +993,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_iYPage = UT_convertToLogicalUnits(pszPageYpos);
 	}
-	UT_DEBUGMSG(("PageYpos for frame is %s units %d \n",pszColYpos,m_iYPage));
+	UT_DEBUGMSG(("PageYpos for frame is %s units %d \n",pszPageYpos,m_iYPage));
 
 // Width
 

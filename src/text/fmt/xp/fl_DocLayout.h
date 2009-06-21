@@ -109,6 +109,7 @@ public:
 	~FL_DocLayout();
 
 	void fillLayouts(void);
+	bool loadPendingObjects(void);
 	void setView(FV_View*);
 
 	inline FV_View * getView(void) const { return m_pView; }
