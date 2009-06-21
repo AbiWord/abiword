@@ -433,7 +433,8 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
     } else if (!strcmp(pName, "draw:frame")) {
         
         if (!strcmp(m_rElementStack.getStartTag(0)->getName(), "text:p") ||
-            !strcmp(m_rElementStack.getStartTag(0)->getName(), "text:h")) {
+            !strcmp(m_rElementStack.getStartTag(0)->getName(), "text:h")) 
+	{
             
             const gchar* pVal = NULL;
             
@@ -452,7 +453,9 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
                 rAction.pushState("Frame");
             }
             
-        } else if (!strcmp(m_rElementStack.getStartTag(0)->getName(), "office:text")) {
+        } 
+	else if (!strcmp(m_rElementStack.getStartTag(0)->getName(), "office:text")) 
+	{
             
             // A page anchored frame.
             // Store this in the PD_Document until after the rest of the
@@ -514,8 +517,10 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
 		
 	  }
 
-        } else if (!strcmp(m_rElementStack.getStartTag(0)->getName(),
-                              "text:span")) {
+        } 
+	else if (!strcmp(m_rElementStack.getStartTag(0)->getName(),
+                              "text:span")) 
+        {
             // Must be an inlined image, otherwise we can't handle it.
             
             const gchar* pVal;
@@ -538,8 +543,9 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             // TODO: Figure out what to do then.
         }
         
-    } else if (!strcmp(pName, "draw:image"))
-      {
+    } 
+    else if (!strcmp(pName, "draw:image"))
+    {
 	if(m_bPageReferencePending)
 	{
 	  //
@@ -598,8 +604,17 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
 	  rAction.ignoreElement();
 	}
     }
+    else if (m_bPageReferencePending)
+    {
+      // No image was found in the page anchored code. Skip for now.
+      // Later we will handle textboxes.
 
-    else if (!strcmp(pName, "draw:text-box")) {
+	  m_bPageReferencePending = false;
+	  //	  rAction.ignoreElement();
+	  rAction.popState();
+    }
+    else if (!strcmp(pName, "draw:text-box")) 
+    {
         UT_ASSERT(m_elementParsingLevel == 0);
         
         // We're inside a text-box, parsing its text contents.

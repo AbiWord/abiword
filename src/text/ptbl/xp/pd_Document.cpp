@@ -1542,11 +1542,39 @@ bool PD_Document::appendStruxFmt(pf_Frag_Strux * pfs, const gchar ** attributes)
  */
 bool PD_Document::repairDoc(void)
 {
+	pf_Frag * pf = NULL;
+	pf_Frag_Strux * pfs = NULL;
+	//
+	// First check there is *some* content.
+	//
+	pf = m_pPieceTable->getFragments().getFirst();
+	bool bFoundSection = false;
+	bool bFoundBlock = false;
+	if(!pf)
+	{
+		appendStrux(PTX_Section, NULL);
+		appendStrux(PTX_Block,NULL);
+		return true;
+	}
+
+	// Now check if the document starts with a section
+
+	if(pf->getType() != pf_Frag::PFT_Strux)
+	{
+		insertStruxBeforeFrag(pf, PTX_Section,NULL);
+		insertStruxBeforeFrag(pf, PTX_Block,NULL);
+	}
+	pf = m_pPieceTable->getFragments().getFirst();
+	pfs = static_cast<pf_Frag_Strux *>(pf);
+	if(pfs->getStruxType() != PTX_Section)
+	{
+		insertStruxBeforeFrag(pf, PTX_Section,NULL);
+		insertStruxBeforeFrag(pf, PTX_Block,NULL);
+	}
+
 	checkForSuspect(); // Look at last frag. If it's an endtable we need a block
 	bool bRepaired = false;
 	UT_sint32 i = 0;
-	pf_Frag * pf = NULL;
-	pf_Frag_Strux * pfs = NULL;
 	for(i=0; i< m_vecSuspectFrags.getItemCount(); i++)
 	{
 		pf = m_vecSuspectFrags.getNthItem(i);
