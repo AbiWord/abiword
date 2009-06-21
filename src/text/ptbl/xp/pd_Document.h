@@ -61,8 +61,7 @@ class fl_BlockLayout;
 class fp_Run;
 class UT_UTF8String;
 class pp_Author;
-class _ImagePage;
-class _TextboxPage;
+
 
 #ifdef PT_TEST
 #include "ut_test.h"
@@ -157,6 +156,46 @@ enum
 // the creator (product) of this document. AbiWord, KWord, etc...
 #define PD_META_KEY_GENERATOR         "abiword.generator"
 
+class ABI_EXPORT  ImagePage
+{
+public:
+	ImagePage(UT_UTF8String & sImageId, UT_sint32 iPage, double xInch, double yInch, const char * pzProps);
+	virtual ~ImagePage(void);
+	const UT_UTF8String * getImageId(void) const;
+	UT_sint32 getPageNo(void) const;
+	double getXInch(void) const;
+	double getYInch(void) const;
+	const	UT_UTF8String * getProps(void) const;
+
+private:
+	UT_UTF8String m_sImageId;
+	UT_sint32 m_iPage;
+	double m_xInch;
+	double m_yInch;
+	UT_UTF8String m_sProps;
+};
+
+/*!
+ * Helpder class to import Page Referenced TextBoxes
+ */
+class ABI_EXPORT TextboxPage
+{
+public:
+	TextboxPage(UT_sint32 iPage, double xInch, double yInch,const char * pzProps, UT_UTF8String & sContent);
+	virtual ~TextboxPage(void);
+	const UT_UTF8String * getContent(void) const;
+	UT_sint32 getPageNo(void) const;
+	double getXInch(void) const;
+	double getYInch(void) const;
+	const UT_UTF8String * getProps(void) const;
+private:
+	UT_sint32 m_iPage;
+	double m_xInch;
+	double m_yInch;
+	UT_UTF8String m_sProps;
+	UT_UTF8String m_sContent;
+};
+
 
 /*!
  PD_Document is the representation for a document.
@@ -197,6 +236,13 @@ public:
 	// Caret Methods
 
 	void                    removeCaret(const std::string& sCaretID);
+
+	// Page Referenced methods
+
+	void                    addPageReferencedImage(UT_UTF8String & sImageId, UT_sint32 iPage, double xInch, double yInch, const char * pzProps);
+	void                    addPageReferencedTextbox(UT_UTF8String & sContent,UT_sint32 iPage, double xInch, double yInch,const char * pzProps);
+	ImagePage *             getNthImagePage(UT_sint32 iImagePage);
+	TextboxPage *           getNthTextboxPage(UT_sint32 iTextboxPage);
 
 	// Author methods
 
@@ -786,8 +832,8 @@ private:
 	bool                    m_bExportAuthorAtts;
 	UT_sint32               m_iMyAuthorInt;
 	UT_sint32               m_iLastAuthorInt;
-	UT_GenericVector<_ImagePage *> m_pPendingImagePage;
-	UT_GenericVector<_TextboxPage *> m_pPendingTextboxPage;
+	UT_GenericVector<ImagePage *> m_pPendingImagePage;
+	UT_GenericVector<TextboxPage *> m_pPendingTextboxPage;
 };
 
 #endif /* PD_DOCUMENT_H */

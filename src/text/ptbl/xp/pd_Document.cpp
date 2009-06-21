@@ -76,78 +76,74 @@
 /*! 
  * Helper class to import Page Referenced Images
  */
-class ABI_EXPORT  _ImagePage
+
+ImagePage::ImagePage(UT_UTF8String & sImageId, UT_sint32 iPage, double xInch, double yInch, const char * pzProps) : m_sImageId(sImageId), m_iPage(iPage),m_xInch(xInch),m_yInch(yInch)
 {
-public:
-	_ImagePage(UT_ByteBuf * pImageData, UT_sint32 iPage, double xInch, double yInch, const char * pzProps) : m_iPage(iPage),m_xInch(xInch),m_yInch(yInch)
-	{
-		m_pImageData.append(pImageData->getPointer(0),pImageData->getLength());
-		m_sProps = pzProps;
-	}
-	virtual ~_ImagePage(void)
-	{
-	}
-	const UT_ByteBuf * getByteBuf(void) const
-	{
-		return &m_pImageData;
-	}
-	UT_sint32 getPageNo(void) const
-	{
-		return m_iPage;
-	}
-	double getXInch(void) const
-	{
-		return m_xInch;
-	}
-	double getYInch(void) const
-	{
-		return m_yInch;
-	}
-private:
-	UT_ByteBuf m_pImageData;
-	UT_sint32 m_iPage;
-	double m_xInch;
-	double m_yInch;
-	UT_UTF8String m_sProps;
-};
+	m_sProps = pzProps;
+}
+
+ImagePage::~ImagePage(void)
+{
+}
+
+const UT_UTF8String * ImagePage::getImageId(void) const
+{
+	return &m_sImageId;
+}
+
+UT_sint32 ImagePage::getPageNo(void) const
+{
+	return m_iPage;
+}
+
+double ImagePage::getXInch(void) const
+{
+	return m_xInch;
+}
+
+double ImagePage::getYInch(void) const
+{
+	return m_yInch;
+}
+
+const	UT_UTF8String * ImagePage::getProps(void) const
+{
+	return &m_sProps;
+}
+
 
 /*!
  * Helpder class to import Page Referenced TextBoxes
  */
-class ABI_EXPORT _TextboxPage
+TextboxPage::TextboxPage(UT_sint32 iPage, double xInch, double yInch,const char * pzProps, UT_UTF8String & sContent) : m_iPage(iPage),m_xInch(xInch),m_yInch(yInch)
 {
-public:
-	_TextboxPage(UT_sint32 iPage, double xInch, double yInch,const char * pzProps, UT_UTF8String & sContent) : m_iPage(iPage),m_xInch(xInch),m_yInch(yInch)
-	{
-		m_sProps = pzProps;
-		m_sContent = sContent;
-	}
-	virtual ~_TextboxPage(void)
-	{
-	}
-	const UT_UTF8String * getContent(void) const
-	{
-		return &m_sContent;
-	}
-	UT_sint32 getPageNo(void) const
-	{
-		return m_iPage;
-	}
-	double getXInch(void) const
-	{
-		return m_xInch;
-	}
-	double getYInch(void) const
-	{
-		return m_yInch;
-	}
-private:
-	UT_sint32 m_iPage;
-	double m_xInch;
-	double m_yInch;
-	UT_UTF8String m_sProps;
-	UT_UTF8String m_sContent;
-};
+	m_sProps = pzProps;
+	m_sContent = sContent;
+}
+TextboxPage::~TextboxPage(void)
+{
+}
+const UT_UTF8String * TextboxPage::getContent(void) const
+{
+	return &m_sContent;
+}
+UT_sint32 TextboxPage::getPageNo(void) const
+{
+	return m_iPage;
+}
+double TextboxPage::getXInch(void) const
+{
+	return m_xInch;
+}
+double TextboxPage::getYInch(void) const
+{
+	return m_yInch;
+}
+const UT_UTF8String * TextboxPage::getProps(void) const
+{
+	return &m_sProps;
+}
+
 
 // our currently used DTD
 #define ABIWORD_FILEFORMAT_VERSION "1.1"
@@ -229,6 +225,8 @@ PD_Document::~PD_Document()
 	//UT_HASH_PURGEDATA(UT_UTF8String*, &m_mailMergeMap, delete) ;
 
 	UT_VECTOR_PURGEALL(pp_Author *, m_vecAuthors);
+	UT_VECTOR_PURGEALL(ImagePage *, m_pPendingImagePage);
+	UT_VECTOR_PURGEALL(TextboxPage *, m_pPendingTextboxPage);
 	// we do not purge the contents of m_vecListeners
 	// since these are not owned by us.
 
@@ -341,6 +339,36 @@ void PD_Document::removeCaret(const std::string& sCaretID)
 		FV_View * pView = static_cast<FV_View *>(vecViews.getNthItem(i));
 		pView->removeCaret(sCaretID);
 	}
+}
+
+/////////////////////////////////////////////////////////////////
+
+void PD_Document::addPageReferencedImage(UT_UTF8String & sImageId, UT_sint32 iPage, double xInch, double yInch, const char * pzProps)
+{
+	m_pPendingImagePage.addItem(new ImagePage(sImageId, iPage, xInch, yInch, pzProps));
+}
+
+void PD_Document::addPageReferencedTextbox(UT_UTF8String & sContent,UT_sint32 iPage, double xInch, double yInch,const char * pzProps)
+{
+	m_pPendingTextboxPage.addItem(new TextboxPage(iPage, xInch,yInch,pzProps, sContent));
+}
+
+ImagePage * PD_Document::getNthImagePage(UT_sint32 iImagePage)
+{
+	if(iImagePage < m_pPendingImagePage.getItemCount())
+	{
+		return m_pPendingImagePage.getNthItem(iImagePage);
+	}
+	return NULL;
+}
+
+TextboxPage * PD_Document::getNthTextboxPage(UT_sint32 iTextboxPage)
+{
+	if(iTextboxPage < m_pPendingTextboxPage.getItemCount())
+	{
+		return m_pPendingTextboxPage.getNthItem(iTextboxPage);
+	}
+	return NULL;
 }
 
 UT_sint32 PD_Document::getNumAuthors() const
