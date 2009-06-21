@@ -41,6 +41,7 @@
 class ODi_Office_Styles;
 class ODi_Style_List;
 class ODi_TableOfContent_ListenerState;
+class ODi_Abi_Data;
 
 // AbiWord classes
 class PD_Document;
@@ -75,7 +76,8 @@ public:
     ODi_TextContent_ListenerState (
         PD_Document* pDocument,
         ODi_Office_Styles* pStyles,
-        ODi_ElementStack& rElementStack);
+        ODi_ElementStack& rElementStack,
+	ODi_Abi_Data & rAbiData);
         
     virtual ~ODi_TextContent_ListenerState();
 
@@ -181,6 +183,14 @@ private:
     UT_uint32 m_iAnnotation;
     std::string m_sAnnotationAuthor;
     std::string m_sAnnotationDate;
+
+    // Page referenced stuff
+    bool m_bPageReferencePending;
+    UT_sint32 m_iPageNum;
+    double    m_dXpos;
+    double    m_dYpos;
+    UT_UTF8String m_sProps;
+    ODi_Abi_Data& m_rAbiData;
 };
 
 #endif //_ODI_TEXTCONTENT_LISTENERSTATE_H_

@@ -464,7 +464,8 @@ ODi_ListenerState* ODi_StreamListener::_createState(const char* pStateName) {
     } else if (!strcmp("TextContent", pStateName)) {
         
         pState = new ODi_TextContent_ListenerState(m_pAbiDocument, m_pStyles,
-                                                  *m_pElementStack);
+						   *m_pElementStack,
+						   m_rAbiData);
     } else if (!strcmp("Frame", pStateName)) {
         
         pState = new ODi_Frame_ListenerState(m_pAbiDocument, m_pStyles,

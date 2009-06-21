@@ -35,6 +35,7 @@
 #include "ODi_StartTag.h"
 #include "ODi_ElementStack.h"
 #include "ODi_TableOfContent_ListenerState.h"
+#include "ODi_Abi_Data.h"
 
 // AbiWord includes
 #include <ut_misc.h>
@@ -48,7 +49,8 @@
 ODi_TextContent_ListenerState::ODi_TextContent_ListenerState (
                 PD_Document* pDocument,
                 ODi_Office_Styles* pStyles,
-                ODi_ElementStack& rElementStack)
+                ODi_ElementStack& rElementStack,
+		ODi_Abi_Data& rAbiData)
                 : ODi_ListenerState("TextContent", rElementStack),
                   m_pAbiDocument ( pDocument ),
                   m_pStyles(pStyles),
@@ -67,7 +69,13 @@ ODi_TextContent_ListenerState::ODi_TextContent_ListenerState (
                   m_bPendingAnnotation(false),
                   m_bPendingAnnotationAuthor(false),
                   m_bPendingAnnotationDate(false),
-                  m_iAnnotation(0)
+                  m_iAnnotation(0),
+		  m_bPageReferencePending(false),
+		  m_iPageNum(0),
+		  m_dXpos(0.0),
+		  m_dYpos(0.0),
+		  m_sProps(""),
+		  m_rAbiData(rAbiData)
 {
     UT_ASSERT_HARMLESS(m_pAbiDocument);
     UT_ASSERT_HARMLESS(m_pStyles);
@@ -447,15 +455,80 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         } else if (!strcmp(m_rElementStack.getStartTag(0)->getName(), "office:text")) {
             
             // A page anchored frame.
-            //
-            // Page anchored frames defined outside a paragraph specifies the
-            // number of the page that they are anchored to. As I can't translate
-            // this info easily (if not at all) into AbiWord I will ignore all
-            // OpenDocument page anchored frames defined that way.
-            
-            // Ignore this element
-            rAction.ignoreElement();
-           
+            // Store this in the PD_Document until after the rest of the
+	  // is layed out.
+	  // First acquired the info we need
+	  const gchar* pVal = NULL;
+	  pVal = UT_getAttribute("draw:name", ppAtts);
+	  bool bImage = false;
+	  bool bCont = true;
+	  m_iPageNum = 0;
+	  m_dXpos = 0.0;
+	  m_dYpos = 0.0;
+	  m_sProps.clear();
+	  m_bPageReferencePending = false;
+	  if(!pVal || !*pVal )
+	  {
+	       rAction.ignoreElement();
+	       bCont = false;
+	  }
+	  else if(strstr(pVal,"graphics")!= NULL)
+	  {
+	       bImage = true;
+	  }
+	  else
+	  {
+	    // FIXME handle Textboxes
+               rAction.ignoreElement();
+	       bCont = false;
+	  }
+	  if(bImage && bCont)
+	  {
+	        pVal = UT_getAttribute("text:anchor-page-number", ppAtts);
+		if(!pVal || !*pVal)
+		{
+		    rAction.ignoreElement();
+		    bCont = false;
+		}
+		if(bCont)
+		{
+		  m_iPageNum = atoi(pVal);
+		}
+		pVal = UT_getAttribute("svg:x", ppAtts);
+		if(!pVal || !*pVal)
+		{
+		    rAction.ignoreElement();
+		    bCont = false;
+		}
+		if(bCont)
+		{
+		    m_dXpos = UT_convertToInches(pVal);
+		}
+		pVal = UT_getAttribute("svg:y", ppAtts);
+		if(!pVal || !*pVal)
+		{
+		    rAction.ignoreElement();
+		    bCont = false;
+		}
+		if(bCont)
+		{
+		    m_dYpos = UT_convertToInches(pVal);
+		    m_bPageReferencePending=true;
+		}
+		pVal = UT_getAttribute("svg:width", ppAtts);
+		if(pVal && *pVal)
+		{
+		    UT_UTF8String_setProperty(m_sProps,"frame-width",pVal);
+		}
+		pVal = UT_getAttribute("svg:height", ppAtts);
+		if(pVal && *pVal)
+		{
+		    UT_UTF8String_setProperty(m_sProps,"frame-height",pVal);
+		}
+
+		
+	  }
+
         } else if (!strcmp(m_rElementStack.getStartTag(0)->getName(),
                               "text:span")) {
             // Must be an inlined image, otherwise we can't handle it.
@@ -467,17 +540,81 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             if (!pVal || !strcmp(pVal, "as-char") || !strcmp(pVal, "char")) {
                 _flush();
                 rAction.pushState("Frame");
-            } else {
+            }
+	    else {
                 // Ignore this element
                 rAction.ignoreElement();
             }
 
-        } else {
+        }
+	else 
+        {
             UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
             // TODO: Figure out what to do then.
         }
         
-    } else if (!strcmp(pName, "draw:text-box")) {
+    } else if (!strcmp(pName, "draw:image"))
+      {
+	if(m_bPageReferencePending)
+	{
+	  //
+	  // We have page referenced image to handle.
+	  //  
+	  UT_String dataId; // id of the data item that contains the image.
+	  m_rAbiData.addImageDataItem(dataId, ppAtts);
+	  const gchar* pStyleName;
+	  const ODi_Style_Style* pGraphicStyle;
+	  const UT_UTF8String* pWrap;
+    
+	  pStyleName = m_rElementStack.getStartTag(0)->getAttributeValue("draw:style-name");
+	  UT_ASSERT(pStyleName);
+    
+	  pGraphicStyle = m_pStyles->getGraphicStyle(pStyleName, true);
+	  if(pGraphicStyle)
+	  {    
+	    pWrap = pGraphicStyle->getWrap(false);
+                                                    
+	    if ( !strcmp(pWrap->utf8_str(), "run-through")) 
+	    {
+		// Floating wrapping.
+		m_sProps += "; wrap-mode:above-text";
+		
+	    } 
+	    else if ( !strcmp(pWrap->utf8_str(), "left")) 
+	    {
+		m_sProps += "; wrap-mode:wrapped-to-left";
+	    } 
+	    else if ( !strcmp(pWrap->utf8_str(), "right")) 
+	    {
+		m_sProps += "; wrap-mode:wrapped-to-right";
+	    } 
+	    else if ( !strcmp(pWrap->utf8_str(), "parallel")) 
+	    {
+		m_sProps += "; wrap-mode:wrapped-both";
+	    } 
+	    else 
+	    {
+		// Unsupported.        
+		// Let's put an arbitrary wrap mode to avoid an error.
+		m_sProps += "; wrap-mode:wrapped-both";
+	    }
+	  }
+	    //
+	    // OK lets write this into the document for later use
+	    //
+	  UT_UTF8String sImageId = dataId.c_str();
+	  m_pAbiDocument->addPageReferencedImage(sImageId, m_iPageNum, m_dXpos, m_dYpos, m_sProps.utf8_str());
+	  
+	  m_bPageReferencePending = false;
+	}
+	else
+	{
+	  // Ignore this element
+	  rAction.ignoreElement();
+	}
+    }
+
+    else if (!strcmp(pName, "draw:text-box")) {
         UT_ASSERT(m_elementParsingLevel == 0);
         
         // We're inside a text-box, parsing its text contents.
@@ -485,6 +622,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         m_bOnContentStream = true;
         
     } else if (!strcmp(pName, "draw:g")) {
+      UT_DEBUGMSG(("Unallowed drawing element %s \n",pName));
        rAction.ignoreElement();  // ignore drawing shapes since AbiWord can't handle them
 
     } else if (!strcmp(pName, "table:table")) {
@@ -779,7 +917,9 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
             m_bPendingAnnotationDate = false;
             m_bAcceptingText = true;
         }
-
+    }
+    else if (!strcmp(pName, "draw:frame")) {
+      m_bPageReferencePending = false;
     }
     
     m_elementParsingLevel--;
