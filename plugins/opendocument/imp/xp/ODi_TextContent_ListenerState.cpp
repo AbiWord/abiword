@@ -609,7 +609,6 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
       // No image was found in the page anchored code. Skip for now.
       // Later we will handle textboxes.
 
-	  m_bPageReferencePending = false;
 	  rAction.ignoreElement();
     }
     else if (!strcmp(pName, "draw:text-box")) 
@@ -857,7 +856,14 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
         UT_ASSERT(m_elementParsingLevel == 1);
         
         // We were inside a <draw:text-box> element.
-        rAction.popState();
+	if(m_bPageReferencePending )
+	{
+	    m_bPageReferencePending = false;
+	}
+	else
+	{
+	    rAction.popState();
+	}
         
     } else if (!strcmp(pName, "table:table-cell")) {
         UT_ASSERT(m_elementParsingLevel == 1);
