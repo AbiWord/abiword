@@ -78,10 +78,17 @@ ODi_StreamListener::ODi_StreamListener(PD_Document* pAbiDocument,
 ODi_StreamListener::~ODi_StreamListener()
 {
     UT_ASSERT(m_currentAction == ODI_NONE);
-    UT_ASSERT(m_postponedParsing.getItemCount() == 0);
-    UT_ASSERT(m_stateStack.getItemCount() == 0);
-//  Having a state is perfectly valid as we allow recovering from an error.
-//    UT_ASSERT(m_pCurrentState == NULL);
+#if DEBUG
+    if(m_postponedParsing.getItemCount()) {
+        UT_DEBUGMSG(("ERROR ODTi: postponedParsing not empty\n"));
+    }
+    if(m_stateStack.getItemCount()) {
+        UT_DEBUGMSG(("ERROR ODTi: stateStack not empty\n"));
+    }
+    if(m_pCurrentState) {
+        UT_DEBUGMSG(("ERROR ODTi: current state exist\n"));
+    }
+#endif
     UT_VECTOR_PURGEALL(ODi_Postpone_ListenerState*, m_postponedParsing);
     if(m_ownStack) {
         DELETEP(m_pElementStack);

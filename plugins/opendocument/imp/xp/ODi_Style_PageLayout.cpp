@@ -255,7 +255,11 @@ void ODi_Style_PageLayout::_parseBackgroundImage(const gchar** ppAtts) {
     const gchar* pVal = NULL;
     
     pVal = UT_getAttribute ("xlink:href", ppAtts);
-    UT_return_if_fail(pVal);
+    if(!pVal) {
+        // this is a perfectly valid case.
+        UT_DEBUGMSG(("ODT import: no background image found.\n"));
+        return;
+    }
 
     UT_String dataId; // id of the data item that contains the image.
 

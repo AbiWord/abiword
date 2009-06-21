@@ -77,13 +77,11 @@ ODi_TextContent_ListenerState::ODi_TextContent_ListenerState (
 /**
  * Destructor
  */
-ODi_TextContent_ListenerState::~ODi_TextContent_ListenerState() {
-
-    UT_ASSERT_HARMLESS(m_tablesOfContentProps.getItemCount()==0);
-   
+ODi_TextContent_ListenerState::~ODi_TextContent_ListenerState() 
+{
     if (m_tablesOfContentProps.getItemCount() > 0) {
+        UT_DEBUGMSG(("ERROR ODti: table of content props not empty\n"));
         UT_VECTOR_PURGEALL(UT_UTF8String*, m_tablesOfContentProps);
-        m_tablesOfContentProps.clear();
     }
 }
 
