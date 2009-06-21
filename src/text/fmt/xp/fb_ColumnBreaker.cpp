@@ -383,7 +383,7 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fl_DocSectionLayout * pSL, fp_Page * p
 					// Ok.  Now, deduct the proper amount from iMaxColHeight.
 
 					// OK get a vector of the footnote containers in this line.
-				 
+				        UT_sint32 iTheseFootnotes = 0; 
 					UT_GenericVector<fp_FootnoteContainer*> vecFootnotes;
 					pCurLine->getFootnoteContainers(&vecFootnotes);
 					fp_Page *pCurPage = pCurColumn->getPage();
@@ -394,17 +394,19 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fl_DocSectionLayout * pSL, fp_Page * p
 						fp_FootnoteContainer * pFC = vecFootnotes.getNthItem(i);
 						if(pFC && ((pFC->getPage() == NULL) || (pFC->getPage() != pCurPage)))
 						{
+						        iTheseFootnotes += pFC->getHeight();
 							iFootnoteHeight += pFC->getHeight();
 						}				
 					}	
 					UT_DEBUGMSG(("got footnote section height %d\n", iFootnoteHeight));
-					iWorkingColHeight += iFootnoteHeight;
+					iWorkingColHeight += iTheseFootnotes;
 				}
 				if(pCurLine->containsAnnotations() && _displayAnnotations())
 				  {
 					// Ok.  Now, deduct the proper amount from iMaxColHeight.
 
 					// OK get a vector of the Annotation containers in this line.
+				        UT_sint32 iTheseAnnotations = 0; 
 				 
 					UT_GenericVector<fp_AnnotationContainer*> vecAnnotations;
 					pCurLine->getAnnotationContainers(&vecAnnotations);
@@ -416,11 +418,12 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fl_DocSectionLayout * pSL, fp_Page * p
 						fp_AnnotationContainer * pAC = vecAnnotations.getNthItem(i);
 						if(pAC && ((pAC->getPage() == NULL) || (pAC->getPage() != pCurPage)))
 						{
+						        iTheseAnnotations += pAC->getHeight();
 							iFootnoteHeight += pAC->getHeight();
 						}				
 					}	
 					UT_DEBUGMSG(("got Total section height %d\n", iFootnoteHeight));
-					iWorkingColHeight += iFootnoteHeight;
+					iWorkingColHeight += iTheseAnnotations;
 
 				  }
 			}
