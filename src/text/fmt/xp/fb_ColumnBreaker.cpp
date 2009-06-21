@@ -747,8 +747,8 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fl_DocSectionLayout * pSL, fp_Page * p
 		bEquivColumnBreak = bEquivColumnBreak && ( iMaxColHeight < (iWorkingColHeight + iTotalContainerSpace));
 		if (pLastContainerToKeep)
 		{
-			while(pLastContainerToKeep && (pLastContainerToKeep->getContainerType() == FP_CONTAINER_FOOTNOTE )
-			      && (pLastContainerToKeep->getContainerType() == FP_CONTAINER_ANNOTATION))
+		        while(pLastContainerToKeep && ((pLastContainerToKeep->getContainerType() == FP_CONTAINER_FOOTNOTE )
+						 || (pLastContainerToKeep->getContainerType() == FP_CONTAINER_ANNOTATION)))
 			{
 				pLastContainerToKeep = pLastContainerToKeep->getPrevContainerInSection();
 			}
@@ -953,7 +953,7 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fl_DocSectionLayout * pSL, fp_Page * p
 							}
 						}
 					}
-					if(pCurTable->containsAnnotations())
+					if(pCurTable->containsAnnotations()  && _displayAnnotations())
 					{
 						// OK get a vector of the footnote containers in this line.
 						UT_GenericVector<fp_AnnotationContainer*> vecAnnotations;
