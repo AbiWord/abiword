@@ -25,15 +25,15 @@ if test "$enable_wordperfect_builtin" == "yes"; then
 AC_MSG_ERROR([wordperfect plugin: static linking not supported])
 fi
 
-deps_pkgs="$wordperfect_pkgs"
+wp_deps_pkgs="$wordperfect_pkgs"
 
 PKG_CHECK_EXISTS([ $wordperfect_wps_pkgs ],
 [
-	deps_pkgs="$deps_pkgs $wordperfect_wps_pkgs"
+	wp_deps_pkgs="$wp_deps_pkgs $wordperfect_wps_pkgs"
 	WPS_DEFINE=" -DHAVE_LIBWPS"
 ])
 
-PKG_CHECK_MODULES(WORDPERFECT,[ $deps_pkgs ])
+PKG_CHECK_MODULES(WORDPERFECT,[ $wp_deps_pkgs ])
 
 test "$enable_wordperfect" == "auto" && PLUGINS="$PLUGINS wordperfect"
 
