@@ -57,6 +57,7 @@
 #include "ut_assert.h"
 #include "ut_timer.h"
 #include "ut_string.h"
+#include "ut_mbtowc.h"
 #include "xap_Frame.h"
 #include "ut_misc.h"
 #include "pf_Frag_Strux.h"
@@ -804,6 +805,20 @@ bool FL_DocLayout::loadPendingObjects(void)
 		//
 		i++;
 		pImagePage = pDoc->getNthImagePage(i);
+	}
+	i = 0;
+	TextboxPage * pTBPage = pDoc->getNthTextboxPage(i);
+	UT_UTF8String sTmp;
+	UT_UCS4_mbtowc wc;
+	
+	while(pTBPage)
+	{
+	    const UT_ByteBuf * pBuf = pTBPage->getContent();
+	    sTmp.clear();
+	    sTmp.appendBuf(*pBuf,wc);
+	    UT_DEBUGMSG(("RTF content | %s | \n",sTmp.utf8_str()));
+	    i++;
+	    pTBPage = pDoc->getNthTextboxPage(i);
 	}
 	//
 	// Remove all pending objects. They've now been loaded.

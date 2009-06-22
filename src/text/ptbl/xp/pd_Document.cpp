@@ -118,10 +118,11 @@ const	UT_UTF8String * ImagePage::getProps(void) const
 TextboxPage::TextboxPage(UT_sint32 iPage, double xInch, double yInch,const char * pzProps, UT_ByteBuf & sContent) : m_iPage(iPage),m_xInch(xInch),m_yInch(yInch)
 {
 	m_sProps = pzProps;
-	m_sContent = sContent;
+	m_sContent.append(sContent.getPointer(0),sContent.getLength());
 }
 TextboxPage::~TextboxPage(void)
 {
+
 }
 const UT_ByteBuf * TextboxPage::getContent(void) const
 {
@@ -6207,6 +6208,9 @@ void PD_Document::lockStyles(bool b)
  */
 bool PD_Document::exportGetVisDirectionAtPos(PT_DocPosition pos, UT_BidiCharType &type)
 {
+	if(m_bLoading)
+		return true;
+
 	if(pos == m_iVDLastPos && m_pVDRun)
 	{
 		// we have all the info we need cached, so just use it
@@ -6238,6 +6242,8 @@ bool PD_Document::exportGetVisDirectionAtPos(PT_DocPosition pos, UT_BidiCharType
 
 bool PD_Document::_exportInitVisDirection(PT_DocPosition pos)
 {
+	if(m_bLoading)
+		return true;
 	m_pVDBl = NULL;
 	m_pVDRun = NULL;
 

@@ -144,6 +144,8 @@ void pf_Fragments::unlinkFrag(pf_Frag * pf)
 
 	if (m_pLast == pf)
 		m_pLast = pp;
+	if(m_pFirst == pf)
+	        m_pFirst = pn;
 	if (getCache() == pf)
 		setCache(pp);
 }

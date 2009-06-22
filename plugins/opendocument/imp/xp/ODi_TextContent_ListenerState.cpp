@@ -36,6 +36,9 @@
 #include "ODi_ElementStack.h"
 #include "ODi_TableOfContent_ListenerState.h"
 #include "ODi_Abi_Data.h"
+#include "ut_growbuf.h"
+#include "pf_Frag.h"
+#include "ie_exp_RTF.h"
 
 // AbiWord includes
 #include <ut_misc.h>
@@ -463,8 +466,6 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
 	  // is layed out.
 	  // First acquired the info we need
 	  const gchar* pVal = NULL;
-	  pVal = UT_getAttribute("draw:name", ppAtts);
-	  bool bImage = true;
 	  bool bCont = true;
 	  m_iPageNum = 0;
 	  m_dXpos = 0.0;
@@ -599,21 +600,23 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
 	  rAction.ignoreElement();
 	}
     }
-    else if (m_bPageReferencePending)
-    {
-      // No image was found in the page anchored code. Skip for now.
-      // Later we will handle textboxes.
-
-	  rAction.ignoreElement();
-    }
     else if (!strcmp(pName, "draw:text-box")) 
     {
-        UT_ASSERT(m_elementParsingLevel == 0);
         
         // We're inside a text-box, parsing its text contents.
         m_inAbiSection = true;
         m_bOnContentStream = true;
-        
+	if(m_bPageReferencePending)
+	{
+	  //
+	  // We have page referenced text box to handle.
+	  // Start collecting text after first gathering the infor we
+	  // for the frame
+	  //  
+	  m_bPendingTextbox = true;
+	  m_sProps += ";bot-style:1; left-style:1; right-style:1; top-style:1";
+	  
+	}        
     } else if (!strcmp(pName, "draw:g")) {
       UT_DEBUGMSG(("Unallowed drawing element %s \n",pName));
        rAction.ignoreElement();  // ignore drawing shapes since AbiWord can't handle them
@@ -848,10 +851,9 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
         }
         
     } else if (!strcmp(pName, "draw:text-box")) {
-        UT_ASSERT(m_elementParsingLevel == 1);
         
         // We were inside a <draw:text-box> element.
-	if(m_bPageReferencePending )
+	if(m_bPageReferencePending || m_bPendingTextbox)
 	{
 	    m_bPageReferencePending = false;
 	}
@@ -920,6 +922,42 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
     }
     else if (!strcmp(pName, "draw:frame")) {
       m_bPageReferencePending = false;
+      if(m_bPendingTextbox)
+      {
+	  m_bPendingTextbox = false;
+	  m_bAcceptingText = true;
+	  _flush();
+	  PT_DocPosition pos2 = 0;
+	  m_pAbiDocument->getBounds(true,pos2);
+	  UT_ByteBuf * pBuf = new UT_ByteBuf(1024);
+	  pf_Frag * pfLast = m_pAbiDocument->getLastFrag();
+	  pf_Frag * pfFirst = pfLast;
+	  while(pfFirst->getPrev())
+	  {
+	      pfFirst = pfFirst->getPrev();
+	  }
+	  PT_DocPosition pos1 = pfFirst->getPos();
+	  IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(m_pAbiDocument);
+	  PD_DocumentRange docRange(m_pAbiDocument, pos1,pos2);
+	  //
+	  // Copy the Textbox content to RTF and store for later insertion
+	  //
+	  pExpRtf->copyToBuffer(&docRange,pBuf);
+	  delete pExpRtf;
+	  m_pAbiDocument->addPageReferencedTextbox(*pBuf,m_iPageNum, m_dXpos,m_dYpos,m_sProps.utf8_str());
+	  delete pBuf;
+	  pf_Frag * pfNext = pfFirst; 
+	  //
+	  // Remove this textbox content from the PT
+	  //
+	  while(pfFirst)
+	  {
+	      pfNext = pfFirst->getNext();
+	      m_pAbiDocument->deleteFragNoUpdate(pfFirst);
+	      pfFirst = pfNext;
+	  }
+	  m_bAcceptingText = false;
+      }
     }
     
     m_elementParsingLevel--;

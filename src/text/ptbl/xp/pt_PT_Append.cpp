@@ -413,8 +413,7 @@ bool pt_PieceTable::appendFmtMark(void)
 bool pt_PieceTable::insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
 										  const gchar ** attributes, pf_Frag_Strux ** ppfs_ret)
 {
-	// cannot insert before first fragment
-	UT_return_val_if_fail(pF && pF->getPrev() && pF != m_fragments.getFirst(), false);
+	UT_return_val_if_fail(pF , false);
 
 	pf_Frag_Strux * pfs = NULL;
 	if(!_makeStrux(pts, attributes, pfs) || !pfs)
