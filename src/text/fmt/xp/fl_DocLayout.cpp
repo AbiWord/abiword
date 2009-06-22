@@ -692,6 +692,16 @@ void FL_DocLayout::fillLayouts(void)
 	// One more time!
 	//
 	setFramePageNumbers(0);
+	//
+	// Fix all Lists
+	//
+	getDocument()->enableListUpdates();
+	for(UT_uint32 j =0; j<getDocument()->getListsCount();j++)
+	{
+	    fl_AutoNum * pAuto = getDocument()->getNthList(j);
+	    pAuto->markAsDirty();
+	}
+	getDocument()->updateDirtyLists();
 }
 
 /*!
