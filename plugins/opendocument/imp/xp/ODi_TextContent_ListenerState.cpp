@@ -75,7 +75,8 @@ ODi_TextContent_ListenerState::ODi_TextContent_ListenerState (
 		  m_dXpos(0.0),
 		  m_dYpos(0.0),
 		  m_sProps(""),
-		  m_rAbiData(rAbiData)
+		  m_rAbiData(rAbiData),
+		  m_bPendingTextbox(false)
 {
     UT_ASSERT_HARMLESS(m_pAbiDocument);
     UT_ASSERT_HARMLESS(m_pStyles);
@@ -470,53 +471,47 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
 	  m_dYpos = 0.0;
 	  m_sProps.clear();
 	  m_bPageReferencePending = false;
-	  if(bImage && bCont)
+	  pVal = UT_getAttribute("text:anchor-page-number", ppAtts);
+	  if(!pVal || !*pVal)
 	  {
-	        pVal = UT_getAttribute("text:anchor-page-number", ppAtts);
-		if(!pVal || !*pVal)
-		{
-		    rAction.ignoreElement();
-		    bCont = false;
-		}
-		if(bCont)
-		{
-		  m_iPageNum = atoi(pVal);
-		}
-		pVal = UT_getAttribute("svg:x", ppAtts);
-		if(!pVal || !*pVal)
-		{
-		    rAction.ignoreElement();
-		    bCont = false;
-		}
-		if(bCont)
-		{
-		    m_dXpos = UT_convertToInches(pVal);
-		}
-		pVal = UT_getAttribute("svg:y", ppAtts);
-		if(!pVal || !*pVal)
-		{
-		    rAction.ignoreElement();
-		    bCont = false;
-		}
-		if(bCont)
-		{
-		    m_dYpos = UT_convertToInches(pVal);
-		    m_bPageReferencePending=true;
-		}
-		pVal = UT_getAttribute("svg:width", ppAtts);
-		if(pVal && *pVal)
-		{
-		    UT_UTF8String_setProperty(m_sProps,"frame-width",pVal);
-		}
-		pVal = UT_getAttribute("svg:height", ppAtts);
-		if(pVal && *pVal)
-		{
-		    UT_UTF8String_setProperty(m_sProps,"frame-height",pVal);
-		}
-
-		
+	      rAction.ignoreElement();
+	      bCont = false;
 	  }
-
+	  if(bCont)
+	  {
+	      m_iPageNum = atoi(pVal);
+	  }
+	  pVal = UT_getAttribute("svg:x", ppAtts);
+	  if(!pVal || !*pVal)
+	  {
+	      rAction.ignoreElement();
+	      bCont = false;
+	  }
+	  if(bCont)
+	  {
+	      m_dXpos = UT_convertToInches(pVal);
+	  }
+	  pVal = UT_getAttribute("svg:y", ppAtts);
+	  if(!pVal || !*pVal)
+	  {
+	      rAction.ignoreElement();
+	      bCont = false;
+	  }
+	  if(bCont)
+	  {
+	      m_dYpos = UT_convertToInches(pVal);
+	      m_bPageReferencePending=true;
+	  }
+	  pVal = UT_getAttribute("svg:width", ppAtts);
+	  if(pVal && *pVal)
+	  {
+	      UT_UTF8String_setProperty(m_sProps,"frame-width",pVal);
+	  }
+	  pVal = UT_getAttribute("svg:height", ppAtts);
+	  if(pVal && *pVal)
+	  {
+	      UT_UTF8String_setProperty(m_sProps,"frame-height",pVal);
+	  }
         } 
 	else if (!strcmp(m_rElementStack.getStartTag(0)->getName(),
                               "text:span")) 

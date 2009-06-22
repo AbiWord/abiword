@@ -115,7 +115,7 @@ const	UT_UTF8String * ImagePage::getProps(void) const
 /*!
  * Helpder class to import Page Referenced TextBoxes
  */
-TextboxPage::TextboxPage(UT_sint32 iPage, double xInch, double yInch,const char * pzProps, UT_UTF8String & sContent) : m_iPage(iPage),m_xInch(xInch),m_yInch(yInch)
+TextboxPage::TextboxPage(UT_sint32 iPage, double xInch, double yInch,const char * pzProps, UT_ByteBuf & sContent) : m_iPage(iPage),m_xInch(xInch),m_yInch(yInch)
 {
 	m_sProps = pzProps;
 	m_sContent = sContent;
@@ -123,7 +123,7 @@ TextboxPage::TextboxPage(UT_sint32 iPage, double xInch, double yInch,const char 
 TextboxPage::~TextboxPage(void)
 {
 }
-const UT_UTF8String * TextboxPage::getContent(void) const
+const UT_ByteBuf * TextboxPage::getContent(void) const
 {
 	return &m_sContent;
 }
@@ -348,7 +348,7 @@ void PD_Document::addPageReferencedImage(UT_UTF8String & sImageId, UT_sint32 iPa
 	m_pPendingImagePage.addItem(new ImagePage(sImageId, iPage, xInch, yInch, pzProps));
 }
 
-void PD_Document::addPageReferencedTextbox(UT_UTF8String & sContent,UT_sint32 iPage, double xInch, double yInch,const char * pzProps)
+void PD_Document::addPageReferencedTextbox(UT_ByteBuf & sContent,UT_sint32 iPage, double xInch, double yInch,const char * pzProps)
 {
 	m_pPendingTextboxPage.addItem(new TextboxPage(iPage, xInch,yInch,pzProps, sContent));
 }
@@ -1538,18 +1538,17 @@ bool PD_Document::appendStruxFmt(pf_Frag_Strux * pfs, const gchar ** attributes)
 
 /*!
  * Scan the vector of suspect frags and add blocks if they're needed.
- * Returns true if there are no changes to the document. 
+ * Returns true if there are changes to the document. 
  */
 bool PD_Document::repairDoc(void)
 {
 	pf_Frag * pf = NULL;
 	pf_Frag_Strux * pfs = NULL;
+	bool bRepaired = false;
 	//
 	// First check there is *some* content.
 	//
 	pf = m_pPieceTable->getFragments().getFirst();
-	bool bFoundSection = false;
-	bool bFoundBlock = false;
 	if(!pf)
 	{
 		appendStrux(PTX_Section, NULL);
@@ -1563,6 +1562,7 @@ bool PD_Document::repairDoc(void)
 	{
 		insertStruxBeforeFrag(pf, PTX_Section,NULL);
 		insertStruxBeforeFrag(pf, PTX_Block,NULL);
+		bRepaired = true;
 	}
 	pf = m_pPieceTable->getFragments().getFirst();
 	pfs = static_cast<pf_Frag_Strux *>(pf);
@@ -1570,10 +1570,10 @@ bool PD_Document::repairDoc(void)
 	{
 		insertStruxBeforeFrag(pf, PTX_Section,NULL);
 		insertStruxBeforeFrag(pf, PTX_Block,NULL);
+		bRepaired = true;
 	}
 
 	checkForSuspect(); // Look at last frag. If it's an endtable we need a block
-	bool bRepaired = false;
 	UT_sint32 i = 0;
 	for(i=0; i< m_vecSuspectFrags.getItemCount(); i++)
 	{
@@ -2315,6 +2315,16 @@ bool PD_Document::deleteStrux(PT_DocPosition dpos,
 bool PD_Document::deleteStruxNoUpdate(PL_StruxDocHandle sdh)
 {
 	return m_pPieceTable->deleteStruxNoUpdate(sdh);
+}
+
+/*!
+ * This method deletes a frag without throwing a change record.
+ * pf is the frag that gets deleted..
+ * Use with extreme care. Should only be used for document import.
+ */
+bool PD_Document::deleteFragNoUpdate(pf_Frag * pf)
+{
+	return m_pPieceTable->deleteFragNoUpdate(pf);
 }
 
 /*!
@@ -5715,6 +5725,7 @@ void PD_Document::enableListUpdates(void)
 {
         m_ballowListUpdates = true;
 }
+
 
 void PD_Document::updateDirtyLists(void)
 {

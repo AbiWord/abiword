@@ -191,6 +191,7 @@ private:
     double    m_dYpos;
     UT_UTF8String m_sProps;
     ODi_Abi_Data& m_rAbiData;
+    bool m_bPendingTextbox;
 };
 
 #endif //_ODI_TEXTCONTENT_LISTENERSTATE_H_

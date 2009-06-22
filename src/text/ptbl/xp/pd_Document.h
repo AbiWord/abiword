@@ -181,9 +181,9 @@ private:
 class ABI_EXPORT TextboxPage
 {
 public:
-	TextboxPage(UT_sint32 iPage, double xInch, double yInch,const char * pzProps, UT_UTF8String & sContent);
+	TextboxPage(UT_sint32 iPage, double xInch, double yInch,const char * pzProps, UT_ByteBuf & sContent);
 	virtual ~TextboxPage(void);
-	const UT_UTF8String * getContent(void) const;
+	const UT_ByteBuf * getContent(void) const;
 	UT_sint32 getPageNo(void) const;
 	double getXInch(void) const;
 	double getYInch(void) const;
@@ -193,7 +193,7 @@ private:
 	double m_xInch;
 	double m_yInch;
 	UT_UTF8String m_sProps;
-	UT_UTF8String m_sContent;
+	UT_ByteBuf m_sContent;
 };
 
 
@@ -240,7 +240,7 @@ public:
 	// Page Referenced methods
 
 	void                    addPageReferencedImage(UT_UTF8String & sImageId, UT_sint32 iPage, double xInch, double yInch, const char * pzProps);
-	void                    addPageReferencedTextbox(UT_UTF8String & sContent,UT_sint32 iPage, double xInch, double yInch,const char * pzProps);
+	void                    addPageReferencedTextbox(UT_ByteBuf & sContent,UT_sint32 iPage, double xInch, double yInch,const char * pzProps);
 	ImagePage *             getNthImagePage(UT_sint32 iImagePage);
 	TextboxPage *           getNthTextboxPage(UT_sint32 iTextboxPage);
 	void                    clearAllPendingObjects(void);
@@ -459,6 +459,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 
 	bool                    changeStruxAttsNoUpdate(PL_StruxDocHandle sdh, const char * attr, const char * attvalue);
 	bool                    deleteStruxNoUpdate(PL_StruxDocHandle sdh);
+	bool                    deleteFragNoUpdate(pf_Frag * pf);
 	bool                    insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType pts,const gchar ** attributes );
 	bool                    isStruxBeforeThis(PL_StruxDocHandle sdh,  PTStruxType pts);
 
