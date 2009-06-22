@@ -92,6 +92,12 @@ const gchar * OXMLi_ListenerState::_TwipsToPoints(const gchar * twips)
 	return UT_convertToDimensionlessString(pt);
 }
 
+const gchar * OXMLi_ListenerState::_TwipsToInches(const gchar * twips)
+{
+	double in = UT_convertDimensionless(twips) / 1440;
+	return UT_convertToDimensionlessString(in);
+}
+
 const gchar * OXMLi_ListenerState::_EighthPointsToPoints(const gchar * eights)
 {
 	double pt = UT_convertDimensionless(eights) / 8;

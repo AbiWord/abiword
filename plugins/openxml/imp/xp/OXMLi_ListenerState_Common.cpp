@@ -87,6 +87,71 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 /********************************
  ****  PARAGRAPH FORMATTING  ****
  ********************************/
+	} else if ( nameMatches(rqst->pName, NS_W_KEY, "tab")){
+		//verify the context
+		std::string contextTag = rqst->context->back();
+
+		if (contextMatches(contextTag, NS_W_KEY, "r")) {
+			//This is an actual tab to be inserted
+			OXML_SharedElement tab ( new OXML_Element_Text("\t", 2) );
+			rqst->stck->push(tab);
+			rqst->handled = true;
+		}
+		else if(contextMatches(contextTag, NS_W_KEY, "tabs")){
+			OXML_SharedElement para = rqst->stck->top();
+			const gchar* val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
+			const gchar* pos = attrMatches(NS_W_KEY, "pos", rqst->ppAtts);
+			const gchar* leadCh = attrMatches(NS_W_KEY, "leader", rqst->ppAtts);
+			if(!val || !*val || !pos || !*pos)
+				return;
+
+			std::string value(val);
+			std::string position(_TwipsToInches(pos));
+			position += "in";
+			std::string leader("0"); //no leader by default
+			
+			std::string tabstops("");
+			const gchar* tabProp = NULL;
+			para->getProperty("tabstops", tabProp);	
+			if(tabProp)
+			{
+				tabstops = tabProp;
+				tabstops += ",";
+			}
+
+			tabstops += position;
+			tabstops += "/";
+
+			if(!value.compare("left"))
+				tabstops += "L";
+			else if(!value.compare("right"))
+				tabstops += "R";
+			else if(!value.compare("center"))
+				tabstops += "C";
+			else if(!value.compare("bar"))
+				tabstops += "B";
+			else if(!value.compare("decimal"))
+				tabstops += "D";
+
+			if(leadCh)
+			{
+				std::string leaderChar(leadCh);
+				if(!leaderChar.compare("dot"))
+					leader = "1";
+				else if(!leaderChar.compare("heavy"))
+					leader = "3";
+				else if(!leaderChar.compare("hyphen"))
+					leader = "2";
+				else if(!leaderChar.compare("middleDot"))
+					leader = "1";
+				else if(!leaderChar.compare("underscore"))
+					leader = "3";
+			}
+			tabstops += leader;
+				
+			para->setProperty("tabstops", tabstops);						
+		}		
+		rqst->handled = true;
 	} else if ( nameMatches(rqst->pName, NS_W_KEY, "ilvl")){
 		//verify the context
 		std::string contextTag = rqst->context->back();
@@ -591,17 +656,6 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 		rqst->handled = true;
 
 /******* END OF SECTION FORMATTING ********/
-
-	} else if (nameMatches(rqst->pName, NS_W_KEY, "tab")) {
-		//Verify the context...
-		std::string contextTag = rqst->context->back();
-		if (contextMatches(contextTag, NS_W_KEY, "r")) {
-			//This is an actual tab to be inserted
-			OXML_SharedElement tab ( new OXML_Element_Text("\t", 2) );
-			rqst->stck->push(tab);
-
-			rqst->handled = true;
-		}
 		
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "br")) {
 		const gchar * type = attrMatches(NS_W_KEY, "type", rqst->ppAtts);
@@ -708,6 +762,8 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 			UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) );
 			rqst->handled = true;
 		}
+		else if(contextMatches(contextTag, NS_W_KEY, "tabs"))
+			rqst->handled = true;
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "br")) {
 		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) );
 		rqst->handled = true;
@@ -722,7 +778,7 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 				nameMatches(rqst->pName, NS_W_KEY, "bookmarkEnd")) {
 		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) );
 		rqst->handled = true;		
-	}
+	} 
 }
 
 void OXMLi_ListenerState_Common::charData (OXMLi_CharDataRequest * rqst)

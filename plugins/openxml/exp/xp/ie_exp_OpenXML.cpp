@@ -1179,11 +1179,11 @@ UT_Error IE_Exp_OpenXML::setTabstops(int target, const gchar* tabstops)
 				tabs += "<w:tab w:val=\"clear\" ";
 
 
-			if(strstr(type.c_str(), "1"))
+			if(strstr(type.c_str(), "3"))
 				tabs += "w:leader=\"underscore\" ";
-			else if(strstr(type.c_str(), "2"))
+			else if(strstr(type.c_str(), "1"))
 				tabs += "w:leader=\"dot\" ";
-			else if(strstr(type.c_str(), "3"))
+			else if(strstr(type.c_str(), "2"))
 				tabs += "w:leader=\"hyphen\" ";
 		
 			tabs += "w:pos=\"";
