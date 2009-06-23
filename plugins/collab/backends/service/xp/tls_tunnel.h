@@ -103,6 +103,8 @@ protected:
 
 private:
 	void tunnel_(session_ptr_t session_ptr, socket_ptr_t local_socket_ptr, buffer_ptr_t local_buffer_ptr, socket_ptr_t remote_socket_ptr);
+
+	asio::thread* t;
 };
 
 // FIXME: this clientproxy can only handle 1 SSL connection at the same time

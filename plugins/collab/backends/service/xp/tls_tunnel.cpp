@@ -226,6 +226,7 @@ static ssize_t write(gnutls_transport_ptr_t ptr, const void* buffer, size_t size
 }
 
 Proxy::~Proxy() {
+	stop();
 	gnutls_certificate_free_credentials(x509cred);
 }
 
@@ -234,10 +235,16 @@ void Proxy::run() {
 }
 
 void Proxy::stop() {
-	transport().stop();
+	transport().stop(); // DOES THIS io.close() cancel stuff??
+	if (t)
+	{
+		t->join();
+		t = NULL;
+	}
 }
 
 Proxy::Proxy(const std::string& ca_file)
+	: t(NULL)
 {
 	// setup certificates
 	if (gnutls_certificate_allocate_credentials(&x509cred) < 0)
@@ -269,7 +276,7 @@ void Proxy::on_local_read(const asio::error_code& error, std::size_t bytes_trans
 
 void Proxy::tunnel(session_ptr_t session_ptr, socket_ptr_t local_socket_ptr, socket_ptr_t remote_socket_ptr) {
 	buffer_ptr_t local_buffer_ptr(new std::vector<char>(LOCAL_BUFFER_SIZE));
-	asio::thread thread(boost::bind(&Proxy::tunnel_, this, session_ptr, local_socket_ptr, local_buffer_ptr, remote_socket_ptr));
+	t = new asio::thread(boost::bind(&Proxy::tunnel_, this, session_ptr, local_socket_ptr, local_buffer_ptr, remote_socket_ptr));
 }
 
 void Proxy::disconnect_(session_ptr_t session_ptr, socket_ptr_t local_socket_ptr, socket_ptr_t remote_socket_ptr) {
