@@ -39,6 +39,7 @@
 #include "ut_growbuf.h"
 #include "pf_Frag.h"
 #include "ie_exp_RTF.h"
+#include "ut_units.h"
 
 // AbiWord includes
 #include <ut_misc.h>
@@ -1153,7 +1154,45 @@ void ODi_TextContent_ListenerState::_openAbiSection(
             dataID = pMasterPageStyle->getSectionDataID();
             UT_ASSERT(!allProps.empty());
         }
-        
+	//
+	// Page size is defined from the first section properties
+	//
+        if(!m_openedFirstAbiSection)
+	{
+	    UT_UTF8String sProp(""),sWidth(""),sHeight(""),sOri("");
+	    bool bValid = true;
+	    
+	    sProp="page-width";
+	    sWidth = UT_UTF8String_getPropVal(allProps,sProp);
+	    if(sWidth.size()==0)
+	        bValid = false;
+
+	    sProp="page-height";
+	    sHeight = UT_UTF8String_getPropVal(allProps,sProp);
+	    if(sHeight.size()==0)
+	        bValid = false;
+
+	    sProp="page-orientation";
+	    sOri = UT_UTF8String_getPropVal(allProps,sProp);
+	    if(sOri.size()==0)
+	        bValid = false;
+	    if(bValid)
+	    {
+	        UT_UTF8String sUnits = UT_dimensionName(UT_determineDimension(sWidth.utf8_str()));
+	        const gchar * atts[13] ={"pagetype","Custom",
+					 "orientation",NULL,
+					 "width",NULL,
+					 "height",NULL,
+					 "units",NULL,
+					 "page-scale","1.0",
+					 NULL};
+		atts[3] = sOri.utf8_str();
+		atts[5] = sWidth.utf8_str();
+		atts[7] = sHeight.utf8_str();
+		atts[9] = sUnits.utf8_str();
+		m_pAbiDocument->setPageSizeFromFile(atts);
+	    }
+	}
         m_openedFirstAbiSection = true;
     }
 

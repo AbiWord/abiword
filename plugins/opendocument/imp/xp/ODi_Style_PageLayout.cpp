@@ -295,7 +295,10 @@ void ODi_Style_PageLayout::_buildSectionPropsString() {
 
     APPEND_STYLE("page-margin-left", m_marginLeft);
     APPEND_STYLE("page-margin-right", m_marginRight);
-    
+    APPEND_STYLE("page-width",m_pageWidth);
+    APPEND_STYLE("page-height",m_pageHeight);
+    APPEND_STYLE("page-orientation",m_printOrientation);
+
     if (m_headerHeight.empty()) {
         // We don't have a header.
         // The property maps directly.
