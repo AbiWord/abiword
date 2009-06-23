@@ -158,7 +158,7 @@ void fl_AutoNum::fixHierarchy(void)
 		XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
 		FV_View* pView = NULL;
 		if (pFrame)
-			FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
+			pView = static_cast<FV_View *>(pFrame->getCurrentView());
 
 		bool bFound = m_pDoc->getAttributeFromSDH(sdh,
 												  pView ? pView->isShowRevisions() : true,
