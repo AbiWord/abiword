@@ -23,6 +23,7 @@
 #include "xap_Win32App.h"
 #include "xap_Win32FrameImpl.h"
 #include "xap_EncodingManager.h"
+#include "ut_Win32LocaleString.h"
 
 /*****************************************************************/
 XAP_Dialog * XAP_Win32Dialog_MessageBox::static_constructor(XAP_DialogFactory * pFactory,
@@ -50,7 +51,8 @@ void XAP_Win32Dialog_MessageBox::runModal(XAP_Frame * pFrame)
 	XAP_Win32App * pApp = static_cast<XAP_Win32App *>(XAP_App::getApp());
 	UT_return_if_fail(pApp);
 
-	const char * szCaption = pApp->getApplicationTitleForTitleBar();
+	UT_Win32LocaleString caption;
+	caption.fromASCII (pApp->getApplicationTitleForTitleBar());
 
 	HWND hwnd = static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow();
 	UINT flags;
@@ -85,7 +87,8 @@ void XAP_Win32Dialog_MessageBox::runModal(XAP_Frame * pFrame)
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	}
 
-	int res = MessageBox(hwnd, getApp()->getEncodingManager()->strToNative(m_szMessage, "UTF-8"), szCaption, flags);
+	int res = MessageBoxW(hwnd, (wchar_t *) getApp()->getEncodingManager()->strToNative(m_szMessage,
+                                                                                                                          "UTF-8"), caption.c_str(), flags);
 
 	switch (res)
 	{
