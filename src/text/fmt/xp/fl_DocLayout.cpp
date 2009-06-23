@@ -724,7 +724,8 @@ bool FL_DocLayout::loadPendingObjects(void)
 	PT_DocPosition pos = 0;
 	fp_Page * pPage = NULL;
 	UT_UTF8String allProps;
-	while(pImagePage)
+	fl_DocSectionLayout * pDSL = NULL;
+	for(i=0;pImagePage;pImagePage = pDoc->getNthImagePage(++i))
         {
 		UT_UTF8String sID = *pImagePage->getImageId();
 		allProps = *pImagePage-> getProps();
@@ -757,7 +758,7 @@ bool FL_DocLayout::loadPendingObjects(void)
 		pView->insertParaBreakIfNeededAtPos(posFrame+2);
 		//
 		// Now rebreak from this page forward.
-		fl_DocSectionLayout * pDSL = pPage->getOwningSection();
+		pDSL = pPage->getOwningSection();
 		pDSL->setNeedsSectionBreak(true,pPage);
 		while(pDSL)
 		{
@@ -768,13 +769,13 @@ bool FL_DocLayout::loadPendingObjects(void)
 		//
 		// Get Next ImagePage
 		//
-		i++;
-		pImagePage = pDoc->getNthImagePage(i);
+
 	}
 	i = 0;
 	TextboxPage * pTBPage = pDoc->getNthTextboxPage(i);
-	while(pTBPage)
+	for(i=0;pTBPage;pTBPage = pDoc->getNthTextboxPage(++i))
 	{
+	    allProps = *pTBPage->getProps();
 	    bOK = AnchoredObjectHelper(pTBPage->getXInch(),
 				       pTBPage->getYInch(),
 				       pTBPage->getPageNo(),
@@ -787,7 +788,7 @@ bool FL_DocLayout::loadPendingObjects(void)
 	    // Props neeed for the Text box
 		
 	    sProp="frame-type";
-	    sVal="image";
+	    sVal="textbox";
 	    UT_UTF8String_setProperty(allProps,sProp,sVal);
 
 	  //
@@ -812,9 +813,16 @@ bool FL_DocLayout::loadPendingObjects(void)
 	    const unsigned char * pData = static_cast<const unsigned char *>(pBuf->getPointer(0));
 	    UT_uint32 iLen = pBuf->getLength();
 	    pImpRTF->pasteFromBuffer(&docRange,pData,iLen);
-
-	    i++;
-	    pTBPage = pDoc->getNthTextboxPage(i);
+	    delete pImpRTF;
+	    //
+	    // Now rebreak from this page forward.
+	    pDSL = pPage->getOwningSection();
+	    pDSL->setNeedsSectionBreak(true,pPage);
+	    while(pDSL)
+	    {
+		pDSL->format();
+		pDSL = pDSL->getNextDocSection();
+	    }
 	}
 	//
 	// Remove all pending objects. They've now been loaded.
