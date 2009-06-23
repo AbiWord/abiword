@@ -2501,9 +2501,7 @@ UT_Error IE_Imp_RTF::_parseText()
 						ok = true;
 						break;
 					}
-#if 0 //enable to debug
-					return UT_OK; // try to finish the import anyway
-#endif
+					return UT_IE_TRY_RECOVER; // try to finish the import anyway
 				}
 				setEncoding(); // Reset encoding from current state.
 			}
@@ -5637,7 +5635,7 @@ bool IE_Imp_RTF::HandleStarKeyword()
 					if(NULL == m_pAnnotation)
 					{
 						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-						return false;
+						return true;
 					}
 					UT_UTF8String sContent;
 					ReadContentFromFile(sContent);
@@ -5717,7 +5715,7 @@ bool IE_Imp_RTF::HandleStarKeyword()
 					if(m_pAnnotation == NULL)
 					{
 						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-						return false;
+						return true;
 					}
 					//					if(m_pAnnotation->m_iAnnNumber != parameter_star)
 					//	{

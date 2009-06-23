@@ -132,8 +132,8 @@ bool IE_Imp_RTF::PopRTFState(void)
 		return ok;
 	}
 	else {
-		UT_return_val_if_fail(pState != NULL, false);	// state stack should not be empty
-		return true; // was false
+		UT_DEBUGMSG(("RTF ERROR: pState is NULL! Will try to recover."));
+		return false;
 	}
 }
 
