@@ -1433,7 +1433,7 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 	for (pData=data; (pData<data+length); /**/)
 	{
 		// first handle direciton issues
-		UT_BidiCharType type;
+		UT_BidiCharType type = UT_BIDI_LTR;
 
 		if(  !bIgnorePosition
 		   && m_pDocument->exportGetVisDirectionAtPos(pos + (pData - data),type)
