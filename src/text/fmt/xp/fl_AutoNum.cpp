@@ -156,7 +156,10 @@ void fl_AutoNum::fixHierarchy(void)
 	{
 		PL_StruxDocHandle sdh = static_cast<PL_StruxDocHandle>(m_pItems.getNthItem(0));
 		XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
-		FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
+		FV_View* pView = NULL;
+		if (pFrame)
+			FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
+
 		bool bFound = m_pDoc->getAttributeFromSDH(sdh,
 												  pView ? pView->isShowRevisions() : true,
 												  pView ? pView->getRevisionLevel(): PD_MAX_REVISION,
