@@ -514,6 +514,46 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
 	  {
 	      UT_UTF8String_setProperty(m_sProps,"frame-height",pVal);
 	  }
+	  //
+	  // Get wrapping style
+	  //
+	  const gchar* pStyleName = NULL;
+	  pStyleName = UT_getAttribute("draw:style-name", ppAtts);
+	  if(pStyleName)
+	  {
+	      const ODi_Style_Style* pGraphicStyle = m_pStyles->getGraphicStyle(pStyleName, m_bOnContentStream);
+	      if(pGraphicStyle)
+	      {
+		  const UT_UTF8String* pWrap=NULL;
+		  pWrap = pGraphicStyle->getWrap(false);
+		  if(pWrap)
+		  {
+		      if ( !strcmp(pWrap->utf8_str(), "run-through")) 
+		      {
+			  // Floating wrapping.
+			  m_sProps += "; wrap-mode:above-text";
+		      } 
+		      else if ( !strcmp(pWrap->utf8_str(), "left")) 
+		      {
+			  m_sProps += "; wrap-mode:wrapped-to-left";
+		      } 
+		      else if ( !strcmp(pWrap->utf8_str(), "right")) 
+		      {
+			  m_sProps += "; wrap-mode:wrapped-to-right";
+		      } 
+		      else if ( !strcmp(pWrap->utf8_str(), "parallel")) 
+		      {
+			  m_sProps += "; wrap-mode:wrapped-both";
+		      } 
+		      else 
+		      {
+			  // Unsupported.        
+			  // Let's put an arbitrary wrap mode to avoid an error.
+			  m_sProps += "; wrap-mode:wrapped-both";
+		      }
+		  }
+	      }
+	  }
         } 
 	else if (!strcmp(m_rElementStack.getStartTag(0)->getName(),
                               "text:span")) 
