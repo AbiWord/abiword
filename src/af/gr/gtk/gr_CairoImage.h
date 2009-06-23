@@ -42,15 +42,22 @@ class GR_RSVGVectorImage : public GR_CairoVectorImage {
   virtual void cairoSetSource(cairo_t *cr, double x, double y);
   virtual void scaleImageTo(GR_Graphics * pG, const UT_Rect & rec);
 
+  virtual bool            hasAlpha(void) const;
+  virtual bool            isTransparentAt(UT_sint32 x, UT_sint32 y);
+  virtual GR_Image *  createImageSegment(GR_Graphics *pG, const UT_Rect &rec);
+
  private:
   void reset();
   void setupScale(UT_sint32 w, UT_sint32 h);
   void createSurface(cairo_t* cairo);
-	
+  void createImageSurface();
+  void renderToSurface(cairo_surface_t* surf);
+
   UT_ByteBuf data;
   RsvgDimensionData size;
   cairo_t* graphics;
   cairo_surface_t* surface;
+  cairo_surface_t* image_surface;
   RsvgHandle* svg;
   double scaleX;
   double scaleY;
