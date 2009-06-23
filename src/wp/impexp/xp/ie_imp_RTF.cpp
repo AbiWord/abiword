@@ -4538,7 +4538,10 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 	break;
 	case RTF_KW_fonttbl:
 		// read in the font table
-		return ReadFontTable();
+		if(!ReadFontTable()) {
+			UT_DEBUGMSG(("RTF ERROR: ReadFontTable() failed\n"));
+		}
+		return true;
 	case RTF_KW_fs:
 		return HandleFontSize(fParam ? param : 24);
 	case RTF_KW_f:
