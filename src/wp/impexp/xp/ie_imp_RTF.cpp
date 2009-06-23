@@ -4400,7 +4400,13 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		return true;
 	}
 	case RTF_KW_colortbl:
-		return ReadColourTable();
+		// It is import that we don't fail if this fail
+		// Just continue
+		if(!ReadColourTable()) {
+			UT_DEBUGMSG(("RTF ERROR: ReadColourTable() failed.\n"));
+		}
+		// And this does not even warrant an attempt to recover.
+		return true;
 	case RTF_KW_cf:
 		return HandleColour(fParam ? param : 0);
 	case RTF_KW_cb:
