@@ -28,7 +28,6 @@
 #include "xap_Win32FrameImpl.h"
 #include "xav_View.h"
 #include "gr_Win32Graphics.h"
-#include "ap_Win32App.h"
 #include "xap_Win32DialogBase.h"
 
 /*****************************************************************/
@@ -37,15 +36,15 @@ static UINT CALLBACK s_PrintHookProc(
   UINT uiMsg,     // message identifier
   WPARAM wParam,  // message parameter
   LPARAM lParam   // message parameter
-  )                                                                             //TODO - PORTED
+  )                                                                             
 {
 	XAP_Win32Dialog_Print * pThis = NULL;
 	
 	if(uiMsg == WM_INITDIALOG)
 	{
-		PRINTDLG * pDlgInfo = (PRINTDLG*)lParam;
+		PRINTDLGW * pDlgInfo = (PRINTDLGW*)lParam;
 		pThis = (XAP_Win32Dialog_Print*)pDlgInfo->lCustData;
-		SetWindowLong(hdlg, DWL_USER, (LONG) pThis);
+		SetWindowLongW(hdlg, DWL_USER, (LONG) pThis);
 
 		// reset the 'closed' flag which indicates that the dialog should be considered
 		// 'closed' rather than aborted
@@ -60,13 +59,13 @@ static UINT CALLBACK s_PrintHookProc(
 
 		// remember the original printer selected; we use this to decide if upon closure
 		// we should notify associated views to rebuild to reflect the new font metrics
-		UT_uint32 iPrinter = SendDlgItemMessage(hdlg, cmb4, CB_GETCURSEL, 0, 0);
+		UT_uint32 iPrinter = SendDlgItemMessageW(hdlg, cmb4, CB_GETCURSEL, 0, 0);
 		pThis->setOrigPrinter(iPrinter);
 		pThis->setNewPrinter(iPrinter);
 	}
 	else
 	{
-		pThis = (XAP_Win32Dialog_Print*)GetWindowLong(hdlg, DWL_USER);
+		pThis = (XAP_Win32Dialog_Print*)GetWindowLongW(hdlg, DWL_USER);
 	}
 	
 	if(uiMsg == WM_COMMAND)
@@ -75,9 +74,9 @@ static UINT CALLBACK s_PrintHookProc(
 		// button to Close; make sure we have valid this pointer.
 		if((int)LOWORD(wParam) == cmb4 && HIWORD(wParam) == CBN_SELCHANGE)
 		{
-			pThis->setNewPrinter(SendDlgItemMessage(hdlg, cmb4, CB_GETCURSEL, 0, 0));
+			pThis->setNewPrinter(SendDlgItemMessageW(hdlg, cmb4, CB_GETCURSEL, 0, 0));
 
-			XAP_App*              pApp        = XAP_App::getApp();
+			XAP_App*                    pApp      = XAP_App::getApp();
 			const XAP_StringSet*  pSS         = pApp->getStringSet();
 			
 			if(pThis->getNewPrinter() != pThis->getOrigPrinter())
@@ -102,7 +101,7 @@ static UINT CALLBACK s_PrintHookProc(
 				// with the data we need; set the m_bClosed flag, so we can differentiate
 				// this from the user pressing the OK button
 				pThis->setClosed(true);
-				PostMessage(hdlg, WM_COMMAND, IDOK, 0);
+				PostMessageW(hdlg, WM_COMMAND, IDOK, 0);
 
 				return 1; // eat the message
 			}
@@ -126,7 +125,7 @@ XAP_Win32Dialog_Print::XAP_Win32Dialog_Print(XAP_DialogFactory * pDlgFactory,
 	m_iNewPrinter(0),
 	m_bClosed(false)
 {
-	m_pPersistPrintDlg = (PRINTDLG *)UT_calloc(1,sizeof(PRINTDLG));
+	m_pPersistPrintDlg = (PRINTDLGW *)UT_calloc(1,sizeof(PRINTDLGW));
 	UT_return_if_fail(m_pPersistPrintDlg);
 	
 	memset(m_pPersistPrintDlg,0,sizeof(m_pPersistPrintDlg));
@@ -261,7 +260,7 @@ void XAP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 			pG->setPrintDC(m_pPersistPrintDlg->hDC);
 		}
 	}
-	else if (PrintDlg(m_pPersistPrintDlg))		// raise the actual dialog.
+	else if (PrintDlgW(m_pPersistPrintDlg))		// raise the actual dialog.
 	{
 		_extractResults(pFrame);
 
