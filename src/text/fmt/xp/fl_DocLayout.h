@@ -110,6 +110,7 @@ public:
 
 	void fillLayouts(void);
 	bool loadPendingObjects(void);
+	bool AnchoredObjectHelper(double x, double y, UT_sint32 iPage, UT_UTF8String & allProps, PT_DocPosition & pos, fp_Page *& pPage);
 	void setView(FV_View*);
 
 	inline FV_View * getView(void) const { return m_pView; }

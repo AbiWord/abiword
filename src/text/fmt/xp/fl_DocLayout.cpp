@@ -61,6 +61,7 @@
 #include "xap_Frame.h"
 #include "ut_misc.h"
 #include "pf_Frag_Strux.h"
+#include "ie_imp_RTF.h"
 
 #ifdef ENABLE_SPELL
 #include "spell_manager.h"
@@ -719,45 +720,29 @@ bool FL_DocLayout::loadPendingObjects(void)
 	UT_sint32 i = 0;
 	pImagePage = pDoc->getNthImagePage(i);
 	UT_UTF8String sVal,sProp;
+	bool bOK = false;
+	PT_DocPosition pos = 0;
+	fp_Page * pPage = NULL;
+	UT_UTF8String allProps;
 	while(pImagePage)
         {
-	        UT_sint32 iPage = pImagePage->getPageNo() -1; // Start from page 1
-		if(iPage>=m_vecPages.getItemCount())
-		     iPage = m_vecPages.getItemCount()-1;
-		fp_Page * pPage = m_vecPages.getNthItem(iPage);
-		UT_sint32 xPos = UT_LAYOUT_RESOLUTION*pImagePage->getXInch();
-		UT_sint32 yPos = UT_LAYOUT_RESOLUTION*pImagePage->getYInch();
 		UT_UTF8String sID = *pImagePage->getImageId();
-		UT_UTF8String allProps = *pImagePage-> getProps();
-		PT_DocPosition pos = 0;
-		bool bBOL,bEOL,isTOC;
-		pPage->mapXYToPosition(xPos,yPos, pos, bBOL,bEOL,isTOC);
-	  //
-	  // Set the image position in the frame properties as well
-	  // as the properties that define this as a positioned image
-	  // positioned relative to a page.
-	  //
-		sVal = UT_formatDimensionedValue(pImagePage->getXInch(),"in", NULL);
-		sProp="frame-page-xpos";
-		UT_UTF8String_setProperty(allProps,sProp,sVal);
-		sVal = UT_formatDimensionedValue(pImagePage->getYInch(),"in", NULL);
-		sProp="frame-page-ypos";
-		UT_UTF8String_setProperty(allProps,sProp,sVal);
+		allProps = *pImagePage-> getProps();
+		bOK = AnchoredObjectHelper(pImagePage->getXInch(),
+					   pImagePage->getYInch(),
+					   pImagePage->getPageNo(),
+					   allProps,
+					   pos,
+					   pPage);
+		if(!bOK)
+		    continue;
 
-		sProp="position-to";
-		sVal="page-above-text";
-		UT_UTF8String_setProperty(allProps,sProp,sVal);
-
+		// Props neeed for the image
+		
 		sProp="frame-type";
 		sVal="image";
 		UT_UTF8String_setProperty(allProps,sProp,sVal);
 
-	  //
-	  // Position the object immediately after the closest block
-	  //
-		fl_BlockLayout * pBL = findBlockAtPosition(pos);
-		if(pBL == NULL)
-		       continue;
 	  //
 	  // Now define the Frame attributes strux
 	  //
@@ -765,26 +750,6 @@ bool FL_DocLayout::loadPendingObjects(void)
 					  NULL,"props",NULL,NULL};
 		attributes[1] = sID.utf8_str();
 		attributes[3] = allProps.utf8_str();
-	  //
-	  // This should place the the frame strux immediately after the 
-	  // block containing position posXY.
-	  // It returns the Frag_Strux of the new frame.
-	  //
-
-		fl_BlockLayout * pPrevBL = pBL;
-		while(pBL && ((pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_ENDNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_TOC)|| (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FRAME)))
-		{
-		    UT_DEBUGMSG(("Skipping Block %p \n",pBL));
-		    pPrevBL = pBL;
-		    pBL = pBL->getPrevBlockInDocument();
-		}
-		if(pBL == NULL)
-		{
-		    pBL = pPrevBL;
-		}
-		UT_ASSERT((pBL->myContainingLayout()->getContainerType() != FL_CONTAINER_HDRFTR) 
-			  && (pBL->myContainingLayout()->getContainerType() != FL_CONTAINER_SHADOW));
-		pos = pBL->getPosition();
 		pf_Frag_Strux * pfFrame = NULL;
 		pDoc->insertStrux(pos,PTX_SectionFrame,attributes,NULL,&pfFrame);
 		PT_DocPosition posFrame = pfFrame->getPos();
@@ -808,15 +773,46 @@ bool FL_DocLayout::loadPendingObjects(void)
 	}
 	i = 0;
 	TextboxPage * pTBPage = pDoc->getNthTextboxPage(i);
-	UT_UTF8String sTmp;
-	UT_UCS4_mbtowc wc;
-	
 	while(pTBPage)
 	{
+	    bOK = AnchoredObjectHelper(pTBPage->getXInch(),
+				       pTBPage->getYInch(),
+				       pTBPage->getPageNo(),
+				       allProps,
+				       pos,
+				       pPage);
+	    if(!bOK)
+	        continue;
+
+	    // Props neeed for the Text box
+		
+	    sProp="frame-type";
+	    sVal="image";
+	    UT_UTF8String_setProperty(allProps,sProp,sVal);
+
+	  //
+	  // Now define the Frame attributes strux
+	  //
+	    const gchar * attributes[3] = {"props",NULL,NULL};
+	    attributes[1] = allProps.utf8_str();
+	    pf_Frag_Strux * pfFrame = NULL;
+	    pDoc->insertStrux(pos,PTX_SectionFrame,attributes,NULL,&pfFrame);
+	    PT_DocPosition posFrame = pfFrame->getPos();
+	    pDoc->insertStrux(posFrame+1,PTX_EndFrame);
+	    pDoc->insertStrux(posFrame+1,PTX_Block);
+	    pView->insertParaBreakIfNeededAtPos(posFrame+3);
+
+	    //
+	    // Now insert the content
+	    //
+
 	    const UT_ByteBuf * pBuf = pTBPage->getContent();
-	    sTmp.clear();
-	    sTmp.appendBuf(*pBuf,wc);
-	    UT_DEBUGMSG(("RTF content | %s | \n",sTmp.utf8_str()));
+	    PD_DocumentRange docRange(pDoc, posFrame+1,posFrame+1);
+	    IE_Imp_RTF * pImpRTF = new IE_Imp_RTF(pDoc);
+	    const unsigned char * pData = static_cast<const unsigned char *>(pBuf->getPointer(0));
+	    UT_uint32 iLen = pBuf->getLength();
+	    pImpRTF->pasteFromBuffer(&docRange,pData,iLen);
+
 	    i++;
 	    pTBPage = pDoc->getNthTextboxPage(i);
 	}
@@ -825,6 +821,66 @@ bool FL_DocLayout::loadPendingObjects(void)
 	//
 	pDoc->clearAllPendingObjects();
         return true;
+}
+
+/*!
+ * Returns true if it founds a valid pos to insert the postioned object
+ */
+bool FL_DocLayout::AnchoredObjectHelper(double x, double y, UT_sint32 iPage, UT_UTF8String & allProps, PT_DocPosition & pos, fp_Page *& pPage)
+{
+	UT_UTF8String sVal,sProp;
+	iPage = iPage -1; // Start from page 1
+	if(iPage>=m_vecPages.getItemCount())
+	    iPage = m_vecPages.getItemCount()-1;
+	pPage = m_vecPages.getNthItem(iPage);
+	UT_sint32 xPos = UT_LAYOUT_RESOLUTION*x;
+	UT_sint32 yPos = UT_LAYOUT_RESOLUTION*y;
+	bool bBOL,bEOL,isTOC;
+	pPage->mapXYToPosition(xPos,yPos, pos, bBOL,bEOL,isTOC);
+	//
+	// Set the image position in the frame properties as well
+	// as the properties that define this as a positioned image
+	// positioned relative to a page.
+	//
+	sVal = UT_formatDimensionedValue(x,"in", NULL);
+	sProp="frame-page-xpos";
+	UT_UTF8String_setProperty(allProps,sProp,sVal);
+	sVal = UT_formatDimensionedValue(y,"in", NULL);
+	sProp="frame-page-ypos";
+	UT_UTF8String_setProperty(allProps,sProp,sVal);
+	sProp="position-to";
+	sVal="page-above-text";
+	UT_UTF8String_setProperty(allProps,sProp,sVal);
+
+	//
+	// Position the object immediately after the closest block
+	//
+	fl_BlockLayout * pBL = findBlockAtPosition(pos);
+	if(pBL == NULL)
+	{
+	    return false;
+	}
+	//
+	// This should place the the frame strux immediately after the 
+	// block containing position posXY.
+	// It returns the Frag_Strux of the new frame.
+	//
+
+	fl_BlockLayout * pPrevBL = pBL;
+	while(pBL && ((pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_ENDNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_TOC)|| (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FRAME)))
+	{
+	    UT_DEBUGMSG(("Skipping Block %p \n",pBL));
+	    pPrevBL = pBL;
+	    pBL = pBL->getPrevBlockInDocument();
+	}
+	if(pBL == NULL)
+	{
+	    pBL = pPrevBL;
+	}
+	UT_ASSERT((pBL->myContainingLayout()->getContainerType() != FL_CONTAINER_HDRFTR) 
+		  && (pBL->myContainingLayout()->getContainerType() != FL_CONTAINER_SHADOW));
+	pos = pBL->getPosition();
+	return true;
 }
 
 #if 0
