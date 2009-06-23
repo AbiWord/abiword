@@ -30,6 +30,7 @@
 #include "ut_string_class.h"
 #include "xap_Dialog_Id.h"
 #include "xap_Types.h"
+#include "ie_imp.h"
 #include <account/xp/AccountHandler.h>
 #include <libxml/tree.h>
 
@@ -130,7 +131,10 @@ public:
 	void										endAsyncOperation(AbiCollab* pSession);
 	void										beginAsyncOperation(AccountHandler* pSession);
 	void										endAsyncOperation(AccountHandler* pSession);		
-		
+
+	// file format handling
+	void										unregisterSniffers(void);
+	
 	AbiCollabSessionManager(void); // TODO: this constructor shouldn't be public
 
 private:
@@ -167,6 +171,9 @@ private:
 	// asynchronous opertation registration
 	std::map<AbiCollab*, int>					m_asyncSessionOps;
 	std::map<AccountHandler*, int>				m_asyncAccountOps;
+
+	// file format sniffers
+	std::vector<IE_ImpSniffer*>					m_vImpSniffers;
 };
 
 #endif /* ABICOLLABSESSIONMANAGER_H */

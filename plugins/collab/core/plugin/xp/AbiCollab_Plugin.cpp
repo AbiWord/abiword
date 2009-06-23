@@ -120,9 +120,12 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	// store the settings to the profile
 	AbiCollabSessionManager::getManager()->storeProfile();
 
-	// register all available account handlers
+	// unregister all available account handlers
 	AbiCollabSessionManager::getManager()->unregisterAccountHandlers();
 
+	// unregister all import/export sniffers we have registered
+	AbiCollabSessionManager::getManager()->unregisterSniffers();
+	
 	// unregister all dialogs we use
 	AbiCollabSessionManager::getManager()->unregisterDialogs();
 

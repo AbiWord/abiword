@@ -260,7 +260,9 @@ bool AbiCollabSessionManager::registerAccountHandlers()
 #ifdef ABICOLLAB_HANDLER_SERVICE
 	if (tls_tunnel::Proxy::tls_tunnel_init())
 		m_regAccountHandlers[ServiceAccountHandler::getStaticStorageType()] = ServiceAccountHandlerConstructor;
-	IE_Imp::registerImporter(new IE_Imp_AbiCollabSniffer()); // will be deleted again by IE_Imp::unregisterAllImporters()
+	IE_Imp_AbiCollabSniffer* pAbiCollabSniffer = new IE_Imp_AbiCollabSniffer();
+	IE_Imp::registerImporter(pAbiCollabSniffer);
+	m_vImpSniffers.push_back(pAbiCollabSniffer);
 #endif
 	return true;
 }
@@ -274,6 +276,17 @@ bool AbiCollabSessionManager::unregisterAccountHandlers(void)
 	tls_tunnel::Proxy::tls_tunnel_deinit();
 #endif
 	return true;
+}
+
+void AbiCollabSessionManager::unregisterSniffers(void)
+{
+	for (UT_uint32 i = 0; i < m_vImpSniffers.size(); i++)
+	{
+		IE_ImpSniffer* pSniffer = m_vImpSniffers[i];
+		UT_continue_if_fail(pSniffer);
+		IE_Imp::unregisterImporter(pSniffer);
+	}
+	m_vImpSniffers.clear();
 }
 
 bool AbiCollabSessionManager::unregisterDialogs(void)
