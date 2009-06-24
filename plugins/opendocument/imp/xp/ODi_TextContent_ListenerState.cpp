@@ -1103,8 +1103,7 @@ void ODi_TextContent_ListenerState::_popInlineFmt(void)
         p = (const gchar *)m_vecInlineFmt.getNthItem(k-1);
         m_vecInlineFmt.deleteNthItem(k-1);
         
-        if (p)
-            free((void *)p);
+        FREEP(p);
     }
 }
 
