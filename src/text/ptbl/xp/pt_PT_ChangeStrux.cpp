@@ -687,10 +687,11 @@ bool pt_PieceTable::changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType ps
 	PT_AttrPropIndex currentAP = pf->getIndexAP();
 
 	const PP_AttrProp * pOldAP;
-    if(!getAttrProp(currentAP,&pOldAP))
+        if(!getAttrProp(currentAP,&pOldAP))
 		return false;
 
 	PP_AttrProp * pNewAP = pOldAP->cloneWithReplacements(attrs,props,false);
+	UT_return_val_if_fail(pNewAP, false);
 	pNewAP->markReadOnly();
 
 	PT_AttrPropIndex indexAP;
