@@ -26,3 +26,6 @@ for f in ` find ./plugins -name '*.m4' | grep -v 'plugin\.m4'`; do
     ln -sf $f
 done
 
+# Create the intltool scripts
+intltoolize --force
+

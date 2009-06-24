@@ -2,7 +2,7 @@ Makefile.am
 configure.in
 keith-bowes-changed-files
 po/Makefile.in
-po/abiword.POT
+po/abiword.pot
 po/eo.po
 po/gl.po
 po/he-IL.po
@@ -26,6 +26,7 @@ src/wp/ap/cocoa/ap_CocoaApp.cpp
 src/wp/ap/gtk/ap_UnixApp.cpp
 src/wp/ap/gtk/ap_UnixApp.h
 src/wp/ap/gtk/ap_UnixDialog_Lists.cpp
+src/wp/ap/gtk/ap_UnixDialog_PageSetup.cpp
 src/wp/ap/gtk/ap_UnixStockIcons.cpp
 src/wp/ap/win/ap_Win32App.cpp
 src/wp/ap/xp/ap_Args.cpp

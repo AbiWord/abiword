@@ -25,7 +25,6 @@
 
 #include <map>
 #include <string>
-
 #include <glib/gi18n.h>
 #include <clocale>
 

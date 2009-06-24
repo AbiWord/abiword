@@ -119,8 +119,8 @@ inline char * _0(const XAP_StringSet * pSS, XAP_String_Id id)
 	return _ev_convert (_ev_buf, _s.utf8_str());
 } 
 
-#define _(a, x) _0(pSS, a##_STRING_ID_##x)
-
+#define __(a, x) _0(pSS, a##_STRING_ID_##x)
+#define _(s) gettext(s)
 
 /*********************************************************************************/
 
@@ -580,34 +580,34 @@ GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
 	m_PageHbox = _getWidget("hbox16");
 
 	/* required for translations */
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbPage")), _(AP, DLG_PageSetup_Page));
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbMargin")), _(AP, DLG_PageSetup_Margin));
-	Markup (_getWidget("lbPaper"), pSS, _(AP, DLG_PageSetup_Paper));
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbPaperSize")), _(AP, DLG_PageSetup_Paper_Size));
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbPageUnits")), _(AP, DLG_PageSetup_Units));
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbWidth")), _(AP, DLG_PageSetup_Width));
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbHeight")), _(AP, DLG_PageSetup_Height));
-	Markup (_getWidget("lbOrientation"), pSS, _(AP, DLG_PageSetup_Orient));
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbPage")), __(AP, DLG_PageSetup_Page));
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbMargin")), __(AP, DLG_PageSetup_Margin));
+	Markup (_getWidget("lbPaper"), pSS, __(AP, DLG_PageSetup_Paper));
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbPaperSize")), __(AP, DLG_PageSetup_Paper_Size));
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbPageUnits")), __(AP, DLG_PageSetup_Units));
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbWidth")), __(AP, DLG_PageSetup_Width));
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbHeight")), __(AP, DLG_PageSetup_Height));
+	Markup (_getWidget("lbOrientation"), pSS, __(AP, DLG_PageSetup_Orient));
 
 	/* radio button labels */
 	glist = gtk_container_get_children (GTK_CONTAINER (m_radioPagePortrait));
 	orientation = GTK_LABEL (g_list_nth_data (glist, 0));
-	gtk_label_set_text (GTK_LABEL (orientation), _(AP, DLG_PageSetup_Portrait));
+	gtk_label_set_text (GTK_LABEL (orientation), __(AP, DLG_PageSetup_Portrait));
 
 	glist = gtk_container_get_children (GTK_CONTAINER (m_radioPageLandscape));
 	orientation = GTK_LABEL (g_list_nth_data (glist, 0));
-	gtk_label_set_text (GTK_LABEL (orientation), _(AP, DLG_PageSetup_Landscape));
+	gtk_label_set_text (GTK_LABEL (orientation), __(AP, DLG_PageSetup_Landscape));
 
-	Markup (_getWidget("lbScale"), pSS, _(AP, DLG_PageSetup_Scale));
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbAdjust")), _(AP, DLG_PageSetup_Adjust));
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbPercentNormalSize")), _(AP, DLG_PageSetup_Percent));
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbMarginUnits")), _(AP, DLG_PageSetup_Units));
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbTop")), _(AP, DLG_PageSetup_Top));
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbRight")), _(AP, DLG_PageSetup_Right));
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbLeft")), _(AP, DLG_PageSetup_Left));
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbBottom")), _(AP, DLG_PageSetup_Bottom));
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbHeader")), _(AP, DLG_PageSetup_Header));
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbFooter")), _(AP, DLG_PageSetup_Footer));
+	Markup (_getWidget("lbScale"), pSS, __(AP, DLG_PageSetup_Scale));
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbAdjust")), __(AP, DLG_PageSetup_Adjust));
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbPercentNormalSize")), __(AP, DLG_PageSetup_Percent));
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbMarginUnits")), __(AP, DLG_PageSetup_Units));
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbTop")), __(AP, DLG_PageSetup_Top));
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbRight")), __(AP, DLG_PageSetup_Right));
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbLeft")), __(AP, DLG_PageSetup_Left));
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbBottom")), __(AP, DLG_PageSetup_Bottom));
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbHeader")), __(AP, DLG_PageSetup_Header));
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbFooter")), __(AP, DLG_PageSetup_Footer));
 	/* end translation req */
 
 	/* setup page width and height */
@@ -649,17 +649,17 @@ GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
 	/* setup page units menu */
 	GtkComboBox *combo = GTK_COMBO_BOX(m_optionPageUnits);
 	XAP_makeGtkComboBoxText(combo, G_TYPE_INT);
-	XAP_appendComboBoxTextAndInt(combo, _(XAP, DLG_Unit_inch), DIM_IN);
-	XAP_appendComboBoxTextAndInt(combo, _(XAP, DLG_Unit_cm), DIM_CM);
-	XAP_appendComboBoxTextAndInt(combo, _(XAP, DLG_Unit_mm), DIM_MM);
+	XAP_appendComboBoxTextAndInt(combo, __(XAP, DLG_Unit_inch), DIM_IN);
+	XAP_appendComboBoxTextAndInt(combo, __(XAP, DLG_Unit_cm), DIM_CM);
+	XAP_appendComboBoxTextAndInt(combo, __(XAP, DLG_Unit_mm), DIM_MM);
 	gtk_combo_box_set_active(combo, fp_2_pos (getPageUnits()));
 
 	/* setup margin units menu */
 	combo = GTK_COMBO_BOX(m_optionMarginUnits);
 	XAP_makeGtkComboBoxText(combo, G_TYPE_INT);
-	XAP_appendComboBoxTextAndInt(combo, _(XAP, DLG_Unit_inch), DIM_IN);
-	XAP_appendComboBoxTextAndInt(combo, _(XAP, DLG_Unit_cm), DIM_CM);
-	XAP_appendComboBoxTextAndInt(combo, _(XAP, DLG_Unit_mm), DIM_MM);
+	XAP_appendComboBoxTextAndInt(combo, __(XAP, DLG_Unit_inch), DIM_IN);
+	XAP_appendComboBoxTextAndInt(combo, __(XAP, DLG_Unit_cm), DIM_CM);
+	XAP_appendComboBoxTextAndInt(combo, __(XAP, DLG_Unit_mm), DIM_MM);
 	last_margin_unit = getMarginUnits ();
 	gtk_combo_box_set_active(combo, fp_2_pos(last_margin_unit));
 

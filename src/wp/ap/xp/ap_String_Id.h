@@ -29,1048 +29,1048 @@
 ******************************************************************
 *****************************************************************/
 // Default Heading used in TOC
-#define AP_STRING_ID_TOC_TocHeading  "Contents"
+#define AP_STRING_ID_TOC_TocHeading  _("Contents")
 // Message Boxes used in AP_EditMethods
-#define AP_STRING_ID_MSG_SaveFailed  "Could not write to the file %s."
-#define AP_STRING_ID_MSG_SaveFailedWrite  "Writing error when attempting to save %s"
-#define AP_STRING_ID_MSG_SaveFailedExport  "Error while attempting to save %s: could not construct exporter"
-#define AP_STRING_ID_MSG_SaveFailedName  "Error while attempting to save %s: invalid name"
-#define AP_STRING_ID_MSG_OpenFailed  "Could not open file %s."
-#define AP_STRING_ID_MSG_DlgNotImp "%s not implemented yet.\n\nIf you are a programmer, feel free to add code in %s, line %d\nand mail patches to:\n\n\tabiword-dev@abisource.com\n\nOtherwise  please be patient."
-#define AP_STRING_ID_MSG_RevertBuffer  "Revert to saved copy of %s?"
-#define AP_STRING_ID_MSG_QueryExit  "Close all windows and exit?"
-#define AP_STRING_ID_MSG_ConfirmSave  "Save changes to document %s before closing?"
-#define AP_STRING_ID_MSG_ConfirmSaveSecondary  "Your changes will be lost if you don't save them."
-#define AP_STRING_ID_MSG_ImportError  "Error importing file %s."
-#define AP_STRING_ID_MSG_IE_FileNotFound  "File %s not found"
-#define AP_STRING_ID_MSG_IE_NoMemory  "Out of memory attempting to open %s"
-#define AP_STRING_ID_MSG_IE_UnknownType  "File %s is of unknown type"
-#define AP_STRING_ID_MSG_IE_FakeType  "File %s is not of the type it claims to be"
-#define AP_STRING_ID_MSG_IE_UnsupportedType  "File %s is not of a currently supported file type"
-#define AP_STRING_ID_MSG_IE_BogusDocument  "AbiWord cannot open %s. It appears to be an invalid document"
-#define AP_STRING_ID_MSG_IE_CouldNotOpen  "Could not open file %s for writing"
-#define AP_STRING_ID_MSG_IE_CouldNotWrite  "Could not write to file %s"
-#define AP_STRING_ID_MSG_SpellSelectionDone  "AbiWord finished checking the selection."
-#define AP_STRING_ID_MSG_SpellDone  "The spelling check is complete."
-#define AP_STRING_ID_MSG_PrintStatus  "Printing page %d of %d"
-#define AP_STRING_ID_MSG_RevertFile  "Revert file to last saved state?"
-#define AP_STRING_ID_MSG_PrintingDoc  "Printing Document.."
-#define AP_STRING_ID_MSG_NoBreakInsideTable  "Can not insert a Break inside a table"
-#define AP_STRING_ID_MSG_NoBreakInsideFrame  "Can not insert a Break inside a text box"
-#define AP_STRING_ID_MSG_AutoRevisionOffWarning "Are you sure you do not want to maintain full history record? If you proceed  you will not be able to restore earlier versions of this document."
+#define AP_STRING_ID_MSG_SaveFailed  _("Could not write to the file %s.")
+#define AP_STRING_ID_MSG_SaveFailedWrite  _("Writing error when attempting to save %s")
+#define AP_STRING_ID_MSG_SaveFailedExport  _("Error while attempting to save %s: could not construct exporter")
+#define AP_STRING_ID_MSG_SaveFailedName  _("Error while attempting to save %s: invalid name")
+#define AP_STRING_ID_MSG_OpenFailed  _("Could not open file %s.")
+#define AP_STRING_ID_MSG_DlgNotImp _("%s not implemented yet.\n\nIf you are a programmer, feel free to add code in %s, line %d\nand mail patches to:\n\n\tabiword-dev@abisource.com\n\nOtherwise  please be patient.")
+#define AP_STRING_ID_MSG_RevertBuffer  _("Revert to saved copy of %s?")
+#define AP_STRING_ID_MSG_QueryExit  _("Close all windows and exit?")
+#define AP_STRING_ID_MSG_ConfirmSave  _("Save changes to document %s before closing?")
+#define AP_STRING_ID_MSG_ConfirmSaveSecondary  _("Your changes will be lost if you don't save them.")
+#define AP_STRING_ID_MSG_ImportError  _("Error importing file %s.")
+#define AP_STRING_ID_MSG_IE_FileNotFound  _("File %s not found")
+#define AP_STRING_ID_MSG_IE_NoMemory  _("Out of memory attempting to open %s")
+#define AP_STRING_ID_MSG_IE_UnknownType  _("File %s is of unknown type")
+#define AP_STRING_ID_MSG_IE_FakeType  _("File %s is not of the type it claims to be")
+#define AP_STRING_ID_MSG_IE_UnsupportedType  _("File %s is not of a currently supported file type")
+#define AP_STRING_ID_MSG_IE_BogusDocument  _("AbiWord cannot open %s. It appears to be an invalid document")
+#define AP_STRING_ID_MSG_IE_CouldNotOpen  _("Could not open file %s for writing")
+#define AP_STRING_ID_MSG_IE_CouldNotWrite  _("Could not write to file %s")
+#define AP_STRING_ID_MSG_SpellSelectionDone  _("AbiWord finished checking the selection.")
+#define AP_STRING_ID_MSG_SpellDone  _("The spelling check is complete.")
+#define AP_STRING_ID_MSG_PrintStatus  _("Printing page %d of %d")
+#define AP_STRING_ID_MSG_RevertFile  _("Revert file to last saved state?")
+#define AP_STRING_ID_MSG_PrintingDoc  _("Printing Document..")
+#define AP_STRING_ID_MSG_NoBreakInsideTable  _("Can not insert a Break inside a table")
+#define AP_STRING_ID_MSG_NoBreakInsideFrame  _("Can not insert a Break inside a text box")
+#define AP_STRING_ID_MSG_AutoRevisionOffWarning _("Are you sure you do not want to maintain full history record? If you proceed  you will not be able to restore earlier versions of this document.")
 
 // Abi has just crashed
-#define AP_STRING_ID_MSG_Exception  "A fatal error has just occurred. AbiWord is going to shutdown.\nThe current document has been saved to disc with a \".saved\" extension."
+#define AP_STRING_ID_MSG_Exception  _("A fatal error has just occurred. AbiWord is going to shutdown.\nThe current document has been saved to disc with a \".saved\" extension.")
 
 // Status Bar Messages
-#define AP_STRING_ID_PageInfoField  "Page: %d/%d"
-#define AP_STRING_ID_LeftMarginStatus  "Left Margin [%s]"
-#define AP_STRING_ID_RightMarginStatus  "Right Margin [%s]"
-#define AP_STRING_ID_FirstLineIndentStatus  "First Line Indent [%s]"
-#define AP_STRING_ID_LeftIndentTextIndentStatus  "Left Indent [%s] First Line Indent [%s]"
-#define AP_STRING_ID_ColumnGapStatus  "Column Gap [%s]"
-#define AP_STRING_ID_LeftIndentStatus  "Left Indent [%s]"
-#define AP_STRING_ID_RightIndentStatus  "Right Indent [%s]"
-#define AP_STRING_ID_TabStopStatus  "Tab Stop [%s]"
-#define AP_STRING_ID_TopMarginStatus  "Top Margin [%s]"
-#define AP_STRING_ID_BottomMarginStatus  "Bottom Margin [%s]"
-#define AP_STRING_ID_HeaderStatus  "Header [%s]"
-#define AP_STRING_ID_FooterStatus  "Footer [%s]"
-#define AP_STRING_ID_ColumnStatus  "Column [%d]"
-#define AP_STRING_ID_InsertModeFieldINS  "INS"
-#define AP_STRING_ID_InsertModeFieldOVR  "OVR"
+#define AP_STRING_ID_PageInfoField  _("Page: %d/%d")
+#define AP_STRING_ID_LeftMarginStatus  _("Left Margin [%s]")
+#define AP_STRING_ID_RightMarginStatus  _("Right Margin [%s]")
+#define AP_STRING_ID_FirstLineIndentStatus  _("First Line Indent [%s]")
+#define AP_STRING_ID_LeftIndentTextIndentStatus  _("Left Indent [%s] First Line Indent [%s]")
+#define AP_STRING_ID_ColumnGapStatus  _("Column Gap [%s]")
+#define AP_STRING_ID_LeftIndentStatus  _("Left Indent [%s]")
+#define AP_STRING_ID_RightIndentStatus  _("Right Indent [%s]")
+#define AP_STRING_ID_TabStopStatus  _("Tab Stop [%s]")
+#define AP_STRING_ID_TopMarginStatus  _("Top Margin [%s]")
+#define AP_STRING_ID_BottomMarginStatus  _("Bottom Margin [%s]")
+#define AP_STRING_ID_HeaderStatus  _("Header [%s]")
+#define AP_STRING_ID_FooterStatus  _("Footer [%s]")
+#define AP_STRING_ID_ColumnStatus  _("Column [%d]")
+#define AP_STRING_ID_InsertModeFieldINS  _("INS")
+#define AP_STRING_ID_InsertModeFieldOVR  _("OVR")
 
 /* */
-#define AP_STRING_ID_DLG_NEW_Title  "New Document"
-#define AP_STRING_ID_DLG_NEW_Create  "Create a new document from a template"
-#define AP_STRING_ID_DLG_NEW_Open  "Open an existing document"
-#define AP_STRING_ID_DLG_NEW_NoFile  "No File"
-#define AP_STRING_ID_DLG_NEW_Choose  "Choose"
-#define AP_STRING_ID_DLG_NEW_StartEmpty  "Create an empty document"
+#define AP_STRING_ID_DLG_NEW_Title  _("New Document")
+#define AP_STRING_ID_DLG_NEW_Create  _("Create a new document from a template")
+#define AP_STRING_ID_DLG_NEW_Open  _("Open an existing document")
+#define AP_STRING_ID_DLG_NEW_NoFile  _("No File")
+#define AP_STRING_ID_DLG_NEW_Choose  _("Choose")
+#define AP_STRING_ID_DLG_NEW_StartEmpty  _("Create an empty document")
 
-#define AP_STRING_ID_DLG_NEW_Tab1  "Wordprocessing"
-#define AP_STRING_ID_DLG_NEW_Tab1_WP1  "Create a new blank document"
-#define AP_STRING_ID_DLG_NEW_Tab1_FAX1  "Create a fax"
+#define AP_STRING_ID_DLG_NEW_Tab1  _("Wordprocessing")
+#define AP_STRING_ID_DLG_NEW_Tab1_WP1  _("Create a new blank document")
+#define AP_STRING_ID_DLG_NEW_Tab1_FAX1  _("Create a fax")
 
-#define AP_STRING_ID_DLG_InsertButton  "&Insert"
-#define AP_STRING_ID_DLG_CloseButton  "&Close"
-#define AP_STRING_ID_DLG_ApplyButton  "&Apply"
-#define AP_STRING_ID_DLG_HelpButton  "&Help"
+#define AP_STRING_ID_DLG_InsertButton  _("&Insert")
+#define AP_STRING_ID_DLG_CloseButton  _("&Close")
+#define AP_STRING_ID_DLG_ApplyButton  _("&Apply")
+#define AP_STRING_ID_DLG_HelpButton  _("&Help")
 
 /* Tab Types - the order here must be consistent with the
    order in fl_BlockLayout.h*/
-#define AP_STRING_ID_TabToggleLeftTab  "Left Tab"
-#define AP_STRING_ID_TabToggleCenterTab  "Center Tab"
-#define AP_STRING_ID_TabToggleRightTab  "Right Tab"
-#define AP_STRING_ID_TabToggleDecimalTab  "Decimal Tab"
-#define AP_STRING_ID_TabToggleBarTab  "Bar Tab"
+#define AP_STRING_ID_TabToggleLeftTab  _("Left Tab")
+#define AP_STRING_ID_TabToggleCenterTab  _("Center Tab")
+#define AP_STRING_ID_TabToggleRightTab  _("Right Tab")
+#define AP_STRING_ID_TabToggleDecimalTab  _("Decimal Tab")
+#define AP_STRING_ID_TabToggleBarTab  _("Bar Tab")
 
 /* Find and Replace strings */
-#define AP_STRING_ID_DLG_FR_FindTitle  "Find"
-#define AP_STRING_ID_DLG_FR_ReplaceTitle  "Replace"
-#define AP_STRING_ID_DLG_FR_FindLabel  "Fi&nd what:"
-#define AP_STRING_ID_DLG_FR_ReplaceWithLabel  "Re&place with:"
-#define AP_STRING_ID_DLG_FR_MatchCase  "&Match case"
-#define AP_STRING_ID_DLG_FR_WholeWord  "&Whole word"
-#define AP_STRING_ID_DLG_FR_ReverseFind  "Re&verse find"
-#define AP_STRING_ID_DLG_FR_FindNextButton  "&Find Next"
-#define AP_STRING_ID_DLG_FR_ReplaceButton  "&Replace"
-#define AP_STRING_ID_DLG_FR_ReplaceAllButton  "Replace &All"
-#define AP_STRING_ID_DLG_FR_FinishedFind  "AbiWord has finished searching the document."
-#define AP_STRING_ID_DLG_FR_FinishedReplace  "AbiWord has finished its search of the document and has made %d replacements."
+#define AP_STRING_ID_DLG_FR_FindTitle  _("Find")
+#define AP_STRING_ID_DLG_FR_ReplaceTitle  _("Replace")
+#define AP_STRING_ID_DLG_FR_FindLabel  _("Fi&nd what:")
+#define AP_STRING_ID_DLG_FR_ReplaceWithLabel  _("Re&place with:")
+#define AP_STRING_ID_DLG_FR_MatchCase  _("&Match case")
+#define AP_STRING_ID_DLG_FR_WholeWord  _("&Whole word")
+#define AP_STRING_ID_DLG_FR_ReverseFind  _("Re&verse find")
+#define AP_STRING_ID_DLG_FR_FindNextButton  _("&Find Next")
+#define AP_STRING_ID_DLG_FR_ReplaceButton  _("&Replace")
+#define AP_STRING_ID_DLG_FR_ReplaceAllButton  _("Replace &All")
+#define AP_STRING_ID_DLG_FR_FinishedFind  _("AbiWord has finished searching the document.")
+#define AP_STRING_ID_DLG_FR_FinishedReplace  _("AbiWord has finished its search of the document and has made %d replacements.")
 
 /* Break dialog */
-#define AP_STRING_ID_DLG_Break_BreakTitle  "Insert break"
-#define AP_STRING_ID_DLG_Break_BreakTitle_Capital  "Insert Break"
-#define AP_STRING_ID_DLG_Break_Insert  "Insert"
-#define AP_STRING_ID_DLG_Break_SectionBreaks  "Section breaks"
-#define AP_STRING_ID_DLG_Break_SectionBreaks_Capital  "Section Breaks"
-#define AP_STRING_ID_DLG_Break_PageBreak  "&Page break"
-#define AP_STRING_ID_DLG_Break_ColumnBreak  "&Column break"
-#define AP_STRING_ID_DLG_Break_NextPage  "&Next page"
-#define AP_STRING_ID_DLG_Break_Continuous  "Con&tinuous"
-#define AP_STRING_ID_DLG_Break_EvenPage  "&Even page"
-#define AP_STRING_ID_DLG_Break_OddPage  "&Odd page"
+#define AP_STRING_ID_DLG_Break_BreakTitle  _("Insert break")
+#define AP_STRING_ID_DLG_Break_BreakTitle_Capital  _("Insert Break")
+#define AP_STRING_ID_DLG_Break_Insert  _("Insert")
+#define AP_STRING_ID_DLG_Break_SectionBreaks  _("Section breaks")
+#define AP_STRING_ID_DLG_Break_SectionBreaks_Capital  _("Section Breaks")
+#define AP_STRING_ID_DLG_Break_PageBreak  _("&Page break")
+#define AP_STRING_ID_DLG_Break_ColumnBreak  _("&Column break")
+#define AP_STRING_ID_DLG_Break_NextPage  _("&Next page")
+#define AP_STRING_ID_DLG_Break_Continuous  _("Con&tinuous")
+#define AP_STRING_ID_DLG_Break_EvenPage  _("&Even page")
+#define AP_STRING_ID_DLG_Break_OddPage  _("&Odd page")
 
 /* Insert Table dialog */
-#define AP_STRING_ID_DLG_InsertTable_TableTitle  "Insert Table"
-#define AP_STRING_ID_DLG_InsertTable_TableSize  "Table size"
-#define AP_STRING_ID_DLG_InsertTable_TableSize_Capital  "Table Size"
-#define AP_STRING_ID_DLG_InsertTable_NumCols  "Number of columns:"
-#define AP_STRING_ID_DLG_InsertTable_NumRows  "Number of rows:"
-#define AP_STRING_ID_DLG_InsertTable_AutoFit  "AutoFit behavior"
-#define AP_STRING_ID_DLG_InsertTable_AutoFit_Capital  "AutoFit Behavior"
-#define AP_STRING_ID_DLG_InsertTable_AutoColSize  "Automatic column size"
-#define AP_STRING_ID_DLG_InsertTable_FixedColSize  "Fixed column size:"
+#define AP_STRING_ID_DLG_InsertTable_TableTitle  _("Insert Table")
+#define AP_STRING_ID_DLG_InsertTable_TableSize  _("Table size")
+#define AP_STRING_ID_DLG_InsertTable_TableSize_Capital  _("Table Size")
+#define AP_STRING_ID_DLG_InsertTable_NumCols  _("Number of columns:")
+#define AP_STRING_ID_DLG_InsertTable_NumRows  _("Number of rows:")
+#define AP_STRING_ID_DLG_InsertTable_AutoFit  _("AutoFit behavior")
+#define AP_STRING_ID_DLG_InsertTable_AutoFit_Capital  _("AutoFit Behavior")
+#define AP_STRING_ID_DLG_InsertTable_AutoColSize  _("Automatic column size")
+#define AP_STRING_ID_DLG_InsertTable_FixedColSize  _("Fixed column size:")
 
 /* Format FootNotes dialog */
-#define AP_STRING_ID_DLG_FormatFootnotes_Title  "Format Footnotes and Endnotes"
-#define AP_STRING_ID_DLG_FormatFootnotes_Footnotes  "Format Footnotes"
-#define AP_STRING_ID_DLG_FormatFootnotes_Endnotes  "Format Endnotes"
-#define AP_STRING_ID_DLG_FormatFootnotes_FootStyle  "Footnote style"
-#define AP_STRING_ID_DLG_FormatFootnotes_FootRestartSec  "Restart on each section"
-#define AP_STRING_ID_DLG_FormatFootnotes_FootRestartPage  "Restart on each page"
-#define AP_STRING_ID_DLG_FormatFootnotes_FootRestartNone  "Don't restart"
-#define AP_STRING_ID_DLG_FormatFootnotes_FootInitialVal  "Initial Footnote value"
-#define AP_STRING_ID_DLG_FormatFootnotes_EndStyle  "Endnote style"
-#define AP_STRING_ID_DLG_FormatFootnotes_EndRestartSec  "Restart on each section"
-#define AP_STRING_ID_DLG_FormatFootnotes_EndInitialVal  "Initial Endnote value"
-#define AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndDoc  "Place at end of document"
-#define AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndSec  "Place at end of section"
-#define AP_STRING_ID_DLG_FormatFootnotes_EndPlacement  "Placement"
-#define AP_STRING_ID_DLG_FormatFootnotes_FootnoteRestart  "Numbering"
+#define AP_STRING_ID_DLG_FormatFootnotes_Title  _("Format Footnotes and Endnotes")
+#define AP_STRING_ID_DLG_FormatFootnotes_Footnotes  _("Format Footnotes")
+#define AP_STRING_ID_DLG_FormatFootnotes_Endnotes  _("Format Endnotes")
+#define AP_STRING_ID_DLG_FormatFootnotes_FootStyle  _("Footnote style")
+#define AP_STRING_ID_DLG_FormatFootnotes_FootRestartSec  _("Restart on each section")
+#define AP_STRING_ID_DLG_FormatFootnotes_FootRestartPage  _("Restart on each page")
+#define AP_STRING_ID_DLG_FormatFootnotes_FootRestartNone  _("Don't restart")
+#define AP_STRING_ID_DLG_FormatFootnotes_FootInitialVal  _("Initial Footnote value")
+#define AP_STRING_ID_DLG_FormatFootnotes_EndStyle  _("Endnote style")
+#define AP_STRING_ID_DLG_FormatFootnotes_EndRestartSec  _("Restart on each section")
+#define AP_STRING_ID_DLG_FormatFootnotes_EndInitialVal  _("Initial Endnote value")
+#define AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndDoc  _("Place at end of document")
+#define AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndSec  _("Place at end of section")
+#define AP_STRING_ID_DLG_FormatFootnotes_EndPlacement  _("Placement")
+#define AP_STRING_ID_DLG_FormatFootnotes_FootnoteRestart  _("Numbering")
 
 /* Format TOC dialog */
-#define AP_STRING_ID_DLG_FormatTOC_Title  "Format Table of Contents"
-#define AP_STRING_ID_DLG_FormatTOC_General  "General"
-#define AP_STRING_ID_DLG_FormatTOC_LayoutDetails  "Layout Details"
-#define AP_STRING_ID_DLG_FormatTOC_None  "None"
-#define AP_STRING_ID_DLG_FormatTOC_HasHeading  "&Has Heading"
-#define AP_STRING_ID_DLG_FormatTOC_HeadingText  "H&eading text:"
-#define AP_STRING_ID_DLG_FormatTOC_HeadingStyle  "Heading style:"
-#define AP_STRING_ID_DLG_FormatTOC_ChangeStyle  "Change Style"
-#define AP_STRING_ID_DLG_FormatTOC_LevelDefs  "Define Main Properties"
-#define AP_STRING_ID_DLG_FormatTOC_HasLabel  "H&as label"
-#define AP_STRING_ID_DLG_FormatTOC_FillStyle  "Fill style:"
-#define AP_STRING_ID_DLG_FormatTOC_DispStyle  "Display style:"
-#define AP_STRING_ID_DLG_FormatTOC_DetailsTop  "Label Definitions"
-#define AP_STRING_ID_DLG_FormatTOC_StartAt  "&Start at:"
-#define AP_STRING_ID_DLG_FormatTOC_TextBefore  "Text &before:"
-#define AP_STRING_ID_DLG_FormatTOC_NumberingType  "&Numbering type:"
-#define AP_STRING_ID_DLG_FormatTOC_TextAfter  "Text &after:"
-#define AP_STRING_ID_DLG_FormatTOC_InheritLabel  "&Inherit label"
-#define AP_STRING_ID_DLG_FormatTOC_TabLeader  "&Tab leader:"
-#define AP_STRING_ID_DLG_FormatTOC_Indent  "I&ndent:"
-#define AP_STRING_ID_DLG_FormatTOC_PageNumbering  "&Page numbering:"
-#define AP_STRING_ID_DLG_FormatTOC_DetailsTabPage  "Tabs and Page Numbering"
-#define AP_STRING_ID_DLG_FormatTOC_Level1  "Level 1"
-#define AP_STRING_ID_DLG_FormatTOC_Level2  "Level 2"
-#define AP_STRING_ID_DLG_FormatTOC_Level3  "Level 3"
-#define AP_STRING_ID_DLG_FormatTOC_Level4  "Level 4"
+#define AP_STRING_ID_DLG_FormatTOC_Title  _("Format Table of Contents")
+#define AP_STRING_ID_DLG_FormatTOC_General  _("General")
+#define AP_STRING_ID_DLG_FormatTOC_LayoutDetails  _("Layout Details")
+#define AP_STRING_ID_DLG_FormatTOC_None  _("None")
+#define AP_STRING_ID_DLG_FormatTOC_HasHeading  _("&Has Heading")
+#define AP_STRING_ID_DLG_FormatTOC_HeadingText  _("H&eading text:")
+#define AP_STRING_ID_DLG_FormatTOC_HeadingStyle  _("Heading style:")
+#define AP_STRING_ID_DLG_FormatTOC_ChangeStyle  _("Change Style")
+#define AP_STRING_ID_DLG_FormatTOC_LevelDefs  _("Define Main Properties")
+#define AP_STRING_ID_DLG_FormatTOC_HasLabel  _("H&as label")
+#define AP_STRING_ID_DLG_FormatTOC_FillStyle  _("Fill style:")
+#define AP_STRING_ID_DLG_FormatTOC_DispStyle  _("Display style:")
+#define AP_STRING_ID_DLG_FormatTOC_DetailsTop  _("Label Definitions")
+#define AP_STRING_ID_DLG_FormatTOC_StartAt  _("&Start at:")
+#define AP_STRING_ID_DLG_FormatTOC_TextBefore  _("Text &before:")
+#define AP_STRING_ID_DLG_FormatTOC_NumberingType  _("&Numbering type:")
+#define AP_STRING_ID_DLG_FormatTOC_TextAfter  _("Text &after:")
+#define AP_STRING_ID_DLG_FormatTOC_InheritLabel  _("&Inherit label")
+#define AP_STRING_ID_DLG_FormatTOC_TabLeader  _("&Tab leader:")
+#define AP_STRING_ID_DLG_FormatTOC_Indent  _("I&ndent:")
+#define AP_STRING_ID_DLG_FormatTOC_PageNumbering  _("&Page numbering:")
+#define AP_STRING_ID_DLG_FormatTOC_DetailsTabPage  _("Tabs and Page Numbering")
+#define AP_STRING_ID_DLG_FormatTOC_Level1  _("Level 1")
+#define AP_STRING_ID_DLG_FormatTOC_Level2  _("Level 2")
+#define AP_STRING_ID_DLG_FormatTOC_Level3  _("Level 3")
+#define AP_STRING_ID_DLG_FormatTOC_Level4  _("Level 4")
 
 /* Latex dialog */
-#define AP_STRING_ID_DLG_Latex_LatexTitle  "LaTeX Equation"
-#define AP_STRING_ID_DLG_Latex_LatexEquation  "LaTeX Equation"
-#define AP_STRING_ID_DLG_Latex_Example  "Example:"
+#define AP_STRING_ID_DLG_Latex_LatexTitle  _("LaTeX Equation")
+#define AP_STRING_ID_DLG_Latex_LatexEquation  _("LaTeX Equation")
+#define AP_STRING_ID_DLG_Latex_Example  _("Example:")
 
 /*Equation Menus */
-#define AP_STRING_ID_MENU_LABEL_INSERT_EQUATION  "Equation"
-#define AP_STRING_ID_MENU_LABEL_TOOLTIP_INSERT_EQUATION  "Insert Equation"
-#define AP_STRING_ID_MENU_LABEL_INSERT_EQUATION_FILE  "From File"
-#define AP_STRING_ID_MENU_LABEL_TOOLTIP_INSERT_EQUATION_FILE  "Insert MathML from a file"
-#define AP_STRING_ID_MENU_LABEL_INSERT_EQUATION_LATEX  "From LaTeX"
-#define AP_STRING_ID_MENU_LABEL_TOOLTIP_INSERT_EQUATION_LATEX  "Insert Equation from a LaTeX expression"
+#define AP_STRING_ID_MENU_LABEL_INSERT_EQUATION  _("Equation")
+#define AP_STRING_ID_MENU_LABEL_TOOLTIP_INSERT_EQUATION  _("Insert Equation")
+#define AP_STRING_ID_MENU_LABEL_INSERT_EQUATION_FILE  _("From File")
+#define AP_STRING_ID_MENU_LABEL_TOOLTIP_INSERT_EQUATION_FILE  _("Insert MathML from a file")
+#define AP_STRING_ID_MENU_LABEL_INSERT_EQUATION_LATEX  _("From LaTeX")
+#define AP_STRING_ID_MENU_LABEL_TOOLTIP_INSERT_EQUATION_LATEX  _("Insert Equation from a LaTeX expression")
 
 /* Word Count dialog */
-#define AP_STRING_ID_DLG_WordCount_WordCountTitle  "Word Count"
-#define AP_STRING_ID_DLG_WordCount_Statistics  "Statistics:"
-#define AP_STRING_ID_DLG_WordCount_Pages  "Pages:"
-#define AP_STRING_ID_DLG_WordCount_Words  "Words:"
-#define AP_STRING_ID_DLG_WordCount_Words_No_Notes  "Words (no footnotes/endnotes):"
-#define AP_STRING_ID_DLG_WordCount_Characters_No  "Characters (no spaces):"
-#define AP_STRING_ID_DLG_WordCount_Characters_Sp  "Characters (with spaces):"
-#define AP_STRING_ID_DLG_WordCount_Paragraphs  "Paragraphs:"
-#define AP_STRING_ID_DLG_WordCount_Lines  "Lines:"
-#define AP_STRING_ID_DLG_WordCount_Update_Rate  "Seconds between updates"
-#define AP_STRING_ID_DLG_WordCount_Auto_Update  " Auto Update"
+#define AP_STRING_ID_DLG_WordCount_WordCountTitle  _("Word Count")
+#define AP_STRING_ID_DLG_WordCount_Statistics  _("Statistics:")
+#define AP_STRING_ID_DLG_WordCount_Pages  _("Pages:")
+#define AP_STRING_ID_DLG_WordCount_Words  _("Words:")
+#define AP_STRING_ID_DLG_WordCount_Words_No_Notes  _("Words (no footnotes/endnotes):")
+#define AP_STRING_ID_DLG_WordCount_Characters_No  _("Characters (no spaces):")
+#define AP_STRING_ID_DLG_WordCount_Characters_Sp  _("Characters (with spaces):")
+#define AP_STRING_ID_DLG_WordCount_Paragraphs  _("Paragraphs:")
+#define AP_STRING_ID_DLG_WordCount_Lines  _("Lines:")
+#define AP_STRING_ID_DLG_WordCount_Update_Rate  _("Seconds between updates")
+#define AP_STRING_ID_DLG_WordCount_Auto_Update  _(" Auto Update")
 
 /* Spell dialog */
-#define AP_STRING_ID_DLG_Spell_SpellTitle  "Spelling"
-#define AP_STRING_ID_DLG_Spell_UnknownWord  "Not in dictionary&:"
-#define AP_STRING_ID_DLG_Spell_ChangeTo  "Change &to:"
-#define AP_STRING_ID_DLG_Spell_Change  "&Change"
-#define AP_STRING_ID_DLG_Spell_ChangeAll  "Change A&ll"
-#define AP_STRING_ID_DLG_Spell_Ignore  "&Ignore"
-#define AP_STRING_ID_DLG_Spell_IgnoreAll  "I&gnore All"
-#define AP_STRING_ID_DLG_Spell_AddToDict  "&Add"
-#define AP_STRING_ID_DLG_Spell_Suggestions  "Sugg&estions:"
-#define AP_STRING_ID_DLG_Spell_NoSuggestions  "(no spelling suggestions)"
+#define AP_STRING_ID_DLG_Spell_SpellTitle  _("Spelling")
+#define AP_STRING_ID_DLG_Spell_UnknownWord  _("Not in dictionary&:")
+#define AP_STRING_ID_DLG_Spell_ChangeTo  _("Change &to:")
+#define AP_STRING_ID_DLG_Spell_Change  _("&Change")
+#define AP_STRING_ID_DLG_Spell_ChangeAll  _("Change A&ll")
+#define AP_STRING_ID_DLG_Spell_Ignore  _("&Ignore")
+#define AP_STRING_ID_DLG_Spell_IgnoreAll  _("I&gnore All")
+#define AP_STRING_ID_DLG_Spell_AddToDict  _("&Add")
+#define AP_STRING_ID_DLG_Spell_Suggestions  _("Sugg&estions:")
+#define AP_STRING_ID_DLG_Spell_NoSuggestions  _("(no spelling suggestions)")
 
 /* Style Dialog */
-#define AP_STRING_ID_DLG_Styles_StylesTitle  "Styles"
-#define AP_STRING_ID_DLG_Styles_Available  "Available Styles"
-#define AP_STRING_ID_DLG_Styles_List  "List"
-#define AP_STRING_ID_DLG_Styles_ParaPrev  "Paragraph Preview"
-#define AP_STRING_ID_DLG_Styles_CharPrev  "Character Preview"
-#define AP_STRING_ID_DLG_Styles_Description  "Description"
-#define AP_STRING_ID_DLG_Styles_New  "New..."
-#define AP_STRING_ID_DLG_Styles_Modify  "Modify..."
-#define AP_STRING_ID_DLG_Styles_Delete  "Delete"
-#define AP_STRING_ID_DLG_Styles_LBL_InUse  "In Use"
-#define AP_STRING_ID_DLG_Styles_LBL_All  "All"
-#define AP_STRING_ID_DLG_Styles_LBL_UserDefined  "User-defined styles"
-#define AP_STRING_ID_DLG_Styles_LBL_TxtMsg  "What Hath God Wrought"
-#define AP_STRING_ID_DLG_Styles_ModifyTitle  "Modify Styles"
-#define AP_STRING_ID_DLG_Styles_ModifyName  "Style Name:"
-#define AP_STRING_ID_DLG_Styles_ModifyBasedOn  "Based On:"
-#define AP_STRING_ID_DLG_Styles_ModifyFollowing  "Style for following paragraph"
-#define AP_STRING_ID_DLG_Styles_ModifyPreview  "Preview"
-#define AP_STRING_ID_DLG_Styles_ModifyDescription  "Description"
-#define AP_STRING_ID_DLG_Styles_ModifyTemplate  "Add to template"
-#define AP_STRING_ID_DLG_Styles_ModifyAutomatic  "Automatically update"
-#define AP_STRING_ID_DLG_Styles_ModifyShortCut  "Shortcut Key"
-#define AP_STRING_ID_DLG_Styles_ModifyFormat  "Format"
-#define AP_STRING_ID_DLG_Styles_ModifyParagraph  "Paragraph"
-#define AP_STRING_ID_DLG_Styles_ModifyFont  "Font"
-#define AP_STRING_ID_DLG_Styles_ModifyTabs  "Tabs"
-#define AP_STRING_ID_DLG_Styles_ModifyNumbering  "Numbering"
-#define AP_STRING_ID_DLG_Styles_ModifyLanguage  "Language"
-#define AP_STRING_ID_DLG_Styles_ModifyCharacter  "Character"
-#define AP_STRING_ID_DLG_Styles_ModifyType  "Style Type"
-#define AP_STRING_ID_DLG_Styles_DefNone  "None"
-#define AP_STRING_ID_DLG_Styles_DefCurrent  "Current Settings"
-#define AP_STRING_ID_DLG_Styles_NewTitle  "New Style"
-#define AP_STRING_ID_DLG_Styles_RemoveLab  "Remove Property from Style"
-#define AP_STRING_ID_DLG_Styles_RemoveButton  "Remove"
-#define AP_STRING_ID_DLG_Styles_ErrNotTitle1  "Style Name - "
-#define AP_STRING_ID_DLG_Styles_ErrNotTitle2  " - Reserved. \n You cannot use this name. Choose Another \n"
-#define AP_STRING_ID_DLG_Styles_ErrNoStyle  "No Style selected \n so it cannot be modified"
-#define AP_STRING_ID_DLG_Styles_ErrStyleNot  "This style does not exist \n so it cannot be modified"
-#define AP_STRING_ID_DLG_Styles_ErrStyleBuiltin  "Cannot modify a builtin style"
-#define AP_STRING_ID_DLG_Styles_ErrStyleCantDelete  "Cannot delete this style"
-#define AP_STRING_ID_DLG_Styles_ErrBlankName  "Style name cannot be left blank"
-#define AP_STRING_ID_DLG_Styles_StylesLocked "Disable all formatting commands  except styles"
+#define AP_STRING_ID_DLG_Styles_StylesTitle  _("Styles")
+#define AP_STRING_ID_DLG_Styles_Available  _("Available Styles")
+#define AP_STRING_ID_DLG_Styles_List  _("List")
+#define AP_STRING_ID_DLG_Styles_ParaPrev  _("Paragraph Preview")
+#define AP_STRING_ID_DLG_Styles_CharPrev  _("Character Preview")
+#define AP_STRING_ID_DLG_Styles_Description  _("Description")
+#define AP_STRING_ID_DLG_Styles_New  _("New...")
+#define AP_STRING_ID_DLG_Styles_Modify  _("Modify...")
+#define AP_STRING_ID_DLG_Styles_Delete  _("Delete")
+#define AP_STRING_ID_DLG_Styles_LBL_InUse  _("In Use")
+#define AP_STRING_ID_DLG_Styles_LBL_All  _("All")
+#define AP_STRING_ID_DLG_Styles_LBL_UserDefined  _("User-defined styles")
+#define AP_STRING_ID_DLG_Styles_LBL_TxtMsg  _("What Hath God Wrought")
+#define AP_STRING_ID_DLG_Styles_ModifyTitle  _("Modify Styles")
+#define AP_STRING_ID_DLG_Styles_ModifyName  _("Style Name:")
+#define AP_STRING_ID_DLG_Styles_ModifyBasedOn  _("Based On:")
+#define AP_STRING_ID_DLG_Styles_ModifyFollowing  _("Style for following paragraph")
+#define AP_STRING_ID_DLG_Styles_ModifyPreview  _("Preview")
+#define AP_STRING_ID_DLG_Styles_ModifyDescription  _("Description")
+#define AP_STRING_ID_DLG_Styles_ModifyTemplate  _("Add to template")
+#define AP_STRING_ID_DLG_Styles_ModifyAutomatic  _("Automatically update")
+#define AP_STRING_ID_DLG_Styles_ModifyShortCut  _("Shortcut Key")
+#define AP_STRING_ID_DLG_Styles_ModifyFormat  _("Format")
+#define AP_STRING_ID_DLG_Styles_ModifyParagraph  _("Paragraph")
+#define AP_STRING_ID_DLG_Styles_ModifyFont  _("Font")
+#define AP_STRING_ID_DLG_Styles_ModifyTabs  _("Tabs")
+#define AP_STRING_ID_DLG_Styles_ModifyNumbering  _("Numbering")
+#define AP_STRING_ID_DLG_Styles_ModifyLanguage  _("Language")
+#define AP_STRING_ID_DLG_Styles_ModifyCharacter  _("Character")
+#define AP_STRING_ID_DLG_Styles_ModifyType  _("Style Type")
+#define AP_STRING_ID_DLG_Styles_DefNone  _("None")
+#define AP_STRING_ID_DLG_Styles_DefCurrent  _("Current Settings")
+#define AP_STRING_ID_DLG_Styles_NewTitle  _("New Style")
+#define AP_STRING_ID_DLG_Styles_RemoveLab  _("Remove Property from Style")
+#define AP_STRING_ID_DLG_Styles_RemoveButton  _("Remove")
+#define AP_STRING_ID_DLG_Styles_ErrNotTitle1  _("Style Name - ")
+#define AP_STRING_ID_DLG_Styles_ErrNotTitle2  _(" - Reserved. \n You cannot use this name. Choose Another \n")
+#define AP_STRING_ID_DLG_Styles_ErrNoStyle  _("No Style selected \n so it cannot be modified")
+#define AP_STRING_ID_DLG_Styles_ErrStyleNot  _("This style does not exist \n so it cannot be modified")
+#define AP_STRING_ID_DLG_Styles_ErrStyleBuiltin  _("Cannot modify a builtin style")
+#define AP_STRING_ID_DLG_Styles_ErrStyleCantDelete  _("Cannot delete this style")
+#define AP_STRING_ID_DLG_Styles_ErrBlankName  _("Style name cannot be left blank")
+#define AP_STRING_ID_DLG_Styles_StylesLocked _("Disable all formatting commands  except styles")
 
 /* Stylist dialog */
 
-#define AP_STRING_ID_DLG_Stylist_Title  "Stylist"
-#define AP_STRING_ID_DLG_Stylist_ListStyles  "List Styles"
-#define AP_STRING_ID_DLG_Stylist_HeadingStyles  "Heading Styles"
-#define AP_STRING_ID_DLG_Stylist_FootnoteStyles  "Note Styles"
-#define AP_STRING_ID_DLG_Stylist_UserStyles  "User defined Styles"
-#define AP_STRING_ID_DLG_Stylist_MiscStyles  "Miscellaneous Styles"
-#define AP_STRING_ID_DLG_Stylist_Styles  "Styles"
+#define AP_STRING_ID_DLG_Stylist_Title  _("Stylist")
+#define AP_STRING_ID_DLG_Stylist_ListStyles  _("List Styles")
+#define AP_STRING_ID_DLG_Stylist_HeadingStyles  _("Heading Styles")
+#define AP_STRING_ID_DLG_Stylist_FootnoteStyles  _("Note Styles")
+#define AP_STRING_ID_DLG_Stylist_UserStyles  _("User defined Styles")
+#define AP_STRING_ID_DLG_Stylist_MiscStyles  _("Miscellaneous Styles")
+#define AP_STRING_ID_DLG_Stylist_Styles  _("Styles")
 
 /* Paragraph dialog */
-#define AP_STRING_ID_DLG_Para_ParaTitle  "Paragraph"
+#define AP_STRING_ID_DLG_Para_ParaTitle  _("Paragraph")
 
-#define AP_STRING_ID_DLG_Para_AlignLeft  "Left"
-#define AP_STRING_ID_DLG_Para_AlignCentered  "Centered"
-#define AP_STRING_ID_DLG_Para_AlignRight  "Right"
-#define AP_STRING_ID_DLG_Para_AlignJustified  "Justified"
+#define AP_STRING_ID_DLG_Para_AlignLeft  _("Left")
+#define AP_STRING_ID_DLG_Para_AlignCentered  _("Centered")
+#define AP_STRING_ID_DLG_Para_AlignRight  _("Right")
+#define AP_STRING_ID_DLG_Para_AlignJustified  _("Justified")
 
-#define AP_STRING_ID_DLG_Para_SpecialNone  "(none)"
-#define AP_STRING_ID_DLG_Para_SpecialFirstLine  "First line"
-#define AP_STRING_ID_DLG_Para_SpecialHanging  "Hanging"
+#define AP_STRING_ID_DLG_Para_SpecialNone  _("(none)")
+#define AP_STRING_ID_DLG_Para_SpecialFirstLine  _("First line")
+#define AP_STRING_ID_DLG_Para_SpecialHanging  _("Hanging")
 
-#define AP_STRING_ID_DLG_Para_SpacingSingle  "Single"
-#define AP_STRING_ID_DLG_Para_SpacingHalf  "1.5 lines"
-#define AP_STRING_ID_DLG_Para_SpacingDouble  "Double"
-#define AP_STRING_ID_DLG_Para_SpacingAtLeast  "At least"
-#define AP_STRING_ID_DLG_Para_SpacingExactly  "Exactly"
-#define AP_STRING_ID_DLG_Para_SpacingMultiple  "Multiple"
+#define AP_STRING_ID_DLG_Para_SpacingSingle  _("Single")
+#define AP_STRING_ID_DLG_Para_SpacingHalf  _("1.5 lines")
+#define AP_STRING_ID_DLG_Para_SpacingDouble  _("Double")
+#define AP_STRING_ID_DLG_Para_SpacingAtLeast  _("At least")
+#define AP_STRING_ID_DLG_Para_SpacingExactly  _("Exactly")
+#define AP_STRING_ID_DLG_Para_SpacingMultiple  _("Multiple")
 
-#define AP_STRING_ID_DLG_Para_TabLabelIndentsAndSpacing  "Indents and Spacing"
-#define AP_STRING_ID_DLG_Para_TabLabelLineAndPageBreaks  "Line and Page Breaks"
+#define AP_STRING_ID_DLG_Para_TabLabelIndentsAndSpacing  _("Indents and Spacing")
+#define AP_STRING_ID_DLG_Para_TabLabelLineAndPageBreaks  _("Line and Page Breaks")
 
-#define AP_STRING_ID_DLG_Para_LabelAlignment  "Ali&gnment:"
-#define AP_STRING_ID_DLG_Para_LabelBy  "B&y:"
-#define AP_STRING_ID_DLG_Para_LabelLeft  "&Left:"
-#define AP_STRING_ID_DLG_Para_LabelRight  "&Right:"
-#define AP_STRING_ID_DLG_Para_LabelSpecial  "&Special:"
-#define AP_STRING_ID_DLG_Para_LabelBefore  "&Before:"
-#define AP_STRING_ID_DLG_Para_LabelAfter  "Aft&er:"
-#define AP_STRING_ID_DLG_Para_LabelLineSpacing  "Li&ne spacing:"
-#define AP_STRING_ID_DLG_Para_LabelAt  "&At:"
+#define AP_STRING_ID_DLG_Para_LabelAlignment  _("Ali&gnment:")
+#define AP_STRING_ID_DLG_Para_LabelBy  _("B&y:")
+#define AP_STRING_ID_DLG_Para_LabelLeft  _("&Left:")
+#define AP_STRING_ID_DLG_Para_LabelRight  _("&Right:")
+#define AP_STRING_ID_DLG_Para_LabelSpecial  _("&Special:")
+#define AP_STRING_ID_DLG_Para_LabelBefore  _("&Before:")
+#define AP_STRING_ID_DLG_Para_LabelAfter  _("Aft&er:")
+#define AP_STRING_ID_DLG_Para_LabelLineSpacing  _("Li&ne spacing:")
+#define AP_STRING_ID_DLG_Para_LabelAt  _("&At:")
 
-#define AP_STRING_ID_DLG_Para_LabelIndentation  "Indentation"
-#define AP_STRING_ID_DLG_Para_LabelSpacing  "Spacing"
-#define AP_STRING_ID_DLG_Para_LabelPreview  "Preview"
-#define AP_STRING_ID_DLG_Para_LabelPagination  "Pagination"
+#define AP_STRING_ID_DLG_Para_LabelIndentation  _("Indentation")
+#define AP_STRING_ID_DLG_Para_LabelSpacing  _("Spacing")
+#define AP_STRING_ID_DLG_Para_LabelPreview  _("Preview")
+#define AP_STRING_ID_DLG_Para_LabelPagination  _("Pagination")
 
-#define AP_STRING_ID_DLG_Para_PushWidowOrphanControl  "&Widow/Orphan control"
-#define AP_STRING_ID_DLG_Para_PushKeepLinesTogether  "&Keep lines together"
-#define AP_STRING_ID_DLG_Para_PushPageBreakBefore  "Page &break before"
-#define AP_STRING_ID_DLG_Para_PushSuppressLineNumbers  "&Suppress line numbers"
-#define AP_STRING_ID_DLG_Para_PushNoHyphenate  "&Don't hyphenate"
-#define AP_STRING_ID_DLG_Para_PushKeepWithNext  "Keep with ne&xt"
+#define AP_STRING_ID_DLG_Para_PushWidowOrphanControl  _("&Widow/Orphan control")
+#define AP_STRING_ID_DLG_Para_PushKeepLinesTogether  _("&Keep lines together")
+#define AP_STRING_ID_DLG_Para_PushPageBreakBefore  _("Page &break before")
+#define AP_STRING_ID_DLG_Para_PushSuppressLineNumbers  _("&Suppress line numbers")
+#define AP_STRING_ID_DLG_Para_PushNoHyphenate  _("&Don't hyphenate")
+#define AP_STRING_ID_DLG_Para_PushKeepWithNext  _("Keep with ne&xt")
 
-#define AP_STRING_ID_DLG_Para_ButtonTabs  "&Tabs..."
+#define AP_STRING_ID_DLG_Para_ButtonTabs  _("&Tabs...")
 
-#define AP_STRING_ID_DLG_Para_DomDirection  "Right-to-left &dominant"
+#define AP_STRING_ID_DLG_Para_DomDirection  _("Right-to-left &dominant")
 
 /* Columns dialog */
-#define AP_STRING_ID_DLG_Column_ColumnTitle  "Columns"
-#define AP_STRING_ID_DLG_Column_Number  "Number of columns"
-#define AP_STRING_ID_DLG_Column_Preview  "Preview"
-#define AP_STRING_ID_DLG_Column_One  "One"
-#define AP_STRING_ID_DLG_Column_Two  "Two"
-#define AP_STRING_ID_DLG_Column_Three  "Three"
-#define AP_STRING_ID_DLG_Column_Line_Between  "Line between"
-#define AP_STRING_ID_DLG_Column_Number_Cols  "Number of Columns"
-#define AP_STRING_ID_DLG_Column_Space_After  "Space after Column"
-#define AP_STRING_ID_DLG_Column_Size  "Max Column size"
+#define AP_STRING_ID_DLG_Column_ColumnTitle  _("Columns")
+#define AP_STRING_ID_DLG_Column_Number  _("Number of columns")
+#define AP_STRING_ID_DLG_Column_Preview  _("Preview")
+#define AP_STRING_ID_DLG_Column_One  _("One")
+#define AP_STRING_ID_DLG_Column_Two  _("Two")
+#define AP_STRING_ID_DLG_Column_Three  _("Three")
+#define AP_STRING_ID_DLG_Column_Line_Between  _("Line between")
+#define AP_STRING_ID_DLG_Column_Number_Cols  _("Number of Columns")
+#define AP_STRING_ID_DLG_Column_Space_After  _("Space after Column")
+#define AP_STRING_ID_DLG_Column_Size  _("Max Column size")
 
-#define AP_STRING_ID_DLG_Column_RtlOrder  "Use RTL Order"
+#define AP_STRING_ID_DLG_Column_RtlOrder  _("Use RTL Order")
 
 /* when translating these, the important thing to remember is to get a
    similar amount of text in the translation.  Microsoft Word uses
    strings just like this to simulate text, and if your translation
    ends up very, very wordy, it will take up too much room in the preview.
 */
-#define AP_STRING_ID_DLG_Para_PreviewSampleFallback "This paragraph represents words as they might appear in your document.  To see text from your document used in this preview  position your cursor in a document paragraph with some text in it and open this dialog."
-#define AP_STRING_ID_DLG_Para_PreviewPrevParagraph  "Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph"
-#define AP_STRING_ID_DLG_Para_PreviewFollowParagraph  "Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph"
+#define AP_STRING_ID_DLG_Para_PreviewSampleFallback _("This paragraph represents words as they might appear in your document.  To see text from your document used in this preview  position your cursor in a document paragraph with some text in it and open this dialog.")
+#define AP_STRING_ID_DLG_Para_PreviewPrevParagraph  _("Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph")
+#define AP_STRING_ID_DLG_Para_PreviewFollowParagraph  _("Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph")
 
 /* Options dialog */
-#define AP_STRING_ID_DLG_Options_OptionsTitle  "Preferences"
+#define AP_STRING_ID_DLG_Options_OptionsTitle  _("Preferences")
 
-#define AP_STRING_ID_DLG_Options_TabLabel_Spelling  "Spelling"
-#define AP_STRING_ID_DLG_Options_TabLabel_Other  "Other"
-#define AP_STRING_ID_DLG_Options_TabLabel_Preferences  "Preference Schemes"
-#define AP_STRING_ID_DLG_Options_TabLabel_View  "View"
-#define AP_STRING_ID_DLG_Options_TabLabel_Misc  "Misc."
-#define AP_STRING_ID_DLG_Options_TabLabel_SmartQuotes  "Smart Quotes"
+#define AP_STRING_ID_DLG_Options_TabLabel_Spelling  _("Spelling")
+#define AP_STRING_ID_DLG_Options_TabLabel_Other  _("Other")
+#define AP_STRING_ID_DLG_Options_TabLabel_Preferences  _("Preference Schemes")
+#define AP_STRING_ID_DLG_Options_TabLabel_View  _("View")
+#define AP_STRING_ID_DLG_Options_TabLabel_Misc  _("Misc.")
+#define AP_STRING_ID_DLG_Options_TabLabel_SmartQuotes  _("Smart Quotes")
 
-#define AP_STRING_ID_DLG_Options_Btn_Save  "Sa&ve"
-#define AP_STRING_ID_DLG_Options_Btn_Apply  "Apply"
-#define AP_STRING_ID_DLG_Options_Btn_Default  "De&faults"
+#define AP_STRING_ID_DLG_Options_Btn_Save  _("Sa&ve")
+#define AP_STRING_ID_DLG_Options_Btn_Apply  _("Apply")
+#define AP_STRING_ID_DLG_Options_Btn_Default  _("De&faults")
 
-#define AP_STRING_ID_DLG_Options_SpellCheckingTitle  "Spell Checking"
+#define AP_STRING_ID_DLG_Options_SpellCheckingTitle  _("Spell Checking")
 
-#define AP_STRING_ID_DLG_Options_Label_SpellCheckAsType  "Check s&pelling as you type"
-#define AP_STRING_ID_DLG_Options_Label_SpellHideErrors  "Hide &spelling errors in the document"
-#define AP_STRING_ID_DLG_Options_Label_SpellHighlightMisspelledWords  "&Highlight misspelled words" // Opposite of HideErrors
+#define AP_STRING_ID_DLG_Options_Label_SpellCheckAsType  _("Check s&pelling as you type")
+#define AP_STRING_ID_DLG_Options_Label_SpellHideErrors  _("Hide &spelling errors in the document")
+#define AP_STRING_ID_DLG_Options_Label_SpellHighlightMisspelledWords  _("&Highlight misspelled words") // Opposite of HideErrors
 
      // Grammar Check
-#define AP_STRING_ID_DLG_Options_Label_Grammar  "Automatic Grammar Checking"
-#define AP_STRING_ID_DLG_Options_Label_GrammarCheck  "Check &grammar as you type"
+#define AP_STRING_ID_DLG_Options_Label_Grammar  _("Automatic Grammar Checking")
+#define AP_STRING_ID_DLG_Options_Label_GrammarCheck  _("Check &grammar as you type")
 
-#define AP_STRING_ID_DLG_Options_Label_SmartQuotes  "Enable smart (curly) quotes"
-#define AP_STRING_ID_DLG_Options_Label_CustomSmartQuotes  "Use custom smart quote style"
-#define AP_STRING_ID_DLG_Options_Label_OuterQuoteStyle  "Outer (double) quote style"
-#define AP_STRING_ID_DLG_Options_Label_InnerQuoteStyle  "Inner (single) quote style"
+#define AP_STRING_ID_DLG_Options_Label_SmartQuotes  _("Enable smart (curly) quotes")
+#define AP_STRING_ID_DLG_Options_Label_CustomSmartQuotes  _("Use custom smart quote style")
+#define AP_STRING_ID_DLG_Options_Label_OuterQuoteStyle  _("Outer (double) quote style")
+#define AP_STRING_ID_DLG_Options_Label_InnerQuoteStyle  _("Inner (single) quote style")
 										      // should be merged one day
-#define AP_STRING_ID_DLG_Options_Label_SpellSuggest  "A&lways suggest corrections"
-#define AP_STRING_ID_DLG_Options_Label_SpellMainOnly  "Suggest from &main dictionary only"
-#define AP_STRING_ID_DLG_Options_Label_SpellUppercase  "Words in &UPPERCASE"
-#define AP_STRING_ID_DLG_Options_Label_SpellNumbers  "Words with num&bers"
-#define AP_STRING_ID_DLG_Options_Label_SpellCustomDict  "Custom Dictionary:"
-#define AP_STRING_ID_DLG_Options_Label_SpellIgnoredWord  "Ignored words:"
-#define AP_STRING_ID_DLG_Options_Label_SpellIgnoreWords  "Ignore Words"
-#define AP_STRING_ID_DLG_Options_Btn_CustomDict  "&Dictionary..."
-#define AP_STRING_ID_DLG_Options_Btn_IgnoreReset  "&Reset"
-#define AP_STRING_ID_DLG_Options_Btn_IgnoreEdit  "&Edit"
-#define AP_STRING_ID_DLG_Options_Label_SpellAutoReplace  "Auto replace misspelled words"
-#define AP_STRING_ID_DLG_Options_Label_SpellDictionaries  "Dictionaries"
+#define AP_STRING_ID_DLG_Options_Label_SpellSuggest  _("A&lways suggest corrections")
+#define AP_STRING_ID_DLG_Options_Label_SpellMainOnly  _("Suggest from &main dictionary only")
+#define AP_STRING_ID_DLG_Options_Label_SpellUppercase  _("Words in &UPPERCASE")
+#define AP_STRING_ID_DLG_Options_Label_SpellNumbers  _("Words with num&bers")
+#define AP_STRING_ID_DLG_Options_Label_SpellCustomDict  _("Custom Dictionary:")
+#define AP_STRING_ID_DLG_Options_Label_SpellIgnoredWord  _("Ignored words:")
+#define AP_STRING_ID_DLG_Options_Label_SpellIgnoreWords  _("Ignore Words")
+#define AP_STRING_ID_DLG_Options_Btn_CustomDict  _("&Dictionary...")
+#define AP_STRING_ID_DLG_Options_Btn_IgnoreReset  _("&Reset")
+#define AP_STRING_ID_DLG_Options_Btn_IgnoreEdit  _("&Edit")
+#define AP_STRING_ID_DLG_Options_Label_SpellAutoReplace  _("Auto replace misspelled words")
+#define AP_STRING_ID_DLG_Options_Label_SpellDictionaries  _("Dictionaries")
 
-#define AP_STRING_ID_DLG_Options_Label_SmartQuotesEnable  "&Enable smart quotes"
-#define AP_STRING_ID_DLG_Options_Label_DefaultPageSize  "Default page size"
+#define AP_STRING_ID_DLG_Options_Label_SmartQuotesEnable  _("&Enable smart quotes")
+#define AP_STRING_ID_DLG_Options_Label_DefaultPageSize  _("Default page size")
 
-#define AP_STRING_ID_DLG_Options_Label_DirectionRtl  "Default to right-to-left direction of text"
-#define AP_STRING_ID_DLG_Options_Label_BiDiOptions  "Bi-Directional Options"
-#define AP_STRING_ID_DLG_Options_Label_HebrewContextGlyphs  "Use glyph shaping for Hebrew"
+#define AP_STRING_ID_DLG_Options_Label_DirectionRtl  _("Default to right-to-left direction of text")
+#define AP_STRING_ID_DLG_Options_Label_BiDiOptions  _("Bi-Directional Options")
+#define AP_STRING_ID_DLG_Options_Label_HebrewContextGlyphs  _("Use glyph shaping for Hebrew")
 
-#define AP_STRING_ID_DLG_Options_Label_UI  "User Interface"
-#define AP_STRING_ID_DLG_Options_Label_AppStartup  "Application Startup"
-#define AP_STRING_ID_DLG_Options_Label_Documents  "Documents"
+#define AP_STRING_ID_DLG_Options_Label_UI  _("User Interface")
+#define AP_STRING_ID_DLG_Options_Label_AppStartup  _("Application Startup")
+#define AP_STRING_ID_DLG_Options_Label_Documents  _("Documents")
 
-#define AP_STRING_ID_DLG_Options_Label_UILang  "User Interface Language"
-#define AP_STRING_ID_DLG_Options_Label_LangSettings  "Language settings"
-
-
-#define AP_STRING_ID_DLG_Options_Label_AutoSave  "Auto Save"
-#define AP_STRING_ID_DLG_Options_Label_AutoSaveUnderline  "Auto &Save"
-#define AP_STRING_ID_DLG_Options_Label_AutoSaveCurrent  "Auto &save current file every"
-#define AP_STRING_ID_DLG_Options_Label_AutoSaveInterval  "&Interval:"
-#define AP_STRING_ID_DLG_Options_Label_Minutes  "minutes"
-#define AP_STRING_ID_DLG_Options_Label_FileExtension  "&File extension:"
-#define AP_STRING_ID_DLG_Options_Label_WithExtension  "With extension:"
-
-#define AP_STRING_ID_DLG_Options_Label_PrefsAutoSave  "&Automatically save this Scheme"
-#define AP_STRING_ID_DLG_Options_Label_PrefsCurrentScheme  "&Current Preferences Scheme"
-
-#define AP_STRING_ID_DLG_Options_Label_CheckAutoLoadPlugins  "Automatically load all plugins found"
-
-#define AP_STRING_ID_DLG_Options_Label_ViewShowHide  "Show..."
-#define AP_STRING_ID_DLG_Options_Label_ViewRuler  "&Ruler"
-#define AP_STRING_ID_DLG_Options_Label_ViewUnits  "&Units:"
-#define AP_STRING_ID_DLG_Options_Label_ViewCursorBlink  "Cursor &blink"
-#define AP_STRING_ID_DLG_Options_Label_ViewStandardTB  "Standard Toolbar"
-#define AP_STRING_ID_DLG_Options_Label_ViewFormatTB  "Format Toolbar"
-#define AP_STRING_ID_DLG_Options_Label_ViewTableTB  "Table Toolbar"
-#define AP_STRING_ID_DLG_Options_Label_ViewExtraTB  "Extra Toolbar"
-#define AP_STRING_ID_DLG_Options_Label_ViewSimpleTB  "Simple Toolbar"
-#define AP_STRING_ID_DLG_Options_Label_ViewStatusBar  "&Status bar"
-#define AP_STRING_ID_DLG_Options_Label_ViewViewFrame  "View..."
-#define AP_STRING_ID_DLG_Options_Label_ViewAll  "&All"
-#define AP_STRING_ID_DLG_Options_Label_ViewHiddenText  "&Hidden Text"
-#define AP_STRING_ID_DLG_Options_Label_ViewUnprintable  "Invisible &Layout Marks"
-#define AP_STRING_ID_DLG_Options_Label_CheckEnableSmoothScrolling  "Enable Smooth Scrolling"
-
-#define AP_STRING_ID_DLG_Options_Label_CheckWhiteForTransparent  "Allow screen colors other than white"
-#define AP_STRING_ID_DLG_Options_Label_ChooseForTransparent  "Choose Screen Color"
-#define AP_STRING_ID_DLG_Options_Label_ColorChooserLabel  "Choose screen color for AbiWord"
-#define AP_STRING_ID_DLG_Options_Label_InvalidRangeForAutoSave  "You should choose a range from 1 to 120 for the auto save frequency"
-#define AP_STRING_ID_DLG_Options_Prompt_YouMustRestart  "The new user interface language will take effect the next time that you start the application"
-
-#define AP_STRING_ID_DLG_Options_Prompt_IgnoreResetCurrent  "Do you want to reset ignored words in the current document?"
-#define AP_STRING_ID_DLG_Options_Prompt_IgnoreResetAll  "Do you want to reset ignored words in all the documents?"
-
-#define AP_STRING_ID_DLG_Options_Label_Icons  "Icons"
-#define AP_STRING_ID_DLG_Options_Label_Text  "Text"
-#define AP_STRING_ID_DLG_Options_Label_Both  "Text and Icon"
-#define AP_STRING_ID_DLG_Options_Label_Show  "Show"
-#define AP_STRING_ID_DLG_Options_Label_Hide  "Hide"
-#define AP_STRING_ID_DLG_Options_Label_Toolbars  "Toolbars"
-#define AP_STRING_ID_DLG_Options_Label_Look  "Button Style"
-#define AP_STRING_ID_DLG_Options_Label_Visible  "Visible"
-#define AP_STRING_ID_DLG_Options_Label_ViewTooltips  "View tooltips"
-#define AP_STRING_ID_DLG_Options_Label_General  "General"
-#define AP_STRING_ID_DLG_Options_Label_Ignore  "Ignore"
-#define AP_STRING_ID_DLG_Options_Label_CustomDict  "custom.dic"
-#define AP_STRING_ID_DLG_Options_Label_Layout  "Layout"
-#define AP_STRING_ID_DLG_Options_Label_Schemes  "Preference Schemes"
-#define AP_STRING_ID_DLG_Options_Label_Language  "Language"
-
-#define AP_STRING_ID_DLG_Tab_TabTitle  "Tabs"
-#define AP_STRING_ID_DLG_Tab_Label_Existing  "User-defined Tabs"
-#define AP_STRING_ID_DLG_Tab_Label_New  "Set new Tab"
-#define AP_STRING_ID_DLG_Tab_Label_TabPosition  "Tab stop position:"
-#define AP_STRING_ID_DLG_Tab_Label_TabToClear  "Tab stops to be cleared:"
-#define AP_STRING_ID_DLG_Tab_Label_DefaultTS  "Default tab stops:"
-
-#define AP_STRING_ID_DLG_Tab_Label_Position  "Position"
-
-#define AP_STRING_ID_DLG_Tab_Label_Alignment  "Alignment"
-#define AP_STRING_ID_DLG_Tab_Radio_NoAlign  "None"
-#define AP_STRING_ID_DLG_Tab_Radio_Left  "Left"
-#define AP_STRING_ID_DLG_Tab_Radio_Center  "Center"
-#define AP_STRING_ID_DLG_Tab_Radio_Right  "Right"
-#define AP_STRING_ID_DLG_Tab_Radio_Decimal  "Decimal"
-#define AP_STRING_ID_DLG_Tab_Radio_Bar  "Bar"
-
-#define AP_STRING_ID_DLG_Tab_Label_Leader  "Leader"
-#define AP_STRING_ID_DLG_Tab_Radio_None  "&1 None"
-#define AP_STRING_ID_DLG_Tab_Radio_Dot  "&2 .........."
-#define AP_STRING_ID_DLG_Tab_Radio_Dash  "&3 ----------"
-#define AP_STRING_ID_DLG_Tab_Radio_Underline  "&4 __________"
-
-#define AP_STRING_ID_DLG_Tab_Button_Set  "Set"
-#define AP_STRING_ID_DLG_Tab_Button_Clear  "Clear"
-#define AP_STRING_ID_DLG_Tab_Button_ClearAll  "Clear &All"
-
-#define AP_STRING_ID_DLG_DateTime_DateTimeTitle  "Insert Date and Time"
-#define AP_STRING_ID_DLG_DateTime_AvailableFormats  "&Available formats:"
-#define AP_STRING_ID_DLG_DateTime_AvailableFormats_Capital  "Available Formats"
-
-#define AP_STRING_ID_DLG_MergeCellsTitle  "Merge Cells"
-#define AP_STRING_ID_DLG_MergeCells_Frame  "Merge Cells"
-#define AP_STRING_ID_DLG_MergeCells_Left  "Merge Left"
-#define AP_STRING_ID_DLG_MergeCells_Right  "Merge Right"
-#define AP_STRING_ID_DLG_MergeCells_Above  "Merge Above"
-#define AP_STRING_ID_DLG_MergeCells_Below  "Merge Below"
+#define AP_STRING_ID_DLG_Options_Label_UILang  _("User Interface Language")
+#define AP_STRING_ID_DLG_Options_Label_LangSettings  _("Language settings")
 
 
-#define AP_STRING_ID_DLG_SplitCellsTitle  "Split Cells"
-#define AP_STRING_ID_DLG_SplitCells_Frame  "Split Cells"
-#define AP_STRING_ID_DLG_SplitCells_Left  "Split on Left Side"
-#define AP_STRING_ID_DLG_SplitCells_HoriMid  "Split in Middle"
-#define AP_STRING_ID_DLG_SplitCells_Right  "Split on Right Side"
-#define AP_STRING_ID_DLG_SplitCells_Above  "Split on Top Side"
-#define AP_STRING_ID_DLG_SplitCells_VertMid  "Split in Middle"
-#define AP_STRING_ID_DLG_SplitCells_Below  "Split on Bottom Side"
+#define AP_STRING_ID_DLG_Options_Label_AutoSave  _("Auto Save")
+#define AP_STRING_ID_DLG_Options_Label_AutoSaveUnderline  _("Auto &Save")
+#define AP_STRING_ID_DLG_Options_Label_AutoSaveCurrent  _("Auto &save current file every")
+#define AP_STRING_ID_DLG_Options_Label_AutoSaveInterval  _("&Interval:")
+#define AP_STRING_ID_DLG_Options_Label_Minutes  _("minutes")
+#define AP_STRING_ID_DLG_Options_Label_FileExtension  _("&File extension:")
+#define AP_STRING_ID_DLG_Options_Label_WithExtension  _("With extension:")
+
+#define AP_STRING_ID_DLG_Options_Label_PrefsAutoSave  _("&Automatically save this Scheme")
+#define AP_STRING_ID_DLG_Options_Label_PrefsCurrentScheme  _("&Current Preferences Scheme")
+
+#define AP_STRING_ID_DLG_Options_Label_CheckAutoLoadPlugins  _("Automatically load all plugins found")
+
+#define AP_STRING_ID_DLG_Options_Label_ViewShowHide  _("Show...")
+#define AP_STRING_ID_DLG_Options_Label_ViewRuler  _("&Ruler")
+#define AP_STRING_ID_DLG_Options_Label_ViewUnits  _("&Units:")
+#define AP_STRING_ID_DLG_Options_Label_ViewCursorBlink  _("Cursor &blink")
+#define AP_STRING_ID_DLG_Options_Label_ViewStandardTB  _("Standard Toolbar")
+#define AP_STRING_ID_DLG_Options_Label_ViewFormatTB  _("Format Toolbar")
+#define AP_STRING_ID_DLG_Options_Label_ViewTableTB  _("Table Toolbar")
+#define AP_STRING_ID_DLG_Options_Label_ViewExtraTB  _("Extra Toolbar")
+#define AP_STRING_ID_DLG_Options_Label_ViewSimpleTB  _("Simple Toolbar")
+#define AP_STRING_ID_DLG_Options_Label_ViewStatusBar  _("&Status bar")
+#define AP_STRING_ID_DLG_Options_Label_ViewViewFrame  _("View...")
+#define AP_STRING_ID_DLG_Options_Label_ViewAll  _("&All")
+#define AP_STRING_ID_DLG_Options_Label_ViewHiddenText  _("&Hidden Text")
+#define AP_STRING_ID_DLG_Options_Label_ViewUnprintable  _("Invisible &Layout Marks")
+#define AP_STRING_ID_DLG_Options_Label_CheckEnableSmoothScrolling  _("Enable Smooth Scrolling")
+
+#define AP_STRING_ID_DLG_Options_Label_CheckWhiteForTransparent  _("Allow screen colors other than white")
+#define AP_STRING_ID_DLG_Options_Label_ChooseForTransparent  _("Choose Screen Color")
+#define AP_STRING_ID_DLG_Options_Label_ColorChooserLabel  _("Choose screen color for AbiWord")
+#define AP_STRING_ID_DLG_Options_Label_InvalidRangeForAutoSave  _("You should choose a range from 1 to 120 for the auto save frequency")
+#define AP_STRING_ID_DLG_Options_Prompt_YouMustRestart  _("The new user interface language will take effect the next time that you start the application")
+
+#define AP_STRING_ID_DLG_Options_Prompt_IgnoreResetCurrent  _("Do you want to reset ignored words in the current document?")
+#define AP_STRING_ID_DLG_Options_Prompt_IgnoreResetAll  _("Do you want to reset ignored words in all the documents?")
+
+#define AP_STRING_ID_DLG_Options_Label_Icons  _("Icons")
+#define AP_STRING_ID_DLG_Options_Label_Text  _("Text")
+#define AP_STRING_ID_DLG_Options_Label_Both  _("Text and Icon")
+#define AP_STRING_ID_DLG_Options_Label_Show  _("Show")
+#define AP_STRING_ID_DLG_Options_Label_Hide  _("Hide")
+#define AP_STRING_ID_DLG_Options_Label_Toolbars  _("Toolbars")
+#define AP_STRING_ID_DLG_Options_Label_Look  _("Button Style")
+#define AP_STRING_ID_DLG_Options_Label_Visible  _("Visible")
+#define AP_STRING_ID_DLG_Options_Label_ViewTooltips  _("View tooltips")
+#define AP_STRING_ID_DLG_Options_Label_General  _("General")
+#define AP_STRING_ID_DLG_Options_Label_Ignore  _("Ignore")
+#define AP_STRING_ID_DLG_Options_Label_CustomDict  _("custom.dic")
+#define AP_STRING_ID_DLG_Options_Label_Layout  _("Layout")
+#define AP_STRING_ID_DLG_Options_Label_Schemes  _("Preference Schemes")
+#define AP_STRING_ID_DLG_Options_Label_Language  _("Language")
+
+#define AP_STRING_ID_DLG_Tab_TabTitle  _("Tabs")
+#define AP_STRING_ID_DLG_Tab_Label_Existing  _("User-defined Tabs")
+#define AP_STRING_ID_DLG_Tab_Label_New  _("Set new Tab")
+#define AP_STRING_ID_DLG_Tab_Label_TabPosition  _("Tab stop position:")
+#define AP_STRING_ID_DLG_Tab_Label_TabToClear  _("Tab stops to be cleared:")
+#define AP_STRING_ID_DLG_Tab_Label_DefaultTS  _("Default tab stops:")
+
+#define AP_STRING_ID_DLG_Tab_Label_Position  _("Position")
+
+#define AP_STRING_ID_DLG_Tab_Label_Alignment  _("Alignment")
+#define AP_STRING_ID_DLG_Tab_Radio_NoAlign  _("None")
+#define AP_STRING_ID_DLG_Tab_Radio_Left  _("Left")
+#define AP_STRING_ID_DLG_Tab_Radio_Center  _("Center")
+#define AP_STRING_ID_DLG_Tab_Radio_Right  _("Right")
+#define AP_STRING_ID_DLG_Tab_Radio_Decimal  _("Decimal")
+#define AP_STRING_ID_DLG_Tab_Radio_Bar  _("Bar")
+
+#define AP_STRING_ID_DLG_Tab_Label_Leader  _("Leader")
+#define AP_STRING_ID_DLG_Tab_Radio_None  _("&1 None")
+#define AP_STRING_ID_DLG_Tab_Radio_Dot  _("&2 ..........")
+#define AP_STRING_ID_DLG_Tab_Radio_Dash  _("&3 ----------")
+#define AP_STRING_ID_DLG_Tab_Radio_Underline  _("&4 __________")
+
+#define AP_STRING_ID_DLG_Tab_Button_Set  _("Set")
+#define AP_STRING_ID_DLG_Tab_Button_Clear  _("Clear")
+#define AP_STRING_ID_DLG_Tab_Button_ClearAll  _("Clear &All")
+
+#define AP_STRING_ID_DLG_DateTime_DateTimeTitle  _("Insert Date and Time")
+#define AP_STRING_ID_DLG_DateTime_AvailableFormats  _("&Available formats:")
+#define AP_STRING_ID_DLG_DateTime_AvailableFormats_Capital  _("Available Formats")
+
+#define AP_STRING_ID_DLG_MergeCellsTitle  _("Merge Cells")
+#define AP_STRING_ID_DLG_MergeCells_Frame  _("Merge Cells")
+#define AP_STRING_ID_DLG_MergeCells_Left  _("Merge Left")
+#define AP_STRING_ID_DLG_MergeCells_Right  _("Merge Right")
+#define AP_STRING_ID_DLG_MergeCells_Above  _("Merge Above")
+#define AP_STRING_ID_DLG_MergeCells_Below  _("Merge Below")
 
 
-#define AP_STRING_ID_DLG_FormatFrameTitle  "Format Text Box"
-#define AP_STRING_ID_DLG_FormatFrame_Borders  "Borders"
-#define AP_STRING_ID_DLG_FormatFrame_Background  "Background"
-#define AP_STRING_ID_DLG_FormatFrame_Border_Color  "Border color:"
-#define AP_STRING_ID_DLG_FormatFrame_Background_Color  "Background color:"
-#define AP_STRING_ID_DLG_FormatFrame_Color  "Color:"
-#define AP_STRING_ID_DLG_FormatFrame_Preview  "Preview"
-#define AP_STRING_ID_DLG_FormatFrame_SetImageBackground  "Image For Background"
-#define AP_STRING_ID_DLG_FormatFrame_SetImage  "Set Image"
-#define AP_STRING_ID_DLG_FormatFrame_SelectImage  "Select image from File"
-#define AP_STRING_ID_DLG_FormatFrame_NoImageBackground  "Set no image"
-#define AP_STRING_ID_DLG_FormatFrame_TextWrapping  "Text Wrapping"
-#define AP_STRING_ID_DLG_FormatFrame_SetTextWrapping  "Set Text Wrapping"
-#define AP_STRING_ID_DLG_FormatFrame_SetToParagraph  "Position to Paragraph"
-#define AP_STRING_ID_DLG_FormatFrame_SetToColumn  "Position to Column"
-#define AP_STRING_ID_DLG_FormatFrame_SetToPage  "Position to Page"
-#define AP_STRING_ID_DLG_FormatFrame_PositionTo  "Position Text Box"
-
-#define AP_STRING_ID_DLG_FormatTableTitle  "Format Table"
-#define AP_STRING_ID_DLG_FormatTable_Borders  "Borders"
-#define AP_STRING_ID_DLG_FormatTable_Background  "Background"
-#define AP_STRING_ID_DLG_FormatTable_Border_Color  "Border color:"
-#define AP_STRING_ID_DLG_FormatTable_Background_Color  "Background color:"
-#define AP_STRING_ID_DLG_FormatTable_Color  "Color:"
-#define AP_STRING_ID_DLG_FormatTable_Thickness  "Thickness:"
-#define AP_STRING_ID_DLG_FormatTable_Preview  "Preview"
-#define AP_STRING_ID_DLG_FormatTable_Apply_To  "Apply to:"
-#define AP_STRING_ID_DLG_FormatTable_Apply_To_Selection  "Selection"
-#define AP_STRING_ID_DLG_FormatTable_Apply_To_Row  "Row"
-#define AP_STRING_ID_DLG_FormatTable_Apply_To_Column  "Column"
-#define AP_STRING_ID_DLG_FormatTable_Apply_To_Table  "Table"
-#define AP_STRING_ID_DLG_FormatTable_SetImageBackground  "Image For Background"
-#define AP_STRING_ID_DLG_FormatTable_SetImage  "Set Image"
-#define AP_STRING_ID_DLG_FormatTable_SelectImage  "Select image from File"
-#define AP_STRING_ID_DLG_FormatTable_NoImageBackground  "Set no image"
+#define AP_STRING_ID_DLG_SplitCellsTitle  _("Split Cells")
+#define AP_STRING_ID_DLG_SplitCells_Frame  _("Split Cells")
+#define AP_STRING_ID_DLG_SplitCells_Left  _("Split on Left Side")
+#define AP_STRING_ID_DLG_SplitCells_HoriMid  _("Split in Middle")
+#define AP_STRING_ID_DLG_SplitCells_Right  _("Split on Right Side")
+#define AP_STRING_ID_DLG_SplitCells_Above  _("Split on Top Side")
+#define AP_STRING_ID_DLG_SplitCells_VertMid  _("Split in Middle")
+#define AP_STRING_ID_DLG_SplitCells_Below  _("Split on Bottom Side")
 
 
-#define AP_STRING_ID_DLG_Field_FieldTitle  "Insert field"
-#define AP_STRING_ID_DLG_Field_FieldTitle_Capital  "Insert Field"
-#define AP_STRING_ID_DLG_Field_Types  "&Types:"
-#define AP_STRING_ID_DLG_Field_Types_No_Colon  "&Types"
-#define AP_STRING_ID_DLG_Field_Fields  "&Fields:"
-#define AP_STRING_ID_DLG_Field_Fields_No_Colon  "&Fields"
-#define AP_STRING_ID_DLG_Field_Parameters  "Extra parameters:"
-#define AP_STRING_ID_DLG_Field_Parameters_Capital  "Extra Parameters"
+#define AP_STRING_ID_DLG_FormatFrameTitle  _("Format Text Box")
+#define AP_STRING_ID_DLG_FormatFrame_Borders  _("Borders")
+#define AP_STRING_ID_DLG_FormatFrame_Background  _("Background")
+#define AP_STRING_ID_DLG_FormatFrame_Border_Color  _("Border color:")
+#define AP_STRING_ID_DLG_FormatFrame_Background_Color  _("Background color:")
+#define AP_STRING_ID_DLG_FormatFrame_Color  _("Color:")
+#define AP_STRING_ID_DLG_FormatFrame_Preview  _("Preview")
+#define AP_STRING_ID_DLG_FormatFrame_SetImageBackground  _("Image For Background")
+#define AP_STRING_ID_DLG_FormatFrame_SetImage  _("Set Image")
+#define AP_STRING_ID_DLG_FormatFrame_SelectImage  _("Select image from File")
+#define AP_STRING_ID_DLG_FormatFrame_NoImageBackground  _("Set no image")
+#define AP_STRING_ID_DLG_FormatFrame_TextWrapping  _("Text Wrapping")
+#define AP_STRING_ID_DLG_FormatFrame_SetTextWrapping  _("Set Text Wrapping")
+#define AP_STRING_ID_DLG_FormatFrame_SetToParagraph  _("Position to Paragraph")
+#define AP_STRING_ID_DLG_FormatFrame_SetToColumn  _("Position to Column")
+#define AP_STRING_ID_DLG_FormatFrame_SetToPage  _("Position to Page")
+#define AP_STRING_ID_DLG_FormatFrame_PositionTo  _("Position Text Box")
 
-#define AP_STRING_ID_DLG_MailMerge_MailMergeTitle  "Insert Mail Merge Field"
-#define AP_STRING_ID_DLG_MailMerge_AvailableFields  "Available Fields"
-#define AP_STRING_ID_DLG_MailMerge_Insert  "Field Name:"
-#define AP_STRING_ID_DLG_MailMerge_Insert_No_Colon  "Field Name"
-#define AP_STRING_ID_DLG_MailMerge_OpenFile  "&Open File"
+#define AP_STRING_ID_DLG_FormatTableTitle  _("Format Table")
+#define AP_STRING_ID_DLG_FormatTable_Borders  _("Borders")
+#define AP_STRING_ID_DLG_FormatTable_Background  _("Background")
+#define AP_STRING_ID_DLG_FormatTable_Border_Color  _("Border color:")
+#define AP_STRING_ID_DLG_FormatTable_Background_Color  _("Background color:")
+#define AP_STRING_ID_DLG_FormatTable_Color  _("Color:")
+#define AP_STRING_ID_DLG_FormatTable_Thickness  _("Thickness:")
+#define AP_STRING_ID_DLG_FormatTable_Preview  _("Preview")
+#define AP_STRING_ID_DLG_FormatTable_Apply_To  _("Apply to:")
+#define AP_STRING_ID_DLG_FormatTable_Apply_To_Selection  _("Selection")
+#define AP_STRING_ID_DLG_FormatTable_Apply_To_Row  _("Row")
+#define AP_STRING_ID_DLG_FormatTable_Apply_To_Column  _("Column")
+#define AP_STRING_ID_DLG_FormatTable_Apply_To_Table  _("Table")
+#define AP_STRING_ID_DLG_FormatTable_SetImageBackground  _("Image For Background")
+#define AP_STRING_ID_DLG_FormatTable_SetImage  _("Set Image")
+#define AP_STRING_ID_DLG_FormatTable_SelectImage  _("Select image from File")
+#define AP_STRING_ID_DLG_FormatTable_NoImageBackground  _("Set no image")
 
-#define AP_STRING_ID_FIELD_Error  "Error calculating value!"
-#define AP_STRING_ID_FIELD_Type_Datetime  "Date and Time"
-#define AP_STRING_ID_FIELD_Type_Numbers  "Numbers"
-#define AP_STRING_ID_FIELD_Type_PieceTable  "Piece Table"
-#define AP_STRING_ID_FIELD_Datetime_CurrentTime  "Current Time"
-#define AP_STRING_ID_FIELD_Numbers_PageNumber  "Page Number"
-#define AP_STRING_ID_FIELD_Numbers_TOCPageNumber  "Table of Contents Page"
-#define AP_STRING_ID_FIELD_Numbers_TOCListLabel  "Table of Contents List Label"
-#define AP_STRING_ID_FIELD_Numbers_PageReference  "Page Reference"
-#define AP_STRING_ID_FIELD_Numbers_PagesCount  "Number of Pages"
-#define AP_STRING_ID_FIELD_Numbers_ListLabel  "List Label"
-#define AP_STRING_ID_FIELD_Numbers_TableSumCols  "Sum a Table Row"
-#define AP_STRING_ID_FIELD_Numbers_TableSumRows  "Sum a Table Column"
-#define AP_STRING_ID_FIELD_Numbers_WordCount  "Word Count"
-#define AP_STRING_ID_FIELD_Numbers_CharCount  "Character Count"
-#define AP_STRING_ID_FIELD_Numbers_LineCount  "Line Count"
-#define AP_STRING_ID_FIELD_Numbers_ParaCount  "Paragraph Count"
-#define AP_STRING_ID_FIELD_Numbers_NbspCount  "Character Count (w/o spaces)"
-#define AP_STRING_ID_FIELD_Numbers_EndnoteReference  "Endnote reference"
-#define AP_STRING_ID_FIELD_Numbers_EndnoteAnchor  "Endnote anchor"
-#define AP_STRING_ID_FIELD_Numbers_FootnoteReference  "Footnote reference"
-#define AP_STRING_ID_FIELD_Numbers_FootnoteAnchor  "Footnote anchor"
-#define AP_STRING_ID_FIELD_PieceTable_Test  "Kevins Test"
-#define AP_STRING_ID_FIELD_PieceTable_MartinTest  "Martins Test"
-#define AP_STRING_ID_FIELD_Datetime_CurrentDate  "Current Date"
 
-#define AP_STRING_ID_FIELD_DateTime_MMDDYY  "mm/dd/yy"
-#define AP_STRING_ID_FIELD_DateTime_DDMMYY  "dd/mm/yy"
-#define AP_STRING_ID_FIELD_DateTime_MonthDayYear "Month Day  Year"
-#define AP_STRING_ID_FIELD_DateTime_MthDayYear "Mth. Day  Year"
-#define AP_STRING_ID_FIELD_DateTime_DefaultDate  "Default date representation"
-#define AP_STRING_ID_FIELD_DateTime_DefaultDateNoTime  "Default date (w/o time)"
-#define AP_STRING_ID_FIELD_DateTime_Wkday  "The weekday"
-#define AP_STRING_ID_FIELD_DateTime_DOY  "Day # in the year"
+#define AP_STRING_ID_DLG_Field_FieldTitle  _("Insert field")
+#define AP_STRING_ID_DLG_Field_FieldTitle_Capital  _("Insert Field")
+#define AP_STRING_ID_DLG_Field_Types  _("&Types:")
+#define AP_STRING_ID_DLG_Field_Types_No_Colon  _("&Types")
+#define AP_STRING_ID_DLG_Field_Fields  _("&Fields:")
+#define AP_STRING_ID_DLG_Field_Fields_No_Colon  _("&Fields")
+#define AP_STRING_ID_DLG_Field_Parameters  _("Extra parameters:")
+#define AP_STRING_ID_DLG_Field_Parameters_Capital  _("Extra Parameters")
 
-#define AP_STRING_ID_FIELD_DateTime_MilTime  "Military Time"
-#define AP_STRING_ID_FIELD_DateTime_AMPM  "AM/PM"
-#define AP_STRING_ID_FIELD_DateTime_TimeZone  "Time Zone"
-#define AP_STRING_ID_FIELD_DateTime_Epoch  "Seconds since the epoch"
-#define AP_STRING_ID_FIELD_DateTime_Custom  "Customizable date/time"
+#define AP_STRING_ID_DLG_MailMerge_MailMergeTitle  _("Insert Mail Merge Field")
+#define AP_STRING_ID_DLG_MailMerge_AvailableFields  _("Available Fields")
+#define AP_STRING_ID_DLG_MailMerge_Insert  _("Field Name:")
+#define AP_STRING_ID_DLG_MailMerge_Insert_No_Colon  _("Field Name")
+#define AP_STRING_ID_DLG_MailMerge_OpenFile  _("&Open File")
 
-#define AP_STRING_ID_FIELD_Application  "Application"
-#define AP_STRING_ID_FIELD_Application_Filename  "File Name"
-#define AP_STRING_ID_FIELD_Application_Version  "Version"
-#define AP_STRING_ID_FIELD_Application_BuildId  "Build Id."
-#define AP_STRING_ID_FIELD_Application_Options  "Build Options"
-#define AP_STRING_ID_FIELD_Application_Target  "Build Target"
-#define AP_STRING_ID_FIELD_Application_CompileDate  "Compile Date"
-#define AP_STRING_ID_FIELD_Application_CompileTime  "Compile Time"
-#define AP_STRING_ID_FIELD_Application_MailMerge  "Mail Merge"
+#define AP_STRING_ID_FIELD_Error  _("Error calculating value!")
+#define AP_STRING_ID_FIELD_Type_Datetime  _("Date and Time")
+#define AP_STRING_ID_FIELD_Type_Numbers  _("Numbers")
+#define AP_STRING_ID_FIELD_Type_PieceTable  _("Piece Table")
+#define AP_STRING_ID_FIELD_Datetime_CurrentTime  _("Current Time")
+#define AP_STRING_ID_FIELD_Numbers_PageNumber  _("Page Number")
+#define AP_STRING_ID_FIELD_Numbers_TOCPageNumber  _("Table of Contents Page")
+#define AP_STRING_ID_FIELD_Numbers_TOCListLabel  _("Table of Contents List Label")
+#define AP_STRING_ID_FIELD_Numbers_PageReference  _("Page Reference")
+#define AP_STRING_ID_FIELD_Numbers_PagesCount  _("Number of Pages")
+#define AP_STRING_ID_FIELD_Numbers_ListLabel  _("List Label")
+#define AP_STRING_ID_FIELD_Numbers_TableSumCols  _("Sum a Table Row")
+#define AP_STRING_ID_FIELD_Numbers_TableSumRows  _("Sum a Table Column")
+#define AP_STRING_ID_FIELD_Numbers_WordCount  _("Word Count")
+#define AP_STRING_ID_FIELD_Numbers_CharCount  _("Character Count")
+#define AP_STRING_ID_FIELD_Numbers_LineCount  _("Line Count")
+#define AP_STRING_ID_FIELD_Numbers_ParaCount  _("Paragraph Count")
+#define AP_STRING_ID_FIELD_Numbers_NbspCount  _("Character Count (w/o spaces)")
+#define AP_STRING_ID_FIELD_Numbers_EndnoteReference  _("Endnote reference")
+#define AP_STRING_ID_FIELD_Numbers_EndnoteAnchor  _("Endnote anchor")
+#define AP_STRING_ID_FIELD_Numbers_FootnoteReference  _("Footnote reference")
+#define AP_STRING_ID_FIELD_Numbers_FootnoteAnchor  _("Footnote anchor")
+#define AP_STRING_ID_FIELD_PieceTable_Test  _("Kevins Test")
+#define AP_STRING_ID_FIELD_PieceTable_MartinTest  _("Martins Test")
+#define AP_STRING_ID_FIELD_Datetime_CurrentDate  _("Current Date")
 
-#define AP_STRING_ID_FIELD_Type_Document  "Document"
-#define AP_STRING_ID_FIELD_Document_Title  "Title"
-#define AP_STRING_ID_FIELD_Document_Creator  "Creator"
-#define AP_STRING_ID_FIELD_Document_Subject  "Subject"
-#define AP_STRING_ID_FIELD_Document_Publisher  "Publisher"
-#define AP_STRING_ID_FIELD_Document_Contributor  "Contributor"
-#define AP_STRING_ID_FIELD_Document_Date  "Date"
-#define AP_STRING_ID_FIELD_Document_Type  "Type"
-#define AP_STRING_ID_FIELD_Document_Language  "Language"
-#define AP_STRING_ID_FIELD_Document_Coverage  "Coverage"
-#define AP_STRING_ID_FIELD_Document_Rights  "Rights"
-#define AP_STRING_ID_FIELD_Document_Keywords  "Keywords"
-#define AP_STRING_ID_FIELD_Document_Description  "Description"
+#define AP_STRING_ID_FIELD_DateTime_MMDDYY  _("mm/dd/yy")
+#define AP_STRING_ID_FIELD_DateTime_DDMMYY  _("dd/mm/yy")
+#define AP_STRING_ID_FIELD_DateTime_MonthDayYear _("Month Day  Year")
+#define AP_STRING_ID_FIELD_DateTime_MthDayYear _("Mth. Day  Year")
+#define AP_STRING_ID_FIELD_DateTime_DefaultDate  _("Default date representation")
+#define AP_STRING_ID_FIELD_DateTime_DefaultDateNoTime  _("Default date (w/o time)")
+#define AP_STRING_ID_FIELD_DateTime_Wkday  _("The weekday")
+#define AP_STRING_ID_FIELD_DateTime_DOY  _("Day # in the year")
 
-#define AP_STRING_ID_DLG_Goto_Title  "Go to..."
-#define AP_STRING_ID_DLG_Goto_Label_Help "Choose your target in the left side.\nIf you want to use the \"Go To\" button, just fill the Number Entry with the desired number.  You can use + and - to perform relative movement.	I.e., if you write \"+2\" and you select \"Line\"  the \"Go To\" will go 2 lines below your current position."
-#define AP_STRING_ID_DLG_Goto_Btn_Prev  "<< Prev"
-#define AP_STRING_ID_DLG_Goto_Btn_Next  "Next >>"
-#define AP_STRING_ID_DLG_Goto_Label_What  "Go To &What:"
-#define AP_STRING_ID_DLG_Goto_Label_Number  "&Number:"
-#define AP_STRING_ID_DLG_Goto_Label_Name  "&Name:"
-#define AP_STRING_ID_DLG_Goto_Btn_Goto  "Go To"
-#define AP_STRING_ID_DLG_Goto_Target_Page  "Page"
-#define AP_STRING_ID_DLG_Goto_Target_Line  "Line"
-#define AP_STRING_ID_DLG_Goto_Target_Picture  "Picture"
-#define AP_STRING_ID_DLG_Goto_Target_Bookmark  "Bookmark"
+#define AP_STRING_ID_FIELD_DateTime_MilTime  _("Military Time")
+#define AP_STRING_ID_FIELD_DateTime_AMPM  _("AM/PM")
+#define AP_STRING_ID_FIELD_DateTime_TimeZone  _("Time Zone")
+#define AP_STRING_ID_FIELD_DateTime_Epoch  _("Seconds since the epoch")
+#define AP_STRING_ID_FIELD_DateTime_Custom  _("Customizable date/time")
+
+#define AP_STRING_ID_FIELD_Application  _("Application")
+#define AP_STRING_ID_FIELD_Application_Filename  _("File Name")
+#define AP_STRING_ID_FIELD_Application_Version  _("Version")
+#define AP_STRING_ID_FIELD_Application_BuildId  _("Build Id.")
+#define AP_STRING_ID_FIELD_Application_Options  _("Build Options")
+#define AP_STRING_ID_FIELD_Application_Target  _("Build Target")
+#define AP_STRING_ID_FIELD_Application_CompileDate  _("Compile Date")
+#define AP_STRING_ID_FIELD_Application_CompileTime  _("Compile Time")
+#define AP_STRING_ID_FIELD_Application_MailMerge  _("Mail Merge")
+
+#define AP_STRING_ID_FIELD_Type_Document  _("Document")
+#define AP_STRING_ID_FIELD_Document_Title  _("Title")
+#define AP_STRING_ID_FIELD_Document_Creator  _("Creator")
+#define AP_STRING_ID_FIELD_Document_Subject  _("Subject")
+#define AP_STRING_ID_FIELD_Document_Publisher  _("Publisher")
+#define AP_STRING_ID_FIELD_Document_Contributor  _("Contributor")
+#define AP_STRING_ID_FIELD_Document_Date  _("Date")
+#define AP_STRING_ID_FIELD_Document_Type  _("Type")
+#define AP_STRING_ID_FIELD_Document_Language  _("Language")
+#define AP_STRING_ID_FIELD_Document_Coverage  _("Coverage")
+#define AP_STRING_ID_FIELD_Document_Rights  _("Rights")
+#define AP_STRING_ID_FIELD_Document_Keywords  _("Keywords")
+#define AP_STRING_ID_FIELD_Document_Description  _("Description")
+
+#define AP_STRING_ID_DLG_Goto_Title  _("Go to...")
+#define AP_STRING_ID_DLG_Goto_Label_Help _("Choose your target in the left side.\nIf you want to use the \"Go To\" button, just fill the Number Entry with the desired number.  You can use + and - to perform relative movement.	I.e., if you write \"+2\" and you select \"Line\"  the \"Go To\" will go 2 lines below your current position.")
+#define AP_STRING_ID_DLG_Goto_Btn_Prev  _("<< Prev")
+#define AP_STRING_ID_DLG_Goto_Btn_Next  _("Next >>")
+#define AP_STRING_ID_DLG_Goto_Label_What  _("Go To &What:")
+#define AP_STRING_ID_DLG_Goto_Label_Number  _("&Number:")
+#define AP_STRING_ID_DLG_Goto_Label_Name  _("&Name:")
+#define AP_STRING_ID_DLG_Goto_Btn_Goto  _("Go To")
+#define AP_STRING_ID_DLG_Goto_Target_Page  _("Page")
+#define AP_STRING_ID_DLG_Goto_Target_Line  _("Line")
+#define AP_STRING_ID_DLG_Goto_Target_Picture  _("Picture")
+#define AP_STRING_ID_DLG_Goto_Target_Bookmark  _("Bookmark")
 
 
 // Lists Dialog
 
-#define AP_STRING_ID_DLG_Lists_Title  "Lists for "
-#define AP_STRING_ID_DLG_Lists_Start_New_List  "Start New List"
-#define AP_STRING_ID_DLG_Lists_Stop_Current_List  "Stop Current List"
-#define AP_STRING_ID_DLG_Lists_Resume_Previous_List  "Resume Previous List"
-#define AP_STRING_ID_DLG_Lists_New_List_Type  "New List \nType"
-#define AP_STRING_ID_DLG_Lists_Numbered_List  "Numbered List"
-#define AP_STRING_ID_DLG_Lists_Lower_Case_List  "Lower Case List"
-#define AP_STRING_ID_DLG_Lists_Upper_Case_List  "Upper Case List"
-#define AP_STRING_ID_DLG_Lists_Lower_Roman_List  "Lower Roman List"
-#define AP_STRING_ID_DLG_Lists_Upper_Roman_List  "Upper Roman List"
-#define AP_STRING_ID_DLG_Lists_Arabic_List  "Arabic List"
-#define AP_STRING_ID_DLG_Lists_Hebrew_List  "Hebrew List"
-#define AP_STRING_ID_DLG_Lists_Bullet_List  "Bullet List"
-#define AP_STRING_ID_DLG_Lists_Dashed_List  "Dashed List"
-#define AP_STRING_ID_DLG_Lists_Square_List  "Square List"
-#define AP_STRING_ID_DLG_Lists_Triangle_List  "Triangle List"
-#define AP_STRING_ID_DLG_Lists_Diamond_List  "Diamond List"
-#define AP_STRING_ID_DLG_Lists_Star_List  "Star List"
-#define AP_STRING_ID_DLG_Lists_Implies_List  "Implies List"
-#define AP_STRING_ID_DLG_Lists_Tick_List  "Tick List"
-#define AP_STRING_ID_DLG_Lists_Box_List  "Box List"
-#define AP_STRING_ID_DLG_Lists_Hand_List  "Hand List"
-#define AP_STRING_ID_DLG_Lists_Heart_List  "Heart List"
-#define AP_STRING_ID_DLG_Lists_Starting_Value  "New Starting \nValue"
-#define AP_STRING_ID_DLG_Lists_New_List_Label  "New List Label"
-#define AP_STRING_ID_DLG_Lists_Current_List_Type  "Current List Type"
-#define AP_STRING_ID_DLG_Lists_Current_List_Label  "Current List Label"
-#define AP_STRING_ID_DLG_Lists_Cur_Change_Start  "Change Current \nList"
-#define AP_STRING_ID_DLG_Lists_Type  "Type:"
-#define AP_STRING_ID_DLG_Lists_Type_none  "None"
-#define AP_STRING_ID_DLG_Lists_Type_bullet  "Bullet"
-#define AP_STRING_ID_DLG_Lists_Type_numbered  "Numbered"
-#define AP_STRING_ID_DLG_Lists_Style  "Style:"
-#define AP_STRING_ID_DLG_Lists_Customize  "Customized List"
-#define AP_STRING_ID_DLG_Lists_Format  "Format:"
-#define AP_STRING_ID_DLG_Lists_Font  "Font:"
-#define AP_STRING_ID_DLG_Lists_ButtonFont  "Font..."
-#define AP_STRING_ID_DLG_Lists_DelimiterString  "Level Delimiter:"
-#define AP_STRING_ID_DLG_Lists_Level  "Level:"
-#define AP_STRING_ID_DLG_Lists_Start  "Start At:"
-#define AP_STRING_ID_DLG_Lists_Align  "Text Align:"
-#define AP_STRING_ID_DLG_Lists_Indent  "Label Align:"
-#define AP_STRING_ID_DLG_Lists_Current_Font  "Current Font"
-#define AP_STRING_ID_DLG_Lists_Preview  "Preview"
-#define AP_STRING_ID_DLG_Lists_Start_New  "Start New List"
-#define AP_STRING_ID_DLG_Lists_Apply_Current  "Apply to Current List"
-#define AP_STRING_ID_DLG_Lists_Start_Sub  "Start Sublist"
-#define AP_STRING_ID_DLG_Lists_Resume  "Attach to Previous List"
-#define AP_STRING_ID_DLG_Lists_SetDefault  "Set Default Values"
-#define AP_STRING_ID_DLG_Lists_PageProperties  "List Properties"
-#define AP_STRING_ID_DLG_Lists_PageFolding  "Text Folding"
-#define AP_STRING_ID_DLG_Lists_FoldingLevelexp  "Hide text below List Levels"
-#define AP_STRING_ID_DLG_Lists_FoldingLevel0  "No Folding"
-#define AP_STRING_ID_DLG_Lists_FoldingLevel1  "Fold below level 1"
-#define AP_STRING_ID_DLG_Lists_FoldingLevel2  "Fold below level 2"
-#define AP_STRING_ID_DLG_Lists_FoldingLevel3  "Fold below level 3"
-#define AP_STRING_ID_DLG_Lists_FoldingLevel4  "Fold below level 4"
+#define AP_STRING_ID_DLG_Lists_Title  _("Lists for ")
+#define AP_STRING_ID_DLG_Lists_Start_New_List  _("Start New List")
+#define AP_STRING_ID_DLG_Lists_Stop_Current_List  _("Stop Current List")
+#define AP_STRING_ID_DLG_Lists_Resume_Previous_List  _("Resume Previous List")
+#define AP_STRING_ID_DLG_Lists_New_List_Type  _("New List \nType")
+#define AP_STRING_ID_DLG_Lists_Numbered_List  _("Numbered List")
+#define AP_STRING_ID_DLG_Lists_Lower_Case_List  _("Lower Case List")
+#define AP_STRING_ID_DLG_Lists_Upper_Case_List  _("Upper Case List")
+#define AP_STRING_ID_DLG_Lists_Lower_Roman_List  _("Lower Roman List")
+#define AP_STRING_ID_DLG_Lists_Upper_Roman_List  _("Upper Roman List")
+#define AP_STRING_ID_DLG_Lists_Arabic_List  _("Arabic List")
+#define AP_STRING_ID_DLG_Lists_Hebrew_List  _("Hebrew List")
+#define AP_STRING_ID_DLG_Lists_Bullet_List  _("Bullet List")
+#define AP_STRING_ID_DLG_Lists_Dashed_List  _("Dashed List")
+#define AP_STRING_ID_DLG_Lists_Square_List  _("Square List")
+#define AP_STRING_ID_DLG_Lists_Triangle_List  _("Triangle List")
+#define AP_STRING_ID_DLG_Lists_Diamond_List  _("Diamond List")
+#define AP_STRING_ID_DLG_Lists_Star_List  _("Star List")
+#define AP_STRING_ID_DLG_Lists_Implies_List  _("Implies List")
+#define AP_STRING_ID_DLG_Lists_Tick_List  _("Tick List")
+#define AP_STRING_ID_DLG_Lists_Box_List  _("Box List")
+#define AP_STRING_ID_DLG_Lists_Hand_List  _("Hand List")
+#define AP_STRING_ID_DLG_Lists_Heart_List  _("Heart List")
+#define AP_STRING_ID_DLG_Lists_Starting_Value  _("New Starting \nValue")
+#define AP_STRING_ID_DLG_Lists_New_List_Label  _("New List Label")
+#define AP_STRING_ID_DLG_Lists_Current_List_Type  _("Current List Type")
+#define AP_STRING_ID_DLG_Lists_Current_List_Label  _("Current List Label")
+#define AP_STRING_ID_DLG_Lists_Cur_Change_Start  _("Change Current \nList")
+#define AP_STRING_ID_DLG_Lists_Type  _("Type:")
+#define AP_STRING_ID_DLG_Lists_Type_none  _("None")
+#define AP_STRING_ID_DLG_Lists_Type_bullet  _("Bullet")
+#define AP_STRING_ID_DLG_Lists_Type_numbered  _("Numbered")
+#define AP_STRING_ID_DLG_Lists_Style  _("Style:")
+#define AP_STRING_ID_DLG_Lists_Customize  _("Customized List")
+#define AP_STRING_ID_DLG_Lists_Format  _("Format:")
+#define AP_STRING_ID_DLG_Lists_Font  _("Font:")
+#define AP_STRING_ID_DLG_Lists_ButtonFont  _("Font...")
+#define AP_STRING_ID_DLG_Lists_DelimiterString  _("Level Delimiter:")
+#define AP_STRING_ID_DLG_Lists_Level  _("Level:")
+#define AP_STRING_ID_DLG_Lists_Start  _("Start At:")
+#define AP_STRING_ID_DLG_Lists_Align  _("Text Align:")
+#define AP_STRING_ID_DLG_Lists_Indent  _("Label Align:")
+#define AP_STRING_ID_DLG_Lists_Current_Font  _("Current Font")
+#define AP_STRING_ID_DLG_Lists_Preview  _("Preview")
+#define AP_STRING_ID_DLG_Lists_Start_New  _("Start New List")
+#define AP_STRING_ID_DLG_Lists_Apply_Current  _("Apply to Current List")
+#define AP_STRING_ID_DLG_Lists_Start_Sub  _("Start Sublist")
+#define AP_STRING_ID_DLG_Lists_Resume  _("Attach to Previous List")
+#define AP_STRING_ID_DLG_Lists_SetDefault  _("Set Default Values")
+#define AP_STRING_ID_DLG_Lists_PageProperties  _("List Properties")
+#define AP_STRING_ID_DLG_Lists_PageFolding  _("Text Folding")
+#define AP_STRING_ID_DLG_Lists_FoldingLevelexp  _("Hide text below List Levels")
+#define AP_STRING_ID_DLG_Lists_FoldingLevel0  _("No Folding")
+#define AP_STRING_ID_DLG_Lists_FoldingLevel1  _("Fold below level 1")
+#define AP_STRING_ID_DLG_Lists_FoldingLevel2  _("Fold below level 2")
+#define AP_STRING_ID_DLG_Lists_FoldingLevel3  _("Fold below level 3")
+#define AP_STRING_ID_DLG_Lists_FoldingLevel4  _("Fold below level 4")
 
 	 /* page numbers dialog */
-#define AP_STRING_ID_DLG_PageNumbers_Title  "Page Numbers"
-#define AP_STRING_ID_DLG_PageNumbers_Left  "Left"
-#define AP_STRING_ID_DLG_PageNumbers_Right  "Right"
-#define AP_STRING_ID_DLG_PageNumbers_Center  "Center"
-#define AP_STRING_ID_DLG_PageNumbers_Header  "Header"
-#define AP_STRING_ID_DLG_PageNumbers_Footer  "Footer"
-#define AP_STRING_ID_DLG_PageNumbers_Preview  "Preview"
-#define AP_STRING_ID_DLG_PageNumbers_Alignment  "Alignment:"
-#define AP_STRING_ID_DLG_PageNumbers_Alignment_No_Colon  "Alignment"
-#define AP_STRING_ID_DLG_PageNumbers_Position  "Position:"
-#define AP_STRING_ID_DLG_PageNumbers_Position_No_Colon  "Position"
+#define AP_STRING_ID_DLG_PageNumbers_Title  _("Page Numbers")
+#define AP_STRING_ID_DLG_PageNumbers_Left  _("Left")
+#define AP_STRING_ID_DLG_PageNumbers_Right  _("Right")
+#define AP_STRING_ID_DLG_PageNumbers_Center  _("Center")
+#define AP_STRING_ID_DLG_PageNumbers_Header  _("Header")
+#define AP_STRING_ID_DLG_PageNumbers_Footer  _("Footer")
+#define AP_STRING_ID_DLG_PageNumbers_Preview  _("Preview")
+#define AP_STRING_ID_DLG_PageNumbers_Alignment  _("Alignment:")
+#define AP_STRING_ID_DLG_PageNumbers_Alignment_No_Colon  _("Alignment")
+#define AP_STRING_ID_DLG_PageNumbers_Position  _("Position:")
+#define AP_STRING_ID_DLG_PageNumbers_Position_No_Colon  _("Position")
 
 	 /* page setup dialog */
-#define AP_STRING_ID_DLG_PageSetup_Title  "Page Setup"
-#define AP_STRING_ID_DLG_PageSetup_Paper  "Paper..."
-#define AP_STRING_ID_DLG_PageSetup_Width  "&Width:"
-#define AP_STRING_ID_DLG_PageSetup_Height  "&Height:"
-#define AP_STRING_ID_DLG_PageSetup_Paper_Size  "Paper Si&ze:"
-#define AP_STRING_ID_DLG_PageSetup_Units  "&Units:"
-#define AP_STRING_ID_DLG_PageSetup_Orient  "Orientation..."
-#define AP_STRING_ID_DLG_PageSetup_Landscape  "&Landscape"
-#define AP_STRING_ID_DLG_PageSetup_Portrait  "&Portrait"
-#define AP_STRING_ID_DLG_PageSetup_Scale  "Scale..."
-#define AP_STRING_ID_DLG_PageSetup_Adjust  "&Adjust to:"
-#define AP_STRING_ID_DLG_PageSetup_Percent  "% of normal size"
-#define AP_STRING_ID_DLG_PageSetup_Page  "Page"
-#define AP_STRING_ID_DLG_PageSetup_Top  "&Top:"
-#define AP_STRING_ID_DLG_PageSetup_Header  "&Header:"
-#define AP_STRING_ID_DLG_PageSetup_Footer  "&Footer:"
-#define AP_STRING_ID_DLG_PageSetup_Bottom  "&Bottom:"
-#define AP_STRING_ID_DLG_PageSetup_Left  "&Left:"
-#define AP_STRING_ID_DLG_PageSetup_Right  "&Right:"
-#define AP_STRING_ID_DLG_PageSetup_Margin  "Margin"
-#define AP_STRING_ID_DLG_PageSetup_ErrBigMargins  "The margins selected are too large to fit on the page."
+#define AP_STRING_ID_DLG_PageSetup_Title  _("Page Setup")
+#define AP_STRING_ID_DLG_PageSetup_Paper  _("Paper...")
+#define AP_STRING_ID_DLG_PageSetup_Width  _("&Width:")
+#define AP_STRING_ID_DLG_PageSetup_Height  _("&Height:")
+#define AP_STRING_ID_DLG_PageSetup_Paper_Size  _("Paper Si&ze:")
+#define AP_STRING_ID_DLG_PageSetup_Units  _("&Units:")
+#define AP_STRING_ID_DLG_PageSetup_Orient  _("Orientation...")
+#define AP_STRING_ID_DLG_PageSetup_Landscape  _("&Landscape")
+#define AP_STRING_ID_DLG_PageSetup_Portrait  _("&Portrait")
+#define AP_STRING_ID_DLG_PageSetup_Scale  _("Scale...")
+#define AP_STRING_ID_DLG_PageSetup_Adjust  _("&Adjust to:")
+#define AP_STRING_ID_DLG_PageSetup_Percent  _("% of normal size")
+#define AP_STRING_ID_DLG_PageSetup_Page  _("Page")
+#define AP_STRING_ID_DLG_PageSetup_Top  _("&Top:")
+#define AP_STRING_ID_DLG_PageSetup_Header  _("&Header:")
+#define AP_STRING_ID_DLG_PageSetup_Footer  _("&Footer:")
+#define AP_STRING_ID_DLG_PageSetup_Bottom  _("&Bottom:")
+#define AP_STRING_ID_DLG_PageSetup_Left  _("&Left:")
+#define AP_STRING_ID_DLG_PageSetup_Right  _("&Right:")
+#define AP_STRING_ID_DLG_PageSetup_Margin  _("Margin")
+#define AP_STRING_ID_DLG_PageSetup_ErrBigMargins  _("The margins selected are too large to fit on the page.")
 
-#define AP_STRING_ID_MSG_AutoMerge  "Automerge"
-#define AP_STRING_ID_MSG_DirectionModeChg  "You have changed the direction mode."
-#define AP_STRING_ID_MSG_DefaultDirectionChg  "You have changed the default direction."
-#define AP_STRING_ID_MSG_AfterRestartNew  "This change will only take effect when you restart AbiWord or create a new document."
-#define AP_STRING_ID_MSG_BookmarkNotFound  "Bookmark \"%s\" was not found in this document."
-#define AP_STRING_ID_MSG_HyperlinkNoSelection  "You must select a portion of the document before inserting a hyperlink."
-#define AP_STRING_ID_MSG_HyperlinkNoBookmark  "Warning: the bookmark you provided [%s] does not exist."
-#define AP_STRING_ID_MSG_HyperlinkCrossesBoundaries  "The text to which the hyperlink is to be attached must be within a single paragraph."
-#define AP_STRING_ID_MSG_HiddenRevisions  "This document contains revisions which are currently hidden from view. Please see AbiWord documentation for information on working with revisions."
+#define AP_STRING_ID_MSG_AutoMerge  _("Automerge")
+#define AP_STRING_ID_MSG_DirectionModeChg  _("You have changed the direction mode.")
+#define AP_STRING_ID_MSG_DefaultDirectionChg  _("You have changed the default direction.")
+#define AP_STRING_ID_MSG_AfterRestartNew  _("This change will only take effect when you restart AbiWord or create a new document.")
+#define AP_STRING_ID_MSG_BookmarkNotFound  _("Bookmark \"%s\" was not found in this document.")
+#define AP_STRING_ID_MSG_HyperlinkNoSelection  _("You must select a portion of the document before inserting a hyperlink.")
+#define AP_STRING_ID_MSG_HyperlinkNoBookmark  _("Warning: the bookmark you provided [%s] does not exist.")
+#define AP_STRING_ID_MSG_HyperlinkCrossesBoundaries  _("The text to which the hyperlink is to be attached must be within a single paragraph.")
+#define AP_STRING_ID_MSG_HiddenRevisions  _("This document contains revisions which are currently hidden from view. Please see AbiWord documentation for information on working with revisions.")
 
-#define AP_STRING_ID_DLG_ToggleCase_Title  "Change Case"
-#define AP_STRING_ID_DLG_ToggleCase_SentenceCase  "Sentence case"
-#define AP_STRING_ID_DLG_ToggleCase_LowerCase  "lowercase"
-#define AP_STRING_ID_DLG_ToggleCase_UpperCase  "UPPERCASE"
-#define AP_STRING_ID_DLG_ToggleCase_TitleCase  "Title Case"
-#define AP_STRING_ID_DLG_ToggleCase_FirstUpperCase  "Initial Caps"
-#define AP_STRING_ID_DLG_ToggleCase_ToggleCase  "tOGGLE cASE"
+#define AP_STRING_ID_DLG_ToggleCase_Title  _("Change Case")
+#define AP_STRING_ID_DLG_ToggleCase_SentenceCase  _("Sentence case")
+#define AP_STRING_ID_DLG_ToggleCase_LowerCase  _("lowercase")
+#define AP_STRING_ID_DLG_ToggleCase_UpperCase  _("UPPERCASE")
+#define AP_STRING_ID_DLG_ToggleCase_TitleCase  _("Title Case")
+#define AP_STRING_ID_DLG_ToggleCase_FirstUpperCase  _("Initial Caps")
+#define AP_STRING_ID_DLG_ToggleCase_ToggleCase  _("tOGGLE cASE")
 
-#define AP_STRING_ID_DLG_Background_Title  "Change Background Color"
-#define AP_STRING_ID_DLG_Background_ClearClr  "Clear Background Color"
-#define AP_STRING_ID_DLG_Background_TitleFore  "Change Text Color"
-#define AP_STRING_ID_DLG_Background_TitleHighlight  "Change Highlight Color"
-#define AP_STRING_ID_DLG_Background_ClearHighlight  "Clear Highlight Color"
+#define AP_STRING_ID_DLG_Background_Title  _("Change Background Color")
+#define AP_STRING_ID_DLG_Background_ClearClr  _("Clear Background Color")
+#define AP_STRING_ID_DLG_Background_TitleFore  _("Change Text Color")
+#define AP_STRING_ID_DLG_Background_TitleHighlight  _("Change Highlight Color")
+#define AP_STRING_ID_DLG_Background_ClearHighlight  _("Clear Highlight Color")
 
-#define AP_STRING_ID_DLG_HdrFtr_Title  "Format Header/Footers"
-#define AP_STRING_ID_DLG_HdrFtr_HeaderFrame  "Header Properties"
-#define AP_STRING_ID_DLG_HdrFtr_HeaderEven  "Different header on facing pages"
-#define AP_STRING_ID_DLG_HdrFtr_HeaderFirst  "Different header on first page"
-#define AP_STRING_ID_DLG_HdrFtr_HeaderLast  "Different header on last page"
-#define AP_STRING_ID_DLG_HdrFtr_FooterFrame  "Footer Properties"
-#define AP_STRING_ID_DLG_HdrFtr_FooterEven  "Different footer on facing pages"
-#define AP_STRING_ID_DLG_HdrFtr_FooterFirst  "Different footer on first page"
-#define AP_STRING_ID_DLG_HdrFtr_FooterLast  "Different footer on last page"
-#define AP_STRING_ID_DLG_HdrFtr_PageNumberProperties  "Page Number Properties"
-#define AP_STRING_ID_DLG_HdrFtr_RestartCheck  "Restart page numbers on new sections"
-#define AP_STRING_ID_DLG_HdrFtr_RestartNumbers  "Restart numbering at:"
+#define AP_STRING_ID_DLG_HdrFtr_Title  _("Format Header/Footers")
+#define AP_STRING_ID_DLG_HdrFtr_HeaderFrame  _("Header Properties")
+#define AP_STRING_ID_DLG_HdrFtr_HeaderEven  _("Different header on facing pages")
+#define AP_STRING_ID_DLG_HdrFtr_HeaderFirst  _("Different header on first page")
+#define AP_STRING_ID_DLG_HdrFtr_HeaderLast  _("Different header on last page")
+#define AP_STRING_ID_DLG_HdrFtr_FooterFrame  _("Footer Properties")
+#define AP_STRING_ID_DLG_HdrFtr_FooterEven  _("Different footer on facing pages")
+#define AP_STRING_ID_DLG_HdrFtr_FooterFirst  _("Different footer on first page")
+#define AP_STRING_ID_DLG_HdrFtr_FooterLast  _("Different footer on last page")
+#define AP_STRING_ID_DLG_HdrFtr_PageNumberProperties  _("Page Number Properties")
+#define AP_STRING_ID_DLG_HdrFtr_RestartCheck  _("Restart page numbers on new sections")
+#define AP_STRING_ID_DLG_HdrFtr_RestartNumbers  _("Restart numbering at:")
 
-#define AP_STRING_ID_DLG_MetaData_Title  "Document Properties"
-#define AP_STRING_ID_DLG_MetaData_Title_LBL  "Title:"
-#define AP_STRING_ID_DLG_MetaData_Subject_LBL  "Subject:"
-#define AP_STRING_ID_DLG_MetaData_Author_LBL  "Author:"
-#define AP_STRING_ID_DLG_MetaData_Publisher_LBL  "Publisher:"
-#define AP_STRING_ID_DLG_MetaData_CoAuthor_LBL  "Contributor(s):"
-#define AP_STRING_ID_DLG_MetaData_Category_LBL  "Category:"
-#define AP_STRING_ID_DLG_MetaData_Keywords_LBL  "Keywords:"
-#define AP_STRING_ID_DLG_MetaData_Languages_LBL  "Language(s):"
-#define AP_STRING_ID_DLG_MetaData_Description_LBL  "Description:"
-#define AP_STRING_ID_DLG_MetaData_Source_LBL  "Source:"
-#define AP_STRING_ID_DLG_MetaData_Relation_LBL  "Relation:"
-#define AP_STRING_ID_DLG_MetaData_Coverage_LBL  "Coverage:"
-#define AP_STRING_ID_DLG_MetaData_Rights_LBL  "Rights:"
-#define AP_STRING_ID_DLG_MetaData_TAB_Permission  "Permissions"
-#define AP_STRING_ID_DLG_MetaData_TAB_Summary  "Summary"
-#define AP_STRING_ID_DLG_MetaData_TAB_General  "General"
+#define AP_STRING_ID_DLG_MetaData_Title  _("Document Properties")
+#define AP_STRING_ID_DLG_MetaData_Title_LBL  _("Title:")
+#define AP_STRING_ID_DLG_MetaData_Subject_LBL  _("Subject:")
+#define AP_STRING_ID_DLG_MetaData_Author_LBL  _("Author:")
+#define AP_STRING_ID_DLG_MetaData_Publisher_LBL  _("Publisher:")
+#define AP_STRING_ID_DLG_MetaData_CoAuthor_LBL  _("Contributor(s):")
+#define AP_STRING_ID_DLG_MetaData_Category_LBL  _("Category:")
+#define AP_STRING_ID_DLG_MetaData_Keywords_LBL  _("Keywords:")
+#define AP_STRING_ID_DLG_MetaData_Languages_LBL  _("Language(s):")
+#define AP_STRING_ID_DLG_MetaData_Description_LBL  _("Description:")
+#define AP_STRING_ID_DLG_MetaData_Source_LBL  _("Source:")
+#define AP_STRING_ID_DLG_MetaData_Relation_LBL  _("Relation:")
+#define AP_STRING_ID_DLG_MetaData_Coverage_LBL  _("Coverage:")
+#define AP_STRING_ID_DLG_MetaData_Rights_LBL  _("Rights:")
+#define AP_STRING_ID_DLG_MetaData_TAB_Permission  _("Permissions")
+#define AP_STRING_ID_DLG_MetaData_TAB_Summary  _("Summary")
+#define AP_STRING_ID_DLG_MetaData_TAB_General  _("General")
 
-#define AP_STRING_ID_MSG_EmptySelection  "Current Selection is Empty"
+#define AP_STRING_ID_MSG_EmptySelection  _("Current Selection is Empty")
 
-#define AP_STRING_ID_DLG_InsertBookmark_Title  "Insert Bookmark"
-#define AP_STRING_ID_DLG_InsertBookmark_Msg "Type a name for the bookmark  or select an existing from the list."
+#define AP_STRING_ID_DLG_InsertBookmark_Title  _("Insert Bookmark")
+#define AP_STRING_ID_DLG_InsertBookmark_Msg _("Type a name for the bookmark  or select an existing from the list.")
 
-#define AP_STRING_ID_DLG_InsertHyperlink_Title  "Insert Hyperlink"
-#define AP_STRING_ID_DLG_InsertHyperlink_Msg  "Select a target bookmark from the list."
+#define AP_STRING_ID_DLG_InsertHyperlink_Title  _("Insert Hyperlink")
+#define AP_STRING_ID_DLG_InsertHyperlink_Msg  _("Select a target bookmark from the list.")
 
 	/* Mark revisions dialog */
-#define AP_STRING_ID_DLG_MarkRevisions_Title  "Mark Revisions"
-#define AP_STRING_ID_DLG_MarkRevisions_Check1Label  "Continue previous revision (number %d)"
-#define AP_STRING_ID_DLG_MarkRevisions_Check2Label  "Start a new revision"
-#define AP_STRING_ID_DLG_MarkRevisions_Comment2Label  "Comment to be associated with the revision:"
+#define AP_STRING_ID_DLG_MarkRevisions_Title  _("Mark Revisions")
+#define AP_STRING_ID_DLG_MarkRevisions_Check1Label  _("Continue previous revision (number %d)")
+#define AP_STRING_ID_DLG_MarkRevisions_Check2Label  _("Start a new revision")
+#define AP_STRING_ID_DLG_MarkRevisions_Comment2Label  _("Comment to be associated with the revision:")
 
 	/* List revisions dialog */
-#define AP_STRING_ID_DLG_ListRevisions_Title  "Select Revision"
-#define AP_STRING_ID_DLG_ListRevisions_Column1Label  "Revision ID"
-#define AP_STRING_ID_DLG_ListRevisions_Column2Label  "Date"
-#define AP_STRING_ID_DLG_ListRevisions_Column3Label  "Comment"
-#define AP_STRING_ID_DLG_ListRevisions_Label1  "Existing revisions:"
-#define AP_STRING_ID_DLG_ListRevisions_LevelZero  "(All revisions visible)"
+#define AP_STRING_ID_DLG_ListRevisions_Title  _("Select Revision")
+#define AP_STRING_ID_DLG_ListRevisions_Column1Label  _("Revision ID")
+#define AP_STRING_ID_DLG_ListRevisions_Column2Label  _("Date")
+#define AP_STRING_ID_DLG_ListRevisions_Column3Label  _("Comment")
+#define AP_STRING_ID_DLG_ListRevisions_Label1  _("Existing revisions:")
+#define AP_STRING_ID_DLG_ListRevisions_LevelZero  _("(All revisions visible)")
 
 // RIVERA
-#define AP_STRING_ID_DLG_Annotation_Title  "Edit Annotation"
-#define AP_STRING_ID_DLG_Annotation_Title_LBL  "Title:"
-#define AP_STRING_ID_DLG_Annotation_Author_LBL  "Author:"
-#define AP_STRING_ID_DLG_Annotation_Description_LBL  "Description:"
-#define AP_STRING_ID_DLG_Annotation_Replace_LBL  "Replace"
-#define AP_STRING_ID_DLG_Annotation_OK_tooltip  "Update the annotation"
-#define AP_STRING_ID_DLG_Annotation_Replace_tooltip  "Replace selection with annotation"
+#define AP_STRING_ID_DLG_Annotation_Title  _("Edit Annotation")
+#define AP_STRING_ID_DLG_Annotation_Title_LBL  _("Title:")
+#define AP_STRING_ID_DLG_Annotation_Author_LBL  _("Author:")
+#define AP_STRING_ID_DLG_Annotation_Description_LBL  _("Description:")
+#define AP_STRING_ID_DLG_Annotation_Replace_LBL  _("Replace")
+#define AP_STRING_ID_DLG_Annotation_OK_tooltip  _("Update the annotation")
+#define AP_STRING_ID_DLG_Annotation_Replace_tooltip  _("Replace selection with annotation")
 
-#define AP_STRING_ID_WORD_PassRequired "Password required  this is an encrypted document"
-#define AP_STRING_ID_WORD_PassInvalid  "Incorrect Password"
-#define AP_STRING_ID_SCRIPT_NOSCRIPTS  "No scripts found"
-#define AP_STRING_ID_SCRIPT_CANTRUN  "Error executing script %s"
-#define AP_STRING_ID_PRINT_CANNOTSTARTPRINTJOB  "Cannot start print job"
+#define AP_STRING_ID_WORD_PassRequired _("Password required  this is an encrypted document")
+#define AP_STRING_ID_WORD_PassInvalid  _("Incorrect Password")
+#define AP_STRING_ID_SCRIPT_NOSCRIPTS  _("No scripts found")
+#define AP_STRING_ID_SCRIPT_CANTRUN  _("Error executing script %s")
+#define AP_STRING_ID_PRINT_CANNOTSTARTPRINTJOB  _("Cannot start print job")
 
-#define AP_STRING_ID_MSG_CHECK_PRINT_MODE  "Headers and Footers can only be created and edited while in Print View Mode. \n To enter this mode choose ""View"" then ""Print Layout"" from the Menus. \n Would you like to enter Print Layout mode right now?"
+#define AP_STRING_ID_MSG_CHECK_PRINT_MODE  _("Headers and Footers can only be created and edited while in Print View Mode. \n To enter this mode choose ""View"" then ""Print Layout"" from the Menus. \n Would you like to enter Print Layout mode right now?")
 
 
 /* Windows ap_App */
-#define AP_STRING_ID_WINDOWS_NEED_UNICOWS  "AbiWord needs the file %s.dll\nPlease download and install it from http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
-#define AP_STRING_ID_WINDOWS_COMCTL_WARNING "AbiWord is designed for a newer version of the system file COMCTL32.DLL\nthan the one currently on your system. (COMCTL32.DLL version 4.72 or newer)\nA solution to this problem is explained in the FAQ on the AbiSource web site\n\n\thttp://www.abisource.com\n\nYou can use the program  but the toolbar may be missing."
+#define AP_STRING_ID_WINDOWS_NEED_UNICOWS  _("AbiWord needs the file %s.dll\nPlease download and install it from http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm")
+#define AP_STRING_ID_WINDOWS_COMCTL_WARNING _("AbiWord is designed for a newer version of the system file COMCTL32.DLL\nthan the one currently on your system. (COMCTL32.DLL version 4.72 or newer)\nA solution to this problem is explained in the FAQ on the AbiSource web site\n\n\thttp://www.abisource.com\n\nYou can use the program  but the toolbar may be missing.")
 
-#define AP_STRING_ID_MENU_LABEL__BOGUS1__  " "
-#define AP_STRING_ID_MENU_LABEL__BOGUS2__  " "
-#define AP_STRING_ID_MENU_LABEL_OPEN_TEMPLATE  "Open Template"
-#define AP_STRING_ID_MENU_LABEL_FILE  "&File"
-#define AP_STRING_ID_MENU_LABEL_FILE_NEW  "&New"
-#define AP_STRING_ID_MENU_LABEL_FILE_NEW_USING_TEMPLATE  "&New using Template"
-#define AP_STRING_ID_MENU_LABEL_FILE_OPEN  "&Open"
-#define AP_STRING_ID_MENU_LABEL_FILE_IMPORTSTYLES  "&Import Styles"
-#define AP_STRING_ID_MENU_LABEL_FILE_CLOSE  "&Close"
-#define AP_STRING_ID_MENU_LABEL_FILE_SAVE  "&Save"
-#define AP_STRING_ID_MENU_LABEL_FILE_SAVEAS  "Save &As"
-#define AP_STRING_ID_MENU_LABEL_FILE_SAVE_TEMPLATE  "Save &Template"
-#define AP_STRING_ID_MENU_LABEL_FILE_SAVEIMAGE  "&Save Image As"
-#define AP_STRING_ID_MENU_LABEL_FILE_IMPORT  "Op&en Copy"
-#define AP_STRING_ID_MENU_LABEL_FILE_EXPORT  "Sav&e Copy"
-#define AP_STRING_ID_MENU_LABEL_FILE_PROPERTIES  "P&roperties"
-#define AP_STRING_ID_MENU_LABEL_FILE_PAGESETUP  "Page Set&up"
-#define AP_STRING_ID_MENU_LABEL_FILE_PRINT  "&Print"
-#define AP_STRING_ID_MENU_LABEL_FILE_PRINT_DIRECTLY  "Print &directly"
-#define AP_STRING_ID_MENU_LABEL_FILE_PRINT_PREVIEW  "Print P&review"
-#define AP_STRING_ID_MENU_LABEL_FILE_RECENT  "Recent &Files"
-#define AP_STRING_ID_MENU_LABEL_FILE_RECENT_1  "&1 %s"
-#define AP_STRING_ID_MENU_LABEL_FILE_RECENT_2  "&2 %s"
-#define AP_STRING_ID_MENU_LABEL_FILE_RECENT_3  "&3 %s"
-#define AP_STRING_ID_MENU_LABEL_FILE_RECENT_4  "&4 %s"
-#define AP_STRING_ID_MENU_LABEL_FILE_RECENT_5  "&5 %s"
-#define AP_STRING_ID_MENU_LABEL_FILE_RECENT_6  "&6 %s"
-#define AP_STRING_ID_MENU_LABEL_FILE_RECENT_7  "&7 %s"
-#define AP_STRING_ID_MENU_LABEL_FILE_RECENT_8  "&8 %s"
-#define AP_STRING_ID_MENU_LABEL_FILE_RECENT_9  "&9 %s"
-#define AP_STRING_ID_MENU_LABEL_FILE_REVERT  "Re&vert"
-#define AP_STRING_ID_MENU_LABEL_FILE_SAVEEMBED  "Save to file"
-#define AP_STRING_ID_MENU_LABEL_FILE_EXIT  "&Quit"
-#define AP_STRING_ID_MENU_LABEL_EDIT  "&Edit"
-#define AP_STRING_ID_MENU_LABEL_EDIT_UNDO  "&Undo"
-#define AP_STRING_ID_MENU_LABEL_EDIT_REDO  "&Redo"
-#define AP_STRING_ID_MENU_LABEL_EDIT_CUT  "Cu&t"
-#define AP_STRING_ID_MENU_LABEL_EDIT_COPY  "&Copy"
-#define AP_STRING_ID_MENU_LABEL_EDIT_PASTE  "&Paste"
-#define AP_STRING_ID_MENU_LABEL_EDIT_PASTE_SPECIAL  "Pa&ste Unformatted"
-#define AP_STRING_ID_MENU_LABEL_EDIT_CLEAR  "Cle&ar"
-#define AP_STRING_ID_MENU_LABEL_EDIT_SELECTALL  "Select A&ll"
-#define AP_STRING_ID_MENU_LABEL_EDIT_FIND  "&Find"
-#define AP_STRING_ID_MENU_LABEL_EDIT_REPLACE  "R&eplace"
-#define AP_STRING_ID_MENU_LABEL_EDIT_GOTO  "&Go To"
-#define AP_STRING_ID_MENU_LABEL_EDIT_DELETEFRAME  "Delete Text Box"
-#define AP_STRING_ID_MENU_LABEL_EDIT_DELETEIMAGE  "Delete Image"
-#define AP_STRING_ID_MENU_LABEL_EDIT_CUTIMAGE  "Cut Image"
-#define AP_STRING_ID_MENU_LABEL_EDIT_COPYIMAGE  "Copy Image"
-#define AP_STRING_ID_MENU_LABEL_EDIT_CUT_FRAME  "Cut Text Box"
-#define AP_STRING_ID_MENU_LABEL_EDIT_COPY_FRAME  "Copy Text Box"
-#define AP_STRING_ID_MENU_LABEL_EDIT_SELECT_FRAME  "Select Text Box"
-#define AP_STRING_ID_MENU_LABEL_INSERT_HEADER  "Header"
-#define AP_STRING_ID_MENU_LABEL_INSERT_FOOTER  "Footer"
-#define AP_STRING_ID_MENU_LABEL_EDIT_EDITHEADER  "Edit Header"
-#define AP_STRING_ID_MENU_LABEL_EDIT_EDITFOOTER  "Edit Footer"
-#define AP_STRING_ID_MENU_LABEL_EDIT_REMOVEHEADER  "Remove Header"
-#define AP_STRING_ID_MENU_LABEL_EDIT_REMOVEFOOTER  "Remove Footer"
-#define AP_STRING_ID_MENU_LABEL_EDIT_CUTEMBED  "Cut Object"
-#define AP_STRING_ID_MENU_LABEL_EDIT_COPYEMBED  "Copy Object"
-#define AP_STRING_ID_MENU_LABEL_EDIT_DELETEEMBED  "Delete Object"
-#define AP_STRING_ID_MENU_LABEL_EDIT_LATEXEQUATION  "Edit Equation"
-#define AP_STRING_ID_MENU_LABEL_VIEW  "&View"
-#define AP_STRING_ID_MENU_LABEL_VIEW_NORMAL  "&Normal Layout"
-#define AP_STRING_ID_MENU_LABEL_VIEW_WEB  "&Web Layout"
-#define AP_STRING_ID_MENU_LABEL_VIEW_PRINT  "&Print Layout"
-#define AP_STRING_ID_MENU_LABEL_VIEW_TOOLBARS  "&Toolbars"
-#define AP_STRING_ID_MENU_LABEL_VIEW_TB_1  "&1 %s"
-#define AP_STRING_ID_MENU_LABEL_VIEW_TB_2  "&2 %s"
-#define AP_STRING_ID_MENU_LABEL_VIEW_TB_3  "&3 %s"
-#define AP_STRING_ID_MENU_LABEL_VIEW_TB_4  "&4 %s"
-#define AP_STRING_ID_MENU_LABEL_VIEW_LOCK_TB_LAYOUT  "&Lock layout"
-#define AP_STRING_ID_MENU_LABEL_VIEW_DEFAULT_TB_LAYOUT  "&Reset to default layout"
-#define AP_STRING_ID_MENU_LABEL_VIEW_RULER  "Show &Ruler"
-#define AP_STRING_ID_MENU_LABEL_VIEW_STATUSBAR  "&Show Status Bar"
-#define AP_STRING_ID_MENU_LABEL_VIEW_SHOWPARA  "Show For&matting Marks"
-#define AP_STRING_ID_MENU_LABEL_VIEW_LOCKSTYLES  "Enable F&ormatting Tools"
-#define AP_STRING_ID_MENU_LABEL_VIEW_HEADFOOT  "&Header and Footer"
-#define AP_STRING_ID_MENU_LABEL_VIEW_FULLSCREEN  "F&ull Screen"
-#define AP_STRING_ID_MENU_LABEL_VIEW_ZOOM_MENU  "&Zoom"
-#define AP_STRING_ID_MENU_LABEL_VIEW_ZOOM  "&Zoom"
-#define AP_STRING_ID_MENU_LABEL_VIEW_ZOOM_200  "Zoom to &200%"
-#define AP_STRING_ID_MENU_LABEL_VIEW_ZOOM_100  "Zoom to &100%"
-#define AP_STRING_ID_MENU_LABEL_VIEW_ZOOM_75  "Zoom to &75%"
-#define AP_STRING_ID_MENU_LABEL_VIEW_ZOOM_50  "Zoom to &50%"
-#define AP_STRING_ID_MENU_LABEL_VIEW_ZOOM_WIDTH  "&Page Width"
-#define AP_STRING_ID_MENU_LABEL_VIEW_ZOOM_WHOLE  "&Whole Page"
-#define AP_STRING_ID_MENU_LABEL_INSERT  "&Insert"
-#define AP_STRING_ID_MENU_LABEL_INSERT_BREAK  "&Break"
-#define AP_STRING_ID_MENU_LABEL_INSERT_PAGENO  "Page N&umbers"
-#define AP_STRING_ID_MENU_LABEL_INSERT_DATETIME  "Date and &Time"
-#define AP_STRING_ID_MENU_LABEL_INSERT_TEXTBOX  "Text Box"
-#define AP_STRING_ID_MENU_LABEL_INSERT_MAILMERGE  "&Mail Merge Field"
-#define AP_STRING_ID_MENU_LABEL_INSERT_FIELD  "&Field"
-#define AP_STRING_ID_MENU_LABEL_INSERT_FILE  "F&ile"
-#define AP_STRING_ID_MENU_LABEL_INSERT_SYMBOL  "Sy&mbol"
-#define AP_STRING_ID_MENU_LABEL_INSERT_ENDNOTE  "&Endnote"
-#define AP_STRING_ID_MENU_LABEL_INSERT_FOOTNOTE  "Foot&note"
-#define AP_STRING_ID_MENU_LABEL_INSERT_TABLEOFCONTENTS  "Table of Contents"
-#define AP_STRING_ID_MENU_LABEL_INSERT_CLIPART  "&Clip Art"
-#define AP_STRING_ID_MENU_LABEL_INSERT_GRAPHIC  "&Picture"
-#define AP_STRING_ID_MENU_LABEL_INSERT_BOOKMARK  "Boo&kmark"
-#define AP_STRING_ID_MENU_LABEL_INSERT_HYPERLINK  "&Hyperlink"
-#define AP_STRING_ID_MENU_LABEL_INSERT_GOTO_HYPERLINK  "&Jump to hyperlink"
-#define AP_STRING_ID_MENU_LABEL_INSERT_EDIT_HYPERLINK  "&Edit hyperlink"
-#define AP_STRING_ID_MENU_LABEL_EDIT_COPY_HYPERLINK_LOCATION  "C&opy hyperlink location"
-#define AP_STRING_ID_MENU_LABEL_INSERT_DELETE_HYPERLINK  "&Delete hyperlink"
-#define AP_STRING_ID_MENU_LABEL_INSERT_DIRECTIONMARKER  "&Direction Marker"
-#define AP_STRING_ID_MENU_LABEL_INSERT_DIRECTIONMARKER_LRM  "&LRM"
-#define AP_STRING_ID_MENU_LABEL_INSERT_DIRECTIONMARKER_RLM  "&RLM"
-#define AP_STRING_ID_MENU_LABEL_FORMAT  "F&ormat"
-#define AP_STRING_ID_MENU_LABEL_FMT  "Te&xt Formatting"
-#define AP_STRING_ID_MENU_LABEL_FMT_LANGUAGE  "Set &Language"
-#define AP_STRING_ID_MENU_LABEL_FMT_FONT  "&Font"
-#define AP_STRING_ID_MENU_LABEL_FMT_PARAGRAPH  "&Paragraph"
-#define AP_STRING_ID_MENU_LABEL_FMT_BULLETS  "Bullets and &Numbering"
-#define AP_STRING_ID_MENU_LABEL_FMT_DOCUMENT  "&Document"
-#define AP_STRING_ID_MENU_LABEL_FMT_BORDERS  "Borders and Shading"
-#define AP_STRING_ID_MENU_LABEL_FMT_HDRFTR  "Header/Footers"
-#define AP_STRING_ID_MENU_LABEL_FMT_FOOTNOTES  "Footnotes and Endnotes"
-#define AP_STRING_ID_MENU_LABEL_FMT_TABLEOFCONTENTS  "Table of Contents"
-#define AP_STRING_ID_MENU_LABEL_FMT_COLUMNS  "&Columns"
-#define AP_STRING_ID_MENU_LABEL_FMT_TOGGLECASE  "C&hange Case"
-#define AP_STRING_ID_MENU_LABEL_FMT_BACKGROUND  "Page Background"
-#define AP_STRING_ID_MENU_LABEL_FMT_BACKGROUND_PAGE_COLOR  "Page C&olor"
-#define AP_STRING_ID_MENU_LABEL_FMT_BACKGROUND_PAGE_IMAGE  "Page Image"
-#define AP_STRING_ID_MENU_LABEL_FMT_STYLIST  "Sty&list"
-#define AP_STRING_ID_MENU_LABEL_FMT_STYLE  "St&yle"
-#define AP_STRING_ID_MENU_LABEL_FMT_STYLE_DEFINE  "&Create and Modify Styles"
-#define AP_STRING_ID_MENU_LABEL_FMT_TABS  "&Tabs"
-#define AP_STRING_ID_MENU_LABEL_FMT_BOLD  "&Bold"
-#define AP_STRING_ID_MENU_LABEL_FMT_ITALIC  "&Italic"
-#define AP_STRING_ID_MENU_LABEL_FMT_UNDERLINE  "&Underline"
-#define AP_STRING_ID_MENU_LABEL_FMT_OVERLINE  "&Overline"
-#define AP_STRING_ID_MENU_LABEL_FMT_STRIKE  "Stri&ke"
-#define AP_STRING_ID_MENU_LABEL_FMT_TOPLINE  "Topline"
-#define AP_STRING_ID_MENU_LABEL_FMT_BOTTOMLINE  "Bottomline"
-#define AP_STRING_ID_MENU_LABEL_FMT_SUPERSCRIPT  "Supe&rscript"
-#define AP_STRING_ID_MENU_LABEL_FMT_SUBSCRIPT  "&Subscript"
-#define AP_STRING_ID_MENU_LABEL_FMT_FRAME  "Text Box"
-#define AP_STRING_ID_MENU_LABEL_FMT_IMAGE  "&Image"
-#define AP_STRING_ID_MENU_LABEL_FMT_SETPOSIMAGE  "Set Positioned Image"
-#define AP_STRING_ID_MENU_LABEL_FMT_POSIMAGE  "&Image"
-#define AP_STRING_ID_MENU_LABEL_FMT_DIRECTION  "D&irectional"
-#define AP_STRING_ID_MENU_LABEL_FMT_DIRECTION_DOCD_RTL  "RTL &Document"
-#define AP_STRING_ID_MENU_LABEL_FMT_DIRECTION_SD_RTL  "RTL &Section"
-#define AP_STRING_ID_MENU_LABEL_FMT_DIRECTION_DD_RTL  "RTL &Paragraph"
-#define AP_STRING_ID_MENU_LABEL_FMT_DIRECTION_DO_LTR  "&Left-to-right text"
-#define AP_STRING_ID_MENU_LABEL_FMT_DIRECTION_DO_RTL  "&Right-to-left text"
-#define AP_STRING_ID_MENU_LABEL_FMT_EMBED  "Format Object"
-#define AP_STRING_ID_MENU_LABEL_TOOLS  "&Tools"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_SPELLING  "&Spelling"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_SPELL  "Check &Spelling"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_AUTOSPELL  "&Auto Spellcheck"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_SPELLPREFS  "Spelling &Options"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_WORDCOUNT  "&Word Count"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_OPTIONS  "Pr&eferences"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_LANGUAGE  "&Language"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_PLUGINS  "&Plugins"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_SCRIPTS  "S&cripts"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_MAILMERGE  "&Mail Merge"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_HISTORY  "&Document History"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_HISTORY_SHOW  "&Show History"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_HISTORY_PURGE  "&Purge History"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_AUTO  "&Maintain Full History"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS  "&Revisions"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_MARK  "&Mark revisions while typing"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_SHOW  "S&how revisions"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_SHOW_AFTER  "Show document a&fter revisions"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_SHOW_AFTERPREV  "Show document after &previous revisions"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_SHOW_BEFORE  "Show document &before revisions"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_SET_VIEW_LEVEL  "&Select revision"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_ACCEPT_REVISION  "&Accept revision"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_REJECT_REVISION  "&Reject revision"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_FIND_NEXT  "Find &next revision"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_FIND_PREV  "Find &previous revision"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_COMPARE_DOCUMENTS  "&Compare documents"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_NEW_REVISION  "Start ne&w revision"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_PURGE  "P&urge revisions"
+#define AP_STRING_ID_MENU_LABEL__BOGUS1__  _(" ")
+#define AP_STRING_ID_MENU_LABEL__BOGUS2__  _(" ")
+#define AP_STRING_ID_MENU_LABEL_OPEN_TEMPLATE  _("Open Template")
+#define AP_STRING_ID_MENU_LABEL_FILE  _("&File")
+#define AP_STRING_ID_MENU_LABEL_FILE_NEW  _("&New")
+#define AP_STRING_ID_MENU_LABEL_FILE_NEW_USING_TEMPLATE  _("&New using Template")
+#define AP_STRING_ID_MENU_LABEL_FILE_OPEN  _("&Open")
+#define AP_STRING_ID_MENU_LABEL_FILE_IMPORTSTYLES  _("&Import Styles")
+#define AP_STRING_ID_MENU_LABEL_FILE_CLOSE  _("&Close")
+#define AP_STRING_ID_MENU_LABEL_FILE_SAVE  _("&Save")
+#define AP_STRING_ID_MENU_LABEL_FILE_SAVEAS  _("Save &As")
+#define AP_STRING_ID_MENU_LABEL_FILE_SAVE_TEMPLATE  _("Save &Template")
+#define AP_STRING_ID_MENU_LABEL_FILE_SAVEIMAGE  _("&Save Image As")
+#define AP_STRING_ID_MENU_LABEL_FILE_IMPORT  _("Op&en Copy")
+#define AP_STRING_ID_MENU_LABEL_FILE_EXPORT  _("Sav&e Copy")
+#define AP_STRING_ID_MENU_LABEL_FILE_PROPERTIES  _("P&roperties")
+#define AP_STRING_ID_MENU_LABEL_FILE_PAGESETUP  _("Page Set&up")
+#define AP_STRING_ID_MENU_LABEL_FILE_PRINT  _("&Print")
+#define AP_STRING_ID_MENU_LABEL_FILE_PRINT_DIRECTLY  _("Print &directly")
+#define AP_STRING_ID_MENU_LABEL_FILE_PRINT_PREVIEW  _("Print P&review")
+#define AP_STRING_ID_MENU_LABEL_FILE_RECENT  _("Recent &Files")
+#define AP_STRING_ID_MENU_LABEL_FILE_RECENT_1  _("&1 %s")
+#define AP_STRING_ID_MENU_LABEL_FILE_RECENT_2  _("&2 %s")
+#define AP_STRING_ID_MENU_LABEL_FILE_RECENT_3  _("&3 %s")
+#define AP_STRING_ID_MENU_LABEL_FILE_RECENT_4  _("&4 %s")
+#define AP_STRING_ID_MENU_LABEL_FILE_RECENT_5  _("&5 %s")
+#define AP_STRING_ID_MENU_LABEL_FILE_RECENT_6  _("&6 %s")
+#define AP_STRING_ID_MENU_LABEL_FILE_RECENT_7  _("&7 %s")
+#define AP_STRING_ID_MENU_LABEL_FILE_RECENT_8  _("&8 %s")
+#define AP_STRING_ID_MENU_LABEL_FILE_RECENT_9  _("&9 %s")
+#define AP_STRING_ID_MENU_LABEL_FILE_REVERT  _("Re&vert")
+#define AP_STRING_ID_MENU_LABEL_FILE_SAVEEMBED  _("Save to file")
+#define AP_STRING_ID_MENU_LABEL_FILE_EXIT  _("&Quit")
+#define AP_STRING_ID_MENU_LABEL_EDIT  _("&Edit")
+#define AP_STRING_ID_MENU_LABEL_EDIT_UNDO  _("&Undo")
+#define AP_STRING_ID_MENU_LABEL_EDIT_REDO  _("&Redo")
+#define AP_STRING_ID_MENU_LABEL_EDIT_CUT  _("Cu&t")
+#define AP_STRING_ID_MENU_LABEL_EDIT_COPY  _("&Copy")
+#define AP_STRING_ID_MENU_LABEL_EDIT_PASTE  _("&Paste")
+#define AP_STRING_ID_MENU_LABEL_EDIT_PASTE_SPECIAL  _("Pa&ste Unformatted")
+#define AP_STRING_ID_MENU_LABEL_EDIT_CLEAR  _("Cle&ar")
+#define AP_STRING_ID_MENU_LABEL_EDIT_SELECTALL  _("Select A&ll")
+#define AP_STRING_ID_MENU_LABEL_EDIT_FIND  _("&Find")
+#define AP_STRING_ID_MENU_LABEL_EDIT_REPLACE  _("R&eplace")
+#define AP_STRING_ID_MENU_LABEL_EDIT_GOTO  _("&Go To")
+#define AP_STRING_ID_MENU_LABEL_EDIT_DELETEFRAME  _("Delete Text Box")
+#define AP_STRING_ID_MENU_LABEL_EDIT_DELETEIMAGE  _("Delete Image")
+#define AP_STRING_ID_MENU_LABEL_EDIT_CUTIMAGE  _("Cut Image")
+#define AP_STRING_ID_MENU_LABEL_EDIT_COPYIMAGE  _("Copy Image")
+#define AP_STRING_ID_MENU_LABEL_EDIT_CUT_FRAME  _("Cut Text Box")
+#define AP_STRING_ID_MENU_LABEL_EDIT_COPY_FRAME  _("Copy Text Box")
+#define AP_STRING_ID_MENU_LABEL_EDIT_SELECT_FRAME  _("Select Text Box")
+#define AP_STRING_ID_MENU_LABEL_INSERT_HEADER  _("Header")
+#define AP_STRING_ID_MENU_LABEL_INSERT_FOOTER  _("Footer")
+#define AP_STRING_ID_MENU_LABEL_EDIT_EDITHEADER  _("Edit Header")
+#define AP_STRING_ID_MENU_LABEL_EDIT_EDITFOOTER  _("Edit Footer")
+#define AP_STRING_ID_MENU_LABEL_EDIT_REMOVEHEADER  _("Remove Header")
+#define AP_STRING_ID_MENU_LABEL_EDIT_REMOVEFOOTER  _("Remove Footer")
+#define AP_STRING_ID_MENU_LABEL_EDIT_CUTEMBED  _("Cut Object")
+#define AP_STRING_ID_MENU_LABEL_EDIT_COPYEMBED  _("Copy Object")
+#define AP_STRING_ID_MENU_LABEL_EDIT_DELETEEMBED  _("Delete Object")
+#define AP_STRING_ID_MENU_LABEL_EDIT_LATEXEQUATION  _("Edit Equation")
+#define AP_STRING_ID_MENU_LABEL_VIEW  _("&View")
+#define AP_STRING_ID_MENU_LABEL_VIEW_NORMAL  _("&Normal Layout")
+#define AP_STRING_ID_MENU_LABEL_VIEW_WEB  _("&Web Layout")
+#define AP_STRING_ID_MENU_LABEL_VIEW_PRINT  _("&Print Layout")
+#define AP_STRING_ID_MENU_LABEL_VIEW_TOOLBARS  _("&Toolbars")
+#define AP_STRING_ID_MENU_LABEL_VIEW_TB_1  _("&1 %s")
+#define AP_STRING_ID_MENU_LABEL_VIEW_TB_2  _("&2 %s")
+#define AP_STRING_ID_MENU_LABEL_VIEW_TB_3  _("&3 %s")
+#define AP_STRING_ID_MENU_LABEL_VIEW_TB_4  _("&4 %s")
+#define AP_STRING_ID_MENU_LABEL_VIEW_LOCK_TB_LAYOUT  _("&Lock layout")
+#define AP_STRING_ID_MENU_LABEL_VIEW_DEFAULT_TB_LAYOUT  _("&Reset to default layout")
+#define AP_STRING_ID_MENU_LABEL_VIEW_RULER  _("Show &Ruler")
+#define AP_STRING_ID_MENU_LABEL_VIEW_STATUSBAR  _("&Show Status Bar")
+#define AP_STRING_ID_MENU_LABEL_VIEW_SHOWPARA  _("Show For&matting Marks")
+#define AP_STRING_ID_MENU_LABEL_VIEW_LOCKSTYLES  _("Enable F&ormatting Tools")
+#define AP_STRING_ID_MENU_LABEL_VIEW_HEADFOOT  _("&Header and Footer")
+#define AP_STRING_ID_MENU_LABEL_VIEW_FULLSCREEN  _("F&ull Screen")
+#define AP_STRING_ID_MENU_LABEL_VIEW_ZOOM_MENU  _("&Zoom")
+#define AP_STRING_ID_MENU_LABEL_VIEW_ZOOM  _("&Zoom")
+#define AP_STRING_ID_MENU_LABEL_VIEW_ZOOM_200  _("Zoom to &200%")
+#define AP_STRING_ID_MENU_LABEL_VIEW_ZOOM_100  _("Zoom to &100%")
+#define AP_STRING_ID_MENU_LABEL_VIEW_ZOOM_75  _("Zoom to &75%")
+#define AP_STRING_ID_MENU_LABEL_VIEW_ZOOM_50  _("Zoom to &50%")
+#define AP_STRING_ID_MENU_LABEL_VIEW_ZOOM_WIDTH  _("&Page Width")
+#define AP_STRING_ID_MENU_LABEL_VIEW_ZOOM_WHOLE  _("&Whole Page")
+#define AP_STRING_ID_MENU_LABEL_INSERT  _("&Insert")
+#define AP_STRING_ID_MENU_LABEL_INSERT_BREAK  _("&Break")
+#define AP_STRING_ID_MENU_LABEL_INSERT_PAGENO  _("Page N&umbers")
+#define AP_STRING_ID_MENU_LABEL_INSERT_DATETIME  _("Date and &Time")
+#define AP_STRING_ID_MENU_LABEL_INSERT_TEXTBOX  _("Text Box")
+#define AP_STRING_ID_MENU_LABEL_INSERT_MAILMERGE  _("&Mail Merge Field")
+#define AP_STRING_ID_MENU_LABEL_INSERT_FIELD  _("&Field")
+#define AP_STRING_ID_MENU_LABEL_INSERT_FILE  _("F&ile")
+#define AP_STRING_ID_MENU_LABEL_INSERT_SYMBOL  _("Sy&mbol")
+#define AP_STRING_ID_MENU_LABEL_INSERT_ENDNOTE  _("&Endnote")
+#define AP_STRING_ID_MENU_LABEL_INSERT_FOOTNOTE  _("Foot&note")
+#define AP_STRING_ID_MENU_LABEL_INSERT_TABLEOFCONTENTS  _("Table of Contents")
+#define AP_STRING_ID_MENU_LABEL_INSERT_CLIPART  _("&Clip Art")
+#define AP_STRING_ID_MENU_LABEL_INSERT_GRAPHIC  _("&Picture")
+#define AP_STRING_ID_MENU_LABEL_INSERT_BOOKMARK  _("Boo&kmark")
+#define AP_STRING_ID_MENU_LABEL_INSERT_HYPERLINK  _("&Hyperlink")
+#define AP_STRING_ID_MENU_LABEL_INSERT_GOTO_HYPERLINK  _("&Jump to hyperlink")
+#define AP_STRING_ID_MENU_LABEL_INSERT_EDIT_HYPERLINK  _("&Edit hyperlink")
+#define AP_STRING_ID_MENU_LABEL_EDIT_COPY_HYPERLINK_LOCATION  _("C&opy hyperlink location")
+#define AP_STRING_ID_MENU_LABEL_INSERT_DELETE_HYPERLINK  _("&Delete hyperlink")
+#define AP_STRING_ID_MENU_LABEL_INSERT_DIRECTIONMARKER  _("&Direction Marker")
+#define AP_STRING_ID_MENU_LABEL_INSERT_DIRECTIONMARKER_LRM  _("&LRM")
+#define AP_STRING_ID_MENU_LABEL_INSERT_DIRECTIONMARKER_RLM  _("&RLM")
+#define AP_STRING_ID_MENU_LABEL_FORMAT  _("F&ormat")
+#define AP_STRING_ID_MENU_LABEL_FMT  _("Te&xt Formatting")
+#define AP_STRING_ID_MENU_LABEL_FMT_LANGUAGE  _("Set &Language")
+#define AP_STRING_ID_MENU_LABEL_FMT_FONT  _("&Font")
+#define AP_STRING_ID_MENU_LABEL_FMT_PARAGRAPH  _("&Paragraph")
+#define AP_STRING_ID_MENU_LABEL_FMT_BULLETS  _("Bullets and &Numbering")
+#define AP_STRING_ID_MENU_LABEL_FMT_DOCUMENT  _("&Document")
+#define AP_STRING_ID_MENU_LABEL_FMT_BORDERS  _("Borders and Shading")
+#define AP_STRING_ID_MENU_LABEL_FMT_HDRFTR  _("Header/Footers")
+#define AP_STRING_ID_MENU_LABEL_FMT_FOOTNOTES  _("Footnotes and Endnotes")
+#define AP_STRING_ID_MENU_LABEL_FMT_TABLEOFCONTENTS  _("Table of Contents")
+#define AP_STRING_ID_MENU_LABEL_FMT_COLUMNS  _("&Columns")
+#define AP_STRING_ID_MENU_LABEL_FMT_TOGGLECASE  _("C&hange Case")
+#define AP_STRING_ID_MENU_LABEL_FMT_BACKGROUND  _("Page Background")
+#define AP_STRING_ID_MENU_LABEL_FMT_BACKGROUND_PAGE_COLOR  _("Page C&olor")
+#define AP_STRING_ID_MENU_LABEL_FMT_BACKGROUND_PAGE_IMAGE  _("Page Image")
+#define AP_STRING_ID_MENU_LABEL_FMT_STYLIST  _("Sty&list")
+#define AP_STRING_ID_MENU_LABEL_FMT_STYLE  _("St&yle")
+#define AP_STRING_ID_MENU_LABEL_FMT_STYLE_DEFINE  _("&Create and Modify Styles")
+#define AP_STRING_ID_MENU_LABEL_FMT_TABS  _("&Tabs")
+#define AP_STRING_ID_MENU_LABEL_FMT_BOLD  _("&Bold")
+#define AP_STRING_ID_MENU_LABEL_FMT_ITALIC  _("&Italic")
+#define AP_STRING_ID_MENU_LABEL_FMT_UNDERLINE  _("&Underline")
+#define AP_STRING_ID_MENU_LABEL_FMT_OVERLINE  _("&Overline")
+#define AP_STRING_ID_MENU_LABEL_FMT_STRIKE  _("Stri&ke")
+#define AP_STRING_ID_MENU_LABEL_FMT_TOPLINE  _("Topline")
+#define AP_STRING_ID_MENU_LABEL_FMT_BOTTOMLINE  _("Bottomline")
+#define AP_STRING_ID_MENU_LABEL_FMT_SUPERSCRIPT  _("Supe&rscript")
+#define AP_STRING_ID_MENU_LABEL_FMT_SUBSCRIPT  _("&Subscript")
+#define AP_STRING_ID_MENU_LABEL_FMT_FRAME  _("Text Box")
+#define AP_STRING_ID_MENU_LABEL_FMT_IMAGE  _("&Image")
+#define AP_STRING_ID_MENU_LABEL_FMT_SETPOSIMAGE  _("Set Positioned Image")
+#define AP_STRING_ID_MENU_LABEL_FMT_POSIMAGE  _("&Image")
+#define AP_STRING_ID_MENU_LABEL_FMT_DIRECTION  _("D&irectional")
+#define AP_STRING_ID_MENU_LABEL_FMT_DIRECTION_DOCD_RTL  _("RTL &Document")
+#define AP_STRING_ID_MENU_LABEL_FMT_DIRECTION_SD_RTL  _("RTL &Section")
+#define AP_STRING_ID_MENU_LABEL_FMT_DIRECTION_DD_RTL  _("RTL &Paragraph")
+#define AP_STRING_ID_MENU_LABEL_FMT_DIRECTION_DO_LTR  _("&Left-to-right text")
+#define AP_STRING_ID_MENU_LABEL_FMT_DIRECTION_DO_RTL  _("&Right-to-left text")
+#define AP_STRING_ID_MENU_LABEL_FMT_EMBED  _("Format Object")
+#define AP_STRING_ID_MENU_LABEL_TOOLS  _("&Tools")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_SPELLING  _("&Spelling")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_SPELL  _("Check &Spelling")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_AUTOSPELL  _("&Auto Spellcheck")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_SPELLPREFS  _("Spelling &Options")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_WORDCOUNT  _("&Word Count")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_OPTIONS  _("Pr&eferences")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_LANGUAGE  _("&Language")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_PLUGINS  _("&Plugins")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_SCRIPTS  _("S&cripts")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_MAILMERGE  _("&Mail Merge")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_HISTORY  _("&Document History")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_HISTORY_SHOW  _("&Show History")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_HISTORY_PURGE  _("&Purge History")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_AUTO  _("&Maintain Full History")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS  _("&Revisions")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_MARK  _("&Mark revisions while typing")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_SHOW  _("S&how revisions")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_SHOW_AFTER  _("Show document a&fter revisions")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_SHOW_AFTERPREV  _("Show document after &previous revisions")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_SHOW_BEFORE  _("Show document &before revisions")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_SET_VIEW_LEVEL  _("&Select revision")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_ACCEPT_REVISION  _("&Accept revision")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_REJECT_REVISION  _("&Reject revision")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_FIND_NEXT  _("Find &next revision")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_FIND_PREV  _("Find &previous revision")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_COMPARE_DOCUMENTS  _("&Compare documents")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_NEW_REVISION  _("Start ne&w revision")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_PURGE  _("P&urge revisions")
 // RIVERA
-#define AP_STRING_ID_MENU_LABEL_TOOLS_ANNOTATIONS  "&Annotations"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_ANNOTATIONS_INSERT  "New &annotation"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL  "Create from &selection"
-#define AP_STRING_ID_MENU_LABEL_TOOLS_ANNOTATIONS_TOGGLE_DISPLAY  "&Show annotations"
-#define AP_STRING_ID_MENU_LABEL_GOTO_ANNOTATION  "&Jump to annotation"
-#define AP_STRING_ID_MENU_LABEL_EDIT_ANNOTATION  "&Edit annotation"
-#define AP_STRING_ID_MENU_LABEL_DELETE_ANNOTATION  "&Delete annotation"
-#define AP_STRING_ID_MENU_LABEL_TABLE  "T&able"
-#define AP_STRING_ID_MENU_LABEL_TABLE_INSERT  "&Insert"
-#define AP_STRING_ID_MENU_LABEL_TABLE_INSERT_TABLE  "&Table"
-#define AP_STRING_ID_MENU_LABEL_TABLE_INSERTTABLE  "Insert &Table"
-#define AP_STRING_ID_MENU_LABEL_TABLE_INSERT_COLUMNS_BEFORE  "Columns &Left"
-#define AP_STRING_ID_MENU_LABEL_TABLE_INSERT_COLUMNS_AFTER  "Columns &Right"
-#define AP_STRING_ID_MENU_LABEL_TABLE_INSERTCOLUMN  "Insert &Columns"
-#define AP_STRING_ID_MENU_LABEL_TABLE_INSERT_ROWS_BEFORE  "Rows &Above"
-#define AP_STRING_ID_MENU_LABEL_TABLE_INSERT_ROWS_AFTER  "Rows &Below"
-#define AP_STRING_ID_MENU_LABEL_TABLE_INSERTROW  "Insert &Rows"
-#define AP_STRING_ID_MENU_LABEL_TABLE_INSERT_CELLS  "&Cells"
-#define AP_STRING_ID_MENU_LABEL_TABLE_INSERT_SUMCOLS  "Sum a Row"
-#define AP_STRING_ID_MENU_LABEL_TABLE_INSERT_SUMROWS  "Sum a Column"
-#define AP_STRING_ID_MENU_LABEL_TABLE_DELETE  "&Delete"
-#define AP_STRING_ID_MENU_LABEL_TABLE_DELETE_TABLE  "&Table"
-#define AP_STRING_ID_MENU_LABEL_TABLE_DELETETABLE  "Delete Tabl&e"
-#define AP_STRING_ID_MENU_LABEL_TABLE_DELETE_COLUMNS  "&Column"
-#define AP_STRING_ID_MENU_LABEL_TABLE_DELETECOLUMN  "Delete Co&lumn"
-#define AP_STRING_ID_MENU_LABEL_TABLE_DELETE_ROWS  "&Row"
-#define AP_STRING_ID_MENU_LABEL_TABLE_DELETEROW  "Delete Ro&w"
-#define AP_STRING_ID_MENU_LABEL_TABLE_DELETE_CELLS  "&Cells"
-#define AP_STRING_ID_MENU_LABEL_TABLE_SELECT  "&Select"
-#define AP_STRING_ID_MENU_LABEL_TABLE_SELECT_TABLE  "&Table"
-#define AP_STRING_ID_MENU_LABEL_TABLE_SELECT_COLUMN  "Co&lumn"
-#define AP_STRING_ID_MENU_LABEL_TABLE_SELECT_ROW  "&Row"
-#define AP_STRING_ID_MENU_LABEL_TABLE_SELECT_CELL  "&Cell"
-#define AP_STRING_ID_MENU_LABEL_TABLE_MERGE_CELLS  "&Merge Cells"
-#define AP_STRING_ID_MENU_LABEL_TABLE_SPLIT_CELLS  "S&plit Cells"
-#define AP_STRING_ID_MENU_LABEL_TABLE_SPLIT_TABLE  "Spli&t Table"
-#define AP_STRING_ID_MENU_LABEL_TABLE_FORMAT  "&Format Table"
-#define AP_STRING_ID_MENU_LABEL_TABLE_AUTOFIT  "&Autofit Table"
-#define AP_STRING_ID_MENU_LABEL_TABLE_TEXTTOTABLE  "Convert Text to Table"
-#define AP_STRING_ID_MENU_LABEL_TABLE_TEXTTOTABLE_ALL "Split text at spaces, commas  or tabs"
-#define AP_STRING_ID_MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES  "Split text at commas or tabs"
-#define AP_STRING_ID_MENU_LABEL_TABLE_TABLETOTEXT  "Convert Table to Text"
-#define AP_STRING_ID_MENU_LABEL_TABLE_TABLETOTEXTCOMMAS  "Separate with commas"
-#define AP_STRING_ID_MENU_LABEL_TABLE_TABLETOTEXTTABS  "Separate with tabs"
-#define AP_STRING_ID_MENU_LABEL_TABLE_TABLETOTEXTCOMMASTABS  "Separate with commas and tabs"
-#define AP_STRING_ID_MENU_LABEL_TABLE_HEADING_ROWS_REPEAT  "Repeat Row as Heading"
-#define AP_STRING_ID_MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_THIS  "Set this Row as Heading"
-#define AP_STRING_ID_MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE  "Remove Row as Heading"
-#define AP_STRING_ID_MENU_LABEL_TABLE_SORT  "So&rt Table"
-#define AP_STRING_ID_MENU_LABEL_TABLE_SORTROWSASCEND  "Sort Rows in Ascending Order"
-#define AP_STRING_ID_MENU_LABEL_TABLE_SORTROWSDESCEND  "Sort Rows in Descending Order"
-#define AP_STRING_ID_MENU_LABEL_TABLE_SORTCOLSASCEND  "Sort Columns in Ascending Order"
-#define AP_STRING_ID_MENU_LABEL_TABLE_SORTCOLSDESCEND  "Sort Columns in Descending Order"
+#define AP_STRING_ID_MENU_LABEL_TOOLS_ANNOTATIONS  _("&Annotations")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_ANNOTATIONS_INSERT  _("New &annotation")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL  _("Create from &selection")
+#define AP_STRING_ID_MENU_LABEL_TOOLS_ANNOTATIONS_TOGGLE_DISPLAY  _("&Show annotations")
+#define AP_STRING_ID_MENU_LABEL_GOTO_ANNOTATION  _("&Jump to annotation")
+#define AP_STRING_ID_MENU_LABEL_EDIT_ANNOTATION  _("&Edit annotation")
+#define AP_STRING_ID_MENU_LABEL_DELETE_ANNOTATION  _("&Delete annotation")
+#define AP_STRING_ID_MENU_LABEL_TABLE  _("T&able")
+#define AP_STRING_ID_MENU_LABEL_TABLE_INSERT  _("&Insert")
+#define AP_STRING_ID_MENU_LABEL_TABLE_INSERT_TABLE  _("&Table")
+#define AP_STRING_ID_MENU_LABEL_TABLE_INSERTTABLE  _("Insert &Table")
+#define AP_STRING_ID_MENU_LABEL_TABLE_INSERT_COLUMNS_BEFORE  _("Columns &Left")
+#define AP_STRING_ID_MENU_LABEL_TABLE_INSERT_COLUMNS_AFTER  _("Columns &Right")
+#define AP_STRING_ID_MENU_LABEL_TABLE_INSERTCOLUMN  _("Insert &Columns")
+#define AP_STRING_ID_MENU_LABEL_TABLE_INSERT_ROWS_BEFORE  _("Rows &Above")
+#define AP_STRING_ID_MENU_LABEL_TABLE_INSERT_ROWS_AFTER  _("Rows &Below")
+#define AP_STRING_ID_MENU_LABEL_TABLE_INSERTROW  _("Insert &Rows")
+#define AP_STRING_ID_MENU_LABEL_TABLE_INSERT_CELLS  _("&Cells")
+#define AP_STRING_ID_MENU_LABEL_TABLE_INSERT_SUMCOLS  _("Sum a Row")
+#define AP_STRING_ID_MENU_LABEL_TABLE_INSERT_SUMROWS  _("Sum a Column")
+#define AP_STRING_ID_MENU_LABEL_TABLE_DELETE  _("&Delete")
+#define AP_STRING_ID_MENU_LABEL_TABLE_DELETE_TABLE  _("&Table")
+#define AP_STRING_ID_MENU_LABEL_TABLE_DELETETABLE  _("Delete Tabl&e")
+#define AP_STRING_ID_MENU_LABEL_TABLE_DELETE_COLUMNS  _("&Column")
+#define AP_STRING_ID_MENU_LABEL_TABLE_DELETECOLUMN  _("Delete Co&lumn")
+#define AP_STRING_ID_MENU_LABEL_TABLE_DELETE_ROWS  _("&Row")
+#define AP_STRING_ID_MENU_LABEL_TABLE_DELETEROW  _("Delete Ro&w")
+#define AP_STRING_ID_MENU_LABEL_TABLE_DELETE_CELLS  _("&Cells")
+#define AP_STRING_ID_MENU_LABEL_TABLE_SELECT  _("&Select")
+#define AP_STRING_ID_MENU_LABEL_TABLE_SELECT_TABLE  _("&Table")
+#define AP_STRING_ID_MENU_LABEL_TABLE_SELECT_COLUMN  _("Co&lumn")
+#define AP_STRING_ID_MENU_LABEL_TABLE_SELECT_ROW  _("&Row")
+#define AP_STRING_ID_MENU_LABEL_TABLE_SELECT_CELL  _("&Cell")
+#define AP_STRING_ID_MENU_LABEL_TABLE_MERGE_CELLS  _("&Merge Cells")
+#define AP_STRING_ID_MENU_LABEL_TABLE_SPLIT_CELLS  _("S&plit Cells")
+#define AP_STRING_ID_MENU_LABEL_TABLE_SPLIT_TABLE  _("Spli&t Table")
+#define AP_STRING_ID_MENU_LABEL_TABLE_FORMAT  _("&Format Table")
+#define AP_STRING_ID_MENU_LABEL_TABLE_AUTOFIT  _("&Autofit Table")
+#define AP_STRING_ID_MENU_LABEL_TABLE_TEXTTOTABLE  _("Convert Text to Table")
+#define AP_STRING_ID_MENU_LABEL_TABLE_TEXTTOTABLE_ALL _("Split text at spaces, commas  or tabs")
+#define AP_STRING_ID_MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES  _("Split text at commas or tabs")
+#define AP_STRING_ID_MENU_LABEL_TABLE_TABLETOTEXT  _("Convert Table to Text")
+#define AP_STRING_ID_MENU_LABEL_TABLE_TABLETOTEXTCOMMAS  _("Separate with commas")
+#define AP_STRING_ID_MENU_LABEL_TABLE_TABLETOTEXTTABS  _("Separate with tabs")
+#define AP_STRING_ID_MENU_LABEL_TABLE_TABLETOTEXTCOMMASTABS  _("Separate with commas and tabs")
+#define AP_STRING_ID_MENU_LABEL_TABLE_HEADING_ROWS_REPEAT  _("Repeat Row as Heading")
+#define AP_STRING_ID_MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_THIS  _("Set this Row as Heading")
+#define AP_STRING_ID_MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE  _("Remove Row as Heading")
+#define AP_STRING_ID_MENU_LABEL_TABLE_SORT  _("So&rt Table")
+#define AP_STRING_ID_MENU_LABEL_TABLE_SORTROWSASCEND  _("Sort Rows in Ascending Order")
+#define AP_STRING_ID_MENU_LABEL_TABLE_SORTROWSDESCEND  _("Sort Rows in Descending Order")
+#define AP_STRING_ID_MENU_LABEL_TABLE_SORTCOLSASCEND  _("Sort Columns in Ascending Order")
+#define AP_STRING_ID_MENU_LABEL_TABLE_SORTCOLSDESCEND  _("Sort Columns in Descending Order")
 
 // the following two strings are identical to the two above, so I will
 // just alias them
@@ -1078,552 +1078,552 @@
 #define AP_STRING_ID_MENU_LABEL_CONTEXT_REVISIONS_ACCEPT_REVISION AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_ACCEPT_REVISION
 #define AP_STRING_ID_MENU_LABEL_CONTEXT_REVISIONS_FIND_NEXT AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_FIND_NEXT
 #define AP_STRING_ID_MENU_LABEL_CONTEXT_REVISIONS_FIND_PREV AP_STRING_ID_MENU_LABEL_TOOLS_REVISIONS_FIND_PREV
-#define AP_STRING_ID_MENU_LABEL_ALIGN  "&Align"
-#define AP_STRING_ID_MENU_LABEL_ALIGN_LEFT  "&Left"
-#define AP_STRING_ID_MENU_LABEL_ALIGN_CENTER  "&Center"
-#define AP_STRING_ID_MENU_LABEL_ALIGN_RIGHT  "&Right"
-#define AP_STRING_ID_MENU_LABEL_ALIGN_JUSTIFY  "&Justify"
-#define AP_STRING_ID_MENU_LABEL_WEB_WEBPREVIEW  "&In web browser"
-#define AP_STRING_ID_MENU_LABEL_WEB_SAVEASWEB  "&Save web page"
-#define AP_STRING_ID_MENU_LABEL_WINDOW  "&Documents"
-#define AP_STRING_ID_MENU_LABEL_WINDOW_NEW  "&New Window"
-#define AP_STRING_ID_MENU_LABEL_WINDOW_1  "&1 %s"
-#define AP_STRING_ID_MENU_LABEL_WINDOW_2  "&2 %s"
-#define AP_STRING_ID_MENU_LABEL_WINDOW_3  "&3 %s"
-#define AP_STRING_ID_MENU_LABEL_WINDOW_4  "&4 %s"
-#define AP_STRING_ID_MENU_LABEL_WINDOW_5  "&5 %s"
-#define AP_STRING_ID_MENU_LABEL_WINDOW_6  "&6 %s"
-#define AP_STRING_ID_MENU_LABEL_WINDOW_7  "&7 %s"
-#define AP_STRING_ID_MENU_LABEL_WINDOW_8  "&8 %s"
-#define AP_STRING_ID_MENU_LABEL_WINDOW_9  "&9 %s"
-#define AP_STRING_ID_MENU_LABEL_WINDOW_MORE  "&More Documents"
-#define AP_STRING_ID_MENU_LABEL_HELP  "&Help"
-#define AP_STRING_ID_MENU_LABEL_HELP_CREDITS  "C&redits"
-#define AP_STRING_ID_MENU_LABEL_HELP_CONTENTS  "Help &Contents"
-#define AP_STRING_ID_MENU_LABEL_HELP_INDEX  "Help &Introduction"
-#define AP_STRING_ID_MENU_LABEL_HELP_CHECKVER  "Check for &Updates"
-#define AP_STRING_ID_MENU_LABEL_HELP_SEARCH  "&Search for Help"
-#define AP_STRING_ID_MENU_LABEL_HELP_ABOUT  "&About %s"
-#define AP_STRING_ID_MENU_LABEL_HELP_ABOUT_GNOMEOFFICE  "About G&NOME Office"
-#define AP_STRING_ID_MENU_LABEL_HELP_REPORT_BUG  "Report a &Bug"
-#define AP_STRING_ID_MENU_LABEL_SPELL_SUGGEST_1  "%s"
-#define AP_STRING_ID_MENU_LABEL_SPELL_SUGGEST_2  "%s"
-#define AP_STRING_ID_MENU_LABEL_SPELL_SUGGEST_3  "%s"
-#define AP_STRING_ID_MENU_LABEL_SPELL_SUGGEST_4  "%s"
-#define AP_STRING_ID_MENU_LABEL_SPELL_SUGGEST_5  "%s"
-#define AP_STRING_ID_MENU_LABEL_SPELL_SUGGEST_6  "%s"
-#define AP_STRING_ID_MENU_LABEL_SPELL_SUGGEST_7  "%s"
-#define AP_STRING_ID_MENU_LABEL_SPELL_SUGGEST_8  "%s"
-#define AP_STRING_ID_MENU_LABEL_SPELL_SUGGEST_9  "%s"
-#define AP_STRING_ID_MENU_LABEL_SPELL_IGNOREALL  "&Ignore All"
-#define AP_STRING_ID_MENU_LABEL_SPELL_ADD  "&Add"
+#define AP_STRING_ID_MENU_LABEL_ALIGN  _("&Align")
+#define AP_STRING_ID_MENU_LABEL_ALIGN_LEFT  _("&Left")
+#define AP_STRING_ID_MENU_LABEL_ALIGN_CENTER  _("&Center")
+#define AP_STRING_ID_MENU_LABEL_ALIGN_RIGHT  _("&Right")
+#define AP_STRING_ID_MENU_LABEL_ALIGN_JUSTIFY  _("&Justify")
+#define AP_STRING_ID_MENU_LABEL_WEB_WEBPREVIEW  _("&In web browser")
+#define AP_STRING_ID_MENU_LABEL_WEB_SAVEASWEB  _("&Save web page")
+#define AP_STRING_ID_MENU_LABEL_WINDOW  _("&Documents")
+#define AP_STRING_ID_MENU_LABEL_WINDOW_NEW  _("&New Window")
+#define AP_STRING_ID_MENU_LABEL_WINDOW_1  _("&1 %s")
+#define AP_STRING_ID_MENU_LABEL_WINDOW_2  _("&2 %s")
+#define AP_STRING_ID_MENU_LABEL_WINDOW_3  _("&3 %s")
+#define AP_STRING_ID_MENU_LABEL_WINDOW_4  _("&4 %s")
+#define AP_STRING_ID_MENU_LABEL_WINDOW_5  _("&5 %s")
+#define AP_STRING_ID_MENU_LABEL_WINDOW_6  _("&6 %s")
+#define AP_STRING_ID_MENU_LABEL_WINDOW_7  _("&7 %s")
+#define AP_STRING_ID_MENU_LABEL_WINDOW_8  _("&8 %s")
+#define AP_STRING_ID_MENU_LABEL_WINDOW_9  _("&9 %s")
+#define AP_STRING_ID_MENU_LABEL_WINDOW_MORE  _("&More Documents")
+#define AP_STRING_ID_MENU_LABEL_HELP  _("&Help")
+#define AP_STRING_ID_MENU_LABEL_HELP_CREDITS  _("C&redits")
+#define AP_STRING_ID_MENU_LABEL_HELP_CONTENTS  _("Help &Contents")
+#define AP_STRING_ID_MENU_LABEL_HELP_INDEX  _("Help &Introduction")
+#define AP_STRING_ID_MENU_LABEL_HELP_CHECKVER  _("Check for &Updates")
+#define AP_STRING_ID_MENU_LABEL_HELP_SEARCH  _("&Search for Help")
+#define AP_STRING_ID_MENU_LABEL_HELP_ABOUT  _("&About %s")
+#define AP_STRING_ID_MENU_LABEL_HELP_ABOUT_GNOMEOFFICE  _("About G&NOME Office")
+#define AP_STRING_ID_MENU_LABEL_HELP_REPORT_BUG  _("Report a &Bug")
+#define AP_STRING_ID_MENU_LABEL_SPELL_SUGGEST_1  _("%s")
+#define AP_STRING_ID_MENU_LABEL_SPELL_SUGGEST_2  _("%s")
+#define AP_STRING_ID_MENU_LABEL_SPELL_SUGGEST_3  _("%s")
+#define AP_STRING_ID_MENU_LABEL_SPELL_SUGGEST_4  _("%s")
+#define AP_STRING_ID_MENU_LABEL_SPELL_SUGGEST_5  _("%s")
+#define AP_STRING_ID_MENU_LABEL_SPELL_SUGGEST_6  _("%s")
+#define AP_STRING_ID_MENU_LABEL_SPELL_SUGGEST_7  _("%s")
+#define AP_STRING_ID_MENU_LABEL_SPELL_SUGGEST_8  _("%s")
+#define AP_STRING_ID_MENU_LABEL_SPELL_SUGGEST_9  _("%s")
+#define AP_STRING_ID_MENU_LABEL_SPELL_IGNOREALL  _("&Ignore All")
+#define AP_STRING_ID_MENU_LABEL_SPELL_ADD  _("&Add")
 
-#define AP_STRING_ID_MENU_STATUSLINE__BOGUS1__  " "
-#define AP_STRING_ID_MENU_STATUSLINE__BOGUS2__  " "
-#define AP_STRING_ID_MENU_STATUSLINE_OPEN_TEMPLATE  " "
-#define AP_STRING_ID_MENU_STATUSLINE_FILE  " "
-#define AP_STRING_ID_MENU_STATUSLINE_FILE_NEW  "Create a new document"	
-#define AP_STRING_ID_MENU_STATUSLINE_FILE_NEW_USING_TEMPLATE  "Create a new document using a template"	
-#define AP_STRING_ID_MENU_STATUSLINE_FILE_OPEN  "Open an existing document"
-#define AP_STRING_ID_MENU_STATUSLINE_FILE_IMPORTSTYLES  "Import style definitions from a document"
-#define AP_STRING_ID_MENU_STATUSLINE_FILE_CLOSE  "Close the document"
-#define AP_STRING_ID_MENU_STATUSLINE_FILE_SAVE  "Save the document"
-#define AP_STRING_ID_MENU_STATUSLINE_FILE_SAVEAS  "Save the document under a different name"
-#define AP_STRING_ID_MENU_STATUSLINE_FILE_SAVE_TEMPLATE  "Save the document as a template"
-#define AP_STRING_ID_MENU_STATUSLINE_FILE_SAVEIMAGE  "Save the selected image to a file"
-#define AP_STRING_ID_MENU_STATUSLINE_FILE_IMPORT  "Open a document by making a copy"
-#define AP_STRING_ID_MENU_STATUSLINE_FILE_EXPORT  "Save the document without changing the current name"
-#define AP_STRING_ID_MENU_STATUSLINE_FILE_PROPERTIES  "Set meta-data properties"
-#define AP_STRING_ID_MENU_STATUSLINE_FILE_PAGESETUP  "Change the printing options"
-#define AP_STRING_ID_MENU_STATUSLINE_FILE_PRINT  "Print all or part of the document"
-#define AP_STRING_ID_MENU_STATUSLINE_FILE_PRINT_DIRECTLY  "Print using the internal PS driver"
-#define AP_STRING_ID_MENU_STATUSLINE_FILE_PRINT_PREVIEW  "Preview the document before printing"
-#define AP_STRING_ID_MENU_STATUSLINE_FILE_RECENT  "Open a recently used document"
-#define AP_STRING_ID_MENU_STATUSLINE_FILE_RECENT_1  "Open this document"
-#define AP_STRING_ID_MENU_STATUSLINE_FILE_RECENT_2  "Open this document"
-#define AP_STRING_ID_MENU_STATUSLINE_FILE_RECENT_3  "Open this document"
-#define AP_STRING_ID_MENU_STATUSLINE_FILE_RECENT_4  "Open this document"
-#define AP_STRING_ID_MENU_STATUSLINE_FILE_RECENT_5  "Open this document"
-#define AP_STRING_ID_MENU_STATUSLINE_FILE_RECENT_6  "Open this document"
-#define AP_STRING_ID_MENU_STATUSLINE_FILE_RECENT_7  "Open this document"
-#define AP_STRING_ID_MENU_STATUSLINE_FILE_RECENT_8  "Open this document"
-#define AP_STRING_ID_MENU_STATUSLINE_FILE_RECENT_9  "Open this document"
-#define AP_STRING_ID_MENU_STATUSLINE_FILE_REVERT  "Revert the document to the last saved state"
-#define AP_STRING_ID_MENU_STATUSLINE_FILE_EXIT  "Close all windows in the application and exit"
-#define AP_STRING_ID_MENU_STATUSLINE_FILE_SAVEEMBED  "Save the Embedded Object"
-#define AP_STRING_ID_MENU_STATUSLINE_EDIT  " "
-#define AP_STRING_ID_MENU_STATUSLINE_EDIT_UNDO  "Undo editing"
-#define AP_STRING_ID_MENU_STATUSLINE_EDIT_REDO  "Redo previously undone editing"
-#define AP_STRING_ID_MENU_STATUSLINE_EDIT_CUT  "Cut the selection and put it on the Clipboard"
-#define AP_STRING_ID_MENU_STATUSLINE_EDIT_COPY  "Copy the selection and put it on the Clipboard"
-#define AP_STRING_ID_MENU_STATUSLINE_EDIT_PASTE  "Insert Clipboard contents"
-#define AP_STRING_ID_MENU_STATUSLINE_EDIT_PASTE_SPECIAL  "Insert unformatted clipboard contents"
-#define AP_STRING_ID_MENU_STATUSLINE_EDIT_CLEAR  "Delete the selection"
-#define AP_STRING_ID_MENU_STATUSLINE_EDIT_SELECTALL  "Select the entire document"
-#define AP_STRING_ID_MENU_STATUSLINE_EDIT_FIND  "Find the specified text"
-#define AP_STRING_ID_MENU_STATUSLINE_EDIT_REPLACE  "Replace the specified text with different text"
-#define AP_STRING_ID_MENU_STATUSLINE_EDIT_GOTO  "Move the insertion point to a specific location"
-#define AP_STRING_ID_MENU_STATUSLINE_EDIT_EDITHEADER  "Edit the Header on the current page"
-#define AP_STRING_ID_MENU_STATUSLINE_EDIT_EDITFOOTER  "Edit the Footer on the current page"
-#define AP_STRING_ID_MENU_STATUSLINE_EDIT_REMOVEHEADER  "Remove the Header on this page from the Document"
-#define AP_STRING_ID_MENU_STATUSLINE_EDIT_REMOVEFOOTER  "Remove the Footer on this page from the Document"
-#define AP_STRING_ID_MENU_STATUSLINE_EDIT_DELETEFRAME  "Remove the Text Box from the Document"
-#define AP_STRING_ID_MENU_STATUSLINE_EDIT_DELETEIMAGE  "Remove the Image from the Document"
-#define AP_STRING_ID_MENU_STATUSLINE_EDIT_CUTIMAGE  "Remove the Image and save a copy on the clipboard"
-#define AP_STRING_ID_MENU_STATUSLINE_EDIT_COPYIMAGE  "Save a copy of the image on the clipboard"
-#define AP_STRING_ID_MENU_STATUSLINE_EDIT_CUT_FRAME  "Copy the Text Box to the clipboard then remove it"
-#define AP_STRING_ID_MENU_STATUSLINE_EDIT_COPY_FRAME  "Copy the Text Box to the clipboard"
-#define AP_STRING_ID_MENU_STATUSLINE_EDIT_SELECT_FRAME  "Select the Text Box"
-#define AP_STRING_ID_MENU_STATUSLINE_EDIT_CUTEMBED  "Cut Embedded Object"
-#define AP_STRING_ID_MENU_STATUSLINE_EDIT_COPYEMBED  "Copy Embedded Object"
-#define AP_STRING_ID_MENU_STATUSLINE_EDIT_DELETEEMBED  "Delete Embedded Object"
-#define AP_STRING_ID_MENU_STATUSLINE_EDIT_LATEXEQUATION  "Edit Latex Equation"
-#define AP_STRING_ID_MENU_STATUSLINE_VIEW  " "
-#define AP_STRING_ID_MENU_STATUSLINE_VIEW_NORMAL  "Normal View"
-#define AP_STRING_ID_MENU_STATUSLINE_VIEW_WEB  "Web Layout"
-#define AP_STRING_ID_MENU_STATUSLINE_VIEW_PRINT  "Print Layout"
-#define AP_STRING_ID_MENU_STATUSLINE_VIEW_TOOLBARS  " "
-#define AP_STRING_ID_MENU_STATUSLINE_VIEW_TB_1  "Show or hide the toolbar"
-#define AP_STRING_ID_MENU_STATUSLINE_VIEW_TB_2  "Show or hide the toolbar"
-#define AP_STRING_ID_MENU_STATUSLINE_VIEW_TB_3  "Show or hide the toolbar"
-#define AP_STRING_ID_MENU_STATUSLINE_VIEW_TB_4  "Show or hide the toolbar"
-#define AP_STRING_ID_MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT  "Lock the layout of the current toolbars"
-#define AP_STRING_ID_MENU_STATUSLINE_VIEW_DEFAULT_TB_LAYOUT  "Reset the current toolbar layout to its defaults"
-#define AP_STRING_ID_MENU_STATUSLINE_VIEW_RULER  "Show or hide the rulers"
-#define AP_STRING_ID_MENU_STATUSLINE_VIEW_STATUSBAR  "Show or hide the status bar"
-#define AP_STRING_ID_MENU_STATUSLINE_VIEW_SHOWPARA  "Display non-printing characters"
-#define AP_STRING_ID_MENU_STATUSLINE_VIEW_LOCKSTYLES  "Allow formatting using styles only"
-#define AP_STRING_ID_MENU_STATUSLINE_VIEW_HEADFOOT  "Edit text at the top or bottom of every page"
-#define AP_STRING_ID_MENU_STATUSLINE_VIEW_FULLSCREEN  "View the document in full screen mode"
-#define AP_STRING_ID_MENU_STATUSLINE_VIEW_ZOOM_MENU  "Reduce or enlarge the document display"
-#define AP_STRING_ID_MENU_STATUSLINE_VIEW_ZOOM  "Reduce or enlarge the document display"
-#define AP_STRING_ID_MENU_STATUSLINE_VIEW_ZOOM_200  "Zoom to 200%"
-#define AP_STRING_ID_MENU_STATUSLINE_VIEW_ZOOM_100  "Zoom to 100%"
-#define AP_STRING_ID_MENU_STATUSLINE_VIEW_ZOOM_75  "Zoom to 75%"
-#define AP_STRING_ID_MENU_STATUSLINE_VIEW_ZOOM_50  "Zoom to 50%"
-#define AP_STRING_ID_MENU_STATUSLINE_VIEW_ZOOM_WIDTH  "Zoom to page width"
-#define AP_STRING_ID_MENU_STATUSLINE_VIEW_ZOOM_WHOLE  "Zoom to whole page"
-#define AP_STRING_ID_MENU_STATUSLINE_INSERT  " "
-#define AP_STRING_ID_MENU_STATUSLINE_INSERT_BREAK "Insert a page, column  or section break"
-#define AP_STRING_ID_MENU_STATUSLINE_INSERT_PAGENO  "Insert an automatically-updated page number"
-#define AP_STRING_ID_MENU_STATUSLINE_INSERT_DATETIME  "Insert the date and/or time"
-#define AP_STRING_ID_MENU_STATUSLINE_INSERT_FIELD  "Insert a calculated field"
-#define AP_STRING_ID_MENU_STATUSLINE_INSERT_TEXTBOX  "Insert a Text Box"
-#define AP_STRING_ID_MENU_STATUSLINE_INSERT_MAILMERGE  "Insert a mail merge field"
-#define AP_STRING_ID_MENU_STATUSLINE_INSERT_FILE  "Insert the contents of another file"
-#define AP_STRING_ID_MENU_STATUSLINE_INSERT_SYMBOL  "Insert a symbol or other special character"
-#define AP_STRING_ID_MENU_STATUSLINE_INSERT_FOOTNOTE  "Insert a footnote"
-#define AP_STRING_ID_MENU_STATUSLINE_INSERT_TABLEOFCONTENTS  "Insert a Table of Contents based on Headings"
-#define AP_STRING_ID_MENU_STATUSLINE_INSERT_ENDNOTE  "Insert an endnote"
-#define AP_STRING_ID_MENU_STATUSLINE_INSERT_CLIPART  "Insert clipart"
-#define AP_STRING_ID_MENU_STATUSLINE_INSERT_HEADER  "Insert a Header"
-#define AP_STRING_ID_MENU_STATUSLINE_INSERT_FOOTER  "Insert a Footer"
-#define AP_STRING_ID_MENU_STATUSLINE_INSERT_GRAPHIC  "Insert an existing picture from another file"
-#define AP_STRING_ID_MENU_STATUSLINE_INSERT_BOOKMARK  "Insert bookmark"
-#define AP_STRING_ID_MENU_STATUSLINE_INSERT_HYPERLINK  "Insert hyperlink"
-#define AP_STRING_ID_MENU_STATUSLINE_INSERT_GOTO_HYPERLINK  "Jump to hyperlink"
-#define AP_STRING_ID_MENU_STATUSLINE_INSERT_EDIT_HYPERLINK  "Edit hyperlink"
-#define AP_STRING_ID_MENU_STATUSLINE_EDIT_COPY_HYPERLINK_LOCATION  "Copy hyperlink location"
-#define AP_STRING_ID_MENU_STATUSLINE_INSERT_DELETE_HYPERLINK  "Delete hyperlink"
-#define AP_STRING_ID_MENU_STATUSLINE_INSERT_DIRECTIONMARKER  "Insert Unicode direction marker into the document"
-#define AP_STRING_ID_MENU_STATUSLINE_INSERT_DIRECTIONMARKER_LRM  "Insert left-to-right direction marker (LRM)"
-#define AP_STRING_ID_MENU_STATUSLINE_INSERT_DIRECTIONMARKER_RLM  "Insert right-to-left direction marker (RLM)"
+#define AP_STRING_ID_MENU_STATUSLINE__BOGUS1__  _(" ")
+#define AP_STRING_ID_MENU_STATUSLINE__BOGUS2__  _(" ")
+#define AP_STRING_ID_MENU_STATUSLINE_OPEN_TEMPLATE  _(" ")
+#define AP_STRING_ID_MENU_STATUSLINE_FILE  _(" ")
+#define AP_STRING_ID_MENU_STATUSLINE_FILE_NEW  _("Create a new document")	
+#define AP_STRING_ID_MENU_STATUSLINE_FILE_NEW_USING_TEMPLATE  _("Create a new document using a template")	
+#define AP_STRING_ID_MENU_STATUSLINE_FILE_OPEN  _("Open an existing document")
+#define AP_STRING_ID_MENU_STATUSLINE_FILE_IMPORTSTYLES  _("Import style definitions from a document")
+#define AP_STRING_ID_MENU_STATUSLINE_FILE_CLOSE  _("Close the document")
+#define AP_STRING_ID_MENU_STATUSLINE_FILE_SAVE  _("Save the document")
+#define AP_STRING_ID_MENU_STATUSLINE_FILE_SAVEAS  _("Save the document under a different name")
+#define AP_STRING_ID_MENU_STATUSLINE_FILE_SAVE_TEMPLATE  _("Save the document as a template")
+#define AP_STRING_ID_MENU_STATUSLINE_FILE_SAVEIMAGE  _("Save the selected image to a file")
+#define AP_STRING_ID_MENU_STATUSLINE_FILE_IMPORT  _("Open a document by making a copy")
+#define AP_STRING_ID_MENU_STATUSLINE_FILE_EXPORT  _("Save the document without changing the current name")
+#define AP_STRING_ID_MENU_STATUSLINE_FILE_PROPERTIES  _("Set meta-data properties")
+#define AP_STRING_ID_MENU_STATUSLINE_FILE_PAGESETUP  _("Change the printing options")
+#define AP_STRING_ID_MENU_STATUSLINE_FILE_PRINT  _("Print all or part of the document")
+#define AP_STRING_ID_MENU_STATUSLINE_FILE_PRINT_DIRECTLY  _("Print using the internal PS driver")
+#define AP_STRING_ID_MENU_STATUSLINE_FILE_PRINT_PREVIEW  _("Preview the document before printing")
+#define AP_STRING_ID_MENU_STATUSLINE_FILE_RECENT  _("Open a recently used document")
+#define AP_STRING_ID_MENU_STATUSLINE_FILE_RECENT_1  _("Open this document")
+#define AP_STRING_ID_MENU_STATUSLINE_FILE_RECENT_2  _("Open this document")
+#define AP_STRING_ID_MENU_STATUSLINE_FILE_RECENT_3  _("Open this document")
+#define AP_STRING_ID_MENU_STATUSLINE_FILE_RECENT_4  _("Open this document")
+#define AP_STRING_ID_MENU_STATUSLINE_FILE_RECENT_5  _("Open this document")
+#define AP_STRING_ID_MENU_STATUSLINE_FILE_RECENT_6  _("Open this document")
+#define AP_STRING_ID_MENU_STATUSLINE_FILE_RECENT_7  _("Open this document")
+#define AP_STRING_ID_MENU_STATUSLINE_FILE_RECENT_8  _("Open this document")
+#define AP_STRING_ID_MENU_STATUSLINE_FILE_RECENT_9  _("Open this document")
+#define AP_STRING_ID_MENU_STATUSLINE_FILE_REVERT  _("Revert the document to the last saved state")
+#define AP_STRING_ID_MENU_STATUSLINE_FILE_EXIT  _("Close all windows in the application and exit")
+#define AP_STRING_ID_MENU_STATUSLINE_FILE_SAVEEMBED  _("Save the Embedded Object")
+#define AP_STRING_ID_MENU_STATUSLINE_EDIT  _(" ")
+#define AP_STRING_ID_MENU_STATUSLINE_EDIT_UNDO  _("Undo editing")
+#define AP_STRING_ID_MENU_STATUSLINE_EDIT_REDO  _("Redo previously undone editing")
+#define AP_STRING_ID_MENU_STATUSLINE_EDIT_CUT  _("Cut the selection and put it on the Clipboard")
+#define AP_STRING_ID_MENU_STATUSLINE_EDIT_COPY  _("Copy the selection and put it on the Clipboard")
+#define AP_STRING_ID_MENU_STATUSLINE_EDIT_PASTE  _("Insert Clipboard contents")
+#define AP_STRING_ID_MENU_STATUSLINE_EDIT_PASTE_SPECIAL  _("Insert unformatted clipboard contents")
+#define AP_STRING_ID_MENU_STATUSLINE_EDIT_CLEAR  _("Delete the selection")
+#define AP_STRING_ID_MENU_STATUSLINE_EDIT_SELECTALL  _("Select the entire document")
+#define AP_STRING_ID_MENU_STATUSLINE_EDIT_FIND  _("Find the specified text")
+#define AP_STRING_ID_MENU_STATUSLINE_EDIT_REPLACE  _("Replace the specified text with different text")
+#define AP_STRING_ID_MENU_STATUSLINE_EDIT_GOTO  _("Move the insertion point to a specific location")
+#define AP_STRING_ID_MENU_STATUSLINE_EDIT_EDITHEADER  _("Edit the Header on the current page")
+#define AP_STRING_ID_MENU_STATUSLINE_EDIT_EDITFOOTER  _("Edit the Footer on the current page")
+#define AP_STRING_ID_MENU_STATUSLINE_EDIT_REMOVEHEADER  _("Remove the Header on this page from the Document")
+#define AP_STRING_ID_MENU_STATUSLINE_EDIT_REMOVEFOOTER  _("Remove the Footer on this page from the Document")
+#define AP_STRING_ID_MENU_STATUSLINE_EDIT_DELETEFRAME  _("Remove the Text Box from the Document")
+#define AP_STRING_ID_MENU_STATUSLINE_EDIT_DELETEIMAGE  _("Remove the Image from the Document")
+#define AP_STRING_ID_MENU_STATUSLINE_EDIT_CUTIMAGE  _("Remove the Image and save a copy on the clipboard")
+#define AP_STRING_ID_MENU_STATUSLINE_EDIT_COPYIMAGE  _("Save a copy of the image on the clipboard")
+#define AP_STRING_ID_MENU_STATUSLINE_EDIT_CUT_FRAME  _("Copy the Text Box to the clipboard then remove it")
+#define AP_STRING_ID_MENU_STATUSLINE_EDIT_COPY_FRAME  _("Copy the Text Box to the clipboard")
+#define AP_STRING_ID_MENU_STATUSLINE_EDIT_SELECT_FRAME  _("Select the Text Box")
+#define AP_STRING_ID_MENU_STATUSLINE_EDIT_CUTEMBED  _("Cut Embedded Object")
+#define AP_STRING_ID_MENU_STATUSLINE_EDIT_COPYEMBED  _("Copy Embedded Object")
+#define AP_STRING_ID_MENU_STATUSLINE_EDIT_DELETEEMBED  _("Delete Embedded Object")
+#define AP_STRING_ID_MENU_STATUSLINE_EDIT_LATEXEQUATION  _("Edit Latex Equation")
+#define AP_STRING_ID_MENU_STATUSLINE_VIEW  _(" ")
+#define AP_STRING_ID_MENU_STATUSLINE_VIEW_NORMAL  _("Normal View")
+#define AP_STRING_ID_MENU_STATUSLINE_VIEW_WEB  _("Web Layout")
+#define AP_STRING_ID_MENU_STATUSLINE_VIEW_PRINT  _("Print Layout")
+#define AP_STRING_ID_MENU_STATUSLINE_VIEW_TOOLBARS  _(" ")
+#define AP_STRING_ID_MENU_STATUSLINE_VIEW_TB_1  _("Show or hide the toolbar")
+#define AP_STRING_ID_MENU_STATUSLINE_VIEW_TB_2  _("Show or hide the toolbar")
+#define AP_STRING_ID_MENU_STATUSLINE_VIEW_TB_3  _("Show or hide the toolbar")
+#define AP_STRING_ID_MENU_STATUSLINE_VIEW_TB_4  _("Show or hide the toolbar")
+#define AP_STRING_ID_MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT  _("Lock the layout of the current toolbars")
+#define AP_STRING_ID_MENU_STATUSLINE_VIEW_DEFAULT_TB_LAYOUT  _("Reset the current toolbar layout to its defaults")
+#define AP_STRING_ID_MENU_STATUSLINE_VIEW_RULER  _("Show or hide the rulers")
+#define AP_STRING_ID_MENU_STATUSLINE_VIEW_STATUSBAR  _("Show or hide the status bar")
+#define AP_STRING_ID_MENU_STATUSLINE_VIEW_SHOWPARA  _("Display non-printing characters")
+#define AP_STRING_ID_MENU_STATUSLINE_VIEW_LOCKSTYLES  _("Allow formatting using styles only")
+#define AP_STRING_ID_MENU_STATUSLINE_VIEW_HEADFOOT  _("Edit text at the top or bottom of every page")
+#define AP_STRING_ID_MENU_STATUSLINE_VIEW_FULLSCREEN  _("View the document in full screen mode")
+#define AP_STRING_ID_MENU_STATUSLINE_VIEW_ZOOM_MENU  _("Reduce or enlarge the document display")
+#define AP_STRING_ID_MENU_STATUSLINE_VIEW_ZOOM  _("Reduce or enlarge the document display")
+#define AP_STRING_ID_MENU_STATUSLINE_VIEW_ZOOM_200  _("Zoom to 200%")
+#define AP_STRING_ID_MENU_STATUSLINE_VIEW_ZOOM_100  _("Zoom to 100%")
+#define AP_STRING_ID_MENU_STATUSLINE_VIEW_ZOOM_75  _("Zoom to 75%")
+#define AP_STRING_ID_MENU_STATUSLINE_VIEW_ZOOM_50  _("Zoom to 50%")
+#define AP_STRING_ID_MENU_STATUSLINE_VIEW_ZOOM_WIDTH  _("Zoom to page width")
+#define AP_STRING_ID_MENU_STATUSLINE_VIEW_ZOOM_WHOLE  _("Zoom to whole page")
+#define AP_STRING_ID_MENU_STATUSLINE_INSERT  _(" ")
+#define AP_STRING_ID_MENU_STATUSLINE_INSERT_BREAK _("Insert a page, column  or section break")
+#define AP_STRING_ID_MENU_STATUSLINE_INSERT_PAGENO  _("Insert an automatically-updated page number")
+#define AP_STRING_ID_MENU_STATUSLINE_INSERT_DATETIME  _("Insert the date and/or time")
+#define AP_STRING_ID_MENU_STATUSLINE_INSERT_FIELD  _("Insert a calculated field")
+#define AP_STRING_ID_MENU_STATUSLINE_INSERT_TEXTBOX  _("Insert a Text Box")
+#define AP_STRING_ID_MENU_STATUSLINE_INSERT_MAILMERGE  _("Insert a mail merge field")
+#define AP_STRING_ID_MENU_STATUSLINE_INSERT_FILE  _("Insert the contents of another file")
+#define AP_STRING_ID_MENU_STATUSLINE_INSERT_SYMBOL  _("Insert a symbol or other special character")
+#define AP_STRING_ID_MENU_STATUSLINE_INSERT_FOOTNOTE  _("Insert a footnote")
+#define AP_STRING_ID_MENU_STATUSLINE_INSERT_TABLEOFCONTENTS  _("Insert a Table of Contents based on Headings")
+#define AP_STRING_ID_MENU_STATUSLINE_INSERT_ENDNOTE  _("Insert an endnote")
+#define AP_STRING_ID_MENU_STATUSLINE_INSERT_CLIPART  _("Insert clipart")
+#define AP_STRING_ID_MENU_STATUSLINE_INSERT_HEADER  _("Insert a Header")
+#define AP_STRING_ID_MENU_STATUSLINE_INSERT_FOOTER  _("Insert a Footer")
+#define AP_STRING_ID_MENU_STATUSLINE_INSERT_GRAPHIC  _("Insert an existing picture from another file")
+#define AP_STRING_ID_MENU_STATUSLINE_INSERT_BOOKMARK  _("Insert bookmark")
+#define AP_STRING_ID_MENU_STATUSLINE_INSERT_HYPERLINK  _("Insert hyperlink")
+#define AP_STRING_ID_MENU_STATUSLINE_INSERT_GOTO_HYPERLINK  _("Jump to hyperlink")
+#define AP_STRING_ID_MENU_STATUSLINE_INSERT_EDIT_HYPERLINK  _("Edit hyperlink")
+#define AP_STRING_ID_MENU_STATUSLINE_EDIT_COPY_HYPERLINK_LOCATION  _("Copy hyperlink location")
+#define AP_STRING_ID_MENU_STATUSLINE_INSERT_DELETE_HYPERLINK  _("Delete hyperlink")
+#define AP_STRING_ID_MENU_STATUSLINE_INSERT_DIRECTIONMARKER  _("Insert Unicode direction marker into the document")
+#define AP_STRING_ID_MENU_STATUSLINE_INSERT_DIRECTIONMARKER_LRM  _("Insert left-to-right direction marker (LRM)")
+#define AP_STRING_ID_MENU_STATUSLINE_INSERT_DIRECTIONMARKER_RLM  _("Insert right-to-left direction marker (RLM)")
 
-#define AP_STRING_ID_MENU_STATUSLINE_FORMAT  " "
-#define AP_STRING_ID_MENU_STATUSLINE_FMT  " "
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_LANGUAGE  "Change the language of the selected text"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_FONT  "Change the font of the selected text"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_PARAGRAPH  "Change the format of the selected paragraph"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_BULLETS  "Add or modify bullets and numbering for selected paragraphs"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_DOCUMENT  "Setup your document's page properties such as page size and margins"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_BORDERS  "Add borders and shading to the selection"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_HDRFTR  "Set the types of Headers and Footers"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_FOOTNOTES  "Set the types of Footnotes and Endnotes"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_TABLEOFCONTENTS  "Set the type and styles of the Table of Contents"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_COLUMNS  "Change the number of columns"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_TOGGLECASE  "Change the case of the selected text"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_BACKGROUND  "Change your document's page background"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_BACKGROUND_PAGE_COLOR  "Change your document's page color"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_BACKGROUND_PAGE_IMAGE  "Set an image as a background for your page"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_STYLIST  "Format your document using styles"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_STYLE  "Define or apply style for the selection"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_STYLE_DEFINE  "Define or apply style for the selection"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_TABS  "Set tab stops"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_BOLD  "Make the selection bold (toggle)"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_ITALIC  "Make the selection italic (toggle)"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_UNDERLINE  "Underline the selection (toggle)"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_OVERLINE  "Overline the selection (toggle)"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_STRIKE  "Strikeout the selection (toggle)"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_TOPLINE  "Line above the selection (toggle)"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_BOTTOMLINE  "Line below the selection (toggle)"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_SUPERSCRIPT  "Make the selection superscript (toggle)"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_SUBSCRIPT  "Make the selection subscript (toggle)"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_FRAME  "Change the properties of the Text Box"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_DIRECTION  "Change directional properties of text"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_DIRECTION_DOCD_RTL  "Set dominant direction of document to RTL"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_DIRECTION_SD_RTL  "Set dominant direction of section to RTL"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_DIRECTION_DD_RTL  "Set dominant direction of paragraph to RTL"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_DIRECTION_DO_LTR  "Force left-to-right direction of text"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_DIRECTION_DO_RTL  "Force right-to-left direction of text"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_EMBED  "Format Embedded Object"
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS  " "	
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_SPELLING  " "
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_SPELL  "Check the document for incorrect spelling"
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_AUTOSPELL  "Automatically spell-check the document"
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_SPELLPREFS  "Set your spelling preferences"
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_WORDCOUNT  "Count the number of words in the document"
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_OPTIONS  "Set preferences"
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_LANGUAGE  "Change the language of the selected text"
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_PLUGINS  "Manage plugins"
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_MAILMERGE  "Mail Merge"
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_SCRIPTS  "Execute helper scripts"
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_HISTORY  "See history of the current document"
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_HISTORY_SHOW  "View document history"
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_HISTORY_PURGE  "Remove full document history from the document"
+#define AP_STRING_ID_MENU_STATUSLINE_FORMAT  _(" ")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT  _(" ")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_LANGUAGE  _("Change the language of the selected text")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_FONT  _("Change the font of the selected text")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_PARAGRAPH  _("Change the format of the selected paragraph")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_BULLETS  _("Add or modify bullets and numbering for selected paragraphs")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_DOCUMENT  _("Setup your document's page properties such as page size and margins")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_BORDERS  _("Add borders and shading to the selection")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_HDRFTR  _("Set the types of Headers and Footers")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_FOOTNOTES  _("Set the types of Footnotes and Endnotes")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_TABLEOFCONTENTS  _("Set the type and styles of the Table of Contents")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_COLUMNS  _("Change the number of columns")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_TOGGLECASE  _("Change the case of the selected text")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_BACKGROUND  _("Change your document's page background")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_BACKGROUND_PAGE_COLOR  _("Change your document's page color")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_BACKGROUND_PAGE_IMAGE  _("Set an image as a background for your page")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_STYLIST  _("Format your document using styles")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_STYLE  _("Define or apply style for the selection")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_STYLE_DEFINE  _("Define or apply style for the selection")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_TABS  _("Set tab stops")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_BOLD  _("Make the selection bold (toggle)")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_ITALIC  _("Make the selection italic (toggle)")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_UNDERLINE  _("Underline the selection (toggle)")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_OVERLINE  _("Overline the selection (toggle)")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_STRIKE  _("Strikeout the selection (toggle)")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_TOPLINE  _("Line above the selection (toggle)")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_BOTTOMLINE  _("Line below the selection (toggle)")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_SUPERSCRIPT  _("Make the selection superscript (toggle)")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_SUBSCRIPT  _("Make the selection subscript (toggle)")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_FRAME  _("Change the properties of the Text Box")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_DIRECTION  _("Change directional properties of text")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_DIRECTION_DOCD_RTL  _("Set dominant direction of document to RTL")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_DIRECTION_SD_RTL  _("Set dominant direction of section to RTL")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_DIRECTION_DD_RTL  _("Set dominant direction of paragraph to RTL")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_DIRECTION_DO_LTR  _("Force left-to-right direction of text")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_DIRECTION_DO_RTL  _("Force right-to-left direction of text")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_EMBED  _("Format Embedded Object")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS  _(" ")	
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_SPELLING  _(" ")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_SPELL  _("Check the document for incorrect spelling")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_AUTOSPELL  _("Automatically spell-check the document")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_SPELLPREFS  _("Set your spelling preferences")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_WORDCOUNT  _("Count the number of words in the document")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_OPTIONS  _("Set preferences")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_LANGUAGE  _("Change the language of the selected text")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_PLUGINS  _("Manage plugins")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_MAILMERGE  _("Mail Merge")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_SCRIPTS  _("Execute helper scripts")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_HISTORY  _("See history of the current document")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_HISTORY_SHOW  _("View document history")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_HISTORY_PURGE  _("Remove full document history from the document")
 #define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS  ""
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_SET_VIEW_LEVEL  "Choose which revision you wish to view"
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_MARK  "Mark changes as you type"
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_SHOW  "Show revisions that are present in document"
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_AFTER  "Show what the document looks like after revisions"
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_AFTERPREV  "Show what the document looks like after previous revisions"
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_BEFORE  "Show what the document looks like before revisions"
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION  "Accept the suggested change"
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_REJECT_REVISION  "Remove the suggested change"
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_FIND_NEXT  "Find next visible revision in the document"
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_FIND_PREV  "Find previous visible revision in the document"
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_COMPARE_DOCUMENTS  "Compare active document to another document"
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_MERGE_DOCUMENTS  "Merge another document into the active document using revision marks"
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_NEW_REVISION  "Start revision distinct from the current one"
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_PURGE  "Remove all revision information from the document"
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_AUTO  "Retain all document changes"
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_SET_VIEW_LEVEL  _("Choose which revision you wish to view")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_MARK  _("Mark changes as you type")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_SHOW  _("Show revisions that are present in document")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_AFTER  _("Show what the document looks like after revisions")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_AFTERPREV  _("Show what the document looks like after previous revisions")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_BEFORE  _("Show what the document looks like before revisions")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION  _("Accept the suggested change")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_REJECT_REVISION  _("Remove the suggested change")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_FIND_NEXT  _("Find next visible revision in the document")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_FIND_PREV  _("Find previous visible revision in the document")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_COMPARE_DOCUMENTS  _("Compare active document to another document")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_MERGE_DOCUMENTS  _("Merge another document into the active document using revision marks")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_NEW_REVISION  _("Start revision distinct from the current one")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_PURGE  _("Remove all revision information from the document")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_AUTO  _("Retain all document changes")
 // RIVERA
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_ANNOTATIONS  "Manage annotations in document"
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_ANNOTATIONS_INSERT  "Insert an annotation"
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_ANNOTATIONS_INSERT_FROMSEL  "Insert selected text into a new annotation"
-#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_ANNOTATIONS_TOGGLE_DISPLAY  "Show/hide annotations"
-#define AP_STRING_ID_MENU_STATUSLINE_GOTO_ANNOTATION  "Jump to annotation"
-#define AP_STRING_ID_MENU_STATUSLINE_EDIT_ANNOTATION  "Edit annotation"
-#define AP_STRING_ID_MENU_STATUSLINE_DELETE_ANNOTATION  "Delete annotation"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE  "Table"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_INSERT  "Insert"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_INSERT_TABLE  "Insert Table"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_INSERTTABLE  "Insert Table"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_INSERT_COLUMNS_BEFORE  "Insert a column to the left"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_INSERT_COLUMNS_AFTER  "Insert a column to the right"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_INSERTCOLUMN  "Insert a column to the right"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_INSERT_ROWS_BEFORE  "Insert a row above"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_INSERT_ROWS_AFTER  "Insert a row below"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_INSERTROW  "Insert a row below"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_INSERT_CELLS  "Insert Cells"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_DELETE  "Delete"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_DELETE_TABLE  "Delete Table"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_DELETETABLE  "Delete Table"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_DELETE_COLUMNS  "Delete Column"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_DELETECOLUMN  "Delete Column"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_DELETE_ROWS  "Delete Row"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_DELETEROW  "Delete Row"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_DELETE_CELLS  "Delete Cells"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_SELECT  "Select"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_SELECT_TABLE  "Select Table"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_SELECT_COLUMN  "Select Column"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_SELECT_ROW  "Select Row"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_SELECT_CELL  "Select Cell"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_MERGE_CELLS  "Merge Cells"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_SPLIT_CELLS  "Split Cells"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_SPLIT_TABLE  "Split Table"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_FORMAT  "Format Table"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_AUTOFIT  "Autofit Table"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT  "Repeat Row as Heading on each new page"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT_THIS  "Set this Row as the Heading on each page"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT_REMOVE  "Remove Row as the page Heading"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_SORT  "Sort Table"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_TEXTTOTABLE  "Convert Selected Text to a Table"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL  "Split on all word delimiters including spaces"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES  "Split on all delimiters except spaces"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_TABLETOTEXT  "Convert from a Table to Text"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_TABLETOTEXTCOMMAS  "Separate table items with commas"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_TABLETOTEXTTABS  "Separate table items with tabs"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_TABLETOTEXTCOMMASTABS  "Separate table items with commas and tabs"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_SORTROWSASCEND  "Sort Rows in Ascending Order based on selected Column"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_SORTROWSDESCEND  "Sort Rows in Descending Order based on Selected Column"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_SORTCOLSASCEND  "Sort Columns in Ascending Order based on Selected Row"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_SORTCOLSDESCEND  "Sort Columns in Descending Order based on Selected Row"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_INSERT_SUMCOLS  "Insert the Sum of a Table Row"
-#define AP_STRING_ID_MENU_STATUSLINE_TABLE_INSERT_SUMROWS  "Insert the Sum of a Table Column"
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_ANNOTATIONS  _("Manage annotations in document")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_ANNOTATIONS_INSERT  _("Insert an annotation")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_ANNOTATIONS_INSERT_FROMSEL  _("Insert selected text into a new annotation")
+#define AP_STRING_ID_MENU_STATUSLINE_TOOLS_ANNOTATIONS_TOGGLE_DISPLAY  _("Show/hide annotations")
+#define AP_STRING_ID_MENU_STATUSLINE_GOTO_ANNOTATION  _("Jump to annotation")
+#define AP_STRING_ID_MENU_STATUSLINE_EDIT_ANNOTATION  _("Edit annotation")
+#define AP_STRING_ID_MENU_STATUSLINE_DELETE_ANNOTATION  _("Delete annotation")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE  _("Table")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_INSERT  _("Insert")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_INSERT_TABLE  _("Insert Table")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_INSERTTABLE  _("Insert Table")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_INSERT_COLUMNS_BEFORE  _("Insert a column to the left")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_INSERT_COLUMNS_AFTER  _("Insert a column to the right")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_INSERTCOLUMN  _("Insert a column to the right")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_INSERT_ROWS_BEFORE  _("Insert a row above")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_INSERT_ROWS_AFTER  _("Insert a row below")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_INSERTROW  _("Insert a row below")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_INSERT_CELLS  _("Insert Cells")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_DELETE  _("Delete")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_DELETE_TABLE  _("Delete Table")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_DELETETABLE  _("Delete Table")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_DELETE_COLUMNS  _("Delete Column")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_DELETECOLUMN  _("Delete Column")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_DELETE_ROWS  _("Delete Row")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_DELETEROW  _("Delete Row")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_DELETE_CELLS  _("Delete Cells")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_SELECT  _("Select")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_SELECT_TABLE  _("Select Table")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_SELECT_COLUMN  _("Select Column")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_SELECT_ROW  _("Select Row")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_SELECT_CELL  _("Select Cell")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_MERGE_CELLS  _("Merge Cells")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_SPLIT_CELLS  _("Split Cells")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_SPLIT_TABLE  _("Split Table")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_FORMAT  _("Format Table")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_AUTOFIT  _("Autofit Table")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT  _("Repeat Row as Heading on each new page")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT_THIS  _("Set this Row as the Heading on each page")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT_REMOVE  _("Remove Row as the page Heading")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_SORT  _("Sort Table")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_TEXTTOTABLE  _("Convert Selected Text to a Table")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL  _("Split on all word delimiters including spaces")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES  _("Split on all delimiters except spaces")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_TABLETOTEXT  _("Convert from a Table to Text")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_TABLETOTEXTCOMMAS  _("Separate table items with commas")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_TABLETOTEXTTABS  _("Separate table items with tabs")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_TABLETOTEXTCOMMASTABS  _("Separate table items with commas and tabs")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_SORTROWSASCEND  _("Sort Rows in Ascending Order based on selected Column")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_SORTROWSDESCEND  _("Sort Rows in Descending Order based on Selected Column")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_SORTCOLSASCEND  _("Sort Columns in Ascending Order based on Selected Row")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_SORTCOLSDESCEND  _("Sort Columns in Descending Order based on Selected Row")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_INSERT_SUMCOLS  _("Insert the Sum of a Table Row")
+#define AP_STRING_ID_MENU_STATUSLINE_TABLE_INSERT_SUMROWS  _("Insert the Sum of a Table Column")
 #define AP_STRING_ID_MENU_STATUSLINE_CONTEXT_REVISIONS_ACCEPT_REVISION AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #define AP_STRING_ID_MENU_STATUSLINE_CONTEXT_REVISIONS_REJECT_REVISION AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_REJECT_REVISION
 #define AP_STRING_ID_MENU_STATUSLINE_CONTEXT_REVISIONS_FIND_NEXT AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_FIND_NEXT
 #define AP_STRING_ID_MENU_STATUSLINE_CONTEXT_REVISIONS_FIND_PREV AP_STRING_ID_MENU_STATUSLINE_TOOLS_REVISIONS_FIND_PREV
-#define AP_STRING_ID_MENU_STATUSLINE_ALIGN  " "
-#define AP_STRING_ID_MENU_STATUSLINE_ALIGN_LEFT  "Left-align the paragraph"
-#define AP_STRING_ID_MENU_STATUSLINE_ALIGN_CENTER  "Center-align the paragraph"
-#define AP_STRING_ID_MENU_STATUSLINE_ALIGN_RIGHT  "Right-align the paragraph"
-#define AP_STRING_ID_MENU_STATUSLINE_ALIGN_JUSTIFY  "Justify the paragraph"
-#define AP_STRING_ID_MENU_STATUSLINE_WEB_WEBPREVIEW  "Preview the document as a web page"
-#define AP_STRING_ID_MENU_STATUSLINE_WEB_SAVEASWEB  "Preview the document as a web page"
-#define AP_STRING_ID_MENU_STATUSLINE_WINDOW  " "
-#define AP_STRING_ID_MENU_STATUSLINE_WINDOW_NEW  "Open another window for the document"
-#define AP_STRING_ID_MENU_STATUSLINE_WINDOW_1  "View this document"
-#define AP_STRING_ID_MENU_STATUSLINE_WINDOW_2  "View this document"
-#define AP_STRING_ID_MENU_STATUSLINE_WINDOW_3  "View this document"
-#define AP_STRING_ID_MENU_STATUSLINE_WINDOW_4  "View this document"
-#define AP_STRING_ID_MENU_STATUSLINE_WINDOW_5  "View this document"
-#define AP_STRING_ID_MENU_STATUSLINE_WINDOW_6  "View this document"
-#define AP_STRING_ID_MENU_STATUSLINE_WINDOW_7  "View this document"
-#define AP_STRING_ID_MENU_STATUSLINE_WINDOW_8  "View this document"
-#define AP_STRING_ID_MENU_STATUSLINE_WINDOW_9  "View this document"
-#define AP_STRING_ID_MENU_STATUSLINE_WINDOW_MORE  "Show full list of documents"
-#define AP_STRING_ID_MENU_STATUSLINE_HELP  " "
-#define AP_STRING_ID_MENU_STATUSLINE_HELP_CREDITS  "Display Credits"
-#define AP_STRING_ID_MENU_STATUSLINE_HELP_CONTENTS  "Display Help Contents"
-#define AP_STRING_ID_MENU_STATUSLINE_HELP_INDEX  "Display Help Index"
-#define AP_STRING_ID_MENU_STATUSLINE_HELP_CHECKVER  "Check online for newer versions of AbiWord"
-#define AP_STRING_ID_MENU_STATUSLINE_HELP_SEARCH  "Search for help about..."
-#define AP_STRING_ID_MENU_STATUSLINE_HELP_ABOUT "Display program information, version number  and copyright" 
-#define AP_STRING_ID_MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE  "About the GNOME Office project"
-#define AP_STRING_ID_MENU_STATUSLINE_HELP_REPORT_BUG  "Report a bug and help AbiWord become a better product"
-#define AP_STRING_ID_MENU_STATUSLINE_SPELL_SUGGEST_1  "Change to this suggested spelling"
-#define AP_STRING_ID_MENU_STATUSLINE_SPELL_SUGGEST_2  "Change to this suggested spelling"
-#define AP_STRING_ID_MENU_STATUSLINE_SPELL_SUGGEST_3  "Change to this suggested spelling"
-#define AP_STRING_ID_MENU_STATUSLINE_SPELL_SUGGEST_4  "Change to this suggested spelling"
-#define AP_STRING_ID_MENU_STATUSLINE_SPELL_SUGGEST_5  "Change to this suggested spelling"
-#define AP_STRING_ID_MENU_STATUSLINE_SPELL_SUGGEST_6  "Change to this suggested spelling"
-#define AP_STRING_ID_MENU_STATUSLINE_SPELL_SUGGEST_7  "Change to this suggested spelling"
-#define AP_STRING_ID_MENU_STATUSLINE_SPELL_SUGGEST_8  "Change to this suggested spelling"
-#define AP_STRING_ID_MENU_STATUSLINE_SPELL_SUGGEST_9  "Change to this suggested spelling"
-#define AP_STRING_ID_MENU_STATUSLINE_SPELL_IGNOREALL  "Ignore all occurrences of this word in the document"
-#define AP_STRING_ID_MENU_STATUSLINE_SPELL_ADD  "Add this word to the custom dictionary"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_IMAGE  "Resize this image"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_POSIMAGE  "Format this image"
-#define AP_STRING_ID_MENU_STATUSLINE_FMT_SETPOSIMAGE  "Set this image to be positioned"
+#define AP_STRING_ID_MENU_STATUSLINE_ALIGN  _(" ")
+#define AP_STRING_ID_MENU_STATUSLINE_ALIGN_LEFT  _("Left-align the paragraph")
+#define AP_STRING_ID_MENU_STATUSLINE_ALIGN_CENTER  _("Center-align the paragraph")
+#define AP_STRING_ID_MENU_STATUSLINE_ALIGN_RIGHT  _("Right-align the paragraph")
+#define AP_STRING_ID_MENU_STATUSLINE_ALIGN_JUSTIFY  _("Justify the paragraph")
+#define AP_STRING_ID_MENU_STATUSLINE_WEB_WEBPREVIEW  _("Preview the document as a web page")
+#define AP_STRING_ID_MENU_STATUSLINE_WEB_SAVEASWEB  _("Preview the document as a web page")
+#define AP_STRING_ID_MENU_STATUSLINE_WINDOW  _(" ")
+#define AP_STRING_ID_MENU_STATUSLINE_WINDOW_NEW  _("Open another window for the document")
+#define AP_STRING_ID_MENU_STATUSLINE_WINDOW_1  _("View this document")
+#define AP_STRING_ID_MENU_STATUSLINE_WINDOW_2  _("View this document")
+#define AP_STRING_ID_MENU_STATUSLINE_WINDOW_3  _("View this document")
+#define AP_STRING_ID_MENU_STATUSLINE_WINDOW_4  _("View this document")
+#define AP_STRING_ID_MENU_STATUSLINE_WINDOW_5  _("View this document")
+#define AP_STRING_ID_MENU_STATUSLINE_WINDOW_6  _("View this document")
+#define AP_STRING_ID_MENU_STATUSLINE_WINDOW_7  _("View this document")
+#define AP_STRING_ID_MENU_STATUSLINE_WINDOW_8  _("View this document")
+#define AP_STRING_ID_MENU_STATUSLINE_WINDOW_9  _("View this document")
+#define AP_STRING_ID_MENU_STATUSLINE_WINDOW_MORE  _("Show full list of documents")
+#define AP_STRING_ID_MENU_STATUSLINE_HELP  _(" ")
+#define AP_STRING_ID_MENU_STATUSLINE_HELP_CREDITS  _("Display Credits")
+#define AP_STRING_ID_MENU_STATUSLINE_HELP_CONTENTS  _("Display Help Contents")
+#define AP_STRING_ID_MENU_STATUSLINE_HELP_INDEX  _("Display Help Index")
+#define AP_STRING_ID_MENU_STATUSLINE_HELP_CHECKVER  _("Check online for newer versions of AbiWord")
+#define AP_STRING_ID_MENU_STATUSLINE_HELP_SEARCH  _("Search for help about...")
+#define AP_STRING_ID_MENU_STATUSLINE_HELP_ABOUT _("Display program information, version number  and copyright") 
+#define AP_STRING_ID_MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE  _("About the GNOME Office project")
+#define AP_STRING_ID_MENU_STATUSLINE_HELP_REPORT_BUG  _("Report a bug and help AbiWord become a better product")
+#define AP_STRING_ID_MENU_STATUSLINE_SPELL_SUGGEST_1  _("Change to this suggested spelling")
+#define AP_STRING_ID_MENU_STATUSLINE_SPELL_SUGGEST_2  _("Change to this suggested spelling")
+#define AP_STRING_ID_MENU_STATUSLINE_SPELL_SUGGEST_3  _("Change to this suggested spelling")
+#define AP_STRING_ID_MENU_STATUSLINE_SPELL_SUGGEST_4  _("Change to this suggested spelling")
+#define AP_STRING_ID_MENU_STATUSLINE_SPELL_SUGGEST_5  _("Change to this suggested spelling")
+#define AP_STRING_ID_MENU_STATUSLINE_SPELL_SUGGEST_6  _("Change to this suggested spelling")
+#define AP_STRING_ID_MENU_STATUSLINE_SPELL_SUGGEST_7  _("Change to this suggested spelling")
+#define AP_STRING_ID_MENU_STATUSLINE_SPELL_SUGGEST_8  _("Change to this suggested spelling")
+#define AP_STRING_ID_MENU_STATUSLINE_SPELL_SUGGEST_9  _("Change to this suggested spelling")
+#define AP_STRING_ID_MENU_STATUSLINE_SPELL_IGNOREALL  _("Ignore all occurrences of this word in the document")
+#define AP_STRING_ID_MENU_STATUSLINE_SPELL_ADD  _("Add this word to the custom dictionary")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_IMAGE  _("Resize this image")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_POSIMAGE  _("Format this image")
+#define AP_STRING_ID_MENU_STATUSLINE_FMT_SETPOSIMAGE  _("Set this image to be positioned")
 
 /* Toolbar labels */
-#define AP_STRING_ID_TB_Extra  "Extra"
-#define AP_STRING_ID_TB_Format  "Format"
-#define AP_STRING_ID_TB_Standard  "Standard"
-#define AP_STRING_ID_TB_Simple  "Simple"
-#define AP_STRING_ID_TB_Embedded  "Embedded"
-#define AP_STRING_ID_TB_Table  "Table"
+#define AP_STRING_ID_TB_Extra  _("Extra")
+#define AP_STRING_ID_TB_Format  _("Format")
+#define AP_STRING_ID_TB_Standard  _("Standard")
+#define AP_STRING_ID_TB_Simple  _("Simple")
+#define AP_STRING_ID_TB_Embedded  _("Embedded")
+#define AP_STRING_ID_TB_Table  _("Table")
 
-#define AP_STRING_ID_TOOLBAR_LABEL_FILE_NEW  "New"
-#define AP_STRING_ID_TOOLBAR_LABEL_FILE_OPEN  "Open"
-#define AP_STRING_ID_TOOLBAR_LABEL_FILE_SAVE  "Save"
-#define AP_STRING_ID_TOOLBAR_LABEL_FILE_SAVEAS  "Save As"
-#define AP_STRING_ID_TOOLBAR_LABEL_FILE_PRINT  "Print"
-#define AP_STRING_ID_TOOLBAR_LABEL_FILE_PRINT_PREVIEW  "Print Preview"
-#define AP_STRING_ID_TOOLBAR_LABEL_EDIT_UNDO  "Undo"
-#define AP_STRING_ID_TOOLBAR_LABEL_EDIT_REDO  "Redo"
-#define AP_STRING_ID_TOOLBAR_LABEL_EDIT_CUT  "Cut"
-#define AP_STRING_ID_TOOLBAR_LABEL_EDIT_COPY  "Copy"
-#define AP_STRING_ID_TOOLBAR_LABEL_EDIT_PASTE  "Paste"
-#define AP_STRING_ID_TOOLBAR_LABEL_EDIT_HEADER  "Edit Header"
-#define AP_STRING_ID_TOOLBAR_LABEL_EDIT_FOOTER  "Edit Footer"
-#define AP_STRING_ID_TOOLBAR_LABEL_EDIT_REMOVEHEADER  "Remove Header"
-#define AP_STRING_ID_TOOLBAR_LABEL_EDIT_REMOVEFOOTER  "Remove Footer"
-#define AP_STRING_ID_TOOLBAR_LABEL_SPELLCHECK  "Spellcheck"
-#define AP_STRING_ID_TOOLBAR_LABEL_IMG  "Insert Image"
-#define AP_STRING_ID_TOOLBAR_LABEL_FMT_STYLE  "Style"
-#define AP_STRING_ID_TOOLBAR_LABEL_FMT_CHOOSE  "Font choose"
-#define AP_STRING_ID_TOOLBAR_LABEL_FMT_FONT  "Font"
-#define AP_STRING_ID_TOOLBAR_LABEL_FMT_HYPERLINK  "Insert Hyperlink"
-#define AP_STRING_ID_TOOLBAR_LABEL_FMT_BOOKMARK  "Insert Bookmark"
-#define AP_STRING_ID_TOOLBAR_LABEL_FMT_SIZE  "Font Size"
-#define AP_STRING_ID_TOOLBAR_LABEL_FMT_BOLD  "Bold"
-#define AP_STRING_ID_TOOLBAR_LABEL_FMT_ITALIC  "Italic"
-#define AP_STRING_ID_TOOLBAR_LABEL_FMT_UNDERLINE  "Underline"
-#define AP_STRING_ID_TOOLBAR_LABEL_FMT_OVERLINE  "Overline"
-#define AP_STRING_ID_TOOLBAR_LABEL_FMT_STRIKE  "Strike"
-#define AP_STRING_ID_TOOLBAR_LABEL_FMT_TOPLINE  "Topline"
-#define AP_STRING_ID_TOOLBAR_LABEL_FMT_BOTTOMLINE  "Bottomline"
-#define AP_STRING_ID_TOOLBAR_LABEL_HELP  "Help"
-#define AP_STRING_ID_TOOLBAR_LABEL_FMT_SUPERSCRIPT  "Superscript"
-#define AP_STRING_ID_TOOLBAR_LABEL_FMT_SUBSCRIPT  "Subscript"
-#define AP_STRING_ID_TOOLBAR_LABEL_INSERT_SYMBOL  "Symbol"
-#define AP_STRING_ID_TOOLBAR_LABEL_ALIGN_LEFT  "Left"
-#define AP_STRING_ID_TOOLBAR_LABEL_ALIGN_CENTER  "Center"
-#define AP_STRING_ID_TOOLBAR_LABEL_ALIGN_RIGHT  "Right"
-#define AP_STRING_ID_TOOLBAR_LABEL_ALIGN_JUSTIFY  "Justify"
-#define AP_STRING_ID_TOOLBAR_LABEL_PARA_0BEFORE  "None before"
-#define AP_STRING_ID_TOOLBAR_LABEL_PARA_12BEFORE  "12 pt before"
-#define AP_STRING_ID_TOOLBAR_LABEL_SINGLE_SPACE  "Single Spacing"
-#define AP_STRING_ID_TOOLBAR_LABEL_MIDDLE_SPACE  "1.5 Spacing"
-#define AP_STRING_ID_TOOLBAR_LABEL_DOUBLE_SPACE  "Double Spacing"
-#define AP_STRING_ID_TOOLBAR_LABEL_1COLUMN  "1 Column"
-#define AP_STRING_ID_TOOLBAR_LABEL_2COLUMN  "2 Columns"
-#define AP_STRING_ID_TOOLBAR_LABEL_3COLUMN  "3 Columns"
-#define AP_STRING_ID_TOOLBAR_LABEL_VIEW_SHOWPARA  "Show All"
-#define AP_STRING_ID_TOOLBAR_LABEL_ZOOM  "Zoom"
-#define AP_STRING_ID_TOOLBAR_LABEL_VIEW_FULL_SCREEN  "Full Screen"
-#define AP_STRING_ID_TOOLBAR_LABEL_LISTS_BULLETS  "Bullets"
-#define AP_STRING_ID_TOOLBAR_LABEL_LISTS_NUMBERS  "Numbering"
-#define AP_STRING_ID_TOOLBAR_LABEL_COLOR_FORE  "Font color"
-#define AP_STRING_ID_TOOLBAR_LABEL_COLOR_BACK  "Highlight"
-#define AP_STRING_ID_TOOLBAR_LABEL_INDENT  "Increase indent"
-#define AP_STRING_ID_TOOLBAR_LABEL_UNINDENT  "Decrease indent"
-#define AP_STRING_ID_TOOLBAR_LABEL_SCRIPT_PLAY  "Ex. script"
-#define AP_STRING_ID_TOOLBAR_LABEL_FMTPAINTER  "Format Painter"
-#define AP_STRING_ID_TOOLBAR_LABEL_FMT_DIR_OVERRIDE_LTR  "Force text LTR"
-#define AP_STRING_ID_TOOLBAR_LABEL_FMT_DIR_OVERRIDE_RTL  "Force text RTL"
-#define AP_STRING_ID_TOOLBAR_LABEL_FMT_DOM_DIRECTION  "Paragraph Direction"
-#define AP_STRING_ID_TOOLBAR_LABEL_INSERT_TABLE  "Insert table"
-#define AP_STRING_ID_TOOLBAR_LABEL_ADD_ROW  "Add row after"
-#define AP_STRING_ID_TOOLBAR_LABEL_ADD_COLUMN  "Add column after"
-#define AP_STRING_ID_TOOLBAR_LABEL_DELETE_ROW  "Delete row"
-#define AP_STRING_ID_TOOLBAR_LABEL_DELETE_COLUMN  "Delete column"
-#define AP_STRING_ID_TOOLBAR_LABEL_MERGE_CELLS  "Merge cells"
-#define AP_STRING_ID_TOOLBAR_LABEL_SPLIT_CELLS  "Split cells"
-#define AP_STRING_ID_TOOLBAR_LABEL_MERGELEFT  "Merge left"
-#define AP_STRING_ID_TOOLBAR_LABEL_MERGERIGHT  "Merge right"
-#define AP_STRING_ID_TOOLBAR_LABEL_MERGEABOVE  "Merge above"
-#define AP_STRING_ID_TOOLBAR_LABEL_MERGEBELOW  "Merge below"
-#define AP_STRING_ID_TOOLBAR_LABEL_MENU  "Menu"
+#define AP_STRING_ID_TOOLBAR_LABEL_FILE_NEW  _("New")
+#define AP_STRING_ID_TOOLBAR_LABEL_FILE_OPEN  _("Open")
+#define AP_STRING_ID_TOOLBAR_LABEL_FILE_SAVE  _("Save")
+#define AP_STRING_ID_TOOLBAR_LABEL_FILE_SAVEAS  _("Save As")
+#define AP_STRING_ID_TOOLBAR_LABEL_FILE_PRINT  _("Print")
+#define AP_STRING_ID_TOOLBAR_LABEL_FILE_PRINT_PREVIEW  _("Print Preview")
+#define AP_STRING_ID_TOOLBAR_LABEL_EDIT_UNDO  _("Undo")
+#define AP_STRING_ID_TOOLBAR_LABEL_EDIT_REDO  _("Redo")
+#define AP_STRING_ID_TOOLBAR_LABEL_EDIT_CUT  _("Cut")
+#define AP_STRING_ID_TOOLBAR_LABEL_EDIT_COPY  _("Copy")
+#define AP_STRING_ID_TOOLBAR_LABEL_EDIT_PASTE  _("Paste")
+#define AP_STRING_ID_TOOLBAR_LABEL_EDIT_HEADER  _("Edit Header")
+#define AP_STRING_ID_TOOLBAR_LABEL_EDIT_FOOTER  _("Edit Footer")
+#define AP_STRING_ID_TOOLBAR_LABEL_EDIT_REMOVEHEADER  _("Remove Header")
+#define AP_STRING_ID_TOOLBAR_LABEL_EDIT_REMOVEFOOTER  _("Remove Footer")
+#define AP_STRING_ID_TOOLBAR_LABEL_SPELLCHECK  _("Spellcheck")
+#define AP_STRING_ID_TOOLBAR_LABEL_IMG  _("Insert Image")
+#define AP_STRING_ID_TOOLBAR_LABEL_FMT_STYLE  _("Style")
+#define AP_STRING_ID_TOOLBAR_LABEL_FMT_CHOOSE  _("Font choose")
+#define AP_STRING_ID_TOOLBAR_LABEL_FMT_FONT  _("Font")
+#define AP_STRING_ID_TOOLBAR_LABEL_FMT_HYPERLINK  _("Insert Hyperlink")
+#define AP_STRING_ID_TOOLBAR_LABEL_FMT_BOOKMARK  _("Insert Bookmark")
+#define AP_STRING_ID_TOOLBAR_LABEL_FMT_SIZE  _("Font Size")
+#define AP_STRING_ID_TOOLBAR_LABEL_FMT_BOLD  _("Bold")
+#define AP_STRING_ID_TOOLBAR_LABEL_FMT_ITALIC  _("Italic")
+#define AP_STRING_ID_TOOLBAR_LABEL_FMT_UNDERLINE  _("Underline")
+#define AP_STRING_ID_TOOLBAR_LABEL_FMT_OVERLINE  _("Overline")
+#define AP_STRING_ID_TOOLBAR_LABEL_FMT_STRIKE  _("Strike")
+#define AP_STRING_ID_TOOLBAR_LABEL_FMT_TOPLINE  _("Topline")
+#define AP_STRING_ID_TOOLBAR_LABEL_FMT_BOTTOMLINE  _("Bottomline")
+#define AP_STRING_ID_TOOLBAR_LABEL_HELP  _("Help")
+#define AP_STRING_ID_TOOLBAR_LABEL_FMT_SUPERSCRIPT  _("Superscript")
+#define AP_STRING_ID_TOOLBAR_LABEL_FMT_SUBSCRIPT  _("Subscript")
+#define AP_STRING_ID_TOOLBAR_LABEL_INSERT_SYMBOL  _("Symbol")
+#define AP_STRING_ID_TOOLBAR_LABEL_ALIGN_LEFT  _("Left")
+#define AP_STRING_ID_TOOLBAR_LABEL_ALIGN_CENTER  _("Center")
+#define AP_STRING_ID_TOOLBAR_LABEL_ALIGN_RIGHT  _("Right")
+#define AP_STRING_ID_TOOLBAR_LABEL_ALIGN_JUSTIFY  _("Justify")
+#define AP_STRING_ID_TOOLBAR_LABEL_PARA_0BEFORE  _("None before")
+#define AP_STRING_ID_TOOLBAR_LABEL_PARA_12BEFORE  _("12 pt before")
+#define AP_STRING_ID_TOOLBAR_LABEL_SINGLE_SPACE  _("Single Spacing")
+#define AP_STRING_ID_TOOLBAR_LABEL_MIDDLE_SPACE  _("1.5 Spacing")
+#define AP_STRING_ID_TOOLBAR_LABEL_DOUBLE_SPACE  _("Double Spacing")
+#define AP_STRING_ID_TOOLBAR_LABEL_1COLUMN  _("1 Column")
+#define AP_STRING_ID_TOOLBAR_LABEL_2COLUMN  _("2 Columns")
+#define AP_STRING_ID_TOOLBAR_LABEL_3COLUMN  _("3 Columns")
+#define AP_STRING_ID_TOOLBAR_LABEL_VIEW_SHOWPARA  _("Show All")
+#define AP_STRING_ID_TOOLBAR_LABEL_ZOOM  _("Zoom")
+#define AP_STRING_ID_TOOLBAR_LABEL_VIEW_FULL_SCREEN  _("Full Screen")
+#define AP_STRING_ID_TOOLBAR_LABEL_LISTS_BULLETS  _("Bullets")
+#define AP_STRING_ID_TOOLBAR_LABEL_LISTS_NUMBERS  _("Numbering")
+#define AP_STRING_ID_TOOLBAR_LABEL_COLOR_FORE  _("Font color")
+#define AP_STRING_ID_TOOLBAR_LABEL_COLOR_BACK  _("Highlight")
+#define AP_STRING_ID_TOOLBAR_LABEL_INDENT  _("Increase indent")
+#define AP_STRING_ID_TOOLBAR_LABEL_UNINDENT  _("Decrease indent")
+#define AP_STRING_ID_TOOLBAR_LABEL_SCRIPT_PLAY  _("Ex. script")
+#define AP_STRING_ID_TOOLBAR_LABEL_FMTPAINTER  _("Format Painter")
+#define AP_STRING_ID_TOOLBAR_LABEL_FMT_DIR_OVERRIDE_LTR  _("Force text LTR")
+#define AP_STRING_ID_TOOLBAR_LABEL_FMT_DIR_OVERRIDE_RTL  _("Force text RTL")
+#define AP_STRING_ID_TOOLBAR_LABEL_FMT_DOM_DIRECTION  _("Paragraph Direction")
+#define AP_STRING_ID_TOOLBAR_LABEL_INSERT_TABLE  _("Insert table")
+#define AP_STRING_ID_TOOLBAR_LABEL_ADD_ROW  _("Add row after")
+#define AP_STRING_ID_TOOLBAR_LABEL_ADD_COLUMN  _("Add column after")
+#define AP_STRING_ID_TOOLBAR_LABEL_DELETE_ROW  _("Delete row")
+#define AP_STRING_ID_TOOLBAR_LABEL_DELETE_COLUMN  _("Delete column")
+#define AP_STRING_ID_TOOLBAR_LABEL_MERGE_CELLS  _("Merge cells")
+#define AP_STRING_ID_TOOLBAR_LABEL_SPLIT_CELLS  _("Split cells")
+#define AP_STRING_ID_TOOLBAR_LABEL_MERGELEFT  _("Merge left")
+#define AP_STRING_ID_TOOLBAR_LABEL_MERGERIGHT  _("Merge right")
+#define AP_STRING_ID_TOOLBAR_LABEL_MERGEABOVE  _("Merge above")
+#define AP_STRING_ID_TOOLBAR_LABEL_MERGEBELOW  _("Merge below")
+#define AP_STRING_ID_TOOLBAR_LABEL_MENU  _("Menu")
 
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_FILE_NEW  "Create a new document"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_FILE_OPEN  "Open an existing document"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_FILE_SAVE  "Save the document"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_FILE_SAVEAS  "Save the document under a different name"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_FILE_PRINT  "Print the document"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_FILE_PRINT_PREVIEW  "Preview the document before printing"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_EDIT_UNDO  "Undo editing"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_EDIT_REDO  "Redo editing"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_EDIT_CUT  "Cut"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_EDIT_COPY  "Copy"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_EDIT_PASTE  "Paste"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_EDIT_HEADER  "Edit Header"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_EDIT_FOOTER  "Edit Footer"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_EDIT_REMOVEHEADER  "Remove Header"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_EDIT_REMOVEFOOTER  "Remove Footer"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_SPELLCHECK  "Spellcheck the document"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_IMG  "Insert an image into the document"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_STYLE  "Style"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_CHOOSE  "Font Choose"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_FONT  "Font"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_HYPERLINK  "Insert a hyperlink into the document"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_BOOKMARK  "Insert a bookmark into the document"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_SIZE  "Font Size"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_BOLD  "Bold"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_ITALIC  "Italic"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_UNDERLINE  "Underline"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_OVERLINE  "Overline"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_STRIKE  "Strike"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_TOPLINE  "Topline"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_BOTTOMLINE  "Bottomline"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_HELP  "Help"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_SUPERSCRIPT  "Superscript"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_SUBSCRIPT  "Subscript"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_INSERT_SYMBOL  "Insert symbol"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_ALIGN_LEFT  "Left alignment"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_ALIGN_CENTER  "Center alignment"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_ALIGN_RIGHT  "Right alignment"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_ALIGN_JUSTIFY  "Justify paragraph"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_PARA_0BEFORE  "Space before: None"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_PARA_12BEFORE  "Space before: 12 pt"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_SINGLE_SPACE  "Single spacing"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_MIDDLE_SPACE  "1.5 spacing"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_DOUBLE_SPACE  "Double spacing"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_1COLUMN  "1 Column"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_2COLUMN  "2 Columns"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_3COLUMN  "3 Columns"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_VIEW_SHOWPARA  "Show/hide formatting marks"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_ZOOM  "Zoom"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_VIEW_FULL_SCREEN  "Full Screen"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_LISTS_BULLETS  "Bullets"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_LISTS_NUMBERS  "Numbering"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_COLOR_FORE  "Font color"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_COLOR_BACK  "Highlight"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_INDENT  "Increase indent"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_UNINDENT  "Decrease indent"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_SCRIPT_PLAY  "Execute script"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMTPAINTER  "Apply the previously copied paragraph formatting onto the selected text"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_DIR_OVERRIDE_LTR  "Force LTR direction of text"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_DIR_OVERRIDE_RTL  "Force RTL direction of text"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_DOM_DIRECTION  "Change dominant direction of paragraph"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_INSERT_TABLE  "Insert a new table into your document"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_ADD_ROW  "Add a row to this table after the current row"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_ADD_COLUMN  "Add a column to this table after the current column"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_DELETE_ROW  "Delete this row from its table"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_DELETE_COLUMN  "Delete this column from its table"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_MERGE_CELLS  "Merge cells"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_SPLIT_CELLS  "Split this cell"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_MERGELEFT  "Merge with left cell"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_MERGERIGHT  "Merge with right cell"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_MERGEABOVE  "Merge with cell above"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_MERGEBELOW  "Merge with cell below"
-#define AP_STRING_ID_TOOLBAR_STATUSLINE_MENU  "Menu"
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_FILE_NEW  _("Create a new document")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_FILE_OPEN  _("Open an existing document")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_FILE_SAVE  _("Save the document")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_FILE_SAVEAS  _("Save the document under a different name")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_FILE_PRINT  _("Print the document")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_FILE_PRINT_PREVIEW  _("Preview the document before printing")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_EDIT_UNDO  _("Undo editing")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_EDIT_REDO  _("Redo editing")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_EDIT_CUT  _("Cut")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_EDIT_COPY  _("Copy")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_EDIT_PASTE  _("Paste")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_EDIT_HEADER  _("Edit Header")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_EDIT_FOOTER  _("Edit Footer")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_EDIT_REMOVEHEADER  _("Remove Header")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_EDIT_REMOVEFOOTER  _("Remove Footer")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_SPELLCHECK  _("Spellcheck the document")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_IMG  _("Insert an image into the document")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_STYLE  _("Style")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_CHOOSE  _("Font Choose")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_FONT  _("Font")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_HYPERLINK  _("Insert a hyperlink into the document")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_BOOKMARK  _("Insert a bookmark into the document")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_SIZE  _("Font Size")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_BOLD  _("Bold")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_ITALIC  _("Italic")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_UNDERLINE  _("Underline")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_OVERLINE  _("Overline")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_STRIKE  _("Strike")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_TOPLINE  _("Topline")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_BOTTOMLINE  _("Bottomline")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_HELP  _("Help")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_SUPERSCRIPT  _("Superscript")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_SUBSCRIPT  _("Subscript")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_INSERT_SYMBOL  _("Insert symbol")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_ALIGN_LEFT  _("Left alignment")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_ALIGN_CENTER  _("Center alignment")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_ALIGN_RIGHT  _("Right alignment")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_ALIGN_JUSTIFY  _("Justify paragraph")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_PARA_0BEFORE  _("Space before: None")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_PARA_12BEFORE  _("Space before: 12 pt")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_SINGLE_SPACE  _("Single spacing")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_MIDDLE_SPACE  _("1.5 spacing")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_DOUBLE_SPACE  _("Double spacing")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_1COLUMN  _("1 Column")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_2COLUMN  _("2 Columns")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_3COLUMN  _("3 Columns")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_VIEW_SHOWPARA  _("Show/hide formatting marks")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_ZOOM  _("Zoom")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_VIEW_FULL_SCREEN  _("Full Screen")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_LISTS_BULLETS  _("Bullets")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_LISTS_NUMBERS  _("Numbering")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_COLOR_FORE  _("Font color")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_COLOR_BACK  _("Highlight")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_INDENT  _("Increase indent")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_UNINDENT  _("Decrease indent")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_SCRIPT_PLAY  _("Execute script")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMTPAINTER  _("Apply the previously copied paragraph formatting onto the selected text")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_DIR_OVERRIDE_LTR  _("Force LTR direction of text")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_DIR_OVERRIDE_RTL  _("Force RTL direction of text")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_FMT_DOM_DIRECTION  _("Change dominant direction of paragraph")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_INSERT_TABLE  _("Insert a new table into your document")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_ADD_ROW  _("Add a row to this table after the current row")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_ADD_COLUMN  _("Add a column to this table after the current column")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_DELETE_ROW  _("Delete this row from its table")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_DELETE_COLUMN  _("Delete this column from its table")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_MERGE_CELLS  _("Merge cells")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_SPLIT_CELLS  _("Split this cell")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_MERGELEFT  _("Merge with left cell")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_MERGERIGHT  _("Merge with right cell")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_MERGEABOVE  _("Merge with cell above")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_MERGEBELOW  _("Merge with cell below")
+#define AP_STRING_ID_TOOLBAR_STATUSLINE_MENU  _("Menu")
 
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_FILE_NEW  "Create a new document"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_FILE_OPEN  "Open an existing document"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_FILE_SAVE  "Save the document"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_FILE_SAVEAS  "Save the document under a different name"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_FILE_PRINT  "Print the document"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_FILE_PRINT_PREVIEW  "Preview the document before printing"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_EDIT_UNDO  "Undo editing"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_EDIT_REDO  "Redo editing"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_EDIT_CUT  "Cut"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_EDIT_COPY  "Copy"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_EDIT_PASTE  "Paste"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_EDIT_HEADER  "Edit Header"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_EDIT_FOOTER  "Edit Footer"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_EDIT_REMOVEHEADER  "Remove Header"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_EDIT_REMOVEFOOTER  "Remove Footer"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_SPELLCHECK  "Spellcheck the document"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_IMG  "Insert an image into the document"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_STYLE  "Style"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_CHOOSE  "Select Font"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_FONT  "Font"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_HYPERLINK  "Insert a hyperlink into the document"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_BOOKMARK  "Insert a bookmark into the document"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_SIZE  "Font Size"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_BOLD  "Bold"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_ITALIC  "Italic"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_UNDERLINE  "Underline"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_OVERLINE  "Overline"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_STRIKE  "Strike"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_TOPLINE  "Topline"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_BOTTOMLINE  "Bottomline"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_HELP  "Help"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_SUPERSCRIPT  "Superscript"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_SUBSCRIPT  "Subscript"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_INSERT_SYMBOL  "Insert symbol"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_ALIGN_LEFT  "Left alignment"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_ALIGN_CENTER  "Center alignment"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_ALIGN_RIGHT  "Right alignment"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_ALIGN_JUSTIFY  "Justify paragraph"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_PARA_0BEFORE  "Space before: None"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_PARA_12BEFORE  "Space before: 12 pt"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_SINGLE_SPACE  "Single spacing"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_MIDDLE_SPACE  "1.5 spacing"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_DOUBLE_SPACE  "Double spacing"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_1COLUMN  "1 Column"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_2COLUMN  "2 Columns"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_3COLUMN  "3 Columns"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_VIEW_SHOWPARA  "Show/hide formatting marks"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_ZOOM  "Zoom"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_VIEW_FULL_SCREEN  "Full Screen"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_LISTS_BULLETS  "Bullets"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_LISTS_NUMBERS  "Numbering"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_COLOR_FORE  "Font color"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_COLOR_BACK  "Highlight"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_INDENT  "Increase indent"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_UNINDENT  "Decrease indent"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_SCRIPT_PLAY  "Execute script"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMTPAINTER  "Apply the previously copied paragraph formatting onto the selected text"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_DIR_OVERRIDE_LTR  "Force LTR direction of text"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_DIR_OVERRIDE_RTL  "Force RTL direction of text"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_DOM_DIRECTION  "Change dominant direction of paragraph"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_INSERT_TABLE  "Insert a new table into your document"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_ADD_ROW  "Add a row to this table after the current row"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_ADD_COLUMN  "Add a column to this table after the current column"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_DELETE_ROW  "Delete this row from its table"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_DELETE_COLUMN  "Delete this column from its table"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_MERGE_CELLS  "Merge cells"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_SPLIT_CELLS  "Split this cell"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_MERGELEFT  "Merge with left cell"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_MERGERIGHT  "Merge with right cell"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_MERGEABOVE  "Merge with cell above"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_MERGEBELOW  "Merge with cell below"
-#define AP_STRING_ID_TOOLBAR_TOOLTIP_MENU  "Menu"
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_FILE_NEW  _("Create a new document")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_FILE_OPEN  _("Open an existing document")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_FILE_SAVE  _("Save the document")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_FILE_SAVEAS  _("Save the document under a different name")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_FILE_PRINT  _("Print the document")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_FILE_PRINT_PREVIEW  _("Preview the document before printing")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_EDIT_UNDO  _("Undo editing")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_EDIT_REDO  _("Redo editing")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_EDIT_CUT  _("Cut")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_EDIT_COPY  _("Copy")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_EDIT_PASTE  _("Paste")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_EDIT_HEADER  _("Edit Header")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_EDIT_FOOTER  _("Edit Footer")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_EDIT_REMOVEHEADER  _("Remove Header")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_EDIT_REMOVEFOOTER  _("Remove Footer")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_SPELLCHECK  _("Spellcheck the document")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_IMG  _("Insert an image into the document")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_STYLE  _("Style")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_CHOOSE  _("Select Font")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_FONT  _("Font")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_HYPERLINK  _("Insert a hyperlink into the document")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_BOOKMARK  _("Insert a bookmark into the document")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_SIZE  _("Font Size")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_BOLD  _("Bold")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_ITALIC  _("Italic")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_UNDERLINE  _("Underline")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_OVERLINE  _("Overline")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_STRIKE  _("Strike")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_TOPLINE  _("Topline")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_BOTTOMLINE  _("Bottomline")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_HELP  _("Help")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_SUPERSCRIPT  _("Superscript")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_SUBSCRIPT  _("Subscript")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_INSERT_SYMBOL  _("Insert symbol")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_ALIGN_LEFT  _("Left alignment")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_ALIGN_CENTER  _("Center alignment")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_ALIGN_RIGHT  _("Right alignment")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_ALIGN_JUSTIFY  _("Justify paragraph")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_PARA_0BEFORE  _("Space before: None")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_PARA_12BEFORE  _("Space before: 12 pt")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_SINGLE_SPACE  _("Single spacing")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_MIDDLE_SPACE  _("1.5 spacing")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_DOUBLE_SPACE  _("Double spacing")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_1COLUMN  _("1 Column")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_2COLUMN  _("2 Columns")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_3COLUMN  _("3 Columns")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_VIEW_SHOWPARA  _("Show/hide formatting marks")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_ZOOM  _("Zoom")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_VIEW_FULL_SCREEN  _("Full Screen")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_LISTS_BULLETS  _("Bullets")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_LISTS_NUMBERS  _("Numbering")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_COLOR_FORE  _("Font color")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_COLOR_BACK  _("Highlight")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_INDENT  _("Increase indent")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_UNINDENT  _("Decrease indent")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_SCRIPT_PLAY  _("Execute script")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMTPAINTER  _("Apply the previously copied paragraph formatting onto the selected text")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_DIR_OVERRIDE_LTR  _("Force LTR direction of text")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_DIR_OVERRIDE_RTL  _("Force RTL direction of text")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_DOM_DIRECTION  _("Change dominant direction of paragraph")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_INSERT_TABLE  _("Insert a new table into your document")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_ADD_ROW  _("Add a row to this table after the current row")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_ADD_COLUMN  _("Add a column to this table after the current column")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_DELETE_ROW  _("Delete this row from its table")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_DELETE_COLUMN  _("Delete this column from its table")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_MERGE_CELLS  _("Merge cells")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_SPLIT_CELLS  _("Split this cell")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_MERGELEFT  _("Merge with left cell")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_MERGERIGHT  _("Merge with right cell")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_MERGEABOVE  _("Merge with cell above")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_MERGEBELOW  _("Merge with cell below")
+#define AP_STRING_ID_TOOLBAR_TOOLTIP_MENU  _("Menu")
 
-#define AP_STRING_ID_COMMAND_LINE_PRINTING_DEPRECATED "The '--print' option has been removed as of AbiWord 2.8. You can achieve the desired behavior using AbiWord's command-line conversion tools and then piping the output to a print spooler. Eg: 'abiword --to=ps --to-name fd://1 myfile.txt | lpr'"
+#define AP_STRING_ID_COMMAND_LINE_PRINTING_DEPRECATED _("The '--print' option has been removed as of AbiWord 2.8. You can achieve the desired behavior using AbiWord's command-line conversion tools and then piping the output to a print spooler. Eg: 'abiword --to=ps --to-name fd://1 myfile.txt | lpr'")
 
 #endif /* AP_STRING_ID_H */

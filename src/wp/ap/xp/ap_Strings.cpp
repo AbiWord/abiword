@@ -46,5 +46,5 @@ AP_StringSet::~AP_StringSet(void)
 
 const char *AP_StringSet::getValue(XAP_String_Id id) const
 {
-  return _(id);
+  return id;
 }
