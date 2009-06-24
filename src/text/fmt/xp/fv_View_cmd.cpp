@@ -5224,6 +5224,7 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG)
 	UT_return_val_if_fail(uuid != NULL, UT_ERROR);
 	UT_UTF8String s;
 	uuid->toString(s);
+	DELETEP(uuid);
 		
 	UT_Error errorCode = _insertGraphic(pFG, s.utf8_str());
 	if(m_FrameEdit.isActive())
