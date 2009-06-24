@@ -63,7 +63,8 @@ GR_UnixImage::GR_UnixImage(const char* szName,GdkPixbuf * pPixbuf )
     setName ( "GdkPixbufImage" );
   }
   m_ImageType = GR_Image::GRT_Raster;
-  setDisplaySize (gdk_pixbuf_get_width (pPixbuf), gdk_pixbuf_get_height (pPixbuf));
+  if(m_image)
+      setDisplaySize (gdk_pixbuf_get_width (pPixbuf), gdk_pixbuf_get_height (pPixbuf));
 }
 
 
@@ -102,6 +103,8 @@ GR_Image::GRType GR_UnixImage::getType(void) const
  */
 GR_Image * GR_UnixImage::createImageSegment(GR_Graphics * pG,const UT_Rect & rec)
 {
+        if(m_image == NULL)
+	    return NULL;
 	UT_sint32 x = pG->tdu(rec.left);
 	UT_sint32 y = pG->tdu(rec.top);
 	if(x < 0)
@@ -132,23 +135,24 @@ GR_Image * GR_UnixImage::createImageSegment(GR_Graphics * pG,const UT_Rect & rec
 	{
 		height = dH - y;
 	}
-	if(width < 0)
+	if(width <= 0)
 	{
-		x = dW -1;
+	        x = dW -1;
 		width = 1;
 	}
-	if(height < 0)
+	if(height <= 0)
 	{
 		y = dH -1;
 		height = 1;
 	}
 	UT_String sName("");
 	getName(sName);
-    UT_String sSub("");
+	UT_String sSub("");
 	UT_String_sprintf(sSub,"_segemnt_%d_%d_%d_%d",x,y,width,height);
 	sName += sSub;
 	GR_UnixImage * pImage = new GR_UnixImage(sName.c_str());
 	UT_ASSERT(m_image);
+	UT_DEBUGMSG((" segment x %d y %d width %d height %d \n",x,y,width,height));
 	pImage->m_image = gdk_pixbuf_new_subpixbuf(m_image,x,y,width,height);
 //
 //  gdk_pixbuf_new_subpixbuf shares pixels with the original pixbuf and
@@ -231,6 +235,8 @@ bool  GR_UnixImage::convertToBuffer(UT_ByteBuf** ppBB) const
 
 bool GR_UnixImage::saveToPNG(const char * szFile)
 {
+        UT_return_val_if_fail(m_image,false);
+
 	GError * error = NULL;
 	gboolean res = gdk_pixbuf_save (m_image, szFile, "png", &error,NULL);
 	if(res != FALSE)
@@ -322,6 +328,7 @@ bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB,
 				     UT_sint32 iDisplayHeight)
 {
 	// assert no image loaded yet
+
 	UT_ASSERT(!m_image);
 
 	bool forceScale = (iDisplayWidth != -1 && iDisplayHeight != -1);
@@ -411,5 +418,6 @@ bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB,
 
 void GR_UnixImage::cairoSetSource(cairo_t * cr, double x, double y)
 {
+	UT_return_if_fail(m_image);
 	gdk_cairo_set_source_pixbuf(cr, m_image, x, y);
 }

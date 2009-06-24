@@ -2329,6 +2329,7 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 				pFrameCon->setY(yFpos);
 				UT_sint32 iPrefPage = pFrameCon->getPreferedPageNo();
 				UT_sint32 iThisPage = getDocLayout()->findPage(pPage);
+				UT_return_val_if_fail(pPage,false);
 				if(pPage->findFrameContainer(pFrameCon) < 0)
 				{
 					if((iPrefPage >= 0) && abs(iPrefPage - iThisPage) < 2)
@@ -2434,6 +2435,7 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 				UT_return_val_if_fail(pCol,false);
 				pFrameCon->setX(pFrame->getFrameXColpos()+pCol->getX());
 				pFrameCon->setY(pFrame->getFrameYColpos()+pCol->getY());
+				UT_return_val_if_fail(pPage,false);
 				if(pPage->findFrameContainer(pFrameCon) < 0)
 				{
 					pPage->insertFrameContainer(pFrameCon);
@@ -2486,6 +2488,7 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 				}
 				pFrameCon->setX(pFrame->getFrameXPagepos());
 				pFrameCon->setY(pFrame->getFrameYPagepos());
+				UT_return_val_if_fail(pPage,false);
 				if(pPage->findFrameContainer(pFrameCon) < 0)
 				{
 					pPage->insertFrameContainer(pFrameCon);
