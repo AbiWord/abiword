@@ -19,7 +19,11 @@ libwin_la_SOURCES = \
 	ap_Win32Dialog_CollaborationJoin.cpp \
 	ap_Win32Dialog_CollaborationJoin.h
 
-# TODO build
+libwin_la_LIBADD = ap_Win32Res_CollaborationDialogs.lo
+
+ap_Win32Res_CollaborationDialogs.lo: ap_Win32Res_CollaborationDialogs.rc $(libwin_la_OBJECTS)
+	CPPFLAGS=$(COLLAB_RCLAGS) $(top_srcdir)/lt-compile-resource $< $@
+
 EXTRA_DIST = \
 	ap_Win32Res_CollaborationDialogs.rc \
 	ap_Win32Res_DlgCollaborationAccounts.rc2 \

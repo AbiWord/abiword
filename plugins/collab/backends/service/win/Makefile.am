@@ -16,11 +16,6 @@ libwin_la_SOURCES = \
 	ServiceWin32AccountHandler.cpp \
 	ServiceWin32AccountHandler.h
 
-libwin_la_LIBADD = ap_Win32Res_ServiceDialogs.lo
-
-ap_Win32Res_ServiceDialogs.lo: ap_Win32Res_ServiceDialogs.rc $(libwin_la_OBJECTS)
-	$(top_srcdir)/lt-compile-resource $< $@
-
 EXTRA_DIST = \
 	ap_Win32Res_ServiceDialogs.rc \
 	ap_Win32Res_DlgGenericInput.rc2 \

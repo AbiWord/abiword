@@ -145,6 +145,7 @@ fi
 
 test "$enable_collab" == "auto" && PLUGINS="$PLUGINS collab"
 
+COLLAB_RCFLAGS="$COLLAB_CFLAGS"
 COLLAB_CFLAGS="$COLLAB_CFLAGS "'${PLUGIN_CFLAGS}'
 COLLAB_LIBS="$COLLAB_LIBS "'${PLUGIN_LIBS}'
 
@@ -158,5 +159,6 @@ AM_CONDITIONAL([COLLAB_BACKEND_SERVICE], [test "$enable_collab_backend_service" 
 AM_CONDITIONAL([COLLAB_RECORD_ALWAYS], [test "$enable_collab_record_always" == "yes"])
 
 AC_SUBST([COLLAB_CFLAGS])
+AC_SUBST([COLLAB_RCFLAGS])
 AC_SUBST([COLLAB_LIBS])
 
