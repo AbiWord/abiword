@@ -46,6 +46,8 @@
 #include "ie_imp.h"
 #include "ie_impGraphic.h"
 
+#include "fg_Graphic.h"
+
 #include "xap_Win32Resources.rc2"
 
 
