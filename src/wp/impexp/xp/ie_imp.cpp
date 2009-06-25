@@ -802,18 +802,15 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 				GsfInputMarker marker(input);
 				content_confidence = s->recognizeContents(input);
 			}
-
-		    const char * suffix = UT_pathSuffix(gsf_input_name (input)) ;
-		    if (suffix) {
-				const IE_SuffixConfidence * sc = s->getSuffixConfidence();
-				while (sc && !sc->suffix.empty()) {
-					/* suffixes do not have a leading '.' */
-					if (0 == g_ascii_strcasecmp(sc->suffix.c_str(), suffix+1) && 
-						sc->confidence > suffix_confidence) {
-						suffix_confidence = sc->confidence;
-					}
-					sc++;
+			const IE_SuffixConfidence * sc = s->getSuffixConfidence();
+			while (sc && !sc->suffix.empty() && suffix_confidence != UT_CONFIDENCE_PERFECT) {
+				/* suffixes do not have a leading '.' */
+				std::string suffix = std::string(".") + sc->suffix;
+				if (g_str_has_suffix(gsf_input_name (input), suffix.c_str()) && 
+					sc->confidence > suffix_confidence) {
+					suffix_confidence = sc->confidence;
 				}
+				sc++;
 			}
 
 		    UT_Confidence_t confidence = s_confidence_heuristic ( content_confidence, 
