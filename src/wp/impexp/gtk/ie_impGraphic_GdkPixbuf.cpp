@@ -92,12 +92,13 @@ s_getSuffixInfo (void)
 	idx = 0;
 	while (formatIter) {
 		format = (GdkPixbufFormat *) formatIter->data;
-		extensions = gdk_pixbuf_format_get_extensions (format);
-		while (*extensions) {
-			suffixInfo.suffixes[idx] = *extensions;
+		extensionsIter = extensions = gdk_pixbuf_format_get_extensions (format);
+		while (*extensionsIter) {
+			suffixInfo.suffixes[idx] = g_strdup(*extensionsIter);
 			idx++;
-			extensions++;
+			extensionsIter++;
 		}
+		g_strfreev(extensions);
 		tmp = formatIter;
 		formatIter = formatIter->next;
 		g_slist_free_1 (tmp);
