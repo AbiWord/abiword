@@ -69,8 +69,7 @@ bool ODe_ManifestWriter::writeManifest(PD_Document* pDoc, GsfOutfile* pODT)
     ODe_writeToStream (manifest, preamble, G_N_ELEMENTS(preamble));
 
     const char* szName;
-    const char* szMimeType;
-	const char **pszMimeType = &szMimeType;
+    std::string mimeType;
     const UT_ByteBuf* pByteBuf;
     bool wroteDirManifest = false;
     
@@ -79,9 +78,9 @@ bool ODe_ManifestWriter::writeManifest(PD_Document* pDoc, GsfOutfile* pODT)
                               NULL,
                               &szName,
                               &pByteBuf,
-                              reinterpret_cast<const void **>(pszMimeType))); k++) {
+                              &mimeType)); k++) {
                                 
-        if (szMimeType && !strcmp(szMimeType, "image/png")) {
+        if (!mimeType.empty() && (mimeType == "image/png")) {
             
             if (!wroteDirManifest) {
                 name = " <manifest:file-entry manifest:media-type=\"\" manifest:full-path=\"Pictures/\"/>\n";
@@ -93,7 +92,7 @@ bool ODe_ManifestWriter::writeManifest(PD_Document* pDoc, GsfOutfile* pODT)
 
             name = UT_String_sprintf(
                 " <manifest:file-entry manifest:media-type=\"%s\" manifest:full-path=\"Pictures/%s.png\"/>\n",
-                szMimeType, szName);
+                mimeType.c_str(), szName);
                 
             ODe_gsf_output_write (manifest, name.size(),
                 reinterpret_cast<const guint8 *>(name.c_str()));

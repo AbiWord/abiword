@@ -4,6 +4,7 @@
  * Copyright (C) 2001 Martin Sevior
  * Copyright (C) 2002 Dom Lachowicz
  * Copyright (C) 2005 Marc Maurer
+ * Copyright (C) 2009 Hubert Figuiere
  *
  * Portions from GdkPixBuf Library 
  * Copyright (C) 1999 The Free Software Foundation
@@ -25,6 +26,9 @@
  */
 
 #include <string.h>
+
+#include <string>
+
 #include <glib.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gdk-pixbuf/gdk-pixbuf-loader.h>
@@ -55,7 +59,7 @@ public:
 
 private:
 
-	GdkPixbuf * pixbufForByteBuf (UT_ByteBuf * pBB);
+	GdkPixbuf * pixbufForByteBuf (UT_ByteBuf * pBB, std::string & mimetype);
 	void _createPNGFromPixbuf(GdkPixbuf * pixbuf);
 	UT_Error _png_write(GdkPixbuf * pixbuf);
 

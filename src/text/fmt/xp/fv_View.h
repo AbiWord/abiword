@@ -25,6 +25,8 @@
 #include "config.h"
 #endif
 
+#include <string>
+
 #include "xap_Features.h"
 #include "ut_types.h"
 #include "xav_View.h"
@@ -488,7 +490,7 @@ public:
 	fl_FrameLayout * getFrameLayout(void);
 	void            setFrameFormat(const gchar ** props);
 	void            setFrameFormat(const gchar ** attribs, const gchar ** props);
-	void            setFrameFormat(const gchar ** props,FG_Graphic * pFG, UT_String & dataID);
+	void            setFrameFormat(const gchar ** props,FG_Graphic * pFG, const std::string & dataID);
 	void            convertInLineToPositioned(PT_DocPosition pos, 
 											const gchar ** attribs);
 

@@ -2041,18 +2041,21 @@ void s_LaTeX_Listener::_handleImage(const PP_AttrProp * pAP)
 	/* Part of code taken from the HTML exporter */
 	const UT_ByteBuf * pByteBuf;
 	UT_ByteBuf decodedByteBuf;				
-	const gchar *szHeight = NULL, *szWidth = NULL, *szDataID = NULL, *szMimeType = NULL;
+	const gchar *szHeight = NULL, *szWidth = NULL, *szDataID = NULL;
+    std::string mimeType;
 	
 	if (! pAP)
 		return;
 	if (! pAP->getAttribute("dataid", szDataID))
 		return;
 
-	if (! m_pDocument->getDataItemDataByName(szDataID, &pByteBuf, reinterpret_cast<const void**>(&szMimeType), NULL))
+	if (! m_pDocument->getDataItemDataByName(szDataID, &pByteBuf,
+                                             &mimeType, NULL))
 		return;
-	if ((pByteBuf == 0) || (szMimeType == 0)) return; // ??
+	if ((pByteBuf == 0) || (mimeType.empty())) 
+        return; // ??
 
-	if (strcmp (szMimeType, "image/png") != 0)
+	if (mimeType != "image/png")
 	{
 		UT_DEBUGMSG(("Object not of MIME type image/png - ignoring...\n"));
 		return;

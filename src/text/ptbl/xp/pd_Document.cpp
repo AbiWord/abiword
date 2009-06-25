@@ -4390,14 +4390,14 @@ bool PD_Document::hasMathorSVG(void)
 					bool bFoundDataID = pAP->getAttribute("dataid", pszDataID);
 					if (bFoundDataID && pszDataID)
 					{
-						const char * pszMimeType = NULL;
-						const char **ppszMimeType = &pszMimeType;
+                        std::string mimeType;
 						bFoundDataID = getDataItemDataByName(pszDataID, NULL,
-															 reinterpret_cast<const void**>(ppszMimeType), NULL);
+															 &mimeType, NULL);
 	   
 						// figure out what type of image
 	   
-						if (bFoundDataID && pszMimeType && (strcmp(pszMimeType, "image/svg+xml") == 0)) 
+						if (bFoundDataID && !mimeType.empty() && 
+                            (mimeType == "image/svg+xml")) 
 						{
 							return true;
 						}
@@ -4706,29 +4706,32 @@ bool  PD_Document::isDoingTheDo(void) const
 // the data-section of the document.  These are used, for example,
 // to store the actual data of an image.  The inline image tag has
 // a reference to a DataItem.
-
-bool PD_Document::createDataItem(const char * szName, bool bBase64, const UT_ByteBuf * pByteBuf,
-									const void* pToken,
-									void ** ppHandle)
+// mime_type is the associated mime type for the blob.
+bool PD_Document::createDataItem(const char * szName, bool bBase64, 
+                                 const UT_ByteBuf * pByteBuf,
+                                 const std::string & mime_type,
+                                 void ** ppHandle)
 {
+	struct _dataItemPair* pPair = NULL;
+    UT_ByteBuf * pNew = NULL;
+
+	UT_return_val_if_fail (pByteBuf, false);
+
 	// verify unique name
 	UT_DEBUGMSG(("Create data item name %s \n",szName));
 	if (getDataItemDataByName(szName,NULL,NULL,NULL) == true)
-		{
-			UT_DEBUGMSG(("Data item %s already exists! \n",szName));
-			return false;				// invalid or duplicate name
-		}
+    {
+        UT_DEBUGMSG(("Data item %s already exists! \n",szName));
+        goto Failed;
+    }
 	// set the actual DataItem's data using the contents of the ByteBuf.
 	// we must copy it if we want to keep it.  bBase64 is TRUE if the
 	// data is Base64 encoded.
 
-	UT_return_val_if_fail (pByteBuf, false);
-
-	struct _dataItemPair* pPair = NULL;
-
-	UT_ByteBuf * pNew = new UT_ByteBuf();
-	if (!pNew)
-		return false;
+	pNew = new UT_ByteBuf();
+	if (!pNew) {
+		goto Failed;
+    }
 
 	if (bBase64)
 	{
@@ -4748,7 +4751,7 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64, const UT_Byt
 	}
 
 	pPair->pBuf = pNew;
-	pPair->pToken = pToken;
+	pPair->pToken = g_strdup(mime_type.c_str());
 	m_hashDataItems.insert(szName, pPair);
 
 	// give them back a handle if they want one
@@ -4775,9 +4778,6 @@ Failed:
 	{
 		delete pNew;
 	}
-
-	// we also have to g_free the pToken, which was created by g_strdup
-	FREEP(pToken);
 
 	return false;
 }
@@ -4809,7 +4809,7 @@ bool PD_Document::replaceDataItem(const char * szName, const UT_ByteBuf * pByteB
 
 bool PD_Document::getDataItemDataByName(const char * szName,
 										   const UT_ByteBuf ** ppByteBuf,
-										   const void** ppToken,
+                                        std::string * pMimeType,
 										   void ** ppHandle) const
 {
 	UT_DEBUGMSG(("Look for %s \n",szName));
@@ -4827,9 +4827,9 @@ bool PD_Document::getDataItemDataByName(const char * szName,
 		*ppByteBuf = pPair->pBuf;
 	}
 
-	if (ppToken)
+	if (pMimeType)
 	{
-		*ppToken = pPair->pToken;
+		*pMimeType = (const char *)pPair->pToken;
 	}
 
 	if (ppHandle)
@@ -4852,21 +4852,26 @@ bool PD_Document::getDataItemFileExtension(const char *szDataID, std::string &sE
 {
 	UT_return_val_if_fail(szDataID && *szDataID, false);
 
-	const char * szMimeType = NULL;
-	const char** pszMimeType = &szMimeType;
+    std::string mimeType;
  
-	if(getDataItemDataByName(szDataID, NULL, reinterpret_cast<const void**>(pszMimeType), NULL))
+	if(getDataItemDataByName(szDataID, NULL, &mimeType, NULL))
 	{
-		if(!szMimeType || !*szMimeType)
+		if(mimeType.empty())
 			return false;
 
-		if(!strcmp(szMimeType, "image/png"))
+		if(mimeType == "image/png")
 		{
 			sExt = (bDot ? "." : "");
 			sExt += "png";
 			return true;
 		}
-		else if(!strcmp(szMimeType, "image/svg+xml"))
+		if(mimeType == "image/jpeg")
+		{
+			sExt = (bDot ? "." : "");
+			sExt += "jpg";
+			return true;
+		}
+		else if(mimeType ==  "image/svg+xml")
 		{
 			sExt = (bDot ? "." : "");
 			sExt += "svg";
@@ -4874,7 +4879,7 @@ bool PD_Document::getDataItemFileExtension(const char *szDataID, std::string &sE
 		}
 		else
 		{
-			UT_DEBUGMSG(("getDataItemFileExtension(): unhandled/ignored mime type: %s\n", szMimeType));
+			UT_DEBUGMSG(("getDataItemFileExtension(): unhandled/ignored mime type: %s\n", mimeType.c_str()));
 		}
 	}
 
@@ -4926,7 +4931,7 @@ bool PD_Document::getDataItemData(void * pHandle,
 }
 
 bool PD_Document::enumDataItems(UT_uint32 k,
-								   void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf, const void** ppToken) const
+                                void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf, std::string * pMimeType) const
 {
 	// return the kth data item.
 
@@ -4955,9 +4960,9 @@ bool PD_Document::enumDataItems(UT_uint32 k,
 		*ppByteBuf = pPair->pBuf;
 	}
 
-	if (ppToken)
+	if (pMimeType)
 	{
-		*ppToken = pPair->pToken;
+		*pMimeType = (const char *)pPair->pToken;
 	}
 
 	if (pszName)

@@ -41,6 +41,8 @@ libxp_la_SOURCES = \
 	ut_iconv.h \
 	ut_idle.cpp \
 	ut_idle.h \
+	ut_jpeg.cpp \
+	ut_jpeg.h \
 	ut_Language.cpp \
 	ut_Language.h \
 	ut_locale.cpp \
@@ -69,6 +71,8 @@ libxp_la_SOURCES = \
 	ut_stack.h \
 	ut_std_algo.h \
 	ut_std_map.h \
+	ut_std_string.h \
+	ut_std_string.cpp \
 	ut_stringbuf.cpp \
 	ut_stringbuf.h \
 	ut_string_class.cpp \

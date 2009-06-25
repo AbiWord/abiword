@@ -1238,13 +1238,12 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 		else if (!isClipboard ())
 			pfg = importImage (szSrc);
 
-		if (pfg == 0) break;
+		if (pfg == 0) 
+            break;
 
-		const UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pfg)->getRaster_PNG ();
+		const UT_ByteBuf * pBB = pfg->getBuffer();
 		X_CheckError(pBB);
 
-		char * mimetype = g_strdup ("image/png");
-		X_CheckError(mimetype);
 		if(szWidth)
 			{
 				UT_Dimension units = UT_determineDimension (szWidth);
@@ -1404,7 +1403,8 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 		xxx_UT_DEBUGMSG(("inserting `%s' as `%s' [%s]\n",szSrc,dataid.c_str(),utf8val.utf8_str()));
 
 		X_CheckError(appendObject (PTO_Image, api_atts));
-		X_CheckError(getDoc()->createDataItem (dataid.c_str(), false, pBB, static_cast<void*>(mimetype), NULL));
+		X_CheckError(getDoc()->createDataItem (dataid.c_str(), false, pBB, 
+                                               pfg->getMimeType(), NULL));
 
 		UT_DEBUGMSG(("insertion successful\n"));
 		}

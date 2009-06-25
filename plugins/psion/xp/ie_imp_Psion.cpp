@@ -938,7 +938,6 @@ UT_Error IE_Imp_Psion::insertImage(const psiconv_in_line_layout in_line)
 	UT_UTF8String props,iname,buffer;
 	const gchar* propsArray[13];
 	int x,y,xsize,ysize;
-	char *mimetype;
 	UT_uint32 iid;
 	
 	// Get the sketch file
@@ -1029,10 +1028,8 @@ UT_Error IE_Imp_Psion::insertImage(const psiconv_in_line_layout in_line)
 	propsArray[4] = NULL;
 	if (!(getDoc()->appendObject(PTO_Image,propsArray)))
 		return UT_IE_IMPORTERROR;
-	if (!(mimetype = g_strdup("image/png")))
-		return UT_IE_NOMEMORY;
 	if (!(getDoc()->createDataItem(iname.utf8_str(),false,&image_buffer,
-		 (const void*) mimetype,NULL)))
+								   "image/png",NULL)))
 		return UT_IE_IMPORTERROR;
 	return UT_OK;
 }

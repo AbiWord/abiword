@@ -44,14 +44,15 @@ FG_Graphic* FG_Graphic::createFromChangeRecord(const fl_ContainerLayout* pFL,
       
 		if (bFoundDataID && pszDataID)
 		{
-			const char * pszMimeType = NULL;
-			const char **ppszMimeType = &pszMimeType;
+            std::string mimeType;
 			bFoundDataID = pFL->getDocument()->getDataItemDataByName(pszDataID, NULL,
-																	 reinterpret_cast<const void**>(ppszMimeType), NULL);
+																	 &mimeType,
+                                                                     NULL);
 	   
 			// figure out what type to create
 	   
-			if (!bFoundDataID || !pszMimeType || strcmp(pszMimeType, "image/svg+xml") != 0) {
+			if (!bFoundDataID || mimeType.empty() 
+                || (mimeType != "image/svg+xml")) {
 				return FG_GraphicRaster::createFromChangeRecord(pFL, pcro);
 			} else {
 				return FG_GraphicVector::createFromChangeRecord(pFL, pcro);
@@ -74,14 +75,16 @@ FG_Graphic* FG_Graphic::createFromStrux(const fl_ContainerLayout* pFL)
       
 		if (bFoundDataID && pszDataID)
 		{
-			const char * pszMimeType = NULL;
-			const char **ppszMimeType = &pszMimeType;			
+            std::string mimeType;
 			bFoundDataID = pFL->getDocument()->getDataItemDataByName(pszDataID, NULL,
-																	 reinterpret_cast<const void**>(ppszMimeType), NULL);
+																	 &mimeType,
+                                                                     NULL);
 	   
 			// figure out what type to create
 	   
-			if (!bFoundDataID || !pszMimeType || strcmp(pszMimeType, "image/svg+xml") != 0) {
+			if (!bFoundDataID || mimeType.empty() || 
+                (mimeType != "image/svg+xml")) 
+            {
 				return FG_GraphicRaster::createFromStrux(pFL);
 			} else {
 				return FG_GraphicVector::createFromStrux(pFL);

@@ -1104,10 +1104,11 @@ void s_WML_Listener::_handleImage(PT_AttrPropIndex api, bool bPos)
 void s_WML_Listener::_handleDataItems(void)
 {
  	const char * szName;
-	const char * szMimeType;
+    std::string mimeType;
 	const UT_ByteBuf * pByteBuf;
 
-	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,reinterpret_cast<const void**>(&szMimeType))); k++)
+	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,
+                                                    &mimeType)); k++)
 	{
 		UT_sint32 loc = -1;
 		for (UT_sint32 i = 0; i < m_utvDataIDs.getItemCount(); i++)
@@ -1135,15 +1136,15 @@ void s_WML_Listener::_handleDataItems(void)
 				 * but I don't think so. */
 			}
 
-			if (!strcmp(szMimeType, "image/svg+xml"))
+			if (mimeType == "image/svg+xml")
 			{
 				UT_UTF8String_sprintf(fname, "%s/%s_%d.svg", fname.utf8_str(), szName, loc);
 			}
-			else if (!strcmp(szMimeType, "application/mathml+xml"))
+			else if (mimeType == "application/mathml+xml")
 			{
 				UT_UTF8String_sprintf(fname, "%s/%s_%d.mathml", fname.utf8_str(), szName, loc);
 			}
-			else if (!strcmp(szMimeType, "image/png"))// PNG Image
+			else if (mimeType == "image/png")// PNG Image
 			{
 				char * temp = _stripSuffix(UT_go_basename(szName), '_');
 				char * fstripped = _stripSuffix(temp, '.');
@@ -1153,7 +1154,7 @@ void s_WML_Listener::_handleDataItems(void)
 			}
 			else
 			{
-				UT_DEBUGMSG(("WML export: Unhandled/ignored mime type: %s\n", szMimeType));
+				UT_DEBUGMSG(("WML export: Unhandled/ignored mime type: %s\n", mimeType.c_str()));
 			}
 
 			GsfOutput *fp = UT_go_file_create (fname.utf8_str(), NULL);

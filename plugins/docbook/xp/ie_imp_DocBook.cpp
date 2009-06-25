@@ -27,6 +27,7 @@
 #include "ut_debugmsg.h"
 #include "ut_path.h"
 #include "ut_string.h"
+#include "ut_std_string.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
 #include "ie_impexp_DocBook.h"
@@ -2906,7 +2907,7 @@ void IE_Imp_DocBook :: createList (void)
 /*
  * this function creates a new image in the document
  */
-void IE_Imp_DocBook :: createImage (const char *name, const gchar **atts)
+void IE_Imp_DocBook::createImage(const char *name, const gchar **atts)
 {
 	char * relative_file = UT_go_url_resolve_relative(m_szFileName, name);
 	if(!relative_file)
@@ -2919,18 +2920,17 @@ void IE_Imp_DocBook :: createImage (const char *name, const gchar **atts)
 	if (IE_ImpGraphic::loadGraphic (filename.utf8_str(), IEGFT_Unknown, &pfg) != UT_OK)
 		return;
 
-	const UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pfg)->getRaster_PNG();
+	const UT_ByteBuf * pBB = pfg->getBuffer();
 	X_CheckError(pBB);
 
-	UT_UTF8String dataid;
-	UT_UTF8String_sprintf (dataid, "image%u", static_cast<unsigned int>(m_iImages++));
+    std::string dataid = UT_std_string_sprintf ("image%u", static_cast<unsigned int>(m_iImages++));
 
-	const char *mime = g_strdup("image/png");
-	X_CheckError (getDoc()->createDataItem (dataid.utf8_str(), false, pBB, reinterpret_cast<void *>(const_cast<char *>(mime)), NULL));
+	X_CheckError (getDoc()->createDataItem (dataid.c_str(), false, pBB, 
+                                            "image/png", NULL));
 
 	const gchar *buf[5];
 	buf[0] = "dataid";
-	buf[1] = (gchar*)dataid.utf8_str();
+	buf[1] = (gchar*)dataid.c_str();
 	buf[2] = NULL;
 	buf[4] = NULL;
 

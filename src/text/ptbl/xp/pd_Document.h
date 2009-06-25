@@ -24,9 +24,9 @@
 #ifndef PD_DOCUMENT_H
 #define PD_DOCUMENT_H
 
-// TODO should the filename be UT_UCSChar rather than char ?
-
 #include <stdio.h>
+#include <string>
+
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "ut_hash.h"
@@ -439,17 +439,21 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 
 	// data items
 
-	virtual bool			createDataItem(const char * szName, bool bBase64, const UT_ByteBuf * pByteBuf,
-										   const void* pToken, void ** ppHandle);
+	virtual bool			createDataItem(const char * szName, bool bBase64, 
+                                           const UT_ByteBuf * pByteBuf,
+										   const std::string & mime_type, 
+                                           void ** ppHandle);
 	virtual bool            replaceDataItem(const char * szName, const UT_ByteBuf * pByteBuf);
 	virtual bool			getDataItemDataByName(const char * szName,
-												  const UT_ByteBuf ** ppByteBuf, const void** ppToken, void ** ppHandle) const;
+												  const UT_ByteBuf ** ppByteBuf,
+                                                  std::string* pMimeType,
+                                                  void ** ppHandle) const;
 	bool					setDataItemToken(void* pHandle, void* pToken);
 	bool					getDataItemData(void * pHandle,
 											const char ** pszName, const UT_ByteBuf ** ppByteBuf, const void** ppToken) const;
 	bool					getDataItemFileExtension(const char *szDataID, std::string &sExt, bool bDot = true) const;
 	bool					enumDataItems(UT_uint32 k,
-										  void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf, const void** ppToken) const;
+										  void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf, std::string * pMimeType) const;
 
     PL_StruxDocHandle       findHdrFtrStrux(const gchar * pszHdtFtr,
 											const gchar * pszHdrFtrID);

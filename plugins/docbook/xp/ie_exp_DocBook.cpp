@@ -2201,10 +2201,11 @@ void s_DocBook_Listener::_handleDataItems(void)
 {
 	// Lifted from HTML listener
  	const char * szName = 0;
-	const char * szMimeType = 0;
+    std::string mimeType;
 	const UT_ByteBuf * pByteBuf;
 	
-	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,reinterpret_cast<const void **>(&szMimeType))); k++)
+	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,
+                                                    &mimeType)); k++)
 	{
 		UT_sint32 loc = -1;
 		for (UT_sint32 i = 0; i < m_utvDataIDs.getItemCount(); i++)
@@ -2224,9 +2225,9 @@ void s_DocBook_Listener::_handleDataItems(void)
 			/* int result = */
 			UT_go_directory_create(fname.utf8_str(), 0750, NULL);
 			
-			if (!strcmp(szMimeType, "image/svg+xml"))
+			if (mimeType == "image/svg+xml")
 				UT_UTF8String_sprintf(fname, "%s/%s_%d.svg", fname.utf8_str(), szName, loc);
-			if (!strcmp(szMimeType, "application/mathml+xml"))
+			else if (mimeType == "application/mathml+xml")
 				UT_UTF8String_sprintf(fname, "%s/%s_%d.mathml", fname.utf8_str(), szName, loc);
 			else // PNG Image
 			{  

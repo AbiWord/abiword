@@ -70,11 +70,10 @@ bool GR_EmbedView::getSnapShots(void)
   UT_UTF8String sName = "snapshot-png-";
   sName += m_sDataID;
   bool bFound = false;
-  const void * pToken = NULL;
   void * pHandle = NULL;
   const UT_ByteBuf * pPNG = NULL;
   const UT_ByteBuf * pSVG = NULL;
-  bFound = m_pDoc->getDataItemDataByName(sName.utf8_str(),&pPNG,&pToken,&pHandle);
+  bFound = m_pDoc->getDataItemDataByName(sName.utf8_str(),&pPNG,NULL,&pHandle);
   if(!bFound)
   {
     m_bHasPNGSnapshot = false;    
@@ -87,7 +86,7 @@ bool GR_EmbedView::getSnapShots(void)
   }
   UT_UTF8String sPNGName = "snapshot-svg-";
   sName += m_sDataID;
-  bFound = m_pDoc->getDataItemDataByName(sName.utf8_str(),&pSVG,&pToken,&pHandle);
+  bFound = m_pDoc->getDataItemDataByName(sName.utf8_str(),&pSVG,NULL,&pHandle);
   if(!bFound)
   {
     m_bHasSVGSnapshot = false;    

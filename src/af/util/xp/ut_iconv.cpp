@@ -73,15 +73,14 @@ auto_iconv::auto_iconv(UT_iconv_t iconv)
 /*!
  * Convert characters from in_charset to out_charset
  */
-auto_iconv::auto_iconv(const char * in_charset, const char *out_charset)
-  UT_THROWS((UT_iconv_t))
+auto_iconv::auto_iconv(const char * in_charset, const char *out_charset) throw(UT_iconv_t)
 {
 	m_h = UT_ICONV_INVALID;
 
 	UT_iconv_t cd = UT_iconv_open (out_charset, in_charset);
 	
 	if (!UT_iconv_isValid(cd))
-		UT_THROW(cd);
+		throw cd;
 	
 	m_h = cd;
 }

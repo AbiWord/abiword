@@ -1198,9 +1198,10 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 		if(pszDataID != NULL)
 		{
 			const UT_ByteBuf * pbb = NULL;
-			const void * pToken = NULL;
-			void * pHandle = NULL;
-			bool bFoundDataItem = m_pDocument->getDataItemDataByName(static_cast<const char*>(pszDataID),&pbb,&pToken,&pHandle);
+			bool bFoundDataItem = m_pDocument->getDataItemDataByName(static_cast<const char*>(pszDataID), 
+                                                                     &pbb,
+                                                                     NULL, 
+                                                                     NULL);
 			if (!bFoundDataItem)
 			{
 				UT_DEBUGMSG(("RTF_Export: cannot get dataitem for image\n"));
@@ -2381,8 +2382,6 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 // Export the MathML associated with this
 		 //
 		 const UT_ByteBuf * pbb = NULL;
-		 const void * pToken = NULL;
-		 void * pHandle = NULL;
 		 bool bFoundDataItem = false;
 		 UT_uint32 lenData = 0;
 		 const UT_Byte * pData = NULL;
@@ -2390,7 +2389,10 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 UT_String buf;
 		 if(pszDataId)
 		 {
-			bFoundDataItem = m_pDocument->getDataItemDataByName(static_cast<const char*>(pszDataId),&pbb,&pToken,&pHandle);
+			bFoundDataItem = m_pDocument->getDataItemDataByName(static_cast<const char*>(pszDataId),
+                                                                &pbb,
+                                                                NULL,
+                                                                NULL);
 			if (!bFoundDataItem)
 			{
 
@@ -2421,7 +2423,9 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 //
 		 if(pszLatexId)
 		 {
-		        bFoundDataItem = m_pDocument->getDataItemDataByName(static_cast<const char*>(pszLatexId),&pbb,&pToken,&pHandle);
+             bFoundDataItem = m_pDocument->getDataItemDataByName(static_cast<const char*>(pszLatexId),
+                                                                 &pbb, NULL, 
+                                                                 NULL);
 			if (!bFoundDataItem)
 			{
 
@@ -5007,9 +5011,8 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 		return;
 	}
 	const UT_ByteBuf * pbb = NULL;
-	const void * pToken = NULL;
-	void * pHandle = NULL;
-	bool bFoundDataItem = m_pDocument->getDataItemDataByName(static_cast<const char*>(szDataID),&pbb,&pToken,&pHandle);
+	bool bFoundDataItem = m_pDocument->getDataItemDataByName(static_cast<const char*>(szDataID),
+                                                             &pbb, NULL, NULL);
 	if (!bFoundDataItem)
 	{
 		UT_DEBUGMSG(("RTF_Export: cannot get dataitem for image\n"));

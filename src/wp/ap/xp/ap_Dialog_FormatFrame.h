@@ -22,6 +22,8 @@
 #ifndef AP_DIALOG_FORMATFRAME_H
 #define AP_DIALOG_FORMATFRAME_H
 
+#include <string>
+
 #include "ut_types.h"
 #include "ut_misc.h"
 #include "ut_PropVector.h"
@@ -105,7 +107,8 @@ public:
 	void                                toggleLineType(toggle_button btn, bool enabled);
 	void                                clearImage(void);
 	void                                askForGraphicPathName(void);
-	void                                ShowErrorBox(UT_String & sFile, UT_Error errorCode);
+	void                                ShowErrorBox(const std::string & sFile, 
+                                                     UT_Error errorCode);
 	void								_createPreviewFromGC(GR_Graphics * gc,
 															 UT_uint32 width,
 															 UT_uint32 height);
@@ -190,6 +193,9 @@ protected:
 	AP_FormatFrame_preview				*m_pFormatFramePreview;
 	AP_FormatFrame_preview_drawer		m_previewDrawer;
 private:
+    GR_Image * _makeImageForRaster(const std::string & name, 
+                                   GR_Graphics * pGraphics,
+                                   const FG_Graphic * pG);
 	bool					_getToggleButtonStatus(const char * lineStyle);
 
 	bool					m_bSettingsChanged;
@@ -225,7 +231,7 @@ private:
 	bool m_bAutoUpdate_happening_now;
 
 	PT_DocPosition                      m_iOldPos;
-	UT_String                           m_sImagePath;
+    std::string                         m_sImagePath;
 	IEGraphicFileType                   m_iGraphicType;
 	GR_Image *                          m_pImage;
 	FG_Graphic *                        m_pGraphic;

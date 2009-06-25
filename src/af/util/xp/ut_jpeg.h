@@ -1,5 +1,5 @@
 /* AbiSource Program Utilities
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,22 +16,23 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
 
 
-#ifndef UT_PNG_H
-#define UT_PNG_H
+#ifndef _UT_JPEG_H_
+#define _UT_JPEG_H_
 
-/* pre-emptive dismissal; ut_types.h is needed by just about everything,
- * so even if it's commented out in-file that's still a lot of work for
- * the preprocessor to do...
- */
-#ifndef UT_TYPES_H
+extern "C" 
+{
+#include <jpeglib.h>
+}
+
 #include "ut_types.h"
-#endif
 
 class UT_ByteBuf;
 
-ABI_EXPORT bool UT_PNG_getDimensions(const UT_ByteBuf* pBB, UT_sint32& iImageWidth, UT_sint32& iImageHeight);
+ABI_EXPORT void UT_JPEG_ByteBufSrc (j_decompress_ptr cinfo, const UT_ByteBuf* sourceBuf);
 
-#endif /* UT_PNG_H */
+ABI_EXPORT bool UT_JPEG_getDimensions(const UT_ByteBuf* pBB, UT_sint32& iImageWidth, 
+                                      UT_sint32& iImageHeight);
+
+#endif

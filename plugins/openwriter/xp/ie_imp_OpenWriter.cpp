@@ -1584,7 +1584,6 @@ private:
     if (error != UT_OK)
       return;
 
-    const char * mimetype 	= g_strdup ("image/png");
     FG_Graphic* pFG		= 0;
     const UT_ByteBuf * pictData       = 0;
     
@@ -1595,17 +1594,15 @@ private:
 	if ((error != UT_OK) || !pFG)
       {
 		  // pictData is already freed in ~FG_Graphic
-		  FREEP(mimetype);
 		  return;
       }
 
     // TODO: can we get back a vector graphic?
-    pictData = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
+    pictData = pFG->getBuffer();
     
     if (!pictData)
       {
 		  // i don't think that this could ever happen, but...
-		  FREEP(mimetype);
 		  error = UT_ERROR;
 		  return;
       }
@@ -1626,12 +1623,11 @@ private:
     
     if (!getDocument()->appendObject (PTO_Image, propsArray))
       {
-		  FREEP(mimetype);
 		  return;
       }
 
     if (!getDocument()->createDataItem(propsName.c_str(), false,
-				       pictData, (void*)mimetype, NULL))
+                                       pictData, pFG->getMimeType(), NULL))
       {
 		  return;
       }

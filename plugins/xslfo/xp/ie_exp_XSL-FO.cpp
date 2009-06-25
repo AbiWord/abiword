@@ -1361,10 +1361,10 @@ void s_XSL_FO_Listener::_handlePageSize(PT_AttrPropIndex api)
 void s_XSL_FO_Listener::_handleDataItems(void)
 {
 	const char * szName = NULL;
-   	const char * szMimeType = NULL;
+    std::string mimeType;
 	const UT_ByteBuf * pByteBuf;
 
-	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,reinterpret_cast<const void **>(&szMimeType))); k++)
+	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k, NULL, &szName, &pByteBuf, &mimeType)); k++)
 	{	  	  
 		UT_sint32 loc = -1;
 		for (UT_sint32 i = 0; i < m_utvDataIDs.getItemCount(); i++)
@@ -1383,9 +1383,9 @@ void s_XSL_FO_Listener::_handleDataItems(void)
 			UT_UTF8String_sprintf(fname, "%s_data", m_pie->getFileName());
 			UT_go_directory_create(fname.utf8_str(), 0750, NULL);
 
-			if (!strcmp(szMimeType, "image/svg+xml"))
+			if (mimeType == "image/svg+xml")
 				UT_UTF8String_sprintf(fname, "%s/%d.svg", fname.utf8_str(), loc);
-			if (!strcmp(szMimeType, "application/mathml+xml"))
+			else if (mimeType == "application/mathml+xml")
 				UT_UTF8String_sprintf(fname, "%s/%d.mathml", fname.utf8_str(), loc);
 			else // PNG Image
 			{  

@@ -4,6 +4,7 @@
  * Copyright (C) 2001 Martin Sevior
  * Copyright (C) 2002 Dom Lachowicz
  * Copyright (C) 2005 Marc Maurer
+ * Copyright (C) 2009 Hubert Figuiere
  *
  * Portions from GdkPixBuf Library 
  * Copyright (C) 1999 The Free Software Foundation
@@ -117,7 +118,7 @@ IE_ImpGraphic_GdkPixbuf::IE_ImpGraphic_GdkPixbuf()
 
 IE_ImpGraphic_GdkPixbuf::~IE_ImpGraphic_GdkPixbuf()
 {
-	// we likely don't own the m_pPngBB, so don't g_free it
+	// we likely don't own the m_pPngBB, so don't free it
 }
 
 /*!
@@ -125,41 +126,57 @@ IE_ImpGraphic_GdkPixbuf::~IE_ImpGraphic_GdkPixbuf()
  */
 UT_Error IE_ImpGraphic_GdkPixbuf::importGraphic(UT_ByteBuf * pBB, FG_Graphic ** ppfg)
 {
-	GdkPixbuf * pixbuf = pixbufForByteBuf ( pBB );
+	std::string mimetype;
+	GdkPixbuf * pixbuf = pixbufForByteBuf ( pBB, mimetype );
+	UT_Error err = UT_OK;
 
 	if (!pixbuf)
 	{
 		UT_DEBUGMSG (("GdkPixbuf: couldn't get image from loader!\n"));
 		return UT_ERROR;
 	}
-
-	// Initialize stuff to create our PNG.
-	UT_Error err = Initialize_PNG();
-	if (err)
+	FG_GraphicRaster * pFGR = new FG_GraphicRaster();
+	if(pFGR == NULL)
 	{
 		g_object_unref(G_OBJECT(pixbuf));
-		return err;
+		DELETEP(m_pPngBB);
+		return UT_IE_NOMEMORY;
 	}
 
-	err = _png_write(pixbuf);
-
-	if(err == UT_OK) {
-		FG_GraphicRaster * pFGR = new FG_GraphicRaster();
-		if(pFGR == NULL)
-		{
-			DELETEP(m_pPngBB);
-			return UT_IE_NOMEMORY;
-		}
-		
-		if(!pFGR->setRaster_PNG(m_pPngBB)) 
+	if(mimetype == "image/jpeg") 
+	{
+		m_pPngBB = pBB;
+		pBB = NULL;
+		if(!pFGR->setRaster_JPEG(m_pPngBB)) 
 		{
 			DELETEP(pFGR);
 			DELETEP(m_pPngBB);
 			return UT_IE_FAKETYPE;
 		}
-		
-		*ppfg = static_cast<FG_Graphic *>(pFGR);
 	}
+	else {
+		// Initialize stuff to create our PNG.
+		err = Initialize_PNG();
+		if (err)
+		{
+			g_object_unref(G_OBJECT(pixbuf));
+			return err;
+		}
+
+		err = _png_write(pixbuf);
+
+		if(err == UT_OK) {
+		
+			if(!pFGR->setRaster_PNG(m_pPngBB)) 
+			{
+				DELETEP(pFGR);
+				DELETEP(m_pPngBB);
+				return UT_IE_FAKETYPE;
+			}
+		
+		}
+	}
+	*ppfg = static_cast<FG_Graphic *>(pFGR);
 	return err;
 }
 
@@ -193,25 +210,34 @@ UT_Error IE_ImpGraphic_GdkPixbuf::_png_write(GdkPixbuf * pixbuf)
 UT_Error IE_ImpGraphic_GdkPixbuf::convertGraphic(UT_ByteBuf* pBB,
 								UT_ByteBuf** ppBB)
 {
-	GdkPixbuf * pixbuf = pixbufForByteBuf (pBB);
+	UT_Error err = UT_OK;
+	std::string  mimetype;
+	GdkPixbuf * pixbuf = pixbufForByteBuf (pBB, mimetype);
 
 	if (!pixbuf)
 	{			
 		return UT_ERROR;
 	}
 
-	// Initialize stuff to create our PNG.
-	UT_Error err;
-	err = Initialize_PNG();
-	if (err)
+	if(mimetype == "image/jpeg") 
 	{
+		// JPEG as copied verbatim
 		g_object_unref(G_OBJECT(pixbuf));
-		return err;
+		*ppBB = pBB;
 	}
+	else {
+		// Initialize stuff to create our PNG.
+		err = Initialize_PNG();
+		if (err)
+		{
+			g_object_unref(G_OBJECT(pixbuf));
+			return err;
+		}
 
-	err = _png_write(pixbuf);
-	if(err == UT_OK) {
-		*ppBB =  m_pPngBB;
+		err = _png_write(pixbuf);
+		if(err == UT_OK) {
+			*ppBB =  m_pPngBB;
+		}
 	}
 	return err;
 }
@@ -362,7 +388,8 @@ GdkPixbuf * IE_ImpGraphic_GdkPixbuf::_loadXPM(UT_ByteBuf * pBB)
 	return pixbuf;
 }
 
-GdkPixbuf * IE_ImpGraphic_GdkPixbuf::pixbufForByteBuf (UT_ByteBuf * pBB)
+GdkPixbuf * IE_ImpGraphic_GdkPixbuf::pixbufForByteBuf (UT_ByteBuf * pBB, 
+													   std::string & mimetype)
 {
 	if ( !pBB || !pBB->getLength() )
 		return NULL;
@@ -387,24 +414,40 @@ GdkPixbuf * IE_ImpGraphic_GdkPixbuf::pixbufForByteBuf (UT_ByteBuf * pBB)
 
 		ldr = gdk_pixbuf_loader_new ();
 		if (!ldr)
-			{
-				UT_DEBUGMSG (("GdkPixbuf: couldn't create loader! WTF?\n"));
-				UT_ASSERT (ldr);
-				return NULL ;
-			}
+		{
+			UT_DEBUGMSG (("GdkPixbuf: couldn't create loader! WTF?\n"));
+			UT_ASSERT (ldr);
+			return NULL ;
+		}
 
-		if ( FALSE== gdk_pixbuf_loader_write (ldr, static_cast<const guchar *>(pBB->getPointer (0)),
-											  static_cast<gsize>(pBB->getLength ()), &err) )
-			{
-				UT_DEBUGMSG(("DOM: couldn't write to loader: %s\n", err->message));
-				g_error_free(err);
-				gdk_pixbuf_loader_close (ldr, NULL);
-				g_object_unref (G_OBJECT(ldr));
-				return NULL ;
-			}
+		if (!gdk_pixbuf_loader_write (ldr, static_cast<const guchar *>(pBB->getPointer (0)),
+									  static_cast<gsize>(pBB->getLength ()), &err) )
+		{
+			UT_DEBUGMSG(("DOM: couldn't write to loader: %s\n", err->message));
+			g_error_free(err);
+			gdk_pixbuf_loader_close (ldr, NULL);
+			g_object_unref (G_OBJECT(ldr));
+			mimetype.clear();
+			return NULL ;
+		}
+
 		
 		gdk_pixbuf_loader_close (ldr, NULL);
 		pixbuf = gdk_pixbuf_loader_get_pixbuf (ldr);
+
+		GdkPixbufFormat * format = gdk_pixbuf_loader_get_format(ldr);
+		gchar ** mime_types = gdk_pixbuf_format_get_mime_types(format);
+		gchar ** current = mime_types;
+		while(*current) {
+			if((strcmp(*current, "image/jpeg") == 0) 
+			   || (strcmp(*current, "image/png") == 0)) {
+				mimetype = *current;
+				break;
+			}
+			current++;
+		}
+		g_strfreev(mime_types);
+		
 
 		// ref before closing the loader
 		if ( pixbuf )
@@ -424,15 +467,15 @@ UT_Error IE_ImpGraphic_GdkPixbuf::Initialize_PNG(void)
 									  NULL, 
 									  NULL );
 	if( m_pPNG == NULL )
-		{
-			return UT_ERROR;
-		}
+	{
+		return UT_ERROR;
+	}
 	
 	m_pPNGInfo = png_create_info_struct(m_pPNG);
 	if ( m_pPNGInfo == NULL )
-		{
-			png_destroy_write_struct(&m_pPNG, static_cast<png_infopp>(NULL));
-			return UT_ERROR;
+	{
+		png_destroy_write_struct(&m_pPNG, static_cast<png_infopp>(NULL));
+		return UT_ERROR;
 	}
 	
 	/* Set error handling if you are using the setjmp/longjmp method (this is
@@ -440,13 +483,13 @@ UT_Error IE_ImpGraphic_GdkPixbuf::Initialize_PNG(void)
 	 * set up your own error handlers in the png_create_read_struct() earlier.
 	 */
 	if (setjmp(m_pPNG->jmpbuf))
-		{
-			/* Free all of the memory associated with the png_ptr and info_ptr */
-			png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
+	{
+		/* Free all of the memory associated with the png_ptr and info_ptr */
+		png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
 			
-			/* If we get here, we had a problem reading the file */
-			return UT_ERROR;
-		}
+		/* If we get here, we had a problem reading the file */
+		return UT_ERROR;
+	}
 	m_pPngBB = new UT_ByteBuf;  /* Byte Buffer for Converted Data */
 	
 	/* Setting up the Data Writing Function */

@@ -36,7 +36,6 @@ typedef void * UT_iconv_t;
 
 #ifdef __cplusplus
 
-#include "ut_exception.h"
 
 class ABI_EXPORT auto_iconv
 {
@@ -45,7 +44,7 @@ class ABI_EXPORT auto_iconv
   explicit auto_iconv(UT_iconv_t iconv);
 
   explicit auto_iconv(const char * in_charset, const char *out_charset)
-    UT_THROWS((UT_iconv_t));
+      throw(UT_iconv_t);
   ~auto_iconv();
   operator UT_iconv_t();
 

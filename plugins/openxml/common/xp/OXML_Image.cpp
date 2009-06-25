@@ -53,7 +53,7 @@ void OXML_Image::setId(const char* imageId)
 	id = imageId;
 }
 
-void OXML_Image::setMimeType(const char* imageMimeType)
+void OXML_Image::setMimeType(const std::string & imageMimeType)
 {
 	mimeType = imageMimeType;
 }
@@ -72,11 +72,11 @@ UT_Error OXML_Image::serialize(IE_Exp_OpenXML* exporter)
 {
 	std::string filename(id);
 
-	if(!mimeType || !strcmp(mimeType, "image/png"))
+	if(mimeType.empty() || (mimeType == "image/png"))
 	{
 		filename += ".png";
 	}
-	else if(!strcmp(mimeType, "image/svg+xml"))
+	else if(mimeType == "image/svg+xml")
 	{
 		filename += ".svg";
 	}

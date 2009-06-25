@@ -62,7 +62,6 @@ bool ODi_Abi_Data::addImageDataItem(UT_String& rDataId, const gchar** ppAtts) {
     UT_Error error = UT_OK;
     UT_ByteBuf img_buf;
     GsfInfile* pPictures_dir;
-    char* pMimetype;
     FG_Graphic* pFG = NULL;
     const UT_ByteBuf* pPictData = NULL;
     UT_uint32 imageID;
@@ -118,7 +117,7 @@ bool ODi_Abi_Data::addImageDataItem(UT_String& rDataId, const gchar** ppAtts) {
 
     // Builds pPictData from pFG
     // TODO: can we get back a vector graphic?
-    pPictData = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
+    pPictData = pFG->getBuffer();
 
     if (!pPictData) {
         // i don't think that this could ever happen, but...
@@ -130,18 +129,13 @@ bool ODi_Abi_Data::addImageDataItem(UT_String& rDataId, const gchar** ppAtts) {
     // Create the data item.
     //
 
-    // the data item will free the token we passed (mime-type)
-    pMimetype = g_strdup ("image/png");
-    UT_return_val_if_fail(pMimetype, false);
-
     if (!m_pAbiDocument->createDataItem(rDataId.c_str(),
                                         false,
                                         pPictData,
-                                        (void*)pMimetype,
+                                        pFG->getMimeType(),
                                         NULL)) {
             
         UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-        FREEP(pMimetype);
         return false;
     }    
 
@@ -168,7 +162,6 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
     UT_ByteBuf *object_buf;
     GsfInfile* pObjects_dir;
     UT_uint32 objectID;
-    char *pMimetype;
 
     // The subdirectory that holds the picture. e.g: "ObjectReplacements" or "Pictures"
     UT_String dirName;
@@ -229,13 +222,9 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
     // Create the data item.
     //
 
-    // the data item will free the token we passed (mime-type)
-    pMimetype = g_strdup("application/mathml+xml");
-    UT_return_val_if_fail(pMimetype, false);
-
-    if (!m_pAbiDocument->createDataItem(rDataId.c_str(), false, object_buf, (void*)pMimetype, NULL)) {            
+    if (!m_pAbiDocument->createDataItem(rDataId.c_str(), false, object_buf, 
+                                        "application/mathml+xml", NULL)) {            
         UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-	FREEP(pMimetype);
         return false;
     }  
 

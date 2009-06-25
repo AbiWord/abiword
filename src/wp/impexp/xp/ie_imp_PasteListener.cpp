@@ -141,14 +141,14 @@ bool  IE_Imp_PasteListener::populateStrux(PL_StruxDocHandle /*sdh*/,
 //
 // Now these can be found via the properties of the spans and strux's
 //
-			void * pHandle = NULL;
+            void *pHandle = NULL;
+            std::string mimeType;
 			const char * szName= NULL;
 			const UT_ByteBuf * pBuf = NULL;
-			const void * pToken;
 			UT_sint32 k = 0;
-			while(m_pSourceDoc->enumDataItems(k,&pHandle,&szName,&pBuf,&pToken))
+			while(m_pSourceDoc->enumDataItems(k,&pHandle,&szName,&pBuf,&mimeType))
 			{
-				m_pPasteDocument->createDataItem(szName,false,pBuf,pToken,&pHandle);
+				m_pPasteDocument->createDataItem(szName,false,pBuf,mimeType,&pHandle);
 				k++;
 			}
 			m_bFirstSection = false;

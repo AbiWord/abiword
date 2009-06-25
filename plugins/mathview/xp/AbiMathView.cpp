@@ -463,12 +463,11 @@ AbiMathView_FileInsert(AV_View* /*v*/, EV_EditMethodCallData */*d*/)
 	}
 
 	/* Create the data item */
-	const char* mimetypeMATHML = NULL;
-	mimetypeMATHML = g_strdup("application/mathml+xml");
 	UT_uint32 uid = pDoc->getUID(UT_UniqueId::Image);
 	UT_UTF8String sUID;
 	UT_UTF8String_sprintf(sUID,"%d",uid);
-	pDoc->createDataItem(sUID.utf8_str(), false, pImpMathML->getByteBuf(), static_cast<void *>(const_cast<char *>(mimetypeMATHML)), NULL);
+	pDoc->createDataItem(sUID.utf8_str(), false, pImpMathML->getByteBuf(), 
+                         "application/mathml+xml", NULL);
 
 	/* Insert the MathML Object */
 	PT_DocPosition pos = pView->getPoint();

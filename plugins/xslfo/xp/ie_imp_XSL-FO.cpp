@@ -1089,15 +1089,14 @@ void IE_Imp_XSL_FO::createImage(const char *name, const gchar **atts)
 	if (IE_ImpGraphic::loadGraphic (filename.utf8_str(), IEGFT_Unknown, &pfg) != UT_OK)
 		return;
 
-	const UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pfg)->getRaster_PNG();
+	const UT_ByteBuf * pBB = pfg->getBuffer();
 	X_CheckError(pBB);
 
 	UT_UTF8String dataid;
 	UT_UTF8String_sprintf (dataid, "image%u", static_cast<unsigned int>(m_iImages++));
 
-	const char *mime = g_strdup("image/png");
-	UT_return_if_fail(mime);
-	X_CheckError (getDoc()->createDataItem (dataid.utf8_str(), false, pBB, reinterpret_cast<void *>(const_cast<char *>(mime)), NULL));
+	X_CheckError (getDoc()->createDataItem (dataid.utf8_str(), false, pBB, 
+                                            pfg->getMimeType(), NULL));
 
 	const gchar *buf[5];
 	buf[0] = "dataid";

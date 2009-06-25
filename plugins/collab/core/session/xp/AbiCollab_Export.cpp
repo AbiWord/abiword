@@ -315,17 +315,17 @@ ChangeRecordSessionPacket* ABI_Collab_Export::_buildPacket( const PX_ChangeRecor
 				return NULL;
 			}
 			const UT_ByteBuf* pBuf=NULL;
-			const void* pToken = NULL;
+            std::string mime_type;
 			void* pHandle = NULL;
-			m_pDoc->getDataItemDataByName(pszDataName,&pBuf,&pToken,&pHandle);
+			m_pDoc->getDataItemDataByName(pszDataName,&pBuf,&mime_type,&pHandle);
 			// put into our vector
 			size_t length = pBuf->getLength();
 			packet->m_vecData.resize( length );
 			memcpy( &packet->m_vecData[0], pBuf->getPointer(0), length );
-			if (pToken) 
+			if (!mime_type.empty()) 
 			{
 				packet->m_bTokenSet = true;
-				packet->m_sToken = static_cast<const char*>( pToken );
+				packet->m_sToken = mime_type;
 			}
 			else
 			{

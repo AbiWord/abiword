@@ -1293,7 +1293,7 @@ bool PL_Psion_Listener::_insertImage(const PT_AttrPropIndex api)
 	const PP_AttrProp * pAP = NULL;
 	const gchar *szValue;
 	_bb image_data;
-	const char * szMimeType;
+    std::string mimeType;
 	const psiconv_ucs2 object_marker = 0x0e;
 	png_structp png_ptr;
 	png_infop info_ptr;
@@ -1315,13 +1315,13 @@ bool PL_Psion_Listener::_insertImage(const PT_AttrPropIndex api)
 	
 	// Retrieve the image
 	if (!m_pDocument->getDataItemDataByName(szValue,&(image_data.pBB),
-	                                   (const void **) &szMimeType,NULL))
+                                            &mimeType,NULL))
 		goto ERROR2;
 	image_data.iCurPos = 0;
 	
 	// At this moment, we only handle PNG images. Too bad.
-	if (strcmp(szMimeType,"image/png")) {
-		UT_DEBUGMSG(("PSION: Unknown image MIME type (%s)\n",szMimeType));
+	if (mimeType == "image/png") {
+		UT_DEBUGMSG(("PSION: Unknown image MIME type (%s)\n", mimeType.c_str()));
 		goto ERROR2;
 	}
 		

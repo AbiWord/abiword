@@ -784,7 +784,7 @@ void IE_Imp_WML::createImage(const char *name, const gchar **atts)
 	if (IE_ImpGraphic::loadGraphic (filename.utf8_str(), IEGFT_Unknown, &pfg) != UT_OK)
 		return;
 
-	const UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pfg)->getRaster_PNG();
+	const UT_ByteBuf * pBB = pfg->getBuffer();
 	X_CheckError(pBB);
 
 	UT_UTF8String dataid;
@@ -797,9 +797,7 @@ void IE_Imp_WML::createImage(const char *name, const gchar **atts)
 	if (p_val)
 		alt += p_val;
 
-	const char *mime = g_strdup("image/png");
-	X_CheckError (mime);
-	X_CheckError (getDoc()->createDataItem (dataid.utf8_str(), false, pBB, reinterpret_cast<void *>(const_cast<char *>(mime)), NULL));
+	X_CheckError (getDoc()->createDataItem (dataid.utf8_str(), false, pBB, "image/png", NULL));
 
 	const gchar *buf[7];
 	buf[0] = "dataid";

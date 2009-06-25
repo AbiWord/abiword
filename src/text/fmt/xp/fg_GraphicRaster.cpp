@@ -1,5 +1,6 @@
 /* AbiWord -- Embedded graphics for layout
  * Copyright (C) 1999 Matt Kimball
+ * Copyright (C) 2009 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,18 +20,20 @@
 
 #include <string.h>
 
+#include <string>
+
 #include "ut_assert.h"
 #include "ut_png.h"
+#include "ut_jpeg.h"
 #include "ut_string.h"
+#include "ut_debugmsg.h"
 #include "ut_bytebuf.h"
 #include "fl_ContainerLayout.h"
 #include "px_CR_Object.h"
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
-#include "ut_debugmsg.h"
 #include "fg_GraphicRaster.h"
 
-#include "ut_string_class.h"
 
 FG_Graphic* FG_GraphicRaster::createFromChangeRecord(const fl_ContainerLayout* pFL,
 													 const PX_ChangeRecord_Object* pcro)
@@ -53,7 +56,17 @@ FG_Graphic* FG_GraphicRaster::createFromChangeRecord(const fl_ContainerLayout* p
 		bool bFoundDataID = pFG->m_pSpanAP->getAttribute("dataid", pFG->m_pszDataID);
 		if (bFoundDataID && pFG->m_pszDataID)
 		{
-			bFoundDataItem = pDoc->getDataItemDataByName(static_cast<const char*>(pFG->m_pszDataID), &pFG->m_pbbPNG, NULL, NULL);
+			std::string mime_type;
+			bFoundDataItem = pDoc->getDataItemDataByName(pFG->m_pszDataID, 
+                                                         &pFG->m_pbb, 
+                                                         &mime_type, NULL);
+            if(bFoundDataItem) 
+            {
+                if(mime_type == "image/jpeg") 
+                {
+                    pFG->m_format = JPEG_FORMAT;
+                }
+            }
 		}
 	}
 
@@ -82,7 +95,18 @@ FG_Graphic* FG_GraphicRaster::createFromStrux(const fl_ContainerLayout* pFL)
 		bool bFoundDataID = pFG->m_pSpanAP->getAttribute(PT_STRUX_IMAGE_DATAID, pFG->m_pszDataID);
 		if (bFoundDataID && pFG->m_pszDataID)
 		{
-			bFoundDataItem = pDoc->getDataItemDataByName(static_cast<const char*>(pFG->m_pszDataID), &pFG->m_pbbPNG, NULL, NULL);
+			std::string mime_type;
+			bFoundDataItem = pDoc->getDataItemDataByName(pFG->m_pszDataID, 
+                                                         &pFG->m_pbb, 
+                                                         &mime_type, NULL);
+            if(bFoundDataItem) 
+            {
+                if(mime_type == "image/jpeg") 
+                {
+                    pFG->m_format = JPEG_FORMAT;
+                }
+            }
+
 		}
 	}
 
@@ -94,62 +118,71 @@ FG_Graphic* FG_GraphicRaster::createFromStrux(const fl_ContainerLayout* pFL)
 
 
 FG_GraphicRaster::FG_GraphicRaster()
+    : m_format(PNG_FORMAT)
+    , m_pbb(NULL)
+	, m_bOwnBuffer(false)
+	, m_iWidth(0)
+	, m_iHeight(0)
+	, m_iMaxW(0)
+	, m_iMaxH(0)
+	, m_pSpanAP(NULL)
+	, m_pszDataID(NULL)
 {
-	m_pbbPNG = NULL;
-	m_bOwnPNG = false;
-	m_pSpanAP = NULL;
-	m_pszDataID = NULL;
-	m_iWidth = 0, 
-	m_iHeight = 0;
-	m_iMaxW = 0;
-	m_iMaxH = 0;
 	xxx_UT_DEBUGMSG(("GraphRaster created %x \n",this));
 }
 
 FG_GraphicRaster::~FG_GraphicRaster()
 {
-	if (m_bOwnPNG)
-		DELETEP(m_pbbPNG);
+	if (m_bOwnBuffer)
+		DELETEP(m_pbb);
 	else
-		m_pbbPNG = NULL;
+		m_pbb = NULL;
 
 	xxx_UT_DEBUGMSG(("GraphRaster Deleted %x \n",this));
 	
 }
 
-FG_Graphic * FG_GraphicRaster::clone(void)
+FG_Graphic * FG_GraphicRaster::clone(void) const
 {
 	FG_GraphicRaster * pClone = new FG_GraphicRaster();
-	pClone->m_pbbPNG = m_pbbPNG;
+    pClone->m_format = m_format;
+	pClone->m_pbb = m_pbb;
+    pClone->m_bOwnBuffer = false;
 	pClone->m_pSpanAP = m_pSpanAP;
 	pClone->m_pszDataID = m_pszDataID;
 	pClone->m_iWidth = m_iWidth; 
 	pClone->m_iHeight = m_iHeight;
 	pClone->m_iMaxW = m_iMaxW;
 	pClone->m_iMaxH = m_iMaxH;
-	return static_cast<FG_Graphic *>(pClone);
+	return pClone;
 }
 
-FGType FG_GraphicRaster::getType(void)
+FGType FG_GraphicRaster::getType(void) const
 {
 	return FGT_Raster;
 }
 
-const char * FG_GraphicRaster::getDataId(void) const
+const UT_ByteBuf* FG_GraphicRaster::getBuffer() const
 {
-	return static_cast<const char *>(m_pszDataID);
+    return m_pbb;
 }
 
-double FG_GraphicRaster::getWidth(void)
+
+const char * FG_GraphicRaster::getDataId(void) const
 {
-	UT_ASSERT(m_pbbPNG);
+	return m_pszDataID;
+}
+
+double FG_GraphicRaster::getWidth(void) const
+{
+	UT_ASSERT(m_pbb);
 
 	return m_iWidth;
 }
 
-double FG_GraphicRaster::getHeight(void)
+double FG_GraphicRaster::getHeight(void) const
 {
-	UT_ASSERT(m_pbbPNG);
+	UT_ASSERT(m_pbb);
 
 	return m_iHeight;
 }
@@ -228,7 +261,18 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG,
 		UT_sint32 iImageWidth;
 		UT_sint32 iImageHeight;
 
-		UT_PNG_getDimensions(m_pbbPNG, iImageWidth, iImageHeight);
+        switch(m_format) 
+        {
+        case PNG_FORMAT:
+            UT_PNG_getDimensions(m_pbb, iImageWidth, iImageHeight);
+            break;
+        case JPEG_FORMAT:
+            UT_JPEG_getDimensions(m_pbb, iImageWidth, iImageHeight);
+            break;
+        default:
+            UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+            break;
+        }
 
 		iDisplayWidth = pG->tlu(iImageWidth);
 		iDisplayHeight = pG->tlu(iImageHeight);
@@ -248,9 +292,24 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG,
 
 	m_iMaxW = maxW;
 	m_iMaxH = maxH;
-   	GR_Image *pImage = pG->createNewImage(static_cast<const char*>(m_pszDataID), m_pbbPNG, iDisplayWidth, iDisplayHeight, GR_Image::GRT_Raster);
+   	GR_Image *pImage = pG->createNewImage(m_pszDataID, m_pbb, iDisplayWidth, iDisplayHeight, GR_Image::GRT_Raster);
 
 	return pImage;
+}
+
+static const std::string s_none;
+static const std::string s_png_type = "image/png";
+static const std::string s_jpeg_type = "image/jpeg";
+
+const std::string & FG_GraphicRaster::getMimeType() const
+{
+    switch(m_format) {
+    case PNG_FORMAT:
+        return s_png_type;
+    case JPEG_FORMAT:
+        return s_jpeg_type;
+    }
+    return s_none;
 }
 
 //
@@ -268,14 +327,12 @@ UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
 	/*
 	  Create the data item
 	*/
-	const char* mimetypePNG = NULL;
-	mimetypePNG = g_strdup("image/png");
-   	pDoc->createDataItem(szName, false, m_pbbPNG, mimetypePNG, NULL);
+   	pDoc->createDataItem(szName, false, m_pbb, getMimeType(), NULL);
 
 	/*
 	  Insert the object into the document.
 	*/
-	UT_String szProps;
+    std::string szProps;
 
 	szProps += "width:";
 	szProps += UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_iWidth)/res, "3.2");
@@ -298,9 +355,8 @@ const char *  FG_GraphicRaster::createDataItem(PD_Document *pDoc, const char * s
 {
 	UT_return_val_if_fail(pDoc,NULL);
 	UT_ASSERT(szName);
-	const char* mimetypePNG = NULL;
-	mimetypePNG = g_strdup("image/png");
-   	pDoc->createDataItem(szName, false, m_pbbPNG, mimetypePNG, NULL);
+
+   	pDoc->createDataItem(szName, false, m_pbb, getMimeType(), NULL);
 	return szName;
 }
 
@@ -317,17 +373,16 @@ UT_Error FG_GraphicRaster::insertAtStrux(PD_Document* pDoc,
 	UT_return_val_if_fail(pDoc, UT_ERROR);
 	UT_ASSERT(szName);
 
+
 	/*
 	  Create the data item
 	*/
-	const char* mimetypePNG = NULL;
-	mimetypePNG = g_strdup("image/png");
-   	pDoc->createDataItem(szName, false, m_pbbPNG, mimetypePNG, NULL);
+   	pDoc->createDataItem(szName, false, m_pbb, getMimeType(), NULL);
 
 	/*
 	  Insert the object into the document.
 	*/
-	UT_String szProps;
+    std::string szProps;
 
 	szProps += "width:";
 	szProps += UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_iWidth)/res, "3.2");
@@ -349,19 +404,27 @@ UT_Error FG_GraphicRaster::insertAtStrux(PD_Document* pDoc,
 
 bool FG_GraphicRaster::setRaster_PNG(const UT_ByteBuf* pBB)
 {
-	if (m_bOwnPNG)
-		DELETEP(m_pbbPNG);
+	if (m_bOwnBuffer)
+		DELETEP(m_pbb);
 
-	m_pbbPNG = pBB;
-	m_bOwnPNG = true;
+	m_pbb = pBB;
+    m_format = PNG_FORMAT;
+	m_bOwnBuffer = true;
 
 	//  We want to calculate the dimensions of the image here.
 	return UT_PNG_getDimensions(pBB, m_iWidth, m_iHeight);
 }
 
-const UT_ByteBuf* FG_GraphicRaster::getRaster_PNG(void) const
-{
-	UT_ASSERT(m_pbbPNG);
 
-	return m_pbbPNG;
+bool FG_GraphicRaster::setRaster_JPEG(const UT_ByteBuf* pBB)
+{
+	if (m_bOwnBuffer)
+		DELETEP(m_pbb);
+
+	m_pbb = pBB;
+    m_format = JPEG_FORMAT;
+	m_bOwnBuffer = true;
+
+	//  We want to calculate the dimensions of the image here.
+	return UT_JPEG_getDimensions(pBB, m_iWidth, m_iHeight);
 }

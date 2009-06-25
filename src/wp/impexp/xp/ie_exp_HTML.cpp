@@ -4475,14 +4475,17 @@ void s_HTML_Listener::_handleEmbedded (PT_AttrPropIndex api)
 	// http://www.w3.org/TR/1999/REC-html401-19991224/struct/objects.html#h-13.3
 	UT_LocaleTransactor t(LC_NUMERIC, "C");
 
-	const char * szMimeType = 0;
-	const char ** pszMimeType = &szMimeType;
+    std::string mimeType;
 
 	const UT_ByteBuf * pByteBuf = 0;
 
-	if (!m_pDocument->getDataItemDataByName(szDataID, &pByteBuf, reinterpret_cast<const void**>(pszMimeType), NULL))
+	if (!m_pDocument->getDataItemDataByName(szDataID, &pByteBuf, 
+                                            &mimeType, NULL)) {
 		return;
-	if ((pByteBuf == 0) || (szMimeType == 0)) return; // ??
+    }
+	if ((pByteBuf == 0) || mimeType.empty()) {
+        return; // ??
+    }
 		
 
 	const char * dataid = UT_basename (static_cast<const char *>(szDataID));
@@ -4602,7 +4605,7 @@ void s_HTML_Listener::_handleEmbedded (PT_AttrPropIndex api)
 			m_utf8_1 += "\"";
 		}
 
-	m_utf8_1 += UT_UTF8String_sprintf(" type=\"%s\"", szMimeType);
+	m_utf8_1 += UT_UTF8String_sprintf(" type=\"%s\"", mimeType.c_str());
 
 	m_tagStack.push (TT_OBJECT);
 	if (!get_Embed_Images () || get_Multipart ())
@@ -4618,7 +4621,7 @@ void s_HTML_Listener::_handleEmbedded (PT_AttrPropIndex api)
 		}
 	else
 		{
-			m_utf8_1 += UT_UTF8String_sprintf(" data=\"data:%s;base64,", szMimeType);
+			m_utf8_1 += UT_UTF8String_sprintf(" data=\"data:%s;base64,", mimeType.c_str());
 			tagOpenBroken (m_utf8_1, ws_None);
 
 			_writeImageBase64 (pByteBuf);
@@ -4653,16 +4656,17 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 {
 	UT_LocaleTransactor t(LC_NUMERIC, "C");
 
-	const char * szMimeType = 0;
-	const char ** pszMimeType = &szMimeType;
+    std::string mimeType;
 
 	const UT_ByteBuf * pByteBuf = 0;
 
-	if (!m_pDocument->getDataItemDataByName(szDataID, &pByteBuf, reinterpret_cast<const void**>(pszMimeType), NULL))
+	if (!m_pDocument->getDataItemDataByName(szDataID, &pByteBuf, 
+                                            &mimeType, NULL))
 		return;
-	if ((pByteBuf == 0) || (szMimeType == 0)) return; // ??
+	if ((pByteBuf == 0) || mimeType.empty()) 
+        return; // ??
 
-	if (strcmp (szMimeType, "image/png") != 0)
+	if ((mimeType != "image/png") && (mimeType != "image/jpeg"))
 	{
 		UT_DEBUGMSG(("Object not of MIME type image/png - ignoring...\n"));
 		return;
@@ -4707,8 +4711,13 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 
 	UT_UTF8String filename(dataid,suffix-dataid);
 	filename += suffid;
-	filename += ".png";
-
+	if (mimeType == "image/png") {
+		filename += ".png";
+	}
+	else {
+		filename += ".jpg";
+	}
+        
 	g_free (base_name);
 
 	UT_UTF8String url;
@@ -4874,18 +4883,18 @@ void s_HTML_Listener::_handlePendingImages ()
 		const UT_UTF8String * saved_url = val;
 		UT_UTF8String * url = const_cast<UT_UTF8String *>(saved_url);
 
-		const char * szMimeType = 0;
-		const char ** pszMimeType = &szMimeType;
+        std::string mimeType;
 
 		const UT_ByteBuf * pByteBuf = 0;
 
-		if (!m_pDocument->getDataItemDataByName(dataid, &pByteBuf, reinterpret_cast<const void**>(pszMimeType), NULL))
+		if (!m_pDocument->getDataItemDataByName(dataid, &pByteBuf, 
+                                                &mimeType, NULL))
 			return;
 		if (pByteBuf) // this should always be found, but just in case...
 		{
 			multiBoundary ();
 
-			m_utf8_1 = "image/png";
+			m_utf8_1 = mimeType;
 			multiField ("Content-Type", m_utf8_1);
 
 			m_utf8_1 = "base64";

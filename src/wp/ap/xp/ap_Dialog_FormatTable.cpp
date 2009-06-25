@@ -244,24 +244,21 @@ void AP_Dialog_FormatTable::askForGraphicPathName(void)
 	m_sImagePath.clear();
 	UT_String_sprintf(m_sImagePath,"%d",uid);
 
+    const UT_ByteBuf * pBB = m_pGraphic->getBuffer();
 	if(m_pGraphic->getType() == FGT_Raster)
 	{
-		UT_sint32 iImageWidth;
-		UT_sint32 iImageHeight;
-		const UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
-		UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
 		m_pImage = static_cast<GR_Image *>(
 			pG->createNewImage( m_sImagePath.c_str(),
 								pBB,
-								iImageWidth,
-								iImageHeight,
+								pFG->getWidth(),
+								pFG->getHeight(),
 								GR_Image::GRT_Raster));
 	}
 	else
 	{
 		m_pImage = static_cast<GR_Image *>(
 			pG->createNewImage( m_sImagePath.c_str(),
-								static_cast<FG_GraphicVector *>(pFG)->getVector_SVG(),
+								pBB,
 								m_pFormatTablePreview->getWindowWidth()-2,
 								m_pFormatTablePreview->getWindowHeight()-2,
 								GR_Image::GRT_Vector));
@@ -420,24 +417,21 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 						m_pGraphic = pFG;
 						m_sImagePath = pFG->getDataId();
 						GR_Graphics * pG = m_pFormatTablePreview->getGraphics();
+                        const UT_ByteBuf * pBB = pFG->getBuffer();
 						if(m_pGraphic->getType() == FGT_Raster)
 						{
-							UT_sint32 iImageWidth;
-							UT_sint32 iImageHeight;
-							const UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
-							UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
 							m_pImage = static_cast<GR_Image *>(
 								pG->createNewImage( m_sImagePath.c_str(),
 													pBB,
-													iImageWidth,
-													iImageHeight,
+													pFG->getWidth(),
+													pFG->getHeight(),
 													GR_Image::GRT_Raster));
 						}
 						else
 						{
 							m_pImage = static_cast<GR_Image *>(
 								pG->createNewImage( m_sImagePath.c_str(),
-													static_cast<FG_GraphicVector *>(pFG)->getVector_SVG(),
+													pBB,
 													m_pFormatTablePreview->getWindowWidth()-2,
 													m_pFormatTablePreview->getWindowHeight()-2,
 													GR_Image::GRT_Vector));
@@ -696,9 +690,9 @@ void AP_FormatTable_preview::draw(void)
 		GR_Image * pImg = m_pFormatTable->getImage();
 		FG_Graphic * pFG = m_pFormatTable->getGraphic();
 		const char * szName = pFG->getDataId();
+        const UT_ByteBuf * pBB = pFG->getBuffer();
 		if(pFG->getType() == FGT_Raster)
 		{
-			const UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
 			pImg = static_cast<GR_Image *>(
 				m_gc->createNewImage( szName,
 									pBB,
@@ -710,7 +704,7 @@ void AP_FormatTable_preview::draw(void)
 		{
 			pImg = static_cast<GR_Image *>(
 				m_gc->createNewImage( szName,
-									static_cast<FG_GraphicVector *>(pFG)->getVector_SVG(),
+                                      pBB,
 									pageRect.width - 2*border,
 									pageRect.height - 2*border,
 									GR_Image::GRT_Vector));

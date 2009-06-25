@@ -780,13 +780,13 @@ public:
   static bool writePictures(PD_Document * pDoc, GsfOutfile * oo)
   {
     const char * szName;
-    const char * szMimeType;
+    std::string mimeType;
     const UT_ByteBuf * pByteBuf;
 
     // create Pictures directory
     GsfOutput * pictures = gsf_outfile_new_child(oo, "Pictures", TRUE);
     
-    for (UT_uint32 k=0; (pDoc->enumDataItems(k,NULL,&szName,&pByteBuf,reinterpret_cast<const void **>(const_cast<const char **>(&szMimeType)))); k++)
+    for (UT_uint32 k=0; (pDoc->enumDataItems(k,NULL,&szName,&pByteBuf,&mimeType)); k++)
       {
 	// create individual pictures
 	UT_String name = UT_String_sprintf("IMG-%d.png", k);
@@ -845,16 +845,16 @@ public:
     writeToStream (manifest, preamble, G_N_ELEMENTS(preamble));
 
     const char * szName;
-    const char * szMimeType;
+    std::string mimeType;
     const UT_ByteBuf * pByteBuf;
-    for (UT_uint32 k = 0; (pDoc->enumDataItems(k,NULL,&szName,&pByteBuf,reinterpret_cast<const void **>(const_cast<const char **>(&szMimeType)))); k++)
+    for (UT_uint32 k = 0; (pDoc->enumDataItems(k,NULL,&szName,&pByteBuf, &mimeType)); k++)
       {
 	if (k == 0) {
 	  name = "<manifest:file-entry manifest:media-type='' manifest:full-path='Pictures/'/>\n";
 	  oo_gsf_output_write(manifest, name.size(), reinterpret_cast<const guint8 *>(name.c_str()));
 	}
 	  
-	name = UT_String_sprintf("<manifest:file-entry manifest:media-type='%s' manifest:full-path='Pictures/IMG-%d.png'/>\n", szMimeType, k);
+	name = UT_String_sprintf("<manifest:file-entry manifest:media-type='%s' manifest:full-path='Pictures/IMG-%d.png'/>\n", mimeType.c_str(), k);
 	oo_gsf_output_write (manifest, name.size(), reinterpret_cast<const guint8 *>(name.c_str()));
       }
 

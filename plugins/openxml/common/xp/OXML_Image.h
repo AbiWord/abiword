@@ -45,7 +45,7 @@ public:
 	virtual ~OXML_Image();
 
 	virtual void setId(const char* id);
-	virtual void setMimeType(const char* mimeType);
+	virtual void setMimeType(const std::string & mimeType);
 	virtual void setData(const UT_ByteBuf* data);
 
 	virtual const char* getId();
@@ -55,7 +55,7 @@ public:
 
 private:
 	const char* id;
-	const char* mimeType;
+    std::string mimeType;
 	const UT_ByteBuf* data;
 };
 

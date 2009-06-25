@@ -66,22 +66,6 @@ public:
 	UT_Error _convertGraphic (UT_ByteBuf* pBB);
 	UT_Error Initialize_PNG();
 
-	typedef struct {
-	    struct jpeg_source_mgr pub;	/* public fields */
-	    
-	    UT_ByteBuf* sourceBuf;
-	    UT_uint32 pos;
-	} bytebuf_jpeg_source_mgr;
-	typedef bytebuf_jpeg_source_mgr * bytebuf_jpeg_source_ptr;
-	
-	// JPEG callbacks
-	void _jpegByteBufSrc (j_decompress_ptr cinfo, UT_ByteBuf* sourceBuf);
-	static void _jpegInitSource (j_decompress_ptr cinfo);
-	static boolean _jpegFillInputBuffer (j_decompress_ptr cinfo);
-	static void _jpegSkipInputData (j_decompress_ptr cinfo, long num_bytes);
-	static void _jpegTermSource (j_decompress_ptr cinfo);
-	
-
 };
 
 #endif /* IE_IMPGRAPHIC_JPEG_H */

@@ -1,5 +1,6 @@
 /* AbiWord -- Embedded graphics for layout
  * Copyright (C) 1999 Matt Kimball
+ * Copyright (C) 2009 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,6 +21,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include <string>
+
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_svg.h"
@@ -31,7 +34,6 @@
 #include "pp_AttrProp.h"
 
 #include "fg_GraphicVector.h"
-#include "ut_string_class.h"
 
 FG_Graphic* FG_GraphicVector::createFromChangeRecord(const fl_ContainerLayout* pFL,
 													 const PX_ChangeRecord_Object* pcro)
@@ -109,7 +111,7 @@ FG_GraphicVector::~FG_GraphicVector()
 		m_pbbSVG = NULL;
 }
 
-FG_Graphic * FG_GraphicVector::clone(void)
+FG_Graphic * FG_GraphicVector::clone(void) const
 {
 	FG_GraphicVector * pClone = new FG_GraphicVector();
 	pClone->m_pbbSVG = m_pbbSVG;
@@ -122,19 +124,27 @@ FG_Graphic * FG_GraphicVector::clone(void)
 	return static_cast<FG_Graphic *>(pClone);
 }
 
-FGType FG_GraphicVector::getType(void)
+FGType FG_GraphicVector::getType(void) const
 {
 	return FGT_Vector;
 }
 
-double FG_GraphicVector::getWidth(void)
+static const std::string s_svg_type = "image/svg+xml";
+
+const std::string & FG_GraphicVector::getMimeType(void) const
+{
+	return s_svg_type;
+}
+
+
+double FG_GraphicVector::getWidth(void) const
 {
 	UT_ASSERT(m_pbbSVG);
 
 	return m_iWidth / 72.0;
 }
 
-double FG_GraphicVector::getHeight(void)
+double FG_GraphicVector::getHeight(void) const
 {
 	UT_ASSERT(m_pbbSVG);
 
@@ -243,8 +253,7 @@ const char *  FG_GraphicVector::createDataItem(PD_Document *pDoc, const char * s
 {
 	UT_return_val_if_fail(pDoc,NULL);
 	UT_ASSERT(szName);
-	char * mimetype = g_strdup("image/svg+xml");
-   	pDoc->createDataItem(szName, false, m_pbbSVG, mimetype, NULL);
+   	pDoc->createDataItem(szName, false, m_pbbSVG, getMimeType(), NULL);
 	return szName;
 }
 
@@ -263,10 +272,9 @@ UT_Error FG_GraphicVector::insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
 	/*
 	  Create the data item
 	*/
-	char * mimetype = g_strdup("image/svg+xml");
-   	pDoc->createDataItem(szName, false, m_pbbSVG, mimetype, NULL);
+   	pDoc->createDataItem(szName, false, m_pbbSVG, getMimeType(), NULL);
 
-	UT_String szProps;
+    std::string szProps;
 
 	szProps += "width:";
 	szProps += UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_iWidth)/res, "3.2");
@@ -309,7 +317,7 @@ UT_Error FG_GraphicVector::insertAtStrux(PD_Document* pDoc,
 	/*
 	  Insert the object into the document.
 	*/
-	UT_String szProps;
+    std::string szProps;
 
 	szProps += "width:";
 	szProps += UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_iWidth)/res, "3.2");
@@ -344,7 +352,7 @@ bool FG_GraphicVector::setVector_SVG(const UT_ByteBuf* pBB)
 	return UT_SVG_getDimensions(pBB, 0, m_iWidth, m_iHeight, layoutWidth, layoutHeight);
 }
 
-const UT_ByteBuf* FG_GraphicVector::getVector_SVG(void) const
+const UT_ByteBuf* FG_GraphicVector::getBuffer(void) const
 {
 	UT_ASSERT(m_pbbSVG);
 

@@ -39,8 +39,7 @@
  */
 bool ODe_PicturesWriter::writePictures(PD_Document* pDoc, GsfOutfile* pODT) {
     const char * szName;
-    const char * szMimeType;
-	const char ** pszMimeType = &szMimeType;
+    std::string mimeType;
     const UT_ByteBuf * pByteBuf;
     GsfOutput* pImg;
     UT_UTF8String name;
@@ -51,10 +50,10 @@ bool ODe_PicturesWriter::writePictures(PD_Document* pDoc, GsfOutfile* pODT) {
                               NULL,
                               &szName,
                               &pByteBuf,
-                              reinterpret_cast<const void **>(pszMimeType)));
+                              &mimeType));
          k++) {
             
-        if (szMimeType && !strcmp(szMimeType, "image/png")) {
+        if (!mimeType.empty() && (mimeType == "image/png")) {
             
             if (pPicsDir == NULL) {
                 // create Pictures directory

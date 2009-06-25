@@ -25,12 +25,7 @@
 #define AD_DOCUMENT_H
 
 #include <string>
-// TODO should the filename be UT_UCSChar rather than char ?
 
-/* pre-emptive dismissal; ut_types.h is needed by just about everything,
- * so even if it's commented out in-file that's still a lot of work for
- * the preprocessor to do...
- */
 #ifndef UT_TYPES_H
 #include "ut_types.h"
 #endif
@@ -161,13 +156,13 @@ public:
 	virtual bool			createDataItem(const char * szName,
 										   bool bBase64, 
 										   const UT_ByteBuf * pByteBuf,
-										   const void* pToken, 
+										   const std::string & mime_type, 
 										   void ** ppHandle) = 0;
 	virtual bool            replaceDataItem(const char * szName, 
 											const UT_ByteBuf * pByteBuf) = 0;
 	virtual bool			getDataItemDataByName(const char * szName,
 												  const UT_ByteBuf ** ppByteBuf,
-												  const void** ppToken, 
+												  std::string * mime_type, 
 												  void ** ppHandle) const = 0;		
 public:
 	

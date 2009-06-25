@@ -570,16 +570,17 @@ void s_KWord_1_Listener::_handleAttributes(PT_AttrPropIndex /*api*/)
 void s_KWord_1_Listener::_handleDataItems(void)
 {
 	const char * szName;
-   	const char * szMimeType;
+	std::string mimeType;
 	const UT_ByteBuf * pByteBuf;
 
-	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,reinterpret_cast<const void**>(&szMimeType))); k++)
+	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,
+                                                    &mimeType)); k++)
 	{	  	  
 	  UT_UTF8String fname;	  
 	  
-	  if (!strcmp(szMimeType, "image/svg+xml"))
+	  if (mimeType == "image/svg+xml")
 	      UT_UTF8String_sprintf(fname, "%s-%d.svg", m_pie->getFileName(), k);
-	  if (!strcmp(szMimeType, "application/mathml+xml"))
+      else if (mimeType == "application/mathml+xml")
 	    UT_UTF8String_sprintf(fname, "%s-%d.mathml", m_pie->getFileName(), k);
 	  else // PNG Image
 	    UT_UTF8String_sprintf(fname, "%s-%d.png", m_pie->getFileName(), k);

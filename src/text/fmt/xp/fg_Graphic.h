@@ -21,9 +21,12 @@
 #ifndef FG_GRAPHIC_H
 #define FG_GRAPHIC_H
 
+#include <string>
+
 #include "ut_types.h"
 #include "pt_Types.h"
 
+class UT_ByteBuf;
 class fl_ContainerLayout;
 class PX_ChangeRecord_Object;
 class PP_AttrProp;
@@ -53,11 +56,13 @@ public:
 
 	virtual ~FG_Graphic();
 
-	virtual FGType		getType(void) = 0;
-	
+	virtual FGType		getType(void) const = 0;
+    // return the mime type.
+    virtual const std::string & getMimeType() const = 0;
+
 	//  width and height are returned in inches not pixels.
-	virtual double		getWidth(void) = 0;
-	virtual double		getHeight(void) = 0;
+	virtual double		getWidth(void) const = 0;
+	virtual double		getHeight(void) const = 0;
 	virtual const char * getDataId(void) const = 0;
 //
 // Return the width and height properties of the span that contains this
@@ -66,7 +71,9 @@ public:
 	virtual const char * getWidthProp(void) = 0;
 	virtual const char * getHeightProp(void) = 0;
 	virtual GR_Image *     regenerateImage(GR_Graphics * pG) = 0;
-	virtual FG_Graphic *   clone(void) = 0;
+	virtual FG_Graphic *   clone(void) const = 0;
+    // return the buffer behind the image
+    virtual const UT_ByteBuf * getBuffer() const = 0;
 	virtual const char * createDataItem(PD_Document *pDoc, const char * szName) = 0;
 	//  generate an image for display in the specified graphics object
 	virtual GR_Image* generateImage(GR_Graphics* pG,

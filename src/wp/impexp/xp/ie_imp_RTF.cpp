@@ -4023,7 +4023,7 @@ gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & _buf, gchar *xmlField, bool 
 					{
 						RTFProps_ImageProps imgProps;
 						const UT_ByteBuf * buf;
-						buf = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
+						buf = pFG->getBuffer();
 						ok = InsertImage (buf, fileName, imgProps);
 					}
 					else
@@ -9518,8 +9518,6 @@ bool IE_Imp_RTF::CreateDataItemfromSteam(void)
 	UT_uint16 chLeft = chars_per_byte;
 	UT_Byte bin_byte = 0;
 	const UT_ByteBuf * pDum = NULL;
-	const void * pToken = NULL;
-	void * pHandle = NULL;
 	while (ch != '}')
 	{
 		int digit;
@@ -9545,7 +9543,7 @@ bool IE_Imp_RTF::CreateDataItemfromSteam(void)
 	}
 	// Put the '}' back into the input stream
 	SkipBackChar(ch);
-	bFound = getDoc()->getDataItemDataByName(sName.c_str(),&pDum,const_cast<const void **>(&pToken),&pHandle);
+	bFound = getDoc()->getDataItemDataByName(sName.c_str(),&pDum, NULL, NULL);
 	if(bFound)
 	{
 		return true;

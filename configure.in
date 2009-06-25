@@ -1,4 +1,4 @@
-
+ dif
 m4_define([abi_version_major], [2])
 m4_define([abi_version_minor], [7])
 m4_define([abi_version_micro], [5])
@@ -477,6 +477,15 @@ AC_CHECK_HEADER([png.h], [],
 	AC_MSG_ERROR([`png.h' not found, install libpng or specify CPPFLAGS to include custom locations])
 ])
 
+# We need ljpeg
+AC_CHECK_HEADER(jpeglib.h,[
+	AC_CHECK_LIB(jpeg,jpeg_read_header,
+	[], 
+	[
+	  AC_MSG_ERROR([jpeg: libjpeg not found])
+	])
+])
+
 # TODO need to check for libz too, at least on win32
 AC_CHECK_HEADER([zlib.h], [], 
 [
@@ -490,7 +499,7 @@ if test "$TOOLKIT" == "win"; then
 	deps_pkgs="$deps_pkgs $win_pkgs"
 	# nonstandard dlls go below the blank line
 	SYSTEM_LIBS="-ladvapi32 -lcomctl32 -lcomdlg32 -lgdi32 -lkernel32 -lole32 -lshell32 -luser32 -luuid -lversion -lwinspool \
-		     -lpng12 -lz"
+		     -lpng12 -lz -ljpeg"
 	SYSTEM_CFLAGS="-mthreads"
 elif test "$TOOLKIT" == "cocoa"; then
 	deps_pkgs="$deps_pkgs $cocoa_pkgs"

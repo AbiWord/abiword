@@ -1054,7 +1054,7 @@ void FV_View::btn1Frame(UT_sint32 x, UT_sint32 y)
 
 void FV_View::setFrameFormat(const gchar * properties[])
 {
-	UT_String dataID("");
+	std::string dataID;
 	setFrameFormat(properties,NULL,dataID);
 }
 
@@ -1273,7 +1273,8 @@ void FV_View::convertInLineToPositioned(PT_DocPosition pos,const gchar ** attrib
 	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 }
 
-void FV_View::setFrameFormat(const gchar * properties[], FG_Graphic * pFG,UT_String & sDataID)
+void FV_View::setFrameFormat(const gchar * properties[], FG_Graphic * pFG, 
+							 const std::string & sDataID)
 {
 	bool bRet;
 	setCursorWait();

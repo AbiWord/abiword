@@ -1,5 +1,6 @@
 /* AbiWord -- Embedded graphics for layout
  * Copyright (C) 1999 Matt Kimball
+ * Copyright (C) 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,10 +26,14 @@
 #include "ut_types.h"
 
 //  An implementation of the FG_Graphic interface for raster files.  The
-//  internal file format happens to be PNG.
+//  internal file format happens to be PNG OR JPEG
 class ABI_EXPORT FG_GraphicRaster : public FG_Graphic
 {
 public:
+    enum Format {
+        PNG_FORMAT = 0,
+        JPEG_FORMAT
+    };
 	static FG_Graphic*	createFromChangeRecord(const fl_ContainerLayout *pFL, 
 											   const PX_ChangeRecord_Object* pcro);
 	static FG_Graphic*	createFromStrux(const fl_ContainerLayout *pFL);
@@ -36,10 +41,11 @@ public:
 	FG_GraphicRaster();
 	virtual ~FG_GraphicRaster();
 
-	virtual FGType		getType(void);
-	virtual FG_Graphic * clone(void);
-	virtual double		getWidth(void);
-	virtual double		getHeight(void);
+	virtual FGType		getType(void) const;
+    virtual const std::string & getMimeType() const;
+	virtual FG_Graphic * clone(void) const;
+	virtual double		getWidth(void) const;
+	virtual double		getHeight(void) const;
 	virtual const char * getDataId(void) const;
 	virtual const char * createDataItem(PD_Document *pDoc, const char * szName);
 	virtual GR_Image*	regenerateImage(GR_Graphics* pG);
@@ -56,14 +62,20 @@ public:
 									  const char* szName);
 
 	bool				setRaster_PNG(const UT_ByteBuf* pBB);
-	const UT_ByteBuf*		getRaster_PNG(void) const;
+    bool                setRaster_JPEG(const UT_ByteBuf* pBB);
+	virtual const UT_ByteBuf*	getBuffer() const;
+    Format              getFormat() const
+    {
+        return m_format;
+    }
 
 	virtual const char * getWidthProp(void);
 	virtual const char * getHeightProp(void);
 
 protected:
-	const UT_ByteBuf* m_pbbPNG;
-	bool m_bOwnPNG;
+    Format            m_format;
+	const UT_ByteBuf* m_pbb;
+	bool              m_bOwnBuffer;
 
 	UT_sint32 m_iWidth, m_iHeight;
 	UT_sint32 m_iMaxW;

@@ -1,5 +1,6 @@
 /* AbiWord -- Embedded graphics for layout
  * Copyright (C) 1999 Matt Kimball
+ * Copyright (C) 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,8 +22,9 @@
 #define FG_GRAPHICVECTOR_H
 
 #include "fg_Graphic.h"
-#include "ut_bytebuf.h"
 #include "ut_types.h"
+
+class UT_ByteBuf;
 
 //  An implementation of the FG_Graphic interface for vector files.  The
 //  internal file format happens to be SVG.
@@ -36,10 +38,11 @@ public:
 	FG_GraphicVector();
 	virtual ~FG_GraphicVector();
 
-	virtual FGType		getType(void);
-	virtual FG_Graphic * clone(void);
-	virtual double		getWidth(void);
-	virtual double		getHeight(void);
+	virtual FGType		getType(void) const;
+    virtual const std::string & getMimeType(void) const;
+	virtual FG_Graphic * clone(void) const;
+	virtual double		getWidth(void) const;
+	virtual double		getHeight(void) const;
 	virtual const char * getDataId(void) const { return m_pszDataID;}
 	virtual const char * createDataItem(PD_Document *pDoc, const char * szName);
 	virtual GR_Image*	generateImage(GR_Graphics* pG,
@@ -57,7 +60,7 @@ public:
 									  const char* szName);
 
 	bool				setVector_SVG(const UT_ByteBuf* pBB);
-	const UT_ByteBuf*		getVector_SVG(void) const;
+	const UT_ByteBuf*		getBuffer(void) const;
 
 	virtual const char * getWidthProp(void);
 	virtual const char * getHeightProp(void);

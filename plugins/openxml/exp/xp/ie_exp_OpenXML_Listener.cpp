@@ -950,31 +950,31 @@ UT_Error IE_Exp_OpenXML_Listener::addImages()
 	UT_Error err = UT_OK;
 
 	const char* szName = NULL;
-	const char* szMimeType = NULL;
-	const char** pszMimeType = &szMimeType;
+    std::string mimeType;
 	const UT_ByteBuf* pByteBuf = NULL;
 
 	UT_uint32 k = 0;
-	while (pdoc->enumDataItems (k, 0, &szName, &pByteBuf, reinterpret_cast<const void**>(pszMimeType)))
+	while (pdoc->enumDataItems (k, 0, &szName, &pByteBuf, &mimeType))
 	{
 		k++;
 
-		if(!(szName && *szName && szMimeType && *szMimeType && pByteBuf && pByteBuf->getLength()))
+		if(!(szName && *szName && !mimeType.empty() && pByteBuf && pByteBuf->getLength()))
 		{
 			szName = NULL;
-			szMimeType = NULL;
+			mimeType.clear();
 			pByteBuf = NULL;
 			continue;
 		}
 
-		if(!(strcmp(szMimeType, "image/png") == 0 || strcmp(szMimeType, "image/svg+xml") == 0))
+		if(!((mimeType == "image/png") || (mimeType == "image/svg+xml")))
 		{
 			// If you add a mime type, make sure to update the extension code in
 			// PD_Document::getDataItemFileExtension()
-			UT_DEBUGMSG(("OpenXML export: unhandled/ignored mime type: %s\n", szMimeType));
+			UT_DEBUGMSG(("OpenXML export: unhandled/ignored mime type: %s\n", 
+                         mimeType.c_str()));
 
 			szName = NULL;
-			szMimeType = NULL;
+			mimeType.clear();
 			pByteBuf = NULL;
 			continue;
 		}
@@ -983,7 +983,7 @@ UT_Error IE_Exp_OpenXML_Listener::addImages()
 		const OXML_SharedImage shared_image(image);			
 
 		image->setId(szName);
-		image->setMimeType(szMimeType);
+		image->setMimeType(mimeType);
 		image->setData(pByteBuf);
 
 		err = document->addImage(shared_image);
@@ -991,7 +991,7 @@ UT_Error IE_Exp_OpenXML_Listener::addImages()
 			return err;
 		
 		szName = NULL;
-		szMimeType = NULL;
+		mimeType.clear();
 		pByteBuf = NULL;
 	}
 

@@ -3,6 +3,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Marc Maurer
+ * Copyright (C) 2009 Hubert Figuiere
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -27,6 +28,7 @@
 
 #include "ut_assert.h"
 #include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_debugmsg.h"
 #include "ut_locale.h"
 
@@ -51,6 +53,33 @@
 #include "ap_Strings.h"
 #include "ut_png.h"
 #include "gr_Painter.h"
+
+
+GR_Image * AP_Dialog_FormatFrame::_makeImageForRaster(const std::string & name, 
+                              GR_Graphics * pGraphics,
+                              const FG_Graphic * pG)
+{
+    GR_Image* pImage;
+    const UT_ByteBuf * pBB = pG->getBuffer();
+	if(pG->getType() == FGT_Raster)
+	{
+		pImage = pGraphics->createNewImage( name.c_str(),
+								pBB,
+								pG->getWidth(),
+								pG->getHeight(),
+								GR_Image::GRT_Raster);
+	}
+	else
+	{
+		pImage = pGraphics->createNewImage( name.c_str(),
+                                pBB,
+								m_pFormatFramePreview->getWindowWidth()-2,
+								m_pFormatFramePreview->getWindowHeight()-2,
+								GR_Image::GRT_Vector);
+	}
+    return pImage;
+}
+
 
 AP_Dialog_FormatFrame::AP_Dialog_FormatFrame(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_Modeless(pDlgFactory,id, "interface/dialogformattable"),
@@ -262,73 +291,52 @@ void AP_Dialog_FormatFrame::askForGraphicPathName(void)
 
 	UT_uint32 uid = pView->getDocument()->getUID(UT_UniqueId::Image); //see Bug 10851
 	m_sImagePath.clear();
-	UT_String_sprintf(m_sImagePath,"%d",uid);
+	m_sImagePath = UT_std_string_sprintf("%d",uid);
 
-	if(m_pGraphic->getType() == FGT_Raster)
-	{
-		UT_sint32 iImageWidth;
-		UT_sint32 iImageHeight;
-		const UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
-		UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
-		m_pImage = static_cast<GR_Image *>(
-			pG->createNewImage( m_sImagePath.c_str(),
-								pBB,
-								iImageWidth,
-								iImageHeight,
-								GR_Image::GRT_Raster));
-	}
-	else
-	{
-		m_pImage = static_cast<GR_Image *>(
-			pG->createNewImage( m_sImagePath.c_str(),
-								static_cast<FG_GraphicVector *>(pFG)->getVector_SVG(),
-								m_pFormatFramePreview->getWindowWidth()-2,
-								m_pFormatFramePreview->getWindowHeight()-2,
-								GR_Image::GRT_Vector));
-	}
-	
+    m_pImage = _makeImageForRaster(m_sImagePath, pG, m_pGraphic);
+
 	// draw the preview with the changed properties
 	if(m_pFormatFramePreview)
 		m_pFormatFramePreview->draw();
 
 }
 
-void AP_Dialog_FormatFrame::ShowErrorBox(UT_String & sFile, UT_Error errorCode)
+void AP_Dialog_FormatFrame::ShowErrorBox(const std::string & sFile, UT_Error errorCode)
 {
 	XAP_String_Id String_id;
-	XAP_Frame * pFrame = m_pApp->getLastFocussedFrame();
+	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	switch (errorCode)
 	  {
-	  case -301:
+	  case UT_IE_FILENOTFOUND:
 		String_id = AP_STRING_ID_MSG_IE_FileNotFound;
 		break;
 
-	  case -302:
+	  case UT_IE_NOMEMORY:
 		String_id = AP_STRING_ID_MSG_IE_NoMemory;
 		break;
 
-	  case -303:
+	  case UT_IE_UNKNOWNTYPE:
 		String_id = AP_STRING_ID_MSG_IE_UnsupportedType;
 		//AP_STRING_ID_MSG_IE_UnknownType;
 		break;
 
-	  case -304:
+	  case UT_IE_BOGUSDOCUMENT:
 		String_id = AP_STRING_ID_MSG_IE_BogusDocument;
 		break;
 
-	  case -305:
+	  case UT_IE_COULDNOTOPEN:
 		String_id = AP_STRING_ID_MSG_IE_CouldNotOpen;
 		break;
 
-	  case -306:
+	  case UT_IE_COULDNOTWRITE:
 		String_id = AP_STRING_ID_MSG_IE_CouldNotWrite;
 		break;
 
-	  case -307:
+	  case UT_IE_FAKETYPE:
 		String_id = AP_STRING_ID_MSG_IE_FakeType;
 		break;
 
-	  case -311:
+	  case UT_IE_UNSUPTYPE:
 		String_id = AP_STRING_ID_MSG_IE_UnsupportedType;
 		break;
 
@@ -507,29 +515,9 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 					m_sImagePath.clear();
 					m_pGraphic = pFG;
 					m_sImagePath = pFG->getDataId();
+
 					GR_Graphics * pG = m_pFormatFramePreview->getGraphics();
-					if(m_pGraphic->getType() == FGT_Raster)
-					{
-						UT_sint32 iImageWidth;
-						UT_sint32 iImageHeight;
-						const UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
-						UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
-						m_pImage = static_cast<GR_Image *>(
-							pG->createNewImage( m_sImagePath.c_str(),
-												pBB,
-												iImageWidth,
-												iImageHeight,
-												GR_Image::GRT_Raster));
-					}
-					else
-					{
-						m_pImage = static_cast<GR_Image *>(
-							pG->createNewImage( m_sImagePath.c_str(),
-												static_cast<FG_GraphicVector *>(pFG)->getVector_SVG(),
-												m_pFormatFramePreview->getWindowWidth()-2,
-												m_pFormatFramePreview->getWindowHeight()-2,
-												GR_Image::GRT_Vector));
-					}
+                    m_pImage = _makeImageForRaster(m_sImagePath, pG, m_pGraphic);
 				}
 			}
 		}
@@ -1129,9 +1117,9 @@ void AP_FormatFrame_preview::draw(void)
 		GR_Image * pImg = m_pFormatFrame->getImage();
 		FG_Graphic * pFG = m_pFormatFrame->getGraphic();
 		const char * szName = pFG->getDataId();
+        const UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pFG)->getBuffer();
 		if(pFG->getType() == FGT_Raster)
 		{
-			const UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
 			pImg = static_cast<GR_Image *>(
 				m_gc->createNewImage( szName,
 									pBB,
@@ -1143,7 +1131,7 @@ void AP_FormatFrame_preview::draw(void)
 		{
 			pImg = static_cast<GR_Image *>(
 				m_gc->createNewImage( szName,
-									static_cast<FG_GraphicVector *>(pFG)->getVector_SVG(),
+                                      pBB,
 									pageRect.width - 2*border,
 									pageRect.height - 2*border,
 									GR_Image::GRT_Vector));

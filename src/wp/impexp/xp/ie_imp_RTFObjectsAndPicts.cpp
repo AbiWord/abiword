@@ -142,7 +142,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 
 	if ((error == UT_OK) && pFG)
 	{
-		const UT_ByteBuf * buf = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
+		const UT_ByteBuf * buf = pFG->getBuffer();
 		imgProps.width = static_cast<UT_uint32>(pFG->getWidth ());
 		imgProps.height = static_cast<UT_uint32>(pFG->getHeight ());
 		// Not sure whether this is the right way, but first, we should
@@ -196,8 +196,7 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 		// non-null file, we're importing a doc
 		// Now, we should insert the picture into the document
 
-		const char * mimetype = NULL;
-		mimetype = g_strdup("image/png");
+		std::string mimetype = "image/png";
 
 		switch (imgProps.sizeType)
 		{
@@ -269,12 +268,11 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 
 			if (!getDoc()->appendObject(PTO_Image, propsArray))
 			{
-				FREEP(mimetype);
 				return false;
 			}
 		}
 		if (!getDoc()->createDataItem(image_name, false,
-									  buf, static_cast<const void*>(mimetype), NULL))
+									  buf, mimetype, NULL))
 		{
 			// taken care of by createDataItem
 			//FREEP(mimetype);
@@ -322,10 +320,9 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 		/*
 		  Create the data item
 		*/
-		const char * mimetype = NULL;
-		mimetype = g_strdup("image/png");
+		std::string mimetype = "image/png";
 		bool bOK = false;
-		bOK = getDoc()->createDataItem(szName.c_str(), false, buf, static_cast<const void *>(mimetype), NULL);
+		bOK = getDoc()->createDataItem(szName.c_str(), false, buf, mimetype, NULL);
 		UT_return_val_if_fail(bOK, false);
 		/*
 		  Insert the object into the document.

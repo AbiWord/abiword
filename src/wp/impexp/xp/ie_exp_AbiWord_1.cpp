@@ -1567,8 +1567,7 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 	bool bWroteOpenDataSection = false;
 
 	const char * szName;
-   	const char * szMimeType;
-   	const char ** pszMimeType = &szMimeType;
+    std::string mimeType;
 	const UT_ByteBuf * pByteBuf;
 
 	UT_ByteBuf bbEncoded(1024);
@@ -1576,7 +1575,7 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 	UT_DEBUGMSG(("Used images are... \n"));
 	for (UT_uint32 k=0;
 		 
-		 (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,reinterpret_cast<const void**>(pszMimeType)));
+		 (m_pDocument->enumDataItems(k, NULL, &szName, &pByteBuf, &mimeType));
 		 k++)
 	{
 		string_set::iterator it(m_pUsedImages.find(szName));
@@ -1601,7 +1600,9 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 	   	bool status = false;
 	   	bool encoded = true;
 
-		if (szMimeType && (strcmp(szMimeType, "image/svg+xml") == 0 || strcmp(szMimeType, "application/mathml+xml") == 0))
+		if (!mimeType.empty() 
+            && ((mimeType ==  "image/svg+xml") 
+                || (mimeType == "application/mathml+xml")))
 	    {
 		   bbEncoded.truncate(0);
 		   bbEncoded.append(reinterpret_cast<const UT_Byte*>("<![CDATA["), 9);
@@ -1638,10 +1639,10 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 			// That's not really a good assumption, but, hey.
 			// TODO: make szName, szMimeType be UT_gchars.
 			_outputXMLChar(szName, strlen(szName));
-		   	if (szMimeType)
+		   	if (!mimeType.empty())
 			{
 			   m_pie->write("\" mime-type=\"");
-			   _outputXMLChar(szMimeType, strlen(szMimeType));
+			   _outputXMLChar(mimeType.c_str(), mimeType.size());
 			}
 		   	if (encoded)
 		    {

@@ -60,19 +60,7 @@ UT_Error IE_Imp_GraphicAsDocument::_loadFile(GsfInput * input)
    	if (error != UT_OK) return error;
    
    	const UT_ByteBuf * buf;
-   	const char * mimetype = NULL;
-	if (pFG->getType() == FGT_Raster) {
-	   buf = (static_cast<FG_GraphicRaster*>(pFG))->getRaster_PNG();
-	   mimetype =g_strdup("image/png");
-	}
-   	else if (pFG->getType() == FGT_Vector) { 
-	   buf = (static_cast<FG_GraphicVector*>(pFG))->getVector_SVG();
-	   mimetype = g_strdup("image/svg+xml");
-	}
-   	else {
-	   delete pFG;
-	   return UT_IE_BOGUSDOCUMENT;
-	}
+    buf = pFG->getBuffer();
 
    	const gchar* propsArray[3];
    	propsArray[0] = "dataid";
@@ -81,15 +69,13 @@ UT_Error IE_Imp_GraphicAsDocument::_loadFile(GsfInput * input)
    
    	if (!getDoc()->appendObject(PTO_Image, propsArray)) {
 	   delete pFG;
-	   FREEP(mimetype);
 	   return UT_IE_NOMEMORY;
 	}
 
    	if (!getDoc()->createDataItem("image_0", false,
-					buf, static_cast<const void*>(mimetype), NULL)) {
+					buf, pFG->getMimeType(), NULL)) {
 	   delete pFG;
-	   // mimetype will be freed by crateDataItem
-	   //FREEP(mimetype);
+	   // mimetype will be freed by createDataItem
 	   return UT_IE_NOMEMORY;
 	}
 

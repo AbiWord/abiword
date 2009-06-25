@@ -586,16 +586,7 @@ UT_Error IE_ImpGraphic::convertGraphic(UT_ByteBuf* pBB,
 		return result;
 
 	const UT_ByteBuf * graphic_bytebuf;
-
-	if (graphic->getType() == FGT_Raster) {
-		graphic_bytebuf = static_cast<FG_GraphicRaster *>(graphic)->getRaster_PNG();
-	} else if (graphic->getType() == FGT_Vector) {
-		graphic_bytebuf = static_cast<FG_GraphicVector *>(graphic)->getVector_SVG();
-	} else {
-		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-		DELETEP(graphic);
-		return UT_ERROR;
-	}
+    graphic_bytebuf  = graphic->getBuffer();
 
 
 	UT_ByteBuf *out_graphic = new UT_ByteBuf();
