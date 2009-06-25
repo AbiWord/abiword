@@ -1,5 +1,6 @@
-/* AbiSource Program Utilities
+/* AbiSource
  * Copyright (C) 2002 Dom Lachowicz <cinamod@hotmail.com>
+ * Copyright (C) 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,6 +17,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
+
+#include <string>
 
 // abiword stuff
 #include "fd_Field.h"
@@ -57,28 +60,16 @@ private:
 /*****************************************************************************/
 /*****************************************************************************/
 
-class OO_Style
-{
-public:
-   OO_Style(UT_String &props, UT_String &name);
-
-private:
-   UT_String props;
-   UT_String name;
-};
-
-/*****************************************************************************/
-/*****************************************************************************/
-
 class OO_ListenerImpl
 {
 public:
    OO_ListenerImpl() {}
    virtual ~OO_ListenerImpl() {}
    virtual void insertText(const UT_UCSChar * data, UT_uint32 length) = 0;
-   virtual void openBlock(UT_String & styleAtts, UT_String & styleProps, UT_String & font, bool bIsHeading = false) = 0;
+   virtual void openBlock(const std::string & styleAtts, const std::string & styleProps, 
+                          const std::string & font, bool bIsHeading = false) = 0;
    virtual void closeBlock() = 0;
-   virtual void openSpan(UT_String & props, UT_String & font) = 0;
+   virtual void openSpan(const std::string & props, const std::string & font) = 0;
    virtual void closeSpan() = 0;   
    virtual void openHyperlink(const PP_AttrProp* pAP) = 0;
    virtual void closeHyperlink() = 0;
@@ -129,11 +120,11 @@ public:
 	   m_blockAttsHash.purgeData();
 	   m_fontsHash.purgeData();
    }
-   void addSpanStyle(UT_String &key);
-   void addBlockStyle(UT_String & styleAtts, UT_String & styleProps);
-   void addFont(UT_String & font);
-   int getSpanStyleNum(UT_String &key) const;
-   int getBlockStyleNum(UT_String & styleAtts, UT_String & styleProps) const;
+   void addSpanStyle(const std::string &key);
+   void addBlockStyle(const std::string & styleAtts, const std::string & styleProps);
+   void addFont(const std::string & font);
+   int getSpanStyleNum(const std::string &key) const;
+   int getBlockStyleNum(const std::string & styleAtts, const std::string & styleProps) const;
    UT_GenericVector<int*> * enumerateSpanStyles() const;
    UT_String * pickBlockAtts(const UT_String *key);
    UT_GenericVector<const UT_String*> * getSpanStylesKeys() const;
@@ -155,9 +146,10 @@ class OO_AccumulatorImpl : public OO_ListenerImpl
 public:
    OO_AccumulatorImpl(OO_StylesContainer *pStylesContainer) : OO_ListenerImpl() { m_pStylesContainer = pStylesContainer; }
    virtual void insertText(const UT_UCSChar * /*data*/, UT_uint32 /*length*/) {}
-   virtual void openBlock(UT_String & styleAtts, UT_String & styleProps, UT_String & font, bool bIsHeading = false);
+   virtual void openBlock(const std::string & styleAtts, const std::string & styleProps, 
+                          const std::string & font, bool bIsHeading = false);
    virtual void closeBlock() {};
-   virtual void openSpan(UT_String & props, UT_String & font);
+   virtual void openSpan(const std::string & props, const std::string & font);
    virtual void closeSpan() {}
    virtual void openHyperlink(const PP_AttrProp* /*pAP*/) {}
    virtual void closeHyperlink() {}
@@ -176,9 +168,10 @@ public:
    OO_WriterImpl(GsfOutfile *pOutfile, OO_StylesContainer *pStylesContainer);
    ~OO_WriterImpl();
    virtual void insertText(const UT_UCSChar * data, UT_uint32 length);
-   virtual void openBlock(UT_String & styleAtts, UT_String & styleProps, UT_String & font, bool bIsHeading = false);
+   virtual void openBlock(const std::string & styleAtts, const std::string & styleProps, 
+                          const std::string & font, bool bIsHeading = false);
    virtual void closeBlock();
-   virtual void openSpan(UT_String & props, UT_String & font);
+   virtual void openSpan(const std::string & props, const std::string & font);
    virtual void closeSpan();
    virtual void openHyperlink(const PP_AttrProp* pAP);
    virtual void closeHyperlink();

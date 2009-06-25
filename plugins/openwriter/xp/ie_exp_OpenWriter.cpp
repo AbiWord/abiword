@@ -1,6 +1,7 @@
 /* AbiSource Program Utilities
  * Copyright (C) 2002 Dom Lachowicz <cinamod@hotmail.com>
  * Copyright (C) 2004 Robert Staudinger <robsta@stereolyzer.net>
+ * Copyright (C) 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,6 +28,7 @@
 #include "pd_Style.h"
 #include "ut_Language.h"
 #include "ut_math.h"
+#include "ut_std_string.h"
 #include "ie_impexp_OpenWriter.h"
 #include "ie_exp_OpenWriter.h"
 
@@ -263,11 +265,11 @@ void OO_WriterImpl::insertText(const UT_UCSChar * data, UT_uint32 length)
    outputCharData(m_pContentStream, data, length);
 }
 
-void OO_WriterImpl::openBlock(UT_String & styleAtts, UT_String & styleProps, UT_String & /*font*/, bool bIsHeading)
+void OO_WriterImpl::openBlock(const std::string & styleAtts, const std::string & styleProps, const std::string & /*font*/, bool bIsHeading)
 {
 	UT_UTF8String tag, props;
 
-	if (styleAtts.size() && styleProps.size()) 
+	if (!styleAtts.empty() && !styleProps.empty()) 
 	{
 		// derive automatic style
 		props = UT_UTF8String_sprintf("text:style-name=\"P%i\" ", m_pStylesContainer->getBlockStyleNum(styleAtts, styleProps));		
@@ -297,7 +299,7 @@ void OO_WriterImpl::closeBlock()
 	m_blockEnd.clear();
 }
 
-void OO_WriterImpl::openSpan(UT_String & props, UT_String & /*font*/)
+void OO_WriterImpl::openSpan(const std::string & props, const std::string & /*font*/)
 {
    UT_UTF8String spanString = UT_UTF8String_sprintf("<text:span text:style-name=\"S%i\">",  
 						    m_pStylesContainer->getSpanStyleNum(props));
@@ -339,7 +341,7 @@ void OO_WriterImpl::closeHyperlink()
     writeUTF8String(m_pContentStream, output);
 }
 
-void OO_StylesContainer::addSpanStyle(UT_String &key)
+void OO_StylesContainer::addSpanStyle(const std::string &key)
 {
    //if (!m_spanStylesHash.contains(key.utf8_str(), temp)) 
    if (!m_spanStylesHash.pick(key.c_str())) 
@@ -357,7 +359,7 @@ void OO_StylesContainer::addSpanStyle(UT_String &key)
    }
 }
 
-void OO_StylesContainer::addBlockStyle(UT_String & styleAtts, UT_String & styleProps)
+void OO_StylesContainer::addBlockStyle(const std::string & styleAtts, const std::string & styleProps)
 {
    if (!m_blockAttsHash.pick(styleProps.c_str())) 
    {
@@ -372,7 +374,7 @@ void OO_StylesContainer::addBlockStyle(UT_String & styleAtts, UT_String & styleP
    }
 }
 
-void OO_StylesContainer::addFont(UT_String & font) 
+void OO_StylesContainer::addFont(const std::string & font) 
 {
 	if (!m_fontsHash.pick(font.c_str()))
 	{
@@ -389,7 +391,7 @@ void OO_StylesContainer::addFont(UT_String & font)
 	}
 }
 
-int OO_StylesContainer::getSpanStyleNum(UT_String &key) const
+int OO_StylesContainer::getSpanStyleNum(const std::string &key) const
 {
    if (int *val = m_spanStylesHash.pick(key.c_str())) {
       return *val;
@@ -398,7 +400,8 @@ int OO_StylesContainer::getSpanStyleNum(UT_String &key) const
       return 0;
 }
 
-int OO_StylesContainer::getBlockStyleNum(UT_String & /*styleAtts*/, UT_String & styleProps) const
+int OO_StylesContainer::getBlockStyleNum(const std::string & /*styleAtts*/, 
+                                         const std::string & styleProps) const
 {
 	UT_GenericVector<const UT_String*> *keys = m_blockAttsHash.keys();
 
@@ -438,7 +441,7 @@ UT_GenericVector<const UT_String*> * OO_StylesContainer::getFontsKeys() const
    return m_fontsHash.keys();
 }
 
-void OO_AccumulatorImpl::openSpan(UT_String & props, UT_String & font)
+void OO_AccumulatorImpl::openSpan(const std::string & props, const std::string & font)
 {
    m_pStylesContainer->addSpanStyle(props);
 
@@ -446,9 +449,9 @@ void OO_AccumulatorImpl::openSpan(UT_String & props, UT_String & font)
 		m_pStylesContainer->addFont(font);
 }
 
-void OO_AccumulatorImpl::openBlock(UT_String & styleAtts, UT_String & styleProps, UT_String & font, bool /*bIsHeading*/)
+void OO_AccumulatorImpl::openBlock(const std::string & styleAtts, const std::string & styleProps, const std::string & font, bool /*bIsHeading*/)
 {
-	if (styleAtts.size() && styleProps.size()) 
+	if (!styleAtts.empty() && !styleProps.empty()) 
 	{
 		// custom props, need to derive automatic style
 		m_pStylesContainer->addBlockStyle(styleAtts, styleProps);
@@ -571,13 +574,13 @@ void OO_Listener::endDocument()
 
 void OO_Listener::_openBlock (PT_AttrPropIndex api)
 {
-   if (m_bInBlock)
-      _closeBlock();
+    if (m_bInBlock)
+        _closeBlock();
 
-   const PP_AttrProp * pAP = NULL;
-   bool bHaveProp = m_pDocument->getAttrProp(api, &pAP);
-   bool bIsHeading = false;
-   UT_String styleAtts, propAtts, font;
+    const PP_AttrProp * pAP = NULL;
+    bool bHaveProp = m_pDocument->getAttrProp(api, &pAP);
+    bool bIsHeading = false;
+    std::string styleAtts, propAtts, font;
 
 	if (bHaveProp && pAP)
 	{
@@ -604,13 +607,13 @@ void OO_Listener::_openBlock (PT_AttrPropIndex api)
 		if (szStyle && strstr(szStyle, "Heading"))
 			bIsHeading = true;		
 
-		styleAtts += sa.utf8_str();
-		propAtts += pa.utf8_str();
-		font += f.utf8_str();
+        styleAtts += sa.utf8_str();
+        propAtts += pa.utf8_str();
+        font += f.utf8_str();
 	}
 
-   m_pListenerImpl->openBlock(styleAtts, propAtts, font, bIsHeading);
-   m_bInBlock = true;
+    m_pListenerImpl->openBlock(styleAtts, propAtts, font, bIsHeading);
+    m_bInBlock = true;
 }
 
 void OO_Listener::_closeBlock ()
@@ -631,7 +634,7 @@ void OO_Listener::_openSpan(PT_AttrPropIndex api)
    const PP_AttrProp * pAP = NULL;
    bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
    
-   UT_String propAtts, font;
+   std::string propAtts, font;
 
    if (bHaveProp && pAP)
    {
@@ -787,14 +790,18 @@ public:
     GsfOutput * pictures = gsf_outfile_new_child(oo, "Pictures", TRUE);
     
     for (UT_uint32 k=0; (pDoc->enumDataItems(k,NULL,&szName,&pByteBuf,&mimeType)); k++)
-      {
-	// create individual pictures
-	UT_String name = UT_String_sprintf("IMG-%d.png", k);
-	GsfOutput * img = gsf_outfile_new_child(GSF_OUTFILE(pictures), name.c_str(), FALSE);	
-	oo_gsf_output_write(img, pByteBuf->getLength(),  pByteBuf->getPointer(0));
+    {
+        const char * extension = "png";
+        // create individual pictures
+        if(mimeType == "image/jpeg") {
+            extension = "jpg";
+        }
+        std::string name = UT_std_string_sprintf("IMG-%d.%s", k, extension);
+        GsfOutput * img = gsf_outfile_new_child(GSF_OUTFILE(pictures), name.c_str(), FALSE);	
+        oo_gsf_output_write(img, pByteBuf->getLength(),  pByteBuf->getPointer(0));
 
-	oo_gsf_output_close(img);
-      }
+        oo_gsf_output_close(img);
+    }
 
     oo_gsf_output_close(pictures);
 
@@ -823,7 +830,7 @@ public:
     GsfOutput * meta_inf = gsf_outfile_new_child(oo, "META-INF", TRUE);
     GsfOutput * manifest = gsf_outfile_new_child(GSF_OUTFILE(meta_inf), "manifest.xml", FALSE);
 
-    UT_String name;
+    std::string name;
 
     static const char * const preamble [] = 
       {
@@ -848,15 +855,19 @@ public:
     std::string mimeType;
     const UT_ByteBuf * pByteBuf;
     for (UT_uint32 k = 0; (pDoc->enumDataItems(k,NULL,&szName,&pByteBuf, &mimeType)); k++)
-      {
-	if (k == 0) {
-	  name = "<manifest:file-entry manifest:media-type='' manifest:full-path='Pictures/'/>\n";
-	  oo_gsf_output_write(manifest, name.size(), reinterpret_cast<const guint8 *>(name.c_str()));
-	}
+    {
+        const char *extension = "png";
+        if (mimeType == "image/jpeg") {
+            extension = "jpg";
+        }
+        if (k == 0) {
+            name = "<manifest:file-entry manifest:media-type='' manifest:full-path='Pictures/'/>\n";
+            oo_gsf_output_write(manifest, name.size(), reinterpret_cast<const guint8 *>(name.c_str()));
+        }
 	  
-	name = UT_String_sprintf("<manifest:file-entry manifest:media-type='%s' manifest:full-path='Pictures/IMG-%d.png'/>\n", mimeType.c_str(), k);
-	oo_gsf_output_write (manifest, name.size(), reinterpret_cast<const guint8 *>(name.c_str()));
-      }
+        name = UT_std_string_sprintf("<manifest:file-entry manifest:media-type='%s' manifest:full-path='Pictures/IMG-%d.%s'/>\n", mimeType.c_str(), k, extension);
+        oo_gsf_output_write (manifest, name.size(), reinterpret_cast<const guint8 *>(name.c_str()));
+    }
 
     writeToStream (manifest, postamble, G_N_ELEMENTS(postamble));
 
@@ -904,28 +915,28 @@ bool OO_StylesWriter::writeStyles(PD_Document * pDoc, GsfOutfile * oo, OO_Styles
   UT_sint32 k = 0;
   UT_UTF8String styleAtts, propAtts, font;
   for (k=0; k < vecStyles.getItemCount(); k++)
-    {
+  {
       pStyle = vecStyles.getNthItem(k);
       PT_AttrPropIndex api = pStyle->getIndexAP();
       const PP_AttrProp * pAP = NULL;
       bool bHaveProp = pDoc->getAttrProp (api, &pAP);
       
       if (bHaveProp && pAP) 
-	{
-	  OO_StylesWriter::map(pAP, styleAtts, propAtts, font);
+      {
+          OO_StylesWriter::map(pAP, styleAtts, propAtts, font);
 	  
-	  styles += "<style:style " + styleAtts + ">\n";
-	  styles += "<style:properties " + propAtts + "/>\n";
-	  styles += "</style:style>\n";
-	}
+          styles += "<style:style " + styleAtts + ">\n";
+          styles += "<style:properties " + propAtts + "/>\n";
+          styles += "</style:style>\n";
+      }
       
       if (font.size())
-	{
-	  UT_String f = font.utf8_str();
-	  stylesContainer.addFont(f);
-	  font.clear();
-	}
-    }
+      {
+          std::string f = font.utf8_str();
+          stylesContainer.addFont(f);
+          font.clear();
+      }
+  }
   
   static const char * const postamble [] = 
     {
