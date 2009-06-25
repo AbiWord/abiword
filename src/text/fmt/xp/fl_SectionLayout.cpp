@@ -1979,7 +1979,7 @@ void fl_DocSectionLayout::redrawUpdate(void)
 			pEL = static_cast<fl_EndnoteLayout *>(pEL->getNext());
 		}
 	}
-	if(needsSectionBreak() || needsRebuild())
+	if(!getDocLayout()->isLayoutFilling() && (needsSectionBreak() || needsRebuild()))
 	{
 		m_ColumnBreaker.breakSection(this);
 	

@@ -3353,12 +3353,28 @@ void fl_BlockLayout::format()
 	//
 	// Need this to find where to break section in the document.
 	//
+	fp_Page * pPrevP = NULL;
+	//
+	// Sevior says...
+	// Two choices of code here. "1" is mroe agressive and less likely
+	// to lead to infinite loops.
+	// On the down side it appears to cause pages with difficult to wrap
+	// sets of images to bump all content off the page.
+	//
+	// If think the latter is fixable elsewhere so will try for the "1"
+	// branch for now
+#if 1
+	fp_Container * pPrevCon = getFirstContainer();
+	if(pPrevCon)
+	{
+		pPrevP = pPrevCon->getPage();
+	}
+#else
 	fl_ContainerLayout * pPrevCL = getPrev();
 	while(pPrevCL && pPrevCL->getContainerType() != FL_CONTAINER_BLOCK)
 	{
 		pPrevCL = pPrevCL->getPrev();
 	}
-	fp_Page * pPrevP = NULL;
 	if(pPrevCL)
 	{
 		fp_Container * pPrevCon = pPrevCL->getFirstContainer();
@@ -3367,6 +3383,7 @@ void fl_BlockLayout::format()
 			pPrevP = pPrevCon->getPage();
 		}
 	}
+#endif
 	xxx_UT_DEBUGMSG(("fl_BlockLayout - format \n"));
 	_assertRunListIntegrity();
 	fp_Run *pRunToStartAt = NULL;
@@ -3604,6 +3621,7 @@ void fl_BlockLayout::format()
 				}
 			}
 		}
+
 		getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
 	}
 

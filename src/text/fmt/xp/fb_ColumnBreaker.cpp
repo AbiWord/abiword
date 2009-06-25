@@ -207,7 +207,7 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fl_DocSectionLayout * pSL, fp_Page * p
 	}
 	pCurColumn = static_cast<fp_Column*>(pSL->getFirstContainer());
 	xxx_UT_DEBUGMSG(("fb_ColumnBreaker: For DocSec %x first column %x \n",pSL,pCurColumn));
-	if(pStartPage)
+	if(pStartPage && (pStartPage->getNthColumnLeader(0)))
 	{
 		xxx_UT_DEBUGMSG(("Layout from page %x \n",pStartPage));
 		pCurColumn = pStartPage->getNthColumnLeader(0);

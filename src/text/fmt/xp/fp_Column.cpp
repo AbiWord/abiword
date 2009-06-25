@@ -1877,6 +1877,10 @@ void fp_Column::layout(void)
 			{
 				addWrappedLine(pLine);
 			}
+			else if((pLine->getMaxWidth() > 0) && (pLine->getMaxWidth() < getWidth()))
+			{
+				addWrappedLine(pLine);
+			}
 			if(pLine->isSameYAsPrevious() && pLine->getPrev())
 			{
 				UT_sint32 iPrevY = static_cast<fp_Line *>(pLine->getPrev())->getY();

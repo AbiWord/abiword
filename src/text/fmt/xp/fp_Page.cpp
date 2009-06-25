@@ -1298,6 +1298,8 @@ UT_sint32 fp_Page::countColumnLeaders(void) const
 
 fp_Column* fp_Page::getNthColumnLeader(UT_sint32 n) const
 {
+	if(n >= m_vecColumnLeaders.getItemCount())
+		return NULL;
 	return m_vecColumnLeaders.getNthItem(n);
 }
 
