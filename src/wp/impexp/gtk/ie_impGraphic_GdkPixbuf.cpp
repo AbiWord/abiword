@@ -204,43 +204,6 @@ UT_Error IE_ImpGraphic_GdkPixbuf::_png_write(GdkPixbuf * pixbuf)
 }
 
 
-/*!
- * Convert an image byte buffer into a PNG byte buffer
- */
-UT_Error IE_ImpGraphic_GdkPixbuf::convertGraphic(UT_ByteBuf* pBB,
-								UT_ByteBuf** ppBB)
-{
-	UT_Error err = UT_OK;
-	std::string  mimetype;
-	GdkPixbuf * pixbuf = pixbufForByteBuf (pBB, mimetype);
-
-	if (!pixbuf)
-	{			
-		return UT_ERROR;
-	}
-
-	if(mimetype == "image/jpeg") 
-	{
-		// JPEG as copied verbatim
-		g_object_unref(G_OBJECT(pixbuf));
-		*ppBB = pBB;
-	}
-	else {
-		// Initialize stuff to create our PNG.
-		err = Initialize_PNG();
-		if (err)
-		{
-			g_object_unref(G_OBJECT(pixbuf));
-			return err;
-		}
-
-		err = _png_write(pixbuf);
-		if(err == UT_OK) {
-			*ppBB =  m_pPngBB;
-		}
-	}
-	return err;
-}
 
 /*!
  * This method fills the m_pPNG byte buffer with a PNG representation of 

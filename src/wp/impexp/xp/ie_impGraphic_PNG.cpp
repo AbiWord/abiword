@@ -98,10 +98,3 @@ UT_Error IE_ImpGraphic_PNG::importGraphic(UT_ByteBuf* pBB,
 	return UT_OK;
 }
 
-UT_Error IE_ImpGraphic_PNG::convertGraphic(UT_ByteBuf* pBB,
-					   UT_ByteBuf** ppBB)
-{
-   	if (!ppBB) return UT_ERROR;
-   	*ppBB = pBB;
-   	return UT_OK;
-}

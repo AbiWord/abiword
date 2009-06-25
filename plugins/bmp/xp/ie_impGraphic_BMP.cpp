@@ -198,18 +198,6 @@ UT_Error IE_ImpGraphic_BMP::_convertGraphic(UT_ByteBuf * pBB)
    	return UT_OK;
 }
 
-UT_Error IE_ImpGraphic_BMP::convertGraphic(UT_ByteBuf* pBB,
-					   UT_ByteBuf** ppBB)
-{
-   	if (!ppBB) return UT_ERROR;
-
-   	UT_Error err = _convertGraphic(pBB);
-   	if (err != UT_OK) return err;
-   
-	*ppBB = m_pBB;
-   
-   	return UT_OK;
-}
 
 //  This actually creates our FG_Graphic object for a PNG
 UT_Error IE_ImpGraphic_BMP::importGraphic(UT_ByteBuf* pBB, 

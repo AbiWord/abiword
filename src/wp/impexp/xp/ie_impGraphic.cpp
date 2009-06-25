@@ -568,45 +568,6 @@ UT_Error IE_ImpGraphic::importGraphic(const char * szFilename,
 	return res;
 }
 
-UT_Error IE_ImpGraphic::convertGraphic(UT_ByteBuf* pBB,
-									   UT_ByteBuf** ppBB)
-{
-	UT_return_val_if_fail(pBB != NULL, UT_IE_FILENOTFOUND);
-	UT_return_val_if_fail(ppBB != NULL, UT_ERROR);
-
-	FG_Graphic * graphic = NULL;
-	UT_Error result;
-
-	result = IE_ImpGraphic::loadGraphic(*pBB, IEGFT_Unknown, &graphic);
-
-	// method assumes that we take ownership of pBB
-	DELETEP(pBB);
-
-	if (result != UT_OK)
-		return result;
-
-	const UT_ByteBuf * graphic_bytebuf;
-    graphic_bytebuf  = graphic->getBuffer();
-
-
-	UT_ByteBuf *out_graphic = new UT_ByteBuf();
-	if (!out_graphic) {
-		DELETEP(graphic);
-		return UT_IE_NOMEMORY;
-	}
-		
-	if (!out_graphic->ins (0, graphic_bytebuf->getPointer(0), graphic_bytebuf->getLength()))
-		{
-			DELETEP(graphic);
-			DELETEP(out_graphic);
-			return UT_IE_NOMEMORY;
-		}
-
-	DELETEP(graphic);
-	*ppBB = out_graphic;
-
-	return UT_OK;
-}
 
 UT_Error IE_ImpGraphic::loadGraphic(const char * szFilename,
 									IEGraphicFileType iegft,

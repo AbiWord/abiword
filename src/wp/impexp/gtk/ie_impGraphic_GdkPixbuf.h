@@ -54,8 +54,6 @@ public:
 	virtual ~IE_ImpGraphic_GdkPixbuf();
 
 	virtual UT_Error importGraphic(UT_ByteBuf * pBB, FG_Graphic ** ppfg);
-	virtual UT_Error convertGraphic(UT_ByteBuf* pBB,
-									UT_ByteBuf** ppBB);
 
 private:
 

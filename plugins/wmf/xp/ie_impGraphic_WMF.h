@@ -45,10 +45,12 @@ class IE_ImpGraphic_WMF : public IE_ImpGraphic
 public:
     	virtual UT_Error	importGraphic(UT_ByteBuf* pBB, 
 					      FG_Graphic ** ppfg);
-    	virtual UT_Error	convertGraphic(UT_ByteBuf* pBB, 
-					       UT_ByteBuf** ppBB);
-
 private:
+    // that on is used internally. But we removed it 
+    // from the API.
+    // Convert to a PNG.
+    	UT_Error	convertGraphic(UT_ByteBuf* pBB, 
+					       UT_ByteBuf** ppBB);
 
 	UT_Error convertGraphicToSVG(UT_ByteBuf* pBB, UT_ByteBuf** ppBB);
 };

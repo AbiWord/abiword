@@ -75,7 +75,6 @@ UT_Error IE_Imp_GraphicAsDocument::_loadFile(GsfInput * input)
    	if (!getDoc()->createDataItem("image_0", false,
 					buf, pFG->getMimeType(), NULL)) {
 	   delete pFG;
-	   // mimetype will be freed by createDataItem
 	   return UT_IE_NOMEMORY;
 	}
 

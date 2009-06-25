@@ -130,7 +130,7 @@ public:
 							  IEGraphicFileType iegft,
 							  FG_Graphic ** ppfg);
 
-  //  Note subclassers:  ownership of pBB is passes here, so
+  //  Note subclassers:  ownership of pBB is passed here, so
   //  free pBB if you don't need it.
 
   // you must override at least one of the importGraphic calls
@@ -138,10 +138,7 @@ public:
 								  FG_Graphic ** ppfg);  
   virtual UT_Error  importGraphic(GsfInput * input,
 								  FG_Graphic ** ppfg);
-  
-  virtual UT_Error	convertGraphic(UT_ByteBuf* pBB,
-								   UT_ByteBuf** ppBB);
-  
+    
   UT_Error	importGraphic(const char * szFilename,
 						  FG_Graphic ** ppfg);
 

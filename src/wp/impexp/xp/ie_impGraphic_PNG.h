@@ -43,8 +43,6 @@ class ABI_EXPORT IE_ImpGraphic_PNG : public IE_ImpGraphic
 public:
         virtual UT_Error	importGraphic(UT_ByteBuf* pBB, 
 					      FG_Graphic ** ppfg);
-        virtual UT_Error	convertGraphic(UT_ByteBuf* pBB, 
-					       UT_ByteBuf** ppBB);
 };
 
 #endif /* IE_IMPGRAPHIC_PNG_H */

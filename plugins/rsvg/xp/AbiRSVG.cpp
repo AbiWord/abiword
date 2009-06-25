@@ -104,19 +104,6 @@ public:
 		return UT_OK;
 	}
   
-  /*!
-   * Convert an image byte buffer into a PNG byte buffer
-   */
-	virtual UT_Error convertGraphic(UT_ByteBuf* pBB,
-									UT_ByteBuf** ppBB)
-	{
-		UT_Error err = _importGraphic(pBB);
-		if ( err != UT_OK )
-			return err ;
-		*ppBB =  m_pPngBB;
-		return UT_OK;
-	}
-	
 private:
 
 	UT_Error _importGraphic(UT_ByteBuf * pBB)
