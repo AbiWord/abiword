@@ -253,10 +253,10 @@ void ODe_Text_Listener::openFrame(const PP_AttrProp* pAP,
         rAction.pushListenerImpl(pFrameListener, true);
         m_openedODTextboxFrame = true;
     } else if (pValue && !strcmp(pValue, "image")) {
-        ok = pAP->getAttribute("strux-image-dataid", pValue);
-        if(ok && pValue)
+        ok = pAP->getAttribute(PT_STRUX_IMAGE_DATAID, pValue);
+        if(ok && pValue) {
             insertPositionedImage(pValue, pAP);
-
+        }
         m_openedODTextboxFrame = true;
     }
 }
@@ -782,7 +782,8 @@ void ODe_Text_Listener::insertTabChar() {
  *
  */
 void ODe_Text_Listener::insertInlinedImage(const gchar* pImageName,
-                                                 const PP_AttrProp* pAP) {
+                                           const PP_AttrProp* pAP) 
+{
     UT_UTF8String output;
     UT_UTF8String str;
     UT_UTF8String escape;
@@ -815,7 +816,7 @@ void ODe_Text_Listener::insertInlinedImage(const gchar* pImageName,
     
     output += "><draw:image xlink:href=\"Pictures/";
     output += pImageName;
-    output += ".png\" xlink:type=\"simple\" xlink:show=\"embed\""
+    output += "\" xlink:type=\"simple\" xlink:show=\"embed\""
               " xlink:actuate=\"onLoad\"/>";
 
     ok = pAP->getAttribute("alt", pValue);
@@ -848,7 +849,8 @@ void ODe_Text_Listener::insertInlinedImage(const gchar* pImageName,
 
 
 void ODe_Text_Listener::insertPositionedImage(const gchar* pImageName,
-                                                 const PP_AttrProp* pAP) {
+                                                 const PP_AttrProp* pAP)
+{
     UT_UTF8String output = "<text:p>";
     UT_UTF8String str;
     UT_UTF8String escape;
@@ -980,7 +982,7 @@ void ODe_Text_Listener::insertPositionedImage(const gchar* pImageName,
     
     output += "><draw:image xlink:href=\"Pictures/";
     output += pImageName;
-    output += ".png\" xlink:type=\"simple\" xlink:show=\"embed\""
+    output += "\" xlink:type=\"simple\" xlink:show=\"embed\""
               " xlink:actuate=\"onLoad\"/>";
 
     ok = pAP->getAttribute("alt", pValue);

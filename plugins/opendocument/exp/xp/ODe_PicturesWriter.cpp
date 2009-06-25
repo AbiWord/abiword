@@ -2,7 +2,7 @@
  * 
  * Copyright (C) 2002 Dom Lachowicz <cinamod@hotmail.com>
  * Copyright (C) 2004 Robert Staudinger <robsta@stereolyzer.net>
- * 
+ * Copyright (C) 2009 Hubert Figuiere
  * Copyright (C) 2005 INdT
  * Author: Daniel d'Andrada T. de Carvalho <daniel.carvalho@indt.org.br>
  * 
@@ -23,26 +23,26 @@
  */
  
  
+// Abiword includes
+#include "ut_bytebuf.h"
+#include "pd_Document.h"
+
 // Class definition include
 #include "ODe_PicturesWriter.h"
 
 // Internal includes
 #include "ODe_Common.h"
 
-// Abiword includes
-#include <ut_bytebuf.h>
-#include <pd_Document.h>
-
 
 /**
  * Writes all pictures inside the Pictures subdirectory.
  */
-bool ODe_PicturesWriter::writePictures(PD_Document* pDoc, GsfOutfile* pODT) {
+bool ODe_PicturesWriter::writePictures(PD_Document* pDoc, GsfOutfile* pODT) 
+{
     const char * szName;
     std::string mimeType;
     const UT_ByteBuf * pByteBuf;
     GsfOutput* pImg;
-    UT_UTF8String name;
     GsfOutput* pPicsDir = NULL;
     
     for (UT_uint32 k=0;
@@ -53,18 +53,14 @@ bool ODe_PicturesWriter::writePictures(PD_Document* pDoc, GsfOutfile* pODT) {
                               &mimeType));
          k++) {
             
-        if (!mimeType.empty() && (mimeType == "image/png")) {
-            
+        if (!mimeType.empty()) {
             if (pPicsDir == NULL) {
                 // create Pictures directory
                 pPicsDir = gsf_outfile_new_child(pODT, "Pictures", TRUE);
             }
         
-            // create individual pictures
-            UT_UTF8String_sprintf(name, "%s.png", szName);
-            
             pImg = gsf_outfile_new_child(GSF_OUTFILE(pPicsDir),
-                                         name.utf8_str(), FALSE);    
+                                         szName, FALSE);    
                                                     
             ODe_gsf_output_write(pImg, pByteBuf->getLength(),
                                 pByteBuf->getPointer(0));

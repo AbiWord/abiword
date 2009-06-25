@@ -2,6 +2,7 @@
  * 
  * Copyright (C) 2002 Dom Lachowicz <cinamod@hotmail.com>
  * Copyright (C) 2004 Robert Staudinger <robsta@stereolyzer.net>
+ * Copyright (C) 2009 Hubert Figuiere
  * 
  * Copyright (C) 2005 INdT
  * Author: Daniel d'Andrada T. de Carvalho <daniel.carvalho@indt.org.br>
@@ -23,19 +24,20 @@
  */
  
  
+// External includes
+#include <gsf/gsf-output-stdio.h>
+#include <gsf/gsf-outfile.h>
+
+#include "ut_std_string.h"
+#include "pd_Document.h"
+
 // Class definition include
 #include "ODe_ManifestWriter.h"
  
 // Internal includes
 #include "ODe_Common.h"
 
-// Abiword includes
-#include <ut_string_class.h>
-#include <pd_Document.h>
  
-// External includes
-#include <gsf/gsf-output-stdio.h>
-#include <gsf/gsf-outfile.h>
 
  
 /**
@@ -49,7 +51,7 @@ bool ODe_ManifestWriter::writeManifest(PD_Document* pDoc, GsfOutfile* pODT)
     GsfOutput* manifest = gsf_outfile_new_child(
                             GSF_OUTFILE(meta_inf), "manifest.xml", FALSE);
 
-    UT_String name;
+    std::string name;
 
     static const char * const preamble [] = {
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
@@ -80,7 +82,7 @@ bool ODe_ManifestWriter::writeManifest(PD_Document* pDoc, GsfOutfile* pODT)
                               &pByteBuf,
                               &mimeType)); k++) {
                                 
-        if (!mimeType.empty() && (mimeType == "image/png")) {
+        if (!mimeType.empty()) {
             
             if (!wroteDirManifest) {
                 name = " <manifest:file-entry manifest:media-type=\"\" manifest:full-path=\"Pictures/\"/>\n";
@@ -90,8 +92,8 @@ bool ODe_ManifestWriter::writeManifest(PD_Document* pDoc, GsfOutfile* pODT)
                 wroteDirManifest = true;
             }
 
-            name = UT_String_sprintf(
-                " <manifest:file-entry manifest:media-type=\"%s\" manifest:full-path=\"Pictures/%s.png\"/>\n",
+            name = UT_std_string_sprintf(
+                " <manifest:file-entry manifest:media-type=\"%s\" manifest:full-path=\"Pictures/%s\"/>\n",
                 mimeType.c_str(), szName);
                 
             ODe_gsf_output_write (manifest, name.size(),
