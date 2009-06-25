@@ -805,6 +805,8 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 			const IE_SuffixConfidence * sc = s->getSuffixConfidence();
 			while (sc && !sc->suffix.empty() && suffix_confidence != UT_CONFIDENCE_PERFECT) {
 				/* suffixes do not have a leading '.' */
+				// we use g_sts_has_suffix like this to make sure we properly autodetect the extention
+				// of files that have dots in their name, like foo.bar.abw
 				std::string suffix = std::string(".") + sc->suffix;
 				if (g_str_has_suffix(gsf_input_name (input), suffix.c_str()) && 
 					sc->confidence > suffix_confidence) {
