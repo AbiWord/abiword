@@ -94,7 +94,7 @@ public:
 	GOComponentView(GR_GOComponentManager  * pGOMan);
 	virtual ~GOComponentView(void);
 	void render(UT_Rect & rec);
-	void loadBuffer(UT_ByteBuf const *sGOComponentData, char *_mime_type);
+	void loadBuffer(UT_ByteBuf const *sGOComponentData, const char *_mime_type);
 	void setDefaultFontSize(UT_sint32 iSize);
 	void modify(void);
 	void update (void);
@@ -107,7 +107,7 @@ public:
 private:
 	GR_GOComponentManager  * m_pGOMan;
 	GOComponent *component;
-	char *mime_type;
+	const char *mime_type;
 	GR_Image *m_Image;
 	UT_sint32 width, ascent, descent;
 	UT_sint32 pix_width, pix_height;

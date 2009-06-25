@@ -494,17 +494,18 @@ void GR_GOComponentManager::loadEmbedData(G_GNUC_UNUSED UT_sint32 uid)
 	/* bool b = */ m_pDoc->getAttrProp(api, &pSpanAP);
 	const char * pszDataID = NULL;
 	bool bFoundDataID = pSpanAP->getAttribute("dataid", pszDataID);
-	char *mime_type;
+	std::string mime_type;
+
 	if (bFoundDataID && pszDataID)
 	{
 		const UT_ByteBuf * pByteBuf = NULL;
 		bFoundDataID = m_pDoc->getDataItemDataByName(pszDataID, 
 							const_cast<const UT_ByteBuf **>(&pByteBuf),
-							(const void**) (&mime_type), NULL);
+							&mime_type, NULL);
 		UT_return_if_fail(bFoundDataID);
 		UT_return_if_fail(pszDataID);
 		UT_DEBUGMSG(("GO Component string is... \n %s \n", (char*)pByteBuf));
-		pGOComponentView->loadBuffer(pByteBuf, mime_type);
+		pGOComponentView->loadBuffer(pByteBuf, mime_type.c_str());
 	}
 }
 
@@ -725,7 +726,7 @@ changed_cb (GOComponent *component, gpointer data)
 	}
 }
 
-void GOComponentView::loadBuffer(UT_ByteBuf const *sGOComponentData, char *_mime_type)
+void GOComponentView::loadBuffer(UT_ByteBuf const *sGOComponentData, const char *_mime_type)
 {
 	if (!component) {
 		mime_type = _mime_type;
