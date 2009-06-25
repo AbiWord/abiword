@@ -1,9 +1,9 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiWord
- * Copyright (C) 2007 Hubert Figuiere
+ * Copyright (C) 2007, 2009 Hubert Figuiere
  * Copyright (C) 2003-2005 Mark Gilbert <mg_abimail@yahoo.com>
- * Copyright (C) 2002,2004 Francis James Franklin <fjf@alinameridon.com>
+ * Copyright (C) 2002, 2004 Francis James Franklin <fjf@alinameridon.com>
  * Copyright (C) 2001-2002 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -4668,7 +4668,7 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 
 	if ((mimeType != "image/png") && (mimeType != "image/jpeg"))
 	{
-		UT_DEBUGMSG(("Object not of MIME type image/png - ignoring...\n"));
+		UT_DEBUGMSG(("Object not of MIME type image/png or image/jpeg - ignoring...\n"));
 		return;
 	}
 
@@ -4862,7 +4862,8 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 		return;
 	}
 
-	m_utf8_1 += " src=\"data:image/png;base64,";
+	m_utf8_1 += " src=\"data:";
+	m_utf8_1 += mimeType + ";base64,";
 	tagOpenBroken (m_utf8_1, ws_None);
 
 	_writeImageBase64 (pByteBuf);
