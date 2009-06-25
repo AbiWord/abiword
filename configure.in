@@ -77,8 +77,6 @@ AC_PROG_LIBTOOL
 DOLT
 AC_PROG_LN_S
 
-# Causes a failure in aclocal, so commenting out for the time being
-read a
 IT_PROG_INTLTOOL([0.26])
 AM_GLIB_GNU_GETTEXT
 

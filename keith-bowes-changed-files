@@ -12,6 +12,7 @@ po/quh-BO.po
 po/wo-SN.po
 src/af/util/xp/ut_Encoding.cpp
 src/af/util/xp/ut_Language.cpp
+src/af/util/xp/ut_Language.h
 src/af/xap/xp/Makefile.am
 src/af/xap/xp/xap_Dlg_Language.cpp
 src/af/xap/xp/xap_Dlg_MessageBox.cpp

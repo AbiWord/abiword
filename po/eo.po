@@ -3172,7 +3172,7 @@ msgstr ""
 
 #: ../src/wp/ap/xp/ap_String_Id.h:953
 msgid "Set &Language"
-msgstr "Valorizi la lingvon"
+msgstr "Valorizi la &lingvon"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:954
 msgid "&Font"

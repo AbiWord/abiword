@@ -39,7 +39,7 @@ struct UT_LangRecord
 {
 	const gchar * m_szLangCode;
 	const gchar * m_szLangName;
-	UT_uint32  m_nID;
+	const gchar *  m_nID;
     UT_LANGUAGE_DIR m_eDir;
 };
 
@@ -52,13 +52,13 @@ public:
 	UT_uint32	getCount();
 	const gchar * 	getNthLangCode(UT_uint32 n);
 	const gchar * 	getNthLangName(UT_uint32 n);
-	UT_uint32  	getNthId(UT_uint32 n);
+	const gchar *  	getNthId(UT_uint32 n);
 	const gchar * 	getCodeFromName(const gchar * szName);
 	const gchar * 	getCodeFromCode(const gchar * szCode); //
 																  //see the cpp file for explanation
 	const UT_LangRecord* getLangRecordFromCode(const gchar * szCode);
 	UT_uint32 	        getIndxFromCode(const gchar * szCode);
-	UT_uint32 	        getIdFromCode(const gchar * szCode);
+	const gchar * 	        getIdFromCode(const gchar * szCode);
 	UT_LANGUAGE_DIR		getDirFromCode(const gchar * szCode);
 
 private:
