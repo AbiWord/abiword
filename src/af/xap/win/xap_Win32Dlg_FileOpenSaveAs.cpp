@@ -665,46 +665,15 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 
 	UT_DEBUGMSG(("File Selected is %s\n", buf));
 
-	// Load File into memory
-	UT_ByteBuf* pBB 	= new UT_ByteBuf(NULL);
-	UT_ByteBuf* pTempBB = new UT_ByteBuf(NULL);
-	pBB->insertFromFile(0, buf);
-
 	// Build an Import Graphic based on file type
-	IEGraphicFileType iegft = IEGFT_Unknown;
-	IE_ImpGraphic* pIEG;
 	UT_Error errorCode = UT_ERROR;
-	char *uri = UT_go_filename_to_uri(buf);
-	if(uri)
-		errorCode = IE_ImpGraphic::constructImporter(uri, iegft, &pIEG);
+    FG_Graphic *pfg = NULL;
 
+    errorCode = IE_ImpGraphic::loadGraphic(buf, IEGFT_Unknown, &pfg);
 	if (errorCode)
 	{
-		DELETEP(pBB);
-		DELETEP(pTempBB);
 		return false;
 	}
-	iegft = pIEG->fileTypeForContents( (const char *) pBB->getPointer(0), 50);
-
-	// Skip import if PNG or SVG file
-	if (iegft != IEGFT_PNG && iegft != IEGFT_SVG)
-	{
-		// Convert to PNG or SVG (pBB Memoried freed in function
-		errorCode = pIEG->convertGraphic(pBB, &pTempBB);  
-		pBB = pTempBB;
-		if (errorCode)
-		{
-			DELETEP(pIEG);
-			DELETEP(pBB);
-			DELETEP(pTempBB);
-			FREEP(uri);
-			return false;
-		}
-	}
-	// Reset file type based on conversion
-	iegft = pIEG->fileTypeForContents( (const char *) pBB->getPointer(0), 50);
-	DELETEP(pIEG);
-	FREEP(uri);
 
 	double		scale_factor = 0.0;
 	UT_sint32	scaled_width,scaled_height;
@@ -714,19 +683,8 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 	GetClientRect (hThumbnail, &r);
 	InvalidateRect(hThumbnail, &r, true);
 
-	if (iegft == IEGFT_PNG)
-	{
-		UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
-	}
-	else
-	{
-	//	TODO Fix this
-	//	UT_sint32 layoutWidth;
-	//	UT_sint32 layoutHeight;
-	//	UT_SVG_getDimensions(pBB, pGr, iImageWidth, iImageHeight, layoutWidth, layoutHeight);
-		iImageWidth = 0;
-		iImageHeight = 0;
-	}
+    iImageWidth = pfg->getWidth();
+    iImageHeight = pfg->getHeight();
 
 	// Update Height and Width Strings
 	sprintf( buf, 
@@ -756,7 +714,7 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 	scaled_height = (int) (scale_factor * iImageHeight);
 
 	GR_Win32Image* pImage = new GR_Win32Image(NULL);
-	pImage->convertFromBuffer(pBB, scaled_width, scaled_height);
+	pImage->convertFromBuffer(pfg->getBuffer(), scaled_width, scaled_height);
 
 	PAINTSTRUCT ps;
 	HDC hdc = BeginPaint(hThumbnail, &ps);
@@ -771,7 +729,7 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 				   pGr->tlu((r.bottom - scaled_height) / 2));
 	EndPaint(hThumbnail,&ps);
 
-	DELETEP(pBB);
+    DELETEP(pfg);
 	DELETEP(pImage);
 	DELETEP(pGr);
 
