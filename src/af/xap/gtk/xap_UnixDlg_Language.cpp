@@ -81,7 +81,8 @@ void XAP_UnixDialog_Language::event_setLang()
 	if (row >= 0) {
 	  if (!m_pLanguage || g_ascii_strcasecmp(m_pLanguage, m_ppLanguages[row]))
 	    {
-	      _setLanguage(m_ppLanguages[row]);
+        UT_DEBUGMSG(("Language not set\n"));
+        _setLanguage(m_ppLanguages[row]);
 	      m_bChangedLanguage = true;
 		  m_answer = XAP_Dialog_Language::a_OK;
 
