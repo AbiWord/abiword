@@ -132,7 +132,7 @@ bool UT_Rect::intersectsRect(const UT_Rect * pRect) const
 #undef R_BOTTOM
 }
 
-
+// WARNING: do NOT use UT_pathSuffix on URI's, as that won't work on Windows!
 const char * UT_pathSuffix(const char * path)
 {
 	// TODO This needs to be moved to platform code.
