@@ -153,7 +153,7 @@ protected:
 
     UT_ByteBuf		m_currentDataItem;
     gchar *		m_currentDataItemName;
-    gchar *		m_currentDataItemMimeType;
+    std::string		m_currentDataItemMimeType;
     bool			m_currentDataItemEncoded;
 
 	const char *	m_szFileName;

@@ -668,7 +668,7 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 #else
 		m_currentDataItem.truncate(0);
 		X_CheckError((m_currentDataItemName = g_strdup(_getDataItemName(atts))));
-		X_CheckError((m_currentDataItemMimeType = g_strdup(_getDataItemMimeType(atts))));
+		m_currentDataItemMimeType = _getDataItemMimeType(atts);
 		m_currentDataItemEncoded = _getDataItemEncoded(atts);
 #endif
 		goto cleanup;
@@ -1158,8 +1158,7 @@ void IE_Imp_AbiWord_1::endElement(const gchar *name)
 #undef MyIsWhite
  		X_CheckError(getDoc()->createDataItem(static_cast<const char*>(m_currentDataItemName),m_currentDataItemEncoded,&m_currentDataItem,m_currentDataItemMimeType,NULL));
 		FREEP(m_currentDataItemName);
-		// the data item will g_free the token we passed (mime-type)
-		m_currentDataItemMimeType = NULL;
+		m_currentDataItemMimeType.clear();
 #endif
  		return;
 
