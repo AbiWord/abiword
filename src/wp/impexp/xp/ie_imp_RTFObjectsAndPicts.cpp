@@ -3,7 +3,7 @@
  * Copyright (C) 1999 AbiSource, Inc.
  * Copyright (C) 2003 Tomas Frydrych <tomas@frydrych.uklinux.net>
  * Copyright (C) 2003 Martin Sevior <msevior@physics.unimelb.edu.au> 
- * Copyright (C) 2001, 2004 Hubert Figuiere <hfiguiere@teaser.fr>
+ * Copyright (C) 2001, 2004, 2009 Hubert Figuiere <hub@figuiere.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -142,7 +142,6 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 
 	if ((error == UT_OK) && pFG)
 	{
-		const UT_ByteBuf * buf = pFG->getBuffer();
 		imgProps.width = static_cast<UT_uint32>(pFG->getWidth ());
 		imgProps.height = static_cast<UT_uint32>(pFG->getHeight ());
 		// Not sure whether this is the right way, but first, we should
@@ -154,7 +153,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 			return false;
 		}
 
-		ok = InsertImage (buf, image_name, imgProps);
+		ok = InsertImage (pFG, image_name, imgProps);
 		DELETEP(pFG);
 		if (!ok)
 		{
@@ -180,7 +179,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
   Insert and image at the current position.
   Check whether we are pasting or importing
 */
-bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
+bool IE_Imp_RTF::InsertImage (const FG_Graphic *pFG, const char * image_name,
 							  const struct RTFProps_ImageProps & imgProps)
 {
 	UT_String propBuffer;
@@ -195,8 +194,6 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 	{
 		// non-null file, we're importing a doc
 		// Now, we should insert the picture into the document
-
-		std::string mimetype = "image/png";
 
 		switch (imgProps.sizeType)
 		{
@@ -272,7 +269,8 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 			}
 		}
 		if (!getDoc()->createDataItem(image_name, false,
-									  buf, mimetype, NULL))
+									  pFG->getBuffer(), pFG->getMimeType(), 
+									  NULL))
 		{
 			// taken care of by createDataItem
 			//FREEP(mimetype);
@@ -320,9 +318,10 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 		/*
 		  Create the data item
 		*/
-		std::string mimetype = "image/png";
 		bool bOK = false;
-		bOK = getDoc()->createDataItem(szName.c_str(), false, buf, mimetype, NULL);
+		bOK = getDoc()->createDataItem(szName.c_str(), false, 
+									   pFG->getBuffer(), 
+									   pFG->getMimeType(), NULL);
 		UT_return_val_if_fail(bOK, false);
 		/*
 		  Insert the object into the document.

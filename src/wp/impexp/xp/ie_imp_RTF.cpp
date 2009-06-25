@@ -4,7 +4,7 @@
  * Copyright (C) 1999 AbiSource, Inc.
  * Copyright (C) 2003 Tomas Frydrych <tomas@frydrych.uklinux.net>
  * Copyright (C) 2003 Martin Sevior <msevior@physics.unimelb.edu.au> 
- * Copyright (C) 2001, 2004 Hubert Figuiere <hfiguiere@teaser.fr>
+ * Copyright (C) 2001, 2004, 2009 Hubert Figuiere <hub@figuiere.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -4022,9 +4022,7 @@ gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & _buf, gchar *xmlField, bool 
 					if (error == UT_OK && pFG)
 					{
 						RTFProps_ImageProps imgProps;
-						const UT_ByteBuf * buf;
-						buf = pFG->getBuffer();
-						ok = InsertImage (buf, fileName, imgProps);
+						ok = InsertImage (pFG, fileName, imgProps);
 					}
 					else
 					{

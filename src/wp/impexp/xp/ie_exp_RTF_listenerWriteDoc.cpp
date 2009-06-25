@@ -1,5 +1,7 @@
+/* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2009 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -33,6 +35,7 @@
 #include "ut_string.h"
 #include "ut_units.h"
 #include "ut_png.h"
+#include "ut_jpeg.h"
 #include "ut_bytebuf.h"
 #include "ut_math.h"
 #include "ie_exp_RTF_listenerWriteDoc.h"
@@ -1194,13 +1197,14 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 //
 		const gchar * pszDataID = NULL;
 		if(pSectionAP)
-			pSectionAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const gchar *&)pszDataID);
+			pSectionAP->getAttribute(PT_STRUX_IMAGE_DATAID, pszDataID);
 		if(pszDataID != NULL)
 		{
+			std::string mimetype;
 			const UT_ByteBuf * pbb = NULL;
-			bool bFoundDataItem = m_pDocument->getDataItemDataByName(static_cast<const char*>(pszDataID), 
+			bool bFoundDataItem = m_pDocument->getDataItemDataByName(pszDataID, 
                                                                      &pbb,
-                                                                     NULL, 
+                                                                     &mimetype, 
                                                                      NULL);
 			if (!bFoundDataItem)
 			{
@@ -1208,17 +1212,6 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 				return;
 			}
 
-			// get the width/height of the image from the image itself.
-
-			UT_sint32 iImageWidth, iImageHeight;
-			UT_PNG_getDimensions(pbb,iImageWidth,iImageHeight);
-
-	// compute scale factors...
-
-			double dImageWidth = static_cast<double>(iImageWidth);
-			double dImageHeight = static_cast<double>(iImageHeight);
-			dImageWidth = UT_convertDimToInches(dImageWidth,DIM_PT);
-			dImageHeight = UT_convertDimToInches(dImageHeight,DIM_PT);
 			_writeSPNumProp("shapeType",75);  // Image
 
 // OK the sp stuff for the image inside the "pib" tag.
@@ -1238,7 +1231,26 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 			{
 				m_pie->_rtf_keyword("pict");
 				
-				m_pie->_rtf_keyword("pngblip");
+				// get the width/height of the image from the image itself.
+
+				UT_sint32 iImageWidth, iImageHeight;
+
+				if(mimetype == "image/png") {
+					m_pie->_rtf_keyword("pngblip");
+					UT_PNG_getDimensions(pbb,iImageWidth,iImageHeight);
+				}
+				else if(mimetype == "image/jpeg") {
+					m_pie->_rtf_keyword("jpegblip");
+					UT_JPEG_getDimensions(pbb,iImageWidth,iImageHeight);
+				}
+
+				// compute scale factors...
+
+				double dImageWidth = static_cast<double>(iImageWidth);
+				double dImageHeight = static_cast<double>(iImageHeight);
+				dImageWidth = UT_convertDimToInches(dImageWidth,DIM_PT);
+				dImageHeight = UT_convertDimToInches(dImageHeight,DIM_PT);
+
 				
 				// <pictsize>
 
@@ -5011,8 +5023,10 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 		return;
 	}
 	const UT_ByteBuf * pbb = NULL;
-	bool bFoundDataItem = m_pDocument->getDataItemDataByName(static_cast<const char*>(szDataID),
-                                                             &pbb, NULL, NULL);
+	std::string mimetype;
+	bool bFoundDataItem = m_pDocument->getDataItemDataByName(szDataID,
+                                                             &pbb, &mimetype, 
+															 NULL);
 	if (!bFoundDataItem)
 	{
 		UT_DEBUGMSG(("RTF_Export: cannot get dataitem for image\n"));
@@ -5035,17 +5049,6 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 	bool bFoundCropt = pImageAP->getProperty ("cropt",szCroptProp);
 	bool bFoundCropb = pImageAP->getProperty ("cropb",szCropbProp);
 
-	// get the width/height of the image from the image itself.
-
-	UT_sint32 iImageWidth, iImageHeight;
-	UT_PNG_getDimensions(pbb,iImageWidth,iImageHeight);
-
-	// compute scale factors...
-
-	double dImageWidth = static_cast<double>(iImageWidth);
-	double dImageHeight = static_cast<double>(iImageHeight);
-	dImageWidth = UT_convertDimToInches(dImageWidth,DIM_PT);
-	dImageHeight = UT_convertDimToInches(dImageHeight,DIM_PT);
 
 	// if everything is ok, we need to dump the image data (in hex)
 	// to the RTF stream with some screwy keywords...
@@ -5069,7 +5072,25 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 			//              we output here.  TODO consider listing multiple formats
 			//              here -- word97 seems to, but this really bloats the file.
 
-			m_pie->_rtf_keyword("pngblip");
+			// get the width/height of the image from the image itself.
+
+			UT_sint32 iImageWidth, iImageHeight;
+
+			if(mimetype == "image/png") {
+				m_pie->_rtf_keyword("pngblip");
+				UT_PNG_getDimensions(pbb,iImageWidth,iImageHeight);
+			}
+			else if(mimetype == "image/jpeg") {
+				m_pie->_rtf_keyword("jpegblip");
+				UT_JPEG_getDimensions(pbb,iImageWidth,iImageHeight);
+			}
+
+			// compute scale factors...
+
+			double dImageWidth = static_cast<double>(iImageWidth);
+			double dImageHeight = static_cast<double>(iImageHeight);
+			dImageWidth = UT_convertDimToInches(dImageWidth,DIM_PT);
+			dImageHeight = UT_convertDimToInches(dImageHeight,DIM_PT);
 
 			// <pictsize>
 

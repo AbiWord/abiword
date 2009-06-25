@@ -1,7 +1,7 @@
 /* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* Copyright (C) 1999 AbiSource, Inc.
  * Copyright (C) 2003 Tomas Frydrych <tomas@frydrych.uklinux.net>
- * Copyright (C) 2004 Hubert Figuiere <hfiguiere@teaser.fr>
+ * Copyright (C) 2004, 2009 Hubert Figuiere <hub@figuiere.net>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,7 +26,6 @@
 
 #include <stdio.h>
 #include "ie_imp.h"
-#include "ut_bytebuf.h"
 #include "ut_growbuf.h"
 #include "ut_vector.h"
 #include "ut_stack.h"
@@ -46,6 +45,7 @@ class ie_imp_cell;
 class ie_imp_table;
 class ie_imp_table_control;
 class RTFProps_FrameProps;
+class FG_Graphic;
 
 
 // Font table entry
@@ -660,7 +660,7 @@ private:
 	bool LoadPictData(PictFormat format, const char * image_name,
 					  struct RTFProps_ImageProps & imgProps,
 					  bool isBinary = false, long binaryLen = 0);
-	bool InsertImage (const UT_ByteBuf * buf, const char * image_name,
+	bool InsertImage (const FG_Graphic *, const char * image_name,
 					  const struct RTFProps_ImageProps & imgProps);
 
 	RTFFontTableItem* GetNthTableFont(UT_sint32 fontNum);
