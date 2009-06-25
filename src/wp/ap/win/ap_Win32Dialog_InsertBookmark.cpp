@@ -57,7 +57,7 @@ void AP_Win32Dialog_InsertBookmark::runModal(XAP_Frame * pFrame)
 	UT_return_if_fail (pFrame && m_id == AP_DIALOG_ID_INSERTBOOKMARK);
 	
 	setDialog(this);
-	createModal(pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_INSERTBOOKMARK));	
+	createModal(pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_INSERTBOOKMARK));	
 }
 
 BOOL AP_Win32Dialog_InsertBookmark::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)

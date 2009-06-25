@@ -64,7 +64,7 @@ void XAP_Win32Dialog_Image::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(m_id == XAP_DIALOG_ID_IMAGE);
 
 	setDialog(this);
-	createModal(pFrame, MAKEINTRESOURCE(XAP_RID_DIALOG_IMAGE));
+	createModal(pFrame, MAKEINTRESOURCEW(XAP_RID_DIALOG_IMAGE));
 }
 
 BOOL XAP_Win32Dialog_Image::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)

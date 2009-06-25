@@ -69,7 +69,7 @@ void AP_Win32Dialog_Columns::runModal(XAP_Frame * pFrame)
 	// raise the dialog
 	setViewAndDoc(pFrame);
 	setDialog(this);
-	createModal(pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_COLUMNS));
+	createModal(pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_COLUMNS));
 }
 
 void AP_Win32Dialog_Columns::enableLineBetweenControl(bool bState)

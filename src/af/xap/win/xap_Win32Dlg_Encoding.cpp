@@ -58,7 +58,7 @@ void XAP_Win32Dialog_Encoding::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(m_id == XAP_DIALOG_ID_ENCODING);
 
 	setDialog(this);
-	createModal(pFrame, MAKEINTRESOURCE(XAP_RID_DIALOG_ENCODING));
+	createModal(pFrame, MAKEINTRESOURCEW(XAP_RID_DIALOG_ENCODING));
 }
 
 BOOL XAP_Win32Dialog_Encoding::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)

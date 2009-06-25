@@ -51,9 +51,9 @@ public:
     static bool setDlgItemText(HWND hWnd, int nIDDlgItem, const char* uft8_str);
 		
 protected:
-	void createModal(XAP_Frame* pFrame, LPCTSTR dlgTemplate);
+	void createModal(XAP_Frame* pFrame, LPCWSTR dlgTemplate);
     void createModal(XAP_Frame* pFrame);
-	HWND createModeless(XAP_Frame* pFrame, LPCTSTR dlgTemplate);
+	HWND createModeless(XAP_Frame* pFrame, LPCWSTR dlgTemplate);
 
     void notifyCloseFrame(XAP_Frame *pFrame);
 	// Subclasses: override this and use it as your DLGPROC

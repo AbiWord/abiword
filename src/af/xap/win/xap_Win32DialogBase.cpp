@@ -25,7 +25,7 @@
 #include "xap_Win32FrameImpl.h"
 #include "ut_Win32LocaleString.h"
 
-void XAP_Win32DialogBase::createModal(XAP_Frame* pFrame, LPCTSTR dlgTemplate)
+void XAP_Win32DialogBase::createModal(XAP_Frame* pFrame, LPCWSTR dlgTemplate)
 {
 	UT_ASSERT(m_tag == magic_tag);
 
@@ -43,7 +43,7 @@ void XAP_Win32DialogBase::createModal(XAP_Frame* pFrame, LPCTSTR dlgTemplate)
 	HWND hFrameWnd = pWin32FrameImpl->getTopLevelWindow();
 
 	// raise the dialog
-	int result = DialogBoxParam(pWin32App->getInstance(),
+	int result = DialogBoxParamW(pWin32App->getInstance(),
 						dlgTemplate,
 						hFrameWnd,
 						(DLGPROC)&XAP_Win32DialogBase::s_dlgProc,
@@ -54,7 +54,7 @@ void XAP_Win32DialogBase::createModal(XAP_Frame* pFrame, LPCTSTR dlgTemplate)
 }
 
 
-HWND XAP_Win32DialogBase::createModeless(XAP_Frame* pFrame, LPCTSTR dlgTemplate)
+HWND XAP_Win32DialogBase::createModeless(XAP_Frame* pFrame, LPCWSTR dlgTemplate)
 {
 	UT_ASSERT(m_tag == magic_tag);
    	UT_ASSERT(pFrame);
@@ -70,7 +70,7 @@ HWND XAP_Win32DialogBase::createModeless(XAP_Frame* pFrame, LPCTSTR dlgTemplate)
 
 	HWND hFrameWnd = pWin32FrameImpl->getTopLevelWindow();
 
-	HWND hWnd = CreateDialogParam(pWin32App->getInstance(),
+	HWND hWnd = CreateDialogParamW(pWin32App->getInstance(),
 							dlgTemplate,
 							hFrameWnd,
 							(DLGPROC)&XAP_Win32DialogBase::s_dlgProc,

@@ -90,7 +90,7 @@ void XAP_Win32Dialog_Zoom::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(m_id == XAP_DIALOG_ID_ZOOM);
 	
 	setDialog(this);
-	createModal(pFrame, MAKEINTRESOURCE(XAP_RID_DIALOG_ZOOM));
+	createModal(pFrame, MAKEINTRESOURCEW(XAP_RID_DIALOG_ZOOM));
 
 }
 

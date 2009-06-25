@@ -62,7 +62,7 @@ void AP_Win32Dialog_Break::runModal(XAP_Frame * pFrame)
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 	XAP_Win32LabelledSeparator_RegisterClass(pWin32App);
 	setDialog(this);
-	createModal(pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_BREAK));
+	createModal(pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_BREAK));
 }
 
 BOOL AP_Win32Dialog_Break::_onInitDialog(HWND /*hWnd*/, WPARAM /*wParam*/, LPARAM /*lParam*/)

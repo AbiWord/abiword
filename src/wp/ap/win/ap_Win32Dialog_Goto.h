@@ -22,11 +22,11 @@
 
 #include "ap_Dialog_Goto.h"
 #include "xap_Frame.h"
-
+#include "xap_Win32DialogBase.h"
 
 /*****************************************************************/
 
-class ABI_EXPORT AP_Win32Dialog_Goto: public AP_Dialog_Goto
+class ABI_EXPORT AP_Win32Dialog_Goto: public AP_Dialog_Goto, public XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_Goto(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -50,10 +50,10 @@ protected:
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
-	int 					m_iRow;
+	int 					    m_iRow;
 	HWND					m_hWnd;
 
-	char *				m_pszOldValue;
+    UT_Win32LocaleString	m_oldvalue;   
 };
 
 #endif /* AP_WIN32DIALOG_GOTO_H */

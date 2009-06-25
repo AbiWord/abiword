@@ -59,7 +59,7 @@ void XAP_Win32Dialog_Password::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(m_id == XAP_DIALOG_ID_PASSWORD);
 	
 	setDialog(this);
-	createModal(pFrame, MAKEINTRESOURCE(XAP_RID_DIALOG_PASSWORD));
+	createModal(pFrame, MAKEINTRESOURCEW(XAP_RID_DIALOG_PASSWORD));
 }
 
 #define _DSX(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))

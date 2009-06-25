@@ -71,7 +71,7 @@ void XAP_Win32Dialog_PluginManager::runModal(XAP_Frame * pFrame)
 	UT_return_if_fail(m_id == XAP_DIALOG_ID_PLUGIN_MANAGER);
 
 	setDialog(this);
-	createModal(pFrame,MAKEINTRESOURCE(XAP_RID_DIALOG_PLUGIN_MANAGER));
+	createModal(pFrame,MAKEINTRESOURCEW(XAP_RID_DIALOG_PLUGIN_MANAGER));
 }
 
 BOOL XAP_Win32Dialog_PluginManager::_onInitDialog(HWND /*hWnd*/, WPARAM /*wParam*/, LPARAM /*lParam*/)

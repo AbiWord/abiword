@@ -59,7 +59,7 @@ void AP_Win32Dialog_InsertHyperlink::runModal(XAP_Frame * pFrame)
 	UT_return_if_fail (pFrame && m_id == AP_DIALOG_ID_INSERTHYPERLINK);
 	
 	setDialog(this);
-	createModal(pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_INSERTHYPERLINK));
+	createModal(pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_INSERTHYPERLINK));
 }
 
 BOOL AP_Win32Dialog_InsertHyperlink::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)

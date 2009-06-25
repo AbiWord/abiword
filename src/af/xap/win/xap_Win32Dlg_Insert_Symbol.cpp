@@ -71,7 +71,7 @@ void XAP_Win32Dialog_Insert_Symbol::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(m_id == XAP_DIALOG_ID_INSERT_SYMBOL);
 	
 	setDialog(this);
-	createModal(pFrame, MAKEINTRESOURCE(XAP_RID_DIALOG_INSERT_SYMBOL));
+	createModal(pFrame, MAKEINTRESOURCEW(XAP_RID_DIALOG_INSERT_SYMBOL));
 }
 
 void XAP_Win32Dialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
@@ -80,7 +80,7 @@ void XAP_Win32Dialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	UT_ASSERT(m_id == XAP_DIALOG_ID_INSERT_SYMBOL);
 
 	setDialog(this);
-	HWND hWndDialog = createModeless( pFrame, MAKEINTRESOURCE(XAP_RID_DIALOG_INSERT_SYMBOL) );
+	HWND hWndDialog = createModeless( pFrame, MAKEINTRESOURCEW(XAP_RID_DIALOG_INSERT_SYMBOL) );
 
 	UT_ASSERT((hWndDialog != NULL));
 	ShowWindow(hWndDialog, SW_SHOW);
