@@ -2365,18 +2365,22 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 
 	g_object_class_install_property(gobject_class,
 								  CONTENT_LENGTH,
-								  g_param_spec_string("content_length",
+								  g_param_spec_int("content_length",
 													   NULL,
 													   NULL,
-													   FALSE,
+													   INT_MIN,
+													   INT_MAX,
+													   0,
 													   static_cast<GParamFlags>(G_PARAM_READABLE)));
 
 	g_object_class_install_property(gobject_class,
 								  SELECTION_LENGTH,
-								  g_param_spec_string("selection_length",
+								  g_param_spec_int("selection_length",
 													   NULL,
 													   NULL,
-													   FALSE,
+													   INT_MIN,
+													   INT_MAX,
+													   0,
 													   static_cast<GParamFlags>(G_PARAM_READABLE)));
 
 	g_object_class_install_property(gobject_class,
