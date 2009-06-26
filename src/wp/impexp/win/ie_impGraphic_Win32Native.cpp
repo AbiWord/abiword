@@ -27,13 +27,13 @@
 #include <olectl.h>
 #include "ut_string.h"
 #include "ut_bytebuf.h"
-#include "png.h"
-#include "ie_impGraphic.h"
 #include "fg_GraphicRaster.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "xap_Module.h"
 #include "ut_assert.h"
+
+#include "ie_impGraphic_Win32Native.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_win32gfx_register
@@ -185,27 +185,10 @@ static PBITMAPINFO CreateBitmapInfoStruct(HBITMAP hBmp)
   return pbmi; 
 } 
 
-class IE_ImpGraphic_Win32Native : public IE_ImpGraphic
+//  This actually creates our FG_Graphic object for a PNG
+UT_Error IE_ImpGraphic_Win32Native::importGraphic(UT_ByteBuf* pBB, 
+												  FG_Graphic ** ppfg)
 {
-public:
-  
-  virtual UT_Error convertGraphic(UT_ByteBuf* pBB,
-				  UT_ByteBuf** ppBB)
-  {
-    if (!ppBB) return UT_ERROR;
-    
-    UT_Error err = _convertGraphic(pBB);
-    if (err != UT_OK) return err;
-    
-    *ppBB = m_pBB;
-    
-    return UT_OK;
-  }
-  
-  //  This actually creates our FG_Graphic object for a PNG
-  virtual UT_Error importGraphic(UT_ByteBuf* pBB, 
-				 FG_Graphic ** ppfg)
-  {
     UT_Error err = _convertGraphic(pBB); 
     if (err != UT_OK) return err;
     
@@ -214,25 +197,23 @@ public:
     pFGR = new FG_GraphicRaster();
     
     if(pFGR == NULL)
-      return UT_IE_NOMEMORY;
+		return UT_IE_NOMEMORY;
     
     if(!pFGR->setRaster_PNG(m_pBB)) {
-      DELETEP(pFGR);	
-      return UT_IE_FAKETYPE;
+		DELETEP(pFGR);	
+		return UT_IE_FAKETYPE;
     }
     
     *ppfg = static_cast<FG_Graphic *>(pFGR);
     
     return UT_OK;
-  }
-  
-private:
+}
   
   //
   // Entry point for conversion
   //
-  UT_Error _convertGraphic(UT_ByteBuf * pBB)
-  {	
+UT_Error IE_ImpGraphic_Win32Native::_convertGraphic(UT_ByteBuf * pBB)
+{	
     IPicture* pPicture = NULL;
     IStream* stream;	
     HGLOBAL hG;		
@@ -253,17 +234,17 @@ private:
     size_t nBlockLen = pBB->getLength();   	
     hG = GlobalAlloc(GPTR, nBlockLen);
     if (!hG) 
-      return UT_IE_NOMEMORY;	
+		return UT_IE_NOMEMORY;	
     
     CopyMemory(hG, pBB->getPointer(0), nBlockLen);   	
     
     // Create a stream from heap
     HRESULT hr = CreateStreamOnHGlobal(hG,false,&stream);
     if (!SUCCEEDED(hr) || !stream)
-      {
-	GlobalFree(hG);
-	return UT_IE_NOMEMORY;
-      }
+	{
+		GlobalFree(hG);
+		return UT_IE_NOMEMORY;
+	}
     
     hr = OleLoadPicture(stream,0,false,IID_IPicture,(void**)&pPicture);	
 
@@ -271,9 +252,9 @@ private:
     GlobalFree(hG);
     
     if (!SUCCEEDED(hr) || !pPicture)
-      {
-	return UT_IE_UNKNOWNTYPE;
-      }
+	{
+		return UT_IE_UNKNOWNTYPE;
+	}
 
     pPicture->get_Handle((unsigned int*)&hB);
     
@@ -292,8 +273,8 @@ private:
     err = Read_BMP_Header(&bBufBMP);
 	
 	/* 
-		It's not a bitmap, then we have to rendered it into a device
-		context and get a bitmap from there. Case wmf graphics
+	   It's not a bitmap, then we have to rendered it into a device
+	   context and get a bitmap from there. Case wmf graphics
 	*/
 	if (err) 
 	{
@@ -342,7 +323,7 @@ private:
 
 		FillRect(hMemDC, &rect,  hBrush);
 		pPicture->Render(hMemDC, 0,0,  nScaleToWidth,	nScaleToHeight, 0,  nHeight, 
-				nWidth, -nHeight, &rc);	
+						 nWidth, -nHeight, &rc);	
 		
 		hBit =  (HBITMAP)SelectObject(hMemDC, hOld);
 		
@@ -369,52 +350,52 @@ private:
 
 
     if ((err = Initialize_PNG()))
-      {   
-	return err;
-      }	
+	{   
+		return err;
+	}	
     
     /* Read Palette, if no palette set Header accordingly */
     if(m_iBitsPerPlane < 24) 
-      {
-	if ((err = Convert_BMP_Palette(&bBufBMP))) 
-	  return err;
-      }
-    else
-      {
-	UT_uint16 bitsPerChannel;
-	UT_uint16 colorType;
-
-	if (m_iBitsPerPlane == 24) {
-	  bitsPerChannel = 8;
-	  colorType = PNG_COLOR_TYPE_RGB;
-	} else if (m_iBitsPerPlane == 32) {
-	  bitsPerChannel = 8;
-	  colorType = PNG_COLOR_TYPE_RGB_ALPHA;
-	} else if (m_iBitsPerPlane == 48) {
-	  bitsPerChannel = 16;
-	  colorType = PNG_COLOR_TYPE_RGB;
-	} else if (m_iBitsPerPlane == 64) {
-	  bitsPerChannel = 16;
-	  colorType = PNG_COLOR_TYPE_RGB_ALPHA;
-	} else {		   
-	  return UT_ERROR;
+	{
+		if ((err = Convert_BMP_Palette(&bBufBMP))) 
+			return err;
 	}
+    else
+	{
+		UT_uint16 bitsPerChannel;
+		UT_uint16 colorType;
+
+		if (m_iBitsPerPlane == 24) {
+			bitsPerChannel = 8;
+			colorType = PNG_COLOR_TYPE_RGB;
+		} else if (m_iBitsPerPlane == 32) {
+			bitsPerChannel = 8;
+			colorType = PNG_COLOR_TYPE_RGB_ALPHA;
+		} else if (m_iBitsPerPlane == 48) {
+			bitsPerChannel = 16;
+			colorType = PNG_COLOR_TYPE_RGB;
+		} else if (m_iBitsPerPlane == 64) {
+			bitsPerChannel = 16;
+			colorType = PNG_COLOR_TYPE_RGB_ALPHA;
+		} else {		   
+			return UT_ERROR;
+		}
 	
-	png_set_IHDR ( m_pPNG,
-		       m_pPNGInfo,
-		       m_iWidth,
-		       m_iHeight,
-		       bitsPerChannel,
-		       colorType,
-		       PNG_INTERLACE_NONE,
-		       PNG_COMPRESSION_TYPE_DEFAULT,
-		       PNG_FILTER_TYPE_DEFAULT );
+		png_set_IHDR ( m_pPNG,
+					   m_pPNGInfo,
+					   m_iWidth,
+					   m_iHeight,
+					   bitsPerChannel,
+					   colorType,
+					   PNG_INTERLACE_NONE,
+					   PNG_COMPRESSION_TYPE_DEFAULT,
+					   PNG_FILTER_TYPE_DEFAULT );
 	
-      }
+	}
     if ((err = Convert_BMP(&bBufBMP))) 
-      {
-	return err;
-      }
+	{
+		return err;
+	}
     
     /* Clean Up Memory Used */
 		
@@ -422,10 +403,10 @@ private:
     png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
     
     return UT_OK;  	  	
-  }
+}
   
-  UT_Error Read_BMP_Header(UT_ByteBuf* pBB)
-  {
+UT_Error IE_ImpGraphic_Win32Native::Read_BMP_Header(UT_ByteBuf* pBB)
+{
     /* Stepping Through the Header Data first all the File Info
      * Then the Image Info until reached the end of the image Header Size
      * Note some simple checks for data out of bounds are included
@@ -445,11 +426,11 @@ private:
     if (m_bHeaderDone) return UT_IE_BOGUSDOCUMENT; /* More Header Info Needed */
     m_bOldBMPFormat = (m_iHeaderSize <=12) ? true : false;
     m_iWidth  = (m_bOldBMPFormat) ?
-      static_cast<UT_sint32>(Read2Bytes(pBB,m_iBytesRead) ):
-      static_cast<UT_sint32>(Read4Bytes(pBB,m_iBytesRead) );
+		static_cast<UT_sint32>(Read2Bytes(pBB,m_iBytesRead) ):
+		static_cast<UT_sint32>(Read4Bytes(pBB,m_iBytesRead) );
     m_iHeight = (m_bOldBMPFormat) ?
-      static_cast<UT_sint32>(Read2Bytes(pBB,m_iBytesRead) ):
-      static_cast<UT_sint32>(Read4Bytes(pBB,m_iBytesRead) );
+		static_cast<UT_sint32>(Read2Bytes(pBB,m_iBytesRead) ):
+		static_cast<UT_sint32>(Read4Bytes(pBB,m_iBytesRead) );
     if (m_bHeaderDone) return UT_IE_BOGUSDOCUMENT; /* More Header Info Needed */
     m_iPlanes		    = Read2Bytes(pBB,m_iBytesRead);
     if (m_bHeaderDone) return UT_IE_BOGUSDOCUMENT; /* More Header Info Needed */
@@ -489,95 +470,95 @@ private:
     if (m_bHeaderDone) return UT_OK;
     /* Document Using non-standard HeaderSize Assume OK */
     return UT_OK;
-  }
+}
 
-  UT_Error Initialize_PNG()
-  {
+UT_Error IE_ImpGraphic_Win32Native::Initialize_PNG()
+{
     /* Set up png structures for writing */
     m_pPNG = png_create_write_struct( PNG_LIBPNG_VER_STRING, 
-				      static_cast<void*>(NULL),
-				      NULL, 
-				      NULL );
+									  static_cast<void*>(NULL),
+									  NULL, 
+									  NULL );
     if( m_pPNG == NULL )
-      {
-	return UT_ERROR;
-      }
+	{
+		return UT_ERROR;
+	}
     
     m_pPNGInfo = png_create_info_struct(m_pPNG);
     if ( m_pPNGInfo == NULL )
-      {
-	png_destroy_write_struct(&m_pPNG, static_cast<png_infopp>(NULL));
-	return UT_ERROR;
-      }
+	{
+		png_destroy_write_struct(&m_pPNG, static_cast<png_infopp>(NULL));
+		return UT_ERROR;
+	}
     
     /* Set error handling if you are using the setjmp/longjmp method (this is
      * the normal method of doing things with libpng).  REQUIRED unless you
      * set up your own error handlers in the png_create_read_struct() earlier.
      */
     if (setjmp(m_pPNG->jmpbuf))
-      {
-	/* Free all of the memory associated with the png_ptr and info_ptr */
-	png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
+	{
+		/* Free all of the memory associated with the png_ptr and info_ptr */
+		png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
 	
-	/* If we get here, we had a problem reading the file */
-	return UT_ERROR;
-      }
+		/* If we get here, we had a problem reading the file */
+		return UT_ERROR;
+	}
     m_pBB = new UT_ByteBuf;  /* Byte Buffer for Converted Data */
     
     /* Setting up the Data Writing Function */
     png_set_write_fn(m_pPNG, static_cast<void *>(m_pBB), static_cast<png_rw_ptr>(_write_png), static_cast<png_flush_ptr>(_write_flush));
 
     return UT_OK;
-  }
+}
   
-  UT_Error Convert_BMP_Palette(UT_ByteBuf* pBB)
-  {
+UT_Error IE_ImpGraphic_Win32Native::Convert_BMP_Palette(UT_ByteBuf* pBB)
+{
     /* Reset error handling for libpng */
     if (setjmp(m_pPNG->jmpbuf))
-      {
-	png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
-	return UT_ERROR;
-      }
+	{
+		png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
+		return UT_ERROR;
+	}
     
     png_set_IHDR ( m_pPNG,
-		   m_pPNGInfo,
-		   m_iWidth,
-		   m_iHeight,
-		   m_iBitsPerPlane,
-		   PNG_COLOR_TYPE_PALETTE,
-		   PNG_INTERLACE_NONE,
-		   PNG_COMPRESSION_TYPE_DEFAULT,
-		   PNG_FILTER_TYPE_DEFAULT );
+				   m_pPNGInfo,
+				   m_iWidth,
+				   m_iHeight,
+				   m_iBitsPerPlane,
+				   PNG_COLOR_TYPE_PALETTE,
+				   PNG_INTERLACE_NONE,
+				   PNG_COMPRESSION_TYPE_DEFAULT,
+				   PNG_FILTER_TYPE_DEFAULT );
     
     UT_uint32 iOffset = m_iHeaderSize + 14;
     UT_uint32 numClrs = (m_iClrUsed > 0) ?
-      m_iClrUsed :
-      (m_iOffset - iOffset)/((m_bOldBMPFormat)?3:4);
+		m_iClrUsed :
+		(m_iOffset - iOffset)/((m_bOldBMPFormat)?3:4);
     
     png_colorp palette = static_cast<png_colorp>(png_malloc(m_pPNG, numClrs * sizeof(png_color)));
     
     for (UT_uint32 i=0; i < numClrs; i++)
-      {
-	palette[i].blue  = ReadByte(pBB,iOffset++);
-	palette[i].green = ReadByte(pBB,iOffset++);
-	palette[i].red   = ReadByte(pBB,iOffset++);
-	if(!m_bOldBMPFormat) iOffset++;
-      }
+	{
+		palette[i].blue  = ReadByte(pBB,iOffset++);
+		palette[i].green = ReadByte(pBB,iOffset++);
+		palette[i].red   = ReadByte(pBB,iOffset++);
+		if(!m_bOldBMPFormat) iOffset++;
+	}
     if (iOffset > m_iOffset) return UT_IE_BOGUSDOCUMENT;
     
     png_set_PLTE( m_pPNG, m_pPNGInfo, palette, numClrs );
     
     return UT_OK;
-  }
+}
   
-  UT_Error Convert_BMP(UT_ByteBuf* pBB)
-  {
+UT_Error IE_ImpGraphic_Win32Native::Convert_BMP(UT_ByteBuf* pBB)
+{
     /* Reset error handling for libpng */
     if (setjmp(m_pPNG->jmpbuf))
-      {
-	png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
-	return UT_ERROR;
-      }
+	{
+		png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
+		return UT_ERROR;
+	}
     png_write_info(m_pPNG,m_pPNGInfo);
     
     const UT_Byte*  row_data;
@@ -588,108 +569,109 @@ private:
     UT_Byte* row_transformed_data = new UT_Byte[row_width];
 
     switch (m_iBitsPerPlane)
-      {
-      case 1:
-      case 4:
-      case 8:
-      case 16:
-	for (row=m_iHeight-1; row >= 0; row--)
-	  {
-	    /* Calculating the start of each row */
-	    position=m_iOffset + row*row_width;
-	    row_data = reinterpret_cast<const unsigned char *>(pBB->getPointer(position));
-	    png_write_rows(m_pPNG,const_cast<png_byte **>(reinterpret_cast<const png_byte **>(&row_data)),1);
-	  }	
-	break;
-      case 24:
-      case 48:
-	for (row=m_iHeight-1; row >= 0; row--)
-	  {
-	    /* Calculating the start of each row */
-	    position=m_iOffset + row*row_width;
-	    /* Transforming the b/r to r/b */
-	    for (UT_sint32 i=0, col=0; i < m_iWidth; i++,col+=3)
-	      {
-		row_transformed_data[col+0] = (UT_Byte)*pBB->getPointer(position+col+2);
-		row_transformed_data[col+1] = (UT_Byte)*pBB->getPointer(position+col+1);
-		row_transformed_data[col+2] = (UT_Byte)*pBB->getPointer(position+col+0);
-	      }
-	    png_write_rows(m_pPNG,&row_transformed_data,1);
-	  }	
-	break;
-      case 32: 
-      case 64:
-	for (row=m_iHeight-1; row >= 0; row--)
-	  {
-	    /* Calculating the start of each row */
-	    position=m_iOffset + row*row_width;
-	    /* Transforming the b/r to r/b */
-	    for (UT_sint32 i=0, col=0; i < m_iWidth; i++,col+=4)
-	      {
-		row_transformed_data[col+0] = (UT_Byte)*pBB->getPointer(position+col+2);
-		row_transformed_data[col+1] = (UT_Byte)*pBB->getPointer(position+col+1);
-		row_transformed_data[col+2] = (UT_Byte)*pBB->getPointer(position+col+0);
-		row_transformed_data[col+3] = (UT_Byte)*pBB->getPointer(position+col+3);				
-	      }
-	    png_write_rows(m_pPNG,&row_transformed_data,1);
-	  }	
-	break;			
-      default:
-	return UT_IE_BOGUSDOCUMENT;
-	break;
-      }
+	{
+	case 1:
+	case 4:
+	case 8:
+	case 16:
+		for (row=m_iHeight-1; row >= 0; row--)
+		{
+			/* Calculating the start of each row */
+			position=m_iOffset + row*row_width;
+			row_data = reinterpret_cast<const unsigned char *>(pBB->getPointer(position));
+			png_write_rows(m_pPNG,const_cast<png_byte **>(reinterpret_cast<const png_byte **>(&row_data)),1);
+		}	
+		break;
+	case 24:
+	case 48:
+		for (row=m_iHeight-1; row >= 0; row--)
+		{
+			/* Calculating the start of each row */
+			position=m_iOffset + row*row_width;
+			/* Transforming the b/r to r/b */
+			for (UT_sint32 i=0, col=0; i < m_iWidth; i++,col+=3)
+			{
+				row_transformed_data[col+0] = (UT_Byte)*pBB->getPointer(position+col+2);
+				row_transformed_data[col+1] = (UT_Byte)*pBB->getPointer(position+col+1);
+				row_transformed_data[col+2] = (UT_Byte)*pBB->getPointer(position+col+0);
+			}
+			png_write_rows(m_pPNG,&row_transformed_data,1);
+		}	
+		break;
+	case 32: 
+	case 64:
+		for (row=m_iHeight-1; row >= 0; row--)
+		{
+			/* Calculating the start of each row */
+			position=m_iOffset + row*row_width;
+			/* Transforming the b/r to r/b */
+			for (UT_sint32 i=0, col=0; i < m_iWidth; i++,col+=4)
+			{
+				row_transformed_data[col+0] = (UT_Byte)*pBB->getPointer(position+col+2);
+				row_transformed_data[col+1] = (UT_Byte)*pBB->getPointer(position+col+1);
+				row_transformed_data[col+2] = (UT_Byte)*pBB->getPointer(position+col+0);
+				row_transformed_data[col+3] = (UT_Byte)*pBB->getPointer(position+col+3);				
+			}
+			png_write_rows(m_pPNG,&row_transformed_data,1);
+		}	
+		break;			
+	default:
+		return UT_IE_BOGUSDOCUMENT;
+		break;
+	}
     delete [] row_transformed_data;
     
     png_write_end(m_pPNG,m_pPNGInfo);
     return UT_OK;
-  }
+}
 
-  UT_Byte ReadByte  (UT_ByteBuf* pBB, 
-		     UT_uint32 offset)
-  {
+
+UT_Byte IE_ImpGraphic_Win32Native::ReadByte  (UT_ByteBuf* pBB, 
+											  UT_uint32 offset)
+{
     return ( static_cast<const UT_Byte>(ReadBytes(pBB,offset,1) ));
-  }
+}
   
-  UT_uint16 Read2Bytes(UT_ByteBuf* pBB, 
-		       UT_uint32 offset)
-  {
+UT_uint16 IE_ImpGraphic_Win32Native::Read2Bytes(UT_ByteBuf* pBB, 
+												UT_uint32 offset)
+{
     return ( static_cast<const UT_uint16>(ReadBytes(pBB,offset,2) ));
-  }
+}
     
-  UT_uint32 Read4Bytes(UT_ByteBuf* pBB, 
-		       UT_uint32 offset)
-  {
+UT_uint32 IE_ImpGraphic_Win32Native::Read4Bytes(UT_ByteBuf* pBB, 
+												UT_uint32 offset)
+{
     return ( ReadBytes(pBB,offset,4) );
-  }  
+}  
   
-  UT_uint32 ReadBytes(UT_ByteBuf* pBB, 
-		      UT_uint32 offset,
-		      UT_uint32 num_bytes)
-  {
+UT_uint32 IE_ImpGraphic_Win32Native::ReadBytes(UT_ByteBuf* pBB, 
+											   UT_uint32 offset,
+											   UT_uint32 num_bytes)
+{
     UT_return_val_if_fail (num_bytes <= 4, 0);
     UT_return_val_if_fail ((m_iBytesRead + num_bytes) <= pBB->getLength(), 0);
 
     m_iBytesRead+=num_bytes;
     
     if (m_iHeaderSize)
-      {
-	m_bHeaderDone = (m_iBytesRead >= m_iHeaderSize + 14) ?
-	  true :
-	  false;
-      }
+	{
+		m_bHeaderDone = (m_iBytesRead >= m_iHeaderSize + 14) ?
+			true :
+			false;
+	}
     
     UT_uint32 result = 0;
     const UT_Byte*  pByte;
     for (UT_uint32 i=0; i<num_bytes; i++)
-      {
-	pByte   =  pBB->getPointer(offset+i);
-	result |=  *pByte << (i*8);
-      }
+	{
+		pByte   =  pBB->getPointer(offset+i);
+		result |=  *pByte << (i*8);
+	}
     return (result);
-  }
+}
   
-  void InitializePrivateClassData()
-  {
+void IE_ImpGraphic_Win32Native::InitializePrivateClassData()
+{
     m_iFileType=0;
     m_iFileSize=0;
     m_iXHotspot=0;
@@ -717,47 +699,8 @@ private:
     m_iBytesRead=0;		
     m_bOldBMPFormat=false;
     m_bHeaderDone=false;
-  }
+}
 
-  // PNG structures used
-  png_structp m_pPNG;				// libpng structure for the PNG Object
-  png_infop   m_pPNGInfo;			// libpng structure for info on the PNG Object
-  
-  // BMP File Header Data
-  UT_uint16	m_iFileType;		// type - 'BM' for Bitmaps
-  UT_uint32	m_iFileSize;		// file size in bytes
-  UT_uint16	m_iXHotspot;		// 0 or x hotspot
-  UT_uint16	m_iYHotspot;		// 0 or y hotspot
-  UT_uint32	m_iOffset;			// Offset to BMP image
-  
-  // BMP Header Data
-  UT_uint32	m_iHeaderSize;		// Size of Header Data
-  UT_sint32	m_iWidth;			// Image Width in pixels
-  UT_sint32	m_iHeight;			// Image Height in pixels
-  UT_uint16	m_iPlanes;			// Number of Planes == 1
-  UT_uint16	m_iBitsPerPlane;	// Bit per pixel
-  UT_uint32	m_iCompression;		// compression flag
-  UT_uint32	m_iImageSize;		// Image size in bytes
-  UT_uint32	m_iXResolution;		// Horizontal Resolution (Pels/Meter)
-  UT_uint32	m_iYResolution;		// Vertical Resolution (Pels/Meter)
-  UT_uint32	m_iClrUsed;			// Color Table Size
-  UT_uint32	m_iClrImportant;	// Important Color Count
-  UT_uint16	m_iResolutionUnits; // Units of Measure
-  UT_uint16	m_iPadding;			// Reserved
-  UT_uint16	m_iOrigin;			// Recording Algorithm
-  UT_uint16	m_iHalfToning;		// Halftoning Algorithm
-  UT_uint32	m_iHalfToningParam1;// Size Value 1
-  UT_uint32	m_iHalfToningParam2;// Size Value 2
-  UT_uint32	m_iClrEncoding;		// Color Encoding
-  UT_uint32	m_iIdentifier;		//
-  
-  // BMP Utility Data
-  UT_uint32   m_iBytesRead;		// Number of Bytes Read
-  bool		m_bOldBMPFormat;	// Older smaller file type
-  bool		m_bHeaderDone;		// Check to see if finshed Reading Header
-  
-  UT_ByteBuf*  m_pBB;				// pBB Converted to PNG File
-};
 
 /*******************************************************************/
 /*******************************************************************/
@@ -786,46 +729,42 @@ static IE_MimeConfidence IE_ImpGraphicWin32_Sniffer__MimeConfidence[] = {
     { IE_MIME_MATCH_BOGUS,  "",               UT_CONFIDENCE_ZILCH    }
 };
 
-class IE_ImpGraphicWin32Native_Sniffer : public IE_ImpGraphicSniffer
+const IE_MimeConfidence * IE_ImpGraphicWin32Native_Sniffer::getMimeConfidence ()
 {
- public:
-
-  const IE_MimeConfidence * getMimeConfidence ()
-  {
 	return IE_ImpGraphicWin32_Sniffer__MimeConfidence;
-  }
+}
  
  
-  const IE_SuffixConfidence * getSuffixConfidence ()
-  {
+const IE_SuffixConfidence * IE_ImpGraphicWin32Native_Sniffer::getSuffixConfidence ()
+{
 	return IE_ImpGraphicWin32Native_Sniffer__SuffixConfidence;
-  }
+}
 
-  virtual UT_Confidence_t recognizeContents (const char * szBuf, 
-					     UT_uint32 iNumbytes)
-  {
+UT_Confidence_t IE_ImpGraphicWin32Native_Sniffer::recognizeContents (const char * szBuf, 
+																			 UT_uint32 iNumbytes)
+{
     return UT_CONFIDENCE_SOSO;
-  }
+}
 
-  virtual bool getDlgLabels (const char ** pszDesc,
-			     const char ** pszSuffixList,
-			     IEGraphicFileType * ft)
-  {
+bool IE_ImpGraphicWin32Native_Sniffer::getDlgLabels (const char ** pszDesc,
+															 const char ** pszSuffixList,
+															 IEGraphicFileType * ft)
+{
     *pszDesc = "BMP, GIF, JPEG Images";
     *pszSuffixList = "*.bmp; *.emf; *.gif; *.ico; *.jpg; *.jpeg; *.wmf";
     *ft = getType ();
     return true;
-  }
+}
 
-  virtual UT_Error constructImporter (IE_ImpGraphic ** ppieg)
-  {
+UT_Error IE_ImpGraphicWin32Native_Sniffer::constructImporter (IE_ImpGraphic ** ppieg)
+{
     *ppieg = new IE_ImpGraphic_Win32Native();
     if (*ppieg == NULL)
-      return UT_IE_NOMEMORY;
+		return UT_IE_NOMEMORY;
     
     return UT_OK;
-  }
-};
+}
+
 
 /*******************************************************************/
 /*******************************************************************/

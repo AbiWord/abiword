@@ -23,6 +23,7 @@
 #include "ie_imp.h"
 #include "ie_exp.h"
 #include "ie_impexp_Register.h"
+#include "ie_impGraphic_Win32Native.h"
 
 
 /*!
@@ -31,5 +32,6 @@
  */
 void IE_ImpExp_RegisterPlatform ()
 {
+    IE_ImpGraphics::registerImporter(new IE_ImpGraphicWin32Native_Sniffer());
 }
     
