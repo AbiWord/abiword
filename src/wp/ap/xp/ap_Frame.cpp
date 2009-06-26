@@ -59,6 +59,8 @@ void AP_Frame::quickZoom(UT_uint32 iZoom)
 	bool bChanged = (getZoomPercentage() != iZoom);
 	XAP_Frame::setZoomPercentage(iZoom);
 	FV_View * pView = static_cast<FV_View *>(getCurrentView());
+	if(!pView)
+		return;
 	if (bChanged) 
 	{
 		FL_DocLayout * pDocLayout = pView->getLayout();
