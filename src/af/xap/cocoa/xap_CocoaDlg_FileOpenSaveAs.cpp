@@ -2,7 +2,7 @@
 
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2003 Hubert Figuiere
+ * Copyright (C) 2001-2003, 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -711,52 +711,44 @@ void XAP_CocoaDialog_FileOpenSaveAs::_updatePreview ()
 				pBB = 0;
 
 				if ((errorCode == UT_OK) && pGraphic) {
-					if (FGT_Raster == pGraphic->getType()) {
+					const UT_ByteBuf * png = pGraphic->getBuffer();
 
-						const UT_ByteBuf * png = static_cast<FG_GraphicRaster *>(pGraphic)->getRaster_PNG();
+					UT_sint32 iImageWidth = pGraphic->getWidth();
+					UT_sint32 iImageHeight = pGraphic->getHeight();
 
-						UT_sint32 iImageWidth;
-						UT_sint32 iImageHeight;
+					double dImageWidth  = static_cast<double>(iImageWidth);
+					double dImageHeight = static_cast<double>(iImageHeight);
 
-						UT_PNG_getDimensions(png, iImageWidth, iImageHeight);
+					NSSize previewSize = [m_accessoryViewsController previewSize];
 
-						double dImageWidth  = static_cast<double>(iImageWidth);
-						double dImageHeight = static_cast<double>(iImageHeight);
+					double dPreviewWidth  = static_cast<double>(previewSize.width);
+					double dPreviewHeight = static_cast<double>(previewSize.height);
 
-						NSSize previewSize = [m_accessoryViewsController previewSize];
+					if ((dPreviewWidth < dImageWidth) || (dPreviewHeight < dImageHeight)) {
+						double factor_width  = dPreviewWidth  / dImageWidth;
+						double factor_height = dPreviewHeight / dImageHeight;
 
-						double dPreviewWidth  = static_cast<double>(previewSize.width);
-						double dPreviewHeight = static_cast<double>(previewSize.height);
+						double scale_factor = MIN(factor_width, factor_height);
 
-						if ((dPreviewWidth < dImageWidth) || (dPreviewHeight < dImageHeight)) {
-							double factor_width  = dPreviewWidth  / dImageWidth;
-							double factor_height = dPreviewHeight / dImageHeight;
-
-							double scale_factor = MIN(factor_width, factor_height);
-
-							iImageWidth  = static_cast<UT_sint32>(scale_factor * dImageWidth);
-							iImageHeight = static_cast<UT_sint32>(scale_factor * dImageHeight);
-						}
-
-						GR_CocoaImage * pImage = new GR_CocoaImage(0);
-
-						pImage->convertFromBuffer(png, iImageWidth, iImageHeight); // this flips the NSImage but doesn't actually scale it
-						image = pImage->getNSImage();
-						if (image) {
-							NSSize imageSize;
-							imageSize.width  = static_cast<float>(iImageWidth);
-							imageSize.height = static_cast<float>(iImageHeight);
-
-							[image setScalesWhenResized:YES];
-							[image setSize:imageSize];
-							[image setFlipped:NO];
-							[image retain];
-						}
-						DELETEP(pImage);
+						iImageWidth  = static_cast<UT_sint32>(scale_factor * dImageWidth);
+						iImageHeight = static_cast<UT_sint32>(scale_factor * dImageHeight);
 					}
-					else { // if (FGT_Vector == pGraphic->getType())
-						// pImage = new GR_VectorImage(NULL);
+
+					GR_CocoaImage * pImage = new GR_CocoaImage(0);
+
+					pImage->convertFromBuffer(png, iImageWidth, iImageHeight); // this flips the NSImage but doesn't actually scale it
+					image = pImage->getNSImage();
+					if (image) {
+						NSSize imageSize;
+						imageSize.width  = static_cast<float>(iImageWidth);
+						imageSize.height = static_cast<float>(iImageHeight);
+
+						[image setScalesWhenResized:YES];
+						[image setSize:imageSize];
+						[image setFlipped:NO];
+						[image retain];
 					}
+					DELETEP(pImage);
 					DELETEP(pGraphic);
 				}
 				DELETEP(pIEG);
