@@ -35,17 +35,6 @@
 
 #include "ie_impGraphic_Win32Native.h"
 
-#ifdef ABI_PLUGIN_BUILTIN
-#define abi_plugin_register abipgn_win32gfx_register
-#define abi_plugin_unregister abipgn_win32gfx_unregister
-#define abi_plugin_supports_version abipgn_win32gfx_supports_version
-// dll exports break static linking
-#define ABI_BUILTIN_FAR_CALL extern "C"
-#else
-#define ABI_BUILTIN_FAR_CALL ABI_FAR_CALL
-ABI_PLUGIN_DECLARE("Win32Gfx")
-#endif
-
 /*******************************************************************/
 /*******************************************************************/
 
@@ -750,7 +739,7 @@ bool IE_ImpGraphicWin32Native_Sniffer::getDlgLabels (const char ** pszDesc,
 															 const char ** pszSuffixList,
 															 IEGraphicFileType * ft)
 {
-    *pszDesc = "BMP, GIF, JPEG Images";
+    *pszDesc = "BMP, EMF, GIF, ICO, JPEG, WMF Images";
     *pszSuffixList = "*.bmp; *.emf; *.gif; *.ico; *.jpg; *.jpeg; *.wmf";
     *ft = getType ();
     return true;
@@ -765,51 +754,3 @@ UT_Error IE_ImpGraphicWin32Native_Sniffer::constructImporter (IE_ImpGraphic ** p
     return UT_OK;
 }
 
-
-/*******************************************************************/
-/*******************************************************************/
-
-static IE_ImpGraphicWin32Native_Sniffer * m_impSniffer = 0;
-
-ABI_BUILTIN_FAR_CALL
-int abi_plugin_register (XAP_ModuleInfo * mi)
-{
-  if (!m_impSniffer)
-    {
-      m_impSniffer = new IE_ImpGraphicWin32Native_Sniffer();
-    }
-  
-  mi->name = "BMP, JPG, GIF Win32 Import Plugin";
-  mi->desc = "Import JPG, GIF, WMF Images";
-  mi->version = ABI_VERSION_STRING;
-  mi->author = "Jordi Mas i Hernàndez and Dom Lachowicz";
-  mi->usage = "No Usage";
-  
-  IE_ImpGraphic::registerImporter (m_impSniffer);
-  return 1;
-}
-
-ABI_BUILTIN_FAR_CALL
-int abi_plugin_unregister (XAP_ModuleInfo * mi)
-{
-  mi->name = 0;
-  mi->desc = 0;
-  mi->version = 0;
-  mi->author = 0;
-  mi->usage = 0;
-  
-  UT_ASSERT (m_impSniffer);
-
-  IE_ImpGraphic::unregisterImporter (m_impSniffer);
-  delete m_impSniffer;
-  m_impSniffer = 0;
-
-  return 1;
-}
-
-ABI_BUILTIN_FAR_CALL
-int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
-				 UT_uint32 release)
-{
-  return 1;
-}

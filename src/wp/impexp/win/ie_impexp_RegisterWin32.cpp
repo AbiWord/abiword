@@ -32,6 +32,6 @@
  */
 void IE_ImpExp_RegisterPlatform ()
 {
-    IE_ImpGraphics::registerImporter(new IE_ImpGraphicWin32Native_Sniffer());
+    IE_ImpGraphic::registerImporter(new IE_ImpGraphicWin32Native_Sniffer());
 }
     
