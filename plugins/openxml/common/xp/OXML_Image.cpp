@@ -38,7 +38,6 @@
 OXML_Image::OXML_Image() : 
 	OXML_ObjectWithAttrProp(),
 	id(NULL),
-	mimeType(NULL),
 	data(NULL)
 {
 
@@ -76,6 +75,10 @@ UT_Error OXML_Image::serialize(IE_Exp_OpenXML* exporter)
 	{
 		filename += ".png";
 	}
+    else if(mimeType == "image/jpeg")
+    {
+        filename += ".jpg";
+    }
 	else if(mimeType == "image/svg+xml")
 	{
 		filename += ".svg";

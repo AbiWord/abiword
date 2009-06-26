@@ -966,7 +966,7 @@ UT_Error IE_Exp_OpenXML_Listener::addImages()
 			continue;
 		}
 
-		if(!((mimeType == "image/png") || (mimeType == "image/svg+xml")))
+		if(!((mimeType == "image/png") || (mimeType == "image/jpeg") || (mimeType == "image/svg+xml")))
 		{
 			// If you add a mime type, make sure to update the extension code in
 			// PD_Document::getDataItemFileExtension()
