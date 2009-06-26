@@ -99,7 +99,7 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 	if(!s_iClassInstanceCount)
 	{
 		s_bBidiOS = (XAP_App::getApp()->theOSHasBidiSupport() == XAP_App::BIDI_SUPPORT_FULL);
-		UT_DEBUGMSG(("fp_TextRun size is %d\n",sizeof(fp_TextRun) ));
+		UT_DEBUGMSG(("fp_TextRun size is %zd\n",sizeof(fp_TextRun) ));
 	}
 
 	s_iClassInstanceCount++;
