@@ -156,6 +156,11 @@ public:
 	void                        quickZoom(void);
 
 	virtual void				setStatusMessage(const char * szMsg) = 0;
+	// TODO change that to be the main call.
+	void                        setStatusMessage(const std::string & s)
+	{
+		setStatusMessage(s.c_str());
+	}
 
 	virtual void				toggleRuler(bool /*bRulerOn*/) { } //
 	virtual void                toggleTopRuler(bool /*bRulerOn*/) = 0;

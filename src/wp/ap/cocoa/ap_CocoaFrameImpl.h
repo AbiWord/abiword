@@ -26,7 +26,7 @@
 
 class AP_CocooApp;
 
-@class XAP_CocoaNSView, XAP_NSScroller;
+@class XAP_CocoaTextView, XAP_NSScroller;
 
 @interface AP_DocViewDelegate : NSObject <XAP_MouseEventDelegate>
 {
@@ -77,7 +77,7 @@ class AP_CocoaFrameImpl : public XAP_CocoaFrameImpl
 	void _hideTopRulerNSView(void);
 	void _showLeftRulerNSView(void);
 	void _hideLeftRulerNSView(void);
-	XAP_CocoaNSView *_getDocAreaGRView(void)
+	XAP_CocoaTextView *_getDocAreaGRView(void)
 		{ return m_docAreaGRView; }
  protected:
 
@@ -102,7 +102,7 @@ class AP_CocoaFrameImpl : public XAP_CocoaFrameImpl
 private:
 	XAP_NSScroller*					m_hScrollbar;
 	XAP_NSScroller*					m_vScrollbar;
-	XAP_CocoaNSView*				m_docAreaGRView;
+	XAP_CocoaTextView*				m_docAreaGRView;
 	static bool					_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param);
 private:
 	UT_sint32					m_HMinScroll;

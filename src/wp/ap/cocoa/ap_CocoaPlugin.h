@@ -72,7 +72,7 @@ class PD_Document;
 - (id <XAP_CocoaPlugin_MenuItem>)menuItem;
 @end
 
-@interface AP_CocoaPlugin_ContextMenuItem : AP_CocoaPlugin_EditMethod // <XAP_CocoaPlugin_MenuItem>
+@interface AP_CocoaPlugin_ContextMenuItem : AP_CocoaPlugin_EditMethod <XAP_CocoaPlugin_MenuItem>
 {
 	NSString *						m_Label;
 
@@ -92,6 +92,7 @@ class PD_Document;
 
 - (void)setLabel:(NSString *)label;
 - (NSString *)label;
+
 
 - (void)setTag:(int)anInt;
 - (int)tag;

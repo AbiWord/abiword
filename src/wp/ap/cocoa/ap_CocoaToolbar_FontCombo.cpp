@@ -61,7 +61,7 @@ AP_CocoaToolbar_FontCombo::~AP_CocoaToolbar_FontCombo(void)
 // TODO: move it else where in a place it is reusable by anybody.
 static  int compareStrings(const void * ppS1, const void * ppS2)
 {
-	#pragma warning TODO: move it else where in a place it is reusable by anybody.
+	#warning TODO: move it else where in a place it is reusable by anybody.
 	const char ** sz1 = (const char **) (ppS1);
 	const char ** sz2 = (const char **) (ppS2);
 	return strcmp(*sz1, *sz2);
@@ -82,12 +82,7 @@ bool AP_CocoaToolbar_FontCombo::populate(void)
 	while ((item = [enumerator nextObject])) {
 		const char * fName = g_strdup([item UTF8String]);
 		UT_ASSERT (fName);
-		if (true /* (*fName != '.') && (*fName != '#') */) {	// this is also what Camino does, but cf Bug 6638
-			m_vecContents.addItem(fName);
-		}
-		else {
-			FREEP(fName);
-		}
+		m_vecContents.addItem(fName);
 	}
 	m_vecContents.qsort(compareStrings);
 	

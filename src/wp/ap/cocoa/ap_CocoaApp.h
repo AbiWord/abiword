@@ -114,6 +114,6 @@ private:	// JCA: Why in the hell we have so many (any) protected variables?
 // C/C++ conflict over pointers to member functions. It is,
 // however, what the C++ FAQ reccommends.
 
-void signalWrapper(int);
+void signalWrapper(int) ABI_NORETURN;
 
 #endif /* AP_COCOAAPP_H */

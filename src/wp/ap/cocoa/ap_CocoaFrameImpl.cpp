@@ -48,7 +48,7 @@
 @interface XAP_NSScroller : NSScroller
 {
 }
--(id)initWithFrame:(NSRect)frame andController:(AP_CocoaFrameController*)controller vertical:(BOOL)vertical;
+-(id)initWithFrame:(NSRect)frame andController:(NSController*)controller vertical:(BOOL)vertical;
 
 @end
 
@@ -685,7 +685,7 @@ void AP_CocoaFrameImpl::giveFocus()
 
 @implementation XAP_NSScroller
 
--(id)initWithFrame:(NSRect)frame andController:(AP_CocoaFrameController*)controller vertical:(BOOL)vertical
+-(id)initWithFrame:(NSRect)frame andController:(NSController*)controller vertical:(BOOL)vertical
 {
 	if(![super initWithFrame:frame]) {
 		return nil;

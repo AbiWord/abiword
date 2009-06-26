@@ -270,6 +270,7 @@
  */
 - (NSString *)label;
 
+#if 0 // YAGNI
 /**
  * \param aSelector Set the method which is called when the call-back is triggered, or
  *                  nil if no method is to be called.
@@ -291,6 +292,7 @@
  * \return The new target object for the action when the call-back is triggered, or nil if none.
  */
 - (id <NSObject>)target;
+#endif
 
 /**
  * \param anInt An integer which can be used to identify this particular object.

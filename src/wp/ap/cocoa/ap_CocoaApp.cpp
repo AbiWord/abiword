@@ -655,7 +655,7 @@ void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool /*bUseCl
 		  
 		  bytes->append (pData, iLen);
 		  
-		  error = IE_ImpGraphic::constructImporter(bytes, iegft, &pIEG);
+		  error = IE_ImpGraphic::constructImporter(*bytes, iegft, &pIEG);
 		  if(error)
 		  {
 			  UT_DEBUGMSG(("DOM: could not construct importer (%d)\n", 
@@ -674,6 +674,7 @@ void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool /*bUseCl
 		  }
 		  
 		  // at this point, 'bytes' is owned by pFG
+		  bytes = NULL;
 		  FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
 		  
 		  UT_UTF8String newName = UT_UTF8String_sprintf ( "paste_image_%d", UT_newNumber() ) ;

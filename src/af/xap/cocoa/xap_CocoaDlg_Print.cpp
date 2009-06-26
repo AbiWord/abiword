@@ -1,6 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2003 Hubert Figuiere
+ * Copyright (C) 2003-2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,6 +21,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include <string>
 
 #import <Cocoa/Cocoa.h>
 
@@ -158,9 +160,10 @@ bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDirectly)
 //		s_pLoadingDoc = static_cast<AD_Document *>(doc);
 
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-	UT_String msg =  pSS->getValue(AP_STRING_ID_MSG_PrintingDoc);
+	std::string msg;
+	pSS->getValueUTF8(AP_STRING_ID_MSG_PrintingDoc, msg);
 
-	pFrame->setStatusMessage ( static_cast<const gchar *>(msg.c_str()) );
+	pFrame->setStatusMessage (msg);
 
 	// TODO these are here temporarily to make printing work.  We'll fix the hack later.
 	// BUGBUG assumes all pages are same size and orientation
