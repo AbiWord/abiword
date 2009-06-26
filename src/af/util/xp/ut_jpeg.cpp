@@ -21,6 +21,12 @@
  * 02111-1307, USA.
  */
 
+#include <stdio.h>
+
+extern "C" {
+#include <jpeglib.h>
+}
+
 #include "ut_assert.h"
 #include "ut_bytebuf.h"
 #include "ut_debugmsg.h"
@@ -34,6 +40,8 @@ typedef struct {
 } bytebuf_jpeg_source_mgr;
 
 typedef bytebuf_jpeg_source_mgr * bytebuf_jpeg_source_ptr;
+
+static void _JPEG_ByteBufSrc (j_decompress_ptr cinfo, const UT_ByteBuf* sourceBuf);
 
 
 /*
@@ -150,7 +158,7 @@ bool UT_JPEG_getDimensions(const UT_ByteBuf* pBB, UT_sint32& iImageWidth,
 	jpeg_create_decompress(&cinfo);
 
 	/* set the data source */
-	UT_JPEG_ByteBufSrc (&cinfo, pBB);
+	_JPEG_ByteBufSrc (&cinfo, pBB);
 
 	jpeg_read_header(&cinfo, TRUE);
 	jpeg_start_decompress(&cinfo);
@@ -165,7 +173,7 @@ bool UT_JPEG_getDimensions(const UT_ByteBuf* pBB, UT_sint32& iImageWidth,
 
 
 
-void UT_JPEG_ByteBufSrc (j_decompress_ptr cinfo, const UT_ByteBuf* sourceBuf)
+static void _JPEG_ByteBufSrc (j_decompress_ptr cinfo, const UT_ByteBuf* sourceBuf)
 {
 	bytebuf_jpeg_source_ptr src;
 	

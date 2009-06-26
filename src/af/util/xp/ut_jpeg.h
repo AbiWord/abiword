@@ -21,16 +21,9 @@
 #ifndef _UT_JPEG_H_
 #define _UT_JPEG_H_
 
-extern "C" 
-{
-#include <jpeglib.h>
-}
-
 #include "ut_types.h"
 
 class UT_ByteBuf;
-
-ABI_EXPORT void UT_JPEG_ByteBufSrc (j_decompress_ptr cinfo, const UT_ByteBuf* sourceBuf);
 
 ABI_EXPORT bool UT_JPEG_getDimensions(const UT_ByteBuf* pBB, UT_sint32& iImageWidth, 
                                       UT_sint32& iImageHeight);
