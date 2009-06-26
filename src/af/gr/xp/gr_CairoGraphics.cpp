@@ -811,7 +811,55 @@ bool GR_CairoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	pango_shape(utf8.utf8_str(), utf8.byteLength(),
 				&(pItem->m_pi->analysis), RI->m_pScaledGlyphs);
 
-	pItem->m_pi->analysis.font = pPangoFontOrig;
+	/*
+	 * The problem is we believe that the shaping was done using
+	 * a font at the requested point size and suitable for use
+	 * at 1440 dpi which is the resolution of the layout device.
+	 * However there may not have been such a font available for
+	 * pango to choose.  Adjust the geometry as necessary to
+	 * compensate.
+	 */
+
+	double dpw = ((double)pFont->getPointSize() * getResolution()) / 72;
+
+	double apw = dpw;
+	pfd = pango_font_describe_with_absolute_size (pf);
+	if (pango_font_description_get_size_is_absolute (pfd))
+		apw = (double)pango_font_description_get_size (pfd)
+		      / PANGO_SCALE;
+	pango_font_description_free(pfd);
+
+	if (fabs (apw - dpw) >= .5)
+	{
+		for (int i = 0; i < RI->m_pGlyphs->num_glyphs; ++i)
+		{
+			PangoGlyphGeometry *gp
+			  = &RI->m_pGlyphs->glyphs[i].geometry;
+
+			gp->x_offset
+			  = (PangoGlyphUnit)(gp->x_offset * dpw / apw);
+			gp->y_offset
+			  = (PangoGlyphUnit)(gp->y_offset * dpw / apw);
+			gp->width
+			  = (PangoGlyphUnit)(gp->width * dpw / apw);
+		}
+
+		for (int i = 0; i < RI->m_pScaledGlyphs->num_glyphs; ++i)
+		{
+			PangoGlyphGeometry *gp
+			  = &RI->m_pScaledGlyphs->glyphs[i].geometry;
+
+			gp->x_offset
+			  = (PangoGlyphUnit)(gp->x_offset * dpw / apw);
+			gp->y_offset
+			  = (PangoGlyphUnit)(gp->y_offset * dpw / apw);
+			gp->width
+			  = (PangoGlyphUnit)(gp->width * dpw / apw);
+		}
+	}
+
+	if( pPangoFontOrig)
+		pItem->m_pi->analysis.font = pPangoFontOrig;
 		
 	if(RI->m_pLogOffsets)
 	{
@@ -3114,6 +3162,35 @@ void GR_PangoFont::reloadFont(GR_CairoGraphics * pG)
 	// pango_metrics_ functions return in points * PANGO_SCALE (points * 1024)
  	m_iAscent = (UT_uint32) pango_font_metrics_get_ascent(pfm)/PANGO_SCALE;
  	m_iDescent = (UT_uint32) pango_font_metrics_get_descent(pfm)/PANGO_SCALE;
+
+	/*
+	 * The problem is we believe that the metrics are from a
+	 * font at the requested point size and suitable for use
+	 * at 1440 dpi which is the resolution of the layout device.
+	 * However there may not have been such a font available for
+	 * pango to choose.  Adjust the metrics as necessary to
+	 * compensate. 
+	 
+	 */
+
+	double dpw = ((double)m_dPointSize * pG->getResolution()) / 72;
+
+	double apw = dpw;
+	PangoFontDescription *pfd
+	  = pango_font_describe_with_absolute_size (m_pLayoutF);
+	if (pango_font_description_get_size_is_absolute (pfd))
+		apw = (double)pango_font_description_get_size (pfd)
+		      / PANGO_SCALE;
+	pango_font_description_free(pfd);
+
+	if (fabs (apw - dpw) >= .5)
+	{
+		fprintf (stderr, "AbiWord: [%s] not available at appropriate pixel size.\n", sLay.c_str());
+
+		m_iAscent = (UT_uint32)(m_iAscent * dpw / apw);
+		m_iDescent = (UT_uint32)(m_iDescent * dpw / apw);
+	}
+
  	xxx_UT_DEBUGMSG(("Layout Font Ascent %d point size %f zoom %d \n",m_iAscent, m_dPointSize, m_iZoom));
 	pango_font_metrics_unref(pfm);
 
