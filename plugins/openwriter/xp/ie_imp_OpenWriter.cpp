@@ -40,6 +40,7 @@
 #include "ut_misc.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
+#include "ut_std_string.h"
 #include "ut_bytebuf.h"
 #include "ut_hash.h"
 #include "ut_vector.h"
@@ -129,7 +130,7 @@ private:
     if (val)
     {
       width = rint(UT_convertToDimension(val, DIM_MM));
-      m_width = UT_String_sprintf("%f", width);
+      m_width = UT_std_string_sprintf("%f", width);
       m_pageAtts[propCtr++] = "width";
       m_pageAtts[propCtr++] = m_width.c_str();
     }
@@ -138,7 +139,7 @@ private:
     if (val)
     {
       height = rint(UT_convertToDimension(val, DIM_MM));
-      m_height = UT_String_sprintf("%f", height);
+      m_height = UT_std_string_sprintf("%f", height);
       m_pageAtts[propCtr++] = "height";
       m_pageAtts[propCtr++] = m_height.c_str();
     }
@@ -149,8 +150,9 @@ private:
     val = UT_getAttribute ("style:print-orientation", props);
     if (val)
     {
-      m_pageAtts[propCtr++] = "orientation";
-      m_pageAtts[propCtr++] = g_strdup (val);
+        m_orientation = val;
+        m_pageAtts[propCtr++] = "orientation";
+        m_pageAtts[propCtr++] = m_orientation.c_str();
     }
     
     m_pageAtts[propCtr++] = "page-scale";
@@ -198,8 +200,9 @@ private:
   
   UT_String m_name;
 
-  UT_String m_width;
-  UT_String m_height;
+  std::string m_width;
+  std::string m_height;
+  std::string m_orientation;
   
   UT_String m_marginLeft;
   UT_String m_marginTop;
@@ -693,16 +696,6 @@ IE_Imp_OpenWriter::IE_Imp_OpenWriter (PD_Document * pDocument)
 {
 }
 
-/*!
- * Destroy an OpenWriter importer object
- */
-IE_Imp_OpenWriter::~IE_Imp_OpenWriter ()
-{
-  if (m_oo)
-    g_object_unref (G_OBJECT(m_oo));
-
-  m_styleBucket.purgeData();
-}
 
 /*!
  * Import the given file
@@ -1010,6 +1003,7 @@ public:
   virtual ~OpenWriter_StylesStream_Listener ()
   {
     m_styleNameMap.purgeData();
+    DELETEP(m_ooStyle);
   }
 
   UT_UTF8String getStyleName(const UT_UTF8String & in) const
@@ -1800,4 +1794,17 @@ UT_Error IE_Imp_OpenWriter::_handleContentStream ()
 {
   OpenWriter_ContentStream_Listener listener (this, m_pSSListener, m_bOpenDocument);
   return handleStream (m_oo, "content.xml", listener);
+}
+
+
+/*!
+ * Destroy an OpenWriter importer object
+ */
+IE_Imp_OpenWriter::~IE_Imp_OpenWriter ()
+{
+  if (m_oo)
+    g_object_unref (G_OBJECT(m_oo));
+
+  DELETEP(m_pSSListener);
+  m_styleBucket.purgeData();
 }
