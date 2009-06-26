@@ -498,7 +498,7 @@ SYSTEM_CFLAGS=
 if test "$TOOLKIT" == "win"; then
 	deps_pkgs="$deps_pkgs $win_pkgs"
 	# nonstandard dlls go below the blank line
-	SYSTEM_LIBS="-ladvapi32 -lcomctl32 -lcomdlg32 -lgdi32 -lkernel32 -lole32 -lshell32 -luser32 -luuid -lversion -lwinspool \
+	SYSTEM_LIBS="-ladvapi32 -lcomctl32 -lcomdlg32 -lgdi32 -lkernel32 -lole32 -loleaut32 -lshell32 -luser32 -luuid -lversion -lwinspool \
 		     -lpng12 -lz -ljpeg"
 	SYSTEM_CFLAGS="-mthreads"
 elif test "$TOOLKIT" == "cocoa"; then
