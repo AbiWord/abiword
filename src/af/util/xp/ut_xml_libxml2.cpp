@@ -53,7 +53,7 @@ static void _startElement (void * userData, const gchar * name, const gchar ** a
 
   /* libxml2 can supply atts == 0, which is a little at variance to what is expected...
    */
-  const gchar * ptr = 0;
+  static const gchar * ptr = 0;
   const gchar ** new_atts = atts;
   if (atts == 0) new_atts = &ptr;
 

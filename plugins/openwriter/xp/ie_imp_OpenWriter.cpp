@@ -74,10 +74,10 @@ public:
   * Parse attributes array and map keys and values
   * to Abi's.
   */
-  void appendPageMaster(const gchar * name, const gchar ** atts) 
+  void appendPageMaster(const std::string & name, const gchar ** atts) 
   {
     // FIXME ATM only one page setup per document can be imported
-    if (m_name != "")
+    if (!m_name.empty())
     {
       UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
     }
@@ -198,7 +198,7 @@ private:
       m_sectionProps [m_sectionProps.size()-1] = 0; 
   }
   
-  UT_String m_name;
+  std::string m_name;
 
   std::string m_width;
   std::string m_height;
@@ -996,7 +996,7 @@ class OpenWriter_StylesStream_Listener : public OpenWriter_Stream_Listener
 {
 public:
   OpenWriter_StylesStream_Listener ( IE_Imp_OpenWriter * importer, bool bOpenDocument )
-    : OpenWriter_Stream_Listener ( importer ), m_ooStyle (0), m_pageMaster(0), m_bOpenDocument(bOpenDocument)
+    : OpenWriter_Stream_Listener ( importer ), m_ooStyle (0), m_bOpenDocument(bOpenDocument)
   {
   }
   
@@ -1073,7 +1073,7 @@ public:
     }
     else if (/* SXW || ODT */
 	     (!strcmp (name, "style:properties") || !strcmp (name, "style:page-layout-properties")) && 
-	     m_pageMaster) {
+	     !m_pageMaster.empty()) {
       // page setup, because we are in page-master subtree
       m_ooPageStyle.appendPageMaster(m_pageMaster, atts);
     }
@@ -1094,7 +1094,7 @@ public:
   virtual void endElement (const gchar * name)
   {
     if (!strcmp (name, "style:page-master")) {
-      m_pageMaster = NULL;
+      m_pageMaster.clear();
     }
     else if (!strcmp (name, "style:style")) {
       if (m_name.size ()) {
@@ -1167,7 +1167,7 @@ private:
   OO_Style *m_ooStyle;
   PD_Style *m_pParentStyle;
   OO_PageStyle m_ooPageStyle;
-  const gchar * m_pageMaster;
+  std::string m_pageMaster;
   const bool m_bOpenDocument;
 
   UT_GenericStringMap<UT_UTF8String *> m_styleNameMap;
