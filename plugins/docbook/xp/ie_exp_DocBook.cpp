@@ -1453,7 +1453,23 @@ void s_DocBook_Listener::_handleImage(PT_AttrPropIndex api)
 		const gchar* dataid = g_strdup(szValue);
 		char * temp = _stripSuffix(UT_go_basename(szValue), '_');
 		char * fstripped = _stripSuffix(temp, '.');
-		UT_UTF8String_sprintf(buf, "%s.png", fstripped);
+
+        std::string mimeType;
+        const UT_ByteBuf * pByteBuf = 0;
+        const char * extension = "png";
+        const char * format = "PNG";
+        m_pDocument->getDataItemDataByName(szValue, &pByteBuf, 
+                                           &mimeType, NULL);
+        if(mimeType == "image/jpeg") {
+            extension = "jpg";
+            format = "JPEG";
+        }
+        else if(mimeType == "image/svg+xml") {
+            extension = "svg";
+            format = "SVG";
+        }
+
+		UT_UTF8String_sprintf(buf, "%s.%s", fstripped, extension);
 		m_utvDataIDs.push_back(dataid);
 
 		FREEP(temp);
@@ -1483,7 +1499,9 @@ void s_DocBook_Listener::_handleImage(PT_AttrPropIndex api)
 		escaped += UT_go_basename(m_pie->getFileName());
 		escaped += "_data/";
 		escaped += buf.escapeXML();
-		escaped += "\" format=\"PNG\"";
+		escaped += "\" format=\"";
+        escaped += format;
+        escaped += "\"";
 
 		if(pAP->getProperty("height", szValue))
 		{
@@ -1530,7 +1548,23 @@ void s_DocBook_Listener::_handlePositionedImage(PT_AttrPropIndex api)
 		const gchar* dataid = g_strdup(szValue);
 		char * temp = _stripSuffix(UT_go_basename(szValue), '_');
 		char * fstripped = _stripSuffix(temp, '.');
-		UT_UTF8String_sprintf(buf, "%s.png", fstripped);
+
+        std::string mimeType;
+        const UT_ByteBuf * pByteBuf = 0;
+        const char * extension = "png";
+        const char * format = "PNG";
+        m_pDocument->getDataItemDataByName(szValue, &pByteBuf, 
+                                           &mimeType, NULL);
+        if(mimeType == "image/jpeg") {
+            extension = "jpg";
+            format = "JPEG";
+        }
+        else if(mimeType == "image/svg+xml") {
+            extension = "svg";
+            format = "SVG";
+        }
+
+		UT_UTF8String_sprintf(buf, "%s.%s", fstripped, extension);
 		m_utvDataIDs.push_back(dataid);
 
 		FREEP(temp);
@@ -1560,7 +1594,9 @@ void s_DocBook_Listener::_handlePositionedImage(PT_AttrPropIndex api)
 		escaped += UT_go_basename(m_pie->getFileName());
 		escaped += "_data/";
 		escaped += buf.escapeXML();
-		escaped += "\" format=\"PNG\"";
+		escaped += "\" format=\"";
+        escaped += format;
+        escaped += "\"";
 
 		if(pAP->getProperty("frame-height", szValue))
 		{
@@ -2234,7 +2270,11 @@ void s_DocBook_Listener::_handleDataItems(void)
 			  char * temp = _stripSuffix(UT_go_basename(szName), '_');
 			  char * fstripped = _stripSuffix(temp, '.');
 			  FREEP(temp);
-			  UT_UTF8String_sprintf(fname, "%s/%s.png", fname.utf8_str(), fstripped);
+              const char * extension = "png";
+              if (mimeType == "image/jpeg") {
+                  extension = "jpg";
+              }
+			  UT_UTF8String_sprintf(fname, "%s/%s.%s", fname.utf8_str(), fstripped, extension);
 			  FREEP(fstripped);
 			}
 			
