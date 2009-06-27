@@ -4637,9 +4637,9 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 	if ((pByteBuf == 0) || mimeType.empty()) 
         return; // ??
 
-	if ((mimeType != "image/png") && (mimeType != "image/jpeg"))
+	if ((mimeType != "image/png") && (mimeType != "image/jpeg") && (mimeType != "image/svg+xml"))
 	{
-		UT_DEBUGMSG(("Object not of MIME type image/png or image/jpeg - ignoring...\n"));
+		UT_DEBUGMSG(("Object not of a suppored MIME type - ignoring...\n"));
 		return;
 	}
 
@@ -4682,12 +4682,14 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 
 	UT_UTF8String filename(dataid,suffix-dataid);
 	filename += suffid;
-	if (mimeType == "image/png") {
-		filename += ".png";
-	}
-	else {
-		filename += ".jpg";
-	}
+
+	std::string ext;
+    if(m_pDocument->getDataItemFileExtension(dataid, ext, true)) {
+        filename += ext;
+    }
+    else {
+        filename += ".png";
+    }
         
 	g_free (base_name);
 
