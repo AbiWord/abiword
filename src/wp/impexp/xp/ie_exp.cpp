@@ -753,3 +753,27 @@ UT_uint32 IE_Exp::getExporterCount(void)
 	return m_sniffers.size();
 }
 
+
+UT_Error IE_Exp::writeBufferToFile(const UT_ByteBuf * pByteBuf,
+                                   const std::string & imagedir,
+                                   const std::string & filename)
+{
+    UT_go_directory_create(imagedir.c_str(), 0750, NULL);
+
+    std::string path = imagedir + "/" + filename;
+
+    GError * error = NULL;
+	GsfOutput * out = UT_go_file_create (path.c_str (), &error);
+	if (out)
+	{
+		gsf_output_write (out, pByteBuf->getLength (), (const guint8*)pByteBuf->getPointer (0));
+		gsf_output_close (out);
+		g_object_unref (G_OBJECT (out));
+	}
+    else {
+        UT_DEBUGMSG(("Couldn't write file '%s': %s\n", path.c_str(), error->message));
+        g_error_free(error);
+        return UT_ERROR;
+    }
+    return UT_OK;
+}

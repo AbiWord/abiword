@@ -565,8 +565,6 @@ private:
  	void	_populateHeaderStyle ();
  	void	_populateFooterStyle ();
 
-	void	_writeImage (const UT_ByteBuf * pByteBuf,
-						 const UT_UTF8String & imagedir, const UT_UTF8String & filename);
 	void	_writeImageBase64 (const UT_ByteBuf * pByteBuf);
 	void	_handleImage (PT_AttrPropIndex api);
 	void	_handleImage (const PP_AttrProp * pAP, const char * szDataID, bool isPositioned);
@@ -4402,33 +4400,6 @@ s_HTML_Listener::~s_HTML_Listener()
 	DELETEP(m_toc);
 }
 
-/* dataid   is the raw string with the data ID
- * imagedir is the name of the directory in which we'll write the image
- * filename is the name of the file to which we'll write the image
- * url      is the URL which we'll use
- */
-void s_HTML_Listener::_writeImage (const UT_ByteBuf * pByteBuf,
-								   const UT_UTF8String & imagedir,
-								   const UT_UTF8String & filename)
-{
-	/* hmm, bit lazy this - attempt to create directory whether or not
-	 * it exists already... if it does, well hey. if this fails to
-	 * create a directory then fopen() will fail as well, so no biggie
-	 */
-	UT_go_directory_create(imagedir.utf8_str(), 0750, NULL);
-
-	UT_UTF8String path(imagedir);
-	path += "/";
-	path += filename;
-
-	GsfOutput * out = UT_go_file_create (path.utf8_str (), NULL);
-	if (out)
-	{
-		gsf_output_write (out, pByteBuf->getLength (), (const guint8*)pByteBuf->getPointer (0));
-		gsf_output_close (out);
-		g_object_unref (G_OBJECT (out));
-	}
-}
 
 void s_HTML_Listener::_writeImageBase64 (const UT_ByteBuf * pByteBuf)
 {
@@ -4522,7 +4493,7 @@ void s_HTML_Listener::_handleEmbedded (PT_AttrPropIndex api)
 	if (base_name)
 		objectbasedir = base_name;
 	objectbasedir += "_files";
-	UT_UTF8String objectdir = m_pie->getFileName ();
+	std::string objectdir = m_pie->getFileName ();
 	objectdir += "_files";
 		
 	UT_UTF8String filename(dataid,suffix-dataid);
@@ -4556,7 +4527,7 @@ void s_HTML_Listener::_handleEmbedded (PT_AttrPropIndex api)
 	 */
 	if (!get_Embed_Images () && !get_Multipart ())
 		{
-			_writeImage (pByteBuf, objectdir, filename);
+			IE_Exp::writeBufferToFile(pByteBuf, objectdir, filename.utf8_str());
 		}
 		
 	m_utf8_1 = "object";
@@ -4706,7 +4677,7 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 	if (base_name)
 		imagebasedir = base_name;
 	imagebasedir += "_files";
-	UT_UTF8String imagedir = m_pie->getFileName ();
+	std::string imagedir = m_pie->getFileName ();
 	imagedir += "_files";
 
 	UT_UTF8String filename(dataid,suffix-dataid);
@@ -4745,7 +4716,7 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 	 */
 	if (!get_Embed_Images () && !get_Multipart ())
 	{
-		_writeImage (pByteBuf, imagedir, filename);
+		IE_Exp::writeBufferToFile(pByteBuf, imagedir, filename.utf8_str());
 	}
 	m_utf8_1 = "img";
 	if(bIsPositioned)

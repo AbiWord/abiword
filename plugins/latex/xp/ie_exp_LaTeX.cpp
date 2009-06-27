@@ -337,9 +337,6 @@ protected:
 	void				_handleDataItems(void);
 	void				_convertFontSize(UT_String& szDest, const char* pszFontSize);
 	void				_convertColor(UT_String& szDest, const char* pszColor);
-	void				_writeImage (const UT_ByteBuf * pByteBuf,
-								   const UT_UTF8String & imagedir,
-								   const UT_UTF8String & filename);
 	void				_handleImage(const PP_AttrProp * pAP);
 	
 	PD_Document *		m_pDocument;
@@ -2012,29 +2009,6 @@ void s_LaTeX_Listener::_handleDataItems(void)
 }
 
 
-/* Code taken from the HTML exporter
- *
- * imagedir is the name of the directory in which we'll write the image
- * filename is the name of the file to which we'll write the image
- */
-void s_LaTeX_Listener::_writeImage (const UT_ByteBuf * pByteBuf,
-									const UT_UTF8String & imagedir,
-									const UT_UTF8String & filename)
-{
-	UT_go_directory_create(imagedir.utf8_str(), 0750, NULL);
-
-	UT_UTF8String path(imagedir);
-	path += "/";
-	path += filename;
-
-	GsfOutput * out = UT_go_file_create (path.utf8_str (), NULL);
-	if (out)
-	{
-		gsf_output_write (out, pByteBuf->getLength (), (const guint8*)pByteBuf->getPointer (0));
-		gsf_output_close (out);
-		g_object_unref (G_OBJECT (out));
-	}
-}
 
 void s_LaTeX_Listener::_handleImage(const PP_AttrProp * pAP)
 {	
@@ -2055,19 +2029,24 @@ void s_LaTeX_Listener::_handleImage(const PP_AttrProp * pAP)
 	if ((pByteBuf == 0) || (mimeType.empty())) 
         return; // ??
 
-	if (mimeType != "image/png")
+    const char * extension = ".png";
+    if(mimeType == "image/jpeg")
+    {
+        extension = ".jpg";
+    }
+	else if (mimeType != "image/png")
 	{
-		UT_DEBUGMSG(("Object not of MIME type image/png - ignoring...\n"));
+		UT_DEBUGMSG(("Object not of MIME type image/png or image/jpeg but %s - ignoring...\n", mimeType.c_str()));
 		return;
 	}
 
 	gchar *imagedir = UT_go_dirname_from_uri(m_pie->getFileName(), true);
 	
-	UT_UTF8String filename(szDataID);
-	filename += ".png";
+    std::string filename(szDataID);
+	filename += extension;
 	
 	/* save the image as imagedir/filename */
-	_writeImage (pByteBuf, imagedir, filename);
+	IE_Exp::writeBufferToFile(pByteBuf, imagedir, filename);
 	FREEP(imagedir);
 	
 	m_pie->write("\\includegraphics");
@@ -2081,7 +2060,7 @@ void s_LaTeX_Listener::_handleImage(const PP_AttrProp * pAP)
 	}
 
 	m_pie->write("{");
-	m_pie->write(szDataID);
+	m_pie->write(filename.c_str());
 	m_pie->write("}\n");
 
 	return;	

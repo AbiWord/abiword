@@ -156,6 +156,12 @@ public:
 
 	void populateFields();
 
+
+    // UTILS
+    static UT_Error writeBufferToFile(const UT_ByteBuf * pByteBuf,
+                             const std::string & imagedir,
+                             const std::string & filename);
+
 protected:
 	// todo: remove the = 0 for 2.2
 	IE_Exp(PD_Document * pDocument, UT_Confidence_t fidelity = 0);
