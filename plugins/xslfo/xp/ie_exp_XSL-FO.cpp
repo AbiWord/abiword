@@ -820,6 +820,7 @@ void s_XSL_FO_Listener::_handleHyperlink(PT_AttrPropIndex api)
 	}
 }
 
+
 void s_XSL_FO_Listener::_handleImage(PT_AttrPropIndex api)
 {
 	const PP_AttrProp * pAP = NULL;
@@ -842,7 +843,16 @@ void s_XSL_FO_Listener::_handleImage(PT_AttrPropIndex api)
 	img += url;
 	img += "_data/";
 	img += buf;
-	img += ".png')\"";
+
+    std::string ext;
+    if(m_pDocument->getDataItemFileExtension(dataid, ext, true)) {
+        img += ext;
+    }
+    else {
+        img += ".png";
+    }
+
+	img += "')\"";
 	buf.clear();
 
 	UT_LocaleTransactor t(LC_NUMERIC, "C");
@@ -888,7 +898,16 @@ void s_XSL_FO_Listener::_handlePositionedImage(PT_AttrPropIndex api)
 	img += url;
 	img += "_data/";
 	img += buf;
-	img += ".png')\"";
+
+    std::string ext;
+    if(m_pDocument->getDataItemFileExtension(dataid, ext, true)) {
+        img += ext;
+    }
+    else {
+        img += ".png";
+    }
+
+	img += "')\"";
 	buf.clear();
 
 	UT_LocaleTransactor t(LC_NUMERIC, "C");
@@ -1387,11 +1406,15 @@ void s_XSL_FO_Listener::_handleDataItems(void)
 				UT_UTF8String_sprintf(fname, "%s/%d.svg", fname.utf8_str(), loc);
 			else if (mimeType == "application/mathml+xml")
 				UT_UTF8String_sprintf(fname, "%s/%d.mathml", fname.utf8_str(), loc);
-			else // PNG Image
+			else // raster Image
 			{  
+                const char * extension = "png";
+                if(mimeType == "image/jpeg") {
+                    extension = "jpg";
+                }
 				char * temp = _stripSuffix(UT_go_basename(szName), '_');
 				char * fstripped = _stripSuffix(temp, '.');
-				UT_UTF8String_sprintf(fname, "%s/%s.png", fname.utf8_str(), fstripped);
+				UT_UTF8String_sprintf(fname, "%s/%s.%s", fname.utf8_str(), fstripped, extension);
 
 				FREEP(temp);
 				FREEP(fstripped);
