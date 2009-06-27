@@ -346,7 +346,7 @@ dcl(DLG_Column_RtlOrder,		"Use RTL Order")
    strings just like this to simulate text, and if your translation
    ends up very, very wordy, it will take up too much room in the preview.
 */
-dcl(DLG_Para_PreviewSampleFallback, "This paragraph represents words as they might appear in your document.  To see text from your document used in this preview, position your cursor in a document paragraph with some text in it and open this dialog.")
+dcl(DLG_Para_PreviewSampleFallback, "This paragraph represents words as they might appear in your document.  To see the text from your document used in this preview, position your cursor in a document paragraph with some text in it and open this dialog.")
 dcl(DLG_Para_PreviewPrevParagraph,	"Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph")
 dcl(DLG_Para_PreviewFollowParagraph,"Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph")
 
