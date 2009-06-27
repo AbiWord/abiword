@@ -221,6 +221,10 @@ public:
     virtual UT_Rect *      getScreenRect() = 0;
     virtual void           markDirtyOverlappingRuns(UT_Rect & recScreen) = 0;
 	const char *           getContainerString(void);
+	void                   setAllowDelete(bool bDelete)
+	{ m_bCanDelete = bDelete;}
+	bool                   canDeleta(void)
+	{ return m_bCanDelete;}
     UT_sint32   getBreakTick(void) const
 		{ return  m_iBreakTick;}
 	void        setBreakTick(UT_sint32 iTick)
@@ -243,6 +247,7 @@ private:
 	UT_BidiCharType         m_iDirection;
 	UT_sint32               m_iBreakTick;
 	UT_sint32               m_iRef;
+	bool                    m_bCanDelete;
 };
 
 

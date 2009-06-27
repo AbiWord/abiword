@@ -50,7 +50,8 @@ fp_ContainerObject::fp_ContainerObject(FP_ContainerType iType, fl_SectionLayout*
 			m_pSectionLayout(pSectionLayout),
 			m_iDirection(UT_BIDI_UNSET),
 		m_iBreakTick(0),
-		m_iRef(0)
+		m_iRef(0),
+		m_bCanDelete(true)
 {
 	UT_ASSERT(pSectionLayout);
 }
@@ -101,6 +102,7 @@ const char * fp_ContainerObject::getContainerString(void)
 fp_ContainerObject::~fp_ContainerObject()
 {
 	m_iConType = static_cast<FP_ContainerType>(-1);
+	UT_ASSERT(m_bCanDelete);
 }
 
 /*!

@@ -288,10 +288,10 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 		}
 		while(pCol)
 		{
-			UT_sint32 nWrapped2 = pCol->getNumWrapped();
+			//			nWrapped += pCol->getNumWrapped();
 			nWrapped += pCol->countWrapped();
 			UT_DEBUGMSG(("Page number %d \n",getDocLayout()->findPage(this)));
-			UT_DEBUGMSG(("Countwrapped %d NumWrapped %d \n",nWrapped,nWrapped2));
+			UT_DEBUGMSG(("NumWrapped %d \n",nWrapped));
 			pCol = static_cast<fp_Column *>(pCol->getFollower());
 		}
 	}
@@ -430,6 +430,11 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 						}
 						pNextCol = pFirstCol;
 						fp_Container * pNewFirstCon = static_cast<fp_Container *>(pNextCol->getNthCon(0));
+						if(!pNewFirstCon)
+						{
+							pBL = vecCollapse.getNthItem(0);
+							pNewFirstCon = static_cast<fp_Container *>(pBL->getFirstRun()->getLine());
+						}
 						return pNewFirstCon;
 					}
 					else

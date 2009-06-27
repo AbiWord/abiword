@@ -248,7 +248,12 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fl_DocSectionLayout * pSL, fp_Page * p
 //
 			        UT_sint32 iPage = m_pDocSec->getDocLayout()->findPage(pPrevPage);
 				m_pDocSec->getDocLayout()->setFramePageNumbers(iPage);
+				//pOuterContainer->setAllowDelete(false);
+				// 
+				// pOuterContainer can be deleted by this call
+				//
 				fp_Container * pNextContainer = pPrevPage->updatePageForWrapping(pCurColumn);
+				//pOuterContainer->setAllowDelete(true);
 				xxx_UT_DEBUGMSG(("Returned container updatePage %x \n",pNextContainer));
 				if(pNextContainer != NULL)
 				{
@@ -261,7 +266,7 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fl_DocSectionLayout * pSL, fp_Page * p
 		xxx_UT_DEBUGMSG(("SEVIOR: first to keep 1 %x \n",pFirstContainerToKeep));
 		fp_Container* pLastContainerToKeep = NULL;
 		fp_Container* pOffendingContainer = NULL;
-		UT_sint32 iMaxSecCol = pSL->getMaxSectionColumnHeight();
+		UT_sint32 iMaxSecCol = pSL->getActualColumnHeight();
  		UT_sint32 iMaxColHeight = pCurColumn->getMaxHeight();
 		UT_sint32 iFootnoteHeight = 0;
 		bool bEquivColumnBreak = false;
@@ -1004,7 +1009,9 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fl_DocSectionLayout * pSL, fp_Page * p
 #endif
 			conPos++;
 			if (pCurContainer == pLastContainerToKeep)
+			{
 				break;
+			}
 			else
 			{
 				if((pLastContainerToKeep!=NULL) && (_getNext(pCurContainer) == NULL))
@@ -1124,7 +1131,6 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fl_DocSectionLayout * pSL, fp_Page * p
 			if(pOuterContainer)
 				bTOCTest = (pOuterContainer->getContainerType() == 
 							  FP_CONTAINER_TOC);
-
 			pCurColumn->layout();
 
 			// pCurColumn->layout() might delete a broken table or TOC; fixup.
@@ -1193,6 +1199,7 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fl_DocSectionLayout * pSL, fp_Page * p
 			if(pNextContainer == NULL)
 			{
 				pCurColumn = NULL;
+				pOuterContainer = NULL;
 			}
 			else
 			{
