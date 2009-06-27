@@ -167,6 +167,7 @@ public:
 	UT_sint32   findPage(fp_Page * pPage);
 	void            setFramePageNumbers(UT_sint32 iStartPage);
 	void            relocateFrame(fl_FrameLayout * pFrame);
+	void            clearAllCountWraps(void);
 
 	UT_sint32   getPercentFilled(void)
 		{ return m_iFilled;}

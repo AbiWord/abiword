@@ -97,7 +97,7 @@ public:
 	UT_sint32           getAvailableHeight(void) const;
 	UT_sint32           getAvailableHeightForColumn(const fp_Column * pColumn) const;
 	fp_TableContainer * getContainingTable(PT_DocPosition pos);
-
+	void                clearCountWrapNumber(void);
 	// Leader (e.g. column) functions.
 	void 				columnHeightChanged(fp_Column* pLeader);
 	bool                breakPage(void);

@@ -232,6 +232,10 @@ UT_sint32 fp_Page::getColumnGap(void) const
 	return getOwningSection()->getColumnGap();
 }
 
+void fp_Page::clearCountWrapNumber(void)
+{
+	m_iCountWrapPasses = 0;
+}
 /*!
  * This method scans the page, looking for lines that overlap wrapped
  * positioned frames. As it finds them it records the line and the block
@@ -340,6 +344,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 				return NULL;
 			}
 			fp_Container * pNewFirstWrapCon = static_cast<fp_Container *>(pNextNoWrapCol->getNthCon(0));
+			getNext()->clearCountWrapNumber();
 			return pNewFirstWrapCon;
 		}
 	}

@@ -556,6 +556,15 @@ FootnoteType FL_DocLayout::getFootnoteType(void) const
 	return m_FootnoteType;
 }
 
+
+void FL_DocLayout::clearAllCountWraps(void)
+{
+  UT_sint32 i = 0;
+  for(i=0; i<countPages();i++)
+  {
+      getNthPage(i)->clearCountWrapNumber();
+  }
+}
 /*!
  * This Method fills the layout structures from the PieceTable.
  */
@@ -2694,6 +2703,7 @@ void FL_DocLayout::formatAll()
 //  		}
 //  		pSL = pSL->getNext();
 //  	}
+	clearAllCountWraps();
 	while (pSL)
 	{
 		pSL->format();
@@ -2747,6 +2757,7 @@ void FL_DocLayout::rebuildFromHere( fl_DocSectionLayout * pFirstDSL)
 		pDSL = pDSL->getNextDocSection();
 	}
 	deleteEmptyColumnsAndPages();
+	clearAllCountWraps();
 //
 // Clear out rebuild marks from this collapse
 //
