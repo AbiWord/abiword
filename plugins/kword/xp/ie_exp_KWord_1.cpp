@@ -22,6 +22,7 @@
 #include <ctype.h>
 
 #include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_types.h"
 #include "ut_misc.h"
 #include "ut_units.h"
@@ -576,23 +577,29 @@ void s_KWord_1_Listener::_handleDataItems(void)
 	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,
                                                     &mimeType)); k++)
 	{	  	  
-	  UT_UTF8String fname;	  
+        std::string fname;	  
 	  
-	  if (mimeType == "image/svg+xml")
-	      UT_UTF8String_sprintf(fname, "%s-%d.svg", m_pie->getFileName(), k);
-      else if (mimeType == "application/mathml+xml")
-	    UT_UTF8String_sprintf(fname, "%s-%d.mathml", m_pie->getFileName(), k);
-	  else // PNG Image
-	    UT_UTF8String_sprintf(fname, "%s-%d.png", m_pie->getFileName(), k);
+        const char * extension = "png";
+
+        if (mimeType == "image/svg+xml") {
+            extension = "svg";
+        }
+        else if (mimeType == "application/mathml+xml") {
+            extension = "mathml";
+        }
+        else if(mimeType == "image/jpeg") {
+            extension = "jpg";
+        }
+        fname = UT_std_string_sprintf("%s-%d.%s", m_pie->getFileName(), k, extension);
 	  
-	  GsfOutput *fp = UT_go_file_create(fname.utf8_str(), NULL);
+        GsfOutput *fp = UT_go_file_create(fname.c_str(), NULL);
 	  
-	  if(!fp)
-	    continue;
+        if(!fp)
+            continue;
 	  
-	  gsf_output_write(fp, pByteBuf->getLength(), (const guint8*)pByteBuf->getPointer(0));
-	  gsf_output_close(fp);
-	  g_object_unref(G_OBJECT(fp));
+        gsf_output_write(fp, pByteBuf->getLength(), (const guint8*)pByteBuf->getPointer(0));
+        gsf_output_close(fp);
+        g_object_unref(G_OBJECT(fp));
 	}
 	
 	return;
