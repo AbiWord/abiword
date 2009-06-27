@@ -422,8 +422,11 @@ bool fp_Line::isLastLineInBlock(void) const
  */
 void fp_Line::setReformat(void)
 {
+  if(!getFirstRun())
+      return;
   UT_sint32 iOff = getFirstRun()->getBlockOffset();
-  getBlock()->setNeedsReformat(getBlock(),iOff);
+  if(getBlock())
+      getBlock()->setNeedsReformat(getBlock(),iOff);
 }
 void fp_Line::setMaxWidth(UT_sint32 iMaxWidth)
 {
@@ -432,6 +435,10 @@ void fp_Line::setMaxWidth(UT_sint32 iMaxWidth)
 	  UT_DEBUGMSG(("Max width set to... %d \n",iMaxWidth));
 	  UT_ASSERT(0);
 		iMaxWidth = 60;
+	}
+	if((m_iMaxWidth > 0) && (m_iMaxWidth != iMaxWidth))
+	{
+	    setReformat();
 	}
 	m_iMaxWidth = iMaxWidth;
 	xxx_UT_DEBUGMSG(("Line %x MaxWidth set %d SameY %d \n",this,iMaxWidth,isSameYAsPrevious()));
@@ -2756,7 +2763,10 @@ void fp_Line::setY(UT_sint32 iY)
 	{
 		return;
 	}
-
+	if((m_iY !=INITIAL_OFFSET) && (m_iY != 0)  && isWrapped())
+	{
+	    setReformat();
+	}
 	clearScreen();
 	m_iY = iY;
 }

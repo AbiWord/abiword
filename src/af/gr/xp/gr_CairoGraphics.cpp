@@ -1262,7 +1262,7 @@ void GR_CairoGraphics::renderChars(GR_RenderInfo & ri)
 
 		// both of these can be 0 (iGlyphsEnd == 0 => only 1 glyph)
 		//	UT_return_if_fail( iGlyphsStart >= 0 && iGlyphsEnd >= 0 );
-		UT_DEBUGMSG(("Drawing glyph subset from %d to %d (offsets %d, %d)\n",
+		xxx_UT_DEBUGMSG(("Drawing glyph subset from %d to %d (offsets %d, %d)\n",
 					 iGlyphsStart, iGlyphsEnd,
 					 iOffsetStart, iOffsetEnd));
 		

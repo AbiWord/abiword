@@ -6975,7 +6975,7 @@ PT_DocPosition FV_View::getDocPositionFromXY(UT_sint32 xpos, UT_sint32 ypos, boo
 		bUseHdrFtr = false;
 	}
 	pPage->mapXYToPosition(bNotFrames,xClick, yClick, iNewPoint, bBOL, bEOL,isTOC, bUseHdrFtr,NULL);
-	UT_DEBUGMSG((" point at (%d,%d) is docpos %d \n",xpos,ypos,iNewPoint));
+	xxx_UT_DEBUGMSG((" point at (%d,%d) is docpos %d \n",xpos,ypos,iNewPoint));
 	return iNewPoint;
 }
 

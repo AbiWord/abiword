@@ -284,7 +284,10 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 		}
 		while(pCol)
 		{
-			nWrapped += pCol->getNumWrapped();
+			UT_sint32 nWrapped2 = pCol->getNumWrapped();
+			nWrapped += pCol->countWrapped();
+			UT_DEBUGMSG(("Page number %d \n",getDocLayout()->findPage(this)));
+			UT_DEBUGMSG(("Countwrapped %d NumWrapped %d \n",nWrapped,nWrapped2));
 			pCol = static_cast<fp_Column *>(pCol->getFollower());
 		}
 	}
@@ -319,8 +322,26 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 				}
 				
 		}
-		if(nWrappedObjs == 0)
+		if((nWrappedObjs == 0) &&(m_iCountWrapPasses == 0))
+		{
 			return NULL;
+		}
+		else if((nWrappedObjs == 0) && (getNext() == NULL))
+		{
+				return NULL;
+		}
+		else if(nWrappedObjs == 0)
+		{
+			fp_Column * pNextNoWrapCol = getNext()->getNthColumnLeader(0);
+			if(pNextNoWrapCol == NULL)
+			{
+				// FIXME this appears to happen sometimes.
+				// we should work out a better thing to do this this
+				return NULL;
+			}
+			fp_Container * pNewFirstWrapCon = static_cast<fp_Container *>(pNextNoWrapCol->getNthCon(0));
+			return pNewFirstWrapCon;
+		}
 	}
 	bool bFormatAllWrapped = ((nWrapped > 0) && (nWrappedObjs == 0));
 	UT_GenericVector<_BL *> vecBL;

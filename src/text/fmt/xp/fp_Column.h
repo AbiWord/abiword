@@ -123,12 +123,13 @@ public:
 								   UT_sint32& yoff);
 	fp_TableContainer * getCorrectBrokenTable(fp_Container * pLine);
 	fp_TOCContainer *   getCorrectBrokenTOC(fp_Container * pLine);
-	void		 		getScreenOffsets(fp_ContainerObject* pContainer,
+	void		    getScreenOffsets(fp_ContainerObject* pContainer,
 										 UT_sint32& xoff,
 										 UT_sint32& yoff);
 
-    virtual UT_Rect *       getScreenRect();
-    virtual void            markDirtyOverlappingRuns(UT_Rect & recScreen);
+        virtual UT_Rect *   getScreenRect();
+	virtual void        markDirtyOverlappingRuns(UT_Rect & recScreen);
+	UT_sint32           countWrapped(void);
 
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}
@@ -145,6 +146,7 @@ public:
 	{
 		UT_UNUSED(bDontClearIfNeeded);
 	}
+
 	virtual UT_sint32   getMarginBefore(void) const { return 0;}
 	virtual UT_sint32   getMarginAfter(void) const { return 0;}
 	virtual void        setAssignedScreenHeight(UT_sint32) {}

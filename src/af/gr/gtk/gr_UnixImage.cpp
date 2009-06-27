@@ -152,7 +152,7 @@ GR_Image * GR_UnixImage::createImageSegment(GR_Graphics * pG,const UT_Rect & rec
 	sName += sSub;
 	GR_UnixImage * pImage = new GR_UnixImage(sName.c_str());
 	UT_ASSERT(m_image);
-	UT_DEBUGMSG((" segment x %d y %d width %d height %d \n",x,y,width,height));
+	xxx_UT_DEBUGMSG((" segment x %d y %d width %d height %d \n",x,y,width,height));
 	pImage->m_image = gdk_pixbuf_new_subpixbuf(m_image,x,y,width,height);
 //
 //  gdk_pixbuf_new_subpixbuf shares pixels with the original pixbuf and
