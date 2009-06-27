@@ -797,7 +797,7 @@ void IE_Imp_WML::createImage(const char *name, const gchar **atts)
 	if (p_val)
 		alt += p_val;
 
-	X_CheckError (getDoc()->createDataItem (dataid.utf8_str(), false, pBB, "image/png", NULL));
+	X_CheckError (getDoc()->createDataItem (dataid.utf8_str(), false, pBB, pfg->getMimeType(), NULL));
 
 	const gchar *buf[7];
 	buf[0] = "dataid";
