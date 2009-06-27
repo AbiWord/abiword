@@ -221,7 +221,7 @@ bool GR_RSVGVectorImage::isTransparentAt(UT_sint32 x, UT_sint32 y)
 	return false;
 }
 
-GR_Image *GR_RSVGVectorImage::createImageSegment(GR_Graphics *pG, const UT_Rect &rec)
+GR_Image *GR_RSVGVectorImage::createImageSegment(GR_Graphics * /*pG*/, const UT_Rect & /*rec*/)
 {
 #if 0
 	// we need createImageSegment for converting inline images to positioned images via the context menu

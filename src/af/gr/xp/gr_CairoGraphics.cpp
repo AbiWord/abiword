@@ -831,7 +831,7 @@ bool GR_CairoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 
 	if (fabs (apw - dpw) >= .5)
 	{
-		for (int i = 0; i < RI->m_pGlyphs->num_glyphs; ++i)
+		for (i = 0; i < RI->m_pGlyphs->num_glyphs; ++i)
 		{
 			PangoGlyphGeometry *gp
 			  = &RI->m_pGlyphs->glyphs[i].geometry;
@@ -844,7 +844,7 @@ bool GR_CairoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 			  = (PangoGlyphUnit)(gp->width * dpw / apw);
 		}
 
-		for (int i = 0; i < RI->m_pScaledGlyphs->num_glyphs; ++i)
+		for (i = 0; i < RI->m_pScaledGlyphs->num_glyphs; ++i)
 		{
 			PangoGlyphGeometry *gp
 			  = &RI->m_pScaledGlyphs->glyphs[i].geometry;
