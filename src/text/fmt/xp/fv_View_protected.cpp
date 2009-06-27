@@ -228,7 +228,7 @@ void FV_View::_clearSelection(void)
 	{
 		UT_sint32 i = 0;
 		UT_GenericVector<PD_DocumentRange *> vecRanges;
-		vecRanges.clear();
+
 		for(i=0; i<m_Selection.getNumSelections();i++)
 		{
 			PD_DocumentRange * pTmp =m_Selection.getNthSelection(i);
