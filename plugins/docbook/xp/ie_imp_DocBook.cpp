@@ -2926,7 +2926,7 @@ void IE_Imp_DocBook::createImage(const char *name, const gchar **atts)
     std::string dataid = UT_std_string_sprintf ("image%u", static_cast<unsigned int>(m_iImages++));
 
 	X_CheckError (getDoc()->createDataItem (dataid.c_str(), false, pBB, 
-                                            "image/png", NULL));
+                                            pfg->getMimeType(), NULL));
 
 	const gchar *buf[5];
 	buf[0] = "dataid";
