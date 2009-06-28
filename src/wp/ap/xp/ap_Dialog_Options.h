@@ -28,6 +28,10 @@
 #include "config.h"
 #endif
 
+#include <string>
+#include <vector>
+#include <utility>
+
 #include "xap_Frame.h"
 #include "xap_Dialog.h"
 #include "xav_View.h"
@@ -92,7 +96,7 @@ class ABI_EXPORT AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 
 	AP_Dialog_Options::tAnswer	getAnswer(void) const;
 	
-	void _populateWindowData(void);
+	virtual void _populateWindowData(void);
 		// to be called when a control is toggled/changed
 	void _enableDisableLogic( tControl id );
 	
@@ -110,6 +114,9 @@ class ABI_EXPORT AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 	void _setColorForTransparent(const gchar * pzsColorForTransparent);
 	bool  isInitialPopulationHappenning(void)
 		{ return m_bInitialPop; }
+
+	typedef std::vector<std::pair<std::string, int> >	UnitMenuContent;
+	void _getUnitMenuContent(const XAP_StringSet *pSS, UnitMenuContent & content);
 
  protected:
 

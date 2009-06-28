@@ -260,21 +260,14 @@ void AP_UnixDialog_Options::addPage ( const XAP_NotebookDialog::Page *page )
 void AP_UnixDialog_Options::_setupUnitMenu ( GtkWidget *optionmenu, const XAP_StringSet *pSS )
 {
 	GtkComboBox *combo = GTK_COMBO_BOX(optionmenu);
-    std::string s;
-
+	UnitMenuContent content;
+	_getUnitMenuContent(pSS, content);
 	XAP_makeGtkComboBoxText(combo, G_TYPE_INT);
-    // inches
-    pSS->getValueUTF8 ( XAP_STRING_ID_DLG_Unit_inch, s );
-	XAP_appendComboBoxTextAndInt(combo, s.c_str(), DIM_IN);
-    // cm
-    pSS->getValueUTF8 ( XAP_STRING_ID_DLG_Unit_cm, s );
-	XAP_appendComboBoxTextAndInt(combo, s.c_str(), DIM_CM);
-    // points
-    pSS->getValueUTF8 ( XAP_STRING_ID_DLG_Unit_points, s );
-	XAP_appendComboBoxTextAndInt(combo, s.c_str(), DIM_PT);
-    // picas
-    pSS->getValueUTF8 ( XAP_STRING_ID_DLG_Unit_pica, s );
-	XAP_appendComboBoxTextAndInt(combo, s.c_str(), DIM_PI);
+	
+	for(UnitMenuContent::const_iterator iter = content.begin();
+		iter != content.end(); ++iter) {
+		XAP_appendComboBoxTextAndInt(combo, iter->first.c_str(), iter->second);
+	}
 	gtk_combo_box_set_active(combo, 0);
 }
 

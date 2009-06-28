@@ -86,8 +86,11 @@ void AP_Dialog_Options::_storeWindowData(void)
 	XAP_Prefs *pPrefs = m_pApp->getPrefs();
 	UT_return_if_fail (pPrefs);
 
-	AP_FrameData *pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
-	UT_return_if_fail (pFrameData);
+	AP_FrameData *pFrameData = NULL;
+	if(m_pFrame) {
+		pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
+		UT_return_if_fail (pFrameData);
+	}
 
 	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
 	UT_return_if_fail (pPrefsScheme);
@@ -169,7 +172,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 	// or hidden, then update the current window:
 	// (If we didn't change anything, leave it alone)
 #if !defined(TOOLKIT_GTK) && !defined(TOOLKIT_COCOA) && !defined (TOOLKIT_WIN) 
-	if ( _gatherViewShowRuler() != pFrameData->m_bShowRuler )
+	if (pFrameData && _gatherViewShowRuler() != pFrameData->m_bShowRuler )
 	{
 		pFrameData->m_bShowRuler = _gatherViewShowRuler() ;
 		if (!pFrameData->m_bIsFullScreen)
@@ -179,7 +182,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 	}
 
 	// Same for status bar
-	if (_gatherViewShowStatusBar() != pFrameData->m_bShowStatusBar)
+	if (pFrameData && _gatherViewShowStatusBar() != pFrameData->m_bShowStatusBar)
 	{
 		pFrameData->m_bShowStatusBar = _gatherViewShowStatusBar();
 		if (!pFrameData->m_bIsFullScreen)
@@ -189,19 +192,21 @@ void AP_Dialog_Options::_storeWindowData(void)
 	}
 
 
-	for (i = 0; i < m_pApp->getToolbarFactory()->countToolbars(); i++) {
-		if (_gatherViewShowToolbar(i) != pFrameData->m_bShowBar[i])
-		{
-			pFrameData->m_bShowBar[i] = _gatherViewShowToolbar(i);
-			if (!pFrameData->m_bIsFullScreen)
+	if(pFrameData) {
+		for (i = 0; i < m_pApp->getToolbarFactory()->countToolbars(); i++) {
+			if (_gatherViewShowToolbar(i) != pFrameData->m_bShowBar[i])
 			{
-				m_pFrame->toggleBar(i, pFrameData->m_bShowBar[i]);
+				pFrameData->m_bShowBar[i] = _gatherViewShowToolbar(i);
+				if (!pFrameData->m_bIsFullScreen)
+				{
+					m_pFrame->toggleBar(i, pFrameData->m_bShowBar[i]);
+				}
 			}
 		}
 	}
 #endif
 	
-	if ( _gatherViewUnprintable() != pFrameData->m_bShowPara )
+	if (pFrameData &&  _gatherViewUnprintable() != pFrameData->m_bShowPara )
 	{
 		pFrameData->m_bShowPara = _gatherViewUnprintable() ;
 		AV_View * pAVView = m_pFrame->getCurrentView();
@@ -258,8 +263,11 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 	XAP_Prefs *pPrefs = m_pApp->getPrefs();
 	UT_return_if_fail (pPrefs);
 
-	AP_FrameData *pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
-	UT_return_if_fail (pFrameData);
+	AP_FrameData *pFrameData = NULL;
+	if(m_pFrame) {
+		pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
+		UT_return_if_fail (pFrameData);
+	}
 
 	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
 	UT_return_if_fail (pPrefsScheme);
@@ -337,7 +345,7 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 			{
 				bool tmpbool = _gatherViewShowRuler();
 				Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_RulerVisible, tmpbool);
-				if (tmpbool != pFrameData->m_bShowRuler)
+				if (pFrameData && (tmpbool != pFrameData->m_bShowRuler))
 				{
 					pFrameData->m_bShowRuler = _gatherViewShowRuler() ;
 					m_pFrame->toggleRuler(pFrameData->m_bShowRuler);
@@ -362,7 +370,7 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 			{
 				bool tmpbool = _gatherViewShowStatusBar();
 				Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_StatusBarVisible, tmpbool);
-				if (tmpbool != pFrameData->m_bShowStatusBar)
+				if (pFrameData && (tmpbool != pFrameData->m_bShowStatusBar))
 				{
 					pFrameData->m_bShowStatusBar = tmpbool;
 					m_pFrame->toggleStatusBar(pFrameData->m_bShowStatusBar);
@@ -612,6 +620,21 @@ void AP_Dialog_Options::_enableDisableLogic( tControl id )
 		break;
 	}
 }
+
+
+void AP_Dialog_Options::_getUnitMenuContent(const XAP_StringSet *pSS, UnitMenuContent & content)
+{
+    std::string s;
+    pSS->getValueUTF8 ( XAP_STRING_ID_DLG_Unit_inch, s );
+	content.push_back(std::make_pair(s, (int)DIM_IN));
+    pSS->getValueUTF8 ( XAP_STRING_ID_DLG_Unit_cm, s );
+	content.push_back(std::make_pair(s, (int)DIM_CM));
+    pSS->getValueUTF8 ( XAP_STRING_ID_DLG_Unit_points, s );
+	content.push_back(std::make_pair(s, (int)DIM_PT));
+    pSS->getValueUTF8 ( XAP_STRING_ID_DLG_Unit_pica, s );
+	content.push_back(std::make_pair(s, (int)DIM_PI));
+}
+
 
 // The initialize the controls (i.e., disable controls not coded yet)
 void AP_Dialog_Options::_initEnableControls()
