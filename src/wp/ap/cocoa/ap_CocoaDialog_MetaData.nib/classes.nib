@@ -2,7 +2,7 @@
     IBClasses = (
         {
             ACTIONS = {cancelBtnAction = id; okBtnAction = id; }; 
-            CLASS = "AP_CocoaDialog_MetadataController"; 
+            CLASS = "AP_CocoaDialog_MetaDataController"; 
             LANGUAGE = ObjC; 
             OUTLETS = {
                 "m_authorData" = NSTextField; 
@@ -13,7 +13,7 @@
                 "m_coAuthorLabel" = NSTextField; 
                 "m_coverageData" = NSTextField; 
                 "m_coverageLabel" = NSTextField; 
-                "m_descriptionData" = NSTextField; 
+                "m_descriptionData" = NSTextView; 
                 "m_descriptionLabel" = NSTextField; 
                 "m_keywordData" = NSTextField; 
                 "m_keywordLabel" = NSTextField; 

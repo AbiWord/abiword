@@ -2,6 +2,7 @@
 
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
+ * Copyright (C) 2001-2003, 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -39,7 +40,7 @@ class AP_CocoaDialog_MetaData;
     IBOutlet NSTextField *m_coAuthorLabel;
     IBOutlet NSTextField *m_coverageData;
     IBOutlet NSTextField *m_coverageLabel;
-    IBOutlet NSTextField *m_descriptionData;
+    IBOutlet NSTextView  *m_descriptionData;
     IBOutlet NSTextField *m_descriptionLabel;
     IBOutlet NSTextField *m_keywordData;
     IBOutlet NSTextField *m_keywordLabel;

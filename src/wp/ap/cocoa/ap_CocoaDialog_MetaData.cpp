@@ -2,7 +2,7 @@
 
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
- * Copyright (C) 2001-2003 Hubert Figuiere
+ * Copyright (C) 2001-2003, 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -328,14 +328,12 @@ void AP_CocoaDialog_MetaData::cancelAction(void)
 
 - (NSString*)GUIDescription
 {
-	return [m_descriptionData stringValue];
+	return [m_descriptionData string];
 }
 
 - (void)setGUIDescription:(const UT_UTF8String&)str
 {
-	NSString *s = [[NSString alloc] initWithUTF8String:str.utf8_str()];
-	[m_descriptionData setStringValue:s];
-	[s release];
+	[m_descriptionData setString:[NSString stringWithUTF8String:str.utf8_str()]];
 }
 
 
