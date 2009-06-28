@@ -142,7 +142,7 @@ std::string UT_pathSuffix(std::string path)
 	if (path.size() == 0)
 		return "";
 
-	bool isUri = UT_go_path_is_uri(path.c_str())
+	bool isUri = UT_go_path_is_uri(path.c_str());
 	bool isFilename = isUri ? false : path.find_last_of(G_DIR_SEPARATOR) == std::string::npos;
 	
 	// If 'path' is no URI but also not a filename, then it must be a
