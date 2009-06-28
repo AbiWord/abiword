@@ -282,11 +282,11 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 
 				if (nFileType > 0) // 0 means autodetect
 				{
-					if (UT_pathSuffix(szDialogFilename))
+					if (!UT_pathSuffix(szDialogFilename).empty())
 					{
 						// warn if we have a suffix that doesn't match the selected file type
 						IE_ExpSniffer* pSniffer = IE_Exp::snifferForFileType(m_nTypeList[nIndex]);
-						if (pSniffer && !pSniffer->recognizeSuffix(UT_pathSuffix(szDialogFilename)))
+						if (pSniffer && !pSniffer->recognizeSuffix(UT_pathSuffix(szDialogFilename).c_str()))
 						{
 							UT_UTF8String msg;
 							const XAP_StringSet * pSS = m_pApp->getStringSet();
@@ -794,9 +794,9 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 #endif
 			if(m_id == XAP_DIALOG_ID_FILE_SAVEAS)
 			{
-				const char * szInitialSuffix = UT_pathSuffix(m_szInitialPathname);
+				std::string szInitialSuffix = UT_pathSuffix(m_szInitialPathname);
 				std::string szSaveTypeSuffix = IE_Exp::preferredSuffixForFileType(m_nDefaultFileType).utf8_str();
-				if(szInitialSuffix && !szSaveTypeSuffix.empty() 
+				if(!szInitialSuffix.empty() && !szSaveTypeSuffix.empty() 
 					&& (szSaveTypeSuffix != szInitialSuffix))
 				{
 					std::string sFileName = m_szInitialPathname;

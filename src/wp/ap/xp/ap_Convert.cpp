@@ -334,14 +334,14 @@ bool AP_Convert::convertTo(const char * szFilename,
   } 
   else
     {
-      const char *suffix = UT_pathSuffix(szTargetSuffixOrMime);
-      if (suffix)
+      std::string suffix = UT_pathSuffix(szTargetSuffixOrMime);
+      if (!suffix.empty())
 	{
 	  // suffix is ".txt" or ".html"
-	  ieft = IE_Exp::fileTypeForSuffix(suffix);
+	  ieft = IE_Exp::fileTypeForSuffix(suffix.c_str());
 
 	  // szTargetSuffixOrMime is something like "file://home/dom/foo.html", so use it as our target filename
-	  if (strlen (suffix) != strlen(szTargetSuffixOrMime))
+	  if (suffix.size() != strlen(szTargetSuffixOrMime))
 	    file = szTargetSuffixOrMime;
 	}
       else

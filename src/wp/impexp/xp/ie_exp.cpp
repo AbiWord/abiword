@@ -701,7 +701,7 @@ UT_Error IE_Exp::constructExporter(PD_Document * pDocument,
 	// that back to ieft.
 	if ( (ieft == IEFT_Unknown || ieft == IEFT_Bogus) && szFilename && *szFilename)
 	{
-		ieft = IE_Exp::fileTypeForSuffix(UT_pathSuffix(szFilename));
+		ieft = IE_Exp::fileTypeForSuffix(UT_pathSuffix(szFilename).c_str());
 	}
 
 	UT_return_val_if_fail (ieft != IEFT_Unknown, UT_ERROR);

@@ -177,7 +177,7 @@ UT_ScriptIdType	UT_ScriptLibrary::typeForContents(const char * szBuf,
 	
 UT_ScriptIdType	UT_ScriptLibrary::typeForSuffix(const char * szSuffix)
 {
-	if (!szSuffix)
+	if (!szSuffix || !(*szSuffix))
 		return -1;
 	
 	// we have to construct the loop this way because a
@@ -261,7 +261,7 @@ UT_Error UT_ScriptLibrary::constructScript(const char * szFilename,
     }
 	if (ieft == -1 && szFilename && *szFilename)
     {
-		ieft = typeForSuffix(UT_pathSuffix(szFilename));
+		ieft = typeForSuffix(UT_pathSuffix(szFilename).c_str());
     }
   
 	UT_return_val_if_fail(ieft != -1, UT_ERROR);

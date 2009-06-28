@@ -164,6 +164,9 @@ std::vector<std::string> & IE_ImpGraphic::getSupportedSuffixes()
  */
 const char * IE_ImpGraphic::getMimeTypeForSuffix(const char * suffix)
 {
+	if (!suffix || !(*suffix))
+		return NULL;
+		
 	if (suffix[0] == '.') {
 		suffix++;
 	}
@@ -469,17 +472,17 @@ UT_Error IE_ImpGraphic::constructImporter(GsfInput * input,
 					content_confidence = s->recognizeContents(input);
 				}
 
-				const char * suffix = UT_pathSuffix(gsf_input_name (input));
-				if (suffix) {
-					const IE_SuffixConfidence * sc = s->getSuffixConfidence();
-					while (sc && !sc->suffix.empty()) {
-						/* suffixes do not have a leading '.' */
-						if (0 == g_ascii_strcasecmp(sc->suffix.c_str(), suffix+1) && 
-							sc->confidence > suffix_confidence) {
-							suffix_confidence = sc->confidence;
-						}
-						sc++;
+				const IE_SuffixConfidence * sc = s->getSuffixConfidence();
+				while (sc && !sc->suffix.empty() && suffix_confidence != UT_CONFIDENCE_PERFECT) {
+					/* suffixes do not have a leading '.' */
+					// we use g_str_has_suffix like this to make sure we properly autodetect the extensions
+					// of files that have dots in their names, like foo.bar.png
+					std::string suffix = std::string(".") + sc->suffix;
+					if (g_str_has_suffix(gsf_input_name (input), suffix.c_str()) && 
+						sc->confidence > suffix_confidence) {
+						suffix_confidence = sc->confidence;
 					}
+					sc++;
 				}
 				
 				UT_Confidence_t confidence = s_condfidence_heuristic ( content_confidence, 

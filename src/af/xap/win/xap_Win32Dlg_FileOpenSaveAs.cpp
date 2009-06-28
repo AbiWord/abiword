@@ -429,31 +429,31 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		UT_uint32 end = g_strv_length((gchar **) m_szSuffixes);
 
 		if ((m_id == XAP_DIALOG_ID_FILE_SAVEAS) &&
-			(!UT_pathSuffix(szFile)))
+			(UT_pathSuffix(szFile).empty()))
 		{
 			// add suffix based on selected file type
 			// if selected file is "all documents" or "all"
 			// default to .abw, since that is how it will get saved
 			UT_ASSERT(ofn.nFilterIndex > 0);
 
-			const char * szSuffix = NULL;
+			std::string suffix;
 			char abw_sfx[] = ".abw";
 			
 			if(ofn.nFilterIndex <= end)
-				szSuffix = UT_pathSuffix(m_szSuffixes[ofn.nFilterIndex - 1]);
+				suffix = UT_pathSuffix(m_szSuffixes[ofn.nFilterIndex - 1]);
 			else
-				szSuffix = abw_sfx;
+				suffix = abw_sfx;
 			
-			UT_ASSERT(szSuffix);
+			UT_ASSERT(!suffix.empty());
 
-			UT_uint32 length = strlen(szFile) + strlen(szSuffix) + 1;
+			UT_uint32 length = strlen(szFile) + suffix.size() + 1;
 			m_szFinalPathname = (char *)UT_calloc(length,sizeof(char));
 			if (m_szFinalPathname)
 			{
 				char * p = m_szFinalPathname;
 
 				strcpy(p,szFile);
-				strcat(p,szSuffix);
+				strcat(p,suffix.c_str());
 			}
 		}
 		else

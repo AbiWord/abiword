@@ -30,6 +30,7 @@
 #include "ut_misc.h"
 #include "ut_assert.h"
 #include "ut_string.h"
+#include "ut_go_file.h"
 #include "ut_debugmsg.h"
 
 //#include "fl_AutoLists.h" // need definition of AUTO_LIST_RESERVED
@@ -132,25 +133,45 @@ bool UT_Rect::intersectsRect(const UT_Rect * pRect) const
 #undef R_BOTTOM
 }
 
-// WARNING: do NOT use UT_pathSuffix on URI's, as that won't work on Windows!
-const char * UT_pathSuffix(const char * path)
+// Returns the suffix (including the dot) of the filename designated by `path`. 
+// Path can be a local filename or an URI. Note that you can't pass this 
+// function unix-style local filenames on Windows, nor the other way around.
+// Returns an empty string if no suffix is found or an error occurred.
+std::string UT_pathSuffix(std::string path)
 {
-	// TODO This needs to be moved to platform code.
+	if (path.size() == 0)
+		return "";
+
+	bool isUri = UT_go_path_is_uri(path.c_str())
+	bool isFilename = isUri ? false : path.find_last_of(G_DIR_SEPARATOR) == std::string::npos;
 	
-	if (!path)
-		return NULL;
+	// If 'path' is no URI but also not a filename, then it must be a
+	// local path. If so, then we can convert it into a proper URI
+	if (!isUri && !isFilename)
+	{
+		char* uri = g_filename_to_uri(path.c_str(), NULL, NULL);
+		if (!uri)
+			return "";
+		path = uri;
+		FREEP(uri);
+	}
 
-	// This algorithm is pretty simple.  We search for
-	// a dot, and if the dot happens AFTER the last slash (if there
-	// is a slash), we consider the stuff beyond the dot (in
-	// the forward direction) the extension.
+	// This algorithm is pretty simple: we search for a dot, and if the
+	// dot happens AFTER the last slash (in the case of an URI), we consider
+	// the stuff beyond the dot (in the forward direction) the extension.
 
-	const char * slashpos = strrchr(path, G_DIR_SEPARATOR);
+	size_t slashpos = 0;
+	if (!isFilename)
+	{
+		slashpos = path.find_last_of('/');
+		slashpos++; // strip the leading / as well
+	}
 
-	if (slashpos)
-	  return strchr (slashpos + 1, '.');
-	else
-	  return strchr (path, '.');
+	size_t dotpos = path.find_first_of('.', slashpos);
+	if (dotpos == std::string::npos)
+		return "";
+
+	return std::string(path, dotpos, path.size() - dotpos);
 }
 
 /*!

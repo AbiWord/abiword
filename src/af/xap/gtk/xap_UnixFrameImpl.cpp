@@ -192,13 +192,11 @@ static int s_mapMimeToUriType (const char * uri)
 
 	if (g_ascii_strcasecmp (mimeType, "application/octet-stream") == 0) {
 		FREEP (mimeType);
-		const gchar * suffix = UT_pathSuffix(uri);
-		if (suffix) {
-			if(suffix[0] == '.')
-				suffix++;
-			const gchar *mt = IE_Imp::getMimeTypeForSuffix(suffix);
+		std::string suffix = UT_pathSuffix(uri);
+		if (!suffix.empty()) {
+			const gchar *mt = IE_Imp::getMimeTypeForSuffix(suffix.c_str());
 			if (!mt) {
-				mt = IE_ImpGraphic::getMimeTypeForSuffix(suffix);
+				mt = IE_ImpGraphic::getMimeTypeForSuffix(suffix.c_str());
 			}
 			if (mt) {
 				/* we to g_free that later */
@@ -552,18 +550,15 @@ s_dndDropEvent(GtkWidget        *widget,
 		//
 		// Look to see if this is actually an image.
 		//
-		const gchar * suffix = UT_pathSuffix(uri);
-		if (suffix) 
+		std::string suffix = UT_pathSuffix(uri);
+		if (!suffix.empty()) 
 		{
-			if(suffix[0] == '.')
-				suffix++;
-			UT_UTF8String sSuff = suffix;
-			UT_DEBUGMSG(("SUffix of uri is %s \n",sSuff.utf8_str()));
-			if(sSuff.length() > 0 && ((sSuff.substr(0,3) == "jpg") ||
-									  (sSuff.substr(0,4) == "jpeg") ||
-									  (sSuff.substr(0,3) == "png") ||
-									  (sSuff.substr(0,3) == "svg") ||
-									  (sSuff.substr(0,3) == "gif")))
+			UT_DEBUGMSG(("Suffix of uri is %s \n",suffix.c_str()));
+			if ((suffix.substr(1,3) == "jpg") ||
+				  (suffix.substr(1,4) == "jpeg") ||
+				  (suffix.substr(1,3) == "png") ||
+				  (suffix.substr(1,3) == "svg") ||
+				  (suffix.substr(1,3) == "gif"))
 			{
 
 				UT_UTF8String sUri = uri;

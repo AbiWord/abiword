@@ -366,6 +366,9 @@ std::vector<std::string> & IE_Imp::getSupportedSuffixes()
  */
 const char * IE_Imp::getMimeTypeForSuffix(const char * suffix)
 {
+	if (!suffix || !(*suffix))
+		return NULL;
+	
 	if (suffix[0] == '.') {
 		suffix++;
 	}
@@ -441,11 +444,14 @@ IEFileType IE_Imp::fileTypeForContents(const char * szBuf, UT_uint32 iNumbytes)
 */
 IEFileType IE_Imp::fileTypeForSuffix(const char * szSuffix)
 {
-	if (!szSuffix)
+	if (!szSuffix || !(*szSuffix))
 		return IEFT_Unknown;
-
+	
 	// this assert alerts us to bugs like 9571
 	UT_ASSERT_HARMLESS(*szSuffix == '.');
+
+	if (szSuffix[0] == '.')
+		szSuffix++;	
 	
 	IEFileType best = IEFT_Unknown;
 	UT_Confidence_t   best_confidence = UT_CONFIDENCE_ZILCH;
@@ -460,9 +466,9 @@ IEFileType IE_Imp::fileTypeForSuffix(const char * szSuffix)
 		IE_ImpSniffer * s = IE_IMP_Sniffers.getNthItem(k);
 		const IE_SuffixConfidence * sc = s->getSuffixConfidence();
 		UT_Confidence_t confidence = UT_CONFIDENCE_ZILCH;
-		while (sc && !sc->suffix.empty()) {
+		while (sc && !sc->suffix.empty() && confidence != UT_CONFIDENCE_PERFECT) {
 			/* suffixes do not have a leading '.' */
-			if (0 == g_ascii_strcasecmp(sc->suffix.c_str(), szSuffix+1) && 
+			if (0 == g_ascii_strcasecmp(sc->suffix.c_str(), szSuffix) && 
 				sc->confidence > confidence) {
 				confidence = sc->confidence;
 			}

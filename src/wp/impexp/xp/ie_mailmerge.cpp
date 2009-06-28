@@ -333,10 +333,10 @@ UT_Error IE_MailMerge::constructMerger(const char * szFilename,
 		    if ( iNumbytes > 0 )
 				content_confidence = s->recognizeContents(szBuf, iNumbytes);
 		    
-		    const char * suffix = UT_pathSuffix(szFilename) ;
-		    if ( suffix != NULL )
+		    std::string suffix = UT_pathSuffix(szFilename) ;
+		    if (!suffix.empty())
 			{
-				suffix_confidence = s->recognizeSuffix(suffix);
+				suffix_confidence = s->recognizeSuffix(suffix.c_str());
 			}
 		    
 		    UT_Confidence_t confidence = s_confidence_heuristic ( content_confidence, 
