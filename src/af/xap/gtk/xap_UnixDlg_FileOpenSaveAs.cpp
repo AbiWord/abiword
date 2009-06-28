@@ -652,7 +652,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	gtk_widget_show(pulldown_hbox);
 
 	// pulldown label
-	GtkWidget * filetypes_label = gtk_label_new(szFileTypeLabel.c_str());
+	GtkWidget * filetypes_label = gtk_label_new_with_mnemonic(convertMnemonics(szFileTypeLabel).c_str());
 	gtk_label_set_justify(GTK_LABEL(filetypes_label), GTK_JUSTIFY_RIGHT);
 	gtk_misc_set_alignment(GTK_MISC(filetypes_label), 1.0, 0.5);
 	gtk_widget_show(filetypes_label);
@@ -662,6 +662,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	filetypes_pulldown = gtk_combo_box_new();
 	gtk_widget_show(filetypes_pulldown);
 	gtk_box_pack_end(GTK_BOX(pulldown_hbox), filetypes_pulldown, TRUE, TRUE, 0);
+    gtk_label_set_mnemonic_widget(GTK_LABEL(filetypes_label), filetypes_pulldown);
 #endif
 	//
 	// add the filters to the dropdown list

@@ -632,6 +632,27 @@ void convertMnemonics(gchar * s)
 	}
 }
 
+
+// probably much slower....
+std::string & convertMnemonics(std::string & s)
+{
+	for (UT_uint32 i = 0; s[i] != 0; i++) 
+	{
+		if ( s[i] == '&' ) {
+			if (i > 0 && s[i-1] == '\\')
+			{
+				s[i-1] = '&';
+                s.erase(i);
+				i--;
+            }
+			else
+				s[i] = '_';
+		}
+	}
+
+    return s;
+}
+
 /*!
  * Localizes the label of a widget given the string id
  * Ampersands will be converted to underscores/mnemonics

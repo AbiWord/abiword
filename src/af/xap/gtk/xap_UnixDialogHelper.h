@@ -95,6 +95,7 @@ void abiDialogSetTitle(GtkWidget * dlg, const char * title, ...)
     ABI_PRINTF_FORMAT(2,3);
 
 void convertMnemonics(gchar * s);
+std::string & convertMnemonics(std::string & s);
 
 void localizeLabel(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id);
 void localizeLabelUnderline(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id);
