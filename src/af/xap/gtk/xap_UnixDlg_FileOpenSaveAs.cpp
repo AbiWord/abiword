@@ -280,7 +280,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 				pPrefs->getPrefsValueBool(static_cast<const gchar *>(XAP_PREF_KEY_UseSuffix), &wantSuffix);
 				UT_DEBUGMSG(("UseSuffix: %d\n", wantSuffix));
 
-				if (nFileType > 0) // 0 means autodetect
+				if (nFileType > 0 && getDialogId() != XAP_DIALOG_ID_FILE_SAVE_IMAGE) // 0 means autodetect
 				{
 					if (!UT_pathSuffix(szDialogFilename).empty())
 					{
@@ -537,6 +537,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 				break;
 			}
 		case XAP_DIALOG_ID_FILE_SAVEAS:
+		case XAP_DIALOG_ID_FILE_SAVE_IMAGE:
 			{
 				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_SaveAsTitle,szTitle);
 				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel,szFileTypeLabel);
@@ -704,7 +705,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	m_wFileTypes_PullDown = filetypes_pulldown;
 	// dialog; open dialog always does auto-detect
 	// TODO: should this also apply to the open dialog?
-	if (m_id == XAP_DIALOG_ID_FILE_SAVEAS)
+	if (m_id == XAP_DIALOG_ID_FILE_SAVEAS || m_id == XAP_DIALOG_ID_FILE_SAVE_IMAGE)
 	{
 		gtk_combo_box_set_active(combo, activeItemIndex + 1);
 	}

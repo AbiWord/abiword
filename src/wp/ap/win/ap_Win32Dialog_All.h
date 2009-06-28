@@ -96,6 +96,7 @@
 	DeclareDialog(XAP_DIALOG_ID_MESSAGE_BOX,	XAP_Win32Dialog_MessageBox)
 	DeclareDialog(XAP_DIALOG_ID_FILE_OPEN,		XAP_Win32Dialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FILE_SAVEAS,	XAP_Win32Dialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_FILE_SAVE_IMAGE,	XAP_Win32Dialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FILE_IMPORT,	XAP_Win32Dialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT,	XAP_Win32Dialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_FILE,	XAP_Win32Dialog_FileOpenSaveAs)

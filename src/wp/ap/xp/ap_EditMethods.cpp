@@ -2831,7 +2831,7 @@ Defun1(fileSaveImage)
 		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	XAP_Dialog_FileOpenSaveAs * pDialog
-		= static_cast<XAP_Dialog_FileOpenSaveAs *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_FILE_SAVEAS));
+		= static_cast<XAP_Dialog_FileOpenSaveAs *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_FILE_SAVE_IMAGE));
 	UT_return_val_if_fail (pDialog, false);
 
 	UT_uint32 filterCount = 1;

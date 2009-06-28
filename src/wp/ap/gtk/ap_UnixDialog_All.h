@@ -122,6 +122,7 @@
 	DeclareDialog(XAP_DIALOG_ID_CLIPART,		XAP_UnixDialog_ClipArt,				FALSE)
 	DeclareDialog(XAP_DIALOG_ID_FILE_OPEN,		XAP_UnixDialog_FileOpenSaveAs, 		FALSE)
 	DeclareDialog(XAP_DIALOG_ID_FILE_SAVEAS,	XAP_UnixDialog_FileOpenSaveAs, 		FALSE)
+	DeclareDialog(XAP_DIALOG_ID_FILE_SAVE_IMAGE,	XAP_UnixDialog_FileOpenSaveAs, 		FALSE)
 #ifdef ENABLE_PRINT
 	DeclareDialog(XAP_DIALOG_ID_PRINT,			XAP_UnixDialog_Print, 				FALSE)
 	DeclareDialog(XAP_DIALOG_ID_PRINTPREVIEW,	XAP_UnixDialog_PrintPreview, 		FALSE)
