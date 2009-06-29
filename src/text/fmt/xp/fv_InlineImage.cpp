@@ -119,7 +119,7 @@ void FV_VisualInlineImage::_actuallyScroll(UT_Worker * pWorker)
 	{
 		bScrollRight = true;
 	}
-	if(bScrollDown || bScrollUp || bScrollLeft || bScrollRight)
+	if((bScrollDown || bScrollUp || bScrollLeft || bScrollRight) && (pVis->m_pDragImage ))
 	{
 		if(bScrollUp)
 		{
@@ -137,12 +137,8 @@ void FV_VisualInlineImage::_actuallyScroll(UT_Worker * pWorker)
 		{
 			pView->cmdScroll(AV_SCROLLCMD_LINERIGHT, static_cast<UT_uint32>(x -pView->getWindowWidth()));
 		}
+
 		pVis->drawImage();
-#if 0
-		PT_DocPosition posAtXY = pVis->getPosFromXY(x,y);
-		pView->_setPoint(posAtXY);
-		pVis->drawCursor(posAtXY);
-#endif
 		iExtra = 0;
 		return;
 	}

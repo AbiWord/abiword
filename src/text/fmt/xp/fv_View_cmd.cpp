@@ -5502,8 +5502,8 @@ bool FV_View::cmdInsertLatexMath(UT_UTF8String & sLatex,
 	UT_ByteBuf latexBuf;
 	mathBuf.ins(0,reinterpret_cast<const UT_Byte *>(sMath.utf8_str()),static_cast<UT_uint32>(sMath.size()));
 	latexBuf.ins(0,reinterpret_cast<const UT_Byte *>(sLatex.utf8_str()),static_cast<UT_uint32>(sLatex.size()));
-	m_pDoc->createDataItem(sMathName.utf8_str(),false,&mathBuf,"",NULL);
-	m_pDoc->createDataItem(sLatexName.utf8_str(),false,&latexBuf,"",NULL);
+	m_pDoc->createDataItem(sMathName.utf8_str(),false,&mathBuf,"MathML",NULL);
+	m_pDoc->createDataItem(sLatexName.utf8_str(),false,&latexBuf,"iTex",NULL);
 	// OK Insert the MathML Object
 	const gchar * atts[9]={"dataid",NULL,"latexid",NULL,"props",NULL,NULL,NULL,NULL};
 	atts[1] = static_cast<const gchar *>(sMathName.utf8_str());
