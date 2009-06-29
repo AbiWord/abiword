@@ -114,7 +114,7 @@ toolbar_append_item (GtkToolbar *toolbar,
 		gtk_container_add (GTK_CONTAINER (tool_item), box);
 		gtk_container_add (GTK_CONTAINER (box), widget);
 #if GTK_CHECK_VERSION(2,12,0)
-		gtk_widget_set_tooltip_text (GTK_WIDGET(toolbar), text);
+		gtk_tool_item_set_tooltip_text(tool_item, text);
 #endif
 		if (action_name && data) {
 			GtkAction	*proxy_action;
