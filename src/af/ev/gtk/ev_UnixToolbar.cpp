@@ -142,6 +142,7 @@ static GtkWidget *
 toolbar_append_button (GtkToolbar 	*toolbar, 
 					   const gchar	*icon_name, 
 					   const gchar	*label, 
+					   const gchar  *tooltip,
 					   const gchar  *private_text, 
 					   GCallback	 handler, 
 					   gpointer		 data, 
@@ -158,7 +159,7 @@ toolbar_append_button (GtkToolbar 	*toolbar,
 	*handler_id = g_signal_connect (G_OBJECT (item), "clicked", handler, data);
 
 	return (GtkWidget *) toolbar_append_item (toolbar, GTK_WIDGET (item), 
-											  label, private_text, TRUE,
+											  tooltip, private_text, TRUE,
 											  NULL, NULL, NULL);
 }
 
@@ -169,6 +170,7 @@ static GtkWidget *
 toolbar_append_toggle (GtkToolbar 	*toolbar, 
 					   const gchar	*icon_name, 
 					   const gchar	*label, 
+					   const gchar  *tooltip,
 					   const gchar  *private_text, 
 					   GCallback	 handler, 
 					   gpointer		 data, 
@@ -186,7 +188,7 @@ toolbar_append_toggle (GtkToolbar 	*toolbar,
 	*handler_id = g_signal_connect (G_OBJECT (item), "toggled", handler, data);
 
 	return (GtkWidget *) toolbar_append_item (toolbar, GTK_WIDGET (item), 
-											  label, private_text, show,
+											  tooltip, private_text, show,
 											  NULL, NULL, NULL);
 }
 
@@ -206,6 +208,7 @@ toolbar_append_menubutton (GtkToolbar 	*toolbar,
 						   GtkWidget    *menu,
 						   const gchar	*icon_name, 
 						   const gchar	*label, 
+						   const gchar  *tooltip,
 						   const gchar  *private_text, 
 						   GCallback	 handler, 
 						   gpointer		 data, 
@@ -238,7 +241,7 @@ toolbar_append_menubutton (GtkToolbar 	*toolbar,
 	}
 	
 	return (GtkWidget *) toolbar_append_item (toolbar, GTK_WIDGET (item), 
-											  label, private_text, TRUE,
+											  tooltip, private_text, TRUE,
 											  NULL, NULL, NULL);
 }
 #endif
@@ -881,16 +884,16 @@ bool EV_UnixToolbar::synthesize(void)
 		EV_Toolbar_Label * pLabel = m_pToolbarLabelSet->getLabel(id);
 		UT_ASSERT(pLabel);
 
+		const char * szToolTip = pLabel->getToolTip();
+		if (!szToolTip || !*szToolTip)
+			szToolTip = pLabel->getStatusMsg();		
+
 		switch (pLayoutItem->getToolbarLayoutFlags())
 		{
 		case EV_TLF_Normal:
 		{
 			_wd * wd = new _wd(this,id);
 			UT_ASSERT(wd);
-
-			const char * szToolTip = pLabel->getToolTip();
-			if (!szToolTip || !*szToolTip)
-				szToolTip = pLabel->getStatusMsg();
 
 			switch (pAction->getItemType())
 			{
@@ -900,7 +903,7 @@ bool EV_UnixToolbar::synthesize(void)
 				if(pAction->getToolbarId() != AP_TOOLBAR_ID_INSERT_TABLE)
 				{
 					wd->m_widget = toolbar_append_button (GTK_TOOLBAR (m_wToolbar), pLabel->getIconName(),
-												    	  pLabel->getToolbarLabel(), NULL, 
+												    	  pLabel->getToolbarLabel(), szToolTip, NULL, 
 														  (GCallback) _wd::s_callback, (gpointer) wd, 
 														  &(wd->m_handlerId));
 				}
@@ -961,7 +964,7 @@ bool EV_UnixToolbar::synthesize(void)
 
 					gboolean bShow = TRUE;
 					wd->m_widget = toolbar_append_toggle (GTK_TOOLBAR (m_wToolbar), pLabel->getIconName(),
-												    	  pLabel->getToolbarLabel(), NULL, 
+												    	  pLabel->getToolbarLabel(), szToolTip, NULL, 
 														  (GCallback) _wd::s_callback, (gpointer) wd, 
 														  bShow, &(wd->m_handlerId));
 					//
@@ -1171,6 +1174,7 @@ bool EV_UnixToolbar::synthesize(void)
 											   wMenu,
 											   pLabel->getIconName(),
 											   pLabel->getToolbarLabel(),
+											   szToolTip,
 											   NULL, 
 											   NULL,
 											   NULL, 
