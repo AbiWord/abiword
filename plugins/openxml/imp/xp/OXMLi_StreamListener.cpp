@@ -38,6 +38,7 @@
 #include <OXMLi_ListenerState_Footnote.h>
 #include <OXMLi_ListenerState_Endnote.h>
 #include <OXMLi_ListenerState_Image.h>
+#include <OXMLi_ListenerState_Textbox.h>
 
 // AbiWord includes
 #include <ut_types.h>
@@ -76,6 +77,8 @@ void OXMLi_StreamListener::setupStates(OXML_PartType type, const char * partId)
 		state = new OXMLi_ListenerState_Table();
 		this->pushState(state);
 		state = new OXMLi_ListenerState_Image();
+		this->pushState(state);
+		state = new OXMLi_ListenerState_Textbox();
 		this->pushState(state);
 		break;
 	case STYLES_PART:
