@@ -64,7 +64,7 @@ void AP_Win32Dialog_Goto::activate(void)
 	//  iResult = ShowWindow( m_hWnd, SW_SHOW );
 	//  iResult = BringWindowToTop( m_hWnd );
 
-	UT_ASSERT_HARMLESS((iResult != 0));
+	//UT_ASSERT_HARMLESS((iResult != 0));
     showWindow(SW_SHOW);
 	bringWindowToTop();
 }

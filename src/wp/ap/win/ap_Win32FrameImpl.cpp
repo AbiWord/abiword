@@ -628,12 +628,12 @@ bool AP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
 		return false;
 
 	ATOM a;
-    	UT_Win32LocaleString str;	
+    UT_Win32LocaleString str;	
 
 	// register class for the container window (this will contain the document
 	// and the rulers and the scroll bars)
 
-    	str.fromASCII (app->getApplicationName());	
+    str.fromASCII (app->getApplicationName());	
 	_snwprintf(s_ContainerWndClassName, MAXCNTWNDCLSNMSIZE, L"%sContainer", str.c_str());
  	
 
@@ -771,12 +771,12 @@ int AP_Win32FrameImpl::_getMouseWheelLines()
  		Info.dwMajorVersion == 4 &&
  		Info.dwMinorVersion == 0)
  	{
- 		// Win95
+ 		// Win95                TODO: Check this
  		UINT msgMSHWheelGetScrollLines = RegisterWindowMessageW(MSH_SCROLL_LINES);
  		HWND hdlMSHWheel = FindWindowW(MSH_WHEELMODULE_CLASS, MSH_WHEELMODULE_TITLE);
  		if (hdlMSHWheel && msgMSHWheelGetScrollLines)
  		{
- 			return SendMessage(hdlMSHWheel, msgMSHWheelGetScrollLines, 0, 0);
+ 			return SendMessageW(hdlMSHWheel, msgMSHWheelGetScrollLines, 0, 0);
  		}
  	}
  	else
@@ -832,13 +832,13 @@ void AP_Win32FrameImpl::_track(UT_sint32 x, UT_sint32 y)
 	{
 		int iNewPosition = (m_startScrollPosition - iMin) * (y - rect.top) / (m_startMouseWheelY - rect.top);
 
-		SendMessage(m_hwndContainer, WM_VSCROLL, MAKEWPARAM(SB_THUMBTRACK, (WORD)iNewPosition), NULL);
+		SendMessageW(m_hwndContainer, WM_VSCROLL, MAKEWPARAM(SB_THUMBTRACK, (WORD)iNewPosition), NULL);
 	}
 	else
 	{
 		int iNewPosition = m_startScrollPosition + (iMax - m_startScrollPosition) * (y - m_startMouseWheelY) / (rect.bottom - m_startMouseWheelY);
 
-		SendMessage(m_hwndContainer, WM_VSCROLL, MAKEWPARAM(SB_THUMBTRACK, (WORD)iNewPosition), NULL);
+		SendMessageW(m_hwndContainer, WM_VSCROLL, MAKEWPARAM(SB_THUMBTRACK, (WORD)iNewPosition), NULL);
 	}
 
 }
@@ -981,9 +981,9 @@ LRESULT CALLBACK AP_Win32FrameImpl::_ContainerWndProc(HWND hwnd, UINT iMsg, WPAR
 
 		case WM_SYSCOLORCHANGE:
 		{
-			SendMessage(fImpl->m_hwndTopRuler,WM_SYSCOLORCHANGE,0,0);
-			SendMessage(fImpl->m_hwndLeftRuler,WM_SYSCOLORCHANGE,0,0);
-			SendMessage(fImpl->m_hwndDocument,WM_SYSCOLORCHANGE,0,0);
+			SendMessageW(fImpl->m_hwndTopRuler,WM_SYSCOLORCHANGE,0,0);
+			SendMessageW(fImpl->m_hwndLeftRuler,WM_SYSCOLORCHANGE,0,0);
+			SendMessageW(fImpl->m_hwndDocument,WM_SYSCOLORCHANGE,0,0);
 			return UT_DefWindowProc(hwnd, iMsg, wParam, lParam);
 		}
 
@@ -1008,7 +1008,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_ContainerWndProc(HWND hwnd, UINT iMsg, WPAR
 			if (WHEEL_PAGESCROLL == cWheelLines)
 			{
 				WORD wDir = (iDelta < 0) ? SB_PAGEDOWN : SB_PAGEUP;
-				SendMessage(hwnd,
+				SendMessageW(hwnd,
 							WM_VSCROLL,
 							MAKELONG(wDir, 0),
 							NULL);
@@ -1035,7 +1035,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_ContainerWndProc(HWND hwnd, UINT iMsg, WPAR
 				{
 					// If position has changed set new position
 					iNewPos >>= fImpl->m_vScale;
-					SendMessage(hwnd,
+					SendMessageW(hwnd,
 							WM_VSCROLL,
 							MAKELONG(SB_THUMBPOSITION, iNewPos),
 							NULL);
@@ -1378,7 +1378,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 			return 0;
 
 		case WM_INPUTLANGCHANGE:	// let the XAP_Win32Frame handle this
-			return ::SendMessage(fImpl->_getTopLevelWindow(), WM_INPUTLANGCHANGE, wParam, lParam);
+			return ::SendMessageW(fImpl->_getTopLevelWindow(), WM_INPUTLANGCHANGE, wParam, lParam);
 #ifdef COPY_ON_DEMAND
 		case WM_RENDERFORMAT:
 			if(static_cast<AP_Win32App *>(XAP_App::getApp())->copyFmtToClipboardOnDemand((UINT)wParam))
