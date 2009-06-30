@@ -33,15 +33,15 @@ class fl_BlockLayout;
 class ABI_EXPORT fb_ColumnBreaker
 {
 public:
-	fb_ColumnBreaker();
+	fb_ColumnBreaker(fl_DocSectionLayout * pDSL);
 	virtual ~fb_ColumnBreaker(void) {}
-	UT_sint32 breakSection(fl_DocSectionLayout * pSL);
+	UT_sint32 breakSection(void);
 	void   setStartPage(fp_Page * pPage);
 	fp_Page * getStartPage(void) { return m_pStartPage;}
-	fp_Page * needsRebreak(fl_DocSectionLayout * pSL);
+	fp_Page * needsRebreak(void);
 private:
-	fp_Page *               _getLastValidPage(fl_DocSectionLayout * pSL);
-	UT_sint32               _breakSection(fl_DocSectionLayout * pSL, fp_Page * pStartPage);
+	fp_Page *               _getLastValidPage(void);
+	UT_sint32               _breakSection(fp_Page * pStartPage);
 	bool                    _isThisBroken(fp_Container * pCon);
 	void                    _setLastWantedVBreak(fp_Container * pCon, UT_sint32 iBreakAt);
 	UT_sint32               _getLastWantedVBreak(fp_Container * pCon);

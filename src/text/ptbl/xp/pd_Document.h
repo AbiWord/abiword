@@ -776,7 +776,7 @@ protected:
 	bool     _pruneSectionAPI(pf_Frag_Strux * pfs,const char * szHType, UT_GenericVector<pf_Frag_Strux *> *vecHdrFtrs);
 	bool     _matchSection(pf_Frag_Strux * pfs, UT_GenericVector<pf_Frag_Strux *> *vecSections);
 	bool     _removeHdrFtr(pf_Frag_Strux * pfs);
-
+	bool     _checkAndFixTable(pf_Frag_Strux * pfs);
 public:
 	// these functions allow us to retrieve visual direction at document
 	// position pos from an associated layout. They are intended to be

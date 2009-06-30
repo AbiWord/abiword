@@ -223,7 +223,7 @@ public:
 	const char *           getContainerString(void);
 	void                   setAllowDelete(bool bDelete)
 	{ m_bCanDelete = bDelete;}
-	bool                   canDeleta(void)
+	bool                   canDelete(void)
 	{ return m_bCanDelete;}
     UT_sint32   getBreakTick(void) const
 		{ return  m_iBreakTick;}

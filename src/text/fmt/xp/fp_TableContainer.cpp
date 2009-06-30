@@ -2543,7 +2543,7 @@ void fp_CellContainer::sizeRequest(fp_Requisition * pRequest)
 				width = pCon->getWidth();
 
 			}
-			xxx_UT_DEBUGMSG(("sizeRequest: Height of Line %d %d \n",i,pCon->getHeight()));
+			xxx_UT_DEBUGMSG(("sizeRequest: Height of Line %d %d tot %d \n",i,pCon->getHeight(),height));
 			height = height + pCon->getHeight();
 			height = height + pCon->getMarginAfter();
 		}
@@ -2568,6 +2568,7 @@ void fp_CellContainer::sizeRequest(fp_Requisition * pRequest)
 			}
 			height = height + pReq.height;
 		}
+		xxx_UT_DEBUGMSG(("Total height %d \n",height));
 	}
 	UT_sint32 maxwidth = 0;
 	fl_CellLayout * pCellL = static_cast<fl_CellLayout *>(getSectionLayout());

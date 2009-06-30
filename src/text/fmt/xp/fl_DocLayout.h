@@ -85,6 +85,7 @@ class fl_EndnoteLayout;
 class fp_EndnoteContainer;
 class GR_EmbedManager;
 class fl_FrameLayout;
+class fp_Container;
 
 // the following get used by view and layout code, 
 // since they're private to the formatter, we stick 'em here
@@ -358,6 +359,10 @@ public:
 	GR_EmbedManager * getQuickPrintEmbedManager(const char * szEmbedType);
 	fp_PageSize	m_docViewPageSize;
 	bool            setDocViewPageSize(const PP_AttrProp * pAP);
+        void            setSaveContainerPointer( fp_Container * pContainer);
+	void            setRebuiltBlock(fl_BlockLayout *pBlock);
+	fl_BlockLayout* getRebuiltBlock(void);
+	fp_Container *  getSavedContainerPointer(void);
 
 #ifdef FMT_TEST
 	//! Pointer to last instatiated FL_DocLayout. Used for debugging.
@@ -445,6 +450,8 @@ private:
 	GR_Graphics *       m_pQuickPrintGraphics;
 	bool                m_bIsQuickPrint;
 	bool                m_bDisplayAnnotations;
+        fp_Container *      m_pSavedContainer;
+	fl_BlockLayout *    m_pRebuiltBlockLayout;
 };
 
 #endif /* DOCLAYOUT_H */

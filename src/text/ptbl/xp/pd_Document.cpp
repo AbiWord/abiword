@@ -1645,6 +1645,7 @@ bool PD_Document::repairDoc(void)
 	//
 	UT_GenericVector<pf_Frag_Strux *> vecSections;
 	UT_GenericVector<pf_Frag_Strux *> vecHdrFtrs;
+	UT_GenericVector<pf_Frag_Strux *> vecTables;
 	pf = m_pPieceTable->getFragments().getFirst();
 	while(pf)
 	{
@@ -1659,9 +1660,28 @@ bool PD_Document::repairDoc(void)
 			{
 				vecHdrFtrs.addItem(pfs);
 			}
+			else if(pfs->getStruxType() == PTX_SectionTable)
+			{
+				vecTables.addItem(pfs);
+			}
+			else if(pfs->getStruxType() == PTX_EndTable)
+			{
+				vecTables.addItem(pfs);
+			}
 		}
 		pf = pf->getNext();
 	}
+	//
+	// Look for bare tables struxes. Delete them if we find one
+	//
+	for(i=0; i< vecTables.getItemCount(); i++)
+	{
+		pfs = vecTables.getNthItem(i);
+		bRepaired = bRepaired | _checkAndFixTable(pfs);
+	}
+	//
+	// Fix section matching of HdrFtrs
+	//
 	for(i = 0; i< vecSections.getItemCount(); i++)
 	{
 		pfs = vecSections.getNthItem(i);
@@ -1738,6 +1758,61 @@ bool PD_Document::_removeRepeatedHdrFtr(pf_Frag_Strux * pfs ,UT_GenericVector<pf
 	}
 	return false;
 }
+
+
+/*!
+ * This method looks to see if we have a table strux without a matching cell
+ * or an endtable without a matching endcell preceding it
+ * If we do it deletes the table/endtable.
+ */
+bool PD_Document::_checkAndFixTable(pf_Frag_Strux * pfs)
+{
+	pf_Frag * pf =NULL;
+	pf_Frag_Strux * pfsn = NULL;
+	if(pfs->getStruxType() == PTX_SectionTable)
+	{
+		pf = pfs->getNext();
+		if(!pf)
+		{
+			m_pPieceTable->deleteFragNoUpdate(pfs);
+			return true;
+		}
+		else if(pf->getType() != pf_Frag::PFT_Strux)
+		{
+			m_pPieceTable->deleteFragNoUpdate(pfs);
+			return true;
+		}
+		pfsn = static_cast<pf_Frag_Strux *>(pf);
+		if(pfsn->getStruxType() !=  PTX_SectionCell)
+		{
+			m_pPieceTable->deleteFragNoUpdate(pfs);
+			return true;
+		}
+		return false;
+	}
+	else if(pfs->getStruxType() == PTX_EndTable)
+	{
+		pf = pfs->getPrev();
+		if(!pf)
+		{
+			m_pPieceTable->deleteFragNoUpdate(pfs);
+			return true;
+		}
+		else if(pf->getType() != pf_Frag::PFT_Strux)
+		{
+			m_pPieceTable->deleteFragNoUpdate(pfs);
+			return true;
+		}
+		pfsn = static_cast<pf_Frag_Strux *>(pf);
+		if(pfsn->getStruxType() !=  PTX_EndCell)
+		{
+			m_pPieceTable->deleteFragNoUpdate(pfs);
+			return true;
+		}
+		return false;
+	}
+}
+
 
 /*!
  * This scans the HdrFtrs to see if there is a match for the header/footer type

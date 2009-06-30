@@ -288,7 +288,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 		}
 		while(pCol)
 		{
-			//			nWrapped += pCol->getNumWrapped();
+			//nWrapped += pCol->getNumWrapped();
 			nWrapped += pCol->countWrapped();
 			UT_DEBUGMSG(("Page number %d \n",getDocLayout()->findPage(this)));
 			UT_DEBUGMSG(("NumWrapped %d \n",nWrapped));

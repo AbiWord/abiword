@@ -139,7 +139,9 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
     m_iPrevPos(0),
     m_pQuickPrintGraphics(NULL),
     m_bIsQuickPrint(false),
-    m_bDisplayAnnotations(false)
+    m_bDisplayAnnotations(false),
+    m_pSavedContainer(NULL),
+    m_pRebuiltBlockLayout(NULL)
 {
 #ifdef FMT_TEST
         m_pDocLayout = this;
@@ -898,6 +900,40 @@ bool FL_DocLayout::AnchoredObjectHelper(double x, double y, UT_sint32 iPage, UT_
 		  && (pBL->myContainingLayout()->getContainerType() != FL_CONTAINER_SHADOW));
 	pos = pBL->getPosition();
 	return true;
+}
+
+/*!
+ * Code to deal with Dangling Pointers in fb_ColumnBreaker. Unfortunately there is no way to avoid the
+ * problem that some containers will get deleted during a page wrap. Even more unfortunately we need to
+ * hold a pointer to a container in fb_ColumnBreaker that coukd get deleted. This code allows us to detect
+ * and repair the damage when this occurs.
+ */
+/*!
+ * The save the pointer that might be left dangling. This methos is called from fb_ColumnBreak.
+ * We set a boolean inside this class that tells us we need
+ * signal fl_Doclayout that it has been deleted. The pointer m_pRebuiltBlock is the block that contains the
+ * Container. The pointer to it will be set within BlockLayout when the container gets deleted
+ */
+void FL_DocLayout::setSaveContainerPointer( fp_Container * pContainer)
+{
+        m_pSavedContainer = pContainer;
+	pContainer->setAllowDelete(false);
+	m_pRebuiltBlockLayout = NULL;
+}
+
+void FL_DocLayout::setRebuiltBlock(fl_BlockLayout *pBlock)
+{
+  m_pRebuiltBlockLayout = pBlock; 
+}
+
+fl_BlockLayout * FL_DocLayout::getRebuiltBlock(void)
+{
+  return m_pRebuiltBlockLayout;
+}
+
+fp_Container * FL_DocLayout::getSavedContainerPointer(void)
+{
+  return m_pSavedContainer;
 }
 
 #if 0

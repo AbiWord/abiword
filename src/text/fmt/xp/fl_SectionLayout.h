@@ -114,6 +114,7 @@ public:
 	virtual bool                isCollapsed(void) const
 		{return m_bIsCollapsed;}
 	virtual void                setNeedsReformat(fl_ContainerLayout * pCL, UT_uint32 offset = 0);
+	        void                clearNeedsReformat(fl_ContainerLayout * pCL);
 	virtual void                setNeedsRedraw(void);
 	virtual void                removeFromUpdate(fl_ContainerLayout * pL);
 	virtual bool                needsReformat(void) const

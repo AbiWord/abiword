@@ -167,6 +167,9 @@ void fp_FootnoteContainer::draw(dg_DrawArgs* pDA)
 		return;
 	}
 	UT_sint32 pos = getPage()->findFootnoteContainer(this);
+	fl_DocSectionLayout * pDSL = getDocSectionLayout();
+	UT_sint32 iMaxFootHeight = pDSL->getActualColumnHeight();
+	iMaxFootHeight -= pDA->pG->tlu(20)*3; 
 	xxx_UT_DEBUGMSG(("fp_Footnote:draw: pos %d \n",pos));
 	if(pos == 0)
 	{
@@ -204,12 +207,17 @@ void fp_FootnoteContainer::draw(dg_DrawArgs* pDA)
 	dg_DrawArgs da = *pDA;
 
 	UT_uint32 count = countCons();
+	UT_sint32 iTotHeight = 0;
 	for (UT_uint32 i = 0; i<count; i++)
 	{
-		fp_ContainerObject* pContainer = static_cast<fp_ContainerObject*>(getNthCon(i));
+		fp_Container* pContainer = static_cast<fp_Container *>(getNthCon(i));
 		da.xoff = pDA->xoff + pContainer->getX();
 		da.yoff = pDA->yoff + pContainer->getY();
 		pContainer->draw(&da);
+		iTotHeight += pContainer->getHeight();
+		iTotHeight += pContainer->getMarginAfter();
+		if(iTotHeight > iMaxFootHeight)
+		  break;
 	}
     _drawBoundaries(pDA);
 }
@@ -283,6 +291,7 @@ void fp_FootnoteContainer::layout(void)
 		if(iY > iMaxFootHeight)
 		{
 			iY = iMaxFootHeight;
+			break;
 		}
 		else
 		{

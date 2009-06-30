@@ -102,7 +102,7 @@ const char * fp_ContainerObject::getContainerString(void)
 fp_ContainerObject::~fp_ContainerObject()
 {
 	m_iConType = static_cast<FP_ContainerType>(-1);
-	UT_ASSERT(m_bCanDelete);
+	//	UT_ASSERT(m_bCanDelete);
 }
 
 /*!

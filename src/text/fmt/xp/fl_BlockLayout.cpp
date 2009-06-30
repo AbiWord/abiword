@@ -1824,7 +1824,10 @@ void fl_BlockLayout::purgeLayout(void)
 
 void fl_BlockLayout::_removeLine(fp_Line* pLine, bool bRemoveFromContainer, bool bReCalc) 
 {
-
+	if(!pLine->canDelete())
+	{
+		m_pLayout->setRebuiltBlock(this);
+	}
 	if (getFirstContainer() == static_cast<fp_Container *>(pLine))
 	{
 		setFirstContainer(static_cast<fp_Container *>(getFirstContainer()->getNext()));
@@ -3369,6 +3372,20 @@ void fl_BlockLayout::format()
 	{
 		pPrevP = pPrevCon->getPage();
 	}
+	else
+	{
+		fl_BlockLayout *pPrevB = getPrevBlockInDocument();
+		while(pPrevB)
+		{
+			pPrevCon = pPrevB->getFirstContainer();
+			if(pPrevCon)
+			{
+				pPrevP = pPrevCon->getPage();
+				break;
+			}
+			pPrevB = pPrevB->getPrevBlockInDocument();
+		}
+	}
 #else
 	fl_ContainerLayout * pPrevCL = getPrev();
 	while(pPrevCL && pPrevCL->getContainerType() != FL_CONTAINER_BLOCK)
@@ -3629,6 +3646,7 @@ void fl_BlockLayout::format()
 	if(!m_pLayout->isLayoutFilling())
     {
 		m_iNeedsReformat = -1;
+		getDocSectionLayout()->clearNeedsReformat(this);
 	}
 	else
 	{

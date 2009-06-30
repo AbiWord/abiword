@@ -154,6 +154,20 @@ void fl_SectionLayout::removeFromUpdate(fl_ContainerLayout * pCL)
   }
 }
 
+
+void fl_SectionLayout::clearNeedsReformat(fl_ContainerLayout * pCL)
+{
+       UT_sint32 i = m_vecFormatLayout.findItem(pCL);
+       if(i>= 0)
+       {
+	   m_vecFormatLayout.deleteNthItem(i);
+       }
+       if(m_vecFormatLayout.getItemCount() == 0)
+       {
+	   m_bNeedsReformat = false;
+       }
+}
+
 void fl_SectionLayout::setNeedsReformat(fl_ContainerLayout * pCL, UT_uint32 /*offset*/)
 {
         UT_sint32 i = m_vecFormatLayout.findItem(pCL);
@@ -894,6 +908,7 @@ void fl_SectionLayout::checkGraphicTick(GR_Graphics * pG)
 #endif
 fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, SectionType iType)
 	: fl_SectionLayout(pLayout, sdh, indexAP, iType, FL_CONTAINER_DOCSECTION,PTX_Section, this),
+	  m_ColumnBreaker(this),
 	  m_pHeaderSL(NULL),
 	  m_pFooterSL(NULL),
 	  m_pHeaderEvenSL(NULL),
@@ -1769,7 +1784,7 @@ void fl_DocSectionLayout::format(void)
 		pBL = pBL->getNext();
 	}
 
-	m_ColumnBreaker.breakSection(this);
+	m_ColumnBreaker.breakSection();
 	m_bNeedsFormat = false;
 }
 
@@ -1891,7 +1906,7 @@ void fl_DocSectionLayout::updateLayout(bool bDoFull)
 	m_vecFormatLayout.clear();
 	if(needsSectionBreak() && !getDocument()->isDontImmediateLayout() )
 	{
-		m_ColumnBreaker.breakSection(this);
+		m_ColumnBreaker.breakSection();
 //		UT_ASSERT(!needsSectionBreak());
 	}
 	if(needsRebuild() && !getDocument()->isDontImmediateLayout() )
@@ -1906,9 +1921,10 @@ void fl_DocSectionLayout::setNeedsSectionBreak(bool bSet, fp_Page * pPage)
 {
 	m_bNeedsSectionBreak = bSet;
 	fp_Page * pOldP = m_ColumnBreaker.getStartPage();
-    UT_sint32 iOldP = 999999999;
+	UT_sint32 iOldP = 999999999;
 	if(pPage == NULL)
 	{
+	  UT_DEBUGMSG(("SectionBreak from start \n"));
 		m_ColumnBreaker.setStartPage(pPage);
 		return;
 	}	
@@ -1936,7 +1952,7 @@ void fl_DocSectionLayout::completeBreakSection(void)
 	m_bNeedsSectionBreak = true;
 	updateLayout(true);
 	m_ColumnBreaker.setStartPage(NULL);
-	m_ColumnBreaker.breakSection(this);
+	m_ColumnBreaker.breakSection();
 	m_bNeedsSectionBreak = false;
 }
 
@@ -1981,13 +1997,15 @@ void fl_DocSectionLayout::redrawUpdate(void)
 	}
 	if(!getDocLayout()->isLayoutFilling() && (needsSectionBreak() || needsRebuild()))
 	{
-		m_ColumnBreaker.breakSection(this);
+		m_ColumnBreaker.breakSection();
+		m_bNeedsSectionBreak = false;
 	
 		if(needsRebuild())
 		{
 //			UT_ASSERT(0);
 			checkAndRemovePages();
 			addValidPages();
+			m_bNeedsRebuild = false;
 		}
 	}
 
