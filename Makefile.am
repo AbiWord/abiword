@@ -66,5 +66,5 @@ endif
 # Files for Google's final submission
 # Remove from SVN before merge
 gettext-dist:
-	rm -fv ../gettext-dist.zip
+	rm -f ../gettext-dist.zip
 	zip ../gettext-dist.zip `cat keith-bowes-changed-files`

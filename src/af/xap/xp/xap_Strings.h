@@ -21,8 +21,6 @@
 #ifndef XAP_STRINGS_H
 #define XAP_STRINGS_H
 
-#define GETTEXT_PACKAGE "abiword"
-
 #include <map>
 #include <string>
 #include <glib/gi18n.h>
@@ -64,7 +62,7 @@ typedef const char*     XAP_String_Id;
 class ABI_EXPORT XAP_StringSet
 {
 public:
-	XAP_StringSet(XAP_App * pApp, const gchar * szLanguageName);
+	XAP_StringSet(XAP_App * pApp, const gchar * szDomainName, const gchar * szLanguageName);
 	virtual ~XAP_StringSet(void);
 
 	const gchar *			getLanguageName(void) const;
@@ -83,6 +81,7 @@ protected:
 	const gchar *			m_szLanguageName;
 
  private:
+  const gchar * m_domain;
 	UT_String m_encoding ;
 };
 

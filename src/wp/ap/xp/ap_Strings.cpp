@@ -35,8 +35,8 @@
 
 #include "ap_Strings.h"
 
-AP_StringSet::AP_StringSet(XAP_App *pApp, char *szLanguageName) :
-  XAP_StringSet(pApp, szLanguageName)
+AP_StringSet::AP_StringSet(XAP_App *pApp, char *szDomainName, char *szLanguageName) :
+  XAP_StringSet(pApp, szDomainName, szLanguageName)
 {
 }
 
@@ -47,4 +47,9 @@ AP_StringSet::~AP_StringSet(void)
 const char *AP_StringSet::getValue(XAP_String_Id id) const
 {
   return id;
+}
+
+const char *AP_StringSet::translate(XAP_String_Id id) const
+{
+  return _(id);
 }

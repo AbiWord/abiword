@@ -41,8 +41,9 @@
 // base class provides interface regardless of how we got the strings
 //////////////////////////////////////////////////////////////////
 
-XAP_StringSet::XAP_StringSet(XAP_App * pApp, const gchar * szLanguageName)
-  : m_encoding("UTF-8")
+XAP_StringSet::XAP_StringSet(XAP_App * pApp, const gchar * szDomainName, const gchar * szLanguageName)
+  : m_domain(szDomainName),
+    m_encoding("UTF-8")
 {
 	m_pApp = pApp;
 
@@ -50,9 +51,12 @@ XAP_StringSet::XAP_StringSet(XAP_App * pApp, const gchar * szLanguageName)
 	if (szLanguageName && *szLanguageName)
 		m_szLanguageName = g_strdup(szLanguageName);
 
+  if (!m_domain)
+    m_domain = pApp->getApplicationName();
+
   setlocale(LC_ALL, "");
-  bindtextdomain(GETTEXT_PACKAGE, LOCALE_DIR);
-  textdomain(GETTEXT_PACKAGE);
+  bindtextdomain(m_domain, LOCALE_DIR);
+  textdomain(m_domain);
 }
 
 XAP_StringSet::~XAP_StringSet(void)
@@ -116,6 +120,7 @@ void XAP_StringSet::setEncoding(const gchar * inEncoding)
 {
   UT_return_if_fail(inEncoding != 0);
   m_encoding = inEncoding;
+  bind_textdomain_codeset(m_domain, getEncoding());
 }
 
 const char * XAP_StringSet::getEncoding() const
