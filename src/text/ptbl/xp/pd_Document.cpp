@@ -1788,7 +1788,6 @@ bool PD_Document::_checkAndFixTable(pf_Frag_Strux * pfs)
 			m_pPieceTable->deleteFragNoUpdate(pfs);
 			return true;
 		}
-		return false;
 	}
 	else if(pfs->getStruxType() == PTX_EndTable)
 	{
@@ -1809,8 +1808,8 @@ bool PD_Document::_checkAndFixTable(pf_Frag_Strux * pfs)
 			m_pPieceTable->deleteFragNoUpdate(pfs);
 			return true;
 		}
-		return false;
 	}
+	return false;
 }
 
 

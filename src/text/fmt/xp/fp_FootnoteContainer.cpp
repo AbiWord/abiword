@@ -167,8 +167,8 @@ void fp_FootnoteContainer::draw(dg_DrawArgs* pDA)
 		return;
 	}
 	UT_sint32 pos = getPage()->findFootnoteContainer(this);
-	fl_DocSectionLayout * pDSL = getDocSectionLayout();
-	UT_sint32 iMaxFootHeight = pDSL->getActualColumnHeight();
+	fl_DocSectionLayout * pDSL2 = getDocSectionLayout();
+	UT_sint32 iMaxFootHeight = pDSL2->getActualColumnHeight();
 	iMaxFootHeight -= pDA->pG->tlu(20)*3; 
 	xxx_UT_DEBUGMSG(("fp_Footnote:draw: pos %d \n",pos));
 	if(pos == 0)
