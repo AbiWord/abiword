@@ -3089,7 +3089,7 @@ bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, UT_sint32* pParam, bool* p
 	*pKeyword = 0;
 	const unsigned int max_param = 256;
 	unsigned char parameter[max_param];
-	unsigned int count = 0;
+	int count = 0;
 	unsigned char * savedKeyword = pKeyword;
 
 	// Read the first character of the control word
@@ -3116,14 +3116,14 @@ bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, UT_sint32* pParam, bool* p
 			UT_DEBUGMSG(("Keyword too large. Bogus RTF!\n"));
 			return false;
 		}
-
+		xxx_UT_DEBUGMSG(("|%c|\n",ch));
 		*pKeyword = ch;
 		pKeyword++;
 		if (!ReadCharFromFileWithCRLF(&ch))
 			return false;
 	}
 	*pKeyword = 0;
-
+	xxx_UT_DEBUGMSG(("keyword %s \n",savedKeyword));
     // If the delimeter was '-' then the following parameter is negative
     if (ch == '-')
     {
@@ -3139,15 +3139,28 @@ bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, UT_sint32* pParam, bool* p
 	// Some * keywords have the numeric parameter after a space
 	// We need to hand this special case. Stupid RTF!!
 	//
-	if (isdigit(ch) || (m_currentRTFState.m_bInKeywordStar && ch == ' '))
+	bool bLeadSpace = true;
+	if (isdigit(ch) || (bLeadSpace && m_currentRTFState.m_bInKeywordStar && (ch == ' ')))
 	{
-		*pParamUsed = true;
-		while (isdigit(ch) || ch == ' ')
+
+		if(isdigit(ch))
 		{
+			bLeadSpace=false;
+		}
+		*pParamUsed = true;
+		while (isdigit(ch) || (bLeadSpace && (ch == ' ' )))
+		{
+
+			if(isdigit(ch))
+			{
+				bLeadSpace=false;
+			}
+
+			xxx_UT_DEBUGMSG(("|%c|\n",ch));
 			// Avoid buffer overflow
 			if (count == max_param )
 			{
-				UT_DEBUGMSG(("Parameter too large. Bogus RTF!\n"));
+				xxx_UT_DEBUGMSG(("Parameter too large. Bogus RTF!\n"));
 				return false;
 			}
 			if(ch != ' ')
@@ -3156,7 +3169,7 @@ bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, UT_sint32* pParam, bool* p
 				return false;
 		}
 		parameter[count] = 0;
-
+		xxx_UT_DEBUGMSG(("parameter %s \n",parameter));
 		*pParam = atol(reinterpret_cast<char*>(&parameter[0]));
 		if (fNegative)
 			*pParam = -*pParam;
@@ -5911,6 +5924,9 @@ bool IE_Imp_RTF::buildCharacterProps(UT_String & propBuffer)
 		propBuffer += "normal";
 	}
 	// font size
+	// If Font is too big inside a table can trigger an infinite too during layout
+	//
+	//	UT_ASSERT(m_currentRTFState.m_charProps.m_fontSize < 120);
 	UT_String_sprintf(tempBuffer, "; font-size:%spt", std_size_string(static_cast<float>(m_currentRTFState.m_charProps.m_fontSize)));
 	propBuffer += tempBuffer;
 	// typeface

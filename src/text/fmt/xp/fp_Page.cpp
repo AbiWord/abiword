@@ -253,7 +253,7 @@ void fp_Page::clearCountWrapNumber(void)
  */
 fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 {
-	if(m_iCountWrapPasses > 199)
+	if(m_iCountWrapPasses > 19)
 	{
 		return NULL;
 	}
@@ -267,9 +267,9 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 			xxx_UT_DEBUGMSG(("Prev page %x Prev page number %d Number Frames %d \n",getPrev(),iPage,getPrev()->countAboveFrameContainers() ));
 		}
 #endif
-	if(m_iCountWrapPasses > 100)
+	if(m_iCountWrapPasses > 10)
     {
-	  xxx_UT_DEBUGMSG(("Number of wrapped passed = %d \n",m_iCountWrapPasses));
+		UT_DEBUGMSG(("Number of wrapped passed = %d \n",m_iCountWrapPasses));
 	}
 	UT_sint32 i= 0;
 	UT_sint32 nWrapped = 0;
@@ -288,7 +288,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 		}
 		while(pCol)
 		{
-			if(m_iCountWrapPasses > 20)
+			if(m_iCountWrapPasses > 10)
 			{
 				nWrapped += pCol->countWrapped();
 			}
