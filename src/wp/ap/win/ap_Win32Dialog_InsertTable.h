@@ -37,7 +37,6 @@ public:
 
 protected:
 
-    //	HWND						m_hwndDlg;	//  dialog box Windows	
 	BOOL						_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);   
 	

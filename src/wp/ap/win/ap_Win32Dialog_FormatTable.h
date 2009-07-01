@@ -25,10 +25,11 @@
 #include "xap_Win32PreviewWidget.h"
 #include "gr_Win32Graphics.h"
 #include "xap_Win32ColourButton.h"
+#include "xap_Win32DialogBase.h"
 
 /*****************************************************************/
 
-class ABI_EXPORT AP_Win32Dialog_FormatTable: public AP_Dialog_FormatTable
+class ABI_EXPORT AP_Win32Dialog_FormatTable: public AP_Dialog_FormatTable, public XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_FormatTable(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -50,12 +51,10 @@ public:
 	HBITMAP 				_loadBitmap(HWND hWnd,UINT nId, char* pName, int width, int height, UT_RGBColor Color);
 	virtual BOOL			_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	virtual BOOL 			_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	static BOOL CALLBACK	s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
-	virtual void *			pGetWindowHandle(void) {  return (void *) m_hwndDlg; }
-	
+    virtual BOOL 			_onDlgMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+   	
 
 protected:
-	HWND					m_hwndDlg;	//  dialog box Windows
 	HBITMAP					m_hBitmapBottom;
 	HBITMAP					m_hBitmapTop;
 	HBITMAP					m_hBitmapRight;
