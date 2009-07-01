@@ -160,14 +160,27 @@ UT_sint32 fb_ColumnBreaker::breakSection()
       icnt = 0;
       pStartPage = m_pStartPage;
   }
-  while(pStartPage && (icnt < 10))
+  while(pStartPage && (icnt < 50))
   {
+
+#if DEBUG
+      UT_DEBUGMSG(("Try to get a decent break Column %d times \n",icnt));
+      if(pStartPage)
+      {
+	  FL_DocLayout * pDL =  m_pDocSec->getDocLayout();
+	  UT_sint32 iPage = pDL->findPage(pStartPage);
+	  UT_DEBUGMSG(("Retrying from page %d \n",iPage));
+      }
+#endif
       iVal = _breakSection(pStartPage);
       pStartPage = needsRebreak();
       if(m_pStartPage)
       {
-	  icnt = 0;
 	  pStartPage = m_pStartPage;
+	  if(icnt > 10)
+	  {
+	      pStartPage = pStartPage->getPrev();
+	  }
       }
       icnt++;
   }
@@ -467,11 +480,17 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 					for(i=0; i< vecFootnotes.getItemCount();i++)
 					{
 						fp_FootnoteContainer * pFC = vecFootnotes.getNthItem(i);
+						if(pFC->getHeight() > iMaxSecCol)
+						{
+						    UT_DEBUGMSG(("Footnote container height %d \n",pFC->getHeight()));
+						    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+						    pFC->setHeight(iMaxSecCol -600);
+						}
 						if(pFC && ((pFC->getPage() == NULL) || (pFC->getPage() != pCurPage)))
 						{
 						        iTheseFootnotes += pFC->getHeight();
 							iFootnoteHeight += pFC->getHeight();
-						}				
+						}
 					}	
 					xxx_UT_DEBUGMSG(("got footnote section height %d\n", iFootnoteHeight));
 					iWorkingColHeight += iTheseFootnotes;
@@ -501,7 +520,8 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 
 				  }
 			}
-
+			xxx_UT_DEBUGMSG(("WorkingColHeight = %d \n",iWorkingColHeight));
+			xxx_UT_DEBUGMSG(("iTotalContainerSpace = %d MarginAfter %d \n",iTotalContainerSpace,iContainerMarginAfter));
 			if ((iWorkingColHeight + iTotalContainerSpace) > iMaxColHeight)
 			{
 				pOffendingContainer = pCurContainer;
@@ -824,7 +844,7 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 		        while(pLastContainerToKeep && ((pLastContainerToKeep->getContainerType() == FP_CONTAINER_FOOTNOTE )
 						 || (pLastContainerToKeep->getContainerType() == FP_CONTAINER_ANNOTATION)))
 			{
-				pLastContainerToKeep = pLastContainerToKeep->getPrevContainerInSection();
+			        pLastContainerToKeep = pLastContainerToKeep->getPrevContainerInSection();
 			}
 			if(pLastContainerToKeep)
 			{
@@ -1096,6 +1116,9 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 			}
 		}
 
+		//
+		// end of add container to columns
+		//
 		if (pLastContainerToKeep
 			&& pCurColumn->getLastContainer() != pLastContainerToKeep)
 		{
@@ -1141,7 +1164,9 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 			while (pCurColumn != NULL && pCurColumn != pNextColumn)
 			{
 				xxx_UT_DEBUGMSG(("Start of bump loop pNextColumn %x \n",pNextColumn));
-				bool isTOCTABLE = ((pOuterContainer->getContainerType() == FP_CONTAINER_TABLE) || (pOuterContainer->getContainerType() == FP_CONTAINER_TABLE));
+				bool isTOCTABLE = false;
+				if(pOuterContainer && ((pOuterContainer->getContainerType() == FP_CONTAINER_TABLE) || (pOuterContainer->getContainerType() == FP_CONTAINER_TABLE)))
+				        isTOCTABLE= true;
 				pCurColumn->bumpContainers(pLastContainerToKeep);
 
 				pCurColumn->layout();
@@ -1630,4 +1655,16 @@ fp_Container * fb_ColumnBreaker::_getNext(fp_Container * pCon)
 
 	return pNext;
 }
-	
+#if 0	
+bool fb_ColumnBreaker::_verifyAllInColumns(void)
+{
+  fp_Container * pCon = m_pDocSec->getFirstContainer();
+  while(pCon)
+    {
+      if((pCon->getContainerType() == FP_CONTAINER_LINE) || (pCon->getContainerType() == FP_CONTAINER_TABLE))
+	{
+	  
+	} 
+    }
+}
+#endif

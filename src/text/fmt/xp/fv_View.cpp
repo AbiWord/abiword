@@ -9262,6 +9262,8 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 				return;
 			}
 		}
+		if(!pColumn)
+			return;
 		UT_uint32 nCol=0;
 		fp_Column * pNthColumn=pColumn->getLeader();
 		while (pNthColumn && (pNthColumn != pColumn))
