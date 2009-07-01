@@ -1837,7 +1837,7 @@ void IE_Imp_XHTML::endElement(const gchar *name)
 
 		uid = getDoc()->getUID(UT_UniqueId::Math);
 		UT_UTF8String_sprintf(sUID,"MathLatex%d",uid);
-		X_CheckError(getDoc()->createDataItem(sUID.utf8_str(), false, m_pMathBB, NULL, NULL));
+		X_CheckError(getDoc()->createDataItem(sUID.utf8_str(), false, m_pMathBB, "", NULL));
 
 		atts[0] = "dataid";
 		atts[1] = sUID.utf8_str();

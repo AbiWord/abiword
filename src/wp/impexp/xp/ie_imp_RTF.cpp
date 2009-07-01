@@ -9493,7 +9493,7 @@ bool IE_Imp_RTF::HandleAbiLatexData(void)
 
 bool IE_Imp_RTF::CreateDataItemfromSteam(void)
 {
-	UT_String sName;
+	UT_UTF8String sName;
 	unsigned char ch;
 	if (!ReadCharFromFile(&ch))
 		return false;
@@ -9558,7 +9558,8 @@ bool IE_Imp_RTF::CreateDataItemfromSteam(void)
 	}
 	// Put the '}' back into the input stream
 	SkipBackChar(ch);
-	bFound = getDoc()->getDataItemDataByName(sName.c_str(),&pDum, NULL, NULL);
+	
+	bFound = getDoc()->getDataItemDataByName(sName.utf8_str(),&pDum, NULL, NULL);
 	if(bFound)
 	{
 		return true;
@@ -9567,7 +9568,7 @@ bool IE_Imp_RTF::CreateDataItemfromSteam(void)
 	// Now create the data item from the RTF data stream
 	//
 	
-	retval = getDoc()->createDataItem(sName.c_str(),false,&BinData,NULL,NULL);
+	retval = getDoc()->createDataItem(sName.utf8_str(),false,&BinData,"",NULL);
 	return retval;
 
 }
