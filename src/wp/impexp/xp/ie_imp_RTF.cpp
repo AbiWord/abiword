@@ -1465,7 +1465,8 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_pAnnotation(NULL),
 	m_pDelayedFrag(NULL),
 	m_posSavedDocPosition(0),
-	m_bInAnnotation(false)
+	m_bInAnnotation(false),
+	m_bFrameTextBox(false)
 {
 	UT_DEBUGMSG(("New ie_imp_RTF %p \n",this));
 	m_sImageName.clear();
@@ -11980,6 +11981,7 @@ bool IE_Imp_RTF::HandlePCData(UT_UTF8String & str)
 	bool bStop = false;
 	UT_ByteBuf buf;
 	UT_sint32 iUniCharsLeftToSkip = 0;
+	UT_UCS2Char ch =0;
 	
 	do {
 		tokenType = NextToken (keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN, false);
@@ -12000,7 +12002,6 @@ bool IE_Imp_RTF::HandlePCData(UT_UTF8String & str)
 			}
 			case RTF_KW_u:
 			{
-				UT_UCS2Char ch;
 				/* RTF is limited to +/-32K ints so we need to use negative
 				 * numbers for large unicode values. So, check for Unicode chars
 				 * wrapped to negative values.
@@ -12025,7 +12026,6 @@ bool IE_Imp_RTF::HandlePCData(UT_UTF8String & str)
 			case RTF_KW_uc:
 				// A little bit evil, but I'd like to know if this happens! - R.Kay
 				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-				break;
 			default:
 				bStop = true; // regular keyword stop reading data and handle it
 				break;

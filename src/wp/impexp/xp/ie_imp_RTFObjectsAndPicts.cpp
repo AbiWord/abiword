@@ -40,7 +40,8 @@
 #include "fg_Graphic.h"
 #include "fg_GraphicRaster.h"
 #include "fg_GraphicVector.h"
-
+#include "pf_Frag.h"
+#include "pf_Frag_Strux.h"
 
 // move this one away.
 #define MAX_KEYWORD_LEN 256
@@ -1044,7 +1045,26 @@ void IE_Imp_RTF::HandleShape(void)
 
 	// Formely in HandleEndFrame()
 	UT_DEBUGMSG((">>>>End frame\n"));
-	if(!bUseInsertNotAppend()) {
+	if(!bUseInsertNotAppend()) 
+	{
+		if(m_bFrameTextBox)
+		{
+			//
+			// Look if we have a bare FrameStrux. If so delete it.
+			//
+			pf_Frag * pf = getDoc()->getLastFrag();
+			if(pf && (pf->getType() == pf_Frag::PFT_Strux))
+			{
+				    pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
+					if(pfs->getStruxType() == PTX_SectionFrame)
+					{
+						getDoc()->deleteFragNoUpdate(pf);
+						m_bFrameTextBox = false;
+						return;
+					}
+			}
+				
+		}
 		getDoc()->appendStrux(PTX_EndFrame, NULL);
 		m_newParaFlagged = false;
 	}
@@ -1076,6 +1096,7 @@ void IE_Imp_RTF::addFrame(RTFProps_FrameProps & frame)
 	UT_UTF8String sP;
 	UT_UTF8String sV;
 	sP = "frame-type";
+	m_bFrameTextBox = false;
 	if(	frame.m_iFrameType == 1)
 	{
 		sV = "image";
@@ -1094,6 +1115,7 @@ void IE_Imp_RTF::addFrame(RTFProps_FrameProps & frame)
 	{
 		sV = "textbox";
 		UT_UTF8String_setProperty(sPropString,sP,sV); // fixme make other types
+		m_bFrameTextBox = true;
 	}
 
 	sP = "position-to";

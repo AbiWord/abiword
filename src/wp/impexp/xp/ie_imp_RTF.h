@@ -942,6 +942,7 @@ private:
 	pf_Frag *             m_pDelayedFrag; // insert before this frag if non-null
 	PT_DocPosition        m_posSavedDocPosition;
 	bool                  m_bInAnnotation;
+	bool                  m_bFrameTextBox;
 };
 
 #endif /* IE_IMP_RTF_H */

@@ -4677,7 +4677,11 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 	if (base_name)
 		imagebasedir = base_name;
 	imagebasedir += "_files";
-	std::string imagedir = m_pie->getFileName ();
+	std::string imagedir ="";
+	if( m_pie->getFileName ())
+	{
+			imagedir = m_pie->getFileName ();
+	}
 	imagedir += "_files";
 
 	UT_UTF8String filename(dataid,suffix-dataid);
