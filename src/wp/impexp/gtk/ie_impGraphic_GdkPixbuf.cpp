@@ -602,7 +602,13 @@ const IE_MimeConfidence * IE_ImpGraphicGdkPixbuf_Sniffer::getMimeConfidence ()
 	{
 		mimeConfidence[idx].match = IE_MIME_MATCH_FULL;
 		mimeConfidence[idx].mimetype = *iter;
-		mimeConfidence[idx].confidence = UT_CONFIDENCE_PERFECT;
+		if(*iter == "image/x-wmf") {
+			UT_DEBUGMSG(("WMF mime is only good\n"));
+			mimeConfidence[idx].confidence = UT_CONFIDENCE_GOOD;
+		}
+		else {
+			mimeConfidence[idx].confidence = UT_CONFIDENCE_PERFECT;
+		}
 		idx++;
 	}
 
@@ -631,7 +637,13 @@ const IE_SuffixConfidence * IE_ImpGraphicGdkPixbuf_Sniffer::getSuffixConfidence 
 	idx = 0;
 	while (*suffixIter) {
 		suffixConfidence[idx].suffix = *suffixIter;
-		suffixConfidence[idx].confidence = UT_CONFIDENCE_PERFECT;
+		if(strcmp(*suffixIter, "wmf") == 0) {
+			UT_DEBUGMSG(("WMF suffix is only good\n"));
+			suffixConfidence[idx].confidence = UT_CONFIDENCE_GOOD;
+		}
+		else {
+			suffixConfidence[idx].confidence = UT_CONFIDENCE_PERFECT;
+		}
 		suffixIter++;
 		idx++;
 	}
