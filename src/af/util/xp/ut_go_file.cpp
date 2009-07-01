@@ -1229,13 +1229,15 @@ UT_go_file_create_impl (char const *uri, GError **err)
 {
 	char *filename;
 	int fd;
-
 	g_return_val_if_fail (uri != NULL, NULL);
 
+	bool is_path = (*uri == '/');
+
 	filename = UT_go_filename_from_uri (uri);
-	if (filename) {
-		GsfOutput *result = gsf_output_stdio_new (filename, err);
-		g_free (filename);
+	if (is_path || filename) {
+		GsfOutput *result = gsf_output_stdio_new (filename?filename:uri, err);
+		if(filename) 
+			g_free (filename);
 		return result;
 	}
 
