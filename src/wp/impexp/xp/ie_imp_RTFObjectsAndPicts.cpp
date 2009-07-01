@@ -1292,7 +1292,7 @@ void IE_Imp_RTF::HandleShapePict()
 		default:
 			break;
 		}
-	} while (!((tokenType == RTF_TOKEN_CLOSE_BRACE) && (nested == 1)));
+	} while (!((tokenType == RTF_TOKEN_CLOSE_BRACE) && (nested <= 1)));
 }
 
 
@@ -1390,7 +1390,7 @@ bool IE_Imp_RTF::HandleObject()
 		default:
 			break;
 		}
-	} while (!((tokenType == RTF_TOKEN_CLOSE_BRACE) && (nested == 0)));
+	} while (!((tokenType == RTF_TOKEN_CLOSE_BRACE) && (nested <= 1)));
 
 	return true;
 }
