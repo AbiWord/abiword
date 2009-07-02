@@ -75,6 +75,7 @@
 #include <fcntl.h>
 #endif
 
+#include <string>
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
@@ -1231,7 +1232,10 @@ UT_go_file_create_impl (char const *uri, GError **err)
 	int fd;
 	g_return_val_if_fail (uri != NULL, NULL);
 
-	bool is_path = (*uri == '/');
+	std::string path = uri;
+        bool is_uri = UT_go_path_is_uri(path.c_str());
+        bool is_filename = is_uri ? false : path.find_last_of(G_DIR_SEPARATOR) == std::string::npos;
+	bool is_path = !is_uri && !is_filename;
 
 	filename = UT_go_filename_from_uri (uri);
 	if (is_path || filename) {
