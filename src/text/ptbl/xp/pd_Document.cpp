@@ -2406,7 +2406,7 @@ bool PD_Document::deleteFragNoUpdate(pf_Frag * pf)
  * Returns true if it is legal to insert a hperlink at this position. Looks to see if there is
  * An open hyperlink or annotation upstream.
  */
-bool   PD_Document::isInsertHyperLinkValid(PT_DocPosition pos)
+bool   PD_Document::isInsertHyperLinkValid(PT_DocPosition pos) const
 {
 	PT_BlockOffset pOffset;
 	pf_Frag * pf = NULL;
