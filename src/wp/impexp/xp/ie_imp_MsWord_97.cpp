@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
@@ -4262,141 +4262,170 @@ static MSWord_ImageType s_determineImageType ( Blip * b )
 	}
 }
 
+static IEGraphicFileType s_determineIEGFT ( Blip * b )
+{
+	if ( !b )
+		return IEGFT_Unknown;
+
+	switch ( b->type )
+	{
+	case msoblipEMF:
+		return IEGFT_EMF;
+	case msoblipWMF:
+		return IEGFT_WMF;
+
+	case msoblipJPEG:
+		return IEGFT_JPEG;
+	case msoblipPNG:
+		return IEGFT_PNG;
+	case msoblipDIB:
+		return IEGFT_DIB;
+
+	case msoblipPICT:
+	case msoblipERROR:
+	case msoblipUNKNOWN:
+	default:
+		return IEGFT_Unknown;
+	}
+}
+
+
+
 UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long cropt, long cropb, long cropl, long cropr)
 {
 	FG_Graphic* pFG		= 0;
 	UT_Error error		= UT_OK;
 	const UT_ByteBuf * buf		= 0;
 
-        UT_String propBuffer;
-        UT_String propsName;
+	UT_String propBuffer;
+	UT_String propsName;
 
-  // suck the data into the ByteBuffer
+	// suck the data into the ByteBuffer
 
-  MSWord_ImageType imgType = s_determineImageType ( b );
+	MSWord_ImageType imgType = s_determineImageType ( b );
+	IEGraphicFileType iegft = s_determineIEGFT( b );
 
-  wvStream *pwv;
-  bool decompress = false;
+	wvStream *pwv;
+	bool decompress = false;
 
-  if ( imgType == MSWord_RasterImage )
+	if ( imgType == MSWord_RasterImage )
 	{
-	  pwv = b->blip.bitmap.m_pvBits;
+		pwv = b->blip.bitmap.m_pvBits;
 
 	}
-  else if ( imgType == MSWord_VectorImage )
+	else if ( imgType == MSWord_VectorImage )
 	{
-	  pwv = b->blip.metafile.m_pvBits;
-	  decompress = (b->blip.metafile.m_fCompression == msocompressionDeflate);
+		pwv = b->blip.metafile.m_pvBits;
+		decompress = (b->blip.metafile.m_fCompression == msocompressionDeflate);
 	}
-  else
+	else
 	{
-	  UT_DEBUGMSG(("UNKNOWN IMAGE TYPE!!"));
-	  return UT_ERROR;
+		UT_DEBUGMSG(("UNKNOWN IMAGE TYPE!!"));
+		return UT_ERROR;
 	}
 
-  size_t size = wvStream_size (pwv);
-  char *data = new char[size];
-  wvStream_rewind(pwv);
-  wvStream_read(data,size,sizeof(char),pwv);
+	size_t size = wvStream_size (pwv);
+	char *data = new char[size];
+	wvStream_rewind(pwv);
+	wvStream_read(data,size,sizeof(char),pwv);
 
-  UT_ByteBuf pictData;
-  if (decompress)
-  {
-
-    unsigned long uncomprLen, comprLen;
-    comprLen = size;
-    uncomprLen = b->blip.metafile.m_cb;
-    Bytef *uncompr = new Bytef[uncomprLen];    
-    int err = uncompress (uncompr, &uncomprLen, reinterpret_cast<const unsigned char *>(data), comprLen);
-    if (err != Z_OK)
-      {
-	UT_DEBUGMSG(("Could not uncompress image\n"));
-        DELETEP(uncompr);
-	goto Cleanup;
-      }
-      pictData.append(reinterpret_cast<const UT_Byte*>(uncompr), uncomprLen);
-      DELETEPV(uncompr);
-  }
-  else
-  {
-    pictData.append(reinterpret_cast<const UT_Byte*>(data), size);
-  }
-
-  delete [] data;
-
-  if(!pictData.getPointer(0))
-	  error =  UT_ERROR;
-  else
-	  error = IE_ImpGraphic::loadGraphic (pictData, IEGFT_Unknown, &pFG);
-
-  if ((error != UT_OK) || !pFG)
+	UT_ByteBuf pictData;
+	if (decompress)
 	{
-	  UT_DEBUGMSG(("Could not import graphic\n"));
-	  goto Cleanup;
+
+		unsigned long uncomprLen, comprLen;
+		comprLen = size;
+		uncomprLen = b->blip.metafile.m_cb;
+		Bytef *uncompr = new Bytef[uncomprLen];    
+		int err = uncompress (uncompr, &uncomprLen, reinterpret_cast<const unsigned char *>(data), comprLen);
+		if (err != Z_OK)
+		{
+			UT_DEBUGMSG(("Could not uncompress image\n"));
+			DELETEP(uncompr);
+			goto Cleanup;
+		}
+		pictData.append(reinterpret_cast<const UT_Byte*>(uncompr), uncomprLen);
+		DELETEPV(uncompr);
 	}
-
-  // TODO: can we get back a vector graphic?
-  buf = pFG->getBuffer();
-
-  if (!buf)
+	else
 	{
-	  // i don't think that this could ever happen, but...
-	  UT_DEBUGMSG(("Could not convert to PNG\n"));
-	  error = UT_ERROR;
-	  goto Cleanup;
+		pictData.append(reinterpret_cast<const UT_Byte*>(data), size);
 	}
 
-  //
-  // This next bit of code will set up our properties based on the image attributes
-  //
+	delete [] data;
 
-  {
-	  UT_LocaleTransactor t(LC_NUMERIC, "C");
-	  UT_String_sprintf(propBuffer, "width:%fin; height:%fin; cropt:%fin; cropb:%fin; cropl:%fin; cropr:%fin",
-						static_cast<double>(width) / static_cast<double>(1440),
-			    static_cast<double>(height) / static_cast<double>(1440),
-			    static_cast<double>(cropt) / static_cast<double>(1440),
-			    static_cast<double>(cropb) / static_cast<double>(1440),
-			    static_cast<double>(cropl) / static_cast<double>(1440),
-						static_cast<double>(cropr) / static_cast<double>(1440));
-  }
+	if(!pictData.getPointer(0))
+		error =  UT_ERROR;
+	else
+		error = IE_ImpGraphic::loadGraphic (pictData, iegft, &pFG);
 
-  UT_String_sprintf(propsName, "%d", getDoc()->getUID(UT_UniqueId::Image));
-
-  const gchar* propsArray[5];
-  propsArray[0] = static_cast<const gchar *>("props");
-  propsArray[1] = static_cast<const gchar *>(propBuffer.c_str());
-  propsArray[2] = static_cast<const gchar *>("dataid");
-  propsArray[3] = static_cast<const gchar *>(propsName.c_str());
-  propsArray[4] = 0;
-
-  if (!_ensureInBlock())
-        {
-	  UT_DEBUGMSG (("_ensureInBlock() failed\n"));
-	  error = UT_ERROR;
-	  goto Cleanup;
-	}
-
-  if (!_appendObject (PTO_Image, propsArray))
+	if ((error != UT_OK) || !pFG)
 	{
-	  UT_DEBUGMSG (("Could not create append object\n"));
-	  error = UT_ERROR;
-	  goto Cleanup;
+		UT_DEBUGMSG(("Could not import graphic\n"));
+		goto Cleanup;
 	}
 
-  if (!getDoc()->createDataItem(propsName.c_str(), false,
-                                buf, pFG->getMimeType(), NULL))
+	buf = pFG->getBuffer();
+
+	if (!buf)
 	{
-	  UT_DEBUGMSG (("Could not create data item\n"));
-      // the mimetype is sunk anyway
-	  error = UT_ERROR;
-	  goto Cleanup;
+		// i don't think that this could ever happen, but...
+		UT_DEBUGMSG(("Could not convert to PNG\n"));
+		error = UT_ERROR;
+		goto Cleanup;
 	}
 
- Cleanup:
-  DELETEP(pFG);
+	//
+	// This next bit of code will set up our properties based on the image attributes
+	//
 
-  return error;
+	{
+		UT_LocaleTransactor t(LC_NUMERIC, "C");
+		UT_String_sprintf(propBuffer, "width:%fin; height:%fin; cropt:%fin; cropb:%fin; cropl:%fin; cropr:%fin",
+						  static_cast<double>(width) / static_cast<double>(1440),
+						  static_cast<double>(height) / static_cast<double>(1440),
+						  static_cast<double>(cropt) / static_cast<double>(1440),
+						  static_cast<double>(cropb) / static_cast<double>(1440),
+						  static_cast<double>(cropl) / static_cast<double>(1440),
+						  static_cast<double>(cropr) / static_cast<double>(1440));
+	}
+
+	UT_String_sprintf(propsName, "%d", getDoc()->getUID(UT_UniqueId::Image));
+
+	const gchar* propsArray[5];
+	propsArray[0] = "props";
+	propsArray[1] = propBuffer.c_str();
+	propsArray[2] = "dataid";
+	propsArray[3] = propsName.c_str();
+	propsArray[4] = 0;
+
+	if (!_ensureInBlock())
+	{
+		UT_DEBUGMSG (("_ensureInBlock() failed\n"));
+		error = UT_ERROR;
+		goto Cleanup;
+	}
+
+	if (!_appendObject (PTO_Image, propsArray))
+	{
+		UT_DEBUGMSG (("Could not create append object\n"));
+		error = UT_ERROR;
+		goto Cleanup;
+	}
+
+	if (!getDoc()->createDataItem(propsName.c_str(), false,
+								  buf, pFG->getMimeType(), NULL))
+	{
+		UT_DEBUGMSG (("Could not create data item\n"));
+		// the mimetype is sunk anyway
+		error = UT_ERROR;
+		goto Cleanup;
+	}
+
+Cleanup:
+	DELETEP(pFG);
+
+	return error;
 }
 
 

@@ -56,6 +56,7 @@ typedef UT_sint32 IEGraphicFileType;
 #define IEGFT_DIB IEGFT_BMP
 #define IEGFT_JPEG IE_ImpGraphic::fileTypeForSuffix(".jpg")
 #define IEGFT_WMF IE_ImpGraphic::fileTypeForSuffix(".wmf")
+#define IEGFT_EMF IE_ImpGraphic::fileTypeForSuffix(".emf")
 
 /* plug-ins adding new importers/exporters should give them names
  * such as "<plug-in name>::<format description>"
