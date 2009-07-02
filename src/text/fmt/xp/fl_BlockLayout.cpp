@@ -1834,7 +1834,8 @@ void fl_BlockLayout::_removeLine(fp_Line* pLine, bool bRemoveFromContainer, bool
 
 		// we have to call recalcMaxWidth so that the new line has the correct
 		// x offset and width
-		if(getFirstContainer() && bReCalc)
+
+		if(!getDocSectionLayout()->isCollapsing() && getFirstContainer() && bReCalc)
 			getFirstContainer()->recalcMaxWidth();
 	}
 
@@ -1843,11 +1844,10 @@ void fl_BlockLayout::_removeLine(fp_Line* pLine, bool bRemoveFromContainer, bool
 		setLastContainer(static_cast<fp_Container *>(getLastContainer()->getPrev()));
 		// we have to call recalcMaxWidth so that the new line has the correct
 		// x offset and width
-		if(getLastContainer() && bReCalc)
+		if(!getDocSectionLayout()->isCollapsing() && getLastContainer() && bReCalc)
 			getLastContainer()->recalcMaxWidth();
 	}
 
-	pLine->setBlock(NULL);
 	if(pLine->getContainer() && bRemoveFromContainer)
 	{
 		fp_VerticalContainer * pVert = static_cast<fp_VerticalContainer *>(pLine->getContainer());
@@ -1855,6 +1855,7 @@ void fl_BlockLayout::_removeLine(fp_Line* pLine, bool bRemoveFromContainer, bool
 		pLine->setContainer(NULL);
 	}
 	pLine->remove();
+	pLine->setBlock(NULL);
 	xxx_UT_DEBUGMSG(("Removed line %x \n",pLine));
 	UT_ASSERT(findLineInBlock(pLine) == -1);
 

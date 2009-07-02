@@ -836,15 +836,19 @@ void fp_TOCContainer::deleteBrokenTOCs(bool bClearFirst)
 		pLast = pBroke;
 		if(!bFirst)
 		{
-			UT_sint32 i = pBroke->getContainer()->findCon(pBroke);
+		        fp_Container * pConBroke =  pBroke->getContainer();
+			if(pConBroke)
+			{
+			    UT_sint32 i = pBroke->getContainer()->findCon(pBroke);
 //
 // First broken TOC is not in the container.
 //
-			if(i >=0)
-			{
-				fp_Container * pCon = pBroke->getContainer();
+			    if(i >=0)
+			    {
+			        fp_Container * pCon = pBroke->getContainer();
 				pBroke->setContainer(NULL);
 				pCon->deleteNthCon(i);
+			    }
 			}
 		}
 		bFirst = false;

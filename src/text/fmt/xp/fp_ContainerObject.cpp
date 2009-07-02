@@ -122,6 +122,22 @@ bool fp_ContainerObject::isColumnType(void) const
 }
 
 /*!
+ * Return the DocSectionLayout that owns this
+ */
+fl_DocSectionLayout * fp_ContainerObject::getDocSectionLayout(void)
+{
+    fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(getSectionLayout());
+    while(pCL && (pCL->getContainerType() != FL_CONTAINER_DOCSECTION))
+    {
+        pCL = pCL->myContainingLayout();
+    }
+    if(pCL)
+    {
+        return static_cast<fl_DocSectionLayout *>(pCL);
+    }
+    return NULL;
+}
+/*!
  * Return a pointer to the Graphics class for this object
  */
 GR_Graphics * fp_ContainerObject::getGraphics(void) const

@@ -690,7 +690,7 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 	}
 	fp_Container * pPrev = NULL;
 	fp_TableContainer * pTab = NULL;
-	while(!pCon->isColumnType() && !bTable)
+	while(pCon && !pCon->isColumnType() && !bTable)
 	{
 		my_xoff += pCon->getX();
 		xxx_UT_DEBUGMSG(("Screen offsets my_xoff %d pCon %x type %s \n",my_xoff,pCon,pCon->getContainerString()));
@@ -765,7 +765,9 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 		}
 		pPrev = pCon;
 		pCon = pCon->getContainer();
+		UT_return_if_fail(pCon);
 	}
+	UT_return_if_fail(pCon);
 	UT_sint32 col_x =0;
 	UT_sint32 col_y =0;
 	xoff = my_xoff + pOrig->getX();
@@ -865,6 +867,7 @@ void fp_VerticalContainer::removeContainer(fp_Container* pContainer,bool bClear)
 bool fp_VerticalContainer::insertContainer(fp_Container* pNewContainer)
 {
 	UT_return_val_if_fail(pNewContainer,false);
+        UT_return_val_if_fail(pNewContainer->getDocSectionLayout() == getDocSectionLayout(),false);
 	UT_ASSERT(pNewContainer->getContainerType() != FP_CONTAINER_ANNOTATION);
 	pNewContainer->clearScreen();
 	xxx_UT_DEBUGMSG(("Insert  Container after CS %x in column %x \n",pNewContainer,this));
@@ -891,6 +894,7 @@ UT_sint32	fp_VerticalContainer::getColumnGap(void) const
 bool fp_VerticalContainer::addContainer(fp_Container* pNewContainer)
 {
 	UT_return_val_if_fail(pNewContainer,false);
+	UT_return_val_if_fail(pNewContainer->getDocSectionLayout() == getDocSectionLayout(),false);
 	UT_ASSERT(pNewContainer->getContainerType() != FP_CONTAINER_ANNOTATION);
 	if(pNewContainer->getContainer() != NULL)
 	{
@@ -916,6 +920,7 @@ bool fp_VerticalContainer::insertContainerAfter(fp_Container*	pNewContainer, fp_
 {
 	UT_ASSERT(pAfterContainer);
 	UT_return_val_if_fail(pNewContainer, false);
+        UT_return_val_if_fail(pNewContainer->getDocSectionLayout() == getDocSectionLayout(),false);
 	UT_ASSERT(pNewContainer->getContainerType() != FP_CONTAINER_ANNOTATION);
 
 	UT_sint32 count = countCons();
@@ -1625,6 +1630,7 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 	fp_TOCContainer *pTOC2 = NULL;
 	fp_VerticalContainer* pNextContainer = static_cast<fp_VerticalContainer*>(getNext());
 	UT_return_if_fail(pNextContainer);
+	UT_return_if_fail(pNextContainer->getDocSectionLayout() == getDocSectionLayout());
 	if (pNextContainer->isEmpty())
 	{
 		for (i=ndx; i< countCons(); i++)
@@ -2080,11 +2086,17 @@ void fp_Column::layout(void)
 UT_sint32 fp_Column::getMaxHeight(void) const
 {
 	const fp_VerticalContainer * pVC = static_cast<const fp_VerticalContainer *>(this);
+	UT_sint32 iMaxHeight = 0;
 	if(!getPage())
 	{
-		return pVC->getMaxHeight();
+		iMaxHeight = pVC->getMaxHeight();
 	}
-	return getPage()->getAvailableHeightForColumn(this);
+	else
+	{
+	        iMaxHeight = getPage()->getAvailableHeightForColumn(this);
+	}
+	//UT_ASSERT(iMaxHeight > 0);
+	return iMaxHeight;
 }
 
 fl_DocSectionLayout* fp_Column::getDocSectionLayout(void) const

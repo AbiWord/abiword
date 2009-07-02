@@ -853,7 +853,7 @@ UT_sint32 fp_Page::getAvailableHeightForColumn(const fp_Column * pColumn) const
 	fl_DocSectionLayout * pDSL = pCurLeader->getDocSectionLayout();
 	UT_sint32 avail = getHeight() - pDSL->getTopMargin() - pDSL->getBottomMargin();
 	UT_sint32 i =0;
-	xxx_UT_DEBUGMSG(("fp_Page:: Total avail after margins subtracted %d \n",avail));
+	UT_DEBUGMSG(("fp_Page:: Total avail after margins subtracted %d \n",avail));
 	UT_sint32 nLeaders = static_cast<UT_sint32>(countColumnLeaders()); 
 	while((pCurLeader != pLeader) && (nLeaders > 1))	
 	{
@@ -892,6 +892,7 @@ UT_sint32 fp_Page::getAvailableHeightForColumn(const fp_Column * pColumn) const
 					avail -= pAC->getHeight();
 			}
 	}
+	//UT_ASSERT(avail > 0);
 	return avail;
 
 }

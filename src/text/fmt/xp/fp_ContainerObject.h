@@ -96,6 +96,7 @@ struct _fp_Allocation
 class GR_Graphics;
 class FG_Graphic;
 class fl_SectionLayout;
+class fl_DocSectionLayout;
 class FL_DocLayout;
 class fp_Page;
 class fp_Container;
@@ -193,6 +194,7 @@ public:
 	virtual UT_sint32	getY(void) const = 0;
 	fl_SectionLayout*   getSectionLayout(void) const
 		{ return m_pSectionLayout; }
+	fl_DocSectionLayout *   getDocSectionLayout(void);
     void         setSectionLayout(fl_SectionLayout * pSL)
 		{ m_pSectionLayout = pSL; }
 	virtual inline UT_BidiCharType getDirection(void) const

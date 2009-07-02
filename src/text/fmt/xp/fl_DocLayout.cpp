@@ -2471,7 +2471,13 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos) const
 		return NULL;
 	}
 
-	UT_return_val_if_fail( pBL, NULL );
+	if(pBL== NULL)
+	{
+	  //
+	  // Give up!
+	  //
+	     return NULL;
+	}
 	
 	fl_ContainerLayout * pMyC = pBL->myContainingLayout();
 	while(pMyC && (pMyC->getContainerType() != FL_CONTAINER_DOCSECTION)

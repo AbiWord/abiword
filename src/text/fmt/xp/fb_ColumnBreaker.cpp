@@ -151,7 +151,11 @@ UT_sint32 fb_ColumnBreaker::breakSection()
 {
   fp_Page * pStartPage = m_pStartPage;
   m_pDocSec->setNeedsSectionBreak(false,m_pStartPage);
+  FL_DocLayout * pDL =  m_pDocSec->getDocLayout();
   m_bStartFromStart = true;
+  UT_sint32 iPage = pDL->findPage(pStartPage);  
+  if(iPage < 0)
+       pStartPage = NULL;
   UT_sint32 iVal = _breakSection(pStartPage);
   UT_sint32 icnt = 0;
   pStartPage = needsRebreak();
@@ -163,15 +167,28 @@ UT_sint32 fb_ColumnBreaker::breakSection()
   while(pStartPage && (icnt < 50))
   {
 
-#if DEBUG
       UT_DEBUGMSG(("Try to get a decent break Column %d times \n",icnt));
-      if(pStartPage)
+      iPage = pDL->findPage(pStartPage);
+      if(iPage < 0)
       {
-	  FL_DocLayout * pDL =  m_pDocSec->getDocLayout();
-	  UT_sint32 iPage = pDL->findPage(pStartPage);
-	  UT_DEBUGMSG(("Retrying from page %d \n",iPage));
+	  pStartPage = NULL;
       }
-#endif
+      else
+      {
+	  UT_DEBUGMSG(("Retrying from page %d \n",iPage));
+	  if(icnt >15)
+	  {
+	      if(pStartPage->getAvailableHeight() <0)
+	      {
+		  while(pStartPage->countFootnoteContainers()>0)
+		  {
+		      fp_FootnoteContainer* pFC = pStartPage->getNthFootnoteContainer(0);
+		      pStartPage->removeFootnoteContainer(pFC);
+		  }
+	      }
+	  }
+      }
+
       iVal = _breakSection(pStartPage);
       pStartPage = needsRebreak();
       if(m_pStartPage)
@@ -184,7 +201,6 @@ UT_sint32 fb_ColumnBreaker::breakSection()
       }
       icnt++;
   }
-  FL_DocLayout * pDL = m_pDocSec->getDocLayout();
   pDL->deleteEmptyColumnsAndPages();
   return iVal;
 }
@@ -218,6 +234,7 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 	fp_Container* pOuterContainer = NULL;
 	fp_Column* pCurColumn = NULL;
 	fp_Column* pPrevColumn = NULL;
+	UT_sint32 iCurPage = 0;
 	xxx_UT_DEBUGMSG(("Doing ColumnBreak for section %x at page %x \n",m_pDecSec,m_pStartPage));
 //	UT_ASSERT(m_pDocSec->needsSectionBreak());
 	pFirstLayout = m_pDocSec->getFirstLayout();
@@ -226,6 +243,12 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 		m_pStartPage = NULL;
 		m_bStartFromStart = false;
 		return 0;
+	}
+	if(pStartPage)
+	{
+	    iCurPage =  pDocLayout->findPage(pStartPage);
+	    if(iCurPage == 0)
+	        pStartPage=NULL;
 	}
 	pOuterContainer = pFirstLayout->getFirstContainer();
 	if(pOuterContainer
@@ -239,8 +262,6 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 
 	}
 	pCurColumn = static_cast<fp_Column*>(m_pDocSec->getFirstContainer());
-	if(pCurColumn && (pCurColumn->getFirstContainer()))
-	        pOuterContainer = pCurColumn->getFirstContainer();
 	xxx_UT_DEBUGMSG(("fb_ColumnBreaker: For DocSec %x first column %x \n",m_pDecSec,pCurColumn));
 	if(pStartPage && (pStartPage->getNthColumnLeader(0)))
 	{
@@ -372,18 +393,18 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 			fp_Container* pPrevContainer = 
 				static_cast<fp_Container *>(pCurContainer->getPrevContainerInSection());
 			if(pPrevContainer && 
-			   pPrevContainer->getContainerType() == FP_CONTAINER_LINE)
+			   (pPrevContainer->getContainerType() == FP_CONTAINER_LINE))
 			{
 				fp_Line * pL = static_cast<fp_Line *>(pPrevContainer);
-				{
-					if (pL->containsForcedPageBreak()
+				
+				if (pL && pL->containsForcedPageBreak() && pL->getContainer() 
 				&& (pCurColumn->getPage() == pL->getContainer()->getPage()))
-					{
+				{
 					  //						pCurColumn->validate();
-						pCurColumn = static_cast<fp_Column *>(pCurColumn->getNext());
-						continue;
-					}
+				  pCurColumn = static_cast<fp_Column *>(pCurColumn->getNext());
+				  continue;
 				}
+				
 			}
 		}
 		bool bBreakOnColumnBreak = false;
@@ -394,7 +415,11 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 		fp_Container * pPrevWorking = pCurContainer;
 		while (pCurContainer)
 		{
-			xxx_UT_DEBUGMSG(("curContainer %x type %d \n",pCurContainer,pCurContainer->getContainerType()));
+		        xxx_UT_DEBUGMSG(("curContainer pointer %p type %s \n",iLoop,pCurContainer,pCurContainer->getContainerString()));
+			if(pCurContainer->getDocSectionLayout() != m_pDocSec)
+			{
+			        break;
+			}
 			if(pCurContainer->getContainerType() == FP_CONTAINER_FOOTNOTE || ((pCurContainer->getContainerType() == FP_CONTAINER_ANNOTATION)))
 			{
 //
@@ -877,6 +902,10 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 				pCurContainer = _getNext(pCurContainer);
 				continue;
 			}
+			if(pCurContainer->getDocSectionLayout() != m_pDocSec)
+			{
+			    break;
+			}
 			if (pCurContainer->getContainer() != pCurColumn || (pCurColumn->findCon(pCurContainer) < 0) )
 			{
 //
@@ -901,7 +930,7 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 #endif
 					pVert->removeContainer(pCurContainer,true);
 				}
-				if(pCurContainer->getContainer() != pCurColumn)
+				if((pCurContainer->getContainer() != pCurColumn) && (pCurContainer->getDocSectionLayout() == pCurColumn->getDocSectionLayout()))
 				{
 					if(pCurContainer->getContainerType() != FP_CONTAINER_FRAME)
 					{
@@ -926,6 +955,7 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 						}
 					}
 				}
+				
 			}
 //
 // Now make sure footnotes and annotations are on the same page as the reference.
@@ -1082,7 +1112,7 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 			}
 //
 // Code to fix order in the column
-//
+// 
 #if 1
 			if((pCurColumn->findCon(pCurContainer) >= 0) && (pCurColumn->findCon(pCurContainer)  != conPos))
 			{
@@ -1298,6 +1328,10 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 			{
 				pOuterContainer = pNextContainer;
 			}
+		}
+		if(pCurContainer && (pCurContainer->getDocSectionLayout() != m_pDocSec))
+		{
+		        pCurColumn = NULL;
 		}
 //
 // Loop back for next pCurContainer. Finish if pCurColumn == NULL.

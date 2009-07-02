@@ -162,7 +162,7 @@ fp_Line::~fp_Line()
 #endif
 	setScreenCleared(true);
 	xxx_UT_DEBUGMSG(("Line %x delete refCount %d \n",this,getRefCount()));
-	UT_ASSERT(getRefCount() == 0);
+	//UT_ASSERT(getRefCount() == 0);
 }
 
 
@@ -652,6 +652,8 @@ void fp_Line::remove(void)
 		pPrev->setNext(pNext);
 		unref();
 	}
+	if(m_pBlock && (m_pBlock->getDocSectionLayout()->isCollapsing()))
+	        return;
 	if(getContainer())
 	{
 		xxx_UT_DEBUGMSG(("Removing line %x from container \n",this));
