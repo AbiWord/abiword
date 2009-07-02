@@ -65,18 +65,18 @@ public:
 	OXML_Element(const std::string & id, OXML_ElementTag tag, OXML_ElementType type);
 	virtual ~OXML_Element();
 
-	inline std::string getId() { return m_id; }
+	inline const std::string & getId() const { return m_id; }
 	inline void setId(const std::string & id) { m_id = id; }
-	inline OXML_ElementTag getTag() { return m_tag; }
-	inline OXML_ElementType getType() { return m_type; }
+	inline OXML_ElementTag getTag() const { return m_tag; }
+	inline OXML_ElementType getType() const { return m_type; }
 	inline void setType(OXML_ElementType type) { m_type = type; }
 
-	bool operator ==(const std::string id);
-	friend bool operator ==(const OXML_SharedElement& lhs, const std::string id) { return (*lhs) == id; }
+	bool operator ==(const std::string & id);
+	friend bool operator ==(const OXML_SharedElement& lhs, const std::string & id) { return (*lhs) == id; }
 
-	OXML_SharedElement getElement(std::string id);
-	UT_Error appendElement(OXML_SharedElement obj);
-	inline OXML_ElementVector getChildren() { return m_children; }
+	OXML_SharedElement getElement(const std::string & id) const;
+	UT_Error appendElement(const OXML_SharedElement & obj);
+	inline const OXML_ElementVector & getChildren() const { return m_children; }
 	UT_Error clearChildren();
 
 	//! Writes the OpenXML element to a file on disk.

@@ -57,40 +57,40 @@ public:
 	static OXML_SharedSection getCurrentSection();
 
 	//! Returns a reference to the FIRST style with corresponding ID OR empty SharedStyle if none found.
-	OXML_SharedStyle getStyleById(const std::string & id);
+	OXML_SharedStyle getStyleById(const std::string & id) const;
 	//! Returns a reference to the FIRST style with corresponding name OR empty SharedStyle if none found.
-	OXML_SharedStyle getStyleByName(const std::string & name);
+	OXML_SharedStyle getStyleByName(const std::string & name) const;
 	UT_Error addStyle(const std::string & id, const std::string & name, const gchar ** attributes);
 	UT_Error addStyle(const OXML_SharedStyle & obj);
 	UT_Error clearStyles();
 
 	UT_Error addList(const OXML_SharedList& obj);
 	UT_Error addImage(const OXML_SharedImage& obj);
-	OXML_SharedList getListById(UT_uint32 id);
+	OXML_SharedList getListById(UT_uint32 id) const;
 
 	//! Returns a reference to the FIRST footnote with corresponding ID OR empty SharedSection if none found.
-	OXML_SharedSection getFootnote(const std::string & id);
+	OXML_SharedSection getFootnote(const std::string & id) const;
 	UT_Error addFootnote(const OXML_SharedSection & obj);
 	UT_Error clearFootnotes();
 
-	OXML_SharedSection getEndnote(const std::string & id);
+	OXML_SharedSection getEndnote(const std::string & id) const;
 	UT_Error addEndnote(const OXML_SharedSection & obj);
 	UT_Error clearEndnotes();
 
 	//! Returns a reference to the FIRST header with corresponding ID OR empty SharedSection if none found.
-	OXML_SharedSection getHeader(const std::string & id);
+	OXML_SharedSection getHeader(const std::string & id) const;
 	UT_Error addHeader(const OXML_SharedSection & obj);
 	UT_Error clearHeaders();
 
 	//! Returns a reference to the FIRST footer with corresponding ID OR NULL if none found.
-	OXML_SharedSection getFooter(const std::string & id);
+	OXML_SharedSection getFooter(const std::string & id) const;
 	UT_Error addFooter(const OXML_SharedSection & obj);
 	UT_Error clearFooters();
 
 	//! Retrieves the last appended section of the document OR empty SharedSection if no sections have been appended.
-	OXML_SharedSection getLastSection();
+	OXML_SharedSection getLastSection() const;
 	//! Returns a reference to the FIRST section with corresponding ID OR empty SharedSection if none found.
-	OXML_SharedSection getSection(const std::string & id);
+	OXML_SharedSection getSection(const std::string & id) const;
 	//! Appends a new section at the end of the list.
 	UT_Error appendSection(const OXML_SharedSection & obj);
 	UT_Error clearSections();
@@ -109,10 +109,10 @@ public:
 	*/
 	UT_Error addToPT(PD_Document * pDocument);
 
-	std::string getMappedNumberingId(const std::string & numId);
+	std::string getMappedNumberingId(const std::string & numId) const;
 	bool setMappedNumberingId(const std::string & numId, const std::string & abstractNumId);
 
-	std::string getBookmarkName(const std::string & bookmarkId);
+	std::string getBookmarkName(const std::string & bookmarkId) const;
 	bool setBookmarkName(const std::string & bookmarkId, const std::string & bookmarkName);
 
 private:

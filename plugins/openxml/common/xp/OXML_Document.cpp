@@ -86,16 +86,16 @@ OXML_Document::~OXML_Document()
 	clearEndnotes();
 }
 
-OXML_SharedStyle OXML_Document::getStyleById(const std::string & id)
+OXML_SharedStyle OXML_Document::getStyleById(const std::string & id) const
 {
-	OXML_StyleMap::iterator it;
+	OXML_StyleMap::const_iterator it;
 	it = m_styles_by_id.find(id);
 	return it != m_styles_by_id.end() ? it->second : OXML_SharedStyle() ;
 }
 
-OXML_SharedStyle OXML_Document::getStyleByName(const std::string & name)
+OXML_SharedStyle OXML_Document::getStyleByName(const std::string & name) const
 {
-	OXML_StyleMap::iterator it;
+	OXML_StyleMap::const_iterator it;
 	it = m_styles_by_name.find(name);
 	return it != m_styles_by_name.end() ? it->second : OXML_SharedStyle() ;
 }
@@ -132,9 +132,9 @@ UT_Error OXML_Document::addList(const OXML_SharedList & obj)
 	return UT_OK;
 }
 
-OXML_SharedList OXML_Document::getListById(UT_uint32 id)
+OXML_SharedList OXML_Document::getListById(UT_uint32 id) const
 {
-	OXML_ListMap::iterator it;
+	OXML_ListMap::const_iterator it;
 	it = m_lists_by_id.find(id);
 	return it != m_lists_by_id.end() ? it->second : OXML_SharedList() ;
 }
@@ -143,7 +143,7 @@ UT_Error OXML_Document::addImage(const OXML_SharedImage & obj)
 {
 	UT_return_val_if_fail(obj, UT_ERROR);
 
-	std::string str("");
+	std::string str;
 	str += obj->getId();
 	m_images_by_id[str] = obj;
 	return UT_OK;
@@ -156,9 +156,9 @@ UT_Error OXML_Document::clearStyles()
 	return m_styles_by_id.size() == 0 && m_styles_by_name.size() == 0 ? UT_OK : UT_ERROR;
 }
 
-OXML_SharedSection OXML_Document::getHeader(const std::string & id)
+OXML_SharedSection OXML_Document::getHeader(const std::string & id) const
 {
-	OXML_SectionMap::iterator it;
+	OXML_SectionMap::const_iterator it;
 	it = m_headers.find(id);
 	return it != m_headers.end() ? it->second : OXML_SharedSection() ;
 }
@@ -177,9 +177,9 @@ UT_Error OXML_Document::clearHeaders()
 	return m_headers.size() == 0 ? UT_OK : UT_ERROR;
 }
 
-OXML_SharedSection OXML_Document::getFootnote(const std::string & id)
+OXML_SharedSection OXML_Document::getFootnote(const std::string & id) const
 {
-	OXML_SectionMap::iterator it;
+	OXML_SectionMap::const_iterator it;
 	it = m_footnotes.find(id);
 	return it != m_footnotes.end() ? it->second : OXML_SharedSection() ;
 }
@@ -198,9 +198,9 @@ UT_Error OXML_Document::clearFootnotes()
 	return m_footnotes.size() == 0 ? UT_OK : UT_ERROR;
 }
 
-OXML_SharedSection OXML_Document::getEndnote(const std::string & id)
+OXML_SharedSection OXML_Document::getEndnote(const std::string & id) const
 {
-	OXML_SectionMap::iterator it;
+	OXML_SectionMap::const_iterator it;
 	it = m_endnotes.find(id);
 	return it != m_endnotes.end() ? it->second : OXML_SharedSection() ;
 }
@@ -219,9 +219,9 @@ UT_Error OXML_Document::clearEndnotes()
 	return m_endnotes.size() == 0 ? UT_OK : UT_ERROR;
 }
 
-OXML_SharedSection OXML_Document::getFooter(const std::string & id)
+OXML_SharedSection OXML_Document::getFooter(const std::string & id) const
 {
-	OXML_SectionMap::iterator it;
+	OXML_SectionMap::const_iterator it;
 	it = m_footers.find(id);
 	return it != m_footers.end() ? it->second : OXML_SharedSection() ;
 }
@@ -240,15 +240,15 @@ UT_Error OXML_Document::clearFooters()
 	return m_footers.size() == 0 ? UT_OK : UT_ERROR;
 }
 
-OXML_SharedSection OXML_Document::getLastSection()
+OXML_SharedSection OXML_Document::getLastSection() const
 {
 	UT_return_val_if_fail(!m_sections.empty(), OXML_SharedSection() );
 	return m_sections.back();
 }
 
-OXML_SharedSection OXML_Document::getSection(const std::string & id)
+OXML_SharedSection OXML_Document::getSection(const std::string & id) const
 {
-	OXML_SectionVector::iterator it;
+	OXML_SectionVector::const_iterator it;
 	it = std::find(m_sections.begin(), m_sections.end(), id);
 	return ( it != m_sections.end() ) ? (*it) : OXML_SharedSection() ;
 }
@@ -485,9 +485,9 @@ void OXML_Document::_assignHdrFtrIds()
 	}
 }
 
-std::string OXML_Document::getMappedNumberingId(const std::string & numId)
+std::string OXML_Document::getMappedNumberingId(const std::string & numId) const
 {
-	std::map<std::string, std::string>::iterator iter = m_numberingMap.find(numId);
+	std::map<std::string, std::string>::const_iterator iter = m_numberingMap.find(numId);
 	if(iter == m_numberingMap.end())
 		return "";
 	return iter->second; 
@@ -499,9 +499,9 @@ bool OXML_Document::setMappedNumberingId(const std::string & numId, const std::s
 	return m_numberingMap.find(numId) != m_numberingMap.end();
 }
 
-std::string OXML_Document::getBookmarkName(const std::string & bookmarkId)
+std::string OXML_Document::getBookmarkName(const std::string & bookmarkId) const
 {
-	std::map<std::string, std::string>::iterator iter = m_bookmarkMap.find(bookmarkId);
+	std::map<std::string, std::string>::const_iterator iter = m_bookmarkMap.find(bookmarkId);
 	if(iter == m_bookmarkMap.end())
 		return "";
 	return iter->second; 

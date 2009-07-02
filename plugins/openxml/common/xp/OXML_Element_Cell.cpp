@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiSource
  * 
@@ -34,11 +34,11 @@
 OXML_Element_Cell::OXML_Element_Cell(const std::string & id, OXML_Element_Table* tbl, OXML_Element_Row* rw,
 									 UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bottom) : 
 	OXML_Element(id, TC_TAG, CELL),
-	m_startVerticalMerge(true),
 	m_iLeft(left), 
 	m_iRight(right), 
 	m_iTop(top), 
 	m_iBottom(bottom),
+	m_startVerticalMerge(true),
 	table(tbl),
 	row(rw)
 {
@@ -298,30 +298,6 @@ void OXML_Element_Cell::setBottom(UT_sint32 bottom)
 	m_iBottom = bottom;
 }
 
-UT_sint32 OXML_Element_Cell::getLeft()
-{
-	return m_iLeft;
-}
-
-UT_sint32 OXML_Element_Cell::getRight()
-{
-	return m_iRight;
-}
-
-UT_sint32 OXML_Element_Cell::getTop()
-{
-	return m_iTop;
-}
-
-UT_sint32 OXML_Element_Cell::getBottom()
-{
-	return m_iBottom;
-}
-
-bool OXML_Element_Cell::startsVerticalMerge()
-{
-	return m_startVerticalMerge;
-}
 
 //start=false for vertical merge = continous cells
 void OXML_Element_Cell::setVerticalMergeStart(bool start)

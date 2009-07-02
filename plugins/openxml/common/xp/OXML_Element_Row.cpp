@@ -167,16 +167,7 @@ void OXML_Element_Row::setRowNumber(int row)
 {
 	m_rowNumber = row;
 }
-\
-int OXML_Element_Row::getRowNumber()
-{
-	return m_rowNumber;
-}
 
-int OXML_Element_Row::getCurrentColumnNumber()
-{
-	return m_currentColumnNumber;
-}
 
 void OXML_Element_Row::addCell(OXML_Element_Cell* cell)
 {
@@ -185,8 +176,8 @@ void OXML_Element_Row::addCell(OXML_Element_Cell* cell)
 
 bool OXML_Element_Row::incrementBottomVerticalMergeStart(int left, int top)
 {
-	std::vector<OXML_Element_Cell*>::iterator it;
-	for( it=m_cells.begin(); it < m_cells.end(); ++it )
+	std::vector<OXML_Element_Cell*>::const_iterator it;
+	for( it = m_cells.begin(); it < m_cells.end(); ++it )
 	{
 		OXML_Element_Cell* pCell = *it;
 		if((pCell->getLeft() == left) && (pCell->getTop() < top) && pCell->startsVerticalMerge())

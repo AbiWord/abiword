@@ -48,8 +48,14 @@ public:
 	virtual void setNumCols(UT_sint32 numCols);
 
 	void setRowNumber(int row);
-	int getRowNumber();
-	int getCurrentColumnNumber();
+	int getRowNumber() const
+        {
+            return m_rowNumber;
+        }
+	int getCurrentColumnNumber() const
+        {
+            return m_currentColumnNumber;
+        }
 
 	void addCell(OXML_Element_Cell* cell);
 

@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiSource
  * 
@@ -46,10 +46,22 @@ public:
 
 	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
 	virtual UT_Error addToPT(PD_Document * pDocument);
-	UT_sint32 getLeft();
-	UT_sint32 getRight();
-	UT_sint32 getTop();
-	UT_sint32 getBottom();
+	UT_sint32 getLeft() const
+		{
+			return m_iLeft;
+		}
+	UT_sint32 getRight() const
+		{
+			return m_iRight;
+		}
+	UT_sint32 getTop() const
+		{
+			return m_iTop;
+		}
+	UT_sint32 getBottom() const
+		{
+			return m_iBottom;
+		}
 
 	void setLeft(UT_sint32 left);
 	void setRight(UT_sint32 right);
@@ -57,7 +69,10 @@ public:
 	void setBottom(UT_sint32 bottom);
 
 	void setVerticalMergeStart(bool start);
-	bool startsVerticalMerge();
+	bool startsVerticalMerge() const
+        {
+            return m_startVerticalMerge;
+        }
 
 private:
 	virtual UT_Error serializeProperties(IE_Exp_OpenXML* exporter);

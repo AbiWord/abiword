@@ -41,7 +41,6 @@ OXML_Element::OXML_Element(const std::string & id, OXML_ElementTag tag, OXML_Ele
 	m_tag(tag), 
 	m_type(type)
 {
-	m_children.clear();
 }
 
 OXML_Element::~OXML_Element()
@@ -49,19 +48,19 @@ OXML_Element::~OXML_Element()
 	this->clearChildren();
 }
 
-bool OXML_Element::operator ==(const std::string id)
+bool OXML_Element::operator ==(const std::string & id)
 {
 	return this->m_id.compare(id) == 0;
 }
 
-OXML_SharedElement OXML_Element::getElement(std::string id)
+OXML_SharedElement OXML_Element::getElement(const std::string & id) const
 {
-	OXML_ElementVector::iterator it;
+	OXML_ElementVector::const_iterator it;
 	it = std::find(m_children.begin(), m_children.end(), id);
 	return ( it != m_children.end() ) ? (*it) : OXML_SharedElement() ;
 }
 
-UT_Error OXML_Element::appendElement(OXML_SharedElement obj)
+UT_Error OXML_Element::appendElement(const OXML_SharedElement & obj)
 {
 	UT_return_val_if_fail(obj.get() != NULL, UT_ERROR);
 
@@ -113,7 +112,7 @@ UT_Error OXML_Element::addChildrenToPT(PD_Document * pDocument)
 {
 	UT_Error ret(UT_OK), temp(UT_OK);
 
-	std::vector<OXML_Element*>::size_type i;
+	OXML_ElementVector::size_type i;
 	for (i = 0; i < m_children.size(); i++)
 	{
 		temp = m_children[i]->addToPT(pDocument);

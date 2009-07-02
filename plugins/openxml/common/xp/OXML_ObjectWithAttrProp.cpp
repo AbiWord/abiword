@@ -21,7 +21,7 @@
  */
 
 // Class definition include
-#include <OXML_ObjectWithAttrProp.h>
+#include "OXML_ObjectWithAttrProp.h"
 
 OXML_ObjectWithAttrProp::OXML_ObjectWithAttrProp() : 
 	m_pAttributes(NULL)
@@ -57,7 +57,7 @@ UT_Error OXML_ObjectWithAttrProp::setProperty(const std::string & szName, const 
 	return setProperty(szName.c_str(), szValue.c_str());
 }
 
-UT_Error OXML_ObjectWithAttrProp::getAttribute(const gchar * szName, const gchar *& szValue)
+UT_Error OXML_ObjectWithAttrProp::getAttribute(const gchar * szName, const gchar *& szValue) const
 {
     szValue = NULL;
 	UT_return_val_if_fail(szName && *szName, UT_ERROR);
@@ -72,7 +72,7 @@ UT_Error OXML_ObjectWithAttrProp::getAttribute(const gchar * szName, const gchar
 	return (szValue && *szValue) ? UT_OK : UT_ERROR;
 }
 
-UT_Error OXML_ObjectWithAttrProp::getProperty(const gchar * szName, const gchar *& szValue)
+UT_Error OXML_ObjectWithAttrProp::getProperty(const gchar * szName, const gchar *& szValue) const
 {
     szValue = NULL;
 	UT_return_val_if_fail(szName && *szName, UT_ERROR);
@@ -127,36 +127,41 @@ UT_Error OXML_ObjectWithAttrProp::appendProperties(const gchar ** properties)
 	return UT_OK;
 }
 
-const gchar ** OXML_ObjectWithAttrProp::getAttributes()
+const gchar ** OXML_ObjectWithAttrProp::getAttributes() const
 {
-	if (m_pAttributes == NULL) return NULL;
+	if (m_pAttributes == NULL) 
+        return NULL;
 	return m_pAttributes->getAttributes();
 }
 
-const gchar ** OXML_ObjectWithAttrProp::getProperties()
+const gchar ** OXML_ObjectWithAttrProp::getProperties() const
 {
-	if (m_pAttributes == NULL) return NULL;
+	if (m_pAttributes == NULL) 
+        return NULL;
 	return m_pAttributes->getProperties();
 }
 
 const gchar ** OXML_ObjectWithAttrProp::getAttributesWithProps()
 {
 	std::string propstring = _generatePropsString();
-	if (!propstring.compare("")) return getAttributes();
+	if (!propstring.compare("")) 
+        return getAttributes();
+// WTF is that?
 	UT_return_val_if_fail(UT_OK == setAttribute("fakeprops", propstring.c_str()), NULL);
 	const gchar ** atts = getAttributes();
-	for (UT_uint32 i = 0; atts[i] != NULL; i += 2) {
+	for (UT_uint32 i = 0; atts && (atts[i] != NULL); i += 2) {
 		if (!strcmp(atts[i], "fakeprops"))
 			atts[i] = PT_PROPS_ATTRIBUTE_NAME;
 	}
 	return atts;
 }
 
-std::string OXML_ObjectWithAttrProp::_generatePropsString()
+std::string OXML_ObjectWithAttrProp::_generatePropsString() const
 {
 	const gchar ** props = getProperties();
-	if (props == NULL) return "";
-	std::string fmt_props = "";
+	if (props == NULL) 
+        return "";
+	std::string fmt_props;
 
 	for (UT_uint32 i = 0; props[i] != NULL; i += 2) {
 		fmt_props += props[i];

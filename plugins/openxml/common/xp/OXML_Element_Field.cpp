@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiSource
  * 
@@ -728,9 +728,9 @@ void OXML_Element_Field::setFieldType(const std::string & typ)
 
 std::string OXML_Element_Field::removeExtraSpaces(const std::string & str)
 {
-	std::string s("");
+	std::string s;
 	char lastChar = ' ';
-	int i;
+	std::string::size_type i;
 	for(i=0; i<str.length(); i++)
 	{
 		if((str[i] != ' ') || (lastChar != ' '))

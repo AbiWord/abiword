@@ -39,14 +39,14 @@ public:
 	UT_Error setAttribute(const gchar * szName, const gchar * szValue);
 	UT_Error setProperty(const gchar * szName, const gchar * szValue);
 	UT_Error setProperty(const std::string & szName, const std::string & szValue);
-	UT_Error getAttribute(const gchar * szName, const gchar *& szValue);
-	UT_Error getProperty(const gchar * szName, const gchar *& szValue);
+	UT_Error getAttribute(const gchar * szName, const gchar *& szValue) const;
+	UT_Error getProperty(const gchar * szName, const gchar *& szValue) const;
 	UT_Error setAttributes(const gchar ** attributes);
 	UT_Error setProperties(const gchar ** properties);
 	UT_Error appendAttributes(const gchar ** attributes);
 	UT_Error appendProperties(const gchar ** properties);
-	const gchar ** getAttributes();
-	const gchar ** getProperties();
+	const gchar ** getAttributes() const;
+	const gchar ** getProperties() const;
 
 	//! Provides the list of attributes including all the properties in one attribute.
 	/*! This method takes all the properties of the object and combines them into one string in CSS
@@ -58,7 +58,7 @@ public:
 private:
 	PP_AttrProp* m_pAttributes;
 
-	std::string _generatePropsString();
+	std::string _generatePropsString() const;
 };
 
 #endif //_OXML_OBJECTWITHATTRPROP_H_
