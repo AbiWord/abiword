@@ -1,8 +1,9 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiSource
  * 
  * Copyright (C) 2008 Firat Kiyak <firatkiyak@gmail.com>
+ * Copyright (C) 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,37 +21,36 @@
  * 02111-1307, USA.
  */
 
-// Class definition include
-#include <OXML_Image.h>
 
-// Internal includes
-#include <OXML_Types.h>
-#include <OXML_Document.h>
-
-// AbiWord includes
-#include <ut_types.h>
-#include <ut_misc.h>
-#include <pd_Document.h>
-
-// External includes
 #include <string>
 
-OXML_Image::OXML_Image() : 
-	OXML_ObjectWithAttrProp(),
-	m_id(""),
-	m_mimeType(""),
-	m_data(NULL)
+#include "ut_types.h"
+#include "ut_misc.h"
+#include "pd_Document.h"
+#include "fg_Graphic.h"
+
+// Class definition include
+#include "OXML_Image.h"
+
+// Internal includes
+#include "OXML_Types.h"
+#include "OXML_Document.h"
+
+
+
+OXML_Image::OXML_Image()
+	: m_data(NULL)
+	, m_graphic(NULL)
 {
 
 }
 
 OXML_Image::~OXML_Image()
 {
-	if(m_data)
-		delete m_data;
+	DELETEP(m_graphic);
 }
 
-void OXML_Image::setId(const char* imageId)
+void OXML_Image::setId(const std::string & imageId)
 {
 	m_id = imageId;
 }
@@ -60,29 +60,41 @@ void OXML_Image::setMimeType(const std::string & imageMimeType)
 	m_mimeType = imageMimeType;
 }
 
+
 void OXML_Image::setData(const UT_ByteBuf* imageData)
 {
+	DELETEP(m_graphic);
 	m_data = imageData;
 }
 
-const char* OXML_Image::getId()
+void OXML_Image::setGraphic(const FG_Graphic * graphic)
 {
-	return m_id.c_str();	
+	DELETEP(m_graphic);
+	m_data = NULL;
+	m_graphic = graphic;
 }
+
 
 UT_Error OXML_Image::serialize(IE_Exp_OpenXML* exporter)
 {
 	std::string filename = m_id;
+	std::string mimeType;
+	if(m_graphic) {
+		mimeType = m_graphic->getMimeType();
+	}
+	else {
+		mimeType = m_mimeType;
+	}
 
-	if(m_mimeType.empty() || (m_mimeType == "image/png"))
+	if(mimeType.empty() || (mimeType == "image/png"))
 	{
 		filename += ".png";
 	}
-	else if(m_mimeType == "image/jpeg")
+	else if(mimeType == "image/jpeg")
 	{
 		filename += ".jpg";
 	}
-	else if(m_mimeType == "image/svg+xml")
+	else if(mimeType == "image/svg+xml")
 	{
 		filename += ".svg";
 	}
@@ -91,12 +103,14 @@ UT_Error OXML_Image::serialize(IE_Exp_OpenXML* exporter)
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	}
 
-	return exporter->writeImage(filename.c_str(), m_data);
+	return exporter->writeImage(filename.c_str(), m_graphic ? m_graphic->getBuffer() : m_data);
 }
 
 UT_Error OXML_Image::addToPT(PD_Document * pDocument)
 {
-	if (!pDocument->createDataItem(m_id.c_str(), false, m_data, m_mimeType.c_str(), NULL))
+	if (!pDocument->createDataItem(m_id.c_str(), false, m_graphic ? m_graphic->getBuffer() : m_data, 
+                                   m_graphic ? m_graphic->getMimeType().c_str() : m_mimeType, 
+                                   NULL))
 	{            
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return UT_ERROR;

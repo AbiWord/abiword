@@ -1,8 +1,9 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiSource
  * 
  * Copyright (C) 2008 Firat Kiyak <firatkiyak@gmail.com>
+ * Copyright (C) 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,40 +24,46 @@
 #ifndef _OXML_IMAGE_H_
 #define _OXML_IMAGE_H_
 
-// Internal includes
-#include <OXML_Types.h>
-#include <OXML_ObjectWithAttrProp.h>
-
-// AbiWord includes
-#include <ut_types.h>
-#include <pd_Document.h>
-
-// External includes
 #include <string>
 #include <boost/shared_ptr.hpp>
 
-class IE_Exp_OpenXML;
+#include "ut_types.h"
+#include "pd_Document.h"
 
-class OXML_Image : public OXML_ObjectWithAttrProp
+#include "OXML_Types.h"
+#include "OXML_ObjectWithAttrProp.h"
+
+
+class IE_Exp_OpenXML;
+class FG_Graphic;
+
+class OXML_Image 
+    : public OXML_ObjectWithAttrProp
 {
 
 public:
 	OXML_Image();
 	virtual ~OXML_Image();
 
-	virtual void setId(const char* id);
-	virtual void setMimeType(const std::string & mimeType);
-	virtual void setData(const UT_ByteBuf* data);
+	void setId(const std::string & id);
+	void setMimeType(const std::string & mimeType);
+    // DOES NOT take ownership of the buffer
+	void setData(const UT_ByteBuf* data);
+	void setGraphic(const FG_Graphic * fg);
 
-	virtual const char* getId();
+	const std::string & getId() const
+        {
+            return m_id;
+        }
 
 	UT_Error serialize(IE_Exp_OpenXML* exporter);
 	UT_Error addToPT(PD_Document * pDocument);
 
 private:
-	std::string m_id;
+	std::string  m_id;
 	std::string m_mimeType;
 	const UT_ByteBuf* m_data;
+	const FG_Graphic * m_graphic;
 };
 
 typedef boost::shared_ptr<OXML_Image> OXML_SharedImage;

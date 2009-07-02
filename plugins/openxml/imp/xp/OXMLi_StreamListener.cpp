@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4;  indent-tabs-mode: t -*- */
 
 /* AbiSource
  * 
@@ -57,6 +57,7 @@ OXMLi_StreamListener::OXMLi_StreamListener() :
 OXMLi_StreamListener::~OXMLi_StreamListener()
 {
 	DELETEP(m_pElemStack);
+	DELETEP(m_pSectStack);
 	DELETEP(m_namespaces);
 	DELETEP(m_context);
 	clearStates();

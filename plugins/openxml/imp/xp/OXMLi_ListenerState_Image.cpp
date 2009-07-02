@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiSource
  * 
@@ -102,26 +102,22 @@ void OXMLi_ListenerState_Image::startElement (OXMLi_StartElementRequest * rqst)
 			err = IE_ImpGraphic::loadGraphic (*imageData, IEGFT_Unknown, &pFG);
 			if ((err != UT_OK) || !pFG) 
 			{
+				DELETEP(imageData);
 				UT_DEBUGMSG(("FRT:OpenXML importer can't import the picture with id:%s\n", id));
 				return;
 			}
+			DELETEP(imageData);
 
-			imageData = static_cast<FG_GraphicRaster *>(pFG)->getBuffer();
-		
-			if(imageData)
-			{
-				OXML_Document * doc = OXML_Document::getInstance();
-				UT_return_if_fail(_error_if_fail(doc != NULL));
+			OXML_Document * doc = OXML_Document::getInstance();
+			UT_return_if_fail(_error_if_fail(doc != NULL));
 				
-				OXML_Image* img = new OXML_Image();
-				img->setId(imageId.c_str());
-				img->setData(imageData);
-				img->setMimeType(pFG->getMimeType());
+			OXML_Image* img = new OXML_Image();
+			img->setId(imageId.c_str());
+			img->setGraphic(pFG);
 
-				OXML_SharedImage shrImg(img);
-				if(doc->addImage(shrImg) != UT_OK)
-					return;
-			}
+			OXML_SharedImage shrImg(img);
+			if(doc->addImage(shrImg) != UT_OK)
+				return;
 			rqst->handled = true;
 		}
 	}	
