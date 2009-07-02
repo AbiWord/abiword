@@ -25,6 +25,7 @@
 
 // Internal includes
 #include <OXML_Element.h>
+#include <OXML_Element_Row.h>
 #include <ie_exp_OpenXML.h>
 
 // AbiWord includes
@@ -36,16 +37,40 @@
 class OXML_Element_Table : public OXML_Element
 {
 public:
-	OXML_Element_Table(std::string id);
+	OXML_Element_Table(const std::string & id);
 	virtual ~OXML_Element_Table();
 
 	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
+	virtual UT_Error serializeChildren(IE_Exp_OpenXML* exporter);
 	virtual UT_Error addToPT(PD_Document * pDocument);
 	virtual std::string getColumnWidth(int colIndex);
+	virtual std::string getRowHeight(int rowIndex);
+	UT_Error addChildrenToPT(PD_Document * pDocument);
+
+	void addRow(OXML_Element_Row* row);
+	
+	int getCurrentRowNumber();
+	int getCurrentColNumber();
+
+	void setCurrentRowNumber(int row);
+	void setCurrentColNumber(int col);
+
+	void incrementCurrentRowNumber();
+	void incrementCurrentColNumber();
+
+	//this method increments the vertical merge start cell's bottom by one. 
+	//It traverses up the cells in the table and finds the vertical merge starting cell
+	//and increments its bottom value by one. Should be called for the vertMerge=continue cells.
+	//return true if successful
+	bool incrementBottomVerticalMergeStart(int left, int top);
 
 private:
 	virtual UT_Error serializeProperties(IE_Exp_OpenXML* exporter);
 	std::vector<std::string> columnWidth;
+	std::vector<std::string> rowHeight;
+	std::vector<OXML_Element_Row*> m_rows;
+	int m_currentRowNumber;
+	int m_currentColNumber;
 };
 
 #endif //_OXML_ELEMENT_TABLE_H_

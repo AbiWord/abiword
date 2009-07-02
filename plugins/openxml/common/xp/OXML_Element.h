@@ -62,12 +62,14 @@ public:
 	 * \param tag The tag that this element represents.
 	 * \param The category (BLOCK or SPAN) that this element belongs to.
 	 */
-	OXML_Element(std::string id, OXML_ElementTag tag, OXML_ElementType type);
+	OXML_Element(const std::string & id, OXML_ElementTag tag, OXML_ElementType type);
 	virtual ~OXML_Element();
 
 	inline std::string getId() { return m_id; }
+	inline void setId(const std::string & id) { m_id = id; }
 	inline OXML_ElementTag getTag() { return m_tag; }
 	inline OXML_ElementType getType() { return m_type; }
+	inline void setType(OXML_ElementType type) { m_type = type; }
 
 	bool operator ==(const std::string id);
 	friend bool operator ==(const OXML_SharedElement& lhs, const std::string id) { return (*lhs) == id; }
@@ -91,6 +93,10 @@ public:
 		\param pDocument A valid reference to the PD_Document object.
 	*/
 	virtual UT_Error addToPT(PD_Document * pDocument);
+	//! Calls the method addToPT() on all children.
+	/*! WARNING: if you derive OXML_Element, you probably shouldn't redefine this method.
+	 */
+	UT_Error addChildrenToPT(PD_Document * pDocument);
 
 	void setTarget(int target);
 
@@ -99,11 +105,7 @@ protected:
 	/*! WARNING: if you derive OXML_Element, you probably shouldn't redefine this method.
 	 */
 	UT_Error serializeChildren(IE_Exp_OpenXML* exporter);
-	//! Calls the method addToPT() on all children.
-	/*! WARNING: if you derive OXML_Element, you probably shouldn't redefine this method.
-	 */
-	UT_Error addChildrenToPT(PD_Document * pDocument);
-
+	
 	int TARGET;
 
 private:

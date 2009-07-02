@@ -59,24 +59,25 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 {
 	UT_return_if_fail( this->_error_if_fail(rqst != NULL) );
 
-	if (!strcmp(rqst->pName, "p")) {
+	if(nameMatches(rqst->pName, NS_W_KEY, "p")) {
 		//New paragraph...
-		OXML_SharedElement elem(new OXML_Element("", P_TAG, BLOCK));
+		OXML_SharedElement elem(new OXML_Element_Paragraph(""));
 		rqst->stck->push(elem);
 
 		rqst->handled = true;
-	} else if (!strcmp(rqst->pName, "r")) {
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "r")) {
 		//New text run...
 		OXML_SharedElement elem(new OXML_Element_Run(""));
 		rqst->stck->push(elem);
 
 		rqst->handled = true;
 
-	} else if (!strcmp(rqst->pName, "sectPr")) {
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "sectPr")) {
 		//Verify the context...
 		std::string contextTag = rqst->context->back();
-		if (!contextTag.compare("pPr") || !contextTag.compare("body")) {
-			OXML_SharedElement dummy(new OXML_Element("Dummy", P_TAG, BLOCK));
+		if (contextMatches(contextTag, NS_W_KEY, "pPr") || 
+			contextMatches(contextTag, NS_W_KEY, "body")) {
+			OXML_SharedElement dummy(new OXML_Element_Paragraph(""));
 			rqst->stck->push(dummy);
 
 			m_pendingSectBreak = true;
@@ -86,18 +87,114 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 /********************************
  ****  PARAGRAPH FORMATTING  ****
  ********************************/
+	} else if ( nameMatches(rqst->pName, NS_W_KEY, "tab")){
+		//verify the context
+		std::string contextTag = rqst->context->back();
 
-	} else if ( !strcmp(rqst->pName, "jc") ||
-				!strcmp(rqst->pName, "ind") ||
-				!strcmp(rqst->pName, "spacing") ||
-				!strcmp(rqst->pName, "pStyle")) {
+		if (contextMatches(contextTag, NS_W_KEY, "r")) {
+			//This is an actual tab to be inserted
+			OXML_SharedElement tab ( new OXML_Element_Text("\t", 2) );
+			rqst->stck->push(tab);
+			rqst->handled = true;
+		}
+		else if(contextMatches(contextTag, NS_W_KEY, "tabs")){
+			OXML_SharedElement para = rqst->stck->top();
+			const gchar* val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
+			const gchar* pos = attrMatches(NS_W_KEY, "pos", rqst->ppAtts);
+			const gchar* leadCh = attrMatches(NS_W_KEY, "leader", rqst->ppAtts);
+			if(!val || !*val || !pos || !*pos)
+				return;
+
+			std::string value(val);
+			std::string position(_TwipsToInches(pos));
+			position += "in";
+			std::string leader("0"); //no leader by default
+			
+			std::string tabstops("");
+			const gchar* tabProp = NULL;
+			para->getProperty("tabstops", tabProp);	
+			if(tabProp)
+			{
+				tabstops = tabProp;
+				tabstops += ",";
+			}
+
+			tabstops += position;
+			tabstops += "/";
+
+			if(!value.compare("left"))
+				tabstops += "L";
+			else if(!value.compare("right"))
+				tabstops += "R";
+			else if(!value.compare("center"))
+				tabstops += "C";
+			else if(!value.compare("bar"))
+				tabstops += "B";
+			else if(!value.compare("decimal"))
+				tabstops += "D";
+
+			if(leadCh)
+			{
+				std::string leaderChar(leadCh);
+				if(!leaderChar.compare("dot"))
+					leader = "1";
+				else if(!leaderChar.compare("heavy"))
+					leader = "3";
+				else if(!leaderChar.compare("hyphen"))
+					leader = "2";
+				else if(!leaderChar.compare("middleDot"))
+					leader = "1";
+				else if(!leaderChar.compare("underscore"))
+					leader = "3";
+			}
+			tabstops += leader;
+				
+			para->setProperty("tabstops", tabstops);						
+		}		
+		rqst->handled = true;
+	} else if ( nameMatches(rqst->pName, NS_W_KEY, "ilvl")){
+		//verify the context
+		std::string contextTag = rqst->context->back();
+		if(contextMatches(contextTag, NS_W_KEY, "numPr")){
+			OXML_SharedElement para = rqst->stck->top();
+			const gchar* val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
+			if(!val || !*val)
+				return;
+			std::string level(val);
+			para->setAttribute("level", level.c_str());	
+		}		
+		rqst->handled = true;
+	} else if ( nameMatches(rqst->pName, NS_W_KEY, "numId")){
+		//verify the context
+		std::string contextTag = rqst->context->back();
+		if(contextMatches(contextTag, NS_W_KEY, "numPr")){
+			OXML_SharedElement para = rqst->stck->top();
+			const gchar* val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
+			if(!val || !*val)
+				return;
+			std::string numId(val);
+
+			OXML_Document* doc = OXML_Document::getInstance();
+			std::string absNumId = doc->getMappedNumberingId(numId);
+			if(!absNumId.empty())
+				para->setAttribute("listid", absNumId.c_str());					
+		}		
+		rqst->handled = true;
+	} else if ( nameMatches(rqst->pName, NS_W_KEY, "jc") ||
+				nameMatches(rqst->pName, NS_W_KEY, "ind") ||
+				nameMatches(rqst->pName, NS_W_KEY, "spacing") ||
+				nameMatches(rqst->pName, NS_W_KEY, "pStyle")) {
 	//Verify the context...
 	std::string contextTag = rqst->context->at(rqst->context->size() - 2);
-	if (!contextTag.compare("p") || !contextTag.compare("pPrDefault") || !contextTag.compare("style")) { 
+	if (contextMatches(contextTag, NS_W_KEY, "p") ||
+		contextMatches(contextTag, NS_W_KEY, "pPrDefault") ||
+		contextMatches(contextTag, NS_W_KEY, "lvl") ||  
+		contextMatches(contextTag, NS_W_KEY, "style")) { 
+
 		OXML_SharedElement para = rqst->stck->top();
 
-		if (!strcmp(rqst->pName, "jc")) {
-			const gchar * val = UT_getAttribute("w:val", rqst->ppAtts);
+		if (nameMatches(rqst->pName, NS_W_KEY, "jc")) {
+			const gchar * val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
 
 			if (!val || !*val)
 				return;
@@ -116,11 +213,11 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				UT_return_if_fail( _error_if_fail( UT_OK == para->setProperty("text-align", "justify") ));
 			}
 
-		} else if (!strcmp(rqst->pName, "ind")) {
-			const gchar * left = UT_getAttribute("w:left", rqst->ppAtts);
-			const gchar * right = UT_getAttribute("w:right", rqst->ppAtts);
-			const gchar * fLine = UT_getAttribute("w:firstLine", rqst->ppAtts);
-			const gchar * hanging = UT_getAttribute("w:hanging", rqst->ppAtts);
+		} else if (nameMatches(rqst->pName, NS_W_KEY, "ind")) {
+			const gchar * left = attrMatches(NS_W_KEY, "left", rqst->ppAtts);
+			const gchar * right = attrMatches(NS_W_KEY, "right", rqst->ppAtts);
+			const gchar * fLine = attrMatches(NS_W_KEY, "firstLine", rqst->ppAtts);
+			const gchar * hanging = attrMatches(NS_W_KEY, "hanging", rqst->ppAtts);
 
 			std::string final = "";
 			if (left != NULL) {
@@ -148,10 +245,10 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				UT_return_if_fail( _error_if_fail( UT_OK == para->setProperty("text-indent", final.c_str()) ));
 			}
 
-		} else if (!strcmp(rqst->pName, "spacing")) {
-			const gchar * before = UT_getAttribute("w:before", rqst->ppAtts);
-			const gchar * after = UT_getAttribute("w:after", rqst->ppAtts);
-			const gchar * lineRule = UT_getAttribute("w:lineRule", rqst->ppAtts);
+		} else if (nameMatches(rqst->pName, NS_W_KEY, "spacing")) {
+			const gchar * before = attrMatches(NS_W_KEY, "before", rqst->ppAtts);
+			const gchar * after = attrMatches(NS_W_KEY, "after", rqst->ppAtts);
+			const gchar * lineRule = attrMatches(NS_W_KEY, "lineRule", rqst->ppAtts);
 
 			std::string final = "";
 			if (before != NULL) {
@@ -166,14 +263,14 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 			}
 			if (lineRule != NULL && !strcmp(lineRule, "auto")) {
 				//For now, we only handle "auto".
-				const gchar * line = UT_getAttribute("w:line", rqst->ppAtts);
+				const gchar * line = attrMatches(NS_W_KEY, "line", rqst->ppAtts);
 				UT_return_if_fail( _error_if_fail(line != NULL) );
 				double ln_spc = UT_convertDimensionless(line) / 240;
 				final = UT_convertToDimensionlessString(ln_spc);
 				UT_return_if_fail( _error_if_fail( UT_OK == para->setProperty("line-height", final.c_str()) ));
 			}
-		} else if (!strcmp(rqst->pName, "pStyle")) {
-			const gchar * val = UT_getAttribute("w:val", rqst->ppAtts);
+		} else if (nameMatches(rqst->pName, NS_W_KEY, "pStyle")) {
+			const gchar * val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
 			UT_return_if_fail( _error_if_fail(val != NULL) );
 			if (!strcmp(val, "Normal")) val = "_Normal"; //Cannot interfere with document defaults
 			OXML_Document * doc = OXML_Document::getInstance();
@@ -193,42 +290,44 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 /**************************
  ****  RUN FORMATTING  ****
  **************************/
-	} else if (	!strcmp(rqst->pName, "b") || 
-				!strcmp(rqst->pName, "i") || 
-				!strcmp(rqst->pName, "u") ||
-				!strcmp(rqst->pName, "color") ||
-				!strcmp(rqst->pName, "vertAlign") || // for subscript and superscript
-				!strcmp(rqst->pName, "highlight") ||
-				!strcmp(rqst->pName, "strike") ||
-				!strcmp(rqst->pName, "dstrike") ||
-				!strcmp(rqst->pName, "rFonts") ||
-				!strcmp(rqst->pName, "lang") ||
-				!strcmp(rqst->pName, "noProof") ||
-				!strcmp(rqst->pName, "vanish") ||
-				!strcmp(rqst->pName, "sz") ) {
+	} else if (	nameMatches(rqst->pName, NS_W_KEY, "b") || 
+				nameMatches(rqst->pName, NS_W_KEY, "i") || 
+				nameMatches(rqst->pName, NS_W_KEY, "u") ||
+				nameMatches(rqst->pName, NS_W_KEY, "color") ||
+				nameMatches(rqst->pName, NS_W_KEY, "vertAlign") || // for subscript and superscript
+				nameMatches(rqst->pName, NS_W_KEY, "highlight") ||
+				nameMatches(rqst->pName, NS_W_KEY, "strike") ||
+				nameMatches(rqst->pName, NS_W_KEY, "dstrike") ||
+				nameMatches(rqst->pName, NS_W_KEY, "rFonts") ||
+				nameMatches(rqst->pName, NS_W_KEY, "lang") ||
+				nameMatches(rqst->pName, NS_W_KEY, "noProof") ||
+				nameMatches(rqst->pName, NS_W_KEY, "vanish") ||
+				nameMatches(rqst->pName, NS_W_KEY, "sz") ) {
 		//Verify the context...
 		std::string contextTag = rqst->context->at(rqst->context->size() - 2);
-		if (!contextTag.compare("r") || !contextTag.compare("rPrDefault") || !contextTag.compare("style")) {
+		if (contextMatches(contextTag, NS_W_KEY, "r") ||
+			contextMatches(contextTag, NS_W_KEY, "rPrDefault") || 
+			contextMatches(contextTag, NS_W_KEY, "style")) {
 			OXML_SharedElement run = rqst->stck->top();
 
-			if (!strcmp(rqst->pName, "b")) {
-				const gchar * isOn = UT_getAttribute("w:val", rqst->ppAtts);
+			if (nameMatches(rqst->pName, NS_W_KEY, "b")) {
+				const gchar * isOn = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
 				if (isOn == NULL || !strcmp(isOn, "on") || !strcmp(isOn, "1") || !strcmp(isOn, "true") ) {
 					UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("font-weight", "bold") ));
 				} else {
 					UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("font-weight", "normal") ));
 				}
 
-			} else if (!strcmp(rqst->pName, "i")) {
-				const gchar * isOn = UT_getAttribute("w:val", rqst->ppAtts);
+			} else if (nameMatches(rqst->pName, NS_W_KEY, "i")) {
+				const gchar * isOn = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
 				if (isOn == NULL || !strcmp(isOn, "on") || !strcmp(isOn, "1") || !strcmp(isOn, "true") ) {
 					UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("font-style", "italic") ));
 				} else {
 					UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("font-style", "normal") ));
 				}
 
-			} else if (!strcmp(rqst->pName, "vertAlign")) {
-				const gchar * val = UT_getAttribute("w:val", rqst->ppAtts);
+			} else if (nameMatches(rqst->pName, NS_W_KEY, "vertAlign")) {
+				const gchar * val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
 				if (val == NULL || !*val || !strcmp(val, "baseline")) {
 					UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("text-position", "normal") ));
 				} else if (!strcmp(val, "superscript")) {
@@ -237,8 +336,8 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 					UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("text-position", "subscript") ));
 				}
 				
-			} else if (!strcmp(rqst->pName, "u")) {
-				const gchar * newVal = UT_getAttribute("w:val", rqst->ppAtts);
+			} else if (nameMatches(rqst->pName, NS_W_KEY, "u")) {
+				const gchar * newVal = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
 				UT_return_if_fail( this->_error_if_fail(newVal != NULL) );
 				std::string final_val = "";
 				const gchar * previousVal = NULL;
@@ -254,13 +353,13 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				}
 				UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("text-decoration", final_val.c_str()) ));
 
-			} else if (!strcmp(rqst->pName, "color")) {
-				const gchar * val = UT_getAttribute("w:val", rqst->ppAtts);
+			} else if (nameMatches(rqst->pName, NS_W_KEY, "color")) {
+				const gchar * val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
 				if (val != NULL) {
 					if (!strcmp(val, "auto")) val = "#000000";
 					UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("color", val)));
 				} else {
-					val = UT_getAttribute("w:themeColor", rqst->ppAtts);
+					val = attrMatches(NS_W_KEY, "themeColor", rqst->ppAtts);
 					UT_return_if_fail( this->_error_if_fail(val != NULL) );
 					std::string color = "#000000"; //default color in case of illegal themeColor value.
 					OXML_Document * doc = OXML_Document::getInstance();
@@ -296,8 +395,8 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 					UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("color", color.c_str())));
 				}
 
-			} else if (!strcmp(rqst->pName, "highlight")) {
-				const gchar * val = UT_getAttribute("w:val", rqst->ppAtts);
+			} else if (nameMatches(rqst->pName, NS_W_KEY, "highlight")) {
+				const gchar * val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
 				UT_return_if_fail( this->_error_if_fail(val != NULL) );
 				if (!strcmp(val, "darkYellow")) val = "olive"; //the only value not supported by CSS (equivalent to Olive)
 				else if (!strcmp(val, "none")) val = "black"; //bypass inherited color value when "none"
@@ -310,8 +409,9 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				UT_return_if_fail( this->_error_if_fail( NULL != val ) );
 				UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("bgcolor", val)));
 
-			} else if (!strcmp(rqst->pName, "strike") || !strcmp(rqst->pName, "dstrike")) {
-				const gchar * isOn = UT_getAttribute("w:val", rqst->ppAtts);
+			} else if (nameMatches(rqst->pName, NS_W_KEY, "strike") || 
+					   nameMatches(rqst->pName, NS_W_KEY, "dstrike")) {
+				const gchar * isOn = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
 				std::string final_val = "";
 				const gchar * previousVal = NULL;
 				if (UT_OK == run->getProperty("text-decoration", previousVal)) {
@@ -326,7 +426,7 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				}
 				UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("text-decoration", final_val.c_str()) ));
 
-			} else if (!strcmp(rqst->pName, "rFonts")) {
+			} else if (nameMatches(rqst->pName, NS_W_KEY, "rFonts")) {
 				OXML_Document * doc = OXML_Document::getInstance();
 				UT_return_if_fail( this->_error_if_fail(doc != NULL) );
 				OXML_SharedFontManager fmgr = doc->getFontManager();
@@ -337,10 +437,10 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				OXML_CharRange range = UNKNOWN_RANGE;
 
 				const gchar * ascii = NULL; //TODO: add support for eastAsia, bidi, and hAnsi
-				if (NULL != (ascii = UT_getAttribute("w:asciiTheme", rqst->ppAtts))) {
+				if (NULL != (ascii = attrMatches(NS_W_KEY, "asciiTheme", rqst->ppAtts))) {
 					this->getFontLevelRange(ascii, level, range);
 					fontName = fmgr->getValidFont(level, range); //Retrieve valid font name from Theme
-				} else if (NULL != (ascii = UT_getAttribute("w:ascii", rqst->ppAtts))) {
+				} else if (NULL != (ascii = attrMatches(NS_W_KEY, "ascii", rqst->ppAtts))) {
 					fontName = ascii;
 					fontName = fmgr->getValidFont(fontName); //Make sure the name is valid
 				} else {
@@ -348,8 +448,8 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				}
 				UT_return_if_fail( _error_if_fail( UT_OK == run->setProperty("font-family", fontName.c_str()) ));
 
-			} else if (!strcmp(rqst->pName, "lang")) {
-				const gchar * val = UT_getAttribute("w:val", rqst->ppAtts); //TODO: add support for eastAsia and bidi attributes
+			} else if (nameMatches(rqst->pName, NS_W_KEY, "lang")) {
+				const gchar * val = attrMatches(NS_W_KEY, "val", rqst->ppAtts); //TODO: add support for eastAsia and bidi attributes
 				const gchar * previousVal = NULL;
 				if (UT_OK == run->getProperty("lang", previousVal)) {
 					if ( 0 != strcmp(previousVal, "-none-"))
@@ -358,22 +458,22 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				if ( val != NULL)
 					UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("lang", val) ));
 
-			} else if (!strcmp(rqst->pName, "noProof")) {
+			} else if (nameMatches(rqst->pName, NS_W_KEY, "noProof")) {
 				//noProof has priority over lang, so no need to check for previous values
-				const gchar * isOn = UT_getAttribute("w:val", rqst->ppAtts);
+				const gchar * isOn = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
 				if (isOn == NULL || !strcmp(isOn, "on") || !strcmp(isOn, "1") || !strcmp(isOn, "true") )
 					UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("lang", "-none-") ));
 
-			} else if (!strcmp(rqst->pName, "vanish")) {
-				const gchar * isOn = UT_getAttribute("w:val", rqst->ppAtts);
+			} else if (nameMatches(rqst->pName, NS_W_KEY, "vanish")) {
+				const gchar * isOn = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
 				if (isOn == NULL || !strcmp(isOn, "on") || !strcmp(isOn, "1") || !strcmp(isOn, "true") ) {
 					UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("display", "none") ));
 				} else {
 					UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("display", "inline") ));
 				}
 
-			} else if (!strcmp(rqst->pName, "sz")) {
-				const gchar * szStr = UT_getAttribute("w:val", rqst->ppAtts);
+			} else if (nameMatches(rqst->pName, NS_W_KEY, "sz")) {
+				const gchar * szStr = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
 				UT_return_if_fail( this->_error_if_fail(szStr != NULL) );
 				double sz = UT_convertDimensionless(szStr) / 2; //TODO: error-check this
 				std::string pt_value = UT_convertToDimensionlessString(sz);
@@ -389,17 +489,18 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
  ****  SECTION FORMATTING  ****
  ******************************/
 
-	} else if (	!strcmp(rqst->pName, "type") ||
-				!strcmp(rqst->pName, "footerReference") ||
-				!strcmp(rqst->pName, "headerReference")) {
+	} else if (	nameMatches(rqst->pName, NS_W_KEY, "type") ||
+				nameMatches(rqst->pName, NS_W_KEY, "footerReference") ||
+				nameMatches(rqst->pName, NS_W_KEY, "headerReference") ||
+				nameMatches(rqst->pName, NS_W_KEY, "cols")) {
 		//Verify the context...
 		std::string contextTag = rqst->context->back();
-		if (!contextTag.compare("sectPr")) {
-			if (!strcmp(rqst->pName, "type")) {
-				const gchar * val = UT_getAttribute("w:val", rqst->ppAtts);
+		if (contextMatches(contextTag, NS_W_KEY, "sectPr")) {
+			if (nameMatches(rqst->pName, NS_W_KEY, "type")) {
+				const gchar * val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
 				UT_return_if_fail( this->_error_if_fail(val != NULL) );
 
-				OXML_SharedSection last = OXML_Document::getCurrentSection();
+				OXML_SharedSection last = rqst->sect_stck->top();
 				if (!strcmp(val, "continuous")) {
 					last->setBreakType(CONTINUOUS_BREAK);
 				} else if (!strcmp(val, "evenPage")) {
@@ -411,17 +512,17 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				}
 				rqst->handled = true;
 
-			} else if (!strcmp(rqst->pName, "footerReference")) {
-				const gchar * id = UT_getAttribute("r:id", rqst->ppAtts);
+			} else if (nameMatches(rqst->pName, NS_W_KEY, "footerReference")) {
+				const gchar * id = attrMatches(NS_R_KEY, "id", rqst->ppAtts);
 				UT_return_if_fail( this->_error_if_fail(id != NULL) );
-				OXML_SharedSection last = OXML_Document::getCurrentSection();
+				OXML_SharedSection last = rqst->sect_stck->top();
 
 				OXMLi_PackageManager * mgr = OXMLi_PackageManager::getInstance();
 				UT_return_if_fail( _error_if_fail( UT_OK == mgr->parseDocumentHdrFtr(id) ) );
 
 				OXML_Document * doc = OXML_Document::getInstance();
 				UT_return_if_fail(_error_if_fail(doc != NULL));
-				const gchar * type = UT_getAttribute("w:type", rqst->ppAtts);
+				const gchar * type = attrMatches(NS_W_KEY, "type", rqst->ppAtts);
 				UT_return_if_fail( this->_error_if_fail(type != NULL) );
 
 				if (!strcmp(type, "default")) {
@@ -438,17 +539,17 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				OXML_SharedSection ftr = doc->getFooter(id);
 				UT_return_if_fail(_error_if_fail( UT_OK == ftr->setAttribute("type", type) ));
 
-			} else if (!strcmp(rqst->pName, "headerReference")) {
-				const gchar * id = UT_getAttribute("r:id", rqst->ppAtts);
+			} else if (nameMatches(rqst->pName, NS_W_KEY, "headerReference")) {
+				const gchar * id = attrMatches(NS_R_KEY, "id", rqst->ppAtts);
 				UT_return_if_fail( this->_error_if_fail(id != NULL) );
-				OXML_SharedSection last = OXML_Document::getCurrentSection();
+				OXML_SharedSection last = rqst->sect_stck->top();
 
 				OXMLi_PackageManager * mgr = OXMLi_PackageManager::getInstance();
 				UT_return_if_fail( _error_if_fail( UT_OK == mgr->parseDocumentHdrFtr(id) ) );
 
 				OXML_Document * doc = OXML_Document::getInstance();
 				UT_return_if_fail(_error_if_fail(doc != NULL));
-				const gchar * type = UT_getAttribute("w:type", rqst->ppAtts);
+				const gchar * type = attrMatches(NS_W_KEY, "type", rqst->ppAtts);
 				UT_return_if_fail( this->_error_if_fail(type != NULL) );
 
 				if (!strcmp(type, "default")) {
@@ -465,23 +566,99 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				OXML_SharedSection hdr = doc->getHeader(id);
 				UT_return_if_fail(_error_if_fail( UT_OK == hdr->setAttribute("type", type) ));
 			}
+			else if (nameMatches(rqst->pName, NS_W_KEY, "cols")) {
+				const gchar * num = attrMatches(NS_W_KEY, "num", rqst->ppAtts);
+				const gchar * sep = attrMatches(NS_W_KEY, "sep", rqst->ppAtts);
+
+				if(!num || atoi(num)<1)
+					num = "1";
+
+				if(!sep)
+					sep = "off";
+				
+				OXML_SharedSection last = rqst->sect_stck->top();
+				last->setProperty("columns", num);
+				last->setProperty("column-line", sep);
+			}
 		}
+
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "footnoteReference")) {
+		const gchar * id = attrMatches(NS_W_KEY, "id", rqst->ppAtts);
+		if(id)
+		{
+			OXML_SharedElement footnote(new OXML_Element_Field(id, fd_Field::FD_Footnote_Ref, NULL));
+			rqst->stck->push(footnote);
+		}
+		rqst->handled = true;
+
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "endnoteReference")) {
+		const gchar * id = attrMatches(NS_W_KEY, "id", rqst->ppAtts);
+		if(id)
+		{
+			OXML_SharedElement endnote(new OXML_Element_Field(id, fd_Field::FD_Endnote_Ref, NULL));
+			rqst->stck->push(endnote);
+		}
+		rqst->handled = true;		
+
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "hyperlink")) {
+		const gchar * id = attrMatches(NS_R_KEY, "id", rqst->ppAtts);
+		const gchar * anchor = attrMatches(NS_W_KEY, "anchor", rqst->ppAtts);
+		if(id)
+		{
+			OXMLi_PackageManager * mgr = OXMLi_PackageManager::getInstance();
+			std::string target = mgr->getPartName(id);
+			OXML_Element_Hyperlink* hyperlink = new OXML_Element_Hyperlink("");
+			hyperlink->setHyperlinkTarget(target);				
+			OXML_SharedElement elem(hyperlink);
+			rqst->stck->push(elem);
+		}
+		else if(anchor)
+		{
+			std::string bookmarkAnchor("#");
+			bookmarkAnchor += anchor;
+			OXML_Element_Hyperlink* hyperlink = new OXML_Element_Hyperlink("");
+			hyperlink->setHyperlinkTarget(bookmarkAnchor);				
+			OXML_SharedElement elem(hyperlink);
+			rqst->stck->push(elem);
+		}
+		rqst->handled = true;
+
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "bookmarkStart")) {
+		const gchar * id = attrMatches(NS_W_KEY, "id", rqst->ppAtts);
+		const gchar * name = attrMatches(NS_W_KEY, "name", rqst->ppAtts);
+		if(id && name)
+		{
+			std::string bookmarkId(id);
+			std::string bookmarkName(name);
+			OXML_Element_Bookmark* bookmark = new OXML_Element_Bookmark(bookmarkId);
+			bookmark->setType("start");		
+			bookmark->setName(bookmarkName);		
+			OXML_SharedElement elem(bookmark);
+			rqst->stck->push(elem);
+			OXML_Document* pDoc = OXML_Document::getInstance();
+			if(!pDoc->setBookmarkName(bookmarkId, bookmarkName))
+				return;
+		}
+		rqst->handled = true;
+
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "bookmarkEnd")) {
+		const gchar * id = attrMatches(NS_W_KEY, "id", rqst->ppAtts);
+		if(id)
+		{
+			std::string bookmarkId(id);
+			OXML_Element_Bookmark* bookmark = new OXML_Element_Bookmark(bookmarkId);
+			bookmark->setType("end");				
+			OXML_Document* pDoc = OXML_Document::getInstance();
+			bookmark->setName(pDoc->getBookmarkName(bookmarkId));
+			OXML_SharedElement elem(bookmark);
+			rqst->stck->push(elem);
+		}
+		rqst->handled = true;
 
 /******* END OF SECTION FORMATTING ********/
-
-	} else if (!strcmp(rqst->pName, "tab")) {
-		//Verify the context...
-		std::string contextTag = rqst->context->back();
-		if (!contextTag.compare("r")) {
-			//This is an actual tab to be inserted
-			OXML_SharedElement tab ( new OXML_Element_Text("\t", 2) );
-			rqst->stck->push(tab);
-
-			rqst->handled = true;
-		}
 		
-	} else if (!strcmp(rqst->pName, "br")) {
-		const gchar * type = UT_getAttribute("w:type", rqst->ppAtts);
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "br")) {
+		const gchar * type = attrMatches(NS_W_KEY, "type", rqst->ppAtts);
 // The optional attribute can be missing. In that case a default 
 // value is implied.
 //		UT_return_if_fail( this->_error_if_fail(type != NULL) );
@@ -505,12 +682,12 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 {
 	UT_return_if_fail( this->_error_if_fail(rqst != NULL) );
 
-	if (!strcmp(rqst->pName, "p")) {
+	if (nameMatches(rqst->pName, NS_W_KEY, "p")) {
 		//Paragraph is done, appending it.
 		if (rqst->stck->size() == 1) { //Only the paragraph is on the stack, append to section
 			OXML_SharedElement elem = rqst->stck->top();
 			UT_return_if_fail( this->_error_if_fail(elem.get() != NULL) );
-			OXML_SharedSection sect = OXML_Document::getCurrentSection();
+			OXML_SharedSection sect = rqst->sect_stck->top();
 			UT_return_if_fail( this->_error_if_fail(sect.get() != NULL) );
 			UT_return_if_fail( this->_error_if_fail(UT_OK == sect->appendElement(elem) ) );
 			rqst->stck->pop();
@@ -523,20 +700,22 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 			OXML_Document * doc = OXML_Document::getInstance();
 			UT_return_if_fail(_error_if_fail(doc != NULL));
 			OXML_SharedSection sect(new OXML_Section());
-			UT_return_if_fail(_error_if_fail( UT_OK == doc->appendSection(sect) ));
+
+			rqst->sect_stck->push(sect);
 			m_pendingSectBreak = false;
 		}
 
 		rqst->handled = true;
-	} else if (!strcmp(rqst->pName, "r")) {
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "r")) {
 		//Run is done, appending it.
 		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) );
 
 		rqst->handled = true;
-	} else if (!strcmp(rqst->pName, "sectPr")) {
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "sectPr")) {
 		std::string contextTag = rqst->context->back();
-		if (!contextTag.compare("pPr") || !contextTag.compare("body")) {
-			OXML_SharedSection sect = OXML_Document::getCurrentSection();
+		if (contextMatches(contextTag, NS_W_KEY, "pPr") ||
+			contextMatches(contextTag, NS_W_KEY, "body")) {
+			OXML_SharedSection sect = rqst->sect_stck->top();
 			UT_return_if_fail(_error_if_fail(sect.get() != NULL));
 			OXML_SharedElement dummy = rqst->stck->top();
 			const gchar ** atts = dummy->getAttributes();
@@ -551,41 +730,55 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 
 			rqst->handled = true;
 		}
-	} else if (	!strcmp(rqst->pName, "jc") || 
-				!strcmp(rqst->pName, "ind") ||
-				!strcmp(rqst->pName, "spacing") ) {
+	} else if (	nameMatches(rqst->pName, NS_W_KEY, "jc") || 
+				nameMatches(rqst->pName, NS_W_KEY, "ind") ||
+				nameMatches(rqst->pName, NS_W_KEY, "spacing") ) {
 		rqst->handled = true;
-	} else if (	!strcmp(rqst->pName, "b") || 
-				!strcmp(rqst->pName, "i") || 
-				!strcmp(rqst->pName, "u") ||
-				!strcmp(rqst->pName, "color") ||
-				!strcmp(rqst->pName, "vertAlign") ||
-				!strcmp(rqst->pName, "highlight") ||
-				!strcmp(rqst->pName, "strike") ||
-				!strcmp(rqst->pName, "dstrike") ||
-				!strcmp(rqst->pName, "rFonts") ||
-				!strcmp(rqst->pName, "lang") ||
-				!strcmp(rqst->pName, "noProof") ||
-				!strcmp(rqst->pName, "vanish") ||
-				!strcmp(rqst->pName, "sz") ) {
+	} else if (	nameMatches(rqst->pName, NS_W_KEY, "b") || 
+				nameMatches(rqst->pName, NS_W_KEY, "i") || 
+				nameMatches(rqst->pName, NS_W_KEY, "u") ||
+				nameMatches(rqst->pName, NS_W_KEY, "color") ||
+				nameMatches(rqst->pName, NS_W_KEY, "vertAlign") ||
+				nameMatches(rqst->pName, NS_W_KEY, "highlight") ||
+				nameMatches(rqst->pName, NS_W_KEY, "strike") ||
+				nameMatches(rqst->pName, NS_W_KEY, "dstrike") ||
+				nameMatches(rqst->pName, NS_W_KEY, "rFonts") ||
+				nameMatches(rqst->pName, NS_W_KEY, "lang") ||
+				nameMatches(rqst->pName, NS_W_KEY, "noProof") ||
+				nameMatches(rqst->pName, NS_W_KEY, "vanish") ||
+				nameMatches(rqst->pName, NS_W_KEY, "sz") ) {
 		rqst->handled = true;
-	} else if (	!strcmp(rqst->pName, "type") ||
-				!strcmp(rqst->pName, "footerReference") ||
-				!strcmp(rqst->pName, "headerReference")) {
+	} else if (	nameMatches(rqst->pName, NS_W_KEY, "type") ||
+				nameMatches(rqst->pName, NS_W_KEY, "footerReference") ||
+				nameMatches(rqst->pName, NS_W_KEY, "headerReference") ||
+				nameMatches(rqst->pName, NS_W_KEY, "cols")) {
 		std::string contextTag = rqst->context->back();
-		if (!contextTag.compare("sectPr")) {
+		if (contextMatches(contextTag, NS_W_KEY, "sectPr")) {
 			rqst->handled = true;
 		}
-	} else if (!strcmp(rqst->pName, "tab")) {
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "tab")) {
 		std::string contextTag = rqst->context->back();
-		if (!contextTag.compare("r")) {
+		if (contextMatches(contextTag, NS_W_KEY, "r")) {
 			UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) );
 			rqst->handled = true;
 		}
-	} else if (!strcmp(rqst->pName, "br")) {
+		else if(contextMatches(contextTag, NS_W_KEY, "tabs"))
+			rqst->handled = true;
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "br")) {
 		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) );
 		rqst->handled = true;
-	}
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "footnoteReference") || 
+			   nameMatches(rqst->pName, NS_W_KEY, "endnoteReference")) {
+		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) );
+		rqst->handled = true;
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "hyperlink")) {
+		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) );
+		rqst->handled = true;
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "bookmarkStart") ||
+				nameMatches(rqst->pName, NS_W_KEY, "bookmarkEnd")) {
+		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) );
+		rqst->handled = true;		
+	} 
 }
 
 void OXMLi_ListenerState_Common::charData (OXMLi_CharDataRequest * rqst)

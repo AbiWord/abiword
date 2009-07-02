@@ -37,11 +37,13 @@
 class OXML_Element_Run : public OXML_Element
 {
 public:
-	OXML_Element_Run(std::string id);
+	OXML_Element_Run(const std::string & id);
 	virtual ~OXML_Element_Run();
 
 	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
 	virtual UT_Error addToPT(PD_Document * pDocument);
+
+	UT_Error serializeChildren(IE_Exp_OpenXML* exporter);
 
 private: 
 	virtual UT_Error serializeProperties(IE_Exp_OpenXML* exporter);

@@ -83,18 +83,36 @@ public:
 	*/
 	UT_Error parseDocumentSettings();
 
+	//! Parses the numbering associated with the Main Document part of the package.
+	/*! The parser automatically adds the information to the OXML_Document singleton.
+	*/
+	UT_Error parseDocumentNumbering();
+
+	//! Parses the footnotes associated with the Main Document part of the package.
+	/*! The parser automatically adds the information to the OXML_Document singleton.
+	*/
+	UT_Error parseDocumentFootnotes();
+
+	//! Parses the endnotes associated with the Main Document part of the package.
+	/*! The parser automatically adds the information to the OXML_Document singleton.
+	*/
+	UT_Error parseDocumentEndnotes();
+
+	UT_ByteBuf* parseImageStream(const char * id);
+	std::string getPartName(const char * id);
+
 private:
 	OXMLi_PackageManager();
 	virtual ~OXMLi_PackageManager();
 
 	GsfInput * getChildById( GsfInput * parent, const char * id );
 	GsfInput * getChildByType( GsfInput * parent, OXML_PartType type );
-	UT_Error parseChildById( GsfInput * parent, const char * id, OXMLi_StreamListener * pListener, const gchar * ns );
-	UT_Error parseChildByType( GsfInput * parent, OXML_PartType type, OXMLi_StreamListener * pListener, const gchar * ns );
+	UT_Error parseChildById( GsfInput * parent, const char * id, OXMLi_StreamListener * pListener );
+	UT_Error parseChildByType( GsfInput * parent, OXML_PartType type, OXMLi_StreamListener * pListener );
 
 	const char * _getFullType( OXML_PartType type );
 	GsfInput * _getDocumentStream();
-	UT_Error _parseStream( GsfInput * stream, OXMLi_StreamListener * pListener, const gchar * ns  );
+	UT_Error _parseStream( GsfInput * stream, OXMLi_StreamListener * pListener );
 
 	static OXMLi_PackageManager * s_pInst;
 

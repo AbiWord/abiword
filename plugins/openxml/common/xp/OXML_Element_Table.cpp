@@ -28,8 +28,10 @@
 #include <ut_string.h>
 #include <pd_Document.h>
 
-OXML_Element_Table::OXML_Element_Table(std::string id) : 
-	OXML_Element(id, TBL_TAG, TABLE)
+OXML_Element_Table::OXML_Element_Table(const std::string & id) : 
+	OXML_Element(id, TBL_TAG, TABLE),
+	m_currentRowNumber(0),
+	m_currentColNumber(0)
 {
 }
 
@@ -90,13 +92,143 @@ UT_Error OXML_Element_Table::serializeProperties(IE_Exp_OpenXML* exporter)
 			return err;
 	}
 
+	if(getProperty("table-row-heights", szValue) == UT_OK)
+	{
+		std::string rowHeights(szValue);
+		std::string token("");
+
+		std::string::size_type prev = -1;
+		std::string::size_type pos = rowHeights.find_first_of("/");
+		
+		while (pos != std::string::npos) 
+		{
+			token = rowHeights.substr(prev+1, pos-prev-1);
+			rowHeight.push_back(token);
+			prev = pos;	
+			pos = rowHeights.find_first_of("/", pos + 1);
+		}
+	}
+
 	err = exporter->startTableProperties(TARGET_DOCUMENT);
 	if(err != UT_OK)
 		return err;
 
+	if(getProperty("background-color", szValue) == UT_OK)
+	{
+		err = exporter->setBackgroundColor(TARGET_DOCUMENT, szValue);
+		if(err != UT_OK)
+			return err;
+	}
+
 	err = exporter->startTableBorderProperties(TARGET_DOCUMENT);
 	if(err != UT_OK)
 		return err;
+
+	const gchar* borderType = NULL;
+	const gchar* color = NULL;
+	const gchar* size = NULL;
+
+	//left border
+	borderType = "single";
+	if(getProperty("left-style", szValue) == UT_OK)
+	{
+		if(strcmp(szValue, "1") != 0)
+		{
+			 borderType = "dashed";
+		}
+	}
+
+	color = NULL; 
+	if(getProperty("left-color", szValue) == UT_OK)
+	{
+		color = szValue;
+	}
+
+	size = NULL;
+	if(getProperty("left-thickness", szValue) == UT_OK)
+	{
+		size = szValue;
+	}
+
+	err = exporter->setTableBorder(TARGET_DOCUMENT, "left", borderType, color, size);
+	if(err != UT_OK)
+		return err;
+
+	//right border
+	borderType = "single";
+	if(getProperty("right-style", szValue) == UT_OK)
+	{
+		if(strcmp(szValue, "1") != 0)
+		{
+			 borderType = "dashed";
+		}
+	}
+
+	color = NULL; 
+	if(getProperty("right-color", szValue) == UT_OK)
+	{
+		color = szValue;
+	}
+
+	size = NULL;
+	if(getProperty("right-thickness", szValue) == UT_OK)
+	{
+		size = szValue;
+	}
+	err = exporter->setTableBorder(TARGET_DOCUMENT, "right", borderType, color, size);
+	if(err != UT_OK)
+		return err;
+
+	//top border
+	borderType = "single";
+	if(getProperty("top-style", szValue) == UT_OK)
+	{
+		if(strcmp(szValue, "1") != 0)
+		{
+			 borderType = "dashed";
+		}
+	}
+
+	color = NULL; 
+	if(getProperty("top-color", szValue) == UT_OK)
+	{
+		color = szValue;
+	}
+
+	size = NULL;
+	if(getProperty("top-thickness", szValue) == UT_OK)
+	{
+		size = szValue;
+	}
+	err = exporter->setTableBorder(TARGET_DOCUMENT, "top", borderType, color, size);
+	if(err != UT_OK)
+		return err;
+
+	//bottom border
+	borderType = "single";
+	if(getProperty("bot-style", szValue) == UT_OK)
+	{
+		if(strcmp(szValue, "1") != 0)
+		{
+			 borderType = "dashed";
+		}
+	}
+	
+	color = NULL; 
+	if(getProperty("bot-color", szValue) == UT_OK)
+	{
+		color = szValue;
+	}
+	
+	size = NULL;
+	if(getProperty("bot-thickness", szValue) == UT_OK)
+	{
+		size = szValue;
+	}
+	err = exporter->setTableBorder(TARGET_DOCUMENT, "bottom", borderType, color, size);
+	if(err != UT_OK)
+		return err;
+
 
 	err = exporter->finishTableBorderProperties(TARGET_DOCUMENT);
 	if(err != UT_OK)
@@ -105,11 +237,90 @@ UT_Error OXML_Element_Table::serializeProperties(IE_Exp_OpenXML* exporter)
 	return exporter->finishTableProperties(TARGET_DOCUMENT);
 }
 
-
-UT_Error OXML_Element_Table::addToPT(PD_Document * /*pDocument*/)
+UT_Error OXML_Element_Table::serializeChildren(IE_Exp_OpenXML* exporter)
 {
-	//TODO
-	return UT_OK;
+	UT_Error ret = UT_OK;
+
+	OXML_ElementVector::size_type i;
+	OXML_ElementVector children = getChildren();
+	for (i = 0; i < children.size(); i++)
+	{
+		m_currentRowNumber = i;
+		ret = children[i]->serialize(exporter);
+		if(ret != UT_OK)
+			return ret;
+	}
+
+	return ret;
+}
+
+UT_Error OXML_Element_Table::addChildrenToPT(PD_Document * pDocument)
+{
+	UT_Error ret = UT_OK;
+	UT_Error temp = UT_OK;
+	std::vector<OXML_Element*>::size_type i;
+	OXML_ElementVector children = getChildren();
+	for (i = 0; i < children.size(); i++)
+	{
+		m_currentRowNumber = i;
+		temp = children[i]->addToPT(pDocument);
+		if (temp != UT_OK)
+			ret = temp;
+	}
+	return ret;
+}
+
+UT_Error OXML_Element_Table::addToPT(PD_Document * pDocument)
+{
+	UT_Error ret = UT_OK;
+
+	const gchar ** atts = getAttributesWithProps();
+	if(!pDocument->appendStrux(PTX_SectionTable, atts))
+		return UT_ERROR;
+
+	ret = addChildrenToPT(pDocument);
+	if(ret != UT_OK)
+		return ret;
+
+	if(!pDocument->appendStrux(PTX_EndTable,NULL))
+		return UT_ERROR;
+
+	return ret;
+}
+
+int OXML_Element_Table::getCurrentRowNumber()
+{
+	return m_currentRowNumber;
+}
+
+int OXML_Element_Table::getCurrentColNumber()
+{
+	return m_currentColNumber;
+}
+
+void OXML_Element_Table::setCurrentRowNumber(int row)
+{
+	m_currentRowNumber = row;
+}
+
+void OXML_Element_Table::setCurrentColNumber(int col)
+{
+	m_currentColNumber = col;
+}
+
+void OXML_Element_Table::incrementCurrentRowNumber()
+{
+	m_currentRowNumber++;
+}
+
+void OXML_Element_Table::incrementCurrentColNumber()
+{
+	m_currentColNumber++;
+}
+
+void OXML_Element_Table::addRow(OXML_Element_Row* row)
+{
+	m_rows.push_back(row);
 }
 
 std::string OXML_Element_Table::getColumnWidth(int colIndex)
@@ -119,3 +330,21 @@ std::string OXML_Element_Table::getColumnWidth(int colIndex)
 	return columnWidth.at(colIndex);
 }
 
+std::string OXML_Element_Table::getRowHeight(int rowIndex)
+{
+	if((rowIndex < 0) || (rowIndex >= (int)rowHeight.size()))
+		return "0in"; 
+	return rowHeight.at(rowIndex);
+}
+
+bool OXML_Element_Table::incrementBottomVerticalMergeStart(int left, int top)
+{
+	std::vector<OXML_Element_Row*>::reverse_iterator rit;
+	for( rit=m_rows.rbegin(); rit < m_rows.rend(); ++rit )
+	{
+		OXML_Element_Row* pRow = *rit;
+		if(pRow->incrementBottomVerticalMergeStart(left, top))
+			return true;
+	}
+	return false;	
+}

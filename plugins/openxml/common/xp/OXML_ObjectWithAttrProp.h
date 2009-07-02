@@ -38,6 +38,7 @@ public:
 
 	UT_Error setAttribute(const gchar * szName, const gchar * szValue);
 	UT_Error setProperty(const gchar * szName, const gchar * szValue);
+	UT_Error setProperty(const std::string & szName, const std::string & szValue);
 	UT_Error getAttribute(const gchar * szName, const gchar *& szValue);
 	UT_Error getProperty(const gchar * szName, const gchar *& szValue);
 	UT_Error setAttributes(const gchar ** attributes);

@@ -66,10 +66,14 @@ public:
 
 	UT_Error addList(const OXML_SharedList& obj);
 	UT_Error addImage(const OXML_SharedImage& obj);
+	OXML_SharedList getListById(UT_uint32 id);
 
+	//! Returns a reference to the FIRST footnote with corresponding ID OR empty SharedSection if none found.
+	OXML_SharedSection getFootnote(const std::string & id);
 	UT_Error addFootnote(const OXML_SharedSection & obj);
 	UT_Error clearFootnotes();
 
+	OXML_SharedSection getEndnote(const std::string & id);
 	UT_Error addEndnote(const OXML_SharedSection & obj);
 	UT_Error clearEndnotes();
 
@@ -105,6 +109,12 @@ public:
 	*/
 	UT_Error addToPT(PD_Document * pDocument);
 
+	std::string getMappedNumberingId(const std::string & numId);
+	bool setMappedNumberingId(const std::string & numId, const std::string & abstractNumId);
+
+	std::string getBookmarkName(const std::string & bookmarkId);
+	bool setBookmarkName(const std::string & bookmarkId, const std::string & bookmarkName);
+
 private:
 	static OXML_Document* s_docInst;
 	OXML_Document();
@@ -125,6 +135,9 @@ private:
 
 	OXML_ListMap m_lists_by_id;
 	OXML_ImageMap m_images_by_id;
+
+	std::map<std::string, std::string> m_numberingMap;
+	std::map<std::string, std::string> m_bookmarkMap;
 
 	void _assignHdrFtrIds();
 };

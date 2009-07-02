@@ -112,6 +112,8 @@ public:
 	UT_Error finishNumberingLevel(int target);
 	UT_Error startRow();
 	UT_Error finishRow();
+	UT_Error startRowProperties(int target);
+	UT_Error finishRowProperties(int target);
 	UT_Error startCell();
 	UT_Error finishCell();
 	UT_Error startTableGrid(int target);
@@ -155,6 +157,7 @@ public:
 	UT_Error setTableBorder(int target, const char* border, const char* type, const char* color, const char* size);
 	UT_Error setGridCol(int target, const char* column);
 	UT_Error setColumnWidth(int target, const char* width);
+	UT_Error setRowHeight(int target, const char* height);
 	UT_Error setListLevel(int target, const char* level);
 	UT_Error setListFormat(int target, const char* format);
 	UT_Error setListStartValue(int target, UT_uint32 startValue);
@@ -167,7 +170,7 @@ public:
 	UT_Error setImage(const char* id, const char* relId, const char* filename, const char* width, const char* height);
 	UT_Error setImageRelation(const char* filename, const char* id);
 	UT_Error writeImage(const char* filename, const UT_ByteBuf* data);
-	UT_Error setSimpleField(const char* instr, const char* value);
+	UT_Error setSimpleField(int target, const char* instr, const char* value);
 	UT_Error setHeaderReference(const char* id, const char* type);
 	UT_Error setFooterReference(const char* id, const char* type);
 	UT_Error setFootnoteReference(const char* id);
@@ -250,6 +253,8 @@ private:
 
 	GsfOutput* getTargetStream(int target);
 	UT_Error writeTargetStream(int target, const char* str);
+
+	bool isListBullet(const char* str);
 
 	void _cleanup();
 };

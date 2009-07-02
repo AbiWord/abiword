@@ -25,9 +25,25 @@ libxp_la_SOURCES = \
 	OXMLi_ListenerState_Styles.h \
 	OXMLi_ListenerState_Theme.cpp \
 	OXMLi_ListenerState_Theme.h \
+	OXMLi_ListenerState_Numbering.cpp \
+	OXMLi_ListenerState_Numbering.h \
+	OXMLi_ListenerState_Table.cpp \
+	OXMLi_ListenerState_Table.h \
+	OXMLi_ListenerState_Field.cpp \
+	OXMLi_ListenerState_Field.h \
+	OXMLi_ListenerState_Footnote.cpp \
+	OXMLi_ListenerState_Footnote.h \
+	OXMLi_ListenerState_Endnote.cpp \
+	OXMLi_ListenerState_Endnote.h \
+	OXMLi_ListenerState_Image.cpp \
+	OXMLi_ListenerState_Image.h \
+	OXMLi_ListenerState_Textbox.cpp \
+	OXMLi_ListenerState_Textbox.h \
 	OXMLi_PackageManager.cpp \
 	OXMLi_PackageManager.h \
 	OXMLi_StreamListener.cpp \
 	OXMLi_StreamListener.h \
+	OXMLi_Namespace_Common.cpp \
+	OXMLi_Namespace_Common.h \
 	OXMLi_Types.h
 

@@ -2,7 +2,7 @@
 
 /* AbiSource
  * 
- * Copyright (C) 2008 Firat Kiyak <firatkiyak@gmail.com>
+ * Copyright (C) 2009 Firat Kiyak <firatkiyak@gmail.com>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,34 +20,34 @@
  * 02111-1307, USA.
  */
 
-#ifndef _OXML_ELEMENT_BOOKMARK_H_
-#define _OXML_ELEMENT_BOOKMARK_H_
+#ifndef _OXMLI_LISTENERSTATE_NUMBERING_H_
+#define _OXMLI_LISTENERSTATE_NUMBERING_H_
 
 // Internal includes
-#include <OXML_Element.h>
-#include <ie_exp_OpenXML.h>
+#include <OXMLi_ListenerState.h>
+#include <OXMLi_Types.h>
+#include <OXML_Types.h>
 
-// AbiWord includes
-#include <ut_types.h>
-#include <ut_string.h>
-#include <pd_Document.h>
-
-class OXML_Element_Bookmark : public OXML_Element
+/* \class OXMLi_ListenerState_Numbering
+ * \brief This ListenerState parses the Document Numbering part.
+*/
+class OXMLi_ListenerState_Numbering : public OXMLi_ListenerState
 {
 public:
-	OXML_Element_Bookmark(const std::string & id);
-	virtual ~OXML_Element_Bookmark();
-
-	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
-	virtual UT_Error addToPT(PD_Document * pDocument);
-	
-	void setType(const std::string & type);
-	void setName(const std::string & name);
+	OXMLi_ListenerState_Numbering();
+	void startElement (OXMLi_StartElementRequest * rqst);
+	void endElement (OXMLi_EndElementRequest * rqst);
+	void charData (OXMLi_CharDataRequest * rqst);
 
 private:
-	std::string m_type;
-	std::string m_name;
+	OXML_List* m_currentList;
+	std::string m_currentNumId;
+	std::string m_parentListId;
+
+	void handleLevel(const gchar* ilvl);
+	void handleFormattingType(const gchar* val);
+	
 };
 
-#endif //_OXML_ELEMENT_BOOKMARK_H_
+#endif //_OXMLI_LISTENERSTATE_NUMBERING_H_
 

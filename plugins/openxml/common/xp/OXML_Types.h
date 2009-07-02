@@ -38,6 +38,7 @@
 #define NUMBERING_REL_TYPE "http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering"
 #define STYLES_REL_TYPE "http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles"
 #define WEBSETTINGS_REL_TYPE "http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings"
+#define IMAGE_REL_TYPE "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"
 #define THEME_REL_TYPE "http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme"
 
 enum OXML_PartType {
@@ -55,6 +56,7 @@ enum OXML_PartType {
 	NUMBERING_PART, 
 	STYLES_PART, 
 	WEBSETTINGS_PART, 
+	IMAGE_PART,
 	THEME_PART //At the end because this part is outside of WordprocessorML specs
 };
 

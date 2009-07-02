@@ -28,7 +28,7 @@
 #include <ut_string.h>
 #include <pd_Document.h>
 
-OXML_Element_Hyperlink::OXML_Element_Hyperlink(std::string id) : 
+OXML_Element_Hyperlink::OXML_Element_Hyperlink(const std::string & id) : 
 	OXML_Element(id, HYPR_TAG, HYPRLNK)
 {
 }
@@ -36,6 +36,11 @@ OXML_Element_Hyperlink::OXML_Element_Hyperlink(std::string id) :
 OXML_Element_Hyperlink::~OXML_Element_Hyperlink()
 {
 
+}
+
+void OXML_Element_Hyperlink::setHyperlinkTarget(const std::string & target)
+{
+	m_target = target;
 }
 
 UT_Error OXML_Element_Hyperlink::serialize(IE_Exp_OpenXML* exporter)
@@ -77,8 +82,24 @@ UT_Error OXML_Element_Hyperlink::serialize(IE_Exp_OpenXML* exporter)
 	return UT_OK;
 }
 
-UT_Error OXML_Element_Hyperlink::addToPT(PD_Document* /*pDocument*/)
+UT_Error OXML_Element_Hyperlink::addToPT(PD_Document* pDocument)
 {
-	//TODO
+	UT_Error err = UT_OK;
+
+	const gchar *field_fmt[3];
+	field_fmt[0] = "xlink:href";
+	field_fmt[1] = m_target.c_str();
+	field_fmt[2] = 0;
+
+	if(!pDocument->appendObject(PTO_Hyperlink, field_fmt))
+		return UT_ERROR;
+
+	err = addChildrenToPT(pDocument);
+	if(err != UT_OK)
+		return err;
+
+	if(!pDocument->appendObject(PTO_Hyperlink, NULL))
+		return UT_ERROR;
+
 	return UT_OK;
 }

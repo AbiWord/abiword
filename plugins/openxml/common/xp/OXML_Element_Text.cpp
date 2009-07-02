@@ -46,10 +46,11 @@ OXML_Element_Text::OXML_Element_Text(const gchar * text, int length) :
 	setText(text, length);
 }
 
-void OXML_Element_Text::setText(const gchar * text, int length)
+void OXML_Element_Text::setText(const gchar * text, int /*length*/)
 {
 	try {
-		m_pString = new UT_UCS4String(text, length);
+		std::string str(text);
+		m_pString = new UT_UCS4String(str);
 	} catch(...) {
 		m_pString = NULL;
 	}
@@ -64,6 +65,12 @@ const UT_UCS4Char * OXML_Element_Text::getText_UCS4String()
 const char * OXML_Element_Text::getText()
 {
 	UT_return_val_if_fail(m_pString != NULL, NULL);
+	if(getType() == LIST)
+	{
+		const char* pStr = m_pString->utf8_str();
+		if(pStr && (strlen(pStr) > 0) && (pStr[0] == '\t'))
+			return pStr+1; //get rid of the initial tab
+	}
 	return m_pString->utf8_str();
 }
 

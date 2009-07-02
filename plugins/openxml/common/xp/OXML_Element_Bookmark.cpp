@@ -28,7 +28,7 @@
 #include <ut_string.h>
 #include <pd_Document.h>
 
-OXML_Element_Bookmark::OXML_Element_Bookmark(std::string id) : 
+OXML_Element_Bookmark::OXML_Element_Bookmark(const std::string & id) : 
 	OXML_Element(id, BOOK_TAG, BOOKMRK)
 {
 }
@@ -36,6 +36,16 @@ OXML_Element_Bookmark::OXML_Element_Bookmark(std::string id) :
 OXML_Element_Bookmark::~OXML_Element_Bookmark()
 {
 
+}
+
+void OXML_Element_Bookmark::setType(const std::string & type)
+{
+	m_type = type;
+}
+
+void OXML_Element_Bookmark::setName(const std::string & name)
+{
+	m_name = name;
 }
 
 UT_Error OXML_Element_Bookmark::serialize(IE_Exp_OpenXML* exporter)
@@ -71,8 +81,23 @@ UT_Error OXML_Element_Bookmark::serialize(IE_Exp_OpenXML* exporter)
 	return UT_OK;
 }
 
-UT_Error OXML_Element_Bookmark::addToPT(PD_Document* /*pDocument*/)
+UT_Error OXML_Element_Bookmark::addToPT(PD_Document* pDocument)
 {
-	//TODO
+	UT_Error err = UT_OK;
+
+	const gchar *field_fmt[5];
+	field_fmt[0] = "type";
+	field_fmt[1] = m_type.c_str();
+	field_fmt[2] = "name";
+	field_fmt[3] = m_name.c_str();
+	field_fmt[4] = 0;
+
+	if(!pDocument->appendObject(PTO_Bookmark, field_fmt))
+		return UT_ERROR;
+
+	err = addChildrenToPT(pDocument);
+	if(err != UT_OK)
+		return err;
+
 	return UT_OK;
 }

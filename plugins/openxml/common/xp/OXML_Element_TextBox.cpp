@@ -31,7 +31,7 @@
 // External includes
 #include <string>
 
-OXML_Element_TextBox::OXML_Element_TextBox(std::string id) : 
+OXML_Element_TextBox::OXML_Element_TextBox(const std::string & id) : 
 	OXML_Element(id, TXTBX_TAG, TEXTBOX)
 {
 	//Intentionally empty
@@ -99,9 +99,40 @@ UT_Error OXML_Element_TextBox::serializeProperties(IE_Exp_OpenXML* exporter)
 	return exporter->finishTextBoxProperties(TARGET);
 }
 
-UT_Error OXML_Element_TextBox::addToPT(PD_Document* /*pDocument*/)
+UT_Error OXML_Element_TextBox::addToPT(PD_Document* pDocument)
 {
-	//TODO
-	return UT_OK;
+	UT_Error ret = UT_OK;
+
+	ret = setProperty("frame-type", "textbox");
+	if(ret != UT_OK)
+		return ret;
+
+	ret = setProperty("position-to", "column-above-text");
+	if(ret != UT_OK)
+		return ret;
+
+	ret = setProperty("wrap-mode", "wrapped-both");
+	if(ret != UT_OK)
+		return ret;
+
+	ret = setProperty("background-color", "ffffff");
+	if(ret != UT_OK)
+		return ret;
+
+	ret = setProperty("bg-style", "1");
+	if(ret != UT_OK)
+		return ret;
+
+	const gchar ** attr = this->getAttributesWithProps();
+	ret = pDocument->appendStrux(PTX_SectionFrame, attr) ? UT_OK : UT_ERROR;
+	if(ret != UT_OK)
+		return ret;
+
+	ret = this->addChildrenToPT(pDocument);
+	if(ret != UT_OK)
+		return ret;
+
+	ret = pDocument->appendStrux(PTX_EndFrame, NULL) ? UT_OK : UT_ERROR;
+	return ret;
 }
 

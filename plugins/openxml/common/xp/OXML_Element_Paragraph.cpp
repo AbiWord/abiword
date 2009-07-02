@@ -28,7 +28,7 @@
 #include <ut_string.h>
 #include <pd_Document.h>
 
-OXML_Element_Paragraph::OXML_Element_Paragraph(std::string id) : 
+OXML_Element_Paragraph::OXML_Element_Paragraph(const std::string & id) : 
 	OXML_Element(id, P_TAG, BLOCK), pageBreak(false)
 {
 }
@@ -61,17 +61,23 @@ UT_Error OXML_Element_Paragraph::serializeChildren(IE_Exp_OpenXML* exporter)
 {
 	UT_Error ret = UT_OK;
 
+	bool includesList = false;
+
 	OXML_ElementVector::size_type i;
 	OXML_ElementVector children = getChildren();
 	for (i = 0; i < children.size(); i++)
 	{
 		// LIST children are handled in serializeProperties function
 		if(children[i]->getType() != LIST)
-		{
+		{	
+			if(includesList)
+				children[i]->setType(LIST);
 			ret = children[i]->serialize(exporter);
 			if(ret != UT_OK)
 				return ret;
 		}
+		else 
+			includesList = true;
 	}
 
 	return ret;
@@ -201,10 +207,84 @@ UT_Error OXML_Element_Paragraph::serializeProperties(IE_Exp_OpenXML* exporter)
 
 UT_Error OXML_Element_Paragraph::addToPT(PD_Document * pDocument)
 {
-	//TODO Move the OXML_Element addToPT case P_TAG code here
-	//the importer needs to be updated to create OXML_Element_Paragraph object
-	//instead of generic OXML_Element object for representing a paragraph
-	return OXML_Element::addToPT(pDocument);
+	UT_Error ret = UT_OK;
+
+	if (pDocument == NULL)
+		return UT_ERROR;
+
+	//update list id and parent id here
+	const gchar* pListId = getListId();
+	const gchar* pListLevel = getListLevel();
+	if(pListId && pListLevel)
+	{
+		std::string listid(pListId);
+		std::string level(pListLevel);
+		std::string parentid(pListId);
+		parentid += "0";
+		listid += level;
+		if(!level.compare("0"))
+		{	
+			parentid = "0";		
+		}
+		
+		ret = setAttribute("level", pListLevel);
+		if(ret != UT_OK)
+			return ret;
+	
+		ret = setAttribute("listid", listid.c_str());
+		if(ret != UT_OK)
+			return ret;
+
+		ret = setAttribute("parentid", parentid.c_str());
+		if(ret != UT_OK)
+			return ret; 	
+
+		//now copy over properties from the corresponding OXML_List object
+		OXML_Document* doc = OXML_Document::getInstance();
+		if(doc)
+		{
+			OXML_SharedList sList = doc->getListById(atoi(listid.c_str()));
+			if(sList)
+			{
+				ret = setProperties(sList->getProperties());
+				if(ret != UT_OK)
+					return ret; 	
+			}
+		}
+
+	}
+
+	const gchar ** atts = getAttributesWithProps();
+
+	if (atts != NULL) {
+		ret = pDocument->appendStrux(PTX_Block, atts) ? UT_OK : UT_ERROR;
+		if(ret != UT_OK) {
+			UT_ASSERT_HARMLESS(ret == UT_OK);
+			return ret;
+		}
+	} else {
+		ret = pDocument->appendStrux(PTX_Block, NULL) ? UT_OK : UT_ERROR;
+	}
+		
+
+	if(pListId && pListLevel)
+	{
+		ret = setAttribute("type", "list_label");
+		if(ret != UT_OK)
+			return ret;
+
+		const gchar ** ppAttr = getAttributesWithProps();
+    
+		if(!pDocument->appendObject(PTO_Field, ppAttr))
+			return ret;
+
+		pDocument->appendFmt(ppAttr);
+	
+		UT_UCS4String string = "\t";
+		pDocument->appendSpan(string.ucs4_str(), string.size());
+	}
+	
+	return addChildrenToPT(pDocument);
 }
 
 const gchar* OXML_Element_Paragraph::getListLevel()

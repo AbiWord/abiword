@@ -850,6 +850,8 @@ UT_Error IE_Exp_OpenXML::setFontFamily(int target, const gchar* family)
 	str += sEscFamily.utf8_str();
 	str += "\" w:cs=\"";
 	str += sEscFamily.utf8_str();
+	str += "\" w:hAnsi=\"";
+	str += sEscFamily.utf8_str();
 	str += "\"/>";
 	return writeTargetStream(target, str.c_str());
 }
@@ -1177,11 +1179,11 @@ UT_Error IE_Exp_OpenXML::setTabstops(int target, const gchar* tabstops)
 				tabs += "<w:tab w:val=\"clear\" ";
 
 
-			if(strstr(type.c_str(), "1"))
+			if(strstr(type.c_str(), "3"))
 				tabs += "w:leader=\"underscore\" ";
-			else if(strstr(type.c_str(), "2"))
+			else if(strstr(type.c_str(), "1"))
 				tabs += "w:leader=\"dot\" ";
-			else if(strstr(type.c_str(), "3"))
+			else if(strstr(type.c_str(), "2"))
 				tabs += "w:leader=\"hyphen\" ";
 		
 			tabs += "w:pos=\"";
@@ -1247,7 +1249,7 @@ UT_Error IE_Exp_OpenXML::setGridSpan(int target, UT_sint32 hspan)
  */
 UT_Error IE_Exp_OpenXML::setVerticalMerge(int target, const char* vmerge)
 {
-	std::string str("<w:vmerge w:val=\"");
+	std::string str("<w:vMerge w:val=\"");
 	str += vmerge;
 	str += "\"/>";
 	return writeTargetStream(target, str.c_str());
@@ -1295,6 +1297,18 @@ UT_Error IE_Exp_OpenXML::setTableBorder(int target, const char* border, const ch
 }
 
 /**
+ * Sets table row height to some exact value
+ */
+UT_Error IE_Exp_OpenXML::setRowHeight(int target, const char* height)
+{
+	std::string str("<w:trHeight w:val=\"");
+	str += convertToPositiveTwips(height);
+	str += "\" w:hRule=\"exact\"/>";
+	return writeTargetStream(target, str.c_str());
+}
+
+
+/**
  * Starts table grid
  */
 UT_Error IE_Exp_OpenXML::startTableGrid(int target)
@@ -1308,6 +1322,22 @@ UT_Error IE_Exp_OpenXML::startTableGrid(int target)
 UT_Error IE_Exp_OpenXML::finishTableGrid(int target)
 {
 	return writeTargetStream(target, "</w:tblGrid>");
+}
+
+/**
+ * Starts table row properties
+ */
+UT_Error IE_Exp_OpenXML::startRowProperties(int target)
+{
+	return writeTargetStream(target, "<w:trPr>");
+}
+
+/**
+ * Finishes table row properties
+ */
+UT_Error IE_Exp_OpenXML::finishRowProperties(int target)
+{
+	return writeTargetStream(target, "</w:trPr>");
 }
 
 /**
@@ -1435,12 +1465,22 @@ UT_Error IE_Exp_OpenXML::setListStartValue(int target, UT_uint32 startValue)
 UT_Error IE_Exp_OpenXML::setListLevelText(int target, const char* text)
 {
 	UT_UTF8String sEscText = text;
-	sEscText.escapeXML();
+	if(!isListBullet(text))
+		sEscText.escapeXML();
 
 	std::string str("<w:lvlText w:val=\"");
 	str += sEscText.utf8_str();
 	str += "\"/>";
 	return writeTargetStream(target, str.c_str());
+}
+
+/**
+ * Checks whether given a string is a special list bullet symbol
+ */
+bool IE_Exp_OpenXML::isListBullet(const char* str)
+{
+	return !strcmp(str, BULLET) || !strcmp(str, SQUARE) || !strcmp(str, TRIANGLE) || !strcmp(str, TICK) || !strcmp(str, IMPLIES) || 
+			!strcmp(str, DIAMOND) || !strcmp(str, BOX) || !strcmp(str, HAND) || !strcmp(str, HEART) || !strcmp(str, DASH);
 }
 
 /**
@@ -1562,7 +1602,7 @@ UT_Error IE_Exp_OpenXML::setImageRelation(const char* filename, const char* id)
 /**
  * Sets the simple field
  */
-UT_Error IE_Exp_OpenXML::setSimpleField(const char* instr, const char* value)
+UT_Error IE_Exp_OpenXML::setSimpleField(int target, const char* instr, const char* value)
 {
 	UT_UTF8String sEscInstr = instr;
 	sEscInstr.escapeXML();
@@ -1579,7 +1619,7 @@ UT_Error IE_Exp_OpenXML::setSimpleField(const char* instr, const char* value)
 	str += "</w:t>";
 	str += "</w:r>";
 	str += "</w:fldSimple>";
-	return writeTargetStream(TARGET_DOCUMENT, str.c_str());
+	return writeTargetStream(target, str.c_str());
 }
 
 /**
@@ -1729,7 +1769,7 @@ const gchar * IE_Exp_OpenXML::convertToLines(const gchar* str)
 const gchar * IE_Exp_OpenXML::computeBorderWidth(const gchar* str)
 {
 	//in eighths of a point
-	double pt = UT_convertDimensionless(str) * 160;
+	double pt = UT_convertToPoints(str) * 8;
 	if(pt < 1.0 && pt > -1.0)
 		return "0";
 	return UT_convertToDimensionlessString(pt, ".0");

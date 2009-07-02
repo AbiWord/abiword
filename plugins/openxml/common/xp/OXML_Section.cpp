@@ -285,6 +285,7 @@ UT_Error OXML_Section::serializeFooter(IE_Exp_OpenXML* exporter)
 	OXML_ElementVector::size_type i;
 	for (i = 0; i < m_children.size(); i++)
 	{
+		m_children[i]->setTarget(TARGET_FOOTER);
 		ret = m_children[i]->serialize(exporter);
 		if(ret != UT_OK)
 			return ret;
@@ -368,7 +369,7 @@ UT_Error OXML_Section::addToPT(PD_Document * pDocument)
 	}
 
 	//Appending new section
-	attr = this->getAttributes();
+	attr = this->getAttributesWithProps();
 	ret = pDocument->appendStrux(PTX_Section, attr) ? UT_OK : UT_ERROR;
 	UT_return_val_if_fail(ret == UT_OK, ret);
 
@@ -387,6 +388,88 @@ UT_Error OXML_Section::addToPT(PD_Document * pDocument)
 		UT_return_val_if_fail(ret == UT_OK, ret);
 	}
 	return ret;
+}
+
+UT_Error OXML_Section::addToPTAsFootnote(PD_Document * pDocument)
+{
+	UT_Error ret = UT_OK;
+	const gchar *attr[3];
+	attr[0] = "footnote-id";
+	attr[1] = m_id.c_str();
+	attr[2] = 0;
+
+	ret = pDocument->appendStrux(PTX_SectionFootnote, attr) ? UT_OK : UT_ERROR;
+	UT_return_val_if_fail(ret == UT_OK, ret);
+
+	const gchar *field_fmt[5];
+	field_fmt[0] = "type";
+	field_fmt[1] = "footnote_anchor";
+	field_fmt[2] = "footnote-id";
+	field_fmt[3] = m_id.c_str();
+	field_fmt[4] = 0;
+
+	if(!pDocument->appendObject(PTO_Field, field_fmt))
+		return UT_ERROR;
+
+	OXML_ElementVector::size_type i;	
+	i = 0;
+
+	if(m_children[0].get() && ((m_children[0].get())->getTag() == P_TAG))
+	{
+		//skip the first paragraph and directly add its children
+		ret = m_children[0]->addChildrenToPT(pDocument);
+		UT_return_val_if_fail(ret == UT_OK, ret);
+		i = 1;
+	}
+
+	for (; i < m_children.size(); i++)
+	{
+		ret = m_children[i]->addToPT(pDocument);
+		UT_return_val_if_fail(ret == UT_OK, ret);
+	}
+
+	return pDocument->appendStrux(PTX_EndFootnote, NULL) ? UT_OK : UT_ERROR;
+}
+
+UT_Error OXML_Section::addToPTAsEndnote(PD_Document * pDocument)
+{
+	UT_Error ret = UT_OK;
+	const gchar *attr[3];
+	attr[0] = "endnote-id";
+	attr[1] = m_id.c_str();
+	attr[2] = 0;
+
+	ret = pDocument->appendStrux(PTX_SectionEndnote, attr) ? UT_OK : UT_ERROR;
+	UT_return_val_if_fail(ret == UT_OK, ret);
+
+	const gchar *field_fmt[5];
+	field_fmt[0] = "type";
+	field_fmt[1] = "endnote_anchor";
+	field_fmt[2] = "endnote-id";
+	field_fmt[3] = m_id.c_str();
+	field_fmt[4] = 0;
+
+	if(!pDocument->appendObject(PTO_Field, field_fmt))
+		return UT_ERROR;
+
+	OXML_ElementVector::size_type i;	
+	i = 0;
+
+	if(m_children[0].get() && ((m_children[0].get())->getTag() == P_TAG))
+	{
+		//skip the first paragraph and directly add its children
+		ret = m_children[0]->addChildrenToPT(pDocument);
+		UT_return_val_if_fail(ret == UT_OK, ret);
+		i = 1;
+	}
+
+	for (; i < m_children.size(); i++)
+	{
+		ret = m_children[i]->addToPT(pDocument);
+		UT_return_val_if_fail(ret == UT_OK, ret);
+	}
+
+	return pDocument->appendStrux(PTX_EndEndnote, NULL) ? UT_OK : UT_ERROR;
 }
 
 UT_Error OXML_Section::addToPTAsHdrFtr(PD_Document * pDocument)

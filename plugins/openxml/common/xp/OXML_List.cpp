@@ -20,6 +20,9 @@
  * 02111-1307, USA.
  */
 
+//External includes
+#include <boost/lexical_cast.hpp>
+
 // Class definition include
 #include <OXML_List.h>
 
@@ -32,17 +35,14 @@
 #include <ut_misc.h>
 #include <pd_Document.h>
 
-// External includes
-#include <string>
-
 OXML_List::OXML_List() : 
 	OXML_ObjectWithAttrProp(),
 	id(0),
 	parentId(0),
 	level(0),
 	startValue(0),
-	delim(NULL),
-	decimal(NULL),
+	delim(""),
+	decimal(""),
 	type(NUMBERED_LIST)
 {
 
@@ -72,12 +72,100 @@ void OXML_List::setStartValue(UT_uint32 val)
 	startValue = val;
 }
 
-void OXML_List::setDelim(const gchar* dlm)
+void OXML_List::setDelim(const std::string & dlm)
 {
+	UT_Error err = UT_OK;
+
 	delim = dlm;
+
+	if(type == BULLETED_LIST)
+	{
+	    UT_UCS4String ucs4Str = delim;
+
+		if (!ucs4Str.empty())
+		{
+			switch (ucs4Str[0])
+			{
+				case 8226: // U+2022 BULLET
+					type = BULLETED_LIST;
+					err = setProperty("field-font", "Symbol");
+					break;
+                        
+				case 8211: // U+2013 EN DASH
+					type = DASHED_LIST;
+					err = setProperty("field-font", "Symbol");
+					break;
+
+				case 9632:  // U+25A0 BLACK SQUARE                        
+				case 61607: // MS WORD 2007 BLACK SQUARE
+					type = SQUARE_LIST;
+					err = setProperty("field-font", "Dingbats");
+					break;
+                        
+				case 9650: // U+25B2 BLACK UP-POINTING TRIANGLE
+				case 9654: // TRIANGLE
+				case 61656: // MS WORD 2007 TRIANGLE ARROW
+					type = TRIANGLE_LIST;
+					err = setProperty("field-font", "Dingbats");
+					break;
+                    
+				case 9670: //U+25C6 DIAMOND
+				case 9830: // U+2666 BLACK DIAMOND SUIT
+				case 61558: // MS WORD 2007 DIAMOND SUIT
+					type = DIAMOND_LIST;
+					err = setProperty("field-font", "Dingbats");
+					break;
+                        
+				case 10035: // U+2733 EIGHT SPOKED ASTERISK
+				case 42: // MS WORD 2007 EIGHT SPOKED ASTERISK
+					type = STAR_LIST;
+					err = setProperty("field-font", "Dingbats");
+					break;
+                        
+				case 10003: // U+2713 CHECK MARK
+				case 61692: // MS WORD 2007 CHECK MARK
+					type = TICK_LIST;
+					err = setProperty("field-font", "Dingbats");
+					break;
+                        
+				case 9633: //BOX
+				case 10066: // U+2752 UPPER RIGHT SHADOWED WHITE SQUARE
+					type = BOX_LIST;
+					err = setProperty("field-font", "Dingbats");
+					break;
+                        
+				case 9758: // U+261E WHITE RIGHT POINTING INDEX
+					type = HAND_LIST;
+					err = setProperty("field-font", "Dingbats");
+					break;                        
+
+				case 9829: // U+2665 BLACK HEART SUIT
+				case 61609: //MS WORD 2007 HEART SUIT
+					type = HEART_LIST;
+					err = setProperty("field-font", "Dingbats");
+					break;
+                        
+				case 8658: // U+21D2 RIGHTWARDS DOUBLE ARROW
+					type = IMPLIES_LIST;
+					err = setProperty("field-font", "Symbol");
+					break;
+
+				default:
+					type = BULLETED_LIST;
+					err = setProperty("field-font", "Symbol");
+					break;
+			};
+		}
+	}
+
+	if(err != UT_OK)
+	{
+		UT_DEBUGMSG(("FRT:OpenXML importer setting field-font property failed\n"));
+		type = BULLETED_LIST;
+	}	
 }
 
-void OXML_List::setDecimal(const gchar* dcml)
+void OXML_List::setDecimal(const std::string & dcml)
 {
 	decimal = dcml;
 }
@@ -109,12 +197,12 @@ UT_uint32 OXML_List::getStartValue()
 
 const gchar* OXML_List::getDelim()
 {
-	return delim;
+	return delim.c_str();
 }
 
 const gchar* OXML_List::getDecimal()
 {
-	return decimal;
+	return decimal.c_str();
 }
 
 FL_ListType OXML_List::getType()
@@ -170,6 +258,7 @@ UT_Error OXML_List::serialize(IE_Exp_OpenXML* exporter)
 			txt = txt.replace(index+1, 1, 1, '1'+i);
 		}
 	
+		std::string fontFamily("Times New Roman");
 		const gchar* listType = "bullet";
 		switch(type)
 		{
@@ -218,9 +307,11 @@ UT_Error OXML_List::serialize(IE_Exp_OpenXML* exporter)
 				break;
 			case TRIANGLE_LIST:
 				txt = TRIANGLE;
+				fontFamily = "Wingdings";
 				break;
 			case DIAMOND_LIST:
 				txt = DIAMOND;
+				fontFamily = "Wingdings";
 				break;
 			case STAR_LIST:
 				txt = STAR;
@@ -236,6 +327,10 @@ UT_Error OXML_List::serialize(IE_Exp_OpenXML* exporter)
 				break;
 			case HEART_LIST:
 				txt = HEART;
+				break;
+			case TICK_LIST:
+				txt = TICK;
+				fontFamily = "Wingdings";
 				break;
 			case BULLETED_LIST:
 				txt = BULLET;
@@ -256,6 +351,27 @@ UT_Error OXML_List::serialize(IE_Exp_OpenXML* exporter)
 		if(err != UT_OK)
 		{
 			UT_DEBUGMSG(("FRT: Can't set List Level Text\n"));
+			return err;
+		}
+
+		err = exporter->startRunProperties(TARGET_NUMBERING);
+		if(err != UT_OK)
+		{
+			UT_DEBUGMSG(("FRT: Can't start List Level Run Properties\n"));
+			return err;
+		}
+
+		err = exporter->setFontFamily(TARGET_NUMBERING, fontFamily.c_str());
+		if(err != UT_OK)
+		{
+			UT_DEBUGMSG(("FRT: Can't set font family\n"));
+			return err;
+		}
+
+		err = exporter->finishRunProperties(TARGET_NUMBERING);
+		if(err != UT_OK)
+		{
+			UT_DEBUGMSG(("FRT: Can't finish List Level Run Properties\n"));
 			return err;
 		}
 	
@@ -302,9 +418,38 @@ UT_Error OXML_List::serializeNumbering(IE_Exp_OpenXML* exporter)
 	return exporter->finishNumbering(TARGET_NUMBERING);
 }
 
-UT_Error OXML_List::addToPT(PD_Document * /*pDocument*/)
+UT_Error OXML_List::addToPT(PD_Document * pDocument)
 {
-	//TODO
-	return UT_OK;
+	UT_Error err = UT_ERROR;
+
+	const gchar* ppAttr[13];
+
+	std::string listId = boost::lexical_cast<std::string>(id);
+	std::string parentListId = boost::lexical_cast<std::string>(parentId);
+	std::string listType = boost::lexical_cast<std::string>(type);
+	std::string listStartVal = boost::lexical_cast<std::string>(startValue);
+	std::string listDelim("%L."); 
+	std::string listDecimal(".");
+	if(decimal.compare(""))
+		listDecimal = decimal;
+
+	ppAttr[0] = "id";
+	ppAttr[1] = listId.c_str();
+	ppAttr[2] = "parentid";
+	ppAttr[3] = parentListId.c_str();
+	ppAttr[4] = "type";
+	ppAttr[5] = listType.c_str();
+	ppAttr[6] = "start-value";
+	ppAttr[7] = listStartVal.c_str();
+	ppAttr[8] = "list-delim";
+	ppAttr[9] = listDelim.c_str();
+	ppAttr[10] = "list-decimal";
+	ppAttr[11] = listDecimal.c_str();
+	ppAttr[12] = 0;
+    
+	if (pDocument->appendList(ppAttr))
+		err = UT_OK;
+
+	return err;
 }
 
