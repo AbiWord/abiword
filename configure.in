@@ -482,8 +482,10 @@ AC_CHECK_HEADER(jpeglib.h,[
 	AC_CHECK_LIB(jpeg,jpeg_read_header,
 	[], 
 	[
-	  AC_MSG_ERROR([jpeg: libjpeg not found])
+	  AC_MSG_ERROR([libjpeg not found])
 	])
+],[
+	  AC_MSG_ERROR([jpeg.h not found])
 ])
 
 # TODO need to check for libz too, at least on win32
