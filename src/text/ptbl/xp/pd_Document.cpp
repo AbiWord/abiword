@@ -2403,6 +2403,61 @@ bool PD_Document::deleteFragNoUpdate(pf_Frag * pf)
 }
 
 /*!
+ * Returns true if it is legal to insert a hperlink at this position. Looks to see if there is
+ * An open hyperlink or annotation upstream.
+ */
+bool   PD_Document::isInsertHyperLinkValid(PT_DocPosition pos)
+{
+	PT_BlockOffset pOffset;
+	pf_Frag * pf = NULL;
+	m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
+	while(pf && (pf->getType() != pf_Frag::PFT_Strux) )
+	{
+		if(pf->getType() == pf_Frag::PFT_Object)
+		{
+			pf_Frag_Object * pfo = static_cast<pf_Frag_Object *>(pf);
+			if((pfo->getObjectType() != PTO_Hyperlink) && (pfo->getObjectType() != PTO_Annotation))
+			{
+				pf = pf->getPrev();
+			}
+			else
+			{
+				PT_AttrPropIndex iAP = pf->	getIndexAP();
+				const PP_AttrProp * pAP = NULL;
+				m_pPieceTable->getAttrProp(iAP,&pAP);
+				UT_return_val_if_fail (pAP, false);
+				const gchar * pszXlink = NULL;
+				(pAP)->getAttribute(PT_HYPERLINK_TARGET_NAME,pszXlink);
+				if(pszXlink)
+				{
+					return false;
+				}
+				(pAP)->getAttribute(PT_ANNOTATION_NUMBER,pszXlink);
+				if(pszXlink)
+				{
+					return false;
+				}
+				return true;
+			}
+		}
+		else
+		{
+			pf = pf->getPrev();
+		}
+	}
+	if(!pf)
+		return false;
+	if(pf->getType() != pf_Frag::PFT_Strux)
+	{
+		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
+		if(pfs->getStruxType() == PTX_Block)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+/*!
  * This method returns the last pf_Frag_Strux as a PL_StruxDocHandle before the end of the piecetable.
  */
 PL_StruxDocHandle  PD_Document::getLastSectionSDH(void)

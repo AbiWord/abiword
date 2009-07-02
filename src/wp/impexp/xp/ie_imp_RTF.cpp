@@ -3614,9 +3614,16 @@ bool IE_Imp_RTF::HandleField()
 		}
 		else 
 		{
-			const gchar * props[] = {"list-tag","dummy",NULL};
-			getDoc()->insertObject(m_dposPaste, PTO_Hyperlink, props, NULL);
-			m_dposPaste++;
+			if(getDoc()->isInsertHyperLinkValid(m_dposPaste))
+			{
+				const gchar * props[] = {"list-tag","dummy",NULL};
+				getDoc()->insertObject(m_dposPaste, PTO_Hyperlink, props, NULL);
+				m_dposPaste++;
+			}
+			else
+			{
+				return false;
+			}
 		}
 		m_iHyperlinkOpen--;
 		UT_ASSERT_HARMLESS( m_iHyperlinkOpen == iHyperlinkOpen );
@@ -3830,8 +3837,15 @@ gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & _buf, gchar *xmlField, bool 
 			}
 			else 
 			{
-				getDoc()->insertObject(m_dposPaste, PTO_Hyperlink, new_atts, NULL);
-				m_dposPaste++;
+				if(getDoc()->isInsertHyperLinkValid(m_dposPaste))
+				{
+						getDoc()->insertObject(m_dposPaste, PTO_Hyperlink, new_atts, NULL);
+						m_dposPaste++;
+				}
+				else
+				{
+						break;
+				}
 			}
 			m_iHyperlinkOpen++;
 		}

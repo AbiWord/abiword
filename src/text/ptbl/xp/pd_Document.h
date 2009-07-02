@@ -544,6 +544,9 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 												 UT_sint32 col);
 	void                    miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes);
 
+	bool                    isInsertHyperLinkValid(PT_DocPosition pos);
+
+
 	// List Functions
 	fl_AutoNum *			getListByID(UT_uint32 id) const;
 	fl_AutoNum *			getNthList(UT_uint32 i) const;
