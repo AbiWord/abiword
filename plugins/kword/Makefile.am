@@ -1,5 +1,5 @@
 
-SUBDIRS = xp
+SUBDIRS = xp po
 
 if KWORD_BUILTIN
 noinst_LTLIBRARIES = kword.la

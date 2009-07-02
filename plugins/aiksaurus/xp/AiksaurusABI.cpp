@@ -40,11 +40,13 @@
 #include "ev_Menu_Labels.h"
 #include "ev_EditMethod.h"
 #include "xap_Menu_Layouts.h"
+#include "ap_strings.h"
 
 #include <iostream>
 using namespace std;
 
 ABI_PLUGIN_DECLARE(Aiksaurus)
+
 
 bool AiksaurusABI_invoke(AV_View* v, EV_EditMethodCallData *d);
 

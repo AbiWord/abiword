@@ -1,8 +1,12 @@
+GETTEXT_PACKAGE ?= abiword
+
 MSGFMT = @MSGFMT@
 
 prefix = @prefix@
 datarootdir = @datarootdir@
 localedir = @localedir@
+
+top_srcdir = @top_srcdir@
 
 po_files = $(wildcard *.po)
 mo_files = $(subst .po,.mo, $(po_files))
@@ -10,7 +14,7 @@ mo_files = $(subst .po,.mo, $(po_files))
 all: $(mo_files)
 
 clean:
-	rm -f $(mo_files) abiword.pot
+	rm -f $(mo_files) $(GETTEXT_PACKAGE).pot
 
 install:
 	-$(foreach lang, $(subst .mo,, $(mo_files)), if test -d $(localedir)/$(subst -,_,$(lang))/LC_MESSAGES; then install -m 644 $(lang).mo $(localedir)/$(subst -,_,$(lang))/LC_MESSAGES/abiword.mo; fi; )
@@ -18,11 +22,11 @@ install:
 uninstall:
 	-$(foreach lang, $(subst .mo,, $(mo_files)), file=$(localedir)/$(subst -,_,$(lang))/LC_MESSAGES/abiword.mo; if test -f $$file; then rm -f $$file; fi; )
 
-update-po: abiword.pot
+update-po: $(GETTEXT_PACKAGE).pot
 	-$(foreach file, $(po_files), intltool-update $(subst .po,,$(file)); )
 
 %.mo: %.po
 	-$(MSGFMT) -o $@ $<
 
-abiword.pot:
-	intltool-update --pot
+$(GETTEXT_PACKAGE).pot:
+	intltool-update --pot  --gettext-package=$(GETTEXT_PACKAGE)
