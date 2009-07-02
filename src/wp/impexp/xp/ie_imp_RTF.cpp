@@ -3614,7 +3614,7 @@ bool IE_Imp_RTF::HandleField()
 		}
 		else 
 		{
-			if(getDoc()->isInsertHyperLinkValid(m_dposPaste))
+			if(m_iHyperlinkOpen ==1)
 			{
 				const gchar * props[] = {"list-tag","dummy",NULL};
 				getDoc()->insertObject(m_dposPaste, PTO_Hyperlink, props, NULL);

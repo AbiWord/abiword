@@ -2447,7 +2447,7 @@ bool   PD_Document::isInsertHyperLinkValid(PT_DocPosition pos) const
 	}
 	if(!pf)
 		return false;
-	if(pf->getType() != pf_Frag::PFT_Strux)
+	if(pf->getType() == pf_Frag::PFT_Strux)
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
 		if(pfs->getStruxType() == PTX_Block)
