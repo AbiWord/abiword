@@ -3089,7 +3089,7 @@ bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, UT_sint32* pParam, bool* p
 	*pKeyword = 0;
 	const unsigned int max_param = 256;
 	unsigned char parameter[max_param];
-	int count = 0;
+	unsigned int count = 0;
 	unsigned char * savedKeyword = pKeyword;
 
 	// Read the first character of the control word
@@ -12012,7 +12012,6 @@ bool IE_Imp_RTF::HandlePCData(UT_UTF8String & str)
 	bool bStop = false;
 	UT_ByteBuf buf;
 	UT_sint32 iUniCharsLeftToSkip = 0;
-	UT_UCS2Char ch =0;
 	
 	do {
 		tokenType = NextToken (keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN, false);
@@ -12033,6 +12032,7 @@ bool IE_Imp_RTF::HandlePCData(UT_UTF8String & str)
 			}
 			case RTF_KW_u:
 			{
+				UT_UCS2Char ch = 0;
 				/* RTF is limited to +/-32K ints so we need to use negative
 				 * numbers for large unicode values. So, check for Unicode chars
 				 * wrapped to negative values.
