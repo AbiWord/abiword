@@ -400,8 +400,18 @@ void AP_UnixFrameImpl::_setScrollRange(apufi_ScrollType scrollType, int iValue, 
 	XAP_Frame::tZoomType tZoom = getFrame()->getZoomType();
 	if(pScrollAdjustment) //this isn't guaranteed in AbiCommand
 	{
-        gtk_adjustment_configure(pScrollAdjustment, iValue, 0.0, fUpperLimit,
+#if GTK_CHECK_VERSION(2,14,0)
+		gtk_adjustment_configure(pScrollAdjustment, iValue, 0.0, fUpperLimit,
                                  pGr->tluD(20.0), fSize, fSize);
+#else
+		pScrollAdjustment->value = iValue;
+		pScrollAdjustment->lower = 0.0;
+		pScrollAdjustment->upper = fUpperLimit;
+		pScrollAdjustment->step_increment = pGr->tluD(20.0);
+		pScrollAdjustment->page_increment = fSize;
+		pScrollAdjustment->page_size = fSize;
+		g_signal_emit_by_name(G_OBJECT(pScrollAdjustment), "changed");
+#endif
 	}
 
 	// hide the horizontal scrollbar if the scroll range is such that the window can contain it all
