@@ -2577,11 +2577,13 @@ const std::vector<std::string> & GR_CairoGraphics::getAllFontNames(void)
 					
 					Vec.push_back(family);
 				}
-			g_object_unref (G_OBJECT (context));
-			context = NULL;
 			g_free(font_families);
 		}
-
+	if(context)
+		{
+			g_object_unref (G_OBJECT (context));
+			context = NULL;
+		}
     std::sort(Vec.begin(), Vec.end());
 
 	return Vec;
