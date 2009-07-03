@@ -177,6 +177,8 @@ id AP_CocoaDialog_Options::_lookupWidget( tControl cid )
 
         case id_CHECK_AUTO_LOAD_PLUGINS:
             return ctrl->m_checkbuttonAutoLoadPlugins;
+		case id_CHECK_ENABLE_OVERWRITE:
+			return ctrl->m_checkbuttonEnableOverwrite;
 
 //        case id_PUSH_CHOOSE_COLOR_FOR_TRANSPARENT:
 //            return ctrl->m_pushbuttonNewTransparentColor;
@@ -279,6 +281,8 @@ DEFINE_GET_SET_BOOL ( OtherDirectionRtl )
 
 DEFINE_GET_SET_BOOL ( AutoSaveFile )
 
+DEFINE_GET_SET_BOOL ( EnableOverwrite )
+
 // dummy implementations. XP pref backend isn't very smart.
 #define DEFINE_GET_SET_BOOL_DUMMY(Bool)     \
     bool AP_CocoaDialog_Options::_gather##Bool(void) {   \
@@ -287,7 +291,6 @@ DEFINE_GET_SET_BOOL ( AutoSaveFile )
     void AP_CocoaDialog_Options::_set##Bool(bool b) {   \
         m_bool##Bool = b;     \
     }
-
 
 DEFINE_GET_SET_BOOL_DUMMY ( EnableSmoothScrolling )
 DEFINE_GET_SET_BOOL_DUMMY ( PrefsAutoSave )
@@ -445,6 +448,7 @@ void AP_CocoaDialog_Options::_populateWindowData(void)
 	LocalizeControl(oButton_ChooseScreenColor,		pSS, AP_STRING_ID_DLG_Options_Label_ChooseForTransparent);
 
 	LocalizeControl(oLabel_Units,					pSS, AP_STRING_ID_DLG_Options_Label_ViewUnits);
+	LocalizeControl(m_checkbuttonEnableOverwrite,   pSS, AP_STRING_ID_DLG_Options_Label_EnableOverwrite);
 	LocalizeControl(m_checkbuttonOtherDirectionRtl,	pSS, AP_STRING_ID_DLG_Options_Label_DirectionRtl);
 	LocalizeControl(m_checkbuttonSpellCheckAsType,		pSS, AP_STRING_ID_DLG_Options_Label_SpellCheckAsType);
 	LocalizeControl(m_checkbuttonGrammarCheck,			pSS, AP_STRING_ID_DLG_Options_Label_GrammarCheck);

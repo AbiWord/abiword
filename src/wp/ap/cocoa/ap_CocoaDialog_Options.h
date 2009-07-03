@@ -83,6 +83,7 @@ class AP_CocoaDialog_Options;
 	IBOutlet NSButton *         m_checkbuttonSmartQuotes;
 	IBOutlet NSButton *         m_checkbuttonCustomSmartQuotes;
 	IBOutlet NSButton *         m_checkbuttonAutoSaveFile;
+	IBOutlet NSButton *         m_checkbuttonEnableOverwrite;
 	
 	IBOutlet NSTabView *		oTabView;
 }
@@ -209,6 +210,7 @@ protected:
 	SET_GATHER			(ViewHiddenText,		bool);
 	SET_GATHER			(ViewUnprintable,		bool);
 	SET_GATHER			(EnableSmoothScrolling,		bool);
+	SET_GATHER          (EnableOverwrite,       bool);
 
 #undef SET_GATHER
 

@@ -17,6 +17,7 @@
                 "m_checkbuttonAutoLoadPlugins" = NSButton; 
                 "m_checkbuttonAutoSaveFile" = NSButton; 
                 "m_checkbuttonCustomSmartQuotes" = NSButton; 
+                "m_checkbuttonEnableOverwrite" = NSButton; 
                 "m_checkbuttonGrammarCheck" = NSButton; 
                 "m_checkbuttonOtherDirectionRtl" = NSButton; 
                 "m_checkbuttonSmartQuotes" = NSButton; 
