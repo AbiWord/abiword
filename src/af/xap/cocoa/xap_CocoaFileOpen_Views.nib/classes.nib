@@ -7,7 +7,7 @@
             SUPERCLASS = NSObject; 
         }, 
         {
-            ACTIONS = {selectFileType = id; }; 
+            ACTIONS = {panelSelectionDidChange = id; selectFileType = id; }; 
             CLASS = "XAP_OpenSavePanel_AccessoryController"; 
             LANGUAGE = ObjC; 
             OUTLETS = {

@@ -31,9 +31,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_misc.h"
-#include "ut_png.h"
 #include "ut_string.h"
-#include "ut_svg.h"
 
 #include "xap_CocoaDlg_FileOpenSaveAs.h"
 #include "xap_CocoaApp.h"
@@ -46,73 +44,12 @@
 #include "gr_CocoaGraphics.h"
 #include "gr_CocoaImage.h"
 
-#include "fg_Graphic.h"
 #include "fg_GraphicRaster.h"
 
 #include "ie_imp.h"
 #include "ie_impGraphic.h"
 #include "ie_types.h"
 
-@implementation XAP_CocoaOpenPanel
-
-- (id)init
-{
-	if (![super init]) {
-		return nil;
-	}
-	m_bPanelCanOrderOut = YES;
-	return self;
-}
-
-- (BOOL)panelCanOrderOut
-{
-	return m_bPanelCanOrderOut;
-}
-
-- (void)setPanelCanOrderOut:(BOOL)panelCanOrderOut
-{
-	m_bPanelCanOrderOut = panelCanOrderOut;
-}
-
-- (void)orderOut:(id)sender
-{
-	if ([self panelCanOrderOut])
-		{
-			[super orderOut:sender];
-		}
-}
-
-@end
-
-@implementation XAP_CocoaSavePanel
-
-- (id)init
-{
-	if (![super init]) {
-		return nil;
-	}
-	m_bPanelCanOrderOut = YES;
-	return self;
-}
-
-- (BOOL)panelCanOrderOut
-{
-	return m_bPanelCanOrderOut;
-}
-
-- (void)setPanelCanOrderOut:(BOOL)panelCanOrderOut
-{
-	m_bPanelCanOrderOut = panelCanOrderOut;
-}
-
-- (void)orderOut:(id)sender
-{
-	if ([self panelCanOrderOut]) {
-		[super orderOut:sender];
-	}
-}
-
-@end
 
 #define PREVIEW_WIDTH  100
 #define PREVIEW_HEIGHT 100
@@ -137,12 +74,12 @@
 - (void)setPreviewImage:(NSImage *)image
 {
 	if (m_bInsertGraphic)
-		{
-			if (image)
-				[oFTIImageView setImage:image];
-			else
-				[oFTIImageView setImage:[NSImage imageNamed:@"NSApplicationIcon"]];
-		}
+	{
+		if (image)
+			[oFTIImageView setImage:image];
+		else
+			[oFTIImageView setImage:[NSImage imageNamed:@"NSApplicationIcon"]];
+	}
 }
 
 - (NSSize)previewSize
@@ -218,11 +155,9 @@ XAP_Dialog * XAP_CocoaDialog_FileOpenSaveAs::static_constructor(XAP_DialogFactor
 
 XAP_CocoaDialog_FileOpenSaveAs::XAP_CocoaDialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid) :
 	XAP_Dialog_FileOpenSaveAs(pDlgFactory,dlgid),
-	m_accessoryViewsController(0),
-	m_OpenPanel(0),
-	m_SavePanel(0),
-	m_panel(0),
-	m_FileTypes(0),
+	m_accessoryViewsController(nil),
+	m_panel(nil),
+	m_fileTypes(nil),
 	m_szFileTypeDescription(0),
 	m_szFileTypeCount(0)
 {
@@ -232,25 +167,13 @@ XAP_CocoaDialog_FileOpenSaveAs::XAP_CocoaDialog_FileOpenSaveAs(XAP_DialogFactory
 XAP_CocoaDialog_FileOpenSaveAs::~XAP_CocoaDialog_FileOpenSaveAs(void)
 {
 	if (m_accessoryViewsController)
-		{
-			[m_accessoryViewsController release];
-			m_accessoryViewsController = 0;
-		}
-	if (m_OpenPanel)
-		{
-			[m_OpenPanel release];
-			m_OpenPanel = 0;
-		}
-	if (m_SavePanel)
-		{
-			[m_SavePanel release];
-			m_SavePanel = 0;
-		}
-	if (m_FileTypes)
-		{
-			[m_FileTypes release];
-			m_FileTypes = 0;
-		}
+	{
+		[m_accessoryViewsController release];
+	}
+	if (m_fileTypes)
+	{
+		[m_fileTypes release];
+	}
 }
 
 /*****************************************************************/
@@ -271,24 +194,6 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * /*pFrame*/)
 	if (!m_accessoryViewsController)
 		return;
 
-	if (!m_OpenPanel)
-		m_OpenPanel = [[XAP_CocoaOpenPanel alloc] init];
-	UT_ASSERT(m_OpenPanel);
-	if (!m_OpenPanel)
-		return;
-
-	if (!m_SavePanel)
-		m_SavePanel = [[XAP_CocoaSavePanel alloc] init];
-	UT_ASSERT(m_SavePanel);
-	if (!m_SavePanel)
-		return;
-
-	if (!m_FileTypes)
-		m_FileTypes = [[NSMutableArray alloc] initWithCapacity:4];
-	UT_ASSERT(m_FileTypes);
-	if (!m_FileTypes)
-		return;
-
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	// do we want to let this function handle stating the Cocoa
@@ -299,117 +204,107 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * /*pFrame*/)
 	bool bOpenPanel = false;
 	bool bSavePanel = false;
 
-	UT_UTF8String szTitle;
-	UT_UTF8String szFileTypeLabel;
+	std::string szTitle;
+	std::string szFileTypeLabel;
 
 	switch (m_id)
 	{
 	case XAP_DIALOG_ID_INSERTMATHML:
-		{
-			bOpenPanel = true;
+		bOpenPanel = true;
 
-			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_InsertMath, szTitle);
-			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileInsertMath, szFileTypeLabel);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_InsertMath, szTitle);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileInsertMath, szFileTypeLabel);
 
-			bCheckWritePermission = false;
-			break;
-		}
+		bCheckWritePermission = false;
+		break;
 	case XAP_DIALOG_ID_INSERT_PICTURE:
-		{
-			bOpenPanel = true;
+		bOpenPanel = true;
 
-			pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_Title, szTitle);
-			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel, szFileTypeLabel);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_Title, szTitle);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel, szFileTypeLabel);
 
-			bCheckWritePermission = false;
-			break;
-		}
+		bCheckWritePermission = false;
+		break;
 	case XAP_DIALOG_ID_FILE_OPEN:
-		{
-			bOpenPanel = true;
+		bOpenPanel = true;
 
-			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_OpenTitle, szTitle);
-			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel, szFileTypeLabel);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_OpenTitle, szTitle);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel, szFileTypeLabel);
 
-			bCheckWritePermission = false;
-			break;
-		}
+		bCheckWritePermission = false;
+		break;
 	case XAP_DIALOG_ID_FILE_SAVEAS:
-		{
-			bSavePanel = true;
+	case XAP_DIALOG_ID_FILE_SAVE_IMAGE:
+		bSavePanel = true;
 
-			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_SaveAsTitle, szTitle);
-			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel, szFileTypeLabel);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_SaveAsTitle, szTitle);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel, szFileTypeLabel);
 
-			bCheckWritePermission = true;
-			break;
-		}
+		bCheckWritePermission = true;
+		break;
 	case XAP_DIALOG_ID_FILE_IMPORT:
-		{
-			bOpenPanel = true;
+		bOpenPanel = true;
 
-			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ImportTitle, szTitle);
-			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel, szFileTypeLabel);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ImportTitle, szTitle);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel, szFileTypeLabel);
 
-			bCheckWritePermission = false;
-			break;
-		}
+		bCheckWritePermission = false;
+		break;
 	case XAP_DIALOG_ID_FILE_EXPORT:
-		{
-			bSavePanel = true;
+		bSavePanel = true;
 
-			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ExportTitle, szTitle);
-			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel, szFileTypeLabel);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ExportTitle, szTitle);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel, szFileTypeLabel);
 
-			bCheckWritePermission = true;
-			break;
-		}
+		bCheckWritePermission = true;
+		break;
 	case XAP_DIALOG_ID_INSERT_FILE:
-		{
-			bOpenPanel = true;
+		bOpenPanel = true;
 
-			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_InsertTitle, szTitle);
-			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel, szFileTypeLabel);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_InsertTitle, szTitle);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel, szFileTypeLabel);
 
-			bCheckWritePermission = false;
-			break;
-		}
+		bCheckWritePermission = false;
+		break;
 	case XAP_DIALOG_ID_PRINTTOFILE:
-		{
-			bSavePanel = true;
+		bSavePanel = true;
 
-			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle, szTitle);
-			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FilePrintTypeLabel, szFileTypeLabel);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle, szTitle);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FilePrintTypeLabel, szFileTypeLabel);
 
-			bCheckWritePermission = true;
-			break;
-		}
+		bCheckWritePermission = true;
+		break;
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 
-	m_panel = 0;
+	if (!m_fileTypes)
+		m_fileTypes = [[NSMutableArray alloc] initWithCapacity:4];
+	UT_ASSERT(m_fileTypes);
+	if (!m_fileTypes)
+		return;
+
+	m_panel = nil;
 
 	if (bOpenPanel) {
-		m_panel = m_OpenPanel;
+		NSOpenPanel *openPanel = [[NSOpenPanel openPanel] retain];
+		m_panel = openPanel;
 
-		// cast it id to avoid warning.
-		if ([m_panel respondsToSelector:@selector(setAllowsMultipleSelection:)])
-			[(id)m_panel setAllowsMultipleSelection:NO];
-		if ([m_panel respondsToSelector:@selector(setCanChooseDirectories:)])
-			[(id)m_panel setCanChooseDirectories:NO];
-		if ([m_panel respondsToSelector:@selector(setCanChooseFiles:)])
-			[(id)m_panel setCanChooseFiles:YES];
+		[openPanel setAllowsMultipleSelection:NO];
+		[openPanel setCanChooseDirectories:NO];
+		[openPanel setCanChooseFiles:YES];
+		// this call is 10.3 only.
 		if ([m_panel respondsToSelector:@selector(setCanCreateDirectories:)])
-			[(id)m_panel setCanCreateDirectories:NO];
+			[openPanel setCanCreateDirectories:NO];
 
-		[m_panel setCanSelectHiddenExtension:NO];
-		[m_panel setExtensionHidden:NO];
+		[openPanel setCanSelectHiddenExtension:NO];
+		[openPanel setExtensionHidden:NO];
 	}
 	else if (bSavePanel) {
-		m_panel = m_SavePanel;
-
+		m_panel = [[NSSavePanel savePanel] retain];
+		
+		// this call is 10.3 only.
 		if ([m_panel respondsToSelector:@selector(setCanCreateDirectories:)])
 			[m_panel setCanCreateDirectories:YES];
 
@@ -428,9 +323,9 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * /*pFrame*/)
 		[m_accessoryViewsController setInsertGraphic:NO];
 	}
 
-	[m_accessoryViewsController setFileTypeLabel:[NSString stringWithUTF8String:(szFileTypeLabel.utf8_str())]];
+	[m_accessoryViewsController setFileTypeLabel:[NSString stringWithUTF8String:(szFileTypeLabel.c_str())]];
 
-	[m_panel setTitle:[NSString stringWithUTF8String:(szTitle.utf8_str())]];
+	[m_panel setTitle:[NSString stringWithUTF8String:(szTitle.c_str())]];
 	[m_panel setDelegate:m_accessoryViewsController];
 
 	/* File-types PopUp:
@@ -438,16 +333,16 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * /*pFrame*/)
 
 	[m_accessoryViewsController removeItemsOfFileTypesMenu];
 
-	UT_UTF8String label;
+	std::string label;
 	if (pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileTypeAutoDetect, label)) {
-		NSString * title = [NSString stringWithUTF8String:(label.utf8_str())];
+		NSString * title = [NSString stringWithUTF8String:(label.c_str())];
 		int type = (int) XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO;
 		[m_accessoryViewsController addItemWithTitle:title fileType:type];
 	}
 
-	UT_ASSERT(g_strv_length((gchar **) m_szSuffixes) == g_strv_length((gchar **) m_szDescriptions));
-
 	m_szFileTypeCount = g_strv_length((gchar **) m_szDescriptions);
+
+	UT_ASSERT(g_strv_length((gchar **) m_szSuffixes) == m_szFileTypeCount);
 
 	UT_sint32 defaultFileType = m_nDefaultFileType;
 
@@ -526,13 +421,13 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * /*pFrame*/)
 			{
 				NSString * extension = [szPersistFile pathExtension];
 
-				const char * szSaveTypeSuffix = UT_pathSuffix(m_szSuffixes[m_nDefaultFileType]);
+				std::string szSaveTypeSuffix = UT_pathSuffix(m_szSuffixes[m_nDefaultFileType]);
 
-				if ([extension length] && szSaveTypeSuffix)
+				if ([extension length] && !szSaveTypeSuffix.empty())
 				{
-					if (*szSaveTypeSuffix == '.')
+					if (*(szSaveTypeSuffix.c_str()) == '.')
 					{
-						NSString * new_suffix = [NSString stringWithUTF8String:(szSaveTypeSuffix + 1)];
+						NSString * new_suffix = [NSString stringWithUTF8String:(szSaveTypeSuffix.c_str() + 1)];
 
 						if (![new_suffix isEqualToString:extension])
 						{
@@ -567,32 +462,35 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * /*pFrame*/)
 
 		if (m_bOpenPanel)
 		{
-			[m_OpenPanel setPanelCanOrderOut:YES];
-
-			if ([m_FileTypes count])
+//			[m_panel setPanelCanOrderOut:YES];
+			NSOpenPanel * openPanel = (NSOpenPanel*)m_panel;
+			if ([m_fileTypes count])
 			{
-				NSString * type = (NSString *) [m_FileTypes objectAtIndex:0];
+				NSString * type = (NSString *) [m_fileTypes objectAtIndex:0];
 				if (szPersistFile)
 				{
 					NSString * extension = [szPersistFile pathExtension];
-					if (![extension isEqualToString:type])
+					if (![extension isEqualToString:type]) {
 						szPersistFile = nil;
+					}
 				}
 			}
 
-			if ([m_FileTypes count])
-				result = [m_OpenPanel runModalForDirectory:szPersistDirectory file:szPersistFile types:m_FileTypes];
-			else
-				result = [m_OpenPanel runModalForDirectory:szPersistDirectory file:szPersistFile types:nil];
+			if ([m_fileTypes count]) {
+				result = [openPanel runModalForDirectory:szPersistDirectory file:szPersistFile types:m_fileTypes];
+			}
+			else {
+				result = [openPanel runModalForDirectory:szPersistDirectory file:szPersistFile types:nil];
+			}
 
 			result = (result == NSOKButton) ? NSFileHandlingPanelOKButton : NSFileHandlingPanelCancelButton;
 		}
 		else
 		{
-			if ([m_FileTypes count])
+			if ([m_fileTypes count])
 			{
-				NSString * type = (NSString *) [m_FileTypes objectAtIndex:0];
-				[m_SavePanel setRequiredFileType:type];
+				NSString * type = (NSString *) [m_fileTypes objectAtIndex:0];
+				[m_panel setRequiredFileType:type];
 
 				if (szPersistFile)
 				{
@@ -613,11 +511,11 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * /*pFrame*/)
 			}
 			else
 			{
-				[m_SavePanel setRequiredFileType:nil];
+				[m_panel setRequiredFileType:nil];
 			}
 
-			[m_SavePanel setPanelCanOrderOut:YES];
-			result = [m_SavePanel runModalForDirectory:szPersistDirectory file:szPersistFile];
+//			[m_panel setPanelCanOrderOut:YES];
+			result = [m_panel runModalForDirectory:szPersistDirectory file:szPersistFile];
 		}
 
 		szPersistDirectory = [m_panel directory];
@@ -645,14 +543,14 @@ void XAP_CocoaDialog_FileOpenSaveAs::_setSelectedFileType (UT_sint32 type)
 	m_nFileType = type;
 	m_szFileTypeDescription = 0;
 
-	[m_FileTypes removeAllObjects];
+	[m_fileTypes removeAllObjects];
 
 	if (m_nFileType != XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO) {
 		for (UT_uint32 i = 0; i < m_szFileTypeCount; i++) {
 			if (m_nFileType == m_nTypeList[i]) {
 				m_szFileTypeDescription = m_szDescriptions[i];
 
-				UT_UTF8String suffix;
+				std::string suffix;
 				const char * suffix_list = m_szSuffixes[i];
 				while (const char * ptr1 = strstr(suffix_list, "*.")) {
 					ptr1 += 2;
@@ -663,7 +561,7 @@ void XAP_CocoaDialog_FileOpenSaveAs::_setSelectedFileType (UT_sint32 type)
 							bSingleExtension = false;
 					suffix.assign(ptr1, ptr2 - ptr1);
 					if (bSingleExtension)
-						[m_FileTypes addObject:[NSString stringWithUTF8String:(suffix.utf8_str())]];
+						[m_fileTypes addObject:[NSString stringWithUTF8String:(suffix.c_str())]];
 					suffix_list = ptr2;
 				}
 			}
@@ -671,10 +569,7 @@ void XAP_CocoaDialog_FileOpenSaveAs::_setSelectedFileType (UT_sint32 type)
 	}
 
 	if (m_bPanelActive) {
-		if (m_bOpenPanel)
-			[m_OpenPanel setPanelCanOrderOut:NO];
-		else
-			[m_SavePanel setPanelCanOrderOut:NO];
+//		[m_panel setPanelCanOrderOut:NO];
 
 		m_bIgnoreCancel = true;
 		[NSApp stopModal];
@@ -687,7 +582,7 @@ void XAP_CocoaDialog_FileOpenSaveAs::_updatePreview ()
 		return;
 
 	NSImage * image = nil;
-	NSArray * array = [m_OpenPanel filenames];
+	NSArray * array = [(NSOpenPanel*)m_panel filenames];
 
 	if ([array count]) {
 		NSString * filename = (NSString *) [array objectAtIndex:0];
@@ -708,7 +603,7 @@ void XAP_CocoaDialog_FileOpenSaveAs::_updatePreview ()
 				FG_Graphic * pGraphic = 0;
 
 				errorCode = pIEG->importGraphic(pBB, &pGraphic);
-				pBB = 0;
+				pBB = NULL;
 
 				if ((errorCode == UT_OK) && pGraphic) {
 					const UT_ByteBuf * png = pGraphic->getBuffer();

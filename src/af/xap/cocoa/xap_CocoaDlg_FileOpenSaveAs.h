@@ -2,7 +2,7 @@
 
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2003 Hubert Figuiere
+ * Copyright (C) 2001-2003, 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,30 +26,10 @@
 #import <Cocoa/Cocoa.h>
 
 #include "xap_Dlg_FileOpenSaveAs.h"
-#include "xap_Strings.h"
 
 class XAP_CocoaFrame;
 class XAP_CocoaDialog_FileOpenSaveAs;
 
-@interface XAP_CocoaOpenPanel : NSOpenPanel
-{
-	BOOL			m_bPanelCanOrderOut;
-}
-- (id)init;
-- (BOOL)panelCanOrderOut;
-- (void)setPanelCanOrderOut:(BOOL)panelCanOrderOut;
-- (void)orderOut:(id)sender;
-@end
-
-@interface XAP_CocoaSavePanel : NSSavePanel
-{
-	BOOL	m_bPanelCanOrderOut;
-}
-- (id)init;
-- (BOOL)panelCanOrderOut;
-- (void)setPanelCanOrderOut:(BOOL)panelCanOrderOut;
-- (void)orderOut:(id)sender;
-@end
 
 @interface XAP_OpenSavePanel_AccessoryController : NSObject
 {
@@ -105,11 +85,8 @@ private:
 	XAP_OpenSavePanel_AccessoryController *	m_accessoryViewsController;
 	XAP_CocoaFrame *						m_pCocoaFrame;
 
-	XAP_CocoaOpenPanel *					m_OpenPanel;
-	XAP_CocoaSavePanel *					m_SavePanel;
-
 	NSSavePanel	*							m_panel;
-	NSMutableArray *						m_FileTypes;
+	NSMutableArray *						m_fileTypes;
 
 	const char *							m_szFileTypeDescription;
 	UT_uint32								m_szFileTypeCount;
