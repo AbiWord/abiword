@@ -535,7 +535,7 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 			UT_DEBUGMSG(("Ignore image in embed-tag \n"));
 			goto cleanup;
 		}
-		X_VerifyParseState(_PS_Block);
+		//		X_VerifyParseState(_PS_Block);
 #ifdef ENABLE_RESOURCE_MANAGER
 		X_CheckError(_handleImage (atts));
 #else
@@ -1076,7 +1076,7 @@ void IE_Imp_AbiWord_1::endElement(const gchar *name)
 
 	case TT_IMAGE:						// not a container, so we don't pop stack
 		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
-		X_VerifyParseState(_PS_Block);
+		//		X_VerifyParseState(_PS_Block);
 		m_iImageId++;
 		getDoc()->setMinUID(UT_UniqueId::Image, m_iImageId);
 		return;

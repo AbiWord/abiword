@@ -1719,6 +1719,34 @@ bool PD_Document::repairDoc(void)
 			bRepaired = true;
 		}
 	}
+	//
+	// Now repair text and objects which aren't enclosed in a paragraph
+	//
+	pf = m_pPieceTable->getFragments().getFirst();
+	bool bGotBlock = false;
+	while(pf)
+	{
+		if(pf->getType() == pf_Frag::PFT_Strux)
+		{
+			pfs = static_cast<pf_Frag_Strux *>(pf);
+			if(pfs->getStruxType() == PTX_Block)
+			{
+				bGotBlock = true;
+			}
+			else
+			{
+				bGotBlock = false;
+			}
+		}
+		else if(!bGotBlock && (pf->getType() !=  pf_Frag::PFT_EndOfDoc))
+		{
+			// BUG! Content not in a block. Insert one now
+			insertStruxBeforeFrag(pf, PTX_Block,NULL);
+			bGotBlock = true;
+			bRepaired = true;
+		}
+		pf = pf->getNext();
+	}
 	return !bRepaired;
 }
 
