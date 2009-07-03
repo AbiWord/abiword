@@ -216,7 +216,6 @@ EXTRA_DIST = \
 	$(conditional_src) \
 	$(conditional_ui) \
 	$(ui_DATA) \
-	abiword_48.xpm \
 	hildon/qgn_list_abiword.png \
 	hildon/com.abisource.abiword.service.in \
 	hildon/abiword.desktop.in \

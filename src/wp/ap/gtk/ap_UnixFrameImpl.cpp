@@ -33,11 +33,6 @@
 #include "ut_debugmsg.h"
 #include "ev_UnixMenuBar.h"
 
-#ifdef ABISOURCE_LICENSED_TRADEMARKS
-#include "abiword_48_tm.xpm"
-#else
-#include "abiword_48.xpm"
-#endif
 
 AP_UnixFrameImpl::AP_UnixFrameImpl(AP_UnixFrame *pUnixFrame) :
 	XAP_UnixFrameImpl(static_cast<XAP_Frame *>(pUnixFrame)),
@@ -342,12 +337,22 @@ void AP_UnixFrameImpl::_hideMenuScroll(bool bHideMenuScroll)
 }
 void AP_UnixFrameImpl::_setWindowIcon()
 {
+    GError * error = NULL;
 	// attach program icon to window
 	GtkWidget * window = getTopLevelWindow();
 
-	GdkPixbuf * icon = gdk_pixbuf_new_from_xpm_data (const_cast<const char **>(abiword_48_xpm));
-	gtk_window_set_icon (GTK_WINDOW (window), icon);
-	g_object_unref (G_OBJECT(icon));
+    GtkIconTheme * theme = gtk_icon_theme_get_default();
+    GdkPixbuf * icon = gtk_icon_theme_load_icon(theme, "abiword_48", 48, GTK_ICON_LOOKUP_USE_BUILTIN, &error);
+    if(icon) {
+        gtk_window_set_icon (GTK_WINDOW (window), icon);
+        g_object_unref (G_OBJECT(icon));
+    }
+    else {
+        g_error("Unable to load AbiWord icon: %s", error ? error->message : "(null)");
+        if(error) {
+            g_error_free(error);
+        }
+    }
 }
 
 void AP_UnixFrameImpl::_createWindow()
@@ -390,18 +395,13 @@ void AP_UnixFrameImpl::_setScrollRange(apufi_ScrollType scrollType, int iValue, 
 {
 	GtkAdjustment *pScrollAdjustment = (scrollType == apufi_scrollX) ? m_pHadj : m_pVadj;
 	GtkWidget *wScrollWidget = (scrollType == apufi_scrollX) ? m_hScroll : m_vScroll;
-	UT_DEBUGMSG(("Scroll Adjustment set to %d \n",iValue));
+	UT_DEBUGMSG(("Scroll Adjustment set to %d upper %f size %f\n",iValue, fUpperLimit, fSize));
 	GR_Graphics * pGr = getFrame()->getCurrentView()->getGraphics ();
 	XAP_Frame::tZoomType tZoom = getFrame()->getZoomType();
 	if(pScrollAdjustment) //this isn't guaranteed in AbiCommand
 	{
-		pScrollAdjustment->value = iValue;
-		pScrollAdjustment->lower = 0.0;
-		pScrollAdjustment->upper = fUpperLimit;
-		pScrollAdjustment->step_increment = pGr->tluD(20.0);
-		pScrollAdjustment->page_increment = fSize;
-		pScrollAdjustment->page_size = fSize;
-		g_signal_emit_by_name(G_OBJECT(pScrollAdjustment), "changed");
+        gtk_adjustment_configure(pScrollAdjustment, iValue, 0.0, fUpperLimit,
+                                 pGr->tluD(20.0), fSize, fSize);
 	}
 
 	// hide the horizontal scrollbar if the scroll range is such that the window can contain it all
