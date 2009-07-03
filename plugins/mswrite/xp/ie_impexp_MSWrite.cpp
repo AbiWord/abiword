@@ -27,6 +27,12 @@
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
+#include "ap_Strings.h"
+
+//
+//
+
+AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-mswrite");
 
 /***************************************************************************/
 /* wri_struct.c */
@@ -46,7 +52,7 @@ int read_wri_struct_mem (struct wri_struct *cfg, unsigned char *blob) {
 	case CT_BLOB:
 	    cfg[i].data = static_cast<char*>(malloc (cfg[i].size));
 	    if (!cfg[i].data) {
-		fprintf (stderr, "Out of memory!\n");
+		fprintf (stderr, strings->getValue(_("Out of memory!\n")));
 		return 1;
 	    }
 	    memcpy (cfg[i].data, blob, cfg[i].size);
@@ -70,11 +76,11 @@ int read_wri_struct (struct wri_struct *cfg, GsfInput *f) {
     /* got the size, read the blob */
     blob = static_cast<unsigned char*>(malloc (size));
     if (!blob) {
-	fprintf (stderr, "Out of memory!\n");
+	fprintf (stderr, strings->getValue(_("Out of memory!\n")));
 	return 1;
     }
     if (!gsf_input_read(f, size, blob)) {
-	fprintf (stderr, "File not big enough!\n");
+	fprintf (stderr, strings->getValue(_("File not big enough!\n")));
 	return 1;
     }
     
@@ -93,10 +99,10 @@ void dump_wri_struct (struct wri_struct *cfg) {
 	    printf ("%s:\t%x\n", cfg[i].name, cfg[i].value);
 	    break;
 	case CT_IGNORE:
-	    printf ("%s:\tignored\n", cfg[i].name);
+	    printf (strings->getValue(_("%s:\tignored\n")), cfg[i].name);
 	    break;
 	case CT_BLOB:
-	    printf ("%s:\tblob (%d)\n", cfg[i].name, cfg[i].size);
+	    printf (strings->getValue(_("%s:\tblob (%d)\n")), cfg[i].name, cfg[i].size);
 	    break;
 	}
 	i++;
@@ -118,7 +124,7 @@ int wri_struct_value (const struct wri_struct *cfg, const char *name) {
 	i++;
     }
     /* this shouldn't happen! */
-    printf ("%s not found, internal error.\n", name);
+    printf (strings->getValue(_("%s not found, internal error.\n")), name);
     exit (1);
     return 0;
 }

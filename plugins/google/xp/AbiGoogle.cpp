@@ -30,6 +30,7 @@
 #include "ev_EditMethod.h"
 #include "xap_Menu_Layouts.h"
 #include "ut_string_class.h"
+#include "ap_Strings.cpp"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_google_register
@@ -44,6 +45,8 @@ ABI_PLUGIN_DECLARE("Google")
 
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
+
+AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-google");
 
 //
 // AbiGoogle_invoke
@@ -68,7 +71,7 @@ AbiGoogle_invoke(AV_View* /*v*/, EV_EditMethodCallData * /*d*/)
   }
 
   // Now we will figure out what word to look up
-  UT_UTF8String url ("http://www.google.com/search?hl=en&ie=UTF-8&oe=UTF-8&q=");
+  UT_UTF8String url ("http://www.google.com/search?ie=UTF-8&oe=UTF-8&q=");
   
   // url escaping should be moved somewhere more generic
   UT_UCS4Char *ucs4ST;
@@ -94,8 +97,8 @@ AbiGoogle_invoke(AV_View* /*v*/, EV_EditMethodCallData * /*d*/)
   return true;
 }
 
-static const char* Google_MenuLabel = "&Google Search";
-static const char* Google_MenuTooltip = "Search the web with Google";
+static const char* Google_MenuLabel = strings->getValue(_("&Google Search"));
+static const char* Google_MenuTooltip = strings->getValue(_("Search the web with Google"));
 
 static void
 Google_removeFromMenus()
@@ -171,7 +174,7 @@ Google_addToMenus()
   //
   // Also put it under word Wount in the main menu,
   //
-  pFact->addNewMenuAfter("Main",NULL,"&Word Count",EV_MLF_Normal,newID);
+  pFact->addNewMenuAfter("Main",NULL, strings->getValue(_("&Word Count")),EV_MLF_Normal,newID);
   
   // Create the Action that will be called.
   EV_Menu_Action* myAction = new EV_Menu_Action(
@@ -209,11 +212,11 @@ Google_addToMenus()
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-    mi->name = "Google plugin";
+    mi->name = strings->getValue(_("Google plugin"));
     mi->desc = "Google search for AbiWord";
     mi->version = ABI_VERSION_STRING;
     mi->author = "Dom Lachowicz";
-    mi->usage = "No Usage";
+    mi->usage = strings->getValue(_("No Usage"));
     
     Google_addToMenus();
     
@@ -232,6 +235,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 
     Google_removeFromMenus() ;
 
+    delete strings;
     return 1;
 }
 

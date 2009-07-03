@@ -30,6 +30,7 @@
 #include "ie_impexp_Psion.h"
 #include "xap_Module.h"
 #include "ut_debugmsg.h"
+#include "ap_Strings.h"
 
 #include <psiconv/data.h>
 #include <psiconv/error.h>
@@ -49,6 +50,7 @@ static IE_Imp_Psion_TextEd_Sniffer * m_imptexted_sniffer = 0;
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
+  AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-psion");
 
 	if (!m_expword_sniffer && !m_exptexted_sniffer)
 	{
@@ -62,11 +64,11 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 		m_imptexted_sniffer = new IE_Imp_Psion_TextEd_Sniffer (PLUGIN_TEXT);
 	}
 
-	mi->name = "Psion Import/Export";
-	mi->desc = "Read and Write Psion Documents";
+	mi->name = strings->getValue(_("Psion Import/Export"));
+	mi->desc = strings->getValue(_("Read and Write Psion Documents"));
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Abi the Ant";
-	mi->usage = "No Usage";
+	mi->usage = strings->getValue(_("No Usage"));
 
 	IE_Exp::registerExporter (m_expword_sniffer);
 	IE_Exp::registerExporter (m_exptexted_sniffer);
@@ -74,6 +76,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 	IE_Imp::registerImporter (m_impword_sniffer);
 	IE_Imp::registerImporter (m_imptexted_sniffer);
 
+  delete strings;
 	return 1;
 }
 

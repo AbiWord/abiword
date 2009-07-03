@@ -1,5 +1,5 @@
 
-SUBDIRS = xp
+SUBDIRS = xp po
 
 if BABELFISH_BUILTIN
 noinst_LTLIBRARIES = babelfish.la

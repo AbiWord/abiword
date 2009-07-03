@@ -1,5 +1,5 @@
 
-SUBDIRS = xp
+SUBDIRS = xp po
 
 if PRESENTATION_BUILTIN
 noinst_LTLIBRARIES = presentation.la

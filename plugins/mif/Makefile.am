@@ -1,5 +1,5 @@
 
-SUBDIRS = xp
+SUBDIRS = xp po
 
 if MIF_BUILTIN
 noinst_LTLIBRARIES = mif.la

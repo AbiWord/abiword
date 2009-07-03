@@ -30,6 +30,7 @@
 #include "ev_EditMethod.h"
 #include "xap_Menu_Layouts.h"
 #include "ut_string_class.h"
+#include "ap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_urldict_register
@@ -44,6 +45,8 @@ ABI_PLUGIN_DECLARE ("URLDict")
 
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
+
+AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-urldict");
 
 //
 // _ucsToAscii
@@ -118,8 +121,8 @@ URLDict_invoke(AV_View* /*v*/, EV_EditMethodCallData * /*d*/)
   return true;
 }
 
-static const char* URLDict_MenuLabel = "&URL Dictionary";
-static const char* URLDict_MenuTooltip = "Opens the on-line dictionary";
+static const char* URLDict_MenuLabel = strings->getValue(_("&URL Dictionary"));
+static const char* URLDict_MenuTooltip = strings->getValue(_("Opens the on-line dictionary"));
 
 static void
 URLDict_removeFromMenus()
@@ -233,11 +236,11 @@ URLDict_addToMenus()
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-    mi->name = "URLDict plugin";
-    mi->desc = "On-line Dictionary support for AbiWord. Based upon the DICT Protocol. Search site is http://www.dict.org";
+    mi->name = strings->getValue(_("URLDict plugin"));
+    mi->desc = strings->getValue(_("On-line Dictionary support for AbiWord. Based upon the DICT Protocol. The search site is http://www.dict.org."));
     mi->version = ABI_VERSION_STRING;
     mi->author = "Michael D. Pritchett"; // and Dom Lachowicz
-    mi->usage = "No Usage";
+    mi->usage = strings->getValue(_("No Usage"));
     
     // Add the dictionary to AbiWord's menus.
     URLDict_addToMenus();
@@ -257,6 +260,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 
     URLDict_removeFromMenus() ;
 
+    delete strings;
     return 1;
 }
 

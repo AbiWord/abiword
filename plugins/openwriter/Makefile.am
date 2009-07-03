@@ -1,5 +1,5 @@
 
-SUBDIRS = xp
+SUBDIRS = xp po
 
 if OPENWRITER_BUILTIN
 noinst_LTLIBRARIES = openwriter.la

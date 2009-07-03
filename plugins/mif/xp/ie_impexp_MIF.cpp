@@ -22,6 +22,7 @@
 #include "ie_imp_MIF.h"
 #include "ie_exp_MIF.h"
 #include "xap_Module.h"
+#include "ap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_mif_register
@@ -43,6 +44,7 @@ static IE_Exp_MIF_Sniffer * m_expSniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
+  AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-mif");
 
 	if (!m_impSniffer)
 	{
@@ -54,14 +56,16 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 		m_expSniffer = new IE_Exp_MIF_Sniffer (PLUGIN_NAME);
 	}
 
-	mi->name = "MIF Importer/Exporter";
-	mi->desc = "Import/Export MIF Documents - needs work";
+	mi->name = strings->getValue(_("MIF Importer/Exporter"));
+	mi->desc = strings->getValue(_("Import/Export MIF Documents - needs work"));
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Abi the Ant";
-	mi->usage = "No Usage";
+	mi->usage = strings->getValue(_("No Usage"));
 
 	IE_Imp::registerImporter (m_impSniffer);
 	IE_Exp::registerExporter (m_expSniffer);
+
+  delete strings;
 	return 1;
 }
 

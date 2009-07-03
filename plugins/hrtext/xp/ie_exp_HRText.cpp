@@ -38,6 +38,7 @@
 #include "ut_string_class.h"
 #include "ut_hash.h"
 #include "xap_Module.h"
+#include "ap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_hrtext_register
@@ -64,6 +65,8 @@ ABI_PLUGIN_DECLARE("HRText")
 /*****************************************************************/
 /*****************************************************************/
 
+AP_StringSet *strings;
+
 // completely generic code to allow this to be a plugin
 
 // we use a reference-counted sniffer
@@ -72,17 +75,18 @@ static IE_Exp_HRText_Sniffer * m_sniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
+  strings = new AP_StringSet(NULL, "abiword-plugin-hrtext");
 
 	if (!m_sniffer)
 	{
 		m_sniffer = new IE_Exp_HRText_Sniffer ();
 	}
 
-	mi->name = "HRText Exporter";
-	mi->desc = "Export HRText Documents";
+	mi->name = strings->getValue(_("HRText Exporter"));
+	mi->desc = strings->getValue(_("Export HRText Documents"));
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Abi the Ant";
-	mi->usage = "No Usage";
+	mi->usage = strings->getValue(_("No Usage"));
 
 	IE_Exp::registerExporter (m_sniffer);
 	return 1;
@@ -102,6 +106,8 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	IE_Exp::unregisterExporter (m_sniffer);
 	delete m_sniffer;
 	m_sniffer = 0;
+
+  delete strings;
 
 	return 1;
 }
@@ -139,7 +145,7 @@ bool IE_Exp_HRText_Sniffer::getDlgLabels(const char ** pszDesc,
 										 const char ** pszSuffixList,
 										 IEFileType * ft)
 {
-	*pszDesc = "Newsgroup Formatted Text (.nws)";
+	*pszDesc = strings->getValue(_("Newsgroup Formatted Text (.nws)"));
 	*pszSuffixList = "*.nws";
 	*ft = getFileType();
 	return true;

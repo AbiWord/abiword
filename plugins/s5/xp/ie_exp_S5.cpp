@@ -61,6 +61,7 @@
 #include "ie_exp_HTML.h"
 #include "xap_Module.h"
 #include "ut_string_class.h"
+#include "ap_Strings.cpp"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_s5_register
@@ -110,6 +111,8 @@ public:
 /*****************************************************************/
 /*****************************************************************/
 
+AP_StringSet *strings;
+
 // completely generic code to allow this to be a plugin
 
 // we use a reference-counted sniffer
@@ -118,17 +121,18 @@ static IE_Exp_S5_Sniffer * m_sniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
+  strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-s5");
 
 	if (!m_sniffer)
 	{
 		m_sniffer = new IE_Exp_S5_Sniffer ();
 	}
 
-	mi->name = "S5 Slideshow Exporter";
-	mi->desc = "Export S5 Slideshows";
+	mi->name = strings->getValue(_("S5 Slideshow Exporter"));
+	mi->desc = strings->getValue(_("Export S5 Slideshows"));
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Abi the Ant";
-	mi->usage = "No Usage";
+	mi->usage = strings->getValue(_("No Usage"));
 
 	IE_Exp::registerExporter (m_sniffer);
 	return 1;
@@ -148,6 +152,8 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	IE_Exp::unregisterExporter (m_sniffer);
 	delete m_sniffer;
 	m_sniffer = 0;
+
+  delete strings;
 
 	return 1;
 }
@@ -184,7 +190,7 @@ bool IE_Exp_S5_Sniffer::getDlgLabels(const char ** pszDesc,
 									 const char ** pszSuffixList,
 									 IEFileType * ft)
 {
-	*pszDesc = "S5 Slideshow (.s5.html)";
+	*pszDesc = strings->getValue(_("S5 Slideshow (.s5.html)"));
 	*pszSuffixList = "*.s5.html";
 	*ft = getFileType();
 	return true;
@@ -200,6 +206,7 @@ IE_Exp_S5::IE_Exp_S5(PD_Document * pDocument)
 
 IE_Exp_S5::~IE_Exp_S5()
 {
+  delete strings;
 }
 
 UT_Error IE_Exp_S5::_writeDocument(void)

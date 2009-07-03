@@ -1,5 +1,5 @@
 
-SUBDIRS = xp
+SUBDIRS = xp po
 
 if ISCII_BUILTIN
 noinst_LTLIBRARIES = iscii.la

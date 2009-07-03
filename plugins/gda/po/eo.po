@@ -1,0 +1,64 @@
+# Esperanto translations for abiword package.
+# Copyright (C) 2009 THE abiword'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the abiword package.
+# Keith Bowes <keith@keith-desktop>, 2009.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: abiword 2.7.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-07-02 18:50-0400\n"
+"PO-Revision-Date: 2009-07-02 18:50-0400\n"
+"Last-Translator: Keith Bowes <keith@keith-desktop>\n"
+"Language-Team: Esperanto\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../unix/AbiGDA.cpp:328
+msgid "GDA Table Insertion"
+msgstr "Enmetado de GDA-tabelo"
+
+#: ../unix/AbiGDA.cpp:339
+msgid "<b>Data Source</b>"
+msgstr "<b>Datumfonto</b>"
+
+#: ../unix/AbiGDA.cpp:345
+msgid "<b>Command to Execute</b>"
+msgstr "<b>Komando plenumiĝi</b>"
+
+#: ../unix/AbiGDA.cpp:389
+msgid "G&DA Database"
+msgstr "G&DA-datumbazo"
+
+#: ../unix/AbiGDA.cpp:389
+msgid "Insert database tables as tbles"
+msgstr "Enmeti datumbazajn tabelojn"
+
+#: ../unix/AbiGDA.cpp:390
+msgid "Data Sources"
+msgstr "Datumfontoj"
+
+#: ../unix/AbiGDA.cpp:390
+msgid "Configure and admin data sources"
+msgstr "Agordi kaj administri datumfontojn"
+
+#.
+#. Put it in the main menu.
+#.
+#: ../unix/AbiGDA.cpp:454
+msgid "S&cripts"
+msgstr "P&rogrametoj"
+
+#: ../unix/AbiGDA.cpp:502
+msgid "GDA plugin"
+msgstr "Kromprogramo GDA"
+
+#: ../unix/AbiGDA.cpp:503
+msgid "Database support for AbiWord"
+msgstr "Datumbaza subteno por AbiWord"
+
+#: ../unix/AbiGDA.cpp:506
+msgid "You had better know some SQL..."
+msgstr "Vi scipovu iom da SQL..."

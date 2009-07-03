@@ -1,5 +1,5 @@
 
-SUBDIRS = xp
+SUBDIRS = xp po
 
 if FREETRANSLATION_BUILTIN
 noinst_LTLIBRARIES = freetranslation.la

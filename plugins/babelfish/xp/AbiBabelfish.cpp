@@ -31,6 +31,7 @@
 #include "xap_Menu_Layouts.h"
 #include "ut_string_class.h"
 #include "ut_wctomb.h"
+#include "ap_Strings.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
@@ -77,6 +78,8 @@ ABI_PLUGIN_DECLARE("Babelfish")
 
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
+
+AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-babelfish");
 
 //
 // _ucsToUTF8
@@ -243,8 +246,8 @@ static bool BabelFish_invoke(AV_View* /*v*/, EV_EditMethodCallData * /*d*/)
   return true;
 }
 
-static const char* BabelFish_MenuLabel = "Use &Babelfish Translation";
-static const char* BabelFish_MenuTooltip = "Opens the on-line babelfish translator";
+static const char* BabelFish_MenuLabel = strings->getValue(_("Use &Babelfish Translation"));
+static const char* BabelFish_MenuTooltip = strings->getValue(_("Opens the on-line babelfish translator"));
 
 static void
 BabelFish_addToMenus()
@@ -288,13 +291,13 @@ BabelFish_addToMenus()
   //
   // Put it in the context menu.
   //
-  XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText",NULL,"Bullets and &Numbering",EV_MLF_Normal);
+  XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText",NULL,strings->getValue(_("Bullets and &Numbering")),EV_MLF_Normal);
   pFact->addNewLabel(NULL,newID,BabelFish_MenuLabel, BabelFish_MenuTooltip);
 
   //
   // Also put it under word Wount in the main menu,
   //
-  pFact->addNewMenuAfter("Main",NULL,"&Word Count",EV_MLF_Normal,newID);
+  pFact->addNewMenuAfter("Main",NULL,strings->getValue(_("&Word Count")),EV_MLF_Normal,newID);
   
   // Create the Action that will be called.
   EV_Menu_Action* myAction = new EV_Menu_Action(
@@ -358,11 +361,11 @@ BabelFish_RemoveFromMenus ()
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-    mi->name = "BabelFish plugin";
-    mi->desc = "On-line Translation support for AbiWord. Based upon the Babelfish translation tool which is powered by Systran.";
+    mi->name = strings->getValue(_("BabelFish plugin"));
+    mi->desc = strings->getValue(_("On-line Translation support for AbiWord. Based upon the Babelfish translation tool which is powered by Systran."));
     mi->version = ABI_VERSION_STRING;
     mi->author = "Dom Lachowicz <cinamod@hotmail.com>";
-    mi->usage = "No Usage";
+    mi->usage = strings->getValue(_("No Usage"));
     
     // Add the translator to AbiWord's menus.
     BabelFish_addToMenus();
@@ -382,6 +385,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 
     BabelFish_RemoveFromMenus () ;
 
+    delete strings;
     return 1;
 }
 

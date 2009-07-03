@@ -44,6 +44,7 @@
 #include "ut_growbuf.h"
 #include "ut_string_class.h"
 #include "xap_Module.h"
+#include "ap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_mswrite_register
@@ -67,21 +68,24 @@ static IE_Imp_MSWrite_Sniffer * m_sniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
+  AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-mswrite");
 
 	if (!m_sniffer)
 	{
 		m_sniffer = new IE_Imp_MSWrite_Sniffer ();
 	}
 
-	mi->name = "MSWrite Importer";
-	mi->desc = "Import MSWrite Documents";
+	mi->name = strings->getValue(_("MSWrite Importer"));
+	mi->desc = strings->getValue(_("Import MSWrite Documents"));
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Abi the Ant";
-	mi->usage = "No Usage";
+	mi->usage = strings->getValue(_("No Usage"));
 
 	IE_Imp::registerImporter (m_sniffer);
+  delete strings;
 	return 1;
 }
+
 
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)

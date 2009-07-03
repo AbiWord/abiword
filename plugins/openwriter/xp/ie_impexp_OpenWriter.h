@@ -25,6 +25,8 @@
 #include "ie_imp.h"
 #include "ie_exp.h"
 
+#include "ap_Strings.h"
+
 class IE_Imp_OpenWriter_Sniffer : public IE_ImpSniffer
 {
 public:
@@ -44,6 +46,9 @@ public:
   virtual bool getDlgLabels (const char ** szDesc,
 			     const char ** szSuffixList,
 			     IEFileType * ft) ;
+
+private:
+  AP_StringSet *m_strings;
 };
 
 class IE_Exp_OpenWriter_Sniffer : public IE_ExpSniffer
@@ -61,6 +66,9 @@ public:
   virtual bool getDlgLabels(const char ** pszDesc,
 			    const char ** pszSuffixList,
 			    IEFileType * ft) ;
+
+private:
+  AP_StringSet *m_strings;
 };
 
 #endif // IE_IMPEXP_OPENWRITER_H

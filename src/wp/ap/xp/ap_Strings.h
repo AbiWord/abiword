@@ -27,7 +27,7 @@
 class ABI_EXPORT AP_StringSet : public XAP_StringSet
 {
   public:
-    AP_StringSet(XAP_App *pApp, char *szDomainName = NULL, char *szLanguageName = NULL);
+    AP_StringSet(XAP_App *pApp, const char *szDomainName = NULL, const char *szLanguageName = NULL);
     virtual ~AP_StringSet(void);
     const char *getValue(XAP_String_Id id) const;
     const char *translate(XAP_String_Id id) const;

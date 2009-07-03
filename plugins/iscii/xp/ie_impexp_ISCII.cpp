@@ -41,6 +41,7 @@ static IE_Exp_ISCII_Sniffer * m_expSniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
+  AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-iscii");
 
 	if (!m_impSniffer)
 	{
@@ -52,14 +53,16 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 		m_expSniffer = new IE_Exp_ISCII_Sniffer (PLUGIN_NAME);
 	}
 
-	mi->name = "ISCII Importer/Exporter";
-	mi->desc = "Import/Export ISCII Documents";
+	mi->name = strings->getValue(_("ISCII Importer/Exporter"));
+	mi->desc = strings->getValue(_("Import/Export ISCII Documents"));
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Andrew Dunbar";
-	mi->usage = "No Usage";
+	mi->usage = strings->getValue(_("No Usage"));
 
 	IE_Imp::registerImporter (m_impSniffer);
 	IE_Exp::registerExporter (m_expSniffer);
+
+  delete strings;
 	return 1;
 }
 

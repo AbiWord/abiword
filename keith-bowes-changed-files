@@ -1,6 +1,10 @@
 Makefile.am
 configure.in
 keith-bowes-changed-files
+plugins/*/po
+plugins/*/po/Makefile
+plugins/*/po/POTFILES.in
+plugins/*/po/eo.po
 po/Makefile.in
 po/abiword.pot
 po/eo.po

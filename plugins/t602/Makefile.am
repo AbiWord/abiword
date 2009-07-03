@@ -1,5 +1,5 @@
 
-SUBDIRS = xp
+SUBDIRS = xp po
 
 if T602_BUILTIN
 noinst_LTLIBRARIES = t602.la

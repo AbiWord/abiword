@@ -61,10 +61,12 @@ oo_gsf_output_close(GsfOutput *output)
 IE_Exp_OpenWriter_Sniffer::IE_Exp_OpenWriter_Sniffer()
   : IE_ExpSniffer ("OpenWriter::SXW")
 {
+  m_strings = new AP_StringSet(NULL, "abiword-plugin-openwriter");
 }
 
 IE_Exp_OpenWriter_Sniffer::~IE_Exp_OpenWriter_Sniffer()
 {
+  delete m_strings;
 }
 
 /*!
@@ -92,7 +94,7 @@ bool IE_Exp_OpenWriter_Sniffer::getDlgLabels(const char ** pszDesc,
 					     const char ** pszSuffixList,
 					     IEFileType * ft)
 {
-  *pszDesc = "OpenOffice Writer (.sxw)";
+  *pszDesc = m_strings->getValue(_("OpenOffice Writer (.sxw)"));
   *pszSuffixList = "*.sxw";
   *ft = getFileType();
   return true;

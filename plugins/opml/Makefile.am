@@ -1,5 +1,5 @@
 
-SUBDIRS = xp
+SUBDIRS = xp po
 
 if OPML_BUILTIN
 noinst_LTLIBRARIES = opml.la

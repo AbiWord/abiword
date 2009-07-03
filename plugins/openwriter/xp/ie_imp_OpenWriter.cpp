@@ -555,10 +555,12 @@ private:
 IE_Imp_OpenWriter_Sniffer::IE_Imp_OpenWriter_Sniffer () :
   IE_ImpSniffer("OpenWriter::SXW")
 {
+  m_strings = new AP_StringSet(NULL, "abiword-plugin-openwriter");
 }
 
 IE_Imp_OpenWriter_Sniffer::~IE_Imp_OpenWriter_Sniffer ()
 {
+  delete m_strings;
 }
 
 // supported suffixes
@@ -652,7 +654,7 @@ bool IE_Imp_OpenWriter_Sniffer::getDlgLabels (const char ** szDesc,
 					      const char ** szSuffixList,
 					      IEFileType * ft)
 {
-  *szDesc = "OpenOffice Writer (.stw, .sxw)";
+  *szDesc = m_strings->getValue(_("OpenOffice Writer (.stw, .sxw)"));
   *szSuffixList = "*.stw; *.sxw";
   *ft = getFileType();
   return true;

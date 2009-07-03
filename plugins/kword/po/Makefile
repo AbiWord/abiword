@@ -1,4 +1,4 @@
-GETTEXT_PACKAGE = abiword-plugins-kword
+GETTEXT_PACKAGE = abiword-plugin-kword
 
 top_srcdir = ../../..
 

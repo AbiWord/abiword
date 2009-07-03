@@ -23,6 +23,7 @@
 #define IE_IMP_ISCII_H
 
 #include "ie_imp_Text.h"
+#include "ap_Strings.h"
 
 #define ISCII_INV	0xD9	// Invisible character - acts like Unicode ZWJ
 #define ISCII_NUKTA	0xE9	// A Nukta following a character can modify its meaning
@@ -53,7 +54,7 @@ class IE_Imp_ISCII_Sniffer : public IE_ImpSniffer
 
 public:
 	IE_Imp_ISCII_Sniffer(const char * name);
-	virtual ~IE_Imp_ISCII_Sniffer() {}
+	virtual ~IE_Imp_ISCII_Sniffer();
 
 	virtual const IE_SuffixConfidence * getSuffixConfidence ();
 	virtual const IE_MimeConfidence * getMimeConfidence () { return NULL; }
@@ -64,6 +65,9 @@ public:
 							   IEFileType * ft);
 	virtual UT_Error constructImporter (PD_Document * pDocument,
 										IE_Imp ** ppie);
+
+private:
+  AP_StringSet *m_strings;
 
 };
 

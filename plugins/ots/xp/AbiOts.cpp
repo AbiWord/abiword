@@ -44,6 +44,7 @@
 #include "xap_EncodingManager.h"
 #include "ie_types.h"
 #include "ut_growbuf.h"
+#include "ap_Strings.h"
 
 #include <ots/libots.h>
 
@@ -53,8 +54,10 @@
 #include "xap_UnixDialogHelper.h"
 #endif
 
-static const char* Ots_MenuLabel = "&Summarize";
-static const char* Ots_MenuTooltip = "Summarize your document or selected text";
+AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-ots");
+
+static const char* Ots_MenuLabel = strings->getValue(_("&Summarize"));
+static const char* Ots_MenuTooltip = stringns->getValue(_("Summarize your document or selected text"));
 #ifdef TOOLKIT_GTK
 
 static int getSummaryPercent(void)
@@ -100,7 +103,7 @@ AbiOts_invoke(AV_View* /*v*/, EV_EditMethodCallData * /*d*/)
   if (!ots_load_xml_dictionary (article, (const unsigned char *)dictionary_file))
     {
       ots_free_article (article);
-      pFrame->showMessageBox("Ots: could not load dictionary!", XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
+      pFrame->showMessageBox(strings->getValue(_("Ots: could not load dictionary!")), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
       return false;
     }
 
@@ -229,11 +232,11 @@ ABI_PLUGIN_DECLARE	("AbiOts")
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-    mi->name = "Ots plugin";
-    mi->desc = "Open Text Summarizer for AbiWord";
+    mi->name = strings->getValue(_("Ots plugin"));
+    mi->desc = strings->getValue(_("Open Text Summarizer for AbiWord"));
     mi->version = ABI_VERSION_STRING;
     mi->author = "Dom Lachowicz";
-    mi->usage = "No Usage";
+    mi->usage = strings->getValue(_("No Usage"));
     
     Ots_addToMenus();
     
@@ -252,6 +255,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 
     Ots_removeFromMenus() ;
 
+    delete strings;
     return 1;
 }
 

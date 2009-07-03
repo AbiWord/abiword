@@ -1,0 +1,37 @@
+# Esperanto translations for abiword package.
+# Copyright (C) 2009 THE abiword'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the abiword package.
+# Keith Bowes <keith@keith-desktop>, 2009.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: abiword 2.7.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-07-02 15:56-0400\n"
+"PO-Revision-Date: 2009-07-02 15:57-0400\n"
+"Last-Translator: Keith Bowes <keith@keith-desktop>\n"
+"Language-Team: Esperanto\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../xp/ie_exp_OpenWriter.cpp:97
+msgid "OpenOffice Writer (.sxw)"
+msgstr "Verkilo de OpenOffice (.swx)"
+
+#: ../xp/ie_imp_OpenWriter.cpp:657
+msgid "OpenOffice Writer (.stw, .sxw)"
+msgstr "Verkilo de OpenOffice (.stw, .sxw)"
+
+#: ../xp/ie_impexp_OpenWriter.cpp:56
+msgid "OpenOffice Writer Filter"
+msgstr "Filtrilo de la verkilo de OpenOffice"
+
+#: ../xp/ie_impexp_OpenWriter.cpp:57
+msgid "Import/Export OpenOffice Writer documents"
+msgstr "Importi/eksporti dokumentojn de la verkilo de OpenOffice"
+
+#: ../xp/ie_impexp_OpenWriter.cpp:60
+msgid "No Usage"
+msgstr "Neniu uzado"

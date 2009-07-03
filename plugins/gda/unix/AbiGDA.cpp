@@ -39,6 +39,7 @@
 #include "ev_EditMethod.h"
 #include "xap_Menu_Layouts.h"
 #include "ut_string_class.h"
+#include "ap_Strings.h"
 
 #include "ie_imp.h"
 #include "ie_types.h"
@@ -259,6 +260,8 @@ private:
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
 
+AP_StringSet *strings;
+
 static bool
 handle_recordset (GdaDataModel *recset, PD_Document * pDoc)
 {
@@ -322,7 +325,7 @@ GDA_execSQL(AV_View* v, EV_EditMethodCallData *d)
 
 	bool ret = false;
 
-	dlg = abiDialogNew ("gda database", FALSE, "GDA Table Insertion");
+	dlg = abiDialogNew ("gda database", FALSE, strings->getValue(_("GDA Table Insertion")));
 	abiAddStockButton(GTK_DIALOG(dlg), GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
 	abiAddStockButton(GTK_DIALOG(dlg), GTK_STOCK_OK, GTK_RESPONSE_OK);
 
@@ -333,13 +336,13 @@ GDA_execSQL(AV_View* v, EV_EditMethodCallData *d)
 	gtk_container_set_border_width (GTK_CONTAINER (table), 12);
 
 	label = gnome_db_new_label_widget (NULL);
-	gtk_label_set_markup (GTK_LABEL (label), "<b>Data Source</b>");
+	gtk_label_set_markup (GTK_LABEL (label), strings->getValue(_("<b>Data Source</b>")));
 	gtk_table_attach (GTK_TABLE (table), label, 0, 2, 0, 1, GTK_FILL, GTK_FILL, 6, 6);
 	gtk_table_attach (GTK_TABLE (table), db_login, 1, 2, 1, 2,
 			  GTK_EXPAND, GTK_EXPAND, 6, 6);
 
 	label = gnome_db_new_label_widget (NULL);
-	gtk_label_set_markup (GTK_LABEL (label), "<b>Command to Execute</b>");
+	gtk_label_set_markup (GTK_LABEL (label), strings->getValue(_("<b>Command to Execute</b>")));
 	gtk_table_attach (GTK_TABLE (table), label, 0, 2, 2, 3, GTK_FILL, GTK_FILL, 6, 6);
 	gtk_table_attach (GTK_TABLE (table), text, 1, 2, 3, 4,
 			  GTK_FILL, GTK_FILL, 2, 2);
@@ -383,8 +386,8 @@ const static struct {
 	const char    * description;
 	EV_Menu_LayoutFlags flags;		// usually EV_MLF_Normal
 } gda_menus [] = {
-	{ "GDA_execSQL", GDA_execSQL, "G&DA Database", "Insert database tables as tbles", EV_MLF_Normal },
-	{ "GDA_viewDataSources", GDA_viewDataSources, "Data Sources", "Configure and admin data sources", EV_MLF_Normal }
+	{ "GDA_execSQL", GDA_execSQL, strings->getValue(_("G&DA Database")), strings->getValue(_("Insert database tables as tbles")), EV_MLF_Normal },
+	{ "GDA_viewDataSources", GDA_viewDataSources, strings->getValue(_("Data Sources")), strings->getValue(_("Configure and admin data sources")), EV_MLF_Normal }
 };
 
 static void
@@ -448,7 +451,7 @@ GDA_addToMenus()
 		//
 		// Put it in the main menu.
 		//
-		const char *prev = "S&cripts";
+		const char *prev = strings->getValue(_("S&cripts"));
 		if (i != 0)
 			prev = gda_menus[i - 1].label;
 		XAP_Menu_Id newID = pFact->addNewMenuAfter("Main",NULL,
@@ -487,6 +490,8 @@ ABI_PLUGIN_DECLARE	("AbiGDA")
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
+  strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-gda");
+
 	/* initialize connection pool if first time */
 	if (!GDA_IS_CLIENT (connection_pool)) {
 		connection_pool = gda_client_new ();
@@ -494,11 +499,11 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 			return 0;
 	}
 	
-	mi->name    = "GDA plugin";
-	mi->desc    = "Database support for AbiWord";
+	mi->name    = strings->getValue(_("GDA plugin"));
+	mi->desc    = strings->getValue(_("Database support for AbiWord"));
 	mi->version = ABI_VERSION_STRING;
 	mi->author  = "Dom Lachowicz <cinamod@hotmail.com>";
-	mi->usage   = "You had better know some SQL...";
+	mi->usage   = strings->getValue(_("You had better know some SQL..."));
 	
 	// Add the database to AbiWord's menus.
 	GDA_addToMenus();
@@ -521,6 +526,8 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 		g_object_unref (G_OBJECT (connection_pool));
 		connection_pool = NULL;
 	}
+
+  delete strings;
 	
 	return 1;
 }

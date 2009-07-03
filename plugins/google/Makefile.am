@@ -1,5 +1,5 @@
 
-SUBDIRS = xp
+SUBDIRS = xp po
 
 if GOOGLE_BUILTIN
 noinst_LTLIBRARIES = google.la

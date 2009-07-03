@@ -32,6 +32,7 @@
 #include <gsf/gsf-output-stdio.h>
 
 #include "xap_Module.h"
+#include "ap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_pdf_register
@@ -43,6 +44,8 @@
 #define ABI_BUILTIN_FAR_CALL ABI_FAR_CALL
 ABI_PLUGIN_DECLARE("PDF")
 #endif
+
+AP_StringSet *strings;
 
 static const struct
 {
@@ -212,7 +215,7 @@ public:
 							 const char ** pszSuffixList,
 							 IEFileType * ft)
   {
-    *pszDesc = "PDF (.pdf)";
+    *pszDesc = strings->getValue(_("PDF (.pdf)"));
     *pszSuffixList = "*.pdf";
     *ft = getFileType();
     return true;
@@ -236,6 +239,7 @@ static IE_Imp_PDF_Sniffer * m_impSniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
+  strings = new AP_StringSet(NULL, "abiword-plugin-pdf");
 	for (size_t i = 0; i < G_N_ELEMENTS(pdf_conversion_programs); i++)
 		{
 			gchar * prog_path;
@@ -251,11 +255,11 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 							m_impSniffer = new IE_Imp_PDF_Sniffer ();
 						}
 					
-					mi->name    = "PDF Import Filter";
-					mi->desc    = "Import Adobe PDF Documents";
+					mi->name    = strings->getValue(_("PDF Import Filter"));
+					mi->desc    = strings->getValue(_("Import Adobe PDF Documents"));
 					mi->version = ABI_VERSION_STRING;
 					mi->author  = "Dom Lachowicz <cinamod@hotmail.com>";
-					mi->usage   = "No Usage";
+					mi->usage   = strings->getValue(_("No Usage"));
 					
 					IE_Imp::registerImporter (m_impSniffer);
 					return 1;

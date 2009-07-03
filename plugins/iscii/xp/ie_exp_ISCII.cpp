@@ -30,7 +30,13 @@
 IE_Exp_ISCII_Sniffer::IE_Exp_ISCII_Sniffer (const char * _name) :
   IE_ExpSniffer(_name)
 {
-  // 
+  //
+  m_strings = new AP_StringSet(NULL, "abiword-plugin-iscii"); 
+}
+
+IE_Exp_ISCII_Sniffer::~IE_Exp_ISCII_Sniffer()
+{
+  delete m_strings;
 }
 
 bool IE_Exp_ISCII_Sniffer::recognizeSuffix(const char * szSuffix)
@@ -50,7 +56,7 @@ bool IE_Exp_ISCII_Sniffer::getDlgLabels(const char ** pszDesc,
 											const char ** pszSuffixList,
 											IEFileType * ft)
 {
-	*pszDesc = "ISCII Text (.isc, .iscii)";
+	*pszDesc = m_strings->getValue(_("ISCII Text (.isc, .iscii)"));
 	*pszSuffixList = "*.isc; *.iscii";
 	*ft = getFileType();
 	return true;

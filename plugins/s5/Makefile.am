@@ -1,5 +1,5 @@
 
-SUBDIRS = xp
+SUBDIRS = xp po
 
 if S5_BUILTIN
 noinst_LTLIBRARIES = s5.la

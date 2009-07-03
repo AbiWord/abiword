@@ -59,6 +59,7 @@
 #include "ut_string_class.h"
 #include "xap_Module.h"
 #include "ut_misc.h"
+#include "ap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_latex_register
@@ -74,6 +75,8 @@ ABI_PLUGIN_DECLARE("LaTeX")
 /*****************************************************************/
 /*****************************************************************/
 
+AP_StringSet *strings;
+
 // completely generic code to allow this to be a plugin
 
 // we use a reference-counted sniffer
@@ -82,17 +85,18 @@ static IE_Exp_LaTeX_Sniffer * m_sniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
+  strings = new AP_StringSet(NULL, "abiword-plugin-latex");
 
 	if (!m_sniffer)
 	{
 		m_sniffer = new IE_Exp_LaTeX_Sniffer ();
 	}
 
-	mi->name = "LaTeX Exporter";
-	mi->desc = "Export LaTeX Documents";
+	mi->name = strings->getValue(_("LaTeX Exporter"));
+	mi->desc = strings->getValue(_("Export LaTeX Documents"));
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Abi the Ant";
-	mi->usage = "No Usage";
+	mi->usage = strings->getValue(_("No Usage"));
 
 	IE_Exp::registerExporter (m_sniffer);
 	return 1;
@@ -113,6 +117,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	delete m_sniffer;
 	m_sniffer = 0;
 
+  delete strings;
 	return 1;
 }
 
@@ -149,7 +154,7 @@ bool IE_Exp_LaTeX_Sniffer::getDlgLabels(const char ** pszDesc,
 					const char ** pszSuffixList,
 					IEFileType * ft)
 {
-	*pszDesc = "LaTeX (.latex)";
+	*pszDesc = strings->getValue(_("LaTeX (.latex)"));
 	*pszSuffixList = "*.tex; *.latex";
 	*ft = getFileType();
 	return true;
@@ -1459,9 +1464,9 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie,
 	m_pqRect(NULL)
 {
 	m_pie->write("%% ================================================================================\n");
-	m_pie->write("%% This LaTeX file was created by AbiWord.                                         \n");
-	m_pie->write("%% AbiWord is a free, Open Source word processor.                                  \n");
-	m_pie->write("%% More information about AbiWord is available at http://www.abisource.com/        \n");
+	m_pie->write(strings->getValue(_("%% This LaTeX file was created by AbiWord.                                         \n")));
+	m_pie->write(strings->getValue(_("%% AbiWord is a free, Open Source word processor.                                  \n")));
+	m_pie->write(strings->getValue(_("%% More information about AbiWord is available at http://www.abisource.com/        \n")));
 	m_pie->write("%% ================================================================================\n");
 	m_pie->write("\n");
 

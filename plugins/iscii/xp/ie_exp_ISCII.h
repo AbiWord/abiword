@@ -21,6 +21,7 @@
 #define IE_EXP_ISCII_H
 
 #include "ie_exp_Text.h"
+#include "ap_Strings.h"
 
 // The exporter/writer for ISCII text files.
 
@@ -30,7 +31,7 @@ class IE_Exp_ISCII_Sniffer : public IE_ExpSniffer
 
 public:
 	IE_Exp_ISCII_Sniffer (const char * name);
-	virtual ~IE_Exp_ISCII_Sniffer () {}
+	virtual ~IE_Exp_ISCII_Sniffer ();
 
 	virtual bool recognizeSuffix(const char * szSuffix);
 	virtual bool getDlgLabels(const char ** szDesc,
@@ -38,6 +39,9 @@ public:
 							  IEFileType * ft);
 	virtual UT_Error constructExporter(PD_Document * pDocument,
 									   IE_Exp ** ppie);
+
+private:
+  AP_StringSet *m_strings;
 };
 
 class IE_Exp_ISCII : public IE_Exp_Text

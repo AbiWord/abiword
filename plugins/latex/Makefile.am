@@ -5,6 +5,8 @@ else
 SUBDIRS = xp
 endif
 
+SUBDIRS += po
+
 if LATEX_BUILTIN
 noinst_LTLIBRARIES = latex.la
 

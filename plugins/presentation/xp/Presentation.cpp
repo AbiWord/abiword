@@ -32,6 +32,7 @@
 #include "xap_Module.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
+#include "ap_Strings.h"
 #include "fv_View.h"
 #include "ev_EditMethod.h"
 #include "ie_imp.h"
@@ -80,12 +81,13 @@ static bool Presentation_prevPage (AV_View * v, EV_EditMethodCallData * d);
 static bool Presentation_context (AV_View * v, EV_EditMethodCallData * d);
 
 Presentation myPresentation;
+AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-presentation");
 EV_EditMouseContext PresentationContextID =  EV_EMC_EMBED;
 static XAP_Menu_Id presentationID;
-static const char * szPresentation = "Presentation";
-static const char * szPresentationStatus = "View the document in presentation mode";
-static const char * szNextSlide = "Next Slide";
-static const char * szPrevSlide = "Previous Slide";
+static const char * szPresentation = strings->getValue(_("Presentation"));
+static const char * szPresentationStatus = strings->getValue(_("View the document in presentation mode"));
+static const char * szNextSlide = strings->getValue(_("Next Slide"));
+static const char * szPrevSlide = strings->getValue(_("Previous Slide"));
 static XAP_Menu_Id nextSlideID;
 static XAP_Menu_Id prevSlideID;
 //
@@ -157,7 +159,7 @@ Presentation_registerMethod ()
 
 // Put it after 
 
-    presentationID= pFact->addNewMenuAfter("Main",NULL,AP_MENU_ID_VIEW_SHOWPARA,EV_MLF_Normal);
+    presentationID= pFact->addNewMenuAfter("Main",NULL, AP_MENU_ID_VIEW_SHOWPARA,EV_MLF_Normal);
     UT_DEBUGMSG(("presentationID %d \n",presentationID));
 
 
@@ -261,8 +263,8 @@ Presentation_RemoveFromMethods ()
 ABI_BUILTIN_FAR_CALL int
 abi_plugin_register (XAP_ModuleInfo * mi)
 {
-	mi->name = "Presentation";
-	mi->desc = "This enables AbiWord to make presentations";
+	mi->name = strings->getValue(_("Presentation"));
+	mi->desc = strings->getValue(_("This enables AbiWord to make presentations"));
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Martin Sevior <msevior@physics.unimelb.edu.au>";
 	mi->usage = "Presentaton_start";
@@ -409,7 +411,7 @@ Presentation::Presentation(void):
 
 Presentation::~Presentation (void)
 {
-
+  delete strings;
 }
 
 bool Presentation::_loadPresentationBindings(AV_View * pView)

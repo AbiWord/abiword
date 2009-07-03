@@ -35,7 +35,7 @@
 
 #include "ap_Strings.h"
 
-AP_StringSet::AP_StringSet(XAP_App *pApp, char *szDomainName, char *szLanguageName) :
+AP_StringSet::AP_StringSet(XAP_App *pApp, const char *szDomainName, const char *szLanguageName) :
   XAP_StringSet(pApp, szDomainName, szLanguageName)
 {
 }

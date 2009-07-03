@@ -1,5 +1,5 @@
 
-SUBDIRS = xp
+SUBDIRS = xp po
 
 if URLDICT_BUILTIN
 noinst_LTLIBRARIES = urldict.la

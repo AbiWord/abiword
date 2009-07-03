@@ -1,5 +1,5 @@
 
-SUBDIRS = xp
+SUBDIRS = xp po
 
 if PDF_BUILTIN
 noinst_LTLIBRARIES = pdf.la

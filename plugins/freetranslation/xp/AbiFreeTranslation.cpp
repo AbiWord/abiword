@@ -29,6 +29,7 @@
 #include "ev_EditMethod.h"
 #include "xap_Menu_Layouts.h"
 #include "ut_string_class.h"
+#include "ap_Strings.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
@@ -44,6 +45,8 @@
 #define ABI_BUILTIN_FAR_CALL ABI_FAR_CALL
 ABI_PLUGIN_DECLARE("FreeTranslation")
 #endif
+
+AP_StringSet *strings;
 
 // FreeTranslation offers a similar service to BabelFish
 // but has a way to return just the translated string
@@ -375,11 +378,12 @@ static void FreeTranslation_addToMenus()
 
 ABI_BUILTIN_FAR_CALL int abi_plugin_register(XAP_ModuleInfo * mi)
 {
-	mi->name = "FreeTranslation plugin";
-	mi->desc = "On-line Translation support for AbiWord. Based upon the FreeTranslation translation tool (www.freetranslation.com), only for personal, non-commercial use only.";
+  strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-freetranslation");
+	mi->name = strings->getValue(_("FreeTranslation plugin"));
+	mi->desc = strings->getValue(_("On-line Translation support for AbiWord. Based upon the FreeTranslation translation tool (www.freetranslation.com), for personal, non-commercial use only."));
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Andrew Dunbar";
-	mi->usage = "No Usage";
+	mi->usage = strings->getValue(_("No Usage"));
 
 	// Add the translator to AbiWord's menus.
 	FreeTranslation_addToMenus();
@@ -397,6 +401,7 @@ ABI_BUILTIN_FAR_CALL int abi_plugin_unregister(XAP_ModuleInfo * mi)
 	mi->usage = 0;
 
 	FreeTranslation_RemoveFromMenus ();
+  delete strings;
 
 	return 1;
 }

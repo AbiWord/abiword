@@ -26,6 +26,7 @@
 #include "ie_imp_OPML.h"
 #include "ie_types.h"
 #include "xap_Module.h"
+#include "ap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_opml_register
@@ -49,6 +50,7 @@ static IE_Imp_OPML_Sniffer * m_sniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
+  AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-opml");
 	if (!m_sniffer)
 	{
 		m_sniffer = new IE_Imp_OPML_Sniffer (PLUGIN_NAME);
@@ -56,13 +58,15 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 
 	UT_ASSERT (m_sniffer);
 
-	mi->name = "OPML Importer";
-	mi->desc = "Imports OPML documents.";
+	mi->name = strings->getValue(_("OPML Importer"));
+	mi->desc = strings->getValue(_("Imports OPML documents."));
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Abi the Ant";
-	mi->usage = "No Usage";
+	mi->usage = strings->getValue(_("No Usage"));
 
 	IE_Imp::registerImporter (m_sniffer);
+
+  delete strings;
 	return 1;
 }
 

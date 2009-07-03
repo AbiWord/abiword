@@ -1,5 +1,5 @@
 
-SUBDIRS = xp
+SUBDIRS = xp po
 
 if MSWRITE_BUILTIN
 noinst_LTLIBRARIES = mswrite.la

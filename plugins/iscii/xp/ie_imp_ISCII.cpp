@@ -325,6 +325,12 @@ IE_Imp_ISCII_Sniffer::IE_Imp_ISCII_Sniffer (const char * _name) :
   IE_ImpSniffer(_name)
 {
   // 
+  m_strings = new AP_StringSet(NULL, "abiword-plugin-iscii");
+}
+
+IE_Imp_ISCII_Sniffer::~IE_Imp_ISCII_Sniffer()
+{
+  delete m_strings;
 }
 
 // supported suffixes
@@ -358,7 +364,7 @@ bool IE_Imp_ISCII_Sniffer::getDlgLabels(const char ** pszDesc,
 									  const char ** pszSuffixList,
 									  IEFileType * ft)
 {
-	*pszDesc = "ISCII Text (.isc, .iscii)";
+	*pszDesc = m_strings->getValue(_("ISCII Text (.isc, .iscii)"));
 	*pszSuffixList = "*.isc; *.iscii";
 	*ft = getFileType();
 	return true;

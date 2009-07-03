@@ -1,0 +1,33 @@
+# Esperanto translations for abiword package.
+# Copyright (C) 2009 THE abiword'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the abiword package.
+# Keith Bowes <keith@keith-desktop>, 2009.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: abiword 2.7.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-07-02 21:31-0400\n"
+"PO-Revision-Date: 2009-07-02 21:31-0400\n"
+"Last-Translator: Keith Bowes <keith@keith-desktop>\n"
+"Language-Team: Esperanto\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ASCII\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../xp/ie_imp_PDF.cpp:216
+msgid "PDF (.pdf)"
+msgstr "PDF-dosieroj (.pdf)"
+
+#: ../xp/ie_imp_PDF.cpp:256
+msgid "PDF Import Filter"
+msgstr "Importa filtrilo por PDF-dosieroj"
+
+#: ../xp/ie_imp_PDF.cpp:257
+msgid "Import Adobe PDF Documents"
+msgstr "Importi por PDF-dokumentoj"
+
+#: ../xp/ie_imp_PDF.cpp:260
+msgid "No Usage"
+msgstr "Neniu uzado"

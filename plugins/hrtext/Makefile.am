@@ -1,5 +1,5 @@
 
-SUBDIRS = xp
+SUBDIRS = xp po
 
 if HRTEXT_BUILTIN
 noinst_LTLIBRARIES = hrtext.la

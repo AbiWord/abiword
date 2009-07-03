@@ -32,6 +32,8 @@
 #include "ie_impexp_WordPerfect.h"
 #include <gsf/gsf-utils.h>
 
+#include "ap_Strings.h"
+
 ABI_PLUGIN_DECLARE("WordPerfect")
 
 static IE_Imp_WordPerfect_Sniffer * m_ImpSniffer = 0;
@@ -44,6 +46,8 @@ static IE_Imp_MSWorks_Sniffer * m_MSWorks_ImpSniffer = 0;
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
+  AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugins-wordperfect");
+
 	if (!m_ImpSniffer)
 	{
 		m_ImpSniffer = new IE_Imp_WordPerfect_Sniffer ();
@@ -68,18 +72,20 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 #endif
 
 #ifdef HAVE_LIBWPS
-	mi->name    = "WordPerfect(tm) and Microsoft Works Importer";
-	mi->desc    = "Import WordPerfect(tm) and Microsoft Works Documents";
+	mi->name    = strings->getValue(_("WordPerfect(tm) and Microsoft Works Importer"));
+	mi->desc    = strings->getValue(_("Import WordPerfect(tm) and Microsoft Works Documents"));
 #else
-	mi->name    = "WordPerfect(tm) Importer";
-	mi->desc    = "Import WordPerfect(tm) Documents";
+	mi->name    = strings->getValue(_("WordPerfect(tm) Importer"));
+	mi->desc    = strings->getValue(_("Import WordPerfect(tm) Documents"));
 #endif
 	mi->version = ABI_VERSION_STRING;
 	mi->author  = "Marc Maurer, William Lachance";
-	mi->usage   = "No Usage";
+	mi->usage   = strings->getValue(_("No Usage"));
 
 	IE_Imp::registerImporter (m_ImpSniffer);
 	//IE_Exp::registerExporter (m_ExpSniffer);
+
+  delete strings;
 	return 1;
 }
 

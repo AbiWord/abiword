@@ -1,0 +1,33 @@
+# Esperanto translations for s package.
+# Copyright (C) 2009 THE s'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the s package.
+# Keith Bowes <keith@keith-desktop>, 2009.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: s 5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-07-02 12:12-0400\n"
+"PO-Revision-Date: 2009-07-02 12:10-0400\n"
+"Last-Translator: Keith Bowes <keith@keith-desktop>\n"
+"Language-Team: Esperanto\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../xp/ie_exp_S5.cpp:130
+msgid "S5 Slideshow Exporter"
+msgstr "Eksportilo de S5-aj bildvicoj"
+
+#: ../xp/ie_exp_S5.cpp:131
+msgid "Export S5 Slideshows"
+msgstr "Eksporti S5-aj bildvicoj"
+
+#: ../xp/ie_exp_S5.cpp:134
+msgid "No Usage"
+msgstr "Neniu uzado"
+
+#: ../xp/ie_exp_S5.cpp:190
+msgid "S5 Slideshow (.s5.html)"
+msgstr "S5-a vicbildo (.s5.html)"
