@@ -140,6 +140,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 #if defined(TOOLKIT_GTK)
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_EnableSmoothScrolling, _gatherEnableSmoothScrolling() );
 #endif
+    Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_InsertModeToggle, _gatherEnableOverwrite() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_AutoLoadPlugins, _gatherAutoLoadPlugins() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_DefaultDirectionRtl, _gatherOtherDirectionRtl() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_ChangeLanguageWithKeyboard, _gatherLanguageWithKeyboard() );
@@ -396,7 +397,10 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 					_gatherEnableSmoothScrolling());
 #endif
 			break;
-
+        case id_CHECK_ENABLE_OVERWRITE:
+			Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_InsertModeToggle,
+					_gatherEnableOverwrite() );
+            break;
 		case id_CHECK_AUTO_LOAD_PLUGINS:
 			Save_Pref_Bool (pPrefsScheme, XAP_PREF_KEY_AutoLoadPlugins,
 					_gatherAutoLoadPlugins() );
@@ -426,7 +430,6 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 		case id_BUTTON_CANCEL:
 		case id_BUTTON_APPLY:
 		case id_BUTTON_SPELL_AUTOREPLACE:
-		case id_LIST_VIEW_TOOLBARS: // this is needed for the Cocoa front-end to fetch the control
 		case id_CHECK_COLOR_FOR_TRANSPARENT_IS_WHITE:
 		case id_TEXT_AUTO_SAVE_FILE_PERIOD_SPIN:  // needed by Cocoa FE
 
@@ -532,6 +535,10 @@ void AP_Dialog_Options::_populateWindowData(void)
 	if (pPrefs->getPrefsValueBool((gchar*)AP_PREF_KEY_StatusBarVisible,&b))
 		_setViewShowStatusBar (b);
 #endif	
+
+
+	if (pPrefs->getPrefsValueBool((gchar*)AP_PREF_KEY_InsertModeToggle,&b))
+		_setEnableOverwrite (b);
 
 	if (pPrefs->getPrefsValueBool((gchar*)AP_PREF_KEY_ParaVisible,&b))
 		_setViewUnprintable (b);

@@ -43,7 +43,7 @@
 
 #define AP_STATUSBAR_STATUSMESSAGE_REPRESENTATIVE_STRING "MMMMMMMMMMMMMMMMMMMMMMMMMMMM"
 #define AP_STATUSBAR_INPUTMODE_REP_STRING "MMMMMMMM"
-#define AP_STATUSBAR_INSERTMODE_REP_STRING "MMM"
+#define AP_STATUSBAR_INSERTMODE_REP_STRING "MMMMMMM"
 
 #define AP_STATUSBAR_MAX_PAGES 999
 
@@ -220,7 +220,7 @@ public:
     virtual void        notify(AV_View * pView, const AV_ChangeMask mask);
 
 private:
-    UT_UTF8String m_sInsertMode[2];
+    std::string m_sInsertMode[2];
     bool m_bInsertMode;
 };
 
@@ -231,10 +231,12 @@ ap_sbf_InsertMode::ap_sbf_InsertMode(AP_StatusBar * pSB)
 {
     m_bInsertMode = true;
     
-    UT_UTF8String s1(XAP_App::getApp()->getStringSet()->getValue(AP_STRING_ID_InsertModeFieldINS), 
-					 XAP_App::getApp()->getDefaultEncoding());
-    UT_UTF8String s2(XAP_App::getApp()->getStringSet()->getValue(AP_STRING_ID_InsertModeFieldOVR), 
-					 XAP_App::getApp()->getDefaultEncoding());
+    const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+
+    std::string s1, s2;
+    pSS->getValueUTF8(AP_STRING_ID_InsertModeFieldINS, s1);
+    pSS->getValueUTF8(AP_STRING_ID_InsertModeFieldOVR, s2);
+
     m_sInsertMode[0] = s2; // m_bInsertMode == false
     m_sInsertMode[1] = s1; // m_bInsertMode == true
 

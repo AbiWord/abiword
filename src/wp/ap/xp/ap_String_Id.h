@@ -75,8 +75,8 @@ dcl(BottomMarginStatus, 		"Bottom Margin [%s]")
 dcl(HeaderStatus,				"Header [%s]")
 dcl(FooterStatus,				"Footer [%s]")
 dcl(ColumnStatus,               "Column [%d]")
-dcl(InsertModeFieldINS, 		"INS")
-dcl(InsertModeFieldOVR, 		"OVR")
+dcl(InsertModeFieldINS, 		"Insert")
+dcl(InsertModeFieldOVR, 		"Overwrite")
 
 /* */
 dcl(DLG_NEW_Title,			"New Document")
@@ -439,6 +439,7 @@ dcl(DLG_Options_Label_CheckEnableSmoothScrolling, "Enable Smooth Scrolling")
 dcl(DLG_Options_Label_CheckWhiteForTransparent, "Allow screen colors other than white")
 dcl(DLG_Options_Label_ChooseForTransparent, "Choose Screen Color")
 dcl(DLG_Options_Label_ColorChooserLabel,	"Choose screen color for AbiWord")
+dcl(DLG_Options_Label_EnableOverwrite,      "&Enable overwrite mode toggle")
 dcl(DLG_Options_Label_InvalidRangeForAutoSave,	"You should choose a range from 1 to 120 for the auto save frequency")
 dcl(DLG_Options_Prompt_YouMustRestart,	"The new user interface language will take effect the next time that you start the application")
 

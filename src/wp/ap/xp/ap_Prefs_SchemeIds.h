@@ -76,6 +76,7 @@
 #define AP_PREF_KEY_RulerUnits						"RulerUnits"				/* value in UT_dimensionName() */
 #define AP_PREF_DEFAULT_RulerUnits					"in"
 
+
 #define AP_PREF_KEY_RulerVisible					"RulerVisible"				/* are the rulers visible? {0,1} */
 #ifdef EMBEDDED_TARGET
 #define AP_PREF_DEFAULT_RulerVisible				"0"
@@ -125,7 +126,7 @@
 #define AP_PREF_DEFAULT_InsertMode					"1"							/* overwrite or insert? {0,1} */
 
 #define AP_PREF_KEY_InsertModeToggle				"InsertModeToggle"			/* does INS key toggle modes? {0,1} */
-#define AP_PREF_DEFAULT_InsertModeToggle			"1"
+#define AP_PREF_DEFAULT_InsertModeToggle			"0"
 
 #define AP_PREF_KEY_MenuLayout						"MenuLayouts"
 #define AP_PREF_DEFAULT_MenuLayout					"Main"						/* value in BeginLayout() */

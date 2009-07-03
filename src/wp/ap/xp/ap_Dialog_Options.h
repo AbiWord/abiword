@@ -85,8 +85,8 @@ class ABI_EXPORT AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 				   id_BUTTON_OK, id_BUTTON_CANCEL, id_BUTTON_APPLY,
 
 				   id_CHECK_ENABLE_SMOOTH_SCROLLING,
+                   id_CHECK_ENABLE_OVERWRITE,
 				   id_CHECK_AUTO_LOAD_PLUGINS,
-				   id_LIST_VIEW_TOOLBARS,		// this is needed for the Cocoa front-end to fetch the control
 				   id_NOTEBOOK,
 				   id_CHECK_LANG_WITH_KEYBOARD,
 				   id_CHECK_DIR_MARKER_AFTER_CLOSING_PARENTHESIS,
@@ -149,6 +149,7 @@ class ABI_EXPORT AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 	SET_GATHER			(CustomSmartQuotes,		bool);
 	SET_GATHER			(SmartQuotes,		bool);
 	SET_GATHER			(PrefsAutoSave, 	bool);
+    SET_GATHER          (EnableOverwrite,   bool);
 
 #if !defined (TOOLKIT_GTK) && !defined(TOOLKIT_COCOA)
 	SET_GATHER			(ViewShowRuler, 	bool);

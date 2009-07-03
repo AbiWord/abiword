@@ -2,6 +2,7 @@
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2009 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -127,7 +128,7 @@ public:
 	SET_GATHER			(ViewHiddenText,		bool);
 	SET_GATHER			(ViewUnprintable,		bool);
 	SET_GATHER			(EnableSmoothScrolling,		bool);
-
+    SET_GATHER          (EnableOverwrite,       bool);
 #undef SET_GATHER
 
  protected:
@@ -204,6 +205,8 @@ public:
 		GtkWidget *m_checkbuttonCustomSmartQuotes;
 		GtkWidget *m_omOuterQuoteStyle;
 		GtkWidget *m_omInnerQuoteStyle;
+
+    GtkWidget *m_checkbuttonEnableOverwrite;
 
     		// Dummy
 		bool m_boolEnableSmoothScrolling;

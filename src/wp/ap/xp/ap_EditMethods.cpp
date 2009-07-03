@@ -12794,14 +12794,20 @@ Defun1(toggleInsertMode)
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
 
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
+    UT_return_val_if_fail(pFrameData, false);
+
 	// this edit method may get ignored entirely
 	bool b;
-	if (pPrefs->getPrefsValueBool(static_cast<const gchar*>(AP_PREF_KEY_InsertModeToggle), &b) && !b)
-		return false;
+	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_InsertModeToggle, &b) && !b) {
+        // if we are in insert mode, just return, otherwise give a chance
+        // to toggle it, or one might get stick to overwrite.
+        if(pFrameData->m_bInsertMode) {
+            return false;
+        }
+    }
 
 	// toggle the insert mode
-	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
-UT_return_val_if_fail(pFrameData, false);
 	pFrameData->m_bInsertMode = ! pFrameData->m_bInsertMode;
 
 	// the view actually does the dirty work
@@ -12813,7 +12819,7 @@ UT_return_val_if_fail(pFrameData, false);
 	// POLICY: make this the default for new frames, too
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 UT_return_val_if_fail(pScheme, false);
-	pScheme->setValueBool(static_cast<const gchar*>(AP_PREF_KEY_InsertMode), pFrameData->m_bInsertMode);
+	pScheme->setValueBool(AP_PREF_KEY_InsertMode, pFrameData->m_bInsertMode);
 
 	return true;
 }

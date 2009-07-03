@@ -320,6 +320,10 @@ void AP_UnixDialog_Options::_constructWindowContents ( GtkBuilder * builder )
     tmp = WID ( "lblScreenColor" );
     localizeLabelUnderline ( tmp, pSS, AP_STRING_ID_DLG_Options_Label_ChooseForTransparent );
 
+    m_checkbuttonEnableOverwrite = WID ( "btnOverwrite" );
+    localizeButtonUnderline ( m_checkbuttonEnableOverwrite, pSS,
+                              AP_STRING_ID_DLG_Options_Label_EnableOverwrite );    
+
 #if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
     // Application Startup
     tmp = WID ( "lblApplicationStartup" );
@@ -634,6 +638,8 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 
         case id_PUSH_CHOOSE_COLOR_FOR_TRANSPARENT:
             return  m_pushbuttonNewTransparentColor;
+        case id_CHECK_ENABLE_OVERWRITE:
+            return m_checkbuttonEnableOverwrite;
 
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             // general
@@ -736,6 +742,7 @@ DEFINE_GET_SET_BOOL ( CustomSmartQuotes )
 DEFINE_GET_SET_BOOL ( OtherDirectionRtl )
 
 DEFINE_GET_SET_BOOL ( AutoSaveFile )
+DEFINE_GET_SET_BOOL ( EnableOverwrite )
 
 // dummy implementations. XP pref backend isn't very smart.
 #define DEFINE_GET_SET_BOOL_DUMMY(Bool)     \
