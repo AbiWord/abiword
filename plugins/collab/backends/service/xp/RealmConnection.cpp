@@ -47,7 +47,8 @@ RealmConnection::RealmConnection(const std::string& ca_file, const std::string& 
 	m_sig(sig),
 	m_buddies(),
 	m_pdp_ptr(),
-	m_tls_tunnel_ptr()
+	m_tls_tunnel_ptr(),
+	m_mutex()
 {
 }
 
@@ -59,6 +60,7 @@ bool RealmConnection::connect()
 	try {
 		// setup our local TLS tunnel to the realm
 		m_tls_tunnel_ptr.reset(new tls_tunnel::ClientProxy(m_address, m_port, m_ca_file, false));
+		m_tls_tunnel_ptr->setup();
 		asio::thread thread(boost::bind(&tls_tunnel::ClientProxy::run, m_tls_tunnel_ptr));
 
 		// connect to the tunnel
@@ -99,9 +101,14 @@ bool RealmConnection::connect()
 	return true;
 }
 
+// only the mainloop should call this function
 void RealmConnection::disconnect()
 {
 	UT_DEBUGMSG(("RealmConnection::disconnect()\n"));
+	abicollab::scoped_lock lock(m_mutex);
+
+	// trigger a disconnect; _disconnect will detect this, and perform
+	// the complete disconnect
 	if (m_socket.is_open())
 	{
 		asio::error_code ac;
@@ -168,10 +175,12 @@ void RealmConnection::promote()
 	}
 }
 
+// disconnects, and signals the main loop of the disconnect
 void RealmConnection::_disconnect()
 {
 	UT_DEBUGMSG(("RealmConnection::_disconnect()\n"));
-
+	abicollab::scoped_lock lock(m_mutex);
+	
 	if (m_socket.is_open())
 	{
 		asio::error_code ac;
@@ -191,7 +200,6 @@ void RealmConnection::_disconnect()
 		m_tls_tunnel_ptr->stop();
 		m_tls_tunnel_ptr.reset();
 	}
-
 	// signal the packet queue, so the listener will be informed of the 
 	// disconnect; this is a bit wacky (design wise), but it works
 	m_packet_queue.signal();

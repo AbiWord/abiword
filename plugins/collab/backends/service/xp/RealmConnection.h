@@ -29,6 +29,7 @@
 #include "RealmGrowBuffer.h"
 #include "RealmProtocol.h"
 #include "tls_tunnel.h"
+#include <sync/xp/lock.h>
 #include <sync/xp/SynchronizedQueue.h>
 
 class AP_Dialog_GenericProgress;
@@ -137,6 +138,8 @@ private:
 										m_pdp_ptr;
 	boost::shared_ptr<tls_tunnel::ClientProxy>
 										m_tls_tunnel_ptr;
+
+	abicollab::mutex					m_mutex;
 };
 
 typedef boost::shared_ptr<RealmConnection> ConnectionPtr;

@@ -1,20 +1,30 @@
-/* Copyright (C) 2008 AbiSource Corporation B.V.
+/* Copyright (c) 2008-2009, AbiSource Corporation B.V.
+ * All rights reserved.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of AbiSource Corporation B.V. nor the
+ *       names of other contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * THIS SOFTWARE IS PROVIDED BY ABISOURCE CORPORATION B.V. AND OTHER 
+ * CONTRIBUTORS ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, 
+ * BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ABISOURCE 
+ * CORPORATION B.V OR OTHER CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+ * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 
 #include "tls_tunnel.h"
 
@@ -170,7 +180,12 @@ Transport::Transport()
 {
 }
 
-ClientTransport::ClientTransport(const std::string& host, unsigned short port, boost::function<void (socket_ptr_t)> on_connect)
+Transport::~Transport()
+{
+}
+
+ClientTransport::ClientTransport(const std::string& host, unsigned short port, 
+		boost::function<void (transport_ptr_t, socket_ptr_t)> on_connect)
 	: Transport(),
 	host_(host),
 	port_(port),
@@ -184,10 +199,11 @@ void ClientTransport::connect() {
 	asio::ip::tcp::resolver::iterator iterator(resolver.resolve(query));
 	socket_ptr_t socket_ptr(new asio::ip::tcp::socket(io_service()));
 	socket_ptr->connect(*iterator);
-	on_connect_(socket_ptr);
+	on_connect_(shared_from_this(), socket_ptr);
 }
 
-ServerTransport::ServerTransport(const std::string& ip, unsigned short port, boost::function<void (socket_ptr_t)> on_connect) 
+ServerTransport::ServerTransport(const std::string& ip, unsigned short port, 
+		boost::function<void (transport_ptr_t, socket_ptr_t)> on_connect) 
 	: Transport(),
 	acceptor_(io_service(), asio::ip::tcp::endpoint(asio::ip::address_v4::from_string(ip), port)),
 	on_connect_(on_connect)
@@ -203,7 +219,7 @@ void ServerTransport::on_accept(const asio::error_code& error, socket_ptr_t sock
 	if (error) {
 		return;
 	}
-	on_connect_(socket_ptr);
+	on_connect_(shared_from_this(), socket_ptr);
 	accept();
 }
 
@@ -230,21 +246,35 @@ Proxy::~Proxy() {
 	gnutls_certificate_free_credentials(x509cred);
 }
 
-void Proxy::run() {
-	transport().run();
+void Proxy::run()
+{	
+	// We copy the transport member pointer here to make sure the transport
+	// object can't be deleted another thread (for example by the reset call 
+	// in ::stop()), while the transport is still running...
+	// This is the reason that I would love to get rid of the transport member
+	// variable, but I don't know how yet...
+	transport_ptr_t trans(transport_ptr_);
+	if (trans)
+		trans->run();
+	trans.reset();
 }
 
-void Proxy::stop() {
-	transport().stop(); // DOES THIS io.close() cancel stuff??
-	if (t)
-	{
+void Proxy::stop()
+{
+	if (transport_ptr_)
+		transport_ptr_->stop();
+	
+	if (t) {
 		t->join();
 		t = NULL;
 	}
+
+	transport_ptr_.reset();
 }
 
 Proxy::Proxy(const std::string& ca_file)
-	: t(NULL)
+	: transport_ptr_(),
+	t(NULL)
 {
 	// setup certificates
 	if (gnutls_certificate_allocate_credentials(&x509cred) < 0)
@@ -254,32 +284,39 @@ Proxy::Proxy(const std::string& ca_file)
 }
 
 void Proxy::on_local_read(const asio::error_code& error, std::size_t bytes_transferred,
-		session_ptr_t session_ptr, socket_ptr_t local_socket_ptr, buffer_ptr_t local_buffer_ptr, socket_ptr_t remote_socket_ptr) {
+		transport_ptr_t transport_ptr, session_ptr_t session_ptr, socket_ptr_t local_socket_ptr, 
+		buffer_ptr_t local_buffer_ptr, socket_ptr_t remote_socket_ptr)
+{
 	if (error) {
-		disconnect_(session_ptr, local_socket_ptr, remote_socket_ptr);
+		disconnect_(transport_ptr, session_ptr, local_socket_ptr, remote_socket_ptr);
 		return;
 	}
 
 	// write the data to the tunnel connection
 	int num_forwarded = gnutls_record_send(*session_ptr, &(*local_buffer_ptr)[0], bytes_transferred);
 	if (num_forwarded < 0) {
-		disconnect_(session_ptr, local_socket_ptr, remote_socket_ptr);
+		disconnect_(transport_ptr, session_ptr, local_socket_ptr, remote_socket_ptr);
 		return;
 	}
 
 	local_socket_ptr->async_receive(
 			asio::buffer(&(*local_buffer_ptr)[0], local_buffer_ptr->size()),
 			boost::bind(&Proxy::on_local_read, this, asio::placeholders::error, asio::placeholders::bytes_transferred,
-					session_ptr, local_socket_ptr, local_buffer_ptr, remote_socket_ptr)
+					transport_ptr, session_ptr, local_socket_ptr, local_buffer_ptr, remote_socket_ptr)
 		);
 }
 
-void Proxy::tunnel(session_ptr_t session_ptr, socket_ptr_t local_socket_ptr, socket_ptr_t remote_socket_ptr) {
+void Proxy::tunnel(transport_ptr_t transport_ptr, session_ptr_t session_ptr,
+		socket_ptr_t local_socket_ptr, socket_ptr_t remote_socket_ptr)
+{
 	buffer_ptr_t local_buffer_ptr(new std::vector<char>(LOCAL_BUFFER_SIZE));
-	t = new asio::thread(boost::bind(&Proxy::tunnel_, this, session_ptr, local_socket_ptr, local_buffer_ptr, remote_socket_ptr));
+	t = new asio::thread(boost::bind(&Proxy::tunnel_, this, transport_ptr,
+							session_ptr, local_socket_ptr, local_buffer_ptr, remote_socket_ptr));
 }
 
-void Proxy::disconnect_(session_ptr_t session_ptr, socket_ptr_t local_socket_ptr, socket_ptr_t remote_socket_ptr) {
+void Proxy::disconnect_(transport_ptr_t /*transport_ptr*/, session_ptr_t session_ptr,
+		socket_ptr_t local_socket_ptr, socket_ptr_t remote_socket_ptr)
+{			
 	// shutdown the tls session (ignore any error condition)
 	if (session_ptr)
 		gnutls_bye(*session_ptr, GNUTLS_SHUT_RDWR);
@@ -297,11 +334,13 @@ void Proxy::disconnect_(session_ptr_t session_ptr, socket_ptr_t local_socket_ptr
 	}
 }
 
-void Proxy::tunnel_(session_ptr_t session_ptr, socket_ptr_t local_socket_ptr, buffer_ptr_t local_buffer_ptr, socket_ptr_t remote_socket_ptr) {
+void Proxy::tunnel_(transport_ptr_t transport_ptr, session_ptr_t session_ptr, socket_ptr_t local_socket_ptr, 
+		buffer_ptr_t local_buffer_ptr, socket_ptr_t remote_socket_ptr)
+{
 	local_socket_ptr->async_receive(
 			asio::buffer(&(*local_buffer_ptr)[0], local_buffer_ptr->size()),
 			boost::bind(&Proxy::on_local_read, this, asio::placeholders::error, asio::placeholders::bytes_transferred, 
-					session_ptr, local_socket_ptr, local_buffer_ptr, remote_socket_ptr)
+					transport_ptr, session_ptr, local_socket_ptr, local_buffer_ptr, remote_socket_ptr)
 		);
 	
 	ssize_t bytes_transferred = 0;
@@ -324,7 +363,7 @@ void Proxy::tunnel_(session_ptr_t session_ptr, socket_ptr_t local_socket_ptr, bu
 		}
 	}
 
-	disconnect_(session_ptr, local_socket_ptr, remote_socket_ptr);		
+	disconnect_(transport_ptr, session_ptr, local_socket_ptr, remote_socket_ptr);		
 }
 
 static const int PRIORITIES[] = { GNUTLS_KX_ANON_DH, GNUTLS_KX_RSA, GNUTLS_KX_DHE_DSS, GNUTLS_KX_DHE_RSA, 0 };
@@ -333,32 +372,54 @@ static const int CIPHERS[] = { GNUTLS_CIPHER_AES_256_CBC, GNUTLS_CIPHER_AES_128_
 // FIXME: this clientproxy can only handle 1 SSL connection at the same time
 ClientProxy::ClientProxy(const std::string& connect_address, unsigned short connect_port, 
 		const std::string& ca_file, bool check_hostname)
-try
 	: Proxy(ca_file),
-	transport_(connect_address, connect_port, boost::bind(&ClientProxy::on_transport_connect, this, _1)),
 	local_address_("127.0.0.1"),
 	local_port_(0),
 	connect_address_(connect_address),
+	connect_port_(connect_port),
 	acceptor_ptr(),
 	check_hostname_(check_hostname)
 {
-	for (unsigned short port = MIN_CLIENT_PORT; port <= MAX_CLIENT_PORT; port++) {
-		try {
-			acceptor_ptr.reset(new asio::ip::tcp::acceptor(transport_.io_service(), asio::ip::tcp::endpoint(asio::ip::address_v4::from_string(local_address_), port), false));
-			local_port_ = port;
-			break;
-		} catch (asio::system_error& se) {
-			if (port == MAX_CLIENT_PORT)
-				throw se;
-			if (se.code() != asio::error::address_in_use)
-				throw se;
-			// this port is already in use, try another one
-			continue;
+}
+
+void ClientProxy::setup()
+{
+	try
+	{
+		// FIXME: should we make the proxy a shared ptr?
+		transport_ptr_.reset(new ClientTransport(connect_address_, connect_port_,
+											boost::bind(&ClientProxy::on_transport_connect, this, _1, _2)));
+
+		for (unsigned short port = MIN_CLIENT_PORT; port <= MAX_CLIENT_PORT; port++) {
+			try {
+				acceptor_ptr.reset(
+						new asio::ip::tcp::acceptor(transport_ptr_->io_service(),
+														asio::ip::tcp::endpoint(asio::ip::address_v4::from_string(local_address_),
+														port), false));
+				local_port_ = port;
+				break;
+			} catch (asio::system_error& se) {
+				if (port == MAX_CLIENT_PORT)
+					throw se;
+				if (se.code() != asio::error::address_in_use)
+					throw se;
+				// this port is already in use, try another one
+				continue;
+			}
 		}
-	}
-	transport_.connect();
-} catch (asio::system_error& se) {
-	throw Exception(std::string(TRANSPORT_ERROR) + se.what());
+
+		// connect the transport
+		boost::static_pointer_cast<ClientTransport>(transport_ptr_)->connect();
+	} catch (asio::system_error& se) {
+		throw Exception(std::string(TRANSPORT_ERROR) + se.what());
+	}	
+}
+
+void ClientProxy::stop()
+{
+	acceptor_ptr->close();
+	acceptor_ptr.reset();
+	Proxy::stop();
 }
 
 const std::string& ClientProxy::local_address() const {
@@ -369,31 +430,28 @@ unsigned short ClientProxy::local_port() const {
 	return local_port_;
 }
 
-Transport& ClientProxy::transport() {
-	return static_cast<Transport&>(transport_);
-}
-
-void ClientProxy::on_transport_connect(socket_ptr_t remote_socket_ptr) {
+void ClientProxy::on_transport_connect(transport_ptr_t transport_ptr, socket_ptr_t remote_socket_ptr) {
 	session_ptr_t session_ptr = setup_tls_session(remote_socket_ptr);
 	if (!session_ptr) {
-		disconnect_(session_ptr_t(), socket_ptr_t(), remote_socket_ptr);
+		disconnect_(transport_ptr, session_ptr_t(), socket_ptr_t(), remote_socket_ptr);
 		throw Exception(TLS_SETUP_ERROR);
 	}
 	
 	// start accepting connections on the local socket
-	socket_ptr_t local_socket_ptr(new asio::ip::tcp::socket(transport_.io_service()));
+	socket_ptr_t local_socket_ptr(new asio::ip::tcp::socket(transport_ptr->io_service()));
 	acceptor_ptr->async_accept(*local_socket_ptr, boost::bind(&ClientProxy::on_client_connect, this, 
-			asio::placeholders::error, session_ptr, local_socket_ptr, remote_socket_ptr));
+			asio::placeholders::error, transport_ptr, session_ptr, local_socket_ptr, remote_socket_ptr));
 }
 
 void ClientProxy::on_client_connect(const asio::error_code& error, 
-		session_ptr_t session_ptr, socket_ptr_t local_socket_ptr, socket_ptr_t remote_socket_ptr) {
+		transport_ptr_t transport_ptr, session_ptr_t session_ptr,
+		socket_ptr_t local_socket_ptr, socket_ptr_t remote_socket_ptr) {
 	if (error) {
-		disconnect_(session_ptr, local_socket_ptr, remote_socket_ptr);
+		disconnect_(transport_ptr, session_ptr, local_socket_ptr, remote_socket_ptr);
 		return;
 	}
 	
-	tunnel(session_ptr, local_socket_ptr, remote_socket_ptr);
+	tunnel(transport_ptr, session_ptr, local_socket_ptr, remote_socket_ptr);
 }
 
 session_ptr_t ClientProxy::setup_tls_session(socket_ptr_t remote_socket_ptr) {
@@ -443,7 +501,8 @@ ServerProxy::ServerProxy(const std::string& bind_ip, unsigned short bind_port, u
 		const std::string& ca_file, const std::string& cert_file, const std::string& key_file)
 try
 	: Proxy(ca_file),
-	transport_(bind_ip, bind_port, boost::bind(&ServerProxy::on_transport_connect, this, _1)),
+	bind_ip_(bind_ip),
+	bind_port_(bind_port),
 	local_port_(local_port)
 {
 	// setup tls server state
@@ -457,36 +516,39 @@ try
 		throw Exception(TLS_SETUP_ERROR);
 
 	gnutls_certificate_set_dh_params(x509cred, dh_params);
-	
-	// start accepting connections
-	transport_.accept();
 } catch (asio::system_error& se) {
 	throw Exception(std::string(TRANSPORT_ERROR) + se.what());
 }
-	
-Transport& ServerProxy::transport() {
-	return static_cast<Transport&>(transport_);
+
+void ServerProxy::setup()
+{
+	// FIXME: should we make the proxy a shared ptr?
+	transport_ptr_.reset(new ServerTransport(bind_ip_, bind_port_,
+										boost::bind(&ServerProxy::on_transport_connect, this, _1, _2)));
+
+	// start accepting connections
+	boost::static_pointer_cast<ServerTransport>(transport_ptr_)->accept();
 }
 
-void ServerProxy::on_transport_connect(socket_ptr_t remote_socket_ptr) {
+void ServerProxy::on_transport_connect(transport_ptr_t transport_ptr, socket_ptr_t remote_socket_ptr) {
 	session_ptr_t session_ptr = setup_tls_session(remote_socket_ptr);
 	if (!session_ptr) {
-		disconnect_(session_ptr_t(), socket_ptr_t(), remote_socket_ptr);
+		disconnect_(transport_ptr, session_ptr_t(), socket_ptr_t(), remote_socket_ptr);
 		return;
 	}
 	
-	socket_ptr_t local_socket_ptr(new asio::ip::tcp::socket(transport_.io_service()));
+	socket_ptr_t local_socket_ptr(new asio::ip::tcp::socket(transport_ptr->io_service()));
 	try {
-		asio::ip::tcp::resolver resolver(transport_.io_service());
+		asio::ip::tcp::resolver resolver(transport_ptr->io_service());
 		asio::ip::tcp::resolver::query query("127.0.0.1", boost::lexical_cast<std::string>(local_port_));
 		asio::ip::tcp::resolver::iterator iterator(resolver.resolve(query));		
 		local_socket_ptr->connect(*iterator);		
 	} catch (asio::system_error& /*se*/) {
-		disconnect_(session_ptr, local_socket_ptr, remote_socket_ptr);
+		disconnect_(transport_ptr, session_ptr, local_socket_ptr, remote_socket_ptr);
 		return;
 	}
 
-	tunnel(session_ptr, local_socket_ptr, remote_socket_ptr);
+	tunnel(transport_ptr, session_ptr, local_socket_ptr, remote_socket_ptr);
 }
 
 session_ptr_t ServerProxy::setup_tls_session(socket_ptr_t remote_socket_ptr) {
