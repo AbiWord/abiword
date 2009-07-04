@@ -429,7 +429,7 @@ static bool s_AskForMathMLPathname(XAP_Frame * pFrame,
 //   This is the function that we actually call to insert the MathML.
 //
 bool 
-AbiMathView_FileInsert(AV_View* /*v*/, EV_EditMethodCallData */*d*/)
+AbiMathView_FileInsert(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 {
 	// Get the current view that the user is in.
 	XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
@@ -486,7 +486,7 @@ AbiMathView_FileInsert(AV_View* /*v*/, EV_EditMethodCallData */*d*/)
 //   a Latex expression.
 //
 bool 
-AbiMathView_LatexInsert(AV_View* v, EV_EditMethodCallData */*d*/)
+AbiMathView_LatexInsert(AV_View* v, EV_EditMethodCallData* /*d*/)
 {
 	FV_View * pView = static_cast<FV_View *>(v);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
