@@ -6350,7 +6350,7 @@ bool IE_Imp_MsWord_97::_handleTextboxesText(UT_uint32 iDocPosition)
 // 			return true;
 // 		}
 		
-		UT_DEBUGMSG(("In Textbox %d, on pos %d\n", m_iNextTextbox, iDocPosition));
+		xxx_UT_DEBUGMSG(("In Textbox %d, on pos %d\n", m_iNextTextbox, iDocPosition));
 	}
 	else if(m_bInTextboxes)
 	{
@@ -6518,9 +6518,9 @@ bool IE_Imp_MsWord_97::_appendStrux(PTStruxType pts, const gchar ** attributes)
 	}
 	else if(m_bInTextboxes && m_pTextboxEndSection)
 	{
-	        if(pts == PTX_Block)
+		if(pts == PTX_Block)
 		{
-		      UT_DEBUGMSG(("Insert block in Text box \n"));
+			xxx_UT_DEBUGMSG(("Insert block in Text box \n"));
 		}
 		return getDoc()->insertStruxBeforeFrag(m_pTextboxEndSection, pts, attributes);
 	}

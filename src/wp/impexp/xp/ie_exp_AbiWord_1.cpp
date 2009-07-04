@@ -481,7 +481,7 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 #else /* ENABLE_RESOURCE_MANAGER */
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
-	UT_DEBUGMSG(("_openTag: api %d, bHaveProp %d\n",api, bHaveProp));
+	xxx_UT_DEBUGMSG(("_openTag: api %d, bHaveProp %d\n",api, bHaveProp));
 	m_pie->write("<");
 
 	UT_return_if_fail(szPrefix && *szPrefix);

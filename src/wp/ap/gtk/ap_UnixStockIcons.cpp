@@ -329,7 +329,7 @@ abi_stock_from_toolbar_id (const gchar *toolbar_id)
 		g_free (stock_id);
 		stock_id = g_strdup (tmp2);
 	} else {
-		UT_DEBUGMSG(("abi_stock_get_gtk_stock_id returned NULL for stock_id: %s\n", stock_id));
+		xxx_UT_DEBUGMSG(("abi_stock_get_gtk_stock_id returned NULL for stock_id: %s\n", stock_id));
 	}
 
 	return stock_id;
