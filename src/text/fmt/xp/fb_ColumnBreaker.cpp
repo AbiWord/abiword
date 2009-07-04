@@ -1652,6 +1652,10 @@ fp_Container * fb_ColumnBreaker::_getNext(fp_Container * pCon)
 	if(pCon->getContainerType() != FP_CONTAINER_ENDNOTE)
 	{
 		pNext = pCon->getNextContainerInSection();
+		if(pNext)
+		{
+		    UT_return_val_if_fail(pNext->getDocSectionLayout() == m_pDocSec,NULL);
+		}
 		if(pNext != NULL)
 		{
 		        xxx_UT_DEBUGMSG(("_getNext: 1 Returning %p \n",pNext));

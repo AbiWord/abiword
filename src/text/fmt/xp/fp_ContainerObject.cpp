@@ -127,11 +127,16 @@ bool fp_ContainerObject::isColumnType(void) const
 fl_DocSectionLayout * fp_ContainerObject::getDocSectionLayout(void)
 {
     fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(getSectionLayout());
-    while(pCL && (pCL->getContainerType() != FL_CONTAINER_DOCSECTION))
+    while(pCL && (pCL->getContainerType() != FL_CONTAINER_DOCSECTION) && (pCL->getContainerType() != FL_CONTAINER_HDRFTR))
     {
+        xxx_UT_DEBUGMSG(("getDocSectionLayout: Container type %s \n",getContainerString()));
         pCL = pCL->myContainingLayout();
     }
-    if(pCL)
+    if(pCL && (pCL->getContainerType() == FL_CONTAINER_HDRFTR))
+    {
+        return static_cast<fl_HdrFtrSectionLayout *>(pCL)->getDocSectionLayout();
+    }
+    else if(pCL)
     {
         return static_cast<fl_DocSectionLayout *>(pCL);
     }

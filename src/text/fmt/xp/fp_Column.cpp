@@ -56,6 +56,7 @@ fp_VerticalContainer::fp_VerticalContainer(FP_ContainerType iType, fl_SectionLay
 	m_imaxContainerHeight(0)
 {
 	clearWrappedLines();
+	UT_ASSERT(getDocSectionLayout());
 }
 
 /*!

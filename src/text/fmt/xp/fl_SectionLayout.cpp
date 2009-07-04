@@ -3221,6 +3221,7 @@ fl_HdrFtrSectionLayout::fl_HdrFtrSectionLayout(HdrFtrType iHFType, FL_DocLayout*
 {
 	fl_Layout::setType(PTX_SectionHdrFtr); // Set the type of this strux
 	UT_DEBUGMSG(("SEVIOR: Creating HFType =%d \n",m_iHFType));
+	xxx_UT_DEBUGMSG(("DocSectionLayout is %p \n",getDocSectionLayout()));
 //
 // Since we're almost certainly removing blocks at the end of the doc, tell the
 // view to remember the current position on the active view.
@@ -5029,7 +5030,8 @@ fl_HdrFtrShadow::fl_HdrFtrShadow(FL_DocLayout* pLayout, fp_Page* pPage, fl_HdrFt
 	  m_pHdrFtrSL(pHdrFtrSL)
 {
 	// Force creation of the appropriate container object;
-	// throw away return value.
+	// throw away return value
+        xxx_UT_DEBUGMSG(("In Shadow Constructor %p DocSectionLayout %p \n",this,getDocSectionLayout()));
 	m_pPage->getHdrFtrContainer(m_pHdrFtrSL);
 	xxx_UT_DEBUGMSG(("check that m_iType is indeed FL_SECTION_SHADOW \n"));
 	UT_ASSERT(m_iType == FL_SECTION_SHADOW);
