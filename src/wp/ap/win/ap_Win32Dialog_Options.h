@@ -220,6 +220,7 @@ public:
 	SET_GATHER			(ViewHiddenText,		bool);
 	SET_GATHER			(ViewUnprintable,		bool);
 	SET_GATHER			(EnableSmoothScrolling,	bool);
+	SET_GATHER			(EnableOverwrite,		bool);
 
 	virtual void _gatherAutoSaveFilePeriod(UT_String &stRetVal);
 	virtual void _setAutoSaveFilePeriod(const UT_String &stPeriod);
@@ -237,6 +238,7 @@ public:
 
 	// Dummy
 	bool			m_boolEnableSmoothScrolling;
+	bool			m_boolEnableOverwrite;
 	bool			m_boolPrefsAutoSave;
 	bool			m_boolViewAll;
 	bool			m_boolViewHiddenText;
