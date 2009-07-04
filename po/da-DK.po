@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: AbiWord\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-10-14 05:26+0200\n"
-"PO-Revision-Date: 2008-11-23 14:53+0100\n"
+"PO-Revision-Date: 2009-03-20 15:17+0100\n"
 "Last-Translator: Morten Juhl-Johansen Zölde-Fejér <mjjzf@syntaktisk.dk>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
 "MIME-Version: 1.0\n"
@@ -57,6 +57,7 @@ msgstr " Autoopdatér"
 
 #. DLG_PageSetup_Percent
 #: po/tmp/ap_String_Id.h.h:29
+#, c-format
 msgid "% of normal size"
 msgstr "% af normal størrelse"
 
@@ -448,7 +449,7 @@ msgstr "Side&fod:"
 #. MENU_LABEL_TABLE_FORMAT
 #: po/tmp/ap_String_Id.h.h:188
 msgid "&Format Table"
-msgstr "&Formatér tabel"
+msgstr "&Formattér tabel"
 
 #. MENU_LABEL_EDIT_GOTO
 #: po/tmp/ap_String_Id.h.h:190
@@ -567,7 +568,7 @@ msgstr "Hold &linjer samlet"
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_LRM
 #: po/tmp/ap_String_Id.h.h:236
 msgid "&LRM"
-msgstr "&Venstre-mod-højre-markør"
+msgstr "&-mod-højre-markør"
 
 #. DLG_PageSetup_Landscape
 #: po/tmp/ap_String_Id.h.h:238
@@ -582,7 +583,7 @@ msgstr "&Sprog"
 #. MENU_LABEL_ALIGN_LEFT
 #: po/tmp/ap_String_Id.h.h:242
 msgid "&Left"
-msgstr "&Venstre"
+msgstr "&Venstrestillet"
 
 #. MENU_LABEL_FMT_DIRECTION_DO_LTR
 #: po/tmp/ap_String_Id.h.h:244
@@ -884,7 +885,7 @@ msgstr "&Statuslinje"
 #. MENU_LABEL_FMT_SUBSCRIPT
 #: po/tmp/ap_String_Id.h.h:363
 msgid "&Subscript"
-msgstr "&Sænket"
+msgstr "&Sænket skrift"
 
 #. DLG_Para_PushSuppressLineNumbers
 #: po/tmp/ap_String_Id.h.h:365
@@ -966,7 +967,7 @@ msgstr "&Vis"
 #. MENU_LABEL_VIEW_WEB
 #: po/tmp/ap_String_Id.h.h:396
 msgid "&Web Layout"
-msgstr "&Netudseende"
+msgstr "&Netlayout"
 
 #. MENU_LABEL_VIEW_ZOOM_WHOLE
 #: po/tmp/ap_String_Id.h.h:398
@@ -1498,7 +1499,7 @@ msgstr "Byggemål"
 #. DLG_Lists_Type_bullet
 #: po/tmp/ap_String_Id.h.h:605
 msgid "Bullet"
-msgstr "Bullet"
+msgstr "Punkt"
 
 #. DLG_Lists_Bullet_List
 #. STYLE_BULLETLIST
@@ -1749,7 +1750,7 @@ msgstr "&Stavekontrol"
 #. DLG_Options_Label_GrammarCheck
 #: po/tmp/ap_String_Id.h.h:712
 msgid "Check &grammar as you type"
-msgstr "Stave&kontrol mens du skriver"
+msgstr "&Grammatikkontrol mens du skriver"
 
 #. MENU_LABEL_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h.h:714
@@ -2182,7 +2183,7 @@ msgstr "Bi-direktionale indstillinger"
 #: po/tmp/ap_String_Id.h.h:883
 #: po/tmp/xap_String_Id.h.h:241
 msgid "Dashed List"
-msgstr "Stregliste"
+msgstr "Liste med streger"
 
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
@@ -2203,7 +2204,7 @@ msgstr "Dato og tid"
 #. FIELD_DateTime_DOY
 #: po/tmp/ap_String_Id.h.h:892
 msgid "Day # in the year"
-msgstr "Nummer dag i året"
+msgstr "Dagens nummer i året"
 
 #. DLG_Options_Btn_Default
 #: po/tmp/ap_String_Id.h.h:894
@@ -2245,7 +2246,7 @@ msgstr "Standard sidestørrelse"
 #. DLG_Tab_Label_DefaultTS
 #: po/tmp/ap_String_Id.h.h:910
 msgid "Default tab stops:"
-msgstr "Standard tabulatorstop:"
+msgstr "Standardtabulatorstop:"
 
 #. DLG_Options_Label_DirectionRtl
 #: po/tmp/ap_String_Id.h.h:912
@@ -2381,7 +2382,7 @@ msgstr "Beskrivelse:"
 #: po/tmp/ap_String_Id.h.h:967
 #: po/tmp/xap_String_Id.h.h:260
 msgid "Diamond List"
-msgstr "Diamantliste"
+msgstr "Liste med ruder"
 
 #. DLG_Options_Label_SpellDictionaries
 #: po/tmp/ap_String_Id.h.h:969
@@ -2391,17 +2392,17 @@ msgstr "Ordbøger"
 #. DLG_HdrFtr_FooterEven
 #: po/tmp/ap_String_Id.h.h:971
 msgid "Different footer on facing pages"
-msgstr "Different footer on facing pages"
+msgstr "Særskilt bundtekst på modsatte sider"
 
 #. DLG_HdrFtr_FooterFirst
 #: po/tmp/ap_String_Id.h.h:973
 msgid "Different footer on first page"
-msgstr "Anderledes sidefod på 1. side"
+msgstr "Særskilt sidefod på 1. side"
 
 #. DLG_HdrFtr_FooterLast
 #: po/tmp/ap_String_Id.h.h:975
 msgid "Different footer on last page"
-msgstr "Anderledes sidefod på sidste side"
+msgstr "Særskilt sidefod på sidste side"
 
 #. DLG_HdrFtr_HeaderEven
 #: po/tmp/ap_String_Id.h.h:977
@@ -2411,17 +2412,17 @@ msgstr "Forskellige sidehoveder på modsatte sider"
 #. DLG_HdrFtr_HeaderFirst
 #: po/tmp/ap_String_Id.h.h:979
 msgid "Different header on first page"
-msgstr "Anderledes sidehoved på første side"
+msgstr "Særskilt sidehoved på første side"
 
 #. DLG_HdrFtr_HeaderLast
 #: po/tmp/ap_String_Id.h.h:981
 msgid "Different header on last page"
-msgstr "Anderledes sidehoved på sidste side"
+msgstr "Særskilt sidehoved på sidste side"
 
 #. DLG_Styles_StylesLocked
 #: po/tmp/ap_String_Id.h.h:983
 msgid "Disable all formatting commands, except styles"
-msgstr "Deaktivér alle formatteringskommandoer pånær tyopgrafier"
+msgstr "Deaktivér alle formatteringskommandoer pånær typografier"
 
 #. MENU_STATUSLINE_HELP_CREDITS
 #: po/tmp/ap_String_Id.h.h:985
@@ -2553,7 +2554,7 @@ msgstr "Indlejret"
 #. MENU_LABEL_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h.h:1040
 msgid "Enable F&ormatting Tools"
-msgstr "Tillad F&ormatteringsværktøjer"
+msgstr "Tillad f&ormatteringsværktøjer"
 
 #. DLG_Options_Label_CheckEnableSmoothScrolling
 #: po/tmp/ap_String_Id.h.h:1042
@@ -2723,7 +2724,7 @@ msgstr "Filnavn"
 #. DLG_FormatTOC_FillStyle
 #: po/tmp/ap_String_Id.h.h:1105
 msgid "Fill style:"
-msgstr "Fyldtyopgrafi"
+msgstr "Fyldtypografi"
 
 #. DLG_FR_FindTitle
 #: po/tmp/ap_String_Id.h.h:1107
@@ -3051,7 +3052,7 @@ msgstr "Overskrift for indholdsfortegnelse:"
 #: po/tmp/ap_String_Id.h.h:1241
 #: po/tmp/xap_String_Id.h.h:383
 msgid "Hand List"
-msgstr "Håndliste"
+msgstr "Liste med hånd-symboler"
 
 #. DLG_Para_SpecialHanging
 #: po/tmp/ap_String_Id.h.h:1243
@@ -3105,7 +3106,7 @@ msgstr "Overskriftstypografi:"
 #: po/tmp/ap_String_Id.h.h:1260
 #: po/tmp/xap_String_Id.h.h:399
 msgid "Heart List"
-msgstr "Hjerteliste"
+msgstr "Liste med hjertesymboler"
 
 #. DLG_Lists_Hebrew_List
 #: po/tmp/ap_String_Id.h.h:1262
@@ -3127,7 +3128,7 @@ msgstr "&Indhold af hjælp"
 #. MENU_LABEL_HELP_INDEX
 #: po/tmp/ap_String_Id.h.h:1270
 msgid "Help &Introduction"
-msgstr "Hjælp &introduktion"
+msgstr "Hjælpe&indeks"
 
 #. DLG_Options_Label_Hide
 #: po/tmp/ap_String_Id.h.h:1272
@@ -3202,7 +3203,7 @@ msgstr "Baggrundsbillede"
 #: po/tmp/ap_String_Id.h.h:1301
 #: po/tmp/xap_String_Id.h.h:433
 msgid "Implies List"
-msgstr "Implikationsliste"
+msgstr "Liste med implikationstegn"
 
 #. MENU_STATUSLINE_FILE_IMPORTSTYLES
 #: po/tmp/ap_String_Id.h.h:1303
@@ -3959,17 +3960,17 @@ msgstr "Divs."
 #. DLG_Stylist_MiscStyles
 #: po/tmp/ap_String_Id.h.h:1620
 msgid "Miscellaneous Styles"
-msgstr "Forskellige typografier"
+msgstr "Andre typografier"
 
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h.h:1622
 msgid "Modify Styles"
-msgstr "Ændr typografier"
+msgstr "Modificér typografier"
 
 #. DLG_Styles_Modify
 #: po/tmp/ap_String_Id.h.h:1624
 msgid "Modify..."
-msgstr "Ændr..."
+msgstr "Modificér..."
 
 #. FIELD_DateTime_MonthDayYear
 #: po/tmp/ap_String_Id.h.h:1626
@@ -4746,12 +4747,12 @@ msgstr "Start forfra på hver side"
 #. DLG_FormatFootnotes_EndRestartSec
 #: po/tmp/ap_String_Id.h.h:1953
 msgid "Restart on each section"
-msgstr "Start sidenumre forfra på hver sektion"
+msgstr "Start sidenummerering forfra på hver sektion"
 
 #. DLG_HdrFtr_RestartCheck
 #: po/tmp/ap_String_Id.h.h:1955
 msgid "Restart page numbers on new sections"
-msgstr "Start sidenumre forfra på nye sektioner"
+msgstr "Start sidenummerering forfra på nye sektioner"
 
 #. DLG_Lists_Resume_Previous_List
 #: po/tmp/ap_String_Id.h.h:1957
@@ -5517,7 +5518,7 @@ msgstr "Opsplit denne celle"
 #: po/tmp/ap_String_Id.h.h:2269
 #: po/tmp/xap_String_Id.h.h:699
 msgid "Square List"
-msgstr "Liste med firkanter som tegn"
+msgstr "Liste med firkanter"
 
 #. MENU_LABEL_FMT_STYLE
 #: po/tmp/ap_String_Id.h.h:2271
@@ -5539,7 +5540,7 @@ msgstr "Standardværktøjslinje"
 #: po/tmp/ap_String_Id.h.h:2277
 #: po/tmp/xap_String_Id.h.h:703
 msgid "Star List"
-msgstr "Liste med stjerner som tegn"
+msgstr "Liste med stjerner"
 
 #. DLG_Lists_Start
 #: po/tmp/ap_String_Id.h.h:2279
@@ -5654,7 +5655,7 @@ msgstr "Typografier"
 #. DLG_Stylist_Title
 #: po/tmp/ap_String_Id.h.h:2325
 msgid "Stylist"
-msgstr "Typograf"
+msgstr "Typografivælger"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h.h:2327
@@ -5693,12 +5694,12 @@ msgstr "Kolonnesum"
 #. MENU_LABEL_TABLE_INSERT_SUMCOLS
 #: po/tmp/ap_String_Id.h.h:2341
 msgid "Sum a Row"
-msgstr "Opsummér række"
+msgstr "Sum af tabelrække"
 
 #. FIELD_Numbers_TableSumRows
 #: po/tmp/ap_String_Id.h.h:2343
 msgid "Sum a Table Column"
-msgstr "Tabelkolonnesum"
+msgstr "Sum af tabelkolonne"
 
 #. FIELD_Numbers_TableSumCols
 #: po/tmp/ap_String_Id.h.h:2345
@@ -5915,7 +5916,7 @@ msgstr "Tre"
 #: po/tmp/ap_String_Id.h.h:2430
 #: po/tmp/xap_String_Id.h.h:757
 msgid "Tick List"
-msgstr "Afkrydsningsliste"
+msgstr "Liste med afkrydsningstegn"
 
 #. FIELD_DateTime_TimeZone
 #: po/tmp/ap_String_Id.h.h:2432
@@ -5965,7 +5966,7 @@ msgstr "Toplinje"
 #: po/tmp/ap_String_Id.h.h:2449
 #: po/tmp/xap_String_Id.h.h:769
 msgid "Triangle List"
-msgstr "Liste med trekanter som tegn"
+msgstr "Liste med trekanter"
 
 #. DLG_Column_Two
 #: po/tmp/ap_String_Id.h.h:2451
