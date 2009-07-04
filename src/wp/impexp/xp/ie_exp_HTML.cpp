@@ -343,18 +343,22 @@ static const UT_uint32 s_PropListLen = G_N_ELEMENTS(s_prop_list) - 2; /* don't i
 */
 static bool is_CSS (const char * prop_name, const char ** prop_default = 0)
 {
-	if ( prop_name == 0) return false;
-	if (*prop_name == 0) return false;
+	if (prop_name == 0)
+		return false;
+	if (*prop_name == 0)
+		return false;
 
 	bool bCSS = false;
 
 	for (UT_uint32 i = 0; i < s_PropListLen; i += 2)
+	{
 		if (!strcmp (prop_name, s_prop_list[i]))
 		{
 			if (prop_default) *prop_default = s_prop_list[i+1];
 			bCSS = true;
 			break;
 		}
+	}
 	return bCSS;
 }
 
@@ -4128,17 +4132,17 @@ void s_HTML_Listener::_openTextBox (PT_AttrPropIndex api)
 	m_bInTextBox = true; // See comment by declaration
 	/* --- Copied from closeSection --- */
 	// TODO: Extract me into closePseudoSection.
-		if (m_bInBlock)
+	if (m_bInBlock)
 		_closeTag (); // We need to investigate the tag stack usage of this, and whether or not we really would rather specify the tag in all cases.
 
-	       // Need to investigate whether we can safely uncomment this without undoing heading work, or any other kind using unended structures like lists.
-	  	// _popUnendedStructures(); // Close lists, and possibly other stuff.  Even if it theoretically can span sections, we run a high risk of corrupting the document.
+	// Need to investigate whether we can safely uncomment this without undoing heading work, or any other kind using unended structures like lists.
+	// _popUnendedStructures(); // Close lists, and possibly other stuff.  Even if it theoretically can span sections, we run a high risk of corrupting the document.
 
-	       if (m_bInSection && (tagTop () == TT_DIV))
-	       {
-		    m_utf8_1 = "div";
-	     	    tagClose (TT_DIV, m_utf8_1);
-	       }
+	if (m_bInSection && (tagTop () == TT_DIV))
+	{
+		m_utf8_1 = "div";
+		tagClose (TT_DIV, m_utf8_1);
+	}
 	/* --- */
 	m_utf8_1 = "div style=\""; // We represent the box with a div (block)
 	
@@ -4202,25 +4206,25 @@ void s_HTML_Listener::_openTextBox (PT_AttrPropIndex api)
 void s_HTML_Listener::_closeTextBox ()
 {
 	// We don't need to close the block ourselves because _closeSection does it for us.
-   /* --- */
-   // TODO: Extract me into closePseudoSection
+
+	// TODO: Extract me into closePseudoSection
 	// We cannot use _closeSection(), we're not actually in a section.
-	  if (m_bInBlock)
+	if (m_bInBlock)
 		_closeTag (); // We need to investigate the tag stack usage of this, and whether or not we really would rather specify the tag in all cases.
 
-	  // Need to investigate whether we can safely uncomment this without undoing heading work, or any other kind using unended structures like lists.
-	  // _popUnendedStructures(); // Close lists, and possibly other stuff.  Even if it theoretically can span sections, we run a high risk of corrupting the document.
+	// Need to investigate whether we can safely uncomment this without undoing heading work, or any other kind using unended structures like lists.
+	// _popUnendedStructures(); // Close lists, and possibly other stuff.  Even if it theoretically can span sections, we run a high risk of corrupting the document.
 
-	  if ((tagTop () == TT_DIV))
-	  {
-	  	m_utf8_1 = "div";
+	if ((tagTop () == TT_DIV))
+	{
+		m_utf8_1 = "div";
 		tagClose (TT_DIV, m_utf8_1);
-	  }
-	  else
-	  {
-	       UT_DEBUGMSG(("WARNING: Something gone awry with this textbox \n"));
-	  }
-   /* --- */
+	}
+	else
+	{
+		UT_DEBUGMSG(("WARNING: Something gone awry with this textbox \n"));
+	}
+
 	// Fortunately for us, abi does not permit nested frames yet.
 	m_bInFrame = false;
 	m_bInTextBox = false;
@@ -4431,7 +4435,8 @@ void s_HTML_Listener::_handleEmbedded (PT_AttrPropIndex api)
 	const PP_AttrProp * pAP = 0;
 	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
 
-	if (!bHaveProp || (pAP == 0)) return;
+	if (!bHaveProp || (pAP == 0))
+		return;
 
 	const gchar * szDataID = 0;
 	pAP->getAttribute ("dataid", szDataID);
@@ -4451,10 +4456,12 @@ void s_HTML_Listener::_handleEmbedded (PT_AttrPropIndex api)
 	const UT_ByteBuf * pByteBuf = 0;
 
 	if (!m_pDocument->getDataItemDataByName(szDataID, &pByteBuf, 
-                                            &mimeType, NULL)) {
+                                            &mimeType, NULL))
+	{
 		return;
     }
-	if ((pByteBuf == 0) || mimeType.empty()) {
+	if ((pByteBuf == 0) || mimeType.empty())
+	{
         return; // ??
     }
 		
@@ -4470,20 +4477,25 @@ void s_HTML_Listener::_handleEmbedded (PT_AttrPropIndex api)
 	 */
 	ptr = suffix;
 	while (ptr > dataid)
+	{
 		if (*--ptr == '_')
 			{
 				suffix = ptr;
 				suffid = suffix;
 				break;
 			}
+	}
 	ptr = suffix;
 	while (ptr > dataid)
+	{
 		if (*--ptr == '.')
-			{
-				suffix = ptr;
-				// break;
-			}
-	if (dataid == suffix) return;
+		{
+			suffix = ptr;
+			// break;
+		}
+	}
+	if (dataid == suffix)
+		return;
 
 	char * base_name = UT_go_basename_from_uri (m_pie->getFileName ());
 		
@@ -4509,16 +4521,17 @@ void s_HTML_Listener::_handleEmbedded (PT_AttrPropIndex api)
 	url += s_string_to_url (filename);
 		
 	if (get_Multipart ())
+	{
+		UT_UTF8String * save_url = new UT_UTF8String(url);
+		if (save_url == 0)
+			return;
+			
+		if (!m_SavedURLs.insert (szDataID, save_url)) // arg. failed. skip object
 		{
-			UT_UTF8String * save_url = new UT_UTF8String(url);
-			if (save_url == 0) return;
-				
-			if (!m_SavedURLs.insert (szDataID, save_url)) // arg. failed. skip object
-				{
-					DELETEP(save_url);
-					return;
-				}
+			DELETEP(save_url);
+			return;
 		}
+	}
 
 	/* szDataID is the raw string with the data ID
 	 * objectdir is the name of the directory in which we'll write the object
@@ -4526,9 +4539,9 @@ void s_HTML_Listener::_handleEmbedded (PT_AttrPropIndex api)
 	 * url      is the URL which we'll use
 	 */
 	if (!get_Embed_Images () && !get_Multipart ())
-		{
-			IE_Exp::writeBufferToFile(pByteBuf, objectdir, filename.utf8_str());
-		}
+	{
+		IE_Exp::writeBufferToFile(pByteBuf, objectdir, filename.utf8_str());
+	}
 		
 	m_utf8_1 = "object";
 		
@@ -4539,67 +4552,69 @@ void s_HTML_Listener::_handleEmbedded (PT_AttrPropIndex api)
 	double dWidth = UT_convertToInches(szWidth);
 	double total = 0;
 	if(m_TableHelper.getNestDepth() > 0)
-		{
-			total = m_dCellWidthInches;
-		}
+	{
+		total = m_dCellWidthInches;
+	}
 	else
-		{
-			total =  m_dPageWidthInches - m_dSecLeftMarginInches - m_dSecRightMarginInches;
-		}
+	{
+		total =  m_dPageWidthInches - m_dSecLeftMarginInches - m_dSecRightMarginInches;
+	}
 	double percent = 100.0*dWidth/total;
 	if(percent > 100.)
-		{
-			percent = 100.0;
-		}
+	{
+		percent = 100.0;
+	}
 	UT_UTF8String tmp;
 	UT_DEBUGMSG(("Width of Object %s \n",szWidth ? szWidth : "(null)"));
 		
 #if defined(DEBUG)
 	UT_sint32 iObjectWidth, iObjectHeight;
-	if(UT_PNG_getDimensions(pByteBuf, iObjectWidth, iObjectHeight)) {
+	if(UT_PNG_getDimensions(pByteBuf, iObjectWidth, iObjectHeight))
+	{
 		UT_DEBUGMSG(("Real object dimensions: (%d x %d)\n", iObjectWidth, iObjectHeight));
 	}
 #endif
 	if (szWidth)
+	{
+		m_utf8_1 += " width=\"";
+		if (get_Scale_Units())
 		{
-			m_utf8_1 += " width=\"";
-			if (get_Scale_Units())
-				{
-					UT_sint32 iPercent = (UT_sint32)(percent + 0.5);
-					tmp = UT_UTF8String_sprintf("%d%%",iPercent);
-				} else // Abi stores the orig file, but abs or unitless must be true to dims set in abi
-					{
-						double dMM = UT_convertToDimension(szWidth, DIM_MM);
-						tmp = UT_UTF8String_sprintf("%.1fmm",dMM);
-					}
-			m_utf8_1 += tmp;
-			m_utf8_1 += "\"";
+			UT_sint32 iPercent = (UT_sint32)(percent + 0.5);
+			tmp = UT_UTF8String_sprintf("%d%%",iPercent);
 		}
+		else // Abi stores the orig file, but abs or unitless must be true to dims set in abi
+		{
+			double dMM = UT_convertToDimension(szWidth, DIM_MM);
+			tmp = UT_UTF8String_sprintf("%.1fmm",dMM);
+		}
+		m_utf8_1 += tmp;
+		m_utf8_1 += "\"";
+	}
 
 	m_utf8_1 += UT_UTF8String_sprintf(" type=\"%s\"", mimeType.c_str());
 
 	m_tagStack.push (TT_OBJECT);
 	if (!get_Embed_Images () || get_Multipart ())
-		{
-			m_utf8_1 += " data=\"";
-			m_utf8_1 += url;
-			m_utf8_1 += "\"";
+	{
+		m_utf8_1 += " data=\"";
+		m_utf8_1 += url;
+		m_utf8_1 += "\"";
 
-			tagOpenBroken (m_utf8_1, ws_None);
+		tagOpenBroken (m_utf8_1, ws_None);
 
-			m_utf8_1 = "";
-			tagCloseBroken (m_utf8_1, true, ws_None);
-		}
+		m_utf8_1 = "";
+		tagCloseBroken (m_utf8_1, true, ws_None);
+	}
 	else
-		{
-			m_utf8_1 += UT_UTF8String_sprintf(" data=\"data:%s;base64,", mimeType.c_str());
-			tagOpenBroken (m_utf8_1, ws_None);
+	{
+		m_utf8_1 += UT_UTF8String_sprintf(" data=\"data:%s;base64,", mimeType.c_str());
+		tagOpenBroken (m_utf8_1, ws_None);
 
-			_writeImageBase64 (pByteBuf);
-			
-			m_utf8_1 = "\"";
-			tagCloseBroken (m_utf8_1, true, ws_None);
-		}
+		_writeImageBase64 (pByteBuf);
+		
+		m_utf8_1 = "\"";
+		tagCloseBroken (m_utf8_1, true, ws_None);
+	}
 
 	// embed an <img> version of the object, as a rendering fallback
 	_handleImage (pAP, imgDataID.utf8_str(),false);
@@ -4634,6 +4649,7 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 	if (!m_pDocument->getDataItemDataByName(szDataID, &pByteBuf, 
                                             &mimeType, NULL))
 		return;
+
 	if ((pByteBuf == 0) || mimeType.empty()) 
         return; // ??
 
@@ -4654,20 +4670,25 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 	 */
 	ptr = suffix;
 	while (ptr > dataid)
+	{
 		if (*--ptr == '_')
 		{
 			suffix = ptr;
 			suffid = suffix;
 			break;
 		}
+	}
 	ptr = suffix;
 	while (ptr > dataid)
+	{
 		if (*--ptr == '.')
 		{
 			suffix = ptr;
 			// break;
 		}
-	if (dataid == suffix) return;
+	}
+	if (dataid == suffix)
+		return;
 
 	char * base_name = UT_go_basename_from_uri (m_pie->getFileName ());
 
@@ -4688,10 +4709,12 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 	filename += suffid;
 
 	std::string ext;
-    if(m_pDocument->getDataItemFileExtension(dataid, ext, true)) {
+    if(m_pDocument->getDataItemFileExtension(dataid, ext, true))
+	{
         filename += ext;
     }
-    else {
+    else
+	{
         filename += ".png";
     }
         
@@ -4727,28 +4750,28 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 	m_utf8_1 = "img";
 	if(bIsPositioned)
 	{
-			const gchar * szXPos = NULL;
-			UT_sint32 ixPos = 0;
-			if(pAP->getProperty("xpos",szXPos))
-			{
-				    ixPos= UT_convertToLogicalUnits(szXPos);
-			}
-			else if(pAP->getProperty("frame-col-xpos",szXPos))
-			{
-				    ixPos= UT_convertToLogicalUnits(szXPos);
-			}
-			else if(pAP->getProperty("frame-page-xpos",szXPos))
-			{
-				    ixPos= UT_convertToLogicalUnits(szXPos);
-			}
-			if(ixPos > UT_convertToLogicalUnits("1.0in"))
-			{
-					m_utf8_1 += " align=\"right\" ";
-			}
-			else
-			{
-					m_utf8_1 += " align=\"left\" ";
-			}
+		const gchar * szXPos = NULL;
+		UT_sint32 ixPos = 0;
+		if(pAP->getProperty("xpos",szXPos))
+		{
+			    ixPos= UT_convertToLogicalUnits(szXPos);
+		}
+		else if(pAP->getProperty("frame-col-xpos",szXPos))
+		{
+			    ixPos= UT_convertToLogicalUnits(szXPos);
+		}
+		else if(pAP->getProperty("frame-page-xpos",szXPos))
+		{
+			    ixPos= UT_convertToLogicalUnits(szXPos);
+		}
+		if(ixPos > UT_convertToLogicalUnits("1.0in"))
+		{
+				m_utf8_1 += " align=\"right\" ";
+		}
+		else
+		{
+				m_utf8_1 += " align=\"left\" ";
+		}
 	}
 	const gchar * szWidth  = 0;
 	if(!bIsPositioned)
@@ -4865,9 +4888,9 @@ void s_HTML_Listener::_handlePendingImages ()
 
 		const UT_ByteBuf * pByteBuf = 0;
 
-		if (!m_pDocument->getDataItemDataByName(dataid, &pByteBuf, 
-                                                &mimeType, NULL))
+		if (!m_pDocument->getDataItemDataByName(dataid, &pByteBuf, &mimeType, NULL))
 			return;
+
 		if (pByteBuf) // this should always be found, but just in case...
 		{
 			multiBoundary ();
@@ -4895,7 +4918,8 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 	const PP_AttrProp * pAP = 0;
 	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
 
-	if (!bHaveProp || (pAP == 0)) return;
+	if (!bHaveProp || (pAP == 0))
+		return;
 
 	const gchar * szType = 0;
 	pAP->getAttribute ("type", szType);
@@ -5029,7 +5053,8 @@ void s_HTML_Listener::_handleHyperlink (PT_AttrPropIndex api)
 	const PP_AttrProp * pAP = 0;
 	bool bHaveProp = (api ? (m_pDocument->getAttrProp (api, &pAP)) : false);
 
-	if (!bHaveProp || (pAP == 0)) return;
+	if (!bHaveProp || (pAP == 0))
+		return;
 
 	const gchar * szHRef = 0;
 	pAP->getAttribute ("xlink:href", szHRef);
@@ -5046,8 +5071,6 @@ void s_HTML_Listener::_handleHyperlink (PT_AttrPropIndex api)
 		tagOpen (TT_A, m_utf8_1, ws_None);
 	}
 }
-
-
 
 void s_HTML_Listener::_handleAnnotationMark (PT_AttrPropIndex api)
 {
@@ -5086,12 +5109,14 @@ void s_HTML_Listener::_handleBookmark (PT_AttrPropIndex api)
 	const PP_AttrProp * pAP = 0;
 	bool bHaveProp = (api ? (m_pDocument->getAttrProp (api, &pAP)) : false);
 
-	if (!bHaveProp || (pAP == 0)) return;
+	if (!bHaveProp || (pAP == 0))
+		return;
 
 	const gchar * szType = 0;
 	pAP->getAttribute ("type", szType);
 
-	if (szType == 0) return; // ??
+	if (szType == 0)
+		return; // ??
 
 	if (g_ascii_strcasecmp (szType, "start") == 0)
 	{
@@ -5171,7 +5196,8 @@ void s_HTML_Listener::_handleMetaTag (const char * key, UT_UTF8String & value)
 
 void s_HTML_Listener::_handleMeta ()
 {
-	if (!m_pie->isCopying ()) {
+	if (!m_pie->isCopying ())
+	{
 
 		UT_UTF8String metaProp;
 		
@@ -5313,180 +5339,183 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 	switch (pcrx->getStruxType ())
 	{
 		case PTX_Section:
+		{
+			m_bIgnoreTillNextSection = false;
+			
+			// TODO: It may be wise to look into the necessity of an _popUnendedStructures here.  However,
+			// that may also not play nice with structures, if any, which span sections.  Unended structures
+			// can theoretically do so, such as lists that attach to a extrastructural listID.  However, we
+			// also (as of this writing) do not support incontiguous lists.  Again, there's an ambiguity
+			// regarding how this should be handled because the behaviour of the piecetable is incompletely
+			// defined.
+			// UPDATE: We're going to put one in _closeSection for safety's sake.  If it makes some output
+			// 	    less pretty, please do file bugs and we can fix that on a case by case basis, but
+			// 	    that's preferable to spitting out corrupt html.
+			
+			if(m_bIgnoreTillEnd)
 			{
-				m_bIgnoreTillNextSection = false;
-				
-				// TODO: It may be wise to look into the necessity of an _popUnendedStructures here.  However,
-				// that may also not play nice with structures, if any, which span sections.  Unended structures
-				// can theoretically do so, such as lists that attach to a extrastructural listID.  However, we
-				// also (as of this writing) do not support incontiguous lists.  Again, there's an ambiguity
-				// regarding how this should be handled because the behaviour of the piecetable is incompletely
-				// defined.
-				// UPDATE: We're going to put one in _closeSection for safety's sake.  If it makes some output
-				// 	    less pretty, please do file bugs and we can fix that on a case by case basis, but
-				// 	    that's preferable to spitting out corrupt html.
-				
-				if(m_bIgnoreTillEnd)
-				{
-					return true;  // Nested sections could be the sign of a severe problem, even if caused by import
-				}
-				
-				// This block prepares us for getting document-level properties (namely, the endnote-place-endsection one stored in doEndnotes)
-				PT_AttrPropIndex docApi = m_pDocument->getAttrPropIndex();
-				const gchar * doEndnotes = NULL;
-				const PP_AttrProp * pDAP = NULL;
-				m_pDocument->getAttrProp (docApi, &pDAP);
-				
-				// If the d-e-p-e.s. prop is defined	(getProp call succeeds and returns TRUE), and it is 1 (TRUE), we're supposed to spit out the endnotes every section.
-				if(pDAP->getProperty("document-endnote-place-endsection", doEndnotes) && atoi(doEndnotes))
-					{ _doEndnotes(); } // Spit out the endnotes that have accumulated for this past section.
-				
-				if (m_bInBlock) _closeTag (); // possible problem with lists??
-				_openSection (api, 0); // Actually start the next section, which is why we're here.
-				return true;
+				return true;  // Nested sections could be the sign of a severe problem, even if caused by import
 			}
+			
+			// This block prepares us for getting document-level properties (namely, the endnote-place-endsection one stored in doEndnotes)
+			PT_AttrPropIndex docApi = m_pDocument->getAttrPropIndex();
+			const gchar * doEndnotes = NULL;
+			const PP_AttrProp * pDAP = NULL;
+			m_pDocument->getAttrProp (docApi, &pDAP);
+			
+			// If the d-e-p-e.s. prop is defined	(getProp call succeeds and returns TRUE), and it is 1 (TRUE), we're supposed to spit out the endnotes every section.
+			if(pDAP->getProperty("document-endnote-place-endsection", doEndnotes) && atoi(doEndnotes))
+			{
+				_doEndnotes(); // Spit out the endnotes that have accumulated for this past section.
+			}
+			
+			if (m_bInBlock) _closeTag (); // possible problem with lists??
+			_openSection (api, 0); // Actually start the next section, which is why we're here.
+			return true;
+		}
 
 		case PTX_Block:
+		{
+			if(m_bIgnoreTillEnd || m_bIgnoreTillNextSection)
 			{
-				if(m_bIgnoreTillEnd || m_bIgnoreTillNextSection)
-				{
-					return true;
-				}
-				if (m_bFirstWrite && m_bClipBoard) _openSection (0, 0);
-				_openTag (api, sdh);
 				return true;
 			}
+			if (m_bFirstWrite && m_bClipBoard) _openSection (0, 0);
+			_openTag (api, sdh);
+			return true;
+		}
 
 #ifdef HTML_TABLES_SUPPORTED
 		case PTX_SectionTable:
+		{
+			if(m_bIgnoreTillEnd || m_bIgnoreTillNextSection)
 			{
-				if(m_bIgnoreTillEnd || m_bIgnoreTillNextSection)
-				{
-					return true;
-				}
-				if (m_bFirstWrite && m_bClipBoard) _openSection (0, 0);
+				return true;
+			}
+			if (m_bFirstWrite && m_bClipBoard) _openSection (0, 0);
 
+			m_TableHelper.OpenTable(sdh,pcr->getIndexAP()) ;
+			_closeSpan();
+			_closeTag();
+			_openTable(pcr->getIndexAP());
+			return true;
+		}
+
+		case PTX_SectionCell:
+		{
+			if(m_bIgnoreTillEnd || m_bIgnoreTillNextSection)
+			{
+				return true;
+			}
+			if(m_TableHelper.getNestDepth() <1)
+			{
 				m_TableHelper.OpenTable(sdh,pcr->getIndexAP()) ;
 				_closeSpan();
 				_closeTag();
 				_openTable(pcr->getIndexAP());
-				return true;
 			}
-
-		case PTX_SectionCell:
-			{
-				if(m_bIgnoreTillEnd || m_bIgnoreTillNextSection)
-				{
-					return true;
-				}
-				if(m_TableHelper.getNestDepth() <1)
-				{
-					m_TableHelper.OpenTable(sdh,pcr->getIndexAP()) ;
-					_closeSpan();
-					_closeTag();
-					_openTable(pcr->getIndexAP());
-				}
-				m_TableHelper.OpenCell(pcr->getIndexAP()) ;
-				_closeSpan();
-				_closeTag();
-				_openCell(pcr->getIndexAP());
-				return true;
-			}
+			m_TableHelper.OpenCell(pcr->getIndexAP()) ;
+			_closeSpan();
+			_closeTag();
+			_openCell(pcr->getIndexAP());
+			return true;
+		}
 
 		case PTX_EndTable:
+		{
+			if(m_bIgnoreTillEnd || m_bIgnoreTillNextSection)
 			{
-				if(m_bIgnoreTillEnd || m_bIgnoreTillNextSection)
-				{
-					return true;
-				}
-				_closeTag();
-				m_utf8_1 = "tr";
-				tagClose (TT_TR, m_utf8_1);
-				m_TableHelper.CloseTable();
-				_closeTable();
 				return true;
 			}
+			_closeTag();
+			m_utf8_1 = "tr";
+			tagClose (TT_TR, m_utf8_1);
+			m_TableHelper.CloseTable();
+			_closeTable();
+			return true;
+		}
 
 		case PTX_EndCell:
+		{
+			if(m_bIgnoreTillEnd || m_bIgnoreTillNextSection)
 			{
-				if(m_bIgnoreTillEnd || m_bIgnoreTillNextSection)
-				{
-					return true;
-				}
-				_closeTag();
-				_closeCell();
-				if(m_TableHelper.getNestDepth() <1)
-				{
-					return true;
-				}
-
-				m_TableHelper.CloseCell();
 				return true;
 			}
+			_closeTag();
+			_closeCell();
+			if(m_TableHelper.getNestDepth() <1)
+			{
+				return true;
+			}
+
+			m_TableHelper.CloseCell();
+			return true;
+		}
 #endif /* HTML_TABLES_SUPPORTED */
 		
 		case PTX_SectionFootnote:
 		case PTX_SectionEndnote:
 		case PTX_SectionAnnotation:
-			{
-				// We should use strux-specific position markers, as this sets a precarious
-				// precedent for nested struxes.
-				m_iEmbedStartPos = pcrx->getPosition() + 1;
-				m_bIgnoreTillEnd = true;
-				return true;
-			}
+		{
+			// We should use strux-specific position markers, as this sets a precarious
+			// precedent for nested struxes.
+			m_iEmbedStartPos = pcrx->getPosition() + 1;
+			m_bIgnoreTillEnd = true;
+			return true;
+		}
 		case PTX_EndFootnote:
 		case PTX_EndEndnote:
 		case PTX_EndAnnotation:
+		{
+			PD_DocumentRange * pDocRange = new PD_DocumentRange(m_pDocument, m_iEmbedStartPos, pcrx->getPosition());
+			if(pcrx->getStruxType () == PTX_EndFootnote)
 			{
-				PD_DocumentRange * pDocRange = new PD_DocumentRange(m_pDocument, m_iEmbedStartPos, pcrx->getPosition());
-				if(pcrx->getStruxType () == PTX_EndFootnote)
-				{
-					addFootnote(pDocRange);
-				}
-				else if (pcrx->getStruxType () == PTX_EndEndnote)
-				{
-					addEndnote(pDocRange);
-				}
-				else
-				{
-					addAnnotation(pDocRange);
-				}
-				m_bIgnoreTillEnd = false;
-				return true;
+				addFootnote(pDocRange);
 			}
+			else if (pcrx->getStruxType () == PTX_EndEndnote)
+			{
+				addEndnote(pDocRange);
+			}
+			else
+			{
+				addAnnotation(pDocRange);
+			}
+			m_bIgnoreTillEnd = false;
+			return true;
+		}
 		case PTX_SectionFrame:
-			{
-				// We do this individually for explicitly handled types of frame, because we don't know the consequences
-				// of doing it generally.
-				// m_bInFrame = true; // Fortunately for the html exporter, abi does not permit nested frames.
-				
-				if(m_iListDepth)
-	              	  listPopToDepth(0); // AbiWord does not support frames in LIs, neither do we.
+		{
+			// We do this individually for explicitly handled types of frame, because we don't know the consequences
+			// of doing it generally.
+			// m_bInFrame = true; // Fortunately for the html exporter, abi does not permit nested frames.
+			
+			if(m_iListDepth)
+              	  listPopToDepth(0); // AbiWord does not support frames in LIs, neither do we.
 
-				if(m_bIgnoreTillEnd || m_bIgnoreTillNextSection)
-				{
-					return true;
-				}
-				// Set up to get and get the type of frame (a property thereof)
-				const PP_AttrProp * pAP = 0;
-				bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
-				if (!bHaveProp || (pAP == 0)) return true;
-				const gchar * szType = 0;
-				if((pAP->getProperty ("frame-type", szType)) && szType)
-				{
-				     if (!strcmp(szType, "textbox"))
-				     {
-						 _openTextBox(pcr->getIndexAP()); // Open a new text box
-						 return true;
-				     }
-					 if(!strcmp(szType, "image"))
-					 { 
-						 _openPosImage(pcr->getIndexAP()); // Output positioned image
-					 }
-				}
+			if(m_bIgnoreTillEnd || m_bIgnoreTillNextSection)
+			{
 				return true;
 			}
+			// Set up to get and get the type of frame (a property thereof)
+			const PP_AttrProp * pAP = 0;
+			bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
+			if (!bHaveProp || (pAP == 0)) return true;
+			const gchar * szType = 0;
+			if((pAP->getProperty ("frame-type", szType)) && szType)
+			{
+			     if (!strcmp(szType, "textbox"))
+			     {
+					 _openTextBox(pcr->getIndexAP()); // Open a new text box
+					 return true;
+			     }
+				 if(!strcmp(szType, "image"))
+				 { 
+					 _openPosImage(pcr->getIndexAP()); // Output positioned image
+				 }
+			}
+			return true;
+		}
+
 		case PTX_EndFrame:
 		{
 			_closeTextBox();
@@ -5498,23 +5527,23 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 #endif
 			// Ignore HdrFtr for now
 		case PTX_SectionHdrFtr:
-			{
-				/* We need to close unended structures (like lists, which are known only as paragraphs with listIDs)
-				   because the HdrFtr comes after all such things except for those which are contained within it. -MG */
-				// This call may be unnecessary. -MG
-				_popUnendedStructures();
-				m_bIgnoreTillNextSection = true;
-				return true;
-			}
+		{
+			/* We need to close unended structures (like lists, which are known only as paragraphs with listIDs)
+			   because the HdrFtr comes after all such things except for those which are contained within it. -MG */
+			// This call may be unnecessary. -MG
+			_popUnendedStructures();
+			m_bIgnoreTillNextSection = true;
+			return true;
+		}
 		case PTX_SectionTOC: 
-			{
-				_emitTOC (pcr->getIndexAP());
-				return true;
-			}
+		{
+			_emitTOC (pcr->getIndexAP());
+			return true;
+		}
 		case PTX_EndTOC:
-			{
-				return true;
-			}
+		{
+			return true;
+		}
 		default:
 			UT_DEBUGMSG(("WARNING: ie_exp_HTML.cpp: unhandled strux type: %d!\n", pcrx->getStruxType ()));
 			UT_ASSERT_HARMLESS(UT_TODO);
@@ -5538,7 +5567,8 @@ bool s_HTML_Listener::endOfDocument () {
 }
 
 void s_HTML_Listener::_emitTOC (PT_AttrPropIndex api) {
-	if (m_toc) {
+	if (m_toc)
+	{
 
 		const PP_AttrProp * pAP = 0;
 		bool bHaveProp = (api ? (m_pDocument->getAttrProp (api, &pAP)) : false);
@@ -5559,15 +5589,15 @@ void s_HTML_Listener::_emitTOC (PT_AttrPropIndex api) {
 		}
 		
 		if(bHaveProp && pAP && pAP->getProperty("toc-heading", szValue)) // user-defined TOC heading
-			{
-				tocHeadingUTF8 = szValue;
-				//_outputdata() below makes escapeXML() redundant here
-			}
+		{
+			tocHeadingUTF8 = szValue;
+			//_outputdata() below makes escapeXML() redundant here
+		}
 		else
-			{ 
-				const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-				pSS->getValueUTF8(AP_STRING_ID_TOC_TocHeading, tocHeadingUTF8);
-			}
+		{ 
+			const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+			pSS->getValueUTF8(AP_STRING_ID_TOC_TocHeading, tocHeadingUTF8);
+		}
 
 		bool bEmitHeading = true;
 
@@ -5625,20 +5655,27 @@ void s_HTML_Listener::_emitTOC (PT_AttrPropIndex api) {
 			}
 			
 			UT_UCS4String tocLevelText;
-			if(tocLevel == 1) {
+			if(tocLevel == 1)
+			{
 				level1_depth++;
 				level2_depth = level3_depth = level4_depth = 0;
 				
 				tocLevelText = UT_UTF8String_sprintf("[%d] ", level1_depth).ucs4_str();
-			} else if(tocLevel == 2) {
+			}
+			else if(tocLevel == 2)
+			{
 				level2_depth++;
 				level3_depth = level4_depth = 0;
 				tocLevelText = UT_UTF8String_sprintf("[%d.%d] ", level1_depth, level2_depth).ucs4_str();
-			} else if(tocLevel == 3) {
+			}
+			else if(tocLevel == 3)
+			{
 				level3_depth++;
 				level4_depth = 0;
 				tocLevelText = UT_UTF8String_sprintf("[%d.%d.%d] ", level1_depth, level2_depth, level3_depth).ucs4_str();
-			} else if(tocLevel == 4) {
+			}
+			else if(tocLevel == 4)
+			{
 				level4_depth++;
 				tocLevelText = UT_UTF8String_sprintf("[%d.%d.%d.%d] ", level1_depth, level2_depth, level3_depth, level4_depth).ucs4_str();
 			}
@@ -5683,7 +5720,8 @@ void s_HTML_Listener::_doFootnotes () {
 	// Output footnotes
 	//
 	UT_uint32 i = 0, nFootnotes = getNumFootnotes();
-	if(nFootnotes > 0) {
+	if(nFootnotes > 0)
+	{
 		startEmbeddedStrux();
 	}
 	for(i = 0; i < nFootnotes; i = i + 1)
@@ -5828,7 +5866,8 @@ bool s_HTML_HdrFtr_Listener::populateStrux (PL_StruxDocHandle sdh,
 			if (bHaveNextSection)
 			{
 				m_iHdrFtrStopPos  = m_pDocument->getStruxPosition(nextSDH);
-			} else
+			}
+			else
 			{
 				m_pDocument->getBounds(true, m_iHdrFtrStopPos);
 			}
@@ -7176,10 +7215,10 @@ struct StyleListener
 	void styleClose ()
 	{
 		if (m_styleIndent == 0)
-			{
-				UT_DEBUGMSG(("WARNING: CSS style group over-closing!\n"));
-				return;
-			}
+		{
+			UT_DEBUGMSG(("WARNING: CSS style group over-closing!\n"));
+			return;
+		}
 		m_styleIndent--;
 		
 		styleIndent ();
