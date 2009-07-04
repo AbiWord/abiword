@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiWord
  * Copyright (C) 2001 AbiSource, Inc.
@@ -213,6 +213,9 @@ UT_Error IE_ImpGraphic_WMF::convertGraphicToSVG(UT_ByteBuf* pBBwmf, UT_ByteBuf**
 
 	bbuf_read_info  read_info;
 
+	char *stream = NULL;
+	unsigned long stream_len = 0;
+
 	*ppBB = 0;
 
 	flags = 0;
@@ -224,7 +227,9 @@ UT_Error IE_ImpGraphic_WMF::convertGraphicToSVG(UT_ByteBuf* pBBwmf, UT_ByteBuf**
 	status = explicit_wmf_error ("wmf_api_create",err);
 
 	if (status)
-	{	if (API) wmf_api_destroy (API);
+	{	
+		if (API) 
+			wmf_api_destroy (API);
 		return (UT_ERROR);
 	}
 
@@ -236,16 +241,15 @@ UT_Error IE_ImpGraphic_WMF::convertGraphicToSVG(UT_ByteBuf* pBBwmf, UT_ByteBuf**
 	err = wmf_bbuf_input (API,AbiWord_WMF_read,AbiWord_WMF_seek,AbiWord_WMF_tell,(void *) &read_info);
 	if (err != wmf_E_None) {
 		UT_DEBUGMSG(("IE_ImpGraphic_WMF::convertGraphic Bad input set\n"));
-		wmf_api_destroy(API);
-		return UT_ERROR;
+		goto ErrorHandler;
 	}
 
 	err = wmf_scan (API,0,&(bbox));
 	status = explicit_wmf_error ("wmf_scan",err);
 
 	if (status)
-	{	wmf_api_destroy (API);
-		return UT_ERROR;
+	{	
+		goto ErrorHandler;
 	}
 
 /* Okay, got this far, everything seems cool.
@@ -306,21 +310,29 @@ UT_Error IE_ImpGraphic_WMF::convertGraphicToSVG(UT_ByteBuf* pBBwmf, UT_ByteBuf**
 		status = explicit_wmf_error ("wmf_play",err);
 	}
 
-	unsigned long stream_len = 0;
-	char *stream;
 	wmf_stream_destroy(API, ddata->out, &stream, &stream_len);
 
-	if (status == 0) {
+	if (status == 0) 
+	{
 		UT_ByteBuf* pBB = new UT_ByteBuf;
 		pBB->append((const UT_Byte*)stream, (UT_uint32)stream_len);
 		*ppBB = pBB;
+		DELETEP(pBBwmf);
 		wmf_free(API, stream);
 		wmf_api_destroy (API);
 		return UT_OK;
 	}
 
-	wmf_api_destroy (API);
-	wmf_free(API, stream);
+ErrorHandler:
+	DELETEP(pBBwmf);
+	if(API) 
+	{
+		if(stream) 
+		{
+			wmf_free(API, stream);
+		}
+		wmf_api_destroy (API);
+	}
 	return UT_ERROR;
 }
 
