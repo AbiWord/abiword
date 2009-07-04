@@ -348,7 +348,7 @@ void AP_UnixFrameImpl::_setWindowIcon()
         g_object_unref (G_OBJECT(icon));
     }
     else {
-        g_error("Unable to load AbiWord icon: %s", error ? error->message : "(null)");
+        g_warning("Unable to load AbiWord icon: %s", error ? error->message : "(null)");
         if(error) {
             g_error_free(error);
         }
