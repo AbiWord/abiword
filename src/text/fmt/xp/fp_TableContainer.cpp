@@ -3549,6 +3549,13 @@ void fp_TableContainer::resize(UT_sint32 n_rows, UT_sint32 n_cols)
 }
 
 /*!
+ * Returns true if this is a broken table
+ */
+bool fp_TableContainer::isThisBroken(void) const
+{
+	return m_bIsBroken;
+}
+/*!
  * Returns true since a table can be broken vertically.
  */
 bool fp_TableContainer::isVBreakable(void)

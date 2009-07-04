@@ -3326,10 +3326,12 @@ void fl_BlockLayout::format()
 	{
 		pCL2 = pCL2->myContainingLayout();
 	}
+	bool isInShadow = false;
 	if(pCL2 && (pCL2->getContainerType() == FL_CONTAINER_SHADOW))
 	{
 		xxx_UT_DEBUGMSG(("Formatting a block in a shadow \n"));
 		xxx_UT_DEBUGMSG(("m_pSectionLayout Type is %d \n",m_pSectionLayout->getContainerType()));
+		isInShadow = true;
 	}
 	//
 	// If block hasn't changed don't format it.
@@ -3639,8 +3641,10 @@ void fl_BlockLayout::format()
 				}
 			}
 		}
-
-		getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
+		if(!isInShadow)
+		{
+			getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
+		}
 	}
 
 	// Paragraph has been reformatted.

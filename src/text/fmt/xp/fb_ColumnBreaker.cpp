@@ -193,7 +193,7 @@ UT_sint32 fb_ColumnBreaker::breakSection()
       pStartPage = needsRebreak();
       if(m_pStartPage)
       {
-	  pStartPage = m_pStartPage;
+  	  pStartPage = m_pStartPage;
 	  if(icnt > 10)
 	  {
 	      pStartPage = pStartPage->getPrev();
@@ -235,6 +235,7 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 	fp_Column* pCurColumn = NULL;
 	fp_Column* pPrevColumn = NULL;
 	UT_sint32 iCurPage = 0;
+	UT_sint32 iColCons =  0;
 	xxx_UT_DEBUGMSG(("Doing ColumnBreak for section %x at page %x \n",m_pDecSec,m_pStartPage));
 //	UT_ASSERT(m_pDocSec->needsSectionBreak());
 	pFirstLayout = m_pDocSec->getFirstLayout();
@@ -301,6 +302,7 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 		  // Abort and start again
 		    break;
 		}
+		iColCons = -1;
 		if(pCurColumn && pCurColumn->getPrev())
 		{
 		  fp_Column * pPrevCol = static_cast<fp_Column *>(pCurColumn->getPrev());
@@ -415,6 +417,7 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 		fp_Container * pPrevWorking = pCurContainer;
 		while (pCurContainer)
 		{
+		        iColCons++;
 		        xxx_UT_DEBUGMSG(("curContainer pointer %p type %s \n",iLoop,pCurContainer,pCurContainer->getContainerString()));
 			if(pCurContainer->getDocSectionLayout() != m_pDocSec)
 			{
@@ -455,6 +458,8 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 //
 						if(pVTab->getContainerType() == FP_CONTAINER_TABLE)
 						{
+						        xxx_UT_DEBUGMSG(("Deleting broken tables for %p \n",pVTab));
+						        UT_ASSERT(static_cast<fp_TableContainer *>(pVTab)->getMasterTable() == NULL);
 							static_cast<fp_TableContainer *>(pVTab)->deleteBrokenTables(true,true);
 						}
 						else
@@ -550,7 +555,6 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 			if ((iWorkingColHeight + iTotalContainerSpace) > iMaxColHeight)
 			{
 				pOffendingContainer = pCurContainer;
-
 				/*
 				  We have found the offending container (the first one
 				  which won't fit in the column) and we now need to
@@ -1431,7 +1435,7 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 {
 	bool bDoTableBreak;
 
-    xxx_UT_DEBUGMSG(("breakTable:!!!!!!!!!!!! Offending Table is %x \n",pOffendingContainer));
+        xxx_UT_DEBUGMSG(("breakTable:!!!!!!!!!!!! Offending Table is %p \n",pOffendingContainer));
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pOffendingContainer);
 	if(!pTab->isThisBroken())
 	{
@@ -1508,7 +1512,9 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 //
 		if(iBreakAt < 30)
 		{
-			pOffendingContainer = static_cast<fp_Container *>(pTab);
+		        xxx_UT_DEBUGMSG(("Break too small %d , bumping container height of Tab %d \n",iBreakAt,pTab->getHeight()));
+		        pLastContainerToKeep = static_cast<fp_Container *>(pTab->getPrevContainerInSection());
+		        pOffendingContainer = static_cast<fp_Container *>(pBroke);
 		}
 		else
 		{
@@ -1519,7 +1525,7 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 //
 			fp_TableContainer * pNewTab = static_cast<fp_TableContainer *>(pBroke->VBreakAt(iBreakAt));
 			pOffendingContainer = static_cast<fp_Container *>(pNewTab);
-		    xxx_UT_DEBUGMSG(("SEVIOR: Created broken table %x \n",pOffendingContainer));
+		        xxx_UT_DEBUGMSG(("SEVIOR: Created broken table %p height %d \n",pOffendingContainer,pOffendingContainer->getHeight()));
 			UT_ASSERT(pBroke->getHeight() > 0);
 			UT_ASSERT(pNewTab->getHeight() > 0);
 			pLastContainerToKeep = static_cast<fp_Container *>(pTab);

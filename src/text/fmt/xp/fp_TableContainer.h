@@ -407,8 +407,7 @@ fp_Column *         getBrokenColumn(void);
 	virtual fp_Container * getPrevContainerInSection(void) const;
 	fp_TableContainer * getMasterTable(void) const
 		{ return m_pMasterTable; }
-	bool                isThisBroken(void) const
-		{ return m_bIsBroken;}
+	bool                isThisBroken(void) const;
 	void                setYBreakHere(UT_sint32 iBreakHere);
 	void                setYBottom(UT_sint32 iBotContainer);
 	bool                isInBrokenTable(fp_CellContainer * pCell, 
