@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiWord
  * Copyright (C) 1998,1999 AbiSource, Inc.
@@ -3194,10 +3194,10 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 	while(!bStop)
     {
 		getLeftRightForWrapping(iX, iHeight,iMinLeft,iMinRight,iMinWidth);
-		fp_Line* pLine2 = new fp_Line(getSectionLayout());
 		fp_Line* pOldLastLine = static_cast<fp_Line *>(getLastContainer());
 		if(iMinWidth >  getMinWrapWidth())
 		{
+			fp_Line* pLine2 = new fp_Line(getSectionLayout());
 			if(pOldLastLine == NULL)
 			{
 				xxx_UT_DEBUGMSG(("Old Lastline NULL?????? \n"));
