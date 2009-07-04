@@ -1,4 +1,4 @@
- dif
+
 m4_define([abi_version_major], [2])
 m4_define([abi_version_minor], [7])
 m4_define([abi_version_micro], [5])
