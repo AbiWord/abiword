@@ -507,7 +507,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
                                      fd_Field * &pField);
 	po_Bookmark * 			getBookmark(PL_StruxDocHandle sdh, UT_uint32 offset);
 	pf_Frag *               findBookmark(const char * pName, bool bEnd = false, pf_Frag * pfStart = NULL);
-	bool                    hasMathorSVG(void);
+	bool                    hasMath(void);
 
 	void					setDontChangeInsPoint(void);
 	void					allowChangeInsPoint(void);

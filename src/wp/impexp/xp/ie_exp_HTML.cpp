@@ -1446,7 +1446,7 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 	//
 	// Export the script to enable mathml and SVG in HTML4
 	//
-	if(m_pDocument->hasMathorSVG())
+	if(m_pDocument->hasMath())
 	{
 		m_pie->write(sMathSVGScript.utf8_str(),sMathSVGScript.size());
 	}

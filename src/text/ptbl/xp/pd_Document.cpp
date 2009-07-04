@@ -4524,7 +4524,7 @@ PTStruxType PD_Document::getStruxType(PL_StruxDocHandle sdh) const
 /*!
  * Returns true if the document as any math or SVG runs within it.
  */
-bool PD_Document::hasMathorSVG(void)
+bool PD_Document::hasMath(void)
 {
 	pf_Frag *  pf = getPieceTable()->getFragments().getFirst();
 	while(pf)
@@ -4535,31 +4535,6 @@ bool PD_Document::hasMathorSVG(void)
 			if(po->getObjectType() == PTO_Math)
 			{
 				return true;
-			}
-			else if(po->getObjectType() ==  PTO_Image)
-			{
-				const PP_AttrProp* pAP = NULL;
-				PT_AttrPropIndex indexAP = po->getIndexAP();
-				m_pPieceTable->getAttrProp(indexAP,&pAP);
-				if (pAP)
-				{
-					const gchar *pszDataID;
-					bool bFoundDataID = pAP->getAttribute("dataid", pszDataID);
-					if (bFoundDataID && pszDataID)
-					{
-                        std::string mimeType;
-						bFoundDataID = getDataItemDataByName(pszDataID, NULL,
-															 &mimeType, NULL);
-	   
-						// figure out what type of image
-	   
-						if (bFoundDataID && !mimeType.empty() && 
-                            (mimeType == "image/svg+xml")) 
-						{
-							return true;
-						}
-					}
-				}				
 			}
 		}
 		pf = pf->getNext();
