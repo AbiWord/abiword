@@ -285,6 +285,13 @@ static char * s_stripDangerousChars(const char *s)
 	return t;
 }
 
+static char * s_convert_to_utf8 (const wvParseStruct *ps, const char *s)
+{
+	const char * encoding = NULL;
+	char fallback = '?';
+	encoding = wvLIDToCodePageConverter(ps->fib.lid);
+	return g_convert_with_fallback(s, -1, "UTF-8", encoding, &fallback, NULL, NULL, NULL);
+}
 
 //
 // DOC uses an unsigned int color index
@@ -3174,7 +3181,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 /*tag*/,
 			}
 			else if(pSTD)
 			{
-				m_paraStyle = t = s_stripDangerousChars(pSTD[apap->istd].xstzName);
+				m_paraStyle = t = s_convert_to_utf8(ps,pSTD[apap->istd].xstzName);
 			}
 
 			FREEP(t);
@@ -3414,7 +3421,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 /*tag*/,
 			}
 			else
 			{
-				m_charStyle = t = s_stripDangerousChars(pSTD[achp->istd].xstzName);
+				m_charStyle = t = s_convert_to_utf8(ps,pSTD[achp->istd].xstzName);
 			}
 
 			FREEP(t);
@@ -5430,7 +5437,7 @@ void IE_Imp_MsWord_97::_handleStyleSheet(const wvParseStruct *ps)
 			continue;
 		}
 
-		UT_DEBUGMSG(("Style name: [%s], id: %d\n", pSTD->xstzName, pSTD->sti));
+		//UT_DEBUGMSG(("Style name: [%s], id: %d\n", pSTD->xstzName, pSTD->sti));
 
 		attribs[iOffset++] = PT_NAME_ATTRIBUTE_NAME;
 
@@ -5443,10 +5450,12 @@ void IE_Imp_MsWord_97::_handleStyleSheet(const wvParseStruct *ps)
 		}
 		else
 		{
-			s = s_stripDangerousChars(pSTD->xstzName);
+			s = s_convert_to_utf8(ps, pSTD->xstzName);
 			attribs[iOffset++] = s;
 		}
 		
+		UT_DEBUGMSG(("Style name: [%s], id: %d\n", attribs[iOffset-1], pSTD->sti));
+
 		
 		attribs[iOffset++] = PT_TYPE_ATTRIBUTE_NAME;
 		if(pSTD->sgc == sgcChp)
@@ -5464,7 +5473,9 @@ void IE_Imp_MsWord_97::_handleStyleSheet(const wvParseStruct *ps)
 				attribs[iOffset++] = PT_FOLLOWEDBY_ATTRIBUTE_NAME;
 				const char * t = s_translateStyleId(pSTD->istdNext);
 				if(!t)
-					t = f = s_stripDangerousChars((pSTDBase + pSTD->istdNext)->xstzName);
+				{
+					t = f = s_convert_to_utf8(ps,(pSTDBase + pSTD->istdNext)->xstzName);					
+				}
 				attribs[iOffset++] = t;
 			}
 		}
@@ -5474,7 +5485,7 @@ void IE_Imp_MsWord_97::_handleStyleSheet(const wvParseStruct *ps)
 			attribs[iOffset++] = PT_BASEDON_ATTRIBUTE_NAME;
 			const char * t = s_translateStyleId(pSTD->istdBase);
 			if(!t)
-				t = b = s_stripDangerousChars((pSTDBase + pSTD->istdBase)->xstzName);
+				t = b = s_convert_to_utf8(ps,(pSTDBase + pSTD->istdBase)->xstzName);
 			attribs[iOffset++] = t;
 		}
 		
