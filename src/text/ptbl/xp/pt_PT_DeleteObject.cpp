@@ -78,7 +78,7 @@ bool pt_PieceTable::_deleteObject(pf_Frag_Object * pfo,
 {
 	// unlink the object from the fragment list and try to
 	// coalesce the neighboring fragments.
-	
+        xxx_UT_DEBUGMSG(("Deleting Frag object %p  \n",pfo));
 	_unlinkFrag(pfo,ppfEnd,pfragOffsetEnd);
 	delete pfo;
 	return true;

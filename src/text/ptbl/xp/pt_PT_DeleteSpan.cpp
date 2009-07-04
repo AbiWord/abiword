@@ -1723,109 +1723,128 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 				// the start marker
 				case PTO_Hyperlink:
 				{
-					bool bFoundStrux2;
-					PT_DocPosition posComrade;
-					pf_Frag_Strux * pfsContainer2 = NULL;
+				     bool bFoundStrux2;
+				     PT_DocPosition posComrade;
+				     pf_Frag_Strux * pfsContainer2 = NULL;
 
-					pf_Frag * pF;
+				     pf_Frag * pF;
 
-		    		const PP_AttrProp * pAP = NULL;
-				    pO->getPieceTable()->getAttrProp(pO->getIndexAP(),&pAP);
-				    UT_return_val_if_fail (pAP, false);
-				    const gchar* pszHref = NULL;
-				    const gchar* pszHname  = NULL;
-		            UT_uint32 k = 0;
-        		    bool bStart = false;
-				    while((pAP)->getNthAttribute(k++,pszHname, pszHref))
-				    {
-		    			if(!strcmp(pszHname, "xlink:href"))
-				    	{
-				    		bStart = true;
-		    				break;
-				    	}
-				    }
+				     const PP_AttrProp * pAP = NULL;
+				     pO->getPieceTable()->getAttrProp(pO->getIndexAP(),&pAP);
+				     UT_return_val_if_fail (pAP, false);
+				     const gchar* pszHref = NULL;
+				     const gchar* pszHname  = NULL;
+				     UT_uint32 k = 0;
+				     bool bStart = false;
+				     while((pAP)->getNthAttribute(k++,pszHname, pszHref))
+				     {
+				          if(!strcmp(pszHname, "xlink:href"))
+				    	  {
+				    	      bStart = true;
+					      break;
+					  }
+				     }
 
-					if(!bStart)
-					{
+				     if(!bStart)
+				     {
 						// in this case we are looking for the start marker
 						// and so we delete it and then move on
-				    	pF = pO->getPrev();
-				    	while(pF)
-				    	{
-							if(pF->getType() == pf_Frag::PFT_Object)
+				          pF = pO->getPrev();
+					  while(pF)
+					  {
+					      if(pF->getType() == pf_Frag::PFT_Object)
+					      {
+						   pf_Frag_Object *pOb = static_cast<pf_Frag_Object*>(pF);
+						   if(pOb->getObjectType() == PTO_Hyperlink)
+						   {
+						        posComrade = getFragPosition(pOb);
+							bFoundStrux2 = _getStruxFromFragSkip(pOb,&pfsContainer2);
+							UT_return_val_if_fail (bFoundStrux2, false);
+
+
+							xxx_UT_DEBUGMSG(("Deleting End Hyperlink 1 %p \n",pOb));
+							bResult2 =
+							  _deleteObjectWithNotify(posComrade,pOb,0,1,
+										  pfsContainer2,0,0);
+
+							// now adjusting the positional variables
+							if(posComrade <= dpos1)
+							  // delete before the start of the segement we are working on
+							     dpos1--;
+							else
 							{
-								pf_Frag_Object *pOb = static_cast<pf_Frag_Object*>(pF);
-								if(pOb->getObjectType() == PTO_Hyperlink)
-								{
-									posComrade = getFragPosition(pOb);
-									bFoundStrux2 = _getStruxFromFragSkip(pOb,&pfsContainer2);
-									UT_return_val_if_fail (bFoundStrux2, false);
-
-									bResult2 =
-											_deleteObjectWithNotify(posComrade,pOb,0,1,
-										  							pfsContainer2,0,0);
-
-									// now adjusting the positional variables
-									if(posComrade <= dpos1)
-										// delete before the start of the segement we are working on
-										dpos1--;
-									else
-									{
-										// we are inside that section
-										length--;
-									}
-									break;
-								}
+							     // we are inside that section
+							     length--;
 							}
-							pF = pF->getPrev();
-				    	}
-						bResult
-							= _deleteObjectWithNotify(dpos1,pO,fragOffset_First,lengthThisStep,
+							break;
+						   }
+					      }
+					      pF = pF->getPrev();
+					  }
+
+					  xxx_UT_DEBUGMSG(("Deleting Start Hyperlink 1 %p \n",pO));
+					  bResult
+					    = _deleteObjectWithNotify(dpos1,pO,fragOffset_First,lengthThisStep,
 										  pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
 
-					}
-					else
-					{
-						// in this case we are looking for the end marker,
-						// so we have to be carefult the get rid of the start
-						// marker first
-				    	pF = pO->getNext();
-				    	while(pF)
-				    	{
-							if(pF->getType() == pf_Frag::PFT_Object)
-							{
-								pf_Frag_Object *pOb = static_cast<pf_Frag_Object*>(pF);
-								if(pOb->getObjectType() == PTO_Hyperlink)
-								{
-									posComrade = getFragPosition(pOb);
-									bFoundStrux2 = _getStruxFromFragSkip(pOb,&pfsContainer2);
-									UT_return_val_if_fail (bFoundStrux2, false);
-					                // delete the original start marker
-									bResult
-										= _deleteObjectWithNotify(dpos1,pO,fragOffset_First,lengthThisStep,
-													  pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
+				     }
+				     else
+				     {
+				       // in this case we are looking for the end marker,
+				       // so we have to be carefult the get rid of the start
+				       // marker first
+				    	   pF = pO->getNext();
+					   while(pF)
+					   {
+					        if(pF->getType() == pf_Frag::PFT_Object)
+						{
+						     pf_Frag_Object *pOb = static_cast<pf_Frag_Object*>(pF);
+						     if(pOb->getObjectType() == PTO_Hyperlink)
+						     {
+						          posComrade = getFragPosition(pOb);
+							  bFoundStrux2 = _getStruxFromFragSkip(pOb,&pfsContainer2);
+							  UT_return_val_if_fail (bFoundStrux2, false);
+							  // delete the original start marker
 
-									// now adjusting the positional variables
-									posComrade--;
+							  xxx_UT_DEBUGMSG(("Deleting Start Hyperlink 2 %p \n",pO));
+							  bResult
+							    = _deleteObjectWithNotify(dpos1,pO,fragOffset_First,lengthThisStep,
+										      pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
 
-									bResult2 =
-											_deleteObjectWithNotify(posComrade,pOb,0,1,
-									  							pfsContainer2,0,0);
+							  // now adjusting the positional variables
+							  posComrade--;
+							  xxx_UT_DEBUGMSG(("Deleting End Hyperlink 2 %p \n",pOb));
+							  // One last twist make sure the next frag from the previous
+							  // delete isn't the same as this this other we need to get the next frag from thi
+							  // second delete
+							  if(pfNewEnd != static_cast<pf_Frag *>(pOb))
+							  {
+							        bResult2 =
+								  _deleteObjectWithNotify(posComrade,pOb,0,1,
+											pfsContainer2,0,0);
+							  }
+							  else
+							  {
+							        bResult2 =
+								  _deleteObjectWithNotify(posComrade,pOb,0,1,
+											pfsContainer2,&pfNewEnd,&fragOffsetNewEnd);
+							  }
 
-									if(posComrade >= dpos1 && posComrade <= dpos1 + length - 2)
-									{
-										// the endmarker was inside of the segment we are working
-										// so we have to adjust the length
-										length--;
-									}
+							  if(posComrade >= dpos1 && posComrade <= dpos1 + length - 2)
+							  {
+							    // the endmarker was inside of the segment we are working
+							    // so we have to adjust the length
+							       length--;
+							  }
 
-									break;
-								}
-							}
-							pF = pF->getNext();
-				    	}
-					}
+							  break;
+						     }
+						}
+						pF = pF->getNext();
+					   }
+				     }
 				}
+				xxx_UT_DEBUGMSG(("Finished Deleting Hyperlink %p \n",pO));
 				break;
 
 				//
@@ -1838,19 +1857,20 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 				// the start marker
 				case PTO_Annotation:
 				{
-					bool bFoundStrux2;
-					PT_DocPosition posComrade;
-					pf_Frag_Strux * pfsContainer2 = NULL;
+				    UT_ASSERT(pO->getObjectType() == PTO_Annotation);
+				    bool bFoundStrux2;
+				    PT_DocPosition posComrade;
+				    pf_Frag_Strux * pfsContainer2 = NULL;
 
-					pf_Frag * pF;
+				    pf_Frag * pF;
 
-		    		const PP_AttrProp * pAP = NULL;
+				    const PP_AttrProp * pAP = NULL;
 				    pO->getPieceTable()->getAttrProp(pO->getIndexAP(),&pAP);
 				    UT_return_val_if_fail (pAP, false);
 				    const gchar* pszHref = NULL;
 				    const gchar* pszHname  = NULL;
-		            UT_uint32 k = 0;
-        		    bool bStart = false;
+				    UT_uint32 k = 0;
+				    bool bStart = false;
 				    while((pAP)->getNthAttribute(k++,pszHname, pszHref))
 				    {
 				      if((strcmp(pszHname, "annotation") == 0) ||(strcmp(pszHname, "Annotation") == 0) )
@@ -1864,39 +1884,40 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 					{
 						// in this case we are looking for the start marker
 						// and so we delete it and then move on
-				    	pF = pO->getPrev();
-				    	while(pF)
-				    	{
-							if(pF->getType() == pf_Frag::PFT_Object)
-							{
-								pf_Frag_Object *pOb = static_cast<pf_Frag_Object*>(pF);
-								if(pOb->getObjectType() == PTO_Annotation)
-								{
-									posComrade = getFragPosition(pOb);
-									bFoundStrux2 = _getStruxFromFragSkip(pOb,&pfsContainer2);
-									UT_return_val_if_fail (bFoundStrux2, false);
+				    	     pF = pO->getPrev();
+					     while(pF)
+					     {
+					          if(pF->getType() == pf_Frag::PFT_Object)
+						  {
+						       pf_Frag_Object *pOb = static_cast<pf_Frag_Object*>(pF);
+						       if(pOb->getObjectType() == PTO_Annotation)
+						       {
+							   posComrade = getFragPosition(pOb);
+							   bFoundStrux2 = _getStruxFromFragSkip(pOb,&pfsContainer2);
+							   UT_return_val_if_fail (bFoundStrux2, false);
 
-									bResult2 =
-											_deleteObjectWithNotify(posComrade,pOb,0,1,
-										  							pfsContainer2,0,0);
+							   bResult2 =
+							     _deleteObjectWithNotify(posComrade,pOb,0,1,
+										     pfsContainer2,0,0);
 
-									// now adjusting the positional variables
-									if(posComrade <= dpos1)
-										// delete before the start of the segement we are working on
-										dpos1--;
-									else
-									{
-										// we are inside that section
-										length--;
-									}
-									break;
-								}
-							}
-							pF = pF->getPrev();
-				    	}
-						bResult
-							= _deleteObjectWithNotify(dpos1,pO,fragOffset_First,lengthThisStep,
-										  pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
+							   // now adjusting the positional variables
+							   if(posComrade <= dpos1)
+							     // delete before the start of the segement we are working on
+							        dpos1--;
+							   else
+							   {
+							        // we are inside that section
+							        length--;
+							   }
+							   break;
+						       }
+						  }
+						  pF = pF->getPrev();
+					     }
+					     UT_ASSERT(pO->getObjectType() == PTO_Annotation);
+					     bResult
+					       = _deleteObjectWithNotify(dpos1,pO,fragOffset_First,lengthThisStep,
+								    pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
 
 					}
 					else
@@ -1904,44 +1925,57 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 						// in this case we are looking for the end marker,
 						// so we have to be carefult the get rid of the start
 						// marker first
-				    	pF = pO->getNext();
-				    	while(pF)
-				    	{
-							if(pF->getType() == pf_Frag::PFT_Object)
-							{
-								pf_Frag_Object *pOb = static_cast<pf_Frag_Object*>(pF);
-								if(pOb->getObjectType() == PTO_Annotation)
-								{
-									posComrade = getFragPosition(pOb);
-									bFoundStrux2 = _getStruxFromFragSkip(pOb,&pfsContainer2);
-									UT_return_val_if_fail (bFoundStrux2, false);
+					     pF = pO->getNext();
+					     while(pF)
+					     {
+					         if(pF->getType() == pf_Frag::PFT_Object)
+						 {
+						     pf_Frag_Object *pOb = static_cast<pf_Frag_Object*>(pF);
+						     if(pOb->getObjectType() == PTO_Annotation)
+						     {
+						         posComrade = getFragPosition(pOb);
+							 bFoundStrux2 = _getStruxFromFragSkip(pOb,&pfsContainer2);
+							 UT_return_val_if_fail (bFoundStrux2, false);
 					                // delete the original start marker
-									bResult
-										= _deleteObjectWithNotify(dpos1,pO,fragOffset_First,lengthThisStep,
-													  pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
+							 bResult
+							   = _deleteObjectWithNotify(dpos1,pO,fragOffset_First,lengthThisStep,
+										     pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
 
-									// now adjusting the positional variables
-									posComrade--;
+							 // now adjusting the positional variables
+							 posComrade--;
 
-									bResult2 =
-											_deleteObjectWithNotify(posComrade,pOb,0,1,
-									  							pfsContainer2,0,0);
 
-									// FIXME!! Need to work out how to delete the content of the annotation
-									// at this point
+							 // One last twist make sure the next frag from the previous
+							 // delete isn't the same as this this other we need to get the next frag from thi
+							 // second delete
+							 if(pfNewEnd != static_cast<pf_Frag *>(pOb))
+							 {
+							      bResult2 =
+								_deleteObjectWithNotify(posComrade,pOb,0,1,
+											pfsContainer2,0,0);
+							 }
+							 else
+							 {
+							      bResult2 =
+								_deleteObjectWithNotify(posComrade,pOb,0,1,
+											pfsContainer2,&pfNewEnd,&fragOffsetNewEnd);
+							 }
 
-									if(posComrade >= dpos1 && posComrade <= dpos1 + length - 2)
-									{
-										// the endmarker was inside of the segment we are working
-										// so we have to adjust the length
-										length--;
-									}
+							 // FIXME!! Need to work out how to delete the content of the annotation
+							 // at this point
 
-									break;
-								}
-							}
-							pF = pF->getNext();
-				    	}
+							 if(posComrade >= dpos1 && posComrade <= dpos1 + length - 2)
+							 {
+							      // the endmarker was inside of the segment we are working
+							      // so we have to adjust the length
+							      length--;
+							 }
+
+							 break;
+						     }
+						 }
+						 pF = pF->getNext();
+					     }
 					}
 				}
 				break;

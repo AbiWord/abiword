@@ -38,6 +38,7 @@ pf_Frag::pf_Frag(pt_PieceTable * pPT, PFType type, UT_uint32 length):
 
 pf_Frag::~pf_Frag()
 {
+  xxx_UT_DEBUGMSG(("Delete Frag of Type %d pointer %p \n",getType(),this));
 }
 
 /*!
