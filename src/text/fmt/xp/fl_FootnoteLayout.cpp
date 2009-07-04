@@ -937,6 +937,7 @@ fl_EndnoteLayout::fl_EndnoteLayout(FL_DocLayout* pLayout,
 {
         UT_DEBUGMSG(("Create Endnote section %p from pos %d \n",this,getPosition()));
 	m_pLayout->addEndnote(this);
+	UT_DEBUGMSG(("myContaining Layout %s \n",myContainingLayout()->getContainerString()));
 	_createEndnoteContainer();
 }
 
@@ -1067,7 +1068,7 @@ void fl_EndnoteLayout::format(void)
 		pView = m_pLayout->getView();
 	if(bOnPage && pView && !pView->isLayoutFilling())
 	{
-		getDocSectionLayout()->completeBreakSection();
+	       getDocSectionLayout()->setNeedsSectionBreak(true,NULL);
 	}
 	UT_ASSERT(getFirstContainer()->getPage());
 }
