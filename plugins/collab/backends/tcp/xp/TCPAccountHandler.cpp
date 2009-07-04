@@ -33,6 +33,7 @@ TCPAccountHandler::TCPAccountHandler()
 	m_bConnected(false),
 	m_pDelegator(0)
 {
+  m_strings = new AP_StringSet(NULL, "abiword-plugin-stringset");
 }
 
 TCPAccountHandler::~TCPAccountHandler()
@@ -40,6 +41,8 @@ TCPAccountHandler::~TCPAccountHandler()
 	UT_DEBUGMSG(("~TCPAccountHandler()\n"));
 	if (m_bConnected)
 		disconnect();
+
+  delete m_strings;
 }
 
 UT_UTF8String TCPAccountHandler::getDescription()
@@ -48,13 +51,13 @@ UT_UTF8String TCPAccountHandler::getDescription()
 	const std::string port = getProperty("port");	
 	
 	if (host == "")
-		return UT_UTF8String_sprintf("Listening on port %s", port.c_str());
+		return UT_UTF8String_sprintf(m_strings->getValue(_("Listening on port %s")), port.c_str());
 	return UT_UTF8String_sprintf("%s:%s", host.c_str(), port.c_str());
 }
 
 UT_UTF8String TCPAccountHandler::getDisplayType()
 {
-	return "Direct Connection (TCP)";
+	return m_strings->getValue(_("Direct Connection (TCP)"));
 }
 
 UT_UTF8String TCPAccountHandler::getStaticStorageType()

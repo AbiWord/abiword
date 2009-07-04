@@ -27,6 +27,7 @@
 #include <boost/bind.hpp>
 #include "xap_App.h"
 #include "xap_DialogFactory.h"
+#include "ap_Strings.h"
 #include "AsyncWorker.h"
 #include "ap_Dialog_GenericProgress.h"
 #include "ServiceAccountHandler.h"
@@ -37,6 +38,8 @@ class InternalErrorException {};
 template <class T>
 class InterruptableAsyncWorker : public boost::enable_shared_from_this< InterruptableAsyncWorker<T> >
 {
+private:
+  AP_StringSet *m_strings;
 public:
 	InterruptableAsyncWorker(boost::function<T ()> async_func)
 		: m_async_func(async_func),
@@ -47,7 +50,14 @@ public:
 		m_finished(false),
 		m_progressSynchronizerPtr(),
 		m_result()
-	{}
+	{
+    m_strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-collab");
+  }
+
+  ~InterruptableAsyncWorker()
+  {
+    delete m_strings;
+  }
 	
 	T run()
 	{
@@ -68,8 +78,8 @@ public:
 		m_pProgressDlg = static_cast<AP_Dialog_GenericProgress*>(
 					pFactory->requestDialog(ServiceAccountHandler::getDialogGenericProgressId())
 				);		
-		m_pProgressDlg->setTitle("Retrieving Document");
-		m_pProgressDlg->setInformation("Please wait while retrieving document...");
+		m_pProgressDlg->setTitle(m_strings->getValue(_("Retrieving Document")));
+		m_pProgressDlg->setInformation(m_strings->getValue(_("Please wait while retrieving document...")));
 
 		// start the asynchronous process
 		m_worker_ptr->start();

@@ -105,6 +105,12 @@ AP_UnixDialog_CollaborationAccounts::AP_UnixDialog_CollaborationAccounts(XAP_Dia
 	m_wModel(NULL),
 	m_wAccountsTree(NULL)
 {
+  m_strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-collab");
+}
+
+AP_UnixDialog_CollaborationAccounts::~AP_UnixDialog_CollaborationAccounts()
+{
+  delete m_strings;
 }
 
 void AP_UnixDialog_CollaborationAccounts::runModal(XAP_Frame * pFrame)
@@ -198,18 +204,18 @@ void AP_UnixDialog_CollaborationAccounts::_populateWindowData()
 	m_wRenderer = gtk_cell_renderer_text_new ();
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (m_wAccountsTree), 
 												-1,
-												"Account", 
+												m_strings->getValue(_("Account")), 
 												m_wRenderer, "text", 0, (void*)NULL);
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (m_wAccountsTree), 
 												-1,
-												"Type", 
+												m_strings->getValue(_("Type")), 
 												m_wRenderer, "text", 1, (void*)NULL);
 	
 	m_wToggleRenderer = gtk_cell_renderer_toggle_new ();
 	g_object_set (m_wToggleRenderer, "xalign", 0.0, NULL);
 	g_signal_connect (m_wToggleRenderer, "toggled", G_CALLBACK (s_online_toggled), this);
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (m_wAccountsTree), 
-												-1,	"Online", 
+												-1,	m_strings->getValue(_("Online")), 
 												m_wToggleRenderer, 
 												"active",
 												2,

@@ -27,6 +27,7 @@
 
 #include "xap_Types.h"
 #include "ut_string_class.h"
+#include "ap_Strings.h"
 
 #include <core/account/xp/AccountHandler.h>
 #include "AbiCollabSaveInterceptor.h"
@@ -58,9 +59,17 @@ typedef boost::shared_ptr< std::map<std::string, GetSessionsResponseEvent> > Bud
 
 class ServiceAccountHandler : public AccountHandler
 {
+private:
+  AP_StringSet *m_strings;
 public:
-	ServiceAccountHandler();
-	virtual ~ServiceAccountHandler();
+	ServiceAccountHandler()
+  {
+    m_strings = new AP_StringSet(NULL, "abiword-plugin-collab");
+  }
+	virtual ~ServiceAccountHandler()
+  {
+    delete m_strings;
+  }
 
 	static bool								askPassword(const std::string& email, std::string& password);
 

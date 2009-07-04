@@ -95,8 +95,14 @@ AP_Win32Dialog_CollaborationAddAccount::AP_Win32Dialog_CollaborationAddAccount(X
 	{
 		m_hInstance=pSessionManager->getInstance();
 	}
+
+  m_strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-collab");
 }
 
+AP_Win32Dialog_CollaborationAddAccount::~AP_Win32Dialog_CollaborationAddAccount()
+{
+  delete m_strings;
+}
 
 void AP_Win32Dialog_CollaborationAddAccount::runModal(XAP_Frame * pFrame)
 {
@@ -261,7 +267,7 @@ void AP_Win32Dialog_CollaborationAddAccount::_populateWindowData()
 	{
 		// nope, we don't have any account handler :'-( 
 		// Add a sample item to show that we can.  Then, disable the box and the ok button
-		m_pWin32Dialog->addItemToCombo(AP_RID_DIALOG_COLLABORATIONADDACCOUNT_TYPECOMBO, (LPCSTR) "No Handlers!");
+		m_pWin32Dialog->addItemToCombo(AP_RID_DIALOG_COLLABORATIONADDACCOUNT_TYPECOMBO, (LPCSTR) m_strings->getValue(_("No Handlers!")));
 		m_pWin32Dialog->selectComboItem(AP_RID_DIALOG_COLLABORATIONADDACCOUNT_TYPECOMBO, 0);
 		m_pWin32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONADDACCOUNT_TYPECOMBO, false);
 		m_pWin32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONADDACCOUNT_OK_BUTTON, false);

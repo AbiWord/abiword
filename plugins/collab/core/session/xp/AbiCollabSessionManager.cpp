@@ -214,6 +214,7 @@ AbiCollabSessionManager::AbiCollabSessionManager(void)
 	m_iDialogAddBuddy(0)
 {
 	m_pManager = this;
+  m_strings = new AP_StringSet(NULL, "abiword-plugin-collab");
 }
 
 AbiCollabSessionManager::~AbiCollabSessionManager(void)
@@ -222,6 +223,7 @@ AbiCollabSessionManager::~AbiCollabSessionManager(void)
 	destroyAccounts();
 	
 	m_pManager = NULL;
+  delete m_strings;
 }
 
 bool AbiCollabSessionManager::registerDialogs(void)
@@ -937,7 +939,7 @@ void AbiCollabSessionManager::removeBuddy(BuddyPtr pBuddy, bool graceful)
 				UT_DEBUGMSG(("This buddy controlled a session, destroying the session...\n"));
 				UT_UTF8String docName = pSession->getDocument()->getFilename();
 				if (docName == "")
-					docName = "Untitled"; // TODO: fetch the title from the frame somehow (which frame?) - MARCM
+					docName = m_strings->getValue(_("Untitled")); // TODO: fetch the title from the frame somehow (which frame?) - MARCM
 				destroySession(pSession);
 				if (!graceful)
 				{
@@ -1232,7 +1234,7 @@ bool AbiCollabSessionManager::processPacket(AccountHandler& /*handler*/, Packet*
 				{
 					UT_UTF8String docName = pSession->getDocument()->getFilename();
 					if (docName == "")
-						docName = "Untitled"; // TODO: fetch the title from the frame somehow (which frame?) - MARCM
+						docName = m_strings->getValue(_("Untitled")); // TODO: fetch the title from the frame somehow (which frame?) - MARCM
 					
 					// the server hosting this session is gone, so let's disconnect as well
 					if (!destroySession(pSession))
@@ -1247,7 +1249,7 @@ bool AbiCollabSessionManager::processPacket(AccountHandler& /*handler*/, Packet*
 					UT_return_val_if_fail(pFrame, true);
 					UT_UTF8String msg;
 					// TODO: make this localizable
-					UT_UTF8String_sprintf(msg, "Document %s is not being shared anymore by buddy %s. You are disconnected from the collaboration session.", docName.utf8_str(), buddy->getDescription().utf8_str()); 
+					UT_UTF8String_sprintf(msg, m_strings->getValue(_("Document %s is not being shared anymore by buddy %s. You are disconnected from the collaboration session.")), docName.utf8_str(), buddy->getDescription().utf8_str()); 
 					pFrame->showMessageBox(msg.utf8_str(), XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
 				}
 				else

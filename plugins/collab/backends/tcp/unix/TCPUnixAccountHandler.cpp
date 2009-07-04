@@ -40,6 +40,12 @@ TCPUnixAccountHandler::TCPUnixAccountHandler()
 	ssl_button(NULL),
 	autoconnect_button(NULL)
 {
+  m_strings = new AP_StringSet(NULL, "abiword-plugin-collab");
+}
+
+TCPUnixAccountHandler::~TCPUnixAccountHandler()
+{
+  delete m_strings;
 }
 
 void TCPUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
@@ -51,11 +57,11 @@ void TCPUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	GtkVBox* parent = (GtkVBox*)pEmbeddingParent;
 	
 	// host a session (we should really use a GtkAction for this)
-	server_button = gtk_radio_button_new_with_label(NULL, "Accept incoming connections");
+	server_button = gtk_radio_button_new_with_label(NULL, m_strings->getValue(_("Accept incoming connections")));
 	gtk_box_pack_start(GTK_BOX(vbox), server_button, TRUE, TRUE, 0);
 	
 	// join a session
-	client_button = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(server_button), "Connect to a server");
+	client_button = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(server_button), m_strings->getValue(_("Connect to a server")));
 	gtk_box_pack_start(GTK_BOX(vbox), client_button, TRUE, TRUE, 0);
 
 	// add a table to hold the server and port options
@@ -67,7 +73,7 @@ void TCPUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	gtk_table_attach_defaults(GTK_TABLE(table), spacer, 0, 1, 0, 1);
 
 	// host	
-	GtkWidget* server_label = gtk_label_new("Address:");
+	GtkWidget* server_label = gtk_label_new(m_strings->getValue(_("Address:")));
 	gtk_misc_set_alignment(GTK_MISC(server_label), 0, 0.5);
 	gtk_table_attach_defaults(GTK_TABLE(table), server_label, 1, 2, 0, 1);
 	server_entry = gtk_entry_new();
@@ -78,7 +84,7 @@ void TCPUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	
 	// port
 	GtkWidget* portHBox = gtk_hbox_new(FALSE, 6);
-	GtkWidget* port_label = gtk_label_new("Port:");
+	GtkWidget* port_label = gtk_label_new(m_strings->getValue(_("Port:")));
 	gtk_misc_set_alignment(GTK_MISC(port_label), 0, 0.5);
 	gtk_box_pack_start(GTK_BOX(portHBox), port_label, false, false, 0);	
 	port_button = gtk_spin_button_new_with_range(1, 65536, 1);
@@ -87,13 +93,13 @@ void TCPUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	gtk_box_pack_start(GTK_BOX(vbox), portHBox, false, false, 0);
 	
 	// ssl
-	ssl_button = gtk_check_button_new_with_label("Use a secure connection (SSL)");
+	ssl_button = gtk_check_button_new_with_label(m_strings->getValue(_("Use a secure connection (SSL)")));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(ssl_button), false);
 	gtk_box_pack_start(GTK_BOX(vbox), ssl_button, TRUE, TRUE, 0);	
 	gtk_widget_set_sensitive(ssl_button, false); // not supported for now
 	
 	// autoconnect
-	autoconnect_button = gtk_check_button_new_with_label("Connect on application startup");
+	autoconnect_button = gtk_check_button_new_with_label(m_strings->getValue(_("Connect on application startup")));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(autoconnect_button), true);
 	gtk_box_pack_start(GTK_BOX(vbox), autoconnect_button, TRUE, TRUE, 0);
 	

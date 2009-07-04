@@ -1,5 +1,5 @@
 
-SUBDIRS = linkgrammarwrap xp
+SUBDIRS = linkgrammarwrap xp po
 
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = grammar.la

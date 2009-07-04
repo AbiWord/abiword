@@ -21,6 +21,8 @@
 #ifndef ABI_COLLAB_COMMAND_H
 #define ABI_COLLAB_COMMAND_H
 
+#include "ap_Strings.h"
+
 class UT_UTF8String;
 #ifdef ABICOLLAB_HANDLER_FAKE	
 class FakeAccountHandler;
@@ -43,6 +45,8 @@ private:
 #endif
 	
 	UT_UTF8String			m_argv;	
+
+  AP_StringSet  *m_strings;
 };
 
 #endif /* ABI_COLLAB_COMMAND_H */

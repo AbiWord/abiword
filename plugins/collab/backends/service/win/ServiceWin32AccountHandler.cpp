@@ -46,7 +46,15 @@ ServiceWin32AccountHandler::ServiceWin32AccountHandler()
 	{
 		m_hInstance = pSessionManager->getInstance();
 	}
+
+  m_strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-collab");
 }
+
+ServiceWin32AccountHandler::~ServiceWin32AccountHandler()
+{
+  delete m_strings;
+}
+
 
 void ServiceWin32AccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 {
@@ -58,11 +66,11 @@ void ServiceWin32AccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	
 	/* Non-Tabbable Labels */
 
-	m_hEmailLabel = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "STATIC", "E-mail address:", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP,
+	m_hEmailLabel = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "STATIC", m_strings->getValue(_("E-mail address:")), SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP,
 			15, 20, 51, 15, hBox,  (HMENU) ABI_RID_DIALOG_COLLABSERVICE_EMAILLABEL,  m_hInstance, 0);
 	UT_return_if_fail(m_hEmailLabel);
 
-	m_hPasswordLabel = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "STATIC", "Password:", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP,
+	m_hPasswordLabel = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "STATIC", m_strings->getValue(_("Password:")), SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP,
 			15, 40, 51, 15, hBox,  (HMENU) ABI_RID_DIALOG_COLLABSERVICE_PASSWORDLABEL,  m_hInstance, 0);
 	UT_return_if_fail(m_hPasswordLabel);
 	
@@ -78,7 +86,7 @@ void ServiceWin32AccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	SendMessage(m_hPasswordEntry, EM_SETPASSWORDCHAR, '*', 0);
 	SendMessage(m_hPasswordEntry, EM_SETLIMITTEXT, 255*sizeof(TCHAR), 0);
 
-	m_hUrlButton = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "BUTTON", "Get a free abicollab.net account", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 
+	m_hUrlButton = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "BUTTON", m_strings->getValue(_("Get a free abicollab.net account")), WS_CHILD | WS_VISIBLE | WS_TABSTOP, 
 			15, 64, 186, 20, hBox, (HMENU) ABI_RID_DIALOG_COLLABSERVICE_URLBUTTON, m_hInstance, 0);
 
 	// Font setting code borrowed from XAP_Win32Dlg_About

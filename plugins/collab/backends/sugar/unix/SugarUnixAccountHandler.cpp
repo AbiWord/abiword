@@ -49,6 +49,7 @@ SugarAccountHandler::SugarAccountHandler()
 	UT_DEBUGMSG(("SugarAccountHandler::SugarAccountHandler()\n"));
 	m_pHandler = this;
 	_registerEditMethods();
+  m_strings = new AP_StringSet(XAPP_App::getApp(), "abiword-plugin-collab");
 }
 
 SugarAccountHandler::~SugarAccountHandler()
@@ -59,16 +60,18 @@ SugarAccountHandler::~SugarAccountHandler()
 		dbus_connection_unref(m_pTube);
 		m_pTube = NULL;
 	}
+
+  delete m_strings;
 }
 
 UT_UTF8String SugarAccountHandler::getDescription()
 {
-	return "Sugar Presence Service";
+	return m_strings->getValue(_("Sugar Presence Service"));
 }
 
 UT_UTF8String SugarAccountHandler::getDisplayType()
 {
-	return "Sugar Presence Service";
+	return m_strings->getValue(_("Sugar Presence Service"));
 }
 
 UT_UTF8String SugarAccountHandler::getStaticStorageType()

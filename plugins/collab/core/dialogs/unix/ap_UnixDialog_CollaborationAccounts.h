@@ -23,12 +23,15 @@
 #include <gtk/gtk.h>
 #include <xp/ap_Dialog_CollaborationAccounts.h>
 
+#include "ap_Strings.h"
+
 class XAP_Frame;
 
 class AP_UnixDialog_CollaborationAccounts : public AP_Dialog_CollaborationAccounts
 {
 public:
 	AP_UnixDialog_CollaborationAccounts(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+  ~AP_UnixDialog_CollaborationAccounts();
 	static XAP_Dialog * static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id);
 	void				runModal(XAP_Frame * pFrame);
 
@@ -48,6 +51,8 @@ private:
 	void				_populateWindowData(void);
 	GtkListStore*		_constructModel();
 	void				_setModel(GtkListStore* model);
+
+  AP_StringSet  *m_strings;
 
 	GtkWidget*			m_wWindowMain;
 	GtkWidget*			m_wAdd;

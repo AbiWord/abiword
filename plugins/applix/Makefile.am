@@ -1,5 +1,5 @@
 
-SUBDIRS = xp
+SUBDIRS = xp po
 
 if APPLIX_BUILTIN
 noinst_LTLIBRARIES = applix.la

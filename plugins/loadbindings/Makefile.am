@@ -1,5 +1,5 @@
 
-SUBDIRS = xp
+SUBDIRS = xp po
 
 if LOADBINDINGS_BUILTIN
 noinst_LTLIBRARIES = loadbindings.la

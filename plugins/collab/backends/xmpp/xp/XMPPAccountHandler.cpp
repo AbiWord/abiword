@@ -174,11 +174,13 @@ XMPPAccountHandler::XMPPAccountHandler():
 	m_pChatHandler(NULL),
 	m_bLoggedIn(false)
 {
+  m_strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-collab");
 }
 
 XMPPAccountHandler::~XMPPAccountHandler()
 {
 	disconnect();
+  delete m_strings;
 }
 
 UT_UTF8String XMPPAccountHandler::getDescription()
@@ -190,7 +192,7 @@ UT_UTF8String XMPPAccountHandler::getDescription()
 
 UT_UTF8String XMPPAccountHandler::getDisplayType()
 {
-	return "Jabber (XMPP)";
+	return m_strings->getValue(_("Jabber (XMPP)"));
 }
 
 UT_UTF8String XMPPAccountHandler::getStaticStorageType()

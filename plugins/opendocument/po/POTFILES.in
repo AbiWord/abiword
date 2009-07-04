@@ -1,0 +1,3 @@
+common/xp/ie_impexp_OpenDocument.cpp
+exp/xp/ie_exp_OpenDocument_Sniffer.cpp
+imp/xp/ie_imp_OpenDocument_Sniffer.cpp

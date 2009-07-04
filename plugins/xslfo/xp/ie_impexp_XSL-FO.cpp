@@ -20,6 +20,7 @@
 #include "ie_exp_XSL-FO.h"
 #include "ie_imp_XSL-FO.h"
 #include "xap_Module.h"
+#include "ap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_xslfo_register
@@ -41,6 +42,7 @@ static IE_Exp_XSL_FO_Sniffer * m_expSniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
+  AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-xslfo");
 
 	if (!m_impSniffer)
 	{
@@ -53,14 +55,15 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 	}
 
 
-	mi->name = "XSL-FO Importer/Exporter";
-	mi->desc = "Import/Export XSL-FO Documents";
+	mi->name = strings->getValue(_("XSL-FO Importer/Exporter"));
+	mi->desc = strings->getValue(_("Import/Export XSL-FO Documents"));
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Abi the Ant";
-	mi->usage = "No Usage";
+	mi->usage = strings->getValue(_("No Usage"));
 
 	IE_Imp::registerImporter (m_impSniffer);
 	IE_Exp::registerExporter (m_expSniffer);
+
 	return 1;
 }
 

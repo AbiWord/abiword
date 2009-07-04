@@ -30,6 +30,12 @@ XMPPUnixAccountHandler::XMPPUnixAccountHandler()
 	port_entry(NULL),
 	autoconnect_button(NULL)
 {
+  m_strings = new AP_StringSet(NULL, "abiword-plugin-collab");
+}
+
+XMPPUnixAccountHandler::~XMPPUnixAccountHandler()
+{
+  delete m_strings;
 }
 
 AccountHandler * XMPPUnixAccountHandler::static_constructor()
@@ -45,14 +51,14 @@ void XMPPUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	GtkVBox* parent = (GtkVBox*)pEmbeddingParent;
 	
 	// username	
-	GtkWidget* username_label = gtk_label_new("Username:");
+	GtkWidget* username_label = gtk_label_new(m_strings->getValue(_("Username:")));
 	gtk_misc_set_alignment(GTK_MISC(username_label), 0, 0.5);
 	gtk_table_attach_defaults(GTK_TABLE(table), username_label, 0, 1, 0, 1);
 	username_entry = gtk_entry_new();
 	gtk_table_attach_defaults(GTK_TABLE(table), username_entry, 1, 2, 0, 1);
 
 	// password
-	GtkWidget* password_label = gtk_label_new("Password:");
+	GtkWidget* password_label = gtk_label_new(m_strings->getValue(_("Password:")));
 	gtk_misc_set_alignment(GTK_MISC(password_label), 0, 0.5);
 	gtk_table_attach_defaults(GTK_TABLE(table), password_label, 0, 1, 1, 2);
 	password_entry = gtk_entry_new();
@@ -60,21 +66,21 @@ void XMPPUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	gtk_table_attach_defaults(GTK_TABLE(table), password_entry, 1, 2, 1, 2);
 
 	// server
-	GtkWidget* server_label = gtk_label_new("Server:");
+	GtkWidget* server_label = gtk_label_new(m_strings->getValue(_("Server:")));
 	gtk_misc_set_alignment(GTK_MISC(server_label), 0, 0.5);
 	gtk_table_attach_defaults(GTK_TABLE(table), server_label, 0, 1, 2, 3);
 	server_entry = gtk_entry_new();
 	gtk_table_attach_defaults(GTK_TABLE(table), server_entry, 1, 2, 2, 3);
 
 	// port
-	GtkWidget* port_label = gtk_label_new("Port:");
+	GtkWidget* port_label = gtk_label_new(m_strings->getValue(_("Port:")));
 	gtk_misc_set_alignment(GTK_MISC(port_label), 0, 0.5);
 	gtk_table_attach_defaults(GTK_TABLE(table), port_label, 0, 1, 3, 4);
 	port_entry = gtk_entry_new(); // TODO: should be a numerical entry
 	gtk_table_attach_defaults(GTK_TABLE(table), port_entry, 1, 2, 3, 4);
 	
 	// autoconnect
-	autoconnect_button = gtk_check_button_new_with_label ("Connect on application startup");
+	autoconnect_button = gtk_check_button_new_with_label (m_strings->getValue(_("Connect on application startup")));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(autoconnect_button), true);
 	gtk_table_attach_defaults(GTK_TABLE(table), autoconnect_button, 0, 2, 4, 5);
 	
@@ -82,7 +88,7 @@ void XMPPUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	gtk_widget_show_all(GTK_WIDGET(parent));
 	
 	// some convenient default values
-	gtk_entry_set_text(GTK_ENTRY(port_entry), "5222");	
+	gtk_entry_set_text(GTK_ENTRY(port_entry), m_strings->getValue(_("5222")));	
 }
 
 void XMPPUnixAccountHandler::removeDialogWidgets(void* /*pEmbeddingParent*/)

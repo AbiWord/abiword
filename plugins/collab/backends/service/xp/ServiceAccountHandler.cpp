@@ -66,11 +66,10 @@ bool ServiceAccountHandler::askPassword(const std::string& email, std::string& p
 			);
 	
 	// Run the dialog
-	// TODO: make this translatable
-	pDialog->setTitle("AbiCollab.net Collaboration Service"); // FIXME: don't hardcode this title to abicollab.net
-	std::string msg = "Please enter your password for account '" + email + "'";
+	pDialog->setTitle(m_strings->getValue(_("AbiCollab.net Collaboration Service"))); // FIXME: don't hardcode this title to abicollab.net
+	std::string msg = m_strings->getValue(_("Please enter your password for account '")) + email + "'";
 	pDialog->setQuestion(msg.c_str());
-	pDialog->setLabel("Password:");
+	pDialog->setLabel(m_strings->getValue(_("Password:")));
 	pDialog->setPassword(true);
 	pDialog->runModal(pFrame);
 	
@@ -111,7 +110,7 @@ UT_UTF8String ServiceAccountHandler::getDescription()
 
 UT_UTF8String ServiceAccountHandler::getDisplayType()
 {
-	return "AbiCollab.net Collaboration Service";
+	return m_strings->getValue(_("AbiCollab.net Collaboration Service"));
 }
 
 UT_UTF8String ServiceAccountHandler::getStaticStorageType()
@@ -428,7 +427,7 @@ void ServiceAccountHandler::joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHand
 		default:
 			{
 				// TODO: add the document name, error type and perhaps the server name
-				UT_UTF8String msg("Error importing document ");
+				UT_UTF8String msg(m_strings->getValue(_("Error importing document ")));
 				msg += docHandle.getName();
 				msg += ".";
 				XAP_App::getApp()->getLastFocussedFrame()->showMessageBox(msg.utf8_str(), XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
@@ -590,8 +589,8 @@ acs::SOAP_ERROR ServiceAccountHandler::_openDocumentSlave(ConnectionPtr connecti
 	AP_Dialog_GenericProgress* pDlg = static_cast<AP_Dialog_GenericProgress*>(
 				pFactory->requestDialog(ServiceAccountHandler::getDialogGenericProgressId())
 			);		
-	pDlg->setTitle("Retrieving Document");
-	pDlg->setInformation("Please wait while retrieving document...");
+	pDlg->setTitle(m_strings->getValue(_("Retrieving Document")));
+	pDlg->setInformation(m_strings->getValue(_("Please wait while retrieving document...")));
 
 	// setup the information for the callback to use when the document comes in
 	connection->loadDocumentStart(pDlg, pDoc, pFrame, filename);

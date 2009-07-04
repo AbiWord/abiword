@@ -59,7 +59,6 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
   mi->author  = "Dom Lachowicz <cinamod@hotmail.com>";
   mi->usage   = strings->getValue(_("No Usage"));
   
-  delete strings;
   return 1;
 }
 

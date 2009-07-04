@@ -23,10 +23,13 @@
 #include "gtk/gtk.h"
 #include <backends/xmpp/xp/XMPPAccountHandler.h>
 
+#include "ap_Strings.h"
+
 class XMPPUnixAccountHandler : public XMPPAccountHandler
 {
 public:
 	XMPPUnixAccountHandler();
+  ~XMPPUnixAccountHandler();
 	static AccountHandler * static_constructor();
 
 	// dialog management
@@ -42,6 +45,8 @@ private:
 	GtkWidget*				server_entry;
 	GtkWidget*				port_entry;	
 	GtkWidget*				autoconnect_button;
+
+  AP_StringSet  *m_strings;
 };
 
 #endif /* __XMPPACCOUNTHANDLER__ */

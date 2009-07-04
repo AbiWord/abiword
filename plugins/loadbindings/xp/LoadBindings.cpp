@@ -57,6 +57,7 @@
 #include "xap_Dlg_FileOpenSaveAs.h"
 #include "xap_Dialog_Id.h"
 #include "ev_NamedVirtualKey.h"
+#include "ap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_loadbindings_register
@@ -71,6 +72,8 @@ ABI_PLUGIN_DECLARE (LoadBindings)
 
 #define RES_TO_STATUS(a) ((a) ? 0 : -1)
 
+AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-loadbindings");
+
 // -----------------------------------------------------------------------
 //      Edit methods and menu items
 // -----------------------------------------------------------------------
@@ -84,12 +87,12 @@ static bool SaveBindings_invoke(AV_View * v, EV_EditMethodCallData* d);
 static XAP_Menu_Id loadBindingID;
 static XAP_Menu_Id dumpEditMethodsID;
 static XAP_Menu_Id saveBindingID;
-static const char * szLoadBinding = "Load keybindings";
-static const char * szLoadBindingStatus = "Load keybindings from a file";
-static const char * szDumpEditMethods = "Dump edit methods";
-static const char * szDumpEditMethodsStatus = "Dump edit methods to your console";
-static const char * szSaveBinding = "Save keybindings";
-static const char * szSaveBindingStatus = "Save keybindings to your profile directory";
+static const char * szLoadBinding = strings->getValue(_("Load keybindings"));
+static const char * szLoadBindingStatus = strings->getValue(_("Load keybindings from a file"));
+static const char * szDumpEditMethods = strings->getValue(_("Dump edit methods"));
+static const char * szDumpEditMethodsStatus = strings->getValue(_("Dump edit methods to your console"));
+static const char * szSaveBinding = strings->getValue(_("Save keybindings"));
+static const char * szSaveBindingStatus = strings->getValue(_("Save keybindings to your profile directory"));
 
 static void LoadBindings_registerMethod () 
 {
@@ -224,12 +227,12 @@ static void LoadKeybindings(const char* uri)
 
 ABI_BUILTIN_FAR_CALL int abi_plugin_register (XAP_ModuleInfo * mi) 
 {
-	mi->name = "LoadBindings";
-	mi->desc = "This allows Keybindings to be loaded from an Ascii file";
+	mi->name = strings->getValue(_("LoadBindings"));
+	mi->desc = strings->getValue(_("This allows Keybindings to be loaded from an Ascii file"));
 	mi->version = ABI_VERSION_STRING;
 	mi->author = 
-		"Original version by Martin Sevior <msevior@physics.unimelb.edu.au>\n"
-		"Refactored to support XML by Marc 'Foddex' Oude Kotte <foddex@foddex.net>";
+		strings->getValue(_("Original version by Martin Sevior <msevior@physics.unimelb.edu.au>\n"
+		"Refactored to support XML by Marc 'Foddex' Oude Kotte <foddex@foddex.net>"));
 	mi->usage = "LoadBindingsDlg_invoke";
 
 	LoadBindings_registerMethod ();
@@ -266,6 +269,7 @@ ABI_BUILTIN_FAR_CALL int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	mi->usage = 0;
 
 	LoadBindings_RemoveFromMethods ();
+  delete strings;
 	return 1;
 }
 
@@ -340,7 +344,7 @@ static bool DumpEditMethods_invoke(AV_View *, EV_EditMethodCallData *)
 	std::sort( list.begin(), list.end(), compareEditMethods );
 	
 	// print them
-	printf("%u bindable edit methods (don't require data)\n", list.size());
+	printf(strings->getValue(_("%u bindable edit methods (don't require data)\n")), list.size());
 	for (size_t i=0; i<list.size(); ++i) printf("%s\n", list[i]->getName());
 
 	return true;
@@ -576,7 +580,7 @@ bool LoadBindings::Load()
 {
 	// check input
 	if (!m_pXMLDoc) {
-		ReportError( "XML file failed to load" );
+		ReportError( strings->getValue(_("XML file failed to load")) );
 		return false;
 	}
 	
@@ -584,27 +588,27 @@ bool LoadBindings::Load()
 	xmlNodePtr node = (xmlNodePtr)m_pXMLDoc;
 	while (node && node->type!=XML_DOCUMENT_NODE) node = node->next;
 	if (!node) {
-		ReportError("couldn't find document node");
+		ReportError(strings->getValue(_("couldn't find document node")));
 		return false;
 	}
 	
 	// first child should be element node named editbindings
 	node = node->children;
 	if (!node || node->type!=XML_ELEMENT_NODE || strcmp( node->name, "editbindings" )) {
-		ReportError("expected editbindings node");
+		ReportError(strings->getValue(_("expected editbindings node")));
 		return false;
 	}
 	
 	// get mode and name
 	const char* nameStr = FindAttribute( node, "name" );
 	if (!nameStr) {
-		ReportError("editbinding missing mandatory name attribute");
+		ReportError(strings->getValue(_("editbinding missing mandatory name attribute")));
 		return false;
 	}
 	m_sName = nameStr;
 	const char* modeStr = FindAttribute( node, "mode" );
 	if (!modeStr) {
-		ReportError("editbinding missing mandatory mode attribute");
+		ReportError(strings->getValue(_("editbinding missing mandatory mode attribute")));
 	}
 	if (!strcmp( modeStr, "replace" )) {
 		m_bReplace = true;
@@ -613,7 +617,7 @@ bool LoadBindings::Load()
 		m_bReplace = false;
 	}
 	else {
-		ReportError("invalid mode attribute value %s, expected replace or append", modeStr);
+		ReportError(strings->getValue(_("invalid mode attribute value %s, expected replace or append")), modeStr);
 		return false;
 	}
 	
@@ -629,7 +633,7 @@ bool LoadBindings::Load()
 			EV_EditMouseContext context = 0;
 			const char* contextStr = FindAttribute( node, "context" );
 			if (!contextStr) {
-				ReportError("mousecontext requires a context attribute");
+				ReportError(strings->getValue(_("mousecontext requires a context attribute")));
 				return false;
 			}
 			if (!strcmp("EV_EMC_UNKNOWN", contextStr)) context = EV_EMC_UNKNOWN;
@@ -652,7 +656,7 @@ bool LoadBindings::Load()
 			else if (!strcmp("EV_EMC_MATH", contextStr)) context = EV_EMC_MATH;
 			else if (!strcmp("EV_EMC_EMBED", contextStr)) context = EV_EMC_EMBED;
 			else {
-				ReportError("unrecognized context attribute value %s in mousecontext element", contextStr);
+				ReportError(strings->getValue(_("unrecognized context attribute value %s in mousecontext element")), contextStr);
 				return false;
 			}
 			// get mouse button
@@ -667,7 +671,7 @@ bool LoadBindings::Load()
 					case 4: button = EV_EMB_BUTTON4; break;
 					case 5: button = EV_EMB_BUTTON5; break;
 					default:
-						ReportError("button value must be 0<=x<=5, found %d", atoi(buttonStr));
+						ReportError(strings->getValue(_("button value must be 0<=x<=5, found %d")), atoi(buttonStr));
 						return false;
 				}
 			}
@@ -677,12 +681,12 @@ bool LoadBindings::Load()
 			while (operationNode) {
 				// get operation
 				if (strcmp( operationNode->name, "operation" )) {
-					ReportError("mousecontext element may only have operation sub elements, found %s element", operationNode->name);
+					ReportError(strings->getValue(_("mousecontext element may only have operation sub elements, found %s element")), operationNode->name);
 					return false;
 				}
 				const char* opType = FindAttribute( operationNode, "type" );
 				if (!opType) {
-					ReportError("operation element missing type attribute");
+					ReportError(strings->getValue(_("operation element missing type attribute")));
 					return false;
 				}
 				EV_EditMouseOp op = 0;
@@ -693,14 +697,14 @@ bool LoadBindings::Load()
 				else if (!strcmp( opType, "release" )) op = EV_EMO_RELEASE;
 				else if (!strcmp( opType, "doublerelease" )) op = EV_EMO_DOUBLERELEASE;
 				else {
-					ReportError("unrecognized type attribute value %s in operation element",opType);
+					ReportError(strings->getValue(_("unrecognized type attribute value %s in operation element")),opType);
 					return false;
 				}
 				
 				// get command to invoke
 				const char* command = FindAttribute( operationNode, "handler" );
 				if (!command) {
-					ReportError("operation element missing handler attribute");
+					ReportError(strings->getValue(_("operation element missing handler attribute")));
 					return false;
 				}
 				
@@ -714,12 +718,12 @@ bool LoadBindings::Load()
 		else if (!strcmp( node->name, "keystroke" )) {
 			const char* handlerStr = FindAttribute( node, "handler" );
 			if (!handlerStr) {
-				ReportError("keystroke element missing mandatory handler attribute");
+				ReportError(strings->getValue(_("keystroke element missing mandatory handler attribute")));
 				return false;
 			}
 			const char* keyStr = FindAttribute( node, "key" );
 			if (!keyStr) {
-				ReportError("keystroke element missing mandatory key attribute");
+				ReportError(strings->getValue(_("keystroke element missing mandatory key attribute")));
 				return false;
 			}
 			if (!strncmp( keyStr, "0x", 2 )) {
@@ -732,7 +736,7 @@ bool LoadBindings::Load()
 				// handle named virtual key
 				EV_EditBits vkey = EV_NamedVirtualKey::getEB( keyStr );
 				if (!vkey) {
-					ReportError("unrecognized named virtual key %s", keyStr);
+					ReportError(strings->getValue(_("unrecognized named virtual key %s")), keyStr);
 					return false;
 				}
 				if (!AddMapping( modifiers | vkey | EV_EKP_NAMEDKEY, handlerStr )) return false;
@@ -741,7 +745,7 @@ bool LoadBindings::Load()
 		else if (!strcmp( node->name, "unbind-mappings" )) {
 			const char* handlerStr = FindAttribute( node, "handler" );
 			if (!handlerStr) {
-				ReportError("unbind-mappings element missing mandatory handler attribute");
+				ReportError(strings->getValue(_("unbind-mappings element missing mandatory handler attribute")));
 				return false;
 			}
 			UT_uint8 unbind = 0;
@@ -754,13 +758,13 @@ bool LoadBindings::Load()
 				unbind |= DONT_UNBIND_MOUSECONTEXTS;
 			}
 			if ((unbind & DONT_UNBIND_ANYTHING)==DONT_UNBIND_ANYTHING) {
-				ReportError("got unbind-mappings for handler %s that unbinds nothing", handlerStr);
+				ReportError(strings->getValue(_("got unbind-mappings for handler %s that unbinds nothing")), handlerStr);
 				return false;
 			}
 			RemoveMapping( handlerStr, unbind );
 		}
 		else {
-			ReportError("unrecognized element %s, expecting 'mousecontext', 'keystroke' or 'unbind-mappings'", node->name);
+			ReportError(strings->getValue(_("unrecognized element %s, expecting 'mousecontext', 'keystroke' or 'unbind-mappings'")), node->name);
 			return false;
 		}
 		// next sibling
@@ -814,7 +818,7 @@ bool LoadBindings::AddMapping( UT_uint32 binding, const char* command )
 {
 	UT_DEBUGMSG(("[LoadBindings] Adding 0x%08x: '%s'\n", binding, command));
 	if (!m_BindMap.insert( BindingMap::value_type( binding, command ) ).second) {
-		ReportError("overlapping mappings detected for binding 0x%x (see command %s)", binding, command);
+		ReportError(strings->getValue(_("overlapping mappings detected for binding 0x%x (see command %s)")), binding, command);
 		return false;
 	}
 	return true;
@@ -824,14 +828,14 @@ bool LoadBindings::RemoveMapping( const char* command, UT_uint8 unbinding )
 {
 	UT_DEBUGMSG(("[LoadBindings] Removing 0x%02x: '%s'\n", unbinding, command));
 	if (!m_UnbindMap.insert( UnbindMap::value_type( command, unbinding) ).second) {
-		ReportWarning("duplicate unbind-mappings detected for command %s", command);
+		ReportWarning(strings->getValue(_("duplicate unbind-mappings detected for command %s")), command);
 	}
 	return true;
 }
 
 void LoadBindings::ReportError( const char* format, ... ) const 
 {
-	fprintf( stderr, "[LoadBindings] Error: " );
+	fprintf( stderr, strings->getValue(_("[LoadBindings] Error: ")) );
 	va_list args;
 	va_start(args, format);
 	vfprintf( stderr, format, args );
@@ -841,7 +845,7 @@ void LoadBindings::ReportError( const char* format, ... ) const
 
 void LoadBindings::ReportWarning( const char* format, ... ) const 
 {
-	fprintf( stderr, "[LoadBindings] Warning: " );
+	fprintf( stderr, strings->getValue(_("[LoadBindings] Warning: ")) );
 	va_list args;
 	va_start(args, format);
 	vfprintf( stderr, format, args );
@@ -881,7 +885,7 @@ bool LoadBindings::Set() const
 		map->removeBinding( static_cast<EV_EditBits>( (*it).first ) );
 		// then set our new command
 		if (!map->setBinding( static_cast<EV_EditBits>( (*it).first ), (*it).second.c_str() )) {
-			ReportWarning( "Failed to set binding for EV 0x%x handler %s", (*it).first, (*it).second.c_str() );
+			ReportWarning( strings->getValue(_("Failed to set binding for EV 0x%x handler %s")), (*it).first, (*it).second.c_str() );
 		}
 	}
 	// remove bindings
@@ -892,20 +896,20 @@ bool LoadBindings::Set() const
 			if (EV_IsMouse( editBits[i] )) {
 				if (!((*it).second & DONT_UNBIND_MOUSECONTEXTS)) {
 					if (!map->removeBinding( editBits[i] )) {
-						ReportWarning( "Failed to remove binding for EV 0x%x handler %s", editBits[i], (*it).first.c_str() );
+						ReportWarning( strings->getValue(_("Failed to remove binding for EV 0x%x handler %s")), editBits[i], (*it).first.c_str() );
 					}
 				}
 			}
 			else if (EV_IsKeyboard( editBits[i] )) {
 				if (!((*it).second & DONT_UNBIND_KEYSTROKES)) {
 					if (!map->removeBinding( editBits[i] )) {
-						ReportWarning( "Failed to remove binding for EV 0x%x handler %s", editBits[i], (*it).first.c_str() );
+						ReportWarning( strings->getValue(_("Failed to remove binding for EV 0x%x handler %s")), editBits[i], (*it).first.c_str() );
 					}
 				}
 			}
 			else {
 				if (!map->removeBinding( editBits[i] )) {
-					ReportWarning( "Failed to remove binding for EV 0x%x handler %s", editBits[i], (*it).first.c_str() );
+					ReportWarning( strings->getValue(_("Failed to remove binding for EV 0x%x handler %s")), editBits[i], (*it).first.c_str() );
 				}
 			}
 		}

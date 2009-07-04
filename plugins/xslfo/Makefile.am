@@ -1,5 +1,5 @@
 
-SUBDIRS = xp
+SUBDIRS = xp po
 
 if XSLFO_BUILTIN
 noinst_LTLIBRARIES = xslfo.la

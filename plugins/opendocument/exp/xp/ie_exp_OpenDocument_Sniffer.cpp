@@ -28,6 +28,8 @@
 // Internal includes
 #include "ie_exp_OpenDocument.h"
 
+#include "ap_Strings.h"
+
 
 
 /**
@@ -89,7 +91,9 @@ bool IE_Exp_OpenDocument_Sniffer::getDlgLabels(const char ** pszDesc,
                          const char ** pszSuffixList,
                          IEFileType * ft)
 {
-  *pszDesc = "OpenDocument (.odt)";
+  AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-opendocument");
+
+  *pszDesc = strings->getValue(_("OpenDocument (.odt)"));
   *pszSuffixList = "*.odt";
   *ft = getFileType();
   return true;

@@ -32,6 +32,7 @@
 #include "ut_iconv.h"
 #include "ut_exception.h"
 #include "ut_Language.h"
+#include "ut_locale.h"
 
 #include "xap_App.h"
 #include "xap_Strings.h"
@@ -47,7 +48,12 @@ XAP_StringSet::XAP_StringSet(XAP_App * pApp, const gchar * szDomainName, const g
 {
 	m_pApp = pApp;
 
-	m_szLanguageName = NULL;
+  if (!szLanguageName)
+  {
+    UT_LocaleInfo *info = new UT_LocaleInfo();
+	  m_szLanguageName = info->getLanguage().utf8_str();
+  }
+
 	if (szLanguageName && *szLanguageName)
 		m_szLanguageName = g_strdup(szLanguageName);
 
@@ -126,4 +132,12 @@ void XAP_StringSet::setEncoding(const gchar * inEncoding)
 const char * XAP_StringSet::getEncoding() const
 {
   return m_encoding.c_str();
+}
+
+const char * XAP_StringSet::translate(XAP_String_Id id) const
+{
+  if (textdomain(m_domain) != m_domain)
+    id = dgettext(m_domain, id);
+
+  return id;
 }

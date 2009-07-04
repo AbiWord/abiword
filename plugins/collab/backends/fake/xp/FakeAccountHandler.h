@@ -24,6 +24,8 @@
 #include <account/xp/Buddy.h>
 #include "FakeBuddy.h"
 
+#include "ap_Strings.h"
+
 class RecordedPacket;
 class AbiCollab;
 class PD_Document;
@@ -103,6 +105,9 @@ private:
 	// variables for the debug test
 	UT_sint32								m_iLocalRev;
 	UT_sint32								m_iRemoteRev;
+
+private:
+  AP_StringSet *strings;
 };
 
 #endif /* __SUGARACCOUNTHANDLER__ */

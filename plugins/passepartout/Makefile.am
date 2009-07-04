@@ -1,5 +1,5 @@
 
-SUBDIRS = xp
+SUBDIRS = xp po
 
 if PASSEPARTOUT_BUILTIN
 noinst_LTLIBRARIES = passepartout.la

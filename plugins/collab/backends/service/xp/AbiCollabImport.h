@@ -22,6 +22,8 @@
 #include "ie_imp.h"
 #include "ut_types.h"
 
+#include "ap_Strings.h"
+
 class IE_Imp_AbiCollabSniffer : public IE_ImpSniffer
 {
 public:
@@ -33,6 +35,9 @@ public:
 	virtual const IE_MimeConfidence * getMimeConfidence () { return NULL; }
 	virtual bool getDlgLabels (const char ** pszDesc, const char ** pszSuffixList, IEFileType * ft);
 	virtual UT_Error constructImporter (PD_Document * pDocument, IE_Imp ** ppie);	
+
+private:
+  AP_StringSet *m_strings;
 };
 
 class IE_Imp_AbiCollab : public IE_Imp

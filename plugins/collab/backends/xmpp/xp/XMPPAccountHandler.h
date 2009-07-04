@@ -35,6 +35,7 @@ using std::map;
 #include "stdio.h"
 #include "ut_string_class.h"
 #include "ut_types.h"
+#include "ap_Strings.h"
 #include "XMPPBuddy.h"
 
 #define XMPP_RESOURCE "AbiCollab"
@@ -92,6 +93,7 @@ private:
 	UT_UTF8String			_getNameFromFqa(const UT_UTF8String& fqa);
 	bool					_send(const char* base64data, XMPPBuddyPtr pBuddy);
 	XMPPBuddyPtr			_getBuddy(const std::string& from_address);
+  AP_StringSet  *m_strings;
 		
 	// connection management
 	LmConnection *			m_pConnection;

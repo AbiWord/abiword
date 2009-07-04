@@ -19,6 +19,7 @@
 
 #include "ie_exp_Passepartout.h"
 #include "xap_Module.h"
+#include "ap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_passepartout_register
@@ -39,6 +40,8 @@ static IE_Exp_Passepartout_Sniffer * m_expSniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
+  AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-passepartout");
+
 	if (!m_expSniffer)
 	{
 		m_expSniffer = new IE_Exp_Passepartout_Sniffer (PLUGIN_NAME);
@@ -46,11 +49,13 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 
 	IE_Exp::registerExporter (m_expSniffer);
 
-	mi->name = "Passepartout Exporter";
-	mi->desc = "Export Passepartout's xml2ps format";
+	mi->name = strings->getValue(_("Passepartout Exporter"));
+	mi->desc = strings->getValue(_("Export Passepartout's xml2ps format"));
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "David Bolack";
-	mi->usage = "No Usage";
+  mi->usage = strings->getValue(_("No Usage"));
+
+  delete strings;
 	return 1;
 }
 

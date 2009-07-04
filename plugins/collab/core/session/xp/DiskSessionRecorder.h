@@ -29,6 +29,7 @@
 #include "xap_App.h"
 #include "ut_assert.h"
 #include "ut_go_file.h"
+#include "ap_Strings.h"
 
 #include <session/xp/AbiCollab.h>
 
@@ -60,19 +61,19 @@ public:
 
 class DiskSessionRecorder : public SessionRecorderInterface
 {
+private:
+  AP_StringSet *m_strings;
 public:
 	DiskSessionRecorder(AbiCollab* pSession);
-	~DiskSessionRecorder();		
+	~DiskSessionRecorder();
+  static const char * getPrefix() { return "Session-"; }  
 		
 	static const char* getTargetDirectory()
 		{ return XAP_App::getApp()->getUserPrivateDirectory(); }
-
-	static const char* getPrefix()
-		{ return "Session-"; }
 	
 	static bool getPackets(const std::string& filename, bool& bLocallyControlled, std::vector<RecordedPacket*>& packets);
 		
-	static bool	dumpSession(const std::string& filename);
+	static  bool	dumpSession(const std::string& filename);
 
 	void storeOutgoing(const Packet* pPacket)
 		{ store(false, pPacket, BuddyPtr()); }

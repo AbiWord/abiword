@@ -55,6 +55,7 @@ static ap_bs_Char CharTable[] =
 AbiCollabSaveInterceptor::AbiCollabSaveInterceptor()
 	: m_pOldSaveEM(NULL)
 {
+  m_strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-collab");
 	UT_DEBUGMSG(("Installing Save menu interceptor!\n"));
 	EV_EditMethodContainer *pEMC = XAP_App::getApp()->getEditMethodContainer();
 
@@ -66,7 +67,7 @@ AbiCollabSaveInterceptor::AbiCollabSaveInterceptor()
 	EV_EditMethod* mySaveInterceptor = new EV_EditMethod (
 								SAVE_INTERCEPTOR_EM, 
 								&AbiCollabSaveInterceptor_interceptor, 
-								0, "AbiCollab Service Save Interceptor"
+								0, m_strings->getValue(_("AbiCollab Service Save Interceptor"))
 							);
 	pEMC->addEditMethod(mySaveInterceptor);	
 	
@@ -102,6 +103,11 @@ AbiCollabSaveInterceptor::AbiCollabSaveInterceptor()
 	UT_return_if_fail(pBindingSet);
 
 	pBindingSet->_loadChar(pEbMap, CharTable, 2, NULL, 0);	
+}
+
+AbiCollabSaveInterceptor::~AbiCollabSaveInterceptor()
+{
+  delete m_strings;
 }
 
 bool AbiCollabSaveInterceptor::saveRemotely(PD_Document * pDoc)

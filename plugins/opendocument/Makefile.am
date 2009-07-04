@@ -1,5 +1,5 @@
 
-SUBDIRS = common exp imp
+SUBDIRS = common exp imp po
 
 if OPENDOCUMENT_BUILTIN
 noinst_LTLIBRARIES = opendocument.la

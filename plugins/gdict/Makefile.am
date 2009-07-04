@@ -1,7 +1,7 @@
 
 if TOOLKIT_GTK
 
-SUBDIRS = unix
+SUBDIRS = unix po
 
 if GDICT_BUILTIN
 noinst_LTLIBRARIES = gdict.la

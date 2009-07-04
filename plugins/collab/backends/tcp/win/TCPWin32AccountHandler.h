@@ -25,6 +25,7 @@
 #include <string>
 #include <ap_Win32App.h>
 #include "xap_Win32DialogHelper.h"
+#include "ap_Strings.h"
 
 #include <core/session/xp/AbiCollabSessionManager.h>
 #include <core/dialogs/win/ap_Win32Dialog_CollaborationAddAccount.h>
@@ -35,6 +36,7 @@ class TCPWin32AccountHandler : public TCPAccountHandler
 {
 public:
 	TCPWin32AccountHandler();
+  ~TCPWin32AccountHandler();
 	
 	static AccountHandler*					static_constructor();
 
@@ -61,6 +63,8 @@ private:
 	void									_checkButtonHwnd(HWND hCtrl, bool bChecked);
 	bool									_isCheckedHwnd(HWND hCtrl);
 	int										_getControlTextHwnd(HWND hCtrl, int iLen, const char * p_szBuf);
+
+  AP_StringSet  *m_strings;
 
 
 };

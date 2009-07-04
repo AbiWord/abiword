@@ -2,7 +2,7 @@
 if TOOLKIT_COCOA
 SUBDIRS =
 else
-SUBDIRS = backends core
+SUBDIRS = backends core po
 
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = collab.la

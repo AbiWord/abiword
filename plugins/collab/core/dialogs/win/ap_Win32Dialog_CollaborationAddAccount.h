@@ -25,6 +25,7 @@
 
 #include "xap_Win32DialogHelper.h"
 #include "ut_assert.h"
+#include "ap_Strings.h"
 
 #include <dialogs/xp/ap_Dialog_CollaborationAddAccount.h>
 #include "ap_Win32Res_DlgCollaborationAddAccount.rc2"
@@ -35,6 +36,7 @@ class AP_Win32Dialog_CollaborationAddAccount : public AP_Dialog_CollaborationAdd
 {
 public:
 	AP_Win32Dialog_CollaborationAddAccount(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+  ~AP_Win32Dialog_CollaborationAddAccount();
 	static XAP_Dialog * 		static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id);
 
 	void						runModal(XAP_Frame * pFrame);
@@ -66,6 +68,8 @@ protected:
 private:
 	
 	void						_populateWindowData(void);
+
+  AP_StringSet  *m_strings;
 };
 
 #endif /* AP_WIN32DIALOG_COLLABORATIONADDACCOUNT_H */

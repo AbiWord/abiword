@@ -25,6 +25,8 @@
 #include "IOServerHandler.h"
 #include "TCPBuddy.h"
 
+#include "ap_Strings.h"
+
 #define DEFAULT_TCP_PORT 25509  /* log2(e + pi) * 10^4 */
 
 extern AccountHandlerConstructor TCPAccountHandlerConstructor;
@@ -88,6 +90,8 @@ private:
 	IOServerHandler*						m_pDelegator;
 
 	std::map<TCPBuddyPtr, boost::shared_ptr<Session> >		m_clients; // mapping buddies and their accompanying session
+
+  AP_StringSet *strings;
 };
 
 #endif /* __TCPACCOUNTHANDLER__ */

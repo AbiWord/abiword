@@ -43,6 +43,7 @@
 #include "ut_vector.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_FileOpenSaveAs.h"
+#include "ap_Strings.h"
 
 #include <dialogs/xp/ap_Dialog_CollaborationJoin.h>
 #include <dialogs/xp/ap_Dialog_CollaborationAccounts.h>
@@ -67,13 +68,15 @@ static void s_cleanup_old_sessions();
 //
 // -----------------------------------------------------------------------
 
+AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-collab");
+
 ABI_PLUGIN_DECLARE(AbiCollab)
   
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-	mi->name = "AbiWord Collaboration";
-	mi->desc = "This plugin allows real-time collaborative document editing";
+	mi->name = strings->getValue(_("AbiWord Collaboration"));
+	mi->desc = strings->getValue(_("This plugin allows real-time collaborative document editing"));
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Martin Sevior <msevior@physics.unimelb.edu.au>\nMarc Maurer <uwog@uwog.net>\nMarc Oude Kotte <foddex@foddex.net>";
 	mi->usage = "com.abisource.abiword.abicollab.command";
@@ -126,6 +129,8 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	// unregister all dialogs we use
 	AbiCollabSessionManager::getManager()->unregisterDialogs();
 
+  delete strings;
+
 	return 1;
 }
 
@@ -144,28 +149,28 @@ int abi_plugin_supports_version (UT_uint32 /*major*/, UT_uint32 /*minor*/, UT_ui
 // -----------------------------------------------------------------------
 
 // FIXME: make these translatable strings
-static const char * szCollaboration = "&Collaborate";
-static const char * szCollaborationTip = "Collaborate over the internet or local network";
+static const char * szCollaboration = strings->getValue(_("&Collaborate"));
+static const char * szCollaborationTip = strings->getValue(_("Collaborate over the internet or local network"));
 
-static const char * szCollaborationOffer = "Share Document";
-static const char * szCollaborationOfferTip = "Offer the current document for collaboration";
+static const char * szCollaborationOffer = strings->getValue(_("Share Document"));
+static const char * szCollaborationOfferTip = strings->getValue(_("Offer the current document for collaboration"));
 
-static const char * szCollaborationJoin = "Shared Documents";
-static const char * szCollaborationJoinTip = "Join a collaboration session";
+static const char * szCollaborationJoin = strings->getValue(_("Shared Documents"));
+static const char * szCollaborationJoinTip = strings->getValue(_("Join a collaboration session"));
 
-static const char * szCollaborationAccounts = "Accounts";
-static const char * szCollaborationAccountsTip = "Manage collaboration accounts";
+static const char * szCollaborationAccounts = strings->getValue(_("Accounts"));
+static const char * szCollaborationAccountsTip = strings->getValue(_("Manage collaboration accounts"));
 
-static const char * szCollaborationShowAuthors = "Show Authors";
-static const char * szCollaborationShowAuthorsTip = "Show who wrote each piece of text by with different colors";
+static const char * szCollaborationShowAuthors = strings->getValue(_("Show Authors"));
+static const char * szCollaborationShowAuthorsTip = strings->getValue(_("Show who wrote each piece of text by with different colors"));
 
 #if defined(DEBUG)
 #if !defined(ABICOLLAB_RECORD_ALWAYS)
 static const char * szCollaborationRecord = "Record this Session";
 static const char * szCollaborationRecordTip = "Record a session to disk, for debugging purposes";
 #endif
-static const char * szCollaborationViewRecord = "View Session";
-static const char * szCollaborationViewRecordTip = "Load a recorded session from disk and show the packets";
+static const char * szCollaborationViewRecord = strings->getValue(_("View Session"));
+static const char * szCollaborationViewRecordTip = strings->getValue(_("Load a recorded session from disk and show the packets"));
 #endif
 
 static const char * szEndCollaboration = "EndCollaboration";

@@ -1,0 +1,177 @@
+# Esperanto translations for abiword package.
+# Copyright (C) 2009 THE abiword'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the abiword package.
+# Keith Bowes <keith@keith-desktop>, 2009.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: abiword 2.7.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-07-03 21:38-0400\n"
+"PO-Revision-Date: 2009-07-03 21:39-0400\n"
+"Last-Translator: Keith Bowes <keith@keith-desktop>\n"
+"Language-Team: Esperanto <translation-team-eo@lists.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../xp/LoadBindings.cpp:90
+msgid "Load keybindings"
+msgstr "Ŝargi klavbindaĵojn"
+
+#: ../xp/LoadBindings.cpp:91
+msgid "Load keybindings from a file"
+msgstr "Ŝargi klavbindaĵojn el dosiero"
+
+#: ../xp/LoadBindings.cpp:92
+msgid "Dump edit methods"
+msgstr "Eligi redaktajn metodojn"
+
+#: ../xp/LoadBindings.cpp:93
+msgid "Dump edit methods to your console"
+msgstr "Eligi al via konsolo redaktajn metodojn"
+
+#: ../xp/LoadBindings.cpp:94
+msgid "Save keybindings"
+msgstr "Konservi klavbindaĵojn"
+
+#: ../xp/LoadBindings.cpp:95
+msgid "Save keybindings to your profile directory"
+msgstr "Konservi al via dosierujo profila klavbindaĵojn"
+
+#: ../xp/LoadBindings.cpp:230
+msgid "LoadBindings"
+msgstr ""
+
+#: ../xp/LoadBindings.cpp:231
+msgid "This allows Keybindings to be loaded from an Ascii file"
+msgstr "Ĉi tio permesas, ke klavbindaĵojn estu ŝargita el askia dosiero"
+
+#: ../xp/LoadBindings.cpp:234
+msgid ""
+"Original version by Martin Sevior <msevior@physics.unimelb.edu.au>\n"
+"Refactored to support XML by Marc 'Foddex' Oude Kotte <foddex@foddex.net>"
+msgstr "Originala versio de Martin Sevior <msevior@physics.unimelb.edu.au>\nReverkita subteni XML-on de Marc 'Foddex' OUde Kotte <foddex@foddex.net>"
+
+#. print them
+#: ../xp/LoadBindings.cpp:346
+#, c-format
+msgid "%u bindable edit methods (don't require data)\n"
+msgstr "%u bindeblaj redaktaj metodoj (ne bezonas datumon)\n"
+
+#: ../xp/LoadBindings.cpp:582
+msgid "XML file failed to load"
+msgstr "XML-dosiera ŝargado malsukcesis"
+
+#: ../xp/LoadBindings.cpp:590
+msgid "couldn't find document node"
+msgstr "ne povis trovi dokumentan nodon"
+
+#: ../xp/LoadBindings.cpp:597
+msgid "expected editbindings node"
+msgstr "atendis nodon editbindings"
+
+#: ../xp/LoadBindings.cpp:604
+msgid "editbinding missing mandatory name attribute"
+msgstr "editbinding mankas devigan atributon name"
+
+#: ../xp/LoadBindings.cpp:610
+msgid "editbinding missing mandatory mode attribute"
+msgstr "editbinding mankas devigan atributon mode"
+
+#: ../xp/LoadBindings.cpp:619
+#, c-format
+msgid "invalid mode attribute value %s, expected replace or append"
+msgstr "nevalida atributon valoron %s de mode; validaj estas replace kaj append"
+
+#: ../xp/LoadBindings.cpp:635
+msgid "mousecontext requires a context attribute"
+msgstr "mousecontext bezonas atributon context"
+
+#: ../xp/LoadBindings.cpp:658
+#, c-format
+msgid "unrecognized context attribute value %s in mousecontext element"
+msgstr "nerekona valora %s de atributo context en elemento mousecontext"
+
+#: ../xp/LoadBindings.cpp:673
+#, c-format
+msgid "button value must be 0<=x<=5, found %d"
+msgstr "butona valoro devas esti inter 0 kaj 5, estis %d"
+
+#: ../xp/LoadBindings.cpp:683
+#, c-format
+msgid ""
+"mousecontext element may only have operation sub elements, found %s element"
+msgstr "elemento moustcontext havu subelementojn sub, trovis elementon %s"
+
+#: ../xp/LoadBindings.cpp:688
+msgid "operation element missing type attribute"
+msgstr "elemento operation mankas atributon type"
+
+#: ../xp/LoadBindings.cpp:699
+#, c-format
+msgid "unrecognized type attribute value %s in operation element"
+msgstr "nekonata valoro %s de atributo type de elemento operation"
+
+#: ../xp/LoadBindings.cpp:706
+msgid "operation element missing handler attribute"
+msgstr "elemento operation mankas atributon handler"
+
+#: ../xp/LoadBindings.cpp:720
+msgid "keystroke element missing mandatory handler attribute"
+msgstr "elemento keystroke mankas devigan atributon handler"
+
+#: ../xp/LoadBindings.cpp:725
+msgid "keystroke element missing mandatory key attribute"
+msgstr "elemento keystroke mankas devigan atributon key"
+
+#: ../xp/LoadBindings.cpp:738
+#, c-format
+msgid "unrecognized named virtual key %s"
+msgstr "nekonata nomata virtuala klavo %s"
+
+#: ../xp/LoadBindings.cpp:747
+msgid "unbind-mappings element missing mandatory handler attribute"
+msgstr "elemento unbind-mappings mankas devigan atributon handler"
+
+#: ../xp/LoadBindings.cpp:760
+#, c-format
+msgid "got unbind-mappings for handler %s that unbinds nothing"
+msgstr "ricevis elementon unbind-mappings por traktilo %s, kiu malbindas nenion"
+
+#: ../xp/LoadBindings.cpp:766
+#, c-format
+msgid ""
+"unrecognized element %s, expecting 'mousecontext', 'keystroke' or 'unbind-"
+"mappings'"
+msgstr "Nekonata elemento %s, anticipis 'mousecontext', 'keystroke', aŭ 'unbind-mappings'"
+
+#: ../xp/LoadBindings.cpp:820
+#, c-format
+msgid "overlapping mappings detected for binding 0x%x (see command %s)"
+msgstr "parte kovrantaj mapigoj malkovriĝis por bindaĵo 0x%x (vidi komandon %s)"
+
+#: ../xp/LoadBindings.cpp:830
+#, c-format
+msgid "duplicate unbind-mappings detected for command %s"
+msgstr "duoblaj unbind-mappings malkorvriĝis por komando %s"
+
+#: ../xp/LoadBindings.cpp:837
+msgid "[LoadBindings] Error: "
+msgstr "[LoadBindings] Eraro: "
+
+#: ../xp/LoadBindings.cpp:847
+msgid "[LoadBindings] Warning: "
+msgstr "[LoadBindings] Averto: "
+
+#: ../xp/LoadBindings.cpp:887
+#, c-format
+msgid "Failed to set binding for EV 0x%x handler %s"
+msgstr "Malsukcesis valorizi bindaĵojn por EV 0x%x traktilon %s"
+
+#: ../xp/LoadBindings.cpp:898 ../xp/LoadBindings.cpp:905
+#: ../xp/LoadBindings.cpp:911
+#, c-format
+msgid "Failed to remove binding for EV 0x%x handler %s"
+msgstr "Malsukcesis forigi bindaĵojn por EV 0x%x traktilo %s"

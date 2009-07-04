@@ -78,7 +78,6 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 
 	IE_Imp::registerImporter (m_sniffer);
   
-  delete strings;
 	return 1;
 }
 

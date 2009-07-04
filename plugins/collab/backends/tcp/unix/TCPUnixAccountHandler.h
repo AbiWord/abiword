@@ -21,10 +21,13 @@
 
 #include <backends/tcp/xp/TCPAccountHandler.h>
 
+#include "ap_String.h"
+
 class TCPUnixAccountHandler : public TCPAccountHandler
 {
 public:
 	TCPUnixAccountHandler();
+  ~TCPUnixAccountHandler();
 	
 	static AccountHandler*					static_constructor();
 
@@ -43,6 +46,7 @@ private:
 	GtkWidget*								port_button;
 	GtkWidget*								ssl_button;
 	GtkWidget*								autoconnect_button;
+  AP_StringSet *m_strings;
 };
 
 #endif /* __TCPUNIXACCOUNTHANDLER__ */

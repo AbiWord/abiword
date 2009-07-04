@@ -33,6 +33,7 @@
 #include "xap_Module.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
+#include "ap_Strings.h"
 #include "fv_View.h"
 #include "xav_View.h"
 #include "xav_Listener.h"
@@ -138,15 +139,15 @@ ABI_PLUGIN_DECLARE(AbiGrammar)
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-    mi->name = "AbiGrammar";
-    mi->desc = "The plugin allows AbiWord to be Grammar checked";
+    XAP_App * pApp = XAP_App::getApp();
+    AP_StringSet *strings = new AP_StringSet(pApp, "abiword-plugin-grammar");
+
+    mi->name = strings->getValue(_("AbiGrammar"));
+    mi->desc = strings->getValue(_("The plugin allows AbiWord to be Grammar checked"));
     mi->version = ABI_VERSION_STRING;
     mi->author = "Martin Sevior <msevior@physics.unimelb.edu.au>";
-    mi->usage = "No Usage";
+    mi->usage = strings->getValue(_("No Usage"));
     
-    // Add to AbiWord's plugin listeners
-    XAP_App * pApp = XAP_App::getApp();
-
 #ifdef TOOLKIT_COCOA
     if (const char * resources = getenv ("ABIWORD_COCOA_BUNDLED_RESOURCES"))
     {

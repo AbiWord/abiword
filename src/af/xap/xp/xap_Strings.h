@@ -76,6 +76,8 @@ public:
 	void setEncoding(const char * inEndcoding);
 	const char * getEncoding() const;
 
+  const char * translate(XAP_String_Id id) const;
+
 protected:
 	XAP_App *					m_pApp;
 	const gchar *			m_szLanguageName;
