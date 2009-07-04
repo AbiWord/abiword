@@ -868,7 +868,7 @@ void fp_VerticalContainer::removeContainer(fp_Container* pContainer,bool bClear)
 bool fp_VerticalContainer::insertContainer(fp_Container* pNewContainer)
 {
 	UT_return_val_if_fail(pNewContainer,false);
-        UT_return_val_if_fail(pNewContainer->getDocSectionLayout() == getDocSectionLayout(),false);
+	UT_return_val_if_fail((pNewContainer->getContainerType() == FP_CONTAINER_ENDNOTE) || (pNewContainer->getDocSectionLayout() == getDocSectionLayout()),false);
 	UT_ASSERT(pNewContainer->getContainerType() != FP_CONTAINER_ANNOTATION);
 	pNewContainer->clearScreen();
 	xxx_UT_DEBUGMSG(("Insert  Container after CS %x in column %x \n",pNewContainer,this));
@@ -895,7 +895,7 @@ UT_sint32	fp_VerticalContainer::getColumnGap(void) const
 bool fp_VerticalContainer::addContainer(fp_Container* pNewContainer)
 {
 	UT_return_val_if_fail(pNewContainer,false);
-	UT_return_val_if_fail(pNewContainer->getDocSectionLayout() == getDocSectionLayout(),false);
+	UT_return_val_if_fail((pNewContainer->getContainerType() == FP_CONTAINER_ENDNOTE) || (pNewContainer->getDocSectionLayout() == getDocSectionLayout()),false);
 	UT_ASSERT(pNewContainer->getContainerType() != FP_CONTAINER_ANNOTATION);
 	if(pNewContainer->getContainer() != NULL)
 	{
@@ -921,7 +921,7 @@ bool fp_VerticalContainer::insertContainerAfter(fp_Container*	pNewContainer, fp_
 {
 	UT_ASSERT(pAfterContainer);
 	UT_return_val_if_fail(pNewContainer, false);
-        UT_return_val_if_fail(pNewContainer->getDocSectionLayout() == getDocSectionLayout(),false);
+	UT_return_val_if_fail((pNewContainer->getContainerType() == FP_CONTAINER_ENDNOTE) || (pNewContainer->getDocSectionLayout() == getDocSectionLayout()),false);
 	UT_ASSERT(pNewContainer->getContainerType() != FP_CONTAINER_ANNOTATION);
 
 	UT_sint32 count = countCons();
@@ -1631,7 +1631,7 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 	fp_TOCContainer *pTOC2 = NULL;
 	fp_VerticalContainer* pNextContainer = static_cast<fp_VerticalContainer*>(getNext());
 	UT_return_if_fail(pNextContainer);
-	UT_return_if_fail(pNextContainer->getDocSectionLayout() == getDocSectionLayout());
+	UT_return_if_fail((pNextContainer->getContainerType() == FP_CONTAINER_ENDNOTE) || (pNextContainer->getDocSectionLayout() == getDocSectionLayout()));
 	if (pNextContainer->isEmpty())
 	{
 		for (i=ndx; i< countCons(); i++)
