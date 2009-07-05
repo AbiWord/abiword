@@ -48,7 +48,7 @@ UT_Error OXML_Element_Field::serialize(IE_Exp_OpenXML* exporter)
 {
 	//TODO: serialize field here
 
-	const char* format = "";
+	std::string format("");
 	
 	switch(fieldType)
 	{
@@ -264,8 +264,15 @@ UT_Error OXML_Element_Field::serialize(IE_Exp_OpenXML* exporter)
 		}	
 		case fd_Field::FD_MailMerge:
 		{
-			//TODO
-			return UT_OK;
+			format = "MERGEFIELD ";
+			if((fieldValue.length() > 1) && (fieldValue[0] == '<') && 
+				(fieldValue[fieldValue.length()-1] == '>'))
+			{
+				fieldValue = fieldValue.substr(1, fieldValue.length()-2);
+			}
+			format += fieldValue;
+			fieldValue = "\u00AB" + fieldValue + "\u00BB"; //unicode double angle quotation marks
+			break;
 		}	
 		case fd_Field::FD_Endnote_Ref:
 		{
@@ -386,7 +393,7 @@ UT_Error OXML_Element_Field::serialize(IE_Exp_OpenXML* exporter)
 			return UT_OK;
 	}
 	
-	return exporter->setSimpleField(TARGET, format, fieldValue);
+	return exporter->setSimpleField(TARGET, format.c_str(), fieldValue.c_str());
 }
 
 UT_Error OXML_Element_Field::serializeProperties(IE_Exp_OpenXML* /*exporter*/)
@@ -542,6 +549,11 @@ UT_Error OXML_Element_Field::addToPT(PD_Document * pDocument)
 			format = "meta_comments";
 			break;
 		}
+		case fd_Field::FD_MailMerge:
+		{
+			format = "mail_merge";
+			break;
+		}	
 		
 		case fd_Field::FD_Footnote_Ref:
 		{
@@ -608,6 +620,18 @@ UT_Error OXML_Element_Field::addToPT(PD_Document * pDocument)
 			return UT_ERROR;			
 		}
 	}	
+	else if(fieldType == fd_Field::FD_MailMerge)
+	{
+		const gchar *field_fmt[5];
+		field_fmt[0] = "type";
+		field_fmt[1] = format;
+		field_fmt[2] = "param";
+		field_fmt[3] = fieldValue.c_str();
+		field_fmt[4] = 0;
+
+		if(!pDocument->appendObject(PTO_Field, field_fmt))
+			return UT_ERROR;
+	}
 	else
 	{
 		const gchar *field_fmt[3];
@@ -722,6 +746,25 @@ void OXML_Element_Field::setFieldType(const std::string & typ)
 		fieldType = fd_Field::FD_Meta_Keywords;
 	else if(!type.compare("COMMENTS \\* MERGEFORMAT"))
 		fieldType = fd_Field::FD_Meta_Description;
+
+	//mail merge fields
+	else if(type.find("MERGEFIELD") != std::string::npos)
+	{
+		fieldType = fd_Field::FD_MailMerge;
+		size_t quoteStart = type.find_first_of('"');
+		size_t quoteEnd = type.find_last_of('"');
+		if((quoteStart != std::string::npos) &&
+			(quoteEnd != std::string::npos) &&
+			(quoteEnd > quoteStart))
+		{
+			fieldValue = type.substr(quoteStart+1, quoteEnd-quoteStart-1);
+		}
+		else
+		{
+			fieldValue = type.replace(0, type.find("MERGEFIELD")+10, ""); //keep everything after MERGEFIELD
+			fieldValue = removeExtraSpaces(fieldValue);
+		}
+	}
 
 	//TODO: more to come here		
 }
