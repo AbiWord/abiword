@@ -75,7 +75,7 @@ void OXMLi_ListenerState_DocSettings::endElement (OXMLi_EndElementRequest * rqst
 
 void OXMLi_ListenerState_DocSettings::charData (OXMLi_CharDataRequest * /*rqst*/)
 {
-	UT_ASSERT ( UT_SHOULD_NOT_HAPPEN );
+	//don't do anything here
 }
 
 std::string OXMLi_ListenerState_DocSettings::_convert_ST_LANG(std::string code_in)

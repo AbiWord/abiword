@@ -75,15 +75,30 @@ bool OXMLi_ListenerState::_error_if_fail(bool val)
 	return val;
 }
 
-UT_Error OXMLi_ListenerState::_flushTopLevel(OXMLi_ElementStack * stck)
+UT_Error OXMLi_ListenerState::_flushTopLevel(OXMLi_ElementStack * stck, OXMLi_SectionStack * sect_stck)
 {
-	UT_return_val_if_fail( stck != NULL, UT_ERROR );
+	if(!stck || !sect_stck || stck->empty())
+		return UT_ERROR;
+
+	//pop the top element from the stack
 	OXML_SharedElement elem = stck->top();
-	UT_return_val_if_fail( elem != NULL, UT_ERROR );
 	stck->pop();
-	OXML_SharedElement newTop = stck->top();
-	UT_return_val_if_fail( newTop != NULL, UT_ERROR );
-	return newTop->appendElement(elem);
+	
+	//if there isn't any parent of this element, append the element to last section
+	if(stck->empty())
+	{
+		//this element is a child of <body>
+		if(sect_stck->empty())
+			return UT_ERROR;
+
+		OXML_SharedSection sect = sect_stck->top();
+		return sect->appendElement(elem);
+	}
+	else //append it to its parent
+	{
+		OXML_SharedElement newTop = stck->top();
+		return newTop->appendElement(elem);
+	}
 }
 
 const gchar * OXMLi_ListenerState::_TwipsToPoints(const gchar * twips)

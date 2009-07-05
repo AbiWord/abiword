@@ -129,7 +129,7 @@ void OXMLi_ListenerState_Image::endElement (OXMLi_EndElementRequest * rqst)
 	if(nameMatches(rqst->pName, NS_W_KEY, "drawing"))
 	{
 		//image is done
-		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) ); 
+		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck, rqst->sect_stck) ) ); 
 		rqst->handled = true;
 	}
 	else if (nameMatches(rqst->pName, NS_A_KEY, "blip") || 

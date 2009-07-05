@@ -72,6 +72,12 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 
 		rqst->handled = true;
 
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "t")) {
+		//New text...
+		OXML_SharedElement elem(new OXML_Element_Text());
+		rqst->stck->push(elem);
+		rqst->handled = true;
+
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "sectPr")) {
 		//Verify the context...
 		std::string contextTag = rqst->context->back();
@@ -692,7 +698,7 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 			UT_return_if_fail( this->_error_if_fail(UT_OK == sect->appendElement(elem) ) );
 			rqst->stck->pop();
 		} else { //Append to next element on the stack
-			UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) );
+			UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck, rqst->sect_stck) ) );
 		}
 
 		//Perform the section break if any
@@ -708,8 +714,12 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 		rqst->handled = true;
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "r")) {
 		//Run is done, appending it.
-		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) );
+		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck, rqst->sect_stck) ) );
 
+		rqst->handled = true;
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "t")) {
+		//Text is done, appending it.
+		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck, rqst->sect_stck) ) );
 		rqst->handled = true;
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "sectPr")) {
 		std::string contextTag = rqst->context->back();
@@ -759,36 +769,45 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "tab")) {
 		std::string contextTag = rqst->context->back();
 		if (contextMatches(contextTag, NS_W_KEY, "r")) {
-			UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) );
+			UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck, rqst->sect_stck) ) );
 			rqst->handled = true;
 		}
 		else if(contextMatches(contextTag, NS_W_KEY, "tabs"))
 			rqst->handled = true;
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "br")) {
-		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) );
+		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck, rqst->sect_stck) ) );
 		rqst->handled = true;
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "footnoteReference") || 
 			   nameMatches(rqst->pName, NS_W_KEY, "endnoteReference")) {
-		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) );
+		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck, rqst->sect_stck) ) );
 		rqst->handled = true;
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "hyperlink")) {
-		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) );
+		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck, rqst->sect_stck) ) );
 		rqst->handled = true;
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "bookmarkStart") ||
 				nameMatches(rqst->pName, NS_W_KEY, "bookmarkEnd")) {
-		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) );
+		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck, rqst->sect_stck) ) );
 		rqst->handled = true;		
 	} 
 }
 
 void OXMLi_ListenerState_Common::charData (OXMLi_CharDataRequest * rqst)
 {
-	UT_return_if_fail( this->_error_if_fail(rqst != NULL) );
+	if(!rqst)
+	{
+		UT_DEBUGMSG(("FRT: OpenXML importer invalid NULL request in OXMLi_ListenerState_Common.charData\n"));
+		return;
+	}
+	
+	if(rqst->stck->empty())
+		return;
 
-	OXML_SharedElement char_data (new OXML_Element_Text(rqst->buffer, rqst->length) );
-	UT_return_if_fail( _error_if_fail( !rqst->stck->empty() ));
-	OXML_SharedElement elem = rqst->stck->top();
-	UT_return_if_fail( this->_error_if_fail(elem.get() != NULL) );
-	UT_return_if_fail( this->_error_if_fail( UT_OK == elem->appendElement(char_data) ) );
+	OXML_SharedElement sharedElem = rqst->stck->top();
+	OXML_Element* elem = sharedElem.get();
+
+	if(!elem || (elem->getTag() != T_TAG))
+		return;
+
+	OXML_Element_Text* textElement = static_cast<OXML_Element_Text*>(elem);
+	textElement->setText(rqst->buffer, rqst->length);
 }
-

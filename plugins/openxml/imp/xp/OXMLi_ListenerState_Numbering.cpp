@@ -206,7 +206,7 @@ void OXMLi_ListenerState_Numbering::endElement (OXMLi_EndElementRequest * rqst)
 
 void OXMLi_ListenerState_Numbering::charData (OXMLi_CharDataRequest * /*rqst*/)
 {
-	UT_ASSERT ( UT_SHOULD_NOT_HAPPEN );
+	//don't do anything here
 }
 
 

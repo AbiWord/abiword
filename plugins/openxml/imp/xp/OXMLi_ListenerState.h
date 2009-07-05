@@ -59,7 +59,7 @@ public:
 	
 protected:
 	bool _error_if_fail(bool val);
-	UT_Error _flushTopLevel(OXMLi_ElementStack * stck);
+	UT_Error _flushTopLevel(OXMLi_ElementStack * stck, OXMLi_SectionStack * sect_stck);
 	const gchar * _TwipsToPoints(const gchar * twips);
 	const gchar * _TwipsToInches(const gchar * twips);
 	const gchar * _EighthPointsToPoints(const gchar * eights);
