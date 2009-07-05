@@ -899,8 +899,16 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		UT_sint32 iColx = 0;
 		UT_sint32 iColy = 0;
 		fp_Page * pPage = pCol->getPage();
-		pPage->getScreenOffsets(pCol,iColx,iColy);
-		UT_sint32 xp,yp;
+		if(!pPage)
+		{
+		    return false;
+		}
+		else
+		{
+		    pPage->getScreenOffsets(pCol,iColx,iColy);
+		}
+		UT_sint32 xp=0;
+		UT_sint32 yp= 0;
 		m_pView->getPageScreenOffsets(pPage,xp,yp);
 		UT_sint32 finalColx = x - iColx;
 		if(finalColx + iColx - xp < 0)
@@ -910,7 +918,10 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		else if(finalColx + iColx + m_recCurFrame.width - xp > pPage->getWidth())
 		{
 		  //			x -= finalColx + iColx + m_recCurFrame.width -xp - pPage->getWidth();
-		  x = pPage->getWidth() - m_recCurFrame.width;
+		  if(pPage)
+		  {
+		      x = pPage->getWidth() - m_recCurFrame.width;
+		  }
 		}
 		finalColx = x - iColx;
 

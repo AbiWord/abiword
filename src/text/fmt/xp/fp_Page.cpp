@@ -822,7 +822,7 @@ fp_TableContainer * fp_Page::getContainingTable(PT_DocPosition pos)
 
 UT_sint32 fp_Page::getAvailableHeight(void) const
 {
-	fl_DocSectionLayout * pDSL = getNthColumnLeader(0)->getDocSectionLayout();
+	fl_DocSectionLayout * pDSL = getOwningSection();
 	UT_sint32 avail = getHeight() - pDSL->getTopMargin() - pDSL->getBottomMargin();
 	UT_sint32 i =0;
 	for(i=0; i< static_cast<UT_sint32>(countFootnoteContainers()); i++)
