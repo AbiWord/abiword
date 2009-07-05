@@ -72,6 +72,8 @@ public:
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 	GdkWindow *  getWindow () {return m_pWin;}
 
+	virtual GR_Font * getGUIFont(void);
+	
 	virtual void		setCursor(GR_Graphics::Cursor c);
 	void                createPixmapFromXPM(char ** pXPM,GdkPixmap *source,
 											GdkBitmap * mask);

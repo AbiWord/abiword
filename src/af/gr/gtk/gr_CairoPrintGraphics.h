@@ -52,7 +52,7 @@ public:
 
 	virtual void setCursor(GR_Graphics::Cursor /*c*/) { UT_ASSERT_NOT_REACHED(); }
 	virtual GR_Graphics::Cursor getCursor(void) const { UT_ASSERT_NOT_REACHED(); return GR_CURSOR_INVALID; }
-
+	virtual GR_Font * getGUIFont(void);
 	virtual void setPageSize(char * /*pageSizeName*/, UT_uint32 /*iwidth*/ = 0, UT_uint32 /*iheight*/=0) { UT_ASSERT_NOT_REACHED(); }
 
 	virtual void scroll(UT_sint32, UT_sint32) { UT_ASSERT_NOT_REACHED(); }

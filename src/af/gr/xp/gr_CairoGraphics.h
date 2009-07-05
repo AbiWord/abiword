@@ -32,7 +32,8 @@
 #include "ut_string_class.h"
 #include "gr_RenderInfo.h"
 
-#include <pango/pango-font.h>
+#include <cairo.h>
+#include <pango/pango.h>
 
 // we do not want this to be a plugin for now
 #define GR_UNIXPANGO_BUILTIN
@@ -202,8 +203,6 @@ public:
 
 	virtual void setColor(const UT_RGBColor& clr);
 	virtual void getColor(UT_RGBColor &clr);
-	
-	virtual GR_Font * getGUIFont(void);
 	
 	PangoFontMap * getFontMap() const {return m_pFontMap;}
 	PangoContext * getContext() const {return m_pContext;}

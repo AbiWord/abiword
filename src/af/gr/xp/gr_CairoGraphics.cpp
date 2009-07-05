@@ -27,7 +27,6 @@
 
 #include "xap_App.h"
 #include "xap_Prefs.h"
-#include "xap_EncodingManager.h"
 #include "xap_Strings.h"
 #include "xap_Frame.h"
 
@@ -41,6 +40,7 @@
 
 #include <pango/pango-item.h>
 #include <pango/pango-engine.h>
+#include <pango/pangocairo.h>
 
 #include <math.h>
 
@@ -2882,37 +2882,6 @@ void GR_CairoGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 	cairo_fill(m_cr);
 
 	cairo_restore(m_cr);
-}
-
-GR_Font * GR_CairoGraphics::getGUIFont(void)
-{
-	if (!m_pPFontGUI)
-	{
-		// get the font resource
-		GtkStyle *tempStyle = gtk_style_new();
-		const char *guiFontName = pango_font_description_get_family(tempStyle->font_desc);
-		if (!guiFontName)
-			guiFontName = "'Times New Roman'";
-
-		UT_UTF8String s = XAP_EncodingManager::get_instance()->getLanguageISOName();
-
-		const char * pCountry
-			= XAP_EncodingManager::get_instance()->getLanguageISOTerritory();
-		
-		if(pCountry)
-		{
-			s += "-";
-			s += pCountry;
-		}
-		
-		m_pPFontGUI = new GR_PangoFont(guiFontName, 11.0, this, s.utf8_str(), true);
-
-		g_object_unref(G_OBJECT(tempStyle));
-		
-		UT_ASSERT(m_pPFontGUI);
-	}
-
-	return m_pPFontGUI;
 }
 
 /*!

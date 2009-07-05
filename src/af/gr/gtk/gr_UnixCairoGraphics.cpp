@@ -19,12 +19,16 @@
  * 02111-1307, USA.
  */
 
+#include "ut_bytebuf.h"
+
 #include "gr_UnixCairoGraphics.h"
 #include "gr_CairoImage.h"
 #include "gr_Painter.h"
 #include "gr_UnixImage.h"
+
 #include "xap_App.h"
-#include "ut_bytebuf.h"
+#include "xap_EncodingManager.h"
+
 
 GR_UnixCairoGraphicsBase::~GR_UnixCairoGraphicsBase()
 {
@@ -129,6 +133,38 @@ void GR_UnixCairoGraphics::init3dColors(GtkStyle * pStyle)
 
 	m_bHave3DColors = true;
 }
+
+GR_Font * GR_UnixCairoGraphics::getGUIFont(void)
+{
+	if (!m_pPFontGUI)
+	{
+		// get the font resource
+		GtkStyle *tempStyle = gtk_style_new();
+		const char *guiFontName = pango_font_description_get_family(tempStyle->font_desc);
+		if (!guiFontName)
+			guiFontName = "'Times New Roman'";
+
+		UT_UTF8String s = XAP_EncodingManager::get_instance()->getLanguageISOName();
+
+		const char * pCountry
+			= XAP_EncodingManager::get_instance()->getLanguageISOTerritory();
+		
+		if(pCountry)
+		{
+			s += "-";
+			s += pCountry;
+		}
+		
+		m_pPFontGUI = new GR_PangoFont(guiFontName, 11.0, this, s.utf8_str(), true);
+
+		g_object_unref(G_OBJECT(tempStyle));
+		
+		UT_ASSERT(m_pPFontGUI);
+	}
+
+	return m_pPFontGUI;
+}
+
 
 void GR_UnixCairoGraphics::setCursor(GR_Graphics::Cursor c)
 {

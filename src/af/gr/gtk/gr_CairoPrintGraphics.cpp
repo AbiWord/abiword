@@ -33,6 +33,14 @@ GR_CairoPrintGraphics::~GR_CairoPrintGraphics()
 	UT_DEBUGMSG(("Deleting CairoPrint graphics %p \n",this));
 }
 
+
+GR_Font * GR_CairoPrintGraphics::getGUIFont(void)
+{
+    UT_ASSERT_NOT_REACHED ();
+    return NULL;
+}
+
+
 bool GR_CairoPrintGraphics::queryProperties(GR_Graphics::Properties gp) const
 {
 	switch (gp)
