@@ -919,7 +919,8 @@ void FV_VisualInlineImage::mouseCopy(UT_sint32 x, UT_sint32 y)
 	  cleanUP();
 	  return;
 	}
-	getDoc()->getDataItemDataByName ( dataId, &pBytes, NULL, NULL );
+	std::string sMimeType;
+	getDoc()->getDataItemDataByName ( dataId, &pBytes, &sMimeType, NULL );
 	//
 	// Save it in the document under a new name
 	//
@@ -932,7 +933,7 @@ void FV_VisualInlineImage::mouseCopy(UT_sint32 x, UT_sint32 y)
 	//
 	// Make a copy of it and save it under a new name.
 	//
-	getDoc()->createDataItem(sDataID.utf8_str(), false, pBytes, NULL,NULL);
+	getDoc()->createDataItem(sDataID.utf8_str(), false, pBytes, sMimeType,NULL);
 	m_sCopyName = sDataID;
 	m_pView->_resetSelection();
 }
