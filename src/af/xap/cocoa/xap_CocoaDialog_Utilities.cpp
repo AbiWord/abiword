@@ -21,15 +21,7 @@
 
 #include "xap_CocoaDialog_Utilities.h"
 
-/** set the label of a NSControl
-	\param control the control AppKit object
-	\param label UT_UTF8String to set. It is a well formed XP label
-	that will be converted.
-	\note if the control object you pass is of an unknown type, the function will
-	NSLog something on the console. Feel g_free to update the function if you want to
-	handle that kind of object.
-*/
-void SetNSControlLabel (id control, const UT_UTF8String &label)
+void _SetNSControlLabel (id control, const char *label)
 {
  	char buf [1024];
 	NSString*	str;
@@ -58,6 +50,24 @@ void SetNSControlLabel (id control, const UT_UTF8String &label)
 	[str release];
 }
 
+
+/** set the label of a NSControl
+	\param control the control AppKit object
+	\param label UT_UTF8String to set. It is a well formed XP label
+	that will be converted.
+	\note if the control object you pass is of an unknown type, the function will
+	NSLog something on the console. Feel g_free to update the function if you want to
+	handle that kind of object.
+*/
+void SetNSControlLabel (id control, const UT_UTF8String &label)
+{
+	_SetNSControlLabel(control, label.utf8_str());
+}
+
+void SetNSControlLabel (id control, const std::string &label)
+{
+	_SetNSControlLabel(control, label.c_str());
+}
 
 /*!
 	Localize a control with a string from a string set
@@ -111,12 +121,12 @@ void AppendLocalizedMenuItem (NSPopUpButton * menu, const XAP_StringSet * pSS, X
 	\param bufSize the allocated size for buf
 	\param label the label to convert as an UT_String
  */
-void _convertLabelToMac (char * buf, size_t bufSize, const UT_UTF8String& label)
+void _convertLabelToMac (char * buf, size_t bufSize, const char * label)
 {
 	UT_ASSERT(buf);
-	UT_ASSERT(label.length() < bufSize);
+	UT_ASSERT(strlen(label) < bufSize);
 
-	strcpy (buf, label.utf8_str());
+	strcpy (buf, label);
 
 	char * src, *dst;
 	src = dst = buf;
