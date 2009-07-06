@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 2004-6 Tomas Frydrych <dr.tomas@yahoo.co.uk>
  * Copyright (C) 2009 Hubert Figuiere
@@ -305,6 +305,8 @@ public:
 	static UT_uint32 getDefaultDeviceResolution();
 
   protected:
+	// setup the graphics properties like color and clip if they have been set
+	void _setProps();
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
 	GR_CairoGraphics(cairo_t *cr, UT_uint32 iDeviceResolution);
 	GR_CairoGraphics();
@@ -356,6 +358,8 @@ public:
 	UT_RGBColor		m_3dColors[COUNT_3D_COLORS];
 
 	UT_RGBColor		m_curColor;
+	bool            m_curColorDirty;
+	bool            m_clipRectDirty;
 	bool                    m_bIsSymbol;       
 	bool                    m_bIsDingbat;
 	UT_sint32               m_iPrevX1;

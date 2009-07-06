@@ -1,6 +1,7 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 2004-2007 Tomas Frydrych
+ * Copyright (C) 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -250,6 +251,8 @@ GR_CairoGraphics::GR_CairoGraphics(cairo_t *cr, UT_uint32 iDeviceResolution)
 	m_cr(cr),
 	m_cursor(GR_CURSOR_INVALID),
 	m_cs(GR_Graphics::GR_COLORSPACE_COLOR),
+	m_curColorDirty(false),
+	m_clipRectDirty(false),
 	m_bIsSymbol(false),
 	m_bIsDingbat(false),
 	m_iPrevX1(0),
@@ -413,7 +416,7 @@ void GR_CairoGraphics::setColor3D(GR_Color3D c)
 {
 	UT_ASSERT(c < COUNT_3D_COLORS);
 
-	cairo_set_source_rgb(m_cr, m_3dColors[c].m_red/255., m_3dColors[c].m_grn/255., m_3dColors[c].m_blu/255.);
+	setColor(m_3dColors[c]);
 }
 
 bool GR_CairoGraphics::getColor3D(GR_Color3D name, UT_RGBColor &color)
@@ -1171,6 +1174,7 @@ void GR_CairoGraphics::renderChars(GR_RenderInfo & ri)
 	if(RI.m_iLength == 0)
 		return;
 
+	_setProps();
 	//
 	// Actually want the zoomed device font here
 	//
@@ -1274,6 +1278,33 @@ void GR_CairoGraphics::renderChars(GR_RenderInfo & ri)
 		cairo_translate(m_cr, xoff, yoff);
 		pango_cairo_show_glyph_string(m_cr, pf, &gs);
 		cairo_restore(m_cr);
+	}
+}
+
+
+void GR_CairoGraphics::_setProps()
+{
+	UT_ASSERT(m_cr);
+
+	if(m_curColorDirty) 
+	{
+		cairo_set_source_rgb(m_cr, m_curColor.m_red/255., m_curColor.m_grn/255., m_curColor.m_blu/255.);
+		m_curColorDirty = false;
+	}
+	if(m_clipRectDirty)
+	{
+		cairo_reset_clip(m_cr);
+		if (m_pRect)
+		{
+			double x, y, width, height;
+			x = _tdudX(m_pRect->left);
+			y = _tdudY(m_pRect->top);
+			width = _tduR(m_pRect->width);
+			height = _tduR(m_pRect->height);
+			cairo_rectangle(m_cr, x, y, width, height);
+			cairo_clip(m_cr);
+		}
+		m_clipRectDirty = false;
 	}
 }
 
@@ -1900,6 +1931,7 @@ void GR_CairoGraphics::drawChars(const UT_UCSChar* pChars,
 									UT_sint32 xoff, UT_sint32 yoff,
 									 int * pCharWidth)
 {
+	_setProps();
 	UT_UTF8String utf8;
 	xxx_UT_DEBUGMSG(("isDingBat %d \n",isDingbat()));
 	if(isSymbol())
@@ -2149,6 +2181,7 @@ cleanup:
 void GR_CairoGraphics::drawImage(GR_Image* pImg,
 									 UT_sint32 xDest, UT_sint32 yDest)
 {
+	_setProps();
 	UT_ASSERT(pImg);
 
    	UT_sint32 iImageWidth = pImg->getDisplayWidth();
@@ -2655,12 +2688,14 @@ void GR_CairoGraphics::getColor(UT_RGBColor& clr)
 void GR_CairoGraphics::setColor(const UT_RGBColor& clr)
 {
 	m_curColor = clr;
-	cairo_set_source_rgb(m_cr, clr.m_red/255., clr.m_grn/255., clr.m_blu/255.);
+	m_curColorDirty = true;
 }
 
 void GR_CairoGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 							   UT_sint32 x2, UT_sint32 y2)
 {
+	_setProps();
+
 	UT_sint32 idx1 = _tduX(x1);
 	UT_sint32 idx2 = _tduX(x2);
 
@@ -2674,6 +2709,8 @@ void GR_CairoGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 
 void GR_CairoGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
+	_setProps();
+
 	double width = tduD(iLineWidth);
 
 	cairo_set_line_width (m_cr, width);
@@ -2735,6 +2772,7 @@ void GR_CairoGraphics::setLineProperties ( double inWidth,
 										  GR_Graphics::CapStyle inCapStyle,
 										  GR_Graphics::LineStyle inLineStyle )
 {
+	_setProps();
 	double dashes[2];
 	double width;
 	int n_dashes;
@@ -2758,6 +2796,8 @@ void GR_CairoGraphics::setLineProperties ( double inWidth,
 void GR_CairoGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 							  UT_sint32 y2)
 {
+	_setProps();
+
 	UT_sint32 idx1 = _tduX(x1);
 	UT_sint32 idx2 = _tduX(x2);
 
@@ -2814,6 +2854,8 @@ void GR_CairoGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 
 void GR_CairoGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
+	_setProps();
+
 	UT_uint32 i;
 
 	UT_return_if_fail(nPoints > 1);
@@ -2859,22 +2901,13 @@ double GR_CairoGraphics::_tdudY(UT_sint32 layoutUnits) const
 void GR_CairoGraphics::setClipRect(const UT_Rect* pRect)
 {
 	m_pRect = pRect;
-	cairo_reset_clip(m_cr);
-	if (pRect)
-	{
-		double x, y, width, height;
-		x = _tdudX(pRect->left);
-		y = _tdudY(pRect->top);
-		width = _tduR(pRect->width);
-		height = _tduR(pRect->height);
-		cairo_rectangle(m_cr, x, y, width, height);
-		cairo_clip(m_cr);
-	}
+	m_clipRectDirty = true;
 }
 
 void GR_CairoGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 							   UT_sint32 w, UT_sint32 h)
 {
+	_setProps();
 	cairo_save(m_cr);
 
 	cairo_set_source_rgb(m_cr, c.m_red/255., c.m_grn/255., c.m_blu/255.);
@@ -2971,8 +3004,8 @@ void GR_CairoGraphics::fillRect(GR_Color3D c, UT_Rect &r)
  */
 void GR_CairoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
+	_setProps();
 	UT_ASSERT(m_bHave3DColors && c < COUNT_3D_COLORS);
-
 	cairo_save (m_cr);
 
 	cairo_set_source_rgb(m_cr, m_3dColors[c].m_red/255., m_3dColors[c].m_grn/255., m_3dColors[c].m_blu/255.);
@@ -2988,6 +3021,7 @@ void GR_CairoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint3
 void GR_CairoGraphics::polygon(UT_RGBColor& c, UT_Point *pts,
 								   UT_uint32 nPoints)
 {
+	_setProps();
 	UT_uint32 i;
 
 	UT_return_if_fail(nPoints > 1);
