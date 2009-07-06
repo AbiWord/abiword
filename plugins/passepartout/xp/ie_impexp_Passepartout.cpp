@@ -55,7 +55,6 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 	mi->author = "David Bolack";
   mi->usage = strings->getValue(_("No Usage"));
 
-  delete strings;
 	return 1;
 }
 
