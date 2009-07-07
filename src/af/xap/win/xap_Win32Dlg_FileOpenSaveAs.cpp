@@ -100,7 +100,12 @@ char * XAP_Win32Dialog_FileOpenSaveAs::_getDefaultExtension(UT_uint32 indx)
 	
 	UT_uint32 end = g_strv_length((gchar **) m_szDescriptions);
 	if(indx >= end)
+	{
+		if(m_id == XAP_DIALOG_ID_FILE_SAVE_IMAGE)
+			return "png";
+
 		return abw_sfx;
+	}
 	
 	// copy at most DEFAULT_EXT_SIZE characters from the suffix;
 	strncpy(m_szDefaultExtension, m_szSuffixes[indx] + 2, DEFAULT_EXT_SIZE);
@@ -365,6 +370,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		break;
 
 	case XAP_DIALOG_ID_FILE_SAVEAS:
+	case XAP_DIALOG_ID_FILE_SAVE_IMAGE:
 		ofn.lpstrTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_SaveAsTitle);
 		ofn.lpfnHook	   = (LPOFNHOOKPROC) s_hookSaveAsProc;
 		ofn.Flags |= OFN_OVERWRITEPROMPT;
