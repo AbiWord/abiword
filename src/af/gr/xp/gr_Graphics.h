@@ -35,6 +35,7 @@
 #include "ut_hash.h"
 #include "ut_vector.h"
 #include "ut_TextIterator.h"
+#include <deque>
 
 #ifdef ABI_GRAPHICS_PLUGIN
 #define VIRTUAL_SFX = 0
@@ -350,6 +351,14 @@ class ABI_EXPORT GR_Graphics
 
  public:
 	virtual ~GR_Graphics();
+
+	// Used for buffering to prevent flickering///////////////////////////////////
+	std::deque< std::pair<cairo_surface_t*, UT_uint32*> > bufferContainer;
+	cairo_surface_t* bufferPointer;
+	cairo_surface_t* mainBufferPointer;
+	void beginBuffering(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_uint32 height);
+	void endBuffering();
+	void setActiveBuffer(cairo_surface_t* buffer);
 
 	// the static method allows us to retrive the the class id for
 	// purposes of registration; we also need the virtual to identify

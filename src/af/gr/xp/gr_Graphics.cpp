@@ -1532,6 +1532,85 @@ void GR_Graphics::adjustDeletePosition(GR_RenderInfo & )
 	return;
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+/*! Use multiple buffers for drawing until endBuffering is called.
+	Takes the extend of the desired drawing area as an arugment.
+*/
+void GR_Graphics::beginBuffering(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_uint32 height)
+{
+	bool suitableBufferFound = false;
+	bool needNewBuffer = false;
+	UT_uint32 i = 0;
+	//extends for the argument
+	UT_uint32 left1 = x;
+	UT_uint32 right1 = x + width;
+	UT_uint32 top1 = y;
+	UT_uint32 bottom1 = y + width;
+	
+	if (bufferContainter.empty())
+	{
+		needNewBuffer = true;
+	}
+	while (!suitableBufferFound && !newBuffer)
+	{
+		cairo_surface_t buffer = bufferContainer.at(i);
+		//extends for the buffer we're looking at in the deque
+		UT_uint32 left2 = buffer.second[0]; //x
+		UT_uint32 right2 = buffer.second[0] + buffer.second[1]; //x + width
+		UT_uint32 top2 = buffer.second[2]; //y
+		UT_uint32 bottom2 = buffer.second[2] + buffer.second[3]; //y + height
+	
+		//If the extends fit inside the buffer
+		if (left1 >= left2 && right1 <= right2 &&
+			top1 >= top2 && bottom1 <= bottom2)
+		{
+			setActiveBuffer(buffer);
+			suitableBufferFound = true;
+		}
+		 //If the extends overlap
+		 else if ((right1 > left2 && top1 < bottom2) ||
+				  (left1 < right2 && top1 < bottom2) ||
+				  (right1 > left2 && bottom1 > top2) ||
+				  (left1 < right2 && bottom1 > top2))
+			needNewBuffer = true;
+		//Next buffer
+		else if (i < bufferContainer.size())
+			i++;
+	}
+	if (suitableBufferFound == false) //Add a new buffer to the deque
+	{
+		cairo_surface_t newBuffer = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, width, height;
+		UT_uint32 newExtends [] = {x, y, width, height};
+		std::pair <cairo_surface_t, UT_uint32*> tempPair (newBuffer, newExtends);
+		bufferContainer.push_front(tempPair);
+		setActiveBuffer(tempPair.first);
+	}
+	
+	return;
+}
+
+void GR_Graphics::endBuffering()
+{
+	setActiveBuffer(mainBufferPointer);
+		while (!bufferContainter.empty())
+		{
+			bufferContainter.pop_back();
+			paint to mainBufferPointer
+		}
+	}
+	return;
+}
+
+/*cairo_surface_t GR_Graphics::getBuffer()
+{
+	return bufferPointer;
+}*/
+
+void GR_Graphics::setActiveBuffer(cairo_surface_t* buffer)
+{
+	bufferPointer* = buffer
+}
+
 #endif // #ifndef ABI_GRAPHICS_PLUGIN
 
 ///////////////////////////////////////////////////////////////////////////////
