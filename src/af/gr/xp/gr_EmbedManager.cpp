@@ -436,7 +436,7 @@ void GR_EmbedManager::render(UT_sint32 uid ,UT_Rect & rec )
       iHeight = rec.height;
       iWidth = rec.width;
     }
-    pEView->m_pPreview = getGraphics()->createNewImage(pEView->m_sDataID.utf8_str(),pEView->m_PNGBuf,iWidth,iHeight);
+    pEView->m_pPreview = getGraphics()->createNewImage(pEView->m_sDataID.utf8_str(),pEView->m_PNGBuf,"image/png",iWidth,iHeight);
     GR_Painter painter(getGraphics());
     painter.drawImage(pEView->m_pPreview,rec.left,rec.top);
     return;

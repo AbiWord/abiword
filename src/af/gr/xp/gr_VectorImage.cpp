@@ -73,7 +73,8 @@ bool   GR_VectorImage::isTransparentAt(UT_sint32 /*x*/, UT_sint32 /*y*/)
   return false;
 }
 
-bool GR_VectorImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+bool GR_VectorImage::convertFromBuffer(const UT_ByteBuf* pBB, const std::string& mimetype, 
+									   UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
   setDisplaySize ( iDisplayWidth, iDisplayHeight );
 

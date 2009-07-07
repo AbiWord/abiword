@@ -219,7 +219,7 @@ GR_Image* FG_GraphicVector::generateImage(GR_Graphics* pG,
 	m_iMaxW = maxW;
 
 	// load SVGs at their natural size
-	GR_Image *pImage = pG->createNewImage(static_cast<const char*>(m_pszDataID), m_pbbSVG, -1, -1, GR_Image::GRT_Vector);
+	GR_Image *pImage = pG->createNewImage(static_cast<const char*>(m_pszDataID), m_pbbSVG, getMimeType(), -1, -1, GR_Image::GRT_Vector);
 
 
 	UT_sint32 iDisplayWidth = 0;

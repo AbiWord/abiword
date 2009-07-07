@@ -473,6 +473,7 @@ class ABI_EXPORT GR_Graphics
 
    	virtual GR_Image* createNewImage(const char* pszName,
 									 const UT_ByteBuf* pBB,
+									 const std::string& mimetype,
 									 UT_sint32 iWidth,
 									 UT_sint32 iHeight,
 									 GR_Image::GRType iType = GR_Image::GRT_Raster);

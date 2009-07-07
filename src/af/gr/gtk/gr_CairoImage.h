@@ -37,6 +37,7 @@ class GR_RSVGVectorImage : public GR_CairoVectorImage {
 
   virtual bool convertToBuffer(UT_ByteBuf** ppBB) const;
   virtual bool convertFromBuffer(const UT_ByteBuf* pBB, 
+                 const std::string& mimetype,
 				 UT_sint32 iDisplayWidth, 
 				 UT_sint32 iDisplayHeight);	
   virtual void cairoSetSource(cairo_t *cr, double x, double y);

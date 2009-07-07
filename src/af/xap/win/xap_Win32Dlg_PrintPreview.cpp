@@ -427,15 +427,15 @@ public:
     m_pGraphics->clearArea(a, b, c, d);
   }
 
-  virtual GR_Image* createNewImage(const char* pszName, const UT_ByteBuf* pBB,
+  virtual GR_Image* createNewImage(const char* pszName, const UT_ByteBuf* pBB, const std::string& mimetype,
 				   UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight,
 				   GR_Image::GRType iType)
   {    
     d (g_print ("createNewImage()\n"));
     if (m_pGraphics)
-      return m_pGraphics->createNewImage(pszName, pBB, iDisplayWidth, iDisplayHeight, iType);
+      return m_pGraphics->createNewImage(pszName, pBB, mimetype, iDisplayWidth, iDisplayHeight, iType);
     else
-      return GR_Win32Graphics::createNewImage(pszName, pBB, iDisplayWidth, iDisplayHeight, iType);
+      return GR_Win32Graphics::createNewImage(pszName, pBB, mimetype, iDisplayWidth, iDisplayHeight, iType);
   }
   
   virtual void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)

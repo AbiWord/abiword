@@ -292,7 +292,7 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG,
 
 	m_iMaxW = maxW;
 	m_iMaxH = maxH;
-   	GR_Image *pImage = pG->createNewImage(m_pszDataID, m_pbb, iDisplayWidth, iDisplayHeight, GR_Image::GRT_Raster);
+   	GR_Image *pImage = pG->createNewImage(m_pszDataID, m_pbb, getMimeType(), iDisplayWidth, iDisplayHeight, GR_Image::GRT_Raster);
 
 	return pImage;
 }

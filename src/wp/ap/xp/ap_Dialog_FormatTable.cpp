@@ -249,7 +249,7 @@ void AP_Dialog_FormatTable::askForGraphicPathName(void)
 	{
 		m_pImage = static_cast<GR_Image *>(
 			pG->createNewImage( m_sImagePath.c_str(),
-								pBB,
+								pBB, pFG->getMimeType(),
 								pFG->getWidth(),
 								pFG->getHeight(),
 								GR_Image::GRT_Raster));
@@ -258,7 +258,7 @@ void AP_Dialog_FormatTable::askForGraphicPathName(void)
 	{
 		m_pImage = static_cast<GR_Image *>(
 			pG->createNewImage( m_sImagePath.c_str(),
-								pBB,
+								pBB, pFG->getMimeType(),
 								m_pFormatTablePreview->getWindowWidth()-2,
 								m_pFormatTablePreview->getWindowHeight()-2,
 								GR_Image::GRT_Vector));
@@ -422,7 +422,7 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 						{
 							m_pImage = static_cast<GR_Image *>(
 								pG->createNewImage( m_sImagePath.c_str(),
-													pBB,
+													pBB, pFG->getMimeType(),
 													pFG->getWidth(),
 													pFG->getHeight(),
 													GR_Image::GRT_Raster));
@@ -431,7 +431,7 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 						{
 							m_pImage = static_cast<GR_Image *>(
 								pG->createNewImage( m_sImagePath.c_str(),
-													pBB,
+													pBB, pFG->getMimeType(),
 													m_pFormatTablePreview->getWindowWidth()-2,
 													m_pFormatTablePreview->getWindowHeight()-2,
 													GR_Image::GRT_Vector));
@@ -695,7 +695,7 @@ void AP_FormatTable_preview::draw(void)
 		{
 			pImg = static_cast<GR_Image *>(
 				m_gc->createNewImage( szName,
-									pBB,
+									pBB, pFG->getMimeType(),
 									pageRect.width - 2*border,
 									pageRect.height - 2*border,
 									GR_Image::GRT_Raster));
@@ -704,7 +704,7 @@ void AP_FormatTable_preview::draw(void)
 		{
 			pImg = static_cast<GR_Image *>(
 				m_gc->createNewImage( szName,
-                                      pBB,
+                                      pBB, pFG->getMimeType(),
 									pageRect.width - 2*border,
 									pageRect.height - 2*border,
 									GR_Image::GRT_Vector));

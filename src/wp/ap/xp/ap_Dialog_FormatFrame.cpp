@@ -64,7 +64,7 @@ GR_Image * AP_Dialog_FormatFrame::_makeImageForRaster(const std::string & name,
 	if(pG->getType() == FGT_Raster)
 	{
 		pImage = pGraphics->createNewImage( name.c_str(),
-								pBB,
+								pBB, pG->getMimeType(),
 								pG->getWidth(),
 								pG->getHeight(),
 								GR_Image::GRT_Raster);
@@ -72,7 +72,7 @@ GR_Image * AP_Dialog_FormatFrame::_makeImageForRaster(const std::string & name,
 	else
 	{
 		pImage = pGraphics->createNewImage( name.c_str(),
-                                pBB,
+                                pBB, pG->getMimeType(),
 								m_pFormatFramePreview->getWindowWidth()-2,
 								m_pFormatFramePreview->getWindowHeight()-2,
 								GR_Image::GRT_Vector);
@@ -1122,7 +1122,7 @@ void AP_FormatFrame_preview::draw(void)
 		{
 			pImg = static_cast<GR_Image *>(
 				m_gc->createNewImage( szName,
-									pBB,
+									pBB, pFG->getMimeType(),
 									pageRect.width - 2*border,
 									pageRect.height - 2*border,
 									GR_Image::GRT_Raster));
@@ -1131,7 +1131,7 @@ void AP_FormatFrame_preview::draw(void)
 		{
 			pImg = static_cast<GR_Image *>(
 				m_gc->createNewImage( szName,
-                                      pBB,
+                                      pBB, pFG->getMimeType(),
 									pageRect.width - 2*border,
 									pageRect.height - 2*border,
 									GR_Image::GRT_Vector));

@@ -351,7 +351,7 @@ bool GR_Image::convertToBuffer(UT_ByteBuf** /*ppBB*/) const
   return false; 
 }
 
-bool GR_Image::convertFromBuffer(const UT_ByteBuf* /*pBB*/, UT_sint32 /*iWidth*/, 
+bool GR_Image::convertFromBuffer(const UT_ByteBuf* /*pBB*/, const std::string& mimetype, UT_sint32 /*iWidth*/, 
 								 UT_sint32 /*iHeight*/) 
 { 
   // default no impl

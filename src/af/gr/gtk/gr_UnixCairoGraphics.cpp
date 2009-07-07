@@ -42,6 +42,7 @@ GR_UnixCairoGraphicsBase::~GR_UnixCairoGraphicsBase()
  */
 GR_Image* GR_UnixCairoGraphicsBase::createNewImage (const char* pszName,
 													const UT_ByteBuf* pBB,
+                                                    const std::string& mimetype,
 													UT_sint32 iWidth,
 													UT_sint32 iHeight,
 													GR_Image::GRType iType)
@@ -50,10 +51,10 @@ GR_Image* GR_UnixCairoGraphicsBase::createNewImage (const char* pszName,
 
 	if (iType == GR_Image::GRT_Raster) {
 		pImg = new GR_UnixImage(pszName);
-		pImg->convertFromBuffer(pBB, tdu(iWidth), tdu(iHeight));
+		pImg->convertFromBuffer(pBB, mimetype, tdu(iWidth), tdu(iHeight));
 	} else if (iType == GR_Image::GRT_Vector) {
 		pImg = new GR_RSVGVectorImage(pszName);
-		pImg->convertFromBuffer(pBB, tdu(iWidth), tdu(iHeight));		
+		pImg->convertFromBuffer(pBB, mimetype, tdu(iWidth), tdu(iHeight));		
 	} else {
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}

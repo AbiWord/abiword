@@ -58,7 +58,8 @@ bool GR_RSVGVectorImage::convertToBuffer(UT_ByteBuf** ppBB) const
 	return bCopied;
 }
 
-bool GR_RSVGVectorImage::convertFromBuffer(const UT_ByteBuf* pBB, 
+bool GR_RSVGVectorImage::convertFromBuffer(const UT_ByteBuf* pBB,
+                                           const std::string& /*mimetype*/,
 										   UT_sint32 iDisplayWidth, 
 										   UT_sint32 iDisplayHeight) {
 	reset();
