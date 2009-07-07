@@ -40,7 +40,7 @@
 
 /* GDIPLUS interface */
 bool isGDIPlusAvailable ();
-UT_Error GDIconvertGraphic (UT_ByteBuf * pBB, UT_ByteBuf* pBBOut);
+UT_Error GDIconvertGraphic (UT_ByteBuf * pBB, UT_ByteBuf* pBBOut, std::string& mimetype);
 void  shutDownGDIPlus ();
 
 
@@ -178,7 +178,8 @@ static PBITMAPINFO CreateBitmapInfoStruct(HBITMAP hBmp)
 UT_Error IE_ImpGraphic_Win32Native::importGraphic(UT_ByteBuf* pBB, 
 												  FG_Graphic ** ppfg)
 {
-    UT_Error err = _convertGraphic(pBB); 
+	std::string mimetype;
+    UT_Error err = _convertGraphic(pBB, mimetype); 
     if (err != UT_OK) return err;
     
     /* Send Data back to AbiWord as PNG */
@@ -188,10 +189,22 @@ UT_Error IE_ImpGraphic_Win32Native::importGraphic(UT_ByteBuf* pBB,
     if(pFGR == NULL)
 		return UT_IE_NOMEMORY;
     
-    if(!pFGR->setRaster_PNG(m_pBB)) {
-		DELETEP(pFGR);	
-		return UT_IE_FAKETYPE;
-    }
+	if (mimetype == "image/jpeg")
+	{
+		if(!pFGR->setRaster_JPEG(m_pBB))
+		{
+			DELETEP(pFGR);
+			return UT_IE_FAKETYPE;
+		}
+	}
+	else
+	{
+		if(!pFGR->setRaster_PNG(m_pBB))
+		{
+			DELETEP(pFGR);	
+			return UT_IE_FAKETYPE;
+		}
+	}
     
     *ppfg = static_cast<FG_Graphic *>(pFGR);
     
@@ -201,7 +214,7 @@ UT_Error IE_ImpGraphic_Win32Native::importGraphic(UT_ByteBuf* pBB,
   //
   // Entry point for conversion
   //
-UT_Error IE_ImpGraphic_Win32Native::_convertGraphic(UT_ByteBuf * pBB)
+UT_Error IE_ImpGraphic_Win32Native::_convertGraphic(UT_ByteBuf * pBB, std::string& mimetype)
 {	
     IPicture* pPicture = NULL;
     IStream* stream;	
@@ -216,8 +229,12 @@ UT_Error IE_ImpGraphic_Win32Native::_convertGraphic(UT_ByteBuf * pBB)
 	if (isGDIPlusAvailable())
 	{
 		m_pBB = new UT_ByteBuf();
-		return GDIconvertGraphic(pBB, m_pBB);		
+		return GDIconvertGraphic(pBB, m_pBB, mimetype);		
 	}
+
+	// the code below always writes out PNG's for now; we could update it to support
+	// native JPEG images as well, or just delete it and always use GDI+.
+	mimetype = "image/png";
 
     // We need to store the incoming bytebuffer in a Windows global heap	
     size_t nBlockLen = pBB->getLength();   	

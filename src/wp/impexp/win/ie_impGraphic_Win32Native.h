@@ -38,7 +38,7 @@ public:
   virtual UT_Error importGraphic(UT_ByteBuf* pBB, 
                                  FG_Graphic ** ppfg);
 private:
-  UT_Error _convertGraphic(UT_ByteBuf * pBB);
+  UT_Error _convertGraphic(UT_ByteBuf * pBB, std::string& mimetype);
   UT_Error Read_BMP_Header(UT_ByteBuf* pBB);
   UT_Error Initialize_PNG();
   UT_Error Convert_BMP_Palette(UT_ByteBuf* pBB);

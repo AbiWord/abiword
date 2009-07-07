@@ -48,15 +48,27 @@ struct GdiplusStartupInput
     BOOL SuppressExternalCodecs;  
 
 };
-
+ 
 struct GdiplusStartupOutput
 {
     DWORD NotificationHook;
     DWORD NotificationUnhook;
 };
 
+// GDI+ uses GUIDs to identify a particular image encoder. See
+// http://msdn.microsoft.com/en-us/library/ms533843(VS.85).aspx for an
+// example on retrieving the GUIDs.
+
 /* PNG GUID's encoder */
-CLSID gdip_png_guid = { 0x557cf406, 0x1a04, 0x11d3, { 0x9a, 0x73, 0x0, 0x0, 0xf8, 0x1e, 0xf3, 0x2e } };
+CLSID gdip_png_encoder_guid = { 0x557cf406, 0x1a04, 0x11d3, { 0x9a, 0x73, 0x00, 0x00, 0xf8, 0x1e, 0xf3, 0x2e } };
+
+/* JPEG GUID's encoder */
+CLSID gdip_jpeg_encoder_guid = { 0x557cf401, 0x1a04, 0x11d3, { 0x9a, 0x73, 0x00, 0x00, 0xf8, 0x1e, 0xf3, 0x2e } };
+
+// GDI+ also uses GUIDs to identify image types. See GdiPlusImaging.h for the defined types, or
+// http://msdn.microsoft.com/en-us/library/ms535393(VS.85).aspx for an
+// example on retrieving the GUIDs.
+GUID gdip_jpeg_guid = { 0xb96b3cae, 0x0728, 0x11d3, { 0x9d, 0x7b, 0x00, 0x00, 0xf8, 0x1e, 0xf3, 0x2e } };
 
 
 /* Globals */
@@ -70,6 +82,7 @@ typedef Status (CALLBACK* GDIPLUSSTARTUP) (ULONG_PTR *token,  const GdiplusStart
 typedef Status (CALLBACK* GDIPLOADIMAGEFROMSTREAM) (IStream* stream, GpImage **image);
 typedef Status (CALLBACK* GDIPSAVEIMAGETOSTREAM) (GpImage *image, IStream* stream,
                       CLSID* clsidEncoder, EncoderParameters* encoderParams);
+typedef Status (CALLBACK* GDIPGETIMAGERRAWFFORMAT) (GpImage *image, GUID *format);
 
 typedef Status (CALLBACK* GDIPDISPOSEIMAGE) (GpImage *image);
 
@@ -127,13 +140,10 @@ GdipLoadImageFromStream (IStream* stream, GpImage **image)
 	return (*proc) (stream, image);
 }
 
-
-
 Status 
 GdipSaveImageToStream (GpImage *image, IStream* stream,
                       CLSID* clsidEncoder, EncoderParameters* encoderParams)
 {
-
 	GDIPSAVEIMAGETOSTREAM	proc = NULL;
 
 	if (gdipluslib)			  
@@ -143,8 +153,22 @@ GdipSaveImageToStream (GpImage *image, IStream* stream,
 		return -1;
 
 	return (*proc) (image, stream, clsidEncoder, encoderParams);
-
 }
+
+Status
+GdipGetImageRawFormat (GpImage *image, GUID *format)
+{
+	GDIPGETIMAGERRAWFFORMAT	proc = NULL;
+
+	if (gdipluslib)			  
+		proc = (GDIPGETIMAGERRAWFFORMAT) GetProcAddress(gdipluslib, "GdipGetImageRawFormat");	
+
+	if (!proc)
+		return -1;
+
+	return (*proc) (image, format);
+}
+
 
 Status 
 GdipDisposeImage (GpImage *image)
@@ -171,7 +195,6 @@ GdipDisposeImage (GpImage *image)
 void 
 initGDIPlus ()
 {
-	
 	GdiplusStartupInput input;	
 
 	if (!gdipluslib)
@@ -185,8 +208,6 @@ initGDIPlus ()
     input.SuppressBackgroundThread = input.SuppressExternalCodecs = FALSE;
 
 	GdiplusStartup (&gdiplusToken, &input, NULL);
-	
-
 }
 
 
@@ -214,7 +235,7 @@ shutDownGDIPlus()
 
 /* Conversion function */
 UT_Error 
-GDIconvertGraphic(UT_ByteBuf * pBB, UT_ByteBuf* pBBOut)
+GDIconvertGraphic(UT_ByteBuf * pBB, UT_ByteBuf* pBBOut, std::string& mimetype)
 {
 	IStream *stream, *streamOut = NULL;	
 	HGLOBAL hG;		
@@ -248,14 +269,30 @@ GDIconvertGraphic(UT_ByteBuf * pBB, UT_ByteBuf* pBBOut)
     hr = CreateStreamOnHGlobal (NULL, TRUE, &streamOut);
 	
 	status =  GdipLoadImageFromStream (stream, &image);
-
 	if (status != 0)
 		return UT_ERROR;
 	
-	status =  GdipSaveImageToStream (image, streamOut, &gdip_png_guid, NULL);
-
+	GUID format;
+	status = GdipGetImageRawFormat (image, &format);
 	if (status != 0)
 		return UT_ERROR;
+
+	if (format != gdip_jpeg_guid)
+	{
+		// convert the image data to PNG if the input data is not JPEG
+		status = GdipSaveImageToStream (image, streamOut, &gdip_png_encoder_guid, NULL);
+		if (status != 0)
+			return UT_ERROR;
+		mimetype = "image/png";
+	}
+	else
+	{
+		// we can handle native JPEG data, no need to convert
+		status = GdipSaveImageToStream (image, streamOut, &gdip_jpeg_encoder_guid, NULL);
+		if (status != 0)
+			return UT_ERROR;
+		mimetype = "image/jpeg";
+	}
 
 	GdipDisposeImage (image);
 	
@@ -282,7 +319,6 @@ GDIconvertGraphic(UT_ByteBuf * pBB, UT_ByteBuf* pBBOut)
 	streamOut->Release ();
 	stream->Release ();
     GlobalFree (hG);   
-	
 	
 	return UT_OK;
 }
