@@ -1,5 +1,5 @@
 
-SUBDIRS = xp
+SUBDIRS = xp po
 
 if HANCOM_BUILTIN
 noinst_LTLIBRARIES = hancom.la

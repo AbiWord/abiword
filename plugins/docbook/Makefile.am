@@ -1,5 +1,5 @@
 
-SUBDIRS = xp
+SUBDIRS = xp po
 
 if DOCBOOK_BUILTIN
 noinst_LTLIBRARIES = docbook.la

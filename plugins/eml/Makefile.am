@@ -1,5 +1,5 @@
 
-SUBDIRS = xp
+SUBDIRS = xp po
 
 if EML_BUILTIN
 noinst_LTLIBRARIES = eml.la

@@ -22,14 +22,18 @@ dist:
 clean:
 	rm -f $(mo_files) $(GETTEXT_PACKAGE).pot
 
+distclean distclean-recursive: clean
+
+maintainer-clean maintainer-clean-recursive: distclean-recursive
+
 install: all
-	-@$(foreach lang, $(langs), if test -d $(dir $(call instfile,$(lang))); then install -m 644 $(lang).mo $(call instfile,$(lang)); echo Installing $(call instfile,$(lang)); fi; )
+	@$(foreach lang, $(langs), if test -d $(dir $(call instfile,$(lang))); then install -m 644 $(lang).mo $(call instfile,$(lang)); echo Installing $(call instfile,$(lang)); fi; )
 
 uninstall:
-	-@$(foreach lang, $(langs), if test -f $(call instfile,$(lang)); then rm -f $(call instfile,$(lang)); echo Uninstalling $(call instfile,$(lang)); fi; )
+	@$(foreach lang, $(langs), if test -f $(call instfile,$(lang)); then rm -f $(call instfile,$(lang)); echo Uninstalling $(call instfile,$(lang)); fi; )
 
 update-po: pot
-	-@$(foreach lang, $(langs), intltool-update --gettext-package $(GETTEXT_PACKAGE) $(lang); echo Updating locale $(lang); )
+	@$(foreach lang, $(langs), echo Updating locale $(lang); intltool-update --gettext-package $(GETTEXT_PACKAGE) $(lang); )
 
 %.mo: %.po
 	$(MSGFMT) -o $@ $<
@@ -37,7 +41,7 @@ update-po: pot
 pot: $(GETTEXT_PACKAGE).pot
 
 translate: pot
-	$(MSGINIT) --locale=$(subst $(LANG),-,_)
+	$(MSGINIT) --locale=$(LANG)
 
 $(GETTEXT_PACKAGE).pot:
 	intltool-update --pot --gettext-package=$(GETTEXT_PACKAGE)

@@ -1,5 +1,5 @@
 
-SUBDIRS = xp
+SUBDIRS = xp po
 
 if CLARISWORKS_BUILTIN
 noinst_LTLIBRARIES = clarisworks.la

@@ -1,7 +1,7 @@
 if TOOLKIT_COCOA
 
 else
-SUBDIRS = xp
+SUBDIRS = xp po
 
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = command.la

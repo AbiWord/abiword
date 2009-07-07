@@ -27,6 +27,7 @@
 #include "fg_GraphicRaster.h"
 #include "ut_debugmsg.h"
 #include "xap_Module.h"
+#include "ap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_bmp_register
@@ -42,6 +43,8 @@ ABI_PLUGIN_DECLARE("BMP")
 /*******************************************************************/
 /*******************************************************************/
 
+AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-bmp");
+
 // we use a reference-counted sniffer
 static IE_ImpGraphicBMP_Sniffer * m_impSniffer = 0;
 
@@ -54,11 +57,11 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 	  m_impSniffer = new IE_ImpGraphicBMP_Sniffer();
 	}
 
-	mi->name = "BMP Import Plugin";
-	mi->desc = "Import Windows Bitmap Images";
+	mi->name = strings->getValue(_("BMP Import Plugin"));
+	mi->desc = strings->getValue(_("Import Windows Bitmap Images"));
 	mi->version = ABI_VERSION_STRING;
-	mi->author = "Abi the Ant";
-	mi->usage = "No Usage";
+	mi->author = strings->getValue(_("Abi the Ant"));
+	mi->usage = strings->getValue(_("No Usage"));
 
 	IE_ImpGraphic::registerImporter (m_impSniffer);
 	return 1;
@@ -78,6 +81,8 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	IE_ImpGraphic::unregisterImporter (m_impSniffer);
 	delete m_impSniffer;
 	m_impSniffer = 0;
+
+  delete strings;
 
 	return 1;
 }
@@ -124,7 +129,7 @@ bool IE_ImpGraphicBMP_Sniffer::getDlgLabels(const char ** pszDesc,
 					    const char ** pszSuffixList,
 					    IEGraphicFileType * ft)
 {
-	*pszDesc = "Windows Bitmap (.bmp)";
+	*pszDesc = strings->getValue(_("Windows Bitmap (.bmp)"));
 	*pszSuffixList = "*.bmp";
 	*ft = getType ();
 	return true;

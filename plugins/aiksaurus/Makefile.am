@@ -7,6 +7,8 @@ SUBDIRS += win
 platform_lib = win/libwin.la
 endif
 
+SUBDIRS += po
+
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = aiksaurus.la
 

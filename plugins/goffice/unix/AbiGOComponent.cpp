@@ -231,9 +231,11 @@ AbiGOComponent_FileInsert(G_GNUC_UNUSED AV_View* v, G_GNUC_UNUSED EV_EditMethodC
 bool 
 AbiGOComponent_Create (G_GNUC_UNUSED AV_View* v, G_GNUC_UNUSED EV_EditMethodCallData *d)
 {
+	AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-goffice");
+
     XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	XAP_UnixFrameImpl *pFrameImpl = static_cast<XAP_UnixFrameImpl*>(pFrame->getFrameImpl());
-	GtkDialog *dialog = GTK_DIALOG (gtk_dialog_new_with_buttons ("New Object",
+	GtkDialog *dialog = GTK_DIALOG (gtk_dialog_new_with_buttons (strings->getValue(_("New Object")),
 		GTK_WINDOW(pFrameImpl->getTopLevelWindow()),
 		(GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT),
 		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_OK, GTK_RESPONSE_OK, NULL));

@@ -31,6 +31,7 @@
 #include "pd_Document.h"
 #include "ut_growbuf.h"
 #include "xap_Module.h"
+#include "ap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_clarisworks_register
@@ -46,6 +47,8 @@ ABI_PLUGIN_DECLARE("ClarisWorks")
 /*****************************************************************/
 /*****************************************************************/
 
+AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-clarisworks");
+
 // completely generic code to allow this to be a plugin
 
 // we use a reference-counted sniffer
@@ -60,11 +63,11 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 		m_sniffer = new IE_Imp_ClarisWorks_Sniffer ();
 	}
 
-	mi->name = "ClarisWorks Importer";
-	mi->desc = "Import ClarisWorks Documents";
+	mi->name = strings->getValue(_("ClarisWorks Importer"));
+	mi->desc = strings->getValue(_("Import ClarisWorks Documents"));
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Abi the Ant";
-	mi->usage = "No Usage";
+	mi->usage = strings->getValue(_("No Usage"));
 
 	IE_Imp::registerImporter (m_sniffer);
 	return 1;
@@ -84,6 +87,8 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	IE_Imp::unregisterImporter (m_sniffer);
 	delete m_sniffer;
 	m_sniffer = 0;
+
+  delete strings;
 
 	return 1;
 }
@@ -202,7 +207,7 @@ bool	IE_Imp_ClarisWorks_Sniffer::getDlgLabels(const char ** pszDesc,
 												 const char ** pszSuffixList,
 												 IEFileType * ft)
 {
-   *pszDesc = "ClarisWorks/AppleWorks 5 (.cwk)";
+   *pszDesc = strings->getValue(_("ClarisWorks/AppleWorks 5 (.cwk)"));
    *pszSuffixList = "*.cwk";
    *ft = getFileType();
    return true;

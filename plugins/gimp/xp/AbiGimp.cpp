@@ -41,6 +41,7 @@
 #include "ie_exp.h"
 #include "ie_types.h"
 #include "ut_sleep.h"
+#include "ap_Strings.h"
 #include <sys/types.h>  
 #include <sys/stat.h>
 #include <unistd.h>
@@ -63,10 +64,12 @@
 ABI_PLUGIN_DECLARE("Gimp")
 #endif
 
+AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-gimp");
+
 static bool AbiGimp_invoke(AV_View* v, EV_EditMethodCallData *d);
 
-static const char* AbiGimp_MenuLabel = "&Edit Image via GIMP";
-static const char* AbiGimp_MenuTooltip = "Opens the selected image in the GIMP for editing.";
+static const char* AbiGimp_MenuLabel = strings->getValue(_("&Edit Image via GIMP"));
+static const char* AbiGimp_MenuTooltip = strings->getValue(_("Opens the selected image in the GIMP for editing."));
 
 #ifdef WIN32
 static BOOL CreateChildProcess(char * appName, char *cmdline,
@@ -198,11 +201,11 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
     return 0;
 #endif
 
-    mi->name = "AbiGimp";
-    mi->desc = "Use this to edit an image with the GIMP from within AbiWord";
+    mi->name = strings->getValue(_("AbiGimp"));
+    mi->desc = strings->getValue(_("Use this to edit an image with the GIMP from within AbiWord"));
     mi->version = ABI_VERSION_STRING;
     mi->author = "Martin Sevior <msevior@physics.unimelb.edu.au>";
-    mi->usage = "No Usage";
+    mi->usage = strings->getValue(_("No Usage"));
     
     // Add to AbiWord's menus.
     AbiGimp_addToMenus();
@@ -221,6 +224,8 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
     mi->usage = 0;
 
     AbiGimp_RemoveFromMenus ();
+
+    delete strings;
 
     return 1;
 }
@@ -275,7 +280,7 @@ AbiGimp_invoke(AV_View* /*v*/, EV_EditMethodCallData *d)
 //
 	if(pos == 0)
 	{
-		pFrame->showMessageBox("You must select an Image before editing it", XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
+		pFrame->showMessageBox(strings->getValue(_("You must select an Image before editing it")), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
 		return false;
 	}
 
@@ -305,7 +310,7 @@ AbiGimp_invoke(AV_View* /*v*/, EV_EditMethodCallData *d)
 	STARTUPINFO startInfo;
 	if (!CreateChildProcess(NULL, const_cast<char *>(cmdline.c_str()), &procInfo, &startInfo))
 	{
-		UT_String msg = "Unable to run program: ";  msg += cmdline;
+		UT_String msg = strings->getValue(_("Unable to run program: "));  msg += cmdline;
 
 		// try again, but with default install locations in 'path' env var
 		char *pathEnvVar = getenv("PATH");
@@ -402,7 +407,7 @@ AbiGimp_invoke(AV_View* /*v*/, EV_EditMethodCallData *d)
 					if(errorCode)
 					{
 						UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-						pFrame->showMessageBox("Error making pFG. Could not put image back into Abiword", XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
+						pFrame->showMessageBox(strings->getValue(_("Error making pFG. Could not put image back into Abiword")), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
 						goto Cleanup;
 					}
 //
@@ -415,7 +420,7 @@ AbiGimp_invoke(AV_View* /*v*/, EV_EditMethodCallData *d)
 					errorCode = pView->cmdInsertGraphic(pFG);
 					if (errorCode)
 					{
-						pFrame->showMessageBox("Could not put image back into Abiword", XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
+						pFrame->showMessageBox(strings->getValue(_("Could not put image back into Abiword")), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
 						UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 						DELETEP(pFG);
 						goto Cleanup;

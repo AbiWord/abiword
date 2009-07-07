@@ -21,6 +21,7 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "xap_Module.h"
+#include "ap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_eml_register
@@ -32,6 +33,8 @@
 #define ABI_BUILTIN_FAR_CALL ABI_FAR_CALL
 ABI_PLUGIN_DECLARE("EML")
 #endif
+
+XAP_StringSet *strings;
 
 //extern  IE_Exp_Text::;
 /*****************************************************************/
@@ -78,7 +81,7 @@ bool IE_Exp_EML_Sniffer::getDlgLabels(const char ** pszDesc,
 		    const char ** pszSuffixList,
 		    IEFileType * ft)
   {
-    *pszDesc = "Outlook Express Email (.eml)";
+    *pszDesc = strings->getValue(_("Outlook Express Email (.eml)"));
     *pszSuffixList = "*.eml";
     *ft = getFileType();
     return true;
@@ -93,17 +96,18 @@ static IE_Exp_EML_Sniffer * m_sniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
+  strings = new AP_StringSet(NULL, "abiword-plugin-eml");
 
 	if (!m_sniffer)
 	{
 		m_sniffer = new IE_Exp_EML_Sniffer ();
 	}
 
-	mi->name = "Outlook Express EML Exporter";
-	mi->desc = "Export AbiWord Documents to email clients";
+	mi->name = strings->getValue(_("Outlook Express EML Exporter"));
+	mi->desc = strings->getValue(_("Export AbiWord Documents to email clients"));
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Dom Lachowicz <cinamod@hotmail.com>";
-	mi->usage = "No Usage";
+	mi->usage = strings->getValue(_("No Usage"));
 
 	IE_Exp::registerExporter (m_sniffer);
 	return 1;
@@ -123,6 +127,8 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	IE_Exp::unregisterExporter (m_sniffer);
 	delete m_sniffer;
 	m_sniffer = 0;
+
+  delete strings;
 
 	return 1;
 }

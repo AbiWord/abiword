@@ -1,5 +1,5 @@
 
-SUBDIRS = unix
+SUBDIRS = unix po
 
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = goffice.la

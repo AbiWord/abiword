@@ -1,5 +1,5 @@
 
-SUBDIRS = xp
+SUBDIRS = xp po
 
 if BMP_BUILTIN
 noinst_LTLIBRARIES = bmp.la

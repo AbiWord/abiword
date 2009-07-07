@@ -67,4 +67,4 @@ endif
 # Remove from SVN before merge
 gettext-dist:
 	rm -f ../gettext-dist.zip
-	zip ../gettext-dist.zip `cat keith-bowes-changed-files`
+	zip ../gettext-dist.zip `cat keith-bowes-changed-files plugins/*/po/POTFILES.in`

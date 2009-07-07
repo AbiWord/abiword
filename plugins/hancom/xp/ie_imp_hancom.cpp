@@ -31,6 +31,7 @@
 #include "ut_iconv.h"
 #include "ut_debugmsg.h"
 #include "pd_Document.h"
+#include "ap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_hancom_register
@@ -179,16 +180,18 @@ static IE_Imp_Hancom_Sniffer * m_impSniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
+		AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-hancom");
+
     if (!m_impSniffer)
     {
     	m_impSniffer = new IE_Imp_Hancom_Sniffer ();
     }
 
-    mi->name    = "Hancom .hwp file importer";
-    mi->desc    = "Imports Hancom binary (OLE) documents";
+    mi->name    = strings->getValue(_("Hancom .hwp file importer"));
+    mi->desc    = strings->getValue(_("Imports Hancom binary (OLE) documents"));
     mi->version = ABI_VERSION_STRING;
     mi->author  = "Christian Biesinger <cbiesinger@web.de>";
-    mi->usage   = "No Usage";
+    mi->usage   = strings->getValue(_("No Usage"));
   
     IE_Imp::registerImporter (m_impSniffer);
     return 1;

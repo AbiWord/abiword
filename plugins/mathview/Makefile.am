@@ -1,5 +1,5 @@
 
-SUBDIRS = data itex2mml xp
+SUBDIRS = data itex2mml xp po
 
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = mathview.la

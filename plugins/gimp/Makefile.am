@@ -1,5 +1,5 @@
 
-SUBDIRS = xp
+SUBDIRS = xp po
 
 if GIMP_BUILTIN
 noinst_LTLIBRARIES = gimp.la

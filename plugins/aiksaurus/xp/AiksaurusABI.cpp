@@ -47,11 +47,13 @@ using namespace std;
 
 ABI_PLUGIN_DECLARE(Aiksaurus)
 
+AP_StringSet *strings = new AP_StringSet
+
 
 bool AiksaurusABI_invoke(AV_View* v, EV_EditMethodCallData *d);
 
-static const char* AiksaurusABI_MenuLabel = "&Thesaurus";
-static const char* AiksaurusABI_MenuTooltip = "Opens the thesaurus and finds synonyms.";
+static const char* AiksaurusABI_MenuLabel = strings->getValue(_("&Thesaurus"));
+static const char* AiksaurusABI_MenuTooltip = strings->getValue(_("Opens the thesaurus and finds synonyms."));
 
 
 //
@@ -101,12 +103,12 @@ AiksaurusABI_addToMenus()
 //
 // Put it in the context menu.
 //
-    XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText",NULL,"Bullets and &Numbering",EV_MLF_Normal);
+    XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText",NULL, strings->getValue(_("Bullets and &Numbering")),EV_MLF_Normal);
     pFact->addNewLabel(NULL,newID,AiksaurusABI_MenuLabel, AiksaurusABI_MenuTooltip);
 //
 // Also put it under word Wount in the main menu,
 //
-    pFact->addNewMenuAfter("Main",NULL,"&Word Count",EV_MLF_Normal,newID);
+    pFact->addNewMenuAfter("Main",NULL, strings->getValue(_("&Word Count")),EV_MLF_Normal,newID);
 
     // Create the Action that will be called.
     EV_Menu_Action* myAction = new EV_Menu_Action(
@@ -170,12 +172,12 @@ AikSaurusABI_RemoveFromMenus ()
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-    mi->name = "Aiksaurus";
-    mi->desc = "English-language thesaurus based on the Aiksaurus library: "
-               "http://www.aiksaurus.com/";
+    mi->name = strings->getValue(_("Aiksaurus"));
+    mi->desc = strings->getValue(_("English-language thesaurus based on the Aiksaurus library: "
+               "http://www.aiksaurus.com/"));
     mi->version = ABI_VERSION_STRING;
     mi->author = "Jared Davis <jared@aiksaurus.com>";
-    mi->usage = "No Usage";
+    mi->usage = strings->getValue(_("No Usage"));
     
     // Add the thesaurus to AbiWord's menus.
     AiksaurusABI_addToMenus();
@@ -194,6 +196,8 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
     mi->usage = 0;
 
     AikSaurusABI_RemoveFromMenus ();
+
+		delete strings;
 
     return 1;
 }

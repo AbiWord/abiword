@@ -957,11 +957,13 @@ ABI_PLUGIN_DECLARE(AbiMathView)
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-	mi->name = "AbiMathView";
-	mi->desc = "The plugin allows AbiWord to import MathML documents";
+	AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-mathview");
+
+	mi->name = strings->getValue(_("AbiMathView"));
+	mi->desc = strings->getValue(_("The plugin allows AbiWord to import MathML documents"));
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Martin Sevior <msevior@physics.unimelb.edu.au>";
-	mi->usage = "No Usage";
+	mi->usage = strings->getValue(_("No Usage"));
     
 	// Add to AbiWord's plugin listeners
 	XAP_App * pApp = XAP_App::getApp();	

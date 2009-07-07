@@ -35,6 +35,7 @@
 #include "ev_EditMethod.h"
 #include "xap_Menu_Layouts.h"
 #include "ut_stack.h"
+#include "ap_Strings.h"
 #include "AbiGOffice.h"
 #include "AbiGOChart.h"
 #include "AbiGOComponent.h"
@@ -48,6 +49,8 @@
 #include <goffice/component/go-component-factory.h>
 #include <gsf/gsf-impl-utils.h>
 
+AP_StringSet *strings = new AP_StringSet(XAP_App()::getApp(), "abiword-plugin-goffice");
+
 //
 // GOCmdContext interface implementation for AbiGOffice
 //
@@ -59,7 +62,7 @@ typedef GObjectClass AbiCmdContextClass;
 static void
 abi_error_error (G_GNUC_UNUSED GOCmdContext *cc, GError *error)
 {
-	fprintf (stderr, "Error: %s\n", error->message);
+	fprintf (stderr, strings->getValue(_("Error: %s\n", error->message)));
 }
 
 static void
@@ -114,14 +117,14 @@ GSF_CLASS_FULL (AbiCmdContext, abi_cmd_context,
 //
 // FIXME make these translatable strings
 
-static const char * Object_MenuLabelObject = "Object";
-static const char * Object_MenuTooltipObject = "Insert Embeddable Object";
-static const char* AbiGOChart_MenuLabelInsert = "Gnome Office Chart";
-static const char* AbiGOChart_MenuTooltipInsert = "Create a chart";
-static const char* AbiGOComponent_MenuLabelInsertFromFile = "From File";
-static const char* AbiGOComponent_MenuTooltipInsertFromFile = "Insert the contents of a file";
-static const char* AbiGOComponent_MenuLabelCreate = "New";
-static const char* AbiGOComponent_MenuTooltipCreate = "Create a new object";
+static const char * Object_MenuLabelObject = strings->getValue(_("Object"));
+static const char * Object_MenuTooltipObject = strings->getValue(_("Insert Embeddable Object"));
+static const char* AbiGOChart_MenuLabelInsert = strings->getValue(_("Gnome Office Chart"));
+static const char* AbiGOChart_MenuTooltipInsert = strings->getValue(_("Create a chart"));
+static const char* AbiGOComponent_MenuLabelInsertFromFile = strings->getValue(_("From File"));
+static const char* AbiGOComponent_MenuTooltipInsertFromFile = strings->getValue(_("Insert the contents of a file"));
+static const char* AbiGOComponent_MenuLabelCreate = strings->getValue(_("New"));
+static const char* AbiGOComponent_MenuTooltipCreate = strings->getValue(_("Create a new object"));
 
 static XAP_Menu_Id newObjectID = 0;
 static XAP_Menu_Id InsertGOChartID = 0;
@@ -422,11 +425,11 @@ ABI_PLUGIN_DECLARE(AbiGOChart)
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-    mi->name = "AbiGOffice";
-    mi->desc = "The plugin enables Gnome Office Charts and components to be displayed in AbiWord";
+    mi->name = strings->getValue(_("AbiGOffice"));
+    mi->desc = strings->getValue(_("The plugin enables Gnome Office Charts and components to be displayed in AbiWord"));
     mi->version = ABI_VERSION_STRING;
     mi->author = "Jean Bréfort <jean.brefort@normalesup.org>";
-    mi->usage = "No Usage";
+    mi->usage = strings->getValue(_("No Usage"));
 
     // Add to AbiWord's plugin importers
     m_impSniffer = new IE_Imp_Object_Sniffer();
@@ -498,6 +501,8 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
     AbiGOffice_removeFromMenus();
 	go_component_set_command_context (NULL);
 	g_object_unref (cc);
+
+  delete strings;
 
     return 1;
 }
