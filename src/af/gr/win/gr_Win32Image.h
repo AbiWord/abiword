@@ -43,7 +43,11 @@ public:
 	virtual bool isTransparentAt(UT_sint32 x, UT_sint32 y);
 
 protected:
-	BITMAPINFO*		m_pDIB;
+	BITMAPINFO*			m_pDIB;
+
+private:
+	bool				_convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+	bool				_convertFromJPEG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 };
 
 #endif /* GR_WIN32IMAGE_H */

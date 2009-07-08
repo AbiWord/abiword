@@ -27,6 +27,7 @@ extern "C" {
 #include <jpeglib.h>
 }
 
+#include <string.h>
 #include "ut_assert.h"
 #include "ut_bytebuf.h"
 #include "ut_debugmsg.h"
@@ -171,7 +172,102 @@ bool UT_JPEG_getDimensions(const UT_ByteBuf* pBB, UT_sint32& iImageWidth,
     return true;
 }
 
+// Converts the JPEG image data in pBB into raw RGB data,
+// and writes it to pDest. pDest must be large enough to
+// hold width * height * 3 bytes of data.
+bool UT_JPEG_getRGBData(const UT_ByteBuf* pBB, UT_Byte* pDest, UT_sint32 iDestRowSize, bool bBGR, bool bFlipHoriz)
+{
+	UT_return_val_if_fail(pBB, false);
+	UT_return_val_if_fail(pDest, false);
 
+    struct jpeg_decompress_struct cinfo;
+	struct jpeg_error_mgr jerr;
+
+	cinfo.err = jpeg_std_error(&jerr);
+	jpeg_create_decompress(&cinfo);
+
+	/* set the data source */
+	_JPEG_ByteBufSrc (&cinfo, pBB);
+
+	jpeg_read_header(&cinfo, TRUE);
+	jpeg_start_decompress(&cinfo);
+    
+	int row_stride = cinfo.output_width * cinfo.output_components;
+	
+	JSAMPARRAY buffer = (*cinfo.mem->alloc_sarray)
+			((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
+
+	UT_Byte* pCYMK = NULL;
+	if (cinfo.output_components == 4)
+		pCYMK = reinterpret_cast<UT_Byte*>(g_malloc(row_stride));
+
+	for (UT_uint32 row = 0; row < cinfo.output_height; row++)
+	{
+		// determine the place directly into the output buffer
+		// where we should decode the next line
+		UT_Byte* pB = !bFlipHoriz ?
+			pDest + row * iDestRowSize : 
+			pDest + (cinfo.output_height - row - 1) * iDestRowSize;
+
+		// we defer the data to a temporary buffer if we are dealing
+		// with CYMK data.
+		UT_Byte* pD = cinfo.output_components != 4 ? pB : pCYMK;
+
+		// decode the next line
+		jpeg_read_scanlines(&cinfo, &pD, 1);
+
+		// postprocess the line
+		switch (cinfo.output_components)
+		{
+			case 1:
+				// convert greyscale -> RGB (which is equal to BGR)
+				for (UT_sint32 col = cinfo.output_width-1; col >= 0; col--)
+				{
+					UT_Byte r = pB[col];
+					pB[col*3] = r;
+					pB[col*3+1] = r;
+					pB[col*3+2] = r;
+				}
+				break;
+			case 3:
+				if (bBGR)
+				{
+					// convert RGB -> BGR
+					for (UT_sint32 col = 0; col < row_stride; col+=3)
+					{
+						UT_Byte r = pB[col];
+						pB[col] = pB[col+2];
+						pB[col+2] = r;
+					}
+				}
+				break;
+			case 4:
+				// convert CMYK -> RGB (or BGR), and store the 
+				// results in the destination buffer (it was in a 
+				// temporary buffer up till now)
+				for (UT_uint32 pixel = 0; pixel < cinfo.output_width; pixel++)
+				{
+					UT_sint32 col = pixel * 4;
+
+					UT_Byte r = (pCYMK[col] * pCYMK[col+3] + 127) / 255;
+					UT_Byte g = (pCYMK[col+1] * pCYMK[col+3] + 127) / 255;
+					UT_Byte b = (pCYMK[col+2] * pCYMK[col+3] + 127) / 255;
+
+					pB[pixel*3] = !bBGR ? r : b;
+					pB[pixel*3+1] = g;
+					pB[pixel*3+2] = !bBGR ? b : r;
+				}
+				break;
+		}
+	}
+
+	FREEP(pCYMK);
+
+	/* This is an important step since it will release a good deal of memory. */
+	jpeg_destroy_decompress(&cinfo);
+
+    return true;
+}
 
 static void _JPEG_ByteBufSrc (j_decompress_ptr cinfo, const UT_ByteBuf* sourceBuf)
 {

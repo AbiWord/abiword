@@ -35,6 +35,7 @@
 #include "gr_Win32Graphics.h"
 #include "gr_Win32Image.h"
 #include "png.h"
+#include "ut_jpeg.h"
 
 #include "ut_assert.h"
 #include "ut_bytebuf.h"
@@ -83,139 +84,19 @@ bool	GR_Win32Image::isTransparentAt(UT_sint32 /*x*/, UT_sint32 /*y*/)
 /*!
  * Returns true if there is any transparency in the image.
  */ 
-bool	GR_Win32Image::hasAlpha(void) const
+bool GR_Win32Image::hasAlpha(void) const
 {
 	UT_ASSERT_HARMLESS(0);
 	return false;
 }
 
-
 bool GR_Win32Image::convertFromBuffer(const UT_ByteBuf* pBB, const std::string& mimetype, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
-	png_structp png_ptr;
-	png_infop info_ptr;
-	png_uint_32 width, height;
-	int bit_depth, color_type, interlace_type;
-
-	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, (void*) NULL,
-									 NULL, NULL);
-
-	if (png_ptr == NULL)
-	{
-		return false;
-	}
-
-	/* Allocate/initialize the memory for image information.  REQUIRED. */
-	info_ptr = png_create_info_struct(png_ptr);
-	if (info_ptr == NULL)
-	{
-		png_destroy_read_struct(&png_ptr, (png_infopp)NULL, (png_infopp)NULL);
-		return false;
-	}
-
-	/* Set error handling if you are using the setjmp/longjmp method (this is
-	 * the normal method of doing things with libpng).  REQUIRED unless you
-	 * set up your own error handlers in the png_create_read_struct() earlier.
-	 */
-	if (setjmp(png_ptr->jmpbuf))
-	{
-		/* Free all of the memory associated with the png_ptr and info_ptr */
-		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
-
-		/* If we get here, we had a problem reading the file */
-		return false;
-	}
-
-	struct _bb myBB;
-	myBB.pBB = pBB;
-	myBB.iCurPos = 0;
-	
-	png_set_read_fn(png_ptr, (void *)&myBB, _png_read);
-
-	/* The call to png_read_info() gives us all of the information from the
-	 * PNG file before the first IDAT (image data chunk).  REQUIRED
-	 */
-	png_read_info(png_ptr, info_ptr);
-
-	png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type,
-				 &interlace_type, NULL, NULL);
-
-	/* Extract multiple pixels with bit depths of 1, 2, and 4 from a single
-	 * byte into separate bytes (useful for paletted and grayscale images).
-	 */
-	png_set_packing(png_ptr);
-
-	/* Expand paletted colors into true RGB triplets */
-	png_set_expand(png_ptr);
-
-	/*  If we've got images with 16 bits per channel, we don't need that
-		much precision.  We'll do fine with 8 bits per channel */
-	png_set_strip_16(png_ptr);
-
-	/*  For simplicity, treat grayscale as RGB */
-	png_set_gray_to_rgb(png_ptr);
-
-	/*  For simplicity, we'll ignore alpha */
-	png_set_strip_alpha(png_ptr);
-	
-	/*  We want libpng to deinterlace the image for us */
-	UT_uint32 iInterlacePasses = png_set_interlace_handling(png_ptr);
-
-	/* flip the RGB pixels to BGR (or RGBA to BGRA) */
-	png_set_bgr(png_ptr);
-
-	UT_uint32 iBytesInRow = width * 3;
-	if (iBytesInRow % 4)
-	{
-		iBytesInRow += (4 - (iBytesInRow % 4));
-	}
-
-	m_pDIB = (BITMAPINFO*) g_try_malloc(sizeof(BITMAPINFOHEADER) + height * iBytesInRow);
-	if (!m_pDIB)
-	{
-		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
-		return false;
-	}
-
-	/*
-	  Note that we do NOT create a DIB of iDisplayWidth,iDisplayHeight, since
-	  DIBs can be stretched automatically by the Win32 API.  So we simply remember
-	  the display size for drawing later.
-	*/
-
-	setDisplaySize(iDisplayWidth, iDisplayHeight);
-
-	m_pDIB->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-	m_pDIB->bmiHeader.biWidth = width;
-	m_pDIB->bmiHeader.biHeight = height;
-	m_pDIB->bmiHeader.biPlanes = 1;
-	m_pDIB->bmiHeader.biBitCount = 24;
-	m_pDIB->bmiHeader.biCompression = BI_RGB;
-	m_pDIB->bmiHeader.biSizeImage = 0;
-	m_pDIB->bmiHeader.biXPelsPerMeter = 0;
-	m_pDIB->bmiHeader.biYPelsPerMeter = 0;
-	m_pDIB->bmiHeader.biClrUsed = 0;
-	m_pDIB->bmiHeader.biClrImportant = 0;
-
-	UT_Byte* pBits = ((unsigned char*) m_pDIB) + m_pDIB->bmiHeader.biSize;
-
-	for (; iInterlacePasses; iInterlacePasses--)
-	{
-		for (UT_uint32 iRow = 0; iRow < height; iRow++)
-		{
-			UT_Byte* pRow = pBits + (height - iRow - 1) * iBytesInRow;
-
-			png_read_rows(png_ptr, &pRow, NULL, 1);
-		}
-	}
-
-	/* read rest of file, and get additional chunks in info_ptr - REQUIRED */
-	png_read_end(png_ptr, info_ptr);
-
-	/* clean up after the read, and g_free any memory allocated - REQUIRED */
-	png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
-
-	return true;
+	if (mimetype == "image/png")
+		return _convertFromPNG(pBB, iDisplayWidth, iDisplayHeight);
+	else if (mimetype == "image/jpeg")
+		return _convertFromJPEG(pBB, iDisplayWidth, iDisplayHeight);
+	return false;
 }
 
 GR_Win32Image::~GR_Win32Image()
@@ -637,4 +518,186 @@ GR_Image * GR_Win32Image::createImageSegment(GR_Graphics * pG,const UT_Rect & re
 	}
 	
 	return static_cast<GR_Image *>(pImage);
+}
+
+bool GR_Win32Image::_convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+{
+	png_structp png_ptr;
+	png_infop info_ptr;
+	png_uint_32 width, height;
+	int bit_depth, color_type, interlace_type;
+
+	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, (void*) NULL,
+									 NULL, NULL);
+
+	if (png_ptr == NULL)
+	{
+		return false;
+	}
+
+	/* Allocate/initialize the memory for image information.  REQUIRED. */
+	info_ptr = png_create_info_struct(png_ptr);
+	if (info_ptr == NULL)
+	{
+		png_destroy_read_struct(&png_ptr, (png_infopp)NULL, (png_infopp)NULL);
+		return false;
+	}
+
+	/* Set error handling if you are using the setjmp/longjmp method (this is
+	 * the normal method of doing things with libpng).  REQUIRED unless you
+	 * set up your own error handlers in the png_create_read_struct() earlier.
+	 */
+	if (setjmp(png_ptr->jmpbuf))
+	{
+		/* Free all of the memory associated with the png_ptr and info_ptr */
+		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
+
+		/* If we get here, we had a problem reading the file */
+		return false;
+	}
+
+	struct _bb myBB;
+	myBB.pBB = pBB;
+	myBB.iCurPos = 0;
+	
+	png_set_read_fn(png_ptr, (void *)&myBB, _png_read);
+
+	/* The call to png_read_info() gives us all of the information from the
+	 * PNG file before the first IDAT (image data chunk).  REQUIRED
+	 */
+	png_read_info(png_ptr, info_ptr);
+
+	png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type,
+				 &interlace_type, NULL, NULL);
+
+	/* Extract multiple pixels with bit depths of 1, 2, and 4 from a single
+	 * byte into separate bytes (useful for paletted and grayscale images).
+	 */
+	png_set_packing(png_ptr);
+
+	/* Expand paletted colors into true RGB triplets */
+	png_set_expand(png_ptr);
+
+	/*  If we've got images with 16 bits per channel, we don't need that
+		much precision.  We'll do fine with 8 bits per channel */
+	png_set_strip_16(png_ptr);
+
+	/*  For simplicity, treat grayscale as RGB */
+	png_set_gray_to_rgb(png_ptr);
+
+	/*  For simplicity, we'll ignore alpha */
+	png_set_strip_alpha(png_ptr);
+	
+	/*  We want libpng to deinterlace the image for us */
+	UT_uint32 iInterlacePasses = png_set_interlace_handling(png_ptr);
+
+	/* flip the RGB pixels to BGR (or RGBA to BGRA) */
+	png_set_bgr(png_ptr);
+
+	UT_uint32 iBytesInRow = width * 3;
+	if (iBytesInRow % 4)
+	{
+		iBytesInRow += (4 - (iBytesInRow % 4));
+	}
+
+	m_pDIB = (BITMAPINFO*) g_try_malloc(sizeof(BITMAPINFOHEADER) + height * iBytesInRow);
+	if (!m_pDIB)
+	{
+		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
+		return false;
+	}
+
+	/*
+	  Note that we do NOT create a DIB of iDisplayWidth,iDisplayHeight, since
+	  DIBs can be stretched automatically by the Win32 API.  So we simply remember
+	  the display size for drawing later.
+	*/
+
+	setDisplaySize(iDisplayWidth, iDisplayHeight);
+
+	m_pDIB->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	m_pDIB->bmiHeader.biWidth = width;
+	m_pDIB->bmiHeader.biHeight = height;
+	m_pDIB->bmiHeader.biPlanes = 1;
+	m_pDIB->bmiHeader.biBitCount = 24;
+	m_pDIB->bmiHeader.biCompression = BI_RGB;
+	m_pDIB->bmiHeader.biSizeImage = 0;
+	m_pDIB->bmiHeader.biXPelsPerMeter = 0;
+	m_pDIB->bmiHeader.biYPelsPerMeter = 0;
+	m_pDIB->bmiHeader.biClrUsed = 0;
+	m_pDIB->bmiHeader.biClrImportant = 0;
+
+	UT_Byte* pBits = ((unsigned char*) m_pDIB) + m_pDIB->bmiHeader.biSize;
+
+	for (; iInterlacePasses; iInterlacePasses--)
+	{
+		for (UT_uint32 iRow = 0; iRow < height; iRow++)
+		{
+			UT_Byte* pRow = pBits + (height - iRow - 1) * iBytesInRow;
+
+			png_read_rows(png_ptr, &pRow, NULL, 1);
+		}
+	}
+
+	/* read rest of file, and get additional chunks in info_ptr - REQUIRED */
+	png_read_end(png_ptr, info_ptr);
+
+	/* clean up after the read, and g_free any memory allocated - REQUIRED */
+	png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
+
+	return true;
+}
+
+bool GR_Win32Image::_convertFromJPEG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+{
+	UT_sint32 iImageWidth;
+	UT_sint32 iImageHeight;
+
+	// Get the size of the jpeg image. This is a bit of a performance
+	// issue, as it starts decoding the jpeg (though it does not actually decode it)
+	// while we also do that in UT_JPEG_getRGBData below.
+	// This however allows us to decode the image data directly into the DIB we
+	// create below, which saves us a potentially huge memory copy.
+	if (!UT_JPEG_getDimensions(pBB, iImageWidth, iImageHeight))
+		return false;
+
+	UT_uint32 iBytesInRow = iImageWidth * 3;
+	if (iBytesInRow % 4)
+	{
+		iBytesInRow += (4 - (iBytesInRow % 4));
+	}
+
+	m_pDIB = (BITMAPINFO*) g_try_malloc(sizeof(BITMAPINFOHEADER) + iImageHeight * iBytesInRow);
+	if (!m_pDIB)
+		return false;
+
+	/*
+	  Note that we do NOT create a DIB of iDisplayWidth,iDisplayHeight, since
+	  DIBs can be stretched automatically by the Win32 API.  So we simply remember
+	  the display size for drawing later.
+	*/
+
+	setDisplaySize(iDisplayWidth, iDisplayHeight);
+
+	m_pDIB->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	m_pDIB->bmiHeader.biWidth = iImageWidth;
+	m_pDIB->bmiHeader.biHeight = iImageHeight;
+	m_pDIB->bmiHeader.biPlanes = 1;
+	m_pDIB->bmiHeader.biBitCount = 24;
+	m_pDIB->bmiHeader.biCompression = BI_RGB;
+	m_pDIB->bmiHeader.biSizeImage = 0;
+	m_pDIB->bmiHeader.biXPelsPerMeter = 0;
+	m_pDIB->bmiHeader.biYPelsPerMeter = 0;
+	m_pDIB->bmiHeader.biClrUsed = 0;
+	m_pDIB->bmiHeader.biClrImportant = 0;
+
+	UT_Byte* pBuf = ((unsigned char*) m_pDIB) + m_pDIB->bmiHeader.biSize;
+	
+	if (!UT_JPEG_getRGBData(pBB, pBuf, iBytesInRow, true, true))
+	{
+		FREEP(m_pDIB);
+		return false;
+	}
+	
+	return true;
 }

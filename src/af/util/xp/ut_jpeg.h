@@ -28,4 +28,7 @@ class UT_ByteBuf;
 ABI_EXPORT bool UT_JPEG_getDimensions(const UT_ByteBuf* pBB, UT_sint32& iImageWidth, 
                                       UT_sint32& iImageHeight);
 
+ABI_EXPORT bool UT_JPEG_getRGBData(const UT_ByteBuf* pBB, UT_Byte* pDest, 
+								   UT_sint32 iDestRowSize, bool bBGR, bool bFlipHoriz);
+
 #endif
