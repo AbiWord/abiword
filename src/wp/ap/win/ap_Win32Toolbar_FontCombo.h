@@ -40,8 +40,8 @@ public:
 	UT_Vector*	 getFontsCharset(){return &m_vecFontCharSet;};
 
 protected:
-	static int CALLBACK				_EnumFontsProc(LPLOGFONT lplf, 
-												   LPTEXTMETRIC lptm,
+	static int CALLBACK				_EnumFontsProc(LPLOGFONTW lplf, 
+												   LPTEXTMETRICW lptm,
 												   DWORD dwStyle, 
 												   LONG lParam);
 

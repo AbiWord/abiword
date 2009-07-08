@@ -372,8 +372,8 @@ BOOL XAP_Win32Dialog_FontChooser::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LP
 
 	// get the initial offset in the text color dlg so that we can tell if the user
 	// changed color
-	m_iColorIndx = SendDlgItemMessage(hWnd, 1139, CB_GETCURSEL, 0, 0);
-	m_iColorCount = SendDlgItemMessage(hWnd, 1139, CB_GETCOUNT, 0, 0);
+	m_iColorIndx = SendDlgItemMessageW(hWnd, 1139, CB_GETCURSEL, 0, 0);
+	m_iColorCount = SendDlgItemMessageW(hWnd, 1139, CB_GETCOUNT, 0, 0);
 
 	if(m_iColorIndx == 0 && m_pColor && *m_pColor && strcmp(m_pColor, "000000") != 0)
 	{
@@ -382,13 +382,13 @@ BOOL XAP_Win32Dialog_FontChooser::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LP
 		// of the list
 
 		// we have no name for this color, so left it empty
-		SendDlgItemMessage(hWnd, 1139, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)"");
+		SendDlgItemMessageW(hWnd, 1139, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)"");
 
 		// set the color for the entry
 		UT_RGBColor c;
 		UT_parseColor(m_pColor,c);
 		DWORD dColor = RGB(c.m_red,c.m_grn,c.m_blu);
-		SendDlgItemMessage(hWnd, 1139, CB_SETITEMDATA, m_iColorCount, (LPARAM)(DWORD)dColor);
+		SendDlgItemMessageW(hWnd, 1139, CB_SETITEMDATA, m_iColorCount, (LPARAM)(DWORD)dColor);
 
 		// make sure this worked and select the color
 		int iOldCount = m_iColorCount;
