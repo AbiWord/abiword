@@ -324,8 +324,9 @@ are in device units. Setting this to -1 will cause the image not to be scaled.
 @return true if successful, false otherwise
 */
 bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB, 
-				     UT_sint32 iDisplayWidth, 
-				     UT_sint32 iDisplayHeight)
+                                     const std::string & /*mimetype */,
+                                     UT_sint32 iDisplayWidth,
+                                     UT_sint32 iDisplayHeight)
 {
 	// assert no image loaded yet
 

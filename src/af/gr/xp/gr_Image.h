@@ -45,8 +45,8 @@ public:
 	virtual UT_sint32	getDisplayWidth(void) const;
 	virtual UT_sint32	getDisplayHeight(void) const;
 
-   	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
-	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, const std::string& mimetype, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+   	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const = 0;
+	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, const std::string& mimetype, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) = 0;
 	/*!
 	 * This should be overridden by platform code. The idea is to create a
 	 * new image from the rectangular segment in device units defined by 

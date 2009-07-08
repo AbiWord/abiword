@@ -345,20 +345,6 @@ UT_sint32 GR_Image::getDisplayHeight(void) const
   return m_iDisplayHeight; 
 }
 
-bool GR_Image::convertToBuffer(UT_ByteBuf** /*ppBB*/) const 
-{ 
-  // default no impl
-  return false; 
-}
-
-bool GR_Image::convertFromBuffer(const UT_ByteBuf* /*pBB*/, const std::string& mimetype, UT_sint32 /*iWidth*/, 
-								 UT_sint32 /*iHeight*/) 
-{ 
-  // default no impl
-  UT_ASSERT_NOT_REACHED ();
-  return false; 
-}
-
 GR_Image::GRType GR_Image::getType() const
 { 
 //
