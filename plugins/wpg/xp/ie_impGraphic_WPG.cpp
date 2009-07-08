@@ -33,11 +33,14 @@
 #include <gsf/gsf-infile-msole.h>
 #include <libwpd/WPXStream.h>
 #include "xap_Module.h"
+#include "ap_Strings.h"
 
 using libwpg::WPGraphics;
 using libwpg::WPGString;
 
 ABI_PLUGIN_DECLARE("WPG")
+
+AP_StringSet *strings;
 
 class AbiWordPerfectGraphicsInputStream : public WPXInputStream
 {
@@ -154,6 +157,7 @@ static IE_Imp_WordPerfectGraphics_Sniffer * m_ImpSniffer = 0;
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
+	strings = new AP_StringSet(NULL, "abiword-plugin-wpg");
 	if (!m_ImpSniffer)
 	{
 		m_ImpSniffer = new IE_Imp_WordPerfectGraphics_Sniffer ();
@@ -161,11 +165,11 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 
 	UT_ASSERT (m_ImpSniffer);
 
-	mi->name    = "WordPerfect(tm) Graphics Importer";
-	mi->desc    = "Import WordPerfect(tm) Graphics";
+	mi->name    = strings->getValue(_("WordPerfect(tm) Graphics Importer"));
+	mi->desc    = strings->getValue(_("Import WordPerfect(tm) Graphics"));
 	mi->version = ABI_VERSION_STRING;
 	mi->author  = "Marc Maurer";
-	mi->usage   = "No Usage";
+	mi->usage   = strings->getValue(_("No Usage"));
 
 	IE_ImpGraphic::registerImporter (m_ImpSniffer);
 	return 1;
@@ -185,6 +189,8 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	IE_ImpGraphic::unregisterImporter (m_ImpSniffer);
 	delete m_ImpSniffer;
 	m_ImpSniffer = 0;
+
+	delete strings;
 	
 	return 1;
 }
@@ -227,7 +233,7 @@ bool IE_Imp_WordPerfectGraphics_Sniffer::getDlgLabels (const char ** szDesc,
                         const char ** szSuffixList,
                         IEGraphicFileType *ft)
 {
-	*szDesc = "WordPerfect(tm) Graphics Images (.wpg)";
+	*szDesc = strings->getValue(_("WordPerfect(tm) Graphics Images (.wpg)"));
 	*szSuffixList = "*.wpg";
 	*ft = getType ();
 	return true;

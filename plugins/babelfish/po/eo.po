@@ -36,7 +36,7 @@ msgstr "Buloj kaj &Nombrado"
 #.
 #: ../xp/AbiBabelfish.cpp:300
 msgid "&Word Count"
-msgstr "&Vortonombro"
+msgstr "&Vortnombro"
 
 #: ../xp/AbiBabelfish.cpp:364
 msgid "BabelFish plugin"
@@ -46,7 +46,7 @@ msgstr "Kromprogramo Babelfish"
 msgid ""
 "On-line Translation support for AbiWord. Based upon the Babelfish "
 "translation tool which is powered by Systran."
-msgstr "Reta tradukado subteno por AbiWord. Bazite sur la tradukilo Babelfish, kiu motoratas de Systran."
+msgstr "Reta tradukada regado por AbiWord. Bazite sur la tradukilo Babelfish, kiu motoratas de Systran."
 
 #: ../xp/AbiBabelfish.cpp:368
 msgid "No Usage"

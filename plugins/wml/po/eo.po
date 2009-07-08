@@ -1,0 +1,29 @@
+# Esperanto translations for abiword package.
+# Copyright (C) 2009 THE abiword'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the abiword package.
+# Keith Bowes <keith@keith-desktop>, 2009.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: abiword 2.7.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-07-07 17:41-0400\n"
+"PO-Revision-Date: 2009-07-07 17:41-0400\n"
+"Last-Translator: Keith Bowes <keith@keith-desktop>\n"
+"Language-Team: Esperanto\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ASCII\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../xp/ie_impexp_WML.cpp:57
+msgid "WML Importer"
+msgstr "Importilo de WML (sendrata marklingvo)"
+
+#: ../xp/ie_impexp_WML.cpp:58
+msgid "Import/Export WML Documents"
+msgstr "Importi/eksporti WML-dokumentojn"
+
+#: ../xp/ie_impexp_WML.cpp:61
+msgid "No Usage"
+msgstr "Neniu uzado"

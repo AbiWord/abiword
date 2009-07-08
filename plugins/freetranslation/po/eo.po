@@ -18,7 +18,7 @@ msgstr ""
 
 #: ../xp/AbiFreeTranslation.cpp:382
 msgid "FreeTranslation plugin"
-msgstr "kromprogramo por FreeTranslation"
+msgstr "Kromprogramo por FreeTranslation"
 
 #: ../xp/AbiFreeTranslation.cpp:383
 #, fuzzy
@@ -27,7 +27,7 @@ msgid ""
 "translation tool (www.freetranslation.com), for personal, non-commercial use "
 "only."
 msgstr ""
-"Reta traduka subteno por AbiWord. Bazite sur la tradukilo FreeTranslation "
+"Reta traduka regado por AbiWord. Bazite sur la tradukilo FreeTranslation "
 "(www.freetranslation.com), nur por persona, nekomerca uzo."
 
 #: ../xp/AbiFreeTranslation.cpp:386

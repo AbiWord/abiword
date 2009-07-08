@@ -29,7 +29,7 @@ msgstr "Serĉi la TTT-on per Guglo"
 #.
 #: ../xp/AbiGoogle.cpp:177
 msgid "&Word Count"
-msgstr "&Vortonombro"
+msgstr "&Vortnombro"
 
 #: ../xp/AbiGoogle.cpp:215
 msgid "Google plugin"

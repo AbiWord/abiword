@@ -1,4 +1,5 @@
 GETTEXT_PACKAGE ?= abiword
+LOCALE ?= $(LANG)
 
 MSGFMT = @MSGFMT@
 MSGINIT = msginit
@@ -41,7 +42,7 @@ update-po: pot
 pot: $(GETTEXT_PACKAGE).pot
 
 translate: pot
-	$(MSGINIT) --locale=$(LANG)
+	$(MSGINIT) --locale=$(LOCALE)
 
 $(GETTEXT_PACKAGE).pot:
 	intltool-update --pot --gettext-package=$(GETTEXT_PACKAGE)

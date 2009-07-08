@@ -41,7 +41,7 @@ msgstr "Buloj kaj &Nombrado"
 #.
 #: ../unix/GdictAbiPlugin.cpp:342
 msgid "&Word Count"
-msgstr "&Vortonombro"
+msgstr "&Vortnombro"
 
 #: ../unix/GdictAbiPlugin.cpp:380
 msgid "GDict plugin"

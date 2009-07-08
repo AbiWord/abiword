@@ -35,12 +35,16 @@
 #include "fg_GraphicVector.h"
 #include "ie_impGraphic_WMF.h"
 
+#include "ap_Strings.h"
+
 #include <stdio.h>
 #include <math.h>
 
 #include <libwmf/api.h>
 #include <libwmf/gd.h>
 #include <libwmf/svg.h>
+
+AP_StringSet *strings;
 
 static int  AbiWord_WMF_read (void * context);
 static int  AbiWord_WMF_seek (void * context,long pos);
@@ -86,7 +90,7 @@ bool IE_ImpGraphicWMF_Sniffer::getDlgLabels(const char ** pszDesc,
 					const char ** pszSuffixList,
 					IEGraphicFileType * ft)
 {
-	*pszDesc = "Windows Metafile (.wmf)";
+	*pszDesc = strings->getValue(_("Windows Metafile (.wmf)"));
 	*pszSuffixList = "*.wmf";
 	*ft = getType ();
 	return true;
@@ -264,7 +268,7 @@ UT_Error IE_ImpGraphic_WMF::convertGraphicToSVG(UT_ByteBuf* pBBwmf, UT_ByteBuf**
 	wmf_height = (float) disp_height;
 
 	if ((wmf_width <= 0) || (wmf_height <= 0))
-	{	fputs ("Bad image size - but this error shouldn't occur...\n",stderr);
+	{	fputs (strings->getValue(_("Bad image size - but this error shouldn't occur...\n")),stderr);
 		status = 1;
 		wmf_api_destroy (API);
 		return UT_ERROR;
@@ -552,11 +556,11 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 	  m_impSniffer = new IE_ImpGraphicWMF_Sniffer();
 	}
 
-	mi->name = "WMF Import Plugin";
-	mi->desc = "Import Windows Metafiles";
+	mi->name = strings->getValue(_("WMF Import Plugin"));
+	mi->desc = strings->getValue(_("Import Windows Metafiles"));
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Abi the Ant";
-	mi->usage = "No Usage";
+	mi->usage = strings->getValue(_("No Usage"));
 
 	IE_ImpGraphic::registerImporter (m_impSniffer);
 	return 1;
@@ -576,6 +580,8 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	IE_ImpGraphic::unregisterImporter (m_impSniffer);
 	delete m_impSniffer;
 	m_impSniffer = 0;
+
+	delete strings;
 
 	return 1;
 }

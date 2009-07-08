@@ -30,6 +30,7 @@
 #include "ev_EditMethod.h"
 #include "xap_Menu_Layouts.h"
 #include "ut_string_class.h"
+#include "ap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_wikipedia_register
@@ -44,6 +45,8 @@ ABI_PLUGIN_DECLARE ("Wikipedia")
 
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
+
+AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-wikipdia");
 
 //
 // _ucsToAscii
@@ -122,8 +125,8 @@ Wikipedia_invoke(AV_View* /*v*/, EV_EditMethodCallData * /*d*/)
   return true;
 }
 
-static const char* Wikipedia_MenuLabel = "Wi&ki Encyclopedia";
-static const char* Wikipedia_MenuTooltip = "Opens the libre Wiki on-line encyclopedia";
+static const char* Wikipedia_MenuLabel = strings->getValue(_("Wi&ki Encyclopedia"));
+static const char* Wikipedia_MenuTooltip = strings->getValue(_("Opens the libre Wiki on-line encyclopedia"));
 
 static void
 Wikipedia_removeFromMenus()
@@ -199,7 +202,7 @@ Wikipedia_addToMenus()
   //
   // Also put it under word Wount in the main menu,
   //
-  pFact->addNewMenuAfter("Main",NULL,"&Word Count",EV_MLF_Normal,newID);
+  pFact->addNewMenuAfter("Main",NULL, strings->getValue(_("&Word Count")),EV_MLF_Normal,newID);
   
   // Create the Action that will be called.
   EV_Menu_Action* myAction = new EV_Menu_Action(
@@ -237,11 +240,11 @@ Wikipedia_addToMenus()
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-    mi->name = "Wikipedia plugin";
-    mi->desc = "On-line Encyclopedia support for AbiWord. Search site is http://www.wikipedia.com/";
+    mi->name = strings->getValue(_("Wikipedia plugin"));
+    mi->desc = strings->getValue(_("On-line Encyclopedia support for AbiWord. Search site is http://www.wikipedia.com/"));
     mi->version = ABI_VERSION_STRING;
     mi->author = "Francis James Franklin"; // and Michael D. Pritchett and Dom Lachowicz
-    mi->usage = "No Usage";
+    mi->usage = strings->getValue(_("No Usage"));
     
     // Add the dictionary to AbiWord's menus.
     Wikipedia_addToMenus();
@@ -260,6 +263,8 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
     mi->usage = 0;
 
     Wikipedia_removeFromMenus();
+
+		delete strings;
 
     return 1;
 }

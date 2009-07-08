@@ -28,6 +28,8 @@
 #include <ie_imp_OpenXML_Sniffer.h>
 #include <ie_exp_OpenXML_Sniffer.h>
 
+#include "ap_Strings.h"
+
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_openxml_register
 #define abi_plugin_unregister abipgn_openxml_unregister
@@ -53,6 +55,8 @@ static IE_Exp_OpenXML_Sniffer* pExp_sniffer = 0;
  */
 ABI_BUILTIN_FAR_CALL int abi_plugin_register (XAP_ModuleInfo * mi)
 {
+		AP_StringSet *strings = new  AP_StringSet(NULL, "abiword-plugin-openxml");
+
     if (!pImp_sniffer) {
         pImp_sniffer = new IE_Imp_OpenXML_Sniffer ();
     }
@@ -65,11 +69,11 @@ ABI_BUILTIN_FAR_CALL int abi_plugin_register (XAP_ModuleInfo * mi)
     
 	IE_Exp::registerExporter (pExp_sniffer);
 
-    mi->name    = "Office Open XML Filter";
-    mi->desc    = "Import/Export Office Open XML (.docx) files";
+    mi->name    = strings->getValue(_("Office Open XML Filter"));
+    mi->desc    = strings->getValue(_("Import/Export Office Open XML (.docx) files"));
     mi->version = ABI_VERSION_STRING;
     mi->author  = "Philippe Milot";
-    mi->usage   = "No Usage";
+    mi->usage   = strings->getValue(_("No Usage"));
   
     return 1;
 }

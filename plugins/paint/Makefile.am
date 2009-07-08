@@ -1,6 +1,6 @@
 
 DIST_SUBDIRS = unix win xp
-SUBDIRS = @PLATFORM@ xp
+SUBDIRS = @PLATFORM@ xp po
 
 if PAINT_BUILTIN
 noinst_LTLIBRARIES = paint.la

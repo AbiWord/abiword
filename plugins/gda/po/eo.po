@@ -57,7 +57,7 @@ msgstr "Kromprogramo GDA"
 
 #: ../unix/AbiGDA.cpp:503
 msgid "Database support for AbiWord"
-msgstr "Datumbaza subteno por AbiWord"
+msgstr "Datumbaza regado por AbiWord"
 
 #: ../unix/AbiGDA.cpp:506
 msgid "You had better know some SQL..."

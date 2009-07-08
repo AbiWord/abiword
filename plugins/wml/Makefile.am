@@ -1,5 +1,5 @@
 
-SUBDIRS = xp
+SUBDIRS = xp po
 
 if WML_BUILTIN
 noinst_LTLIBRARIES = wml.la

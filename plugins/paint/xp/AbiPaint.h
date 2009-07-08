@@ -54,10 +54,10 @@
 
 #ifdef WIN32
 #define ENABLE_BMP
-const char *szProgramsDesc = "Image Editing Programs (*.exe,*.com)";
+const char *szProgramsDesc = _("Image Editing Programs (*.exe,*.com)");
 const char *szProgramSuffix= "*.exe; *.com";
 #else /* UNIX */
-const char *szProgramsDesc = "Image Editing Programs (*)";
+const char *szProgramsDesc = _("Image Editing Programs (*)");
 const char *szProgramSuffix= "*";
 #endif
 

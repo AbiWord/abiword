@@ -45,7 +45,7 @@ msgstr "Abako el Gnome Office"
 
 #: ../unix/AbiGOffice.cpp:123
 msgid "Create a chart"
-msgstr "Krei abakon"
+msgstr "Krei grafikaĵon"
 
 #: ../unix/AbiGOffice.cpp:124
 msgid "From File"
@@ -72,7 +72,7 @@ msgid ""
 "The plugin enables Gnome Office Charts and components to be displayed in "
 "AbiWord"
 msgstr ""
-"La kromprogramo ebligas, ke abakoj kaj eroj de Gnome Office vidiĝu en AbiWord"
+"La kromprogramo ebligas, ke grafikaĵoj kaj eroj de Gnome Office vidiĝu en AbiWord"
 
 #: ../unix/AbiGOffice.cpp:432
 msgid "No Usage"

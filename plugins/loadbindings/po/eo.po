@@ -52,7 +52,7 @@ msgstr "Ĉi tio permesas, ke klavbindaĵojn estu ŝargita el askia dosiero"
 msgid ""
 "Original version by Martin Sevior <msevior@physics.unimelb.edu.au>\n"
 "Refactored to support XML by Marc 'Foddex' Oude Kotte <foddex@foddex.net>"
-msgstr "Originala versio de Martin Sevior <msevior@physics.unimelb.edu.au>\nReverkita subteni XML-on de Marc 'Foddex' OUde Kotte <foddex@foddex.net>"
+msgstr "Originala versio de Martin Sevior <msevior@physics.unimelb.edu.au>\nReverkiĝis pro regado de XML-on fare de Marc 'Foddex' OUde Kotte <foddex@foddex.net>"
 
 #. print them
 #: ../xp/LoadBindings.cpp:346

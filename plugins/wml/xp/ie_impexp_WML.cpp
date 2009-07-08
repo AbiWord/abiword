@@ -20,6 +20,7 @@
 #include "ie_imp_WML.h"
 #include "ie_exp_WML.h"
 #include "xap_Module.h"
+#include "ap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_wml_register
@@ -41,6 +42,7 @@ static IE_Exp_WML_Sniffer * m_expSniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
+	AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-wml");
 
 	if (!m_impSniffer)
 	{
@@ -52,11 +54,11 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 		m_expSniffer = new IE_Exp_WML_Sniffer (PLUGIN_NAME);
 	}
 
-	mi->name = "WML Importer";
-	mi->desc = "Import/Export WML Documents";
+	mi->name = strings->getValue(_("WML Importer"));
+	mi->desc = strings->getValue(_("Import/Export WML Documents"));
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Abi the Ant";
-	mi->usage = "No Usage";
+	mi->usage = strings->getValue(_("No Usage"));
 
 	IE_Imp::registerImporter (m_impSniffer);
 	IE_Exp::registerExporter (m_expSniffer);

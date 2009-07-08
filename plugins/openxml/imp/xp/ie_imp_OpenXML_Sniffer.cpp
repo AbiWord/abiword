@@ -29,6 +29,8 @@
 #include <gsf/gsf-infile.h>
 #include <gsf/gsf-infile-zip.h>
 
+#include "ap_Strings.h"
+
 /**
  * Constructor
  * 
@@ -124,7 +126,10 @@ bool IE_Imp_OpenXML_Sniffer::getDlgLabels (const char ** szDesc,
 										const char ** szSuffixList,
 										IEFileType * ft)
 {
-	*szDesc = "Office Open XML (.docx, .dotx, .docm, .dotm)";
+	AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-openxml");
+
+	*szDesc = strings->getValue(_("Office Open XML (.docx, .dotx, .docm, .dotm)"))
+  ;
 	*szSuffixList = "*.docx; *.dotx; *.docm; *.dotm";
 	*ft = getFileType();
   

@@ -40,15 +40,14 @@
 #include "ev_Menu_Labels.h"
 #include "ev_EditMethod.h"
 #include "xap_Menu_Layouts.h"
-#include "ap_strings.h"
+#include "ap_Strings.h"
 
 #include <iostream>
 using namespace std;
 
 ABI_PLUGIN_DECLARE(Aiksaurus)
 
-AP_StringSet *strings = new AP_StringSet
-
+AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-aiksaurus");
 
 bool AiksaurusABI_invoke(AV_View* v, EV_EditMethodCallData *d);
 

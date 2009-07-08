@@ -1,5 +1,5 @@
 
-SUBDIRS = common imp exp
+SUBDIRS = common imp exp po
 
 if OPENXML_BUILTIN
 noinst_LTLIBRARIES = openxml.la

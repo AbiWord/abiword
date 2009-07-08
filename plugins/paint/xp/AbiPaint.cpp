@@ -55,6 +55,8 @@
 #include <io.h>
 #endif
 
+#include "ap_Strings.h"
+
 // use preference file instead of registry
 XAP_PrefsScheme * prefsScheme = NULL;
 /* our Plugin Scheme name in preference file,  e.g. "AbiGeneric" */
@@ -89,15 +91,15 @@ ABI_TOGGLEABLE_MENUITEM_PROTOTYPE(useBmp);
  */
 static AbiMenuOptions amo [] = 
 {
-  { ABI_PLUGIN_METHOD_STR(submenu_start), NULL,                           "AbiPaint",                   "Allows in place editing of image via external program.", EV_MLF_BeginSubMenu, true, false, false, NULL, NULL, true, false, 0 },
-  { ABI_PLUGIN_METHOD_STR(editImage),     ABI_PLUGIN_METHOD(editImage),   "(AbiPaint) &Edit Image",     "Opens the selected image for modification (in specified image editing program).", EV_MLF_Normal, false, true, false, ABI_GRAYABLE_MENUITEM(editImage), getEditImageMenuName, true, true, 0 },
+  { ABI_PLUGIN_METHOD_STR(submenu_start), NULL,                           _("AbiPaint"),                   _("Allows in place editing of image via external program."), EV_MLF_BeginSubMenu, true, false, false, NULL, NULL, true, false, 0 },
+  { ABI_PLUGIN_METHOD_STR(editImage),     ABI_PLUGIN_METHOD(editImage),   "(AbiPaint) &Edit Image",     _("Opens the selected image for modification (in specified image editing program)."), EV_MLF_Normal, false, true, false, ABI_GRAYABLE_MENUITEM(editImage), getEditImageMenuName, true, true, 0 },
 #ifdef ENABLE_BMP
-  { ABI_PLUGIN_METHOD_STR(saveAsBmp),     ABI_PLUGIN_METHOD(saveAsBmp),   "Save Image &As BMP",         "Saves the selected image as a BMP file.", EV_MLF_Normal, false, true, false, ABI_GRAYABLE_MENUITEM(editImage), NULL, true, true, 0 },
+  { ABI_PLUGIN_METHOD_STR(saveAsBmp),     ABI_PLUGIN_METHOD(saveAsBmp),   _("Save Image &As BMP"),         _("Saves the selected image as a BMP file."), EV_MLF_Normal, false, true, false, ABI_GRAYABLE_MENUITEM(editImage), NULL, true, true, 0 },
 #endif
   { ABI_PLUGIN_METHOD_STR(separator1),    NULL,                           NULL,                         NULL, EV_MLF_Separator, false, false, false, NULL, NULL, true, false, 0 },
   { ABI_PLUGIN_METHOD_STR(specify),       ABI_PLUGIN_METHOD(specify),     "&Specify Image Editor",      "Allows you to specify what image editing program to use, results stored in registry.", EV_MLF_Normal, false, true, false, NULL, NULL, true, false, 0 },
 #ifdef ENABLE_BMP
-  { ABI_PLUGIN_METHOD_STR(useBmp),        ABI_PLUGIN_METHOD(useBmp),      "Image Editor Requires &BMP", "Indicates the specified image editing program must use a BMP file instead of PNG (default is enabled).", EV_MLF_Normal, false, false, true, ABI_TOGGLEABLE_MENUITEM(useBmp), NULL, true, false, 0 },
+  { ABI_PLUGIN_METHOD_STR(useBmp),        ABI_PLUGIN_METHOD(useBmp),      _("Image Editor Requires &BMP"), _("Indicates the specified image editing program must use a BMP file instead of PNG (default is enabled)."), EV_MLF_Normal, false, false, true, ABI_TOGGLEABLE_MENUITEM(useBmp), NULL, true, false, 0 },
 #endif
   { ABI_PLUGIN_METHOD_STR(submenu_end),   NULL,                           "AbiPaint Submenu End",       NULL, EV_MLF_EndSubMenu, true, false, false, NULL, NULL, true, false, 0 },
 } ;
@@ -112,11 +114,11 @@ static AbiMenuOptions amo [] =
 
 static XAP_ModuleInfo AbiPaintModuleInfo = 
 {
-    "AbiPaint",											/* name */
-    "Allows editing an embedded image via external image editing program.",	/* desc */
+    _("AbiPaint"),											/* name */
+    _("Allows editing an embedded image via external image editing program."),	/* desc */
     ABI_PLUGIN_mkstr(ABI_PLUGIN_VERSION) " for AbiWord " ABI_BUILD_VERSION , 	/* version */
     "Abi the Ant",										/* author */
-    "Select Image 1st, then select the action from AbiPaint menu.  ;-)",	/* usage */
+    _("Select Image 1st, then select the action from AbiPaint menu.  ;-)"),	/* usage */
 } ;
     
 XAP_ModuleInfo * getModuleInfo(void)
@@ -126,6 +128,8 @@ XAP_ModuleInfo * getModuleInfo(void)
 
 bool doRegistration(void)
 {
+		AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-paint");
+
     // Get XAP_Prefs object for retrieving/storing image editor and related preferences
     UT_return_val_if_fail(prefs != NULL, false);
     if ((prefsScheme = prefs->getPluginScheme(szAbiPluginSchemeName)) == NULL)
@@ -140,8 +144,8 @@ bool doRegistration(void)
 	UT_String szProgramName;
 	bool bLeaveImageAsPNG;
 	getDefaultApp(szProgramName, bLeaveImageAsPNG);
-	prefsScheme->setValue(ABIPAINT_PREF_KEY_szProgramName.c_str(), szProgramName.c_str());
-	prefsScheme->setValueBool(ABIPAINT_PREF_KEY_bLeaveImageAsPNG, bLeaveImageAsPNG);
+	prefsScheme->setValue(strings->getValue(ABIPAINT_PREF_KEY_szProgramName.c_str()), szProgramName.c_str());
+	prefsScheme->setValueBool(strings->getValue(ABIPAINT_PREF_KEY_bLeaveImageAsPNG), bLeaveImageAsPNG);
     }
 
 
@@ -169,6 +173,8 @@ void doUnregistration(void)
 //
 static DECLARE_ABI_PLUGIN_METHOD(specify)
 {
+	AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-paint");
+
 	UT_UNUSED(v);
 	UT_UNUSED(d);
 	// get current value
@@ -182,8 +188,8 @@ static DECLARE_ABI_PLUGIN_METHOD(specify)
 		const char * szDescList[3];
 		const char * szSuffixList[3];
 		int ft[3];
-		szDescList[0] = szProgramsDesc;
-		szSuffixList[0] = szProgramSuffix;
+		szDescList[0] = strings->getValue(szProgramsDesc);
+		szSuffixList[0] = strings->getValue(szProgramSuffix);
 		szDescList[1] = szSuffixList[1] = NULL;
 		ft[0] = ft[1] = ft[2] = IEGFT_Unknown;
 
@@ -252,6 +258,8 @@ static DECLARE_ABI_PLUGIN_METHOD(useBmp)
 //
 static DECLARE_ABI_PLUGIN_METHOD(saveAsBmp)
 {
+	AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-paint");
+
 	// Get a frame (for error messages) and (to) get the current view that the user is in.
 	XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	FV_View* pView = static_cast<FV_View*>(pFrame->getCurrentView());
@@ -274,7 +282,7 @@ static DECLARE_ABI_PLUGIN_METHOD(saveAsBmp)
 	PT_DocPosition pos = pView->saveSelectedImage((const char *)szTmpPng.c_str());
 	if(pos == 0)
 	{
-		pFrame->showMessageBox("You must select an Image before trying to save it as a BMP file!", XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
+		pFrame->showMessageBox(strings->getValue(_("You must select an Image before trying to save it as a BMP file!")), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
 		return false;
 	}
 
@@ -291,7 +299,7 @@ static DECLARE_ABI_PLUGIN_METHOD(saveAsBmp)
 		{
 			// IE_ImpGraphicBMP_Sniffer tmp;
 			// tmp.getDlgLabels(szDescList, szSuffixList, ft);
-			szDescList[0] = "Windows Bitmap (*.bmp)";
+			szDescList[0] = strings->getValue(_("Windows Bitmap (*.bmp)"));
 			szSuffixList[0] = "*.bmp";
 			ft[0] = IEGFT_BMP;
 		}
@@ -308,7 +316,7 @@ static DECLARE_ABI_PLUGIN_METHOD(saveAsBmp)
 
 	if (convertPNG2BMP(szTmpPng.c_str(), szBMPFile.c_str()))
 	{
-		pFrame->showMessageBox("Unable to convert PNG image data to BMP.", XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
+		pFrame->showMessageBox(strings->getValue(_("Unable to convert PNG image data to BMP.")), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
 		remove(szTmpPng.c_str());
@@ -332,18 +340,20 @@ static DECLARE_ABI_PLUGIN_METHOD(saveAsBmp)
 // const char * getEditImageMenuName(XAP_Frame * pFrame, const EV_Menu_Label * pLabel, XAP_Menu_Id id)
 Defun_EV_GetMenuItemComputedLabel_Fn(getEditImageMenuName)
 {
+	AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-paint");
+
 	UT_UNUSED(pLabel);
 	UT_UNUSED(id);
 
 	UT_String szProgramName;
 	static UT_String MenuName;
-	MenuName = "&Edit Image";
+	MenuName = strings->getValue(_("&Edit Image"));
 
 	// give user some indication of program that will be executed
 	if (prefsScheme->getValue(ABIPAINT_PREF_KEY_szProgramName, szProgramName))
 	{
 		// we now have the full program name (with path & extension), so prune
-		MenuName += " via ";
+		MenuName += strings->getValue(_(" via "));
 		MenuName += UT_basename(szProgramName.c_str());
 
 		// limit menu length to max of 33 (31 characters + two dots ..)
@@ -369,6 +379,8 @@ Defun_EV_GetMenuItemComputedLabel_Fn(getEditImageMenuName)
 //
 static DECLARE_ABI_PLUGIN_METHOD(editImage)
 {
+	AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-paint");
+
 	UT_UNUSED(v);
     // Get the current view that the user is in.
     XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
@@ -415,7 +427,7 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 	{
 		remove(szTempFileName);
 		g_free (szTempFileName); szTempFileName = NULL;
-		pFrame->showMessageBox("You must select an Image before editing it", XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
+		pFrame->showMessageBox(strings->getValue(_("You must select an Image before editing it")), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
 		return false;
 	}
 
@@ -431,7 +443,7 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 
 		if (convertPNG2BMP(szTmpPng.c_str(), szTmp.c_str()))
 		{
-			pFrame->showMessageBox("Unable to convert PNG image data to BMP for external program use!", XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
+			pFrame->showMessageBox(strings->getValue(_("Unable to convert PNG image data to BMP for external program use!")), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
 			remove(szTempFileName);
@@ -469,7 +481,7 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 	if (!createChildProcess(imageApp.c_str(), szTmp.c_str(), &procInfo))
 
 	{
-		UT_String msg = "Unable to run program: ";  msg += imageApp + " " + szTmp;
+		UT_String msg = strings->getValue(_("Unable to run program: "));  msg += imageApp + " " + szTmp;
 		pFrame->showMessageBox(msg.c_str(), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
 
 		// failed to spawn stuff, so do some cleanup and return failure
@@ -506,7 +518,7 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 					// just make sure the program is still running, otherwise we could get stuck in a loop
 					if (!isProcessStillAlive(procInfo))
 					{
-						pFrame->showMessageBox("External image editor appears to have been terminated unexpectedly.", 
+						pFrame->showMessageBox(strings->getValue(_("External image editor appears to have been terminated unexpectedly.")), 
 								XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
 						//procInfo.hProcess = 0;
 						goto Cleanup;
@@ -532,7 +544,7 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 				{
 					if (convertBMP2PNG(szTmp.c_str(), szTmpPng.c_str()))
 					{
-						pFrame->showMessageBox("Unable to convert BMP image data back to PNG for AbiWord to import!", XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
+						pFrame->showMessageBox(strings->getValue(_("Unable to convert BMP image data back to PNG for AbiWord to import!")), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
 						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 						goto Cleanup;
 					}
@@ -543,7 +555,7 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 				if(errorCode)
 				{
 					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-					pFrame->showMessageBox("Error making pFG. Could not put image back into Abiword", XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
+					pFrame->showMessageBox(strings->getValue(_("Error making pFG. Could not put image back into Abiword")), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
 					goto Cleanup;
 				}
 
@@ -555,7 +567,7 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 				errorCode = pView->cmdInsertGraphic(pFG);
 				if (errorCode)
 				{
-					pFrame->showMessageBox("Could not put image back into Abiword", XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
+					pFrame->showMessageBox(strings->getValue(_("Could not put image back into Abiword")), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
 					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 					DELETEP(pFG);
 					goto Cleanup;

@@ -21,6 +21,8 @@ source code for any purpose, without fee.
 #include <stdio.h>
 #include "pngdib.h"
 
+#include "ap_Strings.h"
+
 
 // This is just a generic function to read a file into a memory block.
 int read_bmp_to_mem(const char *bmpfn,unsigned char **bmppp, DWORD *fsizep)
@@ -57,6 +59,8 @@ int read_bmp_to_mem(const char *bmpfn,unsigned char **bmppp, DWORD *fsizep)
 // returns 0 on success, nonzero of failure
 int convertBMP2PNG(const char *bmpfn, const char *pngfn)
 {
+	AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-paint");
+
 	PNGD_D2PINFO d2p;
 	int ret;
 	unsigned char *bmpp;
@@ -65,7 +69,7 @@ int convertBMP2PNG(const char *bmpfn, const char *pngfn)
 	char errmsg[100];
 
 	if(read_bmp_to_mem(bmpfn,&bmpp, &bmpsize)) {
-		printf("can't read BMP from file\n");
+		printf(strings->getValue(_("can't read BMP from file\n")));
 		return 1;
 	}
 
@@ -88,7 +92,7 @@ int convertBMP2PNG(const char *bmpfn, const char *pngfn)
 
 	lpbmfh= (LPBITMAPFILEHEADER)bmpp;
 	if(lpbmfh->bfOffBits >= bmpsize) {
-		printf("Corrupt BMP\n");
+		printf(strings->getValue(_("Corrupt BMP\n")));
 		return 1;
 	}
 
@@ -104,7 +108,7 @@ int convertBMP2PNG(const char *bmpfn, const char *pngfn)
 	ret=write_dib_to_png(&d2p);
 	// returns 0 on success
 	if(ret) {
-		printf("Error: %s (%d)\n",d2p.errmsg,ret);
+		printf(strings->getValue(_("Error: %s (%d)\n",d2p.errmsg,ret)));
 		return 1;
 	}
 

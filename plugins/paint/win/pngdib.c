@@ -27,6 +27,8 @@
 #include "png.h"
 #include "pngdib.h"
 
+#include "ap_Strings_wrapper.h"
+
 #if PNGDIB_SRC_VERSION != PNGDIB_HEADER_VERSION
 #error Wrong PNGDIB header file version
 #endif
@@ -55,17 +57,21 @@ struct errstruct {
 
 static void pngd_get_error_message(int rv,char *e)
 {
+	ap_strings_create("abiword-plugin-paint");
+
 	switch(rv) {
-	case PNGD_E_ERROR: strcpy(e,"Unknown error"); break;
-	case PNGD_E_VERSION: strcpy(e,"Incompatible library version"); break;
-	case PNGD_E_NOMEM: strcpy(e,"Unable to allocate memory"); break;
-	case PNGD_E_UNSUPP: strcpy(e,"Invalid or unsupported image"); break;
-	case PNGD_E_LIBPNG: strcpy(e,"libpng reported an error"); break;
-	case PNGD_E_BADBMP: strcpy(e,"Invalid BMP image"); break;
-	case PNGD_E_BADPNG: strcpy(e,"Invalid PNG image"); break;
-	case PNGD_E_READ: strcpy(e,"Unable to read file"); break;
-	case PNGD_E_WRITE: strcpy(e,"Unable to write file"); break;
+	case PNGD_E_ERROR: strcpy(e, ap_strings_get_value(_("Unknown error"))); break;
+	case PNGD_E_VERSION: strcpy(e, ap_strings_get_value(_("Incompatible library version"))); break;
+	case PNGD_E_NOMEM: strcpy(e,ap_strings_get_value(_("Unable to allocate memory"))); break;
+	case PNGD_E_UNSUPP: strcpy(e, ap_strings_get_value(_("Invalid or unsupported image"))); break;
+	case PNGD_E_LIBPNG: strcpy(e, ap_strings_get_value(_("libpng reported an error"))); break;
+	case PNGD_E_BADBMP: strcpy(e, ap_strings_get_value(_("Invalid BMP image"))); break;
+	case PNGD_E_BADPNG: strcpy(e, ap_strings_get_value(_("Invalid PNG image"))); break;
+	case PNGD_E_READ: strcpy(e, ap_strings_get_value(_("Unable to read file"))); break;
+	case PNGD_E_WRITE: strcpy(e, ap_strings_get_value(_("Unable to write file"))); break;
 	}
+
+  ap_strings_destroy();
 }
 
 static unsigned char* uncompress_dib(LPBITMAPINFO lpbmi1, int infosize, void *lpbits1)
@@ -687,6 +693,8 @@ int write_dib_to_png(PNGD_D2PINFO *d2pp)
 	char *errmsg;
 	char dummy_errmsg[MAX_ERRMSGLEN];
 
+	ap_strings_create("abiword-plugin-paint");
+
 	if(d2pp->structsize != sizeof(PNGD_D2PINFO)) return PNGD_E_VERSION;
 	                 
 	rv=PNGD_E_ERROR;  // this should always get changed before returning
@@ -705,7 +713,7 @@ int write_dib_to_png(PNGD_D2PINFO *d2pp)
 	headersize= d2pp->lpdib->biSize;
 
 	if(headersize<40 && headersize!=12) {
-		sprintf(errmsg,"Unexpected BMP header size (%d)",headersize);
+		sprintf(errmsg, ap_strings_get_value(_("Unexpected BMP header size (%d)")),headersize);
 		rv=PNGD_E_BADBMP; goto abort;
 	}
 
@@ -745,7 +753,7 @@ int write_dib_to_png(PNGD_D2PINFO *d2pp)
 
 	// sanity check
 	if(height<1 || height>1000000 || width<1 || width>1000000) {
-		sprintf(errmsg,"Unreasonable image dimensions (%dx%d)",width,height);
+		sprintf(errmsg, ap_strings_get_value(_("Unreasonable image dimensions (%dx%d)")),width,height);
 		rv=PNGD_E_BADBMP; goto abort;
 	}
 
@@ -755,7 +763,7 @@ int write_dib_to_png(PNGD_D2PINFO *d2pp)
 		if(dib_bpp!=1 && dib_bpp!=4 && dib_bpp!=8 && dib_bpp!=16
 			&& dib_bpp!=24 && dib_bpp!=32)
 		{
-			sprintf(errmsg,"Unsupported bit depth (%d)",dib_bpp);
+			sprintf(errmsg, ap_strings_get_value(_("Unsupported bit depth (%d)")),dib_bpp);
 			rv=PNGD_E_UNSUPP; goto abort;
 		}
 		break;
@@ -775,7 +783,7 @@ int write_dib_to_png(PNGD_D2PINFO *d2pp)
 		}
 		break;
 	default:
-		sprintf(errmsg,"Unsupported compression scheme");
+		sprintf(errmsg, ap_strings_get_value(_("Unsupported compression scheme")));
 		return PNGD_E_UNSUPP;
 	}
 
@@ -1032,6 +1040,8 @@ abort:
 	if(!strlen(errmsg)) {
 		pngd_get_error_message(rv,errmsg);
 	}
+
+  ap_strings_destroy();
 	return rv;
 }
 

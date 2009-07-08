@@ -22,7 +22,7 @@ msgstr "Importilo de .hwp-dosieroj de Hancom"
 
 #: ../xp/ie_imp_hancom.cpp:191
 msgid "Imports Hancom binary (OLE) documents"
-msgstr "Importas duumajn (BEO) dokumentojn de Hancom"
+msgstr "Importas duumajn (OBE) dokumentojn de Hancom"
 
 #: ../xp/ie_imp_hancom.cpp:194
 msgid "No Usage"

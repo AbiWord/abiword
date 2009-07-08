@@ -1,0 +1,37 @@
+# Esperanto translations for abiword package.
+# Copyright (C) 2009 THE abiword'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the abiword package.
+# Keith Bowes <keith@keith-desktop>, 2009.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: abiword 2.7.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-07-07 17:21-0400\n"
+"PO-Revision-Date: 2009-07-07 17:21-0400\n"
+"Last-Translator: Keith Bowes <keith@keith-desktop>\n"
+"Language-Team: Esperanto\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../xp/ie_impGraphic_WMF.cpp:93
+msgid "Windows Metafile (.wmf)"
+msgstr "Vindoza metadosiero (.wmf)"
+
+#: ../xp/ie_impGraphic_WMF.cpp:271
+msgid "Bad image size - but this error shouldn't occur...\n"
+msgstr "Misa bildgrandeco - sed ĉi tiu eraro ne okazu...\n"
+
+#: ../xp/ie_impGraphic_WMF.cpp:559
+msgid "WMF Import Plugin"
+msgstr "Kromprogramo por importado de WMF"
+
+#: ../xp/ie_impGraphic_WMF.cpp:560
+msgid "Import Windows Metafiles"
+msgstr "Importi vindozajn metadosierojn"
+
+#: ../xp/ie_impGraphic_WMF.cpp:563
+msgid "No Usage"
+msgstr "Neniu uzado"

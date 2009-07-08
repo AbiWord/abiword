@@ -1,5 +1,5 @@
 
-SUBDIRS = xp
+SUBDIRS = xp po
 
 if SDW_BUILTIN
 noinst_LTLIBRARIES = sdw.la

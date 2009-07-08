@@ -1,5 +1,5 @@
 
-SUBDIRS = xp
+SUBDIRS = xp po
 
 if WIKIPEDIA_BUILTIN
 noinst_LTLIBRARIES = wikipedia.la

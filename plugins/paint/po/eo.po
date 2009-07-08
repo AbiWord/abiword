@@ -1,0 +1,184 @@
+# Esperanto translations for abiword package.
+# Copyright (C) 2009 THE abiword'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the abiword package.
+# Keith Bowes <keith@keith-desktop>, 2009.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: abiword 2.7.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-07-07 14:20-0400\n"
+"PO-Revision-Date: 2009-07-07 13:06-0400\n"
+"Last-Translator: Keith Bowes <keith@keith-desktop>\n"
+"Language-Team: Esperanto\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../win/bmp2png.cpp:72
+msgid "can't read BMP from file\n"
+msgstr "ne povas legi BMP-bildon el dosiero\n"
+
+#: ../win/bmp2png.cpp:95
+msgid "Corrupt BMP\n"
+msgstr "Putra BMP\n"
+
+#: ../win/bmp2png.cpp:111
+#, c-format
+msgid "Error: %s (%d)\n"
+msgstr "Eraro: %s (%d)\n"
+
+#: ../win/pngdib.c:63
+msgid "Unknown error"
+msgstr "Nekonata eraro"
+
+#: ../win/pngdib.c:64
+msgid "Incompatible library version"
+msgstr "Nekongrua biblioteka eldono"
+
+#: ../win/pngdib.c:65
+msgid "Unable to allocate memory"
+msgstr "Malkapablas disponigi memoron"
+
+#: ../win/pngdib.c:66
+msgid "Invalid or unsupported image"
+msgstr "Ni ne regas tiun bildon"
+
+#: ../win/pngdib.c:67
+msgid "libpng reported an error"
+msgstr "libpng raportis eraron"
+
+#: ../win/pngdib.c:68
+msgid "Invalid BMP image"
+msgstr ""
+
+#: ../win/pngdib.c:69
+msgid "Invalid PNG image"
+msgstr "Nevalida PNG-bildo"
+
+#: ../win/pngdib.c:70
+msgid "Unable to read file"
+msgstr "Malkapablas legi dosieron"
+
+#: ../win/pngdib.c:71
+msgid "Unable to write file"
+msgstr "Malkapablas skribi dosieron"
+
+#: ../win/pngdib.c:716
+#, c-format
+msgid "Unexpected BMP header size (%d)"
+msgstr "Neanticipita kapgrandeco (%d) de BMP"
+
+#: ../win/pngdib.c:756
+#, c-format
+msgid "Unreasonable image dimensions (%dx%d)"
+msgstr "Neraciaj bildaj dimensioj (%dx%d)"
+
+#: ../win/pngdib.c:766
+#, c-format
+msgid "Unsupported bit depth (%d)"
+msgstr "Ni ne komprenas tiun bit-profundecon (%d)"
+
+#: ../win/pngdib.c:786
+msgid "Unsupported compression scheme"
+msgstr "Ni ne regas tiun kunpreman aranĝon"
+
+#: ../xp/AbiPaint.cpp:94 ../xp/AbiPaint.cpp:117
+msgid "AbiPaint"
+msgstr ""
+
+#: ../xp/AbiPaint.cpp:94
+msgid "Allows in place editing of image via external program."
+msgstr "Permesa aktuala redaktado de bildo per ekstera programo."
+
+#: ../xp/AbiPaint.cpp:95
+msgid ""
+"Opens the selected image for modification (in specified image editing "
+"program)."
+msgstr ""
+"Malfermas la elektita bildo por modifo (en specifa bildredakta prgoramo)."
+
+#: ../xp/AbiPaint.cpp:97
+msgid "Save Image &As BMP"
+msgstr "Konservi &Kiel BMP-bildon"
+
+#: ../xp/AbiPaint.cpp:97
+msgid "Saves the selected image as a BMP file."
+msgstr "Konservas la elektitan bildon kiel BMP-dosieron."
+
+#: ../xp/AbiPaint.cpp:102
+msgid "Image Editor Requires &BMP"
+msgstr "Bildredaktilo bezonas &BMP"
+
+#: ../xp/AbiPaint.cpp:102
+msgid ""
+"Indicates the specified image editing program must use a BMP file instead of "
+"PNG (default is enabled)."
+msgstr ""
+"Indikas, ke la specifa bildredakta programa devas uzi anstataŭ PNG BMP-"
+"dosieron (aŭtomate ebligita)."
+
+#. name
+#: ../xp/AbiPaint.cpp:118
+msgid "Allows editing an embedded image via external image editing program."
+msgstr "Permesas redakti enmetitan bildon per ekstera bildredakta programo."
+
+#. desc
+#. version
+#. author
+#: ../xp/AbiPaint.cpp:121
+msgid "Select Image 1st, then select the action from AbiPaint menu.  ;-)"
+msgstr "Unue elekti bildon, do elekti la agon el la menuo AbiPaint."
+
+#: ../xp/AbiPaint.cpp:285
+msgid "You must select an Image before trying to save it as a BMP file!"
+msgstr ""
+"Vi devas elekti bildon antaŭ ol vi provas konsevri kiel BMP-dosieron ĝin."
+
+#. IE_ImpGraphicBMP_Sniffer tmp;
+#. tmp.getDlgLabels(szDescList, szSuffixList, ft);
+#: ../xp/AbiPaint.cpp:302
+msgid "Windows Bitmap (*.bmp)"
+msgstr "Vindoza rastrumo (*.bmp)"
+
+#: ../xp/AbiPaint.cpp:319
+msgid "Unable to convert PNG image data to BMP."
+msgstr "Malkapablas konverti al BMP PNG-bildan datumon."
+
+#: ../xp/AbiPaint.cpp:350
+msgid "&Edit Image"
+msgstr "&Redakti bildon"
+
+#. we now have the full program name (with path & extension), so prune
+#: ../xp/AbiPaint.cpp:356
+msgid " via "
+msgstr " per "
+
+#: ../xp/AbiPaint.cpp:430
+msgid "You must select an Image before editing it"
+msgstr "Vi devas elekti bildon antaŭ ol redakti ĝin"
+
+#: ../xp/AbiPaint.cpp:446
+msgid "Unable to convert PNG image data to BMP for external program use!"
+msgstr "Malkapablas konverti al BMP PNG-bildon por uzo de ekstera programo."
+
+#: ../xp/AbiPaint.cpp:484
+msgid "Unable to run program: "
+msgstr "Malkapablas plenumi programon: "
+
+#: ../xp/AbiPaint.cpp:521
+msgid "External image editor appears to have been terminated unexpectedly."
+msgstr "Ekstera bildredaktila ŝajne estis neatendite finigita"
+
+#: ../xp/AbiPaint.cpp:547
+msgid "Unable to convert BMP image data back to PNG for AbiWord to import!"
+msgstr "Malkapablas rekonverti al PNG BMP-bildon por AbiWord importi"
+
+#: ../xp/AbiPaint.cpp:558
+msgid "Error making pFG. Could not put image back into Abiword"
+msgstr "Ne povis remeti bildon Abiworden"
+
+#: ../xp/AbiPaint.cpp:570
+msgid "Could not put image back into Abiword"
+msgstr "Ne povis remeti bildon AbiWorden"

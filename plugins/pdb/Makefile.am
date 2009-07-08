@@ -1,5 +1,5 @@
 
-SUBDIRS = xp
+SUBDIRS = xp po
 
 if PDB_BUILTIN
 noinst_LTLIBRARIES = pdb.la
