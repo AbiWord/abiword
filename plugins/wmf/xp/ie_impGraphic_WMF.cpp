@@ -550,6 +550,7 @@ static IE_ImpGraphicWMF_Sniffer * m_impSniffer = 0;
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
+  strings = new AP_StringSet(NULL, "abiword-plugin-wmf");
 
 	if (!m_impSniffer)
 	{
