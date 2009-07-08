@@ -44,9 +44,9 @@ public:
 	virtual ~GR_CocoaImage();
 
 	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
-	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, const std::string & mimetype, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
-    virtual GR_Image *  createImageSegment(GR_Graphics * pG, const UT_Rect & rec);
+	virtual GR_Image *  createImageSegment(GR_Graphics * pG, const UT_Rect & rec);
 	virtual bool hasAlpha (void) const;
 	virtual bool isTransparentAt(UT_sint32 x, UT_sint32 y);
 

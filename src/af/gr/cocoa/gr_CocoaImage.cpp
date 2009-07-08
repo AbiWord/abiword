@@ -90,7 +90,7 @@ bool	GR_CocoaImage::hasAlpha(void) const
 }
 
 
-bool	GR_CocoaImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+bool	GR_CocoaImage::convertFromBuffer(const UT_ByteBuf* pBB, const std::string & /*mimetype*/, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
 	const char *buffer = (const char *) pBB->getPointer(0);
 	UT_uint32 buflen = pBB->getLength();
