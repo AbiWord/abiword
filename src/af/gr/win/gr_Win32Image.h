@@ -33,7 +33,7 @@ public:
 	virtual ~GR_Win32Image();
 
 	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
-	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, const std::string& mimetype, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 	
 	void				setDIB(BITMAPINFO *pDIB) { m_pDIB = pDIB; if (m_pDIB) setDisplaySize(m_pDIB->bmiHeader.biWidth,m_pDIB->bmiHeader.biHeight); }
 	inline BITMAPINFO*	getDIB(void) const { return m_pDIB; }

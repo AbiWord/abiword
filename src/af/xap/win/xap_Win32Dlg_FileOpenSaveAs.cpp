@@ -722,7 +722,7 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 	scaled_height = (int) (scale_factor * iImageHeight);
 
 	GR_Win32Image* pImage = new GR_Win32Image(NULL);
-	pImage->convertFromBuffer(pfg->getBuffer(), scaled_width, scaled_height);
+	pImage->convertFromBuffer(pfg->getBuffer(), pfg->getMimeType(), scaled_width, scaled_height);
 
 	PAINTSTRUCT ps;
 	HDC hdc = BeginPaint(hThumbnail, &ps);

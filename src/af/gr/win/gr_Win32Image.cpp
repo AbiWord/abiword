@@ -90,7 +90,7 @@ bool	GR_Win32Image::hasAlpha(void) const
 }
 
 
-bool GR_Win32Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+bool GR_Win32Image::convertFromBuffer(const UT_ByteBuf* pBB, const std::string& mimetype, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
 	png_structp png_ptr;
 	png_infop info_ptr;
