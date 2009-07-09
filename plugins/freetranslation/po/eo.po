@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: abiword 2.7.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-07-02 14:05-0400\n"
+"POT-Creation-Date: 2009-07-08 21:29-0400\n"
 "PO-Revision-Date: 2009-07-02 12:48-0400\n"
 "Last-Translator: Keith Bowes <keith@keith-desktop>\n"
 "Language-Team: Esperanto\n"
@@ -15,6 +15,20 @@ msgstr ""
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#.
+#. Put it in the context menu.
+#.
+#: ../xp/AbiFreeTranslation.cpp:338
+msgid "Bullets and &Numbering"
+msgstr "&Numerado kaj bulado"
+
+#.
+#. Also put it under word Wount in the main menu,
+#.
+#: ../xp/AbiFreeTranslation.cpp:344
+msgid "&Word Count"
+msgstr "&Nombri vortojn"
 
 #: ../xp/AbiFreeTranslation.cpp:382
 msgid "FreeTranslation plugin"

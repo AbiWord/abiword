@@ -29,14 +29,14 @@ msgstr "Malfermas la retan tradukilon Babelfish"
 #.
 #: ../xp/AbiBabelfish.cpp:294
 msgid "Bullets and &Numbering"
-msgstr "Buloj kaj &Nombrado"
+msgstr "&Numerado kaj bulado"
 
 #.
 #. Also put it under word Wount in the main menu,
 #.
 #: ../xp/AbiBabelfish.cpp:300
 msgid "&Word Count"
-msgstr "&Vortnombro"
+msgstr "&Nombri vortojn"
 
 #: ../xp/AbiBabelfish.cpp:364
 msgid "BabelFish plugin"

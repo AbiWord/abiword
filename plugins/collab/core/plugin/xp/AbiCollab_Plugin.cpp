@@ -166,8 +166,8 @@ static const char * szCollaborationShowAuthorsTip = strings->getValue(_("Show wh
 
 #if defined(DEBUG)
 #if !defined(ABICOLLAB_RECORD_ALWAYS)
-static const char * szCollaborationRecord = "Record this Session";
-static const char * szCollaborationRecordTip = "Record a session to disk, for debugging purposes";
+static const char * szCollaborationRecord = strings->getValue(_("Record this Session"));
+static const char * szCollaborationRecordTip = strings->getValue(_("Record a session to disk, for debugging purposes"));
 #endif
 static const char * szCollaborationViewRecord = strings->getValue(_("View Session"));
 static const char * szCollaborationViewRecordTip = strings->getValue(_("Load a recorded session from disk and show the packets"));

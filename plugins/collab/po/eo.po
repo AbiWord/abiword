@@ -301,7 +301,7 @@ msgstr "&Kunlabori"
 
 #: ../core/plugin/xp/AbiCollab_Plugin.cpp:153
 msgid "Collaborate over the internet or local network"
-msgstr "Kunlabori per la Interreto aŭ loka reta"
+msgstr "Kunlabori per la Interreto aŭ loka reto"
 
 #: ../core/plugin/xp/AbiCollab_Plugin.cpp:155
 msgid "Share Document"
@@ -365,11 +365,11 @@ msgstr "%06u] %s pakaĵo "
 
 #: ../core/session/xp/DiskSessionRecorder.cpp:192
 msgid "INCOMING"
-msgstr "ENVENA"
+msgstr "RICEVOTA"
 
 #: ../core/session/xp/DiskSessionRecorder.cpp:192
 msgid "OUTGOING"
-msgstr "ELIRA"
+msgstr "SENDOTA"
 
 #: ../core/session/xp/DiskSessionRecorder.cpp:193
 msgid "from"

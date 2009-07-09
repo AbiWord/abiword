@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: abiword 2.7.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-07-02 21:42-0400\n"
+"POT-Creation-Date: 2009-07-08 21:32-0400\n"
 "PO-Revision-Date: 2009-07-02 21:42-0400\n"
 "Last-Translator: Keith Bowes <keith@keith-desktop>\n"
 "Language-Team: Esperanto\n"
@@ -25,15 +25,22 @@ msgid "Search the web with Google"
 msgstr "Serĉi la TTT-on per Guglo"
 
 #.
+#. Put it in the context menu.
+#.
+#: ../xp/AbiGoogle.cpp:171
+msgid "Bullets and &Numbering"
+msgstr "&Numerado kaj bulado"
+
+#.
 #. Also put it under word Wount in the main menu,
 #.
 #: ../xp/AbiGoogle.cpp:177
 msgid "&Word Count"
-msgstr "&Vortnombro"
+msgstr "&Nombri vortojn"
 
 #: ../xp/AbiGoogle.cpp:215
 msgid "Google plugin"
-msgstr "Kromprogramo"
+msgstr "Kromprogramo Guglo"
 
 #: ../xp/AbiGoogle.cpp:219
 msgid "No Usage"

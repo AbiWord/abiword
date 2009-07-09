@@ -124,12 +124,12 @@ AbiGimp_addToMenus()
 //
 // Put it in the context menu.
 //
-    XAP_Menu_Id newID = pFact->addNewMenuAfter("ContextImageT",NULL,"&Save Image As",EV_MLF_Normal);
+    XAP_Menu_Id newID = pFact->addNewMenuAfter("ContextImageT",NULL, strings->getValue(_("&Save Image As")), EV_MLF_Normal);
     pFact->addNewLabel(NULL,newID,AbiGimp_MenuLabel, AbiGimp_MenuTooltip);
 
 // Put it after Word Count in the Main menu
 
-    pFact->addNewMenuAfter("Main",NULL,"&Word Count",EV_MLF_Normal,newID);
+    pFact->addNewMenuAfter("Main",NULL, strings->getValue(_("Bullets and &Numbering")),EV_MLF_Normal,newID);
 //
 // Also put it under word Count in the main menu,
 //

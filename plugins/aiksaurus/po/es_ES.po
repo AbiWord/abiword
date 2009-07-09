@@ -29,14 +29,14 @@ msgstr "Abre el tesauro y encuentra los sinónimos."
 #.
 #: ../xp/AiksaurusABI.cpp:106
 msgid "Bullets and &Numbering"
-msgstr "Puntos y &Numeración"
+msgstr "Puntos y &numeración"
 
 #.
 #. Also put it under word Wount in the main menu,
 #.
 #: ../xp/AiksaurusABI.cpp:111
 msgid "&Word Count"
-msgstr "Número de &Palabras"
+msgstr "Co&ntar palabras"
 
 #: ../xp/AiksaurusABI.cpp:175
 msgid "Aiksaurus"

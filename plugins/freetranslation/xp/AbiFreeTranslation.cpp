@@ -335,13 +335,13 @@ static void FreeTranslation_addToMenus()
 	// 
 	// Put it in the context menu.
 	// 
-	XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText", NULL, "Bullets and &Numbering", EV_MLF_Normal);
+	XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText", NULL, strings->getValue(_("Bullets and &Numbering")), EV_MLF_Normal);
 	pFact->addNewLabel(NULL, newID, FreeTranslation_MenuLabel, FreeTranslation_MenuTooltip);
 
 	// 
 	// Also put it under word Wount in the main menu,
 	// 
-	pFact->addNewMenuAfter("Main", NULL, "&Word Count", EV_MLF_Normal, newID);
+	pFact->addNewMenuAfter("Main", NULL, strings->getValue(_("&Word Count")), EV_MLF_Normal, newID);
 
 	// Create the Action that will be called.
 	EV_Menu_Action * myAction = new EV_Menu_Action(

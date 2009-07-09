@@ -46,7 +46,7 @@ ABI_PLUGIN_DECLARE ("Wikipedia")
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
 
-AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-wikipdia");
+AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-wikipedia");
 
 //
 // _ucsToAscii
@@ -196,7 +196,7 @@ Wikipedia_addToMenus()
   //
   // Put it in the context menu.
   //
-  XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText",NULL,"Bullets and &Numbering",EV_MLF_Normal);
+  XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText",NULL, strings->getValue(_("Bullets and &Numbering")),EV_MLF_Normal);
   pFact->addNewLabel(NULL,newID,Wikipedia_MenuLabel, Wikipedia_MenuTooltip);
 
   //

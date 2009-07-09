@@ -168,7 +168,7 @@ Google_addToMenus()
   //
   // Put it in the context menu.
   //
-  XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText",NULL,"Bullets and &Numbering",EV_MLF_Normal);
+  XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText",NULL, strings->getValue(_("Bullets and &Numbering")),EV_MLF_Normal);
   pFact->addNewLabel(NULL,newID,Google_MenuLabel, Google_MenuTooltip);
 
   //

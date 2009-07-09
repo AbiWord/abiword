@@ -29,14 +29,14 @@ msgstr "Malfermas la tezaŭron kaj trovas samsencaĵojn."
 #.
 #: ../xp/AiksaurusABI.cpp:106
 msgid "Bullets and &Numbering"
-msgstr "Buloj kaj &Nombrado"
+msgstr "&Numerado kaj bulado"
 
 #.
 #. Also put it under word Wount in the main menu,
 #.
 #: ../xp/AiksaurusABI.cpp:111
 msgid "&Word Count"
-msgstr "Nombro da &Vortoj"
+msgstr "&Nombri vortojn"
 
 #: ../xp/AiksaurusABI.cpp:175
 msgid "Aiksaurus"

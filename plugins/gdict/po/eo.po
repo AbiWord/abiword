@@ -34,14 +34,14 @@ msgstr "Malfermas la vortaron"
 #.
 #: ../unix/GdictAbiPlugin.cpp:336
 msgid "Bullets and &Numbering"
-msgstr "Buloj kaj &Nombrado"
+msgstr "&Numerado kaj bulado"
 
 #.
 #. Also put it under word Wount in the main menu,
 #.
 #: ../unix/GdictAbiPlugin.cpp:342
 msgid "&Word Count"
-msgstr "&Vortnombro"
+msgstr "&Nombri vortojn"
 
 #: ../unix/GdictAbiPlugin.cpp:380
 msgid "GDict plugin"

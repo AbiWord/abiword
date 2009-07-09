@@ -296,6 +296,7 @@ GDict_addToMenus()
 {
   // First we need to get a pointer to the application itself.
   XAP_App *pApp = XAP_App::getApp();
+  const XAP_StringSet *pSS = pApp->getStringSet();
     
   // Create an EditMethod that will link our method's name with
   // it's callback function.  This is used to link the name to 
@@ -333,13 +334,13 @@ GDict_addToMenus()
   //
   // Put it in the context menu.
   //
-  XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText",NULL, strings->getValue(_("Bullets and &Numbering")),EV_MLF_Normal);
-  pFact->addNewLabel(NULL,newID,GDict_MenuLabel, GDict_MenuTooltip);
+  XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText",NULL, AP_STRING_ID_MENU_LABEL_FMT_BULLETS,EV_MLF_Normal);
+  //pFact->addNewLabel(NULL,newID,GDict_MenuLabel, GDict_MenuTooltip);
 
   //
   // Also put it under word Wount in the main menu,
   //
-  pFact->addNewMenuAfter("Main",NULL,strings->getValue(_("&Word Count")),EV_MLF_Normal,newID);
+  pFact->addNewMenuAfter("Main",NULL, AP_STRING_ID_MENU_LABEL_TOOLS_WORDCOUNT,EV_MLF_Normal,newID);
   
   // Create the Action that will be called.
   EV_Menu_Action* myAction = new EV_Menu_Action(

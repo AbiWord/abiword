@@ -2790,7 +2790,7 @@ msgstr ""
 
 #: ../src/wp/ap/xp/ap_String_Id.h:853
 msgid "&Save Image As"
-msgstr "&Konservu bildon kiel"
+msgstr "&Konservi bildon kiel"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:854
 msgid "Op&en Copy"
@@ -3337,7 +3337,7 @@ msgstr ""
 
 #: ../src/wp/ap/xp/ap_String_Id.h:996
 msgid "&Word Count"
-msgstr "&Komputu vortojn"
+msgstr "&Nombri vortojn"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:997
 msgid "Pr&eferences"
