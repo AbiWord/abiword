@@ -300,7 +300,7 @@ AC_ARG_ENABLE([clipart],
 ])
 
 AC_ARG_ENABLE([templates], 
-	[AS_HELP_STRING([--enable-templates], [Install templates])], 
+	[AS_HELP_STRING([--enable-templates], [Install additional templates])], 
 [
 	abi_cv_templates="$enableval"
 ], [

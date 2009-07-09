@@ -1,17 +1,6 @@
 
 templatesdir = $(ABIWORD_DATADIR)/templates
 templates_DATA = \
-	A4.awt \
-	Business-Letter.awt \
-	Business-Report.awt \
-	Employee-Directory.awt \
-	Fax-Coversheet.awt \
-	Friendly-Letter.awt \
-	Memo.awt \
-	Press-Release.awt \
-	Resume.awt \
-	Two-Columns.awt \
-	US-Letter.awt \
 	normal.awt \
 	normal.awt-am_ET \
 	normal.awt-ar \
@@ -73,6 +62,21 @@ templates_DATA = \
 	normal.awt-yi \
 	normal.awt-zh_CN \
 	normal.awt-zh_TW
+
+if ENABLE_TEMPLATES
+templates_DATA += \
+	A4.awt \
+	Business-Letter.awt \
+	Business-Report.awt \
+	Employee-Directory.awt \
+	Fax-Coversheet.awt \
+	Friendly-Letter.awt \
+	Memo.awt \
+	Press-Release.awt \
+	Resume.awt \
+	Two-Columns.awt \
+	US-Letter.awt
+endif
 
 EXTRA_DIST = $(templates_DATA)
 
