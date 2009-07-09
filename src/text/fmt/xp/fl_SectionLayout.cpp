@@ -2686,14 +2686,6 @@ void fl_DocSectionLayout::collapse(void)
 	pCol2 = m_pFirstColumn;
 	while (pCol2)
 	{
-		if(pCol2->countCons() > 0)
-		{
-			for(i = 0; i < pCol2->countCons(); i++)
-			{
-				UT_DEBUGMSG(("Still have a pointer to a container %p -removing pointer \n",pCol2->getNthCon(i)));
-				pCol2->justRemoveNthCon(i);
-			}
-		}
 		fp_Column* pNext = static_cast<fp_Column *>(pCol2->getNext());
 		delete pCol2;
 		pCol2 = pNext;	
