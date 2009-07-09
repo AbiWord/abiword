@@ -2602,8 +2602,26 @@ void fp_CellContainer::sizeRequest(fp_Requisition * pRequest)
 		width = pCol->getWidth();
 	}
 
-	m_MyRequest.width = width;
-	m_MyRequest.height = height;
+	/* 
+	 * To make sure that cells include their borders as well, get the
+	 * thickness of each of the cell borders and add them
+	 * appropriately to the requisition.
+	 */
+	
+	//Lookup table properties to find line thickness.
+	fl_ContainerLayout * pLayout = getSectionLayout()->myContainingLayout ();
+	UT_return_if_fail(pLayout->getContainerType () == FL_CONTAINER_TABLE);
+	
+	fl_TableLayout * pTableLayout = static_cast<fl_TableLayout *>(pLayout);
+	
+	UT_uint32 bottomLineThickness = getBottomStyle (pTableLayout).m_thickness;
+	UT_uint32 leftLineThickness = getLeftStyle (pTableLayout).m_thickness;
+	UT_uint32 rightLineThickness = getRightStyle (pTableLayout).m_thickness;
+	UT_uint32 topLineThickness = getTopStyle (pTableLayout).m_thickness;
+	
+	m_MyRequest.width = width + leftLineThickness + rightLineThickness;
+	m_MyRequest.height = height + bottomLineThickness + topLineThickness;
+	   
 	xxx_UT_DEBUGMSG(("Size Request: Cell Total height  %d width %d \n",height,width));
 }
 
