@@ -1406,42 +1406,69 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 		PP_PropertyMap::Line clineLeft   = getLeftStyle   (pTableLayout);
 		PP_PropertyMap::Line clineRight  = getRightStyle  (pTableLayout);
 		PP_PropertyMap::Line clineTop    = getTopStyle    (pTableLayout);
+		
 		UT_RGBColor white(255,255,255);
+
+		/*
+		 * Co-ordinates are adjusted below so that the line is drawn
+		 * within the cell, rather than outside it. It is based on the
+		 * assumption that the line will be drawn between two points
+		 * such that the thickness of the drawing is equally
+		 * distributed on either side of the line
+		 **/
+
 		if (m_bDrawLeft)
 		{
+			UT_sint32 thickness = lineLeft.m_thickness/2;
+			//printf("ADITYA: drawing left! ");
 			if(bDoClear)
 			{
 				clineLeft.m_color = white;
-				_drawLine (clineLeft, iLeft, iTop, iLeft,  iBot,pG);
+				_drawLine (clineLeft, iLeft + thickness, iTop, 
+						   iLeft + thickness, iBot, pG);
 			}
-			_drawLine(lineLeft, iLeft, iTop, iLeft, iBot,pG);
+			_drawLine(lineLeft, iLeft + thickness, iTop, 
+					  iLeft + thickness, iBot, pG);
 		}
 		if(m_bDrawTop || bDrawTop)
 		{
+			UT_sint32 thickness = lineTop.m_thickness/2;
+			//printf("drawing top! ");
 			if(bDoClear)
 			{
 				clineTop.m_color = white;
-				_drawLine(clineTop, iLeft, iTop, iRight, iTop,pG);
+				_drawLine(clineTop, iLeft, iTop + thickness, 
+						  iRight, iTop + thickness, pG);
 			}
-			_drawLine(lineTop, iLeft, iTop, iRight, iTop,pG);
+			_drawLine(lineTop,  iLeft, iTop + thickness, 
+					  iRight, iTop + thickness, pG);
 		}
 		if(m_bDrawRight)
 		{
+			UT_sint32 thickness = lineRight.m_thickness/2;
+			//printf("drawing right! ");
 			if(bDoClear)
 			{
 				clineRight.m_color = white;
-				_drawLine(clineRight, iRight, iTop, iRight, iBot,pG);
+				_drawLine(clineRight, iRight - thickness, iTop, 
+						  iRight - thickness, iBot, pG);
 			}
 			_drawLine(lineRight, iRight, iTop, iRight, iBot,pG);
+			_drawLine(lineRight, iRight - thickness, iTop, 
+					  iRight - thickness, iBot, pG);
 		}
 		if(m_bDrawBot || bDrawBot)
 		{
+			UT_sint32 thickness = lineBottom.m_thickness/2;
+			//printf("drawing bot!\n");
 			if(bDoClear)
 			{
 				clineBottom.m_color = white;
-				_drawLine(clineBottom, iLeft, iBot, iRight, iBot,pG);
+				_drawLine(clineBottom, iLeft, iBot - thickness,
+						  iRight, iBot - thickness, pG);
 			}
-			_drawLine(lineBottom, iLeft, iBot, iRight, iBot,pG);
+			_drawLine(lineBottom, iLeft, iBot - thickness,
+					  iRight, iBot - thickness, pG);
 		}
 	}
 }
@@ -4884,7 +4911,6 @@ void fp_TableContainer::_size_allocate_pass_3(void)
 		getNthRow(row)->y = getNthRow(row-1)->y + getNthRow(row-1)->spacing + getNthRow(row)->allocation;
 	
 	fp_CellContainer* child = static_cast<fp_CellContainer *>(getNthCon(0));
-	double dBorder = static_cast<double>(m_iBorderWidth);
 	const UT_GenericVector<fl_ColProps*> * pVecColProps = pTL->getVecColProps();
 	const UT_GenericVector<fl_RowProps*> * pVecRowProps = pTL->getVecRowProps();
 
