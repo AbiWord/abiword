@@ -58,6 +58,51 @@ UT_VersionInfo GR_CairoGraphics::s_Version;
 int            GR_CairoGraphics::s_iMaxScript = 0;
 
 
+class GR_CairoPatternImpl
+	: public UT_ColorPatImpl
+{
+public:
+	GR_CairoPatternImpl(const char * fileName);
+	// takes ownership of the surface.
+	GR_CairoPatternImpl(cairo_surface_t * surf);
+	GR_CairoPatternImpl(const GR_CairoPatternImpl &);
+	virtual ~GR_CairoPatternImpl();
+    virtual UT_ColorPatImpl * clone() const;
+	cairo_surface_t *getSurface() const 
+		{
+			return m_surf;
+		}
+private:
+	cairo_surface_t *m_surf;
+};
+
+GR_CairoPatternImpl::GR_CairoPatternImpl(const char * fileName)
+	: m_surf(cairo_image_surface_create_from_png(fileName))
+{
+}
+
+GR_CairoPatternImpl::GR_CairoPatternImpl(cairo_surface_t * surf)
+	: m_surf(surf)
+{
+}
+
+GR_CairoPatternImpl::GR_CairoPatternImpl(const GR_CairoPatternImpl & p)
+	: m_surf(cairo_surface_reference(p.m_surf))
+{
+}
+
+GR_CairoPatternImpl::~GR_CairoPatternImpl()
+{
+	cairo_surface_destroy(m_surf);
+}
+
+
+UT_ColorPatImpl * GR_CairoPatternImpl::clone() const
+{
+	return new GR_CairoPatternImpl(*this);
+}
+
+
 static void _pango_item_list_free(GList * items) 
 {
 	GList * l;
@@ -304,13 +349,15 @@ void GR_CairoGraphics::_initPango()
 {
 	m_pFontMap =  pango_cairo_font_map_new();
 	pango_cairo_font_map_set_resolution(PANGO_CAIRO_FONT_MAP(m_pFontMap), m_iDeviceResolution);	
-	m_pContext = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(m_pFontMap));
+	m_pContext = pango_font_map_create_context(m_pFontMap);
 
 	m_pLayoutFontMap = pango_cairo_font_map_new();
 	pango_cairo_font_map_set_resolution(PANGO_CAIRO_FONT_MAP(m_pLayoutFontMap), getResolution());	
-	m_pLayoutContext = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(m_pLayoutFontMap));
+	m_pLayoutContext = pango_font_map_create_context(m_pLayoutFontMap);
 
-	UT_DEBUGMSG(("Created LayoutFontMap %p Layout Context %p \n", m_pLayoutFontMap,	m_pLayoutContext));
+	UT_DEBUGMSG(("Created LayoutFontMap %p Layout Context %p resolution %d device resolution %d \n", 
+				 m_pLayoutFontMap,	m_pLayoutContext, getResolution(),
+				 m_iDeviceResolution));
 
 }
 
@@ -1282,13 +1329,27 @@ void GR_CairoGraphics::renderChars(GR_RenderInfo & ri)
 }
 
 
+void GR_CairoGraphics::_setSource(cairo_t *cr, const UT_RGBColor &clr)
+{
+	const GR_CairoPatternImpl * pat 
+		= dynamic_cast<const GR_CairoPatternImpl *>(clr.pattern());
+	if(pat) {
+		cairo_set_source_surface(cr, pat->getSurface(), 0., 0.);
+	}
+	else {
+		cairo_set_source_rgb(cr, clr.m_red/255., clr.m_grn/255., clr.m_blu/255.);
+	}
+}
+
+
 void GR_CairoGraphics::_setProps()
 {
 	UT_ASSERT(m_cr);
 
 	if(m_curColorDirty) 
 	{
-		cairo_set_source_rgb(m_cr, m_curColor.m_red/255., m_curColor.m_grn/255., m_curColor.m_blu/255.);
+		_setSource(m_cr, m_curColor);
+
 		m_curColorDirty = false;
 	}
 	if(m_clipRectDirty)
@@ -2910,7 +2971,7 @@ void GR_CairoGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 	_setProps();
 	cairo_save(m_cr);
 
-	cairo_set_source_rgb(m_cr, c.m_red/255., c.m_grn/255., c.m_blu/255.);
+	_setSource(m_cr, c);
 	cairo_rectangle(m_cr, _tdudX(x), _tdudY(y), _tduR(w), _tduR(h));
 	cairo_fill(m_cr);
 
@@ -3008,7 +3069,7 @@ void GR_CairoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint3
 	UT_ASSERT(m_bHave3DColors && c < COUNT_3D_COLORS);
 	cairo_save (m_cr);
 
-	cairo_set_source_rgb(m_cr, m_3dColors[c].m_red/255., m_3dColors[c].m_grn/255., m_3dColors[c].m_blu/255.);
+	_setSource(m_cr, m_3dColors[c]);
 	cairo_rectangle(m_cr, tdu(x), tdu(y), tdu(w), tdu(h));
 	cairo_fill(m_cr);
 
@@ -3034,7 +3095,7 @@ void GR_CairoGraphics::polygon(UT_RGBColor& c, UT_Point *pts,
 	for (; i < nPoints; i++) {
 		cairo_line_to(m_cr, _tdudX(pts[i].x), _tdudY(pts[i].y));
 	}
-	cairo_set_source_rgb(m_cr, c.m_red/255., c.m_grn/255., c.m_blu/255.);
+	_setSource(m_cr, c);
 	cairo_fill(m_cr);	
 
 	cairo_restore(m_cr);
@@ -3180,6 +3241,8 @@ void GR_PangoFont::reloadFont(GR_CairoGraphics * pG)
 	 
 	 */
 
+	UT_DEBUGMSG(("%f = pointsize %d = resolution ", m_dPointSize, 
+				 pG->getResolution()));
 	double dpw = ((double)m_dPointSize * pG->getResolution()) / 72;
 
 	double apw = dpw;
@@ -3198,7 +3261,7 @@ void GR_PangoFont::reloadFont(GR_CairoGraphics * pG)
 		m_iDescent = (UT_uint32)(m_iDescent * dpw / apw);
 	}
 
- 	xxx_UT_DEBUGMSG(("Layout Font Ascent %d point size %f zoom %d \n",m_iAscent, m_dPointSize, m_iZoom));
+ 	UT_DEBUGMSG(("Layout Font Ascent %d point size %f zoom %d \n",m_iAscent, m_dPointSize, m_iZoom));
 	pango_font_metrics_unref(pfm);
 
 	UT_return_if_fail( pfm);

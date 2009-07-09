@@ -307,6 +307,9 @@ public:
   protected:
 	// setup the graphics properties like color and clip if they have been set
 	void _setProps();
+	// the 
+	static void _setSource(cairo_t *, const UT_RGBColor &);
+
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
 	GR_CairoGraphics(cairo_t *cr, UT_uint32 iDeviceResolution);
 	GR_CairoGraphics();
