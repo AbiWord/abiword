@@ -402,7 +402,14 @@ static void UT_parseCMYKColor(const char *p, UT_RGBColor& c)
 	       c.m_red, c.m_grn, c.m_blu));
 }
 
+
+UT_ColorPatImpl::~UT_ColorPatImpl()
+{
+}
+
+
 UT_RGBColor::UT_RGBColor()
+    : m_patImpl(NULL)
 {
 	m_red = 0;
 	m_grn = 0;
@@ -411,6 +418,7 @@ UT_RGBColor::UT_RGBColor()
 }
 
 UT_RGBColor::UT_RGBColor(unsigned char red, unsigned char grn, unsigned char blu, bool bTransparent)
+    : m_patImpl(NULL)
 {
 	m_red = red;
 	m_grn = grn;
@@ -424,7 +432,24 @@ UT_RGBColor::UT_RGBColor(const UT_RGBColor &c)
 	m_grn = c.m_grn;
 	m_blu = c.m_blu;
 	m_bIsTransparent = c.m_bIsTransparent;
+    m_patImpl = ( c.m_patImpl ? c.m_patImpl->clone() : NULL );
 }
+
+UT_RGBColor::UT_RGBColor(const UT_ColorPatImpl * pattern)
+    : m_red(0)
+    , m_grn(0)
+    , m_blu(0)
+    , m_bIsTransparent(false)
+    , m_patImpl(pattern)
+{
+}
+
+
+UT_RGBColor::~UT_RGBColor()
+{
+    DELETEP(m_patImpl);
+}
+
 
 bool UT_RGBColor::setColor(const char * pszColor)
 {

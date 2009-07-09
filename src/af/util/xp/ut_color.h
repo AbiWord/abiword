@@ -38,12 +38,22 @@
 // ----------------------------------------------------------------
 #define UT_RGBCOLOR_PROXIMITY 45
 
+class ABI_EXPORT UT_ColorPatImpl
+{
+public:
+    virtual ~UT_ColorPatImpl();
+    virtual UT_ColorPatImpl * clone() const= 0;
+};
+
 class ABI_EXPORT UT_RGBColor
 {
 public:
 	UT_RGBColor();
 	UT_RGBColor(unsigned char, unsigned char, unsigned char, bool bTransparent = false);
 	UT_RGBColor(const UT_RGBColor&);
+    // take ownership
+    UT_RGBColor(const UT_ColorPatImpl * pattern);
+    ~UT_RGBColor();
 	bool operator != (const UT_RGBColor &op1)
 	{
 		return (op1.m_red != m_red || op1.m_grn != m_grn || op1.m_blu != m_blu);
@@ -99,11 +109,21 @@ public:
 	}
 	bool setColor(const char * pszColor);
 
+    bool isPattern() const 
+    {
+        return m_patImpl != NULL;
+    }
+    const UT_ColorPatImpl *pattern() const
+    {
+        return m_patImpl;
+    }
+
 	unsigned char m_red;
 	unsigned char m_grn;
 	unsigned char m_blu;
 	bool m_bIsTransparent;
-	
+private:
+    const UT_ColorPatImpl * m_patImpl;
 };
 
 void UT_setColor(UT_RGBColor & col, unsigned char r, unsigned char g, unsigned char b, bool bTransparent = false);
