@@ -39,8 +39,8 @@
 #define GWL(hwnd)		(AP_Win32Dialog_SplitCells*)GetWindowLong((hwnd), DWL_USER)
 #define SWL(hwnd, d)	(AP_Win32Dialog_SplitCells*)SetWindowLong((hwnd), DWL_USER,(LONG)(d))
 
-#define BITMAP_WITDH	15
-#define BITMAP_HEIGHT	15
+#define BITMAP_WITDH	50
+#define BITMAP_HEIGHT	50
 
 
 XAP_Dialog * AP_Win32Dialog_SplitCells::static_constructor(XAP_DialogFactory * pFactory,
@@ -172,7 +172,7 @@ BOOL AP_Win32Dialog_SplitCells::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM l
 	ConstructWindowName();
 	SetWindowText(m_hwndDlg, m_WindowName);
 
-	// The four items are the same size
+	// The six items are the same size
 	GetClientRect(GetDlgItem(hWnd, AP_RID_DIALOG_SPLITCELLS_BMP_LEFT), &rect);			
 		
 	hdc = GetDC(hWnd);
