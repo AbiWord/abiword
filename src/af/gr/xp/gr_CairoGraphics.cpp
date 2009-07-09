@@ -58,42 +58,29 @@ UT_VersionInfo GR_CairoGraphics::s_Version;
 int            GR_CairoGraphics::s_iMaxScript = 0;
 
 
-class GR_CairoPatternImpl
-	: public UT_ColorPatImpl
-{
-public:
-	GR_CairoPatternImpl(const char * fileName);
-	// takes ownership of the surface.
-	GR_CairoPatternImpl(cairo_surface_t * surf);
-	GR_CairoPatternImpl(const GR_CairoPatternImpl &);
-	virtual ~GR_CairoPatternImpl();
-    virtual UT_ColorPatImpl * clone() const;
-	cairo_surface_t *getSurface() const 
-		{
-			return m_surf;
-		}
-private:
-	cairo_surface_t *m_surf;
-};
-
 GR_CairoPatternImpl::GR_CairoPatternImpl(const char * fileName)
-	: m_surf(cairo_image_surface_create_from_png(fileName))
+	: m_pattern(NULL)
 {
+	cairo_surface_t * surface = cairo_image_surface_create_from_png(fileName);
+	m_pattern = cairo_pattern_create_for_surface(surface);
+	cairo_pattern_set_extend(m_pattern, CAIRO_EXTEND_REPEAT);
+	cairo_surface_destroy(surface);
 }
 
 GR_CairoPatternImpl::GR_CairoPatternImpl(cairo_surface_t * surf)
-	: m_surf(surf)
+	: m_pattern(cairo_pattern_create_for_surface(surf))
 {
+	cairo_pattern_set_extend(m_pattern, CAIRO_EXTEND_REPEAT);
 }
 
 GR_CairoPatternImpl::GR_CairoPatternImpl(const GR_CairoPatternImpl & p)
-	: m_surf(cairo_surface_reference(p.m_surf))
+	: m_pattern(cairo_pattern_reference(p.m_pattern))
 {
 }
 
 GR_CairoPatternImpl::~GR_CairoPatternImpl()
 {
-	cairo_surface_destroy(m_surf);
+	cairo_pattern_destroy(m_pattern);
 }
 
 
@@ -1289,7 +1276,7 @@ void GR_CairoGraphics::_setSource(cairo_t *cr, const UT_RGBColor &clr)
 	const GR_CairoPatternImpl * pat 
 		= dynamic_cast<const GR_CairoPatternImpl *>(clr.pattern());
 	if(pat) {
-		cairo_set_source_surface(cr, pat->getSurface(), 0., 0.);
+		cairo_set_source(cr, pat->getPattern());
 	}
 	else {
 		cairo_set_source_rgb(cr, clr.m_red/255., clr.m_grn/255., clr.m_blu/255.);

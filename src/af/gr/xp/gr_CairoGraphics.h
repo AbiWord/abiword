@@ -50,6 +50,26 @@ class GR_CairoGraphics;
 class XAP_Frame;
 
 
+class GR_CairoPatternImpl
+	: public UT_ColorPatImpl
+{
+public:
+	GR_CairoPatternImpl(const char * fileName);
+	// don't take ownership
+	GR_CairoPatternImpl(cairo_surface_t * surf);
+	GR_CairoPatternImpl(const GR_CairoPatternImpl &);
+	virtual ~GR_CairoPatternImpl();
+    virtual UT_ColorPatImpl * clone() const;
+	cairo_pattern_t *getPattern() const
+		{
+			return m_pattern;
+		}
+private:
+	GR_CairoPatternImpl & operator=(const GR_CairoPatternImpl &);
+	cairo_pattern_t *m_pattern;
+};
+
+
 class GR_CairoVectorImage 
 	: public GR_VectorImage
 {

@@ -435,12 +435,12 @@ UT_RGBColor::UT_RGBColor(const UT_RGBColor &c)
     m_patImpl = ( c.m_patImpl ? c.m_patImpl->clone() : NULL );
 }
 
-UT_RGBColor::UT_RGBColor(const UT_ColorPatImpl * pattern)
+UT_RGBColor::UT_RGBColor(const UT_ColorPatImpl * pat)
     : m_red(0)
     , m_grn(0)
     , m_blu(0)
     , m_bIsTransparent(false)
-    , m_patImpl(pattern)
+    , m_patImpl(pat)
 {
 }
 
@@ -448,6 +448,21 @@ UT_RGBColor::UT_RGBColor(const UT_ColorPatImpl * pattern)
 UT_RGBColor::~UT_RGBColor()
 {
     DELETEP(m_patImpl);
+}
+
+
+UT_RGBColor & UT_RGBColor::operator=(const  UT_RGBColor &c)
+{
+	m_red = c.m_red;
+	m_grn = c.m_grn;
+	m_blu = c.m_blu;
+	m_bIsTransparent = c.m_bIsTransparent;
+    if(m_patImpl) {
+        delete m_patImpl;
+    }
+    m_patImpl = ( c.m_patImpl ? c.m_patImpl->clone() : NULL );
+
+    return *this;
 }
 
 

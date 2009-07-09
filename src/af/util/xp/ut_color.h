@@ -103,6 +103,8 @@ public:
 		return *this;
 	}
 
+    UT_RGBColor & operator=(const  UT_RGBColor &inc);
+
 	bool isTransparent() const 
 	{
 		return m_bIsTransparent;
