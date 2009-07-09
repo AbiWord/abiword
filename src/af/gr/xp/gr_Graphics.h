@@ -36,6 +36,8 @@
 #include "ut_vector.h"
 #include "ut_TextIterator.h"
 #include <deque>
+#include <cairo.h>
+#include <pango/pango.h>
 
 #ifdef ABI_GRAPHICS_PLUGIN
 #define VIRTUAL_SFX = 0
@@ -359,6 +361,8 @@ class ABI_EXPORT GR_Graphics
 	void beginBuffering(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_uint32 height);
 	void endBuffering();
 	void setActiveBuffer(cairo_surface_t* buffer);
+	void createOffscreenBuffer(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_uint32 height);
+	//cairo_surface_t* getBuffer();
 
 	// the static method allows us to retrive the the class id for
 	// purposes of registration; we also need the virtual to identify
