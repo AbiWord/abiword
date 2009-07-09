@@ -1318,7 +1318,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 //
 		return;
 	}
-	bool bDrawTop = true;
+	bool bDrawTop = false;
 	bool bDrawBot = true;
 	xxx_UT_DEBUGMSG(("m_iBotY %d \n",m_iBotY));
 	m_bLinesDrawn = true;
@@ -1353,7 +1353,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 		{
 			xxx_UT_DEBUGMSG(("iTop < col_y !! iTop %d col_y %d row is %d \n",iTop,col_y,getTopAttach()));
 			iTop = col_y;
-			bDrawTop = true;
+			//bDrawTop = true;
 			if(pBroke != NULL)
 			{
 				pBroke->setBrokenTop(1);
@@ -1397,7 +1397,6 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 // 		iTop = bRec.top;
 // 		iBot = iTop + bRec.height;
 // 		iRight = iLeft + bRec.width;
-		m_bDrawRight = true;
 
 		//
 		// Have to draw white first because drawing is additive
@@ -1417,10 +1416,13 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 		 * distributed on either side of the line
 		 **/
 
+		printf("ADITYA: t: %d b: %d r: %d l: %d\n", m_bDrawTop, m_bDrawBot, 
+			   m_bDrawRight, m_bDrawLeft);
+
 		if (m_bDrawLeft)
 		{
 			UT_sint32 thickness = lineLeft.m_thickness/2;
-			//printf("ADITYA: drawing left! ");
+			printf("ADITYA: drawing left! ");
 			if(bDoClear)
 			{
 				clineLeft.m_color = white;
@@ -1433,7 +1435,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 		if(m_bDrawTop || bDrawTop)
 		{
 			UT_sint32 thickness = lineTop.m_thickness/2;
-			//printf("drawing top! ");
+			printf("drawing top! ");
 			if(bDoClear)
 			{
 				clineTop.m_color = white;
@@ -1446,7 +1448,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 		if(m_bDrawRight)
 		{
 			UT_sint32 thickness = lineRight.m_thickness/2;
-			//printf("drawing right! ");
+			printf("drawing right! ");
 			if(bDoClear)
 			{
 				clineRight.m_color = white;
@@ -1457,10 +1459,10 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 			_drawLine(lineRight, iRight - thickness, iTop, 
 					  iRight - thickness, iBot, pG);
 		}
-		if(m_bDrawBot || bDrawBot)
+		if(m_bDrawBot)
 		{
 			UT_sint32 thickness = lineBottom.m_thickness/2;
-			//printf("drawing bot!\n");
+			printf("drawing bot!\n");
 			if(bDoClear)
 			{
 				clineBottom.m_color = white;
@@ -2091,8 +2093,6 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 								  fp_TableContainer * pBroke)
 {
 	GR_Graphics * pG = pDA->pG;
-	m_bDrawLeft = false;
-	m_bDrawTop = false;
 	fp_TableContainer * pTab2 = NULL;
 	bool bIsNested = isInNestedTable();
 	if(pBroke && pBroke->isThisBroken())
@@ -2103,15 +2103,17 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	{
 		pTab2 = static_cast<fp_TableContainer *>(getContainer());
 	}
-// draw bottom if this cell is the last of the table and fully contained on the page
 
-	m_bDrawBot = (pTab2->getCellAtRowColumn(getBottomAttach(),getLeftAttach()) == NULL);
-
-// draw right if this cell is the rightmost of the table
-
-	m_bDrawRight = (pTab2->getCellAtRowColumn(getTopAttach(),getRightAttach()) == NULL);
-	m_bDrawRight = true;
+	// draw top if this cell is on top row of table.
+	m_bDrawTop = (0 == getTopAttach());
+	m_bDrawBot = true; 
+	
+	// draw right if this cell is the rightmost of the table
+	m_bDrawRight = (pTab2->getNumCols() == getRightAttach());
 	m_bDrawLeft = true;
+	
+	printf("ADITYA: t: %d b: %d r: %d l: %d\n", m_bDrawTop, m_bDrawBot, 
+		   m_bDrawRight, m_bDrawLeft);
    
 	const UT_Rect * pClipRect = pDA->pG->getClipRect();
 	UT_sint32 ytop,ybot;
@@ -2227,10 +2229,10 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 // Draw the top of the cell if the cell starts on this page.
 //
 				xxx_UT_DEBUGMSG((" -2- da.yoff %d ydiff %d \n",da.yoff,ydiff));
-				if(i == 0)
+				/*if(i == 0)
 				{
 					m_bDrawTop = true;
-				}
+					}*/
 				bStart = true;
 
 				if(containsNestedTables())
