@@ -35,8 +35,8 @@
 #include "ap_Win32Dialog_MergeCells.h"
 #include "ap_Win32Resources.rc2"
 
-#define BITMAP_WITDH	15
-#define BITMAP_HEIGHT	15
+#define BITMAP_WITDH	32
+#define BITMAP_HEIGHT	32
 
 #define GWL(hwnd)		(AP_Win32Dialog_MergeCells*)GetWindowLong((hwnd), DWL_USER)
 #define SWL(hwnd, d)	(AP_Win32Dialog_MergeCells*)SetWindowLong((hwnd), DWL_USER,(LONG)(d))
