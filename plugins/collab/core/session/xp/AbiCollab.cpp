@@ -4,7 +4,7 @@
  * Copyright (C) 2005 by Martin Sevior
  * Copyright (C) 2006,2007 by Marc Maurer <uwog@uwog.net>
  * Copyright (C) 2007 by One Laptop Per Child
- * Copyright (C) 2008 by AbiSource Corporation B.V.
+ * Copyright (C) 2008-2009 by AbiSource Corporation B.V.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -220,6 +220,22 @@ void AbiCollab::addCollaborator(BuddyPtr pCollaborator)
 	UT_DEBUGMSG(("AbiCollab::addCollaborator()\n"));
 	UT_return_if_fail(pCollaborator)
 
+	// check if this buddy is in the access control list
+	bool bAccessGranted = false;
+	for (UT_uint32 i = 0; i < m_vACL.size(); i++)
+	{
+		if (pCollaborator == m_vACL[i])
+		{
+			bAccessGranted = true;
+			break;
+		}
+	}
+	if (!bAccessGranted)
+	{
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		return;
+	}
+		
 	// check for duplicates (as long as we assume a collaborator can only be part of a collaboration session once)
 	std::map<BuddyPtr, std::string>::iterator it = m_vCollaborators.find(pCollaborator);
 	if (it != m_vCollaborators.end())
@@ -252,6 +268,13 @@ void AbiCollab::removeCollaboratorsForAccount(AccountHandler* pHandler)
 			m_vCollaborators.erase(it);
 		}
 	}
+}
+
+void AbiCollab::setACL(const std::vector<BuddyPtr> vACL)
+{
+	UT_DEBUGMSG(("AbiCollab::setACL()\n"));
+
+	// TODO: implement me
 }
 
 void AbiCollab::_setDocument(PD_Document* pDoc, XAP_Frame* pFrame)

@@ -118,6 +118,7 @@ public:
 	void									addBuddy(BuddyPtr pBuddy);
 	std::vector<BuddyPtr>&					getBuddies()
 		{ return m_vBuddies; }
+	virtual void							getBuddiesAsync() {}
 	void									deleteBuddy(BuddyPtr pBuddy);
 	void									deleteBuddies();
 	virtual BuddyPtr						constructBuddy(const PropertyMap& vProps) = 0;
@@ -136,6 +137,8 @@ public:
 	// session management
 	virtual void							getSessionsAsync();
 	virtual void							getSessionsAsync(BuddyPtr pBuddy);
+	virtual bool							startSession(PD_Document* /*pDoc*/, const std::vector<BuddyPtr>& /*acl*/)
+		{ return true; }
 	virtual void							joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHandle);
 	virtual bool							hasSession(const UT_UTF8String& sSessionId);
 	virtual bool							allowsSessionTakeover() = 0;

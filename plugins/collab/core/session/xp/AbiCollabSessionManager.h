@@ -57,6 +57,8 @@ public:
 	// dialog code
 	bool										registerDialogs(void);
 	bool										unregisterDialogs(void);
+	XAP_Dialog_Id								getDialogShareId()
+		{ return m_iDialogShare; }	
 	XAP_Dialog_Id								getDialogJoinId()
 		{ return m_iDialogJoin; }
 	XAP_Dialog_Id								getDialogAccountsId()
@@ -151,6 +153,7 @@ private:
 	static AbiCollabSessionManager* 			m_pManager;	
 	
 	// dialog code
+	XAP_Dialog_Id								m_iDialogShare;
 	XAP_Dialog_Id								m_iDialogJoin;
 	XAP_Dialog_Id								m_iDialogAccounts;
 	XAP_Dialog_Id								m_iDialogAddAccount;

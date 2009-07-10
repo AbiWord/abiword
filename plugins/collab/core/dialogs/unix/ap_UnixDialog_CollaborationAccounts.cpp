@@ -250,7 +250,10 @@ GtkListStore* AP_UnixDialog_CollaborationAccounts::_constructModel()
 
 void AP_UnixDialog_CollaborationAccounts::_setModel(GtkListStore* model)
 {
-	// TODO: free the old model
+	if (m_wModel)
+	{
+		g_object_unref(m_wModel);
+	}
 	m_wModel = model;
 	gtk_tree_view_set_model(GTK_TREE_VIEW (m_wAccountsTree), GTK_TREE_MODEL(m_wModel));
 	gtk_widget_show_all(m_wAccountsTree);

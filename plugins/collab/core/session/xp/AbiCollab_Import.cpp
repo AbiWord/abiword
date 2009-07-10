@@ -158,24 +158,24 @@ UT_sint32 ABI_Collab_Import::_getIncomingAdjustmentForState(const UT_GenericVect
 				else if (pPrev->getLocalAdjust() < 0)
 				{
 					// TODO: is the < 0 case correctly handled like this?
-					UT_DEBUGMSG(("ADJUSTMENT influence by delete by queue pos: %d, pPrev->m_iProgDocPos: %d, pPrev->getRemoteDocPos()\n", j, pPrev->getRemoteDocPos()));
+					UT_DEBUGMSG(("ADJUSTMENT influence by delete by queue pos: %d, pPrev->m_iProgDocPos: %d, pPrev->getRemoteDocPos(): %d\n", j, pPrev->getRemoteDocPos(), pPrev->getRemoteDocPos()));
 					iAdjust -= pPrev->getLocalAdjust();
 					incAdjs.push_front(pPrev->getLocalAdjust());		
 				}
 				else
 				{
-					UT_DEBUGMSG(("ADJUSTMENT influence of 0 by queue pos: %d, pPrev->m_iProgDocPos: %d, pPrev->getRemoteDocPos()\n", j, pPrev->getRemoteDocPos()));
+					UT_DEBUGMSG(("ADJUSTMENT influence of 0 by queue pos: %d, pPrev->m_iProgDocPos: %d, pPrev->getRemoteDocPos(): %d\n", j, pPrev->getRemoteDocPos(), pPrev->getRemoteDocPos()));
 					incAdjs.push_front(0);
 				}
 			}
 			else if (static_cast<UT_sint32>(pPrev->getRemoteDocPos()) > iIncomingPos+iAdjust)
 			{
-				UT_DEBUGMSG(("no ADJUSTMENT influence (insertion point smaller than checkpoint) by queue pos: %d, pPrev->m_iProgDocPos: %d, pPrev->getRemoteDocPos()\n", j, pPrev->getRemoteDocPos()));
+				UT_DEBUGMSG(("no ADJUSTMENT influence (insertion point smaller than checkpoint) by queue pos: %d, pPrev->m_iProgDocPos: %d, pPrev->getRemoteDocPos(): %d\n", j, pPrev->getRemoteDocPos(), pPrev->getRemoteDocPos()));
 				incAdjs.push_front(0);
 			}
 			else
 			{
-				UT_DEBUGMSG(("no ADJUSTMENT influence (insertion point equals checkpoint) by queue pos: %d, pPrev->m_iProgDocPos: %d, pPrev->getRemoteDocPos()\n", j, pPrev->getRemoteDocPos()));
+				UT_DEBUGMSG(("no ADJUSTMENT influence (insertion point equals checkpoint) by queue pos: %d, pPrev->m_iProgDocPos: %d, pPrev->getRemoteDocPos(): %d\n", j, pPrev->getRemoteDocPos(), pPrev->getRemoteDocPos()));
 				incAdjs.push_front(0);
 			}
 		}
