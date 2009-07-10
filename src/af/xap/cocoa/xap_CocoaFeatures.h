@@ -25,5 +25,6 @@
 
 #define XAP_DONT_INLINE_XPM 1
 
+#define XAP_HAVE_GR_findNearestFont 1
 
 #endif

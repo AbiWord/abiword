@@ -47,7 +47,7 @@
 #include "xap_Cocoa_TB_CFactory.h"
 #include "xap_Prefs.h"
 #include "xap_CocoaEncodingManager.h"
-#include "gr_CocoaGraphics.h"
+#include "gr_CocoaCairoGraphics.h"
 #include "ev_CocoaMenuBar.h"
 
 /*****************************************************************/
@@ -87,14 +87,14 @@ XAP_CocoaApp::XAP_CocoaApp(const char * szAppName)
 
 	if(pGF)
 	{
-		bool bSuccess = pGF->registerClass(GR_CocoaGraphics::graphicsAllocator,
-										   GR_CocoaGraphics::graphicsDescriptor,
-										   GR_CocoaGraphics::s_getClassId());
+		bool bSuccess = pGF->registerClass(GR_CocoaCairoGraphics::graphicsAllocator,
+										   GR_CocoaCairoGraphics::graphicsDescriptor,
+										   GR_CocoaCairoGraphics::s_getClassId());
 
 		// we are in deep trouble if this did not succeed
 		UT_ASSERT( bSuccess );
-		pGF->registerAsDefault(GR_CocoaGraphics::s_getClassId(), true);
-		pGF->registerAsDefault(GR_CocoaGraphics::s_getClassId(), false);
+		pGF->registerAsDefault(GR_CocoaCairoGraphics::s_getClassId(), true);
+		pGF->registerAsDefault(GR_CocoaCairoGraphics::s_getClassId(), false);
 	}
 
 }

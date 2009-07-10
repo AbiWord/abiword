@@ -32,6 +32,7 @@
 #include "xap_CocoaApp.h"
 #include "xap_CocoaFrame.h"
 
+#include "gr_CocoaCairoGraphics.h"
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
 #include "fl_DocLayout.h"
@@ -169,8 +170,8 @@ void AP_CocoaDialog_Styles::runModal(XAP_Frame * pFrame)
 	DELETEP (m_pParaPreviewWidget);
 	XAP_CocoaNSView * preview = m_dlg->_paraPreview;
 	{
-		GR_CocoaAllocInfo ai(preview);
-		m_pParaPreviewWidget = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
+		GR_CocoaCairoAllocInfo ai(preview);
+		m_pParaPreviewWidget = (GR_CocoaCairoGraphics*)XAP_App::getApp()->newGraphics(ai);
 	}
 	
         // let the widget materialize
@@ -182,8 +183,8 @@ void AP_CocoaDialog_Styles::runModal(XAP_Frame * pFrame)
 	DELETEP (m_pCharPreviewWidget);
 	preview = m_dlg->_charPreview;
 	{
-		GR_CocoaAllocInfo ai(preview);
-		m_pCharPreviewWidget = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
+		GR_CocoaCairoAllocInfo ai(preview);
+		m_pCharPreviewWidget = (GR_CocoaCairoGraphics*)XAP_App::getApp()->newGraphics(ai);
 	}
 
 	// let the widget materialize
@@ -494,8 +495,8 @@ void  AP_CocoaDialog_Styles::modifyRunModal(void)
 		// make a new Cocoa GC
 		DELETEP (m_pAbiPreviewWidget);
 		XAP_CocoaNSView * preview = m_modifyDlg->_preview;
-		GR_CocoaAllocInfo ai(preview);
-		m_pAbiPreviewWidget = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
+		GR_CocoaCairoAllocInfo ai(preview);
+		m_pAbiPreviewWidget = (GR_CocoaCairoGraphics*)XAP_App::getApp()->newGraphics(ai);
 
 		
 			// let the widget materialize

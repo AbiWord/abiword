@@ -119,6 +119,14 @@ public:
     {
         return m_patImpl;
     }
+	// take ownership
+	void setPattern(const UT_ColorPatImpl *p) 
+	{
+		if(m_patImpl) {
+			delete m_patImpl;
+		}
+		m_patImpl = p;
+	}
 
 	unsigned char m_red;
 	unsigned char m_grn;

@@ -41,7 +41,7 @@
 #include "xap_Prefs.h"
 #include "xap_Strings.h"
 
-#include "gr_CocoaGraphics.h"
+#include "gr_CocoaCairoGraphics.h"
 #include "gr_CocoaImage.h"
 
 #include "fg_GraphicRaster.h"
@@ -631,7 +631,7 @@ void XAP_CocoaDialog_FileOpenSaveAs::_updatePreview ()
 
 					GR_CocoaImage * pImage = new GR_CocoaImage(0);
 
-					pImage->convertFromBuffer(png, iImageWidth, iImageHeight); // this flips the NSImage but doesn't actually scale it
+					pImage->convertFromBuffer(png, "image/png", iImageWidth, iImageHeight); // this flips the NSImage but doesn't actually scale it
 					image = pImage->getNSImage();
 					if (image) {
 						NSSize imageSize;

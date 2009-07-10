@@ -24,9 +24,8 @@
 #import <Cocoa/Cocoa.h>
 
 #include "ap_Dialog_FormatTable.h"
-#include "gr_CocoaGraphics.h"
 
-
+class GR_CocoaCairoGraphics;
 class XAP_CocoaFrame;
 @class AP_CocoaDialog_FormatTableController;
 
@@ -58,7 +57,7 @@ protected:
 	void					_populateWindowData(void);
 	void					_storeWindowData(void);
 	
-	GR_CocoaGraphics	* 		m_pPreviewWidget;	
+	GR_CocoaCairoGraphics	* 		m_pPreviewWidget;	
 private:
 	AP_CocoaDialog_FormatTableController*	m_dlg;
 };

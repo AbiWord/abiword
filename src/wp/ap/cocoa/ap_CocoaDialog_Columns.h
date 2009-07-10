@@ -24,10 +24,11 @@
 #define AP_CocoaDialog_Columns_H
 
 #include "ap_Dialog_Columns.h"
-#include "gr_CocoaGraphics.h"
 
 #include "ut_types.h"
 #include "ut_string.h"
+
+class GR_CocoaCairoGraphics;
 
 class XAP_CocoaFrame;
 @class AP_CocoaDialog_ColumnsController;
@@ -62,7 +63,7 @@ public:
 	void			incrSpaceAfter(bool bIncrement);
 
 private:
-	GR_CocoaGraphics *	m_pPreviewWidget;
+	GR_CocoaCairoGraphics *	m_pPreviewWidget;
 
 	AP_CocoaDialog_ColumnsController *	m_dlg;
 

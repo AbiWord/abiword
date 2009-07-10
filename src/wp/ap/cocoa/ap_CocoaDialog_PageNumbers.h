@@ -27,7 +27,7 @@
 #include "ap_Dialog_PageNumbers.h"
 
 class XAP_CocoaFrame;
-class GR_CocoaGraphics;
+class GR_CocoaCairoGraphics;
 @class AP_CocoaDialog_PageNumbersController;
 @protocol XAP_CocoaDialogProtocol;
 
@@ -51,7 +51,7 @@ public:
 private:
 	AP_Dialog_PageNumbers::tAlign m_recentAlign;
 	AP_Dialog_PageNumbers::tControl m_recentControl;
-	GR_CocoaGraphics * m_pG;
+	GR_CocoaCairoGraphics * m_pG;
 	AP_CocoaDialog_PageNumbersController * m_dlg;
 };
 

@@ -25,9 +25,9 @@
 
 #include "ap_Dialog_Lists.h"
 #include "ut_timer.h"
-#include "gr_CocoaGraphics.h"
 #include "xap_CocoaDialog_Utilities.h"
 
+class GR_CocoaCairoGraphics;
 class XAP_CocoaFrame;
 class AP_CocoaDialog_Lists;
 
@@ -158,8 +158,7 @@ class AP_CocoaDialog_Lists: public AP_Dialog_Lists
 	void					_setRadioButtonLabels(void);
 	void					_gatherData(void);
  private:
-//	GList *					m_glFonts;
-	GR_CocoaGraphics *		m_pPreviewWidget;
+	GR_CocoaCairoGraphics *		m_pPreviewWidget;
 	UT_Timer *				m_pAutoUpdateLists;
 	bool					m_bDontUpdate;
 	bool					m_bDestroy_says_stopupdating;

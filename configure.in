@@ -106,16 +106,16 @@ dnl libosso-gsf-1'
 # placeholder for accumulated optional deps
 opt_pkgs=''
 
-# cocoa deps
-cocoa_pkgs="$enchant_req"
-
 # gtk deps
-cairo_req='cairo-pdf cairo-ps'
+cairo_req='cairo-pdf cairo-ps pangocairo'
 gtk_req="gtk+-2.0 >= $GTK_VERSION_REQ gtk+-unix-print-2.0 librsvg-2.0 >= 2.16.0"
 gtk_pkgs="
   ${cairo_req}
   ${gtk_req}
 "
+# cocoa deps
+cocoa_pkgs="$enchant_req $cairo_req"
+
 
 # win32 deps
 win_pkgs="$enchant_req"
@@ -519,9 +519,16 @@ if test "$TOOLKIT" == "gtk"; then
 	if test "$abi_cv_gtk214" == "yes" ; then
 		AC_DEFINE([HAVE_GTK214], [1], [GTK is at least 2.14])
 	fi
+fi
+
+dnl make that for all.
+if test "$TOOLKIT" == "gtk" -o "$TOOLKIT" == "cocoa"; then
 	dnl move away
 	AC_DEFINE([WITH_CAIRO], [1], [Using Cairo])
+	WITH_CAIRO=1
 fi
+AM_CONDITIONAL([WITH_CAIRO], test "$WITH_CAIRO" == "1")
+
 
 AC_SUBST([DEPS_CFLAGS])
 if test "$abi_cv_gio" == "yes"; then
@@ -651,7 +658,6 @@ if test "$TOOLKIT" == "win"; then
 	enable_static="yes"
 elif test "$TOOLKIT" == "cocoa"; then
 	AC_DEFINE([TOOLKIT_COCOA], [1], [Build cocoa user interface])
-	AC_DEFINE([XAP_DONTUSE_XOR], [1], [do not use XOR drawing functions])
 	# override static/dynamic, on cocoa. dynamic only
 	enable_dynamic="yes"
 	enable_static="no"

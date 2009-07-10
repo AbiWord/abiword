@@ -24,6 +24,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
+#include "gr_CocoaCairoGraphics.h"
 #include "xap_CocoaDialog_Utilities.h"
 
 #include "xap_App.h"
@@ -75,8 +76,8 @@ void AP_CocoaDialog_FormatTable::runModeless(XAP_Frame * /*pFrame*/)
 	// make a new Cocoa GC
 	DELETEP (m_pPreviewWidget);
 	XAP_CocoaNSView * view = [m_dlg preview];
-	GR_CocoaAllocInfo ai(view);
-	m_pPreviewWidget = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
+	GR_CocoaCairoAllocInfo ai(view);
+	m_pPreviewWidget = (GR_CocoaCairoGraphics*)XAP_App::getApp()->newGraphics(ai);
 
 	// Todo: we need a good widget to query with a probable
 	// Todo: non-white (i.e. gray, or a similar bgcolor as our parent widget)

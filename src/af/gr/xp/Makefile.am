@@ -4,7 +4,7 @@ noinst_LTLIBRARIES = libxp.la
 AM_CPPFLAGS = \
 	$(AF_CPPFLAGS)
 
-if TOOLKIT_GTK
+if WITH_CAIRO
 CAIRO_SOURCES=gr_CairoGraphics.h \
 	gr_CairoGraphics.cpp
 else

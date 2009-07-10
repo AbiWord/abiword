@@ -3,6 +3,7 @@
 /* AbiSource Application Framework
  * Copyright (C) 2003-2004 Hubert Figuiere
  * Copyright (C) 2004 Francis James Franklin
+ * Copyright (C) 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,7 +29,6 @@
 
 #include "xap_CocoaApp.h"
 #include "xap_CocoaAppController.h"
-#include "xap_CocoaFont.h"
 #include "xap_CocoaModule.h"
 #include "xap_CocoaToolPalette.h"
 #include "xap_CocoaToolProvider.h"
@@ -333,11 +333,6 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 	m_PanelMenu   = [[NSMenu alloc] initWithTitle:@"Panels"];
 	m_ContextMenu = [[NSMenu alloc] initWithTitle:@"Context Menu"];
 
-	m_FontReferenceDictionary = [[NSMutableDictionary alloc] initWithCapacity:128];
-	m_FontFamilyDictionary    = [XAP_CocoaFontFamilyHelper fontFamilyHelperDictionary:m_FontReferenceDictionary];
-
-	[m_FontFamilyDictionary retain];
-
 	m_MenuIDRefDictionary = [[NSMutableDictionary alloc] initWithCapacity:16];
 
 	m_Plugins      = [[NSMutableArray alloc] initWithCapacity:16];
@@ -355,8 +350,6 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 	[m_FilesRequestedDuringLaunch release];
 	[m_PanelMenu release];
 	[m_ContextMenu release];
-	[m_FontReferenceDictionary release];
-	[m_FontFamilyDictionary release];
 	[m_MenuIDRefDictionary release];
 	[m_Plugins release];
 	[m_PluginsTools release];
@@ -769,38 +762,6 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 	[self clearMenu:XAP_CocoaAppMenu_Help  ];
 }
 
-- (NSString *)familyNameForFont:(NSString *)fontName
-{
-	NSString * familyName = nil;
-
-	if (XAP_CocoaFontReference * fontRef = [m_FontReferenceDictionary objectForKey:fontName])
-	{
-		familyName = [fontRef fontFamily];
-	}
-	return familyName;
-}
-
-- (XAP_CocoaFontReference *)helperReferenceForFont:(NSString *)fontName
-{
-	return [m_FontReferenceDictionary objectForKey:fontName];
-}
-
-- (XAP_CocoaFontFamilyHelper *)helperForFontFamily:(NSString *)fontFamilyName
-{
-	return [m_FontFamilyDictionary objectForKey:fontFamilyName];
-}
-
-- (XAP_CocoaFontFamilyHelper *)helperForUnknownFontFamily:(NSString *)fontFamilyName
-{
-	XAP_CocoaFontFamilyHelper * helper = [[XAP_CocoaFontFamilyHelper alloc] initWithFontFamilyName:fontFamilyName known:NO];
-
-	[m_FontFamilyDictionary setObject:helper forKey:fontFamilyName];
-
-	[helper addFontReferences:m_FontReferenceDictionary];
-	[helper release];
-
-	return helper;
-}
 
 - (void)reappendPluginMenuItems
 {

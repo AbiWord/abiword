@@ -26,6 +26,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
+#include "gr_CocoaCairoGraphics.h"
 #include "xap_Dialog_Id.h"
 #include "xap_CocoaApp.h"
 #include "xap_CocoaFrame.h"
@@ -96,8 +97,8 @@ void AP_CocoaDialog_Lists::runModal( XAP_Frame * /*pFrame*/)
 
 
 	NSView* preview = [m_dlg preview];
-	GR_CocoaAllocInfo ai(preview);
-	m_pPreviewWidget = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
+	GR_CocoaCairoAllocInfo ai(preview);
+	m_pPreviewWidget = (GR_CocoaCairoGraphics*)XAP_App::getApp()->newGraphics(ai);
 
 	// let the widget materialize
 
@@ -143,8 +144,8 @@ void AP_CocoaDialog_Lists::runModeless (XAP_Frame * /*pFrame*/)
 
 	// make a new Cocoa GC
 	NSView* preview = [m_dlg preview];
-	GR_CocoaAllocInfo ai(preview);
-	m_pPreviewWidget = static_cast<GR_CocoaGraphics*>(XAP_App::getApp()->newGraphics(ai));
+	GR_CocoaCairoAllocInfo ai(preview);
+	m_pPreviewWidget = static_cast<GR_CocoaCairoGraphics*>(XAP_App::getApp()->newGraphics(ai));
 
 	// let the widget materialize
 
@@ -632,7 +633,7 @@ void AP_CocoaDialog_Lists::_gatherData(void)
 {
 	UT_sint32 maxWidth = getBlock()->getFirstContainer()->getContainer()->getWidth();
 
-	float fmaxWidthIN = ((float) maxWidth / GR_CocoaGraphics::_getScreenResolution()) - 0.6;
+	float fmaxWidthIN = ((float) maxWidth / GR_CocoaCairoGraphics::_getScreenResolution()) - 0.6;
 	setiLevel(1);
 	float f = [m_dlg->_textAlignData floatValue];
 	if(f >   fmaxWidthIN)

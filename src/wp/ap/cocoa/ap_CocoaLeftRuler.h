@@ -32,7 +32,7 @@
 
 #include "ut_types.h"
 #include "ap_LeftRuler.h"
-#include "gr_CocoaGraphics.h"
+
 class XAP_Frame;
 @class AP_CocoaLeftRulerDelegate;
 
@@ -54,12 +54,14 @@ public:
 
 //	void _ruler_style_changed (void);
 protected:
+#if 0
 	virtual void		_drawMarginProperties(const UT_Rect * pClipRect,
 											  AP_LeftRulerInfo * pInfo, 
 											  GR_Graphics::GR_Color3D clr);
 	virtual void		_drawCellMark(UT_Rect *prDrag, bool bUp);
+#endif
 private:
-	static bool _graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param);
+	static bool _graphicsUpdateCB(NSRect * aRect, GR_CocoaCairoGraphics *pG, void* param);
 	
 	XAP_CocoaNSView *		m_wLeftRuler;
 	NSWindow *	m_rootWindow;

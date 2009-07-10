@@ -105,34 +105,34 @@ static void _pango_item_list_free(GList * items)
 
 
 
-class GR_UnixPangoItem: public GR_Item
+class GR_CairoPangoItem: public GR_Item
 {
 	friend class GR_CairoGraphics;
 	friend class GR_UnixPangoPrintGraphics;
 	friend class GR_PangoRenderInfo;
 	
   public:
-	virtual ~GR_UnixPangoItem(){ if (m_pi) {pango_item_free(m_pi);}};
+	virtual ~GR_CairoPangoItem(){ if (m_pi) {pango_item_free(m_pi);}};
 	
 	virtual GR_ScriptType getType() const {return (GR_ScriptType)m_iType;}
 	
 	virtual GR_Item *     makeCopy() const
 	    {
-			return new GR_UnixPangoItem(pango_item_copy(m_pi));
+			return new GR_CairoPangoItem(pango_item_copy(m_pi));
 		}
 	
-	virtual GRRI_Type     getClassId() const {return GRRI_UNIX_PANGO;}
+	virtual GRRI_Type     getClassId() const {return GRRI_CAIRO_PANGO;}
 
   protected:
-	GR_UnixPangoItem(PangoItem *pi);
-	GR_UnixPangoItem() : m_pi(NULL) { }; // just a dummy used to terminate
+	GR_CairoPangoItem(PangoItem *pi);
+	GR_CairoPangoItem() : m_pi(NULL) { }; // just a dummy used to terminate
 	                                     // GR_Itemization list
 
 	PangoItem *m_pi;
 	UT_uint32 m_iType;
 };
 
-GR_UnixPangoItem::GR_UnixPangoItem(PangoItem *pi):
+GR_CairoPangoItem::GR_CairoPangoItem(PangoItem *pi):
 	m_pi(pi)
 {
 	// there does not seem to be anything that we could use to identify the
@@ -190,7 +190,7 @@ class GR_PangoRenderInfo : public GR_RenderInfo
 		}
 	};
 
-	virtual GRRI_Type getType() const {return GRRI_UNIX_PANGO;}
+	virtual GRRI_Type getType() const {return GRRI_CAIRO_PANGO;}
 	virtual bool append(GR_RenderInfo &ri, bool bReverse = false);
 	virtual bool split (GR_RenderInfo *&pri, bool bReverse = false);
 	virtual bool cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse = false);
@@ -332,6 +332,7 @@ GR_CairoGraphics::GR_CairoGraphics()
 
 void GR_CairoGraphics::_initCairo()
 {
+	UT_ASSERT(m_cr);
 	cairo_translate(m_cr, 0.5, 0.5);
 	cairo_set_line_width (m_cr, 1);
 }
@@ -349,14 +350,13 @@ void GR_CairoGraphics::_initPango()
 	UT_DEBUGMSG(("Created LayoutFontMap %p Layout Context %p resolution %d device resolution %d \n", 
 				 m_pLayoutFontMap,	m_pLayoutContext, getResolution(),
 				 m_iDeviceResolution));
-
 }
 
 GR_CairoGraphics::~GR_CairoGraphics()
 {
 	xxx_UT_DEBUGMSG(("Deleting UnixPangoGraphics %x \n",this));
-
-	cairo_destroy(m_cr), m_cr = NULL;
+	cairo_destroy(m_cr);
+	m_cr = NULL;
 
 	if(m_pAdjustedPangoFont!= NULL)
 	{
@@ -553,7 +553,7 @@ bool GR_CairoGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 	{
 		xxx_UT_DEBUGMSG(("itemize: creating item %d\n", i));
 		PangoItem *pItem = (PangoItem *)g_list_nth(gItems, i)->data;
-		GR_UnixPangoItem * pI = new GR_UnixPangoItem(pItem);
+		GR_CairoPangoItem * pI = new GR_CairoPangoItem(pItem);
 
 #if 0 //def DEBUG
 		PangoFont * pf = pI->m_pi->analysis.font;
@@ -573,7 +573,7 @@ bool GR_CairoGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 		iOffset += pItem->num_chars;
 	}
 
-	I.addItem(iPosEnd - iPosStart + 1, new GR_UnixPangoItem());
+	I.addItem(iPosEnd - iPosStart + 1, new GR_CairoPangoItem());
 
 	g_list_free(gItems);
 	
@@ -626,10 +626,10 @@ bool GR_CairoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 {
 	xxx_UT_DEBUGMSG(("GR_CairoGraphics::shape, len %d\n", si.m_iLength));
 	UT_return_val_if_fail(si.m_pItem &&
-						  si.m_pItem->getClassId() == GRRI_UNIX_PANGO &&
+						  si.m_pItem->getClassId() == GRRI_CAIRO_PANGO &&
 						  si.m_pFont, false);
 	
-	GR_UnixPangoItem * pItem = (GR_UnixPangoItem *)si.m_pItem;
+	GR_CairoPangoItem * pItem = (GR_CairoPangoItem *)si.m_pItem;
 
 	PangoFontset * pfs = NULL;
 	PangoFont    * pFontSubst = NULL;
@@ -643,7 +643,7 @@ bool GR_CairoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	}
 	else
 	{
-		UT_return_val_if_fail(ri->getType() == GRRI_UNIX_PANGO, false);
+		UT_return_val_if_fail(ri->getType() == GRRI_CAIRO_PANGO, false);
 	}
 
 	GR_PangoRenderInfo * RI = (GR_PangoRenderInfo *)ri;
@@ -884,9 +884,9 @@ bool GR_CairoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 UT_sint32 GR_CairoGraphics::getTextWidth(GR_RenderInfo & ri)
 {
 	xxx_UT_DEBUGMSG(("GR_CairoGraphics::getTextWidth\n"));
-	UT_return_val_if_fail(ri.getType() == GRRI_UNIX_PANGO, 0);
+	UT_return_val_if_fail(ri.getType() == GRRI_CAIRO_PANGO, 0);
 	GR_PangoRenderInfo & RI = (GR_PangoRenderInfo &)ri;
-	GR_UnixPangoItem * pItem = (GR_UnixPangoItem *)RI.m_pItem;
+	GR_CairoPangoItem * pItem = (GR_CairoPangoItem *)RI.m_pItem;
 	
 	UT_return_val_if_fail( RI.m_pGlyphs && RI.m_pLogOffsets && pItem, 0 );
 	
@@ -1027,7 +1027,7 @@ void GR_CairoGraphics::prepareToRenderChars(GR_RenderInfo & ri)
 {
 	// the only thing we need to do here is to make sure that the glyph metrics
 	// are calculated to a correct zoom level.
-	UT_return_if_fail(ri.getType() == GRRI_UNIX_PANGO);
+	UT_return_if_fail(ri.getType() == GRRI_CAIRO_PANGO);
 	GR_PangoRenderInfo & RI = (GR_PangoRenderInfo &)ri;
 
 	if(RI.m_iZoom != getZoomPercentage())
@@ -1153,10 +1153,11 @@ PangoFont *  GR_CairoGraphics::_adjustedLayoutPangoFont (GR_PangoFont * pFont, P
 */
 void GR_CairoGraphics::renderChars(GR_RenderInfo & ri)
 {
-	UT_return_if_fail(ri.getType() == GRRI_UNIX_PANGO);
+	UT_return_if_fail(ri.getType() == GRRI_CAIRO_PANGO);
+	UT_ASSERT(m_cr);
 	GR_PangoRenderInfo & RI = (GR_PangoRenderInfo &)ri;
 	GR_PangoFont * pFont = (GR_PangoFont *)RI.m_pFont;
-	GR_UnixPangoItem * pItem = (GR_UnixPangoItem *)RI.m_pItem;
+	GR_CairoPangoItem * pItem = (GR_CairoPangoItem *)RI.m_pItem;
 	UT_return_if_fail(pItem && pFont && pFont->getPangoFont());
 	xxx_UT_DEBUGMSG(("GR_CairoGraphics::renderChars length %d \n",
 					 RI.m_iLength));
@@ -1275,7 +1276,7 @@ void GR_CairoGraphics::renderChars(GR_RenderInfo & ri)
 void GR_CairoGraphics::_setSource(cairo_t *cr, const UT_RGBColor &clr)
 {
 	const GR_CairoPatternImpl * pat 
-		= dynamic_cast<const GR_CairoPatternImpl *>(clr.pattern());
+		= NULL;//dynamic_cast<const GR_CairoPatternImpl *>(clr.pattern());
 	if(pat) {
 		cairo_set_source(cr, pat->getPattern());
 	}
@@ -1350,7 +1351,7 @@ void GR_CairoGraphics::_scaleJustification(GR_PangoRenderInfo & RI)
 */
 void GR_CairoGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 {
-	UT_return_if_fail(ri.getType() == GRRI_UNIX_PANGO);
+	UT_return_if_fail(ri.getType() == GRRI_CAIRO_PANGO);
 	GR_PangoRenderInfo & RI = (GR_PangoRenderInfo &)ri;
 
 	_scaleCharacterMetrics(RI);
@@ -1374,7 +1375,7 @@ bool GR_CairoGraphics::_scriptBreak(GR_PangoRenderInfo &ri)
 {
 	UT_return_val_if_fail(ri.m_pText && ri.m_pGlyphs && ri.m_pItem, false);
 
-	GR_UnixPangoItem * pItem = (GR_UnixPangoItem*)ri.m_pItem;
+	GR_CairoPangoItem * pItem = (GR_CairoPangoItem*)ri.m_pItem;
 
 	// fill the static buffer with UTF8 text
 	UT_return_val_if_fail(ri.getUTF8Text(), false);
@@ -1398,7 +1399,7 @@ bool GR_CairoGraphics::_scriptBreak(GR_PangoRenderInfo &ri)
 bool GR_CairoGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext,
 									bool bAfter)
 {
-	UT_return_val_if_fail(ri.getType() == GRRI_UNIX_PANGO &&
+	UT_return_val_if_fail(ri.getType() == GRRI_CAIRO_PANGO &&
 						  ri.m_iOffset < ri.m_iLength, false);
 	
 	GR_PangoRenderInfo & RI = (GR_PangoRenderInfo &)ri;
@@ -1461,7 +1462,7 @@ bool GR_CairoGraphics::needsSpecialCaretPositioning(GR_RenderInfo &)
 UT_uint32 GR_CairoGraphics::adjustCaretPosition(GR_RenderInfo & ri,
 													bool bForward)
 {
-	UT_return_val_if_fail(ri.getType() == GRRI_UNIX_PANGO, 0);
+	UT_return_val_if_fail(ri.getType() == GRRI_CAIRO_PANGO, 0);
 	GR_PangoRenderInfo & RI = (GR_PangoRenderInfo &)ri;
 	
 	if(!RI.s_pLogAttrs || RI.s_pOwnerLogAttrs != &ri)
@@ -1484,7 +1485,7 @@ UT_uint32 GR_CairoGraphics::adjustCaretPosition(GR_RenderInfo & ri,
 
 void GR_CairoGraphics::adjustDeletePosition(GR_RenderInfo & ri)
 {
-	UT_return_if_fail(ri.getType() == GRRI_UNIX_PANGO);
+	UT_return_if_fail(ri.getType() == GRRI_CAIRO_PANGO);
 	GR_PangoRenderInfo & RI = (GR_PangoRenderInfo &)ri;
 
 	if(ri.m_iOffset + ri.m_iLength >= (UT_sint32)RI.m_iCharCount)
@@ -1544,7 +1545,7 @@ void GR_CairoGraphics::adjustDeletePosition(GR_RenderInfo & ri)
 UT_sint32 GR_CairoGraphics::resetJustification(GR_RenderInfo & ri,
 												   bool bPermanent)
 {
-	UT_return_val_if_fail(ri.getType() == GRRI_UNIX_PANGO, 0);
+	UT_return_val_if_fail(ri.getType() == GRRI_CAIRO_PANGO, 0);
 	GR_PangoRenderInfo & RI = (GR_PangoRenderInfo &)ri;
 
 	if(!RI.m_pJustify)
@@ -1582,7 +1583,7 @@ UT_sint32 GR_CairoGraphics::resetJustification(GR_RenderInfo & ri,
 
 UT_sint32 GR_CairoGraphics::countJustificationPoints(const GR_RenderInfo & ri) const
 {
-	UT_return_val_if_fail(ri.getType() == GRRI_UNIX_PANGO, 0);
+	UT_return_val_if_fail(ri.getType() == GRRI_CAIRO_PANGO, 0);
 	GR_PangoRenderInfo & RI = (GR_PangoRenderInfo &)ri;
 
 	UT_return_val_if_fail(RI.m_pText, 0);
@@ -1634,7 +1635,7 @@ These are determined in fp_TextRun using calculations in layout units
  */
 void GR_CairoGraphics::justify(GR_RenderInfo & ri)
 {
-	UT_return_if_fail(ri.getType() == GRRI_UNIX_PANGO);
+	UT_return_if_fail(ri.getType() == GRRI_CAIRO_PANGO);
 	GR_PangoRenderInfo & RI = (GR_PangoRenderInfo &) ri;
 	if(!RI.m_iJustificationPoints || !RI.m_iJustificationAmount ||
 	   !RI.m_pGlyphs)
@@ -1786,9 +1787,9 @@ void GR_CairoGraphics::justify(GR_RenderInfo & ri)
 UT_uint32 GR_CairoGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 x, 
 											 UT_sint32 /*y*/) const
 {
-	UT_return_val_if_fail(ri.getType() == GRRI_UNIX_PANGO, 0);
+	UT_return_val_if_fail(ri.getType() == GRRI_CAIRO_PANGO, 0);
 	GR_PangoRenderInfo & RI = (GR_PangoRenderInfo &) ri;
-	GR_UnixPangoItem * pItem = (GR_UnixPangoItem *)RI.m_pItem;
+	GR_CairoPangoItem * pItem = (GR_CairoPangoItem *)RI.m_pItem;
 	UT_return_val_if_fail(pItem, 0);
 
 	// TODO: this is very inefficient: to cache or not to cache ?
@@ -1852,9 +1853,9 @@ void GR_CairoGraphics::positionToXY(const GR_RenderInfo & ri,
 										UT_sint32& x2, UT_sint32& /*y2*/,
 										UT_sint32& /*height*/, bool& /*bDirection*/) const
 {
-	UT_return_if_fail(ri.getType() == GRRI_UNIX_PANGO);
+	UT_return_if_fail(ri.getType() == GRRI_CAIRO_PANGO);
 	GR_PangoRenderInfo & RI = (GR_PangoRenderInfo &) ri;
-	GR_UnixPangoItem * pItem = (GR_UnixPangoItem *)RI.m_pItem;
+	GR_CairoPangoItem * pItem = (GR_CairoPangoItem *)RI.m_pItem;
   
 	if(!pItem)
 		return;
@@ -2242,8 +2243,8 @@ void GR_CairoGraphics::setFont(const GR_Font * pFont)
 		if(strstr(szLCFontName,"dingbat"))
 			_setIsDingbat(true);
 	}
-	g_free (szLCFontName); szLCFontName = NULL;
-	
+	FREEP(szLCFontName);
+		
 	if(!m_pPFont->isGuiFont() && m_pPFont->getZoom() != getZoomPercentage())
 	{
 		m_pPFont->reloadFont(this);
@@ -2304,7 +2305,6 @@ UT_uint32 GR_CairoGraphics::getFontHeight(const GR_Font *pFont)
 	UT_return_val_if_fail( pFont, 0 );
 
 	const GR_PangoFont * pFP = static_cast<const GR_PangoFont*>(pFont);
-	xxx_UT_DEBUGMSG(("Font Height Pango %d \n",pFP->getAscent() + pFP->getDescent()));
 	return pFP->getAscent() + pFP->getDescent();
 }
 
@@ -3121,6 +3121,8 @@ void GR_PangoFont::reloadFont(GR_CairoGraphics * pG)
 		return;
 	
 	m_iZoom = iZoom;
+
+	UT_DEBUGMSG(("GR_PangoFont::reloadFont() zoom %% %d\n", iZoom));
 	
 	UT_LocaleTransactor t(LC_NUMERIC, "C");
  	UT_String sLay;
@@ -3173,6 +3175,7 @@ void GR_PangoFont::reloadFont(GR_CairoGraphics * pG)
 	// pango_metrics_ functions return in points * PANGO_SCALE (points * 1024)
  	m_iAscent = (UT_uint32) pango_font_metrics_get_ascent(pfm)/PANGO_SCALE;
  	m_iDescent = (UT_uint32) pango_font_metrics_get_descent(pfm)/PANGO_SCALE;
+	UT_DEBUGMSG(("metrics asc %d desc %d\n", m_iAscent, m_iDescent));
 
  	xxx_UT_DEBUGMSG(("Layout Font Ascent %d point size %f zoom %d \n",m_iAscent, m_dPointSize, m_iZoom));
 	pango_font_metrics_unref(pfm);
@@ -3320,8 +3323,8 @@ const char* GR_PangoFont::getFamily() const
 bool GR_PangoRenderInfo::canAppend(GR_RenderInfo &ri) const
 {
 	GR_PangoRenderInfo & RI = (GR_PangoRenderInfo &)ri;
-	GR_UnixPangoItem * pItem1 = (GR_UnixPangoItem *)m_pItem;
-	GR_UnixPangoItem * pItem2 = (GR_UnixPangoItem *)RI.m_pItem;
+	GR_CairoPangoItem * pItem1 = (GR_CairoPangoItem *)m_pItem;
+	GR_CairoPangoItem * pItem2 = (GR_CairoPangoItem *)RI.m_pItem;
 
 	/* Do not merger runs that have not been shapped yet */
 	if (!pItem1 || !pItem2)

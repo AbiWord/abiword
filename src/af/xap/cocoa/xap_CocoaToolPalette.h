@@ -31,10 +31,9 @@
 
 #include "xav_Listener.h"
 
-@class XAP_CocoaFontFamilyHelper;
-
 class XAP_Frame;
-
+class EV_Menu_ActionSet;
+class EV_Toolbar_ActionSet;
 class FV_View;
 
 @class XAP_CocoaToolPalette;
@@ -170,8 +169,6 @@ private:
 	NSMutableArray *				m_pFontFamilies;
 
 	NSString *						m_pCurrentFontFamily;
-
-	XAP_CocoaFontFamilyHelper *		m_pCurrentFontFamilyHelper;
 
 	const EV_Menu_ActionSet *		m_pMenuActionSet;
 	const EV_Toolbar_ActionSet *	m_pToolbarActionSet;

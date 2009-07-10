@@ -29,6 +29,7 @@
 #include <vector>
 
 #include "ut_types.h"
+#include "ut_color.h"
 #include "ut_string_class.h"
 #include "gr_RenderInfo.h"
 
@@ -48,7 +49,6 @@
 class GR_PangoRenderInfo;
 class GR_CairoGraphics;
 class XAP_Frame;
-
 
 class GR_CairoPatternImpl
 	: public UT_ColorPatImpl

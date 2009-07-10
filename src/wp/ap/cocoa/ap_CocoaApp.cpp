@@ -67,7 +67,6 @@
 
 #include "xav_View.h"
 
-#include "gr_CocoaGraphics.h"
 #include "gr_CocoaImage.h"
 #include "gr_Graphics.h"
 #include "gr_Image.h"

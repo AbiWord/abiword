@@ -25,7 +25,6 @@
 #include "xap_Frame.h"
 #include "xap_CocoaFrame.h"
 #include "ap_CocoaFrame.h"
-#include "gr_CocoaGraphics.h"
 #include "ap_CocoaStatusBar.h"
 #import "xap_CocoaFrameImpl.h"
 

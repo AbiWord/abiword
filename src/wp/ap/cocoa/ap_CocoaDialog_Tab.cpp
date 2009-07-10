@@ -26,7 +26,6 @@
 
 #include "xap_CocoaDialog_Utilities.h"
 
-#include "gr_CocoaGraphics.h"
 #include "fl_BlockLayout.h"
 
 #include "xap_App.h"

@@ -22,6 +22,7 @@
 #define XAP_COCOADIALOG_PRINT_H
 
 #include "xap_Dlg_Print.h"
+class GR_CocoaCairoGraphics;
 class AP_CocoaFrame;
 class FV_View;
 
@@ -44,7 +45,7 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 private:
-	GR_CocoaGraphics*			m_pPrintGraphics;
+	GR_CocoaCairoGraphics*			m_pPrintGraphics;
 };
 
 #endif /* XAP_COCOADIALOG_PRINT_H */

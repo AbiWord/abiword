@@ -23,6 +23,7 @@
 
 #include "ap_Dialog_Paragraph.h"
 
+class GR_CocoaCairoGraphics;
 class XAP_CocoaFrame;
 class AP_CocoaDialog_Paragraph;
 
@@ -114,7 +115,7 @@ void	_createGC(XAP_CocoaNSView* owner);
 void 	_deleteGC(void);
  protected:
 
-	GR_CocoaGraphics	* 		m_pGraphics;
+	GR_CocoaCairoGraphics	* 		m_pGraphics;
 
 	void                 _populateWindowData(void);
 

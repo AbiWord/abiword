@@ -27,8 +27,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-// This header defines some functions for Cocoa dialogs,
-// like centering them, measuring them, etc.
+#include "gr_CocoaCairoGraphics.h"
 #include "xap_CocoaDialog_Utilities.h"
 
 #include "xap_App.h"
@@ -83,8 +82,8 @@ void AP_CocoaDialog_Columns::runModal(XAP_Frame * pFrame)
 	// make a new Cocoa GC
 	DELETEP (m_pPreviewWidget);
 	XAP_CocoaNSView *preview = [m_dlg preview];
-	GR_CocoaAllocInfo ai(preview);
-	m_pPreviewWidget = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
+	GR_CocoaCairoAllocInfo ai(preview);
+	m_pPreviewWidget = (GR_CocoaCairoGraphics*)XAP_App::getApp()->newGraphics(ai);
 
 	NSSize size = [preview frame].size;
 

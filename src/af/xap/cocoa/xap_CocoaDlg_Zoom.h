@@ -92,7 +92,7 @@ public:
 private:
 	void		_populateWindowData(void);
 	void 		_storeWindowData(void);
-	GR_CocoaGraphics	* 		m_pGR;
+	GR_CocoaCairoGraphics	* 		m_pGR;
 	XAP_CocoaDlg_ZoomController*	m_dlg;
 };
 

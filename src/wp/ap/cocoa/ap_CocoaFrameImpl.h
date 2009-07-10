@@ -103,7 +103,7 @@ private:
 	XAP_NSScroller*					m_hScrollbar;
 	XAP_NSScroller*					m_vScrollbar;
 	XAP_CocoaTextView*				m_docAreaGRView;
-	static bool					_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param);
+	static bool					_graphicsUpdateCB(NSRect * aRect, GR_CocoaCairoGraphics *pG, void* param);
 private:
 	UT_sint32					m_HMinScroll;
 	UT_sint32					m_HMaxScroll;

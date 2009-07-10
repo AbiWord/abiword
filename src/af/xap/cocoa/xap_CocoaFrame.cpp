@@ -44,7 +44,8 @@
 #include "xav_View.h"
 #include "fv_View.h"
 #include "xad_Document.h"
-#include "gr_Graphics.h"
+#include "gr_CocoaCairoGraphics.h"
+#include "gr_Painter.h"
 
 
 
@@ -96,7 +97,7 @@
 	return m_pFrame;
 }
 
-- (void)setGraphics:(GR_CocoaGraphics *)gr
+- (void)setGraphics:(GR_CocoaCairoGraphics *)gr
 {
 	m_pGR = gr;
 }
@@ -107,7 +108,11 @@
 - (void)drawRect:(NSRect)aRect
 {
 	if (m_pGR) {
-		m_pGR->fillNSRect (aRect, [NSColor redColor]);
+		UT_RGBColor clr;
+		GR_Painter painter(m_pGR);
+
+		GR_CocoaCairoGraphics::_utNSColorToRGBColor([NSColor redColor], clr);
+		m_pGR->fillRect (clr, aRect.origin.x, aRect.origin.y, aRect.size.width, aRect.size.height);
 
 		/*  Because of the way we convert from local to display units for scrolling and back again for expose
 		 *  events, there can be a sizeable discrepancy (in local units) between internal events and the
@@ -131,7 +136,7 @@
 */
 - (BOOL)isFlipped
 {
-	return GR_CocoaGraphics::_isFlipped();
+	return GR_CocoaCairoGraphics::_isFlipped();
 }
 
 /*!

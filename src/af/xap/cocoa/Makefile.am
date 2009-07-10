@@ -104,8 +104,6 @@ libcocoa_la_SOURCES = \
 	xap_CocoaEncodingManager.h \
 	xap_CocoaEncodingManager.cpp \
 	xap_CocoaFeatures.h \
-	xap_CocoaFont.h \
-	xap_CocoaFont.cpp \
 	xap_CocoaFrame.h \
 	xap_CocoaFrameImpl.h \
 	xap_CocoaFrameImpl.cpp \

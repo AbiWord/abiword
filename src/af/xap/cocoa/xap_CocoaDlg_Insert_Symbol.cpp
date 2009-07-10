@@ -30,13 +30,12 @@
 
 #import "xap_CocoaDialog_Utilities.h"
 
-#include "gr_CocoaGraphics.h"
+#include "gr_CocoaCairoGraphics.h"
 
 #include "xap_App.h"
 #include "xap_CocoaApp.h"
 #include "xap_CocoaAppController.h"
 #include "xap_CocoaFrame.h"
-#include "xap_CocoaFont.h"
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_Insert_Symbol.h"
 #include "xap_Draw_Symbol.h"

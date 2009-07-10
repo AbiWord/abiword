@@ -29,7 +29,7 @@
 // like centering them, measuring them, etc.
 #include "xap_CocoaDialog_Utilities.h"
 
-#include "gr_CocoaGraphics.h"
+#include "gr_CocoaCairoGraphics.h"
 
 #include "xap_App.h"
 #include "xap_CocoaApp.h"
@@ -79,8 +79,8 @@ void XAP_CocoaDialog_Zoom::runModal(XAP_Frame * pFrame)
 	// make a new Cocoa GC
 	XAP_CocoaNSView* view = [m_dlg preview];
 	NSSize size = [view bounds].size;
-	GR_CocoaAllocInfo ai(view);
-	m_pGR = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
+	GR_CocoaCairoAllocInfo ai(view);
+	m_pGR = (GR_CocoaCairoGraphics*)XAP_App::getApp()->newGraphics(ai);
 
 	_createPreviewFromGC(m_pGR, lrintf(size.width), lrintf(size.height));
 	_populateWindowData();

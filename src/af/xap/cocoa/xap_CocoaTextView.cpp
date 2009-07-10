@@ -29,6 +29,7 @@
 #include "ev_EditMethod.h"
 #include "ev_NamedVirtualKey.h"
 
+#include "xap_App.h"
 #include "xap_CocoaTextView.h"
 #include "xap_CocoaToolPalette.h"
 #include "xap_Frame.h"

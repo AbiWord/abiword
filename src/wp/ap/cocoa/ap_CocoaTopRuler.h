@@ -32,7 +32,7 @@
 
 #include "ut_types.h"
 #include "ap_TopRuler.h"
-#include "gr_CocoaGraphics.h"
+
 class XAP_Frame;
 @class AP_CocoaTopRulerDelegate;
 
@@ -53,15 +53,17 @@ public:
 	NSWindow * 	getRootWindow(void);
 	
 protected:
+#if 0
 	virtual void	_drawMarginProperties(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo, GR_Graphics::GR_Color3D clr);
 	virtual void	_drawLeftIndentMarker(UT_Rect & r, bool bFilled);
 	virtual void	_drawRightIndentMarker(UT_Rect & r, bool bFilled);
 	virtual void	_drawFirstLineIndentMarker(UT_Rect & rect, bool bFilled);
 	virtual void	_drawColumnGapMarker(UT_Rect & rect);
 	virtual void	_drawCellMark(UT_Rect * prDrag, bool bUp);
+#endif
 
 private:
-	static bool _graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param);
+	static bool _graphicsUpdateCB(NSRect * aRect, GR_CocoaCairoGraphics *pG, void* param);
 
 	XAP_CocoaNSView *			m_wTopRuler;
 	NSWindow *	m_rootWindow;

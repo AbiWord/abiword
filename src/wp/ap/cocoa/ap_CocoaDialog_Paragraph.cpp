@@ -25,7 +25,7 @@
 
 #include "xap_CocoaDialog_Utilities.h"
 
-#include "gr_CocoaGraphics.h"
+#include "gr_CocoaCairoGraphics.h"
 
 #include "xap_App.h"
 #include "xap_CocoaApp.h"
@@ -91,8 +91,8 @@ void AP_CocoaDialog_Paragraph::runModal(XAP_Frame * pFrame)
 void	AP_CocoaDialog_Paragraph::_createGC(XAP_CocoaNSView* owner)
 {
 	NSSize  size;
-	GR_CocoaAllocInfo ai(owner);
-	m_pGraphics = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
+	GR_CocoaCairoAllocInfo ai(owner);
+	m_pGraphics = (GR_CocoaCairoGraphics*)XAP_App::getApp()->newGraphics(ai);
 
 	size = [owner bounds].size;
 	_createPreviewFromGC(m_pGraphics, lrintf(size.width), lrintf(size.height));

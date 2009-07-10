@@ -24,8 +24,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "gr_CocoaGraphics.h"
-
 #include "xap_Frame.h"
 
 class XAP_CocoaApp;
@@ -43,7 +41,7 @@ class EV_CocoaMenuPopup;
 ******************************************************************
 *****************************************************************/
 
-class GR_CocoaGraphics;
+class GR_CocoaCairoGraphics;
 class FV_View;
 
 @protocol XAP_MouseEventDelegate
@@ -58,14 +56,14 @@ class FV_View;
 {
 	NSCursor		*_cursor;
 	XAP_Frame 		*m_pFrame;
-	GR_CocoaGraphics	*m_pGR;
+	GR_CocoaCairoGraphics	*m_pGR;
 	NSObject<XAP_MouseEventDelegate>	*_eventDelegate;
 }
 - (id)initWith:(XAP_Frame *)frame andFrame:(NSRect)windowFrame;
 - (BOOL)acceptsFirstResponder;
 - (BOOL)becomeFirstResponder;
 - (XAP_Frame *)xapFrame;
-- (void)setGraphics:(GR_CocoaGraphics *)gr;
+- (void)setGraphics:(GR_CocoaCairoGraphics *)gr;
 - (void)setEventDelegate:(NSObject<XAP_MouseEventDelegate>*)delegate;
 - (NSObject<XAP_MouseEventDelegate>*)eventDelegate;
 - (void)drawRect:(NSRect)aRect;

@@ -30,7 +30,7 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "pd_Document.h"
-#include "gr_CocoaGraphics.h"
+#include "gr_CocoaCairoGraphics.h"
 #include "xap_Dialog_Id.h"
 #include "xap_CocoaDlg_Print.h"
 #include "xap_CocoaApp.h"
@@ -78,11 +78,11 @@ GR_Graphics * XAP_CocoaDialog_Print::getPrinterGraphicsContext(void)
 	if (m_pPrintGraphics == NULL) {
 		NSSize size = [[NSPrintInfo sharedPrintInfo] paperSize];	// TODO get the size from a real data
 		XAP_PrintingNSView* printingView = [[XAP_PrintingNSView  alloc] initWithFrame:NSMakeRect(0,0,size.width,size.height)];
-		GR_CocoaAllocInfo ai(printingView);
-		m_pPrintGraphics = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
+		GR_CocoaCairoAllocInfo ai(printingView);
+		m_pPrintGraphics = (GR_CocoaCairoGraphics*)XAP_App::getApp()->newGraphics(ai);
 		m_pPrintGraphics->setIsPrinting(true);
 	}
-	return static_cast<GR_Graphics*>(m_pPrintGraphics);
+	return m_pPrintGraphics;
 }
 
 
@@ -104,7 +104,7 @@ void XAP_CocoaDialog_Print::runPrint(XAP_Frame * /*pFrame*/, FV_View * pPrintVie
 							UT_sint32 /*iWidth*/, UT_sint32 /*iHeight*/)
 {
 	UT_ASSERT(m_pPrintGraphics);
-	XAP_PrintingNSView* printingView = (XAP_PrintingNSView*)m_pPrintGraphics->_getView();
+	XAP_PrintingNSView* printingView = (XAP_PrintingNSView*)m_pPrintGraphics->getView();
 	[printingView setPrintingDelegate:(new AP_PrintingDelegate(pPrintView))];
 	fp_PageSize ps = pPrintView->getPageSize();	  
 	bool orient = ps.isPortrait ();

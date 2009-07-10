@@ -30,7 +30,7 @@
 #include "xav_View.h"
 #include "fv_View.h"
 #include "fl_DocLayout.h"
-#include "gr_CocoaGraphics.h"
+#include "gr_CocoaCairoGraphics.h"
 #include "xap_Scrollbar_ViewListener.h"
 #include "ap_CocoaFrame.h"
 #include "xap_CocoaApp.h"

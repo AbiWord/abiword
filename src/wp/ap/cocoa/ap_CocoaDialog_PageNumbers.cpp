@@ -28,7 +28,7 @@
 
 #include "xap_CocoaDialog_Utilities.h"
 
-#include "gr_CocoaGraphics.h"
+#include "gr_CocoaCairoGraphics.h"
 
 #include "xap_App.h"
 #include "xap_CocoaApp.h"
@@ -115,8 +115,8 @@ void AP_CocoaDialog_PageNumbers::runModal(XAP_Frame * /*pFrame*/)
 	// make a new Cocoa GC
 	XAP_CocoaNSView* view = [m_dlg preview];
 	NSSize size = [view frame].size;
-	GR_CocoaAllocInfo ai(view);
-	m_pG = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
+	GR_CocoaCairoAllocInfo ai(view);
+	m_pG = (GR_CocoaCairoGraphics*)XAP_App::getApp()->newGraphics(ai);
 
 	// let the widget materialize
 	_createPreviewFromGC(m_pG, (UT_uint32) lrintf(size.width), (UT_uint32) lrintf(size.height));

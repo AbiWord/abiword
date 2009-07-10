@@ -27,7 +27,6 @@
 
 #import "xap_CocoaApp.h"
 #import "xap_CocoaAppController.h"
-#import "xap_CocoaFont.h"
 #import "xap_CocoaToolPalette.h"
 #import "xap_CocoaToolbar_Icons.h"
 
@@ -844,7 +843,6 @@ static XAP_CocoaToolPalette * s_instance = nil;
 	m_pEditMethodContainer = 0;
 	m_pFontFamilies = 0;
 	m_pCurrentFontFamily = 0;
-	m_pCurrentFontFamilyHelper = 0;
 	m_Listener = 0;
 
 	XAP_CocoaApp * pCocoaApp = dynamic_cast<XAP_CocoaApp *>(XAP_App::getApp());
@@ -933,11 +931,6 @@ static XAP_CocoaToolPalette * s_instance = nil;
 	{
 		[m_pCurrentFontFamily release];
 		m_pCurrentFontFamily = 0;
-	}
-	if (m_pCurrentFontFamilyHelper)
-	{
-		[m_pCurrentFontFamilyHelper release];
-		m_pCurrentFontFamilyHelper = 0;
 	}
 	DELETEP(m_ToolChest);
 	DELETEP(m_Listener);
@@ -1326,12 +1319,12 @@ static XAP_CocoaToolPalette * s_instance = nil;
 		return;
 	}
 
-	if (!m_pCurrentFontFamily || !m_pCurrentFontFamilyHelper)
+	if (!m_pCurrentFontFamily)
 	{
 		return;
 	}
 
-	int index = [[oFontMemberName selectedItem] tag];
+//	int index = [[oFontMemberName selectedItem] tag];
 
 	NSString * fontFamilyName = m_pCurrentFontFamily;
 
@@ -1341,6 +1334,7 @@ static XAP_CocoaToolPalette * s_instance = nil;
 	BOOL bSetBold   = NO;
 	BOOL bSetItalic = NO;
 
+#if 0
 	if (index == [m_pCurrentFontFamilyHelper indexBoldItalic])
 	{
 		bSetBold   = YES;
@@ -1364,7 +1358,7 @@ static XAP_CocoaToolPalette * s_instance = nil;
 
 		fontFamilyName = [fontNames objectAtIndex:index];
 	}
-
+#endif
 	/* fontFamilyName gets corrupted for some probably obvious reason, so copy it here and now...
 	 */
 	UT_UCS4String selection([fontFamilyName UTF8String]);
@@ -2115,7 +2109,7 @@ static XAP_CocoaToolPalette * s_instance = nil;
 
 - (void)rebuildFontFamilyPopUp
 {
-	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+//	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
 
 	[oFontName removeAllItems];
 
@@ -2137,12 +2131,12 @@ static XAP_CocoaToolPalette * s_instance = nil;
 		{
 			bAttributedTitles = [item respondsToSelector:@selector(setAttributedTitle:)];
 		}
-		if (bAttributedTitles)
-		{
-			XAP_CocoaFontFamilyHelper * helper = [pController helperForFontFamily:Family];
-
-			[item setAttributedTitle:[helper attributedFontFamilyName]];
-		}
+//		if (bAttributedTitles)
+//		{
+//			XAP_CocoaFontFamilyHelper * helper = [pController helperForFontFamily:Family];
+//
+//			[item setAttributedTitle:[helper attributedFontFamilyName]];
+//		}
 	}
 }
 
@@ -2157,34 +2151,34 @@ static XAP_CocoaToolPalette * s_instance = nil;
 
 	NSString * fontFamilyName = 0;
 
-	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+//	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
 
-	XAP_CocoaFontReference * fontRef = 0;
+//	XAP_CocoaFontReference * fontRef = 0;
 
-	XAP_CocoaFontFamilyHelper * helper = [pController helperForFontFamily:requestedFontFamilyName];
+//	XAP_CocoaFontFamilyHelper * helper = [pController helperForFontFamily:requestedFontFamilyName];
 
-	if (helper)
-	{
-		// (a) a recognized font family name
-
+//	if (helper)
+//	{
+//		// (a) a recognized font family name
+//
+//		fontFamilyName = requestedFontFamilyName;
+//	}
+//	else if ((fontRef = [pController helperReferenceForFont:requestedFontFamilyName]))
+//	{
+//		// (b) really a font name
+//
+//		fontFamilyName = [fontRef fontFamily];
+//
+//		helper = [fontRef fontFamilyHelper];
+//	}
+//	else
+//	{
+//		// (c) completely unknown, so we pretend it's a new font family name
+//
 		fontFamilyName = requestedFontFamilyName;
-	}
-	else if ((fontRef = [pController helperReferenceForFont:requestedFontFamilyName]))
-	{
-		// (b) really a font name
-
-		fontFamilyName = [fontRef fontFamily];
-
-		helper = [fontRef fontFamilyHelper];
-	}
-	else
-	{
-		// (c) completely unknown, so we pretend it's a new font family name
-
-		fontFamilyName = requestedFontFamilyName;
-
-		helper = [pController helperForUnknownFontFamily:requestedFontFamilyName];
-
+//
+//		helper = [pController helperForUnknownFontFamily:requestedFontFamilyName];
+//
 		/* In this case we need to modify the list of font families
 		 */
 
@@ -2192,7 +2186,7 @@ static XAP_CocoaToolPalette * s_instance = nil;
 		[m_pFontFamilies sortUsingSelector:@selector(compare:)];
 
 		[self rebuildFontFamilyPopUp];
-	}
+//	}
 
 	BOOL bRebuildMemberPopUp = YES;
 
@@ -2207,6 +2201,7 @@ static XAP_CocoaToolPalette * s_instance = nil;
 	m_pCurrentFontFamily = fontFamilyName;
 	[m_pCurrentFontFamily retain];
 
+#if 0
 	if (m_pCurrentFontFamilyHelper)
 	{
 		[m_pCurrentFontFamilyHelper release];
@@ -2260,7 +2255,6 @@ static XAP_CocoaToolPalette * s_instance = nil;
 		[oFontMemberName selectItemAtIndex:((int) [fontRef index])];
 		return;
 	}
-
 	/* We have a font family name but we need to choose a particular member of the font...
 	 */
 	BOOL bBold   = ([oTB_text_bold   state] == NSOnState) ? YES : NO;
@@ -2299,6 +2293,7 @@ static XAP_CocoaToolPalette * s_instance = nil;
 
 		[oFontMemberName selectItemAtIndex:((index >= 0) ? index : 0)];
 	}
+#endif
 }
 
 @end

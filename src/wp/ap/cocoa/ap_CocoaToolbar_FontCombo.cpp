@@ -25,8 +25,6 @@
 #include "ut_hash.h"
 #include "ut_debugmsg.h"
 
-#include "xap_CocoaFont.h"
-
 #include "ap_CocoaToolbar_FontCombo.h"
 #include "ap_Toolbar_Id.h"
 #include "xap_CocoaApp.h"
