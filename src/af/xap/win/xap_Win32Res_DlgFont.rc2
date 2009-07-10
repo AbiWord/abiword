@@ -1,0 +1,113 @@
+// AbiWord
+// Copyright (C) 1998 AbiSource, Inc.
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+
+#define XAP_RID_DIALOG_FONT_TEXT_FONT				1088
+#define XAP_RID_DIALOG_FONT_TEXT_FONT_STYLE			1089
+#define XAP_RID_DIALOG_FONT_TEXT_SIZE				1090
+#define XAP_RID_DIALOG_FONT_TEXT_EFFECTS			1072
+#define XAP_RID_DIALOG_FONT_BTN_STRIKEOUT			1040
+#define XAP_RID_DIALOG_FONT_BTN_UNDERLINE			1041
+#define XAP_RID_DIALOG_FONT_TEXT_COLOR				1091
+#define XAP_RID_DIALOG_FONT_TEXT_SCRIPT				1094
+#define XAP_RID_DIALOG_FONT_TEXT_SAMPLE				1073
+#define XAP_RID_DIALOG_FONT_CHK_OVERLINE			1001
+//#define XAP_RID_DIALOG_FONT_CHK_TOPLINE				1002
+//#define XAP_RID_DIALOG_FONT_CHK_BOTTOMLINE			1003
+#define XAP_RID_DIALOG_FONT_CHK_SUPERSCRIPT			1004
+#define XAP_RID_DIALOG_FONT_PREVIEW 				1005
+#define XAP_RID_DIALOG_FONT_BTN_OK					IDOK
+#define XAP_RID_DIALOG_FONT_BTN_CANCEL				IDCANCEL
+#define XAP_RID_DIALOG_FONT_CHK_HIDDEN  			1006
+#define XAP_RID_DIALOG_FONT_CHK_SUBSCRIPT			1007
+
+#ifdef RC_INVOKED
+// NOTE -- these placeholder strings get overridden at runtime 
+// NOTE -- they're just here to make sizing easier
+
+//XAP_RID_DIALOG_FONT DIALOG DISCARDABLE  13, 54, 263, 230
+XAP_RID_DIALOG_FONT DIALOG DISCARDABLE  13, 54, 263, 206
+STYLE DS_MODALFRAME | DS_3DLOOK | DS_CONTEXTHELP | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "Font"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "&Font:",XAP_RID_DIALOG_FONT_TEXT_FONT,7,7,84,9
+    COMBOBOX        1136,7,16,98,76,CBS_SIMPLE | CBS_OWNERDRAWFIXED | 
+                    CBS_AUTOHSCROLL | CBS_SORT | CBS_HASSTRINGS | 
+                    CBS_DISABLENOSCROLL | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Font st&yle:",XAP_RID_DIALOG_FONT_TEXT_FONT_STYLE,110,7,
+                    51,9
+    COMBOBOX        1137,110,16,62,76,CBS_SIMPLE | CBS_DISABLENOSCROLL | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Size:",1090,177,7,30,9
+    COMBOBOX        1138,177,16,27,76,CBS_SIMPLE | CBS_OWNERDRAWFIXED | 
+                    CBS_SORT | CBS_HASSTRINGS | CBS_DISABLENOSCROLL | 
+                    WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "OK",IDOK,210,16,45,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,210,32,45,14,WS_GROUP
+    PUSHBUTTON      "&Apply",1026,210,48,45,14,WS_GROUP
+    PUSHBUTTON      "&Help",1038,210,64,45,14,WS_GROUP
+//    GROUPBOX        "Effects",1072,7,92,199,89,WS_GROUP
+    GROUPBOX        "Effects",1072,7,92,199,65,WS_GROUP
+    CONTROL         "Stri&keout",XAP_RID_DIALOG_FONT_BTN_STRIKEOUT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,106,84,10
+    CONTROL         "&Underline",XAP_RID_DIALOG_FONT_BTN_UNDERLINE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,118,84,10
+    LTEXT           "&Color:",XAP_RID_DIALOG_FONT_TEXT_COLOR,113,130,84,9
+    COMBOBOX        1139,113,141,84,100,CBS_DROPDOWNLIST | 
+                    CBS_OWNERDRAWFIXED | CBS_AUTOHSCROLL | CBS_HASSTRINGS | 
+                    WS_BORDER | WS_VSCROLL | WS_TABSTOP
+//    GROUPBOX        "Sample",XAP_RID_DIALOG_FONT_TEXT_SAMPLE,7,188,198,36,
+    GROUPBOX        "Sample",XAP_RID_DIALOG_FONT_TEXT_SAMPLE,7,164,198,36,
+                    WS_GROUP
+//    CTEXT           "AaBbYyZz",1092,15,199,183,21,SS_NOPREFIX | NOT 
+    CTEXT           "AaBbYyZz",1092,15,175,183,21,SS_NOPREFIX | NOT 
+                    WS_VISIBLE
+	//                    
+	// This is not used
+    //LTEXT         "Sc&ript:",XAP_RID_DIALOG_FONT_TEXT_SCRIPT,113,141,84,9
+    //COMBOBOX      1140,113,151,84,30,CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | 
+    //              CBS_AUTOHSCROLL | CBS_HASSTRINGS | WS_BORDER | 
+    //              WS_VSCROLL | WS_TABSTOP
+    
+    CONTROL         "&Overline",XAP_RID_DIALOG_FONT_CHK_OVERLINE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,130,84,10
+//    CONTROL         "&Topline",XAP_RID_DIALOG_FONT_CHK_TOPLINE,"Button",
+//                    BS_AUTOCHECKBOX | WS_TABSTOP,15,130,84,10
+//    CONTROL         "&Bottomline",XAP_RID_DIALOG_FONT_CHK_BOTTOMLINE,"Button",
+//                    BS_AUTOCHECKBOX | WS_TABSTOP,15,142,84,10
+    CONTROL         "&Superscript",XAP_RID_DIALOG_FONT_CHK_SUPERSCRIPT,"Button",
+                    BS_AUTOCHECKBOX | WS_VISIBLE | WS_TABSTOP,113,103,84,10
+    CONTROL         "S&ubscript", XAP_RID_DIALOG_FONT_CHK_SUBSCRIPT,"Button",
+                    BS_AUTOCHECKBOX | WS_VISIBLE | WS_TABSTOP,113,117,84,10                    
+    CONTROL         "&Hidden",XAP_RID_DIALOG_FONT_CHK_HIDDEN,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,142,84,10
+END
+
+#endif /* RC_INVOKED */

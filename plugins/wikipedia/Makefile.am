@@ -1,0 +1,45 @@
+
+SUBDIRS = xp
+
+if WIKIPEDIA_BUILTIN
+noinst_LTLIBRARIES = wikipedia.la
+
+else
+
+plugindir = $(ABIWORD_PLUGINSDIR)
+plugin_LTLIBRARIES = wikipedia.la
+
+if TOOLKIT_WIN
+
+plugin_DATA = \
+	wikipedia.dll
+
+CLEANFILES = \
+	wikipedia.def \
+	wikipedia.dll \
+	wikipedia.dll.a
+
+.libs/wikipedia.a: wikipedia.la
+
+wikipedia.dll: .libs/wikipedia.a
+	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
+
+endif # TOOLKIT_WIN
+
+endif
+
+wikipedia_la_LIBADD = \
+	xp/libxp.la
+
+wikipedia_la_LDFLAGS = \
+	$(WIKIPEDIA_LIBS) \
+	-avoid-version \
+	-module \
+	-no-undefined
+
+wikipedia_la_SOURCES = 
+nodist_EXTRA_wikipedia_la_SOURCES = dummy.cpp
+
+EXTRA_DIST = \
+	plugin.m4
+

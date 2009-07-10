@@ -1,0 +1,38 @@
+
+SUBDIRS = xp
+
+plugindir = $(ABIWORD_PLUGINSDIR)
+plugin_LTLIBRARIES = wmf.la
+
+wmf_la_LIBADD = \
+	xp/libxp.la
+
+wmf_la_LDFLAGS = \
+	$(WMF_LIBS) \
+	-avoid-version \
+	-module \
+	-no-undefined
+
+wmf_la_SOURCES = 
+nodist_EXTRA_wmf_la_SOURCES = dummy.cpp
+
+EXTRA_DIST = \
+	plugin.m4
+
+if TOOLKIT_WIN
+
+plugin_DATA = \
+	wmf.dll
+
+CLEANFILES = \
+	wmf.def \
+	wmf.dll \
+	wmf.dll.a
+
+.libs/wmf.a: wmf.la
+
+wmf.dll: .libs/wmf.a
+	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(WMF_LIBS)
+
+endif # TOOLKIT_WIN
+

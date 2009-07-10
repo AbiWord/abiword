@@ -1,0 +1,35 @@
+/* XPM */
+static const char *tb_smiley[] = {
+/* width height num_colors chars_per_pixel */
+"    24    24       3            1",
+/* colors */
+"` c #000000",
+"i c #ffff00",
+"A c None",
+/* pixels */
+"AAAAAAAAAAAAAAAAAAAAAAAA",
+"AAAAAAAAAAAAAAAAAAAAAAAA",
+"AAAAAAAAAAAAAAAAAAAAAAAA",
+"AAAAAAAAAAAAAAAAAAAAAAAA",
+"AAAAAAAAA``````AAAAAAAAA",
+"AAAAAAA``iiiiii``AAAAAAA",
+"AAAAAA`iiiiiiiiii`AAAAAA",
+"AAAAA`iiiiiiiiiiii`AAAAA",
+"AAAAA`iiiiiiiiiiii`AAAAA",
+"AAAA`iiii`iiii`iiii`AAAA",
+"AAAA`iiiiiiiiiiiiii`AAAA",
+"AAAA`iiiiiiiiiiiiii`AAAA",
+"AAAA`iiiiiiiiiiiiii`AAAA",
+"AAAA`iiiiiiiiiiiiii`AAAA",
+"AAAA`iii`iiiiii`iii`AAAA",
+"AAAAA`iii`iiii`iii`AAAAA",
+"AAAAA`iiii````iiii`AAAAA",
+"AAAAAA`iiiiiiiiii`AAAAAA",
+"AAAAAAA``iiiiii``AAAAAAA",
+"AAAAAAAAA``````AAAAAAAAA",
+"AAAAAAAAAAAAAAAAAAAAAAAA",
+"AAAAAAAAAAAAAAAAAAAAAAAA",
+"AAAAAAAAAAAAAAAAAAAAAAAA",
+"AAAAAAAAAAAAAAAAAAAAAAAA"
+};
+/* Alan Horkan.  Yellow Smiley Face */

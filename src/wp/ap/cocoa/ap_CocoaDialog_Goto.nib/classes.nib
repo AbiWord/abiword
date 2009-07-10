@@ -1,0 +1,28 @@
+{
+    IBClasses = (
+        {
+            ACTIONS = {
+                backAction = id; 
+                closeAction = id; 
+                forwardAction = id; 
+                jumpToAction = id; 
+                valueComboAction = id; 
+                whatPopupAction = id; 
+            }; 
+            CLASS = "AP_CocoaDialog_GotoController"; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                backBtn = NSButton; 
+                forwardBtn = NSButton; 
+                jumpToBtn = NSButton; 
+                valueCombo = NSComboBox; 
+                valueLabel = NSTextField; 
+                whatLabel = NSTextField; 
+                whatPopup = NSPopUpButton; 
+            }; 
+            SUPERCLASS = NSWindowController; 
+        }, 
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }
+    ); 
+    IBVersion = 1; 
+}

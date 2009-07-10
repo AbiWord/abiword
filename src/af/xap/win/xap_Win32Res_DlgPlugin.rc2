@@ -1,0 +1,91 @@
+// AbiWord
+// Copyright (C) 1998 AbiSource, Inc.
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+// the main dialog
+#define XAP_RID_DIALOG_PLUGIN_MANAGER_TAB					1001
+
+
+// sub-dialog for the "Plugin List" tab
+#define XAP_RID_DIALOG_PLUGIN_MANAGER_BTN_ACTIVE			1251
+#define XAP_RID_DIALOG_PLUGIN_MANAGER_BTN_INSTALL			1252
+#define XAP_RID_DIALOG_PLUGIN_MANAGER_LBX_LIST				1253
+
+
+
+// sub-dialog for the "Plugin Details" tab
+#define XAP_RID_DIALOG_PLUGIN_MANAGER_LBL_NAME				1201
+#define XAP_RID_DIALOG_PLUGIN_MANAGER_LBL_DESCRIPTION		1202
+#define XAP_RID_DIALOG_PLUGIN_MANAGER_LBL_AUTHOR			1203
+#define XAP_RID_DIALOG_PLUGIN_MANAGER_LBL_VERSION			1204
+#define XAP_RID_DIALOG_PLUGIN_MANAGER_EBX_NAME				1205
+#define XAP_RID_DIALOG_PLUGIN_MANAGER_EBX_DESCRIPTION		1206
+#define XAP_RID_DIALOG_PLUGIN_MANAGER_EBX_AUTHOR			1207
+#define XAP_RID_DIALOG_PLUGIN_MANAGER_EBX_VERSION			1208
+
+#ifdef RC_INVOKED
+// NOTE -- these placeholder strings get overridden at runtime 
+// NOTE -- they're just here to make sizing easier
+
+
+
+XAP_RID_DIALOG_PLUGIN_MANAGER DIALOG DISCARDABLE  0, 0, 303, 222
+STYLE DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Plugin Manager22" 
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT   	      "Active Plugins",
+     	              XAP_RID_DIALOG_PLUGIN_MANAGER_BTN_ACTIVE,7,6,114,14       	          	                
+      
+    LISTBOX			XAP_RID_DIALOG_PLUGIN_MANAGER_LBX_LIST,7,20,114,129,
+					LBS_USETABSTOPS | LBS_NOINTEGRALHEIGHT | 
+					WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+      
+    PUSHBUTTON      "Install New Plugin",
+                    XAP_RID_DIALOG_PLUGIN_MANAGER_BTN_INSTALL,8,157,116,14
+    EDITTEXT        XAP_RID_DIALOG_PLUGIN_MANAGER_EBX_NAME,138,40,151,14,
+                  ES_AUTOHSCROLL | ES_READONLY
+    EDITTEXT        XAP_RID_DIALOG_PLUGIN_MANAGER_EBX_DESCRIPTION,138,73,151,
+                    48,ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY
+    EDITTEXT        XAP_RID_DIALOG_PLUGIN_MANAGER_EBX_AUTHOR,138,139,151,14,
+                    ES_AUTOHSCROLL | ES_READONLY
+    EDITTEXT        XAP_RID_DIALOG_PLUGIN_MANAGER_EBX_VERSION,136,173,151,14,
+                   ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "Name",XAP_RID_DIALOG_PLUGIN_MANAGER_LBL_NAME,132,21,64,
+                    14,SS_CENTERIMAGE
+    LTEXT           "Description",
+                    XAP_RID_DIALOG_PLUGIN_MANAGER_LBL_DESCRIPTION,132,59,122,
+                    9,SS_CENTERIMAGE
+    LTEXT           "Author",XAP_RID_DIALOG_PLUGIN_MANAGER_LBL_AUTHOR,132,
+                    126,63,10,SS_CENTERIMAGE
+    LTEXT           "Version",XAP_RID_DIALOG_PLUGIN_MANAGER_LBL_VERSION,132,
+                    159,64,9,SS_CENTERIMAGE
+    DEFPUSHBUTTON   "OK",IDOK,236,202,50,14
+END
+
+
+#endif /* RC_INVOKED */

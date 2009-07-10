@@ -1,0 +1,12 @@
+This tool is to regenerate RTF keyword table for the next gen parser.
+If you want to add keywords, modify rtf-keywords.txt
+
+Do this:
+./generate-rtf.pl rtf-keywords.txt
+
+It will generate 2 files:
+	ie_imp_RTFKeywords.h
+	ie_imp_RTFKeywordIDs.h
+
+Then copy them to ../../wp/impexp/xp/
+

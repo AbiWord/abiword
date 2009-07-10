@@ -1,0 +1,12 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+datarootdir=@datarootdir@
+pkgdatadir=@ABIWORD_DATADIR@
+libabiword=false
+
+Name: abiword-@ABIWORD_SERIES@
+Description: AbiWord word processor
+Version: @VERSION@
+Requires: @ABIWORD_REQUIRED_PKGS@

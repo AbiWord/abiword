@@ -1,0 +1,133 @@
+// AbiWord
+// Copyright (C) 2003 Jordi Mas i Hernàndez
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+
+
+#define AP_RID_DIALOG_FORMATFOOTNOTES_BTN_OK			 IDOK
+#define AP_RID_DIALOG_FORMATFOOTNOTES_BTN_CANCEL		 IDCANCEL
+#define AP_RID_DIALOG_FORMATFOOTNOTES_COMBO_FSTYLE		 1002
+#define AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_RSEL		 1003
+#define AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_PAGE		 1004
+#define AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_DONOT		 1005
+#define AP_RID_DIALOG_FORMATFOOTNOTES_COMBO_ESTYLE		 1006
+#define AP_RID_DIALOG_FORMATFOOTNOTES_SPIN_FSTYLE		 1007
+#define AP_RID_DIALOG_FORMATFOOTNOTES_TEXT_FSTYLE		 1008
+#define AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_FSTYLES1	 1009
+#define AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_FSTYLES2	 1010
+#define AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_INITFOOTVAL 1011
+#define AP_RID_DIALOG_FORMATFOOTNOTES_SPIN_ESTYLE		 1012
+#define AP_RID_DIALOG_FORMATFOOTNOTES_TEXT_ESTYLE		 1013
+#define AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_ESTYLES1	 1014
+#define AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_ESTYLES2	 1015
+#define AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_ENDDOC		 1016
+#define AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_ENDSEC		 1017
+#define AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_ERSTSEC		 1018
+#define AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_INITENDVAL  1019
+#define AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_NUMBERING	 1020
+#define AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_PLACEMENT	 1021
+
+#define IDC_STATIC                      -1
+
+
+#ifdef RC_INVOKED
+// NOTE -- these placeholder strings get overridden at runtime 
+// NOTE -- they're just here to make sizing easier
+
+
+
+
+AP_RID_DIALOG_FORMATFOOTNOTES DIALOG DISCARDABLE  0, 0, 275, 263
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Format footnotes and endnotes"
+FONT 8, "MS Sans Serif"
+BEGIN
+
+    DEFPUSHBUTTON   "OK",AP_RID_DIALOG_FORMATFOOTNOTES_BTN_OK,155,245,50,14
+    PUSHBUTTON      "Cancel",AP_RID_DIALOG_FORMATFOOTNOTES_BTN_CANCEL,213,
+                    245,50,14
+    CONTROL         "Footnote Style",
+                    AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_FSTYLES1,
+                    "AbiLabelledSeparator",0x0,9,13,260,8
+    LTEXT           "Footnote Style",
+                    AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_FSTYLES2,16,33,90,8
+    COMBOBOX        AP_RID_DIALOG_FORMATFOOTNOTES_COMBO_FSTYLE,113,30,145,50,
+                    CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Restart on each selection",
+                    AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_RSEL,"Button",
+                    BS_AUTORADIOBUTTON,115,52,141,10
+    CONTROL         "Restart on each page",
+                    AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_PAGE,"Button",
+                    BS_AUTORADIOBUTTON,115,67,141,10
+	CONTROL         "Do not restart",
+                    AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_DONOT,"Button",
+                    BS_AUTORADIOBUTTON,115,82,141,10    
+    LTEXT           "Initial footnote value",
+                    AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_INITFOOTVAL,16,104,
+                    93,8,SS_CENTERIMAGE
+    EDITTEXT        AP_RID_DIALOG_FORMATFOOTNOTES_TEXT_FSTYLE,115,101,20,14,
+                    ES_AUTOHSCROLL
+    CONTROL         "Spin2",AP_RID_DIALOG_FORMATFOOTNOTES_SPIN_FSTYLE,
+                    "msctls_updown32",UDS_SETBUDDYINT | UDS_AUTOBUDDY | 
+                    UDS_ARROWKEYS | UDS_NOTHOUSANDS,134,101,11,14
+    CONTROL         "Endnote Style",
+                    AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_ESTYLES1,
+                    "AbiLabelledSeparator",0x0,9,126,260,8
+    LTEXT           "Endnote Sytle",
+                    AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_ESTYLES2,16,146,80,
+                    8
+    COMBOBOX        AP_RID_DIALOG_FORMATFOOTNOTES_COMBO_ESTYLE,113,143,145,
+                    50,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Place at end of Document",
+                    AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_ENDDOC,"Button",
+                    BS_AUTORADIOBUTTON,115,165,103,10
+    CONTROL         "Place at end of Section",
+                    AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_ENDSEC,"Button",
+                    BS_AUTORADIOBUTTON,115,180,103,10
+    CONTROL         "Restart on each Section",
+                    AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_ERSTSEC,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,115,195,130,10
+    LTEXT           "Initial endnote value",
+                    AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_INITENDVAL,16,218,
+                    92,8,SS_CENTERIMAGE
+    EDITTEXT        AP_RID_DIALOG_FORMATFOOTNOTES_TEXT_ESTYLE,116,216,20,14,
+                    ES_AUTOHSCROLL
+    CONTROL         "Spin2",AP_RID_DIALOG_FORMATFOOTNOTES_SPIN_ESTYLE,
+                    "msctls_updown32",UDS_SETBUDDYINT | UDS_AUTOBUDDY | 
+                    UDS_ARROWKEYS | UDS_NOTHOUSANDS,135,216,11,14
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,5,237,266,1
+    LTEXT           "Numbering",
+                    AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_NUMBERING,16,53,85,
+                    8,SS_CENTERIMAGE
+    LTEXT           "Placement",
+                    AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_PLACEMENT,16,168,85,
+                    8,SS_CENTERIMAGE
+END
+
+
+
+#endif /* RC_INVOKED */

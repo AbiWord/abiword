@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE abiword PUBLIC "-//ABISOURCE//DTD AWML 1.0 Strict//EN" "http://www.abisource.com/awml.dtd">
+<abiword template="true" styles="unlocked" version="2.0.5" xmlns:math="http://www.w3.org/1998/Math/MathML" xmlns:dc="http://purl.org/dc/elements/1.1/" fileformat="1.1" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:svg="http://www.w3.org/2000/svg" xmlns:awml="http://www.abisource.com/awml.dtd" xmlns="http://www.abisource.com/awml.dtd" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" props="lang:en-US; dom-dir:ltr">
+<!-- ======================================================================== -->
+<!-- This file is an AbiWord document.                                        -->
+<!-- AbiWord is a free, Open Source word processor.                           -->
+<!-- More information about AbiWord is available at http://www.abisource.com/ -->
+<!-- You should not edit this file by hand.                                   -->
+<!-- ======================================================================== -->
+
+<metadata>
+<m key="dc.format">application/x-abiword</m>
+<m key="abiword.generator">AbiWord</m>
+<m key="abiword.date_last_changed">Fri Mar 12 21:07:56 2004</m>
+</metadata>
+<styles>
+<s followedby="Current Settings" name="Normal" type="P" props="font-weight:normal; font-family:Times New Roman; margin-top:0pt; font-style:normal; margin-left:0pt; lang:en-US; font-variant:normal; text-indent:0in; margin-bottom:10pt; text-decoration:none; bgcolor:transparent; margin-right:0pt; color:000000; font-size:10pt; line-height:1.0; text-align:left; widows:2; font-stretch:normal"/>
+<s followedby="Normal" name="Heading 3" basedon="Normal" type="P" props="font-weight:normal; margin-top:22pt; keep-with-next:1; margin-bottom:3pt; font-family:Arial; font-size:10pt"/>
+<s followedby="Normal" name="Heading 2" basedon="Normal" type="P" props="margin-top:22pt; font-size:10pt; margin-bottom:3pt; text-align:right; font-style:italic; font-weight:normal; font-family:Arial; keep-with-next:1"/>
+<s type="P" name="Heading 1" basedon="Normal" followedby="Normal" props="keep-with-next:1; margin-top:22pt; font-weight:bold; margin-bottom:3pt; font-family:Arial; font-size:17pt"/>
+</styles>
+<lists>
+<l id="1002" parentid="0" type="5" start-value="0" list-delim="%L" list-decimal="NULL"/>
+</lists>
+<pagesize pagetype="Letter" orientation="portrait" width="8.500000" height="11.000000" units="in" page-scale="1.000000"/>
+<section footer="1" header="0" props="page-margin-footer:0.5in; page-margin-header:0.5in">
+<p style="Normal"></p>
+<table props="list-tag:1; table-column-props:0.6875in/5.7500in/">
+<cell props="bot-attach:1; left-attach:0; right-attach:1; top-attach:0">
+<p style="Heading 3">Date:</p>
+</cell>
+<cell props="bot-attach:1; left-attach:1; right-attach:2; top-attach:0">
+<p style="Normal"><c></c><field type="date"></field></p>
+</cell>
+<cell props="bot-attach:2; left-attach:0; right-attach:1; top-attach:1">
+<p style="Heading 3"><c props="list-tag:1001"></c>To:</p>
+</cell>
+<cell props="bot-attach:2; left-attach:1; right-attach:2; top-attach:1">
+<p style="Normal">&lt;recipients&gt;</p>
+</cell>
+<cell props="bot-attach:3; left-attach:0; right-attach:1; top-attach:2">
+<p style="Heading 3">From:</p>
+</cell>
+<cell props="bot-attach:3; left-attach:1; right-attach:2; top-attach:2">
+<p style="Normal">&lt;sender&gt;</p>
+</cell>
+<cell props="bot-attach:4; left-attach:0; right-attach:1; top-attach:3">
+<p style="Heading 3">RE:</p>
+</cell>
+<cell props="bot-attach:4; left-attach:1; right-attach:2; top-attach:3">
+<p style="Normal">&lt;subject&gt;</p>
+</cell>
+</table>
+<p style="Normal"></p>
+<table props="bg-style:1; left-style:0; right-style:0; left-color:000000; right-color:000000; list-tag:1">
+<cell props="bot-attach:1; left-attach:0; right-attach:1; top-attach:0">
+<p style="Heading 3">How to Use This Memo Template</p>
+<p style="Normal">This template is designed to allow you to quickly and easily create professional looking memos.  To use it, simply select only the text that you want to replace, and type over it.</p>
+<p style="Normal">The box that this text is in uses AbiWord's table support to draw the border.  You can either allow the border to fit to the size of the text as it is now, or press &lt;ENTER&gt; repeatedly at the end of your memo to expand the border to fill the rest of the page.</p>
+<p style="Normal">Don't forget to change the header and footer before printing!  If you wish to save this memo for later and ensure that the date above is saved as today's (not automatically updating), select it and type the desired date text over it.</p>
+<p style="Normal">The styles used in this document for correct conversion, import, export, and HTML are:</p>
+<p level="1" listid="1002" parentid="0" style="Normal" props="start-value:0; text-indent:-0.3000in; list-style:Bullet List; field-font:Symbol; margin-left:0.5000in"><c props="list-tag:1003"></c><field type="list_label" props="width:0in; font-family:Times New Roman; display:inline; font-style:normal; font-weight:normal; bgcolor:transparent; lang:en-US; text-position:normal; homogeneous:1; color:000000; font-variant:normal; text-decoration:none; font-size:10pt; height:0in; list-style:Bullet List; font-stretch:normal"></field><c props="width:0in; font-family:Times New Roman; display:inline; font-style:normal; font-weight:normal; bgcolor:transparent; lang:en-US; text-position:normal; homogeneous:1; color:000000; font-variant:normal; text-decoration:none; font-size:10pt; height:0in; list-style:Bullet List; font-stretch:normal">	Heading 1 for Company Name</c></p>
+<p level="1" listid="1002" parentid="0" style="Normal" props="start-value:0; text-indent:-0.3000in; list-style:Bullet List; field-font:Symbol; margin-left:0.5000in"><c props="width:0in; list-tag:1004; font-family:Times New Roman; display:inline; font-style:normal; font-weight:normal; lang:en-US; font-variant:normal; color:000000; list-style:Bullet List; bgcolor:transparent; font-size:10pt; homogeneous:1; text-decoration:none; height:0in; text-position:normal; font-stretch:normal"></c><field type="list_label" props="width:0in; font-family:Times New Roman; display:inline; font-style:normal; font-weight:normal; bgcolor:transparent; lang:en-US; text-position:normal; homogeneous:1; color:000000; font-variant:normal; text-decoration:none; font-size:10pt; height:0in; list-style:Bullet List; font-stretch:normal"></field><c props="width:0in; font-family:Times New Roman; display:inline; font-style:normal; font-weight:normal; bgcolor:transparent; lang:en-US; text-position:normal; homogeneous:1; color:000000; font-variant:normal; text-decoration:none; font-size:10pt; height:0in; list-style:Bullet List; font-stretch:normal">	Heading 2 for Slogan</c></p>
+<p level="1" listid="1002" parentid="0" style="Normal" props="start-value:0; text-indent:-0.3000in; list-style:Bullet List; field-font:Symbol; margin-left:0.5000in"><c props="width:0in; list-tag:1005; font-family:Times New Roman; display:inline; font-style:normal; font-weight:normal; lang:en-US; font-variant:normal; color:000000; list-style:Bullet List; bgcolor:transparent; font-size:10pt; homogeneous:1; text-decoration:none; height:0in; text-position:normal; font-stretch:normal"></c><field type="list_label" props="width:0in; font-family:Times New Roman; display:inline; font-style:normal; font-weight:normal; bgcolor:transparent; lang:en-US; text-position:normal; homogeneous:1; color:000000; font-variant:normal; text-decoration:none; font-size:10pt; height:0in; list-style:Bullet List; font-stretch:normal"></field><c props="width:0in; font-family:Times New Roman; display:inline; font-style:normal; font-weight:normal; bgcolor:transparent; lang:en-US; text-position:normal; homogeneous:1; color:000000; font-variant:normal; text-decoration:none; font-size:10pt; height:0in; list-style:Bullet List; font-stretch:normal">	Heading 3 for "Date:", "To:", etc.</c></p>
+<p level="1" listid="1002" parentid="0" style="Normal" props="start-value:0; text-indent:-0.3000in; list-style:Bullet List; field-font:Symbol; margin-left:0.5000in"><c props="width:0in; list-tag:1006; font-family:Times New Roman; display:inline; font-style:normal; font-weight:normal; lang:en-US; font-variant:normal; color:000000; list-style:Bullet List; bgcolor:transparent; font-size:10pt; homogeneous:1; text-decoration:none; height:0in; text-position:normal; font-stretch:normal"></c><field type="list_label" props="width:0in; font-family:Times New Roman; display:inline; font-style:normal; font-weight:normal; bgcolor:transparent; lang:en-US; text-position:normal; homogeneous:1; color:000000; font-variant:normal; text-decoration:none; font-size:10pt; height:0in; list-style:Bullet List; font-stretch:normal"></field><c props="width:0in; font-family:Times New Roman; display:inline; font-style:normal; font-weight:normal; bgcolor:transparent; lang:en-US; text-position:normal; homogeneous:1; color:000000; font-variant:normal; text-decoration:none; font-size:10pt; height:0in; list-style:Bullet List; font-stretch:normal">	Normal for body text</c></p>
+</cell>
+</table>
+<p style="Normal"></p>
+</section>
+<section id="1" listid="0" parentid="0" type="footer">
+<p style="Heading 2">Insert company/division slogan here</p>
+</section>
+<section id="0" listid="0" parentid="0" type="header">
+<p style="Heading 1">Sample Company - Memorandum</p>
+</section>
+</abiword>

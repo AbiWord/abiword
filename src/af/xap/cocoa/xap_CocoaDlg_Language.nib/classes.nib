@@ -1,0 +1,19 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            ACTIONS = {aCancel = id; aLanguageTable = id; aOK = id; }; 
+            CLASS = "XAP_CocoaDlg_Language_Controller"; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                oCancel = NSButton; 
+                oDocumentCurrent = NSTextField; 
+                oDocumentDefault = NSButton; 
+                oLanguageTable = NSTableView; 
+                oOK = NSButton; 
+            }; 
+            SUPERCLASS = NSWindowController; 
+        }
+    ); 
+    IBVersion = 1; 
+}

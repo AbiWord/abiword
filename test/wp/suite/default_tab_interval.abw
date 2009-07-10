@@ -1,0 +1,26 @@
+<!-- =====================================================================  -->
+<!-- This file is an AbiWord document.                                      -->
+<!-- AbiWord is a free, Open Source word processor.                         -->
+<!-- You may obtain more information about AbiWord at www.abisource.com     -->
+<!-- You should not edit this file by hand.                                 -->
+<!-- =====================================================================  -->
+
+<!--         Build_ID          = (none) -->
+<!--         Build_Version     = 0.7.7 -->
+<!--         Build_Options     = LicensedTrademarks:On Debug:Off -->
+<!--         Build_Target      = /Builds/AbiBldSvr/0944798123/tmp/abi-0.7.7/src/WIN32_4.0_i386_OBJ/obj -->
+<!--         Build_CompileTime = 22:19:48 -->
+<!--         Build_CompileDate = Dec  9 1999 -->
+
+<abiword version="0.7.7">
+<section>
+<p>First, the default setting of 0.5 in for default-tab-interval</p>
+<p>1	2	3	4	5	6	7</p>
+<p></p>
+<p>Now, 0.75 inch</p>
+<p PROPS="default-tab-interval:0.75in">1	2	3	4	5	6	7</p>
+<p></p>
+<p>Now, .25 inches</p>
+<p PROPS="default-tab-interval:0.25in">1	2	3	4	5	6	7</p>
+</section>
+</abiword>

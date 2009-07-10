@@ -1,0 +1,45 @@
+
+SUBDIRS = xp
+
+if SDW_BUILTIN
+noinst_LTLIBRARIES = sdw.la
+
+else
+
+plugindir = $(ABIWORD_PLUGINSDIR)
+plugin_LTLIBRARIES = sdw.la
+
+if TOOLKIT_WIN
+
+plugin_DATA = \
+	sdw.dll
+
+CLEANFILES = \
+	sdw.def \
+	sdw.dll \
+	sdw.dll.a
+
+.libs/sdw.a: sdw.la
+
+sdw.dll: .libs/sdw.a
+	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(SDW_LIBS)
+
+endif # TOOLKIT_WIN
+
+endif
+
+sdw_la_LIBADD = \
+	xp/libxp.la
+
+sdw_la_LDFLAGS = \
+	$(SDW_LIBS) \
+	-avoid-version \
+	-module \
+	-no-undefined
+
+sdw_la_SOURCES = 
+nodist_EXTRA_sdw_la_SOURCES = dummy.cpp
+
+EXTRA_DIST = \
+	plugin.m4
+

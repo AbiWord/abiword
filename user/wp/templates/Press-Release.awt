@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE abiword PUBLIC "-//ABISOURCE//DTD AWML 1.0 Strict//EN" "http://www.abisource.com/awml.dtd">
+<abiword template="true" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:svg="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/" fileformat="1.1" xmlns:math="http://www.w3.org/1998/Math/MathML" xmlns:awml="http://www.abisource.com/awml.dtd" xmlns="http://www.abisource.com/awml.dtd" xmlns:xlink="http://www.w3.org/1999/xlink" version="2.1.1" xml:space="preserve" props="document-footnote-type:numeric; document-endnote-type:numeric; lang:en-US; document-footnote-initial:1; dom-dir:ltr">
+<!-- ======================================================================== -->
+<!-- This file is an AbiWord document.                                        -->
+<!-- AbiWord is a free, Open Source word processor.                           -->
+<!-- More information about AbiWord is available at http://www.abisource.com/ -->
+<!-- You should not edit this file by hand.                                   -->
+<!-- ======================================================================== -->
+
+<metadata>
+<m key="dc.format">application/x-abiword</m>
+<m key="abiword.generator">AbiWord</m>
+</metadata>
+<history version="3" edit-time="4873" last-saved="1080262431" uid="b3dcf3c8-7eb4-11d8-92e3-d7901b3e7f1a">
+<version id="3" started="1080258930" uid="0c5a8b0e-7ec0-11d8-92e5-d7901b3e7f1a" auto="0"/>
+</history>
+<styles>
+<s followedby="Current Settings" name="Normal" type="P" props="font-weight:normal; font-family:Arial; margin-top:0pt; font-style:normal; margin-left:0.5000in; font-variant:normal; text-indent:0in; margin-bottom:0pt; text-decoration:none; bgcolor:transparent; margin-right:0.5000in; color:000000; font-size:12pt; line-height:1.000000; text-align:left; widows:2; font-stretch:normal"/>
+<s followedby="Normal" name="Heading 1" basedon="Normal" type="P" props="margin-top:0.3056in; font-size:17pt; margin-bottom:0.0417in; line-height:1.000000; font-weight:bold; keep-with-next:1; font-family:Arial"/>
+<s followedby="Press Release" name="Press Release" basedon="Normal" type="P" props="font-weight:normal; font-family:Arial; margin-top:0.1667in; font-style:normal; margin-left:0.5000in; font-variant:normal; text-indent:0in; margin-bottom:0pt; text-decoration:none; bgcolor:transparent; margin-right:0.5000in; color:000000; font-size:12pt; line-height:1.000000; text-align:left; widows:2; font-stretch:normal"/>
+<s followedby="About Companies" name="About Companies" basedon="Press Release" type="P" props="font-weight:normal; font-family:Arial; margin-top:0.1111in; font-style:normal; margin-left:0.7500in; font-variant:normal; text-indent:0in; margin-bottom:0pt; text-decoration:none; bgcolor:transparent; margin-right:0.7500in; color:000000; font-size:10pt; line-height:1.000000; text-align:justify; widows:2; font-stretch:normal"/>
+<s type="P" name="Block Text" basedon="Normal" followedby="Current Settings" props="line-height:1.000000; margin-bottom:0.0833in; margin-right:1.0000in; margin-left:1.0000in"/>
+<s type="P" name="Box List" followedby="Current Settings" props="list-delim:%L; list-decimal:NULL; field-color:transparent; start-value:0; margin-left:0.5000in; field-font:Dingbats; list-style:Box List; line-height:1.000000; text-indent:-0.300000in"/>
+<s type="P" name="Bullet List" followedby="Current Settings" props="list-delim:%L; list-decimal:NULL; field-color:transparent; start-value:0; margin-left:0.5000in; field-font:Symbol; list-style:Bullet List; line-height:1.000000; text-indent:-0.300000in"/>
+<s followedby="Normal" name="Chapter Heading" basedon="Numbered Heading 1" type="P" props="list-delim:Chapter %L.; field-color:transparent; start-value:1; margin-left:0.0in; field-font:Arial; list-style:Numbered List; line-height:1.000000; text-indent:0.0in; tabstops:1.100000in/L0"/>
+<s followedby="Normal" name="Contents 1" basedon="Normal" type="P" props="list-delim:%L.; list-decimal:.; field-color:transparent; start-value:1; margin-left:0.5000in; field-font:NULL; list-style:Numbered List; line-height:1.000000; text-indent:-0.300000in"/>
+<s followedby="Normal" name="Contents 2" basedon="Normal" type="P" props="list-delim:%L.; list-decimal:.; field-color:transparent; start-value:1; margin-left:1.0000in; field-font:NULL; list-style:Numbered List; line-height:1.000000; text-indent:-0.300000in"/>
+<s followedby="Normal" name="Contents 3" basedon="Normal" type="P" props="list-delim:%L.; list-decimal:.; field-color:transparent; start-value:1; margin-left:1.5000in; field-font:NULL; list-style:Numbered List; line-height:1.000000; text-indent:-0.300000in"/>
+<s followedby="Normal" name="Contents 4" basedon="Normal" type="P" props="list-delim:%L.; list-decimal:.; field-color:transparent; start-value:1; margin-left:2.0000in; field-font:NULL; list-style:Numbered List; line-height:1.000000; text-indent:-0.300000in"/>
+<s followedby="Normal" name="Contents Header" basedon="Normal" type="P" props="margin-top:0.1667in; font-size:16pt; margin-bottom:0.0833in; text-align:center; line-height:1.000000; font-weight:bold; keep-with-next:1; font-family:Arial"/>
+<s type="P" name="Dashed List" followedby="Current Settings" props="list-delim:%L; list-decimal:NULL; field-color:transparent; start-value:0; margin-left:0.5000in; field-font:NULL; list-style:Dashed List; line-height:1.000000; text-indent:-0.300000in"/>
+<s type="P" name="Diamond List" followedby="Current Settings" props="list-delim:%L; list-decimal:NULL; field-color:transparent; start-value:0; margin-left:0.5000in; field-font:Dingbats; list-style:Diamond List; line-height:1.000000; text-indent:-0.300000in"/>
+<s type="C" name="Endnote Reference" basedon="None" followedby="Current Settings" props="text-position:superscript; line-height:1.000000; font-size:10pt"/>
+<s type="C" name="Endnote Text" basedon="Normal" followedby="Current Settings" props="text-position:normal; line-height:1.000000"/>
+<s type="C" name="Footnote Reference" basedon="None" followedby="Current Settings" props="text-position:superscript; line-height:1.000000; font-size:10pt"/>
+<s type="C" name="Footnote Text" basedon="Normal" followedby="Current Settings" props="text-position:normal; line-height:1.000000; font-size:10pt"/>
+<s type="P" name="Hand List" followedby="Current Settings" props="list-delim:%L; list-decimal:NULL; field-color:transparent; start-value:0; margin-left:0.5000in; field-font:Dingbats; list-style:Hand List; line-height:1.000000; text-indent:-0.300000in"/>
+<s followedby="Normal" name="Heading 2" basedon="Normal" type="P" props="margin-top:0.3056in; font-size:14pt; margin-bottom:0.0417in; line-height:1.000000; font-weight:bold; keep-with-next:1; font-family:Arial"/>
+<s followedby="Normal" name="Heading 3" basedon="Normal" type="P" props="margin-top:0.3056in; font-size:12pt; margin-bottom:0.0417in; line-height:1.000000; font-weight:bold; keep-with-next:1; font-family:Arial"/>
+<s followedby="Normal" name="Heading 4" basedon="Normal" type="P" props="margin-top:0.3056in; font-size:12pt; margin-bottom:0.0417in; line-height:1.000000; font-weight:bold; keep-with-next:1; font-family:Arial"/>
+<s type="P" name="Heart List" followedby="Current Settings" props="list-delim:%L; list-decimal:NULL; field-color:transparent; start-value:0; margin-left:0.5000in; field-font:Dingbats; list-style:Heart List; line-height:1.000000; text-indent:-0.300000in"/>
+<s type="P" name="Implies List" followedby="Current Settings" props="list-delim:%L; list-decimal:NULL; field-color:transparent; start-value:0; margin-left:0.5000in; field-font:Symbol; list-style:Implies List; line-height:1.000000; text-indent:-0.300000in"/>
+<s type="P" name="Lower Case List" basedon="Numbered List" followedby="Current Settings" props="list-delim:%L); list-decimal:.; field-color:transparent; start-value:1; margin-left:0.5000in; field-font:NULL; list-style:Lower Case List; line-height:1.000000; text-indent:-0.300000in"/>
+<s type="P" name="Lower Roman List" basedon="Normal" followedby="Current Settings" props="list-delim:%L; list-decimal:.; field-color:transparent; start-value:1; margin-left:0.5000in; field-font:NULL; list-style:Lower Roman List; line-height:1.000000; text-indent:-0.300000in"/>
+<s followedby="Normal" name="Numbered Heading 1" basedon="Heading 1" type="P" props="list-delim:%L.; field-color:transparent; start-value:1; margin-left:0.0in; field-font:Arial; list-style:Numbered List; line-height:1.000000; text-indent:0.0in; tabstops:0.299306in/L0"/>
+<s followedby="Normal" name="Numbered Heading 2" basedon="Heading 2" type="P" props="list-delim:%L.; field-color:transparent; start-value:1; margin-left:0.0in; field-font:Arial; list-style:Numbered List; line-height:1.000000; text-indent:0.0in; tabstops:0.299306in/L0"/>
+<s followedby="Normal" name="Numbered Heading 3" basedon="Heading 3" type="P" props="list-delim:%L.; field-color:transparent; start-value:1; margin-left:0.0in; field-font:Arial; list-style:Numbered List; line-height:1.000000; text-indent:0.0in; tabstops:0.299306in/L0"/>
+<s type="P" name="Numbered List" followedby="Current Settings" props="list-delim:%L.; list-decimal:.; field-color:transparent; start-value:1; margin-left:0.5000in; field-font:NULL; list-style:Numbered List; line-height:1.000000; text-indent:-0.300000in"/>
+<s type="P" name="Plain Text" basedon="Normal" followedby="Current Settings" props="font-family:Courier New; line-height:1.000000"/>
+<s followedby="Normal" name="Section Heading" basedon="Numbered Heading 1" type="P" props="list-delim:Section %L.; field-color:transparent; start-value:1; margin-left:0.0in; field-font:Arial; list-style:Numbered List; line-height:1.000000; text-indent:0.0in; tabstops:1.100000in/L0"/>
+<s type="P" name="Square List" followedby="Current Settings" props="list-delim:%L; list-decimal:NULL; field-color:transparent; start-value:0; margin-left:0.5000in; field-font:Dingbats; list-style:Square List; line-height:1.000000; text-indent:-0.300000in"/>
+<s type="P" name="Star List" followedby="Current Settings" props="list-delim:%L; list-decimal:NULL; field-color:transparent; start-value:0; margin-left:0.5000in; field-font:Dingbats; list-style:Star List; line-height:1.000000; text-indent:-0.300000in"/>
+<s type="P" name="Tick List" followedby="Current Settings" props="list-delim:%L; list-decimal:NULL; field-color:transparent; start-value:0; margin-left:0.5000in; field-font:Dingbats; list-style:Tick List; line-height:1.000000; text-indent:-0.300000in"/>
+<s type="P" name="Triangle List" followedby="Current Settings" props="list-delim:%L; list-decimal:NULL; field-color:transparent; start-value:0; margin-left:0.5000in; field-font:Dingbats; list-style:Triangle List; line-height:1.000000; text-indent:-0.300000in"/>
+<s type="P" name="Upper Case List" basedon="Numbered List" followedby="Current Settings" props="list-delim:%L); list-decimal:.; field-color:transparent; start-value:1; margin-left:0.5000in; field-font:NULL; list-style:Upper Case List; line-height:1.000000; text-indent:-0.300000in"/>
+<s type="P" name="Upper Roman List" basedon="Numbered List" followedby="Current Settings" props="list-delim:%L; list-decimal:.; field-color:transparent; start-value:1; margin-left:0.5000in; field-font:NULL; list-style:Upper Roman List; line-height:1.000000; text-indent:-0.300000in"/>
+</styles>
+<pagesize pagetype="Letter" orientation="portrait" width="8.500000" height="11.000000" units="in" page-scale="1.000000"/>
+<section props="page-margin-right:0.5000in; page-margin-footer:0.0000in; page-margin-header:0.0000in; page-margin-left:0.5000in; page-margin-top:1.0000in; page-margin-bottom:1.0000in">
+<p></p>
+<table props="table-row-heights:1.0000in/1.9375in/0.1875in/">
+<cell props="bot-attach:1; left-attach:0; right-attach:1; top-attach:0">
+<p style="Normal" props="text-align:center; font-size:18pt"><c props="lang:en-US; font-size:18pt">COMPANY NAME HERE</c></p>
+<p style="Normal" props="text-align:center; font-size:10pt"><c props="lang:en-US; font-size:10pt">Address Line 1</c></p>
+<p style="Normal" props="text-align:center; font-size:10pt"><c props="lang:en-US; font-size:10pt">Address Line 2</c></p>
+<p style="Normal" props="text-align:center; font-size:10pt"><c props="font-size:10pt; lang:en-US">Phone</c></p>
+<p style="Normal" props="text-align:center; font-size:10pt"><c props="lang:en-US; font-size:10pt">Web</c></p>
+</cell>
+<cell props="bot-attach:2; left-attach:0; right-attach:1; top-attach:1">
+<p style="Heading 1"><c props="lang:en-US"></c><c props="lang:en-US">Company Does Something With Another Company </c></p>
+<p style="Normal"><c props="lang:en-US"></c><field type="date" props="lang:en-US"></field></p>
+<p style="Press Release"><c props="lang:en-US">Type your press release text here.</c></p>
+<p style="Press Release"><c props="lang:en-US">AbiWord Styles will automatically insert a double space between paragraphs.  This grid will automatically expand to fit the amount of text in your press release.</c></p>
+<p style="About Companies"><c props="lang:en-US">About Company 1</c></p>
+<p style="About Companies"><c props="lang:en-US">About Company 2</c></p>
+<p style="Normal"><c props="lang:en-US"></c></p>
+</cell>
+<cell props="bot-attach:3; left-attach:0; right-attach:1; top-attach:2">
+<p style="Normal" props="text-align:center"><c props="font-family:Arial; font-size:12pt; color:000000; text-decoration:none; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">FOR IMMEDIATE RELEASE</c></p>
+</cell>
+</table>
+<p></p>
+</section>
+</abiword>

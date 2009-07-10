@@ -1,0 +1,131 @@
+// AbiWord
+// Copyright (C) 2003 Jordi Mas i Hernàndez
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+
+
+#define AP_RID_DIALOG_FORMATFRAME_STATIC_PREVIEW	1000
+#define AP_RID_DIALOG_FORMATFRAME_BMP_BOTTOM		1001
+#define AP_RID_DIALOG_FORMATFRAME_BMP_TOP			1002
+#define AP_RID_DIALOG_FORMATFRAME_BMP_RIGHT			1003
+#define AP_RID_DIALOG_FORMATFRAME_BMP_LEFT			1004
+#define AP_RID_DIALOG_FORMATFRAME_TEXT_PREVIEW		1005
+#define AP_RID_DIALOG_FORMATFRAME_BTN_BACKCOLOR		1006
+#define AP_RID_DIALOG_FORMATFRAME_TEXT_BACKGROUND	1007
+#define AP_RID_DIALOG_FORMATFRAME_TEXT_BORDER		1008
+#define AP_RID_DIALOG_FORMATFRAME_BTN_BORDERCOLOR	1009
+#define AP_RID_DIALOG_FORMATFRAME_BTN_APPLY			1010
+#define AP_RID_DIALOG_FORMATFRAME_TEXT_BORDERS		1011
+#define AP_RID_DIALOG_FORMATFRAME_TEXT_BACKGROUNDS	1012
+#define AP_RID_DIALOG_FORMATFRAME_TEXT_TEXTWRAPS	1013
+#define AP_RID_DIALOG_FORMATFRAME_CHK_TEXTWRAP		1014
+#define AP_RID_DIALOG_FORMATFRAME_BUTTON_SELIMAGE	1015
+#define AP_RID_DIALOG_FORMATFRAME_BUTTON_NOIMAGE	1016
+#define AP_RID_DIALOG_FORMATFRAME_RADIO_PARA		1017
+#define AP_RID_DIALOG_FORMATFRAME_RADIO_COLUMN		1018
+#define AP_RID_DIALOG_FORMATFRAME_RADIO_PAGE		1019
+#define AP_RID_DIALOG_FORMATFRAME_TEXT_THICKNESS	1020
+#define AP_RID_DIALOG_FORMATFRAME_COMBO_THICKNESS	1021
+#define AP_RID_DIALOG_FORMATFRAME_TEXT_IMGBACK		1022
+#define AP_RID_DIALOG_FORMATFRAME_TEXT_POSTEXTPOS	1023
+
+#define AP_RID_DIALOG_FORMATFRAME_BTN_CANCEL		IDCANCEL
+
+
+#define IDC_STATIC -1
+
+
+#ifdef RC_INVOKED
+// NOTE -- these placeholder strings get overridden at runtime 
+// NOTE -- they're just here to make sizing easier
+
+AP_RID_DIALOG_FORMATFRAME DIALOG 0, 0, 354, 282
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Format Frame"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "Preview",AP_RID_DIALOG_FORMATFRAME_TEXT_PREVIEW,180,8,
+                    162,136
+    CONTROL         "",AP_RID_DIALOG_FORMATFRAME_BMP_BOTTOM,"Button",
+                    BS_AUTOCHECKBOX | BS_BITMAP | BS_PUSHLIKE | WS_TABSTOP,
+                    248,122,21,14
+    CONTROL         "",AP_RID_DIALOG_FORMATFRAME_BMP_TOP,"Button",
+                    BS_AUTOCHECKBOX | BS_BITMAP | BS_PUSHLIKE | WS_TABSTOP,
+                    248,20,21,14
+    CONTROL         "",AP_RID_DIALOG_FORMATFRAME_BMP_RIGHT,"Button",
+                    BS_AUTOCHECKBOX | BS_BITMAP | BS_PUSHLIKE | WS_TABSTOP,
+                    311,68,21,14
+    CONTROL         "",AP_RID_DIALOG_FORMATFRAME_BMP_LEFT,"Button",
+                    BS_AUTOCHECKBOX | BS_BITMAP | BS_PUSHLIKE | WS_TABSTOP,
+                    186,68,21,14
+    CONTROL         "",AP_RID_DIALOG_FORMATFRAME_STATIC_PREVIEW,"Static",
+                    SS_BLACKFRAME,220,40,86,76,WS_EX_CLIENTEDGE
+    LTEXT           "Color:",AP_RID_DIALOG_FORMATFRAME_TEXT_BACKGROUND,16,93,
+                    45,8
+    CONTROL         "",AP_RID_DIALOG_FORMATFRAME_BTN_BACKCOLOR,"Button",
+                    BS_OWNERDRAW | WS_TABSTOP,76,90,22,14
+    LTEXT           "Border Color",AP_RID_DIALOG_FORMATFRAME_TEXT_BORDER,16,
+                    28,54,8
+    CONTROL         "",AP_RID_DIALOG_FORMATFRAME_BTN_BORDERCOLOR,"Button",
+                    BS_OWNERDRAW | WS_TABSTOP,76,25,22,14
+    DEFPUSHBUTTON   "Apply",AP_RID_DIALOG_FORMATFRAME_BTN_APPLY,297,260,50,
+                    14
+    PUSHBUTTON      "Cancel",AP_RID_DIALOG_FORMATFRAME_BTN_CANCEL,236,260,50,
+                    14
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,49,13,104,1
+    LTEXT           "Borders",AP_RID_DIALOG_FORMATFRAME_TEXT_BORDERS,9,9,35,
+                    8
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,64,77,90,1
+    LTEXT           "Background",AP_RID_DIALOG_FORMATFRAME_TEXT_BACKGROUNDS,
+                    9,74,52,8
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,71,178,83,1
+    LTEXT           "Text Wrapping",AP_RID_DIALOG_FORMATFRAME_TEXT_TEXTWRAPS,
+                    9,175,52,8
+    CONTROL         "Set Text Wrapping",
+                    AP_RID_DIALOG_FORMATFRAME_CHK_TEXTWRAP,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,16,192,115,10
+    LTEXT           "Thickness:",AP_RID_DIALOG_FORMATFRAME_TEXT_THICKNESS,16,
+                    49,57,8
+    COMBOBOX        AP_RID_DIALOG_FORMATFRAME_COMBO_THICKNESS,75,46,62,50,CBS_DROPDOWNLIST | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,92,119,62,1
+    LTEXT           "Image for Background",
+                    AP_RID_DIALOG_FORMATFRAME_TEXT_IMGBACK,9,115,72,8
+    PUSHBUTTON      "Select Image From File",AP_RID_DIALOG_FORMATFRAME_BUTTON_SELIMAGE,16,132,100,14
+    PUSHBUTTON      "Set no image", AP_RID_DIALOG_FORMATFRAME_BUTTON_NOIMAGE,16,150,100,14
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,84,219,71,1
+    LTEXT           "Position Text Box",
+                    AP_RID_DIALOG_FORMATFRAME_TEXT_POSTEXTPOS,9,215,71,8
+    CONTROL         "Position to paragraph", AP_RID_DIALOG_FORMATFRAME_RADIO_PARA,"Button",
+                    BS_AUTORADIOBUTTON,16,230,137,10
+    CONTROL         "Position to Column",AP_RID_DIALOG_FORMATFRAME_RADIO_COLUMN,"Button",
+                    BS_AUTORADIOBUTTON,16,245,139,10
+    CONTROL         "Position to Page",AP_RID_DIALOG_FORMATFRAME_RADIO_PAGE,"Button",
+                    BS_AUTORADIOBUTTON,16,260,151,10
+END
+
+#endif /* RC_INVOKED */
