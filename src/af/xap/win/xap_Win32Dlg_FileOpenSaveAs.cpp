@@ -202,9 +202,9 @@ BOOL  XAP_Win32Dialog_FileOpenSaveAs::GetSaveFileName_Hooked(OPENFILENAME_WIN50*
 		lpofn->FlagsEx = 0;		
 		
 		if (bSave)				
-			bRslt = GetSaveFileName((OPENFILENAME *)lpofn);
+			bRslt = GetSaveFileNameW((OPENFILENAMEW *)lpofn);
 		else
-			bRslt = GetOpenFileName((OPENFILENAME *)lpofn);
+			bRslt = GetOpenFileNameW((OPENFILENAMEW *)lpofn);
 		
 		if (!bRslt) // Error
 		{			
@@ -213,11 +213,11 @@ BOOL  XAP_Win32Dialog_FileOpenSaveAs::GetSaveFileName_Hooked(OPENFILENAME_WIN50*
 			if (dwError==CDERR_STRUCTSIZE)	// This system does not support the place bar
 			{								
 					//  Try with the old one
-					lpofn->lStructSize = sizeof(OPENFILENAME);	
+					lpofn->lStructSize = sizeof(OPENFILENAMEW);	
 					if (bSave)				
-						bRslt = GetSaveFileName((OPENFILENAME *)lpofn);
+						bRslt = GetSaveFileNameW((OPENFILENAMEW *)lpofn);
 					else
-						bRslt = GetOpenFileName((OPENFILENAME *)lpofn);
+						bRslt = GetOpenFileNameW((OPENFILENAMEW *)lpofn);
 				
 			}				
 		}	
@@ -369,14 +369,14 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		ofn.lpstrTitle = title.c_str();
 		ofn.Flags |= OFN_FILEMUSTEXIST;
 		ofn.nFilterIndex = g_strv_length((gchar **) m_szDescriptions) + 1;
-		bDialogResult = GetOpenFileName((OPENFILENAME *)&ofn);
+		bDialogResult = GetOpenFileNameW((OPENFILENAMEW *)&ofn);
 		break;
 
 	case XAP_DIALOG_ID_PRINTTOFILE:
 	    title.fromUTF8 (pSS->getValue(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle));
 		ofn.lpstrTitle = title.c_str();	
         ofn.Flags |= OFN_OVERWRITEPROMPT;
-		bDialogResult = GetSaveFileName((OPENFILENAME *)&ofn);
+		bDialogResult = GetSaveFileNameW((OPENFILENAMEW *)&ofn);
 		break;
 
 	case XAP_DIALOG_ID_FILE_SAVEAS:
@@ -408,7 +408,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		ofn.lpstrTitle = title.c_str();
 		ofn.nFilterIndex = g_strv_length((gchar **) m_szDescriptions) + 1;
 		ofn.Flags |= OFN_FILEMUSTEXIST;
-		bDialogResult = GetOpenFileName((OPENFILENAME *)&ofn);
+		bDialogResult = GetOpenFileNameW((OPENFILENAMEW *)&ofn);
 		break;
 
 	case XAP_DIALOG_ID_INSERTMATHML:
@@ -594,7 +594,7 @@ UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookSaveAsProc(HWND hDlg, UINT m
  */
 UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookInsertPicProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	XAP_Win32Dialog_FileOpenSaveAs* pThis = (XAP_Win32Dialog_FileOpenSaveAs *) GetWindowLong(hDlg,GWL_USERDATA);
+	XAP_Win32Dialog_FileOpenSaveAs* pThis = (XAP_Win32Dialog_FileOpenSaveAs *) GetWindowLongW(hDlg,GWL_USERDATA);
 	bool bPreviewImage = ( IsDlgButtonChecked( hDlg, XAP_RID_DIALOG_INSERT_PICTURE_CHECK_ACTIVATE_PREVIEW )
 							  == BST_CHECKED );
 
@@ -613,9 +613,9 @@ UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookInsertPicProc(HWND hDlg, UIN
 		{
 		case CDN_FOLDERCHANGE:
 			UT_DEBUGMSG(("Folder Changed File Name Cleared\n"));
-			SetDlgItemText( GetParent(hDlg), edt1,	NULL );
-			SetDlgItemText( hDlg, XAP_RID_DIALOG_INSERT_PICTURE_TEXT_HEIGHT, NULL );
-			SetDlgItemText( hDlg, XAP_RID_DIALOG_INSERT_PICTURE_TEXT_WIDTH, NULL );
+			SetDlgItemTextW( GetParent(hDlg), edt1,	NULL );
+			SetDlgItemTextW( hDlg, XAP_RID_DIALOG_INSERT_PICTURE_TEXT_HEIGHT, NULL );
+			SetDlgItemTextW( hDlg, XAP_RID_DIALOG_INSERT_PICTURE_TEXT_WIDTH, NULL );
 			return true;
 		case CDN_SELCHANGE:
 			return ( pThis->_previewPicture(hDlg) );
