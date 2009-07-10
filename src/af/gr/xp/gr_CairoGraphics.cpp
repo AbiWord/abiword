@@ -74,7 +74,8 @@ GR_CairoPatternImpl::GR_CairoPatternImpl(cairo_surface_t * surf)
 }
 
 GR_CairoPatternImpl::GR_CairoPatternImpl(const GR_CairoPatternImpl & p)
-	: m_pattern(cairo_pattern_reference(p.m_pattern))
+	: UT_ColorPatImpl(p)
+	, m_pattern(cairo_pattern_reference(p.m_pattern))
 {
 }
 
