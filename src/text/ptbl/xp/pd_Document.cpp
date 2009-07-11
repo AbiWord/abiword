@@ -1729,7 +1729,7 @@ bool PD_Document::repairDoc(void)
 		if(pf->getType() == pf_Frag::PFT_Strux)
 		{
 			pfs = static_cast<pf_Frag_Strux *>(pf);
-			if(pfs->getStruxType() == PTX_Block)
+			if((pfs->getStruxType() == PTX_Block) || (m_pPieceTable->isFootnote(pfs)) || (m_pPieceTable->isEndFootnote(pfs))) 
 			{
 				bGotBlock = true;
 			}
