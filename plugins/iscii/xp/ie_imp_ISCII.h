@@ -23,7 +23,7 @@
 #define IE_IMP_ISCII_H
 
 #include "ie_imp_Text.h"
-#include "ap_Strings.h"
+#include "xap_Strings.h"
 
 #define ISCII_INV	0xD9	// Invisible character - acts like Unicode ZWJ
 #define ISCII_NUKTA	0xE9	// A Nukta following a character can modify its meaning
@@ -67,7 +67,7 @@ public:
 										IE_Imp ** ppie);
 
 private:
-  AP_StringSet *m_strings;
+  XAP_StringSet *m_strings;
 
 };
 

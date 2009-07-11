@@ -86,9 +86,9 @@ GDict_exec (const char * search)
 #include <libgdict/gdict-defbox.h>
 
 // i hate global state, but it's so much easier here...
-static GtkWidget * gdict_dlg    = 0;
-static GtkWidget * gdict_entry  = 0;
-static GtkWidget * gdict_defbox = 0;
+static GtkWidget * gdict_dlg;
+static GtkWidget * gdict_entry;
+static GtkWidget * gdict_defbox;
 
 static void
 lookup_button_cb (GtkButton *button, GtkWidget * defbox)
@@ -262,8 +262,8 @@ GDict_invoke(AV_View* /*v*/, EV_EditMethodCallData */*d*/)
   return true;
 }
 
-static const char* GDict_MenuLabel = strings->getValue(_("G&Dict Dictionary"));
-static const char* GDict_MenuTooltip = strings->getValue(_("Opens the dictionary"));
+static const char* GDict_MenuLabel;
+static const char* GDict_MenuTooltip;
 
 static void
 GDict_removeFromMenus()
@@ -331,13 +331,11 @@ GDict_addToMenus()
   int frameCount = pApp->getFrameCount();
   XAP_Menu_Factory * pFact = pApp->getMenuFactory();
 
-  strings->setDomain("abiword");
-
   //
   // Put it in the context menu.
   //
   XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText",NULL, strings->getValue(_("Bullets and &Numbering")),EV_MLF_Normal);
-  //pFact->addNewLabel(NULL,newID,GDict_MenuLabel, GDict_MenuTooltip);
+  pFact->addNewLabel(NULL,newID,GDict_MenuLabel, GDict_MenuTooltip);
 
   //
   // Also put it under word Wount in the main menu,
@@ -369,7 +367,6 @@ GDict_addToMenus()
       XAP_Frame* pFrame = pApp->getFrame(i);
       pFrame->rebuildMenus();
     }
-  strings->setDomain("abiword-plugin-gdict");
 }
 
 // -----------------------------------------------------------------------
@@ -382,6 +379,9 @@ ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
 		strings->setDomain("abiword-plugin-gdict");
+
+		GDict_MenuLabel = strings->getValue(_("G&Dict Dictionary"));
+		GDict_MenuTooltip = strings->getValue(_("Opens the dictionary"));
 
     mi->name = strings->getValue(_("GDict plugin"));
     mi->desc = strings->getValue(_("Dictionary support for AbiWord"));

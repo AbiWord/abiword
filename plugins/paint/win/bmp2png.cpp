@@ -21,7 +21,8 @@ source code for any purpose, without fee.
 #include <stdio.h>
 #include "pngdib.h"
 
-#include "ap_Strings.h"
+#include "xap_App.h"
+#include "xap_Strings.h"
 
 
 // This is just a generic function to read a file into a memory block.
@@ -59,7 +60,8 @@ int read_bmp_to_mem(const char *bmpfn,unsigned char **bmppp, DWORD *fsizep)
 // returns 0 on success, nonzero of failure
 int convertBMP2PNG(const char *bmpfn, const char *pngfn)
 {
-	AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-paint");
+	XAP_StringSet  * strings = (XAP_StringSet *) XAP_App::getApp->getStringSet();
+	strings->setDomain("abiword-plugin-paint");
 
 	PNGD_D2PINFO d2p;
 	int ret;

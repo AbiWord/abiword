@@ -40,8 +40,6 @@
 
 #define GETTEXT_PACKAGE "abiword"
 
-class XAP_App;
-
 typedef enum _XAP_String_Id_Enum
 {
 	XAP_STRING_ID__FIRST__			= 0,	/* must be first */
@@ -64,7 +62,7 @@ typedef const char*     XAP_String_Id;
 class ABI_EXPORT XAP_StringSet
 {
 public:
-	XAP_StringSet(XAP_App * pApp, const gchar * szDomainName, const gchar * szLanguageName);
+	XAP_StringSet(const gchar * szDomainName);
 	virtual ~XAP_StringSet(void);
 
 	const gchar *			getLanguageName(void) const;
@@ -78,14 +76,13 @@ public:
 	void setEncoding(const char * inEndcoding);
 	const char * getEncoding() const;
 
-	void setDomain(const char *szDomain);
+	const char * setDomain(const char * szDomain);
 
 protected:
-	XAP_App *					m_pApp;
 	const gchar *			m_szLanguageName;
   const char * translate(XAP_String_Id id) const;
 
- private:
+private:
   const gchar * m_domain;
 	UT_String m_encoding ;
 };

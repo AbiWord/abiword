@@ -30,7 +30,7 @@
 #include "ev_EditMethod.h"
 #include "xap_Menu_Layouts.h"
 #include "ut_string_class.h"
-#include "ap_Strings.h"
+#include "xap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_wikipedia_register
@@ -46,7 +46,7 @@ ABI_PLUGIN_DECLARE ("Wikipedia")
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
 
-AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-wikipedia");
+XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 
 //
 // _ucsToAscii
@@ -125,8 +125,8 @@ Wikipedia_invoke(AV_View* /*v*/, EV_EditMethodCallData * /*d*/)
   return true;
 }
 
-static const char* Wikipedia_MenuLabel = strings->getValue(_("Wi&ki Encyclopedia"));
-static const char* Wikipedia_MenuTooltip = strings->getValue(_("Opens the libre Wiki on-line encyclopedia"));
+static const char* Wikipedia_MenuLabel;
+static const char* Wikipedia_MenuTooltip;
 
 static void
 Wikipedia_removeFromMenus()
@@ -242,6 +242,11 @@ Wikipedia_addToMenus()
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
+		strings->setDomain("abiword-plugin-wikipedia");
+
+		Wikipedia_MenuLabel = strings->getValue(_("Wi&ki Encyclopedia"));
+		 Wikipedia_MenuTooltip = strings->getValue(_("Opens the libre Wiki on-line encyclopedia"));
+
     mi->name = strings->getValue(_("Wikipedia plugin"));
     mi->desc = strings->getValue(_("On-line Encyclopedia support for AbiWord. Search site is http://www.wikipedia.com/"));
     mi->version = ABI_VERSION_STRING;

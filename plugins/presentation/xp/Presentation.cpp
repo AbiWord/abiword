@@ -32,7 +32,7 @@
 #include "xap_Module.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
-#include "ap_Strings.h"
+#include "xap_Strings.h"
 #include "fv_View.h"
 #include "ev_EditMethod.h"
 #include "ie_imp.h"
@@ -81,13 +81,13 @@ static bool Presentation_prevPage (AV_View * v, EV_EditMethodCallData * d);
 static bool Presentation_context (AV_View * v, EV_EditMethodCallData * d);
 
 Presentation myPresentation;
-AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-presentation");
+XAP_StringSet *strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 EV_EditMouseContext PresentationContextID =  EV_EMC_EMBED;
 static XAP_Menu_Id presentationID;
-static const char * szPresentation = strings->getValue(_("Presentation"));
-static const char * szPresentationStatus = strings->getValue(_("View the document in presentation mode"));
-static const char * szNextSlide = strings->getValue(_("Next Slide"));
-static const char * szPrevSlide = strings->getValue(_("Previous Slide"));
+static const char * szPresentation;
+static const char * szPresentationStatus;
+static const char * szNextSlide;
+static const char * szPrevSlide;
 static XAP_Menu_Id nextSlideID;
 static XAP_Menu_Id prevSlideID;
 //
@@ -98,6 +98,7 @@ static XAP_Menu_Id prevSlideID;
 static void
 Presentation_registerMethod ()
 {
+	strings->setDomain(NULL);
 	// First we need to get a pointer to the application itself.
 	XAP_App *pApp = XAP_App::getApp ();
 
@@ -263,6 +264,13 @@ Presentation_RemoveFromMethods ()
 ABI_BUILTIN_FAR_CALL int
 abi_plugin_register (XAP_ModuleInfo * mi)
 {
+	strings->setDomain("abiword-plugin-presentation");
+
+	szPresentation = strings->getValue(_("Presentation"));
+	szPresentationStatus = strings->getValue(_("View the document in presentation mode"));
+	szNextSlide = strings->getValue(_("Next Slide"));
+	szPrevSlide = strings->getValue(_("Previous Slide"));
+
 	mi->name = strings->getValue(_("Presentation"));
 	mi->desc = strings->getValue(_("This enables AbiWord to make presentations"));
 	mi->version = ABI_VERSION_STRING;

@@ -22,7 +22,8 @@
 #include "ie_imp_KWord_1.h"
 #include "ie_exp_KWord_1.h"
 #include "xap_Module.h"
-#include "ap_Strings.h"
+#include "xap_App.h"
+#include "xap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_kword_register
@@ -54,7 +55,8 @@ int abi_plugin_register (XAP_ModuleInfo *mi)
     m_expSniffer = new IE_Exp_KWord_1_Sniffer (PLUGIN_NAME);
   }
   
-  AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-kword");
+  XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	strings->setDomain("abiword-plugin-kword");
 
   mi->name = strings->getValue(_("KWord 1.x Importer/Exporter"));
   mi->desc = strings->getValue(_("Import/Export KWord 1.x Documents"));

@@ -97,8 +97,8 @@ AbiGoogle_invoke(AV_View* /*v*/, EV_EditMethodCallData * /*d*/)
   return true;
 }
 
-static const char* Google_MenuLabel = strings->getValue(_("&Google Search"));
-static const char* Google_MenuTooltip = strings->getValue(_("Search the web with Google"));
+static const char* Google_MenuLabel;
+static const char* Google_MenuTooltip;
 
 static void
 Google_removeFromMenus()
@@ -215,6 +215,9 @@ ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
 		strings->setDomain("abiword-plugin-google");
+
+		Google_MenuLabel = strings->getValue(_("&Google Search"));
+		Google_MenuTooltip = strings->getValue(_("Search the web with Google"));
 
     mi->name = strings->getValue(_("Google plugin"));
     mi->desc = strings->getValue(_("Google search for AbiWord"));

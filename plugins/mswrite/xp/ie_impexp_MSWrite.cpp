@@ -27,12 +27,13 @@
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
-#include "ap_Strings.h"
+#include "xap_App.h"
+#include "xap_Strings.h"
 
 //
 //
 
-AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-mswrite");
+XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 
 /***************************************************************************/
 /* wri_struct.c */
@@ -40,6 +41,7 @@ AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-mswrite");
 
 int read_wri_struct_mem (struct wri_struct *cfg, unsigned char *blob) {
     int i, n;
+		strings->setDomain("abiword-plugin-mswrite");
 
     for (i=0;cfg[i].name;i++) {
 	switch (cfg[i].type) {
@@ -69,6 +71,8 @@ int read_wri_struct (struct wri_struct *cfg, GsfInput *f) {
     int size, i;
     unsigned char *blob;
 
+		strings->setDomain("abiword-plugin-mswrite");
+
     /* first we need to calculate the size */
     i = size = 0;
     while (cfg[i].name) size += cfg[i++].size;
@@ -92,6 +96,8 @@ int read_wri_struct (struct wri_struct *cfg, GsfInput *f) {
 
 void dump_wri_struct (struct wri_struct *cfg) {
     int i = 0;
+
+		strings->setDomain("abiword-plugin-mswrite");
 
     while (cfg[i].name) {
 	switch (cfg[i].type) {
@@ -118,6 +124,8 @@ void free_wri_struct (struct wri_struct *cfg) {
 }
    
 int wri_struct_value (const struct wri_struct *cfg, const char *name) {
+		strings->setDomain("abiword-plugin-mswrite");
+
     int  i = 0;
     while (cfg[i].name) {
 	if (!strcmp (cfg[i].name, name) ) return cfg[i].value;

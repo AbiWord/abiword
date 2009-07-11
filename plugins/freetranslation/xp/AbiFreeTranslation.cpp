@@ -265,8 +265,8 @@ bool FreeTranslation_invoke(AV_View * /*v*/, EV_EditMethodCallData * /*d*/)
 	return true;
 }
 
-static const char * FreeTranslation_MenuLabel = strings->getValue(_("Use &Free Translation"));
-static const char * FreeTranslation_MenuTooltip = strings->getValue(_("Opens the gratis on-line translator"));
+static const char * FreeTranslation_MenuLabel;
+static const char * FreeTranslation_MenuTooltip;
 
 static void
 FreeTranslation_RemoveFromMenus ()
@@ -381,6 +381,9 @@ static void FreeTranslation_addToMenus()
 ABI_BUILTIN_FAR_CALL int abi_plugin_register(XAP_ModuleInfo * mi)
 {
 	strings->setDomain("abiword-plugin-freetranslation");
+
+	FreeTranslation_MenuLabel = strings->getValue(_("Use &Free Translation"));
+	FreeTranslation_MenuTooltip = strings->getValue(_("Opens the gratis on-line translator"));
 
 	mi->name = strings->getValue(_("FreeTranslation plugin"));
 	mi->desc = strings->getValue(_("On-line Translation support for AbiWord. Based upon the FreeTranslation translation tool (www.freetranslation.com), for personal, non-commercial use only."));

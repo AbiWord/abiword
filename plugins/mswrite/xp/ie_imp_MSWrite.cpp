@@ -44,7 +44,8 @@
 #include "ut_growbuf.h"
 #include "ut_string_class.h"
 #include "xap_Module.h"
-#include "ap_Strings.h"
+#include "xap_App.h"
+#include "xap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_mswrite_register
@@ -68,7 +69,8 @@ static IE_Imp_MSWrite_Sniffer * m_sniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-  AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-mswrite");
+  XAP_StringSet *strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	strings->setDomain("abiword-plugin-mswrite");
 
 	if (!m_sniffer)
 	{

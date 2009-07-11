@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "xap_App.h"
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -325,7 +326,8 @@ IE_Imp_ISCII_Sniffer::IE_Imp_ISCII_Sniffer (const char * _name) :
   IE_ImpSniffer(_name)
 {
   // 
-  m_strings = new AP_StringSet(NULL, "abiword-plugin-iscii");
+  m_strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	m_strings->setDomain("abiword-plugin-iscii");
 }
 
 IE_Imp_ISCII_Sniffer::~IE_Imp_ISCII_Sniffer()

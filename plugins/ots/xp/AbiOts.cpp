@@ -44,7 +44,7 @@
 #include "xap_EncodingManager.h"
 #include "ie_types.h"
 #include "ut_growbuf.h"
-#include "ap_Strings.h"
+#include "xap_Strings.h"
 
 #include <ots/libots.h>
 
@@ -54,10 +54,10 @@
 #include "xap_UnixDialogHelper.h"
 #endif
 
-AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-ots");
+XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 
-static const char* Ots_MenuLabel = strings->getValue(_("&Summarize"));
-static const char* Ots_MenuTooltip = stringns->getValue(_("Summarize your document or selected text"));
+static const char* Ots_MenuLabel;
+static const char* Ots_MenuTooltip;
 #ifdef TOOLKIT_GTK
 
 static int getSummaryPercent(void)
@@ -233,6 +233,11 @@ ABI_PLUGIN_DECLARE	("AbiOts")
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
+		strings->setDomain("abiword-plugin-ots");
+
+		Ots_MenuLabel = strings->getValue(_("&Summarize"));
+		Ots_MenuTooltip = strings->getValue(_("Summarize your document or selected text"));
+
     mi->name = strings->getValue(_("Ots plugin"));
     mi->desc = strings->getValue(_("Open Text Summarizer for AbiWord"));
     mi->version = ABI_VERSION_STRING;

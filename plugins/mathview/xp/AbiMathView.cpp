@@ -78,6 +78,7 @@
 #include "xap_Dlg_FileOpenSaveAs.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_MessageBox.h"
+#include "xap_App.h"
 #include "ap_Strings.h"
 #include "ap_Dialog_Latex.h"
 #include "ut_mbtowc.h"
@@ -98,6 +99,8 @@
 #include "itex2MML.h"
 
 static GR_MathManager * pMathManager = NULL; // single plug-in instance of GR_MathManager
+
+XAP_StringSet * strings;
 
 //
 // AbiMathView_addToMenus
@@ -130,18 +133,18 @@ static XAP_Menu_Id FromLatexID;
 static XAP_Menu_Id endEquationID;
 static void AbiMathView_addToMenus()
 {
+		strings->setDomain(NULL);
     // First we need to get a pointer to the application itself.
     XAP_App *pApp = XAP_App::getApp();
     //
     // Translated Strings
     //
-    const XAP_StringSet * pSS = pApp->getStringSet();
-    AbiMathView_MenuLabelEquation= pSS->getValue(AP_STRING_ID_MENU_LABEL_INSERT_EQUATION);
-    AbiMathView_MenuTooltipEquation = pSS->getValue(AP_STRING_ID_MENU_LABEL_TOOLTIP_INSERT_EQUATION);
-    AbiMathView_MenuLabelFileInsert = pSS->getValue(AP_STRING_ID_MENU_LABEL_INSERT_EQUATION_FILE);
-    AbiMathView_MenuTooltipFileInsert = pSS->getValue(AP_STRING_ID_MENU_LABEL_TOOLTIP_INSERT_EQUATION_FILE);
-    AbiMathView_MenuLabelLatexInsert = pSS->getValue(AP_STRING_ID_MENU_LABEL_INSERT_EQUATION_LATEX);
-    AbiMathView_MenuTooltipLatexInsert = pSS->getValue(AP_STRING_ID_MENU_LABEL_TOOLTIP_INSERT_EQUATION_LATEX);
+    AbiMathView_MenuLabelEquation= strings->getValue(AP_STRING_ID_MENU_LABEL_INSERT_EQUATION);
+    AbiMathView_MenuTooltipEquation = strings->getValue(AP_STRING_ID_MENU_LABEL_TOOLTIP_INSERT_EQUATION);
+    AbiMathView_MenuLabelFileInsert = strings->getValue(AP_STRING_ID_MENU_LABEL_INSERT_EQUATION_FILE);
+    AbiMathView_MenuTooltipFileInsert = strings->getValue(AP_STRING_ID_MENU_LABEL_TOOLTIP_INSERT_EQUATION_FILE);
+    AbiMathView_MenuLabelLatexInsert = strings->getValue(AP_STRING_ID_MENU_LABEL_INSERT_EQUATION_LATEX);
+    AbiMathView_MenuTooltipLatexInsert = strings->getValue(AP_STRING_ID_MENU_LABEL_TOOLTIP_INSERT_EQUATION_LATEX);
     
     // Create an EditMethod that will link our method's name with
     // it's callback function.  This is used to link the name to 
@@ -957,17 +960,18 @@ ABI_PLUGIN_DECLARE(AbiMathView)
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-	AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-mathview");
+	// Add to AbiWord's plugin listeners
+	XAP_App * pApp = XAP_App::getApp();	
+	pMathManager = new GR_MathManager(NULL);
+
+	strings = (XAP_StringSet *) pApp()->getStringSet();
+	strings->setDomain("abiword-plugin-mathview");
 
 	mi->name = strings->getValue(_("AbiMathView"));
 	mi->desc = strings->getValue(_("The plugin allows AbiWord to import MathML documents"));
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Martin Sevior <msevior@physics.unimelb.edu.au>";
 	mi->usage = strings->getValue(_("No Usage"));
-    
-	// Add to AbiWord's plugin listeners
-	XAP_App * pApp = XAP_App::getApp();	
-	pMathManager = new GR_MathManager(NULL);
 	MathManagerUID = pApp->registerEmbeddable(pMathManager);
 
 	// Add to AbiWord's menus
@@ -989,6 +993,8 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	pApp->unRegisterEmbeddable(MathManagerUID);
 	DELETEP(pMathManager);
 	AbiMathView_removeFromMenus();
+
+	delete strings;
 
 	return 1;
 }

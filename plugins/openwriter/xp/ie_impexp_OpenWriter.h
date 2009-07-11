@@ -25,7 +25,7 @@
 #include "ie_imp.h"
 #include "ie_exp.h"
 
-#include "ap_Strings.h"
+#include "xap_Strings.h"
 
 class IE_Imp_OpenWriter_Sniffer : public IE_ImpSniffer
 {
@@ -48,7 +48,7 @@ public:
 			     IEFileType * ft) ;
 
 private:
-  AP_StringSet *m_strings;
+  XAP_StringSet *m_strings;
 };
 
 class IE_Exp_OpenWriter_Sniffer : public IE_ExpSniffer
@@ -68,7 +68,7 @@ public:
 			    IEFileType * ft) ;
 
 private:
-  AP_StringSet *m_strings;
+  XAP_StringSet *m_strings;
 };
 
 #endif // IE_IMPEXP_OPENWRITER_H

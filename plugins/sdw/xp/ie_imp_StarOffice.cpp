@@ -48,7 +48,7 @@
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
 #include "xap_Module.h"
-#include "ap_Strings.h"
+#include "xap_Strings.h"
 
 #ifdef DEBUG
 #include <errno.h>
@@ -65,7 +65,7 @@
 ABI_PLUGIN_DECLARE("SDW")
 #endif
 
-AP_StringSet *strings;
+XAP_StringSet * strings;
 
 // ********************************************************************************
 // Mapping of StarOffice attributes to abiword's
@@ -1001,7 +1001,8 @@ static IE_Imp_StarOffice_Sniffer * m_impSniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-		strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-sdw");
+		strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+		strings->setDomain("abiword-plugin-sdw");
 
     if (!m_impSniffer)
     {

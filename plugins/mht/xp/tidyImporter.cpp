@@ -70,7 +70,8 @@ bool IE_Imp_Tidy_Sniffer::getDlgLabels (const char ** pszDesc,
 										const char ** pszSuffixList,
 										IEFileType * ft)
 {
-	AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-mht");
+	XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	strings->setDomain("abiword-plugin-mht");
 	*pszDesc = strings->getValue(_("HTML [via tidy] (.html, .htm)"));
 	*pszSuffixList = "*.html; *.htm";
 	*ft = getFileType();

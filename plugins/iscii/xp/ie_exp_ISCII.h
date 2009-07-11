@@ -21,7 +21,8 @@
 #define IE_EXP_ISCII_H
 
 #include "ie_exp_Text.h"
-#include "ap_Strings.h"
+#include "xap_App.h"
+#include "xap_Strings.h"
 
 // The exporter/writer for ISCII text files.
 
@@ -41,7 +42,7 @@ public:
 									   IE_Exp ** ppie);
 
 private:
-  AP_StringSet *m_strings;
+  XAP_StringSet *m_strings;
 };
 
 class IE_Exp_ISCII : public IE_Exp_Text

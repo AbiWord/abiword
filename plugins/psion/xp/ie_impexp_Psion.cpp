@@ -30,7 +30,8 @@
 #include "ie_impexp_Psion.h"
 #include "xap_Module.h"
 #include "ut_debugmsg.h"
-#include "ap_Strings.h"
+#include "xap_App.h"
+#include "xap_Strings.h"
 
 #include <psiconv/data.h>
 #include <psiconv/error.h>
@@ -50,7 +51,8 @@ static IE_Imp_Psion_TextEd_Sniffer * m_imptexted_sniffer = 0;
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-  AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-psion");
+  XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	strings->getValue("abiword-plugin-psion");
 
 	if (!m_expword_sniffer && !m_exptexted_sniffer)
 	{

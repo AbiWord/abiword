@@ -59,7 +59,7 @@
 #include "ut_string_class.h"
 #include "xap_Module.h"
 #include "ut_misc.h"
-#include "ap_Strings.h"
+#include "xap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_latex_register
@@ -75,7 +75,7 @@ ABI_PLUGIN_DECLARE("LaTeX")
 /*****************************************************************/
 /*****************************************************************/
 
-AP_StringSet *strings;
+XAP_StringSet * strings;
 
 // completely generic code to allow this to be a plugin
 
@@ -85,7 +85,8 @@ static IE_Exp_LaTeX_Sniffer * m_sniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-  strings = new AP_StringSet(NULL, "abiword-plugin-latex");
+  strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	strings->setDomain("abiword-plugin-latex");
 
 	if (!m_sniffer)
 	{

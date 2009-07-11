@@ -42,21 +42,24 @@
 // base class provides interface regardless of how we got the strings
 //////////////////////////////////////////////////////////////////
 
-XAP_StringSet::XAP_StringSet(XAP_App * pApp, const gchar * szDomainName, const gchar * szLanguageName)
+XAP_StringSet::XAP_StringSet(const gchar * szDomainName)
 	: m_domain(szDomainName),
 		m_encoding("UTF-8")
 {
-	m_pApp = pApp;
+	UT_LocaleInfo *info = new UT_LocaleInfo();
+	const char *lang = info->getLanguage().utf8_str();
+	const char *reg = info->getTerritory().utf8_str();
 
-	if (!szLanguageName)
+	if (lang)
 	{
-		UT_LocaleInfo *info = new UT_LocaleInfo();
-		m_szLanguageName = info->getLanguage().utf8_str();
-    UT_DEBUGMSG(("XAP_StringSet::m_szLanguageName: %s\n", m_szLanguageName));
-	}
+		strcpy((char *) m_szLanguageName, lang);
 
-	if (szLanguageName && *szLanguageName)
-		m_szLanguageName = g_strdup(szLanguageName);
+		if (reg)
+		{
+			strcat((char *) m_szLanguageName, "-");
+			strcat((char *) m_szLanguageName, reg);
+		}
+	}
 
 	setlocale(LC_ALL, "");
 	setDomain(m_domain);
@@ -64,8 +67,6 @@ XAP_StringSet::XAP_StringSet(XAP_App * pApp, const gchar * szDomainName, const g
 
 XAP_StringSet::~XAP_StringSet(void)
 {
-	if (m_szLanguageName)
-		g_free(const_cast<gchar *>(m_szLanguageName));
 }
 
 const gchar * XAP_StringSet::getLanguageName(void) const
@@ -131,11 +132,11 @@ const char * XAP_StringSet::getEncoding() const
 	return m_encoding.c_str();
 }
 
-void XAP_StringSet::setDomain(const char * szDomainName)
+const char * XAP_StringSet::setDomain(const char * szDomainName)
 {
   m_domain = szDomainName ? szDomainName : GETTEXT_PACKAGE;
 	bindtextdomain(m_domain, LOCALE_DIR);
-	textdomain(m_domain);
+	return textdomain(m_domain);
 }
 
 /* Kinda useless for now, but maybe we can put in checks in the future */

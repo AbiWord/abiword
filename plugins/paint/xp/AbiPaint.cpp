@@ -55,7 +55,8 @@
 #include <io.h>
 #endif
 
-#include "ap_Strings.h"
+#include "xap_App.h"
+#include "xap_Strings.h"
 
 // use preference file instead of registry
 XAP_PrefsScheme * prefsScheme = NULL;
@@ -79,7 +80,9 @@ static DECLARE_ABI_PLUGIN_METHOD(useBmp);
 static DECLARE_ABI_PLUGIN_METHOD(specify);
 ABI_TOGGLEABLE_MENUITEM_PROTOTYPE(useBmp);
 
+const char * olddom = ((XAP_StringSet *) XAP_App::getApp()->getStringSet())->setDomain("abiword-plugin-paint");
 
+// TODO: Make translatable
 /* Note:  Make sure the methodName field is Not NULL, otherwise
  *        AbiWord.exe will probably segfault -- actual results 
  *        depend on where other plugins add menu items.
@@ -97,7 +100,7 @@ static AbiMenuOptions amo [] =
   { ABI_PLUGIN_METHOD_STR(saveAsBmp),     ABI_PLUGIN_METHOD(saveAsBmp),   _("Save Image &As BMP"),         _("Saves the selected image as a BMP file."), EV_MLF_Normal, false, true, false, ABI_GRAYABLE_MENUITEM(editImage), NULL, true, true, 0 },
 #endif
   { ABI_PLUGIN_METHOD_STR(separator1),    NULL,                           NULL,                         NULL, EV_MLF_Separator, false, false, false, NULL, NULL, true, false, 0 },
-  { ABI_PLUGIN_METHOD_STR(specify),       ABI_PLUGIN_METHOD(specify),     "&Specify Image Editor",      "Allows you to specify what image editing program to use, results stored in registry.", EV_MLF_Normal, false, true, false, NULL, NULL, true, false, 0 },
+  { ABI_PLUGIN_METHOD_STR(specify),       ABI_PLUGIN_METHOD(specify),     _("&Specify Image Editor"),      _("Allows you to specify what image editing program to use, results stored in registry."), EV_MLF_Normal, false, true, false, NULL, NULL, true, false, 0 },
 #ifdef ENABLE_BMP
   { ABI_PLUGIN_METHOD_STR(useBmp),        ABI_PLUGIN_METHOD(useBmp),      _("Image Editor Requires &BMP"), _("Indicates the specified image editing program must use a BMP file instead of PNG (default is enabled)."), EV_MLF_Normal, false, false, true, ABI_TOGGLEABLE_MENUITEM(useBmp), NULL, true, false, 0 },
 #endif
@@ -128,7 +131,8 @@ XAP_ModuleInfo * getModuleInfo(void)
 
 bool doRegistration(void)
 {
-		AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-paint");
+		XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+		strings->setDomain("abiword-plugin-paint");
 
     // Get XAP_Prefs object for retrieving/storing image editor and related preferences
     UT_return_val_if_fail(prefs != NULL, false);
@@ -173,7 +177,8 @@ void doUnregistration(void)
 //
 static DECLARE_ABI_PLUGIN_METHOD(specify)
 {
-	AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-paint");
+	XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	strings->setDomain("abiword-plugin-paint");
 
 	UT_UNUSED(v);
 	UT_UNUSED(d);
@@ -258,7 +263,8 @@ static DECLARE_ABI_PLUGIN_METHOD(useBmp)
 //
 static DECLARE_ABI_PLUGIN_METHOD(saveAsBmp)
 {
-	AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-paint");
+	XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	strings->setDomain("abiword-plugin-paint");
 
 	// Get a frame (for error messages) and (to) get the current view that the user is in.
 	XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
@@ -340,7 +346,8 @@ static DECLARE_ABI_PLUGIN_METHOD(saveAsBmp)
 // const char * getEditImageMenuName(XAP_Frame * pFrame, const EV_Menu_Label * pLabel, XAP_Menu_Id id)
 Defun_EV_GetMenuItemComputedLabel_Fn(getEditImageMenuName)
 {
-	AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-paint");
+	XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	strings->setDomain("abiword-plugin-paint");
 
 	UT_UNUSED(pLabel);
 	UT_UNUSED(id);
@@ -379,7 +386,8 @@ Defun_EV_GetMenuItemComputedLabel_Fn(getEditImageMenuName)
 //
 static DECLARE_ABI_PLUGIN_METHOD(editImage)
 {
-	AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-paint");
+	XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	strings->setDomain("abiword-plugin-paint");
 
 	UT_UNUSED(v);
     // Get the current view that the user is in.

@@ -291,7 +291,7 @@ bool AP_CocoaApp::initialize(void)
 	//////////////////////////////////////////////////////////////////
 	IE_ImpExp_RegisterXP ();
     
-		AP_BuiltinStringSet * pBuiltinStringSet = new AP_StringSet(this);
+		AP_BuiltinStringSet * pBuiltinStringSet = new AP_StringSet();
 		UT_ASSERT(pBuiltinStringSet);
 		m_pStringSet = pBuiltinStringSet;
 	    

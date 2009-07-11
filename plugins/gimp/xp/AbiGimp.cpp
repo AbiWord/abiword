@@ -68,8 +68,8 @@ XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 
 static bool AbiGimp_invoke(AV_View* v, EV_EditMethodCallData *d);
 
-static const char* AbiGimp_MenuLabel = strings->getValue(_("&Edit Image via GIMP"));
-static const char* AbiGimp_MenuTooltip = strings->getValue(_("Opens the selected image in the GIMP for editing."));
+static const char* AbiGimp_MenuLabel;
+static const char* AbiGimp_MenuTooltip;
 
 #ifdef WIN32
 static BOOL CreateChildProcess(char * appName, char *cmdline,
@@ -203,6 +203,9 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 #endif
 
 		strings->setDomain("abiword-plugin-gimp");
+
+		strings->getValue(_("&Edit Image via GIMP"));
+		AbiGimp_MenuTooltip = strings->getValue(_("Opens the selected image in the GIMP for editing."));
 
     mi->name = strings->getValue(_("AbiGimp"));
     mi->desc = strings->getValue(_("Use this to edit an image with the GIMP from within AbiWord"));

@@ -22,7 +22,8 @@
 #include "ie_imp_MIF.h"
 #include "ie_exp_MIF.h"
 #include "xap_Module.h"
-#include "ap_Strings.h"
+#include "xap_App.h"
+#include "xap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_mif_register
@@ -44,7 +45,8 @@ static IE_Exp_MIF_Sniffer * m_expSniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-  AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-mif");
+  XAP_StringSet *strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	strings->setDomain("abiword-plugin-mif");
 
 	if (!m_impSniffer)
 	{

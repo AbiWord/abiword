@@ -24,6 +24,8 @@
 
 #include <locale.h>
 
+#include "xap_App.h"
+
 #include "pd_Style.h"
 #include "ut_Language.h"
 #include "ut_math.h"
@@ -61,7 +63,8 @@ oo_gsf_output_close(GsfOutput *output)
 IE_Exp_OpenWriter_Sniffer::IE_Exp_OpenWriter_Sniffer()
   : IE_ExpSniffer ("OpenWriter::SXW")
 {
-  m_strings = new AP_StringSet(NULL, "abiword-plugin-openwriter");
+  m_strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	m_strings->setDomain("abiword-plugin-openwriter");
 }
 
 IE_Exp_OpenWriter_Sniffer::~IE_Exp_OpenWriter_Sniffer()

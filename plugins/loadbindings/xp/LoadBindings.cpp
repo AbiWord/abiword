@@ -57,7 +57,7 @@
 #include "xap_Dlg_FileOpenSaveAs.h"
 #include "xap_Dialog_Id.h"
 #include "ev_NamedVirtualKey.h"
-#include "ap_Strings.h"
+#include "xap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_loadbindings_register
@@ -72,7 +72,7 @@ ABI_PLUGIN_DECLARE (LoadBindings)
 
 #define RES_TO_STATUS(a) ((a) ? 0 : -1)
 
-AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-loadbindings");
+XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 
 // -----------------------------------------------------------------------
 //      Edit methods and menu items
@@ -87,12 +87,12 @@ static bool SaveBindings_invoke(AV_View * v, EV_EditMethodCallData* d);
 static XAP_Menu_Id loadBindingID;
 static XAP_Menu_Id dumpEditMethodsID;
 static XAP_Menu_Id saveBindingID;
-static const char * szLoadBinding = strings->getValue(_("Load keybindings"));
-static const char * szLoadBindingStatus = strings->getValue(_("Load keybindings from a file"));
-static const char * szDumpEditMethods = strings->getValue(_("Dump edit methods"));
-static const char * szDumpEditMethodsStatus = strings->getValue(_("Dump edit methods to your console"));
-static const char * szSaveBinding = strings->getValue(_("Save keybindings"));
-static const char * szSaveBindingStatus = strings->getValue(_("Save keybindings to your profile directory"));
+static const char * szLoadBinding;
+static const char * szLoadBindingStatus;
+static const char * szDumpEditMethods;
+static const char * szDumpEditMethodsStatus;
+static const char * szSaveBinding;
+static const char * szSaveBindingStatus;
 
 static void LoadBindings_registerMethod () 
 {
@@ -227,6 +227,15 @@ static void LoadKeybindings(const char* uri)
 
 ABI_BUILTIN_FAR_CALL int abi_plugin_register (XAP_ModuleInfo * mi) 
 {
+	strings->setDomain("abiword-plugin-loadbindings");
+
+	szLoadBinding = strings->getValue(_("Load keybindings"));
+	szLoadBindingStatus = strings->getValue(_("Load keybindings from a file"));
+	szDumpEditMethods = strings->getValue(_("Dump edit methods"));
+	szDumpEditMethodsStatus = strings->getValue(_("Dump edit methods to your console"));
+	szSaveBinding = strings->getValue(_("Save keybindings"));
+	szSaveBindingStatus = strings->getValue(_("Save keybindings to your profile directory"));
+
 	mi->name = strings->getValue(_("LoadBindings"));
 	mi->desc = strings->getValue(_("This allows Keybindings to be loaded from an Ascii file"));
 	mi->version = ABI_VERSION_STRING;

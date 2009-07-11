@@ -61,7 +61,7 @@
 #include "ie_exp_HTML.h"
 #include "xap_Module.h"
 #include "ut_string_class.h"
-#include "ap_Strings.cpp"
+#include "xap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_s5_register
@@ -111,7 +111,7 @@ public:
 /*****************************************************************/
 /*****************************************************************/
 
-AP_StringSet *strings;
+XAP_StringSet * strings;
 
 // completely generic code to allow this to be a plugin
 
@@ -121,7 +121,8 @@ static IE_Exp_S5_Sniffer * m_sniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-  strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-s5");
+  strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	strings->setDomain("abiword-plugin-s5");
 
 	if (!m_sniffer)
 	{

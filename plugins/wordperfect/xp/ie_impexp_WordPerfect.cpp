@@ -32,7 +32,8 @@
 #include "ie_impexp_WordPerfect.h"
 #include <gsf/gsf-utils.h>
 
-#include "ap_Strings.h"
+#include "xap_App.h"
+#include "xap_Strings.h"
 
 ABI_PLUGIN_DECLARE("WordPerfect")
 
@@ -46,7 +47,8 @@ static IE_Imp_MSWorks_Sniffer * m_MSWorks_ImpSniffer = 0;
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-  AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-wordperfect");
+  XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	strings->setDomain("abiword-plugin-wordperfect");
 
 	if (!m_ImpSniffer)
 	{

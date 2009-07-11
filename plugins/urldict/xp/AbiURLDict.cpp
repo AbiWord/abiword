@@ -30,7 +30,7 @@
 #include "ev_EditMethod.h"
 #include "xap_Menu_Layouts.h"
 #include "ut_string_class.h"
-#include "ap_Strings.h"
+#include "xap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_urldict_register
@@ -46,7 +46,7 @@ ABI_PLUGIN_DECLARE ("URLDict")
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
 
-AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-urldict");
+XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 
 //
 // _ucsToAscii
@@ -121,8 +121,8 @@ URLDict_invoke(AV_View* /*v*/, EV_EditMethodCallData * /*d*/)
   return true;
 }
 
-static const char* URLDict_MenuLabel = strings->getValue(_("&URL Dictionary"));
-static const char* URLDict_MenuTooltip = strings->getValue(_("Opens the on-line dictionary"));
+static const char* URLDict_MenuLabel;
+static const char* URLDict_MenuTooltip;
 
 static void
 URLDict_removeFromMenus()
@@ -238,6 +238,11 @@ URLDict_addToMenus()
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
+		strings->setDomain("abiword-plugin-urldict");
+
+		URLDict_MenuLabel = strings->getValue(_("&URL Dictionary"));
+		URLDict_MenuTooltip = strings->getValue(_("Opens the on-line dictionary"));
+
     mi->name = strings->getValue(_("URLDict plugin"));
     mi->desc = strings->getValue(_("On-line Dictionary support for AbiWord. Based upon the DICT Protocol. The search site is http://www.dict.org."));
     mi->version = ABI_VERSION_STRING;

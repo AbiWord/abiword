@@ -26,7 +26,8 @@
 #endif
 
 #include "xap_Module.h"
-#include "ap_Strings.h"
+#include "xap_App.h"
+#include "xap_Strings.h"
 
 #ifdef XHTML_MULTIPART_SUPPORTED
 #include "ie_imp_MHT.h"
@@ -63,7 +64,8 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 		m_tidy_sniffer = new IE_Imp_Tidy_Sniffer ();
 	}
 #endif
-	AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-mht");
+	XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	strings->setDomain("abiword-plugin-mht");
 
 #ifdef XHTML_MULTIPART_SUPPORTED
 	mi->name = strings->getValue(_("Multipart HTML Importer"));

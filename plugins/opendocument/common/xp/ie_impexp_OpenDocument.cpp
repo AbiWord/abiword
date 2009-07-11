@@ -23,7 +23,8 @@
 // External includes
 #include <gsf/gsf-utils.h>
 #include <xap_Module.h>
-#include <ap_Strings.h>
+#include <xap_Strings.h>
+#include "xap_App.h"
 
 // Internal includes
 #include "../../imp/xp/ie_imp_OpenDocument_Sniffer.h"
@@ -55,7 +56,8 @@ static IE_Exp_OpenDocument_Sniffer* pExp_sniffer = 0;
  */
 ABI_BUILTIN_FAR_CALL int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-    AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-opendocument");
+    XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+		strings->setDomain("abiword-plugin-opendocument");
 
     if (!pImp_sniffer) {
         pImp_sniffer = new IE_Imp_OpenDocument_Sniffer ();

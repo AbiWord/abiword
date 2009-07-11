@@ -33,14 +33,15 @@
 #include <gsf/gsf-infile-msole.h>
 #include <libwpd/WPXStream.h>
 #include "xap_Module.h"
-#include "ap_Strings.h"
+#include "xap_App.h"
+#include "xap_Strings.h"
 
 using libwpg::WPGraphics;
 using libwpg::WPGString;
 
 ABI_PLUGIN_DECLARE("WPG")
 
-AP_StringSet *strings;
+XAP_StringSet * strings;
 
 class AbiWordPerfectGraphicsInputStream : public WPXInputStream
 {
@@ -157,7 +158,9 @@ static IE_Imp_WordPerfectGraphics_Sniffer * m_ImpSniffer = 0;
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-	strings = new AP_StringSet(NULL, "abiword-plugin-wpg");
+	strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	strings->setDomain("abiword-plugin-wpg");
+
 	if (!m_ImpSniffer)
 	{
 		m_ImpSniffer = new IE_Imp_WordPerfectGraphics_Sniffer ();

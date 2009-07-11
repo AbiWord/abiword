@@ -38,7 +38,7 @@
 #include "ut_bytebuf.h"
 #include "ut_hash.h"
 #include "ut_vector.h"
-#include "ap_Strings.h"
+#include "xap_Strings.h"
 
 #include "pd_Document.h"
 
@@ -129,7 +129,8 @@ UT_Error IE_Imp_MHT_Sniffer::constructImporter (PD_Document * pDocument, IE_Imp 
 bool IE_Imp_MHT_Sniffer::getDlgLabels (const char ** pszDesc, const char ** pszSuffixList,
 										IEFileType * ft)
 {
-	AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-mht");
+	XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	strings->setDomain("abiword-plugin-mht");
 	*pszDesc = strings->getValue(_("Multipart HTML (.mht)"));
 	*pszSuffixList = "*.mht";
 	*ft = getFileType ();

@@ -26,7 +26,8 @@
 #include "ie_imp_OPML.h"
 #include "ie_types.h"
 #include "xap_Module.h"
-#include "ap_Strings.h"
+#include "xap_App.h"
+#include "xap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_opml_register
@@ -50,7 +51,8 @@ static IE_Imp_OPML_Sniffer * m_sniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-  AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-opml");
+  XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	strings->setDomain("abiword-plugin-opml");
 	if (!m_sniffer)
 	{
 		m_sniffer = new IE_Imp_OPML_Sniffer (PLUGIN_NAME);

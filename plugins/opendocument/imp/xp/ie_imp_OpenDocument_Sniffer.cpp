@@ -29,7 +29,8 @@
 // Internal includes
 #include "ie_imp_OpenDocument.h"
 
-#include "ap_Strings.h"
+#include "xap_App.h"
+#include "xap_Strings.h"
 
 #include <gsf/gsf-infile.h>
 #include <gsf/gsf-infile-zip.h>
@@ -137,7 +138,8 @@ bool IE_Imp_OpenDocument_Sniffer::getDlgLabels (const char ** szDesc,
                           const char ** szSuffixList,
                           IEFileType * ft)
 {
-  AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-opendocument");
+  XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	strings->setDomain("abiword-plugin-opendocument");
 
 	*szDesc = strings->getValue(_("OpenDocument (.odt, .ott)"));
 	*szSuffixList = "*.odt; *.ott";

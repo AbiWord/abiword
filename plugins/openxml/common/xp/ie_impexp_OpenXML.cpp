@@ -28,7 +28,8 @@
 #include <ie_imp_OpenXML_Sniffer.h>
 #include <ie_exp_OpenXML_Sniffer.h>
 
-#include "ap_Strings.h"
+#include "xap_App.h"
+#include "xap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_openxml_register
@@ -55,7 +56,8 @@ static IE_Exp_OpenXML_Sniffer* pExp_sniffer = 0;
  */
 ABI_BUILTIN_FAR_CALL int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-		AP_StringSet *strings = new  AP_StringSet(NULL, "abiword-plugin-openxml");
+		XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+		strings->setDomain("abiword-plugin-openxml");
 
     if (!pImp_sniffer) {
         pImp_sniffer = new IE_Imp_OpenXML_Sniffer ();

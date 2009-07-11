@@ -36,14 +36,15 @@
 #include "xap_Module.h"
 #include "ie_impGraphic.h"
 #include "fg_GraphicRaster.h"
-#include "ap_Strings.h"
+#include "xap_App.h"
+#include "xap_Strings.h"
 
 // Workaround for __jmpbuf #define on AIX
 #undef jmpbuf
 
 //------------------------------------------------------------------------------------
 
-AP_StringSet *strings;
+XAP_StringSet * strings;
 
 /*! 
  * This class will import SVGs into PNG byte buffers for AbiWord
@@ -341,7 +342,8 @@ static IE_RSVGGraphic_Sniffer * m_sniffer = 0;
 ABI_FAR_CALL  extern "C"
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-		strings = new AP_StringSet(NULL, "abiword-plugin-rsvg");
+		strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+		strings->setDomain("abiword-plugin-rsvg");
 
   	mi->name = strings->getValue(_("LibRSVG SVG image loader plugin"));
     mi->desc = strings->getValue(_("This will enable AbiWord to read SVG files"));

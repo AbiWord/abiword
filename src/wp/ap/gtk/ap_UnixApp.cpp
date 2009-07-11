@@ -218,7 +218,7 @@ bool AP_UnixApp::initialize(bool has_display)
 		  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
       }
     
-    m_pStringSet = new AP_StringSet(this);
+    m_pStringSet = new AP_StringSet();
 
     // load the preferences.
     

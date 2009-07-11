@@ -117,14 +117,14 @@ GSF_CLASS_FULL (AbiCmdContext, abi_cmd_context,
 //
 // FIXME make these translatable strings
 
-static const char * Object_MenuLabelObject = strings->getValue(_("Object"));
-static const char * Object_MenuTooltipObject = strings->getValue(_("Insert Embeddable Object"));
-static const char* AbiGOChart_MenuLabelInsert = strings->getValue(_("Gnome Office Chart"));
-static const char* AbiGOChart_MenuTooltipInsert = strings->getValue(_("Create a chart"));
-static const char* AbiGOComponent_MenuLabelInsertFromFile = strings->getValue(_("From File"));
-static const char* AbiGOComponent_MenuTooltipInsertFromFile = strings->getValue(_("Insert the contents of a file"));
-static const char* AbiGOComponent_MenuLabelCreate = strings->getValue(_("New"));
-static const char* AbiGOComponent_MenuTooltipCreate = strings->getValue(_("Create a new object"));
+static const char * Object_MenuLabelObject;
+static const char * Object_MenuTooltipObject;
+static const char* AbiGOChart_MenuLabelInsert;
+static const char* AbiGOChart_MenuTooltipInsert;
+static const char* AbiGOComponent_MenuLabelInsertFromFile;
+static const char* AbiGOComponent_MenuTooltipInsertFromFile;
+static const char* AbiGOComponent_MenuLabelCreate;
+static const char* AbiGOComponent_MenuTooltipCreate;
 
 static XAP_Menu_Id newObjectID = 0;
 static XAP_Menu_Id InsertGOChartID = 0;
@@ -426,6 +426,15 @@ ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
 		strings->setDomain("abiword-plugin-goffice");
+
+		Object_MenuLabelObject = strings->getValue(_("Object"));
+		Object_MenuTooltipObject = strings->getValue(_("Insert Embeddable Object"));
+		AbiGOChart_MenuLabelInsert = strings->getValue(_("Gnome Office Chart"));
+		AbiGOChart_MenuTooltipInsert = strings->getValue(_("Create a chart"));
+		AbiGOComponent_MenuLabelInsertFromFile = strings->getValue(_("From File"));
+		AbiGOComponent_MenuTooltipInsertFromFile = strings->getValue(_("Insert the contents of a file"));
+		AbiGOComponent_MenuLabelCreate = strings->getValue(_("New"));
+		 AbiGOComponent_MenuTooltipCreate = strings->getValue(_("Create a new object"));
 
     mi->name = strings->getValue(_("AbiGOffice"));
     mi->desc = strings->getValue(_("The plugin enables Gnome Office Charts and components to be displayed in AbiWord"));

@@ -110,7 +110,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
   szCollaborationJoinTip = strings->getValue(_("Join a collaboration session"));
   szCollaborationAccounts = strings->getValue(_("Accounts"));
   szCollaborationAccountsTip = strings->getValue(_("Manage collaboration accounts"));
-  szCollaborationShowAuthors = "Show Authors";
+  szCollaborationShowAuthors = strings->getValue(_("Show Authors"));
   strings->getValue(_("Show who wrote each piece of text by with different colors"));
   szCollaborationRecord = strings->getValue(_("Record this Session"));
   szCollaborationRecordTip = strings->getValue(_("Record a session to disk, for debugging purposes"));

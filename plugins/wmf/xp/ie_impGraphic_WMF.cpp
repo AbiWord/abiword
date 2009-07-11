@@ -35,7 +35,8 @@
 #include "fg_GraphicVector.h"
 #include "ie_impGraphic_WMF.h"
 
-#include "ap_Strings.h"
+#include "xap_App.h"
+#include "xap_Strings.h"
 
 #include <stdio.h>
 #include <math.h>
@@ -44,7 +45,7 @@
 #include <libwmf/gd.h>
 #include <libwmf/svg.h>
 
-AP_StringSet *strings;
+XAP_StringSet * strings;
 
 static int  AbiWord_WMF_read (void * context);
 static int  AbiWord_WMF_seek (void * context,long pos);
@@ -550,7 +551,8 @@ static IE_ImpGraphicWMF_Sniffer * m_impSniffer = 0;
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-  strings = new AP_StringSet(NULL, "abiword-plugin-wmf");
+  strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	strings->setDomain("abiword-plugin-wmf");
 
 	if (!m_impSniffer)
 	{

@@ -32,7 +32,8 @@
 #include <gsf/gsf-output-stdio.h>
 
 #include "xap_Module.h"
-#include "ap_Strings.h"
+#include "xap_App.h"
+#include "xap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_pdf_register
@@ -45,7 +46,7 @@
 ABI_PLUGIN_DECLARE("PDF")
 #endif
 
-AP_StringSet *strings;
+XAP_StringSet * strings;
 
 static const struct
 {
@@ -239,7 +240,9 @@ static IE_Imp_PDF_Sniffer * m_impSniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-  strings = new AP_StringSet(NULL, "abiword-plugin-pdf");
+  strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	strings->setDomain("abiword-plugin-pdf");
+
 	for (size_t i = 0; i < G_N_ELEMENTS(pdf_conversion_programs); i++)
 		{
 			gchar * prog_path;

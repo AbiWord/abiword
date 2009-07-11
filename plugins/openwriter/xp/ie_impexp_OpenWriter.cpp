@@ -20,6 +20,7 @@
 #include <gsf/gsf-utils.h>
 #include "xap_Module.h"
 #include "ie_impexp_OpenWriter.h"
+#include "xap_App.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_openwriter_register
@@ -44,7 +45,8 @@ static IE_Exp_OpenWriter_Sniffer * m_exp_sniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-  AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-openwriter");
+  XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	strings->setDomain("abiword-plugin-openwriter");
   if (!m_imp_sniffer)
       m_imp_sniffer = new IE_Imp_OpenWriter_Sniffer ();
   IE_Imp::registerImporter (m_imp_sniffer);
