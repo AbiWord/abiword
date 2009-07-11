@@ -1546,14 +1546,14 @@ void GR_Graphics::beginBuffering(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_u
 	UT_uint32 top1 = y;
 	UT_uint32 bottom1 = y + width - 1;
 	
-	if (bufferContainer.empty())
+	if (m_bufferContainer.empty())
 	{
 		createOffscreenBuffer(x, y, width, height);
 		suitableBufferFound = true;
 	}
 	while (!suitableBufferFound)
 	{
-		std::pair<cairo_surface_t*, UT_uint32*> buffer = bufferContainer.at(i);
+		std::pair<cairo_surface_t*, UT_uint32* > buffer = m_bufferContainer.at(i);
 		//extends for the buffer we're looking at in the deque
 		UT_uint32 left2 = buffer.second[0]; //x
 		UT_uint32 right2 = buffer.second[0] + buffer.second[1]; //x + width
@@ -1577,7 +1577,7 @@ void GR_Graphics::beginBuffering(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_u
 			suitableBufferFound = true;
 		}
 		//Next buffer
-		else if (i < bufferContainer.size())
+		else if (i < m_bufferContainer.size())
 			i++;
 		else
 		{
@@ -1591,31 +1591,39 @@ void GR_Graphics::beginBuffering(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_u
 void GR_Graphics::createOffscreenBuffer(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_uint32 height)
 {
 	cairo_surface_t* newBuffer = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, width, height); /////////////////
-	UT_uint32 newExtends[] = {x, y, width, height};
+	UT_uint32 *newExtends = new UT_uint32[4];
+	newExtends[0] = x;
+	newExtends[1] = y;
+	newExtends[2] = width;
+	newExtends[3] = height;
+	
 	std::pair <cairo_surface_t*, UT_uint32*> tempPair (newBuffer, newExtends);
-	bufferContainer.push_front(tempPair);
+	m_bufferContainer.push_front(tempPair);
 	setActiveBuffer(tempPair.first);
 }
 
 void GR_Graphics::endBuffering()
 {
-	setActiveBuffer(mainBufferPointer);
-	while (!bufferContainer.empty())
+	std::pair<cairo_surface_t*, UT_uint32*> tempPair;
+	setActiveBuffer(m_mainBufferPointer);
+	while (!m_bufferContainer.empty())
 	{
-		bufferContainer.pop_back();
-		//paint to mainBufferPointer
+		tempPair = m_bufferContainer.back();
+		m_bufferContainer.pop_back();
+		//paint to m_mainBufferPointer
+		delete[] tempPair.second;
 	}
 	return;
 }
 
 /*cairo_surface_t* GR_Graphics::getBuffer()
 {
-	return bufferPointer;
+	return m_bufferPointer;
 }*/
 
 void GR_Graphics::setActiveBuffer(cairo_surface_t* buffer)
 {
-	bufferPointer = buffer;
+	m_bufferPointer = buffer;
 }
 
 #endif // #ifndef ABI_GRAPHICS_PLUGIN
