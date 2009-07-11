@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: abiword 2.7.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-07-06 14:23-0400\n"
+"POT-Creation-Date: 2009-07-10 13:40-0400\n"
 "PO-Revision-Date: 2009-07-06 13:18-0400\n"
 "Last-Translator: Keith Bowes <keith@keith-desktop>\n"
 "Language-Team: Esperanto\n"
@@ -16,33 +16,33 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../xp/AiksaurusABI.cpp:55
+#: ../xp/AiksaurusABI.cpp:54
 msgid "&Thesaurus"
 msgstr "&Tezaŭro"
 
-#: ../xp/AiksaurusABI.cpp:56
+#: ../xp/AiksaurusABI.cpp:55
 msgid "Opens the thesaurus and finds synonyms."
 msgstr "Malfermas la tezaŭron kaj trovas samsencaĵojn."
 
 #.
 #. Put it in the context menu.
 #.
-#: ../xp/AiksaurusABI.cpp:106
+#: ../xp/AiksaurusABI.cpp:105
 msgid "Bullets and &Numbering"
 msgstr "&Numerado kaj bulado"
 
 #.
 #. Also put it under word Wount in the main menu,
 #.
-#: ../xp/AiksaurusABI.cpp:111
+#: ../xp/AiksaurusABI.cpp:110
 msgid "&Word Count"
 msgstr "&Nombri vortojn"
 
-#: ../xp/AiksaurusABI.cpp:175
+#: ../xp/AiksaurusABI.cpp:174
 msgid "Aiksaurus"
 msgstr ""
 
-#: ../xp/AiksaurusABI.cpp:176
+#: ../xp/AiksaurusABI.cpp:175
 msgid ""
 "English-language thesaurus based on the Aiksaurus library: http://www."
 "aiksaurus.com/"
@@ -50,6 +50,6 @@ msgstr ""
 "Anglalingva tezaŭro bazita sur la biblioteko Aiksauras: http://www.aiksaurus."
 "com/"
 
-#: ../xp/AiksaurusABI.cpp:180
+#: ../xp/AiksaurusABI.cpp:179
 msgid "No Usage"
 msgstr "Neniu uzado"

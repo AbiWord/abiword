@@ -157,6 +157,8 @@ Wikipedia_removeFromMenus()
 static void
 Wikipedia_addToMenus()
 {
+	strings->setDomain(NULL);
+
   // First we need to get a pointer to the application itself.
   XAP_App *pApp = XAP_App::getApp();
     

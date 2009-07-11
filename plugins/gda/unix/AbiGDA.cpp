@@ -39,7 +39,7 @@
 #include "ev_EditMethod.h"
 #include "xap_Menu_Layouts.h"
 #include "ut_string_class.h"
-#include "ap_Strings.h"
+#include "xap_Strings.h"
 
 #include "ie_imp.h"
 #include "ie_types.h"
@@ -260,7 +260,7 @@ private:
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
 
-AP_StringSet *strings;
+XAP_StringSet * strings;
 
 static bool
 handle_recordset (GdaDataModel *recset, PD_Document * pDoc)
@@ -490,7 +490,8 @@ ABI_PLUGIN_DECLARE	("AbiGDA")
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-  strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-gda");
+  strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	strings->setDomain("abiword-plugin-gda");
 
 	/* initialize connection pool if first time */
 	if (!GDA_IS_CLIENT (connection_pool)) {

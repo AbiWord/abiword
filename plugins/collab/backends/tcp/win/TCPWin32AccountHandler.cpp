@@ -119,7 +119,8 @@ TCPWin32AccountHandler::TCPWin32AccountHandler()
 		m_hInstance = pSessionManager->getInstance();
 	}
 
-  m_strings = new AP_StringSet(NULL, "abiword-plugin-collab");
+  m_strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+  m_strings->setDomain("abiword-plugin-collab");
 }
 
 TCPWin32AccountHandler::~TCPWin32AccountHandler()

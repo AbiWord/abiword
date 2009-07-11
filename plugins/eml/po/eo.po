@@ -18,7 +18,7 @@ msgstr ""
 
 #: ../xp/ie_exp_EML.cpp:84
 msgid "Outlook Express Email (.eml)"
-msgstr "Retmesaĝo el Outlook Express (.eml)"
+msgstr "Retmesaĝo de Outlook Express (.eml)"
 
 #: ../xp/ie_exp_EML.cpp:106
 msgid "Outlook Express EML Exporter"
@@ -26,7 +26,7 @@ msgstr "Eksportilo de EML de Outlook Express"
 
 #: ../xp/ie_exp_EML.cpp:107
 msgid "Export AbiWord Documents to email clients"
-msgstr "Eksporti AbiWord-dokumentojn al retpoŝtiloj"
+msgstr "Eksporti al retpoŝtiloj AbiWord-dokumentojn"
 
 #: ../xp/ie_exp_EML.cpp:110
 msgid "No Usage"

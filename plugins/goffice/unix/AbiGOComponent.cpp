@@ -19,7 +19,7 @@
  * USA
  */
 
-#include "ap_Strings.h"
+#include "xap_Strings.h"
 #include "ev_EditMethod.h"
 #include "fv_View.h"
 #include "fp_Run.h"
@@ -231,7 +231,8 @@ AbiGOComponent_FileInsert(G_GNUC_UNUSED AV_View* v, G_GNUC_UNUSED EV_EditMethodC
 bool 
 AbiGOComponent_Create (G_GNUC_UNUSED AV_View* v, G_GNUC_UNUSED EV_EditMethodCallData *d)
 {
-	AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-goffice");
+	XAP_StringSet *strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	strings->setDomain("abiword-plugin-goffice");
 
     XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	XAP_UnixFrameImpl *pFrameImpl = static_cast<XAP_UnixFrameImpl*>(pFrame->getFrameImpl());

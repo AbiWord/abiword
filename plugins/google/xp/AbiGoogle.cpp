@@ -30,7 +30,7 @@
 #include "ev_EditMethod.h"
 #include "xap_Menu_Layouts.h"
 #include "ut_string_class.h"
-#include "ap_Strings.cpp"
+#include "xap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_google_register
@@ -46,7 +46,7 @@ ABI_PLUGIN_DECLARE("Google")
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
 
-AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-google");
+XAP_StringSet *strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 
 //
 // AbiGoogle_invoke
@@ -129,6 +129,8 @@ Google_removeFromMenus()
 static void
 Google_addToMenus()
 {
+	strings->setDomain(NULL);
+
   // First we need to get a pointer to the application itself.
   XAP_App *pApp = XAP_App::getApp();
     
@@ -212,8 +214,10 @@ Google_addToMenus()
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
+		strings->setDomain("abiword-plugin-google");
+
     mi->name = strings->getValue(_("Google plugin"));
-    mi->desc = "Google search for AbiWord";
+    mi->desc = strings->getValue(_("Google search for AbiWord"));
     mi->version = ABI_VERSION_STRING;
     mi->author = "Dom Lachowicz";
     mi->usage = strings->getValue(_("No Usage"));

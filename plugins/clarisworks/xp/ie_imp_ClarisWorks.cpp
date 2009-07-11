@@ -31,7 +31,8 @@
 #include "pd_Document.h"
 #include "ut_growbuf.h"
 #include "xap_Module.h"
-#include "ap_Strings.h"
+#include "xap_App.h"
+#include "xap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_clarisworks_register
@@ -47,7 +48,7 @@ ABI_PLUGIN_DECLARE("ClarisWorks")
 /*****************************************************************/
 /*****************************************************************/
 
-AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-clarisworks");
+XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 
 // completely generic code to allow this to be a plugin
 
@@ -57,6 +58,7 @@ static IE_Imp_ClarisWorks_Sniffer * m_sniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
+	strings->setDomain("abiword-plugin-clarisworks");
 
 	if (!m_sniffer)
 	{

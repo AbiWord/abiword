@@ -29,7 +29,6 @@
 #include "xap_App.h"
 #include "ut_assert.h"
 #include "ut_go_file.h"
-#include "ap_Strings.h"
 
 #include <session/xp/AbiCollab.h>
 
@@ -61,8 +60,6 @@ public:
 
 class DiskSessionRecorder : public SessionRecorderInterface
 {
-private:
-  AP_StringSet *m_strings;
 public:
 	DiskSessionRecorder(AbiCollab* pSession);
 	~DiskSessionRecorder();

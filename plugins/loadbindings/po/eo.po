@@ -46,7 +46,7 @@ msgstr ""
 
 #: ../xp/LoadBindings.cpp:231
 msgid "This allows Keybindings to be loaded from an Ascii file"
-msgstr "Ĉi tio permesas, ke klavbindaĵojn estu ŝargita el askia dosiero"
+msgstr "Ĉi tio permesas, ke klavbindaĵoj estu ŝargitaj el askia dosiero"
 
 #: ../xp/LoadBindings.cpp:234
 msgid ""

@@ -23,7 +23,7 @@
 #include <gtk/gtk.h>
 #include <xp/ap_Dialog_CollaborationAccounts.h>
 
-#include "ap_Strings.h"
+#include "xap_Strings.h"
 
 class XAP_Frame;
 
@@ -52,7 +52,7 @@ private:
 	GtkListStore*		_constructModel();
 	void				_setModel(GtkListStore* model);
 
-  AP_StringSet  *m_strings;
+  XAP_StringSet  *m_strings;
 
 	GtkWidget*			m_wWindowMain;
 	GtkWidget*			m_wAdd;

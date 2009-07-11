@@ -105,7 +105,8 @@ AP_UnixDialog_CollaborationAccounts::AP_UnixDialog_CollaborationAccounts(XAP_Dia
 	m_wModel(NULL),
 	m_wAccountsTree(NULL)
 {
-  m_strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-collab");
+  m_strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+  m_strings->setDomain("abiword-plugin-collab");
 }
 
 AP_UnixDialog_CollaborationAccounts::~AP_UnixDialog_CollaborationAccounts()

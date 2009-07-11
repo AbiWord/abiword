@@ -46,7 +46,7 @@ static IE_Imp_MSWorks_Sniffer * m_MSWorks_ImpSniffer = 0;
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-  AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugins-wordperfect");
+  AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-wordperfect");
 
 	if (!m_ImpSniffer)
 	{

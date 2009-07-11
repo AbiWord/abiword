@@ -26,7 +26,7 @@ msgstr "Importa filtrilo por PDF-dosieroj"
 
 #: ../xp/ie_imp_PDF.cpp:257
 msgid "Import Adobe PDF Documents"
-msgstr "Importi por PDF-dokumentoj"
+msgstr "Importilo por PDF-dokumentoj"
 
 #: ../xp/ie_imp_PDF.cpp:260
 msgid "No Usage"

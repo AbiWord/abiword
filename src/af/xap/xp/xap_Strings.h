@@ -38,6 +38,8 @@
 #include "ut_string.h"
 #include "ut_string_class.h"
 
+#define GETTEXT_PACKAGE "abiword"
+
 class XAP_App;
 
 typedef enum _XAP_String_Id_Enum
@@ -76,11 +78,12 @@ public:
 	void setEncoding(const char * inEndcoding);
 	const char * getEncoding() const;
 
-  const char * translate(XAP_String_Id id) const;
+	void setDomain(const char *szDomain);
 
 protected:
 	XAP_App *					m_pApp;
 	const gchar *			m_szLanguageName;
+  const char * translate(XAP_String_Id id) const;
 
  private:
   const gchar * m_domain;

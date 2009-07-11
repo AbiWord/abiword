@@ -18,9 +18,9 @@
 
 #include "tls_tunnel.h"
 
-#include "ap_Strings.h"
+#include "xap_Strings.h"
 
-AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-collab");
+XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 
 #define return_val_if_neg(C, val) { if (C < 0) {return val;} }
 

@@ -22,7 +22,7 @@
 #include "ev_EditMethod.h"
 #define SAVE_INTERCEPTOR_EM "com.abisource.abiword.abicollab.servicesaveinterceptor"
 
-#include "ap_Strings.h"
+#include "xap_Strings.h"
 
 class AV_View;
 class EV_EditMethodCallData;
@@ -41,7 +41,7 @@ private:
 	void _save_cb(UT_Error error, AbiCollab* pSession);
 
 	EV_EditMethod* m_pOldSaveEM;
-  AP_StringSet *m_strings;
+  XAP_StringSet *m_strings;
 };
 
 #endif /* __ABICOLLAB_SAVE_INTERCEPTOR__ */

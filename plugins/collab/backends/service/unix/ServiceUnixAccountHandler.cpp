@@ -39,12 +39,10 @@ ServiceUnixAccountHandler::ServiceUnixAccountHandler()
 	verify_realm_host_button(NULL)
 #endif
 {
-  m_strings = new AP_StringSet(NULL, "abiword-plugin-collab");
 }
 
 ServiceUnixAccountHandler::~ServiceUnixAccountHandler()
 {
-  delete m_strings;
 }
 
 void ServiceUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)

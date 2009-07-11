@@ -35,7 +35,7 @@
 #include "ev_EditMethod.h"
 #include "xap_Menu_Layouts.h"
 #include "ut_stack.h"
-#include "ap_Strings.h"
+#include "xap_Strings.h"
 #include "AbiGOffice.h"
 #include "AbiGOChart.h"
 #include "AbiGOComponent.h"
@@ -49,7 +49,7 @@
 #include <goffice/component/go-component-factory.h>
 #include <gsf/gsf-impl-utils.h>
 
-AP_StringSet *strings = new AP_StringSet(XAP_App()::getApp(), "abiword-plugin-goffice");
+XAP_StringSet * strings = (XAP_StringSet *) XAP_App()::getApp()->getStringSet();
 
 //
 // GOCmdContext interface implementation for AbiGOffice
@@ -425,6 +425,8 @@ ABI_PLUGIN_DECLARE(AbiGOChart)
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
+		strings->setDomain("abiword-plugin-goffice");
+
     mi->name = strings->getValue(_("AbiGOffice"));
     mi->desc = strings->getValue(_("The plugin enables Gnome Office Charts and components to be displayed in AbiWord"));
     mi->version = ABI_VERSION_STRING;

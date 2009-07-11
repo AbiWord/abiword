@@ -22,8 +22,6 @@
 
 #include <backends/service/xp/ServiceAccountHandler.h>
 
-#include "ap_Strings.h"
-
 class XAP_Frame;
 
 class ServiceUnixAccountHandler : public ServiceAccountHandler
@@ -50,7 +48,6 @@ private:
 	GtkWidget*								verify_webapp_host_button;
 	GtkWidget*								verify_realm_host_button;
 #endif
-  AP_StringSet              *strings;
 };
 
 #endif /* __SERVICEUNIXACCOUNTHANDLER__ */

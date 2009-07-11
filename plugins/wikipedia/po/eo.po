@@ -47,7 +47,7 @@ msgid ""
 "On-line Encyclopedia support for AbiWord. Search site is http://www."
 "wikipedia.com/"
 msgstr ""
-"Retenciklopedia regado por AbiWord. Serĉejo estas http://www.wikipedia.com/"
+"Retenciklopedia integriĝo por AbiWord. Serĉejo estas http://www.wikipedia.com/"
 
 #. and Michael D. Pritchett and Dom Lachowicz
 #: ../xp/AbiWikipedia.cpp:247

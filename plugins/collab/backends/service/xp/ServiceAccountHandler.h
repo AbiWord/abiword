@@ -8,7 +8,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -27,7 +27,7 @@
 
 #include "xap_Types.h"
 #include "ut_string_class.h"
-#include "ap_Strings.h"
+#include "xap_Strings.h"
 
 #include <core/account/xp/AccountHandler.h>
 #include "AbiCollabSaveInterceptor.h"
@@ -60,16 +60,10 @@ typedef boost::shared_ptr< std::map<std::string, GetSessionsResponseEvent> > Bud
 class ServiceAccountHandler : public AccountHandler
 {
 private:
-  AP_StringSet *m_strings;
+	XAP_StringSet *m_strings;
 public:
-	ServiceAccountHandler()
-  {
-    m_strings = new AP_StringSet(NULL, "abiword-plugin-collab");
-  }
-	virtual ~ServiceAccountHandler()
-  {
-    delete m_strings;
-  }
+	ServiceAccountHandler() {}
+	virtual ~ServiceAccountHandler() {}
 
 	static bool								askPassword(const std::string& email, std::string& password);
 
@@ -165,13 +159,13 @@ private:
 	std::string								_getDomain();
 	bool									_parseUserInfo(const std::string& userinfo, uint64_t& user_id);
 
-	bool									m_bOnline;  // only used to determine if we are allowed to 
+	bool									m_bOnline;	// only used to determine if we are allowed to 
 														// communicate with abicollab.net or not
 	std::vector<ConnectionPtr>				m_connections;
 	std::string								m_ssl_ca_file;
-	PL_ListenerId             m_iListenerID;
+	PL_ListenerId						 m_iListenerID;
 	AbiCollabService_Export * m_pExport;
-	  
+		
 };
 
 #endif /* __SERVICEACCOUNTHANDLER__ */

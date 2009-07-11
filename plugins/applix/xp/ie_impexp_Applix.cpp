@@ -23,7 +23,8 @@
 #include "ie_imp_Applix.h"
 #include "ie_exp_Applix.h"
 #include "xap_Module.h"
-#include "ap_Strings.h"
+#include "xap_App.h"
+#include "xap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_applix_register
@@ -38,6 +39,7 @@ ABI_PLUGIN_DECLARE("Applix")
 
 #define PLUGIN_NAME "AbiApplix::AW"
 
+
 // we use a reference-counted sniffer
 static IE_Imp_Applix_Sniffer * m_impSniffer = 0;
 static IE_Exp_Applix_Sniffer * m_expSniffer = 0;
@@ -45,7 +47,8 @@ static IE_Exp_Applix_Sniffer * m_expSniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-  AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-applix");
+  XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+  //strings->setDomain("abiword-plugin-applix");
 
 	if (!m_impSniffer)
 	{

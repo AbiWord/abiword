@@ -22,7 +22,7 @@
 #include "ie_imp.h"
 #include "ut_types.h"
 
-#include "ap_Strings.h"
+#include "xap_Strings.h"
 
 class IE_Imp_AbiCollabSniffer : public IE_ImpSniffer
 {
@@ -37,7 +37,7 @@ public:
 	virtual UT_Error constructImporter (PD_Document * pDocument, IE_Imp ** ppie);	
 
 private:
-  AP_StringSet *m_strings;
+  XAP_StringSet *m_strings;
 };
 
 class IE_Imp_AbiCollab : public IE_Imp

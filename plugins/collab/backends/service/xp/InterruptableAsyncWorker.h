@@ -7,7 +7,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -27,7 +27,7 @@
 #include <boost/bind.hpp>
 #include "xap_App.h"
 #include "xap_DialogFactory.h"
-#include "ap_Strings.h"
+#include "xap_Strings.h"
 #include "AsyncWorker.h"
 #include "ap_Dialog_GenericProgress.h"
 #include "ServiceAccountHandler.h"
@@ -39,7 +39,7 @@ template <class T>
 class InterruptableAsyncWorker : public boost::enable_shared_from_this< InterruptableAsyncWorker<T> >
 {
 private:
-  AP_StringSet *m_strings;
+	XAP_StringSet *m_strings;
 public:
 	InterruptableAsyncWorker(boost::function<T ()> async_func)
 		: m_async_func(async_func),
@@ -51,13 +51,14 @@ public:
 		m_progressSynchronizerPtr(),
 		m_result()
 	{
-    m_strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-collab");
-  }
+		m_strings = XAP_App::getApp()->getStringSet();
+		m_strings->setDomain("abiword-plugin-collab");
+	}
 
-  ~InterruptableAsyncWorker()
-  {
-    delete m_strings;
-  }
+	~InterruptableAsyncWorker()
+	{
+		delete m_strings;
+	}
 	
 	T run()
 	{

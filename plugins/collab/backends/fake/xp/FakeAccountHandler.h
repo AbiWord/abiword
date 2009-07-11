@@ -24,7 +24,7 @@
 #include <account/xp/Buddy.h>
 #include "FakeBuddy.h"
 
-#include "ap_Strings.h"
+#include "xap_Strings.h"
 
 class RecordedPacket;
 class AbiCollab;
@@ -107,7 +107,7 @@ private:
 	UT_sint32								m_iRemoteRev;
 
 private:
-  AP_StringSet *strings;
+  XAP_StringSet * m_strings;
 };
 
 #endif /* __SUGARACCOUNTHANDLER__ */

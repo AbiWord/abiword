@@ -174,7 +174,8 @@ XMPPAccountHandler::XMPPAccountHandler():
 	m_pChatHandler(NULL),
 	m_bLoggedIn(false)
 {
-  m_strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-collab");
+  m_strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+  m_strings->setDomain("abiword-plugin-collab");
 }
 
 XMPPAccountHandler::~XMPPAccountHandler()

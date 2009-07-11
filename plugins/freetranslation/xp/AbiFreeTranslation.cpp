@@ -29,7 +29,7 @@
 #include "ev_EditMethod.h"
 #include "xap_Menu_Layouts.h"
 #include "ut_string_class.h"
-#include "ap_Strings.h"
+#include "xap_Strings.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
@@ -46,7 +46,7 @@
 ABI_PLUGIN_DECLARE("FreeTranslation")
 #endif
 
-AP_StringSet *strings;
+XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 
 // FreeTranslation offers a similar service to BabelFish
 // but has a way to return just the translated string
@@ -265,8 +265,8 @@ bool FreeTranslation_invoke(AV_View * /*v*/, EV_EditMethodCallData * /*d*/)
 	return true;
 }
 
-static const char * FreeTranslation_MenuLabel = "Use &Free Translation";
-static const char * FreeTranslation_MenuTooltip = "Opens the gratis on-line translator";
+static const char * FreeTranslation_MenuLabel = strings->getValue(_("Use &Free Translation"));
+static const char * FreeTranslation_MenuTooltip = strings->getValue(_("Opens the gratis on-line translator"));
 
 static void
 FreeTranslation_RemoveFromMenus ()
@@ -296,6 +296,8 @@ FreeTranslation_RemoveFromMenus ()
 
 static void FreeTranslation_addToMenus()
 {
+	strings->setDomain(NULL);
+
 	// First we need to get a pointer to the application itself.
 	XAP_App * pApp = XAP_App::getApp();
 
@@ -378,7 +380,8 @@ static void FreeTranslation_addToMenus()
 
 ABI_BUILTIN_FAR_CALL int abi_plugin_register(XAP_ModuleInfo * mi)
 {
-  strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-freetranslation");
+	strings->setDomain("abiword-plugin-freetranslation");
+
 	mi->name = strings->getValue(_("FreeTranslation plugin"));
 	mi->desc = strings->getValue(_("On-line Translation support for AbiWord. Based upon the FreeTranslation translation tool (www.freetranslation.com), for personal, non-commercial use only."));
 	mi->version = ABI_VERSION_STRING;

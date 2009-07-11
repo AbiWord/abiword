@@ -40,7 +40,8 @@ IE_Imp_AbiCollabSniffer::IE_Imp_AbiCollabSniffer()
 	: IE_ImpSniffer("AbiWord::AbiCollab-1.0")
 {
 	IE_Imp::registerImporter(this);
-  m_strings = new AP_StringSet(XAP_App()::getApp(), "abiword-plugin-collab");
+  m_strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+  m_strings->setDomain("abiword-plugin-collab");
 }
 
 IE_Imp_AbiCollabSniffer::~IE_Imp_AbiCollabSniffer()

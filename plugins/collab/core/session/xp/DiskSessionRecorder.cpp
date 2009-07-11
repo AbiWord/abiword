@@ -24,11 +24,15 @@
 #include <account/xp/Buddy.h>
 #include <plugin/xp/AbiCollab_Plugin.h>
 #include "DiskSessionRecorder.h"
+#include "xap_Strings.h"
+
+XAP_StringSet * m_strings;
 
 DiskSessionRecorder::DiskSessionRecorder(AbiCollab* pSession)
 	: SessionRecorderInterface(pSession)
 {
-  m_strings = new AP_StringSet(NULL, "abiword-plugin-collab");
+  m_strings = (XAP_StringSet * ) XAP_App::getApp()->getStringSet();
+  m_strings->setDomain("abiword-plugin-collab");
 	
   UT_DEBUGMSG(("DiskSessionRecorder::DiskSessionRecorder()\n"));
 	
@@ -166,7 +170,7 @@ bool DiskSessionRecorder::getPackets(const std::string& filename, bool& bLocally
 
 bool DiskSessionRecorder::dumpSession(const std::string& filename)
 {
-  AP_StringSet *m_strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-collab");
+  m_strings->setDomain("abiword-plugin-collab");
 
 	bool bLocallyControlled;
 	vector<RecordedPacket*> packets;

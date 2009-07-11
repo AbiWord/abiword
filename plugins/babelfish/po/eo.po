@@ -46,7 +46,7 @@ msgstr "Kromprogramo Babelfish"
 msgid ""
 "On-line Translation support for AbiWord. Based upon the Babelfish "
 "translation tool which is powered by Systran."
-msgstr "Reta tradukada regado por AbiWord. Bazite sur la tradukilo Babelfish, kiu motoratas de Systran."
+msgstr "Reta traduka regado por AbiWord. Bazite sur la tradukilo Babelfish, kiu motoratas de Systran."
 
 #: ../xp/AbiBabelfish.cpp:368
 msgid "No Usage"

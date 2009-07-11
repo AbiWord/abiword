@@ -49,7 +49,8 @@ SugarAccountHandler::SugarAccountHandler()
 	UT_DEBUGMSG(("SugarAccountHandler::SugarAccountHandler()\n"));
 	m_pHandler = this;
 	_registerEditMethods();
-  m_strings = new AP_StringSet(XAPP_App::getApp(), "abiword-plugin-collab");
+  m_strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+  m_strings->setDomain("abiword-plugin-collab");
 }
 
 SugarAccountHandler::~SugarAccountHandler()

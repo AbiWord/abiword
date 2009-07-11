@@ -31,7 +31,6 @@
 #include "xap_Menu_Layouts.h"
 #include "ut_string_class.h"
 #include "ut_wctomb.h"
-#include "ap_Strings.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
@@ -79,7 +78,7 @@ ABI_PLUGIN_DECLARE("Babelfish")
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
 
-AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-babelfish");
+XAP_StringSet * strings = (XAP_StringSet *)XAP_App::getApp()->getStringSet();
 
 //
 // _ucsToUTF8
@@ -246,12 +245,13 @@ static bool BabelFish_invoke(AV_View* /*v*/, EV_EditMethodCallData * /*d*/)
   return true;
 }
 
-static const char* BabelFish_MenuLabel = strings->getValue(_("Use &Babelfish Translation"));
-static const char* BabelFish_MenuTooltip = strings->getValue(_("Opens the on-line babelfish translator"));
+static const char* BabelFish_MenuLabel;
+static const char* BabelFish_MenuTooltip;
 
 static void
 BabelFish_addToMenus()
 {
+	strings->setDomain(NULL);
   // First we need to get a pointer to the application itself.
   XAP_App *pApp = XAP_App::getApp();
     
@@ -361,6 +361,11 @@ BabelFish_RemoveFromMenus ()
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
+		strings->setDomain( "abiword-plugin-babelfish");
+
+    BabelFish_MenuLabel = strings->getValue(_("Use &Babelfish Translation"));
+    BabelFish_MenuTooltip = strings->getValue(_("Opens the on-line babelfish translator"));
+
     mi->name = strings->getValue(_("BabelFish plugin"));
     mi->desc = strings->getValue(_("On-line Translation support for AbiWord. Based upon the Babelfish translation tool which is powered by Systran."));
     mi->version = ABI_VERSION_STRING;

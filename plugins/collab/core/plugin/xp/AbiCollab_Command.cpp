@@ -50,7 +50,8 @@ AbiCollab_Command::AbiCollab_Command(const UT_UTF8String& argv)
 	: m_argv(argv)
 {
 	XAP_App* pApp = XAP_App::getApp ();
-  m_strings = new AP_StringSet(pApp, "abiword-plugin-collab");
+  m_strings = (XAP_StringSet *) pApp->getStringSet();
+  m_strings->setDomain("abiword-plugin-collab");
 	
 	#ifndef WIN32
 	pApp->getGraphicsFactory()->registerAsDefault(GRID_UNIX_NULL, true);

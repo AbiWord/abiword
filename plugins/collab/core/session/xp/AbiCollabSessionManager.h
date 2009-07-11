@@ -30,7 +30,7 @@
 #include "ut_string_class.h"
 #include "xap_Dialog_Id.h"
 #include "xap_Types.h"
-#include "ap_Strings.h"
+#include "xap_Strings.h"
 #include <account/xp/AccountHandler.h>
 #include <libxml/tree.h>
 
@@ -169,7 +169,7 @@ private:
 	std::map<AbiCollab*, int>					m_asyncSessionOps;
 	std::map<AccountHandler*, int>				m_asyncAccountOps;
 
-  AP_StringSet  *m_strings;
+  XAP_StringSet  *m_strings;
 };
 
 #endif /* ABICOLLABSESSIONMANAGER_H */

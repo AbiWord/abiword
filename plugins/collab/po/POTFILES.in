@@ -2,7 +2,6 @@ backends/fake/xp/FakeAccountHandler.cpp
 backends/service/unix/ServiceUnixAccountHandler.cpp
 backends/service/win/ServiceWin32AccountHandler.cpp
 backends/service/xp/AbiCollabImport.cpp
-backends/service/xp/AbiCollabImport.cpp
 backends/service/xp/AbiCollabSaveInterceptor.cpp
 backends/service/xp/InterruptableAsyncWorker.h
 backends/service/xp/ServiceAccountHandler.cpp

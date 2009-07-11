@@ -80,7 +80,7 @@ AC_PROG_LN_S
 IT_PROG_INTLTOOL([0.26])
 AM_GLIB_GNU_GETTEXT
 
-cd po && for file in *.po; do ALL_LINGUAS="$ALL_LINGUAS `echo $file |  sed -e 's/\.po//g'`"; done && echo $ALL_LINGUAS > LINGUAS && cd ..
+cd po && for file in *.po; do ALL_LINGUAS="$ALL_LINGUAS `echo $file |  sed -e 's/\.po//g'`"; done && echo -e "`echo $ALL_LINGUAS | sed -e 's/\s/\n/g'`" > LINGUAS && cd ..
 
 AC_MSG_CHECKING([for platform and toolkit])
 case ${target_os} in

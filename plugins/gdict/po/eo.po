@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: abiword 2.7.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-07-03 13:12-0400\n"
+"POT-Creation-Date: 2009-07-11 11:16-0400\n"
 "PO-Revision-Date: 2009-07-03 13:12-0400\n"
 "Last-Translator: Keith Bowes <keith@keith-desktop>\n"
 "Language-Team: Esperanto <translation-team-eo@lists.sourceforge.net>\n"
@@ -32,25 +32,26 @@ msgstr "Malfermas la vortaron"
 #.
 #. Put it in the context menu.
 #.
-#: ../unix/GdictAbiPlugin.cpp:336
+#: ../unix/GdictAbiPlugin.cpp:340
 msgid "Bullets and &Numbering"
 msgstr "&Numerado kaj bulado"
 
+#. pFact->addNewLabel(NULL,newID,GDict_MenuLabel, GDict_MenuTooltip);
 #.
 #. Also put it under word Wount in the main menu,
 #.
-#: ../unix/GdictAbiPlugin.cpp:342
+#: ../unix/GdictAbiPlugin.cpp:346
 msgid "&Word Count"
 msgstr "&Nombri vortojn"
 
-#: ../unix/GdictAbiPlugin.cpp:380
+#: ../unix/GdictAbiPlugin.cpp:385
 msgid "GDict plugin"
 msgstr "Kromprogramo GDict"
 
-#: ../unix/GdictAbiPlugin.cpp:381
+#: ../unix/GdictAbiPlugin.cpp:386
 msgid "Dictionary support for AbiWord"
 msgstr "Vortara subteno por AbiWord"
 
-#: ../unix/GdictAbiPlugin.cpp:384
+#: ../unix/GdictAbiPlugin.cpp:389
 msgid "No Usage"
 msgstr "Neniu uzado"

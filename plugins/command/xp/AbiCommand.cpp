@@ -58,7 +58,6 @@
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_Print.h"
 #include "ap_Dialog_Id.h"
-#include "ap_Strings.h"
 
 #include "AbiCommand.h"
 
@@ -66,7 +65,7 @@ ABI_PLUGIN_DECLARE (AbiCommand)
 
 #define RES_TO_STATUS(a) ((a) ? 0 : -1)
 
-AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-command");
+XAP_StringSet *strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 
 static bool AbiCommand_invoke (AV_View * v, EV_EditMethodCallData * d);
 
@@ -123,6 +122,7 @@ AbiCommand_RemoveFromMethods ()
 ABI_FAR_CALL int
 abi_plugin_register (XAP_ModuleInfo * mi)
 {
+	strings->setDomain("abiword-plugin-command");
 	mi->name = strings->getValue(_("AbiCommand"));
 	mi->desc = strings->getValue(_("This is a command line interface to AbiWord"));
 	mi->version = ABI_VERSION_STRING;
@@ -732,7 +732,7 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
 		printf (strings->getValue(_("                              Otherwise the extension of the filename is used\n")));
 		printf (strings->getValue(_("                              to determine the format of the file.\n")));
 		printf (strings->getValue(_("converttotext <src> <dest>  - Convert the file given in <src> to the plain text\n")));
-		printf (strings->getValue(_("                              file named <dest>.\n");
+		printf (strings->getValue(_("                              file named <dest>.\n")));
 		printf (strings->getValue(_("convert <src> <dest> <type> - Convert the file given in <src> to the file named\n")));
 		printf (strings->getValue(_("                              <dest>. The type of conversion is given by the\n")));
 		printf (strings->getValue(_("                              third parameter (abw,html,odt, etc.).\n")));

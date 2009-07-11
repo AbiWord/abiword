@@ -12,7 +12,7 @@ msgstr ""
 "Last-Translator: Keith Bowes <keith@keith-desktop>\n"
 "Language-Team: Esperanto\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ASCII\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
@@ -22,7 +22,7 @@ msgstr "Importilo/eksportilo por MIF"
 
 #: ../xp/ie_impexp_MIF.cpp:60
 msgid "Import/Export MIF Documents - needs work"
-msgstr "Importi/eksporti MIF-dokumentojn - finota"
+msgstr "Importi/eksporti MIF-dokumentojn - finiĝonta"
 
 #: ../xp/ie_impexp_MIF.cpp:63
 msgid "No Usage"

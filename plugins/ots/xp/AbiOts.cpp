@@ -177,6 +177,7 @@ Ots_removeFromMenus()
 static void
 Ots_addToMenus()
 {
+	strings->setDomain(NULL);
   XAP_App *pApp = XAP_App::getApp();
     
   EV_EditMethod *myEditMethod = new EV_EditMethod("AbiOts_invoke",

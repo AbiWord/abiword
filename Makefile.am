@@ -41,6 +41,11 @@ EXTRA_DIST = \
 	abiword_48.png \
 	libabiword.pc.in
 
+CLEANFILES = \
+	intltool-extract \
+	intltool-merge \
+	intltool-update
+
 DISTCLEANFILES = \
 	abiword-$(ABIWORD_SERIES).pc \
 	plugin-builtin.m4 \
@@ -48,7 +53,10 @@ DISTCLEANFILES = \
 	plugin-list.m4 \
 	plugin-makefiles.m4 \
 	doltcompile \
-	doltlibtool
+	doltlibtool \
+	intltool-extract.in \
+	intltool-merge.in \
+	intltool-update.in
 
 abiword-$(ABIWORD_SERIES).pc: libabiword.pc
 	cp $< $@

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: t 602\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-07-06 15:37-0400\n"
+"POT-Creation-Date: 2009-07-08 22:52-0400\n"
 "PO-Revision-Date: 2009-07-02 13:48-0400\n"
 "Last-Translator: Keith Bowes <keith@keith-desktop>\n"
 "Language-Team: Esperanto\n"
@@ -21,7 +21,6 @@ msgid "T602 Importer"
 msgstr "Importilo de T602"
 
 #: ../xp/ie_imp_T602.cpp:72
-#, fuzzy
 msgid ""
 "Imports T602 documents into abiword. T602 was a popular czech and slovak "
 "text editor in early nineties produced by Software602 (http://www."

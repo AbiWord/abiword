@@ -21,7 +21,7 @@
 
 #include <backends/tcp/xp/TCPAccountHandler.h>
 
-#include "ap_String.h"
+#include "xap_String.h"
 
 class TCPUnixAccountHandler : public TCPAccountHandler
 {
@@ -46,7 +46,7 @@ private:
 	GtkWidget*								port_button;
 	GtkWidget*								ssl_button;
 	GtkWidget*								autoconnect_button;
-  AP_StringSet *m_strings;
+  XAP_StringSet *m_strings;
 };
 
 #endif /* __TCPUNIXACCOUNTHANDLER__ */

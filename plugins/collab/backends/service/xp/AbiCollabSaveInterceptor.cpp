@@ -55,7 +55,8 @@ static ap_bs_Char CharTable[] =
 AbiCollabSaveInterceptor::AbiCollabSaveInterceptor()
 	: m_pOldSaveEM(NULL)
 {
-  m_strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-collab");
+  m_strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+  m_strings->setDomain("abiword-plugin-collab");
 	UT_DEBUGMSG(("Installing Save menu interceptor!\n"));
 	EV_EditMethodContainer *pEMC = XAP_App::getApp()->getEditMethodContainer();
 

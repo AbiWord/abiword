@@ -21,8 +21,6 @@
 
 #include <backends/service/xp/ServiceAccountHandler.h>
 
-#include "ap_Strings.h"
-
 class XAP_Frame;
 
 class ServiceWin32AccountHandler : public ServiceAccountHandler
@@ -47,7 +45,6 @@ private:
 	HWND									m_hPasswordEntry;
 	HWND									m_hPasswordLabel;
 	HWND									m_hUrlButton;
-  AP_StringSet  *m_strings;
 };
 
 #endif /* __SERVICEWIN32ACCOUNTHANDLER__ */

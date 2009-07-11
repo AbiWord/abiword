@@ -29,7 +29,7 @@
 #include "ev_Menu_Labels.h"
 #include "ev_EditMethod.h"
 #include "xap_Menu_Layouts.h"
-#include "ap_Strings.h"
+#include "xap_Strings.h"
 
 #include "xap_UnixFrameImpl.h"
 #include "xap_UnixDialogHelper.h"
@@ -51,7 +51,7 @@
 ABI_PLUGIN_DECLARE("Gdict")
 #endif
 
-AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-gdict");
+XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 
 static void
 GDict_exec (const char * search)
@@ -294,9 +294,9 @@ GDict_removeFromMenus()
 static void
 GDict_addToMenus()
 {
+	strings->setDomain(NULL);
   // First we need to get a pointer to the application itself.
   XAP_App *pApp = XAP_App::getApp();
-  const XAP_StringSet *pSS = pApp->getStringSet();
     
   // Create an EditMethod that will link our method's name with
   // it's callback function.  This is used to link the name to 
@@ -331,16 +331,18 @@ GDict_addToMenus()
   int frameCount = pApp->getFrameCount();
   XAP_Menu_Factory * pFact = pApp->getMenuFactory();
 
+  strings->setDomain("abiword");
+
   //
   // Put it in the context menu.
   //
-  XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText",NULL, AP_STRING_ID_MENU_LABEL_FMT_BULLETS,EV_MLF_Normal);
+  XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText",NULL, strings->getValue(_("Bullets and &Numbering")),EV_MLF_Normal);
   //pFact->addNewLabel(NULL,newID,GDict_MenuLabel, GDict_MenuTooltip);
 
   //
   // Also put it under word Wount in the main menu,
   //
-  pFact->addNewMenuAfter("Main",NULL, AP_STRING_ID_MENU_LABEL_TOOLS_WORDCOUNT,EV_MLF_Normal,newID);
+  pFact->addNewMenuAfter("Main",NULL, strings->getValue(_("&Word Count")),EV_MLF_Normal,newID);
   
   // Create the Action that will be called.
   EV_Menu_Action* myAction = new EV_Menu_Action(
@@ -367,6 +369,7 @@ GDict_addToMenus()
       XAP_Frame* pFrame = pApp->getFrame(i);
       pFrame->rebuildMenus();
     }
+  strings->setDomain("abiword-plugin-gdict");
 }
 
 // -----------------------------------------------------------------------
@@ -378,6 +381,8 @@ GDict_addToMenus()
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
+		strings->setDomain("abiword-plugin-gdict");
+
     mi->name = strings->getValue(_("GDict plugin"));
     mi->desc = strings->getValue(_("Dictionary support for AbiWord"));
     mi->version = ABI_VERSION_STRING;

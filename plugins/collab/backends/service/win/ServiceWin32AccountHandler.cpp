@@ -47,12 +47,10 @@ ServiceWin32AccountHandler::ServiceWin32AccountHandler()
 		m_hInstance = pSessionManager->getInstance();
 	}
 
-  m_strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-collab");
 }
 
 ServiceWin32AccountHandler::~ServiceWin32AccountHandler()
 {
-  delete m_strings;
 }
 
 

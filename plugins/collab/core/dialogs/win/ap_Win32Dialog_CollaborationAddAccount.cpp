@@ -96,7 +96,8 @@ AP_Win32Dialog_CollaborationAddAccount::AP_Win32Dialog_CollaborationAddAccount(X
 		m_hInstance=pSessionManager->getInstance();
 	}
 
-  m_strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-collab");
+  m_strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+  m_strings->setDomain("abiword-plugin-collab");
 }
 
 AP_Win32Dialog_CollaborationAddAccount::~AP_Win32Dialog_CollaborationAddAccount()

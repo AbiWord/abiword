@@ -153,6 +153,8 @@ URLDict_removeFromMenus()
 static void
 URLDict_addToMenus()
 {
+	strings->setDomain(NULL);
+
   // First we need to get a pointer to the application itself.
   XAP_App *pApp = XAP_App::getApp();
     

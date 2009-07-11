@@ -33,7 +33,8 @@ TCPAccountHandler::TCPAccountHandler()
 	m_bConnected(false),
 	m_pDelegator(0)
 {
-  m_strings = new AP_StringSet(NULL, "abiword-plugin-stringset");
+  m_strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+  m_strings->setDomain("abiword-plugin-collab");
 }
 
 TCPAccountHandler::~TCPAccountHandler()

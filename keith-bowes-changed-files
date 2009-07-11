@@ -2,9 +2,10 @@ Makefile.am
 configure.in
 keith-bowes-changed-files
 plugins/*/po
-plugins/*/po/Makefile
 plugins/*/po/POTFILES.in
 plugins/*/po/eo.po
+plugins/paint/win/ap_Strings_wrapper.cpp
+plugins/paint/win/ap_Strings_wrapper.h
 po/Makefile.in
 po/abiword.pot
 po/eo.po

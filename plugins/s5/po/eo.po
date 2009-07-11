@@ -22,7 +22,7 @@ msgstr "Eksportilo de S5-aj bildvicoj"
 
 #: ../xp/ie_exp_S5.cpp:131
 msgid "Export S5 Slideshows"
-msgstr "Eksporti S5-aj bildvicoj"
+msgstr "Eksporti S5-ajn bildvicojn"
 
 #: ../xp/ie_exp_S5.cpp:134
 msgid "No Usage"

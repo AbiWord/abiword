@@ -10,7 +10,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -43,26 +43,23 @@
 //////////////////////////////////////////////////////////////////
 
 XAP_StringSet::XAP_StringSet(XAP_App * pApp, const gchar * szDomainName, const gchar * szLanguageName)
-  : m_domain(szDomainName),
-    m_encoding("UTF-8")
+	: m_domain(szDomainName),
+		m_encoding("UTF-8")
 {
 	m_pApp = pApp;
 
-  if (!szLanguageName)
-  {
-    UT_LocaleInfo *info = new UT_LocaleInfo();
-	  m_szLanguageName = info->getLanguage().utf8_str();
-  }
+	if (!szLanguageName)
+	{
+		UT_LocaleInfo *info = new UT_LocaleInfo();
+		m_szLanguageName = info->getLanguage().utf8_str();
+    UT_DEBUGMSG(("XAP_StringSet::m_szLanguageName: %s\n", m_szLanguageName));
+	}
 
 	if (szLanguageName && *szLanguageName)
 		m_szLanguageName = g_strdup(szLanguageName);
 
-  if (!m_domain)
-    m_domain = pApp->getApplicationName();
-
-  setlocale(LC_ALL, "");
-  bindtextdomain(m_domain, LOCALE_DIR);
-  textdomain(m_domain);
+	setlocale(LC_ALL, "");
+	setDomain(m_domain);
 }
 
 XAP_StringSet::~XAP_StringSet(void)
@@ -88,9 +85,9 @@ bool XAP_StringSet::getValue(XAP_String_Id id, const char * inEncoding, UT_Strin
 	}
 	else
 	{
-	        UT_iconv_t conv = UT_iconv_open(inEncoding, m_encoding.c_str());
+					UT_iconv_t conv = UT_iconv_open(inEncoding, m_encoding.c_str());
 		UT_return_val_if_fail(UT_iconv_isValid(conv), false);
-	  
+ 
 		char * translated = UT_convert_cd(toTranslate, strlen (toTranslate)+1, conv, NULL, NULL);
 		
 		UT_iconv_close(conv);
@@ -106,38 +103,43 @@ bool XAP_StringSet::getValue(XAP_String_Id id, const char * inEncoding, UT_Strin
 
 bool XAP_StringSet::getValueUTF8(XAP_String_Id id, std::string & s) const
 {	
-        UT_String s_;
+	UT_String s_;
 	bool b = getValue(id, "UTF-8", s_);
 	if (b)
-	        s = s_.c_str();
+					s = s_.c_str();
 	return b;
 }
 
 bool XAP_StringSet::getValueUTF8(XAP_String_Id id, UT_UTF8String & s) const
 {	
-        UT_String s_;
+	UT_String s_;
 	bool b = getValue(id, "UTF-8", s_);
 	if (b)
-	        s = s_.c_str();
+					s = s_.c_str();
 	return b;
 }
 
 void XAP_StringSet::setEncoding(const gchar * inEncoding)
 {
-  UT_return_if_fail(inEncoding != 0);
-  m_encoding = inEncoding;
-  bind_textdomain_codeset(m_domain, getEncoding());
+	UT_return_if_fail(inEncoding != 0);
+	m_encoding = inEncoding;
+	bind_textdomain_codeset(m_domain, getEncoding());
 }
 
 const char * XAP_StringSet::getEncoding() const
 {
-  return m_encoding.c_str();
+	return m_encoding.c_str();
 }
 
+void XAP_StringSet::setDomain(const char * szDomainName)
+{
+  m_domain = szDomainName ? szDomainName : GETTEXT_PACKAGE;
+	bindtextdomain(m_domain, LOCALE_DIR);
+	textdomain(m_domain);
+}
+
+/* Kinda useless for now, but maybe we can put in checks in the future */
 const char * XAP_StringSet::translate(XAP_String_Id id) const
 {
-  if (textdomain(m_domain) != m_domain)
-    id = dgettext(m_domain, id);
-
-  return id;
+	return id;
 }

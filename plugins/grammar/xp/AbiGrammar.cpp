@@ -33,7 +33,7 @@
 #include "xap_Module.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
-#include "ap_Strings.h"
+#include "xap_Strings.h"
 #include "fv_View.h"
 #include "xav_View.h"
 #include "xav_Listener.h"
@@ -140,7 +140,8 @@ ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
     XAP_App * pApp = XAP_App::getApp();
-    AP_StringSet *strings = new AP_StringSet(pApp, "abiword-plugin-grammar");
+    XAP_StringSet * strings = (XAP_StringSet *) pApp->getStringSet();
+		strings->setDomain("abiword-plugin-grammar");
 
     mi->name = strings->getValue(_("AbiGrammar"));
     mi->desc = strings->getValue(_("The plugin allows AbiWord to be Grammar checked"));

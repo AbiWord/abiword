@@ -40,7 +40,8 @@ TCPUnixAccountHandler::TCPUnixAccountHandler()
 	ssl_button(NULL),
 	autoconnect_button(NULL)
 {
-  m_strings = new AP_StringSet(NULL, "abiword-plugin-collab");
+  m_strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+  m_strings->setDomain("abiword-plugin-collab");
 }
 
 TCPUnixAccountHandler::~TCPUnixAccountHandler()

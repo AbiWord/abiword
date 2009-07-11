@@ -51,7 +51,8 @@ FakeAccountHandler::FakeAccountHandler(const UT_UTF8String& sSessionURI, XAP_Fra
 	m_iRemoteRev(0)
 {
 	UT_DEBUGMSG(("FakeAccountHandler::FakeAccountHandler()\n"));
-  m_strings = new AP_StringSet(NULL, "abiword-plugin-collab");
+  m_strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+  m_strings->setDomain("abiword-plugin-collab");
 }
 
 FakeAccountHandler::~FakeAccountHandler()

@@ -9,7 +9,7 @@ cd $srcdir
 ./autogen-common.sh
 
 autoreconf --force --install --symlink
-intltoolize --force
+intltoolize
 
 cd $olddir
 

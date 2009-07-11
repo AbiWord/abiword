@@ -41,7 +41,7 @@
 #include "ie_exp.h"
 #include "ie_types.h"
 #include "ut_sleep.h"
-#include "ap_Strings.h"
+#include "xap_Strings.h"
 #include <sys/types.h>  
 #include <sys/stat.h>
 #include <unistd.h>
@@ -64,7 +64,7 @@
 ABI_PLUGIN_DECLARE("Gimp")
 #endif
 
-AP_StringSet *strings = new AP_StringSet(XAP_App::getApp(), "abiword-plugin-gimp");
+XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 
 static bool AbiGimp_invoke(AV_View* v, EV_EditMethodCallData *d);
 
@@ -85,6 +85,7 @@ static BOOL CreateChildProcess(char * appName, char *cmdline,
 static void
 AbiGimp_addToMenus()
 {
+		strings->setDomain(NULL);
     // First we need to get a pointer to the application itself.
     XAP_App *pApp = XAP_App::getApp();
 
@@ -200,6 +201,8 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
   if (!progExists("gimp"))
     return 0;
 #endif
+
+		strings->setDomain("abiword-plugin-gimp");
 
     mi->name = strings->getValue(_("AbiGimp"));
     mi->desc = strings->getValue(_("Use this to edit an image with the GIMP from within AbiWord"));

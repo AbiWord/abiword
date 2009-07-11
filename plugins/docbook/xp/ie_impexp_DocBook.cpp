@@ -22,7 +22,8 @@
 #include "ie_imp_DocBook.h"
 #include "ie_exp_DocBook.h"
 #include "xap_Module.h"
-#include "ap_Strings.h"
+#include "xap_App.h"
+#include "xap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_docbook_register
@@ -44,7 +45,8 @@ static IE_Exp_DocBook_Sniffer * m_expSniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-	AP_StringSet *strings = new AP_StringSet(NULL, "abiword-plugin-docbook");
+	XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+  strings->setDomain("abiword-plugin-docbook");
 
 	if (!m_impSniffer)
 	{
