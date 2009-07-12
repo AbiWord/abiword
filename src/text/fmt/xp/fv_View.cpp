@@ -8048,6 +8048,7 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick = false)
 		_clearIfAtFmtMark(getPoint());
 
 	m_FrameEdit.setMode(FV_FrameEdit_NOT_ACTIVE);
+	m_InlineImage.setMode(FV_InlineDrag_NOT_ACTIVE);
 	_setPoint(pos, bEOL);
 	_ensureInsertionPointOnScreen();
 	setCursorToContext();
@@ -8356,7 +8357,7 @@ void FV_View::drawSelectionBox(UT_Rect & inBox, bool drawHandles)
 {
 	GR_Graphics *pG = getGraphics();
 	UT_sint32 boxSize = getImageSelInfo();
-
+	m_InlineImage.setSelectionDrawn(true);
 	UT_sint32 left = inBox.left;
 	UT_sint32 top = inBox.top;
 	UT_sint32 right = inBox.left + inBox.width;
@@ -10292,7 +10293,7 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 			UT_DEBUGMSG(("Set ImageSize Context \n"));
 
 			m_prevMouseContext = EV_EMC_IMAGESIZE;
-			//			m_InlineImage.mouseLeftPress(xPos, yPos);
+			//m_InlineImage.mouseLeftPress(xPos, yPos);
 			return EV_EMC_IMAGESIZE;
 		}
 		if(m_Selection.isPosSelected(pos))

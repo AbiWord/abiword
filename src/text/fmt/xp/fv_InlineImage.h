@@ -72,6 +72,7 @@ public:
 	void                  abortDrag(void);
 	const char *          getPNGImage(const UT_ByteBuf ** pBuf);
 	UT_sint32             getImageSelBoxSize() const; // in device units!
+	void                  setSelectionDrawn(bool bSelectionDrawn);
 protected:
 	virtual void          _mouseDrag(UT_sint32 x, UT_sint32 y);
 private:
@@ -96,6 +97,7 @@ private:
 	bool                  m_bIsEmbedded;
 	bool				  m_bEmbedCanResize;
 	UT_UTF8String         m_sDataId;
+	bool                  m_bSelectionDrawn;
 };
 
 #endif /* FV_VISUALINLINEIMAGE_H */

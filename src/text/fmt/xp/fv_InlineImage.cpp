@@ -54,7 +54,8 @@ FV_VisualInlineImage::FV_VisualInlineImage (FV_View * pView)
 	  m_bDoingCopy(false),
 	  m_pImageAP(NULL),
 	  m_screenCache(NULL),
-	  m_bIsEmbedded(false)
+	  m_bIsEmbedded(false),
+	  m_bSelectionDrawn(false)
 {
 	UT_ASSERT_HARMLESS(pView);
 }
@@ -76,9 +77,24 @@ bool FV_VisualInlineImage::isActive(void) const
 	return (FV_InlineDrag_NOT_ACTIVE != m_iInlineDragMode);
 }
 
+void FV_VisualInlineImage::setSelectionDrawn(bool bSelection)
+{
+        m_bSelectionDrawn = bSelection;
+}
+
 void FV_VisualInlineImage::setMode(FV_InlineDragMode iEditMode)
 {
-	m_iInlineDragMode = iEditMode;
+       bool bClearSelection =false;
+       if(m_bSelectionDrawn && (iEditMode == FV_InlineDrag_NOT_ACTIVE))
+       {
+	    bClearSelection = true;
+       }
+       m_iInlineDragMode = iEditMode;
+       if(bClearSelection)
+       {
+	    m_pView->updateScreen(false);
+	    m_bSelectionDrawn = false;
+       }
 }
 
 static UT_sint32 iExtra = 0;
@@ -97,6 +113,7 @@ void FV_VisualInlineImage::_actuallyScroll(UT_Worker * pWorker)
 	pVis->getGraphics()->setClipRect(&pVis->m_recCurFrame);
 	pView->updateScreen(false);
 	pView->getGraphics()->setClipRect(NULL);
+	pVis->m_bSelectionDrawn = false;
 	bool bScrollDown = false;
 	bool bScrollUp = false;
 	bool bScrollLeft = false;
@@ -329,11 +346,13 @@ void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			pG->setClipRect(&expX);
 			m_pView->updateScreen(false);
+			m_bSelectionDrawn = false;
 		}
 		if(expY.height > 0)
 		{
 			pG->setClipRect(&expY);
 			m_pView->updateScreen(false);
+			m_bSelectionDrawn = false;
 		}
 		pG->setClipRect(NULL);
 		bool b = drawImage();
@@ -365,12 +384,14 @@ void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			pG->setClipRect(&expX);
 			m_pView->updateScreen(false);
+			m_bSelectionDrawn = false;
 		}
 		if(expY.height > 0)
 		{
 			pG->setClipRect(&expY);
 			xxx_UT_DEBUGMSG(("expY.top %d expY.height %d \n",expY.top,expY.height));
 			m_pView->updateScreen(false);
+			m_bSelectionDrawn = false;
 		}
 		pG->setClipRect(NULL);
 		GR_Painter painter(pG);
@@ -603,6 +624,7 @@ void FV_VisualInlineImage::mouseCut(UT_sint32 x, UT_sint32 y)
 	}
 	m_pView->cmdCharDelete(true,1);
 	m_pView->updateScreen(false);
+	m_bSelectionDrawn = false;
 	drawImage();
 }
 
@@ -715,6 +737,8 @@ void FV_VisualInlineImage::cleanUP(void)
   m_bFirstDragDone = false;
   m_pImageAP = NULL;
   m_bDoingCopy = false;
+  m_pView->updateScreen(false);
+  m_bSelectionDrawn = false;
   while(m_iGlobCount > 0)
     _endGlob();
  
@@ -904,6 +928,7 @@ void FV_VisualInlineImage::mouseCopy(UT_sint32 x, UT_sint32 y)
 	m_pView->m_prevMouseContext = EV_EMC_IMAGESIZE;
 	m_pView->setCursorToContext();
 	m_pView->updateScreen(false);
+	m_bSelectionDrawn = false;
 	drawImage();
 	m_bTextCut = false;
 	m_bDoingCopy = true;
@@ -978,10 +1003,11 @@ void FV_VisualInlineImage::mouseRelease(UT_sint32 x, UT_sint32 y)
 	  PT_DocPosition posAtXY = getPosFromXY(x,y);
 	  m_pView->setPoint(posAtXY);
 	  getGraphics()->setClipRect( &m_recCurFrame);
-	  m_pView->updateScreen(false);
 	  getGraphics()->setClipRect(NULL);
 	  m_iInlineDragMode  = FV_InlineDrag_NOT_ACTIVE;
 	  m_pView->getMouseContext(x,y);
+	  m_pView->updateScreen(false);
+	  m_bSelectionDrawn = false;
 	  m_iInitialOffX = 0;
 	  m_iInitialOffY = 0;
 	  PT_DocPosition oldPoint = m_pView->getPoint();
@@ -1100,7 +1126,7 @@ void FV_VisualInlineImage::mouseRelease(UT_sint32 x, UT_sint32 y)
 	  //m_pView->updateScreen(false);
 	  //getGraphics()->setClipRect(NULL);
 	  m_bDoingCopy = false;
-	  m_iInlineDragMode  = FV_InlineDrag_NOT_ACTIVE;
+	  m_iInlineDragMode = FV_InlineDrag_NOT_ACTIVE;
 	  UT_Rect newImgBounds = m_recCurFrame;
 	  const fp_PageSize & page = m_pView->getPageSize ();		
 	  double max_width = 0., max_height = 0.;
