@@ -69,7 +69,6 @@ IE_Exp_OpenWriter_Sniffer::IE_Exp_OpenWriter_Sniffer()
 
 IE_Exp_OpenWriter_Sniffer::~IE_Exp_OpenWriter_Sniffer()
 {
-  delete m_strings;
 }
 
 /*!

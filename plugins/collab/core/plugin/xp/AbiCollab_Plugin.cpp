@@ -171,8 +171,6 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	// unregister all dialogs we use
 	AbiCollabSessionManager::getManager()->unregisterDialogs();
 
-  delete strings;
-
 	return 1;
 }
 

@@ -332,7 +332,6 @@ IE_Imp_ISCII_Sniffer::IE_Imp_ISCII_Sniffer (const char * _name) :
 
 IE_Imp_ISCII_Sniffer::~IE_Imp_ISCII_Sniffer()
 {
-  delete m_strings;
 }
 
 // supported suffixes

@@ -419,7 +419,6 @@ Presentation::Presentation(void):
 
 Presentation::~Presentation (void)
 {
-  delete strings;
 }
 
 bool Presentation::_loadPresentationBindings(AV_View * pView)

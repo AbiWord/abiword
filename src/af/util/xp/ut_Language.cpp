@@ -247,7 +247,7 @@ UT_Language::UT_Language()
 {
 	if(s_Init) // do this once here
     {
-        UT_Language_updateLanguageNames();
+       	UT_Language_updateLanguageNames();
         s_Init = false;
     }
 }

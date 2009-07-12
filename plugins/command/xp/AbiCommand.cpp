@@ -144,7 +144,6 @@ abi_plugin_unregister (XAP_ModuleInfo * mi)
 
 	AbiCommand_RemoveFromMethods ();
 
-  delete strings;
 	return 1;
 }
 

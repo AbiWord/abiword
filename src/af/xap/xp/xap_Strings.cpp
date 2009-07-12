@@ -47,8 +47,9 @@ XAP_StringSet::XAP_StringSet(const gchar * szDomainName)
 		m_encoding("UTF-8")
 {
 	UT_LocaleInfo *info = new UT_LocaleInfo();
-	const char *lang = info->getLanguage().utf8_str();
-	const char *reg = info->getTerritory().utf8_str();
+	const char * lang = info->getLanguage().utf8_str();
+	const char * reg = info->getTerritory().utf8_str();
+	m_szLanguageName = (char *) malloc(sizeof(char) * (strlen(lang) + strlen(reg)));
 
 	if (lang)
 	{
@@ -60,6 +61,8 @@ XAP_StringSet::XAP_StringSet(const gchar * szDomainName)
 			strcat((char *) m_szLanguageName, reg);
 		}
 	}
+	else
+		m_szLanguageName = "-none-";
 
 	setlocale(LC_ALL, "");
 	setDomain(m_domain);
@@ -67,6 +70,7 @@ XAP_StringSet::XAP_StringSet(const gchar * szDomainName)
 
 XAP_StringSet::~XAP_StringSet(void)
 {
+	free((void *) m_szLanguageName);
 }
 
 const gchar * XAP_StringSet::getLanguageName(void) const

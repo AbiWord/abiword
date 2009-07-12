@@ -82,6 +82,7 @@ bool IE_Exp_EML_Sniffer::getDlgLabels(const char ** pszDesc,
 		    const char ** pszSuffixList,
 		    IEFileType * ft)
   {
+		strings->setDomain("abiword-plugin-eml");
     *pszDesc = strings->getValue(_("Outlook Express Email (.eml)"));
     *pszSuffixList = "*.eml";
     *ft = getFileType();

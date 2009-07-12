@@ -162,7 +162,6 @@ AP_UnixApp::AP_UnixApp(const char * szAppName)
 */
 AP_UnixApp::~AP_UnixApp(void)
 {
-    DELETEP(m_pStringSet);
     DELETEP(m_pClipboard);
 
     IE_ImpExp_UnRegisterXP ();

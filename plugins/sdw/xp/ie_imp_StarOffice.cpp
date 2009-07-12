@@ -521,6 +521,7 @@ UT_Error IE_Imp_StarOffice_Sniffer::constructImporter(PD_Document *pDocument, IE
 }
 
 bool IE_Imp_StarOffice_Sniffer::getDlgLabels(const char** pszDesc, const char** pszSuffixList, IEFileType* ft) {
+	strings->setDomain("abiword-plugin-sdw");
 	*pszDesc = strings->getValue(_("StarWriter up to 5.x (*.sdw)"));
 	*pszSuffixList = "*.sdw";
 	*ft = getFileType();
@@ -1034,8 +1035,6 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
     IE_Imp::unregisterImporter (m_impSniffer);
 	delete m_impSniffer;
 	m_impSniffer = 0;
-
-		delete strings;
 
     return 1;
 }

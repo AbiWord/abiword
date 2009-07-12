@@ -245,7 +245,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 		strings->setDomain("abiword-plugin-wikipedia");
 
 		Wikipedia_MenuLabel = strings->getValue(_("Wi&ki Encyclopedia"));
-		 Wikipedia_MenuTooltip = strings->getValue(_("Opens the libre Wiki on-line encyclopedia"));
+		Wikipedia_MenuTooltip = strings->getValue(_("Opens the libre Wiki on-line encyclopedia"));
 
     mi->name = strings->getValue(_("Wikipedia plugin"));
     mi->desc = strings->getValue(_("On-line Encyclopedia support for AbiWord. Search site is http://www.wikipedia.com/"));
@@ -270,8 +270,6 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
     mi->usage = 0;
 
     Wikipedia_removeFromMenus();
-
-		delete strings;
 
     return 1;
 }

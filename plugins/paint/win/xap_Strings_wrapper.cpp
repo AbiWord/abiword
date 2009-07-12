@@ -13,7 +13,6 @@ void xap_strings_create(const char * szDomain)
 
 void xap_strings_destroy()
 {
-  delete strings;
 }
 
 const char * xap_strings_get_value(const char * szData)

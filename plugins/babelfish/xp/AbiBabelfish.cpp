@@ -390,7 +390,6 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 
     BabelFish_RemoveFromMenus () ;
 
-    delete strings;
     return 1;
 }
 

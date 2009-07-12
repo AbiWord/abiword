@@ -231,8 +231,6 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 
     AbiGimp_RemoveFromMenus ();
 
-    delete strings;
-
     return 1;
 }
 

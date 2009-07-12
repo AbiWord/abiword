@@ -109,8 +109,6 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	delete m_sniffer;
 	m_sniffer = 0;
 
-  delete strings;
-
 	return 1;
 }
 
@@ -147,6 +145,7 @@ bool IE_Exp_HRText_Sniffer::getDlgLabels(const char ** pszDesc,
 										 const char ** pszSuffixList,
 										 IEFileType * ft)
 {
+	strings->setDomain("abiword-plugin-hrtext");
 	*pszDesc = strings->getValue(_("Newsgroup Formatted Text (.nws)"));
 	*pszSuffixList = "*.nws";
 	*ft = getFileType();

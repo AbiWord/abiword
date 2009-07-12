@@ -407,7 +407,6 @@ ABI_BUILTIN_FAR_CALL int abi_plugin_unregister(XAP_ModuleInfo * mi)
 	mi->usage = 0;
 
 	FreeTranslation_RemoveFromMenus ();
-  delete strings;
 
 	return 1;
 }

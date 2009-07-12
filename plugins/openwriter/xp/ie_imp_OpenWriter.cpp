@@ -563,7 +563,6 @@ IE_Imp_OpenWriter_Sniffer::IE_Imp_OpenWriter_Sniffer () :
 
 IE_Imp_OpenWriter_Sniffer::~IE_Imp_OpenWriter_Sniffer ()
 {
-  delete m_strings;
 }
 
 // supported suffixes

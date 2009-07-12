@@ -224,7 +224,6 @@ AbiCollabSessionManager::~AbiCollabSessionManager(void)
 	destroyAccounts();
 	
 	m_pManager = NULL;
-  delete m_strings;
 }
 
 bool AbiCollabSessionManager::registerDialogs(void)

@@ -37,7 +37,6 @@ IE_Exp_ISCII_Sniffer::IE_Exp_ISCII_Sniffer (const char * _name) :
 
 IE_Exp_ISCII_Sniffer::~IE_Exp_ISCII_Sniffer()
 {
-  delete m_strings;
 }
 
 bool IE_Exp_ISCII_Sniffer::recognizeSuffix(const char * szSuffix)

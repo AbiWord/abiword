@@ -236,6 +236,7 @@ bool IE_Imp_WordPerfectGraphics_Sniffer::getDlgLabels (const char ** szDesc,
                         const char ** szSuffixList,
                         IEGraphicFileType *ft)
 {
+	strings->setDomain("abiword-plugin-wpg");
 	*szDesc = strings->getValue(_("WordPerfect(tm) Graphics Images (.wpg)"));
 	*szSuffixList = "*.wpg";
 	*ft = getType ();
