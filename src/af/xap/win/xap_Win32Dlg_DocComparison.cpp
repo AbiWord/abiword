@@ -64,48 +64,12 @@ XAP_Win32Dialog_DocComparison::~XAP_Win32Dialog_DocComparison(void)
 
 void XAP_Win32Dialog_DocComparison::runModal(XAP_Frame * pFrame)
 {
-	UT_return_if_fail(pFrame);
-	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 
 	XAP_Win32LabelledSeparator_RegisterClass(pWin32App);
 
-	LPCTSTR lpTemplate = NULL;
-
 	UT_ASSERT(m_id == XAP_DIALOG_ID_DOCCOMPARISON);
-
-	lpTemplate = MAKEINTRESOURCE(XAP_RID_DIALOG_DOCCOMPARISON);
-
-	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
-						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-						(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT_HARMLESS((result != -1));
-	if(result == -1)
-	{
-		UT_DEBUGMSG(( "XAP_Win32Dlg_DocComparison::runModal error %d\n", GetLastError() ));
-	}
-}
-
-BOOL CALLBACK XAP_Win32Dialog_DocComparison::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
-{
-	// This is a static function.
-
-	XAP_Win32Dialog_DocComparison * pThis;
-
-	switch (msg)
-	{
-	case WM_INITDIALOG:
-		pThis = (XAP_Win32Dialog_DocComparison *)lParam;
-		SetWindowLong(hWnd,DWL_USER,lParam);
-		return pThis->_onInitDialog(hWnd,wParam,lParam);
-
-	case WM_COMMAND:
-		pThis = (XAP_Win32Dialog_DocComparison *)GetWindowLong(hWnd,DWL_USER);
-		return pThis->_onCommand(hWnd,wParam,lParam);
-
-	default:
-		return 0;
-	}
+    createModal(pFrame, MAKEINTRESOURCEW(XAP_RID_DIALOG_DOCCOMPARISON));
 }
 
 BOOL XAP_Win32Dialog_DocComparison::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
