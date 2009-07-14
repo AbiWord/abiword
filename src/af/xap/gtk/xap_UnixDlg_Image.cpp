@@ -454,13 +454,12 @@ void XAP_UnixDialog_Image::_connectSignals (void)
 
 GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 {
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	
 	// get the path where our UI file is located
-	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/xap_UnixDlg_Image.xml";
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/xap_UnixDlg_Image.glade";
 	
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, GETTEXT_PACKAGE);
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	mMainWindow = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_Image"));
@@ -484,34 +483,6 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 	gtk_widget_set_size_request(m_wWidthSpin,13,-1);  
 	gtk_spin_button_set_adjustment (GTK_SPIN_BUTTON(m_wWidthSpin), GTK_ADJUSTMENT(m_oWidthSpin_adj));
 	
-	UT_UTF8String s;
-	pSS->getValueUTF8(XAP_STRING_ID_DLG_Image_Title,s);
-	abiDialogSetTitle(mMainWindow, s.utf8_str());
-
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbSize")), pSS, XAP_STRING_ID_DLG_Image_ImageSize);
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbImageDescription")), pSS, XAP_STRING_ID_DLG_Image_ImageDesc);
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbTextWrapping")), pSS, XAP_STRING_ID_DLG_Image_TextWrapping);
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbImagePlacement")), pSS, XAP_STRING_ID_DLG_Image_Placement);
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbWrapType")), pSS, XAP_STRING_ID_DLG_Image_WrapType);
-	
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbHeight")), pSS, XAP_STRING_ID_DLG_Image_Height);
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbWidth")), pSS, XAP_STRING_ID_DLG_Image_Width);
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbTitle")), pSS, XAP_STRING_ID_DLG_Image_LblTitle);
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbDescription")), pSS, XAP_STRING_ID_DLG_Image_LblDescription);
-
-	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbInLine")), pSS, XAP_STRING_ID_DLG_Image_InLine);
-	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbNone")), pSS, XAP_STRING_ID_DLG_Image_WrappedNone);
-	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbWrappedRight")), pSS, XAP_STRING_ID_DLG_Image_WrappedRight);
-	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbWrappedLeft")), pSS, XAP_STRING_ID_DLG_Image_WrappedLeft);
-	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbWrappedBoth")), pSS, XAP_STRING_ID_DLG_Image_WrappedBoth);
-
-	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbPlaceParagraph")), pSS, XAP_STRING_ID_DLG_Image_PlaceParagraph);
-	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbPlaceColumn")), pSS, XAP_STRING_ID_DLG_Image_PlaceColumn);
-	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbPlacePage")), pSS, XAP_STRING_ID_DLG_Image_PlacePage);
-
-	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbSquareWrap")), pSS, XAP_STRING_ID_DLG_Image_SquareWrap);
-	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbTightWrap")), pSS, XAP_STRING_ID_DLG_Image_TightWrap);
-
 	m_wPlaceTable = GTK_WIDGET(gtk_builder_get_object(builder, "tbPlacement"));
 	m_wrbInLine = GTK_WIDGET(gtk_builder_get_object(builder, "rbInLine"));
 	m_wrbNone = GTK_WIDGET(gtk_builder_get_object(builder, "rbNone"));
@@ -527,19 +498,8 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 	m_wrbSquareWrap = GTK_WIDGET(gtk_builder_get_object(builder, "rbSquareWrap"));
 	m_wrbTightWrap = GTK_WIDGET(gtk_builder_get_object(builder, "rbTightWrap"));
 
-
-// the check button already contains a label. We have to remove this
-// before we can localize it
-
-	gtk_container_remove(GTK_CONTAINER(m_wAspectCheck), gtk_bin_get_child(GTK_BIN(m_wAspectCheck)));
-	pSS->getValueUTF8 (XAP_STRING_ID_DLG_Image_Aspect,s);
-	gtk_button_set_label(GTK_BUTTON(m_wAspectCheck), s.utf8_str());
-
 	m_iWidth = gtk_spin_button_get_value_as_int( GTK_SPIN_BUTTON(m_wWidthSpin));
 	m_iHeight = gtk_spin_button_get_value_as_int( GTK_SPIN_BUTTON(m_wHeightSpin));
-
-	gtk_entry_set_text (GTK_ENTRY(m_wTitleEntry), getTitle().utf8_str());
-	gtk_entry_set_text (GTK_ENTRY(m_wDescriptionEntry), getDescription().utf8_str());
 
 	_connectSignals ();
 	

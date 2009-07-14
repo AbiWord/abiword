@@ -4,6 +4,8 @@ LOCALE ?= $(LANG)
 MSGFMT = @MSGFMT@
 MSGINIT = msginit
 
+INTLTOOL_UPDATE = @INTLTOOL_UPDATE@
+
 prefix = @prefix@
 datarootdir = @datarootdir@
 localedir = @localedir@
@@ -15,6 +17,10 @@ mo_files = $(subst .po,.mo, $(po_files))
 langs = $(subst .po,, $(po_files))
 catfile = $(localedir)/%s/LC_MESSAGES/$(GETTEXT_PACKAGE).mo
 instfile = $(subst %s,$(1),$(catfile))
+
+.PHONY: all dist clean distclean distclean-recursive \
+	maintainer-clean maintainer-clean-recursive install uninstall \
+	update-po pot translate $(GETTEXT_PACKAGE).pot
 
 all: $(mo_files)
 
@@ -37,7 +43,7 @@ uninstall:
 	@$(foreach lang, $(langs), if test -f $(call instfile,$(lang)); then rm -f $(call instfile,$(lang)); echo Uninstalling $(call instfile,$(lang)); fi; )
 
 update-po: pot
-	@$(foreach lang, $(langs), echo Updating locale $(lang); intltool-update --gettext-package $(GETTEXT_PACKAGE) $(lang); )
+	@$(foreach lang, $(langs), echo Updating locale $(lang); $(INTLTOOL_UPDATE) --gettext-package $(GETTEXT_PACKAGE) $(lang); )
 
 %.mo: %.po
 	$(MSGFMT) -o $@ $<
@@ -47,5 +53,5 @@ pot: $(GETTEXT_PACKAGE).pot
 translate: pot
 	$(MSGINIT) --locale=$(LOCALE)
 
-$(GETTEXT_PACKAGE).pot:
-	intltool-update --pot --gettext-package=$(GETTEXT_PACKAGE)
+$(GETTEXT_PACKAGE).pot: POTFILES.in
+	$(INTLTOOL_UPDATE) --pot --gettext-package=$(GETTEXT_PACKAGE)

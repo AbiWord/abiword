@@ -60,7 +60,7 @@ static void s_history_selected(GtkTreeView *treeview,
 	g_value_init(&value, G_TYPE_INVALID);
 	gtk_tree_model_get_value (model, &iter,3,&value);
 	item = g_value_get_int(&value);
-	UT_DEBUGMSG(("Vlaue of id selected %d \n",item));
+	UT_DEBUGMSG(("Value of id selected %d \n",item));
 	dlg->setSelectionId(item);
 }
 
@@ -109,22 +109,18 @@ void XAP_UnixDialog_History::runModal(XAP_Frame * pFrame)
 
 GtkWidget * XAP_UnixDialog_History::_constructWindow(void)
 {
-    const XAP_StringSet * pSS = m_pApp->getStringSet();
-	
 	// get the path where our UI file is located
-	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/xap_UnixDlg_History.xml";
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/xap_UnixDlg_History.glade";
 	
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, GETTEXT_PACKAGE);
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
 	m_windowMain = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_History"));
 	UT_ASSERT(m_windowMain);
-	UT_UTF8String s;
-	pSS->getValueUTF8(XAP_STRING_ID_DLG_History_WindowLabel,s);
-	gtk_window_set_title (GTK_WINDOW(m_windowMain), s.utf8_str());
 	m_wListWindow = GTK_WIDGET(gtk_builder_get_object(builder, "wListWindow"));
 
 	_fillHistoryTree();
@@ -203,22 +199,12 @@ void XAP_UnixDialog_History::_fillHistoryTree(void)
 
 void XAP_UnixDialog_History::_populateWindowData(GtkBuilder* builder)
 {
-    const XAP_StringSet * pSS = m_pApp->getStringSet();
-	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbDocumentDetails")), pSS, XAP_STRING_ID_DLG_History_DocumentDetails);
-	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbDocumentName")), getHeaderLabel(0));
 	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbDocNameVal")), getHeaderValue(0));
-	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbVersion")), getHeaderLabel(1));
 	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbVersionVal")), getHeaderValue(1));
-	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbCreated")), getHeaderLabel(2));
 	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbCreatedVal")), getHeaderValue(2));
-	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbSaved")), getHeaderLabel(3));
 	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbSavedVal")), getHeaderValue(3));
-	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbEditTime")), getHeaderLabel(4));
 	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbEditTimeVal")), getHeaderValue(4));
 	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbIdentifier")), getHeaderLabel(5));
 	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbIdentifierVal")), getHeaderValue(5));
-	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbVersionHistory")), getListTitle());
-
 }
-
 

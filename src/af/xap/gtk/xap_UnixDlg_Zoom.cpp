@@ -200,13 +200,13 @@ void XAP_UnixDialog_Zoom::event_SpinPercentChanged(void)
 GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 {
 	GtkWidget * window;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	// get the path where our UI file is located
-	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/xap_UnixDlg_Zoom.xml";
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/xap_UnixDlg_Zoom.glade";
 	
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, GETTEXT_PACKAGE);
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
@@ -222,31 +222,8 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 	m_spinPercent = GTK_WIDGET(gtk_builder_get_object(builder, "sbPercent"));
 	m_spinAdj = gtk_spin_button_get_adjustment( GTK_SPIN_BUTTON(m_spinPercent) );
 
-	// set the dialog title
-	UT_UTF8String s;
-	pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_ZoomTitle,s);
-	abiDialogSetTitle(window, s.utf8_str());
-
-	// localize the strings in our dialog, and set tags for some widgets
-	
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbZoom")), pSS, XAP_STRING_ID_DLG_Zoom_RadioFrameCaption);
-
-	localizeButton(m_radio200, pSS, XAP_STRING_ID_DLG_Zoom_200);
-	g_object_set_data (G_OBJECT (m_radio200), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(XAP_Frame::z_200));
-  
-	localizeButton(m_radio100, pSS, XAP_STRING_ID_DLG_Zoom_100);
-	g_object_set_data (G_OBJECT (m_radio100), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(XAP_Frame::z_100));
-  
-	localizeButton(m_radio75, pSS, XAP_STRING_ID_DLG_Zoom_75);
-	g_object_set_data (G_OBJECT (m_radio75), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(XAP_Frame::z_75));
-	
-	localizeButton(m_radioPageWidth, pSS, XAP_STRING_ID_DLG_Zoom_PageWidth);
-	g_object_set_data (G_OBJECT (m_radioPageWidth), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(XAP_Frame::z_PAGEWIDTH));
-	
-	localizeButton(m_radioWholePage, pSS, XAP_STRING_ID_DLG_Zoom_WholePage);
 	g_object_set_data (G_OBJECT (m_radioWholePage), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(XAP_Frame::z_WHOLEPAGE));
 	
-	localizeButton(m_radioPercent, pSS, XAP_STRING_ID_DLG_Zoom_Percent);
 	g_object_set_data (G_OBJECT (m_radioPercent), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(XAP_Frame::z_PERCENT));
 	
 	// Connect clicked signals so that our callbacks get called.

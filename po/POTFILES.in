@@ -1,3 +1,17 @@
-src/af/xap/xp/xap_String_Id.h
+# C++ header files
 src/wp/ap/xp/ap_String_Id.h
+src/af/xap/xp/xap_String_Id.h
+
+# GtkBuilder definiton files
+# These contain a lot of duplicates of the C++ header files above.
+# Those strings could be taken out if we would standardize on GTK+.
+src/af/xap/gtk/xap_UnixDlg_DocComparison.glade
+src/af/xap/gtk/xap_UnixDlg_Encoding.glade
+src/af/xap/gtk/xap_UnixDlg_History.glade
+src/af/xap/gtk/xap_UnixDlg_Image.glade
 src/af/xap/gtk/xap_UnixDlg_Language.glade
+src/af/xap/gtk/xap_UnixDlg_ListDocuments.glade
+src/af/xap/gtk/xap_UnixDlg_Password.glade
+src/af/xap/gtk/xap_UnixDlg_PluginManager.glade
+src/af/xap/gtk/xap_UnixDlg_WindowMore.glade
+src/af/xap/gtk/xap_UnixDlg_Zoom.glade

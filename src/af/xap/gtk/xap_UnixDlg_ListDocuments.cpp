@@ -124,24 +124,19 @@ GtkWidget * XAP_UnixDialog_ListDocuments::_constructWindow(void)
 {
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *column;
-	GtkWidget *w;
 	
 	// get the path where our UI file is located
-	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/xap_UnixDlg_ListDocuments.xml";
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/xap_UnixDlg_ListDocuments.glade";
 	
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, GETTEXT_PACKAGE);
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
 	m_windowMain = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_ListDocuments"));
 	m_listWindows = GTK_WIDGET(gtk_builder_get_object(builder, "tvAvailableDocuments"));
-
-	gtk_window_set_title (GTK_WINDOW(m_windowMain), _getTitle());
-	w = GTK_WIDGET(gtk_builder_get_object(builder, "lbAvailableDocuments"));
-	gtk_label_set_text(GTK_LABEL(w), _getHeading());
-	w = GTK_WIDGET(gtk_builder_get_object(builder, "btView"));
 
 	// add a column to our TreeViews
 
