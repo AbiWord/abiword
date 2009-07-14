@@ -391,7 +391,7 @@ void s_HRText_Listener::_openSpan(PT_AttrPropIndex api)
 				  q = strtok(NULL, " ");
 		    }
 
-		    free(p);
+		    FREEP(p);
 		}
 
 		if (pAP->getProperty("text-position", szValue))

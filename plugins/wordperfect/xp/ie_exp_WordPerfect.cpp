@@ -549,7 +549,7 @@ void WordPerfect_Listener::_openSpan(PT_AttrPropIndex api)
 				q = strtok(NULL, " ");
 			}
 
-			free(p);
+			FREEP(p);
 		}
 		
 		if (
@@ -577,7 +577,7 @@ void WordPerfect_Listener::_openSpan(PT_AttrPropIndex api)
 				q = strtok(NULL, " ");
 			}
 
-			free(p);
+			FREEP(p);
 		}
 
 		if (
@@ -688,7 +688,7 @@ void WordPerfect_Listener::_closeSpan()
 				q = strtok(NULL, " ");
 			}
 
-			free(p);
+			FREEP(p);
 		}
 		
 		if (
@@ -716,7 +716,7 @@ void WordPerfect_Listener::_closeSpan()
 				q = strtok(NULL, " ");
 			}
 
-			free(p);
+			FREEP(p);
 		}		
 	}
 }
