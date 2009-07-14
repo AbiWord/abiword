@@ -86,7 +86,7 @@ libgtk_la_SOURCES = \
 uidir=$(ABIWORD_UIDIR)
 ui_DATA = \
 	xap_UnixDlg_Encoding.xml \
-	xap_UnixDlg_Language.xml \
+	xap_UnixDlg_Language.glade \
 	xap_UnixDlg_Password.xml \
 	xap_UnixDlg_PluginManager.xml \
 	xap_UnixDlg_WindowMore.xml \

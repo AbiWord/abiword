@@ -21,6 +21,7 @@
 #include "xap_Strings.h"
 
 XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+const char * olddom = strings->setDomain("abiword-plugin-collab");
 
 #define return_val_if_neg(C, val) { if (C < 0) {return val;} }
 

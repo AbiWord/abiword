@@ -111,7 +111,6 @@ AP_UnixDialog_CollaborationAccounts::AP_UnixDialog_CollaborationAccounts(XAP_Dia
 
 AP_UnixDialog_CollaborationAccounts::~AP_UnixDialog_CollaborationAccounts()
 {
-  delete m_strings;
 }
 
 void AP_UnixDialog_CollaborationAccounts::runModal(XAP_Frame * pFrame)

@@ -70,9 +70,3 @@ zip:
 	zip -r $(PACKAGE)-$(VERSION).zip $(PACKAGE)-$(VERSION) -x \*.a \*.la
 	rm -rf $(PACKAGE)-$(VERSION) ./zip
 endif
-
-# Files for Google's final submission
-# Remove from SVN before merge
-gettext-dist:
-	rm -f ../gettext-dist.zip
-	zip ../gettext-dist.zip `cat keith-bowes-changed-files plugins/*/po/POTFILES.in`

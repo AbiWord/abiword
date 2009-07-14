@@ -80,6 +80,7 @@ GtkWidget * XAP_UnixDialog_DocComparison::constructWindow(void)
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
+	gtk_builder_set_translation_domain(builder, GETTEXT_PACKAGE);
 
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later

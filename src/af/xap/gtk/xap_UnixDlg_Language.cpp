@@ -100,15 +100,15 @@ void XAP_UnixDialog_Language::event_setLang()
 
 GtkWidget * XAP_UnixDialog_Language::constructWindow(void)
 {
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *column;
 	
 	// get the path where our UI file is located
-	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/xap_UnixDlg_Language.xml";
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/xap_UnixDlg_Language.glade";
 	
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, GETTEXT_PACKAGE);
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 
 	// Update our member variables with the important widgets that 
@@ -119,13 +119,8 @@ GtkWidget * XAP_UnixDialog_Language::constructWindow(void)
 	m_cbDefaultLanguage = GTK_WIDGET(gtk_builder_get_object(builder, "cbDefaultLanguage"));
 
 	UT_UTF8String s;
-	pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_LangTitle,s);
-	gtk_window_set_title (GTK_WINDOW(m_windowMain), s.utf8_str());
-	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbAvailableLanguages")), pSS, XAP_STRING_ID_DLG_ULANG_AvailableLanguages);
 	getDocDefaultLangDescription(s);
 	gtk_label_set_text (GTK_LABEL(m_lbDefaultLanguage), s.utf8_str());
-	getDocDefaultLangCheckboxLabel(s);
-	gtk_button_set_label (GTK_BUTTON(m_cbDefaultLanguage), s.utf8_str());
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(m_cbDefaultLanguage), isMakeDocumentDefault());
 
 	// add a column to our TreeViews

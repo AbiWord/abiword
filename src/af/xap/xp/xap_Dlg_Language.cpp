@@ -199,6 +199,7 @@ void XAP_Dialog_Language::getDocDefaultLangDescription(UT_UTF8String & s)
 {
 	s.clear();
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+	((XAP_StringSet *) pSS)->setDomain(NULL);
 	UT_return_if_fail(pSS);
 
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_DefaultLangLabel, s);

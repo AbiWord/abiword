@@ -9,13 +9,1944 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-06-24 21:38-0400\n"
+"POT-Creation-Date: 2009-07-13 21:01-0400\n"
 "PO-Revision-Date: 2007-01-04 23:33+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: ../src/af/xap/xp/xap_String_Id.h:32
+#, fuzzy
+msgid "Importing Document..."
+msgstr "&Pliaj dokumentoj"
+
+#: ../src/af/xap/xp/xap_String_Id.h:33
+msgid "Building Document:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:34
+msgid "Autorevision"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:35
+#, c-format
+msgid ""
+"AbiWord cannot fully restore version %d of the document because the version "
+"information is incomplete."
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:36
+#, c-format
+msgid ""
+"The nearest version that can be restored fully is %d. Would you like to "
+"restore this version instead? To partially restore version %d press No."
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:37
+msgid "To continue anyway, press OK."
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:38
+msgid "To quit the restoration attempt, press Cancel."
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:39
+#, c-format
+msgid ""
+"AbiWord cannot restore version %d of the document because the version "
+"information is missing."
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:40
+#, c-format
+msgid "You have to save changes to document %s before proceeding. Save now?"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:42
+msgid "This operation cannot be undone. Are you sure you want to proceed?"
+msgstr ""
+
+#. Default name for new, untitled document
+#: ../src/af/xap/xp/xap_String_Id.h:45
+#, c-format
+msgid "Untitled%d"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:46
+msgid "Read-Only"
+msgstr ""
+
+#. Styles
+#: ../src/af/xap/xp/xap_String_Id.h:49 ../src/wp/ap/xp/ap_String_Id.h:653
+msgid "Numbered List"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:50
+msgid "Plain Text"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:51
+msgid "Normal"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:52
+msgid "Heading 1"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:53
+msgid "Heading 2"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:54
+msgid "Heading 3"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:55
+msgid "Heading 4"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:56
+msgid "Contents Header"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:57
+msgid "Contents 1"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:58
+msgid "Contents 2"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:59
+msgid "Contents 3"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:60
+msgid "Contents 4"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:61
+msgid "Block Text"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:62 ../src/wp/ap/xp/ap_String_Id.h:654
+msgid "Lower Case List"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:63 ../src/wp/ap/xp/ap_String_Id.h:655
+msgid "Upper Case List"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:64 ../src/wp/ap/xp/ap_String_Id.h:656
+msgid "Lower Roman List"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:65 ../src/wp/ap/xp/ap_String_Id.h:657
+msgid "Upper Roman List"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:66 ../src/wp/ap/xp/ap_String_Id.h:660
+msgid "Bullet List"
+msgstr "Listo kun rondaj bulaj"
+
+#: ../src/af/xap/xp/xap_String_Id.h:67 ../src/wp/ap/xp/ap_String_Id.h:661
+msgid "Dashed List"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:68 ../src/wp/ap/xp/ap_String_Id.h:662
+msgid "Square List"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:69 ../src/wp/ap/xp/ap_String_Id.h:663
+msgid "Triangle List"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:70 ../src/wp/ap/xp/ap_String_Id.h:664
+msgid "Diamond List"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:71 ../src/wp/ap/xp/ap_String_Id.h:665
+msgid "Star List"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:72 ../src/wp/ap/xp/ap_String_Id.h:667
+msgid "Tick List"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:73 ../src/wp/ap/xp/ap_String_Id.h:668
+msgid "Box List"
+msgstr "Listo kun kvadrataj buloj"
+
+#: ../src/af/xap/xp/xap_String_Id.h:74 ../src/wp/ap/xp/ap_String_Id.h:669
+msgid "Hand List"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:75 ../src/wp/ap/xp/ap_String_Id.h:670
+msgid "Heart List"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:76
+msgid "Chapter Heading"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:77
+msgid "Section Heading"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:78
+msgid "Endnote Reference"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:79
+msgid "Endnote Text"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:80
+msgid "Footnote Reference"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:81
+msgid "Footnote Text"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:82
+msgid "Numbered Heading 1"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:83
+msgid "Numbered Heading 2"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:84
+msgid "Numbered Heading 3"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:85 ../src/wp/ap/xp/ap_String_Id.h:666
+msgid "Implies List"
+msgstr ""
+
+#. Common to many dialogs
+#: ../src/af/xap/xp/xap_String_Id.h:89
+msgid "OK"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:90
+msgid "Cancel"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:91
+msgid "Close"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:92 ../src/wp/ap/xp/ap_String_Id.h:95
+#: ../src/wp/ap/xp/ap_String_Id.h:928 ../src/wp/ap/xp/ap_String_Id.h:1029
+msgid "&Insert"
+msgstr "&Enmetu"
+
+#: ../src/af/xap/xp/xap_String_Id.h:93
+msgid "Update"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:94 ../src/wp/ap/xp/ap_String_Id.h:366
+msgid "Apply"
+msgstr "Apliku"
+
+#: ../src/af/xap/xp/xap_String_Id.h:95 ../src/wp/ap/xp/ap_String_Id.h:238
+#: ../src/wp/ap/xp/ap_String_Id.h:1318
+msgid "Delete"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:96
+msgid "Compare"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:97 ../src/wp/ap/xp/ap_String_Id.h:1326
+msgid "Select"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:98
+msgid "Merge"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:99 ../src/wp/ap/xp/ap_String_Id.h:453
+msgid "Show"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:100
+msgid "Restore"
+msgstr ""
+
+#. Units
+#: ../src/af/xap/xp/xap_String_Id.h:103
+msgid "inch"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:104
+msgid "cm"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:105
+msgid "mm"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:106
+msgid "points"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:107
+msgid "pica"
+msgstr ""
+
+#. Message box
+#. These are tagged _("UnixMB") because the underscores precede accelerator
+#. #define XAP_STRING_ID_acters.	It should be an ampersand on Windows, but Windows doesn't
+#. need a hand-constructed message box (Win32 API provides one).
+#.
+#: ../src/af/xap/xp/xap_String_Id.h:114
+msgid "_Yes"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:115
+msgid "_No"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:117
+msgid "Yes"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:118
+msgid "No"
+msgstr ""
+
+#. More Windows dialog
+#: ../src/af/xap/xp/xap_String_Id.h:121
+msgid "View Document"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:122
+msgid "View:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:123
+msgid "Available Documents"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:124 ../src/wp/ap/xp/ap_String_Id.h:903
+msgid "&View"
+msgstr "&Vidaĵo"
+
+#. Remove Toolbar Icon
+#: ../src/af/xap/xp/xap_String_Id.h:127
+msgid "Do you want to remove this icon from the toolbar?"
+msgstr ""
+
+#. Font Selector dialog
+#: ../src/af/xap/xp/xap_String_Id.h:130 ../src/af/xap/xp/xap_String_Id.h:141
+#: ../src/wp/ap/xp/ap_String_Id.h:254 ../src/wp/ap/xp/ap_String_Id.h:1427
+#: ../src/wp/ap/xp/ap_String_Id.h:1500 ../src/wp/ap/xp/ap_String_Id.h:1573
+msgid "Font"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:131 ../src/wp/ap/xp/ap_String_Id.h:683
+msgid "Font:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:132 ../src/wp/ap/xp/ap_String_Id.h:680
+msgid "Style:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:133
+msgid "Size:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:134
+msgid "Encoding:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:135
+msgid "Effects"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:136 ../src/wp/ap/xp/ap_String_Id.h:1435
+#: ../src/wp/ap/xp/ap_String_Id.h:1508 ../src/wp/ap/xp/ap_String_Id.h:1581
+msgid "Strike"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:137 ../src/wp/ap/xp/ap_String_Id.h:1433
+#: ../src/wp/ap/xp/ap_String_Id.h:1506 ../src/wp/ap/xp/ap_String_Id.h:1579
+msgid "Underline"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:138 ../src/wp/ap/xp/ap_String_Id.h:1434
+#: ../src/wp/ap/xp/ap_String_Id.h:1507 ../src/wp/ap/xp/ap_String_Id.h:1580
+msgid "Overline"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:139
+msgid "Hidden"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:140
+msgid "Set no Highlight Color"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:142
+msgid "Text Color"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:143
+msgid "HighLight Color"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:144
+msgid "Regular"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:145 ../src/wp/ap/xp/ap_String_Id.h:1432
+#: ../src/wp/ap/xp/ap_String_Id.h:1505 ../src/wp/ap/xp/ap_String_Id.h:1578
+msgid "Italic"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:146 ../src/wp/ap/xp/ap_String_Id.h:1431
+#: ../src/wp/ap/xp/ap_String_Id.h:1504 ../src/wp/ap/xp/ap_String_Id.h:1577
+msgid "Bold"
+msgstr "Diklitera"
+
+#: ../src/af/xap/xp/xap_String_Id.h:147
+msgid "Bold Italic"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:148 ../src/wp/ap/xp/ap_String_Id.h:976
+#: ../src/wp/ap/xp/ap_String_Id.h:1436 ../src/wp/ap/xp/ap_String_Id.h:1509
+#: ../src/wp/ap/xp/ap_String_Id.h:1582
+msgid "Topline"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:149 ../src/wp/ap/xp/ap_String_Id.h:977
+#: ../src/wp/ap/xp/ap_String_Id.h:1437 ../src/wp/ap/xp/ap_String_Id.h:1510
+#: ../src/wp/ap/xp/ap_String_Id.h:1583
+msgid "Bottomline"
+msgstr "Suba linio"
+
+#: ../src/af/xap/xp/xap_String_Id.h:150 ../src/wp/ap/xp/ap_String_Id.h:520
+#: ../src/wp/ap/xp/ap_String_Id.h:538
+msgid "Color:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:151
+msgid "Script:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:152
+msgid "Sample"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:153 ../src/wp/ap/xp/ap_String_Id.h:1439
+#: ../src/wp/ap/xp/ap_String_Id.h:1512 ../src/wp/ap/xp/ap_String_Id.h:1585
+msgid "Superscript"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:154 ../src/wp/ap/xp/ap_String_Id.h:1440
+#: ../src/wp/ap/xp/ap_String_Id.h:1513 ../src/wp/ap/xp/ap_String_Id.h:1586
+msgid "Subscript"
+msgstr ""
+
+#. Unix FileOpenSaveAs dialog
+#: ../src/af/xap/xp/xap_String_Id.h:157
+msgid "Open File"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:158
+msgid "Save File As"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:159
+msgid "Export File"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:160
+msgid "Import File"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:161
+msgid "Insert File"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:162
+msgid "Insert Math File"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:163
+msgid "Insert Embeddable Object"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:164
+msgid "Print To File"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:165
+msgid "Record Editing to File"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:166
+msgid "Replay Editing from File"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:167
+msgid "Open file as type:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:168
+msgid "Insert MathML file:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:169
+msgid "Insert Embeddable Object file:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:170
+msgid "Save file as type:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:171
+msgid "Print file as type:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:172
+msgid "File to record editing:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:173
+msgid "File to replay editing:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:174
+msgid "Automatically Detected"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:175
+msgid "All Image Files"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:176
+msgid "All Documents"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:177
+msgid "All (*.*)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:178
+msgid "Invalid pathname."
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:179
+msgid "A directory in the given pathname does not exist."
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:180
+#, c-format
+msgid "The directory '%s' is write-protected."
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:181
+#, c-format
+msgid "File already exists.  Overwrite file '%s'?"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:182
+msgid ""
+"The given file extension does not match the chosen file type. Do you want to "
+"use this name anyway?"
+msgstr ""
+
+#. Password dialog
+#: ../src/af/xap/xp/xap_String_Id.h:185
+msgid "Enter Password"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:186
+msgid "Password:"
+msgstr ""
+
+#. Zoom dialog
+#: ../src/af/xap/xp/xap_String_Id.h:189 ../src/wp/ap/xp/ap_String_Id.h:1455
+#: ../src/wp/ap/xp/ap_String_Id.h:1528 ../src/wp/ap/xp/ap_String_Id.h:1601
+msgid "Zoom"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:190
+msgid "Zoom to"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:191
+msgid "&200%"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:192
+msgid "&100%"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:193
+msgid "&75%"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:194
+msgid "&Page width"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:195
+msgid "&Whole page"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:196
+msgid "P&ercent:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:197 ../src/wp/ap/xp/ap_String_Id.h:247
+#: ../src/wp/ap/xp/ap_String_Id.h:318 ../src/wp/ap/xp/ap_String_Id.h:335
+#: ../src/wp/ap/xp/ap_String_Id.h:521 ../src/wp/ap/xp/ap_String_Id.h:540
+#: ../src/wp/ap/xp/ap_String_Id.h:691 ../src/wp/ap/xp/ap_String_Id.h:713
+msgid "Preview"
+msgstr ""
+
+#. Zoom tool bar -- Truncated to fit small combobox size
+#: ../src/af/xap/xp/xap_String_Id.h:200
+msgid "Page Width"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:201
+msgid "Whole Page"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:202
+msgid "Other..."
+msgstr ""
+
+#. Font tool bar
+#: ../src/af/xap/xp/xap_String_Id.h:205
+msgid "Symbols"
+msgstr ""
+
+#. Unix Print dialog
+#: ../src/af/xap/xp/xap_String_Id.h:208 ../src/af/xap/xp/xap_String_Id.h:222
+#: ../src/wp/ap/xp/ap_String_Id.h:1412
+msgid "Print"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:209
+msgid "AbiWord: Print Preview"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:210
+msgid "Print to: "
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:211
+msgid "Printer"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:212
+msgid "File"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:213
+msgid "Printer command: "
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:214
+msgid "Page ranges:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:215 ../src/wp/ap/xp/ap_String_Id.h:240
+msgid "All"
+msgstr "Ĉiuj"
+
+#: ../src/af/xap/xp/xap_String_Id.h:216
+msgid "From: "
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:217
+msgid " to "
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:218 ../src/wp/ap/xp/ap_String_Id.h:542
+msgid "Selection"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:219
+msgid "Collate"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:220
+msgid "Embed Fonts"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:221
+msgid "Copies: "
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:223
+msgid "The print command string is not valid."
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:224
+msgid "Print in: "
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:225
+msgid "Black & White"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:226
+msgid "Grayscale"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:227
+msgid "Color"
+msgstr ""
+
+#. Insert Symbol dialog
+#: ../src/af/xap/xp/xap_String_Id.h:230
+msgid "Insert Symbol"
+msgstr ""
+
+#. Insert Picture Preview Dialog (Win32)
+#: ../src/af/xap/xp/xap_String_Id.h:233
+msgid "Insert Picture"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:234
+msgid "Preview Picture"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:235
+msgid "No Picture"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:236
+msgid "Height: "
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:237
+msgid "Width:  "
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:238 ../src/wp/ap/xp/ap_String_Id.h:125
+#: ../src/wp/ap/xp/ap_String_Id.h:1308
+msgid "Insert"
+msgstr ""
+
+#. Plugin dialog
+#: ../src/af/xap/xp/xap_String_Id.h:241
+msgid "AbiWord Plugin Manager"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:242
+msgid "Active Plugins"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:243
+msgid "Deactivate plugin"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:244
+msgid "Deactivate all plugins"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:245
+msgid "Install new plugin"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:246
+msgid "Plugin List"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:247
+msgid "Name:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:248 ../src/af/xap/xp/xap_String_Id.h:285
+#: ../src/wp/ap/xp/ap_String_Id.h:788 ../src/wp/ap/xp/ap_String_Id.h:823
+msgid "Description:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:249 ../src/wp/ap/xp/ap_String_Id.h:782
+#: ../src/wp/ap/xp/ap_String_Id.h:822
+msgid "Author:"
+msgstr "Verkisto:"
+
+#: ../src/af/xap/xp/xap_String_Id.h:250 ../src/af/xap/xp/xap_String_Id.h:572
+msgid "Version:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:251
+msgid "Plugin Details:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:252
+msgid "Not available"
+msgstr ""
+
+#. spellchecker
+#: ../src/af/xap/xp/xap_String_Id.h:255
+#, c-format
+msgid "Could not load the dictionary for the %s language"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:256
+#, c-format
+msgid ""
+"AbiWord cannot find the spelling file %s.dll\n"
+"Please download and install Aspell from http://aspell.net/win32/"
+msgstr ""
+
+#. plugin error messages
+#: ../src/af/xap/xp/xap_String_Id.h:259
+msgid "Could not activate/load plugin"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:260
+msgid "Could not deactivate plugin"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:261
+msgid "No plugin selected"
+msgstr ""
+
+#. Language Dialog
+#: ../src/af/xap/xp/xap_String_Id.h:264
+#: ../src/af/xap/gtk/xap_UnixDlg_Language.glade.h:4
+msgid "Set Language"
+msgstr "Valorizi la lingvon"
+
+#: ../src/af/xap/xp/xap_String_Id.h:265
+msgid "Select Language:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:266
+msgid "Available Languages"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:267
+msgid "&Set Language"
+msgstr "&Valorizi la lingvon"
+
+#: ../src/af/xap/xp/xap_String_Id.h:268
+msgid "Default language: "
+msgstr "Lingvo senelekta: "
+
+#: ../src/af/xap/xp/xap_String_Id.h:269
+#: ../src/af/xap/gtk/xap_UnixDlg_Language.glade.h:3
+msgid "Make default for document"
+msgstr "Tutdokumente"
+
+#. ClipArt Dialog
+#: ../src/af/xap/xp/xap_String_Id.h:272
+msgid "Clip Art"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:273
+#, fuzzy
+msgid "Loading Clip Art"
+msgstr "&Klipbildoj"
+
+#: ../src/af/xap/xp/xap_String_Id.h:274
+msgid "Clip Art could not be loaded"
+msgstr ""
+
+#. About Dialog
+#: ../src/af/xap/xp/xap_String_Id.h:277
+#, c-format
+msgid "About %s"
+msgstr ""
+
+#. image size dialog
+#: ../src/af/xap/xp/xap_String_Id.h:280
+msgid "Image Properties"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:281
+msgid "Width:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:282
+msgid "Height:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:283
+msgid "Preserve aspect ratio"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:284 ../src/wp/ap/xp/ap_String_Id.h:780
+#: ../src/wp/ap/xp/ap_String_Id.h:821
+msgid "Title:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:286
+msgid "Set Image Size"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:287
+msgid "Set Image Name"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:288
+msgid "Define Text Wrapping"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:289
+msgid "Define Image Placement"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:290
+msgid "Image placed in-line (no text wrapping)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:291
+msgid "Image floats above text"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:292
+msgid "Text wrapped to the Right of the Image"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:293
+msgid "Text wrapped to the Left of the Image"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:294
+msgid "Text wrapped on both sides of the Image"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:295
+msgid "Position relative to nearest paragraph"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:296
+msgid "Position relative to its Column"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:297
+msgid "Position relative to its Page"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:298
+msgid "Type of text wrapping"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:299
+msgid "Square text wrapping"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:300
+msgid "Tight text wrapping"
+msgstr ""
+
+#. ListDocuments Dialog
+#: ../src/af/xap/xp/xap_String_Id.h:303
+msgid "Opened Documents"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:304
+msgid "Choose document from the list:"
+msgstr ""
+
+#.
+#. For insert Table widget
+#.
+#: ../src/af/xap/xp/xap_String_Id.h:309
+msgid "Insert New Table"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:310 ../src/wp/ap/xp/ap_String_Id.h:545
+#: ../src/wp/ap/xp/ap_String_Id.h:1307 ../src/wp/ap/xp/ap_String_Id.h:1406
+msgid "Table"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:311
+#, fuzzy
+msgid "Clear Background"
+msgstr "Fono"
+
+#.
+#. Language property in different languages; alphabetical except English first.
+#. Please when translating the first entry, put it also into parenthesis
+#. or, surround it by some other #define XAP_STRING_ID_acters, so that it will appear on the top
+#. of the list when sorted alphabetically.
+#.
+#: ../src/af/xap/xp/xap_String_Id.h:319
+msgid "(no proofing)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:320
+msgid "English (Australia)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:321
+msgid "English (Canada)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:322
+msgid "English (UK)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:323
+msgid "English (Ireland)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:324
+msgid "English (New Zealand)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:325
+msgid "English (South Africa)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:326
+msgid "English (US)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:327
+msgid "Afrikaans"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:328
+msgid "Akan"
+msgstr ""
+
+#.
+#: ../src/af/xap/xp/xap_String_Id.h:329
+msgid "Albanian"
+msgstr ""
+
+#. Jordi 19/10/2002
+#: ../src/af/xap/xp/xap_String_Id.h:330
+msgid "Amharic (Ethiopia)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:331
+#, fuzzy
+msgid "Arabic"
+msgstr "Araba listo"
+
+#: ../src/af/xap/xp/xap_String_Id.h:332
+msgid "Arabic (Egypt)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:333
+msgid "Arabic (Saudi Arabia)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:334
+msgid "Armenian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:335
+msgid "Assamese"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:336
+msgid "Asturian (Spain)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:337
+msgid "Aymara (La Paz)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:338
+msgid "Aymara (Oruro)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:339
+msgid "Central Aymara"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:340
+msgid "Basque"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:341
+msgid "Belarusian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:342
+msgid "Belarusian, Latin"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:343
+msgid "Bengali"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:344
+msgid "Breton"
+msgstr ""
+
+#. Jordi 19/10/2002
+#: ../src/af/xap/xp/xap_String_Id.h:345
+msgid "Bulgarian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:346
+msgid "Catalan"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:347
+msgid "Cornish"
+msgstr ""
+
+#. Jordi 19/10/2002
+#: ../src/af/xap/xp/xap_String_Id.h:348
+msgid "Corsican"
+msgstr ""
+
+#. Jordi 19/10/2002
+#: ../src/af/xap/xp/xap_String_Id.h:349
+msgid "Croatian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:350
+msgid "Chinese (Hong Kong)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:351
+msgid "Chinese (PRC)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:352
+msgid "Chinese (Singapore)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:353
+msgid "Chinese (Taiwan)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:354
+msgid "Coptic"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:355
+msgid "Czech"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:356
+msgid "Danish"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:357
+msgid "Dutch (Netherlands)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:358
+msgid "Esperanto"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:359
+msgid "Estonian"
+msgstr ""
+
+#. Hipi: Why not et-EE?
+#: ../src/af/xap/xp/xap_String_Id.h:360
+msgid "Farsi"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:361
+msgid "Finnish"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:362
+msgid "Flemish (Belgium)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:363
+msgid "French (Belgium)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:364
+msgid "French (Canada)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:365
+msgid "French (France)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:366
+msgid "French (Switzerland)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:367
+msgid "Frisian"
+msgstr ""
+
+#. Jordi 19/10/2002
+#: ../src/af/xap/xp/xap_String_Id.h:368
+msgid "Galician (Galego)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:369
+msgid "Georgian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:370
+msgid "German (Austria)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:371
+msgid "German (Germany)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:372
+msgid "German (Switzerland)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:373
+msgid "Greek"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:374
+msgid "Hausa (Niger)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:375
+msgid "Hausa (Nigeria)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:376
+msgid "Hawaiian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:377
+msgid "Hebrew"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:378
+msgid "Hindi"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:379
+msgid "Hungarian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:380
+msgid "Icelandic"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:381
+msgid "Indonesian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:382
+msgid "Inuktitut"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:383
+msgid "Interlingua"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:384
+msgid "Irish"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:385
+msgid "Italian (Italy)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:386
+msgid "Japanese"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:387
+msgid "Kannada"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:388 ../src/af/xap/xp/xap_String_Id.h:389
+msgid "Korean"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:390
+msgid "Kurdish"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:391
+msgid "Lao"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:392
+msgid "Latin (Renaissance)"
+msgstr ""
+
+#. Is _IT the right thing here?
+#: ../src/af/xap/xp/xap_String_Id.h:393
+msgid "Latvian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:394
+msgid "Lithuanian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:395
+msgid "Macedonian"
+msgstr ""
+
+#. Jordi 19/10/2002 Hipi: Why not mk-MK?
+#: ../src/af/xap/xp/xap_String_Id.h:396
+msgid "Malay"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:397
+msgid "Maori"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:398
+msgid "Marathi"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:399
+msgid "Marshallese (Marshall Islands)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:400
+msgid "Marshallese (Nauru)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:401
+msgid "Mongolian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:402
+msgid "Norwegian Bokmal"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:403
+msgid "Nepali (Nepal)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:404
+msgid "Norwegian Nynorsk"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:405
+msgid "Occitan"
+msgstr ""
+
+#. Jordi 19/10/2002
+#: ../src/af/xap/xp/xap_String_Id.h:406
+msgid "Polish"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:407
+#, fuzzy
+msgid "Pashto"
+msgstr "&Anigu"
+
+#: ../src/af/xap/xp/xap_String_Id.h:408
+msgid "Portuguese (Brazil)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:409
+msgid "Portuguese (Portugal)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:410
+msgid "Punjabi (Gurmukhi)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:411
+msgid "Punjabi (Shahmukhi)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:412
+msgid "Quechua"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:413
+msgid "Quechua (3 vowels)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:414
+msgid "Quechua (5 vowels)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:415
+msgid "Romanian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:416
+msgid "Russian (Russia)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:417
+msgid "Sardinian"
+msgstr ""
+
+#. Jordi 19/10/2002
+#: ../src/af/xap/xp/xap_String_Id.h:418
+msgid "Serbian"
+msgstr ""
+
+#. Jordi 19/10/2002 Hipi: Why not sr-YU?
+#: ../src/af/xap/xp/xap_String_Id.h:419
+msgid "Slovak"
+msgstr ""
+
+#. or Slovakian?
+#: ../src/af/xap/xp/xap_String_Id.h:420
+msgid "Slovenian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:421
+msgid "Spanish (Mexico)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:422
+msgid "Spanish (Spain)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:423
+msgid "Swahili"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:424
+msgid "Swedish"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:425
+msgid "Syriac"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:426
+msgid "Tagalog"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:427
+msgid "Tamil"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:428
+msgid "Telugu"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:429
+msgid "Thai"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:430
+msgid "Turkish"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:431
+msgid "Ukrainian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:432
+msgid "Urdu (Pakistan)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:433
+msgid "Urdu"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:434
+msgid "Uzbek"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:435
+msgid "Vietnamese"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:436
+msgid "Welsh"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:437
+msgid "Wolof (Senegal)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:438
+msgid "Yiddish"
+msgstr ""
+
+#. Encoding Dialog
+#: ../src/af/xap/xp/xap_String_Id.h:442
+msgid "Select Encoding:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:443
+msgid "Encoding"
+msgstr ""
+
+#. Encoding description in different encodings; keep sorted by the numerical id's
+#. Ordered by 1) number of bits, 2) region & language, 3) platform / standard.
+#. 1) 7 bit, 8 bit, multibyte, Unicode.
+#. 2) Western, Eastern, Asian, multilingual; common before rare.
+#. 3) ISO, de facto standards, MS Windows, Macintosh
+#. It may be desirable to change this order for each platform.
+#. 7 bit
+#: ../src/af/xap/xp/xap_String_Id.h:453
+msgid "US-ASCII"
+msgstr ""
+
+#. 8 bit
+#. Western Europe
+#: ../src/af/xap/xp/xap_String_Id.h:456
+msgid "Western European, ISO-8859-1"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:457
+msgid "Western European, Windows Code Page 1252"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:458
+msgid "Western European, DOS/Windows Code Page 437"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:459
+msgid "Western European, DOS/Windows Code Page 850"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:460
+msgid "Western European, Macintosh"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:461
+msgid "Western European, HP"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:462
+msgid "Western European, NeXT"
+msgstr ""
+
+#. Central & Eastern Europe
+#: ../src/af/xap/xp/xap_String_Id.h:464
+msgid "Central European, ISO-8859-2"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:465
+msgid "Central European, Windows Code Page 1250"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:466
+msgid "Central European, Macintosh"
+msgstr ""
+
+#. Baltic
+#: ../src/af/xap/xp/xap_String_Id.h:468
+msgid "Baltic, ISO-8859-4"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:469
+msgid "Baltic, Windows Code Page 1257"
+msgstr ""
+
+#. Greek
+#: ../src/af/xap/xp/xap_String_Id.h:471
+msgid "Greek, ISO-8859-7"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:472
+msgid "Greek, Windows Code Page 1253"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:473
+msgid "Greek, Macintosh"
+msgstr ""
+
+#. Cyrillic
+#: ../src/af/xap/xp/xap_String_Id.h:475
+msgid "Cyrillic, ISO-8859-5"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:476
+msgid "Cyrillic, KOI8-R"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:477
+msgid "Cyrillic, Windows Code Page 1251"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:478
+msgid "Cyrillic, Macintosh"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:479
+msgid "Ukrainian, KOI8-U"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:480
+msgid "Ukrainian, Macintosh"
+msgstr ""
+
+#. Turkish
+#: ../src/af/xap/xp/xap_String_Id.h:482
+msgid "Turkish, ISO-8859-9"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:483
+msgid "Turkish, Windows Code Page 1254"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:484
+msgid "Turkish, Macintosh"
+msgstr ""
+
+#. Other Roman-based encodings
+#: ../src/af/xap/xp/xap_String_Id.h:486
+msgid "Croatian, Macintosh"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:487
+msgid "Icelandic, Macintosh"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:488
+msgid "Romanian, Macintosh"
+msgstr ""
+
+#. Thai
+#: ../src/af/xap/xp/xap_String_Id.h:490
+msgid "Thai, TIS-620"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:491
+msgid "Thai, Windows Code Page 874"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:492
+msgid "Thai, Macintosh"
+msgstr ""
+
+#. Vietnamese
+#: ../src/af/xap/xp/xap_String_Id.h:494
+msgid "Vietnamese, VISCII"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:495
+msgid "Vietnamese, TCVN"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:496
+msgid "Vietnamese, Windows Code Page 1258"
+msgstr ""
+
+#. Hebrew
+#: ../src/af/xap/xp/xap_String_Id.h:498
+msgid "Hebrew, ISO-8859-8"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:499
+msgid "Hebrew, Windows Code Page 1255"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:500
+msgid "Hebrew, Macintosh"
+msgstr ""
+
+#. Arabic
+#: ../src/af/xap/xp/xap_String_Id.h:502
+msgid "Arabic, ISO-8859-6"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:503
+msgid "Arabic, Windows Code Page 1256"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:504
+msgid "Arabic, Macintosh"
+msgstr ""
+
+#. Armenian
+#: ../src/af/xap/xp/xap_String_Id.h:506
+msgid "Armenian, ARMSCII-8"
+msgstr ""
+
+#. Georgian
+#: ../src/af/xap/xp/xap_String_Id.h:508
+msgid "Georgian, Academy"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:509
+msgid "Georgian, PS"
+msgstr ""
+
+#. Multibyte CJK
+#. Chinese Simplified
+#: ../src/af/xap/xp/xap_String_Id.h:512
+msgid "Chinese Simplified, EUC-CN (GB2312)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:513
+msgid "Chinese Simplified, GB_2312-80"
+msgstr ""
+
+#. Cf. EUC
+#: ../src/af/xap/xp/xap_String_Id.h:514
+msgid "Chinese Simplified, HZ"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:515
+msgid "Chinese Simplified, Windows Code Page 936"
+msgstr ""
+
+#. Chinese Traditional
+#: ../src/af/xap/xp/xap_String_Id.h:517
+msgid "Chinese Traditional, BIG5"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:518
+msgid "Chinese Traditional, BIG5-HKSCS"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:519
+msgid "Chinese Traditional, EUC-TW"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:520
+msgid "Chinese Traditional, Windows Code Page 950"
+msgstr ""
+
+#. Japanese
+#: ../src/af/xap/xp/xap_String_Id.h:522
+msgid "Japanese, ISO-2022-JP"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:523
+msgid "Japanese, EUC-JP"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:524
+msgid "Japanese, Shift-JIS"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:525
+msgid "Japanese, Windows Code Page 932"
+msgstr ""
+
+#. Korean
+#: ../src/af/xap/xp/xap_String_Id.h:527
+msgid "Korean, KSC_5601"
+msgstr ""
+
+#. ISO
+#: ../src/af/xap/xp/xap_String_Id.h:528
+msgid "Korean, EUC-KR"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:529
+msgid "Korean, Johab"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:530
+msgid "Korean, Windows Code Page 949"
+msgstr ""
+
+#. Unicode
+#: ../src/af/xap/xp/xap_String_Id.h:532
+msgid "Unicode UTF-7"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:533
+msgid "Unicode UTF-8"
+msgstr ""
+
+#. #define XAP_STRING_ID_ENC_UNIC_UTF_16  _("Unicode UTF-16")
+#: ../src/af/xap/xp/xap_String_Id.h:535
+msgid "Unicode UTF-16 Big Endian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:536
+msgid "Unicode UTF-16 Little Endian"
+msgstr ""
+
+#. #define XAP_STRING_ID_ENC_UNIC_UTF_32  _("Unicode UTF-32")
+#: ../src/af/xap/xp/xap_String_Id.h:538
+msgid "Unicode UTF-32 Big Endian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:539
+msgid "Unicode UTF-32 Little Endian"
+msgstr ""
+
+#. #define XAP_STRING_ID_ENC_UNIC_UCS2  _("Unicode UCS-2")
+#: ../src/af/xap/xp/xap_String_Id.h:541
+msgid "Unicode UCS-2 Big Endian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:542
+msgid "Unicode UCS-2 Little Endian"
+msgstr ""
+
+#. #define XAP_STRING_ID_ENC_UNIC_UCS4  _("Unicode UCS-4")
+#: ../src/af/xap/xp/xap_String_Id.h:544
+msgid "Unicode UCS-4 Big Endian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:545
+msgid "Unicode UCS-4 Little Endian"
+msgstr ""
+
+#. HTML Options Dialog
+#: ../src/af/xap/xp/xap_String_Id.h:548
+msgid "HTML Export Options"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:549
+msgid "Select HTML export options:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:550
+msgid "Save Settings"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:551
+msgid "Restore Settings"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:552
+msgid "Export as HTML 4.01"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:553
+msgid "Export with PHP instructions"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:554
+msgid "Declare as XML (version 1.0)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:555
+msgid "Allow extra markup in AWML namespace"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:556
+msgid "Embed (CSS) style sheet"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:557
+msgid "Embed images in URLs (Base64-encoded)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:558
+msgid "Close &Without Saving"
+msgstr ""
+
+#. X11 input methods
+#: ../src/af/xap/xp/xap_String_Id.h:561
+msgid "Input Methods"
+msgstr ""
+
+#. since this string goes with XAP preference, I put it here, rather
+#. than ap_String_Id.h
+#: ../src/af/xap/xp/xap_String_Id.h:565
+msgid "Change Language when changing keyboard"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:566
+msgid "Auto-insert direction markers"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:568
+msgid "Document History"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:569
+msgid "Document Details"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:570
+msgid "Document name:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:571
+msgid "Created:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:573
+msgid "Last saved:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:574
+msgid "Editing time:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:575
+msgid "Identifier:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:577
+msgid "Version history"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:578 ../src/wp/ap/xp/ap_String_Id.h:610
+msgid "Version"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:579
+msgid "Created"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:580
+msgid "Auto-revision"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:582
+msgid "Document Comparison"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:583
+msgid "Documents compared"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:584
+msgid "Results"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:585
+msgid "Relationship:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:586
+msgid "Content:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:587 ../src/wp/ap/xp/ap_String_Id.h:682
+msgid "Format:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:588
+msgid "Styles:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:590
+msgid "identical"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:591
+msgid "unrelated"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:592
+msgid "siblings"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:593
+#, c-format
+msgid "diverging after version %d of %s"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:594
+#, c-format
+msgid "diverging after document position %d"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:595
+msgid "(test skipped)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:596
+msgid "different"
+msgstr ""
 
 #. ****************************************************************
 #. ******************************************************************
@@ -303,11 +2234,6 @@ msgstr ""
 msgid "Create a fax"
 msgstr ""
 
-#: ../src/wp/ap/xp/ap_String_Id.h:95 ../src/wp/ap/xp/ap_String_Id.h:928
-#: ../src/wp/ap/xp/ap_String_Id.h:1029 ../src/af/xap/xp/xap_String_Id.h:92
-msgid "&Insert"
-msgstr "&Enmetu"
-
 #: ../src/wp/ap/xp/ap_String_Id.h:96 ../src/wp/ap/xp/ap_String_Id.h:849
 msgid "&Close"
 msgstr "&Fermu"
@@ -400,11 +2326,6 @@ msgstr ""
 
 #: ../src/wp/ap/xp/ap_String_Id.h:124
 msgid "Insert Break"
-msgstr ""
-
-#: ../src/wp/ap/xp/ap_String_Id.h:125 ../src/wp/ap/xp/ap_String_Id.h:1308
-#: ../src/af/xap/xp/xap_String_Id.h:238
-msgid "Insert"
 msgstr ""
 
 #: ../src/wp/ap/xp/ap_String_Id.h:126
@@ -798,18 +2719,9 @@ msgstr ""
 msgid "Modify..."
 msgstr ""
 
-#: ../src/wp/ap/xp/ap_String_Id.h:238 ../src/wp/ap/xp/ap_String_Id.h:1318
-#: ../src/af/xap/xp/xap_String_Id.h:95
-msgid "Delete"
-msgstr ""
-
 #: ../src/wp/ap/xp/ap_String_Id.h:239
 msgid "In Use"
 msgstr ""
-
-#: ../src/wp/ap/xp/ap_String_Id.h:240 ../src/af/xap/xp/xap_String_Id.h:215
-msgid "All"
-msgstr "Ĉiuj"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:241
 msgid "User-defined styles"
@@ -835,13 +2747,6 @@ msgstr "Bazita sur:"
 msgid "Style for following paragraph"
 msgstr ""
 
-#: ../src/wp/ap/xp/ap_String_Id.h:247 ../src/wp/ap/xp/ap_String_Id.h:318
-#: ../src/wp/ap/xp/ap_String_Id.h:335 ../src/wp/ap/xp/ap_String_Id.h:521
-#: ../src/wp/ap/xp/ap_String_Id.h:540 ../src/wp/ap/xp/ap_String_Id.h:691
-#: ../src/wp/ap/xp/ap_String_Id.h:713 ../src/af/xap/xp/xap_String_Id.h:197
-msgid "Preview"
-msgstr ""
-
 #: ../src/wp/ap/xp/ap_String_Id.h:249
 msgid "Add to template"
 msgstr "Enmetu en la modelo"
@@ -861,13 +2766,6 @@ msgstr ""
 #. Paragraph dialog
 #: ../src/wp/ap/xp/ap_String_Id.h:253 ../src/wp/ap/xp/ap_String_Id.h:285
 msgid "Paragraph"
-msgstr ""
-
-#. Font Selector dialog
-#: ../src/wp/ap/xp/ap_String_Id.h:254 ../src/wp/ap/xp/ap_String_Id.h:1427
-#: ../src/wp/ap/xp/ap_String_Id.h:1500 ../src/wp/ap/xp/ap_String_Id.h:1573
-#: ../src/af/xap/xp/xap_String_Id.h:130 ../src/af/xap/xp/xap_String_Id.h:141
-msgid "Font"
 msgstr ""
 
 #: ../src/wp/ap/xp/ap_String_Id.h:255 ../src/wp/ap/xp/ap_String_Id.h:466
@@ -1205,10 +3103,6 @@ msgstr "&Aŭtomataj citiloj"
 msgid "Sa&ve"
 msgstr ""
 
-#: ../src/wp/ap/xp/ap_String_Id.h:366 ../src/af/xap/xp/xap_String_Id.h:94
-msgid "Apply"
-msgstr "Apliku"
-
 #: ../src/wp/ap/xp/ap_String_Id.h:367
 msgid "De&faults"
 msgstr ""
@@ -1488,10 +3382,6 @@ msgstr ""
 msgid "Text and Icon"
 msgstr ""
 
-#: ../src/wp/ap/xp/ap_String_Id.h:453 ../src/af/xap/xp/xap_String_Id.h:99
-msgid "Show"
-msgstr ""
-
 #: ../src/wp/ap/xp/ap_String_Id.h:454
 msgid "Hide"
 msgstr ""
@@ -1675,11 +3565,6 @@ msgstr "Kadra koloro:"
 msgid "Background color:"
 msgstr "Fonkoloro:"
 
-#: ../src/wp/ap/xp/ap_String_Id.h:520 ../src/wp/ap/xp/ap_String_Id.h:538
-#: ../src/af/xap/xp/xap_String_Id.h:150
-msgid "Color:"
-msgstr ""
-
 #: ../src/wp/ap/xp/ap_String_Id.h:522 ../src/wp/ap/xp/ap_String_Id.h:546
 msgid "Image For Background"
 msgstr ""
@@ -1732,21 +3617,12 @@ msgstr ""
 msgid "Apply to:"
 msgstr "Apliku al:"
 
-#: ../src/wp/ap/xp/ap_String_Id.h:542 ../src/af/xap/xp/xap_String_Id.h:218
-msgid "Selection"
-msgstr ""
-
 #: ../src/wp/ap/xp/ap_String_Id.h:543
 msgid "Row"
 msgstr ""
 
 #: ../src/wp/ap/xp/ap_String_Id.h:544
 msgid "Column"
-msgstr ""
-
-#: ../src/wp/ap/xp/ap_String_Id.h:545 ../src/wp/ap/xp/ap_String_Id.h:1307
-#: ../src/wp/ap/xp/ap_String_Id.h:1406 ../src/af/xap/xp/xap_String_Id.h:310
-msgid "Table"
 msgstr ""
 
 #: ../src/wp/ap/xp/ap_String_Id.h:552
@@ -1957,10 +3833,6 @@ msgstr "Apliko"
 msgid "File Name"
 msgstr ""
 
-#: ../src/wp/ap/xp/ap_String_Id.h:610 ../src/af/xap/xp/xap_String_Id.h:578
-msgid "Version"
-msgstr ""
-
 #: ../src/wp/ap/xp/ap_String_Id.h:611
 msgid "Build Id."
 msgstr "Munta kodo"
@@ -2105,77 +3977,12 @@ msgid ""
 "Type"
 msgstr ""
 
-#. Styles
-#: ../src/wp/ap/xp/ap_String_Id.h:653 ../src/af/xap/xp/xap_String_Id.h:49
-msgid "Numbered List"
-msgstr ""
-
-#: ../src/wp/ap/xp/ap_String_Id.h:654 ../src/af/xap/xp/xap_String_Id.h:62
-msgid "Lower Case List"
-msgstr ""
-
-#: ../src/wp/ap/xp/ap_String_Id.h:655 ../src/af/xap/xp/xap_String_Id.h:63
-msgid "Upper Case List"
-msgstr ""
-
-#: ../src/wp/ap/xp/ap_String_Id.h:656 ../src/af/xap/xp/xap_String_Id.h:64
-msgid "Lower Roman List"
-msgstr ""
-
-#: ../src/wp/ap/xp/ap_String_Id.h:657 ../src/af/xap/xp/xap_String_Id.h:65
-msgid "Upper Roman List"
-msgstr ""
-
 #: ../src/wp/ap/xp/ap_String_Id.h:658
 msgid "Arabic List"
 msgstr "Araba listo"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:659
 msgid "Hebrew List"
-msgstr ""
-
-#: ../src/wp/ap/xp/ap_String_Id.h:660 ../src/af/xap/xp/xap_String_Id.h:66
-msgid "Bullet List"
-msgstr "Listo kun rondaj bulaj"
-
-#: ../src/wp/ap/xp/ap_String_Id.h:661 ../src/af/xap/xp/xap_String_Id.h:67
-msgid "Dashed List"
-msgstr ""
-
-#: ../src/wp/ap/xp/ap_String_Id.h:662 ../src/af/xap/xp/xap_String_Id.h:68
-msgid "Square List"
-msgstr ""
-
-#: ../src/wp/ap/xp/ap_String_Id.h:663 ../src/af/xap/xp/xap_String_Id.h:69
-msgid "Triangle List"
-msgstr ""
-
-#: ../src/wp/ap/xp/ap_String_Id.h:664 ../src/af/xap/xp/xap_String_Id.h:70
-msgid "Diamond List"
-msgstr ""
-
-#: ../src/wp/ap/xp/ap_String_Id.h:665 ../src/af/xap/xp/xap_String_Id.h:71
-msgid "Star List"
-msgstr ""
-
-#: ../src/wp/ap/xp/ap_String_Id.h:666 ../src/af/xap/xp/xap_String_Id.h:85
-msgid "Implies List"
-msgstr ""
-
-#: ../src/wp/ap/xp/ap_String_Id.h:667 ../src/af/xap/xp/xap_String_Id.h:72
-msgid "Tick List"
-msgstr ""
-
-#: ../src/wp/ap/xp/ap_String_Id.h:668 ../src/af/xap/xp/xap_String_Id.h:73
-msgid "Box List"
-msgstr "Listo kun kvadrataj buloj"
-
-#: ../src/wp/ap/xp/ap_String_Id.h:669 ../src/af/xap/xp/xap_String_Id.h:74
-msgid "Hand List"
-msgstr ""
-
-#: ../src/wp/ap/xp/ap_String_Id.h:670 ../src/af/xap/xp/xap_String_Id.h:75
-msgid "Heart List"
 msgstr ""
 
 #: ../src/wp/ap/xp/ap_String_Id.h:671
@@ -2216,20 +4023,8 @@ msgstr "buloj"
 msgid "Numbered"
 msgstr ""
 
-#: ../src/wp/ap/xp/ap_String_Id.h:680 ../src/af/xap/xp/xap_String_Id.h:132
-msgid "Style:"
-msgstr ""
-
 #: ../src/wp/ap/xp/ap_String_Id.h:681
 msgid "Customized List"
-msgstr ""
-
-#: ../src/wp/ap/xp/ap_String_Id.h:682 ../src/af/xap/xp/xap_String_Id.h:587
-msgid "Format:"
-msgstr ""
-
-#: ../src/wp/ap/xp/ap_String_Id.h:683 ../src/af/xap/xp/xap_String_Id.h:131
-msgid "Font:"
 msgstr ""
 
 #: ../src/wp/ap/xp/ap_String_Id.h:684
@@ -2543,19 +4338,9 @@ msgstr ""
 msgid "Document Properties"
 msgstr ""
 
-#: ../src/wp/ap/xp/ap_String_Id.h:780 ../src/wp/ap/xp/ap_String_Id.h:821
-#: ../src/af/xap/xp/xap_String_Id.h:284
-msgid "Title:"
-msgstr ""
-
 #: ../src/wp/ap/xp/ap_String_Id.h:781
 msgid "Subject:"
 msgstr ""
-
-#: ../src/wp/ap/xp/ap_String_Id.h:782 ../src/wp/ap/xp/ap_String_Id.h:822
-#: ../src/af/xap/xp/xap_String_Id.h:249
-msgid "Author:"
-msgstr "Verkisto:"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:783
 msgid "Publisher:"
@@ -2575,11 +4360,6 @@ msgstr ""
 
 #: ../src/wp/ap/xp/ap_String_Id.h:787
 msgid "Language(s):"
-msgstr ""
-
-#: ../src/wp/ap/xp/ap_String_Id.h:788 ../src/wp/ap/xp/ap_String_Id.h:823
-#: ../src/af/xap/xp/xap_String_Id.h:248 ../src/af/xap/xp/xap_String_Id.h:285
-msgid "Description:"
 msgstr ""
 
 #: ../src/wp/ap/xp/ap_String_Id.h:789
@@ -2993,10 +4773,6 @@ msgstr ""
 msgid "Edit Equation"
 msgstr ""
 
-#: ../src/wp/ap/xp/ap_String_Id.h:903 ../src/af/xap/xp/xap_String_Id.h:124
-msgid "&View"
-msgstr "&Vidaĵo"
-
 #: ../src/wp/ap/xp/ap_String_Id.h:904
 msgid "&Normal Layout"
 msgstr "&Normala"
@@ -3257,18 +5033,6 @@ msgstr "&Superstreku"
 #: ../src/wp/ap/xp/ap_String_Id.h:975
 msgid "Stri&ke"
 msgstr ""
-
-#: ../src/wp/ap/xp/ap_String_Id.h:976 ../src/wp/ap/xp/ap_String_Id.h:1436
-#: ../src/wp/ap/xp/ap_String_Id.h:1509 ../src/wp/ap/xp/ap_String_Id.h:1582
-#: ../src/af/xap/xp/xap_String_Id.h:148
-msgid "Topline"
-msgstr ""
-
-#: ../src/wp/ap/xp/ap_String_Id.h:977 ../src/wp/ap/xp/ap_String_Id.h:1437
-#: ../src/wp/ap/xp/ap_String_Id.h:1510 ../src/wp/ap/xp/ap_String_Id.h:1583
-#: ../src/af/xap/xp/xap_String_Id.h:149
-msgid "Bottomline"
-msgstr "Suba linio"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:978
 msgid "Supe&rscript"
@@ -4381,10 +6145,6 @@ msgstr ""
 msgid "Delete Cells"
 msgstr ""
 
-#: ../src/wp/ap/xp/ap_String_Id.h:1326 ../src/af/xap/xp/xap_String_Id.h:97
-msgid "Select"
-msgstr ""
-
 #: ../src/wp/ap/xp/ap_String_Id.h:1327
 msgid "Select Table"
 msgstr ""
@@ -4606,12 +6366,6 @@ msgstr ""
 msgid "Save As"
 msgstr ""
 
-#. Unix Print dialog
-#: ../src/wp/ap/xp/ap_String_Id.h:1412 ../src/af/xap/xp/xap_String_Id.h:208
-#: ../src/af/xap/xp/xap_String_Id.h:222
-msgid "Print"
-msgstr ""
-
 #: ../src/wp/ap/xp/ap_String_Id.h:1413
 msgid "Print Preview"
 msgstr ""
@@ -4661,44 +6415,9 @@ msgstr ""
 msgid "Font Size"
 msgstr ""
 
-#: ../src/wp/ap/xp/ap_String_Id.h:1431 ../src/wp/ap/xp/ap_String_Id.h:1504
-#: ../src/wp/ap/xp/ap_String_Id.h:1577 ../src/af/xap/xp/xap_String_Id.h:146
-msgid "Bold"
-msgstr "Diklitera"
-
-#: ../src/wp/ap/xp/ap_String_Id.h:1432 ../src/wp/ap/xp/ap_String_Id.h:1505
-#: ../src/wp/ap/xp/ap_String_Id.h:1578 ../src/af/xap/xp/xap_String_Id.h:145
-msgid "Italic"
-msgstr ""
-
-#: ../src/wp/ap/xp/ap_String_Id.h:1433 ../src/wp/ap/xp/ap_String_Id.h:1506
-#: ../src/wp/ap/xp/ap_String_Id.h:1579 ../src/af/xap/xp/xap_String_Id.h:137
-msgid "Underline"
-msgstr ""
-
-#: ../src/wp/ap/xp/ap_String_Id.h:1434 ../src/wp/ap/xp/ap_String_Id.h:1507
-#: ../src/wp/ap/xp/ap_String_Id.h:1580 ../src/af/xap/xp/xap_String_Id.h:138
-msgid "Overline"
-msgstr ""
-
-#: ../src/wp/ap/xp/ap_String_Id.h:1435 ../src/wp/ap/xp/ap_String_Id.h:1508
-#: ../src/wp/ap/xp/ap_String_Id.h:1581 ../src/af/xap/xp/xap_String_Id.h:136
-msgid "Strike"
-msgstr ""
-
 #: ../src/wp/ap/xp/ap_String_Id.h:1438 ../src/wp/ap/xp/ap_String_Id.h:1511
 #: ../src/wp/ap/xp/ap_String_Id.h:1584
 msgid "Help"
-msgstr ""
-
-#: ../src/wp/ap/xp/ap_String_Id.h:1439 ../src/wp/ap/xp/ap_String_Id.h:1512
-#: ../src/wp/ap/xp/ap_String_Id.h:1585 ../src/af/xap/xp/xap_String_Id.h:153
-msgid "Superscript"
-msgstr ""
-
-#: ../src/wp/ap/xp/ap_String_Id.h:1440 ../src/wp/ap/xp/ap_String_Id.h:1513
-#: ../src/wp/ap/xp/ap_String_Id.h:1586 ../src/af/xap/xp/xap_String_Id.h:154
-msgid "Subscript"
 msgstr ""
 
 #: ../src/wp/ap/xp/ap_String_Id.h:1441
@@ -4746,12 +6465,6 @@ msgstr "3 Vertikaloj"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:1454
 msgid "Show All"
-msgstr ""
-
-#. Zoom dialog
-#: ../src/wp/ap/xp/ap_String_Id.h:1455 ../src/wp/ap/xp/ap_String_Id.h:1528
-#: ../src/wp/ap/xp/ap_String_Id.h:1601 ../src/af/xap/xp/xap_String_Id.h:189
-msgid "Zoom"
 msgstr ""
 
 #: ../src/wp/ap/xp/ap_String_Id.h:1456 ../src/wp/ap/xp/ap_String_Id.h:1529
@@ -4999,1716 +6712,13 @@ msgid ""
 "myfile.txt | lpr'"
 msgstr ""
 
-#: ../src/af/xap/xp/xap_String_Id.h:32
-#, fuzzy
-msgid "Importing Document..."
-msgstr "&Pliaj dokumentoj"
-
-#: ../src/af/xap/xp/xap_String_Id.h:33
-msgid "Building Document:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:34
-msgid "Autorevision"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:35
-#, c-format
-msgid ""
-"AbiWord cannot fully restore version %d of the document because the version "
-"information is incomplete."
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:36
-#, c-format
-msgid ""
-"The nearest version that can be restored fully is %d. Would you like to "
-"restore this version instead? To partially restore version %d press No."
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:37
-msgid "To continue anyway, press OK."
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:38
-msgid "To quit the restoration attempt, press Cancel."
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:39
-#, c-format
-msgid ""
-"AbiWord cannot restore version %d of the document because the version "
-"information is missing."
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:40
-#, c-format
-msgid "You have to save changes to document %s before proceeding. Save now?"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:42
-msgid "This operation cannot be undone. Are you sure you want to proceed?"
-msgstr ""
-
-#. Default name for new, untitled document
-#: ../src/af/xap/xp/xap_String_Id.h:45
-#, c-format
-msgid "Untitled%d"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:46
-msgid "Read-Only"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:50
-msgid "Plain Text"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:51
-msgid "Normal"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:52
-msgid "Heading 1"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:53
-msgid "Heading 2"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:54
-msgid "Heading 3"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:55
-msgid "Heading 4"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:56
-msgid "Contents Header"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:57
-msgid "Contents 1"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:58
-msgid "Contents 2"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:59
-msgid "Contents 3"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:60
-msgid "Contents 4"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:61
-msgid "Block Text"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:76
-msgid "Chapter Heading"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:77
-msgid "Section Heading"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:78
-msgid "Endnote Reference"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:79
-msgid "Endnote Text"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:80
-msgid "Footnote Reference"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:81
-msgid "Footnote Text"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:82
-msgid "Numbered Heading 1"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:83
-msgid "Numbered Heading 2"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:84
-msgid "Numbered Heading 3"
-msgstr ""
-
-#. Common to many dialogs
-#: ../src/af/xap/xp/xap_String_Id.h:89
-msgid "OK"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:90
-msgid "Cancel"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:91
-msgid "Close"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:93
-msgid "Update"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:96
-msgid "Compare"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:98
-msgid "Merge"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:100
-msgid "Restore"
-msgstr ""
-
-#. Units
-#: ../src/af/xap/xp/xap_String_Id.h:103
-msgid "inch"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:104
-msgid "cm"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:105
-msgid "mm"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:106
-msgid "points"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:107
-msgid "pica"
-msgstr ""
-
-#. Message box
-#. These are tagged _("UnixMB") because the underscores precede accelerator
-#. #define XAP_STRING_ID_acters.	It should be an ampersand on Windows, but Windows doesn't
-#. need a hand-constructed message box (Win32 API provides one).
-#.
-#: ../src/af/xap/xp/xap_String_Id.h:114
-msgid "_Yes"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:115
-msgid "_No"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:117
-msgid "Yes"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:118
-msgid "No"
-msgstr ""
-
-#. More Windows dialog
-#: ../src/af/xap/xp/xap_String_Id.h:121
-msgid "View Document"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:122
-msgid "View:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:123
-msgid "Available Documents"
-msgstr ""
-
-#. Remove Toolbar Icon
-#: ../src/af/xap/xp/xap_String_Id.h:127
-msgid "Do you want to remove this icon from the toolbar?"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:133
-msgid "Size:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:134
-msgid "Encoding:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:135
-msgid "Effects"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:139
-msgid "Hidden"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:140
-msgid "Set no Highlight Color"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:142
-msgid "Text Color"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:143
-msgid "HighLight Color"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:144
-msgid "Regular"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:147
-msgid "Bold Italic"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:151
-msgid "Script:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:152
-msgid "Sample"
-msgstr ""
-
-#. Unix FileOpenSaveAs dialog
-#: ../src/af/xap/xp/xap_String_Id.h:157
-msgid "Open File"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:158
-msgid "Save File As"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:159
-msgid "Export File"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:160
-msgid "Import File"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:161
-msgid "Insert File"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:162
-msgid "Insert Math File"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:163
-msgid "Insert Embeddable Object"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:164
-msgid "Print To File"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:165
-msgid "Record Editing to File"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:166
-msgid "Replay Editing from File"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:167
-msgid "Open file as type:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:168
-msgid "Insert MathML file:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:169
-msgid "Insert Embeddable Object file:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:170
-msgid "Save file as type:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:171
-msgid "Print file as type:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:172
-msgid "File to record editing:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:173
-msgid "File to replay editing:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:174
-msgid "Automatically Detected"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:175
-msgid "All Image Files"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:176
-msgid "All Documents"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:177
-msgid "All (*.*)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:178
-msgid "Invalid pathname."
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:179
-msgid "A directory in the given pathname does not exist."
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:180
-#, c-format
-msgid "The directory '%s' is write-protected."
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:181
-#, c-format
-msgid "File already exists.  Overwrite file '%s'?"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:182
-msgid ""
-"The given file extension does not match the chosen file type. Do you want to "
-"use this name anyway?"
-msgstr ""
-
-#. Password dialog
-#: ../src/af/xap/xp/xap_String_Id.h:185
-msgid "Enter Password"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:186
-msgid "Password:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:190
-msgid "Zoom to"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:191
-msgid "&200%"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:192
-msgid "&100%"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:193
-msgid "&75%"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:194
-msgid "&Page width"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:195
-msgid "&Whole page"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:196
-msgid "P&ercent:"
-msgstr ""
-
-#. Zoom tool bar -- Truncated to fit small combobox size
-#: ../src/af/xap/xp/xap_String_Id.h:200
-msgid "Page Width"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:201
-msgid "Whole Page"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:202
-msgid "Other..."
-msgstr ""
-
-#. Font tool bar
-#: ../src/af/xap/xp/xap_String_Id.h:205
-msgid "Symbols"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:209
-msgid "AbiWord: Print Preview"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:210
-msgid "Print to: "
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:211
-msgid "Printer"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:212
-msgid "File"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:213
-msgid "Printer command: "
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:214
-msgid "Page ranges:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:216
-msgid "From: "
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:217
-msgid " to "
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:219
-msgid "Collate"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:220
-msgid "Embed Fonts"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:221
-msgid "Copies: "
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:223
-msgid "The print command string is not valid."
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:224
-msgid "Print in: "
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:225
-msgid "Black & White"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:226
-msgid "Grayscale"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:227
-msgid "Color"
-msgstr ""
-
-#. Insert Symbol dialog
-#: ../src/af/xap/xp/xap_String_Id.h:230
-msgid "Insert Symbol"
-msgstr ""
-
-#. Insert Picture Preview Dialog (Win32)
-#: ../src/af/xap/xp/xap_String_Id.h:233
-msgid "Insert Picture"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:234
-msgid "Preview Picture"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:235
-msgid "No Picture"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:236
-msgid "Height: "
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:237
-msgid "Width:  "
-msgstr ""
-
-#. Plugin dialog
-#: ../src/af/xap/xp/xap_String_Id.h:241
-msgid "AbiWord Plugin Manager"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:242
-msgid "Active Plugins"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:243
-msgid "Deactivate plugin"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:244
-msgid "Deactivate all plugins"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:245
-msgid "Install new plugin"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:246
-msgid "Plugin List"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:247
-msgid "Name:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:250 ../src/af/xap/xp/xap_String_Id.h:572
-msgid "Version:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:251
-msgid "Plugin Details:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:252
-msgid "Not available"
-msgstr ""
-
-#. spellchecker
-#: ../src/af/xap/xp/xap_String_Id.h:255
-#, c-format
-msgid "Could not load the dictionary for the %s language"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:256
-#, c-format
-msgid ""
-"AbiWord cannot find the spelling file %s.dll\n"
-"Please download and install Aspell from http://aspell.net/win32/"
-msgstr ""
-
-#. plugin error messages
-#: ../src/af/xap/xp/xap_String_Id.h:259
-msgid "Could not activate/load plugin"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:260
-msgid "Could not deactivate plugin"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:261
-msgid "No plugin selected"
-msgstr ""
-
-#. Language Dialog
-#: ../src/af/xap/xp/xap_String_Id.h:264
-msgid "Set Language"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:265
-msgid "Select Language:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:266
-msgid "Available Languages"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:267
-msgid "&Set Language"
-msgstr "&Valorizi la lingvon"
-
-#: ../src/af/xap/xp/xap_String_Id.h:268
-msgid "Default language: "
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:269
-msgid "Make default for document"
-msgstr ""
-
-#. ClipArt Dialog
-#: ../src/af/xap/xp/xap_String_Id.h:272
-msgid "Clip Art"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:273
-#, fuzzy
-msgid "Loading Clip Art"
-msgstr "&Klipbildoj"
-
-#: ../src/af/xap/xp/xap_String_Id.h:274
-msgid "Clip Art could not be loaded"
-msgstr ""
-
-#. About Dialog
-#: ../src/af/xap/xp/xap_String_Id.h:277
-#, c-format
-msgid "About %s"
-msgstr ""
-
-#. image size dialog
-#: ../src/af/xap/xp/xap_String_Id.h:280
-msgid "Image Properties"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:281
-msgid "Width:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:282
-msgid "Height:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:283
-msgid "Preserve aspect ratio"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:286
-msgid "Set Image Size"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:287
-msgid "Set Image Name"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:288
-msgid "Define Text Wrapping"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:289
-msgid "Define Image Placement"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:290
-msgid "Image placed in-line (no text wrapping)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:291
-msgid "Image floats above text"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:292
-msgid "Text wrapped to the Right of the Image"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:293
-msgid "Text wrapped to the Left of the Image"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:294
-msgid "Text wrapped on both sides of the Image"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:295
-msgid "Position relative to nearest paragraph"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:296
-msgid "Position relative to its Column"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:297
-msgid "Position relative to its Page"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:298
-msgid "Type of text wrapping"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:299
-msgid "Square text wrapping"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:300
-msgid "Tight text wrapping"
-msgstr ""
-
-#. ListDocuments Dialog
-#: ../src/af/xap/xp/xap_String_Id.h:303
-msgid "Opened Documents"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:304
-msgid "Choose document from the list:"
-msgstr ""
-
-#.
-#. For insert Table widget
-#.
-#: ../src/af/xap/xp/xap_String_Id.h:309
-msgid "Insert New Table"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:311
-#, fuzzy
-msgid "Clear Background"
-msgstr "Fono"
-
-#.
-#. Language property in different languages; alphabetical except English first.
-#. Please when translating the first entry, put it also into parenthesis
-#. or, surround it by some other #define XAP_STRING_ID_acters, so that it will appear on the top
-#. of the list when sorted alphabetically.
-#.
-#: ../src/af/xap/xp/xap_String_Id.h:319
-msgid "(no proofing)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:320
-msgid "English (Australia)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:321
-msgid "English (Canada)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:322
-msgid "English (UK)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:323
-msgid "English (Ireland)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:324
-msgid "English (New Zealand)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:325
-msgid "English (South Africa)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:326
-msgid "English (US)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:327
-msgid "Afrikaans"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:328
-msgid "Akan"
-msgstr ""
-
-#.
-#: ../src/af/xap/xp/xap_String_Id.h:329
-msgid "Albanian"
-msgstr ""
-
-#. Jordi 19/10/2002
-#: ../src/af/xap/xp/xap_String_Id.h:330
-msgid "Amharic (Ethiopia)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:331
-#, fuzzy
-msgid "Arabic"
-msgstr "Araba listo"
-
-#: ../src/af/xap/xp/xap_String_Id.h:332
-msgid "Arabic (Egypt)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:333
-msgid "Arabic (Saudi Arabia)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:334
-msgid "Armenian"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:335
-msgid "Assamese"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:336
-msgid "Asturian (Spain)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:337
-msgid "Aymara (La Paz)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:338
-msgid "Aymara (Oruro)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:339
-msgid "Central Aymara"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:340
-msgid "Basque"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:341
-msgid "Belarusian"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:342
-msgid "Belarusian, Latin"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:343
-msgid "Bengali"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:344
-msgid "Breton"
-msgstr ""
-
-#. Jordi 19/10/2002
-#: ../src/af/xap/xp/xap_String_Id.h:345
-msgid "Bulgarian"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:346
-msgid "Catalan"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:347
-msgid "Cornish"
-msgstr ""
-
-#. Jordi 19/10/2002
-#: ../src/af/xap/xp/xap_String_Id.h:348
-msgid "Corsican"
-msgstr ""
-
-#. Jordi 19/10/2002
-#: ../src/af/xap/xp/xap_String_Id.h:349
-msgid "Croatian"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:350
-msgid "Chinese (Hong Kong)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:351
-msgid "Chinese (PRC)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:352
-msgid "Chinese (Singapore)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:353
-msgid "Chinese (Taiwan)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:354
-msgid "Coptic"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:355
-msgid "Czech"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:356
-msgid "Danish"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:357
-msgid "Dutch (Netherlands)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:358
-msgid "Esperanto"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:359
-msgid "Estonian"
-msgstr ""
-
-#. Hipi: Why not et-EE?
-#: ../src/af/xap/xp/xap_String_Id.h:360
-msgid "Farsi"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:361
-msgid "Finnish"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:362
-msgid "Flemish (Belgium)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:363
-msgid "French (Belgium)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:364
-msgid "French (Canada)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:365
-msgid "French (France)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:366
-msgid "French (Switzerland)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:367
-msgid "Frisian"
-msgstr ""
-
-#. Jordi 19/10/2002
-#: ../src/af/xap/xp/xap_String_Id.h:368
-msgid "Galician (Galego)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:369
-msgid "Georgian"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:370
-msgid "German (Austria)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:371
-msgid "German (Germany)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:372
-msgid "German (Switzerland)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:373
-msgid "Greek"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:374
-msgid "Hausa (Niger)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:375
-msgid "Hausa (Nigeria)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:376
-msgid "Hawaiian"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:377
-msgid "Hebrew"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:378
-msgid "Hindi"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:379
-msgid "Hungarian"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:380
-msgid "Icelandic"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:381
-msgid "Indonesian"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:382
-msgid "Inuktitut"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:383
-msgid "Interlingua"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:384
-msgid "Irish"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:385
-msgid "Italian (Italy)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:386
-msgid "Japanese"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:387
-msgid "Kannada"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:388 ../src/af/xap/xp/xap_String_Id.h:389
-msgid "Korean"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:390
-msgid "Kurdish"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:391
-msgid "Lao"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:392
-msgid "Latin (Renaissance)"
-msgstr ""
-
-#. Is _IT the right thing here?
-#: ../src/af/xap/xp/xap_String_Id.h:393
-msgid "Latvian"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:394
-msgid "Lithuanian"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:395
-msgid "Macedonian"
-msgstr ""
-
-#. Jordi 19/10/2002 Hipi: Why not mk-MK?
-#: ../src/af/xap/xp/xap_String_Id.h:396
-msgid "Malay"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:397
-msgid "Maori"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:398
-msgid "Marathi"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:399
-msgid "Marshallese (Marshall Islands)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:400
-msgid "Marshallese (Nauru)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:401
-msgid "Mongolian"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:402
-msgid "Norwegian Bokmal"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:403
-msgid "Nepali (Nepal)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:404
-msgid "Norwegian Nynorsk"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:405
-msgid "Occitan"
-msgstr ""
-
-#. Jordi 19/10/2002
-#: ../src/af/xap/xp/xap_String_Id.h:406
-msgid "Polish"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:407
-#, fuzzy
-msgid "Pashto"
-msgstr "&Anigu"
-
-#: ../src/af/xap/xp/xap_String_Id.h:408
-msgid "Portuguese (Brazil)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:409
-msgid "Portuguese (Portugal)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:410
-msgid "Punjabi (Gurmukhi)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:411
-msgid "Punjabi (Shahmukhi)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:412
-msgid "Quechua"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:413
-msgid "Quechua (3 vowels)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:414
-msgid "Quechua (5 vowels)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:415
-msgid "Romanian"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:416
-msgid "Russian (Russia)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:417
-msgid "Sardinian"
-msgstr ""
-
-#. Jordi 19/10/2002
-#: ../src/af/xap/xp/xap_String_Id.h:418
-msgid "Serbian"
-msgstr ""
-
-#. Jordi 19/10/2002 Hipi: Why not sr-YU?
-#: ../src/af/xap/xp/xap_String_Id.h:419
-msgid "Slovak"
-msgstr ""
-
-#. or Slovakian?
-#: ../src/af/xap/xp/xap_String_Id.h:420
-msgid "Slovenian"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:421
-msgid "Spanish (Mexico)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:422
-msgid "Spanish (Spain)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:423
-msgid "Swahili"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:424
-msgid "Swedish"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:425
-msgid "Syriac"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:426
-msgid "Tagalog"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:427
-msgid "Tamil"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:428
-msgid "Telugu"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:429
-msgid "Thai"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:430
-msgid "Turkish"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:431
-msgid "Ukrainian"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:432
-msgid "Urdu (Pakistan)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:433
-msgid "Urdu"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:434
-msgid "Uzbek"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:435
-msgid "Vietnamese"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:436
-msgid "Welsh"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:437
-msgid "Wolof (Senegal)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:438
-msgid "Yiddish"
-msgstr ""
-
-#. Encoding Dialog
-#: ../src/af/xap/xp/xap_String_Id.h:442
-msgid "Select Encoding:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:443
-msgid "Encoding"
-msgstr ""
-
-#. Encoding description in different encodings; keep sorted by the numerical id's
-#. Ordered by 1) number of bits, 2) region & language, 3) platform / standard.
-#. 1) 7 bit, 8 bit, multibyte, Unicode.
-#. 2) Western, Eastern, Asian, multilingual; common before rare.
-#. 3) ISO, de facto standards, MS Windows, Macintosh
-#. It may be desirable to change this order for each platform.
-#. 7 bit
-#: ../src/af/xap/xp/xap_String_Id.h:453
-msgid "US-ASCII"
-msgstr ""
-
-#. 8 bit
-#. Western Europe
-#: ../src/af/xap/xp/xap_String_Id.h:456
-msgid "Western European, ISO-8859-1"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:457
-msgid "Western European, Windows Code Page 1252"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:458
-msgid "Western European, DOS/Windows Code Page 437"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:459
-msgid "Western European, DOS/Windows Code Page 850"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:460
-msgid "Western European, Macintosh"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:461
-msgid "Western European, HP"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:462
-msgid "Western European, NeXT"
-msgstr ""
-
-#. Central & Eastern Europe
-#: ../src/af/xap/xp/xap_String_Id.h:464
-msgid "Central European, ISO-8859-2"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:465
-msgid "Central European, Windows Code Page 1250"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:466
-msgid "Central European, Macintosh"
-msgstr ""
-
-#. Baltic
-#: ../src/af/xap/xp/xap_String_Id.h:468
-msgid "Baltic, ISO-8859-4"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:469
-msgid "Baltic, Windows Code Page 1257"
-msgstr ""
-
-#. Greek
-#: ../src/af/xap/xp/xap_String_Id.h:471
-msgid "Greek, ISO-8859-7"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:472
-msgid "Greek, Windows Code Page 1253"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:473
-msgid "Greek, Macintosh"
-msgstr ""
-
-#. Cyrillic
-#: ../src/af/xap/xp/xap_String_Id.h:475
-msgid "Cyrillic, ISO-8859-5"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:476
-msgid "Cyrillic, KOI8-R"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:477
-msgid "Cyrillic, Windows Code Page 1251"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:478
-msgid "Cyrillic, Macintosh"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:479
-msgid "Ukrainian, KOI8-U"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:480
-msgid "Ukrainian, Macintosh"
-msgstr ""
-
-#. Turkish
-#: ../src/af/xap/xp/xap_String_Id.h:482
-msgid "Turkish, ISO-8859-9"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:483
-msgid "Turkish, Windows Code Page 1254"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:484
-msgid "Turkish, Macintosh"
-msgstr ""
-
-#. Other Roman-based encodings
-#: ../src/af/xap/xp/xap_String_Id.h:486
-msgid "Croatian, Macintosh"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:487
-msgid "Icelandic, Macintosh"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:488
-msgid "Romanian, Macintosh"
-msgstr ""
-
-#. Thai
-#: ../src/af/xap/xp/xap_String_Id.h:490
-msgid "Thai, TIS-620"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:491
-msgid "Thai, Windows Code Page 874"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:492
-msgid "Thai, Macintosh"
-msgstr ""
-
-#. Vietnamese
-#: ../src/af/xap/xp/xap_String_Id.h:494
-msgid "Vietnamese, VISCII"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:495
-msgid "Vietnamese, TCVN"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:496
-msgid "Vietnamese, Windows Code Page 1258"
-msgstr ""
-
-#. Hebrew
-#: ../src/af/xap/xp/xap_String_Id.h:498
-msgid "Hebrew, ISO-8859-8"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:499
-msgid "Hebrew, Windows Code Page 1255"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:500
-msgid "Hebrew, Macintosh"
-msgstr ""
-
-#. Arabic
-#: ../src/af/xap/xp/xap_String_Id.h:502
-msgid "Arabic, ISO-8859-6"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:503
-msgid "Arabic, Windows Code Page 1256"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:504
-msgid "Arabic, Macintosh"
-msgstr ""
-
-#. Armenian
-#: ../src/af/xap/xp/xap_String_Id.h:506
-msgid "Armenian, ARMSCII-8"
-msgstr ""
-
-#. Georgian
-#: ../src/af/xap/xp/xap_String_Id.h:508
-msgid "Georgian, Academy"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:509
-msgid "Georgian, PS"
-msgstr ""
-
-#. Multibyte CJK
-#. Chinese Simplified
-#: ../src/af/xap/xp/xap_String_Id.h:512
-msgid "Chinese Simplified, EUC-CN (GB2312)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:513
-msgid "Chinese Simplified, GB_2312-80"
-msgstr ""
-
-#. Cf. EUC
-#: ../src/af/xap/xp/xap_String_Id.h:514
-msgid "Chinese Simplified, HZ"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:515
-msgid "Chinese Simplified, Windows Code Page 936"
-msgstr ""
-
-#. Chinese Traditional
-#: ../src/af/xap/xp/xap_String_Id.h:517
-msgid "Chinese Traditional, BIG5"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:518
-msgid "Chinese Traditional, BIG5-HKSCS"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:519
-msgid "Chinese Traditional, EUC-TW"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:520
-msgid "Chinese Traditional, Windows Code Page 950"
-msgstr ""
-
-#. Japanese
-#: ../src/af/xap/xp/xap_String_Id.h:522
-msgid "Japanese, ISO-2022-JP"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:523
-msgid "Japanese, EUC-JP"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:524
-msgid "Japanese, Shift-JIS"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:525
-msgid "Japanese, Windows Code Page 932"
-msgstr ""
-
-#. Korean
-#: ../src/af/xap/xp/xap_String_Id.h:527
-msgid "Korean, KSC_5601"
-msgstr ""
-
-#. ISO
-#: ../src/af/xap/xp/xap_String_Id.h:528
-msgid "Korean, EUC-KR"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:529
-msgid "Korean, Johab"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:530
-msgid "Korean, Windows Code Page 949"
-msgstr ""
-
-#. Unicode
-#: ../src/af/xap/xp/xap_String_Id.h:532
-msgid "Unicode UTF-7"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:533
-msgid "Unicode UTF-8"
-msgstr ""
-
-#. #define XAP_STRING_ID_ENC_UNIC_UTF_16  _("Unicode UTF-16")
-#: ../src/af/xap/xp/xap_String_Id.h:535
-msgid "Unicode UTF-16 Big Endian"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:536
-msgid "Unicode UTF-16 Little Endian"
-msgstr ""
-
-#. #define XAP_STRING_ID_ENC_UNIC_UTF_32  _("Unicode UTF-32")
-#: ../src/af/xap/xp/xap_String_Id.h:538
-msgid "Unicode UTF-32 Big Endian"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:539
-msgid "Unicode UTF-32 Little Endian"
-msgstr ""
-
-#. #define XAP_STRING_ID_ENC_UNIC_UCS2  _("Unicode UCS-2")
-#: ../src/af/xap/xp/xap_String_Id.h:541
-msgid "Unicode UCS-2 Big Endian"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:542
-msgid "Unicode UCS-2 Little Endian"
-msgstr ""
-
-#. #define XAP_STRING_ID_ENC_UNIC_UCS4  _("Unicode UCS-4")
-#: ../src/af/xap/xp/xap_String_Id.h:544
-msgid "Unicode UCS-4 Big Endian"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:545
-msgid "Unicode UCS-4 Little Endian"
-msgstr ""
-
-#. HTML Options Dialog
-#: ../src/af/xap/xp/xap_String_Id.h:548
-msgid "HTML Export Options"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:549
-msgid "Select HTML export options:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:550
-msgid "Save Settings"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:551
-msgid "Restore Settings"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:552
-msgid "Export as HTML 4.01"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:553
-msgid "Export with PHP instructions"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:554
-msgid "Declare as XML (version 1.0)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:555
-msgid "Allow extra markup in AWML namespace"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:556
-msgid "Embed (CSS) style sheet"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:557
-msgid "Embed images in URLs (Base64-encoded)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:558
-msgid "Close &Without Saving"
-msgstr ""
-
-#. X11 input methods
-#: ../src/af/xap/xp/xap_String_Id.h:561
-msgid "Input Methods"
-msgstr ""
-
-#. since this string goes with XAP preference, I put it here, rather
-#. than ap_String_Id.h
-#: ../src/af/xap/xp/xap_String_Id.h:565
-msgid "Change Language when changing keyboard"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:566
-msgid "Auto-insert direction markers"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:568
-msgid "Document History"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:569
-msgid "Document Details"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:570
-msgid "Document name:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:571
-msgid "Created:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:573
-msgid "Last saved:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:574
-msgid "Editing time:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:575
-msgid "Identifier:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:577
-msgid "Version history"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:579
-msgid "Created"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:580
-msgid "Auto-revision"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:582
-msgid "Document Comparison"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:583
-msgid "Documents compared"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:584
-msgid "Results"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:585
-msgid "Relationship:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:586
-msgid "Content:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:588
-msgid "Styles:"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:590
-msgid "identical"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:591
-msgid "unrelated"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:592
-msgid "siblings"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:593
-#, c-format
-msgid "diverging after version %d of %s"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:594
-#, c-format
-msgid "diverging after document position %d"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:595
-msgid "(test skipped)"
-msgstr ""
-
-#: ../src/af/xap/xp/xap_String_Id.h:596
-msgid "different"
-msgstr ""
+#: ../src/af/xap/gtk/xap_UnixDlg_Language.glade.h:1
+msgid "<b>Select Language</b>"
+msgstr "Valorizi la lingvon"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_Language.glade.h:2
+msgid "Default Language: "
+msgstr "Lingvo senelekta: "
 
 #, fuzzy
 #~ msgid "&From File"
