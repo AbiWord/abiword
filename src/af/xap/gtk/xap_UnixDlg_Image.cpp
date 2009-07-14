@@ -455,7 +455,7 @@ void XAP_UnixDialog_Image::_connectSignals (void)
 GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 {
 	// get the path where our UI file is located
-	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/xap_UnixDlg_Image.glade";
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/xap_UnixDlg_Image.xml";
 	
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();

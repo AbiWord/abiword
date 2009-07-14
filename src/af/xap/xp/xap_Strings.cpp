@@ -49,7 +49,7 @@ XAP_StringSet::XAP_StringSet(const gchar * szDomainName)
 	UT_LocaleInfo *info = new UT_LocaleInfo();
 	const char * lang = info->getLanguage().utf8_str();
 	const char * reg = info->getTerritory().utf8_str();
-	m_szLanguageName = (char *) malloc(sizeof(char) * (strlen(lang) + strlen(reg)));
+	m_szLanguageName = (char *) malloc(sizeof(char) * (strlen(lang) + strlen(reg) + (1 * strlen(reg))));
 
 	if (lang)
 	{

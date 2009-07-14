@@ -73,7 +73,7 @@ void XAP_UnixDialog_DocComparison::runModal(XAP_Frame * pFrame)
 GtkWidget * XAP_UnixDialog_DocComparison::constructWindow(void)
 {
 	// get the path where our UI file is located
-	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/xap_UnixDlg_DocComparison.glade";
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/xap_UnixDlg_DocComparison.xml";
 	
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();

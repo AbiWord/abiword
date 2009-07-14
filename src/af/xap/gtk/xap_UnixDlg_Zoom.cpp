@@ -202,7 +202,7 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 	GtkWidget * window;
 	
 	// get the path where our UI file is located
-	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/xap_UnixDlg_Zoom.glade";
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/xap_UnixDlg_Zoom.xml";
 	
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
