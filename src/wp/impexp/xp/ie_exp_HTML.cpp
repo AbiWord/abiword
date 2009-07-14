@@ -4797,10 +4797,6 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 	UT_UTF8String tmp, escape;
 	UT_DEBUGMSG(("Width of Image %s \n",szWidth ? szWidth : "(null)"));
 
-	UT_sint32 iImageWidth, iImageHeight;
-	UT_PNG_getDimensions(pByteBuf, iImageWidth, iImageHeight);
-	UT_DEBUGMSG(("Real image dimensions: (%d x %d)\n", iImageWidth, iImageHeight));
-
 	if (szWidth)
 	{
 		m_utf8_1 += " style=\"width:";
