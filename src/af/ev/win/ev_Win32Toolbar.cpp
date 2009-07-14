@@ -204,12 +204,14 @@ bool EV_Win32Toolbar::toolbarEvent(XAP_Toolbar_Id id,
 
 		const EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
 
-		if (!pAction) return true;
+		if (!pAction) 
+            return true;
 
 		AV_View * pView = m_pWin32Frame->getCurrentView();
 		
 		const char * szMethodName = pAction->getMethodName();
-		if (!szMethodName) return true;
+		if (!szMethodName) 
+            return true;
 		
 		const EV_EditMethodContainer * pEMC = m_pWin32App->getEditMethodContainer();
 		EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
@@ -265,7 +267,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ToolBarWndProc (HWND hWnd, UINT uMessage, WPA
 		return (LRESULT) GetSysColorBrush (COLOR_WINDOW);
 	}
 	
-	return (CallWindowProc(s_lpfnDefToolBar, hWnd, uMessage, wParam, lParam));
+	return (CallWindowProcW(s_lpfnDefToolBar, hWnd, uMessage, wParam, lParam));
 }
 
 LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
@@ -275,7 +277,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 		/* Draws the font preview in the font selection combobox*/
 		case WM_DRAWITEM:
 		{						
-			EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLong(hWnd, GWL_USERDATA);			
+			EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLongW(hWnd, GWL_USERDATA);			
 			UINT u = GetDlgCtrlID(hWnd);
 			XAP_Toolbar_Id id = t->ItemIdFromWmCommand(u);
 						
@@ -383,8 +385,8 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 
 			HWND hwndToolbar = GetParent(hWnd);
 
-			hWndTT = (HWND)SendMessage(hwndToolbar, TB_GETTOOLTIPS, 0,0);
-			SendMessage(hWndTT, TTM_RELAYEVENT, 0, (LPARAM)(LPMSG)&msg);
+			hWndTT = (HWND)SendMessageW(hwndToolbar, TB_GETTOOLTIPS, 0,0);
+			SendMessageW(hWndTT, TTM_RELAYEVENT, 0, (LPARAM)(LPMSG)&msg);
 			break;
 		}
 
@@ -394,21 +396,21 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 			{								
 				case CBN_SELCHANGE:
 				{
-					UT_sint32 iSelected = SendMessage(hWnd, CB_GETCURSEL, 0, 0);
+					UT_sint32 iSelected = SendMessageW(hWnd, CB_GETCURSEL, 0, 0);
 									
 					if(iSelected != -1)
 					{							
 						static UT_UCSChar ucs_buf[COMBO_BUF_LEN];
                         UT_Win32LocaleString str;
-						UT_uint32 bufLength = SendMessage(hWnd, CB_GETLBTEXTLEN, iSelected, (LPARAM)0) + 1;
+						UT_uint32 bufLength = SendMessageW(hWnd, CB_GETLBTEXTLEN, iSelected, (LPARAM)0) + 1;
 						wchar_t* buf = (wchar_t*)g_try_malloc(bufLength * sizeof (wchar_t));
-						UT_uint32 dataLength = SendMessage(hWnd, CB_GETLBTEXT, iSelected, (LPARAM)buf);
+						UT_uint32 dataLength = SendMessageW(hWnd, CB_GETLBTEXT, iSelected, (LPARAM)buf);
                         str.fromLocale (buf);
 
                         UT_UCS4_strncpy_char(ucs_buf, str.utf8_str().utf8_str(), COMBO_BUF_LEN-1);
 						UT_UCSChar * pData = (UT_UCSChar *) ucs_buf;	// HACK: should be void *
 
-						EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLong(hWnd, GWL_USERDATA);
+						EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLongW(hWnd, GWL_USERDATA);
 						UT_ASSERT(t);
 
 						if(dataLength)
@@ -422,7 +424,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 								UT_sint32 iSelected;					
 								int nData;
 								
-								iSelected = SendMessage(hWnd, CB_GETCURSEL, 0, 0);										
+								iSelected = SendMessageW(hWnd, CB_GETCURSEL, 0, 0);										
 
 								// Find the proper non-localised text                                                                             					
 								XAP_Toolbar_ControlFactory * pFactory = t->m_pWin32App->getControlFactory();
@@ -430,7 +432,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 								AP_Win32Toolbar_StyleCombo * pStyleC = static_cast<AP_Win32Toolbar_StyleCombo *>(pControl);
 								pStyleC->repopulate();                                                                                                
 
-								nData  = SendMessage(hWnd, CB_GETITEMDATA, iSelected, 0);								
+								nData  = SendMessageW(hWnd, CB_GETITEMDATA, iSelected, 0);								
 
 								UT_UCS4_strncpy_char(ucs_buf, t->m_vecOrgStylesNames.getNthItem(nData)->utf8_str(), COMBO_BUF_LEN-1);	
 								dataLength = UT_UCS4_strlen (ucs_buf);
@@ -445,7 +447,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 					}	
 					else
 					{
-						PostMessage(hWnd, WM_KEYDOWN, VK_ESCAPE, 0);
+						PostMessageW(hWnd, WM_KEYDOWN, VK_ESCAPE, 0);
 					}
 						
 					break;
@@ -459,7 +461,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 			
 		case WM_KEYDOWN:
 		{
-			EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLong(hWnd, GWL_USERDATA);
+			EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLongW(hWnd, GWL_USERDATA);
 			UT_ASSERT(t);
 
 			switch (wParam)
@@ -483,7 +485,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 			}
 		}
 	}
-	return (CallWindowProc(s_lpfnDefCombo, hWnd, uMessage, wParam, lParam));
+	return (CallWindowProcW(s_lpfnDefCombo, hWnd, uMessage, wParam, lParam));
 }
 
 
@@ -534,7 +536,7 @@ bool EV_Win32Toolbar::synthesize(void)
 
 	// NOTE: this toolbar will get placed later, by frame or rebar
 
-	m_hwnd = UT_CreateWindowEx(0, 
+	m_hwnd = UT_CreateWindowEx(0,                              
 							   TOOLBARCLASSNAMEW, // window class name
 							   NULL,			// window caption
 							   WS_CHILD | WS_VISIBLE 
@@ -558,12 +560,12 @@ bool EV_Win32Toolbar::synthesize(void)
 	UT_ASSERT(m_hwnd);
 
 	// override the window procedure 		
-	s_lpfnDefToolBar = (WHICHPROC)GetWindowLong(m_hwnd, GWL_WNDPROC);
-	SetWindowLong(m_hwnd, GWL_WNDPROC, (LONG)_ToolBarWndProc);
-	SetWindowLong(m_hwnd, GWL_USERDATA, (LONG)this);
+	s_lpfnDefToolBar = (WHICHPROC)GetWindowLongW(m_hwnd, GWL_WNDPROC);
+	SetWindowLongW(m_hwnd, GWL_WNDPROC, (LONG)_ToolBarWndProc);
+	SetWindowLongW(m_hwnd, GWL_USERDATA, (LONG)this);
 
 
-	SendMessage(m_hwnd, TB_BUTTONSTRUCTSIZE, (WPARAM) sizeof(TBBUTTON), 0);  
+	SendMessageW(m_hwnd, TB_BUTTONSTRUCTSIZE, (WPARAM) sizeof(TBBUTTON), 0);  
 
 	// the Windows Common Control Toolbar requires that we set
 	// a bitmap size in the toolbar window **before** we actually
@@ -579,10 +581,10 @@ bool EV_Win32Toolbar::synthesize(void)
 	const WORD MY_MAXIMUM_BITMAP_Y = 24;
 
 	if( bIcons )
-		SendMessage(m_hwnd, TB_SETBITMAPSIZE, 0,
+		SendMessageW(m_hwnd, TB_SETBITMAPSIZE, 0,
 					(LPARAM) MAKELONG(MY_MAXIMUM_BITMAP_X,MY_MAXIMUM_BITMAP_Y));
 	else
-		SendMessage(m_hwnd, TB_SETBITMAPSIZE, 0, (LPARAM) MAKELONG(0,0));
+		SendMessageW(m_hwnd, TB_SETBITMAPSIZE, 0, (LPARAM) MAKELONG(0,0));
 
 	DWORD dwColor = GetSysColor(COLOR_BTNFACE);
 	UT_RGBColor backgroundColor(GetRValue(dwColor),GetGValue(dwColor),GetBValue(dwColor));
@@ -692,13 +694,13 @@ bool EV_Win32Toolbar::synthesize(void)
 						 * Hack to create a combobox that is readonly, but which is capable of displaying text in 
 						 * the edit control which differs from that in the drop-down list like GTK combos.
 						 */
-						HWND hwndEdit = FindWindowEx(hwndCombo, 0, NULL, NULL);
+						HWND hwndEdit = FindWindowExW(hwndCombo, 0, NULL, NULL);
 						if (!hwndEdit)
 							UT_DEBUGMSG(("Toolbar: Failed to get handle of combos edit controls. Not setting read-only.\n"));
 						else
-							SendMessage(hwndEdit, EM_SETREADONLY, (WPARAM)TRUE, (LPARAM)0);
-						SendMessage(hwndCombo, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), MAKELPARAM(TRUE, 0));
-						SendMessage(hwndCombo, CB_SETDROPPEDWIDTH,(WPARAM)pControl->getDroppedWidth(), 0);
+							SendMessageW(hwndEdit, EM_SETREADONLY, (WPARAM)TRUE, (LPARAM)0);
+						SendMessageW(hwndCombo, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), MAKELPARAM(TRUE, 0));
+						SendMessageW(hwndCombo, CB_SETDROPPEDWIDTH,(WPARAM)pControl->getDroppedWidth(), 0);
 
 						// populate it
 						if (pControl)
@@ -708,7 +710,7 @@ bool EV_Win32Toolbar::synthesize(void)
 							const UT_GenericVector<const char*> * v = pControl->getContents();
 							UT_ASSERT_HARMLESS(v);
 
-							SendMessage(hwndCombo, WM_SETREDRAW, FALSE,0);
+							SendMessageW(hwndCombo, WM_SETREDRAW, FALSE,0);
 
 							if (v)
 							{
@@ -718,21 +720,21 @@ bool EV_Win32Toolbar::synthesize(void)
 								for (UT_uint32 k=0; k < items; k++)
 								{
 									localised.fromUTF8(v->getNthItem(k));									
-    								nIndex = SendMessage(hwndCombo, CB_ADDSTRING,(WPARAM)0, (LPARAM)localised.c_str());
- 	     							SendMessage(hwndCombo,CB_SETITEMDATA, nIndex, k);
+    								nIndex = SendMessageW(hwndCombo, CB_ADDSTRING,(WPARAM)0, (LPARAM)localised.c_str());
+ 	     							SendMessageW(hwndCombo,CB_SETITEMDATA, nIndex, k);
 								}
 							}
 
-							SendMessage(hwndCombo, WM_SETREDRAW, TRUE,0);
+							SendMessageW(hwndCombo, WM_SETREDRAW, TRUE,0);
 						}
 
 						// override the window procedure for the combo box
-						s_lpfnDefCombo = (WHICHPROC)GetWindowLong(hwndCombo, GWL_WNDPROC);
-						SetWindowLong(hwndCombo, GWL_WNDPROC, (LONG)_ComboWndProc);
-						SetWindowLong(hwndCombo, GWL_USERDATA, (LONG)this);
+						s_lpfnDefCombo = (WHICHPROC)GetWindowLongW(hwndCombo, GWL_WNDPROC);
+						SetWindowLongW(hwndCombo, GWL_WNDPROC, (LONG)_ComboWndProc);
+						SetWindowLongW(hwndCombo, GWL_USERDATA, (LONG)this);
 
 						// Get the handle to the tooltip window.
-						HWND hwndTT = (HWND)SendMessage(m_hwnd, TB_GETTOOLTIPS, 0, 0);
+						HWND hwndTT = (HWND)SendMessageW(m_hwnd, TB_GETTOOLTIPS, 0, 0);
 
 						if (hwndTT)
 						{
@@ -753,7 +755,7 @@ bool EV_Win32Toolbar::synthesize(void)
 							ti.hwnd = m_hwnd;		// TODO: should this be the frame?
 							ti.uId = (UINT)hwndCombo;
 							// Set up tooltips for the combo box.
-							SendMessage(hwndTT, TTM_ADDTOOL, 0, (LPARAM)(LPTOOLINFO)&ti);
+							SendMessageW(hwndTT, TTM_ADDTOOL, 0, (LPARAM)(LPTOOLINFOW)&ti);
 						}
 						
 						// bind this separator to its control
@@ -813,7 +815,7 @@ bool EV_Win32Toolbar::synthesize(void)
 						ab.hInst = 0;
 						ab.nID = (LPARAM)hBitmap;						
 						
-						LRESULT iAddedAt = SendMessage(m_hwnd,TB_ADDBITMAP,1,(LPARAM)&ab);
+						LRESULT iAddedAt = SendMessageW(m_hwnd,TB_ADDBITMAP,1,(LPARAM)&ab);
 						UT_ASSERT(iAddedAt != -1);
 
 						tbb.iBitmap = iAddedAt;
@@ -825,7 +827,7 @@ bool EV_Win32Toolbar::synthesize(void)
 						// As long as translators don't cut the text short,
 						// we need to autosize just to squize anything insize 1280 :)
 						tbb.fsStyle |= TBSTYLE_AUTOSIZE;
-						tbb.iString = SendMessage(m_hwnd, TB_ADDSTRING, (WPARAM) 0, (LPARAM) (LPSTR) szLabel);
+						tbb.iString = SendMessageW(m_hwnd, TB_ADDSTRING, (WPARAM) 0, (LPARAM) (LPSTR) szLabel);
 					}
 					
 					if (pAction->getItemType() == EV_TBIT_ColorFore || pAction->getItemType() == EV_TBIT_ColorBack)
@@ -834,9 +836,9 @@ bool EV_Win32Toolbar::synthesize(void)
 
 						//tbb.fsStyle |=BTNS_WHOLEDROPDOWN;
 
-						DWORD dwStyle = SendMessage(m_hwnd, TB_GETEXTENDEDSTYLE, (WPARAM) 0, (LPARAM) 0);						
+						DWORD dwStyle = SendMessageW(m_hwnd, TB_GETEXTENDEDSTYLE, (WPARAM) 0, (LPARAM) 0);						
 						dwStyle |= TBSTYLE_EX_DRAWDDARROWS;																		
-						SendMessage(m_hwnd, TB_SETEXTENDEDSTYLE, (WPARAM) 0, (LPARAM) dwStyle);						
+						SendMessageW(m_hwnd, TB_SETEXTENDEDSTYLE, (WPARAM) 0, (LPARAM) dwStyle);						
 					}
 					
 				}
@@ -853,11 +855,11 @@ bool EV_Win32Toolbar::synthesize(void)
 		}
 
 		// add this button to the bar
-		SendMessage(m_hwnd, TB_ADDBUTTONS, (WPARAM) 1, (LPARAM) (LPTBBUTTON) &tbb);
+		SendMessageW(m_hwnd, TB_ADDBUTTONS, (WPARAM) 1, (LPARAM) (LPTBBUTTON) &tbb);
 	}
 
 	// figure out bar dimensions now that buttons are all there
-	SendMessage(m_hwnd, TB_AUTOSIZE, 0, 0); 
+	SendMessageW(m_hwnd, TB_AUTOSIZE, 0, 0); 
 	
 	if (bControls)
 	{
@@ -883,7 +885,7 @@ bool EV_Win32Toolbar::synthesize(void)
 					GetWindowRect(hwndCtrl, &r);
 					nHeight = r.bottom - r.top;
 
-					SendMessage(m_hwnd, TB_GETITEMRECT, (WPARAM) k, (LPARAM)(LPRECT) &r);
+					SendMessageW(m_hwnd, TB_GETITEMRECT, (WPARAM) k, (LPARAM)(LPRECT) &r);
 
 					nSep = (r.bottom - r.top - nHeight)/2;
 					if (nSep < 0)
@@ -927,8 +929,8 @@ HWND EV_Win32Toolbar::_getControlWindow(XAP_Toolbar_Id id)
 	HWND hwndCtrl;
 	UINT u = WmCommandFromItemId(id);
 
-	UT_uint32 k = SendMessage(m_hwnd, TB_COMMANDTOINDEX, (WPARAM) u, 0);
-	SendMessage(m_hwnd, TB_GETBUTTON, (WPARAM) k, (LPARAM)(LPTBBUTTON) &tbb);
+	UT_uint32 k = SendMessageW(m_hwnd, TB_COMMANDTOINDEX, (WPARAM) u, 0);
+	SendMessageW(m_hwnd, TB_GETBUTTON, (WPARAM) k, (LPARAM)(LPTBBUTTON) &tbb);
 	UT_ASSERT(tbb.idCommand == (int) u);
 	UT_ASSERT(tbb.fsStyle & TBSTYLE_SEP);
 
@@ -995,9 +997,7 @@ bool EV_Win32Toolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 		switch (pLayoutItem->getToolbarLayoutFlags())
 		{
 		case EV_TLF_Normal:
-			{
-				_refreshItem(pView, pAction, id);
-			}
+			_refreshItem(pView, pAction, id);
 			break;
 			
 		case EV_TLF_Spacer:
@@ -1043,7 +1043,7 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 			{
 				bool bGrayed = EV_TIS_ShouldBeGray(tis);
 
-				SendMessage(m_hwnd, TB_ENABLEBUTTON, u, (LONG)!bGrayed) ;
+				SendMessageW(m_hwnd, TB_ENABLEBUTTON, u, (LONG)!bGrayed) ;
 
 				//UT_DEBUGMSG(("refreshToolbar: PushButton [%s] is %s\n",
 				//			m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
@@ -1057,8 +1057,8 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 				bool bGrayed = EV_TIS_ShouldBeGray(tis);
 				bool bToggled = EV_TIS_ShouldBeToggled(tis);
 				
-				SendMessage(m_hwnd, TB_ENABLEBUTTON, u, (LONG)!bGrayed);
-				SendMessage(m_hwnd, TB_CHECKBUTTON, u, (LONG)bToggled);
+				SendMessageW(m_hwnd, TB_ENABLEBUTTON, u, (LONG)!bGrayed);
+				SendMessageW(m_hwnd, TB_CHECKBUTTON, u, (LONG)bToggled);
 
 				//UT_DEBUGMSG(("refreshToolbar: ToggleButton [%s] is %s and %s\n",
 				//			 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
@@ -1079,9 +1079,9 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 				// NOTE: we always update the control even if !szState
 				if (!szState)
 				{
-					int idx = SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)szState);
+					int idx = SendMessageW(hwndCombo, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)szState);
 					if (idx==CB_ERR)
-						SetWindowText(hwndCombo, "");
+						SetWindowTextW(hwndCombo, L"");
 					break;
 				}					
 				
@@ -1097,7 +1097,7 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
                  else
     					localised.fromUTF8 (szState);
 					
-                int idx = SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)localised.c_str());												
+                int idx = SendMessageW(hwndCombo, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)localised.c_str());												
 				/*
 				 * If the string didn't exist within the combos list, we handle things differently for
 				 * different combos.
@@ -1114,7 +1114,7 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 					 */
 					case AP_TOOLBAR_ID_FMT_SIZE:
 					case AP_TOOLBAR_ID_FMT_FONT:
-						idx = SendMessage(hwndCombo, WM_SETTEXT, (WPARAM)-1, (LPARAM)localised.c_str());
+						idx = SendMessageW(hwndCombo, WM_SETTEXT, (WPARAM)-1, (LPARAM)localised.c_str());
 						if (idx == CB_ERR)
 						{
 							UT_DEBUGMSG(("refreshToolbar: Failed to set text for font combo.\n"));
@@ -1126,7 +1126,7 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 					case AP_TOOLBAR_ID_ZOOM:
 						pSS = XAP_App::getApp()->getStringSet();
                         localised.fromUTF8 (pSS->getValue(XAP_STRING_ID_TB_Zoom_Percent));
-						idx = SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)localised.c_str());
+						idx = SendMessageW(hwndCombo, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)localised.c_str());
 						break;
 
 					case AP_TOOLBAR_ID_FMT_STYLE:
@@ -1222,7 +1222,7 @@ void EV_Win32Toolbar::hide(void)
 	const int iBand = _getBandForHwnd(m_hwnd);
 	if (iBand >= 0)
 	{
-		SendMessage(hRebar, RB_DELETEBAND, (WPARAM)iBand, 0);
+		SendMessageW(hRebar, RB_DELETEBAND, (WPARAM)iBand, 0);
 		m_bVisible = false;
 	}
 }
@@ -1237,13 +1237,13 @@ int EV_Win32Toolbar::_getBandForHwnd(HWND hToolbar) const
 	HWND hRebar = static_cast<XAP_Win32FrameImpl*>(m_pWin32Frame->getFrameImpl())->getToolbarWindow();
 
 	// If we ever get more than 20 toolbars I don't wanna be around.
-	REBARBANDINFO rbi;
+	REBARBANDINFOW rbi;
 	memset(&rbi, 0, sizeof(rbi));
 	rbi.cbSize = sizeof(rbi);
 	rbi.fMask  = RBBIM_CHILD;
 	for (int i = 0; i < 20; ++i)
 	{
-		if (!SendMessage(hRebar, RB_GETBANDINFO, (WPARAM)i, (LPARAM)&rbi))
+		if (!SendMessageW(hRebar, RB_GETBANDINFO, (WPARAM)i, (LPARAM)&rbi))
 		{
 			continue;
 		}
@@ -1258,7 +1258,7 @@ int EV_Win32Toolbar::_getBandForHwnd(HWND hToolbar) const
 void EV_Win32Toolbar::_addToRebar()
 {
 	// Get the height of the toolbar.
-	DWORD dwBtnSize = SendMessage(m_hwnd, TB_GETBUTTONSIZE, 0,0);
+	DWORD dwBtnSize = SendMessageW(m_hwnd, TB_GETBUTTONSIZE, 0,0);
 
 	RECT rc;
 	GetWindowRect(m_hwnd, &rc);
@@ -1266,10 +1266,10 @@ void EV_Win32Toolbar::_addToRebar()
 	UINT iWidth = rc.right - rc.left + 13;
 
 	// add this bar to the rebar
-	REBARBANDINFO  rbbi;
+	REBARBANDINFOW rbbi;
 	memset(&rbbi, 0, sizeof(rbbi));
 	// Initialize REBARBANDINFO
-	rbbi.cbSize = sizeof(REBARBANDINFO);
+	rbbi.cbSize = sizeof(REBARBANDINFOW);
 	rbbi.fMask =	RBBIM_COLORS	|	// clrFore and clrBack are valid
 					RBBIM_CHILD		|	// hwndChild is valid
 					RBBIM_CHILDSIZE	|	// cxMinChild and cyMinChild are valid
@@ -1288,7 +1288,7 @@ void EV_Win32Toolbar::_addToRebar()
 
 	HWND hRebar = static_cast<XAP_Win32FrameImpl*>(m_pWin32Frame->getFrameImpl())->getToolbarWindow();
 	// Add it at the the end
-	SendMessage(hRebar, RB_INSERTBAND, (WPARAM)-1, (LPARAM)&rbbi);
+	SendMessageW(hRebar, RB_INSERTBAND, (WPARAM)-1, (LPARAM)&rbbi);
 }
 
 
@@ -1350,10 +1350,10 @@ bool EV_Win32Toolbar::repopulateStyles(void)
 // list of styles to the combo box.
 //
 // Try this....
-	SendMessage(hwndCombo, WM_SETREDRAW, FALSE, 0);
-	SendMessage(hwndCombo, CB_RESETCONTENT, 0 , 0);
+	SendMessageW(hwndCombo, WM_SETREDRAW, FALSE, 0);
+	SendMessageW(hwndCombo, CB_RESETCONTENT, 0 , 0);
 
-	SendMessage(hwndCombo, CB_SETDROPPEDWIDTH,
+	SendMessageW(hwndCombo, CB_SETDROPPEDWIDTH,
 				(WPARAM)pStyleC->getDroppedWidth(), 0);
 
 //
@@ -1381,14 +1381,14 @@ bool EV_Win32Toolbar::repopulateStyles(void)
         pt_PieceTable::s_getLocalisedStyleName(sz, utf8);
 		localised.fromUTF8 (utf8.utf8_str());
 		
-		nItem = SendMessage(hwndCombo, CB_ADDSTRING,(WPARAM)0, (LPARAM)localised.c_str());
+		nItem = SendMessageW(hwndCombo, CB_ADDSTRING,(WPARAM)0, (LPARAM)localised.c_str());
 		m_vecOrgStylesNames.addItem (new UT_UTF8String ((char *)v->getNthItem(k)));
-		SendMessage(hwndCombo, CB_SETITEMDATA,(WPARAM)nItem, (LPARAM)m_vecOrgStylesNames.getItemCount()-1);
+		SendMessageW(hwndCombo, CB_SETITEMDATA,(WPARAM)nItem, (LPARAM)m_vecOrgStylesNames.getItemCount()-1);
 	}
 //
 // Don't need this anymore and we don't like memory leaks in abi
 //
-	SendMessage(hwndCombo, WM_SETREDRAW, TRUE, 0);
+	SendMessageW(hwndCombo, WM_SETREDRAW, TRUE, 0);
 	InvalidateRect (hwndCombo, NULL, true);
 	delete pStyleC;
 //
