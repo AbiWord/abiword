@@ -26,6 +26,7 @@
 #include "gr_Win32CharWidths.h"
 #include "ut_vector.h"
 #include <wchar.h>
+#include <winuser.h>
 
 class UT_ByteBuf;
 
@@ -41,9 +42,9 @@ public:
 	virtual ~GR_Win32Font();
 
 	// need these to allow for adjustements in response to changes of device
-	void    	setAscent(UT_uint32 n)  { m_tm.tmAscent = n; }
+	void        	setAscent(UT_uint32 n)  { m_tm.tmAscent = n; }
 	void 	    setDescent(UT_uint32 n) { m_tm.tmDescent = n; }
-	void        setHeight(UT_uint32 n)  { m_tm.tmHeight = n; }
+	void         setHeight(UT_uint32 n)  { m_tm.tmHeight = n; }
 	
 	UT_uint32	getAscent(HDC hdc, HDC printHDC);
 	UT_uint32	getDescent(HDC hdc, HDC printHDC);
@@ -113,7 +114,7 @@ public:
 
 	void         fetchFont(UT_uint32 pixelsize) const;
 
-	const TEXTMETRIC & getTextMetric() const {return m_tm;}
+	const TEXTMETRICW & getTextMetric() const {return m_tm;}
    	
 private:
 
@@ -139,7 +140,7 @@ private:
 	
 	UT_uint32				m_defaultCharWidth;
 	HFONT                   m_layoutFont;
-	TEXTMETRIC				m_tm;
+	TEXTMETRICW				m_tm;
 	UT_uint32		        m_iHeight; // unscaled height
 
 	// a cache of 'allocFont *' at a given size
@@ -287,7 +288,7 @@ protected:
 	GR_Win32Graphics(HDC, HWND);					/* for screen */
 	GR_Win32Graphics(HDC, const DOCINFOW *, HGLOBAL hDevMode = NULL);	/* for printing */
 	
-	BITMAPINFO * ConvertDDBToDIB(HBITMAP bitmap, HPALETTE hPal, DWORD dwCompression);
+	BITMAPINFO * ConvertDDBToDIB(HBITMAP bitmap, HPALETTE hPal, DWORD dwCompression);  
 
 	virtual GR_Font*		_findFont(const char* pszFontFamily,
 									  const char* pszFontStyle,

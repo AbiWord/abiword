@@ -671,17 +671,17 @@ void GR_Win32USPGraphics::_setupFontOnDC(GR_Win32USPFont *pFont, bool bZoomMe)
 			DWORD e = GetLastError();
 			LPVOID lpMsgBuf;
  
-			FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+			FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
 						  NULL,
 						  e,
 						  MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-						  (LPTSTR) &lpMsgBuf,
+						  (LPWSTR) &lpMsgBuf,
 						  0,
 						  NULL);
 
 			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
-			LOGFONT lf;
-			if(GetObject(hFont, sizeof(LOGFONT), &lf))
+			LOGFONTW lf;
+			if(GetObjectW(hFont, sizeof(LOGFONTW), &lf))
 			{
 				// this assumes that the lfFaceName is a char string; it could be wchar in
 				// fact but it seems to work elsewhere in the win32 graphics class
@@ -692,7 +692,7 @@ void GR_Win32USPGraphics::_setupFontOnDC(GR_Win32USPFont *pFont, bool bZoomMe)
 				LOG_USP_EXCPT("Could not select font into DC")
 			}
 
-			LocalFree( lpMsgBuf );
+			LocalFree(lpMsgBuf );
 		}
 
 		// remember which font we loaded
@@ -1308,10 +1308,10 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 
 		if(!iAscentScreen)
 		{
-			TEXTMETRIC tm;
+			TEXTMETRICW tm;
 			memset(&tm, 0, sizeof(tm));
 
-			GetTextMetrics(m_hdc, &tm);
+			GetTextMetricsW(m_hdc, &tm);
 			iAscentScreen = (UT_sint32)((double)tm.tmAscent*(double)getResolution()*100.0/
 										((double)getDeviceResolution()*(double)getZoomPercentage()));
 		
@@ -1457,10 +1457,10 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 			_setupFontOnDC(pFont, false);
 			bFontSetUpOnDC = true;
 			
-			TEXTMETRIC tm;
+			TEXTMETRICW tm;
 			memset(&tm, 0, sizeof(tm));
 
-			GetTextMetrics(getPrintDC(), &tm);
+			GetTextMetricsW(getPrintDC(), &tm);
 
 #if 0 //def DEBUG
 			HDC printHDC = UT_GetDefaultPrinterDC();
