@@ -77,6 +77,9 @@ void OXMLi_StreamListener::setupStates(OXML_PartType type, const char * partId)
 		this->pushState(state);
 		state = new OXMLi_ListenerState_Table();
 		this->pushState(state);
+		//the ordering is important here: image has to come before textbox
+		//because both image and textbox are children of <shape> and 
+		//rqst->handle flag is only set in textbox, image only sniffs.
 		state = new OXMLi_ListenerState_Image();
 		this->pushState(state);
 		state = new OXMLi_ListenerState_Textbox();

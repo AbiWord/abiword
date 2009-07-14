@@ -39,6 +39,10 @@ public:
 	void startElement (OXMLi_StartElementRequest * rqst);
 	void endElement (OXMLi_EndElementRequest * rqst);
 	void charData (OXMLi_CharDataRequest * rqst);
+
+private:
+	bool addImage(const std::string & id);
+	std::string m_style;
 };
 
 #endif //_OXMLI_LISTENERSTATE_IMAGE_H_
