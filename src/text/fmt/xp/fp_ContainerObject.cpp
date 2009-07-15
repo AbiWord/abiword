@@ -854,6 +854,13 @@ void fg_FillType::setHeight(GR_Graphics * pG, UT_sint32 iHeight)
  */
 void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_sint32 height)
 {
+	if(y < -9999999)
+	{
+	     // Whoops! object is offscreen!
+	     // Bailout
+	     return;
+	}
+
   //
   // Images appear to be 1 pixel narrower than rectangular
   // fills

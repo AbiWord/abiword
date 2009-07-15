@@ -344,6 +344,12 @@ void fp_Run::Fill(GR_Graphics * pG, UT_sint32 x, UT_sint32 y, UT_sint32 width,
 	{
 		return;
 	}
+	if(y < -9999999)
+	{
+			// Whoops! object is offscreen!
+		    // Bailout
+			return;
+	}
 	UT_sint32 srcX = 0;
 	UT_sint32 srcY = 0;
 	fp_Line * pLine = getLine();
