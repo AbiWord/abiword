@@ -59,13 +59,13 @@ void AP_Win32Dialog_Field::runModal(XAP_Frame * pFrame)
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 	
-	LPCTSTR lpTemplate = NULL;
+	LPCWSTR lpTemplate = NULL;
 	
 	UT_return_if_fail (m_id == AP_DIALOG_ID_FIELD);
 	
-	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_FIELD);
+	lpTemplate = MAKEINTRESOURCEW(AP_RID_DIALOG_FIELD);
 	
-	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
+	int result = DialogBoxParamW(pWin32App->getInstance(),lpTemplate,
 		static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 		(DLGPROC)s_dlgProc,(LPARAM)this);
 	UT_ASSERT_HARMLESS((result != -1));
@@ -81,11 +81,11 @@ BOOL CALLBACK AP_Win32Dialog_Field::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,L
 	switch (msg){
 	case WM_INITDIALOG:
 		pThis = (AP_Win32Dialog_Field *)lParam;
-		SetWindowLong(hWnd,DWL_USER,lParam);
+		SetWindowLongW(hWnd,DWL_USER,lParam);
 		return pThis->_onInitDialog(hWnd,wParam,lParam);
 		
 	case WM_COMMAND:
-		pThis = (AP_Win32Dialog_Field *)GetWindowLong(hWnd,DWL_USER);
+		pThis = (AP_Win32Dialog_Field *)GetWindowLongW(hWnd,DWL_USER);
 		return pThis->_onCommand(hWnd,wParam,lParam);
 		
 	default:
@@ -97,9 +97,9 @@ void AP_Win32Dialog_Field::SetTypesList(void)
 {
 	for (int i = 0;fp_FieldTypes[i].m_Desc != NULL;i++) 
 	{
-		SendMessage(m_hwndTypes, LB_ADDSTRING, 0, (LPARAM)fp_FieldTypes[i].m_Desc);
+		SendMessageW(m_hwndTypes, LB_ADDSTRING, 0, (LPARAM)fp_FieldTypes[i].m_Desc);
 	}
-	SendMessage(m_hwndTypes, LB_SETCURSEL, 0, 0);
+	SendMessageW(m_hwndTypes, LB_SETCURSEL, 0, 0);
 	m_iTypeIndex = 0;
 }
 
@@ -107,7 +107,7 @@ void AP_Win32Dialog_Field::SetFieldsList(void)
 {
 	fp_FieldTypesEnum  FType = fp_FieldTypes[m_iTypeIndex].m_Type;
 
-	SendMessage(m_hwndFormats, LB_RESETCONTENT, 0, 0);
+	SendMessageW(m_hwndFormats, LB_RESETCONTENT, 0, 0);
 	int i;
 	for (i = 0;fp_FieldFmts[i].m_Tag != NULL;i++) 
 	{
@@ -121,24 +121,24 @@ void AP_Win32Dialog_Field::SetFieldsList(void)
 		   (fp_FieldFmts[i].m_Num != FPFIELD_footnote_anch) &&
 		   (fp_FieldFmts[i].m_Num != FPFIELD_footnote_ref))
 		{ 
-			UT_sint32 index = SendMessage(m_hwndFormats, LB_ADDSTRING, 0, (LPARAM)fp_FieldFmts[i].m_Desc);
+			UT_sint32 index = SendMessageW(m_hwndFormats, LB_ADDSTRING, 0, (LPARAM)fp_FieldFmts[i].m_Desc);
 			if (index != LB_ERR && index != LB_ERRSPACE)
 			{
-				SendMessage(m_hwndFormats, LB_SETITEMDATA, (WPARAM)index, (LPARAM)i);
+				SendMessageW(m_hwndFormats, LB_SETITEMDATA, (WPARAM)index, (LPARAM)i);
 			}
 		}
 	}
-	SendMessage(m_hwndFormats, LB_SETCURSEL, 0, 0);
+	SendMessageW(m_hwndFormats, LB_SETCURSEL, 0, 0);
 	_FormatListBoxChange();
 }
 
-#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+#define _DS(c,s)	SetDlgItemTextW(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	SetDlgItemTextW(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 BOOL AP_Win32Dialog_Field::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	
+	/*
 	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_Field_FieldTitle));
 	
 	// localize controls
@@ -156,6 +156,7 @@ BOOL AP_Win32Dialog_Field::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*
 	SetTypesList();
 	SetFieldsList();
 	XAP_Win32DialogHelper::s_centerDialog(hWnd);		
+    */
 	return 1;				// 1 == we did not call SetFocus()
 }
 
@@ -172,7 +173,7 @@ BOOL AP_Win32Dialog_Field::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*
 	case IDOK:				// also AP_RID_DIALOG_FIELD_BTN_OK
 		// set the extra param
 		gchar param[256];
-		GetWindowText(m_hwndParam,(LPTSTR) &param[0], 256);
+		GetWindowTextW(m_hwndParam,(LPWSTR) &param[0], 256);
 		setParameter(param);
 		EndDialog(hWnd,0);
 		return 1;
@@ -212,10 +213,10 @@ BOOL AP_Win32Dialog_Field::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*
 
 void AP_Win32Dialog_Field::_FormatListBoxChange(void)
 {
-	m_iTypeIndex = SendMessage(m_hwndTypes, LB_GETCURSEL, 0, 0);
+	m_iTypeIndex = SendMessageW(m_hwndTypes, LB_GETCURSEL, 0, 0);
 
-	UT_sint32 index = SendMessage(m_hwndFormats, LB_GETCURSEL, 0, 0);
-	UT_sint32 tag = SendMessage(m_hwndFormats, LB_GETITEMDATA, index, 0);
+	UT_sint32 index = SendMessageW(m_hwndFormats, LB_GETCURSEL, 0, 0);
+	UT_sint32 tag = SendMessageW(m_hwndFormats, LB_GETITEMDATA, index, 0);
 	UT_ASSERT(tag != LB_ERR);
 
 	m_iFormatIndex = tag;
