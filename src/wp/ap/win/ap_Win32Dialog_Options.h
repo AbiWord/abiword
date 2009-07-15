@@ -74,7 +74,6 @@ private:
 
 	void						_onInitDialog();
 	void						_onKillActive(){};
-//	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);            //TODO
 		
 	AP_Win32Dialog_Options*		m_pParent;		
 	

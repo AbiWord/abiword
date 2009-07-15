@@ -56,8 +56,8 @@
 
 /*****************************************************************/
 
-#define GWL(hwnd)		(AP_Win32Dialog_Options*)GetWindowLong((hwnd), DWL_USER)
-#define SWL(hwnd, d)	(AP_Win32Dialog_Options*)SetWindowLong((hwnd), DWL_USER,(LONG)(d))
+#define GWL(hwnd)		(AP_Win32Dialog_Options*)GetWindowLongW((hwnd), DWL_USER)
+#define SWL(hwnd, d)	(AP_Win32Dialog_Options*)SetWindowLongW((hwnd), DWL_USER,(LONG)(d))
 #define MINAUTOSAVEPERIOD	1
 #define MAXAUTOSAVEPERIOD	120
 
@@ -167,9 +167,6 @@ struct {
 	{ DIM_PI, XAP_STRING_ID_DLG_Unit_pica },
 };
 #define SIZE_aAlignUnit  (sizeof(s_aAlignUnit)/sizeof(s_aAlignUnit[0]))
-//#define _CDB(c,i)	CheckDlgButton(hWnd,AP_RID_DIALOG_##c,_getCheckItemValue(i))
-//#define _DS2(c,s)	SetDlgItemText(getHandle(),AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-//#define _DSX2(c,s)	SetDlgItemText(getHandle(),AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 #define _CDB(c,i)	checkDlgButton(AP_RID_DIALOG_##c,_getCheckItemValue(i))
 #define _DS2(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
 #define _DSX2(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
@@ -379,7 +376,7 @@ void AP_Win32Dialog_Options::_setAutoSaveFilePeriod(const UT_String &stPeriod)
 UT_Dimension AP_Win32Dialog_Options::_gatherViewRulerUnits(void)
 {
 	HWND hwndAlign = GetDlgItem((HWND)getPage(PG_GENERAL), AP_RID_DIALOG_OPTIONS_COMBO_UNITS);
-	int nSel = SendMessage(hwndAlign, CB_GETCURSEL, 0, 0);
+	int nSel = SendMessageW(hwndAlign, CB_GETCURSEL, 0, 0);
 
 	if( nSel != CB_ERR )
 		return s_aAlignUnit[nSel].dim;
@@ -396,7 +393,7 @@ void  AP_Win32Dialog_Options::_setViewRulerUnits(UT_Dimension dim)
 		n1 = 0;
 
 	HWND hwndAlign = GetDlgItem((HWND)getPage(PG_GENERAL), AP_RID_DIALOG_OPTIONS_COMBO_UNITS);
-	SendMessage(hwndAlign, CB_SETCURSEL, (WPARAM)n1, 0);
+	SendMessageW(hwndAlign, CB_SETCURSEL, (WPARAM)n1, 0);
 }
 
 int AP_Win32Dialog_Options::_gatherNotebookPageNum(void)
@@ -414,11 +411,11 @@ void AP_Win32Dialog_Options::_gatherUILanguage(UT_String &stRetVal)
 	HWND hCtrlDocLang = GetDlgItem((HWND)getPage(PG_GENERAL), AP_RID_DIALOG_OPTIONS_COMBO_UILANG);
 	UT_Language	lang;
 	const char* pLang;
-	int nIndex = SendMessage(hCtrlDocLang,  CB_GETCURSEL , 0,0);
+	int nIndex = SendMessageW(hCtrlDocLang,  CB_GETCURSEL , 0,0);
 	
 	if (nIndex!=CB_ERR)
 	{
-		int nID = SendMessage(hCtrlDocLang,  CB_GETITEMDATA , nIndex,0);
+		int nID = SendMessageW(hCtrlDocLang,  CB_GETITEMDATA , nIndex,0);
 		pLang =  (const char*)lang.getNthLangCode(nID);		
 		stRetVal = pLang;
 	}				
@@ -432,13 +429,13 @@ void AP_Win32Dialog_Options::_setUILanguage(const UT_String &stExt)
 	int id = lang.getIndxFromCode(stExt.c_str());
 	HWND hCtrlDocLang = GetDlgItem((HWND)getPage(PG_GENERAL), AP_RID_DIALOG_OPTIONS_COMBO_UILANG);
 
-	int nCount = SendMessage(hCtrlDocLang, CB_GETCOUNT, 0, 0);		
+	int nCount = SendMessageW(hCtrlDocLang, CB_GETCOUNT, 0, 0);		
 	
 	for (int i=0; i<nCount;i++)
 	{
-		if (SendMessage(hCtrlDocLang,  CB_GETITEMDATA , i,0)==id)
+		if (SendMessageW(hCtrlDocLang,  CB_GETITEMDATA , i,0)==id)
 		{
-			SendMessage(hCtrlDocLang, CB_SETCURSEL, i, 0);				
+			SendMessageW(hCtrlDocLang, CB_SETCURSEL, i, 0);				
 			break;
 		}
 	}		
@@ -452,10 +449,10 @@ void AP_Win32Dialog_Options::_setOuterQuoteStyle(const gint index)
 	HWND hCombo = GetDlgItem((HWND)getPage(PG_SMARTQUOTES), AP_RID_DIALOG_OPTIONS_COMBO_OUTERQUOTE);
 	UT_return_if_fail(hCombo);
 
-	int nCount = SendMessage(hCombo, CB_GETCOUNT, 0, 0);
+	int nCount = SendMessageW(hCombo, CB_GETCOUNT, 0, 0);
 	UT_return_if_fail(index >= 0 && index < nCount);
 
-	SendMessage(hCombo, CB_SETCURSEL, index, 0);
+	SendMessageW(hCombo, CB_SETCURSEL, index, 0);
 }
 
 void AP_Win32Dialog_Options::_setInnerQuoteStyle(const gint index)
@@ -463,10 +460,10 @@ void AP_Win32Dialog_Options::_setInnerQuoteStyle(const gint index)
 	HWND hCombo = GetDlgItem((HWND)getPage(PG_SMARTQUOTES), AP_RID_DIALOG_OPTIONS_COMBO_INNERQUOTE);
 	UT_return_if_fail(hCombo);
 
-	int nCount = SendMessage(hCombo, CB_GETCOUNT, 0, 0);
+	int nCount = SendMessageW(hCombo, CB_GETCOUNT, 0, 0);
 	UT_return_if_fail(index >= 0 && index < nCount);
 
-	SendMessage(hCombo, CB_SETCURSEL, index, 0);
+	SendMessageW(hCombo, CB_SETCURSEL, index, 0);
 }
 
 gint AP_Win32Dialog_Options::_gatherOuterQuoteStyle()
@@ -474,7 +471,7 @@ gint AP_Win32Dialog_Options::_gatherOuterQuoteStyle()
 	HWND hCombo = GetDlgItem((HWND)getPage(PG_SMARTQUOTES), AP_RID_DIALOG_OPTIONS_COMBO_OUTERQUOTE);
 	UT_return_val_if_fail(hCombo, 0);
 
-	int nIndex = SendMessage(hCombo,  CB_GETCURSEL , 0,0);
+	int nIndex = SendMessageW(hCombo,  CB_GETCURSEL , 0,0);
 	UT_return_val_if_fail(nIndex != CB_ERR, 0);
 
 	return nIndex;
@@ -485,7 +482,7 @@ gint AP_Win32Dialog_Options::_gatherInnerQuoteStyle()
 	HWND hCombo = GetDlgItem((HWND)getPage(PG_SMARTQUOTES), AP_RID_DIALOG_OPTIONS_COMBO_INNERQUOTE);
 	UT_return_val_if_fail(hCombo, 0);
 
-	int nIndex = SendMessage(hCombo,  CB_GETCURSEL , 0,0);
+	int nIndex = SendMessageW(hCombo,  CB_GETCURSEL , 0,0);
 	UT_return_val_if_fail(nIndex != CB_ERR, 0);
 
 	return nIndex;	
@@ -515,9 +512,9 @@ BOOL AP_Win32Dialog_Options_Sheet::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /
 	
 	if (wID==IDOK)
 	{			
-		AP_Win32Dialog_Options_Sheet * t = (AP_Win32Dialog_Options_Sheet *) GetWindowLong(hWnd, GWL_USERDATA);					
+		AP_Win32Dialog_Options_Sheet * t = (AP_Win32Dialog_Options_Sheet *) GetWindowLongW(hWnd, GWL_USERDATA);					
 		HWND hWndPref = t->getParent()->getPage(PG_DOCUMENT);
-		AP_Win32Dialog_Options_Document * prefPag = (AP_Win32Dialog_Options_Document *) GetWindowLong(hWndPref, GWL_USERDATA);							
+		AP_Win32Dialog_Options_Document * prefPag = (AP_Win32Dialog_Options_Document *) GetWindowLongW(hWndPref, GWL_USERDATA);							
 				
 		if (!prefPag->isAutoSaveInRange()) return 0;
 		
@@ -528,7 +525,7 @@ BOOL AP_Win32Dialog_Options_Sheet::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /
 	
 	if (wID==ID_APPLY_NOW)	// Save default button
 	{
-		AP_Win32Dialog_Options_Sheet * t = (AP_Win32Dialog_Options_Sheet *) GetWindowLong(hWnd, GWL_USERDATA);					
+		AP_Win32Dialog_Options_Sheet * t = (AP_Win32Dialog_Options_Sheet *) GetWindowLongW(hWnd, GWL_USERDATA);					
 		t->getParent()->_event_SetDefaults();				
 		return 0;
 	}
@@ -629,7 +626,7 @@ void AP_Win32Dialog_Options_Spelling::_onInitDialog()
 
 	for(i=0; boldFields[i]; i++) 
 	{
-		SendMessage(GetDlgItem(getHandle(), boldFields[i]), WM_SETFONT, 
+		SendMessageW(GetDlgItem(getHandle(), boldFields[i]), WM_SETFONT, 
 			(WPARAM)(AP_Win32Dialog_Options*)getContainer()->getBoldFontHandle(), MAKELPARAM(FALSE /* Redraw */, 0));
 	}
 		
@@ -734,7 +731,7 @@ void AP_Win32Dialog_Options_General::_onInitDialog()
 
 	for(i=0; boldFields[i]; i++) 
 	{
-		SendMessage(GetDlgItem(getHandle(), boldFields[i]), WM_SETFONT, 
+		SendMessageW(GetDlgItem(getHandle(), boldFields[i]), WM_SETFONT, 
 			(WPARAM)(AP_Win32Dialog_Options*)getContainer()->getBoldFontHandle(), MAKELPARAM(FALSE /* Redraw */, 0));
 	}
 
@@ -758,11 +755,11 @@ void AP_Win32Dialog_Options_General::_onInitDialog()
 		EnableWindow(GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_COMBO_UILANG), FALSE);
 
 
-	SetWindowLong(getHandle(), GWL_USERDATA, (LONG)this);
-    SendMessage(GetDlgItem (m_hDlg, AP_RID_DIALOG_OPTIONS_COMBO_UNITS), 
+	SetWindowLongW(getHandle(), GWL_USERDATA, (LONG)this);
+    SendMessageW(GetDlgItem (m_hDlg, AP_RID_DIALOG_OPTIONS_COMBO_UNITS), 
 		WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), MAKELPARAM(TRUE, 0));
 		
-	SendMessage(GetDlgItem (m_hDlg, AP_RID_DIALOG_OPTIONS_COMBO_UILANG), 
+	SendMessageW(GetDlgItem (m_hDlg, AP_RID_DIALOG_OPTIONS_COMBO_UILANG), 
 		WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), MAKELPARAM(TRUE, 0));	
 	
 }
@@ -772,7 +769,7 @@ int CALLBACK AP_Win32Dialog_Options_General::s_pageWndProc(HWND hWnd, UINT msg, 
 { 	
 	if (msg==WM_NOTIFY)
 	{
-		AP_Win32Dialog_Options_General *pThis = (AP_Win32Dialog_Options_General *)GetWindowLong(hWnd, GWL_USERDATA);					
+		AP_Win32Dialog_Options_General *pThis = (AP_Win32Dialog_Options_General *)GetWindowLongW(hWnd, GWL_USERDATA);					
 		
 		NMHDR* pHdr = (NMHDR*)lParam;
 
@@ -856,20 +853,20 @@ void AP_Win32Dialog_Options_Document::_onInitDialog()
 	SetDlgItemInt(getHandle(), AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod, 1, FALSE );
 	
 	// Set the range for the period to 1-360
-	SendMessage(GetDlgItem(getHandle(),AP_RID_DIALOG_OPTIONS_SPN_AutoSavePeriodSpin),UDM_SETBUDDY, (WPARAM) GetDlgItem(getHandle(),AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod),0);	
-	SendMessage(GetDlgItem(getHandle(),AP_RID_DIALOG_OPTIONS_SPN_AutoSavePeriodSpin),UDM_SETRANGE,0,(WPARAM)MAKELONG(MAXAUTOSAVEPERIOD,MINAUTOSAVEPERIOD));
-	SendMessage(GetDlgItem(getHandle(),AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod),EM_LIMITTEXT,(WPARAM)3,(WPARAM)0);
+	SendMessageW(GetDlgItem(getHandle(),AP_RID_DIALOG_OPTIONS_SPN_AutoSavePeriodSpin),UDM_SETBUDDY, (WPARAM) GetDlgItem(getHandle(),AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod),0);	
+	SendMessageW(GetDlgItem(getHandle(),AP_RID_DIALOG_OPTIONS_SPN_AutoSavePeriodSpin),UDM_SETRANGE,0,(WPARAM)MAKELONG(MAXAUTOSAVEPERIOD,MINAUTOSAVEPERIOD));
+	SendMessageW(GetDlgItem(getHandle(),AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod),EM_LIMITTEXT,(WPARAM)3,(WPARAM)0);
 	
 	// Limit the extension to 5 characters (plus the period)
-	SendMessage(GetDlgItem(getHandle(),AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension),EM_LIMITTEXT,(WPARAM)6,(WPARAM)0);
-	SetWindowLong(getHandle(), GWL_USERDATA, (LONG)this);	
+	SendMessageW(GetDlgItem(getHandle(),AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension),EM_LIMITTEXT,(WPARAM)6,(WPARAM)0);
+	SetWindowLongW(getHandle(), GWL_USERDATA, (LONG)this);	
 	
 	// Setup bold font for some controls	
 	UINT boldFields[]={AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile, AP_RID_DIALOG_OPTIONS_STATIC_BidiOptions, 0};
 
 	for(i=0; boldFields[i]; i++) 
 	{
-		SendMessage(GetDlgItem(getHandle(), boldFields[i]), WM_SETFONT, 
+		SendMessageW(GetDlgItem(getHandle(), boldFields[i]), WM_SETFONT, 
 			(WPARAM)(AP_Win32Dialog_Options*)getContainer()->getBoldFontHandle(), MAKELPARAM(FALSE /* Redraw */, 0));
 	}
 
@@ -945,8 +942,8 @@ void AP_Win32Dialog_Options_SmartQuotes::_onInitDialog()
 		if(szDisplayString)
 		{
 			UT_String tmp = AP_Win32App::s_fromUTF8ToWinLocale(szDisplayString);
-			SendMessage(hComboOuter, CB_ADDSTRING, 0, (LPARAM)tmp.c_str());
-			SendMessage(hComboInner, CB_ADDSTRING, 0, (LPARAM)tmp.c_str());
+			SendMessageW(hComboOuter, CB_ADDSTRING, 0, (LPARAM)tmp.c_str());
+			SendMessageW(hComboInner, CB_ADDSTRING, 0, (LPARAM)tmp.c_str());
 			FREEP(szDisplayString);
 		}
 	}
