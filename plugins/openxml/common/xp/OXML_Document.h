@@ -115,6 +115,10 @@ public:
 	std::string getBookmarkName(const std::string & bookmarkId) const;
 	bool setBookmarkName(const std::string & bookmarkId, const std::string & bookmarkName);
 
+	void setPageWidth(const std::string & width);
+	void setPageHeight(const std::string & height);
+	void setPageOrientation(const std::string & orientation);
+
 private:
 	static OXML_Document* s_docInst;
 	OXML_Document();
@@ -139,7 +143,12 @@ private:
 	std::map<std::string, std::string> m_numberingMap;
 	std::map<std::string, std::string> m_bookmarkMap;
 
+	std::string m_pageWidth;
+	std::string m_pageHeight;
+	std::string m_pageOrientation;
+
 	void _assignHdrFtrIds();
+	UT_Error applyPageProps(PD_Document* pDocument);
 };
 
 #endif //_OXML_DOCUMENT_H_

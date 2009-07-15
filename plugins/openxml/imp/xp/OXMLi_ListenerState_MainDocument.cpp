@@ -29,6 +29,7 @@
 #include <OXML_Section.h>
 
 // AbiWord includes
+#include <ut_math.h>
 #include <ut_debugmsg.h>
 
 // External includes
@@ -55,6 +56,29 @@ void OXMLi_ListenerState_MainDocument::startElement (OXMLi_StartElementRequest *
 		rqst->sect_stck->push(sect);
 		rqst->handled = true;
 	}
+	else if(nameMatches(rqst->pName, NS_W_KEY, "pgSz"))
+	{
+		const gchar* width = attrMatches(NS_W_KEY, "w", rqst->ppAtts);
+		const gchar* height = attrMatches(NS_W_KEY, "h", rqst->ppAtts);
+		const gchar* orientation = attrMatches(NS_W_KEY, "orient", rqst->ppAtts);
+
+		OXML_Document* doc = OXML_Document::getInstance();
+
+		if(!width || !height)
+		{
+			rqst->handled = true;
+			return;
+		}
+		
+		doc->setPageWidth(_TwipsToInches(width));
+		doc->setPageHeight(_TwipsToInches(height));
+
+		if(orientation) //this is an optional attribute
+		{
+			doc->setPageOrientation(orientation);
+		}
+		rqst->handled = true;
+	}
 }
 
 void OXMLi_ListenerState_MainDocument::endElement (OXMLi_EndElementRequest * rqst)
@@ -77,6 +101,10 @@ void OXMLi_ListenerState_MainDocument::endElement (OXMLi_EndElementRequest * rqs
 			UT_return_if_fail(_error_if_fail(doc != NULL)); 
 			UT_return_if_fail(_error_if_fail( UT_OK == doc->appendSection(sect) )); 
 		}
+		rqst->handled = true;
+	}
+	else if(nameMatches(rqst->pName, NS_W_KEY, "pgSz"))
+	{
 		rqst->handled = true;
 	}
 }

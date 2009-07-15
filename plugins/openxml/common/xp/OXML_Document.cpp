@@ -31,6 +31,7 @@
 #include <OXML_FontManager.h>
 
 // AbiWord includes
+#include <fp_PageSize.h>
 #include <ut_types.h>
 #include <pd_Document.h>
 
@@ -66,7 +67,10 @@ OXML_SharedSection OXML_Document::getCurrentSection()
 OXML_Document::OXML_Document() : 
 	OXML_ObjectWithAttrProp(), 
 	m_theme(), 
-	m_fontManager()
+	m_fontManager(),
+	m_pageWidth(""),
+	m_pageHeight(""),
+	m_pageOrientation("")
 {
 	clearStyles();
 	clearHeaders();
@@ -468,7 +472,44 @@ UT_Error OXML_Document::addToPT(PD_Document * pDocument)
 		if (ret != UT_OK) return ret;
 	}
 
-	return ret;
+	return applyPageProps(pDocument);
+}
+
+UT_Error OXML_Document::applyPageProps(PD_Document* pDocument)
+{
+	const gchar* pageAtts[13];
+	int index = 0;
+
+	if(!m_pageOrientation.compare(""))
+		m_pageOrientation = "portrait";
+
+	if(m_pageWidth.compare(""))
+	{
+		pageAtts[index++] = "width";
+		pageAtts[index++] = m_pageWidth.c_str();
+	}
+	if(m_pageHeight.compare(""))
+	{
+		pageAtts[index++] = "height";
+		pageAtts[index++] = m_pageHeight.c_str();
+	}
+	if(m_pageOrientation.compare(""))
+	{
+		pageAtts[index++] = "orientation";
+		pageAtts[index++] = m_pageOrientation.c_str();
+	}
+	pageAtts[index++] = "units";
+	pageAtts[index++] = "in";
+	pageAtts[index++] = "page-scale";
+	pageAtts[index++] = "1.0";
+
+	fp_PageSize ps(UT_convertDimensionless(m_pageWidth.c_str()), UT_convertDimensionless(m_pageHeight.c_str()), DIM_IN);
+	pageAtts[index++] = "pagetype";
+	pageAtts[index++] = ps.getPredefinedName();
+
+	pageAtts[index] = 0; // To signal the end of the array
+   
+	return pDocument->setPageSizeFromFile(pageAtts) ? UT_OK : UT_ERROR;
 }
 
 void OXML_Document::_assignHdrFtrIds()
@@ -513,3 +554,17 @@ bool OXML_Document::setBookmarkName(const std::string & bookmarkId, const std::s
 	return m_bookmarkMap.find(bookmarkId) != m_bookmarkMap.end();
 }
 
+void OXML_Document::setPageWidth(const std::string & width)
+{
+	m_pageWidth = width;
+}
+
+void OXML_Document::setPageHeight(const std::string & height)
+{
+	m_pageHeight = height;
+}
+
+void OXML_Document::setPageOrientation(const std::string & orientation)
+{
+	m_pageOrientation = orientation;
+}
