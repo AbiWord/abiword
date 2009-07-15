@@ -1175,6 +1175,7 @@ typedef enum {
 	RTF_KW_subject,
 	RTF_KW_super,
 	RTF_KW_sv,
+	RTF_KW_svgblip,
 	RTF_KW_swpbdr,
 	RTF_KW_tab,
 	RTF_KW_tabsnoovrlp,

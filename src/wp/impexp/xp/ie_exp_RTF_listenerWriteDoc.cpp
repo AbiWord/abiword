@@ -59,6 +59,7 @@
 #include "fl_TableLayout.h"
 #include "fl_FrameLayout.h"
 #include "ut_rand.h"
+#include "ut_svg.h"
 
 #include "xap_EncodingManager.h"
 #include "ut_string_class.h"
@@ -1235,15 +1236,22 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 
 				UT_sint32 iImageWidth, iImageHeight;
 
-				if(mimetype == "image/png") {
+				if(mimetype == "image/png") 
+				{
 					m_pie->_rtf_keyword("pngblip");
 					UT_PNG_getDimensions(pbb,iImageWidth,iImageHeight);
 				}
-				else if(mimetype == "image/jpeg") {
+				else if(mimetype == "image/jpeg") 
+				{
 					m_pie->_rtf_keyword("jpegblip");
 					UT_JPEG_getDimensions(pbb,iImageWidth,iImageHeight);
 				}
-
+				else if (mimetype == "image/svg+xml")
+				{
+					m_pie->_rtf_keyword("svgblip");
+					UT_sint32 layoutwidth,layoutheight;
+					UT_SVG_getDimensions(pbb,NULL,iImageWidth,iImageHeight,layoutwidth,layoutheight);
+				}
 				// compute scale factors...
 
 				double dImageWidth = static_cast<double>(iImageWidth);
@@ -5080,9 +5088,16 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 				m_pie->_rtf_keyword("pngblip");
 				UT_PNG_getDimensions(pbb,iImageWidth,iImageHeight);
 			}
-			else if(mimetype == "image/jpeg") {
+			else if(mimetype == "image/jpeg") 
+			{
 				m_pie->_rtf_keyword("jpegblip");
 				UT_JPEG_getDimensions(pbb,iImageWidth,iImageHeight);
+			}
+			else if (mimetype == "image/svg+xml")
+			{
+				m_pie->_rtf_keyword("svgblip");
+				UT_sint32 layoutwidth,layoutheight;
+				UT_SVG_getDimensions(pbb,NULL,iImageWidth,iImageHeight,layoutwidth,layoutheight);
 			}
 
 			// compute scale factors...

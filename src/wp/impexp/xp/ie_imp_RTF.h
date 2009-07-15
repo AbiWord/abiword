@@ -572,7 +572,8 @@ public:
 		picWMF,
 		picPICT,
 		picEMF,
-		picGIF
+		picGIF,
+		picSVG
 	};
 
 protected:

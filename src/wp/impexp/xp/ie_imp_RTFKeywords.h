@@ -1169,6 +1169,7 @@ _rtf_keyword rtfKeywords[] = {
 	{"subject", false, false, NO_CONTEXT, RTF_KW_subject }, 
 	{"super", false, false, NO_CONTEXT, RTF_KW_super }, 
 	{"sv", false, false, NO_CONTEXT, RTF_KW_sv }, 
+	{"svgblip", false, false, NO_CONTEXT, RTF_KW_svgblip }, /* abiword! */ 
 	{"swpbdr", false, false, NO_CONTEXT, RTF_KW_swpbdr }, 
 	{"tab", false, false, NO_CONTEXT, RTF_KW_tab }, 
 	{"tabsnoovrlp", false, false, NO_CONTEXT, RTF_KW_tabsnoovrlp }, /* 2000 */ 
