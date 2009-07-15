@@ -1546,6 +1546,8 @@ void GR_Graphics::beginBuffering(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_u
 	UT_uint32 top1 = y;
 	UT_uint32 bottom1 = y + width - 1;
 	
+	m_mainBufferPointer = getMainContext();
+	
 	if (m_bufferContainer.empty())
 	{
 		createOffscreenBuffer(x, y, width, height);
@@ -1553,7 +1555,7 @@ void GR_Graphics::beginBuffering(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_u
 	}
 	while (!suitableBufferFound)
 	{
-		std::pair<cairo_surface_t*, UT_uint32* > buffer = m_bufferContainer.at(i);
+		std::pair<cairo_t*, UT_uint32* > buffer = m_bufferContainer.at(i);
 		//extends for the buffer we're looking at in the deque
 		UT_uint32 left2 = buffer.second[0]; //x
 		UT_uint32 right2 = buffer.second[0] + buffer.second[1]; //x + width
@@ -1590,21 +1592,24 @@ void GR_Graphics::beginBuffering(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_u
 
 void GR_Graphics::createOffscreenBuffer(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_uint32 height)
 {
-	cairo_surface_t* newBuffer = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, width, height); /////////////////
+	cairo_pattern_t* sourcePattern = cairo_get_source(getMainContext());
+	cairo_surface_t* destSurface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, width, height);
+	cairo_t* newContext = cairo_create(destSurface);
+	cairo_set_source(newContext, sourcePattern);
 	UT_uint32 *newExtends = new UT_uint32[4];
 	newExtends[0] = x;
 	newExtends[1] = y;
 	newExtends[2] = width;
 	newExtends[3] = height;
 	
-	std::pair <cairo_surface_t*, UT_uint32*> tempPair (newBuffer, newExtends);
+	std::pair <cairo_t*, UT_uint32*> tempPair (newContext, newExtends);
 	m_bufferContainer.push_front(tempPair);
 	setActiveBuffer(tempPair.first);
 }
 
 void GR_Graphics::endBuffering()
 {
-	std::pair<cairo_surface_t*, UT_uint32*> tempPair;
+	std::pair<cairo_t*, UT_uint32*> tempPair;
 	setActiveBuffer(m_mainBufferPointer);
 	while (!m_bufferContainer.empty())
 	{
@@ -1616,15 +1621,28 @@ void GR_Graphics::endBuffering()
 	return;
 }
 
-/*cairo_surface_t* GR_Graphics::getBuffer()
+cairo_t* GR_Graphics::getBuffer()
 {
 	return m_bufferPointer;
-}*/
+}
 
-void GR_Graphics::setActiveBuffer(cairo_surface_t* buffer)
+void GR_Graphics::setActiveBuffer(cairo_t* buffer)
 {
 	m_bufferPointer = buffer;
 }
+
+cairo_t* GR_Graphics::getMainContext() //This is virtual
+{
+	UT_DEBUGMSG(("gr_Graphics virtual void getMainContext\n"));
+	//This will never actually get returned.
+	return m_mainBufferPointer;
+}
+
+void GR_Graphics::setMainContext(cairo_t* replacement) //This is also virtual.
+{ //Throws a warning. :-(
+	return;
+}
+
 
 #endif // #ifndef ABI_GRAPHICS_PLUGIN
 

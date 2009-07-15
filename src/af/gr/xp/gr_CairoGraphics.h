@@ -170,7 +170,10 @@ public:
 	virtual void           clearFont(void) {m_pPFont = NULL;} 
 
 	virtual void           setZoomPercentage(UT_uint32 iZoom);
-	
+
+	cairo_t* getMainContext(); //////////////////////////////////////////////
+	void setMainContext(cairo_t* replacement);
+		
 	///////////////////////////////////////////////////////////////////
 	// complex script processing
 	//

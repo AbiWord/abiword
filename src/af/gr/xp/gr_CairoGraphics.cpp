@@ -2985,6 +2985,16 @@ void GR_CairoGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 	}
 }
 
+cairo_t* GR_CairoGraphics::getMainContext()
+{
+	UT_DEBUGMSG(("gr_CairoGraphics virtual void getMainContext\n"));
+	return getCairo();
+}
+
+void GR_CairoGraphics::setMainContext(cairo_t* replacement)
+{
+	m_cr = *replacement;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //
