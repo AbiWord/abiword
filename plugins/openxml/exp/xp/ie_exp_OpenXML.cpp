@@ -2024,8 +2024,8 @@ UT_Error IE_Exp_OpenXML::startContentTypes()
 	str += "<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>";
 	str += "<Default Extension=\"xml\" ContentType=\"application/xml\"/>";
 	str += "<Default Extension=\"png\" ContentType=\"image/png\"/>";
-	str += "<Default Extension=\"jpg\" ContentType=\"image/jpg\"/>";
-	str += "<Default Extension=\"jpeg\" ContentType=\"image/jpg\"/>";
+	str += "<Default Extension=\"jpg\" ContentType=\"image/jpeg\"/>";
+	str += "<Default Extension=\"jpeg\" ContentType=\"image/jpeg\"/>";
 	str += "<Default Extension=\"gif\" ContentType=\"image/gif\"/>";
 	str += "<Default Extension=\"tiff\" ContentType=\"image/tiff\"/>";
 	str += "<Default Extension=\"svg\" ContentType=\"image/svg+xml\"/>";
