@@ -11,8 +11,11 @@ endif
 SUBDIRS += src plugins user
 
 if TOOLKIT_GTK
+
+if !EMBEDDED_HILDON
 desktopdir = $(datadir)/applications
 desktop_DATA = abiword.desktop
+endif
 
 mimedir = @ABIWORD_DATADIR@/mime-info
 mime_DATA = abiword.keys
