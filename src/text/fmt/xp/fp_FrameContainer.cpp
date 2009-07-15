@@ -108,6 +108,11 @@ void fp_FrameContainer::setPage(fp_Page * pPage)
 	}
 }
 
+
+bool fp_FrameContainer::isAbove(void)
+{
+  return  m_bIsAbove;
+}
 /*!
  * Returns true if the frame should be relocated before placing on a page
  */
@@ -573,6 +578,7 @@ void  fp_FrameContainer::drawHandles(dg_DrawArgs * pDA)
 	UT_sint32 iYlow = pDA->yoff - m_iYpad;
 
 	UT_Rect box(iXlow + pDA->pG->tlu(2), iYlow + pDA->pG->tlu(2), getFullWidth() - pDA->pG->tlu(4), iFullHeight - pDA->pG->tlu(4));
+	getPage()->expandDamageRect(box.left,box.top,box.width,box.height);
 	getView()->drawSelectionBox(box, true);
 }
 
@@ -626,6 +632,10 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 	dg_DrawArgs da = *pDA;
 	GR_Graphics * pG = da.pG;
 	UT_return_if_fail( pG);
+
+	UT_sint32 x = pDA->xoff - m_iXpad;
+	UT_sint32 y = pDA->yoff - m_iYpad;
+	getPage()->expandDamageRect(x,y,getFullWidth(),getFullHeight());
 	if(!pDA->bDirtyRunsOnly || m_bNeverDrawn)
 	{
 		if(m_bNeverDrawn)
@@ -636,11 +646,6 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 		getSectionLayout()->checkGraphicTick(pG);
 		srcX = -m_iXpad;
 		srcY = -m_iYpad;
-
-		UT_sint32 x = pDA->xoff - m_iXpad;
-		UT_sint32 y = pDA->yoff - m_iYpad;
-		getPage()->expandDamageRect(x,y,getFullWidth(),getFullHeight());
-
 		//
 		// Only fill to the bottom of the viewed page.
 		//

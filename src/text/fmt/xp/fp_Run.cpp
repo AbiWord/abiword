@@ -1219,8 +1219,16 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 {
 	if (pDA->bDirtyRunsOnly && !m_bDirty)
 	{
-		xxx_UT_DEBUGMSG(("fp_Run::Run %x not dirty returning \n",this));
-		return;
+		if(!getLine())
+			return;
+		if(!getLine()->getPage())
+				return;
+		if(!getLine()->getPage()->intersectsDamagedRect(this))
+		{
+			xxx_UT_DEBUGMSG(("fp_Run::Run %x not dirty returning \n",this));
+			return;
+		}
+		m_bDirty = true;
 	}
 
 	if(isHidden())
@@ -3758,8 +3766,12 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 
 	if (m_pImage)
 	{
+		// Paint the background if there is alpha in the image
+		if(pG->queryProperties(GR_Graphics::DGP_SCREEN) && m_pImage->hasAlpha())
+		{
+			Fill(pG,xoff,yoff,getWidth(),getHeight());
+		}
 		// draw the image (always)
-
 		painter.drawImage(m_pImage, xoff, yoff);
 
 		// if we're the selection, draw some pretty selection markers

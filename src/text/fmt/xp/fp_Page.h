@@ -149,6 +149,7 @@ public:
 	void                markDirtyOverlappingRuns(fp_FrameContainer * pFC);
     void                expandDamageRect(UT_sint32 x, UT_sint32 y, 
 										 UT_sint32 width, UT_sint32 height);
+        bool                intersectsDamagedRect(fp_ContainerObject * pObj);
 	void                redrawDamagedFrames(dg_DrawArgs* pDA);
 	bool                overlapsWrappedFrame(fp_Line * pLine);
 	bool                overlapsWrappedFrame(UT_Rect & rec);

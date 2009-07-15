@@ -867,6 +867,7 @@ void GR_Graphics::doRepaint( UT_Rect * rClip)
 */
 void GR_Graphics::fillRect(GR_Image * pImg, const UT_Rect & src, const UT_Rect & dest)
 {
+	UT_return_if_fail(pImg);
 	GR_Image * pImageSection = pImg->createImageSegment(this, src);
 	UT_return_if_fail(pImageSection);
 	drawImage(pImageSection,dest.left,dest.top);

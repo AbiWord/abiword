@@ -114,8 +114,7 @@ public:
 	  { m_bIsRightWrapped = b;}
 
 	bool                overlapsRect(UT_Rect & rec);
-	bool                isAbove(void)
-	        { return m_bIsAbove;}
+	bool                isAbove(void);
 	void                setAbove(bool bAbove)
 	        { m_bIsAbove = bAbove;} 
 	bool                isRelocate(void) const;

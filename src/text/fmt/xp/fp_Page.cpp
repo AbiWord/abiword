@@ -310,6 +310,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 			nWrappedObjs++;
 		}
 	}
+
 	if((nWrapped == 0) && (nWrappedObjs == 0))
 	{
 		xxx_UT_DEBUGMSG(("page %x nWrapped %d nWrappedObjs %d does not need updating \n",this,nWrapped,nWrappedObjs));
@@ -1123,15 +1124,26 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool /*bAlwaysUseWhiteBackground*/)
 		}
 		
 		dg_DrawArgs da = *pDA;
-#if 0
-		if(m_pView && (m_pView->getViewMode() != VIEW_PRINT) &&
-		   !pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
+		da.xoff += pFC->getX();
+		da.yoff += pFC->getY();
+		pFC->draw(&da);
+	}
+	//
+	// Handle Tight wrapped frames
+	//
+	count = m_vecAboveFrames.getItemCount();
+	for (i=0; i<count; i++)
+	{
+		fp_FrameContainer* pFC = m_vecAboveFrames.getNthItem(i);
+		if(!pFC->isTightWrapped())
+			continue;
+		UT_Rect r(pFC->getX(),pFC->getY(),pFC->getWidth(),pFC->getHeight());
+		if(m_rDamageRect.intersectsRect(&r))
 		{
-			fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
-			fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
-			da.yoff -= pFirstSectionLayout->getTopMargin();
+			pFC->setOverWrote();
 		}
-#endif
+		
+		dg_DrawArgs da = *pDA;
 		da.xoff += pFC->getX();
 		da.yoff += pFC->getY();
 		pFC->draw(&da);
@@ -1236,6 +1248,8 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool /*bAlwaysUseWhiteBackground*/)
 	for (i=0; i<count; i++)
 	{
 		fp_FrameContainer* pFC = m_vecAboveFrames.getNthItem(i);
+		if(pFC->isTightWrapped())
+			continue;
 		UT_Rect r(pFC->getX(),pFC->getY(),pFC->getWidth(),pFC->getHeight());
 		if(m_rDamageRect.intersectsRect(&r))
 		{
@@ -1286,6 +1300,17 @@ void   fp_Page::expandDamageRect(UT_sint32 x, UT_sint32 y,
 	UT_Rect r(x,y,width,height);
 	m_rDamageRect.unionRect(&r);
 	return;
+}
+
+/*!
+ * Returns true if the objects intersects the damaged region
+ */
+bool   fp_Page::intersectsDamagedRect(fp_ContainerObject * pObj)
+{
+	UT_Rect * pRec = pObj->getScreenRect();
+	bool bIntersects = m_rDamageRect.intersectsRect(pRec);
+	delete pRec;
+	return bIntersects;
 }
 
 void   fp_Page::redrawDamagedFrames(dg_DrawArgs* pDA)
