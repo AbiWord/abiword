@@ -593,11 +593,11 @@ GR_CairoGraphics::_calculateLogicalOffsets (PangoGlyphString * pGlyphs,
 	
 	int * pLogOffsets = new int [pGlyphs->num_glyphs];
  
-    // See http://www.abisource.com/mailinglists/abiword-dev/2006/Feb/0081.html
-    // for insight how this is supposeed to work and possible optimizations.
-
 	// In LTR text, the values in log_clusters are guaranteed to be increasing,
 	// in RTL text, the values in log_clusters are decreasing
+	
+	glong offset = 0;
+	const gchar *s = pUtf8;
 	
 	if (iVisDir == UT_BIDI_LTR ||
 		(pGlyphs->num_glyphs > 1 &&
@@ -605,8 +605,20 @@ GR_CairoGraphics::_calculateLogicalOffsets (PangoGlyphString * pGlyphs,
 	{
 		for(int i = 0; i < pGlyphs->num_glyphs; ++i)
 		{
+
 			int iOff = pGlyphs->log_clusters[i];
-			pLogOffsets[i] =  g_utf8_pointer_to_offset (pUtf8, pUtf8 + iOff);
+			
+		//      below is equivalent to 
+		//	pLogOffsets[i] =  g_utf8_pointer_to_offset (pUtf8, pUtf8 + iOff);
+		// 	but avoids quadratic behavior because we use s and offset from 
+		//      previous iteration
+
+    		        while (s <  pUtf8 + iOff)
+		        {
+				s = g_utf8_next_char (s);
+				offset++;
+		        }
+			pLogOffsets[i] =  offset;
 		}
 	}
 	else // GR_ShapingInfo.m_iVisDir == UT_BIDI_RTL)
@@ -614,7 +626,12 @@ GR_CairoGraphics::_calculateLogicalOffsets (PangoGlyphString * pGlyphs,
 		for(int i = pGlyphs->num_glyphs - 1; i >= 0; --i)
 		{
 			int iOff = pGlyphs->log_clusters[i];
-			pLogOffsets[i] =  g_utf8_pointer_to_offset (pUtf8, pUtf8 + iOff);
+  		        while (s <  pUtf8 + iOff)
+		        {
+				s = g_utf8_next_char (s);
+				offset++;
+		        }			
+			pLogOffsets[i] =  offset;
 		}
 	}
 
