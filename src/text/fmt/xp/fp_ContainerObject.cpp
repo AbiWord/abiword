@@ -894,15 +894,15 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 		{
 			srcX += xoff;
 			srcY += yoff;
-			if(getParent())
-			{
-			     m_color = getParent()->m_color;
-			     m_bColorSet = getParent()->m_bColorSet;
-			     m_TransColor = getParent()->m_TransColor;
-			     m_bTransColorSet = getParent()->m_bTransColorSet;
-			     if(m_pDocImage == NULL)
-			          m_pDocImage = getParent()->m_pDocImage;
-			}
+		}
+		if(getParent() && ((m_FillType == FG_FILL_IMAGE) || (m_FillType == FG_FILL_TRANSPARENT) ))
+		{
+			m_color = getParent()->m_color;
+			m_bColorSet = getParent()->m_bColorSet;
+			m_TransColor = getParent()->m_TransColor;
+			m_bTransColorSet = getParent()->m_bTransColorSet;
+			if(m_pDocImage == NULL)
+			    m_pDocImage = getParent()->m_pDocImage;
 		}
 	}
 	if(m_pContainer && (m_pContainer->getContainerType() == FP_CONTAINER_RUN))
@@ -1001,7 +1001,7 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 	}
 	if(m_FillType == FG_FILL_IMAGE)
 	{
-		 UT_DEBUGMSG(("Fill type Image ! srcX %d srcY %d x  %d y %d width %d height %d \n",srcX,srcY,x,y,width,height));
+		 xxx_UT_DEBUGMSG(("Fill type Image ! srcX %d srcY %d x  %d y %d width %d height %d \n",srcX,srcY,x,y,width,height));
 		 if((m_pDocImage == NULL) && (m_pDocLayout->getGraphicTick() != m_iGraphicTick))
 		 {
 			 _regenerateImage(pG);
@@ -1023,8 +1023,8 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 			 height -= iY;
 		 }
 		 if(m_pContainer)
-		   UT_DEBUGMSG((" ContainerType %s \n ",m_pContainer->getContainerString()));
-		 UT_DEBUGMSG(("m_pDocImage %p  Trans col %d m_bColorSet %d \n ",m_pDocImage, m_bTransColorSet, m_bColorSet));
+		   xxx_UT_DEBUGMSG((" ContainerType %s \n ",m_pContainer->getContainerString()));
+		 xxx_UT_DEBUGMSG(("m_pDocImage %p  Trans col %d m_bColorSet %d \n ",m_pDocImage, m_bTransColorSet, m_bColorSet));
 
 		src.left = srcX;
 		src.top = srcY;
@@ -1118,6 +1118,7 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 			}
 			else if(getParent() && getParent()->m_pDocImage)
 			{
+			    painter.fillRect(white,x,y,width,height);
 			    painter.fillRect(*getParent()->m_pDocImage,src,dest);
 			}
 			else
