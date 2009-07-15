@@ -313,9 +313,8 @@ GR_CairoGraphics::GR_CairoGraphics()
 	m_cr(NULL),
 	m_cursor(GR_CURSOR_INVALID),
 	m_cs(GR_Graphics::GR_COLORSPACE_COLOR),
-	m_curColor(0,0,0),
-	m_curColorDirty(true),
-	m_clipRectDirty(true),
+	m_curColorDirty(false),
+	m_clipRectDirty(false),
 	m_bIsSymbol(false),
 	m_bIsDingbat(false),
 	m_iPrevX1(0),
@@ -341,11 +340,11 @@ void GR_CairoGraphics::_initPango()
 {
 	m_pFontMap =  pango_cairo_font_map_new();
 	pango_cairo_font_map_set_resolution(PANGO_CAIRO_FONT_MAP(m_pFontMap), m_iDeviceResolution);	
-	m_pContext = pango_font_map_create_context(m_pFontMap);
+	m_pContext = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(m_pFontMap));
 
 	m_pLayoutFontMap = pango_cairo_font_map_new();
 	pango_cairo_font_map_set_resolution(PANGO_CAIRO_FONT_MAP(m_pLayoutFontMap), getResolution());	
-	m_pLayoutContext = pango_font_map_create_context(m_pLayoutFontMap);
+	m_pLayoutContext = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(m_pLayoutFontMap));
 
 	UT_DEBUGMSG(("Created LayoutFontMap %p Layout Context %p resolution %d device resolution %d \n", 
 				 m_pLayoutFontMap,	m_pLayoutContext, getResolution(),
