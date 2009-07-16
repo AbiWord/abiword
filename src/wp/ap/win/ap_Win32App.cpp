@@ -137,7 +137,7 @@ static bool s_createDirectoryIfNecessary(const char * szDir)
 		return false;
 	}
 
-	if (CreateDirectory(szDir,NULL))
+	if (CreateDirectoryA(szDir,NULL))
 		return true;
 
 	UT_DEBUGMSG(("Could not create Directory [%s].\n",szDir));
@@ -452,9 +452,9 @@ HICON AP_Win32App::getIcon(void)
 	UT_DEBUGMSG(("GetIcon(): system metrics [%d %d]\n",sx,sy));
 	
 	if ((sx==32) && (sy==32))
-		return LoadIcon(getInstance(), MAKEINTRESOURCE(AP_RID_ICON_APPLICATION_32));
+		return LoadIconW(getInstance(), MAKEINTRESOURCEW(AP_RID_ICON_APPLICATION_32));
 	else
-		return (HICON) LoadImage(getInstance(), MAKEINTRESOURCE(AP_RID_ICON_APPLICATION_32), IMAGE_ICON, 0,0,0);
+		return (HICON) LoadImageW(getInstance(), MAKEINTRESOURCEW(AP_RID_ICON_APPLICATION_32), IMAGE_ICON, 0,0,0);
 }
 
 HICON AP_Win32App::getSmallIcon(void)
@@ -465,9 +465,9 @@ HICON AP_Win32App::getSmallIcon(void)
 	UT_DEBUGMSG(("GetIcon(): system metrics [%d %d]\n",sx,sy));
 
 	if ((sx==16) && (sy==16))
-		return LoadIcon(getInstance(), MAKEINTRESOURCE(AP_RID_ICON_APPLICATION_16));
+		return LoadIconW(getInstance(), MAKEINTRESOURCEW(AP_RID_ICON_APPLICATION_16));
 	else
-		return (HICON) LoadImage(getInstance(), MAKEINTRESOURCE(AP_RID_ICON_APPLICATION_16), IMAGE_ICON, 0,0,0);
+		return (HICON) LoadImageW(getInstance(), MAKEINTRESOURCEW(AP_RID_ICON_APPLICATION_16), IMAGE_ICON, 0,0,0);
 }
 
 const XAP_StringSet * AP_Win32App::getStringSet(void) const
@@ -1314,7 +1314,7 @@ bool AP_Win32App::handleModelessDialogMessage( MSG * msg )
 		{
 			hWnd = (HWND) m_IdTable[ iCounter ].pDialog->pGetWindowHandle();
 
-			if( hWnd && IsDialogMessage( hWnd, msg ) )
+			if( hWnd && IsDialogMessageW( hWnd, msg ) )
 				return true;
 		}
 		else
@@ -1529,22 +1529,12 @@ bool	AP_Win32App::doesStringSetExist(const char* pLocale)
 	return false;
 }
 
-//TODO: CHECK THIS
+
 /* From UCS4 To WinLocale */
 UT_String  	AP_Win32App::s_fromUCS4ToWinLocale(const UT_UCS4Char * szIn)
 {		
-//	UT_UCS4String sUCS4(szIn);
 	UT_String sRslt;
-
-/*	
-	char *pText = UT_convert ((char *)sUCS4.ucs4_str(),
-							  sUCS4.length()*sizeof(UT_UCS4Char),
-							  ucs4Internal(),
-							  XAP_App::getApp()->getDefaultEncoding(),
-							  NULL, NULL);
-	sRslt = pText;
-	g_free(pText);
-*/
+    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return sRslt;
 
 }
