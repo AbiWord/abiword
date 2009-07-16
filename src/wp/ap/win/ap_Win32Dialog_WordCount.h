@@ -35,7 +35,6 @@ public:
 	virtual ~AP_Win32Dialog_WordCount(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
-
 	virtual void			runModeless(XAP_Frame * pFrame);
 	virtual void			destroy(void);
 	virtual void			activate(void);
@@ -51,7 +50,7 @@ public:
 protected:
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	void					_setDlgItemInt(UINT nCtrl, int nValue);
+	void 					_setDlgItemInt(UINT nCtrl, int nValue);
 	void 					_updateWindowData(void);       
 	
 	bool					m_bAutoWC;

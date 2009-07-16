@@ -578,7 +578,7 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND /*hWnd*/
 							{
 								mif.fState = uCheck | uEnable | uBold;
 								mif.fType = MFT_STRING;
-								mif.dwTypeData = (wchar_t  *)((LPTSTR)szLabelName);
+								mif.dwTypeData = (LPWSTR)szLabelName;
 								SetMenuItemInfoW (hMenuBar,cmd,FALSE,&mif);
 							}
 							break;

@@ -52,7 +52,8 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 		
 		// Convert all forwardslashes to backslashes
 		for (unsigned int i=0; i<sURL.length();i++)	
-			if (sURL[i]==L'/')	sURL[i]=L'\\';
+			if (sURL[i]==L'/')	
+                sURL[i]=L'\\';
 
 		// Convert from longpath to 8.3 shortpath, in case of spaces in the path
 		wchar_t* longpath = NULL;
@@ -136,7 +137,7 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 	XAP_Win32FrameImpl *pFImp =  (XAP_Win32FrameImpl *) pFrame->getFrameImpl();
 	UT_return_val_if_fail(pFImp, false);
 
-	int res = (int) ShellExecute(pFImp->getTopLevelWindow() /*(HWND)*/,
+	int res = (int) ShellExecuteA(pFImp->getTopLevelWindow() /*(HWND)*/,
 								 "open", sBrowser.c_str(), sParams.c_str(), NULL, SW_SHOW );
 
 	// TODO: localized error messages
@@ -152,7 +153,7 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 					errMsg += UT_String_sprintf("%d", res);
 					errMsg += ") displaying URL: The system cannot find the file specified.\n";
 					errMsg += " [ ";  errMsg += sURL.ascii_str();  errMsg += " ] ";
-					MessageBox(pFImp->getTopLevelWindow(), errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
+					MessageBoxA(pFImp->getTopLevelWindow(), errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
 				}
 				break;
 
@@ -162,7 +163,7 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 					errMsg += UT_String_sprintf("%d", res);
 					errMsg += ") displaying URL: The system cannot find the path specified.\n";
 					errMsg += " [ ";  errMsg += sURL.ascii_str();  errMsg += " ] ";
-					MessageBox(pFImp->getTopLevelWindow(), errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
+					MessageBoxA(pFImp->getTopLevelWindow(), errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
 				}
 				break;
 
@@ -172,7 +173,7 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 					errMsg += UT_String_sprintf("%d", res);
 					errMsg += ") displaying URL: Access is denied.\n";
 					errMsg += " [ ";  errMsg += sURL.ascii_str();  errMsg += " ] ";
-					MessageBox(pFImp->getTopLevelWindow(), errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
+					MessageBoxA(pFImp->getTopLevelWindow(), errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
 				}
 				break;
 
@@ -182,7 +183,7 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 					errMsg += UT_String_sprintf("%d", res);
 					errMsg += ") displaying URL: \n";
 					errMsg += " [ ";  errMsg += sURL.ascii_str();  errMsg += " ] ";
-					MessageBox(pFImp->getTopLevelWindow(), errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
+					MessageBoxA(pFImp->getTopLevelWindow(), errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
 				}
 				break;
 		} /* switch (res) */

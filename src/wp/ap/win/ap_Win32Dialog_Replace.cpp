@@ -197,8 +197,7 @@ void AP_Win32Dialog_Replace::_initButtons(HWND hWnd)
 #define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 BOOL AP_Win32Dialog_Replace::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
-{
-	
+{	
 	
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 

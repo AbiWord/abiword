@@ -51,17 +51,17 @@ public:
 			return false;
 		}
 
-		m_hMod = LoadLibrary(name);
+		m_hMod = LoadLibraryA(name);
 		if (!m_hMod)
 		{
 			m_pszErr = szErrNoDllFound;
 			return false;
 		}
 		m_pszErr = 0;
-		m_pszModuleName = new char[lstrlen(name) + 1];
+		m_pszModuleName = new char[strlen(name) + 1];
 		if (m_pszModuleName)
 		{
-			lstrcpy(m_pszModuleName, name);
+			strcpy(m_pszModuleName, name);
 		}
 		return true;
 	}
