@@ -159,9 +159,6 @@ void GR_RSVGVectorImage::setupScale(UT_sint32 w, UT_sint32 h) {
 	m_scaleY = (double)h / m_size.height;
 	
 	m_needsNewSurface = true;
-	if(m_rasterImage)
-		m_rasterImage->scale(getDisplayWidth(), getDisplayHeight());
-
 }
 
 void GR_RSVGVectorImage::renderToSurface(cairo_surface_t* surf) {
@@ -194,6 +191,7 @@ void GR_RSVGVectorImage::createImageSurface() {
 											   getDisplayHeight());
 
 	renderToSurface(m_image_surface);
+	m_needsNewSurface = false;
 }
 
 void GR_RSVGVectorImage::createSurface(cairo_t* cairo) {
