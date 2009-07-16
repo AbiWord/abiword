@@ -696,6 +696,12 @@ void fp_TOCContainer::adjustBrokenTOCs(void)
 	{
 		return;
 	}
+	//
+	// FIXME. Both this code and the code in fp_TableContainer, somehow leads to bugs. I've clearly found
+	// workarounds to what this is trying to achive. In pricinple this code should make laying out TOC's
+	// faster. In parctice I suspect it leads to bugs in fb_ColumnBreaker. I'll leave these returns in place
+	// for now, pending removal of the methods.
+	//
 	return;
 	fp_TOCContainer * pBroke = getFirstBrokenTOC();
 	fp_VerticalContainer * pVC = static_cast<fp_VerticalContainer *>(getContainer());

@@ -1116,7 +1116,7 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 			{
 			    painter.fillRect(m_color,x,y,width,height);
 			}
-			else if(getParent() && getParent()->m_pDocImage)
+			else if(getParent() && getParent()->m_pDocImage && *getParent()->m_pDocImage)
 			{
 			    painter.fillRect(white,x,y,width,height);
 			    painter.fillRect(*getParent()->m_pDocImage,src,dest);

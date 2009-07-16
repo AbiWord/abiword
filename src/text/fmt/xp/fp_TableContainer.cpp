@@ -3591,6 +3591,12 @@ void fp_TableContainer::adjustBrokenTables(void)
 	{
 		return;
 	}
+	// FIXME. Both this code and the code in fp_TOCContainer, somehow leads to bugs. I've clearly found
+	// workarounds to what this is trying to achive. In pricinple this code should make laying out Table's
+	// faster. In practice I suspect it leads to bugs in fb_ColumnBreaker. I'll leave these returns in place
+	// for now, pending removal of the methods.
+	//
+
 	return;
 	fp_TableContainer * pBroke = getFirstBrokenTable();
 	fp_VerticalContainer * pVC = static_cast<fp_VerticalContainer *>(getContainer());
