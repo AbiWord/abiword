@@ -425,7 +425,7 @@ EV_Menu* XAP_Win32FrameImpl::_getMainMenu(void)
 // resized in order to fill the gap leaved by the statusbar
 void XAP_Win32FrameImpl::_queue_resize(void)
 {
-	::SendMessage(m_hwndFrame, WM_SIZE, 0, MAKELONG(m_iRealSizeWidth, m_iRealSizeHeight));
+	::SendMessageW(m_hwndFrame, WM_SIZE, 0, MAKELONG(m_iRealSizeWidth, m_iRealSizeHeight));
 }
 
 
@@ -885,7 +885,7 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 								ScreenToClient( pNMcd->hdr.hwndFrom, &pt );
 								rc.right = pt.x;
 								FillRect( pNMcd->hdc, &rc, hBr );
-								hWndChild = FindWindowEx( pNMcd->hdr.hwndFrom, hWndChild, NULL, NULL );
+								hWndChild = FindWindowExW( pNMcd->hdr.hwndFrom, hWndChild, NULL, NULL );
 							}
 
 							/* Don't delete hBr since it was obtained using GetSysColorBrush, so System owned */

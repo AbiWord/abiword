@@ -52,8 +52,8 @@
 #define UNICODE_NOCHAR 0xFFFF
 #endif
 
-#define GWL(hwnd)		reinterpret_cast<AP_Win32Frame *>(GetWindowLong((hwnd), GWL_USERDATA))
-#define SWL(hwnd, f)	reinterpret_cast<AP_Win32Frame *>(SetWindowLong((hwnd), GWL_USERDATA,(LONG)(f)))
+#define GWL(hwnd)		reinterpret_cast<AP_Win32Frame *>(GetWindowLongW((hwnd), GWL_USERDATA))
+#define SWL(hwnd, f)	reinterpret_cast<AP_Win32Frame *>(SetWindowLongW((hwnd), GWL_USERDATA,(LONG)(f)))
 
 // reserve space for static variables
 wchar_t AP_Win32FrameImpl::s_ContainerWndClassName[MAXCNTWNDCLSNMSIZE];
@@ -783,7 +783,7 @@ int AP_Win32FrameImpl::_getMouseWheelLines()
  	{
  		// Win98, NT, 2K
  		UINT nScrollLines;
- 		if (SystemParametersInfo(	SPI_GETWHEELSCROLLLINES,
+ 		if (SystemParametersInfoW(	SPI_GETWHEELSCROLLLINES,
  									0,
  									(PVOID) &nScrollLines,
  									0))
@@ -847,7 +847,7 @@ void AP_Win32FrameImpl::_track(UT_sint32 x, UT_sint32 y)
 
 LRESULT CALLBACK AP_Win32FrameImpl::_ContainerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
-	AP_Win32Frame * f = reinterpret_cast<AP_Win32Frame *>(GetWindowLong(hwnd, GWL_USERDATA));
+	AP_Win32Frame * f = reinterpret_cast<AP_Win32Frame *>(GetWindowLongW(hwnd, GWL_USERDATA));
 
 	if (!f)
 	{
@@ -1053,7 +1053,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_ContainerWndProc(HWND hwnd, UINT iMsg, WPAR
 
 LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
-	AP_Win32Frame * f = reinterpret_cast<AP_Win32Frame *>(GetWindowLong(hwnd, GWL_USERDATA));
+	AP_Win32Frame * f = reinterpret_cast<AP_Win32Frame *>(GetWindowLongW(hwnd, GWL_USERDATA));
 
 	if (!f || !IsWindow(hwnd))
 	{
@@ -1151,14 +1151,14 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 			::GetKeyboardState(keyboardState);
 
 			UT_DEBUGMSG(("ev_Win32Keyboard::_getModifierState VK_LCONTROL: %u, VK_RCONTROL %u, VK_LMENU %u, VK_LMENU %u, VK_CONTROL %u, VK_MENU %u\n",
-				(GetKeyState(VK_LCONTROL) & 0x8000), (GetKeyState(VK_RCONTROL) & 0x8000),
-				(GetKeyState(VK_LMENU) & 0x8000), (GetKeyState(VK_LMENU) & 0x8000),
-				(GetKeyState(VK_CONTROL) & 0x8000), (GetKeyState(VK_MENU) & 0x8000)	));
+				(GetKeyStateW(VK_LCONTROL) & 0x8000), (GetKeyState(VK_RCONTROL) & 0x8000),
+				(GetKeyStateW(VK_LMENU) & 0x8000), (GetKeyState(VK_LMENU) & 0x8000),
+				(GetKeyStateW(VK_CONTROL) & 0x8000), (GetKeyState(VK_MENU) & 0x8000)	));
 
 			UT_DEBUGMSG(("ev_Win32Keyboard::GetKeyboardState VK_LCONTROL: %u, VK_RCONTROL %u, VK_LMENU %u, VK_LMENU %u, VK_CONTROL %u, VK_MENU %u\n",
-				(keyboardState[VK_LCONTROL]), (keyboardState[VK_RCONTROL]),
-				(keyboardState[VK_LMENU] ), (keyboardState[VK_LMENU]),
-				(keyboardState[VK_CONTROL]), (keyboardState[VK_MENU])	));
+				(keyboardStateW[VK_LCONTROL]), (keyboardStateW[VK_RCONTROL]),
+				(keyboardStateW[VK_LMENU] ), (keyboardStateW[VK_LMENU]),
+				(keyboardStateW[VK_CONTROL]), (keyboardStateW[VK_MENU])	));
 
 	    
 	     	if (pWin32Keyboard->onKeyDown(pView,hwnd,iMsg,wParam,lParam))
@@ -1226,7 +1226,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 					(keyboardState[VK_RMENU] ), (keyboardState[VK_LMENU]),
 					(keyboardState[VK_CONTROL]), (keyboardState[VK_MENU]),
 					(lParam & 0x1000000) ));
-					*/
+				*/
 
 	    
 		     	if (pWin32Keyboard->onKeyDown(pView,hwnd,iMsg,wParam,lParam))
