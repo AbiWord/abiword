@@ -28,7 +28,15 @@
 #include <stdlib.h>
 
 GR_RSVGVectorImage::GR_RSVGVectorImage(const char* name) 
-	: GR_CairoVectorImage(), graphics(0), surface(0), image_surface(0), svg(0), scaleX(1.0), scaleY(1.0), needsNewSurface(false)
+	: GR_CairoVectorImage(), 
+	  m_graphics(0), 
+	  m_surface(0), 
+	  m_image_surface(0), 
+	  m_svg(0), 
+	  m_scaleX(1.0), 
+	  m_scaleY(1.0), 
+	  m_needsNewSurface(false),
+	  m_rasterImage(NULL)
 {
 	if (name)
 		{
@@ -49,7 +57,7 @@ bool GR_RSVGVectorImage::convertToBuffer(UT_ByteBuf** ppBB) const
 {
 	UT_ByteBuf* pBB = new UT_ByteBuf;
 	
-	bool bCopied = pBB->append(data.getPointer(0), data.getLength());
+	bool bCopied = pBB->append(m_data.getPointer(0), m_data.getLength());
 	
 	if (!bCopied) DELETEP(pBB);
 	
@@ -64,48 +72,51 @@ bool GR_RSVGVectorImage::convertFromBuffer(const UT_ByteBuf* pBB,
 										   UT_sint32 iDisplayHeight) {
 	reset();
 	
-	data.append(pBB->getPointer(0), pBB->getLength());
+	m_data.append(pBB->getPointer(0), pBB->getLength());
 	
 	bool forceScale = (iDisplayWidth != -1 && iDisplayHeight != -1);
 	
 	gboolean result;
 	
-	svg = rsvg_handle_new();
+	m_svg = rsvg_handle_new();
 		
-	result = rsvg_handle_write(svg, pBB->getPointer(0), pBB->getLength(), NULL);
+	result = rsvg_handle_write(m_svg, pBB->getPointer(0), pBB->getLength(), NULL);
 	if (!result) {
-		g_object_unref(G_OBJECT(svg));
-		svg = 0;
+		g_object_unref(G_OBJECT(m_svg));
+		m_svg = 0;
 		
 		return false;
 	}
 	
-	result = rsvg_handle_close(svg, NULL);
+	result = rsvg_handle_close(m_svg, NULL);
 	
 	if (!result) {
-		g_object_unref(G_OBJECT(svg));
-		svg = 0;
+		g_object_unref(G_OBJECT(m_svg));
+		m_svg = 0;
 		
 		return false;
 	}
 	
-	rsvg_handle_get_dimensions(svg, &size);
+	rsvg_handle_get_dimensions(m_svg, &m_size);
 	
 	if (!forceScale)
-		setupScale(size.width, size.height);
+		setupScale(m_size.width, m_size.height);
 	else
 		setupScale(iDisplayWidth, iDisplayHeight);
+
 	
 	return true;
 }
 
-void GR_RSVGVectorImage::cairoSetSource(cairo_t *cr, double x, double y) {
+void GR_RSVGVectorImage::cairoSetSource(cairo_t *cr, double x, double y) 
+{
 	createSurface(cr);
-	if (surface == NULL) {
+	if (m_surface == NULL) 
+    {
 		return;
 	}
 	
-	cairo_set_source_surface(cr, surface, x, y);
+	cairo_set_source_surface(cr, m_surface, x, y);
 	cairo_paint(cr);
 }
 
@@ -114,77 +125,93 @@ void GR_RSVGVectorImage::scaleImageTo(GR_Graphics * pG, const UT_Rect & rec)
 	setupScale(pG->tdu(rec.width), pG->tdu(rec.height));
 }
 
-void GR_RSVGVectorImage::reset() {
-	data.truncate(0);
-	if (svg) {
-		g_object_unref(G_OBJECT(svg));
-		svg = 0;
+void GR_RSVGVectorImage::reset() 
+{
+	m_data.truncate(0);
+	if (m_svg) 
+	{
+		g_object_unref(G_OBJECT(m_svg));
+		m_svg = 0;
 	}
 	
-	if (surface) {
-		cairo_surface_destroy(surface);
-		surface = 0;
+	if (m_surface) 
+    {
+		cairo_surface_destroy(m_surface);
+		m_surface = 0;
 	}
 
-	if (image_surface) {
-		cairo_surface_destroy(image_surface);
-		image_surface = 0;
+	if (m_image_surface) {
+		cairo_surface_destroy(m_image_surface);
+		m_image_surface = 0;
 	}
 	
-	scaleX = scaleY = 1.0;
-	graphics = 0;
-	needsNewSurface = false;
-	memset(&size, 0, sizeof(RsvgDimensionData));
+	m_scaleX = m_scaleY = 1.0;
+	m_graphics = 0;
+	m_needsNewSurface = false;
+	memset(&m_size, 0, sizeof(RsvgDimensionData));
+	DELETEP(m_rasterImage);
 }
 
 void GR_RSVGVectorImage::setupScale(UT_sint32 w, UT_sint32 h) {
 	setDisplaySize(w, h);
 	
-	scaleX = (double)w / size.width;
-	scaleY = (double)h / size.height;
+	m_scaleX = (double)w / m_size.width;
+	m_scaleY = (double)h / m_size.height;
 	
-	needsNewSurface = true;
+	m_needsNewSurface = true;
+	if(m_rasterImage)
+		m_rasterImage->scale(getDisplayWidth(), getDisplayHeight());
+
 }
 
 void GR_RSVGVectorImage::renderToSurface(cairo_surface_t* surf) {
 	cairo_t* cr = cairo_create(surf);
-	cairo_scale(cr, scaleX, scaleY);
-	rsvg_handle_render_cairo(svg, cr);
+	cairo_scale(cr, m_scaleX, m_scaleY);
+	rsvg_handle_render_cairo(m_svg, cr);
+	//
+	// Setup Raster Image too
+	//
+	UT_String name;
+	getName(name);
+	DELETEP(m_rasterImage);
+	m_rasterImage = new GR_UnixImage(name.c_str(), rsvg_handle_get_pixbuf(m_svg));
+	m_rasterImage->scale(getDisplayWidth(), getDisplayHeight());
 	cairo_destroy(cr);
 }
 
 void GR_RSVGVectorImage::createImageSurface() {
-	if (!needsNewSurface)
+	if (!m_needsNewSurface)
 		return;
 
-	if (image_surface != 0) { // get rid of any previous surface
-		cairo_surface_destroy(image_surface);
-		image_surface = 0;
+	if (m_image_surface != 0) 
+    { // get rid of any previous surface
+		cairo_surface_destroy(m_image_surface);
+		m_image_surface = 0;
 	}
 
-	image_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32,
+	m_image_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32,
 											   getDisplayWidth(),
 											   getDisplayHeight());
 
-	renderToSurface(image_surface);
+	renderToSurface(m_image_surface);
 }
 
 void GR_RSVGVectorImage::createSurface(cairo_t* cairo) {
-	if (!needsNewSurface && cairo == graphics)
+	if (!m_needsNewSurface && cairo == m_graphics)
 		return; // already have a similar surface for this graphics at this size
 	
-	if (surface != 0) { // get rid of any previous surface
-		cairo_surface_destroy(surface);
-		surface = 0;
+	if (m_surface != 0) { // get rid of any previous surface
+		cairo_surface_destroy(m_surface);
+		m_surface = 0;
 	}
 	
-	surface = cairo_surface_create_similar(cairo_get_target(cairo), 
+	m_surface = cairo_surface_create_similar(cairo_get_target(cairo), 
 										   CAIRO_CONTENT_COLOR_ALPHA,
 										   getDisplayWidth(),
 										   getDisplayHeight());
 	
 	// render to the similar surface once. blit subsequently.
-	renderToSurface(surface);
+	renderToSurface(m_surface);
 	createImageSurface();
 }
 
@@ -196,51 +223,46 @@ bool GR_RSVGVectorImage::hasAlpha(void) const
 bool GR_RSVGVectorImage::isTransparentAt(UT_sint32 x, UT_sint32 y)
 {
 	if(!hasAlpha())
-		{
-			return false;
-		}
+	{
+		return false;
+	}
 
-	if (!image_surface)
+	if (!m_image_surface)
 		createImageSurface();
-	UT_return_val_if_fail(image_surface,false);
-	UT_return_val_if_fail(cairo_image_surface_get_format(image_surface) == CAIRO_FORMAT_ARGB32, false);
+	UT_return_val_if_fail(m_image_surface,false);
+	UT_return_val_if_fail(cairo_image_surface_get_format(m_image_surface) == CAIRO_FORMAT_ARGB32, false);
 
-	UT_sint32 iRowStride = cairo_image_surface_get_stride(image_surface);
-	UT_sint32 iWidth = cairo_image_surface_get_width(image_surface);
-	UT_sint32 iHeight = cairo_image_surface_get_height(image_surface);
+	UT_sint32 iRowStride = cairo_image_surface_get_stride(m_image_surface);
+	UT_sint32 iWidth = cairo_image_surface_get_width(m_image_surface);
+	UT_sint32 iHeight = cairo_image_surface_get_height(m_image_surface);
 	UT_ASSERT(iRowStride/iWidth == 4);
 	UT_return_val_if_fail((x>= 0) && (x < iWidth), false);
 	UT_return_val_if_fail((y>= 0) && (y < iHeight), false);
 
-	guchar * pData = cairo_image_surface_get_data(image_surface);
+	guchar * pData = cairo_image_surface_get_data(m_image_surface);
 	UT_sint32 iOff = iRowStride*y;
 	guchar pix0 = pData[iOff+ x*4];
 	if(pix0 == 0) // the data is not pre-multiplied, ARGB. if the first 8bits are 0, the image is fully transparent
-		{
-			return true;
-		}
+	{
+		return true;
+	}
 	return false;
 }
 
-GR_Image *GR_RSVGVectorImage::createImageSegment(GR_Graphics * /*pG*/, const UT_Rect & /*rec*/)
+GR_Image *GR_RSVGVectorImage::createImageSegment(GR_Graphics * pG, const UT_Rect & rec)
 {
-#if 0
-	// we need createImageSegment for converting inline images to positioned images via the context menu
+#if 1
+	// we need createImageSegment for converting inline images to positioned images via the context menu and for drawing on background images
 
 	// TODO: can we draw the RsvgHandle to a cairo SVG surface, clip it, and return a new GR_RSVGVectorImage?
 	// TODO: or do we just rasterize it?
 
-	UT_String name;
-	getName(name);
-
-	// cheat...
-	GR_UnixImage rasterImage(name.c_str(), rsvg_handle_get_pixbuf(svg));
-
-
-	// do we need to set the scale on the rasterImage?
-	rasterImage.scale(getDisplayWidth(), getDisplayHeight());
-
-	return rasterImage.createImageSegment(pG, rec);
+	// For now we rasterize it
+	if(!m_rasterImage || m_needsNewSurface)
+	{
+		createImageSurface();
+	}
+	return m_rasterImage->createImageSegment(pG, rec);
 #else
 	return NULL;
 #endif

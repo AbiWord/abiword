@@ -25,7 +25,7 @@
 
 #include "gr_CairoGraphics.h"
 #include "ut_bytebuf.h"
-
+#include "gr_UnixImage.h"
 #include <librsvg/rsvg.h>
 #include <librsvg/rsvg-cairo.h>
 
@@ -54,15 +54,16 @@ class GR_RSVGVectorImage : public GR_CairoVectorImage {
   void createImageSurface();
   void renderToSurface(cairo_surface_t* surf);
 
-  UT_ByteBuf data;
-  RsvgDimensionData size;
-  cairo_t* graphics;
-  cairo_surface_t* surface;
-  cairo_surface_t* image_surface;
-  RsvgHandle* svg;
-  double scaleX;
-  double scaleY;
-  bool needsNewSurface;
+  UT_ByteBuf m_data;
+  RsvgDimensionData m_size;
+  cairo_t* m_graphics;
+  cairo_surface_t* m_surface;
+  cairo_surface_t* m_image_surface;
+  RsvgHandle* m_svg;
+  double m_scaleX;
+  double m_scaleY;
+  bool m_needsNewSurface;
+  GR_UnixImage * m_rasterImage;	
 };
 
 #endif
