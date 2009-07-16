@@ -86,6 +86,7 @@ AP_Win32Dialog_Lists::~AP_Win32Dialog_Lists(void)
 void AP_Win32Dialog_Lists::runModal(XAP_Frame * pFrame)
 {
 	clearDirty();
+	setModal();
 	_win32Dialog.runModal(pFrame, AP_DIALOG_ID_LISTS, AP_RID_DIALOG_LIST, this);
 }
 
@@ -398,7 +399,6 @@ void AP_Win32Dialog_Lists::destroy(void)
 		setAnswer(AP_Dialog_Lists::a_QUIT);
 		EndDialog(m_hThisDlg, 0);
 		m_hThisDlg = 0;
-		modeless_cleanup();
 		return;
 	}
 
@@ -406,6 +406,8 @@ void AP_Win32Dialog_Lists::destroy(void)
 	// such as when shutting down the application.
 	m_bDestroy_says_stopupdating = true;
 	m_pAutoUpdateLists->stop();
+	if (!isModal())
+		modeless_cleanup();
 	setAnswer(AP_Dialog_Lists::a_CLOSE);
 	if (IsWindow(m_hThisDlg))
 	{
