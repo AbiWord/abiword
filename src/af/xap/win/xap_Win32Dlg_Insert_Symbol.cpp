@@ -116,14 +116,14 @@ void XAP_Win32Dialog_Insert_Symbol::notifyActiveFrame(XAP_Frame *pFrame)
 	UT_return_if_fail(pFrame);
 
 	HWND frameHWND = static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow();
-	if((HWND)GetWindowLong(m_hDlg, GWL_HWNDPARENT) != frameHWND)
+	if((HWND)GetWindowLongW(m_hDlg, GWL_HWNDPARENT) != frameHWND)
 	{
 		// Update the caption
 		ConstructWindowName();
 		//SetWindowText(m_hDlg, (AP_Win32App::s_fromUTF8ToWinLocale(m_WindowName)).c_str());
         setDialogTitle(m_WindowName);
 
-		SetWindowLong(m_hDlg, GWL_HWNDPARENT, (long)frameHWND);
+		SetWindowLongW(m_hDlg, GWL_HWNDPARENT, (long)frameHWND);
 		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}
@@ -132,9 +132,9 @@ void XAP_Win32Dialog_Insert_Symbol::notifyActiveFrame(XAP_Frame *pFrame)
 void XAP_Win32Dialog_Insert_Symbol::notifyCloseFrame(XAP_Frame *pFrame)
 {
 	UT_return_if_fail(pFrame);
-	if((HWND)GetWindowLong(m_hDlg, GWL_HWNDPARENT) == static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
+	if((HWND)GetWindowLongW(m_hDlg, GWL_HWNDPARENT) == static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
-		SetWindowLong(m_hDlg, GWL_HWNDPARENT, NULL);
+		SetWindowLongW(m_hDlg, GWL_HWNDPARENT, NULL);
 		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}
@@ -205,7 +205,7 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, 
 
 	// Select the current font.
 
-	UT_sint32 Index = SendDlgItemMessage(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_FINDSTRING, -1, (LPARAM)Symbol_font_selected);
+	UT_sint32 Index = SendDlgItemMessageW(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_FINDSTRING, -1, (LPARAM)Symbol_font_selected);
 
 	if(Index != -1)
 	{
@@ -245,7 +245,7 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onCommand(HWND /*hWnd*/, WPARAM wParam, LPA
 		switch(wNotifyCode)
 		{
 		case CBN_SELCHANGE:
-			_setFontFromCombo(SendDlgItemMessage(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_GETCURSEL, 0, 0));
+			_setFontFromCombo(SendDlgItemMessageW(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_GETCURSEL, 0, 0));
 			return 1;
 		}
 		return 0;
@@ -261,7 +261,7 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onDeltaPos(NM_UPDOWN * /*pnmud*/)
 	return FALSE;
 }
 
-int CALLBACK XAP_Win32Dialog_Insert_Symbol::fontEnumProcedure(const LOGFONT *pLogFont, const TEXTMETRIC *pTextMetric, DWORD Font_type, LPARAM lParam)
+int CALLBACK XAP_Win32Dialog_Insert_Symbol::fontEnumProcedure(const LOGFONTW *pLogFont, const TEXTMETRICW *pTextMetric, DWORD Font_type, LPARAM lParam)
 {
 
 	XAP_Win32Dialog_Insert_Symbol *pThis = (XAP_Win32Dialog_Insert_Symbol *)lParam;
@@ -269,11 +269,11 @@ int CALLBACK XAP_Win32Dialog_Insert_Symbol::fontEnumProcedure(const LOGFONT *pLo
 	return pThis->_enumFont(pLogFont, pTextMetric, Font_type);
 }
 
-int XAP_Win32Dialog_Insert_Symbol::_enumFont(const LOGFONT *pLogFont, const TEXTMETRIC * /*pTextMetric*/, DWORD Font_type)
+int XAP_Win32Dialog_Insert_Symbol::_enumFont(const LOGFONTW *pLogFont, const TEXTMETRICW * /*pTextMetric*/, DWORD Font_type)
 {
 	if( ((int)Font_type) & TRUETYPE_FONTTYPE ) // Only except true type fonts.
 	{
-		SendDlgItemMessage(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_ADDSTRING, 0, (LPARAM)pLogFont->lfFaceName);
+		SendDlgItemMessageW(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_ADDSTRING, 0, (LPARAM)pLogFont->lfFaceName);
 	}
 //	if(Font_type & TRUETYPE_FONTTYPE) // Only accept true type fonts.
 //	{
@@ -286,15 +286,15 @@ void XAP_Win32Dialog_Insert_Symbol::_setFontFromCombo(UT_sint32 Index)
 {
 	if(Index >= 0)
 	{
-		SendDlgItemMessage(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_SETCURSEL, Index, 0);
+		SendDlgItemMessageW(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_SETCURSEL, Index, 0);
 
-		int Length = SendDlgItemMessage(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_GETLBTEXTLEN, Index, 0);
+		int Length = SendDlgItemMessageW(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_GETLBTEXTLEN, Index, 0);
 
 		if(Length != CB_ERR)
 		{
 			char *p_buffer = new char[Length + 1];
 
-			SendDlgItemMessage(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_GETLBTEXT, Index, (LPARAM)p_buffer);
+			SendDlgItemMessageW(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_GETLBTEXT, Index, (LPARAM)p_buffer);
 
 			strcpy(Symbol_font_selected, p_buffer);
 

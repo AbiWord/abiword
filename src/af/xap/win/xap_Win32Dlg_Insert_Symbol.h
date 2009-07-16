@@ -73,7 +73,7 @@ public:
 	virtual void			activate(void);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	static int CALLBACK		fontEnumProcedure(const LOGFONT *pLogFont, const TEXTMETRIC *pTextMetric, DWORD Font_type, LPARAM lParam);
+	static int CALLBACK		fontEnumProcedure(const LOGFONTW *pLogFont, const TEXTMETRICW *pTextMetric, DWORD Font_type, LPARAM lParam);
 
 	virtual void *			pGetWindowHandle(void) { return (void *) m_hDlg; }
 	void					doInsertSymbol( void );
@@ -82,8 +82,8 @@ protected:
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL 					_onDeltaPos(NM_UPDOWN * pnmud);
-	int						_enumFont(const LOGFONT *pLogFont, const TEXTMETRIC *pTextMetric, DWORD Font_type);
-	void					_setFontFromCombo(UT_sint32 Index);
+	int						_enumFont(const LOGFONTW *pLogFont, const TEXTMETRICW *pTextMetric, DWORD Font_type);
+	void			    		_setFontFromCombo(UT_sint32 Index);
 
 
 	XAP_Win32PreviewWidget *	m_pSymbolPreviewWidget;
