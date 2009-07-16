@@ -579,7 +579,13 @@ private:
 	void	_handleBookmark (PT_AttrPropIndex api);
 	void	_handleMath (PT_AttrPropIndex api);
 	void    _handleEmbedded (PT_AttrPropIndex api);
+	void	_handleEmbedded (const PP_AttrProp * pAP, const gchar * szDataID, const UT_ByteBuf* pByteBuf, const std::string mimeType);
 
+	bool	_getPropertySize(const PP_AttrProp * pAP, const gchar* szWidthProp, const gchar* szHeightProp, 
+                             const gchar** szWidth, double& widthPercentage, const gchar** szHeight);
+	UT_UTF8String _getStyleSizeString(const gchar * szWidth, double widthPercentage, UT_Dimension widthDim, 
+                                      const gchar * szHeight, UT_Dimension heightDim);
+	
 #ifdef HTML_META_SUPPORTED
 	void    _handleMetaTag (const char * key, UT_UTF8String & value);
 	void    _handleMeta ();
@@ -4430,6 +4436,80 @@ void s_HTML_Listener::_writeImageBase64 (const UT_ByteBuf * pByteBuf)
 	}
 }
 
+bool s_HTML_Listener::_getPropertySize(const PP_AttrProp * pAP, const gchar* szWidthProp, const gchar* szHeightProp, 
+                                       const gchar** szWidth, double& widthPercentage, const gchar** szHeight)
+{
+	UT_return_val_if_fail(pAP, false);
+	UT_return_val_if_fail(szWidth, false)
+	UT_return_val_if_fail(szHeight, false)
+
+	// get the object width as displayed in AbiWord
+	*szWidth = NULL;
+	pAP->getProperty (szWidthProp, *szWidth);
+	
+	// get the object height as displayed in AbiWord
+	*szHeight = NULL;
+	pAP->getProperty (szHeightProp, *szHeight);
+	
+	// determine the total width of this object, so we can calculate the object's
+	// width as a percentage of that
+	widthPercentage = 100;
+	if (*szWidth)
+	{
+		double total = 0;
+		if(m_TableHelper.getNestDepth() > 0)
+		{
+			total = m_dCellWidthInches;
+		}
+		else
+		{
+			total =  m_dPageWidthInches - m_dSecLeftMarginInches - m_dSecRightMarginInches;
+		}
+
+		double dWidth = UT_convertToInches(*szWidth);
+		widthPercentage = 100.0 * dWidth / total;
+		if (widthPercentage > 100.)
+			widthPercentage = 100.0;
+	}
+		
+	return true;
+}
+
+UT_UTF8String s_HTML_Listener::_getStyleSizeString(const gchar * szWidth, double widthPercentage, UT_Dimension widthDim, 
+                                             const gchar * szHeight, UT_Dimension heightDim)
+{
+	UT_UTF8String props;
+	
+	if (szWidth)
+	{
+		props += "width:";
+		if (get_Scale_Units())
+		{
+			UT_sint32 iPercent = (UT_sint32)(widthPercentage + 0.5);
+			props += UT_UTF8String_sprintf("%d%%", iPercent);
+		}
+		else
+		{
+			double d = UT_convertToDimension(szWidth, widthDim);
+			props += UT_formatDimensionString(widthDim, d);
+		}
+	}
+
+	if (szHeight)
+	{
+		if (props.size() > 0)
+			props += "; ";
+		props += "height:";
+		double d = UT_convertToDimension(szHeight, heightDim);
+		props += UT_formatDimensionString(heightDim , d);
+	}	
+
+	if (props.size() > 0)
+		return "style=\"" + props + "\"";
+
+	return "";
+}
+
 void s_HTML_Listener::_handleEmbedded (PT_AttrPropIndex api)
 {
 	const PP_AttrProp * pAP = 0;
@@ -4441,22 +4521,12 @@ void s_HTML_Listener::_handleEmbedded (PT_AttrPropIndex api)
 	const gchar * szDataID = 0;
 	pAP->getAttribute ("dataid", szDataID);
 
-	if (szDataID == 0) return;
-
-	UT_UTF8String imgDataID("snapshot-png-");
-	imgDataID += szDataID;
-
-	// Code to export the embedded object as an <object>
-	// with an <img> inside it, as a rendering fallback
-	// http://www.w3.org/TR/1999/REC-html401-19991224/struct/objects.html#h-13.3
-	UT_LocaleTransactor t(LC_NUMERIC, "C");
+	if (szDataID == 0)
+		return;
 
     std::string mimeType;
-
 	const UT_ByteBuf * pByteBuf = 0;
-
-	if (!m_pDocument->getDataItemDataByName(szDataID, &pByteBuf, 
-                                            &mimeType, NULL))
+	if (!m_pDocument->getDataItemDataByName(szDataID, &pByteBuf, &mimeType, NULL))
 	{
 		return;
     }
@@ -4464,8 +4534,18 @@ void s_HTML_Listener::_handleEmbedded (PT_AttrPropIndex api)
 	{
         return; // ??
     }
-		
 
+	_handleEmbedded (pAP, szDataID, pByteBuf, mimeType);
+}
+
+void s_HTML_Listener::_handleEmbedded (const PP_AttrProp * pAP, const gchar * szDataID, const UT_ByteBuf* pByteBuf, const std::string mimeType)
+{
+	// Code to export the embedded object as an <object>
+	// with an <img> inside it, as a rendering fallback
+	// http://www.w3.org/TR/1999/REC-html401-19991224/struct/objects.html#h-13.3
+
+	UT_LocaleTransactor t(LC_NUMERIC, "C");
+	
 	const char * dataid = UT_basename (static_cast<const char *>(szDataID));
 		
 	const char * suffix = dataid + strlen (dataid);
@@ -4497,7 +4577,9 @@ void s_HTML_Listener::_handleEmbedded (PT_AttrPropIndex api)
 	if (dataid == suffix)
 		return;
 
-	char * base_name = UT_go_basename_from_uri (m_pie->getFileName ());
+	char * base_name = NULL;
+	if (m_pie->getFileName ())
+		base_name = UT_go_basename_from_uri (m_pie->getFileName ());
 		
 	/* hmm; who knows what locale the system uses
 	 */
@@ -4505,14 +4587,14 @@ void s_HTML_Listener::_handleEmbedded (PT_AttrPropIndex api)
 	if (base_name)
 		objectbasedir = base_name;
 	objectbasedir += "_files";
-	std::string objectdir = m_pie->getFileName ();
+	std::string objectdir = m_pie->getFileName () ? m_pie->getFileName () : "";
 	objectdir += "_files";
 		
 	UT_UTF8String filename(dataid,suffix-dataid);
 	filename += suffid;
-	filename += ".obj";
+	filename += (mimeType == "image/svg+xml" ? ".svg" : ".obj");
 
-	g_free (base_name);
+	FREEP(base_name);
 		
 	UT_UTF8String url;
 		
@@ -4544,53 +4626,19 @@ void s_HTML_Listener::_handleEmbedded (PT_AttrPropIndex api)
 	}
 		
 	m_utf8_1 = "object";
-		
-	const gchar * szWidth  = 0;
-		
-	pAP->getProperty ("width",  szWidth);
-		
-	double dWidth = UT_convertToInches(szWidth);
-	double total = 0;
-	if(m_TableHelper.getNestDepth() > 0)
-	{
-		total = m_dCellWidthInches;
-	}
-	else
-	{
-		total =  m_dPageWidthInches - m_dSecLeftMarginInches - m_dSecRightMarginInches;
-	}
-	double percent = 100.0*dWidth/total;
-	if(percent > 100.)
-	{
-		percent = 100.0;
-	}
-	UT_UTF8String tmp;
-	UT_DEBUGMSG(("Width of Object %s \n",szWidth ? szWidth : "(null)"));
-		
-#if defined(DEBUG)
-	UT_sint32 iObjectWidth, iObjectHeight;
-	if(UT_PNG_getDimensions(pByteBuf, iObjectWidth, iObjectHeight))
-	{
-		UT_DEBUGMSG(("Real object dimensions: (%d x %d)\n", iObjectWidth, iObjectHeight));
-	}
-#endif
-	if (szWidth)
-	{
-		m_utf8_1 += " width=\"";
-		if (get_Scale_Units())
-		{
-			UT_sint32 iPercent = (UT_sint32)(percent + 0.5);
-			tmp = UT_UTF8String_sprintf("%d%%",iPercent);
-		}
-		else // Abi stores the orig file, but abs or unitless must be true to dims set in abi
-		{
-			double dMM = UT_convertToDimension(szWidth, DIM_MM);
-			tmp = UT_UTF8String_sprintf("%.1fmm",dMM);
-		}
-		m_utf8_1 += tmp;
-		m_utf8_1 += "\"";
-	}
 
+	// determine the width and height of the object
+	// NOTE: properly scaling SVG objects is not possible at the moment. See
+	// http://bugzilla.abisource.com/show_bug.cgi?id=12152#c4 on why this is.
+	const gchar * szWidth = 0;
+	const gchar * szHeight = 0;
+	double widthPercentage;
+	if (!_getPropertySize(pAP, "width", "height", &szWidth, widthPercentage, &szHeight))
+		return;
+	UT_DEBUGMSG(("Size of object: %sx%s\n", szWidth ? szWidth : "(null)", szHeight ? szHeight : "(null)"));
+	m_utf8_1 += " " + _getStyleSizeString(szWidth, widthPercentage, DIM_MM, szHeight, DIM_MM);
+
+	// objects have a mimetype describing what their content is supposed to be
 	m_utf8_1 += UT_UTF8String_sprintf(" type=\"%s\"", mimeType.c_str());
 
 	m_tagStack.push (TT_OBJECT);
@@ -4616,8 +4664,32 @@ void s_HTML_Listener::_handleEmbedded (PT_AttrPropIndex api)
 		tagCloseBroken (m_utf8_1, true, ws_None);
 	}
 
-	// embed an <img> version of the object, as a rendering fallback
-	_handleImage (pAP, imgDataID.utf8_str(),false);
+	// Embed an image fallback for this object, if the browser can't handle
+	// the object.
+	if (mimeType == "image/svg+xml")
+	{	
+		// Puting SVG data in an <object> tag with an embedded <embed> tag
+		// seems to be the most portable way to place an SVG in an (X)HTML document,
+		// at least according to http://wiki.svg.org/SVG_and_HTML.
+		
+		// However, the deprecated <embed> would be only be useful for support
+		// ancient browsers like NS4, and it wouldn't be valid XHTML either.
+		// Therefor, we'll just leave the <embed> tag out.
+
+		// It would however be neat if we would rasterize the SVG and put an <img> 
+		// inside this <object> tag as a fallback for browsers lacking SVG support. 
+		// We do this for other embedded objects (see the "else" block below), 
+		// but AbiWord does not currently have a PNG snapshot available for SVGs.
+		// Since it is currently non-trivial to make one in a crossplatform manner,
+		// we'll just leave it for now.
+	}
+	else
+	{
+		// embed an <img> version of the object, as a rendering fallback
+		UT_UTF8String imgDataID("snapshot-png-");
+		imgDataID += szDataID;
+		_handleImage (pAP, imgDataID.utf8_str(), false);
+	}
 
 	m_utf8_1 = "object";
 	tagClose(TT_OBJECT, m_utf8_1);
@@ -4633,7 +4705,8 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 	const gchar * szDataID = 0;
 	pAP->getAttribute ("dataid", szDataID);
 
-	if (szDataID == 0) return;
+	if (szDataID == 0)
+		return;
 
 	_handleImage (pAP, szDataID,false);
 }
@@ -4653,7 +4726,14 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 	if ((pByteBuf == 0) || mimeType.empty()) 
         return; // ??
 
-	if ((mimeType != "image/png") && (mimeType != "image/jpeg") && (mimeType != "image/svg+xml"))
+	if (mimeType == "image/svg+xml")
+	{
+		// We export SVGs as embedded objects. See _handleEmbedded() for details on why this is.
+		_handleEmbedded (pAP, szDataID, pByteBuf, mimeType);
+		return;
+	}
+	
+	if ((mimeType != "image/png") && (mimeType != "image/jpeg"))
 	{
 		UT_DEBUGMSG(("Object not of a suppored MIME type - ignoring...\n"));
 		return;
@@ -4690,7 +4770,9 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 	if (dataid == suffix)
 		return;
 
-	char * base_name = UT_go_basename_from_uri (m_pie->getFileName ());
+	char * base_name = NULL;
+	if (m_pie->getFileName ())
+		base_name = UT_go_basename_from_uri (m_pie->getFileName ());
 
 	/* hmm; who knows what locale the system uses
 	 */
@@ -4698,11 +4780,7 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 	if (base_name)
 		imagebasedir = base_name;
 	imagebasedir += "_files";
-	std::string imagedir ="";
-	if( m_pie->getFileName ())
-	{
-			imagedir = m_pie->getFileName ();
-	}
+	std::string imagedir = m_pie->getFileName () ? m_pie->getFileName () : "";
 	imagedir += "_files";
 
 	UT_UTF8String filename(dataid,suffix-dataid);
@@ -4718,7 +4796,7 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
         filename += ".png";
     }
         
-	g_free (base_name);
+	FREEP(base_name);
 
 	UT_UTF8String url;
 
@@ -4773,47 +4851,17 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 				m_utf8_1 += " align=\"left\" ";
 		}
 	}
-	const gchar * szWidth  = 0;
-	if(!bIsPositioned)
-		pAP->getProperty ("width",  szWidth);
-	else
-		pAP->getProperty ("frame-width",  szWidth);
 
-	double dWidth = UT_convertToInches(szWidth);
-	double total = 0;
-	if(m_TableHelper.getNestDepth() > 0)
-	{
-		total = m_dCellWidthInches;
-	}
-	else
-	{
-		total =  m_dPageWidthInches - m_dSecLeftMarginInches - m_dSecRightMarginInches;
-	}
-	double percent = 100.0*dWidth/total;
-	if(percent > 100.)
-	{
-		percent = 100.0;
-	}
-	UT_UTF8String tmp, escape;
-	UT_DEBUGMSG(("Width of Image %s \n",szWidth ? szWidth : "(null)"));
-
-	if (szWidth)
-	{
-		m_utf8_1 += " style=\"width:";
-		if (get_Scale_Units())
-		{
-			UT_sint32 iPercent = (UT_sint32)(percent + 0.5);
-			tmp = UT_UTF8String_sprintf("%d%%",iPercent);
-		} else // Abi stores the orig file, but abs or unitless must be true to dims set in abi
-		{
-			double dMM = UT_convertToDimension(szWidth, DIM_MM);
-			tmp = UT_UTF8String_sprintf("%.1fmm",dMM);
-		}
-		m_utf8_1 += tmp;
-		m_utf8_1 += "\"";
-	}
+	const gchar * szWidth = 0;
+	const gchar * szHeight = 0;
+	double widthPercentage = 0;
+	if (!_getPropertySize(pAP, !bIsPositioned ? "width" : "frame-width", "height", &szWidth, widthPercentage, &szHeight))
+		return;
+	UT_DEBUGMSG(("Size of Image: %sx%s\n", szWidth ? szWidth : "(null)", szHeight ? szHeight : "(null)"));
+	m_utf8_1 += " " + _getStyleSizeString(szWidth, widthPercentage, DIM_MM, szHeight, DIM_MM);	
 
 	const gchar * szTitle  = 0;
+	UT_UTF8String escape;
 	pAP->getAttribute ("title",  szTitle);
 	if (szTitle) {
 		escape = szTitle;
