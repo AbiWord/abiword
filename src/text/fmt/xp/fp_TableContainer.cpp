@@ -1350,11 +1350,20 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 		iBot -= pBroke->getYBreak();
 		xxx_UT_DEBUGMSG(("drawLines: ibot = %d col_y %d m_iBotY %d pCol->getHeight() %d left %d top %d \n",iBot,col_y,m_iBotY,pCol->getHeight(),m_iLeftAttach,m_iTopAttach));
 
+		//Check if the upper row is present in this broken table.
+		UT_sint32 iPrevRow = UT_MAX(getTopAttach() - 1,0);
+		fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
+		UT_sint32 iPrevY = pTab->getYOfRow(iPrevRow);
+		printf("ADITYA: iprevy=%d, ybreak=%d\n", iPrevY, pBroke->getYBreak());
+		if( iPrevY < pBroke->getYBreak())
+		{
+			bDrawTop = true;
+		}
+
 		if(iTop < col_y)
 		{
 			xxx_UT_DEBUGMSG(("iTop < col_y !! iTop %d col_y %d row is %d \n",iTop,col_y,getTopAttach()));
 			iTop = col_y;
-			//bDrawTop = true;
 			if(pBroke != NULL)
 			{
 				pBroke->setBrokenTop(1);
