@@ -1298,8 +1298,8 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 			return;
 		}
 	}
-// Lookup table properties to get the line thickness, etc.
 
+	// Lookup table properties to get the line thickness, etc.
 	fl_ContainerLayout * pLayout = getSectionLayout()->myContainingLayout ();
 	UT_return_if_fail(pLayout->getContainerType () == FL_CONTAINER_TABLE);
 
@@ -1313,9 +1313,9 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 	
 	if(pPage == NULL)
 	{
-//
-// Can happen while loading.
-//
+		//
+		// Can happen while loading.
+		//
 		return;
 	}
 	bool bDrawTop = false;
@@ -1332,23 +1332,24 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 	{
 		if(m_iBotY < pBroke->getYBreak())
 		{
-//
-// Cell is above this page
-//
+			//
+			// Cell is above this page
+			//
 			xxx_UT_DEBUGMSG(("Don't drawlines because M-IBotY < pBroke->getYbreak \n",m_iBotY,pBroke->getYBreak()));
 			return;
 		}
 		if(m_iTopY > pBroke->getYBottom())
 		{
-//
-// Cell is below this page
-//
+			//
+			// Cell is below this page
+			//
 			xxx_UT_DEBUGMSG(("Don't drawlines because m_iTopY > pBroke->getYBottom \n",m_iTopY, pBroke->getYBottom()));
 			return;
 		}
 		iTop -= pBroke->getYBreak();
 		iBot -= pBroke->getYBreak();
 		xxx_UT_DEBUGMSG(("drawLines: ibot = %d col_y %d m_iBotY %d pCol->getHeight() %d left %d top %d \n",iBot,col_y,m_iBotY,pCol->getHeight(),m_iLeftAttach,m_iTopAttach));
+
 		if(iTop < col_y)
 		{
 			xxx_UT_DEBUGMSG(("iTop < col_y !! iTop %d col_y %d row is %d \n",iTop,col_y,getTopAttach()));
@@ -1755,84 +1756,6 @@ UT_sint32 fp_CellContainer::getCellY(fp_Line * /*pLine*/) const
 	fp_TableContainer * pTab = getTopmostTable();
 	return pTab->getY();
 }
-
-/*!
- Draw container content
- \param pDA Draw arguments
- */
-void fp_CellContainer::draw(dg_DrawArgs* pDA)
-{
-	m_bDrawTop = false;
-	GR_Graphics * pG = pDA->pG;
-	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
-// draw bottom if this cell is the last of the table and fully contained on the page
-
-	m_bDrawBot = (pTab->getNumRows() == getBottomAttach());
-
-	m_bDrawLeft = true;
-
-	UT_sint32 count = countCons();
-	const UT_Rect * pClipRect = pDA->pG->getClipRect();
-	UT_sint32 ytop,ybot;
-	UT_sint32 i;
-	UT_sint32 imax = static_cast<UT_sint32>((static_cast<UT_uint32>(1<<31)) - 1);
-	if(pClipRect)
-	{
-		ybot = UT_MAX(pClipRect->height,_getMaxContainerHeight());
-		ytop = pClipRect->top;
-        ybot += ytop + 1;
-		xxx_UT_DEBUGMSG(("SEVIOR: clip top %d clip bot %d \n",ytop,ybot));
-	}
-	else
-	{
-		ytop = 0;
-		ybot = imax;
-	}
-	bool bStop = false;
-	bool bStart = false;
-	xxx_UT_DEBUGMSG(("SEVIOR: Drawing unbroken cell %x x %d, y %d width %d height %d \n",this,getX(),getY(),getWidth(),getHeight()));
-	
-//
-// Only draw the lines in the clipping region.
-//
-	for ( i = 0; (i<count && !bStop); i++)
-	{
-		fp_ContainerObject* pContainer = static_cast<fp_ContainerObject*>(getNthCon(i));
-		dg_DrawArgs da = *pDA;
-//
-// pDA has xoff set at the columns left edge, we need to offset this
-//     by the cell x position.
-// pDA has yoffset at the last ypos in the column relative to the screen
-//     The position Ypos is the absolute position on the screen we need
-//     to offset this with the position of the container holding this
-//     cell.
-
-		da.xoff += pContainer->getX() + getX();
-		da.yoff += pContainer->getY() + getY();
-		UT_sint32 ydiff = da.yoff + pContainer->getHeight();
-		if((da.yoff >= ytop && da.yoff <= ybot) || (ydiff >= ytop && ydiff <= ybot))
-		{
-//
-// Always draw the top of the cell.
-//
-			m_bDrawTop = true;
-			bStart = true;
-			pContainer->draw(&da);
-		}
-		else if(bStart)
-		{
-			bStop = true;
-		}
-	}
-	if(i == count)
-	{
-		m_bDirty = false;
-	}
-	drawLines(NULL,pG);
-	pTab->setRedrawLines();
-    _drawBoundaries(pDA,NULL);
-}
-
 
 /*!
  * Draw the whole cell with the selection colour background.

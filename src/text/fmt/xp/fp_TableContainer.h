@@ -124,7 +124,6 @@ public:
 	fp_TableContainer * getBrokenTable(fp_Container * pCon);
 	fp_VerticalContainer * getColumn(fp_Container *pCon);
 	UT_sint32           tweakBrokenTable(fp_TableContainer * pBroke);
-	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}
 	virtual void        setContainer(fp_Container * pContainer);
 	virtual void        setWidth(UT_sint32 iWidth);
