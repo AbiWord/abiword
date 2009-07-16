@@ -824,6 +824,7 @@
 #define AP_STRING_ID_DLG_Annotation_Replace_LBL  _("Replace")
 #define AP_STRING_ID_DLG_Annotation_OK_tooltip  _("Update the annotation")
 #define AP_STRING_ID_DLG_Annotation_Replace_tooltip  _("Replace selection with annotation")
+#define AP_STRING_ID_DLG_Goto_ColumnLabel_Name _("Name")
 
 #define AP_STRING_ID_WORD_PassRequired _("Password required  this is an encrypted document")
 #define AP_STRING_ID_WORD_PassInvalid  _("Incorrect Password")

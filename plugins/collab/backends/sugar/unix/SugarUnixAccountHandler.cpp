@@ -61,8 +61,6 @@ SugarAccountHandler::~SugarAccountHandler()
 		dbus_connection_unref(m_pTube);
 		m_pTube = NULL;
 	}
-
-  delete m_strings;
 }
 
 UT_UTF8String SugarAccountHandler::getDescription()

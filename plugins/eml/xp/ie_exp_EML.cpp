@@ -131,8 +131,6 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	delete m_sniffer;
 	m_sniffer = 0;
 
-  delete strings;
-
 	return 1;
 }
 

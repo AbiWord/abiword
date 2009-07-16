@@ -126,13 +126,13 @@ void AP_UnixDialog_MetaData::eventOK ()
 GtkWidget * AP_UnixDialog_MetaData::_constructWindow ()
 {
 	GtkWidget * window;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	// get the path where our UI file is located
 	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_MetaData.xml";
 	
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, GETTEXT_PACKAGE);
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
@@ -151,32 +151,6 @@ GtkWidget * AP_UnixDialog_MetaData::_constructWindow ()
 	m_entryRelation = GTK_WIDGET(gtk_builder_get_object(builder, "enRelation"));
 	m_entryCoverage = GTK_WIDGET(gtk_builder_get_object(builder, "enCoverage"));
 	m_entryRights = GTK_WIDGET(gtk_builder_get_object(builder, "enRights"));
-	
-	// set the dialog title
-	UT_UTF8String s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Title,s);
-	abiDialogSetTitle(window, s.utf8_str());	
-	
-	// localize the strings in our dialog, and set some userdata for some widgets
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbTitle")), pSS, AP_STRING_ID_DLG_MetaData_Title_LBL);
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbSubject")), pSS, AP_STRING_ID_DLG_MetaData_Subject_LBL);
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbAuthor")), pSS, AP_STRING_ID_DLG_MetaData_Author_LBL);
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbPublisher")), pSS, AP_STRING_ID_DLG_MetaData_Publisher_LBL);
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbContributors")), pSS, AP_STRING_ID_DLG_MetaData_CoAuthor_LBL);
-
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbCategory")), pSS, AP_STRING_ID_DLG_MetaData_Category_LBL);
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbKeywords")), pSS, AP_STRING_ID_DLG_MetaData_Keywords_LBL);
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbLanguages")), pSS, AP_STRING_ID_DLG_MetaData_Languages_LBL);
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbDescription")), pSS, AP_STRING_ID_DLG_MetaData_Description_LBL);
-
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbSource")), pSS, AP_STRING_ID_DLG_MetaData_Source_LBL);
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbRelation")), pSS, AP_STRING_ID_DLG_MetaData_Relation_LBL);
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbCoverage")), pSS, AP_STRING_ID_DLG_MetaData_Coverage_LBL);
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbRights")), pSS, AP_STRING_ID_DLG_MetaData_Rights_LBL);
-	
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbGeneral_Tab")), pSS, AP_STRING_ID_DLG_MetaData_TAB_General);
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbSummary_Tab")), pSS, AP_STRING_ID_DLG_MetaData_TAB_Summary);
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbPermissions_Tab")), pSS, AP_STRING_ID_DLG_MetaData_TAB_Permission);
 	
 	// now set the text in all the fields
 	UT_UTF8String prop ( "" ) ;

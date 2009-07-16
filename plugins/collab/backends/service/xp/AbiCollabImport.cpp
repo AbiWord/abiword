@@ -47,7 +47,6 @@ IE_Imp_AbiCollabSniffer::IE_Imp_AbiCollabSniffer()
 IE_Imp_AbiCollabSniffer::~IE_Imp_AbiCollabSniffer()
 {
 	IE_Imp::unregisterImporter(this);
-  delete m_strings;
 }
 
 static IE_SuffixConfidence IE_Imp_AbiCollabSniffer__SuffixConfidence[] = {

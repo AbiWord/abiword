@@ -57,7 +57,6 @@ FakeAccountHandler::FakeAccountHandler(const UT_UTF8String& sSessionURI, XAP_Fra
 
 FakeAccountHandler::~FakeAccountHandler()
 {
-  delete m_strings;
 }
 
 UT_UTF8String FakeAccountHandler::getDescription()

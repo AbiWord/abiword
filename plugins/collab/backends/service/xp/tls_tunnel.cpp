@@ -510,5 +510,3 @@ session_ptr_t ServerProxy::setup_tls_session(socket_ptr_t remote_socket_ptr) {
 }
 	
 } /* namespace tls_tunnel */
-
-delete strings;

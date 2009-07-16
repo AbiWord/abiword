@@ -63,7 +63,6 @@ AbiCollab_Command::AbiCollab_Command(const UT_UTF8String& argv)
 
 AbiCollab_Command::~AbiCollab_Command()
 {
-  delete m_strings;
 }
 
 bool AbiCollab_Command::execute()

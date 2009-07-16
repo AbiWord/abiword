@@ -206,7 +206,6 @@ IE_Exp_S5::IE_Exp_S5(PD_Document * pDocument)
 
 IE_Exp_S5::~IE_Exp_S5()
 {
-  delete strings;
 }
 
 UT_Error IE_Exp_S5::_writeDocument(void)

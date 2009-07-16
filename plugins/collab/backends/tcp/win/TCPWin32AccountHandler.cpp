@@ -125,7 +125,6 @@ TCPWin32AccountHandler::TCPWin32AccountHandler()
 
 TCPWin32AccountHandler::~TCPWin32AccountHandler()
 {
-  delete m_strings;
 }
 
 void TCPWin32AccountHandler::embedDialogWidgets(void* pEmbeddingParent)

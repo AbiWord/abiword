@@ -76,7 +76,7 @@ public:
 	void setEncoding(const char * inEndcoding);
 	const char * getEncoding() const;
 
-	const char * setDomain(const char * szDomain);
+	const char * setDomain(const char * szDomain = NULL);
 
 protected:
 	const gchar *			m_szLanguageName;

@@ -128,7 +128,6 @@ void AP_UnixDialog_Insert_DateTime::event_Insert(void)
 GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindow(void)
 {
 	GtkWidget * window;	
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *column;	
 	
@@ -137,6 +136,7 @@ GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindow(void)
 	
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, GETTEXT_PACKAGE);
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
@@ -146,16 +146,6 @@ GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindow(void)
 
 	// set the single selection mode for the TreeView
     gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_tvFormats)), GTK_SELECTION_SINGLE);		
-	
-	// set the dialog title
-	UT_UTF8String s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_DateTime_DateTimeTitle,s);
-	abiDialogSetTitle(window, s.utf8_str());
-	
-	// localize the strings in our dialog
-	
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbAvailableFormats")), pSS, AP_STRING_ID_DLG_DateTime_AvailableFormats_Capital);
-	localizeButtonUnderline(GTK_WIDGET(gtk_builder_get_object(builder, "btInsert")), pSS, AP_STRING_ID_DLG_InsertButton);
 	
 	// add a column to our TreeView
 	renderer = gtk_cell_renderer_text_new ();

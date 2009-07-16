@@ -298,7 +298,6 @@ void AP_UnixDialog_New::s_template_dblclicked(GtkTreeView * /*treeview*/,
 
 GtkWidget * AP_UnixDialog_New::_constructWindow ()
 {
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *column;
 	
@@ -307,21 +306,17 @@ GtkWidget * AP_UnixDialog_New::_constructWindow ()
 	
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, GETTEXT_PACKAGE);
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
 	m_mainWindow = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_New"));
-	gtk_window_set_title(GTK_WINDOW(m_mainWindow), 
-						 pSS->getValue(AP_STRING_ID_DLG_NEW_Title));
 
 	m_radioNew = GTK_WIDGET(gtk_builder_get_object(builder, "rdTemplate"));
 	m_radioExisting = GTK_WIDGET(gtk_builder_get_object(builder, "rdOpen"));
 	m_buttonFilename = GTK_WIDGET(gtk_builder_get_object(builder, "btFile"));
 	m_choicesList = GTK_WIDGET(gtk_builder_get_object(builder, "tvTemplates"));
-
-	localizeButton(m_radioNew, pSS, AP_STRING_ID_DLG_NEW_Create);
-	localizeButton(m_radioExisting, pSS, AP_STRING_ID_DLG_NEW_Open);
 
 	renderer = gtk_cell_renderer_text_new ();
 	column = gtk_tree_view_column_new_with_attributes ("Format",

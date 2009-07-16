@@ -277,7 +277,6 @@ void AP_UnixDialog_Field::setFieldsList(void)
 GtkWidget * AP_UnixDialog_Field::_constructWindow(void)
 {
 	GtkWidget * window;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *column;
 	
@@ -286,6 +285,7 @@ GtkWidget * AP_UnixDialog_Field::_constructWindow(void)
 	
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, GETTEXT_PACKAGE);
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
@@ -298,18 +298,6 @@ GtkWidget * AP_UnixDialog_Field::_constructWindow(void)
 	// set the single selection mode for the TreeViews
     gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_listTypes)), GTK_SELECTION_SINGLE);	
     gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_listFields)), GTK_SELECTION_SINGLE);	
-
-	// set the dialog title
-	UT_UTF8String s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Field_FieldTitle_Capital,s);
-	abiDialogSetTitle(window, s.utf8_str());	
-	
-	// localize the strings in our dialog, and set some userdata for some widg
-
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbTypes")), pSS, AP_STRING_ID_DLG_Field_Types_No_Colon);
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbFields")), pSS, AP_STRING_ID_DLG_Field_Fields_No_Colon);
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbExtraParameters")), pSS, AP_STRING_ID_DLG_Field_Parameters_Capital);
-	localizeButtonUnderline(GTK_WIDGET(gtk_builder_get_object(builder, "btInsert")), pSS, AP_STRING_ID_DLG_InsertButton);
 
 	// add a column to our TreeViews
 

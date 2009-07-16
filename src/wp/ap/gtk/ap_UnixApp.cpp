@@ -162,6 +162,7 @@ AP_UnixApp::AP_UnixApp(const char * szAppName)
 */
 AP_UnixApp::~AP_UnixApp(void)
 {
+		DELETEP(m_pStringSet);
     DELETEP(m_pClipboard);
 
     IE_ImpExp_UnRegisterXP ();
@@ -376,6 +377,7 @@ const std::string& AP_UnixApp::getAbiSuiteAppUIDir(void) const
 */
 const XAP_StringSet * AP_UnixApp::getStringSet(void) const
 {
+		m_pStringSet->setDomain();
     return m_pStringSet;
 }
 

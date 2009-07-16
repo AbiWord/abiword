@@ -528,8 +528,6 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 		connection_pool = NULL;
 	}
 
-  delete strings;
-	
 	return 1;
 }
 

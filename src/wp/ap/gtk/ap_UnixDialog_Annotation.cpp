@@ -145,13 +145,13 @@ void AP_UnixDialog_Annotation::eventApply ()
 GtkWidget * AP_UnixDialog_Annotation::_constructWindow ()
 {
 	GtkWidget * window;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	// get the path where our UI file is located
 	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Annotation.xml";
 	
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, GETTEXT_PACKAGE);
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
@@ -160,16 +160,6 @@ GtkWidget * AP_UnixDialog_Annotation::_constructWindow ()
 	m_entryTitle = GTK_WIDGET(gtk_builder_get_object(builder, "enTitle"));
 	m_entryAuthor = GTK_WIDGET(gtk_builder_get_object(builder, "enAuthor"));
 	m_textDescription = GTK_WIDGET(gtk_builder_get_object(builder, "tvDescription"));
-	
-	// set the dialog title
-	UT_UTF8String s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Annotation_Title,s);
-	abiDialogSetTitle(window, s.utf8_str());	
-	
-	// localize the strings in our dialog, and set some userdata for some widgets
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbTitle")), pSS, AP_STRING_ID_DLG_Annotation_Title_LBL);
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbAuthor")), pSS, AP_STRING_ID_DLG_Annotation_Author_LBL);
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbDescription")), pSS, AP_STRING_ID_DLG_Annotation_Description_LBL);
 	
 	// now set the text in all the fields
 	UT_UTF8String prop ( "" ) ;
@@ -180,15 +170,6 @@ GtkWidget * AP_UnixDialog_Annotation::_constructWindow ()
 		gtk_entry_set_text (GTK_ENTRY(m_entry##name), prop.utf8_str() ) ; \
 	}
 	
-	GtkWidget * wOK = GTK_WIDGET(gtk_builder_get_object(builder, "btOK"));
-	GtkWidget * wReplace = GTK_WIDGET(gtk_builder_get_object(builder, "btReplace"));
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Annotation_Replace_LBL,s);
-	gtk_button_set_label(GTK_BUTTON(wReplace),s.utf8_str()); 
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Annotation_OK_tooltip,s);
-	gtk_widget_set_tooltip_text (wOK,s.utf8_str());
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Annotation_Replace_tooltip,s);
-	gtk_widget_set_tooltip_text (wReplace,s.utf8_str());
-
 
 	SET_ENTRY_TXT(Title)
 	SET_ENTRY_TXT(Author)

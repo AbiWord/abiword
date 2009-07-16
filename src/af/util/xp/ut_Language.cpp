@@ -264,7 +264,9 @@ const gchar * UT_Language::getNthLangCode(UT_uint32 n)
 
 const gchar * UT_Language::getNthLangName(UT_uint32 n)
 {
-	return (s_Table[n].m_szLangName);
+	// It has to be done like this because s_Table is initializeded before the message catalog is loaded.
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+	return (pSS->getValue(_(s_Table[n].m_szLangName)));
 }
 
 const gchar * UT_Language::getNthId(UT_uint32 n)

@@ -96,13 +96,13 @@ void AP_UnixDialog_Break::runModal(XAP_Frame * pFrame)
 GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 {
 	GtkWidget * window;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	// get the path where our UI file is located
 	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Break.xml";
 	
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, GETTEXT_PACKAGE);
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
@@ -110,35 +110,17 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Break"));
 	m_radioGroup = gtk_radio_button_get_group (GTK_RADIO_BUTTON ( GTK_WIDGET(gtk_builder_get_object(builder, "rbPageBreak")) ));
 
-	// set the dialog title
-	UT_UTF8String s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Break_BreakTitle_Capital,s);
-	abiDialogSetTitle(window, s.utf8_str());
-	
-	// localize the strings in our dialog, and set tags for some widgets
-	
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbInsertBreak")), pSS, AP_STRING_ID_DLG_Break_Insert);
-	
-	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbPageBreak")), pSS, AP_STRING_ID_DLG_Break_PageBreak);
 	g_object_set_data (G_OBJECT (GTK_WIDGET(gtk_builder_get_object(builder, "rbPageBreak"))), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_PAGE));
 
-	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbColumnBreak")), pSS, AP_STRING_ID_DLG_Break_ColumnBreak);
 	g_object_set_data (G_OBJECT (GTK_WIDGET(gtk_builder_get_object(builder, "rbColumnBreak"))), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_COLUMN));
 
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbInsertSectionBreak")), pSS, AP_STRING_ID_DLG_Break_SectionBreaks_Capital);
-	
-	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbNextPage")), pSS, AP_STRING_ID_DLG_Break_NextPage);
 	g_object_set_data (G_OBJECT (GTK_WIDGET(gtk_builder_get_object(builder, "rbNextPage"))), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_NEXTPAGE));
 
-	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbContinuous")), pSS, AP_STRING_ID_DLG_Break_Continuous);
 	g_object_set_data (G_OBJECT (GTK_WIDGET(gtk_builder_get_object(builder, "rbContinuous"))), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_CONTINUOUS));
 
-	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbEvenPage")), pSS, AP_STRING_ID_DLG_Break_EvenPage);
 	g_object_set_data (G_OBJECT (GTK_WIDGET(gtk_builder_get_object(builder, "rbEvenPage"))), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_EVENPAGE));
 
-	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbOddPage")), pSS, AP_STRING_ID_DLG_Break_OddPage);
 	g_object_set_data (G_OBJECT (GTK_WIDGET(gtk_builder_get_object(builder, "rbOddPage"))), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_ODDPAGE));
-	localizeButtonUnderline(GTK_WIDGET(gtk_builder_get_object(builder, "btInsert")), pSS, AP_STRING_ID_DLG_InsertButton);
 
 	g_object_unref(G_OBJECT(builder));
 

@@ -261,7 +261,6 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 
     Ots_removeFromMenus() ;
 
-    delete strings;
     return 1;
 }
 

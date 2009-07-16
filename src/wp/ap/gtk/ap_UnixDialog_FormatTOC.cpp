@@ -355,55 +355,13 @@ GtkWidget * AP_UnixDialog_FormatTOC::_constructWindow(void)
 
 	// load the dialog from the UI file
 	m_pBuilder = gtk_builder_new();
+	gtk_builder_set_translation_domain(m_pBuilder, GETTEXT_PACKAGE);
 	gtk_builder_add_from_file(m_pBuilder, ui_path.c_str(), NULL);
 	
-	const XAP_StringSet * pSS = m_pApp->getStringSet ();
-
 	m_windowMain   = _getWidget("ap_UnixDialog_FormatTOC");
 	m_wApply = _getWidget("wApply");
 	m_wClose = _getWidget("wClose");
 
-	// set the dialog title
-	UT_UTF8String s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Title,s);
-	abiDialogSetTitle(m_windowMain, s.utf8_str());
-
-// localize notebook tabs
-	localizeLabel(_getWidget( "lbGeneral"), pSS, AP_STRING_ID_DLG_FormatTOC_General);
-	localizeLabel(_getWidget( "lbLayoutDetails"), pSS, AP_STRING_ID_DLG_FormatTOC_LayoutDetails);
-
-// Heading settings
-
-	localizeButtonMarkup(_getWidget( "cbHasHeading"), pSS, AP_STRING_ID_DLG_FormatTOC_HasHeading);
-	localizeLabelUnderline(_getWidget( "lbHeadingText"), pSS, AP_STRING_ID_DLG_FormatTOC_HeadingText);
-	localizeLabel(_getWidget( "lbHeadingStyle"), pSS, AP_STRING_ID_DLG_FormatTOC_HeadingStyle);
-
-	localizeButton(_getWidget( "lbChangeHeadingStyle"), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
-
-// Main level definitions
-	localizeLabelMarkup(_getWidget( "lbMainLevelDefs"), pSS, AP_STRING_ID_DLG_FormatTOC_LevelDefs);
-	localizeButtonUnderline(_getWidget( "wHasLabel"), pSS, AP_STRING_ID_DLG_FormatTOC_HasLabel);	
-	localizeLabel(_getWidget( "lbFillStyle"), pSS, AP_STRING_ID_DLG_FormatTOC_FillStyle);
-	localizeLabel(_getWidget( "lbDispStyle"), pSS, AP_STRING_ID_DLG_FormatTOC_DispStyle);
-	localizeButton(_getWidget( "wChangeFill"), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
-	localizeButton(_getWidget( "wChangeDisp"), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
-
-// Details top
-	localizeLabelMarkup(_getWidget( "lbDetails"), pSS, AP_STRING_ID_DLG_FormatTOC_DetailsTop);
-	localizeLabelUnderline(_getWidget( "lbStartAt"), pSS, AP_STRING_ID_DLG_FormatTOC_StartAt);
-	localizeLabelUnderline(_getWidget( "lbTextBefore"), pSS, AP_STRING_ID_DLG_FormatTOC_TextBefore);
-	localizeLabelUnderline(_getWidget( "lbNumberingType"), pSS, AP_STRING_ID_DLG_FormatTOC_NumberingType);
-	localizeLabelUnderline(_getWidget( "lbTextAfter"), pSS, AP_STRING_ID_DLG_FormatTOC_TextAfter);
-	localizeButtonUnderline(_getWidget( "cbInherit"), pSS, AP_STRING_ID_DLG_FormatTOC_InheritLabel);
-
-// Tabs and numbering
-	localizeLabelMarkup(_getWidget( "lbTabPage"), pSS, AP_STRING_ID_DLG_FormatTOC_DetailsTabPage);
-	localizeLabelUnderline(_getWidget( "lbTabLeader"), pSS, AP_STRING_ID_DLG_FormatTOC_TabLeader);
-	localizeLabelUnderline(_getWidget( "lbPageNumbering"), pSS, AP_STRING_ID_DLG_FormatTOC_PageNumbering);
-	localizeLabelUnderline(_getWidget( "lbIndent"), pSS, AP_STRING_ID_DLG_FormatTOC_Indent);
-
-// Create the itemlists
-	_createLabelTypeItems();
 	_createTABTypeItems();
 	_createLevelItems();
 	return m_windowMain;

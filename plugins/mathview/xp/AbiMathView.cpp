@@ -994,8 +994,6 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	DELETEP(pMathManager);
 	AbiMathView_removeFromMenus();
 
-	delete strings;
-
 	return 1;
 }
 

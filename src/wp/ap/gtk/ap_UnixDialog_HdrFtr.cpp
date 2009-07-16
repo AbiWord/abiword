@@ -175,7 +175,6 @@ void AP_UnixDialog_HdrFtr::RestartChanged(void)
 GtkWidget * AP_UnixDialog_HdrFtr::_constructWindow (void)
 {
 	GtkWidget * window;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	// get the path where our UI file is located
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
@@ -186,6 +185,7 @@ GtkWidget * AP_UnixDialog_HdrFtr::_constructWindow (void)
 	
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, GETTEXT_PACKAGE);
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
@@ -202,27 +202,6 @@ GtkWidget * AP_UnixDialog_HdrFtr::_constructWindow (void)
 	m_wSpin = GTK_WIDGET(gtk_builder_get_object(builder, "sbRestartNumberingAt"));
 	m_spinAdj = gtk_spin_button_get_adjustment( GTK_SPIN_BUTTON(m_wSpin) );
 	
-	// set the dialog title
-	UT_UTF8String s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_Title,s);
-	abiDialogSetTitle(window, s.utf8_str());
-
-	// localize the strings in our dialog
-	
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbHeaderProperties")), pSS, AP_STRING_ID_DLG_HdrFtr_HeaderFrame);
-	localizeButton(m_wHdrFtrCheck[HdrEven], pSS, AP_STRING_ID_DLG_HdrFtr_HeaderEven);
-	localizeButton(m_wHdrFtrCheck[HdrFirst], pSS, AP_STRING_ID_DLG_HdrFtr_HeaderFirst);
-	localizeButton(m_wHdrFtrCheck[HdrLast], pSS, AP_STRING_ID_DLG_HdrFtr_HeaderLast);
-
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbFooterProperties")), pSS, AP_STRING_ID_DLG_HdrFtr_FooterFrame);
-	localizeButton(m_wHdrFtrCheck[FtrEven], pSS, AP_STRING_ID_DLG_HdrFtr_FooterEven);
-	localizeButton(m_wHdrFtrCheck[FtrFirst], pSS, AP_STRING_ID_DLG_HdrFtr_FooterFirst);
-	localizeButton(m_wHdrFtrCheck[FtrLast], pSS, AP_STRING_ID_DLG_HdrFtr_FooterLast);
-
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbPageNumberProperties")), pSS, AP_STRING_ID_DLG_HdrFtr_PageNumberProperties);
-	localizeButton(m_wRestartButton, pSS, AP_STRING_ID_DLG_HdrFtr_RestartCheck);
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbRestartNumbering")), pSS, AP_STRING_ID_DLG_HdrFtr_RestartNumbers);
-
 	// Now set initial state of the dialog
 	
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_wSpin),static_cast<gfloat>(getRestartValue()));

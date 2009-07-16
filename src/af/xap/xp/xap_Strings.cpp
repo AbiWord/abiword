@@ -138,9 +138,15 @@ const char * XAP_StringSet::getEncoding() const
 
 const char * XAP_StringSet::setDomain(const char * szDomainName)
 {
-  m_domain = szDomainName ? szDomainName : GETTEXT_PACKAGE;
-	bindtextdomain(m_domain, LOCALE_DIR);
-	return textdomain(m_domain);
+	// Don't call the gettext functions unless necessary
+	if ((m_domain != szDomainName) || (!szDomainName && m_domain != GETTEXT_PACKAGE))
+	{
+		m_domain = szDomainName ? szDomainName : GETTEXT_PACKAGE;
+		bindtextdomain(m_domain, LOCALE_DIR);
+		return textdomain(m_domain);
+	}
+	else
+		return m_domain;
 }
 
 /* Kinda useless for now, but maybe we can put in checks in the future */

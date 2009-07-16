@@ -513,9 +513,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	go_component_set_command_context (NULL);
 	g_object_unref (cc);
 
-  delete strings;
-
-    return 1;
+	return 1;
 }
 
 ABI_FAR_CALL

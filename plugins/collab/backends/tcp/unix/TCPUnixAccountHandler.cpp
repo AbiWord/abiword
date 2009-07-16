@@ -46,7 +46,6 @@ TCPUnixAccountHandler::TCPUnixAccountHandler()
 
 TCPUnixAccountHandler::~TCPUnixAccountHandler()
 {
-  delete m_strings;
 }
 
 void TCPUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)

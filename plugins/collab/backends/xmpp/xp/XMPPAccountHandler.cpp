@@ -181,7 +181,6 @@ XMPPAccountHandler::XMPPAccountHandler():
 XMPPAccountHandler::~XMPPAccountHandler()
 {
 	disconnect();
-  delete m_strings;
 }
 
 UT_UTF8String XMPPAccountHandler::getDescription()

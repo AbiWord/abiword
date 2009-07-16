@@ -152,13 +152,12 @@ void AP_UnixDialog_MailMerge::event_AddClicked ()
 
 GtkWidget * AP_UnixDialog_MailMerge::_constructWindow(void)
 {
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	
 	// get the path where our UI file is located
 	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_MailMerge.xml";
 	
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, GETTEXT_PACKAGE);
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
@@ -169,21 +168,6 @@ GtkWidget * AP_UnixDialog_MailMerge::_constructWindow(void)
 
 	// set the single selection mode for the TreeView
     gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_treeview)), GTK_SELECTION_SINGLE);	
-
-	// set the dialog title
-	UT_UTF8String s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_MailMerge_MailMergeTitle,s);
-	abiDialogSetTitle(m_windowMain, s.utf8_str());
-	
-	// localize the strings in our dialog, and set tags for some widgets
-	
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbAvailableFields")), pSS, AP_STRING_ID_DLG_MailMerge_AvailableFields);
-
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbFieldName")), pSS, AP_STRING_ID_DLG_MailMerge_Insert_No_Colon);	
-
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbOpenFile")), pSS, AP_STRING_ID_DLG_MailMerge_OpenFile);	
-
-	localizeButtonUnderline(GTK_WIDGET(gtk_builder_get_object(builder, "btInsert")), pSS, AP_STRING_ID_DLG_InsertButton);
 
 	g_signal_connect_after(G_OBJECT(m_treeview),
 						   "cursor-changed",

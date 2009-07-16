@@ -165,13 +165,12 @@ bool AP_UnixDialog_Latex::getLatexFromGUI(void)
 
 void AP_UnixDialog_Latex::constructDialog(void)
 {	
-	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-
 	// get the path where our UI file is located
 	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Latex.xml";
 
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, GETTEXT_PACKAGE);
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 
         // Update our member variables with the important widgets that
@@ -180,14 +179,6 @@ void AP_UnixDialog_Latex::constructDialog(void)
 	m_wClose = GTK_WIDGET(gtk_builder_get_object(builder, "wClose"));
 	m_wInsert =  GTK_WIDGET(gtk_builder_get_object(builder, "wInsert"));
 	m_wText = GTK_WIDGET(gtk_builder_get_object(builder, "wTextView"));
-
-	// localize the strings in our dialog, and set tags for some widgets
-
-	localizeButtonUnderline(m_wInsert, pSS, AP_STRING_ID_DLG_InsertButton);
-
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbLatexEquation")), pSS, AP_STRING_ID_DLG_Latex_LatexEquation);
-	
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbExample")), pSS, AP_STRING_ID_DLG_Latex_Example);
 
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW(m_windowMain), m_sWindowName.utf8_str());

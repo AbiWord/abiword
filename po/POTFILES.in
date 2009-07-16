@@ -2,6 +2,7 @@
 src/wp/ap/xp/ap_String_Id.h
 src/af/xap/xp/xap_String_Id.h
 
+
 # GtkBuilder definiton files
 [type: gettext/glade]src/af/xap/gtk/xap_UnixDlg_DocComparison.xml
 [type: gettext/glade]src/af/xap/gtk/xap_UnixDlg_Encoding.xml
@@ -13,3 +14,20 @@ src/af/xap/xp/xap_String_Id.h
 [type: gettext/glade]src/af/xap/gtk/xap_UnixDlg_PluginManager.xml
 [type: gettext/glade]src/af/xap/gtk/xap_UnixDlg_WindowMore.xml
 [type: gettext/glade]src/af/xap/gtk/xap_UnixDlg_Zoom.xml
+
+
+[type: gettext/glade]src/wp/ap/gtk/ap_UnixDialog_Annotation.xml
+[type: gettext/glade]src/wp/ap/gtk/ap_UnixDialog_Break.xml
+[type: gettext/glade]src/wp/ap/gtk/ap_UnixDialog_Field.xml
+[type: gettext/glade]src/wp/ap/gtk/ap_UnixDialog_FormatFootnotes.xml
+[type: gettext/glade]src/wp/ap/gtk/ap_UnixDialog_FormatFrame.xml
+[type: gettext/glade]src/wp/ap/gtk/ap_UnixDialog_FormatTOC.xml
+[type: gettext/glade]src/wp/ap/gtk/ap_UnixDialog_FormatTable.xml
+[type: gettext/glade]src/wp/ap/gtk/ap_UnixDialog_Goto.xml
+[type: gettext/glade]src/wp/ap/gtk/ap_UnixDialog_HdrFtr.xml
+[type: gettext/glade]src/wp/ap/gtk/ap_UnixDialog_InsertTable.xml
+[type: gettext/glade]src/wp/ap/gtk/ap_UnixDialog_Insert_DateTime.xml
+[type: gettext/glade]src/wp/ap/gtk/ap_UnixDialog_Latex.xml
+[type: gettext/glade]src/wp/ap/gtk/ap_UnixDialog_MailMerge.xml
+[type: gettext/glade]src/wp/ap/gtk/ap_UnixDialog_MetaData.xml
+[type: gettext/glade]src/wp/ap/gtk/ap_UnixDialog_New.xml

@@ -108,7 +108,6 @@ AbiCollabSaveInterceptor::AbiCollabSaveInterceptor()
 
 AbiCollabSaveInterceptor::~AbiCollabSaveInterceptor()
 {
-  delete m_strings;
 }
 
 bool AbiCollabSaveInterceptor::saveRemotely(PD_Document * pDoc)

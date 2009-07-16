@@ -42,8 +42,6 @@ TCPAccountHandler::~TCPAccountHandler()
 	UT_DEBUGMSG(("~TCPAccountHandler()\n"));
 	if (m_bConnected)
 		disconnect();
-
-  delete m_strings;
 }
 
 UT_UTF8String TCPAccountHandler::getDescription()

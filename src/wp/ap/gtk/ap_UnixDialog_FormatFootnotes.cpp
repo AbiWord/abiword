@@ -370,42 +370,17 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 	
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, GETTEXT_PACKAGE);
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	// might need to be queried or altered later
 	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_FormatFootnotes"));
-	// set the dialog title
-	UT_UTF8String s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_Title,s);
-	abiDialogSetTitle(window, s.utf8_str());
 	
-	// localize the strings in our dialog, and set tags for some widgets
-	
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbFootnote")), pSS, AP_STRING_ID_DLG_FormatFootnotes_Footnotes);
-
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbFootnoteStyle")), pSS, AP_STRING_ID_DLG_FormatFootnotes_FootStyle);
-
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbFootnoteRestart")), pSS, AP_STRING_ID_DLG_FormatFootnotes_FootnoteRestart);
-
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbFootnoteValue")), pSS, AP_STRING_ID_DLG_FormatFootnotes_FootInitialVal);
-	
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbEndnote")), pSS, AP_STRING_ID_DLG_FormatFootnotes_Endnotes);
-
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbEndnoteStyle")), pSS, AP_STRING_ID_DLG_FormatFootnotes_EndStyle);
-
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbEndnotePlacement")), pSS, AP_STRING_ID_DLG_FormatFootnotes_EndPlacement);
-
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbEndnoteValue")), pSS, AP_STRING_ID_DLG_FormatFootnotes_EndInitialVal);
-
-	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "cbSectionRestart")), pSS, AP_STRING_ID_DLG_FormatFootnotes_EndRestartSec);
-
 //
 // Now extract widgets from the menu items
 //
 
 	const FootnoteTypeDesc * footnoteTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
 
-	
-		
 	m_wFootnotesStyleMenu = GTK_COMBO_BOX(gtk_builder_get_object(builder, "omFootnoteStyle"));
 	UT_ASSERT(m_wFootnotesStyleMenu );
 	XAP_makeGtkComboBoxText(m_wFootnotesStyleMenu, G_TYPE_INT);
@@ -417,9 +392,13 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 	XAP_makeGtkComboBoxText(m_wEndnotesStyleMenu, G_TYPE_INT);
 	_populateCombo(m_wEndnotesStyleMenu, footnoteTypeList);
 	gtk_combo_box_set_active(m_wEndnotesStyleMenu, 0);
+	
+UT_UTF8String s;
 
 //
 // Footnotes number menu
+//
+// Yes, I'd like to put the strings into the .xml file, but according to GLADE 3, it's not allowed in GtkBuilder files
 //
 	m_wFootnoteNumberingMenu = GTK_COMBO_BOX(gtk_builder_get_object(builder, "omNumbering"));
 	UT_ASSERT(m_wFootnoteNumberingMenu );
@@ -431,11 +410,11 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootRestartPage,s);
 	gtk_combo_box_append_text(m_wFootnoteNumberingMenu, s.utf8_str());
-//	m_wFootnotesRestartOnPage = gtk_menu_item_new_with_label (s.utf8_str());
-
 
 //
 // Endnotes placement menu
+//
+// See above
 //
 	m_wEndnotesPlaceMenu = GTK_COMBO_BOX(gtk_builder_get_object(builder, "omEndnotePlacement"));
 	UT_ASSERT(m_wEndnotesPlaceMenu );

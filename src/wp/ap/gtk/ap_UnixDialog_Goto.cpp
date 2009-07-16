@@ -417,6 +417,7 @@ AP_UnixDialog_Goto::constuctWindow (XAP_Frame * /*pFrame*/)
 
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, GETTEXT_PACKAGE);
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 
 	m_wDialog = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Goto"));
@@ -434,7 +435,7 @@ AP_UnixDialog_Goto::constuctWindow (XAP_Frame * /*pFrame*/)
 
 
 	// localise	
-	// const XAP_StringSet * pSS = m_pApp->getStringSet ();
+	const XAP_StringSet * pSS = m_pApp->getStringSet ();
 	/* FIXME jump targets localised in xp land, make sure they work for non ascii characters */
 	gchar **targets = getJumpTargets ();
 	gchar *text = NULL;
@@ -455,7 +456,7 @@ AP_UnixDialog_Goto::constuctWindow (XAP_Frame * /*pFrame*/)
 	GtkCellRenderer *renderer = NULL;
 	renderer = gtk_cell_renderer_text_new ();
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (m_lvBookmarks),
-												-1, "Name", renderer,
+												-1, pSS->getValue(AP_STRING_ID_DLG_Goto_ColumnLabel_Name), renderer,
 												"text", COLUMN_NAME,
 												NULL);
 	GtkTreeViewColumn *column = gtk_tree_view_get_column (GTK_TREE_VIEW (m_lvBookmarks), 0);

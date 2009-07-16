@@ -77,7 +77,6 @@ DiskSessionRecorder::DiskSessionRecorder(AbiCollab* pSession)
 DiskSessionRecorder::~DiskSessionRecorder() 
 {
 	destroy();
-  delete m_strings;
 }
 
 bool DiskSessionRecorder::getPackets(const std::string& filename, bool& bLocallyControlled, vector<RecordedPacket*>& packets)

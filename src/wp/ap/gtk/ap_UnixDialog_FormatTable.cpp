@@ -437,6 +437,7 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 	
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, GETTEXT_PACKAGE);
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
@@ -468,32 +469,11 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 	// disable double buffering on our preview
 	gtk_widget_set_double_buffered(m_wPreviewArea, FALSE); 	
 	
-	// localize the strings in our dialog, and set tags for some widgets
-	
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbBorder")), pSS, AP_STRING_ID_DLG_FormatTable_Borders);
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbBorderColor")), pSS, AP_STRING_ID_DLG_FormatTable_Color);
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbBorderThickness")), pSS, AP_STRING_ID_DLG_FormatTable_Thickness);
-	
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbBackground")), pSS, AP_STRING_ID_DLG_FormatTable_Background);
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbBackgroundColor")), pSS, AP_STRING_ID_DLG_FormatTable_Color);
-
-	
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbSetImageBackground")), pSS, AP_STRING_ID_DLG_FormatTable_SetImageBackground);
-	
-
 //	add the buttons for background image to the dialog.
 
 	m_wSelectImageButton = GTK_WIDGET(gtk_builder_get_object(builder, "btSelectImage"));
 	m_wNoImageButton = GTK_WIDGET(gtk_builder_get_object(builder, "btNoImageBackground"));
 	
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbSelectImage")), pSS, AP_STRING_ID_DLG_FormatTable_SelectImage);
-	
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbSetNoImage")), pSS, AP_STRING_ID_DLG_FormatTable_NoImageBackground);
-	
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbPreview")), pSS, AP_STRING_ID_DLG_FormatTable_Preview);
-
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbApplyTo")), pSS, AP_STRING_ID_DLG_FormatTable_Apply_To);
-
 	m_wBorderColorButton = GTK_WIDGET(gtk_builder_get_object(builder, "cbtBorderColorButton"));
 	m_wBackgroundColorButton = GTK_WIDGET(gtk_builder_get_object(builder, "cbtBackgroundColorButton"));
 

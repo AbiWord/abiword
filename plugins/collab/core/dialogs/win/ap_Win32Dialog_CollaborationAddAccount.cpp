@@ -102,7 +102,6 @@ AP_Win32Dialog_CollaborationAddAccount::AP_Win32Dialog_CollaborationAddAccount(X
 
 AP_Win32Dialog_CollaborationAddAccount::~AP_Win32Dialog_CollaborationAddAccount()
 {
-  delete m_strings;
 }
 
 void AP_Win32Dialog_CollaborationAddAccount::runModal(XAP_Frame * pFrame)
