@@ -598,6 +598,11 @@ void fl_FrameLayout::_createFrameContainer(void)
 	pSectionAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const gchar *&)pszDataID);
 	DELETEP(m_pGraphicImage);
 	DELETEP(m_pImageImage);
+	//
+	// Set the image size from the full width
+	//
+	setImageWidth(pFrameContainer->getFullWidth());
+	setImageHeight(pFrameContainer->getFullHeight());
 	if(pszDataID && *pszDataID)
 	{
 		UT_DEBUGMSG(("!!!Found image of file %s \n",pszDataID));

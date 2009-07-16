@@ -224,13 +224,19 @@ GR_Image* FG_GraphicVector::generateImage(GR_Graphics* pG,
 
 	UT_sint32 iDisplayWidth = 0;
 	UT_sint32 iDisplayHeight = 0;
+	if(!bFoundWidthProperty || !bFoundHeightProperty)
+	{
+	     bFoundWidthProperty = m_pSpanAP->getProperty("frame-width", pszWidth);
+	     bFoundHeightProperty = m_pSpanAP->getProperty("frame-height", pszHeight);
+	}
 	if (bFoundWidthProperty && bFoundHeightProperty && pszWidth && pszHeight && pszWidth[0] && pszHeight[0])
 	{
 		// we have a specified size, so use it
 		iDisplayWidth = UT_convertToLogicalUnits(static_cast<const char*>(pszWidth));
 		iDisplayHeight = UT_convertToLogicalUnits(static_cast<const char*>(pszHeight));
 	} 
-	else 
+
+	if( (iDisplayWidth ==0) || (iDisplayHeight == 0))
 	{
 		// or else, get the image's natural size
 		iDisplayWidth = pImage->getDisplayWidth();

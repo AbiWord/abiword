@@ -251,11 +251,18 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG,
 
 	UT_sint32 iDisplayWidth = 0;
 	UT_sint32 iDisplayHeight = 0;
+	// try frame-width, frame-height
+	if(!bFoundWidthProperty || !bFoundHeightProperty)
+	{
+	     bFoundWidthProperty = m_pSpanAP->getProperty("frame-width", pszWidth);
+	     bFoundHeightProperty = m_pSpanAP->getProperty("frame-height", pszHeight);
+	}
 	if (bFoundWidthProperty && bFoundHeightProperty && pszWidth && pszHeight && pszWidth[0] && pszHeight[0])
 	{
 		iDisplayWidth = UT_convertToLogicalUnits(static_cast<const char*>(pszWidth));
 		iDisplayHeight = UT_convertToLogicalUnits(static_cast<const char*>(pszHeight));
 	}
+
 	if((iDisplayWidth==0) || (iDisplayHeight == 0)) 
 	{
 		UT_sint32 iImageWidth;
