@@ -37,7 +37,6 @@
 #include "xap_Dlg_About.h"
 #include "xap_Win32Dlg_About.h"
 
-// #include "xap_Win32Resources.rc2"
 #include "gr_Win32Graphics.h"
 #include "gr_Win32Image.h"
 #include "gr_Win32USPGraphics.h"
@@ -145,7 +144,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 		return;
 	}
 
-	SetWindowLong(hwndAbout, GWL_USERDATA, reinterpret_cast<LONG>(this));
+	SetWindowLongW(hwndAbout, GWL_USERDATA, reinterpret_cast<LONG>(this));
 
 	RECT rcClient;
 	GetClientRect(hwndAbout, &rcClient);
@@ -191,8 +190,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 										   NULL);
 
     str.fromASCII (XAP_App::s_szBuild_Version);
-    str.appendASCII (" (Unicode build)");                       //TODO- remove
-
+   
 	HWND hwndStatic_Version = CreateWindowW(L"STATIC",
 										   str.c_str(),
 										   WS_CHILD | WS_VISIBLE | SS_CENTER,
@@ -274,20 +272,20 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 	lf.lfWeight = FW_BOLD; 
 	HFONT hfontHeading = CreateFontIndirectW(&lf);
 	
-	SendMessage(hwndStatic_Heading, WM_SETFONT, (WPARAM) hfontHeading, 0);
+	SendMessageW(hwndStatic_Heading, WM_SETFONT, (WPARAM) hfontHeading, 0);
 
 	HWND rgFontReceivers[] =
 		{ hwndOK, hwndURL, hwndStatic_Version, hwndStatic_Copyright };
 
 	for (UT_uint32 iWnd = 0; iWnd < G_N_ELEMENTS(rgFontReceivers); ++iWnd)
 	{
-		SendMessage(rgFontReceivers[iWnd], WM_SETFONT, (WPARAM) hfontPrimary, 0);
+		SendMessageW(rgFontReceivers[iWnd], WM_SETFONT, (WPARAM) hfontPrimary, 0);
 	}
 
-	SendMessage(hwndStatic_GPL, WM_SETFONT, (WPARAM) hfontSmall, 0);
+	SendMessageW(hwndStatic_GPL, WM_SETFONT, (WPARAM) hfontSmall, 0);
 
 	if(hwndStatic_USP_Version)
-		SendMessage(hwndStatic_USP_Version, WM_SETFONT, (WPARAM) hfontSmall, 0);
+		SendMessageW(hwndStatic_USP_Version, WM_SETFONT, (WPARAM) hfontSmall, 0);
 	
 	// the event loop
 	{
@@ -297,13 +295,13 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 	
 		while (!s_bEventLoopDone)
 		{
-			if (GetMessage(&msg, NULL, 0, 0))
+			if (GetMessageW(&msg, NULL, 0, 0))
 			{
 				if( hwndAbout && IsDialogMessage( hwndAbout, &msg ) )
 					continue;
 
 				TranslateMessage(&msg);
-				DispatchMessage(&msg);
+				DispatchMessageW(&msg);
 			}
 			else
 			{
@@ -333,7 +331,7 @@ BOOL CALLBACK XAP_Win32Dialog_About::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,
 {
 	// This is a static function.
 
-	XAP_Win32Dialog_About * pThis = (XAP_Win32Dialog_About *)GetWindowLong(hWnd,GWL_USERDATA);
+	XAP_Win32Dialog_About * pThis = (XAP_Win32Dialog_About *)GetWindowLongW(hWnd,GWL_USERDATA);
 
 	if (!pThis)
 	{
