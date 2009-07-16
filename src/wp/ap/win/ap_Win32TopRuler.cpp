@@ -34,8 +34,8 @@
 
 /*****************************************************************/
 
-#define GWL(hwnd)		(AP_Win32TopRuler*)GetWindowLong((hwnd), GWL_USERDATA)
-#define SWL(hwnd, f)	(AP_Win32TopRuler*)SetWindowLong((hwnd), GWL_USERDATA,(LONG)(f))
+#define GWL(hwnd)		(AP_Win32TopRuler*)GetWindowLongW((hwnd), GWL_USERDATA)
+#define SWL(hwnd, f)	(AP_Win32TopRuler*)SetWindowLongW((hwnd), GWL_USERDATA,(LONG)(f))
 
 #define ENSUREP(p)		do { UT_ASSERT_HARMLESS(p); if (!p) goto Cleanup; } while (0)
 
@@ -75,7 +75,7 @@ void AP_Win32TopRuler::setView(AV_View * pView)
 	pG->init3dColors();
 
 	if (IsWindow(m_hwndTopRuler))
-		SendMessage(m_hwndTopRuler, WM_ERASEBKGND, (WPARAM)GetDC(m_hwndTopRuler), 0);
+		SendMessageW(m_hwndTopRuler, WM_ERASEBKGND, (WPARAM)GetDC(m_hwndTopRuler), 0);
 }
 
 /*****************************************************************/

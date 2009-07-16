@@ -25,8 +25,8 @@
 
 /*****************************************************************/
 
-#define GWL(hwnd)		(HFONT)GetWindowLong((hwnd), GWL_USERDATA)
-#define SWL(hwnd, f)	(HFONT)SetWindowLong((hwnd), GWL_USERDATA,(LONG)(f))
+#define GWL(hwnd)		(HFONT)GetWindowLongW((hwnd), GWL_USERDATA)
+#define SWL(hwnd, f)	(HFONT)SetWindowLongW((hwnd), GWL_USERDATA,(LONG)(f))
 
 /*!
   Spacing between the label text and the line separator part of the 
@@ -126,7 +126,7 @@ static LRESULT CALLBACK _LabelledSeparatorWndProc(HWND hwnd, UINT iMsg, WPARAM w
 		{
 			SWL(hwnd, (HFONT) wParam);
 
-			int length = GetWindowTextLength(hwnd);
+			int length = GetWindowTextLengthW(hwnd);
 			wchar_t* text = new wchar_t[length + 1];
 			length = GetWindowTextW(hwnd, text, length + 1);
 			AdaptSeparatorLength(hwnd, text, (HFONT) wParam);
@@ -144,7 +144,7 @@ static LRESULT CALLBACK _LabelledSeparatorWndProc(HWND hwnd, UINT iMsg, WPARAM w
 		break;
 	}
 
-	return CallWindowProc(s_pfnWndProc, hwnd, iMsg, wParam, lParam);   	
+	return CallWindowProcW(s_pfnWndProc, hwnd, iMsg, wParam, lParam);   	
 }
 
 /*!

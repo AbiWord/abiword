@@ -52,13 +52,13 @@ public:
 	XAP_Win32App*		 getApp(){return m_pWin32App;}
 	HWND						 getHandle(){return m_hDlg;}	
 	void						     setDialogProc(DLGPROC pfnDlgProc){m_pfnDlgProc=pfnDlgProc;};	
-	virtual	void				 _onInitDialog(){};
-	virtual	void				 _onKillActive(){}; 	
-	virtual	void				 _onOK(){}; 		
-	virtual	void				 _onApply(){}; 
+	virtual void			 _onInitDialog(){};
+	virtual void			 _onKillActive(){}; 	
+	virtual void			 _onOK(){}; 		
+	virtual void			 _onApply(){}; 
 	virtual void			 _onNotify(LPNMHDR /*hdr*/, int /*iCtrlID*/){};
 	static int CALLBACK			s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,LPARAM lParam);
-	void						setChanged (bool bChanged); // Unables or disables apply button
+	void						     setChanged (bool bChanged); // Unables or disables apply button
 	
 	
 private:
@@ -81,7 +81,7 @@ public:
 public:
 
 	int							runModal(XAP_Win32App* pWin32App,XAP_Frame*	pFrame, XAP_String_Id	nID = 0);
-	int 						runModeless (XAP_Win32App* pWin32App, XAP_Frame * pFrame, XAP_String_Id nID = 0);
+	int 						    runModeless (XAP_Win32App* pWin32App, XAP_Frame * pFrame, XAP_String_Id nID = 0);
 	void 						addPage(XAP_Win32PropertyPage* pPage);
 	PROPSHEETPAGEW* 				_buildPageArray(void);	
 	static int CALLBACK			s_sheetWndProc(HWND hWnd, UINT msg, WPARAM wParam,LPARAM lParam);	

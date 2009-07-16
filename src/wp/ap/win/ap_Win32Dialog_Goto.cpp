@@ -82,7 +82,7 @@ void AP_Win32Dialog_Goto::destroy(void)
 
 void AP_Win32Dialog_Goto::notifyActiveFrame(XAP_Frame *pFrame)
 {
-	if((HWND)GetWindowLong(m_hWnd, GWL_HWNDPARENT) != static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
+	if((HWND)GetWindowLongW(m_hWnd, GWL_HWNDPARENT) != static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
 		// Update the caption
 		ConstructWindowName();
@@ -95,7 +95,7 @@ void AP_Win32Dialog_Goto::notifyActiveFrame(XAP_Frame *pFrame)
 
 void AP_Win32Dialog_Goto::notifyCloseFrame(XAP_Frame *pFrame)
 {
-	if((HWND)GetWindowLong(m_hWnd, GWL_HWNDPARENT) == static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
+	if((HWND)GetWindowLongW(m_hWnd, GWL_HWNDPARENT) == static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
 		SetWindowLongW(m_hWnd, GWL_HWNDPARENT, NULL);
 		SetWindowPos(m_hWnd, NULL, 0, 0, 0, 0,
@@ -215,7 +215,7 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		switch( wNotifyCode )
 		{
 		case LBN_SELCHANGE:
-			m_iRow = (short) SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_WHAT), LB_GETCURSEL, 0, 0);
+			m_iRow = (short) SendMessageW(GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_WHAT), LB_GETCURSEL, 0, 0);
 			if( m_iRow == (short) AP_JUMPTARGET_BOOKMARK )
 			{
 				ShowWindow(GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_TEXT_INFO),FALSE);
@@ -242,7 +242,7 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		case LBN_DBLCLK:
 		case LBN_SELCHANGE:
 			{
-				int nIndex = SendMessage( hWndCtrl, LB_GETCURSEL, 0, 0);
+				int nIndex = SendMessageW( hWndCtrl, LB_GETCURSEL, 0, 0);
 				if( nIndex != LB_ERR )
 				{
 					wchar_t value[1024];

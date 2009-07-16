@@ -287,7 +287,7 @@ UINT CALLBACK XAP_Win32Dialog_FontChooser::s_hookProc(HWND hDlg, UINT msg, WPARA
 	{
 	case WM_INITDIALOG:
 		pThis = (XAP_Win32Dialog_FontChooser *) ((CHOOSEFONTW *)lParam)->lCustData;
-		SetWindowLong(hDlg,DWL_USER,(LPARAM) pThis);
+		SetWindowLongW(hDlg,DWL_USER,(LPARAM) pThis);
 		return pThis->_onInitDialog(hDlg,wParam,lParam);
 
 	case WM_COMMAND:
@@ -392,10 +392,10 @@ BOOL XAP_Win32Dialog_FontChooser::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LP
 
 		// make sure this worked and select the color
 		int iOldCount = m_iColorCount;
-		m_iColorCount = SendDlgItemMessage(hWnd, 1139, CB_GETCOUNT, 0, 0);
+		m_iColorCount = SendDlgItemMessageW(hWnd, 1139, CB_GETCOUNT, 0, 0);
 		if(iOldCount + 1 == m_iColorCount)
 		{
-			SendDlgItemMessage(hWnd, 1139, CB_SETCURSEL, m_iColorCount-1, 0);
+			SendDlgItemMessageW(hWnd, 1139, CB_SETCURSEL, m_iColorCount-1, 0);
 			m_iColorIndx = m_iColorCount-1;
 		}
 	}
@@ -433,7 +433,7 @@ BOOL XAP_Win32Dialog_FontChooser::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*
 		case 1139: // this is hardcoded in the dlg
 			if(wNotifyCode == CBN_SELCHANGE)
 			{
-				int iIndx = SendDlgItemMessage(hWnd, 1139, CB_GETCURSEL, 0, 0);
+				int iIndx = SendDlgItemMessageW(hWnd, 1139, CB_GETCURSEL, 0, 0);
 				if(iIndx != m_iColorIndx)
 					m_bChangedColor = true;
 

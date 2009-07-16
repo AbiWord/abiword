@@ -119,9 +119,7 @@ void XAP_Win32PropertyPage::createPage(XAP_Win32App* pWin32App, WORD wRscID,
 	m_pWin32App = pWin32App;
 	LPCWSTR lpTemplate = MAKEINTRESOURCEW(wRscID);	
 	const XAP_StringSet * pSS = getApp()->getStringSet();									
-	
-//	m_page.pszTitle = pSS->getValue(nID);
-	
+
 	m_page.dwSize = sizeof(PROPSHEETPAGEW);
 	m_page.dwFlags = PSP_DEFAULT;
 	m_page.hInstance = pWin32App->getInstance();
@@ -339,7 +337,7 @@ int XAP_Win32PropertySheet::runModal(XAP_Win32App* pWin32App, XAP_Frame * pFrame
 	EnableWindow(m_psh.hwndParent, FALSE);
 
 	/* Subclassing */
-	m_lpfnDefSheet = (WHICHPROC)GetWindowLong(m_hWnd, GWL_WNDPROC);
+	m_lpfnDefSheet = (WHICHPROC)GetWindowLongW(m_hWnd, GWL_WNDPROC);
 	SetWindowLongW(m_hWnd, GWL_USERDATA, (LONG)this);	
 	SetWindowLongW(m_hWnd, GWL_WNDPROC, (LONG)m_pfnDlgProc);
 		
@@ -404,7 +402,7 @@ int XAP_Win32PropertySheet::runModeless (XAP_Win32App* pWin32App, XAP_Frame * pF
 
 	/* Subclassing */
 
-	m_lpfnDefSheet = (WHICHPROC)GetWindowLong(m_hWnd, GWL_WNDPROC);
+	m_lpfnDefSheet = (WHICHPROC)GetWindowLongW(m_hWnd, GWL_WNDPROC);
 	SetWindowLongW(m_hWnd, GWL_USERDATA, (LONG)this);	
 	SetWindowLongW(m_hWnd, GWL_WNDPROC, (LONG)m_pfnDlgProc);
 		

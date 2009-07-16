@@ -165,6 +165,6 @@ BOOL AP_Win32Dialog_Insert_DateTime::_onCommand(HWND hWnd, WPARAM wParam, LPARAM
 
 void AP_Win32Dialog_Insert_DateTime::_FormatListBoxChange(void)
 {
-    m_iFormatIndex = SendMessage(m_hwndFormats, LB_GETCURSEL, 0, 0);
+    m_iFormatIndex = SendMessageW(m_hwndFormats, LB_GETCURSEL, 0, 0);
 }
 

@@ -39,7 +39,7 @@ LRESULT APIENTRY StatusbarWndProc (HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
     if ((uMsg == WM_SIZE || uMsg == SB_SETPARTS) && hwnd) {
 	
 		// default processing
-		LRESULT lresult = CallWindowProc(pBar->getOrgWndProc(), hwnd, uMsg, wParam, lParam);
+		LRESULT lresult = CallWindowProcW(pBar->getOrgWndProc(), hwnd, uMsg, wParam, lParam);
 		
 		// resize the 2nd pane so the panels fill-up the whole statusbar width
 		// when the statusbar has been resized.
@@ -205,7 +205,7 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 	UT_return_val_if_fail (m_hwndStatusBar,0);	
 
 	// route messages through our handler first (to size the status panels).
-	m_pOrgStatusbarWndProc = reinterpret_cast<WNDPROC>(SetWindowLong(
+	m_pOrgStatusbarWndProc = reinterpret_cast<WNDPROC>(SetWindowLongW(
 		m_hwndStatusBar, GWL_WNDPROC, reinterpret_cast<LONG>(StatusbarWndProc))
 		);
 	
