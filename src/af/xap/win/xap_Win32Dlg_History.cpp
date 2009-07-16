@@ -68,49 +68,13 @@ XAP_Win32Dialog_History::~XAP_Win32Dialog_History(void)
 
 void XAP_Win32Dialog_History::runModal(XAP_Frame * pFrame)
 {
-	UT_return_if_fail(pFrame);
-	// raise the dialog
-	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
+ 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 
 	XAP_Win32LabelledSeparator_RegisterClass(pWin32App);
-
-	LPCWSTR lpTemplate = NULL;
-
-	UT_ASSERT(m_id == XAP_DIALOG_ID_HISTORY);
-
-	lpTemplate = MAKEINTRESOURCEW(XAP_RID_DIALOG_HISTORY);
-
-	int result = DialogBoxParamW(pWin32App->getInstance(),lpTemplate,
-						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-						(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT_HARMLESS((result != -1));
-	if(result == -1)
-	{
-		UT_DEBUGMSG(( "XAP_Win32Dialog_History::runModal error %d\n", GetLastError() ));
-	}
+	UT_ASSERT(m_id == XAP_DIALOG_ID_HISTORY);	
+	createModal(pFrame, MAKEINTRESOURCEW(XAP_RID_DIALOG_HISTORY));	
 }
 
-BOOL CALLBACK XAP_Win32Dialog_History::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
-{
-	// This is a static function.
-
-	XAP_Win32Dialog_History * pThis;
-
-	switch (msg)
-	{
-	case WM_INITDIALOG:
-		pThis = (XAP_Win32Dialog_History *)lParam;
-		SetWindowLongW(hWnd,DWL_USER,lParam);
-		return pThis->_onInitDialog(hWnd,wParam,lParam);
-
-	case WM_COMMAND:
-		pThis = (XAP_Win32Dialog_History *)GetWindowLong(hWnd,DWL_USER);
-		return pThis->_onCommand(hWnd,wParam,lParam);
-
-	default:
-		return 0;
-	}
-}
 
 BOOL XAP_Win32Dialog_History::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
@@ -196,7 +160,7 @@ BOOL XAP_Win32Dialog_History::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM
 		}
 	}
 	
-	SendMessage(h, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);  								
+	SendMessageW(h, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);  								
 	//XAP_Win32DialogHelper::s_centerDialog(hWnd);	
     centerDialog();
 	return 1;							// 1 == we did not call SetFocus()

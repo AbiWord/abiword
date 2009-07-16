@@ -71,62 +71,7 @@ AP_Win32Dialog_InsertTable::~AP_Win32Dialog_InsertTable()
  }
 
 
-/*
-void AP_Win32Dialog_InsertTable::runModal(XAP_Frame *pFrame)
-{
-	UT_return_if_fail (pFrame);	
-	
-	// raise the dialog
-	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-
-	LPCWSTR lpTemplate = NULL;
-
-	UT_return_if_fail (m_id == AP_DIALOG_ID_INSERT_TABLE);
-
-	lpTemplate = MAKEINTRESOURCEW(AP_RID_DIALOG_INSERT_TABLE);
-
-	int result = DialogBoxParamW(pWin32App->getInstance(),lpTemplate,
-						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-						(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT_HARMLESS((result != -1));
-
-}
-*/
-
 /*****************************************************************/
-
-#define GWL(hwnd)		(AP_Win32Dialog_InsertTable*)GetWindowLong((hwnd), DWL_USER)
-#define SWL(hwnd, d)	(AP_Win32Dialog_InsertTable*)SetWindowLong((hwnd), DWL_USER,(LONG)(d))
-
-
-BOOL CALLBACK AP_Win32Dialog_InsertTable::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
-{
-		
-	AP_Win32Dialog_InsertTable * pThis;
-	
-	switch (msg)
-	{
-	case WM_INITDIALOG:
-		pThis = (AP_Win32Dialog_InsertTable *)lParam;
-		SWL(hWnd,lParam);
-		return pThis->_onInitDialog(hWnd,wParam,lParam);
-
-	case WM_NOTIFY:
-		pThis = GWL(hWnd);
-		switch (((LPNMHDR)lParam)->code)
-		{
-			case UDN_DELTAPOS:		return pThis->_onDeltaPos((NM_UPDOWN *)lParam);
-			default:				return 0;
-		}
-		
-	case WM_COMMAND:
-		pThis = GWL(hWnd);
-		return pThis->_onCommand(hWnd,wParam,lParam);
-	default:
-		return 0;
-	}
-}
-
 
 #define _DS(c,s)	setDlgItemText(AP_RID_DIALOG_INSERTTABLE_##c,pSS->getValue(AP_STRING_ID_##s))
 #define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_INSERTTABLE_##c,pSS->getValue(XAP_STRING_ID_##s))

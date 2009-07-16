@@ -72,49 +72,9 @@ XAP_Win32Dialog_Language::~XAP_Win32Dialog_Language(void)
 
 void XAP_Win32Dialog_Language::runModal(XAP_Frame * pFrame)
 {
-	UT_return_if_fail(pFrame);
-
-	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-	UT_return_if_fail(pWin32App);
-	
-	LPCWSTR lpTemplate = NULL;
-
 	UT_ASSERT(m_id == XAP_DIALOG_ID_LANGUAGE);
-
-	lpTemplate = MAKEINTRESOURCEW(XAP_RID_DIALOG_LANGUAGE);
-
-	int result = DialogBoxParamW(pWin32App->getInstance(),
-						lpTemplate,
-						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-						(DLGPROC)s_dlgProc,
-						(LPARAM)this );
-	UT_ASSERT((result != -1));
+    createModal(pFrame, MAKEINTRESOURCEW(XAP_RID_DIALOG_LANGUAGE));    
 }
-
-/*
-	
-*/
-BOOL CALLBACK XAP_Win32Dialog_Language::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
-{
-	// This is a static function.
-	XAP_Win32Dialog_Language * pThis;
-	
-	switch (msg)
-	{			
-	case WM_INITDIALOG:
-		pThis = (XAP_Win32Dialog_Language *)lParam;
-		SetWindowLongW(hWnd,DWL_USER,lParam);
-		return pThis->_onInitDialog(hWnd,wParam,lParam);
-		
-	case WM_COMMAND:
-		pThis = (XAP_Win32Dialog_Language *)GetWindowLongW(hWnd,DWL_USER);
-		return pThis->_onCommand(hWnd,wParam,lParam);
-		
-	default:
-		return 0;
-	}
-}
-
 
 /*
 	Fills up the tree with the languages names
@@ -166,7 +126,7 @@ void  XAP_Win32Dialog_Language::_fillTreeview(HWND hTV)
 			hSel = hItem;	
 	}
 	
-	::SendMessage(hTV, TVM_SELECTITEM, TVGN_CARET,  (LONG)hSel);	
+	::SendMessageW(hTV, TVM_SELECTITEM, TVGN_CARET,  (LONG)hSel);	
 	delete pVec;
 }
 
@@ -184,7 +144,7 @@ BOOL CALLBACK XAP_Win32Dialog_Language::s_treeProc(HWND hWnd,UINT msg,WPARAM wPa
 		TVITEMW tvi;   
 		
 		// Selected item
-		tvi.hItem =  (HTREEITEM)::SendMessage(hWnd, TVM_GETNEXTITEM, TVGN_CARET, 0);
+		tvi.hItem =  (HTREEITEM)::SendMessageW(hWnd, TVM_GETNEXTITEM, TVGN_CARET, 0);
 				
 		if (tvi.hItem)
 		{
