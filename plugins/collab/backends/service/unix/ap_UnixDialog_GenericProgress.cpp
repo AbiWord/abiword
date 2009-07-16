@@ -90,6 +90,7 @@ GtkWidget * AP_UnixDialog_GenericProgress::_constructWindow(void)
 	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_GenericProgress.xml";
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, "abiword-plugin-collab");
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
@@ -97,14 +98,7 @@ GtkWidget * AP_UnixDialog_GenericProgress::_constructWindow(void)
 	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_GenericProgress"));
 	m_wCancel = GTK_WIDGET(gtk_builder_get_object(builder, "btCancel"));
 	m_wProgress = GTK_WIDGET(gtk_builder_get_object(builder, "pbProgress"));
-
-	// set the dialog title
-	abiDialogSetTitle(window, getTitle().utf8_str());
 	
-	// set the informative label
-	gtk_label_set_text(GTK_LABEL(GTK_WIDGET(gtk_builder_get_object(builder, "lbInformation"))), getInformation().utf8_str());
-	//gtk_label_set_text(GTK_LABEL(GTK_WIDGET(gtk_builder_get_object(builder, "lbLabel"))), getLabel().utf8_str());
-
 	g_object_unref(G_OBJECT(builder));
 	return window;
 }

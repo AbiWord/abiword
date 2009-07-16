@@ -66,6 +66,7 @@ static int getSummaryPercent(void)
   
   // load the dialog from the UI file
   GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, "abiword-plugin-ots");
   gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
   
   GtkWidget * window = GTK_WIDGET(gtk_builder_get_object(builder, "otsDlg"));

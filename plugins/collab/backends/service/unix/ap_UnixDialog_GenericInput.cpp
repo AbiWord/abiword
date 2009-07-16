@@ -81,6 +81,7 @@ GtkWidget * AP_UnixDialog_GenericInput::_constructWindow(void)
 	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_GenericInput.xml";
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, "abiword-plugin-collab");
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
@@ -89,12 +90,8 @@ GtkWidget * AP_UnixDialog_GenericInput::_constructWindow(void)
 	m_wOk = GTK_WIDGET(gtk_builder_get_object(builder, "btOK"));
 	m_wInput = GTK_WIDGET(gtk_builder_get_object(builder, "edInput"));
 
-	// set the dialog title
-	abiDialogSetTitle(window, getTitle().utf8_str());
-	
 	// set the question
 	gtk_label_set_text(GTK_LABEL(GTK_WIDGET(gtk_builder_get_object(builder, "lbQuestion"))), getQuestion().utf8_str());
-	gtk_label_set_text(GTK_LABEL(GTK_WIDGET(gtk_builder_get_object(builder, "lbLabel"))), getLabel().utf8_str());
 
 	// connect our signals
 	g_signal_connect(G_OBJECT(m_wOk),

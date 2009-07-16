@@ -121,7 +121,7 @@ void pt_PieceTable::s_getLocalisedStyleName(const char *szStyle, UT_UTF8String &
 	{
 		if (strcmp(szStyle, stLocalised[n].pStyle)==0)
 		{
-			pSS->getValueUTF8(stLocalised[n].nID, utf8);			
+			pSS->getValueUTF8(_(stLocalised[n].nID), utf8);			
 			break;
 		}
 	}		

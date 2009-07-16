@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: abiword 2.7.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-07-03 20:11-0400\n"
+"POT-Creation-Date: 2009-07-16 15:57-0400\n"
 "PO-Revision-Date: 2009-07-03 17:31-0400\n"
 "Last-Translator: Keith Bowes <keith@keith-desktop>\n"
 "Language-Team: Esperanto\n"
@@ -23,46 +23,47 @@ msgstr "Falsa posto de AbiCollab"
 
 #. username
 #. Non-Tabbable Labels
-#: ../backends/service/unix/ServiceUnixAccountHandler.cpp:59
-#: ../backends/service/win/ServiceWin32AccountHandler.cpp:69
+#: ../backends/service/unix/ServiceUnixAccountHandler.cpp:57
+#: ../backends/service/win/ServiceWin32AccountHandler.cpp:67
 msgid "E-mail address:"
 msgstr "Retpoŝta adreso:"
 
 #. password
-#: ../backends/service/unix/ServiceUnixAccountHandler.cpp:66
-#: ../backends/service/win/ServiceWin32AccountHandler.cpp:73
+#: ../backends/service/unix/ServiceUnixAccountHandler.cpp:64
+#: ../backends/service/win/ServiceWin32AccountHandler.cpp:71
 #: ../backends/service/xp/ServiceAccountHandler.cpp:72
 #: ../backends/xmpp/unix/XMPPUnixAccountHandler.cpp:61
+#: ../backends/service/unix/ap_UnixDialog_GenericInput.xml.h:5
 msgid "Password:"
 msgstr "Pasvorto:"
 
 #. autoconnect
 #. not supported for now
 #. autoconnect
-#: ../backends/service/unix/ServiceUnixAccountHandler.cpp:74
+#: ../backends/service/unix/ServiceUnixAccountHandler.cpp:72
 #: ../backends/tcp/unix/TCPUnixAccountHandler.cpp:102
 #: ../backends/xmpp/unix/XMPPUnixAccountHandler.cpp:83
 msgid "Connect on application startup"
 msgstr "Konektiĝi dum startado"
 
 #. register
-#: ../backends/service/unix/ServiceUnixAccountHandler.cpp:79
-#: ../backends/service/win/ServiceWin32AccountHandler.cpp:89
+#: ../backends/service/unix/ServiceUnixAccountHandler.cpp:77
+#: ../backends/service/win/ServiceWin32AccountHandler.cpp:87
 msgid "Get a free abicollab.net account"
 msgstr "Akiri senpagan konton en abicollab.net"
 
 #. uri
-#: ../backends/service/unix/ServiceUnixAccountHandler.cpp:84
+#: ../backends/service/unix/ServiceUnixAccountHandler.cpp:82
 msgid "WebApp SOAP url:"
 msgstr "URL de SOAP-a retaplikaĵo:"
 
 #. check webapp hostname
-#: ../backends/service/unix/ServiceUnixAccountHandler.cpp:92
+#: ../backends/service/unix/ServiceUnixAccountHandler.cpp:90
 msgid "Verify WebApp hostname:"
 msgstr "Konstati retaplikaĵan nodon:"
 
 #. check realm hostname
-#: ../backends/service/unix/ServiceUnixAccountHandler.cpp:97
+#: ../backends/service/unix/ServiceUnixAccountHandler.cpp:95
 msgid "Verify Realm hostname:"
 msgstr "Konstati regnan retnodon:"
 
@@ -71,17 +72,18 @@ msgstr "Konstati regnan retnodon:"
 msgid "Collaborative File Descriptor (.abicollab)"
 msgstr "Priskribilo de kunlabora dosiero (.abicollab)"
 
-#: ../backends/service/xp/AbiCollabSaveInterceptor.cpp:70
+#: ../backends/service/xp/AbiCollabSaveInterceptor.cpp:71
 msgid "AbiCollab Service Save Interceptor"
 msgstr "Konserva kaptilo de la servo AbiCollab"
 
-#: ../backends/service/xp/InterruptableAsyncWorker.h:81
+#: ../backends/service/xp/InterruptableAsyncWorker.h:82
 #: ../backends/service/xp/ServiceAccountHandler.cpp:592
 msgid "Retrieving Document"
 msgstr "Akiranta dokumenton"
 
-#: ../backends/service/xp/InterruptableAsyncWorker.h:82
+#: ../backends/service/xp/InterruptableAsyncWorker.h:83
 #: ../backends/service/xp/ServiceAccountHandler.cpp:593
+#: ../backends/service/unix/ap_UnixDialog_GenericProgress.xml.h:1
 msgid "Please wait while retrieving document..."
 msgstr "Bonvolu atendi dum akiranta dokumenton..."
 
@@ -101,29 +103,29 @@ msgstr "Bonvolu enmeti vian pasvorton por konto '"
 msgid "Error importing document "
 msgstr "Eraro dum importanta dokumenton"
 
-#: ../backends/service/xp/tls_tunnel.cpp:35
+#: ../backends/service/xp/tls_tunnel.cpp:36
 msgid "Transport exception: "
 msgstr "Transporta escepto: "
 
-#: ../backends/service/xp/tls_tunnel.cpp:36
 #: ../backends/service/xp/tls_tunnel.cpp:37
+#: ../backends/service/xp/tls_tunnel.cpp:38
 msgid "Error setting up TLS connection"
 msgstr "Eraro dum stariga TLS-konekto"
 
-#: ../backends/service/xp/tls_tunnel.cpp:38
+#: ../backends/service/xp/tls_tunnel.cpp:39
 msgid "Error verifying peer"
 msgstr "Eraro dum konstatanta samtavolanon"
 
-#: ../backends/service/xp/tls_tunnel.cpp:39
+#: ../backends/service/xp/tls_tunnel.cpp:40
 msgid "Error verifying hostname"
 msgstr "Eraro dum konstatanta retnodon"
 
-#: ../backends/service/xp/tls_tunnel.cpp:40
+#: ../backends/service/xp/tls_tunnel.cpp:41
 msgid "Failed to get peer certificate"
 msgstr "Fiaskis atingi samtavolan pruvilon"
 
-#: ../backends/sugar/unix/SugarUnixAccountHandler.cpp:69
-#: ../backends/sugar/unix/SugarUnixAccountHandler.cpp:74
+#: ../backends/sugar/unix/SugarUnixAccountHandler.cpp:68
+#: ../backends/sugar/unix/SugarUnixAccountHandler.cpp:73
 msgid "Sugar Presence Service"
 msgstr "Ĉeesta servo Sugar"
 
@@ -179,12 +181,12 @@ msgstr "Uzi sekuran konekton"
 msgid "Connect Automatically"
 msgstr "Aŭtomate konektiĝi"
 
-#: ../backends/tcp/xp/TCPAccountHandler.cpp:54
+#: ../backends/tcp/xp/TCPAccountHandler.cpp:53
 #, c-format
 msgid "Listening on port %s"
 msgstr "Aŭskultante je porto %s"
 
-#: ../backends/tcp/xp/TCPAccountHandler.cpp:60
+#: ../backends/tcp/xp/TCPAccountHandler.cpp:59
 msgid "Direct Connection (TCP)"
 msgstr "Rekta konekto (TCP)"
 
@@ -207,15 +209,15 @@ msgstr ""
 msgid "Jabber (XMPP)"
 msgstr ""
 
-#: ../core/dialogs/unix/ap_UnixDialog_CollaborationAccounts.cpp:207
+#: ../core/dialogs/unix/ap_UnixDialog_CollaborationAccounts.cpp:208
 msgid "Account"
 msgstr "Konto"
 
-#: ../core/dialogs/unix/ap_UnixDialog_CollaborationAccounts.cpp:211
+#: ../core/dialogs/unix/ap_UnixDialog_CollaborationAccounts.cpp:212
 msgid "Type"
 msgstr "Speco"
 
-#: ../core/dialogs/unix/ap_UnixDialog_CollaborationAccounts.cpp:218
+#: ../core/dialogs/unix/ap_UnixDialog_CollaborationAccounts.cpp:219
 msgid "Online"
 msgstr "Rete"
 
@@ -280,68 +282,70 @@ msgstr ""
 "Ne povas plenumi je abicollab laŭ senerariga reĝimo: la posto \"fake\" de "
 "abiword estas malebligita\n"
 
-#: ../core/plugin/xp/AbiCollab_Plugin.cpp:78
-msgid "AbiWord Collaboration"
-msgstr "Kunlaborado en AbiWord"
-
-#: ../core/plugin/xp/AbiCollab_Plugin.cpp:79
-msgid "This plugin allows real-time collaborative document editing"
-msgstr ""
-"Ĉi tiu kromprogramo permesas realtempan kunlaboran redaktadon de dokumentoj"
-
-#. -----------------------------------------------------------------------
-#.
-#. Abiword Plugin Menu Structure
-#.
-#. -----------------------------------------------------------------------
-#. FIXME: make these translatable strings
-#: ../core/plugin/xp/AbiCollab_Plugin.cpp:152
+#: ../core/plugin/xp/AbiCollab_Plugin.cpp:105
 msgid "&Collaborate"
 msgstr "&Kunlabori"
 
-#: ../core/plugin/xp/AbiCollab_Plugin.cpp:153
+#: ../core/plugin/xp/AbiCollab_Plugin.cpp:106
 msgid "Collaborate over the internet or local network"
 msgstr "Kunlabori per la Interreto aŭ loka reto"
 
-#: ../core/plugin/xp/AbiCollab_Plugin.cpp:155
+#: ../core/plugin/xp/AbiCollab_Plugin.cpp:107
 msgid "Share Document"
-msgstr "Kunhavigi dokumenton"
+msgstr "Kunuzi dokumenton"
 
-#: ../core/plugin/xp/AbiCollab_Plugin.cpp:156
+#: ../core/plugin/xp/AbiCollab_Plugin.cpp:108
 msgid "Offer the current document for collaboration"
 msgstr "Oferi la aktualan dokumenton por kunlaborado"
 
-#: ../core/plugin/xp/AbiCollab_Plugin.cpp:158
+#: ../core/plugin/xp/AbiCollab_Plugin.cpp:109
 msgid "Shared Documents"
-msgstr "Kunhavigitaj dokumentoj"
+msgstr "Kunuzitaj dokumentoj"
 
-#: ../core/plugin/xp/AbiCollab_Plugin.cpp:159
+#: ../core/plugin/xp/AbiCollab_Plugin.cpp:110
 msgid "Join a collaboration session"
 msgstr "Aliĝi al kunlabora seanco"
 
-#: ../core/plugin/xp/AbiCollab_Plugin.cpp:161
+#: ../core/plugin/xp/AbiCollab_Plugin.cpp:111
 msgid "Accounts"
 msgstr "Kontoj"
 
-#: ../core/plugin/xp/AbiCollab_Plugin.cpp:162
+#: ../core/plugin/xp/AbiCollab_Plugin.cpp:112
 msgid "Manage collaboration accounts"
 msgstr "Administri kunlaborajn kontojn"
 
-#: ../core/plugin/xp/AbiCollab_Plugin.cpp:164
+#: ../core/plugin/xp/AbiCollab_Plugin.cpp:113
 msgid "Show Authors"
 msgstr "Montri verkistojn"
 
-#: ../core/plugin/xp/AbiCollab_Plugin.cpp:165
+#: ../core/plugin/xp/AbiCollab_Plugin.cpp:114
 msgid "Show who wrote each piece of text by with different colors"
 msgstr "Montri tiun, kiu skribis ĉiun pecon da teksto per diversaj koloroj"
 
-#: ../core/plugin/xp/AbiCollab_Plugin.cpp:172
+#: ../core/plugin/xp/AbiCollab_Plugin.cpp:115
+msgid "Record this Session"
+msgstr ""
+
+#: ../core/plugin/xp/AbiCollab_Plugin.cpp:116
+msgid "Record a session to disk, for debugging purposes"
+msgstr ""
+
+#: ../core/plugin/xp/AbiCollab_Plugin.cpp:117
 msgid "View Session"
 msgstr "Vidi seancon"
 
-#: ../core/plugin/xp/AbiCollab_Plugin.cpp:173
+#: ../core/plugin/xp/AbiCollab_Plugin.cpp:118
 msgid "Load a recorded session from disk and show the packets"
 msgstr "Ŝargi registritan seancon el la diskon kaj montri la pakaĵojn"
+
+#: ../core/plugin/xp/AbiCollab_Plugin.cpp:121
+msgid "AbiWord Collaboration"
+msgstr "Kunlaborado en AbiWord"
+
+#: ../core/plugin/xp/AbiCollab_Plugin.cpp:122
+msgid "This plugin allows real-time collaborative document editing"
+msgstr ""
+"Ĉi tiu kromprogramo permesas realtempan kunlaboran redaktadon de dokumentoj"
 
 #: ../core/session/xp/AbiCollabSessionManager.cpp:942
 #: ../core/session/xp/AbiCollabSessionManager.cpp:1237
@@ -358,32 +362,102 @@ msgstr ""
 "Dokumento %s ne plu estas kunhavigita de amiko %s. Vi senkonektiĝas de la "
 "kunlabora seancon."
 
-#: ../core/session/xp/DiskSessionRecorder.cpp:192
+#: ../core/session/xp/DiskSessionRecorder.cpp:195
 #, c-format
 msgid "[%06u] %s packet "
 msgstr "%06u] %s pakaĵo "
 
-#: ../core/session/xp/DiskSessionRecorder.cpp:192
+#: ../core/session/xp/DiskSessionRecorder.cpp:195
 msgid "INCOMING"
 msgstr "RICEVOTA"
 
-#: ../core/session/xp/DiskSessionRecorder.cpp:192
+#: ../core/session/xp/DiskSessionRecorder.cpp:195
 msgid "OUTGOING"
 msgstr "SENDOTA"
 
-#: ../core/session/xp/DiskSessionRecorder.cpp:193
+#: ../core/session/xp/DiskSessionRecorder.cpp:196
 msgid "from"
 msgstr "de"
 
-#: ../core/session/xp/DiskSessionRecorder.cpp:193
+#: ../core/session/xp/DiskSessionRecorder.cpp:196
 msgid "to"
 msgstr "al"
 
-#: ../core/session/xp/DiskSessionRecorder.cpp:200
+#: ../core/session/xp/DiskSessionRecorder.cpp:203
 msgid "<all>"
 msgstr "<ĉiuj>"
 
-#: ../core/session/xp/DiskSessionRecorder.cpp:202
+#: ../core/session/xp/DiskSessionRecorder.cpp:205
 #, c-format
 msgid " of class %s\n"
 msgstr " de klaso %s\n"
+
+#: ../core/dialogs/unix/ap_UnixDialog_CollaborationAccounts.xml.h:1
+#: ../core/dialogs/unix/ap_UnixDialog_CollaborationAddAccount.xml.h:1
+#: ../core/dialogs/unix/ap_UnixDialog_CollaborationAddBuddy.xml.h:1
+#: ../core/dialogs/unix/ap_UnixDialog_CollaborationJoin.xml.h:1
+#: ../backends/service/unix/ap_UnixDialog_GenericInput.xml.h:1
+msgid "    "
+msgstr "    "
+
+#: ../core/dialogs/unix/ap_UnixDialog_CollaborationAccounts.xml.h:2
+msgid "<b>Available accounts</b>"
+msgstr "<b>Disponeblaj kontoj</b>"
+
+#: ../core/dialogs/unix/ap_UnixDialog_CollaborationAccounts.xml.h:3
+msgid "Manage Accounts"
+msgstr "Administri kontojn"
+
+#: ../core/dialogs/unix/ap_UnixDialog_CollaborationAddAccount.xml.h:2
+msgid "<b>Account properties</b>"
+msgstr "<b>Kontaj ecoj</b>"
+
+#: ../core/dialogs/unix/ap_UnixDialog_CollaborationAddAccount.xml.h:3
+msgid "<b>Account type</b>"
+msgstr "<b>Konta tipo</b>"
+
+#: ../core/dialogs/unix/ap_UnixDialog_CollaborationAddAccount.xml.h:4
+msgid "Add Account"
+msgstr "Aldoni konton"
+
+#: ../core/dialogs/unix/ap_UnixDialog_CollaborationAddBuddy.xml.h:2
+msgid "<b>Add buddy</b>"
+msgstr "<b>Aldoni amikon</b>"
+
+#: ../core/dialogs/unix/ap_UnixDialog_CollaborationAddBuddy.xml.h:3
+msgid "Account:"
+msgstr "Konto:"
+
+#: ../core/dialogs/unix/ap_UnixDialog_CollaborationAddBuddy.xml.h:4
+#: ../core/dialogs/unix/ap_UnixDialog_CollaborationJoin.xml.h:3
+msgid "Add Buddy"
+msgstr "Aldoni amikon"
+
+#: ../core/dialogs/unix/ap_UnixDialog_CollaborationAddBuddy.xml.h:5
+msgid "Name:"
+msgstr "Nomo:"
+
+#: ../core/dialogs/unix/ap_UnixDialog_CollaborationJoin.xml.h:2
+msgid "<b>Shared documents</b>"
+msgstr "<b>Kunuzitaj dokumentoj</b>"
+
+#: ../core/dialogs/unix/ap_UnixDialog_CollaborationJoin.xml.h:4
+msgid "Delete Buddy"
+msgstr "Forigi amikon"
+
+#: ../core/dialogs/unix/ap_UnixDialog_CollaborationJoin.xml.h:5
+msgid "Join collaboration"
+msgstr "Aliĝi al kunlaborado"
+
+#: ../backends/service/unix/ap_UnixDialog_GenericInput.xml.h:3
+#, no-c-format
+msgid "%s"
+msgstr "%s"
+
+#: ../backends/service/unix/ap_UnixDialog_GenericInput.xml.h:4
+msgid "Input"
+msgstr "Enigo"
+
+#: ../backends/service/unix/ap_UnixDialog_GenericProgress.xml.h:2
+msgid "Please wait..."
+msgstr "Bonvolu atendi..."

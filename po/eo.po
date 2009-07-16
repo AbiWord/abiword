@@ -2172,7 +2172,7 @@ msgstr ""
 
 #: ../src/wp/ap/xp/ap_String_Id.h:660 ../src/af/xap/xp/xap_String_Id.h:66
 msgid "Bullet List"
-msgstr "Listo kun rondaj bulaj"
+msgstr "Listo kun rondaj buloj"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:661 ../src/af/xap/xp/xap_String_Id.h:67
 msgid "Dashed List"

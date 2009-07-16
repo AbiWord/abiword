@@ -18,3 +18,10 @@ core/plugin/xp/AbiCollab_Command.cpp
 core/plugin/xp/AbiCollab_Plugin.cpp
 core/session/xp/AbiCollabSessionManager.cpp
 core/session/xp/DiskSessionRecorder.cpp
+
+[type: gettext/glade]core/dialogs/unix/ap_UnixDialog_CollaborationAccounts.xml
+[type: gettext/glade]core/dialogs/unix/ap_UnixDialog_CollaborationAddAccount.xml
+[type: gettext/glade]core/dialogs/unix/ap_UnixDialog_CollaborationAddBuddy.xml
+[type: gettext/glade]core/dialogs/unix/ap_UnixDialog_CollaborationJoin.xml
+[type: gettext/glade]backends/service/unix/ap_UnixDialog_GenericInput.xml
+[type: gettext/glade]backends/service/unix/ap_UnixDialog_GenericProgress.xml
