@@ -1266,6 +1266,26 @@ UT_Error IE_Exp_OpenXML::setPageBreak(int target)
 }
 
 /**
+ * Sets page size and orientation
+ */
+UT_Error IE_Exp_OpenXML::setPageSize(int target, const char* width, const char* height, const char* orientation)
+{
+	std::string str("<w:pgSz w:w=\"");
+	str += width;
+	str += "\"";
+
+	str += " w:h=\"";
+	str += height;
+	str += "\"";
+
+	str += " w:orient=\"";
+	str += orientation;
+	str += "\"/>";
+
+	return writeTargetStream(target, str.c_str());	
+}
+
+/**
  * Sets table border style for the specified border in the table
  */
 UT_Error IE_Exp_OpenXML::setTableBorder(int target, const char* border, const char* type, const char* color, const char* size)

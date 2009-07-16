@@ -67,6 +67,10 @@ IE_Exp_OpenXML_Listener::IE_Exp_OpenXML_Listener(PD_Document* doc)
 		UT_DEBUGMSG(("FRT: ERROR, Adding Images Failed\n"));	
 		document = NULL;
 	}
+	if(setPageSize() != UT_OK)
+	{
+		UT_DEBUGMSG(("FRT: ERROR, Setting page size failed\n"));	
+	}
 }
 
 IE_Exp_OpenXML_Listener::~IE_Exp_OpenXML_Listener()
@@ -1008,4 +1012,31 @@ std::string IE_Exp_OpenXML_Listener::getNextId()
 	std::string str("");
 	str += buffer;
 	return str;
+}
+
+UT_Error IE_Exp_OpenXML_Listener::setPageSize()
+{
+	const fp_PageSize* ps = pdoc->getPageSize();
+	if(!ps)
+		return UT_ERROR;
+
+	double w = ps->Width(DIM_IN) * 1440; //1440 twips = 1 in
+	double h = ps->Height(DIM_IN) * 1440;
+	bool portrait = ps->isPortrait();
+
+	std::string width(UT_convertToDimensionlessString(w, ".0"));
+	std::string height(UT_convertToDimensionlessString(h, ".0"));
+	std::string orientation("portrait");
+
+	if(!portrait)
+		orientation = "landscape";
+
+	if(!document)
+		return UT_ERROR;
+
+	document->setPageWidth(width);
+	document->setPageHeight(height);
+	document->setPageOrientation(orientation);
+
+	return UT_OK;			
 }

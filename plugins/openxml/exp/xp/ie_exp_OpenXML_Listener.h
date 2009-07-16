@@ -31,6 +31,7 @@
 #include <px_CR_Object.h>
 #include <fl_AutoNum.h>
 #include <fd_Field.h>
+#include <fp_PageSize.h>
 #include <OXML_Document.h>
 #include <OXML_Element_Text.h>
 #include <OXML_Element_Run.h>
@@ -104,6 +105,7 @@ private:
 	UT_Error addDocumentStyles();
 	UT_Error addLists();
 	UT_Error addImages();
+	UT_Error setPageSize();
 	std::string getNextId();
 };
 

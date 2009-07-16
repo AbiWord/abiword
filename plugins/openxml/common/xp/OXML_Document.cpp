@@ -404,6 +404,14 @@ UT_Error OXML_Document::serialize(IE_Exp_OpenXML* exporter)
 			return ret;
 	}
 
+	//set page size and orientation here
+	if(m_pageWidth.compare("") && m_pageHeight.compare(""))
+	{
+		ret = exporter->setPageSize(TARGET_DOCUMENT, m_pageWidth.c_str(), m_pageHeight.c_str(), m_pageOrientation.c_str());
+		if(ret != UT_OK)
+			return ret;		
+	}
+
 	ret = exporter->finishSectionProperties();
 	if(ret != UT_OK)
 		return ret;
