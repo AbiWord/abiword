@@ -255,28 +255,13 @@ AP_UnixDialog_Spell::_constructWindow (void)
 
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, GETTEXT_PACKAGE);
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 
 	m_wDialog = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Spell"));
-
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	UT_UTF8String s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_SpellTitle,s);
-	gtk_window_set_title (GTK_WINDOW( m_wDialog), s.utf8_str());
-
-	localizeLabelUnderline(GTK_WIDGET(gtk_builder_get_object(builder, "lbNotInDict")), pSS, AP_STRING_ID_DLG_Spell_UnknownWord);
-	localizeLabelUnderline(GTK_WIDGET(gtk_builder_get_object(builder, "lbChangeTo")), pSS, AP_STRING_ID_DLG_Spell_ChangeTo);
-
 	m_txWrong = GTK_WIDGET(gtk_builder_get_object(builder, "txWrong"));
 	m_eChange = GTK_WIDGET(gtk_builder_get_object(builder, "eChange"));
 	m_lvSuggestions = GTK_WIDGET(gtk_builder_get_object(builder, "tvSuggestions"));
-
-	// localise
-	localizeButtonUnderline (GTK_WIDGET(gtk_builder_get_object(builder, "btIgnore")), pSS, AP_STRING_ID_DLG_Spell_Ignore);
-	localizeButtonUnderline (GTK_WIDGET(gtk_builder_get_object(builder, "btIgnoreAll")), pSS, AP_STRING_ID_DLG_Spell_IgnoreAll);
-	localizeButtonUnderline (GTK_WIDGET(gtk_builder_get_object(builder, "btChange")), pSS, AP_STRING_ID_DLG_Spell_Change);
-	localizeButtonUnderline (GTK_WIDGET(gtk_builder_get_object(builder, "btChangeAll")), pSS, AP_STRING_ID_DLG_Spell_ChangeAll);
 
 	// attach signals
 	g_signal_connect (GTK_WIDGET(gtk_builder_get_object(builder, "btAdd")), 

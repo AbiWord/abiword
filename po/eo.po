@@ -3,13 +3,12 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
-#, fuzzy
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-07-15 23:06-0400\n"
+"POT-Creation-Date: 2009-07-16 23:45-0400\n"
 "PO-Revision-Date: 2007-01-04 23:33+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -351,6 +350,7 @@ msgstr "Serĉi"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:110 ../src/wp/ap/xp/ap_String_Id.h:824
 #: ../src/wp/ap/gtk/ap_UnixDialog_Annotation.xml.h:4
+#: ../src/wp/ap/gtk/ap_UnixDialog_Replace.xml.h:3
 msgid "Replace"
 msgstr "Anstataŭigi"
 
@@ -557,6 +557,8 @@ msgstr ""
 #: ../src/wp/ap/xp/ap_String_Id.h:795
 #: ../src/wp/ap/gtk/ap_UnixDialog_FormatTOC.xml.h:10
 #: ../src/wp/ap/gtk/ap_UnixDialog_MetaData.xml.h:8
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:16
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:15
 msgid "General"
 msgstr "Ĝenerala"
 
@@ -699,6 +701,7 @@ msgstr ""
 
 #. Word Count dialog
 #: ../src/wp/ap/xp/ap_String_Id.h:205 ../src/wp/ap/xp/ap_String_Id.h:580
+#: ../src/wp/ap/gtk/ap_UnixDialog_WordCount.xml.h:9
 msgid "Word Count"
 msgstr "Vortnombro"
 
@@ -707,30 +710,37 @@ msgid "Statistics:"
 msgstr "Statistikaĵoj:"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:207
+#: ../src/wp/ap/gtk/ap_UnixDialog_WordCount.xml.h:7
 msgid "Pages:"
 msgstr "Paĝoj:"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:208
+#: ../src/wp/ap/gtk/ap_UnixDialog_WordCount.xml.h:11
 msgid "Words:"
 msgstr "Vortoj:"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:209
+#: ../src/wp/ap/gtk/ap_UnixDialog_WordCount.xml.h:10
 msgid "Words (no footnotes/endnotes):"
 msgstr "Vortoj (ekskluzive de piednotoj/piednotoj):"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:210
+#: ../src/wp/ap/gtk/ap_UnixDialog_WordCount.xml.h:4
 msgid "Characters (no spaces):"
-msgstr "Signojn (sen spacetoj)"
+msgstr "Signojn (sen spacetoj):"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:211
+#: ../src/wp/ap/gtk/ap_UnixDialog_WordCount.xml.h:5
 msgid "Characters (with spaces):"
-msgstr "Signojn (kun spacetoj)"
+msgstr "Signojn (kun spacetoja:)"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:212
+#: ../src/wp/ap/gtk/ap_UnixDialog_WordCount.xml.h:8
 msgid "Paragraphs:"
 msgstr "Alineoj:"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:213
+#: ../src/wp/ap/gtk/ap_UnixDialog_WordCount.xml.h:6
 msgid "Lines:"
 msgstr "Linioj:"
 
@@ -744,6 +754,7 @@ msgstr "Aktualigi aŭtomate "
 
 #. Spell dialog
 #: ../src/wp/ap/xp/ap_String_Id.h:218 ../src/wp/ap/xp/ap_String_Id.h:358
+#: ../src/wp/ap/gtk/ap_UnixDialog_Spell.xml.h:5
 msgid "Spelling"
 msgstr "Literumilo"
 
@@ -761,7 +772,7 @@ msgstr "&Ŝanĝi"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:222
 msgid "Change A&ll"
-msgstr "Ŝanĝi &ĉiujn"
+msgstr "Ŝanĝi &ĉiun"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:223
 msgid "&Ignore"
@@ -769,7 +780,7 @@ msgstr "&Ignori"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:224
 msgid "I&gnore All"
-msgstr "I&gnori ĉiujn"
+msgstr "I&gnori ĉiun"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:225 ../src/wp/ap/xp/ap_String_Id.h:1120
 msgid "&Add"
@@ -785,6 +796,7 @@ msgstr "(neniaj proponoj)"
 
 #. Style Dialog
 #: ../src/wp/ap/xp/ap_String_Id.h:230 ../src/wp/ap/xp/ap_String_Id.h:282
+#: ../src/wp/ap/gtk/ap_UnixDialog_Styles.xml.h:10
 msgid "Styles"
 msgstr "Stiloj"
 
@@ -814,6 +826,7 @@ msgid "New..."
 msgstr "Nova..."
 
 #: ../src/wp/ap/xp/ap_String_Id.h:237
+#: ../src/wp/ap/gtk/ap_UnixDialog_Styles.xml.h:9
 msgid "Modify..."
 msgstr "Modifi..."
 
@@ -823,16 +836,19 @@ msgid "Delete"
 msgstr "Forigi"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:239
+#: ../src/wp/ap/gtk/ap_UnixDialog_Styles.xml.h:8
 msgid "In Use"
 msgstr "Uzataj"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:240 ../src/af/xap/xp/xap_String_Id.h:215
+#: ../src/wp/ap/gtk/ap_UnixDialog_Styles.xml.h:7
 msgid "All"
 msgstr "Ĉiuj"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:241
+#: ../src/wp/ap/gtk/ap_UnixDialog_Styles.xml.h:11
 msgid "User-defined styles"
-msgstr "Propre difinita stiloj"
+msgstr "Propre difinitaj stiloj"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:242
 msgid "What Hath God Wrought"
@@ -890,6 +906,7 @@ msgid "Font"
 msgstr "Tiparo"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:255 ../src/wp/ap/xp/ap_String_Id.h:466
+#: ../src/wp/ap/gtk/ap_UnixDialog_Tab.xml.h:6
 msgid "Tabs"
 msgstr "Taboj"
 
@@ -964,8 +981,10 @@ msgstr ""
 
 #. Stylist dialog
 #: ../src/wp/ap/xp/ap_String_Id.h:276
+#: ../src/wp/ap/gtk/ap_UnixDialog_Stylist.xml.h:1
+#: ../src/wp/ap/gtk/ap_UnixDialog_Stylist_modal.xml.h:1
 msgid "Stylist"
-msgstr "Stiligo"
+msgstr "Stililo"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:277
 msgid "List Styles"
@@ -989,6 +1008,7 @@ msgstr "Diversaj stiloj"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:287 ../src/wp/ap/xp/ap_String_Id.h:477
 #: ../src/wp/ap/xp/ap_String_Id.h:708 ../src/wp/ap/xp/ap_String_Id.h:1443
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageNumbers.xml.h:7
 msgid "Left"
 msgstr "Maldekstren"
 
@@ -998,6 +1018,7 @@ msgstr "Centrigita"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:289 ../src/wp/ap/xp/ap_String_Id.h:479
 #: ../src/wp/ap/xp/ap_String_Id.h:709 ../src/wp/ap/xp/ap_String_Id.h:1445
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageNumbers.xml.h:8
 msgid "Right"
 msgstr "Dekstren"
 
@@ -1196,6 +1217,8 @@ msgstr ""
 
 #. Options dialog
 #: ../src/wp/ap/xp/ap_String_Id.h:356
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:20
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:19
 msgid "Preferences"
 msgstr "Agordo"
 
@@ -1216,6 +1239,7 @@ msgid "Misc."
 msgstr ""
 
 #: ../src/wp/ap/xp/ap_String_Id.h:363
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:21
 msgid "Smart Quotes"
 msgstr "Unikodaj citiloj"
 
@@ -1232,6 +1256,8 @@ msgid "De&faults"
 msgstr ""
 
 #: ../src/wp/ap/xp/ap_String_Id.h:369
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:22
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:21
 msgid "Spell Checking"
 msgstr "Literumilo"
 
@@ -1262,6 +1288,7 @@ msgid "Enable smart (curly) quotes"
 msgstr "Ebligi unikodajn citilojn"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:380
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:23
 msgid "Use custom smart quote style"
 msgstr "Uzi elektitajn citilojn"
 
@@ -1351,6 +1378,8 @@ msgid "Application Startup"
 msgstr "Apliklanĉo"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:406
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:14
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:13
 msgid "Documents"
 msgstr "Dokumentoj"
 
@@ -1363,6 +1392,8 @@ msgid "Language settings"
 msgstr ""
 
 #: ../src/wp/ap/xp/ap_String_Id.h:412
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:12
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:10
 msgid "Auto Save"
 msgstr "Konservi aŭtomate"
 
@@ -1467,6 +1498,7 @@ msgid "Allow screen colors other than white"
 msgstr "Permesi alian ekranan koloron ol blanko"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:442
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options_ColorSel.xml.h:1
 msgid "Choose Screen Color"
 msgstr "Elekti ekranan koloron"
 
@@ -1542,15 +1574,16 @@ msgstr ""
 
 #: ../src/wp/ap/xp/ap_String_Id.h:467
 msgid "User-defined Tabs"
-msgstr "Propre difinita taboj"
+msgstr "Propre difinitaj taboj"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:468
 msgid "Set new Tab"
 msgstr ""
 
 #: ../src/wp/ap/xp/ap_String_Id.h:469
+#: ../src/wp/ap/gtk/ap_UnixDialog_Tab.xml.h:5
 msgid "Tab stop position:"
-msgstr ""
+msgstr "Taba larĝo unua:"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:470
 msgid "Tab stops to be cleared:"
@@ -1565,11 +1598,13 @@ msgid "Position"
 msgstr "Pozicio"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:475 ../src/wp/ap/xp/ap_String_Id.h:715
+#: ../src/wp/ap/gtk/ap_UnixDialog_Tab.xml.h:3
 msgid "Alignment"
 msgstr "Samniveligo"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:478 ../src/wp/ap/xp/ap_String_Id.h:710
 #: ../src/wp/ap/xp/ap_String_Id.h:1444
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageNumbers.xml.h:4
 msgid "Center"
 msgstr "Centrigi"
 
@@ -1582,6 +1617,7 @@ msgid "Bar"
 msgstr "Baro"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:483
+#: ../src/wp/ap/gtk/ap_UnixDialog_Tab.xml.h:4
 msgid "Leader"
 msgstr "Kondukilo"
 
@@ -2101,6 +2137,7 @@ msgstr ""
 
 #: ../src/wp/ap/xp/ap_String_Id.h:640 ../src/wp/ap/xp/ap_String_Id.h:732
 #: ../src/wp/ap/gtk/ap_UnixDialog_Goto.xml.h:4
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:15
 msgid "Page"
 msgstr "Paĝo"
 
@@ -2275,7 +2312,7 @@ msgstr ""
 
 #: ../src/wp/ap/xp/ap_String_Id.h:685
 msgid "Level Delimiter:"
-msgstr "Nivela ekstremaĵo:"
+msgstr "Nivela limsigno:"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:686
 msgid "Level:"
@@ -2355,6 +2392,7 @@ msgid "Header"
 msgstr "Kapo"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:712 ../src/wp/ap/xp/ap_String_Id.h:895
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageNumbers.xml.h:5
 msgid "Footer"
 msgstr "Piedo"
 
@@ -2368,12 +2406,13 @@ msgstr ""
 
 #. page setup dialog
 #: ../src/wp/ap/xp/ap_String_Id.h:720
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:16
 msgid "Page Setup"
 msgstr "Agordi paĝon"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:721
 msgid "Paper..."
-msgstr ""
+msgstr "Papero..."
 
 #: ../src/wp/ap/xp/ap_String_Id.h:722
 msgid "&Width:"
@@ -2405,10 +2444,11 @@ msgstr "Skali..."
 
 #: ../src/wp/ap/xp/ap_String_Id.h:730
 msgid "&Adjust to:"
-msgstr "Ŝanĝi al:"
+msgstr "&Ŝanĝi al:"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:731
-#, c-format
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:3
+#, no-c-format
 msgid "% of normal size"
 msgstr "% de la normala grandeco"
 
@@ -2429,6 +2469,7 @@ msgid "&Bottom:"
 msgstr "&Sube:"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:739
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:14
 msgid "Margin"
 msgstr "Marĝeno"
 
@@ -2526,10 +2567,11 @@ msgstr "Ŝanĝi priluman koloron"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:764
 msgid "Clear Highlight Color"
-msgstr ""
+msgstr "Forigi priluman koloron"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:766
 #: ../src/wp/ap/gtk/ap_UnixDialog_HdrFtr.xml.h:10
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_HdrFtr.xml.h:10
 msgid "Format Header/Footers"
 msgstr "Aranĝi kapon/piedojn"
 
@@ -2539,16 +2581,19 @@ msgstr "Kapaj ecoj"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:768
 #: ../src/wp/ap/gtk/ap_UnixDialog_HdrFtr.xml.h:7
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_HdrFtr.xml.h:7
 msgid "Different header on facing pages"
 msgstr "Malsama kapo en apudaj paĝoj"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:769
 #: ../src/wp/ap/gtk/ap_UnixDialog_HdrFtr.xml.h:8
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_HdrFtr.xml.h:8
 msgid "Different header on first page"
 msgstr "Malsama kapo en unua paĝo"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:770
 #: ../src/wp/ap/gtk/ap_UnixDialog_HdrFtr.xml.h:9
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_HdrFtr.xml.h:9
 msgid "Different header on last page"
 msgstr "Malsama kapo en fina paĝo"
 
@@ -2558,16 +2603,19 @@ msgstr "Piedaj ecoj"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:772
 #: ../src/wp/ap/gtk/ap_UnixDialog_HdrFtr.xml.h:4
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_HdrFtr.xml.h:4
 msgid "Different footer on facing pages"
 msgstr "Malsama piedo en apudaj paĝoj"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:773
 #: ../src/wp/ap/gtk/ap_UnixDialog_HdrFtr.xml.h:5
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_HdrFtr.xml.h:5
 msgid "Different footer on first page"
 msgstr "Malsama piedo en unua paĝo"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:774
 #: ../src/wp/ap/gtk/ap_UnixDialog_HdrFtr.xml.h:6
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_HdrFtr.xml.h:6
 msgid "Different footer on last page"
 msgstr "Malsama piedo en fina paĝo"
 
@@ -2577,11 +2625,13 @@ msgstr "Paĝnumeraj ecoj"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:776
 #: ../src/wp/ap/gtk/ap_UnixDialog_HdrFtr.xml.h:12
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_HdrFtr.xml.h:12
 msgid "Restart page numbers on new sections"
 msgstr "Restarti paĝnumerojn ĉe novaj sekcioj"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:777
 #: ../src/wp/ap/gtk/ap_UnixDialog_HdrFtr.xml.h:11
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_HdrFtr.xml.h:11
 msgid "Restart numbering at:"
 msgstr "Restarti numerado je:"
 
@@ -2825,6 +2875,7 @@ msgstr ""
 #: ../src/wp/ap/xp/ap_String_Id.h:1358 ../src/wp/ap/xp/ap_String_Id.h:1365
 #: ../src/wp/ap/xp/ap_String_Id.h:1377
 #: ../src/wp/ap/gtk/ap_UnixDialog_InsertTable.xml.h:1
+#: ../src/wp/ap/gtk/ap_UnixDialog_Styles.xml.h:1
 msgid " "
 msgstr ""
 
@@ -3299,7 +3350,7 @@ msgstr "Paĝa bildo"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:968
 msgid "Sty&list"
-msgstr "&Stiligo"
+msgstr "&Stililo"
 
 #: ../src/wp/ap/xp/ap_String_Id.h:969
 msgid "St&yle"
@@ -5248,23 +5299,23 @@ msgstr ""
 #. Units
 #: ../src/af/xap/xp/xap_String_Id.h:103
 msgid "inch"
-msgstr "colo"
+msgstr "coloj"
 
 #: ../src/af/xap/xp/xap_String_Id.h:104
 msgid "cm"
-msgstr ""
+msgstr "centimetroj"
 
 #: ../src/af/xap/xp/xap_String_Id.h:105
 msgid "mm"
-msgstr ""
+msgstr "milimetroj"
 
 #: ../src/af/xap/xp/xap_String_Id.h:106
 msgid "points"
-msgstr ""
+msgstr "punktoj"
 
 #: ../src/af/xap/xp/xap_String_Id.h:107
 msgid "pica"
-msgstr ""
+msgstr "ciceroj"
 
 #. Message box
 #. These are tagged _("UnixMB") because the underscores precede accelerator
@@ -5733,11 +5784,13 @@ msgstr ""
 
 #: ../src/af/xap/xp/xap_String_Id.h:281
 #: ../src/af/xap/gtk/xap_UnixDlg_Image.xml.h:21
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:22
 msgid "Width:"
 msgstr ""
 
 #: ../src/af/xap/xp/xap_String_Id.h:282
 #: ../src/af/xap/gtk/xap_UnixDlg_Image.xml.h:7
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:11
 msgid "Height:"
 msgstr ""
 
@@ -6979,6 +7032,7 @@ msgstr "_Para paĝo"
 #: ../src/wp/ap/gtk/ap_UnixDialog_Insert_DateTime.xml.h:3
 #: ../src/wp/ap/gtk/ap_UnixDialog_Latex.xml.h:5
 #: ../src/wp/ap/gtk/ap_UnixDialog_MailMerge.xml.h:4
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageNumbers.xml.h:9
 msgid "_Insert"
 msgstr "_Enmeti"
 
@@ -7057,11 +7111,13 @@ msgid "<b>Image For Background</b>"
 msgstr "<b>Bildo por fono</b>"
 
 #: ../src/wp/ap/gtk/ap_UnixDialog_FormatFrame.xml.h:4
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageNumbers.xml.h:2
 msgid "<b>Position</b>"
 msgstr "<b>Pozicio</b>"
 
 #: ../src/wp/ap/gtk/ap_UnixDialog_FormatFrame.xml.h:5
 #: ../src/wp/ap/gtk/ap_UnixDialog_FormatTable.xml.h:3
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageNumbers.xml.h:3
 msgid "<b>Preview</b>"
 msgstr "<b>Antaŭvido</b>"
 
@@ -7078,6 +7134,9 @@ msgid "Select Image from File"
 msgstr "Elekti bildon el dosiero"
 
 #: ../src/wp/ap/gtk/ap_UnixDialog_FormatTOC.xml.h:1
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:1
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:1
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:1
 msgid "    "
 msgstr "    "
 
@@ -7095,7 +7154,7 @@ msgstr "<b>Etikedaj difinoj</b>"
 
 #: ../src/wp/ap/gtk/ap_UnixDialog_FormatTOC.xml.h:5
 msgid "<b>Tabs and Page Numbering</b>"
-msgstr "<b>Taboj kaj paĝnumerado"
+msgstr "<b>Taboj kaj paĝnumerado</b>"
 
 #: ../src/wp/ap/gtk/ap_UnixDialog_FormatTOC.xml.h:11
 msgid "H_as label"
@@ -7154,10 +7213,12 @@ msgid "Set No Image"
 msgstr "Elekti neniun bildon"
 
 #: ../src/wp/ap/gtk/ap_UnixDialog_HdrFtr.xml.h:1
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_HdrFtr.xml.h:1
 msgid "<b>Footer Properties</b>"
 msgstr "<b>Piedaj ecoj</b>"
 
 #: ../src/wp/ap/gtk/ap_UnixDialog_HdrFtr.xml.h:2
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_HdrFtr.xml.h:2
 msgid "<b>Header Properties</b>"
 msgstr "<b>Kapaj ecoj</b>"
 
@@ -7204,3 +7265,321 @@ msgstr "<b>Kampa nomo</b>"
 #: ../src/wp/ap/gtk/ap_UnixDialog_MailMerge.xml.h:5
 msgid "_Open File"
 msgstr "_Malfermi dosieron"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:2
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:2
+msgid ".bak~"
+msgstr ".bak"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:3
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:3
+msgid "<b>Application Startup</b>"
+msgstr "<b>Programa plenumiĝo</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:4
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:4
+msgid "<b>Automatic Grammar Checking</b>"
+msgstr "<b>Aŭtomata gramatika kontrolo</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:5
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:5
+msgid "<b>Bi-Directional Options</b>"
+msgstr "<b>Ambaŭdirektaj elektoj</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:6
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:6
+msgid "<b>Dictionaries</b>"
+msgstr "<b>Vortaroj</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:7
+msgid "<b>General</b>"
+msgstr "<b>Ĝenerala</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:8
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:7
+msgid "<b>Ignore Words</b>"
+msgstr "<b>Ignori vortojn</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:9
+msgid "<b>Inner (single) quote style</b>"
+msgstr "<b>Apostrofa anstataŭo</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:10
+msgid "<b>Outer (double) quote style</b>"
+msgstr "<b>Citila anstataŭo</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:11
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:9
+msgid "<b>User Interface</b>"
+msgstr "<b>Fasado</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:13
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:11
+msgid "Check spelling as you type"
+msgstr "Kontroli literumo dum tajpado"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:15
+msgid "Enable smart quotes"
+msgstr "Ebligi unikodajn citilojn"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:17
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:16
+msgid "Highlight misspelled words"
+msgstr "_Prilumi misliterumitajn vortojn"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:18
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:17
+msgid "Ignore _UPPERCASE words"
+msgstr "Ignori MAJ_USKLAJ vortoj:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:19
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:18
+msgid "Ignore words containing _numbers"
+msgstr "Ig_nori vortojn kun ciferoj"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:24
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:22
+msgid "_Always suggest corrections"
+msgstr "_Ĉiam proponi korektojn"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:25
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:23
+msgid "_Automatically load all plugins"
+msgstr "_Aŭtomata ŝargado de trovitaj kromprogramoj"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:26
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:24
+msgid "_Check grammar as you type"
+msgstr "Kontroli _gramatikon dum tajpado"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:27
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:25
+msgid "_Choose Screen Color"
+msgstr "_Elekti ekranan koloron"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:28
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:26
+msgid "_Default to right-to-left text direction"
+msgstr "Apriore skribi mal_dekstren"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:29
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:27
+msgid "_File extension:"
+msgstr "_Dosiernoma finaĵo:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:30
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:28
+msgid "_Interval:"
+msgstr "_Intervalo:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:31
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:29
+msgid "_Only suggest from main dictionary"
+msgstr "Proponi nur el la _ĉefa vortaro"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:32
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:30
+msgid "_Units:"
+msgstr "_Mezurunuo:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:33
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:31
+msgid "minute(s)"
+msgstr "minuto(j)"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageNumbers.xml.h:1
+msgid "<b>Arrangement</b>"
+msgstr "<b>Aranĝo</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageNumbers.xml.h:6
+msgid "Insert Page Numbers"
+msgstr "Enmeti paĝajn numerojn"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:4
+msgid "<b>Orientation</b>"
+msgstr "<b>Orientiĝo</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:5
+msgid "<b>Paper</b>"
+msgstr "<b>Papero</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:6
+msgid "<b>Scale</b>"
+msgstr "<b>Skali</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:7
+msgid "Adjust to:"
+msgstr "Ŝanĝi al:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:8
+msgid "Bottom:"
+msgstr "Sube:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:9
+msgid "Footer:"
+msgstr "Piedo:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:10
+msgid "Header:"
+msgstr "Kapo:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:12
+msgid "Landscape"
+msgstr "Horizontala formato"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:13
+msgid "Left:"
+msgstr "Maldekstre:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:17
+msgid "Paper Size:"
+msgstr "Papera Grandeco:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:18
+msgid "Portrait"
+msgstr "Vertikala formato"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:19
+msgid "Right:"
+msgstr "Dekstre:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:20
+msgid "Top:"
+msgstr "Supre:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:21
+msgid "Units:"
+msgstr "Mezurunuo:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Replace.xml.h:1
+msgid "Find what:"
+msgstr "Serĉi kion:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Replace.xml.h:2
+msgid "Re_verse find"
+msgstr "In_verse serĉi"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Replace.xml.h:4
+msgid "Replace _All"
+msgstr "_Anstataŭigi ĉiun"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Replace.xml.h:5
+msgid "Replace with: "
+msgstr "Anstataŭigi per:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Replace.xml.h:6
+msgid "_Match case"
+msgstr "_Kongruu uskleco"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Replace.xml.h:7
+msgid "_Whole word"
+msgstr "_Tuta vorto"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Spell.xml.h:1
+msgid "Change A_ll"
+msgstr "Ŝanĝi _ĉiun"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Spell.xml.h:2
+msgid "Change to:"
+msgstr "Ŝanĝi al:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Spell.xml.h:3
+msgid "I_gnore All"
+msgstr "I_gnori ĉiun"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Spell.xml.h:4
+msgid "Not in Dictionary:"
+msgstr "Ne en vortaro:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Spell.xml.h:6
+msgid "_Change"
+msgstr "_Ŝanĝi"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Spell.xml.h:7
+msgid "_Ignore"
+msgstr "_Ignori"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Styles.xml.h:2
+msgid "<b>Available Styles</b>"
+msgstr "<b>Disponeblaj kampoj</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Styles.xml.h:3
+msgid "<b>Character Preview</b>"
+msgstr "<b>Signa antaŭvido</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Styles.xml.h:4
+msgid "<b>Description</b>"
+msgstr "<b>Priskribo</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Styles.xml.h:5
+msgid "<b>List</b>"
+msgstr "<b>Listo</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Styles.xml.h:6
+msgid "<b>Paragraph Preview</b>"
+msgstr "<b>Alinea antaŭvido</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Tab.xml.h:1
+msgid "<b>Default tab stops:</b>"
+msgstr "<b>Taba larĝo apriora:</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Tab.xml.h:2
+msgid "<b>User-defined Tabs</b>"
+msgstr "<b>Propre difinitaj taboj</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_WordCount.xml.h:1
+msgid "0"
+msgstr "0"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_WordCount.xml.h:3
+#, no-c-format
+msgid "<b>%s</b>"
+msgstr "<b>%s</b>"
+
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_HdrFtr.xml.h:3
+msgid "<b>Page Numbering</b>"
+msgstr "<b>Paĝnumerado</b>"
+
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:8
+msgid "<b>Spell Checking</b>"
+msgstr "<b>Literumilo</b>"
+
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:12
+msgid "Cursor _blink"
+msgstr "Kursora _pulsado"
+
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:14
+msgid "Enable smart _quotes"
+msgstr "Ebligi unikodajn _citilojn"
+
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:20
+msgid "Show splash screen"
+msgstr "Montri salutan ŝildon"
+
+#, fuzzy
+#~ msgid "Characters (no spaces)"
+#~ msgstr "Signojn (sen spacetoj)"
+
+#, fuzzy
+#~ msgid "Characters (with spaces)"
+#~ msgstr "Signojn (kun spacetoj)"
+
+#, fuzzy
+#~ msgid "Lines"
+#~ msgstr "Linioj:"
+
+#, fuzzy
+#~ msgid "Pages"
+#~ msgstr "Paĝoj:"
+
+#, fuzzy
+#~ msgid "Paragraphs"
+#~ msgstr "Alineoj:"
+
+#, fuzzy
+#~ msgid "Words"
+#~ msgstr "Vortoj:"
+
+#, fuzzy
+#~ msgid "Words (no footnotes/endnotes)"
+#~ msgstr "Vortoj (ekskluzive de piednotoj/piednotoj):"

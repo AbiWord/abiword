@@ -220,6 +220,7 @@ void AP_UnixDialog_WordCount::constructDialog(void)
 
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, GETTEXT_PACKAGE);
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 
 	m_windowMain   = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_WordCount"));
@@ -243,7 +244,6 @@ void AP_UnixDialog_WordCount::constructDialog(void)
 	localizeDialog();
 
 	ConstructWindowName();
-	gtk_window_set_title (GTK_WINDOW(m_windowMain), m_WindowName);
 
    	g_signal_connect(G_OBJECT(m_windowMain), "response", 
 					 G_CALLBACK(s_response), this);

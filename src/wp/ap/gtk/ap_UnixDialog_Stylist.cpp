@@ -253,10 +253,9 @@ GtkWidget * AP_UnixDialog_Stylist::_constructWindow(void)
 
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, GETTEXT_PACKAGE);
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
-	const XAP_StringSet * pSS = m_pApp->getStringSet ();
-
 	m_windowMain   = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Stylist"));
 	m_wStyleListContainer  = GTK_WIDGET(gtk_builder_get_object(builder, "TreeViewContainer"));
 	if(m_bIsModal)
@@ -268,11 +267,6 @@ GtkWidget * AP_UnixDialog_Stylist::_constructWindow(void)
 		m_wOK = GTK_WIDGET(gtk_builder_get_object(builder, "btOK"));
 	}
 	m_wClose = GTK_WIDGET(gtk_builder_get_object(builder, "btClose"));
-
-	// set the dialog title
-	UT_UTF8String s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_Title,s);
-	abiDialogSetTitle(m_windowMain, s.utf8_str());
 
 	g_object_unref(G_OBJECT(builder));
 	

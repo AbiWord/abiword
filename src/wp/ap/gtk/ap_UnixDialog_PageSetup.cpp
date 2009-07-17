@@ -551,6 +551,7 @@ GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
 
 	// load the dialog from the UI file
 	m_pBuilder = gtk_builder_new();
+	gtk_builder_set_translation_domain(m_pBuilder, GETTEXT_PACKAGE);
 	gtk_builder_add_from_file(m_pBuilder, ui_path.c_str(), NULL);
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
@@ -579,36 +580,12 @@ GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
 	m_MarginHbox = _getWidget("hbox15");
 	m_PageHbox = _getWidget("hbox16");
 
-	/* required for translations */
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbPage")), __(AP, DLG_PageSetup_Page));
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbMargin")), __(AP, DLG_PageSetup_Margin));
-	Markup (_getWidget("lbPaper"), pSS, __(AP, DLG_PageSetup_Paper));
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbPaperSize")), __(AP, DLG_PageSetup_Paper_Size));
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbPageUnits")), __(AP, DLG_PageSetup_Units));
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbWidth")), __(AP, DLG_PageSetup_Width));
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbHeight")), __(AP, DLG_PageSetup_Height));
-	Markup (_getWidget("lbOrientation"), pSS, __(AP, DLG_PageSetup_Orient));
-
 	/* radio button labels */
 	glist = gtk_container_get_children (GTK_CONTAINER (m_radioPagePortrait));
 	orientation = GTK_LABEL (g_list_nth_data (glist, 0));
-	gtk_label_set_text (GTK_LABEL (orientation), __(AP, DLG_PageSetup_Portrait));
 
 	glist = gtk_container_get_children (GTK_CONTAINER (m_radioPageLandscape));
 	orientation = GTK_LABEL (g_list_nth_data (glist, 0));
-	gtk_label_set_text (GTK_LABEL (orientation), __(AP, DLG_PageSetup_Landscape));
-
-	Markup (_getWidget("lbScale"), pSS, __(AP, DLG_PageSetup_Scale));
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbAdjust")), __(AP, DLG_PageSetup_Adjust));
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbPercentNormalSize")), __(AP, DLG_PageSetup_Percent));
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbMarginUnits")), __(AP, DLG_PageSetup_Units));
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbTop")), __(AP, DLG_PageSetup_Top));
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbRight")), __(AP, DLG_PageSetup_Right));
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbLeft")), __(AP, DLG_PageSetup_Left));
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbBottom")), __(AP, DLG_PageSetup_Bottom));
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbHeader")), __(AP, DLG_PageSetup_Header));
-	gtk_label_set_text (GTK_LABEL (_getWidget("lbFooter")), __(AP, DLG_PageSetup_Footer));
-	/* end translation req */
 
 	/* setup page width and height */
 	if (!getPageOrientation () == PORTRAIT)

@@ -31,3 +31,17 @@ src/af/xap/xp/xap_String_Id.h
 [type: gettext/glade]src/wp/ap/gtk/ap_UnixDialog_MailMerge.xml
 [type: gettext/glade]src/wp/ap/gtk/ap_UnixDialog_MetaData.xml
 [type: gettext/glade]src/wp/ap/gtk/ap_UnixDialog_New.xml
+[type: gettext/glade]src/wp/ap/gtk/ap_UnixDialog_Options.xml
+[type: gettext/glade]src/wp/ap/gtk/ap_UnixDialog_Options_ColorSel.xml
+[type: gettext/glade]src/wp/ap/gtk/ap_UnixDialog_PageNumbers.xml
+[type: gettext/glade]src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml
+[type: gettext/glade]src/wp/ap/gtk/ap_UnixDialog_Replace.xml
+[type: gettext/glade]src/wp/ap/gtk/ap_UnixDialog_Spell.xml
+[type: gettext/glade]src/wp/ap/gtk/ap_UnixDialog_Styles.xml
+[type: gettext/glade]src/wp/ap/gtk/ap_UnixDialog_Stylist.xml
+[type: gettext/glade]src/wp/ap/gtk/ap_UnixDialog_Stylist_modal.xml
+[type: gettext/glade]src/wp/ap/gtk/ap_UnixDialog_Tab.xml
+[type: gettext/glade]src/wp/ap/gtk/ap_UnixDialog_WordCount.xml
+
+[type: gettext/glade]src/wp/ap/gtk/hildon/ap_UnixHildonDialog_HdrFtr.xml
+[type: gettext/glade]src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml

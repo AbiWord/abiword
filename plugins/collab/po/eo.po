@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: abiword 2.7.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-07-16 15:57-0400\n"
+"POT-Creation-Date: 2009-07-16 16:42-0400\n"
 "PO-Revision-Date: 2009-07-03 17:31-0400\n"
 "Last-Translator: Keith Bowes <keith@keith-desktop>\n"
 "Language-Team: Esperanto\n"
@@ -96,7 +96,11 @@ msgstr "Kunlabora servo AbiCollab.net"
 #. FIXME: don't hardcode this title to abicollab.net
 #: ../backends/service/xp/ServiceAccountHandler.cpp:70
 msgid "Please enter your password for account '"
-msgstr "Bonvolu enmeti vian pasvorton por konto '"
+msgstr "Bonvolu enmeti vian pasvorton por konto «"
+
+#: ../backends/service/xp/ServiceAccountHandler.cpp:70
+msgid "'"
+msgstr "»"
 
 #. TODO: add the document name, error type and perhaps the server name
 #: ../backends/service/xp/ServiceAccountHandler.cpp:430
@@ -203,11 +207,11 @@ msgstr "Servilo:"
 #. some convenient default values
 #: ../backends/xmpp/unix/XMPPUnixAccountHandler.cpp:91
 msgid "5222"
-msgstr ""
+msgstr "5222"
 
 #: ../backends/xmpp/xp/XMPPAccountHandler.cpp:195
 msgid "Jabber (XMPP)"
-msgstr ""
+msgstr "Protokolo XMPP"
 
 #: ../core/dialogs/unix/ap_UnixDialog_CollaborationAccounts.cpp:208
 msgid "Account"
@@ -324,11 +328,11 @@ msgstr "Montri tiun, kiu skribis ĉiun pecon da teksto per diversaj koloroj"
 
 #: ../core/plugin/xp/AbiCollab_Plugin.cpp:115
 msgid "Record this Session"
-msgstr ""
+msgstr "Registri ĉi tiun seancon"
 
 #: ../core/plugin/xp/AbiCollab_Plugin.cpp:116
 msgid "Record a session to disk, for debugging purposes"
-msgstr ""
+msgstr "Registri al dosiero seancon pro senerarigado"
 
 #: ../core/plugin/xp/AbiCollab_Plugin.cpp:117
 msgid "View Session"

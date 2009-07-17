@@ -287,15 +287,12 @@ void AP_UnixDialog_Replace::destroy(void)
 
 GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 {
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	char * unixstr;
-
 	// get the path where our UI file is located
 	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Replace.xml";
 	
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, GETTEXT_PACKAGE);
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	m_windowMain = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Replace"));
@@ -313,42 +310,9 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	GtkListStore* comboReplace_model = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_POINTER);
 	gtk_combo_box_set_model(GTK_COMBO_BOX(m_comboReplace), GTK_TREE_MODEL(comboReplace_model));
 
-	GtkWidget * labelFind = GTK_WIDGET(gtk_builder_get_object(builder, "lblFind"));
 	GtkWidget * labelReplace = GTK_WIDGET(gtk_builder_get_object(builder, "lblReplace"));
 
 	ConstructWindowName();
-	gtk_window_set_title(GTK_WINDOW(m_windowMain), m_WindowName);
-
-	UT_UTF8String s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_FR_MatchCase,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());	
-	gtk_button_set_label(GTK_BUTTON(m_checkbuttonMatchCase), unixstr); 
-	FREEP(unixstr);
-
-	pSS->getValueUTF8(AP_STRING_ID_DLG_FR_WholeWord,s);
-    UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
-	gtk_button_set_label(GTK_BUTTON(m_checkbuttonWholeWord), unixstr);
-    FREEP(unixstr);
-
-	pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReverseFind,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
-	gtk_button_set_label(GTK_BUTTON(m_checkbuttonReverseFind), unixstr);
-	FREEP(unixstr);
-
-	pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReplaceWithLabel,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());	
-	gtk_label_set_text(GTK_LABEL(labelReplace), unixstr);
-	FREEP(unixstr);
-
-	pSS->getValueUTF8(AP_STRING_ID_DLG_FR_FindLabel,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
-	gtk_label_set_text(GTK_LABEL(labelFind), unixstr);
-	FREEP(unixstr);
-
-	pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReplaceAllButton,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());	
-	gtk_button_set_label(GTK_BUTTON(m_buttonReplaceAll), unixstr);
-	FREEP(unixstr);
 
 	// create and disable the find button initially
 	gtk_widget_set_sensitive(m_buttonFind, FALSE);

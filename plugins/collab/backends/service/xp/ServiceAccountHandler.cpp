@@ -67,7 +67,7 @@ bool ServiceAccountHandler::askPassword(const std::string& email, std::string& p
 	
 	// Run the dialog
 	pDialog->setTitle(m_strings->getValue(_("AbiCollab.net Collaboration Service"))); // FIXME: don't hardcode this title to abicollab.net
-	std::string msg = m_strings->getValue(_("Please enter your password for account '")) + email + "'";
+	std::string msg = m_strings->getValue(_("Please enter your password for account '")) + email + m_strings->getValue(_("'"));
 	pDialog->setQuestion(msg.c_str());
 	pDialog->setLabel(m_strings->getValue(_("Password:")));
 	pDialog->setPassword(true);

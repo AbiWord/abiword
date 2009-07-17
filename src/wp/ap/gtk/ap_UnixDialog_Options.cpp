@@ -159,18 +159,15 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
     GtkWidget *colorsel;
     UT_UTF8String s;
 
-    const XAP_StringSet * pSS = m_pApp->getStringSet();
-
     // get the path where our UI file is located
     std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Options_ColorSel.xml";
 
     // load the dialog from the UI file
     GtkBuilder* builder = gtk_builder_new();
+		gtk_builder_set_translation_domain(builder, GETTEXT_PACKAGE);
     gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 
     dlg = WID ( "ap_UnixDialog_Options_ColorSel" );
-    pSS->getValueUTF8 ( AP_STRING_ID_DLG_Options_Label_ChooseForTransparent, s );
-    abiDialogSetTitle ( dlg, s.utf8_str() );
 
     colorsel = WID ( "csColorSel" );
 
@@ -242,8 +239,6 @@ void AP_UnixDialog_Options::_constructWindowContents ( GtkBuilder * builder )
     const XAP_StringSet *pSS = m_pApp->getStringSet();
     //const UT_Vector & vec = m_pApp->getToolbarFactory()->getToolbarNames();
 
-    GtkWidget *tmp;
-
     // Dialog
 
     m_windowMain = WID ( "ap_UnixDialog_Options" );
@@ -259,148 +254,48 @@ void AP_UnixDialog_Options::_constructWindowContents ( GtkBuilder * builder )
         gtk_notebook_append_page ( GTK_NOTEBOOK ( m_notebook ),
                                    page, label );
         item = item->next;
-    }
+		}
 
     m_buttonDefaults = WID ( "btnDefaults" );
     m_buttonClose = WID ( "btnClose" );
 
 
-    // General
-
-    tmp = WID ( "lblGeneral" );
-    localizeLabel ( tmp, pSS, AP_STRING_ID_DLG_Options_Label_General );
 
     // User Interface
-
-    tmp = WID ( "lblUserInterface" );
-    localizeLabelMarkup ( tmp, pSS, AP_STRING_ID_DLG_Options_Label_UI );
-
-    tmp = WID ( "lblUnits" );
-    localizeLabelUnderline ( tmp, pSS, AP_STRING_ID_DLG_Options_Label_ViewUnits );
 
     m_menuUnits = WID ( "omUnits" );
     _setupUnitMenu ( m_menuUnits, pSS );
 
     m_pushbuttonNewTransparentColor = WID ( "btnScreenColor" );
-
-    tmp = WID ( "lblScreenColor" );
-    localizeLabelUnderline ( tmp, pSS, AP_STRING_ID_DLG_Options_Label_ChooseForTransparent );
-
-#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
-    // Application Startup
-    tmp = WID ( "lblApplicationStartup" );
-    localizeLabelMarkup ( tmp, pSS, AP_STRING_ID_DLG_Options_Label_AppStartup );
-#endif
-
     m_checkbuttonAutoLoadPlugins = WID ( "chkAutoLoadPlugins" );
-    localizeButtonUnderline ( m_checkbuttonAutoLoadPlugins, pSS,
-                              AP_STRING_ID_DLG_Options_Label_CheckAutoLoadPlugins );
-
-
-    // Documents
-
-    tmp = WID ( "lblDocuments" );
-    localizeLabel ( tmp, pSS, AP_STRING_ID_DLG_Options_Label_Documents );
 
     // Auto Save
 
     m_checkbuttonAutoSaveFile = WID ( "chkAutoSave" );
-    localizeButtonMarkup ( m_checkbuttonAutoSaveFile, pSS,
-                           AP_STRING_ID_DLG_Options_Label_AutoSaveUnderline );
-
     m_tableAutoSaveFile = WID ( "tblAutoSave" );
-
-    tmp = WID ( "lblInterval" );
-    localizeLabelUnderline ( tmp, pSS, AP_STRING_ID_DLG_Options_Label_AutoSaveInterval );
-
     m_textAutoSaveFilePeriod = WID ( "spInterval" );
-
-    tmp = WID ( "lblFileExt" );
-    localizeLabelUnderline ( tmp, pSS, AP_STRING_ID_DLG_Options_Label_FileExtension );
-
     m_textAutoSaveFileExt = WID ( "enFileExt" );
-
-    tmp = WID ( "lblMinutes" );
-    localizeLabel ( tmp, pSS, AP_STRING_ID_DLG_Options_Label_Minutes );
-
-    // RTL Text Layout
-    tmp = WID ( "lblRTL" );
-    localizeLabelMarkup ( tmp, pSS, AP_STRING_ID_DLG_Options_Label_BiDiOptions );
-
     m_checkbuttonOtherDirectionRtl = WID ( "chkDefaultToRTL" );
-    localizeButtonUnderline ( m_checkbuttonOtherDirectionRtl, pSS,
-                              AP_STRING_ID_DLG_Options_Label_DirectionRtl );
-
-    // Spell Checking
-
-    tmp = WID ( "lblSpellChecking" );
-    localizeLabel ( tmp, pSS, AP_STRING_ID_DLG_Options_SpellCheckingTitle );
 
     // General
-
-    tmp = WID ( "lblSpellCheckingGeneral" );
-    localizeLabelMarkup ( tmp, pSS, AP_STRING_ID_DLG_Options_Label_General );
-
     m_checkbuttonSpellCheckAsType = WID ( "chkSpellCheckAsType" );
-    localizeButtonUnderline ( m_checkbuttonSpellCheckAsType, pSS,
-                              AP_STRING_ID_DLG_Options_Label_SpellCheckAsType );
-
     m_checkbuttonSpellHideErrors = WID ( "chkHighlightMisspelledWords" );
-    localizeButtonUnderline ( m_checkbuttonSpellHideErrors, pSS,
-                              AP_STRING_ID_DLG_Options_Label_SpellHighlightMisspelledWords );
 
     // Ignore Words
 
-    tmp = WID ( "lblIgnoreWords" );
-    localizeLabelMarkup ( tmp, pSS, AP_STRING_ID_DLG_Options_Label_SpellIgnoreWords );
-
     m_checkbuttonSpellUppercase = WID ( "chkIgnoreUppercase" );
-    localizeButtonUnderline ( m_checkbuttonSpellUppercase, pSS,
-                              AP_STRING_ID_DLG_Options_Label_SpellUppercase );
-
     m_checkbuttonSpellNumbers = WID ( "chkIgnoreNumbers" );
-    localizeButtonUnderline ( m_checkbuttonSpellNumbers, pSS,
-                              AP_STRING_ID_DLG_Options_Label_SpellNumbers );
 
     // Dictionaries
 
-    tmp = WID ( "lblDictionaries" );
-    localizeLabelMarkup ( tmp, pSS, AP_STRING_ID_DLG_Options_Label_SpellDictionaries );
-
     m_checkbuttonSpellSuggest = WID ( "chkAlwaysSuggest" );
-    localizeButtonUnderline ( m_checkbuttonSpellSuggest, pSS,
-                              AP_STRING_ID_DLG_Options_Label_SpellSuggest );
-
     m_checkbuttonSpellMainOnly = WID ( "chkOnlySuggestFromMain" );
-    localizeButtonUnderline ( m_checkbuttonSpellMainOnly, pSS,
-                              AP_STRING_ID_DLG_Options_Label_SpellMainOnly );
-
-    tmp = WID ( "lblGrammar" );
-    localizeLabelMarkup ( tmp, pSS, AP_STRING_ID_DLG_Options_Label_Grammar );
-
     m_checkbuttonGrammarCheck = WID ( "chkGrammarCheck" );
-    localizeButtonUnderline ( m_checkbuttonGrammarCheck, pSS,
-                              AP_STRING_ID_DLG_Options_Label_GrammarCheck );
 
     // Smart Quotes
 
-    tmp = WID ( "lblSmartQuotes" );
-    localizeLabel ( tmp, pSS, AP_STRING_ID_DLG_Options_TabLabel_SmartQuotes );
-
     m_checkbuttonSmartQuotes = WID ( "chkSmartQuotes" );
-    localizeButtonUnderline ( m_checkbuttonSmartQuotes, pSS,
-                              AP_STRING_ID_DLG_Options_Label_SmartQuotes );
-
     m_checkbuttonCustomSmartQuotes = WID ( "chkCustomQuoteStyle" );
-    localizeButtonUnderline ( m_checkbuttonCustomSmartQuotes, pSS,
-                              AP_STRING_ID_DLG_Options_Label_CustomSmartQuotes );
-
-    tmp = WID ( "lblOuterQuoteStyle" );
-    localizeLabelUnderline ( tmp, pSS, AP_STRING_ID_DLG_Options_Label_OuterQuoteStyle );
-
-    tmp = WID ( "lblInnerQuoteStyle" );
-    localizeLabelUnderline ( tmp, pSS, AP_STRING_ID_DLG_Options_Label_InnerQuoteStyle );
-
     m_omOuterQuoteStyle = WID ( "omOuterQuoteStyle" );
     m_omInnerQuoteStyle = WID ( "omInnerQuoteStyle" );
 
@@ -449,7 +344,6 @@ void AP_UnixDialog_Options::_constructWindowContents ( GtkBuilder * builder )
 GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 {
     GtkWidget *mainWindow;
-    const XAP_StringSet * pSS = m_pApp->getStringSet();
 
     // get the path where our UI file is located
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
@@ -463,16 +357,12 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 
     // load the dialog from the UI file
     GtkBuilder* builder = gtk_builder_new();
+		gtk_builder_set_translation_domain(builder, GETTEXT_PACKAGE);
     gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 
     _constructWindowContents ( builder );
 
     mainWindow = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Options"));
-
-    // set the dialog title
-    UT_UTF8String s;
-    pSS->getValueUTF8(AP_STRING_ID_DLG_Options_OptionsTitle, s);
-    abiDialogSetTitle(mainWindow, s.utf8_str());
 
     // the control buttons
     g_signal_connect ( G_OBJECT ( m_buttonDefaults ),

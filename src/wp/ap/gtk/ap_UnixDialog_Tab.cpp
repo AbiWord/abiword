@@ -238,24 +238,16 @@ AP_UnixDialog_Tab::_constructWindow ()
 
 	// load the dialog from the UI file
 	m_pBuilder = gtk_builder_new();
+	gtk_builder_set_translation_domain(m_pBuilder, GETTEXT_PACKAGE);
 	gtk_builder_add_from_file(m_pBuilder, ui_path.c_str(), NULL);
 	GtkWidget *wDialog = GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "ap_UnixDialog_Tab"));
 	m_exUserTabs = GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "exUserTabs"));
 
-	// localise	
-	UT_UTF8String s;
-	const XAP_StringSet *pSS = m_pApp->getStringSet ();
-	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_TabTitle, s);
-	gtk_window_set_title (GTK_WINDOW (wDialog), s.utf8_str());	
-	
-	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "lbDefaultTab")), pSS, AP_STRING_ID_DLG_Tab_Label_DefaultTS);
-	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "lbUserTabs")), pSS, AP_STRING_ID_DLG_Tab_Label_Existing);
-	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "lbPosition")), pSS, AP_STRING_ID_DLG_Tab_Label_Position);
-	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "lbAlignment")), pSS, AP_STRING_ID_DLG_Tab_Label_Alignment);
-	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "lbLeader")), pSS, AP_STRING_ID_DLG_Tab_Label_Leader);
-
 
 	// initialise
+	
+	const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
+	UT_UTF8String s;
 
 	m_sbDefaultTab = GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "sbDefaultTab"));
 	gtk_spin_button_set_digits (GTK_SPIN_BUTTON (m_sbDefaultTab), UT_getDimensionPrecisicion (m_dim));

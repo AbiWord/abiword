@@ -471,60 +471,44 @@ void AP_UnixDialog_Styles::event_ListClicked(const char * which)
 
 GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 {
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
 	// get the path where our UI file is located
 	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Styles.xml";
 	
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, GETTEXT_PACKAGE);
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 
 	GtkWidget *window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Styles"));
-	UT_UTF8String s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_StylesTitle, s);
-	gtk_window_set_title (GTK_WINDOW (window), s.utf8_str());
 
-	// list of styles goes in the top left
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbStyles")), pSS, AP_STRING_ID_DLG_Styles_Available);
-	
 	// treeview
 	m_tvStyles = GTK_WIDGET(gtk_builder_get_object(builder, "tvStyles"));
 	gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_tvStyles)), GTK_SELECTION_SINGLE);	
 
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbList")), pSS, AP_STRING_ID_DLG_Styles_List);
-
 	m_rbList1 = GTK_WIDGET(gtk_builder_get_object(builder, "rbList1"));
-	localizeButton(m_rbList1, pSS, AP_STRING_ID_DLG_Styles_LBL_InUse);
 	m_rbList2 = GTK_WIDGET(gtk_builder_get_object(builder, "rbList2"));
-	localizeButton(m_rbList2, pSS, AP_STRING_ID_DLG_Styles_LBL_All);
 	m_rbList3 = GTK_WIDGET(gtk_builder_get_object(builder, "rbList3"));
-	localizeButton(m_rbList3, pSS, AP_STRING_ID_DLG_Styles_LBL_UserDefined);
 	
 	// previewing and description goes in the top right
 
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbParagraph")), pSS, AP_STRING_ID_DLG_Styles_ParaPrev);
 	GtkWidget *frameParaPrev = GTK_WIDGET(gtk_builder_get_object(builder, "frameParagraph"));
 	m_wParaPreviewArea = createDrawingArea();
 	gtk_widget_set_size_request(m_wParaPreviewArea, 300, 70);
 	gtk_container_add(GTK_CONTAINER(frameParaPrev), m_wParaPreviewArea);
 	gtk_widget_show(m_wParaPreviewArea);
 
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbCharacter")), pSS, AP_STRING_ID_DLG_Styles_CharPrev);
 	GtkWidget *frameCharPrev = GTK_WIDGET(gtk_builder_get_object(builder, "frameCharacter"));
 	m_wCharPreviewArea = createDrawingArea();
 	gtk_widget_set_size_request(m_wCharPreviewArea, 300, 50);
 	gtk_container_add(GTK_CONTAINER(frameCharPrev), m_wCharPreviewArea);
 	gtk_widget_show(m_wCharPreviewArea);
 
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbDescription")), pSS, AP_STRING_ID_DLG_Styles_Description);
 	m_lbAttributes = GTK_WIDGET(gtk_builder_get_object(builder, "lbAttributes"));
 
 	// Pack buttons at the bottom of the dialog
 	m_btNew = GTK_WIDGET(gtk_builder_get_object(builder, "btNew"));
 	m_btDelete = GTK_WIDGET(gtk_builder_get_object(builder, "btDelete"));
 	m_btModify = GTK_WIDGET(gtk_builder_get_object(builder, "btModify"));
-	localizeButton(m_btModify, pSS, AP_STRING_ID_DLG_Styles_Modify);
 
 	m_btApply = GTK_WIDGET(gtk_builder_get_object(builder, "btApply"));
 	m_btClose = GTK_WIDGET(gtk_builder_get_object(builder, "btClose"));

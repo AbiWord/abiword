@@ -222,8 +222,11 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 	m_spinPercent = GTK_WIDGET(gtk_builder_get_object(builder, "sbPercent"));
 	m_spinAdj = gtk_spin_button_get_adjustment( GTK_SPIN_BUTTON(m_spinPercent) );
 
+	g_object_set_data (G_OBJECT (m_radio200), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(XAP_Frame::z_200));
+	g_object_set_data (G_OBJECT (m_radio100), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(XAP_Frame::z_100));
+	g_object_set_data (G_OBJECT (m_radio75), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(XAP_Frame::z_75));
+	g_object_set_data (G_OBJECT (m_radioPageWidth), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(XAP_Frame::z_PAGEWIDTH));
 	g_object_set_data (G_OBJECT (m_radioWholePage), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(XAP_Frame::z_WHOLEPAGE));
-	
 	g_object_set_data (G_OBJECT (m_radioPercent), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(XAP_Frame::z_PERCENT));
 	
 	// Connect clicked signals so that our callbacks get called.

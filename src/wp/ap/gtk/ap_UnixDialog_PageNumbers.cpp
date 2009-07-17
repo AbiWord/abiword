@@ -160,13 +160,13 @@ void AP_UnixDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
 {
 	GtkWidget * window;	
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	// get the path where our UI file is located
 	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_PageNumbers.xml";
 	
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_set_translation_domain(builder, GETTEXT_PACKAGE);
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
@@ -174,44 +174,24 @@ GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
 	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_PageNumbers"));
 	m_previewArea = GTK_WIDGET(gtk_builder_get_object(builder, "daPreview"));
 	
-	// set the dialog title
-	UT_UTF8String s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Title,s);
-	abiDialogSetTitle(window, s.utf8_str());
-
 	// disable double buffering on our preview
-	gtk_widget_set_double_buffered(m_previewArea, FALSE);  
-	
-	// localize the strings in our dialog, and set some userdata for some widgets
+	gtk_widget_set_double_buffered(m_previewArea, FALSE);  	
 
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbPosition")), pSS, AP_STRING_ID_DLG_PageNumbers_Position_No_Colon);
-	
 	GtkWidget * radioHeader = GTK_WIDGET(gtk_builder_get_object(builder, "rbHeader"));
-	localizeButton(radioHeader, pSS, AP_STRING_ID_DLG_PageNumbers_Header);
 	g_object_set_data(G_OBJECT(radioHeader), "user_data", GINT_TO_POINTER(AP_Dialog_PageNumbers::id_HDR));	
 	
 	GtkWidget * radioFooter = GTK_WIDGET(gtk_builder_get_object(builder, "rbFooter"));
-	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbFooter")), pSS, AP_STRING_ID_DLG_PageNumbers_Footer);	
 	g_object_set_data(G_OBJECT(radioFooter), "user_data", GINT_TO_POINTER(AP_Dialog_PageNumbers::id_FTR));	
 
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbAlignment")), pSS, AP_STRING_ID_DLG_PageNumbers_Alignment_No_Colon);
-	
 	GtkWidget * radioLeft =	GTK_WIDGET(gtk_builder_get_object(builder, "rbLeft"));
-	localizeButton(radioLeft, pSS, AP_STRING_ID_DLG_PageNumbers_Left);	
 	g_object_set_data(G_OBJECT(radioLeft), "user_data",  GINT_TO_POINTER(AP_Dialog_PageNumbers::id_LALIGN));
 	
 	GtkWidget * radioCenter = GTK_WIDGET(gtk_builder_get_object(builder, "rbCenter"));
-	localizeButton(radioCenter, pSS, AP_STRING_ID_DLG_PageNumbers_Center);	
 	g_object_set_data(G_OBJECT(radioCenter), "user_data", GINT_TO_POINTER(AP_Dialog_PageNumbers::id_CALIGN));
 
 	GtkWidget * radioRight = GTK_WIDGET(gtk_builder_get_object(builder, "rbRight"));
-	localizeButton(radioRight, pSS, AP_STRING_ID_DLG_PageNumbers_Right);	
 	g_object_set_data(G_OBJECT(radioRight), "user_data", GINT_TO_POINTER(AP_Dialog_PageNumbers::id_RALIGN));
 	
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbPreview")), pSS, AP_STRING_ID_DLG_PageNumbers_Preview);
-	
-	localizeButtonUnderline(GTK_WIDGET(gtk_builder_get_object(builder, "btInsert")), pSS, AP_STRING_ID_DLG_InsertButton);
-
 	// Set our defaults to number in the bottom-right corner.
 	m_recentControl = m_control = AP_Dialog_PageNumbers::id_FTR;
 	m_recentAlign = m_align = AP_Dialog_PageNumbers::id_RALIGN;
