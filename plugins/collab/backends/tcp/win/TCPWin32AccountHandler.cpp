@@ -193,7 +193,7 @@ void TCPWin32AccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	_checkButtonHwnd(m_hAutoconnectCheck, true);
 }
 
-#define DESTROY_WINDOW(M) if (M) { UT_ASSERT_HARMLESS(DestroyWindow(M)); M = 0; }
+#define DESTROY_WINDOW(M) if (M) { int res = DestroyWindow(M); UT_ASSERT_HARMLESS(res); M = 0; }
 
 void TCPWin32AccountHandler::removeDialogWidgets(void* pEmbeddingParent)
 {

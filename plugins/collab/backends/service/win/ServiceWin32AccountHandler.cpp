@@ -93,7 +93,7 @@ void ServiceWin32AccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 		SendMessage(rgFontReceivers[iWnd], WM_SETFONT, (WPARAM) hfontPrimary, 0);
 }
 
-#define DESTROY_WINDOW(M) if (M) { UT_ASSERT_HARMLESS(DestroyWindow(M)); M = 0; }
+#define DESTROY_WINDOW(M) if (M) { int res = DestroyWindow(M); UT_ASSERT_HARMLESS(res); M = 0; }
 
 void ServiceWin32AccountHandler::removeDialogWidgets(void* pEmbeddingParent)
 {
