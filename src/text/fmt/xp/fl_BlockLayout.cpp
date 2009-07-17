@@ -6284,22 +6284,28 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 		fl_BlockLayout *sq_bl = m_pLayout->getPendingBlockForSmartQuote();
 		UT_uint32 sq_of = m_pLayout->getOffsetForSmartQuote();
 		m_pLayout->setPendingSmartQuote(NULL, 0);
-		if (sq_bl)
+		//
+		// Don't do Smart quotes during an undo or during a paste
+		//
+		if(!m_pDoc->isDoingTheDo() && !m_pDoc->isDoingPaste())
 		{
-			m_pLayout->considerSmartQuoteCandidateAt(sq_bl, sq_of);
-		}
-		if (sqcount)
-		{
-			m_pDoc->beginUserAtomicGlob();
-			for (UT_uint32 sdex=0; sdex<sqcount; ++sdex)
+			if (sq_bl)
 			{
-				m_pLayout->considerSmartQuoteCandidateAt(this, sqlist[sdex]);
+				m_pLayout->considerSmartQuoteCandidateAt(sq_bl, sq_of);
 			}
-			m_pDoc->endUserAtomicGlob();
-		}
-		if (UT_isSmartQuotableCharacter(pChars[len - 1]))
-		{
-			m_pLayout->setPendingSmartQuote(this, blockOffset + len - 1);
+			if (sqcount)
+			{
+				m_pDoc->beginUserAtomicGlob();
+				for (UT_uint32 sdex=0; sdex<sqcount; ++sdex)
+				{
+					m_pLayout->considerSmartQuoteCandidateAt(this, sqlist[sdex]);
+				}
+				m_pDoc->endUserAtomicGlob();
+			}
+			if (UT_isSmartQuotableCharacter(pChars[len - 1]))
+			{
+				m_pLayout->setPendingSmartQuote(this, blockOffset + len - 1);
+			}
 		}
 	}
 	if (sqlist != _sqlist) delete[] sqlist;
