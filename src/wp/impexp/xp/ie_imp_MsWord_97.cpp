@@ -1987,31 +1987,35 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 		wvStream_goto(ps->data, achp->fcPic_fcObj_lTagObj);
 
 		if (1 == wvGetPICF(wvQuerySupported(&ps->fib, NULL), &picf,
-				   ps->data) && NULL != picf.rgb)
-		  {
+						   ps->data) && NULL != picf.rgb)
+		{
 			fil = picf.rgb;
 
 			if (wv0x01(&blip, fil, picf.lcb - picf.cbHeader))
-			  {
-                       this->_handleImage(&blip, picf.mx * picf.dxaGoal / 1000, picf.my * picf.dyaGoal / 1000, picf.dyaCropTop, picf.dyaCropBottom, picf.dxaCropLeft, picf.dxaCropRight);
-			  }
+			{
+				this->_handleImage(&blip, picf.mx * picf.dxaGoal / 1000, picf.my * picf.dyaGoal / 1000, picf.dyaCropTop, picf.dyaCropBottom, picf.dxaCropLeft, picf.dxaCropRight);
+			}
 			else
-			  {
-			UT_DEBUGMSG(("Dom: no graphic data\n"));
-			  }
-#else
-			UT_DEBUGMSG(("DOM: 0x01 graphics support is disabled at the moment\n"));
-#endif
+			{
+				UT_DEBUGMSG(("Dom: no graphic data\n"));
+			}
 
 			wvStream_goto(ps->data, pos);
 
 			return 0;
-		  }
+		}
 		else
-		  {
+		{
 			UT_DEBUGMSG(("Couldn't import graphic!\n"));
 			return 0;
-		  }
+		}
+#else
+		UT_DEBUGMSG(("DOM: 0x01 graphics support is disabled at the moment\n"));
+		wvStream_goto(ps->data, pos);
+
+		return 0;
+#endif
+		break;
 	case 0x08: // Word 97, 2000, XP image
 		if (wvQuerySupported(&ps->fib, NULL) >= WORD8) // sanity check
 		{
