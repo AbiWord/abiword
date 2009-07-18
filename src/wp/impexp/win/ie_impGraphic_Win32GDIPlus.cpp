@@ -314,7 +314,7 @@ GDIconvertGraphic(UT_ByteBuf * pBB, UT_ByteBuf* pBBOut, std::string& mimetype)
     
 	pBBOut->append ((const unsigned char*)pBuff, ulBytesRead);
 
-	delete pBuff;
+	delete [] pBuff;
 	
 	streamOut->Release ();
 	stream->Release ();

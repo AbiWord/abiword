@@ -1568,7 +1568,7 @@ UT_UCS4String	AP_Win32App::s_fromWinLocaleToUCS4(const char* szIn)
 	UT_UCS4Char * src = new UT_UCS4Char[strlen(szIn)+1];	
 	UT_UCS4_strcpy_char(src, (char*)szIn);	
 	UT_UCS4String sRslt(src);	
-	delete src;
+	delete [] src;
 
 	return sRslt;
 }

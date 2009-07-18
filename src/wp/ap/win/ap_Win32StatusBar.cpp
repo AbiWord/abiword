@@ -106,8 +106,8 @@ LRESULT APIENTRY StatusbarWndProc (HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 			// update
 			SendMessage(hwnd, SB_SETPARTS, nParts, (LPARAM)pArOffsets);
 
-			delete pArWidths;
-			delete pArOffsets;
+			delete [] pArWidths;
+			delete [] pArOffsets;
 			}
 			
 		return lresult;
@@ -245,7 +245,7 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 	// Set the numer of elements in the statusbar and their size
     SendMessage(m_hwndStatusBar, SB_SETPARTS, getFields()->getItemCount()+1, (LPARAM)pArWidths);
 	    
-    delete pArWidths;
+    delete [] pArWidths;
 
 	return m_hwndStatusBar;
 }
