@@ -1546,27 +1546,27 @@ void GR_Graphics::beginBuffering(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_u
 	UT_uint32 top1 = y;
 	UT_uint32 bottom1 = y + width - 1;
 	
-	m_mainBufferPointer = getMainContext();
+	saveMainContext();
 	
-	if (m_bufferContainer.empty())
+	if (getDequeSize() == 0)
 	{
 		createOffscreenBuffer(x, y, width, height);
 		suitableBufferFound = true;
 	}
 	while (!suitableBufferFound)
 	{
-		std::pair<cairo_t*, UT_uint32* > buffer = m_bufferContainer.at(i);
+		UT_uint32* extends = getExtendsFromDeque(i);
 		//extends for the buffer we're looking at in the deque
-		UT_uint32 left2 = buffer.second[0]; //x
-		UT_uint32 right2 = buffer.second[0] + buffer.second[1]; //x + width
-		UT_uint32 top2 = buffer.second[2]; //y
-		UT_uint32 bottom2 = buffer.second[2] + buffer.second[3]; //y + height
+		UT_uint32 left2 = extends[0]; //x
+		UT_uint32 right2 = extends[0] + extends[1]; //x + width
+		UT_uint32 top2 = extends[2]; //y
+		UT_uint32 bottom2 = extends[2] + extends[3]; //y + height
 		
 		//If the extends fit inside the buffer
 		if (left1 >= left2 && right1 <= right2 &&
 			top1 >= top2 && bottom1 <= bottom2)
 		{
-			setActiveBuffer(buffer.first);
+			setActiveBufferFromDeque(i); //abstract
 			suitableBufferFound = true;
 		}
 		 //If the extends overlap
@@ -1579,7 +1579,7 @@ void GR_Graphics::beginBuffering(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_u
 			suitableBufferFound = true;
 		}
 		//Next buffer
-		else if (i < m_bufferContainer.size())
+		else if (i < getDequeSize()) //abstract
 			i++;
 		else
 		{
@@ -1590,58 +1590,12 @@ void GR_Graphics::beginBuffering(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_u
 	return;
 }
 
-void GR_Graphics::createOffscreenBuffer(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_uint32 height)
-{
-	cairo_pattern_t* sourcePattern = cairo_get_source(getMainContext());
-	cairo_surface_t* destSurface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, width, height);
-	cairo_t* newContext = cairo_create(destSurface);
-	cairo_set_source(newContext, sourcePattern);
-	UT_uint32 *newExtends = new UT_uint32[4];
-	newExtends[0] = x;
-	newExtends[1] = y;
-	newExtends[2] = width;
-	newExtends[3] = height;
-	
-	std::pair <cairo_t*, UT_uint32*> tempPair (newContext, newExtends);
-	m_bufferContainer.push_front(tempPair);
-	setActiveBuffer(tempPair.first);
-}
-
 void GR_Graphics::endBuffering()
 {
-	std::pair<cairo_t*, UT_uint32*> tempPair;
-	setActiveBuffer(m_mainBufferPointer);
-	while (!m_bufferContainer.empty())
-	{
-		tempPair = m_bufferContainer.back();
-		m_bufferContainer.pop_back();
-		//paint to m_mainBufferPointer
-		delete[] tempPair.second;
-	}
-	return;
+	restoreMainBuffer();
+	paintDeque();
 }
 
-cairo_t* GR_Graphics::getBuffer()
-{
-	return m_bufferPointer;
-}
-
-void GR_Graphics::setActiveBuffer(cairo_t* buffer)
-{
-	m_bufferPointer = buffer;
-}
-
-cairo_t* GR_Graphics::getMainContext() //This is virtual
-{
-	UT_DEBUGMSG(("gr_Graphics virtual void getMainContext\n"));
-	//This will never actually get returned.
-	return m_mainBufferPointer;
-}
-
-void GR_Graphics::setMainContext(cairo_t* replacement) //This is also virtual.
-{ //Throws a warning. :-(
-	return;
-}
 
 
 #endif // #ifndef ABI_GRAPHICS_PLUGIN

@@ -2985,6 +2985,25 @@ void GR_CairoGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 	}
 }
 
+///////////////////// Stuff for flicker reduction //////////////////////
+
+void GR_CairoGraphics::createOffscreenBuffer(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_uint32 height)
+{
+	cairo_pattern_t* sourcePattern = cairo_get_source(getMainContext());
+	cairo_surface_t* destSurface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, width, height);
+	cairo_t* newContext = cairo_create(destSurface);
+	cairo_set_source(newContext, sourcePattern);
+	UT_uint32 *newExtends = new UT_uint32[4];
+	newExtends[0] = x;
+	newExtends[1] = y;
+	newExtends[2] = width;
+	newExtends[3] = height;
+	
+	std::pair <cairo_t*, UT_uint32*> tempPair (newContext, newExtends);
+	m_bufferContainer.push_front(tempPair);
+	setActiveBuffer(tempPair.first);
+}
+
 cairo_t* GR_CairoGraphics::getMainContext()
 {
 	UT_DEBUGMSG(("gr_CairoGraphics virtual void getMainContext\n"));
@@ -2995,6 +3014,59 @@ void GR_CairoGraphics::setMainContext(cairo_t* replacement)
 {
 	m_cr = *replacement;
 }
+
+void GR_CairoGraphics::saveMainContext()
+{
+	m_mainBufferPointer = getMainContext();
+}
+
+void GR_CairoGraphics::setActiveBuffer(cairo_t* buffer)
+{
+	m_bufferPointer = buffer;
+}
+
+cairo_t* GR_CairoGraphics::getBuffer()
+{
+	return m_bufferPointer;
+}
+
+UT_uint32* GR_CairoGraphics::getExtendsFromDeque(UT_uint32 i)
+{
+	return m_bufferContainer.at(i).second;
+}
+
+void GR_CairoGraphics::setActiveBufferFromDeque(UT_uint32 i)
+{
+	setActiveBuffer(m_bufferContainer.at(i).first);
+}
+
+UT_uint32 GR_CairoGraphics::getDequeSize()
+{
+	return m_bufferContainer.size();
+}
+
+void GR_CairoGraphics::restoreMainBuffer()
+{
+	setActiveBuffer(m_mainBufferPointer);
+}
+
+
+/*! Cycle through the deque, removing each item and painting it to the screen 
+*/
+void GR_CairoGraphics::paintDeque()
+{
+	std::pair<cairo_t*, UT_uint32*> tempPair;
+	while (getDequeSize() > 0)
+	{
+		tempPair = m_bufferContainer.back();
+		m_bufferContainer.pop_back();
+		//paint to m_mainBufferPointer
+		delete[] tempPair.second;
+	}
+	return;
+}
+	
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //

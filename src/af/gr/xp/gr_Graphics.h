@@ -356,17 +356,19 @@ class ABI_EXPORT GR_Graphics
 	virtual ~GR_Graphics();
 
 	// Used for buffering to prevent flickering///////////////////////////////////
-	std::deque< std::pair<cairo_t*, UT_uint32* > > m_bufferContainer;
-	cairo_t* m_bufferPointer;
-	cairo_t* m_mainBufferPointer;
-	
 	void beginBuffering(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_uint32 height);
 	void endBuffering();
 	void setActiveBuffer(cairo_t* buffer);
-	void createOffscreenBuffer(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_uint32 height);
+	virtual void createOffscreenBuffer(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_uint32 height);
 	cairo_t* getBuffer();
 	virtual cairo_t* getMainContext();
 	virtual void setMainContext(cairo_t* replacement);
+	virtual void saveMainContext();
+	virtual UT_uint32* getExtendsFromDeque(UT_uint32 i);
+	virtual void setActiveBufferFromDeque(UT_uint32 i);
+	virtual UT_uint32 getDequeSize();
+	virtual void restoreMainBuffer();
+	virtual void paintDeque();
 
 	// the static method allows us to retrive the the class id for
 	// purposes of registration; we also need the virtual to identify
