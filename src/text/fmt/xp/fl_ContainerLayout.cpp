@@ -851,10 +851,9 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 		break;
 	case FL_CONTAINER_FRAME:
 	{
-		fl_DocSectionLayout * pDSL = getDocSectionLayout();
-		pL = static_cast<fl_ContainerLayout *>(new fl_FrameLayout(getDocLayout(), 
-					  pDSL, 
-					  sdh, indexAP, this));
+		pL = static_cast<fl_ContainerLayout *>
+		  (new fl_FrameLayout(getDocLayout(), 
+				      sdh, indexAP, this));
 		if (pPrev)
 		{
 			while(pPrev && pPrev->getContainerType() != FL_CONTAINER_BLOCK)

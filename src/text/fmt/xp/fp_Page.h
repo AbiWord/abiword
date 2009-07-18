@@ -106,6 +106,7 @@ public:
 	bool				insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter);
 	void				removeColumnLeader(fp_Column* pLeader);
 	bool				isEmpty(void) const;
+	bool                            containsPageBreak(void) const;
 	fp_Container *      updatePageForWrapping(fp_Column *& pNextCol);
 	// Header/Footer functions.
 	void                removeHdrFtr(HdrFtrType hfType);

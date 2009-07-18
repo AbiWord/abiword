@@ -70,7 +70,6 @@ static void s_background_properties (const gchar * pszBgStyle, const gchar * psz
 
 
 fl_FrameLayout::fl_FrameLayout(FL_DocLayout* pLayout, 
-							   fl_DocSectionLayout* pDocSL, 
 							   PL_StruxDocHandle sdh, 
 							   PT_AttrPropIndex indexAP, 
 							   fl_ContainerLayout * pMyContainerLayout)
@@ -86,7 +85,6 @@ fl_FrameLayout::fl_FrameLayout(FL_DocLayout* pLayout,
 	  m_bNeedsRebuild(false),
 	  m_bNeedsFormat(true),
 	  m_bIsOnPage(false),
-	  m_pDocSL(pDocSL),
 	  m_bHasEndFrame(false),
 	  m_iWidth(0),
 	  m_iHeight(0),
@@ -104,7 +102,6 @@ fl_FrameLayout::fl_FrameLayout(FL_DocLayout* pLayout,
 	  m_iPrefPage(-1),
 	  m_bRelocate(false)
 {
-	UT_ASSERT(m_pDocSL->getContainerType() == FL_CONTAINER_DOCSECTION);
 }
 
 fl_FrameLayout::~fl_FrameLayout()

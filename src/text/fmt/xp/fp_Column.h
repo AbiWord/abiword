@@ -220,6 +220,7 @@ public:
 	void			setFollower(fp_Column* p) { m_pFollower = p; }
 	fp_Column*	getLeader(void) const  { return m_pLeader; }
 	fp_Column*	getFollower(void) const 		{ return m_pFollower; }
+	bool            containsPageBreak(void) const;
 	/*!
 	  Get page container is located on
 	  \return Page

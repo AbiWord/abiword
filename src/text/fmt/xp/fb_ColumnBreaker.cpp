@@ -305,14 +305,23 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 		iColCons = -1;
 		if(pCurColumn && pCurColumn->getPrev())
 		{
-		  fp_Column * pPrevCol = static_cast<fp_Column *>(pCurColumn->getPrev());
+		    fp_Column * pPrevCol = static_cast<fp_Column *>(pCurColumn->getPrev());
 		    fp_Page * pPrevPrevPage = pPrevCol->getPage();
-		    if(pPrevCol->getHeight() == 0)
+		    if((pPrevCol->getHeight() == 0) && !pPrevCol->containsPageBreak())
 		    {
+		        bool bPageBreak = false;
+		        fp_Column * pCol2 = static_cast<fp_Column *>(pPrevCol->getPrev());
+			while(pCol2 && (pCol2->getPage() == pPrevPrevPage) && !pCol2->containsPageBreak())
+			{
+			    pCol2 = static_cast<fp_Column *>(pCol2->getPrev());
+			}
+			bPageBreak = (pCol2 && pCol2->containsPageBreak());
 		      // Abort and start again from this page
-
-			m_pStartPage = pPrevPrevPage;
-			break;
+			if(!bPageBreak)
+			{
+			    m_pStartPage = pPrevPrevPage;
+			    break;
+			}
 		    }
 		    if(pPrevCol->getHeight() >  m_pDocSec->getActualColumnHeight())
 		    {

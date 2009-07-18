@@ -963,10 +963,10 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
     }
     else if (!strcmp(pName, "draw:frame")) {
       m_bPageReferencePending = false;
+      m_bAcceptingText = true;
       if(m_bPendingTextbox)
       {
 	  m_bPendingTextbox = false;
-	  m_bAcceptingText = true;
 	  _flush();
 	  PT_DocPosition pos2 = 0;
 	  m_pAbiDocument->getBounds(true,pos2);
@@ -1120,11 +1120,20 @@ void ODi_TextContent_ListenerState::_insureInSection(
                                          const UT_UTF8String* pMasterPageName) {
     
     if (m_inAbiSection) {
+      //
+      // FIXME Sevior says I do not know what this ifdeffed code was 
+      // trying to do
+      // If we're in a section we should not change the section properties.
+      // I ifdeffed the code out in case some other bug shows we need it.
+      //
+#if 0
         if (pMasterPageName == NULL ||
             (pMasterPageName != NULL && pMasterPageName->empty()) ) {
             // There's nothing to be done.
-            return;
+                return;
         }
+#endif
+	return;
     }
     
     
@@ -1314,7 +1323,7 @@ void ODi_TextContent_ListenerState::_openAbiSection(
     //
     // That's the only reason for the existence of *pending* paragraph
     // (column or page) breaks.
-    _flushPendingParagraphBreak();
+     _flushPendingParagraphBreak();
 
     m_inAbiSection = true;
     m_bAcceptingText = false;

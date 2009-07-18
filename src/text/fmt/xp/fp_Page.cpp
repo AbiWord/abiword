@@ -843,6 +843,25 @@ UT_sint32 fp_Page::getAvailableHeight(void) const
 }
 
 /*!
+ * Returns true if there is a column with a page break in it
+ */
+bool fp_Page::containsPageBreak(void) const
+{
+	fp_Column * pCol = NULL;
+	UT_sint32 i = 0;
+	for(i=0; i<countColumnLeaders();i++)
+	{
+		pCol = getNthColumnLeader(0);
+		while(pCol)
+		{
+			if(pCol->containsPageBreak())
+				return true;
+			pCol = pCol->getFollower();
+		}
+	}
+	return false;
+}
+/*!
  * This method returns the height available to the requested column. It 
  * subtracts the height given to previous columns on the page as well as the 
  * height given to footnotes and annotations.

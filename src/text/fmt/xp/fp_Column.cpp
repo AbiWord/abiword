@@ -1781,7 +1781,19 @@ void fp_Column::collapseEndnotes(void)
 }
 
 
-
+/*!
+ * Returns true of the column contains a page break.
+ */
+bool fp_Column::containsPageBreak(void) const
+{
+    fp_Container * pCon = getLastContainer();
+    if(pCon && (pCon->getContainerType() ==FP_CONTAINER_LINE))
+    {
+	fp_Line * pLine = static_cast<fp_Line *>(pCon);
+	return pLine->containsForcedPageBreak();
+    }
+    return false;
+}
 
 void fp_Column::setPage(fp_Page * pPage)
 {
