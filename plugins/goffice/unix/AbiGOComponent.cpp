@@ -730,7 +730,7 @@ void GOComponentView::loadBuffer(UT_ByteBuf const *sGOComponentData, const char 
 {
 	if (!component) {
 		mime_type = _mime_type;
-		component = go_component_new_by_mime_type (mime_type);
+		component = go_component_new_by_mime_type (_mime_type);
 	}
 	UT_return_if_fail (component);
 	g_signal_connect (G_OBJECT (component), "changed",
@@ -858,7 +858,7 @@ void GOComponentView::update ()
 				}
 			}
 		}
-		pView->cmdUpdateEmbed(m_pRun, &myByteBuf,mime_type,Props.c_str ());
+		pView->cmdUpdateEmbed(m_pRun, &myByteBuf,mime_type.c_str(),Props.c_str());
 		} else
 			pView->cmdDeleteEmbed(m_pRun);
 		if (clearfunc)

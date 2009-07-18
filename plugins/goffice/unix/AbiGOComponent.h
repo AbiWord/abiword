@@ -107,7 +107,7 @@ public:
 private:
 	GR_GOComponentManager  * m_pGOMan;
 	GOComponent *component;
-	const char *mime_type;
+	std::string mime_type;
 	GR_Image *m_Image;
 	UT_sint32 width, ascent, descent;
 	UT_sint32 pix_width, pix_height;
