@@ -22,7 +22,9 @@
 
 #include "xap_Strings.h"
 
+#define dcl(id,s) static const char * AP_STRING_ID_##id = s;
 #include "ap_String_Id.h"
+#undef dcl
 
 class ABI_EXPORT AP_StringSet : public XAP_StringSet
 {

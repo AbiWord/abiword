@@ -187,7 +187,7 @@
 
 /* Zoom dialog */
 #define XAP_STRING_ID_DLG_Zoom_ZoomTitle  _("Zoom")
-#define XAP_STRING_ID_DLG_Zoom_RadioFrameCaption  _("Zoom to")
+#define XAP_STRING_ID_DLG_Zoom_RadioFrameCaption _("Zoom to")
 #define XAP_STRING_ID_DLG_Zoom_200  _("&200%")
 #define XAP_STRING_ID_DLG_Zoom_100  _("&100%")
 #define XAP_STRING_ID_DLG_Zoom_75  _("&75%")

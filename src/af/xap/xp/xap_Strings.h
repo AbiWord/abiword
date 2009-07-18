@@ -46,8 +46,9 @@ typedef enum _XAP_String_Id_Enum
 	XAP_STRING_ID__LAST__					/* must be last */
 } XAP_String_Id_Enum;
 
-
+#define dcl(id,s) static const char * XAP_STRING_ID_##id = s;
 #include "xap_String_Id.h"
+#undef dcl
 
 //////////////////////////////////////////////////////////////////
 // Both XAP_ and AP_ enum sets fold into XAP_String_Id
