@@ -991,6 +991,8 @@ void fp_Run::clearPrint(void)
 
 void fp_Run::setBlockOffset(UT_uint32 offset)
 {
+	UT_sint32 iOff = static_cast<UT_sint32>(offset);
+	UT_ASSERT(iOff >=0);
 	m_iOffsetFirst = offset;
 }
 

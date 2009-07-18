@@ -582,6 +582,20 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate,
 	{
 		bOK = _charMotion(true,1);
 	}
+	//
+	// We could have gone too far!
+	//
+	if(getPoint() > posEnd)
+	{
+		setPoint(posEnd);
+		PT_DocPosition posBeg = 0;
+		getEditableBounds(false, posBeg);
+		while(bOK && !isPointLegal() && getPoint()>=posBeg)
+		{
+			bOK = _charMotion(false,1);
+		}
+	}
+
 	m_pG->allCarets()->enable();
 }
 

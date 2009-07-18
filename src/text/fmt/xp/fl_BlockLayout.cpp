@@ -1364,8 +1364,34 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 #endif
 		while(pRun)
 		{
-			UT_uint32 iNew = pRun->getBlockOffset() + iSuggestDiff;
-			//useless UT_ASSERT(iNew >= 0);
+			UT_sint32 iNew = static_cast<UT_sint32>(pRun->getBlockOffset()) + iSuggestDiff;
+			//
+			// Since suggestDiff can be < 0 we need to check this
+			//
+			// Check if this iNew is sane.
+			pPrev = pRun->getPrevRun();
+			if(pPrev && (static_cast<UT_sint32>(pPrev->getBlockOffset() + pPrev->getLength()) > iNew))
+			{
+				// Something went wrong. Try to recover
+				UT_DEBUGMSG(("Invalid updated offset %d Try to recover \n",iNew));
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				if(pRun->getType() == FPRUN_FMTMARK)
+				{
+					iNew= static_cast<UT_sint32>(pPrev->getBlockOffset() + pPrev->getLength());
+				}
+				else
+				{
+					iNew= static_cast<UT_sint32>(pPrev->getBlockOffset() + pPrev->getLength()) + 1;
+				} 
+			}
+			else if( (pPrev == NULL) && (iNew < 0))
+			{
+				// Something went wrong. Try to recover
+				UT_DEBUGMSG(("Invalid updated offset %d Try to recover \n",iNew));
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				iNew = 0;
+			}
+			UT_ASSERT(iNew >= 0);
 			xxx_UT_DEBUGMSG(("Run %x Old offset %d New Offset %d \n",pRun,pRun->getBlockOffset(),iNew));
 			pRun->setBlockOffset(static_cast<UT_uint32>(iNew));
 			pRun = pRun->getNextRun();
@@ -5900,7 +5926,7 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 #endif
 			}
 		}
-		else if (iRunBlockOffset == blockOffset)
+		else if (iRunBlockOffset == blockOffset && !bInserted)
 		{
 			UT_ASSERT(!bInserted);
 
@@ -5926,7 +5952,7 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 // Here if the run run starts before the target offset and finishes after it.
 // We need to split this run.
 //
-		else
+		else if(!bInserted)
 		{
 			UT_ASSERT(!bInserted);
 
@@ -6383,8 +6409,11 @@ fl_BlockLayout::_assertRunListIntegrityImpl(void) const
 	UT_ASSERT(m_pFirstRun->getBlockOffset() == 0);
 	// Verify that offset of this block is correct.
 #endif
+	UT_sint32 icnt = -1;
 	while (pRun)
 	{
+		icnt++;
+		xxx_UT_DEBUGMSG(("run %d %p Type %d offset %d length %d \n",icnt,pRun,pRun->getType(),pRun->getBlockOffset(), pRun->getLength()));
 #if 0
 //
 // FIXME: Invent a clever way to account for embedded hidden stuff
@@ -9344,12 +9373,6 @@ fl_BlockLayout::_deleteFmtMark(PT_BlockOffset blockOffset)
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 				_insertEndOfParagraphRun();
 			}
-
-			// I don't believe that we need to keep looping at this point.
-			// We should not ever have two adjacent FmtMarks....
-			UT_ASSERT(!pNextRun || pNextRun->getType() != FPRUN_FMTMARK);
-
-			break;
 		}
 
 		pRun = pNextRun;

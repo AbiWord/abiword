@@ -1837,6 +1837,9 @@ void fl_DocSectionLayout::updateLayout(bool bDoFull)
 	bool bShowHidden = pView && pView->getShowPara();
 	FPVisibility eHidden;
 	bool bHidden;
+	//
+	// FIXME!! Do extensive tests to see if we can remove this line!
+	//
 	bDoFull = true;
 	xxx_UT_DEBUGMSG(("Doing DocSection Update layout \n"));
 	if (!bDoFull || (m_vecFormatLayout.getItemCount() > 0))
@@ -1865,7 +1868,11 @@ void fl_DocSectionLayout::updateLayout(bool bDoFull)
 				       pBL->format();
 				       j--;
 				       if(j < m_vecFormatLayout.getItemCount())
-					 m_vecFormatLayout.deleteNthItem(j);
+				       {
+					    UT_sint32 k = m_vecFormatLayout.findItem(pBL);
+					    if(k == j)
+					         m_vecFormatLayout.deleteNthItem(j);
+				       }
 				  }
 			     }
 			     if (pBL->getContainerType() != FL_CONTAINER_BLOCK && !getDocument()->isDontImmediateLayout())

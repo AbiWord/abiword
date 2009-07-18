@@ -174,6 +174,10 @@ void fl_TableLayout::createTableContainer(void)
 		}
 	}
 	pTableContainer->setWidth(iWidth);
+	//
+	// Tell fl_DocSectionLayout this needs to be formated.
+	//
+	setNeedsReformat(this,0);
 //
 // The container of the tbale is set in getNewContainer()
 //

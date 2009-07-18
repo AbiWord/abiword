@@ -3333,8 +3333,8 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const gch
 			e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_EndCell));
 		}
 	}
-	e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_EndTable));
 	m_pDoc->setDontImmediatelyLayout(false);
+	e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_EndTable));
 
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
@@ -3346,8 +3346,8 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const gch
 
 	m_pDoc->endUserAtomicGlob();
 	setPoint(pointTable);
+	_makePointLegal();
 	_fixInsertionPointCoords();
-	m_pG->allCarets()->setBlink(false);
 	focusChange(AV_FOCUS_HERE);
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
