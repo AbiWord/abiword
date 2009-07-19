@@ -3071,56 +3071,17 @@ void fp_TableContainer::setLastBrokenTable(fp_TableContainer * pBroke)
  */
 UT_sint32 fp_TableContainer::getYOfRow(UT_sint32 row)
 {
-	UT_sint32 i =0;
-	UT_sint32 numCols = getNumCols();
-	if(row > getNumRows())
+	if (row < 0 or row > getNumRows())
 	{
 		return 0;
 	}
-	fp_CellContainer * pCell = getCellAtRowColumn(0,0);
-
-	UT_sint32 iYRow = 0;
-	if(pCell != NULL)
+	else if (row == getNumRows()) 
 	{
-		iYRow = pCell->getY();
+		UT_sint32 lastRow = getNumRows() - 1;
+		return getNthRow(lastRow)->y + getNthRow(lastRow)->spacing 
+			+ getNthRow(lastRow)->allocation;
 	}
-	for(i=0; i< numCols; i++)
-	{
-		pCell = getCellAtRowColumn(0,i);
-		if(pCell)
-		{
-			UT_sint32 Y = pCell->getY();
-			if(Y < iYRow)
-			{
-				iYRow = Y;
-			}
-		}
-	}
-	if(row == 0)
-	{
-		return iYRow;
-	}
-	xxx_UT_DEBUGMSG(("Looking for row %d numrows %d \n",row,getNumRows()));
-	for(i=0; i < row; i++)
-	{
-		fp_TableRowColumn *pRow = getNthRow(i);
-		if(pRow)
-		{
-			iYRow += pRow->allocation;
-			iYRow += pRow->spacing;
-		}
-		xxx_UT_DEBUGMSG((" row %d Height here %d \n",i,iYRow));
-	}
-	if((row < getNumRows()) && (i > 0))
-	{
-		fp_TableRowColumn *pRow = getNthRow(i-1);
-		if(pRow)
-		{
-			iYRow -= pRow->spacing;
-			iYRow += pRow->spacing/2;
-		}
-	}
-	return iYRow;
+	return getNthRow(row)->y;
 }
 
 /*!
