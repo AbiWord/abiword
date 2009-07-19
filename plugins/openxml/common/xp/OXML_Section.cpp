@@ -536,3 +536,38 @@ void OXML_Section::setTarget(int target)
 {
 	TARGET = target;
 }
+
+UT_Error OXML_Section::setPageMargins(const std::string & top, const std::string & left, const std::string & right, const std::string & bottom)
+{
+	UT_Error ret = UT_OK;
+
+	if(top.compare(""))
+	{
+		ret = setProperty("page-margin-top", top);
+		if(ret != UT_OK)
+			return ret;
+	}
+
+	if(left.compare(""))
+	{
+		ret = setProperty("page-margin-left", left);
+		if(ret != UT_OK)
+			return ret;
+	}
+
+	if(right.compare(""))
+	{
+		ret = setProperty("page-margin-right", right);
+		if(ret != UT_OK)
+			return ret;
+	}
+
+	if(bottom.compare(""))
+	{
+		ret = setProperty("page-margin-bottom", bottom);	
+		if(ret != UT_OK)
+			return ret;
+	}
+
+	return ret;
+}

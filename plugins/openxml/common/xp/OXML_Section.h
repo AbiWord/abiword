@@ -104,6 +104,8 @@ public:
 	bool hasFirstPageHdrFtr();
 	bool hasEvenPageHdrFtr();
 
+	UT_Error setPageMargins(const std::string & top, const std::string & left, const std::string & right, const std::string & bottom);
+
 private:
 	std::string m_id;
 	OXML_SectionBreakType m_breakType;

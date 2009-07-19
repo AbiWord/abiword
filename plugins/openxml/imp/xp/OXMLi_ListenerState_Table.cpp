@@ -105,6 +105,17 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 		}
 		rqst->handled = true;
 	}
+	else if(nameMatches(rqst->pName, NS_W_KEY, "hMerge"))
+	{
+		OXML_Element_Cell* cell = m_cellStack.top();				
+		cell->setHorizontalMergeStart(false); //default to continue if the attribute is missing
+		const gchar* val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
+		if(val && !strcmp(val, "restart")) 
+		{
+			cell->setHorizontalMergeStart(true);
+		}
+		rqst->handled = true;
+	}
 
 	//Table Properties
 	else if(nameMatches(rqst->pName, NS_W_KEY, "gridCol") && 
@@ -275,7 +286,19 @@ void OXMLi_ListenerState_Table::endElement (OXMLi_EndElementRequest * rqst)
 				UT_DEBUGMSG(("FRT:OpenXML importer, invalid <vMerge val=continue> attribute.\n"));
 			}
 		}
-		else
+		if(!pCell->startsHorizontalMerge())
+		{
+			OXML_Element_Table* table = m_tableStack.top();
+			if(!table->incrementRightHorizontalMergeStart(pCell->getLeft(), pCell->getTop()))
+			{
+				//this means there is no cell before this starting a horizontal merge
+				//revert back to horizontal merge start instead of continue
+				pCell->setHorizontalMergeStart(true);
+				UT_DEBUGMSG(("FRT:OpenXML importer, invalid <hMerge val=continue> attribute.\n"));
+			}
+		}
+		
+		if(pCell->startsHorizontalMerge() && pCell->startsVerticalMerge())
 		{
 			OXML_Element_Row* pRow = m_rowStack.top();
 			row->appendElement(cell);
@@ -285,6 +308,7 @@ void OXMLi_ListenerState_Table::endElement (OXMLi_EndElementRequest * rqst)
 	}
 	else if(nameMatches(rqst->pName, NS_W_KEY, "gridSpan") ||
 			nameMatches(rqst->pName, NS_W_KEY, "vMerge") ||
+			nameMatches(rqst->pName, NS_W_KEY, "hMerge") ||
 			nameMatches(rqst->pName, NS_W_KEY, "gridCol") ||
 			nameMatches(rqst->pName, NS_W_KEY, "trHeight") ||
 			nameMatches(rqst->pName, NS_W_KEY, "left") ||

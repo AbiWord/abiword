@@ -70,7 +70,11 @@ OXML_Document::OXML_Document() :
 	m_fontManager(),
 	m_pageWidth(""),
 	m_pageHeight(""),
-	m_pageOrientation("")
+	m_pageOrientation(""),
+	m_pageMarginTop(""),
+	m_pageMarginLeft(""),
+	m_pageMarginRight(""),
+	m_pageMarginBottom("")
 {
 	clearStyles();
 	clearHeaders();
@@ -451,6 +455,9 @@ UT_Error OXML_Document::addToPT(PD_Document * pDocument)
 	//Adding sections to PT
 	OXML_SectionVector::iterator it2;
 	for (it2 = m_sections.begin(); it2 != m_sections.end(); it2++) {
+		//set page margins here 
+		ret = (*it2)->setPageMargins(m_pageMarginTop, m_pageMarginLeft, m_pageMarginRight, m_pageMarginBottom);
+		if (ret != UT_OK) return ret;		
 		ret = (*it2)->addToPT(pDocument);
 		if (ret != UT_OK) return ret;
 	}
@@ -575,4 +582,12 @@ void OXML_Document::setPageHeight(const std::string & height)
 void OXML_Document::setPageOrientation(const std::string & orientation)
 {
 	m_pageOrientation = orientation;
+}
+
+void OXML_Document::setPageMargins(const std::string & top, const std::string & left, const std::string & right, const std::string & bottom)
+{
+	m_pageMarginTop = top;
+	m_pageMarginLeft = left;
+	m_pageMarginRight = right;
+	m_pageMarginBottom = bottom;
 }

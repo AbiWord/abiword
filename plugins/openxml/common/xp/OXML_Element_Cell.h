@@ -69,15 +69,21 @@ public:
 	void setBottom(UT_sint32 bottom);
 
 	void setVerticalMergeStart(bool start);
+	void setHorizontalMergeStart(bool start);
 	bool startsVerticalMerge() const
         {
             return m_startVerticalMerge;
+        }
+	bool startsHorizontalMerge() const
+        {
+            return m_startHorizontalMerge;
         }
 
 private:
 	virtual UT_Error serializeProperties(IE_Exp_OpenXML* exporter);
 	UT_sint32 m_iLeft, m_iRight, m_iTop, m_iBottom;
 	bool m_startVerticalMerge;
+	bool m_startHorizontalMerge;
 	OXML_Element_Table* table; 
 	OXML_Element_Row* row;
 };

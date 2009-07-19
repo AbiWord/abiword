@@ -348,3 +348,16 @@ bool OXML_Element_Table::incrementBottomVerticalMergeStart(int left, int top)
 	}
 	return false;	
 }
+
+bool OXML_Element_Table::incrementRightHorizontalMergeStart(int left, int top)
+{
+	std::vector<OXML_Element_Row*>::reverse_iterator rit;
+	for( rit=m_rows.rbegin(); rit < m_rows.rend(); ++rit )
+	{
+		OXML_Element_Row* pRow = *rit;
+		if(pRow->incrementRightHorizontalMergeStart(left, top))
+			return true;
+		top--; //decrement top if we can't find the starting cell in this row
+	}
+	return false;	
+}

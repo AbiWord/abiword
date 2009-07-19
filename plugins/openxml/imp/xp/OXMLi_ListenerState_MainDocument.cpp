@@ -79,6 +79,40 @@ void OXMLi_ListenerState_MainDocument::startElement (OXMLi_StartElementRequest *
 		}
 		rqst->handled = true;
 	}
+	else if(nameMatches(rqst->pName, NS_W_KEY, "pgMar"))
+	{
+		const gchar* t = attrMatches(NS_W_KEY, "top", rqst->ppAtts);
+		const gchar* l = attrMatches(NS_W_KEY, "left", rqst->ppAtts);
+		const gchar* r = attrMatches(NS_W_KEY, "right", rqst->ppAtts);
+		const gchar* b = attrMatches(NS_W_KEY, "bottom", rqst->ppAtts);
+
+		OXML_Document* doc = OXML_Document::getInstance();
+
+		if(!doc || !t || !l || !r || !b)
+		{
+			rqst->handled = true;
+			return;
+		}
+
+		std::string top("");
+		top += _TwipsToInches(t);
+		top += "in";
+
+		std::string left("");
+		left += _TwipsToInches(l);
+		left += "in";
+
+		std::string right("");
+		right += _TwipsToInches(r);
+		right += "in";
+
+		std::string bottom("");
+		bottom += _TwipsToInches(b);
+		bottom += "in";
+		
+		doc->setPageMargins(top, left, right, bottom);
+		rqst->handled = true;
+	}
 }
 
 void OXMLi_ListenerState_MainDocument::endElement (OXMLi_EndElementRequest * rqst)
@@ -103,7 +137,7 @@ void OXMLi_ListenerState_MainDocument::endElement (OXMLi_EndElementRequest * rqs
 		}
 		rqst->handled = true;
 	}
-	else if(nameMatches(rqst->pName, NS_W_KEY, "pgSz"))
+	else if(nameMatches(rqst->pName, NS_W_KEY, "pgSz") || nameMatches(rqst->pName, NS_W_KEY, "pgMar"))
 	{
 		rqst->handled = true;
 	}

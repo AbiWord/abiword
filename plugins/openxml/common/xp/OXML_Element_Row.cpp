@@ -188,3 +188,18 @@ bool OXML_Element_Row::incrementBottomVerticalMergeStart(int left, int top)
 	}
 	return false;	
 }
+
+bool OXML_Element_Row::incrementRightHorizontalMergeStart(int left, int top)
+{
+	std::vector<OXML_Element_Cell*>::reverse_iterator it;
+	for( it = m_cells.rbegin(); it < m_cells.rend(); ++it )
+	{
+		OXML_Element_Cell* pCell = *it;
+		if((pCell->getTop() == top) && (pCell->getLeft() < left) && pCell->startsHorizontalMerge())
+		{
+			pCell->setRight(pCell->getRight()+1);
+			return true;
+		}
+	}
+	return false;	
+}

@@ -65,6 +65,11 @@ public:
 	//return true if successful
 	bool incrementBottomVerticalMergeStart(int left, int top);
 
+	//this method increments the horizontal merge start cell's right by one. 
+	//It traverses the cells in the row and finds the horizontal merge starting cell
+	//and increments its right value by one. Should be called for the hMerge=continue cells.
+	//return true if successful
+	bool incrementRightHorizontalMergeStart(int left, int top);
 
 protected:
 	UT_Error serializeChildren(IE_Exp_OpenXML* exporter);

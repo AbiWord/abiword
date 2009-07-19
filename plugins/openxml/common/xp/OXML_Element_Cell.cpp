@@ -39,6 +39,7 @@ OXML_Element_Cell::OXML_Element_Cell(const std::string & id, OXML_Element_Table*
 	m_iTop(top), 
 	m_iBottom(bottom),
 	m_startVerticalMerge(true),
+	m_startHorizontalMerge(true),
 	table(tbl),
 	row(rw)
 {
@@ -241,6 +242,9 @@ UT_Error OXML_Element_Cell::addToPT(PD_Document * pDocument)
 {
 	UT_Error ret = UT_OK;
 
+	if(!startsHorizontalMerge())
+		return addChildrenToPT(pDocument);
+
 	//add props:bot-attach, left-attach, right-attach, top-attach
 	std::string sTop = boost::lexical_cast<std::string>(m_iTop);
 	std::string sBottom = boost::lexical_cast<std::string>(m_iBottom);
@@ -303,4 +307,10 @@ void OXML_Element_Cell::setBottom(UT_sint32 bottom)
 void OXML_Element_Cell::setVerticalMergeStart(bool start)
 {
 	m_startVerticalMerge = start;
+}
+
+//start=false for horizontal merge = continous cells
+void OXML_Element_Cell::setHorizontalMergeStart(bool start)
+{
+	m_startHorizontalMerge = start;
 }

@@ -64,6 +64,12 @@ public:
 	//return true if successful
 	bool incrementBottomVerticalMergeStart(int left, int top);
 
+	//this method increments the horizontal merge start cell's right by one. 
+	//It traverses up the cells in the table and finds the horizontal merge starting cell
+	//and increments its right value by one. Should be called for the hMerge=continue cells.
+	//return true if successful
+	bool incrementRightHorizontalMergeStart(int left, int top);
+
 private:
 	virtual UT_Error serializeProperties(IE_Exp_OpenXML* exporter);
 	std::vector<std::string> columnWidth;
