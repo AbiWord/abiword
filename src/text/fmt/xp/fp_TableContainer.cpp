@@ -4836,13 +4836,17 @@ void fp_TableContainer::_size_allocate_pass_3(void)
 	getNthCol(0)->x = m_MyAllocation.x + m_iBorderWidth;
 	for ( UT_sint32 col = 1; col < getNumCols(); col++ ) 
 	{
-		getNthCol(col)->x = getNthCol(col-1)->x + getNthCol(col-1)->spacing + getNthCol(col-1)->allocation;
+		getNthCol(col)->x = getNthCol(col-1)->x + getNthCol(col-1)->spacing
+			+ getNthCol(col-1)->allocation;
 	}
 	
 	//Cache the y-position of rows
 	getNthRow(0)->y = m_MyAllocation.y + m_iBorderWidth;
 	for ( UT_sint32 row = 1; row < getNumRows(); row++ ) 
-		getNthRow(row)->y = getNthRow(row-1)->y + getNthRow(row-1)->spacing + getNthRow(row)->allocation;
+	{
+		getNthRow(row)->y = getNthRow(row-1)->y + getNthRow(row-1)->spacing 
+			+ getNthRow(row-1)->allocation;
+	}
 	
 	fp_CellContainer* child = static_cast<fp_CellContainer *>(getNthCon(0));
 	const UT_GenericVector<fl_ColProps*> * pVecColProps = pTL->getVecColProps();
