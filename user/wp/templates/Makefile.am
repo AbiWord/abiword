@@ -81,5 +81,5 @@ if ENABLE_TEMPLATES
 templates_DATA += $(templates_extra)
 endif
 
-EXTRA_DIST = $(templates_normal) $(emplates_extra)
+EXTRA_DIST = $(templates_normal) $(templates_extra)
 
