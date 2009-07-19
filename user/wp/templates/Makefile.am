@@ -1,6 +1,5 @@
 
-templatesdir = $(ABIWORD_DATADIR)/templates
-templates_DATA = \
+templates_normal = \
 	normal.awt \
 	normal.awt-am_ET \
 	normal.awt-ar \
@@ -63,8 +62,7 @@ templates_DATA = \
 	normal.awt-zh_CN \
 	normal.awt-zh_TW
 
-if ENABLE_TEMPLATES
-templates_DATA += \
+templates_extra = \
 	A4.awt \
 	Business-Letter.awt \
 	Business-Report.awt \
@@ -76,7 +74,12 @@ templates_DATA += \
 	Resume.awt \
 	Two-Columns.awt \
 	US-Letter.awt
+
+templatesdir = $(ABIWORD_DATADIR)/templates
+templates_DATA = $(templates_normal)
+if ENABLE_TEMPLATES
+templates_DATA += $(templates_extra)
 endif
 
-EXTRA_DIST = $(templates_DATA)
+EXTRA_DIST = $(templates_normal) $(emplates_extra)
 
