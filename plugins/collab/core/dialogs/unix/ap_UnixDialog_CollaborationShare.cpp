@@ -34,7 +34,10 @@ enum
 	BUDDY_COLUMN
 };
 
-// don't ask :X
+// We can't store shared pointers in the GtkListStore, so we use a hack to store
+// it anyway: store the shared pointer in a C struct called BuddyPtrWrapper.
+// This obviously defies the whole reason of shared pointers, but we have
+// no choice with the GTK+ C API ;/
 struct BuddyPtrWrapper
 {
 public:
@@ -104,6 +107,8 @@ void AP_UnixDialog_CollaborationShare::runModal(XAP_Frame * pFrame)
 			break;
 	}
 
+	_freeBuddyList();
+	
 	abiDestroyWidget(m_wWindowMain);
 }
 
@@ -196,6 +201,8 @@ void AP_UnixDialog_CollaborationShare::_populateWindowData()
 
 void AP_UnixDialog_CollaborationShare::_populateBuddyModel(bool refresh)
 {
+	UT_DEBUGMSG(("AP_UnixDialog_CollaborationShare::_populateBuddyModel()\n"));
+	
 	UT_return_if_fail(m_pBuddyModel);
 	
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
@@ -222,7 +229,6 @@ void AP_UnixDialog_CollaborationShare::_populateBuddyModel(bool refresh)
 		// crap, we can't store shared pointers in the list store; use a 
 		// hack to do it (which kinda defies the whole shared pointer thingy, 
 		// but alas...)
-		// FIXME: memory leak
 		BuddyPtrWrapper* pWrapper = new BuddyPtrWrapper(pBuddy);
 		gtk_list_store_append (m_pBuddyModel, &iter);
 		gtk_list_store_set (m_pBuddyModel, &iter, 
@@ -260,9 +266,10 @@ void AP_UnixDialog_CollaborationShare::eventOk()
 	UT_DEBUGMSG(("AP_UnixDialog_CollaborationShare::eventOk()\n"));
 	AccountHandler*	pHandler = _getActiveAccountHandler();
 	UT_return_if_fail(pHandler);
-	
-	std::vector<BuddyPtr> acl; // TODO: fill this
-	_share(pHandler, acl);
+
+	std::vector<BuddyPtr> vACL;
+	_getSelectedBuddies(vACL);
+	_share(pHandler, vACL);
 }
 
 void AP_UnixDialog_CollaborationShare::eventAccountChanged()
@@ -310,5 +317,51 @@ void AP_UnixDialog_CollaborationShare::_setAccountHint(const UT_UTF8String& sHin
 
 void AP_UnixDialog_CollaborationShare::_refreshWindow()
 {
+	UT_DEBUGMSG(("AP_UnixDialog_CollaborationShare::_refreshWindow()\n"));
 	_populateBuddyModel(false);
+}
+
+void AP_UnixDialog_CollaborationShare::_getSelectedBuddies(std::vector<BuddyPtr>& vACL)
+{
+	UT_DEBUGMSG(("AP_UnixDialog_CollaborationShare::_getSelectedBuddies()\n"));
+	vACL.clear();
+
+	GtkTreeIter iter;
+	if (!gtk_tree_model_get_iter_first(GTK_TREE_MODEL (m_pBuddyModel), &iter))
+		return;
+
+	do
+	{
+		gboolean share;
+		gpointer buddy_wrapper = NULL;
+		gtk_tree_model_get (GTK_TREE_MODEL (m_pBuddyModel), &iter, SHARE_COLUMN, &share, -1);
+		gtk_tree_model_get (GTK_TREE_MODEL (m_pBuddyModel), &iter, BUDDY_COLUMN, &buddy_wrapper, -1);
+		if (share && buddy_wrapper)
+		{
+			BuddyPtr pBuddy = reinterpret_cast<BuddyPtrWrapper*>(buddy_wrapper)->getBuddy();
+			vACL.push_back(pBuddy);
+		}
+	} while (gtk_tree_model_iter_next(GTK_TREE_MODEL (m_pBuddyModel), &iter));
+}
+
+void AP_UnixDialog_CollaborationShare::_freeBuddyList()
+{
+	UT_DEBUGMSG(("AP_UnixDialog_CollaborationShare::_freeBuddyList()\n"));
+
+	GtkTreeIter iter;
+	if (!gtk_tree_model_get_iter_first(GTK_TREE_MODEL (m_pBuddyModel), &iter))
+		return;
+
+	do
+	{
+		gpointer buddy_wrapper = NULL;
+		gtk_tree_model_get (GTK_TREE_MODEL (m_pBuddyModel), &iter, BUDDY_COLUMN, &buddy_wrapper, -1);
+		if (buddy_wrapper)
+		{
+			BuddyPtrWrapper* pWrap = reinterpret_cast<BuddyPtrWrapper*>(buddy_wrapper);
+			DELETEP(pWrap);
+		}
+	} while (gtk_tree_model_iter_next(GTK_TREE_MODEL (m_pBuddyModel), &iter));
+
+	gtk_list_store_clear(m_pBuddyModel);
 }

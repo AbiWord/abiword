@@ -43,7 +43,9 @@ private:
 	AccountHandler*				_getActiveAccountHandler();
 	void						_setAccountHint(const UT_UTF8String& sHint);
 	void						_refreshWindow();
-	
+	void						_getSelectedBuddies(std::vector<BuddyPtr>& vACL);
+	void						_freeBuddyList();
+		
 	GtkWidget*					m_wWindowMain;
 	GtkWidget*					m_wAccount;
 	GtkWidget*					m_wAccountHint;
