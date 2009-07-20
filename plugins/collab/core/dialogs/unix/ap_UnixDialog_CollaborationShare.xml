@@ -116,6 +116,9 @@
                             <property name="title">Share</property>
                             <child>
                               <object class="GtkCellRendererToggle" id="crToggle"/>
+                              <attributes>
+                                <attribute name="active">0</attribute>
+                              </attributes>
                             </child>
                           </object>
                         </child>

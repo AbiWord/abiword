@@ -34,7 +34,8 @@ public:
 
 	void						eventOk();
 	void						eventAccountChanged();
-	
+	void						eventToggle(gchar* path_str);
+		
 private:
 	GtkWidget*	 				_constructWindow(void);
 	void						_populateWindowData(void);
@@ -49,10 +50,11 @@ private:
 
 	GtkWidget*					m_wAccountHintSpacer;
 	GtkWidget*					m_wAccountHintHbox;
-	
+
 	GtkWidget*					m_wBuddyTree;
 	GtkTreeModel*				m_pAccountModel;
 	GtkListStore*				m_pBuddyModel;
+	GObject*					m_crToggle;
 	GtkWidget*					m_wOk;
 };
 

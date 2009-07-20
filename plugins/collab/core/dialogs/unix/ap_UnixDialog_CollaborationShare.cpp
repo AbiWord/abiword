@@ -29,7 +29,7 @@
 
 enum
 {
-	SHARED_COLUMN = 0,
+	SHARE_COLUMN = 0,
 	DESC_COLUMN,
 	BUDDY_COLUMN
 };
@@ -54,6 +54,11 @@ static void s_account_changed(GtkWidget * /*wid*/, AP_UnixDialog_CollaborationSh
 	dlg->eventAccountChanged();
 }
 
+static void s_share_toggled (GtkCellRendererToggle * /*cell*/, gchar * path_str, AP_UnixDialog_CollaborationShare * dlg)
+{
+	dlg->eventToggle(path_str);
+}
+
 XAP_Dialog * AP_UnixDialog_CollaborationShare::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id)
 {
 	return static_cast<XAP_Dialog *>(new AP_UnixDialog_CollaborationShare(pFactory, id));
@@ -65,13 +70,12 @@ AP_UnixDialog_CollaborationShare::AP_UnixDialog_CollaborationShare(XAP_DialogFac
 	m_wWindowMain(NULL),
 	m_wAccount(NULL),
 	m_wAccountHint(NULL),
-
 	m_wAccountHintSpacer(NULL),
 	m_wAccountHintHbox(NULL),
-
 	m_wBuddyTree(NULL),
 	m_pAccountModel(NULL),
 	m_pBuddyModel(NULL),
+	m_crToggle(NULL),
 	m_wOk(NULL)
 {
 }
@@ -120,10 +124,9 @@ GtkWidget * AP_UnixDialog_CollaborationShare::_constructWindow(void)
 	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_CollaborationShare"));
 	m_wAccount = GTK_WIDGET(gtk_builder_get_object(builder, "cbAccount"));
 	m_wAccountHint = GTK_WIDGET(gtk_builder_get_object(builder, "lbAccountHint"));
-
 	m_wAccountHintSpacer = GTK_WIDGET(gtk_builder_get_object(builder, "spAccountHint"));
 	m_wAccountHintHbox = GTK_WIDGET(gtk_builder_get_object(builder, "hbAccountHint"));
-	
+	m_crToggle = G_OBJECT(gtk_builder_get_object(builder, "crToggle"));
 	m_wBuddyTree = GTK_WIDGET(gtk_builder_get_object(builder, "tvBuddies"));
 	m_pBuddyModel = GTK_LIST_STORE(gtk_builder_get_object(builder, "lsBuddies"));
 	m_wOk = GTK_WIDGET(gtk_builder_get_object(builder, "btOK"));
@@ -145,6 +148,11 @@ GtkWidget * AP_UnixDialog_CollaborationShare::_constructWindow(void)
 							G_CALLBACK(s_account_changed),
 							static_cast<gpointer>(this));
 
+	g_signal_connect (m_crToggle, 
+	                  		"toggled", 
+	                  		G_CALLBACK (s_share_toggled), 
+	                  		static_cast<gpointer>(this));
+	
 	g_object_unref(G_OBJECT(builder));
 	return window;
 }
@@ -218,7 +226,7 @@ void AP_UnixDialog_CollaborationShare::_populateBuddyModel(bool refresh)
 		BuddyPtrWrapper* pWrapper = new BuddyPtrWrapper(pBuddy);
 		gtk_list_store_append (m_pBuddyModel, &iter);
 		gtk_list_store_set (m_pBuddyModel, &iter, 
-				SHARED_COLUMN, false, // TODO: implement me 
+				SHARE_COLUMN, false, // TODO: implement me 
 				DESC_COLUMN, pBuddy->getDescription().utf8_str(), 
 				BUDDY_COLUMN, pWrapper, 
 				-1);
@@ -266,6 +274,23 @@ void AP_UnixDialog_CollaborationShare::eventAccountChanged()
 	UT_DEBUGMSG(("Changed account handler to type: %s\n", pHandler->getDisplayType().utf8_str()));
 	_setAccountHint(pHandler->getShareHint());	
 	_populateBuddyModel(true);
+}
+
+void AP_UnixDialog_CollaborationShare::eventToggle(gchar* path_str)
+{
+	UT_DEBUGMSG(("AP_UnixDialog_CollaborationShare::eventToggle()\n"));
+	
+	GtkTreePath *path = gtk_tree_path_new_from_string (path_str);
+	GtkTreeIter iter;
+	gboolean share;
+
+	// toggle the share state
+	gtk_tree_model_get_iter (GTK_TREE_MODEL (m_pBuddyModel), &iter, path);
+	gtk_tree_model_get (GTK_TREE_MODEL (m_pBuddyModel), &iter, SHARE_COLUMN, &share, -1);
+	gtk_list_store_set (m_pBuddyModel, &iter, SHARE_COLUMN, !share, -1);
+
+	// clean up
+	gtk_tree_path_free (path);
 }
 
 void AP_UnixDialog_CollaborationShare::_setAccountHint(const UT_UTF8String& sHint)
