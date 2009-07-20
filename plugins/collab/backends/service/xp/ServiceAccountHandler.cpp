@@ -120,6 +120,21 @@ UT_UTF8String ServiceAccountHandler::getStaticStorageType()
 	return SERVICE_ACCOUNT_HANDLER_TYPE;
 }
 
+UT_UTF8String ServiceAccountHandler::getShareHint()
+{
+	// TODO: we should really have a nice web url for this, but until we do,
+	// we'll poke in the SOAP uri to find it.
+	std::string server = getProperty("uri");
+	string::size_type proto_pos = server.find("://", 0);
+	if (proto_pos != string::npos)
+	{
+		string::size_type slash_pos = server.find("/", proto_pos + 3);
+		if (slash_pos != string::npos)
+			server = server.substr(0, slash_pos + 1);
+	}
+	return UT_UTF8String_sprintf("Your document will automatically be uploaded\nto %s", server.c_str());
+}
+
 void ServiceAccountHandler::storeProperties()
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::storeProperties() - TODO: implement me\n"));
@@ -398,7 +413,8 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<Bu
 	fc("email", email)
 		("password", password)
 		("filename", filename)
-		(soa::Base64Bin("data", document));
+		(soa::Base64Bin("data", document))
+		("start_session", true);
 
 	// execute the call; we do this synchronous for simplicity for now
 	// TODO: handle bad passwords
@@ -420,7 +436,12 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<Bu
 	soa::CollectionPtr rcp = soap_result->as<soa::Collection>("return");
 	UT_return_val_if_fail(rcp, false);
 
-	// TODO: handle the result
+	// connect to the returned realm
+	// TODO: implement me
+
+
+
+	
 	
 	return true;
 }

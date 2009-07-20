@@ -92,7 +92,8 @@ public:
 	PropertyMap&							getProperties()
 		{ return m_properties; }
 
-	// dialog management 
+	// dialog management
+	virtual UT_UTF8String					getShareHint() { return ""; }
 	virtual void							embedDialogWidgets(void* pEmbeddingParent) = 0;
 	virtual void							removeDialogWidgets(void* pEmbeddingParent) = 0;
 	virtual void							storeProperties() = 0;

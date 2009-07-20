@@ -64,6 +64,11 @@ AP_UnixDialog_CollaborationShare::AP_UnixDialog_CollaborationShare(XAP_DialogFac
 	: AP_Dialog_CollaborationShare(pDlgFactory, id),
 	m_wWindowMain(NULL),
 	m_wAccount(NULL),
+	m_wAccountHint(NULL),
+
+	m_wAccountHintSpacer(NULL),
+	m_wAccountHintHbox(NULL),
+
 	m_wBuddyTree(NULL),
 	m_pAccountModel(NULL),
 	m_pBuddyModel(NULL),
@@ -114,6 +119,11 @@ GtkWidget * AP_UnixDialog_CollaborationShare::_constructWindow(void)
 	// might need to be queried or altered later
 	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_CollaborationShare"));
 	m_wAccount = GTK_WIDGET(gtk_builder_get_object(builder, "cbAccount"));
+	m_wAccountHint = GTK_WIDGET(gtk_builder_get_object(builder, "lbAccountHint"));
+
+	m_wAccountHintSpacer = GTK_WIDGET(gtk_builder_get_object(builder, "spAccountHint"));
+	m_wAccountHintHbox = GTK_WIDGET(gtk_builder_get_object(builder, "hbAccountHint"));
+	
 	m_wBuddyTree = GTK_WIDGET(gtk_builder_get_object(builder, "tvBuddies"));
 	m_pBuddyModel = GTK_LIST_STORE(gtk_builder_get_object(builder, "lsBuddies"));
 	m_wOk = GTK_WIDGET(gtk_builder_get_object(builder, "btOK"));
@@ -253,5 +263,21 @@ void AP_UnixDialog_CollaborationShare::eventAccountChanged()
 	UT_return_if_fail(pHandler);
 	
 	UT_DEBUGMSG(("Changed account handler to type: %s\n", pHandler->getDisplayType().utf8_str()));
+	_setAccountHint(pHandler->getShareHint());	
 	_populateBuddyModel();
+}
+
+void AP_UnixDialog_CollaborationShare::_setAccountHint(const UT_UTF8String& sHint)
+{
+	UT_DEBUGMSG(("AP_UnixDialog_CollaborationShare::_setAccountHint() - sHint: %s\n", sHint.utf8_str()));
+	
+	// show/hide the hint widgets
+	GValue val = {0, };
+	g_value_init (&val, G_TYPE_BOOLEAN);
+	g_value_set_boolean (&val, sHint != "");
+	g_object_set_property(G_OBJECT(m_wAccountHintSpacer), "visible", &val);
+	g_object_set_property(G_OBJECT(m_wAccountHintHbox), "visible", &val);
+
+	// set the hint
+	gtk_label_set_text(GTK_LABEL(m_wAccountHint), sHint.utf8_str());
 }

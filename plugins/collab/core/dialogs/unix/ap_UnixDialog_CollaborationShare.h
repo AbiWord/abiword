@@ -40,9 +40,15 @@ private:
 	void						_populateWindowData(void);
 	void						_populateBuddyModel();
 	AccountHandler*				_getActiveAccountHandler();
-
+	void						_setAccountHint(const UT_UTF8String& sHint);
+	
 	GtkWidget*					m_wWindowMain;
 	GtkWidget*					m_wAccount;
+	GtkWidget*					m_wAccountHint;
+
+	GtkWidget*					m_wAccountHintSpacer;
+	GtkWidget*					m_wAccountHintHbox;
+	
 	GtkWidget*					m_wBuddyTree;
 	GtkTreeModel*				m_pAccountModel;
 	GtkListStore*				m_pBuddyModel;
