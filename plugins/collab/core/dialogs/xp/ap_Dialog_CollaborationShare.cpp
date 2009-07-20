@@ -48,16 +48,12 @@ void AP_Dialog_CollaborationShare::signal(const Event& event, BuddyPtr /*pSource
 	UT_DEBUGMSG(("AP_Dialog_CollaborationShare::signal()\n"));
 	switch (event.getClassType())
 	{
-		case PCT_AccountNewEvent:
-		// case Event::AccountDelete:
-			//_refreshAccounts();
-			break;
 		case PCT_AccountAddBuddyEvent:
 		case PCT_AccountDeleteBuddyEvent:
 		case PCT_AccountBuddyOnlineEvent:
 		case PCT_AccountBuddyOfflineEvent:
 			// FIXME: ick ick ick! (I shouldn't need to explain this)
-			//_refreshWindow();
+			_refreshWindow();
 			break;
 		default:
 			// we will ignore the rest

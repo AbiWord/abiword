@@ -229,6 +229,15 @@ ConnectionPtr ServiceAccountHandler::getConnection(PD_Document* pDoc)
 	return ConnectionPtr();
 }
 
+void ServiceAccountHandler::getBuddiesAsync()
+{
+	UT_DEBUGMSG(("ServiceAccountHandler::getBuddiesAsync()\n"));
+
+	// FIXME: this is a hack, and won't show any buddies that have no shared documents;
+	// we need an additional SOAP call to fetch the full buddy list
+	getSessionsAsync();
+}
+
 BuddyPtr ServiceAccountHandler::constructBuddy(const PropertyMap& /*props*/)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::constructBuddy() - TODO: implement me\n"));

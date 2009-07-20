@@ -186,7 +186,7 @@ void AP_UnixDialog_CollaborationShare::_populateWindowData()
 	//_populateBuddyModel();
 }
 
-void AP_UnixDialog_CollaborationShare::_populateBuddyModel()
+void AP_UnixDialog_CollaborationShare::_populateBuddyModel(bool refresh)
 {
 	UT_return_if_fail(m_pBuddyModel);
 	
@@ -195,9 +195,10 @@ void AP_UnixDialog_CollaborationShare::_populateBuddyModel()
 	
 	AccountHandler* pHandler = _getActiveAccountHandler();
 	UT_return_if_fail(pHandler);
-
+	
 	// signal the account to refresh its buddy list ...
-	pHandler->getBuddiesAsync();
+	if (refresh)
+		pHandler->getBuddiesAsync();
 
 	// ... and while it does that, we'll have to work with the list that 
 	// is currently known
@@ -264,7 +265,7 @@ void AP_UnixDialog_CollaborationShare::eventAccountChanged()
 	
 	UT_DEBUGMSG(("Changed account handler to type: %s\n", pHandler->getDisplayType().utf8_str()));
 	_setAccountHint(pHandler->getShareHint());	
-	_populateBuddyModel();
+	_populateBuddyModel(true);
 }
 
 void AP_UnixDialog_CollaborationShare::_setAccountHint(const UT_UTF8String& sHint)
@@ -280,4 +281,9 @@ void AP_UnixDialog_CollaborationShare::_setAccountHint(const UT_UTF8String& sHin
 
 	// set the hint
 	gtk_label_set_text(GTK_LABEL(m_wAccountHint), sHint.utf8_str());
+}
+
+void AP_UnixDialog_CollaborationShare::_refreshWindow()
+{
+	_populateBuddyModel(false);
 }

@@ -38,9 +38,10 @@ public:
 private:
 	GtkWidget*	 				_constructWindow(void);
 	void						_populateWindowData(void);
-	void						_populateBuddyModel();
+	void						_populateBuddyModel(bool refresh);
 	AccountHandler*				_getActiveAccountHandler();
 	void						_setAccountHint(const UT_UTF8String& sHint);
+	void						_refreshWindow();
 	
 	GtkWidget*					m_wWindowMain;
 	GtkWidget*					m_wAccount;

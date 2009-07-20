@@ -84,6 +84,7 @@ public:
 	ConnectionPtr							getConnection(PD_Document* pDoc);
 
 	// user management
+	virtual void							getBuddiesAsync();
 	virtual BuddyPtr						constructBuddy(const PropertyMap& props);
 	virtual BuddyPtr						constructBuddy(const std::string& descriptor, BuddyPtr pBuddy);
 	virtual bool							allowsManualBuddies()
