@@ -189,8 +189,13 @@ static bool s_abicollab_command_invoke(AV_View* v, EV_EditMethodCallData *d);
 /*!
  * returns true if at least one account is online
  */
-bool any_accounts_online( const std::vector<AccountHandler *>& vecAccounts )
+static bool s_any_accounts_online()
 {
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, false);
+	
+	const std::vector<AccountHandler *>& vecAccounts = pManager->getAccounts();
+	
 	for (UT_uint32 i = 0; i < vecAccounts.size(); i++)
 	{
 		AccountHandler* pHandler = vecAccounts[i];
@@ -209,7 +214,10 @@ Defun_EV_GetMenuItemState_Fn(collab_GetState_ShowAuthors)
 	UT_UNUSED(id);
 
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	if (!any_accounts_online( pManager->getAccounts() )) return EV_MIS_Gray;
+	UT_return_val_if_fail(pManager, EV_MIS_Gray);
+	
+	if (!s_any_accounts_online())
+		return EV_MIS_Gray;
 
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
@@ -236,7 +244,10 @@ Defun_EV_GetMenuItemState_Fn(collab_GetState_Recording)
 	// only do this in debug mode
 #if !defined(ABICOLLAB_RECORD_ALWAYS) && defined(DEBUG)
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	if (!any_accounts_online( pManager->getAccounts() )) return EV_MIS_Gray;
+	UT_return_val_if_fail(pManager, EV_MIS_Gray);
+	
+	if (!s_any_accounts_online())
+		return EV_MIS_Gray;
 	
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
@@ -269,19 +280,10 @@ Defun_EV_GetMenuItemState_Fn(collab_GetState_AnyActive)
 	UT_UNUSED(pAV_View);
 	UT_UNUSED(id);
 
-	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
- 	const std::vector<AccountHandler*>& vecAccounts = pManager->getAccounts();
-
-	for (UT_uint32 i = 0; i < vecAccounts.size(); i++)
-	{
-		AccountHandler* pHandler = vecAccounts[i];
-		if (pHandler && pHandler->isOnline())
-			return EV_MIS_ZERO;
-	}
-
-	return EV_MIS_Gray;
+	if (!s_any_accounts_online())
+		return EV_MIS_Gray;
+	return EV_MIS_ZERO;
 }
-
 
 
 /*!
@@ -324,7 +326,7 @@ void s_abicollab_add_menus()
 		0,                      // no, we don't have a checkbox.
 		0,                      // no radio buttons for me, thank you
 		"s_abicollab_offer",    // name of callback function to call.
-		NULL,                   // Function for whether not label is enabled/disabled checked/unchecked
+		collab_GetState_AnyActive,  // Function for whether not label is enabled/disabled checked/unchecked
 		NULL                    // Function to compute Menu Label "Dynamic Label"
 	);
 	pActionSet->addAction(myActionOffer);
