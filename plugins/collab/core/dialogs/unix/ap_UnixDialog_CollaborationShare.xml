@@ -110,7 +110,7 @@
                         <property name="can_focus">True</property>
                         <property name="model">lsBuddies</property>
                         <property name="headers_clickable">False</property>
-                        <property name="search_column">0</property>
+                        <property name="search_column">1</property>
                         <child>
                           <object class="GtkTreeViewColumn" id="clShared">
                             <property name="title">Share</property>
