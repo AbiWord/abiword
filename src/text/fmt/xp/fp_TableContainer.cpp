@@ -3067,11 +3067,14 @@ void fp_TableContainer::setLastBrokenTable(fp_TableContainer * pBroke)
 }
 
 /*!
- * Return the Y location of row number row
+ * Return the Y location of the top of row number row in the unbroken
+ * table.  
+ * The idea is to use the Y co-ordinates cached during table
+ * layout.
  */
 UT_sint32 fp_TableContainer::getYOfRow(UT_sint32 row)
 {
-	if (row < 0 or row > getNumRows())
+	if (row < 0 || row > getNumRows())
 	{
 		return 0;
 	}
