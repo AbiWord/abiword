@@ -186,6 +186,7 @@ public:
 	UT_Error setColumns(int target, const gchar* num, const gchar* sep);
 	UT_Error setPageBreak(int target);
 	UT_Error setPageSize(int target, const char* width, const char* height, const char* orientation);
+	UT_Error setPageMargins(int target, const char* top, const char* left, const char* right, const char* bottom);
 	UT_Error setLanguage(int target, const gchar* lang);
 	UT_Error setNoProof(int target);
 	UT_Error setTextBoxWidth(int target, const gchar* width);

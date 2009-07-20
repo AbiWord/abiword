@@ -126,22 +126,53 @@ UT_Error OXML_Section::serializeProperties(IE_Exp_OpenXML* exporter)
 {
 	//TODO: Add all the property serializations here
 	UT_Error err = UT_OK;
+
 	const gchar* num = NULL;
 	const gchar* sep = "off";
+	const gchar* marginTop = NULL;
+	const gchar* marginLeft = NULL;
+	const gchar* marginRight = NULL;
+	const gchar* marginBottom = NULL;
 
 	if(getProperty("columns", num) != UT_OK)
-		return UT_OK;
+		num = NULL;
 
 	if((getProperty("column-line", sep) != UT_OK) || (strcmp(sep, "on") != 0))
 		sep = "off";
+
+	if(getProperty("page-margin-top", marginTop) != UT_OK)
+		marginTop = NULL;
+
+	if(getProperty("page-margin-left", marginLeft) != UT_OK)
+		marginLeft = NULL;
+
+	if(getProperty("page-margin-right", marginRight) != UT_OK)
+		marginRight = NULL;
+
+	if(getProperty("page-margin-bottom", marginBottom) != UT_OK)
+		marginBottom = NULL;
+
 
 	err = exporter->startSectionProperties();
 	if(err != UT_OK)
 		return err;
 
-	err = exporter->setColumns(TARGET, num, sep);
-	if(err != UT_OK)
-		return err;
+	if(num && sep)
+	{
+		err = exporter->setColumns(TARGET, num, sep);
+		if(err != UT_OK)
+			return err;
+	}
+
+	if(marginTop && marginLeft && marginRight && marginBottom)
+	{	
+		OXML_Document* pDoc = OXML_Document::getInstance();
+		pDoc->setPageMargins(marginTop, marginLeft, marginRight, marginBottom);
+
+		err = exporter->setPageMargins(TARGET, marginTop, marginLeft, marginRight, marginBottom);
+		if(err != UT_OK)
+			return err;
+	}
 
 	return exporter->finishSectionProperties();
 }

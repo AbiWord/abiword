@@ -67,14 +67,7 @@ OXML_SharedSection OXML_Document::getCurrentSection()
 OXML_Document::OXML_Document() : 
 	OXML_ObjectWithAttrProp(), 
 	m_theme(), 
-	m_fontManager(),
-	m_pageWidth(""),
-	m_pageHeight(""),
-	m_pageOrientation(""),
-	m_pageMarginTop(""),
-	m_pageMarginLeft(""),
-	m_pageMarginRight(""),
-	m_pageMarginBottom("")
+	m_fontManager()
 {
 	clearStyles();
 	clearHeaders();
@@ -412,6 +405,15 @@ UT_Error OXML_Document::serialize(IE_Exp_OpenXML* exporter)
 	if(m_pageWidth.compare("") && m_pageHeight.compare(""))
 	{
 		ret = exporter->setPageSize(TARGET_DOCUMENT, m_pageWidth.c_str(), m_pageHeight.c_str(), m_pageOrientation.c_str());
+		if(ret != UT_OK)
+			return ret;		
+	}
+
+	//set page margins
+	if(m_pageMarginTop.compare("") && m_pageMarginLeft.compare("") && m_pageMarginRight.compare("") && m_pageMarginBottom.compare(""))
+	{
+		ret = exporter->setPageMargins(TARGET_DOCUMENT, m_pageMarginTop.c_str(), m_pageMarginLeft.c_str(),
+										m_pageMarginRight.c_str(), m_pageMarginBottom.c_str());
 		if(ret != UT_OK)
 			return ret;		
 	}
