@@ -1609,7 +1609,8 @@ bool s_LaTeX_Listener::convertMathMLtoLaTeX(const UT_UTF8String & sMathML,
 			return false;
 		}
 	}
-	doc = xmlParseDoc((const xmlChar*)(sMathML.utf8_str()));
+	// bad bad bad, apparently on MacOS X, the system libxml2 take a non-const here.
+	doc = xmlParseDoc((xmlChar*)(sMathML.utf8_str()));
 	if (!doc)
 	{
 		xxx_UT_DEBUGMSG(("convertMathMLtoLaTeX: Parsing MathML document failed\n"));
