@@ -1,0 +1,65 @@
+# Esperanto translations for abiword package.
+# Copyright (C) 2009 THE abiword'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the abiword package.
+# Keith Bowes <keith@keith-desktop>, 2009.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: abiword 2.7.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-07-08 21:11-0400\n"
+"PO-Revision-Date: 2009-07-06 22:37-0400\n"
+"Last-Translator: Keith Bowes <keith@keith-desktop>\n"
+"Language-Team: Esperanto <translation-team-eo@lists.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../xp/AbiGimp.cpp:71
+msgid "&Edit Image via GIMP"
+msgstr "&Redakti bildon per GIMP"
+
+#: ../xp/AbiGimp.cpp:72
+msgid "Opens the selected image in the GIMP for editing."
+msgstr "Malfermas por redaktado la elektitan bildon en GIMP"
+
+#.
+#. Put it in the context menu.
+#.
+#: ../xp/AbiGimp.cpp:127
+msgid "&Save Image As"
+msgstr "&Konservi bildon kiel"
+
+#. Put it after Word Count in the Main menu
+#: ../xp/AbiGimp.cpp:132
+msgid "Bullets and &Numbering"
+msgstr "&Numerado kaj bulado"
+
+#: ../xp/AbiGimp.cpp:204
+msgid "AbiGimp"
+msgstr ""
+
+#: ../xp/AbiGimp.cpp:205
+msgid "Use this to edit an image with the GIMP from within AbiWord"
+msgstr "Uzi ĉi tion por redakti bildon per GIMP ene de AbiWord"
+
+#: ../xp/AbiGimp.cpp:208
+msgid "No Usage"
+msgstr "Neniu uzado"
+
+#: ../xp/AbiGimp.cpp:283
+msgid "You must select an Image before editing it"
+msgstr "Vi elektu bildon antaŭ ol redakti ĝin"
+
+#: ../xp/AbiGimp.cpp:313
+msgid "Unable to run program: "
+msgstr "Malkapablas plenumi programon: "
+
+#: ../xp/AbiGimp.cpp:410
+msgid "Error making pFG. Could not put image back into Abiword"
+msgstr "Eraro dum farado. Ne povis remeti Abiworden la bildon"
+
+#: ../xp/AbiGimp.cpp:423
+msgid "Could not put image back into Abiword"
+msgstr "Ne povis remeti Abiworden la bildon"

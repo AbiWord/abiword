@@ -457,6 +457,7 @@ const char * AP_CocoaApp::getAbiSuiteAppDir(void) const
 */
 const XAP_StringSet * AP_CocoaApp::getStringSet(void) const
 {
+		m_pStringSet->setDomain();
     return m_pStringSet;
 }
 

@@ -30,11 +30,12 @@ clean:
 	rm -f $(mo_files) $(GETTEXT_PACKAGE).pot
 
 distclean distclean-recursive: clean
-	rm -f LINGUAS Makefile POTFILES
+	rm -f LINGUAS POTFILES
+	@if test -f Makefile.in; then rm -f Makefile; echo rm -f Makefile; fi
 	rm -f missing
 
 maintainer-clean maintainer-clean-recursive: distclean-recursive
-	rm -f Makefile.in.in
+	rm -fv Makefile.in.in
 
 install: all
 	@$(foreach lang, $(langs), if test -d $(dir $(call instfile,$(lang))); then install -m 644 $(lang).mo $(call instfile,$(lang)); echo Installing $(call instfile,$(lang)); fi; )
@@ -55,3 +56,8 @@ translate: pot
 
 $(GETTEXT_PACKAGE).pot: POTFILES.in
 	$(INTLTOOL_UPDATE) --pot --gettext-package=$(GETTEXT_PACKAGE)
+
+#
+# And last, and certainly least, so that intltool won't throw a hissy fit:
+# INTLTOOL_MAKEFILE
+# 

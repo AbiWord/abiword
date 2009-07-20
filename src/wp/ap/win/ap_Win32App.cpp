@@ -441,6 +441,7 @@ HICON AP_Win32App::getSmallIcon(void)
 
 const XAP_StringSet * AP_Win32App::getStringSet(void) const
 {
+	m_pStringSet->setDomain();
 	return m_pStringSet;
 }
 

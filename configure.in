@@ -77,7 +77,7 @@ AC_PROG_LIBTOOL
 DOLT
 AC_PROG_LN_S
 
-IT_PROG_INTLTOOL([0.26])
+IT_PROG_INTLTOOL([0.35.0])
 AM_GLIB_GNU_GETTEXT
 
 cd po && for file in *.po; do ALL_LINGUAS="$ALL_LINGUAS `echo $file |  sed -e 's/\.po//g'`"; done && echo -e "`echo $ALL_LINGUAS | sed -e 's/\s/\n/g'`" > LINGUAS && cd ..
@@ -777,7 +777,7 @@ AC_OUTPUT(
   libabiword.pc
   Makefile
   goffice-bits/Makefile
-  po/Makefile
+  po/Makefile.in
   src/Makefile
   src/af/Makefile
   src/af/ev/Makefile
@@ -831,9 +831,6 @@ AC_OUTPUT(
   user/wp/Makefile
   user/wp/clipart/Makefile
   user/wp/templates/Makefile
-)
-
-AC_OUTPUT(
   m4_include([plugin-makefiles.m4])
 )
 
