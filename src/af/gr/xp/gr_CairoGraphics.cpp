@@ -694,6 +694,7 @@ bool GR_CairoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	}
 	
 	UT_UTF8String utf8;
+	utf8.reserve(si.m_iLength);
 	bool previousWasSpace = si.m_previousWasSpace;
 
 	UT_sint32 i;
