@@ -1259,14 +1259,14 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 #if DEBUG
 	while(pRun)
 	{
-		xxx_UT_DEBUGMSG(("!!Initially run %x runType %d posindoc %d end run %d \n",pRun,pRun->getType(),posAtStartOfBlock+pRun->getBlockOffset(),posAtStartOfBlock+pRun->getBlockOffset()+pRun->getLength()));
+		xxx_UT_DEBUGMSG(("!!Initially run %p runType %d posindoc %d end run %d \n",pRun,pRun->getType(),posAtStartOfBlock+pRun->getBlockOffset(),posAtStartOfBlock+pRun->getBlockOffset()+pRun->getLength()));
 		pRun = pRun->getNextRun();
 	}
 	pRun = getFirstRun();
 #endif
-	while(pRun && (posAtStartOfBlock + pRun->getBlockOffset() < posEmbedded))
+	while(pRun && ((posAtStartOfBlock + pRun->getBlockOffset() < posEmbedded) || ((pRun->getLength() == 0) && (posAtStartOfBlock + pRun->getBlockOffset() >= posEmbedded))))
 	{
-		xxx_UT_DEBUGMSG(("Look at run %x runType %d posindoc %d \n",pRun,pRun->getType(),posAtStartOfBlock+pRun->getBlockOffset()));
+		xxx_UT_DEBUGMSG(("Look at run %p runType %d posindoc %d \n",pRun,pRun->getType(),posAtStartOfBlock+pRun->getBlockOffset()));
 		pPrev = pRun;
 		pRun = pRun->getNextRun();
 	 
@@ -1353,7 +1353,10 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 	//
 	// pRun is the first run that gets shifted
 	//
-	UT_ASSERT(pRun);
+	UT_return_if_fail(pRun);
+	posRun = posAtStartOfBlock + pRun->getBlockOffset();
+
+
 	if(iSuggestDiff !=  0)
 	{
 //
@@ -1392,7 +1395,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 				iNew = 0;
 			}
 			UT_ASSERT(iNew >= 0);
-			xxx_UT_DEBUGMSG(("Run %x Old offset %d New Offset %d \n",pRun,pRun->getBlockOffset(),iNew));
+			xxx_UT_DEBUGMSG(("Run %p Old offset %d New Offset %d \n",pRun,pRun->getBlockOffset(),iNew));
 			pRun->setBlockOffset(static_cast<UT_uint32>(iNew));
 			pRun = pRun->getNextRun();
 		}
@@ -1404,7 +1407,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 		getGrammarSquiggles()->updatePOBs(iFirstOffset,iSuggestDiff);
 #endif
 	}
-#if 0
+#if 1
 #if DEBUG
 	pRun = getFirstRun();
 	while(pRun)
@@ -1414,7 +1417,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 			fp_TextRun * pTRun = static_cast<fp_TextRun *>(pRun);
 			pTRun->printText();
 		}
-		UT_DEBUGMSG(("update offsets!!!!--- Run %x offset %d Type %d \n",pRun,pRun->getBlockOffset(),pRun->getType()));
+		UT_DEBUGMSG(("update offsets!!!!--- Run %p offset %d Type %d \n",pRun,pRun->getBlockOffset(),pRun->getType()));
 		pRun = pRun->getNextRun();
 	}
 #endif
@@ -6410,9 +6413,11 @@ fl_BlockLayout::_assertRunListIntegrityImpl(void) const
 	// Verify that offset of this block is correct.
 #endif
 	UT_sint32 icnt = -1;
+	//	PT_DocPosition posAtStartOfBlock = getPosition();
 	while (pRun)
 	{
 		icnt++;
+		xxx_UT_DEBUGMSG(("!!Assert run %d runType %d posindoc %d end run %d \n",icnt,pRun->getType(),posAtStartOfBlock+pRun->getBlockOffset(),posAtStartOfBlock+pRun->getBlockOffset()+pRun->getLength()));
 		xxx_UT_DEBUGMSG(("run %d %p Type %d offset %d length %d \n",icnt,pRun,pRun->getType(),pRun->getBlockOffset(), pRun->getLength()));
 #if 0
 //

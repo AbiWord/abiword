@@ -2271,11 +2271,26 @@ bool pt_PieceTable::_realDeleteSpan(PT_DocPosition dpos1,
 	{
 		xxx_UT_DEBUGMSG(("pt_PieceTable::deleteSpan Paragraph empty\n"));
 
-		// All text in paragraph is deleted so insert a text format.
-		// Except if we're realy don't want it. We know we dont if
-		// bDontGlob is true.
+		// All text in paragraph is deleted so insert a text format
+		// Unless we've deleted all text in a footnote type structure.
+		// or if bDontGlob is true.
+		// If we insert an FmtMark is an empty footnote it
+		// will appear in the enclosing block and
+		// screw up the run list.
+		//
+		bool bDoit = !bDontGlob;
+		if(bDoit && (p_frag_after->getType() == pf_Frag::PFT_Strux))
+		{
+		     pf_Frag_Strux * pfsa = static_cast<pf_Frag_Strux *>(p_frag_after);
+		     if((pfsa->getStruxType() == PTX_EndFootnote) ||
+			(pfsa->getStruxType() == PTX_EndEndnote) ||
+			(pfsa->getStruxType() == PTX_EndAnnotation))
+		     {
+			 bDoit = false;
+		     }
+		}
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(p_frag_before);
-		if(!bDontGlob && ((pfs->getStruxType() == PTX_Block) || (p_frag_before->getType() == pf_Frag::PFT_EndOfDoc) ))
+		if(bDoit && ((pfs->getStruxType() == PTX_Block) || (p_frag_before->getType() == pf_Frag::PFT_EndOfDoc) ))
 			_insertFmtMarkFragWithNotify(PTC_AddFmt, dpos1, &AttrProp_Before);
 
 	}
