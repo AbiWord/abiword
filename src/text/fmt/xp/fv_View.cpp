@@ -12411,6 +12411,8 @@ bool FV_View::selectAnnotation(fl_AnnotationLayout * pAL)
 		setCursorToContext();
 		cmdSelect(posStart,posEnd);
 		notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR ); 
+
+		return true;
 }
 
 /*!
