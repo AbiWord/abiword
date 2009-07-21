@@ -2282,9 +2282,7 @@ bool pt_PieceTable::_realDeleteSpan(PT_DocPosition dpos1,
 		if(bDoit && (p_frag_after->getType() == pf_Frag::PFT_Strux))
 		{
 		     pf_Frag_Strux * pfsa = static_cast<pf_Frag_Strux *>(p_frag_after);
-		     if((pfsa->getStruxType() == PTX_EndFootnote) ||
-			(pfsa->getStruxType() == PTX_EndEndnote) ||
-			(pfsa->getStruxType() == PTX_EndAnnotation))
+		     if(isEndFootnote(pfsa))
 		     {
 			 bDoit = false;
 		     }

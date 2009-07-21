@@ -99,9 +99,7 @@ bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 	if(pf->getType() == pf_Frag::PFT_Strux)
 	{
 	    pf_Frag_Strux * pfse = static_cast<pf_Frag_Strux *>(pf);
-	    if((pfse->getStruxType() == PTX_EndFootnote) ||
-	       (pfse->getStruxType() == PTX_EndEndnote) ||
-	       (pfse->getStruxType() == PTX_EndAnnotation))
+	    if(isEndFootnote(pfse))
 	    {
 		if(pf->getPrev() && pf->getPrev()->getType() ==  pf_Frag::PFT_Strux)
 		{
