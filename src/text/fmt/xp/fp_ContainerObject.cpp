@@ -1022,8 +1022,10 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 			 painter.fillRect(white,x,y,width,iY);
 			 height -= iY;
 		 }
-		 if(m_pContainer)
+		 if(m_pContainer) 
+         {
 		   xxx_UT_DEBUGMSG((" ContainerType %s \n ",m_pContainer->getContainerString()));
+         }
 		 xxx_UT_DEBUGMSG(("m_pDocImage %p  Trans col %d m_bColorSet %d \n ",m_pDocImage, m_bTransColorSet, m_bColorSet));
 
 		src.left = srcX;
