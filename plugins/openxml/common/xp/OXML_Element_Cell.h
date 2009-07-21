@@ -87,8 +87,8 @@ private:
 	UT_sint32 m_iLeft, m_iRight, m_iTop, m_iBottom;
 	bool m_startVerticalMerge;
 	bool m_startHorizontalMerge;
-	OXML_Element_Table* table; 
-	OXML_Element_Row* row;
+	OXML_Element_Table* m_table; 
+	OXML_Element_Row*   m_row;
 
 	OXML_Element_Cell* m_horizontalTail;
 	OXML_Element_Cell* m_verticalTail;

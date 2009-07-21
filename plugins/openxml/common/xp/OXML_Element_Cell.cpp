@@ -40,10 +40,10 @@ OXML_Element_Cell::OXML_Element_Cell(const std::string & id, OXML_Element_Table*
 	m_iBottom(bottom),
 	m_startVerticalMerge(true),
 	m_startHorizontalMerge(true),
-	table(tbl),
-	row(rw),
-	m_verticalTail(NULL),
-	m_horizontalTail(NULL)
+	m_table(tbl),
+	m_row(rw),
+	m_horizontalTail(NULL),
+	m_verticalTail(NULL)
 {
 	if(rw)
 		rw->addCell(this);
@@ -89,7 +89,7 @@ UT_Error OXML_Element_Cell::serializeProperties(IE_Exp_OpenXML* exporter)
 	UT_sint32 vspan = getBottom()-getTop();
 	bool isVertCont = getTop() == -1;
 	
-	err = exporter->setColumnWidth(TARGET_DOCUMENT, table->getColumnWidth(getLeft()).c_str());
+	err = exporter->setColumnWidth(TARGET_DOCUMENT, m_table->getColumnWidth(getLeft()).c_str());
 	if(err != UT_OK)
 		return err;
 
