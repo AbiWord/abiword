@@ -482,9 +482,10 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	xxx_UT_DEBUGMSG(("_openTag: api %d, bHaveProp %d\n",api, bHaveProp));
-	m_pie->write("<");
 
 	UT_return_if_fail(szPrefix && *szPrefix);
+
+	m_pie->write("<");
 
 	if(strcmp(szPrefix,"c")== 0)
 		m_bOpenChar = true;
@@ -1392,13 +1393,13 @@ void s_AbiWord_1_Listener::_handleStyles(void)
 
 	UT_GenericVector<PD_Style*> * pStyles = NULL;
 	m_pDocument->enumStyles(pStyles);
-	UT_return_if_fail( pStyles );
+	UT_ASSERT_HARMLESS( pStyles );
 	UT_sint32 iStyleCount = m_pDocument->getStyleCount();
 	
-	for (k=0; k < iStyleCount; k++)
+	for (k=0; (k < iStyleCount) && pStyles; k++)
 	{
 		pStyle = pStyles->getNthItem(k);
-		UT_return_if_fail( pStyle );
+		UT_continue_if_fail( pStyle );
 		
 		if (!pStyle->isUserDefined() || (vecStyles.findItem(const_cast<PD_Style*>(pStyle))) >= 0)
 			continue;
@@ -1686,7 +1687,7 @@ void s_AbiWord_1_Listener::_handleRevisions(void)
 	for (k=0; k < vRevisions.getItemCount(); k++)
 	{
 		pRev = vRevisions.getNthItem(k);
-		UT_return_if_fail(pRev);
+		UT_continue_if_fail(pRev);
 		
 		UT_String s;
 		

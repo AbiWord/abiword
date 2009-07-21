@@ -6943,7 +6943,7 @@ void IE_Exp_HTML::_buildStyleTree ()
 	for (size_t n = 0; n < iStyleCount; n++)
 	{
 		p_pds = pStyles->getNthItem(n);
-		UT_return_if_fail( p_pds );
+		UT_continue_if_fail( p_pds );
 
 		szStyleName = p_pds->getName();
 		
