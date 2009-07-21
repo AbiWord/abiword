@@ -337,27 +337,27 @@ std::string OXML_Element_Table::getRowHeight(int rowIndex)
 	return rowHeight.at(rowIndex);
 }
 
-bool OXML_Element_Table::incrementBottomVerticalMergeStart(int left, int top)
+bool OXML_Element_Table::incrementBottomVerticalMergeStart(OXML_Element_Cell* cell)
 {
 	std::vector<OXML_Element_Row*>::reverse_iterator rit;
 	for( rit=m_rows.rbegin(); rit < m_rows.rend(); ++rit )
 	{
 		OXML_Element_Row* pRow = *rit;
-		if(pRow->incrementBottomVerticalMergeStart(left, top))
+		if(pRow->incrementBottomVerticalMergeStart(cell))
 			return true;
 	}
 	return false;	
 }
 
-bool OXML_Element_Table::incrementRightHorizontalMergeStart(int left, int top)
+bool OXML_Element_Table::incrementRightHorizontalMergeStart(OXML_Element_Cell* cell)
 {
 	std::vector<OXML_Element_Row*>::reverse_iterator rit;
 	for( rit=m_rows.rbegin(); rit < m_rows.rend(); ++rit )
 	{
 		OXML_Element_Row* pRow = *rit;
-		if(pRow->incrementRightHorizontalMergeStart(left, top))
+		if(pRow->incrementRightHorizontalMergeStart(cell))
 			return true;
-		top--; //decrement top if we can't find the starting cell in this row
+		cell->setTop(cell->getTop()-1); //decrement top if we can't find the starting cell in this row
 	}
 	return false;	
 }

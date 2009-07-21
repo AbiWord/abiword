@@ -41,7 +41,9 @@ OXML_Element_Cell::OXML_Element_Cell(const std::string & id, OXML_Element_Table*
 	m_startVerticalMerge(true),
 	m_startHorizontalMerge(true),
 	table(tbl),
-	row(rw)
+	row(rw),
+	m_verticalTail(NULL),
+	m_horizontalTail(NULL)
 {
 	if(rw)
 		rw->addCell(this);
@@ -243,7 +245,7 @@ UT_Error OXML_Element_Cell::addToPT(PD_Document * pDocument)
 	UT_Error ret = UT_OK;
 
 	if(!startsHorizontalMerge())
-		return addChildrenToPT(pDocument);
+		return UT_OK;
 
 	//add props:bot-attach, left-attach, right-attach, top-attach
 	std::string sTop = boost::lexical_cast<std::string>(m_iTop);
@@ -266,6 +268,101 @@ UT_Error OXML_Element_Cell::addToPT(PD_Document * pDocument)
 	ret = setProperty("right-attach", sRight);
 	if(ret != UT_OK)
 		return ret;	
+
+	const gchar * szValue = NULL;
+	
+	//apply last horizontal continuation cell's right border properties
+	if(m_horizontalTail)
+	{
+		m_horizontalTail->getProperty("right-color", szValue);
+		if(szValue)
+		{
+			ret = setProperty("right-color", szValue);
+			if(ret != UT_OK)
+				return ret;
+		}
+		szValue = NULL;
+
+		m_horizontalTail->getProperty("right-style", szValue);
+		if(szValue)
+		{
+			ret = setProperty("right-style", szValue);
+			if(ret != UT_OK)
+				return ret;
+		}
+		szValue = NULL;
+
+		m_horizontalTail->getProperty("right-thickness", szValue);
+		if(szValue)
+		{
+			ret = setProperty("right-thickness", szValue);
+			if(ret != UT_OK)
+				return ret;
+		}
+		szValue = NULL;
+	}
+
+	//apply last vertical continuation cell's bottom border properties
+	if(m_verticalTail)
+	{
+		m_verticalTail->getProperty("bot-color", szValue);
+		if(szValue)
+		{
+			ret = setProperty("bot-color", szValue);
+			if(ret != UT_OK)
+				return ret;
+		}
+		szValue = NULL;
+
+		m_verticalTail->getProperty("bot-style", szValue);
+		if(szValue)
+		{
+			ret = setProperty("bot-style", szValue);
+			if(ret != UT_OK)
+				return ret;
+		}
+		szValue = NULL;
+
+		m_verticalTail->getProperty("bot-thickness", szValue);
+		if(szValue)
+		{
+			ret = setProperty("bot-thickness", szValue);
+			if(ret != UT_OK)
+				return ret;
+		}
+		szValue = NULL;
+	}
+
+	if((getProperty("top-color", szValue) != UT_OK) || !szValue)
+	{
+		ret = setProperty("top-color", "ffffff"); 
+		if(ret != UT_OK)
+			return ret;	
+	}		
+
+	szValue = NULL;
+	if((getProperty("left-color", szValue) != UT_OK) || !szValue)
+	{
+		ret = setProperty("left-color", "ffffff"); 
+		if(ret != UT_OK)
+			return ret;	
+	}
+
+	szValue = NULL;
+	if((getProperty("right-color", szValue) != UT_OK) || !szValue)
+	{
+		ret = setProperty("right-color", "ffffff"); 
+		if(ret != UT_OK)
+			return ret;	
+	}
+
+	szValue = NULL;
+	if((getProperty("bot-color", szValue) != UT_OK) || !szValue)
+	{
+		ret = setProperty("bot-color", "ffffff"); 
+		if(ret != UT_OK)
+			return ret;	
+	}
 
 	const gchar** cell_props = getAttributesWithProps();
 
@@ -313,4 +410,14 @@ void OXML_Element_Cell::setVerticalMergeStart(bool start)
 void OXML_Element_Cell::setHorizontalMergeStart(bool start)
 {
 	m_startHorizontalMerge = start;
+}
+
+void OXML_Element_Cell::setLastHorizontalContinuationCell(OXML_Element_Cell* cell)
+{
+	m_horizontalTail = cell;
+}
+
+void OXML_Element_Cell::setLastVerticalContinuationCell(OXML_Element_Cell* cell)
+{
+	m_verticalTail = cell;
 }

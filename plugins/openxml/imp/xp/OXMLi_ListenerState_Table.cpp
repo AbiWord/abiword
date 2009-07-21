@@ -278,7 +278,7 @@ void OXMLi_ListenerState_Table::endElement (OXMLi_EndElementRequest * rqst)
 		if(!pCell->startsVerticalMerge())
 		{
 			OXML_Element_Table* table = m_tableStack.top();
-			if(!table->incrementBottomVerticalMergeStart(pCell->getLeft(), pCell->getTop()))
+			if(!table->incrementBottomVerticalMergeStart(pCell))
 			{
 				//this means there is no cell before this starting a vertical merge
 				//revert back to vertical merge start instead of continue
@@ -289,7 +289,7 @@ void OXMLi_ListenerState_Table::endElement (OXMLi_EndElementRequest * rqst)
 		if(!pCell->startsHorizontalMerge())
 		{
 			OXML_Element_Table* table = m_tableStack.top();
-			if(!table->incrementRightHorizontalMergeStart(pCell->getLeft(), pCell->getTop()))
+			if(!table->incrementRightHorizontalMergeStart(pCell))
 			{
 				//this means there is no cell before this starting a horizontal merge
 				//revert back to horizontal merge start instead of continue

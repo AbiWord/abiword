@@ -174,8 +174,11 @@ void OXML_Element_Row::addCell(OXML_Element_Cell* cell)
 	m_cells.push_back(cell);
 }
 
-bool OXML_Element_Row::incrementBottomVerticalMergeStart(int left, int top)
+bool OXML_Element_Row::incrementBottomVerticalMergeStart(OXML_Element_Cell* cell)
 {
+	int top = cell->getTop();
+	int left = cell->getLeft();
+
 	std::vector<OXML_Element_Cell*>::const_iterator it;
 	for( it = m_cells.begin(); it < m_cells.end(); ++it )
 	{
@@ -183,14 +186,18 @@ bool OXML_Element_Row::incrementBottomVerticalMergeStart(int left, int top)
 		if((pCell->getLeft() == left) && (pCell->getTop() < top) && pCell->startsVerticalMerge())
 		{
 			pCell->setBottom(pCell->getBottom()+1);
+			pCell->setLastVerticalContinuationCell(cell);
 			return true;
 		}
 	}
 	return false;	
 }
 
-bool OXML_Element_Row::incrementRightHorizontalMergeStart(int left, int top)
+bool OXML_Element_Row::incrementRightHorizontalMergeStart(OXML_Element_Cell* cell)
 {
+	int top = cell->getTop();
+	int left = cell->getLeft();
+
 	std::vector<OXML_Element_Cell*>::reverse_iterator it;
 	for( it = m_cells.rbegin(); it < m_cells.rend(); ++it )
 	{
@@ -198,6 +205,7 @@ bool OXML_Element_Row::incrementRightHorizontalMergeStart(int left, int top)
 		if((pCell->getTop() == top) && (pCell->getLeft() < left) && pCell->startsHorizontalMerge())
 		{
 			pCell->setRight(pCell->getRight()+1);
+			pCell->setLastHorizontalContinuationCell(cell);
 			return true;
 		}
 	}

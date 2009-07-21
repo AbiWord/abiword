@@ -63,13 +63,13 @@ public:
 	//It traverses the cells in the row and finds the vertical merge starting cell
 	//and increments its bottom value by one. Should be called for the vertMerge=continue cells.
 	//return true if successful
-	bool incrementBottomVerticalMergeStart(int left, int top);
+	bool incrementBottomVerticalMergeStart(OXML_Element_Cell* cell);
 
 	//this method increments the horizontal merge start cell's right by one. 
 	//It traverses the cells in the row and finds the horizontal merge starting cell
 	//and increments its right value by one. Should be called for the hMerge=continue cells.
 	//return true if successful
-	bool incrementRightHorizontalMergeStart(int left, int top);
+	bool incrementRightHorizontalMergeStart(OXML_Element_Cell* cell);
 
 protected:
 	UT_Error serializeChildren(IE_Exp_OpenXML* exporter);
