@@ -103,7 +103,7 @@ ap_bs_Mouse MouseTable[] =
 	{_CZ _B0,	{ "",	"",			"btn0InlineImage",	"",			"",			""				}},
 	{_CF _B0,	{ "",	"",			"cursorDefault",	"",			"",			""				}},
 	{_CR _B0,	{ "",	"",			"cursorDefault",	"",			"",			""				}},
-	{_CH _B0,	{ "",	"",			"hyperlinkStatusBar",	"",			"",			"",				}},
+	{_CH _B0,	{ "hyperlinkStatusBar",	"hyperlinkStatusBar",			"hyperlinkStatusBar",	"",			"",			"",				}},
 	{_CTV _B0,	{ "",	"",			"cursorVline",	"",			"",			"",				}},
 	{_CTH _B0,	{ "",	"",			"cursorHline",	"",			"",			"",				}},
 	{_CTF _B0,	{ "",	"",			"btn0Frame",	"",			"",			"",				}},

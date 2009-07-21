@@ -4646,11 +4646,17 @@ UT_Error FV_View::cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (getParentData());
 	if(pH1->getHyperlinkType() ==  HYPERLINK_NORMAL)
 	{
-	  UT_UTF8String url = pH1->getTarget();
-	  url.decodeURL();
-	  pFrame->setStatusMessage(url.utf8_str());
+	    UT_UTF8String url = pH1->getTarget();
+	    url.decodeURL();
+	    pFrame->setStatusMessage(url.utf8_str());
 	}
-
+	else
+	{
+	    if(!isAnnotationPreviewActive())
+	    {
+	         UT_DEBUGMSG(("popup Annotation preview \n"));
+	    }
+	}
 	return true;
 }
 
@@ -4705,7 +4711,8 @@ bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 	pDialog->runModal(pFrame);
 	bool bOK = (pDialog->getAnswer() == AP_Dialog_Annotation::a_OK);
 	bool bApply = (pDialog->getAnswer() == AP_Dialog_Annotation::a_APPLY);
-	
+	fl_AnnotationLayout * pAL = NULL;
+
 	if (bOK)
 	{
 		UT_DEBUGMSG(("cmdEditAnnotationWithDialog: Annotation id(\"%d\") edited \n",aID));
@@ -4725,7 +4732,7 @@ bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 	else if (bApply)
 	{
 		UT_UTF8String sDescr = pDialog->getDescription();
-		fl_AnnotationLayout * pAL = getAnnotationLayout(aID);
+		pAL = getAnnotationLayout(aID);
 		if(!pAL)
 		  return false;
 		PL_StruxDocHandle sdhAnn = pAL->getStruxDocHandle();
@@ -4753,7 +4760,14 @@ bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 	}
 	// release the dialog
 	pDialogFactory->releaseDialog(pDialog);
-	
+	//
+	// Select the text
+	//
+	pAL = getAnnotationLayout(aID);
+	if(!pAL)
+	  return false;
+	selectAnnotation(pAL);
+
 	return true;	
 }
 

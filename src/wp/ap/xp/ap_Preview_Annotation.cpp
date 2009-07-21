@@ -110,27 +110,31 @@ void AP_Preview_Annotation::setSizeFromAnnotation(void)
 	const char * pszWeight = "normal";
 
 	FV_View * pView = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
+	GR_Graphics * pG = NULL;
 	UT_return_if_fail(pView);
-	GR_Graphics * pVGraphics = pView->getGraphics();
-	UT_return_if_fail(pVGraphics);
-	GR_Font * pFont = pVGraphics->findFont(pszFamily, pszStyle,
-							 pszVariant, pszWeight,
-							 pszStretch, pszSize,
-							 NULL);
+	pG = pView->getGraphics();
+
+	UT_return_if_fail(pG);
+	GR_Font * pFont = pG->findFont(pszFamily, pszStyle,
+				       pszVariant, pszWeight,
+				       pszStretch, pszSize,
+				       NULL);
 	
 	UT_return_if_fail(pFont);
 	
-	UT_sint32 iHeight = pVGraphics->getFontAscent(pFont) + pVGraphics->tlu(7);
-	double rat = 100./static_cast<double>(pVGraphics->getZoomPercentage());
+	double rat = 100./static_cast<double>(pG->getZoomPercentage());
+	UT_sint32 iHeight = pG->getFontAscent(pFont) + pG->tlu(7);
 	iHeight = static_cast<UT_sint32>(static_cast<double>(iHeight));
 	m_drawString = m_pDescription;
 	UT_sint32 len = m_drawString.size();
-	UT_sint32 iwidth = pVGraphics->measureString(m_drawString.ucs4_str(),0,len,NULL) + pVGraphics->tlu(6);
+	pG->setFont(pFont);
+	UT_sint32 iwidth = pG->measureString(m_drawString.ucs4_str(),0,len,NULL) + pG->tlu(6);
 	iwidth = static_cast<UT_sint32>(static_cast<double>(iwidth));
-	m_width = static_cast<UT_sint32>(static_cast<double>(pVGraphics->tdu(iwidth))*rat);
-	m_height = static_cast<UT_sint32>(static_cast<double>(pVGraphics->tdu(iHeight))*rat);
-	if(pVGraphics->tdu(pView->getWindowWidth()) < m_width)
-	  m_width = pVGraphics->tdu(pView->getWindowWidth());
+	m_width = static_cast<UT_sint32>(static_cast<double>(pG->tdu(iwidth))*rat);
+	m_height = static_cast<UT_sint32>(static_cast<double>(pG->tdu(iHeight))*rat);
+	if(pG->tdu(pView->getWindowWidth()) < m_width)
+	  m_width = pG->tdu(pView->getWindowWidth());
+	UT_DEBUGMSG(("SetSize from Annotation width %d rat %f \n",m_width,rat));
 }
 // Finally draw the characters in the preview.
 void AP_Preview_Annotation::draw(void)

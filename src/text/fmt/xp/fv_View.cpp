@@ -8072,9 +8072,9 @@ void FV_View::getPageScreenOffsets(const fp_Page* pThePage, UT_sint32& xoff,
 	UT_sint32 y = getPageViewTopMargin();
 	//UT_sint32 iPage = m_pLayout->findPage(const_cast<fp_Page *>(pThePage));
 		
-	if(iPageNumber >= getNumHorizPages())
+	if(iPageNumber >= static_cast<UT_sint32>(getNumHorizPages()))
 	{
-		for (unsigned int i = 0; i < iRow; i++)
+		for (UT_sint32 i = 0; i < iRow; i++)
 		{
 			y += getMaxHeight(i) + getPageViewSep();
 		}
@@ -9964,6 +9964,11 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		UT_DEBUGMSG(("getMouseContext: Deleting previous annotation preview...\n"));
 		killAnnotationPreview();
 	}
+	if(emc == EV_EMC_HYPERLINK)
+	{
+		xxx_UT_DEBUGMSG(("In Hyperlink \n"));
+	}
+	xxx_UT_DEBUGMSG(("Mouse Context %d \n",emc));
 	return emc;
 }
 
@@ -10250,6 +10255,7 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	if(pRun->getHyperlink() != NULL)
 	{
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), run type %d\n", pRun->getType()));
+		
 		if(m_prevMouseContext != EV_EMC_HYPERLINK)
 		{
 			UT_DEBUGMSG(("Mouse context is changed to hyperlink \n"));
@@ -12376,6 +12382,38 @@ bool FV_View::getAnnotationText(UT_uint32 iAnnotation, UT_UTF8String & sText)
 }
 
 /*!
+ * Select the text that is covered by the annotation
+ */
+bool FV_View::selectAnnotation(fl_AnnotationLayout * pAL)
+{
+		PL_StruxDocHandle sdhAnn = pAL->getStruxDocHandle();
+		PL_StruxDocHandle sdhEnd = NULL;
+		getDocument()->getNextStruxOfType(sdhAnn,PTX_EndAnnotation, &sdhEnd);
+		
+		UT_return_val_if_fail(sdhEnd != NULL, false);
+		//
+		// Start of the text covered by the annotations
+		//
+		PT_DocPosition posStart = getDocument()->getStruxPosition(sdhEnd); 
+		posStart++;
+		fp_Run * pRun = getHyperLinkRun(posStart);
+		UT_return_val_if_fail(pRun, false);
+		pRun = pRun->getNextRun();
+		while(pRun && (pRun->getType() != FPRUN_HYPERLINK))
+		  pRun = pRun->getNextRun();
+		UT_return_val_if_fail(pRun, false);
+		UT_return_val_if_fail(pRun->getType() == FPRUN_HYPERLINK, false);
+		PT_DocPosition posEnd = pRun->getBlock()->getPosition(false) + pRun->getBlockOffset();
+		if(posStart> posEnd)
+		  posStart = posEnd;
+		setPoint(posEnd);
+		_ensureInsertionPointOnScreen();
+		setCursorToContext();
+		cmdSelect(posStart,posEnd);
+		notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR ); 
+}
+
+/*!
  * Set the content of the annotation to the plain text supplied by
  *  UT_UTF8String sText.
  * Returns true if a valid annotation was found with valid content.
@@ -12525,14 +12563,14 @@ bool FV_View::setAnnotationAuthor(UT_uint32 iAnnotation, UT_UTF8String & sAuthor
  * Insert annotation number iAnnotation across the current selection.
  * The text of the annotation is contained in pStr.
  * If pstr is NULL default text is inserted.
- * If bReplace is true, the current selection is cut and placed into
+ * If bCopy is true, the current selection is copied and placed into
  * an annotation.
  */
 bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 							   UT_UTF8String * sDescr,
 							   UT_UTF8String * sAuthor,
 							   UT_UTF8String * sTitle,
-							   bool bReplace)
+							   bool bCopy)
 {
 	// can only apply an Annotation to an FL_SECTION_DOC or a Table
 	// TODO allow applying to empty selection (cursor position)
@@ -12635,7 +12673,6 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 	{
 		return false;
 	}
-	_clearSelection();
 	// Silently fail (TODO: pop up message) if we try to nest annotations or hyperlinks.
 	if (_getHyperlinkInRange(posStart, posEnd) != NULL)
 		return false;
@@ -12664,12 +12701,11 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 	//
 	// Cut out current selection.
 	//
-	if(bReplace)
+	if(bCopy)
 	{
 		copyToLocal(posStart,posEnd);
-		_deleteSelection();
-		posEnd = posStart;
 	}
+	_clearSelection();
 	//
 	// Now insert the Hyperlink-like field
 	//
@@ -12719,13 +12755,12 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 	//
 	// OK now Insert the text into the annotation strux
 	//
-	if(bReplace)
+	if(bCopy)
 	{
 		//
 		// Paste in the selected text
 		//
 		_pasteFromLocalTo(posAnnotation+2);
-		_clearSelection();
 	}
 	else
 	{
@@ -12741,13 +12776,7 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 	
 		UT_UCS4String sUCS4(sTmp.utf8_str());
 		bRet = m_pDoc->insertSpan(posAnnotation+2, sUCS4.ucs4_str(),sUCS4.length(),NULL);
-		// because we have inserted two objects, 3 struxes and text 
-		// around the selection boundaries the original insetion point and 
-		// selection anchor
-		// are now shifted, so we need to fix them
-		posEnd += 4 + sUCS4.length();
-		setPoint(posStart+1);
-		m_Selection.setSelectionAnchor(posEnd);
+
 	}
 	// Signal piceTable is stable again and close off the glob
 
@@ -12755,6 +12784,8 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 	_generalUpdate();
 	m_pDoc->endUserAtomicGlob();
 	m_pDoc->enableListUpdates();
+	fl_AnnotationLayout * pAL = getClosestAnnotation(posAnnotation+2);
+	selectAnnotation(pAL);
 
 	return true;
 }

@@ -63,7 +63,7 @@ void AP_UnixPreview_Annotation::runModeless(XAP_Frame * pFrame)
 	m_gc = (GR_CairoGraphics*) pApp->newGraphics(ai);
 	
 	_createAnnotationPreviewFromGC(m_gc, m_pPreviewWindow->allocation.width, m_pPreviewWindow->allocation.height);
-	
+	m_gc->setZoomPercentage(100);
 	gtk_widget_show(m_pDrawingArea);
 }
 

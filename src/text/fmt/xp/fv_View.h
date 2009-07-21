@@ -571,16 +571,16 @@ public:
 										 UT_UTF8String * sAuthor,
 										 UT_UTF8String * sTitle,
 										 bool bReplace);
-	bool                getAnnotationText(UT_uint32 iAnnotaion, UT_UTF8String & sText);
-	bool                setAnnotationText(UT_uint32 iAnnotaion, UT_UTF8String & sText);
-	bool                setAnnotationText(UT_uint32 iAnnotaion, UT_UTF8String & sText,UT_UTF8String & sAuthor, UT_UTF8String & sTitle);
+	bool                getAnnotationText(UT_uint32 iAnnotation, UT_UTF8String & sText);
+	bool                setAnnotationText(UT_uint32 iAnnotation, UT_UTF8String & sText);
+	bool                setAnnotationText(UT_uint32 iAnnotation, UT_UTF8String & sText,UT_UTF8String & sAuthor, UT_UTF8String & sTitle);
 	bool                getAnnotationRichText(UT_uint32 iAnnotation, UT_UTF8String & sRTF);
-    bool                setAnnotationRichText(UT_uint32 iAnnotaion, UT_UTF8String &sRTF);
+    bool                setAnnotationRichText(UT_uint32 iAnnotation, UT_UTF8String &sRTF);
 	// TODO getters and setters to implement/change/add as judged necessary
-	bool                getAnnotationTitle(UT_uint32 iAnnotaion, UT_UTF8String & sTitle);
-	bool                setAnnotationTitle(UT_uint32 iAnnotaion, UT_UTF8String & sTitle);
-	bool                getAnnotationAuthor(UT_uint32 iAnnotaion, UT_UTF8String & sAuthor);
-	bool                setAnnotationAuthor(UT_uint32 iAnnotaion, UT_UTF8String & sAuthor);
+	bool                getAnnotationTitle(UT_uint32 iAnnotation, UT_UTF8String & sTitle);
+	bool                setAnnotationTitle(UT_uint32 iAnnotation, UT_UTF8String & sTitle);
+	bool                getAnnotationAuthor(UT_uint32 iAnnotation, UT_UTF8String & sAuthor);
+	bool                setAnnotationAuthor(UT_uint32 iAnnotation, UT_UTF8String & sAuthor);
 
 	bool                isAnnotationPreviewActive(void) { return m_bAnnotationPreviewActive;}
 	void                setAnnotationPreviewActive(bool b) { m_bAnnotationPreviewActive = b;}
@@ -589,6 +589,7 @@ public:
 	void				killAnnotationPreview();
 	bool				cmdEditAnnotationWithDialog(UT_uint32 aID);
 	fl_AnnotationLayout * getAnnotationLayout(UT_uint32 iAnnotation);
+	bool                selectAnnotation(fl_AnnotationLayout * pAL);
 // ----------------------
 
 	bool		gotoTarget(AP_JumpTarget type, UT_UCSChar * data);
