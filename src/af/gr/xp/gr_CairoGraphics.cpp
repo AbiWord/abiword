@@ -248,7 +248,7 @@ bool GR_PangoRenderInfo::getUTF8Text()
 
 	UT_TextIterator & text = *m_pText;
 	sUTF8->clear();
-
+	sUTF8->reserve( text.getUpperLimit());
 	// we intentionally run this as far as the iterator lets us, even if that is
 	// past the end of this item
 	for(; text.getStatus() == UTIter_OK; ++text)
