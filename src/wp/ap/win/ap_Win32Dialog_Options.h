@@ -205,6 +205,7 @@ public:
 	SET_GATHER			(AutoSaveFile, bool);
  	SET_GATHER			(SmartQuotes,   		bool);
  	SET_GATHER			(CustomSmartQuotes,		bool);
+	SET_GATHER			(EnableOverwrite,		bool);
 	
 	virtual bool _gatherViewShowToolbar(UT_uint32 t) { UT_ASSERT(UT_SHOULD_NOT_HAPPEN); return true;}
 	virtual void _setViewShowToolbar(UT_uint32 row, bool b) {}
@@ -220,7 +221,6 @@ public:
 	SET_GATHER			(ViewHiddenText,		bool);
 	SET_GATHER			(ViewUnprintable,		bool);
 	SET_GATHER			(EnableSmoothScrolling,	bool);
-	SET_GATHER			(EnableOverwrite,		bool);
 
 	virtual void _gatherAutoSaveFilePeriod(UT_String &stRetVal);
 	virtual void _setAutoSaveFilePeriod(const UT_String &stPeriod);
@@ -238,7 +238,6 @@ public:
 
 	// Dummy
 	bool			m_boolEnableSmoothScrolling;
-	bool			m_boolEnableOverwrite;
 	bool			m_boolPrefsAutoSave;
 	bool			m_boolViewAll;
 	bool			m_boolViewHiddenText;

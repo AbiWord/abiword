@@ -212,6 +212,10 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 
 	switch (id)
 	{
+		case id_CHECK_ENABLE_OVERWRITE:
+			EnableWindow(GetDlgItem((HWND)getPage(PG_GENERAL),AP_RID_DIALOG_OPTIONS_CHK_EnableOverwrite),value);
+			return;
+
 		case id_CHECK_LANG_WITH_KEYBOARD:
 			EnableWindow(GetDlgItem((HWND)getPage(PG_GENERAL),AP_RID_DIALOG_OPTIONS_CHK_LanguageWithKeyboard),value);
 			return;
@@ -296,6 +300,7 @@ void	AP_Win32Dialog_Options::_set##Bool(bool b) { 		\
 	m_bool##Bool = b;										\
 }
 
+DEFINE_GET_SET_BOOL(PG_GENERAL,EnableOverwrite)
 DEFINE_GET_SET_BOOL(PG_GENERAL,LanguageWithKeyboard)
 DEFINE_GET_SET_BOOL(PG_GENERAL,AutoLoadPlugins)
 
@@ -315,7 +320,6 @@ DEFINE_GET_SET_BOOL(PG_SMARTQUOTES,CustomSmartQuotes)
 /* Not used */
 DEFINE_GET_SET_BOOL_DUMMY (ViewCursorBlink)
 DEFINE_GET_SET_BOOL_DUMMY (EnableSmoothScrolling)
-DEFINE_GET_SET_BOOL_DUMMY (EnableOverwrite)
 DEFINE_GET_SET_BOOL_DUMMY (PrefsAutoSave)
 DEFINE_GET_SET_BOOL_DUMMY (ViewAll)
 DEFINE_GET_SET_BOOL_DUMMY (ViewHiddenText)
@@ -707,6 +711,7 @@ void AP_Win32Dialog_Options_General::_onInitDialog()
 	HWND hCtrlUILang	= GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_COMBO_UILANG);
 	
 	// localize controls	
+	_DS2(OPTIONS_CHK_EnableOverwrite,		DLG_Options_Label_EnableOverwrite);
 	_DS2(OPTIONS_LBL_UNITS,					DLG_Options_Label_ViewUnits);	
 	_DS2(OPTIONS_BTN_BGColor,				DLG_Options_Label_ChooseForTransparent);
 	_DS2(OPTIONS_CHK_AutoLoadPlugins,		DLG_Options_Label_CheckAutoLoadPlugins);

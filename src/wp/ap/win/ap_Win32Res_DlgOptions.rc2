@@ -67,7 +67,7 @@
 #define AP_RID_DIALOG_OPTIONS_CHK_LanguageWithKeyboard  1312
 #define AP_RID_DIALOG_OPTIONS_COMBO_UILANG				1313
 #define AP_RID_DIALOG_OPTIONS_STATIC_LANGUAGE			1314
-
+#define AP_RID_DIALOG_OPTIONS_CHK_EnableOverwrite		1315
 
 // sub-dialog for the "Documents" tab
 #define AP_RID_DIALOG_OPTIONS_STATIC_BidiOptions		1400
@@ -137,12 +137,15 @@ AP_RID_DIALOG_OPT_GENERAL DIALOG DISCARDABLE  0, 0, 251, 233
 STYLE WS_CHILD
 FONT 8, "MS Sans Serif"
 BEGIN
-	LTEXT           "Units:",AP_RID_DIALOG_OPTIONS_LBL_UNITS,14,49,24,12,
+	LTEXT           "Units:",AP_RID_DIALOG_OPTIONS_LBL_UNITS,14,29,24,12,
                     SS_CENTERIMAGE | NOT WS_GROUP
-    COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_UNITS,43,49,61,75,
+    COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_UNITS,43,29,61,75,
                     CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "Choose Screen Color",AP_RID_DIALOG_OPTIONS_BTN_BGColor,
-                    15,70,90,14
+                    15,50,90,14
+    CONTROL         "Enable overwrite mode toggle",
+                    AP_RID_DIALOG_OPTIONS_CHK_EnableOverwrite,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,14,74,240,8
     LTEXT           "User Interface",AP_RID_DIALOG_OPTIONS_STATIC_UI,7,15,
                     127,8    
     LTEXT           "Application Startup",
