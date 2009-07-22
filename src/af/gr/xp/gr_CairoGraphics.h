@@ -177,7 +177,6 @@ public:
 	cairo_t* m_mainBufferPointer;
 	
 	cairo_t* getMainContext(); //////////////////////////////////////////////
-	void setMainContext(cairo_t* replacement);
 	void createOffscreenBuffer(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_uint32 height);
 	UT_uint32* getExtendsFromDeque(UT_uint32 i);
 	void setActiveBufferFromDeque(UT_uint32 i);
@@ -185,7 +184,7 @@ public:
 	void restoreMainBuffer();
 	void paintDeque();
 	void saveMainContext();
-	void setActiveBuffer(cairo_t* buffer);
+	void setActiveBuffer(cairo_t* replacement);
 	cairo_t* getBuffer();
 		
 	///////////////////////////////////////////////////////////////////

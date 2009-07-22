@@ -3010,19 +3010,14 @@ cairo_t* GR_CairoGraphics::getMainContext()
 	return getCairo();
 }
 
-void GR_CairoGraphics::setMainContext(cairo_t* replacement)
-{
-	m_cr = *replacement;
-}
-
 void GR_CairoGraphics::saveMainContext()
 {
 	m_mainBufferPointer = getMainContext();
 }
 
-void GR_CairoGraphics::setActiveBuffer(cairo_t* buffer)
+void GR_CairoGraphics::setActiveBuffer(cairo_t* replacement)
 {
-	m_bufferPointer = buffer;
+	m_cr = replacement;
 }
 
 cairo_t* GR_CairoGraphics::getBuffer()
@@ -3059,8 +3054,19 @@ void GR_CairoGraphics::paintDeque()
 	while (getDequeSize() > 0)
 	{
 		tempPair = m_bufferContainer.back();
+		cairo_paint(tempPair.first);
+		
+		cairo_surface_t* tempSurface = cairo_get_group_target(tempPair.first);
+		cairo_surface_reference(tempSurface);
+		cairo_destroy(tempPair.first);
+		
+		//paint to screen context
+		cairo_set_source_surface(m_cr, tempSurface, 0, 0);
+		cairo_paint(m_cr);
+		
+		cairo_surface_destroy(tempSurface);
+		
 		m_bufferContainer.pop_back();
-		//paint to m_mainBufferPointer
 		delete[] tempPair.second;
 	}
 	return;
