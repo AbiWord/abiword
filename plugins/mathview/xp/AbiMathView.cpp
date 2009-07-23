@@ -738,8 +738,6 @@ bool GR_MathManager::isDefault(void)
 bool GR_MathManager::createPNGSnapshot(AD_Document * pDoc, UT_Rect & rec,
 					   const char * szDataID)
 {
-	const char* mimetypePNG = NULL;
-
 	if (isDefault())
 	{
 		return false;
@@ -761,7 +759,7 @@ bool GR_MathManager::createPNGSnapshot(AD_Document * pDoc, UT_Rect & rec,
 	UT_UTF8String sID = "snapshot-png-";
 	sID += szDataID;
 
-	mimetypePNG = g_strdup("image/png");
+	const std::string mimetypePNG = "image/png";
 	UT_DEBUGMSG(("Making data-item of name %s \n",sID.utf8_str()));
 	pDoc->createDataItem(sID.utf8_str(),false,reinterpret_cast< const UT_ByteBuf *>(pBuf),mimetypePNG,NULL);
 

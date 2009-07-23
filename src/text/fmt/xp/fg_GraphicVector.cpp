@@ -316,7 +316,7 @@ UT_Error FG_GraphicVector::insertAtStrux(PD_Document* pDoc,
 	/*
 	  Create the data item
 	*/
-	char * mimetype = g_strdup("image/svg+xml");
+	const std::string mimetype = "image/svg+xml";
    	pDoc->createDataItem(szName, false, m_pbbSVG, mimetype, NULL);
 
 
