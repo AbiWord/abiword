@@ -846,11 +846,11 @@ bool ABI_Collab_Import::_import(const SessionPacket& packet, UT_sint32 iImportAd
 						const Data_ChangeRecordSessionPacket* dp = static_cast<const Data_ChangeRecordSessionPacket*>( crp );
 						const char * szNameV = g_strdup(dp->getAttribute(PT_DATAITEM_ATTRIBUTE_NAME));
 						void * pHandle = NULL;
-						char * pToken = dp->m_bTokenSet ? g_strdup(dp->m_sToken.c_str()) : NULL;
+						std::string sToken = dp->m_bTokenSet ? dp->m_sToken : "";
 						UT_ByteBuf * pBuf= new UT_ByteBuf();
-						UT_DEBUGMSG(("PXT_CreateDataItem: append image buffer @ 0x%p, %u bytes, pToken %s\n", &dp->m_vecData[0], dp->m_vecData.size(), pToken?pToken:"NULL"));
+						UT_DEBUGMSG(("PXT_CreateDataItem: append image buffer @ 0x%p, %u bytes, sToken %s\n", &dp->m_vecData[0], dp->m_vecData.size(), sToken.c_str()));
 						pBuf->append(reinterpret_cast<const UT_Byte *>( &dp->m_vecData[0] ), dp->m_vecData.size() );
-						bool res = m_pDoc->createDataItem(szNameV,false,pBuf,pToken,&pHandle);
+						bool res = m_pDoc->createDataItem(szNameV,false,pBuf,sToken,&pHandle);
 						delete pBuf;
 						return res;
 					}
