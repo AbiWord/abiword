@@ -52,6 +52,15 @@ UT_Error OXML_Element_Table::serialize(IE_Exp_OpenXML* exporter)
 	if(err != UT_OK)
 		return err;
 
+	//set the row numbers
+	std::vector<OXML_Element*>::size_type i;
+	OXML_ElementVector children = getChildren();
+	for (i = 0; i < children.size(); i++)
+	{
+		OXML_Element_Row* r = static_cast<OXML_Element_Row*>(get_pointer(children[i]));
+		r->setRowNumber(i);
+	}
+
 	err = this->serializeChildren(exporter);
 	if(err != UT_OK)
 		return err;
@@ -360,4 +369,19 @@ bool OXML_Element_Table::incrementRightHorizontalMergeStart(OXML_Element_Cell* c
 		cell->setTop(cell->getTop()-1); //decrement top if we can't find the starting cell in this row
 	}
 	return false;	
+}
+
+void OXML_Element_Table::addMissingCell(int rowNumber, OXML_Element_Cell* cell)
+{
+	std::vector<OXML_Element*>::size_type i;
+	OXML_ElementVector children = getChildren();
+	for (i = 0; i < children.size(); i++)
+	{
+		OXML_Element_Row* r = static_cast<OXML_Element_Row*>(get_pointer(children[i]));
+		if(i == rowNumber)
+		{
+			r->addMissingCell(cell);
+			return;
+		}
+	}
 }

@@ -77,20 +77,20 @@ UT_Error OXML_Element_Row::serializeChildren(IE_Exp_OpenXML* exporter)
 	{
 		cell = static_cast<OXML_Element_Cell*>(get_pointer(children[i]));
 		
-		for(; left < cell->getLeft(); left++){
-			//top=-1,bottom=0 means vertically continued cell
-			OXML_Element_Cell temp("", table, this, left, left+1, -1, 0); 
-			OXML_SharedElement shared_paragraph(new OXML_Element_Paragraph(""));
-
-			ret = temp.appendElement(shared_paragraph);
-			if(ret != UT_OK)
-				return ret;			
-
-			ret = temp.serialize(exporter);
-			if(ret != UT_OK)
-				return ret;			
+		//go through missing cells and serialize the correct ones
+		std::vector<OXML_Element_Cell*>::const_iterator it;
+		for( it = m_missingCells.begin(); it < m_missingCells.end() && (left < cell->getLeft()); ++it )
+		{
+			OXML_Element_Cell* pCell = *it;
+			if((pCell->getLeft() == left)) 
+			{ //found missing cell
+				left = pCell->getRight();
+				ret = pCell->serialize(exporter);
+				if(ret != UT_OK)
+					return ret;			
+			}
 		}
-
+			
 		left = cell->getRight();
 
 		ret = cell->serialize(exporter);
@@ -172,6 +172,12 @@ void OXML_Element_Row::setRowNumber(int row)
 void OXML_Element_Row::addCell(OXML_Element_Cell* cell)
 {
 	m_cells.push_back(cell);
+}
+
+void OXML_Element_Row::addMissingCell(OXML_Element_Cell* cell)
+{
+	m_missingCells.push_back(cell);
+	cell->setRow(this);
 }
 
 bool OXML_Element_Row::incrementBottomVerticalMergeStart(OXML_Element_Cell* cell)

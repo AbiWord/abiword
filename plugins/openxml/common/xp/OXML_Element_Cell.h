@@ -68,6 +68,11 @@ public:
 	void setTop(UT_sint32 top);
 	void setBottom(UT_sint32 bottom);
 
+	void setRow(OXML_Element_Row* row)
+		{
+			m_row = row;
+		}
+
 	void setVerticalMergeStart(bool start);
 	void setHorizontalMergeStart(bool start);
 	bool startsVerticalMerge() const

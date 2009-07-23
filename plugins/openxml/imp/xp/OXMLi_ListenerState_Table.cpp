@@ -210,10 +210,12 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 		{
 			if(!strcmp(val, "dashed"))
 				styleValue = "0"; 
-			ret = element->setProperty(borderStyle, styleValue);
-			if(ret != UT_OK)
-				UT_DEBUGMSG(("FRT:OpenXML importer can't set %s:0\n", borderStyle.c_str()));
 		}
+
+		ret = element->setProperty(borderStyle, styleValue);
+		if(ret != UT_OK)
+			UT_DEBUGMSG(("FRT:OpenXML importer can't set %s:0\n", borderStyle.c_str()));
+
 	}
 	else if(nameMatches(rqst->pName, NS_W_KEY, "shd"))
 	{

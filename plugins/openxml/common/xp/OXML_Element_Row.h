@@ -71,6 +71,8 @@ public:
 	//return true if successful
 	bool incrementRightHorizontalMergeStart(OXML_Element_Cell* cell);
 
+	void addMissingCell(OXML_Element_Cell* cell);
+
 protected:
 	UT_Error serializeChildren(IE_Exp_OpenXML* exporter);
 
@@ -81,6 +83,7 @@ private:
 	std::vector<OXML_Element_Cell*> m_cells;
 	int m_rowNumber;
 	int m_currentColumnNumber;
+	std::vector<OXML_Element_Cell*> m_missingCells;
 };
 
 #endif //_OXML_ELEMENT_ROW_H_

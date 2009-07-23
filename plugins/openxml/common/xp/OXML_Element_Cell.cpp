@@ -224,9 +224,16 @@ UT_Error OXML_Element_Cell::serializeProperties(IE_Exp_OpenXML* exporter)
 
 	if(vspan > 1)
 	{
-		err = exporter->setVerticalMerge(TARGET_DOCUMENT, "restart");
-		if(err != UT_OK)
-			return err;
+		if(!isVertCont)
+		{
+			err = exporter->setVerticalMerge(TARGET_DOCUMENT, "restart");
+			if(err != UT_OK)
+				return err;
+		}
+		
+		//add the remaining part of the cell as a missing cell
+		OXML_Element_Cell* missingCell = new OXML_Element_Cell("", m_table, NULL, m_iLeft, m_iRight, -1, 1); //vertically continued cell
+		m_table->addMissingCell(m_row->getRowNumber()+1, missingCell);
 	}
 
 	if(isVertCont)
@@ -333,33 +340,33 @@ UT_Error OXML_Element_Cell::addToPT(PD_Document * pDocument)
 		szValue = NULL;
 	}
 
-	if((getProperty("top-color", szValue) != UT_OK) || !szValue)
+	if((getProperty("top-style", szValue) != UT_OK) || !szValue)
 	{
-		ret = setProperty("top-color", "ffffff"); 
+		ret = setProperty("top-style", "0"); 
 		if(ret != UT_OK)
 			return ret;	
 	}		
 
 	szValue = NULL;
-	if((getProperty("left-color", szValue) != UT_OK) || !szValue)
+	if((getProperty("left-style", szValue) != UT_OK) || !szValue)
 	{
-		ret = setProperty("left-color", "ffffff"); 
+		ret = setProperty("left-style", "0"); 
 		if(ret != UT_OK)
 			return ret;	
 	}
 
 	szValue = NULL;
-	if((getProperty("right-color", szValue) != UT_OK) || !szValue)
+	if((getProperty("right-style", szValue) != UT_OK) || !szValue)
 	{
-		ret = setProperty("right-color", "ffffff"); 
+		ret = setProperty("right-style", "0"); 
 		if(ret != UT_OK)
 			return ret;	
 	}
 
 	szValue = NULL;
-	if((getProperty("bot-color", szValue) != UT_OK) || !szValue)
+	if((getProperty("bot-style", szValue) != UT_OK) || !szValue)
 	{
-		ret = setProperty("bot-color", "ffffff"); 
+		ret = setProperty("bot-style", "0"); 
 		if(ret != UT_OK)
 			return ret;	
 	}
