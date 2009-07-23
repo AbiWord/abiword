@@ -157,7 +157,7 @@ void ODi_Frame_ListenerState::endElement (const gchar* pName,
             // Create the data item
             UT_uint32 id = m_pAbiDocument->getUID(UT_UniqueId::Math);
             UT_UTF8String sID = UT_UTF8String_sprintf("MathLatex%d", id);
-            m_pAbiDocument->createDataItem(sID.utf8_str(), false, m_pMathBB, NULL, NULL);
+            m_pAbiDocument->createDataItem(sID.utf8_str(), false, m_pMathBB, "", NULL);
 
             const gchar *atts[3] = { NULL, NULL, NULL };
             atts[0] = PT_IMAGE_DATAID;
