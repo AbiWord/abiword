@@ -72,6 +72,8 @@ public:
 
 	void addMissingCell(int rowNumber, OXML_Element_Cell* cell);
 
+	void applyStyle(OXML_SharedStyle style);
+
 private:
 	virtual UT_Error serializeProperties(IE_Exp_OpenXML* exporter);
 	std::vector<std::string> columnWidth;

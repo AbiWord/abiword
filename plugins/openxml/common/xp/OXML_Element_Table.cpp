@@ -330,6 +330,7 @@ void OXML_Element_Table::incrementCurrentColNumber()
 void OXML_Element_Table::addRow(OXML_Element_Row* row)
 {
 	m_rows.push_back(row);
+	row->inheritProperties(this);
 }
 
 std::string OXML_Element_Table::getColumnWidth(int colIndex)
@@ -384,4 +385,9 @@ void OXML_Element_Table::addMissingCell(int rowNumber, OXML_Element_Cell* cell)
 			return;
 		}
 	}
+}
+
+void OXML_Element_Table::applyStyle(OXML_SharedStyle style)
+{
+	inheritProperties(get_pointer(style));
 }

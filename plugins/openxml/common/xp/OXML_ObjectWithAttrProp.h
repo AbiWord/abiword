@@ -48,6 +48,8 @@ public:
 	const gchar ** getAttributes() const;
 	const gchar ** getProperties() const;
 
+	UT_Error inheritProperties(OXML_ObjectWithAttrProp* parent);
+
 	//! Provides the list of attributes including all the properties in one attribute.
 	/*! This method takes all the properties of the object and combines them into one string in CSS
  	 *  format.  This string is used as the value of a new attribute whose key is defined by PP_PROPS_ATTRIBUTE_NAME.

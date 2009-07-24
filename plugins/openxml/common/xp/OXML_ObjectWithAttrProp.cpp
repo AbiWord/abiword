@@ -24,7 +24,7 @@
 #include "OXML_ObjectWithAttrProp.h"
 
 OXML_ObjectWithAttrProp::OXML_ObjectWithAttrProp() : 
-	m_pAttributes(NULL)
+	m_pAttributes(new PP_AttrProp())
 {
 }
 
@@ -36,20 +36,12 @@ OXML_ObjectWithAttrProp::~OXML_ObjectWithAttrProp()
 
 UT_Error OXML_ObjectWithAttrProp::setAttribute(const gchar * szName, const gchar * szValue)
 {
-	UT_Error ret;
-	if (m_pAttributes == NULL)
-		m_pAttributes = new PP_AttrProp();
-	ret = m_pAttributes->setAttribute(szName, szValue) ? UT_OK : UT_ERROR;
-	return ret;
+	return m_pAttributes->setAttribute(szName, szValue) ? UT_OK : UT_ERROR;
 }
 
 UT_Error OXML_ObjectWithAttrProp::setProperty(const gchar * szName, const gchar * szValue)
 {
-	UT_Error ret;
-	if (m_pAttributes == NULL)
-		m_pAttributes = new PP_AttrProp();
-	ret = m_pAttributes->setProperty(szName, szValue) ? UT_OK : UT_ERROR;
-	return ret;
+	return m_pAttributes->setProperty(szName, szValue) ? UT_OK : UT_ERROR;
 }
 
 UT_Error OXML_ObjectWithAttrProp::setProperty(const std::string & szName, const std::string & szValue)
@@ -89,20 +81,12 @@ UT_Error OXML_ObjectWithAttrProp::getProperty(const gchar * szName, const gchar 
 
 UT_Error OXML_ObjectWithAttrProp::setAttributes(const gchar ** attributes)
 {
-	UT_Error ret;
-	if (m_pAttributes == NULL)
-		m_pAttributes = new PP_AttrProp();
-	ret = m_pAttributes->setAttributes(attributes) ? UT_OK : UT_ERROR;
-	return ret;
+	return m_pAttributes->setAttributes(attributes) ? UT_OK : UT_ERROR;
 }
 
 UT_Error OXML_ObjectWithAttrProp::setProperties(const gchar ** properties)
 {
-	UT_Error ret;
-	if (m_pAttributes == NULL)
-		m_pAttributes = new PP_AttrProp();
-	ret = m_pAttributes->setProperties(properties) ? UT_OK : UT_ERROR;
-	return ret;
+	return m_pAttributes->setProperties(properties) ? UT_OK : UT_ERROR;
 }
 
 UT_Error OXML_ObjectWithAttrProp::appendAttributes(const gchar ** attributes)
@@ -129,15 +113,11 @@ UT_Error OXML_ObjectWithAttrProp::appendProperties(const gchar ** properties)
 
 const gchar ** OXML_ObjectWithAttrProp::getAttributes() const
 {
-	if (m_pAttributes == NULL) 
-        return NULL;
 	return m_pAttributes->getAttributes();
 }
 
 const gchar ** OXML_ObjectWithAttrProp::getProperties() const
 {
-	if (m_pAttributes == NULL) 
-        return NULL;
 	return m_pAttributes->getProperties();
 }
 
@@ -173,3 +153,21 @@ std::string OXML_ObjectWithAttrProp::_generatePropsString() const
 	return fmt_props;
 }
 
+UT_Error OXML_ObjectWithAttrProp::inheritProperties(OXML_ObjectWithAttrProp* parent)
+{
+	if(!parent)
+		return UT_ERROR;
+
+	UT_Error ret = UT_OK;
+
+	const gchar** props = parent->getProperties();
+
+	if(props)
+	{
+		ret = this->appendProperties(props);
+		if(ret != UT_OK)
+			return ret;
+	}	
+
+	return ret;
+}

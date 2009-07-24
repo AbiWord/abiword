@@ -90,6 +90,8 @@ void OXMLi_StreamListener::setupStates(OXML_PartType type, const char * partId)
 		this->pushState(state);
 		state = new OXMLi_ListenerState_Common();
 		this->pushState(state);
+		state = new OXMLi_ListenerState_Table();
+		this->pushState(state);
 		break;
 	case THEME_PART:
 		state = new OXMLi_ListenerState_Theme();

@@ -240,6 +240,28 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 				UT_DEBUGMSG(("FRT:OpenXML importer can't set background-color:%s\n", fill));	
 		}
 	}
+	else if(nameMatches(rqst->pName, NS_W_KEY, "tblStyle"))
+	{
+		OXML_Element_Table* table = m_tableStack.top();				
+		const gchar* val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
+		if(val && table) 
+		{
+			std::string styleName(val);
+			OXML_Document* doc = OXML_Document::getInstance();
+			table->applyStyle(doc->getStyleById(styleName));
+		}
+		rqst->handled = true;
+	}
+	else if(nameMatches(rqst->pName, NS_W_KEY, "tblPr"))
+	{
+		if(contextMatches(rqst->context->back(), NS_W_KEY, "style"))
+		{
+			//we must be in tblStyle in styles, so let's push the table instance to m_tableStack
+			OXML_Element_Table* tbl = static_cast<OXML_Element_Table*>(get_pointer(rqst->stck->top()));
+			m_tableStack.push(tbl);
+		}
+		rqst->handled = true;
+	}
 	//TODO: more coming here
 }
 
@@ -277,7 +299,11 @@ void OXMLi_ListenerState_Table::endElement (OXMLi_EndElementRequest * rqst)
 		rqst->stck->pop(); //pop cell
 		OXML_SharedElement row = rqst->stck->top();
 		OXML_Element_Cell* pCell = m_cellStack.top();
-		if(!pCell->startsVerticalMerge())
+		if(!pCell->startsHorizontalMerge() && !pCell->startsVerticalMerge())
+		{
+			//do nothing in this case
+		}
+		else if(!pCell->startsVerticalMerge())
 		{
 			OXML_Element_Table* table = m_tableStack.top();
 			if(!table->incrementBottomVerticalMergeStart(pCell))
@@ -288,7 +314,7 @@ void OXMLi_ListenerState_Table::endElement (OXMLi_EndElementRequest * rqst)
 				UT_DEBUGMSG(("FRT:OpenXML importer, invalid <vMerge val=continue> attribute.\n"));
 			}
 		}
-		if(!pCell->startsHorizontalMerge())
+		else if(!pCell->startsHorizontalMerge())
 		{
 			OXML_Element_Table* table = m_tableStack.top();
 			if(!table->incrementRightHorizontalMergeStart(pCell))
@@ -299,8 +325,7 @@ void OXMLi_ListenerState_Table::endElement (OXMLi_EndElementRequest * rqst)
 				UT_DEBUGMSG(("FRT:OpenXML importer, invalid <hMerge val=continue> attribute.\n"));
 			}
 		}
-		
-		if(pCell->startsHorizontalMerge() && pCell->startsVerticalMerge())
+		else //(pCell->startsHorizontalMerge() && pCell->startsVerticalMerge())
 		{
 			OXML_Element_Row* pRow = m_rowStack.top();
 			row->appendElement(cell);
@@ -317,10 +342,19 @@ void OXMLi_ListenerState_Table::endElement (OXMLi_EndElementRequest * rqst)
 			nameMatches(rqst->pName, NS_W_KEY, "right") ||
 			nameMatches(rqst->pName, NS_W_KEY, "top") ||
 			nameMatches(rqst->pName, NS_W_KEY, "bottom") ||
-			nameMatches(rqst->pName, NS_W_KEY, "shd"))
+			nameMatches(rqst->pName, NS_W_KEY, "shd") ||
+			nameMatches(rqst->pName, NS_W_KEY, "tblStyle"))
 	{
 		rqst->handled = true;
 	}	
+	else if(nameMatches(rqst->pName, NS_W_KEY, "tblPr"))
+	{
+		if(contextMatches(rqst->context->back(), NS_W_KEY, "style"))
+		{
+			m_tableStack.pop(); //pop the dummy table
+		}
+		rqst->handled = true;
+	}
 	//TODO: more coming here
 }
 

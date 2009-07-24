@@ -60,6 +60,13 @@ void OXMLi_ListenerState_Styles::startElement (OXMLi_StartElementRequest * rqst)
 		rqst->stck->push(dummy);
 
 		rqst->handled = true;
+
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "tblPr")) {
+		//Push a dummy element onto the stack to collect the formatting for the current style.
+		OXML_SharedElement dummy(new OXML_Element_Table(""));
+		rqst->stck->push(dummy);
+		//don't handle the request so that table listener state can adjust its internal state
+
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "style")) {
 		const gchar * id = attrMatches(NS_W_KEY, "styleId", rqst->ppAtts);
 		const gchar * type = attrMatches(NS_W_KEY, "type", rqst->ppAtts);
@@ -114,7 +121,9 @@ void OXMLi_ListenerState_Styles::endElement (OXMLi_EndElementRequest * rqst)
 		m_pCurrentStyle = NULL;
 
 		rqst->handled = true;
-	} else if (nameMatches(rqst->pName, NS_W_KEY, "rPr") || nameMatches(rqst->pName, NS_W_KEY, "pPr")) {
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "rPr") || 
+			   nameMatches(rqst->pName, NS_W_KEY, "pPr") ||
+			   nameMatches(rqst->pName, NS_W_KEY, "tblPr") ) {
 		//Retrieve the formatting collected by the Common listener state.
 		OXML_SharedElement dummy = rqst->stck->top();
 		const gchar ** props = dummy->getProperties();
@@ -124,7 +133,7 @@ void OXMLi_ListenerState_Styles::endElement (OXMLi_EndElementRequest * rqst)
 		}
 		rqst->stck->pop();
 
-		rqst->handled = true;
+		rqst->handled = !nameMatches(rqst->pName, NS_W_KEY, "tblPr");
 	}
 }
 

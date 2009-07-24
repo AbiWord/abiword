@@ -172,6 +172,7 @@ void OXML_Element_Row::setRowNumber(int row)
 void OXML_Element_Row::addCell(OXML_Element_Cell* cell)
 {
 	m_cells.push_back(cell);
+	cell->inheritProperties(this);
 }
 
 void OXML_Element_Row::addMissingCell(OXML_Element_Cell* cell)
