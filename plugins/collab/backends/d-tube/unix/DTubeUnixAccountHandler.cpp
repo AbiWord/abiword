@@ -122,6 +122,8 @@ tp_connection_get_contacts(TpConnection* conn, DTubeAccountHandler* pHandler)
 	UT_return_if_fail(conn);
 
 	GPtrArray *channels;
+	// FIXME: tp_cli_connection_run_list_channels is deprecated
+	// FIXME: only use those channels where TargetHandleType is LIST and TargetID is "stored"
 	tp_cli_connection_run_list_channels (conn, -1, &channels, NULL, NULL);
 	printf("Number of connection channels: %d\n", channels->len);
 	for (guint i = 0; i < channels->len; i++)

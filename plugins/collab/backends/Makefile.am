@@ -1,5 +1,5 @@
 
-DIST_SUBDIRS = fake service sugar tcp xmpp
+DIST_SUBDIRS = d-tube fake service sugar tcp xmpp
 SUBDIRS = 
 
 noinst_LTLIBRARIES = libbackends.la
@@ -30,6 +30,12 @@ if COLLAB_BACKEND_XMPP
 SUBDIRS += xmpp
 libbackends_la_LIBADD += xmpp/libxmpp.la
 endif
+
+if COLLAB_BACKEND_DTUBE
+SUBDIRS += d-tube
+libbackends_la_LIBADD += d-tube/libdtube.la
+endif
+
 
 libbackends_la_SOURCES = 
 

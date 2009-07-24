@@ -106,7 +106,7 @@ private:
 	AccountHandler*				m_handler;
 	UT_UTF8String				m_descriptor;
 	vector<DocHandle*>			m_docHandles;
-	bool						m_volatile;
+	bool						m_volatile;	
 };
 
 typedef boost::shared_ptr<Buddy> BuddyPtr;

@@ -79,7 +79,8 @@ void AP_Dialog_CollaborationShare::_share(AccountHandler* pHandler, const std::v
 	{
 		UT_DEBUGMSG(("Sharing document...\n"));
 
-		// TODO: setup the ACL list
+		// FIXME: this can cause a race condition: the other side can already be
+		// offered the session before we actually started it!
 		
 		// tell the account handler that we start a new session, so
 		// it set up things if needed

@@ -72,6 +72,9 @@
 #include <session/xp/AbiCollab.h>
 
 // account handler includes
+#ifdef ABICOLLAB_HANDLER_DTUBE
+#include <backends/d-tube/unix/DTubeUnixAccountHandler.h>
+#endif
 #ifdef ABICOLLAB_HANDLER_XMPP
 #include <backends/xmpp/xp/XMPPAccountHandler.h>
 #endif
@@ -245,6 +248,15 @@ bool AbiCollabSessionManager::registerAccountHandlers()
 {
 	UT_DEBUGMSG(("AbiCollabSessionManager::registerAccountHandlers()\n"));
 
+#ifdef ABICOLLAB_HANDLER_DTUBE
+	// we don't want to register a d-bus tube account handler here so
+	// swe can construct multiple sugar account handlers later: the 
+	// d-bus tube account handler is a singleton, that should always
+	// be active if it is compiled in
+	UT_DEBUGMSG(("Registering the d-tube account handler!\n"));
+	AccountHandler* pDTubeHandler = new DTubeAccountHandler();
+	addAccount(pDTubeHandler);
+#endif
 #ifdef ABICOLLAB_HANDLER_XMPP
 	m_regAccountHandlers[XMPPAccountHandler::getStaticStorageType()] = XMPPAccountHandlerConstructor;
 #endif
@@ -252,8 +264,8 @@ bool AbiCollabSessionManager::registerAccountHandlers()
 	m_regAccountHandlers[TCPAccountHandler::getStaticStorageType()] = TCPAccountHandlerConstructor;
 #endif
 #ifdef ABICOLLAB_HANDLER_SUGAR
-	// we don't want to regerister a sugar account handler here, 
-	// so we can construct multiple sugar account handlers: the 
+	// we don't want to register a sugar account handler here so
+	// we can construct multiple sugar account handlers later: the 
 	// sugar account handler is a singleton, that should always
 	// be active if it is compiled in
 	UT_DEBUGMSG(("Registering the sugar account handler!\n"));
