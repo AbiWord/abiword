@@ -35,6 +35,7 @@ public:
 		m_pTube(pTube),
 		m_sDBusName(dbusName)
 	{
+		setVolatile(true);
 		// TODO: we should prolly ref the tube
 		// dbus_connection_unref(m_pTube);
 	}

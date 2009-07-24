@@ -100,14 +100,14 @@ is_usable_connection(TpConnection* conn)
 }
 
 static void
-tp_connection_contacts_by_handle_cb(TpConnection *connection,
+tp_connection_contacts_by_handle_cb(TpConnection * /*connection*/,
 			guint n_contacts,
 			TpContact * const *contacts,
-			guint n_failed,
-			const TpHandle *failed,
-			const GError *error,
+			guint /*n_failed*/,
+			const TpHandle * /*failed*/,
+			const GError * /*error*/,
 			gpointer user_data,
-			GObject *weak_object)
+			GObject * /*weak_object*/)
 {
 	UT_DEBUGMSG(("tp_connection_contacts_by_handle_cb()\n"));
 	DTubeAccountHandler* pHandler = reinterpret_cast<DTubeAccountHandler*>(user_data);
@@ -496,13 +496,13 @@ BuddyPtr DTubeAccountHandler::constructBuddy(const PropertyMap& /*props*/)
 	return BuddyPtr();
 }
 
-BuddyPtr DTubeAccountHandler::constructBuddy(const std::string& descriptor, BuddyPtr pBuddy)
+BuddyPtr DTubeAccountHandler::constructBuddy(const std::string& /*descriptor*/, BuddyPtr /*pBuddy*/)
 {
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-	return DTubeBuddyPtr();
+	return BuddyPtr();
 }
 
-bool DTubeAccountHandler::recognizeBuddyIdentifier(const std::string& identifier)
+bool DTubeAccountHandler::recognizeBuddyIdentifier(const std::string& /*identifier*/)
 {
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 	return false;
@@ -526,7 +526,8 @@ bool DTubeAccountHandler::startSession(PD_Document* pDoc, const std::vector<Budd
 		TelepathyBuddyPtr pBuddy = boost::static_pointer_cast<TelepathyBuddy>(*cit);
 		
 		UT_DEBUGMSG(("Offering tube to %s...\n", pBuddy->getDescriptor(false).utf8_str()));
-		// TODO: implement me...
+		_createAndOfferTube(pBuddy);
+		break;
 	}
 
 	return true;
@@ -611,7 +612,7 @@ list_properties_cb (TpProxy *proxy,
                     const GPtrArray *available_props,
                     const GError *error,
                     gpointer user_data,
-                    GObject *weak_object)
+                    GObject * /*weak_object*/)
 {
 	TpChannel *text_chan = TP_CHANNEL (proxy);
 	guint i;
@@ -656,64 +657,99 @@ list_properties_cb (TpProxy *proxy,
 	}
 }
 
-UT_UTF8String DTubeAccountHandler::_createAndOfferTube(TpChannel *text_chan)
+static GHashTable* 
+s_generate_hash(const std::map<std::string, std::string>& props)
 {
-	TpConnection *conn;
-	TpDBusDaemon *dbus_daemon;
-	//GArray *arr;
-	TpHandle handle;
-	gchar *chan_path;
-	TpChannel *chan;
-	GHashTable *params;
-	guint id;
+	GHashTable* hash = g_hash_table_new (g_str_hash, g_str_equal);
+	for (std::map<std::string, std::string>::const_iterator cit = props.begin(); cit != props.end(); cit++)
+	{
+		GValue* value = g_new0 (GValue, 1);
+		g_value_init (value, G_TYPE_STRING);
+		g_value_set_string (value, (*cit).second.c_str());
+		g_hash_table_insert (hash, g_strdup((*cit).first.c_str()), value);
+	}
+	return hash;
+}
+
+// fixme: should be list of pBuddies
+UT_UTF8String DTubeAccountHandler::_createAndOfferTube(TelepathyBuddyPtr pBuddy)
+{
+	GError* error = NULL;
+	GHashTable* params;
+	gchar* object_path;
+	GHashTable* channel_properties;
 	gboolean result;
-	GError *error = NULL;
 	gchar *address;
 	GValue title = {0,};
 	const gchar *doc_title;
 
-	dbus_daemon = tp_dbus_daemon_new (tp_get_bus ());
-	conn = tp_channel_borrow_connection (text_chan);
-	handle = tp_channel_get_handle (text_chan, NULL);
+	// get some connection belonging to this contact
+	TpContact* pContact = pBuddy->getContact();
+	TpConnection * conn = tp_contact_get_connection (pContact);
 
-	tp_cli_connection_run_request_channel (conn, -1,
-				TP_IFACE_CHANNEL_TYPE_TUBES, TP_HANDLE_TYPE_ROOM, handle, TRUE,
-				&chan_path, NULL, NULL);
+	//
+	// create a room, so we can invite some members in it
+	//
 
-	chan = tp_channel_new (conn, chan_path, TP_IFACE_CHANNEL_TYPE_TUBES,
-				TP_HANDLE_TYPE_ROOM, handle, NULL);
-	g_assert (chan != NULL);
+	// first setup some properties for this room...
+	
+	std::map<std::string, std::string> h_params;
+	h_params["org.freedesktop.Telepathy.Channel.ChannelType"] = TP_IFACE_CHANNEL_TYPE_DBUS_TUBE;
+	//h_params["org.freedesktop.Telepathy.Channel.TargetHandleType"] = TP_HANDLE_TYPE_ROOM;
+	h_params["org.freedesktop.Telepathy.Channel.TargetID"] = "abicollabtest@jabber.org";
+	h_params["org.freedesktop.Telepathy.Channel.Type.DBusTube.ServiceName"] = "com.abisource.abiword.abicollab";
+	params = s_generate_hash(h_params);
+
+	// org.freedesktop.Telepathy.Channel.TargetHandleType
+	GValue target_handle_type = {0,};
+	g_value_init (&target_handle_type, G_TYPE_INT);
+	g_value_set_int (&target_handle_type, TP_HANDLE_TYPE_ROOM);
+	g_hash_table_insert (params, (void *) "org.freedesktop.Telepathy.Channel.TargetHandleType", (void *) &target_handle_type);
+
+	// ... then actually create the room
+	if (!tp_cli_connection_interface_requests_run_create_channel (conn, -1, params, &object_path, &channel_properties, &error, NULL))
+    {
+		UT_DEBUGMSG(("Error creating room: %s\n", error ? error->message : "(null)"));
+		return "";
+	}
+	UT_DEBUGMSG(("Got a room, path: %s\n", object_path));
+	
+	// get a channel to the new room
+	TpChannel* chan = tp_channel_new_from_properties (conn, object_path, channel_properties, NULL);
+	UT_return_val_if_fail(chan, "");
 	tp_channel_run_until_ready (chan, NULL, NULL);
 
-	UT_DEBUGMSG(("Offer tube\n"));
+	// add members to the room
+	// TODO: implement me
+	
+	UT_DEBUGMSG(("Channel created, offering tube...\n"));
 
 	params = g_hash_table_new (g_str_hash, g_str_equal);
 	/* Document title */
-	g_value_init (&title, G_TYPE_STRING);
 	/* HACK
 	* <uwogBB> cassidy: but NOTE that if the current focussed document is other than the doc you shared, you'll get a fsckup
 	* <uwogBB> cassidy: so mark it with "HACK", so we will add the document to the event signal it belongs to
 	*/
+	g_value_init (&title, G_TYPE_STRING);
 	doc_title = XAP_App::getApp()->getLastFocussedFrame()->getTitle().utf8_str();
 	g_value_set_string (&title, doc_title);
 	g_hash_table_insert (params, (void *) "title", (void *) &title);
 
-	result = tp_cli_channel_type_tubes_run_offer_d_bus_tube (chan, -1,
-				"com.abisource.abiword.abicollab", params, &id, &error, NULL);
-	g_assert (result);
-
+	// offer this tube to every participant in the room
+	result = tp_cli_channel_type_dbus_tube_run_offer (chan, -1, params, TP_SOCKET_ACCESS_CONTROL_LOCALHOST, &address, &error, NULL);
+	if (!result)
+	{
+		UT_DEBUGMSG(("Error offering tube to room participants: %s\n", error ? error->message : "(null)"));
+		return "";
+	}
 	g_hash_table_destroy (params);
 
-	result = tp_cli_channel_type_tubes_run_get_d_bus_tube_address (chan, -1,
-				id, &address, NULL, NULL);
-	g_assert (result);
+	UT_DEBUGMSG(("Tube offered, address: %s\n", address));
 
-	UT_UTF8String tubeDBusAddress(address, strlen (address));
+	// start listening on the tube for people entering and leaving it
+	tp_cli_channel_type_tubes_connect_to_d_bus_names_changed (chan, tube_dbus_names_changed_cb, this, NULL, NULL, NULL);
 
-	tp_cli_channel_type_tubes_connect_to_d_bus_names_changed (chan,
-				tube_dbus_names_changed_cb, this, NULL, NULL, NULL);
-
-	return tubeDBusAddress;
+	return address;
 }
 
 enum {
@@ -724,84 +760,7 @@ enum {
   NB_COL
 };
 
-void DTubeAccountHandler::DisplayShareDialog()
-{
-	GtkWidget *dialog;
-	GtkWidget *combobox;
-	gint result;
-	GtkListStore *store;
-	GtkCellRenderer *renderer;
-
-	UT_DEBUGMSG(("Display Share dialog\n"));
-	// get the path where our UI file is located
-	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/UnixDialog_Share.xml";
-	GtkBuilder* builder = gtk_builder_new();
-	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
-
-	dialog = GTK_WIDGET(gtk_builder_get_object(builder, "dialog_share"));
-	g_assert (dialog != NULL);
-
-	/* Create the rooms combobox */
-	combobox = GTK_WIDGET (gtk_builder_get_object (builder, "combobox_rooms"));
-	g_assert (combobox != NULL);
-
-	gtk_cell_layout_clear (GTK_CELL_LAYOUT (combobox));
-
-	store = gtk_list_store_new (NB_COL,
-	G_TYPE_STRING,     /* Icon */
-	G_TYPE_OBJECT,     /* TpChannel */
-	G_TYPE_STRING,     /* Description */
-	G_TYPE_BOOLEAN);   /* Enabled */
-
-	renderer = gtk_cell_renderer_pixbuf_new ();
-	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (combobox), renderer, FALSE);
-	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (combobox), renderer,
-				"icon-name", COL_ICON,
-				"sensitive", COL_ENABLED,
-				NULL);
-	g_object_set (renderer, "stock-size", GTK_ICON_SIZE_BUTTON, NULL);
-
-	renderer = gtk_cell_renderer_text_new ();
-	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (combobox), renderer, TRUE);
-	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (combobox), renderer,
-				"text", COL_DESC,
-				"sensitive", COL_ENABLED,
-				NULL);
-
-	gtk_combo_box_set_model (GTK_COMBO_BOX (combobox), GTK_TREE_MODEL (store));
-	g_object_unref (store);
-
-	result = gtk_dialog_run (GTK_DIALOG (dialog));
-	if (result == GTK_RESPONSE_OK)
-	{
-		GtkTreeIter iter;
-
-		if (gtk_combo_box_get_active_iter (GTK_COMBO_BOX (combobox), &iter))
-		{
-			TpChannel *chan;
-			gchar *desc;
-
-			gtk_tree_model_get (GTK_TREE_MODEL (store), &iter,
-						COL_CHAN, &chan,
-						COL_DESC, &desc,
-						-1);
-
-			UT_DEBUGMSG(("Share document with %s\n", desc));
-
-			UT_UTF8String tubeDBusAddress = _createAndOfferTube (chan);
-			PD_Document *pDoc = static_cast<PD_Document*>(XAP_App::getApp()->getLastFocussedFrame()->getCurrentDoc());
-			// FIXME: this is not how to get a proper PD_Document reference!
-			_startSession(pDoc, tubeDBusAddress);
-			
-			g_object_unref (chan);
-			g_free (desc);
-		}
-	}
-
-	gtk_widget_destroy (dialog);
-}
-
-void DTubeAccountHandler::signal(const Event& event, BuddyPtr pSource)
+void DTubeAccountHandler::signal(const Event& /*event*/, BuddyPtr /*pSource*/)
 {
 	UT_DEBUGMSG(("DTubeAccountHandler::signal()\n"));
 
@@ -862,9 +821,6 @@ bool DTubeAccountHandler::send(const Packet* pPacket, BuddyPtr pBuddy)
 	UT_DEBUGMSG(("DTubeAccountHandler::send(const Packet* pPacket, BuddyPtr pBuddy\n"));
 	UT_return_val_if_fail(pPacket, false);
 	UT_return_val_if_fail(pBuddy, false);
-
-	UT_ASSERT_HARMLESS(false);
-	return false;
 	    
 	DTubeBuddyPtr pDTubeBuddy = boost::static_pointer_cast<DTubeBuddy>(pBuddy);
 	UT_DEBUGMSG(("Sending packet to d-tube buddy on dbus addess: %s\n", pDTubeBuddy->getDBusName().utf8_str()));

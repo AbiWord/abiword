@@ -101,9 +101,8 @@ public:
 
 private:
 	bool									_startSession(PD_Document* pDoc, const UT_UTF8String& tubeDBusAddress);
-	UT_UTF8String							_createAndOfferTube(TpChannel *text_chan);
+	UT_UTF8String							_createAndOfferTube(TelepathyBuddyPtr pBuddy);
 	TelepathyBuddyPtr						_getBuddy(TpContact* pContact);
-	void									DisplayShareDialog();
 
 	EmpathyTubeHandler*						tube_handler;
 	/* TpHandle -> buddyPath (UT_UTF8String) */

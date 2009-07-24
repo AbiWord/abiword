@@ -35,6 +35,7 @@ public:
 		: Buddy(handler),
 		m_pContact(pContact)
 	{
+		setVolatile(true);
 		g_object_ref(m_pContact);
 	}
 
