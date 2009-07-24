@@ -1123,11 +1123,8 @@ void s_WML_Listener::_handleDataItems(void)
 		if(loc > -1)
 		{
 			UT_UTF8String fname;
-#ifndef LEGIONS
 			UT_UTF8String_sprintf(fname, "%s_data", m_pie->getFileName());
-#else
-			fname = "images";
-#endif
+
 			/* UT_sint32 result = */ UT_go_directory_create(fname.utf8_str(), 0750, NULL);
 			if (0 /* result < 0 */)
 			{
