@@ -207,63 +207,6 @@ list_connection_names_cb (const gchar * const *bus_names,
 
 	g_object_unref (mc);
 	g_object_unref (bus);
-	
-		
-/*		tp_cli_connection_run_list_channels (conn, -1, &channels, NULL, NULL);
-		printf("Number of connection channels: %d\n", channels->len);
-		for (guint i = 0; i < channels->len; i++)
-		{
-			GValueArray  *chan_struct;
-			const gchar  *object_path;
-			const gchar  *channel_type;
-			TpHandleType  handle_type;
-			guint         handle;
-			TpChannel *chan;
-			GtkTreeIter iter;
-			MissionControl *mc;
-			McAccount *account;
-			gchar *desc;
-
-			chan_struct = (GValueArray *) g_ptr_array_index (channels, i);
-			object_path = (const gchar *) g_value_get_boxed (g_value_array_get_nth (chan_struct, 0));
-			channel_type = g_value_get_string (g_value_array_get_nth (chan_struct, 1));
-			handle_type = (TpHandleType) g_value_get_uint (g_value_array_get_nth (chan_struct, 2));
-			handle = g_value_get_uint (g_value_array_get_nth (chan_struct, 3));
-
-			if (handle_type != TP_HANDLE_TYPE_ROOM || tp_strdiff (channel_type,TP_IFACE_CHANNEL_TYPE_TEXT))
-			{
-				UT_DEBUGMSG(("This handle is not a room or text thingy, skipping...\n"));
-				continue;
-			}
-
-			chan = tp_channel_new (conn, object_path, channel_type, handle_type, handle, NULL);
-			tp_channel_run_until_ready (chan, NULL, NULL);
-
-			mc = empathy_mission_control_dup_singleton ();
-			account = mission_control_get_account_for_tpconnection (mc, conn, NULL);
-
-			desc = g_strdup_printf ("%s (%s)", tp_channel_get_identifier (chan), mc_account_get_display_name (account));
-
-			printf("   channel desc %d: %s\n", i, desc);
-			
-		gtk_list_store_insert_with_values (store, &iter, -1,
-						//COL_ICON, empathy_icon_name_from_account (account),
-						COL_CHAN, chan,
-						COL_DESC, desc,
-						COL_ENABLED, enabled,
-						-1);
-
-			if (enabled)
-				gtk_combo_box_set_active_iter (combobox, &iter);
-
-			
-			g_free (desc);
-			g_object_unref (chan);
-			g_object_unref (mc);
-		}
-
-		g_object_unref (conn);
-*/
 }
 
 static void
