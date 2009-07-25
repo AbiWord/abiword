@@ -46,11 +46,7 @@ WINADVAPI BOOL WINAPI CryptAcquireContextW(HCRYPTPROV *phProv, LPCWSTR pszContai
 #define CRYPT_VERIFYCONTEXT     0xF0000000
 #define PROV_RSA_FULL           1
 
-#ifdef UNICODE
 #define CryptAcquireContext  CryptAcquireContextW
-#else
-#define CryptAcquireContext  CryptAcquireContextA
-#endif // !UNICODE
 } // extern "C"
 #endif // #if defined(__WINCRYPT_H__) && !defined(WINCRYPT32API)
 

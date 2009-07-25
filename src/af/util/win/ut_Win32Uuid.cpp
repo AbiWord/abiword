@@ -55,10 +55,10 @@ bool UT_Win32UUID::_getRandomBytes(void *buf, UT_sint32 nbytes)
 #ifdef DEBUG
 	LPVOID lpMsgBuf;
 	DWORD ecode = GetLastError();
-	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+	FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
 				  NULL, ecode,
 				  MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-				  (LPTSTR) &lpMsgBuf, 0, NULL);
+				  (LPWSTR) &lpMsgBuf, 0, NULL);
 
 	UT_DEBUGMSG(("UT_Win32UUID::_getRandomBytes: no Cryptographic services (0x%x; %s)\n",
 				 ecode, lpMsgBuf));
