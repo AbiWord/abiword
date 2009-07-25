@@ -88,14 +88,14 @@ private:
 	OXML_Section* savedSection;
 	OXML_Element_Paragraph* paragraph;
 	OXML_Element_Paragraph* savedParagraph;
-	OXML_Element_Table* table;
-	OXML_Element_Row* row;
-	OXML_Element_Cell* cell;
+
+	std::stack<OXML_Element_Table*> m_tableStack;
+	std::stack<OXML_Element_Row*> m_rowStack;
+	std::stack<OXML_Element_Cell*> m_cellStack;
 	OXML_Element_Hyperlink* hyperlink;
 	OXML_Element_Bookmark* bookmark;
 	OXML_Element_TextBox* textbox;
 
-	bool bInTable;
 	bool bInHyperlink;
 	bool bInBookmark;
 	bool bInTextbox;

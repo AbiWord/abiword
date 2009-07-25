@@ -35,13 +35,9 @@ IE_Exp_OpenXML_Listener::IE_Exp_OpenXML_Listener(PD_Document* doc)
 	savedSection(NULL),
 	paragraph(NULL), 
 	savedParagraph(NULL),
-	table(NULL), 
-	row(NULL), 
-	cell(NULL), 
 	hyperlink(NULL),
 	bookmark(NULL),
 	textbox(NULL),
-	bInTable(false),
 	bInHyperlink(false),
 	bInBookmark(false),
 	bInTextbox(false),
@@ -470,8 +466,11 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 				}
 			}
 			
-			if(bInTable)
+			if(!m_cellStack.empty())
+			{
+				OXML_Element_Cell* cell = m_cellStack.top();
 				return cell->appendElement(shared_paragraph) == UT_OK;
+			}
 			else if(bInTextbox)
 				return textbox->appendElement(shared_paragraph) == UT_OK;
 
@@ -575,8 +574,7 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 		}
 		case PTX_SectionTable:
 		{	
-			bInTable = true;
-			table = new OXML_Element_Table(getNextId());
+			OXML_Element_Table* table = new OXML_Element_Table(getNextId());
 			OXML_SharedElement shared_table(static_cast<OXML_Element*>(table));
 
 			if(bHaveProp && pAP)
@@ -612,10 +610,34 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 			}
 			tableHelper.OpenTable(sdh, pcr->getIndexAP());
 
+			bool tableInTable = !m_tableStack.empty();
+			m_tableStack.push(table);
+
+			if(tableInTable)
+			{
+				//this is a table inside another table
+				OXML_Element_Cell* cell = m_cellStack.top();
+				return cell->appendElement(shared_table) == UT_OK;
+			}
+
 			return section->appendElement(shared_table) == UT_OK;
 		}
 		case PTX_SectionCell:
 		{
+			OXML_Element_Table* table = NULL;
+			if(!m_tableStack.empty())
+				table = m_tableStack.top();
+
+			if(!table)
+			{
+				UT_DEBUGMSG(("FRT: OpenXML exporter corrupted table layout. Invalid Cell Open."));
+				return false;
+			}
+
+			OXML_Element_Row* row = NULL;
+			if(!m_rowStack.empty())
+				row = m_rowStack.top();
+
 			tableHelper.OpenCell(api);
 			UT_sint32 left = tableHelper.getLeft();
 			UT_sint32 right = tableHelper.getRight();
@@ -625,13 +647,15 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 			if(!row || tableHelper.isNewRow())
 			{
 				row = new OXML_Element_Row(getNextId(), table);
+				m_rowStack.push(row);
 				row->setNumCols(tableHelper.getNumCols());
 				OXML_SharedElement shared_row(static_cast<OXML_Element*>(row));
 				if(table->appendElement(shared_row) != UT_OK)
 					return false;
 			}
 
-			cell = new OXML_Element_Cell(getNextId(), table, row, left, right, top, bottom);
+			OXML_Element_Cell* cell = new OXML_Element_Cell(getNextId(), table, row, left, right, top, bottom);
+			m_cellStack.push(cell);
 			OXML_SharedElement shared_cell(static_cast<OXML_Element*>(cell));
 
 			if(bHaveProp && pAP)
@@ -778,12 +802,30 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 		case PTX_EndCell:
 		{
 			tableHelper.CloseCell();
+			if(m_cellStack.empty())
+				return false;
+
+			m_cellStack.pop();
 			return true;
 		}
 		case PTX_EndTable:
 		{
-			bInTable = false;
 			tableHelper.CloseTable();
+			if(m_tableStack.empty())
+				return false;
+
+			//pop the rows that belong to this table
+			int nRows = m_tableStack.top()->getNumberOfRows();
+			for(int i=0; i<nRows; i++)
+			{
+				if(m_rowStack.empty())
+					return false;
+			
+				m_rowStack.pop();
+			}
+
+			//pop the table
+			m_tableStack.pop();
 			return true;
 		}
 		case PTX_EndFootnote:

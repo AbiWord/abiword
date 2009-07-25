@@ -74,6 +74,11 @@ public:
 
 	void applyStyle(OXML_SharedStyle style);
 
+	int getNumberOfRows()
+		{
+			return m_rows.size();
+		}
+
 private:
 	virtual UT_Error serializeProperties(IE_Exp_OpenXML* exporter);
 	std::vector<std::string> columnWidth;
