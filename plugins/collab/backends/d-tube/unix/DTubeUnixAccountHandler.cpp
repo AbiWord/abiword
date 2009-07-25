@@ -464,17 +464,12 @@ bool DTubeAccountHandler::startSession(PD_Document* pDoc, const std::vector<Budd
 {
 	UT_DEBUGMSG(("DTubeAccountHandler::startSession()\n"));
 	UT_return_val_if_fail(pDoc, false);
-	
-	for (std::vector<BuddyPtr>::const_iterator cit = acl.begin(); cit != acl.end(); cit++)
-	{
-		UT_continue_if_fail(*cit);
-		TelepathyBuddyPtr pBuddy = boost::static_pointer_cast<TelepathyBuddy>(*cit);
-		
-		UT_DEBUGMSG(("Offering tube to %s...\n", pBuddy->getDescriptor(false).utf8_str()));
-		_createAndOfferTube(pBuddy);
-		break;
-	}
 
+	std::vector<TelepathyBuddyPtr> acl_;
+	for (std::vector<BuddyPtr>::const_iterator cit = acl.begin(); cit != acl.end(); cit++)
+		acl_.push_back(boost::static_pointer_cast<TelepathyBuddy>(*cit));
+
+	_createAndOfferTube(pDoc, acl_);
 	return true;
 }
 
@@ -615,95 +610,6 @@ s_generate_hash(const std::map<std::string, std::string>& props)
 	}
 	return hash;
 }
-
-// fixme: should be list of pBuddies
-UT_UTF8String DTubeAccountHandler::_createAndOfferTube(TelepathyBuddyPtr pBuddy)
-{
-	GError* error = NULL;
-	GHashTable* params;
-	gchar* object_path;
-	GHashTable* channel_properties;
-	gboolean result;
-	gchar *address;
-	GValue title = {0,};
-	const gchar *doc_title;
-
-	// get some connection belonging to this contact
-	TpContact* pContact = pBuddy->getContact();
-	TpConnection * conn = tp_contact_get_connection (pContact);
-
-	//
-	// create a room, so we can invite some members in it
-	//
-
-	// first setup some properties for this room...
-	
-	std::map<std::string, std::string> h_params;
-	h_params["org.freedesktop.Telepathy.Channel.ChannelType"] = TP_IFACE_CHANNEL_TYPE_DBUS_TUBE;
-	//h_params["org.freedesktop.Telepathy.Channel.TargetHandleType"] = TP_HANDLE_TYPE_ROOM;
-	h_params["org.freedesktop.Telepathy.Channel.TargetID"] = "abicollabtest@jabber.org";
-	h_params["org.freedesktop.Telepathy.Channel.Type.DBusTube.ServiceName"] = "com.abisource.abiword.abicollab";
-	params = s_generate_hash(h_params);
-
-	// org.freedesktop.Telepathy.Channel.TargetHandleType
-	GValue target_handle_type = {0,};
-	g_value_init (&target_handle_type, G_TYPE_INT);
-	g_value_set_int (&target_handle_type, TP_HANDLE_TYPE_ROOM);
-	g_hash_table_insert (params, (void *) "org.freedesktop.Telepathy.Channel.TargetHandleType", (void *) &target_handle_type);
-
-	// ... then actually create the room
-	if (!tp_cli_connection_interface_requests_run_create_channel (conn, -1, params, &object_path, &channel_properties, &error, NULL))
-    {
-		UT_DEBUGMSG(("Error creating room: %s\n", error ? error->message : "(null)"));
-		return "";
-	}
-	UT_DEBUGMSG(("Got a room, path: %s\n", object_path));
-	
-	// get a channel to the new room
-	TpChannel* chan = tp_channel_new_from_properties (conn, object_path, channel_properties, NULL);
-	UT_return_val_if_fail(chan, "");
-	tp_channel_run_until_ready (chan, NULL, NULL);
-
-	// add members to the room
-	// TODO: implement me
-	
-	UT_DEBUGMSG(("Channel created, offering tube...\n"));
-
-	params = g_hash_table_new (g_str_hash, g_str_equal);
-	/* Document title */
-	/* HACK
-	* <uwogBB> cassidy: but NOTE that if the current focussed document is other than the doc you shared, you'll get a fsckup
-	* <uwogBB> cassidy: so mark it with "HACK", so we will add the document to the event signal it belongs to
-	*/
-	g_value_init (&title, G_TYPE_STRING);
-	doc_title = XAP_App::getApp()->getLastFocussedFrame()->getTitle().utf8_str();
-	g_value_set_string (&title, doc_title);
-	g_hash_table_insert (params, (void *) "title", (void *) &title);
-
-	// offer this tube to every participant in the room
-	result = tp_cli_channel_type_dbus_tube_run_offer (chan, -1, params, TP_SOCKET_ACCESS_CONTROL_LOCALHOST, &address, &error, NULL);
-	if (!result)
-	{
-		UT_DEBUGMSG(("Error offering tube to room participants: %s\n", error ? error->message : "(null)"));
-		return "";
-	}
-	g_hash_table_destroy (params);
-
-	UT_DEBUGMSG(("Tube offered, address: %s\n", address));
-
-	// start listening on the tube for people entering and leaving it
-	tp_cli_channel_type_tubes_connect_to_d_bus_names_changed (chan, tube_dbus_names_changed_cb, this, NULL, NULL, NULL);
-
-	return address;
-}
-
-enum {
-  COL_ICON,
-  COL_CHAN,
-  COL_DESC,
-  COL_ENABLED,
-  NB_COL
-};
 
 void DTubeAccountHandler::signal(const Event& /*event*/, BuddyPtr /*pSource*/)
 {
@@ -870,7 +776,7 @@ bool DTubeAccountHandler::joinTube(const UT_UTF8String& tubeDBusAddress)
 	return false;
 }
 
-bool DTubeAccountHandler::joinBuddy(PD_Document* pDoc, TpHandle handle, const UT_UTF8String& buddyDBusAddress)
+bool DTubeAccountHandler::joinBuddy(PD_Document* /*pDoc*/, TpHandle handle, const UT_UTF8String& buddyDBusAddress)
 {
 	UT_DEBUGMSG(("DTubeAccountHandler::joinBuddy()\n"));
 
@@ -1037,6 +943,107 @@ DBusHandlerResult s_dbus_handle_message(DBusConnection *connection, DBusMessage 
 
 	UT_DEBUGMSG(("Unhandled message\n"));
 	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+}
+
+UT_UTF8String DTubeAccountHandler::_createAndOfferTube(PD_Document* pDoc, const std::vector<TelepathyBuddyPtr>& vBuddies)
+{
+	GError* error = NULL;
+	GHashTable* params;
+	gchar* object_path;
+	GHashTable* channel_properties;
+	gboolean result;
+	gchar *address;
+	GValue title = {0,};
+	const gchar *doc_title;
+
+	UT_return_val_if_fail(pDoc, "");
+	UT_return_val_if_fail(vBuddies.size() > 0, "");
+	
+	// get some connection belonging to this contact
+	// TODO: we probably want to change this to some user selectable thingy
+	TpContact* pContact = vBuddies[0]->getContact();
+	TpConnection * conn = tp_contact_get_connection (pContact);
+
+	//
+	// create a room, so we can invite some members in it
+	//
+
+	// first setup some properties for this room...
+	
+	std::map<std::string, std::string> h_params;
+	h_params["org.freedesktop.Telepathy.Channel.ChannelType"] = TP_IFACE_CHANNEL_TYPE_DBUS_TUBE;
+	//h_params["org.freedesktop.Telepathy.Channel.TargetHandleType"] = TP_HANDLE_TYPE_ROOM;
+	h_params["org.freedesktop.Telepathy.Channel.TargetID"] = "abicollabtest@conference.jabber.org";
+	h_params["org.freedesktop.Telepathy.Channel.Type.DBusTube.ServiceName"] = "com.abisource.abiword.abicollab";
+	params = s_generate_hash(h_params);
+
+	// org.freedesktop.Telepathy.Channel.TargetHandleType
+	GValue target_handle_type = {0,};
+	g_value_init (&target_handle_type, G_TYPE_INT);
+	g_value_set_int (&target_handle_type, TP_HANDLE_TYPE_ROOM);
+	g_hash_table_insert (params, (void *) "org.freedesktop.Telepathy.Channel.TargetHandleType", (void *) &target_handle_type);
+
+	// ... then actually create the room
+	if (!tp_cli_connection_interface_requests_run_create_channel (conn, -1, params, &object_path, &channel_properties, &error, NULL))
+	{
+		UT_DEBUGMSG(("Error creating room: %s\n", error ? error->message : "(null)"));
+		return "";
+	}
+	UT_DEBUGMSG(("Got a room, path: %s\n", object_path));
+	
+	// get a channel to the new room
+	TpChannel* chan = tp_channel_new_from_properties (conn, object_path, channel_properties, NULL);
+	UT_return_val_if_fail(chan, "");
+	tp_channel_run_until_ready (chan, NULL, NULL);
+	// TODO: check for errors
+	UT_DEBUGMSG(("Channel created to the room\n"));
+	
+	// add members to the room
+	GArray* members = g_array_new (FALSE, FALSE, sizeof(TpHandle));
+
+	for (UT_uint32 i = 0; i < vBuddies.size(); i++)
+	{
+		TelepathyBuddyPtr pBuddy = vBuddies[i];
+		UT_continue_if_fail(pBuddy && pBuddy->getContact());
+		TpHandle handle = tp_contact_get_handle(pBuddy->getContact());
+		UT_DEBUGMSG(("Adding %s to the invite list\n", tp_contact_get_identifier(pBuddy->getContact())));
+		g_array_append_val(members, handle);
+	}
+
+	UT_DEBUGMSG(("Inviting members to the room...\n"));
+	if (!tp_cli_channel_interface_group_run_add_members (chan, -1,  members, "Hi there!", &error, NULL))
+	{
+		UT_DEBUGMSG(("Error inviting room members: %s\n", error ? error->message : "(null)"));
+		return "";
+	}
+	UT_DEBUGMSG(("Members invited\n"));
+
+	params = g_hash_table_new (g_str_hash, g_str_equal);
+	/* Document title */
+	/* HACK
+	* <uwogBB> cassidy: but NOTE that if the current focussed document is other than the doc you shared, you'll get a fsckup
+	* <uwogBB> cassidy: so mark it with "HACK", so we will add the document to the event signal it belongs to
+	*/
+	g_value_init (&title, G_TYPE_STRING);
+	doc_title = XAP_App::getApp()->getLastFocussedFrame()->getTitle().utf8_str();
+	g_value_set_string (&title, doc_title);
+	g_hash_table_insert (params, (void *) "title", (void *) &title);
+
+	// offer this tube to every participant in the room
+	result = tp_cli_channel_type_dbus_tube_run_offer (chan, -1, params, TP_SOCKET_ACCESS_CONTROL_LOCALHOST, &address, &error, NULL);
+	if (!result)
+	{
+		UT_DEBUGMSG(("Error offering tube to room participants: %s\n", error ? error->message : "(null)"));
+		return "";
+	}
+	g_hash_table_destroy (params);
+
+	UT_DEBUGMSG(("Tube offered, address: %s\n", address));
+
+	// start listening on the tube for people entering and leaving it
+	tp_cli_channel_type_tubes_connect_to_d_bus_names_changed (chan, tube_dbus_names_changed_cb, this, NULL, NULL, NULL);
+
+	return address;
 }
 
 // FIXME: this can't be right

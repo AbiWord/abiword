@@ -101,7 +101,7 @@ public:
 
 private:
 	bool									_startSession(PD_Document* pDoc, const UT_UTF8String& tubeDBusAddress);
-	UT_UTF8String							_createAndOfferTube(TelepathyBuddyPtr pBuddy);
+	UT_UTF8String							_createAndOfferTube(PD_Document* pDoc, const std::vector<TelepathyBuddyPtr>& vBuddies);
 	TelepathyBuddyPtr						_getBuddy(TpContact* pContact);
 
 	EmpathyTubeHandler*						tube_handler;
