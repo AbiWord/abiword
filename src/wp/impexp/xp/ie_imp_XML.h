@@ -1,5 +1,4 @@
-//* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 2001 AbiSource, Inc.
  *
@@ -124,6 +123,8 @@ protected:
 			       _PS_PageSize,
 			       _PS_MetaData,
 				   _PS_Meta,
+				   _PS_SeMetaData,
+				   _PS_SMeta,
 				   _PS_RevisionSec,
 				   _PS_Revision,
 				   _PS_AuthorSec,

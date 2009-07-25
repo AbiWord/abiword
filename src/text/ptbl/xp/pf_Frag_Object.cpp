@@ -30,7 +30,7 @@
 pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
                                PTObjectType objectType,
                                PT_AttrPropIndex indexAP)
-    : pf_Frag(pPT, pf_Frag::PFT_Object, pf_FRAG_OBJECT_LENGTH)
+    : pf_Frag_Meta(pPT, pf_Frag::PFT_Object, pf_FRAG_OBJECT_LENGTH)
 {
 	m_pObjectSubclass = NULL;
     m_objectType = objectType;

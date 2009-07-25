@@ -25,7 +25,7 @@ pf_Frag_Strux::pf_Frag_Strux(pt_PieceTable * pPT,
 							 PTStruxType struxType,
 							 UT_uint32 length,
 							 PT_AttrPropIndex indexAP)
-	: pf_Frag(pPT, pf_Frag::PFT_Strux, length)
+	: pf_Frag_Meta(pPT, pf_Frag::PFT_Strux, length)
 {
 	m_struxType = struxType;
 	m_indexAP = indexAP;

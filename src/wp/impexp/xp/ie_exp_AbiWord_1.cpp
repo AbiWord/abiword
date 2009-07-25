@@ -1,5 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -28,6 +27,7 @@
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
 #include "ut_debugmsg.h"
+#include "ut_std_string.h"
 #include "ut_string_class.h"
 #include "ut_uuid.h"
 
@@ -41,6 +41,8 @@
 
 #include "pd_Document.h"
 #include "pd_Style.h"
+
+#include "pm_MetaDataStore.h"
 
 #include "pp_AttrProp.h"
 #include "pp_Author.h"
@@ -232,7 +234,8 @@ protected:
 	void				_handleLists(void);
 	void				_handlePageSize(void);
 	void				_handleDataItems(void);
-    void                _handleMetaData(void);
+	void                _handleMetaData(void);
+	void                _handleSemanticMetaData(void);
 	void                _handleRevisions(void);
 	void                _handleHistory(void);
 	void                _handleAuthors(void);
@@ -808,6 +811,7 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	// now we begin the actual document.
 
 	_handleMetaData();
+	_handleSemanticMetaData();
 	_handleHistory();
 	_handleRevisions();
 	_handleStyles();
@@ -1481,6 +1485,27 @@ void s_AbiWord_1_Listener::_handleLists(void)
 
 	return;
 }
+
+void s_AbiWord_1_Listener::_handleSemanticMetaData(void)
+{
+    const pm_MetaDataStore * store = m_pDocument->getMetaDataStore();
+	if(!store->empty()) 
+	{
+		m_pie->write("<semetadata>\n");
+
+		for(pm_MetaDataStore::MetaIdMap::const_iterator iter = store->getStore().begin();
+			iter != store->getStore().end(); ++iter) 
+		{
+        
+			std::string xml = UT_std_string_sprintf("<meta id=\"%d\">", iter->first);
+			m_pie->write(xml.c_str());
+#warning TODO
+			m_pie->write("</meta>");
+		}
+	}
+    m_pie->write("</semetadata>\n");
+}
+
 
 void s_AbiWord_1_Listener::_handleMetaData(void)
 {

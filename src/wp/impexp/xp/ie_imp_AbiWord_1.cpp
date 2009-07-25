@@ -1,5 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -251,6 +250,8 @@ IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
 #define TT_AUTHOR          38 //<author>
 #define TT_ANN             39 //<ann> Annotate region
 #define TT_ANNOTATE        40 //<annotate> Annotation content
+#define TT_SEMETADATA      41 //<semetadta> Semantic Metadata section
+#define TT_SMETA           42 //<meta> Semantic Metadata 
 
 
 /*
@@ -301,6 +302,7 @@ static struct xmlToIdMapping s_Tokens[] =
 	{       "m",        TT_META         },
 	{	"margin",		TT_MARGINNOTE	},
 	{	"math",		    TT_MATH     	},
+	{   "meta",         TT_SMETA        },
 	{       "metadata", TT_METADATA     },
 	{	"p",			TT_BLOCK		},
 	{   "pagesize",     TT_PAGESIZE     },
@@ -310,6 +312,7 @@ static struct xmlToIdMapping s_Tokens[] =
 	{   "revisions",    TT_REVISIONSECTION},
 	{	"s",			TT_STYLE		},
 	{	"section",		TT_SECTION		},
+	{   "semetadata",   TT_SEMETADATA   },
 	{	"styles",		TT_STYLESECTION	},
 	{	"table",		TT_TABLE		},
 	{	"toc",		    TT_TOC  		},
@@ -932,6 +935,18 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 		m_currentMetaDataName = _getXMLPropValue("key", atts);
 		goto cleanup;
 
+	case TT_SEMETADATA:
+		X_VerifyParseState(_PS_Doc);
+		m_parseState = _PS_SeMetaData;
+		goto cleanup;        
+
+	case TT_SMETA:
+		X_VerifyParseState(_PS_SeMetaData);
+		m_parseState = _PS_SMeta;
+#warning TODO
+//		m_currentMetaDataName = _getXMLPropValue("key", atts);
+		goto cleanup;
+
 	case TT_TABLE:
 		m_parseState = _PS_Sec;
 		m_bWroteSection = true;
@@ -1270,6 +1285,16 @@ void IE_Imp_AbiWord_1::endElement(const gchar *name)
 	case TT_META:
 		X_VerifyParseState(_PS_Meta);
 		m_parseState = _PS_MetaData;
+		return;
+
+	case TT_SEMETADATA:
+		X_VerifyParseState(_PS_SeMetaData);
+		m_parseState = _PS_Doc;
+		return;
+        
+	case TT_SMETA:
+		X_VerifyParseState(_PS_SMeta);
+		m_parseState = _PS_SeMetaData;
 		return;
 
 	case TT_OTHER:

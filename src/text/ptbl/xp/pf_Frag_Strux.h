@@ -22,7 +22,7 @@
 #define PF_FRAG_STRUX_H
 
 #include "ut_types.h"
-#include "pf_Frag.h"
+#include "pf_Frag_Meta.h"
 #include "pt_Types.h"
 #include "pd_Document.h"
 
@@ -37,7 +37,7 @@
  run-time stuff.
 */
 
-class ABI_EXPORT pf_Frag_Strux : public pf_Frag
+class ABI_EXPORT pf_Frag_Strux : public pf_Frag_Meta
 {
 public:
 	pf_Frag_Strux(pt_PieceTable * pPT,

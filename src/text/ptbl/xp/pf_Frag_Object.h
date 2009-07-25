@@ -23,7 +23,7 @@
 #define PF_FRAG_OBJECT_H
 
 #include "ut_types.h"
-#include "pf_Frag.h"
+#include "pf_Frag_Meta.h"
 #include "pt_Types.h"
 #include "fd_Field.h"
 #include "po_Bookmark.h"
@@ -32,7 +32,7 @@
  an image) in the document.
 */
 
-class ABI_EXPORT pf_Frag_Object : public pf_Frag
+class ABI_EXPORT pf_Frag_Object : public pf_Frag_Meta
 {
 public:
 	pf_Frag_Object(pt_PieceTable * pPT,

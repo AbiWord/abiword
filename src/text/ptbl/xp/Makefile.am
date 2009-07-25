@@ -21,6 +21,7 @@ libxp_la_SOURCES = \
 	pf_Frag_FmtMark.cpp \
 	pf_Frag_FmtMark.h \
 	pf_Frag.h \
+	pf_Frag_Meta.h \
 	pf_Fragments.cpp \
 	pf_Fragments.h \
 	pf_Frag_Object.cpp \
@@ -36,6 +37,11 @@ libxp_la_SOURCES = \
 	pf_Frag_Text.cpp \
 	pf_Frag_Text.h \
 	pl_Listener.h \
+	pm_MetaData.h \
+	pm_MetaData.cpp \
+	pm_MetaDataTypes.h \
+	pm_MetaDataStore.h \
+	pm_MetaDataStore.cpp \
 	po_Bookmark.cpp \
 	po_Bookmark.h \
 	pp_AttrProp.cpp \

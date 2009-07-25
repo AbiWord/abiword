@@ -62,6 +62,7 @@ class fp_Run;
 class UT_UTF8String;
 class pp_Author;
 
+class pm_MetaDataStore;
 
 #ifdef PT_TEST
 #include "ut_test.h"
@@ -632,6 +633,15 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 
 	UT_GenericStringMap<UT_UTF8String*> & getMetaData () { return m_metaDataMap ; }
 
+    pm_MetaDataStore       *getMetaDataStore()
+    {
+        return m_metadatastore;
+    }
+    const pm_MetaDataStore *getMetaDataStore() const
+    {
+        return m_metadatastore;
+    }
+
 	// document-level property handling functions
 	const PP_AttrProp *     getAttrProp() const;
 	PT_AttrPropIndex        getAttrPropIndex() const {return m_indexAP;}
@@ -843,6 +853,8 @@ private:
 	UT_sint32               m_iLastAuthorInt;
 	UT_GenericVector<ImagePage *> m_pPendingImagePage;
 	UT_GenericVector<TextboxPage *> m_pPendingTextboxPage;
+
+    pm_MetaDataStore      * m_metadatastore;
 };
 
 #endif /* PD_DOCUMENT_H */

@@ -3,6 +3,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (c) 2001,2002,2003 Tomas Frydrych
+ * Copyright (c) 2009 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -63,6 +64,7 @@
 #include "ut_path.h"
 #include "ut_locale.h"
 #include "pp_Author.h"
+#include "pm_MetaDataStore.h"
 
 // these are needed because of the exportGetVisDirectionAtPosition() mechanism
 #include "fp_Run.h"
@@ -194,7 +196,8 @@ PD_Document::PD_Document()
 	  m_bShowAuthors(true),
 	  m_bExportAuthorAtts(false), //should be false by default. Set true to test
 	  m_iMyAuthorInt(-1),
-	  m_iLastAuthorInt(-1)
+	  m_iLastAuthorInt(-1),
+      m_metadatastore(new pm_MetaDataStore())
 {
 	XAP_App::getApp()->getPrefs()->getPrefsValueBool(AP_PREF_KEY_LockStyles,&m_bLockedStyles);
 	UT_ASSERT(isOrigUUID());
@@ -232,6 +235,7 @@ PD_Document::~PD_Document()
 	// since these are not owned by us.
 
 	// TODO: delete the key/data pairs
+    DELETEP(m_metadatastore);
 }
 
 
