@@ -1502,9 +1502,10 @@ void s_AbiWord_1_Listener::_handleSemanticMetaData(void)
 #warning TODO
 			m_pie->write("</meta>");
 		}
-	}
-    m_pie->write("</semetadata>\n");
+		m_pie->write("</semetadata>\n");
+	}	
 }
+ 
 
 
 void s_AbiWord_1_Listener::_handleMetaData(void)
