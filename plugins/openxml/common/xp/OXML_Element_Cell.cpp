@@ -98,6 +98,25 @@ UT_Error OXML_Element_Cell::serializeProperties(IE_Exp_OpenXML* exporter)
 		err = exporter->setBackgroundColor(TARGET_DOCUMENT, szValue);
 		if(err != UT_OK)
 			return err;
+
+		const gchar * bgColor = szValue;
+
+		OXML_ElementVector children = getChildren();
+		OXML_ElementVector::size_type i;
+		for (i = 0; i < children.size(); i++)
+		{
+			if(children[i]->getTag() == TBL_TAG)
+			{
+				if((children[i]->getProperty("background-color", szValue) != UT_OK) || !szValue)
+				{			
+					children[i]->setProperty("background-color", bgColor);
+				}
+			}
+			else if((children[i]->getProperty("bgcolor", szValue) != UT_OK) || !szValue)
+			{			
+				children[i]->setProperty("bgcolor", bgColor);
+			}
+		}
 	}
 	
 	err = exporter->startCellBorderProperties(TARGET_DOCUMENT);
@@ -278,11 +297,37 @@ UT_Error OXML_Element_Cell::addToPT(PD_Document * pDocument)
 	if(ret != UT_OK)
 		return ret;	
 
+
+
 	const gchar * szValue = NULL;
+	const gchar * bgColor = NULL;
+
+	if((getProperty("background-color", bgColor) == UT_OK) && bgColor)
+	{
+		OXML_ElementVector children = getChildren();
+		OXML_ElementVector::size_type i;
+		for (i = 0; i < children.size(); i++)
+		{
+			if(children[i]->getTag() == TBL_TAG)
+			{
+				if((children[i]->getProperty("background-color", szValue) != UT_OK) || !szValue)
+				{			
+					children[i]->setProperty("background-color", bgColor);
+				}
+			}
+			else if((children[i]->getProperty("bgcolor", szValue) != UT_OK) || !szValue)
+			{			
+				children[i]->setProperty("bgcolor", bgColor);
+			}
+		}
+	}
+
+	if(!bgColor)
+		bgColor = "ffffff";
 
 	if((getProperty("top-style", szValue) != UT_OK) || !szValue)
 	{
-		ret = setProperty("top-color", "ffffff"); 
+		ret = setProperty("top-color", bgColor); 
 		if(ret != UT_OK)
 			return ret;	
 	}		
@@ -290,7 +335,7 @@ UT_Error OXML_Element_Cell::addToPT(PD_Document * pDocument)
 	szValue = NULL;
 	if((getProperty("left-style", szValue) != UT_OK) || !szValue)
 	{
-		ret = setProperty("left-color", "ffffff"); 
+		ret = setProperty("left-color", bgColor); 
 		if(ret != UT_OK)
 			return ret;	
 	}
@@ -298,7 +343,7 @@ UT_Error OXML_Element_Cell::addToPT(PD_Document * pDocument)
 	szValue = NULL;
 	if((getProperty("right-style", szValue) != UT_OK) || !szValue)
 	{
-		ret = setProperty("right-color", "ffffff"); 
+		ret = setProperty("right-color", bgColor); 
 		if(ret != UT_OK)
 			return ret;	
 	}
@@ -306,7 +351,7 @@ UT_Error OXML_Element_Cell::addToPT(PD_Document * pDocument)
 	szValue = NULL;
 	if((getProperty("bot-style", szValue) != UT_OK) || !szValue)
 	{
-		ret = setProperty("bot-color", "ffffff"); 
+		ret = setProperty("bot-color", bgColor); 
 		if(ret != UT_OK)
 			return ret;	
 	}

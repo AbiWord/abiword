@@ -140,11 +140,22 @@ UT_Error OXML_Element_Row::addChildrenToPT(PD_Document * pDocument)
 	UT_Error ret = UT_OK;
 	UT_Error temp = UT_OK;
 
+	const gchar * szValue = NULL;
+	const gchar * bgColor = NULL;
+
+	getProperty("background-color", bgColor);
+
 	std::vector<OXML_Element*>::size_type i;
 	OXML_ElementVector children = getChildren();
 	for (i = 0; i < children.size(); i++)
 	{
 		m_currentColumnNumber = i;
+
+		if(bgColor && ((children[i]->getProperty("background-color", szValue) != UT_OK) || !szValue))
+		{			
+			children[i]->setProperty("background-color", bgColor);
+		}
+
 		temp = children[i]->addToPT(pDocument);
 		if (temp != UT_OK)
 			ret = temp;

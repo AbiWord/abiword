@@ -186,13 +186,22 @@ UT_Error OXML_Element_Paragraph::serializeProperties(IE_Exp_OpenXML* exporter)
 			return err;
 	}
 
+	if(getProperty("bgcolor", szValue) == UT_OK)
+	{
+		err = exporter->setBackgroundColor(TARGET, szValue);
+		if(err != UT_OK)
+			return err;
+	}
+
 	//serialize List here if any list appended to the paragraph since we need properties of
 	//list to be included in paragraph properties section
+	//also inherit the properties
 
 	OXML_ElementVector::size_type i;
 	OXML_ElementVector children = getChildren();
 	for (i = 0; i < children.size(); i++)
 	{
+		children[i]->inheritProperties(this);
 		if(children[i]->getType() == LIST)
 		{
 			err = children[i]->serialize(exporter);

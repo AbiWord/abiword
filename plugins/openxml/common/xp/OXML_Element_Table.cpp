@@ -287,6 +287,19 @@ UT_Error OXML_Element_Table::addToPT(PD_Document * pDocument)
 	if(!pDocument->appendStrux(PTX_SectionTable, atts))
 		return UT_ERROR;
 
+	const gchar * szValue = NULL;
+	const gchar * bgColor = NULL;
+
+	if((getProperty("background-color", bgColor) == UT_OK) && bgColor)
+	{
+		OXML_ElementVector children = getChildren();
+		OXML_ElementVector::size_type i;
+		for (i = 0; i < children.size(); i++)
+		{
+			children[i]->setProperty("background-color", bgColor); //apply directly to row
+		}
+	}
+
 	ret = addChildrenToPT(pDocument);
 	if(ret != UT_OK)
 		return ret;
