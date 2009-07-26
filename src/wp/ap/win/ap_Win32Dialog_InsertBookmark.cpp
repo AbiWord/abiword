@@ -84,7 +84,7 @@ BOOL AP_Win32Dialog_InsertBookmark::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 
 	UT_UCS4String suggestedBM = getSuggestedBM();
 
-	if (suggestedBM.utf8_str())
+	if (!suggestedBM.empty())
 	{
 		setControlText(AP_RID_DIALOG_INSERTBOOKMARK_CBX_BOOKMARK, suggestedBM.utf8_str());
 		enableControl(AP_RID_DIALOG_INSERTBOOKMARK_BTN_OK, true);
