@@ -22,10 +22,11 @@
 
 #include "ap_Dialog_FormatFootnotes.h"
 #include "xap_Frame.h"
+#include "xap_Win32DialogBase.h"
 
 /*****************************************************************/
 
-class ABI_EXPORT AP_Win32Dialog_FormatFootnotes: public AP_Dialog_FormatFootnotes
+class ABI_EXPORT AP_Win32Dialog_FormatFootnotes: public AP_Dialog_FormatFootnotes, public XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_FormatFootnotes(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
