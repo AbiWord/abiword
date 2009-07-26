@@ -28,6 +28,7 @@
 
 #include "gr_UnixCairoGraphics.h"
 //
+// Device resolution of the PrintGraphics class.
 // Set this above that of the screen so we don't lose resolution 
 // when printing images.
 //
