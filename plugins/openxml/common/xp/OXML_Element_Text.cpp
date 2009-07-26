@@ -37,8 +37,7 @@ OXML_Element_Text::OXML_Element_Text() :
 
 OXML_Element_Text::~OXML_Element_Text()
 {
-	if(m_pString)
-		DELETEP(m_pString);
+	DELETEP(m_pString);
 }
 
 OXML_Element_Text::OXML_Element_Text(const gchar * text, int length) :

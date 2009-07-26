@@ -219,7 +219,6 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 	}
 	else if(nameMatches(rqst->pName, NS_W_KEY, "shd"))
 	{
-		rqst->handled = true;
 		const gchar* fill = attrMatches(NS_W_KEY, "fill", rqst->ppAtts);
 
 		UT_Error ret = UT_OK;
@@ -239,6 +238,7 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 			if(ret != UT_OK)
 				UT_DEBUGMSG(("FRT:OpenXML importer can't set background-color:%s\n", fill));	
 		}
+		rqst->handled = true;
 	}
 	else if(nameMatches(rqst->pName, NS_W_KEY, "tblStyle"))
 	{
@@ -342,7 +342,6 @@ void OXMLi_ListenerState_Table::endElement (OXMLi_EndElementRequest * rqst)
 			nameMatches(rqst->pName, NS_W_KEY, "right") ||
 			nameMatches(rqst->pName, NS_W_KEY, "top") ||
 			nameMatches(rqst->pName, NS_W_KEY, "bottom") ||
-			nameMatches(rqst->pName, NS_W_KEY, "shd") ||
 			nameMatches(rqst->pName, NS_W_KEY, "tblStyle"))
 	{
 		rqst->handled = true;
@@ -354,6 +353,11 @@ void OXMLi_ListenerState_Table::endElement (OXMLi_EndElementRequest * rqst)
 			m_tableStack.pop(); //pop the dummy table
 		}
 		rqst->handled = true;
+	}
+	else if(nameMatches(rqst->pName, NS_W_KEY, "shd"))
+	{
+		std::string contextTag = rqst->context->back();
+		rqst->handled = contextMatches(contextTag, NS_W_KEY, "tcPr") || contextMatches(contextTag, NS_W_KEY, "tblPr");
 	}
 	//TODO: more coming here
 }

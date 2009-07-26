@@ -93,6 +93,21 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 /********************************
  ****  PARAGRAPH FORMATTING  ****
  ********************************/
+	} else if(nameMatches(rqst->pName, NS_W_KEY, "shd")) {
+		const gchar* fill = attrMatches(NS_W_KEY, "fill", rqst->ppAtts);
+
+		OXML_SharedElement elem = rqst->stck->top();
+
+		if(fill && strcmp(fill, "auto")) 
+		{
+			UT_Error err = UT_OK;
+			err = elem->setProperty("bgcolor", fill);
+			if(err != UT_OK)
+				UT_DEBUGMSG(("FRT:OpenXML importer can't set background-color:%s\n", fill));	
+		}
+
+		std::string contextTag = rqst->context->back();
+		rqst->handled = contextMatches(contextTag, NS_W_KEY, "pPr") || contextMatches(contextTag, NS_W_KEY, "rPr");
 	} else if ( nameMatches(rqst->pName, NS_W_KEY, "pageBreakBefore")){
 		//verify the context
 		std::string contextTag = rqst->context->back();
@@ -804,7 +819,10 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 		rqst->handled = true;		
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "pageBreakBefore")) {
 		rqst->handled = contextMatches(rqst->context->back(), NS_W_KEY, "pPr");		
-	} 
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "shd")) {
+		std::string contextTag = rqst->context->back();
+		rqst->handled = contextMatches(contextTag, NS_W_KEY, "pPr") || contextMatches(contextTag, NS_W_KEY, "rPr");
+	}
 }
 
 void OXMLi_ListenerState_Common::charData (OXMLi_CharDataRequest * rqst)
