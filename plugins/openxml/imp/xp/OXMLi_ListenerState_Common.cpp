@@ -74,7 +74,7 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "t")) {
 		//New text...
-		OXML_SharedElement elem(new OXML_Element_Text());
+		OXML_SharedElement elem(new OXML_Element_Text("", 0));
 		rqst->stck->push(elem);
 		rqst->handled = true;
 
