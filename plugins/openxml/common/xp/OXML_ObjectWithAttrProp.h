@@ -57,6 +57,9 @@ public:
 	*/
 	const gchar ** getAttributesWithProps();
 
+	bool getNthProperty(int i, const gchar* & szName, const gchar* & szValue);
+	size_t getPropertyCount();
+
 private:
 	PP_AttrProp* m_pAttributes;
 

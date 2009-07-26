@@ -160,14 +160,34 @@ UT_Error OXML_ObjectWithAttrProp::inheritProperties(OXML_ObjectWithAttrProp* par
 
 	UT_Error ret = UT_OK;
 
-	const gchar** props = parent->getProperties();
+	size_t numProps = parent->getPropertyCount();
 
-	if(props)
-	{
-		ret = this->appendProperties(props);
-		if(ret != UT_OK)
-			return ret;
-	}	
+	const gchar* szName;
+	const gchar* szValue;
+
+	for (size_t i = 0; i<numProps; i++) {
+		
+		if(!parent->getNthProperty(i, szName, szValue))
+			break;
+
+		const gchar * prop = NULL;
+		if((getProperty(szName, prop) != UT_OK) || !prop)
+		{
+			ret = setProperty(szName, szValue);		
+			if(ret != UT_OK)
+				return ret;
+		}
+	}
 
 	return ret;
+}
+
+size_t OXML_ObjectWithAttrProp::getPropertyCount()
+{
+	return m_pAttributes->getPropertyCount();
+}
+
+bool OXML_ObjectWithAttrProp::getNthProperty(int i, const gchar* & szName, const gchar* & szValue)
+{
+	return m_pAttributes->getNthProperty(i, szName, szValue);
 }

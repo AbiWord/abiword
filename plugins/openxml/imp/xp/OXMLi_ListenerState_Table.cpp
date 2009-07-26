@@ -254,11 +254,31 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 	}
 	else if(nameMatches(rqst->pName, NS_W_KEY, "tblPr"))
 	{
-		if(contextMatches(rqst->context->back(), NS_W_KEY, "style"))
+		if(m_tableStack.empty())
 		{
 			//we must be in tblStyle in styles, so let's push the table instance to m_tableStack
 			OXML_Element_Table* tbl = static_cast<OXML_Element_Table*>(get_pointer(rqst->stck->top()));
 			m_tableStack.push(tbl);
+		}
+		rqst->handled = true;
+	}
+	else if(nameMatches(rqst->pName, NS_W_KEY, "trPr"))
+	{
+		if(m_rowStack.empty())
+		{
+			//we must be in styles, so let's push the row instance to m_rowStack
+			OXML_Element_Row* row = static_cast<OXML_Element_Row*>(get_pointer(rqst->stck->top()));
+			m_rowStack.push(row);
+		}
+		rqst->handled = true;
+	}
+	else if(nameMatches(rqst->pName, NS_W_KEY, "tcPr"))
+	{
+		if(m_cellStack.empty())
+		{
+			//we must be in styles, so let's push the cell instance to m_cellStack
+			OXML_Element_Cell* cell = static_cast<OXML_Element_Cell*>(get_pointer(rqst->stck->top()));
+			m_cellStack.push(cell);
 		}
 		rqst->handled = true;
 	}
@@ -348,9 +368,25 @@ void OXMLi_ListenerState_Table::endElement (OXMLi_EndElementRequest * rqst)
 	}	
 	else if(nameMatches(rqst->pName, NS_W_KEY, "tblPr"))
 	{
-		if(contextMatches(rqst->context->back(), NS_W_KEY, "style"))
+		if(!contextMatches(rqst->context->back(), NS_W_KEY, "tbl"))
 		{
 			m_tableStack.pop(); //pop the dummy table
+		}
+		rqst->handled = true;
+	}
+	else if(nameMatches(rqst->pName, NS_W_KEY, "trPr"))
+	{
+		if(!contextMatches(rqst->context->back(), NS_W_KEY, "tr"))
+		{
+			m_rowStack.pop(); //pop the dummy row
+		}
+		rqst->handled = true;
+	}
+	else if(nameMatches(rqst->pName, NS_W_KEY, "tcPr"))
+	{
+		if(!contextMatches(rqst->context->back(), NS_W_KEY, "tc"))
+		{
+			m_cellStack.pop(); //pop the dummy cell
 		}
 		rqst->handled = true;
 	}

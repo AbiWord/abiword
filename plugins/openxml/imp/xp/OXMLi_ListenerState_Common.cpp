@@ -94,6 +94,12 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
  ****  PARAGRAPH FORMATTING  ****
  ********************************/
 	} else if(nameMatches(rqst->pName, NS_W_KEY, "shd")) {
+		std::string contextTag = rqst->context->back();
+
+		if(!contextMatches(contextTag, NS_W_KEY, "pPr") && 
+			!contextMatches(contextTag, NS_W_KEY, "rPr"))
+			return;
+
 		const gchar* fill = attrMatches(NS_W_KEY, "fill", rqst->ppAtts);
 
 		OXML_SharedElement elem = rqst->stck->top();
@@ -105,9 +111,8 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 			if(err != UT_OK)
 				UT_DEBUGMSG(("FRT:OpenXML importer can't set background-color:%s\n", fill));	
 		}
+		rqst->handled = true;
 
-		std::string contextTag = rqst->context->back();
-		rqst->handled = contextMatches(contextTag, NS_W_KEY, "pPr") || contextMatches(contextTag, NS_W_KEY, "rPr");
 	} else if ( nameMatches(rqst->pName, NS_W_KEY, "pageBreakBefore")){
 		//verify the context
 		std::string contextTag = rqst->context->back();
@@ -621,7 +626,7 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 		const gchar * id = attrMatches(NS_W_KEY, "id", rqst->ppAtts);
 		if(id)
 		{
-			OXML_SharedElement footnote(new OXML_Element_Field(id, fd_Field::FD_Footnote_Ref, NULL));
+			OXML_SharedElement footnote(new OXML_Element_Field(id, fd_Field::FD_Footnote_Ref, ""));
 			rqst->stck->push(footnote);
 		}
 		rqst->handled = true;

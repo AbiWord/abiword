@@ -56,7 +56,7 @@ void OXMLi_ListenerState_Styles::startElement (OXMLi_StartElementRequest * rqst)
 		rqst->handled = true;
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "rPr") || nameMatches(rqst->pName, NS_W_KEY, "pPr")) {
 		//Push a dummy element onto the stack to collect the formatting for the current style.
-		OXML_SharedElement dummy(new OXML_Element("", P_TAG, BLOCK));
+		OXML_SharedElement dummy(new OXML_Element_Paragraph(""));
 		rqst->stck->push(dummy);
 
 		rqst->handled = true;
@@ -64,6 +64,18 @@ void OXMLi_ListenerState_Styles::startElement (OXMLi_StartElementRequest * rqst)
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "tblPr")) {
 		//Push a dummy element onto the stack to collect the formatting for the current style.
 		OXML_SharedElement dummy(new OXML_Element_Table(""));
+		rqst->stck->push(dummy);
+		//don't handle the request so that table listener state can adjust its internal state
+
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "trPr")) {
+		//Push a dummy element onto the stack to collect the formatting for the current style.
+		OXML_SharedElement dummy(new OXML_Element_Row("", NULL));
+		rqst->stck->push(dummy);
+		//don't handle the request so that table listener state can adjust its internal state
+
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "tcPr")) {
+		//Push a dummy element onto the stack to collect the formatting for the current style.
+		OXML_SharedElement dummy(new OXML_Element_Cell("", NULL, NULL, 0,0,0,0));
 		rqst->stck->push(dummy);
 		//don't handle the request so that table listener state can adjust its internal state
 
@@ -123,7 +135,9 @@ void OXMLi_ListenerState_Styles::endElement (OXMLi_EndElementRequest * rqst)
 		rqst->handled = true;
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "rPr") || 
 			   nameMatches(rqst->pName, NS_W_KEY, "pPr") ||
-			   nameMatches(rqst->pName, NS_W_KEY, "tblPr") ) {
+			   nameMatches(rqst->pName, NS_W_KEY, "tblPr") ||
+			   nameMatches(rqst->pName, NS_W_KEY, "trPr") ||
+			   nameMatches(rqst->pName, NS_W_KEY, "tcPr")) {
 		//Retrieve the formatting collected by the Common listener state.
 		OXML_SharedElement dummy = rqst->stck->top();
 		const gchar ** props = dummy->getProperties();
@@ -133,7 +147,9 @@ void OXMLi_ListenerState_Styles::endElement (OXMLi_EndElementRequest * rqst)
 		}
 		rqst->stck->pop();
 
-		rqst->handled = !nameMatches(rqst->pName, NS_W_KEY, "tblPr");
+		rqst->handled = !nameMatches(rqst->pName, NS_W_KEY, "tblPr") &&
+						!nameMatches(rqst->pName, NS_W_KEY, "trPr") &&
+						!nameMatches(rqst->pName, NS_W_KEY, "tcPr");
 	}
 }
 
