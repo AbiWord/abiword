@@ -5009,9 +5009,24 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 
 	if(!m_pDoc->isBookmarkUnique(static_cast<const gchar*>(szName)))
 	{
-		//bookmark already exists -- remove it and then reinsert
-		UT_DEBUGMSG(("fv_View::cmdInsertBookmark: bookmark \"%s\" exists - removing\n", szName));
-		_deleteBookmark(static_cast<const gchar*>(szName), false, &posStart, &posEnd);
+		XAP_Frame * pFrame = static_cast<XAP_Frame *>(getParentData());
+		XAP_Dialog_MessageBox::tAnswer ans = XAP_Dialog_MessageBox::a_NO;
+
+		if(pFrame)
+			ans = pFrame->showMessageBox(AP_STRING_ID_MSG_BookmarkAlreadyExists,
+									XAP_Dialog_MessageBox::b_YN, XAP_Dialog_MessageBox::a_NO);
+
+		if(ans == XAP_Dialog_MessageBox::a_YES)
+		{
+			//bookmark already exists -- remove it and then reinsert
+			UT_DEBUGMSG(("fv_View::cmdInsertBookmark: bookmark \"%s\" exists - removing\n", szName));
+			_deleteBookmark(static_cast<const gchar*>(szName), false, &posStart, &posEnd);
+		}
+		else
+		{
+			xxx_UT_DEBUGMSG(("User canceled bookmark replacement\n"));
+			return false;
+		}
 	}
 
 	gchar * pAttr[6];
