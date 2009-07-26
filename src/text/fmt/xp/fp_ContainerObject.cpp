@@ -873,7 +873,7 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 //
 	GR_Painter painter(pG);
 	UT_RGBColor white(255,255,255);
-
+	bool bIsFrame = false;
 	if(m_pContainer && (m_pContainer->getContainerType() == FP_CONTAINER_CELL))
 	{
 		const fp_CellContainer * pCell = static_cast<const fp_CellContainer *>(m_pContainer);
@@ -894,6 +894,7 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 		{
 			srcX += xoff;
 			srcY += yoff;
+			bIsFrame = true;
 		}
 		if(getParent() && ((m_FillType == FG_FILL_IMAGE) || (m_FillType == FG_FILL_TRANSPARENT) ))
 		{
@@ -967,7 +968,14 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 			 }
 			 else if(*m_pDocImage)
 			 {
+			   if(!bIsFrame)
+			   {
 				 painter.fillRect(*m_pDocImage,src,dest);
+			   }
+			   else
+			   {
+			         painter.drawImage(*m_pDocImage, dest.left,dest.top);
+			   }
 			 }
 			 return;
 		 }

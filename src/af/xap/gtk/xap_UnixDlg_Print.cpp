@@ -40,6 +40,8 @@
 #include "gr_DrawArgs.h"
 #include "ap_Strings.h"
 
+#define GTKPRINTRES 72.
+
 static void s_Begin_Print(GtkPrintOperation * ,
 						  GtkPrintContext   *context,
 						  gpointer           p)
@@ -123,11 +125,22 @@ void XAP_UnixDialog_Print::BeginPrint(GtkPrintContext   *context)
 	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
 
 	xxx_UT_DEBUGMSG(("Initial Cairo Context %x \n",cr));
-	m_pPrintGraphics = (GR_Graphics *) new GR_CairoPrintGraphics(cr, 72);
+	m_pPrintGraphics = (GR_Graphics *) new GR_CairoPrintGraphics(cr, gr_PRINTRES);
 	double ScreenRes = m_pView->getGraphics()->getDeviceResolution();
-	static_cast<GR_CairoPrintGraphics *>(m_pPrintGraphics)->setResolutionRatio(72.0/ScreenRes);
-	xxx_UT_DEBUGMSG(("Resolution Ratio set to %f \n",72.0/ScreenRes));
-	xxx_UT_DEBUGMSG(("Resolution Ratio of Direct call is %f Cast call is %f \n",m_pPrintGraphics->getResolutionRatio(),	static_cast<GR_CairoPrintGraphics *>(m_pPrintGraphics)->getResolutionRatio()));
+	static_cast<GR_CairoPrintGraphics *>(m_pPrintGraphics)->setResolutionRatio(gr_PRINTRES/ScreenRes);
+	//
+	// We set the resolution of the printer context to higher than screen
+	// so we don't loose resolution when printing images.
+	//
+	// We then correct for this with thise scale. GtkPrint contexts always
+	// assume 72 DPI
+	//
+	// In the future we can use this to do 2,4,6,8 etc pages per page
+	//
+	cairo_scale(static_cast<GR_CairoPrintGraphics *>(m_pPrintGraphics)->getCairo(), GTKPRINTRES/gr_PRINTRES,GTKPRINTRES/gr_PRINTRES);
+
+	xxx_UT_DEBUGMSG(("Resolution Ratio set to %f \n",gr_PrintRes/ScreenRes));
+	UT_DEBUGMSG(("Resolution Ratio of Direct call is %f Cast call is %f \n",m_pPrintGraphics->getResolutionRatio(),	static_cast<GR_CairoPrintGraphics *>(m_pPrintGraphics)->getResolutionRatio()));
 	if(m_pView->getViewMode() == VIEW_PRINT )
 	{
 			m_pPrintLayout = m_pDL;
@@ -367,7 +380,6 @@ void XAP_UnixDialog_Print::setupPrint()
 		gtk_page_setup_set_orientation(m_pPageSetup,GTK_PAGE_ORIENTATION_LANDSCAPE);
 	gtk_print_operation_set_default_page_setup(m_pPO,m_pPageSetup);
 	gtk_print_operation_set_use_full_page (m_pPO, true);
-
 	m_pDL = m_pView->getLayout();
 	m_iCurrentPage = m_pDL->findPage(m_pView->getCurrentPage());
 	m_iNumberPages = (gint) m_pDL->countPages();

@@ -23,7 +23,7 @@
 GR_CairoPrintGraphics::GR_CairoPrintGraphics(cairo_t *cr, UT_uint32 iDeviceResolution)
   : GR_UnixCairoGraphicsBase(cr, iDeviceResolution),
 	m_bDoShowPage(false),
-	m_dResRatio(1.0)
+	m_dResRatio(4.0)
 {
 
 }
@@ -65,6 +65,7 @@ bool GR_CairoPrintGraphics::queryProperties(GR_Graphics::Properties gp) const
 void GR_CairoPrintGraphics::setResolutionRatio(double dres)
 {
 	m_dResRatio = dres;
+	
 }
 
 double GR_CairoPrintGraphics::getResolutionRatio(void) const

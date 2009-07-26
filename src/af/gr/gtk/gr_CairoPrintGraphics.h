@@ -27,6 +27,11 @@
 #include <cairo.h>
 
 #include "gr_UnixCairoGraphics.h"
+//
+// Set this above that of the screen so we don't lose resolution 
+// when printing images.
+//
+#define gr_PRINTRES  144.
 
 
 class ABI_EXPORT GR_CairoPrintGraphics : public GR_UnixCairoGraphicsBase
