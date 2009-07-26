@@ -269,12 +269,16 @@ UT_Error OXML_Element_Table::addChildrenToPT(PD_Document * pDocument)
 	UT_Error temp = UT_OK;
 	std::vector<OXML_Element*>::size_type i;
 	OXML_ElementVector children = getChildren();
+	
 	for (i = 0; i < children.size(); i++)
 	{
 		m_currentRowNumber = i;
-		temp = children[i]->addToPT(pDocument);
-		if (temp != UT_OK)
-			ret = temp;
+		if(children[i]->getTag() != BOOK_TAG)
+		{
+			temp = children[i]->addToPT(pDocument);
+			if (temp != UT_OK)
+				ret = temp;
+		}
 	}
 	return ret;
 }
@@ -283,27 +287,40 @@ UT_Error OXML_Element_Table::addToPT(PD_Document * pDocument)
 {
 	UT_Error ret = UT_OK;
 
-	const gchar ** atts = getAttributesWithProps();
-	if(!pDocument->appendStrux(PTX_SectionTable, atts))
-		return UT_ERROR;
-
 	const gchar * szValue = NULL;
 	const gchar * bgColor = NULL;
+	if(getProperty("background-color", bgColor) != UT_OK)
+		bgColor = NULL;
 
-	if((getProperty("background-color", bgColor) == UT_OK) && bgColor)
+	//OpenXML supports bookmarks anywhere in the tables
+	//We will append children bookmarks that go inside table here
+	//to point to the beginning of table instead of correct locations
+	//TODO: this needs to be fixed in piece table?
+	OXML_ElementVector children = getChildren();
+	OXML_ElementVector::size_type i;
+	for (i = 0; i < children.size(); i++)
 	{
-		OXML_ElementVector children = getChildren();
-		OXML_ElementVector::size_type i;
-		for (i = 0; i < children.size(); i++)
+		if(bgColor)
 		{
 			children[i]->setProperty("background-color", bgColor); //apply directly to row
 		}
+					
+		if(children[i]->getTag() == BOOK_TAG)
+		{
+			ret = children[i]->addToPT(pDocument);
+			if (ret != UT_OK)
+				return ret;
+		}
 	}
 
+	const gchar ** atts = getAttributesWithProps();
+	if(!pDocument->appendStrux(PTX_SectionTable, atts))
+		return UT_ERROR;
+	
 	ret = addChildrenToPT(pDocument);
 	if(ret != UT_OK)
 		return ret;
-
+	
 	if(!pDocument->appendStrux(PTX_EndTable,NULL))
 		return UT_ERROR;
 
