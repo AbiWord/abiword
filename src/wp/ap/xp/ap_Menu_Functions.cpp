@@ -169,14 +169,14 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Contents)
 	return buf;
 }
 
-Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Index)
+Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Intro)
 {
-	// Compute the menu label for the _help_index item.
+	// Compute the menu label for the _help_intro item.
 
 	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail (pApp && pLabel, NULL);
 
-	UT_ASSERT_HARMLESS(id == AP_MENU_ID_HELP_INDEX);
+	UT_ASSERT_HARMLESS(id == AP_MENU_ID_HELP_INTRO);
 
 	const char * szFormat = pLabel->getMenuLabel();
 	static char buf[128];

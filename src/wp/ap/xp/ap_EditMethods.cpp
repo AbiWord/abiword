@@ -600,7 +600,7 @@ public:
 
 	static EV_EditMethod_Fn dlgAbout;
 	static EV_EditMethod_Fn helpContents;
-	static EV_EditMethod_Fn helpIndex;
+	static EV_EditMethod_Fn helpIntro;
 	static EV_EditMethod_Fn helpSearch;
 	static EV_EditMethod_Fn helpCheckVer;
 	static EV_EditMethod_Fn helpAboutGnomeOffice;
@@ -940,7 +940,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(helpCheckVer), 		_A_,		""),
 	EV_EditMethod(NF(helpContents), 		_A_,		""),
 	EV_EditMethod(NF(helpCredits), _A_, ""),
-	EV_EditMethod(NF(helpIndex),			_A_,		""),
+	EV_EditMethod(NF(helpIntro),			_A_,		""),
 	EV_EditMethod(NF(helpReportBug), _A_, ""),
 	EV_EditMethod(NF(helpSearch),			_A_,		""),
 	EV_EditMethod(NF(history),	            0,      ""),
@@ -3499,7 +3499,7 @@ Defun0(helpContents)
 	return helpLocalizeAndOpenURL("AbiWord/help", "index", "http://www.abisource.com/help/");
 }
 
-Defun0(helpIndex)
+Defun0(helpIntro)
 {
 	return helpLocalizeAndOpenURL("AbiWord/help", "introduction", "http://www.abisource.com/help/");
 }

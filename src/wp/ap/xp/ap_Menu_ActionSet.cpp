@@ -349,7 +349,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 
 	_s(AP_MENU_ID_HELP,				1,0,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_HELP_CONTENTS,		0,0,0,0,	"helpContents",			NULL,					ap_GetLabel_Contents);
-	_s(AP_MENU_ID_HELP_INDEX,		0,0,0,0,	"helpIndex",			NULL,					ap_GetLabel_Index);
+	_s(AP_MENU_ID_HELP_INTRO,		0,0,0,0,	"helpIntro",			NULL,					ap_GetLabel_Intro);
 	_s(AP_MENU_ID_HELP_CHECKVER,		0,0,0,0,	"helpCheckVer",			NULL,					ap_GetLabel_Checkver);
 	_s(AP_MENU_ID_HELP_SEARCH,		0,0,0,0,	"helpSearch",			NULL,					ap_GetLabel_Search);
 	_s(AP_MENU_ID_HELP_ABOUT,		0,1,0,0,	"dlgAbout",			NULL,					ap_GetLabel_About);
