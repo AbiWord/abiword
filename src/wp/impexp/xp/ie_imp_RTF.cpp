@@ -1863,7 +1863,7 @@ void IE_Imp_RTF::CloseTable(bool bForce /* = false */)
 	}
 	if(getTable() && getTable()->wasTableUsed())
 	{
-		xxx_UT_DEBUGMSG(("SEVIOR: Table used appened end Table, block \n"));
+		UT_DEBUGMSG(("SEVIOR: Table used appened end Table, block \n"));
 		if(m_lastCellSDH != NULL )
 		{
 			getDoc()->insertStruxNoUpdateBefore(m_lastCellSDH,PTX_EndTable,NULL);
@@ -1957,7 +1957,7 @@ void IE_Imp_RTF::HandleCell(void)
 	}
 	if(m_bCellBlank && (m_gbBlock.getLength() == 0))
 	{
-			xxx_UT_DEBUGMSG(("Append block 7 \n"));
+	    UT_DEBUGMSG(("Append block 7 \n"));
 
 		getDoc()->appendStrux(PTX_Block,NULL);
 	}
@@ -2010,6 +2010,7 @@ void IE_Imp_RTF::HandleCell(void)
 		PL_StruxDocHandle sdhEndCell = reinterpret_cast<PL_StruxDocHandle>(getDoc()->getLastStruxOfType(PTX_EndCell));
 		if(getDoc()->isStruxBeforeThis(sdhEndCell,PTX_SectionCell))
 		{
+			UT_DEBUGMSG(("Insert Block before frag 1 \n"));
 			getDoc()->insertStruxNoUpdateBefore(sdhEndCell,PTX_Block,NULL);
 			const pf_Frag * pf = static_cast<const pf_Frag *>(sdhEndCell);
 			getDoc()->insertFmtMarkBeforeFrag(const_cast<pf_Frag *>(pf));
@@ -2308,7 +2309,7 @@ void IE_Imp_RTF::HandleNote(void)
 		else
 			getDoc()->appendStrux(PTX_SectionEndnote,attribs);
 			
-		xxx_UT_DEBUGMSG(("Append block 8 \n"));
+		UT_DEBUGMSG(("Append block 8 \n"));
 		getDoc()->appendStrux(PTX_Block,NULL);
 	}
 	else
@@ -2861,14 +2862,18 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 	{
 		if(ok && m_bCellBlank && (getTable() != NULL))
 		{
-			xxx_UT_DEBUGMSG(("Append block 10 \n"));
-			if(m_pDelayedFrag)
+			ok = ApplyParagraphAttributes();
+			if(m_newParaFlagged || m_bCellBlank)
 			{
-				getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,NULL);
-			}
-			else
-			{
-				getDoc()->appendStrux(PTX_Block,NULL);
+				UT_DEBUGMSG(("Append block 10 \n"));
+				if(m_pDelayedFrag)
+				{
+					getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,NULL);
+				}
+				else
+				{
+					getDoc()->appendStrux(PTX_Block,NULL);
+				}
 			}
 			m_bSectionHasPara = true;
 			m_bCellBlank = false;
@@ -2876,7 +2881,7 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 		}
 		else if( ok && m_bEndTableOpen)
 		{
-			xxx_UT_DEBUGMSG(("Append block 11 \n"));
+			UT_DEBUGMSG(("Append block 11 \n"));
 
 			if(m_pDelayedFrag)
 			{
@@ -3597,7 +3602,7 @@ bool IE_Imp_RTF::HandleField()
 		{
 			if(m_bCellBlank || m_bEndTableOpen)
 			{
-				xxx_UT_DEBUGMSG(("Append block 14 \n"));
+				UT_DEBUGMSG(("Append block 14 \n"));
 
 				if(m_pDelayedFrag)
 				{
@@ -7222,7 +7227,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 	{
 		if(bAbiList || bWord97List )
 		{
-			xxx_UT_DEBUGMSG(("Append block 1 \n"));
+			UT_DEBUGMSG(("Append block 1 \n"));
 			bool bret = false;
 			if(m_pDelayedFrag)
 			{
@@ -7266,7 +7271,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 		}
 		else
 		{
-			xxx_UT_DEBUGMSG(("SEVIOR: Apply Para's append strux -2 \n"));
+			UT_DEBUGMSG(("SEVIOR: Apply Para's atributes append strux -2 \n"));
 			bool ok = false;
 			if(m_pDelayedFrag)
 			{
@@ -10868,7 +10873,7 @@ void IE_Imp_RTF::_appendHdrFtr ()
 		getDoc()->appendStrux (PTX_SectionHdrFtr, propsArray);
 		propsArray[0] = NULL;
 		// actually it appears that we have to append a block for some cases.
-			xxx_UT_DEBUGMSG(("Append block 4 \n"));
+		UT_DEBUGMSG(("Append block 4 with props \n"));
 #if 0 //#TF
 		getDoc()->appendStrux(PTX_Block, propsArray);
 #endif
