@@ -38,9 +38,12 @@
 
 #include "pd_Document.h"
 #include "pd_Style.h"
+#include "pm_MetaData.h"
+#include "pm_MetaDataStore.h"
 
 #include "ie_impexp_AbiWord_1.h"
 #include "ie_imp_AbiWord_1.h"
+#include "ie_imp_MetaDataRDF.h"
 #include "ie_types.h"
 #include "pp_Author.h"
 #include "pp_AttrProp.h"
@@ -201,7 +204,8 @@ IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
 	m_bAutoRevisioning(false),
 	m_bInMath(false),
 	m_bInEmbed(false),
-	m_iImageId(0)
+	m_iImageId(0),
+	m_currentSMetaId(0)
 {
 }
 
@@ -942,9 +946,8 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 
 	case TT_SMETA:
 		X_VerifyParseState(_PS_SeMetaData);
+		m_currentSMetaId = atoi(_getXMLPropValue("id", atts));
 		m_parseState = _PS_SMeta;
-#warning TODO
-//		m_currentMetaDataName = _getXMLPropValue("key", atts);
 		goto cleanup;
 
 	case TT_TABLE:
@@ -1291,12 +1294,23 @@ void IE_Imp_AbiWord_1::endElement(const gchar *name)
 		X_VerifyParseState(_PS_SeMetaData);
 		m_parseState = _PS_Doc;
 		return;
-        
 	case TT_SMETA:
+	{
 		X_VerifyParseState(_PS_SMeta);
+		pm_MetaData *meta = new pm_MetaData();
+		IE_imp_metadata(meta, m_currentDataItem);
+		if(meta->empty() || (m_currentSMetaId == 0)) 
+		{
+			delete meta;
+		}
+		else
+		{
+			getDoc()->getMetaDataStore()->insertMetaData(meta, m_currentSMetaId);
+		}
+		m_currentSMetaId = 0;
 		m_parseState = _PS_SeMetaData;
 		return;
-
+	}
 	case TT_OTHER:
 	default:
 		UT_DEBUGMSG(("Unknown end tag [%s]\n",name));

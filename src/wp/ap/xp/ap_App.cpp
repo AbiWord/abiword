@@ -24,6 +24,10 @@
 
 #include <stdio.h>
 
+#if HAVE_RDF_RAPTOR
+#include <raptor.h>
+#endif
+
 #include "ev_EditMethod.h"
 #include "ap_Features.h"
 #include "ap_App.h"
@@ -51,6 +55,9 @@ AP_App::AP_App (const char * szAppName)
 
 AP_App::~AP_App ()
 {
+#if HAVE_RDF_RAPTOR
+    raptor_finish();
+#endif
 }
 
 /*!
@@ -193,6 +200,9 @@ bool AP_App::openCmdLinePlugins(const AP_Args * Args, bool &bSuccess)
 
 bool	AP_App::initialize(void)
 {
+#if HAVE_RDF_RAPTOR
+    raptor_init();
+#endif
 	return XAP_App_BaseClass::initialize(AP_PREF_KEY_KeyBindings,AP_PREF_DEFAULT_KeyBindings);
 }
 

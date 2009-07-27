@@ -50,9 +50,15 @@ public:
     /** Add a metadata to the store.
      *  @param meta the metadata. The pointer becomes owned by the store
      *         unless it failed.
-     *  @return the id if the metadata. 0 if for some reason it couldn't.
+     *  @return the id of the metadata. 0 if for some reason it couldn't.
      */
     PMMetaDataId  addMetaData(pm_MetaData *meta);
+    /** Add a metadata to the store.
+     *  @param meta the metadata. The pointer becomes owned by the store
+     *         unless it failed.
+     *  @return %id. 0 if for some reason it couldn't.
+     */
+    PMMetaDataId  insertMetaData(pm_MetaData *meta, PMMetaDataId id);
     const MetaIdMap & getStore() const 
         {
             return m_mapstore;

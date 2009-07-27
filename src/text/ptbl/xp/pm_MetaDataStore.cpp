@@ -47,3 +47,11 @@ PMMetaDataId  pm_MetaDataStore::addMetaData(pm_MetaData *meta)
     m_mapstore.insert(std::make_pair(m_lastid, meta));
     return m_lastid;
 }
+
+PMMetaDataId  pm_MetaDataStore::insertMetaData(pm_MetaData *meta, PMMetaDataId id)
+{
+    m_lastid = std::max(m_lastid, id);
+#warning ensure that the entry is not in the table
+    m_mapstore.insert(std::make_pair(id, meta));
+    return id;
+}

@@ -1,5 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* Abiword
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -104,10 +103,16 @@ UT_Error IE_Imp_XML::_loadFile(GsfInput * input)
 
 	UT_XML default_xml;
 	UT_XML * parser = &default_xml;
-	if (m_pParser) parser = m_pParser;
+	if (!m_pParser)
+	{
+		setParser(parser);
+	}
 
 	parser->setListener (this);
-	if (m_pReader) parser->setReader (m_pReader);
+	if (m_pReader)
+	{
+		parser->setReader (m_pReader);
+	}
 
 	// hack!!!
 	size_t num_bytes = gsf_input_size(input);
@@ -124,7 +129,12 @@ UT_Error IE_Imp_XML::_loadFile(GsfInput * input)
 			if(m_error != UT_IE_SKIPINVALID)
 				m_szFileName = 0;
 		}
-	
+
+    if(m_pParser == parser) 
+	{
+		setParser(NULL);
+	}
+
 	return m_error;
 }
 
@@ -320,6 +330,7 @@ void IE_Imp_XML::charData(const gchar *s, int len)
 			}
 			
 		case _PS_DataItem:
+		case _PS_SMeta:
 			{
 #ifdef ENABLE_RESOURCE_MANAGER
 				XAP_ResourceManager & RM = getDoc()->resourceManager ();

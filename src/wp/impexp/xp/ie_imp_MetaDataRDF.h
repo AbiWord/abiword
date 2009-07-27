@@ -18,23 +18,18 @@
  */
 
 
-#include "pm_MetaData.h"
 
 
-pm_MetaData::pm_MetaData()
-{
-    
-}
+#ifndef __IE_IMP_METADATA_RDF_H__
+#define __IE_IMP_METADATA_RDF_H__
+
+class pm_MetaData;
+class UT_ByteBuf;
+
+/** import metadata from the XML stream */
+void IE_imp_metadata(pm_MetaData * metadata, const UT_ByteBuf & buf);
 
 
-bool pm_MetaData::empty() const
-{
-    return m_subject.empty();
-}
+#endif
 
-
-void pm_MetaData::insertData(const char *key, const char *value)
-{
-    m_data.insert(std::make_pair(key, value));
-}
 

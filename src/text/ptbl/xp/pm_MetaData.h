@@ -28,13 +28,33 @@
 class pm_MetaData
 {
 public:
-    pm_MetaData(const std::string & id);
+    pm_MetaData();
 
+    bool empty() const;
+
+    void setSubject(const std::string & id);
+    const std::string & getSubject() const
+        {
+            return m_subject;
+        }
     
+    void insertData(const char *key, const char *value);
+    const std::map<std::string, std::string> & getData() const
+        {
+            return m_data;
+        }
+    const std::map<std::string, std::string> & getPrefixes() const
+        {
+            return m_prefixes;
+        }
+
 private:
-    std::string m_id;
-    // key/value pairs from RDF.
+    // the node id. informational.
+    std::string m_subject;
+    // key/value pairs from RDF (or predicate / object)
     std::map<std::string, std::string> m_data;
+    // prefix/uri map for the RDF
+    std::map<std::string, std::string> m_prefixes;
 };
 
 

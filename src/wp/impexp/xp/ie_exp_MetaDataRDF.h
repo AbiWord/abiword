@@ -18,23 +18,16 @@
  */
 
 
-#include "pm_MetaData.h"
 
 
-pm_MetaData::pm_MetaData()
-{
-    
-}
+#ifndef __IE_EXP_METADATA_RDF_H__
+#define __IE_EXP_METADATA_RDF_H__
+
+class pm_MetaData;
+class IE_Exp;
+
+void IE_exp_metadata(const pm_MetaData * metadata, IE_Exp * exporter, bool is_cdata);
 
 
-bool pm_MetaData::empty() const
-{
-    return m_subject.empty();
-}
-
-
-void pm_MetaData::insertData(const char *key, const char *value)
-{
-    m_data.insert(std::make_pair(key, value));
-}
+#endif
 

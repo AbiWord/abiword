@@ -95,6 +95,7 @@ protected:
 	bool                m_bInMath;
 	bool                m_bInEmbed;
 	UT_uint32           m_iImageId;
+    UT_uint32           m_currentSMetaId;
 };
 
 #endif /* IE_IMP_ABIWORD_1_H */

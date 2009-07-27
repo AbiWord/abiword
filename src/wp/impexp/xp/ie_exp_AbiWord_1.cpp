@@ -60,6 +60,7 @@
 
 #include "ie_impexp_AbiWord_1.h"
 #include "ie_exp_AbiWord_1.h"
+#include "ie_exp_MetaDataRDF.h"
 
 #include "ap_Prefs.h"
 
@@ -1496,10 +1497,10 @@ void s_AbiWord_1_Listener::_handleSemanticMetaData(void)
 		for(pm_MetaDataStore::MetaIdMap::const_iterator iter = store->getStore().begin();
 			iter != store->getStore().end(); ++iter) 
 		{
-        
 			std::string xml = UT_std_string_sprintf("<meta id=\"%d\">", iter->first);
 			m_pie->write(xml.c_str());
-#warning TODO
+			// export as CDATA
+			IE_exp_metadata(iter->second, m_pie, true);
 			m_pie->write("</meta>");
 		}
 		m_pie->write("</semetadata>\n");

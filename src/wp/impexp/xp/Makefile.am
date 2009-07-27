@@ -14,6 +14,8 @@ libxp_la_SOURCES = \
 	ie_exp.h \
 	ie_exp_HTML.cpp \
 	ie_exp_HTML.h \
+	ie_exp_MetaDataRDF.h \
+	ie_exp_MetaDataRDF.cpp \
 	ie_exp_RTF_AttrProp.cpp \
 	ie_exp_RTF_AttrProp.h \
 	ie_exp_RTF.cpp \
@@ -45,6 +47,8 @@ libxp_la_SOURCES = \
 	ie_impGraphic_SVG.cpp \
 	ie_impGraphic_SVG.h \
 	ie_imp.h \
+	ie_imp_MetaDataRDF.cpp \
+	ie_imp_MetaDataRDF.h \
 	ie_imp_MsWord_97.cpp \
 	ie_imp_MsWord_97.h \
 	ie_imp_MsWord_dump.h \

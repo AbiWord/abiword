@@ -6,5 +6,7 @@ AM_CPPFLAGS = \
 
 libt_la_SOURCES = \
 	pp_PropertyMap.t.cpp \
-	pt_PieceTable.t.cpp
+	pt_PieceTable.t.cpp \
+	pm_MetaDataStore.t.cpp \
+	pm_MetaData.t.cpp
 
