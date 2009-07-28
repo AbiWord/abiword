@@ -60,21 +60,17 @@ AP_Win32Dialog_ToggleCase::~AP_Win32Dialog_ToggleCase(void)
 void AP_Win32Dialog_ToggleCase::runModal(XAP_Frame * pFrame)
 {
 	UT_return_if_fail (pFrame);
-	m_helper.runModal(pFrame, AP_DIALOG_ID_TOGGLECASE, AP_RID_DIALOG_TOGGLECASE, this);
-
-	
+	m_helper.runModal(pFrame, AP_DIALOG_ID_TOGGLECASE, AP_RID_DIALOG_TOGGLECASE, this);	
 }
 
-#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+#define _DS(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 BOOL AP_Win32Dialog_ToggleCase::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
-	m_hThisDlg = hWnd;
-
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	SetWindowText( hWnd, pSS->getValue(AP_STRING_ID_DLG_ToggleCase_Title) );
+	setDialogTitle (pSS->getValue(AP_STRING_ID_DLG_ToggleCase_Title) );
 
 	// localize controls
 	_DSX(TOGGLECASE_BTN_OK,			DLG_OK);
@@ -87,7 +83,7 @@ BOOL AP_Win32Dialog_ToggleCase::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPAR
 	_DS(TOGGLECASE_RDO_ToggleCase,		DLG_ToggleCase_ToggleCase);
 
 	m_helper.checkButton(AP_RID_DIALOG_TOGGLECASE_RDO_SentenceCase, true);
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
+	centerDialog();
 
 	return 1;							// 1 == we did not call SetFocus()
 }

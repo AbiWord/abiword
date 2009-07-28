@@ -23,11 +23,11 @@
 #include "ap_Dialog_ToggleCase.h"
 #include "xap_Win32DialogHelper.h"
 #include "xap_Frame.h"
-
+#include "xap_Win32DialogBase.h"
 
 /*****************************************************************/
 
-class ABI_EXPORT AP_Win32Dialog_ToggleCase: public AP_Dialog_ToggleCase, XAP_Win32Dialog
+class ABI_EXPORT AP_Win32Dialog_ToggleCase: public AP_Dialog_ToggleCase, XAP_Win32Dialog, public XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_ToggleCase(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
