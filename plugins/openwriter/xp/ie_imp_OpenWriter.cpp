@@ -45,6 +45,7 @@
 #include "ut_hash.h"
 #include "ut_vector.h"
 #include "ut_stack.h"
+#include "ut_math.h"
 
 #include "ut_debugmsg.h"
 
