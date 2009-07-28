@@ -20,6 +20,8 @@
 #ifndef UT_SLEEP_H
 #define UT_SLEEP_H
 
-void UT_usleep(unsigned long usec);
+#include "ut_types.h"
+
+ABI_EXPORT void UT_usleep(unsigned long usec);
 
 #endif
