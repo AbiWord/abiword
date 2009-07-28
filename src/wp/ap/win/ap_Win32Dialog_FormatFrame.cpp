@@ -39,8 +39,8 @@
 #define BITMAP_WITDH	15
 #define BITMAP_HEIGHT	15
 
-#define GWL(hwnd)		(AP_Win32Dialog_FormatFrame*)GetWindowLong((hwnd), DWL_USER)
-#define SWL(hwnd, d)	(AP_Win32Dialog_FormatFrame*)SetWindowLong((hwnd), DWL_USER,(LONG)(d))
+#define GWL(hwnd)		(AP_Win32Dialog_FormatFrame*)GetWindowLongW((hwnd), DWL_USER)
+#define SWL(hwnd, d)	(AP_Win32Dialog_FormatFrame*)SetWindowLongW((hwnd), DWL_USER,(LONG)(d))
 
 
 const char * sThickness[FORMAT_FRAME_NUMTHICKNESS] = {"0.25pt","0.5pt",
@@ -67,9 +67,7 @@ AP_Win32Dialog_FormatFrame::AP_Win32Dialog_FormatFrame(XAP_DialogFactory * pDlgF
 {
 	UT_sint32 i = 0;
 	for(i=0; i < FORMAT_FRAME_NUMTHICKNESS ;i++)
-		m_dThickness[i] = UT_convertToInches(sThickness[i]);
-	
-	 
+		m_dThickness[i] = UT_convertToInches(sThickness[i]);	 
 }   
     
 AP_Win32Dialog_FormatFrame::~AP_Win32Dialog_FormatFrame(void)
@@ -86,13 +84,13 @@ void AP_Win32Dialog_FormatFrame::runModeless(XAP_Frame * pFrame)
 	UT_return_if_fail (pFrame);		
 	
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-	LPCTSTR lpTemplate = NULL;
+	LPCWSTR lpTemplate = NULL;
 	
 	UT_return_if_fail (m_id == AP_DIALOG_ID_FORMAT_FRAME);	
 
-	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_FORMATFRAME);
+	lpTemplate = MAKEINTRESOURCEW(AP_RID_DIALOG_FORMATFRAME);
 	
-	HWND hResult = CreateDialogParam(pWin32App->getInstance(),lpTemplate,
+	HWND hResult = CreateDialogParamW(pWin32App->getInstance(),lpTemplate,
 							static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 							(DLGPROC)s_dlgProc,(LPARAM)this);
 							
@@ -152,12 +150,12 @@ HBITMAP AP_Win32Dialog_FormatFrame::_loadBitmap(HWND hWnd, UINT nId, char* pName
 	HBITMAP hBitmap = NULL;
 	
 	AP_Win32Toolbar_Icons::getBitmapForIcon(hWnd, width,height, &color,	pName,	&hBitmap);					
-	SendDlgItemMessage(hWnd,  nId,  BM_SETIMAGE,  IMAGE_BITMAP, (LPARAM) hBitmap);	
+	SendDlgItemMessageW(hWnd,  nId,  BM_SETIMAGE,  IMAGE_BITMAP, (LPARAM) hBitmap);	
 	return hBitmap; 
 }
 
-#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+#define _DS(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 // This handles the WM_INITDIALOG message for the top-level dialog.
 BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
@@ -197,7 +195,7 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPA
 	_DS(FORMATFRAME_TEXT_IMGBACK,		DLG_FormatFrame_SetImageBackground);
 
 
-	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_FormatFrameTitle));	
+	setDialogTitle (pSS->getValue(AP_STRING_ID_DLG_FormatFrameTitle));	
 	
 	
 	/* Load the bitmaps into the dialog box */								
@@ -246,11 +244,11 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPA
 	HWND hCombo = GetDlgItem(hWnd, AP_RID_DIALOG_FORMATFRAME_COMBO_THICKNESS);
 	
 	for(i=0; i < FORMAT_FRAME_NUMTHICKNESS ;i++)
-		SendMessage(hCombo, CB_ADDSTRING, 0, (WPARAM) sThickness[i]);
+		SendMessageW(hCombo, CB_ADDSTRING, 0, (WPARAM) sThickness[i]);
 
-	SendMessage(hCombo, CB_SETCURSEL, 0, 0);
+	SendMessageW(hCombo, CB_SETCURSEL, 0, 0);
 
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);			
+	centerDialog();
 	return 1; 
 }
 
@@ -301,18 +299,18 @@ BOOL AP_Win32Dialog_FormatFrame::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 		 
 		case AP_RID_DIALOG_FORMATFRAME_BTN_BORDERCOLOR:		
 		{	
-			CHOOSECOLOR cc;                
+			CHOOSECOLORW cc;                
 			static COLORREF acrCustClr[16];
 			
 			/* Initialize CHOOSECOLOR */
-			ZeroMemory(&cc, sizeof(CHOOSECOLOR));
-			cc.lStructSize = sizeof(CHOOSECOLOR);
+			ZeroMemory(&cc, sizeof(CHOOSECOLORW));
+			cc.lStructSize = sizeof(CHOOSECOLORW);
 			cc.hwndOwner = m_hwndDlg;
 			cc.lpCustColors = (LPDWORD) acrCustClr;
 			cc.rgbResult = 0;
 			cc.Flags = CC_FULLOPEN | CC_RGBINIT;
 		 
-			if(ChooseColor(&cc))			
+			if(ChooseColorW(&cc))			
 			{
 				setBorderColor(UT_RGBColor(GetRValue( cc.rgbResult), GetGValue(cc.rgbResult), GetBValue(cc.rgbResult)));		
 				m_borderButton.setColour(cc.rgbResult);
@@ -328,18 +326,18 @@ BOOL AP_Win32Dialog_FormatFrame::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 		
 		case AP_RID_DIALOG_FORMATFRAME_BTN_BACKCOLOR:		
 		{	
-			CHOOSECOLOR cc;               
+			CHOOSECOLORW cc;               
 			static COLORREF acrCustClr2[16];
 			
 			/* Initialize CHOOSECOLOR */
-			ZeroMemory(&cc, sizeof(CHOOSECOLOR));
-			cc.lStructSize = sizeof(CHOOSECOLOR);
+			ZeroMemory(&cc, sizeof(CHOOSECOLORW));
+			cc.lStructSize = sizeof(CHOOSECOLORW);
 			cc.hwndOwner = m_hwndDlg;
 			cc.lpCustColors = (LPDWORD) acrCustClr2;
 			cc.rgbResult = 0;
 			cc.Flags = CC_FULLOPEN | CC_RGBINIT;
 		 
-			if(ChooseColor(&cc))			
+			if(ChooseColorW(&cc))			
 			{
 				setBGColor(UT_RGBColor(GetRValue( cc.rgbResult), GetGValue(cc.rgbResult), GetBValue(cc.rgbResult)));						
 				m_backgButton.setColour(cc.rgbResult);
@@ -379,7 +377,7 @@ BOOL AP_Win32Dialog_FormatFrame::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 			{
 				int nSelected;
 				HWND hCombo = GetDlgItem(hWnd, AP_RID_DIALOG_FORMATFRAME_COMBO_THICKNESS);
-				nSelected = SendMessage(hCombo, CB_GETCURSEL, 0, 0);				
+				nSelected = SendMessageW(hCombo, CB_GETCURSEL, 0, 0);				
 
 				if (nSelected != CB_ERR)
 				{
@@ -464,13 +462,13 @@ void AP_Win32Dialog_FormatFrame::notifyActiveFrame(XAP_Frame *pFrame)
 { 	
 	setAllSensitivities();
 	
-	if((HWND)GetWindowLong(m_hwndDlg, GWL_HWNDPARENT) != static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
+	if((HWND)GetWindowLongW(m_hwndDlg, GWL_HWNDPARENT) != static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
 		// Update the caption
 		ConstructWindowName();
-		SetWindowText(m_hwndDlg, m_WindowName);
+		setDialogTitle (m_WindowName);
 
-		SetWindowLong(m_hwndDlg, GWL_HWNDPARENT, (long)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
+		SetWindowLongW(m_hwndDlg, GWL_HWNDPARENT, (long)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
 		SetWindowPos(m_hwndDlg, NULL, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 

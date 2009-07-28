@@ -187,7 +187,7 @@ BOOL AP_Win32Dialog_FormatFootnotes::_onInitDialog(HWND hWnd, WPARAM /*wParam*/,
 	
 	CheckDlgButton(hWnd, AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_ERSTSEC, getRestartEndnoteOnSection());
 	      
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
+	centerDialog();
 	
 	return 0; // 0 because we called SetFocus
 

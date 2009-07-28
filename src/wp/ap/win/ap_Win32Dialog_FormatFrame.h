@@ -25,10 +25,11 @@
 #include "xap_Win32PreviewWidget.h"
 #include "gr_Win32Graphics.h"
 #include "xap_Win32ColourButton.h"
+#include "xap_Win32DialogBase.h"
 
 /*****************************************************************/
 
-class ABI_EXPORT AP_Win32Dialog_FormatFrame: public AP_Dialog_FormatFrame
+class ABI_EXPORT AP_Win32Dialog_FormatFrame: public AP_Dialog_FormatFrame, XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_FormatFrame(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
