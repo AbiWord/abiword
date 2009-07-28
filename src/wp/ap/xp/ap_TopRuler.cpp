@@ -2551,7 +2551,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 
 	// if they drag vertically off the ruler, we ignore the whole thing.
 
-	if ((y < 0) || (y > static_cast<UT_sint32>(getHeight ())))
+	if ((getHeight() > 0) && ((y < 0) || (y > static_cast<UT_sint32>(getHeight ()))))
 	{
 		_ignoreEvent(true);
 		m_draggingWhat = DW_NOTHING;
