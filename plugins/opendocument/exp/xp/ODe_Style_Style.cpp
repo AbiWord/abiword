@@ -1556,9 +1556,9 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     
     ok = rAP.getProperty("left-color", pValue);
     if (ok && pValue != NULL) {
-	    m_leftColor = pValue;
+        m_leftColor = UT_colorToHex(pValue, true);
     } else if (m_leftColor.empty()) {
-        m_leftColor = "000000";
+        m_leftColor = "#000000";
     }
 
     // Right border
@@ -1572,9 +1572,9 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     
     ok = rAP.getProperty("right-color", pValue);
     if (ok && pValue != NULL) {
-	    m_rightColor = pValue;
+        m_rightColor = UT_colorToHex(pValue, true);
     } else if (m_rightColor.empty()) {
-        m_rightColor = "000000";
+        m_rightColor = "#000000";
     }
 
     // Top border
@@ -1588,9 +1588,9 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     
     ok = rAP.getProperty("top-color", pValue);
     if (ok && pValue != NULL) {
-	    m_topColor = pValue;
+        m_topColor = UT_colorToHex(pValue, true);
     } else if (m_topColor.empty()) {
-        m_topColor = "000000";
+        m_topColor = "#000000";
     }
     
     // Bottom border
@@ -1604,9 +1604,9 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     
     ok = rAP.getProperty("bot-color", pValue);
     if (ok && pValue != NULL) {
-	    m_bottomColor = pValue;
+        m_bottomColor = UT_colorToHex(pValue, true);
     } else if (m_bottomColor.empty()) {
-        m_bottomColor = "000000";
+        m_bottomColor = "#000000";
     }
     
     // Background color
@@ -1632,10 +1632,10 @@ write(UT_UTF8String& rOutput, const UT_UTF8String& rSpacesOffset) const {
     rOutput += rSpacesOffset;
     rOutput += "<style:table-cell-properties";
     
-    ODe_writeAttribute(rOutput, "fo:border-left", m_leftThickness + " solid #" + m_leftColor);
-    ODe_writeAttribute(rOutput, "fo:border-right",m_rightThickness + " solid #" + m_rightColor);
-    ODe_writeAttribute(rOutput, "fo:border-top", m_topThickness + " solid #" + m_topColor);
-    ODe_writeAttribute(rOutput, "fo:border-bottom", m_bottomThickness + " solid #" + m_bottomColor);
+    ODe_writeAttribute(rOutput, "fo:border-left", m_leftThickness + " solid " + m_leftColor);
+    ODe_writeAttribute(rOutput, "fo:border-right",m_rightThickness + " solid " + m_rightColor);
+    ODe_writeAttribute(rOutput, "fo:border-top", m_topThickness + " solid " + m_topColor);
+    ODe_writeAttribute(rOutput, "fo:border-bottom", m_bottomThickness + " solid " + m_bottomColor);
     ODe_writeAttribute(rOutput, "fo:background-color", m_backgroundColor);
     
     rOutput += "/>\n";
@@ -1731,8 +1731,8 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
             if (!m_borderLeft.empty()) {
                 m_borderLeft += " ";
             }
-            m_borderLeft += "solid #";
-            m_borderLeft += pValue;
+            m_borderLeft += "solid ";
+            m_borderLeft += UT_colorToHex(pValue, true);
         }
     }
     
@@ -1755,8 +1755,8 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
             if (!m_borderRight.empty()) {
                 m_borderRight += " ";
             }
-            m_borderRight += "solid #";
-            m_borderRight += pValue;
+            m_borderRight += "solid ";
+            m_borderRight += UT_colorToHex(pValue, true);
         }
     }
    
@@ -1779,8 +1779,8 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
             if (!m_borderTop.empty()) {
                 m_borderTop += " ";
             }
-            m_borderTop += "solid #";
-            m_borderTop += pValue;
+            m_borderTop += "solid ";
+            m_borderTop += UT_colorToHex(pValue, true);
         }
     }
     
@@ -1805,8 +1805,8 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
                 m_borderBottom += " ";
             }
             
-            m_borderBottom += "solid #";
-            m_borderBottom += pValue;
+            m_borderBottom += "solid ";
+            m_borderBottom += UT_colorToHex(pValue, true);
         }
     }
     
@@ -1815,8 +1815,11 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     
     ok = rAP.getProperty("background-color", pValue);
     if (ok && pValue && *pValue) {
-        // TODO: handle transparent?
-        m_backgroundColor = UT_colorToHex(pValue, true);
+        if (!strcmp(pValue, "transparent")) {
+            m_backgroundColor = pValue;
+        } else {
+            m_backgroundColor = UT_colorToHex(pValue, true);
+        }
     }
     
     
