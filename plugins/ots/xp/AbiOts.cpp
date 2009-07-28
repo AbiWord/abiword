@@ -195,10 +195,10 @@ Ots_addToMenus()
   int frameCount = pApp->getFrameCount();
   XAP_Menu_Factory * pFact = pApp->getMenuFactory();
 
-  XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText",NULL,"Bullets and &Numbering",EV_MLF_Normal);
+  XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText",NULL, _("Bullets and &Numbering"),EV_MLF_Normal);
   pFact->addNewLabel(NULL,newID,Ots_MenuLabel, Ots_MenuTooltip);
 
-  pFact->addNewMenuAfter("Main",NULL,"&Word Count",EV_MLF_Normal,newID);
+  pFact->addNewMenuAfter("Main",NULL, _("&Word Count"),EV_MLF_Normal,newID);
   
   EV_Menu_Action* myAction = new EV_Menu_Action(newID,                     // id that the layout said we could use
 						0,                      // no, we don't have a sub menu.

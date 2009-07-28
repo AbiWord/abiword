@@ -19,7 +19,7 @@
  * USA
  */
 
-#include "xap_Strings.h"
+#include "ap_Strings.h"
 #include "ev_EditMethod.h"
 #include "fv_View.h"
 #include "fp_Run.h"

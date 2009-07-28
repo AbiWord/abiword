@@ -291,7 +291,7 @@ bool AP_CocoaApp::initialize(void)
 	//////////////////////////////////////////////////////////////////
 	IE_ImpExp_RegisterXP ();
     
-		AP_BuiltinStringSet * pBuiltinStringSet = new AP_StringSet();
+		AP_StringSet * pBuiltinStringSet = new AP_StringSet();
 		UT_ASSERT(pBuiltinStringSet);
 		m_pStringSet = pBuiltinStringSet;
 	    
@@ -457,8 +457,8 @@ const char * AP_CocoaApp::getAbiSuiteAppDir(void) const
 */
 const XAP_StringSet * AP_CocoaApp::getStringSet(void) const
 {
-		m_pStringSet->setDomain();
-    return m_pStringSet;
+	m_pStringSet->setDomain();
+	return m_pStringSet;
 }
 
 //////////////////////////////////////////////////////////////////

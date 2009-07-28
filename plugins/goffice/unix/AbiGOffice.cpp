@@ -49,7 +49,7 @@
 #include <goffice/component/go-component-factory.h>
 #include <gsf/gsf-impl-utils.h>
 
-XAP_StringSet * strings = (XAP_StringSet *) XAP_App()::getApp()->getStringSet();
+XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 
 //
 // GOCmdContext interface implementation for AbiGOffice
@@ -62,7 +62,7 @@ typedef GObjectClass AbiCmdContextClass;
 static void
 abi_error_error (G_GNUC_UNUSED GOCmdContext *cc, GError *error)
 {
-	fprintf (stderr, strings->getValue(_("Error: %s\n", error->message)));
+	fprintf (stderr, strings->getValue(_("Error: %s\n")), error->message);
 }
 
 static void

@@ -964,7 +964,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 	XAP_App * pApp = XAP_App::getApp();	
 	pMathManager = new GR_MathManager(NULL);
 
-	strings = (XAP_StringSet *) pApp()->getStringSet();
+	strings = (XAP_StringSet *) pApp->getStringSet();
 	strings->setDomain("abiword-plugin-mathview");
 
 	mi->name = strings->getValue(_("AbiMathView"));

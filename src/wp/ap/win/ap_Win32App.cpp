@@ -177,7 +177,7 @@ bool AP_Win32App::initialize(void)
 	m_pToolbarActionSet = AP_CreateToolbarActionSet();
 	UT_return_val_if_fail (m_pToolbarActionSet,false);
 		
-		AP_BuiltinStringSet * pBuiltinStringSet = new AP_StringSet();
+		AP_StringSet * pBuiltinStringSet = new AP_StringSet();
 		UT_return_val_if_fail (pBuiltinStringSet, false);
 		m_pStringSet = pBuiltinStringSet;
 
@@ -201,7 +201,6 @@ bool AP_Win32App::initialize(void)
 			else
 			{
 				UT_DEBUGMSG(("Unable to load StringSet [%s] -- using builtin strings instead.\n",szPathname));				
-				DELETEP(pDiskStringSet);
 			}
 				
 			g_free(szPathname);

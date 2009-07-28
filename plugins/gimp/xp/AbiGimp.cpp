@@ -202,10 +202,10 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
     return 0;
 #endif
 
-		strings->setDomain("abiword-plugin-gimp");
+	strings->setDomain("abiword-plugin-gimp");
 
-		strings->getValue(_("&Edit Image via GIMP"));
-		AbiGimp_MenuTooltip = strings->getValue(_("Opens the selected image in the GIMP for editing."));
+	AbiGimp_MenuLabel = strings->getValue(_("&Edit Image via GIMP"));
+	AbiGimp_MenuTooltip = strings->getValue(_("Opens the selected image in the GIMP for editing."));
 
     mi->name = strings->getValue(_("AbiGimp"));
     mi->desc = strings->getValue(_("Use this to edit an image with the GIMP from within AbiWord"));
