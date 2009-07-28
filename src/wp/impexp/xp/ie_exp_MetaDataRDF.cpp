@@ -37,6 +37,13 @@ void IE_exp_metadata(const pm_MetaData * metadata, IE_Exp * exporter, bool is_cd
 {
     UT_ASSERT(metadata);
     UT_ASSERT(exporter);
+
+    if(metadata->isRaw())
+    {
+        exporter->write(metadata->rawData());
+
+        return;
+    }
 #if HAVE_RDF_RAPTOR
     int result;
     void * str_out = NULL;

@@ -25,13 +25,25 @@
 #include <string>
 
 
+class UT_ByteBuf;
+
 class pm_MetaData
 {
 public:
     pm_MetaData();
+    ~pm_MetaData();
 
     bool empty() const;
+    bool isRaw() const
+        {
+            return m_cdata;
+        }
 
+    void setRawData(const UT_ByteBuf & buf);
+    const char * rawData() const
+        {
+            return m_cdata;
+        }
     void setSubject(const std::string & id);
     const std::string & getSubject() const
         {
@@ -49,6 +61,7 @@ public:
         }
 
 private:
+    char * m_cdata;
     // the node id. informational.
     std::string m_subject;
     // key/value pairs from RDF (or predicate / object)

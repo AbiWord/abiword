@@ -21,7 +21,7 @@
 
 #include "tf_test.h"
 
-#include "pm_MetaDataSotre.h"
+#include "pm_MetaDataStore.h"
 
 
 

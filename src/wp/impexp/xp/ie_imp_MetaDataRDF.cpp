@@ -66,6 +66,8 @@ void IE_imp_metadata(pm_MetaData * metadata, const UT_ByteBuf & buf)
     raptor_set_statement_handler(parser, metadata, &statement_handler);
 
     raptor_free_parser(parser);
+#else
+    metadata->setRawData(buf);
 #endif
 }
 

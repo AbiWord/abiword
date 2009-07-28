@@ -18,15 +18,39 @@
  * 02111-1307, USA.
  */
 
-
+#include "ut_bytebuf.h"
 #include "tf_test.h"
 
+#include "pm_MetaData.h"
 
 
 TFTEST_MAIN("pm_MetaData")
 {
+    pm_MetaData meta1;
+    UT_ByteBuf buf;
 
+    buf.append((const UT_Byte*)"foobar", 6);
+    
+    TFPASS(meta1.empty());
+    meta1.setRawData(buf);
+    TFPASS(!meta1.empty());
+    TFPASS(meta1.isRaw());
+    TFPASS(meta1.rawData());
+    
 
+    pm_MetaData meta2;
+    TFPASS(meta2.empty());
 
+    meta2.setSubject("foobar");
+    TFPASS(!meta2.empty());
+
+    TFPASS(meta2.getData().empty());
+    meta2.insertData("baz", "42");
+    TFPASS(!meta2.getData().empty());
+    TFPASS(meta2.getData().size() == 1);
+    meta2.insertData("Cylon", "Number 6");
+    TFPASS(meta2.getData().size() == 2);    
+    meta2.insertData("baz", "69");
+    TFPASS(meta2.getData().size() == 2);
 }
 
