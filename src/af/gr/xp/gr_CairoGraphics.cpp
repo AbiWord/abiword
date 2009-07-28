@@ -2609,35 +2609,56 @@ const std::vector<std::string> & GR_CairoGraphics::getAllFontNames(void)
 	PangoFontMap *fontmap = pango_cairo_font_map_get_default();
 	PangoContext *context = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(fontmap));	
 	if (fontmap && context)
-		{
-			PangoFontFamily **font_families;
-			int n_families;
-			pango_font_map_list_families(fontmap, &font_families, &n_families);
+	{
+		PangoFontFamily **font_families;
+		int n_families;
+		pango_font_map_list_families(fontmap, &font_families, &n_families);
 			
-			for(UT_sint32 i = 0; i < n_families; ++i)
-				{
-					const char *family = pango_font_family_get_name(font_families[i]);
-					
-					if (bExclude)
-						{
-							XAP_FontSettings & Fonts = pPrefs->getFontSettings();
-							if (Fonts.isOnExcludeList(family))
-								{
-									UT_DEBUGMSG(("@@@@ ===== Excluding font [%s] =====\n",
-												 family));
-									continue;
-								}
-						}
-					
-					Vec.push_back(family);
-				}
-			g_free(font_families);
-		}
-	if(context)
+		for(UT_sint32 i = 0; i < n_families; ++i)
 		{
-			g_object_unref (G_OBJECT (context));
-			context = NULL;
+			const char *family = pango_font_family_get_name(font_families[i]);
+
+			if (bExclude)
+			{
+				XAP_FontSettings & Fonts = pPrefs->getFontSettings();
+				if (Fonts.isOnExcludeList(family))
+				{
+					UT_DEBUGMSG(("@@@@ ===== Excluding font [%s] =====\n",
+								 family));
+					continue;
+				}
+			}
+			PangoFontFace ** faces;
+			int n_faces;
+			bool is_scalable = true;
+			pango_font_family_list_faces(font_families[i], &faces, &n_faces);
+			for(int j = 0; j < n_faces; j++) 
+			{
+				int * sizes = NULL;
+				int n_sizes = 0;
+				pango_font_face_list_sizes(faces[j], &sizes, &n_sizes);
+				if(sizes) 
+				{
+					g_free(sizes);
+					is_scalable = false;
+					UT_DEBUGMSG(("@@@@ ===== Excluding NON scalable font [%s] =====\n",
+								 family));
+					break;
+				}
+			}
+			g_free(faces);
+			if(is_scalable) 
+			{
+				Vec.push_back(family);
+			}
 		}
+		g_free(font_families);
+	}
+	if(context)
+	{
+		g_object_unref (G_OBJECT (context));
+		context = NULL;
+	}
     std::sort(Vec.begin(), Vec.end());
 
 	return Vec;
