@@ -162,6 +162,11 @@ bool ODe_Style_Style::hasTextStyleProps(const PP_AttrProp* pAP) {
     if (ok && pValue != NULL) {
         return true;
     }
+
+    ok = pAP->getProperty("bgcolor", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
     
     ok = pAP->getProperty("text-decoration", pValue);
     if (ok && pValue != NULL) {
