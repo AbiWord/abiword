@@ -99,8 +99,6 @@ BOOL XAP_Win32Dialog_Image::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /
 	// Initialize controls
 	setControlText( XAP_RID_DIALOG_IMAGE_EBX_HEIGHT, getHeightString() );
 	setControlText( XAP_RID_DIALOG_IMAGE_EBX_WIDTH, getWidthString() );
-	//setControlText(XAP_RID_DIALOG_IMAGE_EBX_TITLE, AP_Win32App::s_fromUTF8ToWinLocale(getTitle().utf8_str()).c_str());
-	//setControlText(XAP_RID_DIALOG_IMAGE_EBX_DESCRIPTION, AP_Win32App::s_fromUTF8ToWinLocale(getDescription().utf8_str()).c_str());
 	setControlText(XAP_RID_DIALOG_IMAGE_EBX_TITLE, getTitle().utf8_str());
 	setControlText(XAP_RID_DIALOG_IMAGE_EBX_DESCRIPTION, getDescription().utf8_str());
     checkButton( XAP_RID_DIALOG_IMAGE_CHK_ASPECT, getPreserveAspect());

@@ -103,7 +103,7 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 	{
 		HFONT hFont = (HFONT) GetCurrentObject(hdc, OBJ_FONT);
 		LOGFONTW aLogFont;
-		int iRes = GetObject(hFont, sizeof(LOGFONTW), &aLogFont);
+		int iRes = GetObjectW(hFont, sizeof(LOGFONTW), &aLogFont);
 		UT_ASSERT(iRes);
 
 		xxx_UT_DEBUGMSG(("gr_Win32Graphics::getCharWidth: extra interchar. spacing %d\n", GetTextCharacterExtra(hdc)));

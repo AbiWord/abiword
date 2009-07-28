@@ -64,7 +64,7 @@ static void AdaptSeparatorLength(HWND hwnd, const wchar_t* text, HFONT hFont)
 {
 	// Provide the right font
 	LOGFONTW logFont;
-	int status = GetObject(hFont, sizeof(LOGFONTW), &logFont);
+	int status = GetObjectW(hFont, sizeof(LOGFONTW), &logFont);
 	UT_return_if_fail(status);
 	HFONT hCtrlFont = CreateFontIndirectW(&logFont);
 	UT_return_if_fail(hCtrlFont);

@@ -70,11 +70,11 @@ void XAP_Win32Dialog_ListDocuments::runModal(XAP_Frame * pFrame)
 
 	XAP_Win32LabelledSeparator_RegisterClass(pWin32App);
 
-	LPCTSTR lpTemplate = NULL;
+	LPCWSTR lpTemplate = NULL;
 
-	lpTemplate = MAKEINTRESOURCE(XAP_RID_DIALOG_LIST_DOCUMENTS);
+	lpTemplate = MAKEINTRESOURCEW(XAP_RID_DIALOG_LIST_DOCUMENTS);
 
-	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
+	int result = DialogBoxParamW(pWin32App->getInstance(),lpTemplate,
 						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 						(DLGPROC)s_dlgProc,(LPARAM)this);
 	UT_ASSERT_HARMLESS((result != -1));
@@ -94,11 +94,11 @@ BOOL CALLBACK XAP_Win32Dialog_ListDocuments::s_dlgProc(HWND hWnd,UINT msg,WPARAM
 	{
 	case WM_INITDIALOG:
 		pThis = (XAP_Win32Dialog_ListDocuments *)lParam;
-		SetWindowLong(hWnd,DWL_USER,lParam);
+		SetWindowLongW(hWnd,DWL_USER,lParam);
 		return pThis->_onInitDialog(hWnd,wParam,lParam);
 
 	case WM_COMMAND:
-		pThis = (XAP_Win32Dialog_ListDocuments *)GetWindowLong(hWnd,DWL_USER);
+		pThis = (XAP_Win32Dialog_ListDocuments *)GetWindowLongW(hWnd,DWL_USER);
 		return pThis->_onCommand(hWnd,wParam,lParam);
 
 	default:
@@ -106,26 +106,26 @@ BOOL CALLBACK XAP_Win32Dialog_ListDocuments::s_dlgProc(HWND hWnd,UINT msg,WPARAM
 	}
 }
 
-#define _DSX(c,s) SetDlgItemText(hWnd,XAP_RID_DIALOG_LIST_DOCUMENTS_##c,pSS->getValue(XAP_STRING_ID_##s))
+#define _DSX(c,s) SetDlgItemTextW(hWnd,XAP_RID_DIALOG_LIST_DOCUMENTS_##c,pSS->getValue(XAP_STRING_ID_##s))
 
-#define _DSXS(c,s) SetDlgItemText(hWnd,XAP_RID_DIALOG_LIST_DOCUMENTS_##c,s)
+#define _DSXS(c,s) SetDlgItemTextW(hWnd,XAP_RID_DIALOG_LIST_DOCUMENTS_##c,s)
 
 BOOL XAP_Win32Dialog_ListDocuments::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	SetWindowText(hWnd, _getTitle());
+    /*
+	SetWindowTextW(hWnd, _getTitle());
 
 	// localize controls
 	_DSXS(BTN_OK,    _getOKButtonText());
 	_DSX(BTN_CANCEL, DLG_Cancel);
 
-	SetDlgItemText(hWnd, XAP_RID_DIALOG_LIST_DOCUMENTS_HEADING,_getHeading());
-
+	SetDlgItemTextW(hWnd, XAP_RID_DIALOG_LIST_DOCUMENTS_HEADING,_getHeading());
+    */
 	// set the column headings
 	HWND h = GetDlgItem(hWnd, XAP_RID_DIALOG_LIST_DOCUMENTS_LIST);
 
-	DWORD dwStyle = GetWindowLong(h, GWL_STYLE);
+	DWORD dwStyle = GetWindowLongW(h, GWL_STYLE);
 
 	RECT r;
 	GetWindowRect(h, &r);

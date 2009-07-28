@@ -124,7 +124,7 @@ BOOL AP_Win32Dialog_InsertTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_INSERTTABLE_VAL_SIZE, szValue);
 
 	/* Units name*/
-	setDlgItemText(hWnd, AP_RID_DIALOG_INSERTTABLE_TEXT_UNITS, UT_dimensionName(m_dim));	
+	setDlgItemText(AP_RID_DIALOG_INSERTTABLE_TEXT_UNITS, UT_dimensionName(m_dim));	
 
 	/* Autosize by default*/
 	EnableWindow(GetDlgItem(m_hDlg,AP_RID_DIALOG_INSERTTABLE_VAL_SIZE), FALSE);

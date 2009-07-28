@@ -485,7 +485,7 @@ void AP_Win32App::_indicateFmtToClipboard(const char * pszFmt) const
 	UT_return_if_fail(m_pClipboard && pszFmt);
 	UINT iFmt = m_pClipboard->convertFormatString(pszFmt);
 
-	SetClipboardData(iFmt, NULL);
+	SetClipboardDataW(iFmt, NULL);
 }
 
 bool AP_Win32App::_cacheClipboardDoc(PD_DocumentRange *pDocRange)
@@ -764,7 +764,7 @@ PBITMAPINFO CreateBitmapInfoStruct(HBITMAP hBmp)
 	WORD    	cClrBits; 
 
 	// Retrieve the bitmap's color format, width, and height. 
-    	if (!GetObject(hBmp, sizeof(BITMAP), (LPSTR)&bmp)) 
+    	if (!GetObjectW(hBmp, sizeof(BITMAP), (LPSTR)&bmp)) 
 		return NULL;
 	
 	if (bmp.bmBitsPixel==16) bmp.bmBitsPixel=24;	// 16 bit BMPs are not supported by all programs
@@ -1171,7 +1171,7 @@ try
 	    	
 			// Check for idle condition
 			while( !UT_Win32Idle::_isEmpty() &&
-                   !PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE) ) 
+                   !PeekMessageW(&msg, NULL, 0, 0, PM_NOREMOVE) ) 
 			{
 				// Fire idle functions when no pending messages
 		    	UT_Win32Idle::_fireall();
