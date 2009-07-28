@@ -438,7 +438,8 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
     } else if (!strcmp(pName, "draw:frame")) {
         
         if (!strcmp(m_rElementStack.getStartTag(0)->getName(), "text:p") ||
-            !strcmp(m_rElementStack.getStartTag(0)->getName(), "text:h")) 
+            !strcmp(m_rElementStack.getStartTag(0)->getName(), "text:h") ||
+            !strcmp(m_rElementStack.getStartTag(0)->getName(), "office:text")) 
 	{
             
             const gchar* pVal = NULL;
@@ -449,7 +450,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             if (pVal && (!strcmp(pVal, "paragraph") ||
                 !strcmp(pVal, "page"))) {
                 // It's postponed because AbiWord uses frames *after* the
-                // paragraph but OpenDocument uses then inside the paragraphs,
+                // paragraph but OpenDocument uses them inside the paragraphs,
                 // right *before* its content.
                 rAction.postponeElementParsing("Frame");
             } else {

@@ -645,30 +645,32 @@ bool ODi_Frame_ListenerState::_getFrameProperties(UT_UTF8String& rProps,
         rProps += "; position-to:page-above-text";
         
         pVal = m_rElementStack.getStartTag(0)->getAttributeValue("svg:x");
-        UT_ASSERT(pVal);
-        rProps += "; frame-page-xpos:";
-        rProps += pVal;
+        if (pVal && *pVal) {
+            rProps += "; frame-page-xpos:";
+            rProps += pVal;
+        }
         
         pVal = m_rElementStack.getStartTag(0)->getAttributeValue("svg:y");
-        UT_ASSERT(pVal);
-        rProps += "; frame-page-ypos:";
-        rProps += pVal;
+        if (pVal && *pVal) {
+            rProps += "; frame-page-ypos:";
+            rProps += pVal;
+        }
         
     } else if (pVal && (!strcmp(pVal, "char") || !strcmp(pVal, "as-char"))) {
 		// AbiWord does not support anchoring frames/texboxes to chars; 
-		// let's just convert it to paragraph anchoring, so we don't loose the 
+		// let's just convert it to paragraph anchoring, so we don't lose the 
 		// entire frame
 		// FIXME: "char" means an inline thing in AbiWord terms, NOT a positioned thing
 		rProps += "; position-to:block-above-text";
 
 	    pVal = m_rElementStack.getStartTag(0)->getAttributeValue("svg:x");
-        if (pVal) {
+        if (pVal && *pVal) {
             rProps += "; xpos:";
             rProps += pVal;
         }
         
         pVal = m_rElementStack.getStartTag(0)->getAttributeValue("svg:y");
-        if (pVal) {
+        if (pVal && *pVal) {
             rProps += "; ypos:";
             rProps += pVal;
         }
