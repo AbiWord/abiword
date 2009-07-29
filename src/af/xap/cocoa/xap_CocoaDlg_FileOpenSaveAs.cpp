@@ -34,17 +34,13 @@
 #include "ut_string.h"
 
 #include "xap_CocoaDlg_FileOpenSaveAs.h"
+#include "xap_CocoaDialog_Utilities.h"
 #include "xap_CocoaApp.h"
 #include "xap_CocoaFrame.h"
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_MessageBox.h"
 #include "xap_Prefs.h"
 #include "xap_Strings.h"
-
-#include "gr_CocoaCairoGraphics.h"
-#include "gr_CocoaImage.h"
-
-#include "fg_GraphicRaster.h"
 
 #include "ie_imp.h"
 #include "ie_impGraphic.h"
@@ -62,72 +58,33 @@
 		return nil;
 	}
 	_xap = xap;
-	m_bInsertGraphic = NO;
 	return self;
-}
-
-- (void)setInsertGraphic:(BOOL)insertGraphic
-{
-	m_bInsertGraphic = insertGraphic;
-}
-
-- (void)setPreviewImage:(NSImage *)image
-{
-	if (m_bInsertGraphic)
-	{
-		if (image)
-			[oFTIImageView setImage:image];
-		else
-			[oFTIImageView setImage:[NSImage imageNamed:@"NSApplicationIcon"]];
-	}
-}
-
-- (NSSize)previewSize
-{
-	return [oFTIImageView frame].size;
 }
 
 - (NSView *)fileTypeAccessoryView
 {
-	return (m_bInsertGraphic ? oFTIAccessoryView : oFTAccessoryView);
+	return oFTAccessoryView;
 }
 
-- (void)setFileTypeLabel:(NSString*)label
+- (void)setFileTypeLabel:(const std::string &)label
 {
-	if (m_bInsertGraphic)
-		[oFTILabel setStringValue:label];
-	else
-		[oFTLabel setStringValue:label];
+	SetNSControlLabel(oFTLabel, label);
 }
 
 - (void)setSelectedFileType:(int)type
 {
-	if (m_bInsertGraphic)
-		[oFTIPopUp selectItem:[[oFTIPopUp menu] itemWithTag:type]];
-	else
-		[oFTPopUp selectItem:[[oFTPopUp menu] itemWithTag:type]];
+	[oFTPopUp selectItem:[[oFTPopUp menu] itemWithTag:type]];
 }
 
 - (void)removeItemsOfFileTypesMenu
 {
-	if (m_bInsertGraphic)
-		[oFTIPopUp removeAllItems];
-	else
-		[oFTPopUp removeAllItems];
+	[oFTPopUp removeAllItems];
 }
 
 - (void)addItemWithTitle:(NSString *)title fileType:(int)type
 {
-	if (m_bInsertGraphic)
-	{
-		[oFTIPopUp addItemWithTitle:title];
-		[[oFTIPopUp lastItem] setTag:type];
-	}
-	else
-	{
-		[oFTPopUp addItemWithTitle:title];
-		[[oFTPopUp lastItem] setTag:type];
-	}
+	[oFTPopUp addItemWithTitle:title];
+	[[oFTPopUp lastItem] setTag:type];
 }
 
 - (IBAction)selectFileType:(id)sender
@@ -136,16 +93,39 @@
 	_xap->_setSelectedFileType([[sender selectedItem] tag]);
 }
 
-- (void)panelSelectionDidChange:(id)sender
+// delegate method
+#if 0
+- (BOOL)panel:(id)sender shouldShowFilename:(NSString *)filename
 {
-	UT_UNUSED(sender);
-	if (m_bInsertGraphic)
-		_xap->_updatePreview();
+	
+	return YES;
 }
+#endif
 
 @end
 
 /*****************************************************************/
+static void addSuffixesToFileTypes(NSMutableArray * fileTypes, const char * suffix_list)
+{
+	std::string suffix;
+	while (const char * ptr1 = strstr(suffix_list, "*.")) {
+		ptr1 += 2;
+		bool bSingleExtension = true;
+		const char * ptr2 = ptr1;
+		while (*ptr2 && (*ptr2 != ';')) {
+			if (*ptr2++ == '.') {
+				bSingleExtension = false;
+			}
+		}
+		suffix.assign(ptr1, ptr2 - ptr1);
+		if (bSingleExtension) {
+			UT_DEBUGMSG(("added suffix %s\n", suffix.c_str()));
+			[fileTypes addObject:[NSString stringWithUTF8String:(suffix.c_str())]];
+		}
+		suffix_list = ptr2;
+	}
+}
+
 
 XAP_Dialog * XAP_CocoaDialog_FileOpenSaveAs::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id dlgid)
 {
@@ -176,6 +156,77 @@ XAP_CocoaDialog_FileOpenSaveAs::~XAP_CocoaDialog_FileOpenSaveAs(void)
 	}
 }
 
+
+NSSavePanel * XAP_CocoaDialog_FileOpenSaveAs::_makeOpenPanel()
+{
+	NSOpenPanel *openPanel = [[NSOpenPanel openPanel] retain];
+
+	[openPanel setAllowsMultipleSelection:NO];
+	[openPanel setCanChooseDirectories:NO];
+	[openPanel setCanChooseFiles:YES];
+	// this call is 10.3 only.
+	if ([openPanel respondsToSelector:@selector(setCanCreateDirectories:)])
+		[openPanel setCanCreateDirectories:NO];
+
+	[openPanel setCanSelectHiddenExtension:NO];
+	[openPanel setExtensionHidden:NO];
+	
+	for (UT_uint32 i = 0; i < m_szFileTypeCount; i++) {
+		addSuffixesToFileTypes(m_fileTypes,  m_szSuffixes[i]);
+	}
+	if([m_fileTypes count]) {
+		[openPanel setAllowedFileTypes:m_fileTypes];
+	}
+	else {
+		[openPanel setAllowedFileTypes:nil];	
+	}
+	return openPanel;
+}
+
+
+
+NSSavePanel * XAP_CocoaDialog_FileOpenSaveAs::_makeSavePanel(const std::string & fileTypeLabel)
+{
+	NSSavePanel * savePanel = [[NSSavePanel savePanel] retain];
+
+	// this call is 10.3 only.
+	if ([savePanel respondsToSelector:@selector(setCanCreateDirectories:)])
+		[savePanel setCanCreateDirectories:YES];
+
+	[savePanel setCanSelectHiddenExtension:YES];
+	[savePanel setExtensionHidden:NO];
+	[m_accessoryViewsController setFileTypeLabel:fileTypeLabel];
+	
+	/* File-types PopUp:
+	 */
+	[m_accessoryViewsController removeItemsOfFileTypesMenu];
+
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+
+	std::string label;
+	if (pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileTypeAutoDetect, label)) {
+		NSString * title = [NSString stringWithUTF8String:(label.c_str())];
+		int type = (int) XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO;
+		[m_accessoryViewsController addItemWithTitle:title fileType:type];
+	}
+
+	UT_sint32 defaultFileType = m_nDefaultFileType;
+
+	for (UT_uint32 i = 0; i < m_szFileTypeCount; i++) {
+		NSString * title = [NSString stringWithUTF8String:m_szDescriptions[i]];
+
+		int type = m_nTypeList[i];
+		
+		[m_accessoryViewsController addItemWithTitle:title fileType:type];
+	}
+
+	[m_accessoryViewsController setSelectedFileType:defaultFileType];
+	_setSelectedFileType(defaultFileType);
+	
+	[savePanel setAccessoryView:[m_accessoryViewsController fileTypeAccessoryView]];
+	return savePanel;
+}
+
 /*****************************************************************/
 
 void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * /*pFrame*/)
@@ -194,7 +245,7 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * /*pFrame*/)
 	if (!m_accessoryViewsController)
 		return;
 
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
 	// do we want to let this function handle stating the Cocoa
 	// directory for writability?  Save/Export operations will want
@@ -287,79 +338,25 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * /*pFrame*/)
 
 	m_panel = nil;
 
+	// TODO WTF is this not in XP land?
+	m_szFileTypeCount = g_strv_length((gchar **) m_szDescriptions);
+
+	UT_ASSERT(g_strv_length((gchar **) m_szSuffixes) == m_szFileTypeCount);
+
 	if (bOpenPanel) {
-		NSOpenPanel *openPanel = [[NSOpenPanel openPanel] retain];
-		m_panel = openPanel;
-
-		[openPanel setAllowsMultipleSelection:NO];
-		[openPanel setCanChooseDirectories:NO];
-		[openPanel setCanChooseFiles:YES];
-		// this call is 10.3 only.
-		if ([m_panel respondsToSelector:@selector(setCanCreateDirectories:)])
-			[openPanel setCanCreateDirectories:NO];
-
-		[openPanel setCanSelectHiddenExtension:NO];
-		[openPanel setExtensionHidden:NO];
+		m_panel = _makeOpenPanel();
 	}
 	else if (bSavePanel) {
-		m_panel = [[NSSavePanel savePanel] retain];
-		
-		// this call is 10.3 only.
-		if ([m_panel respondsToSelector:@selector(setCanCreateDirectories:)])
-			[m_panel setCanCreateDirectories:YES];
-
-		[m_panel setCanSelectHiddenExtension:YES];
-		[m_panel setExtensionHidden:NO];
+		m_panel = _makeSavePanel(szFileTypeLabel);
 	}
 	UT_ASSERT(m_panel);
 	if (!m_panel)
 		return;
 
-	if (m_id == XAP_DIALOG_ID_INSERT_PICTURE) {
-		[m_accessoryViewsController setInsertGraphic:YES];
-		[m_accessoryViewsController setPreviewImage:nil];
-	}
-	else {
-		[m_accessoryViewsController setInsertGraphic:NO];
-	}
-
-	[m_accessoryViewsController setFileTypeLabel:[NSString stringWithUTF8String:(szFileTypeLabel.c_str())]];
 
 	[m_panel setTitle:[NSString stringWithUTF8String:(szTitle.c_str())]];
 	[m_panel setDelegate:m_accessoryViewsController];
 
-	/* File-types PopUp:
-	 */
-
-	[m_accessoryViewsController removeItemsOfFileTypesMenu];
-
-	std::string label;
-	if (pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileTypeAutoDetect, label)) {
-		NSString * title = [NSString stringWithUTF8String:(label.c_str())];
-		int type = (int) XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO;
-		[m_accessoryViewsController addItemWithTitle:title fileType:type];
-	}
-
-	m_szFileTypeCount = g_strv_length((gchar **) m_szDescriptions);
-
-	UT_ASSERT(g_strv_length((gchar **) m_szSuffixes) == m_szFileTypeCount);
-
-	UT_sint32 defaultFileType = m_nDefaultFileType;
-
-	for (UT_uint32 i = 0; i < m_szFileTypeCount; i++) {
-		NSString * title = [NSString stringWithUTF8String:m_szDescriptions[i]];
-		int type = m_nTypeList[i];
-		if (m_id == XAP_DIALOG_ID_INSERT_PICTURE) {
-			if ([title isEqualToString:@"Cocoa-Readable Image"])
-				defaultFileType = m_nTypeList[i];
-		}
-		[m_accessoryViewsController addItemWithTitle:title fileType:type];
-	}
-
-	[m_accessoryViewsController setSelectedFileType:defaultFileType];
-	_setSelectedFileType(defaultFileType);
-	
-	[m_panel setAccessoryView:[m_accessoryViewsController fileTypeAccessoryView]];
 
 	// use the persistence info and/or the suggested filename
 	// to properly seed the dialog.
@@ -538,6 +535,8 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * /*pFrame*/)
 	}
 }
 
+
+
 void XAP_CocoaDialog_FileOpenSaveAs::_setSelectedFileType (UT_sint32 type)
 {
 	m_nFileType = type;
@@ -550,108 +549,23 @@ void XAP_CocoaDialog_FileOpenSaveAs::_setSelectedFileType (UT_sint32 type)
 			if (m_nFileType == m_nTypeList[i]) {
 				m_szFileTypeDescription = m_szDescriptions[i];
 
-				std::string suffix;
-				const char * suffix_list = m_szSuffixes[i];
-				while (const char * ptr1 = strstr(suffix_list, "*.")) {
-					ptr1 += 2;
-					bool bSingleExtension = true;
-					const char * ptr2 = ptr1;
-					while (*ptr2 && (*ptr2 != ';'))
-						if (*ptr2++ == '.')
-							bSingleExtension = false;
-					suffix.assign(ptr1, ptr2 - ptr1);
-					if (bSingleExtension)
-						[m_fileTypes addObject:[NSString stringWithUTF8String:(suffix.c_str())]];
-					suffix_list = ptr2;
-				}
+				addSuffixesToFileTypes(m_fileTypes,  m_szSuffixes[i]);
 			}
 		}
 	}
 
-	if (m_bPanelActive) {
+	if([m_fileTypes count]) {
+		[m_panel setAllowedFileTypes:m_fileTypes];
+	}
+	else {
+		[m_panel setAllowedFileTypes:nil];	
+	}
+	[m_panel update];
+//	if (m_bPanelActive) {
 //		[m_panel setPanelCanOrderOut:NO];
 
-		m_bIgnoreCancel = true;
-		[NSApp stopModal];
-	}
+//		m_bIgnoreCancel = true;
+//		[NSApp stopModal];
+//	}
 }
 
-void XAP_CocoaDialog_FileOpenSaveAs::_updatePreview ()
-{
-	if (m_id != XAP_DIALOG_ID_INSERT_PICTURE)
-		return;
-
-	NSImage * image = nil;
-	NSArray * array = [(NSOpenPanel*)m_panel filenames];
-
-	if ([array count]) {
-		NSString * filename = (NSString *) [array objectAtIndex:0];
-
-		UT_ByteBuf * pBB = new UT_ByteBuf(0);
-
-		if (pBB->insertFromFile(0, [filename UTF8String])) {
-			IE_ImpGraphic * pIEG = 0;
-
-			UT_Error errorCode;
-			if (m_szFileTypeDescription) { // i.e., if (m_nFileType != XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO)
-				errorCode = IE_ImpGraphic::constructImporterWithDescription(m_szFileTypeDescription, &pIEG);
-			}
-			else {
-				errorCode = IE_ImpGraphic::constructImporter([filename UTF8String], IEGFT_Unknown, &pIEG);
-			}
-			if ((errorCode == UT_OK) && pIEG) {
-				FG_Graphic * pGraphic = 0;
-
-				errorCode = pIEG->importGraphic(pBB, &pGraphic);
-				pBB = NULL;
-
-				if ((errorCode == UT_OK) && pGraphic) {
-					const UT_ByteBuf * png = pGraphic->getBuffer();
-
-					UT_sint32 iImageWidth = pGraphic->getWidth();
-					UT_sint32 iImageHeight = pGraphic->getHeight();
-
-					double dImageWidth  = static_cast<double>(iImageWidth);
-					double dImageHeight = static_cast<double>(iImageHeight);
-
-					NSSize previewSize = [m_accessoryViewsController previewSize];
-
-					double dPreviewWidth  = static_cast<double>(previewSize.width);
-					double dPreviewHeight = static_cast<double>(previewSize.height);
-
-					if ((dPreviewWidth < dImageWidth) || (dPreviewHeight < dImageHeight)) {
-						double factor_width  = dPreviewWidth  / dImageWidth;
-						double factor_height = dPreviewHeight / dImageHeight;
-
-						double scale_factor = MIN(factor_width, factor_height);
-
-						iImageWidth  = static_cast<UT_sint32>(scale_factor * dImageWidth);
-						iImageHeight = static_cast<UT_sint32>(scale_factor * dImageHeight);
-					}
-
-					GR_CocoaImage * pImage = new GR_CocoaImage(0);
-
-					pImage->convertFromBuffer(png, "image/png", iImageWidth, iImageHeight); // this flips the NSImage but doesn't actually scale it
-					image = pImage->getNSImage();
-					if (image) {
-						NSSize imageSize;
-						imageSize.width  = static_cast<float>(iImageWidth);
-						imageSize.height = static_cast<float>(iImageHeight);
-
-						[image setScalesWhenResized:YES];
-						[image setSize:imageSize];
-						[image setFlipped:NO];
-						[image retain];
-					}
-					DELETEP(pImage);
-					DELETEP(pGraphic);
-				}
-				DELETEP(pIEG);
-			}
-		}
-		DELETEP(pBB);
-	}
-	[m_accessoryViewsController setPreviewImage:image];
-	if (image)
-		[image release];
-}

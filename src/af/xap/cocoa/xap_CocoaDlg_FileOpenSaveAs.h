@@ -34,35 +34,22 @@ class XAP_CocoaDialog_FileOpenSaveAs;
 @interface XAP_OpenSavePanel_AccessoryController : NSObject
 {
 	IBOutlet NSTextField *		oFTLabel;
-	IBOutlet NSTextField *		oFTILabel;
 	IBOutlet NSPopUpButton *	oFTPopUp;
-	IBOutlet NSPopUpButton *	oFTIPopUp;
 	IBOutlet NSView *			oFTAccessoryView;
-	IBOutlet NSView *			oFTIAccessoryView;
-	IBOutlet NSImageView *		oFTIImageView;
 
 	XAP_CocoaDialog_FileOpenSaveAs *	_xap;
-
-	BOOL	m_bInsertGraphic;
 }
 
 - (id)initWithXAP:(XAP_CocoaDialog_FileOpenSaveAs*)xap;
 
-- (void)setInsertGraphic:(BOOL)insertGraphic;
-
-- (void)setPreviewImage:(NSImage *)image;
-- (NSSize)previewSize;
-
 - (NSView *)fileTypeAccessoryView;
-- (void)setFileTypeLabel:(NSString*)label;
+- (void)setFileTypeLabel:(const std::string &)label;
 - (void)setSelectedFileType:(int)type;
 
 - (void)removeItemsOfFileTypesMenu;
 - (void)addItemWithTitle:(NSString *)title fileType:(int)type;
 
 - (IBAction)selectFileType:(id)sender;
-
-- (void)panelSelectionDidChange:(id)sender;
 @end
 
 /*****************************************************************/
@@ -76,12 +63,13 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
-	int previewPicture (void);
 
 	void	_setSelectedFileType (UT_sint32 type);
-	void	_updatePreview ();
 
 private:
+	NSSavePanel * _makeOpenPanel();
+	NSSavePanel * _makeSavePanel(const std::string & label);
+
 	XAP_OpenSavePanel_AccessoryController *	m_accessoryViewsController;
 	XAP_CocoaFrame *						m_pCocoaFrame;
 

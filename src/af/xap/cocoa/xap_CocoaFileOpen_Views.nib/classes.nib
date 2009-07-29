@@ -10,15 +10,7 @@
             ACTIONS = {panelSelectionDidChange = id; selectFileType = id; }; 
             CLASS = "XAP_OpenSavePanel_AccessoryController"; 
             LANGUAGE = ObjC; 
-            OUTLETS = {
-                oFTAccessoryView = NSView; 
-                oFTIAccessoryView = NSView; 
-                oFTIImageView = NSImageView; 
-                oFTILabel = NSTextField; 
-                oFTIPopUp = NSPopUpButton; 
-                oFTLabel = NSTextField; 
-                oFTPopUp = NSPopUpButton; 
-            }; 
+            OUTLETS = {oFTAccessoryView = NSView; oFTLabel = NSTextField; oFTPopUp = NSPopUpButton; }; 
             SUPERCLASS = NSObject; 
         }
     ); 
