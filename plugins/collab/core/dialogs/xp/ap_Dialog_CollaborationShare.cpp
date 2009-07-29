@@ -75,6 +75,7 @@ void AP_Dialog_CollaborationShare::_share(AccountHandler* pHandler, const std::v
 	PD_Document* pDoc = static_cast<PD_Document *>(pFrame->getCurrentDoc());
 	UT_return_if_fail(pDoc);
 
+	AbiCollab* pSession = NULL;
 	if (!pManager->isInSession(pDoc))
 	{
 		UT_DEBUGMSG(("Sharing document...\n"));
@@ -91,20 +92,13 @@ void AP_Dialog_CollaborationShare::_share(AccountHandler* pHandler, const std::v
 		UT_UTF8String sSessionId("");
 		// TODO: we could use/generate a proper descriptor when there is only
 		// 1 account where we share this document over
-		pManager->startSession(pDoc, sSessionId, NULL, "");
+		pSession = pManager->startSession(pDoc, sSessionId, NULL, "");
 	}
 	else
 	{
-		UT_DEBUGMSG(("Updating access control list to contain the members:\n"));
-#ifdef DEBUG
-		for (UT_uint32 i = 0; i < vAcl.size(); i++)
-		{
-			UT_DEBUGMSG(("\t%s\n", vAcl[i]->getDescriptor().utf8_str()));
-		}
-#endif
-
-		AbiCollab* pSession = pManager->getSession(pDoc);
-		UT_return_if_fail(pSession);
-		pManager->updateAcl(pSession, vAcl);
+		pSession = pManager->getSession(pDoc);
 	}
+
+	UT_return_if_fail(pSession);
+	pManager->updateAcl(pSession, vAcl);
 }
