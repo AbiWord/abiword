@@ -171,10 +171,14 @@ void AP_UnixDialog_CollaborationShare::_populateWindowData()
 	GtkListStore* store = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_POINTER);
 	GtkTreeIter iter;
 
+	AccountHandler* pShareeableAcount = _getShareableAccountHandler();
 	for (std::vector<AccountHandler*>::const_iterator cit = pManager->getAccounts().begin(); cit != pManager->getAccounts().end(); cit++)
 	{
 		AccountHandler* pAccount = *cit;
 		UT_continue_if_fail(pAccount);
+
+		if (pShareeableAcount && pShareeableAcount != pAccount)
+			continue;
 
 		gtk_list_store_append (store, &iter);
 		gtk_list_store_set (store, &iter,

@@ -61,6 +61,36 @@ void AP_Dialog_CollaborationShare::signal(const Event& event, BuddyPtr /*pSource
 	}
 }
 
+// If the current document is already in session, and had buddies in its
+// access control list, then the document can't be shared with buddies from
+// other accounts. This function returns NULL if no buddies are in the
+// current session's ACL, or the document is not shared yet. Otherwise, it
+// returns the (only) handler that is allowed to share the document.
+AccountHandler* AP_Dialog_CollaborationShare::_getShareableAccountHandler()
+{
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, NULL);
+
+	// determine which document to share
+	XAP_Frame* pFrame = XAP_App::getApp()->getLastFocussedFrame();
+	UT_return_val_if_fail(pFrame, NULL);
+
+	PD_Document* pDoc = static_cast<PD_Document *>(pFrame->getCurrentDoc());
+	UT_return_val_if_fail(pDoc, NULL);
+
+	if (!pManager->isInSession(pDoc))
+		return NULL;
+
+	AbiCollab* pSession = pManager->getSession(pDoc);
+	UT_return_val_if_fail(pSession, NULL);
+
+	const std::vector<BuddyPtr> vAcl = pSession->getAcl();
+	if (vAcl.size() == 0)
+		return NULL;
+
+	return vAcl[0]->getHandler();
+}
+
 void AP_Dialog_CollaborationShare::_share(AccountHandler* pHandler, const std::vector<BuddyPtr>& vAcl)
 {
 	UT_DEBUGMSG(("AP_Dialog_CollaborationShare::_share()\n"));

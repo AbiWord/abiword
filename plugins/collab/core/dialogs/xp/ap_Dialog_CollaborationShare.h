@@ -46,6 +46,7 @@ public:
 		{ return m_answer; }
 
 protected:
+	AccountHandler*		_getShareableAccountHandler();
 	void				_share(AccountHandler* pHandler, const std::vector<BuddyPtr>& vAcl);
 	virtual void		_refreshWindow() = 0;
 	
