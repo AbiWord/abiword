@@ -591,6 +591,9 @@ bool s_abicollab_offer(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 			UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 	}	
 
+	// Delete the dialog
+	pFactory->releaseDialog(pDialog);
+
 	return true;
 }
 
