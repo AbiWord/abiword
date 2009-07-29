@@ -46,7 +46,7 @@ public:
 		{ return m_answer; }
 
 protected:
-	void				_share(AccountHandler* pHandler, const std::vector<BuddyPtr>& acl);
+	void				_share(AccountHandler* pHandler, const std::vector<BuddyPtr>& vAcl);
 	virtual void		_refreshWindow() = 0;
 	
 	AP_Dialog_CollaborationShare::tAnswer m_answer;

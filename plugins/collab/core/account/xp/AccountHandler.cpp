@@ -104,7 +104,18 @@ void AccountHandler::deleteBuddies()
 {
 	m_vBuddies.clear();
 }
-		
+
+bool AccountHandler::hasAccess(const std::vector<BuddyPtr>& vAcl, BuddyPtr pBuddy)
+{
+	UT_return_val_if_fail(pBuddy, false);
+
+	for (UT_uint32 i = 0; i < vAcl.size(); i++)
+		if (vAcl[i] == pBuddy)
+			return true;
+
+	return false;
+}
+
 void AccountHandler::getSessionsAsync()
 {
 	for (std::vector<BuddyPtr>::iterator it = m_vBuddies.begin(); it != m_vBuddies.end(); it++)

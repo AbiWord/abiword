@@ -105,7 +105,8 @@ public:
 	bool										isInSession(PD_Document* pDoc);
 	bool										isActive(const UT_UTF8String& sSessionId);
 	void										removeBuddy(BuddyPtr pBuddy, bool graceful = true);
-	  
+	void										updateAcl(AbiCollab* pSession, const std::vector<BuddyPtr> acl);  
+
 	// account code
 	bool										registerAccountHandlers(void);
 	bool										unregisterAccountHandlers(void);

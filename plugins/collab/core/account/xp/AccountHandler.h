@@ -134,6 +134,7 @@ public:
 	virtual bool							recognizeBuddyIdentifier(const std::string& identifier) = 0;
 	virtual bool							allowsManualBuddies() = 0;
 	virtual void							forceDisconnectBuddy(BuddyPtr /*buddy*/) = 0;
+	virtual bool							hasAccess(const std::vector<BuddyPtr>& vAcl, BuddyPtr pBuddy);
 
 	// session management
 	virtual void							getSessionsAsync();

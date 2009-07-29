@@ -61,7 +61,7 @@ void AP_Dialog_CollaborationShare::signal(const Event& event, BuddyPtr /*pSource
 	}
 }
 
-void AP_Dialog_CollaborationShare::_share(AccountHandler* pHandler, const std::vector<BuddyPtr>& acl)
+void AP_Dialog_CollaborationShare::_share(AccountHandler* pHandler, const std::vector<BuddyPtr>& vAcl)
 {
 	UT_DEBUGMSG(("AP_Dialog_CollaborationShare::_share()\n"));
 
@@ -84,7 +84,7 @@ void AP_Dialog_CollaborationShare::_share(AccountHandler* pHandler, const std::v
 		
 		// tell the account handler that we start a new session, so
 		// it set up things if needed
-		bool b = pHandler->startSession(pDoc, acl);
+		bool b = pHandler->startSession(pDoc, vAcl);
 		UT_return_if_fail(b); // TODO: notify the user?
 		
 		// ... and start the session!
@@ -97,15 +97,14 @@ void AP_Dialog_CollaborationShare::_share(AccountHandler* pHandler, const std::v
 	{
 		UT_DEBUGMSG(("Updating access control list to contain the members:\n"));
 #ifdef DEBUG
-		for (UT_uint32 i = 0; i < acl.size(); i++)
+		for (UT_uint32 i = 0; i < vAcl.size(); i++)
 		{
-			UT_DEBUGMSG(("\t%s\n", acl[i]->getDescriptor().utf8_str()));
+			UT_DEBUGMSG(("\t%s\n", vAcl[i]->getDescriptor().utf8_str()));
 		}
 #endif
 
 		AbiCollab* pSession = pManager->getSession(pDoc);
 		UT_return_if_fail(pSession);
-		
-		pSession->setACL(acl);
+		pManager->updateAcl(pSession, vAcl);
 	}
 }

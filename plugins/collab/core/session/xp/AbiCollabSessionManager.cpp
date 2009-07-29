@@ -994,6 +994,32 @@ void AbiCollabSessionManager::removeBuddy(BuddyPtr pBuddy, bool graceful)
 	}
 }
 
+// should we move this to AbiCollab.cpp ?
+void AbiCollabSessionManager::updateAcl(AbiCollab* pSession, const std::vector<BuddyPtr> vAcl)
+{
+	UT_return_if_fail(pSession);
+	
+	// check if all current collaborators are still allowed to collaborate; if not,
+	// then remove them from the session
+	const std::map<BuddyPtr, std::string> collaborators = pSession->getCollaborators();
+	for (std::map<BuddyPtr, std::string>::const_iterator cit = collaborators.begin(); cit != collaborators.end(); cit++)
+	{
+		BuddyPtr pBuddy = (*cit).first;
+		UT_continue_if_fail(pBuddy);
+		AccountHandler* pAccount = pBuddy->getHandler();
+		UT_continue_if_fail(pAccount);
+		if (!pAccount->hasAccess(vAcl, pBuddy))
+		{
+			// this current collaborator has been banned from the session, so
+			// disconnect him
+			UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+		}
+	}
+
+	// set the new access control list on the session
+	pSession->setAcl(vAcl);
+}
+
 bool AbiCollabSessionManager::addAccount(AccountHandler* pHandler)
 {
 	UT_return_val_if_fail(pHandler, false);

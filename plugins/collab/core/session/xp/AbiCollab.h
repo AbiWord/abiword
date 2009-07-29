@@ -119,7 +119,9 @@ public:
 		{ return m_vCollaborators; }
 	bool								isController(BuddyPtr pCollaborator) const
 		{ return m_pController == pCollaborator; }
-	void								setACL(const std::vector<BuddyPtr> vACL);
+	const std::vector<BuddyPtr>&		getAcl()
+		{ return m_vAcl; }
+	void								setAcl(const std::vector<BuddyPtr> vAcl);
 
 	// import/export management
 	ABI_Collab_Import*					getImport(void)
@@ -213,7 +215,7 @@ private:
 
 	// buddy <-> remote document UUID mapping
 	std::map<BuddyPtr, std::string>		m_vCollaborators;
-	std::vector<BuddyPtr>				m_vACL;
+	std::vector<BuddyPtr>				m_vAcl;
 	UT_uint32							m_iDocListenerId;
 	bool								m_bExportMasked;
 

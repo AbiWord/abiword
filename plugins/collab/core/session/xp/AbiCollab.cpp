@@ -221,16 +221,9 @@ void AbiCollab::addCollaborator(BuddyPtr pCollaborator)
 	UT_return_if_fail(pCollaborator)
 
 	// check if this buddy is in the access control list
-	bool bAccessGranted = false;
-	for (UT_uint32 i = 0; i < m_vACL.size(); i++)
-	{
-		if (pCollaborator == m_vACL[i])
-		{
-			bAccessGranted = true;
-			break;
-		}
-	}
-	if (!bAccessGranted)
+	AccountHandler* pAccount = pCollaborator->getHandler();
+	UT_return_if_fail(pAccount);
+	if (!pAccount->hasAccess(m_vAcl, pCollaborator))
 	{
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
 		return;
@@ -270,11 +263,11 @@ void AbiCollab::removeCollaboratorsForAccount(AccountHandler* pHandler)
 	}
 }
 
-void AbiCollab::setACL(const std::vector<BuddyPtr> vACL)
+void AbiCollab::setAcl(const std::vector<BuddyPtr> vAcl)
 {
-	UT_DEBUGMSG(("AbiCollab::setACL()\n"));
+	UT_DEBUGMSG(("AbiCollab::setAcl()\n"));
 
-	// TODO: implement me
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 }
 
 void AbiCollab::_setDocument(PD_Document* pDoc, XAP_Frame* pFrame)
