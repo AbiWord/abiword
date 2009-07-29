@@ -1,4 +1,4 @@
-#include "ap_Strings_wrapper.h"
+#include "xap_Strings_wrapper.h"
 #include "xap_App.h"
 
 XAP_StringSet * strings;

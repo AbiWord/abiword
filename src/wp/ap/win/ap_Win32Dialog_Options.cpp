@@ -155,7 +155,7 @@ void AP_Win32Dialog_Options::runModal(XAP_Frame * pFrame)
 
 struct {
 	UT_Dimension  dim;
-	int 		  id;
+	XAP_String_Id		  id;
 } s_aAlignUnit[] =
 {
 	{ DIM_IN, XAP_STRING_ID_DLG_Unit_inch },

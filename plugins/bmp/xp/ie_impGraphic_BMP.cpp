@@ -28,6 +28,7 @@
 #include "ut_debugmsg.h"
 #include "xap_Module.h"
 #include "xap_App.h"
+#include "xap_Strings.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_bmp_register

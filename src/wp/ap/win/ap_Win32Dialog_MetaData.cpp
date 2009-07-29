@@ -168,7 +168,7 @@ void AP_Win32Dialog_MetaData_General::_onInitDialog()
 char* AP_Win32Dialog_MetaData_General::_get_text(XAP_String_Id nID, char *szBuff, int nSize)
 {
 	*szBuff=0;
-	 GetDlgItemText(getHandle(), nID, szBuff, nSize); 
+	 GetDlgItemText(getHandle(), (int) nID, szBuff, nSize); 
 	 strcpy (szBuff, (AP_Win32App::s_fromWinLocaleToUTF8(szBuff)).utf8_str());
 	 return szBuff;
 }
@@ -180,11 +180,11 @@ void AP_Win32Dialog_MetaData_General::_onOK()
 {	
 	char szBuff[1024];
 
-	m_sTitle = 	_get_text(AP_RID_DIALOG_META_GENERAL_EDIT_TITLE, szBuff, sizeof(szBuff));
-	m_sSubject = _get_text(AP_RID_DIALOG_META_GENERAL_EDIT_SUBJECT, szBuff, sizeof(szBuff));
-	m_sAuthor =  _get_text(AP_RID_DIALOG_META_GENERAL_EDIT_AUTHOR, szBuff, sizeof(szBuff));
-	m_sPublisher = _get_text(AP_RID_DIALOG_META_GENERAL_EDIT_PUBLISHER, szBuff, sizeof(szBuff));
-	m_sCoAuthor = _get_text(AP_RID_DIALOG_META_GENERAL_EDIT_CONTRIBUTOR, szBuff, sizeof(szBuff));	
+	m_sTitle = 	_get_text((XAP_String_Id) AP_RID_DIALOG_META_GENERAL_EDIT_TITLE, szBuff, sizeof(szBuff));
+	m_sSubject = _get_text((XAP_String_Id) AP_RID_DIALOG_META_GENERAL_EDIT_SUBJECT, szBuff, sizeof(szBuff));
+	m_sAuthor =  _get_text((XAP_String_Id) AP_RID_DIALOG_META_GENERAL_EDIT_AUTHOR, szBuff, sizeof(szBuff));
+	m_sPublisher = _get_text((XAP_String_Id) AP_RID_DIALOG_META_GENERAL_EDIT_PUBLISHER, szBuff, sizeof(szBuff));
+	m_sCoAuthor = _get_text((XAP_String_Id) AP_RID_DIALOG_META_GENERAL_EDIT_CONTRIBUTOR, szBuff, sizeof(szBuff));	
 }
 
 /*
@@ -248,7 +248,7 @@ void AP_Win32Dialog_MetaData_Summary::_onInitDialog()
 char* AP_Win32Dialog_MetaData_Summary::_get_text(XAP_String_Id nID, char *szBuff, int nSize)
 {
 	*szBuff=0;
-	 GetDlgItemText(getHandle(), nID, szBuff, nSize); 
+	 GetDlgItemText(getHandle(), (int) nID, szBuff, nSize); 
 	 strcpy (szBuff, (AP_Win32App::s_fromWinLocaleToUTF8(szBuff)).utf8_str());
 	 return szBuff;
 }
@@ -261,10 +261,10 @@ void AP_Win32Dialog_MetaData_Summary::_onOK()
 {	
 	char szBuff[4096];	// description can be long
 
-	m_sCategory = 	_get_text(AP_RID_DIALOG_META_SUMMARY_EDIT_CATEGORY, szBuff, sizeof(szBuff));
-	m_sKeywords = _get_text(AP_RID_DIALOG_META_SUMMARY_EDIT_KEYWORDS, szBuff, sizeof(szBuff));
-	m_sLanguages =  _get_text(AP_RID_DIALOG_META_SUMMARY_EDIT_LANGUAGE, szBuff, sizeof(szBuff));
-	m_sDescription = _get_text(AP_RID_DIALOG_META_SUMMARY_EDIT_DESCRIPTION, szBuff, sizeof(szBuff));
+	m_sCategory = 	_get_text((XAP_String_Id) AP_RID_DIALOG_META_SUMMARY_EDIT_CATEGORY, szBuff, sizeof(szBuff));
+	m_sKeywords = _get_text((XAP_String_Id) AP_RID_DIALOG_META_SUMMARY_EDIT_KEYWORDS, szBuff, sizeof(szBuff));
+	m_sLanguages =  _get_text((XAP_String_Id) AP_RID_DIALOG_META_SUMMARY_EDIT_LANGUAGE, szBuff, sizeof(szBuff));
+	m_sDescription = _get_text((XAP_String_Id) AP_RID_DIALOG_META_SUMMARY_EDIT_DESCRIPTION, szBuff, sizeof(szBuff));
 }
 
 /*
@@ -332,10 +332,10 @@ void AP_Win32Dialog_MetaData_Permissions::_onOK()
 {	
 	char szBuff[1024];
 	
-	m_sSource = _get_text(AP_RID_DIALOG_META_PERMISSIONS_EDIT_SOURCE, szBuff, sizeof(szBuff));
-	m_sRelation = _get_text(AP_RID_DIALOG_META_PERMISSIONS_EDIT_RELATION, szBuff, sizeof(szBuff));
-	m_sCoverage = _get_text(AP_RID_DIALOG_META_PERMISSIONS_EDIT_COVERAGE, szBuff, sizeof(szBuff));
-	m_sRights = _get_text(AP_RID_DIALOG_META_PERMISSIONS_EDIT_RIGHTS, szBuff, sizeof(szBuff));
+	m_sSource = _get_text((XAP_String_Id) AP_RID_DIALOG_META_PERMISSIONS_EDIT_SOURCE, szBuff, sizeof(szBuff));
+	m_sRelation = _get_text((XAP_String_Id) AP_RID_DIALOG_META_PERMISSIONS_EDIT_RELATION, szBuff, sizeof(szBuff));
+	m_sCoverage = _get_text((XAP_String_Id) AP_RID_DIALOG_META_PERMISSIONS_EDIT_COVERAGE, szBuff, sizeof(szBuff));
+	m_sRights = _get_text((XAP_String_Id) AP_RID_DIALOG_META_PERMISSIONS_EDIT_RIGHTS, szBuff, sizeof(szBuff));
 
 }
 
@@ -353,7 +353,7 @@ void AP_Win32Dialog_MetaData_Permissions::transferData()
 char* AP_Win32Dialog_MetaData_Permissions::_get_text(XAP_String_Id nID, char *szBuff, int nSize)
 {
 	 *szBuff=0;
-	 GetDlgItemText(getHandle(), nID, szBuff, nSize); 
+	 GetDlgItemText(getHandle(), (int) nID, szBuff, nSize); 
 	 strcpy (szBuff, (AP_Win32App::s_fromWinLocaleToUTF8(szBuff)).utf8_str());
 	 return szBuff;
 }

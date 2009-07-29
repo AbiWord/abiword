@@ -151,6 +151,8 @@ bool AP_Win32App::initialize(void)
 	const char * szUserPrivateDirectory = getUserPrivateDirectory();
 	bool bVerified = s_createDirectoryIfNecessary(szUserPrivateDirectory);
 
+	char * szPathname;
+
 	UT_return_val_if_fail (bVerified, false);
 
 	// load the preferences.
@@ -194,7 +196,7 @@ bool AP_Win32App::initialize(void)
 			getPrefsValueDirectory(true,AP_PREF_KEY_StringSetDirectory,&szDirectory);
 			UT_return_val_if_fail ((szDirectory) && (*szDirectory), false);
 
-			char * szPathname = (char *)UT_calloc(sizeof(char),strlen(szDirectory)+strlen(szStringSet)+100);
+			szPathname = (char *)UT_calloc(sizeof(char),strlen(szDirectory)+strlen(szStringSet)+100);
 			UT_return_val_if_fail (szPathname, false);
 
 			}

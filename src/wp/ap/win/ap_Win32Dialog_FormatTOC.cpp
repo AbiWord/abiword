@@ -383,7 +383,7 @@ void AP_Win32Dialog_FormatTOC_General::_onInitDialog()
 
 	/* Levels */
 	int item;
-	int nID [4] = {AP_STRING_ID_DLG_FormatTOC_Level1, AP_STRING_ID_DLG_FormatTOC_Level2,
+	char * nID [4] = {AP_STRING_ID_DLG_FormatTOC_Level1, AP_STRING_ID_DLG_FormatTOC_Level2,
 	AP_STRING_ID_DLG_FormatTOC_Level3, AP_STRING_ID_DLG_FormatTOC_Level4};
 	for (i = 0; i < 4; i++)
 	{	
@@ -591,7 +591,7 @@ void AP_Win32Dialog_FormatTOC_Layout::_onInitDialog()
 
 	/* Levels */
 	int item;
-	int nID [4] = {AP_STRING_ID_DLG_FormatTOC_Level1, AP_STRING_ID_DLG_FormatTOC_Level2,
+	char * nID [4] = {AP_STRING_ID_DLG_FormatTOC_Level1, AP_STRING_ID_DLG_FormatTOC_Level2,
 	AP_STRING_ID_DLG_FormatTOC_Level3, AP_STRING_ID_DLG_FormatTOC_Level4};
 	for (i = 0; i < 4; i++)
 	{	

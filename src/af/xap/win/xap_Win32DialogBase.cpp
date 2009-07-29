@@ -379,7 +379,7 @@ void XAP_Win32DialogBase::centerDialog()
 }
 
 
-void XAP_Win32DialogBase::localizeDialogTitle(UT_uint32 stringId)
+void XAP_Win32DialogBase::localizeDialogTitle(XAP_String_Id stringId)
 {
 	if (!m_pSS)
 	{
@@ -388,7 +388,7 @@ void XAP_Win32DialogBase::localizeDialogTitle(UT_uint32 stringId)
 	setDialogTitle( m_pSS->getValue(stringId) );
 }
 
-void XAP_Win32DialogBase::localizeControlText(UT_sint32 controlId, UT_uint32 stringId)
+void XAP_Win32DialogBase::localizeControlText(UT_sint32 controlId, XAP_String_Id stringId)
 {
 	if (!m_pSS)
 	{

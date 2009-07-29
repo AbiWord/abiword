@@ -33,6 +33,7 @@
 #include <commctrl.h>
 
 #include "ut_types.h"
+#include "xap_Strings.h"
 /*****************************************************************/
 
 
@@ -63,7 +64,7 @@ protected:
 	void enableControl(UT_sint32 controlId, bool bEnabled = true);
 	void destroyWindow();
 	void setDialogTitle(LPCSTR p_str);
-	void localizeDialogTitle(UT_uint32 stringId);
+	void localizeDialogTitle(XAP_String_Id stringId);
 	int	 showWindow( int Mode );
 	int	 showControl(UT_sint32 controlId, int Mode);
 	int	 bringWindowToTop();
@@ -90,7 +91,7 @@ protected:
 
 	// Controls
 	void setControlText(UT_sint32 controlId, LPCSTR p_str);
-	void localizeControlText(UT_sint32 controlId, UT_uint32 stringId);
+	void localizeControlText(UT_sint32 controlId, XAP_String_Id stringId);
 	void setControlInt(UT_sint32 controlId, int value);
 	int	 getControlInt(UT_sint32 controlId) const;
 	

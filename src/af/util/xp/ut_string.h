@@ -167,7 +167,6 @@ ABI_EXPORT void UT_parse_properties(const char * props,
 #ifdef WIN32
 #define snprintf _snprintf
 
-#define _(String) (String)
 #define N_(String) (String)
 
 #endif /* WIN32 */

@@ -60,7 +60,7 @@ int read_bmp_to_mem(const char *bmpfn,unsigned char **bmppp, DWORD *fsizep)
 // returns 0 on success, nonzero of failure
 int convertBMP2PNG(const char *bmpfn, const char *pngfn)
 {
-	XAP_StringSet  * strings = (XAP_StringSet *) XAP_App::getApp->getStringSet();
+	XAP_StringSet  * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 	strings->setDomain("abiword-plugin-paint");
 
 	PNGD_D2PINFO d2p;
@@ -110,7 +110,7 @@ int convertBMP2PNG(const char *bmpfn, const char *pngfn)
 	ret=write_dib_to_png(&d2p);
 	// returns 0 on success
 	if(ret) {
-		printf(strings->getValue(_("Error: %s (%d)\n",d2p.errmsg,ret)));
+		printf(strings->getValue(_("Error: %s (%d)\n")),d2p.errmsg,ret);
 		return 1;
 	}
 
