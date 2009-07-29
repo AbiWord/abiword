@@ -117,7 +117,7 @@ ConnectResult TCPAccountHandler::connect()
 		asio::ip::tcp::resolver::iterator iterator(resolver.resolve(query));
 		try
 		{
-			session_ptr->getSocket().connect(*iterator);
+			session_ptr->connect(iterator);
 			session_ptr->asyncReadHeader();
 			m_bConnected = true; // todo: ask it to the socket
 			// Add a buddy
@@ -180,7 +180,7 @@ void TCPAccountHandler::_teardownAndDestroyHandler()
 
 	// ... then tear down all client connections
 	UT_DEBUGMSG(("Tearing down client connections\n"));
-	for (std::map<TCPBuddyPtr, boost::shared_ptr<Session> >::iterator it = m_clients.begin(); it != m_clients.end();)
+	for (std::map<TCPBuddyPtr, boost::shared_ptr<Session> >::iterator it = m_clients.begin(); it != m_clients.end(); it++)
 		(*it).second->disconnect();
 
 	// ... then stop the IOServerhandler (if any)
