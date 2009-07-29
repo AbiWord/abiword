@@ -93,14 +93,11 @@ private:
 	std::stack<OXML_Element_Row*> m_rowStack;
 	std::stack<OXML_Element_Cell*> m_cellStack;
 	OXML_Element_Hyperlink* hyperlink;
-	OXML_Element_Bookmark* bookmark;
 	OXML_Element_TextBox* textbox;
 
 	bool bInHyperlink;
-	bool bInBookmark;
 	bool bInTextbox;
 	int idCount;
-	std::string bookmarkId;
 
 	UT_Error addDocumentStyles();
 	UT_Error addLists();

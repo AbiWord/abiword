@@ -36,13 +36,10 @@ IE_Exp_OpenXML_Listener::IE_Exp_OpenXML_Listener(PD_Document* doc)
 	paragraph(NULL), 
 	savedParagraph(NULL),
 	hyperlink(NULL),
-	bookmark(NULL),
 	textbox(NULL),
 	bInHyperlink(false),
-	bInBookmark(false),
 	bInTextbox(false),
-	idCount(10), //the first ten IDs are reserved for the XML file references
-	bookmarkId("")
+	idCount(10) //the first ten IDs are reserved for the XML file references
 {
 	document = OXML_Document::getNewInstance();
 	
@@ -326,17 +323,42 @@ bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_Cha
 
 				case PTO_Bookmark:
 				{
-					if(!bInBookmark)
-					{
-						bookmarkId = getNextId();
-					}
-					bInBookmark = !bInBookmark;
-
-					bookmark = new OXML_Element_Bookmark(bookmarkId);
-					OXML_SharedElement shared_element_bookmark(static_cast<OXML_Element*>(bookmark));
-
 					if(bHaveProp && pAP)
 					{
+						if(!pAP->getAttribute("name", szValue))
+						{
+							UT_DEBUGMSG(("FRT:OpenXML exporter bookmark without name attribute\n"));
+							return true;
+						}
+						std::string bookmarkName(szValue);
+
+						if(!pAP->getAttribute("type", szValue))
+						{
+							UT_DEBUGMSG(("FRT:OpenXML exporter bookmark without type attribute\n"));
+							return true;
+						}
+						std::string bookmarkType(szValue);
+
+						std::string bookmarkId("");
+						if(!bookmarkType.compare("start"))
+						{
+							bookmarkId = getNextId();
+							document->setBookmarkName(bookmarkId, bookmarkName);
+						}
+						else if(!bookmarkType.compare("end"))
+						{
+							bookmarkId = document->getBookmarkId(bookmarkName);
+						}
+						else
+						{
+							UT_DEBUGMSG(("FRT:OpenXML exporter bookmark with invalid type attribute=%s\n", bookmarkType.c_str()));
+							return true;
+						}							
+
+						OXML_Element_Bookmark* bookmark = new OXML_Element_Bookmark(bookmarkId);
+						bookmark->setName(bookmarkId);
+						OXML_SharedElement shared_element_bookmark(static_cast<OXML_Element*>(bookmark));
+
 						size_t propCount = pAP->getPropertyCount();
 				
 						size_t i;
@@ -363,8 +385,9 @@ bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_Cha
 									return false;		
 							}
 						}
+						return paragraph->appendElement(shared_element_bookmark) == UT_OK;
 					}
-					return paragraph->appendElement(shared_element_bookmark) == UT_OK;
+					return true;
 				}
 				default:
 					return true;

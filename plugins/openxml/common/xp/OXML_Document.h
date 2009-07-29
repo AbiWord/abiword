@@ -113,6 +113,7 @@ public:
 	bool setMappedNumberingId(const std::string & numId, const std::string & abstractNumId);
 
 	std::string getBookmarkName(const std::string & bookmarkId) const;
+	std::string getBookmarkId(const std::string & bookmarkName) const;
 	bool setBookmarkName(const std::string & bookmarkId, const std::string & bookmarkName);
 
 	void setPageWidth(const std::string & width);

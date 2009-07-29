@@ -561,8 +561,23 @@ std::string OXML_Document::getBookmarkName(const std::string & bookmarkId) const
 {
 	std::map<std::string, std::string>::const_iterator iter = m_bookmarkMap.find(bookmarkId);
 	if(iter == m_bookmarkMap.end())
+	{
+		UT_DEBUGMSG(("FRT:Can't find bookmark name with id:%s\n", bookmarkId.c_str()));
 		return "";
+	}
 	return iter->second; 
+}
+
+std::string OXML_Document::getBookmarkId(const std::string & bookmarkName) const
+{
+	std::map<std::string, std::string>::const_iterator iter;
+	for (iter = m_bookmarkMap.begin(); iter != m_bookmarkMap.end(); iter++) {
+		if(!(iter->second).compare(bookmarkName))
+		{
+			return iter->first;
+		}
+	}
+	return ""; 
 }
 
 bool OXML_Document::setBookmarkName(const std::string & bookmarkId, const std::string & bookmarkName)
