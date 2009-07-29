@@ -34,13 +34,31 @@ public:
 		: Synchronizer(boost::bind(&Session::_signal, this)),
 		socket(io_service),
 		queue_protector(),
-		m_ef(ef)
+		m_ef(ef),
+		m_connected(false)
 	{
 	}
 
+	void connect(asio::ip::tcp::resolver::iterator& iterator)
+	{
+		socket.connect(*iterator);
+		m_connected = true;
+	}
+
+	// TODO: don't expose this
 	asio::ip::tcp::socket& getSocket()
 	{	
 		return socket;
+	}
+
+	std::string getRemoteAddress()
+	{
+		return socket.remote_endpoint().address().to_string();
+	}
+
+	unsigned short getRemotePort()
+	{
+		return socket.remote_endpoint().port();
 	}
 
 	void push(int size, char* data)
@@ -105,27 +123,35 @@ public:
 	*/
 	bool isConnected()
 	{
-		return socket.is_open();
+		return m_connected;
 	}
 	
 	void disconnect()
 	{
 		UT_DEBUGMSG(("Session::disconnect()\n"));
-		if (socket.is_open())
+		if (m_connected)
 		{
-			asio::error_code ecs;
-			socket.shutdown(asio::ip::tcp::socket::shutdown_both, ecs);
-			if (ecs) {
-				UT_DEBUGMSG(("Error shutting down socket: %s\n", ecs.message().c_str()));
+			// close the socket if it is open
+			if (socket.is_open())
+			{
+				asio::error_code ecs;
+				socket.shutdown(asio::ip::tcp::socket::shutdown_both, ecs);
+				if (ecs) {
+					UT_DEBUGMSG(("Error shutting down socket: %s\n", ecs.message().c_str()));
+				}
+				asio::error_code ecc;
+				socket.close(ecc);
+				if (ecc) {
+					UT_DEBUGMSG(("Error closing socket: %s\n", ecc.message().c_str()));
+				}
 			}
-			asio::error_code ecc;
-			socket.close(ecc);
-			if (ecc) {
-				UT_DEBUGMSG(("Error closing socket: %s\n", ecc.message().c_str()));
-			}
+			// we are definitly not connected now; make sure to set this before
+			// calling signal(), otherwise we'll end up running circles...
+			m_connected = false;
+			
+			UT_DEBUGMSG(("Socket closed, signalling mainloop\n"));
+			signal();
 		}
-		UT_DEBUGMSG(("Socket closed, signalling mainloop\n"));
-		signal();
 	}
 
 private:
@@ -226,7 +252,7 @@ private:
 	}
 
 	asio::ip::tcp::socket					socket;
-	abicollab::mutex 							queue_protector;
+	abicollab::mutex 						queue_protector;
 	std::deque< std::pair<int, char*> >		incoming;
 	std::deque< std::pair<int, char*> >		outgoing;
 
@@ -237,6 +263,8 @@ private:
 	char*									packet_data_write; // state needed for async writes
 	
 	boost::function<void (Session&)>		m_ef;
+
+	bool									m_connected;
 };
 
 #endif /* __SESSION__ */

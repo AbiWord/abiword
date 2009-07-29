@@ -150,7 +150,8 @@ bool TCPAccountHandler::disconnect()
 {
 	UT_DEBUGMSG(("TCPAccountHandler::disconnect()\n"));
 
-	UT_return_val_if_fail(m_bConnected, false);
+	if (!m_bConnected)
+		return true;
 
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_val_if_fail(pManager, false);
@@ -234,9 +235,7 @@ void TCPAccountHandler::_handleAccept(IOServerHandler* pHandler, boost::shared_p
 	
 	// store this buddy/session
 	UT_UTF8String name;
-	UT_UTF8String_sprintf(name, "%s:%d", 
-			session->getSocket().remote_endpoint().address().to_string().c_str(), 
-			session->getSocket().remote_endpoint().port());
+	UT_UTF8String_sprintf(name, "%s:%d", session->getRemoteAddress().c_str(), session->getRemotePort());
 	TCPBuddyPtr pBuddy = boost::shared_ptr<TCPBuddy>(new TCPBuddy(this, 
 								session->getSocket().remote_endpoint().address().to_string(), 
 								boost::lexical_cast<std::string>(session->getSocket().remote_endpoint().port())));
