@@ -102,14 +102,6 @@ UT_Error OXML_Section::clearChildren()
 UT_Error OXML_Section::serialize(IE_Exp_OpenXML* exporter)
 {
 	UT_Error ret = UT_OK;
-	
-	ret = exporter->startSection();
-	if(ret != UT_OK)
-		return ret;
-
-	ret = this->serializeProperties(exporter);
-	if(ret != UT_OK)
-		return ret;
 
 	OXML_ElementVector::size_type i;
 	for (i = 0; i < m_children.size(); i++)
@@ -117,9 +109,8 @@ UT_Error OXML_Section::serialize(IE_Exp_OpenXML* exporter)
 		ret = m_children[i]->serialize(exporter);
 		if(ret != UT_OK)
 			return ret;
-	}
-	
-	return exporter->finishSection();
+	}	
+	return UT_OK;
 }
 
 UT_Error OXML_Section::serializeProperties(IE_Exp_OpenXML* exporter)

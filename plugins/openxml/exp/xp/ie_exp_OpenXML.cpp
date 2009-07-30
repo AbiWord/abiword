@@ -216,22 +216,6 @@ UT_Error IE_Exp_OpenXML::finishDocument()
 }
 
 /**
- * Starts exporting the OXML_Section object
- */
-UT_Error IE_Exp_OpenXML::startSection()
-{
-	return writeTargetStream(TARGET_DOCUMENT, "<wx:sect>");
-}
-
-/**
- * Finishes exporting the OXML_Section object
- */
-UT_Error IE_Exp_OpenXML::finishSection()
-{
-	return writeTargetStream(TARGET_DOCUMENT, "</wx:sect>");
-}
-
-/**
  * Starts exporting the OXML_Section object's properties
  */
 UT_Error IE_Exp_OpenXML::startSectionProperties()
@@ -2368,7 +2352,7 @@ UT_Error IE_Exp_OpenXML::startMainPart()
 		return err;
 	}	
 
-	std::string str("<w:wordDocument xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" ");
+	std::string str("<w:document xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" ");
 	str += "xmlns:v=\"urn:schemas-microsoft-com:vml\" ";
 	str += "xmlns:wx=\"http://schemas.microsoft.com/office/word/2003/auxHint\" ";
 	str += "xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" ";
@@ -2386,7 +2370,7 @@ UT_Error IE_Exp_OpenXML::finishMainPart()
 {
 	UT_Error err = UT_OK;
 
-	err = writeTargetStream(TARGET_DOCUMENT, "</w:body></w:wordDocument>");
+	err = writeTargetStream(TARGET_DOCUMENT, "</w:body></w:document>");
 	if(err != UT_OK)
 	{
 		UT_DEBUGMSG(("FRT: ERROR, cannot write to document.xml file\n"));	
