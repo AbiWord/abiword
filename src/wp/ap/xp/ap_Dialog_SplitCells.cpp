@@ -129,6 +129,7 @@ void AP_Dialog_SplitCells::autoUpdateMC(UT_Worker * pTimer)
 	if (pDialog->m_bDestroy_says_stopupdating != true)
 	{
 		FV_View * pView = 0;
+		PD_Document * pDoc = NULL;
 
 		if (XAP_Frame * pFrame = pDialog->getApp()->getLastFocussedFrame())
 		{
@@ -136,14 +137,13 @@ void AP_Dialog_SplitCells::autoUpdateMC(UT_Worker * pTimer)
 		}
 		if (pView)
 		{
-			PD_Document * pDoc = pView->getDocument();
-
-			if (!pDoc->isPieceTableChanging())
-			{
-				pDialog->m_bAutoUpdate_happening_now = true;
-				pDialog->setAllSensitivities();
-				pDialog->m_bAutoUpdate_happening_now = false;
-			}
+			pDoc = pView->getDocument();
+		}
+		if (!pView || (pDoc && !pDoc->isPieceTableChanging()))
+		{
+			pDialog->m_bAutoUpdate_happening_now = true;
+			pDialog->setAllSensitivities();
+			pDialog->m_bAutoUpdate_happening_now = false;
 		}
 	}
 }
