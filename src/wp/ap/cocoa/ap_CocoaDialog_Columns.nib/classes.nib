@@ -29,13 +29,16 @@
                 "_numOfColumnStepper" = NSStepper; 
                 "_okBtn" = NSButton; 
                 "_oneBtn" = NSButton; 
+                "_oneLabel" = NSTextField; 
                 "_preview" = "XAP_CocoaNSView"; 
                 "_previewBox" = NSBox; 
                 "_spaceAfterColData" = NSTextField; 
                 "_spaceAfterColLabel" = NSTextField; 
                 "_spaceAfterColStepper" = NSStepper; 
                 "_threeBtn" = NSButton; 
+                "_threeLabel" = NSTextField; 
                 "_twoBtn" = NSButton; 
+                "_twoLabel" = NSTextField; 
                 "_useRTLBtn" = NSButton; 
             }; 
             SUPERCLASS = NSWindowController; 
