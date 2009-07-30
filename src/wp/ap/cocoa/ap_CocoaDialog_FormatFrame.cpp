@@ -744,17 +744,22 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 	[_borderColorWell setEnabled:bEnabled];
 	[_borderStepper   setEnabled:bEnabled];
 	[_borderNumber    setEnabled:bEnabled];
+	
+	[_bgColorLabel setEnabled:bEnabled];
+	[_borderColorLabel setEnabled:bEnabled];
 
 	[ _rightBorderColorWell	setEnabled:bEnabled];
 	[  _leftBorderColorWell	setEnabled:bEnabled];
 	[   _topBorderColorWell	setEnabled:bEnabled];
 	[_bottomBorderColorWell	setEnabled:bEnabled];
 
+	[ _borderStepper setEnabled:bEnabled];
 	[ _rightBorderStepper setEnabled:bEnabled];
 	[  _leftBorderStepper setEnabled:bEnabled];
 	[   _topBorderStepper setEnabled:bEnabled];
 	[_bottomBorderStepper setEnabled:bEnabled];
 
+	[ _borderNumberForm setEnabled:bEnabled];
 	[ _rightBorderNumberForm setEnabled:bEnabled];
 	[  _leftBorderNumberForm setEnabled:bEnabled];
 	[   _topBorderNumberForm setEnabled:bEnabled];
@@ -766,12 +771,12 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 	[_bottomBorderBtn setEnabled:bEnabled];
 
 	if (bEnabled)
-		{
-			NSWindow * window = [self window];
+	{
+		NSWindow * window = [self window];
 
-			// [window makeKeyAndOrderFront:self];
-			[window makeFirstResponder:_borderNumberForm];
-		}
+		// [window makeKeyAndOrderFront:self];
+		[window makeFirstResponder:_borderNumberForm];
+	}
 }
 
 - (void)setWrapState:(int)state
