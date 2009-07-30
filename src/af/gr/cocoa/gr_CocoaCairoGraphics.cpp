@@ -435,6 +435,23 @@ UT_uint32 GR_CocoaCairoGraphics::_getResolution(void) const
 	return m_screenResolution;
 }
 
+/*!
+	Convert a UT_RGBColor to a NSColor
+	\param clr the UT_RGBColor to convert
+	\return an autoreleased NSColor
+
+	Handle the transparency as well.
+*/
+NSColor *GR_CocoaCairoGraphics::_utRGBColorToNSColor (const UT_RGBColor& clr)
+{
+	float r,g,b;
+	r = (float)clr.m_red / 255.0f;
+	g = (float)clr.m_grn / 255.0f;
+	b = (float)clr.m_blu / 255.0f;
+	UT_DEBUGMSG (("converting color r=%f, g=%f, b=%f from %d, %d, %d\n", r, g, b, clr.m_red, clr.m_grn, clr.m_blu));
+	NSColor *c = [NSColor colorWithDeviceRed:r green:g blue:b alpha:1.0/*(clr.m_bIsTransparent ? 0.0 : 1.0)*/];
+	return c;
+}
 
 
 /*!
@@ -779,6 +796,8 @@ void GR_CocoaCairoGraphics::setCursor(GR_Graphics::Cursor c)
 		[[m_pWin window] invalidateCursorRectsForView:m_pWin];
 	}
 }
+
+
 
 void GR_CocoaCairoGraphics::init3dColors()
 {
