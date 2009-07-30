@@ -2,7 +2,7 @@
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2002-2003 Hubert Figuiere.
+ * Copyright (C) 2002-2003, 2009 Hubert Figuiere.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -81,6 +81,7 @@ void AP_CocoaDialog_Break::_populateWindowData(void)
 {
 	// We're a pretty stateless dialog, so we just set up
 	// the defaults from our members.
+	[m_dlg->m_sectionBreakBtns deselectAllCells];
 }
 
 void AP_CocoaDialog_Break::_storeWindowData(void)
@@ -119,13 +120,11 @@ void AP_CocoaDialog_Break::_storeWindowData(void)
 	LocalizeControl([self window], pSS, AP_STRING_ID_DLG_Break_BreakTitle);
 	LocalizeControl(m_insertGrp, pSS, AP_STRING_ID_DLG_Break_Insert);
 	LocalizeControl(m_pgBrkBtn, pSS, AP_STRING_ID_DLG_Break_PageBreak);
-	LocalizeControl(m_sectionBrkBtn, pSS, AP_STRING_ID_DLG_Break_SectionBreaks);
+	LocalizeControl(m_sectionBrkGrp, pSS, AP_STRING_ID_DLG_Break_SectionBreaks);
 	LocalizeControl(m_nxtPgBtn, pSS, AP_STRING_ID_DLG_Break_NextPage);
 	LocalizeControl(m_continuousBtn, pSS, AP_STRING_ID_DLG_Break_Continuous);
 	LocalizeControl(m_evenPgBtn, pSS, AP_STRING_ID_DLG_Break_EvenPage);
 	LocalizeControl(m_oddPgBtn, pSS, AP_STRING_ID_DLG_Break_OddPage);
-	
-	[self _updateButtonsState];
 }
 
 - (IBAction)cancelAction:(id)sender
@@ -150,51 +149,41 @@ void AP_CocoaDialog_Break::_storeWindowData(void)
 	case 1:
 		type = AP_Dialog_Break::b_COLUMN;
 		break;
-	case 2:
-		{
-			int y = [m_sectionBreakBtns selectedRow];
-
-			if ([m_sectionBreakBtns selectedColumn]) {
-				if (y == 0) {
-					type = AP_Dialog_Break::b_EVENPAGE;
-				}
-				else {
-					type = AP_Dialog_Break::b_ODDPAGE;
-				}
-			}
-			else {
-				if (y == 0) {
-					type = AP_Dialog_Break::b_NEXTPAGE;
-				}
-				else {
-					type = AP_Dialog_Break::b_CONTINUOUS;
-				}
-			}
-			break;
-		}
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
+	
+	switch([m_sectionBreakBtns selectedRow]) {
+	case 0:
+		type = AP_Dialog_Break::b_NEXTPAGE;
+		break;
+	case 1:
+		type = AP_Dialog_Break::b_CONTINUOUS;
+		break;
+	case 2:
+		type = AP_Dialog_Break::b_EVENPAGE;
+		break;
+	case 3:
+		type = AP_Dialog_Break::b_ODDPAGE;
+		break;
+	default:
+		break;
+	}
+
 	m_xap->_setBreakType(type);
 	m_xap->_setAnswer(AP_Dialog_Break::a_OK);
 
 	[NSApp stopModal];
 }
 
+
 - (IBAction)insertAction:(id)sender;
 {
-	UT_UNUSED(sender);
-	[self _updateButtonsState];
-}
-
-- (void)_updateButtonsState
-{
-	if ([m_insertRadioBtns selectedRow] == 2) {
-		[m_sectionBreakBtns setEnabled:YES];	
+	if(sender == m_insertRadioBtns) {
+		[m_sectionBreakBtns deselectAllCells];
 	}
-	else {
-		[m_sectionBreakBtns setEnabled:NO];
+	else if (sender == m_sectionBreakBtns) {
+		[m_insertRadioBtns deselectAllCells];
 	}
 }
 

@@ -14,7 +14,7 @@
                 "m_oddPgBtn" = NSButtonCell; 
                 "m_pgBrkBtn" = NSButtonCell; 
                 "m_sectionBreakBtns" = NSMatrix; 
-                "m_sectionBrkBtn" = NSButtonCell; 
+                "m_sectionBrkGrp" = NSBox; 
             }; 
             SUPERCLASS = NSWindowController; 
         }, 

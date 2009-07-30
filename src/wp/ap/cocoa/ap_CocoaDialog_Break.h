@@ -2,7 +2,7 @@
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001, 2003 Hubert Figuiere
+ * Copyright (C) 2001, 2003, 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,10 +32,11 @@ class AP_CocoaDialog_Break;
 
 @interface AP_CocoaDialog_BreakController : NSWindowController <XAP_CocoaDialogProtocol>
 {
+@public
     IBOutlet NSMatrix *m_insertRadioBtns;
 	IBOutlet NSMatrix *m_sectionBreakBtns;
 	IBOutlet NSBox *m_insertGrp;
-	IBOutlet NSButtonCell *m_sectionBrkBtn;
+	IBOutlet NSBox *m_sectionBrkGrp;
 	IBOutlet NSButtonCell *m_pgBrkBtn;
 	IBOutlet NSButtonCell *m_colBrkBtn;
 	IBOutlet NSButtonCell *m_nxtPgBtn;
@@ -49,8 +50,6 @@ class AP_CocoaDialog_Break;
 - (IBAction)cancelAction:(id)sender;
 - (IBAction)okAction:(id)sender;
 - (IBAction)insertAction:(id)sender;
-
-- (void)_updateButtonsState;
 @end
 
 /*****************************************************************/
@@ -69,16 +68,6 @@ public:
 		{ 	m_answer = answer; }
 	void _setBreakType(AP_Dialog_Break::breakType type)
 		{ 	m_breakType = type; }
-
-protected:
-#if 0
-	// private construction functions
-	virtual GtkWidget * _constructWindow(void);
-	
-	// group of radio buttons for easy traversal
-	// see m_dlg Obj-C instance.
-	GSList *	m_radioGroup;
-#endif
 
 private:
 	void		_populateWindowData(void);
