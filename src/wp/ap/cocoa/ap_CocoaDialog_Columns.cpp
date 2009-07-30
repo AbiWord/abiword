@@ -2,7 +2,7 @@
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2003 Hubert Figuiere
+ * Copyright (C) 2003, 2009 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,6 +22,8 @@
 
 #include <stdlib.h>
 #include <math.h>
+
+#include <string>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -143,38 +145,39 @@ void AP_CocoaDialog_Columns::event_OK(void)
 
 void AP_CocoaDialog_Columns::doMaxHeightEntry(const char * szMaxHeight)
 {
-	UT_UTF8String szHeight = szMaxHeight;
+	UT_ASSERT(szMaxHeight);
+	std::string szHeight = szMaxHeight ? szMaxHeight : "";
 
-	UT_Dimension new_dimension = UT_determineDimension(szHeight.utf8_str(), DIM_none);
+	UT_Dimension new_dimension = UT_determineDimension(szHeight.c_str(), DIM_none);
 
 	if (new_dimension == DIM_none)
-		{
-			szHeight += UT_dimensionName(m_Dim_MaxHeight);
-		}
+	{
+		szHeight += UT_dimensionName(m_Dim_MaxHeight);
+	}
 	else
-		{
-			m_Dim_MaxHeight = new_dimension;
-		}
-	setMaxHeight(szHeight.utf8_str());
+	{
+		m_Dim_MaxHeight = new_dimension;
+	}
+	setMaxHeight(szHeight.c_str());
 
 	[m_dlg setMaxColHeight:getHeightString()];
 }
 
 void AP_CocoaDialog_Columns::doSpaceAfterEntry(void)
 {
-	UT_UTF8String szAfter = [[m_dlg spaceAfter] UTF8String];
+	std::string szAfter = [[m_dlg spaceAfter] UTF8String];
 
-    UT_Dimension new_dimension = UT_determineDimension(szAfter.utf8_str(), DIM_none);
+    UT_Dimension new_dimension = UT_determineDimension(szAfter.c_str(), DIM_none);
 
 	if (new_dimension == DIM_none)
-		{
-			szAfter += UT_dimensionName(m_Dim_SpaceAfter);
-		}
+	{
+		szAfter += UT_dimensionName(m_Dim_SpaceAfter);
+	}
 	else
-		{
-			m_Dim_SpaceAfter = new_dimension;
-		}
-	setSpaceAfter(szAfter.utf8_str());
+	{
+		m_Dim_SpaceAfter = new_dimension;
+	}
+	setSpaceAfter(szAfter.c_str());
 
 	[m_dlg setSpaceAfter:getSpaceAfterString()];
 }
