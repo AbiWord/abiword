@@ -402,7 +402,7 @@ UT_Error OXML_Document::serialize(IE_Exp_OpenXML* exporter)
 	}
 
 	//set page size and orientation here
-	if(m_pageWidth.compare("") && m_pageHeight.compare(""))
+	if(!m_pageWidth.empty() && !m_pageHeight.empty())
 	{
 		ret = exporter->setPageSize(TARGET_DOCUMENT, m_pageWidth.c_str(), m_pageHeight.c_str(), m_pageOrientation.c_str());
 		if(ret != UT_OK)
@@ -410,12 +410,20 @@ UT_Error OXML_Document::serialize(IE_Exp_OpenXML* exporter)
 	}
 
 	//set page margins
-	if(m_pageMarginTop.compare("") && m_pageMarginLeft.compare("") && m_pageMarginRight.compare("") && m_pageMarginBottom.compare(""))
+	if(!m_pageMarginTop.empty() && !m_pageMarginLeft.empty() && !m_pageMarginRight.empty() && !m_pageMarginBottom.empty())
 	{
 		ret = exporter->setPageMargins(TARGET_DOCUMENT, m_pageMarginTop.c_str(), m_pageMarginLeft.c_str(),
 										m_pageMarginRight.c_str(), m_pageMarginBottom.c_str());
 		if(ret != UT_OK)
 			return ret;		
+	}
+
+	//set page columns
+	if(!m_colNum.empty() && !m_colSep.empty())
+	{
+		ret = exporter->setColumns(TARGET_DOCUMENT, m_colNum.c_str(), m_colSep.c_str());
+		if(ret != UT_OK)
+			return ret;
 	}
 
 	ret = exporter->finishSectionProperties();
@@ -497,20 +505,20 @@ UT_Error OXML_Document::applyPageProps(PD_Document* pDocument)
 	const gchar* pageAtts[13];
 	int index = 0;
 
-	if(!m_pageOrientation.compare(""))
+	if(m_pageOrientation.empty())
 		m_pageOrientation = "portrait";
 
-	if(m_pageWidth.compare(""))
+	if(!m_pageWidth.empty())
 	{
 		pageAtts[index++] = "width";
 		pageAtts[index++] = m_pageWidth.c_str();
 	}
-	if(m_pageHeight.compare(""))
+	if(!m_pageHeight.empty())
 	{
 		pageAtts[index++] = "height";
 		pageAtts[index++] = m_pageHeight.c_str();
 	}
-	if(m_pageOrientation.compare(""))
+	if(!m_pageOrientation.empty())
 	{
 		pageAtts[index++] = "orientation";
 		pageAtts[index++] = m_pageOrientation.c_str();
@@ -607,4 +615,10 @@ void OXML_Document::setPageMargins(const std::string & top, const std::string & 
 	m_pageMarginLeft = left;
 	m_pageMarginRight = right;
 	m_pageMarginBottom = bottom;
+}
+
+void OXML_Document::setColumns(const std::string & colNum, const std::string & colSep)
+{
+	m_colNum = colNum;
+	m_colSep = colSep;
 }

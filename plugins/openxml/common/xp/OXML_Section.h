@@ -85,6 +85,7 @@ public:
 	*/
 	UT_Error serialize(IE_Exp_OpenXML* exporter);
 	UT_Error serializeProperties(IE_Exp_OpenXML* exporter);
+	void applyDocumentProperties();
 
 	UT_Error serializeHeader(IE_Exp_OpenXML* exporter);
 	UT_Error serializeFooter(IE_Exp_OpenXML* exporter);

@@ -120,6 +120,7 @@ public:
 	void setPageHeight(const std::string & height);
 	void setPageOrientation(const std::string & orientation);
 	void setPageMargins(const std::string & top, const std::string & left, const std::string & right, const std::string & bottom);
+	void setColumns(const std::string & colNum, const std::string & colSep);
 
 private:
 	static OXML_Document* s_docInst;
@@ -153,6 +154,9 @@ private:
 	std::string m_pageMarginLeft;
 	std::string m_pageMarginRight;
 	std::string m_pageMarginBottom;
+
+	std::string m_colNum;
+	std::string m_colSep;
 
 	void _assignHdrFtrIds();
 	UT_Error applyPageProps(PD_Document* pDocument);
