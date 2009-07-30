@@ -96,6 +96,12 @@
 	[self invokeEditMethod:"delRight"];
 }
 
+- (void)deleteToEndOfParagraph:(id)sender
+{
+	UT_UNUSED(sender);
+	[self invokeEditMethod:"delEOL"];
+}
+
 - (void)moveForward:(id)sender;
 {
 	UT_UNUSED(sender);
