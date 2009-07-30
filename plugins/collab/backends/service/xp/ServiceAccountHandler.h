@@ -91,6 +91,9 @@ public:
 		{ return false; }
 	virtual bool							recognizeBuddyIdentifier(const std::string& identifier);
 	virtual void							forceDisconnectBuddy(BuddyPtr) { /* TODO: implement me? */ }
+	virtual bool							hasAccess(const std::vector<std::string>& vAcl, BuddyPtr pBuddy);
+	virtual bool							hasPersistentAccessControl()
+		{ return true; }
 
 	// packet management
 	virtual bool							send(const Packet* packet);

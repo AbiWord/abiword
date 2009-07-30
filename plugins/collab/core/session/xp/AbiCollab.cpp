@@ -82,6 +82,7 @@ AbiCollab::AbiCollab(PD_Document* pDoc, const UT_UTF8String& sSessionId, XAP_Fra
 	m_pFrame(pFrame),
 	m_Import(this, pDoc),
 	m_Export(this, pDoc),
+	m_pAclAccount(NULL),
 	m_iDocListenerId(0),
 	m_bExportMasked(false),
 	m_sId(sSessionId),
@@ -197,6 +198,10 @@ void AbiCollab::removeCollaborator(BuddyPtr pCollaborator)
 			m_vCollaborators.erase(it);
 		}
 	}
+
+	// check if we need to revoke the access rights of this collaborator; if so,
+	// then his rights are revoked
+	_checkRevokeAccess(pCollaborator);
 }
 
 void AbiCollab::_removeCollaborator(BuddyPtr pCollaborator, const std::string& docUUID)
@@ -213,6 +218,35 @@ void AbiCollab::_removeCollaborator(BuddyPtr pCollaborator, const std::string& d
 
 	// remove the caret belonging to this buddy
 	m_pDoc->removeCaret(docUUID.c_str());
+}
+
+void AbiCollab::_checkRevokeAccess(BuddyPtr pCollaborator)
+{
+	UT_DEBUGMSG(("AbiCollab::_checkRevokeAccess()\n"));
+	UT_return_if_fail(pCollaborator);
+	UT_return_if_fail(isLocallyControlled());
+
+	// remove this buddy from the access control list if his access rights
+	// are not persistent
+	if (!pCollaborator->getHandler()->hasPersistentAccessControl())
+	{
+		for (std::vector<std::string>::iterator it = m_vAcl.begin(); it != m_vAcl.end(); it++)
+		{
+			if (pCollaborator->getDescriptor(false) == (*it))
+			{
+				UT_DEBUGMSG(("Dropping %s from the ACL\n", (*it).c_str()));
+				m_vAcl.erase(it);
+				break;
+			}
+		}
+	}
+
+	// stop the session if the ACL has become empty
+	if (m_vAcl.size() == 0)
+	{
+		UT_DEBUGMSG(("The ACL list has become empty, stopping session...\n"));
+		UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+	}
 }
 
 void AbiCollab::addCollaborator(BuddyPtr pCollaborator)
@@ -241,33 +275,14 @@ void AbiCollab::addCollaborator(BuddyPtr pCollaborator)
 	m_vCollaborators[pCollaborator] = ""; // will fill the remote document UUID later once we receive a packet from this buddy
 }
 
-void AbiCollab::removeCollaboratorsForAccount(AccountHandler* pHandler)
-{
-	UT_DEBUGMSG(("AbiCollab::removeCollaboratorsForAccount()\n"));
-	UT_return_if_fail(pHandler);
-
-	std::map<BuddyPtr, std::string>::iterator nit;
-	for (std::map<BuddyPtr, std::string>::iterator it = m_vCollaborators.begin(); it != m_vCollaborators.end(); it = nit)
-	{
-		nit = it;
-		nit++;
-		
-		BuddyPtr pBuddy = (*it).first;
-		UT_continue_if_fail(pBuddy);
-		
-		if (pBuddy->getHandler() == pHandler)
-		{
-			_removeCollaborator(pBuddy, (*it).second);
-			m_vCollaborators.erase(it);
-		}
-	}
-}
-
-void AbiCollab::setAcl(const std::vector<BuddyPtr> vAcl)
+void AbiCollab::setAcl(AccountHandler* pAclAccount, const std::vector<std::string> vAcl)
 {
 	UT_DEBUGMSG(("AbiCollab::setAcl()\n"));
+	UT_return_if_fail(pAclAccount);
+	UT_return_if_fail(vAcl.size() > 0);
 
-	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+	m_pAclAccount = pAclAccount;
+	m_vAcl = vAcl;
 }
 
 void AbiCollab::_setDocument(PD_Document* pDoc, XAP_Frame* pFrame)

@@ -61,17 +61,11 @@ void AP_Dialog_CollaborationShare::signal(const Event& event, BuddyPtr /*pSource
 	}
 }
 
-// If the current document is already in session, and had buddies in its
-// access control list, then the document can't be shared with buddies from
-// other accounts. This function returns NULL if no buddies are in the
-// current session's ACL, or the document is not shared yet. Otherwise, it
-// returns the (only) handler that is allowed to share the document.
-AccountHandler* AP_Dialog_CollaborationShare::_getShareableAccountHandler()
+AbiCollab* AP_Dialog_CollaborationShare::_getActiveSession()
 {
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_val_if_fail(pManager, NULL);
 
-	// determine which document to share
 	XAP_Frame* pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	UT_return_val_if_fail(pFrame, NULL);
 
@@ -81,17 +75,38 @@ AccountHandler* AP_Dialog_CollaborationShare::_getShareableAccountHandler()
 	if (!pManager->isInSession(pDoc))
 		return NULL;
 
-	AbiCollab* pSession = pManager->getSession(pDoc);
-	UT_return_val_if_fail(pSession, NULL);
-
-	const std::vector<BuddyPtr> vAcl = pSession->getAcl();
-	if (vAcl.size() == 0)
-		return NULL;
-
-	return vAcl[0]->getHandler();
+	return pManager->getSession(pDoc);
 }
 
-void AP_Dialog_CollaborationShare::_share(AccountHandler* pHandler, const std::vector<BuddyPtr>& vAcl)
+// If the current document is already in session, and has buddies in its
+// access control list, then the document can't be shared with buddies from
+// other accounts. This function returns NULL if no buddies are in the
+// current session's ACL, or the document is not shared yet. Otherwise, it
+// returns the (only) handler that is allowed to share the document.
+AccountHandler* AP_Dialog_CollaborationShare::_getShareableAccountHandler()
+{
+	AbiCollab* pSession = _getActiveSession();
+	if (!pSession)
+		return NULL;
+
+	const std::vector<std::string> vAcl = pSession->getAcl();
+	UT_return_val_if_fail(vAcl.size() > 0, NULL); // doesn't really do anything, but I like the sanity check
+
+	return pSession->getAclAccount();
+}
+
+std::vector<std::string> AP_Dialog_CollaborationShare::_getCurrentACL()
+{
+	std::vector<std::string> vAcl;
+
+	AbiCollab* pSession = _getActiveSession();
+	if (!pSession)
+		return vAcl;
+
+	return pSession->getAcl();
+}
+
+void AP_Dialog_CollaborationShare::_share(AccountHandler* pHandler, const std::vector<std::string>& vAcl)
 {
 	UT_DEBUGMSG(("AP_Dialog_CollaborationShare::_share()\n"));
 
@@ -130,5 +145,5 @@ void AP_Dialog_CollaborationShare::_share(AccountHandler* pHandler, const std::v
 	}
 
 	UT_return_if_fail(pSession);
-	pManager->updateAcl(pSession, vAcl);
+	pManager->updateAcl(pSession, pHandler, vAcl);
 }

@@ -57,6 +57,8 @@ public:
 	virtual bool							allowsManualBuddies()
 		{ return false; }
 	virtual void							forceDisconnectBuddy(BuddyPtr buddy);
+	virtual bool							hasPersistentAccessControl()
+		{ return false; }
 
 	// session management
 	virtual bool							allowsSessionTakeover()

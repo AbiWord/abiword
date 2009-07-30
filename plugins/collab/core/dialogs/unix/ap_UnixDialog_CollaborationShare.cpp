@@ -219,6 +219,9 @@ void AP_UnixDialog_CollaborationShare::_populateBuddyModel(bool refresh)
 	if (refresh)
 		pHandler->getBuddiesAsync();
 
+	// fetch the currently active ACL, if any
+	std::vector<std::string> vAcl = _getCurrentACL();
+
 	// ... and while it does that, we'll have to work with the list that 
 	// is currently known
 	GtkTreeIter iter;
@@ -236,13 +239,26 @@ void AP_UnixDialog_CollaborationShare::_populateBuddyModel(bool refresh)
 		BuddyPtrWrapper* pWrapper = new BuddyPtrWrapper(pBuddy);
 		gtk_list_store_append (m_pBuddyModel, &iter);
 		gtk_list_store_set (m_pBuddyModel, &iter, 
-				SHARE_COLUMN, false, // TODO: implement me 
+				SHARE_COLUMN, _inAcl(vAcl, pBuddy),
 				DESC_COLUMN, pBuddy->getDescription().utf8_str(), 
 				BUDDY_COLUMN, pWrapper, 
 				-1);
 	}
 	
 	gtk_widget_show_all(m_wBuddyTree);
+}
+
+bool AP_UnixDialog_CollaborationShare::_inAcl(const std::vector<std::string>& vAcl, BuddyPtr pBuddy)
+{
+	UT_return_val_if_fail(pBuddy, false);
+	
+	for (UT_uint32 i = 0; i < vAcl.size(); i++)
+	{
+		if (vAcl[i] == pBuddy->getDescription().utf8_str())
+			return true;
+	}
+
+	return false;
 }
 
 AccountHandler* AP_UnixDialog_CollaborationShare::_getActiveAccountHandler()
@@ -271,7 +287,7 @@ void AP_UnixDialog_CollaborationShare::eventOk()
 	AccountHandler*	pHandler = _getActiveAccountHandler();
 	UT_return_if_fail(pHandler);
 
-	std::vector<BuddyPtr> vACL;
+	std::vector<std::string> vACL;
 	_getSelectedBuddies(vACL);
 	_share(pHandler, vACL);
 }
@@ -325,7 +341,7 @@ void AP_UnixDialog_CollaborationShare::_refreshWindow()
 	_populateBuddyModel(false);
 }
 
-void AP_UnixDialog_CollaborationShare::_getSelectedBuddies(std::vector<BuddyPtr>& vACL)
+void AP_UnixDialog_CollaborationShare::_getSelectedBuddies(std::vector<std::string>& vACL)
 {
 	UT_DEBUGMSG(("AP_UnixDialog_CollaborationShare::_getSelectedBuddies()\n"));
 	vACL.clear();
@@ -343,7 +359,7 @@ void AP_UnixDialog_CollaborationShare::_getSelectedBuddies(std::vector<BuddyPtr>
 		if (share && buddy_wrapper)
 		{
 			BuddyPtr pBuddy = reinterpret_cast<BuddyPtrWrapper*>(buddy_wrapper)->getBuddy();
-			vACL.push_back(pBuddy);
+			vACL.push_back(pBuddy->getDescriptor(false).utf8_str());
 		}
 	} while (gtk_tree_model_iter_next(GTK_TREE_MODEL (m_pBuddyModel), &iter));
 }

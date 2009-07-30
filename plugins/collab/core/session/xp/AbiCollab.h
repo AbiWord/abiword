@@ -114,14 +114,16 @@ public:
 	// collaborator management
 	void								addCollaborator(BuddyPtr pCollaborator);
 	void								removeCollaborator(BuddyPtr pCollaborator);
-	void								removeCollaboratorsForAccount(AccountHandler* pHandler);
 	const std::map<BuddyPtr, std::string>&		getCollaborators() const
 		{ return m_vCollaborators; }
 	bool								isController(BuddyPtr pCollaborator) const
 		{ return m_pController == pCollaborator; }
-	const std::vector<BuddyPtr>&		getAcl()
+	const std::vector<std::string>&		getAcl()
 		{ return m_vAcl; }
-	void								setAcl(const std::vector<BuddyPtr> vAcl);
+	AccountHandler*						getAclAccount()
+		{ return m_pAclAccount; }
+	void								setAcl(AccountHandler* pAclAccount, const std::vector<std::string> vAcl);
+	
 
 	// import/export management
 	ABI_Collab_Import*					getImport(void)
@@ -184,6 +186,8 @@ protected:
 private:
 	// collaborator management
 	void								_removeCollaborator(BuddyPtr pCollaborator, const std::string& docUUID);
+	void								_checkRevokeAccess(BuddyPtr pCollaborator);
+
 
 	// document management
 	void								_setDocument(PD_Document* pDoc, XAP_Frame* pFrame);
@@ -215,7 +219,8 @@ private:
 
 	// buddy <-> remote document UUID mapping
 	std::map<BuddyPtr, std::string>		m_vCollaborators;
-	std::vector<BuddyPtr>				m_vAcl;
+	std::vector<std::string>			m_vAcl;
+	AccountHandler*						m_pAclAccount;
 	UT_uint32							m_iDocListenerId;
 	bool								m_bExportMasked;
 

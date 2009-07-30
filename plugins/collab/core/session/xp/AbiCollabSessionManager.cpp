@@ -995,9 +995,11 @@ void AbiCollabSessionManager::removeBuddy(BuddyPtr pBuddy, bool graceful)
 }
 
 // should we move this to AbiCollab.cpp ?
-void AbiCollabSessionManager::updateAcl(AbiCollab* pSession, const std::vector<BuddyPtr> vAcl)
+void AbiCollabSessionManager::updateAcl(AbiCollab* pSession, AccountHandler* pAccount, const std::vector<std::string> vAcl)
 {
 	UT_return_if_fail(pSession);
+	UT_return_if_fail(pAccount);
+	UT_return_if_fail(vAcl.size() > 0);
 	
 	// check if all current collaborators are still allowed to collaborate; if not,
 	// then remove them from the session
@@ -1006,9 +1008,10 @@ void AbiCollabSessionManager::updateAcl(AbiCollab* pSession, const std::vector<B
 	{
 		BuddyPtr pBuddy = (*cit).first;
 		UT_continue_if_fail(pBuddy);
-		AccountHandler* pAccount = pBuddy->getHandler();
-		UT_continue_if_fail(pAccount);
-		if (!pAccount->hasAccess(vAcl, pBuddy))
+		AccountHandler* pBuddyAccount = pBuddy->getHandler();
+		UT_continue_if_fail(pBuddyAccount);
+		UT_continue_if_fail(pBuddyAccount == pAccount);
+		if (!pBuddyAccount->hasAccess(vAcl, pBuddy))
 		{
 			// this current collaborator has been banned from the session, so
 			// disconnect him
@@ -1017,7 +1020,7 @@ void AbiCollabSessionManager::updateAcl(AbiCollab* pSession, const std::vector<B
 	}
 
 	// set the new access control list on the session
-	pSession->setAcl(vAcl);
+	pSession->setAcl(pAccount, vAcl);
 }
 
 bool AbiCollabSessionManager::addAccount(AccountHandler* pHandler)
@@ -1075,14 +1078,12 @@ bool AbiCollabSessionManager::destroyAccount(AccountHandler* pHandler)
 				AbiCollab* pSession = m_vecSessions.getNthItem(j); 
 				UT_continue_if_fail(pSession);
 				
-				// TODO: do we need to do something extra if the session is
-				// locally controlled?
-				pSession->removeCollaboratorsForAccount(pHandler);
-				
-				// if this session has no collaborators anymore, then drop it
-				if (pSession->getCollaborators().size() == 0)
+				// There can only be buddies from 1 account in an active session these days/
+				// That means that if this session's account is the account we are destroying,
+				// then we can kill off the entire session. Do nothing otherwise.
+				if (pSession->getAclAccount() == pHandler)
 				{
-					UT_DEBUGMSG(("All collaborators left from session %s, destroying it!\n", pSession->getSessionId().utf8_str()));
+					UT_DEBUGMSG(("Session %s is running on this account, destroying it!\n", pSession->getSessionId().utf8_str()));
 					destroySession(pSession);
 				}
 			}

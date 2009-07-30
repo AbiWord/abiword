@@ -40,10 +40,11 @@ private:
 	GtkWidget*	 				_constructWindow(void);
 	void						_populateWindowData(void);
 	void						_populateBuddyModel(bool refresh);
+	bool						_inAcl(const std::vector<std::string>& vAcl, BuddyPtr pBuddy);
 	AccountHandler*				_getActiveAccountHandler();
 	void						_setAccountHint(const UT_UTF8String& sHint);
 	void						_refreshWindow();
-	void						_getSelectedBuddies(std::vector<BuddyPtr>& vACL);
+	void						_getSelectedBuddies(std::vector<std::string>& vACL);
 	void						_freeBuddyList();
 		
 	GtkWidget*					m_wWindowMain;

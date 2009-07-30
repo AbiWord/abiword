@@ -293,6 +293,14 @@ bool ServiceAccountHandler::recognizeBuddyIdentifier(const std::string& identifi
 	return true;
 }
 
+bool ServiceAccountHandler::hasAccess(const std::vector<std::string>& vAcl, BuddyPtr pBuddy)
+{
+	UT_DEBUGMSG(("ServiceAccountHandler::hasAccess()\n"));
+	
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+	return false;
+}
+
 bool ServiceAccountHandler::send(const Packet* /*packet*/)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::send(const Packet*)\n"));

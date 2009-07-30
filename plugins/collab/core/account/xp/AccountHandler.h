@@ -134,12 +134,13 @@ public:
 	virtual bool							recognizeBuddyIdentifier(const std::string& identifier) = 0;
 	virtual bool							allowsManualBuddies() = 0;
 	virtual void							forceDisconnectBuddy(BuddyPtr /*buddy*/) = 0;
-	virtual bool							hasAccess(const std::vector<BuddyPtr>& vAcl, BuddyPtr pBuddy);
+	virtual bool							hasAccess(const std::vector<std::string>& vAcl, BuddyPtr pBuddy);
+	virtual bool							hasPersistentAccessControl() = 0;
 
 	// session management
 	virtual void							getSessionsAsync();
 	virtual void							getSessionsAsync(BuddyPtr pBuddy);
-	virtual bool							startSession(PD_Document* /*pDoc*/, const std::vector<BuddyPtr>& /*acl*/)
+	virtual bool							startSession(PD_Document* /*pDoc*/, const std::vector<std::string>& /*acl*/)
 		{ return true; }
 	virtual void							joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHandle);
 	virtual bool							hasSession(const UT_UTF8String& sSessionId);

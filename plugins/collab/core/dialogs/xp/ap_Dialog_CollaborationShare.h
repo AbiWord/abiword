@@ -46,9 +46,11 @@ public:
 		{ return m_answer; }
 
 protected:
-	AccountHandler*		_getShareableAccountHandler();
-	void				_share(AccountHandler* pHandler, const std::vector<BuddyPtr>& vAcl);
-	virtual void		_refreshWindow() = 0;
+	AbiCollab*					_getActiveSession();
+	AccountHandler*				_getShareableAccountHandler();
+	std::vector<std::string>	_getCurrentACL();
+	void						_share(AccountHandler* pHandler, const std::vector<std::string>& vAcl);
+	virtual void				_refreshWindow() = 0;
 	
 	AP_Dialog_CollaborationShare::tAnswer m_answer;
 };
