@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2003, 2005 Hubert Figuiere
+ * Copyright (C) 2003, 2005, 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -74,6 +74,7 @@
 - (IBAction)newAction:(id)sender;
 
 - (void)setStyleDescription:(NSString*)desc;
+- (BOOL)control:(NSControl *)control textShouldBeginEditing:(NSText *)editor;
 @end
 
 @interface AP_CocoaDialog_StylesModifyController : NSWindowController <XAP_CocoaDialogProtocol>
@@ -910,6 +911,14 @@ void   AP_CocoaDialog_Styles::event_ModifyTabs()
 	[_descriptionData setStringValue:desc];
 }
 
+- (BOOL)control:(NSControl *)control textShouldBeginEditing:(NSText *)editor;
+{
+	UT_UNUSED(editor);
+	if(control == _availStylesList) {
+		return NO;
+	}
+	return YES;
+}
 @end
 
 
