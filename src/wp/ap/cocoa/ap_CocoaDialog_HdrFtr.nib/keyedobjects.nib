@@ -1946,7 +1946,7 @@
 			<key>NSvFlags</key>
 			<integer>256</integer>
 		</dict>
-		<string>{{13, 14}, {182, 14}}</string>
+		<string>{{13, 14}, {185, 14}}</string>
 		<dict>
 			<key>$class</key>
 			<dict>
@@ -2104,7 +2104,7 @@
 			<key>NSvFlags</key>
 			<integer>256</integer>
 		</dict>
-		<string>{{200, 11}, {57, 18}}</string>
+		<string>{{203, 11}, {57, 18}}</string>
 		<dict>
 			<key>$class</key>
 			<dict>
@@ -2392,7 +2392,7 @@
 			<integer>0</integer>
 			<key>NS.mantissa</key>
 			<data>
-			AAAAAAAAAAAAAAAAQCQAAA==
+			or4dUAAAAACQfJxEv//TIA==
 			</data>
 			<key>NS.mantissa.bo</key>
 			<integer>2</integer>
@@ -2486,7 +2486,7 @@
 			<integer>1</integer>
 			<key>NS.mantissa</key>
 			<data>
-			AAEAAAAAAAAAAAAAQCQAAA==
+			AAEdUAAAAACQfJxEv//TIA==
 			</data>
 			<key>NS.mantissa.bo</key>
 			<integer>2</integer>
@@ -2588,7 +2588,7 @@
 			<key>NSvFlags</key>
 			<integer>256</integer>
 		</dict>
-		<string>{{262, 6}, {19, 27}}</string>
+		<string>{{266, 9}, {15, 22}}</string>
 		<dict>
 			<key>$class</key>
 			<dict>
@@ -2600,7 +2600,7 @@
 			<key>NSCellFlags</key>
 			<integer>917024</integer>
 			<key>NSCellFlags2</key>
-			<integer>0</integer>
+			<integer>131072</integer>
 			<key>NSControlView</key>
 			<dict>
 				<key>CF$UID</key>
