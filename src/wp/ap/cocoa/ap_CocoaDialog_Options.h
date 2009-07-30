@@ -61,8 +61,8 @@ class AP_CocoaDialog_Options;
 	IBOutlet NSTextField *      oLabel_Units;
 	IBOutlet NSTextField *      m_textAutoSaveFilePeriod;
 	IBOutlet NSTextField *      m_textAutoSaveFileExt;
-	IBOutlet NSTextField *      m_labelOuterQuoteStyle;
-	IBOutlet NSTextField *      m_labelInnerQuoteStyle;
+	IBOutlet NSBox *      m_labelOuterQuoteStyle;
+	IBOutlet NSBox *      m_labelInnerQuoteStyle;
 
 	IBOutlet NSPopUpButton *	m_menuUnits;
 	IBOutlet NSPopUpButton *    m_comboOuterQuote;

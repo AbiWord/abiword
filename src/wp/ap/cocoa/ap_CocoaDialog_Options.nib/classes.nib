@@ -29,8 +29,8 @@
                 "m_checkbuttonSpellUppercase" = NSButton; 
                 "m_comboInnerQuote" = NSPopUpButton; 
                 "m_comboOuterQuote" = NSPopUpButton; 
-                "m_labelInnerQuoteStyle" = NSTextField; 
-                "m_labelOuterQuoteStyle" = NSTextField; 
+                "m_labelInnerQuoteStyle" = NSBox; 
+                "m_labelOuterQuoteStyle" = NSBox; 
                 "m_menuUnits" = NSPopUpButton; 
                 "m_textAutoSaveFileExt" = NSTextField; 
                 "m_textAutoSaveFilePeriod" = NSTextField; 
