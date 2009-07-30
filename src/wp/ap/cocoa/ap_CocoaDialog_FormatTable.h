@@ -45,6 +45,7 @@ public:
 	virtual void			event_Close(void);
 	void					event_ApplyToChanged(void);
 	void 					event_previewExposed(void);
+	void                    event_BorderThicknessChanged(NSPopUpButton *ctrl);
 	virtual void			setSensitivity(bool bSens);
 	virtual void            setBackgroundColorInGUI(UT_RGBColor clr);
 	virtual void            setBorderThicknessInGUI(UT_UTF8String & sThick);
@@ -65,8 +66,10 @@ private:
 
 @interface AP_CocoaDialog_FormatTableController : NSWindowController <XAP_CocoaDialogProtocol>
 {
+@public
     IBOutlet NSButton *_applyBtn;
     IBOutlet NSBox *_bgBox;
+	IBOutlet NSBox *_imageBgBox;
     IBOutlet NSTextField *_bgColorLabel;
     IBOutlet NSColorWell *_bgColorWell;
     IBOutlet NSBox *_borderBox;
@@ -82,6 +85,8 @@ private:
     IBOutlet NSButton *_topBorderBtn;
     IBOutlet NSButton *_setImageBtn;
     IBOutlet NSButton *_noImageBtn;
+	IBOutlet NSTextField *_thicknessLabel;
+	IBOutlet NSPopUpButton *_thicknessPopup;
 	AP_CocoaDialog_FormatTable*	_xap;
 }
 - (IBAction)applyAction:(id)sender;
@@ -94,6 +99,7 @@ private:
 - (IBAction)selectImageAction:(id)sender;
 - (IBAction)topBorderAction:(id)sender;
 - (IBAction)applyToAction:(id)sender;
+- (IBAction)borderThicknessAction:(id)sender;
 
 - (XAP_CocoaNSView*)preview;
 - (void)setSensitivity:(bool)bSens;

@@ -6,6 +6,7 @@
                 applyToAction = id; 
                 bgColorAction = id; 
                 borderColorAction = id; 
+                borderThicknessAction = id; 
                 bottomBorderAction = id; 
                 leftBorderAction = id; 
                 removeImageAction = id; 
@@ -26,12 +27,15 @@
                 "_borderColorLabel" = NSTextField; 
                 "_borderColorWell" = NSColorWell; 
                 "_bottomBorderBtn" = NSButton; 
+                "_imageBgBox" = NSBox; 
                 "_leftBorderBtn" = NSButton; 
                 "_noImageBtn" = NSButton; 
                 "_preview" = "XAP_CocoaNSView"; 
                 "_previewBox" = NSBox; 
                 "_rightBorderBtn" = NSButton; 
                 "_setImageBtn" = NSButton; 
+                "_thicknessLabel" = NSTextField; 
+                "_thicknessPopup" = NSPopUpButton; 
                 "_topBorderBtn" = NSButton; 
             }; 
             SUPERCLASS = NSWindowController; 

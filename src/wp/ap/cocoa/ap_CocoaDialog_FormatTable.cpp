@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Marc Maurer
- * Copyright (C) 2003-2004 Hubert Figuiere
+ * Copyright (C) 2003-2004, 2009 Hubert Figuiere
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -23,6 +23,7 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_locale.h"
 
 #include "gr_CocoaCairoGraphics.h"
 #include "xap_CocoaDialog_Utilities.h"
@@ -101,14 +102,16 @@ void AP_CocoaDialog_FormatTable::setSensitivity(bool bSens)
 	[m_dlg setSensitivity:bSens];
 }
 
-void AP_CocoaDialog_FormatTable::setBackgroundColorInGUI(UT_RGBColor /*clr*/)
+void AP_CocoaDialog_FormatTable::setBackgroundColorInGUI(UT_RGBColor clr)
 {
-	UT_ASSERT_NOT_REACHED(); // TODO
+	NSColor *color = GR_CocoaCairoGraphics::_utRGBColorToNSColor(clr);
+	[m_dlg->_bgColorWell setColor:color];
 }
 
-void AP_CocoaDialog_FormatTable::setBorderThicknessInGUI(UT_UTF8String & /*sThick*/)
+void AP_CocoaDialog_FormatTable::setBorderThicknessInGUI(UT_UTF8String & sThick)
 {
-	UT_ASSERT_NOT_REACHED();
+	guint closest = _findClosestThickness(sThick.utf8_str());
+	[m_dlg->_thicknessPopup selectItemAtIndex:closest];
 }
 
 void AP_CocoaDialog_FormatTable::event_Close(void)
@@ -144,6 +147,25 @@ void AP_CocoaDialog_FormatTable::event_ApplyToChanged(void)
 	default:
 		// should not happen
 		break;
+	}
+}
+
+void AP_CocoaDialog_FormatTable::event_BorderThicknessChanged(NSPopUpButton *ctrl)
+{
+	// TODO refactor as Gtk has the same code.
+	if(ctrl)
+	{
+		int idx = [ctrl indexOfSelectedItem];
+		double thickness = m_dThickness[idx];
+
+		UT_UTF8String sThickness;
+		{
+			UT_LocaleTransactor t(LC_NUMERIC, "C");
+			sThickness = UT_UTF8String_sprintf("%fin",thickness);
+		}
+
+		setBorderThickness(sThickness);
+		event_previewExposed();
 	}
 }
 
@@ -217,7 +239,8 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
 		LocalizeControl(_bgColorLabel, pSS, AP_STRING_ID_DLG_FormatTable_Color);
 		LocalizeControl(_borderBox, pSS, AP_STRING_ID_DLG_FormatTable_Borders);
 		LocalizeControl(_borderColorLabel, pSS, AP_STRING_ID_DLG_FormatTable_Color);
-	//	LocalizeControl(_mergeCellsBox, pSS, AP_STRING_ID_DLG_FormatTable_SetImageBackground);
+		LocalizeControl(_thicknessLabel, pSS,AP_STRING_ID_DLG_FormatTable_Thickness);
+		LocalizeControl(_imageBgBox, pSS, AP_STRING_ID_DLG_FormatTable_SetImageBackground);
 		LocalizeControl(_setImageBtn, pSS, AP_STRING_ID_DLG_FormatTable_SelectImage);
 		[_setImageBtn setImage:[NSImage imageNamed:@"tb_insert_graphic"]];
 		LocalizeControl(_noImageBtn, pSS, AP_STRING_ID_DLG_FormatTable_NoImageBackground);
@@ -233,6 +256,16 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
 		[_topBorderBtn setImage:[NSImage imageNamed:@"tb_LineTop"]];
 		[_leftBorderBtn setImage:[NSImage imageNamed:@"tb_LineLeft"]];
 		[_bottomBorderBtn setImage:[NSImage imageNamed:@"tb_LineBottom"]];
+		
+		[_thicknessPopup removeAllItems];
+		[_thicknessPopup addItemWithTitle:@"1/2 pt"];
+		[_thicknessPopup addItemWithTitle:@"3/4 pt"];
+		[_thicknessPopup addItemWithTitle:@"1 pt"];
+		[_thicknessPopup addItemWithTitle:@"1 1/2 pt"];
+		[_thicknessPopup addItemWithTitle:@"2 1/4 pt"];
+		[_thicknessPopup addItemWithTitle:@"3 pt"];
+		[_thicknessPopup addItemWithTitle:@"4 1/2 pt"];
+		[_thicknessPopup addItemWithTitle:@"6 pt"];	
 	}
 }
 
@@ -244,12 +277,23 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
 
 - (IBAction)bgColorAction:(id)sender
 {
-	UT_UNUSED(sender);
+	UT_RGBColor clr;
+	GR_CocoaCairoGraphics::_utNSColorToRGBColor ([sender color], clr);
+	_xap->setBackgroundColor(clr);
+	_xap->event_previewExposed();
 }
 
 - (IBAction)borderColorAction:(id)sender
 {
-	UT_UNUSED(sender);
+	UT_RGBColor clr;
+	GR_CocoaCairoGraphics::_utNSColorToRGBColor ([sender color], clr);
+	_xap->setBorderColor(clr);
+	_xap->event_previewExposed();
+}
+
+-(IBAction)borderThicknessAction:(id)sender
+{
+	_xap->event_BorderThicknessChanged(sender);
 }
 
 - (IBAction)bottomBorderAction:(id)sender

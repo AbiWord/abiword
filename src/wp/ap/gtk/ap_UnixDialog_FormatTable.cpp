@@ -245,18 +245,6 @@ AP_UnixDialog_FormatTable::AP_UnixDialog_FormatTable(XAP_DialogFactory * pDlgFac
 	m_wNoImageButton = NULL;
 	m_wBorderThickness = NULL;
 	m_iBorderThicknessConnect = 0;
-//
-// These are hardwired into the GUI.
-//
-	const char * sThickness[FORMAT_TABLE_NUMTHICKNESS] ={"0.25pt","0.5pt",
-													   "0.75pt","1.0pt",
-													   "1.5pt","2.25pt","3pt",
-													   "4.5pt","6.0pt"};
-	UT_sint32 i = 0;
-	for(i=0; i< FORMAT_TABLE_NUMTHICKNESS ;i++)
-	{
-		m_dThickness[i] = UT_convertToInches(sThickness[i]);
-	}
 }
 
 AP_UnixDialog_FormatTable::~AP_UnixDialog_FormatTable(void)
@@ -330,21 +318,7 @@ void AP_UnixDialog_FormatTable::event_previewExposed(void)
 
 void AP_UnixDialog_FormatTable::setBorderThicknessInGUI(UT_UTF8String & sThick)
 {
-	double thickness = UT_convertToInches(sThick.utf8_str());
-	guint i =0;
-	guint closest = 0;
-	double dClose = 100000000.;
-	for(i=0; i<FORMAT_TABLE_NUMTHICKNESS; i++)
-	{
-		double diff = thickness - m_dThickness[i];
-		if(diff < 0)
-			diff = -diff;
-		if(diff < dClose)
-		{
-			closest = i;
-			dClose = diff;
-		}
-	}
+	guint closest = _findClosestThickness(sThick.utf8_str());
 	XAP_GtkSignalBlocker b(G_OBJECT(m_wBorderThickness),m_iBorderThicknessConnect);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(m_wBorderThickness), closest);
 }

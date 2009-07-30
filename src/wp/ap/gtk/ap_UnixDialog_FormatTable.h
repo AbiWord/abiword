@@ -82,7 +82,6 @@ protected:
 	GtkWidget * m_wNoImageButton;
 	GtkWidget * m_wBorderThickness;
 	guint       m_iBorderThicknessConnect;
-	double      m_dThickness[FORMAT_TABLE_NUMTHICKNESS];
 };
 
 #endif /* AP_UNIXDIALOG_FORMATTABLE_H */

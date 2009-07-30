@@ -1,6 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Marc Maurer
+ * Copyright (c) 2009 Hubert Figuiere
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -70,6 +71,19 @@ AP_Dialog_FormatTable::AP_Dialog_FormatTable(XAP_DialogFactory * pDlgFactory, XA
 	  m_pImage(NULL),
 	  m_pGraphic(NULL)
 {
+	//
+	// These are hardwired into the GUI.
+	//
+	const char * sThickness[FORMAT_TABLE_NUMTHICKNESS] ={"0.25pt","0.5pt",
+													   "0.75pt","1.0pt",
+													   "1.5pt","2.25pt","3pt",
+													   "4.5pt","6.0pt"};
+	UT_sint32 i = 0;
+	for(i=0; i< FORMAT_TABLE_NUMTHICKNESS ;i++)
+	{
+		m_dThickness[i] = UT_convertToInches(sThickness[i]);
+	}
+
 	if(m_vecProps.getItemCount() > 0)
 		m_vecProps.clear();
 	  
@@ -646,6 +660,28 @@ bool AP_Dialog_FormatTable::getLeftToggled()
 {
 	return _getToggleButtonStatus("left-style");
 }
+
+
+guint AP_Dialog_FormatTable::_findClosestThickness(const char *sthickness) const
+{
+	double thickness = UT_convertToInches(sthickness);
+	guint i =0;
+	guint closest = 0;
+	double dClose = 100000000.;
+	for(i=0; i<FORMAT_TABLE_NUMTHICKNESS; i++)
+	{
+		double diff = thickness - m_dThickness[i];
+		if(diff < 0)
+			diff = -diff;
+		if(diff < dClose)
+		{
+			closest = i;
+			dClose = diff;
+		}
+	}
+	return closest;
+}
+
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////

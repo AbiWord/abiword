@@ -1,6 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Marc Maurer
+ * Copyright (c) 2009 Hubert Figuiere
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -126,10 +127,12 @@ public:
 	UT_PropVector                           m_vecProps;
 	UT_UTF8String                           m_sBorderThickness;
 protected:
+	guint                               _findClosestThickness(const char *) const;
 	AP_Dialog_FormatTable::tAnswer		m_answer;
 	char                                m_WindowName[100];
 	AP_FormatTable_preview				*m_pFormatTablePreview;
 	AP_FormatTable_preview_drawer		m_previewDrawer;
+	double      m_dThickness[FORMAT_TABLE_NUMTHICKNESS];
 		
 private:
 	bool								_getToggleButtonStatus(const char * lineStyle);
