@@ -2,7 +2,7 @@
 /* AbiWord
  * Copyright (C) 2003 Dom Lachowicz
  * Copyright (C) 2004 Martin Sevior
- * Copyright (C) 2004-2005 Hubert Figuiere
+ * Copyright (C) 2004-2005, 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -177,11 +177,13 @@ void AP_CocoaDialog_Stylist::activate(void)
 {
 	UT_ASSERT (m_dlg);
 	[[m_dlg window] orderFront:m_dlg];
+	setAllSensitivities();
 }
 
 void AP_CocoaDialog_Stylist::notifyActiveFrame(XAP_Frame */*pFrame*/)
 {
     UT_ASSERT(m_dlg);
+	setAllSensitivities();
 }
 
 /*!
@@ -258,6 +260,11 @@ void AP_CocoaDialog_Stylist::runModeless(XAP_Frame * /*pFrame*/)
 	_populateWindowData();
 	[window orderFront:m_dlg];	
 	startUpdater();
+}
+
+void  AP_CocoaDialog_Stylist::setSensitivity(bool bSens)
+{
+	[m_dlg setSensitivity:bSens];
 }
 
 
@@ -342,7 +349,11 @@ void  AP_CocoaDialog_Stylist::_populateWindowData(void)
 
 - (id)initFromNib
 {
-	return [super initWithWindowNibName:@"ap_CocoaDialog_Stylist"];
+	if([super initWithWindowNibName:@"ap_CocoaDialog_Stylist"]) {
+		_xap = NULL; 
+		_enabled = true;
+	}
+	return self;
 }
 
 - (void)discardXAP
@@ -424,6 +435,9 @@ void  AP_CocoaDialog_Stylist::_populateWindowData(void)
 {
 	BOOL bCanApply = NO;
 
+	if(!_enabled) {
+		return;
+	}
 	int row = [sender selectedRow];
 	if (row >= 0)
 	{
@@ -442,6 +456,9 @@ void  AP_CocoaDialog_Stylist::_populateWindowData(void)
 {
 	BOOL bCanApply = NO;
 
+	if(!_enabled) {
+		return;
+	}
 	int row = [sender selectedRow];
 	if (row >= 0)
 	{
@@ -504,5 +521,13 @@ void  AP_CocoaDialog_Stylist::_populateWindowData(void)
 	UT_UNUSED(item);
 	[cell setFont:[NSFont systemFontOfSize:10.0f]];
 }
+
+- (void)setSensitivity:(bool)bSens
+{
+	[_applyBtn setEnabled:bSens];
+	[_stylistList setEnabled:bSens];
+	_enabled = bSens;
+}
+
 
 @end

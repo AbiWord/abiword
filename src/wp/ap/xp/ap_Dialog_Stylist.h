@@ -83,6 +83,8 @@ public:
 		{ return  m_bStyleValid;}
 	void              startUpdater(void);
 	void              stopUpdater(void);
+	// I am gonna be nice and make this an empty implementation instead of pure virtual
+	virtual void      setSensitivity(bool /*bSens*/) {};
     void              setActiveFrame(XAP_Frame *pFrame);
 	void              event_update(void);
 	void              finalize(void);
@@ -110,6 +112,8 @@ public:
 	void              setStyleValid(bool bValid)
 		{ m_bStyleValid = bValid;}
 protected:
+	// call to ensure the dialog is enabled/disabled on overall
+	void setAllSensitivities();
 	bool                  m_bIsModal;
 private:
 	PD_Document *         m_pDoc;

@@ -2,7 +2,7 @@
 
 /* AbiWord
  * Copyright (C) 2003 Dom Lachowicz
- * Copyright (C) 2004 Hubert Figuiere
+ * Copyright (C) 2004, 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -44,6 +44,7 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
+	virtual void      setSensitivity(bool bSens);
 
 	// callbacks can fire these events
 	void			event_Close(void);
@@ -74,11 +75,13 @@ private:
     IBOutlet NSButton *_applyBtn;
     IBOutlet NSOutlineView *_stylistList;
 	AP_CocoaDialog_Stylist* _xap;
+	BOOL _enabled;
 }
 - (void)refresh;
 - (void)selectStyleNode:(StyleNode *)childNode childOf:(StyleNode *)parentNode;
 - (IBAction)applyAction:(id)sender;
 - (IBAction)outlineAction:(id)sender;
+- (void)setSensitivity:(bool)bSens;
 @end
 
 #endif /* AP_COCOADIALOG_STYLIST_H */

@@ -194,6 +194,7 @@ void AP_Dialog_Stylist::updateDialog(void)
 			}
 		}
 	}
+	setAllSensitivities();
 }			
 
 /*!
@@ -204,6 +205,19 @@ void  AP_Dialog_Stylist::finalize(void)
 	stopUpdater();
 	modeless_cleanup();
 }
+
+void AP_Dialog_Stylist::setAllSensitivities()
+{
+	XAP_Frame *frame = XAP_App::getApp()->getLastFocussedFrame();
+	if (frame) {
+		setSensitivity(true);
+	}
+	else {
+		setSensitivity(false);
+	}
+
+}
+
 
 ///////////////////////////////////////////////////////////////////////////
 /*!
