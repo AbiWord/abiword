@@ -286,6 +286,11 @@ GR_CairoGraphics::GR_CairoGraphics(cairo_t *cr, UT_uint32 iDeviceResolution)
 	m_cs(GR_Graphics::GR_COLORSPACE_COLOR),
 	m_curColorDirty(false),
 	m_clipRectDirty(false),
+	m_lineWidth(1.0),
+	m_joinStyle(JOIN_MITER),
+	m_capStyle(CAP_BUTT),
+	m_lineStyle(LINE_SOLID),
+	m_linePropsDirty(false),
 	m_bIsSymbol(false),
 	m_bIsDingbat(false),
 	m_iPrevX1(0),
@@ -315,6 +320,11 @@ GR_CairoGraphics::GR_CairoGraphics()
 	m_cs(GR_Graphics::GR_COLORSPACE_COLOR),
 	m_curColorDirty(false),
 	m_clipRectDirty(false),
+	m_lineWidth(1.0),
+	m_joinStyle(JOIN_MITER),
+	m_capStyle(CAP_BUTT),
+	m_lineStyle(LINE_SOLID),
+	m_linePropsDirty(false),
 	m_bIsSymbol(false),
 	m_bIsDingbat(false),
 	m_iPrevX1(0),
@@ -1303,6 +1313,58 @@ void GR_CairoGraphics::_setSource(cairo_t *cr, const UT_RGBColor &clr)
 }
 
 
+static cairo_line_cap_t mapCapStyle(GR_Graphics::CapStyle in)
+{
+	switch (in) {
+	case GR_Graphics::CAP_ROUND:
+		return CAIRO_LINE_CAP_ROUND;
+	case GR_Graphics::CAP_PROJECTING:
+		return CAIRO_LINE_CAP_SQUARE;
+	case GR_Graphics::CAP_BUTT:
+	default:
+		return CAIRO_LINE_CAP_BUTT;
+    }
+}
+
+/*
+ * \param width line width
+ * \param dashes Array for dash pattern
+ * \param n_dashes IN: length of dashes, OUT: number of needed dash pattern fields
+ */
+static void mapDashStyle(GR_Graphics::LineStyle in, double width, double *dashes, int *n_dashes)
+{
+	switch (in) {
+	case GR_Graphics::LINE_ON_OFF_DASH:
+	case GR_Graphics::LINE_DOUBLE_DASH:				// see GDK_LINE_DOUBLE_DASH, but it was never used
+		UT_ASSERT(*n_dashes > 0);
+		dashes[0] = 4 * width;
+		*n_dashes = 1;
+		break;
+	case GR_Graphics::LINE_DOTTED:
+		UT_ASSERT(*n_dashes > 0);
+		dashes[0] = width;
+		*n_dashes = 1;
+		break;
+	case GR_Graphics::LINE_SOLID:
+	default:
+		*n_dashes = 0;
+	}
+}
+
+static cairo_line_join_t mapJoinStyle(GR_Graphics::JoinStyle in)
+{
+	switch ( in ) {
+	case GR_Graphics::JOIN_ROUND:
+		return CAIRO_LINE_JOIN_ROUND;
+	case GR_Graphics::JOIN_BEVEL:
+		return CAIRO_LINE_JOIN_BEVEL;
+	case GR_Graphics::JOIN_MITER:
+	default:
+		return CAIRO_LINE_JOIN_MITER;
+    }
+}
+
+
 void GR_CairoGraphics::_setProps()
 {
 	UT_ASSERT(m_cr);
@@ -1327,6 +1389,23 @@ void GR_CairoGraphics::_setProps()
 			cairo_clip(m_cr);
 		}
 		m_clipRectDirty = false;
+	}
+	if(m_linePropsDirty)
+	{
+		double dashes[2];
+		double width;
+		int n_dashes;
+
+		cairo_set_line_width (m_cr, tduD(m_lineWidth));
+		cairo_set_line_join (m_cr, mapJoinStyle(m_joinStyle));
+		cairo_set_line_cap (m_cr, mapCapStyle(m_capStyle));
+
+		width = cairo_get_line_width(m_cr);
+		n_dashes = G_N_ELEMENTS(dashes);
+		mapDashStyle(m_lineStyle, width, dashes, &n_dashes);
+		cairo_set_dash(m_cr, dashes, n_dashes, 0);
+
+		m_linePropsDirty = false;
 	}
 }
 
@@ -2751,82 +2830,21 @@ void GR_CairoGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 
 void GR_CairoGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
-	_setProps();
-
-	double width = tduD(iLineWidth);
-
-	cairo_set_line_width (m_cr, width);
+	m_lineWidth = iLineWidth;
+	m_linePropsDirty = true;
 }
 
-static cairo_line_cap_t mapCapStyle(GR_Graphics::CapStyle in)
-{
-	switch (in) {
-	case GR_Graphics::CAP_ROUND:
-		return CAIRO_LINE_CAP_ROUND;
-	case GR_Graphics::CAP_PROJECTING:
-		return CAIRO_LINE_CAP_SQUARE;
-	case GR_Graphics::CAP_BUTT:
-	default:
-		return CAIRO_LINE_CAP_BUTT;
-    }
-}
-
-/*
- * \param width line width
- * \param dashes Array for dash pattern
- * \param n_dashes IN: length of dashes, OUT: number of needed dash pattern fields
- */
-static void mapDashStyle(GR_Graphics::LineStyle in, double width, double *dashes, int *n_dashes)
-{
-	switch (in) {
-	case GR_Graphics::LINE_ON_OFF_DASH:
-	case GR_Graphics::LINE_DOUBLE_DASH:				// see GDK_LINE_DOUBLE_DASH, but it was never used
-		UT_ASSERT(*n_dashes > 0);
-		dashes[0] = 4 * width;
-		*n_dashes = 1;
-		break;
-	case GR_Graphics::LINE_DOTTED:
-		UT_ASSERT(*n_dashes > 0);
-		dashes[0] = width;
-		*n_dashes = 1;
-		break;
-	case GR_Graphics::LINE_SOLID:
-	default:
-		*n_dashes = 0;
-	}
-}
-
-static cairo_line_join_t mapJoinStyle(GR_Graphics::JoinStyle in)
-{
-	switch ( in ) {
-	case GR_Graphics::JOIN_ROUND:
-		return CAIRO_LINE_JOIN_ROUND;
-	case GR_Graphics::JOIN_BEVEL:
-		return CAIRO_LINE_JOIN_BEVEL;
-	case GR_Graphics::JOIN_MITER:
-	default:
-		return CAIRO_LINE_JOIN_MITER;
-    }
-}
 
 void GR_CairoGraphics::setLineProperties ( double inWidth, 
 										  GR_Graphics::JoinStyle inJoinStyle,
 										  GR_Graphics::CapStyle inCapStyle,
 										  GR_Graphics::LineStyle inLineStyle )
 {
-	_setProps();
-	double dashes[2];
-	double width;
-	int n_dashes;
-
-	cairo_set_line_width (m_cr, tduD(inWidth));
-	cairo_set_line_join (m_cr, mapJoinStyle(inJoinStyle));
-	cairo_set_line_cap (m_cr, mapCapStyle(inCapStyle));
-
-	width = cairo_get_line_width(m_cr);
-	n_dashes = G_N_ELEMENTS(dashes);
-	mapDashStyle(inLineStyle, width, dashes, &n_dashes);
-	cairo_set_dash(m_cr, dashes, n_dashes, 0);
+	m_lineWidth = inWidth;
+	m_joinStyle = inJoinStyle;
+	m_capStyle = inCapStyle;
+	m_lineStyle = inLineStyle;
+	m_linePropsDirty = true;
 }
 
 /*

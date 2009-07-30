@@ -383,6 +383,11 @@ public:
 	UT_RGBColor		m_curColor;
 	bool            m_curColorDirty;
 	bool            m_clipRectDirty;
+	double                 m_lineWidth;
+	GR_Graphics::JoinStyle m_joinStyle;
+	GR_Graphics::CapStyle  m_capStyle;
+	GR_Graphics::LineStyle m_lineStyle;
+	bool            m_linePropsDirty;
 	bool                    m_bIsSymbol;       
 	bool                    m_bIsDingbat;
 	UT_sint32               m_iPrevX1;
