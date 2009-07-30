@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
- * Copyright (C) 2003 Hubert Figuiere
+ * Copyright (C) 2003, 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -178,7 +178,7 @@ void AP_CocoaDialog_HdrFtr::RestartSpinChanged(UT_sint32 RestartValue)
 - (IBAction)cancelAction:(id)sender
 {
 	UT_UNUSED(sender);
-	_xap->eventOk();
+	_xap->eventCancel();
 }
 
 - (IBAction)btnAction:(id)sender
@@ -190,7 +190,7 @@ void AP_CocoaDialog_HdrFtr::RestartSpinChanged(UT_sint32 RestartValue)
 - (IBAction)okAction:(id)sender
 {
 	UT_UNUSED(sender);
-	_xap->eventCancel();
+	_xap->eventOk();
 }
 
 - (IBAction)restartAction:(id)sender
