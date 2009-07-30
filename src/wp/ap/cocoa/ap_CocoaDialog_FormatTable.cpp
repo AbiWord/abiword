@@ -304,12 +304,18 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
 - (void)setSensitivity:(bool)bSens
 {
 	[_applyBtn setEnabled:bSens];
-	[_borderColorWell setEnabled:bSens];
+	[_bgColorLabel setEnabled:bSens];
 	[_bgColorWell setEnabled:bSens];
+	[_borderColorLabel setEnabled:bSens];
+	[_borderColorWell setEnabled:bSens];
+	[_applyToLabel setEnabled:bSens];
+	[_applyToPopup setEnabled:bSens];
 	[_bottomBorderBtn setEnabled:bSens];
 	[_leftBorderBtn setEnabled:bSens];
 	[_rightBorderBtn setEnabled:bSens];
 	[_topBorderBtn setEnabled:bSens];
+	[_setImageBtn setEnabled:bSens];
+	[_noImageBtn setEnabled:bSens];
 }
 
 
