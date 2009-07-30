@@ -589,7 +589,7 @@ void AP_CocoaDialog_Lists::loadXPDataIntoLocal(void)
 	}
 	[m_dlg->_startAtData setIntValue:getiStartValue()];
 
-	[m_dlg->_levelDelimData setStringValue:[NSString stringWithUTF8String:getDelim().c_str()]];
+	[m_dlg->_levelDelimData setStringValue:[NSString stringWithUTF8String:getDecimal().c_str()]];
 	[m_dlg->_formatData setStringValue:[NSString stringWithUTF8String:getDelim().c_str()]];
 
 	//
@@ -720,8 +720,8 @@ void AP_CocoaDialog_Lists::_gatherData(void)
 	LocalizeControl(_fontLabel, pSS, AP_STRING_ID_DLG_Lists_Font);
 	LocalizeControl(_levelDelimLabel, pSS, AP_STRING_ID_DLG_Lists_DelimiterString);
 	LocalizeControl(_startAtLabel, pSS, AP_STRING_ID_DLG_Lists_Start);
-	LocalizeControl(_labelAlignLabel, pSS, AP_STRING_ID_DLG_Lists_Align);
-	LocalizeControl(_textAlignLabel, pSS, AP_STRING_ID_DLG_Lists_Indent);
+	LocalizeControl(_textAlignLabel, pSS, AP_STRING_ID_DLG_Lists_Align);
+	LocalizeControl(_labelAlignLabel, pSS, AP_STRING_ID_DLG_Lists_Indent);
 	LocalizeControl(_previewBox, pSS, AP_STRING_ID_DLG_Lists_Preview);
 	LocalizeControl(_startNewListBtn, pSS, AP_STRING_ID_DLG_Lists_Start_New);
 	LocalizeControl(_applyToCurrentBtn, pSS, AP_STRING_ID_DLG_Lists_Apply_Current);
