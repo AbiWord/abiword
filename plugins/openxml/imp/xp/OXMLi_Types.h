@@ -43,6 +43,7 @@ struct OXMLi_StartElementRequest
 	OXMLi_SectionStack * sect_stck;	
 	OXMLi_ContextVector * context;
 	bool handled;
+	bool valid;
 };
 
 struct OXMLi_EndElementRequest
@@ -52,6 +53,7 @@ struct OXMLi_EndElementRequest
 	OXMLi_SectionStack * sect_stck;	
 	OXMLi_ContextVector * context;
 	bool handled;
+	bool valid;
 };
 
 struct OXMLi_CharDataRequest
@@ -61,6 +63,7 @@ struct OXMLi_CharDataRequest
 	OXMLi_ElementStack * stck;
 	OXMLi_ContextVector * context;
 	bool handled;
+	bool valid;
 };
 
 #endif //_OXMLI_TYPES_H_

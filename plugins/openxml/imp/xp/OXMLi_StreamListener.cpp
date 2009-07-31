@@ -39,6 +39,7 @@
 #include <OXMLi_ListenerState_Endnote.h>
 #include <OXMLi_ListenerState_Image.h>
 #include <OXMLi_ListenerState_Textbox.h>
+#include <OXMLi_ListenerState_Valid.h>
 
 // AbiWord includes
 #include <ut_types.h>
@@ -67,6 +68,11 @@ void OXMLi_StreamListener::setupStates(OXML_PartType type, const char * partId)
 {
 	OXMLi_ListenerState * state = NULL;
 	m_namespaces->reset();
+
+	//this has to be the first pushed state since it checks the validity of the input
+	state = new OXMLi_ListenerState_Valid();
+	this->pushState(state);
+
 	switch (type) {
 	case DOCUMENT_PART:
 		state = new OXMLi_ListenerState_MainDocument();
@@ -164,13 +170,13 @@ void OXMLi_StreamListener::startElement (const gchar* pName, const gchar** ppAtt
 	std::map<std::string, std::string>* atts = m_namespaces->processAttributes(pName, ppAtts);
 	std::string name = m_namespaces->processName(pName);
 
-	OXMLi_StartElementRequest rqst = { name, atts, m_pElemStack, m_pSectStack, m_context, false };
+	OXMLi_StartElementRequest rqst = { name, atts, m_pElemStack, m_pSectStack, m_context, false, false };
 
 	std::list<OXMLi_ListenerState*>::iterator it=m_states.begin();
 	do {
 		(*it)->startElement(&rqst);
 		++it;
-	} while ( this->getStatus() == UT_OK && it!=m_states.end() && !rqst.handled );
+	} while ( this->getStatus() == UT_OK && it!=m_states.end() && !rqst.handled && rqst.valid);
 
 	m_context->push_back(name);
 }
@@ -182,23 +188,23 @@ void OXMLi_StreamListener::endElement (const gchar* pName)
 	m_context->pop_back();
 	std::string name = m_namespaces->processName(pName);
 
-	OXMLi_EndElementRequest rqst = { name, m_pElemStack, m_pSectStack, m_context, false };
+	OXMLi_EndElementRequest rqst = { name, m_pElemStack, m_pSectStack, m_context, false, false };
 	std::list<OXMLi_ListenerState*>::iterator it=m_states.begin();
 	do {
 		(*it)->endElement(&rqst);
 		++it;
-	} while ( this->getStatus() == UT_OK && it!=m_states.end() && !rqst.handled );
+	} while ( this->getStatus() == UT_OK && it!=m_states.end() && !rqst.handled && rqst.valid);
 }
 
 void OXMLi_StreamListener::charData (const gchar* pBuffer, int length)
 {
 	UT_return_if_fail(!m_states.empty() || m_parseStatus == UT_OK);
 
-	OXMLi_CharDataRequest rqst = { pBuffer, length, m_pElemStack, m_context, false };
+	OXMLi_CharDataRequest rqst = { pBuffer, length, m_pElemStack, m_context, false, false };
 	std::list<OXMLi_ListenerState*>::iterator it=m_states.begin();
 	do {
 		(*it)->charData(&rqst);
 		++it;
-	} while ( this->getStatus() == UT_OK && it!=m_states.end() && !rqst.handled );
+	} while ( this->getStatus() == UT_OK && it!=m_states.end() && !rqst.handled && rqst.valid);
 }
 
