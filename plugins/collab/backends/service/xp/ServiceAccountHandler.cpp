@@ -203,12 +203,12 @@ bool ServiceAccountHandler::disconnect()
 
 void ServiceAccountHandler::removeExporter(void)
 {
-	if(m_pExport)
-        {
-	    PD_Document * pDoc = m_pExport->getDocument();
-	    pDoc->removeListener(m_iListenerID);
-	    m_iListenerID = 0;
-	    DELETEP(m_pExport);
+	if (m_pExport)
+	{
+		PD_Document * pDoc = m_pExport->getDocument();
+		pDoc->removeListener(m_iListenerID);
+		m_iListenerID = 0;
+		DELETEP(m_pExport);
 	}
 }
 
@@ -407,6 +407,7 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<st
 			AbiCollab** pSession)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::startSession()\n"));
+	UT_return_val_if_fail(pDoc, false);
 	UT_return_val_if_fail(pSession, false);
 
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
@@ -472,8 +473,21 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<st
 	UT_DEBUGMSG((">>>>>> connection to realm for session %s\n", session_id.c_str()));
 	ConnectionPtr connection = _realmConnect(rcp, doc_id_ptr->value(), session_id, true);
 	UT_return_val_if_fail(connection, false);
+	connection->setDocument(pDoc);
+	m_connections.push_back(connection);
 
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+
+	// Register a serviceExporter to handle remote saves via a signal.
+	// FIXME: the exporter is document dependent, so don't store it in a simple class member
+	m_pExport = new AbiCollabService_Export(pDoc, this);
+	pDoc->addListener(m_pExport, &m_iListenerID);
+	
+	// start the session
+	UT_UTF8String sSessionId = session_id.c_str();
+	RealmBuddyPtr buddy(
+				new RealmBuddy(this, connection->user_id(), _getDomain(), connection->connection_id(), connection->master(), connection));
+	pManager->startSession(pDoc, sSessionId, NULL, buddy->getDescriptor());
 
 	return true;
 }
@@ -682,8 +696,8 @@ acs::SOAP_ERROR ServiceAccountHandler::_openDocumentMaster(ConnectionPtr connect
 	gchar* fname = g_strdup(filename.c_str());
 	(*pDoc)->setFilename(fname);
 	
-	// Now register a serviceExporter to handle remote saves
-	// via a signal.
+	// Register a serviceExporter to handle remote saves via a signal.
+	// FIXME: the exporter is document dependent, so don't store it in a simple class member
 	m_pExport = new AbiCollabService_Export(*pDoc,this);
 	(*pDoc)->addListener(m_pExport,	&m_iListenerID);
 	
@@ -727,9 +741,9 @@ acs::SOAP_ERROR ServiceAccountHandler::_openDocumentSlave(ConnectionPtr connecti
 	
 	if (m_cancelled)
 		return acs::SOAP_ERROR_GENERIC;
-	// Now register a serviceExporter to handle remote saves
-	// via a signal.
 
+	// Register a serviceExporter to handle remote saves via a signal.
+	// FIXME: the exporter is document dependent, so don't store it in a simple class member
 	m_pExport = new AbiCollabService_Export(*pDoc,this);
 	(*pDoc)->addListener(m_pExport,&m_iListenerID);
 
