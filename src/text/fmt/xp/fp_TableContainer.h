@@ -140,6 +140,15 @@ public:
 	virtual void        setAssignedScreenHeight(UT_sint32) {}
 	virtual fp_Container * getNextContainerInSection(void) const;
 	virtual fp_Container * getPrevContainerInSection(void) const;
+	virtual UT_sint32   getX(void) const;
+	virtual UT_sint32   getY(void) const;
+	virtual UT_sint32   getWidth(void) const;
+	virtual UT_sint32   getHeight(void) const;
+	UT_sint32           getCellX(void) const;
+	UT_sint32           getCellY(void) const;
+	UT_sint32           getCellWidth(void) const;
+	UT_sint32           getCellHeight(void) const;
+
 	fp_TableContainer * getTopmostTable(void) const;
 	UT_sint32           getCellX(fp_Line * pLine) const; 
 	UT_sint32           getCellY(fp_Line * pLine) const;
