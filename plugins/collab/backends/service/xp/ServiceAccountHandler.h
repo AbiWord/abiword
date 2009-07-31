@@ -102,7 +102,7 @@ public:
 	// session management
 	virtual void							getSessionsAsync();
 	virtual void							getSessionsAsync(const Buddy& buddy);
-	virtual bool							startSession(PD_Document* pDoc, const std::vector<BuddyPtr>& acl);	
+	virtual bool							startSession(PD_Document* pDoc, const std::vector<std::string>& vAcl, AbiCollab** pSession);	
 	virtual void							joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHandle);
 	virtual bool							hasSession(const UT_UTF8String& sSessionId);
 	acs::SOAP_ERROR							openDocument(UT_uint64 doc_id, UT_uint64 revision, const std::string& session_id, PD_Document** pDoc, XAP_Frame* pFrame);
@@ -117,13 +117,16 @@ public:
 	virtual void							signal(const Event& event, BuddyPtr pSource);
 
 	// misc functions
-	static bool								parseUserInfo(const std::string& userinfo, uint64_t& user_id);
+	static bool							parseUserInfo(const std::string& userinfo, uint64_t& user_id);
 	
 	static XAP_Dialog_Id		 			m_iDialogGenericInput;
 	static XAP_Dialog_Id		 			m_iDialogGenericProgress;
 	static AbiCollabSaveInterceptor			m_saveInterceptor;
 
 private:
+	ConnectionPtr							_realmConnect(soa::CollectionPtr rcp, 
+													UT_uint64 doc_id, const std::string& session_id, bool master);
+
 	ServiceBuddyPtr							_getBuddy(ServiceBuddyPtr pBuddy);
 
 	template <class T>

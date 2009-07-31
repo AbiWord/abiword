@@ -128,16 +128,21 @@ void AP_Dialog_CollaborationShare::_share(AccountHandler* pHandler, const std::v
 		// FIXME: this can cause a race condition: the other side can already be
 		// offered the session before we actually started it!
 		
-		// tell the account handler that we start a new session, so
-		// it set up things if needed
-		bool b = pHandler->startSession(pDoc, vAcl);
+		// Tell the account handler that we start a new session, so
+		// it set up things if needed. This call may just setup some stuff 
+		// for a new session, or it might actually start a new session.
+		bool b = pHandler->startSession(pDoc, vAcl, &pSession);
 		UT_return_if_fail(b); // TODO: notify the user?
 		
-		// ... and start the session!
-		UT_UTF8String sSessionId("");
-		// TODO: we could use/generate a proper descriptor when there is only
-		// 1 account where we share this document over
-		pSession = pManager->startSession(pDoc, sSessionId, NULL, "");
+		// start the session ourselves when the account handler did not...
+		if (!pSession)
+		{
+			// ... and start the session!
+			UT_UTF8String sSessionId("");
+			// TODO: we could use/generate a proper descriptor when there is only
+			// 1 account where we share this document over
+			pSession = pManager->startSession(pDoc, sSessionId, NULL, "");
+		}
 	}
 	else
 	{

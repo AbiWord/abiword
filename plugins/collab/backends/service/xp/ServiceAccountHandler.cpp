@@ -403,10 +403,12 @@ void ServiceAccountHandler::getSessionsAsync(const Buddy& /*buddy*/)
 	async_list_docs_ptr->start();	
 }
 
-bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<BuddyPtr>& /*acl*/)
+bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<std::string>& /*vAcl*/,
+			AbiCollab** pSession)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::startSession()\n"));
-	
+	UT_return_val_if_fail(pSession, false);
+
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_val_if_fail(pManager, false);
 
@@ -453,13 +455,14 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<Bu
 	soa::CollectionPtr rcp = soap_result->as<soa::Collection>("return");
 	UT_return_val_if_fail(rcp, false);
 
+	soa::IntPtr doc_id_ptr = rcp->get<soa::Int>("doc_id");
+	UT_return_val_if_fail(doc_id_ptr, false);
+
 	// connect to the returned realm
-	// TODO: implement me
+	//ConnectionPtr connection = _realmConnect(rcp, doc_id_ptr->value(), "" /*session_id*/, true);
+	//UT_return_val_if_fail(connection false);
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 
-
-
-	
-	
 	return true;
 }
 
@@ -560,22 +563,12 @@ acs::SOAP_ERROR ServiceAccountHandler::openDocument(UT_uint64 doc_id, UT_uint64 
 	soa::CollectionPtr rcp = soap_result->as<soa::Collection>("return");
 	UT_return_val_if_fail(rcp, acs::SOAP_ERROR_GENERIC);
 
-	soa::StringPtr realm_address = rcp->get<soa::String>("realm_address");
-	soa::IntPtr realm_port = rcp->get<soa::Int>("realm_port");
-	soa::StringPtr cookie = rcp->get<soa::String>("cookie");
-	
-	// some sanity checking
 	soa::BoolPtr master = rcp->get<soa::Bool>("master");
 	if (!master)
 	{
 		UT_DEBUGMSG(("Error reading master field\n"));
 		return acs::SOAP_ERROR_GENERIC;
 	}
-	if (!realm_address || realm_address->value().size() == 0 || !realm_port || realm_port->value() <= 0 || !cookie || cookie->value().size() == 0)
-	{
-		UT_DEBUGMSG(("Invalid realm login information\n"));
-		return acs::SOAP_ERROR_GENERIC;
-	}   
 	soa::StringPtr filename_ptr = rcp->get<soa::String>("filename");
 	if (!filename_ptr)
 	{
@@ -585,21 +578,10 @@ acs::SOAP_ERROR ServiceAccountHandler::openDocument(UT_uint64 doc_id, UT_uint64 
 	// check the filename; it shouldn't ever be empty, but just check nonetheless
 	// TODO: append a number if the filename happens to be empty
 	std::string filename = filename_ptr->value().size() > 0 ? filename_ptr->value() : "Untitled";
-	
-	// open the realm connection!
-	UT_DEBUGMSG(("realm_address: %s, realm_port: %lld, cookie: %s\n", realm_address->value().c_str(), realm_port->value(), cookie->value().c_str()));
-	ConnectionPtr connection = 
-		boost::shared_ptr<RealmConnection>(new RealmConnection(m_ssl_ca_file, realm_address->value(), 
-								realm_port->value(), cookie->value(), doc_id, master->value(), session_id,
-								boost::bind(&ServiceAccountHandler::_handleRealmPacket, this, _1)));
 
-	// TODO: this connect() call is blocking, so it _could_ take a while; we should
-	// display a progress bar in that case
-	if (!connection->connect())
-	{
-		UT_DEBUGMSG(("Error connecting to realm %s:%lld\n", realm_address->value().c_str(), realm_port->value()));
-		return acs::SOAP_ERROR_GENERIC;
-	}
+	// open a connection with the realm
+	ConnectionPtr connection = _realmConnect(rcp, doc_id, session_id, master->value());
+	UT_return_val_if_fail(connection, acs::SOAP_ERROR_GENERIC);
 	
 	// load the document
 	acs::SOAP_ERROR open_result = master->value()
@@ -619,6 +601,41 @@ acs::SOAP_ERROR ServiceAccountHandler::openDocument(UT_uint64 doc_id, UT_uint64 
 	m_connections.push_back(connection);
 
 	return acs::SOAP_ERROR_OK;
+}
+
+ConnectionPtr ServiceAccountHandler::_realmConnect(soa::CollectionPtr rcp, 
+			UT_uint64 doc_id, const std::string& session_id, bool master)
+{
+	UT_DEBUGMSG(("ServiceAccountHandler::_realmConnect()"));
+	UT_return_val_if_fail(rcp, ConnectionPtr());
+
+	soa::StringPtr realm_address = rcp->get<soa::String>("realm_address");
+	soa::IntPtr realm_port = rcp->get<soa::Int>("realm_port");
+	soa::StringPtr cookie = rcp->get<soa::String>("cookie");
+	
+	// some sanity checking
+	if (!realm_address || realm_address->value().size() == 0 || !realm_port || realm_port->value() <= 0 || !cookie || cookie->value().size() == 0)
+	{
+		UT_DEBUGMSG(("Invalid realm login information\n"));
+		return ConnectionPtr();
+	}   
+	
+	// open the realm connection!
+	UT_DEBUGMSG(("realm_address: %s, realm_port: %lld, cookie: %s\n", realm_address->value().c_str(), realm_port->value(), cookie->value().c_str()));
+	ConnectionPtr connection = 
+		boost::shared_ptr<RealmConnection>(new RealmConnection(m_ssl_ca_file, realm_address->value(), 
+								realm_port->value(), cookie->value(), doc_id, master, session_id,
+								boost::bind(&ServiceAccountHandler::_handleRealmPacket, this, _1)));
+
+	// TODO: this connect() call is blocking, so it _could_ take a while; we should
+	// display a progress bar in that case
+	if (!connection->connect())
+	{
+		UT_DEBUGMSG(("Error connecting to realm %s:%lld\n", realm_address->value().c_str(), realm_port->value()));
+		return ConnectionPtr();
+	}
+
+	return connection;
 }
 
 ServiceBuddyPtr ServiceAccountHandler::_getBuddy(ServiceBuddyPtr pBuddy)

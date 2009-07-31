@@ -140,7 +140,7 @@ public:
 	// session management
 	virtual void							getSessionsAsync();
 	virtual void							getSessionsAsync(BuddyPtr pBuddy);
-	virtual bool							startSession(PD_Document* /*pDoc*/, const std::vector<std::string>& /*acl*/)
+	virtual bool							startSession(PD_Document* /*pDoc*/, const std::vector<std::string>& /*vAcl*/, AbiCollab** /*pSession*/)
 		{ return true; }
 	virtual void							joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHandle);
 	virtual bool							hasSession(const UT_UTF8String& sSessionId);
