@@ -1354,7 +1354,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 		UT_sint32 iPrevRow = UT_MAX(getTopAttach() - 1,0);
 		fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
 		UT_sint32 iPrevY = pTab->getYOfRow(iPrevRow);
-		printf("ADITYA: iprevy=%d, ybreak=%d\n", iPrevY, pBroke->getYBreak());
+		UT_DEBUGMSG(("ADITYA: iprevy=%d, ybreak=%d\n", iPrevY, pBroke->getYBreak()));
 		if( iPrevY < pBroke->getYBreak())
 		{
 			bDrawTop = true;
@@ -1426,14 +1426,14 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 		 * distributed on either side of the line
 		 **/
 
-		printf("ADITYA: t: %d b: %d r: %d l: %d\n", m_bDrawTop, m_bDrawBot, 
-			   m_bDrawRight, m_bDrawLeft);
+		UT_DEBUGMSG(("ADITYA: t: %d b: %d r: %d l: %d\n", m_bDrawTop, m_bDrawBot, 
+					 m_bDrawRight, m_bDrawLeft));
 
 		if (m_bDrawLeft)
 		{
 			UT_sint32 thickness = lineLeft.m_thickness/2;
-			printf("ADITYA: drawing left! (%d,%d),(%d,%d) ", iLeft + thickness, iTop, 
-				   iLeft + thickness, iBot);
+			UT_DEBUGMSG(("ADITYA: drawing left! (%d,%d),(%d,%d) ", iLeft + thickness, iTop, 
+						 iLeft + thickness, iBot));
 			if(bDoClear)
 			{
 				clineLeft.m_color = white;
@@ -1446,8 +1446,8 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 		if(m_bDrawTop || bDrawTop)
 		{
 			UT_sint32 thickness = lineTop.m_thickness/2;
-			printf("drawing top! (%d,%d),(%d,%d) ", iLeft, iTop + thickness, 
-				   iRight, iTop + thickness);
+			UT_DEBUGMSG(("drawing top! (%d,%d),(%d,%d) ", iLeft, iTop + thickness, 
+						 iRight, iTop + thickness));
 			if(bDoClear)
 			{
 				clineTop.m_color = white;
@@ -1460,7 +1460,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 		if(m_bDrawRight)
 		{
 			UT_sint32 thickness = lineRight.m_thickness/2;
-			printf("drawing right! ");
+			UT_DEBUGMSG(("drawing right! "));
 			if(bDoClear)
 			{
 				clineRight.m_color = white;
@@ -1474,8 +1474,8 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 		if(m_bDrawBot)
 		{
 			UT_sint32 thickness = lineBottom.m_thickness/2;
-			printf("drawing bot! (%d,%d),(%d,%d) \n", iLeft, iBot - thickness,
-				   iRight, iBot - thickness);
+			UT_DEBUGMSG(("drawing bot! (%d,%d),(%d,%d) \n", iLeft, iBot - thickness,
+						 iRight, iBot - thickness));
 			if(bDoClear)
 			{
 				clineBottom.m_color = white;
@@ -2046,8 +2046,8 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	m_bDrawRight = (pTab2->getNumCols() == getRightAttach());
 	m_bDrawLeft = true;
 	
-	printf("ADITYA: t: %d b: %d r: %d l: %d\n", m_bDrawTop, m_bDrawBot, 
-		   m_bDrawRight, m_bDrawLeft);
+	UT_DEBUGMSG(("ADITYA: t: %d b: %d r: %d l: %d\n", m_bDrawTop, m_bDrawBot, 
+			  m_bDrawRight, m_bDrawLeft));
    
 	const UT_Rect * pClipRect = pDA->pG->getClipRect();
 	UT_sint32 ytop,ybot;
@@ -2140,16 +2140,15 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	clip.top = pDA->yoff + getY() + topThickness;
 	clip.width = m_MyAllocation.width - leftThickness - rightThickness;
 	clip.height = m_MyAllocation.height - topThickness - bottomThickness;
-	printf("\nCLIPRECT: pos topleft (%d, %d), pos botright (%d,%d) dim width = %d ht = %d\n", clip.left, clip.top, clip.left + clip.width, clip.top + clip.height,
-		   clip.width, clip.height);
+	UT_DEBUGMSG(("\nCLIPRECT: pos topleft (%d, %d), pos botright (%d,%d) dim width = %d ht = %d\n", clip.left, clip.top, clip.left + clip.width, clip.top + clip.height,
+				 clip.width, clip.height));
 	pDA->pG->setClipRect(&clip);
 
 //
 // Only draw the lines in the clipping region.
 //
-	xxx_UT_DEBUGMSG(("number containers %d \n",countCons()));
 	UT_sint32 iLastDraw = 0;
-	printf("Container count = %d\n", countCons());
+	UT_DEBUGMSG(("Container count = %d\n", countCons()));
 	for ( i = 0; (i< countCons() && !bStop); i++)
 	{
 		fp_Container* pContainer = static_cast<fp_Container*>(getNthCon(i));
@@ -2610,8 +2609,8 @@ void fp_CellContainer::sizeRequest(fp_Requisition * pRequest)
 	
 	m_MyRequest.width = width + leftLineThickness + rightLineThickness;
 	m_MyRequest.height = height + bottomLineThickness + topLineThickness;
-	printf("SIZE REQUEST: Old size: (%d, %d), new size: (%d, %d)\n", width, height, 
-		   m_MyRequest.width, m_MyRequest.height);
+	UT_DEBUGMSG(("SIZE REQUEST: Old size: (%d, %d), new size: (%d, %d)\n", width, height, 
+				 m_MyRequest.width, m_MyRequest.height));
 	   
 	xxx_UT_DEBUGMSG(("Size Request: Cell Total height  %d width %d \n",height,width));
 }
@@ -2622,9 +2621,9 @@ void fp_CellContainer::sizeAllocate(fp_Allocation * pAllocate)
 	m_MyAllocation.height = pAllocate->height;
 	m_MyAllocation.x = pAllocate->x;
 	m_MyAllocation.y = pAllocate->y;
-	printf("SIZE ALLOCATION: corner (%d, %d), dimensions (%d, %d)\n", 
+	UT_DEBUGMSG(("SIZE ALLOCATION: corner (%d, %d), dimensions (%d, %d)\n", 
 		   m_MyAllocation.x, m_MyAllocation.y, 
-		   m_MyAllocation.width, m_MyAllocation.height);
+				 m_MyAllocation.width, m_MyAllocation.height));
 }
 
 void fp_CellContainer::layout(void)
