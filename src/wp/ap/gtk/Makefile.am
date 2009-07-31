@@ -159,9 +159,8 @@ ui_DATA = \
 	ap_UnixDialog_Stylist_modal.xml \
 	ap_UnixDialog_Tab.xml	\
 	ap_UnixDialog_WordCount.xml \
-	ap_UnixDialog_Latex.xml \
-	ap_UnixDialog_Options.xml \
-	ap_UnixDialog_HdrFtr.xml
+	ap_UnixDialog_Latex.xml 
+
 
 if ENABLE_SPELL
 optuidir=$(uidir)

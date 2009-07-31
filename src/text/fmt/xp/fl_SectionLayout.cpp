@@ -1850,7 +1850,12 @@ void fl_DocSectionLayout::updateLayout(bool bDoFull)
 				       pBL->format();
 				       j--;
 				       if(j < m_vecFormatLayout.getItemCount())
-					 m_vecFormatLayout.deleteNthItem(j);
+				       {
+					   if(m_vecFormatLayout.getNthItem(j) == pBL)
+					   {
+					       m_vecFormatLayout.deleteNthItem(j);
+					   }
+				       }
 				  }
 			     }
 			     if (pBL->getContainerType() != FL_CONTAINER_BLOCK && !getDocument()->isDontImmediateLayout())
