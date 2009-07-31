@@ -293,7 +293,7 @@ bool ServiceAccountHandler::recognizeBuddyIdentifier(const std::string& identifi
 	return true;
 }
 
-bool ServiceAccountHandler::hasAccess(const std::vector<std::string>& vAcl, BuddyPtr pBuddy)
+bool ServiceAccountHandler::hasAccess(const std::vector<std::string>& /*vAcl*/, BuddyPtr /*pBuddy*/)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::hasAccess()\n"));
 	
@@ -484,7 +484,7 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<st
 	UT_UTF8String sSessionId = session_id.c_str();
 	RealmBuddyPtr buddy(
 				new RealmBuddy(this, connection->user_id(), _getDomain(), connection->connection_id(), connection->master(), connection));
-	pManager->startSession(pDoc, sSessionId, NULL, buddy->getDescriptor());
+	*pSession = pManager->startSession(pDoc, sSessionId, NULL, buddy->getDescriptor());
 
 	return true;
 }
