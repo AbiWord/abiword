@@ -3050,11 +3050,25 @@ void GR_CairoGraphics::restoreMainBuffer()
 */
 void GR_CairoGraphics::paintDeque()
 {
+	UT_DEBUGMSG(("----------8<-------------------------\n"));
 	std::pair<cairo_t*, UT_uint32*> tempPair;
 	while (getDequeSize() > 0)
 	{
+		UT_DEBUGMSG(("painting %d\n",getDequeSize()));
 		tempPair = m_bufferContainer.back();
-		cairo_paint(tempPair.first);
+		
+		setActiveBuffer(m_mainBufferPointer);
+		cairo_surface_t* tempSurface = cairo_get_group_target(tempPair.first);
+		cairo_set_source_surface(m_cr, tempSurface, 0, 0);
+
+		//x, y, with, height
+		cairo_rectangle(m_cr, tempPair.second[0], tempPair.second[1],
+							tempPair.second[2], tempPair.second[0]);
+		cairo_fill(m_cr);
+		cairo_paint(m_cr);
+		
+		//paint the source onto the dest in the context
+		/*cairo_paint(tempPair.first);
 		
 		cairo_surface_t* tempSurface = cairo_get_group_target(tempPair.first);
 		cairo_surface_reference(tempSurface);
@@ -3064,11 +3078,13 @@ void GR_CairoGraphics::paintDeque()
 		cairo_set_source_surface(m_cr, tempSurface, 0, 0);
 		cairo_paint(m_cr);
 		
-		cairo_surface_destroy(tempSurface);
+		cairo_surface_destroy(tempSurface);*/
+		
 		
 		m_bufferContainer.pop_back();
 		delete[] tempPair.second;
 	}
+	UT_DEBUGMSG(("---------------------------->8-------\n"));
 	return;
 }
 	

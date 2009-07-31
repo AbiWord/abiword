@@ -1044,6 +1044,9 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool /*bAlwaysUseWhiteBackground*/)
 // only call this for printing and honour the option to not fill the paper with
 // color.
 //
+
+	pDA->pG->beginBuffering(pDA->xoff, pDA->yoff, getWidth(), getHeight());
+	
 	xxx_UT_DEBUGMSG(("Draw wrap passes = %d \n",m_iCountWrapPasses));
 	m_iCountWrapPasses = 0;
 	int i=0;
@@ -1223,6 +1226,8 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool /*bAlwaysUseWhiteBackground*/)
 	m_rDamageRect.top = 0;
 	m_rDamageRect.width = 0;
 	m_rDamageRect.height = 0;
+
+	pDA->pG->endBuffering();
 
 }
 
