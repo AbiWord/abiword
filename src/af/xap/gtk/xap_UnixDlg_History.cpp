@@ -57,10 +57,11 @@ static void s_history_selected(GtkTreeView *treeview,
 	UT_DEBUGMSG(("In s_history_selected \n"));
 	// Get the row and col number
 	GValue value;
-	g_value_init(&value, G_TYPE_INVALID);
+    value.g_type = 0;
 	gtk_tree_model_get_value (model, &iter,3,&value);
 	item = g_value_get_int(&value);
 	UT_DEBUGMSG(("Vlaue of id selected %d \n",item));
+    g_value_unset(&value);
 	dlg->setSelectionId(item);
 }
 
