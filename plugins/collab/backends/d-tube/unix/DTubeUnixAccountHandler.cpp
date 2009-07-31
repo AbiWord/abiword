@@ -900,7 +900,7 @@ void DTubeAccountHandler::handleMessage(const char* senderDBusAddress, const cha
 
 	// construct the packet
 	// FIXME: inefficient copying of data
-	std::string packet_str(' ', packet_size);
+	std::string packet_str(packet_size, ' ');
 	memcpy(&packet_str[0], packet_data, packet_size);
 	FREEP(packet_data);
 	Packet* pPacket = _createPacket(packet_str, pBuddy);
