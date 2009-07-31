@@ -420,7 +420,7 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<st
 	const std::string password = getProperty("password");
 	bool verify_webapp_host = (getProperty("verify-webapp-host") == "true");
 
-	std::string filename = "New document";
+	std::string filename = "New document.abw"; // TODO: make this localizeable
 	if (pDoc->getFilename())
 		filename = UT_go_basename_from_uri(pDoc->getFilename());
 	
@@ -459,8 +459,20 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<st
 	UT_return_val_if_fail(doc_id_ptr, false);
 
 	// connect to the returned realm
-	//ConnectionPtr connection = _realmConnect(rcp, doc_id_ptr->value(), "" /*session_id*/, true);
-	//UT_return_val_if_fail(connection false);
+	// NOTE: we can safely use the (unique) document id as the session identifier, 
+	// as there is basically only one _ever lasting_ session for each 
+	// document stored on abicollab.net
+	std::string session_id;
+	try {
+		session_id = boost::lexical_cast<std::string>(doc_id_ptr->value());
+	} catch (boost::bad_lexical_cast &) {
+		UT_return_val_if_fail(false, false);
+	}
+
+	UT_DEBUGMSG((">>>>>> connection to realm for session %s\n", session_id.c_str()));
+	ConnectionPtr connection = _realmConnect(rcp, doc_id_ptr->value(), session_id, true);
+	UT_return_val_if_fail(connection, false);
+
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 
 	return true;
@@ -606,7 +618,7 @@ acs::SOAP_ERROR ServiceAccountHandler::openDocument(UT_uint64 doc_id, UT_uint64 
 ConnectionPtr ServiceAccountHandler::_realmConnect(soa::CollectionPtr rcp, 
 			UT_uint64 doc_id, const std::string& session_id, bool master)
 {
-	UT_DEBUGMSG(("ServiceAccountHandler::_realmConnect()"));
+	UT_DEBUGMSG(("ServiceAccountHandler::_realmConnect()\n"));
 	UT_return_val_if_fail(rcp, ConnectionPtr());
 
 	soa::StringPtr realm_address = rcp->get<soa::String>("realm_address");
