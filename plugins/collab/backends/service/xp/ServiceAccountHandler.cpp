@@ -470,13 +470,10 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<st
 		UT_return_val_if_fail(false, false);
 	}
 
-	UT_DEBUGMSG((">>>>>> connection to realm for session %s\n", session_id.c_str()));
 	ConnectionPtr connection = _realmConnect(rcp, doc_id_ptr->value(), session_id, true);
 	UT_return_val_if_fail(connection, false);
 	connection->setDocument(pDoc);
 	m_connections.push_back(connection);
-
-	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 
 	// Register a serviceExporter to handle remote saves via a signal.
 	// FIXME: the exporter is document dependent, so don't store it in a simple class member
