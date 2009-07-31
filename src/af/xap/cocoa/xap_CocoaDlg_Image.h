@@ -53,7 +53,11 @@ public:
 	void	adjustHeightForAspect(void);
 	void	adjustWidthForAspect(void);
 
+	void wrappingChanged(void);
 private:
+	void setWrappingGUI();
+	void setPositionToGUI();
+	
 	double		m_dHeightWidth;
 
 	XAP_CocoaDialog_ImageController *m_dlg;
@@ -62,8 +66,13 @@ private:
 
 @interface XAP_CocoaDialog_ImageController : NSWindowController <XAP_CocoaDialogProtocol>
 {
+@public
+	IBOutlet NSTabView *        _mainTab;
+	IBOutlet NSBox *            _nameBox;
 	IBOutlet NSFormCell *		_titleCell;
 	IBOutlet NSFormCell *		_descriptionCell;
+
+	IBOutlet NSBox *            _imageSizeBox;
 	IBOutlet NSFormCell *		_widthCell;
 	IBOutlet NSFormCell *		_heightCell;
 
@@ -72,18 +81,24 @@ private:
 
 	IBOutlet NSButton *			_preserveAspectBtn;
 
-	IBOutlet NSTextField *		_textWrapLabel;
+	IBOutlet NSBox *		_textWrapLabel;
 	IBOutlet NSMatrix *			_textWrapMatrix;
 	IBOutlet NSButtonCell *		_textWrapInline;
+	IBOutlet NSButtonCell *		_textWrapFloat;
 	IBOutlet NSButtonCell *		_textWrapRight;
 	IBOutlet NSButtonCell *		_textWrapLeft;
 	IBOutlet NSButtonCell *		_textWrapBoth;
 
-	IBOutlet NSTextField *		_imagePlaceLabel;
+	IBOutlet NSBox *		_imagePlaceLabel;
 	IBOutlet NSMatrix *			_imagePlaceMatrix;
 	IBOutlet NSButtonCell *		_imagePlaceNearest;
 	IBOutlet NSButtonCell *		_imagePlaceColumn;
 	IBOutlet NSButtonCell *		_imagePlacePage;
+
+	IBOutlet NSBox *            _typeTextWrapBox;
+	IBOutlet NSMatrix *         _typeTextWrapMatrix;
+	IBOutlet NSButtonCell *     _typeTextWrapSquare;
+	IBOutlet NSButtonCell *     _typeTextWrapTight;
 
 	IBOutlet NSButton *			_cancelBtn;
 	IBOutlet NSButton *			_okBtn;
@@ -108,11 +123,9 @@ private:
 - (BOOL)preserveRatio;
 - (void)setPreserveRatio:(BOOL)val;
 
-- (void)setTextWrap:(WRAPPING_TYPE)textWrap isEnabled:(BOOL)enabled;
 - (WRAPPING_TYPE)textWrap;
-
-- (void)setImagePlacement:(POSITION_TO)imagePlacement isEnabled:(BOOL)enabled;
 - (POSITION_TO)imagePlacement;
+- (bool)tightWrap;
 @end
 
 #endif /* XAP_COCOADIALOG_IMAGE_H */

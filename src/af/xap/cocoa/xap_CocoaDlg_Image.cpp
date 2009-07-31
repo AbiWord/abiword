@@ -47,6 +47,7 @@ void XAP_CocoaDialog_Image::event_Ok ()
 	setDescription ([[m_dlg altEntry] UTF8String]);
 	setWrapping([m_dlg textWrap]);
 	setPositionTo([m_dlg imagePlacement]);
+	setTightWrap([m_dlg tightWrap]);
 	[NSApp stopModal];
 }
 
@@ -153,6 +154,91 @@ XAP_CocoaDialog_Image::~XAP_CocoaDialog_Image(void)
 {
 }
 
+
+void XAP_CocoaDialog_Image::wrappingChanged(void)
+{
+	if([m_dlg->_textWrapMatrix selectedCell] == m_dlg->_textWrapInline)
+	{
+		[m_dlg->_imagePlaceMatrix selectCell:m_dlg->_imagePlaceNearest];
+		[m_dlg->_imagePlaceMatrix setEnabled:NO];
+		[m_dlg->_typeTextWrapMatrix setEnabled:NO];
+		return;
+	}
+	[m_dlg->_imagePlaceMatrix setEnabled:YES];
+	[m_dlg->_textWrapMatrix setEnabled:YES];
+	[m_dlg->_typeTextWrapMatrix setEnabled:YES];
+}
+
+void XAP_CocoaDialog_Image::setWrappingGUI()
+{
+	if(isInHdrFtr() || (getWrapping() == WRAP_INLINE))
+	{
+		[m_dlg->_textWrapInline setState:NSOnState];
+		[m_dlg->_typeTextWrapMatrix setEnabled:NO];
+	}
+	else if(getWrapping() == WRAP_TEXTRIGHT)
+	{
+		[m_dlg->_textWrapRight setState:NSOnState];
+		[m_dlg->_typeTextWrapMatrix setEnabled:YES];
+	}
+	else if(getWrapping() == WRAP_NONE)
+	{
+		[m_dlg->_textWrapFloat setState:NSOnState];
+		[m_dlg->_typeTextWrapMatrix setEnabled:NO];
+	}
+	else if(getWrapping() == WRAP_TEXTLEFT)
+	{
+		[m_dlg->_textWrapLeft setState:NSOnState];
+		[m_dlg->_typeTextWrapMatrix setEnabled:YES];
+	}
+	else if(getWrapping() == WRAP_TEXTBOTH)
+	{
+		[m_dlg->_textWrapBoth setState:NSOnState];
+		[m_dlg->_typeTextWrapMatrix setEnabled:YES];
+	}
+	if(isInHdrFtr())
+	{
+		[m_dlg->_textWrapRight setEnabled:NO];
+		[m_dlg->_textWrapLeft setEnabled:NO];
+		[m_dlg->_textWrapBoth setEnabled:NO];
+		[m_dlg->_typeTextWrapMatrix setEnabled:NO];
+	}
+	else if(isTightWrap())
+	{
+		[m_dlg->_typeTextWrapTight setState:NSOnState];
+	}
+	else if(!isTightWrap())
+	{
+		[m_dlg->_typeTextWrapSquare setState:NSOnState];
+	}
+}
+
+
+void XAP_CocoaDialog_Image::setPositionToGUI()
+{
+	if(!isInHdrFtr())
+	{
+		if(getPositionTo() == POSITION_TO_PARAGRAPH)
+		{
+			[m_dlg->_imagePlaceNearest setState:NSOnState];
+		}
+		else if(getPositionTo() == POSITION_TO_COLUMN)
+		{
+			[m_dlg->_imagePlaceColumn setState:NSOnState];
+		}
+		else if(getPositionTo() == POSITION_TO_PAGE)
+		{
+			[m_dlg->_imagePlacePage setState:NSOnState];
+		}
+	}
+	else
+	{
+		[m_dlg->_imagePlaceMatrix setEnabled:NO];
+		[m_dlg->_typeTextWrapMatrix setEnabled:NO];
+		[m_dlg->_textWrapMatrix setEnabled:NO];
+	}
+}
+
 void XAP_CocoaDialog_Image::runModal(XAP_Frame * /*pFrame*/)
 {
 	m_dlg = [[XAP_CocoaDialog_ImageController alloc] initFromNib];
@@ -173,7 +259,11 @@ void XAP_CocoaDialog_Image::runModal(XAP_Frame * /*pFrame*/)
 	else {
 		m_dHeightWidth = 0.0;
 		[m_dlg setPreserveRatio:NO];
-	}	  
+	}
+
+	setWrappingGUI();
+	setPositionToGUI();
+	wrappingChanged();
 
 	[NSApp runModalForWindow:window];
 
@@ -216,10 +306,17 @@ void XAP_CocoaDialog_Image::runModal(XAP_Frame * /*pFrame*/)
 		const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
 
 		LocalizeControl([self window],		pSS, XAP_STRING_ID_DLG_Image_Title);
+		
 		LocalizeControl(_okBtn,				pSS, XAP_STRING_ID_DLG_OK);
 		LocalizeControl(_cancelBtn,			pSS, XAP_STRING_ID_DLG_Cancel);
+
+		LocalizeControl([_mainTab tabViewItemAtIndex:0], pSS, XAP_STRING_ID_DLG_Image_DescTabLabel);
+		LocalizeControl([_mainTab tabViewItemAtIndex:1], pSS, XAP_STRING_ID_DLG_Image_WrapTabLabel);
+
+		LocalizeControl(_nameBox,			pSS, XAP_STRING_ID_DLG_Image_ImageDesc);
 		LocalizeControl(_titleCell,			pSS, XAP_STRING_ID_DLG_Image_LblTitle);
 		LocalizeControl(_descriptionCell,	pSS, XAP_STRING_ID_DLG_Image_LblDescription);
+		LocalizeControl(_imageSizeBox,		pSS, XAP_STRING_ID_DLG_Image_ImageSize);
 		LocalizeControl(_widthCell,			pSS, XAP_STRING_ID_DLG_Image_Width);
 		LocalizeControl(_heightCell,		pSS, XAP_STRING_ID_DLG_Image_Height);
 		LocalizeControl(_preserveAspectBtn,	pSS, XAP_STRING_ID_DLG_Image_Aspect);
@@ -232,7 +329,11 @@ void XAP_CocoaDialog_Image::runModal(XAP_Frame * /*pFrame*/)
 		LocalizeControl(_imagePlaceNearest,	pSS, XAP_STRING_ID_DLG_Image_PlaceParagraph);
 		LocalizeControl(_imagePlaceColumn,	pSS, XAP_STRING_ID_DLG_Image_PlaceColumn);
 		LocalizeControl(_imagePlacePage,	pSS, XAP_STRING_ID_DLG_Image_PlacePage);
-
+		
+		LocalizeControl(_typeTextWrapBox,		pSS, XAP_STRING_ID_DLG_Image_WrapType);
+		LocalizeControl(_typeTextWrapSquare,	pSS, XAP_STRING_ID_DLG_Image_SquareWrap);
+		LocalizeControl(_typeTextWrapTight,		pSS, XAP_STRING_ID_DLG_Image_TightWrap);
+		
 		[_titleCell       setStringValue:[NSString stringWithUTF8String:_xap->getTitle().utf8_str()]];
 		[_descriptionCell setStringValue:[NSString stringWithUTF8String:_xap->getDescription().utf8_str()]];
 
@@ -240,10 +341,6 @@ void XAP_CocoaDialog_Image::runModal(XAP_Frame * /*pFrame*/)
 
 		[ _widthNumStepper setIntValue:1];
 		[_heightNumStepper setIntValue:1];
-
-		[self setTextWrap:(_xap->getWrapping()) isEnabled:YES];
-
-		[self setImagePlacement:(_xap->getPositionTo()) isEnabled:((_xap->getWrapping() == WRAP_INLINE) ? NO : YES)];
 	}
 }
 
@@ -339,102 +436,56 @@ void XAP_CocoaDialog_Image::runModal(XAP_Frame * /*pFrame*/)
 - (IBAction)wrapAction:(id)sender
 {
 	UT_UNUSED(sender);
-	BOOL bEnabled = (([self textWrap] == WRAP_INLINE) ? NO : YES);
-
-	[_imagePlaceLabel  setEnabled:bEnabled];
-	[_imagePlaceMatrix setEnabled:bEnabled];
+	_xap->wrappingChanged();
 }
 
-- (void)setTextWrap:(WRAPPING_TYPE)textWrap isEnabled:(BOOL)enabled
-{
-	switch (textWrap)
-	{
-	case WRAP_INLINE:
-		[_textWrapMatrix selectCellAtRow:0 column:0];
-		break;
-	case WRAP_TEXTRIGHT:
-		[_textWrapMatrix selectCellAtRow:1 column:0];
-		break;
-	case WRAP_TEXTLEFT:
-		[_textWrapMatrix selectCellAtRow:2 column:0];
-		break;
-	case WRAP_TEXTBOTH:
-		[_textWrapMatrix selectCellAtRow:3 column:0];
-		break;
-	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		break;
-	}
-	[_textWrapLabel  setEnabled:enabled];
-	[_textWrapMatrix setEnabled:enabled];
-}
 
 - (WRAPPING_TYPE)textWrap
 {
 	WRAPPING_TYPE type = WRAP_INLINE;
 
-	switch ([_textWrapMatrix selectedRow])
-	{
-	case 0:
+	NSCell *ctrl = [_textWrapMatrix selectedCell];
+
+	if(ctrl == _textWrapInline) {
 		type = WRAP_INLINE;
-		break;
-	case 1:
+	}
+	else if(ctrl == _textWrapFloat) {
+		type = WRAP_NONE;
+	}
+	else if(ctrl == _textWrapRight) {
 		type = WRAP_TEXTRIGHT;
-		break;
-	case 2:
+	}
+	else if(ctrl == _textWrapLeft) {
 		type = WRAP_TEXTLEFT;
-		break;
-	case 3:
-		type = WRAP_TEXTBOTH;
-		break;
-	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		break;
+	}
+	else if(ctrl == _textWrapBoth) {
+	   type = WRAP_TEXTBOTH;
 	}
 	return type;
 }
 
-- (void)setImagePlacement:(POSITION_TO)imagePlacement isEnabled:(BOOL)enabled
-{
-	switch (imagePlacement)
-	{
-	case POSITION_TO_PARAGRAPH:
-		[_imagePlaceMatrix selectCellAtRow:0 column:0];
-		break;
-	case POSITION_TO_COLUMN:
-		[_imagePlaceMatrix selectCellAtRow:1 column:0];
-		break;
-	case POSITION_TO_PAGE:
-		[_imagePlaceMatrix selectCellAtRow:2 column:0];
-		break;
-	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		break;
-	}
-	[_imagePlaceLabel  setEnabled:enabled];
-	[_imagePlaceMatrix setEnabled:enabled];
-}
 
 - (POSITION_TO)imagePlacement
 {
 	POSITION_TO type = POSITION_TO_PARAGRAPH;
+	NSCell *ctrl = [_imagePlaceMatrix selectedCell];
 
-	switch ([_imagePlaceMatrix selectedRow])
-	{
-	case 0:
+	if(ctrl == _imagePlaceNearest) {
 		type = POSITION_TO_PARAGRAPH;
-		break;
-	case 1:
+	}
+	else if(ctrl == _imagePlaceColumn) {
 		type = POSITION_TO_COLUMN;
-		break;
-	case 2:
+	}
+	else if(ctrl == _imagePlacePage) {
 		type = POSITION_TO_PAGE;
-		break;
-	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		break;
 	}
 	return type;
+}
+
+- (bool)tightWrap
+{
+	NSCell *ctrl = [_typeTextWrapMatrix selectedCell];
+	return (ctrl == _typeTextWrapTight);
 }
 
 @end
