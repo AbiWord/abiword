@@ -1,8 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
 /* AbiWord
  * Copyright (C) 2001 Dom Lachowicz
- * Copyright (C) 2001, 2003 Hubert Figuiere
+ * Copyright (C) 2001, 2003, 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -62,70 +61,5 @@ private:
 
 	XAP_CocoaDialog_ImageController *m_dlg;
 };
-
-
-@interface XAP_CocoaDialog_ImageController : NSWindowController <XAP_CocoaDialogProtocol>
-{
-@public
-	IBOutlet NSTabView *        _mainTab;
-	IBOutlet NSBox *            _nameBox;
-	IBOutlet NSFormCell *		_titleCell;
-	IBOutlet NSFormCell *		_descriptionCell;
-
-	IBOutlet NSBox *            _imageSizeBox;
-	IBOutlet NSFormCell *		_widthCell;
-	IBOutlet NSFormCell *		_heightCell;
-
-	IBOutlet NSStepper *		_widthNumStepper;
-	IBOutlet NSStepper *		_heightNumStepper;
-
-	IBOutlet NSButton *			_preserveAspectBtn;
-
-	IBOutlet NSBox *		_textWrapLabel;
-	IBOutlet NSMatrix *			_textWrapMatrix;
-	IBOutlet NSButtonCell *		_textWrapInline;
-	IBOutlet NSButtonCell *		_textWrapFloat;
-	IBOutlet NSButtonCell *		_textWrapRight;
-	IBOutlet NSButtonCell *		_textWrapLeft;
-	IBOutlet NSButtonCell *		_textWrapBoth;
-
-	IBOutlet NSBox *		_imagePlaceLabel;
-	IBOutlet NSMatrix *			_imagePlaceMatrix;
-	IBOutlet NSButtonCell *		_imagePlaceNearest;
-	IBOutlet NSButtonCell *		_imagePlaceColumn;
-	IBOutlet NSButtonCell *		_imagePlacePage;
-
-	IBOutlet NSBox *            _typeTextWrapBox;
-	IBOutlet NSMatrix *         _typeTextWrapMatrix;
-	IBOutlet NSButtonCell *     _typeTextWrapSquare;
-	IBOutlet NSButtonCell *     _typeTextWrapTight;
-
-	IBOutlet NSButton *			_cancelBtn;
-	IBOutlet NSButton *			_okBtn;
-
-	XAP_CocoaDialog_Image *		_xap;
-}
-- (IBAction)cancelAction:(id)sender;
-- (IBAction)heightChanged:(id)sender;
-- (IBAction)heightNumStepperChanged:(id)sender;
-- (IBAction)okAction:(id)sender;
-- (IBAction)preserveAction:(id)sender;
-- (IBAction)widthChanged:(id)sender;
-- (IBAction)widthNumStepperChanged:(id)sender;
-- (IBAction)wrapAction:(id)sender;
-
-- (NSString*)titleEntry;
-- (NSString*)altEntry;
-- (NSString*)widthEntry;
-- (void)setWidthEntry:(NSString*)entry;
-- (NSString*)heightEntry;
-- (void)setHeightEntry:(NSString*)entry;
-- (BOOL)preserveRatio;
-- (void)setPreserveRatio:(BOOL)val;
-
-- (WRAPPING_TYPE)textWrap;
-- (POSITION_TO)imagePlacement;
-- (bool)tightWrap;
-@end
 
 #endif /* XAP_COCOADIALOG_IMAGE_H */
