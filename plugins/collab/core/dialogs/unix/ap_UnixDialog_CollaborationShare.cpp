@@ -254,7 +254,7 @@ bool AP_UnixDialog_CollaborationShare::_inAcl(const std::vector<std::string>& vA
 	
 	for (UT_uint32 i = 0; i < vAcl.size(); i++)
 	{
-		if (vAcl[i] == pBuddy->getDescription().utf8_str())
+		if (vAcl[i] == pBuddy->getDescriptor(false).utf8_str())
 			return true;
 	}
 
