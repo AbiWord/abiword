@@ -2,7 +2,7 @@
 
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2003 Hubert Figuiere
+ * Copyright (C) 2001-2003, 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -42,12 +42,37 @@
 #include "xap_EncodingManager.h"
 #include "ap_CocoaFrame.h"
 #include "xap_CocoaFrameImpl.h"
+#include "gr_CocoaCairoGraphics.h"
 
 #import <Cocoa/Cocoa.h>
 #import "xap_CocoaToolbarWindow.h"
 
 
+
+@interface EV_CocoaToolbarTarget : NSObject
+{
+	EV_CocoaToolbar*	_xap;
+}
+- (void)dealloc;
+- (void)setColor:(XAP_Toolbar_Id)tlbrid;
+- (IBAction)aColor_FG:(id)sender;
+- (IBAction)aColor_BG:(id)sender;
+- (void)toolbarSelected:(id)sender;
+- (void)setXAPOwner:(EV_CocoaToolbar*)owner;
+@end
+
+
 @implementation EV_CocoaToolbarTarget
+
+- (void)dealloc
+{
+	NSColorPanel * colorPanel = [NSColorPanel sharedColorPanel];
+
+	[colorPanel setAction:nil];
+	[colorPanel setTarget:nil];
+	[super dealloc];
+}
+
 
 - (void)setXAPOwner:(EV_CocoaToolbar*)owner
 {
@@ -56,33 +81,22 @@
 
 - (void)setColor:(XAP_Toolbar_Id)tlbrid
 {
-	float red;
-	float green;
-	float blue;
-	float alpha;
-
 	NSColor * color = [[NSColorPanel sharedColorPanel] color];
-
-	[color getRed:&red green:&green blue:&blue alpha:&alpha]; // TODO: is color necessarily RGBA? if not, could be a problem...
-
-	int r = static_cast<int>(lrintf(red   * 255));	r = (r < 0) ? 0 : r;	r = (r > 255) ? 255 : r;
-	int g = static_cast<int>(lrintf(green * 255));	g = (g < 0) ? 0 : g;	g = (g > 255) ? 255 : g;
-	int b = static_cast<int>(lrintf(blue  * 255));	b = (b < 0) ? 0 : b;	b = (b > 255) ? 255 : b;
-
+	UT_RGBColor rgbclr;
+	GR_CocoaCairoGraphics::_utNSColorToRGBColor(color, rgbclr);
+	
 	UT_HashColor hash;
 
-	const char * color_string = hash.setColor(static_cast<unsigned char>(r),
-											  static_cast<unsigned char>(g),
-											  static_cast<unsigned char>(b));
+	const char * color_string = hash.setColor(rgbclr);
 	if (color_string)
-		{
-			UT_UCS4String color_data(color_string);
+	{
+		UT_UCS4String color_data(color_string);
 
-			const UT_UCS4Char * pData = color_data.ucs4_str();
-			UT_uint32 dataLength = static_cast<UT_uint32>(color_data.length());
+		const UT_UCS4Char * pData = color_data.ucs4_str();
+		UT_uint32 dataLength = static_cast<UT_uint32>(color_data.length());
 
-			_xap->toolbarEvent(tlbrid, pData, dataLength);
-		}
+		_xap->toolbarEvent(tlbrid, pData, dataLength);
+	}
 }
 
 - (IBAction)aColor_FG:(id)sender
@@ -127,17 +141,17 @@
 				[colorPanel setTarget:0];
 
 				if (tlbrID == AP_TOOLBAR_ID_COLOR_FORE)
-					{
-						// [colorPanel setTitle:@"Foreground Color"]; // TODO: Localize
-						// [colorPanel setColor:[oColor_FG color]];
-						[colorPanel setAction:@selector(aColor_FG:)];
-					}
+				{
+					// [colorPanel setTitle:@"Foreground Color"]; // TODO: Localize
+					// [colorPanel setColor:[oColor_FG color]];
+					[colorPanel setAction:@selector(aColor_FG:)];
+				}
 				else
-					{
-						// [colorPanel setTitle:@"Background Color"]; // TODO: Localize
-						// [colorPanel setColor:[oColor_BG color]];
-						[colorPanel setAction:@selector(aColor_BG:)];
-					}
+				{
+					// [colorPanel setTitle:@"Background Color"]; // TODO: Localize
+					// [colorPanel setColor:[oColor_BG color]];
+					[colorPanel setAction:@selector(aColor_BG:)];
+				}
 				[colorPanel orderFront:self];
 				[colorPanel setTarget:self];
 			}

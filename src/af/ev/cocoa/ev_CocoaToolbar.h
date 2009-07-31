@@ -38,17 +38,8 @@ class EV_CocoaToolbar_ViewListener;
 class EV_Toolbar_Label;
 
 class EV_CocoaToolbar;
+@class EV_CocoaToolbarTarget;
 
-@interface EV_CocoaToolbarTarget : NSObject
-{
-	EV_CocoaToolbar*	_xap;
-}
-- (void)setColor:(XAP_Toolbar_Id)tlbrid;
-- (IBAction)aColor_FG:(id)sender;
-- (IBAction)aColor_BG:(id)sender;
-- (void)toolbarSelected:(id)sender;
-- (void)setXAPOwner:(EV_CocoaToolbar*)owner;
-@end
 
 class EV_CocoaToolbar : public EV_Toolbar
 {
