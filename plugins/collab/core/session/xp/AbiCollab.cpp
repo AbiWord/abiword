@@ -253,14 +253,18 @@ void AbiCollab::addCollaborator(BuddyPtr pCollaborator)
 {
 	UT_DEBUGMSG(("AbiCollab::addCollaborator()\n"));
 	UT_return_if_fail(pCollaborator)
-
-	// check if this buddy is in the access control list
-	AccountHandler* pAccount = pCollaborator->getHandler();
-	UT_return_if_fail(pAccount);
-	if (!pAccount->hasAccess(m_vAcl, pCollaborator))
+	
+	// check if this buddy is in the access control list if we are hosting 
+	// this session
+	if (isLocallyControlled())
 	{
-		UT_ASSERT(UT_NOT_IMPLEMENTED);
-		return;
+		AccountHandler* pAccount = pCollaborator->getHandler();
+		UT_return_if_fail(pAccount);
+		if (!pAccount->hasAccess(m_vAcl, pCollaborator))
+		{
+			UT_ASSERT(UT_NOT_IMPLEMENTED);
+			return;
+		}
 	}
 		
 	// check for duplicates (as long as we assume a collaborator can only be part of a collaboration session once)
