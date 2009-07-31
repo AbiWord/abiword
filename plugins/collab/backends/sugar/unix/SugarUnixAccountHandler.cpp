@@ -529,7 +529,7 @@ DBusHandlerResult s_dbus_handle_message(DBusConnection *connection, DBusMessage 
 				}
 
 				// FIXME: inefficient copying of data
-				std::string packet_str(' ', packet_size);
+				std::string packet_str(packet_size, ' ');
 				memcpy(&packet_str[0], packet_data, packet_size);
 				Packet* pPacket = pHandler->createPacket(packet_str, pBuddy);
 				UT_return_val_if_fail(pPacket, DBUS_HANDLER_RESULT_NOT_YET_HANDLED); // TODO: shouldn't we just disconnect here?
