@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
- * Copyright (C) 2004 Hubert Figuiere
+ * Copyright (C) 2004, 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -42,7 +42,6 @@ public:
 	void event_Cancel();
 private:
 	void        _populateWindowData(void);
-	void        _fillHistoryTree(void);
 
 	XAP_CocoaDialog_HistoryController *m_dlg;
 };
@@ -73,6 +72,12 @@ private:
 - (IBAction)okAction:(id)sender;
 - (IBAction)historySelect:(id)sender;
 - (void)populate;
+
+// data source
+- (id)tableView:(NSTableView *)aTableView
+    objectValueForTableColumn:(NSTableColumn *)aTableColumn
+    row:(int)rowIndex;
+- (int)numberOfRowsInTableView:(NSTableView *)aTableView;
 @end
 
 #endif /* XAP_COCOADIALOG_HISTORY_H */
