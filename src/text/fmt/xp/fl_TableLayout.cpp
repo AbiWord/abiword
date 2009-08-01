@@ -417,14 +417,14 @@ bool fl_TableLayout::doSimpleChange(void)
 	UT_sint32 iTop = m_pNewHeightCell->getTopAttach();
 	UT_sint32 iBot = m_pNewHeightCell->getBottomAttach();
 	fl_CellLayout * pCL = static_cast<fl_CellLayout *>(m_pNewHeightCell->getSectionLayout());
-	pCL->format();
-
-	if(iBot > iTop +1 )
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getFirstContainer());
+	if(pTab == NULL)
 	{
 		return false;
 	}
-	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getFirstContainer());
-	if(pTab == NULL)
+	pCL->format();
+
+	if(iBot > iTop +1 )
 	{
 		return false;
 	}
@@ -485,7 +485,7 @@ bool fl_TableLayout::doSimpleChange(void)
 	//
 	while(pCell)
 	{
-		pCell->setY(pCell->getY()+diff);
+		pCell->setY(pCell->getCellY()+diff);
 		pCell = static_cast<fp_CellContainer *>(pCell->getNext());
 	}
 	//
