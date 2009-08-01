@@ -74,6 +74,9 @@ public:
 	virtual bool							allowsManualBuddies()
 		{ return false; }
 	virtual void							forceDisconnectBuddy(BuddyPtr pBuddy);
+	virtual bool							hasPersistentAccessControl()
+		{ return true; }
+
 
 	// session management
 	virtual bool							startSession(PD_Document* pDoc, const std::vector<BuddyPtr>& acl);
