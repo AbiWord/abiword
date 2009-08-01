@@ -473,11 +473,24 @@ bool fl_TableLayout::doSimpleChange(void)
 	markAllRunsDirty();
 	UT_sint32 diff = iMaxHeight - iAlloc;
 	pRow->allocation += diff;
+	//
+	// Now adjust the y positions of all the rows below this one
+	//
+	for(UT_sint32 i=iTop+1; i<pTab->getNumRows();i++)
+	{
+		pTab->getNthRow(i)->y += diff;
+	}
+	//
+	// Now adjust the y postions of the subsequent cells
+	//
 	while(pCell)
 	{
 		pCell->setY(pCell->getY()+diff);
 		pCell = static_cast<fp_CellContainer *>(pCell->getNext());
 	}
+	//
+	// Now adjust the cell markers of the rulers
+	//
 	pCell =  pTab->getCellAtRowColumn(iTop,0);
 	while(pCell)
 	{
