@@ -20,6 +20,8 @@
  * 02111-1307, USA.
  */
 
+#include "config.h"
+
 #include "ut_string_class.h"
 #include "ut_xml.h"
 
@@ -154,7 +156,7 @@ public:
 						{
 							[self setDelegate:instance];
 							unsigned long interface = XAP_COCOAPLUGIN_INTERFACE;
-							NSString * version = [NSString stringWithUTF8String:ABI_BUILD_VERSION];
+							NSString * version = [NSString stringWithUTF8String:VERSION];
 							bLoaded = [instance pluginCanRegisterForAbiWord:self version:version interface:interface];
 						}
 						if (!bLoaded)

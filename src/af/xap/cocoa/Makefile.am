@@ -26,8 +26,7 @@ AM_CPPFLAGS = \
 	$(IMPEXP_CPPFLAGS) \
 	-x objective-c++ \
 	-I$(top_srcdir)/src/wp/ap/xp \
-	-I$(top_srcdir)/src/wp/ap/cocoa \
-	-DABI_BUILD_VERSION="\"$(VERSION)\""
+	-I$(top_srcdir)/src/wp/ap/cocoa
 
 #	-DDATADIR="\"$(datadir)\""
 
