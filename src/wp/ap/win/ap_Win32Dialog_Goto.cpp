@@ -190,7 +190,7 @@ int AP_Win32Dialog_Goto::getSelectedRow (void)
 BOOL AP_Win32Dialog_Goto::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	int iTarget;
-	char **ppszTargets;
+	const char **ppszTargets;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	m_pszOldValue = NULL;
