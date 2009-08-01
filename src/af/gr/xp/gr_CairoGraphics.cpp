@@ -3063,7 +3063,7 @@ void GR_CairoGraphics::paintDeque()
 
 		//x, y, with, height
 		cairo_rectangle(m_cr, tempPair.second[0], tempPair.second[1],
-							tempPair.second[2], tempPair.second[0]);
+							tempPair.second[2], tempPair.second[3]);
 		cairo_fill(m_cr);
 		cairo_paint(m_cr);
 		
