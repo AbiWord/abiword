@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Abiword 2.3.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-09-06 05:26+0200\n"
-"PO-Revision-Date: 2005-03-21 11:28/-0600\n"
+"PO-Revision-Date: 2008-12-24 20:11-0500\n"
 "Last-Translator: Lucian Constantin <struct_bylighting@yahoo.com>\n"
 "Language-Team: unknown <email@address>\n"
 "MIME-Version: 1.0\n"
@@ -288,7 +288,7 @@ msgstr "Î&nlocuiește cu"
 #. MENU_LABEL_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h.h:124
 msgid "&Clip Art"
-msgstr "Clip &Art"
+msgstr "Cli&p Art"
 
 #. DLG_CloseButton
 #. MENU_LABEL_FILE_CLOSE
@@ -324,7 +324,7 @@ msgstr "&Copiază"
 #. MENU_LABEL_FMT_STYLE_DEFINE
 #: po/tmp/ap_String_Id.h.h:139
 msgid "&Create and Modify Styles"
-msgstr "Crea&ză și modifică stilul"
+msgstr "Creea&ză și modifică stilul"
 
 #. DLG_Options_Label_PrefsCurrentScheme
 #: po/tmp/ap_String_Id.h.h:141
@@ -349,7 +349,7 @@ msgstr "&Dicționar..."
 #. MENU_LABEL_INSERT_DIRECTIONMARKER
 #: po/tmp/ap_String_Id.h.h:149
 msgid "&Direction Marker"
-msgstr "Marker de &direcție"
+msgstr "Mar&ker de direcție"
 
 #. MENU_LABEL_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h.h:151
@@ -560,7 +560,7 @@ msgstr "&Ține liniile împreună"
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_LRM
 #: po/tmp/ap_String_Id.h.h:236
 msgid "&LRM"
-msgstr "Stânga la dreapta"
+msgstr "&Stânga la dreapta"
 
 #. DLG_PageSetup_Landscape
 #: po/tmp/ap_String_Id.h.h:238
@@ -596,12 +596,12 @@ msgstr "Încuie aspectul"
 #. MENU_LABEL_TOOLS_MAILMERGE
 #: po/tmp/ap_String_Id.h.h:251
 msgid "&Mail Merge"
-msgstr "Combină &mail"
+msgstr "&Mail Merge"
 
 #. MENU_LABEL_INSERT_MAILMERGE
 #: po/tmp/ap_String_Id.h.h:253
 msgid "&Mail Merge Field"
-msgstr "Combină câmp de &mail"
+msgstr "Câmp &Mail Merge"
 
 #. MENU_LABEL_TOOLS_REVISIONS_AUTO
 #: po/tmp/ap_String_Id.h.h:255
@@ -691,7 +691,7 @@ msgstr "&Barat"
 #. MENU_LABEL_VIEW_ZOOM_WIDTH
 #: po/tmp/ap_String_Id.h.h:289
 msgid "&Page Width"
-msgstr "Zoom la &lățimea paginii "
+msgstr "&Lățimea paginii "
 
 #. DLG_Break_PageBreak
 #: po/tmp/ap_String_Id.h.h:291
@@ -721,7 +721,7 @@ msgstr "Ima&gine"
 #. MENU_LABEL_TOOLS_PLUGINS
 #: po/tmp/ap_String_Id.h.h:301
 msgid "&Plugins"
-msgstr "&Module"
+msgstr "Mod&ule"
 
 #. DLG_PageSetup_Portrait
 #: po/tmp/ap_String_Id.h.h:303
@@ -957,12 +957,12 @@ msgstr "&Web"
 #. MENU_LABEL_VIEW_ZOOM_WHOLE
 #: po/tmp/ap_String_Id.h.h:398
 msgid "&Whole Page"
-msgstr "Zoom la întreaga &pagină"
+msgstr "Întreaga &pagină"
 
 #. DLG_FR_WholeWord
 #: po/tmp/ap_String_Id.h.h:400
 msgid "&Whole word"
-msgstr "Cuvânt întreg"
+msgstr "&Cuvânt întreg"
 
 #. DLG_Para_PushWidowOrphanControl
 #: po/tmp/ap_String_Id.h.h:402
@@ -988,7 +988,7 @@ msgstr "&Zoom"
 #. DLG_ListRevisions_LevelZero
 #: po/tmp/ap_String_Id.h.h:411
 msgid "(All revisions visible)"
-msgstr "(Toate reviziile visibile)"
+msgstr "(Toate reviziile vizibile)"
 
 #. DLG_Spell_NoSuggestions
 #: po/tmp/ap_String_Id.h.h:413
@@ -1081,7 +1081,7 @@ msgstr "AbiWord a terminat de verificat selecția"
 #, c-format
 msgid ""
 "AbiWord has finished its search of the document and has made %d replacements."
-msgstr "AbiWord a terminat de căutat in document și a făcut %d înlocuiri"
+msgstr "AbiWord a terminat de căutat în document și a făcut %d înlocuiri"
 
 #. DLG_FR_FinishedFind
 #: po/tmp/ap_String_Id.h.h:452
@@ -1101,7 +1101,7 @@ msgid ""
 "You can use the program, but the toolbar may be missing."
 msgstr "AbiWord a fost proiectat pentru o versiune mai nouă a fișierului de sistem COMCTL32.DLL\n"
 "decât cea instalată în mod curent. (COMCTL32.DLL versiunea 4.72 sau mai nouă)\n"
-"O souluție a acestei porbleme este expicată în FAQ pe pagina de web a produsului\n"
+"O soluție a acestei probleme este explicată în FAQ pe pagina de web a produsului\n"
 "la http://www.abisource.com."
 
 #. WINDOWS_NEED_UNICOWS
@@ -1134,7 +1134,7 @@ msgstr "Acceptă modificarea sugerată"
 #. TOOLBAR_TOOLTIP_ADD_COLUMN
 #: po/tmp/ap_String_Id.h.h:465
 msgid "Add a column to this table after the current column"
-msgstr "Adaugă o coloană după colana curentă"
+msgstr "Adaugă o coloană după coloana curentă"
 
 #. TOOLBAR_STATUSLINE_ADD_ROW
 #. TOOLBAR_TOOLTIP_ADD_ROW
@@ -1239,7 +1239,7 @@ msgstr "Aplică"
 #. TOOLBAR_TOOLTIP_FMTPAINTER
 #: po/tmp/ap_String_Id.h.h:508
 msgid "Apply the previously copied paragraph formatting onto the selected text"
-msgstr "Aplilcă formatarea paragrafului precedent întregului text selectat"
+msgstr "Aplică formatarea paragrafului precedent întregului text selectat"
 
 #. DLG_Lists_Apply_Current
 #: po/tmp/ap_String_Id.h.h:510
@@ -1404,7 +1404,7 @@ msgstr "Opțiuni pentru scrierea bidirecțională"
 #. DLG_UFS_StyleBold
 #: po/tmp/ap_String_Id.h.h:574 po/tmp/xap_String_Id.h.h:119
 msgid "Bold"
-msgstr "Îngroșat"
+msgstr "În&groșat"
 
 #. MENU_LABEL_INSERT_BOOKMARK
 #: po/tmp/ap_String_Id.h.h:576
@@ -1463,7 +1463,7 @@ msgstr "Listă cu \"box\"-uri"
 #. FIELD_Application_BuildId
 #: po/tmp/ap_String_Id.h.h:599
 msgid "Build Id."
-msgstr "Identificativul versiunii"
+msgstr "Identificatorul versiunii"
 
 #. FIELD_Application_Options
 #: po/tmp/ap_String_Id.h.h:601
@@ -1621,7 +1621,7 @@ msgstr "Schimbă culoarea textului"
 #. MENU_STATUSLINE_FMT_DIRECTION
 #: po/tmp/ap_String_Id.h.h:664
 msgid "Change directional properties of text"
-msgstr "Schmbă proprietățile de direcție ale textului"
+msgstr "Schimbă proprietățile de direcție ale textului"
 
 #. TOOLBAR_STATUSLINE_FMT_DOM_DIRECTION
 #. TOOLBAR_TOOLTIP_FMT_DOM_DIRECTION
@@ -1676,7 +1676,7 @@ msgstr "Schimbă proprietățile dreptunghiului de text"
 #. MENU_STATUSLINE_SPELL_SUGGEST_9
 #: po/tmp/ap_String_Id.h.h:692
 msgid "Change to this suggested spelling"
-msgstr "Schimb in forma sugerată de scriere"
+msgstr "Schimb în forma sugerată de scriere"
 
 #. MENU_STATUSLINE_FMT_BACKGROUND
 #: po/tmp/ap_String_Id.h.h:694
@@ -1721,7 +1721,7 @@ msgstr "Caractere (cu spații)"
 #. MENU_LABEL_TOOLS_SPELL
 #: po/tmp/ap_String_Id.h.h:710
 msgid "Check &Spelling"
-msgstr "&Corectare ortografică"
+msgstr "Corectare &ortografică"
 
 #. DLG_Options_Label_GrammarCheck
 #: po/tmp/ap_String_Id.h.h:712
@@ -1776,7 +1776,8 @@ msgid ""
 "desired number.  You can use + and - to perform relative movement.\tI.e., if "
 "you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines "
 "below your current position."
-msgstr "Alegeți o operațiune din stânga.x0a;Pentru a folosi butonul \"Du-te la\" "
+msgstr "Alegeți o operațiune din stânga.\n"
+"Pentru a folosi butonul \"Du-te la\" "
 "completați câmpul \"Numărul\" cu numărul dorit. Se poate folosi + și - "
 "pentru a obține o mișcare relativă. De exemplu, dacă scrieți \"+2\" și "
 "selectați \"Linia\", \"Du-te la\" te va duce două linii sub poziția actuală."
@@ -1789,7 +1790,7 @@ msgstr "Ș&terge"
 #. DLG_Tab_Button_Clear
 #: po/tmp/ap_String_Id.h.h:734
 msgid "Clear"
-msgstr "Anuleză"
+msgstr "Anulează"
 
 #. DLG_Tab_Button_ClearAll
 #: po/tmp/ap_String_Id.h.h:736
@@ -1804,12 +1805,12 @@ msgstr "Anulează culoarea de fundal"
 #. DLG_Background_ClearHighlight
 #: po/tmp/ap_String_Id.h.h:740
 msgid "Clear Highlight Color"
-msgstr "Anuleză culoarea de evidențiere"
+msgstr "Anulează culoarea de evidențiere"
 
 #. MSG_QueryExit
 #: po/tmp/ap_String_Id.h.h:742
 msgid "Close all windows and exit?"
-msgstr "Închideți toate ferestrele și ieșiti?"
+msgstr "Închideți toate ferestrele și ieșiți?"
 
 #. MENU_STATUSLINE_FILE_EXIT
 #: po/tmp/ap_String_Id.h.h:744
@@ -1898,7 +1899,7 @@ msgstr "R&ând"
 #. TOC_TocHeading
 #: po/tmp/ap_String_Id.h.h:777
 msgid "Contents"
-msgstr "&Cuprins"
+msgstr "Cuprins"
 
 #. DLG_MarkRevisions_Check1Label
 #: po/tmp/ap_String_Id.h.h:779
@@ -1961,7 +1962,7 @@ msgstr "Copiază obiect"
 #. MENU_LABEL_EDIT_COPY_FRAME
 #: po/tmp/ap_String_Id.h.h:803
 msgid "Copy Text Box"
-msgstr "Copiază dreptungi de text"
+msgstr "Copiază dreptunghi de text"
 
 #. MENU_STATUSLINE_EDIT_COPY_HYPERLINK_LOCATION
 #: po/tmp/ap_String_Id.h.h:805
@@ -1976,7 +1977,7 @@ msgstr "Copiază dreptunghiul de text în clipboard"
 #. MENU_STATUSLINE_EDIT_CUT_FRAME
 #: po/tmp/ap_String_Id.h.h:809
 msgid "Copy the Text Box to the clipboard then remove it"
-msgstr "Copiază dreptunghil de text în clipboard și șterge-l"
+msgstr "Copiază dreptunghiul de text în clipboard și șterge-l"
 
 #. MENU_STATUSLINE_EDIT_COPY
 #: po/tmp/ap_String_Id.h.h:811
@@ -2171,7 +2172,7 @@ msgstr "Comentariu"
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h.h:888
 msgid "Date and &Time"
-msgstr "Da&ta și ora"
+msgstr "Data și o&ra"
 
 #. FIELD_Type_Datetime
 #: po/tmp/ap_String_Id.h.h:890
@@ -2717,7 +2718,7 @@ msgstr "Găsește revizia &precedentă"
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h.h:1113
 msgid "Find next visible revision in the document"
-msgstr "Găsește următoarea revisie visibilă a documentului"
+msgstr "Găsește următoarea versiune vizibilă a documentului"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h.h:1115
@@ -2921,7 +2922,7 @@ msgstr "Formatare note de pagină și de sfârșit"
 #. DLG_HdrFtr_Title
 #: po/tmp/ap_String_Id.h.h:1198
 msgid "Format Header/Footers"
-msgstr "Formatare antet șisubsol"
+msgstr "Formatare antet și subsol"
 
 #. MENU_LABEL_FMT_EMBED
 #: po/tmp/ap_String_Id.h.h:1200
@@ -3156,7 +3157,7 @@ msgstr "Ignoră cuvintele"
 #. MENU_STATUSLINE_SPELL_IGNOREALL
 #: po/tmp/ap_String_Id.h.h:1294
 msgid "Ignore all occurrences of this word in the document"
-msgstr "Ignoră intotdeauna acest cuvânt în documente"
+msgstr "Ignoră întotdeauna acest cuvânt în documente"
 
 #. DLG_Options_Label_SpellIgnoredWord
 #: po/tmp/ap_String_Id.h.h:1296
@@ -3299,7 +3300,7 @@ msgstr "Inserare imagine"
 #. DLG_MailMerge_MailMergeTitle
 #: po/tmp/ap_String_Id.h.h:1354
 msgid "Insert Mail Merge Field"
-msgstr "Inserează câmp de combinare mail"
+msgstr "Inserează câmp Mail Merge"
 
 #. MENU_LABEL_TOOLTIP_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h.h:1356
@@ -3374,13 +3375,13 @@ msgstr "Inserează legătură web în document"
 #. MENU_STATUSLINE_INSERT_MAILMERGE
 #: po/tmp/ap_String_Id.h.h:1387
 msgid "Insert a mail merge field"
-msgstr "Inserează un câmp de combinare mail"
+msgstr "Inserează un câmp Mail Merge"
 
 #. TOOLBAR_STATUSLINE_INSERT_TABLE
 #. TOOLBAR_TOOLTIP_INSERT_TABLE
 #: po/tmp/ap_String_Id.h.h:1390
 msgid "Insert a new table into your document"
-msgstr "Inserează o tablelă nouă în document"
+msgstr "Inserează o tabelă nouă în document"
 
 #. MENU_STATUSLINE_INSERT_BREAK
 #: po/tmp/ap_String_Id.h.h:1392
@@ -3442,7 +3443,7 @@ msgstr "Întrerupere"
 #. MENU_STATUSLINE_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h.h:1416
 msgid "Insert clipart"
-msgstr "Inserează o imagine din clipart"
+msgstr "Inserează o imagine clipart"
 
 #. DLG_Field_FieldTitle
 #: po/tmp/ap_String_Id.h.h:1418
@@ -3503,7 +3504,7 @@ msgstr "Inserează conținutul clipboard-ului fără formatare"
 #. DLG_Options_Label_ViewUnprintable
 #: po/tmp/ap_String_Id.h.h:1441
 msgid "Invisible &Layout Marks"
-msgstr "&Caraterele netipăribile"
+msgstr "&Caracterele netipăribile"
 
 #. TOOLBAR_LABEL_FMT_ITALIC
 #. TOOLBAR_STATUSLINE_FMT_ITALIC
@@ -3702,7 +3703,7 @@ msgstr "Pune o line deasupra zonei selectate (comută)"
 #. DLG_Para_TabLabelLineAndPageBreaks
 #: po/tmp/ap_String_Id.h.h:1525
 msgid "Line and Page Breaks"
-msgstr "&Întreruperi de linie si pagină"
+msgstr "&Întreruperi de linie și pagină"
 
 #. MENU_STATUSLINE_FMT_BOTTOMLINE
 #: po/tmp/ap_String_Id.h.h:1527
@@ -3737,7 +3738,7 @@ msgstr "Lista de proprietăți"
 #. DLG_Stylist_ListStyles
 #: po/tmp/ap_String_Id.h.h:1539
 msgid "List Styles"
-msgstr "Lista de stiluri"
+msgstr "Stilurile listei"
 
 #. DLG_Lists_Title
 #: po/tmp/ap_String_Id.h.h:1541
@@ -3765,7 +3766,7 @@ msgstr "Listă cu minuscule romane"
 #. MENU_STATUSLINE_TOOLS_MAILMERGE
 #: po/tmp/ap_String_Id.h.h:1550
 msgid "Mail Merge"
-msgstr "Combinare mail"
+msgstr "Mail Merge"
 
 #. MENU_STATUSLINE_FMT_BOLD
 #: po/tmp/ap_String_Id.h.h:1552
@@ -3864,7 +3865,7 @@ msgstr "Combină deasupra"
 #. MENU_STATUSLINE_TOOLS_REVISIONS_MERGE_DOCUMENTS
 #: po/tmp/ap_String_Id.h.h:1592
 msgid "Merge another document into the active document using revision marks"
-msgstr "Combină un alt document cu cel activ folosind markerii de revizii"
+msgstr "Combină un alt document cu cel activ folosind markerii de versiuni"
 
 #. TOOLBAR_LABEL_MERGEBELOW
 #: po/tmp/ap_String_Id.h.h:1594
@@ -4016,7 +4017,8 @@ msgstr "Fără împachetare (folding)"
 msgid ""
 "No Style selected \n"
 " so it cannot be modified"
-msgstr "Nu a fost selectat nici un stil x0a; ca atare nu a putut fi modificat"
+msgstr "Nu a fost selectat nici un stil \n"
+" ca atare nu a putut fi modificat"
 
 #. SCRIPT_NOSCRIPTS
 #: po/tmp/ap_String_Id.h.h:1656
@@ -4029,7 +4031,7 @@ msgstr "Nu a fost găsit nici un script"
 #. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h.h:1661
 msgid "None"
-msgstr "Nci unul"
+msgstr "Nici unul"
 
 #. TOOLBAR_LABEL_PARA_0BEFORE
 #: po/tmp/ap_String_Id.h.h:1663
@@ -4451,7 +4453,7 @@ msgstr "Tipărește"
 #. MENU_LABEL_FILE_PRINT_DIRECTLY
 #: po/tmp/ap_String_Id.h.h:1845
 msgid "Print &directly"
-msgstr "Țipărește &direct"
+msgstr "Tipărește &direct"
 
 #. MENU_STATUSLINE_VIEW_PRINT
 #: po/tmp/ap_String_Id.h.h:1847
@@ -4471,7 +4473,7 @@ msgstr "Previzualizare tipărire"
 #. MENU_STATUSLINE_FILE_PRINT
 #: po/tmp/ap_String_Id.h.h:1853
 msgid "Print all or part of the document"
-msgstr "Țipărește totul sau o parte din document"
+msgstr "Tipărește totul sau o parte din document"
 
 #. TOOLBAR_STATUSLINE_FILE_PRINT
 #. TOOLBAR_TOOLTIP_FILE_PRINT
@@ -4487,13 +4489,13 @@ msgstr "Tipărește folosind driverul intern PostScript"
 #. MSG_PrintingDoc
 #: po/tmp/ap_String_Id.h.h:1860
 msgid "Printing Document.."
-msgstr "Printez documentul..."
+msgstr "Se tipărește documentul.."
 
 #. MSG_PrintStatus
 #: po/tmp/ap_String_Id.h.h:1862
 #, c-format
 msgid "Printing page %d of %d"
-msgstr "Printez paginile de la %d la %d"
+msgstr "Se tipărește pagina %d din %d"
 
 #. FIELD_Document_Publisher
 #: po/tmp/ap_String_Id.h.h:1864
@@ -4533,7 +4535,7 @@ msgstr "Î&nlocuiește cu:"
 #. DLG_FR_ReverseFind
 #: po/tmp/ap_String_Id.h.h:1878
 msgid "Re&verse find"
-msgstr "Caută înapoi"
+msgstr "Cau&tă înapoi"
 
 #. MENU_LABEL_FILE_REVERT
 #: po/tmp/ap_String_Id.h.h:1880
@@ -4651,7 +4653,7 @@ msgstr "Renunță la modificarea sugerată"
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT
 #: po/tmp/ap_String_Id.h.h:1930
 msgid "Repeat Row as Heading"
-msgstr "RepetA rândul ca titlu"
+msgstr "Repetă rândul ca titlu"
 
 #. MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT
 #: po/tmp/ap_String_Id.h.h:1932
@@ -4929,7 +4931,7 @@ msgstr "Secundele din 1970"
 #. DLG_Break_SectionBreaks_Capital
 #: po/tmp/ap_String_Id.h.h:2045
 msgid "Section Breaks"
-msgstr "Întrerupere de scțiune"
+msgstr "Întrerupere de secțiune"
 
 #. DLG_Break_SectionBreaks
 #: po/tmp/ap_String_Id.h.h:2047
@@ -5139,7 +5141,7 @@ msgstr "Definește tipurile de note de pagină și de sfârșit"
 #. MENU_STATUSLINE_FMT_HDRFTR
 #: po/tmp/ap_String_Id.h.h:2130
 msgid "Set the types of Headers and Footers"
-msgstr "Definește tipurile de antet si de subsol"
+msgstr "Definește tipurile de antet și de subsol"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_THIS
 #: po/tmp/ap_String_Id.h.h:2132
@@ -5185,7 +5187,7 @@ msgstr "&Riglă"
 #. TOOLBAR_LABEL_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h.h:2148
 msgid "Show All"
-msgstr "Arată tot`"
+msgstr "Arată tot"
 
 #. MENU_LABEL_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h.h:2150
@@ -5220,7 +5222,7 @@ msgstr "Arată sau ascunde rigla"
 #. MENU_STATUSLINE_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h.h:2162
 msgid "Show or hide the status bar"
-msgstr "Arată sau ascunde bara de status"
+msgstr "Arată sau ascunde bara de stare"
 
 #. MENU_STATUSLINE_VIEW_TB_1
 #. MENU_STATUSLINE_VIEW_TB_2
@@ -5320,7 +5322,7 @@ msgstr "Sortează rânduri în ordine crescătoare"
 #. MENU_STATUSLINE_TABLE_SORTROWSASCEND
 #: po/tmp/ap_String_Id.h.h:2205
 msgid "Sort Rows in Ascending Order based on selected Column"
-msgstr "Sorează rânduri în ordine crescătoare bazat pe coloana selectată"
+msgstr "Sortează rânduri în ordine crescătoare bazat pe coloana selectată"
 
 #. MENU_LABEL_TABLE_SORTROWSDESCEND
 #: po/tmp/ap_String_Id.h.h:2207
@@ -5442,7 +5444,7 @@ msgstr "Separă în partea de sus"
 #. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
 #: po/tmp/ap_String_Id.h.h:2258
 msgid "Split on all delimiters except spaces"
-msgstr "Separă folosind delimtatorii de cuvinte, mai puțin spațiile"
+msgstr "Separă folosind delimitatorii de cuvinte, mai puțin spațiile"
 
 #. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h.h:2260
@@ -5452,7 +5454,8 @@ msgstr "Separă folosind delimitatorii de cuvinte inclusiv spațiile"
 #. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
 #: po/tmp/ap_String_Id.h.h:2262
 msgid "Split text at commas or tabs"
-msgstr "Separă textul folosind &virgulile și taburile"
+msgstr "Separă textul folosind &virgulele și taburile"
+
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h.h:2264
@@ -5854,10 +5857,10 @@ msgid ""
 "This paragraph represents words as they might appear in your document.  To "
 "see text from your document used in this preview, position your cursor in a "
 "document paragraph with some text in it and open this dialog."
-msgstr "Acest paragraf reprezintă cuvintele așa cum pot să apară în documentul "
-"dumneavoastră. Pentru a vedea cuvintele aici, "
-"pozitionati cursorul într-un paragraf din document și deschideți această "
-"fereastră de dialog."
+msgstr ""
+"Acest paragraf reprezintă cuvintele așa cum pot să apară în document. "
+"Pentru a vedea cuvintele aici, poziționați cursorul într-un paragraf "
+"și deschideți această fereastră de dialog."
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h.h:2426
@@ -6005,7 +6008,7 @@ msgstr "Interfață utilizator"
 #. DLG_Options_Label_UILang
 #: po/tmp/ap_String_Id.h.h:2483
 msgid "User Interface Language"
-msgstr "Limba interfeței utiliazatorului"
+msgstr "Limba interfeței utilizatorului"
 
 #. DLG_Stylist_UserStyles
 #: po/tmp/ap_String_Id.h.h:2485
@@ -6165,52 +6168,52 @@ msgstr "Zoom"
 #. MENU_LABEL_VIEW_ZOOM_100
 #: po/tmp/ap_String_Id.h.h:2552
 msgid "Zoom to &100%"
-msgstr "Zoom la &100%"
+msgstr "&100%"
 
 #. MENU_LABEL_VIEW_ZOOM_200
 #: po/tmp/ap_String_Id.h.h:2554
 msgid "Zoom to &200%"
-msgstr "Zoom la &200%"
+msgstr "&200%"
 
 #. MENU_LABEL_VIEW_ZOOM_50
 #: po/tmp/ap_String_Id.h.h:2556
 msgid "Zoom to &50%"
-msgstr "Zoom la &50%"
+msgstr "&50%"
 
 #. MENU_LABEL_VIEW_ZOOM_75
 #: po/tmp/ap_String_Id.h.h:2558
 msgid "Zoom to &75%"
-msgstr "Zoom la &75%"
+msgstr "&75%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_100
 #: po/tmp/ap_String_Id.h.h:2560
 msgid "Zoom to 100%"
-msgstr "Zoom la 100%"
+msgstr "100%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_200
 #: po/tmp/ap_String_Id.h.h:2562
 msgid "Zoom to 200%"
-msgstr "Zoom la 200%"
+msgstr "200%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_50
 #: po/tmp/ap_String_Id.h.h:2564
 msgid "Zoom to 50%"
-msgstr "Zoom la 50%"
+msgstr "50%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_75
 #: po/tmp/ap_String_Id.h.h:2566
 msgid "Zoom to 75%"
-msgstr "Zoom la 75%"
+msgstr "75%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_WIDTH
 #: po/tmp/ap_String_Id.h.h:2568
 msgid "Zoom to page width"
-msgstr "Zoom la întreaga pagină"
+msgstr "Lățimea paginii"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_WHOLE
 #: po/tmp/ap_String_Id.h.h:2570
 msgid "Zoom to whole page"
-msgstr "Zoom la lățimea paginii"
+msgstr "Întreaga pagină"
 
 #. DLG_Options_Label_CustomDict
 #: po/tmp/ap_String_Id.h.h:2572
@@ -6269,7 +6272,7 @@ msgstr "&75%"
 #. DLG_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h.h:17
 msgid "&Page width"
-msgstr "Lărgimea paginii"
+msgstr "Lățimea paginii"
 
 #. DLG_ULANG_SetLangButton
 #: po/tmp/xap_String_Id.h.h:19
@@ -6279,7 +6282,7 @@ msgstr "&Selecție limbă"
 #. DLG_Zoom_WholePage
 #: po/tmp/xap_String_Id.h.h:23
 msgid "&Whole page"
-msgstr "Întreaga pagină"
+msgstr "Întreaga &pagină"
 
 #. LANG_0
 #: po/tmp/xap_String_Id.h.h:25
@@ -6422,7 +6425,7 @@ msgstr "Armeană"
 #. ENC_ARME_ARMSCII
 #: po/tmp/xap_String_Id.h.h:79
 msgid "Armenian, ARMSCII-8"
-msgstr "Armenă, ARMSCII-8"
+msgstr "Armeană, ARMSCII-8"
 
 #. LANG_AS_IN
 #: po/tmp/xap_String_Id.h.h:81
@@ -6652,7 +6655,7 @@ msgstr "Clip Art"
 #. DLG_CLIPART_Error
 #: po/tmp/xap_String_Id.h.h:181
 msgid "Clip Art could not be loaded"
-msgstr "Clip Art să nu fie încărcată"
+msgstr "Clip Art nu a putut fi încărcat"
 
 #. DLG_Close
 #: po/tmp/xap_String_Id.h.h:183
@@ -6662,7 +6665,7 @@ msgstr "Închide"
 #. DLG_Exit_CloseWithoutSaving
 #: po/tmp/xap_String_Id.h.h:185
 msgid "Close &Without Saving"
-msgstr "&Ieși fără a salva"
+msgstr "&Ieși fără să salvezi"
 
 #. DLG_UP_Collate
 #: po/tmp/xap_String_Id.h.h:187
@@ -6873,7 +6876,7 @@ msgstr "Efect"
 #. DLG_HTMLOPT_ExpEmbedCSS
 #: po/tmp/xap_String_Id.h.h:280
 msgid "Embed (CSS) style sheet"
-msgstr "Include CSS style sheet"
+msgstr "Include (CSS) style sheet"
 
 #. DLG_UP_EmbedFonts
 #: po/tmp/xap_String_Id.h.h:282
@@ -7039,7 +7042,7 @@ msgstr "Franceză (Elveția)"
 #. LANG_FY_NL
 #: po/tmp/xap_String_Id.h.h:353
 msgid "Frisian"
-msgstr "Frisan"
+msgstr "Frisian"
 
 #. DLG_UP_From
 #: po/tmp/xap_String_Id.h.h:355
@@ -7059,7 +7062,7 @@ msgstr "Georgiană"
 #. ENC_GEOR_ACADEMY
 #: po/tmp/xap_String_Id.h.h:361
 msgid "Georgian, Academy"
-msgstr "Georgiană, Academy"
+msgstr "Georgiană, Academică"
 
 #. ENC_GEOR_PS
 #: po/tmp/xap_String_Id.h.h:363
@@ -7284,7 +7287,7 @@ msgstr "Inserează imagine"
 #. DLG_Insert_SymbolTitle
 #: po/tmp/xap_String_Id.h.h:459
 msgid "Insert Symbol"
-msgstr "Inserază simbol"
+msgstr "Inserează simbol"
 
 #. DLG_PLUGIN_MANAGER_INSTALL
 #: po/tmp/xap_String_Id.h.h:461
@@ -7299,7 +7302,7 @@ msgstr "Interlingua"
 #. LANG_IU_CA
 #: po/tmp/xap_String_Id.h.h:465
 msgid "Inuktitut"
-msgstr "Inuktitu"
+msgstr "Inuktitut"
 
 #. DLG_InvalidPathname
 #: po/tmp/xap_String_Id.h.h:467
@@ -7435,7 +7438,7 @@ msgstr "Marathi"
 #. LANG_MH_MH
 #: po/tmp/xap_String_Id.h.h:526
 msgid "Marshallese (Marshall Islands)"
-msgstr "Marșaleză (Marshall Islands)"
+msgstr "Marșaleză (Insulele Marshall)"
 
 #. LANG_MH_NR
 #: po/tmp/xap_String_Id.h.h:528
@@ -7475,7 +7478,7 @@ msgstr "Nici o imagine"
 #. DLG_PLUGIN_MANAGER_NONE_SELECTED
 #: po/tmp/xap_String_Id.h.h:542
 msgid "No plugin selected"
-msgstr "Nci un modul selectat"
+msgstr "Nici un modul nu a fost selectat"
 
 #. STYLE_NORMAL
 #: po/tmp/xap_String_Id.h.h:544
@@ -7923,8 +7926,9 @@ msgstr "Directorul '%s' e protejat la scriere."
 msgid ""
 "The given file extension does not match the chosen file type. Do you want to "
 "use this name anyway?"
-msgstr "Extensia specificată a fișierului nu corespunde tipului de fișeire ales. Doriți să "
-"folosiți acest nume?"
+msgstr ""
+"Extensia specificată nu corespunde tipului de fișier ales. "
+"Doriți să folosiți acest nume?"
 
 #. MSG_HistoryPartRestore2
 #: po/tmp/xap_String_Id.h.h:751
@@ -7932,9 +7936,10 @@ msgstr "Extensia specificată a fișierului nu corespunde tipului de fișeire al
 msgid ""
 "The nearest version that can be restored fully is %d. Would you like to "
 "restore this version instead? To partially restore version %d press No."
-msgstr "Cea mai apropriată versiune care poate fi restaurată complet este %d. Doriți "
+msgstr ""
+"Cea mai apropiată versiune care poate fi restaurată complet este %d. Doriți "
 "să restaurez această versiune? Pentru a restaura versiunea %d parțial "
-"apăsați Nu.:"
+"apăsați Nu."
 
 #. DLG_UP_InvalidPrintString
 #: po/tmp/xap_String_Id.h.h:753
@@ -7949,7 +7954,7 @@ msgstr "Această operație nu poate fi anulată. Sunteți sigur că doriți să 
 #. DLG_Image_TightWrap
 #: po/tmp/xap_String_Id.h.h:759
 msgid "Tight text wrapping"
-msgstr "Împachetare îngesuită (tight text wrapping)"
+msgstr "Împachetare înghesuită (tight text wrapping)"
 
 #. MSG_HistoryPartRestore3
 #: po/tmp/xap_String_Id.h.h:763
@@ -8095,7 +8100,7 @@ msgstr "Urdu"
 #. LANG_UR_PK
 #: po/tmp/xap_String_Id.h.h:829
 msgid "Urdu (Pakistan)"
-msgstr "Urdu (Pachistan)"
+msgstr "Urdu (Pakistan)"
 
 #. LANG_UZ_UZ
 #: po/tmp/xap_String_Id.h.h:831
@@ -8176,7 +8181,7 @@ msgstr "Europeană, Macintosh"
 #. ENC_WEST_NXT
 #: po/tmp/xap_String_Id.h.h:864
 msgid "Western European, NeXT"
-msgstr "Europa de est, NeXT"
+msgstr "Europa de vest, NeXT"
 
 #. ENC_WEST_WIN
 #: po/tmp/xap_String_Id.h.h:866
