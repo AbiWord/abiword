@@ -8,7 +8,7 @@
                 "_addBtn" = NSButton; 
                 "_bookmarkList" = NSTableView; 
                 "_cancelBtn" = NSButton; 
-                "_hyperlinkLabel" = NSTextField; 
+                "_hyperlinkLabel" = NSBox; 
                 "_hyperlinkValue" = NSTextField; 
             }; 
             SUPERCLASS = NSWindowController; 

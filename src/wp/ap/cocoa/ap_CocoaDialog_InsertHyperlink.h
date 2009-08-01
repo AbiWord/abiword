@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
- * Copyright (C) 2001, 2003 Hubert Figuiere
+ * Copyright (C) 2001, 2003, 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -46,23 +46,6 @@ private:
 	XAP_StringListDataSource*	m_pBookmarks;
 	AP_CocoaDialog_InsertHyperlinkController* m_dlg;
 };
-
-@interface AP_CocoaDialog_InsertHyperlinkController : NSWindowController <XAP_CocoaDialogProtocol>
-{
-    IBOutlet NSButton *_addBtn;
-    IBOutlet NSTextField *_hyperlinkValue;
-    IBOutlet NSTextField *_hyperlinkLabel;
-	IBOutlet NSTableView *_bookmarkList;
-    IBOutlet NSButton *_cancelBtn;
-	AP_CocoaDialog_InsertHyperlink* _xap;
-	XAP_StringListDataSource *_datasource;
-}
-- (void)setDataSource:(XAP_StringListDataSource*)datasource;
-- (NSString*) bookmarkText;
-- (IBAction)addBtn:(id)sender;
-- (IBAction)cancelBtn:(id)sender;
-- (IBAction)selectBtn:(id)sender;
-@end
 
 
 #endif /* AP_COCOADIALOG_INSERTBOOKMARK_H */

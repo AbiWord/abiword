@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
- * Copyright (C) 2003 Hubert Figuiere
+ * Copyright (C) 2003, 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -35,6 +35,25 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_InsertHyperlink.h"
 #include "ap_CocoaDialog_InsertHyperlink.h"
+
+
+@interface AP_CocoaDialog_InsertHyperlinkController : NSWindowController <XAP_CocoaDialogProtocol>
+{
+    IBOutlet NSButton *_addBtn;
+    IBOutlet NSTextField *_hyperlinkValue;
+    IBOutlet NSBox *_hyperlinkLabel;
+	IBOutlet NSTableView *_bookmarkList;
+    IBOutlet NSButton *_cancelBtn;
+	AP_CocoaDialog_InsertHyperlink* _xap;
+	XAP_StringListDataSource *_datasource;
+}
+- (void)setDataSource:(XAP_StringListDataSource*)datasource;
+- (NSString*) bookmarkText;
+- (IBAction)addBtn:(id)sender;
+- (IBAction)cancelBtn:(id)sender;
+- (IBAction)selectBtn:(id)sender;
+@end
+
 
 /*****************************************************************/
 
@@ -136,8 +155,13 @@ void AP_CocoaDialog_InsertHyperlink::event_Cancel(void)
 		LocalizeControl(_cancelBtn, pSS, XAP_STRING_ID_DLG_Cancel);
 		LocalizeControl(_hyperlinkLabel, pSS, AP_STRING_ID_DLG_InsertHyperlink_Msg);
 		const gchar* href = _xap->getHyperlink();
-		if (href) {
-			[_hyperlinkValue setStringValue:[NSString stringWithUTF8String:href]];
+		if (href && *href) {
+			if (*href == '#') {
+				[_hyperlinkValue setStringValue:[NSString stringWithUTF8String:(href + 1)]];
+			}
+			else {
+				[_hyperlinkValue setStringValue:[NSString stringWithUTF8String:href]];
+			}
 		}
 		[_bookmarkList setAction:@selector(selectBtn:)];
 	}
