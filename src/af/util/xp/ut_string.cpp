@@ -73,7 +73,7 @@ bool UT_XML_cloneNoAmpersands(gchar *& rszDest, const gchar * szSource)
 }
 
 /* This uses the clone no ampersands but dumps into a static buffer */
-gchar *UT_XML_transNoAmpersands(const gchar * szSource)
+const gchar *UT_XML_transNoAmpersands(const gchar * szSource)
 {
 	static gchar *rszDestBuffer = NULL;
 	static UT_uint32 iDestBufferLength = 0;

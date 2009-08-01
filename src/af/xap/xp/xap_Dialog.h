@@ -235,8 +235,8 @@ public:
 	virtual void				activate(void) = 0;
 	XAP_Frame *					getActiveFrame() const;
 	void						modeless_cleanup(void);
-	bool						isRunning(void);
-	void						BuildWindowName(char * pWindowName, char * pDialogName, UT_uint32 width);
+	bool						isRunning(void) const;
+	void						BuildWindowName(char * pWindowName, const char * pDialogName, UT_uint32 width) const;
 	static XAP_Dialog_Type		s_getPersistence(void) { return XAP_DLGT_APP_PERSISTENT; };
 	
 	// ugly hack necessary for Win32

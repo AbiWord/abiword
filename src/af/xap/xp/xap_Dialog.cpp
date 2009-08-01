@@ -201,7 +201,7 @@ void XAP_Dialog_Modeless::modeless_cleanup(void)
 	m_pDlgFactory->releaseDialog(m_pDialog);
 }
 
-bool XAP_Dialog_Modeless::isRunning(void)
+bool XAP_Dialog_Modeless::isRunning(void) const
 {
  
 	UT_sint32 sid = (UT_sint32) getDialogId();
@@ -227,7 +227,7 @@ void XAP_Dialog_Modeless::setActiveFrame(XAP_Frame *pFrame)
 }
 
 
-void XAP_Dialog_Modeless::BuildWindowName(char * pWindowName, char * pDialogName, UT_uint32 width)
+void XAP_Dialog_Modeless::BuildWindowName(char * pWindowName, const char * pDialogName, UT_uint32 width) const
 {
 // This function constructs and returns the window name of a modeless dialog by
 // concatenating the active frame with the dialog name

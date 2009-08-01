@@ -40,7 +40,7 @@ G_BEGIN_DECLS
 // this function allocates (and returns a pointer to) new memory for the new string
 ABI_EXPORT bool  UT_XML_cloneNoAmpersands(gchar *& rszDest, const gchar * szSource);
 // This function uses a static buffer to do the translation
-ABI_EXPORT gchar *  UT_XML_transNoAmpersands(const gchar * szSource);
+ABI_EXPORT const gchar *  UT_XML_transNoAmpersands(const gchar * szSource);
 
 ABI_EXPORT void  UT_decodeUTF8string(const gchar * p, UT_uint32 len, UT_GrowBuf * pResult);
 
