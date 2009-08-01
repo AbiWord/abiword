@@ -62,6 +62,8 @@ wp_DATA = \
 	system.profile-nb-NO \
 	system.profile-nl-NL \
 	system.profile-nn-NO \
+	system.profile-ro \
+	system.profile-ro-RO \
 	system.profile-pl-PL \
 	system.profile-ps \
 	system.profile-pt-BR \
