@@ -28,40 +28,38 @@
 #include "xap_Frame.h"
 #include "xap_App.h"
 #include "xap_Win32FrameImpl.h"
-#include "ut_Win32LocaleString.h"
 
 bool XAP_Win32AppImpl::openURL(const char * szURL)
 {
 	// NOTE: could get finer control over browser window via DDE 
 	// NOTE: may need to fallback to WinExec for old NSCP versions
 
-    UT_Win32LocaleString sURL;
-	sURL.fromASCII (szURL);
+	UT_String sURL = szURL;
 
 	// If this is a file:// URL, strip off file:// and make it backslashed
-	if (sURL.substr(0, 7) == L"file://")
+	if (sURL.substr(0, 7) == "file://")
 	{
 		sURL = sURL.substr(7, sURL.size() - 7);
 
 		// View as WebPage likes to throw in an extra /\ just for fun, strip it off
-		if (sURL.substr(0, 2) == L"/\\")
+		if (sURL.substr(0, 2) == "/\\")
 			sURL = sURL.substr(2, sURL.size() - 2);
 
-		if (sURL.substr(0, 1) == L"/")
+		if (sURL.substr(0, 1) == "/")
 			sURL = sURL.substr(1, sURL.size() - 1);
 		
 		// Convert all forwardslashes to backslashes
 		for (unsigned int i=0; i<sURL.length();i++)	
-			if (sURL[i]==L'/')	
-                sURL[i]=L'\\';
+			if (sURL[i]=='/')	
+                sURL[i]='\\';
 
 		// Convert from longpath to 8.3 shortpath, in case of spaces in the path
-		wchar_t* longpath = NULL;
-		wchar_t* shortpath = NULL;
-		longpath = new wchar_t[PATH_MAX];
-		shortpath = new wchar_t[PATH_MAX];
-		wcscpy(longpath, sURL.c_str());
-		DWORD retval = GetShortPathNameW(longpath, shortpath, PATH_MAX);
+		char* longpath = NULL;
+		char* shortpath = NULL;
+		longpath = new char[PATH_MAX];
+		shortpath = new char[PATH_MAX];
+		strcpy(longpath, sURL.c_str());
+		DWORD retval = GetShortPathName(longpath, shortpath, PATH_MAX);
 		if((retval == 0) || (retval > PATH_MAX))
 		{
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
@@ -69,7 +67,7 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 			DELETEP(shortpath);
 			return false;
 		}
-		sURL.fromLocale (shortpath);
+		sURL = shortpath;
 		DELETEP(longpath);
 		DELETEP(shortpath);
 	}
@@ -81,12 +79,12 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 	DWORD dwSize;
 	unsigned char* szValue = NULL;
 
-	if (RegOpenKeyExW(HKEY_CLASSES_ROOT, L"http\\shell\\open\\command", 0, KEY_READ, &hKey) == ERROR_SUCCESS)
+	if (RegOpenKeyEx(HKEY_CLASSES_ROOT, "http\\shell\\open\\command", 0, KEY_READ, &hKey) == ERROR_SUCCESS)
 	{
-		if(RegQueryValueExW(hKey, NULL, NULL, &lType, NULL, &dwSize) == ERROR_SUCCESS)
+		if(RegQueryValueEx(hKey, NULL, NULL, &lType, NULL, &dwSize) == ERROR_SUCCESS)
 		{
 			szValue = new unsigned char[dwSize + 1];
-			RegQueryValueExW(hKey, NULL, NULL, &lType, szValue, &dwSize);
+			RegQueryValueEx(hKey, NULL, NULL, &lType, szValue, &dwSize);
 			sBrowser = (char*) szValue;
 			DELETEP(szValue);
 		}
@@ -119,11 +117,11 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 	if (pdest != NULL)
 	{
 		int i = pdest - sParams.c_str() + 1;
-		sParams = sParams.substr(0, i-1) + sURL.ascii_str() + sParams.substr(i+1, sParams.length()-i+1);
+		sParams = sParams.substr(0, i-1) + sURL + sParams.substr(i+1, sParams.length()-i+1);
 	}
 	else
 	{
-		sParams = sParams + " " + sURL.ascii_str();
+		sParams = sParams + " " + sURL;
 	}
 
 	// Win95 doesn't like the Browser command to be quoted, so strip em off.
@@ -152,7 +150,7 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 					errMsg = "Error ("; 
 					errMsg += UT_String_sprintf("%d", res);
 					errMsg += ") displaying URL: The system cannot find the file specified.\n";
-					errMsg += " [ ";  errMsg += sURL.ascii_str();  errMsg += " ] ";
+					errMsg += " [ ";  errMsg += sURL;  errMsg += " ] ";
 					MessageBoxA(pFImp->getTopLevelWindow(), errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
 				}
 				break;
@@ -162,7 +160,7 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 					errMsg = "Error ("; 
 					errMsg += UT_String_sprintf("%d", res);
 					errMsg += ") displaying URL: The system cannot find the path specified.\n";
-					errMsg += " [ ";  errMsg += sURL.ascii_str();  errMsg += " ] ";
+					errMsg += " [ ";  errMsg += sURL;  errMsg += " ] ";
 					MessageBoxA(pFImp->getTopLevelWindow(), errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
 				}
 				break;
@@ -172,7 +170,7 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 					errMsg = "Error ("; 
 					errMsg += UT_String_sprintf("%d", res);
 					errMsg += ") displaying URL: Access is denied.\n";
-					errMsg += " [ ";  errMsg += sURL.ascii_str();  errMsg += " ] ";
+					errMsg += " [ ";  errMsg += sURL;  errMsg += " ] ";
 					MessageBoxA(pFImp->getTopLevelWindow(), errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
 				}
 				break;
@@ -182,7 +180,7 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 					errMsg = "Error ("; 
 					errMsg += UT_String_sprintf("%d", res);
 					errMsg += ") displaying URL: \n";
-					errMsg += " [ ";  errMsg += sURL.ascii_str();  errMsg += " ] ";
+					errMsg += " [ ";  errMsg += sURL;  errMsg += " ] ";
 					MessageBoxA(pFImp->getTopLevelWindow(), errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
 				}
 				break;
