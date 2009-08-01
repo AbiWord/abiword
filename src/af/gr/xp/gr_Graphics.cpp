@@ -1538,6 +1538,9 @@ void GR_Graphics::adjustDeletePosition(GR_RenderInfo & )
 */
 void GR_Graphics::beginBuffering(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_uint32 height)
 {
+	if (queryProperties(GR_Graphics::DGP_PAPER))
+		return; // don't double buffer when printing
+
 	bool suitableBufferFound = false;
 	UT_uint32 i = 0;
 	//extends for the argument
@@ -1592,6 +1595,9 @@ void GR_Graphics::beginBuffering(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_u
 
 void GR_Graphics::endBuffering()
 {
+	if (queryProperties(GR_Graphics::DGP_PAPER))
+		return; // don't double buffer when printing
+
 	restoreMainBuffer();
 	paintDeque();
 }
