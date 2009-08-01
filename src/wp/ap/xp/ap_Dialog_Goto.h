@@ -44,9 +44,9 @@ public:
 	// instance of the dialog.  These do not read the persistent
 	// values.
   	bool						setView(FV_View * view);
-  	FV_View * 					getView();
+  	FV_View * 					getView() const;
 	void						setActiveFrame(XAP_Frame *pFrame);
-	static char **              getJumpTargets(); // TODO: Change to UT_UCSChar
+	static const char **        getJumpTargets();
 	
 	UT_uint32					getExistingBookmarksCount() const;
 	const gchar *			getNthExistingBookmark(UT_uint32 n) const;
@@ -56,7 +56,7 @@ protected:
 	// which are liberally read and set by the
 	// accessor methods above.
   	FV_View * 					m_pView;
-	static char *               s_pJumpTargets[];
+	static const char *               s_pJumpTargets[];
 
 	// is this used in a modeless dialog like this?
 	tAnswer						m_answer;

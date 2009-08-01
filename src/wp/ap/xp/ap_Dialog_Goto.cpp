@@ -40,7 +40,7 @@
 #include "xap_Frame.h"
 #include "pd_Document.h"
 
-char * AP_Dialog_Goto::s_pJumpTargets[] = {
+const char * AP_Dialog_Goto::s_pJumpTargets[] = {
 	NULL,
 	NULL,
 	NULL,
@@ -73,7 +73,7 @@ void AP_Dialog_Goto::_setupJumpTargets(void)
 
 }
 
-char ** AP_Dialog_Goto::getJumpTargets(void)
+const char ** AP_Dialog_Goto::getJumpTargets(void)
 {
 	return (s_pJumpTargets);
 }
@@ -87,15 +87,15 @@ AP_Dialog_Goto::tAnswer AP_Dialog_Goto::getAnswer(void) const
 
 void AP_Dialog_Goto::ConstructWindowName(void)
 {
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	gchar * tmp = NULL;
 	UT_uint32 title_width = 33;
 
-	UT_UTF8String s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Goto_Title,s);
+	std::string s;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Goto_Title, s);
 	
-	UT_XML_cloneNoAmpersands(tmp, s.utf8_str());
-	BuildWindowName((char *) m_WindowName,(char*)tmp,title_width);
+	UT_XML_cloneNoAmpersands(tmp, s.c_str());
+	BuildWindowName(m_WindowName, tmp, title_width);
 	FREEP(tmp);
 }							
 
@@ -114,7 +114,7 @@ bool AP_Dialog_Goto::setView(FV_View * /*view*/)
 	return true;
 }
 
-FV_View * AP_Dialog_Goto::getView(void)
+FV_View * AP_Dialog_Goto::getView(void) const
 {
 	XAP_Frame * pFrame =  getActiveFrame();
 	return  (FV_View *) pFrame->getCurrentView();
