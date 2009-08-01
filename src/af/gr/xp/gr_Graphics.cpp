@@ -1544,10 +1544,11 @@ void GR_Graphics::beginBuffering(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_u
 	bool suitableBufferFound = false;
 	UT_uint32 i = 0;
 	//extends for the argument
-	UT_uint32 left1 = x;
-	UT_uint32 right1 = x + width - 1;
-	UT_uint32 top1 = y;
-	UT_uint32 bottom1 = y + width - 1;
+	UT_Rect rect1;
+	rect1.left = x;
+	rect1.width = x + width - 1;
+	rect1.top = y;
+	rect1.height = y + width -1;
 	
 	saveMainContext();
 	
@@ -1558,25 +1559,20 @@ void GR_Graphics::beginBuffering(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_u
 	}
 	while (!suitableBufferFound)
 	{
-		UT_uint32* extends = getExtendsFromDeque(i);
-		//extends for the buffer we're looking at in the deque
-		UT_uint32 left2 = extends[0]; //x
-		UT_uint32 right2 = extends[0] + extends[1]; //x + width
-		UT_uint32 top2 = extends[2]; //y
-		UT_uint32 bottom2 = extends[2] + extends[3]; //y + height
+		UT_Rect rect2 = getExtendsFromDeque(i);
 		
 		//If the extends fit inside the buffer
-		if (left1 >= left2 && right1 <= right2 &&
-			top1 >= top2 && bottom1 <= bottom2)
+		if (rect1.left >= rect2.left && rect1.width <= rect2.width &&
+			rect1.top >= rect2.top && rect1.height <= rect2.height)
 		{
 			setActiveBufferFromDeque(i); //abstract
 			suitableBufferFound = true;
 		}
 		 //If the extends overlap
-		 else if ((right1 > left2 && top1 < bottom2) ||
-				  (left1 < right2 && top1 < bottom2) ||
-				  (right1 > left2 && bottom1 > top2) ||
-				  (left1 < right2 && bottom1 > top2))
+		 else if ((rect1.width > rect2.left && rect1.top < rect2.height) ||
+				  (rect1.left < rect2.width && rect1.top < rect2.height) ||
+				  (rect1.width > rect2.left && rect1.height > rect2.top) ||
+				  (rect1.left < rect2.width && rect1.height > rect2.top))
 		{
 			createOffscreenBuffer(x, y, width, height);
 			suitableBufferFound = true;

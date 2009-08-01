@@ -2993,13 +2993,14 @@ void GR_CairoGraphics::createOffscreenBuffer(UT_uint32 x, UT_uint32 y, UT_uint32
 	cairo_surface_t* destSurface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, tdu(width), tdu(height));
 	cairo_t* newContext = cairo_create(destSurface);
 	cairo_set_source(newContext, sourcePattern);
-	UT_uint32 *newExtends = new UT_uint32[4];
-	newExtends[0] = x;
-	newExtends[1] = y;
-	newExtends[2] = width;
-	newExtends[3] = height;
-	
-	std::pair <cairo_t*, UT_uint32*> tempPair (newContext, newExtends);
+
+	UT_Rect newExtends = new UT_Rect;
+	newExtends.left = x;
+	newExtends.top = y;
+	newExtends.width = width;
+	newExtends.height = height;
+
+	std::pair <cairo_t*, UT_Rect> tempPair (newContext, newExtends);
 	m_bufferContainer.push_front(tempPair);
 	setActiveBuffer(tempPair.first);
 }
@@ -3025,7 +3026,7 @@ cairo_t* GR_CairoGraphics::getBuffer()
 	return m_bufferPointer;
 }
 
-UT_uint32* GR_CairoGraphics::getExtendsFromDeque(UT_uint32 i)
+UT_Rect GR_CairoGraphics::getExtendsFromDeque(UT_uint32 i)
 {
 	return m_bufferContainer.at(i).second;
 }
@@ -3051,7 +3052,7 @@ void GR_CairoGraphics::restoreMainBuffer()
 void GR_CairoGraphics::paintDeque()
 {
 	UT_DEBUGMSG(("----------8<-------------------------\n"));
-	std::pair<cairo_t*, UT_uint32*> tempPair;
+	std::pair<cairo_t*, UT_Rect> tempPair;
 	while (getDequeSize() > 0)
 	{
 		UT_DEBUGMSG(("painting %d\n",getDequeSize()));
@@ -3060,29 +3061,15 @@ void GR_CairoGraphics::paintDeque()
 		setActiveBuffer(m_mainBufferPointer);
 		cairo_surface_t* tempSurface = cairo_get_group_target(tempPair.first);
 		cairo_set_source_surface(m_cr, tempSurface, 0, 0);
+		UT_Rect tempRect = tempPair.second;
 
-		//x, y, width, height
-		UT_DEBUGMSG(("Drawing buffer, x:%d, y:%d, w:%d, h:%d\n", tdu(tempPair.second[0]), tdu(tempPair.second[1]), tdu(tempPair.second[2]), tdu(tempPair.second[3])));
-		cairo_rectangle(m_cr, tdu(tempPair.second[0]), tdu(tempPair.second[1]), tdu(tempPair.second[2]), tdu(tempPair.second[3]));
+		UT_DEBUGMSG(("Drawing buffer, x:%d, y:%d, w:%d, h:%d\n", tdu(tempRect.left), tdu(tempRect.top), tdu(tempRect.width), tdu(tempRect.height)));
+		cairo_rectangle(m_cr, tdu(tempRect.left), tdu(tempRect.top), tdu(tempRect.width), tdu(tempRect.height));
 		cairo_fill(m_cr);
-		cairo_paint(m_cr);
-		
-		//paint the source onto the dest in the context
-		/*cairo_paint(tempPair.first);
-		
-		cairo_surface_t* tempSurface = cairo_get_group_target(tempPair.first);
-		cairo_surface_reference(tempSurface);
-		cairo_destroy(tempPair.first);
-		
-		//paint to screen context
-		cairo_set_source_surface(m_cr, tempSurface, 0, 0);
-		cairo_paint(m_cr);
-		
-		cairo_surface_destroy(tempSurface);*/
-		
+		//cairo_paint(m_cr);
 		
 		m_bufferContainer.pop_back();
-		delete[] tempPair.second;
+		//delete[] tempPair.second;
 	}
 	UT_DEBUGMSG(("---------------------------->8-------\n"));
 	return;

@@ -172,13 +172,13 @@ public:
 	virtual void           setZoomPercentage(UT_uint32 iZoom);
 
 
-	std::deque< std::pair<cairo_t*, UT_uint32* > > m_bufferContainer;
+	std::deque< std::pair<cairo_t*, UT_Rect> > m_bufferContainer;
 	cairo_t* m_bufferPointer;
 	cairo_t* m_mainBufferPointer;
 	
 	cairo_t* getMainContext(); //////////////////////////////////////////////
 	void createOffscreenBuffer(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_uint32 height);
-	UT_uint32* getExtendsFromDeque(UT_uint32 i);
+	UT_Rect getExtendsFromDeque(UT_uint32 i);
 	void setActiveBufferFromDeque(UT_uint32 i);
 	UT_uint32 getDequeSize();
 	void restoreMainBuffer();

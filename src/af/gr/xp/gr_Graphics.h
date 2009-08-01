@@ -359,10 +359,10 @@ class ABI_EXPORT GR_Graphics
 	void beginBuffering(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_uint32 height);
 	void endBuffering();
 	virtual void createOffscreenBuffer(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_uint32 height) = 0;
-	cairo_t* getBuffer();
-	virtual cairo_t* getMainContext() = 0;
+	//cairo_t* getBuffer(); //remove
+	//virtual cairo_t* getMainContext() = 0; //remove
 	virtual void saveMainContext() = 0;
-	virtual UT_uint32* getExtendsFromDeque(UT_uint32 i) = 0;
+	virtual UT_Rect getExtendsFromDeque(UT_uint32 i) = 0;
 	virtual void setActiveBufferFromDeque(UT_uint32 i) = 0;
 	virtual UT_uint32 getDequeSize() = 0;
 	virtual void restoreMainBuffer() = 0;
