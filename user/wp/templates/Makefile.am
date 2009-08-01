@@ -44,6 +44,8 @@ templates_normal = \
 	normal.awt-nl_NL \
 	normal.awt-nn_NO \
 	normal.awt-pl_PL \
+	normal.awt-ro \
+	normal.awt-ro_RO \
 	normal.awt-ps \
 	normal.awt-pt_BR \
 	normal.awt-pt_PT \
