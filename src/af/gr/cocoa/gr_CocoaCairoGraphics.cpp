@@ -812,6 +812,12 @@ void GR_CocoaCairoGraphics::init3dColors()
 }
 
 
+void GR_CocoaCairoGraphics::setIsPrinting(bool isprinting)
+{
+	m_bIsPrinting = isprinting;
+}
+
+
 void GR_CocoaCairoGraphics::_setUpdateCallback (gr_cocoa_graphics_update callback, void * param)
 {
 	m_updateCallback = callback;
