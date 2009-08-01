@@ -2990,7 +2990,7 @@ void GR_CairoGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 void GR_CairoGraphics::createOffscreenBuffer(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_uint32 height)
 {
 	cairo_pattern_t* sourcePattern = cairo_get_source(getMainContext());
-	cairo_surface_t* destSurface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, width, height);
+	cairo_surface_t* destSurface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, tdu(width), tdu(height));
 	cairo_t* newContext = cairo_create(destSurface);
 	cairo_set_source(newContext, sourcePattern);
 	UT_uint32 *newExtends = new UT_uint32[4];
@@ -3061,9 +3061,9 @@ void GR_CairoGraphics::paintDeque()
 		cairo_surface_t* tempSurface = cairo_get_group_target(tempPair.first);
 		cairo_set_source_surface(m_cr, tempSurface, 0, 0);
 
-		//x, y, with, height
-		cairo_rectangle(m_cr, tempPair.second[0], tempPair.second[1],
-							tempPair.second[2], tempPair.second[3]);
+		//x, y, width, height
+		UT_DEBUGMSG(("Drawing buffer, x:%d, y:%d, w:%d, h:%d\n", tdu(tempPair.second[0]), tdu(tempPair.second[1]), tdu(tempPair.second[2]), tdu(tempPair.second[3])));
+		cairo_rectangle(m_cr, tdu(tempPair.second[0]), tdu(tempPair.second[1]), tdu(tempPair.second[2]), tdu(tempPair.second[3]));
 		cairo_fill(m_cr);
 		cairo_paint(m_cr);
 		
