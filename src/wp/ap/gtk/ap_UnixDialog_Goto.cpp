@@ -436,8 +436,8 @@ AP_UnixDialog_Goto::constuctWindow (XAP_Frame * /*pFrame*/)
 	// localise	
 	// const XAP_StringSet * pSS = m_pApp->getStringSet ();
 	/* FIXME jump targets localised in xp land, make sure they work for non ascii characters */
-	gchar **targets = getJumpTargets ();
-	gchar *text = NULL;
+	const gchar **targets = getJumpTargets ();
+	const gchar *text = NULL;
 	if ((text = targets[AP_JUMPTARGET_PAGE]) != NULL)
 		gtk_label_set_text (GTK_LABEL (m_lbPage), text);
 	if ((text = targets[AP_JUMPTARGET_LINE]) != NULL)
