@@ -320,15 +320,13 @@ new_tube_cb (EmpathyTubeHandler * /*thandler*/,
              TpChannel * tube,
              gpointer data)
 {
-	UT_DEBUGMSG(("new_tube_cb()"));
+	UT_DEBUGMSG(("new_tube_cb()\n"));
 	
 	TpChannel *chan;
 	DTubeAccountHandler *obj = (DTubeAccountHandler *) data;
 	TpHandle initiator;
 	TpContactFeature features[1] = {TP_CONTACT_FEATURE_ALIAS};
 	TpConnection *conn;
-
-	UT_DEBUGMSG(("New tube cb.\n"));
 
 	g_object_get (tube,
 				"channel", &chan,
