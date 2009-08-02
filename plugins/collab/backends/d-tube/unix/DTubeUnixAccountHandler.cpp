@@ -479,7 +479,12 @@ bool DTubeAccountHandler::startSession(PD_Document* pDoc, const std::vector<std:
 		}
 	}
 
-	_createAndOfferTube(pDoc, acl_);
+	UT_UTF8String sTubeAddress; 
+	if (!_createAndOfferTube(pDoc, acl_, sTubeAddress))
+		return false;
+
+	// TODO: store the tube address
+	
 	return true;
 }
 
@@ -955,7 +960,8 @@ DBusHandlerResult s_dbus_handle_message(DBusConnection *connection, DBusMessage 
 	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
 
-UT_UTF8String DTubeAccountHandler::_createAndOfferTube(PD_Document* pDoc, const std::vector<TelepathyBuddyPtr>& vBuddies)
+// TODO: cleanup after errors
+bool DTubeAccountHandler::_createAndOfferTube(PD_Document* pDoc, const std::vector<TelepathyBuddyPtr>& vBuddies, UT_UTF8String& sTubeAddress)
 {
 	GError* error = NULL;
 	GHashTable* params;
@@ -966,8 +972,8 @@ UT_UTF8String DTubeAccountHandler::_createAndOfferTube(PD_Document* pDoc, const 
 	GValue title = {0,};
 	const gchar *doc_title;
 
-	UT_return_val_if_fail(pDoc, "");
-	UT_return_val_if_fail(vBuddies.size() > 0, "");
+	UT_return_val_if_fail(pDoc, false);
+	UT_return_val_if_fail(vBuddies.size() > 0, false);
 	
 	// get some connection belonging to this contact
 	// TODO: we probably want to change this to some user selectable thingy
@@ -997,7 +1003,7 @@ UT_UTF8String DTubeAccountHandler::_createAndOfferTube(PD_Document* pDoc, const 
 	if (!tp_cli_connection_interface_requests_run_create_channel (conn, -1, params, &object_path, &channel_properties, &error, NULL))
 	{
 		UT_DEBUGMSG(("Error creating room: %s\n", error ? error->message : "(null)"));
-		return "";
+		return false;
 	}
 	UT_DEBUGMSG(("Got a room, path: %s\n", object_path));
 	
@@ -1024,7 +1030,7 @@ UT_UTF8String DTubeAccountHandler::_createAndOfferTube(PD_Document* pDoc, const 
 	if (!tp_cli_channel_interface_group_run_add_members (chan, -1,  members, "Hi there!", &error, NULL))
 	{
 		UT_DEBUGMSG(("Error inviting room members: %s\n", error ? error->message : "(null)"));
-		return "";
+		return false;
 	}
 	UT_DEBUGMSG(("Members invited\n"));
 
@@ -1044,16 +1050,17 @@ UT_UTF8String DTubeAccountHandler::_createAndOfferTube(PD_Document* pDoc, const 
 	if (!result)
 	{
 		UT_DEBUGMSG(("Error offering tube to room participants: %s\n", error ? error->message : "(null)"));
-		return "";
+		return false;
 	}
 	g_hash_table_destroy (params);
 
 	UT_DEBUGMSG(("Tube offered, address: %s\n", address));
-
+	sTubeAddress = address;
+	
 	// start listening on the tube for people entering and leaving it
 	tp_cli_channel_type_tubes_connect_to_d_bus_names_changed (chan, tube_dbus_names_changed_cb, this, NULL, NULL, NULL);
 
-	return address;
+	return true;
 }
 
 // FIXME: this can't be right
