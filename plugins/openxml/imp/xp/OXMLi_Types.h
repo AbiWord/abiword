@@ -66,5 +66,56 @@ struct OXMLi_CharDataRequest
 	bool valid;
 };
 
+enum OXMLi_Keyword
+{
+	KEYWORD_adjustRightInd,
+	KEYWORD_autoSpaceDE,
+	KEYWORD_autoSpaceDN,
+	KEYWORD_background, 
+	KEYWORD_bar,
+	KEYWORD_between,
+	KEYWORD_bidi,
+	KEYWORD_body,
+	KEYWORD_bottom,
+	KEYWORD_cnfStyle,
+	KEYWORD_contextualSpacing,
+	KEYWORD_divId,
+	KEYWORD_document, 
+	KEYWORD_framePr,
+	KEYWORD_glossaryDocument,
+	KEYWORD_ind,
+	KEYWORD_jc,
+	KEYWORD_keepLines,
+	KEYWORD_keepNext,
+	KEYWORD_kinsoku,
+	KEYWORD_left,
+	KEYWORD_mirrorIndents,
+	KEYWORD_numPr,
+	KEYWORD_outlineLvl,
+	KEYWORD_overflowPunct,
+	KEYWORD_p,
+	KEYWORD_pageBreakBefore,
+	KEYWORD_pBdr,
+	KEYWORD_pPr,
+	KEYWORD_pStyle,
+	KEYWORD_right,
+	KEYWORD_rPr,
+	KEYWORD_shd,
+	KEYWORD_snapToGrid,
+	KEYWORD_spacing,
+	KEYWORD_suppressAutoHypens,
+	KEYWORD_suppressLineNumbers,
+	KEYWORD_suppressOverlap,
+	KEYWORD_tab,
+	KEYWORD_tabs,
+	KEYWORD_textAlignment,
+	KEYWORD_textboxTightWrap,
+	KEYWORD_textDirection,
+	KEYWORD_top,
+	KEYWORD_topLinePunct,
+	KEYWORD_widowControl,
+	KEYWORD_wordWrap
+};
+
 #endif //_OXMLI_TYPES_H_
 

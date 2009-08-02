@@ -38,6 +38,11 @@ public:
 	void startElement (OXMLi_StartElementRequest * rqst);
 	void endElement (OXMLi_EndElementRequest * rqst);
 	void charData (OXMLi_CharDataRequest * rqst);
+
+private:
+	void populateKeywordTable();
+
+	std::map<std::string, int> m_keywordMap;
 };
 
 #endif //_OXMLI_LISTENERSTATE_VALID_H_
