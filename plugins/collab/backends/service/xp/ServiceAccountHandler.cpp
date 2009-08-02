@@ -293,10 +293,10 @@ bool ServiceAccountHandler::recognizeBuddyIdentifier(const std::string& identifi
 	return true;
 }
 
-bool ServiceAccountHandler::hasAccess(const std::vector<std::string>& /*vAcl*/, BuddyPtr /*pBuddy*/)
+bool ServiceAccountHandler::hasAccess(const std::vector<std::string>& /*vAcl*/, BuddyPtr pBuddy)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::hasAccess()\n"));
-	
+
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 	return false;
 }
@@ -413,9 +413,6 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<st
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_val_if_fail(pManager, false);
 
-	// publish the document to abicollab.net
-	// TODO: implement me
-
 	const std::string uri = getProperty("uri");
 	const std::string email = getProperty("email");
 	const std::string password = getProperty("password");
@@ -428,7 +425,7 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<st
 	boost::shared_ptr<std::string> document(new std::string(""));
 	UT_return_val_if_fail(AbiCollabSessionManager::serializeDocument(pDoc, *document, true) == UT_OK, false);
 	
-	// construct a SOAP method call to gets our documents
+	// construct a SOAP method call to publish the document to abicollab.net
 	soa::function_call fc("publishDocument", "publishDocumentResponse");
 	fc("email", email)
 		("password", password)
@@ -438,6 +435,7 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<st
 
 	// execute the call; we do this synchronous for simplicity for now
 	// TODO: handle bad passwords
+	// TODO: handle "filename already exists"
 	soa::GenericPtr soap_result;
 	try {
 		UT_DEBUGMSG(("Publishing document %s...\n", filename.c_str()));
