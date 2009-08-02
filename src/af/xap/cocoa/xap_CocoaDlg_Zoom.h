@@ -2,7 +2,7 @@
 
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001, 2003 Hubert Figuiere
+ * Copyright (C) 2001, 2003, 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -36,20 +36,16 @@ class XAP_CocoaDialog_Zoom;
     IBOutlet NSButtonCell *_percentBtn;
     IBOutlet NSTextField *_percentField;
 	IBOutlet NSStepper *_percentStepper;
-    IBOutlet XAP_CocoaNSView *_preview;
-    IBOutlet NSBox *_previewBox;
     IBOutlet NSButtonCell *_wholePageBtn;
     IBOutlet NSButtonCell *_zoom100Btn;
     IBOutlet NSButtonCell *_zoom200Btn;
     IBOutlet NSButtonCell *_zoom75Btn;
     IBOutlet NSBox *_zoomBox;
 	IBOutlet NSMatrix	*_zoomMatrix;
-	IBOutlet NSButton	*_okBtn;
-	IBOutlet NSButton *_cancelBtn;
+	IBOutlet NSButton *_closeBtn;
 	XAP_CocoaDialog_Zoom*	_xap;
 }
-- (IBAction)cancelAction:(id)sender;
-- (IBAction)okAction:(id)sender;
+- (IBAction)closeAction:(id)sender;
 - (IBAction)stepperAction:(id)sender;
 - (IBAction)zoom100Action:(id)sender;
 - (IBAction)zoom200Action:(id)sender;
@@ -59,7 +55,6 @@ class XAP_CocoaDialog_Zoom;
 - (IBAction)zoomPercentAction:(id)sender;
 - (IBAction)zoomChangedAction:(id)sender;
 
-- (XAP_CocoaNSView*)preview;
 - (NSMatrix*)zoomMatrix;
 - (int)percentValue;
 - (void)setPercentValue:(int)value;
@@ -78,8 +73,7 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
 
-	virtual void			event_OK(void);
-	virtual void			event_Cancel(void);
+	virtual void			event_Close(void);
 
 	virtual void			event_Radio200Clicked(void);
 	virtual void			event_Radio100Clicked(void);
@@ -92,7 +86,6 @@ public:
 private:
 	void		_populateWindowData(void);
 	void 		_storeWindowData(void);
-	GR_CocoaCairoGraphics	* 		m_pGR;
 	XAP_CocoaDlg_ZoomController*	m_dlg;
 };
 

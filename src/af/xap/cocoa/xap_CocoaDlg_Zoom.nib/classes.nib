@@ -3,8 +3,7 @@
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
             ACTIONS = {
-                cancelAction = id; 
-                okAction = id; 
+                closeAction = id; 
                 stepperAction = id; 
                 zoom100Action = id; 
                 zoom200Action = id; 
@@ -17,14 +16,11 @@
             CLASS = "XAP_CocoaDlg_ZoomController"; 
             LANGUAGE = ObjC; 
             OUTLETS = {
-                "_cancelBtn" = NSButton; 
-                "_okBtn" = NSButton; 
+                "_closeBtn" = NSButton; 
                 "_pageWidthBtn" = NSButtonCell; 
                 "_percentBtn" = NSButtonCell; 
                 "_percentField" = NSTextField; 
                 "_percentStepper" = NSStepper; 
-                "_preview" = "XAP_CocoaNSView"; 
-                "_previewBox" = NSBox; 
                 "_wholePageBtn" = NSButtonCell; 
                 "_zoom100Btn" = NSButtonCell; 
                 "_zoom200Btn" = NSButtonCell; 

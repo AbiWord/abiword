@@ -2,7 +2,7 @@
 
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2003 Hubert Figuiere
+ * Copyright (C) 2003, 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -49,15 +49,13 @@ XAP_Dialog * XAP_CocoaDialog_Zoom::static_constructor(XAP_DialogFactory * pFacto
 }
 
 XAP_CocoaDialog_Zoom::XAP_CocoaDialog_Zoom(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid) :
-	XAP_Dialog_Zoom(pDlgFactory, dlgid),
-	m_pGR(NULL)
+	XAP_Dialog_Zoom(pDlgFactory, dlgid)
 {
 	// 
 }
 
 XAP_CocoaDialog_Zoom::~XAP_CocoaDialog_Zoom(void)
 {
-	DELETEP(m_pGR);
 }
 
 /*****************************************************************/
@@ -76,13 +74,6 @@ void XAP_CocoaDialog_Zoom::runModal(XAP_Frame * pFrame)
 
 	NSWindow * window = [m_dlg window];
 	
-	// make a new Cocoa GC
-	XAP_CocoaNSView* view = [m_dlg preview];
-	NSSize size = [view bounds].size;
-	GR_CocoaCairoAllocInfo ai(view);
-	m_pGR = (GR_CocoaCairoGraphics*)XAP_App::getApp()->newGraphics(ai);
-
-	_createPreviewFromGC(m_pGR, lrintf(size.width), lrintf(size.height));
 	_populateWindowData();
 
 	[NSApp runModalForWindow:window];
@@ -96,13 +87,8 @@ void XAP_CocoaDialog_Zoom::runModal(XAP_Frame * pFrame)
 	m_pFrame = NULL;
 }
 
-void XAP_CocoaDialog_Zoom::event_OK(void)
-{
-	m_answer = XAP_Dialog_Zoom::a_OK;
-	[NSApp stopModal];
-}
 
-void XAP_CocoaDialog_Zoom::event_Cancel(void)
+void XAP_CocoaDialog_Zoom::event_Close(void)
 {
 	m_answer = XAP_Dialog_Zoom::a_CANCEL;
 	[NSApp stopModal];
@@ -249,10 +235,8 @@ void XAP_CocoaDialog_Zoom::_storeWindowData(void)
 	
 	LocalizeControl ([self window],	pSS, XAP_STRING_ID_DLG_Zoom_ZoomTitle);
 
-	LocalizeControl (_okBtn,		pSS, XAP_STRING_ID_DLG_OK);
-	LocalizeControl (_cancelBtn,	pSS, XAP_STRING_ID_DLG_Close);
+	LocalizeControl (_closeBtn,	pSS, XAP_STRING_ID_DLG_Close);
 
-	LocalizeControl (_previewBox,	pSS, XAP_STRING_ID_DLG_Zoom_PreviewFrame);
 	LocalizeControl (_zoomBox,		pSS, XAP_STRING_ID_DLG_Zoom_RadioFrameCaption);
 
 	LocalizeControl (_zoom200Btn,	pSS, XAP_STRING_ID_DLG_Zoom_200);
@@ -273,17 +257,12 @@ void XAP_CocoaDialog_Zoom::_storeWindowData(void)
 	[_percentStepper setMaxValue:((double) XAP_DLG_ZOOM_MAXIMUM_ZOOM)];
 }
 
-- (IBAction)cancelAction:(id)sender
+- (IBAction)closeAction:(id)sender
 {
 	UT_UNUSED(sender);
-	_xap->event_Cancel();
+	_xap->event_Close();
 }
 
-- (IBAction)okAction:(id)sender
-{
-	UT_UNUSED(sender);
-	_xap->event_OK();
-}
 
 - (IBAction)zoom200Action:(id)sender
 {
@@ -337,11 +316,6 @@ void XAP_CocoaDialog_Zoom::_storeWindowData(void)
 	[self setPercentValue:percent];
 
 	_xap->event_SpinPercentChanged();
-}
-
-- (XAP_CocoaNSView*)preview
-{
-	return _preview;
 }
 
 - (NSMatrix*)zoomMatrix
