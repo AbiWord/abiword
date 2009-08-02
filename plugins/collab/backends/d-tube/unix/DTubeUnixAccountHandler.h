@@ -79,7 +79,7 @@ public:
 
 
 	// session management
-	virtual bool							startSession(PD_Document* pDoc, const std::vector<BuddyPtr>& acl);
+	virtual bool							startSession(PD_Document* pDoc, const std::vector<std::string>& acl, AbiCollab** pSession);
 	virtual bool							allowsSessionTakeover()
 		{ return false; /* not right now */ }
 	

@@ -460,14 +460,26 @@ void DTubeAccountHandler::forceDisconnectBuddy(BuddyPtr pBuddy)
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED)
 }
 
-bool DTubeAccountHandler::startSession(PD_Document* pDoc, const std::vector<BuddyPtr>& acl)
+bool DTubeAccountHandler::startSession(PD_Document* pDoc, const std::vector<std::string>& vAcl, AbiCollab** /*pSession*/)
 {
 	UT_DEBUGMSG(("DTubeAccountHandler::startSession()\n"));
 	UT_return_val_if_fail(pDoc, false);
 
 	std::vector<TelepathyBuddyPtr> acl_;
-	for (std::vector<BuddyPtr>::const_iterator cit = acl.begin(); cit != acl.end(); cit++)
-		acl_.push_back(boost::static_pointer_cast<TelepathyBuddy>(*cit));
+	// this n^2 behavior shouldn't be too bad in practice: the ACL will never contain hundreds of elements
+	for (std::vector<std::string>::const_iterator cit = vAcl.begin(); cit != vAcl.end(); cit++)
+	{
+		for (std::vector<BuddyPtr>::iterator it = getBuddies().begin(); it != getBuddies().end(); it++)
+		{
+			TelepathyBuddyPtr pBuddy = boost::static_pointer_cast<TelepathyBuddy>(*it);
+			UT_continue_if_fail(pBuddy);
+			if  (pBuddy->getDescriptor(false).utf8_str() == (*cit))
+			{
+				acl_.push_back(pBuddy);
+				break;
+			}
+		}
+	}
 
 	_createAndOfferTube(pDoc, acl_);
 	return true;
