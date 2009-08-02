@@ -3053,6 +3053,7 @@ void GR_CairoGraphics::paintDeque()
 {
 	UT_DEBUGMSG(("----------8<-------------------------\n"));
 	std::pair<cairo_t*, UT_Rect> tempPair;
+	cairo_push_group(m_cr);
 	while (getDequeSize() > 0)
 	{
 		UT_DEBUGMSG(("painting %d\n",getDequeSize()));
@@ -3071,6 +3072,8 @@ void GR_CairoGraphics::paintDeque()
 		m_bufferContainer.pop_back();
 		//delete[] tempPair.second;
 	}
+	cairo_pop_group_to_source(m_cr);
+	cairo_fill(m_cr);
 	UT_DEBUGMSG(("---------------------------->8-------\n"));
 	return;
 }
