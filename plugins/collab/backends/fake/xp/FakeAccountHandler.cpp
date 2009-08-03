@@ -51,8 +51,8 @@ FakeAccountHandler::FakeAccountHandler(const UT_UTF8String& sSessionURI, XAP_Fra
 	m_iRemoteRev(0)
 {
 	UT_DEBUGMSG(("FakeAccountHandler::FakeAccountHandler()\n"));
-  m_strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-  m_strings->setDomain("abiword-plugin-collab");
+  XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+  pSS->setDomain("abiword-plugin-collab");
 }
 
 FakeAccountHandler::~FakeAccountHandler()
@@ -61,12 +61,12 @@ FakeAccountHandler::~FakeAccountHandler()
 
 UT_UTF8String FakeAccountHandler::getDescription()
 {
-	return m_strings->getValue(_("Fake AbiCollab Backend"));
+	return _("Fake AbiCollab Backend");
 }
 
 UT_UTF8String FakeAccountHandler::getDisplayType()
 {
-	return m_strings->getValue(_("Fake AbiCollab Backend"));
+	return _("Fake AbiCollab Backend");
 }
 
 UT_UTF8String FakeAccountHandler::getStaticStorageType()

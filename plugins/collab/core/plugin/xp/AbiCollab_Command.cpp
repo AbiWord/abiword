@@ -50,8 +50,8 @@ AbiCollab_Command::AbiCollab_Command(const UT_UTF8String& argv)
 	: m_argv(argv)
 {
 	XAP_App* pApp = XAP_App::getApp ();
-  m_strings = (XAP_StringSet *) pApp->getStringSet();
-  m_strings->setDomain("abiword-plugin-collab");
+	XAP_StringSet * pSS = (XAP_StringSet *) pApp->getStringSet();
+	pSS->setDomain("abiword-plugin-collab");
 	
 	#ifndef WIN32
 	pApp->getGraphicsFactory()->registerAsDefault(GRID_UNIX_NULL, true);
@@ -74,7 +74,7 @@ bool AbiCollab_Command::execute()
 	{
 		if(_argc == 0)
 		{
-			fprintf(stderr, m_strings->getValue(_("Usage: abiword --plugin \"AbiWord Collaboration\" <action> [action arguments]\n")));
+			fprintf(stderr, _("Usage: abiword --plugin \"AbiWord Collaboration\" <action> [action arguments]\n"));
 			return false;
 		}
 		
@@ -89,7 +89,7 @@ bool AbiCollab_Command::execute()
 			}
 			else
 			{
-				fprintf(stderr, m_strings->getValue(_("Usage: abiword --plugin \"AbiWord Collaboration\" regression <recorded abicollab session>\n")));
+				fprintf(stderr, _("Usage: abiword --plugin \"AbiWord Collaboration\" regression <recorded abicollab session>\n"));
 				return false;
 			}
 		}
@@ -102,13 +102,13 @@ bool AbiCollab_Command::execute()
 			}
 			else
 			{
-				fprintf(stderr, m_strings->getValue(_("Usage: abiword --plugin \"AbiWord Collaboration\" <debug|debugstep> <recorded abicollab server session> <recorded abicollab client session>\n")));
+				fprintf(stderr, _("Usage: abiword --plugin \"AbiWord Collaboration\" <debug|debugstep> <recorded abicollab server session> <recorded abicollab client session>\n"));
 				return false;
 			}
 		}
 		else
 		{
-			fprintf(stderr, m_strings->getValue(_("Usage: abiword --plugin \"AbiWord Collaboration\" <action> [action arguments]\n")));
+			fprintf(stderr, _("Usage: abiword --plugin \"AbiWord Collaboration\" <action> [action arguments]\n"));
 			return false;
 		}
 	}
@@ -137,7 +137,7 @@ bool AbiCollab_Command::_doCmdRegression(const UT_UTF8String& sSessionFile)
 	g_free(uri);
 	return res;
 #else
-	fprintf(stderr, m_strings->getValue(_("Can't run the abicollab regression test: the \"fake\" abiword backend is disabled\n")));
+	fprintf(stderr, _("Can't run the abicollab regression test: the \"fake\" abiword backend is disabled\n"));
 	return false;
 #endif
 }
@@ -184,7 +184,7 @@ bool AbiCollab_Command::_doCmdDebug(const UT_UTF8String& sServerSessionFile, con
 		UT_sint32 iClientRemoteRev;
 		UT_return_val_if_fail(pClientHandler->getCurrentRev(iClientLocalRev, iClientRemoteRev), false);		
 
-		UT_UTF8String msg = UT_UTF8String_sprintf(m_string->getValue(_("Current state: iServerLocalRev: %d, iServerRemoteRev: %d, iClientLocalRev: %d, iClientRemoteRev: %d\nPress OK to move to the next syncpoint")), 
+		UT_UTF8String msg = UT_UTF8String_sprintf(_("Current state: iServerLocalRev: %d, iServerRemoteRev: %d, iClientLocalRev: %d, iClientRemoteRev: %d\nPress OK to move to the next syncpoint"), 
 					iServerLocalRev, iServerRemoteRev, iClientLocalRev, iClientRemoteRev);
 		pServerHandler->getFrame()->showMessageBox(msg.utf8_str(), XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
 		
@@ -210,7 +210,7 @@ bool AbiCollab_Command::_doCmdDebug(const UT_UTF8String& sServerSessionFile, con
 			UT_ASSERT_HARMLESS(_syncDocs(pServerHandler, pClientHandler, bSingleStep));
 	}
 
-	pServerHandler->getFrame()->showMessageBox(m_strings->getValue(_("Done replaying collaboration session")), XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+	pServerHandler->getFrame()->showMessageBox(_("Done replaying collaboration session"), XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
 	
 	UT_DEBUGMSG(("Cleaning up fake account handlers...\n"));
 	pServerHandler->cleanup();
@@ -224,7 +224,7 @@ bool AbiCollab_Command::_doCmdDebug(const UT_UTF8String& sServerSessionFile, con
 	return true;
 #else
 	UT_UNUSED(bSingleStep);
-	fprintf(stderr, m_strings->getValue(_("Can't run the abicollab in debug mode: the \"fake\" abiword backend is disabled\n")));
+	fprintf(stderr, _("Can't run the abicollab in debug mode: the \"fake\" abiword backend is disabled\n"));
 	return false;
 #endif
 }

@@ -20,8 +20,8 @@
 
 #include "xap_Strings.h"
 
-XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-const char * olddom = strings->setDomain("abiword-plugin-collab");
+XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+const char * olddom = pSS->setDomain("abiword-plugin-collab");
 
 #define return_val_if_neg(C, val) { if (C < 0) {return val;} }
 
@@ -33,12 +33,12 @@ namespace tls_tunnel {
 #define TUNNEL_BUFFER_SIZE 4096
 #define LOCAL_BUFFER_SIZE 4096
 
-#define TRANSPORT_ERROR strings->getValue(_("Transport exception: "))
-#define TLS_SETUP_ERROR strings->getValue(_("Error setting up TLS connection"))
-#define TLS_CREDENTIALS_ERROR strings->getValue(_("Error setting up TLS connection"))
-#define TLS_VERIFY_PEER_ERROR strings->getValue(_("Error verifying peer"))
-#define TLS_VERIFY_HOSTNAME_ERROR strings->getValue(_("Error verifying hostname"))
-#define TLS_CANT_GET_PEER_CERT_ERROR strings->getValue(_("Failed to get peer certificate"))
+#define TRANSPORT_ERROR _("Transport exception: ")
+#define TLS_SETUP_ERROR (_("Error setting up TLS connection")
+#define TLS_CREDENTIALS_ERROR _("Error setting up TLS connection")
+#define TLS_VERIFY_PEER_ERROR _("Error verifying peer")
+#define TLS_VERIFY_HOSTNAME_ERROR (_("Error verifying hostname")
+#define TLS_CANT_GET_PEER_CERT_ERROR _("Failed to get peer certificate")
 
 typedef boost::shared_ptr<asio::ip::tcp::socket> socket_ptr_t;
 typedef boost::shared_ptr<gnutls_session_t> session_ptr_t;

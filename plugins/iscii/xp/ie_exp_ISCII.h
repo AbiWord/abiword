@@ -40,9 +40,6 @@ public:
 							  IEFileType * ft);
 	virtual UT_Error constructExporter(PD_Document * pDocument,
 									   IE_Exp ** ppie);
-
-private:
-  XAP_StringSet *m_strings;
 };
 
 class IE_Exp_ISCII : public IE_Exp_Text

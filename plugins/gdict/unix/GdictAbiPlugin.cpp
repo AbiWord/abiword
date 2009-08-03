@@ -51,7 +51,7 @@
 ABI_PLUGIN_DECLARE("Gdict")
 #endif
 
-XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 
 static void
 GDict_exec (const char * search)
@@ -143,7 +143,7 @@ GDict_dlg_create (const char * search)
   GtkWidget * gtk_entry;
   
   // create the toplevel dialog
-  gdict_dlg = gnome_dialog_new (strings->getValue(_("AbiWord Dictionary")), 
+  gdict_dlg = gnome_dialog_new (_("AbiWord Dictionary"), 
 				GNOME_STOCK_BUTTON_CLOSE, NULL);
   gtk_window_set_modal (GTK_WINDOW(gdict_dlg), false);
   gtk_widget_set_usize (gdict_dlg, 450, 300);
@@ -294,7 +294,7 @@ GDict_removeFromMenus()
 static void
 GDict_addToMenus()
 {
-	strings->setDomain(NULL);
+	pSS->setDomain();
   // First we need to get a pointer to the application itself.
   XAP_App *pApp = XAP_App::getApp();
     
@@ -334,13 +334,13 @@ GDict_addToMenus()
   //
   // Put it in the context menu.
   //
-  XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText",NULL, strings->getValue(_("Bullets and &Numbering")),EV_MLF_Normal);
+  XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText",NULL, _("Bullets and &Numbering"),EV_MLF_Normal);
   pFact->addNewLabel(NULL,newID,GDict_MenuLabel, GDict_MenuTooltip);
 
   //
   // Also put it under word Wount in the main menu,
   //
-  pFact->addNewMenuAfter("Main",NULL, strings->getValue(_("&Word Count")),EV_MLF_Normal,newID);
+  pFact->addNewMenuAfter("Main",NULL, _("&Word Count"),EV_MLF_Normal,newID);
   
   // Create the Action that will be called.
   EV_Menu_Action* myAction = new EV_Menu_Action(
@@ -378,16 +378,16 @@ GDict_addToMenus()
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-		strings->setDomain("abiword-plugin-gdict");
+    pSS->setDomain("abiword-plugin-gdict");
 
-		GDict_MenuLabel = strings->getValue(_("G&Dict Dictionary"));
-		GDict_MenuTooltip = strings->getValue(_("Opens the dictionary"));
+    GDict_MenuLabel = _("G&Dict Dictionary");
+    GDict_MenuTooltip = _("Opens the dictionary");
 
-    mi->name = strings->getValue(_("GDict plugin"));
-    mi->desc = strings->getValue(_("Dictionary support for AbiWord"));
+    mi->name = _("GDict plugin");
+    mi->desc = _("Dictionary support for AbiWord");
     mi->version = ABI_VERSION_STRING;
     mi->author = "Dom Lachowicz <cinamod@hotmail.com>";
-    mi->usage = strings->getValue(_("No Usage"));
+    mi->usage = _("No Usage");
     
     // Add the dictionary to AbiWord's menus.
     GDict_addToMenus();

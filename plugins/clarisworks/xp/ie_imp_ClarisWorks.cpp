@@ -48,7 +48,7 @@ ABI_PLUGIN_DECLARE("ClarisWorks")
 /*****************************************************************/
 /*****************************************************************/
 
-XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 
 // completely generic code to allow this to be a plugin
 
@@ -58,18 +58,18 @@ static IE_Imp_ClarisWorks_Sniffer * m_sniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-	strings->setDomain("abiword-plugin-clarisworks");
+	pSS->setDomain("abiword-plugin-clarisworks");
 
 	if (!m_sniffer)
 	{
 		m_sniffer = new IE_Imp_ClarisWorks_Sniffer ();
 	}
 
-	mi->name = strings->getValue(_("ClarisWorks Importer"));
-	mi->desc = strings->getValue(_("Import ClarisWorks Documents"));
+	mi->name = _("ClarisWorks Importer");
+	mi->desc = _("Import ClarisWorks Documents");
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Abi the Ant";
-	mi->usage = strings->getValue(_("No Usage"));
+	mi->usage = _("No Usage");
 
 	IE_Imp::registerImporter (m_sniffer);
 	return 1;
@@ -207,7 +207,7 @@ bool	IE_Imp_ClarisWorks_Sniffer::getDlgLabels(const char ** pszDesc,
 												 const char ** pszSuffixList,
 												 IEFileType * ft)
 {
-   *pszDesc = strings->getValue(_("ClarisWorks/AppleWorks 5 (.cwk)"));
+   *pszDesc = _("ClarisWorks/AppleWorks 5 (.cwk)");
    *pszSuffixList = "*.cwk";
    *ft = getFileType();
    return true;

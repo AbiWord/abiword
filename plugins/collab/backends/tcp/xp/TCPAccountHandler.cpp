@@ -33,8 +33,8 @@ TCPAccountHandler::TCPAccountHandler()
 	m_bConnected(false),
 	m_pDelegator(0)
 {
-  m_strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-  m_strings->setDomain("abiword-plugin-collab");
+	XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	pSS->setDomain("abiword-plugin-collab");
 }
 
 TCPAccountHandler::~TCPAccountHandler()
@@ -50,13 +50,13 @@ UT_UTF8String TCPAccountHandler::getDescription()
 	const std::string port = getProperty("port");	
 	
 	if (host == "")
-		return UT_UTF8String_sprintf(m_strings->getValue(_("Listening on port %s")), port.c_str());
+		return UT_UTF8String_sprintf(_("Listening on port %s"), port.c_str());
 	return UT_UTF8String_sprintf("%s:%s", host.c_str(), port.c_str());
 }
 
 UT_UTF8String TCPAccountHandler::getDisplayType()
 {
-	return m_strings->getValue(_("Direct Connection (TCP)"));
+	return _("Direct Connection (TCP)");
 }
 
 UT_UTF8String TCPAccountHandler::getStaticStorageType()

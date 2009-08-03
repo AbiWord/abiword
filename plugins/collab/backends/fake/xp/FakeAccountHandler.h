@@ -105,9 +105,6 @@ private:
 	// variables for the debug test
 	UT_sint32								m_iLocalRev;
 	UT_sint32								m_iRemoteRev;
-
-private:
-  XAP_StringSet * m_strings;
 };
 
 #endif /* __SUGARACCOUNTHANDLER__ */

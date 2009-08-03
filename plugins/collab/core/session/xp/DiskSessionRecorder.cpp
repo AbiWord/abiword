@@ -26,13 +26,13 @@
 #include "DiskSessionRecorder.h"
 #include "xap_Strings.h"
 
-XAP_StringSet * m_strings;
+XAP_StringSet * m_pSS;
 
 DiskSessionRecorder::DiskSessionRecorder(AbiCollab* pSession)
 	: SessionRecorderInterface(pSession)
 {
-  m_strings = (XAP_StringSet * ) XAP_App::getApp()->getStringSet();
-  m_strings->setDomain("abiword-plugin-collab");
+	m_pSS = (XAP_StringSet * ) XAP_App::getApp()->getStringSet();
+	m_pSS->setDomain("abiword-plugin-collab");
 	
   UT_DEBUGMSG(("DiskSessionRecorder::DiskSessionRecorder()\n"));
 	
@@ -169,7 +169,7 @@ bool DiskSessionRecorder::getPackets(const std::string& filename, bool& bLocally
 
 bool DiskSessionRecorder::dumpSession(const std::string& filename)
 {
-  m_strings->setDomain("abiword-plugin-collab");
+	m_pSS->setDomain("abiword-plugin-collab");
 
 	bool bLocallyControlled;
 	vector<RecordedPacket*> packets;
@@ -192,17 +192,17 @@ bool DiskSessionRecorder::dumpSession(const std::string& filename)
 			gmtime_r( &t, &time );				
 			printf("@ %04d/%02d/%02d %02d:%02d:%02d\n", 1900+time.tm_year, time.tm_mon, time.tm_mday, time.tm_hour, time.tm_min, time.tm_sec);
 #endif
-			printf(m_strings->getValue(_("[%06u] %s packet ")), packetCounter++, rp->m_bIncoming? m_strings->getValue(_("INCOMING")) : m_strings->getValue(_("OUTGOING")) );
-			printf("%s ", rp->m_bIncoming? m_strings->getValue(_("from")) : m_strings->getValue(_("to")));
+			printf(_("[%06u] %s packet "), packetCounter++, rp->m_bIncoming? _("INCOMING") : _("OUTGOING") );
+			printf("%s ", rp->m_bIncoming? _("from") : _("to"));
 			if (rp->m_bHasBuddy)
 			{
 				printf("<%s>", rp->m_buddyName.utf8_str());
 			}
 			else
 			{
-				printf(m_strings->getValue(_("<all>")));
+				printf(_("<all>"));
 			}
-			printf(m_strings->getValue(_(" of class %s\n")), Packet::getPacketClassname(rp->m_pPacket->getClassType()));
+			printf(_(" of class %s\n"), Packet::getPacketClassname(rp->m_pPacket->getClassType()));
 			printf("--------------------------------------------------------------------------------\n");
 			printf("%s\n", rp->m_pPacket->toStr().c_str());
 			printf("--------------------------------------------------------------------------------\n");

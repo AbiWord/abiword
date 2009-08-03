@@ -46,7 +46,7 @@
 ABI_PLUGIN_DECLARE("FreeTranslation")
 #endif
 
-XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 
 // FreeTranslation offers a similar service to BabelFish
 // but has a way to return just the translated string
@@ -296,7 +296,7 @@ FreeTranslation_RemoveFromMenus ()
 
 static void FreeTranslation_addToMenus()
 {
-	strings->setDomain(NULL);
+	pSS->setDomain();
 
 	// First we need to get a pointer to the application itself.
 	XAP_App * pApp = XAP_App::getApp();
@@ -337,13 +337,13 @@ static void FreeTranslation_addToMenus()
 	// 
 	// Put it in the context menu.
 	// 
-	XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText", NULL, strings->getValue(_("Bullets and &Numbering")), EV_MLF_Normal);
+	XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText", NULL, _("Bullets and &Numbering"), EV_MLF_Normal);
 	pFact->addNewLabel(NULL, newID, FreeTranslation_MenuLabel, FreeTranslation_MenuTooltip);
 
 	// 
 	// Also put it under word Wount in the main menu,
 	// 
-	pFact->addNewMenuAfter("Main", NULL, strings->getValue(_("&Word Count")), EV_MLF_Normal, newID);
+	pFact->addNewMenuAfter("Main", NULL, _("&Word Count"), EV_MLF_Normal, newID);
 
 	// Create the Action that will be called.
 	EV_Menu_Action * myAction = new EV_Menu_Action(
@@ -380,16 +380,16 @@ static void FreeTranslation_addToMenus()
 
 ABI_BUILTIN_FAR_CALL int abi_plugin_register(XAP_ModuleInfo * mi)
 {
-	strings->setDomain("abiword-plugin-freetranslation");
+	pSS->setDomain("abiword-plugin-freetranslation");
 
-	FreeTranslation_MenuLabel = strings->getValue(_("Use &Free Translation"));
-	FreeTranslation_MenuTooltip = strings->getValue(_("Opens the gratis on-line translator"));
+	FreeTranslation_MenuLabel = _("Use &Free Translation");
+	FreeTranslation_MenuTooltip = _("Opens the gratis on-line translator");
 
-	mi->name = strings->getValue(_("FreeTranslation plugin"));
-	mi->desc = strings->getValue(_("On-line Translation support for AbiWord. Based upon the FreeTranslation translation tool (www.freetranslation.com), for personal, non-commercial use only."));
+	mi->name = _("FreeTranslation plugin");
+	mi->desc = _("On-line Translation support for AbiWord. Based upon the FreeTranslation translation tool (www.freetranslation.com), for personal, non-commercial use only.");
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Andrew Dunbar";
-	mi->usage = strings->getValue(_("No Usage"));
+	mi->usage = _("No Usage");
 
 	// Add the translator to AbiWord's menus.
 	FreeTranslation_addToMenus();

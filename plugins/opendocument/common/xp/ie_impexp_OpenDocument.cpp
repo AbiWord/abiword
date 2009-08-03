@@ -56,8 +56,8 @@ static IE_Exp_OpenDocument_Sniffer* pExp_sniffer = 0;
  */
 ABI_BUILTIN_FAR_CALL int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-    XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-		strings->setDomain("abiword-plugin-opendocument");
+    XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+    pSS->setDomain("abiword-plugin-opendocument");
 
     if (!pImp_sniffer) {
         pImp_sniffer = new IE_Imp_OpenDocument_Sniffer ();
@@ -70,11 +70,11 @@ ABI_BUILTIN_FAR_CALL int abi_plugin_register (XAP_ModuleInfo * mi)
         
     IE_Exp::registerExporter (pExp_sniffer);
 
-    mi->name    = strings->getValue(_("OpenDocument Filter"));
-    mi->desc    = strings->getValue(_("Import/Export OpenDocument (.odt) files"));
+    mi->name    = _("OpenDocument Filter");
+    mi->desc    = _("Import/Export OpenDocument (.odt) files");
     mi->version = ABI_VERSION_STRING;
     mi->author  = "Daniel D'Andrada T. de Carvalho, Dom Lachowicz";
-    mi->usage   = strings->getValue(_("No Usage"));
+    mi->usage   = _("No Usage");
   
     return 1;
 }

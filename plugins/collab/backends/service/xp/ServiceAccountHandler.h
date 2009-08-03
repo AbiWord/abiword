@@ -59,8 +59,6 @@ typedef boost::shared_ptr< std::map<std::string, GetSessionsResponseEvent> > Bud
 
 class ServiceAccountHandler : public AccountHandler
 {
-private:
-	XAP_StringSet *m_strings;
 public:
 	ServiceAccountHandler() {}
 	virtual ~ServiceAccountHandler() {}

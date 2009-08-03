@@ -81,7 +81,7 @@ static bool Presentation_prevPage (AV_View * v, EV_EditMethodCallData * d);
 static bool Presentation_context (AV_View * v, EV_EditMethodCallData * d);
 
 Presentation myPresentation;
-XAP_StringSet *strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 EV_EditMouseContext PresentationContextID =  EV_EMC_EMBED;
 static XAP_Menu_Id presentationID;
 static const char * szPresentation;
@@ -98,7 +98,7 @@ static XAP_Menu_Id prevSlideID;
 static void
 Presentation_registerMethod ()
 {
-	strings->setDomain(NULL);
+	pSS->setDomain();
 	// First we need to get a pointer to the application itself.
 	XAP_App *pApp = XAP_App::getApp ();
 
@@ -264,15 +264,15 @@ Presentation_RemoveFromMethods ()
 ABI_BUILTIN_FAR_CALL int
 abi_plugin_register (XAP_ModuleInfo * mi)
 {
-	strings->setDomain("abiword-plugin-presentation");
+	pSS->setDomain("abiword-plugin-presentation");
 
-	szPresentation = strings->getValue(_("Presentation"));
-	szPresentationStatus = strings->getValue(_("View the document in presentation mode"));
-	szNextSlide = strings->getValue(_("Next Slide"));
-	szPrevSlide = strings->getValue(_("Previous Slide"));
+	szPresentation = _("Presentation");
+	szPresentationStatus = _("View the document in presentation mode");
+	szNextSlide = _("Next Slide");
+	szPrevSlide = _("Previous Slide");
 
-	mi->name = strings->getValue(_("Presentation"));
-	mi->desc = strings->getValue(_("This enables AbiWord to make presentations"));
+	mi->name = _("Presentation");
+	mi->desc = _("This enables AbiWord to make presentations");
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Martin Sevior <msevior@physics.unimelb.edu.au>";
 	mi->usage = "Presentaton_start";

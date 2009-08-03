@@ -46,7 +46,7 @@ ABI_PLUGIN_DECLARE ("URLDict")
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
 
-XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 
 //
 // _ucsToAscii
@@ -153,7 +153,7 @@ URLDict_removeFromMenus()
 static void
 URLDict_addToMenus()
 {
-	strings->setDomain(NULL);
+	pSS->setDomain();
 
   // First we need to get a pointer to the application itself.
   XAP_App *pApp = XAP_App::getApp();
@@ -194,13 +194,13 @@ URLDict_addToMenus()
   //
   // Put it in the context menu.
   //
-  XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText",NULL, strings->getValue(_("Bullets and &Numbering")),EV_MLF_Normal);
+  XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText",NULL, _("Bullets and &Numbering"),EV_MLF_Normal);
   pFact->addNewLabel(NULL,newID,URLDict_MenuLabel, URLDict_MenuTooltip);
 
   //
   // Also put it under word Wount in the main menu,
   //
-  pFact->addNewMenuAfter("Main",NULL, strings->getValue(_("&Word Count")),EV_MLF_Normal,newID);
+  pFact->addNewMenuAfter("Main",NULL, _("&Word Count"),EV_MLF_Normal,newID);
   
   // Create the Action that will be called.
   EV_Menu_Action* myAction = new EV_Menu_Action(
@@ -238,16 +238,16 @@ URLDict_addToMenus()
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-		strings->setDomain("abiword-plugin-urldict");
+	pSS->setDomain("abiword-plugin-urldict");
 
-		URLDict_MenuLabel = strings->getValue(_("&URL Dictionary"));
-		URLDict_MenuTooltip = strings->getValue(_("Opens the on-line dictionary"));
+	URLDict_MenuLabel = _("&URL Dictionary");
+	URLDict_MenuTooltip = _("Opens the on-line dictionary");
 
-    mi->name = strings->getValue(_("URLDict plugin"));
-    mi->desc = strings->getValue(_("On-line Dictionary support for AbiWord. Based upon the DICT Protocol. The search site is http://www.dict.org."));
+    mi->name = _("URLDict plugin");
+    mi->desc = _("On-line Dictionary support for AbiWord. Based upon the DICT Protocol. The search site is http://www.dict.org.");
     mi->version = ABI_VERSION_STRING;
     mi->author = "Michael D. Pritchett"; // and Dom Lachowicz
-    mi->usage = strings->getValue(_("No Usage"));
+    mi->usage = _("No Usage");
     
     // Add the dictionary to AbiWord's menus.
     URLDict_addToMenus();

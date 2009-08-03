@@ -169,7 +169,6 @@ private:
 	std::map<AbiCollab*, int>					m_asyncSessionOps;
 	std::map<AccountHandler*, int>				m_asyncAccountOps;
 
-  XAP_StringSet  *m_strings;
 };
 
 #endif /* ABICOLLABSESSIONMANAGER_H */

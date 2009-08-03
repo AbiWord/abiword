@@ -56,8 +56,8 @@ static IE_Exp_OpenXML_Sniffer* pExp_sniffer = 0;
  */
 ABI_BUILTIN_FAR_CALL int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-		XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-		strings->setDomain("abiword-plugin-openxml");
+		XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+		pSS->setDomain("abiword-plugin-openxml");
 
     if (!pImp_sniffer) {
         pImp_sniffer = new IE_Imp_OpenXML_Sniffer ();
@@ -71,11 +71,11 @@ ABI_BUILTIN_FAR_CALL int abi_plugin_register (XAP_ModuleInfo * mi)
     
 	IE_Exp::registerExporter (pExp_sniffer);
 
-    mi->name    = strings->getValue(_("Office Open XML Filter"));
-    mi->desc    = strings->getValue(_("Import/Export Office Open XML (.docx) files"));
+    mi->name    = _("Office Open XML Filter");
+    mi->desc    = _("Import/Export Office Open XML (.docx) files");
     mi->version = ABI_VERSION_STRING;
     mi->author  = "Philippe Milot";
-    mi->usage   = strings->getValue(_("No Usage"));
+    mi->usage   = _("No Usage");
   
     return 1;
 }

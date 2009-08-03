@@ -40,8 +40,8 @@ IE_Imp_AbiCollabSniffer::IE_Imp_AbiCollabSniffer()
 	: IE_ImpSniffer("AbiWord::AbiCollab-1.0")
 {
 	IE_Imp::registerImporter(this);
-  m_strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-  m_strings->setDomain("abiword-plugin-collab");
+	XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	pSS->setDomain("abiword-plugin-collab");
 }
 
 IE_Imp_AbiCollabSniffer::~IE_Imp_AbiCollabSniffer()
@@ -73,7 +73,7 @@ UT_Confidence_t IE_Imp_AbiCollabSniffer::recognizeContents (const char * szBuf, 
 bool IE_Imp_AbiCollabSniffer::getDlgLabels (const char ** pszDesc, const char ** pszSuffixList, IEFileType * ft)
 {
 	// TODO: should we hide this from the menu ?
-	*pszDesc = m_strings->getValue(_("Collaborative File Descriptor (.abicollab)"));
+	*pszDesc = _("Collaborative File Descriptor (.abicollab)");
 	*pszSuffixList = "*.abicollab";
 	*ft = getFileType();
 	return true;

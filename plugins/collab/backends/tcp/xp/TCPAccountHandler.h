@@ -91,7 +91,6 @@ private:
 
 	std::map<TCPBuddyPtr, boost::shared_ptr<Session> >		m_clients; // mapping buddies and their accompanying session
 
-  XAP_StringSet *strings;
 };
 
 #endif /* __TCPACCOUNTHANDLER__ */

@@ -44,7 +44,7 @@ ABI_PLUGIN_DECLARE("BMP")
 /*******************************************************************/
 /*******************************************************************/
 
-XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 
 // we use a reference-counted sniffer
 static IE_ImpGraphicBMP_Sniffer * m_impSniffer = 0;
@@ -52,18 +52,18 @@ static IE_ImpGraphicBMP_Sniffer * m_impSniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-	strings->setDomain("abiword-plugin-bmp");
+	pSS->setDomain("abiword-plugin-bmp");
 
 	if (!m_impSniffer)
 	{
 	  m_impSniffer = new IE_ImpGraphicBMP_Sniffer();
 	}
 
-	mi->name = strings->getValue(_("BMP Import Plugin"));
-	mi->desc = strings->getValue(_("Import Windows Bitmap Images"));
+	mi->name = _("BMP Import Plugin");
+	mi->desc = _("Import Windows Bitmap Images");
 	mi->version = ABI_VERSION_STRING;
-	mi->author = strings->getValue(_("Abi the Ant"));
-	mi->usage = strings->getValue(_("No Usage"));
+	mi->author = _("Abi the Ant");
+	mi->usage = _("No Usage");
 
 	IE_ImpGraphic::registerImporter (m_impSniffer);
 	return 1;
@@ -129,7 +129,9 @@ bool IE_ImpGraphicBMP_Sniffer::getDlgLabels(const char ** pszDesc,
 					    const char ** pszSuffixList,
 					    IEGraphicFileType * ft)
 {
-	*pszDesc = strings->getValue(_("Windows Bitmap (.bmp)"));
+	pSS->setDomain("abiword-plugin-bmp");
+
+	*pszDesc = _("Windows Bitmap (.bmp)");
 	*pszSuffixList = "*.bmp";
 	*ft = getType ();
 	return true;

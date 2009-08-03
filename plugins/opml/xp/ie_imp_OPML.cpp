@@ -51,8 +51,9 @@ static IE_Imp_OPML_Sniffer * m_sniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-  XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-	strings->setDomain("abiword-plugin-opml");
+	XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	pSS->setDomain("abiword-plugin-opml");
+
 	if (!m_sniffer)
 	{
 		m_sniffer = new IE_Imp_OPML_Sniffer (PLUGIN_NAME);
@@ -60,11 +61,11 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 
 	UT_ASSERT (m_sniffer);
 
-	mi->name = strings->getValue(_("OPML Importer"));
-	mi->desc = strings->getValue(_("Imports OPML documents."));
+	mi->name = _("OPML Importer");
+	mi->desc = _("Imports OPML documents.");
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Abi the Ant";
-	mi->usage = strings->getValue(_("No Usage"));
+	mi->usage = _("No Usage");
 
 	IE_Imp::registerImporter (m_sniffer);
 

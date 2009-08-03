@@ -33,7 +33,7 @@
 //
 //
 
-XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 
 /***************************************************************************/
 /* wri_struct.c */
@@ -41,7 +41,7 @@ XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 
 int read_wri_struct_mem (struct wri_struct *cfg, unsigned char *blob) {
     int i, n;
-		strings->setDomain("abiword-plugin-mswrite");
+    pSS->setDomain("abiword-plugin-mswrite");
 
     for (i=0;cfg[i].name;i++) {
 	switch (cfg[i].type) {
@@ -54,7 +54,7 @@ int read_wri_struct_mem (struct wri_struct *cfg, unsigned char *blob) {
 	case CT_BLOB:
 	    cfg[i].data = static_cast<char*>(malloc (cfg[i].size));
 	    if (!cfg[i].data) {
-		fprintf (stderr, strings->getValue(_("Out of memory!\n")));
+		fprintf (stderr, _("Out of memory!\n"));
 		return 1;
 	    }
 	    memcpy (cfg[i].data, blob, cfg[i].size);
@@ -71,7 +71,7 @@ int read_wri_struct (struct wri_struct *cfg, GsfInput *f) {
     int size, i;
     unsigned char *blob;
 
-		strings->setDomain("abiword-plugin-mswrite");
+    pSS->setDomain("abiword-plugin-mswrite");
 
     /* first we need to calculate the size */
     i = size = 0;
@@ -80,11 +80,11 @@ int read_wri_struct (struct wri_struct *cfg, GsfInput *f) {
     /* got the size, read the blob */
     blob = static_cast<unsigned char*>(malloc (size));
     if (!blob) {
-	fprintf (stderr, strings->getValue(_("Out of memory!\n")));
+	fprintf (stderr, _("Out of memory!\n"));
 	return 1;
     }
     if (!gsf_input_read(f, size, blob)) {
-	fprintf (stderr, strings->getValue(_("File not big enough!\n")));
+	fprintf (stderr, _("File not big enough!\n"));
 	return 1;
     }
     
@@ -97,7 +97,7 @@ int read_wri_struct (struct wri_struct *cfg, GsfInput *f) {
 void dump_wri_struct (struct wri_struct *cfg) {
     int i = 0;
 
-		strings->setDomain("abiword-plugin-mswrite");
+    pSS->setDomain("abiword-plugin-mswrite");
 
     while (cfg[i].name) {
 	switch (cfg[i].type) {
@@ -105,10 +105,10 @@ void dump_wri_struct (struct wri_struct *cfg) {
 	    printf ("%s:\t%x\n", cfg[i].name, cfg[i].value);
 	    break;
 	case CT_IGNORE:
-	    printf (strings->getValue(_("%s:\tignored\n")), cfg[i].name);
+	    printf (_("%s:\tignored\n"), cfg[i].name);
 	    break;
 	case CT_BLOB:
-	    printf (strings->getValue(_("%s:\tblob (%d)\n")), cfg[i].name, cfg[i].size);
+	    printf (_("%s:\tblob (%d)\n"), cfg[i].name, cfg[i].size);
 	    break;
 	}
 	i++;
@@ -124,7 +124,7 @@ void free_wri_struct (struct wri_struct *cfg) {
 }
    
 int wri_struct_value (const struct wri_struct *cfg, const char *name) {
-		strings->setDomain("abiword-plugin-mswrite");
+    pSS->setDomain("abiword-plugin-mswrite");
 
     int  i = 0;
     while (cfg[i].name) {
@@ -132,7 +132,7 @@ int wri_struct_value (const struct wri_struct *cfg, const char *name) {
 	i++;
     }
     /* this shouldn't happen! */
-    printf (strings->getValue(_("%s not found, internal error.\n")), name);
+    printf (_("%s not found, internal error.\n"), name);
     exit (1);
     return 0;
 }

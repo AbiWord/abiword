@@ -41,7 +41,6 @@ private:
 	void _save_cb(UT_Error error, AbiCollab* pSession);
 
 	EV_EditMethod* m_pOldSaveEM;
-  XAP_StringSet *m_strings;
 };
 
 #endif /* __ABICOLLAB_SAVE_INTERCEPTOR__ */

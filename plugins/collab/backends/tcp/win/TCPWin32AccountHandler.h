@@ -64,9 +64,6 @@ private:
 	bool									_isCheckedHwnd(HWND hCtrl);
 	int										_getControlTextHwnd(HWND hCtrl, int iLen, const char * p_szBuf);
 
-  XAP_StringSet  *m_strings;
-
-
 };
 
 #endif /* __TCPWin32ACCOUNTHANDLER__ */

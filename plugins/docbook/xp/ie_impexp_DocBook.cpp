@@ -45,8 +45,8 @@ static IE_Exp_DocBook_Sniffer * m_expSniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-	XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-  strings->setDomain("abiword-plugin-docbook");
+	XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	pSS->setDomain("abiword-plugin-docbook");
 
 	if (!m_impSniffer)
 	{
@@ -61,11 +61,11 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 	IE_Imp::registerImporter (m_impSniffer);
 	IE_Exp::registerExporter (m_expSniffer);
 
-	mi->name = strings->getValue(_("DocBook Importer/Exporter"));
-	mi->desc = strings->getValue(_("Import/Export DocBook Documents"));
+	mi->name = _("DocBook Importer/Exporter");
+	mi->desc = _("Import/Export DocBook Documents");
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Abi the Ant, and Nicolas Mercier <linux@infobi.com> / Infobi";
-	mi->usage = strings->getValue(_("No Usage"));
+	mi->usage = _("No Usage");
 
 	return 1;
 }

@@ -46,7 +46,7 @@ ABI_PLUGIN_DECLARE ("Wikipedia")
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
 
-XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 
 //
 // _ucsToAscii
@@ -157,7 +157,7 @@ Wikipedia_removeFromMenus()
 static void
 Wikipedia_addToMenus()
 {
-	strings->setDomain(NULL);
+	pSS->setDomain();
 
   // First we need to get a pointer to the application itself.
   XAP_App *pApp = XAP_App::getApp();
@@ -198,13 +198,13 @@ Wikipedia_addToMenus()
   //
   // Put it in the context menu.
   //
-  XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText",NULL, strings->getValue(_("Bullets and &Numbering")),EV_MLF_Normal);
+  XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText",NULL, _("Bullets and &Numbering"),EV_MLF_Normal);
   pFact->addNewLabel(NULL,newID,Wikipedia_MenuLabel, Wikipedia_MenuTooltip);
 
   //
   // Also put it under word Wount in the main menu,
   //
-  pFact->addNewMenuAfter("Main",NULL, strings->getValue(_("&Word Count")),EV_MLF_Normal,newID);
+  pFact->addNewMenuAfter("Main",NULL, _("&Word Count"),EV_MLF_Normal,newID);
   
   // Create the Action that will be called.
   EV_Menu_Action* myAction = new EV_Menu_Action(
@@ -242,16 +242,16 @@ Wikipedia_addToMenus()
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-		strings->setDomain("abiword-plugin-wikipedia");
+	pSS->setDomain("abiword-plugin-wikipedia");
 
-		Wikipedia_MenuLabel = strings->getValue(_("Wi&ki Encyclopedia"));
-		Wikipedia_MenuTooltip = strings->getValue(_("Opens the libre Wiki on-line encyclopedia"));
+	Wikipedia_MenuLabel = _("Wi&ki Encyclopedia");
+	Wikipedia_MenuTooltip = _("Opens the libre Wiki on-line encyclopedia");
 
-    mi->name = strings->getValue(_("Wikipedia plugin"));
-    mi->desc = strings->getValue(_("On-line Encyclopedia support for AbiWord. Search site is http://www.wikipedia.com/"));
+    mi->name = _("Wikipedia plugin");
+    mi->desc = _("On-line Encyclopedia support for AbiWord. Search site is http://www.wikipedia.com/");
     mi->version = ABI_VERSION_STRING;
     mi->author = "Francis James Franklin"; // and Michael D. Pritchett and Dom Lachowicz
-    mi->usage = strings->getValue(_("No Usage"));
+    mi->usage = _("No Usage");
     
     // Add the dictionary to AbiWord's menus.
     Wikipedia_addToMenus();

@@ -38,6 +38,12 @@
 #include "xap_Strings.h"
 #include "xap_EncodingManager.h"
 
+char * abi_set_domain(const char * szDomain)
+{
+	bindtextdomain(szDomain, LOCALE_DIR);
+	return textdomain(szDomain);
+}
+
 //////////////////////////////////////////////////////////////////
 // base class provides interface regardless of how we got the strings
 //////////////////////////////////////////////////////////////////
@@ -65,7 +71,7 @@ XAP_StringSet::XAP_StringSet(const gchar * szDomainName)
 		m_szLanguageName = "-none-";
 
 	setlocale(LC_ALL, "");
-	setDomain(m_domain);
+	abi_set_domain(m_domain);
 }
 
 XAP_StringSet::~XAP_StringSet(void)
@@ -142,8 +148,7 @@ const char * XAP_StringSet::setDomain(const char * szDomainName)
 	if ((m_domain != szDomainName) || (!szDomainName && m_domain != GETTEXT_PACKAGE))
 	{
 		m_domain = szDomainName ? szDomainName : GETTEXT_PACKAGE;
-		bindtextdomain(m_domain, LOCALE_DIR);
-		return textdomain(m_domain);
+		return abi_set_domain(m_domain);
 	}
 	else
 		return m_domain;

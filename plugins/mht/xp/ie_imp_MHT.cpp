@@ -129,9 +129,9 @@ UT_Error IE_Imp_MHT_Sniffer::constructImporter (PD_Document * pDocument, IE_Imp 
 bool IE_Imp_MHT_Sniffer::getDlgLabels (const char ** pszDesc, const char ** pszSuffixList,
 										IEFileType * ft)
 {
-	XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-	strings->setDomain("abiword-plugin-mht");
-	*pszDesc = strings->getValue(_("Multipart HTML (.mht)"));
+	XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	pSS->setDomain("abiword-plugin-mht");
+	*pszDesc = _("Multipart HTML (.mht)");
 	*pszSuffixList = "*.mht";
 	*ft = getFileType ();
 	return true;

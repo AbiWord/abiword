@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: abiword 2.7.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-07-06 17:34-0400\n"
+"POT-Creation-Date: 2009-08-02 19:12-0400\n"
 "PO-Revision-Date: 2009-07-06 16:34-0400\n"
 "Last-Translator: Keith Bowes <keith@keith-desktop>\n"
 "Language-Team: Esperanto\n"
@@ -24,74 +24,83 @@ msgstr ""
 msgid "This is a command line interface to AbiWord"
 msgstr "Ĉi tio estas komandlinia interfaco al AbiWord"
 
-#: ../xp/AbiCommand.cpp:251
+#: ../xp/AbiCommand.cpp:250
+#, c-format
 msgid "AbiWord command line plugin: Type \"quit\" to exit \n"
 msgstr "Komandlinia kromprogramo de AbiWord: Tajpi \"Quit\" por eliri \n"
 
-#: ../xp/AbiCommand.cpp:282
+#: ../xp/AbiCommand.cpp:281
+#, c-format
 msgid "OK\n"
 msgstr "Bonorde\n"
 
-#: ../xp/AbiCommand.cpp:289
+#: ../xp/AbiCommand.cpp:288
 #, c-format
 msgid "Error in command \"%s\" number %d \n"
 msgstr "Eraro en komando \"%s\" numero %d \n"
 
-#: ../xp/AbiCommand.cpp:293
+#: ../xp/AbiCommand.cpp:292
 #, c-format
 msgid "Failed to open error log: %s"
 msgstr "Malsukcesis malfermi eraroprotokolon: %s"
 
-#: ../xp/AbiCommand.cpp:296
+#: ../xp/AbiCommand.cpp:295
 #, c-format
 msgid "error %d \n"
 msgstr "eraro %d \n"
 
-#: ../xp/AbiCommand.cpp:370
+#: ../xp/AbiCommand.cpp:369
+#, c-format
 msgid "Attempting to create a new document \n"
 msgstr "Provante krei novan dokumenton \n"
 
-#: ../xp/AbiCommand.cpp:378 ../xp/AbiCommand.cpp:819
+#: ../xp/AbiCommand.cpp:377 ../xp/AbiCommand.cpp:818
 #, c-format
 msgid "Error creating new document error %d \n"
 msgstr "Eraro kreante novan dokumenton eraro %d \n"
 
-#: ../xp/AbiCommand.cpp:393
+#: ../xp/AbiCommand.cpp:392
+#, c-format
 msgid "Attempting to load a document \n"
 msgstr "Provante ŝargi dokumenton \n"
 
-#: ../xp/AbiCommand.cpp:404 ../xp/AbiCommand.cpp:795
+#: ../xp/AbiCommand.cpp:403 ../xp/AbiCommand.cpp:794
 #, c-format
 msgid "Error loading %s error %d \n"
 msgstr "Erari ŝargante %s eraro %d \n"
 
-#: ../xp/AbiCommand.cpp:556
+#: ../xp/AbiCommand.cpp:555
 #, c-format
 msgid " Filename %s \n"
 msgstr "Dosiernomo %s \n"
 
-#: ../xp/AbiCommand.cpp:562
+#: ../xp/AbiCommand.cpp:561
 #, c-format
 msgid "Doing file export as %d for %s \n"
 msgstr "Faranta dosieran eksporton kiel %d por %s \n"
 
-#: ../xp/AbiCommand.cpp:705
+#: ../xp/AbiCommand.cpp:704
+#, c-format
 msgid "Currently implemented commands are:\n"
 msgstr "Nune realigitaj komandoj estas:\n"
 
-#: ../xp/AbiCommand.cpp:706
+#: ../xp/AbiCommand.cpp:705
+#, c-format
 msgid "help                        - Prints this message\n"
 msgstr "help                        - Eligi ĉi tiun mesaĝon\n"
 
-#: ../xp/AbiCommand.cpp:707
+#: ../xp/AbiCommand.cpp:706
+#, c-format
 msgid "quit                        - Exits the program\n"
 msgstr "quit                        - Eliri la programon\n"
 
-#: ../xp/AbiCommand.cpp:708
+#: ../xp/AbiCommand.cpp:707
+#, c-format
 msgid "new                         - Create a new empty document.\n"
 msgstr "new                         - Krei novan malplenan dokumenton.\n"
 
-#: ../xp/AbiCommand.cpp:709
+#: ../xp/AbiCommand.cpp:708
+#, c-format
 msgid ""
 "load <filename>             - Load <filename> replacing the current "
 "document.\n"
@@ -99,7 +108,8 @@ msgstr ""
 "load <dosiernomo>           - Ŝargi <dosiernomon> anstataŭigante la kurantan "
 "dokumenton.\n"
 
-#: ../xp/AbiCommand.cpp:710
+#: ../xp/AbiCommand.cpp:709
+#, c-format
 msgid ""
 "printfile <filename1> <filename2> <...> - Print the current document into "
 "the\n"
@@ -107,42 +117,26 @@ msgstr ""
 "printfile <dosiernomo1a> <dosiernomo2a> <...> - Eligi la kurantan dokumenton "
 "en la\n"
 
-#: ../xp/AbiCommand.cpp:711
+#: ../xp/AbiCommand.cpp:710
+#, c-format
 msgid "                              filenames listed.\n"
 msgstr "                              dosiernomojn listigitajn.\n"
 
-#: ../xp/AbiCommand.cpp:712
+#: ../xp/AbiCommand.cpp:711
+#, c-format
 msgid ""
 "replaceall <find> <target>  - Replace every occurrence of <find> with "
 "<target>\n"
 msgstr ""
 "replaceall <trovo> <celo>   - Anstataŭigi ĉiun okazon de <trovo> per <celo>\n"
 
-#: ../xp/AbiCommand.cpp:713 ../xp/AbiCommand.cpp:715 ../xp/AbiCommand.cpp:721
+#: ../xp/AbiCommand.cpp:712 ../xp/AbiCommand.cpp:714 ../xp/AbiCommand.cpp:720
+#, c-format
 msgid "                              in the current document.\n"
 msgstr "                              en la kuranta dokumento.\n"
 
-#: ../xp/AbiCommand.cpp:716
-msgid ""
-"inserttext <target>         - Insert <target> at the current point in the\n"
-msgstr "inserttext <celo>           - Enmeti <celon> ĉe la nuna punkto en la\n"
-
-#: ../xp/AbiCommand.cpp:717
-msgid "                              document.\n"
-msgstr "                              dokumento.\n"
-
-#: ../xp/AbiCommand.cpp:718
-msgid ""
-"delete <args>               - Delete <args> characters at the current point\n"
-msgstr ""
-"delete <nombro>               - Forigi <nombron> da signoj je la nuna "
-"punkto\n"
-
-#: ../xp/AbiCommand.cpp:719
-msgid "                              in the document.\n"
-msgstr "                              en la dokumento.\n"
-
-#: ../xp/AbiCommand.cpp:720
+#: ../xp/AbiCommand.cpp:713 ../xp/AbiCommand.cpp:719
+#, c-format
 msgid ""
 "replacenext <find> <target> - Replace the next occurrence of <find> with "
 "<target>\n"
@@ -150,36 +144,67 @@ msgstr ""
 "replacenext <trovo> <celo>  - Anstataŭigi la sekvan okazon de <trovo> per "
 "<celo>\n"
 
-#: ../xp/AbiCommand.cpp:722
+#: ../xp/AbiCommand.cpp:715
+#, c-format
+msgid ""
+"inserttext <target>         - Insert <target> at the current point in the\n"
+msgstr "inserttext <celo>           - Enmeti <celon> ĉe la nuna punkto en la\n"
+
+#: ../xp/AbiCommand.cpp:716
+#, c-format
+msgid "                              document.\n"
+msgstr "                              dokumento.\n"
+
+#: ../xp/AbiCommand.cpp:717
+#, c-format
+msgid ""
+"delete <args>               - Delete <args> characters at the current point\n"
+msgstr ""
+"delete <nombro>               - Forigi <nombron> da signoj je la nuna "
+"punkto\n"
+
+#: ../xp/AbiCommand.cpp:718
+#, c-format
+msgid "                              in the document.\n"
+msgstr "                              en la dokumento.\n"
+
+#: ../xp/AbiCommand.cpp:721
+#, c-format
 msgid ""
 "movept <arg>                - Move the current point to another location in\n"
 msgstr ""
 "movept <arg>                - Movi la kurantan punkton al alia loko en\n"
 
-#: ../xp/AbiCommand.cpp:723
+#: ../xp/AbiCommand.cpp:722
+#, c-format
 msgid "                              the current document.\n"
 msgstr "                              la kuranta dokumento.\n"
 
-#: ../xp/AbiCommand.cpp:724
+#: ../xp/AbiCommand.cpp:723
+#, c-format
 msgid ""
 "                              Options for arg are: BOD,EOD,BOP,EOP,BOS,EOS,\n"
 msgstr ""
 "                              Elektoj por arg estas: BOD,EOD,BOP,EOP,BOS,"
 "EOS,\n"
 
-#: ../xp/AbiCommand.cpp:725
+#: ../xp/AbiCommand.cpp:724
+#, c-format
 msgid "                              BOL,EOL,BOW,+num,-num,num\n"
 msgstr "                              BOL,EOL,BOW,+num,-num,num\n"
 
-#: ../xp/AbiCommand.cpp:726
+#: ../xp/AbiCommand.cpp:725
+#, c-format
 msgid "selectstart                 - Start a selection at the current point\n"
 msgstr "selectstart                 - Komenci elekton je la aktuala punkto\n"
 
-#: ../xp/AbiCommand.cpp:727
+#: ../xp/AbiCommand.cpp:726
+#, c-format
 msgid "selectclear                 - Clear the current selection.\n"
 msgstr "selectclear                 - Viŝi la nunan elekton.\n"
 
-#: ../xp/AbiCommand.cpp:728
+#: ../xp/AbiCommand.cpp:727
+#, c-format
 msgid ""
 "findnext <target>           - Find the next occurrence of target and select "
 "it.\n"
@@ -187,11 +212,13 @@ msgstr ""
 "findnext <celo>             - Trovi la sekvan okazon de celo kaj elekti "
 "ĝin.\n"
 
-#: ../xp/AbiCommand.cpp:729
+#: ../xp/AbiCommand.cpp:728
+#, c-format
 msgid "save <filename>             - Save the current document.\n"
 msgstr "save <dosiernomo>           - Konservi la nunan dokumenton.\n"
 
-#: ../xp/AbiCommand.cpp:730
+#: ../xp/AbiCommand.cpp:729
+#, c-format
 msgid ""
 "                              If filename is omitted the file is saved to "
 "its\n"
@@ -199,23 +226,27 @@ msgstr ""
 "                              Se dosiernomo preterlasiĝas la dosiero "
 "konserviĝas al ĝia\n"
 
-#: ../xp/AbiCommand.cpp:731
+#: ../xp/AbiCommand.cpp:730
+#, c-format
 msgid "                              original name.\n"
 msgstr "                              komenca nomo.\n"
 
-#: ../xp/AbiCommand.cpp:732
+#: ../xp/AbiCommand.cpp:731
+#, c-format
 msgid ""
 "                              Otherwise the extension of the filename is "
 "used\n"
 msgstr ""
 "                              Aliokaze uziĝas la finaĵo de la dosiernomo\n"
 
-#: ../xp/AbiCommand.cpp:733
+#: ../xp/AbiCommand.cpp:732
+#, c-format
 msgid "                              to determine the format of the file.\n"
 msgstr ""
 "                              por determini la formaton de la dosiero.\n"
 
-#: ../xp/AbiCommand.cpp:734
+#: ../xp/AbiCommand.cpp:733
+#, c-format
 msgid ""
 "converttotext <src> <dest>  - Convert the file given in <src> to the plain "
 "text\n"
@@ -223,12 +254,12 @@ msgstr ""
 "converttotext <fonto> <celo>  - Konverti la dosieron donita en <fonto> al la "
 "plata text\n"
 
-#: ../xp/AbiCommand.cpp:735
+#: ../xp/AbiCommand.cpp:734
+#, c-format
 msgid "                              file named <dest>.\n"
 msgstr "                              dosiero nomata <celo>.\n"
 
-#: ../xp/AbiCommand.cpp:736
-#, fuzzy
+#: ../xp/AbiCommand.cpp:735
 msgid ""
 "convert <src> <dest> <type> - Convert the file given in <src> to the file "
 "named\n"
@@ -236,7 +267,8 @@ msgstr ""
 "convert <fonto> <celo> <speco>     - Konverti la dosieron donita en <fonto> "
 "al la dosiero nomata\n"
 
-#: ../xp/AbiCommand.cpp:737
+#: ../xp/AbiCommand.cpp:736
+#, c-format
 msgid ""
 "                              <dest>. The type of conversion is given by "
 "the\n"
@@ -244,11 +276,13 @@ msgstr ""
 "                              <celo>. La speco de konvertado montriĝas per "
 "la \n"
 
-#: ../xp/AbiCommand.cpp:738
+#: ../xp/AbiCommand.cpp:737
+#, c-format
 msgid "                              third parameter (abw,html,odt, etc.).\n"
 msgstr "                              tria parametro (abw,html,odt, etc.).\n"
 
-#: ../xp/AbiCommand.cpp:739
+#: ../xp/AbiCommand.cpp:738
+#, c-format
 msgid ""
 "writepid <file>             - Write the PID of this process to the file "
 "<file>\n"
@@ -256,18 +290,19 @@ msgstr ""
 "writepid <dosiero>          - Skribi la identigilon de ĉi tiu procezo al la "
 "dosiero nomata <dosiero>\n"
 
-#: ../xp/AbiCommand.cpp:740
+#: ../xp/AbiCommand.cpp:739
+#, c-format
 msgid ""
 "server <error file>         - This is being run as remote process. Write an\n"
 msgstr ""
 "server <erardosiero>        - Ĉi tio pleniĝas kiel malloka procezo. Skribi\n"
 
-#: ../xp/AbiCommand.cpp:741
+#: ../xp/AbiCommand.cpp:740
+#, c-format
 msgid "                              error file on error.\n"
 msgstr "                              erardosieron post eraro.\n"
 
-#: ../xp/AbiCommand.cpp:742
-#, fuzzy
+#: ../xp/AbiCommand.cpp:741
 msgid ""
 "previewpng <document> <preview.png> <width> <height> - Create a PNG preview "
 "of\n"
@@ -275,21 +310,24 @@ msgstr ""
 "previewpng <dokumento> <antaŭvido.png> <larĝo> <alteco> - Krei antaŭvidan "
 "PNG-on de\n"
 
-#: ../xp/AbiCommand.cpp:743
+#: ../xp/AbiCommand.cpp:742
+#, c-format
 msgid ""
 "                              <document> with name <preview.png> of <width>\n"
 msgstr ""
 "                              <dokumento> kun nomo <antaŭvido.png> de "
 "<larĝo>\n"
 
-#: ../xp/AbiCommand.cpp:744
+#: ../xp/AbiCommand.cpp:743
+#, c-format
 msgid ""
 "                              pixels wide and <height> pixels in height.\n"
 msgstr ""
 "                              rastrumeroj larĝa kaj <alteco> rastrumeroj "
 "alta.\n"
 
-#: ../xp/AbiCommand.cpp:745
+#: ../xp/AbiCommand.cpp:744
+#, c-format
 msgid ""
 "visualedit                  - Popup a visual window and edit the file or "
 "just\n"
@@ -297,20 +335,22 @@ msgstr ""
 "visualedit                  - Ŝpruci vidan fenestron kaj redakti la dosieron "
 "aŭ\n"
 
-#: ../xp/AbiCommand.cpp:746
+#: ../xp/AbiCommand.cpp:745
+#, c-format
 msgid "                              preview what you've done.\n"
 msgstr "                              antaŭvidi tion, kion vi faris.\n"
 
-#: ../xp/AbiCommand.cpp:747
+#: ../xp/AbiCommand.cpp:746
+#, c-format
 msgid "                              Close the window when finished.\n"
 msgstr "                              Fermi la fenestron finiĝe.\n"
 
-#: ../xp/AbiCommand.cpp:764
+#: ../xp/AbiCommand.cpp:763
 #, c-format
 msgid "EditMethod %s exists. Calling with %s\n"
 msgstr "EditMethod %s ekzistas. Vokante kun %s\n"
 
-#: ../xp/AbiCommand.cpp:773
+#: ../xp/AbiCommand.cpp:772
 #, c-format
 msgid "EditMethod %s does not exist.\n"
 msgstr "EditMethod %s ne ekzistas.\n"

@@ -46,7 +46,6 @@ private:
 	
 	UT_UTF8String			m_argv;	
 
-  XAP_StringSet  * m_strings;
 };
 
 #endif /* ABI_COLLAB_COMMAND_H */

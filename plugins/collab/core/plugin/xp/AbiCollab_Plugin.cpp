@@ -68,7 +68,7 @@ static void s_cleanup_old_sessions();
 //
 // -----------------------------------------------------------------------
 
-XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 
 ABI_PLUGIN_DECLARE(AbiCollab)
 static const char * szCollaboration;
@@ -100,26 +100,26 @@ static const char * szEndCollaboration = "EndCollaboration";
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-  strings->setDomain("abiword-plugin-collab");
+  pSS->setDomain("abiword-plugin-collab");
 
-  szCollaboration = strings->getValue(_("&Collaborate"));
-  szCollaborationTip = strings->getValue(_("Collaborate over the internet or local network"));
-  szCollaborationOffer = strings->getValue(_("Share Document"));
-  szCollaborationOfferTip = strings->getValue(_("Offer the current document for collaboration"));
-  szCollaborationJoin = strings->getValue(_("Shared Documents"));
-  szCollaborationJoinTip = strings->getValue(_("Join a collaboration session"));
-  szCollaborationAccounts = strings->getValue(_("Accounts"));
-  szCollaborationAccountsTip = strings->getValue(_("Manage collaboration accounts"));
-  szCollaborationShowAuthors = strings->getValue(_("Show Authors"));
-  strings->getValue(_("Show who wrote each piece of text by with different colors"));
-  szCollaborationRecord = strings->getValue(_("Record this Session"));
-  szCollaborationRecordTip = strings->getValue(_("Record a session to disk, for debugging purposes"));
-  szCollaborationViewRecord = strings->getValue(_("View Session"));
-  szCollaborationViewRecordTip = strings->getValue(_("Load a recorded session from disk and show the packets"));
+  szCollaboration = _("&Collaborate");
+  szCollaborationTip = _("Collaborate over the internet or local network");
+  szCollaborationOffer = _("Share Document");
+  szCollaborationOfferTip = _("Offer the current document for collaboration");
+  szCollaborationJoin = _("Shared Documents");
+  szCollaborationJoinTip = _("Join a collaboration session");
+  szCollaborationAccounts = _("Accounts");
+  szCollaborationAccountsTip = _("Manage collaboration accounts");
+  szCollaborationShowAuthors = _("Show Authors");
+  _("Show who wrote each piece of text by with different colors");
+  szCollaborationRecord = _("Record this Session");
+  szCollaborationRecordTip = _("Record a session to disk, for debugging purposes");
+  szCollaborationViewRecord = _("View Session");
+  szCollaborationViewRecordTip = _("Load a recorded session from disk and show the packets");
 
   mi->version = ABI_VERSION_STRING;
-	mi->name = strings->getValue(_("AbiWord Collaboration"));
-	mi->desc = strings->getValue(_("This plugin allows real-time collaborative document editing"));
+	mi->name = _("AbiWord Collaboration");
+	mi->desc = _("This plugin allows real-time collaborative document editing");
 	mi->author = "Martin Sevior <msevior@physics.unimelb.edu.au>\nMarc Maurer <uwog@uwog.net>\nMarc Oude Kotte <foddex@foddex.net>";
 	mi->usage = "com.abisource.abiword.abicollab.command";
 	

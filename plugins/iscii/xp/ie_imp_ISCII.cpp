@@ -326,8 +326,8 @@ IE_Imp_ISCII_Sniffer::IE_Imp_ISCII_Sniffer (const char * _name) :
   IE_ImpSniffer(_name)
 {
   // 
-  m_strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-	m_strings->setDomain("abiword-plugin-iscii");
+	XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	pSS->setDomain("abiword-plugin-iscii");
 }
 
 IE_Imp_ISCII_Sniffer::~IE_Imp_ISCII_Sniffer()
@@ -365,7 +365,7 @@ bool IE_Imp_ISCII_Sniffer::getDlgLabels(const char ** pszDesc,
 									  const char ** pszSuffixList,
 									  IEFileType * ft)
 {
-	*pszDesc = m_strings->getValue(_("ISCII Text (.isc, .iscii)"));
+	*pszDesc = _("ISCII Text (.isc, .iscii)");
 	*pszSuffixList = "*.isc; *.iscii";
 	*ft = getFileType();
 	return true;

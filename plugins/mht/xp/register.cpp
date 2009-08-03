@@ -64,19 +64,19 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 		m_tidy_sniffer = new IE_Imp_Tidy_Sniffer ();
 	}
 #endif
-	XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-	strings->setDomain("abiword-plugin-mht");
+	XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	pSS->setDomain("abiword-plugin-mht");
 
 #ifdef XHTML_MULTIPART_SUPPORTED
-	mi->name = strings->getValue(_("Multipart HTML Importer"));
-	mi->desc = strings->getValue(_("Import Multipart HTML Documents"));
+	mi->name = _("Multipart HTML Importer");
+	mi->desc = _("Import Multipart HTML Documents");
 #else
-	mi->name = strings->getValue(_("HTML Importer"));
-	mi->desc = strings->getValue(_("Import HTML Documents"));
+	mi->name = _("HTML Importer");
+	mi->desc = _("Import HTML Documents");
 #endif
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Abi the Ant";
-	mi->usage = strings->getValue(_("No Usage"));
+	mi->usage = _("No Usage");
 
 #ifdef XHTML_MULTIPART_SUPPORTED
 	IE_Imp::registerImporter (m_mht_sniffer);

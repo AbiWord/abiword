@@ -69,7 +69,6 @@ private:
 	
 	void						_populateWindowData(void);
 
-  AP_StringSet  *m_strings;
 };
 
 #endif /* AP_WIN32DIALOG_COLLABORATIONADDACCOUNT_H */

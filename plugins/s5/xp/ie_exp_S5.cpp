@@ -111,7 +111,7 @@ public:
 /*****************************************************************/
 /*****************************************************************/
 
-XAP_StringSet * strings;
+XAP_StringSet * pSS;
 
 // completely generic code to allow this to be a plugin
 
@@ -121,19 +121,19 @@ static IE_Exp_S5_Sniffer * m_sniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-  strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-	strings->setDomain("abiword-plugin-s5");
+	pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	pSS->setDomain("abiword-plugin-s5");
 
 	if (!m_sniffer)
 	{
 		m_sniffer = new IE_Exp_S5_Sniffer ();
 	}
 
-	mi->name = strings->getValue(_("S5 Slideshow Exporter"));
-	mi->desc = strings->getValue(_("Export S5 Slideshows"));
+	mi->name = _("S5 Slideshow Exporter");
+	mi->desc = _("Export S5 Slideshows");
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Abi the Ant";
-	mi->usage = strings->getValue(_("No Usage"));
+	mi->usage = _("No Usage");
 
 	IE_Exp::registerExporter (m_sniffer);
 	return 1;
@@ -189,8 +189,8 @@ bool IE_Exp_S5_Sniffer::getDlgLabels(const char ** pszDesc,
 									 const char ** pszSuffixList,
 									 IEFileType * ft)
 {
-	strings->setDomain("abiword-plugin-s5");
-	*pszDesc = strings->getValue(_("S5 Slideshow (.s5.html)"));
+	pSS->setDomain("abiword-plugin-s5");
+	*pszDesc = _("S5 Slideshow (.s5.html)");
 	*pszSuffixList = "*.s5.html";
 	*ft = getFileType();
 	return true;

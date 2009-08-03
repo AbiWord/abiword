@@ -44,7 +44,7 @@
 
 //------------------------------------------------------------------------------------
 
-XAP_StringSet * strings;
+XAP_StringSet * pSS;
 
 /*! 
  * This class will import SVGs into PNG byte buffers for AbiWord
@@ -317,7 +317,7 @@ public:
 							  IEGraphicFileType * ft)
 	{
 		// TODO add a more complete list of suffixes
-		*pszDesc = strings->getValue(_("SVG Images (.svg)"));
+		*pszDesc = _("SVG Images (.svg)");
 		*pszSuffixList = "*.svg";
 		*ft = getType ();
 		return true;
@@ -342,14 +342,14 @@ static IE_RSVGGraphic_Sniffer * m_sniffer = 0;
 ABI_FAR_CALL  extern "C"
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-		strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-		strings->setDomain("abiword-plugin-rsvg");
+	pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	pSS->setDomain("abiword-plugin-rsvg");
 
-  	mi->name = strings->getValue(_("LibRSVG SVG image loader plugin"));
-    mi->desc = strings->getValue(_("This will enable AbiWord to read SVG files"));
+    mi->name = _("LibRSVG SVG image loader plugin");
+    mi->desc = _("This will enable AbiWord to read SVG files");
     mi->version = ABI_VERSION_STRING;
     mi->author = "Dom Lachowicz <cinamod@hotmail.com>";
-    mi->usage = strings->getValue(_("No Usage"));
+    mi->usage = _("No Usage");
 
     if (!m_sniffer)
     {

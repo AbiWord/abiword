@@ -43,8 +43,8 @@ static IE_Exp_WML_Sniffer * m_expSniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-	XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-	strings->setDomain("abiword-plugin-wml");
+	XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	pSS->setDomain("abiword-plugin-wml");
 
 	if (!m_impSniffer)
 	{
@@ -56,11 +56,11 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 		m_expSniffer = new IE_Exp_WML_Sniffer (PLUGIN_NAME);
 	}
 
-	mi->name = strings->getValue(_("WML Importer"));
-	mi->desc = strings->getValue(_("Import/Export WML Documents"));
+	mi->name = _("WML Importer");
+	mi->desc = _("Import/Export WML Documents");
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Abi the Ant";
-	mi->usage = strings->getValue(_("No Usage"));
+	mi->usage = _("No Usage");
 
 	IE_Imp::registerImporter (m_impSniffer);
 	IE_Exp::registerExporter (m_expSniffer);

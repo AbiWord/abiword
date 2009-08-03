@@ -181,19 +181,19 @@ static IE_Imp_Hancom_Sniffer * m_impSniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-		XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-		strings->setDomain("abiword-plugin-hancom");
+		XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+		pSS->setDomain("abiword-plugin-hancom");
 
     if (!m_impSniffer)
     {
     	m_impSniffer = new IE_Imp_Hancom_Sniffer ();
     }
 
-    mi->name    = strings->getValue(_("Hancom .hwp file importer"));
-    mi->desc    = strings->getValue(_("Imports Hancom binary (OLE) documents"));
+    mi->name    = _("Hancom .hwp file importer");
+    mi->desc    = _("Imports Hancom binary (OLE) documents");
     mi->version = ABI_VERSION_STRING;
     mi->author  = "Christian Biesinger <cbiesinger@web.de>";
-    mi->usage   = strings->getValue(_("No Usage"));
+    mi->usage   = _("No Usage");
   
     IE_Imp::registerImporter (m_impSniffer);
     return 1;

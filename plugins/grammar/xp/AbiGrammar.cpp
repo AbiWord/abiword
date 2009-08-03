@@ -140,14 +140,14 @@ ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
     XAP_App * pApp = XAP_App::getApp();
-    XAP_StringSet * strings = (XAP_StringSet *) pApp->getStringSet();
-		strings->setDomain("abiword-plugin-grammar");
+    XAP_StringSet * pSS = (XAP_StringSet *) pApp->getStringSet();
+    pSS->setDomain("abiword-plugin-grammar");
 
-    mi->name = strings->getValue(_("AbiGrammar"));
-    mi->desc = strings->getValue(_("The plugin allows AbiWord to be Grammar checked"));
+    mi->name = _("AbiGrammar");
+    mi->desc = _("The plugin allows AbiWord to be Grammar checked");
     mi->version = ABI_VERSION_STRING;
     mi->author = "Martin Sevior <msevior@physics.unimelb.edu.au>";
-    mi->usage = strings->getValue(_("No Usage"));
+    mi->usage = _("No Usage");
     
 #ifdef TOOLKIT_COCOA
     if (const char * resources = getenv ("ABIWORD_COCOA_BUNDLED_RESOURCES"))

@@ -46,7 +46,7 @@ ABI_PLUGIN_DECLARE("Google")
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
 
-XAP_StringSet *strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 
 //
 // AbiGoogle_invoke
@@ -129,7 +129,7 @@ Google_removeFromMenus()
 static void
 Google_addToMenus()
 {
-	strings->setDomain(NULL);
+	pSS->setDomain();
 
   // First we need to get a pointer to the application itself.
   XAP_App *pApp = XAP_App::getApp();
@@ -170,13 +170,13 @@ Google_addToMenus()
   //
   // Put it in the context menu.
   //
-  XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText",NULL, strings->getValue(_("Bullets and &Numbering")),EV_MLF_Normal);
+  XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText",NULL, _("Bullets and &Numbering"),EV_MLF_Normal);
   pFact->addNewLabel(NULL,newID,Google_MenuLabel, Google_MenuTooltip);
 
   //
   // Also put it under word Wount in the main menu,
   //
-  pFact->addNewMenuAfter("Main",NULL, strings->getValue(_("&Word Count")),EV_MLF_Normal,newID);
+  pFact->addNewMenuAfter("Main",NULL, _("&Word Count"),EV_MLF_Normal,newID);
   
   // Create the Action that will be called.
   EV_Menu_Action* myAction = new EV_Menu_Action(
@@ -214,16 +214,16 @@ Google_addToMenus()
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-		strings->setDomain("abiword-plugin-google");
+		pSS->setDomain("abiword-plugin-google");
 
-		Google_MenuLabel = strings->getValue(_("&Google Search"));
-		Google_MenuTooltip = strings->getValue(_("Search the web with Google"));
+		Google_MenuLabel = _("&Google Search");
+		Google_MenuTooltip = _("Search the web with Google");
 
-    mi->name = strings->getValue(_("Google plugin"));
-    mi->desc = strings->getValue(_("Google search for AbiWord"));
+    mi->name = _("Google plugin");
+    mi->desc = _("Google search for AbiWord");
     mi->version = ABI_VERSION_STRING;
     mi->author = "Dom Lachowicz";
-    mi->usage = strings->getValue(_("No Usage"));
+    mi->usage = _("No Usage");
     
     Google_addToMenus();
     

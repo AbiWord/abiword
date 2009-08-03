@@ -33,7 +33,7 @@ struct enc_entry
 {
 	gchar const ** encs;
 	const gchar * desc;
-	UT_uint32  id;
+	const gchar *  id;
 };
 
 class ABI_EXPORT UT_Encoding
@@ -46,7 +46,7 @@ public:
 	const gchar * 	getNthDescription(UT_uint32 n);
 	const gchar * 	getEncodingFromDescription(const gchar * desc);
 	UT_uint32 	getIndxFromEncoding(const gchar * enc);
-	UT_uint32 	getIdFromEncoding(const gchar * enc);
+	const gchar * 	getIdFromEncoding(const gchar * enc);
 
 private:
 	static bool	s_Init;

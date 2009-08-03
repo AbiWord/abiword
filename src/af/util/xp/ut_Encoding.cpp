@@ -143,7 +143,88 @@ static const gchar * enc_utf32be[]	= {"UTF-32BE","UTF-32-BE",0};
 static const gchar * enc_utf32le[]	= {"UTF-32LE","UTF-32-LE",0};
 static const gchar * enc_viscii[]	= {"VISCII",0};
 
-static enc_entry s_Table[] = {{}};
+static enc_entry s_Table[] = 
+{
+	//the property value, the localised translation, the numerical id
+	{enc_armscii,			NULL, XAP_STRING_ID_ENC_ARME_ARMSCII},
+	{enc_big5,				NULL, XAP_STRING_ID_ENC_CHTR_BIG5},
+	{enc_big5hkscs,				NULL, XAP_STRING_ID_ENC_CHTR_BIG5HKSCS},
+#ifdef TOOLKIT_WIN
+	{enc_cp437,				NULL, XAP_STRING_ID_ENC_US_DOS},
+	{enc_cp850,				NULL, XAP_STRING_ID_ENC_MLNG_DOS},
+#endif
+	{enc_cp874,				NULL, XAP_STRING_ID_ENC_THAI_WIN},
+	{enc_cp932,				NULL, XAP_STRING_ID_ENC_JAPN_WIN},
+	{enc_cp936,				NULL, XAP_STRING_ID_ENC_CHSI_WIN},
+	{enc_cp949,				NULL, XAP_STRING_ID_ENC_KORE_WIN},
+	{enc_cp950,				NULL, XAP_STRING_ID_ENC_CHTR_WIN},
+	{enc_cp1250,			NULL, XAP_STRING_ID_ENC_CENT_WIN},
+	{enc_cp1251,			NULL, XAP_STRING_ID_ENC_CYRL_WIN},
+	{enc_cp1252,			NULL, XAP_STRING_ID_ENC_WEST_WIN},
+	{enc_cp1253,			NULL, XAP_STRING_ID_ENC_GREE_WIN},
+	{enc_cp1254,			NULL, XAP_STRING_ID_ENC_TURK_WIN},
+	{enc_cp1255,			NULL, XAP_STRING_ID_ENC_HEBR_WIN},
+	{enc_cp1256,			NULL, XAP_STRING_ID_ENC_ARAB_WIN},
+	{enc_cp1257,			NULL, XAP_STRING_ID_ENC_BALT_WIN},
+	{enc_cp1258,			NULL, XAP_STRING_ID_ENC_VIET_WIN},
+	{enc_euc_cn,			NULL, XAP_STRING_ID_ENC_CHSI_EUC},
+	{enc_euc_jp,			NULL, XAP_STRING_ID_ENC_JAPN_EUC},
+	{enc_euc_kr,			NULL, XAP_STRING_ID_ENC_KORE_EUC},
+	{enc_euc_tw,			NULL, XAP_STRING_ID_ENC_CHTR_EUC},
+	{enc_gb2312,			NULL, XAP_STRING_ID_ENC_CHSI_GB},
+	{enc_georga,			NULL, XAP_STRING_ID_ENC_GEOR_ACADEMY},
+	{enc_georgps,			NULL, XAP_STRING_ID_ENC_GEOR_PS},
+	{enc_hp,				NULL, XAP_STRING_ID_ENC_WEST_HP},
+	{enc_hz,				NULL, XAP_STRING_ID_ENC_CHSI_HZ},
+	{enc_8859_1,			NULL, XAP_STRING_ID_ENC_WEST_ISO},
+	{enc_8859_2,			NULL, XAP_STRING_ID_ENC_CENT_ISO},
+	// 8859-3
+	{enc_8859_4,			NULL, XAP_STRING_ID_ENC_BALT_ISO},
+	{enc_8859_5,			NULL, XAP_STRING_ID_ENC_CYRL_ISO},
+	{enc_8859_6,			NULL, XAP_STRING_ID_ENC_ARAB_ISO},
+	{enc_8859_7,			NULL, XAP_STRING_ID_ENC_GREE_ISO},
+	{enc_8859_8,			NULL, XAP_STRING_ID_ENC_HEBR_ISO},
+	{enc_8859_9,			NULL, XAP_STRING_ID_ENC_TURK_ISO},
+	// 8859-10, 8859-13-16
+	{enc_2022_jp,			NULL, XAP_STRING_ID_ENC_JAPN_ISO},
+	{enc_johab,				NULL, XAP_STRING_ID_ENC_KORE_JOHAB},
+	{enc_koi8r,				NULL, XAP_STRING_ID_ENC_CYRL_KOI},
+	{enc_koi8u,				NULL, XAP_STRING_ID_ENC_UKRA_KOI},
+	{enc_ksc5601,			NULL, XAP_STRING_ID_ENC_KORE_KSC},	// ISO
+	{enc_macarab,			NULL, XAP_STRING_ID_ENC_ARAB_MAC},
+	{enc_macceur,			NULL, XAP_STRING_ID_ENC_CENT_MAC},
+	{enc_maccroat,			NULL, XAP_STRING_ID_ENC_CROA_MAC},
+	{enc_maccyr,			NULL, XAP_STRING_ID_ENC_CYRL_MAC},
+	{enc_macgrk,			NULL, XAP_STRING_ID_ENC_GREE_MAC},
+	{enc_macheb,			NULL, XAP_STRING_ID_ENC_HEBR_MAC},
+	{enc_macice,			NULL, XAP_STRING_ID_ENC_ICEL_MAC},
+	{enc_macrman,			NULL, XAP_STRING_ID_ENC_ROMA_MAC},
+	{enc_macrom,			NULL, XAP_STRING_ID_ENC_WEST_MAC},
+	{enc_macthai,			NULL, XAP_STRING_ID_ENC_THAI_MAC},
+	{enc_macturk,			NULL, XAP_STRING_ID_ENC_TURK_MAC},
+	{enc_macukr,			NULL, XAP_STRING_ID_ENC_UKRA_MAC},
+	// other mac encodings
+	{enc_next,				NULL, XAP_STRING_ID_ENC_WEST_NXT},
+	{enc_sjis,				NULL, XAP_STRING_ID_ENC_JAPN_SJIS},
+	{enc_tcvn,				NULL, XAP_STRING_ID_ENC_VIET_TCVN},
+	{enc_tis620,			NULL, XAP_STRING_ID_ENC_THAI_TIS},
+//	{enc_ucs2,				NULL, XAP_STRING_ID_ENC_UNIC_UCS_2},
+	{enc_ucs2be,			NULL, XAP_STRING_ID_ENC_UNIC_UCS_2BE},
+	{enc_ucs2le,			NULL, XAP_STRING_ID_ENC_UNIC_UCS_2LE},
+//	{enc_ucs4,				NULL, XAP_STRING_ID_ENC_UNIC_UCS_4},
+	{enc_ucs4be,			NULL, XAP_STRING_ID_ENC_UNIC_UCS_4BE},
+	{enc_ucs4le,			NULL, XAP_STRING_ID_ENC_UNIC_UCS_4LE},
+    {enc_usascii,    		NULL, XAP_STRING_ID_ENC_WEST_ASCII},
+	{enc_utf7,				NULL, XAP_STRING_ID_ENC_UNIC_UTF_7},
+	{enc_utf8,				NULL, XAP_STRING_ID_ENC_UNIC_UTF_8},
+//	{enc_utf16,				NULL, XAP_STRING_ID_ENC_UNIC_UTF_16},
+	{enc_utf16be,			NULL, XAP_STRING_ID_ENC_UNIC_UTF_16BE},
+	{enc_utf16le,			NULL, XAP_STRING_ID_ENC_UNIC_UTF_16LE},
+//	{enc_utf32,				NULL, XAP_STRING_ID_ENC_UNIC_UTF_32},
+	{enc_utf32be,			NULL, XAP_STRING_ID_ENC_UNIC_UTF_32BE},
+	{enc_utf32le,			NULL, XAP_STRING_ID_ENC_UNIC_UTF_32LE},
+	{enc_viscii,			NULL, XAP_STRING_ID_ENC_VIET_VISCII},
+};
 
 static int s_compareQ(const void * a, const void *b)
 {
@@ -193,7 +274,7 @@ UT_Encoding::UT_Encoding()
 
 		while (iCheckIndex < G_N_ELEMENTS(s_Table))
 		{
-			const gchar * szName;
+			const gchar * szName = pSS->getValue(s_Table[iCheckIndex].id);
 			const gchar * szEnc;
 			UT_uint32 iAltIndex;
 			bool bFound = false;
@@ -274,7 +355,7 @@ UT_uint32 UT_Encoding::getIndxFromEncoding(const gchar * enc)
 	return 0;
 }
 
-UT_uint32 UT_Encoding::getIdFromEncoding(const gchar * enc)
+const gchar * UT_Encoding::getIdFromEncoding(const gchar * enc)
 {
 	UT_ASSERT (s_Init == false);
 	enc_entry * e = static_cast<enc_entry *>(bsearch(enc, s_Table, s_iCount, sizeof(enc_entry), s_compareB));
@@ -284,7 +365,7 @@ UT_uint32 UT_Encoding::getIdFromEncoding(const gchar * enc)
 	}
 	else
 	{
-		return 0;
+		return NULL;
 	}
 }
 

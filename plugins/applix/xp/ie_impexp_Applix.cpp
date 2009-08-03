@@ -47,8 +47,8 @@ static IE_Exp_Applix_Sniffer * m_expSniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-  XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-  //strings->setDomain("abiword-plugin-applix");
+	XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	pSS->setDomain("abiword-plugin-applix");
 
 	if (!m_impSniffer)
 	{
@@ -60,11 +60,11 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 		m_expSniffer = new IE_Exp_Applix_Sniffer (PLUGIN_NAME);
 	}
 
-	mi->name = strings->getValue(_("Applix Importer/Exporter"));
-	mi->desc = strings->getValue(_("Import/Export Applix Documents"));
+	mi->name = _("Applix Importer/Exporter");
+	mi->desc = _("Import/Export Applix Documents");
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Abi the Ant";
-	mi->usage = strings->getValue(_("No Usage"));
+	mi->usage = _("No Usage");
 
 	IE_Imp::registerImporter (m_impSniffer);
 	IE_Exp::registerExporter (m_expSniffer);

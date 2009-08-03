@@ -52,7 +52,6 @@ private:
 	GtkListStore*		_constructModel();
 	void				_setModel(GtkListStore* model);
 
-  XAP_StringSet  *m_strings;
 
 	GtkWidget*			m_wWindowMain;
 	GtkWidget*			m_wAdd;

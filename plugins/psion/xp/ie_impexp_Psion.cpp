@@ -51,8 +51,8 @@ static IE_Imp_Psion_TextEd_Sniffer * m_imptexted_sniffer = 0;
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-  XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-	strings->getValue("abiword-plugin-psion");
+	XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	pSS->setDomain("abiword-plugin-psion");
 
 	if (!m_expword_sniffer && !m_exptexted_sniffer)
 	{
@@ -66,11 +66,11 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 		m_imptexted_sniffer = new IE_Imp_Psion_TextEd_Sniffer (PLUGIN_TEXT);
 	}
 
-	mi->name = strings->getValue(_("Psion Import/Export"));
-	mi->desc = strings->getValue(_("Read and Write Psion Documents"));
+	mi->name = _("Psion Import/Export");
+	mi->desc = _("Read and Write Psion Documents");
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Abi the Ant";
-	mi->usage = strings->getValue(_("No Usage"));
+	mi->usage = _("No Usage");
 
 	IE_Exp::registerExporter (m_expword_sniffer);
 	IE_Exp::registerExporter (m_exptexted_sniffer);

@@ -64,7 +64,7 @@
 ABI_PLUGIN_DECLARE("Gimp")
 #endif
 
-XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 
 static bool AbiGimp_invoke(AV_View* v, EV_EditMethodCallData *d);
 
@@ -85,7 +85,7 @@ static BOOL CreateChildProcess(char * appName, char *cmdline,
 static void
 AbiGimp_addToMenus()
 {
-		strings->setDomain(NULL);
+    pSS->setDomain();
     // First we need to get a pointer to the application itself.
     XAP_App *pApp = XAP_App::getApp();
 
@@ -125,12 +125,12 @@ AbiGimp_addToMenus()
 //
 // Put it in the context menu.
 //
-    XAP_Menu_Id newID = pFact->addNewMenuAfter("ContextImageT",NULL, strings->getValue(_("&Save Image As")), EV_MLF_Normal);
+    XAP_Menu_Id newID = pFact->addNewMenuAfter("ContextImageT",NULL, _("&Save Image As"), EV_MLF_Normal);
     pFact->addNewLabel(NULL,newID,AbiGimp_MenuLabel, AbiGimp_MenuTooltip);
 
 // Put it after Word Count in the Main menu
 
-    pFact->addNewMenuAfter("Main",NULL, strings->getValue(_("Bullets and &Numbering")),EV_MLF_Normal,newID);
+    pFact->addNewMenuAfter("Main",NULL, _("Bullets and &Numbering"),EV_MLF_Normal,newID);
 //
 // Also put it under word Count in the main menu,
 //
@@ -202,16 +202,16 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
     return 0;
 #endif
 
-	strings->setDomain("abiword-plugin-gimp");
+    pSS->setDomain("abiword-plugin-gimp");
 
-	AbiGimp_MenuLabel = strings->getValue(_("&Edit Image via GIMP"));
-	AbiGimp_MenuTooltip = strings->getValue(_("Opens the selected image in the GIMP for editing."));
+    AbiGimp_MenuLabel = _("&Edit Image via GIMP");
+    AbiGimp_MenuTooltip = _("Opens the selected image in the GIMP for editing.");
 
-    mi->name = strings->getValue(_("AbiGimp"));
-    mi->desc = strings->getValue(_("Use this to edit an image with the GIMP from within AbiWord"));
+    mi->name = _("AbiGimp");
+    mi->desc = _("Use this to edit an image with the GIMP from within AbiWord");
     mi->version = ABI_VERSION_STRING;
     mi->author = "Martin Sevior <msevior@physics.unimelb.edu.au>";
-    mi->usage = strings->getValue(_("No Usage"));
+    mi->usage = _("No Usage");
     
     // Add to AbiWord's menus.
     AbiGimp_addToMenus();
@@ -284,7 +284,7 @@ AbiGimp_invoke(AV_View* /*v*/, EV_EditMethodCallData *d)
 //
 	if(pos == 0)
 	{
-		pFrame->showMessageBox(strings->getValue(_("You must select an Image before editing it")), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
+		pFrame->showMessageBox(_("You must select an Image before editing it"), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
 		return false;
 	}
 
@@ -314,7 +314,7 @@ AbiGimp_invoke(AV_View* /*v*/, EV_EditMethodCallData *d)
 	STARTUPINFO startInfo;
 	if (!CreateChildProcess(NULL, const_cast<char *>(cmdline.c_str()), &procInfo, &startInfo))
 	{
-		UT_String msg = strings->getValue(_("Unable to run program: "));  msg += cmdline;
+		UT_String msg = _("Unable to run program: ");  msg += cmdline;
 
 		// try again, but with default install locations in 'path' env var
 		char *pathEnvVar = getenv("PATH");
@@ -411,7 +411,7 @@ AbiGimp_invoke(AV_View* /*v*/, EV_EditMethodCallData *d)
 					if(errorCode)
 					{
 						UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-						pFrame->showMessageBox(strings->getValue(_("Error making pFG. Could not put image back into Abiword")), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
+						pFrame->showMessageBox(_("Error making pFG. Could not put image back into Abiword"), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
 						goto Cleanup;
 					}
 //
@@ -424,7 +424,7 @@ AbiGimp_invoke(AV_View* /*v*/, EV_EditMethodCallData *d)
 					errorCode = pView->cmdInsertGraphic(pFG);
 					if (errorCode)
 					{
-						pFrame->showMessageBox(strings->getValue(_("Could not put image back into Abiword")), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
+						pFrame->showMessageBox(_("Could not put image back into Abiword"), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
 						UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 						DELETEP(pFG);
 						goto Cleanup;

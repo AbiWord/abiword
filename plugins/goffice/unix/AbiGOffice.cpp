@@ -49,7 +49,7 @@
 #include <goffice/component/go-component-factory.h>
 #include <gsf/gsf-impl-utils.h>
 
-XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 
 //
 // GOCmdContext interface implementation for AbiGOffice
@@ -62,7 +62,7 @@ typedef GObjectClass AbiCmdContextClass;
 static void
 abi_error_error (G_GNUC_UNUSED GOCmdContext *cc, GError *error)
 {
-	fprintf (stderr, strings->getValue(_("Error: %s\n")), error->message);
+	fprintf (stderr, ("Error: %s\n"), error->message);
 }
 
 static void
@@ -425,22 +425,22 @@ ABI_PLUGIN_DECLARE(AbiGOChart)
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-		strings->setDomain("abiword-plugin-goffice");
+		pSS->setDomain("abiword-plugin-goffice");
 
-		Object_MenuLabelObject = strings->getValue(_("Object"));
-		Object_MenuTooltipObject = strings->getValue(_("Insert Embeddable Object"));
-		AbiGOChart_MenuLabelInsert = strings->getValue(_("Gnome Office Chart"));
-		AbiGOChart_MenuTooltipInsert = strings->getValue(_("Create a chart"));
-		AbiGOComponent_MenuLabelInsertFromFile = strings->getValue(_("From File"));
-		AbiGOComponent_MenuTooltipInsertFromFile = strings->getValue(_("Insert the contents of a file"));
-		AbiGOComponent_MenuLabelCreate = strings->getValue(_("New"));
-		 AbiGOComponent_MenuTooltipCreate = strings->getValue(_("Create a new object"));
+		Object_MenuLabelObject = _("Object");
+		Object_MenuTooltipObject = _("Insert Embeddable Object");
+		AbiGOChart_MenuLabelInsert = _("Gnome Office Chart");
+		AbiGOChart_MenuTooltipInsert = _("Create a chart");
+		AbiGOComponent_MenuLabelInsertFromFile = _("From File");
+		AbiGOComponent_MenuTooltipInsertFromFile = _("Insert the contents of a file");
+		AbiGOComponent_MenuLabelCreate = _("New");
+		AbiGOComponent_MenuTooltipCreate = _("Create a new object";
 
-    mi->name = strings->getValue(_("AbiGOffice"));
-    mi->desc = strings->getValue(_("The plugin enables Gnome Office Charts and components to be displayed in AbiWord"));
+    mi->name = _("AbiGOffice");
+    mi->desc = _("The plugin enables Gnome Office Charts and components to be displayed in AbiWord");
     mi->version = ABI_VERSION_STRING;
     mi->author = "Jean Bréfort <jean.brefort@normalesup.org>";
-    mi->usage = strings->getValue(_("No Usage"));
+    mi->usage = _("No Usage");
 
     // Add to AbiWord's plugin importers
     m_impSniffer = new IE_Imp_Object_Sniffer();

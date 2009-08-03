@@ -55,14 +55,14 @@ int abi_plugin_register (XAP_ModuleInfo *mi)
     m_expSniffer = new IE_Exp_KWord_1_Sniffer (PLUGIN_NAME);
   }
   
-  XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-	strings->setDomain("abiword-plugin-kword");
+  XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+  pSS->setDomain("abiword-plugin-kword");
 
-  mi->name = strings->getValue(_("KWord 1.x Importer/Exporter"));
-  mi->desc = strings->getValue(_("Import/Export KWord 1.x Documents"));
+  mi->name = _("KWord 1.x Importer/Exporter");
+  mi->desc = _("Import/Export KWord 1.x Documents");
   mi->version = ABI_VERSION_STRING;
   mi->author = "Abi the Ant";
-  mi->usage = strings->getValue(_("No Usage"));
+  mi->usage = _("No Usage");
 
   IE_Imp::registerImporter(m_impSniffer);
   IE_Exp::registerExporter(m_expSniffer);

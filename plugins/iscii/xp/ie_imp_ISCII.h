@@ -66,9 +66,6 @@ public:
 	virtual UT_Error constructImporter (PD_Document * pDocument,
 										IE_Imp ** ppie);
 
-private:
-  XAP_StringSet *m_strings;
-
 };
 
 class IE_Imp_ISCII : public IE_Imp_Text

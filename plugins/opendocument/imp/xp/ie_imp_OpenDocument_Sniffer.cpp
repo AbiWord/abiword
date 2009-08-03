@@ -138,12 +138,12 @@ bool IE_Imp_OpenDocument_Sniffer::getDlgLabels (const char ** szDesc,
                           const char ** szSuffixList,
                           IEFileType * ft)
 {
-  XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-	strings->setDomain("abiword-plugin-opendocument");
+	XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	pSS->setDomain("abiword-plugin-opendocument");
 
-	*szDesc = strings->getValue(_("OpenDocument (.odt, .ott)"));
+	*szDesc = _("OpenDocument (.odt, .ott)");
 	*szSuffixList = "*.odt; *.ott";
 	*ft = getFileType();
   
-    return true;
+	return true;
 }

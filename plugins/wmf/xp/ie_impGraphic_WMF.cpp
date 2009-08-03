@@ -45,7 +45,7 @@
 #include <libwmf/gd.h>
 #include <libwmf/svg.h>
 
-XAP_StringSet * strings;
+XAP_StringSet * pSS;
 
 static int  AbiWord_WMF_read (void * context);
 static int  AbiWord_WMF_seek (void * context,long pos);
@@ -91,7 +91,7 @@ bool IE_ImpGraphicWMF_Sniffer::getDlgLabels(const char ** pszDesc,
 					const char ** pszSuffixList,
 					IEGraphicFileType * ft)
 {
-	*pszDesc = strings->getValue(_("Windows Metafile (.wmf)"));
+	*pszDesc = _("Windows Metafile (.wmf)");
 	*pszSuffixList = "*.wmf";
 	*ft = getType ();
 	return true;
@@ -269,7 +269,7 @@ UT_Error IE_ImpGraphic_WMF::convertGraphicToSVG(UT_ByteBuf* pBBwmf, UT_ByteBuf**
 	wmf_height = (float) disp_height;
 
 	if ((wmf_width <= 0) || (wmf_height <= 0))
-	{	fputs (strings->getValue(_("Bad image size - but this error shouldn't occur...\n")),stderr);
+	{	fputs (_("Bad image size - but this error shouldn't occur...\n"),stderr);
 		status = 1;
 		wmf_api_destroy (API);
 		return UT_ERROR;
@@ -551,19 +551,19 @@ static IE_ImpGraphicWMF_Sniffer * m_impSniffer = 0;
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-  strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-	strings->setDomain("abiword-plugin-wmf");
+	pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	pSS->setDomain("abiword-plugin-wmf");
 
 	if (!m_impSniffer)
 	{
 	  m_impSniffer = new IE_ImpGraphicWMF_Sniffer();
 	}
 
-	mi->name = strings->getValue(_("WMF Import Plugin"));
-	mi->desc = strings->getValue(_("Import Windows Metafiles"));
+	mi->name = _("WMF Import Plugin");
+	mi->desc = _("Import Windows Metafiles");
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Abi the Ant";
-	mi->usage = strings->getValue(_("No Usage"));
+	mi->usage = _("No Usage");
 
 	IE_ImpGraphic::registerImporter (m_impSniffer);
 	return 1;

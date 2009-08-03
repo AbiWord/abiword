@@ -43,8 +43,8 @@ static IE_Exp_XSL_FO_Sniffer * m_expSniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-  XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-	strings->setDomain("abiword-plugin-xslfo");
+	XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	pSS->setDomain("abiword-plugin-xslfo");
 
 	if (!m_impSniffer)
 	{
@@ -57,11 +57,11 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 	}
 
 
-	mi->name = strings->getValue(_("XSL-FO Importer/Exporter"));
-	mi->desc = strings->getValue(_("Import/Export XSL-FO Documents"));
+	mi->name = _("XSL-FO Importer/Exporter");
+	mi->desc = _("Import/Export XSL-FO Documents");
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Abi the Ant";
-	mi->usage = strings->getValue(_("No Usage"));
+	mi->usage = _("No Usage");
 
 	IE_Imp::registerImporter (m_impSniffer);
 	IE_Exp::registerExporter (m_expSniffer);

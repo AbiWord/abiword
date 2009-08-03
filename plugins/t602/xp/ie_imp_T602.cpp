@@ -59,8 +59,8 @@ static IE_Imp_T602_Sniffer * m_sniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-  XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-	strings->setDomain("abiword-plugin-t602");
+	XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	pSS->setDomain("abiword-plugin-t602");
 
 	if (!m_sniffer)
 	{
@@ -69,13 +69,13 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 
 	UT_ASSERT (m_sniffer);
 
-	mi->name    = strings->getValue(_("T602 Importer"));
-	mi->desc   = strings->getValue(_("Imports T602 documents into abiword. T602 was a "
+	mi->name    = _("T602 Importer");
+	mi->desc    = _("Imports T602 documents into abiword. T602 was a "
 		"popular czech and slovak text editor in early nineties "
-		"produced by Software602 (http://www.software602.cz/)."));
+		"produced by Software602 (http://www.software602.cz/).");
 	mi->version = ABI_VERSION_STRING;
 	mi->author  = "Petr Tomasek <tomasek@etf.cuni.cz>";
-	mi->usage   = strings->getValue(_("No Usage"));
+	mi->usage   = _("No Usage");
 
 	IE_Imp::registerImporter (m_sniffer);
   

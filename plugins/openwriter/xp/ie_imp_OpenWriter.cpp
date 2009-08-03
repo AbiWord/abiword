@@ -557,8 +557,8 @@ private:
 IE_Imp_OpenWriter_Sniffer::IE_Imp_OpenWriter_Sniffer () :
   IE_ImpSniffer("OpenWriter::SXW")
 {
-  m_strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-	m_strings->setDomain("abiword-plugin-openwriter");
+	XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	pSS->setDomain("abiword-plugin-openwriter");
 }
 
 IE_Imp_OpenWriter_Sniffer::~IE_Imp_OpenWriter_Sniffer ()
@@ -656,7 +656,7 @@ bool IE_Imp_OpenWriter_Sniffer::getDlgLabels (const char ** szDesc,
 					      const char ** szSuffixList,
 					      IEFileType * ft)
 {
-  *szDesc = m_strings->getValue(_("OpenOffice Writer (.stw, .sxw)"));
+  *szDesc = _("OpenOffice Writer (.stw, .sxw)");
   *szSuffixList = "*.stw; *.sxw";
   *ft = getFileType();
   return true;

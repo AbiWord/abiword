@@ -47,8 +47,6 @@ public:
 			     const char ** szSuffixList,
 			     IEFileType * ft) ;
 
-private:
-  XAP_StringSet *m_strings;
 };
 
 class IE_Exp_OpenWriter_Sniffer : public IE_ExpSniffer

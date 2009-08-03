@@ -60,8 +60,8 @@ int read_bmp_to_mem(const char *bmpfn,unsigned char **bmppp, DWORD *fsizep)
 // returns 0 on success, nonzero of failure
 int convertBMP2PNG(const char *bmpfn, const char *pngfn)
 {
-	XAP_StringSet  * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-	strings->setDomain("abiword-plugin-paint");
+	XAP_StringSet  * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	pSS->setDomain("abiword-plugin-paint");
 
 	PNGD_D2PINFO d2p;
 	int ret;
@@ -71,7 +71,7 @@ int convertBMP2PNG(const char *bmpfn, const char *pngfn)
 	char errmsg[100];
 
 	if(read_bmp_to_mem(bmpfn,&bmpp, &bmpsize)) {
-		printf(strings->getValue(_("can't read BMP from file\n")));
+		printf(_("can't read BMP from file\n"));
 		return 1;
 	}
 
@@ -94,7 +94,7 @@ int convertBMP2PNG(const char *bmpfn, const char *pngfn)
 
 	lpbmfh= (LPBITMAPFILEHEADER)bmpp;
 	if(lpbmfh->bfOffBits >= bmpsize) {
-		printf(strings->getValue(_("Corrupt BMP\n")));
+		printf(_("Corrupt BMP\n"));
 		return 1;
 	}
 
@@ -110,7 +110,7 @@ int convertBMP2PNG(const char *bmpfn, const char *pngfn)
 	ret=write_dib_to_png(&d2p);
 	// returns 0 on success
 	if(ret) {
-		printf(strings->getValue(_("Error: %s (%d)\n")),d2p.errmsg,ret);
+		printf(_("Error: %s (%d)\n"),d2p.errmsg,ret);
 		return 1;
 	}
 

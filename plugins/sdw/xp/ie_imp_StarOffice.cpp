@@ -65,7 +65,7 @@
 ABI_PLUGIN_DECLARE("SDW")
 #endif
 
-XAP_StringSet * strings;
+XAP_StringSet * pSS;
 
 // ********************************************************************************
 // Mapping of StarOffice attributes to abiword's
@@ -521,8 +521,8 @@ UT_Error IE_Imp_StarOffice_Sniffer::constructImporter(PD_Document *pDocument, IE
 }
 
 bool IE_Imp_StarOffice_Sniffer::getDlgLabels(const char** pszDesc, const char** pszSuffixList, IEFileType* ft) {
-	strings->setDomain("abiword-plugin-sdw");
-	*pszDesc = strings->getValue(_("StarWriter up to 5.x (*.sdw)"));
+	pSS->setDomain("abiword-plugin-sdw");
+	*pszDesc = _("StarWriter up to 5.x (*.sdw)");
 	*pszSuffixList = "*.sdw";
 	*ft = getFileType();
 	return true;
@@ -1002,19 +1002,19 @@ static IE_Imp_StarOffice_Sniffer * m_impSniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-		strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-		strings->setDomain("abiword-plugin-sdw");
+	pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	pSS->setDomain("abiword-plugin-sdw");
 
     if (!m_impSniffer)
     {
     	m_impSniffer = new IE_Imp_StarOffice_Sniffer ();
     }
 
-    mi->name    = strings->getValue(_("StarOffice .sdw file importer"));
-    mi->desc    = strings->getValue(_("Imports StarWriter binary (OLE) documents"));
+    mi->name    = _("StarOffice .sdw file importer");
+    mi->desc    = _("Imports StarWriter binary (OLE) documents");
     mi->version = ABI_VERSION_STRING;
     mi->author  = "Christian Biesinger <cbiesinger@web.de>";
-    mi->usage   = strings->getValue(_("No Usage"));
+    mi->usage   = _("No Usage");
   
     IE_Imp::registerImporter (m_impSniffer);
 

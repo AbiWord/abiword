@@ -65,7 +65,7 @@ ABI_PLUGIN_DECLARE (AbiCommand)
 
 #define RES_TO_STATUS(a) ((a) ? 0 : -1)
 
-XAP_StringSet *strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
 
 static bool AbiCommand_invoke (AV_View * v, EV_EditMethodCallData * d);
 
@@ -122,9 +122,9 @@ AbiCommand_RemoveFromMethods ()
 ABI_FAR_CALL int
 abi_plugin_register (XAP_ModuleInfo * mi)
 {
-	strings->setDomain("abiword-plugin-command");
-	mi->name = strings->getValue(_("AbiCommand"));
-	mi->desc = strings->getValue(_("This is a command line interface to AbiWord"));
+	pSS->setDomain("abiword-plugin-command");
+	mi->name = _("AbiCommand");
+	mi->desc = _("This is a command line interface to AbiWord");
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Martin Sevior <msevior@physics.unimelb.edu.au>";
 	mi->usage = "AbiCommand_invoke";
@@ -247,7 +247,7 @@ AbiCommand::doCommands (void)
 {
 	bool bQuit = false;
 
-	printf (strings->getValue(_("AbiWord command line plugin: Type \"quit\" to exit \n")));
+	printf (_("AbiWord command line plugin: Type \"quit\" to exit \n"));
 	while (!bQuit)
 	{
 		//
@@ -278,21 +278,21 @@ AbiCommand::doCommands (void)
 				UT_sint32 bres = parseTokens (&toks);
 
 				if (bres == 0)
- 					printf (strings->getValue(_("OK\n")));
+ 					printf (_("OK\n"));
 				else
 				{
 					if (m_bRunAsServer)
 					{
 						FILE *errF = fopen (m_sErrorFile.utf8_str (), "a");
 						if (errF) {
-							fprintf (errF, strings->getValue(_("Error in command \"%s\" number %d \n")),
+							fprintf (errF, (_("Error in command \"%s\" number %d \n")),
 								 	pCom, bres);
 							fclose (errF);
 						} else
-							printf(strings->getValue(_("Failed to open error log: %s")), strerror(errno));
+							printf(_("Failed to open error log: %s"), strerror(errno));
 					}
 
-					printf (strings->getValue(_("error %d \n")), bres);
+					printf (_("error %d \n"), bres);
 				}
 			}
 		}
@@ -366,7 +366,7 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
 	//
 	if (strcmp (pCom0->utf8_str (), "new") == 0)
 	{
-		printf (strings->getValue(_("Attempting to create a new document \n")));
+		printf (_("Attempting to create a new document \n"));
 		PD_Document *pDoc = new PD_Document ();
 
 		UT_Error error = pDoc->newDocument ();
@@ -374,7 +374,7 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
 		if (error != UT_OK)
 		{
 			UNREFP (pDoc);
-			printf (strings->getValue(_("Error creating new document error %d \n")), error);
+			printf (_("Error creating new document error %d \n"), error);
 			return static_cast < UT_sint32 > (error);
 		}
 
@@ -389,7 +389,7 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
 	//
 	if (strcmp (pCom0->utf8_str (), "load") == 0)
 	{
-		printf (strings->getValue(_("Attempting to load a document \n")));
+		printf (_("Attempting to load a document \n"));
 		if (count >= 2)
 		{
 			const UT_UTF8String *pCom1 = pToks->getNthItem (1);
@@ -400,7 +400,7 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
 			if (error != UT_OK)
 			{
 				UNREFP (pDoc);
-				printf (strings->getValue(_("Error loading %s error %d \n")), pCom1->utf8_str (),
+				printf (_("Error loading %s error %d \n"), pCom1->utf8_str (),
 					error);
 				return static_cast < UT_sint32 > (error);
 			}
@@ -552,13 +552,13 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
 			if (pToks->getItemCount () > 1)
 			{
 				const UT_UTF8String *pCom1 = pToks->getNthItem (1);
-				printf(strings->getValue(_(" Filename %s \n")),pCom1->utf8_str());
+				printf(_(" Filename %s \n"),pCom1->utf8_str());
 				const char *suffix = rindex (pCom1->utf8_str (), '.');
 
 				if (suffix != NULL)
 				{
 					ieft = IE_Exp::fileTypeForSuffix (suffix);
-					printf (strings->getValue(_("Doing file export as %d for %s \n")), ieft,
+					printf (_("Doing file export as %d for %s \n"), ieft,
 							pCom1->utf8_str ());
 				}
 
@@ -701,49 +701,49 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
 	//
 	else if (strcmp (pCom0->utf8_str (), "help") == 0)
 	{
-		printf (strings->getValue(_("Currently implemented commands are:\n")));
-		printf (strings->getValue(_("help                        - Prints this message\n")));
-		printf (strings->getValue(_("quit                        - Exits the program\n")));
-		printf (strings->getValue(_("new                         - Create a new empty document.\n")));
-		printf (strings->getValue(_("load <filename>             - Load <filename> replacing the current document.\n")));
-		printf (strings->getValue(_("printfile <filename1> <filename2> <...> - Print the current document into the\n")));
-		printf (strings->getValue(_("                              filenames listed.\n")));
-		printf (strings->getValue(_("replaceall <find> <target>  - Replace every occurrence of <find> with <target>\n")));
-		printf (strings->getValue(_("                              in the current document.\n")));
-		printf ("replacenext <find> <target> - Replace the next occurrence of <find> with <target>\n");
-		printf (strings->getValue(_("                              in the current document.\n")));
-		printf (strings->getValue(_("inserttext <target>         - Insert <target> at the current point in the\n")));
-		printf (strings->getValue(_("                              document.\n")));
-		printf (strings->getValue(_("delete <args>               - Delete <args> characters at the current point\n")));
-		printf (strings->getValue(_("                              in the document.\n")));
-		printf (strings->getValue(_("replacenext <find> <target> - Replace the next occurrence of <find> with <target>\n")));
-		printf (strings->getValue(_("                              in the current document.\n")));
-		printf (strings->getValue(_("movept <arg>                - Move the current point to another location in\n")));
-		printf (strings->getValue(_("                              the current document.\n")));
-		printf (strings->getValue(_("                              Options for arg are: BOD,EOD,BOP,EOP,BOS,EOS,\n")));
-		printf (strings->getValue(_("                              BOL,EOL,BOW,+num,-num,num\n")));
-		printf (strings->getValue(_("selectstart                 - Start a selection at the current point\n")));
-		printf (strings->getValue(_("selectclear                 - Clear the current selection.\n")));
-		printf (strings->getValue(_("findnext <target>           - Find the next occurrence of target and select it.\n")));
-		printf (strings->getValue(_("save <filename>             - Save the current document.\n")));
-		printf (strings->getValue(_("                              If filename is omitted the file is saved to its\n")));
-		printf (strings->getValue(_("                              original name.\n")));
-		printf (strings->getValue(_("                              Otherwise the extension of the filename is used\n")));
-		printf (strings->getValue(_("                              to determine the format of the file.\n")));
-		printf (strings->getValue(_("converttotext <src> <dest>  - Convert the file given in <src> to the plain text\n")));
-		printf (strings->getValue(_("                              file named <dest>.\n")));
-		printf (strings->getValue(_("convert <src> <dest> <type> - Convert the file given in <src> to the file named\n")));
-		printf (strings->getValue(_("                              <dest>. The type of conversion is given by the\n")));
-		printf (strings->getValue(_("                              third parameter (abw,html,odt, etc.).\n")));
-		printf (strings->getValue(_("writepid <file>             - Write the PID of this process to the file <file>\n")));
-		printf (strings->getValue(_("server <error file>         - This is being run as remote process. Write an\n")));
-		printf (strings->getValue(_("                              error file on error.\n")));
-		printf (strings->getValue(_("previewpng <document> <preview.png> <width> <height> - Create a PNG preview of\n")));
-		printf (strings->getValue(_("                              <document> with name <preview.png> of <width>\n")));
-		printf (strings->getValue(_("                              pixels wide and <height> pixels in height.\n")));
-		printf (strings->getValue(_("visualedit                  - Popup a visual window and edit the file or just\n")));
-		printf (strings->getValue(_("                              preview what you've done.\n")));
-		printf (strings->getValue(_("                              Close the window when finished.\n")));
+		printf (_("Currently implemented commands are:\n"));
+		printf (_("help                        - Prints this message\n"));
+		printf (_("quit                        - Exits the program\n"));
+		printf (_("new                         - Create a new empty document.\n"));
+		printf (_("load <filename>             - Load <filename> replacing the current document.\n"));
+		printf (_("printfile <filename1> <filename2> <...> - Print the current document into the\n"));
+		printf (_("                              filenames listed.\n"));
+		printf (_("replaceall <find> <target>  - Replace every occurrence of <find> with <target>\n"));
+		printf (_("                              in the current document.\n"));
+		printf (_("replacenext <find> <target> - Replace the next occurrence of <find> with <target>\n"));
+		printf (_("                              in the current document.\n"));
+		printf (_("inserttext <target>         - Insert <target> at the current point in the\n"));
+		printf (_("                              document.\n"));
+		printf (_("delete <args>               - Delete <args> characters at the current point\n"));
+		printf (_("                              in the document.\n"));
+		printf (_("replacenext <find> <target> - Replace the next occurrence of <find> with <target>\n"));
+		printf (_("                              in the current document.\n"));
+		printf (_("movept <arg>                - Move the current point to another location in\n"));
+		printf (_("                              the current document.\n"));
+		printf (_("                              Options for arg are: BOD,EOD,BOP,EOP,BOS,EOS,\n"));
+		printf (_("                              BOL,EOL,BOW,+num,-num,num\n"));
+		printf (_("selectstart                 - Start a selection at the current point\n"));
+		printf (_("selectclear                 - Clear the current selection.\n"));
+		printf (_("findnext <target>           - Find the next occurrence of target and select it.\n"));
+		printf (_("save <filename>             - Save the current document.\n"));
+		printf (_("                              If filename is omitted the file is saved to its\n"));
+		printf (_("                              original name.\n"));
+		printf (_("                              Otherwise the extension of the filename is used\n"));
+		printf (_("                              to determine the format of the file.\n"));
+		printf (_("converttotext <src> <dest>  - Convert the file given in <src> to the plain text\n"));
+		printf (_("                              file named <dest>.\n"));
+		printf (_("convert <src> <dest> <type> - Convert the file given in <src> to the file named\n"));
+		printf (_("                              <dest>. The type of conversion is given by the\n"));
+		printf (_("                              third parameter (abw,html,odt, etc.).\n"));
+		printf (_("writepid <file>             - Write the PID of this process to the file <file>\n"));
+		printf (_("server <error file>         - This is being run as remote process. Write an\n"));
+		printf (_("                              error file on error.\n"));
+		printf (_("previewpng <document> <preview.png> <width> <height> - Create a PNG preview of\n"));
+		printf (_("                              <document> with name <preview.png> of <width>\n"));
+		printf (_("                              pixels wide and <height> pixels in height.\n"));
+		printf (_("visualedit                  - Popup a visual window and edit the file or just\n"));
+		printf (_("                              preview what you've done.\n"));
+		printf (_("                              Close the window when finished.\n"));
 
 		return 0;
 	}
@@ -760,7 +760,7 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
 				calldata += *pComm;
 			}
 
-			printf (strings->getValue(_("EditMethod %s exists. Calling with %s\n")),
+			printf (_("EditMethod %s exists. Calling with %s\n"),
 					pCom0->utf8_str (), calldata.utf8_str ());
 			if (ev_EditMethod_invoke
 				(pCom0->utf8_str (), calldata.utf8_str ()))
@@ -769,7 +769,7 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
 			return -1;
 		}
 		else
-			printf (strings->getValue(_("EditMethod %s does not exist.\n")), pCom0->utf8_str ());
+			printf (_("EditMethod %s does not exist.\n"), pCom0->utf8_str ());
 	}
 
 	return -1;
@@ -791,7 +791,7 @@ bool AbiCommand::loadDocument(UT_UTF8String & sPathToDoc)
       if (error != UT_OK)
       {
            UNREFP (pDoc);
-	   printf (strings->getValue(_("Error loading %s error %d \n")), sPathToDoc.utf8_str (),error);
+	   printf (_("Error loading %s error %d \n"), sPathToDoc.utf8_str (),error);
 	   return false;
       }
       replaceDocument (pDoc);
@@ -815,7 +815,7 @@ bool AbiCommand::newDocument(void)
   if (error != UT_OK)
   {
       UNREFP (pDoc);
-      printf (strings->getValue(_("Error creating new document error %d \n")), error);
+      printf (_("Error creating new document error %d \n"), error);
       return false;;
   }
 

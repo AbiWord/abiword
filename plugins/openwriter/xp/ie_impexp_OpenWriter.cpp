@@ -45,8 +45,9 @@ static IE_Exp_OpenWriter_Sniffer * m_exp_sniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-  XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-	strings->setDomain("abiword-plugin-openwriter");
+  XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+  pSS->setDomain("abiword-plugin-openwriter");
+
   if (!m_imp_sniffer)
       m_imp_sniffer = new IE_Imp_OpenWriter_Sniffer ();
   IE_Imp::registerImporter (m_imp_sniffer);
@@ -55,11 +56,11 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
       m_exp_sniffer = new IE_Exp_OpenWriter_Sniffer ();
   IE_Exp::registerExporter (m_exp_sniffer);
   
-  mi->name    = strings->getValue(_("OpenOffice Writer Filter"));
-  mi->desc    = strings->getValue(_("Import/Export OpenOffice Writer documents"));
+  mi->name    = _("OpenOffice Writer Filter");
+  mi->desc    = _("Import/Export OpenOffice Writer documents");
   mi->version = ABI_VERSION_STRING;
   mi->author  = "Dom Lachowicz <cinamod@hotmail.com>";
-  mi->usage   = strings->getValue(_("No Usage"));
+  mi->usage   = _("No Usage");
   
   return 1;
 }

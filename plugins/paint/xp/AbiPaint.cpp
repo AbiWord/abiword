@@ -131,8 +131,8 @@ XAP_ModuleInfo * getModuleInfo(void)
 
 bool doRegistration(void)
 {
-		XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-		strings->setDomain("abiword-plugin-paint");
+	XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	pSS->setDomain("abiword-plugin-paint");
 
     // Get XAP_Prefs object for retrieving/storing image editor and related preferences
     UT_return_val_if_fail(prefs != NULL, false);
@@ -148,8 +148,8 @@ bool doRegistration(void)
 	UT_String szProgramName;
 	bool bLeaveImageAsPNG;
 	getDefaultApp(szProgramName, bLeaveImageAsPNG);
-	prefsScheme->setValue(strings->getValue(ABIPAINT_PREF_KEY_szProgramName.c_str()), szProgramName.c_str());
-	prefsScheme->setValueBool(strings->getValue(ABIPAINT_PREF_KEY_bLeaveImageAsPNG), bLeaveImageAsPNG);
+	prefsScheme->setValue(ABIPAINT_PREF_KEY_szProgramName.c_str(), szProgramName.c_str());
+	prefsScheme->setValueBool(ABIPAINT_PREF_KEY_bLeaveImageAsPNG, bLeaveImageAsPNG);
     }
 
 
@@ -193,8 +193,8 @@ static DECLARE_ABI_PLUGIN_METHOD(specify)
 		const char * szDescList[3];
 		const char * szSuffixList[3];
 		int ft[3];
-		szDescList[0] = strings->getValue(szProgramsDesc);
-		szSuffixList[0] = strings->getValue(szProgramSuffix);
+		szDescList[0] = szProgramsDesc;
+		szSuffixList[0] = szProgramSuffix;
 		szDescList[1] = szSuffixList[1] = NULL;
 		ft[0] = ft[1] = ft[2] = IEGFT_Unknown;
 
@@ -263,8 +263,8 @@ static DECLARE_ABI_PLUGIN_METHOD(useBmp)
 //
 static DECLARE_ABI_PLUGIN_METHOD(saveAsBmp)
 {
-	XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-	strings->setDomain("abiword-plugin-paint");
+	XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	pSS->setDomain("abiword-plugin-paint");
 
 	// Get a frame (for error messages) and (to) get the current view that the user is in.
 	XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
@@ -288,7 +288,7 @@ static DECLARE_ABI_PLUGIN_METHOD(saveAsBmp)
 	PT_DocPosition pos = pView->saveSelectedImage((const char *)szTmpPng.c_str());
 	if(pos == 0)
 	{
-		pFrame->showMessageBox(strings->getValue(_("You must select an Image before trying to save it as a BMP file!")), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
+		pFrame->showMessageBox(_("You must select an Image before trying to save it as a BMP file!"), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
 		return false;
 	}
 
@@ -305,7 +305,7 @@ static DECLARE_ABI_PLUGIN_METHOD(saveAsBmp)
 		{
 			// IE_ImpGraphicBMP_Sniffer tmp;
 			// tmp.getDlgLabels(szDescList, szSuffixList, ft);
-			szDescList[0] = strings->getValue(_("Windows Bitmap (*.bmp)"));
+			szDescList[0] = _("Windows Bitmap (*.bmp)");
 			szSuffixList[0] = "*.bmp";
 			ft[0] = IEGFT_BMP;
 		}
@@ -322,7 +322,7 @@ static DECLARE_ABI_PLUGIN_METHOD(saveAsBmp)
 
 	if (convertPNG2BMP(szTmpPng.c_str(), szBMPFile.c_str()))
 	{
-		pFrame->showMessageBox(strings->getValue(_("Unable to convert PNG image data to BMP.")), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
+		pFrame->showMessageBox(_("Unable to convert PNG image data to BMP."), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
 		remove(szTmpPng.c_str());
@@ -346,21 +346,21 @@ static DECLARE_ABI_PLUGIN_METHOD(saveAsBmp)
 // const char * getEditImageMenuName(XAP_Frame * pFrame, const EV_Menu_Label * pLabel, XAP_Menu_Id id)
 Defun_EV_GetMenuItemComputedLabel_Fn(getEditImageMenuName)
 {
-	XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-	strings->setDomain("abiword-plugin-paint");
+	XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	pSS->setDomain("abiword-plugin-paint");
 
 	UT_UNUSED(pLabel);
 	UT_UNUSED(id);
 
 	UT_String szProgramName;
 	static UT_String MenuName;
-	MenuName = strings->getValue(_("&Edit Image"));
+	MenuName = _("&Edit Image");
 
 	// give user some indication of program that will be executed
 	if (prefsScheme->getValue(ABIPAINT_PREF_KEY_szProgramName, szProgramName))
 	{
 		// we now have the full program name (with path & extension), so prune
-		MenuName += strings->getValue(_(" via "));
+		MenuName += _(" via ");
 		MenuName += UT_basename(szProgramName.c_str());
 
 		// limit menu length to max of 33 (31 characters + two dots ..)
@@ -386,8 +386,8 @@ Defun_EV_GetMenuItemComputedLabel_Fn(getEditImageMenuName)
 //
 static DECLARE_ABI_PLUGIN_METHOD(editImage)
 {
-	XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-	strings->setDomain("abiword-plugin-paint");
+	XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	pSS->setDomain("abiword-plugin-paint");
 
 	UT_UNUSED(v);
     // Get the current view that the user is in.
@@ -435,7 +435,7 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 	{
 		remove(szTempFileName);
 		g_free (szTempFileName); szTempFileName = NULL;
-		pFrame->showMessageBox(strings->getValue(_("You must select an Image before editing it")), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
+		pFrame->showMessageBox(_("You must select an Image before editing it"), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
 		return false;
 	}
 
@@ -451,7 +451,7 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 
 		if (convertPNG2BMP(szTmpPng.c_str(), szTmp.c_str()))
 		{
-			pFrame->showMessageBox(strings->getValue(_("Unable to convert PNG image data to BMP for external program use!")), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
+			pFrame->showMessageBox(_("Unable to convert PNG image data to BMP for external program use!"), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
 			remove(szTempFileName);
@@ -489,7 +489,7 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 	if (!createChildProcess(imageApp.c_str(), szTmp.c_str(), &procInfo))
 
 	{
-		UT_String msg = strings->getValue(_("Unable to run program: "));  msg += imageApp + " " + szTmp;
+		UT_String msg = _("Unable to run program: ");  msg += imageApp + " " + szTmp;
 		pFrame->showMessageBox(msg.c_str(), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
 
 		// failed to spawn stuff, so do some cleanup and return failure
@@ -526,7 +526,7 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 					// just make sure the program is still running, otherwise we could get stuck in a loop
 					if (!isProcessStillAlive(procInfo))
 					{
-						pFrame->showMessageBox(strings->getValue(_("External image editor appears to have been terminated unexpectedly.")), 
+						pFrame->showMessageBox(_("External image editor appears to have been terminated unexpectedly."), 
 								XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
 						//procInfo.hProcess = 0;
 						goto Cleanup;
@@ -552,7 +552,7 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 				{
 					if (convertBMP2PNG(szTmp.c_str(), szTmpPng.c_str()))
 					{
-						pFrame->showMessageBox(strings->getValue(_("Unable to convert BMP image data back to PNG for AbiWord to import!")), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
+						pFrame->showMessageBox(_("Unable to convert BMP image data back to PNG for AbiWord to import!"), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
 						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 						goto Cleanup;
 					}
@@ -563,7 +563,7 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 				if(errorCode)
 				{
 					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-					pFrame->showMessageBox(strings->getValue(_("Error making pFG. Could not put image back into Abiword")), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
+					pFrame->showMessageBox(_("Error making pFG. Could not put image back into Abiword"), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
 					goto Cleanup;
 				}
 
@@ -575,7 +575,7 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 				errorCode = pView->cmdInsertGraphic(pFG);
 				if (errorCode)
 				{
-					pFrame->showMessageBox(strings->getValue(_("Could not put image back into Abiword")), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
+					pFrame->showMessageBox(_("Could not put image back into Abiword"), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
 					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 					DELETEP(pFG);
 					goto Cleanup;

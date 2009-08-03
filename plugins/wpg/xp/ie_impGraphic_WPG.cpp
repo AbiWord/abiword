@@ -41,7 +41,7 @@ using libwpg::WPGString;
 
 ABI_PLUGIN_DECLARE("WPG")
 
-XAP_StringSet * strings;
+XAP_StringSet * pSS;
 
 class AbiWordPerfectGraphicsInputStream : public WPXInputStream
 {
@@ -158,8 +158,8 @@ static IE_Imp_WordPerfectGraphics_Sniffer * m_ImpSniffer = 0;
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-	strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-	strings->setDomain("abiword-plugin-wpg");
+	pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	pSS->setDomain("abiword-plugin-wpg");
 
 	if (!m_ImpSniffer)
 	{
@@ -168,11 +168,11 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 
 	UT_ASSERT (m_ImpSniffer);
 
-	mi->name    = strings->getValue(_("WordPerfect(tm) Graphics Importer"));
-	mi->desc    = strings->getValue(_("Import WordPerfect(tm) Graphics"));
+	mi->name    = _("WordPerfect(tm) Graphics Importer");
+	mi->desc    = _("Import WordPerfect(tm) Graphics");
 	mi->version = ABI_VERSION_STRING;
 	mi->author  = "Marc Maurer";
-	mi->usage   = strings->getValue(_("No Usage"));
+	mi->usage   = _("No Usage");
 
 	IE_ImpGraphic::registerImporter (m_ImpSniffer);
 	return 1;
@@ -234,8 +234,8 @@ bool IE_Imp_WordPerfectGraphics_Sniffer::getDlgLabels (const char ** szDesc,
                         const char ** szSuffixList,
                         IEGraphicFileType *ft)
 {
-	strings->setDomain("abiword-plugin-wpg");
-	*szDesc = strings->getValue(_("WordPerfect(tm) Graphics Images (.wpg)"));
+	pSS->setDomain("abiword-plugin-wpg");
+	*szDesc = _("WordPerfect(tm) Graphics Images (.wpg)");
 	*szSuffixList = "*.wpg";
 	*ft = getType ();
 	return true;

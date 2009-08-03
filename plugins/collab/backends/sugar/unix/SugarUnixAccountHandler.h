@@ -105,7 +105,6 @@ private:
 	DBusConnection*							m_pTube;
 	bool									m_bLocallyControlled;
 	std::set<UT_UTF8String>					m_ignoredBuddies;
-  AP_StringSet  *strings;
 };
 
 #endif /* __SUGARACCOUNTHANDLER__ */

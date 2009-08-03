@@ -46,7 +46,7 @@ using namespace std;
 
 ABI_PLUGIN_DECLARE(Aiksaurus)
 
-XAP_StringSet *strings = (XAP_StringSet * ) XAP_App::getApp()->getStringSet();
+XAP_StringSet * pSS = (XAP_StringSet * ) XAP_App::getApp()->getStringSet();
 
 bool AiksaurusABI_invoke(AV_View* v, EV_EditMethodCallData *d);
 
@@ -64,7 +64,7 @@ AiksaurusABI_addToMenus()
 {
 		// First we need to get a pointer to the application itself.
 		XAP_App *pApp = XAP_App::getApp();
-		strings->setDomain(NULL);
+		pSS->setDomain(NULL);
 
 		
 		// Create an EditMethod that will link our method's name with
@@ -102,12 +102,12 @@ AiksaurusABI_addToMenus()
 //
 // Put it in the context menu.
 //
-		XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText",NULL, strings->getValue(_("Bullets and &Numbering")),EV_MLF_Normal);
+		XAP_Menu_Id newID = pFact->addNewMenuAfter("contextText",NULL, _("Bullets and &Numbering"),EV_MLF_Normal);
 		pFact->addNewLabel(NULL,newID,AiksaurusABI_MenuLabel, AiksaurusABI_MenuTooltip);
 //
 // Also put it under word Wount in the main menu,
 //
-		pFact->addNewMenuAfter("Main",NULL, strings->getValue(_("&Word Count")),EV_MLF_Normal,newID);
+		pFact->addNewMenuAfter("Main",NULL, _("&Word Count"),EV_MLF_Normal,newID);
 
 		// Create the Action that will be called.
 		EV_Menu_Action* myAction = new EV_Menu_Action(
@@ -171,17 +171,17 @@ AikSaurusABI_RemoveFromMenus ()
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-		strings->setDomain("abiword-plugin-aiksaurus");
+		pSS->setDomain("abiword-plugin-aiksaurus");
 
-		AiksaurusABI_MenuLabel = strings->getValue(_("&Thesaurus"));
-		AiksaurusABI_MenuTooltip = strings->getValue(_("Opens the thesaurus and finds synonyms."));
+		AiksaurusABI_MenuLabel = _("&Thesaurus");
+		AiksaurusABI_MenuTooltip = _("Opens the thesaurus and finds synonyms.");
 
-		mi->name = strings->getValue(_("Aiksaurus"));
-		mi->desc = strings->getValue(_("English-language thesaurus based on the Aiksaurus library: "
-							 "http://www.aiksaurus.com/"));
+		mi->name = _("Aiksaurus");
+		mi->desc = _("English-language thesaurus based on the Aiksaurus library: "
+							 "http://www.aiksaurus.com/");
 		mi->version = ABI_VERSION_STRING;
 		mi->author = "Jared Davis <jared@aiksaurus.com>";
-		mi->usage = strings->getValue(_("No Usage"));
+		mi->usage = _("No Usage");
 		
 		// Add the thesaurus to AbiWord's menus.
 		AiksaurusABI_addToMenus();
@@ -338,8 +338,8 @@ AiksaurusABI_invoke(AV_View* /*v*/, EV_EditMethodCallData * /*d*/)
 #else
 		AiksaurusGTK thesaurus;		
 #endif
-		thesaurus.setTitle(strings->getValue(_("Abiword Thesaurus")));
-		thesaurus.setInitialMessage(strings->getValue(_("Welcome to Aiksaurus")));
+		thesaurus.setTitle(_("Abiword Thesaurus"));
+		thesaurus.setInitialMessage(_("Welcome to Aiksaurus"));
 		const char* response = thesaurus.runThesaurus(search);
 
 		if (response)

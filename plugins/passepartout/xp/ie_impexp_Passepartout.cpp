@@ -41,8 +41,8 @@ static IE_Exp_Passepartout_Sniffer * m_expSniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-  XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-	strings->setDomain("abiword-plugin-passepartout");
+	XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	pSS->setDomain("abiword-plugin-passepartout");
 
 	if (!m_expSniffer)
 	{
@@ -51,11 +51,11 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 
 	IE_Exp::registerExporter (m_expSniffer);
 
-	mi->name = strings->getValue(_("Passepartout Exporter"));
-	mi->desc = strings->getValue(_("Export Passepartout's xml2ps format"));
+	mi->name = _("Passepartout Exporter");
+	mi->desc = _("Export Passepartout's xml2ps format");
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "David Bolack";
-  mi->usage = strings->getValue(_("No Usage"));
+	mi->usage = _("No Usage");
 
 	return 1;
 }

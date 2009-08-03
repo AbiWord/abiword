@@ -10,9 +10,7 @@ libwin_la_SOURCES = \
 	pngdib.c \
 	pngdib.h \
 	ut_process.h \
-	ut_Win32Process.cpp \
-	xap_Strings_wrapper.cpp \
-	xap_Strings_wrapper.h
+	ut_Win32Process.cpp
 
 EXTRA_DIST = \
 	pngdib.readme

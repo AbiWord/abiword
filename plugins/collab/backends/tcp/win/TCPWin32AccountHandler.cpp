@@ -119,8 +119,8 @@ TCPWin32AccountHandler::TCPWin32AccountHandler()
 		m_hInstance = pSessionManager->getInstance();
 	}
 
-  m_strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-  m_strings->setDomain("abiword-plugin-collab");
+	XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	pSS->setDomain("abiword-plugin-collab");
 }
 
 TCPWin32AccountHandler::~TCPWin32AccountHandler()
@@ -138,23 +138,23 @@ void TCPWin32AccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	/* Non-Tabbable Labels */
 	
 	// "Address:"
-	m_hServerLabel = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "STATIC", m_strings->getValue(_("Address:")), SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP,
+	m_hServerLabel = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "STATIC", _("Address:"), SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP,
 	15, 57, 51, 15, hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_SERVERLABEL,  m_hInstance, 0);
 	UT_return_if_fail(m_hServerLabel);
 	
 	// "Port:"
-	m_hPortLabel = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "STATIC", m_strings->getValue(_("Port:")), SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 
+	m_hPortLabel = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "STATIC", _("Port:"), SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 
 	15, 87, 47, 15, hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_PORTLABEL,  m_hInstance, 0);
 	UT_return_if_fail(m_hPortLabel);
 	
 	/* Radio Button Group */
 	// Act As Server radio button
-	m_hServerRadio = CreateWindowEx(WS_EX_NOPARENTNOTIFY |  WS_EX_TRANSPARENT, "BUTTON", m_strings->getValue(_("Accept Incoming Connections")), BS_NOTIFY | BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE |WS_GROUP|WS_TABSTOP,
+	m_hServerRadio = CreateWindowEx(WS_EX_NOPARENTNOTIFY |  WS_EX_TRANSPARENT, "BUTTON", _("Accept Incoming Connections"), BS_NOTIFY | BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE |WS_GROUP|WS_TABSTOP,
 	15, 15, 200, 15, hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_SERVERRADIO,  m_hInstance, 0);
 	UT_return_if_fail(m_hServerRadio);
 	
 	// Join a Server radio button
-	m_hJoinRadio = CreateWindowEx(WS_EX_NOPARENTNOTIFY |  WS_EX_TRANSPARENT, "BUTTON", m_strings->getValue(_("Connect to Another Computer")), BS_NOTIFY  | BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE,
+	m_hJoinRadio = CreateWindowEx(WS_EX_NOPARENTNOTIFY |  WS_EX_TRANSPARENT, "BUTTON", _("Connect to Another Computer"), BS_NOTIFY  | BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE,
 	15, 35, 200, 15, hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_JOINRADIO,  m_hInstance, 0);
 	UT_return_if_fail(m_hJoinRadio);
 	
@@ -172,12 +172,12 @@ void TCPWin32AccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	UT_return_if_fail(m_hPortEntry);
 	
 	// Checkbox for future secure support - currently disabled
-	m_hUseSecureCheck = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "BUTTON", m_strings->getValue(_("Use Secure Connection")), BS_CHECKBOX | BS_AUTOCHECKBOX | WS_CHILD | WS_VISIBLE | WS_DISABLED | WS_TABSTOP | WS_GROUP,
+	m_hUseSecureCheck = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "BUTTON", _("Use Secure Connection"), BS_CHECKBOX | BS_AUTOCHECKBOX | WS_CHILD | WS_VISIBLE | WS_DISABLED | WS_TABSTOP | WS_GROUP,
 	14, 115, 174, 15, hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_USESECURECHECK,  m_hInstance, 0);
 	UT_return_if_fail(m_hUseSecureCheck);
 	
 	// Checkbox for Connect on Startup
-	m_hAutoconnectCheck = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "BUTTON", m_strings->getValue(_("Connect Automatically")), BS_CHECKBOX | BS_AUTOCHECKBOX | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_GROUP,
+	m_hAutoconnectCheck = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "BUTTON", _("Connect Automatically"), BS_CHECKBOX | BS_AUTOCHECKBOX | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_GROUP,
 	14, 135, 172, 15 , hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_AUTOCONNECTCHECK,  m_hInstance, 0);
 	UT_return_if_fail(m_hAutoconnectCheck);
 	

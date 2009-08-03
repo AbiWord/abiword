@@ -66,7 +66,7 @@ ABI_PLUGIN_DECLARE("HRText")
 /*****************************************************************/
 /*****************************************************************/
 
-XAP_StringSet *strings;
+XAP_StringSet * pSS;
 
 // completely generic code to allow this to be a plugin
 
@@ -76,19 +76,19 @@ static IE_Exp_HRText_Sniffer * m_sniffer = 0;
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-  strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-	strings->setDomain("abiword-plugin-hrtext");
+	pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	pSS->setDomain("abiword-plugin-hrtext");
 
 	if (!m_sniffer)
 	{
 		m_sniffer = new IE_Exp_HRText_Sniffer ();
 	}
 
-	mi->name = strings->getValue(_("HRText Exporter"));
-	mi->desc = strings->getValue(_("Export HRText Documents"));
+	mi->name = _("HRText Exporter");
+	mi->desc = _("Export HRText Documents");
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Abi the Ant";
-	mi->usage = strings->getValue(_("No Usage"));
+	mi->usage = _("No Usage");
 
 	IE_Exp::registerExporter (m_sniffer);
 	return 1;
@@ -145,8 +145,8 @@ bool IE_Exp_HRText_Sniffer::getDlgLabels(const char ** pszDesc,
 										 const char ** pszSuffixList,
 										 IEFileType * ft)
 {
-	strings->setDomain("abiword-plugin-hrtext");
-	*pszDesc = strings->getValue(_("Newsgroup Formatted Text (.nws)"));
+	pSS->setDomain("abiword-plugin-hrtext");
+	*pszDesc = _("Newsgroup Formatted Text (.nws)");
 	*pszSuffixList = "*.nws";
 	*ft = getFileType();
 	return true;

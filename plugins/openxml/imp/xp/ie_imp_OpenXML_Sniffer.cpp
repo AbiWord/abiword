@@ -127,11 +127,10 @@ bool IE_Imp_OpenXML_Sniffer::getDlgLabels (const char ** szDesc,
 										const char ** szSuffixList,
 										IEFileType * ft)
 {
-	XAP_StringSet * strings = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
-	strings->setDomain("abiword-plugin-openxml");
+	XAP_StringSet * pSS = (XAP_StringSet *) XAP_App::getApp()->getStringSet();
+	pSS->setDomain("abiword-plugin-openxml");
 
-	*szDesc = strings->getValue(_("Office Open XML (.docx, .dotx, .docm, .dotm)"))
-  ;
+	*szDesc = _("Office Open XML (.docx, .dotx, .docm, .dotm)");
 	*szSuffixList = "*.docx; *.dotx; *.docm; *.dotm";
 	*ft = getFileType();
   

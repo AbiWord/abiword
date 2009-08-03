@@ -46,7 +46,6 @@ private:
 	GtkWidget*								port_button;
 	GtkWidget*								ssl_button;
 	GtkWidget*								autoconnect_button;
-  XAP_StringSet *m_strings;
 };
 
 #endif /* __TCPUNIXACCOUNTHANDLER__ */
