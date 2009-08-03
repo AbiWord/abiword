@@ -1,5 +1,5 @@
 /* Copyright (C) 2006,2007 Marc Maurer <uwog@uwog.net>
- * Copyright (C) 2008 AbiSource Corporation B.V.
+ * Copyright (C) 2008-2009 AbiSource Corporation B.V.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -296,9 +296,27 @@ bool ServiceAccountHandler::recognizeBuddyIdentifier(const std::string& identifi
 bool ServiceAccountHandler::hasAccess(const std::vector<std::string>& /*vAcl*/, BuddyPtr pBuddy)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::hasAccess()\n"));
+	UT_return_val_if_fail(pBuddy, false);
+	
+	// The web application is responsible for access control. Just do a quick
+	// check here to see if this buddy makes any sense on this account, and
+	// then be done with it.
+	// NOTE: there is one drawback to this approach: say the document was shared
+	// to a group, and a buddy (the one passed as a parameter to us) joined via
+	// that group access. Now when we remove the group access from the document,
+	// we do not have enough information here to see that we should disconnect
+	// this particual buddy. Right now we don't have enough information to do that.
+	// He will however be denied access when he tries to reconnect later, or even 
+	// when he tries to save the document. It would be nice if we would fully fix 
+	// this later, possibly by passing more information in the realm "userinfo"
+	// XML blob.
+	RealmBuddyPtr pRealBuddy = boost::dynamic_pointer_cast<RealmBuddy>(pBuddy);
+	UT_return_val_if_fail(pRealBuddy, false);
 
-	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-	return false;
+	if (pRealBuddy->domain() != _getDomain())
+		return false;
+
+	return true;
 }
 
 bool ServiceAccountHandler::send(const Packet* /*packet*/)
