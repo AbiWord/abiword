@@ -76,8 +76,8 @@ void AP_Win32Dialog_PageNumbers::runModal(XAP_Frame* pFrame)
 }
 
 
-#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+#define _DS(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 
 BOOL AP_Win32Dialog_PageNumbers::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
@@ -87,7 +87,7 @@ BOOL AP_Win32Dialog_PageNumbers::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPA
 	const XAP_StringSet* pSS = m_pApp->getStringSet();
 
 	// Update the caption
-	m_helper.setDialogTitle(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Title));
+	setDialogTitle(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Title));
 
 	/* Localise controls*/
 	_DSX(PAGENUMBERS_BTN_OK,				DLG_OK);
