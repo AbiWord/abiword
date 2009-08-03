@@ -299,7 +299,9 @@ void AP_UnixDialog_CollaborationShare::eventAccountChanged()
 	UT_return_if_fail(pHandler);
 	
 	UT_DEBUGMSG(("Changed account handler to type: %s\n", pHandler->getDisplayType().utf8_str()));
-	_setAccountHint(pHandler->getShareHint());	
+	PD_Document *pDoc = static_cast<PD_Document*>(XAP_App::getApp()->getLastFocussedFrame()->getCurrentDoc());
+	UT_return_if_fail(pDoc);
+	_setAccountHint(pHandler->getShareHint(pDoc));	
 	_populateBuddyModel(true);
 }
 

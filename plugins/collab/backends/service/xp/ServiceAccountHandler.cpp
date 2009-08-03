@@ -120,8 +120,17 @@ UT_UTF8String ServiceAccountHandler::getStaticStorageType()
 	return SERVICE_ACCOUNT_HANDLER_TYPE;
 }
 
-UT_UTF8String ServiceAccountHandler::getShareHint()
+UT_UTF8String ServiceAccountHandler::getShareHint(PD_Document* pDoc)
 {
+	UT_return_val_if_fail(pDoc, "");
+
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, "");
+
+	// There is no hint if this document is already uploaded to the service.
+	if (pManager->isInSession(pDoc))
+		return "";
+
 	// TODO: we should really have a nice web url for this, but until we do,
 	// we'll poke in the SOAP uri to find it.
 	std::string server = getProperty("uri");

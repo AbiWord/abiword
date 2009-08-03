@@ -93,7 +93,7 @@ public:
 		{ return m_properties; }
 
 	// dialog management
-	virtual UT_UTF8String					getShareHint() { return ""; }
+	virtual UT_UTF8String					getShareHint(PD_Document* /*pDoc*/) { return ""; }
 	virtual void							embedDialogWidgets(void* pEmbeddingParent) = 0;
 	virtual void							removeDialogWidgets(void* pEmbeddingParent) = 0;
 	virtual void							storeProperties() = 0;
