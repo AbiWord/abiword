@@ -328,6 +328,20 @@ bool ServiceAccountHandler::hasAccess(const std::vector<std::string>& /*vAcl*/, 
 	return true;
 }
 
+bool ServiceAccountHandler::canShare(BuddyPtr pBuddy)
+{
+	UT_return_val_if_fail(pBuddy, false);
+
+	ServiceBuddyPtr pServiceBuddy = boost::dynamic_pointer_cast<ServiceBuddy>(pBuddy);
+	UT_return_val_if_fail(pServiceBuddy, false)
+
+	const std::string email = getProperty("email");
+	if (pServiceBuddy->getEmail() == email)
+		return false; // sharing with yourself makes no sense
+
+	return true;
+}
+
 bool ServiceAccountHandler::send(const Packet* /*packet*/)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::send(const Packet*)\n"));

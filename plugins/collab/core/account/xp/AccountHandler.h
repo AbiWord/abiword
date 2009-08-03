@@ -136,6 +136,9 @@ public:
 	virtual void							forceDisconnectBuddy(BuddyPtr /*buddy*/) = 0;
 	virtual bool							hasAccess(const std::vector<std::string>& vAcl, BuddyPtr pBuddy);
 	virtual bool							hasPersistentAccessControl() = 0;
+	// Return true if you can to share a file with this buddy, false otherwise
+	virtual bool							canShare(BuddyPtr /*pBuddy*/)
+		{ return true; }
 
 	// session management
 	virtual void							getSessionsAsync();

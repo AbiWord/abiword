@@ -231,8 +231,12 @@ void AP_UnixDialog_CollaborationShare::_populateBuddyModel(bool refresh)
 		BuddyPtr pBuddy = pHandler->getBuddies()[i];
 		UT_continue_if_fail(pBuddy);
 		
-		UT_DEBUGMSG(("Got buddy: %s\n", pBuddy->getDescription().utf8_str()));
-	
+		if (!pBuddy->getHandler()->canShare(pBuddy))
+		{
+			UT_DEBUGMSG(("Not allowed to share with buddy: %s\n", pBuddy->getDescription().utf8_str()));
+			continue;
+		}
+
 		// crap, we can't store shared pointers in the list store; use a 
 		// hack to do it (which kinda defies the whole shared pointer thingy, 
 		// but alas...)
