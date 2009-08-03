@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001, 2003 Hubert Figuiere
+ * Copyright (C) 2001, 2003, 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -45,16 +45,8 @@ public:
 	void					setSelectedRow(int row);
 	int						getSelectedRow(void);
 
-	void					doGoto(const char *number);
-	
-	void 					event_goto(const char *number);
-	void 					event_backward(void);
-	void 					event_forward(void);
-	void					event_valueChanged(void);
-	void					event_targetChanged(int row);
-	const char * getWindowName(void) { return m_WindowName; };
+	const char * getWindowName(void) const { return m_WindowName; };
 private:
-	int m_iRow;
 	AP_CocoaDialog_GotoController* m_dlg;
 };
 
@@ -64,21 +56,25 @@ private:
     IBOutlet NSButton *backBtn;
     IBOutlet NSButton *forwardBtn;
     IBOutlet NSButton *jumpToBtn;
-    IBOutlet NSComboBox *valueCombo;
-    IBOutlet NSTextField *valueLabel;
-    IBOutlet NSTextField *whatLabel;
-    IBOutlet NSPopUpButton *whatPopup;
+	IBOutlet NSMatrix *_typeMatrix;
+	IBOutlet NSButtonCell *_pageRadio;
+	IBOutlet NSButtonCell *_lineRadio;
+	IBOutlet NSButtonCell *_bookmarkRadio;
+	IBOutlet NSTextField *_pageNum;
+	IBOutlet NSTextField *_lineNum;
+	IBOutlet NSComboBox *_bookmarkName;
+    IBOutlet NSBox *whatLabel;
 	AP_CocoaDialog_Goto* _xap;
+	AP_JumpTarget m_jumpTarget;
+	FV_DocCount   m_docCount;
 }
 - (void)windowToFront;
+- (void)updateContent;
 
-- (NSString*)stringValue;
 - (IBAction)backAction:(id)sender;
-- (IBAction)closeAction:(id)sender;
 - (IBAction)forwardAction:(id)sender;
 - (IBAction)jumpToAction:(id)sender;
-- (IBAction)valueComboAction:(id)sender;
-- (IBAction)whatPopupAction:(id)sender;
+- (IBAction)selectedType:(id)sender;
 @end
 
 #endif /* AP_COCOADIALOG_GOTO_H */

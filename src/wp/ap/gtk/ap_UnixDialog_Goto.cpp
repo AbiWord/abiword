@@ -301,13 +301,8 @@ AP_UnixDialog_Goto::onJumpClicked ()
 	if (!text)
 		return;		
 
-	UT_uint32 len = strlen (text);
-	UT_UCSChar *number = (UT_UCSChar *) g_try_malloc (sizeof (UT_UCSChar) * (len + 1));
-	UT_UCS4_strcpy_utf8_char (number, text);
-	UT_DEBUGMSG (("ROB: onJumpClicked () gotoTarget () target='%d' number='%s'\n", m_JumpTarget, text));
-	getView()->gotoTarget (m_JumpTarget, number);
-
-	FREEP (number);
+	performGoto(m_JumpTarget, text);
+	
 	if (freeText && text) {
 		g_free ((gchar *)text);
 	}

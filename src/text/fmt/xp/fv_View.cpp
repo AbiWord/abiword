@@ -7311,18 +7311,24 @@ void FV_View::endDrag(UT_sint32 xPos, UT_sint32 yPos)
 }
 
 // ---------------- start goto ---------------
+bool FV_View::gotoTarget(AP_JumpTarget type, const UT_UCSChar *data)
+{
+	char * numberString = static_cast<char *>(UT_calloc(UT_UCS4_strlen(data) + 1, sizeof(char)));
+	UT_return_val_if_fail(numberString, false);
+	UT_UCS4_strcpy_to_char(numberString, data);
+	
+	bool result = gotoTarget(type, numberString);
+	FREEP(numberString);
+	return result;
+}
 
-bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
+
+bool FV_View::gotoTarget(AP_JumpTarget type, const char *numberString)
 {
 	UT_ASSERT(m_pLayout);
 	bool inc = false;
 	bool dec = false;
 
-	char * numberString = static_cast<char *>(UT_calloc(UT_UCS4_strlen(data) + 1, sizeof(char)));
-	UT_return_val_if_fail(numberString, false);
-	char * origNum = numberString;
-
-	UT_UCS4_strcpy_to_char(numberString, data);
 	if (!isSelectionEmpty())
 	{
 		_clearSelection();
@@ -7548,9 +7554,6 @@ book_mark_not_found:
 		// TODO
 		;
 	}
-
-	FREEP(origNum);
-
 	_ensureInsertionPointOnScreen();
 
 	return false;

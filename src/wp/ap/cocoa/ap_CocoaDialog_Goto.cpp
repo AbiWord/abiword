@@ -2,7 +2,7 @@
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2003 Hubert Figuiere
+ * Copyright (C) 2003, 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -40,6 +40,8 @@
 
 #include "fv_View.h"
 
+
+
 /*****************************************************************/
 XAP_Dialog * AP_CocoaDialog_Goto::static_constructor(XAP_DialogFactory * pFactory,
 													XAP_Dialog_Id dlgid)
@@ -51,7 +53,6 @@ XAP_Dialog * AP_CocoaDialog_Goto::static_constructor(XAP_DialogFactory * pFactor
 AP_CocoaDialog_Goto::AP_CocoaDialog_Goto(XAP_DialogFactory * pDlgFactory,
 									   XAP_Dialog_Id dlgid)
 	: AP_Dialog_Goto(pDlgFactory, dlgid),
-		m_iRow(-1),
 		m_dlg(nil)
 {
 }
@@ -59,82 +60,6 @@ AP_CocoaDialog_Goto::AP_CocoaDialog_Goto(XAP_DialogFactory * pDlgFactory,
 AP_CocoaDialog_Goto::~AP_CocoaDialog_Goto(void)
 {
 
-}
-#if 0
-void AP_CocoaDialog_Goto::s_blist_clicked(GtkWidget *clist, gint row, gint column,
-										  GdkEventButton *event, AP_CocoaDialog_Goto *me)
-{
-	gtk_entry_set_text(GTK_ENTRY(me->m_wEntry), (gchar*)me->m_pBookmarks[row]);
-}
-#endif
-void AP_CocoaDialog_Goto::doGoto(const char *number)
-{
-	UT_UCSChar *ucsnumber = (UT_UCSChar *) g_try_malloc (sizeof (UT_UCSChar) * (strlen(number) + 1));
-	UT_UCS4_strcpy_char (ucsnumber, number);
-	int target = getSelectedRow ();
-	getView()->gotoTarget (static_cast<AP_JumpTarget>(target), ucsnumber);
-	g_free (ucsnumber);
-}
-
-void AP_CocoaDialog_Goto::event_goto (const char* number)
-{
-	if (number && *number) {
-		doGoto(number);
-	}
-}
-
-void AP_CocoaDialog_Goto::event_forward ()
-{
-	doGoto ("+1");
-}
-
-void AP_CocoaDialog_Goto::event_backward ()
-{
-	doGoto("-1");
-}
-
-
-void AP_CocoaDialog_Goto::event_targetChanged(int row)
-{
-	setSelectedRow (row);
-}
-
-void AP_CocoaDialog_Goto::event_valueChanged()
-{
-/*
-	gchar *text = gtk_entry_get_text (GTK_ENTRY (widget));
-
-	if (text[0] == '\0')
-	{
-		gtk_widget_grab_default (me->m_wClose);
-		gtk_widget_set_sensitive (me->m_wGoto, FALSE);
-	}
-	else
-	{
-		gtk_widget_set_sensitive (me->m_wGoto, TRUE);
-		gtk_widget_grab_default (me->m_wGoto);
-	}
-*/
-}
-
-void AP_CocoaDialog_Goto::setSelectedRow (int row)
-{
-	m_iRow = row;
-/*	if(row == (int) AP_JUMPTARGET_BOOKMARK)
-	{
-		gtk_widget_hide(m_dlabel);
-		gtk_widget_show(m_swindow);
-	}
-	else
-	{
-		gtk_widget_hide(m_swindow);
-		gtk_widget_show(m_dlabel);
-	}*/
-}
-
-int AP_CocoaDialog_Goto::getSelectedRow (void)
-{
-	return (m_iRow);
 }
 
 void AP_CocoaDialog_Goto::runModeless (XAP_Frame * /*pFrame*/)
@@ -183,6 +108,8 @@ void AP_CocoaDialog_Goto::notifyActiveFrame(XAP_Frame * /*pFrame*/)
 	if(![super initWithWindowNibName:@"ap_CocoaDialog_Goto"]) {
 		return nil;
 	}
+	_xap = NULL;
+	m_jumpTarget = AP_JUMPTARGET_PAGE;
 	return self;
 }
 
@@ -210,67 +137,143 @@ void AP_CocoaDialog_Goto::notifyActiveFrame(XAP_Frame * /*pFrame*/)
 		LocalizeControl(forwardBtn,	pSS, AP_STRING_ID_DLG_Goto_Btn_Next);
 		LocalizeControl(backBtn,	pSS, AP_STRING_ID_DLG_Goto_Btn_Prev);
 		LocalizeControl(whatLabel,	pSS, AP_STRING_ID_DLG_Goto_Label_What);
-		LocalizeControl(valueLabel,	pSS, AP_STRING_ID_DLG_Goto_Label_Number);
 
-		[whatPopup removeAllItems];
+		id widgets[3] = { _pageRadio, _lineRadio, _bookmarkRadio };
 
-		if (char ** tmp2 = _xap->getJumpTargets()) {
-			for (int i = 0; tmp2[i] != NULL; i++) {
-				[whatPopup addItemWithTitle:[NSString stringWithUTF8String:tmp2[i]]];
-			}
-			for(UT_uint32 i = 0; i < _xap->getExistingBookmarksCount(); i++) {
-				[valueCombo addItemWithObjectValue:[NSString stringWithUTF8String:_xap->getNthExistingBookmark(i)]];
+		if (const char ** tmp2 = _xap->getJumpTargets()) {
+			for (int i = 0; tmp2[i] != NULL && i < 3; i++) {
+				[widgets[i] setTitle:[NSString stringWithUTF8String:tmp2[i]]];
 			}
 		}
+	
+		[self updateContent];
 	}
 }
+
+- (void)updateContent
+{
+	UT_ASSERT(_xap);
+
+	UT_sint32 count = _xap->getExistingBookmarksCount();
+	[_bookmarkName removeAllItems];
+	if(count <= 10) {
+		[_bookmarkName setNumberOfVisibleItems:count];
+	}
+	else {
+		[_bookmarkName setNumberOfVisibleItems:10];
+		[_bookmarkName setHasVerticalScroller:YES];
+	}
+	for(UT_sint32 i = 0; i < count; i++) {
+		[_bookmarkName addItemWithObjectValue:[NSString stringWithUTF8String:_xap->getNthExistingBookmark(i)]];
+	}
+	if(count) {
+		[_bookmarkName selectItemAtIndex:0];
+	}
+	
+	m_docCount = _xap->getView()->countWords();
+	NSNumberFormatter *formatter;
+	formatter = [_pageNum formatter];
+	[formatter setMinimum:[NSNumber numberWithInt:1]];
+	[formatter setMaximum:[NSNumber numberWithInt:m_docCount.page]];
+	[_pageNum setIntValue:1];
+	formatter = [_lineNum formatter];
+	[formatter setMinimum:[NSNumber numberWithInt:1]];
+	[formatter setMaximum:[NSNumber numberWithInt:m_docCount.line]];
+	[_lineNum setIntValue:1];
+
+	[self selectedType:_typeMatrix];
+}
+
 
 - (void)windowToFront
 {
 	[[self window] makeKeyAndOrderFront:self];
-	[[self window] makeFirstResponder:valueCombo];
-}
-
-- (NSString*)stringValue
-{
-	return [valueCombo stringValue];
+	id w = nil;
+	switch(m_jumpTarget) {
+	case AP_JUMPTARGET_PAGE:
+		w = _pageNum;
+		break;
+	case AP_JUMPTARGET_LINE:
+		w = _lineNum;
+		break;
+	case AP_JUMPTARGET_BOOKMARK:
+		w = _bookmarkName;
+		break;
+	default:
+		break;
+	}
+	[[self window] makeFirstResponder:w];
 }
 
 
 - (IBAction)backAction:(id)sender
 {
 	UT_UNUSED(sender);
-	_xap->event_backward();
-}
-
-- (IBAction)closeAction:(id)sender
-{
-	UT_UNUSED(sender);
+	int idx = -1;
+	if(m_jumpTarget == AP_JUMPTARGET_BOOKMARK) {
+		idx = [_bookmarkName indexOfItemWithObjectValue:[_bookmarkName stringValue]];
+	}
+	std::string dest = _xap->performGotoPrev(m_jumpTarget, idx);
+	if(m_jumpTarget == AP_JUMPTARGET_BOOKMARK) {
+		[_bookmarkName setStringValue:[NSString stringWithUTF8String:dest.c_str()]];
+	}
 }
 
 - (IBAction)forwardAction:(id)sender
 {
 	UT_UNUSED(sender);
-	_xap->event_forward();
+	int idx = -1;
+	if(m_jumpTarget == AP_JUMPTARGET_BOOKMARK) {
+		idx = [_bookmarkName indexOfItemWithObjectValue:[_bookmarkName stringValue]];
+	}
+	std::string dest = _xap->performGotoNext(m_jumpTarget, idx);
+	if(m_jumpTarget == AP_JUMPTARGET_BOOKMARK) {
+		[_bookmarkName setStringValue:[NSString stringWithUTF8String:dest.c_str()]];
+	}
 }
 
 - (IBAction)jumpToAction:(id)sender
 {
 	UT_UNUSED(sender);
-	_xap->event_goto([[valueCombo stringValue] UTF8String]);
+	switch(m_jumpTarget) {
+	case AP_JUMPTARGET_PAGE:
+		_xap->performGoto(m_jumpTarget, [[_pageNum stringValue] UTF8String]);
+		break;
+	case AP_JUMPTARGET_LINE:
+		_xap->performGoto(m_jumpTarget, [[_lineNum stringValue] UTF8String]);
+		break;
+	case AP_JUMPTARGET_BOOKMARK:
+		_xap->performGoto(m_jumpTarget, [[_bookmarkName stringValue] UTF8String]);
+		break;
+	default:
+		break;
+	}
 }
 
-- (IBAction)valueComboAction:(id)sender
+- (IBAction)selectedType:(id)sender
 {
-	UT_UNUSED(sender);
-	_xap->event_valueChanged();
-}
-
-- (IBAction)whatPopupAction:(id)sender
-{
-	NSMenuItem * item = [sender selectedItem];
-	if (item) {
-		_xap->event_targetChanged([sender indexOfItem:item]);
+	int selected = [sender selectedRow];
+	switch(selected) {
+	case 0:
+		[_pageNum setEnabled:YES];
+		[_lineNum setEnabled:NO];
+		[_bookmarkName setEnabled:NO];
+		m_jumpTarget = AP_JUMPTARGET_PAGE;
+		break;
+	case 1:
+		[_pageNum setEnabled:NO];
+		[_lineNum setEnabled:YES];
+		[_bookmarkName setEnabled:NO];	
+		m_jumpTarget = AP_JUMPTARGET_LINE;
+		break;
+	case 2:
+		[_pageNum setEnabled:NO];
+		[_lineNum setEnabled:NO];
+		[_bookmarkName setEnabled:YES];
+		m_jumpTarget = AP_JUMPTARGET_BOOKMARK;
+		break;
+	default:
+		break;
 	}
 }
 

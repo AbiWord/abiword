@@ -592,7 +592,8 @@ public:
 	bool                selectAnnotation(fl_AnnotationLayout * pAL);
 // ----------------------
 
-	bool		gotoTarget(AP_JumpTarget type, UT_UCSChar * data);
+	bool		gotoTarget(AP_JumpTarget type, const UT_UCSChar * data);
+	bool		gotoTarget(AP_JumpTarget type, const char *numberString);
 
 	void			changeNumColumns(UT_uint32 iNumColumns);
 

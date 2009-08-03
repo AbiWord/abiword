@@ -1,24 +1,21 @@
 {
     IBClasses = (
         {
-            ACTIONS = {
-                backAction = id; 
-                closeAction = id; 
-                forwardAction = id; 
-                jumpToAction = id; 
-                valueComboAction = id; 
-                whatPopupAction = id; 
-            }; 
+            ACTIONS = {backAction = id; forwardAction = id; jumpToAction = id; selectedType = id; }; 
             CLASS = "AP_CocoaDialog_GotoController"; 
             LANGUAGE = ObjC; 
             OUTLETS = {
+                "_bookmarkName" = NSComboBox; 
+                "_bookmarkRadio" = NSButtonCell; 
+                "_lineNum" = NSTextField; 
+                "_lineRadio" = NSButtonCell; 
+                "_pageNum" = NSTextField; 
+                "_pageRadio" = NSButtonCell; 
+                "_typeMatrix" = NSMatrix; 
                 backBtn = NSButton; 
                 forwardBtn = NSButton; 
                 jumpToBtn = NSButton; 
-                valueCombo = NSComboBox; 
-                valueLabel = NSTextField; 
-                whatLabel = NSTextField; 
-                whatPopup = NSPopUpButton; 
+                whatLabel = NSBox; 
             }; 
             SUPERCLASS = NSWindowController; 
         }, 

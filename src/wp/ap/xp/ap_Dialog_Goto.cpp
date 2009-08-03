@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2009 Hubert Figuiere 
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -106,6 +107,63 @@ void  AP_Dialog_Goto::setActiveFrame(XAP_Frame * /*pFrame*/)
 	notifyActiveFrame(getActiveFrame());
 }
 
+// Actions
+void AP_Dialog_Goto::performGoto(AP_JumpTarget target, const char * value) const
+{
+	UT_DEBUGMSG (("performGoto target='%d' number='%s'\n", target, value));
+	m_pView->gotoTarget (target, value);
+}
+
+std::string AP_Dialog_Goto::performGotoNext(AP_JumpTarget target, UT_sint32 idx) const
+{
+	std::string dest;
+	if(target == AP_JUMPTARGET_BOOKMARK) {
+		if(!getExistingBookmarksCount()) {
+			return dest;
+		}
+		if(idx >= 0) {
+			idx++;
+			// wrap it
+			if(idx >= getExistingBookmarksCount()) {
+				idx = 0;
+			}
+		}
+		else {
+			idx = 0;
+		}
+		dest = getNthExistingBookmark(idx);
+		m_pView->gotoTarget (target, dest.c_str());	
+	}
+	else {
+		m_pView->gotoTarget (target, "+1");
+	}
+	return dest;
+}
+
+
+std::string AP_Dialog_Goto::performGotoPrev(AP_JumpTarget target, UT_sint32 idx) const
+{
+	std::string dest;
+	if(target == AP_JUMPTARGET_BOOKMARK) {
+		if(!getExistingBookmarksCount()) {
+			return dest;
+		}
+		idx--;
+		if(idx < 0) {
+			idx = getExistingBookmarksCount();
+			if(idx) {
+				idx--;
+			}
+		}
+		dest = getNthExistingBookmark(idx);
+		m_pView->gotoTarget (target, dest.c_str());
+	}
+	else {
+		m_pView->gotoTarget (target, "-1");
+	}
+	return dest;
+}
+
 
 // --------------------------- Setup Functions -----------------------------
 bool AP_Dialog_Goto::setView(FV_View * /*view*/)
@@ -120,13 +178,13 @@ FV_View * AP_Dialog_Goto::getView(void) const
 	return  (FV_View *) pFrame->getCurrentView();
 }
 
-UT_uint32 AP_Dialog_Goto::getExistingBookmarksCount() const
+UT_sint32 AP_Dialog_Goto::getExistingBookmarksCount() const
 {
 	UT_return_val_if_fail (m_pView, 0);
 	return m_pView->getDocument()->getBookmarkCount();
 }
 
-const gchar * AP_Dialog_Goto::getNthExistingBookmark(UT_uint32 n) const
+const gchar * AP_Dialog_Goto::getNthExistingBookmark(UT_sint32 n) const
 {
 	UT_return_val_if_fail (m_pView, NULL);
 	return m_pView->getDocument()->getNthBookmark(n);

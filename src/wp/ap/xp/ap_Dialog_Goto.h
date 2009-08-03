@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,9 +21,11 @@
 #ifndef AP_DIALOG_GOTO_H
 #define AP_DIALOG_GOTO_H
 
-#include "xap_Dialog.h"
+#include <string>
 
-class FV_View;
+#include "xap_Dialog.h"
+#include "fv_View.h"
+
 class XAP_Frame;
 
 class ABI_EXPORT AP_Dialog_Goto : public XAP_Dialog_Modeless
@@ -48,9 +51,15 @@ public:
 	void						setActiveFrame(XAP_Frame *pFrame);
 	static const char **        getJumpTargets();
 	
-	UT_uint32					getExistingBookmarksCount() const;
-	const gchar *			getNthExistingBookmark(UT_uint32 n) const;
-
+	UT_sint32					getExistingBookmarksCount() const;
+	const gchar *			getNthExistingBookmark(UT_sint32 n) const;
+	/** Perform the Goto with a page #, line # or bookmark name
+	 * @param target the target
+	 * @param value the target value
+	 */
+	void                        performGoto(AP_JumpTarget target, const char *value) const;
+	std::string                 performGotoNext(AP_JumpTarget target, UT_sint32 idx) const;
+	std::string                 performGotoPrev(AP_JumpTarget target, UT_sint32 idx) const;
 protected:
 	// These are the "current use" dialog data items,
 	// which are liberally read and set by the
