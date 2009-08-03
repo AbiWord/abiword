@@ -36,8 +36,8 @@
 #include "ap_Win32Resources.rc2"
 
 
-#define GWL(hwnd)		(AP_Win32Dialog_SplitCells*)GetWindowLong((hwnd), DWL_USER)
-#define SWL(hwnd, d)	(AP_Win32Dialog_SplitCells*)SetWindowLong((hwnd), DWL_USER,(LONG)(d))
+#define GWL(hwnd)		(AP_Win32Dialog_SplitCells*)GetWindowLongW((hwnd), DWL_USER)
+#define SWL(hwnd, d)	(AP_Win32Dialog_SplitCells*)SetWindowLongW((hwnd), DWL_USER,(LONG)(d))
 
 #define BITMAP_WITDH	15
 #define BITMAP_HEIGHT	15
@@ -78,13 +78,13 @@ void AP_Win32Dialog_SplitCells::runModeless(XAP_Frame * pFrame)
 	int iResult;
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 
-	LPCTSTR lpTemplate = NULL;
+	LPCWSTR lpTemplate = NULL;
 
 	UT_return_if_fail (m_id == AP_DIALOG_ID_SPLIT_CELLS);
 
-	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_SPLITCELLS);
+	lpTemplate = MAKEINTRESOURCEW(AP_RID_DIALOG_SPLITCELLS);
 
-	HWND hResult = CreateDialogParam(pWin32App->getInstance(),lpTemplate,
+	HWND hResult = CreateDialogParamW(pWin32App->getInstance(),lpTemplate,
 							static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 							(DLGPROC)s_dlgProc,(LPARAM)this);
 	UT_ASSERT_HARMLESS((hResult != NULL));
@@ -130,8 +130,8 @@ BOOL CALLBACK AP_Win32Dialog_SplitCells::s_dlgProc(HWND hWnd,UINT msg,WPARAM wPa
 		return 0;
 	}
 }
-#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_SPLITCELLS_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_SPLITCELLS_##c,pSS->getValue(XAP_STRING_ID_##s))
+#define _DS(c,s)	setDlgItemText(AP_RID_DIALOG_SPLITCELLS_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_SPLITCELLS_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 
 HBITMAP AP_Win32Dialog_SplitCells::_loadBitmap(HWND hWnd, UINT nId, char* pName, int width, int height, UT_RGBColor color)
@@ -140,7 +140,7 @@ HBITMAP AP_Win32Dialog_SplitCells::_loadBitmap(HWND hWnd, UINT nId, char* pName,
 	
 	AP_Win32Toolbar_Icons::getBitmapForIcon(hWnd, width, height, &color,	pName,	&hBitmap);	
 				
-	SendDlgItemMessage(hWnd,  nId, 
+	SendDlgItemMessageW(hWnd,  nId, 
         	            BM_SETIMAGE,  IMAGE_BITMAP, (LPARAM) hBitmap);				
 	
 	return hBitmap; 
@@ -170,7 +170,7 @@ BOOL AP_Win32Dialog_SplitCells::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM l
 				
 	// Localise caption
 	ConstructWindowName();
-	SetWindowText(m_hwndDlg, m_WindowName);
+	setDialogTitle (m_WindowName);
 
 	// The four items are the same size
 	GetClientRect(GetDlgItem(hWnd, AP_RID_DIALOG_SPLITCELLS_BMP_LEFT), &rect);			
@@ -188,7 +188,7 @@ BOOL AP_Win32Dialog_SplitCells::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM l
     m_hBitmapBelow = _loadBitmap(hWnd,AP_RID_DIALOG_SPLITCELLS_BMP_BELOW, "SPLITBELOW", BITMAP_WITDH, BITMAP_HEIGHT, Color);
 	
 	setAllSensitivities();
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
+	centerDialog();	
 	
 	SetFocus(GetDlgItem(hWnd,AP_RID_DIALOG_SPLITCELLS_BTN_CANCEL));
 	return 0; // 0 because we called SetFocus
@@ -239,12 +239,12 @@ void AP_Win32Dialog_SplitCells::event_Close(void)
 
 void AP_Win32Dialog_SplitCells::notifyActiveFrame(XAP_Frame *pFrame)
 {
-	if((HWND)GetWindowLong(m_hwndDlg, GWL_HWNDPARENT) != static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
+	if((HWND)GetWindowLongW(m_hwndDlg, GWL_HWNDPARENT) != static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
 		ConstructWindowName();
-		SetWindowText(m_hwndDlg, m_WindowName);
+		setDialogTitle (m_WindowName);
 
-		SetWindowLong(m_hwndDlg, GWL_HWNDPARENT, (long)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
+		SetWindowLongW(m_hwndDlg, GWL_HWNDPARENT, (long)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
 		SetWindowPos(m_hwndDlg, NULL, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}
@@ -318,7 +318,7 @@ void AP_Win32Dialog_SplitCells::destroy(void)
 void AP_Win32Dialog_SplitCells::activate(void)
 {
 	ConstructWindowName();
-	SetWindowText(m_hwndDlg, m_WindowName);
+	setDialogTitle (m_WindowName);
 
 	setAllSensitivities();
 }

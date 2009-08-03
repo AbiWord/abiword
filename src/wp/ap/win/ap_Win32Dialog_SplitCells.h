@@ -22,11 +22,11 @@
 
 #include "ap_Dialog_SplitCells.h"
 #include "xap_Frame.h"
-
+#include "xap_Win32DialogBase.h"
 
 /*****************************************************************/
 
-class ABI_EXPORT AP_Win32Dialog_SplitCells: public AP_Dialog_SplitCells
+class ABI_EXPORT AP_Win32Dialog_SplitCells: public AP_Dialog_SplitCells, XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_SplitCells(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
