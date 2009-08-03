@@ -999,7 +999,6 @@ void AbiCollabSessionManager::updateAcl(AbiCollab* pSession, AccountHandler* pAc
 {
 	UT_return_if_fail(pSession);
 	UT_return_if_fail(pAccount);
-	UT_return_if_fail(vAcl.size() > 0);
 	
 	// check if all current collaborators are still allowed to collaborate; if not,
 	// then remove them from the session

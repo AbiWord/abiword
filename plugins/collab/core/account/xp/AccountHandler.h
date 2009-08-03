@@ -150,10 +150,10 @@ public:
 	virtual bool							allowsSessionTakeover() = 0;
 	bool									getCanOffer()
 		{ return m_bCanOffer; }
-
 	void									setOffering(bool bCanOffer)
 		{ m_bCanOffer = bCanOffer; }
-		
+	virtual bool							keepEmptySessionsAlive()
+		{ return false; }
 
 
 	// generic session management packet implementation

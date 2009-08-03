@@ -113,6 +113,8 @@ public:
 	// session management
 	virtual bool							allowsSessionTakeover()
 		{ return true; }
+	virtual bool								keepEmptySessionsAlive()
+		{ return true; }
 
 	// signal management
 	virtual void							signal(const Event& event, BuddyPtr pSource);

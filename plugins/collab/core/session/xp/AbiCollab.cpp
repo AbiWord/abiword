@@ -225,6 +225,7 @@ void AbiCollab::_checkRevokeAccess(BuddyPtr pCollaborator)
 	UT_DEBUGMSG(("AbiCollab::_checkRevokeAccess()\n"));
 	UT_return_if_fail(pCollaborator);
 	UT_return_if_fail(isLocallyControlled());
+	UT_return_if_fail(m_pAclAccount);
 
 	// remove this buddy from the access control list if his access rights
 	// are not persistent
@@ -242,7 +243,7 @@ void AbiCollab::_checkRevokeAccess(BuddyPtr pCollaborator)
 	}
 
 	// stop the session if the ACL has become empty
-	if (m_vAcl.size() == 0)
+	if (!m_pAclAccount->keepEmptySessionsAlive() && m_vAcl.size() == 0)
 	{
 		UT_DEBUGMSG(("The ACL list has become empty, stopping session...\n"));
 		UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
@@ -283,7 +284,6 @@ void AbiCollab::setAcl(AccountHandler* pAclAccount, const std::vector<std::strin
 {
 	UT_DEBUGMSG(("AbiCollab::setAcl()\n"));
 	UT_return_if_fail(pAclAccount);
-	UT_return_if_fail(vAcl.size() > 0);
 
 	m_pAclAccount = pAclAccount;
 	m_vAcl = vAcl;
