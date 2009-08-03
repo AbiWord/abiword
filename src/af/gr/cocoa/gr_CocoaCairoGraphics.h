@@ -97,6 +97,14 @@ public:
 	virtual void _beginPaint ();
 	virtual void _endPaint ();
 
+	virtual bool		queryProperties(GR_Graphics::Properties gp) const;
+  	virtual bool		startPrint(void);
+	virtual bool		endPrint(void);
+	virtual bool		startPage(const char * szPageLabel,
+								  UT_uint32 pageNumber,
+								  bool bPortrait,
+								  UT_uint32 iWidth, UT_uint32 iHeight);
+
 // Cocoa specific
 	static cairo_t *	_createCairo(NSView * view);
 	void			init3dColors();
@@ -142,6 +150,7 @@ private:
 	UT_uint32			m_screenResolution;
 	bool				m_bIsPrinting;
 	bool				m_bIsDrawing;
+	bool                m_bDoShowPage;
 	static void _initColorAndImage(void);
 	static bool			m_colorAndImageInited;
 	static UT_RGBColor *	m_colorBlue16x15;

@@ -396,7 +396,8 @@ GR_CocoaCairoGraphics::GR_CocoaCairoGraphics(XAP_CocoaNSView * win)
 	m_GrabCursor(GR_CURSOR_DEFAULT),
 	m_screenResolution(0),
 	m_bIsPrinting(false),
-	m_bIsDrawing(false)
+	m_bIsDrawing(false),
+	m_bDoShowPage(false)
 {
 	_initColorAndImage();
 	init3dColors();
@@ -941,6 +942,64 @@ void GR_CocoaCairoGraphics::_endPaint ()
 	cairo_destroy(m_cr);
 	m_cr = NULL;
 }
+
+
+
+bool GR_CocoaCairoGraphics::queryProperties(GR_Graphics::Properties gp) const
+{
+	switch (gp)
+	{
+		case DGP_SCREEN:
+		case DGP_OPAQUEOVERLAY:
+			return !m_bIsPrinting;
+		case DGP_PAPER:
+			return m_bIsPrinting;
+		default:
+			UT_ASSERT_NOT_REACHED ();
+			return false;
+	}
+}
+
+
+bool GR_CocoaCairoGraphics::startPrint(void)
+{
+	if(!m_bIsPrinting) {
+		return false;
+	}
+	m_bDoShowPage = false;
+	return true;
+}
+
+
+bool GR_CocoaCairoGraphics::endPrint(void)
+{
+	if(!m_bIsPrinting) {
+		return false;
+	}
+	if (m_bDoShowPage) {
+		cairo_show_page(m_cr);
+	}
+	return true;
+}
+
+
+bool GR_CocoaCairoGraphics::startPage(const char * /*szPageLabel*/,
+							  UT_uint32 /*pageNumber*/,
+							  bool /*bPortrait*/,
+							  UT_uint32 /*iWidth*/, UT_uint32 /*iHeight*/)
+{
+	if(!m_bIsPrinting) {
+		return false;
+	}
+	if (m_bDoShowPage) {
+		cairo_show_page(m_cr);
+	}
+
+	m_bDoShowPage = true;
+
+	return true;
+}
+
 
 cairo_t *GR_CocoaCairoGraphics::_createCairo(NSView * view)
 {
