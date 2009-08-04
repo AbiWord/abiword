@@ -79,7 +79,7 @@ AC_MSG_CHECKING([for collab sugar backend])
 AC_MSG_RESULT([$enable_collab_backend_sugar])
 
 AC_ARG_ENABLE([collab-backend-service], 
-    [AS_HELP_STRING([--enable-collab-backend-service], [abicollab.net backend (default: off); NOTE to packagers: do NOT enable this, the service is not publically available yet])], 
+    [AS_HELP_STRING([--enable-collab-backend-service], [abicollab.net backend (default: auto)], 
 [
 	enable_collab_backend_service=$enableval
 	AC_LANG_PUSH(C++)
