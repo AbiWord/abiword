@@ -85,6 +85,39 @@ bool ServiceAccountHandler::askPassword(const std::string& email, std::string& p
 	return !cancel;
 }
 
+bool ServiceAccountHandler::askFilename(std::string& filename)
+{
+	UT_DEBUGMSG(("ServiceAccountHandler::askFilename()\n"));
+	XAP_Frame* pFrame = XAP_App::getApp()->getLastFocussedFrame();
+	UT_return_val_if_fail(pFrame, false);
+	
+	// ask for the service password
+	XAP_DialogFactory* pFactory = static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
+	UT_return_val_if_fail(pFactory, false);
+	AP_Dialog_GenericInput* pDialog = static_cast<AP_Dialog_GenericInput*>(
+				pFactory->requestDialog(ServiceAccountHandler::getDialogGenericInputId())
+			);
+	
+	// Run the dialog
+	// TODO: make this translatable
+	pDialog->setTitle("AbiCollab.net Collaboration Service"); // FIXME: don't hardcode this title to abicollab.net
+	std::string msg = "The filename '" + filename + "' already exists. Please enter a new name.";
+	pDialog->setQuestion(msg.c_str());
+	pDialog->setLabel("Filename:");
+	pDialog->setPassword(false);
+	pDialog->runModal(pFrame);
+	
+	// get the results
+	bool cancel = pDialog->getAnswer() == AP_Dialog_GenericInput::a_CANCEL;
+	if (!cancel)
+		filename = pDialog->getInput().utf8_str();
+	pFactory->releaseDialog(pDialog);
+	
+	// the user terminated the input
+	return !cancel;
+}
+
+
 ServiceAccountHandler::ServiceAccountHandler()
 	: AccountHandler(),
 	m_bOnline(false),
@@ -456,7 +489,7 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<st
 
 	const std::string uri = getProperty("uri");
 	const std::string email = getProperty("email");
-	const std::string password = getProperty("password");
+	std::string password = getProperty("password");
 	bool verify_webapp_host = (getProperty("verify-webapp-host") == "true");
 
 	std::string filename = "New document.abw"; // TODO: make this localizeable
@@ -466,29 +499,47 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<st
 	boost::shared_ptr<std::string> document(new std::string(""));
 	UT_return_val_if_fail(AbiCollabSessionManager::serializeDocument(pDoc, *document, true) == UT_OK, false);
 	
-	// construct a SOAP method call to publish the document to abicollab.net
-	soa::function_call fc("publishDocument", "publishDocumentResponse");
-	fc("email", email)
-		("password", password)
-		("filename", filename)
-		(soa::Base64Bin("data", document))
-		("start_session", true);
-
-	// execute the call; we do this synchronous for simplicity for now
-	// TODO: handle bad passwords
-	// TODO: handle "filename already exists"
 	soa::GenericPtr soap_result;
-	try {
-		UT_DEBUGMSG(("Publishing document %s...\n", filename.c_str()));
-		soap_result = soup_soa::invoke(uri, 
-							soa::method_invocation("urn:AbiCollabSOAP", fc),
-							verify_webapp_host?m_ssl_ca_file:"");
-	} catch (soa::SoapFault& fault) {
-		UT_DEBUGMSG(("Caught a soap fault: %s (error code: %s)!\n", 
-					 fault.detail() ? fault.detail()->value().c_str() : "(null)",
-					 fault.string() ? fault.string()->value().c_str() : "(null)"));
-		return /*acs::error(fault)*/ false;
-	}
+	do
+	{
+		// construct a SOAP method call to publish the document to abicollab.net
+		// execute the call; we do this synchronous for simplicity for now
+		// TODO: handle bad passwords
+		soa::function_call fc("publishDocument", "publishDocumentResponse");
+		fc("email", email)
+			("password", password)
+			("filename", filename)
+			(soa::Base64Bin("data", document))
+			("start_session", true);
+
+		try {
+			UT_DEBUGMSG(("Publishing document %s...\n", filename.c_str()));
+			soap_result = soup_soa::invoke(uri, 
+								soa::method_invocation("urn:AbiCollabSOAP", fc),
+								verify_webapp_host?m_ssl_ca_file:"");
+		} catch (soa::SoapFault& fault) {
+			UT_DEBUGMSG(("Caught a soap fault: %s (error code: %s)!\n", 
+						 fault.detail() ? fault.detail()->value().c_str() : "(null)",
+						 fault.string() ? fault.string()->value().c_str() : "(null)"));
+
+			acs::SOAP_ERROR err = acs::error(fault);
+			switch (err)
+			{
+				case acs::SOAP_ERROR_INVALID_PASSWORD:
+					if (!askPassword(email, password))
+						return false;
+					addProperty("password", password);
+					pManager->storeProfile();	
+					continue;
+				case acs::SOAP_ERROR_DUP_FILENAME:
+					if (!askFilename(filename))
+						return false;
+					continue;
+				default:
+					break;
+			}
+		}
+	} while (!soap_result);
 	UT_return_val_if_fail(soap_result, false);
 	
 	// handle the result

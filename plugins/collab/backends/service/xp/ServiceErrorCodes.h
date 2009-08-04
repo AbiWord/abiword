@@ -36,7 +36,7 @@ enum SOAP_ERROR
 	
 	// abicollab soap errors
 	SOAP_ERROR_INVALID_PASSWORD = 0x201,
-	SOAP_ERROR_INVALID_EMAIL = 0x202
+	SOAP_ERROR_INVALID_EMAIL = 0x202,
 	// TODO: add more errors
 	
 	// saveDocument soap errors
@@ -44,6 +44,9 @@ enum SOAP_ERROR
 		
 	// openDocument soap errors
 	// TODO: add more errors
+	
+	// publishDocument soap errors
+	SOAP_ERROR_DUP_FILENAME =  0xB03
 };
 
 SOAP_ERROR error(const soa::SoapFault& fault);

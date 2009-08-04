@@ -63,6 +63,7 @@ public:
 	virtual ~ServiceAccountHandler();
 
 	static bool								askPassword(const std::string& email, std::string& password);
+	static bool								askFilename(std::string& filename);
 
 	// housekeeping
 	static UT_UTF8String					getStaticStorageType();
