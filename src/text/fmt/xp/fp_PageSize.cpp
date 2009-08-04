@@ -134,6 +134,14 @@ pagesizes[fp_PageSize::_last_predefined_pagesize_dont_use_] =
 };
 
 fp_PageSize::fp_PageSize(Predefined preDef)
+	: m_predefined(NULL)
+	, m_iWidth(0)
+	, m_iHeight(0)
+	, m_iMarginLeft(0)
+	, m_iMarginRight(0)
+	, m_iMarginTop(0)
+	, m_iMarginBottom(0)
+	, m_unit(DIM_MM)
 {
 	m_bisPortrait = true;
 	if(preDef == psCustom)
@@ -145,6 +153,14 @@ fp_PageSize::fp_PageSize(Predefined preDef)
 }
 
 fp_PageSize::fp_PageSize(const char *name)
+	: m_predefined(NULL)
+	, m_iWidth(0)
+	, m_iHeight(0)
+	, m_iMarginLeft(0)
+	, m_iMarginRight(0)
+	, m_iMarginTop(0)
+	, m_iMarginBottom(0)
+	, m_unit(DIM_MM)
 {
 	m_bisPortrait = true;
 	m_scale = 1.0;
@@ -156,6 +172,14 @@ fp_PageSize::fp_PageSize(const char *name)
 }
 
 fp_PageSize::fp_PageSize(double w, double h, UT_Dimension u)
+	: m_predefined(NULL)
+	, m_iWidth(w)
+	, m_iHeight(w)
+	, m_iMarginLeft(0)
+	, m_iMarginRight(0)
+	, m_iMarginTop(0)
+	, m_iMarginBottom(0)
+	, m_unit(u)
 {
 	UT_ASSERT(u >= DIM_IN && u <= DIM_none);
 
@@ -376,6 +400,8 @@ void fp_PageSize::Set(double w, double h, UT_Dimension u)
 		Set (static_cast<Predefined>(i-1), u);
 		m_iWidth  = UT_convertDimensions(w, u, FUND);
 		m_iHeight = UT_convertDimensions(h, u, FUND);
+		// WE must make sure to use the same units...
+		m_unit = FUND;
 	}
 }
 

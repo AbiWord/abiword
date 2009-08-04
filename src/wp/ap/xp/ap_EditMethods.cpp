@@ -9287,9 +9287,8 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	}
 	pDialog->setPageSize(pSize);
 	pDialog->setPageOrientation(orig_ori);
-	UT_Dimension orig_unit,final_unit,orig_margu,final_margu;
+	UT_Dimension orig_margu,final_margu;
 	double orig_scale,final_scale;
-	orig_unit = pDoc->getPageSize()->getDims();
 	orig_scale = pDoc->getPageSize()->getScale();
 
 	// respect units set in the dialogue constructer from prefs
@@ -9306,7 +9305,6 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	}
 
 	// make sure that the units in the dlg are the same as in the prefs
-	pDialog->setPageUnits(orig_uprefs);
 	pDialog->setMarginUnits(orig_uprefs);
 	
 	pDialog->setPageScale(static_cast<int>(100.0*orig_scale));
@@ -9414,9 +9412,8 @@ static bool s_doPageSetupDlg (FV_View * pView)
 
 	final_def = pSize.NameToPredefined(pDialog->getPageSize().getPredefinedName());
 	final_ori = pDialog->getPageOrientation();
-	final_unit = pDialog->getPageUnits();
 	final_scale = pDialog->getPageScale()/100.0;
-	pSize.Set(final_def,final_unit);
+	pSize.Set(final_def);
 
 	if (final_def == fp_PageSize::psCustom)
 	{
@@ -9425,7 +9422,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 		final_ht = pDialog->getPageSize().Height(final_ut);
 	}
 
-	if((final_def != orig_def) || (final_ori != orig_ori) || (final_unit != orig_unit) || ((final_scale-orig_scale) > 0.001) || ((final_scale-orig_scale) < -0.001) || (orig_ht != final_ht) || (orig_wid != final_wid) || (orig_ut != final_ut) )
+	if((final_def != orig_def) || (final_ori != orig_ori) || ((final_scale-orig_scale) > 0.001) || ((final_scale-orig_scale) < -0.001) || (orig_ht != final_ht) || (orig_wid != final_wid) || (orig_ut != final_ut) )
 	{
 		final_wid = pDialog->getPageSize().Width(final_ut);
 		final_ht = pDialog->getPageSize().Height(final_ut);
@@ -9482,9 +9479,6 @@ static bool s_doPageSetupDlg (FV_View * pView)
 		return false;
 	}
 
-	pPrefsScheme->setValue(static_cast<const gchar *>(AP_PREF_KEY_RulerUnits),
-						   static_cast<const gchar *>(UT_dimensionName(final_unit)));
-
 	//
 	// Recover ppView
 	//
@@ -9501,6 +9495,10 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	UT_String szHeaderMargin;
 
 	final_margu = pDialog->getMarginUnits();
+
+	pPrefsScheme->setValue(static_cast<const gchar *>(AP_PREF_KEY_RulerUnits),
+						   static_cast<const gchar *>(UT_dimensionName(final_margu)));
+
 	dTopMargin = static_cast<double>(pDialog->getMarginTop());
 	dBottomMargin = static_cast<double>(pDialog->getMarginBottom());
 	dLeftMargin = static_cast<double>(pDialog->getMarginLeft());

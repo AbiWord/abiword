@@ -151,8 +151,6 @@ bool AP_CocoaDialog_PageSetup::_validate(AP_CocoaDialog_PageSetup_Controller * /
 
 	setPageSize(fp);
 
-//	setPageUnits(last_page_unit);
-
 	/* ...
 	 */
 
