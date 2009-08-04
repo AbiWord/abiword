@@ -500,6 +500,7 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<st
 	UT_return_val_if_fail(AbiCollabSessionManager::serializeDocument(pDoc, *document, true) == UT_OK, false);
 	
 	soa::GenericPtr soap_result;
+	bool unhandled_error = false;
 	do
 	{
 		// construct a SOAP method call to publish the document to abicollab.net
@@ -536,10 +537,12 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<st
 						return false;
 					continue;
 				default:
+					UT_DEBUGMSG(("Unhandled SOAP error\n"));
+					unhandled_error = true;;
 					break;
 			}
 		}
-	} while (!soap_result);
+	} while (!unhandled_error && !soap_result);
 	UT_return_val_if_fail(soap_result, false);
 	
 	// handle the result
