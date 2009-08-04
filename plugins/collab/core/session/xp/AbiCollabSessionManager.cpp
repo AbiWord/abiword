@@ -748,6 +748,9 @@ AbiCollab* AbiCollabSessionManager::startSession(PD_Document* pDoc, UT_UTF8Strin
 	m_vecSessions.push_back(pAbiCollab);
 	
 	// notify all people we are sharing a new document
+	// FIXME: since we only allow a session to be shared on 1 account, we should
+	// only notify the buddies on that account, instead of notifying the buddies
+	// on all accounts.
 	StartSessionEvent event;
 	event.setBroadcast(true);
 	signal(event);
@@ -1226,7 +1229,6 @@ bool AbiCollabSessionManager::processPacket(AccountHandler& /*handler*/, Packet*
 	switch (pct) {
 		case PCT_StartSessionEvent:
 		{
-			// TODO: it is rather inefficient to request a buddy for every packet
 			StartSessionEvent event;
 			event.setBroadcast(true);
 			signal(event, buddy);
