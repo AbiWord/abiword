@@ -44,6 +44,7 @@
  * files for a list of changes.  These files are distributed with
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
+//#define BENCHLAYOUT 1
 
 #include <stdlib.h>
 #include <math.h>
@@ -66,7 +67,9 @@
 #include "fp_FrameContainer.h"
 #include "gr_Painter.h"
 #include "pd_Document.h"
-
+#if BENCHLAYOUT
+#include <time.h>
+#endif
 fp_TableRowColumn::fp_TableRowColumn(void) :
 		requisition(0),
         allocation(0),
@@ -2072,9 +2075,6 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	m_bDrawRight = (pTab2->getNumCols() == getRightAttach());
 	m_bDrawLeft = true;
 	
-	UT_DEBUGMSG(("ADITYA: t: %d b: %d r: %d l: %d\n", m_bDrawTop, m_bDrawBot, 
-			  m_bDrawRight, m_bDrawLeft));
-   
 	const UT_Rect * pClipRect = pDA->pG->getClipRect();
 	UT_sint32 ytop,ybot;
 	UT_sint32 i;
@@ -2084,6 +2084,10 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	_getBrokenRect(pBroke, pPage, bRec,pG);
 	if((bRec.height < 0) || (bRec.width < 0))
 		return;
+
+	UT_DEBUGMSG(("ADITYA: t: %d b: %d r: %d l: %d\n", m_bDrawTop, m_bDrawBot, 
+			  m_bDrawRight, m_bDrawLeft));
+   
 	if(getFillType()->getFillType() == FG_FILL_IMAGE && (getContainer() != NULL))
 	{
 		fl_DocSectionLayout * pDSL = getSectionLayout()->getDocSectionLayout();
@@ -2756,6 +2760,7 @@ void fp_CellContainer::layout(void)
 	{
 		return;
 	}
+
 	pMyBrokenTable = getBrokenTable(static_cast<fp_Container*>(getNthCon(0)));
 	for (UT_sint32 i=0; i < countCons(); i++)
 	{
@@ -4663,7 +4668,13 @@ void fp_TableContainer::layout(void)
 		return;
 	}
 	xxx_UT_DEBUGMSG(("Doing Table layout %x \n",this));
-	
+#if BENCHLAYOUT
+	printf("Doing Table layout \n");
+	timespec t1;
+	clock_gettime(CLOCK_REALTIME, &t1);
+#endif
+
+
 	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());	
 	static fp_Requisition requisition;
 	static fp_Allocation alloc;
@@ -4681,6 +4692,12 @@ void fp_TableContainer::layout(void)
 	
 	sizeAllocate(&alloc);
 	setToAllocation();
+#if BENCHLAYOUT
+	timespec t2;
+	clock_gettime(CLOCK_REALTIME, &t2);	
+	double millidiff = (t2.tv_sec-t1.tv_sec)*1e3 + (t2.tv_nsec-t1.tv_nsec)/1e6;
+	printf("Layout TIME: %lf milliseconds\n", millidiff);  
+#endif
 }
 
 /*
@@ -4826,7 +4843,7 @@ void fp_TableContainer::_size_allocate_pass_2(void)
 		UT_sint32 child_height;
 
 		//Now handle the heights.
-		child_height = child->getHeight();
+		child_height = child->getCellHeight();
 		
 		//If child spans only one row.
 		if ( child->getTopAttach() == child->getBottomAttach() - 1 )
