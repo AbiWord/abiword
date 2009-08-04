@@ -18,14 +18,11 @@ AC_MSG_RESULT([$enable_collab_backend_fake])
 
 
 AC_ARG_ENABLE([collab-backend-telepathy], 
-    [AS_HELP_STRING([--enable-collab-backend-telepathy], [Telepathy backend (default: auto)])], 
+    [AS_HELP_STRING([--enable-collab-backend-telepathy], [Telepathy backend (experimental, default: off)])], 
 [
 	enable_collab_backend_telepathy=$enableval
 ], [
-	PKG_CHECK_EXISTS([ $collab_telepathy_req ],
-	[
-		enable_collab_backend_telepathy="yes"
-	])
+	enable_collab_backend_telepathy="no"
 ])
 test "$enable_collab_backend_telepathy" == "yes" && collab_pkgs="$collab_pkgs $collab_telepathy_req"
 AC_MSG_CHECKING([for collab telepathy backend])
