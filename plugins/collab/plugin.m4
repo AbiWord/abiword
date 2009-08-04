@@ -18,7 +18,7 @@ AC_MSG_RESULT([$enable_collab_backend_fake])
 
 
 AC_ARG_ENABLE([collab-backend-telepathy], 
-    [AS_HELP_STRING([--enable-collab-backend-telepathy], [Telepathy backend (experimental, default: off)])], 
+    [AS_HELP_STRING([--enable-collab-backend-telepathy], [Experimental telepathy backend (default: off)])], 
 [
 	enable_collab_backend_telepathy=$enableval
 ], [
@@ -76,7 +76,7 @@ AC_MSG_CHECKING([for collab sugar backend])
 AC_MSG_RESULT([$enable_collab_backend_sugar])
 
 AC_ARG_ENABLE([collab-backend-service], 
-    [AS_HELP_STRING([--enable-collab-backend-service], [abicollab.net backend (default: auto)], 
+    [AS_HELP_STRING([--enable-collab-backend-service], [abicollab.net backend (default: auto)])], 
 [
 	enable_collab_backend_service=$enableval
 	AC_LANG_PUSH(C++)
