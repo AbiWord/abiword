@@ -53,8 +53,7 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 	it = m_keywordMap.find(rqst->pName);
 	if(it == m_keywordMap.end())
 	{
-		UT_DEBUGMSG(("FRT: OpenXML importer unknown keyword: [%s]\n", rqst->pName.c_str()));
-		rqst->valid = true; //TODO: change this to false once we have all the keywords added here
+		rqst->valid = false;
 		return;
 	}
 
@@ -266,25 +265,32 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 		{
 			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "rPr") || 
 						  contextMatches(contextTag, NS_W_KEY, "pPr") ||
+						  contextMatches(contextTag, NS_W_KEY, "ctrlPr") ||
+						  contextMatches(contextTag, NS_W_KEY, "r") || 
+						  contextMatches(contextTag, NS_W_KEY, "del") ||
+						  contextMatches(contextTag, NS_W_KEY, "ins") ||
 						  contextMatches(contextTag, NS_W_KEY, "rPrChange");
 			break;
 		}
 		case KEYWORD_shd:
 		{
 			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "shd") || 
-						  contextMatches(contextTag, NS_W_KEY, "pPr");
+						  contextMatches(contextTag, NS_W_KEY, "pPr") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
 			break;
 		}
 		case KEYWORD_snapToGrid:
 		{
 			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "snapToGrid") || 
-						  contextMatches(contextTag, NS_W_KEY, "pPr");
+						  contextMatches(contextTag, NS_W_KEY, "pPr") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
 			break;
 		}
 		case KEYWORD_spacing:
 		{
 			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "spacing") || 
-						  contextMatches(contextTag, NS_W_KEY, "pPr");
+						  contextMatches(contextTag, NS_W_KEY, "pPr") ||
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
 			break;
 		}
 		case KEYWORD_suppressAutoHypens:
@@ -360,21 +366,260 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 			break;
 		}
 
-		//TODO: add more here
+		//Run, Section 2.3.2
+		case KEYWORD_b:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "b") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_bCs:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "bCs") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_bdr:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "bdr") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_caps:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "caps") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_color:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "color") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_cs:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "cs") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_dstrike:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "dstrike") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_eastAsianLayout:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "eastAsianLayout") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_effect:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "effect") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_em:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "em") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_emboss:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "emboss") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_fitText:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "fitText") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_highlight:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "highlight") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_i:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "i") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_iCs:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "iCs") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_imprint:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "imprint") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_kern:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "kern") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_lang:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "lang") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_noProof:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "noProof") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_oMath:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "oMath") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_outline:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "outline") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_position:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "position") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_r:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "r") || 
+						  contextMatches(contextTag, NS_W_KEY, "customXml") || 
+						  contextMatches(contextTag, NS_W_KEY, "del") || 
+						  contextMatches(contextTag, NS_W_KEY, "fldSimple") || 
+						  contextMatches(contextTag, NS_W_KEY, "hyperlink") || 
+						  contextMatches(contextTag, NS_W_KEY, "ins") || 
+						  contextMatches(contextTag, NS_W_KEY, "moveFrom") || 
+						  contextMatches(contextTag, NS_W_KEY, "moveTo") || 
+						  contextMatches(contextTag, NS_W_KEY, "p") || 
+						  contextMatches(contextTag, NS_W_KEY, "rt") || 
+						  contextMatches(contextTag, NS_W_KEY, "rubyBase") || 
+						  contextMatches(contextTag, NS_W_KEY, "sdtContent") || 
+						  contextMatches(contextTag, NS_W_KEY, "smartTag");
+			break;
+		}
+		case KEYWORD_rFonts:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "rFonts") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_rStyle:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "rStyle") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_rtl:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "rtl") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_shadow:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "shadow") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_smallCaps:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "smallCaps") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_specVanish:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "specVanish") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_strike:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "strike") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_sz:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "sz") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_szCs:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "szCs") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_u:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "u") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_vanish:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "vanish") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_vertAlign:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "vertAlign") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_w:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "w") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_webHidden:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "webHidden") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
 
+		//TODO: add more here
 	};
 }
 
 void OXMLi_ListenerState_Valid::endElement (OXMLi_EndElementRequest * rqst)
 {
-	//TODO
+	std::map<std::string, int>::iterator it;
+	it = m_keywordMap.find(rqst->pName);
+	if(it == m_keywordMap.end())
+	{
+		rqst->valid = false;
+		return;
+	}
 	rqst->valid = true;
 }
 
 void OXMLi_ListenerState_Valid::charData (OXMLi_CharDataRequest * rqst)
 {
-	//TODO
-	rqst->valid = true;
+	rqst->valid = (rqst->buffer != NULL);
 }
 
 void OXMLi_ListenerState_Valid::populateKeywordTable()
@@ -382,41 +627,73 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:adjustRightInd", KEYWORD_adjustRightInd));
 	m_keywordMap.insert(std::make_pair("W:autoSpaceDE", KEYWORD_autoSpaceDE));
 	m_keywordMap.insert(std::make_pair("W:autoSpaceDN", KEYWORD_autoSpaceDN));
+	m_keywordMap.insert(std::make_pair("W:b", KEYWORD_b));
 	m_keywordMap.insert(std::make_pair("W:background", KEYWORD_background));
 	m_keywordMap.insert(std::make_pair("W:bar", KEYWORD_bar));
+	m_keywordMap.insert(std::make_pair("W:bCs", KEYWORD_bCs));
+	m_keywordMap.insert(std::make_pair("W:bdr", KEYWORD_bdr));
 	m_keywordMap.insert(std::make_pair("W:between", KEYWORD_between));
 	m_keywordMap.insert(std::make_pair("W:bidi", KEYWORD_bidi));
 	m_keywordMap.insert(std::make_pair("W:body", KEYWORD_body));
 	m_keywordMap.insert(std::make_pair("W:bottom", KEYWORD_bottom));
+	m_keywordMap.insert(std::make_pair("W:caps", KEYWORD_caps));
 	m_keywordMap.insert(std::make_pair("W:cnfStyle", KEYWORD_cnfStyle));
 	m_keywordMap.insert(std::make_pair("W:contextualSpacing", KEYWORD_contextualSpacing));
+	m_keywordMap.insert(std::make_pair("W:color", KEYWORD_color));
+	m_keywordMap.insert(std::make_pair("W:cs", KEYWORD_cs));
 	m_keywordMap.insert(std::make_pair("W:divId", KEYWORD_divId));
 	m_keywordMap.insert(std::make_pair("W:document", KEYWORD_document));
+	m_keywordMap.insert(std::make_pair("W:dstrike", KEYWORD_dstrike));
+	m_keywordMap.insert(std::make_pair("W:eastAsianLayout", KEYWORD_eastAsianLayout));
+	m_keywordMap.insert(std::make_pair("W:effect", KEYWORD_effect));
+	m_keywordMap.insert(std::make_pair("W:em", KEYWORD_em));
+	m_keywordMap.insert(std::make_pair("W:emboss", KEYWORD_emboss));
+	m_keywordMap.insert(std::make_pair("W:fitText", KEYWORD_fitText));
 	m_keywordMap.insert(std::make_pair("W:framePr", KEYWORD_framePr));
 	m_keywordMap.insert(std::make_pair("W:glossaryDocument", KEYWORD_glossaryDocument));
+	m_keywordMap.insert(std::make_pair("W:highlight", KEYWORD_highlight));
+	m_keywordMap.insert(std::make_pair("W:i", KEYWORD_i));
+	m_keywordMap.insert(std::make_pair("W:iCs", KEYWORD_iCs));
+	m_keywordMap.insert(std::make_pair("W:imprint", KEYWORD_imprint));
 	m_keywordMap.insert(std::make_pair("W:ind", KEYWORD_ind));
 	m_keywordMap.insert(std::make_pair("W:jc", KEYWORD_jc));
 	m_keywordMap.insert(std::make_pair("W:keepLines", KEYWORD_keepLines));
 	m_keywordMap.insert(std::make_pair("W:keepNext", KEYWORD_keepNext));
+	m_keywordMap.insert(std::make_pair("W:kern", KEYWORD_kern));
 	m_keywordMap.insert(std::make_pair("W:kinsoku", KEYWORD_kinsoku));
+	m_keywordMap.insert(std::make_pair("W:lang", KEYWORD_lang));
 	m_keywordMap.insert(std::make_pair("W:left", KEYWORD_left));
 	m_keywordMap.insert(std::make_pair("W:mirrorIndents", KEYWORD_mirrorIndents));
+	m_keywordMap.insert(std::make_pair("W:noProof", KEYWORD_noProof));
 	m_keywordMap.insert(std::make_pair("W:numPr", KEYWORD_numPr));
+	m_keywordMap.insert(std::make_pair("W:oMath", KEYWORD_oMath));
+	m_keywordMap.insert(std::make_pair("W:outline", KEYWORD_outline));
 	m_keywordMap.insert(std::make_pair("W:outlineLvl", KEYWORD_outlineLvl));
 	m_keywordMap.insert(std::make_pair("W:overflowPunct", KEYWORD_overflowPunct));
 	m_keywordMap.insert(std::make_pair("W:p", KEYWORD_p));
 	m_keywordMap.insert(std::make_pair("W:pageBreakBefore", KEYWORD_pageBreakBefore));
 	m_keywordMap.insert(std::make_pair("W:pBdr", KEYWORD_pBdr));
+	m_keywordMap.insert(std::make_pair("W:position", KEYWORD_position));
 	m_keywordMap.insert(std::make_pair("W:pPr", KEYWORD_pPr));
 	m_keywordMap.insert(std::make_pair("W:pStyle", KEYWORD_pStyle));
+	m_keywordMap.insert(std::make_pair("W:r", KEYWORD_r));
+	m_keywordMap.insert(std::make_pair("W:rFonts", KEYWORD_rFonts));
 	m_keywordMap.insert(std::make_pair("W:right", KEYWORD_right));
 	m_keywordMap.insert(std::make_pair("W:rPr", KEYWORD_rPr));
+	m_keywordMap.insert(std::make_pair("W:rStyle", KEYWORD_rStyle));
+	m_keywordMap.insert(std::make_pair("W:rtl", KEYWORD_rtl));
+	m_keywordMap.insert(std::make_pair("W:shadow", KEYWORD_shadow));
 	m_keywordMap.insert(std::make_pair("W:shd", KEYWORD_shd));
+	m_keywordMap.insert(std::make_pair("W:smallCaps", KEYWORD_smallCaps));
 	m_keywordMap.insert(std::make_pair("W:snapToGrid", KEYWORD_snapToGrid));
 	m_keywordMap.insert(std::make_pair("W:spacing", KEYWORD_spacing));
+	m_keywordMap.insert(std::make_pair("W:specVanish", KEYWORD_specVanish));
+	m_keywordMap.insert(std::make_pair("W:strike", KEYWORD_strike));
 	m_keywordMap.insert(std::make_pair("W:suppressAutoHypens", KEYWORD_suppressAutoHypens));
 	m_keywordMap.insert(std::make_pair("W:suppressLineNumbers", KEYWORD_suppressLineNumbers));
 	m_keywordMap.insert(std::make_pair("W:suppressOverlap", KEYWORD_suppressOverlap));
+	m_keywordMap.insert(std::make_pair("W:sz", KEYWORD_sz));
+	m_keywordMap.insert(std::make_pair("W:szCs", KEYWORD_szCs));
 	m_keywordMap.insert(std::make_pair("W:tab", KEYWORD_tab));
 	m_keywordMap.insert(std::make_pair("W:tabs", KEYWORD_tabs));
 	m_keywordMap.insert(std::make_pair("W:textAlignment", KEYWORD_textAlignment));
@@ -424,6 +701,11 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:textDirection", KEYWORD_textDirection));
 	m_keywordMap.insert(std::make_pair("W:top", KEYWORD_top));
 	m_keywordMap.insert(std::make_pair("W:topLinePunct", KEYWORD_topLinePunct));
+	m_keywordMap.insert(std::make_pair("W:u", KEYWORD_u));
+	m_keywordMap.insert(std::make_pair("W:vanish", KEYWORD_vanish));
+	m_keywordMap.insert(std::make_pair("W:vertAlign", KEYWORD_vertAlign));
+	m_keywordMap.insert(std::make_pair("W:w", KEYWORD_w));
+	m_keywordMap.insert(std::make_pair("W:webHidden", KEYWORD_webHidden));
 	m_keywordMap.insert(std::make_pair("W:widowControl", KEYWORD_widowControl));
 	m_keywordMap.insert(std::make_pair("W:wordWrap", KEYWORD_wordWrap));
 	//TODO: add more here

@@ -176,14 +176,13 @@ void OXMLi_StreamListener::startElement (const gchar* pName, const gchar** ppAtt
 	do {
 		(*it)->startElement(&rqst);
 		++it;
-	} while ( this->getStatus() == UT_OK && it!=m_states.end() && !rqst.handled && rqst.valid);
+		if(!rqst.valid)
+		{
+			UT_DEBUGMSG(("FRT:Invalid startElement request: [%s]\n", rqst.pName.c_str()));
+		}
+	} while ( this->getStatus() == UT_OK && it!=m_states.end() && !rqst.handled);
 
 	m_context->push_back(name);
-
-	if(!rqst.valid)
-	{
-		this->setStatus(UT_ERROR);
-	}
 }
 
 void OXMLi_StreamListener::endElement (const gchar* pName)
@@ -198,12 +197,11 @@ void OXMLi_StreamListener::endElement (const gchar* pName)
 	do {
 		(*it)->endElement(&rqst);
 		++it;
-	} while ( this->getStatus() == UT_OK && it!=m_states.end() && !rqst.handled && rqst.valid);
-	
-	if(!rqst.valid)
-	{
-		this->setStatus(UT_ERROR);
-	}
+		if(!rqst.valid)
+		{
+			UT_DEBUGMSG(("FRT:Invalid endElement request: [%s]\n", rqst.pName.c_str()));
+		}
+	} while ( this->getStatus() == UT_OK && it!=m_states.end() && !rqst.handled);
 }
 
 void OXMLi_StreamListener::charData (const gchar* pBuffer, int length)
@@ -215,11 +213,10 @@ void OXMLi_StreamListener::charData (const gchar* pBuffer, int length)
 	do {
 		(*it)->charData(&rqst);
 		++it;
-	} while ( this->getStatus() == UT_OK && it!=m_states.end() && !rqst.handled && rqst.valid);
-
-	if(!rqst.valid)
-	{
-		this->setStatus(UT_ERROR);
-	}
+		if(!rqst.valid)
+		{
+			UT_DEBUGMSG(("FRT:Invalid charData request\n"));
+		}
+	} while ( this->getStatus() == UT_OK && it!=m_states.end() && !rqst.handled);
 }
 
