@@ -1,7 +1,7 @@
 
 SUBDIRS = unix
 
-noinst_LTLIBRARIES = libdtube.la
+noinst_LTLIBRARIES = libtelepathy.la
 
 libdtube_la_LIBADD = unix/libunix.la
 
