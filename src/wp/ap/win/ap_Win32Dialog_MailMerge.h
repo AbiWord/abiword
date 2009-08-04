@@ -22,10 +22,11 @@
 
 #include "ap_Dialog_MailMerge.h"
 #include "xap_Frame.h"
+#include "xap_Win32DialogBase.h"
 
 /*****************************************************************/
 
-class ABI_EXPORT AP_Win32Dialog_MailMerge: public AP_Dialog_MailMerge
+class ABI_EXPORT AP_Win32Dialog_MailMerge: public AP_Dialog_MailMerge, XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_MailMerge(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

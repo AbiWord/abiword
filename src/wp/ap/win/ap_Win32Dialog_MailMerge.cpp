@@ -33,8 +33,8 @@
 #include "ap_Win32Dialog_MailMerge.h"
 #include "ap_Win32Resources.rc2"
 
-#define GWL(hwnd)		(AP_Win32Dialog_MailMerge*)GetWindowLong((hwnd), DWL_USER)
-#define SWL(hwnd, d)	(AP_Win32Dialog_MailMerge*)SetWindowLong((hwnd), DWL_USER,(LONG)(d))
+#define GWL(hwnd)		(AP_Win32Dialog_MailMerge*)GetWindowLongW((hwnd), DWL_USER)
+#define SWL(hwnd, d)	(AP_Win32Dialog_MailMerge*)SetWindowLongW((hwnd), DWL_USER,(LONG)(d))
 
 
 /*****************************************************************/
@@ -65,13 +65,13 @@ void AP_Win32Dialog_MailMerge::runModeless(XAP_Frame * pFrame)
 	int iResult;
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 
-	LPCTSTR lpTemplate = NULL;
+	LPCWSTR lpTemplate = NULL;
 
 	UT_return_if_fail (m_id == AP_DIALOG_ID_MAILMERGE);
 
-	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_MAILMERGE);
+	lpTemplate = MAKEINTRESOURCEW(AP_RID_DIALOG_MAILMERGE);
 
-	HWND hResult = CreateDialogParam(pWin32App->getInstance(),lpTemplate,
+	HWND hResult = CreateDialogParamW(pWin32App->getInstance(),lpTemplate,
 							static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 							(DLGPROC)s_dlgProc,(LPARAM)this);
 
@@ -115,8 +115,8 @@ BOOL CALLBACK AP_Win32Dialog_MailMerge::s_dlgProc(HWND hWnd,UINT msg,WPARAM wPar
 		return 0;
 	}
 }
-#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_MAILMERGE_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_MAILMERGE_##c,pSS->getValue(XAP_STRING_ID_##s))
+#define _DS(c,s)	setDlgItemText(AP_RID_DIALOG_MAILMERGE_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_MAILMERGE_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 
 // This handles the WM_INITDIALOG message for the top-level dialog.
@@ -133,9 +133,9 @@ BOOL AP_Win32Dialog_MailMerge::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	_DS(BTN_INSERT,		DLG_InsertButton);		
 	_DSX(BTN_CLOSE,		DLG_Close);				
 	
-	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_MailMerge_MailMergeTitle));	
+	setDialogTitle (pSS->getValue(AP_STRING_ID_DLG_MailMerge_MailMergeTitle));	
 	
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
+	centerDialog();	
 	
 	SetFocus(GetDlgItem(hWnd,AP_RID_DIALOG_MAILMERGE_BTN_CLOSE));
 	return 0; // 0 because we called SetFocus
@@ -152,13 +152,13 @@ BOOL AP_Win32Dialog_MailMerge::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 		case AP_RID_DIALOG_MAILMERGE_LISTBOX:
 		if (HIWORD(wParam)==LBN_DBLCLK)
 		{
-			char szBuff[255];
-			int nItem = SendMessage(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_MAILMERGE_LISTBOX), LB_GETCURSEL, 0, 0);
+			UT_Win32LocaleString str;
+			int nItem = SendMessageW(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_MAILMERGE_LISTBOX), LB_GETCURSEL, 0, 0);
 			
 			if (nItem!=LB_ERR)
 			{	
-				SendMessage(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_MAILMERGE_LISTBOX), LB_GETTEXT, nItem,  (LPARAM)szBuff);			
-				setMergeField(szBuff);			
+				SendMessageW(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_MAILMERGE_LISTBOX), LB_GETTEXT, nItem,  (LPARAM)(str.ascii_str ()));			
+				setMergeField(str.utf8_str ());			
 				addClicked();
 			}
 			return 1;
@@ -170,23 +170,21 @@ BOOL AP_Win32Dialog_MailMerge::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 		
 		case AP_RID_DIALOG_MAILMERGE_BTN_INSERT:		
 		{	
-			char szBuff[255];
-			
-			int nChars = GetDlgItemText(m_hwndDlg,  AP_RID_DIALOG_MAILMERGE_EDIT_FIELD, szBuff, 255);
+			UT_Win32LocaleString str;			
+			int nChars = getDlgItemText(AP_RID_DIALOG_MAILMERGE_EDIT_FIELD, str);
 			if (nChars > 0)
 			{
-				setMergeField(szBuff);
+				setMergeField(str.utf8_str ());
 				addClicked();
 			} 
 			else
 			{
-				char szBuff[255];
-				int nItem = SendMessage(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_MAILMERGE_LISTBOX), LB_GETCURSEL, 0, 0);
+				int nItem = SendMessageW(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_MAILMERGE_LISTBOX), LB_GETCURSEL, 0, 0);
 			
 				if (nItem!=LB_ERR)
 				{	
-					SendMessage(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_MAILMERGE_LISTBOX), LB_GETTEXT, nItem,  (LPARAM)szBuff);			
-					setMergeField(szBuff);			
+					SendMessageW(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_MAILMERGE_LISTBOX), LB_GETTEXT, nItem,  (LPARAM)(str.ascii_str ()));			
+					setMergeField(str.utf8_str ());			
 					addClicked();
 				}				 
 			}
@@ -223,15 +221,15 @@ void AP_Win32Dialog_MailMerge::setFieldList()
 	UT_UTF8String * str;
 	UT_String	sAnsi;
 	
-	SendMessage(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_MAILMERGE_LISTBOX), LB_RESETCONTENT,	0, 0);
+	SendMessageW(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_MAILMERGE_LISTBOX), LB_RESETCONTENT,	0, 0);
 		
  	// build a list of all items
     for (i = 0; i < m_vecFields.size(); i++)
 	{
 		str = (UT_UTF8String*)m_vecFields[i];
-		sAnsi = 	AP_Win32App::s_fromUTF8ToWinLocale(str->utf8_str());
+		sAnsi = 	str->utf8_str();
 		
-		SendMessage(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_MAILMERGE_LISTBOX), LB_ADDSTRING,
+		SendMessageW(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_MAILMERGE_LISTBOX), LB_ADDSTRING,
 			0, (LPARAM)sAnsi.c_str());
 	}
 	
