@@ -525,10 +525,10 @@ bool fl_TableLayout::needsReformat(void) const
 	return false;
 }
 
-void fl_TableLayout::setDirty(void)
+void fl_TableLayout::setDirty(bool isDirty)
 {
 	xxx_UT_DEBUGMSG(("Table Dirty set true \n"));
-	m_bIsDirty = true;
+	m_bIsDirty = isDirty;
 }
 
 void fl_TableLayout::format(void)

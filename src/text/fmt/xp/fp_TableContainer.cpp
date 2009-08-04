@@ -44,7 +44,7 @@
  * files for a list of changes.  These files are distributed with
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
-//#define BENCHLAYOUT 1
+#define BENCHLAYOUT 1
 
 #include <stdlib.h>
 #include <math.h>
@@ -4692,6 +4692,10 @@ void fp_TableContainer::layout(void)
 	
 	sizeAllocate(&alloc);
 	setToAllocation();
+	//
+	// Clear out the dirty flag. We've done a complete layout now.
+	//
+	pTL->setDirty(false);
 #if BENCHLAYOUT
 	timespec t2;
 	clock_gettime(CLOCK_REALTIME, &t2);	
