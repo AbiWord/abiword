@@ -32,9 +32,9 @@ class DocHandle;
 class TCPBuddy : public Buddy
 {
 public:
-	TCPBuddy(AccountHandler* handler, const std::string& server, const std::string& port)
+	TCPBuddy(AccountHandler* handler, const std::string& address, const std::string& port)
 		: Buddy(handler),
-		m_server(server),
+		m_address(address),
 		m_port(port)
 	{
 		setVolatile(true);
@@ -42,17 +42,16 @@ public:
 	
 	virtual UT_UTF8String getDescriptor(bool /*include_session_info = false*/) const
 	{
-		return UT_UTF8String("tcp://") + m_server.c_str() + UT_UTF8String(":") + m_port.c_str();
+		return UT_UTF8String("tcp://") + m_address.c_str() + UT_UTF8String(":") + m_port.c_str();
 	}
 	
 	virtual UT_UTF8String getDescription() const
 	{
-		static UT_UTF8String description = m_server.c_str() + UT_UTF8String(":") + m_port.c_str();
-		return description;
+		return UT_UTF8String(m_address.c_str()) + UT_UTF8String(":") + m_port.c_str();
 	}
 
-	const std::string& getServer() const
-		{ return m_server; }
+	const std::string& getAddress() const
+		{ return m_address; }
 
 	const std::string& getPort() const
 		{ return m_port; }
@@ -80,7 +79,7 @@ public:
 	}
 
 private:
-	std::string m_server;
+	std::string m_address;
 	std::string m_port;
 };
 
