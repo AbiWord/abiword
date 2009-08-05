@@ -87,8 +87,10 @@ static const char * szPresentation = "Presentation";
 static const char * szPresentationStatus = "View the document in presentation mode";
 static const char * szNextSlide = "Next Slide";
 static const char * szPrevSlide = "Previous Slide";
+static const char * szEndPresentation = "End Presentation";
 static XAP_Menu_Id nextSlideID;
 static XAP_Menu_Id prevSlideID;
+static XAP_Menu_Id endPresentationID;
 //
 // Presentation_registerMethod()
 // -----------------------
@@ -192,6 +194,8 @@ Presentation_registerMethod ()
     pFact->addNewLabel(NULL,prevSlideID,szPrevSlide, NULL);
     nextSlideID = pFact->addNewMenuBefore("PresentationContext",NULL,0,EV_MLF_Normal,0);
     pFact->addNewLabel(NULL,nextSlideID,szNextSlide, NULL);
+    endPresentationID = pFact->addNewMenuBefore("PresentationContext",NULL,0,EV_MLF_Normal,0);
+    pFact->addNewLabel(NULL,endPresentationID,szEndPresentation, NULL);
 
     myPresentationAction = new EV_Menu_Action(
 	prevSlideID,          // id that the layout said we could use
@@ -211,6 +215,17 @@ Presentation_registerMethod ()
 	0,                      // no, we don't have a checkbox.
 	0,                      // no radio buttons for me, thank you
 	"Presentation_nextPage",   //  callback function to call.
+	NULL,                   // don't know/care what this is for
+	NULL                    // don't know/care what this is for
+        );
+    pActionSet->addAction(myPresentationAction);
+    myPresentationAction = new EV_Menu_Action(
+	endPresentationID,          // id that the layout said we could use
+	0,                      // no, we don't have a sub menu.
+	0,                      // no, we don't raise a dialog.
+	0,                      // no, we don't have a checkbox.
+	0,                      // no radio buttons for me, thank you
+	"Presentation_end",   //  callback function to call.
 	NULL,                   // don't know/care what this is for
 	NULL                    // don't know/care what this is for
         );

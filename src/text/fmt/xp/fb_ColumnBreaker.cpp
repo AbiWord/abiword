@@ -101,7 +101,6 @@ fp_Page * fb_ColumnBreaker::needsRebreak(void)
     }
     else
     {
-        UT_ASSERT_HARMLESS(pCL);
 	return _getLastValidPage();
     }
     if(pBL)

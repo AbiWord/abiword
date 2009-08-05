@@ -224,7 +224,14 @@ const char ** EV_Menu::getLabelName(XAP_App * pApp,
 			UT_return_val_if_fail(pEMC, NULL);
 
 			EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
-			UT_ASSERT(pEM);						// make sure it's bound to something
+			if(!pEM)
+			{
+			    UT_DEBUGMSG(("Cannot find EV_Editmethod for %s \n",szMethodName));
+			}
+			
+			// make sure it's bound to something
+
+			UT_return_val_if_fail(pEM, NULL);
 
 			const EV_EditEventMapper * pEEM = getApp()->getEditEventMapper();
 			UT_return_val_if_fail(pEEM, NULL);

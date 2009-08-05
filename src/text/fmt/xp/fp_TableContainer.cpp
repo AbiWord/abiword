@@ -45,6 +45,9 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
+//
+// Uncomment to benchmark our table layout time with release builds
+//#define BENCHLAYOUT 1
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
@@ -66,6 +69,9 @@
 #include "fp_FrameContainer.h"
 #include "gr_Painter.h"
 #include "pd_Document.h"
+#if BENCHLAYOUT
+#include <time.h>
+#endif
 
 fp_TableRowColumn::fp_TableRowColumn(void) :
 		requisition(0),
@@ -4609,6 +4615,13 @@ void fp_TableContainer::layout(void)
 		return;
 	}
 	xxx_UT_DEBUGMSG(("Doing Table layout %x \n",this));
+
+#if BENCHLAYOUT
+	printf("Doing Table layout \n");
+	timespec t1;
+	clock_gettime(CLOCK_REALTIME, &t1);
+#endif
+
 	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
 	static fp_Requisition requisition;
 	static fp_Allocation alloc;
@@ -4620,6 +4633,12 @@ void fp_TableContainer::layout(void)
 	alloc.height = requisition.height + pTL->getTopOffset() + pTL->getBottomOffset();
 	sizeAllocate(&alloc);
 	setToAllocation();
+#if BENCHLAYOUT
+	timespec t2;
+	clock_gettime(CLOCK_REALTIME, &t2);	
+	double millidiff = (t2.tv_sec-t1.tv_sec)*1e3 + (t2.tv_nsec-t1.tv_nsec)/1e6;
+	printf("Layout TIME: %lf milliseconds\n", millidiff);  
+#endif
 }
 
 void fp_TableContainer::setToAllocation(void)
