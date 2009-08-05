@@ -54,6 +54,13 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 	}
 	else if(nameMatches(rqst->pName, NS_W_KEY, "tr"))
 	{
+		if(m_tableStack.empty())
+		{
+			rqst->handled = false;
+			rqst->valid = false;
+			return;
+		}
+
 		OXML_Element_Table* table = m_tableStack.top();
 		OXML_Element_Row* pRow = new OXML_Element_Row("", table);
 		m_rowStack.push(pRow);
@@ -66,6 +73,13 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 	}
 	else if(nameMatches(rqst->pName, NS_W_KEY, "tc"))
 	{
+		if(m_tableStack.empty() || m_rowStack.empty())
+		{
+			rqst->handled = false;
+			rqst->valid = false;
+			return;
+		}
+
 		OXML_Element_Table* table = m_tableStack.top();				
 		OXML_Element_Row* row = m_rowStack.top();				
 		OXML_Element_Cell* pCell = new OXML_Element_Cell("", table, row, 
@@ -79,6 +93,13 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 	}
 	else if(nameMatches(rqst->pName, NS_W_KEY, "gridSpan"))
 	{
+		if(m_tableStack.empty() || m_cellStack.empty())
+		{
+			rqst->handled = false;
+			rqst->valid = false;
+			return;
+		}
+
 		OXML_Element_Table* table = m_tableStack.top();				
 		const gchar* val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
 		if(val)
@@ -96,6 +117,13 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 	}
 	else if(nameMatches(rqst->pName, NS_W_KEY, "vMerge"))
 	{
+		if(m_cellStack.empty())
+		{
+			rqst->handled = false;
+			rqst->valid = false;
+			return;
+		}
+
 		OXML_Element_Cell* cell = m_cellStack.top();				
 		cell->setVerticalMergeStart(false); //default to continue if the attribute is missing
 		const gchar* val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
@@ -107,6 +135,13 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 	}
 	else if(nameMatches(rqst->pName, NS_W_KEY, "hMerge"))
 	{
+		if(m_cellStack.empty())
+		{
+			rqst->handled = false;
+			rqst->valid = false;
+			return;
+		}
+
 		OXML_Element_Cell* cell = m_cellStack.top();				
 		cell->setHorizontalMergeStart(false); //default to continue if the attribute is missing
 		const gchar* val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
@@ -121,6 +156,13 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 	else if(nameMatches(rqst->pName, NS_W_KEY, "gridCol") && 
 			contextMatches(rqst->context->back(), NS_W_KEY, "tblGrid"))
 	{
+		if(m_tableStack.empty())
+		{
+			rqst->handled = false;
+			rqst->valid = false;
+			return;
+		}
+
 		OXML_Element_Table* table = m_tableStack.top();				
 		const gchar* w = attrMatches(NS_W_KEY, "w", rqst->ppAtts);
 		if(w) 
@@ -142,6 +184,13 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 	else if(nameMatches(rqst->pName, NS_W_KEY, "trHeight") && 
 			contextMatches(rqst->context->back(), NS_W_KEY, "trPr"))
 	{
+		if(m_tableStack.empty())
+		{
+			rqst->handled = false;
+			rqst->valid = false;
+			return;
+		}
+
 		OXML_Element_Table* table = m_tableStack.top();				
 		const gchar* val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
 		if(val) 
@@ -182,13 +231,24 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 
 		OXML_Element* element = NULL;
 
+		if(rqst->context->empty())
+		{
+			rqst->handled = false;
+			rqst->valid = false;
+			return;
+		}
+
 		if(contextMatches(rqst->context->back(), NS_W_KEY, "tcBorders"))
-			element = m_cellStack.top();
+			element = m_cellStack.empty() ? NULL : m_cellStack.top();
 		else if(contextMatches(rqst->context->back(), NS_W_KEY, "tblBorders"))
-			element = m_tableStack.top();
+			element = m_tableStack.empty() ? NULL : m_tableStack.top();
 
 		if(!element)
+		{
+			rqst->handled = false;
+			rqst->valid = false;
 			return;
+		}
 
 		if(color && strcmp(color, "auto")) 
 		{
@@ -224,13 +284,24 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 		UT_Error ret = UT_OK;
 		OXML_Element* element = NULL;
 
+		if(rqst->context->empty())
+		{
+			rqst->handled = false;
+			rqst->valid = false;
+			return;
+		}
+
 		if(contextMatches(rqst->context->back(), NS_W_KEY, "tcPr"))
-			element = m_cellStack.top();
+			element = m_cellStack.empty() ? NULL : m_cellStack.top();
 		else if(contextMatches(rqst->context->back(), NS_W_KEY, "tblPr"))
-			element = m_tableStack.top();
+			element = m_tableStack.empty() ? NULL : m_tableStack.top();
 
 		if(!element)
+		{
+			rqst->handled = false;
+			rqst->valid = false;
 			return;
+		}
 
 		if(fill && strcmp(fill, "auto")) 
 		{
@@ -242,13 +313,21 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 	}
 	else if(nameMatches(rqst->pName, NS_W_KEY, "tblStyle"))
 	{
+		if(m_tableStack.empty())
+		{
+			rqst->handled = false;
+			rqst->valid = false;
+			return;
+		}
+
 		OXML_Element_Table* table = m_tableStack.top();				
 		const gchar* val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
 		if(val && table) 
 		{
 			std::string styleName(val);
 			OXML_Document* doc = OXML_Document::getInstance();
-			table->applyStyle(doc->getStyleById(styleName));
+			if(doc)
+				table->applyStyle(doc->getStyleById(styleName));
 		}
 		rqst->handled = true;
 	}
@@ -289,6 +368,13 @@ void OXMLi_ListenerState_Table::endElement (OXMLi_EndElementRequest * rqst)
 {
 	if (nameMatches(rqst->pName, NS_W_KEY, "tbl"))
 	{
+		if(m_tableStack.empty() || rqst->stck->empty())
+		{
+			rqst->handled = false;
+			rqst->valid = false;
+			return;
+		}
+
 		OXML_SharedElement table = rqst->stck->top();
 		rqst->stck->pop(); //pop table
 		if(rqst->stck->empty())
@@ -306,6 +392,13 @@ void OXMLi_ListenerState_Table::endElement (OXMLi_EndElementRequest * rqst)
 	}
 	else if(nameMatches(rqst->pName, NS_W_KEY, "tr"))
 	{
+		if(m_rowStack.empty() || (rqst->stck->size() < 2))
+		{
+			rqst->handled = false;
+			rqst->valid = false;
+			return;
+		}
+
 		OXML_SharedElement row = rqst->stck->top();
 		rqst->stck->pop(); //pop row
 		OXML_SharedElement table = rqst->stck->top();
@@ -315,6 +408,13 @@ void OXMLi_ListenerState_Table::endElement (OXMLi_EndElementRequest * rqst)
 	}
 	else if(nameMatches(rqst->pName, NS_W_KEY, "tc"))
 	{
+		if(m_tableStack.empty() || m_cellStack.empty() || (rqst->stck->size() < 2))
+		{
+			rqst->handled = false;
+			rqst->valid = false;
+			return;
+		}
+
 		OXML_SharedElement cell = rqst->stck->top();
 		rqst->stck->pop(); //pop cell
 		OXML_SharedElement row = rqst->stck->top();
@@ -368,7 +468,7 @@ void OXMLi_ListenerState_Table::endElement (OXMLi_EndElementRequest * rqst)
 	}	
 	else if(nameMatches(rqst->pName, NS_W_KEY, "tblPr"))
 	{
-		if(!contextMatches(rqst->context->back(), NS_W_KEY, "tbl"))
+		if(!rqst->context->empty() && !contextMatches(rqst->context->back(), NS_W_KEY, "tbl") && !m_tableStack.empty())
 		{
 			m_tableStack.pop(); //pop the dummy table
 		}
@@ -376,7 +476,7 @@ void OXMLi_ListenerState_Table::endElement (OXMLi_EndElementRequest * rqst)
 	}
 	else if(nameMatches(rqst->pName, NS_W_KEY, "trPr"))
 	{
-		if(!contextMatches(rqst->context->back(), NS_W_KEY, "tr"))
+		if(!rqst->context->empty() && !contextMatches(rqst->context->back(), NS_W_KEY, "tr") && !m_rowStack.empty())
 		{
 			m_rowStack.pop(); //pop the dummy row
 		}
@@ -384,7 +484,7 @@ void OXMLi_ListenerState_Table::endElement (OXMLi_EndElementRequest * rqst)
 	}
 	else if(nameMatches(rqst->pName, NS_W_KEY, "tcPr"))
 	{
-		if(!contextMatches(rqst->context->back(), NS_W_KEY, "tc"))
+		if(!rqst->context->empty() && !contextMatches(rqst->context->back(), NS_W_KEY, "tc") && !m_cellStack.empty())
 		{
 			m_cellStack.pop(); //pop the dummy cell
 		}
@@ -392,7 +492,7 @@ void OXMLi_ListenerState_Table::endElement (OXMLi_EndElementRequest * rqst)
 	}
 	else if(nameMatches(rqst->pName, NS_W_KEY, "shd"))
 	{
-		std::string contextTag = rqst->context->back();
+		std::string contextTag = rqst->context->empty() ? "" : rqst->context->back();
 		rqst->handled = contextMatches(contextTag, NS_W_KEY, "tcPr") || contextMatches(contextTag, NS_W_KEY, "tblPr");
 	}
 	//TODO: more coming here

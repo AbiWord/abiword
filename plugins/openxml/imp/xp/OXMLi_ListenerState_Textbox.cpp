@@ -110,8 +110,7 @@ void OXMLi_ListenerState_Textbox::endElement (OXMLi_EndElementRequest * rqst)
 	}
 	else if(nameMatches(rqst->pName, NS_V_KEY, "textbox"))
 	{
-		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck, rqst->sect_stck) ) ); 
-		rqst->handled = true;
+		rqst->handled = (_flushTopLevel(rqst->stck, rqst->sect_stck) == UT_OK);
 	}
 	else if(nameMatches(rqst->pName, NS_W_KEY, "txbxContent"))
 	{

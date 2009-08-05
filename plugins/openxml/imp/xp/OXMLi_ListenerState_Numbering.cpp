@@ -88,7 +88,7 @@ void OXMLi_ListenerState_Numbering::startElement (OXMLi_StartElementRequest * rq
 	else if(nameMatches(rqst->pName, NS_W_KEY, "start"))
 	{
 		const gchar* val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
-		if(val)
+		if(val && m_currentList)
 		{
 			m_currentList->setStartValue(atoi(val));
 		}
@@ -106,7 +106,7 @@ void OXMLi_ListenerState_Numbering::startElement (OXMLi_StartElementRequest * rq
 	else if(nameMatches(rqst->pName, NS_W_KEY, "lvlText"))
 	{
 		const gchar* val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
-		if(val)
+		if(val && m_currentList)
 		{
 			std::string delim(val);
 			m_currentList->setDelim(delim);
@@ -130,7 +130,8 @@ void OXMLi_ListenerState_Numbering::startElement (OXMLi_StartElementRequest * rq
 			std::string abstractNumId("1"); //starts at 10 instead of zero
 			abstractNumId += val;
 			OXML_Document* doc = OXML_Document::getInstance();
-			doc->setMappedNumberingId(m_currentNumId, abstractNumId);
+			if(doc)
+				doc->setMappedNumberingId(m_currentNumId, abstractNumId);
 		}
 		rqst->handled = true;	
 	}
@@ -196,9 +197,19 @@ void OXMLi_ListenerState_Numbering::endElement (OXMLi_EndElementRequest * rqst)
 	else if(nameMatches(rqst->pName, NS_W_KEY, "pPr") || 
 			nameMatches(rqst->pName, NS_W_KEY, "rPr"))
 	{
+		if(rqst->stck->empty())
+		{
+			rqst->handled = false;
+			rqst->valid = false;
+			return;
+		}
 		OXML_SharedElement dummy = rqst->stck->top();
-		m_currentList->setAttributes(dummy->getAttributes());
-		m_currentList->setProperties(dummy->getProperties());
+		
+		if(m_currentList)
+		{
+			m_currentList->setAttributes(dummy->getAttributes());
+			m_currentList->setProperties(dummy->getProperties());
+		}
 		rqst->stck->pop(); //remove the dummy element
 		rqst->handled = true;
 	}
@@ -240,6 +251,9 @@ void OXMLi_ListenerState_Numbering::handleLevel(const gchar* ilvl)
 
 void OXMLi_ListenerState_Numbering::handleFormattingType(const gchar* val)
 {
+	if(!m_currentList)
+		return;
+
 	if(!strcmp(val, "decimal"))
 		m_currentList->setType(NUMBERED_LIST);
 	else if(!strcmp(val, "lowerLetter"))
