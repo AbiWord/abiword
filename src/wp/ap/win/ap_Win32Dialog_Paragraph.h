@@ -22,13 +22,14 @@
 
 #include "ap_Dialog_Paragraph.h"
 #include "xap_Frame.h"
+#include "xap_Win32DialogBase.h"
 
 class GR_Win32Graphics;
 class XAP_Win32PreviewWidget;
 
 /*****************************************************************/
 
-class ABI_EXPORT AP_Win32Dialog_Paragraph: public AP_Dialog_Paragraph
+class ABI_EXPORT AP_Win32Dialog_Paragraph: public AP_Dialog_Paragraph, XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_Paragraph(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
