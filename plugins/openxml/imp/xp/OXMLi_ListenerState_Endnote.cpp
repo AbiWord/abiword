@@ -60,6 +60,13 @@ void OXMLi_ListenerState_Endnote::endElement (OXMLi_EndElementRequest * rqst)
 	}
 	else if(nameMatches(rqst->pName, NS_W_KEY, "endnote"))
 	{
+		if(rqst->sect_stck->empty())
+		{
+			rqst->handled = false;
+			rqst->valid = false;
+			return;
+		}
+
 		OXML_SharedSection sect = rqst->sect_stck->top();
 		rqst->sect_stck->pop();
 		OXML_Document* pDoc = OXML_Document::getInstance();

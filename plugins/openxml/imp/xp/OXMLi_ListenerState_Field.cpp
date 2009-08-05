@@ -59,8 +59,16 @@ void OXMLi_ListenerState_Field::endElement (OXMLi_EndElementRequest * rqst)
 {
 	if (nameMatches(rqst->pName, NS_W_KEY, "fldSimple"))
 	{
+		if(rqst->stck->size() < 2)
+		{
+			rqst->handled = false;
+			rqst->valid = false;
+			return;
+		}
+
 		OXML_SharedElement field = rqst->stck->top();
 		rqst->stck->pop();
+
 		OXML_SharedElement parent = rqst->stck->top();
 		if(parent)
 			parent->appendElement(field);

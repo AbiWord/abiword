@@ -48,27 +48,25 @@ OXMLi_ListenerState_HdrFtr::~OXMLi_ListenerState_HdrFtr()
 
 void OXMLi_ListenerState_HdrFtr::startElement (OXMLi_StartElementRequest * rqst)
 {
-	UT_return_if_fail( this->_error_if_fail(rqst != NULL) );
-
 	if (nameMatches(rqst->pName, NS_W_KEY, "hdr") || nameMatches(rqst->pName, NS_W_KEY, "ftr"))
 	{
 		OXML_SharedElement dummy(new OXML_Element("", P_TAG, BLOCK));
 		rqst->stck->push(dummy);
-
 		rqst->handled = true;
 	}
 }
 
 void OXMLi_ListenerState_HdrFtr::endElement (OXMLi_EndElementRequest * rqst)
 {
-	UT_return_if_fail( this->_error_if_fail(rqst != NULL) );
-
 	if (nameMatches(rqst->pName, NS_W_KEY, "hdr") || nameMatches(rqst->pName, NS_W_KEY, "ftr"))
 	{
 		OXML_SharedSection s(new OXML_Section(m_partId));
-		OXML_SharedElement container = rqst->stck->top();
 
-		s->setChildren( container->getChildren() );
+		if(!rqst->stck->empty())
+		{
+			OXML_SharedElement container = rqst->stck->top();
+			s->setChildren( container->getChildren() );
+		}
 
 		OXML_Document * doc = OXML_Document::getInstance();
 		UT_return_if_fail( this->_error_if_fail(doc != NULL) );

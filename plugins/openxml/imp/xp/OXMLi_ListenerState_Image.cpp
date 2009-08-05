@@ -53,6 +53,13 @@ void OXMLi_ListenerState_Image::startElement (OXMLi_StartElementRequest * rqst)
 	}
 	else if(nameMatches(rqst->pName, NS_WP_KEY, "extent"))
 	{
+		if(rqst->stck->empty())
+		{
+			rqst->handled = false;
+			rqst->valid = false;
+			return;
+		}
+
 		OXML_SharedElement imgElem = rqst->stck->top();
 		if(!imgElem)
 			return;
@@ -83,6 +90,13 @@ void OXMLi_ListenerState_Image::startElement (OXMLi_StartElementRequest * rqst)
 	}
 	else if (nameMatches(rqst->pName, NS_A_KEY, "blip"))
 	{
+		if(rqst->stck->empty())
+		{
+			rqst->handled = false;
+			rqst->valid = false;
+			return;
+		}
+
 		OXML_SharedElement imgElem = rqst->stck->top();
 		if(!imgElem)
 			return;
@@ -166,8 +180,7 @@ void OXMLi_ListenerState_Image::endElement (OXMLi_EndElementRequest * rqst)
 		nameMatches(rqst->pName, NS_V_KEY, "imagedata"))
 	{
 		//image is done
-		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck, rqst->sect_stck) ) ); 
-		rqst->handled = true;
+		rqst->handled = (_flushTopLevel(rqst->stck, rqst->sect_stck) == UT_OK);
 	}
 	else if (nameMatches(rqst->pName, NS_A_KEY, "blip") || 
 			nameMatches(rqst->pName, NS_WP_KEY, "extent"))
