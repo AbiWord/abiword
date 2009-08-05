@@ -150,6 +150,12 @@ void AccountHandler::signal(const Event& event, BuddyPtr pSource)
 {
 	UT_DEBUGMSG(("AccountHandler::signal()\n"));
 
+	// we will not forward an event over this account that came from another
+	// acount: if you do that, then you very easily get packets running around
+	// forever.
+	if (pSource && pSource->getHandler() != this)
+		return;
+
 	// broadcast this event over our network (if applicable for each message type)
 	const std::vector<BuddyPtr> vRecipients = 
 		(event.isBroadcast() ? getBuddies() : event.getRecipients());
