@@ -248,6 +248,8 @@ public:
 	bool                isInNestedTable(void);
 	bool                containsNestedTables(void);
 	bool                isRepeated(void) const;
+	void                setDefaultLines(bool bDefault)
+	{m_bDefaultLines = bDefault;}
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
@@ -342,7 +344,8 @@ private:
 	bool                   m_bDirty;
 
 	bool                   m_bIsRepeated;
-};
+	bool                   m_bDefaultLines;
+ };
 
 class ABI_EXPORT fp_TableContainer : public fp_VerticalContainer
 {
@@ -473,6 +476,8 @@ fp_Column *         getBrokenColumn(void);
 	{
 		return m_iLastWantedVBreak;
 	}
+	void                setDefaultLines(bool bDefault)
+	{m_bDefaultLines = bDefault;}
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
@@ -551,6 +556,8 @@ private:
 	fp_CellContainer *  m_pLastBrokenCell;
 	bool                m_bRecursiveClear;
 	UT_sint32           m_iAdditionalMarginAfter;
+
+    bool                m_bDefaultLines;
  };
 
 #endif /* TABLECONTAINER_H */

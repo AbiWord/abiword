@@ -115,15 +115,16 @@ fp_CellContainer::fp_CellContainer(fl_SectionLayout* pSectionLayout)
 	  m_iRight(0),
 	  m_iTopY(0),
 	  m_iBotY(0),
-	  m_bDrawLeft(false),
+	  m_bDrawLeft(true),
 	  m_bDrawTop(false),
-	  m_bDrawBot(false),
+	  m_bDrawBot(true),
 	  m_bDrawRight(false),
 	  m_bLinesDrawn(false),
 	  m_bBgDirty(true),
 	  m_bIsSelected(false),
 	  m_bDirty(true),
-	  m_bIsRepeated(false)
+	  m_bIsRepeated(false),
+	  m_bDefaultLines(true)
 {
 }
 
@@ -806,38 +807,47 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 		return;
 	}
 	markAsDirty();
+	UT_sint32 thck = 0;
 	if (pPage != NULL)
 	{
 		UT_DEBUGMSG(("_clear: top %d bot %d cell left %d top %d \n",bRec.top,bRec.top+bRec.height,m_iLeftAttach,m_iTopAttach));
 
 		lineLeft.m_t_linestyle = PP_PropertyMap::linestyle_solid;
 		lineLeft.m_color = *getFillType()->getColor();
-		_drawLine (lineLeft, bRec.left, bRec.top, bRec.left,  bRec.top + bRec.height,getGraphics());
+		thck = lineLeft.m_thickness*2;
+		lineLeft.m_thickness *= 4;
+		_drawLine (lineLeft, bRec.left-thck, bRec.top, bRec.left-thck,  bRec.top + bRec.height,getGraphics());
 
 		lineTop.m_t_linestyle = PP_PropertyMap::linestyle_solid;
 		lineTop.m_color =  *getFillType()->getColor();
-		_drawLine (lineTop, bRec.left, bRec.top, bRec.left + bRec.width,  bRec.top,getGraphics()); 
+		thck = lineTop.m_thickness*2;
+		lineTop.m_thickness *= 4;
+		_drawLine (lineTop, bRec.left, bRec.top-thck, bRec.left + bRec.width,  bRec.top-thck,getGraphics()); 
 		if(pBroke && pBroke->getPage() && pBroke->getBrokenTop() > 0)
 		{
 			UT_sint32 col_x,col_y;
 			fp_Column * pCol = static_cast<fp_Column *>(pBroke->getBrokenColumn());
 			pBroke->getPage()->getScreenOffsets(pCol, col_x,col_y);
-			_drawLine (lineTop, bRec.left, col_y, bRec.left + bRec.width,  col_y,getGraphics());
+			_drawLine (lineTop, bRec.left, col_y-thck, bRec.left + bRec.width,  col_y-thck,getGraphics());
 		}
 		lineRight.m_t_linestyle = PP_PropertyMap::linestyle_solid;
 		lineRight.m_color =  *getFillType()->getColor();
-		_drawLine (lineRight, bRec.left + bRec.width, bRec.top, bRec.left + bRec.width, bRec.top + bRec.height,getGraphics()); 
+		thck = lineRight.m_thickness*2;
+		lineRight.m_thickness *= 4;
+		_drawLine (lineRight, bRec.left + bRec.width-thck, bRec.top, bRec.left + bRec.width-thck, bRec.top + bRec.height,getGraphics()); 
 		
 		lineBottom.m_t_linestyle = PP_PropertyMap::linestyle_solid;
 		lineBottom.m_color =  *getFillType()->getColor();
-		_drawLine (lineBottom, bRec.left, bRec.top + bRec.height, bRec.left + bRec.width , bRec.top + bRec.height,getGraphics());
+		thck = lineBottom.m_thickness*2;
+		lineBottom.m_thickness *= 4;
+		_drawLine (lineBottom, bRec.left, bRec.top + bRec.height-thck, bRec.left + bRec.width , bRec.top + bRec.height-thck,getGraphics());
 		xxx_UT_DEBUGMSG(("_Clear: pBroke %x \n",pBroke));
 		if(pBroke && pBroke->getPage() && pBroke->getBrokenBot() >= 0)
 		{
 			UT_sint32 col_x,col_y;
 			fp_Column * pCol = static_cast<fp_Column *>(pBroke->getBrokenColumn());
 			pBroke->getPage()->getScreenOffsets(pCol, col_x,col_y);
-			UT_sint32 bot = col_y + pCol->getHeight();
+			UT_sint32 bot = col_y + pCol->getHeight()-thck;
 			xxx_UT_DEBUGMSG(("_clear: Clear broken bottom %d \n",bot));
 			_drawLine (lineBottom, bRec.left, bot, bRec.left + bRec.width,  bot,getGraphics());
 		}
@@ -1296,6 +1306,23 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 	xxx_UT_DEBUGMSG(("Doing drawlines for cell %x \n",this));
 	UT_return_if_fail(getPage());
 
+	bool bDrawTop = m_bDrawTop;
+	bool bDrawBot = m_bDrawBot;
+	bool bDrawRight = m_bDrawRight;
+	bool bDrawLeft = m_bDrawLeft;
+
+	// draw top if this cell is on top row of table.
+	fp_TableContainer * pTab2 =  static_cast<fp_TableContainer *>(getContainer());
+	if(m_bDefaultLines)
+	{
+		bDrawTop = (0 == getTopAttach());
+		bDrawBot = true; 
+	
+		// draw right if this cell is the rightmost of the table
+		bDrawRight = (pTab2->getNumCols() == getRightAttach());
+		bDrawLeft = true;
+	}
+
 	bool bNested = false;
 	if(pBroke == NULL)
 	{
@@ -1332,8 +1359,6 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 		//
 		return;
 	}
-	bool bDrawTop = false;
-	bool bDrawBot = true;
 	xxx_UT_DEBUGMSG(("m_iBotY %d \n",m_iBotY));
 	m_bLinesDrawn = true;
 	UT_sint32 iLeft,iRight,iTop,iBot = 0;
@@ -1372,7 +1397,10 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 		UT_DEBUGMSG(("ADITYA: iprevy=%d, ybreak=%d\n", iPrevY, pBroke->getYBreak()));
 		if( iPrevY < pBroke->getYBreak())
 		{
-			bDrawTop = true;
+			if(m_bDefaultLines)
+			{
+				bDrawTop = true;
+			}
 		}
 
 		if(iTop < col_y)
@@ -1398,31 +1426,15 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 		if(iBot > col_y + iColHeight)
 		{
    			iBot =  col_y + iColHeight;
-			bDrawBot = true;
+			if(m_bDefaultLines)
+			{
+				bDrawBot = true;
+			}
 			if(pBroke != NULL)
 			{
 				pBroke->setBrokenBot(1);
 			}
 		}
-		//
-		// Now get a rectangle to calculate draw arguments
-		//
-		// This code might eventually replace a lot of the code above but
-		// it needs more testing and tweaking - particularly for nested tables.
-		//
-// 		UT_Rect bRec;
-// 		fp_Page * pLinePage;
-// 		_getBrokenRect(pBroke, pLinePage, bRec);
-// 		if(pLinePage != pPage)
-// 		{
-// 			UT_DEBUGMSG(("Pages don't match! \n"));
-// 			return;
-// 		}
-// 		iLeft = bRec.left;
-// 		iTop = bRec.top;
-// 		iBot = iTop + bRec.height;
-// 		iRight = iLeft + bRec.width;
-
 		//
 		// Have to draw white first because drawing is additive
 		//
@@ -1441,78 +1453,116 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 		 * distributed on either side of the line
 		 **/
 
-		UT_DEBUGMSG(("ADITYA: t: %d b: %d r: %d l: %d\n", m_bDrawTop, m_bDrawBot, 
-					 m_bDrawRight, m_bDrawLeft));
+		UT_DEBUGMSG(("ADITYA: t: %d b: %d r: %d l: %d\n", bDrawTop, bDrawBot, 
+					 bDrawRight, bDrawLeft));
 
 		UT_sint32 thickness = 0;
 		UT_sint32 clrthick = 0;
-		if (m_bDrawLeft)
+		/*
+		 * Lines including thinkness are drawn like this:
+		 *
+
+         |=============|
+         |             |
+         |             |
+         |             |
+         |             |
+         |=============|
+
+		 left starts from 0 in y and extends to height 
+		 right starts from 0 and extends to height
+		 top starts from (0+left thickness) and extends to width-rightthickness.
+		 bot start from 0+left thickness and extends to (width - right thickness)
+
+		 We draw left and right first, followed by top and bottom
+		 Doing things this way ensures we have no gaps at the clears.
+		 If we don't draw left we extend top and bottom leftThickness left
+		 If we don't draw right we extend top and bottom rightThickness right
+
+		 */
+
+		UT_sint32 leftThickness = lineLeft.m_thickness;
+		UT_sint32 rightThickness = lineRight.m_thickness;
+		UT_sint32 topThickness = lineTop.m_thickness;
+		UT_sint32 botThickness = lineBottom.m_thickness;
+		GR_Painter Paint(pG);
+		UT_DEBUGMSG(("bot Thickness = %d \n",botThickness));
+		if (bDrawLeft)
 		{
 			UT_DEBUGMSG(("ADITYA: drawing left! (%d,%d),(%d,%d) ", iLeft + thickness, iTop, 
 						 iLeft + thickness, iBot));
-			thickness = lineLeft.m_thickness;
+			thickness = leftThickness;
 			
 			if(bDoClear)
 			{
 				clineLeft.m_color = white;
-				clrthick = thickness;
-				lineLeft.m_thickness = clrthick;
-				_drawLine (clineLeft, iLeft, iTop, 
-						   iLeft, iBot, pG);
+				clrthick = thickness*2;
+				clineLeft.m_thickness = clrthick;
+				Paint.clearArea(iLeft-thickness/2, iTop, clrthick,iBot-iTop);
+				//	_drawLine (clineLeft, iLeft, iTop, iLeft, iBot, pG);
 			}
 			lineLeft.m_thickness = thickness;
-			_drawLine(lineLeft, iLeft, iTop, 
-					  iLeft, iBot, pG);
+			_drawLine(lineLeft, iLeft-thickness/2, iTop, 
+					  iLeft-thickness/2, iBot, pG);
 		}
-		if(m_bDrawTop || bDrawTop)
+		if(bDrawRight)
 		{
-			thickness = lineTop.m_thickness;
-			UT_DEBUGMSG(("drawing top! (%d,%d),(%d,%d) ", iLeft, iTop + thickness, 
-						 iRight, iTop + thickness));
-			
-			if(bDoClear)
-			{
-				clineTop.m_color = white;
-				clrthick = thickness;
-				lineTop.m_thickness = clrthick;
-				_drawLine(clineTop, iLeft, iTop, 
-						  iRight, iTop, pG);
-			}
-			lineTop.m_thickness = thickness;
-			_drawLine(lineTop,  iLeft, iTop, 
-					  iRight, iTop, pG);
-		}
-		if(m_bDrawRight)
-		{
-			thickness = lineRight.m_thickness;
+			thickness = rightThickness;
 			UT_DEBUGMSG(("drawing right! "));
 			if(bDoClear)
 			{
-				clrthick = thickness;
-				lineRight.m_thickness = clrthick;
+				clrthick = thickness*2;
+				clineRight.m_thickness = clrthick;
 				clineRight.m_color = white;
-				_drawLine(clineRight, iRight, iTop, 
-						  iRight, iBot, pG);
+				Paint.clearArea(iRight-thickness/2, iTop, clrthick,iBot-iTop);		
+				//				_drawLine(clineRight, iRight-thickness/2, iTop, iRight, iBot, pG);
 			}
 			lineRight.m_thickness = thickness;
 			_drawLine(lineRight, iRight, iTop, iRight, iBot,pG);
 		}
-		if(m_bDrawBot)
+		UT_sint32 myLeft = iLeft;
+		UT_sint32 myRight = iRight;
+		if(bDrawLeft || m_bDefaultLines)
 		{
-			thickness = lineBottom.m_thickness;
-			UT_DEBUGMSG(("drawing bot! (%d,%d),(%d,%d) \n", iLeft, iBot,
-						 iRight, iBot));
+			myLeft += leftThickness;
+		}
+		if(bDrawRight || m_bDefaultLines)
+		{
+			myRight -= rightThickness;
+		}
+		
+		if(bDrawTop)
+		{
+			thickness = topThickness;
+			UT_DEBUGMSG(("drawing top! (%d,%d),(%d,%d) ", myLeft, iTop + thickness, 
+						 myRight, iTop + thickness));
+			
 			if(bDoClear)
 			{
-				clrthick = thickness;
-				lineBottom.m_thickness = clrthick;
+				clineTop.m_color = white;
+				clrthick = thickness*2;
+				clineTop.m_thickness = clrthick;
+				Paint.clearArea(myLeft, iTop-thickness/2, myRight-myLeft, clrthick);		
+				//		_drawLine(clineTop, myLeft, iTop, myRight, iTop, pG);
+			}
+			lineTop.m_thickness = thickness;
+			_drawLine(lineTop,  myLeft, iTop,myRight, iTop, pG);
+		}
+		if(bDrawBot)
+		{
+			thickness = botThickness;
+			UT_DEBUGMSG(("drawing bot! (%d,%d),(%d,%d) \n", myLeft, iBot,
+						 myRight, iBot));
+			if(bDoClear)
+			{
+				clrthick = thickness*2;
+				clineBottom.m_thickness = clrthick;
 				clineBottom.m_color = white;
-				_drawLine(clineBottom, iLeft, iBot,
-						  iRight, iBot, pG);
+				Paint.clearArea(myLeft, iBot-thickness/2, myRight-myLeft, clrthick);		
+				//		_drawLine(clineBottom, myLeft, iBot-thickness/2,myRight, iBot-thickness/2, pG);
 			}
 			lineBottom.m_thickness = thickness;
-			_drawLine(lineBottom, iLeft, iBot,
-					  iRight, iBot, pG);
+			_drawLine(lineBottom, myLeft, iBot, myRight, iBot, pG);
 		}
 	}
 }
@@ -2067,14 +2117,6 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 		pTab2 = static_cast<fp_TableContainer *>(getContainer());
 	}
 
-	// draw top if this cell is on top row of table.
-	m_bDrawTop = (0 == getTopAttach());
-	m_bDrawBot = true; 
-	
-	// draw right if this cell is the rightmost of the table
-	m_bDrawRight = (pTab2->getNumCols() == getRightAttach());
-	m_bDrawLeft = true;
-	
 	const UT_Rect * pClipRect = pDA->pG->getClipRect();
 	UT_sint32 ytop,ybot;
 	UT_sint32 i;
@@ -2954,7 +2996,9 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout)
 	  m_iLastWantedVBreak(-1),
 	  m_pFirstBrokenCell(NULL),
 	  m_pLastBrokenCell(NULL),
-	  m_bRecursiveClear(false)
+	  m_bRecursiveClear(false),
+	  m_iAdditionalMarginAfter(0),
+	  m_bDefaultLines(true)
 
 {
 	if(getSectionLayout())
@@ -3002,8 +3046,13 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout, fp_TableC
 	  m_pFirstBrokenCell(NULL),
 	  m_pLastBrokenCell(NULL),
 	  m_bRecursiveClear(false),
-	  m_iAdditionalMarginAfter(0)
+	  m_iAdditionalMarginAfter(0),
+	  m_bDefaultLines(true)
 {
+	if(pMaster)
+	{
+			m_bDefaultLines = pMaster->m_bDefaultLines;
+	}
 }
 
 /*!
