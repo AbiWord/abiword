@@ -2,8 +2,8 @@
 
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
  * Copyright (c) 2005 Francis James Franklin
+ * Copyright (C) 2001, 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -57,13 +57,14 @@ private:
 
 @interface XAP_CocoaDialog_Language_Controller : NSWindowController <XAP_CocoaDialogProtocol>
 {
-	IBOutlet NSButton *		oCancel;
-	IBOutlet NSButton *		oOK;
-	IBOutlet NSButton *		oDocumentDefault;
+	IBOutlet NSBox    *     _selectLanguageBox;
+	IBOutlet NSButton *		_cancelBtn;
+	IBOutlet NSButton *		_okBtn;
+	IBOutlet NSButton *		_documentDefaultBtn;
 
-	IBOutlet NSTextField *	oDocumentCurrent;
+	IBOutlet NSTextField *	_documentCurrentLabel;
 
-	IBOutlet NSTableView *	oLanguageTable;
+	IBOutlet NSTableView *	_languageTable;
 
 	NSMutableArray *		m_Languages;
 
@@ -93,11 +94,6 @@ private:
  */
 - (int)numberOfRowsInTableView:(NSTableView *)aTableView;
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex;
-
-/* NSTableView delegate methods
- */
-- (void)tableView:(NSTableView *)aTableView willDisplayCell:(id)aCell forTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex;
-- (BOOL)tableView:(NSTableView *)aTableView shouldSelectRow:(int)rowIndex;
 
 @end
 

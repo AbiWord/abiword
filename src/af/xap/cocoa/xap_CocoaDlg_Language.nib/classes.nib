@@ -3,14 +3,15 @@
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
             ACTIONS = {aCancel = id; aLanguageTable = id; aOK = id; }; 
-            CLASS = "XAP_CocoaDlg_Language_Controller"; 
+            CLASS = "XAP_CocoaDialog_Language_Controller"; 
             LANGUAGE = ObjC; 
             OUTLETS = {
-                oCancel = NSButton; 
-                oDocumentCurrent = NSTextField; 
-                oDocumentDefault = NSButton; 
-                oLanguageTable = NSTableView; 
-                oOK = NSButton; 
+                "_cancelBtn" = NSButton; 
+                "_documentCurrentLabel" = NSTextField; 
+                "_documentDefaultBtn" = NSButton; 
+                "_languageTable" = NSTableView; 
+                "_okBtn" = NSButton; 
+                "_selectLanguageBox" = NSBox; 
             }; 
             SUPERCLASS = NSWindowController; 
         }

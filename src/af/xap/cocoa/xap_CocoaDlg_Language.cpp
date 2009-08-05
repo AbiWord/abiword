@@ -64,19 +64,19 @@ void XAP_CocoaDialog_Language::runModal(XAP_Frame * /*pFrame*/)
 	int index = [m_dlg indexOfSelectedLanguage];
 
 	if (index >= 0)
-		{
-			m_answer = XAP_Dialog_Language::a_OK;
+	{
+		m_answer = XAP_Dialog_Language::a_OK;
 
-			setMakeDocumentDefault([m_dlg applyToDocument] == YES);
+		setMakeDocumentDefault([m_dlg applyToDocument] == YES);
 
-			_setLanguage(m_ppLanguages[index]);
+		_setLanguage(m_ppLanguages[index]);
 
-			m_bChangedLanguage = true;
-		}
+		m_bChangedLanguage = true;
+	}
 	else
-		{
-			m_answer = XAP_Dialog_Language::a_CANCEL;
-		}
+	{
+		m_answer = XAP_Dialog_Language::a_CANCEL;
+	}
 
 	[m_dlg close];
 	[m_dlg release];
@@ -101,35 +101,23 @@ void XAP_CocoaDialog_Language::runModal(XAP_Frame * /*pFrame*/)
 	m_bApplyToDocument = NO;
 
 	m_Languages = [[NSMutableArray alloc] initWithCapacity:100];
-	if (!m_Languages) {
-		[self release];
-		return nil;
-	}
 	return self;
 }
 
 - (void)dealloc
 {
-	if (m_Languages)
-		{
-			[m_Languages release];
-			m_Languages = 0;
-		}
-	if (m_Selection)
-		{
-			[m_Selection release];
-			m_Selection = 0;
-		}
+	[m_Languages release];
+	[m_Selection release];
 	[super dealloc];
 }
 
 - (void)setXAPOwner:(XAP_Dialog *)owner
 {
-	if (m_Selection)
-		{
-			[m_Selection release];
-			m_Selection = 0;
-		}
+if (m_Selection)
+	{
+		[m_Selection release];
+		m_Selection = nil;
+	}
 	m_SelectionIndex = -1;
 
 	_xap = static_cast<XAP_CocoaDialog_Language *>(owner);
@@ -138,10 +126,10 @@ void XAP_CocoaDialog_Language::runModal(XAP_Frame * /*pFrame*/)
 - (void)discardXAP
 {
 	if (m_Selection)
-		{
-			[m_Selection release];
-			m_Selection = 0;
-		}
+	{
+		[m_Selection release];
+		m_Selection = nil;
+	}
 	m_SelectionIndex = -1;
 
 	_xap = 0;
@@ -153,42 +141,43 @@ void XAP_CocoaDialog_Language::runModal(XAP_Frame * /*pFrame*/)
 
 	LocalizeControl([self window],     pSS, XAP_STRING_ID_DLG_ULANG_LangTitle);
 
-	LocalizeControl(oCancel,           pSS, XAP_STRING_ID_DLG_Cancel);
-	LocalizeControl(oOK,               pSS, XAP_STRING_ID_DLG_OK);
+	LocalizeControl(_cancelBtn, pSS, XAP_STRING_ID_DLG_Cancel);
+	LocalizeControl(_okBtn, pSS, XAP_STRING_ID_DLG_OK);
+	LocalizeControl(_selectLanguageBox, pSS, XAP_STRING_ID_DLG_ULANG_AvailableLanguages);
 
-	LocalizeControl(oDocumentDefault,  pSS, XAP_STRING_ID_DLG_ULANG_DefaultLangChkbox);
+	LocalizeControl(_documentDefaultBtn,  pSS, XAP_STRING_ID_DLG_ULANG_DefaultLangChkbox);
 
 	if (_xap)
+	{
+		UT_UTF8String defaultLanguageString;
+		_xap->getDocDefaultLangDescription(defaultLanguageString);
+		[_documentCurrentLabel setStringValue:[NSString stringWithUTF8String:(defaultLanguageString.utf8_str())]];
+
+		const char * current_language = _xap->getCurrentLanguage();
+
+		int current_index = -1;
+
+		UT_uint32 count = _xap->getLanguageCount();
+
+		for (UT_uint32 i = 0; i < count; i++)
 		{
-			UT_UTF8String defaultLanguageString;
-			_xap->getDocDefaultLangDescription(defaultLanguageString);
-			[oDocumentCurrent setStringValue:[NSString stringWithUTF8String:(defaultLanguageString.utf8_str())]];
+			const char * language = _xap->getNthLanguage(i);
 
-			const char * current_language = _xap->getCurrentLanguage();
+			[m_Languages addObject:[NSString stringWithUTF8String:language]];
 
-			int current_index = -1;
-
-			UT_uint32 count = _xap->getLanguageCount();
-
-			for (UT_uint32 i = 0; i < count; i++)
-				{
-					const char * language = _xap->getNthLanguage(i);
-
-					[m_Languages addObject:[NSString stringWithUTF8String:language]];
-
-					if (current_language)
-						if (g_ascii_strcasecmp(current_language, language) == 0)
-							{
-								current_index = (int) i;
-							}
-				}
-			[oLanguageTable reloadData];
-
-			if (current_index >= 0)
-				{
-					[oLanguageTable selectRow:current_index byExtendingSelection:NO];
-				}
+			if (current_language && (g_ascii_strcasecmp(current_language, language) == 0))
+			{
+				current_index = (int) i;
+			}
 		}
+		[_languageTable reloadData];
+
+		if (current_index >= 0)
+		{
+			[_languageTable selectRow:current_index byExtendingSelection:NO];
+			[_languageTable scrollRowToVisible:current_index];
+		}
+	}
 }
 
 - (NSString *)selectedLanguage
@@ -210,10 +199,10 @@ void XAP_CocoaDialog_Language::runModal(XAP_Frame * /*pFrame*/)
 {
 	UT_UNUSED(sender);
 	if (m_Selection)
-		{
-			[m_Selection release];
-			m_Selection = 0;
-		}
+	{
+		[m_Selection release];
+		m_Selection = 0;
+	}
 	m_SelectionIndex = -1;
 
 	[NSApp stopModal];
@@ -222,7 +211,7 @@ void XAP_CocoaDialog_Language::runModal(XAP_Frame * /*pFrame*/)
 - (IBAction)aOK:(id)sender
 {
 	UT_UNUSED(sender);
-	m_bApplyToDocument = ([oDocumentDefault state] == NSOnState) ? YES : NO;
+	m_bApplyToDocument = ([_documentDefaultBtn state] == NSOnState) ? YES : NO;
 
 	[NSApp stopModal];
 }
@@ -231,24 +220,23 @@ void XAP_CocoaDialog_Language::runModal(XAP_Frame * /*pFrame*/)
 {
 	UT_UNUSED(sender);
 	if (m_Selection)
-		{
-			[m_Selection release];
-			m_Selection = 0;
-		}
-	m_SelectionIndex = [oLanguageTable selectedRow];
+	{
+		[m_Selection release];
+		m_Selection = nil;
+	}
+	m_SelectionIndex = [_languageTable selectedRow];
 
 	if (m_SelectionIndex >= 0)
+	{
+		if ((unsigned) m_SelectionIndex < [m_Languages count])
 		{
-			if ((unsigned) m_SelectionIndex < [m_Languages count])
-				{
-					m_Selection = (NSString *) [m_Languages objectAtIndex:((unsigned) m_SelectionIndex)];
-					[m_Selection retain];
-				}
-			else // huh?
-				{
-					m_SelectionIndex = -1;
-				}
+			m_Selection = [[m_Languages objectAtIndex:((unsigned) m_SelectionIndex)] retain];
 		}
+		else // huh?
+		{
+			m_SelectionIndex = -1;
+		}
+	}
 }
 
 /* NSTableViewDataSource methods
@@ -264,24 +252,6 @@ void XAP_CocoaDialog_Language::runModal(XAP_Frame * /*pFrame*/)
 	UT_UNUSED(aTableView);
 	UT_UNUSED(aTableColumn);
 	return [m_Languages objectAtIndex:((unsigned) rowIndex)];
-}
-
-/* NSTableView delegate methods
- */
-- (void)tableView:(NSTableView *)aTableView willDisplayCell:(id)aCell forTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
-{
-	UT_UNUSED(aTableView);
-	UT_UNUSED(aCell);
-	UT_UNUSED(aTableColumn);
-	UT_UNUSED(rowIndex);
-	// 
-}
-
-- (BOOL)tableView:(NSTableView *)aTableView shouldSelectRow:(int)rowIndex
-{
-	UT_UNUSED(aTableView);
-	UT_UNUSED(rowIndex);
-	return YES;
 }
 
 @end
