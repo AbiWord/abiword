@@ -89,9 +89,6 @@ AccountHandler* AP_Dialog_CollaborationShare::_getShareableAccountHandler()
 	if (!pSession)
 		return NULL;
 
-	const std::vector<std::string> vAcl = pSession->getAcl();
-	UT_return_val_if_fail(vAcl.size() > 0, NULL); // doesn't really do anything, but I like the sanity check
-
 	return pSession->getAclAccount();
 }
 
@@ -101,9 +98,18 @@ std::vector<std::string> AP_Dialog_CollaborationShare::_getCurrentACL()
 
 	AbiCollab* pSession = _getActiveSession();
 	if (!pSession)
+		return std::vector<std::string>();
+
+	AccountHandler* pAccount = pSession->getAclAccount();
+	if (!pAccount)
 		return vAcl;
 
-	return pSession->getAcl();
+	vAcl = pSession->getAcl();
+	if (!pAccount->updateAcl(pSession, vAcl))
+	{
+		UT_return_val_if_fail(false, vAcl); // TODO; this return is probably not correct
+	}
+	return vAcl;
 }
 
 void AP_Dialog_CollaborationShare::_share(AccountHandler* pHandler, const std::vector<std::string>& vAcl)

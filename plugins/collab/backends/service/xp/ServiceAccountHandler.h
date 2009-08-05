@@ -1,5 +1,5 @@
 /* Copyright (C) 2006,2007 Marc Maurer <uwog@uwog.net>
- * Copyright (C) 2008 AbiSource Corporation B.V.
+ * Copyright (C) 2008,2009 AbiSource Corporation B.V.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -105,6 +105,7 @@ public:
 	virtual void							getSessionsAsync();
 	virtual void							getSessionsAsync(const Buddy& buddy);
 	virtual bool							startSession(PD_Document* pDoc, const std::vector<std::string>& vAcl, AbiCollab** pSession);	
+	virtual bool							updateAcl(AbiCollab* pSession, std::vector<std::string>& vAcl);
 	virtual void							joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHandle);
 	virtual bool							hasSession(const UT_UTF8String& sSessionId);
 	acs::SOAP_ERROR							openDocument(UT_uint64 doc_id, UT_uint64 revision, const std::string& session_id, PD_Document** pDoc, XAP_Frame* pFrame);
@@ -156,6 +157,9 @@ private:
 													const std::string& session_id, const std::string& filename);
 	acs::SOAP_ERROR							_openDocumentSlave(ConnectionPtr connection, PD_Document** pDoc, XAP_Frame* pFrame, 
 													const std::string& filename);
+	bool									_getPermissions(uint64_t doc_id,
+													std::vector<UT_uint64>& rw, std::vector<UT_uint64>& ro,
+													std::vector<UT_uint64>& grw, std::vector<UT_uint64>& gro);
 	
 	void									_handleJoinSessionRequestResponse(
 													JoinSessionRequestResponseEvent* jsre, BuddyPtr pBuddy, 

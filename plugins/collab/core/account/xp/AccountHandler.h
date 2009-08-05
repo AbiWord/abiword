@@ -145,6 +145,8 @@ public:
 	virtual void							getSessionsAsync(BuddyPtr pBuddy);
 	virtual bool							startSession(PD_Document* /*pDoc*/, const std::vector<std::string>& /*vAcl*/, AbiCollab** /*pSession*/)
 		{ return true; }
+	virtual bool							updateAcl(AbiCollab* /*pSession*/, std::vector<std::string>& /*vAcl*/)
+		{ return true; }
 	virtual void							joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHandle);
 	virtual bool							hasSession(const UT_UTF8String& sSessionId);
 	virtual bool							allowsSessionTakeover() = 0;

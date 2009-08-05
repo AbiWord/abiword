@@ -582,6 +582,26 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<st
 	return true;
 }
 
+bool ServiceAccountHandler::updateAcl(AbiCollab* pSession, std::vector<std::string>& vAcl)
+{
+	UT_DEBUGMSG(("ServiceAccountHandler::updateAcl()\n"));
+	UT_return_val_if_fail(pSession, false);
+
+	vAcl.clear();
+
+	ConnectionPtr connection = _getConnection(pSession->getSessionId().utf8_str());
+	UT_return_val_if_fail(connection, false);	
+	std::vector<UT_uint64> rw;
+	std::vector<UT_uint64> ro;
+	std::vector<UT_uint64> grw;
+	std::vector<UT_uint64> gro;
+	if (!_getPermissions(connection->doc_id(), rw, ro, grw, gro))
+		return false;
+
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+	return true;
+}
+
 // NOTE: we don't implement the opening of documents asynchronous; we block on it,
 // as it's annoying to opening them async. We need to change this API
 void ServiceAccountHandler::joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHandle)
@@ -838,6 +858,65 @@ acs::SOAP_ERROR ServiceAccountHandler::_openDocumentSlave(ConnectionPtr connecti
 	(*pDoc)->addListener(m_pExport,&m_iListenerID);
 
 	return acs::SOAP_ERROR_OK;
+}
+
+bool ServiceAccountHandler::_getPermissions(uint64_t doc_id,
+			std::vector<UT_uint64>& rw, std::vector<UT_uint64>& ro,
+			std::vector<UT_uint64>& grw, std::vector<UT_uint64>& gro)
+{
+	UT_DEBUGMSG(("ServiceAccountHandler::_getPermissions()\n"));
+
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, false);
+
+	const std::string uri = getProperty("uri");
+	const std::string email = getProperty("email");
+	std::string password = getProperty("password");
+	bool verify_webapp_host = (getProperty("verify-webapp-host") == "true");
+
+	soa::GenericPtr soap_result;
+	bool unhandled_error = false;
+	do
+	{
+		soa::function_call fc("getPermissions", "getPermissionsResponse");
+		fc("email", email)
+			("password", password)
+			("doc_id", static_cast<int64_t>(doc_id));
+
+		try {
+			UT_DEBUGMSG(("Getting permissions for document %llu...\n", doc_id));
+			soap_result = soup_soa::invoke(uri, 
+								soa::method_invocation("urn:AbiCollabSOAP", fc),
+								verify_webapp_host?m_ssl_ca_file:"");
+		} catch (soa::SoapFault& fault) {
+			UT_DEBUGMSG(("Caught a soap fault: %s (error code: %s)!\n", 
+						 fault.detail() ? fault.detail()->value().c_str() : "(null)",
+						 fault.string() ? fault.string()->value().c_str() : "(null)"));
+
+			acs::SOAP_ERROR err = acs::error(fault);
+			switch (err)
+			{
+				case acs::SOAP_ERROR_INVALID_PASSWORD:
+					if (!askPassword(email, password))
+						return false;
+					addProperty("password", password);
+					pManager->storeProfile();	
+					continue;
+				default:
+					UT_DEBUGMSG(("Unhandled SOAP error\n"));
+					unhandled_error = true;;
+					break;
+			}
+		}
+	} while (!unhandled_error && !soap_result);
+	UT_return_val_if_fail(soap_result, false);
+	
+	// handle the result
+	soa::CollectionPtr rcp = soap_result->as<soa::Collection>("return");
+	UT_return_val_if_fail(rcp, false);
+
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+	return true;
 }
 
 // NOTE: saveDocument can be called from a thread other than our mainloop;
