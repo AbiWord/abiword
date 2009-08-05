@@ -314,7 +314,8 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 		case KEYWORD_tab:
 		{
 			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "tab") || 
-						  contextMatches(contextTag, NS_W_KEY, "tabs");
+						  contextMatches(contextTag, NS_W_KEY, "tabs") || 
+						  contextMatches(contextTag, NS_W_KEY, "r");
 			break;
 		}
 		case KEYWORD_tabs:
@@ -601,6 +602,195 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 			break;
 		}
 
+		//Run Content, Section 2.3.3
+		case KEYWORD_break:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "break") || 
+						  contextMatches(contextTag, NS_W_KEY, "r");
+			break;
+		}
+		case KEYWORD_control:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "control") || 
+						  contextMatches(contextTag, NS_W_KEY, "pict") || 
+						  contextMatches(contextTag, NS_W_KEY, "object");
+			break;
+		}
+		case KEYWORD_cr:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "cr") || 
+						  contextMatches(contextTag, NS_W_KEY, "r");
+			break;
+		}
+		case KEYWORD_dayLong:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "dayLong") || 
+						  contextMatches(contextTag, NS_W_KEY, "r");
+			break;
+		}
+		case KEYWORD_dayShort:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "dayShort") || 
+						  contextMatches(contextTag, NS_W_KEY, "r");
+			break;
+		}
+		case KEYWORD_delText:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "delText") || 
+						  contextMatches(contextTag, NS_W_KEY, "r");
+			break;
+		}
+		case KEYWORD_dirty:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "dirty") || 
+						  contextMatches(contextTag, NS_W_KEY, "rubyPr");
+			break;
+		}
+		case KEYWORD_drawing:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "drawing") || 
+						  contextMatches(contextTag, NS_W_KEY, "r");
+			break;
+		}
+		case KEYWORD_hps:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "hps") || 
+						  contextMatches(contextTag, NS_W_KEY, "rubyPr");
+			break;
+		}
+		case KEYWORD_hpsBaseText:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "hpsBaseText") || 
+						  contextMatches(contextTag, NS_W_KEY, "rubyPr");
+			break;
+		}
+		case KEYWORD_hpsRaise:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "hpsRaise") || 
+						  contextMatches(contextTag, NS_W_KEY, "rubyPr");
+			break;
+		}
+		case KEYWORD_lastRenderedPageBreak:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "lastRenderedPageBreak") || 
+						  contextMatches(contextTag, NS_W_KEY, "r");
+			break;
+		}
+		case KEYWORD_lid:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "lid") || 
+						  contextMatches(contextTag, NS_W_KEY, "rubyPr");
+			break;
+		}
+		case KEYWORD_monthLong:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "monthLong") || 
+						  contextMatches(contextTag, NS_W_KEY, "r");
+			break;
+		}
+		case KEYWORD_monthShort:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "monthShort") || 
+						  contextMatches(contextTag, NS_W_KEY, "r");
+			break;
+		}
+		case KEYWORD_movie:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "movie") || 
+						  contextMatches(contextTag, NS_W_KEY, "pict");
+			break;
+		}
+		case KEYWORD_noBreakHyphen:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "noBreakHyphen") || 
+						  contextMatches(contextTag, NS_W_KEY, "r");
+			break;
+		}
+		case KEYWORD_object:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "object") || 
+						  contextMatches(contextTag, NS_W_KEY, "r");
+			break;
+		}
+		case KEYWORD_pgNum:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "pgNum") || 
+						  contextMatches(contextTag, NS_W_KEY, "r");
+			break;
+		}
+		case KEYWORD_pict:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "pict") || 
+						  contextMatches(contextTag, NS_W_KEY, "r");
+			break;
+		}
+		case KEYWORD_ptab:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "ptab") || 
+						  contextMatches(contextTag, NS_W_KEY, "r");
+			break;
+		}
+		case KEYWORD_rt:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "rt") || 
+						  contextMatches(contextTag, NS_W_KEY, "ruby");
+			break;
+		}
+		case KEYWORD_ruby:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "ruby") || 
+						  contextMatches(contextTag, NS_W_KEY, "r");
+			break;
+		}
+		case KEYWORD_rubyAlign:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "rubyAlign") || 
+						  contextMatches(contextTag, NS_W_KEY, "rubyPr");
+			break;
+		}
+		case KEYWORD_rubyBase:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "rubyBase") || 
+						  contextMatches(contextTag, NS_W_KEY, "ruby");
+			break;
+		}
+		case KEYWORD_rubyPr:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "rubyPr") || 
+						  contextMatches(contextTag, NS_W_KEY, "ruby");
+			break;
+		}
+		case KEYWORD_softHyphen:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "softHyphen") || 
+						  contextMatches(contextTag, NS_W_KEY, "r");
+			break;
+		}
+		case KEYWORD_sym:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "sym") || 
+						  contextMatches(contextTag, NS_W_KEY, "r");
+			break;
+		}
+		case KEYWORD_t:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "t") || 
+						  contextMatches(contextTag, NS_W_KEY, "r");
+			break;
+		}
+		case KEYWORD_yearLong:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "yearLong") || 
+						  contextMatches(contextTag, NS_W_KEY, "r");
+			break;
+		}
+		case KEYWORD_yearShort:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "yearShort") || 
+						  contextMatches(contextTag, NS_W_KEY, "r");
+			break;
+		}
+
 		//TODO: add more here
 	};
 }
@@ -636,13 +826,21 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:bidi", KEYWORD_bidi));
 	m_keywordMap.insert(std::make_pair("W:body", KEYWORD_body));
 	m_keywordMap.insert(std::make_pair("W:bottom", KEYWORD_bottom));
+	m_keywordMap.insert(std::make_pair("W:break", KEYWORD_break));
 	m_keywordMap.insert(std::make_pair("W:caps", KEYWORD_caps));
 	m_keywordMap.insert(std::make_pair("W:cnfStyle", KEYWORD_cnfStyle));
 	m_keywordMap.insert(std::make_pair("W:contextualSpacing", KEYWORD_contextualSpacing));
 	m_keywordMap.insert(std::make_pair("W:color", KEYWORD_color));
+	m_keywordMap.insert(std::make_pair("W:control", KEYWORD_control));
+	m_keywordMap.insert(std::make_pair("W:cr", KEYWORD_cr));
 	m_keywordMap.insert(std::make_pair("W:cs", KEYWORD_cs));
+	m_keywordMap.insert(std::make_pair("W:dayLong", KEYWORD_dayLong));
+	m_keywordMap.insert(std::make_pair("W:dayShort", KEYWORD_dayShort));
+	m_keywordMap.insert(std::make_pair("W:delText", KEYWORD_delText));
+	m_keywordMap.insert(std::make_pair("W:dirty", KEYWORD_dirty));
 	m_keywordMap.insert(std::make_pair("W:divId", KEYWORD_divId));
 	m_keywordMap.insert(std::make_pair("W:document", KEYWORD_document));
+	m_keywordMap.insert(std::make_pair("W:drawing", KEYWORD_drawing));
 	m_keywordMap.insert(std::make_pair("W:dstrike", KEYWORD_dstrike));
 	m_keywordMap.insert(std::make_pair("W:eastAsianLayout", KEYWORD_eastAsianLayout));
 	m_keywordMap.insert(std::make_pair("W:effect", KEYWORD_effect));
@@ -652,6 +850,9 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:framePr", KEYWORD_framePr));
 	m_keywordMap.insert(std::make_pair("W:glossaryDocument", KEYWORD_glossaryDocument));
 	m_keywordMap.insert(std::make_pair("W:highlight", KEYWORD_highlight));
+	m_keywordMap.insert(std::make_pair("W:hps", KEYWORD_hps));
+	m_keywordMap.insert(std::make_pair("W:hpsBaseText", KEYWORD_hpsBaseText));
+	m_keywordMap.insert(std::make_pair("W:hpsRaise", KEYWORD_hpsRaise));
 	m_keywordMap.insert(std::make_pair("W:i", KEYWORD_i));
 	m_keywordMap.insert(std::make_pair("W:iCs", KEYWORD_iCs));
 	m_keywordMap.insert(std::make_pair("W:imprint", KEYWORD_imprint));
@@ -662,10 +863,17 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:kern", KEYWORD_kern));
 	m_keywordMap.insert(std::make_pair("W:kinsoku", KEYWORD_kinsoku));
 	m_keywordMap.insert(std::make_pair("W:lang", KEYWORD_lang));
+	m_keywordMap.insert(std::make_pair("W:lastRenderedPageBreak", KEYWORD_lastRenderedPageBreak));
 	m_keywordMap.insert(std::make_pair("W:left", KEYWORD_left));
+	m_keywordMap.insert(std::make_pair("W:lid", KEYWORD_lid));
 	m_keywordMap.insert(std::make_pair("W:mirrorIndents", KEYWORD_mirrorIndents));
+	m_keywordMap.insert(std::make_pair("W:monthLong", KEYWORD_monthLong));
+	m_keywordMap.insert(std::make_pair("W:monthShort", KEYWORD_monthShort));
+	m_keywordMap.insert(std::make_pair("W:movie", KEYWORD_movie));
+	m_keywordMap.insert(std::make_pair("W:noBreakHyphen", KEYWORD_noBreakHyphen));
 	m_keywordMap.insert(std::make_pair("W:noProof", KEYWORD_noProof));
 	m_keywordMap.insert(std::make_pair("W:numPr", KEYWORD_numPr));
+	m_keywordMap.insert(std::make_pair("W:object", KEYWORD_object));
 	m_keywordMap.insert(std::make_pair("W:oMath", KEYWORD_oMath));
 	m_keywordMap.insert(std::make_pair("W:outline", KEYWORD_outline));
 	m_keywordMap.insert(std::make_pair("W:outlineLvl", KEYWORD_outlineLvl));
@@ -673,27 +881,38 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:p", KEYWORD_p));
 	m_keywordMap.insert(std::make_pair("W:pageBreakBefore", KEYWORD_pageBreakBefore));
 	m_keywordMap.insert(std::make_pair("W:pBdr", KEYWORD_pBdr));
+	m_keywordMap.insert(std::make_pair("W:pgNum", KEYWORD_pgNum));
+	m_keywordMap.insert(std::make_pair("W:pict", KEYWORD_pict));
 	m_keywordMap.insert(std::make_pair("W:position", KEYWORD_position));
 	m_keywordMap.insert(std::make_pair("W:pPr", KEYWORD_pPr));
 	m_keywordMap.insert(std::make_pair("W:pStyle", KEYWORD_pStyle));
+	m_keywordMap.insert(std::make_pair("W:ptab", KEYWORD_ptab));
 	m_keywordMap.insert(std::make_pair("W:r", KEYWORD_r));
 	m_keywordMap.insert(std::make_pair("W:rFonts", KEYWORD_rFonts));
 	m_keywordMap.insert(std::make_pair("W:right", KEYWORD_right));
 	m_keywordMap.insert(std::make_pair("W:rPr", KEYWORD_rPr));
 	m_keywordMap.insert(std::make_pair("W:rStyle", KEYWORD_rStyle));
+	m_keywordMap.insert(std::make_pair("W:rt", KEYWORD_rt));
 	m_keywordMap.insert(std::make_pair("W:rtl", KEYWORD_rtl));
+	m_keywordMap.insert(std::make_pair("W:ruby", KEYWORD_ruby));
+	m_keywordMap.insert(std::make_pair("W:rubyAlign", KEYWORD_rubyAlign));
+	m_keywordMap.insert(std::make_pair("W:rubyBase", KEYWORD_rubyBase));
+	m_keywordMap.insert(std::make_pair("W:rubyPr", KEYWORD_rubyPr));
 	m_keywordMap.insert(std::make_pair("W:shadow", KEYWORD_shadow));
 	m_keywordMap.insert(std::make_pair("W:shd", KEYWORD_shd));
 	m_keywordMap.insert(std::make_pair("W:smallCaps", KEYWORD_smallCaps));
 	m_keywordMap.insert(std::make_pair("W:snapToGrid", KEYWORD_snapToGrid));
+	m_keywordMap.insert(std::make_pair("W:softHyphen", KEYWORD_softHyphen));
 	m_keywordMap.insert(std::make_pair("W:spacing", KEYWORD_spacing));
 	m_keywordMap.insert(std::make_pair("W:specVanish", KEYWORD_specVanish));
 	m_keywordMap.insert(std::make_pair("W:strike", KEYWORD_strike));
 	m_keywordMap.insert(std::make_pair("W:suppressAutoHypens", KEYWORD_suppressAutoHypens));
 	m_keywordMap.insert(std::make_pair("W:suppressLineNumbers", KEYWORD_suppressLineNumbers));
 	m_keywordMap.insert(std::make_pair("W:suppressOverlap", KEYWORD_suppressOverlap));
+	m_keywordMap.insert(std::make_pair("W:sym", KEYWORD_sym));
 	m_keywordMap.insert(std::make_pair("W:sz", KEYWORD_sz));
 	m_keywordMap.insert(std::make_pair("W:szCs", KEYWORD_szCs));
+	m_keywordMap.insert(std::make_pair("W:t", KEYWORD_t));
 	m_keywordMap.insert(std::make_pair("W:tab", KEYWORD_tab));
 	m_keywordMap.insert(std::make_pair("W:tabs", KEYWORD_tabs));
 	m_keywordMap.insert(std::make_pair("W:textAlignment", KEYWORD_textAlignment));
@@ -704,6 +923,8 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:u", KEYWORD_u));
 	m_keywordMap.insert(std::make_pair("W:vanish", KEYWORD_vanish));
 	m_keywordMap.insert(std::make_pair("W:vertAlign", KEYWORD_vertAlign));
+	m_keywordMap.insert(std::make_pair("W:yearLong", KEYWORD_yearLong));
+	m_keywordMap.insert(std::make_pair("W:yearShort", KEYWORD_yearShort));
 	m_keywordMap.insert(std::make_pair("W:w", KEYWORD_w));
 	m_keywordMap.insert(std::make_pair("W:webHidden", KEYWORD_webHidden));
 	m_keywordMap.insert(std::make_pair("W:widowControl", KEYWORD_widowControl));
