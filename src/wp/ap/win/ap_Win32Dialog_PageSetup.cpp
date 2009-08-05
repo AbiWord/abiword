@@ -214,18 +214,18 @@ void AP_Win32Dialog_PageSetup_Page::doSpinControl(UT_uint32 id, UT_sint32 delta)
 {
 	char buf[BUFSIZE];
 	int updatedData =  0;
-	int pageScale   = ( m_pParent->getPageUnits()   == DIM_MM ) ? 1 : 10;
+	int pageScale   = ( m_pParent->m_PageSize.getDims() == DIM_MM ) ? 1 : 10;
 	int marginScale = ( m_pParent->getMarginUnits() == DIM_MM ) ? 1 : 10;
 
 	switch( id )
 	{
 	case AP_RID_DIALOG_PAGE_SETUP_SPN_WIDTH:
-		updatedData = (int)( m_pParent->m_PageSize.Width(m_pParent->getPageUnits()) * pageScale + delta + 0.05f );
+		updatedData = (int)( m_pParent->m_PageSize.Width(m_pParent->m_PageSize.getDims()) * pageScale + delta + 0.05f );
 		if( updatedData >= 0 )
 		{
-			m_pParent->m_PageSize.Set( (m_pParent->getPageOrientation() == m_pParent->PORTRAIT) ? (double) updatedData / (double) pageScale : m_pParent->m_PageSize.Height(m_pParent->getPageUnits()),
-							(m_pParent->getPageOrientation() == m_pParent->PORTRAIT) ? m_pParent->m_PageSize.Height(m_pParent->getPageUnits()) : (double) updatedData / (double) pageScale,
-							m_pParent->getPageUnits() );
+			m_pParent->m_PageSize.Set( (m_pParent->getPageOrientation() == m_pParent->PORTRAIT) ? (double) updatedData / (double) pageScale : m_pParent->m_PageSize.Height(m_pParent->m_PageSize.getDims()),
+							(m_pParent->getPageOrientation() == m_pParent->PORTRAIT) ? m_pParent->m_PageSize.Height(m_pParent->m_PageSize.getDims()) : (double) updatedData / (double) pageScale,
+							m_pParent->m_PageSize.getDims() );
 			m_pParent->updatePageSize();
 			m_pParent->updateWidth();
 			m_pParent->updatePreview();
@@ -233,12 +233,12 @@ void AP_Win32Dialog_PageSetup_Page::doSpinControl(UT_uint32 id, UT_sint32 delta)
 		break;
 
 	case AP_RID_DIALOG_PAGE_SETUP_SPN_HEIGHT:
-		updatedData = (int)( m_pParent->m_PageSize.Height(m_pParent->getPageUnits()) * pageScale + delta + 0.05f );
+		updatedData = (int)( m_pParent->m_PageSize.Height(m_pParent->m_PageSize.getDims()) * pageScale + delta + 0.05f );
 		if( updatedData >= 0 )
 		{
-			m_pParent->m_PageSize.Set( (m_pParent->getPageOrientation() == m_pParent->PORTRAIT) ? m_pParent->m_PageSize.Width(m_pParent->getPageUnits()) : (double) updatedData / (double) pageScale,
-							(m_pParent->getPageOrientation() == m_pParent->PORTRAIT) ? (double) updatedData / (double) pageScale : m_pParent->m_PageSize.Width(m_pParent->getPageUnits()),
-							m_pParent->getPageUnits() );
+			m_pParent->m_PageSize.Set( (m_pParent->getPageOrientation() == m_pParent->PORTRAIT) ? m_pParent->m_PageSize.Width(m_pParent->m_PageSize.getDims()) : (double) updatedData / (double) pageScale,
+							(m_pParent->getPageOrientation() == m_pParent->PORTRAIT) ? (double) updatedData / (double) pageScale : m_pParent->m_PageSize.Width(m_pParent->m_PageSize.getDims()),
+							m_pParent->m_PageSize.getDims() );
 			m_pParent->updatePageSize();
 			m_pParent->updateHeight();
 			m_pParent->updatePreview();
@@ -302,9 +302,8 @@ void AP_Win32Dialog_PageSetup_Page::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 		if( wNotifyCode == CBN_SELCHANGE )
 		{
 			UT_Dimension unit = (UT_Dimension)SendMessage( hWndCtrl, CB_GETCURSEL, (WPARAM) 0, (LPARAM) 0 );
-			if( unit != m_pParent->getPageUnits() )
+			if( unit != m_pParent->m_PageSize.getDims() )
 			{
-				m_pParent->setPageUnits( unit );
 				m_pParent->updateWidth();
 				m_pParent->updateHeight();
 				m_pParent->updatePreview();
@@ -317,11 +316,11 @@ void AP_Win32Dialog_PageSetup_Page::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 		{
 			char buf[BUFSIZE];
 			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
-			if( atof(buf) >= 0.0 && atof(buf) != m_pParent->m_PageSize.Width(m_pParent->getPageUnits()) )
+			if( atof(buf) >= 0.0 && atof(buf) != m_pParent->m_PageSize.Width(m_pParent->m_PageSize.getDims()) )
 			{
-				m_pParent->m_PageSize.Set( (m_pParent->getPageOrientation() == m_pParent->PORTRAIT) ? atof(buf) : m_pParent->m_PageSize.Height(m_pParent->getPageUnits()),
-								(m_pParent->getPageOrientation() == m_pParent->PORTRAIT) ? m_pParent->m_PageSize.Height(m_pParent->getPageUnits()) : atof(buf),
-								m_pParent->getPageUnits() );
+				m_pParent->m_PageSize.Set( (m_pParent->getPageOrientation() == m_pParent->PORTRAIT) ? atof(buf) : m_pParent->m_PageSize.Height(m_pParent->m_PageSize.getDims()),
+								(m_pParent->getPageOrientation() == m_pParent->PORTRAIT) ? m_pParent->m_PageSize.Height(m_pParent->m_PageSize.getDims()) : atof(buf),
+								m_pParent->m_PageSize.getDims() );
 				m_pParent->updatePageSize();
 				m_pParent->updatePreview();
 
@@ -335,11 +334,11 @@ void AP_Win32Dialog_PageSetup_Page::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 		{
 			char buf[BUFSIZE];
 			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
-			if( atof(buf) >= 0.0 && atof(buf) != m_pParent->m_PageSize.Height(m_pParent->getPageUnits()) )
+			if( atof(buf) >= 0.0 && atof(buf) != m_pParent->m_PageSize.Height(m_pParent->m_PageSize.getDims()) )
 			{
-				m_pParent->m_PageSize.Set( (m_pParent->getPageOrientation() == m_pParent->PORTRAIT) ? m_pParent->m_PageSize.Width(m_pParent->getPageUnits()) : atof(buf), 
-								(m_pParent->getPageOrientation() == m_pParent->PORTRAIT) ? atof(buf) : m_pParent->m_PageSize.Width(m_pParent->getPageUnits()),
-								m_pParent->getPageUnits() );
+				m_pParent->m_PageSize.Set( (m_pParent->getPageOrientation() == m_pParent->PORTRAIT) ? m_pParent->m_PageSize.Width(m_pParent->m_PageSize.getDims()) : atof(buf), 
+								(m_pParent->getPageOrientation() == m_pParent->PORTRAIT) ? atof(buf) : m_pParent->m_PageSize.Width(m_pParent->m_PageSize.getDims()),
+								m_pParent->m_PageSize.getDims() );
 				m_pParent->updatePageSize();
 				m_pParent->updatePreview();
 			}
@@ -459,7 +458,7 @@ void AP_Win32Dialog_PageSetup_Page::_onInitDialog()
 
 	m_pParent->updatePageSize();
 
-	int nUnit =  m_pParent->getPageUnits();
+	int nUnit =  m_pParent->m_PageSize.getDims();
 	SendMessage( hwndUnits, CB_SETCURSEL, (WPARAM) nUnit, (LPARAM) 0 );
 
 	// Load Appropriate XPM to BMPs
@@ -691,7 +690,7 @@ int CALLBACK AP_Win32Dialog_PageSetup_Margin::s_pageWndProc(HWND hWnd, UINT msg,
 void AP_Win32Dialog_PageSetup_Margin::doSpinControl(UT_uint32 id, UT_sint32 delta)
 {
 	int updatedData =  0;
-	int pageScale   = ( m_pParent->getPageUnits()   == DIM_MM ) ? 1 : 10;
+	int pageScale   = ( m_pParent->m_PageSize.getDims() == DIM_MM ) ? 1 : 10;
 	int marginScale = ( m_pParent->getMarginUnits() == DIM_MM ) ? 1 : 10;
 
 	switch( id )
@@ -776,7 +775,7 @@ void AP_Win32Dialog_PageSetup::updateWidth()
 
 	char buf[BUFSIZE];
 
-	sprintf (buf, FMT_STRING, m_PageSize.Width (getPageUnits()));
+	sprintf (buf, FMT_STRING, m_PageSize.Width (m_PageSize.getDims()));
 	SetDlgItemText( m_page.getHandle(),
 			AP_RID_DIALOG_PAGE_SETUP_EBX_WIDTH, buf);
 	
@@ -785,7 +784,7 @@ void AP_Win32Dialog_PageSetup::updateWidth()
 void AP_Win32Dialog_PageSetup::updateHeight()
 {
 	char buf[BUFSIZE];
-	sprintf (buf, FMT_STRING, m_PageSize.Height(getPageUnits()));
+	sprintf (buf, FMT_STRING, m_PageSize.Height(m_PageSize.getDims()));
 	SetDlgItemText( m_page.getHandle(),
    	                AP_RID_DIALOG_PAGE_SETUP_EBX_HEIGHT, buf);
 }
