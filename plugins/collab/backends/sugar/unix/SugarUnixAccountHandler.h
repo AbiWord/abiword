@@ -72,6 +72,8 @@ public:
 	// session management
 	virtual bool							allowsSessionTakeover()
 		{ return false; }
+	virtual bool							keepEmptySessionsAlive()
+		{ return true; }
 
 	// packet management
 	virtual bool							send(const Packet* pPacket);
