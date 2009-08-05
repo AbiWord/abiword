@@ -65,7 +65,7 @@ class AP_CocoaDialog_Lists;
 	
 	IBOutlet NSTabView	*_mainTab;
 	
-	IBOutlet NSTextField *_hideTextLabel;
+	IBOutlet NSBox *_hideTextLabel;
 	IBOutlet NSMatrix *_foldingMatrix;
 	IBOutlet NSCell	*_noFoldingBtn;
 	IBOutlet NSCell	*_foldLevel1Btn;

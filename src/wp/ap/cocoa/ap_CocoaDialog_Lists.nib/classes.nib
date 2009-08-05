@@ -32,7 +32,7 @@
                 "_fontPopup" = NSPopUpButton; 
                 "_formatData" = NSTextField; 
                 "_formatLabel" = NSTextField; 
-                "_hideTextLabel" = NSTextField; 
+                "_hideTextLabel" = NSBox; 
                 "_labelAlignData" = NSTextField; 
                 "_labelAlignLabel" = NSTextField; 
                 "_labelAlignStepper" = NSStepper; 
