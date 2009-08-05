@@ -87,9 +87,9 @@ private:
 	IBOutlet NSTextField *		_textAfterLabel;
 	IBOutlet NSTextField *		_textBeforeData;
 	IBOutlet NSTextField *		_textBeforeLabel;
-	IBOutlet NSTextField *		_defineMainLabel;
-	IBOutlet NSTextField *		_labelDefinitionsLabel;
-	IBOutlet NSTextField *		_tabsPageNoLabel;
+	IBOutlet NSBox *			_defineMainLabel;
+	IBOutlet NSBox *			_labelDefinitionsLabel;
+	IBOutlet NSBox *			_tabsPageNoLabel;
 
 	IBOutlet NSStepper *		_startAtStepper;
 	IBOutlet NSStepper *		_indentStepper;

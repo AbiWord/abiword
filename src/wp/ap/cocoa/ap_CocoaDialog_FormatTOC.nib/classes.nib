@@ -17,7 +17,7 @@
             LANGUAGE = ObjC; 
             OUTLETS = {
                 "_applyBtn" = NSButton; 
-                "_defineMainLabel" = NSTextField; 
+                "_defineMainLabel" = NSBox; 
                 "_displayStyleBtn" = NSButton; 
                 "_displayStyleData" = NSTextField; 
                 "_displayStyleLabel" = NSTextField; 
@@ -35,7 +35,7 @@
                 "_indentLabel" = NSTextField; 
                 "_indentStepper" = NSStepper; 
                 "_inheritLabelBtn" = NSButton; 
-                "_labelDefinitionsLabel" = NSTextField; 
+                "_labelDefinitionsLabel" = NSBox; 
                 "_layoutLevelPopup" = NSPopUpButton; 
                 "_mainLevelPopup" = NSPopUpButton; 
                 "_numberingTypeData" = NSPopUpButton; 
@@ -48,7 +48,7 @@
                 "_tabLeadersData" = NSPopUpButton; 
                 "_tabLeadersLabel" = NSTextField; 
                 "_tabView" = NSTabView; 
-                "_tabsPageNoLabel" = NSTextField; 
+                "_tabsPageNoLabel" = NSBox; 
                 "_textAfterData" = NSTextField; 
                 "_textAfterLabel" = NSTextField; 
                 "_textBeforeData" = NSTextField; 
