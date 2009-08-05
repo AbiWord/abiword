@@ -5,9 +5,6 @@
             ACTIONS = {
                 cancelAction = id; 
                 colorWellAction = id; 
-                fontListAction = id; 
-                fontSizeAction = id; 
-                fontStyleAction = id; 
                 okAction = id; 
                 overlineAction = id; 
                 strikeoutAction = id; 
@@ -20,7 +17,7 @@
             LANGUAGE = ObjC; 
             OUTLETS = {
                 "_cancelBtn" = NSButton; 
-                "_effectLabel" = NSTextField; 
+                "_effectLabel" = NSBox; 
                 "_fontLabel" = NSTextField; 
                 "_fontList" = NSTableView; 
                 "_hiddenButton" = NSButton; 
@@ -36,9 +33,9 @@
                 "_styleList" = NSTableView; 
                 "_subscriptButton" = NSButton; 
                 "_superscriptButton" = NSButton; 
-                "_textColorLabel" = NSTextField; 
+                "_textColorLabel" = NSBox; 
                 "_textColorWell" = NSColorWell; 
-                "_textHighlightColorLabel" = NSTextField; 
+                "_textHighlightColorLabel" = NSBox; 
                 "_textHighlightColorWell" = NSColorWell; 
                 "_underlineButton" = NSButton; 
             }; 

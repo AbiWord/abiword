@@ -2,7 +2,7 @@
 
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2003 Hubert Figuiere
+ * Copyright (C) 2001-2003, 2009 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -44,9 +44,9 @@ class XAP_CocoaDialog_FontChooser;
 	IBOutlet NSTextField *		_fontLabel;
 	IBOutlet NSTextField *		_styleLabel;
 	IBOutlet NSTextField *		_sizeLabel;
-	IBOutlet NSTextField *		_effectLabel;
-	IBOutlet NSTextField *		_textColorLabel;
-	IBOutlet NSTextField *		_textHighlightColorLabel;
+	IBOutlet NSBox *			_effectLabel;
+	IBOutlet NSBox *			_textColorLabel;
+	IBOutlet NSBox *			_textHighlightColorLabel;
 
 	IBOutlet NSButton *			_okBtn;
 	IBOutlet NSButton *			_cancelBtn;
