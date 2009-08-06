@@ -324,9 +324,30 @@ bool fp_CellContainer::containsNestedTables(void)
 	return (pCL->getNumNestedTables() > 0);
 }
 
+
+
+
 /*!
- * Return the screen rectangle that is the intersection of the cell and the
- * broken table.
+ * Return the screen rectangle that is the intersection of the complete cell 
+ * and the broken table.
+ * If the height or width is negative, the cell is not in the broken table.
+ */
+void fp_CellContainer::_getBrokenRectCell(fp_TableContainer * pBroke, fp_Page * &pPage, UT_Rect &bRec, GR_Graphics * pG)
+{
+	_getBrokenRect(pBroke, pPage, bRec,pG);
+	UT_sint32 xdiff = getX() - getCellX();
+	UT_sint32 ydiff = getY() - getCellY();
+	UT_sint32 wdiff = getCellWidth() - getWidth();
+	UT_sint32 hdiff = getCellHeight() - getHeight();
+	bRec.left -= xdiff;
+	bRec.top -= ydiff;
+	bRec.width += wdiff;
+	bRec.height += hdiff;
+}
+
+/*!
+ * Return the screen rectangle that is the intersection of the drawable part of
+ * the cell and the broken table.
  * If the height or width is negative, the cell is not in the broken table.
  */
 void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPage, UT_Rect &bRec, GR_Graphics * pG)
@@ -801,7 +822,7 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 	}
 	UT_Rect bRec;
 	fp_Page * pPage = NULL;
-	_getBrokenRect(pBroke, pPage, bRec,getGraphics());
+	_getBrokenRectCell(pBroke, pPage, bRec,getGraphics());
 	if((bRec.top + bRec.height) < 0)
 	{
 		return;
@@ -811,11 +832,11 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 	if (pPage != NULL)
 	{
 		UT_DEBUGMSG(("_clear: top %d bot %d cell left %d top %d \n",bRec.top,bRec.top+bRec.height,m_iLeftAttach,m_iTopAttach));
-
 		lineLeft.m_t_linestyle = PP_PropertyMap::linestyle_solid;
 		lineLeft.m_color = *getFillType()->getColor();
 		thck = lineLeft.m_thickness*2;
 		lineLeft.m_thickness *= 4;
+		
 		_drawLine (lineLeft, bRec.left-thck, bRec.top, bRec.left-thck,  bRec.top + bRec.height,getGraphics());
 
 		lineTop.m_t_linestyle = PP_PropertyMap::linestyle_solid;
@@ -952,6 +973,57 @@ void fp_CellContainer::setContainer(fp_Container * pContainer)
 	UT_sint32 iWidth = pTable->getWidth();
 
 	fp_CellContainer::setWidth(iWidth);
+}
+
+/*!
+ * Return the rectangle that covers the line given. We can use this to
+ * clear the line, with a clearArea call.
+ */
+void fp_CellContainer::_getCoveringRect(const PP_PropertyMap::Line & style,
+										UT_sint32 left, UT_sint32 top, 
+										UT_sint32 right, UT_sint32 bot,
+										 GR_Graphics * pG, UT_Rect & cRec)
+{
+	UT_sint32 thck = style.m_thickness;
+	cRec.left = left;
+	cRec.top = top;
+	bool bThinWidth = false;
+	if(right == left)
+	{
+		cRec.width = thck;
+		bThinWidth = true;
+	}
+	else
+	{
+		cRec.width = right - left;
+	}
+	if(top == bot)
+	{
+		cRec.height = thck;
+	}
+	else
+	{
+		cRec.height = bot - top;
+	}
+	//
+	// OK now make sure we have a one pixel cover over cRec
+	// in just the thin dimension
+	//	
+	UT_sint32 onepix = pG->tlu(1)+1;
+	if(bThinWidth)
+	{
+		cRec.left = cRec.left - onepix;
+		cRec.width = cRec.width + 2*onepix;
+		cRec.top = cRec.top;
+		cRec.height = cRec.height;
+	}
+	else
+	{
+		cRec.left = cRec.left;
+		cRec.width = cRec.width;
+		cRec.top = cRec.top - onepix;
+		cRec.height = cRec.height + 2*onepix;
+	}
 }
 
 /* just a little helper function
@@ -1310,7 +1382,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 	bool bDrawBot = m_bDrawBot;
 	bool bDrawRight = m_bDrawRight;
 	bool bDrawLeft = m_bDrawLeft;
-
+    UT_Rect cRec;
 	// draw top if this cell is on top row of table.
 	fp_TableContainer * pTab2 =  static_cast<fp_TableContainer *>(getContainer());
 	if(m_bDefaultLines)
@@ -1491,33 +1563,21 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 		{
 			UT_DEBUGMSG(("ADITYA: drawing left! (%d,%d),(%d,%d) ", iLeft + thickness, iTop, 
 						 iLeft + thickness, iBot));
-			thickness = leftThickness;
-			
 			if(bDoClear)
 			{
-				clineLeft.m_color = white;
-				clrthick = thickness*2;
-				clineLeft.m_thickness = clrthick;
-				Paint.clearArea(iLeft-thickness/2, iTop, clrthick,iBot-iTop);
-				//	_drawLine (clineLeft, iLeft, iTop, iLeft, iBot, pG);
+				_getCoveringRect(lineLeft, iLeft, iTop, iLeft, iBot, pG,cRec);
+				Paint.clearArea(cRec.left, cRec.top, cRec.width,cRec.height);
 			}
-			lineLeft.m_thickness = thickness;
-			_drawLine(lineLeft, iLeft-thickness/2, iTop, 
-					  iLeft-thickness/2, iBot, pG);
+			_drawLine(lineLeft, iLeft, iTop, iLeft, iBot, pG);
 		}
 		if(bDrawRight)
 		{
-			thickness = rightThickness;
 			UT_DEBUGMSG(("drawing right! "));
 			if(bDoClear)
 			{
-				clrthick = thickness*2;
-				clineRight.m_thickness = clrthick;
-				clineRight.m_color = white;
-				Paint.clearArea(iRight-thickness/2, iTop, clrthick,iBot-iTop);		
-				//				_drawLine(clineRight, iRight-thickness/2, iTop, iRight, iBot, pG);
+				_getCoveringRect(lineRight, iRight, iTop, iRight, iBot, pG,cRec);
+				Paint.clearArea(cRec.left, cRec.top, cRec.width,cRec.height);
 			}
-			lineRight.m_thickness = thickness;
 			_drawLine(lineRight, iRight, iTop, iRight, iBot,pG);
 		}
 		UT_sint32 myLeft = iLeft;
@@ -1533,35 +1593,25 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 		
 		if(bDrawTop)
 		{
-			thickness = topThickness;
 			UT_DEBUGMSG(("drawing top! (%d,%d),(%d,%d) ", myLeft, iTop + thickness, 
 						 myRight, iTop + thickness));
 			
 			if(bDoClear)
 			{
-				clineTop.m_color = white;
-				clrthick = thickness*2;
-				clineTop.m_thickness = clrthick;
-				Paint.clearArea(myLeft, iTop-thickness/2, myRight-myLeft, clrthick);		
-				//		_drawLine(clineTop, myLeft, iTop, myRight, iTop, pG);
+				_getCoveringRect(lineTop,myLeft,iTop,myRight,iTop,pG,cRec);
+				Paint.clearArea(cRec.left, cRec.top, cRec.width,cRec.height);
 			}
-			lineTop.m_thickness = thickness;
 			_drawLine(lineTop,  myLeft, iTop,myRight, iTop, pG);
 		}
 		if(bDrawBot)
 		{
-			thickness = botThickness;
 			UT_DEBUGMSG(("drawing bot! (%d,%d),(%d,%d) \n", myLeft, iBot,
 						 myRight, iBot));
 			if(bDoClear)
 			{
-				clrthick = thickness*2;
-				clineBottom.m_thickness = clrthick;
-				clineBottom.m_color = white;
-				Paint.clearArea(myLeft, iBot-thickness/2, myRight-myLeft, clrthick);		
-				//		_drawLine(clineBottom, myLeft, iBot-thickness/2,myRight, iBot-thickness/2, pG);
+				_getCoveringRect(lineBottom,myLeft,iBot,myRight,iBot,pG,cRec);
+				Paint.clearArea(cRec.left, cRec.top, cRec.width,cRec.height);
 			}
-			lineBottom.m_thickness = thickness;
 			_drawLine(lineBottom, myLeft, iBot, myRight, iBot, pG);
 		}
 	}
