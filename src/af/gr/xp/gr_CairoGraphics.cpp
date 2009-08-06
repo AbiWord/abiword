@@ -2542,10 +2542,14 @@ GR_Font* GR_CairoGraphics::_findFont(const char* pszFontFamily,
 	const char * pWeight = pszFontWeight;
 	const char * pStretch = pszFontStretch;
 
-	if(pszFontFamily && !strcmp(pszFontFamily, "Symbol"))
-	{
-		pszFontFamily = "Standard Symbols L";
-	}
+//  This substitution does not seem to be need on my Linux system
+//  and acutally cause problem on Mac with Cairo as it never finds the
+//  font "Standards Symbols L" -- hub
+//
+//	if(pszFontFamily && !strcmp(pszFontFamily, "Symbol"))
+//	{
+//		pszFontFamily = "Standard Symbols L";
+//	}
 	   
 	if(pszFontStyle && *pszFontStyle == 'n')
 		pStyle = "";
