@@ -35,6 +35,7 @@
 #include "ut_misc.h"
 #include "ut_vector.h"
 #include "ut_locale.h"
+#include "ut_std_string.h"
 
 // need this to include what Pango considers 'low-level' api
 #define PANGO_ENABLE_ENGINE
@@ -2533,7 +2534,7 @@ GR_Font* GR_CairoGraphics::_findFont(const char* pszFontFamily,
 										 const char* pszLang)
 {
 	double dPointSize = UT_convertToPoints(pszFontSize);
-	UT_String s;
+	std::string s;
 
 	// Pango is picky about the string we pass to it -- it cannot handle any
 	// 'normal' values, and it will stop parsing when it encounters one.
@@ -2574,7 +2575,7 @@ GR_Font* GR_CairoGraphics::_findFont(const char* pszFontFamily,
 	if(!pszLang || !*pszLang)
 		pszLang = "en-US";
 	
-	UT_String_sprintf(s, "%s, %s %s %s %s",
+	s = UT_std_string_sprintf("%s, %s %s %s %s",
 					  pszFontFamily,
 					  pStyle,
 					  pVariant,
@@ -3185,17 +3186,17 @@ void GR_PangoFont::reloadFont(GR_CairoGraphics * pG)
 	UT_DEBUGMSG(("GR_PangoFont::reloadFont() zoom %% %d\n", iZoom));
 	
 	UT_LocaleTransactor t(LC_NUMERIC, "C");
- 	UT_String sLay;
- 	UT_String sDev;
+ 	std::string sLay;
+ 	std::string sDev;
 	if(!m_bGuiFont && pG->queryProperties(GR_Graphics::DGP_SCREEN))
  	{
- 		UT_String_sprintf(sDev, "%s %f", m_sDesc.c_str(), m_dPointSize * (double)m_iZoom / 100.0);
- 		UT_String_sprintf(sLay, "%s %f", m_sLayoutDesc.c_str(), m_dPointSize);
+ 		sDev = UT_std_string_sprintf("%s %f", m_sDesc.c_str(), m_dPointSize * (double)m_iZoom / 100.0);
+ 		sLay = UT_std_string_sprintf("%s %f", m_sLayoutDesc.c_str(), m_dPointSize);
  	}
 	else
  	{
- 		UT_String_sprintf(sDev, "%s %f", m_sDesc.c_str(), m_dPointSize);
- 		UT_String_sprintf(sLay, "%s %f", m_sLayoutDesc.c_str(), m_dPointSize);
+ 		sDev = UT_std_string_sprintf("%s %f", m_sDesc.c_str(), m_dPointSize);
+ 		sLay = UT_std_string_sprintf("%s %f", m_sLayoutDesc.c_str(), m_dPointSize);
  	}		
   
  	if(m_pfdLay)
