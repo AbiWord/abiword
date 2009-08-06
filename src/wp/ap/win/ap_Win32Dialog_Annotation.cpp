@@ -161,12 +161,12 @@ void AP_Win32Dialog_Annotation::_get_text(int nID, std::string &text)
 	char szBuff[2048];
 
 	GetDlgItemText(m_hwndDlg, nID, szBuff, 2048);
-	text = AP_Win32App::s_fromWinLocaleToUTF8(szBuff);
+	text = AP_Win32App::s_fromWinLocaleToUTF8(szBuff).utf8_str();
 }
 
 void AP_Win32Dialog_Annotation::_set_text(int nID, const std::string & text)
 {
-	UT_String str = AP_Win32App::s_fromUTF8ToWinLocale(text.utf8_str());
+	UT_String str = AP_Win32App::s_fromUTF8ToWinLocale(text.c_str());
 	SetDlgItemText (m_hwndDlg, nID, str.c_str());
 }
 
