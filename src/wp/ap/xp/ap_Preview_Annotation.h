@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiSource Application Framework
 * Copyright (C) 1998 AbiSource, Inc.
 *
@@ -39,10 +40,18 @@ public:
 	virtual ~AP_Preview_Annotation(void);
 	
 	void		setTitle(const gchar * pTitle);
+	void		setTitle(const std::string & pTitle)
+	{ m_pTitle = pTitle; }
 	void		setAuthor(const gchar * pAuthor);
+	void		setAuthor(const std::string & pAuthor)
+	{ m_pAuthor = pAuthor; }
 	void		setDescription(const gchar * pDescription);
+	void		setDescription(const std::string & pDescription)
+	{ m_pDescription = pDescription; }
 	void		setAnnotationID(UT_uint32 aID);
-	UT_uint32	getAnnotationID();
+	UT_uint32	getAnnotationID() const
+	{  return m_iAID; }
+
 	
 	void		draw(void);
 	void		clearScreen(void);

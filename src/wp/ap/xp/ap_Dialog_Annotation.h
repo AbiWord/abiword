@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 2002 Dom Lachowicz
  * 
@@ -20,6 +21,8 @@
 #ifndef AP_DIALOG_ANNOTATION_H
 #define AP_DIALOG_ANNOTATION_H
 
+#include <string>
+
 #include "xap_Frame.h"
 #include "xap_Dialog.h"
 #include "xav_View.h"
@@ -28,9 +31,9 @@ class XAP_Frame;
 
 #define DCL_PROP(name) \
 public: \
-void set##name(const UT_UTF8String & val) { m_##name = val ; } \
-UT_UTF8String get##name() const { return m_##name ; } \
-private: UT_UTF8String m_##name ;
+void set##name(const std::string & val) { m_##name = val ; }                  \
+const std::string & get##name() const { return m_##name ; }                  \
+private: std::string m_##name ;
 
 class ABI_EXPORT AP_Dialog_Annotation : public XAP_Dialog_NonPersistent
 {

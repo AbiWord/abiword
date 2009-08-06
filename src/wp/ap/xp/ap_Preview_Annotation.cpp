@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiSource Application Framework
 * Copyright (C) 1998 AbiSource, Inc.
 *
@@ -66,10 +67,7 @@ void AP_Preview_Annotation::setAnnotationID(UT_uint32 aID)
 {
 	m_iAID = aID;
 }
-UT_uint32 AP_Preview_Annotation::getAnnotationID()
-{
-	return m_iAID;
-}
+
 
 void AP_Preview_Annotation::_createAnnotationPreviewFromGC(GR_Graphics * gc, UT_uint32 width, UT_uint32 height)
 {

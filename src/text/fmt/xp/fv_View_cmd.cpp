@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
@@ -4671,9 +4672,9 @@ bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 	//
 
 	// TODO maybe we should not exit if annotation is not present (ex. auto-generated annotations may become not be editable!)
-	UT_UTF8String sText("");
-	UT_UTF8String sTitle2("");
-	UT_UTF8String sAuthor2("");
+	std::string sText;
+	std::string sTitle2;
+	std::string sAuthor2;
 	bool b = getAnnotationText(aID,sText);
 	if(!b)
 		return false;
@@ -4701,9 +4702,9 @@ bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 	
 	// set initial annotation properties
 	// TODO add support for all fields
-	pDialog->setTitle(sTitle2.utf8_str());
-	pDialog->setAuthor(sAuthor2.utf8_str());
-	pDialog->setDescription(sText.utf8_str());
+	pDialog->setTitle(sTitle2);
+	pDialog->setAuthor(sAuthor2);
+	pDialog->setDescription(sText);
 	
 	// run the dialog
 	
@@ -4722,16 +4723,16 @@ bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 			pApp->getFrame(i)->updateTitle ();
 		}	  
 		
-		UT_UTF8String sDescr = pDialog->getDescription();
-		UT_UTF8String sTitle = pDialog->getTitle();
-		UT_UTF8String sAuthor = pDialog->getAuthor();
+		const std::string & sDescr = pDialog->getDescription();
+		const std::string & sTitle = pDialog->getTitle();
+		const std::string & sAuthor = pDialog->getAuthor();
 //		bool bReplaceSelection = false;
 		
 		b = setAnnotationText(aID,sDescr,sAuthor,sTitle);
 	}
 	else if (bApply)
 	{
-		UT_UTF8String sDescr = pDialog->getDescription();
+		UT_UCS4String sDescr(pDialog->getDescription());
 		pAL = getAnnotationLayout(aID);
 		if(!pAL)
 		  return false;
@@ -4756,7 +4757,7 @@ bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 		if(posStart> posEnd)
 		  posStart = posEnd;
 		cmdSelect(posStart,posEnd);
-		cmdCharInsert(sDescr.ucs4_str().ucs4_str(),sDescr.ucs4_str().size());
+		cmdCharInsert(sDescr.ucs4_str(),sDescr.size());
 	}
 	// release the dialog
 	pDialogFactory->releaseDialog(pDialog);

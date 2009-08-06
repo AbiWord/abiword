@@ -1,4 +1,4 @@
-/* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
@@ -37,6 +37,7 @@
 #include "ev_Mouse.h"
 #include "ut_misc.h"
 #include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_bytebuf.h"
 #include "ut_timer.h"
 #include "ie_imp_RTF.h"
@@ -12342,7 +12343,7 @@ bool FV_View::isInAnnotation(PT_DocPosition pos)
 	return false;
 }
 
-fl_AnnotationLayout * FV_View::getAnnotationLayout(UT_uint32 iAnnotation)
+fl_AnnotationLayout * FV_View::getAnnotationLayout(UT_uint32 iAnnotation) const
 {
 	fl_AnnotationLayout * pAnn = 	m_pLayout->findAnnotationLayout(iAnnotation);
 	return pAnn;
@@ -12352,7 +12353,7 @@ fl_AnnotationLayout * FV_View::getAnnotationLayout(UT_uint32 iAnnotation)
  * Content is returned in UT_UTF8String sText.
  * Returns true if a valid annotation was found with valid content.
  */
-bool FV_View::getAnnotationText(UT_uint32 iAnnotation, UT_UTF8String & sText)
+bool FV_View::getAnnotationText(UT_uint32 iAnnotation, std::string & sText) const
 {
 	fl_AnnotationLayout * pAL = getAnnotationLayout(iAnnotation);
 	if(!pAL)
@@ -12380,7 +12381,9 @@ bool FV_View::getAnnotationText(UT_uint32 iAnnotation, UT_UTF8String & sText)
 			tmp.truncate(0);
 			block = block->getNextBlockInDocument();
 	}
-	sText.appendUCS4(reinterpret_cast<const UT_UCS4Char *>( buffer.getPointer(0)),buffer.getLength());
+	UT_UCS4String uText(reinterpret_cast<const UT_UCS4Char *>( buffer.getPointer(0)),
+						buffer.getLength());
+	sText = uText.utf8_str();
 	return true;
 }
 
@@ -12423,7 +12426,7 @@ bool FV_View::selectAnnotation(fl_AnnotationLayout * pAL)
  *  UT_UTF8String sText.
  * Returns true if a valid annotation was found with valid content.
  */
-bool FV_View::setAnnotationText(UT_uint32 iAnnotation, UT_UTF8String & sText)
+bool FV_View::setAnnotationText(UT_uint32 iAnnotation, const std::string & sText)
 {
 	fl_AnnotationLayout * pAL = getAnnotationLayout(iAnnotation);
 	if(!pAL)
@@ -12450,7 +12453,8 @@ bool FV_View::setAnnotationText(UT_uint32 iAnnotation, UT_UTF8String & sText)
 	//
 	// Insert the new text
 	//
-	m_pDoc->insertSpan(posStart+1, sText.ucs4_str().ucs4_str(),sText.ucs4_str().size(),pAttrProp_Before);
+	UT_UCS4String text(sText);
+	m_pDoc->insertSpan(posStart+1, text.ucs4_str(),text.size(),pAttrProp_Before);
 	m_pDoc->endUserAtomicGlob();
 
 	// Signal PieceTable Changes have finished
@@ -12466,7 +12470,8 @@ bool FV_View::setAnnotationText(UT_uint32 iAnnotation, UT_UTF8String & sText)
  *  UT_UTF8String sText.
  * Returns true if a valid annotation was found with valid content.
  */
-bool FV_View::setAnnotationText(UT_uint32 iAnnotation, UT_UTF8String & sText,UT_UTF8String & sAuthor, UT_UTF8String & sTitle)
+bool FV_View::setAnnotationText(UT_uint32 iAnnotation, const std::string & sText, 
+                                const std::string & sAuthor, const std::string & sTitle)
 {
 	fl_AnnotationLayout * pAL = getAnnotationLayout(iAnnotation);
 	if(!pAL)
@@ -12493,22 +12498,23 @@ bool FV_View::setAnnotationText(UT_uint32 iAnnotation, UT_UTF8String & sText,UT_
 	//
 	// Insert the new text
 	//
-	m_pDoc->insertSpan(posStart+1, sText.ucs4_str().ucs4_str(),sText.ucs4_str().size(),pAttrProp_Before);
+	UT_UCS4String text(sText);
+	m_pDoc->insertSpan(posStart+1, text.ucs4_str(), text.size(),pAttrProp_Before);
 	//
 	// Set the annotation properties
 	//
 	const char * pszAnn[7] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL};
 	pszAnn[0] = "annotation-author";
-	pszAnn[1] = sAuthor.utf8_str();
+	pszAnn[1] = sAuthor.c_str();
 	pszAnn[2] = "annotation-title";
-	pszAnn[3] = sTitle.utf8_str();
+	pszAnn[3] = sTitle.c_str();
 	pszAnn[4] = "annotation-date";
 	GDate  gDate;
 	g_date_set_time_t (&gDate, time (NULL));
-	UT_UTF8String sDate;
-	sDate = UT_UTF8String_sprintf("%d-%d-%d",gDate.month,gDate.day,gDate.year);
-	pszAnn[5] = sDate.utf8_str();
-	xxx_UT_DEBUGMSG((" Set Author %s Title %s posStart %d \n", sAuthor.utf8_str(),sTitle.utf8_str(),posStart));
+	std::string sDate;
+	sDate = UT_std_string_sprintf("%d-%d-%d",gDate.month,gDate.day,gDate.year);
+	pszAnn[5] = sDate.c_str();
+	xxx_UT_DEBUGMSG((" Set Author %s Title %s posStart %d \n", sAuthor.c_str(),sTitle.c_str(),posStart));
 	m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posStart,NULL,pszAnn,PTX_SectionAnnotation);
 
 	m_pDoc->endUserAtomicGlob();
@@ -12521,7 +12527,7 @@ bool FV_View::setAnnotationText(UT_uint32 iAnnotation, UT_UTF8String & sText,UT_
 }
 
 // TODO getters and setters to implement/change/add as judged necessary
-bool FV_View::getAnnotationTitle(UT_uint32 iAnnotation, UT_UTF8String & sTitle)
+bool FV_View::getAnnotationTitle(UT_uint32 iAnnotation, std::string & sTitle) const
 {
 	fl_AnnotationLayout * pAL = getAnnotationLayout(iAnnotation);
 	if(!pAL)
@@ -12529,7 +12535,7 @@ bool FV_View::getAnnotationTitle(UT_uint32 iAnnotation, UT_UTF8String & sTitle)
 	sTitle = pAL->getTitle();
 	return true;
 }
-bool FV_View::setAnnotationTitle(UT_uint32 iAnnotation, UT_UTF8String & sTitle)
+bool FV_View::setAnnotationTitle(UT_uint32 iAnnotation, const std::string & sTitle)
 {
 	fl_AnnotationLayout * pAL = getAnnotationLayout(iAnnotation);
 	if(!pAL)
@@ -12538,11 +12544,11 @@ bool FV_View::setAnnotationTitle(UT_uint32 iAnnotation, UT_UTF8String & sTitle)
 	PT_DocPosition posAnn = m_pDoc->getStruxPosition(sdhAnn);
 	const char * pszAnn[3] = {NULL,NULL,NULL};
 	pszAnn[0] = "annotation-title";
-	pszAnn[1] = sTitle.utf8_str();
+	pszAnn[1] = sTitle.c_str();
 	m_pDoc->changeStruxFmt(PTC_AddFmt,posAnn,posAnn,NULL,pszAnn,PTX_SectionAnnotation);
 	return true;
 }
-bool FV_View::getAnnotationAuthor(UT_uint32 iAnnotation, UT_UTF8String & sAuthor)
+bool FV_View::getAnnotationAuthor(UT_uint32 iAnnotation, std::string & sAuthor) const
 {
 	fl_AnnotationLayout * pAL = getAnnotationLayout(iAnnotation);
 	if(!pAL)
@@ -12550,7 +12556,7 @@ bool FV_View::getAnnotationAuthor(UT_uint32 iAnnotation, UT_UTF8String & sAuthor
 	sAuthor = pAL->getAuthor();
 	return true;
 }
-bool FV_View::setAnnotationAuthor(UT_uint32 iAnnotation, UT_UTF8String & sAuthor)
+bool FV_View::setAnnotationAuthor(UT_uint32 iAnnotation, const std::string  & sAuthor)
 {
 	fl_AnnotationLayout * pAL = getAnnotationLayout(iAnnotation);
 	if(!pAL)
@@ -12559,7 +12565,7 @@ bool FV_View::setAnnotationAuthor(UT_uint32 iAnnotation, UT_UTF8String & sAuthor
 	PT_DocPosition posAnn = m_pDoc->getStruxPosition(sdhAnn);
 	const char * pszAnn[3] = {NULL,NULL,NULL};
 	pszAnn[0] = "annotation-author";
-	pszAnn[1] = sAuthor.utf8_str();
+	pszAnn[1] = sAuthor.c_str();
 	m_pDoc->changeStruxFmt(PTC_AddFmt,posAnn,posAnn,NULL,pszAnn,PTX_SectionAnnotation);
 	return true;
 }
@@ -12572,9 +12578,9 @@ bool FV_View::setAnnotationAuthor(UT_uint32 iAnnotation, UT_UTF8String & sAuthor
  * an annotation.
  */
 bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
-							   UT_UTF8String * sDescr,
-							   UT_UTF8String * sAuthor,
-							   UT_UTF8String * sTitle,
+							   const std::string & sDescr,
+							   const std::string & sAuthor,
+							   const std::string & sTitle,
 							   bool bCopy)
 {
 	// can only apply an Annotation to an FL_SECTION_DOC or a Table
@@ -12692,9 +12698,9 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 	}
 	const gchar * pAttr[4];
 	pAttr[0] = PT_ANNOTATION_NUMBER;
-	UT_UTF8String sNum;
-	UT_UTF8String_sprintf(sNum,"%d",iAnnotation);
-	pAttr[1] = sNum.utf8_str();
+	std::string sNum;
+	sNum = UT_std_string_sprintf("%d",iAnnotation);
+	pAttr[1] = sNum.c_str();
 	pAttr[2] = 0;
 	pAttr[3] = 0;
 	//
@@ -12731,20 +12737,20 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 	PT_DocPosition posAnnotation = posStart+1;
 	const gchar* ann_attrs[4];
 	ann_attrs[0] = "annotation-id";
-	ann_attrs[1] = sNum.utf8_str();
+	ann_attrs[1] = sNum.c_str();
 	ann_attrs[2] = 0;
 	ann_attrs[3] = 0;
 	const char * pszAnn[7] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL};
 	pszAnn[0] = "annotation-author";
-	pszAnn[1] = sAuthor->utf8_str();
+	pszAnn[1] = sAuthor.c_str();
 	pszAnn[2] = "annotation-title";
-	pszAnn[3] = sTitle->utf8_str();
+	pszAnn[3] = sTitle.c_str();
 	pszAnn[4] = "annotation-date";
 	GDate gDate;
 	g_date_set_time_t (&gDate, time (NULL));
-	UT_UTF8String sDate;
-	sDate = UT_UTF8String_sprintf("%d-%d-%d",gDate.month,gDate.day,gDate.year);
-	pszAnn[5] = sDate.utf8_str();
+	std::string sDate;
+	sDate = UT_std_string_sprintf("%d-%d-%d",gDate.month,gDate.day,gDate.year);
+	pszAnn[5] = sDate.c_str();
 	const gchar* block_atts[] = {PT_STYLE_ATTRIBUTE_NAME,
 				  "Normal",
 				  NULL,
@@ -12769,17 +12775,17 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 	}
 	else
 	{
-		UT_UTF8String sTmp;
-		if(sDescr == NULL)	
+		std::string sTmp;
+		if(sDescr.empty())	
 		{
 			sTmp = "Annotation";
 		}
 		else
 		{
-			sTmp = *sDescr;
+			sTmp = sDescr;
 		}
 	
-		UT_UCS4String sUCS4(sTmp.utf8_str());
+		UT_UCS4String sUCS4(sTmp);
 		bRet = m_pDoc->insertSpan(posAnnotation+2, sUCS4.ucs4_str(),sUCS4.length(),NULL);
 
 	}

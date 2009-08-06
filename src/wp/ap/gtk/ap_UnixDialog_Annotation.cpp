@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 2002 Dom Lachowicz
  * 
@@ -162,9 +163,9 @@ GtkWidget * AP_UnixDialog_Annotation::_constructWindow ()
 	m_textDescription = GTK_WIDGET(gtk_builder_get_object(builder, "tvDescription"));
 	
 	// set the dialog title
-	UT_UTF8String s;
+	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Annotation_Title,s);
-	abiDialogSetTitle(window, s.utf8_str());	
+	abiDialogSetTitle(window, s.c_str());	
 	
 	// localize the strings in our dialog, and set some userdata for some widgets
 	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbTitle")), pSS, AP_STRING_ID_DLG_Annotation_Title_LBL);
@@ -172,23 +173,23 @@ GtkWidget * AP_UnixDialog_Annotation::_constructWindow ()
 	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbDescription")), pSS, AP_STRING_ID_DLG_Annotation_Description_LBL);
 	
 	// now set the text in all the fields
-	UT_UTF8String prop ( "" ) ;
+	std::string prop;
 	
 	#define SET_ENTRY_TXT(name) \
-	prop = get##name ().utf8_str() ; \
-	if ( prop.size () > 0 ) { \
-		gtk_entry_set_text (GTK_ENTRY(m_entry##name), prop.utf8_str() ) ; \
+	prop = get##name () ;                      \
+	if ( !prop.empty() ) {                          \
+		gtk_entry_set_text (GTK_ENTRY(m_entry##name), prop.c_str() ) ; \
 	}
 	
 	GtkWidget * wReplace = GTK_WIDGET(gtk_builder_get_object(builder, "btReplace"));
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Annotation_Replace_LBL,s);
-	gtk_button_set_label(GTK_BUTTON(wReplace),s.utf8_str()); 
+	gtk_button_set_label(GTK_BUTTON(wReplace),s.c_str()); 
 #if GTK_CHECK_VERSION(2,12,0)
 	GtkWidget * wOK = GTK_WIDGET(gtk_builder_get_object(builder, "btOK"));
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Annotation_OK_tooltip,s);
-	gtk_widget_set_tooltip_text (wOK,s.utf8_str());
+	gtk_widget_set_tooltip_text (wOK,s.c_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Annotation_Replace_tooltip,s);
-	gtk_widget_set_tooltip_text (wReplace,s.utf8_str());
+	gtk_widget_set_tooltip_text (wReplace,s.c_str());
 #endif
 
 
@@ -197,11 +198,11 @@ GtkWidget * AP_UnixDialog_Annotation::_constructWindow ()
 	
 	#undef SET_ENTRY_TXT
 	
-	prop = getDescription ().utf8_str() ;
-	if ( prop.size () )
+	prop = getDescription ();
+	if ( !prop.empty() )
 	{
 		GtkTextBuffer * buffer = gtk_text_view_get_buffer ( GTK_TEXT_VIEW(m_textDescription) ) ;
-		gtk_text_buffer_set_text ( buffer, prop.utf8_str(), -1 ) ;
+		gtk_text_buffer_set_text ( buffer, prop.c_str(), -1 ) ;
 	}	
 
 	g_object_unref(G_OBJECT(builder));

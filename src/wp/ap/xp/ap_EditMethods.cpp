@@ -1,5 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2001 Tomas Frydrych
@@ -45,6 +44,7 @@
 #include "ut_locale.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_bytebuf.h"
 #include "ut_Language.h"
 #include "ev_EditMethod.h"
@@ -10622,20 +10622,10 @@ Defun1(insFootnote)
 	return pView->insertFootnote(true);
 }
 
-Defun1(insAnnotation)
+
+static 
+void insertAnnotation(FV_View * pView, bool bReplace)
 {
-	CHECK_FRAME;
-	ABIWORD_VIEW;
-	UT_return_val_if_fail(pView, false);
-	
-	// API is:
-	// Annotation Number,
-	// UT_UTF8String pointer containing text to be inserted
-	// Boolean to determine whether to place the current selection into an annotation.
-	//
-	
-	UT_DEBUGMSG(("insAnnotation: inserting\n"));
-	
 	//
 	// First create the annotation => then open an edit dialog
 	//
@@ -10643,25 +10633,35 @@ Defun1(insAnnotation)
 	UT_sint32 iAnnotation = pView->getDocument()->getUID(UT_UniqueId::Annotation);
 	
 	// Default values
-	UT_UTF8String pTitle("New annotation"); // TODO auto enumerate (ex. "New annotation (3)")
-	UT_UTF8String pAuthor("empty"); // TODO should be empty but FV_View::insertAnnotation needs to be fixed
-	UT_UTF8String pDescr("empty"); // TODO should be empty but FV_View::insertAnnotation needs to be fixed
+	std::string sTitle;
+	sTitle = UT_std_string_sprintf("Annotation %d ",iAnnotation);
+	std::string sAuthor("empty"); 
+	std::string sDescr("empty"); 
 	
 	pView->insertAnnotation(iAnnotation,
-							&pDescr,
-							&pAuthor,
-							&pTitle,
-							false); // TODO this line is the only difference with insAnnotationFromSel below, code should me merged
+							sDescr,
+							sAuthor,
+							sTitle,
+							bReplace);
 	
 	// Open edit annotation dialog
 	pView->cmdEditAnnotationWithDialog(iAnnotation);
 	
 	// TODO: set the document as dirty when something changed
+}
+
+Defun1(insAnnotation)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	
+	UT_DEBUGMSG(("insAnnotation: inserting\n"));
+	insertAnnotation(pView, false);
 	return true;
 }
 
-// RIVERA
+
 Defun1(insAnnotationFromSel)
 {
 	CHECK_FRAME;
@@ -10669,30 +10669,7 @@ Defun1(insAnnotationFromSel)
 	UT_return_val_if_fail(pView, false);
 	
 	UT_DEBUGMSG(("insAnnotationFromSel: inserting\n"));
-	
-	//
-	// First create the annotation => then open an edit dialog
-	//
-	
-	UT_sint32 iAnnotation = pView->getDocument()->getUID(UT_UniqueId::Annotation);
-	
-	// Default values
-	UT_UTF8String sTitle;
-	sTitle = UT_UTF8String_sprintf("Annotation %d ",iAnnotation);
-	UT_UTF8String sAuthor("empty"); 
-	UT_UTF8String sDescr("empty"); 
-	
-	pView->insertAnnotation(iAnnotation,
-							&sDescr,
-							&sAuthor,
-							&sTitle,
-							true);
-	
-	// Open edit annotation dialog
-	pView->cmdEditAnnotationWithDialog(iAnnotation);
-	
-	// TODO: set the document as dirty when something changed
-		
+	insertAnnotation(pView, true);
 	return true;
 }
 
@@ -13869,9 +13846,9 @@ Defun(hyperlinkStatusBar)
 		pView->killAnnotationPreview();
 	}
 	
-	UT_UTF8String sText("");
-	UT_UTF8String sTitle("");
-	UT_UTF8String sAuthor("");
+	std::string sText;
+	std::string sTitle;
+	std::string sAuthor;
 	bool b = pView->getAnnotationText(pAnn->getPID(),sText);
 	if(!b)
 		return false;
@@ -13899,18 +13876,18 @@ Defun(hyperlinkStatusBar)
 	if(!pAnnPview)
 		return false;
 		
-	UT_DEBUGMSG(("hyperlinkStatusBar: Previewing annotation text %s \n",sText.utf8_str()));
+	UT_DEBUGMSG(("hyperlinkStatusBar: Previewing annotation text %s \n",sText.c_str()));
 	
 	// flags
 	pView->setAnnotationPreviewActive(true);
 	pView->setActivePreviewAnnotationID(pAnn->getPID()); // this one is also needed to decide when to redraw the preview
 	
 	// Fields
-	pAnnPview->setDescription(sText.utf8_str());
+	pAnnPview->setDescription(sText);
 	
 	// Optional fields
-	pAnnPview->setTitle(sTitle.utf8_str());	// if those fields ar to be hidden it should be at the GUI level (inside AP_Preview_Annotation)
-	pAnnPview->setAuthor(sAuthor.utf8_str());
+	pAnnPview->setTitle(sTitle);	// if those fields ar to be hidden it should be at the GUI level (inside AP_Preview_Annotation)
+	pAnnPview->setAuthor(sAuthor);
 	
 	pAnnPview->setXY(pG->tdu(xpos),pG->tdu(ypos));
 	pAnnPview->runModeless(pFrame);

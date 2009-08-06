@@ -567,28 +567,29 @@ public:
 	// Stuff for Annotaions
 	//	
 	bool				insertAnnotation(UT_sint32 iAnnotation,
-										 UT_UTF8String * sDescr,
-										 UT_UTF8String * sAuthor,
-										 UT_UTF8String * sTitle,
+										 const std::string & sDescr,
+										 const std::string & sAuthor,
+										 const std::string & sTitle,
 										 bool bReplace);
-	bool                getAnnotationText(UT_uint32 iAnnotation, UT_UTF8String & sText);
-	bool                setAnnotationText(UT_uint32 iAnnotation, UT_UTF8String & sText);
-	bool                setAnnotationText(UT_uint32 iAnnotation, UT_UTF8String & sText,UT_UTF8String & sAuthor, UT_UTF8String & sTitle);
-	bool                getAnnotationRichText(UT_uint32 iAnnotation, UT_UTF8String & sRTF);
-    bool                setAnnotationRichText(UT_uint32 iAnnotation, UT_UTF8String &sRTF);
+	bool                getAnnotationText(UT_uint32 iAnnotation, std::string & sText) const;
+	bool                setAnnotationText(UT_uint32 iAnnotation, const std::string & sText);
+	bool                setAnnotationText(UT_uint32 iAnnotation, const std::string & sText,
+                                          const std::string & sAuthor, const std::string & sTitle);
+	bool                getAnnotationRichText(UT_uint32 iAnnotation, std::string & sRTF) const;
+    bool                setAnnotationRichText(UT_uint32 iAnnotation, const std::string & sRTF);
 	// TODO getters and setters to implement/change/add as judged necessary
-	bool                getAnnotationTitle(UT_uint32 iAnnotation, UT_UTF8String & sTitle);
-	bool                setAnnotationTitle(UT_uint32 iAnnotation, UT_UTF8String & sTitle);
-	bool                getAnnotationAuthor(UT_uint32 iAnnotation, UT_UTF8String & sAuthor);
-	bool                setAnnotationAuthor(UT_uint32 iAnnotation, UT_UTF8String & sAuthor);
+	bool                getAnnotationTitle(UT_uint32 iAnnotation, std::string & sTitle) const;
+	bool                setAnnotationTitle(UT_uint32 iAnnotation, const std::string & sTitle);
+	bool                getAnnotationAuthor(UT_uint32 iAnnotation, std::string & sAuthor) const;
+	bool                setAnnotationAuthor(UT_uint32 iAnnotation, const std::string & sAuthor);
 
-	bool                isAnnotationPreviewActive(void) { return m_bAnnotationPreviewActive;}
+	bool                isAnnotationPreviewActive(void) const { return m_bAnnotationPreviewActive;}
 	void                setAnnotationPreviewActive(bool b) { m_bAnnotationPreviewActive = b;}
-	UT_uint32			getActivePreviewAnnotationID() { return m_iAnnPviewID;}
+	UT_uint32			getActivePreviewAnnotationID() const { return m_iAnnPviewID;}
 	void				setActivePreviewAnnotationID(UT_uint32 iID) { m_iAnnPviewID = iID;}
 	void				killAnnotationPreview();
 	bool				cmdEditAnnotationWithDialog(UT_uint32 aID);
-	fl_AnnotationLayout * getAnnotationLayout(UT_uint32 iAnnotation);
+	fl_AnnotationLayout * getAnnotationLayout(UT_uint32 iAnnotation) const;
 	bool                selectAnnotation(fl_AnnotationLayout * pAL);
 // ----------------------
 
