@@ -55,18 +55,20 @@ public:
 	  {
 	    return m_answer ;
 	  }
+
+	// Obj-C Class on Mac needs to access that.
+	void setAnswer ( AP_Dialog_Annotation::tAnswer a )
+	  {
+	    m_answer = a ;
+	  }
 	
 	DCL_PROP(Title)
 	DCL_PROP(Author)
 	DCL_PROP(Description)
 
+
  protected:
 	
-	void setAnswer ( AP_Dialog_Annotation::tAnswer a )
-	  {
-	    m_answer = a ;
-	  }
-
  private:
 
 	AP_Dialog_Annotation::tAnswer		m_answer;

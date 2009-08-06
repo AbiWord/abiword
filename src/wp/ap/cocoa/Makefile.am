@@ -29,7 +29,9 @@ AM_CPPFLAGS = \
 #	-DSYSCONFDIR=\""$(sysconfdir)"\" 			\
 #	-DABIWORD_PLUGINSDIR="\"$(ABIWORD_PLUGINSDIR)"\"
 
-nobase_resources_DATA = ap_CocoaDialog_Background.nib/*.nib\
+nobase_resources_DATA = \
+	ap_CocoaDialog_Annotation.nib/*.nib \
+	ap_CocoaDialog_Background.nib/*.nib\
 	ap_CocoaDialog_Break.nib/*.nib\
 	ap_CocoaDialog_Columns.nib/*.nib\
 	ap_CocoaDialog_Field.nib/*.nib\
@@ -74,6 +76,8 @@ libcocoa_la_SOURCES = \
 	ap_CocoaClipboard.h \
 	ap_CocoaClipboard.cpp \
 	ap_CocoaDialog_All.h \
+	ap_CocoaDialog_Annotation.h \
+	ap_CocoaDialog_Annotation.cpp \
 	ap_CocoaDialog_Background.h \
 	ap_CocoaDialog_Background.cpp \
 	ap_CocoaDialog_Break.h \

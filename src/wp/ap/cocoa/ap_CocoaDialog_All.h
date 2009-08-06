@@ -87,6 +87,7 @@
 #	include "ap_CocoaDialog_Stylist.h"
 #	include "ap_CocoaDialog_MailMerge.h"
 #	include "ap_CocoaDialog_Latex.h"
+#   include "ap_CocoaDialog_Annotation.h"
 #if 0
 #	include "ap_CocoaDialog_Download_File.h"
 #endif
@@ -152,6 +153,7 @@
 	DeclareDialog(AP_DIALOG_ID_METADATA,		AP_CocoaDialog_MetaData)
  	DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,	AP_CocoaDialog_MarkRevisions)
 	DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,	AP_CocoaDialog_ListRevisions)
+	DeclareDialog(AP_DIALOG_ID_ANNOTATION,  AP_CocoaDialog_Annotation)
 	DeclareDialog(AP_DIALOG_ID_INSERT_TABLE,		AP_CocoaDialog_InsertTable)
 	DeclareDialog(AP_DIALOG_ID_MERGE_CELLS,		AP_CocoaDialog_MergeCells)
 	DeclareDialog(AP_DIALOG_ID_SPLIT_CELLS,		AP_CocoaDialog_SplitCells)
