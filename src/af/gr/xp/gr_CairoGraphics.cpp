@@ -3061,19 +3061,19 @@ void GR_CairoGraphics::paintDeque()
 		
 		setActiveBuffer(m_mainBufferPointer);
 		cairo_surface_t* tempSurface = cairo_get_group_target(tempPair.first);
-		cairo_set_source_surface(m_cr, tempSurface, 0, 0);
 		UT_Rect tempRect = tempPair.second;
+		cairo_set_source_surface(m_cr, tempSurface, 0, 0); 		
 
 		UT_DEBUGMSG(("Drawing buffer, x:%d, y:%d, w:%d, h:%d\n", tdu(tempRect.left), tdu(tempRect.top), tdu(tempRect.width), tdu(tempRect.height)));
-		cairo_rectangle(m_cr, tdu(tempRect.left), tdu(tempRect.top), tdu(tempRect.width), tdu(tempRect.height));
-		cairo_fill(m_cr);
-		//cairo_paint(m_cr);
+		//cairo_rectangle(m_cr, tdu(tempRect.left), tdu(tempRect.top), tdu(tempRect.width), tdu(tempRect.height)); //This gives an overlapping rectangle on the next page.
+		//cairo_fill(m_cr);
+		cairo_paint(m_cr);
 		
 		m_bufferContainer.pop_back();
 		//delete[] tempPair.second;
 	}
 	cairo_pop_group_to_source(m_cr);
-	cairo_fill(m_cr);
+	cairo_paint(m_cr);
 	UT_DEBUGMSG(("---------------------------->8-------\n"));
 	return;
 }

@@ -1546,9 +1546,9 @@ void GR_Graphics::beginBuffering(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_u
 	//extends for the argument
 	UT_Rect rect1;
 	rect1.left = x;
-	rect1.width = x + width - 1;
+	rect1.width = width - 1;
 	rect1.top = y;
-	rect1.height = y + width -1;
+	rect1.height = height - 1;
 	
 	saveMainContext();
 	
@@ -1569,10 +1569,10 @@ void GR_Graphics::beginBuffering(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_u
 			suitableBufferFound = true;
 		}
 		 //If the extends overlap
-		 else if ((rect1.width > rect2.left && rect1.top < rect2.height) ||
-				  (rect1.left < rect2.width && rect1.top < rect2.height) ||
-				  (rect1.width > rect2.left && rect1.height > rect2.top) ||
-				  (rect1.left < rect2.width && rect1.height > rect2.top))
+		 else if (((rect1.left + rect1.width) > rect2.left) &&
+					(rect1.left < (rect2.left + rect2.width)) &&
+					((rect1.top + rect1.height) > rect2.top) &&
+					(rect1.top < (rect2.top + rect2.height)))		 
 		{
 			createOffscreenBuffer(x, y, width, height);
 			suitableBufferFound = true;
