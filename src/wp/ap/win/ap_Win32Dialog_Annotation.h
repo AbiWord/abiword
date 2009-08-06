@@ -20,6 +20,8 @@
 #ifndef AP_WIN32DIALOG_ANNOTATION_H
 #define AP_WIN32DIALOG_ANNOTATION_H
 
+#include <string>
+
 #include "xap_Dialog.h"
 #include "ap_Dialog_Annotation.h"
 
@@ -39,8 +41,8 @@ protected:
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	
 private:	
-	void		 			_get_text(int nID, UT_UTF8String &text);
-	void 					_set_text(int nID, UT_UTF8String text);
+	void		 			_get_text(int nID, std::string &text);
+	void 					_set_text(int nID, const std::string & text);
 	
 	HWND					m_hwndDlg;	//  dialog box Windows	
 

@@ -134,7 +134,7 @@ BOOL AP_Win32Dialog_Annotation::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lP
 
 		case IDOK:
 		{
-			UT_UTF8String text;
+			std::string text;
 
 			_get_text(AP_RID_DIALOG_ANNOTATION_EDIT_TITLE, text);
 			setTitle(text);
@@ -156,7 +156,7 @@ BOOL AP_Win32Dialog_Annotation::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lP
 	}
 }
 
-void AP_Win32Dialog_Annotation::_get_text(int nID, UT_UTF8String &text)
+void AP_Win32Dialog_Annotation::_get_text(int nID, std::string &text)
 {
 	char szBuff[2048];
 
@@ -164,7 +164,7 @@ void AP_Win32Dialog_Annotation::_get_text(int nID, UT_UTF8String &text)
 	text = AP_Win32App::s_fromWinLocaleToUTF8(szBuff);
 }
 
-void AP_Win32Dialog_Annotation::_set_text(int nID, UT_UTF8String text)
+void AP_Win32Dialog_Annotation::_set_text(int nID, const std::string & text)
 {
 	UT_String str = AP_Win32App::s_fromUTF8ToWinLocale(text.utf8_str());
 	SetDlgItemText (m_hwndDlg, nID, str.c_str());
