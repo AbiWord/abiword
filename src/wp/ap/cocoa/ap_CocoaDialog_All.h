@@ -88,6 +88,7 @@
 #	include "ap_CocoaDialog_MailMerge.h"
 #	include "ap_CocoaDialog_Latex.h"
 #   include "ap_CocoaDialog_Annotation.h"
+#   include "ap_CocoaPreview_Annotation.h"
 #if 0
 #	include "ap_CocoaDialog_Download_File.h"
 #endif
@@ -164,6 +165,7 @@
 	DeclareDialog(AP_DIALOG_ID_STYLIST,		AP_CocoaDialog_Stylist)
 	DeclareDialog(AP_DIALOG_ID_MAILMERGE,		AP_CocoaDialog_MailMerge)
 	DeclareDialog(AP_DIALOG_ID_LATEX,		AP_CocoaDialog_Latex)
+	DeclareDialog(AP_DIALOG_ID_ANNOTATION_PREVIEW,	AP_CocoaPreview_Annotation)
 #if 0
 	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_CocoaDialog_Download_File)
 #endif

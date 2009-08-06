@@ -157,6 +157,8 @@ libcocoa_la_SOURCES = \
 	ap_CocoaPlugin.cpp \
 	ap_CocoaPrefs.h \
 	ap_CocoaPrefs.cpp \
+	ap_CocoaPreview_Annotation.h \
+	ap_CocoaPreview_Annotation.cpp \
 	ap_Cocoa_ResourceIDs.h \
 	ap_Cocoa_ResourceIDs.cpp \
 	ap_CocoaStatusBar.h \
