@@ -860,6 +860,21 @@ acs::SOAP_ERROR ServiceAccountHandler::_openDocumentSlave(ConnectionPtr connecti
 	return acs::SOAP_ERROR_OK;
 }
 
+static void s_copy_int_array(soa::ArrayPtr array_ptr, std::vector<UT_uint64>& result)
+{
+	if (!array_ptr)
+		return;
+
+	for (UT_uint32 i = 0; i < array_ptr->size(); i++)
+	{
+		soa::GenericPtr v = array_ptr->operator[](i);
+		UT_continue_if_fail(v);
+		soa::IntPtr vi = v->as<soa::Int>();
+		UT_continue_if_fail(vi);
+		result.push_back(vi->value());
+	}
+}
+
 bool ServiceAccountHandler::_getPermissions(uint64_t doc_id,
 			std::vector<UT_uint64>& rw, std::vector<UT_uint64>& ro,
 			std::vector<UT_uint64>& grw, std::vector<UT_uint64>& gro)
@@ -915,7 +930,11 @@ bool ServiceAccountHandler::_getPermissions(uint64_t doc_id,
 	soa::CollectionPtr rcp = soap_result->as<soa::Collection>("return");
 	UT_return_val_if_fail(rcp, false);
 
-	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+	s_copy_int_array(rcp->get< soa::Array<soa::GenericPtr> >("read_write"), rw);
+	s_copy_int_array(rcp->get< soa::Array<soa::GenericPtr> >("read_only"), ro);
+	s_copy_int_array(rcp->get< soa::Array<soa::GenericPtr> >("group_read_write"), grw);
+	s_copy_int_array(rcp->get< soa::Array<soa::GenericPtr> >("group_read_write"), gro);
+
 	return true;
 }
 
