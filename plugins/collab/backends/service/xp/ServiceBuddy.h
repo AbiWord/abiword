@@ -35,6 +35,8 @@
 class ServiceBuddy : public Buddy
 {
 public:
+	// TODO: we should replace email with the user id; we often don't even
+	// shove in an email address anyway
 	ServiceBuddy(AccountHandler* handler, const std::string& email, const std::string& domain)
 		: Buddy(handler),
 		m_email(email),

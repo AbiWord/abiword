@@ -274,10 +274,8 @@ ConnectionPtr ServiceAccountHandler::getConnection(PD_Document* pDoc)
 void ServiceAccountHandler::getBuddiesAsync()
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::getBuddiesAsync()\n"));
-
-	// FIXME: this is a hack, and won't show any buddies that have no shared documents;
-	// we need an additional SOAP call to fetch the full buddy list
-	getSessionsAsync();
+	bool b = _getConnections(); // FIXME: we should probably make this async
+	UT_return_if_fail(b);
 }
 
 BuddyPtr ServiceAccountHandler::constructBuddy(const PropertyMap& /*props*/)
@@ -860,6 +858,94 @@ acs::SOAP_ERROR ServiceAccountHandler::_openDocumentSlave(ConnectionPtr connecti
 	return acs::SOAP_ERROR_OK;
 }
 
+bool ServiceAccountHandler::_getConnections()
+{
+	UT_DEBUGMSG(("ServiceAccountHandler::_getConnections()\n"));
+
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, false);
+
+	const std::string uri = getProperty("uri");
+	const std::string email = getProperty("email");
+	std::string password = getProperty("password");
+	bool verify_webapp_host = (getProperty("verify-webapp-host") == "true");
+
+	soa::GenericPtr soap_result;
+	bool unhandled_error = false;
+	do
+	{
+		soa::function_call fc("getConnections", "getConnectionsResponse");
+		fc("email", email)
+			("password", password);
+		try {
+			soap_result = soup_soa::invoke(uri, 
+								soa::method_invocation("urn:AbiCollabSOAP", fc),
+								verify_webapp_host?m_ssl_ca_file:"");
+		} catch (soa::SoapFault& fault) {
+			UT_DEBUGMSG(("Caught a soap fault: %s (error code: %s)!\n", 
+						 fault.detail() ? fault.detail()->value().c_str() : "(null)",
+						 fault.string() ? fault.string()->value().c_str() : "(null)"));
+
+			acs::SOAP_ERROR err = acs::error(fault);
+			switch (err)
+			{
+				case acs::SOAP_ERROR_INVALID_PASSWORD:
+					if (!askPassword(email, password))
+						return false;
+					addProperty("password", password);
+					pManager->storeProfile();	
+					continue;
+				default:
+					UT_DEBUGMSG(("Unhandled SOAP error\n"));
+					unhandled_error = true;;
+					break;
+			}
+		}
+	} while (!unhandled_error && !soap_result);
+	UT_return_val_if_fail(soap_result, false);
+
+	// handle the result
+	soa::CollectionPtr rcp = soap_result->as<soa::Collection>("return");
+	UT_return_val_if_fail(rcp, false);
+
+	soa::ArrayPtr friends_ptr = rcp->get< soa::Array<soa::GenericPtr> >("friends");
+	soa::ArrayPtr groups_ptr = rcp->get< soa::Array<soa::GenericPtr> >("groups");
+
+	// construct our friends
+	if (soa::ArrayPtr friends_array = rcp->get< soa::Array<soa::GenericPtr> >("friends"))
+		if (abicollab::FriendArrayPtr friends = friends_array->construct<abicollab::Friend>())
+			for (size_t i = 0; i < friends->size(); i++)
+				if (abicollab::FriendPtr friend_ = friends->operator[](i))
+				{
+					UT_DEBUGMSG(("Got a friend: %s <id: %lld>\n", friend_->name.c_str(), friend_->friend_id));
+					if (friend_->name != "")
+					{
+						ServiceBuddyPtr pBuddy = boost::shared_ptr<ServiceBuddy>(new ServiceBuddy(this, friend_->name, _getDomain()));
+						ServiceBuddyPtr pExistingBuddy = _getBuddy(pBuddy); // TODO: add a getBuddy function based on the email address
+						if (!pExistingBuddy)
+							addBuddy(pBuddy);
+					}				
+				}
+
+	// construct our groups
+	if (soa::ArrayPtr groups_array = rcp->get< soa::Array<soa::GenericPtr> >("groups"))
+		if (abicollab::GroupArrayPtr groups = groups_array->construct<abicollab::Group>())
+			for (size_t i = 0; i < groups->size(); i++)
+				if (abicollab::GroupPtr group_ = groups->operator[](i))
+				{
+					UT_DEBUGMSG(("Got a group: %s <id: %lld>\n", group_->name.c_str(), group_->group_id));
+					if (group_->name != "")
+					{
+						ServiceBuddyPtr pBuddy = boost::shared_ptr<ServiceBuddy>(new ServiceBuddy(this, group_->name, _getDomain()));
+						ServiceBuddyPtr pExistingBuddy = _getBuddy(pBuddy); // TODO: add a getBuddy function based on the email address
+						if (!pExistingBuddy)
+							addBuddy(pBuddy);
+					}				
+				}
+
+	return true;
+}
+
 static void s_copy_int_array(soa::ArrayPtr array_ptr, std::vector<UT_uint64>& result)
 {
 	if (!array_ptr)
@@ -1097,9 +1183,9 @@ acs::SOAP_ERROR ServiceAccountHandler::_listDocuments(
 
 	// load the files from our friends
 	if (soa::ArrayPtr friends_array = rcp->get< soa::Array<soa::GenericPtr> >("friends"))
-		if (abicollab::FriendArrayPtr friends = friends_array->construct<abicollab::Friend>())
+		if (abicollab::FriendFilesArrayPtr friends = friends_array->construct<abicollab::FriendFiles>())
 			for (size_t i = 0; i < friends->size(); i++)
-				if (abicollab::FriendPtr friend_ = friends->operator[](i))
+				if (abicollab::FriendFilesPtr friend_ = friends->operator[](i))
 				{
 					UT_DEBUGMSG(("Got a friend: %s <%s>\n", friend_->name.c_str(), friend_->email.c_str()));
 					if (friend_->email != "")
@@ -1114,9 +1200,9 @@ acs::SOAP_ERROR ServiceAccountHandler::_listDocuments(
 	
 	// load the files from our groups
 	if (soa::ArrayPtr groups_array = rcp->get< soa::Array<soa::GenericPtr> >("groups"))
-		if (abicollab::GroupArrayPtr groups = groups_array->construct<abicollab::Group>())
+		if (abicollab::GroupFilesArrayPtr groups = groups_array->construct<abicollab::GroupFiles>())
 			for (size_t i = 0; i < groups->size(); i++)
-				if (abicollab::GroupPtr group_ = groups->operator[](i))
+				if (abicollab::GroupFilesPtr group_ = groups->operator[](i))
 				{
 					UT_DEBUGMSG(("Got a group: %s\n", group_->name.c_str()));
 					if (group_->name != "")

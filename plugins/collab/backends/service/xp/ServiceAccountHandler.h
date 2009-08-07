@@ -157,6 +157,7 @@ private:
 													const std::string& session_id, const std::string& filename);
 	acs::SOAP_ERROR							_openDocumentSlave(ConnectionPtr connection, PD_Document** pDoc, XAP_Frame* pFrame, 
 													const std::string& filename);
+	bool									_getConnections();
 	bool									_getPermissions(uint64_t doc_id,
 													std::vector<UT_uint64>& rw, std::vector<UT_uint64>& ro,
 													std::vector<UT_uint64>& grw, std::vector<UT_uint64>& gro);
