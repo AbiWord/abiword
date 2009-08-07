@@ -57,6 +57,9 @@ public:
 	virtual UT_UTF8String getDescription() const
 		{ return m_name.c_str(); }
 	
+	uint64_t getUserId() const
+		{ return m_user_id; }
+	
 	const std::string& getName() const
 		{ return m_name; }
 	

@@ -367,8 +367,9 @@ bool ServiceAccountHandler::canShare(BuddyPtr pBuddy)
 	UT_return_val_if_fail(pServiceBuddy, false)
 
 	const std::string email = getProperty("email");
-	if (pServiceBuddy->getEmail() == email)
-		return false; // sharing with yourself makes no sense
+//	if (pServiceBuddy->getEmail() == email)
+//		return false; // sharing with yourself makes no sense
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 
 	return true;
 }
@@ -441,7 +442,7 @@ void ServiceAccountHandler::getSessionsAsync()
 	bool verify_webapp_host = (getProperty("verify-webapp-host") == "true");
 
 	pManager->beginAsyncOperation(this);
-	BuddySessionsPtr sessions_ptr(new std::map<std::string, GetSessionsResponseEvent>());
+	BuddySessionsPtr sessions_ptr(new std::map<ServiceBuddyPtr, GetSessionsResponseEvent>());
 	boost::shared_ptr<AsyncWorker<acs::SOAP_ERROR> > async_list_docs_ptr(
 				new AsyncWorker<acs::SOAP_ERROR>(
 					boost::bind(&ServiceAccountHandler::_listDocuments, this, 
@@ -464,7 +465,7 @@ void ServiceAccountHandler::getSessionsAsync(const Buddy& /*buddy*/)
 	// TODO: we shouldn't ignore the buddy parameter, but for now, we do ;)
 
 	pManager->beginAsyncOperation(this);
-	BuddySessionsPtr sessions_ptr(new std::map<std::string, GetSessionsResponseEvent>());
+	BuddySessionsPtr sessions_ptr(new std::map<ServiceBuddyPtr, GetSessionsResponseEvent>());
 	boost::shared_ptr<AsyncWorker<acs::SOAP_ERROR> > async_list_docs_ptr(
 				new AsyncWorker<acs::SOAP_ERROR>(
 					boost::bind(&ServiceAccountHandler::_listDocuments, this, 
@@ -779,7 +780,7 @@ ServiceBuddyPtr ServiceAccountHandler::_getBuddy(ServiceBuddyPtr pBuddy)
 	{
 		ServiceBuddyPtr pB = boost::static_pointer_cast<ServiceBuddy>(*it);
 		UT_continue_if_fail(pB);
-		if (pB->getEmail() == pBuddy->getEmail())
+		if (pB->getUserId() == pBuddy->getUserId())
 			return pB;
 	}
 	return ServiceBuddyPtr();
@@ -1178,7 +1179,11 @@ acs::SOAP_ERROR ServiceAccountHandler::_listDocuments(
 	UT_return_val_if_fail(rcp, acs::SOAP_ERROR_GENERIC);
 	
 	// load our own files
-	GetSessionsResponseEvent& gsre1 = (*sessions_ptr)[email];
+	soa::IntPtr user_id = rcp->get< soa::Int >("user_id");
+	soa::StringPtr username = rcp->get< soa::String >("name");
+	UT_return_val_if_fail(user_id && username, acs::SOAP_ERROR_GENERIC);
+	ServiceBuddyPtr pBuddy(new ServiceBuddy(this, user_id->value(), username->value(), _getDomain()));
+	GetSessionsResponseEvent& gsre1 = (*sessions_ptr)[pBuddy];
 	_parseSessionFiles(rcp->get< soa::Array<soa::GenericPtr> >("files"), gsre1);
 
 	// load the files from our friends
@@ -1188,12 +1193,12 @@ acs::SOAP_ERROR ServiceAccountHandler::_listDocuments(
 				if (abicollab::FriendFilesPtr friend_ = friends->operator[](i))
 				{
 					UT_DEBUGMSG(("Got a friend: %s <%s>\n", friend_->name.c_str(), friend_->email.c_str()));
-					if (friend_->email != "")
+					if (friend_->name != "")
 					{
 						// add this friend's documents by generating a GetSessionsResponseEvent
 						// to populate all the required document structures
-
-						GetSessionsResponseEvent& gsre = (*sessions_ptr)[friend_->email];
+						ServiceBuddyPtr friend_ptr(new ServiceBuddy(this, friend_->friend_id, friend_->name, _getDomain()));
+						GetSessionsResponseEvent& gsre = (*sessions_ptr)[friend_ptr];
 						_parseSessionFiles(friend_->files, gsre);
 					}				
 				}
@@ -1209,7 +1214,8 @@ acs::SOAP_ERROR ServiceAccountHandler::_listDocuments(
 					{
 						// add this friend's documents by generating a GetSessionsResponseEvent
 						// to populate all the required document structures
-						GetSessionsResponseEvent& gsre = (*sessions_ptr)[group_->name];
+						ServiceBuddyPtr group_ptr(new ServiceBuddy(this, group_->group_id, group_->name, _getDomain()));
+						GetSessionsResponseEvent& gsre = (*sessions_ptr)[group_ptr];
 						_parseSessionFiles(group_->files, gsre);
 					}				
 				}
@@ -1232,13 +1238,13 @@ void ServiceAccountHandler::_listDocuments_cb(acs::SOAP_ERROR error, BuddySessio
 	{
 		case acs::SOAP_ERROR_OK:
 			{
-				std::map<std::string, GetSessionsResponseEvent>& sessions = *sessions_ptr;
+				std::map<ServiceBuddyPtr, GetSessionsResponseEvent>& sessions = *sessions_ptr;
 				if (sessions.size() == 0)
 					return;
 				
-				for (std::map<std::string, GetSessionsResponseEvent>::iterator it = sessions.begin(); it != sessions.end(); it++)
+				for (std::map<ServiceBuddyPtr, GetSessionsResponseEvent>::iterator it = sessions.begin(); it != sessions.end(); it++)
 				{
-					ServiceBuddyPtr pBuddy(new ServiceBuddy(this, (*it).first, _getDomain()));
+					ServiceBuddyPtr pBuddy = (*it).first;
 					ServiceBuddyPtr pExistingBuddy = _getBuddy(pBuddy); // TODO: add a getBuddy function based on the email address
 					if (!pExistingBuddy)
 					{
@@ -1264,7 +1270,7 @@ void ServiceAccountHandler::_listDocuments_cb(acs::SOAP_ERROR error, BuddySessio
 
 					// re-attempt to fetch the documents list
 					pManager->beginAsyncOperation(this);
-					BuddySessionsPtr new_sessions_ptr(new std::map<std::string, GetSessionsResponseEvent>());
+					BuddySessionsPtr new_sessions_ptr(new std::map<ServiceBuddyPtr, GetSessionsResponseEvent>());
 					boost::shared_ptr<AsyncWorker<acs::SOAP_ERROR> > async_list_docs_ptr(
 								new AsyncWorker<acs::SOAP_ERROR>(
 									boost::bind(&ServiceAccountHandler::_listDocuments, this, 
