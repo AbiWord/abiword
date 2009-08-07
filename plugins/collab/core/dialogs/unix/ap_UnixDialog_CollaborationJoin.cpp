@@ -280,6 +280,11 @@ GtkTreeStore* AP_UnixDialog_CollaborationJoin::_constructModel()
 			BuddyPtr pBuddy = accounts[i]->getBuddies()[j];
 			UT_continue_if_fail(pBuddy);
 
+			const DocTreeItem* docTreeItems = pBuddy->getDocTreeItems();
+			// let's skip buddies that have no document shared
+			if (!docTreeItems)
+				continue;
+
 			gtk_tree_store_append (model, &iter, NULL);
 			gtk_tree_store_set (model, &iter, 
 					DESCRIPTION_COLUMN, pBuddy->getDescription().utf8_str(), 
@@ -292,7 +297,7 @@ GtkTreeStore* AP_UnixDialog_CollaborationJoin::_constructModel()
 					
 			// add all documents for this buddy
 			GtkTreeIter child_iter;
-			for (const DocTreeItem* item = pBuddy->getDocTreeItems(); item; item = item->m_next)
+			for (const DocTreeItem* item = docTreeItems; item; item = item->m_next)
 			{
 				UT_continue_if_fail(item->m_docHandle);
 				UT_DEBUGMSG(("DocHandle document name: %s\n", item->m_docHandle->getName().utf8_str()));
