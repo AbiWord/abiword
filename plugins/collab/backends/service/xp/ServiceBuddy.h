@@ -35,11 +35,10 @@
 class ServiceBuddy : public Buddy
 {
 public:
-	// TODO: we should replace email with the user id; we often don't even
-	// shove in an email address anyway
-	ServiceBuddy(AccountHandler* handler, const std::string& email, const std::string& domain)
+	ServiceBuddy(AccountHandler* handler, uint64_t user_id, const std::string& name, const std::string& domain)
 		: Buddy(handler),
-		m_email(email),
+		m_user_id(user_id),
+		m_name(name),
 		m_domain(domain)
 	{
 		setVolatile(true);
@@ -51,14 +50,15 @@ public:
 		{
 			UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 		}
-		return UT_UTF8String("acn://") + m_email.c_str() + UT_UTF8String("@") + m_domain.c_str();
+		// FIXME: use the user_id
+		return UT_UTF8String("acn://") + m_name.c_str() + UT_UTF8String("@") + m_domain.c_str();
 	}
 	
 	virtual UT_UTF8String getDescription() const
-		{ return m_email.c_str(); }
+		{ return m_name.c_str(); }
 	
-	const std::string& getEmail() const
-		{ return m_email; }
+	const std::string& getName() const
+		{ return m_name; }
 	
 	virtual const DocTreeItem* getDocTreeItems() const
 	{
@@ -83,7 +83,8 @@ public:
 	}
 	
 private:
-	std::string		m_email;
+	uint64_t		m_user_id;
+	std::string		m_name;
 	std::string		m_domain;
 };
 

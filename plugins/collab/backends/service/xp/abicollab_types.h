@@ -116,6 +116,8 @@ public:
 	static boost::shared_ptr<FriendFiles> construct(soa::GenericPtr value) {
 		if (soa::CollectionPtr coll = value->as<soa::Collection>()) {
 			boost::shared_ptr<FriendFiles> friend_(new FriendFiles(coll->name()));
+			if (soa::IntPtr friend_id_ = coll->get<soa::Int>("friend_id"))
+				friend_->friend_id = friend_id_->value();			
 			if (soa::StringPtr name_ = coll->get<soa::String>("name"))
 				friend_->name = name_->value();
 			if (soa::StringPtr email_ = coll->get<soa::String>("email"))
@@ -126,6 +128,7 @@ public:
 		return boost::shared_ptr<FriendFiles>();
 	}
 
+	int64_t friend_id;
 	std::string name;
 	std::string email;
 	soa::ArrayPtr files;
@@ -142,6 +145,8 @@ public:
 	static boost::shared_ptr<GroupFiles> construct(soa::GenericPtr value) {
 		if (soa::CollectionPtr coll = value->as<soa::Collection>()) {
 			boost::shared_ptr<GroupFiles> group_(new GroupFiles(coll->name()));
+			if (soa::IntPtr group_id_ = coll->get<soa::Int>("group_id"))
+				group_->group_id = group_id_->value();			
 			if (soa::StringPtr name_ = coll->get<soa::String>("name"))
 				group_->name = name_->value();
 			group_->files = coll->get< soa::Array<soa::GenericPtr> >("files");
@@ -150,6 +155,7 @@ public:
 		return boost::shared_ptr<GroupFiles>();
 	}
 
+	int64_t group_id;
 	std::string name;
 	soa::ArrayPtr files;
 };

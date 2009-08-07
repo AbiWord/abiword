@@ -920,7 +920,7 @@ bool ServiceAccountHandler::_getConnections()
 					UT_DEBUGMSG(("Got a friend: %s <id: %lld>\n", friend_->name.c_str(), friend_->friend_id));
 					if (friend_->name != "")
 					{
-						ServiceBuddyPtr pBuddy = boost::shared_ptr<ServiceBuddy>(new ServiceBuddy(this, friend_->name, _getDomain()));
+						ServiceBuddyPtr pBuddy = boost::shared_ptr<ServiceBuddy>(new ServiceBuddy(this, friend_->friend_id, friend_->name, _getDomain()));
 						ServiceBuddyPtr pExistingBuddy = _getBuddy(pBuddy); // TODO: add a getBuddy function based on the email address
 						if (!pExistingBuddy)
 							addBuddy(pBuddy);
@@ -936,7 +936,7 @@ bool ServiceAccountHandler::_getConnections()
 					UT_DEBUGMSG(("Got a group: %s <id: %lld>\n", group_->name.c_str(), group_->group_id));
 					if (group_->name != "")
 					{
-						ServiceBuddyPtr pBuddy = boost::shared_ptr<ServiceBuddy>(new ServiceBuddy(this, group_->name, _getDomain()));
+						ServiceBuddyPtr pBuddy = boost::shared_ptr<ServiceBuddy>(new ServiceBuddy(this, group_->group_id, group_->name, _getDomain()));
 						ServiceBuddyPtr pExistingBuddy = _getBuddy(pBuddy); // TODO: add a getBuddy function based on the email address
 						if (!pExistingBuddy)
 							addBuddy(pBuddy);
