@@ -32,11 +32,19 @@
 #include <core/account/xp/Buddy.h>
 #include <core/account/xp/AccountHandler.h>
 
+enum ServiceBuddyType
+{
+	SERVICE_USER = 0,
+	SERVICE_FRIEND,
+	SERVICE_GROUP
+};
+
 class ServiceBuddy : public Buddy
 {
 public:
-	ServiceBuddy(AccountHandler* handler, uint64_t user_id, const std::string& name, const std::string& domain)
+	ServiceBuddy(AccountHandler* handler, ServiceBuddyType type_, uint64_t user_id, const std::string& name, const std::string& domain)
 		: Buddy(handler),
+		m_type(type_),
 		m_user_id(user_id),
 		m_name(name),
 		m_domain(domain)
@@ -56,6 +64,9 @@ public:
 	
 	virtual UT_UTF8String getDescription() const
 		{ return m_name.c_str(); }
+	
+	ServiceBuddyType getType() const
+		{ return m_type; }
 	
 	uint64_t getUserId() const
 		{ return m_user_id; }
@@ -86,9 +97,10 @@ public:
 	}
 	
 private:
-	uint64_t		m_user_id;
-	std::string		m_name;
-	std::string		m_domain;
+	ServiceBuddyType	m_type;
+	uint64_t			m_user_id;
+	std::string			m_name;
+	std::string			m_domain;
 };
 
 typedef boost::shared_ptr<ServiceBuddy> ServiceBuddyPtr;

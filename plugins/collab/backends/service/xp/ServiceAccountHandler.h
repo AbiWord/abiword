@@ -133,6 +133,8 @@ private:
 													UT_uint64 doc_id, const std::string& session_id, bool master);
 
 	ServiceBuddyPtr							_getBuddy(ServiceBuddyPtr pBuddy);
+	ServiceBuddyPtr							_getBuddy(ServiceBuddyType type, uint64_t user_id);
+
 
 	template <class T>
 	void _send(boost::shared_ptr<T> packet, RealmBuddyPtr recipient)

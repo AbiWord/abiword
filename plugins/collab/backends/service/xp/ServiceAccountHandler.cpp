@@ -366,10 +366,8 @@ bool ServiceAccountHandler::canShare(BuddyPtr pBuddy)
 	ServiceBuddyPtr pServiceBuddy = boost::dynamic_pointer_cast<ServiceBuddy>(pBuddy);
 	UT_return_val_if_fail(pServiceBuddy, false)
 
-	const std::string email = getProperty("email");
-//	if (pServiceBuddy->getEmail() == email)
-//		return false; // sharing with yourself makes no sense
-	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+	if (pServiceBuddy->getType() == SERVICE_USER)
+		return false; // sharing with yourself makes no sense
 
 	return true;
 }
@@ -586,8 +584,7 @@ bool ServiceAccountHandler::updateAcl(AbiCollab* pSession, std::vector<std::stri
 	UT_DEBUGMSG(("ServiceAccountHandler::updateAcl()\n"));
 	UT_return_val_if_fail(pSession, false);
 
-	vAcl.clear();
-
+	// fetch the current set of file permissions
 	ConnectionPtr connection = _getConnection(pSession->getSessionId().utf8_str());
 	UT_return_val_if_fail(connection, false);	
 	std::vector<UT_uint64> rw;
@@ -597,7 +594,28 @@ bool ServiceAccountHandler::updateAcl(AbiCollab* pSession, std::vector<std::stri
 	if (!_getPermissions(connection->doc_id(), rw, ro, grw, gro))
 		return false;
 
-	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+	vAcl.clear();
+
+	// Update the complete ACL with the newly fetched permissions.
+	// We only support read/write editting for now, so we will ignore the 
+	// read-only permissions
+
+	// add the friend permissions
+	for (UT_uint32 i = 0; i < rw.size(); i++)  
+	{
+		ServiceBuddyPtr pBuddy = _getBuddy(SERVICE_FRIEND, rw[i]);
+		UT_continue_if_fail(pBuddy);
+		vAcl.push_back(pBuddy->getDescriptor(false).utf8_str());
+	}
+
+	// add the group permissions
+	for (UT_uint32 i = 0; i < grw.size(); i++)  
+	{
+		ServiceBuddyPtr pBuddy = _getBuddy(SERVICE_GROUP, grw[i]);
+		UT_continue_if_fail(pBuddy);
+		vAcl.push_back(pBuddy->getDescriptor(false).utf8_str());
+	}
+
 	return true;
 }
 
@@ -780,7 +798,20 @@ ServiceBuddyPtr ServiceAccountHandler::_getBuddy(ServiceBuddyPtr pBuddy)
 	{
 		ServiceBuddyPtr pB = boost::static_pointer_cast<ServiceBuddy>(*it);
 		UT_continue_if_fail(pB);
-		if (pB->getUserId() == pBuddy->getUserId())
+		if (pB->getUserId() == pBuddy->getUserId() &&
+			pB->getType() == pBuddy->getType())
+			return pB;
+	}
+	return ServiceBuddyPtr();
+}
+
+ServiceBuddyPtr ServiceAccountHandler::_getBuddy(ServiceBuddyType type, uint64_t user_id)
+{
+	for (std::vector<BuddyPtr>::iterator it = getBuddies().begin(); it != getBuddies().end(); it++)
+	{
+		ServiceBuddyPtr pB = boost::static_pointer_cast<ServiceBuddy>(*it);
+		UT_continue_if_fail(pB);
+		if (pB->getUserId() == user_id && pB->getType() == type)
 			return pB;
 	}
 	return ServiceBuddyPtr();
@@ -921,7 +952,7 @@ bool ServiceAccountHandler::_getConnections()
 					UT_DEBUGMSG(("Got a friend: %s <id: %lld>\n", friend_->name.c_str(), friend_->friend_id));
 					if (friend_->name != "")
 					{
-						ServiceBuddyPtr pBuddy = boost::shared_ptr<ServiceBuddy>(new ServiceBuddy(this, friend_->friend_id, friend_->name, _getDomain()));
+						ServiceBuddyPtr pBuddy = boost::shared_ptr<ServiceBuddy>(new ServiceBuddy(this, SERVICE_FRIEND, friend_->friend_id, friend_->name, _getDomain()));
 						ServiceBuddyPtr pExistingBuddy = _getBuddy(pBuddy); // TODO: add a getBuddy function based on the email address
 						if (!pExistingBuddy)
 							addBuddy(pBuddy);
@@ -937,7 +968,7 @@ bool ServiceAccountHandler::_getConnections()
 					UT_DEBUGMSG(("Got a group: %s <id: %lld>\n", group_->name.c_str(), group_->group_id));
 					if (group_->name != "")
 					{
-						ServiceBuddyPtr pBuddy = boost::shared_ptr<ServiceBuddy>(new ServiceBuddy(this, group_->group_id, group_->name, _getDomain()));
+						ServiceBuddyPtr pBuddy = boost::shared_ptr<ServiceBuddy>(new ServiceBuddy(this, SERVICE_GROUP, group_->group_id, group_->name, _getDomain()));
 						ServiceBuddyPtr pExistingBuddy = _getBuddy(pBuddy); // TODO: add a getBuddy function based on the email address
 						if (!pExistingBuddy)
 							addBuddy(pBuddy);
@@ -1182,7 +1213,7 @@ acs::SOAP_ERROR ServiceAccountHandler::_listDocuments(
 	soa::IntPtr user_id = rcp->get< soa::Int >("user_id");
 	soa::StringPtr username = rcp->get< soa::String >("name");
 	UT_return_val_if_fail(user_id && username, acs::SOAP_ERROR_GENERIC);
-	ServiceBuddyPtr pBuddy(new ServiceBuddy(this, user_id->value(), username->value(), _getDomain()));
+	ServiceBuddyPtr pBuddy(new ServiceBuddy(this, SERVICE_USER, user_id->value(), username->value(), _getDomain()));
 	GetSessionsResponseEvent& gsre1 = (*sessions_ptr)[pBuddy];
 	_parseSessionFiles(rcp->get< soa::Array<soa::GenericPtr> >("files"), gsre1);
 
@@ -1197,7 +1228,7 @@ acs::SOAP_ERROR ServiceAccountHandler::_listDocuments(
 					{
 						// add this friend's documents by generating a GetSessionsResponseEvent
 						// to populate all the required document structures
-						ServiceBuddyPtr friend_ptr(new ServiceBuddy(this, friend_->friend_id, friend_->name, _getDomain()));
+						ServiceBuddyPtr friend_ptr(new ServiceBuddy(this, SERVICE_FRIEND, friend_->friend_id, friend_->name, _getDomain()));
 						GetSessionsResponseEvent& gsre = (*sessions_ptr)[friend_ptr];
 						_parseSessionFiles(friend_->files, gsre);
 					}				
@@ -1214,7 +1245,7 @@ acs::SOAP_ERROR ServiceAccountHandler::_listDocuments(
 					{
 						// add this friend's documents by generating a GetSessionsResponseEvent
 						// to populate all the required document structures
-						ServiceBuddyPtr group_ptr(new ServiceBuddy(this, group_->group_id, group_->name, _getDomain()));
+						ServiceBuddyPtr group_ptr(new ServiceBuddy(this, SERVICE_GROUP, group_->group_id, group_->name, _getDomain()));
 						GetSessionsResponseEvent& gsre = (*sessions_ptr)[group_ptr];
 						_parseSessionFiles(group_->files, gsre);
 					}				
