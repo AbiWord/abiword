@@ -105,7 +105,7 @@ std::vector<std::string> AP_Dialog_CollaborationShare::_getCurrentACL()
 		return vAcl;
 
 	vAcl = pSession->getAcl();
-	if (!pAccount->updateAcl(pSession, vAcl))
+	if (!pAccount->getAcl(pSession, vAcl))
 	{
 		UT_return_val_if_fail(false, vAcl); // TODO; this return is probably not correct
 	}

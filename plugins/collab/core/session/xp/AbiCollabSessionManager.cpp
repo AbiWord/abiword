@@ -1002,7 +1002,7 @@ void AbiCollabSessionManager::updateAcl(AbiCollab* pSession, AccountHandler* pAc
 {
 	UT_return_if_fail(pSession);
 	UT_return_if_fail(pAccount);
-	
+
 	// check if all current collaborators are still allowed to collaborate; if not,
 	// then remove them from the session
 	const std::map<BuddyPtr, std::string> collaborators = pSession->getCollaborators();
@@ -1020,6 +1020,9 @@ void AbiCollabSessionManager::updateAcl(AbiCollab* pSession, AccountHandler* pAc
 			UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 		}
 	}
+
+	// set the new ACL on the account handler
+	pAccount->setAcl(pSession, vAcl);
 
 	// set the new access control list on the session
 	pSession->setAcl(pAccount, vAcl);

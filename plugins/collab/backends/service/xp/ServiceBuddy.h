@@ -58,7 +58,7 @@ public:
 		{
 			UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 		}
-		// FIXME: use the user_id
+		// FIXME: use the user_id and type
 		return UT_UTF8String("acn://") + m_name.c_str() + UT_UTF8String("@") + m_domain.c_str();
 	}
 	

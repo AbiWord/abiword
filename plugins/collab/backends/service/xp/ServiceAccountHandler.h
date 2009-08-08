@@ -105,7 +105,8 @@ public:
 	virtual void							getSessionsAsync();
 	virtual void							getSessionsAsync(const Buddy& buddy);
 	virtual bool							startSession(PD_Document* pDoc, const std::vector<std::string>& vAcl, AbiCollab** pSession);	
-	virtual bool							updateAcl(AbiCollab* pSession, std::vector<std::string>& vAcl);
+	virtual bool							getAcl(AbiCollab* pSession, std::vector<std::string>& vAcl);
+	virtual bool							setAcl(AbiCollab* pSession, const std::vector<std::string>& vAcl);
 	virtual void							joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHandle);
 	virtual bool							hasSession(const UT_UTF8String& sSessionId);
 	acs::SOAP_ERROR							openDocument(UT_uint64 doc_id, UT_uint64 revision, const std::string& session_id, PD_Document** pDoc, XAP_Frame* pFrame);
@@ -132,6 +133,7 @@ private:
 	ConnectionPtr							_realmConnect(soa::CollectionPtr rcp, 
 													UT_uint64 doc_id, const std::string& session_id, bool master);
 
+	ServiceBuddyPtr							_getBuddy(const UT_UTF8String& descriptor);
 	ServiceBuddyPtr							_getBuddy(ServiceBuddyPtr pBuddy);
 	ServiceBuddyPtr							_getBuddy(ServiceBuddyType type, uint64_t user_id);
 
@@ -163,7 +165,10 @@ private:
 	bool									_getPermissions(uint64_t doc_id,
 													std::vector<UT_uint64>& rw, std::vector<UT_uint64>& ro,
 													std::vector<UT_uint64>& grw, std::vector<UT_uint64>& gro);
-	
+	bool									_setPermissions(UT_uint64 doc_id, 
+													const std::vector<UT_uint64>& friend_readwrite,
+													const std::vector<UT_uint64>& group_readwrite);
+
 	void									_handleJoinSessionRequestResponse(
 													JoinSessionRequestResponseEvent* jsre, BuddyPtr pBuddy, 
 													XAP_Frame* pFrame, PD_Document** pDoc, const std::string& filename);

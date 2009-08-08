@@ -579,9 +579,9 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<st
 	return true;
 }
 
-bool ServiceAccountHandler::updateAcl(AbiCollab* pSession, std::vector<std::string>& vAcl)
+bool ServiceAccountHandler::getAcl(AbiCollab* pSession, std::vector<std::string>& vAcl)
 {
-	UT_DEBUGMSG(("ServiceAccountHandler::updateAcl()\n"));
+	UT_DEBUGMSG(("ServiceAccountHandler::getAcl()\n"));
 	UT_return_val_if_fail(pSession, false);
 
 	// fetch the current set of file permissions
@@ -615,6 +615,49 @@ bool ServiceAccountHandler::updateAcl(AbiCollab* pSession, std::vector<std::stri
 		UT_continue_if_fail(pBuddy);
 		vAcl.push_back(pBuddy->getDescriptor(false).utf8_str());
 	}
+
+	return true;
+}
+
+bool ServiceAccountHandler::setAcl(AbiCollab* pSession, const std::vector<std::string>& vAcl)
+{
+	UT_DEBUGMSG(("ServiceAccountHandler::setAcl()\n"));
+	UT_return_val_if_fail(pSession, false);
+
+	// set the permissions from the acl on the document on the webservice
+	ConnectionPtr connection = _getConnection(pSession->getSessionId().utf8_str());
+	UT_return_val_if_fail(connection, false);
+
+	// Gather the friend and group IDs that will get read-write permission
+	// on the document. Note that we do not support setting read-only or 
+	// group-owner-read permissions from here, so we leave those untouched
+	std::vector<UT_uint64> friend_readwrite;
+	std::vector<UT_uint64> group_readwrite;
+
+	for (UT_uint32 i = 0; i < vAcl.size(); i++)
+	{
+		ServiceBuddyPtr pBuddy = _getBuddy(vAcl[i].c_str());
+		UT_continue_if_fail(pBuddy);
+
+		switch (pBuddy->getType())
+		{
+			case SERVICE_USER:
+				UT_ASSERT_HARMLESS(UT_NOT_REACHED); // setting permissions on yourself makes no sense
+				break;
+			case SERVICE_FRIEND:
+				friend_readwrite.push_back(pBuddy->getUserId());
+				break;
+			case SERVICE_GROUP:
+				group_readwrite.push_back(pBuddy->getUserId());
+				break;
+			default:
+				UT_ASSERT_HARMLESS(UT_NOT_REACHED);
+				break;
+		}
+	}
+	
+	if (!_setPermissions(connection->doc_id(), friend_readwrite, group_readwrite))
+		return false;
 
 	return true;
 }
@@ -789,6 +832,18 @@ ConnectionPtr ServiceAccountHandler::_realmConnect(soa::CollectionPtr rcp,
 	}
 
 	return connection;
+}
+
+ServiceBuddyPtr	ServiceAccountHandler::_getBuddy(const UT_UTF8String& descriptor)
+{
+	for (std::vector<BuddyPtr>::iterator it = getBuddies().begin(); it != getBuddies().end(); it++)
+	{
+		ServiceBuddyPtr pB = boost::static_pointer_cast<ServiceBuddy>(*it);
+		UT_continue_if_fail(pB);
+		if (pB->getDescriptor(false) == descriptor)
+			return pB;
+	}
+	return ServiceBuddyPtr();	
 }
 
 ServiceBuddyPtr ServiceAccountHandler::_getBuddy(ServiceBuddyPtr pBuddy)
@@ -1054,6 +1109,79 @@ bool ServiceAccountHandler::_getPermissions(uint64_t doc_id,
 	s_copy_int_array(rcp->get< soa::Array<soa::GenericPtr> >("group_read_write"), gro);
 
 	return true;
+}
+
+bool ServiceAccountHandler::_setPermissions(UT_uint64 doc_id, 
+			const std::vector<UT_uint64>& friend_readwrite,
+			const std::vector<UT_uint64>& group_readwrite)
+{
+	UT_DEBUGMSG(("ServiceAccountHandler::_setPermissions()\n"));
+
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, false);
+
+	const std::string uri = getProperty("uri");
+	const std::string email = getProperty("email");
+	std::string password = getProperty("password");
+	bool verify_webapp_host = (getProperty("verify-webapp-host") == "true");
+
+	soa::GenericPtr soap_result;
+	bool unhandled_error = false;
+	do
+	{
+		soa::function_call fc("setPermissions", "setPermissionsResponse");
+		fc("email", email)("password", password)("doc_id", static_cast<int64_t>(doc_id));
+
+		// add the friend permissions
+		soa::ArrayPtr friend_permissions(new soa::Array<soa::GenericPtr>(""));
+		for (UT_uint32 i = 0; i < friend_readwrite.size(); i++)
+			friend_permissions->add(soa::IntPtr(new soa::Int("item", friend_readwrite[i])));
+		fc("read_write", friend_permissions, soa::INT_TYPE);
+		fc("read_only", soa::ArrayPtr(), soa::INT_TYPE); // unsupported
+
+		// add the group permissions
+		soa::ArrayPtr group_permissions(new soa::Array<soa::GenericPtr>(""));
+		for (UT_uint32 i = 0; i < group_readwrite.size(); i++)
+			group_permissions->add(soa::IntPtr(new soa::Int("item", group_readwrite[i])));
+		fc("group_read_write", group_permissions, soa::INT_TYPE);
+		fc("group_read_only", soa::ArrayPtr(), soa::INT_TYPE); // unsupported
+		fc("group_read_owner", soa::ArrayPtr(), soa::INT_TYPE); // unsupported
+
+		try {
+			UT_DEBUGMSG(("Getting permissions for document %llu...\n", doc_id));
+			soap_result = soup_soa::invoke(uri, 
+								soa::method_invocation("urn:AbiCollabSOAP", fc),
+								verify_webapp_host?m_ssl_ca_file:"");
+		} catch (soa::SoapFault& fault) {
+			UT_DEBUGMSG(("Caught a soap fault: %s (error code: %s)!\n", 
+						 fault.detail() ? fault.detail()->value().c_str() : "(null)",
+						 fault.string() ? fault.string()->value().c_str() : "(null)"));
+
+			acs::SOAP_ERROR err = acs::error(fault);
+			switch (err)
+			{
+				case acs::SOAP_ERROR_INVALID_PASSWORD:
+					if (!askPassword(email, password))
+						return false;
+					addProperty("password", password);
+					pManager->storeProfile();	
+					continue;
+				default:
+					UT_DEBUGMSG(("Unhandled SOAP error\n"));
+					unhandled_error = true;
+					break;
+			}
+		}
+		// There was no SOAP Exception, so either there was no error or the 
+		// result was totally screwed up. In both cases we do not want to
+		// resend the request.
+		break; 
+	} while (!unhandled_error);
+	UT_return_val_if_fail(soap_result, false);
+
+	soa::BoolPtr res = soap_result->as<soa::Bool>();
+	UT_return_val_if_fail(res, false);
+	return res->value();
 }
 
 // NOTE: saveDocument can be called from a thread other than our mainloop;

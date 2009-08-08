@@ -143,9 +143,11 @@ private:
 
 class function_arg_array : public function_arg {
 public:
-	function_arg_array(const std::string& n, ArrayPtr value)
+	// TODO: automatically deduce the type of the array
+	function_arg_array(const std::string& n, ArrayPtr value, Type element_type)
 		: function_arg(n, ARRAY_TYPE),
-		value_(value)
+		value_(value),
+		element_type_(element_type)
 	{}
 
 	virtual bool type_props() const {
@@ -153,10 +155,9 @@ public:
 	}
 
 	virtual std::string props() const {
-		if (!value_ || value_->size() == 0)
-			return "";
-		GenericPtr val = value_->operator[](0);
-		return "SOAP-ENC:arrayType=\"" + soap_type(val->type()) + "[" + boost::lexical_cast<std::string>(value_->size()) + "]\" SOAP-ENC:offset=\"[0]\"";
+		if (value_)
+			return "SOAP-ENC:arrayType=\"" + soap_type(element_type_) + "[" + boost::lexical_cast<std::string>(value_->size()) + "]\"" + " " + "SOAP-ENC:offset=\"[0]\"";
+		return "SOAP-ENC:arrayType=\"xsd:anyType[0]\" xsi:nil=\"true\"";
 	}
 
 	virtual std::string str() const {
@@ -183,6 +184,7 @@ public:
 	
 private:
 	ArrayPtr value_;
+	Type element_type_;
 };
 
 class function_call {
@@ -219,8 +221,8 @@ public:
 		return *this;
 	}
 
-	function_call& operator()(std::string name, ArrayPtr value) {
-		args.push_back(boost::shared_ptr<function_arg>(new function_arg_array(name, value)));
+	function_call& operator()(std::string name, ArrayPtr value, Type type) {
+		args.push_back(boost::shared_ptr<function_arg>(new function_arg_array(name, value, type)));
 		return *this;
 	}
 
