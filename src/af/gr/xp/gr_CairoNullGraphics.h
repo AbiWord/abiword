@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_UNIXNULLGRAPHICS_H
-#define XAP_UNIXNULLGRAPHICS_H
+#ifndef XAP_CAIRONULLGRAPHICS_H
+#define XAP_CAIRONULLGRAPHICS_H
 
 #include "ut_vector.h"
 #include "gr_CairoGraphics.h"
@@ -29,30 +29,30 @@ class UT_ByteBuf;
 
 /*****************************************************************/
 /*****************************************************************/
-class ABI_EXPORT GR_UnixNullGraphicsAllocInfo : public GR_AllocInfo
+class ABI_EXPORT GR_CairoNullGraphicsAllocInfo : public GR_AllocInfo
 {
 public:
- 	GR_UnixNullGraphicsAllocInfo() 
+ 	GR_CairoNullGraphicsAllocInfo() 
 	  {}
 
-	virtual GR_GraphicsId getType() const {return GRID_UNIX_NULL;}
+	virtual GR_GraphicsId getType() const {return GRID_CAIRO_NULL;}
 	virtual bool isPrinterGraphics() const {return false;}
 };
 
 
 
-class ABI_EXPORT UnixNull_Graphics : public GR_CairoGraphics
+class ABI_EXPORT CairoNull_Graphics : public GR_CairoGraphics
 {
 	// all constructors are protected; instances must be created via
 	// GR_GraphicsFactory
 public:
-	virtual ~UnixNull_Graphics();
+	virtual ~CairoNull_Graphics();
 
-	static UT_uint32 s_getClassId() {return GRID_UNIX_NULL;}
+	static UT_uint32 s_getClassId() {return GRID_CAIRO_NULL;}
 	virtual UT_uint32 getClassId() {return s_getClassId();}
 	
 	virtual GR_Capability getCapability(){UT_ASSERT(UT_NOT_IMPLEMENTED); return GRCAP_UNKNOWN;}
-	static const char *    graphicsDescriptor(void) { return "Unix Null Graphics";}
+	static const char *    graphicsDescriptor(void) { return "Cairo Null Graphics";}
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 
 	virtual void drawChars(const UT_UCSChar* pChars, 
@@ -114,7 +114,7 @@ public:
 
 protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
-	UnixNull_Graphics();
+	CairoNull_Graphics();
 };
 
-#endif /* GR_UNIXPSGRAPHICS_H */
+#endif /* GR_CAIROPSGRAPHICS_H */

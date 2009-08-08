@@ -13,8 +13,6 @@ libgtk_la_SOURCES = \
 	gr_UnixImage.h \
 	gr_CairoImage.h \
 	gr_CairoImage.cpp \
-	gr_UnixNullGraphics.cpp \
-	gr_UnixNullGraphics.h \
 	gr_UnixPangoPixmapGraphics.cpp \
 	gr_UnixPangoPixmapGraphics.h
 

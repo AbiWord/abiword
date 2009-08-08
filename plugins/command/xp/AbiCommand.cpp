@@ -51,7 +51,7 @@
 #include "ap_Convert.h"
 #include "ap_UnixApp.h"
 #include "gr_UnixCairoGraphics.h"
-#include "gr_UnixNullGraphics.h"
+#include "gr_CairoNullGraphics.h"
 #include "ap_UnixFrame.h"
 #include "gr_DrawArgs.h"
 #include "ap_EditMethods.h"
@@ -186,7 +186,7 @@ AbiCommand::AbiCommand (void) :
 	m_sErrorFile ("")
 {
 	m_pApp = XAP_App::getApp ();
-	m_pApp->getGraphicsFactory()->registerAsDefault(GRID_UNIX_NULL,true);
+	m_pApp->getGraphicsFactory()->registerAsDefault(GRID_CAIRO_NULL,true);
 }
 
 
@@ -204,7 +204,7 @@ AbiCommand::AbiCommand (bool bAbiCollab) :
 	m_sErrorFile ("")
 {
 	m_pApp = XAP_App::getApp ();
-	m_pApp->getGraphicsFactory()->registerAsDefault(GRID_UNIX_NULL,true);
+	m_pApp->getGraphicsFactory()->registerAsDefault(GRID_CAIRO_NULL,true);
 }
 
 AbiCommand::~AbiCommand (void)
@@ -1117,9 +1117,9 @@ AbiCommand::replaceDocument (PD_Document * pDoc)
 	UT_UTF8String extension (".bak~");
 
 	m_pCurFrame->setAutoSaveFileExt (extension.utf8_str ());
-	GR_UnixNullGraphicsAllocInfo ai;
+	GR_CairoNullGraphicsAllocInfo ai;
 
-	m_pG = (UnixNull_Graphics *) m_pApp->newGraphics (ai);
+	m_pG = (CairoNull_Graphics *) m_pApp->newGraphics (ai);
 
 	m_pLayout = new FL_DocLayout (m_pCurDoc, static_cast < GR_Graphics * >(m_pG));
 	m_pCurView = new FV_View (m_pApp, m_pCurFrame, m_pLayout);

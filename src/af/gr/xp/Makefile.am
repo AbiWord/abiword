@@ -6,7 +6,10 @@ AM_CPPFLAGS = \
 
 if WITH_CAIRO
 CAIRO_SOURCES=gr_CairoGraphics.h \
-	gr_CairoGraphics.cpp
+	gr_CairoGraphics.cpp \
+	gr_CairoNullGraphics.h \
+	gr_CairoNullGraphics.cpp \
+	$(NULL)
 else
 CAIRO_SOURCES=
 endif

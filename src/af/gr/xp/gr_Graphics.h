@@ -192,7 +192,7 @@ enum GR_GraphicsId
 	GRID_WIN32           =  0x104,
 	GRID_UNIX            =  0x105,
 	GRID_UNIX_PS         =  0x106,
-	GRID_UNIX_NULL       =  0x107,
+	GRID_CAIRO_NULL      =  0x107,
 	
 	/*add new built-in ids here*/
 	

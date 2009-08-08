@@ -67,8 +67,8 @@
   #include <libgnomevfs/gnome-vfs.h>
 #endif
 
-#include "gr_UnixNullGraphics.h"
-static UnixNull_Graphics * nullgraphics = NULL;
+#include "gr_CairoNullGraphics.h"
+static CairoNull_Graphics * nullgraphics = NULL;
 
 /*****************************************************************/
 
@@ -106,9 +106,9 @@ XAP_UnixApp::XAP_UnixApp(const char * szAppName)
 			pGF->registerAsDefault(GR_UnixCairoGraphics::s_getClassId(), true);
 		}
 
-		bSuccess = pGF->registerClass(UnixNull_Graphics::graphicsAllocator,
-									  UnixNull_Graphics::graphicsDescriptor,
-									  UnixNull_Graphics::s_getClassId());
+		bSuccess = pGF->registerClass(CairoNull_Graphics::graphicsAllocator,
+									  CairoNull_Graphics::graphicsDescriptor,
+									  CairoNull_Graphics::s_getClassId());
 		UT_ASSERT( bSuccess );
 		
 		bSuccess = pGF->registerClass(GR_UnixPangoPixmapGraphics::graphicsAllocator,
@@ -122,7 +122,7 @@ XAP_UnixApp::XAP_UnixApp(const char * szAppName)
 
 		UT_ASSERT( bSuccess );
 
-		/* We need to link UnixNull_Graphics because the AbiCommand
+		/* We need to link CairoNull_Graphics because the AbiCommand
 		 * plugin uses it.
 		 *
 		 * We do not need to keep an instance of it around though, as the
@@ -130,9 +130,9 @@ XAP_UnixApp::XAP_UnixApp(const char * szAppName)
 		 * to force the linker into including it).
 		 */
 		{
-			GR_UnixNullGraphicsAllocInfo ai;
+			GR_CairoNullGraphicsAllocInfo ai;
 			nullgraphics =
-				(UnixNull_Graphics*) XAP_App::getApp()->newGraphics((UT_uint32)GRID_UNIX_NULL, ai);
+				(CairoNull_Graphics*) XAP_App::getApp()->newGraphics((UT_uint32)GRID_CAIRO_NULL, ai);
 
 			delete nullgraphics;
 			nullgraphics = NULL;

@@ -52,7 +52,7 @@ AbiCollab_Command::AbiCollab_Command(const UT_UTF8String& argv)
 	XAP_App* pApp = XAP_App::getApp ();
 	
 	#ifndef WIN32
-	pApp->getGraphicsFactory()->registerAsDefault(GRID_UNIX_NULL, true);
+	pApp->getGraphicsFactory()->registerAsDefault(GRID_CAIRO_NULL, true);
 	#else
 	pApp->getGraphicsFactory()->registerAsDefault(GRID_WIN32_UNISCRIBE, true);
 	#endif

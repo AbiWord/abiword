@@ -24,7 +24,7 @@
 class PD_Document;
 class AP_UnixFrame;
 class AV_View;
-class UnixNull_Graphics;
+class CairoNull_Graphics;
 class FL_DocLayout;
 class XAP_App;
 class UT_UTF8String;
@@ -59,7 +59,7 @@ private:
 	UT_UTF8String *          m_pCurFile;
 	AP_UnixFrame  *          m_pCurFrame;
 	AV_View *                m_pCurView;
-	UnixNull_Graphics *      m_pG;
+	CairoNull_Graphics *      m_pG;
 	FL_DocLayout *           m_pLayout;
 	XAP_App *                m_pApp;
 	bool                     m_bViewDoc;

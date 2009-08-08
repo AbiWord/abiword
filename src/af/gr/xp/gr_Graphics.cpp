@@ -1817,12 +1817,12 @@ bool GR_GraphicsFactory::isRegistered(UT_uint32 iClassId) const
 	return true;
 }
 
-#if defined(TOOLKIT_GTK)
-#include "gr_UnixNullGraphics.h"
+#if defined(WITH_CAIRO)
+#include "gr_CairoNullGraphics.h"
 #elif defined(TOOLKIT_WIN)
 #include "gr_Win32Graphics.h"
-#elif defined(TOOLKIT_COCOA)
-#warning implement offscreen
+#else
+#warning un-handled case
 #endif
 
 /**
@@ -1833,13 +1833,13 @@ GR_Graphics* GR_Graphics::newNullGraphics()
 {
 	// todo: support other platforms when possible
 	
-#if defined(TOOLKIT_GTK)
-	GR_UnixNullGraphicsAllocInfo ai;
-	return XAP_App::getApp()->newGraphics(GRID_UNIX_NULL, (GR_AllocInfo&)ai);
+#if defined(WITH_CAIRO)
+	GR_CairoNullGraphicsAllocInfo ai;
+	return XAP_App::getApp()->newGraphics(GRID_CAIRO_NULL, (GR_AllocInfo&)ai);
 #elif defined(TOOLKIT_WIN)
 	GR_Win32AllocInfo ai (GR_Win32Graphics::createbestmetafilehdc(), GR_Win32Graphics::getDocInfo(), NULL);
 	return XAP_App::getApp()->newGraphics(GRID_WIN32, (GR_AllocInfo&)ai);
-#elif defined(TOOLKIT_COCOA)
+#else
 #endif
 	
 	return NULL;
