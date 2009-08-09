@@ -64,6 +64,7 @@ public:
 
 	static bool								askPassword(const std::string& email, std::string& password);
 	static bool								askFilename(std::string& filename);
+	static void								ensureExt(std::string& filename, const std::string& extension);
 
 	// housekeeping
 	static UT_UTF8String					getStaticStorageType();

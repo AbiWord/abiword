@@ -47,6 +47,8 @@
 #include <core/session/xp/AbiCollabSessionManager.h>
 #include "AbiCollabService_Export.h"
 
+#define DEFAULT_FILENAME "New document.abw" // TODO: make this localizeable
+
 namespace rpv1 = realm::protocolv1;
 
 XAP_Dialog_Id ServiceAccountHandler::m_iDialogGenericInput = 0;
@@ -117,6 +119,21 @@ bool ServiceAccountHandler::askFilename(std::string& filename)
 	return !cancel;
 }
 
+void ServiceAccountHandler::ensureExt(std::string& filename, const std::string& extension)
+{
+	// check if the filename ends in the desired extension, and if not, 
+	// append the desired extension
+	if (filename.size() <= extension.size())
+	{
+		filename += extension;
+	}
+	else
+	{
+		std::string ext = filename.substr(filename.size() - extension.size());
+		if (ext != extension)
+			filename += extension;
+	}
+}
 
 ServiceAccountHandler::ServiceAccountHandler()
 	: AccountHandler(),
@@ -489,7 +506,7 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<st
 	std::string password = getProperty("password");
 	bool verify_webapp_host = (getProperty("verify-webapp-host") == "true");
 
-	std::string filename = "New document.abw"; // TODO: make this localizeable
+	std::string filename = DEFAULT_FILENAME;
 	if (pDoc->getFilename())
 		filename = UT_go_basename_from_uri(pDoc->getFilename());
 	
@@ -532,6 +549,10 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<st
 				case acs::SOAP_ERROR_DUP_FILENAME:
 					if (!askFilename(filename))
 						return false;
+					if (filename.size() == 0)
+						filename = DEFAULT_FILENAME;
+					else
+						ensureExt(filename, ".abw");
 					continue;
 				default:
 					UT_DEBUGMSG(("Unhandled SOAP error\n"));
