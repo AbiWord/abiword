@@ -497,7 +497,6 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<st
 	UT_return_val_if_fail(AbiCollabSessionManager::serializeDocument(pDoc, *document, true) == UT_OK, false);
 	
 	soa::GenericPtr soap_result;
-	bool unhandled_error = false;
 	do
 	{
 		// construct a SOAP method call to publish the document to abicollab.net
@@ -515,6 +514,7 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<st
 			soap_result = soup_soa::invoke(uri, 
 								soa::method_invocation("urn:AbiCollabSOAP", fc),
 								verify_webapp_host?m_ssl_ca_file:"");
+			break;
 		} catch (soa::SoapFault& fault) {
 			UT_DEBUGMSG(("Caught a soap fault: %s (error code: %s)!\n", 
 						 fault.detail() ? fault.detail()->value().c_str() : "(null)",
@@ -535,11 +535,10 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<st
 					continue;
 				default:
 					UT_DEBUGMSG(("Unhandled SOAP error\n"));
-					unhandled_error = true;;
-					break;
+					UT_return_val_if_fail(false, false);
 			}
 		}
-	} while (!unhandled_error && !soap_result);
+	} while (!soap_result);
 	UT_return_val_if_fail(soap_result, false);
 	
 	// handle the result
@@ -958,7 +957,6 @@ bool ServiceAccountHandler::_getConnections()
 	bool verify_webapp_host = (getProperty("verify-webapp-host") == "true");
 
 	soa::GenericPtr soap_result;
-	bool unhandled_error = false;
 	do
 	{
 		soa::function_call fc("getConnections", "getConnectionsResponse");
@@ -968,6 +966,7 @@ bool ServiceAccountHandler::_getConnections()
 			soap_result = soup_soa::invoke(uri, 
 								soa::method_invocation("urn:AbiCollabSOAP", fc),
 								verify_webapp_host?m_ssl_ca_file:"");
+			break;
 		} catch (soa::SoapFault& fault) {
 			UT_DEBUGMSG(("Caught a soap fault: %s (error code: %s)!\n", 
 						 fault.detail() ? fault.detail()->value().c_str() : "(null)",
@@ -984,11 +983,10 @@ bool ServiceAccountHandler::_getConnections()
 					continue;
 				default:
 					UT_DEBUGMSG(("Unhandled SOAP error\n"));
-					unhandled_error = true;;
-					break;
+					UT_return_val_if_fail(false, false);
 			}
 		}
-	} while (!unhandled_error && !soap_result);
+	} while (!soap_result);
 	UT_return_val_if_fail(soap_result, false);
 
 	// handle the result
@@ -1063,7 +1061,6 @@ bool ServiceAccountHandler::_getPermissions(uint64_t doc_id,
 	bool verify_webapp_host = (getProperty("verify-webapp-host") == "true");
 
 	soa::GenericPtr soap_result;
-	bool unhandled_error = false;
 	do
 	{
 		soa::function_call fc("getPermissions", "getPermissionsResponse");
@@ -1076,6 +1073,7 @@ bool ServiceAccountHandler::_getPermissions(uint64_t doc_id,
 			soap_result = soup_soa::invoke(uri, 
 								soa::method_invocation("urn:AbiCollabSOAP", fc),
 								verify_webapp_host?m_ssl_ca_file:"");
+			break;
 		} catch (soa::SoapFault& fault) {
 			UT_DEBUGMSG(("Caught a soap fault: %s (error code: %s)!\n", 
 						 fault.detail() ? fault.detail()->value().c_str() : "(null)",
@@ -1092,11 +1090,10 @@ bool ServiceAccountHandler::_getPermissions(uint64_t doc_id,
 					continue;
 				default:
 					UT_DEBUGMSG(("Unhandled SOAP error\n"));
-					unhandled_error = true;;
-					break;
+					UT_return_val_if_fail(false, false);
 			}
 		}
-	} while (!unhandled_error && !soap_result);
+	} while (!soap_result);
 	UT_return_val_if_fail(soap_result, false);
 	
 	// handle the result
@@ -1126,7 +1123,6 @@ bool ServiceAccountHandler::_setPermissions(UT_uint64 doc_id,
 	bool verify_webapp_host = (getProperty("verify-webapp-host") == "true");
 
 	soa::GenericPtr soap_result;
-	bool unhandled_error = false;
 	do
 	{
 		soa::function_call fc("setPermissions", "setPermissionsResponse");
@@ -1152,6 +1148,7 @@ bool ServiceAccountHandler::_setPermissions(UT_uint64 doc_id,
 			soap_result = soup_soa::invoke(uri, 
 								soa::method_invocation("urn:AbiCollabSOAP", fc),
 								verify_webapp_host?m_ssl_ca_file:"");
+			break;
 		} catch (soa::SoapFault& fault) {
 			UT_DEBUGMSG(("Caught a soap fault: %s (error code: %s)!\n", 
 						 fault.detail() ? fault.detail()->value().c_str() : "(null)",
@@ -1168,15 +1165,10 @@ bool ServiceAccountHandler::_setPermissions(UT_uint64 doc_id,
 					continue;
 				default:
 					UT_DEBUGMSG(("Unhandled SOAP error\n"));
-					unhandled_error = true;
-					break;
+					UT_return_val_if_fail(false, false);
 			}
 		}
-		// There was no SOAP Exception, so either there was no error or the 
-		// result was totally screwed up. In both cases we do not want to
-		// resend the request.
-		break; 
-	} while (!unhandled_error);
+	} while (!soap_result);
 	UT_return_val_if_fail(soap_result, false);
 
 	soa::BoolPtr res = soap_result->as<soa::Bool>();
