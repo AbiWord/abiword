@@ -102,14 +102,23 @@ class AbiCollab : public EV_MouseListener
 	friend class ABI_Collab_Export;
 
 public:
-	AbiCollab(PD_Document* pDoc, const UT_UTF8String& sSessionId, bool bLocallyOwned, XAP_Frame* pFrame);
+	// master constructor
+	AbiCollab(PD_Document* pDoc,
+					const UT_UTF8String& sSessionId, 
+					AccountHandler* pAclAccount,
+					bool bLocallyOwned,
+					XAP_Frame* pFrame);
+
+	// slave constructor
 	AbiCollab(const UT_UTF8String& sSessionId, 
 					PD_Document* pDoc, 
 					const UT_UTF8String& docUUID,
 					UT_sint32 iRev,
 					BuddyPtr pControler,
+					AccountHandler* pAclAccount,
 					bool m_bLocallyOwned,
 					XAP_Frame* pFrame);
+
 	virtual ~AbiCollab();
 
 	// collaborator management
@@ -125,7 +134,7 @@ public:
 		{ return m_vAcl; }
 	AccountHandler*						getAclAccount()
 		{ return m_pAclAccount; }
-	void								setAcl(AccountHandler* pAclAccount, const std::vector<std::string> vAcl);
+	void								setAcl(const std::vector<std::string> vAcl);
 	
 
 	// import/export management

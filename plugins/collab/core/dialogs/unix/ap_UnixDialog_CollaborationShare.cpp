@@ -199,8 +199,6 @@ void AP_UnixDialog_CollaborationShare::_populateWindowData()
 		// nope, we don't have any account handler :'-(
 		gtk_combo_box_set_active(GTK_COMBO_BOX(m_wAccount), -1);
 	}
-
-	//_populateBuddyModel();
 }
 
 void AP_UnixDialog_CollaborationShare::_populateBuddyModel(bool refresh)

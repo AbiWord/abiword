@@ -594,7 +594,7 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<st
 	UT_UTF8String sSessionId = session_id.c_str();
 	RealmBuddyPtr buddy(
 				new RealmBuddy(this, connection->user_id(), _getDomain(), connection->connection_id(), connection->master(), connection));
-	*pSession = pManager->startSession(pDoc, sSessionId, true, NULL, buddy->getDescriptor());
+	*pSession = pManager->startSession(pDoc, sSessionId, this, true, NULL, buddy->getDescriptor());
 
 	return true;
 }
@@ -926,7 +926,7 @@ acs::SOAP_ERROR ServiceAccountHandler::_openDocumentMaster(ConnectionPtr connect
 	UT_UTF8String sSessionId = session_id.c_str();
 	RealmBuddyPtr buddy(
 				new RealmBuddy(this, connection->user_id(), _getDomain(), connection->connection_id(), connection->master(), connection));
-	pManager->startSession(*pDoc, sSessionId, bLocallyOwned, pFrame, buddy->getDescriptor());
+	pManager->startSession(*pDoc, sSessionId, this, bLocallyOwned, pFrame, buddy->getDescriptor());
 	
 	return acs::SOAP_ERROR_OK;
 }
@@ -1498,7 +1498,7 @@ void ServiceAccountHandler::_handleJoinSessionRequestResponse(
 	gchar* fname = g_strdup(filename.c_str());
 	(*pDoc)->setFilename(fname);
 
-	pManager->joinSession(jsre->getSessionId(), *pDoc, jsre->m_sDocumentId, jsre->m_iRev, jsre->getAuthorId(), pBuddy, bLocallyOwned, pFrame);
+	pManager->joinSession(jsre->getSessionId(), *pDoc, jsre->m_sDocumentId, jsre->m_iRev, jsre->getAuthorId(), pBuddy, this, bLocallyOwned, pFrame);
 }
 
 void ServiceAccountHandler::_handleRealmPacket(ConnectionPtr connection)

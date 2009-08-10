@@ -91,14 +91,15 @@ public:
 	AbiCollab*									getSessionFromSessionId(const UT_UTF8String& sSessionId);
 	const UT_GenericVector<AbiCollab *>&		getSessions(void) const
 		{ return m_vecSessions;}
-	AbiCollab*									startSession(PD_Document* pDoc, UT_UTF8String& sNewSessionId, bool bLocallyOwned,
-														XAP_Frame* pFrame, const UT_UTF8String& masterDescriptor);
+	AbiCollab*									startSession(PD_Document* pDoc, UT_UTF8String& sNewSessionId, AccountHandler* pAclAccount, 
+														bool bLocallyOwned,	XAP_Frame* pFrame, const UT_UTF8String& masterDescriptor);
 	void										closeSession(AbiCollab* pSession, bool canConfirm);
 	void										closeSessions();
 	void										joinSessionInitiate(BuddyPtr pBuddy, DocHandle* pDocHandle);
 	void										joinSession(const UT_UTF8String& sSessionId, PD_Document* pDoc, 
 														const UT_UTF8String& docUUID, UT_sint32 iRev, UT_sint32 iAuthorId,
-														BuddyPtr pCollaborator, bool bLocallyOwned, XAP_Frame *pFrame);
+														BuddyPtr pCollaborator, AccountHandler* pAclAccount, bool bLocallyOwned, 
+														XAP_Frame *pFrame);
 	void										joinSession(AbiCollab* pSession, BuddyPtr pCollaborator);
 	void										disjoinSession(const UT_UTF8String& sSessionId);	
 	bool										isLocallyControlled(PD_Document* pDoc);

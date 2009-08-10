@@ -76,13 +76,17 @@ ChangeAdjust::~ChangeAdjust()
 }
 
 // Use this constructor to host a collaboration session
-AbiCollab::AbiCollab(PD_Document* pDoc, const UT_UTF8String& sSessionId, bool bLocallyOwned, XAP_Frame* pFrame)
+AbiCollab::AbiCollab(PD_Document* pDoc, 
+						const UT_UTF8String& sSessionId, 
+						AccountHandler* pAclAccount,
+						bool bLocallyOwned,
+						XAP_Frame* pFrame)
 	: EV_MouseListener(),
 	m_pDoc(pDoc),
 	m_pFrame(pFrame),
 	m_Import(this, pDoc),
 	m_Export(this, pDoc),
-	m_pAclAccount(NULL),
+	m_pAclAccount(pAclAccount),
 	m_iDocListenerId(0),
 	m_bExportMasked(false),
 	m_sId(sSessionId),
@@ -116,7 +120,8 @@ AbiCollab::AbiCollab(const UT_UTF8String& sSessionId,
 						PD_Document* pDoc, 
 						const UT_UTF8String& docUUID, 
 						UT_sint32 iRev, 
-						BuddyPtr pController, 
+						BuddyPtr pController,
+						AccountHandler* pAclAccount,
 						bool bLocallyOwned,
 						XAP_Frame* pFrame)
 	: EV_MouseListener(),
@@ -124,6 +129,7 @@ AbiCollab::AbiCollab(const UT_UTF8String& sSessionId,
 	m_pFrame(pFrame),
 	m_Import(this, pDoc),
 	m_Export(this, pDoc),
+	m_pAclAccount(pAclAccount),
 	m_iDocListenerId(0),
 	m_bExportMasked(false),
 	m_sId(sSessionId),
@@ -283,12 +289,9 @@ void AbiCollab::addCollaborator(BuddyPtr pCollaborator)
 	m_vCollaborators[pCollaborator] = ""; // will fill the remote document UUID later once we receive a packet from this buddy
 }
 
-void AbiCollab::setAcl(AccountHandler* pAclAccount, const std::vector<std::string> vAcl)
+void AbiCollab::setAcl(const std::vector<std::string> vAcl)
 {
 	UT_DEBUGMSG(("AbiCollab::setAcl()\n"));
-	UT_return_if_fail(pAclAccount);
-
-	m_pAclAccount = pAclAccount;
 	m_vAcl = vAcl;
 }
 

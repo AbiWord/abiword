@@ -94,18 +94,16 @@ AccountHandler* AP_Dialog_CollaborationShare::_getShareableAccountHandler()
 
 std::vector<std::string> AP_Dialog_CollaborationShare::_getCurrentACL()
 {
-	std::vector<std::string> vAcl;
 
 	AbiCollab* pSession = _getActiveSession();
 	if (!pSession)
 		return std::vector<std::string>();
 
-	AccountHandler* pAccount = pSession->getAclAccount();
-	if (!pAccount)
-		return vAcl;
+	AccountHandler* pAclAccount = pSession->getAclAccount();
+	UT_return_val_if_fail(pAclAccount, std::vector<std::string>());
 
-	vAcl = pSession->getAcl();
-	if (!pAccount->getAcl(pSession, vAcl))
+	std::vector<std::string> vAcl = pSession->getAcl();
+	if (!pAclAccount->getAcl(pSession, vAcl))
 	{
 		UT_return_val_if_fail(false, vAcl); // TODO; this return is probably not correct
 	}
@@ -147,7 +145,7 @@ void AP_Dialog_CollaborationShare::_share(AccountHandler* pHandler, const std::v
 			UT_UTF8String sSessionId("");
 			// TODO: we could use/generate a proper descriptor when there is only
 			// 1 account where we share this document over
-			pSession = pManager->startSession(pDoc, sSessionId, true, NULL, "");
+			pSession = pManager->startSession(pDoc, sSessionId, pHandler, true, NULL, "");
 		}
 	}
 	else
