@@ -213,12 +213,14 @@ void AP_UnixDialog_CollaborationShare::_populateBuddyModel(bool refresh)
 	AccountHandler* pHandler = _getActiveAccountHandler();
 	UT_return_if_fail(pHandler);
 	
-	// signal the account to refresh its buddy list ...
 	if (refresh)
-		pHandler->getBuddiesAsync();
+	{
+		// signal the account to refresh its buddy list ...
+		pHandler->getBuddiesAsync(); // this function is really sync() atm; we need to rework this dialog to make it proper async
 
-	// fetch the currently active ACL, if any
-	std::vector<std::string> vAcl = _getCurrentACL();
+		// fetch the current ACL
+		m_vAcl = _getSessionACL();
+	}
 
 	// ... and while it does that, we'll have to work with the list that 
 	// is currently known
@@ -241,7 +243,7 @@ void AP_UnixDialog_CollaborationShare::_populateBuddyModel(bool refresh)
 		BuddyPtrWrapper* pWrapper = new BuddyPtrWrapper(pBuddy);
 		gtk_list_store_append (m_pBuddyModel, &iter);
 		gtk_list_store_set (m_pBuddyModel, &iter, 
-				SHARE_COLUMN, _inAcl(vAcl, pBuddy),
+				SHARE_COLUMN, _inAcl(m_vAcl, pBuddy),
 				DESC_COLUMN, pBuddy->getDescription().utf8_str(), 
 				BUDDY_COLUMN, pWrapper, 
 				-1);
@@ -286,12 +288,10 @@ AccountHandler* AP_UnixDialog_CollaborationShare::_getActiveAccountHandler()
 void AP_UnixDialog_CollaborationShare::eventOk()
 {
 	UT_DEBUGMSG(("AP_UnixDialog_CollaborationShare::eventOk()\n"));
-	AccountHandler*	pHandler = _getActiveAccountHandler();
+	AccountHandler*	pHandler = _getActiveAccountHandler(); // TODO: make this XP
 	UT_return_if_fail(pHandler);
-
-	std::vector<std::string> vACL;
-	_getSelectedBuddies(vACL);
-	_share(pHandler, vACL);
+	_getSelectedBuddies(m_vAcl); // TODO: make this XP
+	_share(pHandler);
 }
 
 void AP_UnixDialog_CollaborationShare::eventAccountChanged()

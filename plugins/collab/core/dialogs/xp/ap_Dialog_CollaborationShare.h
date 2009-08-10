@@ -48,11 +48,12 @@ public:
 protected:
 	AbiCollab*					_getActiveSession();
 	AccountHandler*				_getShareableAccountHandler();
-	std::vector<std::string>	_getCurrentACL();
-	void						_share(AccountHandler* pHandler, const std::vector<std::string>& vAcl);
+	std::vector<std::string>	_getSessionACL();
+	void						_share(AccountHandler* pHandler);
 	virtual void				_refreshWindow() = 0;
 	
 	AP_Dialog_CollaborationShare::tAnswer m_answer;
+	std::vector<std::string>	m_vAcl;
 };
 
 #endif /* AP_DIALOG_COLLABORATIONSHARE_H */

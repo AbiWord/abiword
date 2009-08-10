@@ -92,9 +92,8 @@ AccountHandler* AP_Dialog_CollaborationShare::_getShareableAccountHandler()
 	return pSession->getAclAccount();
 }
 
-std::vector<std::string> AP_Dialog_CollaborationShare::_getCurrentACL()
+std::vector<std::string> AP_Dialog_CollaborationShare::_getSessionACL()
 {
-
 	AbiCollab* pSession = _getActiveSession();
 	if (!pSession)
 		return std::vector<std::string>();
@@ -110,7 +109,7 @@ std::vector<std::string> AP_Dialog_CollaborationShare::_getCurrentACL()
 	return vAcl;
 }
 
-void AP_Dialog_CollaborationShare::_share(AccountHandler* pHandler, const std::vector<std::string>& vAcl)
+void AP_Dialog_CollaborationShare::_share(AccountHandler* pHandler)
 {
 	UT_DEBUGMSG(("AP_Dialog_CollaborationShare::_share()\n"));
 
@@ -135,7 +134,7 @@ void AP_Dialog_CollaborationShare::_share(AccountHandler* pHandler, const std::v
 		// Tell the account handler that we start a new session, so
 		// it set up things if needed. This call may just setup some stuff 
 		// for a new session, or it might actually start a new session.
-		bool b = pHandler->startSession(pDoc, vAcl, &pSession);
+		bool b = pHandler->startSession(pDoc, m_vAcl, &pSession);
 		UT_return_if_fail(b); // TODO: notify the user?
 		
 		// start the session ourselves when the account handler did not...
@@ -154,5 +153,5 @@ void AP_Dialog_CollaborationShare::_share(AccountHandler* pHandler, const std::v
 	}
 
 	UT_return_if_fail(pSession);
-	pManager->updateAcl(pSession, pHandler, vAcl);
+	pManager->updateAcl(pSession, pHandler, m_vAcl);
 }
