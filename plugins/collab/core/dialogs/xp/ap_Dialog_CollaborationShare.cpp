@@ -135,7 +135,13 @@ void AP_Dialog_CollaborationShare::_share(AccountHandler* pHandler)
 		// it set up things if needed. This call may just setup some stuff 
 		// for a new session, or it might actually start a new session.
 		bool b = pHandler->startSession(pDoc, m_vAcl, &pSession);
-		UT_return_if_fail(b); // TODO: notify the user?
+		if (!b)
+		{
+			XAP_App::getApp()->getLastFocussedFrame()->showMessageBox(
+						"There was an error sharing this document!", 
+						XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+			return;
+		}
 		
 		// start the session ourselves when the account handler did not...
 		if (!pSession)
