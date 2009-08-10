@@ -355,7 +355,7 @@ void s_abicollab_add_menus()
 	EV_Menu_Action* myActionOffer = new EV_Menu_Action (
 		collabOfferId,   	  // id that the layout said we could use
 		0,                      // no, we don't have a sub menu.
-		0,                      // no, we don't raise a dialog.
+		1,                      // yes, we raise a dialog.
 		0,                      // no, we don't have a checkbox.
 		0,                      // no radio buttons for me, thank you
 		"s_abicollab_offer",    // name of callback function to call.
