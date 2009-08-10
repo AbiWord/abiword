@@ -75,7 +75,6 @@ void XAP_Win32Dialog_History::runModal(XAP_Frame * pFrame)
 	createModal(pFrame, MAKEINTRESOURCEW(XAP_RID_DIALOG_HISTORY));	
 }
 
-
 BOOL XAP_Win32Dialog_History::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
     UT_Win32LocaleString str;
@@ -83,13 +82,12 @@ BOOL XAP_Win32Dialog_History::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM
 	setDialogTitle(getWindowLabel());
 	
 	// localize buttons
-
 	setDlgItemText(XAP_RID_DIALOG_HISTORY_BTN_OK,getButtonLabel(0));
-   	//SetDlgItemText(hWnd,XAP_RID_DIALOG_HISTORY_BTN_SHOW,getButtonLabel(1));
+	//setDlgItemText(XAP_RID_DIALOG_HISTORY_BTN_SHOW,getButtonLabel(1));
 	setDlgItemText(XAP_RID_DIALOG_HISTORY_BTN_CANCEL,getButtonLabel(getButtonCount()-1));
 
 	// set the list title
-	setDlgItemText( XAP_RID_DIALOG_HISTORY_FRAME,getListTitle());
+	setDlgItemText(XAP_RID_DIALOG_HISTORY_FRAME,getListTitle());
 	
 	// fill in the section above the list
 	UT_uint32 i;
@@ -101,7 +99,7 @@ BOOL XAP_Win32Dialog_History::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM
 		setDlgItemText(k1 + i,getHeaderLabel(i));
 		
 		char * t = getHeaderValue(i);
-		setDlgItemText(k2 + i, t);
+		SetDlgItemText(hWnd,k2 + i, t);
 		FREEP(t);
 	}
 
@@ -161,8 +159,8 @@ BOOL XAP_Win32Dialog_History::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM
 	}
 	
 	SendMessageW(h, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);  								
-	//XAP_Win32DialogHelper::s_centerDialog(hWnd);	
-    centerDialog();
+	centerDialog();	
+
 	return 1;							// 1 == we did not call SetFocus()
 }
 
