@@ -58,8 +58,11 @@ public:
 		{
 			UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 		}
-		// FIXME: use the user_id and type
-		return UT_UTF8String("acn://") + m_name.c_str() + UT_UTF8String("@") + m_domain.c_str();
+		std::string descr = std::string("acn://")+
+								boost::lexical_cast<std::string>(m_user_id) + ":" + 
+								boost::lexical_cast<std::string>(m_type) + "@" +
+								m_domain;
+		return descr.c_str();
 	}
 	
 	virtual UT_UTF8String getDescription() const
