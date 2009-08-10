@@ -40,7 +40,7 @@ enum SOAP_ERROR
 	// TODO: add more errors
 	
 	// saveDocument soap errors
-	// TODO: add more errors
+	SOAP_ERROR_NO_CHANGES = 0x908,
 		
 	// openDocument soap errors
 	// TODO: add more errors

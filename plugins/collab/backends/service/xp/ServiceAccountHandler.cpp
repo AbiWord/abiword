@@ -1230,7 +1230,16 @@ UT_Error ServiceAccountHandler::saveDocument(PD_Document* pDoc, ConnectionPtr co
 		UT_DEBUGMSG(("Caught a soap fault: %s (error code: %s)!\n", 
 				 fault.detail() ? fault.detail()->value().c_str() : "(null)",
 				 fault.string() ? fault.string()->value().c_str() : "(null)"));
-		return UT_ERROR;
+
+		acs::SOAP_ERROR err = acs::error(fault);
+		switch (err)
+		{
+			case acs::SOAP_ERROR_NO_CHANGES:
+				UT_DEBUGMSG(("The document was unchanged; ignoring error\n"));
+				return UT_OK;
+			default:
+				return UT_ERROR;
+		}
 	}
 
 	UT_DEBUGMSG(("Document uploaded successfully\n"));
