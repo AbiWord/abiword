@@ -205,6 +205,13 @@ UT_String& UT_String::operator=(const char* rhs)
   return *this;
 }
 
+UT_String& UT_String::operator=(const std::basic_string<char> & rhs)
+{
+	pimpl->assign(rhs.c_str(), rhs.size());
+	return *this;
+}
+
+
 UT_String& UT_String::operator+=(const UT_String& rhs)
 {
 	if (this != &rhs) {

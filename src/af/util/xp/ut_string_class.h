@@ -90,6 +90,7 @@ public:
 
 	UT_String&	operator=(const UT_String& rhs);
 	UT_String&	operator=(const char*      rhs);
+	UT_String&	operator=(const std::basic_string<char> & rhs);
 	UT_String&	operator+=(const UT_String& rhs);
 	UT_String&	operator+=(const char*      rhs);
 	UT_String&  operator+=(char rhs);
