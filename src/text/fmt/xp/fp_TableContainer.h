@@ -116,7 +116,7 @@ public:
 	virtual void		clearScreen(void);
 	void		        clearScreen(bool bNoRecursive);
 	void                getScreenPositions(fp_TableContainer * pBroke,GR_Graphics * pG,UT_sint32 & iLeft, UT_sint32 & iRight,UT_sint32 & iTop,UT_sint32 & iBot,UT_sint32 & col_y, fp_Column *& pCol, fp_ShadowContainer *& pShadow, bool & bDoClear );
-	void                drawLines(fp_TableContainer * pBroke,GR_Graphics * pG);
+	void                drawLines(fp_TableContainer * pBroke,GR_Graphics * pG,bool bDoClear);
 	void                drawLinesAdjacent(void);
 	void                draw(fp_Line * pLine);
 	fp_TableContainer * getBrokenTable(fp_Container * pCon);
@@ -140,6 +140,15 @@ public:
 	virtual fp_Container * getNextContainerInSection(void) const;
 	virtual fp_Container * getPrevContainerInSection(void) const;
 	fp_TableContainer * getTopmostTable(void) const;
+	void                extendLeftTop(PP_PropertyMap::Line & line,GR_Graphics * pG,UT_sint32 & iextTop);
+	void                extendLeftBot(PP_PropertyMap::Line & line,GR_Graphics * pG,UT_sint32 & iextBot);
+	void                extendRightTop(PP_PropertyMap::Line & line,GR_Graphics * pG,UT_sint32 & iextTop);
+	void                extendRightBot(PP_PropertyMap::Line & line,GR_Graphics * pG,UT_sint32 & iextBot);
+	void                extendTopLeft(PP_PropertyMap::Line & line,GR_Graphics * pG,UT_sint32 & iextLeft);
+	void                extendTopRight(PP_PropertyMap::Line & line,GR_Graphics * pG,UT_sint32 & iextRight);
+	void                extendBotLeft(PP_PropertyMap::Line & line,GR_Graphics * pG,UT_sint32 & iextLeft);
+	void                extendBotRight(PP_PropertyMap::Line & line,GR_Graphics * pG,UT_sint32 & iextRight);
+
 	UT_sint32           getCellX(fp_Line * pLine) const; 
 	UT_sint32           getCellY(fp_Line * pLine) const;
 	UT_sint32           getSpannedHeight(void);

@@ -799,9 +799,19 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 	UT_Rect bRec;
 	fp_Page * pPage = NULL;
 	_getBrokenRect(pBroke, pPage, bRec,getGraphics());
+	UT_sint32 onePix = getGraphics()->tlu(1)+1;
 	if((bRec.top + bRec.height) < 0)
 	{
 		return;
+	}
+	lineTop.m_thickness += 3*onePix;
+	lineLeft.m_thickness += 3*onePix;
+	lineRight.m_thickness += 3*onePix;
+	lineBottom.m_thickness += 3*onePix;
+	UT_RGBColor pageCol(255,255,255);
+	if(pPage)
+	{
+		pageCol = *pPage->getFillType()->getColor();
 	}
 	markAsDirty();
 	if (pPage != NULL)
@@ -809,11 +819,11 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 		xxx_UT_DEBUGMSG(("_clear: top %d bot %d cell left %d top %d \n",bRec.top,bRec.top+bRec.height,m_iLeftAttach,m_iTopAttach));
 
 		lineLeft.m_t_linestyle = PP_PropertyMap::linestyle_solid;
-		lineLeft.m_color = *getFillType()->getColor();
+		lineLeft.m_color = pageCol;
 		_drawLine (lineLeft, bRec.left, bRec.top, bRec.left,  bRec.top + bRec.height,getGraphics());
 
 		lineTop.m_t_linestyle = PP_PropertyMap::linestyle_solid;
-		lineTop.m_color =  *getFillType()->getColor();
+		lineTop.m_color =  pageCol;
 		_drawLine (lineTop, bRec.left, bRec.top, bRec.left + bRec.width,  bRec.top,getGraphics()); 
 		if(pBroke && pBroke->getPage() && pBroke->getBrokenTop() > 0)
 		{
@@ -823,11 +833,11 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 			_drawLine (lineTop, bRec.left, col_y, bRec.left + bRec.width,  col_y,getGraphics());
 		}
 		lineRight.m_t_linestyle = PP_PropertyMap::linestyle_solid;
-		lineRight.m_color =  *getFillType()->getColor();
+		lineRight.m_color =  pageCol;
 		_drawLine (lineRight, bRec.left + bRec.width, bRec.top, bRec.left + bRec.width, bRec.top + bRec.height,getGraphics()); 
 		
 		lineBottom.m_t_linestyle = PP_PropertyMap::linestyle_solid;
-		lineBottom.m_color =  *getFillType()->getColor();
+		lineBottom.m_color = pageCol;
 		_drawLine (lineBottom, bRec.left, bRec.top + bRec.height, bRec.left + bRec.width , bRec.top + bRec.height,getGraphics());
 		xxx_UT_DEBUGMSG(("_Clear: pBroke %x \n",pBroke));
 		if(pBroke && pBroke->getPage() && pBroke->getBrokenBot() >= 0)
@@ -1283,7 +1293,7 @@ void fp_CellContainer::getScreenPositions(fp_TableContainer * pBroke,GR_Graphics
 /*!
  * Draw background and lines around a cell in a broken table.
  */
-void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
+void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG, bool bDoClear)
 {
 	xxx_UT_DEBUGMSG(("Doing drawlines for cell %x \n",this));
 	UT_return_if_fail(getPage());
@@ -1332,8 +1342,10 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 	UT_sint32 col_y = 0;
 	fp_Column * pCol = NULL;
 	fp_ShadowContainer * pShadow = NULL;
-	bool bDoClear = true;
-	getScreenPositions(pBroke,pG,iLeft,iRight,iTop,iBot,col_y,pCol,pShadow,bDoClear );
+	bool doClear2 =false;
+	bool bTopScreen = false;
+	bool bBotScreen = false;
+	getScreenPositions(pBroke,pG,iLeft,iRight,iTop,iBot,col_y,pCol,pShadow,doClear2 );
 	if(pBroke != NULL)
 	{
 		if(m_iBotY < pBroke->getYBreak())
@@ -1360,6 +1372,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 			xxx_UT_DEBUGMSG(("iTop < col_y !! iTop %d col_y %d row is %d \n",iTop,col_y,getTopAttach()));
 			iTop = col_y;
 			bDrawTop = true;
+			bTopScreen = true;
 			if(pBroke != NULL)
 			{
 				pBroke->setBrokenTop(1);
@@ -1380,6 +1393,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 		{
    			iBot =  col_y + iColHeight;
 			bDrawBot = true;
+			bBotScreen = true;
 			if(pBroke != NULL)
 			{
 				pBroke->setBrokenBot(1);
@@ -1404,7 +1418,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 // 		iBot = iTop + bRec.height;
 // 		iRight = iLeft + bRec.width;
 		m_bDrawRight = true;
-
+		UT_sint32 onePix = pG->tlu(1)+1;
 		//
 		// Have to draw white first because drawing is additive
 		//
@@ -1412,45 +1426,329 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 		PP_PropertyMap::Line clineLeft   = getLeftStyle   (pTableLayout);
 		PP_PropertyMap::Line clineRight  = getRightStyle  (pTableLayout);
 		PP_PropertyMap::Line clineTop    = getTopStyle    (pTableLayout);
+		
 		UT_RGBColor white(255,255,255);
+		white = *pPage->getFillType()->getColor();
+
+		UT_sint32 iextLeft,iextRight,iextTop,iextBot= 0;
 		if (m_bDrawLeft)
 		{
 			if(bDoClear)
 			{
 				clineLeft.m_color = white;
+				clineLeft.m_thickness  += 3*onePix;
 				_drawLine (clineLeft, iLeft, iTop, iLeft,  iBot,pG);
 			}
-			_drawLine(lineLeft, iLeft, iTop, iLeft, iBot,pG);
+			else
+		    {
+				extendLeftTop(lineTop,pG,iextTop);
+				extendLeftBot(lineBottom,pG,iextBot);
+				if(bTopScreen)
+					iextTop = 0;
+				if(bBotScreen)
+					iextBot = 0;
+				_drawLine(lineLeft, iLeft, iTop-iextTop, iLeft, iBot+iextBot,pG);
+			}
 		}
 		if(m_bDrawTop || bDrawTop)
 		{
 			if(bDoClear)
 			{
 				clineTop.m_color = white;
+				clineTop.m_thickness  += 3*onePix;
 				_drawLine(clineTop, iLeft, iTop, iRight, iTop,pG);
 			}
-			_drawLine(lineTop, iLeft, iTop, iRight, iTop,pG);
+			else
+			{
+				extendTopLeft(lineTop,pG,iextLeft);
+				extendTopRight(lineTop,pG,iextRight);
+				_drawLine(lineTop, iLeft-iextLeft, iTop, iRight+iextRight, iTop,pG);
+			}
 		}
 		if(m_bDrawRight)
 		{
 			if(bDoClear)
 			{
 				clineRight.m_color = white;
+				clineRight.m_thickness  += 3*onePix;
 				_drawLine(clineRight, iRight, iTop, iRight, iBot,pG);
 			}
-			_drawLine(lineRight, iRight, iTop, iRight, iBot,pG);
+			else
+			{
+				extendRightTop(lineRight,pG,iextTop);
+				extendRightBot(lineRight,pG,iextBot);
+				if(bTopScreen)
+					iextTop = 0;
+				if(bBotScreen)
+					iextBot = 0;
+				_drawLine(lineRight, iRight, iTop-iextTop, iRight, iBot+iextBot,pG);
+			}
 		}
 		if(m_bDrawBot || bDrawBot)
 		{
 			if(bDoClear)
 			{
 				clineBottom.m_color = white;
+				clineBottom.m_thickness  += 3*onePix;
 				_drawLine(clineBottom, iLeft, iBot, iRight, iBot,pG);
 			}
-			_drawLine(lineBottom, iLeft, iBot, iRight, iBot,pG);
+			else
+			{
+				extendBotLeft(lineBottom,pG,iextLeft);
+				extendBotRight(lineBottom,pG,iextRight);
+				_drawLine(lineBottom, iLeft-iextLeft, iBot, iRight+iextRight, iBot,pG);
+			}
 		}
 	}
 }
+
+/*!
+ *   |
+ *   |_ 
+ *
+ * Extend the cell line at the left top corner if needed
+ */
+void  fp_CellContainer::extendLeftTop(PP_PropertyMap::Line & line,GR_Graphics * pG,UT_sint32 & iextTop)
+{
+	iextTop = 0;
+	if(getTopAttach() == 0)
+	{
+		return;
+	}
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
+	if(pTab == NULL)
+	{
+		return;
+	}
+	fp_CellContainer * pCell = pTab->getCellAtRowColumn(getTopAttach()-1,getLeftAttach());
+	if(pCell->getLeftAttach() != getLeftAttach())
+	{
+		return;
+	}
+	iextTop = line.m_thickness;
+	UT_sint32 onePix = pG->tlu(1)+1;
+	iextTop += 3*onePix;
+}
+
+
+/*!
+ *    _
+ *   |
+ *   | 
+ *
+ * Extend the cell line at the left bot corner if needed
+ */
+void  fp_CellContainer::extendLeftBot(PP_PropertyMap::Line & line,GR_Graphics * pG,UT_sint32 & iextBot)
+{
+	iextBot = 0;
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
+	if(pTab == NULL)
+	{
+		return;
+	}
+	if(getBottomAttach() == pTab->getNumRows())
+	{
+		return;
+	}
+	fp_CellContainer * pCell = pTab->getCellAtRowColumn(getTopAttach()+1,getLeftAttach());
+	if(!pCell)
+		return;
+	if(pCell->getLeftAttach() != getLeftAttach())
+	{
+		return;
+	}
+	iextBot = line.m_thickness;
+	UT_sint32 onePix = pG->tlu(1)+1;
+	iextBot += 3*onePix;
+}
+
+/*!
+ *    |
+ *   _|
+ *
+ * Extend the cell line at the right top corner if needed
+ */
+void  fp_CellContainer::extendRightTop(PP_PropertyMap::Line & line,GR_Graphics * pG,UT_sint32 & iextTop)
+{
+	iextTop = 0;
+	if(getTopAttach() == 0)
+	{
+		return;
+	}
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
+	if(pTab == NULL)
+	{
+		return;
+	}
+	fp_CellContainer * pCell = pTab->getCellAtRowColumn(getTopAttach()-1,getLeftAttach());
+	if(!pCell)
+		return;
+	if(pCell->getRightAttach() != getRightAttach())
+	{
+		return;
+	}
+	iextTop = line.m_thickness;
+	UT_sint32 onePix = pG->tlu(1)+1;
+	iextTop += 3*onePix;
+}
+
+
+/*!
+ *   _
+ *    |
+ *    |
+ *
+ * Extend the cell line at the right bot corner if needed
+ */
+void  fp_CellContainer::extendRightBot(PP_PropertyMap::Line & line,GR_Graphics * pG,UT_sint32 & iextBot)
+{
+	iextBot = 0;
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
+	if(pTab == NULL)
+	{
+		return;
+	}
+	if(getBottomAttach() == pTab->getNumRows())
+	{
+		return;
+	}
+	fp_CellContainer * pCell = pTab->getCellAtRowColumn(getTopAttach()+1,getLeftAttach());
+	if(!pCell)
+		return;
+	if(pCell->getRightAttach() != getRightAttach())
+	{
+		return;
+	}
+	iextBot = line.m_thickness;
+	UT_sint32 onePix = pG->tlu(1)+1;
+	iextBot += 3*onePix;
+}
+
+/*!
+ *  _ _
+ *     |
+ *    
+ *
+ * Extend the cell line at the left top corner if needed
+ */
+void  fp_CellContainer::extendTopLeft(PP_PropertyMap::Line & line,GR_Graphics * pG,UT_sint32 & iextLeft)
+{
+	iextLeft = 0;
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
+	if(pTab == NULL)
+	{
+		return;
+	}
+	if(getLeftAttach() == 0)
+	{
+		return;
+	}
+	fp_CellContainer * pCell = pTab->getCellAtRowColumn(getTopAttach(),getLeftAttach()-1);
+	if(!pCell)
+		return;
+	if(pCell->getTopAttach() != getTopAttach())
+	{
+		return;
+	}
+	iextLeft = line.m_thickness;
+	UT_sint32 onePix = pG->tlu(1)+1;
+	iextLeft += 3*onePix;
+}
+
+
+/*!
+ *     
+ *   _ _
+ *  |   
+ *
+ * Extend the cell line at the right top corner if needed
+ */
+void  fp_CellContainer::extendTopRight(PP_PropertyMap::Line & line,GR_Graphics * pG,UT_sint32 & iextRight)
+{
+	iextRight = 0;
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
+	if(pTab == NULL)
+	{
+		return;
+	}
+	if(getRightAttach() >=  pTab->getNumCols())
+	{
+		return;
+	}
+	fp_CellContainer * pCell = pTab->getCellAtRowColumn(getTopAttach(),getRightAttach());
+	if(!pCell)
+		return;
+	if(pCell->getTopAttach() != getTopAttach())
+	{
+		return;
+	}
+	iextRight = line.m_thickness;
+	UT_sint32 onePix = pG->tlu(1)+1;
+	iextRight += 3*onePix;
+}
+
+
+/*!
+ *  _ _|
+ *     
+ *    
+ * Extend the cell line at the left Bot corner if needed
+ */
+void  fp_CellContainer::extendBotLeft(PP_PropertyMap::Line & line,GR_Graphics * pG,UT_sint32 & iextLeft)
+{
+	iextLeft = 0;
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
+	if(pTab == NULL)
+	{
+		return;
+	}
+	if(getLeftAttach() == 0)
+	{
+		return;
+	}
+	fp_CellContainer * pCell = pTab->getCellAtRowColumn(getTopAttach(),getLeftAttach()-1);
+	if(!pCell)
+		return;
+	if(pCell->getBottomAttach() != getBottomAttach())
+	{
+		return;
+	}
+	iextLeft = line.m_thickness;
+	UT_sint32 onePix = pG->tlu(1)+1;
+	iextLeft += 3*onePix;
+}
+
+
+/*!
+ *     
+ *  |_ _
+ * 
+ * Extend the cell line at the right bot corner if needed
+ */
+void  fp_CellContainer::extendBotRight(PP_PropertyMap::Line & line,GR_Graphics * pG,UT_sint32 & iextRight)
+{
+	iextRight = 0;
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
+	if(pTab == NULL)
+	{
+		return;
+	}
+	if(getRightAttach() >=  pTab->getNumCols())
+	{
+		return;
+	}
+	fp_CellContainer * pCell = pTab->getCellAtRowColumn(getTopAttach(),getRightAttach());
+	if(!pCell)
+		return;
+	if(pCell->getBottomAttach() != getBottomAttach())
+	{
+		return;
+	}
+	iextRight = line.m_thickness;
+	UT_sint32 onePix = pG->tlu(1)+1;
+	iextRight += 3*onePix;
+}
+
 
 /*!
  * Draw lines around neighbouring cells. Use to fix artifacts of editting.
@@ -1478,13 +1776,13 @@ void fp_CellContainer::drawLinesAdjacent(void)
 	fp_TableContainer * pBroke = pTab->getFirstBrokenTable();
 	while(pBroke)
 	{
-		drawLines(pBroke,getGraphics());
+		drawLines(pBroke,getGraphics(),true);
 		if(bDoRight)
 		{
 			fp_CellContainer * pCell = pTab->getCellAtRowColumn(row,col_right);
 			if(pCell)
 			{
-				pCell->drawLines(pBroke,getGraphics());
+				pCell->drawLines(pBroke,getGraphics(),true);
 			}
 		}
 		if(bDoLeft)
@@ -1492,7 +1790,24 @@ void fp_CellContainer::drawLinesAdjacent(void)
 			fp_CellContainer * pCell = pTab->getCellAtRowColumn(row,col_left);
 			if(pCell)
 			{
-				pCell->drawLines(pBroke,getGraphics());
+				pCell->drawLines(pBroke,getGraphics(),true);
+			}
+		}
+		drawLines(pBroke,getGraphics(),false);
+		if(bDoRight)
+		{
+			fp_CellContainer * pCell = pTab->getCellAtRowColumn(row,col_right);
+			if(pCell)
+			{
+				pCell->drawLines(pBroke,getGraphics(),false);
+			}
+		}
+		if(bDoLeft)
+		{
+			fp_CellContainer * pCell = pTab->getCellAtRowColumn(row,col_left);
+			if(pCell)
+			{
+				pCell->drawLines(pBroke,getGraphics(),false);
 			}
 		}
 		pBroke = static_cast<fp_TableContainer *>(pBroke->getNext());
@@ -1805,7 +2120,9 @@ void fp_CellContainer::draw(dg_DrawArgs* pDA)
 	{
 		m_bDirty = false;
 	}
-	drawLines(NULL,pG);
+	if(pG->queryProperties(GR_Graphics::DGP_SCREEN))
+		drawLines(NULL,pG,true);
+	drawLines(NULL,pG,false);
 	pTab->setRedrawLines();
     _drawBoundaries(pDA,NULL);
 }
@@ -2294,7 +2611,8 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 		}
 		getSectionLayout()->clearNeedsRedraw();
 	}
-	drawLines(pBroke,pG);
+	drawLines(pBroke,pG,true);
+	drawLines(pBroke,pG,false);
 	pTab2->setRedrawLines();
     _drawBoundaries(pDA,pBroke);
 }
@@ -3017,13 +3335,15 @@ void fp_TableContainer::drawLines(void)
 		{
 			while(pBroke)
 			{
-				pCell->drawLines(pBroke,getGraphics());
+				pCell->drawLines(pBroke,getGraphics(),true);
+				pCell->drawLines(pBroke,getGraphics(),false);
 				pBroke = static_cast<fp_TableContainer *>(pBroke->getNext());
 			}
 		}
 		else
 		{
-			pCell->drawLines(NULL,getGraphics());
+			pCell->drawLines(NULL,getGraphics(),true);
+			pCell->drawLines(NULL,getGraphics(),false);
 		}
 		pCell = static_cast<fp_CellContainer *>(pCell->getNext());
 	}
