@@ -390,7 +390,11 @@ void AccountHandler::_handlePacket(Packet* packet, BuddyPtr buddy)
 						gchar* fname = g_strdup(jsre->m_sDocumentName.utf8_str());
 						pDoc->setFilename(fname);
 					}
-					pManager->joinSession(jsre->getSessionId(), pDoc, jsre->m_sDocumentId, jsre->m_iRev, jsre->getAuthorId(), buddy, NULL);
+					// The default ownership when joining is FALSE, as that seems 
+					// to make sense for the generic case. The person sharing the 
+					// document by default owns the document (and is thus allowed
+					// to modify the ACL).
+					pManager->joinSession(jsre->getSessionId(), pDoc, jsre->m_sDocumentId, jsre->m_iRev, jsre->getAuthorId(), buddy, false, NULL);
 				}
 				else 
 				{

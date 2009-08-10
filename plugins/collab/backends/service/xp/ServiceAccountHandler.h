@@ -159,9 +159,9 @@ private:
 	void									_listDocuments_cb(acs::SOAP_ERROR error, BuddySessionsPtr sessions_ptr);
 	
 	acs::SOAP_ERROR							_openDocumentMaster(ConnectionPtr connection, soa::CollectionPtr rcp, PD_Document** pDoc, XAP_Frame* pFrame, 
-													const std::string& session_id, const std::string& filename);
+													const std::string& session_id, const std::string& filename, bool bLocallyOwned);
 	acs::SOAP_ERROR							_openDocumentSlave(ConnectionPtr connection, PD_Document** pDoc, XAP_Frame* pFrame, 
-													const std::string& filename);
+													const std::string& filename, bool bLocallyOwned);
 	bool									_getConnections();
 	bool									_getPermissions(uint64_t doc_id,
 													std::vector<UT_uint64>& rw, std::vector<UT_uint64>& ro,
@@ -172,7 +172,8 @@ private:
 
 	void									_handleJoinSessionRequestResponse(
 													JoinSessionRequestResponseEvent* jsre, BuddyPtr pBuddy, 
-													XAP_Frame* pFrame, PD_Document** pDoc, const std::string& filename);
+													XAP_Frame* pFrame, PD_Document** pDoc, const std::string& filename,
+													bool bLocallyOwned);
 	void									_handleRealmPacket(ConnectionPtr connection);
 	ConnectionPtr							_getConnection(const std::string& session_id);	
 	void									_removeConnection(const std::string& session_id);

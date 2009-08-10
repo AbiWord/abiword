@@ -285,6 +285,39 @@ Defun_EV_GetMenuItemState_Fn(collab_GetState_AnyActive)
 	return EV_MIS_ZERO;
 }
 
+Defun_EV_GetMenuItemState_Fn(collab_GetState_CanShare)
+{
+	UT_UNUSED(id);
+
+	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
+
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, EV_MIS_Gray);
+
+	// you can't share a document when no account is only
+	if (!s_any_accounts_online())
+		return EV_MIS_Gray;
+
+	// you can open the share dialog when the document is not shared yet, or
+	// when it is shared and it is 'owned' locally
+	
+	PD_Document* pDoc = pView->getDocument();
+	UT_return_val_if_fail(pDoc, EV_MIS_Gray);
+	
+	AbiCollab* session = pManager->getSession(pDoc);
+	if (session)
+	{
+		if (session->isLocallyOwned())
+			return EV_MIS_ZERO;
+		else
+			return EV_MIS_Gray;
+	}
+
+	// the document is not shared yet, but there are active accounts...
+	return EV_MIS_ZERO;
+}
+
 
 /*!
  * This implements the "Collaborate" main submenu.
@@ -326,7 +359,7 @@ void s_abicollab_add_menus()
 		0,                      // no, we don't have a checkbox.
 		0,                      // no radio buttons for me, thank you
 		"s_abicollab_offer",    // name of callback function to call.
-		collab_GetState_AnyActive,  // Function for whether not label is enabled/disabled checked/unchecked
+		collab_GetState_CanShare,  // Function for whether not label is enabled/disabled checked/unchecked
 		NULL                    // Function to compute Menu Label "Dynamic Label"
 	);
 	pActionSet->addAction(myActionOffer);

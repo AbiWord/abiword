@@ -594,7 +594,7 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<st
 	UT_UTF8String sSessionId = session_id.c_str();
 	RealmBuddyPtr buddy(
 				new RealmBuddy(this, connection->user_id(), _getDomain(), connection->connection_id(), connection->master(), connection));
-	*pSession = pManager->startSession(pDoc, sSessionId, NULL, buddy->getDescriptor());
+	*pSession = pManager->startSession(pDoc, sSessionId, true, NULL, buddy->getDescriptor());
 
 	return true;
 }
@@ -779,6 +779,12 @@ acs::SOAP_ERROR ServiceAccountHandler::openDocument(UT_uint64 doc_id, UT_uint64 
 	soa::CollectionPtr rcp = soap_result->as<soa::Collection>("return");
 	UT_return_val_if_fail(rcp, acs::SOAP_ERROR_GENERIC);
 
+	soa::IntPtr user_id = rcp->get<soa::Int>("user_id");
+	soa::IntPtr owner_id = rcp->get<soa::Int>("owner_id");
+	UT_return_val_if_fail(user_id, acs::SOAP_ERROR_GENERIC);
+	UT_return_val_if_fail(owner_id, acs::SOAP_ERROR_GENERIC);
+	bool bLocallyOwned = (user_id->value() == owner_id->value());
+
 	soa::BoolPtr master = rcp->get<soa::Bool>("master");
 	if (!master)
 	{
@@ -801,8 +807,8 @@ acs::SOAP_ERROR ServiceAccountHandler::openDocument(UT_uint64 doc_id, UT_uint64 
 	
 	// load the document
 	acs::SOAP_ERROR open_result = master->value()
-				? _openDocumentMaster(connection, rcp, pDoc, pFrame, session_id, filename)
-				: _openDocumentSlave(connection, pDoc, pFrame, filename);
+				? _openDocumentMaster(connection, rcp, pDoc, pFrame, session_id, filename, bLocallyOwned)
+				: _openDocumentSlave(connection, pDoc, pFrame, filename, bLocallyOwned);
 
 	if (open_result != acs::SOAP_ERROR_OK)
 	{
@@ -893,7 +899,7 @@ ServiceBuddyPtr ServiceAccountHandler::_getBuddy(ServiceBuddyType type, uint64_t
 }
 
 acs::SOAP_ERROR ServiceAccountHandler::_openDocumentMaster(ConnectionPtr connection, soa::CollectionPtr rcp, PD_Document** pDoc, XAP_Frame* pFrame, 
-																 	const std::string& session_id, const std::string& filename)
+																 	const std::string& session_id, const std::string& filename, bool bLocallyOwned)
 {
 	UT_return_val_if_fail(rcp || pDoc, acs::SOAP_ERROR_GENERIC);
 	
@@ -920,12 +926,13 @@ acs::SOAP_ERROR ServiceAccountHandler::_openDocumentMaster(ConnectionPtr connect
 	UT_UTF8String sSessionId = session_id.c_str();
 	RealmBuddyPtr buddy(
 				new RealmBuddy(this, connection->user_id(), _getDomain(), connection->connection_id(), connection->master(), connection));
-	pManager->startSession(*pDoc, sSessionId, pFrame, buddy->getDescriptor());
+	pManager->startSession(*pDoc, sSessionId, bLocallyOwned, pFrame, buddy->getDescriptor());
 	
 	return acs::SOAP_ERROR_OK;
 }
 
-acs::SOAP_ERROR ServiceAccountHandler::_openDocumentSlave(ConnectionPtr connection, PD_Document** pDoc, XAP_Frame* pFrame, const std::string& filename)
+acs::SOAP_ERROR ServiceAccountHandler::_openDocumentSlave(ConnectionPtr connection, PD_Document** pDoc, XAP_Frame* pFrame, 
+											const std::string& filename, bool bLocallyOwned)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::_openDocumentSlave()\n"));
 	UT_return_val_if_fail(connection, acs::SOAP_ERROR_GENERIC);
@@ -945,7 +952,7 @@ acs::SOAP_ERROR ServiceAccountHandler::_openDocumentSlave(ConnectionPtr connecti
 	pDlg->setInformation("Please wait while retrieving document...");
 
 	// setup the information for the callback to use when the document comes in
-	connection->loadDocumentStart(pDlg, pDoc, pFrame, filename);
+	connection->loadDocumentStart(pDlg, pDoc, pFrame, filename, bLocallyOwned);
 	
 	// run the dialog
 	pDlg->runModal(pDlgFrame);
@@ -1473,7 +1480,8 @@ void ServiceAccountHandler::_listDocuments_cb(acs::SOAP_ERROR error, BuddySessio
 
 void ServiceAccountHandler::_handleJoinSessionRequestResponse(
 									JoinSessionRequestResponseEvent* jsre, BuddyPtr pBuddy, 
-									XAP_Frame* pFrame, PD_Document** pDoc, const std::string& filename)
+									XAP_Frame* pFrame, PD_Document** pDoc, const std::string& filename,
+									bool bLocallyOwned)
 {
 	UT_return_if_fail(jsre);
 	UT_return_if_fail(pBuddy);
@@ -1490,7 +1498,7 @@ void ServiceAccountHandler::_handleJoinSessionRequestResponse(
 	gchar* fname = g_strdup(filename.c_str());
 	(*pDoc)->setFilename(fname);
 
-	pManager->joinSession(jsre->getSessionId(), *pDoc, jsre->m_sDocumentId, jsre->m_iRev, jsre->getAuthorId(), pBuddy, pFrame);
+	pManager->joinSession(jsre->getSessionId(), *pDoc, jsre->m_sDocumentId, jsre->m_iRev, jsre->getAuthorId(), pBuddy, bLocallyOwned, pFrame);
 }
 
 void ServiceAccountHandler::_handleRealmPacket(ConnectionPtr connection)
@@ -1587,7 +1595,7 @@ void ServiceAccountHandler::_handleMessages(ConnectionPtr connection)
 						UT_return_if_fail(pdp);
 
 						UT_DEBUGMSG(("Joining received document..."));
-						_handleJoinSessionRequestResponse(static_cast<JoinSessionRequestResponseEvent*>(pPacket), buddy_ptr, pdp->pFrame, pdp->pDoc, pdp->filename);
+						_handleJoinSessionRequestResponse(static_cast<JoinSessionRequestResponseEvent*>(pPacket), buddy_ptr, pdp->pFrame, pdp->pDoc, pdp->filename, pdp->bLocallyOwned);
 						DELETEP(pPacket);
 						UT_return_if_fail(pdp->pDlg);
 						pdp->pDlg->close();

@@ -76,7 +76,7 @@ ChangeAdjust::~ChangeAdjust()
 }
 
 // Use this constructor to host a collaboration session
-AbiCollab::AbiCollab(PD_Document* pDoc, const UT_UTF8String& sSessionId, XAP_Frame* pFrame)
+AbiCollab::AbiCollab(PD_Document* pDoc, const UT_UTF8String& sSessionId, bool bLocallyOwned, XAP_Frame* pFrame)
 	: EV_MouseListener(),
 	m_pDoc(pDoc),
 	m_pFrame(pFrame),
@@ -87,6 +87,7 @@ AbiCollab::AbiCollab(PD_Document* pDoc, const UT_UTF8String& sSessionId, XAP_Fra
 	m_bExportMasked(false),
 	m_sId(sSessionId),
 	m_pController(BuddyPtr()),
+	m_bLocallyOwned(bLocallyOwned),
 	m_pActivePacket(NULL),
 	m_bIsReverting(false),
 	m_pRecorder(NULL),
@@ -116,6 +117,7 @@ AbiCollab::AbiCollab(const UT_UTF8String& sSessionId,
 						const UT_UTF8String& docUUID, 
 						UT_sint32 iRev, 
 						BuddyPtr pController, 
+						bool bLocallyOwned,
 						XAP_Frame* pFrame)
 	: EV_MouseListener(),
 	m_pDoc(pDoc),
@@ -126,6 +128,7 @@ AbiCollab::AbiCollab(const UT_UTF8String& sSessionId,
 	m_bExportMasked(false),
 	m_sId(sSessionId),
 	m_pController(pController),
+	m_bLocallyOwned(bLocallyOwned),
 	m_pActivePacket(NULL),
 	m_bIsReverting(false),
 	m_pRecorder(NULL),

@@ -666,7 +666,7 @@ AbiCollab* AbiCollabSessionManager::getSessionFromSessionId(const UT_UTF8String&
 }
 
 AbiCollab* AbiCollabSessionManager::startSession(PD_Document* pDoc, UT_UTF8String& sSessionId, 
-			XAP_Frame* pFrame, const UT_UTF8String& masterDescriptor)
+			bool bLocallyOwned, XAP_Frame* pFrame, const UT_UTF8String& masterDescriptor)
 {
 	UT_DEBUGMSG(("Starting collaboration session for document with id %s, master descriptor: %s\n",
 			pDoc->getDocUUIDString(), masterDescriptor.utf8_str()));
@@ -744,7 +744,7 @@ AbiCollab* AbiCollabSessionManager::startSession(PD_Document* pDoc, UT_UTF8Strin
 	UT_DEBUGMSG(("Creating a new collaboration session with UUID: %s\n", sSessionId.utf8_str()));
 
 	UT_return_val_if_fail(_setupFrame(&pFrame, pDoc), NULL);
-	AbiCollab* pAbiCollab = new AbiCollab(pDoc, sSessionId, pFrame);
+	AbiCollab* pAbiCollab = new AbiCollab(pDoc, sSessionId, bLocallyOwned, pFrame);
 	m_vecSessions.push_back(pAbiCollab);
 	
 	// notify all people we are sharing a new document
@@ -819,7 +819,7 @@ void AbiCollabSessionManager::joinSessionInitiate(BuddyPtr pBuddy, DocHandle* pD
 void AbiCollabSessionManager::joinSession(const UT_UTF8String& sSessionId, PD_Document* pDoc, 
 												const UT_UTF8String& docUUID, UT_sint32 iRev, 
 												UT_sint32 iAuthorId, BuddyPtr pCollaborator,
-												XAP_Frame *pFrame)
+												bool bLocallyOwned, XAP_Frame *pFrame)
 {
 	UT_DEBUGMSG(("AbiCollabSessionManager::joinSession()\n"));
 
@@ -834,7 +834,7 @@ void AbiCollabSessionManager::joinSession(const UT_UTF8String& sSessionId, PD_Do
 	UT_return_if_fail(_setupFrame(&pFrame, pDoc));
 #endif
 
-	AbiCollab* pSession = new AbiCollab(sSessionId, pDoc, docUUID, iRev, pCollaborator, pFrame);
+	AbiCollab* pSession = new AbiCollab(sSessionId, pDoc, docUUID, iRev, pCollaborator, bLocallyOwned, pFrame);
 	m_vecSessions.push_back(pSession);
 
 	// signal everyone that we have joined this session

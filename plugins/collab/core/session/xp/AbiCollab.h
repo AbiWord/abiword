@@ -102,12 +102,13 @@ class AbiCollab : public EV_MouseListener
 	friend class ABI_Collab_Export;
 
 public:
-	AbiCollab(PD_Document* pDoc, const UT_UTF8String& sSessionId, XAP_Frame* pFrame);
+	AbiCollab(PD_Document* pDoc, const UT_UTF8String& sSessionId, bool bLocallyOwned, XAP_Frame* pFrame);
 	AbiCollab(const UT_UTF8String& sSessionId, 
 					PD_Document* pDoc, 
 					const UT_UTF8String& docUUID,
 					UT_sint32 iRev,
 					BuddyPtr pControler,
+					bool m_bLocallyOwned,
 					XAP_Frame* pFrame);
 	virtual ~AbiCollab();
 
@@ -118,6 +119,8 @@ public:
 		{ return m_vCollaborators; }
 	bool								isController(BuddyPtr pCollaborator) const
 		{ return m_pController == pCollaborator; }
+	bool								isLocallyOwned() const
+		{ return m_bLocallyOwned; }
 	const std::vector<std::string>&		getAcl()
 		{ return m_vAcl; }
 	AccountHandler*						getAclAccount()
@@ -227,6 +230,7 @@ private:
 	UT_UTF8String						m_sId;
 
 	BuddyPtr							m_pController;
+	bool								m_bLocallyOwned;
 
 	CommandLine *						m_pCommandLine;
 	bool								m_bCloseNow;

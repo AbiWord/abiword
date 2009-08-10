@@ -147,7 +147,7 @@ void AP_Dialog_CollaborationShare::_share(AccountHandler* pHandler, const std::v
 			UT_UTF8String sSessionId("");
 			// TODO: we could use/generate a proper descriptor when there is only
 			// 1 account where we share this document over
-			pSession = pManager->startSession(pDoc, sSessionId, NULL, "");
+			pSession = pManager->startSession(pDoc, sSessionId, true, NULL, "");
 		}
 	}
 	else
