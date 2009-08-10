@@ -1666,8 +1666,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		else if(strcmp(szValue,"changeauthor") == 0)
 		{
 		  	m_pLayout->refreshRunProperties();
-			FV_View * pView = m_pLayout->getView();
-			pView->updateScreen(false ); 
+			m_pLayout->setNeedsRedraw();
 		}
 		else if(strcmp(szValue,"addauthor") == 0)
 		{
@@ -1680,7 +1679,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			  UT_sint32 id = atoi(szAuthorId);
 			  pView->addCaret(0,id);
 			}
-			pView->updateScreen(false ); 
+			m_pLayout->setNeedsRedraw();
 		}
 		goto finish_up;
 	}	

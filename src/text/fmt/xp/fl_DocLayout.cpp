@@ -3946,6 +3946,22 @@ void FL_DocLayout::recheckIgnoredWords()
 }
 #endif
 
+/*!
+ * Mark the whole document for a redraw
+ */
+void FL_DocLayout::setNeedsRedraw(void)
+{
+     if(!m_pFirstSection)
+         return;
+     setSkipUpdates(0);
+     fl_BlockLayout * pBL = m_pFirstSection->getFirstBlock();
+     while(pBL)
+     {
+	 pBL->setNeedsRedraw();
+	 pBL = pBL->getNextBlockInDocument();
+     }
+}
+
 void FL_DocLayout::_redrawUpdate(UT_Worker * pWorker)
 {
 	UT_return_if_fail(pWorker);

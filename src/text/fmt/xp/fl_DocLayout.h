@@ -143,6 +143,7 @@ public:
 	void			notifyBlockIsBeingDeleted(fl_BlockLayout *pBlock);
 	void            setSkipUpdates(UT_uint32 numSkips) {m_iSkipUpdates = numSkips;}
 	UT_uint32       getSkipUpdates(void) { return m_iSkipUpdates;}
+	void            setNeedsRedraw(void);
 	UT_sint32		getHeight();
 	UT_sint32       getWidth();
 	void            refreshRunProperties(void);
