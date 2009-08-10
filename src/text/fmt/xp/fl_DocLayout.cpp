@@ -3646,6 +3646,18 @@ void FL_DocLayout::recheckIgnoredWords()
 }
 #endif
 
+void FL_DocLayout::setNeedsRedraw(void)
+{
+        setSkipUpdates(0);
+	fl_SectionLayout* pSL = m_pFirstSection;
+	fl_BlockLayout * pBL = pSL->getFirstBlock();
+	while (pBL)
+	{
+		pBL->setNeedsRedraw();
+		pBL = pBL->getNextBlockInDocument();
+	}
+}
+
 void FL_DocLayout::_redrawUpdate(UT_Worker * pWorker)
 {
 	UT_return_if_fail(pWorker);

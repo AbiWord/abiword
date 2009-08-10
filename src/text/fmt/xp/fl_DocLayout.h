@@ -339,7 +339,7 @@ public:
 	inline void		addList(fl_AutoNum * pAutoNum);
 	bool            isLayoutDeleting(void) const {return m_bDeletingLayout;}
 	UT_uint32       getRedrawCount() {return m_iRedrawCount;}
-
+        void            setNeedsRedraw(void);
 
 	void            updatePropsNoRebuild(void);
 	void            updatePropsRebuild(void);

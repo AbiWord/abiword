@@ -149,7 +149,7 @@ bool fp_CellContainer::isRepeated(void) const
 
 void fp_CellContainer::setHeight(UT_sint32 iHeight)
 {
-	xxx_UT_DEBUGMSG(("cell: Height was %d \n",getHeight()));
+	UT_DEBUGMSG(("cell: Height was %d new height %d \n",getCellHeight(),iHeight));
 	if ((iHeight == getCellHeight()) || (iHeight== 0))
 	{
 		return;
@@ -337,12 +337,65 @@ void fp_CellContainer::_getBrokenRectCell(fp_TableContainer * pBroke, fp_Page * 
 	_getBrokenRect(pBroke, pPage, bRec,pG);
 	UT_sint32 xdiff = getX() - getCellX();
 	UT_sint32 ydiff = getY() - getCellY();
+	UT_sint32 iLeft,iRight,iTop,iBot = 0;
+	UT_sint32 col_y = 0;
+	fp_Column * pCol = NULL;
+	fp_ShadowContainer * pShadow = NULL;
+	bool bDoClear = true;
+	//
+	// Set height from actual draw positions
+	//
+	bRec.height = -1;
+	getScreenPositions(pBroke,pG,iLeft,iRight,iTop,iBot,col_y,pCol,pShadow,bDoClear );
+	if(pBroke != NULL)
+	{
+		if(m_iBotY < pBroke->getYBreak())
+		{
+			//
+			// Cell is above this page return with height == -1
+			//
+			return;
+		}
+		if(m_iTopY > pBroke->getYBottom())
+		{
+			//
+			// Cell is below this page return with height == -1
+			//
+			return;
+		}
+		iTop -= pBroke->getYBreak();
+		iBot -= pBroke->getYBreak();
+		//Check if the upper row is present in this broken table.
+		UT_sint32 iPrevRow = UT_MAX(getTopAttach() - 1,0);
+		fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
+		UT_sint32 iPrevY = pTab->getYOfRow(iPrevRow);
+		xxx_UT_DEBUGMSG(("ADITYA: iprevy=%d, ybreak=%d\n", iPrevY, pBroke->getYBreak()));
+		if(iTop < col_y)
+		{
+			iTop = col_y;
+		}
+		UT_sint32 iColHeight = 0;
+		if(pCol)
+		{
+			iColHeight = pCol->getHeight();
+		}
+		else if(pShadow)
+		{
+			iColHeight = pShadow->getHeight();
+		}
+
+		if(iBot > col_y + iColHeight)
+		{
+   			iBot =  col_y + iColHeight;
+		}
+	}
+
 	UT_sint32 wdiff = getCellWidth() - getWidth();
 	UT_sint32 hdiff = getCellHeight() - getHeight();
 	bRec.left -= xdiff;
-	bRec.top -= ydiff;
+	bRec.top = iTop;
 	bRec.width += wdiff;
-	bRec.height += hdiff;
+	bRec.height += (iBot-iTop);
 }
 
 /*!
@@ -623,7 +676,7 @@ void fp_CellContainer::clearScreen(bool bNoRecursive)
 		return;
 	}
 	markAsDirty();
-	xxx_UT_DEBUGMSG(("Doing cell clearscreen \n"));
+	UT_DEBUGMSG(("Doing cell clearscreen \n"));
 // only clear the embeded containers if no background is set: the background clearing will also these containers
 // FIXME: should work, but doesn't??
 //	if (m_iBgStyle == FS_OFF)
@@ -651,6 +704,7 @@ void fp_CellContainer::clearScreen(bool bNoRecursive)
 		}
 		if(!m_bLinesDrawn)
 		{
+			UT_DEBUGMSG(("No lines drawn - leaving cell clearscreen \n"));
 			return;
 		}
 		while(pBroke)
@@ -796,10 +850,12 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 
 	if(pBroke == NULL)
 	{
+		UT_DEBUGMSG((" No broken table. Aborting clearscreen \n"));
 		return;
 	}
 	if(pBroke->getPage() && !pBroke->getPage()->isOnScreen())
 	{
+		UT_DEBUGMSG((" cell not on screen. Aborting clearscreen \n"));
 		return;
 	}
 
@@ -825,6 +881,12 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 	_getBrokenRectCell(pBroke, pPage, bRec,getGraphics());
 	if((bRec.top + bRec.height) < 0)
 	{
+		UT_DEBUGMSG(("--+top+height -ve abort clear = %d \n",bRec.top+bRec.height));
+		return;
+	}
+	if(bRec.height < 0)
+	{
+		UT_DEBUGMSG(("--height -ve abort clear = %d \n",bRec.height));
 		return;
 	}
 	markAsDirty();
@@ -833,44 +895,21 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 		GR_Graphics * pG = getGraphics();
 		GR_Painter Paint(pG);
 		UT_Rect cRec;
-		UT_DEBUGMSG(("_clear: top %d bot %d cell left %d top %d \n",bRec.top,bRec.top+bRec.height,m_iLeftAttach,m_iTopAttach));
+		UT_DEBUGMSG(("_clear: top %d bot %d cell left attach %d top attach %d \n",bRec.top,bRec.top+bRec.height,m_iLeftAttach,m_iTopAttach));
 
 		_getCoveringRect(lineLeft,bRec.left,bRec.top,bRec.left,bRec.top + bRec.height,pG,cRec);
 		Paint.clearArea(cRec.left, cRec.top, cRec.width,cRec.height);
 
-		if(pBroke && pBroke->getPage() && pBroke->getBrokenTop() > 0)
-		{
-			UT_sint32 col_x,col_y;
-			fp_Column * pCol = static_cast<fp_Column *>(pBroke->getBrokenColumn());
-			pBroke->getPage()->getScreenOffsets(pCol, col_x,col_y);
-			_getCoveringRect(lineTop,bRec.left,col_y,bRec.left+bRec.width,col_y,pG,cRec);
-			Paint.clearArea(cRec.left, cRec.top, cRec.width,cRec.height);
-		}
-		else
-		{
-			_getCoveringRect(lineTop,bRec.left,bRec.top,bRec.left+bRec.width,bRec.top,pG,cRec);
-			Paint.clearArea(cRec.left, cRec.top, cRec.width,cRec.height);
-		}
+		_getCoveringRect(lineTop,bRec.left,bRec.top,bRec.left+bRec.width,bRec.top,pG,cRec);
+		Paint.clearArea(cRec.left, cRec.top, cRec.width,cRec.height);
 
 		_getCoveringRect(lineRight,bRec.left+bRec.width,bRec.top,bRec.left+bRec.width,bRec.top + bRec.height,pG,cRec);
 		Paint.clearArea(cRec.left, cRec.top, cRec.width,cRec.height);
 
 		xxx_UT_DEBUGMSG(("_Clear: pBroke %x \n",pBroke));
-		if(pBroke && pBroke->getPage() && pBroke->getBrokenBot() >= 0)
-		{
-			UT_sint32 col_x,col_y;
-			fp_Column * pCol = static_cast<fp_Column *>(pBroke->getBrokenColumn());
-			pBroke->getPage()->getScreenOffsets(pCol, col_x,col_y);
-			UT_sint32 bot = col_y + pCol->getHeight();
-			_getCoveringRect(lineBottom,bRec.left,bot,bRec.left+bRec.width,bot,pG,cRec);
-			Paint.clearArea(cRec.left, cRec.top, cRec.width,cRec.height);
-		}
-		else
-		{
-			_getCoveringRect(lineBottom,bRec.left,bRec.top + bRec.height,bRec.left+bRec.width,bRec.top + bRec.height,pG,cRec);
-			Paint.clearArea(cRec.left, cRec.top, cRec.width,cRec.height);
+		_getCoveringRect(lineBottom,bRec.left,bRec.top + bRec.height,bRec.left+bRec.width,bRec.top + bRec.height,pG,cRec);
+		Paint.clearArea(cRec.left, cRec.top, cRec.width,cRec.height);
 
-		}
 		getGraphics()->setLineWidth(1 );
 		xxx_UT_DEBUGMSG(("_clear: BRec.top %d  Brec.height %d \n",bRec.top,bRec.height));
 		//			UT_ASSERT((bRec.left + bRec.width) < getPage()->getWidth());
@@ -883,7 +922,7 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 		const fl_TableLayout * pTableLayout = static_cast<const fl_TableLayout *>(pLayout);
 		UT_uint32 topThickness = getTopStyle (pTableLayout).m_thickness;
 
-
+		UT_DEBUGMSG(("Cell Clear screen x %d y %d width %d height %d \n",bRec.left,bRec.top+topThickness,bRec.width,bRec.height-topThickness));
 		if(getFillType()->getParent())
 		{
 			srcX += getCellX();
@@ -912,7 +951,7 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
  */
 void fp_CellContainer::setWidth(UT_sint32 iWidth)
 {
-	UT_sint32 myWidth = getWidth();
+	UT_sint32 myWidth = getCellWidth();
 	if (iWidth == myWidth)
 	{
 		return;
@@ -922,6 +961,7 @@ void fp_CellContainer::setWidth(UT_sint32 iWidth)
 		iWidth = 2;
 	}
 	clearScreen();
+	UT_DEBUGMSG(("cellWidth set from %d to %d \n",myWidth,iWidth));
 	fp_VerticalContainer::setWidth(iWidth);
 	fl_SectionLayout * pSL = getSectionLayout();
 	pSL = static_cast<fl_SectionLayout *>(pSL->myContainingLayout());
@@ -1556,7 +1596,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 		GR_Painter Paint(pG);
 		if (bDrawLeft)
 		{
-			UT_DEBUGMSG(("ADITYA: drawing left! (%d,%d),(%d,%d) ", iLeft , iTop, 
+			xxx_UT_DEBUGMSG(("ADITYA: drawing left! (%d,%d),(%d,%d) ", iLeft , iTop, 
 						 iLeft, iBot));
 			if(bDoClear)
 			{
@@ -1567,7 +1607,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 		}
 		if(bDrawRight)
 		{
-			UT_DEBUGMSG(("drawing right! "));
+			xxx_UT_DEBUGMSG(("drawing right! "));
 			if(bDoClear)
 			{
 				_getCoveringRect(lineRight, iRight, iTop, iRight, iBot, pG,cRec);
@@ -1588,7 +1628,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 		
 		if(bDrawTop)
 		{
-			UT_DEBUGMSG(("drawing top! (%d,%d),(%d,%d) ", myLeft, iTop, 
+			xxx_UT_DEBUGMSG(("drawing top! (%d,%d),(%d,%d) ", myLeft, iTop, 
 						 myRight, iTop));
 			
 			if(bDoClear)
@@ -1600,7 +1640,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 		}
 		if(bDrawBot)
 		{
-			UT_DEBUGMSG(("drawing bot! (%d,%d),(%d,%d) \n", myLeft, iBot,
+			xxx_UT_DEBUGMSG(("drawing bot! (%d,%d),(%d,%d) \n", myLeft, iBot,
 						 myRight, iBot));
 			if(bDoClear)
 			{
@@ -2201,7 +2241,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	if((bRec.height < 0) || (bRec.width < 0))
 		return;
 
-	UT_DEBUGMSG(("ADITYA: t: %d b: %d r: %d l: %d\n", m_bDrawTop, m_bDrawBot, 
+	xxx_UT_DEBUGMSG(("ADITYA: t: %d b: %d r: %d l: %d\n", m_bDrawTop, m_bDrawBot, 
 			  m_bDrawRight, m_bDrawLeft));
    
 	if(getFillType()->getFillType() == FG_FILL_IMAGE && (getContainer() != NULL))
@@ -2286,7 +2326,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	clip.top = pDA->yoff + getY();
 	clip.width = getWidth()-rightThickness;
 	clip.height = getHeight();
-	UT_DEBUGMSG(("\nCLIPRECT: pos topleft (%d, %d), pos botright (%d,%d) dim width = %d ht = %d\n", clip.left, clip.top, clip.left + clip.width, clip.top + clip.height,
+	xxx_UT_DEBUGMSG(("\nCLIPRECT: pos topleft (%d, %d), pos botright (%d,%d) dim width = %d ht = %d\n", clip.left, clip.top, clip.left + clip.width, clip.top + clip.height,
 				 clip.width, clip.height));
 	pDA->pG->setClipRect(&clip);
 
@@ -2693,18 +2733,6 @@ UT_sint32 fp_CellContainer::getHeight(void) const
 	UT_sint32 topThickness = getTopStyle (pTableLayout).m_thickness;
 	UT_sint32 bottomThickness = getBottomStyle (pTableLayout).m_thickness;
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
-	if(pTab)
-	{
-		UT_sint32 iRowHeight = pTab->getNthRow(getTopAttach())->allocation;
-		if(h > (iRowHeight - topThickness - bottomThickness - m_iTopPad - m_iBotPad))
-		{  
-			h = h - topThickness - bottomThickness - m_iTopPad - m_iBotPad;
-		}
-	}
-	else
-	{
-		h = h - topThickness - bottomThickness - m_iTopPad - m_iBotPad;
-	}
 	return h;
 }
 
@@ -2886,6 +2914,14 @@ void fp_CellContainer::layout(void)
 	fp_Container *pContainer, *pPrevContainer = NULL;
 	xxx_UT_DEBUGMSG(("Doing Cell layout %x \n",this));
 	fp_TableContainer * pMyBrokenTable = NULL;
+	UT_sint32 iAdditional= 0;
+	const fl_ContainerLayout * pLayout = const_cast<const fl_ContainerLayout *>(getSectionLayout()->myContainingLayout ());
+	UT_return_if_fail(pLayout->getContainerType () == FL_CONTAINER_TABLE);
+	const fl_TableLayout * pTableLayout = static_cast<const fl_TableLayout *>(pLayout);
+	iAdditional = getTopStyle (pTableLayout).m_thickness;
+	iAdditional += getBottomStyle (pTableLayout).m_thickness;
+	iAdditional +=(m_iTopPad + m_iBotPad);
+
 	if(countCons() == 0)
 	{
 		return;
@@ -2969,7 +3005,7 @@ void fp_CellContainer::layout(void)
 	{
 		return;
 	}
-	setHeight(iY);
+	setHeight(iY+iAdditional);
 }
 
 void fp_CellContainer::setToAllocation(void)
@@ -4824,11 +4860,11 @@ void fp_TableContainer::layout(void)
 	UT_DEBUGMSG(("ADITYA: Alloc: width = %d, height = %d\n", alloc.width, alloc.height));
 	
 	sizeAllocate(&alloc);
-	setToAllocation();
 	//
 	// Clear out the dirty flag. We've done a complete layout now.
 	//
 	pTL->setDirty(false);
+	setToAllocation();
 #if BENCHLAYOUT
 	timespec t2;
 	clock_gettime(CLOCK_REALTIME, &t2);	
@@ -5315,7 +5351,7 @@ void  fp_TableContainer::clearScreen(void)
 	{
 		return;
 	}
-	xxx_UT_DEBUGMSG(("Doing clear screen on %x \n",this));
+	UT_DEBUGMSG(("Doing clear screen on %p num rows %d \n",this,getNumRows()));
 	fp_CellContainer * pCell = static_cast<fp_CellContainer *>(getNthCon(0));
 	while(pCell)
 	{
