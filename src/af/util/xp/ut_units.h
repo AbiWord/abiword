@@ -78,6 +78,7 @@ ABI_EXPORT bool UT_isValidDimensionString(const char * sz, size_t max_length = 0
 
 ABI_EXPORT UT_uint32 UT_getDimensionPrecisicion (UT_Dimension dim);
 ABI_EXPORT double UT_getDimensionResolution (UT_Dimension dim);
+ABI_EXPORT double UT_convertFraction(const char * sz);
 
 G_END_DECLS
 

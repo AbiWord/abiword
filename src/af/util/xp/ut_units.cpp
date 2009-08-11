@@ -657,3 +657,21 @@ double UT_getDimensionResolution (UT_Dimension dim)
 			return 1;
 	}	
 }
+
+/*!
+ * Convert a percentage to a double precision fractional value
+ */
+double  UT_convertFraction(const char * pszFrac)
+{
+    double res = 0.0;
+    UT_Dimension dim =  UT_determineDimension(pszFrac);
+    if(dim == DIM_PERCENT)
+    {
+      res = UT_convertDimensionless(pszFrac)/100.;
+    }
+    else
+    {
+        res = UT_convertDimensionless(pszFrac);
+    }
+    return res;
+}

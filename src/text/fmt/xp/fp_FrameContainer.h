@@ -62,6 +62,7 @@ public:
 	virtual UT_sint32   getY() const;
 	virtual UT_sint32   getWidth() const;
 	virtual UT_sint32   getHeight() const;
+	virtual void        setHeight(UT_sint32 iHeight);
 	UT_sint32           getLeftPad(UT_sint32 y, UT_sint32 height);
 	UT_sint32           getRightPad(UT_sint32 y, UT_sint32 height);
 	virtual bool        isVBreakable(void)

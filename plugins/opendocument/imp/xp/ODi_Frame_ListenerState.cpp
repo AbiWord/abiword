@@ -708,15 +708,31 @@ bool ODi_Frame_ListenerState::_getFrameProperties(UT_UTF8String& rProps,
         }
     }
     UT_ASSERT_HARMLESS(pVal); // Is it really ok to not have a defined width?
-    if (pVal) {
+    if (pVal) 
+    {
         rProps += "; frame-width:";
         rProps += pVal;
     }
     
-    
-    
+    pVal = UT_getAttribute("style:rel-width", ppAtts);
+    if(pVal)
+    {
+        rProps += "; frame-rel-width:";
+        rProps += pVal;
+    }
+    else
+    {
+         pVal = m_rElementStack.getStartTag(0)->getAttributeValue("style:rel-width");
+	 if(pVal)
+	 {
+	      rProps += "; frame-rel-width:";
+	      rProps += pVal;
+	 }
+    }
+
     pVal = UT_getAttribute("fo:min-height", ppAtts);
-    if (pVal == NULL) {
+    if (pVal == NULL) 
+    {
         pVal = m_rElementStack.getStartTag(0)->getAttributeValue("svg:height");
         if (pVal == NULL) {
             pVal = m_rElementStack.getStartTag(0)->getAttributeValue("fo:min-height");
@@ -726,12 +742,17 @@ bool ODi_Frame_ListenerState::_getFrameProperties(UT_UTF8String& rProps,
                 UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
             }
         }
-    } else {
-        if (UT_determineDimension(pVal, DIM_none) == DIM_PERCENT) {
+    } 
+    else 
+    {
+        if (UT_determineDimension(pVal, DIM_none) == DIM_PERCENT) 
+	{
             // TODO: Do the conversion from percentage to a real
             //       unit (ie: "cm" or "in").
             UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
         }
+	rProps += "; frame-min-height:";
+	rProps += pVal;
     }
     if (pVal) {
         rProps += "; frame-height:";

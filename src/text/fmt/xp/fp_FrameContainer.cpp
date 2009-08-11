@@ -818,4 +818,19 @@ void fp_FrameContainer::layout(void)
 			pPrevContainer->setAssignedScreenHeight(iY - iPrevY + 1);
 		}
 	}
+	fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(getSectionLayout());
+	if(pFL->expandHeight() && (iY > pFL->minHeight()))
+	{
+	     setHeight(iY+m_iYpad*2);
+	}
+}
+
+void fp_FrameContainer::setHeight(UT_sint32 iY)
+{
+        if(iY != getFullHeight())
+	{
+	     fp_VerticalContainer::setHeight(iY);
+	     fp_Page * pPage = getPage();
+	     getDocSectionLayout()->setNeedsSectionBreak(true,pPage);
+	}
 }

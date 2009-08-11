@@ -100,7 +100,9 @@ fl_FrameLayout::fl_FrameLayout(FL_DocLayout* pLayout,
 	  m_iFrameWrapMode(FL_FRAME_ABOVE_TEXT),
 	  m_bIsTightWrap(false),
 	  m_iPrefPage(-1),
-	  m_bRelocate(false)
+	  m_bRelocate(false),
+	  m_bExpandHeight(false),
+	  m_iMinHeight(0)
 {
 }
 
@@ -809,6 +811,9 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	const gchar * pszTightWrapped = NULL;
 	const gchar * pszPrefPage = NULL;
 
+	const gchar * pszExpandHeight = NULL;
+	const gchar * pszPercentWidth = NULL;
+	const gchar * pszMinHeight = NULL;
 // Frame Type
 
 	if(!pSectionAP || !pSectionAP->getProperty("frame-type",pszFrameType))
@@ -1022,6 +1027,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_iHeight = m_pLayout->getGraphics()->tlu(2);
 	}
+	m_iMinHeight = m_iHeight;
 	UT_DEBUGMSG(("Height %s \n",pszHeight));
 
 // Xpadding
@@ -1129,6 +1135,40 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 			m_iPrefPage = atoi(pszPrefPage);
 		else
 			m_iPrefPage = -1;
+	}
+
+	// 
+	// Percent Width
+	//
+	if(pSectionAP && pSectionAP->getProperty("frame-rel-width",pszPercentWidth))
+	{
+		if(pszPercentWidth)
+		{
+			double frac_width = UT_convertFraction(pszPercentWidth);
+			fl_DocSectionLayout * pDSL = getDocSectionLayout();
+			m_iWidth = frac_width*pDSL->getActualColumnWidth();
+		}
+	}
+
+	//
+	// Min Height
+	//
+	if(pSectionAP && pSectionAP->getProperty("frame-min-height",pszMinHeight))
+	{
+		if(pszMinHeight)
+		{
+			m_iMinHeight = UT_convertToLogicalUnits(pszMinHeight);
+			m_bExpandHeight = true;
+		}
+	}
+
+	//
+	// Expandable Height
+	//
+	if(pSectionAP && pSectionAP->getProperty("frame-expand-height",pszExpandHeight))
+	{
+		m_iMinHeight = m_iHeight;
+		m_bExpandHeight = true;
 	}
 }
 

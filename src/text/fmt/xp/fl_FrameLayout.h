@@ -141,6 +141,10 @@ public:
 	  { return m_bIsTightWrap;}
 	bool                isRelocate(void) const
 	{ return m_bRelocate;}
+	bool                expandHeight(void) const
+	{ return m_bExpandHeight;}
+	UT_sint32           minHeight(void) const
+	{ return m_iMinHeight;}
 private:
 	virtual void		     _lookupProperties(const PP_AttrProp* pAP);
 	virtual void		     _lookupMarginProperties(const PP_AttrProp* pAP);
@@ -182,6 +186,8 @@ private:
 	bool                    m_bIsTightWrap;
 	UT_sint32               m_iPrefPage;
 	bool                    m_bRelocate;
+	bool                    m_bExpandHeight;
+	UT_sint32               m_iMinHeight;
 };
 
 #endif /* FRAMELAYOUT_H */
