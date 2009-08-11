@@ -673,7 +673,6 @@ void fl_FrameLayout::format(void)
 		getNewContainer();
 	}
 	fl_ContainerLayout*	pBL2 = getFirstLayout();
-	bool bOnPage = false;
 	while (pBL2)
 	{
 		pBL2->format();
@@ -746,20 +745,20 @@ void fl_FrameLayout::format(void)
 		}
 		if(!pBL->isCollapsed())
 		{
-		  bOnPage = pBL->setFramesOnPage(NULL);
-		  if(!bOnPage)
+		  m_bIsOnPage = pBL->setFramesOnPage(NULL);
+		  if(!m_bIsOnPage)
 		  {
 		    setNeedsReformat(this);
 		  }
 		}
 	}
-	m_bNeedsFormat = bOnPage;
-	m_bNeedsReformat = bOnPage;
-	if(!bOnPage)
+	m_bNeedsFormat = m_bIsOnPage;
+	m_bNeedsReformat = m_bIsOnPage;
+	if(!m_bIsOnPage)
 	{
 	  setNeedsReformat(this);
 	}
-	if(!bOnPage)
+	if(!m_bIsOnPage)
 	{
 	  return;
 	}

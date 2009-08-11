@@ -2371,11 +2371,15 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 							if(pPrefPage && (pPrefPage->findFrameContainer(pFrameCon) < 0))
 							{
 									pPrefPage->insertFrameContainer(pFrameCon);
+									iPrefPage = getDocLayout()->findPage(pPrefPage);
+									pFrameCon->setPreferedPageNo(iPrefPage);
 							}
 					}
 					else
 					{
 							pPage->insertFrameContainer(pFrameCon);
+							iPrefPage = getDocLayout()->findPage(pPage);
+							pFrameCon->setPreferedPageNo(iPrefPage);
 					}
 				}
 			}
