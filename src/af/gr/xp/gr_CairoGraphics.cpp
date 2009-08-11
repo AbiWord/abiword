@@ -23,6 +23,8 @@
 #include "config.h"
 #endif
 
+#include <string>
+
 #include "gr_CairoGraphics.h"
 #include "gr_Painter.h"
 
@@ -57,6 +59,68 @@ UT_uint32 adobeToUnicode(UT_uint32 iAdobe);
 UT_uint32      GR_CairoGraphics::s_iInstanceCount = 0;
 UT_VersionInfo GR_CairoGraphics::s_Version;
 int            GR_CairoGraphics::s_iMaxScript = 0;
+
+
+
+/*!
+ * The idea is to create a
+ * new image from the rectangular segment in device units defined by 
+ * UT_Rect rec. The Image should be deleted by the calling routine.
+ */
+GR_Image * GR_CairoRasterImage::createImageSegment(GR_Graphics * pG,const UT_Rect & rec)
+{
+	UT_sint32 x = pG->tdu(rec.left);
+	UT_sint32 y = pG->tdu(rec.top);
+	if(x < 0)
+	{
+		x = 0;
+	}
+	if(y < 0)
+	{
+		y = 0;
+	}
+	UT_sint32 width = pG->tdu(rec.width);
+	UT_sint32 height = pG->tdu(rec.height);
+	UT_sint32 dH = getDisplayHeight();
+	UT_sint32 dW = getDisplayWidth();
+	if(height > dH)
+	{
+		height = dH;
+	}
+	if(width > dW)
+	{
+		width = dW;
+	}
+	if(x + width > dW)
+	{
+		width = dW - x;
+	}
+	if(y + height > dH)
+	{
+		height = dH - y;
+	}
+	if(width <= 0)
+	{
+	        x = dW -1;
+		width = 1;
+	}
+	if(height <= 0)
+	{
+		y = dH -1;
+		height = 1;
+	}
+	std::string sName("");
+	getName(sName);
+	sName += UT_std_string_sprintf("_segemnt_%d_%d_%d_%d",x,y,width,height);
+
+	GR_CairoRasterImage * pImage = makeSubimage(sName, x, y, width, height);
+	if(pImage) 
+	{
+		pImage->setDisplaySize(width,height);
+	}
+	return pImage;
+}
+
 
 
 GR_CairoPatternImpl::GR_CairoPatternImpl(const char * fileName)

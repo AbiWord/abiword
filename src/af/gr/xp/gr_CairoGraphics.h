@@ -82,7 +82,13 @@ class GR_CairoRasterImage
 	: public GR_RasterImage
 {
 public:
+	virtual GR_Image * createImageSegment(GR_Graphics * pG,const UT_Rect & rec);
 	virtual void cairoSetSource(cairo_t *, double x, double y) = 0;
+protected:
+	// called by createImageSegment()
+	virtual GR_CairoRasterImage *makeSubimage(const std::string & n,
+											  UT_sint32 x, UT_sint32 y,
+											  UT_sint32 w, UT_sint32 h) const = 0;
 };
 
 class ABI_EXPORT GR_PangoFont : public GR_Font

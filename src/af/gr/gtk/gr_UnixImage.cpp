@@ -96,64 +96,16 @@ GR_Image::GRType GR_UnixImage::getType(void) const
 	return  m_ImageType;
 }
 
-/*!
- * The idea is to create a
- * new image from the rectangular segment in device units defined by 
- * UT_Rect rec. The Image should be deleted by the calling routine.
- */
-GR_Image * GR_UnixImage::createImageSegment(GR_Graphics * pG,const UT_Rect & rec)
+
+GR_UnixImage *GR_UnixImage::makeSubimage(const std::string & name,
+                           UT_sint32 x, UT_sint32 y,
+                           UT_sint32 width, UT_sint32 height) const
 {
-        if(m_image == NULL)
+    if(m_image == NULL)
 	    return NULL;
-	UT_sint32 x = pG->tdu(rec.left);
-	UT_sint32 y = pG->tdu(rec.top);
-	if(x < 0)
-	{
-		x = 0;
-	}
-	if(y < 0)
-	{
-		y = 0;
-	}
-	UT_sint32 width = pG->tdu(rec.width);
-	UT_sint32 height = pG->tdu(rec.height);
-	UT_sint32 dH = getDisplayHeight();
-	UT_sint32 dW = getDisplayWidth();
-	if(height > dH)
-	{
-		height = dH;
-	}
-	if(width > dW)
-	{
-		width = dW;
-	}
-	if(x + width > dW)
-	{
-		width = dW - x;
-	}
-	if(y + height > dH)
-	{
-		height = dH - y;
-	}
-	if(width <= 0)
-	{
-	        x = dW -1;
-		width = 1;
-	}
-	if(height <= 0)
-	{
-		y = dH -1;
-		height = 1;
-	}
-	UT_String sName("");
-	getName(sName);
-	UT_String sSub("");
-	UT_String_sprintf(sSub,"_segemnt_%d_%d_%d_%d",x,y,width,height);
-	sName += sSub;
-	GR_UnixImage * pImage = new GR_UnixImage(sName.c_str());
-	UT_ASSERT(m_image);
-	xxx_UT_DEBUGMSG((" segment x %d y %d width %d height %d \n",x,y,width,height));
-	pImage->m_image = gdk_pixbuf_new_subpixbuf(m_image,x,y,width,height);
+	GR_UnixImage * pImage = new GR_UnixImage(name.c_str());
+
+    pImage->m_image = gdk_pixbuf_new_subpixbuf(m_image,x,y,width,height);
 //
 //  gdk_pixbuf_new_subpixbuf shares pixels with the original pixbuf and
 //  so puts a reference on m_image.
@@ -164,9 +116,9 @@ GR_Image * GR_UnixImage::createImageSegment(GR_Graphics * pG,const UT_Rect & rec
 // Make a copy so we don't have to worry about ref counting the orginal.
 //
 	pImage->m_image = gdk_pixbuf_copy(pImage->m_image);
-	pImage->setDisplaySize(width,height);
-	return static_cast<GR_Image *>(pImage);
+    return pImage;
 }
+
 
 /*!
  * Scale our image to rectangle given by rec. The dimensions of rec

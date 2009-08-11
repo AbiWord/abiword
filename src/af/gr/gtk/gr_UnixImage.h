@@ -44,12 +44,14 @@ public:
    	GdkPixbuf *			getData(void) const { return m_image; }
 	void setData(GdkPixbuf *data)
 	{ m_image = data;}
-    virtual GR_Image *  createImageSegment(GR_Graphics * pG, const UT_Rect & rec);
     virtual void        scaleImageTo(GR_Graphics * pG, const UT_Rect & rec);
     virtual bool isTransparentAt(UT_sint32 x, UT_sint32 y);
     void scale (UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 	virtual void cairoSetSource(cairo_t *, double x, double y);
-
+protected:
+	virtual GR_UnixImage *makeSubimage(const std::string & n,
+											  UT_sint32 x, UT_sint32 y,
+											  UT_sint32 w, UT_sint32 h) const;
 private:
 	GdkPixbuf * m_image;
     GR_Image::GRType m_ImageType;
