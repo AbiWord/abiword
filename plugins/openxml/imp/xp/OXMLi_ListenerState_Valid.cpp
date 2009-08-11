@@ -127,13 +127,19 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 		case KEYWORD_bottom:
 		{
 			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "bottom") || 
-						  contextMatches(contextTag, NS_W_KEY, "pBdr");
+						  contextMatches(contextTag, NS_W_KEY, "pBdr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tcMar") ||
+						  contextMatches(contextTag, NS_W_KEY, "tcBorders") ||
+						  contextMatches(contextTag, NS_W_KEY, "tblBorders") ||
+						  contextMatches(contextTag, NS_W_KEY, "tblCellMar");
 			break;
 		}
 		case KEYWORD_cnfStyle:
 		{
 			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "cnfStyle") || 
-						  contextMatches(contextTag, NS_W_KEY, "pPr");
+						  contextMatches(contextTag, NS_W_KEY, "pPr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tcPr") ||
+						  contextMatches(contextTag, NS_W_KEY, "trPr");
 			break;
 		}
 		case KEYWORD_contextualSpacing:
@@ -145,7 +151,8 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 		case KEYWORD_divId:
 		{
 			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "divId") || 
-						  contextMatches(contextTag, NS_W_KEY, "pPr");
+						  contextMatches(contextTag, NS_W_KEY, "pPr") ||
+						  contextMatches(contextTag, NS_W_KEY, "trPr");
 			break;
 		}
 		case KEYWORD_framePr:
@@ -163,7 +170,10 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 		case KEYWORD_jc:
 		{
 			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "jc") || 
-						  contextMatches(contextTag, NS_W_KEY, "pPr");
+						  contextMatches(contextTag, NS_W_KEY, "pPr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tblPrEx") ||
+						  contextMatches(contextTag, NS_W_KEY, "trPr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tblPr");
 			break;
 		}
 		case KEYWORD_keepLines:
@@ -187,7 +197,11 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 		case KEYWORD_left:
 		{
 			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "left") || 
-						  contextMatches(contextTag, NS_W_KEY, "pBdr");
+						  contextMatches(contextTag, NS_W_KEY, "pBdr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tcBorders") ||
+						  contextMatches(contextTag, NS_W_KEY, "tcMar") ||
+						  contextMatches(contextTag, NS_W_KEY, "tblCellMar") ||
+						  contextMatches(contextTag, NS_W_KEY, "tblBorders");
 			break;
 		}
 		case KEYWORD_mirrorIndents:
@@ -258,7 +272,11 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 		case KEYWORD_right:
 		{
 			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "right") || 
-						  contextMatches(contextTag, NS_W_KEY, "pBdr");
+						  contextMatches(contextTag, NS_W_KEY, "pBdr") || 
+						  contextMatches(contextTag, NS_W_KEY, "tcBorders") ||
+						  contextMatches(contextTag, NS_W_KEY, "tcMar") ||
+						  contextMatches(contextTag, NS_W_KEY, "tblCellMar") ||
+						  contextMatches(contextTag, NS_W_KEY, "tblBorders");
 			break;
 		}
 		case KEYWORD_rPr:
@@ -276,7 +294,10 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 		{
 			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "shd") || 
 						  contextMatches(contextTag, NS_W_KEY, "pPr") || 
-						  contextMatches(contextTag, NS_W_KEY, "rPr");
+						  contextMatches(contextTag, NS_W_KEY, "rPr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tcPr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tblPrEx") ||
+						  contextMatches(contextTag, NS_W_KEY, "tblPr");
 			break;
 		}
 		case KEYWORD_snapToGrid:
@@ -339,13 +360,18 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 		case KEYWORD_textDirection:
 		{
 			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "textDirection") || 
-						  contextMatches(contextTag, NS_W_KEY, "pPr");
+						  contextMatches(contextTag, NS_W_KEY, "pPr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tcPr");
 			break;
 		}
 		case KEYWORD_top:
 		{
 			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "top") || 
-						  contextMatches(contextTag, NS_W_KEY, "pBdr");
+						  contextMatches(contextTag, NS_W_KEY, "pBdr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tblBorders") ||
+						  contextMatches(contextTag, NS_W_KEY, "tblCellMar") ||
+						  contextMatches(contextTag, NS_W_KEY, "tcMar") ||
+						  contextMatches(contextTag, NS_W_KEY, "tcBorders");
 			break;
 		}
 		case KEYWORD_topLinePunct:
@@ -791,6 +817,289 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 			break;
 		}
 
+		//Tables, Section 2.4
+		case KEYWORD_bidiVisual:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "bidiVisual") || 
+						  contextMatches(contextTag, NS_W_KEY, "tblPr");
+			break;
+		}
+		case KEYWORD_cantSplit:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "cantSplit") || 
+						  contextMatches(contextTag, NS_W_KEY, "trPr");
+			break;
+		}
+		case KEYWORD_gridAfter:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "gridAfter") || 
+						  contextMatches(contextTag, NS_W_KEY, "trPr");
+			break;
+		}
+		case KEYWORD_gridBefore:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "gridBefore") || 
+						  contextMatches(contextTag, NS_W_KEY, "trPr");
+			break;
+		}
+		case KEYWORD_gridCol:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "gridCol") || 
+						  contextMatches(contextTag, NS_W_KEY, "tblGrid");
+			break;
+		}
+		case KEYWORD_gridSpan:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "gridSpan") || 
+						  contextMatches(contextTag, NS_W_KEY, "tcPr");
+			break;
+		}
+		case KEYWORD_hidden:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "hidden") || 
+						  contextMatches(contextTag, NS_W_KEY, "trPr");
+			break;
+		}
+		case KEYWORD_hideMark:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "hideMark") || 
+						  contextMatches(contextTag, NS_W_KEY, "tcPr");
+			break;
+		}
+		case KEYWORD_hMerge:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "hMerge") || 
+						  contextMatches(contextTag, NS_W_KEY, "tcPr");
+			break;
+		}
+		case KEYWORD_insideH:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "insideH") || 
+						  contextMatches(contextTag, NS_W_KEY, "tblBorders") ||
+						  contextMatches(contextTag, NS_W_KEY, "tcBorders");
+			break;
+		}
+		case KEYWORD_insideV:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "insideV") || 
+						  contextMatches(contextTag, NS_W_KEY, "tblBorders") ||
+						  contextMatches(contextTag, NS_W_KEY, "tcBorders");
+			break;
+		}
+		case KEYWORD_noWrap:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "noWrap") || 
+						  contextMatches(contextTag, NS_W_KEY, "tcPr");
+			break;
+		}
+		case KEYWORD_tbl:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "tbl") || 
+						  contextMatches(contextTag, NS_W_KEY, "body") ||
+						  contextMatches(contextTag, NS_W_KEY, "comment") ||
+						  contextMatches(contextTag, NS_W_KEY, "customXml") ||
+						  contextMatches(contextTag, NS_W_KEY, "docPartBody") ||
+						  contextMatches(contextTag, NS_W_KEY, "endnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "footnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "ftr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hdr") ||
+						  contextMatches(contextTag, NS_W_KEY, "sdtContent") ||
+						  contextMatches(contextTag, NS_W_KEY, "tc") ||
+						  contextMatches(contextTag, NS_W_KEY, "txbxContent");
+			break;
+		}
+		case KEYWORD_tblBorders:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "tblBorders") || 
+						  contextMatches(contextTag, NS_W_KEY, "tblPrEx") ||
+						  contextMatches(contextTag, NS_W_KEY, "tblPr");
+			break;
+		}
+		case KEYWORD_tblCellMar:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "tblCellMar") || 
+						  contextMatches(contextTag, NS_W_KEY, "tblPrEx") ||
+						  contextMatches(contextTag, NS_W_KEY, "tblPr");
+			break;
+		}
+		case KEYWORD_tblCellSpacing:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "tblCellSpacing") || 
+						  contextMatches(contextTag, NS_W_KEY, "tblPrEx") ||
+						  contextMatches(contextTag, NS_W_KEY, "trPr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tblPr");
+			break;
+		}
+		case KEYWORD_tblGrid:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "tblGrid") || 
+						  contextMatches(contextTag, NS_W_KEY, "tbl") ||
+						  contextMatches(contextTag, NS_W_KEY, "tblGridChange");
+			break;
+		}
+		case KEYWORD_tblHeader:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "tblHeader") || 
+						  contextMatches(contextTag, NS_W_KEY, "trPr");
+			break;
+		}
+		case KEYWORD_tblInd:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "tblInd") || 
+						  contextMatches(contextTag, NS_W_KEY, "tblPrEx") ||
+						  contextMatches(contextTag, NS_W_KEY, "tblPr");
+			break;
+		}
+		case KEYWORD_tblLayout:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "tblLayout") || 
+						  contextMatches(contextTag, NS_W_KEY, "tblPr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tblPrEx");
+			break;
+		}
+		case KEYWORD_tblLook:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "tblLook") || 
+						  contextMatches(contextTag, NS_W_KEY, "tblPr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tblPrEx");
+			break;
+		}
+		case KEYWORD_tblOverlap:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "tblOverlap") || 
+						  contextMatches(contextTag, NS_W_KEY, "tblPr");
+			break;
+		}
+		case KEYWORD_tblpPr:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "tblpPr") || 
+						  contextMatches(contextTag, NS_W_KEY, "tblPr");
+			break;
+		}
+		case KEYWORD_tblPr:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "tblPr") || 
+						  contextMatches(contextTag, NS_W_KEY, "tbl") ||
+						  contextMatches(contextTag, NS_W_KEY, "tblPrChange");
+			break;
+		}
+		case KEYWORD_tblPrEx:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "tblPrEx") || 
+						  contextMatches(contextTag, NS_W_KEY, "tr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tblPrExChange");
+			break;
+		}
+		case KEYWORD_tblStyle:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "tblStyle") || 
+						  contextMatches(contextTag, NS_W_KEY, "tblPr");
+			break;
+		}
+		case KEYWORD_tblW:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "tblW") || 
+						  contextMatches(contextTag, NS_W_KEY, "tblPrEx") ||
+						  contextMatches(contextTag, NS_W_KEY, "tblPr");
+			break;
+		}
+		case KEYWORD_tc:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "tc") || 
+						  contextMatches(contextTag, NS_W_KEY, "customXml") ||
+						  contextMatches(contextTag, NS_W_KEY, "sdtContent") ||
+						  contextMatches(contextTag, NS_W_KEY, "tr");
+			break;
+		}
+		case KEYWORD_tcBorders:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "tcBorders") || 
+						  contextMatches(contextTag, NS_W_KEY, "tcPr");
+			break;
+		}
+		case KEYWORD_tcFitText:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "tcFitText") || 
+						  contextMatches(contextTag, NS_W_KEY, "tcPr");
+			break;
+		}
+		case KEYWORD_tcMar:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "tcMar") || 
+						  contextMatches(contextTag, NS_W_KEY, "tcPr");
+			break;
+		}
+		case KEYWORD_tcPr:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "tcPr") || 
+						  contextMatches(contextTag, NS_W_KEY, "tcPrChange") ||
+						  contextMatches(contextTag, NS_W_KEY, "tc");
+			break;
+		}
+		case KEYWORD_tcW:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "tcW") || 
+						  contextMatches(contextTag, NS_W_KEY, "tcPr");
+			break;
+		}
+		case KEYWORD_tl2br:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "tl2br") || 
+						  contextMatches(contextTag, NS_W_KEY, "tcBorders");
+			break;
+		}
+		case KEYWORD_tr:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "tr") || 
+						  contextMatches(contextTag, NS_W_KEY, "customXml") ||
+						  contextMatches(contextTag, NS_W_KEY, "stdContent") ||
+						  contextMatches(contextTag, NS_W_KEY, "tbl");
+			break;
+		}
+		case KEYWORD_tr2bl:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "tr2bl") || 
+						  contextMatches(contextTag, NS_W_KEY, "tcBorders");
+			break;
+		}
+		case KEYWORD_trHeight:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "trHeight") || 
+						  contextMatches(contextTag, NS_W_KEY, "trPr");
+			break;
+		}
+		case KEYWORD_trPr:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "trPr") || 
+						  contextMatches(contextTag, NS_W_KEY, "tr") ||
+						  contextMatches(contextTag, NS_W_KEY, "trPrChange");
+			break;
+		}
+		case KEYWORD_vAlign:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "vAlign") || 
+						  contextMatches(contextTag, NS_W_KEY, "tcPr");
+			break;
+		}
+		case KEYWORD_vMerge:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "vMerge") || 
+						  contextMatches(contextTag, NS_W_KEY, "tcPr");
+			break;
+		}
+		case KEYWORD_wAfter:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "wAfter") || 
+						  contextMatches(contextTag, NS_W_KEY, "trPr");
+			break;
+		}
+		case KEYWORD_wBefore:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "wBefore") || 
+						  contextMatches(contextTag, NS_W_KEY, "trPr");
+			break;
+		}
+
 		//TODO: add more here
 	};
 }
@@ -824,9 +1133,11 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:bdr", KEYWORD_bdr));
 	m_keywordMap.insert(std::make_pair("W:between", KEYWORD_between));
 	m_keywordMap.insert(std::make_pair("W:bidi", KEYWORD_bidi));
+	m_keywordMap.insert(std::make_pair("W:bidiVisual", KEYWORD_bidiVisual));
 	m_keywordMap.insert(std::make_pair("W:body", KEYWORD_body));
 	m_keywordMap.insert(std::make_pair("W:bottom", KEYWORD_bottom));
 	m_keywordMap.insert(std::make_pair("W:break", KEYWORD_break));
+	m_keywordMap.insert(std::make_pair("W:cantSplit", KEYWORD_cantSplit));
 	m_keywordMap.insert(std::make_pair("W:caps", KEYWORD_caps));
 	m_keywordMap.insert(std::make_pair("W:cnfStyle", KEYWORD_cnfStyle));
 	m_keywordMap.insert(std::make_pair("W:contextualSpacing", KEYWORD_contextualSpacing));
@@ -849,7 +1160,14 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:fitText", KEYWORD_fitText));
 	m_keywordMap.insert(std::make_pair("W:framePr", KEYWORD_framePr));
 	m_keywordMap.insert(std::make_pair("W:glossaryDocument", KEYWORD_glossaryDocument));
+	m_keywordMap.insert(std::make_pair("W:gridAfter", KEYWORD_gridAfter));
+	m_keywordMap.insert(std::make_pair("W:gridBefore", KEYWORD_gridBefore));
+	m_keywordMap.insert(std::make_pair("W:gridCol", KEYWORD_gridCol));
+	m_keywordMap.insert(std::make_pair("W:gridSpan", KEYWORD_gridSpan));
+	m_keywordMap.insert(std::make_pair("W:hidden", KEYWORD_hidden));
+	m_keywordMap.insert(std::make_pair("W:hideMark", KEYWORD_hideMark));
 	m_keywordMap.insert(std::make_pair("W:highlight", KEYWORD_highlight));
+	m_keywordMap.insert(std::make_pair("W:hMerge", KEYWORD_hMerge));
 	m_keywordMap.insert(std::make_pair("W:hps", KEYWORD_hps));
 	m_keywordMap.insert(std::make_pair("W:hpsBaseText", KEYWORD_hpsBaseText));
 	m_keywordMap.insert(std::make_pair("W:hpsRaise", KEYWORD_hpsRaise));
@@ -857,6 +1175,8 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:iCs", KEYWORD_iCs));
 	m_keywordMap.insert(std::make_pair("W:imprint", KEYWORD_imprint));
 	m_keywordMap.insert(std::make_pair("W:ind", KEYWORD_ind));
+	m_keywordMap.insert(std::make_pair("W:insideH", KEYWORD_insideH));
+	m_keywordMap.insert(std::make_pair("W:insideV", KEYWORD_insideV));
 	m_keywordMap.insert(std::make_pair("W:jc", KEYWORD_jc));
 	m_keywordMap.insert(std::make_pair("W:keepLines", KEYWORD_keepLines));
 	m_keywordMap.insert(std::make_pair("W:keepNext", KEYWORD_keepNext));
@@ -872,6 +1192,7 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:movie", KEYWORD_movie));
 	m_keywordMap.insert(std::make_pair("W:noBreakHyphen", KEYWORD_noBreakHyphen));
 	m_keywordMap.insert(std::make_pair("W:noProof", KEYWORD_noProof));
+	m_keywordMap.insert(std::make_pair("W:noWrap", KEYWORD_noWrap));
 	m_keywordMap.insert(std::make_pair("W:numPr", KEYWORD_numPr));
 	m_keywordMap.insert(std::make_pair("W:object", KEYWORD_object));
 	m_keywordMap.insert(std::make_pair("W:oMath", KEYWORD_oMath));
@@ -915,17 +1236,47 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:t", KEYWORD_t));
 	m_keywordMap.insert(std::make_pair("W:tab", KEYWORD_tab));
 	m_keywordMap.insert(std::make_pair("W:tabs", KEYWORD_tabs));
+	m_keywordMap.insert(std::make_pair("W:tbl", KEYWORD_tbl));
+	m_keywordMap.insert(std::make_pair("W:tblBorders", KEYWORD_tblBorders));
+	m_keywordMap.insert(std::make_pair("W:tblCellMar", KEYWORD_tblCellMar));
+	m_keywordMap.insert(std::make_pair("W:tblCellSpacing", KEYWORD_tblCellSpacing));
+	m_keywordMap.insert(std::make_pair("W:tblGrid", KEYWORD_tblGrid));
+	m_keywordMap.insert(std::make_pair("W:tblHeader", KEYWORD_tblHeader));
+	m_keywordMap.insert(std::make_pair("W:tblInd", KEYWORD_tblInd));
+	m_keywordMap.insert(std::make_pair("W:tblLayout", KEYWORD_tblLayout));
+	m_keywordMap.insert(std::make_pair("W:tblLook", KEYWORD_tblLook));
+	m_keywordMap.insert(std::make_pair("W:tblOverlap", KEYWORD_tblOverlap));
+	m_keywordMap.insert(std::make_pair("W:tblpPr", KEYWORD_tblpPr));
+	m_keywordMap.insert(std::make_pair("W:tblPr", KEYWORD_tblPr));
+	m_keywordMap.insert(std::make_pair("W:tblPrEx", KEYWORD_tblPrEx));
+	m_keywordMap.insert(std::make_pair("W:tblStyle", KEYWORD_tblStyle));
+	m_keywordMap.insert(std::make_pair("W:tblW", KEYWORD_tblW));
+	m_keywordMap.insert(std::make_pair("W:tc", KEYWORD_tc));
+	m_keywordMap.insert(std::make_pair("W:tcBorders", KEYWORD_tcBorders));
+	m_keywordMap.insert(std::make_pair("W:tcFitText", KEYWORD_tcFitText));
+	m_keywordMap.insert(std::make_pair("W:tcMar", KEYWORD_tcMar));
+	m_keywordMap.insert(std::make_pair("W:tcPr", KEYWORD_tcPr));
+	m_keywordMap.insert(std::make_pair("W:tcW", KEYWORD_tcW));
 	m_keywordMap.insert(std::make_pair("W:textAlignment", KEYWORD_textAlignment));
 	m_keywordMap.insert(std::make_pair("W:textboxTightWrap", KEYWORD_textboxTightWrap));
 	m_keywordMap.insert(std::make_pair("W:textDirection", KEYWORD_textDirection));
+	m_keywordMap.insert(std::make_pair("W:tl2br", KEYWORD_tl2br));
 	m_keywordMap.insert(std::make_pair("W:top", KEYWORD_top));
 	m_keywordMap.insert(std::make_pair("W:topLinePunct", KEYWORD_topLinePunct));
+	m_keywordMap.insert(std::make_pair("W:tr", KEYWORD_tr));
+	m_keywordMap.insert(std::make_pair("W:tr2bl", KEYWORD_tr2bl));
+	m_keywordMap.insert(std::make_pair("W:trHeight", KEYWORD_trHeight));
+	m_keywordMap.insert(std::make_pair("W:trPr", KEYWORD_trPr));
 	m_keywordMap.insert(std::make_pair("W:u", KEYWORD_u));
+	m_keywordMap.insert(std::make_pair("W:vAlign", KEYWORD_vAlign));
 	m_keywordMap.insert(std::make_pair("W:vanish", KEYWORD_vanish));
 	m_keywordMap.insert(std::make_pair("W:vertAlign", KEYWORD_vertAlign));
+	m_keywordMap.insert(std::make_pair("W:vMerge", KEYWORD_vMerge));
 	m_keywordMap.insert(std::make_pair("W:yearLong", KEYWORD_yearLong));
 	m_keywordMap.insert(std::make_pair("W:yearShort", KEYWORD_yearShort));
 	m_keywordMap.insert(std::make_pair("W:w", KEYWORD_w));
+	m_keywordMap.insert(std::make_pair("W:wAfter", KEYWORD_wAfter));
+	m_keywordMap.insert(std::make_pair("W:wBefore", KEYWORD_wBefore));
 	m_keywordMap.insert(std::make_pair("W:webHidden", KEYWORD_webHidden));
 	m_keywordMap.insert(std::make_pair("W:widowControl", KEYWORD_widowControl));
 	m_keywordMap.insert(std::make_pair("W:wordWrap", KEYWORD_wordWrap));
