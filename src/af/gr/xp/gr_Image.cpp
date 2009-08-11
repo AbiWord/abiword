@@ -42,6 +42,11 @@ void GR_Image::getName(char* p) const
 	strcpy(p, m_szName.c_str());
 }
 
+void GR_Image::getName ( std::string & name) const
+{
+	name = m_szName;
+}
+
 void GR_Image::getName ( UT_String & copy ) const
 {
   // assign
@@ -298,7 +303,7 @@ void GR_Image::DestroyOutline(void)
 
 void GR_Image::setName ( const UT_String & name )
 {
-  m_szName = name;
+  m_szName = name.c_str();
 }
 
 GR_Image::GRType GR_Image::getBufferType(const UT_ByteBuf * pBB)

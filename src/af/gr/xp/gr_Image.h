@@ -20,6 +20,7 @@
 #ifndef GR_IMAGE_H
 #define GR_IMAGE_H
 
+#include <string>
 #include "ut_types.h"
 #include "ut_string_class.h"
 #include "ut_misc.h"
@@ -55,6 +56,7 @@ public:
     virtual GR_Image *  createImageSegment(GR_Graphics * pG, const UT_Rect & rec) = 0;
 	virtual void        scaleImageTo(GR_Graphics * pG, const UT_Rect & rec);
 	void				getName(char* szName) const;
+	void getName ( std::string & name) const;
 	void getName ( UT_String & copy ) const;
 	/*!
 	 * Returns true if the image has any alpha in it.
@@ -88,7 +90,7 @@ protected:
 	void setName ( const UT_String & szName );
 
 private:
-   	UT_String		m_szName;
+   	std::string 		m_szName;
 	UT_sint32			m_iDisplayWidth;
 	UT_sint32			m_iDisplayHeight;
 	UT_GenericVector<GR_Image_Point *> m_vecOutLine;
