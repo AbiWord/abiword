@@ -104,7 +104,18 @@ void AccountHandler::deleteBuddies()
 {
 	m_vBuddies.clear();
 }
-		
+
+bool AccountHandler::hasAccess(const std::vector<std::string>& vAcl, BuddyPtr pBuddy)
+{
+	UT_return_val_if_fail(pBuddy, false);
+
+	for (UT_uint32 i = 0; i < vAcl.size(); i++)
+		if (vAcl[i] == pBuddy->getDescriptor(false))
+			return true;
+
+	return false;
+}
+
 void AccountHandler::getSessionsAsync()
 {
 	for (std::vector<BuddyPtr>::iterator it = m_vBuddies.begin(); it != m_vBuddies.end(); it++)
@@ -138,6 +149,12 @@ bool AccountHandler::hasSession(const UT_UTF8String& sSessionId)
 void AccountHandler::signal(const Event& event, BuddyPtr pSource)
 {
 	UT_DEBUGMSG(("AccountHandler::signal()\n"));
+
+	// we will not forward an event over this account that came from another
+	// acount: if you do that, then you very easily get packets running around
+	// forever.
+	if (pSource && pSource->getHandler() != this)
+		return;
 
 	// broadcast this event over our network (if applicable for each message type)
 	const std::vector<BuddyPtr> vRecipients = 
@@ -373,7 +390,11 @@ void AccountHandler::_handlePacket(Packet* packet, BuddyPtr buddy)
 						gchar* fname = g_strdup(jsre->m_sDocumentName.utf8_str());
 						pDoc->setFilename(fname);
 					}
-					pManager->joinSession(jsre->getSessionId(), pDoc, jsre->m_sDocumentId, jsre->m_iRev, jsre->getAuthorId(), buddy, NULL);
+					// The default ownership when joining is FALSE, as that seems 
+					// to make sense for the generic case. The person sharing the 
+					// document by default owns the document (and is thus allowed
+					// to modify the ACL).
+					pManager->joinSession(jsre->getSessionId(), pDoc, jsre->m_sDocumentId, jsre->m_iRev, jsre->getAuthorId(), buddy, this, false, NULL);
 				}
 				else 
 				{

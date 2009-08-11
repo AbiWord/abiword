@@ -60,6 +60,14 @@ public:
 		return type_;
 	}
 
+	virtual bool type_props() const {
+		return false;
+	}
+
+	virtual std::string props() const {
+		return "";
+	}
+
 	// FIXME: returning an std::string is inefficient for large blocks of 
 	// data; we should make it a boost::shared_ptr<std::string>
 	virtual std::string str() const = 0;
@@ -133,6 +141,52 @@ private:
 	Base64Bin value_;
 };
 
+class function_arg_array : public function_arg {
+public:
+	// TODO: automatically deduce the type of the array
+	function_arg_array(const std::string& n, ArrayPtr value, Type element_type)
+		: function_arg(n, ARRAY_TYPE),
+		value_(value),
+		element_type_(element_type)
+	{}
+
+	virtual bool type_props() const {
+		return true;
+	}
+
+	virtual std::string props() const {
+		if (value_)
+			return "SOAP-ENC:arrayType=\"" + soap_type(element_type_) + "[" + boost::lexical_cast<std::string>(value_->size()) + "]\"" + " " + "SOAP-ENC:offset=\"[0]\"";
+		return "SOAP-ENC:arrayType=\"xsd:anyType[0]\" xsi:nil=\"true\"";
+	}
+
+	virtual std::string str() const {
+		std::string ret = "\n";
+		if (!value_)
+			return ret;
+
+		for (size_t i = 0; i < value_->size(); i++)
+		{
+			GenericPtr val = value_->operator[](i);
+			if (!val)
+				continue;
+
+			// TODO: generalize this; for now, we only support arrays of integers
+			IntPtr val_int = boost::dynamic_pointer_cast<soa::Int>(val);
+			if (!val_int)
+				continue;
+			function_arg_int arg(val->name(), val_int->value());
+
+			ret += "<" + arg.name() + " " + "xsi:type=\"" + soap_type(arg.type()) + "\"" + ">" + arg.str() + "</" + arg.name() + ">\n";
+		}
+		return ret;
+	}
+	
+private:
+	ArrayPtr value_;
+	Type element_type_;
+};
+
 class function_call {
 public:
 	function_call() {}
@@ -167,6 +221,11 @@ public:
 		return *this;
 	}
 
+	function_call& operator()(std::string name, ArrayPtr value, Type type) {
+		args.push_back(boost::shared_ptr<function_arg>(new function_arg_array(name, value, type)));
+		return *this;
+	}
+
 	const std::string& request() const {
 		return request_;
 	}
@@ -184,7 +243,11 @@ public:
 		// TODO: XML escape args/values
 		for (std::vector< boost::shared_ptr<function_arg> >::const_iterator cit = args.begin(); cit != args.end(); cit++) {
 			const function_arg& arg = **cit;
-			ret += "<" + arg.name() + " " + soap_type(arg.type()) + ">" + arg.str() + "</" + arg.name() + ">\n";
+			ret += "<" + arg.name() + " " + "xsi:type=\"" + soap_type(arg.type()) + "\"" + 
+						(arg.type_props() ? " " + arg.props() : "") +
+				">" + 
+				arg.str() +
+				"</" + arg.name() + ">\n";
 		}
 		return ret;
 	}

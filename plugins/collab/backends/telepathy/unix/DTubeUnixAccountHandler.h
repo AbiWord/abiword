@@ -17,35 +17,39 @@
  * 02111-1307, USA.
  */
 
-#ifndef __SUGARACCOUNTHANDLER__
-#define __SUGARACCOUNTHANDLER__
+#ifndef __DTUBEACCOUNTHANDLER__
+#define __DTUBEACCOUNTHANDLER__
 
-#include <set>
+#include <map>
 
-#include <account/xp/AccountHandler.h>
 #include <dbus/dbus.h>
 #include <dbus/dbus-glib.h>
 #include <dbus/dbus-glib-lowlevel.h>
-#include "SugarBuddy.h"
 
-extern AccountHandlerConstructor SugarAccountHandlerConstructor;
+#include <libempathy/empathy-tube-handler.h>
+#include <telepathy-glib/handle.h>
+#include <telepathy-glib/channel.h>
+
+#include <account/xp/AccountHandler.h>
+#include "DTubeBuddy.h"
+#include "TelepathyBuddy.h"
+
+extern AccountHandlerConstructor DTubeAccountHandlerConstructor;
 
 class Session;
 class FV_View;
 
-class SugarAccountHandler : public AccountHandler
+class DTubeAccountHandler : public AccountHandler
 {
 public:
-	static SugarAccountHandler*				getHandler();
-	SugarAccountHandler(); // TODO: this constructor shouldn't be public
-	virtual ~SugarAccountHandler();
+	static DTubeAccountHandler*				getHandler();
+	DTubeAccountHandler(); // TODO: this constructor shouldn't be public
+	virtual ~DTubeAccountHandler();
 
 	// housekeeping
-	static UT_UTF8String					getStaticStorageType();
-	virtual UT_UTF8String					getStorageType()
-		{ return getStaticStorageType(); }	
 	virtual UT_UTF8String					getDescription();
 	virtual UT_UTF8String					getDisplayType();
+	virtual UT_UTF8String					getStorageType();
 	
 	// dialog management 
 	virtual void							storeProperties();
@@ -62,23 +66,27 @@ public:
 		{ return m_bLocallyControlled; }
 	
 	// user management
+	virtual void							getBuddiesAsync();
+	void									getBuddiesAsync_cb(guint n_contacts, TpContact * const *contacts); // private, but should be callable from C code
 	virtual BuddyPtr						constructBuddy(const PropertyMap& props);
 	virtual BuddyPtr						constructBuddy(const std::string& descriptor, BuddyPtr pBuddy);
+	virtual bool							recognizeBuddyIdentifier(const std::string& identifier);
 	virtual bool							allowsManualBuddies()
 		{ return false; }
 	virtual void							forceDisconnectBuddy(BuddyPtr pBuddy);
-	virtual bool							recognizeBuddyIdentifier(const std::string& identifier);
-
-	// session management
-	virtual bool							allowsSessionTakeover()
-		{ return false; }
-	virtual bool							keepEmptySessionsAlive()
+	virtual bool							hasPersistentAccessControl()
 		{ return true; }
 
+
+	// session management
+	virtual bool							startSession(PD_Document* pDoc, const std::vector<std::string>& acl, AbiCollab** pSession);
+	virtual bool							allowsSessionTakeover()
+		{ return false; /* not right now */ }
+	
 	// packet management
 	virtual bool							send(const Packet* pPacket);
 	virtual bool							send(const Packet* pPacket, BuddyPtr buddy);
-	Packet*									createPacket(const std::string& packet, BuddyPtr pBuddy);
+	void									handleMessage(const char* senderDBusAddress, const char* packet_data, int packet_size);
 	
 	// event management
 	void									handleEvent(Session& pSession);
@@ -87,24 +95,23 @@ public:
 	virtual void							signal(const Event& event, BuddyPtr pSource);
 
 	// tube & buddy management
-	SugarBuddyPtr							getBuddy(const UT_UTF8String& dbusAddress);
-	bool									offerTube(FV_View* pView, const UT_UTF8String& tubeDBusAddress);
-	bool									joinTube(FV_View* pView, const UT_UTF8String& tubeDBusAddress);
-	bool									joinBuddy(FV_View* pView, const UT_UTF8String& buddyDBusAddress);
+	bool									joinTube(const UT_UTF8String& tubeDBusAddress);
+	bool									joinBuddy(PD_Document* pDoc, TpHandle handle, const UT_UTF8String& buddyDBusAddress);
 	bool									disjoinBuddy(FV_View* pView, const UT_UTF8String& buddyDBusAddress);
 
-	bool									isIgnoredBuddy(const UT_UTF8String& buddyName)
-		{ return m_ignoredBuddies.find(buddyName) != m_ignoredBuddies.end(); }
-	
-protected:
-	// control management
-	void									_registerEditMethods();
+	// FIXME: should be private but have to be callable from C
+	void									acceptTube(TpChannel *tubes_chan, guint id, TpHandle initiator);
 
 private:
-	static SugarAccountHandler* 			m_pHandler;
-	DBusConnection*							m_pTube;
+	bool									_startSession(PD_Document* pDoc, const UT_UTF8String& tubeDBusAddress);
+	bool									_createAndOfferTube(PD_Document* pDoc, const std::vector<TelepathyBuddyPtr>& vBuddies, UT_UTF8String& sTubeAddress);
+	TelepathyBuddyPtr						_getBuddy(TpContact* pContact);
+
+	EmpathyTubeHandler*						tube_handler;
+	/* TpHandle -> buddyPath (UT_UTF8String) */
+	GHashTable*								handle_to_bus_name;
+	static DTubeAccountHandler* 			m_pHandler;
 	bool									m_bLocallyControlled;
-	std::set<UT_UTF8String>					m_ignoredBuddies;
 };
 
-#endif /* __SUGARACCOUNTHANDLER__ */
+#endif /* __DTUBEACCOUNTHANDLER__ */

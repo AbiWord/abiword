@@ -1,4 +1,4 @@
-/* Copyright (C) 2008 AbiSource Corporation B.V.
+/* Copyright (C) 2008-2009 AbiSource Corporation B.V.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,11 +37,11 @@ class RealmConnection;
 class RealmBuddy : public Buddy , public boost::enable_shared_from_this<RealmBuddy>
 {
 public:
-	RealmBuddy(AccountHandler* handler, uint64_t _user_id, const std::string& domain,
+	RealmBuddy(AccountHandler* handler, uint64_t _user_id, const std::string& domain_,
 					UT_uint8 realm_conn_id, bool _master, boost::shared_ptr<RealmConnection> conn)
 		: Buddy(handler),
 		m_user_id(_user_id),
-		m_domain(domain),
+		m_domain(domain_),
 		m_realm_connection_id(realm_conn_id),
 		m_master(_master),
 		m_connection(conn)
@@ -70,6 +70,10 @@ public:
 
 	boost::shared_ptr<RealmBuddy> ptr() {
 		return shared_from_this();
+	}
+
+	std::string domain() {
+		return m_domain;
 	}
 
 	boost::shared_ptr<RealmConnection> connection() {

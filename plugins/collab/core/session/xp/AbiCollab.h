@@ -102,23 +102,40 @@ class AbiCollab : public EV_MouseListener
 	friend class ABI_Collab_Export;
 
 public:
-	AbiCollab(PD_Document* pDoc, const UT_UTF8String& sSessionId, XAP_Frame* pFrame);
+	// master constructor
+	AbiCollab(PD_Document* pDoc,
+					const UT_UTF8String& sSessionId, 
+					AccountHandler* pAclAccount,
+					bool bLocallyOwned,
+					XAP_Frame* pFrame);
+
+	// slave constructor
 	AbiCollab(const UT_UTF8String& sSessionId, 
 					PD_Document* pDoc, 
 					const UT_UTF8String& docUUID,
 					UT_sint32 iRev,
 					BuddyPtr pControler,
+					AccountHandler* pAclAccount,
+					bool m_bLocallyOwned,
 					XAP_Frame* pFrame);
+
 	virtual ~AbiCollab();
 
 	// collaborator management
 	void								addCollaborator(BuddyPtr pCollaborator);
 	void								removeCollaborator(BuddyPtr pCollaborator);
-	void								removeCollaboratorsForAccount(AccountHandler* pHandler);
 	const std::map<BuddyPtr, std::string>&		getCollaborators() const
 		{ return m_vCollaborators; }
 	bool								isController(BuddyPtr pCollaborator) const
 		{ return m_pController == pCollaborator; }
+	bool								isLocallyOwned() const
+		{ return m_bLocallyOwned; }
+	const std::vector<std::string>&		getAcl()
+		{ return m_vAcl; }
+	AccountHandler*						getAclAccount()
+		{ return m_pAclAccount; }
+	void								setAcl(const std::vector<std::string> vAcl);
+	
 
 	// import/export management
 	ABI_Collab_Import*					getImport(void)
@@ -181,6 +198,8 @@ protected:
 private:
 	// collaborator management
 	void								_removeCollaborator(BuddyPtr pCollaborator, const std::string& docUUID);
+	void								_checkRevokeAccess(BuddyPtr pCollaborator);
+
 
 	// document management
 	void								_setDocument(PD_Document* pDoc, XAP_Frame* pFrame);
@@ -212,12 +231,15 @@ private:
 
 	// buddy <-> remote document UUID mapping
 	std::map<BuddyPtr, std::string>		m_vCollaborators;
+	std::vector<std::string>			m_vAcl;
+	AccountHandler*						m_pAclAccount;
 	UT_uint32							m_iDocListenerId;
 	bool								m_bExportMasked;
 
 	UT_UTF8String						m_sId;
 
 	BuddyPtr							m_pController;
+	bool								m_bLocallyOwned;
 
 	CommandLine *						m_pCommandLine;
 	bool								m_bCloseNow;

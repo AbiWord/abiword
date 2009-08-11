@@ -57,6 +57,8 @@ public:
 	// dialog code
 	bool										registerDialogs(void);
 	bool										unregisterDialogs(void);
+	XAP_Dialog_Id								getDialogShareId()
+		{ return m_iDialogShare; }	
 	XAP_Dialog_Id								getDialogJoinId()
 		{ return m_iDialogJoin; }
 	XAP_Dialog_Id								getDialogAccountsId()
@@ -89,21 +91,23 @@ public:
 	AbiCollab*									getSessionFromSessionId(const UT_UTF8String& sSessionId);
 	const UT_GenericVector<AbiCollab *>&		getSessions(void) const
 		{ return m_vecSessions;}
-	AbiCollab*									startSession(PD_Document* pDoc, UT_UTF8String& sNewSessionId,
-														XAP_Frame* pFrame,  const UT_UTF8String& masterDescriptor);
+	AbiCollab*									startSession(PD_Document* pDoc, UT_UTF8String& sNewSessionId, AccountHandler* pAclAccount, 
+														bool bLocallyOwned,	XAP_Frame* pFrame, const UT_UTF8String& masterDescriptor);
 	void										closeSession(AbiCollab* pSession, bool canConfirm);
 	void										closeSessions();
 	void										joinSessionInitiate(BuddyPtr pBuddy, DocHandle* pDocHandle);
 	void										joinSession(const UT_UTF8String& sSessionId, PD_Document* pDoc, 
 														const UT_UTF8String& docUUID, UT_sint32 iRev, UT_sint32 iAuthorId,
-														BuddyPtr pCollaborator, XAP_Frame *pFrame);
+														BuddyPtr pCollaborator, AccountHandler* pAclAccount, bool bLocallyOwned, 
+														XAP_Frame *pFrame);
 	void										joinSession(AbiCollab* pSession, BuddyPtr pCollaborator);
 	void										disjoinSession(const UT_UTF8String& sSessionId);	
 	bool										isLocallyControlled(PD_Document* pDoc);
 	bool										isInSession(PD_Document* pDoc);
 	bool										isActive(const UT_UTF8String& sSessionId);
 	void										removeBuddy(BuddyPtr pBuddy, bool graceful = true);
-	  
+	void										updateAcl(AbiCollab* pSession, AccountHandler* pAccount, const std::vector<std::string> acl);  
+
 	// account code
 	bool										registerAccountHandlers(void);
 	bool										unregisterAccountHandlers(void);
@@ -151,6 +155,7 @@ private:
 	static AbiCollabSessionManager* 			m_pManager;	
 	
 	// dialog code
+	XAP_Dialog_Id								m_iDialogShare;
 	XAP_Dialog_Id								m_iDialogJoin;
 	XAP_Dialog_Id								m_iDialogAccounts;
 	XAP_Dialog_Id								m_iDialogAddAccount;

@@ -1,5 +1,5 @@
 /* Copyright (C) 2006,2007 Marc Maurer <uwog@uwog.net>
- * Copyright (C) 2008 AbiSource Corporation B.V.
+ * Copyright (C) 2008,2009 AbiSource Corporation B.V.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -51,7 +51,7 @@ class RealmBuddy;
 
 extern AccountHandlerConstructor ServiceAccountHandlerConstructor;
 
-typedef boost::shared_ptr< std::map<std::string, GetSessionsResponseEvent> > BuddySessionsPtr;
+typedef boost::shared_ptr< std::map<ServiceBuddyPtr, GetSessionsResponseEvent> > BuddySessionsPtr;
 
 #define SERVICE_ACCOUNT_HANDLER_TYPE "com.abisource.abiword.abicollab.backend.service"
 #define SERVICE_REGISTRATION_URL "https://abicollab.net/user/register"
@@ -63,6 +63,8 @@ public:
 	virtual ~ServiceAccountHandler();
 
 	static bool								askPassword(const std::string& email, std::string& password);
+	static bool								askFilename(std::string& filename);
+	static void								ensureExt(std::string& filename, const std::string& extension);
 
 	// housekeeping
 	static UT_UTF8String					getStaticStorageType();
@@ -72,6 +74,7 @@ public:
 	virtual UT_UTF8String					getDisplayType();
 
 	// dialog management 
+	virtual UT_UTF8String					getShareHint(PD_Document* pDoc);
 	virtual void							storeProperties();
 	static XAP_Dialog_Id					getDialogGenericInputId();
 	static XAP_Dialog_Id					getDialogGenericProgressId();
@@ -83,12 +86,17 @@ public:
 	ConnectionPtr							getConnection(PD_Document* pDoc);
 
 	// user management
+	virtual void							getBuddiesAsync();
 	virtual BuddyPtr						constructBuddy(const PropertyMap& props);
 	virtual BuddyPtr						constructBuddy(const std::string& descriptor, BuddyPtr pBuddy);
 	virtual bool							allowsManualBuddies()
 		{ return false; }
 	virtual bool							recognizeBuddyIdentifier(const std::string& identifier);
 	virtual void							forceDisconnectBuddy(BuddyPtr) { /* TODO: implement me? */ }
+	virtual bool							hasAccess(const std::vector<std::string>& vAcl, BuddyPtr pBuddy);
+	virtual bool							hasPersistentAccessControl()
+		{ return true; }
+	virtual bool							canShare(BuddyPtr pBuddy);
 
 	// packet management
 	virtual bool							send(const Packet* packet);
@@ -97,8 +105,11 @@ public:
 	// session management
 	virtual void							getSessionsAsync();
 	virtual void							getSessionsAsync(const Buddy& buddy);
-	virtual bool							hasSession(const UT_UTF8String& sSessionId);
+	virtual bool							startSession(PD_Document* pDoc, const std::vector<std::string>& vAcl, AbiCollab** pSession);	
+	virtual bool							getAcl(AbiCollab* pSession, std::vector<std::string>& vAcl);
+	virtual bool							setAcl(AbiCollab* pSession, const std::vector<std::string>& vAcl);
 	virtual void							joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHandle);
+	virtual bool							hasSession(const UT_UTF8String& sSessionId);
 	acs::SOAP_ERROR							openDocument(UT_uint64 doc_id, UT_uint64 revision, const std::string& session_id, PD_Document** pDoc, XAP_Frame* pFrame);
 	UT_Error								saveDocument(PD_Document* pDoc, ConnectionPtr connection_ptr);
 	void									removeExporter(void);
@@ -106,19 +117,27 @@ public:
 	// session management
 	virtual bool							allowsSessionTakeover()
 		{ return true; }
+	virtual bool								keepEmptySessionsAlive()
+		{ return true; }
 
 	// signal management
 	virtual void							signal(const Event& event, BuddyPtr pSource);
 
 	// misc functions
-	static bool								parseUserInfo(const std::string& userinfo, uint64_t& user_id);
+	static bool							parseUserInfo(const std::string& userinfo, uint64_t& user_id);
 	
 	static XAP_Dialog_Id		 			m_iDialogGenericInput;
 	static XAP_Dialog_Id		 			m_iDialogGenericProgress;
 	static AbiCollabSaveInterceptor			m_saveInterceptor;
 
 private:
+	ConnectionPtr							_realmConnect(soa::CollectionPtr rcp, 
+													UT_uint64 doc_id, const std::string& session_id, bool master);
+
+	ServiceBuddyPtr							_getBuddy(const UT_UTF8String& descriptor);
 	ServiceBuddyPtr							_getBuddy(ServiceBuddyPtr pBuddy);
+	ServiceBuddyPtr							_getBuddy(ServiceBuddyType type, uint64_t user_id);
+
 
 	template <class T>
 	void _send(boost::shared_ptr<T> packet, RealmBuddyPtr recipient)
@@ -140,13 +159,21 @@ private:
 	void									_listDocuments_cb(acs::SOAP_ERROR error, BuddySessionsPtr sessions_ptr);
 	
 	acs::SOAP_ERROR							_openDocumentMaster(ConnectionPtr connection, soa::CollectionPtr rcp, PD_Document** pDoc, XAP_Frame* pFrame, 
-													const std::string& session_id, const std::string& filename);
+													const std::string& session_id, const std::string& filename, bool bLocallyOwned);
 	acs::SOAP_ERROR							_openDocumentSlave(ConnectionPtr connection, PD_Document** pDoc, XAP_Frame* pFrame, 
-													const std::string& filename);
-	
+													const std::string& filename, bool bLocallyOwned);
+	bool									_getConnections();
+	bool									_getPermissions(uint64_t doc_id,
+													std::vector<UT_uint64>& rw, std::vector<UT_uint64>& ro,
+													std::vector<UT_uint64>& grw, std::vector<UT_uint64>& gro);
+	bool									_setPermissions(UT_uint64 doc_id, 
+													const std::vector<UT_uint64>& friend_readwrite,
+													const std::vector<UT_uint64>& group_readwrite);
+
 	void									_handleJoinSessionRequestResponse(
 													JoinSessionRequestResponseEvent* jsre, BuddyPtr pBuddy, 
-													XAP_Frame* pFrame, PD_Document** pDoc, const std::string& filename);
+													XAP_Frame* pFrame, PD_Document** pDoc, const std::string& filename,
+													bool bLocallyOwned);
 	void									_handleRealmPacket(ConnectionPtr connection);
 	ConnectionPtr							_getConnection(const std::string& session_id);	
 	void									_removeConnection(const std::string& session_id);
