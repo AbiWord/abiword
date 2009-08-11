@@ -23,11 +23,12 @@
 
 #include "ap_Dialog_ListRevisions.h"
 #include "xap_Frame.h"
+#include "xap_Win32DialogBase.h"
 
 
 /*****************************************************************/
 
-class ABI_EXPORT AP_Win32Dialog_ListRevisions: public AP_Dialog_ListRevisions
+class ABI_EXPORT AP_Win32Dialog_ListRevisions: public AP_Dialog_ListRevisions, XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_ListRevisions(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -36,8 +37,6 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-
-	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
 
 protected:
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
