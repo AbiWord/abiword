@@ -159,15 +159,10 @@ BOOL AP_Win32Dialog_CollaborationShare::_onCommand(HWND hWnd, WPARAM wParam, LPA
 	{
 	
 	case AP_RID_DIALOG_COLLABORATIONSHARE_CANCEL_BUTTON:
-		// Close without necessarily joining
-		// formerly/secretly the Cancel button
 		EndDialog(hWnd,0);
 		return true;
 
 	case AP_RID_DIALOG_COLLABORATIONSHARE_SHARE_BUTTON:
-		// join and close
-		// Formerly/secretly the OK button
-		_setJoin(m_hSelected, true);
 		EndDialog(hWnd, 0);
 		return true;
 
@@ -319,40 +314,4 @@ void AP_Win32Dialog_CollaborationShare::_updateSelection()
 	{
 		//p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONSHARE_CONNECT_BUTTON, false);
 	}
-}
-
-void AP_Win32Dialog_CollaborationShare::_setJoin(HTREEITEM hItem, bool joinStatus)
-{
-	/*AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	UT_return_if_fail(pManager);
-
-	std::map< HTREEITEM, ShareListItem >::const_iterator cit = m_mTreeItemHandles.find(hItem);
-	UT_return_if_fail(cit != m_mTreeItemHandles.end());	
-
-	BuddyPtr pBuddy = cit->second.pBuddy;
-	UT_return_if_fail(pBuddy);
-
-	DocHandle* pDocHandle = cit->second.pDocHandle;
-	UT_return_if_fail(pDocHandle);
-
-	bool currentlyJoined = pManager->isActive(pDocHandle->getSessionId());
-	UT_return_if_fail(joinStatus != currentlyJoined);
-	
-	if (joinStatus)
-	{
-		UT_DEBUGMSG(("Got a document we can connect to!\n"));
-		m_answer = AP_Dialog_CollaborationShare::a_CONNECT;
-		m_pBuddy = pBuddy;
-		m_pDocHandle = pDocHandle;
-		return;
-	}
-	
-	if (!joinStatus)
-	{
-		UT_DEBUGMSG(("Got a document we can disconnect from!\n"));
-		m_answer = AP_Dialog_CollaborationShare::a_DISCONNECT;
-		m_pBuddy = pBuddy;
-		m_pDocHandle = pDocHandle;
-		return;
-	}*/
 }

@@ -56,7 +56,6 @@ private:
 	void					_setModel();
 	void					_refreshWindow();
 	void					_updateSelection();
-	void					_setJoin(HTREEITEM hItem, bool joinStatus);
 	
 	// Handles
 	HINSTANCE 				m_hInstance;
