@@ -72,7 +72,7 @@ XAP_Dialog * AP_Win32Dialog_CollaborationShare::static_constructor(XAP_DialogFac
 {
 	return static_cast<XAP_Dialog *>(new AP_Win32Dialog_CollaborationShare(pFactory, id));
 }
-pt2Constructor AP_Dialog_CollaborationShare_Constructor = &AP_Win32Dialog_CollaborationShare::static_constructor;
+pt2Constructor ap_Dialog_CollaborationShare_Constructor = &AP_Win32Dialog_CollaborationShare::static_constructor;
 
 
 AP_Win32Dialog_CollaborationShare::AP_Win32Dialog_CollaborationShare(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
