@@ -157,51 +157,18 @@ BOOL AP_Win32Dialog_CollaborationShare::_onCommand(HWND hWnd, WPARAM wParam, LPA
 	
 	switch (wId)
 	{
-	case AP_RID_DIALOG_COLLABORATIONSHARE_DISCONNECT_BUTTON:
-		// join and close
-		// Formerly/secretly the OK button
-		_setJoin(m_hSelected, false);
-		EndDialog(hWnd, 0);
-		return true;
-
-	case AP_RID_DIALOG_COLLABORATIONSHARE_CONNECT_BUTTON:
-		// join and close
-		// Formerly/secretly the OK button
-		_setJoin(m_hSelected, true);
-		EndDialog(hWnd, 0);
-		return true;
-
-	case AP_RID_DIALOG_COLLABORATIONSHARE_CLOSE_BUTTON:
+	
+	case AP_RID_DIALOG_COLLABORATIONSHARE_CANCEL_BUTTON:
 		// Close without necessarily joining
 		// formerly/secretly the Cancel button
 		EndDialog(hWnd,0);
 		return true;
 
-	case AP_RID_DIALOG_COLLABORATIONSHARE_ADDBUDDY_BUTTON:
-		// open the Add Buddy dialog
-		//_eventAddBuddy();
-		
-		// Would be nice to know if we actually succeeded in adding a buddy
-		// to avoid gratuitous refreshes
-		
-		// have to refresh buddies
-		
-		// Refresh documents
-		//_refreshAllDocHandlesAsync();
-		_setModel();
-		return true;
-	
-	case AP_RID_DIALOG_COLLABORATIONSHARE_DELETE_BUTTON:
-		// TODO: Implement!
-		// didn't actually handle this
-		return false;
-
-	case AP_RID_DIALOG_COLLABORATIONSHARE_REFRESH_BUTTON:
-		// TODO: we really should refresh the buddies here as well, 
-		// as they could pop up automatically as well (for example with a 
-		// avahi backend)
-		//_refreshAllDocHandlesAsync();
-		_setModel();
+	case AP_RID_DIALOG_COLLABORATIONSHARE_SHARE_BUTTON:
+		// join and close
+		// Formerly/secretly the OK button
+		_setJoin(m_hSelected, true);
+		EndDialog(hWnd, 0);
 		return true;
 
 	default:
@@ -324,11 +291,6 @@ void AP_Win32Dialog_CollaborationShare::_refreshWindow()
 	_setModel();
 }
 
-void AP_Win32Dialog_CollaborationShare::_enableBuddyAddition(bool bEnabled)
-{
-	p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONSHARE_ADDBUDDY_BUTTON, bEnabled);
-}
-
 void AP_Win32Dialog_CollaborationShare::_updateSelection()
 {
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
@@ -345,23 +307,17 @@ void AP_Win32Dialog_CollaborationShare::_updateSelection()
 		{
 			UT_DEBUGMSG(("Document selected\n"));
 			bool bIsConnected = pManager->isActive(cit->second.pDocHandle->getSessionId());
-			p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONSHARE_DISCONNECT_BUTTON, bIsConnected );
-			p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONSHARE_CONNECT_BUTTON, !bIsConnected );
-			p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONSHARE_DELETE_BUTTON, false);
+			//p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONSHARE_CONNECT_BUTTON, !bIsConnected );
 		}
 		else
 		{
 			UT_DEBUGMSG(("Buddy selected\n"));
-			p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONSHARE_DISCONNECT_BUTTON, false);
-			p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONSHARE_CONNECT_BUTTON, false);
-			p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONSHARE_DELETE_BUTTON, true);
+			//p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONSHARE_CONNECT_BUTTON, false);
 		}
 	}
 	else
 	{
-		p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONSHARE_DISCONNECT_BUTTON, false);
-		p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONSHARE_CONNECT_BUTTON, false);
-		p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONSHARE_DELETE_BUTTON, false);
+		//p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONSHARE_CONNECT_BUTTON, false);
 	}
 }
 
