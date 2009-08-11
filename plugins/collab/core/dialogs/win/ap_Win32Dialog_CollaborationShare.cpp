@@ -48,9 +48,9 @@ BOOL CALLBACK AP_Win32Dialog_CollaborationShare::s_dlgProc(HWND hWnd, UINT msg, 
 		
 	case WM_DESTROY:
 		pThis = (AP_Win32Dialog_CollaborationShare *)GetWindowLong(hWnd,DWL_USER);
-		if (pThis->p_win32Dialog)
+		if (pThis->m_pWin32Dialog)
 		{
-			DELETEP(pThis->p_win32Dialog);
+			DELETEP(pThis->m_pWin32Dialog);
 		}
 		
 		// WM_DESTROY processed
@@ -77,7 +77,7 @@ pt2Constructor ap_Dialog_CollaborationShare_Constructor = &AP_Win32Dialog_Collab
 
 AP_Win32Dialog_CollaborationShare::AP_Win32Dialog_CollaborationShare(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: AP_Dialog_CollaborationShare(pDlgFactory, id),
-	p_win32Dialog(NULL),
+	m_pWin32Dialog(NULL),
 	m_hInstance(NULL)
 {
 	UT_DEBUGMSG(("AP_Win32Dialog_CollaborationShare()\n"));
@@ -132,12 +132,10 @@ BOOL AP_Win32Dialog_CollaborationShare::_onInitDialog(HWND hWnd, WPARAM wParam, 
 	UT_return_val_if_fail(InitCommonControlsEx(&icc), false);
 	
 	// Get ourselves a custom DialogHelper
-	DELETEP(p_win32Dialog);
-	p_win32Dialog = new XAP_Win32DialogHelper(hWnd);
+	DELETEP(m_pWin32Dialog);
+	m_pWin32Dialog = new XAP_Win32DialogHelper(hWnd);
 	
-	//////
-	// Set up dialog initial state
-	//_refreshAllDocHandlesAsync();
+	_populateWindowData();
 	_setModel();
 	//_refreshAccounts();
 	
@@ -145,7 +143,7 @@ BOOL AP_Win32Dialog_CollaborationShare::_onInitDialog(HWND hWnd, WPARAM wParam, 
 	_updateSelection();
 	
 	// Center Window
-	p_win32Dialog->centerDialog();
+	m_pWin32Dialog->centerDialog();
 	
 	// WM_INITDIALOG wants True returned in order to continue processing
 	return true;
@@ -211,11 +209,54 @@ BOOL AP_Win32Dialog_CollaborationShare::_onNotify(HWND hWnd, WPARAM wParam, LPAR
 	}
 }
 
+void AP_Win32Dialog_CollaborationShare::_populateWindowData()
+{
+	UT_DEBUGMSG(("AP_Win32Dialog_CollaborationShare::_populateWindowData()\n"));
+	UT_return_if_fail(m_pWin32Dialog);
+
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_if_fail(pManager);
+	
+	AccountHandler* pShareeableAcount = _getShareableAccountHandler();
+
+	for (std::vector<AccountHandler*>::const_iterator cit = pManager->getAccounts().begin(); cit != pManager->getAccounts().end(); cit++)
+	{
+		AccountHandler* pAccount = *cit;
+		UT_continue_if_fail(pAccount);
+
+		if (pShareeableAcount && pShareeableAcount != pAccount)
+			continue;
+
+		UT_sint32 index = m_pWin32Dialog->addItemToCombo(AP_RID_DIALOG_COLLABORATIONSHARE_ACCOUNTCOMBO, (LPCSTR) AP_Win32App::s_fromUTF8ToWinLocale(pAccount->getDescription().utf8_str()).c_str());
+		if (index >= 0)
+		{
+			UT_DEBUGMSG(("Added handler to index %d\n", index));
+			//m_vAccountTypeCombo.insert(m_vAccountTypeCombo.begin()+index, pHandler);
+		}
+		else
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+	}
+
+	// if we have at least one account, then make sure the first one is selected
+	if (pManager->getAccounts().size() > 0)
+	{
+		m_pWin32Dialog->selectComboItem(AP_RID_DIALOG_COLLABORATIONSHARE_ACCOUNTCOMBO, 0);
+	}
+	else
+	{
+		// nope, we don't have any account handler :'-( 
+		// Add a sample item to show that we can.  Then, disable the box and the ok button
+		m_pWin32Dialog->addItemToCombo(AP_RID_DIALOG_COLLABORATIONSHARE_ACCOUNTCOMBO, (LPCSTR) "No Accounts Available!");
+		m_pWin32Dialog->selectComboItem(AP_RID_DIALOG_COLLABORATIONSHARE_ACCOUNTCOMBO, 0);
+	}
+}
+
 void AP_Win32Dialog_CollaborationShare::_setModel()
 {
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_if_fail(pManager);
-	
+
+/*
 	const std::vector<AccountHandler *>& accounts = pManager->getAccounts();
 	
 	// clear the treeview; items will not be displayed until the window styles are reset
@@ -279,6 +320,7 @@ void AP_Win32Dialog_CollaborationShare::_setModel()
 	SetWindowLong(m_hDocumentTreeview, GWL_STYLE, styles);
 
 	_updateSelection();
+*/
 }
 
 void AP_Win32Dialog_CollaborationShare::_refreshWindow()
@@ -302,16 +344,16 @@ void AP_Win32Dialog_CollaborationShare::_updateSelection()
 		{
 			UT_DEBUGMSG(("Document selected\n"));
 			bool bIsConnected = pManager->isActive(cit->second.pDocHandle->getSessionId());
-			//p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONSHARE_CONNECT_BUTTON, !bIsConnected );
+			//m_pWin32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONSHARE_CONNECT_BUTTON, !bIsConnected );
 		}
 		else
 		{
 			UT_DEBUGMSG(("Buddy selected\n"));
-			//p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONSHARE_CONNECT_BUTTON, false);
+			//m_pWin32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONSHARE_CONNECT_BUTTON, false);
 		}
 	}
 	else
 	{
-		//p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONSHARE_CONNECT_BUTTON, false);
+		//m_pWin32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONSHARE_CONNECT_BUTTON, false);
 	}
 }
