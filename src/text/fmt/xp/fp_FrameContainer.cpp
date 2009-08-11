@@ -829,6 +829,7 @@ void fp_FrameContainer::setHeight(UT_sint32 iY)
 {
         if(iY != getFullHeight())
 	{
+	     xxx_UT_DEBUGMSG((" SetHeight Frame iY %d Fullheight %d Height %d \n",iY,getFullHeight(),getHeight()));
 	     fp_VerticalContainer::setHeight(iY);
 	     fp_Page * pPage = getPage();
 	     getDocSectionLayout()->setNeedsSectionBreak(true,pPage);

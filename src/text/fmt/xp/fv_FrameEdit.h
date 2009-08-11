@@ -96,6 +96,10 @@ private:
 	//
 	UT_sint32             m_iInitialFrameX;
 	UT_sint32             m_iInitialFrameY;
+
+	UT_String             m_sRelWidth;
+	UT_String             m_sMinHeight;
+	UT_String             m_sExpandHeight;
 };
 
 #endif /* FV_FRAME_EDIT_H */

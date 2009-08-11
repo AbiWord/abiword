@@ -48,7 +48,10 @@ FV_FrameEdit::FV_FrameEdit (FV_View * pView)
 	  m_pFrameImage(NULL),
 	  m_pAutoScrollTimer(NULL),
 	  m_iInitialFrameX(0),
-	  m_iInitialFrameY(0)
+	  m_iInitialFrameY(0),
+	  m_sRelWidth(""),
+	  m_sMinHeight(""),
+	  m_sExpandHeight("")
 {
 	UT_ASSERT_HARMLESS(pView);
 }
@@ -654,6 +657,29 @@ void FV_FrameEdit::setDragType(UT_sint32 x, UT_sint32 y, bool bDrawFrame)
 	{
 		drawFrame(true);
 	}
+	const PP_AttrProp * pAP = NULL;
+	pFL->getAP(pAP);
+	const char * pszPercentWidth = NULL;
+	const char * pszMinHeight = NULL;
+	const char * pszExpandHeight = NULL;
+	if(pAP && pAP->getProperty("frame-rel-width",pszPercentWidth))
+	{
+		if(pszPercentWidth)
+		{
+		     m_sRelWidth = pszPercentWidth;
+		}
+	}
+	if(pAP && pAP->getProperty("frame-min-height",pszMinHeight))
+	{
+		if(pszMinHeight)
+		{
+		     m_sMinHeight = pszMinHeight;
+		}
+	}
+	if(pAP && pAP->getProperty("frame-expand-height",pszExpandHeight))
+	{
+	        m_sExpandHeight = pszExpandHeight;
+	}	
 	m_recCurFrame.left = iLeft;
 	m_recCurFrame.top = iTop;
 	m_recCurFrame.width = (iRight - iLeft);
@@ -662,6 +688,7 @@ void FV_FrameEdit::setDragType(UT_sint32 x, UT_sint32 y, bool bDrawFrame)
 	m_iLastY = y;
 	m_iInitialDragX = iLeft;
 	m_iInitialDragY = iTop;
+	
 	xxx_UT_DEBUGMSG(("Initial width %d \n",m_recCurFrame.width));
 	xxx_UT_DEBUGMSG((" Dragging What %d \n",getDragWhat()));
 	m_pView->setCursorToContext();
@@ -1058,7 +1085,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		//				 Recommend to do whatever is done for thickness, which must also have a default set but not
 		//				 reverted to on every change.
 		// TODO: if(pAP->getProperty("*-thickness", somePropHolder)) sLeftThickness = gchar_strdup(somePropHolder); else sLeftThickness = "1px";
-		const gchar * props[40] = {"frame-type","textbox",
+		const gchar * props[46] = {"frame-type","textbox",
 					      "wrap-mode","wrapped-both",
 					      "position-to","column-above-text",
 					      "xpos",sXpos.c_str(),
@@ -1076,7 +1103,10 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 						  "top-style","1",
 						  "bot-style","1",
 						  "bg-style","1",
-					      "tight-wrap","0",
+					   "tight-wrap","0",
+					   "frame-rel-width",m_sRelWidth.c_str(),
+					   "frame-min-height",m_sMinHeight.c_str(),
+					   "frame-expand-height",m_sExpandHeight.c_str(),
 					      NULL,NULL};
 //
 // This should place the the frame strux immediately after the block containing
@@ -1496,7 +1526,17 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		UT_String_setProperty(sFrameProps,sProp,sVal);		
 		sProp = "pref-page";
 		sVal = sPrefPage;
-		UT_String_setProperty(sFrameProps,sProp,sVal);		
+		UT_String_setProperty(sFrameProps,sProp,sVal);
+
+		sProp = "frame-rel-width";
+		sVal = m_sRelWidth;
+		UT_String_setProperty(sFrameProps,sProp,sVal);
+		sProp = "frame-min-height";
+		sVal = m_sMinHeight;
+		UT_String_setProperty(sFrameProps,sProp,sVal);
+		sProp = "frame-expand-height";
+		sVal = m_sExpandHeight;
+		UT_String_setProperty(sFrameProps,sProp,sVal);
 		//
 		// Get all the blocks around the frame
 		//
