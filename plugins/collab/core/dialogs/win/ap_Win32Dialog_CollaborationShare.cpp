@@ -117,17 +117,27 @@ void AP_Win32Dialog_CollaborationShare::runModal(XAP_Frame * pFrame)
 
 BOOL AP_Win32Dialog_CollaborationShare::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	// Welcome, let's initialize a dialog!
-	//////
-	// Store handles for easy access
-	// Reminder: hDlg is in our DialogHelper
-	m_hDocumentTreeview = GetDlgItem(hWnd, AP_RID_DIALOG_COLLABORATIONSHARE_DOCUMENT_TREE);
-
 	// Set up common controls
 	INITCOMMONCONTROLSEX icc;
 	icc.dwSize=sizeof(INITCOMMONCONTROLSEX);
-	icc.dwICC=ICC_TREEVIEW_CLASSES;
-	
+	icc.dwICC=ICC_LISTVIEW_CLASSES;
+
+	m_hBuddyList = GetDlgItem(hWnd, AP_RID_DIALOG_COLLABORATIONSHARE_BUDDY_LIST);
+
+	// insert a column in the list view
+	LVCOLUMN lvc;
+	lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT; 
+    lvc.pszText = "Column";	
+	lvc.cx = 400;
+	lvc.fmt = LVCFMT_LEFT;
+	if (ListView_InsertColumn(m_hBuddyList, 0, &lvc) == -1) 
+	{
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+	}
+
+	// enable checkboxes on items in the list view
+	ListView_SetExtendedListViewStyle(m_hBuddyList, LVS_EX_CHECKBOXES);
+
 	// If we can't init common controls, bail out
 	UT_return_val_if_fail(InitCommonControlsEx(&icc), false);
 	
@@ -136,8 +146,7 @@ BOOL AP_Win32Dialog_CollaborationShare::_onInitDialog(HWND hWnd, WPARAM wParam, 
 	m_pWin32Dialog = new XAP_Win32DialogHelper(hWnd);
 	
 	_populateWindowData();
-	_setModel();
-	//_refreshAccounts();
+	_populateBuddyModel(true);
 	
 	// we have no selection yet
 	_updateSelection();
@@ -231,7 +240,7 @@ void AP_Win32Dialog_CollaborationShare::_populateWindowData()
 		if (index >= 0)
 		{
 			UT_DEBUGMSG(("Added handler to index %d\n", index));
-			//m_vAccountTypeCombo.insert(m_vAccountTypeCombo.begin()+index, pHandler);
+			m_vAccountCombo.insert(m_vAccountCombo.begin()+index, pAccount);
 		}
 		else
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
@@ -251,89 +260,77 @@ void AP_Win32Dialog_CollaborationShare::_populateWindowData()
 	}
 }
 
-void AP_Win32Dialog_CollaborationShare::_setModel()
+void AP_Win32Dialog_CollaborationShare::_populateBuddyModel(bool refresh)
 {
+	UT_DEBUGMSG(("AP_Win32Dialog_CollaborationShare::_populateBuddyModel\n"));
+
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_if_fail(pManager);
 
-/*
-	const std::vector<AccountHandler *>& accounts = pManager->getAccounts();
+	AccountHandler* pHandler = _getActiveAccountHandler();
+	UT_return_if_fail(pHandler);
 	
-	// clear the treeview; items will not be displayed until the window styles are reset
-	m_mTreeItemHandles.clear();
-	DWORD styles = GetWindowLong(m_hDocumentTreeview, GWL_STYLE);
-	TreeView_DeleteAllItems(m_hDocumentTreeview);
-
-	// Loop through accounts
-	for (UT_uint32 i = 0; i < accounts.size(); i++)
+	if (refresh)
 	{
-		// Loop through buddies in accounts
-		for (UT_uint32 j = 0; j < accounts[i]->getBuddies().size(); j++)
+		// signal the account to refresh its buddy list ...
+		pHandler->getBuddiesAsync(); // this function is really sync() atm; we need to rework this dialog to make it proper async
+
+		// fetch the current ACL
+		m_vAcl = _getSessionACL();
+	}
+
+	// ... and while it does that, we'll have to work with the list that 
+	// is currently known
+	ListView_DeleteAllItems(m_hBuddyList);
+	for (UT_uint32 i = 0; i < pHandler->getBuddies().size(); i++)
+	{
+		BuddyPtr pBuddy = pHandler->getBuddies()[i];
+		UT_continue_if_fail(pBuddy);
+		
+		if (!pBuddy->getHandler()->canShare(pBuddy))
 		{
-			BuddyPtr pBuddy = accounts[i]->getBuddies()[j];
-			UT_UTF8String buddyDesc = pBuddy->getDescription();
-			UT_DEBUGMSG(("Adding buddy (%s) to the treeview\n", buddyDesc.utf8_str()));
-
-			UT_String sBuddyText = AP_Win32App::s_fromUTF8ToWinLocale(buddyDesc.utf8_str());
-			TV_INSERTSTRUCT tviBuddy;
-			tviBuddy.item.mask = TVIF_TEXT| TVIF_STATE; // text only right now
-			tviBuddy.item.stateMask = TVIS_BOLD|TVIS_EXPANDED;
-			tviBuddy.hInsertAfter = TVI_LAST;  // only insert at the end			
-			tviBuddy.hParent = NULL; // top most level Item
-			tviBuddy.item.state = 0;
-			tviBuddy.item.pszText = const_cast<char*>(sBuddyText.c_str());
-			HTREEITEM htiBuddy = (HTREEITEM)SendMessage(m_hDocumentTreeview, TVM_INSERTITEM,0,(LPARAM)&tviBuddy);
-			m_mTreeItemHandles.insert(std::pair<HTREEITEM, ShareListItem>(htiBuddy, ShareListItem(pBuddy, NULL)));
-			
-			// Loop through documents for each buddy
-			for (const DocTreeItem* item = pBuddy->getDocTreeItems(); item; item = item->m_next)
-			{
-				UT_continue_if_fail(item->m_docHandle);
-				UT_UTF8String docDesc = item->m_docHandle->getName();
-				UT_DEBUGMSG(("Adding document (%s) to the treeview\n", docDesc.utf8_str()));
-				
-				UT_String sDocText = AP_Win32App::s_fromUTF8ToWinLocale(docDesc.utf8_str());
-				TV_INSERTSTRUCT tviDocument;
-				tviDocument.item.mask = TVIF_TEXT| TVIF_STATE; // text only right now
-				tviDocument.item.stateMask = TVIS_BOLD|TVIS_EXPANDED;
-				tviDocument.hInsertAfter = TVI_LAST;  // only insert at the end			
-				tviDocument.hParent = htiBuddy;
-				tviDocument.hInsertAfter = TVI_LAST;
-				tviDocument.item.pszText = const_cast<char*>(sDocText.c_str());
-				// if we are connected to this document, bold it.  Eventually checkboxes would be cooler, that's a TODO
-				tviDocument.item.state = pManager->isActive(item->m_docHandle->getSessionId()) ? TVIS_BOLD : TVIS_EXPANDED;
-				HTREEITEM htiDoc = (HTREEITEM)SendMessage(m_hDocumentTreeview, TVM_INSERTITEM, 0, (LPARAM)&tviDocument);
-				m_mTreeItemHandles.insert(std::pair<HTREEITEM, ShareListItem>(htiDoc, ShareListItem(pBuddy, item->m_docHandle)));
-			}
+			UT_DEBUGMSG(("Not allowed to share with buddy: %s\n", pBuddy->getDescription().utf8_str()));
+			continue;
 		}
-	}
-	
-	// Now expand all of the buddies
-	for (std::map< HTREEITEM, ShareListItem >::const_iterator cit = m_mTreeItemHandles.begin(); cit != m_mTreeItemHandles.end(); cit++)
-	{
-		UT_continue_if_fail(cit->first);
-		if (!cit->second.pDocHandle)
-			TreeView_Expand(m_hDocumentTreeview, cit->first, TVE_EXPAND);
-	}
-	
-	// reset the window styles; shows all items
-	SetWindowLong(m_hDocumentTreeview, GWL_STYLE, styles);
 
-	_updateSelection();
-*/
+		UT_String sBuddyText = AP_Win32App::s_fromUTF8ToWinLocale(pBuddy->getDescription().utf8_str());
+
+		// insert a new item in the listview
+		LVITEM lviBuddy;
+		lviBuddy.mask = LVIF_TEXT | LVIF_STATE | LVIF_IMAGE;
+		lviBuddy.state = 0;
+		lviBuddy.iItem = i;
+		lviBuddy.iSubItem = 0;
+		lviBuddy.pszText = const_cast<char*>(sBuddyText.c_str());
+		ListView_InsertItem(m_hBuddyList, &lviBuddy);
+		ListView_SetCheckState(m_hBuddyList, i, _inAcl(m_vAcl, pBuddy));
+	}
 }
 
 void AP_Win32Dialog_CollaborationShare::_refreshWindow()
 {
-	_setModel();
+	_populateBuddyModel(false);
+}
+
+AccountHandler* AP_Win32Dialog_CollaborationShare::_getActiveAccountHandler()
+{
+	UT_DEBUGMSG(("AP_Win32Dialog_CollaborationShare::_getActiveAccountHandler()\n"));
+	UT_return_val_if_fail(m_pWin32Dialog, NULL);
+	
+	int index = m_pWin32Dialog->getComboSelectedIndex(AP_RID_DIALOG_COLLABORATIONSHARE_ACCOUNTCOMBO);
+	UT_return_val_if_fail(index >= 0 && index < static_cast<UT_sint32>(m_vAccountCombo.size()), NULL);
+	
+	// check the return value of this function!
+	return m_vAccountCombo[index];
 }
 
 void AP_Win32Dialog_CollaborationShare::_updateSelection()
 {
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_if_fail(pManager);	
-	
-	HTREEITEM hSelItem = TreeView_GetSelection(m_hDocumentTreeview);
+
+/*
+	HTREEITEM hSelItem = TreeView_GetSelection(m_hBuddyList);
 	if (hSelItem)
 	{
 		m_hSelected = hSelItem;
@@ -356,4 +353,5 @@ void AP_Win32Dialog_CollaborationShare::_updateSelection()
 	{
 		//m_pWin32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONSHARE_CONNECT_BUTTON, false);
 	}
+*/
 }

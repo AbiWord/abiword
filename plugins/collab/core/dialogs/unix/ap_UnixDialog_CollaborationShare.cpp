@@ -252,19 +252,6 @@ void AP_UnixDialog_CollaborationShare::_populateBuddyModel(bool refresh)
 	gtk_widget_show_all(m_wBuddyTree);
 }
 
-bool AP_UnixDialog_CollaborationShare::_inAcl(const std::vector<std::string>& vAcl, BuddyPtr pBuddy)
-{
-	UT_return_val_if_fail(pBuddy, false);
-	
-	for (UT_uint32 i = 0; i < vAcl.size(); i++)
-	{
-		if (vAcl[i] == pBuddy->getDescriptor(false).utf8_str())
-			return true;
-	}
-
-	return false;
-}
-
 AccountHandler* AP_UnixDialog_CollaborationShare::_getActiveAccountHandler()
 {
 	GtkTreeIter iter;

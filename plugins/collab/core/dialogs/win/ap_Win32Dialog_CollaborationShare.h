@@ -54,18 +54,20 @@ private:
 	XAP_Win32DialogHelper *	m_pWin32Dialog;
 
 	void					_populateWindowData();
-	void					_setModel();
+	void					_populateBuddyModel(bool refresh);
 	void					_refreshWindow();
+	AccountHandler*			_getActiveAccountHandler();
 	void					_updateSelection();
 	
 	// Handles
 	HINSTANCE 				m_hInstance;
-	HWND					m_hDocumentTreeview;
+	HWND					m_hBuddyList;
 	
 	// Internal states
 	HTREEITEM				m_hSelected;
 	
 	// Model
+	std::vector<AccountHandler*>		m_vAccountCombo;
 	std::map< HTREEITEM, ShareListItem > m_mTreeItemHandles;
 };
 

@@ -49,6 +49,7 @@ protected:
 	AbiCollab*					_getActiveSession();
 	AccountHandler*				_getShareableAccountHandler();
 	std::vector<std::string>	_getSessionACL();
+	bool						_inAcl(const std::vector<std::string>& vAcl, BuddyPtr pBuddy);
 	void						_share(AccountHandler* pHandler);
 	virtual void				_refreshWindow() = 0;
 	
