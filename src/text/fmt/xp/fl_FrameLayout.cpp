@@ -997,6 +997,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	UT_DEBUGMSG(("PageYpos for frame is %s units %d \n",pszPageYpos,m_iYPage));
 
+
 // Width
 
 	if(!pSectionAP || !pSectionAP->getProperty("frame-width",pszWidth))
@@ -1141,7 +1142,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	//
 	if(pSectionAP && pSectionAP->getProperty("frame-rel-width",pszPercentWidth))
 	{
-		if(pszPercentWidth)
+		if(pszPercentWidth && (m_iWidth <= m_pLayout->getGraphics()->tlu(2)))
 		{
 			double frac_width = UT_convertFraction(pszPercentWidth);
 			fl_DocSectionLayout * pDSL = getDocSectionLayout();
