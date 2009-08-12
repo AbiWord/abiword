@@ -33,7 +33,6 @@ public:
 	void						runModal(XAP_Frame * pFrame);
 
 	void						eventOk();
-	void						eventAccountChanged();
 	void						eventToggle(gchar* path_str);
 		
 private:
