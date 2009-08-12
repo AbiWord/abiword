@@ -558,6 +558,15 @@ void ODi_Frame_ListenerState::_drawTextBox (const gchar** ppAtts,
             }
         }
 
+
+        if(pGraphicStyle->getHorizPos(true) && !pGraphicStyle->getHorizPos(true)->empty()) 
+	{
+	       props += "; frame-horiz-align:";
+	       props += pGraphicStyle->getHorizPos(true)->utf8_str();
+            
+        }
+
+
     } else {  //just hard-code some defaults
         props += "bot-style:1; left-style:1; right-style:1; top-style:1";
     }

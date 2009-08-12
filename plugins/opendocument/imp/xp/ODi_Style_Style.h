@@ -158,7 +158,11 @@ public:
                !m_columnGap.empty() ||
                
                !m_wrap.empty() ||
-               
+	       !m_HorizRel.empty() ||
+	       !m_HorizPos.empty() ||
+	       !m_VerticalPos.empty() ||
+	       !m_VerticalRel.empty() ||
+             
                !m_backgroundColor.empty() ||
     
                !m_columnWidth.empty() ||
@@ -181,6 +185,8 @@ public:
      *              property, taking into account its value on the parent styles.
      */
     const UT_UTF8String* getWrap(bool local) const;
+    const UT_UTF8String* getHorizPos(bool local) const;
+    const UT_UTF8String* getVerticalPos(bool local) const;
     
     const UT_UTF8String* getBackgroundColor() const;
     
@@ -377,8 +383,11 @@ private:
     ////
     // <style:graphic-properties>
     UT_UTF8String m_wrap; // style:wrap
+    UT_UTF8String m_HorizRel; // style:horizontal-rel
+    UT_UTF8String m_HorizPos; // style:horizontal-pos
+    UT_UTF8String m_VerticalPos; // style:vertical-pos
+    UT_UTF8String m_VerticalRel; //  style:vertical-rel
 
-    
     ////
     // <style:table-column-properties>
     UT_UTF8String m_columnWidth; // style:column-width

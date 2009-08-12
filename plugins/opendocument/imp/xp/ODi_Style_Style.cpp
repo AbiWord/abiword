@@ -493,6 +493,29 @@ void ODi_Style_Style::_parse_style_graphicProperties(const gchar** ppProps) {
         m_wrap = pVal;
     }
 
+    pVal = UT_getAttribute("style:horizontal-rel", ppProps);
+    if (pVal) {
+        m_HorizRel = pVal;
+    }
+
+
+    pVal = UT_getAttribute("style:horizontal-pos", ppProps);
+    if (pVal) {
+        m_HorizPos = pVal;
+    }
+
+
+    pVal = UT_getAttribute("style:vertical-rel", ppProps);
+    if (pVal) {
+        m_VerticalRel = pVal;
+    }
+
+
+    pVal = UT_getAttribute("style:vertical-pos", ppProps);
+    if (pVal) {
+        m_VerticalPos = pVal;
+    }
+
     pVal = UT_getAttribute("style:parent-style-name", ppProps);
     if (pVal && *pVal) {
         m_parentStyleName = pVal;
@@ -854,6 +877,42 @@ const UT_UTF8String* ODi_Style_Style::getWrap(bool local) const {
             return m_pParentStyle->getWrap(false);
         } else {
             return &m_wrap;
+        }
+    }
+}
+
+
+/**
+ * @param local If "true", It returns the plain value of the corresponding
+ *              variable. Otherwise, it considers the final value of this
+ *              property, taking into account its value on the parent styles.
+ */
+const UT_UTF8String* ODi_Style_Style::getHorizPos(bool local) const {
+    if (local) {
+        return &m_HorizPos;
+    } else {
+        if (m_HorizPos.empty() && m_pParentStyle) {
+            return m_pParentStyle->getHorizPos(false);
+        } else {
+            return &m_HorizPos;
+        }
+    }
+}
+
+
+/**
+ * @param local If "true", It returns the plain value of the corresponding
+ *              variable. Otherwise, it considers the final value of this
+ *              property, taking into account its value on the parent styles.
+ */
+const UT_UTF8String* ODi_Style_Style::getVerticalPos(bool local) const {
+    if (local) {
+        return &m_VerticalPos;
+    } else {
+        if (m_VerticalPos.empty() && m_pParentStyle) {
+            return m_pParentStyle->getVerticalPos(false);
+        } else {
+            return &m_VerticalPos;
         }
     }
 }

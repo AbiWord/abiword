@@ -1169,6 +1169,20 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		m_iMinHeight = m_iHeight;
 		m_bExpandHeight = true;
 	}
+
+	//
+	// left/right aligned
+	//
+	const char * pszAlign = NULL;
+	if(pSectionAP && pSectionAP->getProperty("frame-horiz-align",pszAlign))
+	{
+		if(pszAlign && (strcmp(pszAlign,"right") == 0) && (m_iXpos == 0))
+		{
+			fl_DocSectionLayout * pDSL = getDocSectionLayout();
+			m_iXpos =  pDSL->getActualColumnWidth() - m_iWidth;
+		}
+	}
+
 }
 
 void fl_FrameLayout::_lookupMarginProperties(const PP_AttrProp* pSectionAP)
