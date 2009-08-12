@@ -97,6 +97,7 @@ public:
 		abi_frame_column_ypos,
 		abi_frame_expand_height,
 		abi_frame_height,
+		abi_frame_horiz_align,
 		abi_frame_min_height,
 		abi_frame_page_xpos,
 		abi_frame_page_ypos,

@@ -75,6 +75,7 @@ static const char * AbiPropertyName[PP_PropertyMap::abi__count] = {
 	"frame-column-ypos",
 	"frame-expand-height",
 	"frame-height",
+	"frame-horiz-align",
 	"frame-min-height",
 	"frame-page-xpos",
 	"frame-page-ypos",
