@@ -117,9 +117,12 @@ BOOL AP_Win32Dialog_GenericInput::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM
 	SetDlgItemText(hWnd, AP_RID_DIALOG_GENERICINPUT_LABEL, getLabel().utf8_str());
 
 	// set the password char for the password field
-	HWND hPasswordEntry = GetDlgItem(hWnd, AP_RID_DIALOG_GENERICINPUT_PASSWORD_EDIT);
-	UT_return_val_if_fail(hPasswordEntry != NULL, false)
-	SendMessage(hPasswordEntry, EM_SETPASSWORDCHAR, '*', 0);
+	if (isPassword())
+	{
+		HWND hPasswordEntry = GetDlgItem(hWnd, AP_RID_DIALOG_GENERICINPUT_PASSWORD_EDIT);
+		UT_return_val_if_fail(hPasswordEntry != NULL, false)
+		SendMessage(hPasswordEntry, EM_SETPASSWORDCHAR, '*', 0);
+	}
 
 	return true;
 }
