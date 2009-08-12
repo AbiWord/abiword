@@ -34,19 +34,6 @@ enum
 	BUDDY_COLUMN
 };
 
-// We can't store shared pointers in the GtkListStore, so we use a hack to store
-// it anyway: store the shared pointer in a C struct called BuddyPtrWrapper.
-// This obviously defies the whole reason of shared pointers, but we have
-// no choice with the GTK+ C API ;/
-struct BuddyPtrWrapper
-{
-public:
-	BuddyPtrWrapper(BuddyPtr pBuddy) : m_pBuddy(pBuddy) {}
-	BuddyPtr getBuddy() { return m_pBuddy; }
-private:
-	BuddyPtr m_pBuddy;
-};
-
 static void s_ok_clicked(GtkWidget * /*wid*/, AP_UnixDialog_CollaborationShare * dlg)
 {
 	dlg->eventOk();
@@ -222,10 +209,10 @@ void AP_UnixDialog_CollaborationShare::_populateBuddyModel(bool refresh)
 		m_vAcl = _getSessionACL();
 	}
 
-	// ... and while it does that, we'll have to work with the list that 
-	// is currently known
+	// clear out the old contents, if any
+	_freeBuddyList();
+
 	GtkTreeIter iter;
-	gtk_list_store_clear(m_pBuddyModel);
 	for (UT_uint32 i = 0; i < pHandler->getBuddies().size(); i++)
 	{
 		BuddyPtr pBuddy = pHandler->getBuddies()[i];
@@ -275,23 +262,8 @@ AccountHandler* AP_UnixDialog_CollaborationShare::_getActiveAccountHandler()
 void AP_UnixDialog_CollaborationShare::eventOk()
 {
 	UT_DEBUGMSG(("AP_UnixDialog_CollaborationShare::eventOk()\n"));
-	AccountHandler*	pHandler = _getActiveAccountHandler(); // TODO: make this XP
-	UT_return_if_fail(pHandler);
-	_getSelectedBuddies(m_vAcl); // TODO: make this XP
-	_share(pHandler);
-}
-
-void AP_UnixDialog_CollaborationShare::eventAccountChanged()
-{
-	UT_DEBUGMSG(("AP_UnixDialog_CollaborationShare::eventAccountChanged()\n"));
-	AccountHandler* pHandler = _getActiveAccountHandler();
-	UT_return_if_fail(pHandler);
-	
-	UT_DEBUGMSG(("Changed account handler to type: %s\n", pHandler->getDisplayType().utf8_str()));
-	PD_Document *pDoc = static_cast<PD_Document*>(XAP_App::getApp()->getLastFocussedFrame()->getCurrentDoc());
-	UT_return_if_fail(pDoc);
-	_setAccountHint(pHandler->getShareHint(pDoc));	
-	_populateBuddyModel(true);
+	m_pAccount = _getActiveAccountHandler();
+	_getSelectedBuddies(m_vAcl);
 }
 
 void AP_UnixDialog_CollaborationShare::eventToggle(gchar* path_str)

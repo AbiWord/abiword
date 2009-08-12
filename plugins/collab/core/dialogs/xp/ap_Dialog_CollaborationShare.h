@@ -28,6 +28,19 @@
 #include <account/xp/Buddy.h>
 #include <account/xp/EventListener.h>
 
+// We can't store shared pointers in the GtkListStore or the Win32 ListView control, 
+// so we use a hack to store it anyway: store the shared pointer in a C struct called 
+// BuddyPtrWrapper. This obviously defies the whole reason of shared pointers, but we 
+// have no choice with these C APIs ;/
+struct BuddyPtrWrapper
+{
+public:
+	BuddyPtrWrapper(BuddyPtr pBuddy) : m_pBuddy(pBuddy) {}
+	BuddyPtr getBuddy() { return m_pBuddy; }
+private:
+	BuddyPtr m_pBuddy;
+};
+
 extern pt2Constructor ap_Dialog_CollaborationShare_Constructor;
 
 class AP_Dialog_CollaborationShare: public XAP_Dialog_NonPersistent, EventListener
@@ -45,15 +58,27 @@ public:
 	AP_Dialog_CollaborationShare::tAnswer	getAnswer(void) const
 		{ return m_answer; }
 
+	AccountHandler* getAccount()
+		{ return m_pAccount; }
+
+	const std::vector<std::string>& getAcl()
+		{ return m_vAcl; }
+
+	void						eventAccountChanged();
+	void						share(AccountHandler* pAccount, const std::vector<std::string>& vAcl);
+
 protected:
 	AbiCollab*					_getActiveSession();
 	AccountHandler*				_getShareableAccountHandler();
 	std::vector<std::string>	_getSessionACL();
 	bool						_inAcl(const std::vector<std::string>& vAcl, BuddyPtr pBuddy);
-	void						_share(AccountHandler* pHandler);
 	virtual void				_refreshWindow() = 0;
+	virtual void				_populateBuddyModel(bool refresh) = 0;
+	virtual AccountHandler*		_getActiveAccountHandler() = 0;
+	virtual void				_setAccountHint(const UT_UTF8String& sHint) = 0;
 	
 	AP_Dialog_CollaborationShare::tAnswer m_answer;
+	AccountHandler*				m_pAccount;
 	std::vector<std::string>	m_vAcl;
 };
 

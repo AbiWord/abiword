@@ -615,13 +615,18 @@ bool s_abicollab_offer(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 	switch (answer)
 	{
 		case AP_Dialog_CollaborationShare::a_OK:
-			// TODO: implement me
+			{
+				AccountHandler* pAccount = pDialog->getAccount();
+				const std::vector<std::string> vAcl = pDialog->getAcl();
+				// TODO: move the share() function to the AbiCollabSessionManager
+				pDialog->share(pAccount, vAcl);
+			}
 			break;
 		case AP_Dialog_CollaborationShare::a_CANCEL:
-			// TODO: implement me
 			break;
 		default:
 			UT_ASSERT_HARMLESS(UT_NOT_REACHED);
+			break;
 	}	
 
 	// Delete the dialog

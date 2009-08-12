@@ -33,7 +33,8 @@
 #include <session/xp/AbiCollab.h>
 
 AP_Dialog_CollaborationShare::AP_Dialog_CollaborationShare(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_NonPersistent(pDlgFactory, id, "interface/dialogcollaborationshare")
+	: XAP_Dialog_NonPersistent(pDlgFactory, id, "interface/dialogcollaborationshare"),
+	m_pAccount(NULL)
 {
 	AbiCollabSessionManager::getManager()->registerEventListener(this);
 }
@@ -122,7 +123,20 @@ bool AP_Dialog_CollaborationShare::_inAcl(const std::vector<std::string>& vAcl, 
 	return false;
 }
 
-void AP_Dialog_CollaborationShare::_share(AccountHandler* pHandler)
+void AP_Dialog_CollaborationShare::eventAccountChanged()
+{
+	UT_DEBUGMSG(("AP_Dialog_CollaborationShare::eventAccountChanged()\n"));
+	AccountHandler* pHandler = _getActiveAccountHandler();
+	UT_return_if_fail(pHandler);
+	
+	UT_DEBUGMSG(("Changed account handler to type: %s\n", pHandler->getDisplayType().utf8_str()));
+	PD_Document *pDoc = static_cast<PD_Document*>(XAP_App::getApp()->getLastFocussedFrame()->getCurrentDoc());
+	UT_return_if_fail(pDoc);
+	_setAccountHint(pHandler->getShareHint(pDoc));	
+	_populateBuddyModel(true);
+}
+
+void AP_Dialog_CollaborationShare::share(AccountHandler* pAccount, const std::vector<std::string>& vAcl)
 {
 	UT_DEBUGMSG(("AP_Dialog_CollaborationShare::_share()\n"));
 
@@ -147,7 +161,7 @@ void AP_Dialog_CollaborationShare::_share(AccountHandler* pHandler)
 		// Tell the account handler that we start a new session, so
 		// it set up things if needed. This call may just setup some stuff 
 		// for a new session, or it might actually start a new session.
-		bool b = pHandler->startSession(pDoc, m_vAcl, &pSession);
+		bool b = pAccount->startSession(pDoc, m_vAcl, &pSession);
 		if (!b)
 		{
 			XAP_App::getApp()->getLastFocussedFrame()->showMessageBox(
@@ -163,7 +177,7 @@ void AP_Dialog_CollaborationShare::_share(AccountHandler* pHandler)
 			UT_UTF8String sSessionId("");
 			// TODO: we could use/generate a proper descriptor when there is only
 			// 1 account where we share this document over
-			pSession = pManager->startSession(pDoc, sSessionId, pHandler, true, NULL, "");
+			pSession = pManager->startSession(pDoc, sSessionId, pAccount, true, NULL, "");
 		}
 	}
 	else
@@ -172,5 +186,5 @@ void AP_Dialog_CollaborationShare::_share(AccountHandler* pHandler)
 	}
 
 	UT_return_if_fail(pSession);
-	pManager->updateAcl(pSession, pHandler, m_vAcl);
+	pManager->updateAcl(pSession, pAccount, vAcl);
 }

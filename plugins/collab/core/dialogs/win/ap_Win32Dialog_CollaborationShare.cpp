@@ -56,12 +56,6 @@ BOOL CALLBACK AP_Win32Dialog_CollaborationShare::s_dlgProc(HWND hWnd, UINT msg, 
 		// WM_DESTROY processed
 		return 0;
 		
-	case WM_NOTIFY:
-		pThis = (AP_Win32Dialog_CollaborationShare *)GetWindowLong(hWnd,DWL_USER);
-		UT_return_val_if_fail(pThis, 0);
-		UT_return_val_if_fail(lParam, 0);
-		return pThis->_onNotify(hWnd, wParam, lParam);
-		
 	default:
 		// Windows system should process any other messages
 		return false;
@@ -111,6 +105,7 @@ void AP_Win32Dialog_CollaborationShare::runModal(XAP_Frame * pFrame)
 		// ok!
 	};
 
+	_freeBuddyList();
 }
 
 /*****************************************************************/
@@ -148,9 +143,6 @@ BOOL AP_Win32Dialog_CollaborationShare::_onInitDialog(HWND hWnd, WPARAM wParam, 
 	_populateWindowData();
 	_populateBuddyModel(true);
 	
-	// we have no selection yet
-	_updateSelection();
-	
 	// Center Window
 	m_pWin32Dialog->centerDialog();
 	
@@ -160,61 +152,30 @@ BOOL AP_Win32Dialog_CollaborationShare::_onInitDialog(HWND hWnd, WPARAM wParam, 
 
 BOOL AP_Win32Dialog_CollaborationShare::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
+	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
 	
 	switch (wId)
 	{
-	
+	case AP_RID_DIALOG_COLLABORATIONSHARE_ACCOUNTCOMBO:
+		if (wNotifyCode == CBN_SELCHANGE)
+			eventAccountChanged();
+		return true;
+
 	case AP_RID_DIALOG_COLLABORATIONSHARE_CANCEL_BUTTON:
+		m_answer = AP_Dialog_CollaborationShare::a_CANCEL;
 		EndDialog(hWnd,0);
 		return true;
 
-	case AP_RID_DIALOG_COLLABORATIONSHARE_SHARE_BUTTON:
+	case AP_RID_DIALOG_COLLABORATIONSHARE_OK_BUTTON:
+		m_pAccount = _getActiveAccountHandler();
+		_getSelectedBuddies(m_vAcl);
+		m_answer = AP_Dialog_CollaborationShare::a_OK;
 		EndDialog(hWnd, 0);
 		return true;
 
 	default:
 		return false;
-	}
-}
-
-BOOL AP_Win32Dialog_CollaborationShare::_onNotify(HWND hWnd, WPARAM wParam, LPARAM lParam){
-	switch (((LPNMHDR)lParam)->code)
-	{
-		//case UDN_DELTAPOS:		return pThis->_onDeltaPos((NM_UPDOWN *)lParam);
-		//UT_DEBUGMSG(("Notify: Code=0x%x\n", ((LPNMHDR)lParam)->code));
-		
-		case NM_DBLCLK:
-			return false; // need to think this through, just toggling the state sounds wrong to me, UI-wise - MARCM
-			
-/*			// A double-click will toggle join status
-			// TODO: This is probably awful GUI-wise
-			_updateSelection();
-			// join stuff!
-			if (m_bShareSelected)
-			{
-				// if they double clicked on a shared document
-				if (!_setJoin(m_hSelected, true))
-				{
-					// if setting join to true didn't change join status
-					// then set it to false.
-					// this minimizes compares required to do the toggle,
-					// while leaving the safety logic in setJoin to prevent double-join or disjoins
-					_setJoin(m_hSelected, false);
-				}
-				
-				// refresh list after toggle
-				_refreshAllDocHandlesAsync();
-				_setModel();
-			}
-			return 1;*/
-			
-		case TVN_SELCHANGED:
-			_updateSelection();
-			return 1;
-			
-		default:
-			return 0;
 	}
 }
 
@@ -279,9 +240,9 @@ void AP_Win32Dialog_CollaborationShare::_populateBuddyModel(bool refresh)
 		m_vAcl = _getSessionACL();
 	}
 
-	// ... and while it does that, we'll have to work with the list that 
-	// is currently known
-	ListView_DeleteAllItems(m_hBuddyList);
+	// clear out the old contents, if any
+	_freeBuddyList();
+
 	for (UT_uint32 i = 0; i < pHandler->getBuddies().size(); i++)
 	{
 		BuddyPtr pBuddy = pHandler->getBuddies()[i];
@@ -297,11 +258,16 @@ void AP_Win32Dialog_CollaborationShare::_populateBuddyModel(bool refresh)
 
 		// insert a new item in the listview
 		LVITEM lviBuddy;
-		lviBuddy.mask = LVIF_TEXT | LVIF_STATE | LVIF_IMAGE;
+		lviBuddy.mask = LVIF_TEXT | LVIF_STATE | LVIF_IMAGE | LVIF_PARAM;
 		lviBuddy.state = 0;
 		lviBuddy.iItem = i;
 		lviBuddy.iSubItem = 0;
 		lviBuddy.pszText = const_cast<char*>(sBuddyText.c_str());
+		// crap, we can't store shared pointers in the list store; use a 
+		// hack to do it (which kinda defies the whole shared pointer thingy, 
+		// but alas...)
+		BuddyPtrWrapper* pWrapper = new BuddyPtrWrapper(pBuddy);
+		lviBuddy.lParam = (LPARAM)pWrapper;
 		ListView_InsertItem(m_hBuddyList, &lviBuddy);
 		ListView_SetCheckState(m_hBuddyList, i, _inAcl(m_vAcl, pBuddy));
 	}
@@ -324,34 +290,55 @@ AccountHandler* AP_Win32Dialog_CollaborationShare::_getActiveAccountHandler()
 	return m_vAccountCombo[index];
 }
 
-void AP_Win32Dialog_CollaborationShare::_updateSelection()
+void AP_Win32Dialog_CollaborationShare::_setAccountHint(const UT_UTF8String& sHint)
 {
-	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	UT_return_if_fail(pManager);	
+	UT_DEBUGMSG(("AP_Win32Dialog_CollaborationShare::_setAccountHint() - sHint: %s\n", sHint.utf8_str()));
 
-/*
-	HTREEITEM hSelItem = TreeView_GetSelection(m_hBuddyList);
-	if (hSelItem)
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+}
+
+void AP_Win32Dialog_CollaborationShare::_getSelectedBuddies(std::vector<std::string>& vACL)
+{
+	UT_DEBUGMSG(("AP_Win32Dialog_CollaborationShare::_getSelectedBuddies()\n"));
+	vACL.clear();
+
+	int itemCount = ListView_GetItemCount(m_hBuddyList);
+	for (UT_sint32 i = 0; i < itemCount; i++)
 	{
-		m_hSelected = hSelItem;
-
-		std::map< HTREEITEM, ShareListItem >::const_iterator cit = m_mTreeItemHandles.find(hSelItem);
-		UT_return_if_fail(cit != m_mTreeItemHandles.end());
-		if (cit->second.pDocHandle)
+		LVITEM lviBuddy;
+		lviBuddy.mask = LVIF_PARAM;
+		lviBuddy.iItem = i;
+		lviBuddy.iSubItem = 0;
+		if (ListView_GetItem(m_hBuddyList, &lviBuddy))
 		{
-			UT_DEBUGMSG(("Document selected\n"));
-			bool bIsConnected = pManager->isActive(cit->second.pDocHandle->getSessionId());
-			//m_pWin32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONSHARE_CONNECT_BUTTON, !bIsConnected );
-		}
-		else
-		{
-			UT_DEBUGMSG(("Buddy selected\n"));
-			//m_pWin32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONSHARE_CONNECT_BUTTON, false);
+			bool share = ListView_GetCheckState(m_hBuddyList, i);
+			BuddyPtrWrapper* buddy_wrapper = reinterpret_cast<BuddyPtrWrapper*>(lviBuddy.lParam);
+			if (share && buddy_wrapper)
+			{
+				BuddyPtr pBuddy = buddy_wrapper->getBuddy();
+				vACL.push_back(pBuddy->getDescriptor(false).utf8_str());
+			}
 		}
 	}
-	else
+}
+
+void AP_Win32Dialog_CollaborationShare::_freeBuddyList()
+{
+	UT_DEBUGMSG(("AP_Win32Dialog_CollaborationShare::_freeBuddyList()\n"));
+
+	int itemCount = ListView_GetItemCount(m_hBuddyList);
+	for (UT_sint32 i = 0; i < itemCount; i++)
 	{
-		//m_pWin32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONSHARE_CONNECT_BUTTON, false);
+		LVITEM lviBuddy;
+		lviBuddy.mask = LVIF_PARAM;
+		lviBuddy.iItem = i;
+		lviBuddy.iSubItem = 0;
+		if (ListView_GetItem(m_hBuddyList, &lviBuddy))
+		{
+			BuddyPtrWrapper* buddy_wrapper = reinterpret_cast<BuddyPtrWrapper*>(lviBuddy.lParam);
+			DELETEP(buddy_wrapper);
+		}
 	}
-*/
+
+	ListView_DeleteAllItems(m_hBuddyList);
 }

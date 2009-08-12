@@ -48,7 +48,6 @@ public:
 	static BOOL CALLBACK		s_dlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	BOOL 						_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL 						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	BOOL						_onNotify(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
 private:
 	XAP_Win32DialogHelper *	m_pWin32Dialog;
@@ -57,7 +56,9 @@ private:
 	void					_populateBuddyModel(bool refresh);
 	void					_refreshWindow();
 	AccountHandler*			_getActiveAccountHandler();
-	void					_updateSelection();
+	void					_setAccountHint(const UT_UTF8String& sHint);
+	void					_getSelectedBuddies(std::vector<std::string>& vACL);
+	void					_freeBuddyList();
 	
 	// Handles
 	HINSTANCE 				m_hInstance;
