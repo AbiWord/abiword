@@ -26,7 +26,7 @@
 #include <math.h>
 
 GR_Image::GR_Image()
-  : m_szName(""), m_iDisplayWidth(0), m_iDisplayHeight(0)
+  : m_iDisplayWidth(0), m_iDisplayHeight(0)
 {
 }
 
@@ -66,7 +66,9 @@ void GR_Image::scaleImageTo(GR_Graphics * pG, const UT_Rect & rec)
 
 void GR_Image::setName ( const char * name )
 {
-  m_szName = name;
+	// passing NULL isn't valid, BUT we have make sure it will not cause trouble.
+	UT_ASSERT_HARMLESS(name);
+	m_szName = (name ? name : "Image");
 }
 
 /*!

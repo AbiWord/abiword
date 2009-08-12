@@ -2,7 +2,7 @@
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2002 Hubert Figuiere 
+ * Copyright (C) 2001-2002, 2009 Hubert Figuiere 
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,30 +23,22 @@
 #ifndef GR_COCOAIMAGE_H
 #define GR_COCOAIMAGE_H
 
-#import <Cocoa/Cocoa.h>
+#include <cairo.h>
+#include <Cocoa/Cocoa.h>
 
+#include "gr_CairoGraphics.h"
 #include "gr_Image.h"
 
-struct Fatmap
-{
-  Fatmap ();
-	int width;
-	int height;
 
-	// Always 24-bit pixel data
-	unsigned char * data;
-};
-
-class GR_CocoaImage : public GR_RasterImage
+class GR_CocoaImage : public GR_CairoRasterImage
 {
 public:
-	GR_CocoaImage(const char* pszName);
+	GR_CocoaImage(const char * pszName);
 	virtual ~GR_CocoaImage();
 
 	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
 	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, const std::string & mimetype, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
-	virtual GR_Image *  createImageSegment(GR_Graphics * pG, const UT_Rect & rec);
 	virtual bool hasAlpha (void) const;
 	virtual bool isTransparentAt(UT_sint32 x, UT_sint32 y);
 
@@ -55,21 +47,26 @@ public:
    	virtual GRType		getType() const { return m_grtype; }
    	virtual bool		render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 	
-	void setFromImageRep(NSImageRep *imgRep);
-	NSImage * getNSImage ()
-		{ return m_image; };
+//	void setFromImageRep(NSImageRep *imgRep);
 
 	static NSImage * imageFromPNG (NSData * data, UT_uint32 & image_width, UT_uint32 & image_height);
 
-private:
-	NSImage*	m_image;
-	NSData*		m_pngData;
+	virtual void cairoSetSource(cairo_t *, double x, double y);
 
+	// WILL retain the surface passed. You shall destroy it.
+	void setSurface(cairo_surface_t *);
+protected:
+	virtual GR_CairoRasterImage *makeSubimage(const std::string & n,
+											  UT_sint32 x, UT_sint32 y,
+											  UT_sint32 w, UT_sint32 h) const;
+
+private:
+	cairo_surface_t * m_surface;
 	GRType m_grtype;
 
-	bool _convertPNGFromBuffer(NSData* data, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+//	bool _convertPNGFromBuffer(NSData* data, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
-//	bool _convertPNGFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+	bool _convertPNGFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 };
 
 #endif /* GR_COCOAIMAGE_H */

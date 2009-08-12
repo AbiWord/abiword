@@ -53,8 +53,8 @@ class ABI_EXPORT GR_CocoaCairoGraphicsBase
 	~GR_CocoaCairoGraphicsBase();
 
 	virtual GR_Image*	createNewImage(const char* pszName,
-	                                   const std::string & mimeType,
 									   const UT_ByteBuf* pBB,
+	                                   const std::string & mimeType,
 									   UT_sint32 iDisplayWidth,
 									   UT_sint32 iDisplayHeight,
 									   GR_Image::GRType =GR_Image::GRT_Raster);
@@ -144,8 +144,8 @@ private:
 	XAP_CocoaNSView *               m_pWin;
 	gr_cocoa_graphics_update	m_updateCallback;
 	void 				*m_updateCBparam;
-	UT_GenericVector<NSRect*>	m_cacheRectArray;
-	UT_GenericVector<id>		m_cacheArray;
+	std::vector<cairo_rectangle_t>	m_cacheRectArray;
+	std::vector<cairo_surface_t*>		m_cacheArray;
 	GR_Graphics::Cursor		m_GrabCursor;
 	UT_uint32			m_screenResolution;
 	bool				m_bIsPrinting;

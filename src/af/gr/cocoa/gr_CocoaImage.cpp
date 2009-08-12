@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 
 /* AbiWord
- * Copyright (C) 2001-2002 Hubert Figuiere
+ * Copyright (C) 2001-2002, 2009 Hubert Figuiere
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -27,6 +27,7 @@
 #include "ut_assert.h"
 #include "ut_bytebuf.h"
 #include "ut_debugmsg.h"
+#include "ut_std_string.h"
 
 #import "xap_CocoaAbiConversions.h"
 
@@ -34,25 +35,28 @@
 #include "gr_CocoaImage.h"
 
 
-GR_CocoaImage::GR_CocoaImage(const char* szName)
-  : m_image(nil),
-	m_pngData(nil),
+GR_CocoaImage::GR_CocoaImage(const char * szName)
+  : m_surface(NULL),
     m_grtype(GRT_Raster) // Probably the safest default.
 {
-	if (szName)
-	{
-		setName (szName);
-	}
-	else
-	{
-		setName("CocoaImage");
-	}
+	setName (szName ? szName : "CocoaImage");
 }
 
 GR_CocoaImage::~GR_CocoaImage()
 {
-	[m_image release];
-	[m_pngData release];
+	if(m_surface)
+	{
+		cairo_surface_destroy(m_surface);
+	}
+}
+
+
+
+
+
+void GR_CocoaImage::cairoSetSource(cairo_t *cr, double x, double y)
+{
+	cairo_set_source_surface(cr, m_surface, x, y);
 }
 
 
@@ -60,14 +64,41 @@ bool		GR_CocoaImage::convertToBuffer(UT_ByteBuf** ppBB) const
 {
 	UT_ByteBuf* pBB = new UT_ByteBuf();
 
-	[m_pngData convertToAbiByteBuf:pBB];
+	UT_ASSERT(0);
+//	[m_pngData convertToAbiByteBuf:pBB];
 	
 	*ppBB = pBB;
 	
 	return true;
 }
 
- 
+
+void GR_CocoaImage::setSurface(cairo_surface_t *surface)
+{
+	if(m_surface) {
+		cairo_surface_destroy(m_surface);
+	}
+	m_surface = cairo_surface_reference(surface);
+}
+
+
+GR_CairoRasterImage *GR_CocoaImage::makeSubimage(const std::string & n,
+											  UT_sint32 x, UT_sint32 y,
+											  UT_sint32 w, UT_sint32 h) const
+{
+	GR_CocoaImage * image = new GR_CocoaImage(n.c_str());
+	cairo_surface_t * surface;
+	
+	surface = cairo_surface_create_similar(m_surface, cairo_surface_get_content(m_surface), w, h);
+	cairo_t * cr = cairo_create(surface);
+	cairo_set_source_surface(cr, m_surface, x, y);
+	cairo_paint(cr);
+	cairo_destroy(cr);
+	
+	image->setSurface(surface);
+	return image;
+}
+
 
 /*! 
  * Returns true if pixel at point (x,y) in device units is transparent.
@@ -85,32 +116,111 @@ bool	GR_CocoaImage::isTransparentAt(UT_sint32 /*x*/, UT_sint32 /*y*/)
  */ 
 bool	GR_CocoaImage::hasAlpha(void) const
 {
-	UT_ASSERT(0);
+	if(m_surface) {
+		return cairo_surface_get_content(m_surface) == CAIRO_CONTENT_COLOR_ALPHA;
+	}
 	return false;
 }
 
 
-bool	GR_CocoaImage::convertFromBuffer(const UT_ByteBuf* pBB, const std::string & /*mimetype*/, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+
+
+class _PNG_read_state
+{
+public:
+	_PNG_read_state(const UT_ByteBuf* pBuf)
+		: pos(0)
+		, buf(pBuf)
+		{
+		}
+	unsigned int pos;
+	const UT_ByteBuf* buf;
+};
+
+static
+cairo_status_t _UT_ByteBuf_PNG_read(void *closure, unsigned char *data,  unsigned int length)
+{
+	_PNG_read_state * state = (_PNG_read_state*)closure;
+	UT_ASSERT(state);
+	UT_uint32 buflen = state->buf->getLength();
+	if(state->pos >= buflen) {
+		return CAIRO_STATUS_READ_ERROR;
+	}
+	if((buflen - state->pos) < length) {
+		UT_DEBUGMSG(("short read\n"));
+		return CAIRO_STATUS_READ_ERROR;		
+	}
+	const UT_Byte * p = state->buf->getPointer(state->pos);
+	memcpy(data, p, length);
+	state->pos += length;
+	
+	return CAIRO_STATUS_SUCCESS;
+}
+
+
+cairo_surface_t * _rescaleTo(cairo_surface_t * surf, double width, double height)
+{
+	cairo_surface_t * dest;
+#if 0
+	dest = cairo_surface_create_similar(surf, 
+	                                       CAIRO_CONTENT_COLOR_ALPHA, 
+	                                       width, height);
+	UT_ASSERT(CAIRO_SURFACE_TYPE_IMAGE == cairo_surface_get_type(surf));
+	double ow = cairo_image_surface_get_width(surf);
+	double oh = cairo_image_surface_get_height(surf);
+	cairo_t *cr = cairo_create(dest);
+	cairo_set_source_surface(cr, dest, 0, 0);
+	cairo_scale(cr, width/ow, height/oh);
+	cairo_paint(cr);
+	cairo_destroy(cr);
+#else
+// NO-OP as this do not work.
+	cairo_surface_reference(surf);
+	dest = surf;
+#endif
+	return dest;
+}
+
+bool	GR_CocoaImage::convertFromBuffer(const UT_ByteBuf* pBB, const std::string & mimetype, 
+                                         UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
 	const char *buffer = (const char *) pBB->getPointer(0);
 	UT_uint32 buflen = pBB->getLength();
 
-	if (buflen < 6) return false;
 
-	char str1[10] = "\211PNG";
-	char str2[10] = "<89>PNG";
+	if(mimetype == "image/png") {
 
-	if ( !(strncmp(buffer, str1, 4)) || !(strncmp(buffer, str2, 6)) )
-	{
-		m_grtype = GRT_Raster;
-		if (m_pngData) {
-			[m_pngData release];
+		if (buflen < 6) {
+			return false;
 		}
-		m_pngData = [[NSData alloc] initWithAbiByteBuffer:pBB];
-		bool ret = _convertPNGFromBuffer(m_pngData, iDisplayWidth, iDisplayHeight);
-		return ret;
-	}
 
+		char str1[10] = "\211PNG";
+		char str2[10] = "<89>PNG";
+
+		if ( !(strncmp(buffer, str1, 4)) || !(strncmp(buffer, str2, 6)) )
+		{
+			m_grtype = GRT_Raster;
+			if(m_surface) {
+				cairo_surface_destroy(m_surface);
+			}
+			
+			_PNG_read_state closure(pBB);
+			m_surface = cairo_image_surface_create_from_png_stream (&_UT_ByteBuf_PNG_read, &closure);
+			if(CAIRO_SURFACE_TYPE_IMAGE == cairo_surface_get_type(m_surface)) 
+			{
+				if((cairo_image_surface_get_width(m_surface) != iDisplayWidth) ||
+					(cairo_image_surface_get_height(m_surface) != iDisplayHeight)) {
+					// needs resize.
+					
+					cairo_surface_t *rescaled = _rescaleTo(m_surface, iDisplayWidth, iDisplayHeight);
+					cairo_surface_destroy(m_surface);
+					m_surface = rescaled;
+				}
+			}
+			setDisplaySize(iDisplayWidth, iDisplayHeight);
+			return true;
+		}
+	}
 	// Otherwise, assume SVG. Do scaling when drawing; save size for then:
 	m_grtype = GRT_Vector;
 
@@ -119,78 +229,6 @@ bool	GR_CocoaImage::convertFromBuffer(const UT_ByteBuf* pBB, const std::string &
 	return true;
 }
 
-GR_Image * 
-GR_CocoaImage::createImageSegment(GR_Graphics * pG, const UT_Rect & rec)
-{
-	UT_sint32 x = pG->tdu(rec.left);
-	UT_sint32 y = pG->tdu(rec.top);
-	if(x < 0)
-	{
-		x = 0;
-	}
-	if(y < 0)
-	{
-		y = 0;
-	}
-	UT_sint32 width = pG->tdu(rec.width);
-	UT_sint32 height = pG->tdu(rec.height);
-	UT_sint32 dH = getDisplayHeight();
-	UT_sint32 dW = getDisplayWidth();
-	if(height > dH)
-	{
-		height = dH;
-	}
-	if(width > dW)
-	{
-		width = dW;
-	}
-	if(x + width > dW)
-	{
-		width = dW - x;
-	}
-	if(y + height > dH)
-	{
-		height = dH - y;
-	}
-	if(width < 0)
-	{
-		x = dW -1;
-		width = 1;
-	}
-	if(height < 0)
-	{
-		y = dH -1;
-		height = 1;
-	}
-	UT_String sName("");
-	getName(sName);
-    UT_String sSub("");
-	UT_String_sprintf(sSub,"_segemnt_%d_%d_%d_%d",x,y,width,height);
-	sName += sSub;
-
-	GR_CocoaImage * image = new GR_CocoaImage(sName.c_str());
-	NSImage * realImage = image->getNSImage();
-	[realImage setFlipped:YES];
-	[realImage lockFocus];
-	[m_image compositeToPoint:NSMakePoint(0,0) fromRect:NSMakeRect(x,y,width,height) operation:NSCompositeCopy];
-	[realImage unlockFocus];
-	
-	return image;
-}
-
-
-
-bool GR_CocoaImage::_convertPNGFromBuffer(NSData* data, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
-{
-	if (m_image) {
-		[m_image release];
-	}
-	m_image = [[NSImage alloc] initWithData:data];
-	UT_ASSERT (m_image);
-	[m_image setFlipped:YES];
-	setDisplaySize(iDisplayWidth, iDisplayHeight);
-	return (m_image != nil);
-}
 
 
 bool GR_CocoaImage::render(GR_Graphics * /*pGR*/, UT_sint32 /*iDisplayWidth*/, UT_sint32 /*iDisplayHeight*/)
@@ -200,23 +238,3 @@ bool GR_CocoaImage::render(GR_Graphics * /*pGR*/, UT_sint32 /*iDisplayWidth*/, U
 	return false;
 }
 
-void GR_CocoaImage::setFromImageRep(NSImageRep *imageRep)
-{ 
-	[m_image release]; 
-	NSSize size = [imageRep size];
-	m_image = [[NSImage alloc] initWithSize:size];
-	[m_image setFlipped:YES];
-	[m_image addRepresentation:imageRep];
-	setDisplaySize(lrintf(size.width), lrintf(size.height));
-}
-
-NSImage * GR_CocoaImage::imageFromPNG (NSData * data, UT_uint32 & image_width, UT_uint32 & image_height)
-{
-	NSImage* image = [[NSImage alloc] initWithData:data];
-	UT_ASSERT(image);
-	NSSize size = [image size];
-	image_width = lrintf(size.width);
-	image_height = lrintf(size.height);
-	
-	return [image autorelease];
-}

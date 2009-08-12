@@ -57,11 +57,11 @@
 #endif
 
 
-#define LOCK_CONTEXT__	StNSViewLocker locker(m_pWin);
+//#define LOCK_CONTEXT__	StNSViewLocker locker(m_pWin);
 								//CGContextRef context = CG_CONTEXT__;
 								//_setClipRectImpl(NULL);
 
-#define CG_CONTEXT__ (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort]
+//#define CG_CONTEXT__ (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort]
 
 // create a stack object like that to lock a NSView, then it will be unlocked on scope exit.
 // never do a new
@@ -114,8 +114,9 @@ NSCursor *	GR_CocoaCairoGraphics::m_Cursor_Crosshair = nil;
 NSCursor *	GR_CocoaCairoGraphics::m_Cursor_HandPointer = nil;
 NSCursor *	GR_CocoaCairoGraphics::m_Cursor_DownArrow = nil;
 
-GR_Image* GR_CocoaCairoGraphicsBase::createNewImage(const char* pszName, const std::string & mimeType, 
-	const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)
+GR_Image* GR_CocoaCairoGraphicsBase::createNewImage(const char* pszName, const UT_ByteBuf* pBB, 
+	const std::string & mimeType, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, 
+	GR_Image::GRType iType)
 {
    	GR_Image* pImg = NULL;
    	if (iType == GR_Image::GRT_Raster)
@@ -123,7 +124,7 @@ GR_Image* GR_CocoaCairoGraphicsBase::createNewImage(const char* pszName, const s
    	else
 	   	pImg = new GR_VectorImage(pszName);
 
-	pImg->convertFromBuffer(pBB, mimeType, _tduR(iDisplayWidth), _tduR(iDisplayHeight));
+	pImg->convertFromBuffer(pBB, mimeType, tdu(iDisplayWidth), tdu(iDisplayHeight));
    	return pImg;
 }
 
@@ -424,9 +425,8 @@ GR_CocoaCairoGraphics::~GR_CocoaCairoGraphics()
 {
 	_destroyFonts ();
 
-	UT_VECTOR_RELEASE(m_cacheArray);
-	UT_VECTOR_SPARSEPURGEALL( NSRect*, m_cacheRectArray);
-
+	std::for_each(m_cacheArray.begin(),  m_cacheArray.end(), &cairo_surface_destroy);
+	
 	[m_pWin setGraphics:NULL];
 }
 
@@ -847,64 +847,53 @@ bool GR_CocoaCairoGraphics::_isFlipped()
 	return true;
 }
 
+
 GR_Image * GR_CocoaCairoGraphics::genImageFromRectangle(const UT_Rect & r)
 {
 	GR_CocoaImage *img = new GR_CocoaImage("ScreenShot");
-	NSRect rect = NSMakeRect(TDUX(r.left), _tduY(r.top), 
-						  _tduR(r.width), _tduR(r.height));
-	NSBitmapImageRep *imageRep;
-	{
-		LOCK_CONTEXT__;
-		imageRep = [[NSBitmapImageRep alloc] initWithFocusedViewRect:rect];
-	}
-	img->setFromImageRep(imageRep);
-	[imageRep release];
-	return static_cast<GR_Image*>(img);
+	cairo_rectangle_t rect;
+	
+	rect.x = _tduX(r.left);
+	rect.y = _tduY(r.top);
+	rect.width = _tduR(r.width);
+	rect.height = _tduR(r.height);
+	
+	cairo_surface_t * surface = NULL;
+	surface = _getCairoSurfaceFromContext(m_cr, rect);
+	img->setSurface(surface);
+	cairo_surface_destroy(surface);
+	img->setDisplaySize(rect.width, rect.height);
+	return img;
 }
 
 
 void GR_CocoaCairoGraphics::saveRectangle(UT_Rect & rect,  UT_uint32 iIndx)
 {
-	NSRect* cacheRect = new NSRect;
-	cacheRect->origin.x = static_cast<float>(_tduX(rect.left)) - 1.0f;
-	cacheRect->origin.y = static_cast<float>(_tduY(rect.top )) - 1.0f;
-	cacheRect->size.width  = static_cast<float>(_tduR(rect.width )) + 2.0f;
-	cacheRect->size.height = static_cast<float>(_tduR(rect.height)) + 2.0f;
+	cairo_rectangle_t cacheRect;
+	cacheRect.x = static_cast<float>(_tduX(rect.left)) - 1.0f;
+	cacheRect.y = static_cast<float>(_tduY(rect.top )) - 1.0f;
+	cacheRect.width  = static_cast<float>(_tduR(rect.width )) + 2.0f;
+	cacheRect.height = static_cast<float>(_tduR(rect.height)) + 2.0f;
 
 	NSRect bounds = [m_pWin bounds];
-	if (cacheRect->size.height > bounds.size.height - cacheRect->origin.y)
-		cacheRect->size.height = bounds.size.height - cacheRect->origin.y;
-
-	NSBitmapImageRep *imageRep;
-	{
-		LOCK_CONTEXT__;
-		imageRep = [[NSBitmapImageRep alloc] initWithFocusedViewRect:*cacheRect];
+	if (cacheRect.height > bounds.size.height - cacheRect.y) {
+		cacheRect.height = bounds.size.height - cacheRect.y;
 	}
-	NSImage* cache = [[NSImage alloc] initWithSize:[imageRep size]];
-	[cache addRepresentation:imageRep];
-	[imageRep release];
-	// update cache arrays
-	id oldObj;
-	m_cacheArray.setNthItem(iIndx, cache, &oldObj);
-	[oldObj release];
-	NSRect *old;
-	m_cacheRectArray.setNthItem(iIndx, cacheRect, &old);
-	if (old) {
-		delete old;
-	}
+	cairo_surface_t * cache;
+	cache = _getCairoSurfaceFromContext(m_cr, cacheRect);
+	cairo_surface_t * old = m_cacheArray[iIndx];
+	m_cacheArray[iIndx] = cache;
+	cairo_surface_destroy(old);
+	m_cacheRectArray[iIndx] = cacheRect;
 }
 
 
 void GR_CocoaCairoGraphics::restoreRectangle(UT_uint32 iIndx)
 {
-	NSRect* cacheRect = m_cacheRectArray.getNthItem(iIndx);
-	NSImage* cache = m_cacheArray.getNthItem(iIndx);
-	NSPoint pt = cacheRect->origin;
-	pt.y += cacheRect->size.height;
-	{
-		LOCK_CONTEXT__;
-		[cache compositeToPoint:pt operation:NSCompositeCopy];
-	}
+	const cairo_rectangle_t & cacheRect = m_cacheRectArray[iIndx];
+	cairo_surface_t * cache = m_cacheArray[iIndx];
+	cairo_set_source_surface(m_cr, cache, cacheRect.x, cacheRect.y);
+	cairo_paint(m_cr);
 }
 
 

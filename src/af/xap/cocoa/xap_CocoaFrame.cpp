@@ -59,9 +59,11 @@
 	}
 	m_pFrame = frame;
 	m_pGR = NULL;
-	[[NSNotificationCenter defaultCenter] addObserver:self
-					selector:@selector(hasBeenResized:)
-					name:NSViewFrameDidChangeNotification object:self];
+	if(frame) {
+		[[NSNotificationCenter defaultCenter] addObserver:self
+						selector:@selector(hasBeenResized:)
+						name:NSViewFrameDidChangeNotification object:self];
+	}
 	return self;
 }
 
@@ -185,7 +187,7 @@
 - (void)hasBeenResized:(NSNotification*)notif
 {
 	UT_UNUSED(notif);
-	if (m_pGR) {
+	if (m_pGR && m_pFrame) {
 		AV_View * pView = m_pFrame->getCurrentView();
 		NSRect rect = [self bounds];
 		if (pView && !pView->isLayoutFilling())
@@ -252,6 +254,9 @@
 
 - (void)scrollWheel:(NSEvent *)theEvent
 {
+	if(!m_pFrame) {
+		return;
+	}
 	AV_View *pAV_View = m_pFrame->getCurrentView ();
 
 	UT_sint32 deltaX = (UT_sint32)rint([theEvent deltaX]);

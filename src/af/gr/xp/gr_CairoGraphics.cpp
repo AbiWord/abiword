@@ -1365,6 +1365,24 @@ void GR_CairoGraphics::renderChars(GR_RenderInfo & ri)
 }
 
 
+cairo_surface_t * GR_CairoGraphics::_getCairoSurfaceFromContext(cairo_t *cr, 
+                                                                     const cairo_rectangle_t & rect)
+{
+	cairo_surface_t * surface = cairo_surface_create_similar(cairo_get_target(cr), 
+	                                       CAIRO_CONTENT_COLOR_ALPHA, 
+	                                       rect.width, rect.height);
+
+	cairo_surface_t * source = cairo_get_target(cr);
+	cairo_surface_flush(source);
+
+	cairo_t * dest = cairo_create(surface);
+	cairo_set_source_surface(dest, source, rect.x, rect.y);
+	cairo_paint(dest);
+	cairo_destroy(dest);
+	return surface;
+}
+
+
 void GR_CairoGraphics::_setSource(cairo_t *cr, const UT_RGBColor &clr)
 {
 	const GR_CairoPatternImpl * pat 

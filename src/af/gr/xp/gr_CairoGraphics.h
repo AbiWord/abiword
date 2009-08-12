@@ -333,7 +333,10 @@ public:
   protected:
 	// setup the graphics properties like color and clip if they have been set
 	void _setProps();
-	// the 
+	
+	// this is called to get the surface out of what is drawning.
+	static cairo_surface_t * _getCairoSurfaceFromContext(cairo_t *cr, 
+												const cairo_rectangle_t & rect);
 	static void _setSource(cairo_t *, const UT_RGBColor &);
 
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
