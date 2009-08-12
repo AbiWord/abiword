@@ -59,6 +59,7 @@
 
 // dialog includes
 #include "xap_DialogFactory.h"
+#include <dialogs/xp/ap_Dialog_CollaborationShare.h>
 #include <dialogs/xp/ap_Dialog_CollaborationJoin.h>
 #include <dialogs/xp/ap_Dialog_CollaborationAccounts.h>
 #include <dialogs/xp/ap_Dialog_CollaborationAddAccount.h>
@@ -71,6 +72,9 @@
 #include <session/xp/AbiCollab.h>
 
 // account handler includes
+#ifdef ABICOLLAB_HANDLER_TELEPATHY
+#include <backends/telepathy/unix/DTubeUnixAccountHandler.h>
+#endif
 #ifdef ABICOLLAB_HANDLER_XMPP
 #include <backends/xmpp/xp/XMPPAccountHandler.h>
 #endif
@@ -212,7 +216,8 @@ UT_Error AbiCollabSessionManager::deserializeDocument(PD_Document** pDoc, const 
 }
 
 AbiCollabSessionManager::AbiCollabSessionManager(void)
-	: m_iDialogJoin(0),
+	: m_iDialogShare(0),
+	m_iDialogJoin(0),
 	m_iDialogAccounts(0),
 	m_iDialogAddAccount(0),
 	m_iDialogAddBuddy(0)
@@ -231,6 +236,7 @@ AbiCollabSessionManager::~AbiCollabSessionManager(void)
 bool AbiCollabSessionManager::registerDialogs(void)
 {
 	XAP_DialogFactory * pFactory = static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
+	m_iDialogShare = pFactory->registerDialog(ap_Dialog_CollaborationShare_Constructor, XAP_DLGT_NON_PERSISTENT);
 	m_iDialogJoin = pFactory->registerDialog(ap_Dialog_CollaborationJoin_Constructor, XAP_DLGT_NON_PERSISTENT);
 	m_iDialogAccounts = pFactory->registerDialog(ap_Dialog_CollaborationAccounts_Constructor, XAP_DLGT_NON_PERSISTENT);
 	m_iDialogAddAccount = pFactory->registerDialog(ap_Dialog_CollaborationAddAccount_Constructor, XAP_DLGT_NON_PERSISTENT);
@@ -242,6 +248,15 @@ bool AbiCollabSessionManager::registerAccountHandlers()
 {
 	UT_DEBUGMSG(("AbiCollabSessionManager::registerAccountHandlers()\n"));
 
+#ifdef ABICOLLAB_HANDLER_TELEPATHY
+	// we don't want to register a d-bus tube account handler here so
+	// swe can construct multiple sugar account handlers later: the 
+	// d-bus tube account handler is a singleton, that should always
+	// be active if it is compiled in
+	UT_DEBUGMSG(("Registering the telepathy account handler!\n"));
+	AccountHandler* pDTubeHandler = new DTubeAccountHandler();
+	addAccount(pDTubeHandler);
+#endif
 #ifdef ABICOLLAB_HANDLER_XMPP
 	m_regAccountHandlers[XMPPAccountHandler::getStaticStorageType()] = XMPPAccountHandlerConstructor;
 #endif
@@ -249,8 +264,8 @@ bool AbiCollabSessionManager::registerAccountHandlers()
 	m_regAccountHandlers[TCPAccountHandler::getStaticStorageType()] = TCPAccountHandlerConstructor;
 #endif
 #ifdef ABICOLLAB_HANDLER_SUGAR
-	// we don't want to regerister a sugar account handler here, 
-	// so we can construct multiple sugar account handlers: the 
+	// we don't want to register a sugar account handler here so
+	// we can construct multiple sugar account handlers later: the 
 	// sugar account handler is a singleton, that should always
 	// be active if it is compiled in
 	UT_DEBUGMSG(("Registering the sugar account handler!\n"));
@@ -292,6 +307,7 @@ void AbiCollabSessionManager::unregisterSniffers(void)
 bool AbiCollabSessionManager::unregisterDialogs(void)
 {
 	XAP_DialogFactory * pFactory = static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
+	pFactory->unregisterDialog(m_iDialogShare);
 	pFactory->unregisterDialog(m_iDialogJoin);
 	pFactory->unregisterDialog(m_iDialogAccounts);
 	pFactory->unregisterDialog(m_iDialogAddAccount);
@@ -650,11 +666,14 @@ AbiCollab* AbiCollabSessionManager::getSessionFromSessionId(const UT_UTF8String&
 }
 
 AbiCollab* AbiCollabSessionManager::startSession(PD_Document* pDoc, UT_UTF8String& sSessionId, 
-			XAP_Frame* pFrame, const UT_UTF8String& masterDescriptor)
+			AccountHandler* pAclAccount, bool bLocallyOwned, XAP_Frame* pFrame, 
+			const UT_UTF8String& masterDescriptor)
 {
 	UT_DEBUGMSG(("Starting collaboration session for document with id %s, master descriptor: %s\n",
 			pDoc->getDocUUIDString(), masterDescriptor.utf8_str()));
-	
+	UT_return_val_if_fail(pDoc, NULL);
+	UT_return_val_if_fail(pAclAccount, NULL);
+
 	if (sSessionId == "")
 	{
 		XAP_App* pApp = XAP_App::getApp();	
@@ -728,10 +747,13 @@ AbiCollab* AbiCollabSessionManager::startSession(PD_Document* pDoc, UT_UTF8Strin
 	UT_DEBUGMSG(("Creating a new collaboration session with UUID: %s\n", sSessionId.utf8_str()));
 
 	UT_return_val_if_fail(_setupFrame(&pFrame, pDoc), NULL);
-	AbiCollab* pAbiCollab = new AbiCollab(pDoc, sSessionId, pFrame);
+	AbiCollab* pAbiCollab = new AbiCollab(pDoc, sSessionId, pAclAccount, bLocallyOwned, pFrame);
 	m_vecSessions.push_back(pAbiCollab);
 	
 	// notify all people we are sharing a new document
+	// FIXME: since we only allow a session to be shared on 1 account, we should
+	// only notify the buddies on that account, instead of notifying the buddies
+	// on all accounts.
 	StartSessionEvent event;
 	event.setBroadcast(true);
 	signal(event);
@@ -800,12 +822,14 @@ void AbiCollabSessionManager::joinSessionInitiate(BuddyPtr pBuddy, DocHandle* pD
 void AbiCollabSessionManager::joinSession(const UT_UTF8String& sSessionId, PD_Document* pDoc, 
 												const UT_UTF8String& docUUID, UT_sint32 iRev, 
 												UT_sint32 iAuthorId, BuddyPtr pCollaborator,
+												AccountHandler* pAclAccount, bool bLocallyOwned, 
 												XAP_Frame *pFrame)
 {
 	UT_DEBUGMSG(("AbiCollabSessionManager::joinSession()\n"));
 
 	UT_return_if_fail(pCollaborator);
 	UT_return_if_fail(pDoc);
+	UT_return_if_fail(pAclAccount);
 	
 #ifdef ABICOLLAB_HANDLER_SUGAR		
 	// HACK, remove this some day: the sugar backend should just pass us a frame to use
@@ -815,7 +839,7 @@ void AbiCollabSessionManager::joinSession(const UT_UTF8String& sSessionId, PD_Do
 	UT_return_if_fail(_setupFrame(&pFrame, pDoc));
 #endif
 
-	AbiCollab* pSession = new AbiCollab(sSessionId, pDoc, docUUID, iRev, pCollaborator, pFrame);
+	AbiCollab* pSession = new AbiCollab(sSessionId, pDoc, docUUID, iRev, pCollaborator, pAclAccount, bLocallyOwned, pFrame);
 	m_vecSessions.push_back(pSession);
 
 	// signal everyone that we have joined this session
@@ -978,6 +1002,37 @@ void AbiCollabSessionManager::removeBuddy(BuddyPtr pBuddy, bool graceful)
 	}
 }
 
+// should we move this to AbiCollab.cpp ?
+void AbiCollabSessionManager::updateAcl(AbiCollab* pSession, AccountHandler* pAccount, const std::vector<std::string> vAcl)
+{
+	UT_return_if_fail(pSession);
+	UT_return_if_fail(pAccount);
+
+	// check if all current collaborators are still allowed to collaborate; if not,
+	// then remove them from the session
+	const std::map<BuddyPtr, std::string> collaborators = pSession->getCollaborators();
+	for (std::map<BuddyPtr, std::string>::const_iterator cit = collaborators.begin(); cit != collaborators.end(); cit++)
+	{
+		BuddyPtr pBuddy = (*cit).first;
+		UT_continue_if_fail(pBuddy);
+		AccountHandler* pBuddyAccount = pBuddy->getHandler();
+		UT_continue_if_fail(pBuddyAccount);
+		UT_continue_if_fail(pBuddyAccount == pAccount);
+		if (!pBuddyAccount->hasAccess(vAcl, pBuddy))
+		{
+			// this current collaborator has been banned from the session, so
+			// disconnect him
+			UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+		}
+	}
+
+	// set the new ACL on the account handler
+	pAccount->setAcl(pSession, vAcl);
+
+	// set the new access control list on the session
+	pSession->setAcl(vAcl);
+}
+
 bool AbiCollabSessionManager::addAccount(AccountHandler* pHandler)
 {
 	UT_return_val_if_fail(pHandler, false);
@@ -1033,14 +1088,12 @@ bool AbiCollabSessionManager::destroyAccount(AccountHandler* pHandler)
 				AbiCollab* pSession = m_vecSessions.getNthItem(j); 
 				UT_continue_if_fail(pSession);
 				
-				// TODO: do we need to do something extra if the session is
-				// locally controlled?
-				pSession->removeCollaboratorsForAccount(pHandler);
-				
-				// if this session has no collaborators anymore, then drop it
-				if (pSession->getCollaborators().size() == 0)
+				// There can only be buddies from 1 account in an active session these days/
+				// That means that if this session's account is the account we are destroying,
+				// then we can kill off the entire session. Do nothing otherwise.
+				if (pSession->getAclAccount() == pHandler)
 				{
-					UT_DEBUGMSG(("All collaborators left from session %s, destroying it!\n", pSession->getSessionId().utf8_str()));
+					UT_DEBUGMSG(("Session %s is running on this account, destroying it!\n", pSession->getSessionId().utf8_str()));
 					destroySession(pSession);
 				}
 			}
@@ -1184,7 +1237,6 @@ bool AbiCollabSessionManager::processPacket(AccountHandler& /*handler*/, Packet*
 	switch (pct) {
 		case PCT_StartSessionEvent:
 		{
-			// TODO: it is rather inefficient to request a buddy for every packet
 			StartSessionEvent event;
 			event.setBroadcast(true);
 			signal(event, buddy);

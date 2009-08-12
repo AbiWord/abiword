@@ -1,5 +1,5 @@
 /* Copyright (C) 2006,2007 Marc Maurer <uwog@uwog.net>
- * Copyright (C) 2008 AbiSource Corporation B.V.
+ * Copyright (C) 2008-2009 AbiSource Corporation B.V.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -31,6 +31,7 @@
 #include <libxml/tree.h>
 #include "xap_App.h"
 #include "xap_Frame.h"
+#include "ut_go_file.h"
 #include "xap_DialogFactory.h"
 #include "ut_debugmsg.h"
 #include "ut_sleep.h"
@@ -45,6 +46,8 @@
 #include <core/account/xp/SessionEvent.h>
 #include <core/session/xp/AbiCollabSessionManager.h>
 #include "AbiCollabService_Export.h"
+
+#define DEFAULT_FILENAME "New document.abw" // TODO: make this localizeable
 
 namespace rpv1 = realm::protocolv1;
 
@@ -84,6 +87,54 @@ bool ServiceAccountHandler::askPassword(const std::string& email, std::string& p
 	return !cancel;
 }
 
+bool ServiceAccountHandler::askFilename(std::string& filename)
+{
+	UT_DEBUGMSG(("ServiceAccountHandler::askFilename()\n"));
+	XAP_Frame* pFrame = XAP_App::getApp()->getLastFocussedFrame();
+	UT_return_val_if_fail(pFrame, false);
+	
+	// ask for the service password
+	XAP_DialogFactory* pFactory = static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
+	UT_return_val_if_fail(pFactory, false);
+	AP_Dialog_GenericInput* pDialog = static_cast<AP_Dialog_GenericInput*>(
+				pFactory->requestDialog(ServiceAccountHandler::getDialogGenericInputId())
+			);
+	
+	// Run the dialog
+	// TODO: make this translatable
+	pDialog->setTitle("AbiCollab.net Collaboration Service"); // FIXME: don't hardcode this title to abicollab.net
+	std::string msg = "The filename '" + filename + "' already exists. Please enter a new name.";
+	pDialog->setQuestion(msg.c_str());
+	pDialog->setLabel("Filename:");
+	pDialog->setPassword(false);
+	pDialog->runModal(pFrame);
+	
+	// get the results
+	bool cancel = pDialog->getAnswer() == AP_Dialog_GenericInput::a_CANCEL;
+	if (!cancel)
+		filename = pDialog->getInput().utf8_str();
+	pFactory->releaseDialog(pDialog);
+	
+	// the user terminated the input
+	return !cancel;
+}
+
+void ServiceAccountHandler::ensureExt(std::string& filename, const std::string& extension)
+{
+	// check if the filename ends in the desired extension, and if not, 
+	// append the desired extension
+	if (filename.size() <= extension.size())
+	{
+		filename += extension;
+	}
+	else
+	{
+		std::string ext = filename.substr(filename.size() - extension.size());
+		if (ext != extension)
+			filename += extension;
+	}
+}
+
 ServiceAccountHandler::ServiceAccountHandler()
 	: AccountHandler(),
 	m_bOnline(false),
@@ -117,6 +168,30 @@ UT_UTF8String ServiceAccountHandler::getDisplayType()
 UT_UTF8String ServiceAccountHandler::getStaticStorageType()
 {
 	return SERVICE_ACCOUNT_HANDLER_TYPE;
+}
+
+UT_UTF8String ServiceAccountHandler::getShareHint(PD_Document* pDoc)
+{
+	UT_return_val_if_fail(pDoc, "");
+
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, "");
+
+	// There is no hint if this document is already uploaded to the service.
+	if (pManager->isInSession(pDoc))
+		return "";
+
+	// TODO: we should really have a nice web url for this, but until we do,
+	// we'll poke in the SOAP uri to find it.
+	std::string server = getProperty("uri");
+	string::size_type proto_pos = server.find("://", 0);
+	if (proto_pos != string::npos)
+	{
+		string::size_type slash_pos = server.find("/", proto_pos + 3);
+		if (slash_pos != string::npos)
+			server = server.substr(0, slash_pos + 1);
+	}
+	return UT_UTF8String_sprintf("Your document will automatically be uploaded\nto %s", server.c_str());
 }
 
 void ServiceAccountHandler::storeProperties()
@@ -187,12 +262,12 @@ bool ServiceAccountHandler::disconnect()
 
 void ServiceAccountHandler::removeExporter(void)
 {
-	if(m_pExport)
-        {
-	    PD_Document * pDoc = m_pExport->getDocument();
-	    pDoc->removeListener(m_iListenerID);
-	    m_iListenerID = 0;
-	    DELETEP(m_pExport);
+	if (m_pExport)
+	{
+		PD_Document * pDoc = m_pExport->getDocument();
+		pDoc->removeListener(m_iListenerID);
+		m_iListenerID = 0;
+		DELETEP(m_pExport);
 	}
 }
 
@@ -211,6 +286,13 @@ ConnectionPtr ServiceAccountHandler::getConnection(PD_Document* pDoc)
 			return *it;
 	}
 	return ConnectionPtr();
+}
+
+void ServiceAccountHandler::getBuddiesAsync()
+{
+	UT_DEBUGMSG(("ServiceAccountHandler::getBuddiesAsync()\n"));
+	bool b = _getConnections(); // FIXME: we should probably make this async
+	UT_return_if_fail(b);
 }
 
 BuddyPtr ServiceAccountHandler::constructBuddy(const PropertyMap& /*props*/)
@@ -265,6 +347,45 @@ bool ServiceAccountHandler::recognizeBuddyIdentifier(const std::string& identifi
 		return false;
 	if (descr_domain != _getDomain())
 		return false;
+	return true;
+}
+
+bool ServiceAccountHandler::hasAccess(const std::vector<std::string>& /*vAcl*/, BuddyPtr pBuddy)
+{
+	UT_DEBUGMSG(("ServiceAccountHandler::hasAccess()\n"));
+	UT_return_val_if_fail(pBuddy, false);
+	
+	// The web application is responsible for access control. Just do a quick
+	// check here to see if this buddy makes any sense on this account, and
+	// then be done with it.
+	// NOTE: there is one drawback to this approach: say the document was shared
+	// to a group, and a buddy (the one passed as a parameter to us) joined via
+	// that group access. Now when we remove the group access from the document,
+	// we do not have enough information here to see that we should disconnect
+	// this particual buddy. Right now we don't have enough information to do that.
+	// He will however be denied access when he tries to reconnect later, or even 
+	// when he tries to save the document. It would be nice if we would fully fix 
+	// this later, possibly by passing more information in the realm "userinfo"
+	// XML blob.
+	RealmBuddyPtr pRealBuddy = boost::dynamic_pointer_cast<RealmBuddy>(pBuddy);
+	UT_return_val_if_fail(pRealBuddy, false);
+
+	if (pRealBuddy->domain() != _getDomain())
+		return false;
+
+	return true;
+}
+
+bool ServiceAccountHandler::canShare(BuddyPtr pBuddy)
+{
+	UT_return_val_if_fail(pBuddy, false);
+
+	ServiceBuddyPtr pServiceBuddy = boost::dynamic_pointer_cast<ServiceBuddy>(pBuddy);
+	UT_return_val_if_fail(pServiceBuddy, false)
+
+	if (pServiceBuddy->getType() == SERVICE_USER)
+		return false; // sharing with yourself makes no sense
+
 	return true;
 }
 
@@ -336,7 +457,7 @@ void ServiceAccountHandler::getSessionsAsync()
 	bool verify_webapp_host = (getProperty("verify-webapp-host") == "true");
 
 	pManager->beginAsyncOperation(this);
-	BuddySessionsPtr sessions_ptr(new std::map<std::string, GetSessionsResponseEvent>());
+	BuddySessionsPtr sessions_ptr(new std::map<ServiceBuddyPtr, GetSessionsResponseEvent>());
 	boost::shared_ptr<AsyncWorker<acs::SOAP_ERROR> > async_list_docs_ptr(
 				new AsyncWorker<acs::SOAP_ERROR>(
 					boost::bind(&ServiceAccountHandler::_listDocuments, this, 
@@ -359,7 +480,7 @@ void ServiceAccountHandler::getSessionsAsync(const Buddy& /*buddy*/)
 	// TODO: we shouldn't ignore the buddy parameter, but for now, we do ;)
 
 	pManager->beginAsyncOperation(this);
-	BuddySessionsPtr sessions_ptr(new std::map<std::string, GetSessionsResponseEvent>());
+	BuddySessionsPtr sessions_ptr(new std::map<ServiceBuddyPtr, GetSessionsResponseEvent>());
 	boost::shared_ptr<AsyncWorker<acs::SOAP_ERROR> > async_list_docs_ptr(
 				new AsyncWorker<acs::SOAP_ERROR>(
 					boost::bind(&ServiceAccountHandler::_listDocuments, this, 
@@ -370,16 +491,195 @@ void ServiceAccountHandler::getSessionsAsync(const Buddy& /*buddy*/)
 	async_list_docs_ptr->start();	
 }
 
-bool ServiceAccountHandler::hasSession(const UT_UTF8String& sSessionId)
+bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<std::string>& /*vAcl*/,
+			AbiCollab** pSession)
 {
-	for (std::vector<boost::shared_ptr<RealmConnection> >::iterator it = m_connections.begin(); it != m_connections.end(); it++)
+	UT_DEBUGMSG(("ServiceAccountHandler::startSession()\n"));
+	UT_return_val_if_fail(pDoc, false);
+	UT_return_val_if_fail(pSession, false);
+
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, false);
+
+	const std::string uri = getProperty("uri");
+	const std::string email = getProperty("email");
+	std::string password = getProperty("password");
+	bool verify_webapp_host = (getProperty("verify-webapp-host") == "true");
+
+	std::string filename = DEFAULT_FILENAME;
+	if (pDoc->getFilename())
+		filename = UT_go_basename_from_uri(pDoc->getFilename());
+	
+	boost::shared_ptr<std::string> document(new std::string(""));
+	UT_return_val_if_fail(AbiCollabSessionManager::serializeDocument(pDoc, *document, true) == UT_OK, false);
+	
+	soa::GenericPtr soap_result;
+	do
 	{
-		boost::shared_ptr<RealmConnection> connection_ptr = *it;
-		UT_continue_if_fail(connection_ptr);
-		if (connection_ptr->session_id() == sSessionId.utf8_str())
-			return true;
+		// construct a SOAP method call to publish the document to abicollab.net
+		// execute the call; we do this synchronous for simplicity for now
+		// TODO: handle bad passwords
+		soa::function_call fc("publishDocument", "publishDocumentResponse");
+		fc("email", email)
+			("password", password)
+			("filename", filename)
+			(soa::Base64Bin("data", document))
+			("start_session", true);
+
+		try {
+			UT_DEBUGMSG(("Publishing document %s...\n", filename.c_str()));
+			soap_result = soup_soa::invoke(uri, 
+								soa::method_invocation("urn:AbiCollabSOAP", fc),
+								verify_webapp_host?m_ssl_ca_file:"");
+			break;
+		} catch (soa::SoapFault& fault) {
+			UT_DEBUGMSG(("Caught a soap fault: %s (error code: %s)!\n", 
+						 fault.detail() ? fault.detail()->value().c_str() : "(null)",
+						 fault.string() ? fault.string()->value().c_str() : "(null)"));
+
+			acs::SOAP_ERROR err = acs::error(fault);
+			switch (err)
+			{
+				case acs::SOAP_ERROR_INVALID_PASSWORD:
+					if (!askPassword(email, password))
+						return false;
+					addProperty("password", password);
+					pManager->storeProfile();	
+					continue;
+				case acs::SOAP_ERROR_DUP_FILENAME:
+					if (!askFilename(filename))
+						return false;
+					if (filename.size() == 0)
+						filename = DEFAULT_FILENAME;
+					else
+						ensureExt(filename, ".abw");
+					continue;
+				default:
+					UT_DEBUGMSG(("Unhandled SOAP error\n"));
+					UT_return_val_if_fail(false, false);
+			}
+		}
+	} while (!soap_result);
+	UT_return_val_if_fail(soap_result, false);
+	
+	// handle the result
+	soa::CollectionPtr rcp = soap_result->as<soa::Collection>("return");
+	UT_return_val_if_fail(rcp, false);
+
+	soa::IntPtr doc_id_ptr = rcp->get<soa::Int>("doc_id");
+	UT_return_val_if_fail(doc_id_ptr, false);
+
+	// connect to the returned realm
+	// NOTE: we can safely use the (unique) document id as the session identifier, 
+	// as there is basically only one _ever lasting_ session for each 
+	// document stored on abicollab.net
+	std::string session_id;
+	try {
+		session_id = boost::lexical_cast<std::string>(doc_id_ptr->value());
+	} catch (boost::bad_lexical_cast &) {
+		UT_return_val_if_fail(false, false);
 	}
-	return AccountHandler::hasSession(sSessionId);
+
+	ConnectionPtr connection = _realmConnect(rcp, doc_id_ptr->value(), session_id, true);
+	UT_return_val_if_fail(connection, false);
+	connection->setDocument(pDoc);
+	m_connections.push_back(connection);
+
+	// Register a serviceExporter to handle remote saves via a signal.
+	// FIXME: the exporter is document dependent, so don't store it in a simple class member
+	m_pExport = new AbiCollabService_Export(pDoc, this);
+	pDoc->addListener(m_pExport, &m_iListenerID);
+	
+	// start the session
+	UT_UTF8String sSessionId = session_id.c_str();
+	RealmBuddyPtr buddy(
+				new RealmBuddy(this, connection->user_id(), _getDomain(), connection->connection_id(), connection->master(), connection));
+	*pSession = pManager->startSession(pDoc, sSessionId, this, true, NULL, buddy->getDescriptor());
+
+	return true;
+}
+
+bool ServiceAccountHandler::getAcl(AbiCollab* pSession, std::vector<std::string>& vAcl)
+{
+	UT_DEBUGMSG(("ServiceAccountHandler::getAcl()\n"));
+	UT_return_val_if_fail(pSession, false);
+
+	// fetch the current set of file permissions
+	ConnectionPtr connection = _getConnection(pSession->getSessionId().utf8_str());
+	UT_return_val_if_fail(connection, false);	
+	std::vector<UT_uint64> rw;
+	std::vector<UT_uint64> ro;
+	std::vector<UT_uint64> grw;
+	std::vector<UT_uint64> gro;
+	if (!_getPermissions(connection->doc_id(), rw, ro, grw, gro))
+		return false;
+
+	vAcl.clear();
+
+	// Update the complete ACL with the newly fetched permissions.
+	// We only support read/write editting for now, so we will ignore the 
+	// read-only permissions
+
+	// add the friend permissions
+	for (UT_uint32 i = 0; i < rw.size(); i++)  
+	{
+		ServiceBuddyPtr pBuddy = _getBuddy(SERVICE_FRIEND, rw[i]);
+		UT_continue_if_fail(pBuddy);
+		vAcl.push_back(pBuddy->getDescriptor(false).utf8_str());
+	}
+
+	// add the group permissions
+	for (UT_uint32 i = 0; i < grw.size(); i++)  
+	{
+		ServiceBuddyPtr pBuddy = _getBuddy(SERVICE_GROUP, grw[i]);
+		UT_continue_if_fail(pBuddy);
+		vAcl.push_back(pBuddy->getDescriptor(false).utf8_str());
+	}
+
+	return true;
+}
+
+bool ServiceAccountHandler::setAcl(AbiCollab* pSession, const std::vector<std::string>& vAcl)
+{
+	UT_DEBUGMSG(("ServiceAccountHandler::setAcl()\n"));
+	UT_return_val_if_fail(pSession, false);
+
+	// set the permissions from the acl on the document on the webservice
+	ConnectionPtr connection = _getConnection(pSession->getSessionId().utf8_str());
+	UT_return_val_if_fail(connection, false);
+
+	// Gather the friend and group IDs that will get read-write permission
+	// on the document. Note that we do not support setting read-only or 
+	// group-owner-read permissions from here, so we leave those untouched
+	std::vector<UT_uint64> friend_readwrite;
+	std::vector<UT_uint64> group_readwrite;
+
+	for (UT_uint32 i = 0; i < vAcl.size(); i++)
+	{
+		ServiceBuddyPtr pBuddy = _getBuddy(vAcl[i].c_str());
+		UT_continue_if_fail(pBuddy);
+
+		switch (pBuddy->getType())
+		{
+			case SERVICE_USER:
+				UT_ASSERT_HARMLESS(UT_NOT_REACHED); // setting permissions on yourself makes no sense
+				break;
+			case SERVICE_FRIEND:
+				friend_readwrite.push_back(pBuddy->getUserId());
+				break;
+			case SERVICE_GROUP:
+				group_readwrite.push_back(pBuddy->getUserId());
+				break;
+			default:
+				UT_ASSERT_HARMLESS(UT_NOT_REACHED);
+				break;
+		}
+	}
+	
+	if (!_setPermissions(connection->doc_id(), friend_readwrite, group_readwrite))
+		return false;
+
+	return true;
 }
 
 // NOTE: we don't implement the opening of documents asynchronous; we block on it,
@@ -437,6 +737,18 @@ void ServiceAccountHandler::joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHand
 	}
 }
 
+bool ServiceAccountHandler::hasSession(const UT_UTF8String& sSessionId)
+{
+	for (std::vector<boost::shared_ptr<RealmConnection> >::iterator it = m_connections.begin(); it != m_connections.end(); it++)
+	{
+		boost::shared_ptr<RealmConnection> connection_ptr = *it;
+		UT_continue_if_fail(connection_ptr);
+		if (connection_ptr->session_id() == sSessionId.utf8_str())
+			return true;
+	}
+	return AccountHandler::hasSession(sSessionId);
+}
+
 acs::SOAP_ERROR ServiceAccountHandler::openDocument(UT_uint64 doc_id, UT_uint64 revision, const std::string& session_id, PD_Document** pDoc, XAP_Frame* pFrame)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::openDocument() - doc_id: %llu\n", doc_id));
@@ -467,22 +779,18 @@ acs::SOAP_ERROR ServiceAccountHandler::openDocument(UT_uint64 doc_id, UT_uint64 
 	soa::CollectionPtr rcp = soap_result->as<soa::Collection>("return");
 	UT_return_val_if_fail(rcp, acs::SOAP_ERROR_GENERIC);
 
-	soa::StringPtr realm_address = rcp->get<soa::String>("realm_address");
-	soa::IntPtr realm_port = rcp->get<soa::Int>("realm_port");
-	soa::StringPtr cookie = rcp->get<soa::String>("cookie");
-	
-	// some sanity checking
+	soa::IntPtr user_id = rcp->get<soa::Int>("user_id");
+	soa::IntPtr owner_id = rcp->get<soa::Int>("owner_id");
+	UT_return_val_if_fail(user_id, acs::SOAP_ERROR_GENERIC);
+	UT_return_val_if_fail(owner_id, acs::SOAP_ERROR_GENERIC);
+	bool bLocallyOwned = (user_id->value() == owner_id->value());
+
 	soa::BoolPtr master = rcp->get<soa::Bool>("master");
 	if (!master)
 	{
 		UT_DEBUGMSG(("Error reading master field\n"));
 		return acs::SOAP_ERROR_GENERIC;
 	}
-	if (!realm_address || realm_address->value().size() == 0 || !realm_port || realm_port->value() <= 0 || !cookie || cookie->value().size() == 0)
-	{
-		UT_DEBUGMSG(("Invalid realm login information\n"));
-		return acs::SOAP_ERROR_GENERIC;
-	}   
 	soa::StringPtr filename_ptr = rcp->get<soa::String>("filename");
 	if (!filename_ptr)
 	{
@@ -492,26 +800,15 @@ acs::SOAP_ERROR ServiceAccountHandler::openDocument(UT_uint64 doc_id, UT_uint64 
 	// check the filename; it shouldn't ever be empty, but just check nonetheless
 	// TODO: append a number if the filename happens to be empty
 	std::string filename = filename_ptr->value().size() > 0 ? filename_ptr->value() : "Untitled";
-	
-	// open the realm connection!
-	UT_DEBUGMSG(("realm_address: %s, realm_port: %lld, cookie: %s\n", realm_address->value().c_str(), realm_port->value(), cookie->value().c_str()));
-	ConnectionPtr connection = 
-		boost::shared_ptr<RealmConnection>(new RealmConnection(m_ssl_ca_file, realm_address->value(), 
-								realm_port->value(), cookie->value(), doc_id, master->value(), session_id,
-								boost::bind(&ServiceAccountHandler::_handleRealmPacket, this, _1)));
 
-	// TODO: this connect() call is blocking, so it _could_ take a while; we should
-	// display a progress bar in that case
-	if (!connection->connect())
-	{
-		UT_DEBUGMSG(("Error connecting to realm %s:%lld\n", realm_address->value().c_str(), realm_port->value()));
-		return acs::SOAP_ERROR_GENERIC;
-	}
+	// open a connection with the realm
+	ConnectionPtr connection = _realmConnect(rcp, doc_id, session_id, master->value());
+	UT_return_val_if_fail(connection, acs::SOAP_ERROR_GENERIC);
 	
 	// load the document
 	acs::SOAP_ERROR open_result = master->value()
-				? _openDocumentMaster(connection, rcp, pDoc, pFrame, session_id, filename)
-				: _openDocumentSlave(connection, pDoc, pFrame, filename);
+				? _openDocumentMaster(connection, rcp, pDoc, pFrame, session_id, filename, bLocallyOwned)
+				: _openDocumentSlave(connection, pDoc, pFrame, filename, bLocallyOwned);
 
 	if (open_result != acs::SOAP_ERROR_OK)
 	{
@@ -528,6 +825,53 @@ acs::SOAP_ERROR ServiceAccountHandler::openDocument(UT_uint64 doc_id, UT_uint64 
 	return acs::SOAP_ERROR_OK;
 }
 
+ConnectionPtr ServiceAccountHandler::_realmConnect(soa::CollectionPtr rcp, 
+			UT_uint64 doc_id, const std::string& session_id, bool master)
+{
+	UT_DEBUGMSG(("ServiceAccountHandler::_realmConnect()\n"));
+	UT_return_val_if_fail(rcp, ConnectionPtr());
+
+	soa::StringPtr realm_address = rcp->get<soa::String>("realm_address");
+	soa::IntPtr realm_port = rcp->get<soa::Int>("realm_port");
+	soa::StringPtr cookie = rcp->get<soa::String>("cookie");
+	
+	// some sanity checking
+	if (!realm_address || realm_address->value().size() == 0 || !realm_port || realm_port->value() <= 0 || !cookie || cookie->value().size() == 0)
+	{
+		UT_DEBUGMSG(("Invalid realm login information\n"));
+		return ConnectionPtr();
+	}   
+	
+	// open the realm connection!
+	UT_DEBUGMSG(("realm_address: %s, realm_port: %lld, cookie: %s\n", realm_address->value().c_str(), realm_port->value(), cookie->value().c_str()));
+	ConnectionPtr connection = 
+		boost::shared_ptr<RealmConnection>(new RealmConnection(m_ssl_ca_file, realm_address->value(), 
+								realm_port->value(), cookie->value(), doc_id, master, session_id,
+								boost::bind(&ServiceAccountHandler::_handleRealmPacket, this, _1)));
+
+	// TODO: this connect() call is blocking, so it _could_ take a while; we should
+	// display a progress bar in that case
+	if (!connection->connect())
+	{
+		UT_DEBUGMSG(("Error connecting to realm %s:%lld\n", realm_address->value().c_str(), realm_port->value()));
+		return ConnectionPtr();
+	}
+
+	return connection;
+}
+
+ServiceBuddyPtr	ServiceAccountHandler::_getBuddy(const UT_UTF8String& descriptor)
+{
+	for (std::vector<BuddyPtr>::iterator it = getBuddies().begin(); it != getBuddies().end(); it++)
+	{
+		ServiceBuddyPtr pB = boost::static_pointer_cast<ServiceBuddy>(*it);
+		UT_continue_if_fail(pB);
+		if (pB->getDescriptor(false) == descriptor)
+			return pB;
+	}
+	return ServiceBuddyPtr();	
+}
+
 ServiceBuddyPtr ServiceAccountHandler::_getBuddy(ServiceBuddyPtr pBuddy)
 {
 	UT_return_val_if_fail(pBuddy, ServiceBuddyPtr());
@@ -535,14 +879,27 @@ ServiceBuddyPtr ServiceAccountHandler::_getBuddy(ServiceBuddyPtr pBuddy)
 	{
 		ServiceBuddyPtr pB = boost::static_pointer_cast<ServiceBuddy>(*it);
 		UT_continue_if_fail(pB);
-		if (pB->getEmail() == pBuddy->getEmail())
+		if (pB->getUserId() == pBuddy->getUserId() &&
+			pB->getType() == pBuddy->getType())
+			return pB;
+	}
+	return ServiceBuddyPtr();
+}
+
+ServiceBuddyPtr ServiceAccountHandler::_getBuddy(ServiceBuddyType type, uint64_t user_id)
+{
+	for (std::vector<BuddyPtr>::iterator it = getBuddies().begin(); it != getBuddies().end(); it++)
+	{
+		ServiceBuddyPtr pB = boost::static_pointer_cast<ServiceBuddy>(*it);
+		UT_continue_if_fail(pB);
+		if (pB->getUserId() == user_id && pB->getType() == type)
 			return pB;
 	}
 	return ServiceBuddyPtr();
 }
 
 acs::SOAP_ERROR ServiceAccountHandler::_openDocumentMaster(ConnectionPtr connection, soa::CollectionPtr rcp, PD_Document** pDoc, XAP_Frame* pFrame, 
-																 	const std::string& session_id, const std::string& filename)
+																 	const std::string& session_id, const std::string& filename, bool bLocallyOwned)
 {
 	UT_return_val_if_fail(rcp || pDoc, acs::SOAP_ERROR_GENERIC);
 	
@@ -560,8 +917,8 @@ acs::SOAP_ERROR ServiceAccountHandler::_openDocumentMaster(ConnectionPtr connect
 	gchar* fname = g_strdup(filename.c_str());
 	(*pDoc)->setFilename(fname);
 	
-	// Now register a serviceExporter to handle remote saves
-	// via a signal.
+	// Register a serviceExporter to handle remote saves via a signal.
+	// FIXME: the exporter is document dependent, so don't store it in a simple class member
 	m_pExport = new AbiCollabService_Export(*pDoc,this);
 	(*pDoc)->addListener(m_pExport,	&m_iListenerID);
 	
@@ -569,12 +926,13 @@ acs::SOAP_ERROR ServiceAccountHandler::_openDocumentMaster(ConnectionPtr connect
 	UT_UTF8String sSessionId = session_id.c_str();
 	RealmBuddyPtr buddy(
 				new RealmBuddy(this, connection->user_id(), _getDomain(), connection->connection_id(), connection->master(), connection));
-	pManager->startSession(*pDoc, sSessionId, pFrame, buddy->getDescriptor());
+	pManager->startSession(*pDoc, sSessionId, this, bLocallyOwned, pFrame, buddy->getDescriptor());
 	
 	return acs::SOAP_ERROR_OK;
 }
 
-acs::SOAP_ERROR ServiceAccountHandler::_openDocumentSlave(ConnectionPtr connection, PD_Document** pDoc, XAP_Frame* pFrame, const std::string& filename)
+acs::SOAP_ERROR ServiceAccountHandler::_openDocumentSlave(ConnectionPtr connection, PD_Document** pDoc, XAP_Frame* pFrame, 
+											const std::string& filename, bool bLocallyOwned)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::_openDocumentSlave()\n"));
 	UT_return_val_if_fail(connection, acs::SOAP_ERROR_GENERIC);
@@ -594,7 +952,7 @@ acs::SOAP_ERROR ServiceAccountHandler::_openDocumentSlave(ConnectionPtr connecti
 	pDlg->setInformation("Please wait while retrieving document...");
 
 	// setup the information for the callback to use when the document comes in
-	connection->loadDocumentStart(pDlg, pDoc, pFrame, filename);
+	connection->loadDocumentStart(pDlg, pDoc, pFrame, filename, bLocallyOwned);
 	
 	// run the dialog
 	pDlg->runModal(pDlgFrame);
@@ -605,13 +963,245 @@ acs::SOAP_ERROR ServiceAccountHandler::_openDocumentSlave(ConnectionPtr connecti
 	
 	if (m_cancelled)
 		return acs::SOAP_ERROR_GENERIC;
-	// Now register a serviceExporter to handle remote saves
-	// via a signal.
 
+	// Register a serviceExporter to handle remote saves via a signal.
+	// FIXME: the exporter is document dependent, so don't store it in a simple class member
 	m_pExport = new AbiCollabService_Export(*pDoc,this);
 	(*pDoc)->addListener(m_pExport,&m_iListenerID);
 
 	return acs::SOAP_ERROR_OK;
+}
+
+bool ServiceAccountHandler::_getConnections()
+{
+	UT_DEBUGMSG(("ServiceAccountHandler::_getConnections()\n"));
+
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, false);
+
+	const std::string uri = getProperty("uri");
+	const std::string email = getProperty("email");
+	std::string password = getProperty("password");
+	bool verify_webapp_host = (getProperty("verify-webapp-host") == "true");
+
+	soa::GenericPtr soap_result;
+	do
+	{
+		soa::function_call fc("getConnections", "getConnectionsResponse");
+		fc("email", email)
+			("password", password);
+		try {
+			soap_result = soup_soa::invoke(uri, 
+								soa::method_invocation("urn:AbiCollabSOAP", fc),
+								verify_webapp_host?m_ssl_ca_file:"");
+			break;
+		} catch (soa::SoapFault& fault) {
+			UT_DEBUGMSG(("Caught a soap fault: %s (error code: %s)!\n", 
+						 fault.detail() ? fault.detail()->value().c_str() : "(null)",
+						 fault.string() ? fault.string()->value().c_str() : "(null)"));
+
+			acs::SOAP_ERROR err = acs::error(fault);
+			switch (err)
+			{
+				case acs::SOAP_ERROR_INVALID_PASSWORD:
+					if (!askPassword(email, password))
+						return false;
+					addProperty("password", password);
+					pManager->storeProfile();	
+					continue;
+				default:
+					UT_DEBUGMSG(("Unhandled SOAP error\n"));
+					UT_return_val_if_fail(false, false);
+			}
+		}
+	} while (!soap_result);
+	UT_return_val_if_fail(soap_result, false);
+
+	// handle the result
+	soa::CollectionPtr rcp = soap_result->as<soa::Collection>("return");
+	UT_return_val_if_fail(rcp, false);
+
+	soa::ArrayPtr friends_ptr = rcp->get< soa::Array<soa::GenericPtr> >("friends");
+	soa::ArrayPtr groups_ptr = rcp->get< soa::Array<soa::GenericPtr> >("groups");
+
+	// construct our friends
+	if (soa::ArrayPtr friends_array = rcp->get< soa::Array<soa::GenericPtr> >("friends"))
+		if (abicollab::FriendArrayPtr friends = friends_array->construct<abicollab::Friend>())
+			for (size_t i = 0; i < friends->size(); i++)
+				if (abicollab::FriendPtr friend_ = friends->operator[](i))
+				{
+					UT_DEBUGMSG(("Got a friend: %s <id: %lld>\n", friend_->name.c_str(), friend_->friend_id));
+					if (friend_->name != "")
+					{
+						ServiceBuddyPtr pBuddy = boost::shared_ptr<ServiceBuddy>(new ServiceBuddy(this, SERVICE_FRIEND, friend_->friend_id, friend_->name, _getDomain()));
+						ServiceBuddyPtr pExistingBuddy = _getBuddy(pBuddy); // TODO: add a getBuddy function based on the email address
+						if (!pExistingBuddy)
+							addBuddy(pBuddy);
+					}				
+				}
+
+	// construct our groups
+	if (soa::ArrayPtr groups_array = rcp->get< soa::Array<soa::GenericPtr> >("groups"))
+		if (abicollab::GroupArrayPtr groups = groups_array->construct<abicollab::Group>())
+			for (size_t i = 0; i < groups->size(); i++)
+				if (abicollab::GroupPtr group_ = groups->operator[](i))
+				{
+					UT_DEBUGMSG(("Got a group: %s <id: %lld>\n", group_->name.c_str(), group_->group_id));
+					if (group_->name != "")
+					{
+						ServiceBuddyPtr pBuddy = boost::shared_ptr<ServiceBuddy>(new ServiceBuddy(this, SERVICE_GROUP, group_->group_id, group_->name, _getDomain()));
+						ServiceBuddyPtr pExistingBuddy = _getBuddy(pBuddy); // TODO: add a getBuddy function based on the email address
+						if (!pExistingBuddy)
+							addBuddy(pBuddy);
+					}				
+				}
+
+	return true;
+}
+
+static void s_copy_int_array(soa::ArrayPtr array_ptr, std::vector<UT_uint64>& result)
+{
+	if (!array_ptr)
+		return;
+
+	for (UT_uint32 i = 0; i < array_ptr->size(); i++)
+	{
+		soa::GenericPtr v = array_ptr->operator[](i);
+		UT_continue_if_fail(v);
+		soa::IntPtr vi = v->as<soa::Int>();
+		UT_continue_if_fail(vi);
+		result.push_back(vi->value());
+	}
+}
+
+bool ServiceAccountHandler::_getPermissions(uint64_t doc_id,
+			std::vector<UT_uint64>& rw, std::vector<UT_uint64>& ro,
+			std::vector<UT_uint64>& grw, std::vector<UT_uint64>& gro)
+{
+	UT_DEBUGMSG(("ServiceAccountHandler::_getPermissions()\n"));
+
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, false);
+
+	const std::string uri = getProperty("uri");
+	const std::string email = getProperty("email");
+	std::string password = getProperty("password");
+	bool verify_webapp_host = (getProperty("verify-webapp-host") == "true");
+
+	soa::GenericPtr soap_result;
+	do
+	{
+		soa::function_call fc("getPermissions", "getPermissionsResponse");
+		fc("email", email)
+			("password", password)
+			("doc_id", static_cast<int64_t>(doc_id));
+
+		try {
+			UT_DEBUGMSG(("Getting permissions for document %llu...\n", doc_id));
+			soap_result = soup_soa::invoke(uri, 
+								soa::method_invocation("urn:AbiCollabSOAP", fc),
+								verify_webapp_host?m_ssl_ca_file:"");
+			break;
+		} catch (soa::SoapFault& fault) {
+			UT_DEBUGMSG(("Caught a soap fault: %s (error code: %s)!\n", 
+						 fault.detail() ? fault.detail()->value().c_str() : "(null)",
+						 fault.string() ? fault.string()->value().c_str() : "(null)"));
+
+			acs::SOAP_ERROR err = acs::error(fault);
+			switch (err)
+			{
+				case acs::SOAP_ERROR_INVALID_PASSWORD:
+					if (!askPassword(email, password))
+						return false;
+					addProperty("password", password);
+					pManager->storeProfile();	
+					continue;
+				default:
+					UT_DEBUGMSG(("Unhandled SOAP error\n"));
+					UT_return_val_if_fail(false, false);
+			}
+		}
+	} while (!soap_result);
+	UT_return_val_if_fail(soap_result, false);
+	
+	// handle the result
+	soa::CollectionPtr rcp = soap_result->as<soa::Collection>("return");
+	UT_return_val_if_fail(rcp, false);
+
+	s_copy_int_array(rcp->get< soa::Array<soa::GenericPtr> >("read_write"), rw);
+	s_copy_int_array(rcp->get< soa::Array<soa::GenericPtr> >("read_only"), ro);
+	s_copy_int_array(rcp->get< soa::Array<soa::GenericPtr> >("group_read_write"), grw);
+	s_copy_int_array(rcp->get< soa::Array<soa::GenericPtr> >("group_read_write"), gro);
+
+	return true;
+}
+
+bool ServiceAccountHandler::_setPermissions(UT_uint64 doc_id, 
+			const std::vector<UT_uint64>& friend_readwrite,
+			const std::vector<UT_uint64>& group_readwrite)
+{
+	UT_DEBUGMSG(("ServiceAccountHandler::_setPermissions()\n"));
+
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, false);
+
+	const std::string uri = getProperty("uri");
+	const std::string email = getProperty("email");
+	std::string password = getProperty("password");
+	bool verify_webapp_host = (getProperty("verify-webapp-host") == "true");
+
+	soa::GenericPtr soap_result;
+	do
+	{
+		soa::function_call fc("setPermissions", "setPermissionsResponse");
+		fc("email", email)("password", password)("doc_id", static_cast<int64_t>(doc_id));
+
+		// add the friend permissions
+		soa::ArrayPtr friend_permissions(new soa::Array<soa::GenericPtr>(""));
+		for (UT_uint32 i = 0; i < friend_readwrite.size(); i++)
+			friend_permissions->add(soa::IntPtr(new soa::Int("item", friend_readwrite[i])));
+		fc("read_write", friend_permissions, soa::INT_TYPE);
+		fc("read_only", soa::ArrayPtr(), soa::INT_TYPE); // unsupported
+
+		// add the group permissions
+		soa::ArrayPtr group_permissions(new soa::Array<soa::GenericPtr>(""));
+		for (UT_uint32 i = 0; i < group_readwrite.size(); i++)
+			group_permissions->add(soa::IntPtr(new soa::Int("item", group_readwrite[i])));
+		fc("group_read_write", group_permissions, soa::INT_TYPE);
+		fc("group_read_only", soa::ArrayPtr(), soa::INT_TYPE); // unsupported
+		fc("group_read_owner", soa::ArrayPtr(), soa::INT_TYPE); // unsupported
+
+		try {
+			UT_DEBUGMSG(("Getting permissions for document %llu...\n", doc_id));
+			soap_result = soup_soa::invoke(uri, 
+								soa::method_invocation("urn:AbiCollabSOAP", fc),
+								verify_webapp_host?m_ssl_ca_file:"");
+			break;
+		} catch (soa::SoapFault& fault) {
+			UT_DEBUGMSG(("Caught a soap fault: %s (error code: %s)!\n", 
+						 fault.detail() ? fault.detail()->value().c_str() : "(null)",
+						 fault.string() ? fault.string()->value().c_str() : "(null)"));
+
+			acs::SOAP_ERROR err = acs::error(fault);
+			switch (err)
+			{
+				case acs::SOAP_ERROR_INVALID_PASSWORD:
+					if (!askPassword(email, password))
+						return false;
+					addProperty("password", password);
+					pManager->storeProfile();	
+					continue;
+				default:
+					UT_DEBUGMSG(("Unhandled SOAP error\n"));
+					UT_return_val_if_fail(false, false);
+			}
+		}
+	} while (!soap_result);
+	UT_return_val_if_fail(soap_result, false);
+
+	soa::BoolPtr res = soap_result->as<soa::Bool>();
+	UT_return_val_if_fail(res, false);
+	return res->value();
 }
 
 // NOTE: saveDocument can be called from a thread other than our mainloop;
@@ -647,7 +1237,16 @@ UT_Error ServiceAccountHandler::saveDocument(PD_Document* pDoc, ConnectionPtr co
 		UT_DEBUGMSG(("Caught a soap fault: %s (error code: %s)!\n", 
 				 fault.detail() ? fault.detail()->value().c_str() : "(null)",
 				 fault.string() ? fault.string()->value().c_str() : "(null)"));
-		return UT_ERROR;
+
+		acs::SOAP_ERROR err = acs::error(fault);
+		switch (err)
+		{
+			case acs::SOAP_ERROR_NO_CHANGES:
+				UT_DEBUGMSG(("The document was unchanged; ignoring error\n"));
+				return UT_OK;
+			default:
+				return UT_ERROR;
+		}
 	}
 
 	UT_DEBUGMSG(("Document uploaded successfully\n"));
@@ -768,38 +1367,43 @@ acs::SOAP_ERROR ServiceAccountHandler::_listDocuments(
 	UT_return_val_if_fail(rcp, acs::SOAP_ERROR_GENERIC);
 	
 	// load our own files
-	GetSessionsResponseEvent& gsre1 = (*sessions_ptr)[email];
+	soa::IntPtr user_id = rcp->get< soa::Int >("user_id");
+	soa::StringPtr username = rcp->get< soa::String >("name");
+	UT_return_val_if_fail(user_id && username, acs::SOAP_ERROR_GENERIC);
+	ServiceBuddyPtr pBuddy(new ServiceBuddy(this, SERVICE_USER, user_id->value(), username->value(), _getDomain()));
+	GetSessionsResponseEvent& gsre1 = (*sessions_ptr)[pBuddy];
 	_parseSessionFiles(rcp->get< soa::Array<soa::GenericPtr> >("files"), gsre1);
 
 	// load the files from our friends
 	if (soa::ArrayPtr friends_array = rcp->get< soa::Array<soa::GenericPtr> >("friends"))
-		if (abicollab::FriendArrayPtr friends = friends_array->construct<abicollab::Friend>())
+		if (abicollab::FriendFilesArrayPtr friends = friends_array->construct<abicollab::FriendFiles>())
 			for (size_t i = 0; i < friends->size(); i++)
-				if (abicollab::FriendPtr friend_ = friends->operator[](i))
+				if (abicollab::FriendFilesPtr friend_ = friends->operator[](i))
 				{
 					UT_DEBUGMSG(("Got a friend: %s <%s>\n", friend_->name.c_str(), friend_->email.c_str()));
-					if (friend_->email != "")
+					if (friend_->name != "")
 					{
 						// add this friend's documents by generating a GetSessionsResponseEvent
 						// to populate all the required document structures
-
-						GetSessionsResponseEvent& gsre = (*sessions_ptr)[friend_->email];
+						ServiceBuddyPtr friend_ptr(new ServiceBuddy(this, SERVICE_FRIEND, friend_->friend_id, friend_->name, _getDomain()));
+						GetSessionsResponseEvent& gsre = (*sessions_ptr)[friend_ptr];
 						_parseSessionFiles(friend_->files, gsre);
 					}				
 				}
 	
 	// load the files from our groups
 	if (soa::ArrayPtr groups_array = rcp->get< soa::Array<soa::GenericPtr> >("groups"))
-		if (abicollab::GroupArrayPtr groups = groups_array->construct<abicollab::Group>())
+		if (abicollab::GroupFilesArrayPtr groups = groups_array->construct<abicollab::GroupFiles>())
 			for (size_t i = 0; i < groups->size(); i++)
-				if (abicollab::GroupPtr group_ = groups->operator[](i))
+				if (abicollab::GroupFilesPtr group_ = groups->operator[](i))
 				{
 					UT_DEBUGMSG(("Got a group: %s\n", group_->name.c_str()));
 					if (group_->name != "")
 					{
 						// add this friend's documents by generating a GetSessionsResponseEvent
 						// to populate all the required document structures
-						GetSessionsResponseEvent& gsre = (*sessions_ptr)[group_->name];
+						ServiceBuddyPtr group_ptr(new ServiceBuddy(this, SERVICE_GROUP, group_->group_id, group_->name, _getDomain()));
+						GetSessionsResponseEvent& gsre = (*sessions_ptr)[group_ptr];
 						_parseSessionFiles(group_->files, gsre);
 					}				
 				}
@@ -822,13 +1426,13 @@ void ServiceAccountHandler::_listDocuments_cb(acs::SOAP_ERROR error, BuddySessio
 	{
 		case acs::SOAP_ERROR_OK:
 			{
-				std::map<std::string, GetSessionsResponseEvent>& sessions = *sessions_ptr;
+				std::map<ServiceBuddyPtr, GetSessionsResponseEvent>& sessions = *sessions_ptr;
 				if (sessions.size() == 0)
 					return;
 				
-				for (std::map<std::string, GetSessionsResponseEvent>::iterator it = sessions.begin(); it != sessions.end(); it++)
+				for (std::map<ServiceBuddyPtr, GetSessionsResponseEvent>::iterator it = sessions.begin(); it != sessions.end(); it++)
 				{
-					ServiceBuddyPtr pBuddy(new ServiceBuddy(this, (*it).first, _getDomain()));
+					ServiceBuddyPtr pBuddy = (*it).first;
 					ServiceBuddyPtr pExistingBuddy = _getBuddy(pBuddy); // TODO: add a getBuddy function based on the email address
 					if (!pExistingBuddy)
 					{
@@ -854,7 +1458,7 @@ void ServiceAccountHandler::_listDocuments_cb(acs::SOAP_ERROR error, BuddySessio
 
 					// re-attempt to fetch the documents list
 					pManager->beginAsyncOperation(this);
-					BuddySessionsPtr new_sessions_ptr(new std::map<std::string, GetSessionsResponseEvent>());
+					BuddySessionsPtr new_sessions_ptr(new std::map<ServiceBuddyPtr, GetSessionsResponseEvent>());
 					boost::shared_ptr<AsyncWorker<acs::SOAP_ERROR> > async_list_docs_ptr(
 								new AsyncWorker<acs::SOAP_ERROR>(
 									boost::bind(&ServiceAccountHandler::_listDocuments, this, 
@@ -876,7 +1480,8 @@ void ServiceAccountHandler::_listDocuments_cb(acs::SOAP_ERROR error, BuddySessio
 
 void ServiceAccountHandler::_handleJoinSessionRequestResponse(
 									JoinSessionRequestResponseEvent* jsre, BuddyPtr pBuddy, 
-									XAP_Frame* pFrame, PD_Document** pDoc, const std::string& filename)
+									XAP_Frame* pFrame, PD_Document** pDoc, const std::string& filename,
+									bool bLocallyOwned)
 {
 	UT_return_if_fail(jsre);
 	UT_return_if_fail(pBuddy);
@@ -893,7 +1498,7 @@ void ServiceAccountHandler::_handleJoinSessionRequestResponse(
 	gchar* fname = g_strdup(filename.c_str());
 	(*pDoc)->setFilename(fname);
 
-	pManager->joinSession(jsre->getSessionId(), *pDoc, jsre->m_sDocumentId, jsre->m_iRev, jsre->getAuthorId(), pBuddy, pFrame);
+	pManager->joinSession(jsre->getSessionId(), *pDoc, jsre->m_sDocumentId, jsre->m_iRev, jsre->getAuthorId(), pBuddy, this, bLocallyOwned, pFrame);
 }
 
 void ServiceAccountHandler::_handleRealmPacket(ConnectionPtr connection)
@@ -990,7 +1595,7 @@ void ServiceAccountHandler::_handleMessages(ConnectionPtr connection)
 						UT_return_if_fail(pdp);
 
 						UT_DEBUGMSG(("Joining received document..."));
-						_handleJoinSessionRequestResponse(static_cast<JoinSessionRequestResponseEvent*>(pPacket), buddy_ptr, pdp->pFrame, pdp->pDoc, pdp->filename);
+						_handleJoinSessionRequestResponse(static_cast<JoinSessionRequestResponseEvent*>(pPacket), buddy_ptr, pdp->pFrame, pdp->pDoc, pdp->filename, pdp->bLocallyOwned);
 						DELETEP(pPacket);
 						UT_return_if_fail(pdp->pDlg);
 						pdp->pDlg->close();

@@ -32,12 +32,21 @@
 #include <core/account/xp/Buddy.h>
 #include <core/account/xp/AccountHandler.h>
 
+enum ServiceBuddyType
+{
+	SERVICE_USER = 0,
+	SERVICE_FRIEND,
+	SERVICE_GROUP
+};
+
 class ServiceBuddy : public Buddy
 {
 public:
-	ServiceBuddy(AccountHandler* handler, const std::string& email, const std::string& domain)
+	ServiceBuddy(AccountHandler* handler, ServiceBuddyType type_, uint64_t user_id, const std::string& name, const std::string& domain)
 		: Buddy(handler),
-		m_email(email),
+		m_type(type_),
+		m_user_id(user_id),
+		m_name(name),
 		m_domain(domain)
 	{
 		setVolatile(true);
@@ -49,14 +58,24 @@ public:
 		{
 			UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 		}
-		return UT_UTF8String("acn://") + m_email.c_str() + UT_UTF8String("@") + m_domain.c_str();
+		std::string descr = std::string("acn://")+
+								boost::lexical_cast<std::string>(m_user_id) + ":" + 
+								boost::lexical_cast<std::string>(m_type) + "@" +
+								m_domain;
+		return descr.c_str();
 	}
 	
 	virtual UT_UTF8String getDescription() const
-		{ return m_email.c_str(); }
+		{ return m_name.c_str(); }
 	
-	const std::string& getEmail() const
-		{ return m_email; }
+	ServiceBuddyType getType() const
+		{ return m_type; }
+	
+	uint64_t getUserId() const
+		{ return m_user_id; }
+	
+	const std::string& getName() const
+		{ return m_name; }
 	
 	virtual const DocTreeItem* getDocTreeItems() const
 	{
@@ -81,8 +100,10 @@ public:
 	}
 	
 private:
-	std::string		m_email;
-	std::string		m_domain;
+	ServiceBuddyType	m_type;
+	uint64_t			m_user_id;
+	std::string			m_name;
+	std::string			m_domain;
 };
 
 typedef boost::shared_ptr<ServiceBuddy> ServiceBuddyPtr;

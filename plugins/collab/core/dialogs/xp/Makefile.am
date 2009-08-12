@@ -17,5 +17,6 @@ libxp_la_SOURCES = \
 	ap_Dialog_CollaborationAddBuddy.cpp \
 	ap_Dialog_CollaborationAddBuddy.h \
 	ap_Dialog_CollaborationJoin.cpp \
-	ap_Dialog_CollaborationJoin.h
-
+	ap_Dialog_CollaborationJoin.h \
+	ap_Dialog_CollaborationShare.cpp \
+	ap_Dialog_CollaborationShare.h

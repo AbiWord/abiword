@@ -77,7 +77,9 @@ public:
 	virtual bool			allowsManualBuddies()
 		{ return true; }
 	virtual void			forceDisconnectBuddy(BuddyPtr) { /* TODO: implement me? */ }
-	
+	virtual bool							hasPersistentAccessControl()
+		{ return true; }
+
 	// session management
 	virtual bool							allowsSessionTakeover()
 		{ return false; } // no technical reason not to allow this; we just didn't implement session takeover for this backend yet	

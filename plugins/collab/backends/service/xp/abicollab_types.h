@@ -60,7 +60,7 @@ typedef boost::shared_ptr<abicollab::File> FilePtr;
 typedef boost::shared_ptr< soa::Array< abicollab::FilePtr > > FileArrayPtr;
 
 class Friend : public soa::Collection {
-public:
+public:	
 	Friend(const std::string& n)
 		: soa::Collection(n)
 	{}
@@ -68,25 +68,23 @@ public:
 	static boost::shared_ptr<Friend> construct(soa::GenericPtr value) {
 		if (soa::CollectionPtr coll = value->as<soa::Collection>()) {
 			boost::shared_ptr<Friend> friend_(new Friend(coll->name()));
+			if (soa::IntPtr friend_id_ = coll->get<soa::Int>("friend_id"))
+				friend_->friend_id = friend_id_->value();
 			if (soa::StringPtr name_ = coll->get<soa::String>("name"))
 				friend_->name = name_->value();
-			if (soa::StringPtr email_ = coll->get<soa::String>("email"))
-				friend_->email = email_->value();
-			friend_->files = coll->get< soa::Array<soa::GenericPtr> >("files");
 			return friend_;
 		}
 		return boost::shared_ptr<Friend>();
 	}
 
+	int64_t friend_id;
 	std::string name;
-	std::string email;
-	soa::ArrayPtr files;
 };
-typedef boost::shared_ptr<Friend> FriendPtr;
-typedef boost::shared_ptr< soa::Array< FriendPtr > > FriendArrayPtr;
+typedef boost::shared_ptr<abicollab::Friend> FriendPtr;
+typedef boost::shared_ptr< soa::Array< abicollab::FriendPtr > > FriendArrayPtr;
 
 class Group : public soa::Collection {
-public:
+public:	
 	Group(const std::string& n)
 		: soa::Collection(n)
 	{}
@@ -94,19 +92,75 @@ public:
 	static boost::shared_ptr<Group> construct(soa::GenericPtr value) {
 		if (soa::CollectionPtr coll = value->as<soa::Collection>()) {
 			boost::shared_ptr<Group> group_(new Group(coll->name()));
+			if (soa::IntPtr group_id_ = coll->get<soa::Int>("group_id"))
+				group_->group_id = group_id_->value();
 			if (soa::StringPtr name_ = coll->get<soa::String>("name"))
 				group_->name = name_->value();
-			group_->files = coll->get< soa::Array<soa::GenericPtr> >("files");
 			return group_;
 		}
 		return boost::shared_ptr<Group>();
 	}
 
+	int64_t group_id;
+	std::string name;
+};
+typedef boost::shared_ptr<abicollab::Group> GroupPtr;
+typedef boost::shared_ptr< soa::Array< abicollab::GroupPtr > > GroupArrayPtr;
+
+class FriendFiles : public soa::Collection {
+public:
+	FriendFiles(const std::string& n)
+		: soa::Collection(n)
+	{}
+
+	static boost::shared_ptr<FriendFiles> construct(soa::GenericPtr value) {
+		if (soa::CollectionPtr coll = value->as<soa::Collection>()) {
+			boost::shared_ptr<FriendFiles> friend_(new FriendFiles(coll->name()));
+			if (soa::IntPtr friend_id_ = coll->get<soa::Int>("friend_id"))
+				friend_->friend_id = friend_id_->value();			
+			if (soa::StringPtr name_ = coll->get<soa::String>("name"))
+				friend_->name = name_->value();
+			if (soa::StringPtr email_ = coll->get<soa::String>("email"))
+				friend_->email = email_->value();
+			friend_->files = coll->get< soa::Array<soa::GenericPtr> >("files");
+			return friend_;
+		}
+		return boost::shared_ptr<FriendFiles>();
+	}
+
+	int64_t friend_id;
+	std::string name;
+	std::string email;
+	soa::ArrayPtr files;
+};
+typedef boost::shared_ptr<FriendFiles> FriendFilesPtr;
+typedef boost::shared_ptr< soa::Array< FriendFilesPtr > > FriendFilesArrayPtr;
+
+class GroupFiles : public soa::Collection {
+public:
+	GroupFiles(const std::string& n)
+		: soa::Collection(n)
+	{}
+
+	static boost::shared_ptr<GroupFiles> construct(soa::GenericPtr value) {
+		if (soa::CollectionPtr coll = value->as<soa::Collection>()) {
+			boost::shared_ptr<GroupFiles> group_(new GroupFiles(coll->name()));
+			if (soa::IntPtr group_id_ = coll->get<soa::Int>("group_id"))
+				group_->group_id = group_id_->value();			
+			if (soa::StringPtr name_ = coll->get<soa::String>("name"))
+				group_->name = name_->value();
+			group_->files = coll->get< soa::Array<soa::GenericPtr> >("files");
+			return group_;
+		}
+		return boost::shared_ptr<GroupFiles>();
+	}
+
+	int64_t group_id;
 	std::string name;
 	soa::ArrayPtr files;
 };
-typedef boost::shared_ptr<Group> GroupPtr;
-typedef boost::shared_ptr< soa::Array< GroupPtr > > GroupArrayPtr;
+typedef boost::shared_ptr<GroupFiles> GroupFilesPtr;
+typedef boost::shared_ptr< soa::Array< GroupFilesPtr > > GroupFilesArrayPtr;
 
 }
 

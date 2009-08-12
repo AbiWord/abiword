@@ -61,16 +61,18 @@ namespace soa {
 
 	std::string soap_type(Type type) {
 		switch (type) {
+			case ARRAY_TYPE:
+				return "SOAP-ENC:Array";
 			case STRING_TYPE:
-				return "xsi:type=\"xsd:string\"";
+				return "xsd:string";
 			case INT_TYPE:
-				return "xsi:type=\"xsd:int\"";
+				return "xsd:int";
 			case BOOL_TYPE:
-				return "xsi:type=\"xsd:boolean\"";
+				return "xsd:boolean";
 			case BASE64BIN_TYPE:
-				return "xsi:type=\"xsd:base64Binary\"";
+				return "xsd:base64Binary";
 			case QNAME_TYPE:
-				return "xsi:type=\"xsd:QName\"";				
+				return "xsd:QName";
 			default:
 				// FIXME: should throw exception
 				return "";

@@ -92,7 +92,8 @@ public:
 	PropertyMap&							getProperties()
 		{ return m_properties; }
 
-	// dialog management 
+	// dialog management
+	virtual UT_UTF8String					getShareHint(PD_Document* /*pDoc*/) { return ""; }
 	virtual void							embedDialogWidgets(void* pEmbeddingParent) = 0;
 	virtual void							removeDialogWidgets(void* pEmbeddingParent) = 0;
 	virtual void							storeProperties() = 0;
@@ -118,6 +119,7 @@ public:
 	void									addBuddy(BuddyPtr pBuddy);
 	std::vector<BuddyPtr>&					getBuddies()
 		{ return m_vBuddies; }
+	virtual void							getBuddiesAsync() {}
 	void									deleteBuddy(BuddyPtr pBuddy);
 	void									deleteBuddies();
 	virtual BuddyPtr						constructBuddy(const PropertyMap& vProps) = 0;
@@ -132,19 +134,30 @@ public:
 	virtual bool							recognizeBuddyIdentifier(const std::string& identifier) = 0;
 	virtual bool							allowsManualBuddies() = 0;
 	virtual void							forceDisconnectBuddy(BuddyPtr /*buddy*/) = 0;
+	virtual bool							hasAccess(const std::vector<std::string>& vAcl, BuddyPtr pBuddy);
+	virtual bool							hasPersistentAccessControl() = 0;
+	// Return true if you can to share a file with this buddy, false otherwise
+	virtual bool							canShare(BuddyPtr /*pBuddy*/)
+		{ return true; }
 
 	// session management
 	virtual void							getSessionsAsync();
 	virtual void							getSessionsAsync(BuddyPtr pBuddy);
+	virtual bool							startSession(PD_Document* /*pDoc*/, const std::vector<std::string>& /*vAcl*/, AbiCollab** /*pSession*/)
+		{ return true; }
+	virtual bool							getAcl(AbiCollab* /*pSession*/, std::vector<std::string>& /*vAcl*/)
+		{ return true; }
+	virtual bool							setAcl(AbiCollab* /*pSession*/, const std::vector<std::string>& /*vAcl*/)
+		{ return true; }
 	virtual void							joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHandle);
 	virtual bool							hasSession(const UT_UTF8String& sSessionId);
 	virtual bool							allowsSessionTakeover() = 0;
 	bool									getCanOffer()
 		{ return m_bCanOffer; }
-
 	void									setOffering(bool bCanOffer)
 		{ m_bCanOffer = bCanOffer; }
-		
+	virtual bool							keepEmptySessionsAlive()
+		{ return false; }
 
 
 	// generic session management packet implementation

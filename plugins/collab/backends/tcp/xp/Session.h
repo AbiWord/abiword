@@ -38,9 +38,25 @@ public:
 	{
 	}
 
+	void connect(asio::ip::tcp::resolver::iterator& iterator)
+	{
+		socket.connect(*iterator);
+	}
+
+	// TODO: don't expose this
 	asio::ip::tcp::socket& getSocket()
 	{	
 		return socket;
+	}
+
+	std::string getRemoteAddress()
+	{
+		return socket.remote_endpoint().address().to_string();
+	}
+
+	unsigned short getRemotePort()
+	{
+		return socket.remote_endpoint().port();
 	}
 
 	void push(int size, char* data)
@@ -226,7 +242,7 @@ private:
 	}
 
 	asio::ip::tcp::socket					socket;
-	abicollab::mutex 							queue_protector;
+	abicollab::mutex 						queue_protector;
 	std::deque< std::pair<int, char*> >		incoming;
 	std::deque< std::pair<int, char*> >		outgoing;
 

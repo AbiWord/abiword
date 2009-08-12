@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=org.gnome.Empathy.DTubeHandler.com.abisource.abiword.abicollab
+Exec=/home/cassidy/dev/abiword.git/src/abiword

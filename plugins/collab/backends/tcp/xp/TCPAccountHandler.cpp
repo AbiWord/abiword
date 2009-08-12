@@ -117,11 +117,13 @@ ConnectResult TCPAccountHandler::connect()
 		asio::ip::tcp::resolver::iterator iterator(resolver.resolve(query));
 		try
 		{
-			session_ptr->getSocket().connect(*iterator);
+			session_ptr->connect(iterator);
 			session_ptr->asyncReadHeader();
 			m_bConnected = true; // todo: ask it to the socket
 			// Add a buddy
-			TCPBuddyPtr pBuddy = boost::shared_ptr<TCPBuddy>(new TCPBuddy(this, getProperty("server"), getProperty("port")));
+			TCPBuddyPtr pBuddy = boost::shared_ptr<TCPBuddy>(new TCPBuddy(this, 
+						session_ptr->getRemoteAddress(),
+						boost::lexical_cast<std::string>(session_ptr->getRemotePort())));
 			addBuddy(pBuddy);
 			m_clients.insert(std::pair<TCPBuddyPtr, boost::shared_ptr<Session> >(pBuddy, session_ptr));
 		}
@@ -150,7 +152,8 @@ bool TCPAccountHandler::disconnect()
 {
 	UT_DEBUGMSG(("TCPAccountHandler::disconnect()\n"));
 
-	UT_return_val_if_fail(m_bConnected, false);
+	if (!m_bConnected)
+		return true;
 
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_val_if_fail(pManager, false);
@@ -180,7 +183,7 @@ void TCPAccountHandler::_teardownAndDestroyHandler()
 
 	// ... then tear down all client connections
 	UT_DEBUGMSG(("Tearing down client connections\n"));
-	for (std::map<TCPBuddyPtr, boost::shared_ptr<Session> >::iterator it = m_clients.begin(); it != m_clients.end();)
+	for (std::map<TCPBuddyPtr, boost::shared_ptr<Session> >::iterator it = m_clients.begin(); it != m_clients.end(); it++)
 		(*it).second->disconnect();
 
 	// ... then stop the IOServerhandler (if any)
@@ -234,12 +237,10 @@ void TCPAccountHandler::_handleAccept(IOServerHandler* pHandler, boost::shared_p
 	
 	// store this buddy/session
 	UT_UTF8String name;
-	UT_UTF8String_sprintf(name, "%s:%d", 
-			session->getSocket().remote_endpoint().address().to_string().c_str(), 
-			session->getSocket().remote_endpoint().port());
+	UT_UTF8String_sprintf(name, "%s:%d", session->getRemoteAddress().c_str(), session->getRemotePort());
 	TCPBuddyPtr pBuddy = boost::shared_ptr<TCPBuddy>(new TCPBuddy(this, 
-								session->getSocket().remote_endpoint().address().to_string(), 
-								boost::lexical_cast<std::string>(session->getSocket().remote_endpoint().port())));
+								session->getRemoteAddress(), 
+								boost::lexical_cast<std::string>(session->getRemotePort())));
 	addBuddy(pBuddy);
 	m_clients.insert(std::pair<TCPBuddyPtr, boost::shared_ptr<Session> >(pBuddy, session));
 	
@@ -280,7 +281,7 @@ void TCPAccountHandler::forceDisconnectBuddy(BuddyPtr buddy)
 	{
 		for (it = m_clients.begin(); it != m_clients.end(); ++it) 
 		{
-			if ((*it).first->getServer() == pBuddy->getServer() &&
+			if ((*it).first->getAddress() == pBuddy->getAddress() &&
 				(*it).first->getPort() == pBuddy->getPort()) 
 				break;
 		}
@@ -328,7 +329,7 @@ void TCPAccountHandler::handleEvent(Session& session)
 			
 			if ((*it).second.get() == &session)
 			{
-				UT_DEBUGMSG(("Lost connection to %s buddy %s:%s\n", getProperty("server") == "" ? "client" : "server", pB->getServer().c_str(), pB->getPort().c_str()));
+				UT_DEBUGMSG(("Lost connection to %s buddy %s:%s\n", getProperty("server") == "" ? "client" : "server", pB->getAddress().c_str(), pB->getPort().c_str()));
 				// drop this buddy from all sessions
 				pManager->removeBuddy(pB, false);
 				
@@ -370,7 +371,7 @@ UT_sint32 TCPAccountHandler::_getPort(const PropertyMap& props)
 
 bool TCPAccountHandler::send(const Packet* packet)
 {
-	UT_DEBUGMSG(("TCPAccountHandler::_send(const UT_UTF8String& packet)\n"));
+	UT_DEBUGMSG(("TCPAccountHandler::send(const UT_UTF8String& packet)\n"));
 
 	// don't bother creating a nice buffer if there's noone to send it to
 	if (!m_clients.empty()) 
@@ -396,7 +397,7 @@ bool TCPAccountHandler::send(const Packet* packet)
 
 bool TCPAccountHandler::send(const Packet* packet, BuddyPtr pBuddy)
 {
-	UT_DEBUGMSG(("TCPAccountHandler::_send(const UT_UTF8String& packet, const Buddy& buddy)\n"));
+	UT_DEBUGMSG(("TCPAccountHandler::send(const UT_UTF8String& packet, const Buddy& buddy)\n"));
 	UT_return_val_if_fail(pBuddy, false);
 	TCPBuddyPtr pB = boost::static_pointer_cast<TCPBuddy>(pBuddy);
 	
@@ -406,7 +407,7 @@ bool TCPAccountHandler::send(const Packet* packet, BuddyPtr pBuddy)
 	{
 		boost::shared_ptr<Session> session_ptr = pos->second;
 		UT_return_val_if_fail(session_ptr, false);
-		
+	
 		std::string data;
 		_createPacketStream(data, packet);
 
@@ -415,7 +416,7 @@ bool TCPAccountHandler::send(const Packet* packet, BuddyPtr pBuddy)
 	}
 	else
 	{
-		UT_DEBUGMSG(("TCPAccountHandler::send: buddy %s:%s doesn't exist, hope you were dragging something ;)\n", pB->getServer().c_str(), pB->getPort().c_str()));
+		UT_DEBUGMSG(("TCPAccountHandler::send: buddy %s:%s doesn't exist, hope you were dragging something ;)\n", pB->getAddress().c_str(), pB->getPort().c_str()));
 	}
 	return false;
 }

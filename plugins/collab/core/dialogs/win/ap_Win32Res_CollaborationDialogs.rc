@@ -27,6 +27,7 @@
 #include "ap_Win32Res_DlgCollaborationAddAccount.rc2"
 #include "ap_Win32Res_DlgCollaborationAddBuddy.rc2"
 #include "ap_Win32Res_DlgCollaborationJoin.rc2"
+#include "ap_Win32Res_DlgCollaborationShare.rc2"
 
 #ifdef ABICOLLAB_HANDLER_SERVICE
 #include "../../../backends/service/win/ap_Win32Res_ServiceDialogs.rc"

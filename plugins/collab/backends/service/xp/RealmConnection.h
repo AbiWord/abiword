@@ -39,14 +39,20 @@ using realm::protocolv1::PacketPtr;
 struct PendingDocumentProperties
 {
 	PendingDocumentProperties(AP_Dialog_GenericProgress* pDlg_,
-							  PD_Document** pDoc_, XAP_Frame* pFrame_, const std::string& filename_)
-		: pDlg(pDlg_), pDoc(pDoc_), pFrame(pFrame_), filename(filename_)
+								PD_Document** pDoc_, XAP_Frame* pFrame_, 
+								const std::string& filename_, bool bLocallyOwned_)
+	: pDlg(pDlg_),
+	pDoc(pDoc_),
+	pFrame(pFrame_),
+	filename(filename_),
+	bLocallyOwned(bLocallyOwned_)
 	{}
 	
 	AP_Dialog_GenericProgress* pDlg;
 	PD_Document** pDoc;
 	XAP_Frame* pFrame;
 	std::string filename;
+	bool bLocallyOwned;
 };
 
 class UserJoinedPacket;
@@ -90,10 +96,11 @@ public:
 		{ return m_socket; }
 
 	void								loadDocumentStart(AP_Dialog_GenericProgress* pDlg,
-														  PD_Document** pDoc_, XAP_Frame* pFrame_, const std::string& filename_)
+														  PD_Document** pDoc_, XAP_Frame* pFrame_, const std::string& filename_,
+														  bool bLocallyOwned_)
 	{
 		UT_return_if_fail(!m_pdp_ptr);
-		m_pdp_ptr.reset(new PendingDocumentProperties(pDlg, pDoc_, pFrame_, filename_));
+		m_pdp_ptr.reset(new PendingDocumentProperties(pDlg, pDoc_, pFrame_, filename_, bLocallyOwned_));
 	}
 	boost::shared_ptr<PendingDocumentProperties>
 										getPendingDocProps()

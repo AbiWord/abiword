@@ -1,5 +1,6 @@
 
 collab_req="libgsf-1 >= 1.12 libxml-2.0 >= 2.4.0"
+collab_telepathy_req="libmissioncontrol >= 4.60 telepathy-glib >= 0.7.28 libempathy-gtk >= 2.27"
 collab_xmpp_req="loudmouth-1.0 >= 1.0.1"
 collab_sugar_req="dbus-glib-1 >= 0.70"
 collab_service_req="libsoup-2.4 gnutls"
@@ -14,6 +15,19 @@ AC_ARG_ENABLE([collab-backend-fake],
 ])
 AC_MSG_CHECKING([for collab fake backend])
 AC_MSG_RESULT([$enable_collab_backend_fake])
+
+
+AC_ARG_ENABLE([collab-backend-telepathy], 
+    [AS_HELP_STRING([--enable-collab-backend-telepathy], [Experimental telepathy backend (default: off)])], 
+[
+	enable_collab_backend_telepathy=$enableval
+], [
+	enable_collab_backend_telepathy="no"
+])
+test "$enable_collab_backend_telepathy" == "yes" && collab_pkgs="$collab_pkgs $collab_telepathy_req"
+AC_MSG_CHECKING([for collab telepathy backend])
+AC_MSG_RESULT([$enable_collab_backend_telepathy])
+
 
 AC_ARG_ENABLE([collab-backend-xmpp], 
     [AS_HELP_STRING([--enable-collab-backend-xmpp], [Jabber backend (default: auto)])], 
@@ -62,7 +76,7 @@ AC_MSG_CHECKING([for collab sugar backend])
 AC_MSG_RESULT([$enable_collab_backend_sugar])
 
 AC_ARG_ENABLE([collab-backend-service], 
-    [AS_HELP_STRING([--enable-collab-backend-service], [abicollab.net backend (default: off); NOTE to packagers: do NOT enable this, the service is not publically available yet])], 
+    [AS_HELP_STRING([--enable-collab-backend-service], [abicollab.net backend (default: auto)])], 
 [
 	enable_collab_backend_service=$enableval
 	AC_LANG_PUSH(C++)
@@ -123,6 +137,10 @@ if test "$enable_collab_backend_fake" == "yes"; then
 	COLLAB_CFLAGS="$COLLAB_CFLAGS -DABICOLLAB_HANDLER_FAKE"
 	COLLAB_RCFLAGS="$COLLAB_RCFLAGS -DABICOLLAB_HANDLER_FAKE"
 fi
+if test "$enable_collab_backend_telepathy" == "yes"; then
+	COLLAB_CFLAGS="$COLLAB_CFLAGS -DABICOLLAB_HANDLER_TELEPATHY"
+	COLLAB_RCFLAGS="$COLLAB_RCFLAGS -DABICOLLAB_HANDLER_TELEPATHY"
+fi
 if test "$enable_collab_backend_xmpp" == "yes"; then
 	COLLAB_CFLAGS="$COLLAB_CFLAGS -DABICOLLAB_HANDLER_XMPP"
 	COLLAB_RCFLAGS="$COLLAB_RCFLAGS -DABICOLLAB_HANDLER_XMPP"
@@ -157,6 +175,7 @@ COLLAB_LIBS="$COLLAB_LIBS "'${PLUGIN_LIBS}'
 fi # plugin conditional
 
 AM_CONDITIONAL([COLLAB_BACKEND_FAKE], [test "$enable_collab_backend_fake" == "yes"])
+AM_CONDITIONAL([COLLAB_BACKEND_TELEPATHY], [test "$enable_collab_backend_telepathy" == "yes"])
 AM_CONDITIONAL([COLLAB_BACKEND_XMPP], [test "$enable_collab_backend_xmpp" == "yes"])
 AM_CONDITIONAL([COLLAB_BACKEND_TCP], [test "$enable_collab_backend_tcp" == "yes"])
 AM_CONDITIONAL([COLLAB_BACKEND_SUGAR], [test "$enable_collab_backend_sugar" == "yes"])
