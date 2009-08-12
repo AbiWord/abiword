@@ -668,6 +668,7 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 		getFillType()->Fill(pG,srcX,srcY,x,y,getFullWidth(),iFullHeight);
 	}
 	UT_uint32 count = countCons();
+	UT_DEBUGMSG(("Number of containers in frame %d \n",count));
 	const UT_Rect * pPrevRect = pDA->pG->getClipRect();
 	UT_Rect * pRect = getScreenRect();
 	UT_Rect newRect;

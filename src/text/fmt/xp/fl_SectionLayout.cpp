@@ -3615,34 +3615,19 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 // Populate with just this section so find the start and end of it
 //
 	PT_DocPosition posStart,posEnd,posDocEnd;
+	m_pDoc->getBounds(true,posDocEnd);
 	posStart = getFirstLayout()->getPosition(true) - 1;
-	posEnd = getLastLayout()->getPosition(false);
-	fp_Run * pRun = getLastLayout()->getFirstRun();
-
-	if(pRun)
+	PL_StruxDocHandle sdStart = getFirstLayout()->getStruxDocHandle();
+	PL_StruxDocHandle sdEnd = NULL;
+	m_pDoc->getNextStruxOfType(sdStart,PTX_SectionHdrFtr,&sdEnd);
+	if(sdEnd)
 	{
-		while(pRun->getNextRun() != NULL)
-		{
-			pRun = pRun->getNextRun();
-		}
-		posEnd += pRun->getBlockOffset();
+	    posEnd = m_pDoc->getStruxPosition(sdEnd) - 1;
 	}
 	else
 	{
-		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+	    posEnd = posDocEnd;
 	}
-	
-	PL_StruxDocHandle sdh=NULL;
-	bool bres;
-	bres = m_pDoc->getStruxOfTypeFromPosition(posEnd, PTX_Block, &sdh);
-	m_pDoc->getBounds(true,posDocEnd);
-	while(bres && sdh == getLastLayout()->getStruxDocHandle()
-		  && posEnd <= posDocEnd)
-	{
-		posEnd++;
-		bres = m_pDoc->getStruxOfTypeFromPosition(posEnd, PTX_Block, &sdh);
-	}
-	posEnd--;
 	UT_ASSERT(posEnd > posStart);
 	PD_DocumentRange * docRange = new PD_DocumentRange(m_pDoc,posStart,posEnd);
 	m_pDoc->tellListenerSubset(pShadowListener, docRange);

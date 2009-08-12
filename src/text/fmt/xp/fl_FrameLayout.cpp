@@ -1142,7 +1142,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	//
 	if(pSectionAP && pSectionAP->getProperty("frame-rel-width",pszPercentWidth))
 	{
-		if(pszPercentWidth && (m_iWidth <= m_pLayout->getGraphics()->tlu(2)))
+		if(pszPercentWidth && (m_iWidth <= (m_pLayout->getGraphics()->tlu(2)+3)))
 		{
 			double frac_width = UT_convertFraction(pszPercentWidth);
 			fl_DocSectionLayout * pDSL = getDocSectionLayout();
