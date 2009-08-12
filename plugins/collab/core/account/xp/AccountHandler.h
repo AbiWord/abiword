@@ -158,7 +158,8 @@ public:
 		{ m_bCanOffer = bCanOffer; }
 	virtual bool							keepEmptySessionsAlive()
 		{ return false; }
-
+	virtual bool							canManuallyStartSession()
+		{ return true; }
 
 	// generic session management packet implementation
 	virtual void							handleMessage(Packet* pPacket, BuddyPtr pBuddy);

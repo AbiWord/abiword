@@ -189,26 +189,38 @@ void AP_Win32Dialog_CollaborationShare::_populateWindowData()
 	
 	AccountHandler* pShareeableAcount = _getShareableAccountHandler();
 
-	for (std::vector<AccountHandler*>::const_iterator cit = pManager->getAccounts().begin(); cit != pManager->getAccounts().end(); cit++)
+	if (pShareeableAcount)
 	{
-		AccountHandler* pAccount = *cit;
-		UT_continue_if_fail(pAccount);
-
-		if (pShareeableAcount && pShareeableAcount != pAccount)
-			continue;
-
-		UT_sint32 index = m_pWin32Dialog->addItemToCombo(AP_RID_DIALOG_COLLABORATIONSHARE_ACCOUNTCOMBO, (LPCSTR) AP_Win32App::s_fromUTF8ToWinLocale(pAccount->getDescription().utf8_str()).c_str());
+		UT_sint32 index = m_pWin32Dialog->addItemToCombo(AP_RID_DIALOG_COLLABORATIONSHARE_ACCOUNTCOMBO, (LPCSTR) AP_Win32App::s_fromUTF8ToWinLocale(pShareeableAcount->getDescription().utf8_str()).c_str());
 		if (index >= 0)
 		{
 			UT_DEBUGMSG(("Added handler to index %d\n", index));
-			m_vAccountCombo.insert(m_vAccountCombo.begin()+index, pAccount);
+			m_vAccountCombo.insert(m_vAccountCombo.begin()+index, pShareeableAcount);
 		}
-		else
-			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+	}
+	else
+	{
+		for (std::vector<AccountHandler*>::const_iterator cit = pManager->getAccounts().begin(); cit != pManager->getAccounts().end(); cit++)
+		{
+			AccountHandler* pAccount = *cit;
+			UT_continue_if_fail(pAccount);
+
+			if (!pAccount->canManuallyStartSession())
+				continue;
+
+			UT_sint32 index = m_pWin32Dialog->addItemToCombo(AP_RID_DIALOG_COLLABORATIONSHARE_ACCOUNTCOMBO, (LPCSTR) AP_Win32App::s_fromUTF8ToWinLocale(pAccount->getDescription().utf8_str()).c_str());
+			if (index >= 0)
+			{
+				UT_DEBUGMSG(("Added handler to index %d\n", index));
+				m_vAccountCombo.insert(m_vAccountCombo.begin()+index, pAccount);
+			}
+			else
+				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		}
 	}
 
 	// if we have at least one account, then make sure the first one is selected
-	if (pManager->getAccounts().size() > 0)
+	if (m_vAccountCombo.size() > 0)
 	{
 		m_pWin32Dialog->selectComboItem(AP_RID_DIALOG_COLLABORATIONSHARE_ACCOUNTCOMBO, 0);
 	}

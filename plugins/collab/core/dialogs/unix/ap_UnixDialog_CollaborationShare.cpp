@@ -159,19 +159,30 @@ void AP_UnixDialog_CollaborationShare::_populateWindowData()
 	GtkTreeIter iter;
 
 	AccountHandler* pShareeableAcount = _getShareableAccountHandler();
-	for (std::vector<AccountHandler*>::const_iterator cit = pManager->getAccounts().begin(); cit != pManager->getAccounts().end(); cit++)
+	if (pShareeableAcount)
 	{
-		AccountHandler* pAccount = *cit;
-		UT_continue_if_fail(pAccount);
+			gtk_list_store_append (store, &iter);
+			gtk_list_store_set (store, &iter,
+						0, pShareeableAcount->getDescription().utf8_str(),
+						1, pShareeableAcount,
+						-1);
+	}
+	else
+	{
+		for (std::vector<AccountHandler*>::const_iterator cit = pManager->getAccounts().begin(); cit != pManager->getAccounts().end(); cit++)
+		{
+			AccountHandler* pAccount = *cit;
+			UT_continue_if_fail(pAccount);
 
-		if (pShareeableAcount && pShareeableAcount != pAccount)
-			continue;
+			if (!pAccount->canManuallyStartSession())
+				continue;
 
-		gtk_list_store_append (store, &iter);
-		gtk_list_store_set (store, &iter,
-					0, pAccount->getDescription().utf8_str(),
-					1, pAccount,
-					-1);
+			gtk_list_store_append (store, &iter);
+			gtk_list_store_set (store, &iter,
+						0, pAccount->getDescription().utf8_str(),
+						1, pAccount,
+						-1);
+		}
 	}
 	m_pAccountModel = GTK_TREE_MODEL (store);
 	gtk_combo_box_set_model(GTK_COMBO_BOX(m_wAccount), m_pAccountModel);

@@ -67,6 +67,8 @@ public:
 	virtual bool							allowsManualBuddies()
 		{ return false; }
 	virtual void							forceDisconnectBuddy(BuddyPtr pBuddy);
+	virtual bool							hasPersistentAccessControl()
+		{ return false; }
 	virtual bool							recognizeBuddyIdentifier(const std::string& identifier);
 
 	// session management
@@ -74,6 +76,8 @@ public:
 		{ return false; }
 	virtual bool							keepEmptySessionsAlive()
 		{ return true; }
+	virtual bool							canManuallyStartSession()
+		{ return false; }
 
 	// packet management
 	virtual bool							send(const Packet* pPacket);

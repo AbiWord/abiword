@@ -65,11 +65,14 @@ AC_MSG_CHECKING([for collab tcp backend])
 AC_MSG_RESULT([$enable_collab_backend_tcp])
 
 AC_ARG_ENABLE([collab-backend-sugar], 
-    [AS_HELP_STRING([--enable-collab-backend-sugar], [Sugar/OLPC backend (default: off)])], 
+    [AS_HELP_STRING([--enable-collab-backend-sugar], [Sugar/OLPC backend (default: auto)])], 
 [
 	enable_collab_backend_sugar=$enableval
 ], [
-	enable_collab_backend_sugar="no"
+	PKG_CHECK_EXISTS([ $collab_sugar_req ],
+	[
+		enable_collab_backend_sugar="yes"
+	])
 ])
 test "$enable_collab_backend_sugar" == "yes" && collab_pkgs="$collab_pkgs $collab_sugar_req"
 AC_MSG_CHECKING([for collab sugar backend])
