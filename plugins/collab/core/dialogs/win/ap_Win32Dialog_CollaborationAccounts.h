@@ -1,6 +1,7 @@
 /* AbiCollab - Code to enable the modification of remote documents.
  * Copyright (C) 2007 by Ryan Pavlik <abiryan@ryand.net>
  * Copyright (C) 2006 by Marc Maurer <uwog@uwog.net>
+ * Copyright (C) 2009 by AbiSource Corporation B.V.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -40,25 +41,19 @@ public:
 	static BOOL CALLBACK	s_dlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	BOOL 					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL 					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onNotify(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
 	virtual void			signal(const Event& event, BuddyPtr pSource);
 
 private:
-	std::map<UT_UTF8String, AccountHandler*> _constructModel();
-	void					_setModel(std::map<UT_UTF8String, AccountHandler*>  model);
-	void					setOnline(AccountHandler* pHandler, bool online);
+	void					_populateWindowData();
 	void					_updateSelection();
+	void					_setOnline(AccountHandler* pHandler, bool online);
 	
 	XAP_Win32DialogHelper *	m_pWin32Dialog;
 	HINSTANCE 				m_hInstance;
-	
-	// Internal states
-	BOOL					m_bHasSelection;
-	int						m_iSelected;
-	std::map<UT_UTF8String, AccountHandler*> m_mModel;
-	std::map<int, AccountHandler*> m_mIndices;
-	
-
+	HWND					m_hAccountList;
+	bool					m_bPopulating; // hack
 };
 
 #endif /* AP_WIN32DIALOG_COLLABORATIONACCOUNTS_H */
