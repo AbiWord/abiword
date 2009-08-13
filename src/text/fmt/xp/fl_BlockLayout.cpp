@@ -1725,7 +1725,7 @@ void fl_BlockLayout::coalesceRuns(void) const
 	_assertRunListIntegrity();
 
 #if 1
-	xxx_UT_DEBUGMSG(("fl_BlockLayout::coalesceRuns\n"));
+	UT_DEBUGMSG(("fl_BlockLayout::coalesceRuns\n"));
 	fp_Line* pLine = static_cast<fp_Line *>(getFirstContainer());
 	while (pLine)
 	{
@@ -5042,14 +5042,12 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 	return true;
 }
 
-bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len)
+bool   fl_BlockLayout::itemizeSpan(PT_BlockOffset blockOffset, UT_uint32 len,GR_Itemization & I)
 {
-	xxx_UT_DEBUGMSG(("_doInsertTextSpan: Initial offset %d, len %d bl_Length %d \n", blockOffset, len,getLength()));
 	UT_return_val_if_fail( m_pLayout, false );
 	PD_StruxIterator text(getStruxDocHandle(),
 						  blockOffset + fl_BLOCK_STRUX_OFFSET,
 						  blockOffset + fl_BLOCK_STRUX_OFFSET + len - 1);
-	GR_Itemization I;
 	I.setDirOverride(m_iDirOverride);
 	I.setEmbedingLevel(m_iDomDirection);
 
@@ -5081,6 +5079,16 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 	I.setFont(pFont);
 	
 	m_pLayout->getGraphics()->itemize(text, I);
+	return true;
+}
+
+bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len)
+{
+
+	xxx_UT_DEBUGMSG(("_doInsertTextSpan: Initial offset %d, len %d bl_Length %d \n", blockOffset, len,getLength()));
+	GR_Itemization I;
+	bool b= itemizeSpan(blockOffset, len,I);
+	UT_return_val_if_fail( b, false );
 
 	for(UT_sint32 i = 0; i < I.getItemCount() - 1; ++i)
 	{

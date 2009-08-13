@@ -388,6 +388,7 @@ public:
 												PT_DocPosition & endPos,
 												UT_UTF8String & sWord,
 												bool bIgnoreSpace) const;
+	bool                   itemizeSpan(PT_BlockOffset blockOffset, UT_uint32 len,GR_Itemization & I);
 
 #ifdef ENABLE_SPELL
 	/** put in queue for spellchecking after prev. If prev == NULL is put at the head */

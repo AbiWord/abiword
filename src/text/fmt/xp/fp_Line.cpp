@@ -3208,8 +3208,12 @@ void fp_Line::coalesceRuns(void)
 		if (pRun->getType() == FPRUN_TEXT)
 		{
 			fp_TextRun* pTR = static_cast<fp_TextRun *>(pRun);
+			xxx_UT_DEBUGMSG(("Looking at %d Text run \n",i));
+			pTR->printText();
 			if (pTR->canMergeWithNext())
 			{
+			        xxx_UT_DEBUGMSG(("Can merge \n"));
+				//pTR->printText();
 			        fp_Run * pNext = pRun->getNextRun();
 				//
 				// Look if we have a redundant fmtMark.

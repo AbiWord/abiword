@@ -109,7 +109,8 @@ public:
 												  | (UT_uint32)eR);
 	                      }
 
-	void                setItem(GR_Item * i) {m_pItem = i;}
+	void                itemize(void);
+	void                setItem(GR_Item * i);
 	const GR_Item *           getItem() const {return m_pItem;}
 	
 

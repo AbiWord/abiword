@@ -1133,61 +1133,10 @@ void fp_TextRun::mergeWithNext(void)
 
 	// can only adjust width after the justification has been handled
  	_setWidth(getWidth() + pNext->getWidth());
-
-
-	// the shaping requirenments of the combined run
-	UT_ASSERT( m_pRenderInfo );
-	if(m_pRenderInfo && pNext && pNext->m_pRenderInfo)
-	{
-		m_pRenderInfo->m_eShapingResult =
-			(GRShapingResult)((UT_uint32)m_pRenderInfo->m_eShapingResult
-							  | (UT_uint32)(pNext->	m_pRenderInfo->m_eShapingResult));
-
-		// because there might be a ligature across the run boundary, we
-		// have to refresh
-		// get the current refresh state
-		GRShapingResult eR = _getRefreshDrawBuffer();
-		eR = (GRShapingResult)((UT_uint32)eR | (UT_uint32)pNext->_getRefreshDrawBuffer());
-
-		if(((UT_uint32)	m_pRenderInfo->m_eShapingResult & (UT_uint32)GRSR_Ligatures) != 0)
-		{
-			// our run contains ligating characters, see if one is at the end
-			eR = (GRShapingResult)((UT_uint32)eR | (UT_uint32) GRSR_Ligatures);		
-		}
-
-		_setRefreshDrawBuffer(eR);
-	}
-	
-
-
-	// we need to take into consideration whether this run has been reversed
-	// in which case the order of the concating needs to be reversed too
-	UT_BidiCharType iVisDirection = getVisDirection();
-
-	bool bReverse = (!s_bBidiOS && iVisDirection == UT_BIDI_RTL)
-		  || (s_bBidiOS && m_iDirOverride == UT_BIDI_RTL && _getDirection() == UT_BIDI_LTR)
-		  || (s_bBidiOS && m_iDirOverride == UT_BIDI_LTR && _getDirection() == UT_BIDI_RTL);
-
-	UT_uint32 iNextLen = pNext->getLength();
-	UT_uint32 iMyLen   = getLength();
-
-	UT_ASSERT( m_pRenderInfo &&  pNext->m_pRenderInfo);
-	if(m_pRenderInfo &&  pNext->m_pRenderInfo)
-	{
-		m_pRenderInfo->m_iLength = iMyLen;
-		pNext->m_pRenderInfo->m_iLength = iNextLen;
-		
-		if(!m_pRenderInfo->append(*(pNext->m_pRenderInfo), bReverse))
-		{
-			// either the graphics class does not have append capabilities, or the append failed
-			// -- we mark the draw buffer for recalculation
-			_setRefreshDrawBuffer(GRSR_Unknown);
-		}
-		
-	}
-	
-
-	_setLength(iMyLen + iNextLen);
+	_setLength(getLength() + pNext->getLength());
+	DELETEP(m_pRenderInfo);
+	m_pRenderInfo = NULL;
+	itemize();
 	_setDirty(isDirty() || pNext->isDirty());
 
 	setNextRun(pNext->getNextRun(), false);
@@ -1198,28 +1147,12 @@ void fp_TextRun::mergeWithNext(void)
 	}
 
 	pNext->getLine()->removeRun(pNext, false);
-
-	// if appending a strong run onto a weak one, make sure the overall direction
-	// is that of the strong run, and tell the line about this, since the call
-	// to removeRun above decreased the line's direction counter
-	if(!UT_BIDI_IS_STRONG(_getDirection()) && UT_BIDI_IS_STRONG(pNext->_getDirection()))
-	{
-		_setDirection(pNext->_getDirection());
-		getLine()->addDirectionUsed(_getDirection());
-	}
-	else if(UT_BIDI_IS_WEAK(_getDirection()) && UT_BIDI_IS_WEAK(pNext->_getDirection()))
-	{
-		// numbers will take precedence
-		if(UT_BIDI_IS_NUMBER(pNext->_getDirection()))
-		{
-			_setDirection(pNext->_getDirection());
-			// no need to inform the line, since the visual direction
-			// is not going to change
-		}
-	}
+	lookupProperties();
 	setMustClearScreen();
+	markDrawBufferDirty();
 
 	delete pNext;
+
 }
 
 bool fp_TextRun::split(UT_uint32 iSplitOffset)
@@ -1234,10 +1167,6 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 
 
 	UT_ASSERT(pNew);
-
-	// when spliting the run, we do not want to recalculated the draw
-	// buffer if the current one is up to date
-	pNew->_setRefreshDrawBuffer(_getRefreshDrawBuffer());
 
 	pNew->_setFont(this->_getFont());
 
@@ -1289,74 +1218,23 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	}
 	setNextRun(pNew, false);
 
-	// split the rendering info, this will save us refreshing it
-	// which is very expensive (see notes on the mergeWithNext())
-	bool bReverse = ((!s_bBidiOS && iVisDirection == UT_BIDI_RTL)
-			 || (s_bBidiOS && m_iDirOverride == UT_BIDI_RTL && _getDirection() == UT_BIDI_LTR)
-			 || (s_bBidiOS && m_iDirOverride == UT_BIDI_LTR && _getDirection() == UT_BIDI_RTL));
+	// reitemize this run and blow away all the old render info. It has to be
+	// recalculated.
 
-	// runs can be split even before any shaping has been done on the, in which case we do not have
-	// the redering info yet; in such cases we only have m_pItem
-	bool bSplitSucceeded = true;
-	
-	if(m_pRenderInfo)
-	{
-		m_pRenderInfo->m_pGraphics = getGraphics();
-		m_pRenderInfo->m_pFont = getFont();
-		m_pRenderInfo->m_iLength = getLength();
-		m_pRenderInfo->m_iOffset = iSplitOffset - getBlockOffset();
-		if(!m_pRenderInfo->split(pNew->m_pRenderInfo, bReverse))
-		{
-			// the graphics class is either incapable of spliting, or the operation failed
-			// we need to mark both runs for shaping
-			_setRefreshDrawBuffer(GRSR_Unknown);
-			pNew->_setRefreshDrawBuffer(GRSR_Unknown);
-			bSplitSucceeded = false;
-		}
-		
-
-		// the split function created a copy of GR_Item in the render
-		// info; bring the member into sync with it (m_pItem is where the GR_Item lives and where it
-		// is destroyed)
-		if(pNew->m_pRenderInfo)
-		{
-			pNew->m_pItem = pNew->m_pRenderInfo->m_pItem;
-		}
-	}
-	else
-	{
-		// if this assert falls, we are in real trouble ...
-		UT_ASSERT_HARMLESS( m_pItem );
-		if(m_pItem)
-		{
-			pNew->m_pItem = m_pItem->makeCopy();
-		}
-	}
-	
-	
-
-	
 	setLength(iSplitOffset - getBlockOffset(), false);
+	DELETEP(m_pRenderInfo);
+	itemize();
+	lookupProperties();
+	// Reitemize the new run
+	pNew->itemize();
 
 	if(getLine())
 		getLine()->insertRunAfter(pNew, this);
 
-	// we will use the _addupCharWidths() function here instead of recalcWidth(), since when
-	// a run is split the info in the block's char-width array is not affected, so we do not
 	//have to recalculate these
 
-	if(bSplitSucceeded)
-	{
-		_addupCharWidths();
-		pNew->_addupCharWidths();
-	}
-	else
-	{
-		recalcWidth();
-		pNew->recalcWidth();
-	}
-	
-
+	recalcWidth();
+	pNew->recalcWidth();
 
 	//bool bDomDirection = getBlock()->getDominantDirection();
 
@@ -1371,7 +1249,6 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	}
 
 	pNew->_setY(getY());
-
 	return true;
 }
 
@@ -2194,6 +2071,7 @@ bool fp_TextRun::_refreshDrawBuffer()
 							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 
 		bool lastWasSpace = false;
+
 		if (getTextTransform() == GR_ShapingInfo::CAPITALIZE) {
 			fp_Run* prevRun = getPreviousInterestingRunForCapitalization(this->getPrevRun());
 			if (prevRun == NULL) {
@@ -2898,6 +2776,28 @@ UT_sint32 fp_TextRun::getStr(UT_UCSChar * pStr, UT_uint32 &iMax)
 	return -1;
 }
 
+void fp_TextRun::itemize(void)
+{
+	GR_Itemization I;
+	bool b = getBlock()->itemizeSpan(getBlockOffset(), getLength(),I);
+	UT_return_if_fail(b);
+	//
+	// Should only be one item per run
+	//
+	GR_Item * pItem = I.getNthItem(0)->makeCopy();
+	UT_return_if_fail(pItem);
+	setItem(pItem->makeCopy());
+}
+
+void fp_TextRun::setItem(GR_Item * i)
+{
+	DELETEP(m_pItem);
+	m_pItem =i;
+	if(m_pRenderInfo)
+	{
+		m_pRenderInfo->m_pItem = m_pItem;
+	}
+}
 
 void fp_TextRun::setDirection(UT_BidiCharType dir, UT_BidiCharType dirOverride)
 {
