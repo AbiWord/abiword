@@ -43,6 +43,7 @@
 #include "ServiceBuddy.h"
 #include "ServiceAccountHandler.h"
 #include "ap_Dialog_GenericInput.h"
+#include <account/xp/AccountEvent.h>
 #include <core/account/xp/SessionEvent.h>
 #include <core/session/xp/AbiCollabSessionManager.h>
 #include "AbiCollabService_Export.h"
@@ -237,6 +238,10 @@ ConnectResult ServiceAccountHandler::connect()
 
 	// we are "connected" now, time to start sending out, and listening to messages (such as events)
 	pManager->registerEventListener(this);
+	// signal all listeners we are logged in
+	AccountOnlineEvent event;
+	// TODO: fill the event
+	AbiCollabSessionManager::getManager()->signal(event);
 
 	return CONNECT_SUCCESS;
 }
@@ -251,8 +256,10 @@ bool ServiceAccountHandler::disconnect()
 	
 	m_bOnline = false;
 	
-	// TODO: send out an event we are going offline
-	// ...
+	// signal all listeners we are logged out
+	AccountOfflineEvent event;
+	// TODO: fill the event
+	AbiCollabSessionManager::getManager()->signal(event);
 	
 	// we are disconnected now, no need to sent out messages (such as events) anymore
 	pManager->unregisterEventListener(this);	
