@@ -269,6 +269,10 @@ GtkTreeStore* AP_UnixDialog_CollaborationJoin::_constructModel()
 
 	for (UT_uint32 i = 0; i < accounts.size(); i++)
 	{
+		UT_continue_if_fail(accounts[i]);
+		if (!accounts[i]->isOnline())
+			continue;
+
 		UT_DEBUGMSG(("Getting buddies for account: %s of type %s\n", 
 				accounts[i]->getDescription().utf8_str(), 
 				accounts[i]->getDisplayType().utf8_str()

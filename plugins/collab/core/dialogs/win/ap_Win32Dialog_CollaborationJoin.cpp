@@ -266,6 +266,10 @@ void AP_Win32Dialog_CollaborationJoin::_setModel()
 	// Loop through accounts
 	for (UT_uint32 i = 0; i < accounts.size(); i++)
 	{
+		UT_continue_if_fail(accounts[i]);
+		if (!accounts[i]->isOnline())
+			continue;
+
 		// Loop through buddies in accounts
 		for (UT_uint32 j = 0; j < accounts[i]->getBuddies().size(); j++)
 		{
