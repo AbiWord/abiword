@@ -121,13 +121,15 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 		case KEYWORD_bidi:
 		{
 			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "bidi") || 
-						  contextMatches(contextTag, NS_W_KEY, "pPr");
+						  contextMatches(contextTag, NS_W_KEY, "pPr") || 
+						  contextMatches(contextTag, NS_W_KEY, "sectPr");
 			break;
 		}
 		case KEYWORD_bottom:
 		{
 			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "bottom") || 
 						  contextMatches(contextTag, NS_W_KEY, "pBdr") ||
+						  contextMatches(contextTag, NS_W_KEY, "pgBorders") || 
 						  contextMatches(contextTag, NS_W_KEY, "tcMar") ||
 						  contextMatches(contextTag, NS_W_KEY, "tcBorders") ||
 						  contextMatches(contextTag, NS_W_KEY, "tblBorders") ||
@@ -198,6 +200,7 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 		{
 			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "left") || 
 						  contextMatches(contextTag, NS_W_KEY, "pBdr") ||
+						  contextMatches(contextTag, NS_W_KEY, "pgBorders") ||
 						  contextMatches(contextTag, NS_W_KEY, "tcBorders") ||
 						  contextMatches(contextTag, NS_W_KEY, "tcMar") ||
 						  contextMatches(contextTag, NS_W_KEY, "tblCellMar") ||
@@ -276,6 +279,7 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 						  contextMatches(contextTag, NS_W_KEY, "tcBorders") ||
 						  contextMatches(contextTag, NS_W_KEY, "tcMar") ||
 						  contextMatches(contextTag, NS_W_KEY, "tblCellMar") ||
+						  contextMatches(contextTag, NS_W_KEY, "pgBorders") ||
 						  contextMatches(contextTag, NS_W_KEY, "tblBorders");
 			break;
 		}
@@ -363,7 +367,8 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 		{
 			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "textDirection") || 
 						  contextMatches(contextTag, NS_W_KEY, "pPr") ||
-						  contextMatches(contextTag, NS_W_KEY, "tcPr");
+						  contextMatches(contextTag, NS_W_KEY, "tcPr") ||
+						  contextMatches(contextTag, NS_W_KEY, "sectPr");
 			break;
 		}
 		case KEYWORD_top:
@@ -373,7 +378,8 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 						  contextMatches(contextTag, NS_W_KEY, "tblBorders") ||
 						  contextMatches(contextTag, NS_W_KEY, "tblCellMar") ||
 						  contextMatches(contextTag, NS_W_KEY, "tcMar") ||
-						  contextMatches(contextTag, NS_W_KEY, "tcBorders");
+						  contextMatches(contextTag, NS_W_KEY, "tcBorders") ||
+						  contextMatches(contextTag, NS_W_KEY, "pgBorders");
 			break;
 		}
 		case KEYWORD_topLinePunct:
@@ -1081,8 +1087,10 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 		case KEYWORD_vAlign:
 		{
 			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "vAlign") || 
-						  contextMatches(contextTag, NS_W_KEY, "tcPr");
+						  contextMatches(contextTag, NS_W_KEY, "tcPr") ||
+						  contextMatches(contextTag, NS_W_KEY, "sectPr");
 			break;
+
 		}
 		case KEYWORD_vMerge:
 		{
@@ -1384,6 +1392,95 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 			break;
 		}
 
+		//Section 2.6, Sections
+		case KEYWORD_col:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "col") || 
+						  contextMatches(contextTag, NS_W_KEY, "cols");
+			break;
+		}
+		case KEYWORD_cols:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "cols") || 
+						  contextMatches(contextTag, NS_W_KEY, "sectPr");
+			break;
+		}
+		case KEYWORD_docGrid:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "docGrid") || 
+						  contextMatches(contextTag, NS_W_KEY, "sectPr");
+			break;
+		}
+		case KEYWORD_formProt:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "formProt") || 
+						  contextMatches(contextTag, NS_W_KEY, "sectPr");
+			break;
+		}
+		case KEYWORD_lnNumType:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "lnNumType") || 
+						  contextMatches(contextTag, NS_W_KEY, "sectPr");
+			break;
+		}
+		case KEYWORD_paperSrc:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "paperSrc") || 
+						  contextMatches(contextTag, NS_W_KEY, "sectPr");
+			break;
+		}
+		case KEYWORD_pgBorders:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "pgBorders") || 
+						  contextMatches(contextTag, NS_W_KEY, "sectPr");
+			break;
+		}
+		case KEYWORD_pgMar:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "pgMar") || 
+						  contextMatches(contextTag, NS_W_KEY, "sectPr");
+			break;
+		}
+		case KEYWORD_pgNumType:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "pgNumType") || 
+						  contextMatches(contextTag, NS_W_KEY, "sectPr");
+			break;
+		}
+		case KEYWORD_pgSz:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "pgSz") || 
+						  contextMatches(contextTag, NS_W_KEY, "sectPr");
+			break;
+		}
+		case KEYWORD_printerSettings:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "printerSettings") || 
+						  contextMatches(contextTag, NS_W_KEY, "sectPr");
+			break;
+		}
+		case KEYWORD_rtlGutter:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "rtlGutter") || 
+						  contextMatches(contextTag, NS_W_KEY, "sectPr");
+			break;
+		}
+		case KEYWORD_sectPr:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "sectPr") || 
+						  contextMatches(contextTag, NS_W_KEY, "sectPrChange") ||
+						  contextMatches(contextTag, NS_W_KEY, "body") ||
+						  contextMatches(contextTag, NS_W_KEY, "docPartBody") ||
+						  contextMatches(contextTag, NS_W_KEY, "pPr");
+			break;
+		}
+		case KEYWORD_type:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "type") || 
+						  contextMatches(contextTag, NS_W_KEY, "sectPr");
+			break;
+		}
+
 		//TODO: add more here
 	};
 }
@@ -1431,7 +1528,9 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:cnfStyle", KEYWORD_cnfStyle));
 	m_keywordMap.insert(std::make_pair("W:comboBox", KEYWORD_comboBox));
 	m_keywordMap.insert(std::make_pair("W:contextualSpacing", KEYWORD_contextualSpacing));
+	m_keywordMap.insert(std::make_pair("W:col", KEYWORD_col));
 	m_keywordMap.insert(std::make_pair("W:color", KEYWORD_color));
+	m_keywordMap.insert(std::make_pair("W:cols", KEYWORD_cols));
 	m_keywordMap.insert(std::make_pair("W:control", KEYWORD_control));
 	m_keywordMap.insert(std::make_pair("W:cr", KEYWORD_cr));
 	m_keywordMap.insert(std::make_pair("W:cs", KEYWORD_cs));
@@ -1445,6 +1544,7 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:delText", KEYWORD_delText));
 	m_keywordMap.insert(std::make_pair("W:dirty", KEYWORD_dirty));
 	m_keywordMap.insert(std::make_pair("W:divId", KEYWORD_divId));
+	m_keywordMap.insert(std::make_pair("W:docGrid", KEYWORD_docGrid));
 	m_keywordMap.insert(std::make_pair("W:docPart", KEYWORD_docPart));
 	m_keywordMap.insert(std::make_pair("W:docPartCategory", KEYWORD_docPartCategory));
 	m_keywordMap.insert(std::make_pair("W:docPartGallery", KEYWORD_docPartGallery));
@@ -1461,6 +1561,7 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:em", KEYWORD_em));
 	m_keywordMap.insert(std::make_pair("W:emboss", KEYWORD_emboss));
 	m_keywordMap.insert(std::make_pair("W:fitText", KEYWORD_fitText));
+	m_keywordMap.insert(std::make_pair("W:formProt", KEYWORD_formProt));
 	m_keywordMap.insert(std::make_pair("W:framePr", KEYWORD_framePr));
 	m_keywordMap.insert(std::make_pair("W:glossaryDocument", KEYWORD_glossaryDocument));
 	m_keywordMap.insert(std::make_pair("W:gridAfter", KEYWORD_gridAfter));
@@ -1493,6 +1594,7 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:lid", KEYWORD_lid));
 	m_keywordMap.insert(std::make_pair("W:listItem", KEYWORD_listItem));
 	m_keywordMap.insert(std::make_pair("W:lock", KEYWORD_lock));
+	m_keywordMap.insert(std::make_pair("W:lnNumType", KEYWORD_lnNumType));
 	m_keywordMap.insert(std::make_pair("W:mirrorIndents", KEYWORD_mirrorIndents));
 	m_keywordMap.insert(std::make_pair("W:monthLong", KEYWORD_monthLong));
 	m_keywordMap.insert(std::make_pair("W:monthShort", KEYWORD_monthShort));
@@ -1508,12 +1610,18 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:overflowPunct", KEYWORD_overflowPunct));
 	m_keywordMap.insert(std::make_pair("W:p", KEYWORD_p));
 	m_keywordMap.insert(std::make_pair("W:pageBreakBefore", KEYWORD_pageBreakBefore));
+	m_keywordMap.insert(std::make_pair("W:paperSrc", KEYWORD_paperSrc));
 	m_keywordMap.insert(std::make_pair("W:pBdr", KEYWORD_pBdr));
+	m_keywordMap.insert(std::make_pair("W:pgBorders", KEYWORD_pgBorders));
+	m_keywordMap.insert(std::make_pair("W:pgMar", KEYWORD_pgMar));
 	m_keywordMap.insert(std::make_pair("W:pgNum", KEYWORD_pgNum));
+	m_keywordMap.insert(std::make_pair("W:pgNumType", KEYWORD_pgNumType));
+	m_keywordMap.insert(std::make_pair("W:pgSz", KEYWORD_pgSz));
 	m_keywordMap.insert(std::make_pair("W:pict", KEYWORD_pict));
 	m_keywordMap.insert(std::make_pair("W:picture", KEYWORD_picture));
 	m_keywordMap.insert(std::make_pair("W:placeholder", KEYWORD_placeholder));
 	m_keywordMap.insert(std::make_pair("W:position", KEYWORD_position));
+	m_keywordMap.insert(std::make_pair("W:printerSettings", KEYWORD_printerSettings));
 	m_keywordMap.insert(std::make_pair("W:pPr", KEYWORD_pPr));
 	m_keywordMap.insert(std::make_pair("W:pStyle", KEYWORD_pStyle));
 	m_keywordMap.insert(std::make_pair("W:ptab", KEYWORD_ptab));
@@ -1525,6 +1633,7 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:rStyle", KEYWORD_rStyle));
 	m_keywordMap.insert(std::make_pair("W:rt", KEYWORD_rt));
 	m_keywordMap.insert(std::make_pair("W:rtl", KEYWORD_rtl));
+	m_keywordMap.insert(std::make_pair("W:rtlGutter", KEYWORD_rtlGutter));
 	m_keywordMap.insert(std::make_pair("W:ruby", KEYWORD_ruby));
 	m_keywordMap.insert(std::make_pair("W:rubyAlign", KEYWORD_rubyAlign));
 	m_keywordMap.insert(std::make_pair("W:rubyBase", KEYWORD_rubyBase));
@@ -1533,6 +1642,7 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:sdtContent", KEYWORD_sdtContent));
 	m_keywordMap.insert(std::make_pair("W:sdtEndPr", KEYWORD_sdtEndPr));
 	m_keywordMap.insert(std::make_pair("W:sdtPr", KEYWORD_sdtPr));
+	m_keywordMap.insert(std::make_pair("W:sectPr", KEYWORD_sectPr));
 	m_keywordMap.insert(std::make_pair("W:shadow", KEYWORD_shadow));
 	m_keywordMap.insert(std::make_pair("W:shd", KEYWORD_shd));
 	m_keywordMap.insert(std::make_pair("W:showingPlcHdr", KEYWORD_showingPlcHdr));
@@ -1588,6 +1698,7 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:tr2bl", KEYWORD_tr2bl));
 	m_keywordMap.insert(std::make_pair("W:trHeight", KEYWORD_trHeight));
 	m_keywordMap.insert(std::make_pair("W:trPr", KEYWORD_trPr));
+	m_keywordMap.insert(std::make_pair("W:type", KEYWORD_type));
 	m_keywordMap.insert(std::make_pair("W:u", KEYWORD_u));
 	m_keywordMap.insert(std::make_pair("W:vAlign", KEYWORD_vAlign));
 	m_keywordMap.insert(std::make_pair("W:vanish", KEYWORD_vanish));
