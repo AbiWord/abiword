@@ -123,6 +123,9 @@ GtkWidget * AP_UnixDialog_CollaborationShare::_constructWindow(void)
 	m_pBuddyModel = GTK_LIST_STORE(gtk_builder_get_object(builder, "lsBuddies"));
 	m_wOk = GTK_WIDGET(gtk_builder_get_object(builder, "btOK"));
 
+	// make sure the buddy list is sorted
+	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE (m_pBuddyModel), DESC_COLUMN, GTK_SORT_ASCENDING);
+
 	// set the dialog title
 	// TODO
 	
