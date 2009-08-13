@@ -72,7 +72,9 @@ pt2Constructor ap_Dialog_CollaborationShare_Constructor = &AP_Win32Dialog_Collab
 AP_Win32Dialog_CollaborationShare::AP_Win32Dialog_CollaborationShare(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: AP_Dialog_CollaborationShare(pDlgFactory, id),
 	m_pWin32Dialog(NULL),
-	m_hInstance(NULL)
+	m_hInstance(NULL),
+	m_hAccountCombo(NULL),
+	m_hBuddyList(NULL)
 {
 	UT_DEBUGMSG(("AP_Win32Dialog_CollaborationShare()\n"));
 	AbiCollabSessionManager * pSessionManager= AbiCollabSessionManager::getManager();
@@ -117,6 +119,7 @@ BOOL AP_Win32Dialog_CollaborationShare::_onInitDialog(HWND hWnd, WPARAM wParam, 
 	icc.dwSize=sizeof(INITCOMMONCONTROLSEX);
 	icc.dwICC=ICC_LISTVIEW_CLASSES;
 
+	m_hAccountCombo = GetDlgItem(hWnd, AP_RID_DIALOG_COLLABORATIONSHARE_ACCOUNTCOMBO);
 	m_hBuddyList = GetDlgItem(hWnd, AP_RID_DIALOG_COLLABORATIONSHARE_BUDDY_LIST);
 
 	// insert a column in the list view
@@ -197,6 +200,7 @@ void AP_Win32Dialog_CollaborationShare::_populateWindowData()
 			UT_DEBUGMSG(("Added handler to index %d\n", index));
 			m_vAccountCombo.insert(m_vAccountCombo.begin()+index, pShareeableAcount);
 		}
+		EnableWindow(m_hAccountCombo, false);
 	}
 	else
 	{
@@ -217,6 +221,7 @@ void AP_Win32Dialog_CollaborationShare::_populateWindowData()
 			else
 				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		}
+		EnableWindow(m_hAccountCombo, true);
 	}
 
 	// if we have at least one account, then make sure the first one is selected

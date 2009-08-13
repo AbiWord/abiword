@@ -62,6 +62,7 @@ private:
 	
 	// Handles
 	HINSTANCE 				m_hInstance;
+	HWND					m_hAccountCombo;
 	HWND					m_hBuddyList;
 	
 	// Internal states
