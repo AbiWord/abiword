@@ -127,14 +127,9 @@ BOOL AP_Win32Dialog_CollaborationShare::_onInitDialog(HWND hWnd, WPARAM wParam, 
 
 	// setup our listview columns
 	LVCOLUMN lvc;
-	lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT; 
-    lvc.pszText = "Column";	
-	lvc.cx = 400;
-	lvc.fmt = LVCFMT_LEFT;
-	if (ListView_InsertColumn(m_hBuddyList, 0, &lvc) == -1) 
-	{
-		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-	}
+	lvc.mask = LVCF_WIDTH; 
+	lvc.cx = 250;
+	ListView_InsertColumn(m_hBuddyList, 0, &lvc);
 
 	// enable checkboxes on items in the list view
 	ListView_SetExtendedListViewStyle(m_hBuddyList, LVS_EX_CHECKBOXES);
