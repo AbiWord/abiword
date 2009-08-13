@@ -28,9 +28,9 @@
 
 enum
 {
-	DESC_COLUMN = 0,
+	ONLINE_COLUMN = 0,
+	DESC_COLUMN,
 	TYPE_COLUMN,
-	ONLINE_COLUMN,
 	HANDLER_COLUMN
 };
 
@@ -196,24 +196,20 @@ void AP_UnixDialog_CollaborationAccounts::_populateWindowData()
 	gtk_tree_selection_set_mode (sel, GTK_SELECTION_BROWSE);
 	
 	m_wRenderer = gtk_cell_renderer_text_new ();
-	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (m_wAccountsTree), 
-												-1,
-												"Account", 
-												m_wRenderer, "text", 0, (void*)NULL);
-	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (m_wAccountsTree), 
-												-1,
-												"Type", 
-												m_wRenderer, "text", 1, (void*)NULL);
-	
 	m_wToggleRenderer = gtk_cell_renderer_toggle_new ();
 	g_object_set (m_wToggleRenderer, "xalign", 0.0, NULL);
 	g_signal_connect (m_wToggleRenderer, "toggled", G_CALLBACK (s_online_toggled), this);
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (m_wAccountsTree), 
 												-1,	"Online", 
-												m_wToggleRenderer, 
-												"active",
-												2,
-												(void*)NULL);
+												m_wToggleRenderer, "active", 0, (void*)NULL);
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (m_wAccountsTree), 
+												-1,
+												"Account", 
+												m_wRenderer, "text", 1, (void*)NULL);
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (m_wAccountsTree), 
+												-1,
+												"Type", 
+												m_wRenderer, "text", 2, (void*)NULL);
 	
 	gtk_tree_view_expand_all (GTK_TREE_VIEW (m_wAccountsTree));
 	gtk_widget_show_all(m_wAccountsTree);
@@ -222,7 +218,7 @@ void AP_UnixDialog_CollaborationAccounts::_populateWindowData()
 GtkListStore* AP_UnixDialog_CollaborationAccounts::_constructModel()
 {
 	GtkTreeIter iter;
-	GtkListStore* model = gtk_list_store_new (4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN, G_TYPE_POINTER);
+	GtkListStore* model = gtk_list_store_new (4, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
 
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	for (UT_uint32 i = 0; i < pManager->getAccounts().size(); i++)
@@ -237,9 +233,9 @@ GtkListStore* AP_UnixDialog_CollaborationAccounts::_constructModel()
 			
 			gtk_list_store_append (model, &iter);	
 			gtk_list_store_set (model, &iter, 
+					ONLINE_COLUMN, pHandler->isOnline(),
 					DESC_COLUMN, pHandler->getDescription().utf8_str(), 
 					TYPE_COLUMN, pHandler->getDisplayType().utf8_str(), 
-					ONLINE_COLUMN, pHandler->isOnline(), 
 					HANDLER_COLUMN, pHandler,
 					-1);
 		}
