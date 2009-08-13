@@ -283,12 +283,12 @@ void AP_UnixDialog_CollaborationShare::eventToggle(gchar* path_str)
 	
 	GtkTreePath *path = gtk_tree_path_new_from_string (path_str);
 	GtkTreeIter iter;
-	gboolean share;
+	gboolean bshare;
 
 	// toggle the share state
 	gtk_tree_model_get_iter (GTK_TREE_MODEL (m_pBuddyModel), &iter, path);
-	gtk_tree_model_get (GTK_TREE_MODEL (m_pBuddyModel), &iter, SHARE_COLUMN, &share, -1);
-	gtk_list_store_set (m_pBuddyModel, &iter, SHARE_COLUMN, !share, -1);
+	gtk_tree_model_get (GTK_TREE_MODEL (m_pBuddyModel), &iter, SHARE_COLUMN, &bshare, -1);
+	gtk_list_store_set (m_pBuddyModel, &iter, SHARE_COLUMN, !bshare, -1);
 
 	// clean up
 	gtk_tree_path_free (path);
@@ -299,7 +299,8 @@ void AP_UnixDialog_CollaborationShare::_setAccountHint(const UT_UTF8String& sHin
 	UT_DEBUGMSG(("AP_UnixDialog_CollaborationShare::_setAccountHint() - sHint: %s\n", sHint.utf8_str()));
 	
 	// show/hide the hint widgets
-	GValue val = {0, };
+	GValue val;
+	val.g_type = 0;
 	g_value_init (&val, G_TYPE_BOOLEAN);
 	g_value_set_boolean (&val, sHint != "");
 	g_object_set_property(G_OBJECT(m_wAccountHintSpacer), "visible", &val);
@@ -326,11 +327,11 @@ void AP_UnixDialog_CollaborationShare::_getSelectedBuddies(std::vector<std::stri
 
 	do
 	{
-		gboolean share;
+		gboolean bshare;
 		gpointer buddy_wrapper = NULL;
-		gtk_tree_model_get (GTK_TREE_MODEL (m_pBuddyModel), &iter, SHARE_COLUMN, &share, -1);
+		gtk_tree_model_get (GTK_TREE_MODEL (m_pBuddyModel), &iter, SHARE_COLUMN, &bshare, -1);
 		gtk_tree_model_get (GTK_TREE_MODEL (m_pBuddyModel), &iter, BUDDY_COLUMN, &buddy_wrapper, -1);
-		if (share && buddy_wrapper)
+		if (bshare && buddy_wrapper)
 		{
 			BuddyPtr pBuddy = reinterpret_cast<BuddyPtrWrapper*>(buddy_wrapper)->getBuddy();
 			vACL.push_back(pBuddy->getDescriptor(false).utf8_str());
