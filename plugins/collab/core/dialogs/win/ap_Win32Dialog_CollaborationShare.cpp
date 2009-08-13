@@ -118,11 +118,14 @@ BOOL AP_Win32Dialog_CollaborationShare::_onInitDialog(HWND hWnd, WPARAM wParam, 
 	INITCOMMONCONTROLSEX icc;
 	icc.dwSize=sizeof(INITCOMMONCONTROLSEX);
 	icc.dwICC=ICC_LISTVIEW_CLASSES;
+	
+	// If we can't init common controls, bail out
+	UT_return_val_if_fail(InitCommonControlsEx(&icc), false);
 
 	m_hAccountCombo = GetDlgItem(hWnd, AP_RID_DIALOG_COLLABORATIONSHARE_ACCOUNTCOMBO);
 	m_hBuddyList = GetDlgItem(hWnd, AP_RID_DIALOG_COLLABORATIONSHARE_BUDDY_LIST);
 
-	// insert a column in the list view
+	// setup our listview columns
 	LVCOLUMN lvc;
 	lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT; 
     lvc.pszText = "Column";	
@@ -135,9 +138,6 @@ BOOL AP_Win32Dialog_CollaborationShare::_onInitDialog(HWND hWnd, WPARAM wParam, 
 
 	// enable checkboxes on items in the list view
 	ListView_SetExtendedListViewStyle(m_hBuddyList, LVS_EX_CHECKBOXES);
-
-	// If we can't init common controls, bail out
-	UT_return_val_if_fail(InitCommonControlsEx(&icc), false);
 	
 	// Get ourselves a custom DialogHelper
 	DELETEP(m_pWin32Dialog);
