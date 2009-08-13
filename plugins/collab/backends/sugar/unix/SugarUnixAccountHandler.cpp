@@ -409,6 +409,24 @@ void SugarAccountHandler::forceDisconnectBuddy(BuddyPtr pBuddy)
 	m_ignoredBuddies.insert(pBuddy->getDescriptor(false));
 }
 
+bool SugarAccountHandler::hasAccess(const std::vector<std::string>& /*vAcl*/, BuddyPtr pBuddy)
+{
+	UT_DEBUGMSG(("SugarAccountHandler::hasAccess() - pBuddy: %s\n", pBuddy->getDescriptor(false).utf8_str()));
+	UT_return_val_if_fail(pBuddy, false);
+
+	// The sugar presence service is responsible for access control. Just do a quick
+	// check here to see if we know the buddy on this account, and
+	// then be done with it.
+	SugarBuddyPtr pSugarBuddy = boost::dynamic_pointer_cast<SugarBuddy>(pBuddy);
+	UT_return_val_if_fail(pSugarBuddy, false);
+
+	SugarBuddyPtr pExistingBuddy = getBuddy(pSugarBuddy->getDBusAddress());
+	if (!pExistingBuddy)
+		false;
+
+	return true;
+}
+
 SugarBuddyPtr SugarAccountHandler::getBuddy(const UT_UTF8String& dbusAddress)
 {
 	for (std::vector<BuddyPtr>::iterator it = getBuddies().begin(); it != getBuddies().end(); it++)
