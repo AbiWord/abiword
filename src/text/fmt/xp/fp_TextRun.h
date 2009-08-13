@@ -65,6 +65,7 @@ public:
 	bool					canMergeWithNext(void);
 	void					mergeWithNext(void);
 	bool                    findFirstNonBlankSplitPoint(fp_RunSplitInfo & splitInfo);
+	bool                    isOneItem(fp_Run * pNext);
 	enum
 	{
 		Calculate_full_width = -1

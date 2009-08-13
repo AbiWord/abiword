@@ -1068,6 +1068,8 @@ bool fp_TextRun::canMergeWithNext(void)
 		|| (pNext->getVisibility() != getVisibility())
 		// Different authors
 		|| (pNext->getAuthorNum() != getAuthorNum())
+		// The merge must make just one item
+		|| (!isOneItem(pNext))
 #if 0
 		// I do not think this should happen at all
 		|| ((pNext->m_bRenderInfo->isJustified() && m_bRenderInfo->isJustified())
@@ -2776,6 +2778,22 @@ UT_sint32 fp_TextRun::getStr(UT_UCSChar * pStr, UT_uint32 &iMax)
 	return -1;
 }
 
+/*!
+ * Returns if this run plus the next can be combined to make one contiguous 
+ * item
+ */
+bool fp_TextRun::isOneItem(fp_Run * pNext)
+{
+	GR_Itemization I;
+	bool b = getBlock()->itemizeSpan(getBlockOffset(), getLength()+pNext->getLength(),I);
+	UT_return_val_if_fail(b,false);
+	UT_DEBUGMSG(("Found %d items \n",I.getItemCount()-1));
+	if(I.getItemCount() <= 2)
+	{
+		return true;
+	}
+	return false;
+}
 void fp_TextRun::itemize(void)
 {
 	GR_Itemization I;
