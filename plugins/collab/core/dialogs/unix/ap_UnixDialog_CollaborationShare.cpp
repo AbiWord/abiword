@@ -166,6 +166,7 @@ void AP_UnixDialog_CollaborationShare::_populateWindowData()
 						0, pShareeableAcount->getDescription().utf8_str(),
 						1, pShareeableAcount,
 						-1);
+			gtk_widget_set_sensitive(m_wAccount, false);
 	}
 	else
 	{
@@ -183,6 +184,7 @@ void AP_UnixDialog_CollaborationShare::_populateWindowData()
 						1, pAccount,
 						-1);
 		}
+		gtk_widget_set_sensitive(m_wAccount, true);
 	}
 	m_pAccountModel = GTK_TREE_MODEL (store);
 	gtk_combo_box_set_model(GTK_COMBO_BOX(m_wAccount), m_pAccountModel);
