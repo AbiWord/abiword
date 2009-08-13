@@ -205,7 +205,7 @@ void AP_Win32Dialog_CollaborationShare::_populateWindowData()
 			AccountHandler* pAccount = *cit;
 			UT_continue_if_fail(pAccount);
 
-			if (!pAccount->canManuallyStartSession())
+			if (!pAccount->isOnline() || !pAccount->canManuallyStartSession())
 				continue;
 
 			UT_sint32 index = m_pWin32Dialog->addItemToCombo(AP_RID_DIALOG_COLLABORATIONSHARE_ACCOUNTCOMBO, (LPCSTR) AP_Win32App::s_fromUTF8ToWinLocale(pAccount->getDescription().utf8_str()).c_str());

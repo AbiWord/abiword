@@ -174,7 +174,7 @@ void AP_UnixDialog_CollaborationShare::_populateWindowData()
 			AccountHandler* pAccount = *cit;
 			UT_continue_if_fail(pAccount);
 
-			if (!pAccount->canManuallyStartSession())
+			if (!pAccount->isOnline() || !pAccount->canManuallyStartSession())
 				continue;
 
 			gtk_list_store_append (store, &iter);
