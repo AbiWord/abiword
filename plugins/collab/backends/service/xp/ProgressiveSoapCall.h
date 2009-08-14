@@ -33,27 +33,26 @@ class ProgressiveSoapCall : public boost::enable_shared_from_this<ProgressiveSoa
 public:
 	ProgressiveSoapCall(const std::string& uri, soa::function_call& fc, const std::string& ssl_ca_file)
 		: m_uri(uri),
-		m_fc(fc),
+		m_mi(soa::method_invocation("urn:AbiCollabSOAP", fc)),
 		m_ssl_ca_file(ssl_ca_file),
-		m_worker_ptr(),
-		m_soapFault()
+		m_worker_ptr()
 	{}
 	
 	soa::GenericPtr run()
 	{
 		UT_DEBUGMSG(("ProgressiveSoapCall::run()\n"));
 
-		m_worker_ptr.reset(new InterruptableAsyncWorker<soa::GenericPtr>(
+		m_worker_ptr.reset(new InterruptableAsyncWorker<bool>(
 					boost::bind(&ProgressiveSoapCall::invoke, shared_from_this())
 				));
 
 		// start the asynchronous process and display the dialog
 		try
 		{
-			soa::GenericPtr res = m_worker_ptr->run();
-			if (m_soapFault)
-				throw *m_soapFault;
-			return res;
+			bool res = m_worker_ptr->run();
+			if (!res)
+				return soa::GenericPtr();
+			return soa::parse_response(m_result, m_mi.function().response());
 		}
 		catch (InterruptedException e)
 		{
@@ -63,18 +62,14 @@ public:
 	}
 
 private:
-	soa::GenericPtr invoke()
+	bool invoke()
 	{
 		UT_DEBUGMSG(("ProgressiveSoapCall::invoke()\n"));
-		try {
-			return soup_soa::invoke(
-							m_uri, soa::method_invocation("urn:AbiCollabSOAP", m_fc), m_ssl_ca_file,
-							boost::bind(&ProgressiveSoapCall::_progress_cb, this, _1, _2, _3)
-						);
-		} catch (soa::SoapFault& fault) {
-			m_soapFault.reset(new soa::SoapFault(fault));
-			return soa::GenericPtr();
-		}
+		return soup_soa::invoke(
+						m_uri, m_mi, m_ssl_ca_file,
+						boost::bind(&ProgressiveSoapCall::_progress_cb, this, _1, _2, _3), 
+						m_result
+					);
 	}
 	
 	void _progress_cb(SoupSession* session, SoupMessage* msg, uint32_t progress)
@@ -98,14 +93,13 @@ private:
 	}
 	
 	std::string							m_uri;
-	soa::function_call&					m_fc;
+	soa::method_invocation				m_mi;
 	std::string							m_ssl_ca_file;
 	
-	boost::shared_ptr< InterruptableAsyncWorker<soa::GenericPtr> >
+	boost::shared_ptr< InterruptableAsyncWorker<bool> >
 										m_worker_ptr;
 
-	boost::shared_ptr<soa::SoapFault>	m_soapFault;
-	soa::GenericPtr						m_result;
+	std::string							m_result;
 };
 
 #endif /* __PROGRESSIVE_SOAP_CALL__ */
