@@ -96,7 +96,7 @@ namespace soup_soa {
 #else
 	static void _got_chunk_cb(SoupMessage *msg, SoaSoupSession* user_data);
 #endif
-	static soa::GenericPtr _invoke(const std::string& url, const soa::method_invocation& mi, SoaSoupSession& sess);
+	static bool _invoke(const std::string& url, const soa::method_invocation& mi, SoaSoupSession& sess, std::string& result);
 	
 	/* public functions */
 	
@@ -109,7 +109,10 @@ namespace soup_soa {
 		soup_message_set_request(msg, "text/xml", SOUP_BUFFER_USER_OWNED, &soap_msg[0], soap_msg.size());
 #endif
 		SoaSoupSession sess(msg, ssl_ca_file);
-		return _invoke(url, mi, sess);
+		std::string result;
+		if (!_invoke(url, mi, sess, result))
+			return soa::GenericPtr();
+		return soa::parse_response(result, mi.function().response());
 	}
 	
 	soa::GenericPtr invoke(const std::string& url, const soa::method_invocation& mi, const std::string& ssl_ca_file,
@@ -123,12 +126,42 @@ namespace soup_soa {
 #else
 		soup_message_set_request(msg, "text/xml", SOUP_BUFFER_USER_OWNED, &soap_msg[0], soap_msg.size());
 #endif
-		return _invoke(url, mi, sess);
-	}	
+		std::string result;
+		if (!_invoke(url, mi, sess, result))
+			return soa::GenericPtr();
+		return soa::parse_response(result, mi.function().response());
+	}
+
+	bool invoke(const std::string& url, const soa::method_invocation& mi, const std::string& ssl_ca_file, std::string& result) {
+		std::string soap_msg = mi.str();
+		SoupMessage* msg = soup_message_new ("POST", url.c_str());
+#ifdef SOUP24
+		soup_message_set_request(msg, "text/xml", SOUP_MEMORY_STATIC, &soap_msg[0], soap_msg.size());
+#else
+		soup_message_set_request(msg, "text/xml", SOUP_BUFFER_USER_OWNED, &soap_msg[0], soap_msg.size());
+#endif
+		SoaSoupSession sess(msg, ssl_ca_file);
+		return _invoke(url, mi, sess, result);
+	}
+
+	bool invoke(const std::string& url, const soa::method_invocation& mi, const std::string& ssl_ca_file,
+						   boost::function<void (SoupSession*, SoupMessage*, uint32_t)> progress_cb, std::string& result) {
+		std::string soap_msg = mi.str();
+		SoupMessage* msg = soup_message_new ("POST", url.c_str());
+		SoaSoupSession sess(msg, ssl_ca_file, progress_cb);
+		g_signal_connect(G_OBJECT (msg), "got-chunk", G_CALLBACK(_got_chunk_cb), (gpointer)(&sess));
+#ifdef SOUP24
+		soup_message_set_request(msg, "text/xml", SOUP_MEMORY_STATIC, &soap_msg[0], soap_msg.size());
+#else
+		soup_message_set_request(msg, "text/xml", SOUP_BUFFER_USER_OWNED, &soap_msg[0], soap_msg.size());
+#endif
+		return _invoke(url, mi, sess, result);
+	}
+	
 	
 	/* private functions */
 	
-	static soa::GenericPtr _invoke(const std::string& /*url*/, const soa::method_invocation& mi, SoaSoupSession& sess) {
+	static bool _invoke(const std::string& /*url*/, const soa::method_invocation& mi, SoaSoupSession& sess, std::string& result) {
 		if (!sess.m_session || !sess.m_msg )
 			return soa::GenericPtr();
 
@@ -137,15 +170,14 @@ namespace soup_soa {
 		if (!(SOUP_STATUS_IS_SUCCESSFUL (status) ||
 			status == SOUP_STATUS_INTERNAL_SERVER_ERROR /* used for SOAP Faults */))
 		{
-			return soa::GenericPtr();
+			return false;
 		}
 		
 		// store the SOAP result in a string
 		// FIXME: ineffecient copy
-		std::string result;
 #ifdef SOUP24
 		if (!sess.m_msg->response_body || !sess.m_msg->response_body->data)
-			return soa::GenericPtr();
+			return false;
 		result.resize(sess.m_msg->response_body->length);
 		std::copy(sess.m_msg->response_body->data, sess.m_msg->response_body->data+sess.m_msg->response_body->length, result.begin());
 		printf("Result: \n%s\n", result.c_str());
@@ -153,7 +185,7 @@ namespace soup_soa {
 		result.resize(sess.m_msg->response.length);
 		std::copy(sess.m_msg->response.body, sess.m_msg->response.body+sess.m_msg->response.length, result.begin());
 #endif	
-		return soa::parse_response(result, mi.function().response());
+		return true;
 	}
 
 #ifdef SOUP24
