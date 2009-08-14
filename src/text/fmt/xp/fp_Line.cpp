@@ -3209,7 +3209,7 @@ void fp_Line::coalesceRuns(void)
 		{
 			fp_TextRun* pTR = static_cast<fp_TextRun *>(pRun);
 			xxx_UT_DEBUGMSG(("Looking at %d Text run \n",i));
-			pTR->printText();
+			//	pTR->printText();
 			if (pTR->canMergeWithNext())
 			{
 			        xxx_UT_DEBUGMSG(("Can merge \n"));

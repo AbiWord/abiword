@@ -1725,7 +1725,7 @@ void fl_BlockLayout::coalesceRuns(void) const
 	_assertRunListIntegrity();
 
 #if 1
-	UT_DEBUGMSG(("fl_BlockLayout::coalesceRuns\n"));
+	xxx_UT_DEBUGMSG(("fl_BlockLayout::coalesceRuns\n"));
 	fp_Line* pLine = static_cast<fp_Line *>(getFirstContainer());
 	while (pLine)
 	{
