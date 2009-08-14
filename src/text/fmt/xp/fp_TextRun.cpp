@@ -739,7 +739,7 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 y,
 			// don't set bBOL to false here
 			bEOL = false;
 		}
-
+		pos += adjustCaretPosition(pos,true);
 		return;
 	}
 
@@ -768,7 +768,7 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 y,
 			// the correct place to do it.	2001.02.25 jskov
 			bEOL = true;
 		}
-
+		pos += adjustCaretPosition(pos,true);
 		return;
 	}
 
@@ -803,6 +803,7 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 y,
 
 			bBOL = false;
 			bEOL = false;
+			pos += adjustCaretPosition(pos,true);
 			return;
 		}
 
@@ -836,6 +837,7 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 y,
 					iLog = getLength() - i;
 				
 				pos = getBlock()->getPosition() + getBlockOffset() + iLog;
+				pos += adjustCaretPosition(pos,true);
 				return;
 			}
 		}
@@ -862,6 +864,7 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 y,
 		// reset this, so we have no stale pointers there
 		m_pRenderInfo->m_pText = NULL;
 #endif
+		pos = adjustCaretPosition(pos,true);
 		return;
 	}
 	
@@ -877,18 +880,19 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	UT_sint32 yoff2;
 	UT_sint32 xdiff = 0;
 	xxx_UT_DEBUGMSG(("findPointCoords: Text Run offset %d \n",iOffset));
-
 	if(!m_pRenderInfo || _getRefreshDrawBuffer() == GRSR_Unknown)
 	{
 		// this can happen immediately after run is inserted at the
 		// end of a paragraph.
 		_refreshDrawBuffer();
 	}
-
 	UT_return_if_fail(m_pRenderInfo);
 	
 	UT_return_if_fail(getLine());
 
+	//	UT_uint32 docPos = getBlockOffset() + getBlock()->getPosition() +iOffset;
+	//docPos = adjustCaretPosition(docPos,true);
+	//iOffset = docPos - getBlockOffset() + getBlock()->getPosition();
 	getLine()->getOffsets(this, xoff, yoff);
 
 	if (m_fPosition == TEXT_POSITION_SUPERSCRIPT)
@@ -3338,9 +3342,10 @@ void fp_TextRun::updateOnDelete(UT_uint32 offset, UT_uint32 iLenToDelete)
 
 UT_uint32 fp_TextRun::adjustCaretPosition(UT_uint32 iDocumentPosition, bool bForward)
 {
+
 	UT_uint32 iRunOffset = getBlockOffset() + getBlock()->getPosition();
 
-	UT_return_val_if_fail( iDocumentPosition >= iRunOffset && iDocumentPosition < iRunOffset + getLength() &&
+	UT_return_val_if_fail( iDocumentPosition >= iRunOffset && iDocumentPosition <= iRunOffset + getLength() &&
 						   m_pRenderInfo,
 						   iDocumentPosition);
 
@@ -3358,8 +3363,11 @@ UT_uint32 fp_TextRun::adjustCaretPosition(UT_uint32 iDocumentPosition, bool bFor
 	m_pRenderInfo->m_pText = &text;
 	m_pRenderInfo->m_iOffset = iDocumentPosition - iRunOffset;
 	m_pRenderInfo->m_iLength = getLength();
-	
-	return iRunOffset + getGraphics()->adjustCaretPosition(*m_pRenderInfo, bForward);
+	UT_uint32 adjustedPos = iRunOffset + getGraphics()->adjustCaretPosition(*m_pRenderInfo, bForward);
+	if((adjustedPos - iRunOffset) > getLength())
+		adjustedPos = iRunOffset + getLength();
+	_refreshDrawBuffer();
+	return adjustedPos;
 }
 
 void fp_TextRun::adjustDeletePosition(UT_uint32 &iDocumentPosition, UT_uint32 &iCount)

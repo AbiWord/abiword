@@ -2078,7 +2078,7 @@ void GR_CairoGraphics::positionToXY(const GR_RenderInfo & ri,
 		// withing range of our string
 		pOffset = g_utf8_offset_to_pointer (pUtf8, RI.m_iOffset);
 	}
-	else if(i > 1)
+	else if(i >= 1)
 	{
 		// this is the case where the requested offset is past the end
 		// of our string; we will use the last char; as we have more than one
