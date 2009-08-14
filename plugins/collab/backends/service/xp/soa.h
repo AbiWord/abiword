@@ -257,6 +257,7 @@ private:
 	std::string response_;
 	std::vector< boost::shared_ptr<function_arg> > args;
 };
+typedef boost::shared_ptr<soa::function_call> function_call_ptr;
 
 class header {
 public:
