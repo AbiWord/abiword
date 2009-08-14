@@ -165,7 +165,6 @@ namespace soup_soa {
 		if (!sess.m_session || !sess.m_msg )
 			return soa::GenericPtr();
 
-		printf("Request: \n%s\n",  mi.str().c_str());
 		guint status = soup_session_send_message (sess.m_session, sess.m_msg);
 		if (!(SOUP_STATUS_IS_SUCCESSFUL (status) ||
 			status == SOUP_STATUS_INTERNAL_SERVER_ERROR /* used for SOAP Faults */))
@@ -180,7 +179,6 @@ namespace soup_soa {
 			return false;
 		result.resize(sess.m_msg->response_body->length);
 		std::copy(sess.m_msg->response_body->data, sess.m_msg->response_body->data+sess.m_msg->response_body->length, result.begin());
-		printf("Result: \n%s\n", result.c_str());
 #else		
 		result.resize(sess.m_msg->response.length);
 		std::copy(sess.m_msg->response.body, sess.m_msg->response.body+sess.m_msg->response.length, result.begin());
