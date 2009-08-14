@@ -802,8 +802,6 @@ bool UT_isSmartQuotableCharacter(UT_UCSChar c)
 
 bool UT_isSmartQuotedCharacter(UT_UCSChar c)
 {
-	// TODO:  this is anglo-centric; really need a locale argument or
-	// TODO:  something to get smart quote rules for the rest of the world
 	bool result;
 	switch (c)
 	{
@@ -811,6 +809,16 @@ bool UT_isSmartQuotedCharacter(UT_UCSChar c)
 	case UCS_RQUOTE:
 	case UCS_LDBLQUOTE:
 	case UCS_RDBLQUOTE:
+	case 0x201a:
+	case 0x201e:
+	case 0x2039:
+	case 0x203a:
+	case 0x300c:
+	case 0x300d:
+	case 0x300e:
+	case 0x300f:
+	case '\"':
+	case '\'':
 		result = true;
 		break;
 	default:

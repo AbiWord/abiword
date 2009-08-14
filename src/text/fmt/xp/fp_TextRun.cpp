@@ -2779,8 +2779,8 @@ UT_sint32 fp_TextRun::getStr(UT_UCSChar * pStr, UT_uint32 &iMax)
 }
 
 /*!
- * Returns if this run plus the next can be combined to make one contiguous 
- * item
+ * Returns true if this run plus the next can be combined to make 
+ * one contiguous item
  */
 bool fp_TextRun::isOneItem(fp_Run * pNext)
 {
@@ -2790,6 +2790,34 @@ bool fp_TextRun::isOneItem(fp_Run * pNext)
 	UT_DEBUGMSG(("Found %d items \n",I.getItemCount()-1));
 	if(I.getItemCount() <= 2)
 	{
+		//
+		// Now look to see if there is roman text mixed with
+		// Unicode. Can easily happen with numbers or smart quotes
+		//
+		PD_StruxIterator text(getBlock()->getStruxDocHandle(),
+						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
+
+		text.setUpperLimit(text.getPosition() + getLength()+ pNext->getLength() - 1);
+		UT_ASSERT_HARMLESS( text.getStatus() == UTIter_OK );
+		bool bFoundRoman = false;
+		bool bFoundUnicode = false;
+		while(text.getStatus() == UTIter_OK)
+	    {
+			UT_UCS4Char c = text.getChar();
+			if(c != ' ' && c <256)
+			{
+				bFoundRoman = true;
+			}
+			else if(c!= ' ' && !UT_isSmartQuotedCharacter(c))
+			{
+				bFoundUnicode = true;
+			}
+			++text;
+		}
+		if(bFoundRoman && bFoundUnicode)
+		{
+			return false;
+		}
 		return true;
 	}
 	return false;
