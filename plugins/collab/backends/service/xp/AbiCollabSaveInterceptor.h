@@ -35,7 +35,11 @@ public:
 	bool saveRemotely(PD_Document * pDoc);
 	
 private:
-	void _save_cb(UT_Error error, AbiCollab* pSession);
+	bool _save(std::string uri, bool verify_webapp_host, std::string ssl_ca_file,
+			soa::function_call_ptr fc_ptr, boost::shared_ptr<std::string> result_ptr);
+	void _save_cb(bool success, AbiCollab* pSession,
+			soa::function_call_ptr fc_ptr, boost::shared_ptr<std::string> result_ptr);
+	void _reportError();
 
 	EV_EditMethod* m_pOldSaveEM;
 };

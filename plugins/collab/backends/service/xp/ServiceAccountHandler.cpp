@@ -1211,53 +1211,28 @@ bool ServiceAccountHandler::_setPermissions(UT_uint64 doc_id,
 	return res->value();
 }
 
-// NOTE: saveDocument can be called from a thread other than our mainloop;
-// Don't let access or modify any data from the mainloop!
-// FIXME FIXME FIXME: we should NOT call getProperty and serializeDocument!!!
-UT_Error ServiceAccountHandler::saveDocument(PD_Document* pDoc, ConnectionPtr connection_ptr)
+soa::function_call_ptr ServiceAccountHandler::getSaveDocumentCall(PD_Document* pDoc, ConnectionPtr connection_ptr)
 {
-	UT_return_val_if_fail(pDoc, UT_ERROR);
-	UT_return_val_if_fail(connection_ptr, UT_ERROR);		
+	UT_return_val_if_fail(pDoc, soa::function_call_ptr());
+	UT_return_val_if_fail(connection_ptr, soa::function_call_ptr());
+
 	UT_DEBUGMSG(("Saving document with id %llu, session id %s to webservice!\n",
 	             connection_ptr->doc_id(), connection_ptr->session_id().c_str()));
 	
-	const std::string uri = getProperty("uri");
 	const std::string email = getProperty("email");
 	const std::string password = getProperty("password");
-	bool verify_webapp_host = (getProperty("verify-webapp-host") == "true");
 
 	boost::shared_ptr<std::string> document(new std::string(""));
-	UT_return_val_if_fail(AbiCollabSessionManager::serializeDocument(pDoc, *document, true) == UT_OK, UT_ERROR);
+	UT_return_val_if_fail(AbiCollabSessionManager::serializeDocument(pDoc, *document, true) == UT_OK, soa::function_call_ptr());
 	
 	// construct a SOAP method call to gets our documents
-	soa::function_call fc("saveDocument", "saveDocumentResponse");
-	fc("email", email)
+	soa::function_call_ptr fc_ptr(new soa::function_call("saveDocument", "saveDocumentResponse"));
+	(*fc_ptr)("email", email)
 		("password", password)
 		("doc_id", static_cast<int64_t>(connection_ptr->doc_id()))
 		(soa::Base64Bin("data", document));
 
-	// execute the call and ignore the result (the revision number stored)
-	try {
-		soa::GenericPtr soap_result = soup_soa::invoke(uri, soa::method_invocation("urn:AbiCollabSOAP", fc), verify_webapp_host?m_ssl_ca_file:"");
-		UT_return_val_if_fail(soap_result, UT_ERROR);
-	} catch (soa::SoapFault& fault) {
-		UT_DEBUGMSG(("Caught a soap fault: %s (error code: %s)!\n", 
-				 fault.detail() ? fault.detail()->value().c_str() : "(null)",
-				 fault.string() ? fault.string()->value().c_str() : "(null)"));
-
-		acs::SOAP_ERROR err = acs::error(fault);
-		switch (err)
-		{
-			case acs::SOAP_ERROR_NO_CHANGES:
-				UT_DEBUGMSG(("The document was unchanged; ignoring error\n"));
-				return UT_OK;
-			default:
-				return UT_ERROR;
-		}
-	}
-
-	UT_DEBUGMSG(("Document uploaded successfully\n"));
-	return UT_OK;
+	return fc_ptr;
 }
 
 void ServiceAccountHandler::signal(const Event& event, BuddyPtr pSource)

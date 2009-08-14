@@ -28,6 +28,7 @@
 #include "xap_Types.h"
 #include "ut_string_class.h"
 
+#include "soa.h"
 #include <core/account/xp/AccountHandler.h>
 #include "AbiCollabSaveInterceptor.h"
 #include "AsioRealmProtocol.h"
@@ -37,7 +38,6 @@
 #include "RealmProtocol.h"
 #include "ServiceBuddy.h"
 #include "ServiceErrorCodes.h"
-#include "soa.h"
 
 namespace acs = abicollab::service;
 namespace rpv1 = realm::protocolv1;
@@ -111,7 +111,7 @@ public:
 	virtual void							joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHandle);
 	virtual bool							hasSession(const UT_UTF8String& sSessionId);
 	acs::SOAP_ERROR							openDocument(UT_uint64 doc_id, UT_uint64 revision, const std::string& session_id, PD_Document** pDoc, XAP_Frame* pFrame);
-	UT_Error								saveDocument(PD_Document* pDoc, ConnectionPtr connection_ptr);
+	soa::function_call_ptr					getSaveDocumentCall(PD_Document* pDoc, ConnectionPtr connection_ptr);
 	void									removeExporter(void);
 	
 	// session management
@@ -124,6 +124,8 @@ public:
 	virtual void							signal(const Event& event, BuddyPtr pSource);
 
 	// misc functions
+	const std::string&						getCA() const
+		{ return m_ssl_ca_file; }
 	static bool							parseUserInfo(const std::string& userinfo, uint64_t& user_id);
 	
 	static XAP_Dialog_Id		 			m_iDialogGenericInput;

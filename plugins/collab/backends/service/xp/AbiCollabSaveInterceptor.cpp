@@ -31,11 +31,12 @@
 #include "xap_Frame.h"
 #include "ut_debugmsg.h"
 #include "AsyncWorker.h"
+
 #include "ServiceAccountHandler.h"
 #include <core/session/xp/AbiCollab.h>
 #include <core/session/xp/AbiCollabSessionManager.h>
 #include "AbiCollabSaveInterceptor.h"
-
+#include "soa_soup.h"
 
 
 static bool AbiCollabSaveInterceptor_interceptor(AV_View * v, EV_EditMethodCallData * d)
@@ -125,10 +126,16 @@ bool AbiCollabSaveInterceptor::saveRemotely(PD_Document * pDoc)
 
 			pManager->beginAsyncOperation(pSession);
 			// FIXME: guarantee save order!
+			
+			std::string uri = pServiceHandler->getProperty("uri");
+			bool verify_webapp_host = (pServiceHandler->getProperty("verify-webapp-host") == "true");
+			soa::function_call_ptr fc_ptr = pServiceHandler->getSaveDocumentCall(pDoc, connection_ptr);
+			std::string ssl_ca_file = pServiceHandler->getCA();
+			boost::shared_ptr<std::string> result_ptr(new std::string());
 			boost::shared_ptr<AsyncWorker<UT_Error> > async_save_ptr(
 						new AsyncWorker<UT_Error>(
-							boost::bind(&ServiceAccountHandler::saveDocument, pServiceHandler, pDoc, connection_ptr),
-							boost::bind(&AbiCollabSaveInterceptor::_save_cb, this, _1, pSession)
+							boost::bind(&AbiCollabSaveInterceptor::_save, this, uri, verify_webapp_host, ssl_ca_file, fc_ptr, result_ptr),
+							boost::bind(&AbiCollabSaveInterceptor::_save_cb, this, _1, pSession, fc_ptr, result_ptr)
 						)
 					);
 			async_save_ptr->start();
@@ -172,32 +179,79 @@ bool AbiCollabSaveInterceptor::intercept(AV_View * v, EV_EditMethodCallData * d)
 	return m_pOldSaveEM->Fn(v, d);
 }
 
-void AbiCollabSaveInterceptor::_save_cb(UT_Error error, AbiCollab* pSession)
+// NOTE: don't use const std::string& arguments where, as we want a copy for thread safety
+bool AbiCollabSaveInterceptor::_save(std::string uri, bool verify_webapp_host, std::string ssl_ca_file,
+			soa::function_call_ptr fc_ptr, boost::shared_ptr<std::string> result_ptr)
+{
+	UT_DEBUGMSG(("AbiCollabSaveInterceptor::_save()\n"));
+	UT_return_val_if_fail(fc_ptr, false);
+	UT_return_val_if_fail(result_ptr, false);
+
+	// execute the call
+	bool res = soup_soa::invoke(uri, soa::method_invocation("urn:AbiCollabSOAP", *fc_ptr), verify_webapp_host?ssl_ca_file:"", *result_ptr);
+	UT_return_val_if_fail(res, false);
+
+	UT_DEBUGMSG(("Document uploaded successfully\n"));
+	return true;
+}
+
+void AbiCollabSaveInterceptor::_save_cb(bool success, AbiCollab* pSession, 
+			soa::function_call_ptr fc_ptr, boost::shared_ptr<std::string> result_ptr)
 {
 	UT_DEBUGMSG(("AbiCollabSaveInterceptor::_save_cb()\n"));
+	UT_return_if_fail(pSession);
+	UT_return_if_fail(fc_ptr);
+	UT_return_if_fail(result_ptr);
 
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_if_fail(pManager);	
 
 	pManager->endAsyncOperation(pSession);
-	
+
+	if (success)
+	{
+		// parse the soap result
+		try {
+			// we ignore the result (the new revision number), we're happy when there were no errors
+			soa::method_invocation mi("urn:AbiCollabSOAP", *fc_ptr);
+			soa::GenericPtr soap_result = soa::parse_response(*result_ptr, mi.function().response());
+			if (soap_result)
+				return;
+		} catch (soa::SoapFault& fault) {
+			UT_DEBUGMSG(("Caught a soap fault: %s (error code: %s)!\n", 
+					 fault.detail() ? fault.detail()->value().c_str() : "(null)",
+					 fault.string() ? fault.string()->value().c_str() : "(null)"));
+
+			acs::SOAP_ERROR err = acs::error(fault);
+			switch (err)
+			{
+				case acs::SOAP_ERROR_NO_CHANGES:
+					UT_DEBUGMSG(("The document was unchanged; ignoring error\n"));
+					return;
+				default:
+					break;
+			}
+		}
+	}
+
+	_reportError();
+}
+
+void AbiCollabSaveInterceptor::_reportError()
+{
 	// WARNING: do NOT assume we have a valid view or frame here: it could already 
 	// have been deleted if the frame was closed (or abiword shutdown) before this 
 	// callback came back.
 	// You can safely use the AbiCollab pointer or PD_Document pointer though, as
 	// the AbiCollabSessionManager makes sure those are still valid.
-	
-	if (error != UT_OK)
+
+	// idealy we would use the same frame that was used to save the document,
+	// but we don't know if that one is still valid
+	if (XAP_App::getApp()->getLastFocussedFrame())
 	{
-		// idealy we would use the same frame that was used to save the document,
-		// but we don't know if that one is still valid
-		if (XAP_App::getApp()->getLastFocussedFrame())
-		{
-			// TODO: add the document name, error type and perhaps the server name
-			// TODO: offer some kind of solution to the user
-			UT_UTF8String msg("An error occured while saving this document to the web-service!");
-			XAP_App::getApp()->getLastFocussedFrame()->showMessageBox(msg.utf8_str(), XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
-		}
+		// TODO: add the document name, error type and perhaps the server name
+		// TODO: offer some kind of solution to the user
+		UT_UTF8String msg("An error occured while saving this document to the web-service!");
+		XAP_App::getApp()->getLastFocussedFrame()->showMessageBox(msg.utf8_str(), XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
 	}
-	return;
 }
