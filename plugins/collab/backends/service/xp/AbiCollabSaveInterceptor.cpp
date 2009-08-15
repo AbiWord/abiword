@@ -117,6 +117,12 @@ bool AbiCollabSaveInterceptor::intercept(AV_View * v, EV_EditMethodCallData * d)
 	PD_Document* pDoc = pView->getDocument();
 	UT_return_val_if_fail(pDoc, false);
 	
+	if (!pDoc->isDirty())
+	{
+		UT_DEBUGMSG(("Document is not dirty, not saving.\n"));
+		return true;
+	}
+
 	if (!pManager->isInSession(pDoc))
 		return m_pOldSaveEM->Fn(v, d);
 
