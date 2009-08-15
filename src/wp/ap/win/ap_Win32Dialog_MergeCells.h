@@ -37,7 +37,6 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
 	virtual BOOL			_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	static BOOL CALLBACK	s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
 	virtual BOOL 			_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
 	// callbacks can fire these events
@@ -51,7 +50,6 @@ public:
 		
 protected:
 
-	HWND							m_hwndDlg;	//  dialog box Windows
 	HBITMAP						m_hBitmapLeft;
 	HBITMAP						m_hBitmapRight;
 	HBITMAP						m_hBitmapAbove;
