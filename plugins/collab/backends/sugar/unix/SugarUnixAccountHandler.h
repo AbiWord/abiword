@@ -75,8 +75,6 @@ public:
 	// session management
 	virtual bool							allowsSessionTakeover()
 		{ return false; }
-	virtual bool							keepEmptySessionsAlive()
-		{ return true; }
 	virtual bool							canManuallyStartSession()
 		{ return false; }
 

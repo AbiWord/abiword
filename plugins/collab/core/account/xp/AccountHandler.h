@@ -156,8 +156,6 @@ public:
 		{ return m_bCanOffer; }
 	void									setOffering(bool bCanOffer)
 		{ m_bCanOffer = bCanOffer; }
-	virtual bool							keepEmptySessionsAlive()
-		{ return false; }
 	virtual bool							canManuallyStartSession()
 		{ return true; }
 

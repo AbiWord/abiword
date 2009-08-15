@@ -250,13 +250,6 @@ void AbiCollab::_checkRevokeAccess(BuddyPtr pCollaborator)
 			}
 		}
 	}
-
-	// stop the session if the ACL has become empty
-	if (!m_pAclAccount->keepEmptySessionsAlive() && m_vAcl.size() == 0)
-	{
-		UT_DEBUGMSG(("The ACL list has become empty, stopping session...\n"));
-		UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-	}
 }
 
 void AbiCollab::addCollaborator(BuddyPtr pCollaborator)
