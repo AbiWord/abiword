@@ -107,7 +107,7 @@ bool AbiCollabService_Export::signal(UT_uint32 iSignal)
 {
 	if((iSignal == PD_SIGNAL_SAVEDOC) && m_pDoc->isDirty())
 	{
-		bool bSavedRemotely = ServiceAccountHandler::m_saveInterceptor.saveRemotely(m_pDoc);
+		bool bSavedRemotely = ServiceAccountHandler::m_saveInterceptor.save(m_pDoc);
 		if(bSavedRemotely)
 		{
 			UT_GenericVector<AV_View *> vecViews;
