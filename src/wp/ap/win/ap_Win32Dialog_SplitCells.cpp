@@ -36,8 +36,6 @@
 #include "ap_Win32Resources.rc2"
 
 
-#define GWL(hwnd)		(AP_Win32Dialog_SplitCells*)GetWindowLongW((hwnd), DWL_USER)
-#define SWL(hwnd, d)	(AP_Win32Dialog_SplitCells*)SetWindowLongW((hwnd), DWL_USER,(LONG)(d))
 
 #define BITMAP_WITDH	15
 #define BITMAP_HEIGHT	15
@@ -74,62 +72,19 @@ AP_Win32Dialog_SplitCells::~AP_Win32Dialog_SplitCells(void)
 
 void AP_Win32Dialog_SplitCells::runModeless(XAP_Frame * pFrame)
 {
-	// raise the dialog
-	int iResult;
-	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-
-	LPCWSTR lpTemplate = NULL;
-
+	UT_return_if_fail (pFrame);
 	UT_return_if_fail (m_id == AP_DIALOG_ID_SPLIT_CELLS);
 
-	lpTemplate = MAKEINTRESOURCEW(AP_RID_DIALOG_SPLITCELLS);
-
-	HWND hResult = CreateDialogParamW(pWin32App->getInstance(),lpTemplate,
-							static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-							(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT_HARMLESS((hResult != NULL));
-
-	m_hwndDlg = hResult;
+	createModeless(pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_SPLITCELLS));
 
 	// Save dialog the ID number and pointer to the widget
 	UT_sint32 sid =(UT_sint32)  getDialogId();
 	m_pApp->rememberModelessId( sid, (XAP_Dialog_Modeless *) m_pDialog);
 
-	iResult = ShowWindow( m_hwndDlg, SW_SHOW );
-
-	iResult = BringWindowToTop( m_hwndDlg );
-
 	startUpdater();
-
-	UT_ASSERT_HARMLESS((iResult != 0));
-
 }
 
-BOOL CALLBACK AP_Win32Dialog_SplitCells::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
-{		
-	AP_Win32Dialog_SplitCells * pThis;
-	
-	switch (msg)
-	{
-	case WM_INITDIALOG:
-		pThis = (AP_Win32Dialog_SplitCells *)lParam;
-		SWL(hWnd,lParam);
-		return pThis->_onInitDialog(hWnd,wParam,lParam);
 
-	case WM_COMMAND:
-		pThis = GWL(hWnd);
-		return pThis->_onCommand(hWnd,wParam,lParam);
-
-	case WM_DESTROY:
-		pThis = GWL(hWnd);
-		if(pThis)
-			pThis->destroy();
-		return 0;
-
-	default:
-		return 0;
-	}
-}
 #define _DS(c,s)	setDlgItemText(AP_RID_DIALOG_SPLITCELLS_##c,pSS->getValue(AP_STRING_ID_##s))
 #define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_SPLITCELLS_##c,pSS->getValue(XAP_STRING_ID_##s))
 
@@ -156,7 +111,9 @@ BOOL AP_Win32Dialog_SplitCells::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM l
 	UT_RGBColor Color(GetRValue(dwColor),GetGValue(dwColor),GetBValue(dwColor));
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	m_hwndDlg = hWnd;
+	// Localise caption
+	setDialogTitle (pSS->getValue(AP_STRING_ID_DLG_SplitCellsTitle));
+
 
 	// localise controls 		
 	_DS(TEXT_LEFT,		DLG_SplitCells_Left);
@@ -168,9 +125,7 @@ BOOL AP_Win32Dialog_SplitCells::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM l
 	_DS(TEXT_FRAME,		DLG_SplitCells_Frame);		
 	_DSX(BTN_CANCEL,	DLG_Close);				
 				
-	// Localise caption
-	ConstructWindowName();
-	setDialogTitle (m_WindowName);
+
 
 	// The four items are the same size
 	GetClientRect(GetDlgItem(hWnd, AP_RID_DIALOG_SPLITCELLS_BMP_LEFT), &rect);			
@@ -201,28 +156,28 @@ void AP_Win32Dialog_SplitCells::setSensitivity(AP_CellSplitType splitThis, bool 
 	switch(splitThis)
 	{
 	case hori_left:
-		EnableWindow(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_SPLITCELLS_BMP_LEFT), bSens);
-		EnableWindow(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_SPLITCELLS_TEXT_LEFT), bSens);
+		EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_SPLITCELLS_BMP_LEFT), bSens);
+		EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_SPLITCELLS_TEXT_LEFT), bSens);
 		break;
 	case hori_mid:
-		EnableWindow(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_SPLITCELLS_BMP_HORIMID), bSens);
-		EnableWindow(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_SPLITCELLS_TEXT_HORIMID), bSens);
+		EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_SPLITCELLS_BMP_HORIMID), bSens);
+		EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_SPLITCELLS_TEXT_HORIMID), bSens);
 		break;
 	case hori_right:
-		EnableWindow(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_SPLITCELLS_BMP_RIGHT), bSens);
-		EnableWindow(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_SPLITCELLS_TEXT_RIGHT), bSens);
+		EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_SPLITCELLS_BMP_RIGHT), bSens);
+		EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_SPLITCELLS_TEXT_RIGHT), bSens);
 		break;	
 	case vert_above:
-		EnableWindow(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_SPLITCELLS_BMP_ABOVE), bSens);
-		EnableWindow(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_SPLITCELLS_TEXT_ABOVE), bSens);
+		EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_SPLITCELLS_BMP_ABOVE), bSens);
+		EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_SPLITCELLS_TEXT_ABOVE), bSens);
 		break;
 	case vert_mid:
-		EnableWindow(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_SPLITCELLS_BMP_VERTMID), bSens);
-		EnableWindow(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_SPLITCELLS_TEXT_VERTMID), bSens);
+		EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_SPLITCELLS_BMP_VERTMID), bSens);
+		EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_SPLITCELLS_TEXT_VERTMID), bSens);
 		break;
 	case vert_below:
-		EnableWindow(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_SPLITCELLS_BMP_BELOW), bSens);
-		EnableWindow(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_SPLITCELLS_TEXT_BELOW), bSens);
+		EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_SPLITCELLS_BMP_BELOW), bSens);
+		EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_SPLITCELLS_TEXT_BELOW), bSens);
 		break;		
 	default:
 		break;
@@ -239,13 +194,13 @@ void AP_Win32Dialog_SplitCells::event_Close(void)
 
 void AP_Win32Dialog_SplitCells::notifyActiveFrame(XAP_Frame *pFrame)
 {
-	if((HWND)GetWindowLongW(m_hwndDlg, GWL_HWNDPARENT) != static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
+	if((HWND)GetWindowLongW(m_hDlg, GWL_HWNDPARENT) != static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
 		ConstructWindowName();
 		setDialogTitle (m_WindowName);
 
-		SetWindowLongW(m_hwndDlg, GWL_HWNDPARENT, (long)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
-		SetWindowPos(m_hwndDlg, NULL, 0, 0, 0, 0,
+		SetWindowLongW(m_hDlg, GWL_HWNDPARENT, (long)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
+		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}
 	setAllSensitivities();
@@ -312,7 +267,7 @@ void AP_Win32Dialog_SplitCells::destroy(void)
 {
 	finalize();
 
-	int iResult = DestroyWindow( m_hwndDlg );
+	int iResult = DestroyWindow( m_hDlg );
 	UT_ASSERT_HARMLESS((iResult != 0));
 }
 void AP_Win32Dialog_SplitCells::activate(void)

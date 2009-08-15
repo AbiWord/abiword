@@ -102,6 +102,8 @@ BOOL AP_Win32Dialog_MergeCells::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM l
 	DWORD dwColor = GetSysColor(COLOR_BTNFACE);	
 	UT_RGBColor Color(GetRValue(dwColor),GetGValue(dwColor),GetBValue(dwColor));
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+    // Localise caption
 	setDialogTitle (pSS->getValue(AP_STRING_ID_DLG_MergeCellsTitle));
 
 	// localise controls 		
