@@ -32,7 +32,7 @@ public:
 	AbiCollabSaveInterceptor();
 	
 	bool intercept(AV_View * v, EV_EditMethodCallData * d);
-	bool saveRemotely(PD_Document * pDoc);
+	bool save(PD_Document * pDoc);
 	
 private:
 	bool _save(std::string uri, bool verify_webapp_host, std::string ssl_ca_file,

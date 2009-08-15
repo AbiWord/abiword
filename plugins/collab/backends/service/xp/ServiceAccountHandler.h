@@ -51,8 +51,6 @@ class RealmBuddy;
 
 extern AccountHandlerConstructor ServiceAccountHandlerConstructor;
 
-typedef boost::shared_ptr< std::map<ServiceBuddyPtr, GetSessionsResponseEvent> > BuddySessionsPtr;
-
 #define SERVICE_ACCOUNT_HANDLER_TYPE "com.abisource.abiword.abicollab.backend.service"
 #define SERVICE_REGISTRATION_URL "https://abicollab.net/user/register"
 
@@ -111,7 +109,8 @@ public:
 	virtual void							joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHandle);
 	virtual bool							hasSession(const UT_UTF8String& sSessionId);
 	acs::SOAP_ERROR							openDocument(UT_uint64 doc_id, UT_uint64 revision, const std::string& session_id, PD_Document** pDoc, XAP_Frame* pFrame);
-	soa::function_call_ptr					getSaveDocumentCall(PD_Document* pDoc, ConnectionPtr connection_ptr);
+	soa::function_call_ptr					constructListDocumentsCall();
+	soa::function_call_ptr					constructSaveDocumentCall(PD_Document* pDoc, ConnectionPtr connection_ptr);
 	void									removeExporter(void);
 	
 	// session management
@@ -154,9 +153,10 @@ private:
 	void									_write_result(const asio::error_code& e, std::size_t bytes_transferred,
 													ConnectionPtr connection, boost::shared_ptr<rpv1::Packet> packet);
 
-	acs::SOAP_ERROR							_listDocuments(const std::string uri, const std::string email, const std::string password, 
-													bool verify_webapp_host, BuddySessionsPtr sessions_ptr);
-	void									_listDocuments_cb(acs::SOAP_ERROR error, BuddySessionsPtr sessions_ptr);
+	bool									_listDocuments(soa::function_call_ptr fc_ptr,
+													const std::string uri, bool verify_webapp_host,
+													boost::shared_ptr<std::string> result_ptr);
+	void									_listDocuments_cb(bool success, soa::function_call_ptr fc_ptr, boost::shared_ptr<std::string> result_ptr);
 	
 	acs::SOAP_ERROR							_openDocumentMaster(ConnectionPtr connection, soa::CollectionPtr rcp, PD_Document** pDoc, XAP_Frame* pFrame, 
 													const std::string& session_id, const std::string& filename, bool bLocallyOwned);

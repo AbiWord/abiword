@@ -105,10 +105,47 @@ AbiCollabSaveInterceptor::AbiCollabSaveInterceptor()
 	pBindingSet->_loadChar(pEbMap, CharTable, 2, NULL, 0);	
 }
 
-bool AbiCollabSaveInterceptor::saveRemotely(PD_Document * pDoc)
+bool AbiCollabSaveInterceptor::intercept(AV_View * v, EV_EditMethodCallData * d)
 {
+	UT_DEBUGMSG(("AbiCollabSaveInterceptor_intercept\n"));
+	UT_return_val_if_fail(v, false);
+	FV_View* pView = static_cast<FV_View*>(v);
+	
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, false);
+
+	PD_Document* pDoc = pView->getDocument();
+	UT_return_val_if_fail(pDoc, false);
+	
+	if (!pManager->isInSession(pDoc))
+		return m_pOldSaveEM->Fn(v, d);
+
+	UT_DEBUGMSG(("Document is in a collaboration session!\n"));
 	AbiCollab* pSession = pManager->getSession(pDoc);
+	UT_return_val_if_fail(pSession, m_pOldSaveEM->Fn(v, d));
+
+	if (save(pDoc))
+	{
+	    XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	    if (pFrame->getViewNumber() > 0)
+	      XAP_App::getApp()->updateClones(pFrame);
+	    return true;
+	}
+	UT_DEBUGMSG(("This session does not use the abicollab webservice; saving the old fashioned way...\n"));
+	return m_pOldSaveEM->Fn(v, d);
+}
+
+bool AbiCollabSaveInterceptor::save(PD_Document* pDoc)
+{
+	UT_DEBUGMSG(("AbiCollabSaveInterceptor::save()\n"));
+	UT_return_val_if_fail(pDoc, false);
+
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, false);
+
+	AbiCollab* pSession = pManager->getSession(pDoc);
+	UT_return_val_if_fail(pSession, false);
+
 	// the session id should be unique on a specific account handler; let's 
 	// just look it up amongst all our account handlers (not too efficient or
 	// elegant, but it works)
@@ -129,7 +166,7 @@ bool AbiCollabSaveInterceptor::saveRemotely(PD_Document * pDoc)
 			
 			std::string uri = pServiceHandler->getProperty("uri");
 			bool verify_webapp_host = (pServiceHandler->getProperty("verify-webapp-host") == "true");
-			soa::function_call_ptr fc_ptr = pServiceHandler->getSaveDocumentCall(pDoc, connection_ptr);
+			soa::function_call_ptr fc_ptr = pServiceHandler->constructSaveDocumentCall(pDoc, connection_ptr);
 			std::string ssl_ca_file = pServiceHandler->getCA();
 			boost::shared_ptr<std::string> result_ptr(new std::string());
 			boost::shared_ptr<AsyncWorker<UT_Error> > async_save_ptr(
@@ -146,38 +183,10 @@ bool AbiCollabSaveInterceptor::saveRemotely(PD_Document * pDoc)
 			return true;
 		}
 	}
+
 	return false;
 }
 
-bool AbiCollabSaveInterceptor::intercept(AV_View * v, EV_EditMethodCallData * d)
-{
-	UT_DEBUGMSG(("AbiCollabSaveInterceptor_intercept\n"));
-	UT_return_val_if_fail(v, false);
-	FV_View* pView = static_cast<FV_View*>(v);
-	
-	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	UT_return_val_if_fail(pManager, false);
-
-	PD_Document* pDoc = pView->getDocument();
-	UT_return_val_if_fail(pDoc, false);
-	
-	if (!pManager->isInSession(pDoc))
-		return m_pOldSaveEM->Fn(v, d);
-
-	UT_DEBUGMSG(("Document is in a collaboration session!\n"));
-	AbiCollab* pSession = pManager->getSession(pDoc);
-	UT_return_val_if_fail(pSession, m_pOldSaveEM->Fn(v, d));
-
-	if(saveRemotely(pDoc))
-	{
-	    XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
-	    if (pFrame->getViewNumber() > 0)
-	      XAP_App::getApp()->updateClones(pFrame);
-	    return true;
-	}
-	UT_DEBUGMSG(("This session does not use the abicollab webservice; saving the old fashioned way...\n"));
-	return m_pOldSaveEM->Fn(v, d);
-}
 
 // NOTE: don't use const std::string& arguments where, as we want a copy for thread safety
 bool AbiCollabSaveInterceptor::_save(std::string uri, bool verify_webapp_host, std::string ssl_ca_file,
