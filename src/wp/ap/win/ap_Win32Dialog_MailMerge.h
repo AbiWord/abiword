@@ -34,20 +34,17 @@ public:
 
 	virtual void			runModeless(XAP_Frame * pFrame);
 	virtual void            destroy(void);
-	virtual void *			pGetWindowHandle( void ) { return  (void *) m_hwndDlg; }
+	virtual void *			pGetWindowHandle( void ) { return  (void *) m_hDlg; }
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
 	virtual BOOL			_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	static BOOL CALLBACK	s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
 	virtual BOOL 			_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
 	
 protected:
-
 	virtual void setFieldList();
-	
-	HWND							m_hwndDlg;	//  dialog box Windows
+
 };
 
 #endif /* AP_WIN32DIALOG_MAILMERGE_H */
