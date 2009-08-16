@@ -66,7 +66,9 @@ pt2Constructor ap_Dialog_GenericInput_Constructor = &AP_Win32Dialog_GenericInput
 AP_Win32Dialog_GenericInput::AP_Win32Dialog_GenericInput(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: AP_Dialog_GenericInput(pDlgFactory, id),
 	m_pWin32Dialog(NULL),
-	m_hInstance(NULL)	
+	m_hInstance(NULL),
+	m_hWnd(NULL),
+	m_hOk(NULL)
 {
 	AbiCollabSessionManager * pSessionManager= AbiCollabSessionManager::getManager();
 	if (pSessionManager)
@@ -102,6 +104,11 @@ void AP_Win32Dialog_GenericInput::runModal(XAP_Frame * pFrame)
 
 BOOL AP_Win32Dialog_GenericInput::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
+	m_hOk = GetDlgItem(hWnd, AP_RID_DIALOG_GENERICINPUT_OK_BUTTON);
+	UT_return_val_if_fail(m_hOk, false);
+
+	m_hWnd = hWnd;
+
 	// Get ourselves a custom DialogHelper
 	DELETEP(m_pWin32Dialog);
 	m_pWin32Dialog = new XAP_Win32DialogHelper(hWnd);
@@ -124,24 +131,38 @@ BOOL AP_Win32Dialog_GenericInput::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM
 		SendMessage(hPasswordEntry, EM_SETPASSWORDCHAR, '*', 0);
 	}
 
+	// set the initial input
+	SetDlgItemText(hWnd, AP_RID_DIALOG_GENERICINPUT_PASSWORD_EDIT, getInput().utf8_str());
+
+	// force the initial sensitivy state of the buttons
+	_eventTextChanged(); 
+
 	return true;
 }
 
 BOOL AP_Win32Dialog_GenericInput::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
+	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
 	
 	switch (wId)
 	{
 	case AP_RID_DIALOG_GENERICINPUT_OK_BUTTON:
-		_setInput(_getText(hWnd, AP_RID_DIALOG_GENERICINPUT_PASSWORD_EDIT));
+		setInput(_getText(hWnd, AP_RID_DIALOG_GENERICINPUT_PASSWORD_EDIT));
 		m_answer = AP_Dialog_GenericInput::a_OK;
 		EndDialog(hWnd, 0);
 		return true;
 	case AP_RID_DIALOG_GENERICINPUT_CANCEL_BUTTON:
 		m_answer = AP_Dialog_GenericInput::a_CANCEL;
 		EndDialog(hWnd, 0);
-		return true;		
+		return true;
+	case AP_RID_DIALOG_GENERICINPUT_PASSWORD_EDIT:
+		if (wNotifyCode == EN_UPDATE)
+		{
+			_eventTextChanged();
+			return true;
+		}
+		return false;
 	default:
 		return false;
 	}
@@ -149,10 +170,22 @@ BOOL AP_Win32Dialog_GenericInput::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lP
 
 UT_UTF8String AP_Win32Dialog_GenericInput::_getText(HWND hWnd, int nID)
 {
+	UT_return_val_if_fail(hWnd, UT_UTF8String());
+
 	const int buflen = 4096;
 	char szBuff[buflen];
 	*szBuff=0;
 	GetDlgItemText(hWnd, nID, szBuff, buflen);
 	szBuff[buflen-1] = '\0';
 	return AP_Win32App::s_fromWinLocaleToUTF8(szBuff);
+}
+
+void AP_Win32Dialog_GenericInput::_eventTextChanged()
+{
+	UT_return_if_fail(m_hOk);
+
+	if (_getText(m_hWnd, AP_RID_DIALOG_GENERICINPUT_PASSWORD_EDIT).length() < getMinLenght())
+		EnableWindow(m_hOk, false);
+	else
+		EnableWindow(m_hOk, true);
 }

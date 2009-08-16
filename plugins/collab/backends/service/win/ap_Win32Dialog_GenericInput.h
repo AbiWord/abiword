@@ -34,10 +34,13 @@ public:
 	BOOL 						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
 private:
+	void						_eventTextChanged();
 	UT_UTF8String				_getText(HWND hWnd, int nID);
 	
 	XAP_Win32DialogHelper *		m_pWin32Dialog;
 	HINSTANCE 					m_hInstance;
+	HWND						m_hWnd;
+	HWND						m_hOk;
 };
 
 #endif /* AP_WIN32DIALOG_GENERICINPUT_H */
