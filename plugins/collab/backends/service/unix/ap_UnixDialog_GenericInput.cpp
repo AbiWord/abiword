@@ -26,9 +26,14 @@
 
 #include "ap_UnixDialog_GenericInput.h"
 
+static void s_text_changed(GtkWidget * /*wid*/, AP_UnixDialog_GenericInput * dlg)
+{
+	dlg->eventTextChanged();
+}
+
 static void s_ok_clicked(GtkWidget * /*wid*/, AP_UnixDialog_GenericInput * dlg)
 {
-	dlg->event_Ok();
+	dlg->eventOk();
 }
 
 XAP_Dialog * AP_UnixDialog_GenericInput::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id)
@@ -97,6 +102,11 @@ GtkWidget * AP_UnixDialog_GenericInput::_constructWindow(void)
 	gtk_label_set_text(GTK_LABEL(GTK_WIDGET(gtk_builder_get_object(builder, "lbLabel"))), getLabel().utf8_str());
 
 	// connect our signals
+	g_signal_connect(G_OBJECT(m_wInput),
+							"changed",
+							G_CALLBACK(s_text_changed),
+							static_cast<gpointer>(this));
+
 	g_signal_connect(G_OBJECT(m_wOk),
 							"clicked",
 							G_CALLBACK(s_ok_clicked),
@@ -113,10 +123,25 @@ void AP_UnixDialog_GenericInput::_populateWindowData()
 	
 	// set the password style input if requested
 	gtk_entry_set_visibility(GTK_ENTRY(m_wInput), !isPassword());
+
+	// set the initial input
+	gtk_entry_set_text(GTK_ENTRY(m_wInput), getInput().utf8_str());
+
+	// force the initial sensitivy state of the buttons
+	eventTextChanged();
 }
 
-void AP_UnixDialog_GenericInput::event_Ok()
+void AP_UnixDialog_GenericInput::eventTextChanged()
 {
-	_setInput(gtk_entry_get_text(GTK_ENTRY(m_wInput)));
+	const gchar* szText = gtk_entry_get_text(GTK_ENTRY(m_wInput));
+	if (!szText || strlen(szText) < getMinLenght())
+		gtk_widget_set_sensitive(m_wOk, false);
+	else
+		gtk_widget_set_sensitive(m_wOk, true);
+}
+
+void AP_UnixDialog_GenericInput::eventOk()
+{
+	setInput(gtk_entry_get_text(GTK_ENTRY(m_wInput)));
 }
 

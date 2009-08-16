@@ -31,7 +31,8 @@ public:
 	static XAP_Dialog * static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id);
 	void						runModal(XAP_Frame * pFrame);
 
-	void						event_Ok();
+	void						eventTextChanged();
+	void						eventOk();
 
 private:
 	GtkWidget*	 				_constructWindow(void);

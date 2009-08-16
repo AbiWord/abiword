@@ -61,7 +61,7 @@ public:
 	virtual ~ServiceAccountHandler();
 
 	static bool								askPassword(const std::string& email, std::string& password);
-	static bool								askFilename(std::string& filename);
+	static bool								askFilename(std::string& filename, bool firsttime);
 	static void								ensureExt(std::string& filename, const std::string& extension);
 
 	// housekeeping

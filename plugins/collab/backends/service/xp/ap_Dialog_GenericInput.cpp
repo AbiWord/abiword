@@ -24,6 +24,7 @@
 
 AP_Dialog_GenericInput::AP_Dialog_GenericInput(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent(pDlgFactory, id, "interface/dialogcollaborationinput"),
+	m_iMinLength(0),
 	m_bIsPassword(false)
 {
 }
