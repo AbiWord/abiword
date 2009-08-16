@@ -238,6 +238,7 @@ public:
 
 	void clearScreen(GR_Graphics*) const;
 
+
 	void                getStyle(UT_UTF8String & sStyle) const;
 	UT_sint32	        getTextIndent(void) const;
 	inline UT_sint32	getLeftMargin(void) const { return m_iLeftMargin; }

@@ -84,7 +84,9 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL;
 
-	if(pG == NULL)
+
+	FL_DocLayout * pLayout = getBlock()->getDocLayout();
+	if(pG == NULL && pLayout->isQuickPrint())
 	{
 	     pG = getGraphics();
 	     if((m_iMathUID >= 0) && getMathManager() )
@@ -98,7 +100,6 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	getBlockAP(pBlockAP);
 
-	FL_DocLayout * pLayout = getBlock()->getDocLayout();
 	const GR_Font * pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,pG);
 	if(pLayout->isQuickPrint() && pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
@@ -121,6 +122,8 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	  xxx_UT_DEBUGMSG(("!!!!Font is set here... %x \n",pFont));
 		_setFont(pFont);
 	}
+	if(pG == NULL)
+	  pG = getGraphics();
 	m_iPointHeight = pG->getFontAscent(pFont) + pG->getFontDescent(pFont);
 	const char* pszSize = PP_evalProperty("font-size",pSpanAP,pBlockAP,pSectionAP,
 					      getBlock()->getDocument(), true);

@@ -251,6 +251,10 @@ void  FL_DocLayout::setQuickPrint(GR_Graphics * pGraphics)
 		pBL->clearPrint();
 		pBL = pBL->getNextBlockInDocument();
 	    }
+	    //
+	    // Ensure all fonts are owned by the original graphics class
+	    //
+	    refreshRunProperties();
 	}
 }
 
@@ -3988,6 +3992,11 @@ void FL_DocLayout::_redrawUpdate(UT_Worker * pWorker)
 	if(pDoc->isPieceTableChanging())
 	{
 		UT_DEBUGMSG(("PieceTable changing don't redraw \n"));
+		return;
+	}
+	if(pDocLayout->isQuickPrint())
+	{
+	        UT_DEBUGMSG(("Doing a quickPrint don't redraw \n"));
 		return;
 	}
 //

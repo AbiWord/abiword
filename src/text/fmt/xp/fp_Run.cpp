@@ -602,6 +602,10 @@ GR_Graphics * fp_Run::getGraphics(void) const
 			return getBlock()->getDocLayout()->getQuickPrintGraphics();
 		}
 	}
+	if(getBlock()->getView())
+	{
+		return getBlock()->getView()->getGraphics();
+	}
 	return getBlock()->getDocLayout()->getGraphics();
 }
 
@@ -1238,7 +1242,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		}
 		m_bDirty = true;
 	}
-
+	const UT_Rect * pPrevClip = pDA->pG->getClipRect();
 	if(isHidden())
 	{
 		// this run is marked as hidden, nothing to do
@@ -1329,7 +1333,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	}
 	if(isSelectionDraw())
 	{
-		pDA->pG->setClipRect(NULL);
+		pDA->pG->setClipRect(pPrevClip);
 	}
 	FV_View* pView = _getView();
 	UT_return_if_fail(pView);
@@ -1433,6 +1437,11 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	if(pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
 		m_bPrinting = false;
+		//
+		// The font will be reset by refreshRunProperties()
+		// After the print has finished.
+		//
+		_setFont(NULL);
 		lookupProperties(NULL);
 	}
 }

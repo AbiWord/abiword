@@ -465,7 +465,7 @@ private:
 	// the run highlight color. If the property is transparent use the page color
 	UT_RGBColor             m_pColorHL;
 
-	const GR_Font * 			m_pFont;
+	const GR_Font * 		m_pFont;
 
 	bool					m_bRecalcWidth;
 
