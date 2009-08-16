@@ -249,16 +249,25 @@ void AbiCollabSaveInterceptor::_save_cb(bool success, AbiCollab* pSession,
 		}
 	}
 
-	_reportError();
+	_saveFailed(pSession);
 }
 
-void AbiCollabSaveInterceptor::_reportError()
+void AbiCollabSaveInterceptor::_saveFailed(AbiCollab* pSession)
 {
 	// WARNING: do NOT assume we have a valid view or frame here: it could already 
 	// have been deleted if the frame was closed (or abiword shutdown) before this 
 	// callback came back.
 	// You can safely use the AbiCollab pointer or PD_Document pointer though, as
 	// the AbiCollabSessionManager makes sure those are still valid.
+
+	UT_return_if_fail(pSession);
+
+	PD_Document* pDoc = pSession->getDocument();
+	UT_return_if_fail(pDoc);
+
+	// the document was not saved after all, mark it dirty again
+	pDoc->forceDirty();
+	pDoc->signalListeners(PD_SIGNAL_DOCNAME_CHANGED);
 
 	// idealy we would use the same frame that was used to save the document,
 	// but we don't know if that one is still valid

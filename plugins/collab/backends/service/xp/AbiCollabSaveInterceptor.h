@@ -39,7 +39,7 @@ private:
 			soa::function_call_ptr fc_ptr, boost::shared_ptr<std::string> result_ptr);
 	void _save_cb(bool success, AbiCollab* pSession,
 			soa::function_call_ptr fc_ptr, boost::shared_ptr<std::string> result_ptr);
-	void _reportError();
+	void _saveFailed(AbiCollab* pSession);
 
 	EV_EditMethod* m_pOldSaveEM;
 };
