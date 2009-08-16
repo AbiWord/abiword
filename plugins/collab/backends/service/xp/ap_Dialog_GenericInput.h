@@ -57,17 +57,24 @@ public:
 	const UT_UTF8String&			getLabel()
 		{ return m_sLabel; }
 
+	void							setMinLenght(UT_uint32 iMinLength)
+		{ m_iMinLength = iMinLength; }
+
+	UT_uint32						getMinLenght()
+		{ return m_iMinLength; }
+
 	typedef enum { a_OK, a_CANCEL } tAnswer;
 
 	AP_Dialog_GenericInput::tAnswer	getAnswer(void) const
 		{ return m_answer; }
 
+	void							setInput(const UT_UTF8String& sInput)
+		{ m_input = sInput; }
+
 	const UT_UTF8String&			getInput() const
 		{ return m_input; }
 
 protected:
-	void							_setInput(const UT_UTF8String& input)
-		{ m_input = input; }
 
 	AP_Dialog_GenericInput::tAnswer m_answer;
 	
@@ -75,6 +82,7 @@ private:
 	UT_UTF8String		m_sTitle;
 	UT_UTF8String		m_sQuestion;
 	UT_UTF8String		m_sLabel;
+	UT_uint32			m_iMinLength;
 	bool				m_bIsPassword;
 	UT_UTF8String		m_input;
 };

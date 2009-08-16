@@ -48,8 +48,6 @@
 #include <core/session/xp/AbiCollabSessionManager.h>
 #include "AbiCollabService_Export.h"
 
-#define DEFAULT_FILENAME "New document.abw" // TODO: make this localizeable
-
 namespace rpv1 = realm::protocolv1;
 
 XAP_Dialog_Id ServiceAccountHandler::m_iDialogGenericInput = 0;
@@ -76,6 +74,7 @@ bool ServiceAccountHandler::askPassword(const std::string& email, std::string& p
 	pDialog->setQuestion(msg.c_str());
 	pDialog->setLabel("Password:");
 	pDialog->setPassword(true);
+	pDialog->setMinLenght(1);
 	pDialog->runModal(pFrame);
 	
 	// get the results
@@ -88,7 +87,7 @@ bool ServiceAccountHandler::askPassword(const std::string& email, std::string& p
 	return !cancel;
 }
 
-bool ServiceAccountHandler::askFilename(std::string& filename)
+bool ServiceAccountHandler::askFilename(std::string& filename, bool firsttime)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::askFilename()\n"));
 	XAP_Frame* pFrame = XAP_App::getApp()->getLastFocussedFrame();
@@ -104,16 +103,26 @@ bool ServiceAccountHandler::askFilename(std::string& filename)
 	// Run the dialog
 	// TODO: make this translatable
 	pDialog->setTitle("AbiCollab.net Collaboration Service"); // FIXME: don't hardcode this title to abicollab.net
-	std::string msg = "The filename '" + filename + "' already exists. Please enter a new name.";
+	std::string msg;
+	if (firsttime) {
+		msg = "Please specify a filename for the document.";
+	} else {
+		msg = "The filename '" + filename + "' already exists. Please enter a new name.";
+	}
 	pDialog->setQuestion(msg.c_str());
 	pDialog->setLabel("Filename:");
 	pDialog->setPassword(false);
+	pDialog->setMinLenght(1);
+	pDialog->setInput(filename.c_str());
 	pDialog->runModal(pFrame);
 	
 	// get the results
 	bool cancel = pDialog->getAnswer() == AP_Dialog_GenericInput::a_CANCEL;
 	if (!cancel)
+	{
 		filename = pDialog->getInput().utf8_str();
+		ensureExt(filename, ".abw");
+	}
 	pFactory->releaseDialog(pDialog);
 	
 	// the user terminated the input
@@ -515,9 +524,20 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<st
 	std::string password = getProperty("password");
 	bool verify_webapp_host = (getProperty("verify-webapp-host") == "true");
 
-	std::string filename = DEFAULT_FILENAME;
+	std::string filename;
+	bool bFilenameChanged = false;
 	if (pDoc->getFilename())
+	{
 		filename = UT_go_basename_from_uri(pDoc->getFilename());
+	}
+	else
+	{
+		filename = "New document.abw"; // TODO: mke this localizable
+		bool res = askFilename(filename, true);
+		if (!res)
+			return false; // TODO: test this
+		bFilenameChanged = true;
+	}
 	
 	boost::shared_ptr<std::string> document(new std::string(""));
 	UT_return_val_if_fail(AbiCollabSessionManager::serializeDocument(pDoc, *document, true) == UT_OK, false);
@@ -556,12 +576,9 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<st
 					pManager->storeProfile();	
 					continue;
 				case acs::SOAP_ERROR_DUP_FILENAME:
-					if (!askFilename(filename))
+					if (!askFilename(filename, false))
 						return false;
-					if (filename.size() == 0)
-						filename = DEFAULT_FILENAME;
-					else
-						ensureExt(filename, ".abw");
+					bFilenameChanged = true;
 					continue;
 				default:
 					UT_DEBUGMSG(("Unhandled SOAP error\n"));
@@ -604,6 +621,14 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<st
 	RealmBuddyPtr buddy(
 				new RealmBuddy(this, connection->user_id(), _getDomain(), connection->connection_id(), connection->master(), connection));
 	*pSession = pManager->startSession(pDoc, sSessionId, this, true, NULL, buddy->getDescriptor());
+
+	if (bFilenameChanged)
+	{
+		// set the new filename on the document
+		char* szFilename = g_strdup(filename.c_str());
+		pDoc->setFilename(szFilename);
+		pDoc->signalListeners(PD_SIGNAL_DOCNAME_CHANGED);	
+	}
 
 	// everything was successful and the document is uploaded, so
 	// we can mark the document to be clean.
