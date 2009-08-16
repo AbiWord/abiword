@@ -605,6 +605,11 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<st
 				new RealmBuddy(this, connection->user_id(), _getDomain(), connection->connection_id(), connection->master(), connection));
 	*pSession = pManager->startSession(pDoc, sSessionId, this, true, NULL, buddy->getDescriptor());
 
+	// everything was successful and the document is uploaded, so
+	// we can mark the document to be clean.
+	pDoc->setClean();
+	pDoc->signalListeners(PD_SIGNAL_DOCNAME_CHANGED);
+
 	return true;
 }
 
