@@ -675,13 +675,13 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 	bool bRemoveRectAfter = false;
 	bool bSetOrigClip = false;
 	bool bSkip = false;
-	if(pPrevRect == NULL)
+	if((pPrevRect == NULL) && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		pDA->pG->setClipRect(pRect);
 		UT_DEBUGMSG(("Clip bottom is %d \n",pRect->top + pRect->height));
 		bRemoveRectAfter = true;
 	}
-	else if(!pRect->intersectsRect(pPrevRect))
+	else if(pPrevRect && !pRect->intersectsRect(pPrevRect))
 	{
 		bSkip = true;
 		xxx_UT_DEBUGMSG(("External Clip bottom is %d \n",pRect->top + pRect->height));
@@ -694,7 +694,7 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 		newRect.height = UT_MIN(iBotPrev,iBot) - newRect.top;
 		newRect.width = pPrevRect->width;
 		newRect.left = pPrevRect->left;
-		if(newRect.height > 0)
+		if((newRect.height > 0) && pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN))
 		{
 			pDA->pG->setClipRect(&newRect);
 			bSetOrigClip = true;
