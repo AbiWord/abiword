@@ -1612,7 +1612,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	  Upon entry to this function, pDA->yoff is the BASELINE of this run, NOT
 	  the top.
 	*/
-
+	
 	if(getLength() == 0)
 		return;
 
@@ -1646,6 +1646,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	//	UT_sint32 yTopOfRun = pDA->yoff - pG->getFontAscent(_getFont());
 	UT_sint32 yTopOfSel = yTopOfRun;
 #endif
+	
 	xxx_UT_DEBUGMSG(("_draw Text: yoff %d \n",pDA->yoff));
 	xxx_UT_DEBUGMSG(("_draw Text: getAscent %d fontAscent-1 %d fontAscent-2 %d \n",getAscent(),pG->getFontAscent(_getFont()),pG->getFontAscent()));
 	/*
@@ -1662,6 +1663,10 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 #if DEBUG
 	//	printText();
 #endif
+	
+	///////////////////////////////////////////////////////////
+	pG->beginBuffering(pDA->xoff, yTopOfSel, iWidth, getLine()->getHeight());
+	
 //
 // This code makes sure we don't fill past the right edge of text.
 // Full Justified text often as a space at the right edge of the text.
@@ -2047,6 +2052,8 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		getBlock()->findGrammarSquigglesForRun(this);
 	}
 #endif
+
+	pDA->pG->endBuffering();
 }
 
 void fp_TextRun::_fillRect(UT_RGBColor& clr,

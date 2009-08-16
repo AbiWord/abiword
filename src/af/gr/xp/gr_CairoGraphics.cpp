@@ -2986,7 +2986,9 @@ void GR_CairoGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 }
 
 ///////////////////// Stuff for flicker reduction //////////////////////
-
+/*! Creates (and sets using setActiveBuffer) a new Cairo context for use
+	in double buffering
+*/
 void GR_CairoGraphics::createOffscreenBuffer(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_uint32 height)
 {
 	cairo_pattern_t* sourcePattern = cairo_get_source(getMainContext());
@@ -3005,6 +3007,10 @@ void GR_CairoGraphics::createOffscreenBuffer(UT_uint32 x, UT_uint32 y, UT_uint32
 	setActiveBuffer(tempPair.first);
 }
 
+/*! This is not a reliable way to get the real main context; it just 
+	returns whatever m_cr points to at the moment. Use only with knowledge of 
+	saveMainContext() and restoreMainBuffer()
+*/
 cairo_t* GR_CairoGraphics::getMainContext()
 {
 	UT_DEBUGMSG(("gr_CairoGraphics virtual void getMainContext\n"));
@@ -3028,6 +3034,7 @@ cairo_t* GR_CairoGraphics::getBuffer()
 
 UT_Rect GR_CairoGraphics::getExtendsFromDeque(UT_uint32 i)
 {
+	UT_DEBUGMSG(("getExtendsFromDeque i %d, total %d\n", i, m_bufferContainer.size()));
 	return m_bufferContainer.at(i).second;
 }
 

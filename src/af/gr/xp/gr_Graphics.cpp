@@ -128,7 +128,8 @@ GR_CharWidths* GR_Font::newFontWidths(void) const
 }
 
 GR_Graphics::GR_Graphics()
-	: m_iZoomPercentage(100),
+	: m_nestedBuffering(0),
+	  m_iZoomPercentage(100),
 	  m_iFontAllocNo(0),
 	  m_pRect(NULL),
 	  m_bHave3DColors(false),
@@ -1549,11 +1550,11 @@ void GR_Graphics::beginBuffering(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_u
 	rect1.width = width - 1;
 	rect1.top = y;
 	rect1.height = height - 1;
-	
-	saveMainContext();
+	m_nestedBuffering++;
 	
 	if (getDequeSize() == 0)
 	{
+		saveMainContext();
 		createOffscreenBuffer(x, y, width, height);
 		suitableBufferFound = true;
 	}
@@ -1565,7 +1566,7 @@ void GR_Graphics::beginBuffering(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_u
 		if (rect1.left >= rect2.left && rect1.width <= rect2.width &&
 			rect1.top >= rect2.top && rect1.height <= rect2.height)
 		{
-			setActiveBufferFromDeque(i); //abstract
+			setActiveBufferFromDeque(i);
 			suitableBufferFound = true;
 		}
 		 //If the extends overlap
@@ -1578,7 +1579,7 @@ void GR_Graphics::beginBuffering(UT_uint32 x, UT_uint32 y, UT_uint32 width, UT_u
 			suitableBufferFound = true;
 		}
 		//Next buffer
-		else if (i < getDequeSize()) //abstract
+		else if (i + 1 < getDequeSize())
 			i++;
 		else
 		{
@@ -1593,9 +1594,23 @@ void GR_Graphics::endBuffering()
 {
 	if (queryProperties(GR_Graphics::DGP_PAPER))
 		return; // don't double buffer when printing
-
-	restoreMainBuffer();
-	paintDeque();
+	
+	// When every endBuffering call is matched with it's respective 
+	// beginBuffering call, we'll stop double buffering & paint everything.
+	if (m_nestedBuffering == 0)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN); //Too many endBuffering calls!
+	}
+	else
+	{
+		m_nestedBuffering--;
+	}
+		
+	if (m_nestedBuffering == 0)
+	{
+		restoreMainBuffer();
+		paintDeque();
+	}
 }
 
 

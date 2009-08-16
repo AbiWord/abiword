@@ -4361,6 +4361,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 					UT_sint32 width, UT_sint32 height,
 					bool bDirtyRunsOnly, bool bClip)
 {
+	
 	xxx_UT_DEBUGMSG(("FV_View::draw_3 [x %ld][y %ld][w %ld][h %ld][bClip %ld]\n"
 					 "\t\twith [yScrollOffset %ld][windowHeight %ld][bDirtyRunsOnly %d]\n",
 					 x,y,width,height,bClip,
@@ -4384,6 +4385,17 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		UT_DEBUGMSG(("fv_View::draw() called with zero width or height expose.\n"));
 		return;
 	}
+
+	/*
+	if (FIXED_ZOOM &&
+		getWidthPagesInRow(pPage) < getWindowWidth() && 
+		getWindowWidth() < getWidthPagesInRow(pPage) + iPageWidth &&
+		detect vertical window resizing)
+		//We don't actually need to redraw all the pages here
+	{
+		return;
+	}
+	*/
 
 	// TMN: Leave this rect at function scope!
 	// gr_Graphics only stores a _pointer_ to it!
@@ -4488,6 +4500,8 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			}
 		}
 
+		
+
 		if(getViewMode() != VIEW_PRINT)
 		{
 			iPageHeight = iPageHeight - pDSL->getTopMargin() - pDSL->getBottomMargin();
@@ -4581,8 +4595,9 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 				adjustedRight = adjustedLeft + iPageWidth;
 			}
 			
-			
 			adjustedBottom -= getPageViewSep();
+			
+			m_pG->beginBuffering(adjustedLeft, adjustedTop, iPageWidth + m_pG->tlu(1), iPageHeight); //////////////////////////////////////////
 			
 			if (!bDirtyRunsOnly || (pPage->needsRedraw() && (getViewMode() == VIEW_PRINT)))
 			{
@@ -4594,7 +4609,9 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 //
 			  da.bDirtyRunsOnly = false;
 			}
+
 			pPage->draw(&da);
+		
 
 			// draw page decorations
 			UT_RGBColor clr(0,0,0); 	// black
@@ -4613,7 +4630,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 				painter.drawLine(adjustedLeft, adjustedBottom, adjustedRight + m_pG->tlu(1), adjustedBottom);
 				painter.drawLine(adjustedLeft, adjustedTop, adjustedLeft, adjustedBottom);
 			}
-
+			m_pG->endBuffering();/////////////////////////////
 //
 // Draw page seperator
 //
