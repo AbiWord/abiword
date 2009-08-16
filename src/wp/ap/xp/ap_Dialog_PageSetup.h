@@ -41,6 +41,7 @@ public:
 #define SET_GATHER(a, u)  inline u get##a(void) const {return m_##a;} \
 			  inline void set##a(u p##a) {m_##a = p##a;}
 	SET_GATHER(PageSize,		fp_PageSize);
+	SET_GATHER(PageUnits,		UT_Dimension);
 	SET_GATHER(PageOrientation,	Orientation);
 	SET_GATHER(PageScale,		int);
 	SET_GATHER(MarginUnits,		UT_Dimension);
@@ -64,6 +65,7 @@ public:
 
  private:
 	fp_PageSize             m_PageSize;
+	UT_Dimension            m_PageUnits;
 	Orientation             m_PageOrientation;
 	int                     m_PageScale;
 	UT_Dimension            m_MarginUnits;

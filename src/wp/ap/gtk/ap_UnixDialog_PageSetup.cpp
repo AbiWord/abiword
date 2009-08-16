@@ -160,20 +160,20 @@ void AP_UnixDialog_PageSetup::_setWidth(const char * buf)
 	{
 		return;
 	}
-	double height = static_cast<double>(m_PageSize.Height(m_PageSize.getDims()));
+	double height = static_cast<double>(m_PageSize.Height(getMarginUnits()));
 	if( width >= 0.00001)
 	{
 		if(m_PageSize.isPortrait())
 		{
 			m_PageSize.Set( width,
 							height,
-							m_PageSize.getDims() );
+							getMarginUnits() );
 		}
 		else
 		{
 			m_PageSize.Set( height,
 							width,
-							m_PageSize.getDims() );
+							getMarginUnits() );
 		}
 	}
 }
@@ -185,20 +185,20 @@ void AP_UnixDialog_PageSetup::_setHeight(const char * buf)
 	{
 		return;
 	}
-	double width = static_cast<double>(m_PageSize.Width(m_PageSize.getDims()));
+	double width = static_cast<double>(m_PageSize.Width(getMarginUnits()));
 	if( height >= 0.00001)
 	{
 		if(m_PageSize.isPortrait())
 		{
 			m_PageSize.Set( width,
 							height,
-							m_PageSize.getDims() );
+							getMarginUnits() );
 		}
 		else
 		{
 			m_PageSize.Set( height,
 							width,
-							m_PageSize.getDims() );
+							getMarginUnits() );
 		}
 	}
 }
@@ -206,15 +206,15 @@ void AP_UnixDialog_PageSetup::_setHeight(const char * buf)
 
 void AP_UnixDialog_PageSetup::event_LandscapeChanged(void)
 {
-	UT_UTF8String sHeight = gtk_entry_get_text(GTK_ENTRY(m_entryPageHeight));
-	UT_UTF8String sWidth = gtk_entry_get_text(GTK_ENTRY(m_entryPageWidth));
+	std::string sHeight = gtk_entry_get_text(GTK_ENTRY(m_entryPageHeight));
+	std::string sWidth = gtk_entry_get_text(GTK_ENTRY(m_entryPageWidth));
 
-	_setWidth(sHeight.utf8_str());
-	_setHeight(sWidth.utf8_str());
+	_setWidth(sHeight.c_str());
+	_setHeight(sWidth.c_str());
 	g_signal_handler_block(G_OBJECT(m_entryPageWidth), m_iEntryPageWidthID);
 	g_signal_handler_block(G_OBJECT(m_entryPageHeight), m_iEntryPageHeightID);
-	gtk_entry_set_text( GTK_ENTRY(m_entryPageWidth),sHeight.utf8_str() );
-	gtk_entry_set_text( GTK_ENTRY(m_entryPageHeight),sWidth.utf8_str() );
+	gtk_entry_set_text( GTK_ENTRY(m_entryPageWidth),sHeight.c_str() );
+	gtk_entry_set_text( GTK_ENTRY(m_entryPageHeight),sWidth.c_str() );
 	g_signal_handler_unblock(G_OBJECT(m_entryPageWidth), m_iEntryPageWidthID);
 	g_signal_handler_unblock(G_OBJECT(m_entryPageHeight), m_iEntryPageHeightID);
 
@@ -241,7 +241,7 @@ void AP_UnixDialog_PageSetup::doWidthEntry(void)
 {
 	UT_UTF8String sAfter = gtk_entry_get_text(GTK_ENTRY(m_entryPageWidth));
 
-	m_PageSize.Set(fp_PageSize::psCustom  , m_PageSize.getDims());
+	m_PageSize.Set(fp_PageSize::psCustom  , getPageUnits());
 	_setWidth(sAfter.utf8_str());
 	{
 		XAP_GtkSignalBlocker b(G_OBJECT(m_entryPageWidth), m_iEntryPageWidthID);
@@ -249,7 +249,7 @@ void AP_UnixDialog_PageSetup::doWidthEntry(void)
 		gtk_entry_set_text( GTK_ENTRY(m_entryPageWidth),sAfter.utf8_str() );
 		gtk_editable_set_position(GTK_EDITABLE(m_entryPageWidth), pos);
 	}
-	m_PageSize.Set(fp_PageSize::psCustom  , m_PageSize.getDims());
+	m_PageSize.Set(fp_PageSize::psCustom  , getPageUnits());
 	_updatePageSizeList();
 }
 
@@ -257,7 +257,7 @@ void AP_UnixDialog_PageSetup::doHeightEntry(void)
 {
     UT_UTF8String sAfter = gtk_entry_get_text(GTK_ENTRY(m_entryPageHeight));
 
-	m_PageSize.Set(fp_PageSize::psCustom  , m_PageSize.getDims());
+	m_PageSize.Set(fp_PageSize::psCustom  , getPageUnits());
 	_setHeight(sAfter.utf8_str());
 
 	{
@@ -366,6 +366,7 @@ void AP_UnixDialog_PageSetup::event_PageSizeChanged (fp_PageSize::Predefined pd)
 
 	// change the units in the dialog, too.
 	UT_Dimension new_units = ps.getDims();
+    setPageUnits(new_units);
     XAP_comboBoxSetActiveFromIntCol(GTK_COMBO_BOX (m_optionPageUnits), 1, new_units);
 
 	float w, h;
@@ -599,8 +600,8 @@ GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
 	{
 		m_PageSize.setLandscape();
 	}
-	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_entryPageWidth), m_PageSize.Width (m_PageSize.getDims()));
-	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_entryPageHeight), m_PageSize.Height (m_PageSize.getDims()));
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_entryPageWidth), m_PageSize.Width (getPageUnits ()));
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_entryPageHeight), m_PageSize.Height (getPageUnits ()));
 
 	/* setup margin numbers */
 	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_spinMarginTop), getMarginTop ());
@@ -636,7 +637,7 @@ GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
 	XAP_appendComboBoxTextAndInt(combo, _(XAP, DLG_Unit_inch), DIM_IN);
 	XAP_appendComboBoxTextAndInt(combo, _(XAP, DLG_Unit_cm), DIM_CM);
 	XAP_appendComboBoxTextAndInt(combo, _(XAP, DLG_Unit_mm), DIM_MM);
-    XAP_comboBoxSetActiveFromIntCol(combo, 1, m_PageSize.getDims());
+    XAP_comboBoxSetActiveFromIntCol(combo, 1, getPageUnits ());
 
 	/* setup margin units menu */
 	combo = GTK_COMBO_BOX(m_optionMarginUnits);

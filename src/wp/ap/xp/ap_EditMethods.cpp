@@ -9305,6 +9305,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	}
 
 	// make sure that the units in the dlg are the same as in the prefs
+	pDialog->setPageUnits(orig_uprefs);
 	pDialog->setMarginUnits(orig_uprefs);
 	
 	pDialog->setPageScale(static_cast<int>(100.0*orig_scale));
