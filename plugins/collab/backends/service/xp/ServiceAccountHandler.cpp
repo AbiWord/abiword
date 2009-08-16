@@ -107,7 +107,7 @@ bool ServiceAccountHandler::askFilename(std::string& filename, bool firsttime)
 	if (firsttime) {
 		msg = "Please specify a filename for the document.";
 	} else {
-		msg = "The filename '" + filename + "' already exists. Please enter a new name.";
+		msg = "This filename already exists, please enter a new name.";
 	}
 	pDialog->setQuestion(msg.c_str());
 	pDialog->setLabel("Filename:");
