@@ -40,7 +40,7 @@ public:
 	
 	void				signal(const Event& event, BuddyPtr pSource);
 
-	typedef enum { a_CLOSE, a_CONNECT, a_DISCONNECT } tAnswer;
+	typedef enum { a_CANCEL, a_OPEN } tAnswer;
 
 	AP_Dialog_CollaborationJoin::tAnswer	getAnswer(void) const
 		{ return m_answer; }

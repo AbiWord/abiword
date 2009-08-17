@@ -34,8 +34,7 @@ public:
 
 	void				eventAddBuddy();
 	void				eventRefresh();
-	void				eventConnect();
-	void				eventDisconnect();
+	void				eventOpen();
 	void				eventSelectionChanged(GtkTreeView *treeview);
 
 
@@ -52,12 +51,10 @@ private:
 
 	GtkWidget*			m_wWindowMain;
 	GtkWidget*			m_wAddBuddy;
-	GtkWidget*			m_wDeleteBuddy;
 	GtkWidget*			m_wRefresh;	
 	GtkTreeStore*		m_wModel;
 	GtkWidget *			m_wBuddyTree;
-	GtkWidget*			m_wConnect;
-	GtkWidget*			m_wDisconnect;
+	GtkWidget*			m_wOpen;
 };
 
 #endif /* AP_UNIXDIALOG_COLLABORATIONJOIN_H */

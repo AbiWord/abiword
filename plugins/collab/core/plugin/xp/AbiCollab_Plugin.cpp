@@ -154,8 +154,8 @@ static const char * szCollaborationTip = "Collaborate over the internet or local
 static const char * szCollaborationOffer = "Share Document";
 static const char * szCollaborationOfferTip = "Offer the current document for collaboration";
 
-static const char * szCollaborationJoin = "Shared Documents";
-static const char * szCollaborationJoinTip = "Join a collaboration session";
+static const char * szCollaborationJoin = "Open Shared Document";
+static const char * szCollaborationJoinTip = "Open a shared document";
 
 static const char * szCollaborationAccounts = "Accounts";
 static const char * szCollaborationAccountsTip = "Manage collaboration accounts";
@@ -669,22 +669,11 @@ bool s_abicollab_join(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 	
 	switch (answer)
 	{
-		case AP_Dialog_CollaborationJoin::a_CONNECT:
+		case AP_Dialog_CollaborationJoin::a_OPEN:
 			UT_return_val_if_fail(pBuddy && pDocHandle, false);
 			pManager->joinSessionInitiate(pBuddy, pDocHandle);	
 			break;
-		case AP_Dialog_CollaborationJoin::a_DISCONNECT:
-			{
-				UT_return_val_if_fail(pBuddy && pDocHandle, false);
-				AbiCollab* pSession = pManager->getSessionFromSessionId(pDocHandle->getSessionId());
-				UT_return_val_if_fail(pSession, false);
-				if (pSession->isLocallyControlled())
-					pManager->closeSession(pSession, true);
-				else
-					pManager->disjoinSession(pDocHandle->getSessionId());
-			}
-			break;
-		case AP_Dialog_CollaborationJoin::a_CLOSE:
+		case AP_Dialog_CollaborationJoin::a_CANCEL:
 			break;
 	}	
 	

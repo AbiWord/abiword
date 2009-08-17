@@ -31,7 +31,6 @@
 enum
 {
 	DESCRIPTION_COLUMN = 0,
-	CONNECTED_COLUMN,
 	DOCHANDLE_COLUMN,
 	HANDLER_COLUMN,
 	BUDDY_COLUMN,
@@ -49,14 +48,9 @@ static void s_refresh_clicked(GtkWidget * /*wid*/, AP_UnixDialog_CollaborationJo
 	dlg->eventRefresh();
 }
 
-static void s_connect_clicked(GtkWidget * /*wid*/, AP_UnixDialog_CollaborationJoin * dlg)
+static void s_open_clicked(GtkWidget * /*wid*/, AP_UnixDialog_CollaborationJoin * dlg)
 {
-	dlg->eventConnect();
-}
-
-static void s_disconnect_clicked(GtkWidget * /*wid*/, AP_UnixDialog_CollaborationJoin * dlg)
-{
-	dlg->eventDisconnect();
+	dlg->eventOpen();
 }
 
 static void s_selection_changed(GtkTreeView *treeview, AP_UnixDialog_CollaborationJoin * dlg)
@@ -64,42 +58,6 @@ static void s_selection_changed(GtkTreeView *treeview, AP_UnixDialog_Collaborati
 	UT_return_if_fail(treeview && dlg);
 	dlg->eventSelectionChanged(treeview);
 }
-
-/*
-static void joined_toggled (GtkCellRendererToggle *cell,
-	      gchar                 *path_str,
-	      gpointer               data)
-{
-	AP_UnixDialog_CollaborationJoin* pDlg = static_cast<AP_UnixDialog_CollaborationJoin*>(data);
-	GtkTreeModel *model = GTK_TREE_MODEL(pDlg->getModel());
-	GtkTreePath *path = gtk_tree_path_new_from_string (path_str);
-	GtkTreeIter iter;
-	
-	gboolean joined;
-	gpointer doc_handle;
-	gpointer buddy;	
-
-	// get the toggled state
-	gtk_tree_model_get_iter (model, &iter, path);
-	gtk_tree_model_get (model, &iter, CONNECTED_COLUMN, &joined, -1);
-	gtk_tree_model_get (model, &iter, DOCHANDLE_COLUMN, &doc_handle, -1);
-	gtk_tree_model_get (model, &iter, BUDDY_COLUMN, &buddy, -1);	
-
-	// toggle the value
-	joined = !joined;
-	// set the new value
-	gtk_tree_store_set (GTK_TREE_STORE (model), &iter, CONNECTED_COLUMN, joined, -1);
-
-	// handle the joining/closing of the selected document
-	pDlg->eventJoin(
-			static_cast<Buddy*>(buddy), 
-			static_cast<DocHandle*>(doc_handle), joined
-		);
-
-	// clean up
-	gtk_tree_path_free (path);
-}
-*/
 
 XAP_Dialog * AP_UnixDialog_CollaborationJoin::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id)
 {
@@ -111,11 +69,9 @@ AP_UnixDialog_CollaborationJoin::AP_UnixDialog_CollaborationJoin(XAP_DialogFacto
 	: AP_Dialog_CollaborationJoin(pDlgFactory, id),
 	m_wWindowMain(NULL),
 	m_wAddBuddy(NULL),
-	m_wDeleteBuddy(NULL),
 	m_wModel(NULL),
 	m_wBuddyTree(NULL),
-	m_wConnect(NULL),
-	m_wDisconnect(NULL)
+	m_wOpen(NULL)
 {
 }
 
@@ -133,19 +89,16 @@ void AP_UnixDialog_CollaborationJoin::runModal(XAP_Frame * pFrame)
 	eventRefresh();
 	
 	switch ( abiRunModalDialog ( GTK_DIALOG(m_wWindowMain),
-								 pFrame, this, GTK_RESPONSE_CLOSE, false ) )
+								 pFrame, this, GTK_RESPONSE_CANCEL, false ) )
 	{
-		case GTK_RESPONSE_YES: // ugly stock response abuse
-			m_answer = AP_Dialog_CollaborationJoin::a_CONNECT;
+		case GTK_RESPONSE_OK:
+			m_answer = AP_Dialog_CollaborationJoin::a_OPEN;
 			break;		
-		case GTK_RESPONSE_NO: // ugly stock response abuse
-			m_answer = AP_Dialog_CollaborationJoin::a_DISCONNECT;
-			break;		
-		case GTK_RESPONSE_CLOSE:
-			m_answer = AP_Dialog_CollaborationJoin::a_CLOSE;
+		case GTK_RESPONSE_CANCEL:
+			m_answer = AP_Dialog_CollaborationJoin::a_CANCEL;
 			break;
 		default:
-			m_answer = AP_Dialog_CollaborationJoin::a_CLOSE;
+			m_answer = AP_Dialog_CollaborationJoin::a_CANCEL;
 			break;
 	}
 
@@ -168,19 +121,15 @@ GtkWidget * AP_UnixDialog_CollaborationJoin::_constructWindow(void)
 	// might need to be queried or altered later
 	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_CollaborationJoin"));
 	m_wAddBuddy = GTK_WIDGET(gtk_builder_get_object(builder, "btAddBuddy"));
-	m_wDeleteBuddy = GTK_WIDGET(gtk_builder_get_object(builder, "btDeleteBuddy"));
 	m_wRefresh = GTK_WIDGET(gtk_builder_get_object(builder, "btRefresh"));
 	m_wBuddyTree = GTK_WIDGET(gtk_builder_get_object(builder, "tvBuddies"));
-	m_wConnect = GTK_WIDGET(gtk_builder_get_object(builder, "btConnect"));
-	m_wDisconnect = GTK_WIDGET(gtk_builder_get_object(builder, "btDisconnect"));
+	m_wOpen = GTK_WIDGET(gtk_builder_get_object(builder, "btOpen"));
 	
 	_refreshAccounts();
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	gtk_widget_set_sensitive(m_wAddBuddy, pManager->getAccounts().size() != 0); // TODO: fix this
-	gtk_widget_set_sensitive(m_wDeleteBuddy, false); // TODO: implement this
 	gtk_widget_set_sensitive(m_wRefresh, true);	
-	gtk_widget_set_sensitive(m_wConnect, false);
-	gtk_widget_set_sensitive(m_wDisconnect, false);
+	gtk_widget_set_sensitive(m_wOpen, false);
 
 	// set the dialog title
 	// TODO
@@ -199,14 +148,9 @@ GtkWidget * AP_UnixDialog_CollaborationJoin::_constructWindow(void)
 							G_CALLBACK(s_refresh_clicked),
 							static_cast<gpointer>(this));
 	
-	g_signal_connect(G_OBJECT(m_wConnect),
+	g_signal_connect(G_OBJECT(m_wOpen),
 							"clicked",
-							G_CALLBACK(s_connect_clicked),
-							static_cast<gpointer>(this));	
-
-	g_signal_connect(G_OBJECT(m_wDisconnect),
-							"clicked",
-							G_CALLBACK(s_disconnect_clicked),
+							G_CALLBACK(s_open_clicked),
 							static_cast<gpointer>(this));	
 	
 	g_signal_connect_after(G_OBJECT(m_wBuddyTree),
@@ -242,19 +186,6 @@ void AP_UnixDialog_CollaborationJoin::_populateWindowData()
 												(void*)NULL);
 	column = gtk_tree_view_get_column (GTK_TREE_VIEW (m_wBuddyTree), col_offset - 1);	
 	
-	renderer = gtk_cell_renderer_toggle_new ();
-	g_object_set (renderer, "xalign", 0.0, NULL);
-	//g_signal_connect (renderer, "toggled", G_CALLBACK (joined_toggled), this);
-	col_offset = gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (m_wBuddyTree), 
-												-1,	"Connected", 
-												renderer, 
-												"active", CONNECTED_COLUMN,
-												"visible", VISIBLE_COLUMN,
-												(void*)NULL);
-	column = gtk_tree_view_get_column (GTK_TREE_VIEW (m_wBuddyTree), col_offset - 1);												
-	gtk_tree_view_column_set_fixed_width (GTK_TREE_VIEW_COLUMN (column), 50);
-	gtk_tree_view_column_set_clickable (GTK_TREE_VIEW_COLUMN (column), TRUE);
-
 	gtk_tree_view_expand_all (GTK_TREE_VIEW (m_wBuddyTree));
 	gtk_widget_show_all(m_wBuddyTree);
 }
@@ -262,7 +193,7 @@ void AP_UnixDialog_CollaborationJoin::_populateWindowData()
 GtkTreeStore* AP_UnixDialog_CollaborationJoin::_constructModel()
 {
 	GtkTreeIter iter;
-	GtkTreeStore* model = gtk_tree_store_new (NUM_COLUMNS, G_TYPE_STRING, G_TYPE_BOOLEAN, G_TYPE_POINTER, G_TYPE_UINT, G_TYPE_UINT, G_TYPE_BOOLEAN);
+	GtkTreeStore* model = gtk_tree_store_new (NUM_COLUMNS, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_UINT, G_TYPE_UINT, G_TYPE_BOOLEAN);
 
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	const std::vector<AccountHandler*>& accounts = pManager->getAccounts();
@@ -292,7 +223,6 @@ GtkTreeStore* AP_UnixDialog_CollaborationJoin::_constructModel()
 			gtk_tree_store_append (model, &iter, NULL);
 			gtk_tree_store_set (model, &iter, 
 					DESCRIPTION_COLUMN, pBuddy->getDescription().utf8_str(), 
-					CONNECTED_COLUMN, false, /* joined */
 					DOCHANDLE_COLUMN, 0, /* dochandle */
 					HANDLER_COLUMN, 0, /* account handler */
 					BUDDY_COLUMN, 0, /* buddy */
@@ -310,7 +240,6 @@ GtkTreeStore* AP_UnixDialog_CollaborationJoin::_constructModel()
 				gtk_tree_store_append (model, &child_iter, &iter);
 				gtk_tree_store_set (model, &child_iter, 
 						DESCRIPTION_COLUMN, (item->m_docHandle ? item->m_docHandle->getName().utf8_str() : "null"),
-						CONNECTED_COLUMN, pManager->isActive(item->m_docHandle->getSessionId()),
 						DOCHANDLE_COLUMN, item->m_docHandle,
 						HANDLER_COLUMN, i,
 						BUDDY_COLUMN, j,
@@ -325,10 +254,16 @@ GtkTreeStore* AP_UnixDialog_CollaborationJoin::_constructModel()
 void AP_UnixDialog_CollaborationJoin::_setModel(GtkTreeStore* model)
 {
 	// TODO: free the old model
+	// TODO: or better: we shouldn't nuke the model, but just update the existing one
 	m_wModel = model;
+
 	gtk_tree_view_set_model(GTK_TREE_VIEW (m_wBuddyTree), GTK_TREE_MODEL(m_wModel));
 	gtk_tree_view_expand_all (GTK_TREE_VIEW (m_wBuddyTree));
-	gtk_widget_show_all(m_wBuddyTree);	
+
+	// sort on the buddy name
+	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE (m_wModel), DESCRIPTION_COLUMN, GTK_SORT_ASCENDING);
+
+	gtk_widget_show_all(m_wBuddyTree);
 }
 
 void AP_UnixDialog_CollaborationJoin::_refreshWindow()
@@ -358,10 +293,9 @@ void AP_UnixDialog_CollaborationJoin::eventRefresh()
 	_refreshAllDocHandlesAsync();
 }
 
-// FIXME: share code with eventDisconnect()
-void AP_UnixDialog_CollaborationJoin::eventConnect()
+void AP_UnixDialog_CollaborationJoin::eventOpen()
 {
-	UT_DEBUGMSG(("AP_UnixDialog_CollaborationJoin::eventConnect()\n"));
+	UT_DEBUGMSG(("AP_UnixDialog_CollaborationJoin::eventOpen()\n"));
 	
 	GtkTreeSelection * selection;
 	GtkTreeIter iter;
@@ -370,27 +304,25 @@ void AP_UnixDialog_CollaborationJoin::eventConnect()
 	selection = gtk_tree_view_get_selection( GTK_TREE_VIEW(m_wBuddyTree) );
 	if (!selection || !gtk_tree_selection_get_selected (selection, &model, &iter))
 	{
-		m_answer = AP_Dialog_CollaborationJoin::a_CLOSE;
+		m_answer = AP_Dialog_CollaborationJoin::a_CANCEL;
 		return;
 	}
 	
 	// see if we selected a row that has a document that we can still join
 	
 	// get the row data
-	gboolean connected;
-	gpointer doc_handle;
-	guint handler_idx;	
-	guint buddy_idx;	
+	gpointer doc_handle = 0;
+	guint handler_idx = 0;	
+	guint buddy_idx = 0;	
 
-	gtk_tree_model_get (model, &iter, CONNECTED_COLUMN, &connected, -1);
 	gtk_tree_model_get (model, &iter, DOCHANDLE_COLUMN, &doc_handle, -1);
 	gtk_tree_model_get (model, &iter, HANDLER_COLUMN, &handler_idx, -1);	
 	gtk_tree_model_get (model, &iter, BUDDY_COLUMN, &buddy_idx, -1);
 	
-	if (!doc_handle || connected)
+	if (!doc_handle)
 	{
 		UT_DEBUGMSG(("Not a document we can join\n"));
-		m_answer = AP_Dialog_CollaborationJoin::a_CLOSE;
+		m_answer = AP_Dialog_CollaborationJoin::a_CANCEL;
 		return;
 	}
 
@@ -399,65 +331,14 @@ void AP_UnixDialog_CollaborationJoin::eventConnect()
 	if (handler_idx >= accounts.size() || buddy_idx >= accounts[handler_idx]->getBuddies().size())
 	{
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-		m_answer = AP_Dialog_CollaborationJoin::a_CLOSE;
+		m_answer = AP_Dialog_CollaborationJoin::a_CANCEL;
 		return;
 	}
 	
-	UT_DEBUGMSG(("Got a document we can connect to!\n"));
-	m_answer = AP_Dialog_CollaborationJoin::a_CONNECT;
+	m_answer = AP_Dialog_CollaborationJoin::a_OPEN;
 	m_pBuddy = accounts[handler_idx]->getBuddies()[buddy_idx];
 	m_pDocHandle = reinterpret_cast<DocHandle*>(doc_handle);
-}
-
-// FIXME: share code with eventConnect()
-void AP_UnixDialog_CollaborationJoin::eventDisconnect()
-{
-	UT_DEBUGMSG(("AP_UnixDialog_CollaborationJoin::eventDisconnect()\n"));
-	
-	GtkTreeSelection * selection;
-	GtkTreeIter iter;
-	GtkTreeModel * model;	
-	
-	selection = gtk_tree_view_get_selection( GTK_TREE_VIEW(m_wBuddyTree) );
-	if (!selection || !gtk_tree_selection_get_selected (selection, &model, &iter))
-	{
-		m_answer = AP_Dialog_CollaborationJoin::a_CLOSE;
-		return;
-	}
-	
-	// see if we selected a row that has a document that we can still join
-	
-	// get the row data
-	gboolean connected;
-	gpointer doc_handle;
-	guint handler_idx;	
-	guint buddy_idx;	
-
-	gtk_tree_model_get (model, &iter, CONNECTED_COLUMN, &connected, -1);
-	gtk_tree_model_get (model, &iter, DOCHANDLE_COLUMN, &doc_handle, -1);
-	gtk_tree_model_get (model, &iter, HANDLER_COLUMN, &handler_idx, -1);	
-	gtk_tree_model_get (model, &iter, BUDDY_COLUMN, &buddy_idx, -1);
-	
-	if (!doc_handle || !connected)
-	{
-		UT_DEBUGMSG(("Not a document we can disconnect from\n"));
-		m_answer = AP_Dialog_CollaborationJoin::a_CLOSE;
-		return;
-	}
-
-	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	const std::vector<AccountHandler*>& accounts = pManager->getAccounts();
-	if (handler_idx >= accounts.size() || buddy_idx >= accounts[handler_idx]->getBuddies().size())
-	{
-		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-		m_answer = AP_Dialog_CollaborationJoin::a_CLOSE;
-		return;
-	}
-	
-	UT_DEBUGMSG(("Got a document we can disconnect from!\n"));
-	m_answer = AP_Dialog_CollaborationJoin::a_DISCONNECT;
-	m_pBuddy = accounts[handler_idx]->getBuddies()[buddy_idx];
-	m_pDocHandle = reinterpret_cast<DocHandle*>(doc_handle);
+	UT_DEBUGMSG(("Got a document we can connect to for buddy %s!\n", m_pBuddy->getDescriptor(false).utf8_str()));
 }
 
 void AP_UnixDialog_CollaborationJoin::eventSelectionChanged(GtkTreeView *treeview)
@@ -471,28 +352,23 @@ void AP_UnixDialog_CollaborationJoin::eventSelectionChanged(GtkTreeView *treevie
 	selection = gtk_tree_view_get_selection( GTK_TREE_VIEW(treeview) );
 	if (!selection || !gtk_tree_selection_get_selected (selection, &model, &iter))
 	{
-		gtk_widget_set_sensitive(m_wConnect, false);
-		gtk_widget_set_sensitive(m_wDisconnect, false);
+		gtk_widget_set_sensitive(m_wOpen, false);
 		return;
 	}
 	
 	// see if we selected a row that has a document that we can still join
 	
 	// get the row data
-	gboolean connected;
 	gpointer doc_handle;
 
-	gtk_tree_model_get (model, &iter, CONNECTED_COLUMN, &connected, -1);
 	gtk_tree_model_get (model, &iter, DOCHANDLE_COLUMN, &doc_handle, -1);	
 
 	if (!doc_handle)
 	{
 		UT_DEBUGMSG(("Not a document\n"));
-		gtk_widget_set_sensitive(m_wConnect, false);
-		gtk_widget_set_sensitive(m_wDisconnect, false);
+		gtk_widget_set_sensitive(m_wOpen, false);
 		return;
 	}
 
-	gtk_widget_set_sensitive(m_wConnect, !connected);
-	gtk_widget_set_sensitive(m_wDisconnect, connected);
+	gtk_widget_set_sensitive(m_wOpen, true);
 }
