@@ -800,6 +800,10 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 	fp_Page * pPage = NULL;
 	_getBrokenRect(pBroke, pPage, bRec,getGraphics());
 	UT_sint32 onePix = getGraphics()->tlu(1)+1;
+	//
+	// This fix makes win32 look bad. FIXME fix this later
+	//
+	onePix = 0;
 	if((bRec.top + bRec.height) < 0)
 	{
 		return;
@@ -1419,6 +1423,11 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG, bo
 // 		iRight = iLeft + bRec.width;
 		m_bDrawRight = true;
 		UT_sint32 onePix = pG->tlu(1)+1;
+		//
+		// the was put in to fix cairo draws but it makes windows look bad.
+		// Fixme for cairo a different way.
+		//
+		onePix = 0;
 		//
 		// Have to draw white first because drawing is additive
 		//
