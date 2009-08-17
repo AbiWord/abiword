@@ -240,10 +240,9 @@ void AP_Win32Dialog_CollaborationJoin::_setModel()
 			UT_String sBuddyText = AP_Win32App::s_fromUTF8ToWinLocale(buddyDesc.utf8_str());
 			TV_INSERTSTRUCT tviBuddy;
 			tviBuddy.item.mask = TVIF_TEXT | TVIF_STATE; // text only right now
-			tviBuddy.item.stateMask = TVIS_EXPANDED;
 			tviBuddy.hInsertAfter = TVI_SORT;
 			tviBuddy.hParent = NULL; // top most level Item
-			tviBuddy.item.state = 0;
+			tviBuddy.item.state = TVIS_EXPANDED; // weird, this does not seem to work; therefor, we expand this node again later on
 			tviBuddy.item.pszText = const_cast<char*>(sBuddyText.c_str());
 			HTREEITEM htiBuddy = (HTREEITEM)SendMessage(m_hDocumentTreeview, TVM_INSERTITEM,0,(LPARAM)&tviBuddy);
 			m_mTreeItemHandles.insert(std::pair<HTREEITEM, ShareListItem>(htiBuddy, ShareListItem(pBuddy, NULL)));
@@ -258,7 +257,6 @@ void AP_Win32Dialog_CollaborationJoin::_setModel()
 				UT_String sDocText = AP_Win32App::s_fromUTF8ToWinLocale(docDesc.utf8_str());
 				TV_INSERTSTRUCT tviDocument;
 				tviDocument.item.mask = TVIF_TEXT | TVIF_STATE; // text only right now
-				tviDocument.item.stateMask = TVIS_EXPANDED;
 				tviDocument.hInsertAfter = TVI_SORT;
 				tviDocument.hParent = htiBuddy;
 				tviDocument.item.pszText = const_cast<char*>(sDocText.c_str());
