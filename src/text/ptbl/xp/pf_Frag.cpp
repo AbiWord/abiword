@@ -25,12 +25,12 @@
 
 pf_Frag::pf_Frag(pt_PieceTable * pPT, PFType type, UT_uint32 length):
 	m_type(type),
-	m_length(length),
 	m_next(NULL),
 	m_prev(NULL),
 	m_pField(NULL),
 	m_pPieceTable(pPT),
 	m_indexAP(0),
+	m_length(length),
 	m_docPos(0),
 	m_iXID(0)
 {
@@ -124,4 +124,22 @@ bool pf_Frag::createSpecialChangeRecord(PX_ChangeRecord ** /*ppcr*/,
 fd_Field * pf_Frag::getField(void) const
 {
     return m_pField;
+}
+
+pf_Frag* pf_Frag::getNext(void) const
+{
+	pt_PieceTable* pt = m_pPieceTable;
+	pf_Fragments fragments = pt->getFragments();
+	pf_Fragments::Iterator it = fragments.find(m_docPos);
+	it++;
+	return it.value();
+}
+
+pf_Frag* pf_Frag::getPrev(void) const
+{
+	pt_PieceTable* pt = m_pPieceTable;
+	pf_Fragments fragments = pt->getFragments();
+	pf_Fragments::Iterator it = fragments.find(m_docPos);
+	it--;
+	return it.value();
 }

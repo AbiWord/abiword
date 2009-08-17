@@ -48,8 +48,8 @@ public:
 	virtual ~pf_Frag();
 
 	inline PFType			getType(void) const		{ return m_type; }
-	inline pf_Frag *		getNext(void) const		{ return m_next; }
-	inline pf_Frag *		getPrev(void) const		{ return m_prev; }
+	pf_Frag *                       getNext(void) const;
+	pf_Frag *                       getPrev(void) const;
 
 	pf_Frag *				setNext(pf_Frag * pNext);
 	pf_Frag *				setPrev(pf_Frag * pPrev);
@@ -59,6 +59,11 @@ public:
 	fd_Field *				getField(void) const;
 	PT_DocPosition          getPos(void) const { return m_docPos;}
 	void                    setPos(PT_DocPosition pos) const { m_docPos = pos;}
+	PT_DocPosition          getLeftTreeLength(void) const   { return m_leftTreeLength; }
+	void                    setLeftTreeLength(PT_DocPosition length) { m_leftTreeLength = length;}
+
+	/* We need the following function to accumulate left tree length */
+	void                    accLeftTreeLength(PT_DocPosition length) { m_leftTreeLength += length; }
 
 	inline PT_AttrPropIndex	getIndexAP(void) const {return m_indexAP;}
 	virtual void			setIndexAP(PT_AttrPropIndex indexNewAP)	{m_indexAP = indexNewAP;}
@@ -84,7 +89,8 @@ public:
 	
 #ifdef PT_TEST
 	virtual void			__dump(FILE * fp) const;
-#endif
+#endif	
+
 
 protected:
 /*!
@@ -111,13 +117,17 @@ protected:
 	virtual bool            _isContentEqual(const pf_Frag & /*f2*/) const {return true;}
 	
 	PFType					m_type;
-	UT_uint32				m_length;	/* in PT_DocPosition-space */
 	pf_Frag *				m_next;
 	pf_Frag *				m_prev;
 	
-    fd_Field *              m_pField;
+	fd_Field *              m_pField;
 	pt_PieceTable *			m_pPieceTable;
 	PT_AttrPropIndex		m_indexAP;
+
+	/* In PT_DocPosition space - specifies size of left subtree */
+	UT_sint32                               m_leftTreeLength;   
+	/* in PT_DocPosition-space - gives length of this fragment */ 
+	UT_uint32				m_length;	
 
 private:
 	mutable PT_DocPosition  m_docPos;
