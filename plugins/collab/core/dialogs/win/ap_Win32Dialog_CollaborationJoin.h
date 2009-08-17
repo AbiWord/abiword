@@ -58,7 +58,7 @@ private:
 	void					_refreshWindow();
 	void					_enableBuddyAddition(bool bEnabled);
 	void					_updateSelection();
-	void					_setJoin(HTREEITEM hItem, bool joinStatus);
+	void					_eventOpen(HTREEITEM hItem);
 	
 	// Handles
 	HINSTANCE 				m_hInstance;

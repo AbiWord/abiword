@@ -110,7 +110,6 @@ void AP_Win32Dialog_CollaborationJoin::runModal(XAP_Frame * pFrame)
 		break;
 	default:
 		break;
-		// ok!
 	};
 
 }
@@ -119,8 +118,6 @@ void AP_Win32Dialog_CollaborationJoin::runModal(XAP_Frame * pFrame)
 
 BOOL AP_Win32Dialog_CollaborationJoin::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	// Welcome, let's initialize a dialog!
-	//////
 	// Store handles for easy access
 	// Reminder: hDlg is in our DialogHelper
 	m_hDocumentTreeview = GetDlgItem(hWnd, AP_RID_DIALOG_COLLABORATIONJOIN_DOCUMENT_TREE);
@@ -159,23 +156,12 @@ BOOL AP_Win32Dialog_CollaborationJoin::_onCommand(HWND hWnd, WPARAM wParam, LPAR
 	
 	switch (wId)
 	{
-	case AP_RID_DIALOG_COLLABORATIONJOIN_DISCONNECT_BUTTON:
-		// join and close
-		// Formerly/secretly the OK button
-		_setJoin(m_hSelected, false);
+	case AP_RID_DIALOG_COLLABORATIONJOIN_OPEN_BUTTON:
+		_eventOpen(m_hSelected);
 		EndDialog(hWnd, 0);
 		return true;
 
-	case AP_RID_DIALOG_COLLABORATIONJOIN_CONNECT_BUTTON:
-		// join and close
-		// Formerly/secretly the OK button
-		_setJoin(m_hSelected, true);
-		EndDialog(hWnd, 0);
-		return true;
-
-	case AP_RID_DIALOG_COLLABORATIONJOIN_CLOSE_BUTTON:
-		// Close without necessarily joining
-		// formerly/secretly the Cancel button
+	case AP_RID_DIALOG_COLLABORATIONJOIN_CANCEL_BUTTON:
 		EndDialog(hWnd,0);
 		return true;
 
@@ -192,11 +178,6 @@ BOOL AP_Win32Dialog_CollaborationJoin::_onCommand(HWND hWnd, WPARAM wParam, LPAR
 		_refreshAllDocHandlesAsync();
 		_setModel();
 		return true;
-	
-	case AP_RID_DIALOG_COLLABORATIONJOIN_DELETE_BUTTON:
-		// TODO: Implement!
-		// didn't actually handle this
-		return false;
 
 	case AP_RID_DIALOG_COLLABORATIONJOIN_REFRESH_BUTTON:
 		// TODO: we really should refresh the buddies here as well, 
@@ -211,37 +192,10 @@ BOOL AP_Win32Dialog_CollaborationJoin::_onCommand(HWND hWnd, WPARAM wParam, LPAR
 	}
 }
 
-BOOL AP_Win32Dialog_CollaborationJoin::_onNotify(HWND hWnd, WPARAM wParam, LPARAM lParam){
+BOOL AP_Win32Dialog_CollaborationJoin::_onNotify(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
 	switch (((LPNMHDR)lParam)->code)
 	{
-		//case UDN_DELTAPOS:		return pThis->_onDeltaPos((NM_UPDOWN *)lParam);
-		//UT_DEBUGMSG(("Notify: Code=0x%x\n", ((LPNMHDR)lParam)->code));
-		
-		case NM_DBLCLK:
-			return false; // need to think this through, just toggling the state sounds wrong to me, UI-wise - MARCM
-			
-/*			// A double-click will toggle join status
-			// TODO: This is probably awful GUI-wise
-			_updateSelection();
-			// join stuff!
-			if (m_bShareSelected)
-			{
-				// if they double clicked on a shared document
-				if (!_setJoin(m_hSelected, true))
-				{
-					// if setting join to true didn't change join status
-					// then set it to false.
-					// this minimizes compares required to do the toggle,
-					// while leaving the safety logic in setJoin to prevent double-join or disjoins
-					_setJoin(m_hSelected, false);
-				}
-				
-				// refresh list after toggle
-				_refreshAllDocHandlesAsync();
-				_setModel();
-			}
-			return 1;*/
-			
 		case TVN_SELCHANGED:
 			_updateSelection();
 			return 1;
@@ -274,8 +228,14 @@ void AP_Win32Dialog_CollaborationJoin::_setModel()
 		for (UT_uint32 j = 0; j < accounts[i]->getBuddies().size(); j++)
 		{
 			BuddyPtr pBuddy = accounts[i]->getBuddies()[j];
+			UT_continue_if_fail(pBuddy);
+
+			const DocTreeItem* docTreeItems = pBuddy->getDocTreeItems();
+			// let's skip buddies that have no document shared
+			if (!docTreeItems)
+				continue;
+
 			UT_UTF8String buddyDesc = pBuddy->getDescription();
-			UT_DEBUGMSG(("Adding buddy (%s) to the treeview\n", buddyDesc.utf8_str()));
 
 			UT_String sBuddyText = AP_Win32App::s_fromUTF8ToWinLocale(buddyDesc.utf8_str());
 			TV_INSERTSTRUCT tviBuddy;
@@ -288,8 +248,8 @@ void AP_Win32Dialog_CollaborationJoin::_setModel()
 			HTREEITEM htiBuddy = (HTREEITEM)SendMessage(m_hDocumentTreeview, TVM_INSERTITEM,0,(LPARAM)&tviBuddy);
 			m_mTreeItemHandles.insert(std::pair<HTREEITEM, ShareListItem>(htiBuddy, ShareListItem(pBuddy, NULL)));
 			
-			// Loop through documents for each buddy
-			for (const DocTreeItem* item = pBuddy->getDocTreeItems(); item; item = item->m_next)
+			// add all documents for this buddy
+			for (const DocTreeItem* item = docTreeItems; item; item = item->m_next)
 			{
 				UT_continue_if_fail(item->m_docHandle);
 				UT_UTF8String docDesc = item->m_docHandle->getName();
@@ -298,13 +258,12 @@ void AP_Win32Dialog_CollaborationJoin::_setModel()
 				UT_String sDocText = AP_Win32App::s_fromUTF8ToWinLocale(docDesc.utf8_str());
 				TV_INSERTSTRUCT tviDocument;
 				tviDocument.item.mask = TVIF_TEXT| TVIF_STATE; // text only right now
-				tviDocument.item.stateMask = TVIS_BOLD|TVIS_EXPANDED;
+				tviDocument.item.stateMask = TVIS_EXPANDED;
 				tviDocument.hInsertAfter = TVI_LAST;  // only insert at the end			
 				tviDocument.hParent = htiBuddy;
 				tviDocument.hInsertAfter = TVI_LAST;
 				tviDocument.item.pszText = const_cast<char*>(sDocText.c_str());
-				// if we are connected to this document, bold it.  Eventually checkboxes would be cooler, that's a TODO
-				tviDocument.item.state = pManager->isActive(item->m_docHandle->getSessionId()) ? TVIS_BOLD : TVIS_EXPANDED;
+				tviDocument.item.state = 0;
 				HTREEITEM htiDoc = (HTREEITEM)SendMessage(m_hDocumentTreeview, TVM_INSERTITEM, 0, (LPARAM)&tviDocument);
 				m_mTreeItemHandles.insert(std::pair<HTREEITEM, ShareListItem>(htiDoc, ShareListItem(pBuddy, item->m_docHandle)));
 			}
@@ -350,28 +309,21 @@ void AP_Win32Dialog_CollaborationJoin::_updateSelection()
 		if (cit->second.pDocHandle)
 		{
 			UT_DEBUGMSG(("Document selected\n"));
-			bool bIsConnected = pManager->isActive(cit->second.pDocHandle->getSessionId());
-			p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_DISCONNECT_BUTTON, bIsConnected );
-			p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_CONNECT_BUTTON, !bIsConnected );
-			p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_DELETE_BUTTON, false);
+			p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_OPEN_BUTTON, true );
 		}
 		else
 		{
 			UT_DEBUGMSG(("Buddy selected\n"));
-			p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_DISCONNECT_BUTTON, false);
-			p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_CONNECT_BUTTON, false);
-			p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_DELETE_BUTTON, true);
+			p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_OPEN_BUTTON, false);
 		}
 	}
 	else
 	{
-		p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_DISCONNECT_BUTTON, false);
-		p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_CONNECT_BUTTON, false);
-		p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_DELETE_BUTTON, false);
+		p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_OPEN_BUTTON, false);
 	}
 }
 
-void AP_Win32Dialog_CollaborationJoin::_setJoin(HTREEITEM hItem, bool joinStatus)
+void AP_Win32Dialog_CollaborationJoin::_eventOpen(HTREEITEM hItem)
 {
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_if_fail(pManager);
@@ -385,24 +337,8 @@ void AP_Win32Dialog_CollaborationJoin::_setJoin(HTREEITEM hItem, bool joinStatus
 	DocHandle* pDocHandle = cit->second.pDocHandle;
 	UT_return_if_fail(pDocHandle);
 
-	bool currentlyJoined = pManager->isActive(pDocHandle->getSessionId());
-	UT_return_if_fail(joinStatus != currentlyJoined);
-	
-	if (joinStatus)
-	{
-		UT_DEBUGMSG(("Got a document we can connect to!\n"));
-		m_answer = AP_Dialog_CollaborationJoin::a_CONNECT;
-		m_pBuddy = pBuddy;
-		m_pDocHandle = pDocHandle;
-		return;
-	}
-	
-	if (!joinStatus)
-	{
-		UT_DEBUGMSG(("Got a document we can disconnect from!\n"));
-		m_answer = AP_Dialog_CollaborationJoin::a_DISCONNECT;
-		m_pBuddy = pBuddy;
-		m_pDocHandle = pDocHandle;
-		return;
-	}
+	UT_DEBUGMSG(("Got a document we can connect to!\n"));
+	m_answer = AP_Dialog_CollaborationJoin::a_OPEN;
+	m_pBuddy = pBuddy;
+	m_pDocHandle = pDocHandle;
 }
