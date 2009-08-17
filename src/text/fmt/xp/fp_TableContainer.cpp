@@ -803,7 +803,6 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 	//
 	// This fix makes win32 look bad. FIXME fix this later
 	//
-	onePix = 0;
 	if((bRec.top + bRec.height) < 0)
 	{
 		return;

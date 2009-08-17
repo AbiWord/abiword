@@ -2910,8 +2910,8 @@ void GR_CairoGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 	UT_sint32 idy1 = _tduY(y1);
 	UT_sint32 idy2 = _tduY(y2);
 	
-	cairo_move_to (m_cr, idx1, idy1);
-	cairo_line_to (m_cr, idx2, idy2);
+	cairo_move_to (m_cr, static_cast<double>(idx1)+0.5, static_cast<double>(idy1)+0.5);
+	cairo_line_to (m_cr, static_cast<double>(idx2) +0.5 , static_cast<double>(idy2)+0.5);
 	cairo_stroke (m_cr);
 }
 
