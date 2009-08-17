@@ -24,12 +24,13 @@
 #include "ap_Dialog_PageSetup.h"
 #include "xap_Win32PropertySheet.h"
 #include "xap_Frame.h"
+#include "xap_Win32DialogBase.h"
 
 class AP_Win32Dialog_PageSetup;
 /*
 	Sheet
 */
-class ABI_EXPORT AP_Win32Dialog_PageSetup_Sheet: public XAP_Win32PropertySheet
+class ABI_EXPORT AP_Win32Dialog_PageSetup_Sheet: public XAP_Win32PropertySheet, XAP_Win32DialogBase
 {
 public:	
 		AP_Win32Dialog_PageSetup_Sheet();				
