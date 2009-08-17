@@ -239,9 +239,9 @@ void AP_Win32Dialog_CollaborationJoin::_setModel()
 
 			UT_String sBuddyText = AP_Win32App::s_fromUTF8ToWinLocale(buddyDesc.utf8_str());
 			TV_INSERTSTRUCT tviBuddy;
-			tviBuddy.item.mask = TVIF_TEXT| TVIF_STATE; // text only right now
-			tviBuddy.item.stateMask = TVIS_BOLD|TVIS_EXPANDED;
-			tviBuddy.hInsertAfter = TVI_LAST;  // only insert at the end			
+			tviBuddy.item.mask = TVIF_TEXT | TVIF_STATE; // text only right now
+			tviBuddy.item.stateMask = TVIS_EXPANDED;
+			tviBuddy.hInsertAfter = TVI_SORT;
 			tviBuddy.hParent = NULL; // top most level Item
 			tviBuddy.item.state = 0;
 			tviBuddy.item.pszText = const_cast<char*>(sBuddyText.c_str());
@@ -257,11 +257,10 @@ void AP_Win32Dialog_CollaborationJoin::_setModel()
 				
 				UT_String sDocText = AP_Win32App::s_fromUTF8ToWinLocale(docDesc.utf8_str());
 				TV_INSERTSTRUCT tviDocument;
-				tviDocument.item.mask = TVIF_TEXT| TVIF_STATE; // text only right now
+				tviDocument.item.mask = TVIF_TEXT | TVIF_STATE; // text only right now
 				tviDocument.item.stateMask = TVIS_EXPANDED;
-				tviDocument.hInsertAfter = TVI_LAST;  // only insert at the end			
+				tviDocument.hInsertAfter = TVI_SORT;
 				tviDocument.hParent = htiBuddy;
-				tviDocument.hInsertAfter = TVI_LAST;
 				tviDocument.item.pszText = const_cast<char*>(sDocText.c_str());
 				tviDocument.item.state = 0;
 				HTREEITEM htiDoc = (HTREEITEM)SendMessage(m_hDocumentTreeview, TVM_INSERTITEM, 0, (LPARAM)&tviDocument);
