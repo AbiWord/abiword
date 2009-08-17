@@ -666,6 +666,7 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 		        iFullHeight = iFullHeight - (iBot-iMaxHeight);
 		}
 		getFillType()->Fill(pG,srcX,srcY,x,y,getFullWidth(),iFullHeight);
+		m_bNeverDrawn = false;
 	}
 	UT_uint32 count = countCons();
 	UT_DEBUGMSG(("Number of containers in frame %d \n",count));

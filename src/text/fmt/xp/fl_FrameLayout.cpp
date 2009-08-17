@@ -691,6 +691,7 @@ void fl_FrameLayout::format(void)
 		pBL2 = pBL2->getNext();
 	}
 	static_cast<fp_FrameContainer *>(getFirstContainer())->layout();
+	bool bPlacedOnPage = false;
 	if(!m_bIsOnPage)
 	{
 //
@@ -745,28 +746,33 @@ void fl_FrameLayout::format(void)
 		}
 		if(!pBL->isCollapsed())
 		{
-		  m_bIsOnPage = pBL->setFramesOnPage(NULL);
-		  if(!m_bIsOnPage)
-		  {
-		    setNeedsReformat(this);
-		  }
+			m_bIsOnPage = pBL->setFramesOnPage(NULL);
+			if(!m_bIsOnPage)
+			{
+				setNeedsReformat(this);
+			}
 		}
+		if(m_bIsOnPage)
+			bPlacedOnPage = true;
 	}
 	m_bNeedsFormat = m_bIsOnPage;
 	m_bNeedsReformat = m_bIsOnPage;
 	if(!m_bIsOnPage)
 	{
-	  setNeedsReformat(this);
+		setNeedsReformat(this);
 	}
 	if(!m_bIsOnPage)
 	{
-	  return;
+		return;
 	}
-	fl_DocSectionLayout * pDSL = getDocSectionLayout();
-	fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(getFirstContainer());
-	if(pFC)
+	if(bPlacedOnPage)
 	{
-		pDSL->setNeedsSectionBreak(true,pFC->getPage());
+		fl_DocSectionLayout * pDSL = getDocSectionLayout();
+		fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(getFirstContainer());
+		if(pFC)
+		{
+			pDSL->setNeedsSectionBreak(true,pFC->getPage());
+		}
 	}
 }
 

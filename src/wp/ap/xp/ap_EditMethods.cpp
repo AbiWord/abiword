@@ -8320,6 +8320,7 @@ Defun1(cairoPrintPreview)
 	pDialog->releasePrinterGraphicsContext(pGraphics);
 	pView->clearCursorWait();
 	s_pLoadingFrame = NULL;
+	pView->setPoint(pView->getPoint());
 	pView->updateScreen(false);
 	pDialogFactory->releaseDialog(pDialog);
 	return true;

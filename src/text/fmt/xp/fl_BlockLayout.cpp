@@ -3674,7 +3674,7 @@ void fl_BlockLayout::format()
 				}
 			}
 		}
-		if(!isInShadow)
+		if(!isInShadow &&  (getSectionLayout()->getContainerType() != FL_CONTAINER_FRAME))
 		{
 			getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
 		}
@@ -6968,15 +6968,19 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 // Do this before all the required info is deleted.
 //
 	updateEnclosingBlockIfNeeded();
+	bool isInFrame = (getSectionLayout()->getContainerType() == FL_CONTAINER_FRAME);
 	fp_Container * pCon = getFirstContainer();
-	if(pCon)
+	if(!isInFrame)
 	{
-		fp_Page * pPage = pCon->getPage();
-		getDocSectionLayout()->setNeedsSectionBreak(true,pPage);
-	}
-	else
-	{
-		getDocSectionLayout()->setNeedsSectionBreak(true,NULL);
+		if(pCon)
+		{
+			fp_Page * pPage = pCon->getPage();
+			getDocSectionLayout()->setNeedsSectionBreak(true,pPage);
+		}
+		else
+		{
+			getDocSectionLayout()->setNeedsSectionBreak(true,NULL);
+		}
 	}
 	if(getPrev())
 	{
