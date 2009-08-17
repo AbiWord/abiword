@@ -239,7 +239,10 @@ pf_Frag * pf_Fragments::getNthFrag(UT_uint32 nthFrag) const
  * @returns pf_Frag * pointer to the Frag with position immediately before pos
 */
 pf_Frag * pf_Fragments::findFirstFragBeforePos(PT_DocPosition pos) const
-{
+{       
+	if (pos >= sizeDocument())
+		return NULL;
+
 	Iterator it = find(pos);
 	return it.value();
 }
