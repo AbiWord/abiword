@@ -1478,8 +1478,10 @@ void GR_CairoGraphics::_setProps()
 		double dashes[2];
 		double width;
 		int n_dashes;
-
-		cairo_set_line_width (m_cr, tduD(m_lineWidth));
+		width = tduD(m_lineWidth);
+		if(width < 1.0)
+			width = 1.0;
+		cairo_set_line_width (m_cr, width);
 		cairo_set_line_join (m_cr, mapJoinStyle(m_joinStyle));
 		cairo_set_line_cap (m_cr, mapCapStyle(m_capStyle));
 
@@ -2909,10 +2911,12 @@ void GR_CairoGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 
 	UT_sint32 idy1 = _tduY(y1);
 	UT_sint32 idy2 = _tduY(y2);
-	
-	cairo_move_to (m_cr, static_cast<double>(idx1)+0.5, static_cast<double>(idy1)+0.5);
-	cairo_line_to (m_cr, static_cast<double>(idx2) +0.5 , static_cast<double>(idy2)+0.5);
+	cairo_antialias_t prevAntiAlias = cairo_get_antialias(m_cr);
+	cairo_set_antialias(m_cr,CAIRO_ANTIALIAS_NONE);
+	cairo_move_to (m_cr,idx1, idy1);
+	cairo_line_to (m_cr,idx2, idy2);
 	cairo_stroke (m_cr);
+	cairo_set_antialias(m_cr,prevAntiAlias);
 }
 
 void GR_CairoGraphics::setLineWidth(UT_sint32 iLineWidth)

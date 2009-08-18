@@ -800,9 +800,11 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 	fp_Page * pPage = NULL;
 	_getBrokenRect(pBroke, pPage, bRec,getGraphics());
 	UT_sint32 onePix = getGraphics()->tlu(1)+1;
+	
 	//
 	// This fix makes win32 look bad. FIXME fix this later
 	//
+	onePix = 0.0;
 	if((bRec.top + bRec.height) < 0)
 	{
 		return;
@@ -1449,8 +1451,6 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG, bo
 			}
 			else
 		    {
-				extendLeftTop(lineTop,pG,iextTop);
-				extendLeftBot(lineBottom,pG,iextBot);
 				if(bTopScreen)
 					iextTop = 0;
 				if(bBotScreen)
@@ -1468,8 +1468,6 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG, bo
 			}
 			else
 			{
-				extendTopLeft(lineTop,pG,iextLeft);
-				extendTopRight(lineTop,pG,iextRight);
 				_drawLine(lineTop, iLeft-iextLeft, iTop, iRight+iextRight, iTop,pG);
 			}
 		}
@@ -1483,8 +1481,6 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG, bo
 			}
 			else
 			{
-				extendRightTop(lineRight,pG,iextTop);
-				extendRightBot(lineRight,pG,iextBot);
 				if(bTopScreen)
 					iextTop = 0;
 				if(bBotScreen)
@@ -1502,8 +1498,6 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG, bo
 			}
 			else
 			{
-				extendBotLeft(lineBottom,pG,iextLeft);
-				extendBotRight(lineBottom,pG,iextRight);
 				_drawLine(lineBottom, iLeft-iextLeft, iBot, iRight+iextRight, iBot,pG);
 			}
 		}
@@ -1516,6 +1510,10 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG, bo
  *
  * Extend the cell line at the left top corner if needed
  */
+#if 0
+//
+// These methods not needed for 2.8 but might be for 2.10
+//
 void  fp_CellContainer::extendLeftTop(PP_PropertyMap::Line & line,GR_Graphics * pG,UT_sint32 & iextTop)
 {
 	iextTop = 0;
@@ -1756,7 +1754,7 @@ void  fp_CellContainer::extendBotRight(PP_PropertyMap::Line & line,GR_Graphics *
 	UT_sint32 onePix = pG->tlu(1)+1;
 	iextRight += 3*onePix;
 }
-
+#endif
 
 /*!
  * Draw lines around neighbouring cells. Use to fix artifacts of editting.
