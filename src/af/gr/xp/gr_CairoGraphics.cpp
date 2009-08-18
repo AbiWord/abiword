@@ -2990,9 +2990,11 @@ void GR_CairoGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 		}
 		r.left = tlu(idx1);
 		r.top = tlu(idy1);
-		r.width = tlu(idx2 - idx1 +1);
+		r.width = tlu(idx2 - idx1 +2);
 		r.height = tlu(idy2 - idy1+2);
 		saveRectangle(r,m_iPrevRect);
+		cairo_antialias_t prevAntiAlias = cairo_get_antialias(m_cr);
+		cairo_set_antialias(m_cr,CAIRO_ANTIALIAS_NONE);
 		cairo_save(m_cr);
 		cairo_set_source_rgb(m_cr, 0.0 , 0.0 , 0.0);
 
@@ -3000,6 +3002,7 @@ void GR_CairoGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 		cairo_line_to(m_cr, idx2, idy2);
 		cairo_stroke(m_cr);
 		cairo_restore(m_cr);
+		cairo_set_antialias(m_cr,prevAntiAlias);
 	}
 }
 
@@ -3062,6 +3065,8 @@ void GR_CairoGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 							   UT_sint32 w, UT_sint32 h)
 {
 	_setProps();
+	cairo_antialias_t prevAntiAlias = cairo_get_antialias(m_cr);
+	cairo_set_antialias(m_cr,CAIRO_ANTIALIAS_NONE);
 	cairo_save(m_cr);
 
 	_setSource(m_cr, c);
@@ -3069,6 +3074,7 @@ void GR_CairoGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 	cairo_fill(m_cr);
 
 	cairo_restore(m_cr);
+	cairo_set_antialias(m_cr,prevAntiAlias);
 }
 
 /*!
@@ -3160,6 +3166,9 @@ void GR_CairoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint3
 {
 	_setProps();
 	UT_ASSERT(m_bHave3DColors && c < COUNT_3D_COLORS);
+	cairo_antialias_t prevAntiAlias = cairo_get_antialias(m_cr);
+	cairo_set_antialias(m_cr,CAIRO_ANTIALIAS_NONE);
+
 	cairo_save (m_cr);
 
 	_setSource(m_cr, m_3dColors[c]);
@@ -3167,6 +3176,7 @@ void GR_CairoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint3
 	cairo_fill(m_cr);
 
 	cairo_restore (m_cr);
+	cairo_set_antialias(m_cr,prevAntiAlias);
 }
 
 /*!
@@ -3179,7 +3189,8 @@ void GR_CairoGraphics::polygon(UT_RGBColor& c, UT_Point *pts,
 	UT_uint32 i;
 
 	UT_return_if_fail(nPoints > 1);
-
+	cairo_antialias_t prevAntiAlias = cairo_get_antialias(m_cr);
+	cairo_set_antialias(m_cr,CAIRO_ANTIALIAS_NONE);
 	cairo_save(m_cr);
 
 	i = 0;
@@ -3192,6 +3203,7 @@ void GR_CairoGraphics::polygon(UT_RGBColor& c, UT_Point *pts,
 	cairo_fill(m_cr);	
 
 	cairo_restore(m_cr);
+	cairo_set_antialias(m_cr,prevAntiAlias);
 }
 
 void GR_CairoGraphics::clearArea(UT_sint32 x, UT_sint32 y,

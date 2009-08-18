@@ -1858,7 +1858,7 @@ void AP_TopRuler::_drawCellMark(UT_Rect * prDrag, bool bUp)
 	UT_sint32 right = left + prDrag->width -m_pG->tlu(4);
 	UT_sint32 top = prDrag->top + m_pG->tlu(2);
 	UT_sint32 bot = top + prDrag->height - m_pG->tlu(4);
-	UT_DEBUGMSG(("Drawing Cell Mark left %d \n",left));
+	xxx_UT_DEBUGMSG(("Drawing Cell Mark left %d \n",left));
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
 	painter.drawLine(left,top,left,bot);
 	painter.drawLine(left,bot,right,bot);
@@ -1870,10 +1870,10 @@ void AP_TopRuler::_drawCellMark(UT_Rect * prDrag, bool bUp)
 // Draw a bevel up
 //
 		m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-		left += m_pG->tlu(1);
-		top += m_pG->tlu(1);
-		right -= m_pG->tlu(1);
-		bot -= m_pG->tlu(1);
+		left += (m_pG->tlu(1)+1);
+		top += (m_pG->tlu(1)+1);
+		right -= (m_pG->tlu(1)+1);
+		bot -= (m_pG->tlu(1)+1);
 		painter.drawLine(left,top,left,bot);
 		painter.drawLine(right,top,left,top);
 //
@@ -1881,7 +1881,9 @@ void AP_TopRuler::_drawCellMark(UT_Rect * prDrag, bool bUp)
 //
 		left += m_pG->tlu(1);
 		top += m_pG->tlu(1);
-		painter.fillRect(GR_Graphics::CLR3D_Background,left,top,right-left+m_pG->tlu(1),bot-top+m_pG->tlu(1));
+		right -= m_pG->tlu(1);
+		bot -= m_pG->tlu(1);
+		painter.fillRect(GR_Graphics::CLR3D_Background,left,top,right-left,bot-top);
 	}
 }
 
