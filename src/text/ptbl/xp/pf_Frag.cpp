@@ -123,6 +123,11 @@ void pf_Frag::_setNode(pf_Fragments::Node * pNode)
        m_pMyNode = pNode;
 }
 
+pf_Fragments::Node * pf_Frag::_getNode(void) const
+{
+       return m_pMyNode;
+}
+
 bool pf_Frag::createSpecialChangeRecord(PX_ChangeRecord ** /*ppcr*/,
 										   PT_DocPosition /*dpos*/) const
 {

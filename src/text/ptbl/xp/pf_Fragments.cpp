@@ -96,7 +96,6 @@ void pf_Fragments::appendFrag(pf_Frag * pf)
 
 	if ( m_pRoot == m_pLeaf ) //If tree is empty.
 	{
-		pf->setPos(0);
 		insertRoot(pf);	
 	}
 	else 
@@ -104,9 +103,7 @@ void pf_Fragments::appendFrag(pf_Frag * pf)
 		//Since this fragment is at the end of the document,
 		//we find the last piece and insert it to its right.
 		Iterator lastIt = find(sizeDocument()-1);
-		pf->setPos(sizeDocument());
 		insertRight(pf, lastIt);
-		
 	}
 
 	return;
@@ -134,11 +131,11 @@ void pf_Fragments::insertFrag(pf_Frag * pfPlace, pf_Frag * pfNew)
 	// insert the new fragment after the given fragment.
 	UT_return_if_fail (pfPlace);
 	UT_return_if_fail (pfNew);
+	UT_return_if_fail (pfPlace->_getNode());
 
 	xxx_UT_DEBUGMSG(("Inserting frag %x of type %d after frag %x of type %d\n",pfNew,pfNew->getType(),pfPlace,pfPlace->getType()));
 
-	pfNew->setPos(pfPlace->getPos() + pfPlace->getLength());
-	Iterator it = find(pfPlace->getPos());
+	Iterator it(this,pfPlace->_getNode());
 	insertRight(pfNew, it);
 }
 
@@ -147,11 +144,12 @@ void pf_Fragments::insertFragBefore(pf_Frag * pfPlace, pf_Frag * pfNew)
 	// insert the new fragment after the given fragment.
 	UT_return_if_fail (pfPlace);
 	UT_return_if_fail (pfNew);
+	UT_return_if_fail (pfPlace->_getNode());
 
 	xxx_UT_DEBUGMSG(("Inserting frag %x of type %d after frag %x of type %d\n",pfNew,pfNew->getType(),pfPlace,pfPlace->getType()));
 
 	pfNew->setPos(pfPlace->getPos() - 1);
-	Iterator it = find(pfPlace->getPos());
+	Iterator it(this,pfPlace->_getNode());
 	insertLeft(pfNew, it);
 }
 
@@ -470,7 +468,7 @@ pf_Fragments::insertRight(pf_Frag* new_piece, Iterator& it)
 	}
 
 	_insertFixup(pNewNode);
-
+	new_piece->_setNode(pNewNode);
 	return Iterator(this, pNewNode);
 }
 
@@ -515,7 +513,7 @@ pf_Fragments::insertLeft(pf_Frag* new_piece, Iterator& it)
 	}
 
 	_insertFixup(pNewNode);
-
+	new_piece->_setNode(pNewNode);
 	return Iterator(this, pNewNode);
 }
 

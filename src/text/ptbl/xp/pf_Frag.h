@@ -135,6 +135,7 @@ protected:
 
 private:
         void                    _setNode(pf_Fragments::Node * pNode);
+	pf_Fragments::Node *    _getNode(void) const;
 	mutable PT_DocPosition  m_docPos;
 	UT_uint32               m_iXID;
 	pf_Fragments::Node *    m_pMyNode;
