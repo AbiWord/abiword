@@ -21,8 +21,8 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-#include "pf_Fragments.h"
 #include "pf_Frag.h"
+#include "pf_Fragments.h"
 #include "ut_debugmsg.h"
 #include "pf_Frag_Strux.h"
 
@@ -30,43 +30,28 @@
 // Node
 ///////////////////////////////////////////
 
-struct pf_Fragments::Node
-{
-	enum Color { red, black } color;
-	pf_Frag* item;
-	Node* left;
-	Node* right;
-	Node* parent;
-
-	Node(Color c = red, pf_Frag* i = 0, Node* l = 0, Node* r = 0, Node* p = 0)
-		: color(c), item(i), left(l), right(r), parent(p) {}
 
 #ifdef DEBUG
-	void print()
-	{
-		if (!item)
-			return;
+void pf_Fragments::Node::print()
+{
+  if (!item)
+    return;
 				
-		printnl("%c (%i, %i)", color == red ? 'R' : 'B', item->size_left, item->size);
+  printf("%c (%i, %i) \n", color == red ? 'R' : 'B', item->m_leftTreeLength, item->m_length);
 
-		if (left && left->item)
-		{
-			printnl("--- left tree:");
-			++indent;
-			left->print();
-			--indent;
-		}
+  if (left && left->item)
+  {
+      printf("--- left tree:");
+      left->print();
+  }
 
-		if (right && right->item)
-		{
-			printnl("--- right tree:");
-			++indent;
-			right->print();
-			--indent;
-		}
-	}
+  if (right && right->item)
+  {
+      printf("--- right tree:");
+      right->print();
+  }
+}
 #endif
-};
 
 //////////////////////////////////////////////
 // End Node Defn.
@@ -1122,9 +1107,9 @@ pf_Fragments::checkSizeInvariant(const Node* pn, PT_DocPosition* size) const
 	if (!checkSizeInvariant(pn->right, &size_right))
 		return false;
 
-	if (pn->item->m_lengthLeft != m_lengthLeft)
+	if (pn->item->m_leftTreeLength != m_lengthLeft)
 	{
-		printf("A node reported as m_lengthLeft [%u], but the real size of its left subtree is [%u].\n", pn->item->m_lengthLeft, m_lengthLeft);
+		printf("A node reported as m_lengthLeft [%u], but the real size of its left subtree is [%u].\n", pn->item->m_leftTreeLength, m_lengthLeft);
 		return false;
 	}
 

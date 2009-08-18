@@ -24,9 +24,12 @@
 #include <stdio.h>
 #include "ut_types.h"
 #include "pt_Types.h"
+#include "pf_Fragments.h"
+
 class pt_PieceTable;
 class PX_ChangeRecord;
 class fd_Field;
+
 
 /*!
  pf_Frag represents a fragment of the document.  This may be text
@@ -41,6 +44,7 @@ class fd_Field;
 
 class ABI_EXPORT pf_Frag
 {
+  friend class            pf_Fragments;
 public:
 	typedef enum _PFType { PFT_Text = 0, PFT_Object, PFT_Strux, PFT_EndOfDoc, PFT_FmtMark } PFType;
 
@@ -57,7 +61,7 @@ public:
 	inline UT_uint32		getLength(void) const	{ return m_length; }
 	pt_PieceTable *			getPieceTable(void) const { return m_pPieceTable;}
 	fd_Field *				getField(void) const;
-	PT_DocPosition          getPos(void) const { return m_docPos;}
+	PT_DocPosition          getPos(void) const;
 	void                    setPos(PT_DocPosition pos) const { m_docPos = pos;}
 	PT_DocPosition          getLeftTreeLength(void) const   { return m_leftTreeLength; }
 	void                    setLeftTreeLength(PT_DocPosition length) { m_leftTreeLength = length;}
@@ -130,8 +134,10 @@ protected:
 	UT_uint32				m_length;	
 
 private:
+        void                    _setNode(pf_Fragments::Node * pNode);
 	mutable PT_DocPosition  m_docPos;
 	UT_uint32               m_iXID;
+	pf_Fragments::Node *    m_pMyNode;
 };
 
 #endif /* PF_FRAG_H */

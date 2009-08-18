@@ -32,12 +32,13 @@
 */
 
 #include <stdio.h>
-#include "pf_Frag.h"
 #include "ut_vector.h"
 #include "ut_types.h"
+class pf_Frag;
 
 class ABI_EXPORT pf_Fragments
 {
+  friend class pf_Frag;
 public:
 	pf_Fragments();
 	~pf_Fragments();
@@ -60,7 +61,22 @@ public:
 	void					__dump(FILE * fp) const;
 #endif
 
-	struct Node;	
+	struct  Node
+	{
+	          enum Color { red, black } color;
+	          pf_Frag* item;
+	          Node* left;
+	          Node* right;
+	          Node* parent;
+
+	          Node(Color c = red, pf_Frag* i = 0, Node* l = 0, Node* r = 0, Node* p = 0)
+		: color(c), item(i), left(l), right(r), parent(p) {}
+#ifdef DEBUG
+	  void         print(void);
+#endif
+	};
+
+	
 	class Iterator
 	{
 	public:
@@ -112,6 +128,7 @@ public:
 		const pf_Fragments* m_pOwner;
 		Node* m_pNode;
 		friend class pf_Fragments;
+		friend class pf_Frag;
 	};
 
 	Iterator find(PT_DocPosition pos) const; // throws ()

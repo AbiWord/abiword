@@ -32,7 +32,8 @@ pf_Frag::pf_Frag(pt_PieceTable * pPT, PFType type, UT_uint32 length):
 	m_indexAP(0),
 	m_length(length),
 	m_docPos(0),
-	m_iXID(0)
+	m_iXID(0),
+	m_pMyNode(NULL)
 {
 }
 
@@ -108,6 +109,20 @@ pf_Frag * pf_Frag::setPrev(pf_Frag * pPrev)
 	return pOld;
 }
 
+PT_DocPosition pf_Frag::getPos(void) const
+{
+       UT_return_val_if_fail(m_pMyNode,0);
+       pf_Fragments fragments = m_pPieceTable->getFragments();
+       const pf_Fragments::Iterator it(&fragments,m_pMyNode);
+       PT_DocPosition pos = fragments.documentPosition(it);
+       return pos;
+}
+
+void pf_Frag::_setNode(pf_Fragments::Node * pNode)
+{
+       m_pMyNode = pNode;
+}
+
 bool pf_Frag::createSpecialChangeRecord(PX_ChangeRecord ** /*ppcr*/,
 										   PT_DocPosition /*dpos*/) const
 {
@@ -128,18 +143,17 @@ fd_Field * pf_Frag::getField(void) const
 
 pf_Frag* pf_Frag::getNext(void) const
 {
-	pt_PieceTable* pt = m_pPieceTable;
-	pf_Fragments fragments = pt->getFragments();
-	pf_Fragments::Iterator it = fragments.find(m_docPos);
+        UT_return_val_if_fail(m_pMyNode,NULL);
+ 	pf_Fragments::Iterator it(&(m_pPieceTable->getFragments()),m_pMyNode);
 	it++;
 	return it.value();
 }
 
+
 pf_Frag* pf_Frag::getPrev(void) const
 {
-	pt_PieceTable* pt = m_pPieceTable;
-	pf_Fragments fragments = pt->getFragments();
-	pf_Fragments::Iterator it = fragments.find(m_docPos);
+        UT_return_val_if_fail(m_pMyNode,NULL);
+ 	pf_Fragments::Iterator it(&(m_pPieceTable->getFragments()),m_pMyNode);
 	it--;
 	return it.value();
 }
