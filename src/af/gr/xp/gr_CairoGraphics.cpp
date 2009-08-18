@@ -3010,6 +3010,8 @@ void GR_CairoGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 	UT_uint32 i;
 
 	UT_return_if_fail(nPoints > 1);
+	cairo_antialias_t prevAntiAlias = cairo_get_antialias(m_cr);
+	cairo_set_antialias(m_cr,CAIRO_ANTIALIAS_NONE);
 
 	i = 0;
 	cairo_move_to(m_cr, _tdudX(pts[i].x), _tdudY(pts[i].y));
@@ -3019,6 +3021,7 @@ void GR_CairoGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 		cairo_line_to(m_cr, _tdudX(pts[i].x), _tdudY(pts[i].y));
 	}
 	cairo_stroke(m_cr);
+	cairo_set_antialias(m_cr,prevAntiAlias);
 }
 
 void GR_CairoGraphics::invertRect(const UT_Rect* /* pRect */)
