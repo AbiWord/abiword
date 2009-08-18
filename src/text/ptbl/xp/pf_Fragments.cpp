@@ -148,7 +148,6 @@ void pf_Fragments::insertFragBefore(pf_Frag * pfPlace, pf_Frag * pfNew)
 
 	xxx_UT_DEBUGMSG(("Inserting frag %x of type %d after frag %x of type %d\n",pfNew,pfNew->getType(),pfPlace,pfPlace->getType()));
 
-	pfNew->setPos(pfPlace->getPos() - 1);
 	Iterator it(this,pfPlace->_getNode());
 	insertLeft(pfNew, it);
 }
@@ -159,7 +158,7 @@ void pf_Fragments::unlinkFrag(pf_Frag * pf)
 	
 	UT_return_if_fail (pf->getType() != pf_Frag::PFT_EndOfDoc);
 
-	Iterator it = find(pf->getPos());
+	Iterator it(this,pf->_getNode());
 	erase(it);
 }
 
@@ -182,7 +181,7 @@ void pf_Fragments::cleanFrags(void) const
 	PT_DocPosition sum = 0;
 	for (pf_Frag * pf = getFirst(); (pf); pf=pf->getNext())
 	{
-		pf->setPos(sum);
+	  // delete this		pf->setPos(sum);
 		sum += pf->getLength();
 		pfLast = pf;
 		m_vecFrags.addItem((void *) pf);

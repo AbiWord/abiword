@@ -25,13 +25,10 @@
 
 pf_Frag::pf_Frag(pt_PieceTable * pPT, PFType type, UT_uint32 length):
 	m_type(type),
-	m_next(NULL),
-	m_prev(NULL),
 	m_pField(NULL),
 	m_pPieceTable(pPT),
 	m_indexAP(0),
 	m_length(length),
-	m_docPos(0),
 	m_iXID(0),
 	m_pMyNode(NULL)
 {
@@ -93,20 +90,6 @@ bool pf_Frag::isContentEqual(const pf_Frag & f2) const
 		return false;
 	
 	return _isContentEqual(f2);
-}
-
-pf_Frag * pf_Frag::setNext(pf_Frag * pNext)
-{
-	pf_Frag * pOld = m_next;
-	m_next = pNext;
-	return pOld;
-}
-
-pf_Frag * pf_Frag::setPrev(pf_Frag * pPrev)
-{
-	pf_Frag * pOld = m_prev;
-	m_prev = pPrev;
-	return pOld;
 }
 
 PT_DocPosition pf_Frag::getPos(void) const

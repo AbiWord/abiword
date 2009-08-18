@@ -55,14 +55,11 @@ public:
 	pf_Frag *                       getNext(void) const;
 	pf_Frag *                       getPrev(void) const;
 
-	pf_Frag *				setNext(pf_Frag * pNext);
-	pf_Frag *				setPrev(pf_Frag * pPrev);
-
 	inline UT_uint32		getLength(void) const	{ return m_length; }
 	pt_PieceTable *			getPieceTable(void) const { return m_pPieceTable;}
 	fd_Field *				getField(void) const;
 	PT_DocPosition          getPos(void) const;
-	void                    setPos(PT_DocPosition pos) const { m_docPos = pos;}
+
 	PT_DocPosition          getLeftTreeLength(void) const   { return m_leftTreeLength; }
 	void                    setLeftTreeLength(PT_DocPosition length) { m_leftTreeLength = length;}
 
@@ -121,8 +118,6 @@ protected:
 	virtual bool            _isContentEqual(const pf_Frag & /*f2*/) const {return true;}
 	
 	PFType					m_type;
-	pf_Frag *				m_next;
-	pf_Frag *				m_prev;
 	
 	fd_Field *              m_pField;
 	pt_PieceTable *			m_pPieceTable;
@@ -136,7 +131,6 @@ protected:
 private:
         void                    _setNode(pf_Fragments::Node * pNode);
 	pf_Fragments::Node *    _getNode(void) const;
-	mutable PT_DocPosition  m_docPos;
 	UT_uint32               m_iXID;
 	pf_Fragments::Node *    m_pMyNode;
 };

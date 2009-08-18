@@ -705,7 +705,6 @@ void  AP_Dialog_Lists::generateFakeLabels(void)
 	{
 		DELETEP(m_pFakeLayout[i]);
 		m_pFakeSdh[i] = static_cast<PL_StruxDocHandle>(new pf_Frag_Strux_Block(NULL,0));
-		static_cast<const pf_Frag *>(m_pFakeSdh[i])->setPos(i);
 		m_pFakeLayout[i] = new fl_Layout((PTStruxType) 0 , (PL_StruxDocHandle) m_pFakeSdh[i] );
 	}
 	//
