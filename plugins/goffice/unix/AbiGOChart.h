@@ -26,8 +26,6 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 #include <goffice/goffice.h>
-#include <goffice/graph/gog-graph.h>
-#include <goffice/graph/gog-renderer.h>
 
 
 class GR_Graphics;
@@ -106,6 +104,7 @@ public:
 	void SetRun (fp_Run *pRun) {m_pRun = pRun;}
 	fp_Run *getRun () {return m_pRun;}
 	void SetGuru (GtkWidget *guru) {m_Guru = guru;}
+	UT_ByteBuf *exportToSVG ();
 private:
 	GR_GOChartManager  * m_pGOMan;
 	GogGraph *m_Graph;

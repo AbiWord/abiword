@@ -39,7 +39,7 @@
 #include "ie_imp_GOComponent.h"
 #include <math.h>
 #include <goffice/component/go-component-factory.h>
-#include <goffice/utils/go-file.h>
+#include <goffice/goffice.h>
 #include <gsf/gsf-libxml.h>
 
 static void changed_cb (GOComponent*, gpointer);

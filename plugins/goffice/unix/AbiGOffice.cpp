@@ -39,12 +39,6 @@
 #include "AbiGOChart.h"
 #include "AbiGOComponent.h"
 
-#include <goffice/app/error-info.h>
-#include <goffice/app/go-cmd-context-impl.h>
-#include <goffice/app/go-plugin.h>
-#include <goffice/app/go-plugin-loader-module.h>
-#include <goffice/data/go-data-simple.h>
-#include <goffice/utils/go-file.h>
 #include <goffice/component/go-component-factory.h>
 #include <gsf/gsf-impl-utils.h>
 

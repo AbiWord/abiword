@@ -23,7 +23,7 @@
 #define __gr_AbiGOffice_h__
 
 #include <glib-object.h>
-#include <goffice/app/goffice-app.h>
+#include <goffice/goffice.h>
 
 #define ABI_CMD_CONTEXT_TYPE		(abi_cmd_context_get_type ())
 GType		abi_cmd_context_get_type   (void);

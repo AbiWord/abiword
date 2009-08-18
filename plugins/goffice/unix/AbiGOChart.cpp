@@ -37,17 +37,10 @@
 #include "ap_Menu_Id.h"
 
 #include <gtk/gtk.h>
-#include <goffice/graph/gog-data-allocator.h>
-#include <goffice/graph/gog-series.h>
-#include <goffice/graph/gog-guru.h>
-#include <goffice/graph/gog-renderer.h>
-#include <goffice/graph/gog-data-set.h>
-#include <goffice/graph/gog-object-xml.h>
-#include <goffice/data/go-data-simple.h>
-#include <goffice/utils/go-locale.h>
 #include <gsf/gsf-impl-utils.h>
 #include <gsf/gsf-output-memory.h>
 #include <gsf/gsf-libxml.h>
+#include <cairo-svg.h>
 
 #define ABI_TYPE_CONTROL_GUI     (abi_control_gui_get_type ())
 #define ABI_CONTROL_GUI(obj)     (G_TYPE_CHECK_INSTANCE_CAST ((obj), ABI_TYPE_CONTROL_GUI, AbiControlGUI))
@@ -501,20 +494,42 @@ void GR_GOChartManager::makeSnapShot(UT_sint32 uid, UT_Rect & rec)
     }
   GR_AbiGOChartItems * pItem = m_vecItems.getNthItem(uid);
   UT_return_if_fail(pItem);  
+  GOChartView * pGOChartView = m_vecGOChartView.getNthItem(uid);
   const PP_AttrProp * pSpanAP = NULL;
   PT_AttrPropIndex api = pItem->m_iAPI;
   bool bHaveProp = m_pDoc->getAttrProp(api, &pSpanAP);
   UT_return_if_fail(bHaveProp);
   const char * pszDataID = NULL;
   pSpanAP->getAttribute("dataid", pszDataID);
-  if(pItem->m_bHasSnapshot)
+  UT_ByteBuf *pBuf;
+/* FIXME: don't enable this code until svg snapshot are supported
+  if ((pBuf = pGOChartView->exportToSVG ()))
     {
-       updatePNGSnapshot(static_cast<AD_Document *>(m_pDoc),rec,pszDataID);
+      UT_UTF8String sID = "snapshot-svg-";
+      sID += pszDataID;
+      if(pItem->m_bHasSnapshot)
+        {
+          m_pDoc->replaceDataItem(sID.utf8_str(),reinterpret_cast< const UT_ByteBuf *>(pBuf));
+        }
+      else
+        {
+          const char* mimetypeSVG = g_strdup("image/svg");
+          m_pDoc->createDataItem(sID.utf8_str(),false,reinterpret_cast< const UT_ByteBuf *>(pBuf),mimetypeSVG,NULL);
+          pItem->m_bHasSnapshot = true;
+        }
+      delete pBuf;
     }
-  else
+  else */
     {
-       createPNGSnapshot(static_cast<AD_Document *>(m_pDoc),rec,pszDataID);
-       pItem->m_bHasSnapshot = true;
+      if(pItem->m_bHasSnapshot)
+        {
+           updatePNGSnapshot(static_cast<AD_Document *>(m_pDoc),rec,pszDataID);
+        }
+      else
+        {
+           createPNGSnapshot(static_cast<AD_Document *>(m_pDoc),rec,pszDataID);
+           pItem->m_bHasSnapshot = true;
+        }
     }
 }
 
@@ -776,6 +791,20 @@ void GOChartView::render(UT_Rect & rec)
 	gog_renderer_render_to_cairo (m_Renderer, cr, _width, _height);
 	cairo_new_path (cr); // just in case a path has not been ended
 	cairo_restore (cr);
+}
+
+UT_ByteBuf *GOChartView::exportToSVG ()
+{
+	UT_return_val_if_fail (m_Graph, NULL);
+	UT_ByteBuf *pBuf = new UT_ByteBuf ();
+	cairo_surface_t *surface = cairo_svg_surface_create_for_stream (
+										reinterpret_cast<cairo_write_func_t>(UT_ByteBuf::CairoWrite),
+										pBuf, width, height);
+	cairo_t *cr = cairo_create (surface);
+	cairo_surface_destroy (surface);
+	gog_renderer_render_to_cairo (m_Renderer, cr, width, height);
+	cairo_destroy (cr);
+	return pBuf;
 }
 
 void GOChartView::loadBuffer(UT_UTF8String & sGOChartXML)
