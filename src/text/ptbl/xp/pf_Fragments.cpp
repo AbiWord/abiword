@@ -68,6 +68,7 @@ pf_Fragments::pf_Fragments()
 	  m_nDocumentSize(0)
 	  
 {
+  UT_DEBUGMSG(("Fragments created %p Root %p Leaf %p \n",this,m_pRoot,m_pLeaf));
 }
 
 pf_Fragments::~pf_Fragments()
@@ -93,7 +94,7 @@ void pf_Fragments::appendFrag(pf_Frag * pf)
 	// append a frag to the end of the list
 	
 	UT_return_if_fail (pf);
-
+	UT_DEBUGMSG(("AppendFrag %p of Type %d \n",pf,pf->getType()));
 	if ( m_pRoot == m_pLeaf ) //If tree is empty.
 	{
 		insertRoot(pf);	
@@ -114,6 +115,11 @@ void pf_Fragments::appendFrag(pf_Frag * pf)
  */ 
 pf_Frag * pf_Fragments::getFirst() const
 {
+  //
+  // If tree is empty return NULL;
+  //
+        if(m_pLeaf == m_pRoot)
+	  return NULL;
 	return find( 0 ).value();
 }
 
@@ -123,6 +129,11 @@ pf_Frag * pf_Fragments::getFirst() const
  */ 
 pf_Frag * pf_Fragments::getLast() const
 {
+  //
+  // If tree is empty return NULL;
+  //
+        if(m_pLeaf == m_pRoot)
+	  return NULL;
 	return find( sizeDocument() - 1 ).value();
 }
 
@@ -162,58 +173,6 @@ void pf_Fragments::unlinkFrag(pf_Frag * pf)
 	erase(it);
 }
 
-/*!
- * This method clears out and repopulates the vector of pointers to fragments.
- * It also sets the doc Positions of all the fragments.
- */
-void pf_Fragments::cleanFrags(void) const
-{
-	/*
-	 * ADITYA: In the new implementation with an rb-tree, this operation
-	 * need not do anything. Thus we return immediately.
-	 */
-	return;
-
-	if (m_vecFrags.getItemCount() > 0)
-		m_vecFrags.clear();
-
-	pf_Frag * pfLast = NULL;
-	PT_DocPosition sum = 0;
-	for (pf_Frag * pf = getFirst(); (pf); pf=pf->getNext())
-	{
-	  // delete this		pf->setPos(sum);
-		sum += pf->getLength();
-		pfLast = pf;
-		m_vecFrags.addItem((void *) pf);
-	}
-	
-	UT_return_if_fail (pfLast /*&& (pfLast->getType() == pf_Frag::PFT_EndOfDoc)*/);
-	xxx_UT_DEBUGMSG(("Found %d Frags dopos at end = %d \n",m_vecFrags.getItemCount(),getLast()->getPos()));
-	m_bAreFragsClean = true;
-	setCache(NULL);
-}
-
-pf_Frag * pf_Fragments::getNthFrag(UT_uint32 nthFrag) const
-{
-	if (areFragsDirty())
-	{
-		xxx_UT_DEBUGMSG(("JCA: getNthFrag (%d): Cleanning fragments ( O(n) complexity! )\n", nthFrag));
-		cleanFrags();
-	}
-	else 
-	{
-		xxx_UT_DEBUGMSG(("JCA: getNthFrag (%d): Don't need to clean fragments\n", nthFrag));
-	}
-	
-	if (m_vecFrags.getItemCount() > 0)
-	{
-		xxx_UT_DEBUGMSG(("JCA: getNthFrag (%d): returning frag %p\n", nthFrag, m_vecFrags.getNthItem(nthFrag)));
-		return (pf_Frag *) m_vecFrags.getNthItem(nthFrag);
-	}
-
-	return NULL;
-}
-
 
 /*!
  * Search the rb-tree to find the first frag before pos.
@@ -226,20 +185,25 @@ pf_Frag * pf_Fragments::findFirstFragBeforePos(PT_DocPosition pos) const
 		return NULL;
 
 	Iterator it = find(pos);
-	return it.value();
+	pf_Frag * pf = it.value();
+	return pf;
+}
+void pf_Fragments::cleanFrags(void) const
+{
+  return;
 }
 
 
 UT_uint32 pf_Fragments::getFragNumber(const pf_Frag * pf) const
 {
-	if (areFragsDirty())
-		cleanFrags();
-
-	return m_vecFrags.findItem((void *) pf);
+  UT_ASSERT(0);
+  return 0;
 }
 
 UT_uint32 pf_Fragments::getNumberOfFrags() const
 {
+  UT_ASSERT(0);
+  return 0;
 	if (areFragsDirty())
 	{
 		cleanFrags();
@@ -305,6 +269,7 @@ pf_Fragments::_insertBST(Node* pNewNode, PT_DocPosition pos)
 
 	if (pNode == m_pLeaf)
 	{
+	  
 		m_pRoot = pNewNode;
 		m_pRoot->color = Node::black;
 	}
@@ -443,14 +408,17 @@ pf_Fragments::insertRight(pf_Frag* new_piece, Iterator& it)
 	UT_ASSERT(m_nSize == 0 || it.is_valid());
 	
 	Node* pNewNode = new Node(Node::red, new_piece, m_pLeaf, m_pLeaf, 0);
-
+	UT_DEBUGMSG(("!!!!!! New node created %p item %p \n",pNewNode,pNewNode->item));
 	new_piece->setLeftTreeLength(0);
 	
 	++m_nSize;
 	m_nDocumentSize += new_piece->getLength();
 
 	if (!it.is_valid())
+	{
+	        UT_DEBUGMSG(("Root node set to %p \n",pNewNode));
 		m_pRoot = pNewNode;
+	}
 	else if (pNode->right == m_pLeaf)
 	{
 		pNode->right = pNewNode;
@@ -469,6 +437,7 @@ pf_Fragments::insertRight(pf_Frag* new_piece, Iterator& it)
 	}
 
 	_insertFixup(pNewNode);
+	UT_DEBUGMSG(("!!!!!! Frag %p NodeSet %p item %p \n",new_piece,pNewNode,pNewNode->item));
 	new_piece->_setNode(pNewNode);
 	return Iterator(this, pNewNode);
 }
@@ -495,7 +464,10 @@ pf_Fragments::insertLeft(pf_Frag* new_piece, Iterator& it)
 	m_nDocumentSize += new_piece->getLength();
 
 	if (!it.is_valid())
+	{
+	        UT_DEBUGMSG(("Root node set to %p \n",pNewNode));
 		m_pRoot = pNewNode;
+	}
 	else if (pNode->left == m_pLeaf)
 	{
 		pNode->left = pNewNode;
@@ -562,6 +534,7 @@ pf_Fragments::erase(Iterator& it)
 		  Thus, the line below is commented out.
 		*/
 		//delete pNode->item;
+	  UT_DEBUGMSG(("Set pNode %p item to %p \n",pNode,y->item));
 		pNode->item = y->item;
 		Iterator it_temp(this, pNode);
 		fixSize(it_temp);
@@ -715,10 +688,6 @@ pf_Fragments::Iterator
 pf_Fragments::find(PT_DocPosition pos) const
 {
 	Node* x = m_pRoot;
-	if(pos == 0)
-	{
-	        return Iterator(this, 0);
-	}
 	while (x != m_pLeaf)
 	{
 		pf_Frag* p = x->item;
@@ -809,7 +778,7 @@ const pf_Fragments::Node*
 pf_Fragments::_next(const Node* pn) const
 {
 	UT_ASSERT(pn != NULL);
-
+	
 	if (pn != m_pLeaf)
 	{
 		if (pn->right != m_pLeaf)
