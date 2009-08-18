@@ -739,7 +739,6 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 y,
 			// don't set bBOL to false here
 			bEOL = false;
 		}
-		pos += adjustCaretPosition(pos,true);
 		return;
 	}
 
@@ -768,7 +767,6 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 y,
 			// the correct place to do it.	2001.02.25 jskov
 			bEOL = true;
 		}
-		pos += adjustCaretPosition(pos,true);
 		return;
 	}
 
