@@ -61,16 +61,34 @@ public:
 	void					__dump(FILE * fp) const;
 #endif
 
-	struct  Node
+	class  Node
 	{
-	          enum Color { red, black } color;
-	          pf_Frag* item;
-	          Node* left;
-	          Node* right;
-	          Node* parent;
+	public:
+	          enum Color { red, black };
+	          Node(void)
+		    : color(red), 
+	              item(NULL), 
+                      left(NULL), 
+                      right(NULL), 
+                      parent(NULL) {}
+	          Node(Color c)
+		    : color(c), 
+	              item(NULL), 
+                      left(NULL), 
+                      right(NULL), 
+                      parent(NULL) {}
+		  Node(Color c, pf_Frag * pf, Node * l, Node * r, Node * p)
+		    : color(c), 
+	              item(pf), 
+                      left(l), 
+                      right(r), 
+                      parent(p) {}
+		    Color color;
+		    pf_Frag* item;
+		    Node* left;
+		    Node* right;
+		    Node* parent;
 
-	          Node(Color c = red, pf_Frag* i = 0, Node* l = 0, Node* r = 0, Node* p = 0)
-		: color(c), item(i), left(l), right(r), parent(p) {}
 #ifdef DEBUG
 	  void         print(void);
 #endif

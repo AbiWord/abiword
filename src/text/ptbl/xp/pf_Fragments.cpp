@@ -259,6 +259,8 @@ UT_uint32 pf_Fragments::getNumberOfFrags() const
 pf_Frag*
 pf_Fragments::Iterator::value()
 {
+        if(!m_pNode)
+	    return NULL;
 	return m_pNode->item;
 }
 
@@ -713,11 +715,18 @@ pf_Fragments::Iterator
 pf_Fragments::find(PT_DocPosition pos) const
 {
 	Node* x = m_pRoot;
-
+	if(pos == 0)
+	{
+	        return Iterator(this, 0);
+	}
 	while (x != m_pLeaf)
 	{
 		pf_Frag* p = x->item;
-		
+		if(p == NULL)
+		{
+		    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		    break;
+		}
 		if (p->getLeftTreeLength() > pos)
 			x = x->left;
 		else if (p->getLeftTreeLength() + p->getLength() > pos)
@@ -1009,7 +1018,9 @@ pf_Fragments::delete_tree(Node* node)
 	if (node->right != m_pLeaf)
 		delete_tree(node->right);
 
-	delete node->item;
+	//
+	// node->item (pf_Frag) is already deleted elsewhere
+	//
 	delete node;
 }
 
