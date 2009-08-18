@@ -1242,7 +1242,8 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 		case KEYWORD_docPart:
 		{
 			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "docPart") || 
-						  contextMatches(contextTag, NS_W_KEY, "placeholder");
+						  contextMatches(contextTag, NS_W_KEY, "placeholder") || 
+						  contextMatches(contextTag, NS_W_KEY, "docParts"); 
 			break;
 		}
 		case KEYWORD_docPartCategory:
@@ -1494,6 +1495,7 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 		case KEYWORD_type:
 		{
 			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "type") || 
+						  contextMatches(contextTag, NS_W_KEY, "types") ||
 						  contextMatches(contextTag, NS_W_KEY, "sectPr");
 			break;
 		}
@@ -1545,6 +1547,8 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 		{
 			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "name") || 
 						  contextMatches(contextTag, NS_W_KEY, "style") ||
+						  contextMatches(contextTag, NS_W_KEY, "category") ||
+						  contextMatches(contextTag, NS_W_KEY, "docPartPr") ||
 						  contextMatches(contextTag, NS_W_KEY, "abstractNum");
 			break;
 		}
@@ -1593,6 +1597,7 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 		case KEYWORD_style:
 		{
 			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "style") || 
+						  contextMatches(contextTag, NS_W_KEY, "docPartPr") ||
 						  contextMatches(contextTag, NS_W_KEY, "styles");
 			break;
 		}
@@ -2040,6 +2045,1031 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 			break;
 		}
 
+		//Section 2.12, Glossary Document
+		case KEYWORD_behavior:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "behavior") || 
+						  contextMatches(contextTag, NS_W_KEY, "behaviors");
+			break;
+		}
+		case KEYWORD_behaviors:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "behaviors") || 
+						  contextMatches(contextTag, NS_W_KEY, "docPartPr");
+			break;
+		}
+		case KEYWORD_category:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "category") || 
+						  contextMatches(contextTag, NS_W_KEY, "docPartPr");
+			break;
+		}
+		case KEYWORD_description:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "description") || 
+						  contextMatches(contextTag, NS_W_KEY, "docPartPr");
+			break;
+		}
+		case KEYWORD_docPartBody:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "docPartBody") || 
+						  contextMatches(contextTag, NS_W_KEY, "docPart");
+			break;
+		}
+		case KEYWORD_docPartPr:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "docPartPr") || 
+						  contextMatches(contextTag, NS_W_KEY, "docPart");
+			break;
+		}
+		case KEYWORD_docParts:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "docParts") || 
+						  contextMatches(contextTag, NS_W_KEY, "glossaryDocument");
+			break;
+		}
+		case KEYWORD_gallery:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "gallery") || 
+						  contextMatches(contextTag, NS_W_KEY, "category");
+			break;
+		}
+		case KEYWORD_glossaryDocument:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "glossaryDocument");
+			break;
+		}
+		case KEYWORD_guid:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "guid") || 
+						  contextMatches(contextTag, NS_W_KEY, "docPartPr");
+			break;
+		}
+		case KEYWORD_types:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "types") || 
+						  contextMatches(contextTag, NS_W_KEY, "docPartPr");
+			break;
+		}
+
+		//Section 2.13, Annotations
+		case KEYWORD_annotationRef:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "annotationRef") || 
+						  contextMatches(contextTag, NS_W_KEY, "r");
+			break;
+		}
+		case KEYWORD_comment:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "comment") || 
+						  contextMatches(contextTag, NS_W_KEY, "comments");
+			break;
+		}
+		case KEYWORD_commentRangeEnd:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "commentRangeEnd") || 
+						  contextMatches(contextTag, NS_W_KEY, "body") ||
+						  contextMatches(contextTag, NS_W_KEY, "comment") ||
+						  contextMatches(contextTag, NS_W_KEY, "customXml") ||
+						  contextMatches(contextTag, NS_W_KEY, "deg") ||
+						  contextMatches(contextTag, NS_W_KEY, "del") ||
+						  contextMatches(contextTag, NS_W_KEY, "den") ||
+						  contextMatches(contextTag, NS_W_KEY, "docPartBody") ||
+						  contextMatches(contextTag, NS_W_KEY, "e") ||
+						  contextMatches(contextTag, NS_W_KEY, "endnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "fldSimple") ||
+						  contextMatches(contextTag, NS_W_KEY, "fName") ||
+						  contextMatches(contextTag, NS_W_KEY, "footnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "ftr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hdr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hyperlink") ||
+						  contextMatches(contextTag, NS_W_KEY, "ins") ||
+						  contextMatches(contextTag, NS_W_KEY, "lim") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveFrom") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveTo") ||
+						  contextMatches(contextTag, NS_W_KEY, "num") ||
+						  contextMatches(contextTag, NS_W_KEY, "oMath") ||
+						  contextMatches(contextTag, NS_W_KEY, "p") ||
+						  contextMatches(contextTag, NS_W_KEY, "rt") ||
+						  contextMatches(contextTag, NS_W_KEY, "rubyBase") ||
+						  contextMatches(contextTag, NS_W_KEY, "sdtContent") ||
+						  contextMatches(contextTag, NS_W_KEY, "smartTag") ||
+						  contextMatches(contextTag, NS_W_KEY, "sub") ||
+						  contextMatches(contextTag, NS_W_KEY, "sup") ||
+						  contextMatches(contextTag, NS_W_KEY, "tbl") ||
+						  contextMatches(contextTag, NS_W_KEY, "tr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tc") ||
+						  contextMatches(contextTag, NS_W_KEY, "txbxContent");
+			break;
+		}
+		case KEYWORD_commentRangeStart:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "commentRangeStart") || 
+						  contextMatches(contextTag, NS_W_KEY, "body") ||
+						  contextMatches(contextTag, NS_W_KEY, "comment") ||
+						  contextMatches(contextTag, NS_W_KEY, "customXml") ||
+						  contextMatches(contextTag, NS_W_KEY, "deg") ||
+						  contextMatches(contextTag, NS_W_KEY, "del") ||
+						  contextMatches(contextTag, NS_W_KEY, "den") ||
+						  contextMatches(contextTag, NS_W_KEY, "docPartBody") ||
+						  contextMatches(contextTag, NS_W_KEY, "e") ||
+						  contextMatches(contextTag, NS_W_KEY, "endnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "fldSimple") ||
+						  contextMatches(contextTag, NS_W_KEY, "fName") ||
+						  contextMatches(contextTag, NS_W_KEY, "footnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "ftr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hdr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hyperlink") ||
+						  contextMatches(contextTag, NS_W_KEY, "ins") ||
+						  contextMatches(contextTag, NS_W_KEY, "lim") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveFrom") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveTo") ||
+						  contextMatches(contextTag, NS_W_KEY, "num") ||
+						  contextMatches(contextTag, NS_W_KEY, "oMath") ||
+						  contextMatches(contextTag, NS_W_KEY, "p") ||
+						  contextMatches(contextTag, NS_W_KEY, "rt") ||
+						  contextMatches(contextTag, NS_W_KEY, "rubyBase") ||
+						  contextMatches(contextTag, NS_W_KEY, "sdtContent") ||
+						  contextMatches(contextTag, NS_W_KEY, "smartTag") ||
+						  contextMatches(contextTag, NS_W_KEY, "sub") ||
+						  contextMatches(contextTag, NS_W_KEY, "sup") ||
+						  contextMatches(contextTag, NS_W_KEY, "tbl") ||
+						  contextMatches(contextTag, NS_W_KEY, "tr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tc") ||
+						  contextMatches(contextTag, NS_W_KEY, "txbxContent");
+			break;
+		}
+		case KEYWORD_commentReference:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "commentReference") || 
+						  contextMatches(contextTag, NS_W_KEY, "r");
+			break;
+		}
+		case KEYWORD_comments:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "comments");
+			break;
+		}
+		case KEYWORD_cellDel:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "cellDel") || 
+						  contextMatches(contextTag, NS_W_KEY, "tcPr");
+			break;
+		}
+		case KEYWORD_cellIns:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "cellIns") || 
+						  contextMatches(contextTag, NS_W_KEY, "tcPr");
+			break;
+		}
+		case KEYWORD_cellMerge:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "cellMerge") || 
+						  contextMatches(contextTag, NS_W_KEY, "tcPr");
+			break;
+		}
+		case KEYWORD_customXmlDelRangeEnd:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "customXmlDelRangeEnd") || 
+						  contextMatches(contextTag, NS_W_KEY, "body") ||
+						  contextMatches(contextTag, NS_W_KEY, "comment") ||
+						  contextMatches(contextTag, NS_W_KEY, "customXml") ||
+						  contextMatches(contextTag, NS_W_KEY, "deg") ||
+						  contextMatches(contextTag, NS_W_KEY, "del") ||
+						  contextMatches(contextTag, NS_W_KEY, "den") ||
+						  contextMatches(contextTag, NS_W_KEY, "docPartBody") ||
+						  contextMatches(contextTag, NS_W_KEY, "e") ||
+						  contextMatches(contextTag, NS_W_KEY, "endnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "fldSimple") ||
+						  contextMatches(contextTag, NS_W_KEY, "fName") ||
+						  contextMatches(contextTag, NS_W_KEY, "footnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "ftr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hdr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hyperlink") ||
+						  contextMatches(contextTag, NS_W_KEY, "ins") ||
+						  contextMatches(contextTag, NS_W_KEY, "lim") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveFrom") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveTo") ||
+						  contextMatches(contextTag, NS_W_KEY, "num") ||
+						  contextMatches(contextTag, NS_W_KEY, "oMath") ||
+						  contextMatches(contextTag, NS_W_KEY, "p") ||
+						  contextMatches(contextTag, NS_W_KEY, "rt") ||
+						  contextMatches(contextTag, NS_W_KEY, "rubyBase") ||
+						  contextMatches(contextTag, NS_W_KEY, "sdtContent") ||
+						  contextMatches(contextTag, NS_W_KEY, "smartTag") ||
+						  contextMatches(contextTag, NS_W_KEY, "sub") ||
+						  contextMatches(contextTag, NS_W_KEY, "sup") ||
+						  contextMatches(contextTag, NS_W_KEY, "tbl") ||
+						  contextMatches(contextTag, NS_W_KEY, "tr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tc") ||
+						  contextMatches(contextTag, NS_W_KEY, "txbxContent");
+			break;
+		}
+		case KEYWORD_customXmlDelRangeStart:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "customXmlDelRangeStart") || 
+						  contextMatches(contextTag, NS_W_KEY, "body") ||
+						  contextMatches(contextTag, NS_W_KEY, "comment") ||
+						  contextMatches(contextTag, NS_W_KEY, "customXml") ||
+						  contextMatches(contextTag, NS_W_KEY, "deg") ||
+						  contextMatches(contextTag, NS_W_KEY, "del") ||
+						  contextMatches(contextTag, NS_W_KEY, "den") ||
+						  contextMatches(contextTag, NS_W_KEY, "docPartBody") ||
+						  contextMatches(contextTag, NS_W_KEY, "e") ||
+						  contextMatches(contextTag, NS_W_KEY, "endnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "fldSimple") ||
+						  contextMatches(contextTag, NS_W_KEY, "fName") ||
+						  contextMatches(contextTag, NS_W_KEY, "footnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "ftr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hdr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hyperlink") ||
+						  contextMatches(contextTag, NS_W_KEY, "ins") ||
+						  contextMatches(contextTag, NS_W_KEY, "lim") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveFrom") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveTo") ||
+						  contextMatches(contextTag, NS_W_KEY, "num") ||
+						  contextMatches(contextTag, NS_W_KEY, "oMath") ||
+						  contextMatches(contextTag, NS_W_KEY, "p") ||
+						  contextMatches(contextTag, NS_W_KEY, "rt") ||
+						  contextMatches(contextTag, NS_W_KEY, "rubyBase") ||
+						  contextMatches(contextTag, NS_W_KEY, "sdtContent") ||
+						  contextMatches(contextTag, NS_W_KEY, "smartTag") ||
+						  contextMatches(contextTag, NS_W_KEY, "sub") ||
+						  contextMatches(contextTag, NS_W_KEY, "sup") ||
+						  contextMatches(contextTag, NS_W_KEY, "tbl") ||
+						  contextMatches(contextTag, NS_W_KEY, "tr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tc") ||
+						  contextMatches(contextTag, NS_W_KEY, "txbxContent");
+			break;
+		}
+		case KEYWORD_customXmlInsRangeEnd:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "customXmlInsRangeEnd") || 
+						  contextMatches(contextTag, NS_W_KEY, "body") ||
+						  contextMatches(contextTag, NS_W_KEY, "comment") ||
+						  contextMatches(contextTag, NS_W_KEY, "customXml") ||
+						  contextMatches(contextTag, NS_W_KEY, "deg") ||
+						  contextMatches(contextTag, NS_W_KEY, "del") ||
+						  contextMatches(contextTag, NS_W_KEY, "den") ||
+						  contextMatches(contextTag, NS_W_KEY, "docPartBody") ||
+						  contextMatches(contextTag, NS_W_KEY, "e") ||
+						  contextMatches(contextTag, NS_W_KEY, "endnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "fldSimple") ||
+						  contextMatches(contextTag, NS_W_KEY, "fName") ||
+						  contextMatches(contextTag, NS_W_KEY, "footnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "ftr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hdr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hyperlink") ||
+						  contextMatches(contextTag, NS_W_KEY, "ins") ||
+						  contextMatches(contextTag, NS_W_KEY, "lim") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveFrom") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveTo") ||
+						  contextMatches(contextTag, NS_W_KEY, "num") ||
+						  contextMatches(contextTag, NS_W_KEY, "oMath") ||
+						  contextMatches(contextTag, NS_W_KEY, "p") ||
+						  contextMatches(contextTag, NS_W_KEY, "rt") ||
+						  contextMatches(contextTag, NS_W_KEY, "rubyBase") ||
+						  contextMatches(contextTag, NS_W_KEY, "sdtContent") ||
+						  contextMatches(contextTag, NS_W_KEY, "smartTag") ||
+						  contextMatches(contextTag, NS_W_KEY, "sub") ||
+						  contextMatches(contextTag, NS_W_KEY, "sup") ||
+						  contextMatches(contextTag, NS_W_KEY, "tbl") ||
+						  contextMatches(contextTag, NS_W_KEY, "tr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tc") ||
+						  contextMatches(contextTag, NS_W_KEY, "txbxContent");
+			break;
+		}
+		case KEYWORD_customXmlInsRangeStart:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "customXmlInsRangeStart") || 
+						  contextMatches(contextTag, NS_W_KEY, "body") ||
+						  contextMatches(contextTag, NS_W_KEY, "comment") ||
+						  contextMatches(contextTag, NS_W_KEY, "customXml") ||
+						  contextMatches(contextTag, NS_W_KEY, "deg") ||
+						  contextMatches(contextTag, NS_W_KEY, "del") ||
+						  contextMatches(contextTag, NS_W_KEY, "den") ||
+						  contextMatches(contextTag, NS_W_KEY, "docPartBody") ||
+						  contextMatches(contextTag, NS_W_KEY, "e") ||
+						  contextMatches(contextTag, NS_W_KEY, "endnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "fldSimple") ||
+						  contextMatches(contextTag, NS_W_KEY, "fName") ||
+						  contextMatches(contextTag, NS_W_KEY, "footnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "ftr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hdr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hyperlink") ||
+						  contextMatches(contextTag, NS_W_KEY, "ins") ||
+						  contextMatches(contextTag, NS_W_KEY, "lim") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveFrom") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveTo") ||
+						  contextMatches(contextTag, NS_W_KEY, "num") ||
+						  contextMatches(contextTag, NS_W_KEY, "oMath") ||
+						  contextMatches(contextTag, NS_W_KEY, "p") ||
+						  contextMatches(contextTag, NS_W_KEY, "rt") ||
+						  contextMatches(contextTag, NS_W_KEY, "rubyBase") ||
+						  contextMatches(contextTag, NS_W_KEY, "sdtContent") ||
+						  contextMatches(contextTag, NS_W_KEY, "smartTag") ||
+						  contextMatches(contextTag, NS_W_KEY, "sub") ||
+						  contextMatches(contextTag, NS_W_KEY, "sup") ||
+						  contextMatches(contextTag, NS_W_KEY, "tbl") ||
+						  contextMatches(contextTag, NS_W_KEY, "tr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tc") ||
+						  contextMatches(contextTag, NS_W_KEY, "txbxContent");
+			break;
+		}
+		case KEYWORD_customXmlMoveFromRangeEnd:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "customXmlMoveFromRangeEnd") || 
+						  contextMatches(contextTag, NS_W_KEY, "body") ||
+						  contextMatches(contextTag, NS_W_KEY, "comment") ||
+						  contextMatches(contextTag, NS_W_KEY, "customXml") ||
+						  contextMatches(contextTag, NS_W_KEY, "deg") ||
+						  contextMatches(contextTag, NS_W_KEY, "del") ||
+						  contextMatches(contextTag, NS_W_KEY, "den") ||
+						  contextMatches(contextTag, NS_W_KEY, "docPartBody") ||
+						  contextMatches(contextTag, NS_W_KEY, "e") ||
+						  contextMatches(contextTag, NS_W_KEY, "endnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "fldSimple") ||
+						  contextMatches(contextTag, NS_W_KEY, "fName") ||
+						  contextMatches(contextTag, NS_W_KEY, "footnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "ftr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hdr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hyperlink") ||
+						  contextMatches(contextTag, NS_W_KEY, "ins") ||
+						  contextMatches(contextTag, NS_W_KEY, "lim") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveFrom") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveTo") ||
+						  contextMatches(contextTag, NS_W_KEY, "num") ||
+						  contextMatches(contextTag, NS_W_KEY, "oMath") ||
+						  contextMatches(contextTag, NS_W_KEY, "p") ||
+						  contextMatches(contextTag, NS_W_KEY, "rt") ||
+						  contextMatches(contextTag, NS_W_KEY, "rubyBase") ||
+						  contextMatches(contextTag, NS_W_KEY, "sdtContent") ||
+						  contextMatches(contextTag, NS_W_KEY, "smartTag") ||
+						  contextMatches(contextTag, NS_W_KEY, "sub") ||
+						  contextMatches(contextTag, NS_W_KEY, "sup") ||
+						  contextMatches(contextTag, NS_W_KEY, "tbl") ||
+						  contextMatches(contextTag, NS_W_KEY, "tr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tc") ||
+						  contextMatches(contextTag, NS_W_KEY, "txbxContent");
+			break;
+		}
+		case KEYWORD_customXmlMoveFromRangeStart:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "customXmlMoveFromRangeStart") || 
+						  contextMatches(contextTag, NS_W_KEY, "body") ||
+						  contextMatches(contextTag, NS_W_KEY, "comment") ||
+						  contextMatches(contextTag, NS_W_KEY, "customXml") ||
+						  contextMatches(contextTag, NS_W_KEY, "deg") ||
+						  contextMatches(contextTag, NS_W_KEY, "del") ||
+						  contextMatches(contextTag, NS_W_KEY, "den") ||
+						  contextMatches(contextTag, NS_W_KEY, "docPartBody") ||
+						  contextMatches(contextTag, NS_W_KEY, "e") ||
+						  contextMatches(contextTag, NS_W_KEY, "endnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "fldSimple") ||
+						  contextMatches(contextTag, NS_W_KEY, "fName") ||
+						  contextMatches(contextTag, NS_W_KEY, "footnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "ftr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hdr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hyperlink") ||
+						  contextMatches(contextTag, NS_W_KEY, "ins") ||
+						  contextMatches(contextTag, NS_W_KEY, "lim") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveFrom") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveTo") ||
+						  contextMatches(contextTag, NS_W_KEY, "num") ||
+						  contextMatches(contextTag, NS_W_KEY, "oMath") ||
+						  contextMatches(contextTag, NS_W_KEY, "p") ||
+						  contextMatches(contextTag, NS_W_KEY, "rt") ||
+						  contextMatches(contextTag, NS_W_KEY, "rubyBase") ||
+						  contextMatches(contextTag, NS_W_KEY, "sdtContent") ||
+						  contextMatches(contextTag, NS_W_KEY, "smartTag") ||
+						  contextMatches(contextTag, NS_W_KEY, "sub") ||
+						  contextMatches(contextTag, NS_W_KEY, "sup") ||
+						  contextMatches(contextTag, NS_W_KEY, "tbl") ||
+						  contextMatches(contextTag, NS_W_KEY, "tr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tc") ||
+						  contextMatches(contextTag, NS_W_KEY, "txbxContent");
+			break;
+		}
+		case KEYWORD_customXmlMoveToRangeEnd:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "customXmlMoveToRangeEnd") || 
+						  contextMatches(contextTag, NS_W_KEY, "body") ||
+						  contextMatches(contextTag, NS_W_KEY, "comment") ||
+						  contextMatches(contextTag, NS_W_KEY, "customXml") ||
+						  contextMatches(contextTag, NS_W_KEY, "deg") ||
+						  contextMatches(contextTag, NS_W_KEY, "del") ||
+						  contextMatches(contextTag, NS_W_KEY, "den") ||
+						  contextMatches(contextTag, NS_W_KEY, "docPartBody") ||
+						  contextMatches(contextTag, NS_W_KEY, "e") ||
+						  contextMatches(contextTag, NS_W_KEY, "endnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "fldSimple") ||
+						  contextMatches(contextTag, NS_W_KEY, "fName") ||
+						  contextMatches(contextTag, NS_W_KEY, "footnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "ftr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hdr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hyperlink") ||
+						  contextMatches(contextTag, NS_W_KEY, "ins") ||
+						  contextMatches(contextTag, NS_W_KEY, "lim") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveFrom") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveTo") ||
+						  contextMatches(contextTag, NS_W_KEY, "num") ||
+						  contextMatches(contextTag, NS_W_KEY, "oMath") ||
+						  contextMatches(contextTag, NS_W_KEY, "p") ||
+						  contextMatches(contextTag, NS_W_KEY, "rt") ||
+						  contextMatches(contextTag, NS_W_KEY, "rubyBase") ||
+						  contextMatches(contextTag, NS_W_KEY, "sdtContent") ||
+						  contextMatches(contextTag, NS_W_KEY, "smartTag") ||
+						  contextMatches(contextTag, NS_W_KEY, "sub") ||
+						  contextMatches(contextTag, NS_W_KEY, "sup") ||
+						  contextMatches(contextTag, NS_W_KEY, "tbl") ||
+						  contextMatches(contextTag, NS_W_KEY, "tr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tc") ||
+						  contextMatches(contextTag, NS_W_KEY, "txbxContent");
+			break;
+		}
+		case KEYWORD_customXmlMoveToRangeStart:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "customXmlMoveToRangeStart") || 
+						  contextMatches(contextTag, NS_W_KEY, "body") ||
+						  contextMatches(contextTag, NS_W_KEY, "comment") ||
+						  contextMatches(contextTag, NS_W_KEY, "customXml") ||
+						  contextMatches(contextTag, NS_W_KEY, "deg") ||
+						  contextMatches(contextTag, NS_W_KEY, "del") ||
+						  contextMatches(contextTag, NS_W_KEY, "den") ||
+						  contextMatches(contextTag, NS_W_KEY, "docPartBody") ||
+						  contextMatches(contextTag, NS_W_KEY, "e") ||
+						  contextMatches(contextTag, NS_W_KEY, "endnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "fldSimple") ||
+						  contextMatches(contextTag, NS_W_KEY, "fName") ||
+						  contextMatches(contextTag, NS_W_KEY, "footnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "ftr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hdr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hyperlink") ||
+						  contextMatches(contextTag, NS_W_KEY, "ins") ||
+						  contextMatches(contextTag, NS_W_KEY, "lim") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveFrom") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveTo") ||
+						  contextMatches(contextTag, NS_W_KEY, "num") ||
+						  contextMatches(contextTag, NS_W_KEY, "oMath") ||
+						  contextMatches(contextTag, NS_W_KEY, "p") ||
+						  contextMatches(contextTag, NS_W_KEY, "rt") ||
+						  contextMatches(contextTag, NS_W_KEY, "rubyBase") ||
+						  contextMatches(contextTag, NS_W_KEY, "sdtContent") ||
+						  contextMatches(contextTag, NS_W_KEY, "smartTag") ||
+						  contextMatches(contextTag, NS_W_KEY, "sub") ||
+						  contextMatches(contextTag, NS_W_KEY, "sup") ||
+						  contextMatches(contextTag, NS_W_KEY, "tbl") ||
+						  contextMatches(contextTag, NS_W_KEY, "tr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tc") ||
+						  contextMatches(contextTag, NS_W_KEY, "txbxContent");
+			break;
+		}
+		case KEYWORD_del:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "del") || 
+						  contextMatches(contextTag, NS_W_KEY, "body") ||
+						  contextMatches(contextTag, NS_W_KEY, "comment") ||
+						  contextMatches(contextTag, NS_W_KEY, "customXml") ||
+						  contextMatches(contextTag, NS_W_KEY, "deg") ||
+						  contextMatches(contextTag, NS_W_KEY, "del") ||
+						  contextMatches(contextTag, NS_W_KEY, "den") ||
+						  contextMatches(contextTag, NS_W_KEY, "docPartBody") ||
+						  contextMatches(contextTag, NS_W_KEY, "e") ||
+						  contextMatches(contextTag, NS_W_KEY, "endnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "fldSimple") ||
+						  contextMatches(contextTag, NS_W_KEY, "fName") ||
+						  contextMatches(contextTag, NS_W_KEY, "footnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "ftr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hdr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hyperlink") ||
+						  contextMatches(contextTag, NS_W_KEY, "ins") ||
+						  contextMatches(contextTag, NS_W_KEY, "lim") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveFrom") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveTo") ||
+						  contextMatches(contextTag, NS_W_KEY, "num") ||
+						  contextMatches(contextTag, NS_W_KEY, "oMath") ||
+						  contextMatches(contextTag, NS_W_KEY, "p") ||
+						  contextMatches(contextTag, NS_W_KEY, "rt") ||
+						  contextMatches(contextTag, NS_W_KEY, "rubyBase") ||
+						  contextMatches(contextTag, NS_W_KEY, "sdtContent") ||
+						  contextMatches(contextTag, NS_W_KEY, "smartTag") ||
+						  contextMatches(contextTag, NS_W_KEY, "sub") ||
+						  contextMatches(contextTag, NS_W_KEY, "sup") ||
+						  contextMatches(contextTag, NS_W_KEY, "tbl") ||
+						  contextMatches(contextTag, NS_W_KEY, "tr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tc") ||
+						  contextMatches(contextTag, NS_W_KEY, "rPr") ||
+						  contextMatches(contextTag, NS_W_KEY, "trPr") ||
+						  contextMatches(contextTag, NS_W_KEY, "ctrlPr") ||
+						  contextMatches(contextTag, NS_W_KEY, "numPr") ||
+						  contextMatches(contextTag, NS_W_KEY, "txbxContent");
+			break;
+		}
+		case KEYWORD_ins:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "ins") || 
+						  contextMatches(contextTag, NS_W_KEY, "body") ||
+						  contextMatches(contextTag, NS_W_KEY, "comment") ||
+						  contextMatches(contextTag, NS_W_KEY, "customXml") ||
+						  contextMatches(contextTag, NS_W_KEY, "deg") ||
+						  contextMatches(contextTag, NS_W_KEY, "del") ||
+						  contextMatches(contextTag, NS_W_KEY, "den") ||
+						  contextMatches(contextTag, NS_W_KEY, "docPartBody") ||
+						  contextMatches(contextTag, NS_W_KEY, "e") ||
+						  contextMatches(contextTag, NS_W_KEY, "endnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "fldSimple") ||
+						  contextMatches(contextTag, NS_W_KEY, "fName") ||
+						  contextMatches(contextTag, NS_W_KEY, "footnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "ftr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hdr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hyperlink") ||
+						  contextMatches(contextTag, NS_W_KEY, "ins") ||
+						  contextMatches(contextTag, NS_W_KEY, "lim") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveFrom") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveTo") ||
+						  contextMatches(contextTag, NS_W_KEY, "num") ||
+						  contextMatches(contextTag, NS_W_KEY, "oMath") ||
+						  contextMatches(contextTag, NS_W_KEY, "p") ||
+						  contextMatches(contextTag, NS_W_KEY, "rt") ||
+						  contextMatches(contextTag, NS_W_KEY, "rubyBase") ||
+						  contextMatches(contextTag, NS_W_KEY, "sdtContent") ||
+						  contextMatches(contextTag, NS_W_KEY, "smartTag") ||
+						  contextMatches(contextTag, NS_W_KEY, "sub") ||
+						  contextMatches(contextTag, NS_W_KEY, "sup") ||
+						  contextMatches(contextTag, NS_W_KEY, "tbl") ||
+						  contextMatches(contextTag, NS_W_KEY, "tr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tc") ||
+						  contextMatches(contextTag, NS_W_KEY, "rPr") ||
+						  contextMatches(contextTag, NS_W_KEY, "trPr") ||
+						  contextMatches(contextTag, NS_W_KEY, "ctrlPr") ||
+						  contextMatches(contextTag, NS_W_KEY, "txbxContent");
+			break;
+		}
+		case KEYWORD_moveFrom:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "moveFrom") || 
+						  contextMatches(contextTag, NS_W_KEY, "body") ||
+						  contextMatches(contextTag, NS_W_KEY, "comment") ||
+						  contextMatches(contextTag, NS_W_KEY, "customXml") ||
+						  contextMatches(contextTag, NS_W_KEY, "deg") ||
+						  contextMatches(contextTag, NS_W_KEY, "del") ||
+						  contextMatches(contextTag, NS_W_KEY, "den") ||
+						  contextMatches(contextTag, NS_W_KEY, "docPartBody") ||
+						  contextMatches(contextTag, NS_W_KEY, "e") ||
+						  contextMatches(contextTag, NS_W_KEY, "endnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "fldSimple") ||
+						  contextMatches(contextTag, NS_W_KEY, "fName") ||
+						  contextMatches(contextTag, NS_W_KEY, "footnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "ftr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hdr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hyperlink") ||
+						  contextMatches(contextTag, NS_W_KEY, "ins") ||
+						  contextMatches(contextTag, NS_W_KEY, "lim") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveFrom") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveTo") ||
+						  contextMatches(contextTag, NS_W_KEY, "num") ||
+						  contextMatches(contextTag, NS_W_KEY, "oMath") ||
+						  contextMatches(contextTag, NS_W_KEY, "p") ||
+						  contextMatches(contextTag, NS_W_KEY, "rt") ||
+						  contextMatches(contextTag, NS_W_KEY, "rubyBase") ||
+						  contextMatches(contextTag, NS_W_KEY, "sdtContent") ||
+						  contextMatches(contextTag, NS_W_KEY, "smartTag") ||
+						  contextMatches(contextTag, NS_W_KEY, "sub") ||
+						  contextMatches(contextTag, NS_W_KEY, "sup") ||
+						  contextMatches(contextTag, NS_W_KEY, "tbl") ||
+						  contextMatches(contextTag, NS_W_KEY, "tr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tc") ||
+						  contextMatches(contextTag, NS_W_KEY, "rPr") ||
+						  contextMatches(contextTag, NS_W_KEY, "txbxContent");
+			break;
+		}
+		case KEYWORD_moveFromRangeEnd:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "moveFromRangeEnd") || 
+						  contextMatches(contextTag, NS_W_KEY, "body") ||
+						  contextMatches(contextTag, NS_W_KEY, "comment") ||
+						  contextMatches(contextTag, NS_W_KEY, "customXml") ||
+						  contextMatches(contextTag, NS_W_KEY, "deg") ||
+						  contextMatches(contextTag, NS_W_KEY, "del") ||
+						  contextMatches(contextTag, NS_W_KEY, "den") ||
+						  contextMatches(contextTag, NS_W_KEY, "docPartBody") ||
+						  contextMatches(contextTag, NS_W_KEY, "e") ||
+						  contextMatches(contextTag, NS_W_KEY, "endnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "fldSimple") ||
+						  contextMatches(contextTag, NS_W_KEY, "fName") ||
+						  contextMatches(contextTag, NS_W_KEY, "footnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "ftr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hdr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hyperlink") ||
+						  contextMatches(contextTag, NS_W_KEY, "ins") ||
+						  contextMatches(contextTag, NS_W_KEY, "lim") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveFrom") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveTo") ||
+						  contextMatches(contextTag, NS_W_KEY, "num") ||
+						  contextMatches(contextTag, NS_W_KEY, "oMath") ||
+						  contextMatches(contextTag, NS_W_KEY, "p") ||
+						  contextMatches(contextTag, NS_W_KEY, "rt") ||
+						  contextMatches(contextTag, NS_W_KEY, "rubyBase") ||
+						  contextMatches(contextTag, NS_W_KEY, "sdtContent") ||
+						  contextMatches(contextTag, NS_W_KEY, "smartTag") ||
+						  contextMatches(contextTag, NS_W_KEY, "sub") ||
+						  contextMatches(contextTag, NS_W_KEY, "sup") ||
+						  contextMatches(contextTag, NS_W_KEY, "tbl") ||
+						  contextMatches(contextTag, NS_W_KEY, "tr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tc") ||
+						  contextMatches(contextTag, NS_W_KEY, "txbxContent");
+			break;
+		}
+		case KEYWORD_moveFromRangeStart:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "moveFromRangeStart") || 
+						  contextMatches(contextTag, NS_W_KEY, "body") ||
+						  contextMatches(contextTag, NS_W_KEY, "comment") ||
+						  contextMatches(contextTag, NS_W_KEY, "customXml") ||
+						  contextMatches(contextTag, NS_W_KEY, "deg") ||
+						  contextMatches(contextTag, NS_W_KEY, "del") ||
+						  contextMatches(contextTag, NS_W_KEY, "den") ||
+						  contextMatches(contextTag, NS_W_KEY, "docPartBody") ||
+						  contextMatches(contextTag, NS_W_KEY, "e") ||
+						  contextMatches(contextTag, NS_W_KEY, "endnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "fldSimple") ||
+						  contextMatches(contextTag, NS_W_KEY, "fName") ||
+						  contextMatches(contextTag, NS_W_KEY, "footnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "ftr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hdr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hyperlink") ||
+						  contextMatches(contextTag, NS_W_KEY, "ins") ||
+						  contextMatches(contextTag, NS_W_KEY, "lim") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveFrom") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveTo") ||
+						  contextMatches(contextTag, NS_W_KEY, "num") ||
+						  contextMatches(contextTag, NS_W_KEY, "oMath") ||
+						  contextMatches(contextTag, NS_W_KEY, "p") ||
+						  contextMatches(contextTag, NS_W_KEY, "rt") ||
+						  contextMatches(contextTag, NS_W_KEY, "rubyBase") ||
+						  contextMatches(contextTag, NS_W_KEY, "sdtContent") ||
+						  contextMatches(contextTag, NS_W_KEY, "smartTag") ||
+						  contextMatches(contextTag, NS_W_KEY, "sub") ||
+						  contextMatches(contextTag, NS_W_KEY, "sup") ||
+						  contextMatches(contextTag, NS_W_KEY, "tbl") ||
+						  contextMatches(contextTag, NS_W_KEY, "tr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tc") ||
+						  contextMatches(contextTag, NS_W_KEY, "txbxContent");
+			break;
+		}
+		case KEYWORD_moveTo:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "moveTo") || 
+						  contextMatches(contextTag, NS_W_KEY, "body") ||
+						  contextMatches(contextTag, NS_W_KEY, "comment") ||
+						  contextMatches(contextTag, NS_W_KEY, "customXml") ||
+						  contextMatches(contextTag, NS_W_KEY, "deg") ||
+						  contextMatches(contextTag, NS_W_KEY, "del") ||
+						  contextMatches(contextTag, NS_W_KEY, "den") ||
+						  contextMatches(contextTag, NS_W_KEY, "docPartBody") ||
+						  contextMatches(contextTag, NS_W_KEY, "e") ||
+						  contextMatches(contextTag, NS_W_KEY, "endnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "fldSimple") ||
+						  contextMatches(contextTag, NS_W_KEY, "fName") ||
+						  contextMatches(contextTag, NS_W_KEY, "footnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "ftr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hdr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hyperlink") ||
+						  contextMatches(contextTag, NS_W_KEY, "ins") ||
+						  contextMatches(contextTag, NS_W_KEY, "lim") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveFrom") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveTo") ||
+						  contextMatches(contextTag, NS_W_KEY, "num") ||
+						  contextMatches(contextTag, NS_W_KEY, "oMath") ||
+						  contextMatches(contextTag, NS_W_KEY, "p") ||
+						  contextMatches(contextTag, NS_W_KEY, "rt") ||
+						  contextMatches(contextTag, NS_W_KEY, "rubyBase") ||
+						  contextMatches(contextTag, NS_W_KEY, "sdtContent") ||
+						  contextMatches(contextTag, NS_W_KEY, "smartTag") ||
+						  contextMatches(contextTag, NS_W_KEY, "sub") ||
+						  contextMatches(contextTag, NS_W_KEY, "sup") ||
+						  contextMatches(contextTag, NS_W_KEY, "tbl") ||
+						  contextMatches(contextTag, NS_W_KEY, "tr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tc") ||
+						  contextMatches(contextTag, NS_W_KEY, "rPr") ||
+						  contextMatches(contextTag, NS_W_KEY, "txbxContent");
+			break;
+		}
+		case KEYWORD_moveToRangeEnd:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "moveToRangeEnd") || 
+						  contextMatches(contextTag, NS_W_KEY, "body") ||
+						  contextMatches(contextTag, NS_W_KEY, "comment") ||
+						  contextMatches(contextTag, NS_W_KEY, "customXml") ||
+						  contextMatches(contextTag, NS_W_KEY, "deg") ||
+						  contextMatches(contextTag, NS_W_KEY, "del") ||
+						  contextMatches(contextTag, NS_W_KEY, "den") ||
+						  contextMatches(contextTag, NS_W_KEY, "docPartBody") ||
+						  contextMatches(contextTag, NS_W_KEY, "e") ||
+						  contextMatches(contextTag, NS_W_KEY, "endnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "fldSimple") ||
+						  contextMatches(contextTag, NS_W_KEY, "fName") ||
+						  contextMatches(contextTag, NS_W_KEY, "footnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "ftr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hdr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hyperlink") ||
+						  contextMatches(contextTag, NS_W_KEY, "ins") ||
+						  contextMatches(contextTag, NS_W_KEY, "lim") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveFrom") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveTo") ||
+						  contextMatches(contextTag, NS_W_KEY, "num") ||
+						  contextMatches(contextTag, NS_W_KEY, "oMath") ||
+						  contextMatches(contextTag, NS_W_KEY, "p") ||
+						  contextMatches(contextTag, NS_W_KEY, "rt") ||
+						  contextMatches(contextTag, NS_W_KEY, "rubyBase") ||
+						  contextMatches(contextTag, NS_W_KEY, "sdtContent") ||
+						  contextMatches(contextTag, NS_W_KEY, "smartTag") ||
+						  contextMatches(contextTag, NS_W_KEY, "sub") ||
+						  contextMatches(contextTag, NS_W_KEY, "sup") ||
+						  contextMatches(contextTag, NS_W_KEY, "tbl") ||
+						  contextMatches(contextTag, NS_W_KEY, "tr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tc") ||
+						  contextMatches(contextTag, NS_W_KEY, "txbxContent");
+			break;
+		}
+		case KEYWORD_moveToRangeStart:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "moveToRangeStart") || 
+						  contextMatches(contextTag, NS_W_KEY, "body") ||
+						  contextMatches(contextTag, NS_W_KEY, "comment") ||
+						  contextMatches(contextTag, NS_W_KEY, "customXml") ||
+						  contextMatches(contextTag, NS_W_KEY, "deg") ||
+						  contextMatches(contextTag, NS_W_KEY, "del") ||
+						  contextMatches(contextTag, NS_W_KEY, "den") ||
+						  contextMatches(contextTag, NS_W_KEY, "docPartBody") ||
+						  contextMatches(contextTag, NS_W_KEY, "e") ||
+						  contextMatches(contextTag, NS_W_KEY, "endnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "fldSimple") ||
+						  contextMatches(contextTag, NS_W_KEY, "fName") ||
+						  contextMatches(contextTag, NS_W_KEY, "footnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "ftr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hdr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hyperlink") ||
+						  contextMatches(contextTag, NS_W_KEY, "ins") ||
+						  contextMatches(contextTag, NS_W_KEY, "lim") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveFrom") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveTo") ||
+						  contextMatches(contextTag, NS_W_KEY, "num") ||
+						  contextMatches(contextTag, NS_W_KEY, "oMath") ||
+						  contextMatches(contextTag, NS_W_KEY, "p") ||
+						  contextMatches(contextTag, NS_W_KEY, "rt") ||
+						  contextMatches(contextTag, NS_W_KEY, "rubyBase") ||
+						  contextMatches(contextTag, NS_W_KEY, "sdtContent") ||
+						  contextMatches(contextTag, NS_W_KEY, "smartTag") ||
+						  contextMatches(contextTag, NS_W_KEY, "sub") ||
+						  contextMatches(contextTag, NS_W_KEY, "sup") ||
+						  contextMatches(contextTag, NS_W_KEY, "tbl") ||
+						  contextMatches(contextTag, NS_W_KEY, "tr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tc") ||
+						  contextMatches(contextTag, NS_W_KEY, "txbxContent");
+			break;
+		}
+		case KEYWORD_numberingChange:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "numberingChange") || 
+						  contextMatches(contextTag, NS_W_KEY, "fldChar") ||
+						  contextMatches(contextTag, NS_W_KEY, "numPr");
+			break;
+		}
+		case KEYWORD_pPrChange:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "pPrChange") || 
+						  contextMatches(contextTag, NS_W_KEY, "pPr");
+			break;
+		}
+		case KEYWORD_rPrChange:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "rPrChange") || 
+						  contextMatches(contextTag, NS_W_KEY, "rPr");
+			break;
+		}
+		case KEYWORD_sectPrChange:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "sectPrChange") || 
+						  contextMatches(contextTag, NS_W_KEY, "sectPr");
+			break;
+		}
+		case KEYWORD_tblGridChange:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "tblGridChange") || 
+						  contextMatches(contextTag, NS_W_KEY, "tblGrid");
+			break;
+		}
+		case KEYWORD_tblPrChange:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "tblPrChange") || 
+						  contextMatches(contextTag, NS_W_KEY, "tblPr");
+			break;
+		}
+		case KEYWORD_tblPrExChange:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "tblPrExChange") || 
+						  contextMatches(contextTag, NS_W_KEY, "tblPrEx");
+			break;
+		}
+		case KEYWORD_tcPrChange:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "tcPrChange") || 
+						  contextMatches(contextTag, NS_W_KEY, "tcPr");
+			break;
+		}
+		case KEYWORD_trPrChange:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "trPrChange") || 
+						  contextMatches(contextTag, NS_W_KEY, "trPr");
+			break;
+		}
+		case KEYWORD_bookmarkEnd:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "bookmarkEnd") || 
+						  contextMatches(contextTag, NS_W_KEY, "body") ||
+						  contextMatches(contextTag, NS_W_KEY, "comment") ||
+						  contextMatches(contextTag, NS_W_KEY, "customXml") ||
+						  contextMatches(contextTag, NS_W_KEY, "deg") ||
+						  contextMatches(contextTag, NS_W_KEY, "del") ||
+						  contextMatches(contextTag, NS_W_KEY, "den") ||
+						  contextMatches(contextTag, NS_W_KEY, "docPartBody") ||
+						  contextMatches(contextTag, NS_W_KEY, "e") ||
+						  contextMatches(contextTag, NS_W_KEY, "endnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "fldSimple") ||
+						  contextMatches(contextTag, NS_W_KEY, "fName") ||
+						  contextMatches(contextTag, NS_W_KEY, "footnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "ftr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hdr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hyperlink") ||
+						  contextMatches(contextTag, NS_W_KEY, "ins") ||
+						  contextMatches(contextTag, NS_W_KEY, "lim") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveFrom") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveTo") ||
+						  contextMatches(contextTag, NS_W_KEY, "num") ||
+						  contextMatches(contextTag, NS_W_KEY, "oMath") ||
+						  contextMatches(contextTag, NS_W_KEY, "p") ||
+						  contextMatches(contextTag, NS_W_KEY, "rt") ||
+						  contextMatches(contextTag, NS_W_KEY, "rubyBase") ||
+						  contextMatches(contextTag, NS_W_KEY, "sdtContent") ||
+						  contextMatches(contextTag, NS_W_KEY, "smartTag") ||
+						  contextMatches(contextTag, NS_W_KEY, "sub") ||
+						  contextMatches(contextTag, NS_W_KEY, "sup") ||
+						  contextMatches(contextTag, NS_W_KEY, "tbl") ||
+						  contextMatches(contextTag, NS_W_KEY, "tr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tc") ||
+						  contextMatches(contextTag, NS_W_KEY, "txbxContent");
+			break;
+		}
+		case KEYWORD_bookmarkStart:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "bookmarkStart") || 
+						  contextMatches(contextTag, NS_W_KEY, "body") ||
+						  contextMatches(contextTag, NS_W_KEY, "comment") ||
+						  contextMatches(contextTag, NS_W_KEY, "customXml") ||
+						  contextMatches(contextTag, NS_W_KEY, "deg") ||
+						  contextMatches(contextTag, NS_W_KEY, "del") ||
+						  contextMatches(contextTag, NS_W_KEY, "den") ||
+						  contextMatches(contextTag, NS_W_KEY, "docPartBody") ||
+						  contextMatches(contextTag, NS_W_KEY, "e") ||
+						  contextMatches(contextTag, NS_W_KEY, "endnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "fldSimple") ||
+						  contextMatches(contextTag, NS_W_KEY, "fName") ||
+						  contextMatches(contextTag, NS_W_KEY, "footnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "ftr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hdr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hyperlink") ||
+						  contextMatches(contextTag, NS_W_KEY, "ins") ||
+						  contextMatches(contextTag, NS_W_KEY, "lim") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveFrom") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveTo") ||
+						  contextMatches(contextTag, NS_W_KEY, "num") ||
+						  contextMatches(contextTag, NS_W_KEY, "oMath") ||
+						  contextMatches(contextTag, NS_W_KEY, "p") ||
+						  contextMatches(contextTag, NS_W_KEY, "rt") ||
+						  contextMatches(contextTag, NS_W_KEY, "rubyBase") ||
+						  contextMatches(contextTag, NS_W_KEY, "sdtContent") ||
+						  contextMatches(contextTag, NS_W_KEY, "smartTag") ||
+						  contextMatches(contextTag, NS_W_KEY, "sub") ||
+						  contextMatches(contextTag, NS_W_KEY, "sup") ||
+						  contextMatches(contextTag, NS_W_KEY, "tbl") ||
+						  contextMatches(contextTag, NS_W_KEY, "tr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tc") ||
+						  contextMatches(contextTag, NS_W_KEY, "txbxContent");
+			break;
+		}
+		case KEYWORD_permEnd:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "permEnd") || 
+						  contextMatches(contextTag, NS_W_KEY, "body") ||
+						  contextMatches(contextTag, NS_W_KEY, "comment") ||
+						  contextMatches(contextTag, NS_W_KEY, "customXml") ||
+						  contextMatches(contextTag, NS_W_KEY, "deg") ||
+						  contextMatches(contextTag, NS_W_KEY, "del") ||
+						  contextMatches(contextTag, NS_W_KEY, "den") ||
+						  contextMatches(contextTag, NS_W_KEY, "docPartBody") ||
+						  contextMatches(contextTag, NS_W_KEY, "e") ||
+						  contextMatches(contextTag, NS_W_KEY, "endnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "fldSimple") ||
+						  contextMatches(contextTag, NS_W_KEY, "fName") ||
+						  contextMatches(contextTag, NS_W_KEY, "footnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "ftr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hdr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hyperlink") ||
+						  contextMatches(contextTag, NS_W_KEY, "ins") ||
+						  contextMatches(contextTag, NS_W_KEY, "lim") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveFrom") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveTo") ||
+						  contextMatches(contextTag, NS_W_KEY, "num") ||
+						  contextMatches(contextTag, NS_W_KEY, "oMath") ||
+						  contextMatches(contextTag, NS_W_KEY, "p") ||
+						  contextMatches(contextTag, NS_W_KEY, "rt") ||
+						  contextMatches(contextTag, NS_W_KEY, "rubyBase") ||
+						  contextMatches(contextTag, NS_W_KEY, "sdtContent") ||
+						  contextMatches(contextTag, NS_W_KEY, "smartTag") ||
+						  contextMatches(contextTag, NS_W_KEY, "sub") ||
+						  contextMatches(contextTag, NS_W_KEY, "sup") ||
+						  contextMatches(contextTag, NS_W_KEY, "tbl") ||
+						  contextMatches(contextTag, NS_W_KEY, "tr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tc") ||
+						  contextMatches(contextTag, NS_W_KEY, "txbxContent");
+			break;
+		}
+		case KEYWORD_permStart:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "permStart") || 
+						  contextMatches(contextTag, NS_W_KEY, "body") ||
+						  contextMatches(contextTag, NS_W_KEY, "comment") ||
+						  contextMatches(contextTag, NS_W_KEY, "customXml") ||
+						  contextMatches(contextTag, NS_W_KEY, "deg") ||
+						  contextMatches(contextTag, NS_W_KEY, "del") ||
+						  contextMatches(contextTag, NS_W_KEY, "den") ||
+						  contextMatches(contextTag, NS_W_KEY, "docPartBody") ||
+						  contextMatches(contextTag, NS_W_KEY, "e") ||
+						  contextMatches(contextTag, NS_W_KEY, "endnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "fldSimple") ||
+						  contextMatches(contextTag, NS_W_KEY, "fName") ||
+						  contextMatches(contextTag, NS_W_KEY, "footnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "ftr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hdr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hyperlink") ||
+						  contextMatches(contextTag, NS_W_KEY, "ins") ||
+						  contextMatches(contextTag, NS_W_KEY, "lim") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveFrom") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveTo") ||
+						  contextMatches(contextTag, NS_W_KEY, "num") ||
+						  contextMatches(contextTag, NS_W_KEY, "oMath") ||
+						  contextMatches(contextTag, NS_W_KEY, "p") ||
+						  contextMatches(contextTag, NS_W_KEY, "rt") ||
+						  contextMatches(contextTag, NS_W_KEY, "rubyBase") ||
+						  contextMatches(contextTag, NS_W_KEY, "sdtContent") ||
+						  contextMatches(contextTag, NS_W_KEY, "smartTag") ||
+						  contextMatches(contextTag, NS_W_KEY, "sub") ||
+						  contextMatches(contextTag, NS_W_KEY, "sup") ||
+						  contextMatches(contextTag, NS_W_KEY, "tbl") ||
+						  contextMatches(contextTag, NS_W_KEY, "tr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tc") ||
+						  contextMatches(contextTag, NS_W_KEY, "txbxContent");
+			break;
+		}
+		case KEYWORD_proofErr:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "proofErr") || 
+						  contextMatches(contextTag, NS_W_KEY, "body") ||
+						  contextMatches(contextTag, NS_W_KEY, "comment") ||
+						  contextMatches(contextTag, NS_W_KEY, "customXml") ||
+						  contextMatches(contextTag, NS_W_KEY, "deg") ||
+						  contextMatches(contextTag, NS_W_KEY, "del") ||
+						  contextMatches(contextTag, NS_W_KEY, "den") ||
+						  contextMatches(contextTag, NS_W_KEY, "docPartBody") ||
+						  contextMatches(contextTag, NS_W_KEY, "e") ||
+						  contextMatches(contextTag, NS_W_KEY, "endnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "fldSimple") ||
+						  contextMatches(contextTag, NS_W_KEY, "fName") ||
+						  contextMatches(contextTag, NS_W_KEY, "footnote") ||
+						  contextMatches(contextTag, NS_W_KEY, "ftr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hdr") ||
+						  contextMatches(contextTag, NS_W_KEY, "hyperlink") ||
+						  contextMatches(contextTag, NS_W_KEY, "ins") ||
+						  contextMatches(contextTag, NS_W_KEY, "lim") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveFrom") ||
+						  contextMatches(contextTag, NS_W_KEY, "moveTo") ||
+						  contextMatches(contextTag, NS_W_KEY, "num") ||
+						  contextMatches(contextTag, NS_W_KEY, "oMath") ||
+						  contextMatches(contextTag, NS_W_KEY, "p") ||
+						  contextMatches(contextTag, NS_W_KEY, "rt") ||
+						  contextMatches(contextTag, NS_W_KEY, "rubyBase") ||
+						  contextMatches(contextTag, NS_W_KEY, "sdtContent") ||
+						  contextMatches(contextTag, NS_W_KEY, "smartTag") ||
+						  contextMatches(contextTag, NS_W_KEY, "sub") ||
+						  contextMatches(contextTag, NS_W_KEY, "sup") ||
+						  contextMatches(contextTag, NS_W_KEY, "tbl") ||
+						  contextMatches(contextTag, NS_W_KEY, "tr") ||
+						  contextMatches(contextTag, NS_W_KEY, "tc") ||
+						  contextMatches(contextTag, NS_W_KEY, "txbxContent");
+			break;
+		}
+
 		//TODO: add more here
 	};
 }
@@ -2069,6 +3099,7 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:alias", KEYWORD_alias));
 	m_keywordMap.insert(std::make_pair("W:aliases", KEYWORD_aliases));
 	m_keywordMap.insert(std::make_pair("W:altName", KEYWORD_altName));
+	m_keywordMap.insert(std::make_pair("W:annotationRef", KEYWORD_annotationRef));
 	m_keywordMap.insert(std::make_pair("W:attr", KEYWORD_attr));
 	m_keywordMap.insert(std::make_pair("W:autoRedefine", KEYWORD_autoRedefine));
 	m_keywordMap.insert(std::make_pair("W:autoSpaceDE", KEYWORD_autoSpaceDE));
@@ -2079,20 +3110,33 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:basedOn", KEYWORD_basedOn));
 	m_keywordMap.insert(std::make_pair("W:bCs", KEYWORD_bCs));
 	m_keywordMap.insert(std::make_pair("W:bdr", KEYWORD_bdr));
+	m_keywordMap.insert(std::make_pair("W:behavior", KEYWORD_behavior));
+	m_keywordMap.insert(std::make_pair("W:behaviors", KEYWORD_behaviors));
 	m_keywordMap.insert(std::make_pair("W:between", KEYWORD_between));
 	m_keywordMap.insert(std::make_pair("W:bibliography", KEYWORD_bibliography));
 	m_keywordMap.insert(std::make_pair("W:bidi", KEYWORD_bidi));
 	m_keywordMap.insert(std::make_pair("W:bidiVisual", KEYWORD_bidiVisual));
 	m_keywordMap.insert(std::make_pair("W:body", KEYWORD_body));
+	m_keywordMap.insert(std::make_pair("W:bookmarkEnd", KEYWORD_bookmarkEnd));
+	m_keywordMap.insert(std::make_pair("W:bookmarkStart", KEYWORD_bookmarkStart));
 	m_keywordMap.insert(std::make_pair("W:bottom", KEYWORD_bottom));
 	m_keywordMap.insert(std::make_pair("W:break", KEYWORD_break));
 	m_keywordMap.insert(std::make_pair("W:calendar", KEYWORD_calendar));
 	m_keywordMap.insert(std::make_pair("W:cantSplit", KEYWORD_cantSplit));
 	m_keywordMap.insert(std::make_pair("W:caps", KEYWORD_caps));
+	m_keywordMap.insert(std::make_pair("W:category", KEYWORD_category));
+	m_keywordMap.insert(std::make_pair("W:cellDel", KEYWORD_cellDel));
+	m_keywordMap.insert(std::make_pair("W:cellIns", KEYWORD_cellIns));
+	m_keywordMap.insert(std::make_pair("W:cellMerge", KEYWORD_cellMerge));
 	m_keywordMap.insert(std::make_pair("W:charset", KEYWORD_charset));
 	m_keywordMap.insert(std::make_pair("W:citation", KEYWORD_citation));
 	m_keywordMap.insert(std::make_pair("W:cnfStyle", KEYWORD_cnfStyle));
 	m_keywordMap.insert(std::make_pair("W:comboBox", KEYWORD_comboBox));
+	m_keywordMap.insert(std::make_pair("W:comment", KEYWORD_comment));
+	m_keywordMap.insert(std::make_pair("W:commentRangeEnd", KEYWORD_commentRangeEnd));
+	m_keywordMap.insert(std::make_pair("W:commentRangeStart", KEYWORD_commentRangeStart));
+	m_keywordMap.insert(std::make_pair("W:commentReference", KEYWORD_commentReference));
+	m_keywordMap.insert(std::make_pair("W:comments", KEYWORD_comments));
 	m_keywordMap.insert(std::make_pair("W:contextualSpacing", KEYWORD_contextualSpacing));
 	m_keywordMap.insert(std::make_pair("W:continuationSeparator", KEYWORD_continuationSeparator));
 	m_keywordMap.insert(std::make_pair("W:col", KEYWORD_col));
@@ -2102,21 +3146,35 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:cr", KEYWORD_cr));
 	m_keywordMap.insert(std::make_pair("W:cs", KEYWORD_cs));
 	m_keywordMap.insert(std::make_pair("W:customXml", KEYWORD_customXml));
+	m_keywordMap.insert(std::make_pair("W:customXmlDelRangeEnd", KEYWORD_customXmlDelRangeEnd));
+	m_keywordMap.insert(std::make_pair("W:customXmlDelRangeStart", KEYWORD_customXmlDelRangeStart));
+	m_keywordMap.insert(std::make_pair("W:customXmlInsRangeEnd", KEYWORD_customXmlInsRangeEnd));
+	m_keywordMap.insert(std::make_pair("W:customXmlInsRangeStart", KEYWORD_customXmlInsRangeStart));
+	m_keywordMap.insert(std::make_pair("W:customXmlMoveFromRangeEnd", KEYWORD_customXmlMoveFromRangeEnd));
+	m_keywordMap.insert(std::make_pair("W:customXmlMoveFromRangeStart", KEYWORD_customXmlMoveFromRangeStart));
+	m_keywordMap.insert(std::make_pair("W:customXmlMoveToRangeEnd", KEYWORD_customXmlMoveToRangeEnd));
+	m_keywordMap.insert(std::make_pair("W:customXmlMoveToRangeStart", KEYWORD_customXmlMoveToRangeStart));
 	m_keywordMap.insert(std::make_pair("W:customXmlPr", KEYWORD_customXmlPr));
 	m_keywordMap.insert(std::make_pair("W:dataBinding", KEYWORD_dataBinding));
 	m_keywordMap.insert(std::make_pair("W:date", KEYWORD_date));
 	m_keywordMap.insert(std::make_pair("W:dateFormat", KEYWORD_dateFormat));
 	m_keywordMap.insert(std::make_pair("W:dayLong", KEYWORD_dayLong));
 	m_keywordMap.insert(std::make_pair("W:dayShort", KEYWORD_dayShort));
+	m_keywordMap.insert(std::make_pair("W:del", KEYWORD_del));
 	m_keywordMap.insert(std::make_pair("W:delText", KEYWORD_delText));
+	m_keywordMap.insert(std::make_pair("W:description", KEYWORD_description));
 	m_keywordMap.insert(std::make_pair("W:dirty", KEYWORD_dirty));
 	m_keywordMap.insert(std::make_pair("W:divId", KEYWORD_divId));
+	m_keywordMap.insert(std::make_pair("W:docDefaults", KEYWORD_docDefaults));
 	m_keywordMap.insert(std::make_pair("W:docGrid", KEYWORD_docGrid));
 	m_keywordMap.insert(std::make_pair("W:docPart", KEYWORD_docPart));
+	m_keywordMap.insert(std::make_pair("W:docPartBody", KEYWORD_docPartBody));
 	m_keywordMap.insert(std::make_pair("W:docPartCategory", KEYWORD_docPartCategory));
 	m_keywordMap.insert(std::make_pair("W:docPartGallery", KEYWORD_docPartGallery));
 	m_keywordMap.insert(std::make_pair("W:docPartList", KEYWORD_docPartList));
 	m_keywordMap.insert(std::make_pair("W:docPartObj", KEYWORD_docPartObj));
+	m_keywordMap.insert(std::make_pair("W:docPartPr", KEYWORD_docPartPr));
+	m_keywordMap.insert(std::make_pair("W:docParts", KEYWORD_docParts));
 	m_keywordMap.insert(std::make_pair("W:docPartUnique", KEYWORD_docPartUnique));
 	m_keywordMap.insert(std::make_pair("W:document", KEYWORD_document));
 	m_keywordMap.insert(std::make_pair("W:drawing", KEYWORD_drawing));
@@ -2138,10 +3196,12 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:endnoteRef", KEYWORD_endnoteRef));
 	m_keywordMap.insert(std::make_pair("W:endnoteReference", KEYWORD_endnoteReference));
 	m_keywordMap.insert(std::make_pair("W:endnotes", KEYWORD_endnotes));
+	m_keywordMap.insert(std::make_pair("W:evenAndOddHeaders", KEYWORD_evenAndOddHeaders));
 	m_keywordMap.insert(std::make_pair("W:family", KEYWORD_family));
 	m_keywordMap.insert(std::make_pair("W:fitText", KEYWORD_fitText));
 	m_keywordMap.insert(std::make_pair("W:font", KEYWORD_font));
 	m_keywordMap.insert(std::make_pair("W:fonts", KEYWORD_fonts));
+	m_keywordMap.insert(std::make_pair("W:footerReference", KEYWORD_footerReference));
 	m_keywordMap.insert(std::make_pair("W:footnote", KEYWORD_footnote));
 	m_keywordMap.insert(std::make_pair("W:footnotePr", KEYWORD_footnotePr));
 	m_keywordMap.insert(std::make_pair("W:footnoteRef", KEYWORD_footnoteRef));
@@ -2149,12 +3209,17 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:footnotes", KEYWORD_footnotes));
 	m_keywordMap.insert(std::make_pair("W:formProt", KEYWORD_formProt));
 	m_keywordMap.insert(std::make_pair("W:framePr", KEYWORD_framePr));
+	m_keywordMap.insert(std::make_pair("W:ftr", KEYWORD_ftr));
+	m_keywordMap.insert(std::make_pair("W:gallery", KEYWORD_gallery));
 	m_keywordMap.insert(std::make_pair("W:glossaryDocument", KEYWORD_glossaryDocument));
 	m_keywordMap.insert(std::make_pair("W:gridAfter", KEYWORD_gridAfter));
 	m_keywordMap.insert(std::make_pair("W:gridBefore", KEYWORD_gridBefore));
 	m_keywordMap.insert(std::make_pair("W:gridCol", KEYWORD_gridCol));
 	m_keywordMap.insert(std::make_pair("W:gridSpan", KEYWORD_gridSpan));
 	m_keywordMap.insert(std::make_pair("W:group", KEYWORD_group));
+	m_keywordMap.insert(std::make_pair("W:guid", KEYWORD_guid));
+	m_keywordMap.insert(std::make_pair("W:hdr", KEYWORD_hdr));
+	m_keywordMap.insert(std::make_pair("W:headerReference", KEYWORD_headerReference));
 	m_keywordMap.insert(std::make_pair("W:hidden", KEYWORD_hidden));
 	m_keywordMap.insert(std::make_pair("W:hideMark", KEYWORD_hideMark));
 	m_keywordMap.insert(std::make_pair("W:highlight", KEYWORD_highlight));
@@ -2167,6 +3232,7 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:id", KEYWORD_id));
 	m_keywordMap.insert(std::make_pair("W:imprint", KEYWORD_imprint));
 	m_keywordMap.insert(std::make_pair("W:ind", KEYWORD_ind));
+	m_keywordMap.insert(std::make_pair("W:ins", KEYWORD_ins));
 	m_keywordMap.insert(std::make_pair("W:insideH", KEYWORD_insideH));
 	m_keywordMap.insert(std::make_pair("W:insideV", KEYWORD_insideV));
 	m_keywordMap.insert(std::make_pair("W:ilvl", KEYWORD_ilvl));
@@ -2197,6 +3263,12 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:mirrorIndents", KEYWORD_mirrorIndents));
 	m_keywordMap.insert(std::make_pair("W:monthLong", KEYWORD_monthLong));
 	m_keywordMap.insert(std::make_pair("W:monthShort", KEYWORD_monthShort));
+	m_keywordMap.insert(std::make_pair("W:moveFrom", KEYWORD_moveFrom));
+	m_keywordMap.insert(std::make_pair("W:moveFromRangeEnd", KEYWORD_moveFromRangeEnd));
+	m_keywordMap.insert(std::make_pair("W:moveFromRangeStart", KEYWORD_moveFromRangeStart));
+	m_keywordMap.insert(std::make_pair("W:moveTo", KEYWORD_moveTo));
+	m_keywordMap.insert(std::make_pair("W:moveToRangeEnd", KEYWORD_moveToRangeEnd));
+	m_keywordMap.insert(std::make_pair("W:moveToRangeStart", KEYWORD_moveToRangeStart));
 	m_keywordMap.insert(std::make_pair("W:movie", KEYWORD_movie));
 	m_keywordMap.insert(std::make_pair("W:multiLevelType", KEYWORD_multiLevelType));
 	m_keywordMap.insert(std::make_pair("W:name", KEYWORD_name));
@@ -2209,6 +3281,7 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:nsid", KEYWORD_nsid));
 	m_keywordMap.insert(std::make_pair("W:num", KEYWORD_num));
 	m_keywordMap.insert(std::make_pair("W:numbering", KEYWORD_numbering));
+	m_keywordMap.insert(std::make_pair("W:numberingChange", KEYWORD_numberingChange));
 	m_keywordMap.insert(std::make_pair("W:numFmt", KEYWORD_numFmt));
 	m_keywordMap.insert(std::make_pair("W:numId", KEYWORD_numId));
 	m_keywordMap.insert(std::make_pair("W:numIdMacAtCleanup", KEYWORD_numIdMacAtCleanup));
@@ -2227,6 +3300,8 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:panose1", KEYWORD_panose1));
 	m_keywordMap.insert(std::make_pair("W:paperSrc", KEYWORD_paperSrc));
 	m_keywordMap.insert(std::make_pair("W:pBdr", KEYWORD_pBdr));
+	m_keywordMap.insert(std::make_pair("W:permEnd", KEYWORD_permEnd));
+	m_keywordMap.insert(std::make_pair("W:permStart", KEYWORD_permStart));
 	m_keywordMap.insert(std::make_pair("W:personal", KEYWORD_personal));
 	m_keywordMap.insert(std::make_pair("W:personalCompose", KEYWORD_personalCompose));
 	m_keywordMap.insert(std::make_pair("W:personalReply", KEYWORD_personalReply));
@@ -2243,6 +3318,9 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:position", KEYWORD_position));
 	m_keywordMap.insert(std::make_pair("W:printerSettings", KEYWORD_printerSettings));
 	m_keywordMap.insert(std::make_pair("W:pPr", KEYWORD_pPr));
+	m_keywordMap.insert(std::make_pair("W:pPrChange", KEYWORD_pPrChange));
+	m_keywordMap.insert(std::make_pair("W:pPrDefault", KEYWORD_pPrDefault));
+	m_keywordMap.insert(std::make_pair("W:proofErr", KEYWORD_proofErr));
 	m_keywordMap.insert(std::make_pair("W:pStyle", KEYWORD_pStyle));
 	m_keywordMap.insert(std::make_pair("W:ptab", KEYWORD_ptab));
 	m_keywordMap.insert(std::make_pair("W:qFormat", KEYWORD_qFormat));
@@ -2251,6 +3329,8 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:richText", KEYWORD_richText));
 	m_keywordMap.insert(std::make_pair("W:right", KEYWORD_right));
 	m_keywordMap.insert(std::make_pair("W:rPr", KEYWORD_rPr));
+	m_keywordMap.insert(std::make_pair("W:rPrChange", KEYWORD_rPrChange));
+	m_keywordMap.insert(std::make_pair("W:rPrDefault", KEYWORD_rPrDefault));
 	m_keywordMap.insert(std::make_pair("W:rsid", KEYWORD_rsid));
 	m_keywordMap.insert(std::make_pair("W:rStyle", KEYWORD_rStyle));
 	m_keywordMap.insert(std::make_pair("W:rt", KEYWORD_rt));
@@ -2266,6 +3346,7 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:sdtEndPr", KEYWORD_sdtEndPr));
 	m_keywordMap.insert(std::make_pair("W:sdtPr", KEYWORD_sdtPr));
 	m_keywordMap.insert(std::make_pair("W:sectPr", KEYWORD_sectPr));
+	m_keywordMap.insert(std::make_pair("W:sectPrChange", KEYWORD_sectPrChange));
 	m_keywordMap.insert(std::make_pair("W:semiHidden", KEYWORD_semiHidden));
 	m_keywordMap.insert(std::make_pair("W:separator", KEYWORD_separator));
 	m_keywordMap.insert(std::make_pair("W:shadow", KEYWORD_shadow));
@@ -2302,6 +3383,7 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:tblCellMar", KEYWORD_tblCellMar));
 	m_keywordMap.insert(std::make_pair("W:tblCellSpacing", KEYWORD_tblCellSpacing));
 	m_keywordMap.insert(std::make_pair("W:tblGrid", KEYWORD_tblGrid));
+	m_keywordMap.insert(std::make_pair("W:tblGridChange", KEYWORD_tblGridChange));
 	m_keywordMap.insert(std::make_pair("W:tblHeader", KEYWORD_tblHeader));
 	m_keywordMap.insert(std::make_pair("W:tblInd", KEYWORD_tblInd));
 	m_keywordMap.insert(std::make_pair("W:tblLayout", KEYWORD_tblLayout));
@@ -2309,7 +3391,9 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:tblOverlap", KEYWORD_tblOverlap));
 	m_keywordMap.insert(std::make_pair("W:tblpPr", KEYWORD_tblpPr));
 	m_keywordMap.insert(std::make_pair("W:tblPr", KEYWORD_tblPr));
+	m_keywordMap.insert(std::make_pair("W:tblPrChange", KEYWORD_tblPrChange));
 	m_keywordMap.insert(std::make_pair("W:tblPrEx", KEYWORD_tblPrEx));
+	m_keywordMap.insert(std::make_pair("W:tblPrExChange", KEYWORD_tblPrExChange));
 	m_keywordMap.insert(std::make_pair("W:tblStyle", KEYWORD_tblStyle));
 	m_keywordMap.insert(std::make_pair("W:tblStylePr", KEYWORD_tblStylePr));
 	m_keywordMap.insert(std::make_pair("W:tblStyleColBandSize", KEYWORD_tblStyleColBandSize));
@@ -2320,12 +3404,14 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:tcFitText", KEYWORD_tcFitText));
 	m_keywordMap.insert(std::make_pair("W:tcMar", KEYWORD_tcMar));
 	m_keywordMap.insert(std::make_pair("W:tcPr", KEYWORD_tcPr));
+	m_keywordMap.insert(std::make_pair("W:tcPrChange", KEYWORD_tcPrChange));
 	m_keywordMap.insert(std::make_pair("W:tcW", KEYWORD_tcW));
 	m_keywordMap.insert(std::make_pair("W:temporary", KEYWORD_temporary));
 	m_keywordMap.insert(std::make_pair("W:text", KEYWORD_text));
 	m_keywordMap.insert(std::make_pair("W:textAlignment", KEYWORD_textAlignment));
 	m_keywordMap.insert(std::make_pair("W:textboxTightWrap", KEYWORD_textboxTightWrap));
 	m_keywordMap.insert(std::make_pair("W:textDirection", KEYWORD_textDirection));
+	m_keywordMap.insert(std::make_pair("W:titlePg", KEYWORD_titlePg));
 	m_keywordMap.insert(std::make_pair("W:tl2br", KEYWORD_tl2br));
 	m_keywordMap.insert(std::make_pair("W:tmpl", KEYWORD_tmpl));
 	m_keywordMap.insert(std::make_pair("W:top", KEYWORD_top));
@@ -2334,7 +3420,9 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:tr2bl", KEYWORD_tr2bl));
 	m_keywordMap.insert(std::make_pair("W:trHeight", KEYWORD_trHeight));
 	m_keywordMap.insert(std::make_pair("W:trPr", KEYWORD_trPr));
+	m_keywordMap.insert(std::make_pair("W:trPrChange", KEYWORD_trPrChange));
 	m_keywordMap.insert(std::make_pair("W:type", KEYWORD_type));
+	m_keywordMap.insert(std::make_pair("W:types", KEYWORD_types));
 	m_keywordMap.insert(std::make_pair("W:u", KEYWORD_u));
 	m_keywordMap.insert(std::make_pair("W:uiPriority", KEYWORD_uiPriority));
 	m_keywordMap.insert(std::make_pair("W:unhideWhenUsed", KEYWORD_unhideWhenUsed));
