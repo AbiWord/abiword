@@ -138,7 +138,23 @@ void XAP_UnixDialog_Print::BeginPrint(GtkPrintContext   *context)
 	// In the future we can use this to do 2,4,6,8 etc pages per page
 	//
 	cairo_scale(static_cast<GR_CairoPrintGraphics *>(m_pPrintGraphics)->getCairo(), GTKPRINTRES/gr_PRINTRES,GTKPRINTRES/gr_PRINTRES);
+	if(!m_pView->getPageSize().isPortrait())
+	{
+		//
+		// Don't ask me why cairo needs this. I just work here
+		//
+		double width = gtk_page_setup_get_paper_width(m_pPageSetup,GTK_UNIT_MM);
+		double height = gtk_page_setup_get_paper_height(m_pPageSetup,GTK_UNIT_MM);
+		// This magic number is a good heuristic.
+		// One day we might work out why this works and the correct value for
+		// this. We need this for the print to start at the top of the landscape
+		// page.
 
+		double magic_number = 2.85;
+		double offset = magic_number*height;
+		UT_DEBUGMSG(("width %f height %f offset %f \n",width,height,offset));
+		cairo_translate(static_cast<GR_CairoPrintGraphics *>(m_pPrintGraphics)->getCairo(),offset,0.0);
+	}
 	xxx_UT_DEBUGMSG(("Resolution Ratio set to %f \n",gr_PrintRes/ScreenRes));
 	UT_DEBUGMSG(("Resolution Ratio of Direct call is %f Cast call is %f \n",m_pPrintGraphics->getResolutionRatio(),	static_cast<GR_CairoPrintGraphics *>(m_pPrintGraphics)->getResolutionRatio()));
 	if(m_pView->getViewMode() == VIEW_PRINT )
@@ -171,6 +187,8 @@ void XAP_UnixDialog_Print::PrintPage(gint page_nr)
 	xxx_UT_DEBUGMSG(("Print Page %d \n",page_nr));
 	dg_DrawArgs da;
 	da.pG = m_pPrintGraphics;
+	da.xoff = 0;
+	da.yoff = 0;
 	const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet ();
 	const gchar * msgTmpl = pSS->getValue (AP_STRING_ID_MSG_PrintStatus);
 	gchar msgBuf [1024];
