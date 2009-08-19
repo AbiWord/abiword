@@ -75,7 +75,7 @@ pf_Fragments::Node::Node(Color c, pf_Frag * pf, Node * l, Node * r, Node * p)
 
 pf_Fragments::Node::~Node(void)
 {
-  UT_DEBUGMSG(("Deleting Node %p left %p right %p parent %p item %p \n",this,left,right,parent,item));
+  xxx_UT_DEBUGMSG(("Deleting Node %p left %p right %p parent %p item %p \n",this,left,right,parent,item));
  
 }
 //////////////////////////////////////////////
@@ -93,7 +93,7 @@ pf_Fragments::pf_Fragments()
 	  m_nDocumentSize(0)
 	  
 {
-  UT_DEBUGMSG(("Fragments created %p Root %p Leaf %p \n",this,m_pRoot,m_pLeaf));
+  xxx_UT_DEBUGMSG(("Fragments created %p Root %p Leaf %p \n",this,m_pRoot,m_pLeaf));
 }
 
 pf_Fragments::~pf_Fragments()
@@ -119,7 +119,7 @@ void pf_Fragments::appendFrag(pf_Frag * pf)
 	// append a frag to the end of the list
 	
 	UT_return_if_fail (pf);
-	UT_DEBUGMSG(("AppendFrag %p of Type %d \n",pf,pf->getType()));
+	xxx_UT_DEBUGMSG(("AppendFrag %p of Type %d \n",pf,pf->getType()));
 	if ( m_pRoot == m_pLeaf ) //If tree is empty.
 	{
 		insertRoot(pf);	
@@ -433,7 +433,7 @@ pf_Fragments::insertRight(pf_Frag* new_piece, Iterator& it)
 	UT_ASSERT(m_nSize == 0 || it.is_valid());
 	
 	Node* pNewNode = new Node(Node::red, new_piece, m_pLeaf, m_pLeaf, 0);
-	UT_DEBUGMSG(("!!!!!! New node created %p item %p \n",pNewNode,pNewNode->item));
+	xxx_UT_DEBUGMSG(("!!!!!! New node created %p item %p \n",pNewNode,pNewNode->item));
 	new_piece->setLeftTreeLength(0);
 	
 	++m_nSize;
@@ -441,7 +441,7 @@ pf_Fragments::insertRight(pf_Frag* new_piece, Iterator& it)
 
 	if (!it.is_valid())
 	{
-	        UT_DEBUGMSG(("Root node set to %p \n",pNewNode));
+	        xxx_UT_DEBUGMSG(("Root node set to %p \n",pNewNode));
 		m_pRoot = pNewNode;
 	}
 	else if (pNode->right == m_pLeaf)
@@ -462,9 +462,9 @@ pf_Fragments::insertRight(pf_Frag* new_piece, Iterator& it)
 	}
 
 	_insertFixup(pNewNode);
-	UT_DEBUGMSG(("!!!!!! Frag %p NodeSet %p item %p \n",new_piece,pNewNode,pNewNode->item));
+	xxx_UT_DEBUGMSG(("!!!!!! Frag %p NodeSet %p item %p \n",new_piece,pNewNode,pNewNode->item));
 	new_piece->_setNode(pNewNode);
-	print();
+	//	print();
 	return Iterator(this, pNewNode);
 }
 
@@ -491,7 +491,7 @@ pf_Fragments::insertLeft(pf_Frag* new_piece, Iterator& it)
 
 	if (!it.is_valid())
 	{
-	        UT_DEBUGMSG(("Root node set to %p \n",pNewNode));
+	        xxx_UT_DEBUGMSG(("Root node set to %p \n",pNewNode));
 		m_pRoot = pNewNode;
 	}
 	else if (pNode->left == m_pLeaf)
@@ -546,7 +546,7 @@ pf_Fragments::erase(Iterator& it)
 	if (!y->parent)
 	{
 		m_pRoot = son;
-		UT_DEBUGMSG(("2 Root node set to %p \n",son));
+		xxx_UT_DEBUGMSG(("2 Root node set to %p \n",son));
 	}
 	else
 		if (y->parent->left == y)
@@ -563,7 +563,7 @@ pf_Fragments::erase(Iterator& it)
 		  Thus, the line below is commented out.
 		*/
 		//delete pNode->item;
-	  UT_DEBUGMSG(("Set pNode %p item to %p \n",pNode,y->item));
+	        xxx_UT_DEBUGMSG(("Set pNode %p item to %p \n",pNode,y->item));
 		pNode->item = y->item;
 		pNode->item->_setNode(pNode);
 		Iterator it_temp(this, pNode);
@@ -934,7 +934,7 @@ pf_Fragments::_leftRotate(Node* x)
     if (!x->parent)
     {
 		m_pRoot = y;
-		UT_DEBUGMSG(("3 Root node set to %p \n",y));
+		xxx_UT_DEBUGMSG(("3 Root node set to %p \n",y));
     }
     else
         if (x == x->parent->left)
@@ -982,7 +982,7 @@ pf_Fragments::_rightRotate(Node* x)
 	if (!x->parent)
 	{
 		m_pRoot = y;
-		UT_DEBUGMSG(("4 Root node set to %p \n",y));
+		xxx_UT_DEBUGMSG(("4 Root node set to %p \n",y));
 	}
 	else
 		if (x == x->parent->right)
