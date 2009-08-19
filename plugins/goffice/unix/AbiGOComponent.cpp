@@ -389,7 +389,7 @@ void GR_GOComponentManager::makeSnapShot(UT_sint32 uid, UT_Rect & rec)
 		}
 		else
 		{
-			const char* mimetypeSVG = g_strdup("image/svg");
+			const std::string mimetypeSVG = "image/svg";
 			m_pDoc->createDataItem(sID.utf8_str(),false,reinterpret_cast< const UT_ByteBuf *>(pBuf),mimetypeSVG,NULL);
 			pItem->m_bHasSnapshot = true;
 		}
@@ -436,8 +436,7 @@ bool GR_GOComponentManager::createPNGSnapshot(AD_Document * pDoc, UT_Rect & rec,
   pImage->convertToBuffer(&pBuf);
   UT_UTF8String sID = "snapshot-png-";
   sID += szDataID;
-  const char* mimetypePNG = NULL;
-  mimetypePNG = g_strdup("image/png");
+  const std::string mimetypePNG = "image/png";
   pDoc->createDataItem(sID.utf8_str(),false,reinterpret_cast< const UT_ByteBuf *>(pBuf),mimetypePNG,NULL);
   delete pBuf;
   delete pImage;
