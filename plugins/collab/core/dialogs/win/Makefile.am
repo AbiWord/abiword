@@ -17,7 +17,9 @@ libwin_la_SOURCES = \
 	ap_Win32Dialog_CollaborationAddBuddy.cpp \
 	ap_Win32Dialog_CollaborationAddBuddy.h \
 	ap_Win32Dialog_CollaborationJoin.cpp \
-	ap_Win32Dialog_CollaborationJoin.h
+	ap_Win32Dialog_CollaborationJoin.h \
+	ap_Win32Dialog_CollaborationShare.cpp \
+	ap_Win32Dialog_CollaborationShare.h
 
 libwin_la_LIBADD = ap_Win32Res_CollaborationDialogs.lo
 
