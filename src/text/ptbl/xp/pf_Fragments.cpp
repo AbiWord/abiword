@@ -212,6 +212,7 @@ pf_Frag * pf_Fragments::findFirstFragBeforePos(PT_DocPosition pos) const
 	pf_Frag * pf = it.value();
 	return pf;
 }
+
 void pf_Fragments::cleanFrags(void) const
 {
   return;

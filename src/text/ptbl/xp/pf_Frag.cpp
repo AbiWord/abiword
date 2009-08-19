@@ -101,6 +101,26 @@ PT_DocPosition pf_Frag::getPos(void) const
        return pos;
 }
 
+/*!
+ * Tell the fragments tree that the length of this item changed by
+ * delta.
+ * delta = new_length - old_length
+ */
+void  pf_Frag::lengthChanged(UT_sint32 delta)
+{
+       UT_return_if_fail(m_pMyNode);
+       pf_Fragments * fragments = &(m_pPieceTable->getFragments());
+       fragments->changeSize(delta);
+       pf_Fragments::Iterator it(fragments,m_pMyNode);
+       fragments->fixSize(it);
+}
+
+	/* We need the following function to accumulate left tree length */
+void  pf_Frag:: accLeftTreeLength(PT_DocPosition length)
+{
+       m_leftTreeLength += length; 
+}
+ 
 void pf_Frag::_setNode(pf_Fragments::Node * pNode)
 {
        m_pMyNode = pNode;

@@ -59,12 +59,12 @@ public:
 	pt_PieceTable *			getPieceTable(void) const { return m_pPieceTable;}
 	fd_Field *				getField(void) const;
 	PT_DocPosition          getPos(void) const;
-
+	void                    lengthChanged(UT_sint32 delta);
 	PT_DocPosition          getLeftTreeLength(void) const   { return m_leftTreeLength; }
 	void                    setLeftTreeLength(PT_DocPosition length) { m_leftTreeLength = length;}
 
 	/* We need the following function to accumulate left tree length */
-	void                    accLeftTreeLength(PT_DocPosition length) { m_leftTreeLength += length; }
+	void                    accLeftTreeLength(PT_DocPosition length);
 
 	inline PT_AttrPropIndex	getIndexAP(void) const {return m_indexAP;}
 	virtual void			setIndexAP(PT_AttrPropIndex indexNewAP)	{m_indexAP = indexNewAP;}
