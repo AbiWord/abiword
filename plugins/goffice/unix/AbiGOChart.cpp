@@ -796,14 +796,14 @@ void GOChartView::render(UT_Rect & rec)
 UT_ByteBuf *GOChartView::exportToSVG ()
 {
 	UT_return_val_if_fail (m_Graph, NULL);
-	UT_ByteBuf *pBuf = new UT_ByteBuf ();
+	UT_ByteBuf *pBuf = NULL; /*new UT_ByteBuf ();
 	cairo_surface_t *surface = cairo_svg_surface_create_for_stream (
 										reinterpret_cast<cairo_write_func_t>(UT_ByteBuf::CairoWrite),
 										pBuf, width, height);
 	cairo_t *cr = cairo_create (surface);
 	cairo_surface_destroy (surface);
 	gog_renderer_render_to_cairo (m_Renderer, cr, width, height);
-	cairo_destroy (cr);
+	cairo_destroy (cr);*/
 	return pBuf;
 }
 
