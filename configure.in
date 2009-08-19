@@ -651,7 +651,7 @@ fi
 
 if test "$TOOLKIT" == "win"; then
 	AC_DEFINE([TOOLKIT_WIN], [1], [Build win32 user interface])
-	AC_DEFINE([_WIN32_IE], [0x0300], [minimal comctl.dll v4.70 for toolbars])
+	AC_DEFINE([_WIN32_IE], [0x0501], [minimal comctl.dll v4.70 for toolbars])
 	AC_DEFINE([_WIN32_WINNT], [0x0500], [support collaboration plugin in Windows 2000 or higher])
 	# override static/dynamic, on win32 only static is possible
 	enable_dynamic="no"
@@ -682,7 +682,7 @@ if test "$TOOLKIT" == "gtk" &&
 	# derived classes in dlopened modules
 	PLUGIN_LIBS="$PLUGIN_LIBS "'-L${top_builddir}/src'" -labiword-$ABIWORD_SERIES"
 elif test "$TOOLKIT" == "win"; then
-	PLUGIN_CFLAGS="$PLUGIN_CFLAGS "'-D_WIN32_IE=0x0300 -D_WIN32_WINNT=0x0500'
+	PLUGIN_CFLAGS="$PLUGIN_CFLAGS "'-D_WIN32_IE=0x0501 -D_WIN32_WINNT=0x0500'
 	# link plugins to the executable so they can be loaded
 	PLUGIN_LIBS="$PLUGIN_LIBS "'-L${top_builddir}/src -labiword'
 elif test "$TOOLKIT" == "cocoa" ; then 
