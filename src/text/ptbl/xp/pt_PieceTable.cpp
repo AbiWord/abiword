@@ -692,13 +692,6 @@ bool pt_PieceTable::getBounds(bool bEnd, PT_DocPosition & docPos) const
 	}
 	else
 	{
-		// NOTE: this gets called for every cursor motion
-		// TODO: be more efficient & cache the doc length
-		// Sevior I did this 6/6/2001
-		if(m_fragments.areFragsDirty())
-		{
-			m_fragments.cleanFrags();
-		}
 		docPos = m_fragments.getLast()->getPos()+m_fragments.getLast()->getLength();
 	}
 	return res;
@@ -775,8 +768,6 @@ void pt_PieceTable::_realDeleteHdrFtrStrux(pf_Frag_Strux * pfs)
 
 PT_DocPosition pt_PieceTable::getFragPosition(const pf_Frag * pfToFind) const
 {
-	if(m_fragments.areFragsDirty())
-		m_fragments.cleanFrags();
 	return  pfToFind->getPos();
 }
 
@@ -803,7 +794,6 @@ bool pt_PieceTable::getFragFromPosition(PT_DocPosition docPos,
 			*pFragOffset = docPos - pfLast->getPos();
 		*ppf = pfLast;       
 		return true;
-		xxx_UT_DEBUGMSG(("SEVIOR: I found frag %d \n",getFragNumber(pfLast)));
 	}
 
 	UT_return_val_if_fail (pfLast,false);
@@ -826,7 +816,6 @@ bool pt_PieceTable::getFragFromPosition(PT_DocPosition docPos,
 //  			// in this loop -- rather we want the thing just past it.
 
 //  			UT_ASSERT(pf->getType() != pf_Frag::PFT_FmtMark);
-//  			UT_DEBUGMSG(("SEVIOR: Jeff finds frag %d at Pos %d \n",getFragNumber(pf),docPos));
 
 //  			return true;
 //  		}
@@ -849,7 +838,6 @@ bool pt_PieceTable::getFragFromPosition(PT_DocPosition docPos,
 //  	*ppf = pfLast;
 //  	if (pFragOffset)
 //  		*pFragOffset = docPos - sum;
-//  	UT_DEBUGMSG(("SEVIOR: Jeff finds Last frag Number %d at Pos %d \n",getFragNumber(pf),docPos));
 
 
 //  	return true;

@@ -342,7 +342,6 @@ public:
 	bool                    isFootnote(pf_Frag * pf) const;
 	
 	void					clearIfAtFmtMark(PT_DocPosition dpos);
-	UT_uint32               getFragNumber(pf_Frag * pFrag) const {return m_fragments.getFragNumber(pFrag);}
     pt_VarSet &             getVarSet(void) {return m_varset;};
     pf_Fragments &          getFragments(void) {return m_fragments;};
 

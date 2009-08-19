@@ -73,13 +73,6 @@ bool PD_DocIterator::_findFrag()
 		return false;
 	}
 	
-	// need to make sure fragments are clean before we can use their
-	// doc positions
-	if(m_pt.getFragments().areFragsDirty())
-	{
-		m_pt.getFragments().cleanFrags();
-	}
-
 	if(m_frag)
 	{
 		// if we have a fragment, we can speed things up in certain
@@ -146,7 +139,6 @@ bool PD_DocIterator::_findFrag()
 	  //
 	  // One last attempt
 	  //
-	        m_pt.getFragments().cleanFrags();
 		m_frag = m_pt.getFragments().findFirstFragBeforePos(m_pos);
 	}
 	if(m_frag)
@@ -477,10 +469,6 @@ bool PD_StruxIterator::_findFrag()
 	{
 		m_frag = static_cast<const pf_Frag *>(m_sdh);
 		m_frag_offset = 0;
-	}
-	if(m_pPT->getFragments().areFragsDirty())
-	{
-		m_pPT->getFragments().cleanFrags();
 	}
 
 	while(m_frag)

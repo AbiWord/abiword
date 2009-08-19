@@ -47,14 +47,10 @@ public:
 	void					insertFrag(pf_Frag * pfPlace, pf_Frag * pfNew);
 	void					insertFragBefore(pf_Frag * pfPlace, pf_Frag * pfNew);
 	void					unlinkFrag(pf_Frag * pf);
-	void                    cleanFrags(void) const;
 	pf_Frag *               findFirstFragBeforePos(PT_DocPosition pos) const;
-	UT_uint32               getNumberOfFrags() const;
-	UT_uint32               getFragNumber(const pf_Frag * pf) const;
+
 	pf_Frag *				getFirst() const;
 	pf_Frag *				getLast() const;
-	void                    setFragsDirty(void) { m_bAreFragsClean = false;}
-	bool                    areFragsDirty() const { return false; }
 
 #ifdef PT_TEST
 	void					__dump(FILE * fp) const;
@@ -143,8 +139,6 @@ private:
 
 	pf_Frag *				m_pFirst;
 	pf_Frag *				m_pLast;
-	mutable UT_Vector		m_vecFrags;
-	mutable bool		    m_bAreFragsClean;
 	mutable pf_Frag*		m_pCache;
 
 	Iterator insertRoot(pf_Frag* new_piece); // throws std::bad_alloc (strong)

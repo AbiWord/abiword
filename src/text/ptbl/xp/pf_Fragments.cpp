@@ -85,7 +85,6 @@ pf_Fragments::Node::~Node(void)
 pf_Fragments::pf_Fragments()
 	: m_pFirst(0),
 	  m_pLast(0),
-	  m_bAreFragsClean(false),
 	  m_pCache(0),
 	  m_pLeaf(new Node(Node::black)),
 	  m_pRoot(m_pLeaf),
@@ -207,35 +206,11 @@ void pf_Fragments::unlinkFrag(pf_Frag * pf)
 pf_Frag * pf_Fragments::findFirstFragBeforePos(PT_DocPosition pos) const
 {       
 	if (pos >= sizeDocument())
-	    pos = sizeDocument()-1;
+	  pos = sizeDocument()-1;
 	Iterator it = find(pos);
 	pf_Frag * pf = it.value();
 	return pf;
 }
-
-void pf_Fragments::cleanFrags(void) const
-{
-  return;
-}
-
-
-UT_uint32 pf_Fragments::getFragNumber(const pf_Frag * pf) const
-{
-  UT_ASSERT(0);
-  return 0;
-}
-
-UT_uint32 pf_Fragments::getNumberOfFrags() const
-{
-  UT_ASSERT(0);
-  return 0;
-	if (areFragsDirty())
-	{
-		cleanFrags();
-	}
-	return m_vecFrags.getItemCount();
-}
-
 
 /* Methods that implement the rb-tree */
 

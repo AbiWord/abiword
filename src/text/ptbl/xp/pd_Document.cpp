@@ -1177,8 +1177,6 @@ bool PD_Document::isDirty(void) const
 
 void PD_Document::_setClean(void)
 {
-	m_pPieceTable->setClean();
-	m_pPieceTable->getFragments().cleanFrags();
 	_setForceDirty(false);
 }
 
@@ -7477,12 +7475,6 @@ bool PD_Document::findWhereSimilarityResumes(PT_DocPosition &pos, UT_sint32 &iOf
 											 const PD_Document &d) const
 {
 	UT_return_val_if_fail(m_pPieceTable || d.m_pPieceTable, true);
-
-	if(m_pPieceTable->getFragments().areFragsDirty())
-		m_pPieceTable->getFragments().cleanFrags();
-	
-	if(d.m_pPieceTable->getFragments().areFragsDirty())
-		d.m_pPieceTable->getFragments().cleanFrags();
 		
 	//  scroll through the documents comparing contents
 	PD_DocIterator t1(*this, pos);
@@ -7615,12 +7607,6 @@ bool PD_Document::findFirstDifferenceInContent(PT_DocPosition &pos, UT_sint32 &i
 											   const PD_Document &d) const
 {
 	UT_return_val_if_fail(m_pPieceTable || d.m_pPieceTable, true);
-
-	if(m_pPieceTable->getFragments().areFragsDirty())
-		m_pPieceTable->getFragments().cleanFrags();
-	
-	if(d.m_pPieceTable->getFragments().areFragsDirty())
-		d.m_pPieceTable->getFragments().cleanFrags();
 		
 	//  scroll through the documents comparing contents
 	PD_DocIterator t1(*this, pos);
@@ -7732,12 +7718,6 @@ bool PD_Document::areDocumentContentsEqual(const AD_Document &D, UT_uint32 &pos)
 	
 	PD_Document &d = (PD_Document &)D;
 	UT_return_val_if_fail(m_pPieceTable || d.m_pPieceTable, false);
-
-	if(m_pPieceTable->getFragments().areFragsDirty())
-		m_pPieceTable->getFragments().cleanFrags();
-	
-	if(d.m_pPieceTable->getFragments().areFragsDirty())
-		d.m_pPieceTable->getFragments().cleanFrags();
 		
 	// test the docs for length
 	UT_uint32 end1, end2;
@@ -7882,12 +7862,6 @@ bool PD_Document::areDocumentFormatsEqual(const AD_Document &D, UT_uint32 &pos) 
 	
 	PD_Document &d = (PD_Document &)D;
 	UT_return_val_if_fail(m_pPieceTable || d.m_pPieceTable, false);
-
-	if(m_pPieceTable->getFragments().areFragsDirty())
-		m_pPieceTable->getFragments().cleanFrags();
-	
-	if(d.m_pPieceTable->getFragments().areFragsDirty())
-		d.m_pPieceTable->getFragments().cleanFrags();
 		
 	//  scroll through the documents comparing fmt
 	PD_DocIterator t1(*this);
