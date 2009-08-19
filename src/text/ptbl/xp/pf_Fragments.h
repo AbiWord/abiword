@@ -63,30 +63,16 @@ public:
 	class  Node
 	{
 	public:
-	          enum Color { red, black };
-	          Node(void)
-		    : color(red), 
-	              item(NULL), 
-                      left(NULL), 
-                      right(NULL), 
-                      parent(NULL) {}
-	          Node(Color c)
-		    : color(c), 
-	              item(NULL), 
-                      left(NULL), 
-                      right(NULL), 
-                      parent(NULL) {}
-		  Node(Color c, pf_Frag * pf, Node * l, Node * r, Node * p)
-		    : color(c), 
-	              item(pf), 
-                      left(l), 
-                      right(r), 
-                      parent(p) {}
-		    Color color;
-		    pf_Frag* item;
-		    Node* left;
-		    Node* right;
-		    Node* parent;
+	  enum Color { red, black };
+	  Node(void);
+	  Node(Color c);
+	  Node(Color c, pf_Frag * pf, Node * l, Node * r, Node * p);
+	  ~Node(void);
+	  Color color;
+	  pf_Frag* item;
+	  Node* left;
+	  Node* right;
+	  Node* parent;
 
 #ifdef DEBUG
 	  void         print(void);

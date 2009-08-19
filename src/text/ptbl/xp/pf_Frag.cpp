@@ -95,9 +95,9 @@ bool pf_Frag::isContentEqual(const pf_Frag & f2) const
 PT_DocPosition pf_Frag::getPos(void) const
 {
        UT_return_val_if_fail(m_pMyNode,0);
-       pf_Fragments fragments = m_pPieceTable->getFragments();
-       const pf_Fragments::Iterator it(&fragments,m_pMyNode);
-       PT_DocPosition pos = fragments.documentPosition(it);
+       pf_Fragments * fragments = &(m_pPieceTable->getFragments());
+       const pf_Fragments::Iterator it(fragments,m_pMyNode);
+       PT_DocPosition pos = fragments->documentPosition(it);
        return pos;
 }
 

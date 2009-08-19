@@ -52,7 +52,32 @@ void pf_Fragments::Node::print()
   }
 }
 #endif
+pf_Fragments::Node::Node(void)
+		    : color(red), 
+	              item(NULL), 
+                      left(NULL), 
+                      right(NULL), 
+                      parent(NULL) {}
 
+pf_Fragments::Node::Node(Color c)
+		    : color(c), 
+	              item(NULL), 
+                      left(NULL), 
+                      right(NULL), 
+                      parent(NULL) {}
+
+pf_Fragments::Node::Node(Color c, pf_Frag * pf, Node * l, Node * r, Node * p)
+		    : color(c), 
+	              item(pf), 
+                      left(l), 
+                      right(r), 
+                      parent(p) {}
+
+pf_Fragments::Node::~Node(void)
+{
+  UT_DEBUGMSG(("Deleting Node %p left %p right %p parent %p item %p \n",this,left,right,parent,item));
+ 
+}
 //////////////////////////////////////////////
 // End Node Defn.
 //////////////////////////////////////////////
@@ -439,6 +464,7 @@ pf_Fragments::insertRight(pf_Frag* new_piece, Iterator& it)
 	_insertFixup(pNewNode);
 	UT_DEBUGMSG(("!!!!!! Frag %p NodeSet %p item %p \n",new_piece,pNewNode,pNewNode->item));
 	new_piece->_setNode(pNewNode);
+	print();
 	return Iterator(this, pNewNode);
 }
 
@@ -518,7 +544,10 @@ pf_Fragments::erase(Iterator& it)
 	son->parent = y->parent;
 
 	if (!y->parent)
+	{
 		m_pRoot = son;
+		UT_DEBUGMSG(("2 Root node set to %p \n",son));
+	}
 	else
 		if (y->parent->left == y)
 			y->parent->left = son;
@@ -536,6 +565,7 @@ pf_Fragments::erase(Iterator& it)
 		//delete pNode->item;
 	  UT_DEBUGMSG(("Set pNode %p item to %p \n",pNode,y->item));
 		pNode->item = y->item;
+		pNode->item->_setNode(pNode);
 		Iterator it_temp(this, pNode);
 		fixSize(it_temp);
 	}
@@ -902,7 +932,10 @@ pf_Fragments::_leftRotate(Node* x)
     /* Set the parent to point to y instead of x */
     /* First see whether we're at the root */
     if (!x->parent)
+    {
 		m_pRoot = y;
+		UT_DEBUGMSG(("3 Root node set to %p \n",y));
+    }
     else
         if (x == x->parent->left)
             /* x was on the left of its parent */
@@ -947,7 +980,10 @@ pf_Fragments::_rightRotate(Node* x)
 	y->parent = x->parent;
 
 	if (!x->parent)
+	{
 		m_pRoot = y;
+		UT_DEBUGMSG(("4 Root node set to %p \n",y));
+	}
 	else
 		if (x == x->parent->right)
 			x->parent->right = y;
