@@ -277,7 +277,7 @@ bool fp_PageSize::Set(const gchar ** attributes)
 	if( g_ascii_strcasecmp(szOrientation,"landscape") == 0 )
 	{
 		// Note: setting landscape causes the width and height to be swapped
-		if (width && height && szUnits) // just setting a custom width or height should be allowed imo, but I'm lazy - MARCM
+		if (szWidth && szHeight && szUnits) // just setting a custom width or height should be allowed imo, but I'm lazy - MARCM
 		{
 			width = UT_convertDimensionless(szWidth);
 			height = UT_convertDimensionless(szHeight);

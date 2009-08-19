@@ -160,20 +160,20 @@ void AP_UnixDialog_PageSetup::_setWidth(const char * buf)
 	{
 		return;
 	}
-	double height = static_cast<double>(m_PageSize.Height(getMarginUnits()));
+	double height = static_cast<double>(m_PageSize.Height(getPageUnits()));
 	if( width >= 0.00001)
 	{
 		if(m_PageSize.isPortrait())
 		{
 			m_PageSize.Set( width,
 							height,
-							getMarginUnits() );
+							getPageUnits() );
 		}
 		else
 		{
 			m_PageSize.Set( height,
 							width,
-							getMarginUnits() );
+							getPageUnits() );
 		}
 	}
 }
@@ -185,20 +185,20 @@ void AP_UnixDialog_PageSetup::_setHeight(const char * buf)
 	{
 		return;
 	}
-	double width = static_cast<double>(m_PageSize.Width(getMarginUnits()));
+	double width = static_cast<double>(m_PageSize.Width(getPageUnits()));
 	if( height >= 0.00001)
 	{
 		if(m_PageSize.isPortrait())
 		{
 			m_PageSize.Set( width,
 							height,
-							getMarginUnits() );
+							getPageUnits() );
 		}
 		else
 		{
 			m_PageSize.Set( height,
 							width,
-							getMarginUnits() );
+							getPageUnits() );
 		}
 	}
 }
@@ -341,18 +341,29 @@ void AP_UnixDialog_PageSetup::event_PageUnitsChanged (void)
 	width  = static_cast<double>(ps.Width (pu));
 	height = static_cast<double>(ps.Height (pu));
 
-	m_PageSize.Set(width, height, pu);
-
+	if(m_PageSize.isPortrait())
+	{
+	    m_PageSize.Set(width, height, pu);
+	}
+	else
+	{
+	    m_PageSize.Set(height,width, pu);
+	}
 	// set values
 	gchar * val;
-
-	val = g_strdup_printf (FMT_STRING, static_cast<float>(width));
-	gtk_entry_set_text (GTK_ENTRY (m_entryPageWidth), val);
-	g_free (val);
-
-	val = g_strdup_printf (FMT_STRING, static_cast<float>(height));
-	gtk_entry_set_text (GTK_ENTRY (m_entryPageHeight), val);
-	g_free (val);
+	{
+	  XAP_GtkSignalBlocker b(G_OBJECT(m_entryPageWidth), m_iEntryPageWidthID);
+	  val = g_strdup_printf (FMT_STRING, static_cast<float>(width));
+	  gtk_entry_set_text (GTK_ENTRY (m_entryPageWidth), val);
+	  g_free (val);
+	}
+	{
+	  XAP_GtkSignalBlocker C(G_OBJECT(m_entryPageHeight), m_iEntryPageHeightID);
+	  val = g_strdup_printf (FMT_STRING, static_cast<float>(height));
+	  gtk_entry_set_text (GTK_ENTRY (m_entryPageHeight), val);
+	  g_free (val);
+	}
+	setPageUnits(pu);
 }
 
 void AP_UnixDialog_PageSetup::event_PageSizeChanged (fp_PageSize::Predefined pd)
@@ -366,8 +377,8 @@ void AP_UnixDialog_PageSetup::event_PageSizeChanged (fp_PageSize::Predefined pd)
 
 	// change the units in the dialog, too.
 	UT_Dimension new_units = ps.getDims();
-    setPageUnits(new_units);
-    XAP_comboBoxSetActiveFromIntCol(GTK_COMBO_BOX (m_optionPageUnits), 1, new_units);
+	setPageUnits(new_units);
+	XAP_comboBoxSetActiveFromIntCol(GTK_COMBO_BOX (m_optionPageUnits), 1, new_units);
 
 	float w, h;
 
@@ -383,7 +394,8 @@ void AP_UnixDialog_PageSetup::event_PageSizeChanged (fp_PageSize::Predefined pd)
   {
 	  // set entry values for a non-custom pagesize
 	  gchar * val;
-
+	  XAP_GtkSignalBlocker b(G_OBJECT(m_entryPageWidth), m_iEntryPageWidthID);
+	  XAP_GtkSignalBlocker c(G_OBJECT(m_entryPageHeight), m_iEntryPageHeightID);
 	  val = g_strdup_printf (FMT_STRING, w);
  	  _setWidth(val);
 	  gtk_entry_set_text (GTK_ENTRY (m_entryPageWidth), val);
