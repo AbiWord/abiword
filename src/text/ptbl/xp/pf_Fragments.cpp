@@ -207,8 +207,7 @@ void pf_Fragments::unlinkFrag(pf_Frag * pf)
 pf_Frag * pf_Fragments::findFirstFragBeforePos(PT_DocPosition pos) const
 {       
 	if (pos >= sizeDocument())
-		return NULL;
-
+	    pos = sizeDocument()-1;
 	Iterator it = find(pos);
 	pf_Frag * pf = it.value();
 	return pf;
