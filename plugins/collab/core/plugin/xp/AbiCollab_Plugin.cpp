@@ -189,7 +189,7 @@ static bool s_abicollab_command_invoke(AV_View* v, EV_EditMethodCallData *d);
 /*!
  * returns true if at least one account is online
  */
-static bool s_any_accounts_online()
+static bool s_any_accounts_online(bool bIncludeNonManualShareAccounts = true)
 {
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_val_if_fail(pManager, false);
@@ -201,7 +201,10 @@ static bool s_any_accounts_online()
 		AccountHandler* pHandler = vecAccounts[i];
 		if (pHandler && pHandler->isOnline())
 		{
-			return true;
+			if (bIncludeNonManualShareAccounts)
+				return true;
+			if (pHandler->canManuallyStartSession())
+				return true;
 		}
 	}
 	return false;
@@ -295,8 +298,8 @@ Defun_EV_GetMenuItemState_Fn(collab_GetState_CanShare)
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_val_if_fail(pManager, EV_MIS_Gray);
 
-	// you can't share a document when no account is only
-	if (!s_any_accounts_online())
+	// you can't share a document when no account is online
+	if (!s_any_accounts_online(false))
 		return EV_MIS_Gray;
 
 	// you can open the share dialog when the document is not shared yet, or
