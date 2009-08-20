@@ -3521,13 +3521,13 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	}
 	else if (pCL && pCL->getContainerType() == FL_CONTAINER_CELL)
 	{
-		fl_CellLayout * pCell = static_cast<fl_CellLayout *>(pCL);
+		//
+		// Don't shrink images to fit cells. Cells should expand to fit images
+		// This is a compromize that makes tables sane for insanely large
+		// images. The user will have to adjust images size manually
+		//
 		maxW = static_cast<UT_sint32>(static_cast<double>(maxW)*0.95);
 		maxH = static_cast<UT_sint32>(static_cast<double>(maxH)*0.95);
-		if(pCell->getCellWidth() > pG->tlu(2) && pCell->getCellWidth() < maxW)
-		{
-			maxW = pCell->getCellWidth();
-		}
 	}
 	if(pG->tdu(maxW) < 3)
 	{
