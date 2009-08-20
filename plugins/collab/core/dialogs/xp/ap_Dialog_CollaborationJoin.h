@@ -57,14 +57,13 @@ protected:
 	DocHandle*			m_pDocHandle;
 
 	void				_eventAddBuddy();
-	void				_addBuddy(AccountHandler* pHandler, BuddyPtr pBuddy);
 	void				_refreshAllDocHandlesAsync();
 	
 	void				_refreshAccounts();
 	
 	virtual void		_refreshWindow() = 0;
 	virtual void		_enableBuddyAddition(bool bEnabled) = 0;
-	
+	virtual void		_addDocument(BuddyPtr pBuddy, DocHandle* pDocHandle) = 0;
 };
 
 #endif /* AP_DIALOG_COLLABORATIONJOIN_H */

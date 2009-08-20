@@ -54,21 +54,19 @@ public:
 private:
 	XAP_Win32DialogHelper *	p_win32Dialog;
 
-	void					_setModel();
+	HTREEITEM				_addBuddyToTree(BuddyPtr pBuddy);
+	HTREEITEM				_addDocumentToBuddy(HTREEITEM buddyItem, BuddyPtr pBuddy, DocHandle* pDocHandle);
+	void					_populateWindowData();
 	void					_refreshWindow();
 	void					_enableBuddyAddition(bool bEnabled);
+	ShareListItem*			_getSelectedItem();
 	void					_updateSelection();
-	void					_eventOpen(HTREEITEM hItem);
+	void					_eventOpen();
+	void					_addDocument(BuddyPtr pBuddy, DocHandle* pDocHandle);
 	
 	// Handles
 	HINSTANCE 				m_hInstance;
 	HWND					m_hDocumentTreeview;
-	
-	// Internal states
-	HTREEITEM				m_hSelected;
-	
-	// Model
-	std::map< HTREEITEM, ShareListItem > m_mTreeItemHandles;
 };
 
 #endif /* AP_WIN32DIALOG_COLLABORATIONJOIN_H */

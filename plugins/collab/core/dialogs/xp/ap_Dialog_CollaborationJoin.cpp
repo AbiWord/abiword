@@ -70,24 +70,16 @@ void AP_Dialog_CollaborationJoin::_eventAddBuddy()
 		// Add the buddy to the dialog
 		// FIXME: use pHandler->constructBuddy here, instead of the hard-coded XMPP buddy!!!
 		XMPPBuddyPtr pNewBuddy(new XMPPBuddy(pAccount, pDialog->getName().utf8_str()));
-		_addBuddy(pAccount, pNewBuddy);
-		
+		UT_DEBUGMSG(("Adding buddy (%s) to handler (%s)\n", pNewBuddy->getDescription().utf8_str(), pAccount->getDescription().utf8_str()));
+		pAccount->addBuddy(pNewBuddy);
+		pAccount->getSessionsAsync(pNewBuddy);
+			
 		// signal that we want to add a buddy to our list
 		AccountAddBuddyRequestEvent event;
 		event.addRecipient(pNewBuddy);
 		pManager->signal(event);
 	}
 	pFactory->releaseDialog(pDialog);
-}
-
-void AP_Dialog_CollaborationJoin::_addBuddy(AccountHandler* pHandler, BuddyPtr pBuddy)
-{
-	UT_return_if_fail(pHandler);
-	UT_return_if_fail(pBuddy);
-
-	UT_DEBUGMSG(("Adding buddy (%s) to handler (%s)\n", pBuddy->getDescription().utf8_str(), pHandler->getDescription().utf8_str()));
-	pHandler->addBuddy(pBuddy);
-	pHandler->getSessionsAsync(pBuddy);
 }
 
 void AP_Dialog_CollaborationJoin::_refreshAllDocHandlesAsync()
@@ -123,7 +115,7 @@ void AP_Dialog_CollaborationJoin::_refreshAccounts()
 	_enableBuddyAddition(bEnableAddition);
 }
 
-void AP_Dialog_CollaborationJoin::signal(const Event& event, BuddyPtr /*pSource*/)
+void AP_Dialog_CollaborationJoin::signal(const Event& event, BuddyPtr pSource)
 {
 	UT_DEBUGMSG(("AP_Dialog_CollaborationJoin::signal()\n"));
 	switch (event.getClassType())
@@ -133,10 +125,15 @@ void AP_Dialog_CollaborationJoin::signal(const Event& event, BuddyPtr /*pSource*
 			_refreshAccounts();
 			break;
 		case PCT_AccountAddBuddyEvent:
+			// we should just drop this on the floor: we don't show buddies
+			// with no documents anyway, and if this buddy does have
+			// a document, then it will get added by an 
+			// AccountBuddyAddDocument event.
+			break;
 		case PCT_AccountDeleteBuddyEvent:
 		case PCT_AccountBuddyOnlineEvent:
 		case PCT_AccountBuddyOfflineEvent:
-			// FIXME: ick ick ick! (I shouldn't need to explain this)
+			// FIXME: ick ick ick! this should be more fine-grained
 			_refreshWindow();
 			break;
 		case PCT_AccountBuddyAddDocumentEvent:
@@ -148,7 +145,10 @@ void AP_Dialog_CollaborationJoin::signal(const Event& event, BuddyPtr /*pSource*
 				//const AccountBuddyAddDocumentEvent* pAde = static_cast<const AccountBuddyAddDocumentEvent*>(&event);
 				//DocHandle* pDocHandler = pAde->getDocHandle();
 				// TODO: only refresh the buddy belonging to this handle
-				_refreshWindow();
+				UT_return_if_fail(pSource);
+
+				const AccountBuddyAddDocumentEvent& abade = static_cast<const AccountBuddyAddDocumentEvent&>(event);
+				_addDocument(pSource, abade.getDocHandle());
 			}
 			break;	
 		case PCT_StartSessionEvent:

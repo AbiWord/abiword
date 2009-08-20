@@ -134,14 +134,10 @@ BOOL AP_Win32Dialog_CollaborationJoin::_onInitDialog(HWND hWnd, WPARAM wParam, L
 	DELETEP(p_win32Dialog);
 	p_win32Dialog = new XAP_Win32DialogHelper(hWnd);
 	
-	//////
 	// Set up dialog initial state
 	_refreshAllDocHandlesAsync();
-	_setModel();
+	_populateWindowData();
 	_refreshAccounts();
-	
-	// we have no selection yet
-	_updateSelection();
 	
 	// Center Window
 	p_win32Dialog->centerDialog();
@@ -157,7 +153,7 @@ BOOL AP_Win32Dialog_CollaborationJoin::_onCommand(HWND hWnd, WPARAM wParam, LPAR
 	switch (wId)
 	{
 	case AP_RID_DIALOG_COLLABORATIONJOIN_OPEN_BUTTON:
-		_eventOpen(m_hSelected);
+		_eventOpen();
 		EndDialog(hWnd, 0);
 		return true;
 
@@ -166,17 +162,7 @@ BOOL AP_Win32Dialog_CollaborationJoin::_onCommand(HWND hWnd, WPARAM wParam, LPAR
 		return true;
 
 	case AP_RID_DIALOG_COLLABORATIONJOIN_ADDBUDDY_BUTTON:
-		// open the Add Buddy dialog
 		_eventAddBuddy();
-		
-		// Would be nice to know if we actually succeeded in adding a buddy
-		// to avoid gratuitous refreshes
-		
-		// have to refresh buddies
-		
-		// Refresh documents
-		_refreshAllDocHandlesAsync();
-		_setModel();
 		return true;
 
 	case AP_RID_DIALOG_COLLABORATIONJOIN_REFRESH_BUTTON:
@@ -184,7 +170,6 @@ BOOL AP_Win32Dialog_CollaborationJoin::_onCommand(HWND hWnd, WPARAM wParam, LPAR
 		// as they could pop up automatically as well (for example with a 
 		// avahi backend)
 		_refreshAllDocHandlesAsync();
-		_setModel();
 		return true;
 
 	default:
@@ -205,7 +190,40 @@ BOOL AP_Win32Dialog_CollaborationJoin::_onNotify(HWND hWnd, WPARAM wParam, LPARA
 	}
 }
 
-void AP_Win32Dialog_CollaborationJoin::_setModel()
+HTREEITEM AP_Win32Dialog_CollaborationJoin::_addBuddyToTree(BuddyPtr pBuddy)
+{
+	UT_UTF8String buddyDesc = pBuddy->getDescription();
+
+	UT_String sBuddyText = AP_Win32App::s_fromUTF8ToWinLocale(buddyDesc.utf8_str());
+	TV_INSERTSTRUCT tviBuddy;
+	tviBuddy.item.mask = TVIF_TEXT | TVIF_STATE | TVIF_PARAM;
+	tviBuddy.hInsertAfter = TVI_SORT;
+	tviBuddy.hParent = NULL; // top most level Item
+	tviBuddy.item.state = 0;
+	tviBuddy.item.pszText = const_cast<char*>(sBuddyText.c_str());
+	tviBuddy.item.lParam = (LPARAM)new ShareListItem(pBuddy, NULL); // FIXME: memory leak
+	return (HTREEITEM)SendMessage(m_hDocumentTreeview, TVM_INSERTITEM,0,(LPARAM)&tviBuddy);
+}
+
+HTREEITEM AP_Win32Dialog_CollaborationJoin::_addDocumentToBuddy(HTREEITEM buddyItem, BuddyPtr pBuddy, DocHandle* pDocHandle)
+{
+	UT_return_val_if_fail(buddyItem, NULL);
+	UT_return_val_if_fail(pBuddy, NULL);
+	UT_return_val_if_fail(pDocHandle, NULL);
+
+	UT_UTF8String docDesc = pDocHandle->getName();
+	UT_String sDocText = AP_Win32App::s_fromUTF8ToWinLocale(docDesc.utf8_str());
+	TV_INSERTSTRUCT tviDocument;
+	tviDocument.item.mask = TVIF_TEXT | TVIF_STATE | TVIF_PARAM;
+	tviDocument.hInsertAfter = TVI_SORT;
+	tviDocument.hParent = buddyItem;
+	tviDocument.item.pszText = const_cast<char*>(sDocText.c_str());
+	tviDocument.item.state = 0;
+	tviDocument.item.lParam = (LPARAM)new ShareListItem(pBuddy, pDocHandle); // FIXME: memory leak
+	return (HTREEITEM)SendMessage(m_hDocumentTreeview, TVM_INSERTITEM, 0, (LPARAM)&tviDocument);
+}
+
+void AP_Win32Dialog_CollaborationJoin::_populateWindowData()
 {
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_if_fail(pManager);
@@ -213,7 +231,6 @@ void AP_Win32Dialog_CollaborationJoin::_setModel()
 	const std::vector<AccountHandler *>& accounts = pManager->getAccounts();
 	
 	// clear the treeview; items will not be displayed until the window styles are reset
-	m_mTreeItemHandles.clear();
 	DWORD styles = GetWindowLong(m_hDocumentTreeview, GWL_STYLE);
 	TreeView_DeleteAllItems(m_hDocumentTreeview);
 
@@ -235,44 +252,15 @@ void AP_Win32Dialog_CollaborationJoin::_setModel()
 			if (!docTreeItems)
 				continue;
 
-			UT_UTF8String buddyDesc = pBuddy->getDescription();
-
-			UT_String sBuddyText = AP_Win32App::s_fromUTF8ToWinLocale(buddyDesc.utf8_str());
-			TV_INSERTSTRUCT tviBuddy;
-			tviBuddy.item.mask = TVIF_TEXT | TVIF_STATE; // text only right now
-			tviBuddy.hInsertAfter = TVI_SORT;
-			tviBuddy.hParent = NULL; // top most level Item
-			tviBuddy.item.state = TVIS_EXPANDED; // weird, this does not seem to work; therefor, we expand this node again later on
-			tviBuddy.item.pszText = const_cast<char*>(sBuddyText.c_str());
-			HTREEITEM htiBuddy = (HTREEITEM)SendMessage(m_hDocumentTreeview, TVM_INSERTITEM,0,(LPARAM)&tviBuddy);
-			m_mTreeItemHandles.insert(std::pair<HTREEITEM, ShareListItem>(htiBuddy, ShareListItem(pBuddy, NULL)));
+			HTREEITEM htiBuddy = _addBuddyToTree(pBuddy);
 			
 			// add all documents for this buddy
 			for (const DocTreeItem* item = docTreeItems; item; item = item->m_next)
 			{
-				UT_continue_if_fail(item->m_docHandle);
-				UT_UTF8String docDesc = item->m_docHandle->getName();
-				UT_DEBUGMSG(("Adding document (%s) to the treeview\n", docDesc.utf8_str()));
-				
-				UT_String sDocText = AP_Win32App::s_fromUTF8ToWinLocale(docDesc.utf8_str());
-				TV_INSERTSTRUCT tviDocument;
-				tviDocument.item.mask = TVIF_TEXT | TVIF_STATE; // text only right now
-				tviDocument.hInsertAfter = TVI_SORT;
-				tviDocument.hParent = htiBuddy;
-				tviDocument.item.pszText = const_cast<char*>(sDocText.c_str());
-				tviDocument.item.state = 0;
-				HTREEITEM htiDoc = (HTREEITEM)SendMessage(m_hDocumentTreeview, TVM_INSERTITEM, 0, (LPARAM)&tviDocument);
-				m_mTreeItemHandles.insert(std::pair<HTREEITEM, ShareListItem>(htiDoc, ShareListItem(pBuddy, item->m_docHandle)));
+				UT_continue_if_fail(item);
+				UT_continue_if_fail(_addDocumentToBuddy(htiBuddy, pBuddy, item->m_docHandle));
 			}
 		}
-	}
-	
-	// Now expand all of the buddies
-	for (std::map< HTREEITEM, ShareListItem >::const_iterator cit = m_mTreeItemHandles.begin(); cit != m_mTreeItemHandles.end(); cit++)
-	{
-		UT_continue_if_fail(cit->first);
-		if (!cit->second.pDocHandle)
-			TreeView_Expand(m_hDocumentTreeview, cit->first, TVE_EXPAND);
 	}
 	
 	// reset the window styles; shows all items
@@ -283,7 +271,7 @@ void AP_Win32Dialog_CollaborationJoin::_setModel()
 
 void AP_Win32Dialog_CollaborationJoin::_refreshWindow()
 {
-	_setModel();
+	_populateWindowData();
 }
 
 void AP_Win32Dialog_CollaborationJoin::_enableBuddyAddition(bool bEnabled)
@@ -291,51 +279,85 @@ void AP_Win32Dialog_CollaborationJoin::_enableBuddyAddition(bool bEnabled)
 	p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_ADDBUDDY_BUTTON, bEnabled);
 }
 
-void AP_Win32Dialog_CollaborationJoin::_updateSelection()
+ShareListItem* AP_Win32Dialog_CollaborationJoin::_getSelectedItem()
 {
-	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	UT_return_if_fail(pManager);	
-	
-	HTREEITEM hSelItem = TreeView_GetSelection(m_hDocumentTreeview);
-	if (hSelItem)
-	{
-		m_hSelected = hSelItem;
+	UT_return_val_if_fail(m_hDocumentTreeview, NULL);
 
-		std::map< HTREEITEM, ShareListItem >::const_iterator cit = m_mTreeItemHandles.find(hSelItem);
-		UT_return_if_fail(cit != m_mTreeItemHandles.end());
-		if (cit->second.pDocHandle)
-		{
-			UT_DEBUGMSG(("Document selected\n"));
-			p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_OPEN_BUTTON, true );
-		}
-		else
-		{
-			UT_DEBUGMSG(("Buddy selected\n"));
-			p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_OPEN_BUTTON, false);
-		}
+	HTREEITEM hSelItem = TreeView_GetSelection(m_hDocumentTreeview);
+	if (!hSelItem)
+	{
+		p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_OPEN_BUTTON, false);
+		return NULL;
+	}
+
+	TVITEM item;
+	item.mask = TVIF_PARAM;
+	item.hItem = hSelItem;
+	UT_return_val_if_fail(TreeView_GetItem(m_hDocumentTreeview, &item), NULL);
+
+	return reinterpret_cast<ShareListItem*>(item.lParam); 
+}
+
+void AP_Win32Dialog_CollaborationJoin::_updateSelection()
+{	
+	ShareListItem* sli = _getSelectedItem();
+	if (!sli)
+		return;
+
+	if (sli->pDocHandle)
+	{
+		UT_DEBUGMSG(("Document selected\n"));
+		p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_OPEN_BUTTON, true );
 	}
 	else
 	{
+		UT_DEBUGMSG(("Buddy selected\n"));
 		p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_OPEN_BUTTON, false);
 	}
 }
 
-void AP_Win32Dialog_CollaborationJoin::_eventOpen(HTREEITEM hItem)
+void AP_Win32Dialog_CollaborationJoin::_eventOpen()
 {
-	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	UT_return_if_fail(pManager);
+	UT_DEBUGMSG(("AP_Win32Dialog_CollaborationJoin::_eventOpen()\n"));
+	ShareListItem* sli = _getSelectedItem();
+	UT_return_if_fail(sli && sli->pBuddy && sli->pDocHandle);
 
-	std::map< HTREEITEM, ShareListItem >::const_iterator cit = m_mTreeItemHandles.find(hItem);
-	UT_return_if_fail(cit != m_mTreeItemHandles.end());	
+	m_answer = AP_Dialog_CollaborationJoin::a_OPEN;
+	m_pBuddy = sli->pBuddy;
+	m_pDocHandle = sli->pDocHandle;
+}
 
-	BuddyPtr pBuddy = cit->second.pBuddy;
+void AP_Win32Dialog_CollaborationJoin::_addDocument(BuddyPtr pBuddy, DocHandle* pDocHandle)
+{
+	UT_DEBUGMSG(("AP_Win32Dialog_CollaborationJoin::_addDocument()"));
 	UT_return_if_fail(pBuddy);
-
-	DocHandle* pDocHandle = cit->second.pDocHandle;
 	UT_return_if_fail(pDocHandle);
 
-	UT_DEBUGMSG(("Got a document we can connect to!\n"));
-	m_answer = AP_Dialog_CollaborationJoin::a_OPEN;
-	m_pBuddy = pBuddy;
-	m_pDocHandle = pDocHandle;
+	// check if this buddy is already in our tree
+	HTREEITEM item = TreeView_GetRoot(m_hDocumentTreeview);
+    while (item)
+	{
+		TVITEM buddyItem;
+		buddyItem.mask = TVIF_PARAM;
+		buddyItem.hItem = item;
+		UT_return_if_fail(TreeView_GetItem(m_hDocumentTreeview, &buddyItem));		
+		UT_return_if_fail(buddyItem.lParam);
+
+		ShareListItem* sli = reinterpret_cast<ShareListItem*>(buddyItem.lParam);
+		if (pBuddy->getDescriptor(false) == sli->pBuddy->getDescriptor(false))
+			break;
+
+		item = TreeView_GetNextItem(m_hDocumentTreeview, item, TVGN_NEXT);
+	}
+	
+	if (!item)
+	{
+		// the buddy is not in our tree yet, let's add it
+		item = _addBuddyToTree(pBuddy);
+		UT_return_if_fail(item);
+	}
+
+	// add the document to the buddy
+	HTREEITEM htiDoc = _addDocumentToBuddy(item, pBuddy, pDocHandle);
+	UT_ASSERT_HARMLESS(htiDoc);
 }
