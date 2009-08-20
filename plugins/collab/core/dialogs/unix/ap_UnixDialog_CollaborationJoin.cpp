@@ -372,3 +372,10 @@ void AP_UnixDialog_CollaborationJoin::eventSelectionChanged(GtkTreeView *treevie
 
 	gtk_widget_set_sensitive(m_wOpen, true);
 }
+
+void AP_UnixDialog_CollaborationJoin::_addDocument(BuddyPtr /*pBuddy*/, DocHandle* /*pDocHandle*/)
+{
+	// TODO: implement this sanely like the Win32 dialog, which does not
+	// simply refresh the whole dialog.
+	_refreshWindow();
+}

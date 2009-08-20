@@ -48,6 +48,7 @@ private:
 	void				_setModel(GtkTreeStore* model);
 	void				_refreshWindow();
 	void				_enableBuddyAddition(bool bEnabled);
+	void				_addDocument(BuddyPtr pBuddy, DocHandle* pDocHandle);
 
 	GtkWidget*			m_wWindowMain;
 	GtkWidget*			m_wAddBuddy;
