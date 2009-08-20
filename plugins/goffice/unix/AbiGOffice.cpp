@@ -57,9 +57,9 @@ abi_error_error (G_GNUC_UNUSED GOCmdContext *cc, GError *error)
 }
 
 static void
-abi_error_info (G_GNUC_UNUSED GOCmdContext *cc, ErrorInfo *error)
+abi_error_info (G_GNUC_UNUSED GOCmdContext *cc, GOErrorInfo *error)
 {
-	error_info_print (error);
+	go_error_info_print (error);
 }
 
 static char *
