@@ -1440,7 +1440,14 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG, bo
 		UT_RGBColor white(255,255,255);
 		white = *pPage->getFillType()->getColor();
 
-		UT_sint32 iextLeft,iextRight,iextTop,iextBot= 0;
+		//
+		// Might needs these later
+		//
+		UT_sint32 iextLeft=0;
+		UT_sint32 iextRight=0;
+		UT_sint32 iextTop=0;
+		UT_sint32 iextBot= 0;
+
 		if (m_bDrawLeft)
 		{
 			if(bDoClear)
