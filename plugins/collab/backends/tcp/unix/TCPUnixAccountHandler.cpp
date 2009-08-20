@@ -73,7 +73,8 @@ void TCPUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	server_entry = gtk_entry_new();
 	gtk_table_attach_defaults(GTK_TABLE(table), server_entry, 2, 3, 0, 1);
 	gtk_widget_set_sensitive(server_entry, false);
-	
+	gtk_entry_set_activates_default(GTK_ENTRY(server_entry), true);	
+
 	gtk_box_pack_start(GTK_BOX(vbox), table, TRUE, TRUE, 0);
 	
 	// port

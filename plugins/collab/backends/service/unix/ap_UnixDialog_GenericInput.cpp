@@ -101,7 +101,7 @@ GtkWidget * AP_UnixDialog_GenericInput::_constructWindow(void)
 	gtk_label_set_text(GTK_LABEL(GTK_WIDGET(gtk_builder_get_object(builder, "lbQuestion"))), getQuestion().utf8_str());
 	gtk_label_set_text(GTK_LABEL(GTK_WIDGET(gtk_builder_get_object(builder, "lbLabel"))), getLabel().utf8_str());
 
-	// set the default action to take on "enter"
+	// "enter" in the edit box should trigger the default action
 	gtk_entry_set_activates_default(GTK_ENTRY(m_wInput), true);
 
 	// connect our signals

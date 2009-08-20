@@ -62,7 +62,7 @@ void AP_UnixDialog_CollaborationAddAccount::runModal(XAP_Frame * pFrame)
 	_populateWindowData();
 
 	switch ( abiRunModalDialog ( GTK_DIALOG(m_wWindowMain),
-								 pFrame, this, GTK_RESPONSE_CANCEL, false ) )
+								 pFrame, this, GTK_RESPONSE_OK, false ) )
 	{
 		case GTK_RESPONSE_CANCEL:
 			m_answer = AP_UnixDialog_CollaborationAddAccount::a_CANCEL;

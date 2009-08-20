@@ -55,6 +55,7 @@ void ServiceUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	gtk_table_attach_defaults(GTK_TABLE(table), username_label, 0, 1, 0, 1);
 	username_entry = gtk_entry_new();
 	gtk_table_attach_defaults(GTK_TABLE(table), username_entry, 1, 2, 0, 1);
+	gtk_entry_set_activates_default(GTK_ENTRY(username_entry), true);
 
 	// password
 	GtkWidget* password_label = gtk_label_new("Password:");
@@ -63,7 +64,8 @@ void ServiceUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	password_entry = gtk_entry_new();
 	gtk_entry_set_visibility(GTK_ENTRY(password_entry), false);
 	gtk_table_attach_defaults(GTK_TABLE(table), password_entry, 1, 2, 1, 2);
-	
+	gtk_entry_set_activates_default(GTK_ENTRY(password_entry), true);
+
 	// autoconnect
 	autoconnect_button = gtk_check_button_new_with_label ("Connect on application startup");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(autoconnect_button), true);
