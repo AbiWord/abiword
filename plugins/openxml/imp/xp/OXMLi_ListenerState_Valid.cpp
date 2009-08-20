@@ -723,7 +723,8 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 		{
 			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "lid") || 
 						  contextMatches(contextTag, NS_W_KEY, "rubyPr") ||
-						  contextMatches(contextTag, NS_W_KEY, "date");
+						  contextMatches(contextTag, NS_W_KEY, "date") ||
+						  contextMatches(contextTag, NS_W_KEY, "fieldMapData");
 			break;
 		}
 		case KEYWORD_monthLong:
@@ -1496,7 +1497,9 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 		{
 			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "type") || 
 						  contextMatches(contextTag, NS_W_KEY, "types") ||
-						  contextMatches(contextTag, NS_W_KEY, "sectPr");
+						  contextMatches(contextTag, NS_W_KEY, "sectPr") ||
+						  contextMatches(contextTag, NS_W_KEY, "fieldMapData") ||
+						  contextMatches(contextTag, NS_W_KEY, "odso");
 			break;
 		}
 
@@ -1549,7 +1552,8 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 						  contextMatches(contextTag, NS_W_KEY, "style") ||
 						  contextMatches(contextTag, NS_W_KEY, "category") ||
 						  contextMatches(contextTag, NS_W_KEY, "docPartPr") ||
-						  contextMatches(contextTag, NS_W_KEY, "abstractNum");
+						  contextMatches(contextTag, NS_W_KEY, "abstractNum") ||
+						  contextMatches(contextTag, NS_W_KEY, "fieldMapData");
 			break;
 		}
 		case KEYWORD_next:
@@ -3070,6 +3074,189 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 			break;
 		}
 
+		//Section 2.14, Mail Merge
+		case KEYWORD_active:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "active") || 
+						  contextMatches(contextTag, NS_W_KEY, "recipientData");
+			break;
+		}
+		case KEYWORD_activeRecord:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "activeRecord") || 
+						  contextMatches(contextTag, NS_W_KEY, "mailMerge");
+			break;
+		}
+		case KEYWORD_addressFieldName:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "addressFieldName") || 
+						  contextMatches(contextTag, NS_W_KEY, "mailMerge");
+			break;
+		}
+		case KEYWORD_checkErrors:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "checkErrors") || 
+						  contextMatches(contextTag, NS_W_KEY, "mailMerge");
+			break;
+		}
+		case KEYWORD_colDelim:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "colDelim") || 
+						  contextMatches(contextTag, NS_W_KEY, "odso");
+			break;
+		}
+		case KEYWORD_column:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "column") || 
+						  contextMatches(contextTag, NS_W_KEY, "recipientData") ||
+						  contextMatches(contextTag, NS_W_KEY, "fieldMapData");
+			break;
+		}
+		case KEYWORD_connectString:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "connectString") || 
+						  contextMatches(contextTag, NS_W_KEY, "mailMerge");
+			break;
+		}
+		case KEYWORD_dataSource:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "dataSource") || 
+						  contextMatches(contextTag, NS_W_KEY, "mailMerge");
+			break;
+		}
+		case KEYWORD_dataType:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "dataType") || 
+						  contextMatches(contextTag, NS_W_KEY, "mailMerge");
+			break;
+		}
+		case KEYWORD_destination:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "destination") || 
+						  contextMatches(contextTag, NS_W_KEY, "mailMerge");
+			break;
+		}
+		case KEYWORD_doNotSuppressBlankLines:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "doNotSuppressBlankLines") || 
+						  contextMatches(contextTag, NS_W_KEY, "mailMerge");
+			break;
+		}
+		case KEYWORD_dynamicAddress:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "dynamicAddress") || 
+						  contextMatches(contextTag, NS_W_KEY, "fieldMapData");
+			break;
+		}
+		case KEYWORD_fHdr:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "fHdr") || 
+						  contextMatches(contextTag, NS_W_KEY, "odso");
+			break;
+		}
+		case KEYWORD_fieldMapData:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "fieldMapData") || 
+						  contextMatches(contextTag, NS_W_KEY, "odso");
+			break;
+		}
+		case KEYWORD_headerSource:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "headerSource") || 
+						  contextMatches(contextTag, NS_W_KEY, "mailMerge");
+			break;
+		}
+		case KEYWORD_linkToQuery:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "linkToQuery") || 
+						  contextMatches(contextTag, NS_W_KEY, "mailMerge");
+			break;
+		}
+		case KEYWORD_mailAsAttachment:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "mailAsAttachment") || 
+						  contextMatches(contextTag, NS_W_KEY, "mailMerge");
+			break;
+		}
+		case KEYWORD_mailMerge:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "mailMerge") || 
+						  contextMatches(contextTag, NS_W_KEY, "settings");
+			break;
+		}
+		case KEYWORD_mailSubject:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "mailSubject") || 
+						  contextMatches(contextTag, NS_W_KEY, "mailMerge");
+			break;
+		}
+		case KEYWORD_mainDocumentType:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "mainDocumentType") || 
+						  contextMatches(contextTag, NS_W_KEY, "mailMerge");
+			break;
+		}
+		case KEYWORD_mappedName:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "mappedName") || 
+						  contextMatches(contextTag, NS_W_KEY, "fieldMapData");
+			break;
+		}
+		case KEYWORD_odso:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "odso") || 
+						  contextMatches(contextTag, NS_W_KEY, "mailMerge");
+			break;
+		}
+		case KEYWORD_query:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "query") || 
+						  contextMatches(contextTag, NS_W_KEY, "mailMerge");
+			break;
+		}
+		case KEYWORD_recipientData:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "recipientData") || 
+						  contextMatches(contextTag, NS_W_KEY, "odso") ||
+						  contextMatches(contextTag, NS_W_KEY, "recipients");
+			break;
+		}
+		case KEYWORD_recipients:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "recipients");
+			break;
+		}
+		case KEYWORD_src:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "src") || 
+						  contextMatches(contextTag, NS_W_KEY, "odso");
+			break;
+		}
+		case KEYWORD_table:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "table") || 
+						  contextMatches(contextTag, NS_W_KEY, "odso");
+			break;
+		}
+		case KEYWORD_udl:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "udl") || 
+						  contextMatches(contextTag, NS_W_KEY, "odso");
+			break;
+		}
+		case KEYWORD_uniqueTag:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "uniqueTag") || 
+						  contextMatches(contextTag, NS_W_KEY, "recipientData");
+			break;
+		}
+		case KEYWORD_viewMergedData:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_W_KEY, "viewMergedData") || 
+						  contextMatches(contextTag, NS_W_KEY, "mailMerge");
+			break;
+		}
+
 		//TODO: add more here
 	};
 }
@@ -3095,6 +3282,9 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 {
 	m_keywordMap.insert(std::make_pair("W:abstractNum", KEYWORD_abstractNum));
 	m_keywordMap.insert(std::make_pair("W:abstractNumId", KEYWORD_abstractNumId));
+	m_keywordMap.insert(std::make_pair("W:active", KEYWORD_active));
+	m_keywordMap.insert(std::make_pair("W:activeRecord", KEYWORD_activeRecord));
+	m_keywordMap.insert(std::make_pair("W:addressFieldName", KEYWORD_addressFieldName));
 	m_keywordMap.insert(std::make_pair("W:adjustRightInd", KEYWORD_adjustRightInd));
 	m_keywordMap.insert(std::make_pair("W:alias", KEYWORD_alias));
 	m_keywordMap.insert(std::make_pair("W:aliases", KEYWORD_aliases));
@@ -3129,14 +3319,18 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:cellIns", KEYWORD_cellIns));
 	m_keywordMap.insert(std::make_pair("W:cellMerge", KEYWORD_cellMerge));
 	m_keywordMap.insert(std::make_pair("W:charset", KEYWORD_charset));
+	m_keywordMap.insert(std::make_pair("W:checkErrors", KEYWORD_checkErrors));
 	m_keywordMap.insert(std::make_pair("W:citation", KEYWORD_citation));
 	m_keywordMap.insert(std::make_pair("W:cnfStyle", KEYWORD_cnfStyle));
+	m_keywordMap.insert(std::make_pair("W:colDelim", KEYWORD_colDelim));
+	m_keywordMap.insert(std::make_pair("W:column", KEYWORD_column));
 	m_keywordMap.insert(std::make_pair("W:comboBox", KEYWORD_comboBox));
 	m_keywordMap.insert(std::make_pair("W:comment", KEYWORD_comment));
 	m_keywordMap.insert(std::make_pair("W:commentRangeEnd", KEYWORD_commentRangeEnd));
 	m_keywordMap.insert(std::make_pair("W:commentRangeStart", KEYWORD_commentRangeStart));
 	m_keywordMap.insert(std::make_pair("W:commentReference", KEYWORD_commentReference));
 	m_keywordMap.insert(std::make_pair("W:comments", KEYWORD_comments));
+	m_keywordMap.insert(std::make_pair("W:connectString", KEYWORD_connectString));
 	m_keywordMap.insert(std::make_pair("W:contextualSpacing", KEYWORD_contextualSpacing));
 	m_keywordMap.insert(std::make_pair("W:continuationSeparator", KEYWORD_continuationSeparator));
 	m_keywordMap.insert(std::make_pair("W:col", KEYWORD_col));
@@ -3156,6 +3350,8 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:customXmlMoveToRangeStart", KEYWORD_customXmlMoveToRangeStart));
 	m_keywordMap.insert(std::make_pair("W:customXmlPr", KEYWORD_customXmlPr));
 	m_keywordMap.insert(std::make_pair("W:dataBinding", KEYWORD_dataBinding));
+	m_keywordMap.insert(std::make_pair("W:dataSource", KEYWORD_dataSource));
+	m_keywordMap.insert(std::make_pair("W:dataType", KEYWORD_dataType));
 	m_keywordMap.insert(std::make_pair("W:date", KEYWORD_date));
 	m_keywordMap.insert(std::make_pair("W:dateFormat", KEYWORD_dateFormat));
 	m_keywordMap.insert(std::make_pair("W:dayLong", KEYWORD_dayLong));
@@ -3163,6 +3359,7 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:del", KEYWORD_del));
 	m_keywordMap.insert(std::make_pair("W:delText", KEYWORD_delText));
 	m_keywordMap.insert(std::make_pair("W:description", KEYWORD_description));
+	m_keywordMap.insert(std::make_pair("W:destination", KEYWORD_destination));
 	m_keywordMap.insert(std::make_pair("W:dirty", KEYWORD_dirty));
 	m_keywordMap.insert(std::make_pair("W:divId", KEYWORD_divId));
 	m_keywordMap.insert(std::make_pair("W:docDefaults", KEYWORD_docDefaults));
@@ -3177,9 +3374,11 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:docParts", KEYWORD_docParts));
 	m_keywordMap.insert(std::make_pair("W:docPartUnique", KEYWORD_docPartUnique));
 	m_keywordMap.insert(std::make_pair("W:document", KEYWORD_document));
+	m_keywordMap.insert(std::make_pair("W:doNotSuppressBlankLines", KEYWORD_doNotSuppressBlankLines));
 	m_keywordMap.insert(std::make_pair("W:drawing", KEYWORD_drawing));
 	m_keywordMap.insert(std::make_pair("W:dropDownList", KEYWORD_dropDownList));
 	m_keywordMap.insert(std::make_pair("W:dstrike", KEYWORD_dstrike));
+	m_keywordMap.insert(std::make_pair("W:dynamicAddress", KEYWORD_dynamicAddress));
 	m_keywordMap.insert(std::make_pair("W:eastAsianLayout", KEYWORD_eastAsianLayout));
 	m_keywordMap.insert(std::make_pair("W:effect", KEYWORD_effect));
 	m_keywordMap.insert(std::make_pair("W:equation", KEYWORD_equation));
@@ -3198,6 +3397,8 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:endnotes", KEYWORD_endnotes));
 	m_keywordMap.insert(std::make_pair("W:evenAndOddHeaders", KEYWORD_evenAndOddHeaders));
 	m_keywordMap.insert(std::make_pair("W:family", KEYWORD_family));
+	m_keywordMap.insert(std::make_pair("W:fHdr", KEYWORD_fHdr));
+	m_keywordMap.insert(std::make_pair("W:fieldMapData", KEYWORD_fieldMapData));
 	m_keywordMap.insert(std::make_pair("W:fitText", KEYWORD_fitText));
 	m_keywordMap.insert(std::make_pair("W:font", KEYWORD_font));
 	m_keywordMap.insert(std::make_pair("W:fonts", KEYWORD_fonts));
@@ -3220,6 +3421,7 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:guid", KEYWORD_guid));
 	m_keywordMap.insert(std::make_pair("W:hdr", KEYWORD_hdr));
 	m_keywordMap.insert(std::make_pair("W:headerReference", KEYWORD_headerReference));
+	m_keywordMap.insert(std::make_pair("W:headerSource", KEYWORD_headerSource));
 	m_keywordMap.insert(std::make_pair("W:hidden", KEYWORD_hidden));
 	m_keywordMap.insert(std::make_pair("W:hideMark", KEYWORD_hideMark));
 	m_keywordMap.insert(std::make_pair("W:highlight", KEYWORD_highlight));
@@ -3249,6 +3451,7 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
     m_keywordMap.insert(std::make_pair("W:legacy", KEYWORD_legacy));
 	m_keywordMap.insert(std::make_pair("W:lid", KEYWORD_lid));
 	m_keywordMap.insert(std::make_pair("W:link", KEYWORD_link));
+	m_keywordMap.insert(std::make_pair("W:linkToQuery", KEYWORD_linkToQuery));
 	m_keywordMap.insert(std::make_pair("W:listItem", KEYWORD_listItem));
 	m_keywordMap.insert(std::make_pair("W:lock", KEYWORD_lock));
 	m_keywordMap.insert(std::make_pair("W:locked", KEYWORD_locked));
@@ -3260,6 +3463,11 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:lvlPicBulletId", KEYWORD_lvlPicBulletId));
 	m_keywordMap.insert(std::make_pair("W:lvlRestart", KEYWORD_lvlRestart));
 	m_keywordMap.insert(std::make_pair("W:lvlText", KEYWORD_lvlText));
+	m_keywordMap.insert(std::make_pair("W:mailAsAttachment", KEYWORD_mailAsAttachment));
+	m_keywordMap.insert(std::make_pair("W:mailMerge", KEYWORD_mailMerge));
+	m_keywordMap.insert(std::make_pair("W:mailSubject", KEYWORD_mailSubject));
+	m_keywordMap.insert(std::make_pair("W:mainDocumentType", KEYWORD_mainDocumentType));
+	m_keywordMap.insert(std::make_pair("W:mappedName", KEYWORD_mappedName));
 	m_keywordMap.insert(std::make_pair("W:mirrorIndents", KEYWORD_mirrorIndents));
 	m_keywordMap.insert(std::make_pair("W:monthLong", KEYWORD_monthLong));
 	m_keywordMap.insert(std::make_pair("W:monthShort", KEYWORD_monthShort));
@@ -3291,6 +3499,7 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:numStart", KEYWORD_numStart));
 	m_keywordMap.insert(std::make_pair("W:numStyleLink", KEYWORD_numStyleLink));
 	m_keywordMap.insert(std::make_pair("W:object", KEYWORD_object));
+	m_keywordMap.insert(std::make_pair("W:odso", KEYWORD_odso));
 	m_keywordMap.insert(std::make_pair("W:oMath", KEYWORD_oMath));
 	m_keywordMap.insert(std::make_pair("W:outline", KEYWORD_outline));
 	m_keywordMap.insert(std::make_pair("W:outlineLvl", KEYWORD_outlineLvl));
@@ -3324,7 +3533,10 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:pStyle", KEYWORD_pStyle));
 	m_keywordMap.insert(std::make_pair("W:ptab", KEYWORD_ptab));
 	m_keywordMap.insert(std::make_pair("W:qFormat", KEYWORD_qFormat));
+	m_keywordMap.insert(std::make_pair("W:query", KEYWORD_query));
 	m_keywordMap.insert(std::make_pair("W:r", KEYWORD_r));
+	m_keywordMap.insert(std::make_pair("W:recipientData", KEYWORD_recipientData));
+	m_keywordMap.insert(std::make_pair("W:recipients", KEYWORD_recipients));
 	m_keywordMap.insert(std::make_pair("W:rFonts", KEYWORD_rFonts));
 	m_keywordMap.insert(std::make_pair("W:richText", KEYWORD_richText));
 	m_keywordMap.insert(std::make_pair("W:right", KEYWORD_right));
@@ -3360,6 +3572,7 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:softHyphen", KEYWORD_softHyphen));
 	m_keywordMap.insert(std::make_pair("W:spacing", KEYWORD_spacing));
 	m_keywordMap.insert(std::make_pair("W:specVanish", KEYWORD_specVanish));
+	m_keywordMap.insert(std::make_pair("W:src", KEYWORD_src));
 	m_keywordMap.insert(std::make_pair("W:start", KEYWORD_start));
 	m_keywordMap.insert(std::make_pair("W:startOverride", KEYWORD_startOverride));
 	m_keywordMap.insert(std::make_pair("W:storeMappedDataAs", KEYWORD_storeMappedDataAs));
@@ -3376,6 +3589,7 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:szCs", KEYWORD_szCs));
 	m_keywordMap.insert(std::make_pair("W:t", KEYWORD_t));
 	m_keywordMap.insert(std::make_pair("W:tab", KEYWORD_tab));
+	m_keywordMap.insert(std::make_pair("W:table", KEYWORD_table));
 	m_keywordMap.insert(std::make_pair("W:tabs", KEYWORD_tabs));
 	m_keywordMap.insert(std::make_pair("W:tag", KEYWORD_tag));
 	m_keywordMap.insert(std::make_pair("W:tbl", KEYWORD_tbl));
@@ -3424,11 +3638,14 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:type", KEYWORD_type));
 	m_keywordMap.insert(std::make_pair("W:types", KEYWORD_types));
 	m_keywordMap.insert(std::make_pair("W:u", KEYWORD_u));
+	m_keywordMap.insert(std::make_pair("W:udl", KEYWORD_udl));
 	m_keywordMap.insert(std::make_pair("W:uiPriority", KEYWORD_uiPriority));
 	m_keywordMap.insert(std::make_pair("W:unhideWhenUsed", KEYWORD_unhideWhenUsed));
+	m_keywordMap.insert(std::make_pair("W:uniqueTag", KEYWORD_uniqueTag));
 	m_keywordMap.insert(std::make_pair("W:vAlign", KEYWORD_vAlign));
 	m_keywordMap.insert(std::make_pair("W:vanish", KEYWORD_vanish));
 	m_keywordMap.insert(std::make_pair("W:vertAlign", KEYWORD_vertAlign));
+	m_keywordMap.insert(std::make_pair("W:viewMergedData", KEYWORD_viewMergedData));
 	m_keywordMap.insert(std::make_pair("W:vMerge", KEYWORD_vMerge));
 	m_keywordMap.insert(std::make_pair("W:yearLong", KEYWORD_yearLong));
 	m_keywordMap.insert(std::make_pair("W:yearShort", KEYWORD_yearShort));
