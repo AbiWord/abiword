@@ -258,7 +258,6 @@ void AP_UnixDialog_CollaborationJoin::_setModel(GtkTreeStore* model)
 	m_wModel = model;
 
 	gtk_tree_view_set_model(GTK_TREE_VIEW (m_wBuddyTree), GTK_TREE_MODEL(m_wModel));
-	gtk_tree_view_expand_all (GTK_TREE_VIEW (m_wBuddyTree));
 
 	// sort on the buddy name
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE (m_wModel), DESCRIPTION_COLUMN, GTK_SORT_ASCENDING);
