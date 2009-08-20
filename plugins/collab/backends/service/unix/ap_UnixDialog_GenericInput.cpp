@@ -60,7 +60,7 @@ void AP_UnixDialog_GenericInput::runModal(XAP_Frame * pFrame)
 	_populateWindowData();
 
 	switch ( abiRunModalDialog ( GTK_DIALOG(m_wWindowMain),
-								 pFrame, this, GTK_RESPONSE_CANCEL, false ) )
+								 pFrame, this, GTK_RESPONSE_OK, false ) )
 	{
 		case GTK_RESPONSE_CANCEL:
 			m_answer = AP_UnixDialog_GenericInput::a_CANCEL;
@@ -100,6 +100,9 @@ GtkWidget * AP_UnixDialog_GenericInput::_constructWindow(void)
 	// set the question
 	gtk_label_set_text(GTK_LABEL(GTK_WIDGET(gtk_builder_get_object(builder, "lbQuestion"))), getQuestion().utf8_str());
 	gtk_label_set_text(GTK_LABEL(GTK_WIDGET(gtk_builder_get_object(builder, "lbLabel"))), getLabel().utf8_str());
+
+	// set the default action to take on "enter"
+	gtk_entry_set_activates_default(GTK_ENTRY(m_wInput), true);
 
 	// connect our signals
 	g_signal_connect(G_OBJECT(m_wInput),
