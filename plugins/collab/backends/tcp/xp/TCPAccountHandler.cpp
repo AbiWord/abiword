@@ -110,13 +110,14 @@ ConnectResult TCPAccountHandler::connect()
 	}
 	else
 	{
-		UT_DEBUGMSG(("Connecting to server %s on port %d...\n", getProperty("server").c_str(), _getPort(getProperties())));
-		boost::shared_ptr<Session> session_ptr(new Session(m_io_service, boost::bind(&TCPAccountHandler::handleEvent, this, _1)));
-		asio::ip::tcp::resolver resolver(m_io_service);
-		asio::ip::tcp::resolver::query query(getProperty("server"), getProperty("port"));
-		asio::ip::tcp::resolver::iterator iterator(resolver.resolve(query));
 		try
 		{
+			UT_DEBUGMSG(("Connecting to server %s on port %d...\n", getProperty("server").c_str(), _getPort(getProperties())));
+			boost::shared_ptr<Session> session_ptr(new Session(m_io_service, boost::bind(&TCPAccountHandler::handleEvent, this, _1)));
+			asio::ip::tcp::resolver resolver(m_io_service);
+			asio::ip::tcp::resolver::query query(getProperty("server"), getProperty("port"));
+			asio::ip::tcp::resolver::iterator iterator(resolver.resolve(query));
+
 			session_ptr->connect(iterator);
 			session_ptr->asyncReadHeader();
 			m_bConnected = true; // todo: ask it to the socket
