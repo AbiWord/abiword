@@ -673,8 +673,22 @@ bool s_abicollab_join(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 	switch (answer)
 	{
 		case AP_Dialog_CollaborationJoin::a_OPEN:
-			UT_return_val_if_fail(pBuddy && pDocHandle, false);
-			pManager->joinSessionInitiate(pBuddy, pDocHandle);	
+			{
+				UT_return_val_if_fail(pBuddy && pDocHandle, false);
+				// Check if we have already joined this session. If so, then just
+				// ignore the request. Otherwise actually join the session.
+				AbiCollab* pSession = pManager->getSessionFromSessionId(pDocHandle->getSessionId());
+				if (pSession)
+				{
+					UT_DEBUGMSG(("Already connected to session, ignore this join request\n"));
+					// Doing nothing is not too elegant, but it keeps the Open Shared Document
+					// simple (it does not have to show the "connection" state). This case
+					// won't be often triggered in practice I suppose, so cluttering the
+					// dialog to deal with this obscure case would be a shame.
+				}
+				else
+					pManager->joinSessionInitiate(pBuddy, pDocHandle);	
+			}
 			break;
 		case AP_Dialog_CollaborationJoin::a_CANCEL:
 			break;
