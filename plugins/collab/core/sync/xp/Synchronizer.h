@@ -73,6 +73,8 @@ private:
 
 #ifdef WIN32
 	HWND m_hWnd;
+	bool m_bIsProcessing;
+	int m_iDeferredMessages;
 #else
 	int fdr;
 	int fdw;

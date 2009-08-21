@@ -75,8 +75,22 @@ LRESULT CALLBACK Synchronizer::s_wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPA
 		UT_DEBUGMSG(("Received a message in Synchronizer message loop! 0x%x\n", msg));
 		pThis = (Synchronizer *)GetWindowLong(hWnd,GWL_USERDATA);
 		UT_return_val_if_fail(pThis, 0);
-		pThis->callMainloop();
-		return 1;
+		if (pThis->m_bIsProcessing)
+		{
+			pThis->m_iDeferredMessages++;
+		}
+		else
+		{
+			pThis->m_bIsProcessing = true;
+			pThis->callMainloop();
+			while (pThis->m_iDeferredMessages)
+			{
+				pThis->callMainloop();
+				--pThis->m_iDeferredMessages;
+			}
+			pThis->m_bIsProcessing = false;
+		}
+		return true;
 
 	default:
 		UT_DEBUGMSG(("return DefWindowProc for message 0x%x\n", msg));
@@ -149,7 +163,9 @@ void Synchronizer::_unregisterWndClass() // Win32-only
 #ifdef WIN32
 Synchronizer::Synchronizer(boost::function<void ()>  signalhandler) // Win32 Implementation
 	: m_signalhandler(signalhandler),
- 	m_hWnd(0)
+ 	m_hWnd(0),
+	m_bIsProcessing(false),
+	m_iDeferredMessages(0)
 {
 	UT_DEBUGMSG(("Synchronizer()\n"));
 	AbiCollabSessionManager * pSessionManager = AbiCollabSessionManager::getManager();

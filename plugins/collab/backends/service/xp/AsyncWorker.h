@@ -62,7 +62,6 @@ private:
 	{
 		UT_DEBUGMSG(("Calling async callback function from the main loop\n"));
 		m_async_callback(m_func_result);
-		m_synchronizer.reset();
 	}
 
 	void _thread_func()
