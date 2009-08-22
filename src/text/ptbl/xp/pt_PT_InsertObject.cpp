@@ -258,7 +258,7 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 	{
 	    for(i=0;(properties[i] != NULL);i+=2)
 	    {
-		UT_DEBUGMSG(("Image: szProps = |%s| \n",properties[i]));
+		UT_DEBUGMSG(("Object: szProps = |%s| \n",properties[i]));
 		sProps +=properties[i];
 		sProps += ":";
 		sProps += properties[i+1];
