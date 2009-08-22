@@ -58,48 +58,19 @@ void AP_Win32Dialog_Field::runModal(XAP_Frame * pFrame)
 {
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-	
-	LPCWSTR lpTemplate = NULL;
-	
+		
 	UT_return_if_fail (m_id == AP_DIALOG_ID_FIELD);
 	
-	lpTemplate = MAKEINTRESOURCEW(AP_RID_DIALOG_FIELD);
-	
-	int result = DialogBoxParamW(pWin32App->getInstance(),lpTemplate,
-		static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-		(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT_HARMLESS((result != -1));
-}
-
-BOOL CALLBACK AP_Win32Dialog_Field::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
-{
-	// This is a static function.
-	
-	AP_Win32Dialog_Field * pThis;
-	
-	
-	switch (msg){
-	case WM_INITDIALOG:
-		pThis = (AP_Win32Dialog_Field *)lParam;
-		SetWindowLongW(hWnd,DWL_USER,lParam);
-		return pThis->_onInitDialog(hWnd,wParam,lParam);
-		
-	case WM_COMMAND:
-		pThis = (AP_Win32Dialog_Field *)GetWindowLongW(hWnd,DWL_USER);
-		return pThis->_onCommand(hWnd,wParam,lParam);
-		
-	default:
-		return 0;
-	}
+	createModal(pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_FIELD));	
 }
 
 void AP_Win32Dialog_Field::SetTypesList(void)
 {
 	for (int i = 0;fp_FieldTypes[i].m_Desc != NULL;i++) 
 	{
-		SendMessageW(m_hwndTypes, LB_ADDSTRING, 0, (LPARAM)fp_FieldTypes[i].m_Desc);
+		SendMessageW(m_hwndTypes, LB_ADDSTRING, (WPARAM)0, (LPARAM)fp_FieldTypes[i].m_Desc);
 	}
-	SendMessageW(m_hwndTypes, LB_SETCURSEL, 0, 0);
+	SendMessageW(m_hwndTypes, LB_SETCURSEL, (WPARAM)0, (LPARAM)0);
 	m_iTypeIndex = 0;
 }
 
@@ -132,14 +103,14 @@ void AP_Win32Dialog_Field::SetFieldsList(void)
 	_FormatListBoxChange();
 }
 
-#define _DS(c,s)	SetDlgItemTextW(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemTextW(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+#define _DS(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 BOOL AP_Win32Dialog_Field::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	/*
-	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_Field_FieldTitle));
+	
+	setDialogTitle (pSS->getValue(AP_STRING_ID_DLG_Field_FieldTitle));
 	
 	// localize controls
 	_DSX(FIELD_BTN_OK,			DLG_OK);
@@ -155,8 +126,8 @@ BOOL AP_Win32Dialog_Field::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*
 	m_hwndParam = GetDlgItem(hWnd, AP_RID_DIALOG_FIELD_EDIT_PARAM);
 	SetTypesList();
 	SetFieldsList();
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);		
-    */
+	centerDialog();		
+    
 	return 1;				// 1 == we did not call SetFocus()
 }
 
