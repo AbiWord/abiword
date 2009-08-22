@@ -58,46 +58,13 @@ AP_Win32Dialog_Annotation::~AP_Win32Dialog_Annotation(void)
 
 void AP_Win32Dialog_Annotation::runModal(XAP_Frame * pFrame)
 {
-	UT_return_if_fail (pFrame);
-	// raise the dialog
-	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-
-	LPCWSTR lpTemplate = NULL;
-
 	UT_return_if_fail (m_id == AP_DIALOG_ID_ANNOTATION);
 
-	lpTemplate = MAKEINTRESOURCEW(AP_RID_DIALOG_ANNOTATION);
-
-	int result = DialogBoxParamW(pWin32App->getInstance(),lpTemplate,
-						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-						(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT_HARMLESS((result != -1));
-
+	 createModal(pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_ANNOTATION));
 }
 
-BOOL CALLBACK AP_Win32Dialog_Annotation::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
-{
-	AP_Win32Dialog_Annotation * pThis;
-
-	switch (msg)
-	{
-	case WM_INITDIALOG:
-		pThis = (AP_Win32Dialog_Annotation *)lParam;
-		SetWindowLongW(hWnd,DWL_USER,lParam);
-		return pThis->_onInitDialog(hWnd,wParam,lParam);
-
-	case WM_COMMAND:
-		pThis = (AP_Win32Dialog_Annotation *)GetWindowLongW(hWnd,DWL_USER);
-		return pThis->_onCommand(hWnd,wParam,lParam);
-
-	default:
-		return 0;
-	}
-	return 0;
-}
-
-#define _DS(c,s)	setDlgItemText(hWnd,AP_RID_DIALOG_ANNOTATION_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	setDlgItemText(hWnd,AP_RID_DIALOG_ANNOTATION_##c,pSS->getValue(XAP_STRING_ID_##s))
+#define _DS(c,s)	setDlgItemText(AP_RID_DIALOG_ANNOTATION_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_ANNOTATION_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 
 BOOL AP_Win32Dialog_Annotation::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
@@ -105,8 +72,7 @@ BOOL AP_Win32Dialog_Annotation::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPAR
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	setDialogTitle(pSS->getValue(AP_STRING_ID_DLG_Annotation_Title));
-	m_hwndDlg = hWnd;
-
+	
 	// localize controls
 	_DSX(BTN_OK,			DLG_OK);
 	_DSX(BTN_CANCEL,		DLG_Cancel);
@@ -118,7 +84,7 @@ BOOL AP_Win32Dialog_Annotation::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPAR
 	_set_text(AP_RID_DIALOG_ANNOTATION_EDIT_AUTHOR, getAuthor ());
 	_set_text(AP_RID_DIALOG_ANNOTATION_EDIT_DESCRIPTION, getDescription ());
 
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);
+	centerDialog();
 	return 1;							// 1 == we did not call SetFocus()
 }
 
@@ -159,14 +125,13 @@ BOOL AP_Win32Dialog_Annotation::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lP
 
 void AP_Win32Dialog_Annotation::_get_text(int nID, UT_UTF8String &text)     //TODO: CHECK
 {
-	char szBuff[2048];
-
-	GetDlgItemText(m_hwndDlg, nID, szBuff, 2048);
-	text = AP_Win32App::s_fromWinLocaleToUTF8(szBuff);
+	UT_Win32LocaleString str;
+	getDlgItemText(nID, str);
+	text = str.utf8_str();
 }
 
 void AP_Win32Dialog_Annotation::_set_text(int nID, UT_UTF8String text)
 {
 	UT_String str = AP_Win32App::s_fromUTF8ToWinLocale(text.utf8_str());
-	SetDlgItemText (m_hwndDlg, nID, str.c_str());
+	setDlgItemText (nID, str.c_str());
 }

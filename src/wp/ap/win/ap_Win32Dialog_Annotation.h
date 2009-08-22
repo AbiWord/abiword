@@ -33,7 +33,6 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 	
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);	
-	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
 
 protected:
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
@@ -42,8 +41,6 @@ protected:
 private:	
 	void		 			_get_text(int nID, UT_UTF8String &text);
 	void 					_set_text(int nID, UT_UTF8String text);
-	
-	HWND					m_hwndDlg;	//  dialog box Windows	
 
 };
 
