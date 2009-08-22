@@ -100,7 +100,6 @@ void XAP_Win32Dialog_Insert_Symbol::activate(void)
 
 	// Update the caption
 	ConstructWindowName();
-	//SetWindowText(m_hDlg, (AP_Win32App::s_fromUTF8ToWinLocale(m_WindowName)).c_str());
     setDialogTitle(m_WindowName);
 
 	iResult = ShowWindow( m_hDlg, SW_SHOW );
@@ -120,7 +119,6 @@ void XAP_Win32Dialog_Insert_Symbol::notifyActiveFrame(XAP_Frame *pFrame)
 	{
 		// Update the caption
 		ConstructWindowName();
-		//SetWindowText(m_hDlg, (AP_Win32App::s_fromUTF8ToWinLocale(m_WindowName)).c_str());
         setDialogTitle(m_WindowName);
 
 		SetWindowLongW(m_hDlg, GWL_HWNDPARENT, (long)frameHWND);
@@ -218,7 +216,6 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, 
 
 	// Update the caption
 	ConstructWindowName();
-	//setDialogTitle((LPCSTR)(AP_Win32App::s_fromUTF8ToWinLocale(m_WindowName)).c_str());
     setDialogTitle(m_WindowName);	
     centerDialog();	
 

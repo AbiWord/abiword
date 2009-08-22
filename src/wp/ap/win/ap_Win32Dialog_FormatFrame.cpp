@@ -349,12 +349,9 @@ BOOL AP_Win32Dialog_FormatFrame::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 				if (nSelected != CB_ERR)
 				{
 					UT_LocaleTransactor t(LC_NUMERIC, "C");					
-					//  UT_UTF8String sThickness;
-                    UT_Win32LocaleString thickness;
-                    UT_UTF8String thickness_utf8 = thickness.utf8_str ();
-					
-					//  sThickness = UT_UTF8String_sprintf("%fin",m_dThickness[nSelected]);
-                    getComboTextItem(AP_RID_DIALOG_FORMATFRAME_COMBO_THICKNESS, nSelected, thickness);
+					UT_Win32LocaleString thickness;
+					UT_UTF8String thickness_utf8 = thickness.utf8_str ();
+					getComboTextItem(AP_RID_DIALOG_FORMATFRAME_COMBO_THICKNESS, nSelected, thickness);
 					setBorderThicknessAll(thickness_utf8);					
 					event_previewExposed();
 				}

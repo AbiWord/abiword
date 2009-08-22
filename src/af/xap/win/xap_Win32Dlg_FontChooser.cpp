@@ -115,7 +115,6 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 	if (m_pFontFamily && *m_pFontFamily)
     {
-		//strcpy(lf.lfFaceName,pEncMan->strToNative(m_pFontFamily, "UTF-8"));
         family.fromUTF8 (m_pFontFamily);
 		wcscpy(lf.lfFaceName,family.c_str());
     }
@@ -319,7 +318,6 @@ BOOL XAP_Win32Dialog_FontChooser::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LP
 	XAP_App*              pApp        = XAP_App::getApp();
 	const XAP_StringSet*  pSS         = pApp->getStringSet();
 
-	//SetWindowText(hWnd, pSS->getValue(XAP_STRING_ID_DLG_UFS_FontTitle));
     m_hDlg = hWnd;
 	
 	setDialogTitle(pSS->getValue(XAP_STRING_ID_DLG_UFS_FontTitle));

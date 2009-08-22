@@ -108,26 +108,18 @@ BOOL AP_Win32Dialog_FormatFootnotes::_onInitDialog(HWND hWnd, WPARAM /*wParam*/,
 
 	for(UT_uint32 i = 0; footnoteTypeList->n !=  _FOOTNOTE_TYPE_INVALID; footnoteTypeList++, i++)
 	{
-		 // nItem = SendDlgItemMessageW(hWnd, AP_RID_DIALOG_FORMATFOOTNOTES_COMBO_FSTYLE, CB_ADDSTRING, 0,
-		 //							(LPARAM)footnoteTypeList->label);
-		 // SendDlgItemMessageW(hWnd, AP_RID_DIALOG_FORMATFOOTNOTES_COMBO_FSTYLE, CB_SETITEMDATA, nItem, (LPARAM)i);
    		 nItem = addItemToCombo (AP_RID_DIALOG_FORMATFOOTNOTES_COMBO_FSTYLE, footnoteTypeList->label);
          setComboDataItem (AP_RID_DIALOG_FORMATFOOTNOTES_COMBO_FSTYLE, nItem, (LPARAM)i);
    
 		 if (i==(UT_uint32)getFootnoteType())
 		  	nDefF = i;			
 
-		 // nItem = SendDlgItemMessageW(hWnd, AP_RID_DIALOG_FORMATFOOTNOTES_COMBO_ESTYLE, CB_ADDSTRING, 0,
-		 //							(LPARAM)footnoteTypeList->label);
-		 // SendDlgItemMessageW(hWnd, AP_RID_DIALOG_FORMATFOOTNOTES_COMBO_ESTYLE, CB_SETITEMDATA, nItem, (LPARAM)i);
 		 nItem = addItemToCombo (AP_RID_DIALOG_FORMATFOOTNOTES_COMBO_ESTYLE, footnoteTypeList->label);
          setComboDataItem (AP_RID_DIALOG_FORMATFOOTNOTES_COMBO_ESTYLE, nItem, (LPARAM)i);
 		 if (i==(UT_uint32)getEndnoteType())
 		  	nDefE = i;			
 	}
 
- 	//  SendDlgItemMessageW(hWnd, AP_RID_DIALOG_FORMATFOOTNOTES_COMBO_FSTYLE, CB_SETCURSEL, nDefF, 0);
- 	//  SendDlgItemMessageW(hWnd, AP_RID_DIALOG_FORMATFOOTNOTES_COMBO_ESTYLE, CB_SETCURSEL, nDefE, 0);
 	selectComboItem (AP_RID_DIALOG_FORMATFOOTNOTES_COMBO_FSTYLE, 0); 	 	
     selectComboItem (AP_RID_DIALOG_FORMATFOOTNOTES_COMBO_ESTYLE, 0); 	 	
  	
@@ -191,6 +183,7 @@ BOOL AP_Win32Dialog_FormatFootnotes::_onCommand(HWND hWnd, WPARAM wParam, LPARAM
 			EndDialog(hWnd,0);
 			return 1;
 		}
+
 		/*Footnote*/	
 		case AP_RID_DIALOG_FORMATFOOTNOTES_RADIO_RSEL:
 		{

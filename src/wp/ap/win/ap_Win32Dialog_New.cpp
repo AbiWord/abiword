@@ -349,7 +349,7 @@ void AP_Win32Dialog_New::_setFileName( UT_sint32 nIndex )
 		if(!strstr(buf, "normal.awt-")) // don't append awt to localized templates
 			templateName += ".awt";
 
-        char *uri = NULL;//UT_go_filename_to_uri(AP_Win32App::s_fromWinLocaleToUTF8(templateName.c_str()).utf8_str());
+		char *uri = NULL;//UT_go_filename_to_uri(AP_Win32App::s_fromWinLocaleToUTF8(templateName.c_str()).utf8_str());
 		UT_return_if_fail(uri);
 
 		setFileName(uri);

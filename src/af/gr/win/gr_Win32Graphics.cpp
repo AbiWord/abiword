@@ -588,7 +588,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 		{
 			UT_ASSERT(m_remapIndices);
 			GCP_RESULTSW gcpResult;
-			gcpResult.lStructSize = sizeof(GCP_RESULTS);
+			gcpResult.lStructSize = sizeof(GCP_RESULTSW);
 			gcpResult.lpOutString = NULL;			// Output string
 			gcpResult.lpOrder = NULL;				// Ordering indices
 			// we must set here lpDx to NULL so that
@@ -939,7 +939,7 @@ void GR_Win32Graphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, 
 	// CreateSolidBrush is dog slow.
 	HDC hdc = m_hdc;
 	const COLORREF cr = ::SetBkColor(hdc,  clr);
-	::ExtTextOut(hdc, 0, 0, ETO_OPAQUE, &r, NULL, 0, NULL);
+	::ExtTextOutW(hdc, 0, 0, ETO_OPAQUE, &r, NULL, 0, NULL);
 	::SetBkColor(hdc, cr);
 	setExposePending(false);
 }
@@ -1111,7 +1111,7 @@ void GR_Win32Graphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_s
 	GetObjectW(m_hClearBrush, sizeof(LOGBRUSHW), &lb);
 	
 	const COLORREFW cr = ::SetBkColor(m_hdc,  lb.lbColor);
-	::ExtTextOut(m_hdc, 0, 0, ETO_OPAQUE, &r, NULL, 0, NULL);
+	::ExtTextOutW(m_hdc, 0, 0, ETO_OPAQUE, &r, NULL, 0, NULL);
 	::SetBkColor(m_hdc, cr);
 #endif
 }
@@ -1427,7 +1427,7 @@ void GR_Win32Graphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint3
 	COLORREF clr = RGB(GetRValue(m_3dColors[c]), GetGValue(m_3dColors[c]), GetBValue(m_3dColors[c]));
 	
 	const COLORREF cr = ::SetBkColor(hdc,  clr);
-	::ExtTextOut(hdc, 0, 0, ETO_OPAQUE, &r, NULL, 0, NULL);
+	::ExtTextOutW(hdc, 0, 0, ETO_OPAQUE, &r, NULL, 0, NULL);
 	::SetBkColor(hdc, cr);
 	setExposePending(false);
 }
@@ -2399,9 +2399,9 @@ GR_Graphics * GR_Win32Graphics::getPrinterGraphics(const wchar_t * pPrinterName,
 	pDI = (DOCINFOW*) UT_calloc(1, sizeof(DOCINFOW));
 	_test_and_cleanup(pDI);
 
-	memset(pDI, 0, sizeof(DOCINFO));
+	memset(pDI, 0, sizeof(DOCINFOW));
 	
-	pDI->cbSize = sizeof(DOCINFO);
+	pDI->cbSize = sizeof(DOCINFOW);
 	pDI->lpszDocName = pDocName;
 	pDI->lpszOutput  = NULL; // for now we do not support printing into file from cmd line
 	pDI->lpszDatatype = NULL;

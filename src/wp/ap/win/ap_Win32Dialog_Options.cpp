@@ -705,7 +705,6 @@ void AP_Win32Dialog_Options_General::_onInitDialog()
 	int nIndex;
 	const XAP_StringSet * pSS = getApp()->getStringSet();	
 	AP_Win32App * pApp = static_cast<AP_Win32App*>(XAP_App::getApp());
-    //	HWND hCtrlUILang	= GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_COMBO_UILANG);
 	
 	// localize controls	
 	_DS2(OPTIONS_LBL_UNITS,					DLG_Options_Label_ViewUnits);	
@@ -718,8 +717,7 @@ void AP_Win32Dialog_Options_General::_onInitDialog()
 	_DS2(OPTIONS_STATIC_LANGUAGE, 			DLG_Options_Label_LangSettings);
 	
 	// Populate values in the _COMBO_UNITS
-	// HWND hwndAlign = GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_COMBO_UNITS);
-    // Populate values in the _COMBO_UNITS	
+
 	for(i = 0; i < SIZE_aAlignUnit; i++ )
 	{
 		addItemToCombo(AP_RID_DIALOG_OPTIONS_COMBO_UNITS, pSS->getValue(s_aAlignUnit[i].id));

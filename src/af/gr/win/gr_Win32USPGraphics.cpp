@@ -1950,6 +1950,7 @@ void GR_Win32USPGraphics::adjustDeletePosition(GR_RenderInfo & ri)
 	// restore the original length
 	ri.m_iLength = iCharCount;
 }
+
 bool GR_Win32USPGraphics::needsSpecialCaretPositioning(GR_RenderInfo & ri)
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE, false);

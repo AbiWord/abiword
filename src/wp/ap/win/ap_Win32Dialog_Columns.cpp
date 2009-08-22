@@ -132,8 +132,8 @@ BOOL AP_Win32Dialog_Columns::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM 
 	checkButton(AP_RID_DIALOG_COLUMN_RADIO_ONE + getColumns() - 1, true);
 	enableLineBetweenControl(getColumns() != 1);
 	checkButton(AP_RID_DIALOG_COLUMN_CHECK_LINE_BETWEEN, getLineBetween());
-    SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_COLUMN_EDIT_NUMCOLUMNS, _itow( getColumns(),buf,10) );    
-    setControlText(AP_RID_DIALOG_COLUMN_EDIT_SPACEAFTER, getSpaceAfterString());
+	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_COLUMN_EDIT_NUMCOLUMNS, _itow( getColumns(),buf,10) );    
+	setControlText(AP_RID_DIALOG_COLUMN_EDIT_SPACEAFTER, getSpaceAfterString());
 	setControlText(AP_RID_DIALOG_COLUMN_EDIT_MAXSIZE, getHeightString());
 
 	showControl( AP_RID_DIALOG_COLUMN_CHECK_RTL_ORDER, SW_NORMAL );
@@ -180,7 +180,7 @@ BOOL AP_Win32Dialog_Columns::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lPara
 		setColumns(1);
 		checkButton(AP_RID_DIALOG_COLUMN_RADIO_TWO, false);
 		checkButton(AP_RID_DIALOG_COLUMN_RADIO_THREE, false);
-        SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_COLUMN_EDIT_NUMCOLUMNS, _itow(getColumns(),buf,10));
+		SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_COLUMN_EDIT_NUMCOLUMNS, _itow(getColumns(),buf,10));
 		return 1;
 
 	case AP_RID_DIALOG_COLUMN_RADIO_TWO:
@@ -220,11 +220,10 @@ BOOL AP_Win32Dialog_Columns::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lPara
 		if( wNotifyCode == EN_KILLFOCUS )
 		{
 			GetDlgItemTextW( hWnd, wId, buf, BUFSIZE );
-            str.fromLocale (buf);
+			str.fromLocale (buf);
 			setSpaceAfter( str.ascii_str () );
-            str.fromUTF8 (getSpaceAfterString ());
-            SetDlgItemTextW(m_hDlg, wId, str.c_str ());
- 			//  setControlText(wId, getSpaceAfterString());
+			str.fromUTF8 (getSpaceAfterString ());
+			SetDlgItemTextW(m_hDlg, wId, str.c_str ());
 		}
 		return 1;
 
@@ -236,7 +235,6 @@ BOOL AP_Win32Dialog_Columns::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lPara
 			setMaxHeight( str.ascii_str () );
             str.fromUTF8 (getHeightString());
             SetDlgItemTextW(m_hDlg, wId, str.c_str ());
-			//  setControlText( wId, getHeightString());
 		}
 		return 1;
 
@@ -252,8 +250,8 @@ BOOL AP_Win32Dialog_Columns::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lPara
 
 BOOL AP_Win32Dialog_Columns::_onDeltaPos(NM_UPDOWN * pnmud)
 {
-    wchar_t buf[BUFSIZE];
-    UT_Win32LocaleString str;
+	wchar_t buf[BUFSIZE];
+	UT_Win32LocaleString str;
     
 	switch( pnmud->hdr.idFrom )
 	{
@@ -286,7 +284,6 @@ BOOL AP_Win32Dialog_Columns::_onDeltaPos(NM_UPDOWN * pnmud)
 		}
         str.fromUTF8 (getSpaceAfterString());
         SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_COLUMN_EDIT_SPACEAFTER, str.c_str ());
-		// setControlText(AP_RID_DIALOG_COLUMN_EDIT_SPACEAFTER, getSpaceAfterString());
 		return 1;
 
 	case AP_RID_DIALOG_COLUMN_SPIN_MAXSIZE:
@@ -300,7 +297,6 @@ BOOL AP_Win32Dialog_Columns::_onDeltaPos(NM_UPDOWN * pnmud)
 		}
         str.fromUTF8 (getHeightString());
         SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_COLUMN_EDIT_MAXSIZE, str.c_str ());
-		// setControlText(AP_RID_DIALOG_COLUMN_EDIT_MAXSIZE, getHeightString());
 		return 1;
 
 	default:

@@ -107,20 +107,12 @@ void AP_Win32Dialog_Paragraph::runModal(XAP_Frame * pFrame)
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 
-	XAP_Win32LabelledSeparator_RegisterClass(pWin32App);
+	XAP_Win32LabelledSeparator_RegisterClass(pWin32App);	
 
-	LPCWSTR lpTemplate = NULL;
-
-	UT_return_if_fail (m_id == AP_DIALOG_ID_PARAGRAPH);
-
-	lpTemplate = MAKEINTRESOURCEW(AP_RID_DIALOG_PARAGRAPH);
-
-	int result = DialogBoxParamW(pWin32App->getInstance(),lpTemplate,
-						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-						(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT_HARMLESS((result != -1));
+	createModal(pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_PARAGRAPH));
 }
 
+/*
 BOOL CALLBACK AP_Win32Dialog_Paragraph::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
 {
 	// This is a static function.
@@ -171,7 +163,7 @@ BOOL CALLBACK AP_Win32Dialog_Paragraph::s_dlgProc(HWND hWnd,UINT msg,WPARAM wPar
 		return 0;
 	}
 }
-
+*/
 // this little struct gets passed into s_tabProc
 typedef struct _tabParam
 {

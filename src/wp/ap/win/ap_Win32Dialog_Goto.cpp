@@ -54,28 +54,18 @@ AP_Win32Dialog_Goto::~AP_Win32Dialog_Goto(void)
 
 void AP_Win32Dialog_Goto::activate(void)
 {
-    //	int iResult;
-
 	ConstructWindowName();
 	setDialogTitle (m_WindowName);
 
 	SetFocus( GetDlgItem( m_hWnd,AP_RID_DIALOG_GOTO_EDIT_NUMBER ) );
 
-	//  iResult = ShowWindow( m_hWnd, SW_SHOW );
-	//  iResult = BringWindowToTop( m_hWnd );
-
-	//UT_ASSERT_HARMLESS((iResult != 0));
-    showWindow(SW_SHOW);
+	showWindow(SW_SHOW);
 	bringWindowToTop();
 }
 
 
 void AP_Win32Dialog_Goto::destroy(void)
 {
-	//  DELETEP( m_pszOldValue );
-
-	//  int iResult = DestroyWindow( m_hWnd );
-	//  UT_ASSERT_HARMLESS((iResult != 0));
     destroyWindow();
 	modeless_cleanup();
 }

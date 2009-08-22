@@ -88,8 +88,6 @@ HWND XAP_Win32DialogBase::createModeless(XAP_Frame* pFrame, LPCWSTR dlgTemplate)
 
 BOOL CALLBACK XAP_Win32DialogBase::s_dlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	// static const char szProp[] = "abiWin23base_dlgproc";
-
 	XAP_Win32DialogBase* pThis = NULL;
 
 	if (msg == WM_INITDIALOG)
@@ -97,7 +95,6 @@ BOOL CALLBACK XAP_Win32DialogBase::s_dlgProc(HWND hWnd, UINT msg, WPARAM wParam,
 		pThis = (XAP_Win32DialogBase*)lParam;
         SetWindowLongW(hWnd, DWL_USER, lParam);
 		pThis->m_hDlg = hWnd;
-		// SetProp(hWnd, szProp, (HANDLE)lParam /* XAP_Win32DialogBase* */);
 		return pThis->_onInitDialog(hWnd, wParam, lParam);
 	}
 

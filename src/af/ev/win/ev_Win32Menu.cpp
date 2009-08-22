@@ -151,14 +151,13 @@ static const wchar_t * _ev_GetLabelName(XAP_Win32App * pWin32App,
 	if (!szLabelName_utf8 || !*szLabelName_utf8)
 		return NULL;
 
-	// UT_String str = AP_Win32App::s_fromUTF8ToWinLocale(szLabelName);
-    UT_Win32LocaleString str;
+	UT_Win32LocaleString str;
 	str.fromUTF8 (szLabelName_utf8);
 	szLabelName = str.c_str();
 
 	const char * szShortcut_ascii = NULL;
 	const wchar_t * szShortcut = NULL;
-    UT_Win32LocaleString shortcut;
+	UT_Win32LocaleString shortcut;
 	
     int len = 0;
 

@@ -1375,10 +1375,9 @@ bool EV_Win32Toolbar::repopulateStyles(void)
 	for (UT_uint32 k=0; k < v->getItemCount(); k++)
 	{
 		const char*	sz = (char *)v->getNthItem(k);
-		//const char*	pLocalised = sz;
-        UT_Win32LocaleString localised;
+		UT_Win32LocaleString localised;
 		
-        pt_PieceTable::s_getLocalisedStyleName(sz, utf8);
+		pt_PieceTable::s_getLocalisedStyleName(sz, utf8);
 		localised.fromUTF8 (utf8.utf8_str());
 		
 		nItem = SendMessageW(hwndCombo, CB_ADDSTRING,(WPARAM)0, (LPARAM)localised.c_str());

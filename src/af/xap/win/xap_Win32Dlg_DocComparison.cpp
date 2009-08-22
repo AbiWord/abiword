@@ -107,7 +107,6 @@ BOOL XAP_Win32Dialog_DocComparison::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, 
 		FREEP(t);
 	}
 
-//	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
     centerDialog();
 	return 1;							// 1 == we did not call SetFocus()
 }

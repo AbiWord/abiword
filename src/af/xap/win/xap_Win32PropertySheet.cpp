@@ -349,7 +349,7 @@ int XAP_Win32PropertySheet::runModal(XAP_Win32App* pWin32App, XAP_Frame * pFrame
 			continue;				
 					
 		TranslateMessage(&msg);
-		DispatchMessage(&msg);		
+		DispatchMessageW(&msg);		
 	}	
 	
 	destroy();	
