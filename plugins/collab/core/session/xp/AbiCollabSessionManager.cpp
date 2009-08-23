@@ -1486,8 +1486,13 @@ void AbiCollabSessionManager::_deleteSession(AbiCollab* pSession)
 	UT_return_if_fail(pSession);
 	// wait for all async actions to complete
 	// TODO: some sort of feedback to the user would be nice
+	bool caughtQuit = false;
 	while (m_asyncSessionOps[pSession] > 0)
-		_nullUpdate();
+		caughtQuit |= _nullUpdate();
+#if defined(TOOLKIT_WIN)
+	if (caughtQuit)
+		PostQuitMessage(0);
+#endif
 	DELETEP(pSession);
 }
 
@@ -1497,19 +1502,35 @@ void AbiCollabSessionManager::_deleteAccount(AccountHandler* pHandler)
 	UT_return_if_fail(pHandler);
 	// wait for all async actions to complete
 	// TODO: some sort of feedback to the user would be nice
+	bool caughtQuit = false;
 	while (m_asyncAccountOps[pHandler] > 0)
-		_nullUpdate();			
+		caughtQuit |= _nullUpdate();
+#if defined(TOOLKIT_WIN)
+	if (caughtQuit)
+		PostQuitMessage(0);
+#endif
 	DELETEP(pHandler);
 }
 
-void AbiCollabSessionManager::_nullUpdate()
+// Note: the return value only makes sense on Win32, other platforms
+// should ignore it. On Win32, it denotes wether a WM_QUIT message
+// has been eaten (and thus should be reposted to the main message 
+// queue later.
+bool AbiCollabSessionManager::_nullUpdate()
 {
+	bool caughtQuit = false;
 #if defined(TOOLKIT_WIN)
-		MSG msg;
-		for (UT_sint32 i = 0 ; i < 10 ; i++ )
-			if (PeekMessage(&msg, (HWND) NULL, 0, 0, PM_REMOVE))
-				DispatchMessage(&msg);
-		Sleep(10);
+	MSG msg;
+	for (UT_sint32 i = 0 ; i < 10 ; i++ )
+	{
+		if (PeekMessage(&msg, (HWND) NULL, 0, 0, PM_REMOVE))
+		{
+			if (msg.message == WM_QUIT)
+				caughtQuit = true;
+			DispatchMessage(&msg);
+		}
+	}
+	Sleep(10);
 #elif defined(TOOLKIT_GTK)
 		for (UT_sint32 i = 0; (i < 10) && gtk_events_pending(); i++)
 			gtk_main_iteration ();
@@ -1519,6 +1540,7 @@ void AbiCollabSessionManager::_nullUpdate()
 #else 
 #error unknown platform
 #endif	
+	return caughtQuit;
 }
 
 bool AbiCollabSessionManager::_canInitiateSessionTakeover(AbiCollab* pSession)

@@ -147,7 +147,7 @@ private:
 	// asynchronous operation handling
 	void										_deleteSession(AbiCollab* pSession);
 	void										_deleteAccount(AccountHandler* pHandler);
-	void										_nullUpdate();
+	bool										_nullUpdate();
 	
 	// session code
 	bool										_canInitiateSessionTakeover(AbiCollab* pSession);
