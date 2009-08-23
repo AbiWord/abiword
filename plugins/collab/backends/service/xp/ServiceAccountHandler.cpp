@@ -57,8 +57,6 @@ AbiCollabSaveInterceptor ServiceAccountHandler::m_saveInterceptor = AbiCollabSav
 bool ServiceAccountHandler::askPassword(const std::string& email, std::string& password)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::askPassword()\n"));
-	XAP_Frame* pFrame = XAP_App::getApp()->getLastFocussedFrame();
-	UT_return_val_if_fail(pFrame, false);
 	
 	// ask for the service password
 	XAP_DialogFactory* pFactory = static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
@@ -75,7 +73,7 @@ bool ServiceAccountHandler::askPassword(const std::string& email, std::string& p
 	pDialog->setLabel("Password:");
 	pDialog->setPassword(true);
 	pDialog->setMinLenght(1);
-	pDialog->runModal(pFrame);
+	pDialog->runModal(XAP_App::getApp()->getLastFocussedFrame());
 	
 	// get the results
 	bool cancel = pDialog->getAnswer() == AP_Dialog_GenericInput::a_CANCEL;

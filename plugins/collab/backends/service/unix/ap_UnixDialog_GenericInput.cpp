@@ -51,8 +51,6 @@ AP_UnixDialog_GenericInput::AP_UnixDialog_GenericInput(XAP_DialogFactory * pDlgF
 
 void AP_UnixDialog_GenericInput::runModal(XAP_Frame * pFrame)
 {
-	UT_return_if_fail(pFrame);
-	
 	// Build the dialog's window
 	m_wWindowMain = _constructWindow();
 	UT_return_if_fail(m_wWindowMain);

@@ -1,4 +1,4 @@
-/* Copyright (C) 2008 AbiSource Corporation B.V.
+/* Copyright (C) 2008-2009 AbiSource Corporation B.V.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -38,6 +38,7 @@
 #include "AbiCollabSaveInterceptor.h"
 #include "soa_soup.h"
 
+#define SAVE_INTERCEPTOR_EM "com.abisource.abiword.abicollab.servicesaveinterceptor"
 
 static bool AbiCollabSaveInterceptor_interceptor(AV_View * v, EV_EditMethodCallData * d)
 {
@@ -178,7 +179,7 @@ bool AbiCollabSaveInterceptor::save(PD_Document* pDoc)
 			boost::shared_ptr<AsyncWorker<UT_Error> > async_save_ptr(
 						new AsyncWorker<UT_Error>(
 							boost::bind(&AbiCollabSaveInterceptor::_save, this, uri, verify_webapp_host, ssl_ca_file, fc_ptr, result_ptr),
-							boost::bind(&AbiCollabSaveInterceptor::_save_cb, this, _1, pSession, fc_ptr, result_ptr)
+							boost::bind(&AbiCollabSaveInterceptor::_save_cb, this, _1, pServiceHandler, pSession, connection_ptr, fc_ptr, result_ptr)
 						)
 					);
 			async_save_ptr->start();
@@ -210,18 +211,19 @@ bool AbiCollabSaveInterceptor::_save(std::string uri, bool verify_webapp_host, s
 	return true;
 }
 
-void AbiCollabSaveInterceptor::_save_cb(bool success, AbiCollab* pSession, 
+void AbiCollabSaveInterceptor::_save_cb(bool success, ServiceAccountHandler* pAccount,
+			AbiCollab* pSession, ConnectionPtr connection_ptr,
 			soa::function_call_ptr fc_ptr, boost::shared_ptr<std::string> result_ptr)
 {
 	UT_DEBUGMSG(("AbiCollabSaveInterceptor::_save_cb()\n"));
+	UT_return_if_fail(pAccount);
 	UT_return_if_fail(pSession);
+	UT_return_if_fail(connection_ptr);
 	UT_return_if_fail(fc_ptr);
 	UT_return_if_fail(result_ptr);
 
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_if_fail(pManager);	
-
-	pManager->endAsyncOperation(pSession);
 
 	if (success)
 	{
@@ -231,7 +233,11 @@ void AbiCollabSaveInterceptor::_save_cb(bool success, AbiCollab* pSession,
 			soa::method_invocation mi("urn:AbiCollabSOAP", *fc_ptr);
 			soa::GenericPtr soap_result = soa::parse_response(*result_ptr, mi.function().response());
 			if (soap_result)
+			{
+				// the save was successful, so we can mark this async action as completed
+				pManager->endAsyncOperation(pSession);
 				return;
+			}
 		} catch (soa::SoapFault& fault) {
 			UT_DEBUGMSG(("Caught a soap fault: %s (error code: %s)!\n", 
 					 fault.detail() ? fault.detail()->value().c_str() : "(null)",
@@ -240,7 +246,41 @@ void AbiCollabSaveInterceptor::_save_cb(bool success, AbiCollab* pSession,
 			acs::SOAP_ERROR err = acs::error(fault);
 			switch (err)
 			{
+				case acs::SOAP_ERROR_INVALID_PASSWORD:
+				{
+					const std::string email = pAccount->getProperty("email");
+					std::string uri = pAccount->getProperty("uri");
+					bool verify_webapp_host = (pAccount->getProperty("verify-webapp-host") == "true");
+					std::string ssl_ca_file = pAccount->getCA();
+
+					std::string password;
+					if (ServiceAccountHandler::askPassword(email, password))
+					{
+						// store the new password
+						pAccount->addProperty("password", password);
+						pManager->storeProfile();
+
+						// construct a SOAP call with the new password
+						// FIXME: this is highly ineffictient as it serializes the whole document again
+						fc_ptr = pAccount->constructSaveDocumentCall(pSession->getDocument(), connection_ptr);
+
+						// re-attempt the save
+						boost::shared_ptr<AsyncWorker<UT_Error> > async_save_ptr(
+									new AsyncWorker<UT_Error>(
+										boost::bind(&AbiCollabSaveInterceptor::_save, this, uri, verify_webapp_host, ssl_ca_file, fc_ptr, result_ptr),
+										boost::bind(&AbiCollabSaveInterceptor::_save_cb, this, _1, pAccount, pSession, connection_ptr, fc_ptr, result_ptr)
+									)
+								);
+						async_save_ptr->start();
+
+						// we re-attempt the save, so don't mark this async action as completed
+						// before exiting this function
+						return;
+					}
+				}
 				case acs::SOAP_ERROR_NO_CHANGES:
+					// the save was successful (unneeded), so we can mark this async action as completed
+					pManager->endAsyncOperation(pSession);
 					UT_DEBUGMSG(("The document was unchanged; ignoring error\n"));
 					return;
 				default:
@@ -249,6 +289,9 @@ void AbiCollabSaveInterceptor::_save_cb(bool success, AbiCollab* pSession,
 		}
 	}
 
+	// the save failed and we can't recover from it, so we can mark this async action as completed
+	pManager->endAsyncOperation(pSession);
+	// inform the user of the failure to save
 	_saveFailed(pSession);
 }
 

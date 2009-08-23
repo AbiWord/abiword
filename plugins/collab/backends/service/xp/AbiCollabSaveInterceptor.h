@@ -1,4 +1,4 @@
-/* Copyright (C) 2008 AbiSource Corporation B.V.
+/* Copyright (C) 2008-2009 AbiSource Corporation B.V.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,12 +20,14 @@
 #define __ABICOLLAB_SAVE_INTERCEPTOR__
 
 #include "ev_EditMethod.h"
-#define SAVE_INTERCEPTOR_EM "com.abisource.abiword.abicollab.servicesaveinterceptor"
+#include "RealmConnection.h"
 
 class AV_View;
 class EV_EditMethodCallData;
 class EV_EditMethod;
 class PD_Document;
+class ServiceAccountHandler;
+
 class AbiCollabSaveInterceptor
 {
 public:
@@ -37,7 +39,8 @@ public:
 private:
 	bool _save(std::string uri, bool verify_webapp_host, std::string ssl_ca_file,
 			soa::function_call_ptr fc_ptr, boost::shared_ptr<std::string> result_ptr);
-	void _save_cb(bool success, AbiCollab* pSession,
+	void _save_cb(bool success, ServiceAccountHandler* pAccount, 
+			AbiCollab* pSession, ConnectionPtr connection_ptr,
 			soa::function_call_ptr fc_ptr, boost::shared_ptr<std::string> result_ptr);
 	void _saveFailed(AbiCollab* pSession);
 
