@@ -439,6 +439,21 @@ AC_ARG_WITH([fink],
         fi
 ])
 
+AC_ARG_WITH([abisdk],
+	[AS_HELP_STRING([--with-abisdk], [(Mac OSX only) use the AbiSDK])], 
+[
+	if test "x$withval" == "x"; then
+		AC_MSG_ERROR([The AbiSDK path must be specified.])
+	fi
+	if test "x$withval" != "xno"; then
+		PKG_CONFIG=/opt/abi/bin/pkg-config
+		PKG_CONFIG_PATH=/usr/lib/pkgconfig ; export PKG_CONFIG_PATH
+		CPPFLAGS="$CPPFLAGS -isysroot $withval -I/opt/abi/include"
+		LDFLAGS="$LDFLAGS -isysroot $withval -L/opt/abi/lib"
+		CC=g++
+	fi
+])
+
 
 #
 # Compiler settings (from gnumeric's configure.in)
