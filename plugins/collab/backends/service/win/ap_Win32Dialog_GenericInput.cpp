@@ -79,15 +79,14 @@ AP_Win32Dialog_GenericInput::AP_Win32Dialog_GenericInput(XAP_DialogFactory * pDl
 
 void AP_Win32Dialog_GenericInput::runModal(XAP_Frame * pFrame)
 {
-	UT_return_if_fail(pFrame);
 	UT_return_if_fail(m_hInstance);
 
 	// default value
 	m_answer = AP_Dialog_GenericInput::a_CANCEL;		
 
 	// create the dialog
-	int result = DialogBoxParam( m_hInstance, AP_RID_DIALOG_GENERICINPUT,
-		static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
+	HWND hWndParent = pFrame ? static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow() : NULL;
+	int result = DialogBoxParam( m_hInstance, AP_RID_DIALOG_GENERICINPUT, hWndParent,
 		(DLGPROC)s_dlgProc, (LPARAM)this );
 	switch (result)
 	{
