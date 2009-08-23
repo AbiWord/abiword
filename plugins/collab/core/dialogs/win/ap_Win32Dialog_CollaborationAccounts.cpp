@@ -242,7 +242,7 @@ BOOL AP_Win32Dialog_CollaborationAccounts::_onCommand(HWND hWnd, WPARAM wParam, 
 				return true;
 
 			UT_sint32 iIndex = ListView_GetSelectionMark(m_hAccountList);
-			UT_return_val_if_fail(iIndex > 0, false);
+			UT_return_val_if_fail(iIndex >= 0, false);
 
 			LVITEM lviAccount;
 			lviAccount.mask = LVIF_PARAM;
