@@ -57,7 +57,6 @@
 static gboolean focus_in_event(GtkWidget *widget,GdkEvent */*event*/,gpointer /*user_data*/)
 {
       XAP_Frame *pFrame=static_cast<XAP_Frame *>(g_object_get_data(G_OBJECT(widget), "frame"));
-      UT_ASSERT_HARMLESS(pFrame);
 	  if (pFrame && pFrame->getCurrentView())
 		  pFrame->getCurrentView()->focusChange(AV_FOCUS_NEARBY);
       return FALSE;
@@ -372,22 +371,20 @@ void centerDialog(GtkWidget * parent, GtkWidget * child, bool set_transient_for)
 
 void abiSetupModalDialog(GtkDialog * dialog, XAP_Frame *pFrame, XAP_Dialog * pDlg, gint defaultResponse)
 {
-	// To center the dialog, we need the frame of its parent.
-	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
-	
-	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pUnixFrameImpl->getTopLevelWindow();
-
-	if(GTK_IS_WINDOW(parentWindow) != TRUE)
-		parentWindow  = gtk_widget_get_parent(parentWindow);
-	GtkWidget *popup;
-
-	popup = GTK_WIDGET (dialog);
-	connectFocus (GTK_WIDGET(popup), pFrame);
+	GtkWidget *popup = GTK_WIDGET (dialog);
 	gtk_dialog_set_default_response (GTK_DIALOG (popup), defaultResponse);
-
-	centerDialog (parentWindow, GTK_WIDGET(popup));
 	gtk_window_set_modal (GTK_WINDOW(popup), TRUE);
+
+	// To center the dialog, we need the frame of its parent.
+	if (pFrame)
+	{
+		XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
+		GtkWidget * parentWindow = pUnixFrameImpl->getTopLevelWindow();
+		if (GTK_IS_WINDOW(parentWindow) != TRUE)
+			parentWindow  = gtk_widget_get_parent(parentWindow);
+		centerDialog (parentWindow, GTK_WIDGET(popup));
+	}
+	connectFocus (GTK_WIDGET(popup), pFrame);
 
 	// connect F1 to the help subsystem
 	g_signal_connect (G_OBJECT(popup), "key-press-event",
@@ -444,22 +441,22 @@ gint abiRunModalDialog(GtkDialog * me, XAP_Frame *pFrame, XAP_Dialog * pDlg,
 void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg,
 							gint defaultResponse, bool abi_modeless, AtkRole /*role*/ )
 {
-	// To center the dialog, we need the frame of its parent.
-	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
+	if (abi_modeless)
+	{
+		// remember the modeless id
+		XAP_App::getApp()->rememberModelessId( pDlg->getDialogId(), static_cast<XAP_Dialog_Modeless *>(pDlg));
 
-	if (abi_modeless) {
-	  // remember the modeless id
-	  XAP_App::getApp()->rememberModelessId( pDlg->getDialogId(), static_cast<XAP_Dialog_Modeless *>(pDlg));
-	
-	  // connect focus to our parent frame
-	  connectFocusModeless(GTK_WIDGET(me), XAP_App::getApp());
+		// connect focus to our parent frame
+		connectFocusModeless(GTK_WIDGET(me), XAP_App::getApp());
 	}
 
-	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = gtk_widget_get_toplevel (pUnixFrameImpl->getTopLevelWindow());
- 	
-	// center the dialog
-	centerDialog ( parentWindow, GTK_WIDGET(me), false ) ;
+	// To center the dialog, we need the frame of its parent.
+	if (pFrame)
+	{
+		XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
+		GtkWidget * parentWindow = gtk_widget_get_toplevel (pUnixFrameImpl->getTopLevelWindow());
+		centerDialog ( parentWindow, GTK_WIDGET(me), false ) ;
+	}
 	
 	// connect F1 to the help subsystem
 	g_signal_connect (G_OBJECT(me), "key-press-event",
