@@ -43,7 +43,6 @@ protected:
 	BOOL					_onDeltaPos(NM_UPDOWN * pnmud);
 
 private:
-	HWND					m_hThisDlg;
 	XAP_Win32DialogHelper		m_helper;
 	ToggleCase				m_iWhichCase;
 

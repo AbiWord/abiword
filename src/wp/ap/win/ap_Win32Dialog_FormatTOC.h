@@ -22,13 +22,14 @@
 
 #include "ap_Dialog_FormatTOC.h"
 #include "xap_Win32PropertySheet.h"
+#include "xap_Win32DialogBase.h"
 
 class XAP_Win32Frame;
 class AP_Win32Dialog_FormatTOC_General;
 class AP_Win32Dialog_FormatTOC_Sheet;
 class AP_Win32Dialog_FormatTOC_Layout;
 
-class ABI_EXPORT AP_Win32Dialog_FormatTOC: public AP_Dialog_FormatTOC
+class ABI_EXPORT AP_Win32Dialog_FormatTOC: public AP_Dialog_FormatTOC, XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_FormatTOC(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

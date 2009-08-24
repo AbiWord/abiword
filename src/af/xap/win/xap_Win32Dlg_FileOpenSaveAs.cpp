@@ -545,7 +545,7 @@ UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookSaveAsProc(HWND hDlg, UINT m
 							// so we have to retrieve the text directly from the control (I could swear that
 							// this used to work, and have no idea what changed)
 							GetDlgItemTextW(GetParent(hDlg), edt1, buff, MAX_DLG_INS_PICT_STRING);
-							// wcscpy(buff,pNotify->lpOFN->lpstrFile);                 //was once commented
+							wcscpy(buff,pNotify->lpOFN->lpstrFile);                 //was once commented
 							wchar_t * dot = wcschr(buff, L'.');
 							if(dot)
 							{
@@ -813,13 +813,14 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 UINT XAP_Win32Dialog_FileOpenSaveAs::_initPreviewDlg(HWND hDlg)
 {
 	HWND hFOSADlg	= GetParent(hDlg);
+	UT_Win32LocaleString str;
 	setHandle (hDlg);
 
 	const XAP_StringSet*  pSS		  = XAP_App::getApp()->getStringSet();
 	UT_return_val_if_fail(pSS, false);
 
     setDlgItemText( XAP_RID_DIALOG_INSERT_PICTURE_IMAGE_PREVIEW,
-					pSS->getValue(XAP_STRING_ID_DLG_IP_Height_Label));
+					pSS->getValue(XAP_STRING_ID_DLG_IP_No_Picture_Label));
   
     setDlgItemText( XAP_RID_DIALOG_INSERT_PICTURE_CHECK_ACTIVATE_PREVIEW,
 					pSS->getValue(XAP_STRING_ID_DLG_IP_Activate_Label));
@@ -828,11 +829,12 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_initPreviewDlg(HWND hDlg)
 					pSS->getValue(XAP_STRING_ID_DLG_IP_Height_Label));
     
     setDlgItemText( XAP_RID_DIALOG_INSERT_PICTURE_TEXT_WIDTH,
-					pSS->getValue(XAP_STRING_ID_DLG_IP_Height_Label));
+					pSS->getValue(XAP_STRING_ID_DLG_IP_Width_Label));
     
-    setDlgItemText( hFOSADlg,
+    str.fromUTF8 (pSS->getValue(XAP_STRING_ID_DLG_IP_Button_Label));
+    SetDlgItemTextW( hFOSADlg,
 					IDOK,
-					pSS->getValue(XAP_STRING_ID_DLG_IP_Button_Label));
+					str.c_str());
 
 	return true;
 

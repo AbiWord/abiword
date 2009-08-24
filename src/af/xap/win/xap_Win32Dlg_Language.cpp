@@ -150,7 +150,7 @@ BOOL CALLBACK XAP_Win32Dialog_Language::s_treeProc(HWND hWnd,UINT msg,WPARAM wPa
 		{
 			// Associated data		 
 			tvi.mask = TVIF_PARAM;
-			SendMessageW(hWnd, TVM_GETITEM, 0, (LPARAM)&tvi);
+			SendMessageW(hWnd, TVM_GETITEMW, 0, (LPARAM)&tvi);
 			pThis->_setLanguageAndExit(tvi.lParam);			
 		}
 		return 1;						
@@ -244,7 +244,7 @@ BOOL XAP_Win32Dialog_Language::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lPa
 				{				
 					// Associated data		 
 					tvi.mask = TVIF_PARAM;
-					SendMessageW(hWndTree, TVM_GETITEM, 0, (LPARAM)&tvi);		
+					SendMessageW(hWndTree, TVM_GETITEMW, 0, (LPARAM)&tvi);		
 					_setLanguage( m_ppLanguages[tvi.lParam]);
 					m_bChangedLanguage = true;
 					m_answer = a_OK;
