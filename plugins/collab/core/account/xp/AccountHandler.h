@@ -166,7 +166,6 @@ public:
 	virtual void							signal(const Event& event, BuddyPtr pSource);
 	
 	// protocol error management
-	static void enableProtocolErrorReports(bool enable); // NOTE: enabled by default!
 	enum
 	{
 		PE_Invalid_Version 		= 1,	// only possible error atm ^_^
@@ -187,7 +186,6 @@ protected:
 
 private:
 	static void								_reportProtocolError(UT_sint32 remoteVersion, UT_sint32 errorEnum, BuddyPtr buddy);
-	static bool								showProtocolErrorReports;
 
 	bool									m_bCanOffer;
 	std::vector<BuddyPtr>					m_vBuddies;

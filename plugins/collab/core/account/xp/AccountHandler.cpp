@@ -460,39 +460,36 @@ BOOL AccountHandler::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 }
 #endif
 
-void AccountHandler::_reportProtocolError(UT_sint32 remoteVersion, UT_sint32 errorEnum, BuddyPtr /* buddy*/) 
+void AccountHandler::_reportProtocolError(UT_sint32 remoteVersion, UT_sint32 errorEnum, BuddyPtr pBuddy)
 {
 #ifndef DEBUG
 	UT_UNUSED(remoteVersion);
 	UT_UNUSED(errorEnum);
 #endif
-	UT_DEBUGMSG(("_reportProtocolError: showProtocolErrorReports=%d remoteVersion=%d errorEnum=%d\n", showProtocolErrorReports, remoteVersion, errorEnum));
-	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-/*
-	if (showProtocolErrorReports) {
-		static std::set<std::string> reportedBuddies;
+	UT_DEBUGMSG(("_reportProtocolError: remoteVersion=%d errorEnum=%d\n", remoteVersion, errorEnum));
+	UT_return_if_fail(pBuddy);
 
-		if (reportedBuddies.insert( buddy.getName().utf8_str() ).second) {
-			UT_UTF8String msg;
-			switch (errorEnum) {
-				case PE_Invalid_Version:
-					msg = UT_UTF8String_sprintf("Your buddy %s is using a different version of collaboration software (expected %d, got %d).\n"
-												"You will not be able to collaborate with him/her.", 
-												buddy.getDescription().utf8_str(), // TODO: make the name more user-friendly
-												ABICOLLAB_PROTOCOL_VERSION, remoteVersion);
-					break;
-				default:
-					msg = UT_UTF8String_sprintf("An unknown error code %d was reported by buddy %s.", errorEnum,
-													buddy.getDescription().utf8_str()); // TODO: make the name more user-friendly
-					break;
-			}
-			XAP_App::getApp()->getLastFocussedFrame()->showMessageBox(
-				msg.utf8_str(),
-				XAP_Dialog_MessageBox::b_O,
-				XAP_Dialog_MessageBox::a_OK);
+	static std::set<std::string> reportedBuddies;
+	if (reportedBuddies.insert( pBuddy->getDescriptor(false).utf8_str() ).second)
+	{
+		UT_UTF8String msg;
+		switch (errorEnum) {
+			case PE_Invalid_Version:
+				msg = UT_UTF8String_sprintf("Your buddy %s is using version %d of AbiCollab, while you are using version %d.\n"
+											"Please make sure you are using the same AbiWord version.", 
+											pBuddy->getDescription().utf8_str(),
+											remoteVersion, ABICOLLAB_PROTOCOL_VERSION);
+				break;
+			default:
+				msg = UT_UTF8String_sprintf("An unknown error code %d was reported by buddy %s.", errorEnum,
+												pBuddy->getDescription().utf8_str());
+				break;
 		}
+		XAP_App::getApp()->getLastFocussedFrame()->showMessageBox(
+			msg.utf8_str(),
+			XAP_Dialog_MessageBox::b_O,
+			XAP_Dialog_MessageBox::a_OK);
 	}
-*/
 }
 
 void AccountHandler::_sendProtocolError(BuddyPtr pBuddy, UT_sint32 errorEnum)
@@ -501,13 +498,6 @@ void AccountHandler::_sendProtocolError(BuddyPtr pBuddy, UT_sint32 errorEnum)
 	ProtocolErrorPacket event(errorEnum);
 	send(&event, pBuddy);
 }
-
-void AccountHandler::enableProtocolErrorReports(bool enable) 
-{
-	showProtocolErrorReports = enable;
-}
-
-bool AccountHandler::showProtocolErrorReports = true;
 
 /*
  * ProtocolErrorPacket
