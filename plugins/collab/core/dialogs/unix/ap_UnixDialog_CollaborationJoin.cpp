@@ -186,7 +186,6 @@ void AP_UnixDialog_CollaborationJoin::_populateWindowData()
 												(void*)NULL);
 	column = gtk_tree_view_get_column (GTK_TREE_VIEW (m_wBuddyTree), col_offset - 1);	
 	
-	gtk_tree_view_expand_all (GTK_TREE_VIEW (m_wBuddyTree));
 	gtk_widget_show_all(m_wBuddyTree);
 }
 
