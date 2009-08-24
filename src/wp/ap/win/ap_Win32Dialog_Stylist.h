@@ -22,10 +22,11 @@
 
 #include "ap_Dialog_Stylist.h"
 #include "xap_Frame.h"
+#include "xap_Win32DialogBase.h"
 
 /*****************************************************************/
 
-class ABI_EXPORT AP_Win32Dialog_Stylist: public AP_Dialog_Stylist
+class ABI_EXPORT AP_Win32Dialog_Stylist: public AP_Dialog_Stylist, XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_Stylist(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -41,10 +42,9 @@ public:
 	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
 	static BOOL CALLBACK 	s_treeProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
 	virtual void            setStyleInGUI(void);
-	virtual void *  		pGetWindowHandle(void) {  return (void *) m_hWnd; }	
-protected:
-	HWND                    m_hWnd;
+	virtual void *  		pGetWindowHandle(void) {  return (void *) m_hDlg; }	
 
+protected:
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	void					_populateWindowData(void);
