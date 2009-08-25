@@ -48,6 +48,7 @@ BOOL CALLBACK AP_Win32Dialog_CollaborationShare::s_dlgProc(HWND hWnd, UINT msg, 
 		
 	case WM_DESTROY:
 		pThis = (AP_Win32Dialog_CollaborationShare *)GetWindowLong(hWnd,DWL_USER);
+		pThis->_freeBuddyList();
 		if (pThis->m_pWin32Dialog)
 		{
 			DELETEP(pThis->m_pWin32Dialog);
@@ -106,8 +107,6 @@ void AP_Win32Dialog_CollaborationShare::runModal(XAP_Frame * pFrame)
 		break;
 		// ok!
 	};
-
-	_freeBuddyList();
 }
 
 /*****************************************************************/
