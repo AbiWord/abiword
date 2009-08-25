@@ -33,7 +33,7 @@ public:
 	BOOL						_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL 						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
-	virtual void				close();
+	virtual void				close(bool cancel = false);
 	virtual void				setProgress(UT_uint32 progress);
 
 private:

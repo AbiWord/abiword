@@ -44,7 +44,7 @@ public:
 	const UT_UTF8String&			getInformation()
 		{ return m_sInformation; }
 
-	virtual void					close() = 0;
+	virtual void					close(bool cancel = false) = 0;
 	virtual void					setProgress(UT_uint32 progress) = 0;
 
 	typedef enum { a_OK, a_CANCEL } tAnswer;

@@ -364,6 +364,15 @@ bool ServiceAccountHandler::recognizeBuddyIdentifier(const std::string& identifi
 	return true;
 }
 
+void ServiceAccountHandler::forceDisconnectBuddy(BuddyPtr pBuddy)
+{
+	UT_DEBUGMSG(("ServiceAccountHandler::forceDisconnectBuddy()\n"));
+	UT_return_if_fail(pBuddy);
+
+	// It makes no sense on this backend to disconnect from buddies
+	// as far as I can see now.
+}
+
 bool ServiceAccountHandler::hasAccess(const std::vector<std::string>& /*vAcl*/, BuddyPtr pBuddy)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::hasAccess()\n"));
@@ -993,13 +1002,15 @@ acs::SOAP_ERROR ServiceAccountHandler::_openDocumentSlave(ConnectionPtr connecti
 	
 	// run the dialog
 	pDlg->runModal(pDlgFrame);
-	UT_DEBUGMSG(("Progress dialog destroyed...\n"));
 	bool m_cancelled = pDlg->getAnswer() == AP_Dialog_GenericProgress::a_CANCEL;
+	UT_DEBUGMSG(("Progress dialog destroyed, result: %s\n", m_cancelled ? "cancelled" : "ok"));
 	pFactory->releaseDialog(pDlg);		
 	connection->loadDocumentEnd();
 	
 	if (m_cancelled)
 		return acs::SOAP_ERROR_GENERIC;
+
+	UT_return_val_if_fail(*pDoc, acs::SOAP_ERROR_GENERIC);
 
 	// Register a serviceExporter to handle remote saves via a signal.
 	// FIXME: the exporter is document dependent, so don't store it in a simple class member
@@ -1611,6 +1622,26 @@ void ServiceAccountHandler::_handleMessages(ConnectionPtr connection)
 				
 					Packet* pPacket = _createPacket(*dp->getMessage(), buddy_ptr);
 					UT_return_if_fail(pPacket);								
+
+					if (pPacket->getClassType() == PCT_ProtocolErrorPacket)
+					{
+						// If there is a running async file open action going on, we'll
+						// have to abort that...
+						if (buddy_ptr->master())
+						{
+							boost::shared_ptr<PendingDocumentProperties> pdp = connection->getPendingDocProps();
+							if (pdp)
+							{
+								UT_return_if_fail(pdp->pDlg);
+								pdp->pDlg->close(true);
+								connection->loadDocumentEnd();
+							}
+						}
+
+						bool b = _handleProtocolError(pPacket, buddy_ptr);
+						UT_return_if_fail(b);
+						return;
+					}
 
 					if (pPacket->getClassType() == PCT_JoinSessionRequestResponseEvent)
 					{

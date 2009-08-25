@@ -67,10 +67,10 @@ void AP_UnixDialog_GenericProgress::runModal(XAP_Frame * pFrame)
 	abiDestroyWidget(m_wWindowMain);
 }
 
-void AP_UnixDialog_GenericProgress::close()
+void AP_UnixDialog_GenericProgress::close(bool cancel)
 {
 	UT_return_if_fail(m_wWindowMain);
-	gtk_dialog_response(GTK_DIALOG(m_wWindowMain), AP_Dialog_GenericProgress::a_OK);
+	gtk_dialog_response(GTK_DIALOG(m_wWindowMain), cancel ? GTK_RESPONSE_CANCEL : GTK_RESPONSE_OK);
 }
 
 void AP_UnixDialog_GenericProgress::setProgress(UT_uint32 progress)

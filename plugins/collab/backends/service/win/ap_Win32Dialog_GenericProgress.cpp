@@ -102,11 +102,11 @@ void AP_Win32Dialog_GenericProgress::runModal(XAP_Frame * pFrame)
 	};
 }
 
-void AP_Win32Dialog_GenericProgress::close()
+void AP_Win32Dialog_GenericProgress::close(bool cancel)
 {
 	UT_DEBUGMSG(("AP_Win32Dialog_GenericProgress::close()\n"));
 	UT_return_if_fail(m_hWnd);
-	m_answer = AP_Dialog_GenericProgress::a_OK;	
+	m_answer = cancel ? AP_Dialog_GenericProgress::a_CANCEL : AP_Dialog_GenericProgress::a_OK;
 	EndDialog(m_hWnd, 0);
 }
 

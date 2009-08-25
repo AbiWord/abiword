@@ -31,7 +31,7 @@ public:
 	static XAP_Dialog * static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id);
 	void						runModal(XAP_Frame * pFrame);
 
-	virtual void				close();
+	virtual void				close(bool cancel = false);
 	virtual void				setProgress(UT_uint32 progress);
 
 private:
