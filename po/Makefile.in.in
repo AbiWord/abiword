@@ -35,10 +35,9 @@ distclean distclean-recursive: clean
 	rm -f missing
 
 maintainer-clean maintainer-clean-recursive: distclean-recursive
-	rm -fv Makefile.in.in
 
 install: all
-	@$(foreach lang, $(langs), if test -d $(dir $(call instfile,$(lang))); then install -m 644 $(lang).mo $(call instfile,$(lang)); echo Installing $(call instfile,$(lang)); fi; )
+	@$(foreach lang, $(langs), install -d $(dir $(call instfile,$(lang))); install -m 644 $(lang).mo $(call instfile,$(lang)); echo Installing $(call instfile,$(lang)); )
 
 uninstall:
 	@$(foreach lang, $(langs), if test -f $(call instfile,$(lang)); then rm -f $(call instfile,$(lang)); echo Uninstalling $(call instfile,$(lang)); fi; )

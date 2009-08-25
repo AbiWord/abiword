@@ -260,8 +260,153 @@ Section "" section_abi_req
 
 	SetOutPath $INSTDIR\profiles
 	File "${ABIWORD_COMPILED_PATH}\profiles\system.profile*"
-	SetOutPath $INSTDIR\strings
-	File "${ABIWORD_COMPILED_PATH}\strings\*.strings"
+  
+  SetOutPath $INSTDIR/share/locale/am_ET/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/am_ET.mo
+  SetOutPath $INSTDIR/share/locale/ar/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/ar.mo
+  SetOutPath $INSTDIR/share/locale/ast_ES/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/ast_ES.mo
+  SetOutPath $INSTDIR/share/locale/ayc_BO/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/ayc_BO.mo
+  SetOutPath $INSTDIR/share/locale/aym_BO/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/aym_BO.mo
+  SetOutPath $INSTDIR/share/locale/be_BY/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/be_BY.mo
+  SetOutPath $INSTDIR/share/locale/be@latin/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/be@latin.mo
+  SetOutPath $INSTDIR/share/locale/bg_BG/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/bg_BG.mo
+  SetOutPath $INSTDIR/share/locale/br_FR/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/br_FR.mo
+  SetOutPath $INSTDIR/share/locale/ca_ES/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/ca_ES.mo
+  SetOutPath $INSTDIR/share/locale/cs_CZ/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/cs_CZ.mo
+  SetOutPath $INSTDIR/share/locale/cy_GB/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/cy_GB.mo
+  SetOutPath $INSTDIR/share/locale/da_DK/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/da_DK.mo
+  SetOutPath $INSTDIR/share/locale/de_CH/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/de_CH.mo
+  SetOutPath $INSTDIR/share/locale/de_DE/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/de_DE.mo
+  SetOutPath $INSTDIR/share/locale/el_GR/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/el_GR.mo
+  SetOutPath $INSTDIR/share/locale/en_AU/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/en_AU.mo
+  SetOutPath $INSTDIR/share/locale/en_CA/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/en_CA.mo
+  SetOutPath $INSTDIR/share/locale/en_GB/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/en_GB.mo
+  SetOutPath $INSTDIR/share/locale/en_IE/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/en_IE.mo
+  SetOutPath $INSTDIR/share/locale/eo/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/eo.mo
+  SetOutPath $INSTDIR/share/locale/es_ES/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/es_ES.mo
+  SetOutPath $INSTDIR/share/locale/es_MX/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/es_MX.mo
+  SetOutPath $INSTDIR/share/locale/et/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/et.mo
+  SetOutPath $INSTDIR/share/locale/eu_ES/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/eu_ES.mo
+  SetOutPath $INSTDIR/share/locale/fi_FI/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/fi_FI.mo
+  SetOutPath $INSTDIR/share/locale/fr_FR/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/fr_FR.mo
+  SetOutPath $INSTDIR/share/locale/ga_IE/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/ga_IE.mo
+  SetOutPath $INSTDIR/share/locale/gl/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/gl.mo
+  SetOutPath $INSTDIR/share/locale/he_IL/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/he_IL.mo
+  SetOutPath $INSTDIR/share/locale/hr_HR/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/hr_HR.mo
+  SetOutPath $INSTDIR/share/locale/hu_HU/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/hu_HU.mo
+  SetOutPath $INSTDIR/share/locale/id_ID/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/id_ID.mo
+  SetOutPath $INSTDIR/share/locale/it_IT/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/it_IT.mo
+  SetOutPath $INSTDIR/share/locale/ja_JP/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/ja_JP.mo
+  SetOutPath $INSTDIR/share/locale/jbo/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/jbo.mo
+  SetOutPath $INSTDIR/share/locale/ko/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/ko.mo
+  SetOutPath $INSTDIR/share/locale/ku/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/ku.mo
+  SetOutPath $INSTDIR/share/locale/lt_LT/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/lt_LT.mo
+  SetOutPath $INSTDIR/share/locale/lv_LV/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/lv_LV.mo
+  SetOutPath $INSTDIR/share/locale/mg_MG/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/mg_MG.mo
+  SetOutPath $INSTDIR/share/locale/mh_MH/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/mh_MH.mo
+  SetOutPath $INSTDIR/share/locale/mk_MK/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/mk_MK.mo
+  SetOutPath $INSTDIR/share/locale/ms_MY/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/ms_MY.mo
+  SetOutPath $INSTDIR/share/locale/nb_NO/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/nb_NO.mo
+  SetOutPath $INSTDIR/share/locale/ne_NP/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/ne_NP.mo
+  SetOutPath $INSTDIR/share/locale/nl_NL/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/nl_NL.mo
+  SetOutPath $INSTDIR/share/locale/nn_NO/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/nn_NO.mo
+  SetOutPath $INSTDIR/share/locale/pl_PL/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/pl_PL.mo
+  SetOutPath $INSTDIR/share/locale/ps/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/ps.mo
+  SetOutPath $INSTDIR/share/locale/pt_BR/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/pt_BR.mo
+  SetOutPath $INSTDIR/share/locale/pt_PT/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/pt_PT.mo
+  SetOutPath $INSTDIR/share/locale/quh_BO/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/quh_BO.mo
+  SetOutPath $INSTDIR/share/locale/qul_BO/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/qul_BO.mo
+  SetOutPath $INSTDIR/share/locale/ro_RO/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/ro_RO.mo
+  SetOutPath $INSTDIR/share/locale/ru_RU/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/ru_RU.mo
+  SetOutPath $INSTDIR/share/locale/sc_IT/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/sc_IT.mo
+  SetOutPath $INSTDIR/share/locale/sk_SK/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/sk_SK.mo
+  SetOutPath $INSTDIR/share/locale/sl_SI/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/sl_SI.mo
+  SetOutPath $INSTDIR/share/locale/sq_AL/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/sq_AL.mo
+  SetOutPath $INSTDIR/share/locale/sr/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/sr.mo
+  SetOutPath $INSTDIR/share/locale/sr_SR/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/sr_SR.mo
+  SetOutPath $INSTDIR/share/locale/sv_SE/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/sv_SE.mo
+  SetOutPath $INSTDIR/share/locale/ta_IN/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/ta_IN.mo
+  SetOutPath $INSTDIR/share/locale/tr_TR/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/tr_TR.mo
+  SetOutPath $INSTDIR/share/locale/uk_UA/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/uk_UA.mo
+  SetOutPath $INSTDIR/share/locale/ur/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/ur.mo
+  SetOutPath $INSTDIR/share/locale/vi_VN/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/vi_VN.mo
+  SetOutPath $INSTDIR/share/locale/wo_SN/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/wo_SN.mo
+  SetOutPath $INSTDIR/share/locale/yi/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/yi.mo
+  SetOutPath $INSTDIR/share/locale/zh_CN/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/zh_CN.mo
+  SetOutPath $INSTDIR/share/locale/zh_HK/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/zh_HK.mo
+  SetOutPath $INSTDIR/share/locale/zh_TW/LC_MESSAGES
+  File /oname=abiword.mo ${ABIWORD_MODULE_PATH}/po/zh_TW.mo
 
 	SetOutPath $INSTDIR
 	File /oname=copying.txt "${ABIWORD_MODULE_PATH}\Copying"
@@ -309,8 +454,11 @@ SectionEnd
 	Delete "$INSTDIR\readme.abw"
 
 	; remove string sets
-	Delete "$INSTDIR\strings\*.strings"
-	${DeleteDirIfEmpty} "$INSTDIR\strings"
+	Delete "$INSTDIR\share\locale\*\LC_MESSAGES\*.mo"
+	${DeleteDirIfEmpty} "$INSTDIR\share\locale\*\LC_MESSAGES"
+	${DeleteDirIfEmpty} "$INSTDIR\share\locale\*"
+	${DeleteDirIfEmpty} "$INSTDIR\share\locale"
+	${DeleteDirIfEmpty} "$INSTDIR\share"
 
 	; remove profile sets
 	Delete "$INSTDIR\profiles\system.profile*"
