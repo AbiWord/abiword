@@ -49,6 +49,15 @@ class ServiceBuddy;
 class AbiCollabService_Export;
 class RealmBuddy;
 
+struct DocumentPermissions
+{
+	std::vector<UT_uint64> read_write;
+	std::vector<UT_uint64> read_only;
+	std::vector<UT_uint64> group_read_write;
+	std::vector<UT_uint64> group_read_only;
+	std::vector<UT_uint64> group_read_owner;
+};
+
 extern AccountHandlerConstructor ServiceAccountHandlerConstructor;
 
 #define SERVICE_ACCOUNT_HANDLER_TYPE "com.abisource.abiword.abicollab.backend.service"
@@ -163,12 +172,8 @@ private:
 	acs::SOAP_ERROR							_openDocumentSlave(ConnectionPtr connection, PD_Document** pDoc, XAP_Frame* pFrame, 
 													const std::string& filename, bool bLocallyOwned);
 	bool									_getConnections();
-	bool									_getPermissions(uint64_t doc_id,
-													std::vector<UT_uint64>& rw, std::vector<UT_uint64>& ro,
-													std::vector<UT_uint64>& grw, std::vector<UT_uint64>& gro);
-	bool									_setPermissions(UT_uint64 doc_id, 
-													const std::vector<UT_uint64>& friend_readwrite,
-													const std::vector<UT_uint64>& group_readwrite);
+	bool									_getPermissions(uint64_t doc_id, DocumentPermissions& perms);
+	bool									_setPermissions(UT_uint64 doc_id, DocumentPermissions& perms);
 
 	void									_handleJoinSessionRequestResponse(
 													JoinSessionRequestResponseEvent* jsre, BuddyPtr pBuddy, 
@@ -186,6 +191,7 @@ private:
 	bool									m_bOnline;  // only used to determine if we are allowed to 
 														// communicate with abicollab.net or not
 	std::vector<ConnectionPtr>				m_connections;
+	std::map<uint64_t, DocumentPermissions> m_permissions;
 	std::string								m_ssl_ca_file;
 	PL_ListenerId             m_iListenerID;
 	AbiCollabService_Export * m_pExport;

@@ -653,31 +653,31 @@ bool ServiceAccountHandler::getAcl(AbiCollab* pSession, std::vector<std::string>
 	// fetch the current set of file permissions
 	ConnectionPtr connection = _getConnection(pSession->getSessionId().utf8_str());
 	UT_return_val_if_fail(connection, false);	
-	std::vector<UT_uint64> rw;
-	std::vector<UT_uint64> ro;
-	std::vector<UT_uint64> grw;
-	std::vector<UT_uint64> gro;
-	if (!_getPermissions(connection->doc_id(), rw, ro, grw, gro))
+	DocumentPermissions perms;
+	if (!_getPermissions(connection->doc_id(), perms))
 		return false;
-
-	vAcl.clear();
+	
+	m_permissions[connection->doc_id()] = perms;
 
 	// Update the complete ACL with the newly fetched permissions.
 	// We only support read/write editting for now, so we will ignore the 
-	// read-only permissions
+	// read-only permissions (we will keep track of them however, so we won't
+	// overwrite read-only permissions set by the web application.
+
+	vAcl.clear();
 
 	// add the friend permissions
-	for (UT_uint32 i = 0; i < rw.size(); i++)  
+	for (UT_uint32 i = 0; i < perms.read_write.size(); i++)  
 	{
-		ServiceBuddyPtr pBuddy = _getBuddy(SERVICE_FRIEND, rw[i]);
+		ServiceBuddyPtr pBuddy = _getBuddy(SERVICE_FRIEND, perms.read_write[i]);
 		UT_continue_if_fail(pBuddy);
 		vAcl.push_back(pBuddy->getDescriptor(false).utf8_str());
 	}
 
 	// add the group permissions
-	for (UT_uint32 i = 0; i < grw.size(); i++)  
+	for (UT_uint32 i = 0; i < perms.group_read_write.size(); i++)  
 	{
-		ServiceBuddyPtr pBuddy = _getBuddy(SERVICE_GROUP, grw[i]);
+		ServiceBuddyPtr pBuddy = _getBuddy(SERVICE_GROUP, perms.group_read_write[i]);
 		UT_continue_if_fail(pBuddy);
 		vAcl.push_back(pBuddy->getDescriptor(false).utf8_str());
 	}
@@ -696,9 +696,19 @@ bool ServiceAccountHandler::setAcl(AbiCollab* pSession, const std::vector<std::s
 
 	// Gather the friend and group IDs that will get read-write permission
 	// on the document. Note that we do not support setting read-only or 
-	// group-owner-read permissions from here, so we leave those untouched
-	std::vector<UT_uint64> friend_readwrite;
-	std::vector<UT_uint64> group_readwrite;
+	// group-owner-read permissions from here, so we try to leave those 
+	// untouched by copying in the results from the last getPermissions
+	// result, if any.
+	
+	DocumentPermissions perms;
+	std::map<uint64_t, DocumentPermissions>::iterator it = m_permissions.find(connection->doc_id());
+	if (it != m_permissions.end())
+	{
+		printf(">>>>>> copying current RO permisions over...\n");
+		perms.read_only = (*it).second.read_only;
+		perms.group_read_only = (*it).second.group_read_only;
+		perms.group_read_owner = (*it).second.group_read_owner;
+	}
 
 	for (UT_uint32 i = 0; i < vAcl.size(); i++)
 	{
@@ -711,10 +721,10 @@ bool ServiceAccountHandler::setAcl(AbiCollab* pSession, const std::vector<std::s
 				UT_ASSERT_HARMLESS(UT_NOT_REACHED); // setting permissions on yourself makes no sense
 				break;
 			case SERVICE_FRIEND:
-				friend_readwrite.push_back(pBuddy->getUserId());
+				perms.read_write.push_back(pBuddy->getUserId());
 				break;
 			case SERVICE_GROUP:
-				group_readwrite.push_back(pBuddy->getUserId());
+				perms.group_read_write.push_back(pBuddy->getUserId());
 				break;
 			default:
 				UT_ASSERT_HARMLESS(UT_NOT_REACHED);
@@ -722,7 +732,7 @@ bool ServiceAccountHandler::setAcl(AbiCollab* pSession, const std::vector<std::s
 		}
 	}
 	
-	if (!_setPermissions(connection->doc_id(), friend_readwrite, group_readwrite))
+	if (!_setPermissions(connection->doc_id(), perms))
 		return false;
 
 	return true;
@@ -1122,9 +1132,7 @@ static void s_copy_int_array(soa::ArrayPtr array_ptr, std::vector<UT_uint64>& re
 	}
 }
 
-bool ServiceAccountHandler::_getPermissions(uint64_t doc_id,
-			std::vector<UT_uint64>& rw, std::vector<UT_uint64>& ro,
-			std::vector<UT_uint64>& grw, std::vector<UT_uint64>& gro)
+bool ServiceAccountHandler::_getPermissions(uint64_t doc_id, DocumentPermissions& perms)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::_getPermissions()\n"));
 
@@ -1176,17 +1184,16 @@ bool ServiceAccountHandler::_getPermissions(uint64_t doc_id,
 	soa::CollectionPtr rcp = soap_result->as<soa::Collection>("return");
 	UT_return_val_if_fail(rcp, false);
 
-	s_copy_int_array(rcp->get< soa::Array<soa::GenericPtr> >("read_write"), rw);
-	s_copy_int_array(rcp->get< soa::Array<soa::GenericPtr> >("read_only"), ro);
-	s_copy_int_array(rcp->get< soa::Array<soa::GenericPtr> >("group_read_write"), grw);
-	s_copy_int_array(rcp->get< soa::Array<soa::GenericPtr> >("group_read_write"), gro);
+	s_copy_int_array(rcp->get< soa::Array<soa::GenericPtr> >("read_write"), perms.read_write);
+	s_copy_int_array(rcp->get< soa::Array<soa::GenericPtr> >("read_only"), perms.read_only);
+	s_copy_int_array(rcp->get< soa::Array<soa::GenericPtr> >("group_read_write"), perms.group_read_write);
+	s_copy_int_array(rcp->get< soa::Array<soa::GenericPtr> >("group_read_only"), perms.group_read_only);
+	s_copy_int_array(rcp->get< soa::Array<soa::GenericPtr> >("group_read_owner"), perms.group_read_owner);
 
 	return true;
 }
 
-bool ServiceAccountHandler::_setPermissions(UT_uint64 doc_id, 
-			const std::vector<UT_uint64>& friend_readwrite,
-			const std::vector<UT_uint64>& group_readwrite)
+bool ServiceAccountHandler::_setPermissions(UT_uint64 doc_id, DocumentPermissions& perms)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::_setPermissions()\n"));
 
@@ -1205,19 +1212,33 @@ bool ServiceAccountHandler::_setPermissions(UT_uint64 doc_id,
 		fc("email", email)("password", password)("doc_id", static_cast<int64_t>(doc_id));
 
 		// add the friend permissions
-		soa::ArrayPtr friend_permissions(new soa::Array<soa::GenericPtr>(""));
-		for (UT_uint32 i = 0; i < friend_readwrite.size(); i++)
-			friend_permissions->add(soa::IntPtr(new soa::Int("item", friend_readwrite[i])));
-		fc("read_write", friend_permissions, soa::INT_TYPE);
-		fc("read_only", soa::ArrayPtr(), soa::INT_TYPE); // unsupported
+
+		soa::ArrayPtr read_write(new soa::Array<soa::GenericPtr>(""));
+		for (UT_uint32 i = 0; i < perms.read_write.size(); i++)
+			read_write->add(soa::IntPtr(new soa::Int("item", perms.read_write[i])));
+		fc("read_write", read_write, soa::INT_TYPE);
+
+		soa::ArrayPtr read_only(new soa::Array<soa::GenericPtr>(""));
+		for (UT_uint32 i = 0; i < perms.read_only.size(); i++)
+			read_only->add(soa::IntPtr(new soa::Int("item", perms.read_only[i])));
+		fc("read_only", read_only, soa::INT_TYPE);
 
 		// add the group permissions
-		soa::ArrayPtr group_permissions(new soa::Array<soa::GenericPtr>(""));
-		for (UT_uint32 i = 0; i < group_readwrite.size(); i++)
-			group_permissions->add(soa::IntPtr(new soa::Int("item", group_readwrite[i])));
-		fc("group_read_write", group_permissions, soa::INT_TYPE);
-		fc("group_read_only", soa::ArrayPtr(), soa::INT_TYPE); // unsupported
-		fc("group_read_owner", soa::ArrayPtr(), soa::INT_TYPE); // unsupported
+
+		soa::ArrayPtr group_read_write(new soa::Array<soa::GenericPtr>(""));
+		for (UT_uint32 i = 0; i < perms.group_read_write.size(); i++)
+			group_read_write->add(soa::IntPtr(new soa::Int("item", perms.group_read_write[i])));
+		fc("group_read_write", group_read_write, soa::INT_TYPE);
+
+		soa::ArrayPtr group_read_only(new soa::Array<soa::GenericPtr>(""));
+		for (UT_uint32 i = 0; i < perms.group_read_only.size(); i++)
+			group_read_only->add(soa::IntPtr(new soa::Int("item", perms.group_read_only[i])));
+		fc("group_read_only", group_read_only, soa::INT_TYPE);
+
+		soa::ArrayPtr group_read_owner(new soa::Array<soa::GenericPtr>(""));
+		for (UT_uint32 i = 0; i < perms.group_read_owner.size(); i++)
+			group_read_owner->add(soa::IntPtr(new soa::Int("item", perms.group_read_owner[i])));
+		fc("group_read_owner", group_read_owner, soa::INT_TYPE);
 
 		try {
 			UT_DEBUGMSG(("Getting permissions for document %llu...\n", doc_id));
