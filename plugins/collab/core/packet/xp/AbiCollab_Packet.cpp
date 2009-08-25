@@ -42,55 +42,6 @@
 #include <plugin/xp/AbiCollab_Plugin.h>
 #include <account/xp/Buddy.h>
 
-const gchar * szAbiCollab_Packet_PTName[] =
-{
-    PT_STYLE_ATTRIBUTE_NAME,
-    PT_LEVEL_ATTRIBUTE_NAME,
-    PT_LISTID_ATTRIBUTE_NAME,
-    PT_PARENTID_ATTRIBUTE_NAME,
-    PT_NAME_ATTRIBUTE_NAME,
-    PT_TYPE_ATTRIBUTE_NAME,
-    PT_BASEDON_ATTRIBUTE_NAME,
-    PT_FOLLOWEDBY_ATTRIBUTE_NAME,
-    PT_ID_ATTRIBUTE_NAME,
-    PT_HEADER_ATTRIBUTE_NAME,
-    PT_HEADEREVEN_ATTRIBUTE_NAME,
-    PT_HEADERFIRST_ATTRIBUTE_NAME,
-    PT_HEADERLAST_ATTRIBUTE_NAME,
-    PT_FOOTER_ATTRIBUTE_NAME,
-    PT_FOOTEREVEN_ATTRIBUTE_NAME,
-    PT_FOOTERFIRST_ATTRIBUTE_NAME,
-    PT_FOOTERLAST_ATTRIBUTE_NAME,
-    PT_REVISION_ATTRIBUTE_NAME,
-    PT_REVISION_DESC_ATTRIBUTE_NAME,
-    PT_REVISION_TIME_ATTRIBUTE_NAME,
-    PT_REVISION_VERSION_ATTRIBUTE_NAME,
-    PT_DOCPROP_ATTRIBUTE_NAME,
-    PT_ID_ATTRIBUTE_NAME,
-    PT_STRUX_IMAGE_DATAID,
-    PT_XID_ATTRIBUTE_NAME,
-    PT_DATAITEM_ATTRIBUTE_NAME,
-    PT_IMAGE_DATAID,
-    PT_IMAGE_TITLE,
-    PT_IMAGE_DESCRIPTION,
-    PT_DATA_PREVIEW,
-    PT_HYPERLINK_TARGET_NAME,
-    PT_ANNOTATION_NUMBER,
-    PT_AUTHOR_NAME
-};
-
-UT_sint16 getPacket_PTName_Index( const gchar* name )
-{
-	for (UT_uint8 i=0; i<sizeof(szAbiCollab_Packet_PTName)/sizeof(szAbiCollab_Packet_PTName[0]); ++i) 
-	{
-		if (!strcmp( name, szAbiCollab_Packet_PTName[i] ))
-		{
-			return UT_sint16(i);
-		}
-	}
-	return -1;
-}
-
 /* ***************************************************** */
 /* *                Packet                               */
 /* ***************************************************** */
@@ -346,30 +297,20 @@ void Props_ChangeRecordSessionPacket::_fillAtts()
 	
 	m_szAtts = new gchar* [m_sAtts.size()*2 + 1];
 	UT_uint32 i = 0;
-	for (std::map<UT_uint8,UT_UTF8String>::iterator it=m_sAtts.begin(); it!=m_sAtts.end(); ++it) 
+	for (std::map<UT_UTF8String,UT_UTF8String>::iterator it=m_sAtts.begin(); it!=m_sAtts.end(); ++it) 
 	{
-		UT_uint8 attIndex = (*it).first;
-		if (attIndex < (sizeof(szAbiCollab_Packet_PTName)/sizeof(szAbiCollab_Packet_PTName[0]))) 
-		{
-			m_szAtts[i] = g_strdup( szAbiCollab_Packet_PTName[attIndex] );
-			m_szAtts[i+1] = g_strdup( (*it).second.utf8_str() );
-			i += 2;
-		}
-		else
-		{
-			// invalid index, who sent this??
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		}
+		m_szAtts[i] = g_strdup( (*it).first.utf8_str() );
+		m_szAtts[i+1] = g_strdup( (*it).second.utf8_str() );
+		i += 2;
 	}
 	m_szAtts[i] = NULL;
 }
 
 gchar* Props_ChangeRecordSessionPacket::getAttribute( const gchar* attr ) const
 {
-	UT_sint16 idx = getPacket_PTName_Index( attr );
-	if (idx==-1) return NULL;	// guaranteed not in map
-	std::map<UT_uint8,UT_UTF8String>::const_iterator it = m_sAtts.find( idx );
-	if (it==m_sAtts.end()) return NULL;
+	std::map<UT_UTF8String,UT_UTF8String>::const_iterator it = m_sAtts.find( attr );
+	if (it == m_sAtts.end())
+		return NULL;
 	return static_cast<gchar*>( const_cast<char*>( (*it).second.utf8_str() ) );
 }
 

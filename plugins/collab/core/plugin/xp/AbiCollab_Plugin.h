@@ -22,6 +22,6 @@
 
 // Our protocol version. Increase this number whenever you make changes to any 
 // part of the communication protocols used
-#define ABICOLLAB_PROTOCOL_VERSION 	(UT_sint32(10))
+#define ABICOLLAB_PROTOCOL_VERSION 	(UT_sint32(11))
 
 #endif /* ABI_COLLAB_PLUGIN_H */

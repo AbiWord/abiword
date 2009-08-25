@@ -130,9 +130,6 @@ class SessionPacket;
 class AbiCollab;
 class AccountHandler;
 
-extern const gchar * szAbiCollab_Packet_PTName[];
-UT_sint16 getPacket_PTName_Index( const gchar* name );	// returns -1, or 0 <= x <= sizeof(szAbiCollab_Packet_PTName)
-
 /*************************************************************
  * Packets                                                   *
  *************************************************************/
@@ -326,8 +323,8 @@ public:
 	std::map<UT_UTF8String,UT_UTF8String>& getPropMap() 			{ return m_sProps; }
 	
 	gchar** getAtts() const											{ return m_szAtts; }
-	const std::map<UT_uint8,UT_UTF8String>& getAttMap() const		{ return m_sAtts; }
-	std::map<UT_uint8,UT_UTF8String>& getAttMap() 					{ return m_sAtts; }
+	const std::map<UT_UTF8String,UT_UTF8String>& getAttMap() const	{ return m_sAtts; }
+	std::map<UT_UTF8String,UT_UTF8String>& getAttMap() 				{ return m_sAtts; }
 	gchar* getAttribute( const gchar* attr ) const;
 
 	virtual std::string toStr() const;		
@@ -335,7 +332,7 @@ public:
 protected:
 	gchar**									m_szAtts;
 	gchar**									m_szProps;
-	std::map<UT_uint8,UT_UTF8String>		m_sAtts;		// key is index into szAbiCollab_Packet_PTName
+	std::map<UT_UTF8String,UT_UTF8String>	m_sAtts;
 	std::map<UT_UTF8String,UT_UTF8String>	m_sProps;
 	
 	void _freeProps(); 

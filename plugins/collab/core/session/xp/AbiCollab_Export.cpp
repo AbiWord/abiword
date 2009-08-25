@@ -361,7 +361,7 @@ ChangeRecordSessionPacket* ABI_Collab_Export::_buildPacket( const PX_ChangeRecor
  * from the index provides and maps them to a utf-8 string.
  * The result can be placed inside an XML name space. 
  */
-void ABI_Collab_Export::_mapPropsAtts( UT_sint32 indx, std::map<UT_UTF8String,UT_UTF8String>& props, std::map<UT_uint8,UT_UTF8String>& atts )
+void ABI_Collab_Export::_mapPropsAtts( UT_sint32 indx, std::map<UT_UTF8String,UT_UTF8String>& props, std::map<UT_UTF8String,UT_UTF8String>& atts )
 {
 	// fetch data
 	const PP_AttrProp * pAP = NULL;
@@ -382,16 +382,8 @@ void ABI_Collab_Export::_mapPropsAtts( UT_sint32 indx, std::map<UT_UTF8String,UT
 		pAP->getNthAttribute(i,szName,szVal);
 		if (szName && szVal)
 		{
-			UT_sint16 ix = getPacket_PTName_Index( static_cast<const char*>( szName ) );
-			if (ix!=-1)
-			{
-				UT_DEBUGMSG(("ABI_Collab_Export::mapPropsAtts: [%d] '%s' = '%s'\n", ix, szName, szVal));
-				atts[ ix ] = static_cast<const char*>( szVal );
-			}
-			else
-			{
-				UT_DEBUGMSG(("ABI_Collab_Export::mapPropsAtts: unknown attribute '%s' = '%s'\n", szName, szVal));
-			}
+			UT_DEBUGMSG(("ABI_Collab_Export::mapPropsAtts: '%s' = '%s'\n", szName, szVal));
+			atts[ szName ] = static_cast<const char*>( szVal );
 		}
 	}
 	
