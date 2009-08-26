@@ -68,7 +68,6 @@ void AP_Preview_Annotation::setAnnotationID(UT_uint32 aID)
 	m_iAID = aID;
 }
 
-
 void AP_Preview_Annotation::_createAnnotationPreviewFromGC(GR_Graphics * gc, UT_uint32 width, UT_uint32 height)
 {
 	UT_ASSERT(gc);
@@ -85,39 +84,16 @@ void AP_Preview_Annotation::_createAnnotationPreviewFromGC(GR_Graphics * gc, UT_
  */
 void AP_Preview_Annotation::setSizeFromAnnotation(void)
 {
-	//
-	// Get the font and features
-	//
-	
-	// "font-family"
-	const char * pszFamily = "Times New Roman";
-	
-	// "font-style"
-	const char * pszStyle = "normal";
-	
-	// "font-variant"
-	const char * pszVariant = "normal";
-	
-	// "font-stretch"
-	const char * pszStretch = "normal";
-	
-	// "font-size"
-	const char * pszSize="12pt";
-	
-	// "font-weight"
-	const char * pszWeight = "normal";
-
 	FV_View * pView = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
 	GR_Graphics * pG = NULL;
 	UT_return_if_fail(pView);
 	pG = pView->getGraphics();
 
 	UT_return_if_fail(pG);
-	GR_Font * pFont = pG->findFont(pszFamily, pszStyle,
-				       pszVariant, pszWeight,
-				       pszStretch, pszSize,
+	GR_Font * pFont = pG->findFont("Times New Roman", "normal",
+				       "normal", "normal",
+				       "normal", "12pt",
 				       NULL);
-	
 	UT_return_if_fail(pFont);
 	
 	double rat = 100./static_cast<double>(pG->getZoomPercentage());
@@ -131,47 +107,22 @@ void AP_Preview_Annotation::setSizeFromAnnotation(void)
 	m_width = static_cast<UT_sint32>(static_cast<double>(pG->tdu(iwidth))*rat);
 	m_height = static_cast<UT_sint32>(static_cast<double>(pG->tdu(iHeight))*rat);
 	if(pG->tdu(pView->getWindowWidth()) < m_width)
-	  m_width = pG->tdu(pView->getWindowWidth());
+		m_width = pG->tdu(pView->getWindowWidth());
 	UT_DEBUGMSG(("SetSize from Annotation width %d rat %f \n",m_width,rat));
 }
+
 // Finally draw the characters in the preview.
 void AP_Preview_Annotation::draw(void)
 {
-        m_drawString = m_pDescription;
+	m_drawString = m_pDescription;
 	
-	//
-	// Foreground and background colors.
-	//
 	UT_RGBColor FGcolor(0,0,0);
 	UT_RGBColor BGcolor(m_clrBackground);
 	
-	//
-	// Get the font and features
-	//
-	
-	// "font-family"
-	const char * pszFamily = "Times New Roman";
-	
-	// "font-style"
-	const char * pszStyle = "normal";
-	
-	// "font-variant"
-	const char * pszVariant = "normal";
-	
-	// "font-stretch"
-	const char * pszStretch = "normal";
-	
-	// "font-size"
-	const char * pszSize="12pt";
-	
-	// "font-weight"
-	const char * pszWeight = "normal";
-	
-	m_pFont = m_gc->findFont(pszFamily, pszStyle,
-							 pszVariant, pszWeight,
-							 pszStretch, pszSize,
+	m_pFont = m_gc->findFont("Times New Roman", "normal",
+							 "normal", "normal",
+							 "normal", "12pt",
 							 NULL);
-	
 	UT_ASSERT_HARMLESS(m_pFont);
 	if(!m_pFont)
 	{
@@ -185,10 +136,8 @@ void AP_Preview_Annotation::draw(void)
 	m_iDescent = m_gc->getFontDescent(m_pFont);
 	m_iHeight = m_gc->getFontHeight(m_pFont);
 	
-	//
-	// Clear the screen!
-	//
 	clearScreen();
+
 	//
 	// Calculate the draw coordinates position
 	//
@@ -232,7 +181,6 @@ void AP_Preview_Annotation::clearScreen(void)
 void AP_Preview_Annotation::setActiveFrame(XAP_Frame *pFrame)
 {
 	UT_DEBUGMSG(("AP_Preview_Annotation: setActiveFrame\n"));
-	//notifyActiveFrame(getActiveFrame());
 	notifyActiveFrame(pFrame);
 }
 
@@ -242,11 +190,11 @@ void AP_Preview_Annotation::setActiveFrame(XAP_Frame *pFrame)
  */
 void  AP_Preview_Annotation::setXY(UT_sint32 x, UT_sint32 y)
 {
-  m_left = x - m_width/2;
-  m_top = y;
-  if(m_top < 0)
-    m_top = 0;
-  if(m_left < 0)
-    m_left = 0;
-  UT_DEBUGMSG(("AP_Preview_Annotation: setXY top %d, left %d\n",m_top,m_left));
+	m_left = x - m_width/2;
+		m_top = y;
+	if(m_top < 0)
+		m_top = 0;
+	if(m_left < 0)
+		m_left = 0;
+	UT_DEBUGMSG(("AP_Preview_Annotation: setXY top %d, left %d\n", m_top, m_left));
 }
