@@ -824,6 +824,7 @@ dcl(DLG_Annotation_Description_LBL, "Description:")
 dcl(DLG_Annotation_Replace_LBL, "Replace")
 dcl(DLG_Annotation_OK_tooltip, "Update the annotation")
 dcl(DLG_Annotation_Replace_tooltip, "Replace the annotated text with the annotation content")
+dcl(DLG_Annotation_By, "by")
 
 dcl(WORD_PassRequired, "Password required, this is an encrypted document")
 dcl(WORD_PassInvalid, "Incorrect Password")

@@ -39,15 +39,24 @@ public:
 	AP_Preview_Annotation(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Preview_Annotation(void);
 	
-	void		setTitle(const gchar * pTitle);
-	void		setTitle(const std::string & pTitle)
-	{ m_pTitle = pTitle; }
-	void		setAuthor(const gchar * pAuthor);
-	void		setAuthor(const std::string & pAuthor)
-	{ m_pAuthor = pAuthor; }
-	void		setDescription(const gchar * pDescription);
-	void		setDescription(const std::string & pDescription)
-	{ m_pDescription = pDescription; }
+	void					setTitle(const gchar * pTitle);
+	void					setTitle(const std::string & sTitle)
+		{ m_sTitle = sTitle; }
+	const std::string&		getTitle() const
+		{ return m_sTitle; }
+
+	void					setAuthor(const gchar * pAuthor);
+	void					setAuthor(const std::string & sAuthor)
+		{ m_sAuthor = sAuthor; }
+	const std::string&		getAuthor() const
+		{ return m_sAuthor; }
+
+	void					setDescription(const gchar * pDescription);
+	void					setDescription(const std::string & sDescription)
+		{ m_sDescription = sDescription; }
+	const std::string&		getDescription() const
+		{ return m_sDescription; }
+
 	void		setAnnotationID(UT_uint32 aID);
 	UT_uint32	getAnnotationID() const
 	{  return m_iAID; }
@@ -71,10 +80,10 @@ protected:
 private:
 	UT_uint32			m_iAID;
 	// assume that these strings are always UTF8
-	std::string			m_pTitle;
-	std::string			m_pAuthor;
-	std::string			m_pDescription;
-	UT_UCS4String			m_drawString;
+	std::string			m_sTitle;
+	std::string			m_sAuthor;
+	std::string			m_sDescription;
+	UT_UCS4String		m_drawString;
 	GR_Font *			m_pFont;
 	UT_sint32			m_iAscent;
 	UT_sint32			m_iDescent;

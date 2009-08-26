@@ -37,9 +37,9 @@ AP_Preview_Annotation::AP_Preview_Annotation(XAP_DialogFactory * pDlgFactory,XAP
 	m_left(0),
 	m_top(0),
 	m_clrBackground(255, 247, 177),
-	m_pTitle("n/a"),
-	m_pAuthor("n/a"),
-	m_pDescription("n/a")
+	m_sTitle("n/a"),
+	m_sAuthor("n/a"),
+	m_sDescription("n/a")
 {
 }
 
@@ -51,18 +51,21 @@ AP_Preview_Annotation::~AP_Preview_Annotation()
 void AP_Preview_Annotation::setTitle(const gchar * pTitle)
 {
 	UT_return_if_fail(pTitle);
-	m_pTitle = pTitle;
+	m_sTitle = pTitle;
 }
+
 void AP_Preview_Annotation::setAuthor(const gchar * pAuthor)
 {
 	UT_return_if_fail(pAuthor);
-	m_pAuthor = pAuthor;
+	m_sAuthor = pAuthor;
 }
+
 void AP_Preview_Annotation::setDescription(const gchar * pDescription)
 {
 	UT_return_if_fail(pDescription);
-	m_pDescription = pDescription;
+	m_sDescription = pDescription;
 }
+
 void AP_Preview_Annotation::setAnnotationID(UT_uint32 aID)
 {
 	m_iAID = aID;
@@ -99,7 +102,7 @@ void AP_Preview_Annotation::setSizeFromAnnotation(void)
 	double rat = 100./static_cast<double>(pG->getZoomPercentage());
 	UT_sint32 iHeight = pG->getFontAscent(pFont) + pG->tlu(7);
 	iHeight = static_cast<UT_sint32>(static_cast<double>(iHeight));
-	m_drawString = m_pDescription;
+	m_drawString = m_sDescription;
 	UT_sint32 len = m_drawString.size();
 	pG->setFont(pFont);
 	UT_sint32 iwidth = pG->measureString(m_drawString.ucs4_str(),0,len,NULL) + pG->tlu(6);
@@ -113,7 +116,7 @@ void AP_Preview_Annotation::setSizeFromAnnotation(void)
 
 void AP_Preview_Annotation::draw(void)
 {
-	m_drawString = m_pDescription;
+	m_drawString = m_sDescription;
 	
 	UT_RGBColor FGcolor(0,0,0);
 	UT_RGBColor BGcolor(m_clrBackground);

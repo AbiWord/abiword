@@ -37,10 +37,11 @@ public:
 	virtual void			draw(void);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	void					_constructWindow(void);
 	
 private:
+	void					_createToolTip(HWND hwndParent);
 
+	HWND					m_hToolTip;
 };
 
 #endif /* AP_WIN32PREVIEW_ANNOTATION_H */
