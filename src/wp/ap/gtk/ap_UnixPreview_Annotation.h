@@ -41,9 +41,6 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	void					_constructWindow(void);
 	
-/*protected:
-	void	_bringToTop(void);*/
-	
 private:
 	// parent frame
 	GR_CairoGraphics * 	m_gc;

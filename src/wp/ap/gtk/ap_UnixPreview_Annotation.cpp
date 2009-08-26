@@ -34,8 +34,8 @@ AP_UnixPreview_Annotation::AP_UnixPreview_Annotation(XAP_DialogFactory * pDlgFac
 
 AP_UnixPreview_Annotation::~AP_UnixPreview_Annotation(void)
 {
-  UT_DEBUGMSG(("Preview Annotation deleted %p \n",this));
-  destroy();
+	UT_DEBUGMSG(("Preview Annotation deleted %p \n",this));
+	destroy();
 }
 
 void AP_UnixPreview_Annotation::runModeless(XAP_Frame * pFrame)
@@ -67,12 +67,6 @@ void AP_UnixPreview_Annotation::runModeless(XAP_Frame * pFrame)
 	gtk_widget_show(m_pDrawingArea);
 }
 
-void AP_UnixPreview_Annotation::notifyActiveFrame(XAP_Frame * /*pFrame*/)
-{
-	//UT_DEBUGMSG(("notifyActiveFrame: trying to activate... %p \n",this));
-	//activate();
-}
-
 void AP_UnixPreview_Annotation::activate(void)
 {
 	UT_ASSERT(m_pPreviewWindow);
@@ -89,7 +83,6 @@ void  AP_UnixPreview_Annotation::_constructWindow(void)
 	XAP_App::getApp()->rememberModelessId(getDialogId(), static_cast<XAP_Dialog_Modeless *>(this));
 	UT_DEBUGMSG(("Contructing Window width %d height %d left %d top %d \n",m_width,m_height,m_left,m_top));
 	m_pPreviewWindow = gtk_window_new(GTK_WINDOW_POPUP);
-	//	gtk_window_set_decorated(GTK_WINDOW(m_pPreviewWindow),FALSE);
 	gtk_widget_set_size_request(m_pPreviewWindow, m_width, m_height);
 	gtk_window_set_position(GTK_WINDOW(m_pPreviewWindow),GTK_WIN_POS_MOUSE);
 	gint root_x,root_y;
@@ -98,29 +91,22 @@ void  AP_UnixPreview_Annotation::_constructWindow(void)
 	gtk_widget_show(GTK_WIDGET(m_pDrawingArea));
 	gtk_container_add(GTK_CONTAINER(m_pPreviewWindow), m_pDrawingArea);
 	root_y -= m_height;
-	// moving
-	gtk_window_move(GTK_WINDOW(m_pPreviewWindow),
-					root_x,
-					root_y);
-	
+	gtk_window_move(GTK_WINDOW(m_pPreviewWindow), root_x, root_y);
 	gtk_widget_show_all(GTK_WIDGET(m_pPreviewWindow));
 }
 
 void  AP_UnixPreview_Annotation::destroy(void)
 {
 	modeless_cleanup();
-	if (m_pPreviewWindow != NULL)
-	{
-		//_bringToTop();
-		//sleep(4);
-		//UT_DEBUGMSG(("sleep over\n"));
-		
-		DELETEP(m_gc);
-		gtk_widget_destroy(m_pDrawingArea);
-		gtk_widget_destroy(m_pPreviewWindow);
-		m_pPreviewWindow = NULL;
-		m_pDrawingArea = NULL;
-	}
+
+	if (!m_pPreviewWindow)
+		return;
+	
+	DELETEP(m_gc);
+	gtk_widget_destroy(m_pDrawingArea);
+	gtk_widget_destroy(m_pPreviewWindow);
+	m_pPreviewWindow = NULL;
+	m_pDrawingArea = NULL;
 }
 
 
