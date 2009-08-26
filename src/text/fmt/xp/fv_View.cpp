@@ -10264,8 +10264,18 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		{
 			UT_DEBUGMSG(("Mouse context is changed to hyperlink \n"));
 		}
-		m_prevMouseContext = EV_EMC_HYPERLINK;
-		return EV_EMC_HYPERLINK;
+		fp_Line * pLine=  pRun->getLine();
+		if(pLine)
+		{
+			UT_Rect * pRec = pLine->getScreenRect();
+			if((pRec->top <= yPos) && ((pRec->top + pRec->height) >= yPos))
+			{
+				delete pRec;
+				m_prevMouseContext = EV_EMC_HYPERLINK;
+				return EV_EMC_HYPERLINK;
+			}
+			delete pRec;
+		}
 	}
 	
 	if(!isSelectionEmpty())
