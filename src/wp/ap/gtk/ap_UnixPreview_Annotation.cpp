@@ -69,7 +69,7 @@ void AP_UnixPreview_Annotation::runModeless(XAP_Frame * pFrame)
 
 void AP_UnixPreview_Annotation::activate(void)
 {
-	UT_ASSERT(m_pPreviewWindow);
+	UT_return_if_fail(m_pPreviewWindow);
 	gdk_window_raise(m_pPreviewWindow->window);
 }
 
