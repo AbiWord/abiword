@@ -53,11 +53,11 @@ public:
 	{  return m_iAID; }
 
 	
-	void		draw(void);
-	void		clearScreen(void);
-	void        setXY(UT_sint32 x, UT_sint32 y);                              
-	void        setActiveFrame(XAP_Frame *pFrame);
-	void        setSizeFromAnnotation(void);
+	virtual void	draw(void);
+	void			clearScreen(void);
+	void			setXY(UT_sint32 x, UT_sint32 y);                              
+	void			setActiveFrame(XAP_Frame *pFrame);
+	void			setSizeFromAnnotation(void);
 	
 protected:
 	void			_createAnnotationPreviewFromGC(GR_Graphics * gc, UT_uint32 width, UT_uint32 height);

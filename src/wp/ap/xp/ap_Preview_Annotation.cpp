@@ -111,7 +111,6 @@ void AP_Preview_Annotation::setSizeFromAnnotation(void)
 	UT_DEBUGMSG(("SetSize from Annotation width %d rat %f \n",m_width,rat));
 }
 
-// Finally draw the characters in the preview.
 void AP_Preview_Annotation::draw(void)
 {
 	m_drawString = m_pDescription;

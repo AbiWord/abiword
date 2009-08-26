@@ -33,7 +33,7 @@
 #	include "xap_Win32Dlg_MessageBox.h"
 #	include "xap_Win32Dlg_FileOpenSaveAs.h"
 #	include "xap_Win32Dlg_Print.h"
-#       include "xap_Win32Dlg_PrintPreview.h"
+#	include "xap_Win32Dlg_PrintPreview.h"
 #	include "xap_Win32Dlg_FontChooser.h"
 #	include "xap_Win32Dlg_WindowMore.h"
 #	include "xap_Win32Dlg_About.h"
@@ -84,12 +84,10 @@
 #	include "ap_Win32Dialog_FormatFrame.h"
 #	include "ap_Win32Dialog_FormatTOC.h"
 #	include "ap_Win32Dialog_Latex.h"
-#if 0
-#	include "ap_Win32Dialog_Download_File.h"
-#endif
-	// ... add new dialogs here ...
 #	include "ap_Win32Dialog_Stylist.h"
 #	include "ap_Win32Dialog_Annotation.h"
+#   include "ap_Win32Preview_Annotation.h"
+	// ... add new dialogs here ...
 
 #else
 
@@ -160,13 +158,12 @@
 	DeclareDialog(AP_DIALOG_ID_FORMAT_FOOTNOTES,AP_Win32Dialog_FormatFootnotes)
 	DeclareDialog(AP_DIALOG_ID_FORMAT_TOC,      AP_Win32Dialog_FormatTOC)
 	DeclareDialog(AP_DIALOG_ID_MAILMERGE,		AP_Win32Dialog_MailMerge)	
-#if 0
-	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_Win32Dialog_Download_File)
-#endif
+ 	DeclareDialog(AP_DIALOG_ID_ANNOTATION, 		AP_Win32Dialog_Annotation)
+	DeclareDialog(AP_DIALOG_ID_STYLIST,			AP_Win32Dialog_Stylist)
+	DeclareDialog(AP_DIALOG_ID_LATEX,			AP_Win32Dialog_Latex)
+	DeclareDialog(AP_DIALOG_ID_ANNOTATION_PREVIEW,	AP_Win32Preview_Annotation)
  	// ... also add new dialogs here ...
- 	DeclareDialog(AP_DIALOG_ID_ANNOTATION, 	AP_Win32Dialog_Annotation)
-	DeclareDialog(AP_DIALOG_ID_STYLIST,		AP_Win32Dialog_Stylist)
-	DeclareDialog(AP_DIALOG_ID_LATEX,	    AP_Win32Dialog_Latex)
+
 	// Remember to place the dialog box with the higher ID
 	// as the latest member. See XAP_DialogFactory::getNextId
 #endif

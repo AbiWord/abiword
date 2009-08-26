@@ -95,6 +95,8 @@ libwin_la_SOURCES = \
 	ap_Win32StatusBar.cpp \
 	ap_Win32StatusBar.h \
 	ap_Win32_TB_CFactory.cpp \
+	ap_Win32Preview_Annotation.cpp \
+	ap_Win32Preview_Annotation.h \
 	ap_Win32Toolbar_Control_All.h \
 	ap_Win32Toolbar_FontCombo.cpp \
 	ap_Win32Toolbar_FontCombo.h \
