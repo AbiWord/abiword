@@ -138,14 +138,6 @@ void AP_Preview_Annotation::setSizeFromAnnotation(void)
 void AP_Preview_Annotation::draw(void)
 {
         m_drawString = m_pDescription;
-	//
-	// Text decorations.
-	//
-	bool isUnder,isOver,isStrike;
-	
-	isUnder = false;	// "underline"
-	isOver = false;		// "overline"
-	isStrike = false;	// "line-through"
 	
 	//
 	// Foreground and background colors.
@@ -215,24 +207,6 @@ void AP_Preview_Annotation::draw(void)
 	//
 	m_gc->setColor(FGcolor);
 	painter.drawChars(m_drawString.ucs4_str(), 0, len, iLeft, iTop);
-	//
-	// Do the decorations
-	//
-	if(isUnder)
-	{
-		UT_sint32 iDrop = iTop + m_iAscent + m_iDescent/3;
-		painter.drawLine(iLeft,iDrop,iLeft+twidth,iDrop);
-	}
-	if(isOver)
-	{
-		UT_sint32 iDrop = iTop + m_gc->tlu(1) + (UT_MAX(m_gc->tlu(10),m_iAscent) - m_gc->tlu(10))/8;
-		painter.drawLine(iLeft,iDrop,iLeft+twidth,iDrop);
-	}
-	if(isStrike)
-	{
-		UT_sint32 iDrop = iTop + m_iAscent * 2 /3;
-		painter.drawLine(iLeft,iDrop,iLeft+twidth,iDrop);
-	}
 	
 	// bad hardcoded color, but this will probably [ <-this assumption is the bad thing :) ] never be different anyway
 	m_gc->setColor(UT_RGBColor(0,0,0));
@@ -242,20 +216,7 @@ void AP_Preview_Annotation::draw(void)
 	painter.drawLine(m_gc->tlu(getWindowWidth()) - m_gc->tlu(1), m_gc->tlu(getWindowHeight()) - m_gc->tlu(1), 0,
 					 m_gc->tlu(getWindowHeight()) - m_gc->tlu(1));
 	painter.drawLine(0, m_gc->tlu(getWindowHeight()) - m_gc->tlu(1), 0, 0);
-	
-	// somehow this gets ignored...
-	//activate();
 }
-
-/*void AP_Preview_Annotation::activate(void)
-{
-	UT_DEBUGMSG(("AP_Preview_Annotation: no activate implementation\n"));
-}*/
-
-/*void AP_Preview_Annotation::_bringToTop(void)
-{
-	UT_DEBUGMSG(("AP_Preview_Annotation: no _bringToTop\n"));
-}*/
 
 void AP_Preview_Annotation::clearScreen(void)
 {
