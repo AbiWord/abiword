@@ -36,7 +36,7 @@ class IOServerHandler
 {
 public:
 	IOServerHandler(int port, boost::function<void (IOServerHandler*, boost::shared_ptr<Session>)> af,
-					boost::function<void (Session&)> ef, asio::io_service& io_service_)
+					boost::function<void (boost::shared_ptr<Session>)> ef, asio::io_service& io_service_)
 	:	accept_synchronizer(boost::bind(&IOServerHandler::_signal, this)),
 		io_service(io_service_),
 		m_pAcceptor(NULL),
@@ -107,7 +107,7 @@ private:
 	boost::shared_ptr<Session>	session_ptr;
 
 	boost::function<void (IOServerHandler*, boost::shared_ptr<Session>)> m_af;
-	boost::function<void (Session&)> m_ef;
+	boost::function<void (boost::shared_ptr<Session>)> m_ef;
 };
 
 #endif /* __IO_SERVER_HANDLER__ */

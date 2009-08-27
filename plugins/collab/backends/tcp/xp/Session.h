@@ -21,16 +21,17 @@
 
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
+#include <boost/enable_shared_from_this.hpp>
 #include <deque>
 #include <sync/xp/lock.h>
 #include <sync/xp/Synchronizer.h>
 
 class TCPAccountHandler;
 
-class Session : public Synchronizer, public boost::noncopyable
+class Session : public Synchronizer, public boost::noncopyable, public boost::enable_shared_from_this<Session>
 {
 public:
-	Session(asio::io_service& io_service, boost::function<void (Session&)> ef)
+	Session(asio::io_service& io_service, boost::function<void (boost::shared_ptr<Session>)> ef)
 		: Synchronizer(boost::bind(&Session::_signal, this)),
 		socket(io_service),
 		queue_protector(),
@@ -91,7 +92,7 @@ public:
 		packet_data = 0; // just to be sure we'll never touch a datablock we might have read before
 		asio::async_read(socket, 
 			asio::buffer(&packet_size, 4),
-			boost::bind(&Session::asyncReadHeaderHandler, this, asio::placeholders::error, asio::placeholders::bytes_transferred));
+			boost::bind(&Session::asyncReadHeaderHandler, shared_from_this(), asio::placeholders::error, asio::placeholders::bytes_transferred));
 	}
 
 	void asyncWrite(int size, const char* data)
@@ -112,7 +113,7 @@ public:
 			UT_DEBUGMSG(("sending datablock of length: %d\n", packet_size_write));
 			asio::async_write(socket, 
 				asio::buffer(&packet_size_write, 4),
-				boost::bind(&Session::asyncWriteHeaderHandler, this, asio::placeholders::error));
+				boost::bind(&Session::asyncWriteHeaderHandler, shared_from_this(), asio::placeholders::error));
 		}
 	}
 
@@ -148,7 +149,7 @@ private:
 	void _signal()
 	{
 		UT_DEBUGMSG(("Session::_signal()\n"));
-		m_ef(*this);
+		m_ef(shared_from_this());
 	}
 
 	void asyncReadHeaderHandler(const asio::error_code& error,
@@ -173,7 +174,7 @@ private:
 		packet_data = reinterpret_cast<char*>(g_malloc(packet_size));
 		asio::async_read(socket,
 			asio::buffer(packet_data, packet_size),
-			boost::bind(&Session::asyncReadHandler, this, asio::placeholders::error, asio::placeholders::bytes_transferred));
+			boost::bind(&Session::asyncReadHandler, shared_from_this(), asio::placeholders::error, asio::placeholders::bytes_transferred));
 	}
 
 	void asyncReadHandler(const asio::error_code& error,
@@ -211,7 +212,7 @@ private:
 		// write the packet body
 		asio::async_write(socket, 
 			asio::buffer(packet_data_write, packet_size_write),
-			boost::bind(&Session::asyncWriteHandler, this, asio::placeholders::error));
+			boost::bind(&Session::asyncWriteHandler, shared_from_this(), asio::placeholders::error));
 	}
 
 	void asyncWriteHandler(const asio::error_code& ec)
@@ -237,7 +238,7 @@ private:
 
 			asio::async_write(socket, 
 				asio::buffer(&packet_size_write, 4),
-				boost::bind(&Session::asyncWriteHeaderHandler, this, asio::placeholders::error));
+				boost::bind(&Session::asyncWriteHeaderHandler, shared_from_this(), asio::placeholders::error));
 		}
 	}
 
@@ -252,7 +253,7 @@ private:
 	int										packet_size_write; // state needed for async writes
 	char*									packet_data_write; // state needed for async writes
 	
-	boost::function<void (Session&)>		m_ef;
+	boost::function<void (boost::shared_ptr<Session>)>		m_ef;
 };
 
 #endif /* __SESSION__ */

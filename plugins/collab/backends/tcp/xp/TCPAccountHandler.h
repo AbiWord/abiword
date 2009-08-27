@@ -69,15 +69,14 @@ public:
 	virtual bool							send(const Packet*, BuddyPtr pBuddy);
 
 	// event management
-	void									handleEvent(Session& session);
+	void									handleEvent(boost::shared_ptr<Session> session_ptr);
 
 private:
 	void									_teardownAndDestroyHandler();
-	void									_handleMessages(Session& session);
+	void									_handleMessages(boost::shared_ptr<Session> session_ptr);
 
 	// user management
-	TCPBuddyPtr								_getBuddy(Session* pSession);
-	//TCPBuddy*								_getBuddy(const TCPBuddy* pBuddy);
+	TCPBuddyPtr								_getBuddy(boost::shared_ptr<Session> session_ptr);
 
 	// connection management
 	virtual UT_sint32						_getPort(const PropertyMap& props);

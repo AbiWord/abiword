@@ -199,17 +199,18 @@ void TCPAccountHandler::_teardownAndDestroyHandler()
 	}
 }
 
-void TCPAccountHandler::_handleMessages(Session& session)
+void TCPAccountHandler::_handleMessages(boost::shared_ptr<Session> session_ptr)
 {
 	UT_DEBUGMSG(("TCPAccountHandler::_handleMessages()\n"));
-	
+	UT_return_if_fail(session_ptr);
+
 	// handle all packets waiting in our queue
 	int packet_size;
 	char* packet_data;
-	while (session.pop(packet_size, &packet_data))
+	while (session_ptr->pop(packet_size, &packet_data))
 	{
 		// get the buddy for this session
-		TCPBuddyPtr pBuddy = _getBuddy(&session);
+		TCPBuddyPtr pBuddy = _getBuddy(session_ptr);
 		UT_continue_if_fail(pBuddy); // TODO: shouldn't we just disconnect here?
 
 		// construct the packet
@@ -300,17 +301,18 @@ bool TCPAccountHandler::recognizeBuddyIdentifier(const std::string& /*identifier
 	return false;
 }
 
-void TCPAccountHandler::handleEvent(Session& session)
+void TCPAccountHandler::handleEvent(boost::shared_ptr<Session> session_ptr)
 {
 	UT_DEBUGMSG(("TCPAccountHandler::handleEvent()\n"));
+	UT_return_if_fail(session_ptr);
 
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_if_fail(pManager);
 
 	// make sure we have handled _all_ packets in the queue before checking
 	// the disconnected status
-	bool disconnected = !session.isConnected();
-	_handleMessages(session);
+	bool disconnected = !session_ptr->isConnected();
+	_handleMessages(session_ptr);
 	
 	// check the connection status
 	if (disconnected)
@@ -328,7 +330,7 @@ void TCPAccountHandler::handleEvent(Session& session)
 
 			TCPBuddyPtr pB = (*it).first;
 			
-			if ((*it).second.get() == &session)
+			if ((*it).second == session_ptr)
 			{
 				UT_DEBUGMSG(("Lost connection to %s buddy %s:%s\n", getProperty("server") == "" ? "client" : "server", pB->getAddress().c_str(), pB->getPort().c_str()));
 				// drop this buddy from all sessions
@@ -422,13 +424,14 @@ bool TCPAccountHandler::send(const Packet* packet, BuddyPtr pBuddy)
 	return false;
 }
 
-TCPBuddyPtr TCPAccountHandler::_getBuddy(Session* pSession)
+TCPBuddyPtr TCPAccountHandler::_getBuddy(boost::shared_ptr<Session> session_ptr)
 {
+	UT_return_val_if_fail(session_ptr, TCPBuddyPtr());
+
 	for (std::map<TCPBuddyPtr, boost::shared_ptr<Session> >::iterator it = m_clients.begin(); it != m_clients.end(); it++)
 	{
-		std::pair<TCPBuddyPtr, boost::shared_ptr<Session> > pbs = *it;
-		if (pbs.second.get() == pSession)
-			return pbs.first;
+		if ((*it).second == session_ptr)
+			return (*it).first;
 	}
 	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	return TCPBuddyPtr();
