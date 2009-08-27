@@ -12500,11 +12500,14 @@ bool FV_View::setAnnotationText(UT_uint32 iAnnotation, const std::string & sText
 	_saveAndNotifyPieceTableChange();
 	m_pDoc->disableListUpdates();
 	//
-	// Cut out current content
+	// Cut out current content (if any, as "" is allowed as annotation content)
 	//
-	UT_uint32 iRealDeleteCount2;
 	PP_AttrProp * pAttrProp_Before = NULL;
-	m_pDoc->deleteSpan(posStart+1, posEnd, pAttrProp_Before, iRealDeleteCount2);
+	if (posStart+1 < posEnd)
+	{
+		UT_uint32 iRealDeleteCount2;
+		m_pDoc->deleteSpan(posStart+1, posEnd, pAttrProp_Before, iRealDeleteCount2);
+	}
 	//
 	// Insert the new text
 	//
