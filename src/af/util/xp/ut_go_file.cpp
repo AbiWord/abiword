@@ -348,6 +348,11 @@ UT_go_path_is_uri (const char * path)
 		return (strstr (path, "://") != NULL);
 }
 
+gboolean UT_go_path_is_path (const char * path)
+{
+	return (strstr (path, G_DIR_SEPARATOR_S) != NULL);
+}
+
 /*
  * Convert an escaped URI into a filename.
  */

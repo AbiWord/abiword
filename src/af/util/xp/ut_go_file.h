@@ -59,6 +59,7 @@ typedef enum {
 } UT_GODotDot;
 
 ABI_EXPORT gboolean UT_go_path_is_uri (const char * path);
+ABI_EXPORT gboolean UT_go_path_is_path (const char * path);
 
 ABI_EXPORT char *UT_go_filename_simplify (const char *filename, UT_GODotDot dotdot, gboolean make_absolute);
 ABI_EXPORT char *UT_go_url_simplify (const char *uri);

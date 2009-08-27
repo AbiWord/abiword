@@ -813,13 +813,23 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 					}
 				}
 			}
-			gtk_file_chooser_set_uri(m_FC, m_szInitialPathname);
+			if (UT_go_path_is_uri(m_szInitialPathname) || UT_go_path_is_path(m_szInitialPathname))
+			{
+				gtk_file_chooser_set_uri(m_FC, m_szInitialPathname);
+			}
 		}
 		else
 		{
-			// use directory(m_szInitialPathname)
-			szPersistDirectory = UT_go_dirname_from_uri(m_szInitialPathname, FALSE);
-			gtk_file_chooser_set_current_folder_uri(m_FC, szPersistDirectory);
+			if (UT_go_path_is_uri(m_szInitialPathname) || UT_go_path_is_path(m_szInitialPathname))
+			{
+				szPersistDirectory = UT_go_dirname_from_uri(m_szInitialPathname, FALSE);
+				gtk_file_chooser_set_current_folder_uri(m_FC, szPersistDirectory);
+			}
+			else
+			{
+				// we are dealing with a plain filename, not an URI or path, so 
+				// just let it come up in the current working directory.
+			}
 		}
 	}
 
