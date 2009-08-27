@@ -1785,8 +1785,8 @@ void fl_DocSectionLayout::format(void)
 	}
 	fp_Column * pCol = static_cast<fp_Column *>(getFirstContainer());
 	//
-	// If there is only one column, all the lines
-	// in the section have been stuffed into it. 
+	// When the document is first loaded, all the lines
+	// in the section have been stuffed into the first column. 
 	// When we do a break section, the lines that don't
 	// fit in the first column are shuffled into the
 	// second, then the ones that don't fit are shuffled
@@ -1795,7 +1795,7 @@ void fl_DocSectionLayout::format(void)
 	// and let BreakSection fill each empty column as 
 	// needed.
 	// 
-      	if(pCol->getNext() == NULL)
+      	if(m_pLayout->isLayoutFilling())
 	{
 	      pCol->removeAll();
 	}
