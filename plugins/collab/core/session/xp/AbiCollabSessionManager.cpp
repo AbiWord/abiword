@@ -1033,6 +1033,23 @@ void AbiCollabSessionManager::updateAcl(AbiCollab* pSession, AccountHandler* pAc
 	pSession->setAcl(vAcl);
 }
 
+XAP_Frame* AbiCollabSessionManager::findFrameForSession(AbiCollab* pSession)
+{
+	UT_return_val_if_fail(pSession, NULL);
+	UT_return_val_if_fail(pSession->getDocument(), NULL);
+
+	for (UT_sint32 i = 0; i < XAP_App::getApp()->getFrameCount(); i++)
+	{
+		XAP_Frame* pFrame = XAP_App::getApp()->getFrame(i);
+		UT_continue_if_fail(pFrame);
+
+		if (pSession->getDocument() == pFrame->getCurrentDoc())
+			return pFrame;
+	}
+
+	return NULL;
+}
+
 bool AbiCollabSessionManager::addAccount(AccountHandler* pHandler)
 {
 	UT_return_val_if_fail(pHandler, false);

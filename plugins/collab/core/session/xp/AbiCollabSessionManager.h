@@ -107,6 +107,7 @@ public:
 	bool										isActive(const UT_UTF8String& sSessionId);
 	void										removeBuddy(BuddyPtr pBuddy, bool graceful = true);
 	void										updateAcl(AbiCollab* pSession, AccountHandler* pAccount, const std::vector<std::string> acl);  
+	XAP_Frame*									findFrameForSession(AbiCollab* pSession);
 
 	// account code
 	bool										registerAccountHandlers(void);

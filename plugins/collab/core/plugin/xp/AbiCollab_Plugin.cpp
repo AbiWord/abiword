@@ -680,11 +680,13 @@ bool s_abicollab_join(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 				AbiCollab* pSession = pManager->getSessionFromSessionId(pDocHandle->getSessionId());
 				if (pSession)
 				{
-					UT_DEBUGMSG(("Already connected to session, ignore this join request\n"));
-					// Doing nothing is not too elegant, but it keeps the Open Shared Document
-					// simple (it does not have to show the "connection" state). This case
-					// won't be often triggered in practice I suppose, so cluttering the
-					// dialog to deal with this obscure case would be a shame.
+					UT_DEBUGMSG(("Already connected to session, just raising the associated frame\n"));
+
+					// Just raise a frame that contains this session, instead of
+					// opening the document again
+					XAP_Frame* pFrame = pManager->findFrameForSession(pSession);
+					UT_return_val_if_fail(pFrame, false);
+					pFrame->raise();
 				}
 				else
 					pManager->joinSessionInitiate(pBuddy, pDocHandle);	
