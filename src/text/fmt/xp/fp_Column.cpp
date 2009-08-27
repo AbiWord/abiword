@@ -832,6 +832,19 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
+
+/*!
+ * remove all contains from this.
+ */
+void fp_VerticalContainer::removeAll(void)
+{
+        UT_sint32 iCount = countCons();
+	UT_sint32 i = 0;
+	for(i=0; i< iCount; i++)
+        {
+	     deleteNthCon(0);
+	}
+}
 /*!
  Remove line from container
  \param pContainer Container
@@ -1625,7 +1638,6 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 {
 	UT_sint32 ndx = (NULL == pLastContainerToKeep) ? 0 : (findCon(pLastContainerToKeep)+1);
 	xxx_UT_DEBUGMSG(("!!!---Bump Containers LastToKeep %x Index %d \n",pLastContainerToKeep,ndx));
-
 	UT_ASSERT(ndx >= 0);
 	UT_sint32 i;
 	fp_TOCContainer *pTOC2 = NULL;

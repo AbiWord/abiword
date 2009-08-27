@@ -110,7 +110,7 @@ public:
 	bool				insertContainer(fp_Container*);
 	bool				addContainer(fp_Container*);
 	void				removeContainer(fp_Container* pContainer, bool bClear = false);
-
+        void                            removeAll(void);
 	virtual UT_uint32 	distanceFromPoint(UT_sint32 x, UT_sint32 y);
 
 	virtual void		mapXYToPosition(UT_sint32 xPos,
