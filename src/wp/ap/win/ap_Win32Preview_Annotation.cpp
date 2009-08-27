@@ -91,14 +91,25 @@ void AP_Win32Preview_Annotation::_createToolTip(HWND hwndParent)
     GetClientRect (hwndParent, &ti.rect);
     SendMessage(m_hToolTip, TTM_ADDTOOL, 0, (LPARAM) (LPTOOLINFO) &ti);
 
-	// Set the title and author as the tooltip title
-	// Note: the title can't exceed 100 chars (including the terminating \0 character)
-	// according to http://msdn.microsoft.com/en-us/library/bb760414(VS.85).aspxs
-	UT_String by = AP_Win32App::s_fromUTF8ToWinLocale(pSS->getValue(AP_STRING_ID_DLG_Annotation_By));
-	std::string title = getTitle() + " (" + by.c_str() + " " + getAuthor() + ")";
-	if (title.size() > 99)
-		title = title.substr(0, 99);
-	SendMessage(m_hToolTip, TTM_SETTITLE, (WPARAM)TTI_NONE, (LPARAM)title.c_str());
+	if (!getTitle().empty() || !getAuthor().empty())
+	{
+		// Set the title and/or author as the tooltip title
+		std::string title;
+		if (!getAuthor().empty())
+		{
+			title += getAuthor();
+			if (!getTitle().empty())
+				title += ": "
+		}
+		title += getTitle();
+
+		// The title can't exceed 100 chars (including the terminating \0 character)
+		// according to http://msdn.microsoft.com/en-us/library/bb760414(VS.85).aspxs
+		if (title.size() > 99)
+			title = title.substr(0, 99);
+
+		SendMessage(m_hToolTip, TTM_SETTITLE, (WPARAM)TTI_NONE, (LPARAM)title.c_str());
+	}
 
 	// We don't want to auto-hide the popup after is has been shown, but the maximum popup
 	// time is 30 seconds. We use this long delay since people might want to carefully read 
