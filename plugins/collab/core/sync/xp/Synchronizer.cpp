@@ -82,13 +82,16 @@ LRESULT CALLBACK Synchronizer::s_wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPA
 		else
 		{
 			pThis->m_bIsProcessing = true;
+			bool bIsDestroyed = false;
+			pThis->m_bIsDestroyed = &bIsDestroyed;
 			pThis->callMainloop();
-			while (pThis->m_iDeferredMessages)
+			while (!bIsDestroyed && pThis->m_iDeferredMessages)
 			{
 				pThis->callMainloop();
 				--pThis->m_iDeferredMessages;
 			}
 			pThis->m_bIsProcessing = false;
+			pThis->m_bIsDestroyed = NULL;
 		}
 		return true;
 
@@ -165,7 +168,8 @@ Synchronizer::Synchronizer(boost::function<void ()>  signalhandler) // Win32 Imp
 	: m_signalhandler(signalhandler),
  	m_hWnd(0),
 	m_bIsProcessing(false),
-	m_iDeferredMessages(0)
+	m_iDeferredMessages(0),
+	m_bIsDestroyed(NULL)
 {
 	UT_DEBUGMSG(("Synchronizer()\n"));
 	AbiCollabSessionManager * pSessionManager = AbiCollabSessionManager::getManager();
@@ -243,7 +247,7 @@ Synchronizer::Synchronizer(boost::function<void ()> signalhandler) // Unix Imple
 #ifdef WIN32
 Synchronizer::~Synchronizer() // Win32 Implementation
 {
-	UT_DEBUGMSG(("~Synchronizer()\n"));
+	UT_DEBUGMSG(("~Synchronizer() - this: %p\n", this));
 	// destroy our window
 	if (m_hWnd)
 	{
@@ -258,6 +262,9 @@ Synchronizer::~Synchronizer() // Win32 Implementation
 	
 	// Attempt to unregister class - it will check to make sure we're the last one out.
 	_unregisterWndClass();
+
+	if (m_bIsDestroyed)
+		*m_bIsDestroyed = true;
 }
 
 #else

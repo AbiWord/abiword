@@ -75,6 +75,16 @@ private:
 	HWND m_hWnd;
 	bool m_bIsProcessing;
 	int m_iDeferredMessages;
+
+	// This hack should not be needed if the Synchronizer was always uses
+	// as a shared pointer. Without that, when this object is destroyed as the 
+	// result of a mainloop callback, we can't determine the number of deferred 
+	// signals anymore.
+	// If this hack is removed (because all uses of the Synchronizer are
+	// shared pointer uses, and the wndProc has been updated accordingly),
+	// then make sure the testcase from http://bugzilla.abisource.com/show_bug.cgi?id=12264
+	// still works...
+	bool* m_bIsDestroyed;
 #else
 	int fdr;
 	int fdw;
