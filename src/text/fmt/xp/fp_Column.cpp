@@ -395,9 +395,21 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 					my_yoff = my_yoff + pVCon->getY() -iycon;
 				}
 			}
-			if(pVCon->getContainer()->getContainerType() == FP_CONTAINER_CELL)
+			if(pVCon && pVCon->getContainer() && (pVCon->getContainer()->getContainerType() == FP_CONTAINER_CELL))
 			{
 				pContainer = static_cast<fp_Container *>(pVCon);
+			}
+			else if(pVCon && (pVCon->getContainer() == NULL))
+			{
+			  //
+			  // Just bail out for now
+			  //
+			        return;
+			}
+			if(pVCon == NULL)
+			{
+			        pCon = NULL;
+				break;
 			}
 			pCon = static_cast<fp_Container *>(pVCon);
 		}
