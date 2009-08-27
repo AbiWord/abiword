@@ -10636,9 +10636,8 @@ void insertAnnotation(FV_View * pView, bool bReplace)
 	
 	// Default values
 	std::string sTitle;
-	sTitle = UT_std_string_sprintf("Annotation %d ",iAnnotation);
-	std::string sAuthor("empty"); 
-	std::string sDescr("empty"); 
+	std::string sAuthor; 
+	std::string sDescr; 
 	
 	pView->insertAnnotation(iAnnotation,
 							sDescr,

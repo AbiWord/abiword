@@ -99,7 +99,7 @@ void AP_Win32Preview_Annotation::_createToolTip(HWND hwndParent)
 		{
 			title += getAuthor();
 			if (!getTitle().empty())
-				title += ": "
+				title += ": ";
 		}
 		title += getTitle();
 

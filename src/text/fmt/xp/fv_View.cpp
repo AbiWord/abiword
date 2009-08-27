@@ -12785,17 +12785,7 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 	}
 	else
 	{
-		std::string sTmp;
-		if(sDescr.empty())	
-		{
-			sTmp = "Annotation";
-		}
-		else
-		{
-			sTmp = sDescr;
-		}
-	
-		UT_UCS4String sUCS4(sTmp);
+		UT_UCS4String sUCS4(sDescr);
 		bRet = m_pDoc->insertSpan(posAnnotation+2, sUCS4.ucs4_str(),sUCS4.length(),NULL);
 
 	}
