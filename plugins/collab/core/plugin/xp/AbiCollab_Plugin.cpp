@@ -121,6 +121,9 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	// store the settings to the profile
 	AbiCollabSessionManager::getManager()->storeProfile();
 
+	// stop all active accounts
+	AbiCollabSessionManager::getManager()->destroyAccounts();
+
 	// unregister all available account handlers
 	AbiCollabSessionManager::getManager()->unregisterAccountHandlers();
 
