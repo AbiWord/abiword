@@ -120,8 +120,8 @@ BOOL AP_Win32Dialog_FormatFootnotes::_onInitDialog(HWND hWnd, WPARAM /*wParam*/,
 		  	nDefE = i;			
 	}
 
-	selectComboItem (AP_RID_DIALOG_FORMATFOOTNOTES_COMBO_FSTYLE, 0); 	 	
-    selectComboItem (AP_RID_DIALOG_FORMATFOOTNOTES_COMBO_ESTYLE, 0); 	 	
+	selectComboItem (AP_RID_DIALOG_FORMATFOOTNOTES_COMBO_FSTYLE, nDefF); 	 	
+	selectComboItem (AP_RID_DIALOG_FORMATFOOTNOTES_COMBO_ESTYLE, nDefE); 	 	
  	
 	/*Set Default Radio buttons Footnotes */                                                                                                      
 	if (getRestartFootnoteOnSection() || getRestartFootnoteOnPage())

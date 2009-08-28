@@ -452,7 +452,7 @@ void AP_Win32Dialog_Options::_setOuterQuoteStyle(const gint index)
 	int nCount = SendMessageW(hCombo, CB_GETCOUNT, 0, 0);
 	UT_return_if_fail(index >= 0 && index < nCount);
 
-	SendMessageW(hCombo, CB_SETCURSEL, index, 0);
+	selectComboItem(AP_RID_DIALOG_OPTIONS_COMBO_OUTERQUOTE, index);
 }
 
 void AP_Win32Dialog_Options::_setInnerQuoteStyle(const gint index)
@@ -463,15 +463,12 @@ void AP_Win32Dialog_Options::_setInnerQuoteStyle(const gint index)
 	int nCount = SendMessageW(hCombo, CB_GETCOUNT, 0, 0);
 	UT_return_if_fail(index >= 0 && index < nCount);
 
-	SendMessageW(hCombo, CB_SETCURSEL, index, 0);
+	selectComboItem (AP_RID_DIALOG_OPTIONS_COMBO_INNERQUOTE, index);
 }
 
 gint AP_Win32Dialog_Options::_gatherOuterQuoteStyle()
 {
-	HWND hCombo = GetDlgItem((HWND)getPage(PG_SMARTQUOTES), AP_RID_DIALOG_OPTIONS_COMBO_OUTERQUOTE);
-	UT_return_val_if_fail(hCombo, 0);
-
-	int nIndex = SendMessageW(hCombo,  CB_GETCURSEL , 0,0);
+	int nIndex = getComboSelectedIndex(AP_RID_DIALOG_OPTIONS_COMBO_OUTERQUOTE);
 	UT_return_val_if_fail(nIndex != CB_ERR, 0);
 
 	return nIndex;
@@ -479,10 +476,7 @@ gint AP_Win32Dialog_Options::_gatherOuterQuoteStyle()
 
 gint AP_Win32Dialog_Options::_gatherInnerQuoteStyle()
 {
-	HWND hCombo = GetDlgItem((HWND)getPage(PG_SMARTQUOTES), AP_RID_DIALOG_OPTIONS_COMBO_INNERQUOTE);
-	UT_return_val_if_fail(hCombo, 0);
-
-	int nIndex = SendMessageW(hCombo,  CB_GETCURSEL , 0,0);
+	int nIndex = getComboSelectedIndex(AP_RID_DIALOG_OPTIONS_COMBO_INNERQUOTE);
 	UT_return_val_if_fail(nIndex != CB_ERR, 0);
 
 	return nIndex;	
@@ -921,12 +915,7 @@ void AP_Win32Dialog_Options_SmartQuotes::_onInitDialog()
 	_DS2(OPTIONS_CHK_CustomSmartQuotes,		DLG_Options_Label_CustomSmartQuotes);
 	_DS2(OPTIONS_LBL_OuterQuoteStyle,		DLG_Options_Label_OuterQuoteStyle);
 	_DS2(OPTIONS_LBL_InnerQuoteStyle,		DLG_Options_Label_InnerQuoteStyle);
-
-	HWND hComboOuter = GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_COMBO_OUTERQUOTE);
-	UT_return_if_fail(hComboOuter);
-	HWND hComboInner = GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_COMBO_INNERQUOTE);
-	UT_return_if_fail(hComboInner);
-
+	
 	UT_UCSChar buf[4];
 
 	for(size_t i = 0; XAP_EncodingManager::smartQuoteStyles[i].leftQuote != (UT_UCSChar)0; i++)
@@ -936,17 +925,16 @@ void AP_Win32Dialog_Options_SmartQuotes::_onInitDialog()
 		buf[2] = XAP_EncodingManager::smartQuoteStyles[i].rightQuote;
 		buf[3] = NULL;
 
-		gchar *szDisplayString = g_ucs4_to_utf8(buf, -1, NULL, NULL, NULL);
+		LPSTR szDisplayString = g_ucs4_to_utf8(buf, -1, NULL, NULL, NULL);
 		if(szDisplayString)
-		{
-			UT_String tmp = AP_Win32App::s_fromUTF8ToWinLocale(szDisplayString);
-			SendMessageW(hComboOuter, CB_ADDSTRING, 0, (LPARAM)tmp.c_str());
-			SendMessageW(hComboInner, CB_ADDSTRING, 0, (LPARAM)tmp.c_str());
+		{			
+			addItemToCombo( AP_RID_DIALOG_OPTIONS_COMBO_OUTERQUOTE, szDisplayString);
+			addItemToCombo( AP_RID_DIALOG_OPTIONS_COMBO_INNERQUOTE, szDisplayString);
+
 			FREEP(szDisplayString);
 		}
 	}
 }
-
 
 /*
 	

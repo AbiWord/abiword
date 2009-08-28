@@ -454,7 +454,7 @@ void AP_Win32Dialog_PageSetup_Page::_onInitDialog()
 	m_pParent->updatePageSize();
 
 	int nUnit =  m_pParent->getPageUnits();
-	selectComboItem (AP_RID_DIALOG_PAGE_SETUP_LBX_UNITS, (LPARAM) 0 );                 
+	selectComboItem (AP_RID_DIALOG_PAGE_SETUP_LBX_UNITS, (WPARAM) nUnit );                 
 
 	// Load Appropriate XPM to BMPs
 	COLORREF ColorRef = GetSysColor(COLOR_BTNFACE);
@@ -661,8 +661,8 @@ void AP_Win32Dialog_PageSetup_Margin::_onInitDialog()
         addItemToCombo (AP_RID_DIALOG_PAGE_SETUP_LBX_MARGINUNITS, _GVX(DLG_Unit_cm));
         addItemToCombo (AP_RID_DIALOG_PAGE_SETUP_LBX_MARGINUNITS, _GVX(DLG_Unit_mm));
 		// Initialize Data
-        selectComboItem (AP_RID_DIALOG_PAGE_SETUP_LBX_MARGINUNITS, (LPARAM) 0 );   		
-        SetWindowLong(getHandle(), GWL_USERDATA, (LONG)this);
+        selectComboItem (AP_RID_DIALOG_PAGE_SETUP_LBX_MARGINUNITS, (WPARAM) m_pParent->getMarginUnits() );   		
+        SetWindowLongW(getHandle(), GWL_USERDATA, (LONG)this);
 }
 
 int CALLBACK AP_Win32Dialog_PageSetup_Margin::s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
