@@ -1645,7 +1645,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	bool bEndNoteSection =	pOldSL->getType() == FL_SECTION_ENDNOTE;
 	bool bFootnoteSection = pOldSL->getType() == FL_SECTION_FOOTNOTE;
 	bool bCellSection = (pOldSL->getContainerType() == FL_CONTAINER_CELL);
-
+	UT_sint32 iHoriz = getNumHorizPages();
 
 
 	if(bDocSection || bEndNoteSection || bFootnoteSection || (bCellSection && !isHdrFtrEdit()))
@@ -1659,6 +1659,8 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 
 	UT_sint32 iLineX = 0;
 	UT_sint32 iLineY = 0;
+	UT_sint32 xOldpage = 0;
+	UT_sint32 xNewpage = 0;
 
 	pOldContainer->getOffsets(static_cast<fp_Container *>(pOldLine), iLineX, iLineY);
 	yPoint = iLineY;
@@ -1701,6 +1703,12 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 				{
 					getPageYOffset(pPage, iPageOffset);
 					yPoint = 0;
+					if(iHoriz > 1)
+					{
+						xOldpage = static_cast<UT_sint32>(getWidthPrevPagesInRow(m_pLayout->findPage(pOldPage)));
+						xNewpage = static_cast<UT_sint32>(getWidthPrevPagesInRow(m_pLayout->findPage(pPage)));
+						 m_xPointSticky =  m_xPointSticky - (xOldpage-xNewpage);
+					}
 				}
 				else
 				{
@@ -1714,6 +1722,11 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 		{
 			UT_sint32 iAfter = m_pG->tlu(1);
 			yPoint += (iLineHeight + iAfter);
+			//
+			// FIXME
+			// This is not right. we need to look into the next column/page
+			// if this is off the page.
+			//
 		}
 		else if(bEndNoteSection)
 		{
@@ -1727,6 +1740,12 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 				{
 					getPageYOffset(pPage, iPageOffset);
 					yPoint = 0;
+					if(iHoriz > 1)
+					{
+						xOldpage = static_cast<UT_sint32>(getWidthPrevPagesInRow(m_pLayout->findPage(pOldPage)));
+						xNewpage = static_cast<UT_sint32>(getWidthPrevPagesInRow(m_pLayout->findPage(pPage)));
+						 m_xPointSticky =  m_xPointSticky - (xOldpage-xNewpage);
+					}
 				}
 			}
 		}
@@ -1744,6 +1763,12 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 					getPageYOffset(pPage, iPageOffset);
 					xxx_UT_DEBUGMSG(("Move to next page new IpageOffset %d \n",iPageOffset));
 					yPoint = 0;
+					if(iHoriz > 1)
+					{
+						xOldpage = static_cast<UT_sint32>(getWidthPrevPagesInRow(m_pLayout->findPage(pOldPage)));
+						xNewpage = static_cast<UT_sint32>(getWidthPrevPagesInRow(m_pLayout->findPage(pPage)));
+						 m_xPointSticky =  m_xPointSticky - (xOldpage-xNewpage);
+					}
 				}
 			}
 		}
@@ -1789,6 +1814,12 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 						fl_DocSectionLayout * pDSL = pPage->getOwningSection();
 						yPoint = yPoint - pDSL->getTopMargin() -2;
 					}
+					if(iHoriz > 1)
+					{
+						xOldpage = static_cast<UT_sint32>(getWidthPrevPagesInRow(m_pLayout->findPage(pOldPage)));
+						xNewpage = static_cast<UT_sint32>(getWidthPrevPagesInRow(m_pLayout->findPage(pPage)));
+						 m_xPointSticky =  m_xPointSticky - (xOldpage-xNewpage);
+					}
 				}
 				else
 				{
@@ -1814,6 +1845,12 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 					{
 						fl_DocSectionLayout * pDSL = pPage->getOwningSection();
 						yPoint = yPoint - pDSL->getTopMargin() -2;
+					}
+					if(iHoriz > 1)
+					{
+						xOldpage = static_cast<UT_sint32>(getWidthPrevPagesInRow(m_pLayout->findPage(pOldPage)));
+						xNewpage = static_cast<UT_sint32>(getWidthPrevPagesInRow(m_pLayout->findPage(pPage)));
+						 m_xPointSticky =  m_xPointSticky - (xOldpage-xNewpage);
 					}
 				}
 			}
@@ -1856,6 +1893,12 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 					{
 						fl_DocSectionLayout * pDSL = pPage->getOwningSection();
 						yPoint = yPoint - pDSL->getTopMargin() -2;
+					}
+					if(iHoriz > 1)
+					{
+						xOldpage = static_cast<UT_sint32>(getWidthPrevPagesInRow(m_pLayout->findPage(pOldPage)));
+						xNewpage = static_cast<UT_sint32>(getWidthPrevPagesInRow(m_pLayout->findPage(pPage)));
+						 m_xPointSticky =  m_xPointSticky - (xOldpage-xNewpage);
 					}
 				}
 			}
@@ -2011,7 +2054,8 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	_ensureInsertionPointOnScreen();
 
 	// this is the only place where we override changes to m_xPointSticky
-	m_xPointSticky = xOldSticky;
+	if((getNumHorizPages() == 1) || (pPage == pOldPage))
+	   m_xPointSticky = xOldSticky;
 }
 
 /*! Scrolls the screen to make sure that the IP is on-screen.
