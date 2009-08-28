@@ -494,12 +494,8 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_TextToTableOK)
 }
 
 
-Defun_EV_GetMenuItemState_Fn(ap_GetState_HyperlinkOK)
+static EV_Menu_ItemState HyperLinkOK(FV_View * pView)
 {
-	UT_UNUSED(id);
-	ABIWORD_VIEW ;
-	UT_return_val_if_fail (pView, EV_MIS_Gray);
-
 	EV_Menu_ItemState s = EV_MIS_ZERO ;
 
 	if ( pView->isSelectionEmpty())
@@ -550,6 +546,32 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_HyperlinkOK)
 	}
 	  
 	return s ;
+}
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_AnnotationJumpOK)
+{
+	UT_UNUSED(id);
+	ABIWORD_VIEW ;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
+	EV_Menu_ItemState s = HyperLinkOK(pView);
+	if(s ==  EV_MIS_Gray)
+	{
+		return s;
+	}
+	UT_return_val_if_fail (pView->getLayout(),EV_MIS_Gray);
+	if(!pView->getLayout()->displayAnnotations())
+	{
+		return EV_MIS_Gray;
+	}
+	return s;
+}
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_HyperlinkOK)
+{
+	UT_UNUSED(id);
+	ABIWORD_VIEW ;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
+	return HyperLinkOK(pView);
 }
 
 #ifdef ENABLE_SPELL

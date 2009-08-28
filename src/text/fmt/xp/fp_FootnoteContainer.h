@@ -71,6 +71,7 @@ public:
 	virtual void		clearScreen(void);
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}
+	virtual void        setY(UT_sint32 iY);
 	virtual void        setContainer(fp_Container * pContainer);
 	virtual fp_Container * getNextContainerInSection(void) const;
 	virtual fp_Container * getPrevContainerInSection(void) const;

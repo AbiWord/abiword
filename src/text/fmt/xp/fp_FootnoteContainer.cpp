@@ -540,6 +540,11 @@ fp_Container * fp_AnnotationContainer::getPrevContainerInSection() const
 	return NULL;
 }
 
+void fp_AnnotationContainer::setY(UT_sint32 iy)
+{
+        fp_VerticalContainer::setY(iy);
+}
+
 void fp_AnnotationContainer::layout(void)
 {
 	_setMaxContainerHeight(0);

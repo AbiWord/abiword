@@ -64,7 +64,7 @@ public:
 	
 	virtual void	draw(void);
 	void			clearScreen(void);
-	void			setXY(UT_sint32 x, UT_sint32 y);                              
+	void			setXY(UT_sint32 x, UT_sint32 y);                                void            setOffset(UT_sint32 ioff);
 	void			setActiveFrame(XAP_Frame *pFrame);
 	void			setSizeFromAnnotation(void);
 	
@@ -74,6 +74,7 @@ protected:
 	UT_sint32		m_height;
 	UT_sint32		m_left;
 	UT_sint32		m_top;
+	UT_sint32       m_Offset;
 	void            ConstructWindowName(void);
 	UT_RGBColor		m_clrBackground;
 	

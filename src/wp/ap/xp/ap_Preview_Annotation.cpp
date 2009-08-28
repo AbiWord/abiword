@@ -36,6 +36,7 @@ AP_Preview_Annotation::AP_Preview_Annotation(XAP_DialogFactory * pDlgFactory,XAP
 	m_height(PREVIEW_DEFAULT_HEIGHT),
 	m_left(0),
 	m_top(0),
+	m_Offset(0),
 	m_clrBackground(255, 247, 177),
 	m_sTitle("n/a"),
 	m_sAuthor("n/a"),
@@ -199,4 +200,16 @@ void  AP_Preview_Annotation::setXY(UT_sint32 x, UT_sint32 y)
 	if(m_left < 0)
 		m_left = 0;
 	UT_DEBUGMSG(("AP_Preview_Annotation: setXY top %d, left %d\n", m_top, m_left));
+}
+
+/*!
+ * In Gtk Apps it is really hard to translate the position of the 
+ * popup window to the actual position of the run. In insead use the
+ * location of the mouse when it crosses the run.
+ * If induces a vertical uncertainty in here the popup appears.
+ * Setting this offset corrects for this.
+ */
+void AP_Preview_Annotation::setOffset(UT_sint32 offset)
+{
+	m_Offset = offset;
 }

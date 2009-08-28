@@ -1027,7 +1027,7 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 						if(pAC != NULL)
 						{
 							fp_Page * myPage = pAC->getPage();
-							xxx_UT_DEBUGMSG(("Annotation %x is on Page %x \n",pAC,myPage));
+							UT_DEBUGMSG(("Annotation %x is on Page %x \n",pAC,myPage));
 							if(myPage != pCurPage)
 							{
 								if(myPage == NULL)

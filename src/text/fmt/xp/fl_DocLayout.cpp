@@ -1386,6 +1386,8 @@ bool  FL_DocLayout::collapseAnnotations(void)
 	  pBL = static_cast<fl_BlockLayout *>(pFL->getFirstLayout());
 	  if(pBL)
 	      pBL->collapse();
+
+	  pFL->collapse();
       }
   }
   return true;

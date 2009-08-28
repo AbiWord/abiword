@@ -22,6 +22,7 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+#define BENCHLAYOUT 1
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -103,6 +104,9 @@
 // at max BOOKMARK_NAME_LIMIT of chars as defined in pf_Frag_Bookmark.h
 #define BOOKMARK_NAME_SIZE 30
 #define CHECK_WINDOW_SIZE if(getWindowHeight() < 20) return;
+#if BENCHLAYOUT
+#include <time.h>
+#endif
 
 /****************************************************************/
 
@@ -3160,6 +3164,11 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const gch
 	{
 		return 0;
 	}
+#if BENCHLAYOUT
+	printf("Doing Insert Table \n");
+	timespec t1;
+	clock_gettime(CLOCK_REALTIME, &t1);
+#endif
 
 //
 // Do all the stuff we need to make this go smoothly and to undo in a single step.
@@ -3335,6 +3344,12 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const gch
 		}
 	}
 	m_pDoc->setDontImmediatelyLayout(false);
+#if BENCHLAYOUT
+	timespec t2;
+	clock_gettime(CLOCK_REALTIME, &t2);	
+	double millidiff = (t2.tv_sec-t1.tv_sec)*1e3 + (t2.tv_nsec-t1.tv_nsec)/1e6;
+	printf("Insert TIME: %lf milliseconds\n", millidiff);  
+#endif
 	e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_EndTable));
 
 	// restore updates and clean up dirty lists
@@ -4160,7 +4175,32 @@ void FV_View::cmdHyperlinkJump(PT_DocPosition pos)
 {
 	fp_HyperlinkRun * pH = static_cast<fp_HyperlinkRun *>(getHyperLinkRun(pos));
 	UT_return_if_fail(pH);
-
+	if(pH->getHyperlinkType() == HYPERLINK_ANNOTATION)
+	{
+		fp_AnnotationRun * pAN = static_cast<fp_AnnotationRun *>(pH);
+		if(!pAN->displayAnnotations())
+		{
+			UT_DEBUGMSG(("Can only directly edit if we in show annotation mode \n"));
+			UT_DEBUGMSG(("Should pop up a dialog to say this, but not now \n?"));
+			return;
+		}
+		UT_uint32 aid = pAN->getPID();
+		fl_AnnotationLayout * pAL = getAnnotationLayout(aid);
+		if(pAL == NULL)
+		{
+			return;
+		}
+		//
+		// Put caret just past the annotation field
+		//
+		PT_DocPosition posAn = pAL->getPosition();
+		setPoint(posAn);
+		_fixInsertionPointCoords();
+		_ensureInsertionPointOnScreen();
+		notifyListeners(AV_CHG_MOTION);
+		_generalUpdate();
+		return;
+	}
 	const gchar * pTarget = pH->getTarget();
 
 	if(*pTarget == '#')

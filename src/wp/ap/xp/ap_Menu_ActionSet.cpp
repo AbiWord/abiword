@@ -270,7 +270,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TOOLS_ANNOTATIONS_INSERT_FROMSEL,	0,1,0,0,	"insAnnotationFromSel",		ap_GetState_InAnnotation,			NULL);
 	_s(AP_MENU_ID_TOOLS_ANNOTATIONS_TOGGLE_DISPLAY,	0,0,1,0,	"toggleDisplayAnnotations",	ap_GetState_ToggleAnnotations,		NULL);
 	
-	_s(AP_MENU_ID_GOTO_ANNOTATION,					0,0,0,0,	"hyperlinkJumpPos",			ap_GetState_HyperlinkOK,			NULL);
+	_s(AP_MENU_ID_GOTO_ANNOTATION,					0,0,0,0,	"hyperlinkJumpPos",			ap_GetState_AnnotationJumpOK,			NULL);
 	_s(AP_MENU_ID_EDIT_ANNOTATION,					0,1,0,0,	"editAnnotation",			ap_GetState_HyperlinkOK,			NULL);
 	_s(AP_MENU_ID_DELETE_ANNOTATION,				0,0,0,0,	"deleteHyperlink",			NULL,								NULL);
 	

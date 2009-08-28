@@ -13890,6 +13890,17 @@ Defun(hyperlinkStatusBar)
 	pAnnPview->setTitle(sTitle);	// if those fields ar to be hidden it should be at the GUI level (inside AP_Preview_Annotation)
 	pAnnPview->setAuthor(sAuthor);
 	
+	fp_Line * pLine = pAnn->getLine();
+	if(pLine)
+	{
+		UT_Rect * pRect = pLine->getScreenRect();
+		if(pRect)
+		{
+			UT_sint32 ioff = pRect->top;
+		    pAnnPview->setOffset(pG->tdu(ypos - ioff));
+		}
+		delete pRect;
+	}
 	pAnnPview->setXY(pG->tdu(xpos),pG->tdu(ypos));
 	pAnnPview->runModeless(pFrame);
 	
