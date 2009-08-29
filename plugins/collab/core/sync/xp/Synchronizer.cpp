@@ -90,8 +90,11 @@ LRESULT CALLBACK Synchronizer::s_wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPA
 				pThis->callMainloop();
 				--pThis->m_iDeferredMessages;
 			}
-			pThis->m_bIsProcessing = false;
-			pThis->m_bIsDestroyed = NULL;
+			if (!bIsDestroyed) 
+			{
+				pThis->m_bIsProcessing = false;
+				pThis->m_bIsDestroyed = NULL;
+			}
 		}
 		return true;
 
