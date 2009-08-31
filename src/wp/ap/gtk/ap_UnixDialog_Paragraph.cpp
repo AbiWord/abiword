@@ -240,7 +240,7 @@ void AP_UnixDialog_Paragraph::event_ComboBoxChanged(GtkWidget * widget)
 
 	
 	tControl id = (tControl) GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget),
-								   WIDGET_MENU_PARENT_ID_TAG));
+								   WIDGET_ID_TAG));
 
 	UT_uint32 value = (UT_uint32)XAP_comboBoxGetActiveInt(GTK_COMBO_BOX(widget));
 
