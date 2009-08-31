@@ -354,9 +354,7 @@ bool SugarAccountHandler::joinBuddy(FV_View* pView, const UT_UTF8String& buddyDB
 
 	if (m_bLocallyControlled)
 	{
-		AbiCollab* pSession = pManager->getSession(pDoc);
-		UT_return_val_if_fail(pSession, false);
-		pSession->addCollaborator(pBuddy);
+		UT_DEBUGMSG(("Buddy joined while hosting a session; waiting for his GetSessions request\n"));
 		return true;
 	}
 	else
