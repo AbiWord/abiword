@@ -4645,6 +4645,46 @@ void OXMLi_ListenerState_Valid::startElement (OXMLi_StartElementRequest * rqst)
 			break;
 		}
 
+		//Section 5.2, DrawingML Picture
+		case KEYWORD_blipFill:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_PIC_KEY, "blipFill") || 
+						  contextMatches(contextTag, NS_PIC_KEY, "pic");
+			break;
+		}
+		case KEYWORD_cNvPicPr:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_PIC_KEY, "cNvPicPr") || 
+						  contextMatches(contextTag, NS_PIC_KEY, "nvPicPr");
+			break;
+		}
+		case KEYWORD_cNvPr:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_PIC_KEY, "cNvPr") || 
+						  contextMatches(contextTag, NS_PIC_KEY, "nvPicPr");
+			break;
+		}
+		case KEYWORD_nvPicPr:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_PIC_KEY, "nvPicPr") || 
+						  contextMatches(contextTag, NS_PIC_KEY, "pic");
+			break;
+		}
+		case KEYWORD_pic:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_PIC_KEY, "pic") || 
+						  contextMatches(contextTag, NS_PIC_KEY, "blipFill") ||
+						  contextMatches(contextTag, NS_PIC_KEY, "nvPicPr") ||
+						  contextMatches(contextTag, NS_PIC_KEY, "spPr");
+			break;
+		}
+		case KEYWORD_spPr:
+		{
+			rqst->valid = nameMatches(rqst->pName, NS_PIC_KEY, "spPr") || 
+						  contextMatches(contextTag, NS_PIC_KEY, "pic");
+			break;
+		}
+
 		//TODO: add more here
 	};
 }
@@ -4714,6 +4754,7 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:bibliography", KEYWORD_bibliography));
 	m_keywordMap.insert(std::make_pair("W:bidi", KEYWORD_bidi));
 	m_keywordMap.insert(std::make_pair("W:bidiVisual", KEYWORD_bidiVisual));
+	m_keywordMap.insert(std::make_pair("PIC:blipFill", KEYWORD_blipFill));
 	m_keywordMap.insert(std::make_pair("W:blockQuote", KEYWORD_blockQuote));
 	m_keywordMap.insert(std::make_pair("W:bookFoldPrinting", KEYWORD_bookFoldPrinting));
 	m_keywordMap.insert(std::make_pair("W:bookFoldPrintingSheets", KEYWORD_bookFoldPrintingSheets));
@@ -4746,6 +4787,8 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:clickAndTypeStyle", KEYWORD_clickAndTypeStyle));
 	m_keywordMap.insert(std::make_pair("W:clrSchemeMapping", KEYWORD_clrSchemeMapping));
 	m_keywordMap.insert(std::make_pair("W:cnfStyle", KEYWORD_cnfStyle));
+	m_keywordMap.insert(std::make_pair("PIC:cNvPicPr", KEYWORD_cNvPicPr));
+	m_keywordMap.insert(std::make_pair("PIC:cNvPr", KEYWORD_cNvPr));
 	m_keywordMap.insert(std::make_pair("W:col", KEYWORD_col));
 	m_keywordMap.insert(std::make_pair("W:colDelim", KEYWORD_colDelim));
 	m_keywordMap.insert(std::make_pair("W:color", KEYWORD_color));
@@ -5030,6 +5073,7 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:numRestart", KEYWORD_numRestart));
 	m_keywordMap.insert(std::make_pair("W:numStart", KEYWORD_numStart));
 	m_keywordMap.insert(std::make_pair("W:numStyleLink", KEYWORD_numStyleLink));
+	m_keywordMap.insert(std::make_pair("PIC:nvPicPr", KEYWORD_nvPicPr));
 	m_keywordMap.insert(std::make_pair("W:object", KEYWORD_object));
 	m_keywordMap.insert(std::make_pair("W:odso", KEYWORD_odso));
 	m_keywordMap.insert(std::make_pair("W:oMath", KEYWORD_oMath));
@@ -5052,6 +5096,7 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:pgNum", KEYWORD_pgNum));
 	m_keywordMap.insert(std::make_pair("W:pgNumType", KEYWORD_pgNumType));
 	m_keywordMap.insert(std::make_pair("W:pgSz", KEYWORD_pgSz));
+	m_keywordMap.insert(std::make_pair("PIC:pic", KEYWORD_pic));
 	m_keywordMap.insert(std::make_pair("W:pict", KEYWORD_pict));
 	m_keywordMap.insert(std::make_pair("W:picture", KEYWORD_picture));
 	m_keywordMap.insert(std::make_pair("W:pitch", KEYWORD_pitch));
@@ -5142,6 +5187,7 @@ void OXMLi_ListenerState_Valid::populateKeywordTable()
 	m_keywordMap.insert(std::make_pair("W:spacingInWholePoints", KEYWORD_spacingInWholePoints));
 	m_keywordMap.insert(std::make_pair("W:specVanish", KEYWORD_specVanish));
 	m_keywordMap.insert(std::make_pair("W:splitPgBreakAndParaMark", KEYWORD_splitPgBreakAndParaMark));
+	m_keywordMap.insert(std::make_pair("PIC:spPr", KEYWORD_spPr));
 	m_keywordMap.insert(std::make_pair("W:src", KEYWORD_src));
 	m_keywordMap.insert(std::make_pair("W:start", KEYWORD_start));
 	m_keywordMap.insert(std::make_pair("W:startOverride", KEYWORD_startOverride));
