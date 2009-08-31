@@ -477,7 +477,7 @@ void XAP_UnixDialog_FileOpenSaveAs::fileTypeChanged(GtkWidget * w)
 
 void XAP_UnixDialog_FileOpenSaveAs::onDeleteCancel() 
 {
-	if (GTK_HAS_GRAB) {
+	if (m_FC != NULL && GTK_WIDGET_HAS_GRAB(GTK_WIDGET (m_FC))) {
 		gtk_grab_remove (GTK_WIDGET (m_FC));
 	}
 	m_FC = NULL;
