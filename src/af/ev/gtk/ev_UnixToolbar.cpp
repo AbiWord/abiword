@@ -76,6 +76,12 @@
 
 #define PROP_HANDLER_ID "handler-id"
 
+#ifndef UINT_RGBA_R
+#	define UINT_RGBA_R GO_UINT_RGBA_R
+#	define UINT_RGBA_G GO_UINT_RGBA_G
+#	define UINT_RGBA_B GO_UINT_RGBA_B
+#endif
+
 class _wd;
 
 static void s_proxy_activated(GtkAction * action, _wd * wd);
