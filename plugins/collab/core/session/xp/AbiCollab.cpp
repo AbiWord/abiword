@@ -538,6 +538,7 @@ void AbiCollab::addChangeAdjust(ChangeAdjust* pAdjust)
 void AbiCollab::initiateSessionTakeover(BuddyPtr pNewMaster)
 {
 	UT_return_if_fail(pNewMaster);
+	UT_DEBUGMSG(("AbiCollab::initiateSessionTakeover() - pNewMaster: %s\n", pNewMaster->getDescriptor(true).utf8_str()));
 
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_if_fail(pManager);

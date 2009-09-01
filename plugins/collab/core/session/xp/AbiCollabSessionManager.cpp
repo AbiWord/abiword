@@ -569,6 +569,7 @@ bool AbiCollabSessionManager::destroySession(AbiCollab* pSession)
 void AbiCollabSessionManager::disconnectSession(AbiCollab* pSession)
 {
 	UT_return_if_fail(pSession);
+	UT_DEBUGMSG(("AbiCollabSessionManager::disconnectSession() - pSession: %s\n", pSession->getSessionId().utf8_str()));
 
 	if (isLocallyControlled(pSession->getDocument()))
 	{
@@ -581,6 +582,8 @@ void AbiCollabSessionManager::disconnectSession(AbiCollab* pSession)
 		*/
 		if (_canInitiateSessionTakeover(pSession))
 		{
+			UT_DEBUGMSG(("Can initiate session takeover\n"));
+
 			if (pSession->getCollaborators().size() > 0)
 			{
 				std::map<BuddyPtr, std::string>::const_iterator cit = pSession->getCollaborators().begin();
