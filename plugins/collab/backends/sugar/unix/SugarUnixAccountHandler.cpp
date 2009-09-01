@@ -115,10 +115,18 @@ BuddyPtr SugarAccountHandler::constructBuddy(const PropertyMap& props)
 	return boost::shared_ptr<SugarBuddy>(new SugarBuddy(this, cit->second.c_str()));
 }
 
-BuddyPtr SugarAccountHandler::constructBuddy(const std::string& /*descriptor*/, BuddyPtr /*pBuddy*/)
+BuddyPtr SugarAccountHandler::constructBuddy(const std::string& descriptor, BuddyPtr /*pBuddy*/)
 {
-	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-	return SugarBuddyPtr();
+	UT_DEBUGMSG(("SugarAccountHandler::constructBuddy() - descriptor: %s\n", descriptor.c_str()));
+
+	std::string uri_id = "sugar://";
+	UT_return_val_if_fail(descriptor.size() > uri_id.size(), SugarBuddyPtr());
+
+	std::string dbusAddress = descriptor.substr(uri_id.size());
+	SugarBuddyPtr pBuddy = getBuddy(dbusAddress.c_str());
+	UT_return_val_if_fail(pBuddy, SugarBuddyPtr());
+
+	return pBuddy;
 }
 
 bool SugarAccountHandler::recognizeBuddyIdentifier(const std::string& identifier)
