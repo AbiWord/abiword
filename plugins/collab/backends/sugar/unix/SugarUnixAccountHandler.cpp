@@ -427,7 +427,7 @@ bool SugarAccountHandler::hasAccess(const std::vector<std::string>& /*vAcl*/, Bu
 
 	SugarBuddyPtr pExistingBuddy = getBuddy(pSugarBuddy->getDBusAddress());
 	if (!pExistingBuddy)
-		false;
+		return false;
 
 	return true;
 }
