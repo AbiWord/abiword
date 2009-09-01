@@ -121,10 +121,17 @@ BuddyPtr SugarAccountHandler::constructBuddy(const std::string& /*descriptor*/, 
 	return SugarBuddyPtr();
 }
 
-bool SugarAccountHandler::recognizeBuddyIdentifier(const std::string& /*identifier*/)
+bool SugarAccountHandler::recognizeBuddyIdentifier(const std::string& identifier)
 {
-	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-	return false;
+	std::string uri_id = "sugar://";
+
+	if (identifier.compare(0, uri_id.size(), uri_id) != 0)
+		return false;
+
+	// The rest of the buddy descriptor contains the dbus address, which we
+	// can't really check.
+
+	return true;
 }
 
 void  SugarAccountHandler::handleEvent(Session& /*pSession*/)
