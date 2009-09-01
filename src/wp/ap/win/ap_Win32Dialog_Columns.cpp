@@ -83,23 +83,29 @@ void AP_Win32Dialog_Columns::enableLineBetweenControl(bool bState)
 	}
 }
 
+#define _DS(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+
 BOOL AP_Win32Dialog_Columns::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
-	localizeDialogTitle(AP_STRING_ID_DLG_Column_ColumnTitle);
+	const XAP_StringSet* pSS = m_pApp->getStringSet();
 
-	// localize controls
-	localizeControlText(AP_RID_DIALOG_COLUMN_BTN_OK,			XAP_STRING_ID_DLG_OK);
-	localizeControlText(AP_RID_DIALOG_COLUMN_BTN_CANCEL,		XAP_STRING_ID_DLG_Cancel);
-	localizeControlText(AP_RID_DIALOG_COLUMN_GROUP1,			AP_STRING_ID_DLG_Column_Number);
-	localizeControlText(AP_RID_DIALOG_COLUMN_GROUP2,			AP_STRING_ID_DLG_Column_Preview);
-	localizeControlText(AP_RID_DIALOG_COLUMN_TEXT_ONE,			AP_STRING_ID_DLG_Column_One);
-	localizeControlText(AP_RID_DIALOG_COLUMN_TEXT_TWO,			AP_STRING_ID_DLG_Column_Two);
-	localizeControlText(AP_RID_DIALOG_COLUMN_TEXT_THREE,		AP_STRING_ID_DLG_Column_Three);
-	localizeControlText(AP_RID_DIALOG_COLUMN_CHECK_LINE_BETWEEN,AP_STRING_ID_DLG_Column_Line_Between);
-	localizeControlText(AP_RID_DIALOG_COLUMN_TEXT_NUMCOLUMNS,	AP_STRING_ID_DLG_Column_Number_Cols);
-	localizeControlText(AP_RID_DIALOG_COLUMN_TEXT_SPACEAFTER,	AP_STRING_ID_DLG_Column_Space_After);
-	localizeControlText(AP_RID_DIALOG_COLUMN_TEXT_MAXSIZE,		AP_STRING_ID_DLG_Column_Size);
-	localizeControlText(AP_RID_DIALOG_COLUMN_CHECK_RTL_ORDER,	AP_STRING_ID_DLG_Column_RtlOrder);
+	// Update the caption
+	setDialogTitle(pSS->getValue(AP_STRING_ID_DLG_Column_ColumnTitle));
+
+	/* Localise controls*/
+	_DSX(COLUMN_BTN_OK,			DLG_OK);
+	_DSX(COLUMN_BTN_CANCEL,			DLG_Cancel);
+	_DS(COLUMN_GROUP1,			DLG_Column_Number);
+	_DS(COLUMN_GROUP2,			DLG_Column_Preview);
+	_DS(COLUMN_TEXT_ONE,			DLG_Column_One);
+	_DS(COLUMN_TEXT_TWO,			DLG_Column_Two);
+	_DS(COLUMN_TEXT_THREE,			DLG_Column_Three);
+	_DS(COLUMN_CHECK_LINE_BETWEEN,		DLG_Column_Line_Between);
+	_DS(COLUMN_TEXT_NUMCOLUMNS,		DLG_Column_Number_Cols);
+	_DS(COLUMN_TEXT_SPACEAFTER,		DLG_Column_Space_After);
+	_DS(COLUMN_TEXT_MAXSIZE,		DLG_Column_Size);
+	_DS(COLUMN_CHECK_RTL_ORDER,		DLG_Column_RtlOrder);
 
 	// Do Bitmaps
 	RECT rect;
