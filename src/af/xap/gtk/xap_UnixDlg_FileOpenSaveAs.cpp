@@ -31,6 +31,7 @@
 #endif
 
 #include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h> // this include seems to fix 12332 (it defines GDK_Escape)
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
