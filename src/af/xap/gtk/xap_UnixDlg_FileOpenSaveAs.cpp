@@ -161,17 +161,11 @@ static void s_filetypechanged(GtkWidget * w, gpointer p)
 static gint
 fsel_key_event (GtkWidget * widget, GdkEventKey * event, XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
 {
-#ifdef GDK_Escape
 	if (event->keyval == GDK_Escape) {
 		g_signal_stop_emission_by_name (G_OBJECT (widget), "key_press_event");
 		s_dialog_response(widget, GTK_RESPONSE_CANCEL, answer);
 		return TRUE;
 	}
-#else
-	UT_UNUSED(widget);
-	UT_UNUSED(event);
-	UT_UNUSED(answer);
-#endif
 
 	return FALSE;
 }
