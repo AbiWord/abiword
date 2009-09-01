@@ -74,7 +74,7 @@ public:
 
 	// session management
 	virtual bool							allowsSessionTakeover()
-		{ return false; }
+		{ return true; }
 	virtual bool							canManuallyStartSession()
 		{ return false; }
 
