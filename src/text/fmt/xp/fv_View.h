@@ -849,6 +849,7 @@ protected:
 	void				_moveInsPtNextPrevPage(bool bNext);
 	void				_moveInsPtNextPrevScreen(bool bNext);
 	void				_moveInsPtNextPrevLine(bool bNext);
+	fp_Line *           _getNextLineInDoc(fp_Container * pCon);
 	fp_Page *			_getCurrentPage(void) const;
 	void				_moveInsPtNthPage(UT_sint32 n);
 	void				_moveInsPtToPage(fp_Page *page);

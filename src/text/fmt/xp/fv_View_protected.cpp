@@ -1592,6 +1592,67 @@ void FV_View::_insertSectionBreak(void)
 	_ensureInsertionPointOnScreen();
 }
 
+/*!
+ * Return the next line in the document.
+ */
+fp_Line * FV_View::_getNextLineInDoc(fp_Container * pCon)
+{
+	fp_ContainerObject * pNext = NULL;
+	fl_ContainerLayout * pCL = NULL;
+	fl_BlockLayout * pNextB = NULL;
+	if(pCon->getContainerType() == FP_CONTAINER_CELL)
+	{
+		pCon = static_cast<fp_CellContainer *>(pCon)->getFirstContainer();
+		if(pCon->getContainerType() == FP_CONTAINER_TABLE)
+		{
+			pCon = static_cast<fp_TableContainer *>(pCon)->getFirstContainer();
+			return _getNextLineInDoc(pCon);
+		}
+		return static_cast<fp_Line *>(pCon);
+	}
+	if(pCon->getContainerType() != FP_CONTAINER_LINE )
+	{
+		pCL = static_cast<fl_ContainerLayout *>(pCon->getSectionLayout());
+		pCL = pCL->getNext();
+		if(pCL && pCL->getContainerType() == FL_CONTAINER_BLOCK)
+		{
+			pNextB = static_cast<fl_BlockLayout *>(pCL);
+		}
+		else if(pCL)
+	    {
+			pNextB = pCL->getNextBlockInDocument();
+		}
+		if(pNextB)
+			pNext = pNextB->getFirstContainer();
+	}
+	else
+	{
+		pNext = pCon->getNext();
+		if(pNext == NULL)
+		{
+			pNextB = static_cast<fp_Line *>(pCon)->getBlock();
+			pNextB = pNextB->getNextBlockInDocument();
+			if(pNextB)
+				pNext = pNextB->getFirstContainer();
+		}
+	}
+	while(pNext && pNext->getContainerType() !=FP_CONTAINER_LINE)
+	{
+		pCL = static_cast<fl_ContainerLayout *>(pNext->getSectionLayout());
+		pNextB = pCL->getNextBlockInDocument();
+		if(pNextB)
+			pNext = pNextB->getFirstContainer();
+	}
+	if(!pNext)
+	{
+		//
+		// end of document
+		//
+		return NULL;
+	}
+	fp_Line * pNextLine = static_cast<fp_Line *>(pNext);
+	return pNextLine;
+}
 
 /*!
   Move insertion point to previous or next line
@@ -1646,7 +1707,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	bool bFootnoteSection = pOldSL->getType() == FL_SECTION_FOOTNOTE;
 	bool bCellSection = (pOldSL->getContainerType() == FL_CONTAINER_CELL);
 	UT_sint32 iHoriz = getNumHorizPages();
-
+	bool bChangedPage = false;
 
 	if(bDocSection || bEndNoteSection || bFootnoteSection || (bCellSection && !isHdrFtrEdit()))
 	{
@@ -1669,7 +1730,9 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 
 	bool bNOOP = false;
 	bool bEOL = false, bBOL = false;
-
+	fp_Line * pNextLine = NULL; 
+	fp_Container * pNext = NULL;
+	fp_Page* pPage = NULL;
 	xxx_UT_DEBUGMSG(("fv_View::_moveInsPtNextPrevLine: old line 0x%x\n", pOldLine));
 
 	if (bNext)
@@ -1698,7 +1761,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 			else
 			{
 				// move to next page
-				fp_Page* pPage = pOldPage->getNext();
+				pPage = pOldPage->getNext();
 				if (pPage)
 				{
 					getPageYOffset(pPage, iPageOffset);
@@ -1708,6 +1771,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 						xOldpage = static_cast<UT_sint32>(getWidthPrevPagesInRow(m_pLayout->findPage(pOldPage)));
 						xNewpage = static_cast<UT_sint32>(getWidthPrevPagesInRow(m_pLayout->findPage(pPage)));
 						 m_xPointSticky =  m_xPointSticky - (xOldpage-xNewpage);
+						 bChangedPage = true;
 					}
 				}
 				else
@@ -1722,11 +1786,50 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 		{
 			UT_sint32 iAfter = m_pG->tlu(1);
 			yPoint += (iLineHeight + iAfter);
-			//
-			// FIXME
-			// This is not right. we need to look into the next column/page
-			// if this is off the page.
-			//
+			if(iHoriz > 1)
+			{
+				fp_CellContainer * pCell =  static_cast<fp_CellContainer*> (pOldLine->getContainer());
+			    if(pCell->getLastContainer() == pOldLine)
+				{
+					fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCell->getContainer());
+					UT_sint32 iBotPrev = pCell->getBottomAttach();
+					if(iBotPrev > pTab->getNumRows())
+					{
+						pNextLine = _getNextLineInDoc(pTab);
+					}
+					else
+				    {
+						pCell = pTab->getCellAtRowColumn(iBotPrev,pCell->getLeftAttach());
+						if(!pCell)
+						{
+							pNextLine = _getNextLineInDoc(pTab);
+						}
+						else
+						{
+							pNextLine = _getNextLineInDoc(pCell);
+						}
+					}
+				}
+				else
+				{
+					pNextLine =  _getNextLineInDoc(pOldLine);
+				}
+				if(!pNextLine)
+					return;
+				pPage = pNextLine->getPage();
+				if(pPage && (pPage != pOldPage))
+				{
+					xOldpage = static_cast<UT_sint32>(getWidthPrevPagesInRow(m_pLayout->findPage(pOldPage)));
+					xNewpage = static_cast<UT_sint32>(getWidthPrevPagesInRow(m_pLayout->findPage(pPage)));
+					m_xPointSticky =  m_xPointSticky - ( xOldpage -xNewpage);
+					if(pPage != pOldPage)
+					{
+						getPageYOffset(pPage, iPageOffset);
+						yPoint = 0;
+					}
+					bChangedPage = true;
+				}
+			}
 		}
 		else if(bEndNoteSection)
 		{
@@ -1735,7 +1838,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 			if(pOldPage->getBottom() < yPoint)
 			{
 				// move to next page
-				fp_Page* pPage = pOldPage->getNext();
+				pPage = pOldPage->getNext();
 				if (pPage)
 				{
 					getPageYOffset(pPage, iPageOffset);
@@ -1745,6 +1848,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 						xOldpage = static_cast<UT_sint32>(getWidthPrevPagesInRow(m_pLayout->findPage(pOldPage)));
 						xNewpage = static_cast<UT_sint32>(getWidthPrevPagesInRow(m_pLayout->findPage(pPage)));
 						 m_xPointSticky =  m_xPointSticky - (xOldpage-xNewpage);
+						 bChangedPage = true;
 					}
 				}
 			}
@@ -1756,7 +1860,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 			if(pOldPage->getBottom() < yPoint)
 			{
 				// move to next page
-				fp_Page* pPage = pOldPage->getNext();
+				pPage = pOldPage->getNext();
 				if (pPage)
 				{
 					xxx_UT_DEBUGMSG(("Move to next page old IpageOffset %d ypoint %d \n",iPageOffset,yPoint));
@@ -1768,6 +1872,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 						xOldpage = static_cast<UT_sint32>(getWidthPrevPagesInRow(m_pLayout->findPage(pOldPage)));
 						xNewpage = static_cast<UT_sint32>(getWidthPrevPagesInRow(m_pLayout->findPage(pPage)));
 						 m_xPointSticky =  m_xPointSticky - (xOldpage-xNewpage);
+						 bChangedPage = true;
 					}
 				}
 			}
@@ -1804,7 +1909,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 			else
 			{
 				// move to prev page
-				fp_Page* pPage = pOldPage->getPrev();
+				pPage = pOldPage->getPrev();
 				if (pPage)
 				{
 					getPageYOffset(pPage, iPageOffset);
@@ -1819,6 +1924,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 						xOldpage = static_cast<UT_sint32>(getWidthPrevPagesInRow(m_pLayout->findPage(pOldPage)));
 						xNewpage = static_cast<UT_sint32>(getWidthPrevPagesInRow(m_pLayout->findPage(pPage)));
 						 m_xPointSticky =  m_xPointSticky - (xOldpage-xNewpage);
+						 bChangedPage = true;
 					}
 				}
 				else
@@ -1836,7 +1942,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 			if(yPoint < 0)
 			{
 				// move to prev page
-				fp_Page* pPage = pOldPage->getPrev();
+				pPage = pOldPage->getPrev();
 				if (pPage)
 				{
 					getPageYOffset(pPage, iPageOffset);
@@ -1851,6 +1957,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 						xOldpage = static_cast<UT_sint32>(getWidthPrevPagesInRow(m_pLayout->findPage(pOldPage)));
 						xNewpage = static_cast<UT_sint32>(getWidthPrevPagesInRow(m_pLayout->findPage(pPage)));
 						 m_xPointSticky =  m_xPointSticky - (xOldpage-xNewpage);
+						 bChangedPage = true;
 					}
 				}
 			}
@@ -1884,7 +1991,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 			if(yPoint < 0)
 			{
 				// move to prev page
-				fp_Page* pPage = pOldPage->getPrev();
+				pPage = pOldPage->getPrev();
 				if (pPage)
 				{
 					getPageYOffset(pPage, iPageOffset);
@@ -1899,6 +2006,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 						xOldpage = static_cast<UT_sint32>(getWidthPrevPagesInRow(m_pLayout->findPage(pOldPage)));
 						xNewpage = static_cast<UT_sint32>(getWidthPrevPagesInRow(m_pLayout->findPage(pPage)));
 						 m_xPointSticky =  m_xPointSticky - (xOldpage-xNewpage);
+						 bChangedPage = true;
 					}
 				}
 			}
@@ -1918,15 +2026,26 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 		// cannot move.  should we beep?
 		return;
 	}
-
-	// change to screen coordinates
-	xPoint = m_xPointSticky - m_xScrollOffset + getPageViewLeftMargin();
-	yPoint += iPageOffset - m_yScrollOffset;
-
 	// hit-test to figure out where that puts us
 	UT_sint32 xClick, yClick;
-	fp_Page* pPage = _getPageForXY(xPoint, yPoint, xClick, yClick);
+	if(!pNextLine)
+	{
+		// change to screen coordinates
+		xPoint = m_xPointSticky - m_xScrollOffset + getPageViewLeftMargin();
+		yPoint += iPageOffset - m_yScrollOffset;
 
+		pPage = _getPageForXY(xPoint, yPoint, xClick, yClick);
+	}
+	else
+	{
+		UT_Rect * pOldRec = pOldLine->getScreenRect();
+		UT_Rect * pNewRec = pNextLine->getScreenRect();
+		yPoint = pNewRec->top + pNewRec->height/2;
+		xPoint = xPoint + (pNewRec->left - pOldRec->left);
+		pPage = _getPageForXY(xPoint, yPoint, xClick, yClick);
+		delete pOldRec;
+		delete pNewRec;
+	}
 	PT_DocPosition iNewPoint = 0;
 	bBOL = false;
 	bEOL = false;
@@ -2054,7 +2173,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	_ensureInsertionPointOnScreen();
 
 	// this is the only place where we override changes to m_xPointSticky
-	if((getNumHorizPages() == 1) || (pPage == pOldPage))
+	if(!bChangedPage || (pPage == pOldPage))
 	   m_xPointSticky = xOldSticky;
 }
 
