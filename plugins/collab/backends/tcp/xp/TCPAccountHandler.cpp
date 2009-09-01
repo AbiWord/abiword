@@ -49,7 +49,8 @@ UT_UTF8String TCPAccountHandler::getDescription()
 	
 	if (host == "")
 		return UT_UTF8String_sprintf("Listening on port %s", port.c_str());
-	return UT_UTF8String_sprintf("%s:%s", host.c_str(), port.c_str());
+
+	return UT_UTF8String_sprintf("Connection to %s:%s", host.c_str(), port.c_str());
 }
 
 UT_UTF8String TCPAccountHandler::getDisplayType()
