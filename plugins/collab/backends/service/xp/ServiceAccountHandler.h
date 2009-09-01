@@ -121,8 +121,6 @@ public:
 	soa::function_call_ptr					constructListDocumentsCall();
 	soa::function_call_ptr					constructSaveDocumentCall(PD_Document* pDoc, ConnectionPtr connection_ptr);
 	void									removeExporter(void);
-	
-	// session management
 	virtual bool							allowsSessionTakeover()
 		{ return true; }
 
