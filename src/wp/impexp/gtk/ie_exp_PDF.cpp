@@ -100,7 +100,10 @@ public:
     height = getDoc()->m_docPageSize.Height (DIM_IN);
     portrait = getDoc()->m_docPageSize.isPortrait();
 
-	UT_uint32 dpi = GR_CairoGraphics::getDefaultDeviceResolution();
+	// Cairo expects the width/height of the surface in points, with 1 point == 1/72 inch). For details, see
+	// http://cairographics.org/manual/cairo-pdf-surface.html#cairo-pdf-surface-create-for-stream
+	// Fixes bug 11343 - export to pdf uses wrong document size
+	UT_uint32 dpi = 72;
 	if (BACKEND_PDF == mFormat)
 		surface = cairo_pdf_surface_create_for_stream(ie_exp_cairo_write_func, getFp(), width * dpi, height * dpi);
 	else if (BACKEND_PS == mFormat)
