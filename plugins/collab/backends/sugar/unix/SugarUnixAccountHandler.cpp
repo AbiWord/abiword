@@ -497,12 +497,10 @@ static bool s_joinTube(AV_View* v, EV_EditMethodCallData *d)
 	return pHandler->joinTube(pView, tubeDBusAddress);
 }
 
-static bool s_disconnectTube(AV_View* v, EV_EditMethodCallData *d)
+static bool s_disconnectTube(AV_View* v, EV_EditMethodCallData */*d*/)
 {
 	UT_DEBUGMSG(("s_disconnectTube()\n"));
 	UT_return_val_if_fail(v, false);
-	UT_return_val_if_fail(d && d->m_pData && d->m_dataLength > 0, false);
-
 	FV_View* pView = static_cast<FV_View *>(v);
 	
 	SugarAccountHandler* pHandler = SugarAccountHandler::getHandler();
