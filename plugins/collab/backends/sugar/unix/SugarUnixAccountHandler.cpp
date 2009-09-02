@@ -351,7 +351,7 @@ bool SugarAccountHandler::joinTube(FV_View* pView, const UT_UTF8String& tubeDBus
 	return true;
 }
 
-bool SugarAccountHandler::disconnectTube(FV_View* pView, const UT_UTF8String& /*tubeDBusAddress*/)
+bool SugarAccountHandler::disconnectTube(FV_View* pView)
 {
 	UT_DEBUGMSG(("SugarAccountHandler::disconnectTube()\n"));
 	UT_return_val_if_fail(pView, false);
@@ -504,12 +504,10 @@ static bool s_disconnectTube(AV_View* v, EV_EditMethodCallData *d)
 	UT_return_val_if_fail(d && d->m_pData && d->m_dataLength > 0, false);
 
 	FV_View* pView = static_cast<FV_View *>(v);
-	UT_UTF8String tubeDBusAddress(d->m_pData, d->m_dataLength);
-	UT_DEBUGMSG(("Got tube address: %s\n", tubeDBusAddress.utf8_str()));
 	
 	SugarAccountHandler* pHandler = SugarAccountHandler::getHandler();
 	UT_return_val_if_fail(pHandler, false);
-	return pHandler->disconnectTube(pView, tubeDBusAddress);
+	return pHandler->disconnectTube(pView);
 }
 
 static bool s_buddyJoined(AV_View* v, EV_EditMethodCallData *d)
