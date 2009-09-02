@@ -333,7 +333,8 @@ public:
   protected:
 	// setup the graphics properties like color and clip if they have been set
 	void _setProps();
-	
+	virtual void		_resetClip(void);
+
 	// this is called to get the surface out of what is drawning.
 	static cairo_surface_t * _getCairoSurfaceFromContext(cairo_t *cr, 
 												const cairo_rectangle_t & rect);

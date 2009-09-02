@@ -1447,6 +1447,10 @@ static cairo_line_join_t mapJoinStyle(GR_Graphics::JoinStyle in)
     }
 }
 
+void GR_CairoGraphics::_resetClip(void)
+{
+	cairo_reset_clip(m_cr);
+}
 
 void GR_CairoGraphics::_setProps()
 {
@@ -1460,7 +1464,7 @@ void GR_CairoGraphics::_setProps()
 	}
 	if(m_clipRectDirty)
 	{
-		cairo_reset_clip(m_cr);
+		_resetClip();
 		if (m_pRect)
 		{
 			double x, y, width, height;

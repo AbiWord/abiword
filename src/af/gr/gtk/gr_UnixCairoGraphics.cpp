@@ -29,6 +29,11 @@
 #include "xap_App.h"
 #include "xap_EncodingManager.h"
 
+#define GTK_CHECK_VERSION(major,minor,micro) \
+	(GTK_MAJOR_VERSION > (major) || \
+	(GTK_MAJOR_VERSION == (major) && GTK_MINOR_VERSION > (minor)) || \
+	(GTK_MAJOR_VERSION == (major) && GTK_MINOR_VERSION == (minor) && \
+	GTK_MICRO_VERSION >= (micro)))
 
 GR_UnixCairoGraphicsBase::~GR_UnixCairoGraphicsBase()
 {
@@ -122,6 +127,26 @@ inline UT_RGBColor _convertGdkColor(const GdkColor &c)
 	color.m_grn = c.green >> 8;
 	color.m_blu = c.blue >> 8;
 	return color;
+}
+
+void GR_UnixCairoGraphics::widget_size_allocate(GtkWidget* /*widget*/, GtkAllocation* /*allocation*/, GR_UnixCairoGraphics* me)
+{
+#if GTK_CHECK_VERSION(2,17,11) 
+	UT_return_if_fail(me);
+	me->m_clipRectDirty = TRUE;
+#else
+	UT_UNUSED(me);
+#endif
+}
+
+void GR_UnixCairoGraphics::initWidget(GtkWidget* widget)
+{
+#if GTK_CHECK_VERSION(2,17,11)
+	UT_return_if_fail(widget);
+	g_signal_connect_after(G_OBJECT(widget), "size_allocate", G_CALLBACK(widget_size_allocate), this);
+#else
+	UT_UNUSED(widget);
+#endif
 }
 
 void GR_UnixCairoGraphics::init3dColors(GtkStyle * pStyle)
@@ -359,6 +384,14 @@ void GR_UnixCairoGraphics::createPixmapFromXPM( char ** pXPM,GdkPixmap *source,
 							pXPM);
 }
 
+void GR_UnixCairoGraphics::_resetClip(void)
+{
+#if GTK_CHECK_VERSION(2,17,11)
+	gdk_cairo_reset_clip (m_cr, _getDrawable());
+#else
+	cairo_reset_clip (m_cr);
+#endif
+}
 
 void GR_UnixCairoGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 {

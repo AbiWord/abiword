@@ -520,6 +520,7 @@ bool AP_UnixFrame::_createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom)
 	GtkWidget *widget = GTK_WIDGET(static_cast<AP_UnixFrameImpl *>(getFrameImpl())->m_dArea);
 	GR_UnixCairoGraphics *pUnixGraphics = static_cast<GR_UnixCairoGraphics *>(pG);
 	pUnixGraphics->init3dColors(widget->style);
+	pUnixGraphics->initWidget(widget);
 
 	ENSUREP_RF(pG);
 	pG->setZoomPercentage(iZoom);

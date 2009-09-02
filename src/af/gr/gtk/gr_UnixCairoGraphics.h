@@ -87,8 +87,13 @@ public:
 	virtual GR_Image *  genImageFromRectangle(const UT_Rect & r);
 
 	void				init3dColors(GtkStyle * pStyle);
+	void				initWidget(GtkWidget *widget);
 
 protected:
+	virtual void		_resetClip(void);
+	static void		widget_size_allocate (GtkWidget        *widget,
+									  GtkAllocation    *allocation,
+									  GR_UnixCairoGraphics *me);
 	GR_UnixCairoGraphics(GdkDrawable * win = NULL);
 	virtual GdkDrawable * _getDrawable(void)
 	{  return static_cast<GdkDrawable *>(m_pWin);}
