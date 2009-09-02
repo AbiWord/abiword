@@ -93,6 +93,7 @@ public:
 	SugarBuddyPtr							getBuddy(const UT_UTF8String& dbusAddress);
 	bool									offerTube(FV_View* pView, const UT_UTF8String& tubeDBusAddress);
 	bool									joinTube(FV_View* pView, const UT_UTF8String& tubeDBusAddress);
+	bool									disconnectTube(FV_View* pView, const UT_UTF8String& tubeDBusAddress);
 	bool									joinBuddy(FV_View* pView, const UT_UTF8String& buddyDBusAddress);
 	bool									disjoinBuddy(FV_View* pView, const UT_UTF8String& buddyDBusAddress);
 

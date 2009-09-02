@@ -30,6 +30,7 @@
 // some fucntion prototype declarations
 static bool s_offerTube(AV_View* v, EV_EditMethodCallData *d);
 static bool s_joinTube(AV_View* v, EV_EditMethodCallData *d);
+static bool s_disconnectTube(AV_View* v, EV_EditMethodCallData *d);
 static bool s_buddyJoined(AV_View* v, EV_EditMethodCallData *d);
 static bool s_buddyLeft(AV_View* v, EV_EditMethodCallData *d);
 static DBusHandlerResult s_dbus_handle_message(DBusConnection *connection, DBusMessage *message, void *user_data);
@@ -258,6 +259,14 @@ void SugarAccountHandler::_registerEditMethods()
 	);
 	pEMC->addEditMethod(emJoinTube);
 
+	EV_EditMethod *emDisconnectTube = new EV_EditMethod (
+		"com.abisource.abiword.abicollab.olpc.disconnectTube",     // name of callback function
+		s_disconnectTube,       // callback function itself.
+		0,                      // no additional data required.
+		""                      // description -- allegedly never used for anything
+	);
+	pEMC->addEditMethod(emDisconnectTube);
+
 	EV_EditMethod *emBuddyJoined = new EV_EditMethod (
 		"com.abisource.abiword.abicollab.olpc.buddyJoined",     // name of callback function
 		s_buddyJoined,       // callback function itself.
@@ -292,31 +301,25 @@ bool SugarAccountHandler::offerTube(FV_View* pView, const UT_UTF8String& tubeDBu
 	UT_DEBUGMSG(("Got tube address: %s\n", tubeDBusAddress.utf8_str()));
 
 	m_pTube = dbus_connection_open(tubeDBusAddress.utf8_str(), NULL);
-	if (m_pTube)
-	{
-		UT_DEBUGMSG(("Opened a dbus connection for tube: %s\n", tubeDBusAddress.utf8_str()));
+	UT_return_val_if_fail(m_pTube, false);
 
-		UT_DEBUGMSG(("Adding dbus handlers to the main loop\n"));
-		dbus_connection_setup_with_g_main(m_pTube, NULL);
+	UT_DEBUGMSG(("Opened a dbus connection for tube: %s\n", tubeDBusAddress.utf8_str()));
 
-		UT_DEBUGMSG(("Adding message filter\n"));
-		dbus_connection_add_filter(m_pTube, s_dbus_handle_message, this, NULL);
+	UT_DEBUGMSG(("Adding dbus handlers to the main loop\n"));
+	dbus_connection_setup_with_g_main(m_pTube, NULL);
 
-		m_bLocallyControlled = true;
+	UT_DEBUGMSG(("Adding message filter\n"));
+	dbus_connection_add_filter(m_pTube, s_dbus_handle_message, this, NULL);
 
-		// we are "connected" now, time to start sending out, and listening to messages (such as events)
-		pManager->registerEventListener(this);
-		// start hosting a session on the current document
-		UT_UTF8String sID;
-		pManager->startSession(pDoc, sID, this, true, NULL, "");
-		return true;
-	}
-	else
-	{
-		UT_DEBUGMSG(("Failed to open a dbus connection for tube: %s\n", tubeDBusAddress.utf8_str()));
-	}
+	m_bLocallyControlled = true;
 
-	return false;
+	// we are "connected" now, time to start sending out, and listening to messages (such as events)
+	pManager->registerEventListener(this);
+	// start hosting a session on the current document
+	UT_UTF8String sID;
+	pManager->startSession(pDoc, sID, this, true, NULL, "");
+
+	return true;
 }
 
 bool SugarAccountHandler::joinTube(FV_View* pView, const UT_UTF8String& tubeDBusAddress)
@@ -330,27 +333,40 @@ bool SugarAccountHandler::joinTube(FV_View* pView, const UT_UTF8String& tubeDBus
 	// TODO: check that we aren't already in a session; this backend can only join one session at a time (for now)
 
 	m_pTube = dbus_connection_open(tubeDBusAddress.utf8_str(), NULL);
-	if (m_pTube)
-	{
-		UT_DEBUGMSG(("Opened a dbus connection for tube: %s\n", tubeDBusAddress.utf8_str()));
+	UT_return_val_if_fail(m_pTube, false);
 
-		UT_DEBUGMSG(("Adding dbus handlers to the main loop\n"));
-		dbus_connection_setup_with_g_main(m_pTube, NULL);
+	UT_DEBUGMSG(("Opened a dbus connection for tube: %s\n", tubeDBusAddress.utf8_str()));
 
-		UT_DEBUGMSG(("Adding message filter\n"));
-		dbus_connection_add_filter(m_pTube, s_dbus_handle_message, this, NULL);
+	UT_DEBUGMSG(("Adding dbus handlers to the main loop\n"));
+	dbus_connection_setup_with_g_main(m_pTube, NULL);
 
-		m_bLocallyControlled = false;
+	UT_DEBUGMSG(("Adding message filter\n"));
+	dbus_connection_add_filter(m_pTube, s_dbus_handle_message, this, NULL);
 
-		// we are "connected" now, time to start sending out, and listening to messages (such as events)
-		pManager->registerEventListener(this);
-	}
-	else
-	{
-		UT_DEBUGMSG(("Failed to open a dbus connection for tube: %s\n", tubeDBusAddress.utf8_str()));
-	}
+	m_bLocallyControlled = false;
 
-	return false;
+	// we are "connected" now, time to start sending out, and listening to messages (such as events)
+	pManager->registerEventListener(this);
+
+	return true;
+}
+
+bool SugarAccountHandler::disconnectTube(FV_View* pView, const UT_UTF8String& /*tubeDBusAddress*/)
+{
+	UT_DEBUGMSG(("SugarAccountHandler::disconnectTube()\n"));
+	UT_return_val_if_fail(pView, false);
+
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, false);
+
+	PD_Document * pDoc = pView->getDocument();
+	UT_return_val_if_fail(pDoc, false);
+
+	AbiCollab* pSession = pManager->getSession(pDoc);
+	UT_return_val_if_fail(pSession, false);
+	pManager->disconnectSession(pSession);
+
+	return true;
 }
 
 bool SugarAccountHandler::joinBuddy(FV_View* pView, const UT_UTF8String& buddyDBusAddress)
@@ -479,6 +495,21 @@ static bool s_joinTube(AV_View* v, EV_EditMethodCallData *d)
 	SugarAccountHandler* pHandler = SugarAccountHandler::getHandler();
 	UT_return_val_if_fail(pHandler, false);
 	return pHandler->joinTube(pView, tubeDBusAddress);
+}
+
+static bool s_disconnectTube(AV_View* v, EV_EditMethodCallData *d)
+{
+	UT_DEBUGMSG(("s_disconnectTube()\n"));
+	UT_return_val_if_fail(v, false);
+	UT_return_val_if_fail(d && d->m_pData && d->m_dataLength > 0, false);
+
+	FV_View* pView = static_cast<FV_View *>(v);
+	UT_UTF8String tubeDBusAddress(d->m_pData, d->m_dataLength);
+	UT_DEBUGMSG(("Got tube address: %s\n", tubeDBusAddress.utf8_str()));
+	
+	SugarAccountHandler* pHandler = SugarAccountHandler::getHandler();
+	UT_return_val_if_fail(pHandler, false);
+	return pHandler->disconnectTube(pView, tubeDBusAddress);
 }
 
 static bool s_buddyJoined(AV_View* v, EV_EditMethodCallData *d)
