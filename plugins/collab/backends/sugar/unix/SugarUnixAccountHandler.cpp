@@ -21,6 +21,7 @@
 #include "SugarBuddy.h"
 #include <account/xp/AccountEvent.h>
 #include <account/xp/Event.h>
+#include <core/account/xp/SessionEvent.h>
 #include <session/xp/AbiCollabSessionManager.h>
 #include <session/xp/AbiCollab.h>
 #include <ev_EditMethod.h>
@@ -55,11 +56,7 @@ SugarAccountHandler::SugarAccountHandler()
 SugarAccountHandler::~SugarAccountHandler()
 {
 	m_pHandler = NULL;
-	if (m_pTube)
-	{
-		dbus_connection_unref(m_pTube);
-		m_pTube = NULL;
-	}
+	disconnect();
 }
 
 UT_UTF8String SugarAccountHandler::getDescription()
@@ -91,7 +88,11 @@ ConnectResult SugarAccountHandler::connect()
 
 bool SugarAccountHandler::disconnect()
 {
-	UT_ASSERT_HARMLESS(UT_NOT_REACHED);
+	if (m_pTube)
+	{
+		dbus_connection_unref(m_pTube);
+		m_pTube = NULL;
+	}
 	return true;
 }
 
@@ -150,35 +151,53 @@ void  SugarAccountHandler::handleEvent(Session& /*pSession*/)
 
 void SugarAccountHandler::signal(const Event& event, BuddyPtr pSource)
 {
-	AccountHandler::signal(event, pSource);
-
 	UT_DEBUGMSG(("SugarAccountHandler::signal()\n"));
 
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_if_fail(pManager);
 
-	// we just want to listen for when we get a document handle from the other side
-	// (this obviously only makes sense for a joining party, not an offering one;
-	// the offering party should never even receive such an event
-	if (event.getClassType() == PCT_AccountBuddyAddDocumentEvent)
+	switch (event.getClassType())
 	{
-		UT_DEBUGMSG(("We received a document handle from an offering party; let's join it immediately!\n"));
-		AccountBuddyAddDocumentEvent& abade = (AccountBuddyAddDocumentEvent&)event;
-
-		if (!m_bLocallyControlled)
-		{
-			DocHandle* pDocHandle = abade.getDocHandle();
-			if (pDocHandle)
+		case PCT_CloseSessionEvent:
 			{
+				UT_DEBUGMSG(("Got a PCT_CloseSessionEvent\n"));
+				const CloseSessionEvent cse = static_cast<const CloseSessionEvent&>(event);
+				UT_return_if_fail(!pSource); // we shouldn't receive these events over the wire on this backend
+
+				// If the session that is close was started by us, then disconnect from
+				// the tube. Otherwise, just drop the event on the floor....
+
+				if (cse.getSessionId() == m_sSessionId)
+				{
+					UT_DEBUGMSG(("We host session %s, disconnecting...\n", cse.getSessionId().utf8_str()));
+					disconnect();
+				}
+			}
+			break;
+
+		case PCT_AccountBuddyAddDocumentEvent:
+			{
+				// We've received a document handle from the other side. This obviously only 
+				// makes sense for a joining party, not an offering one: the offering party 
+				// should never even receive such an event
+
+				UT_DEBUGMSG(("We received a document handle from an offering party; let's join it immediately!\n"));
+				AccountBuddyAddDocumentEvent& abade = (AccountBuddyAddDocumentEvent&)event;
+
+				UT_return_if_fail(!m_bLocallyControlled);
+
+				DocHandle* pDocHandle = abade.getDocHandle();
+				UT_return_if_fail(pDocHandle);
+
 				UT_DEBUGMSG(("Got dochandle, going to initiate a join on it!\n"));
 				// FIXME: remove const cast
 				pManager->joinSessionInitiate(pSource, pDocHandle);
 			}
-			else
-				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-		}
-		else
-			UT_ASSERT_HARMLESS(UT_NOT_REACHED);
+			break;
+
+		default:
+			AccountHandler::signal(event, pSource);
+			break;
 	}
 }
 
@@ -285,6 +304,32 @@ void SugarAccountHandler::_registerEditMethods()
 
 }
 
+void SugarAccountHandler::_handlePacket(Packet* packet, BuddyPtr buddy)
+{
+	UT_DEBUGMSG(("SugarAccountHandler::_handlePacket()\n"));
+
+	UT_return_if_fail(packet);
+	UT_return_if_fail(buddy);
+
+	switch (packet->getClassType())
+	{
+		case PCT_JoinSessionRequestResponseEvent:
+		{
+			JoinSessionRequestResponseEvent* jsre = static_cast<JoinSessionRequestResponseEvent*>( packet );
+			m_sSessionId = jsre->getSessionId();
+			// Let the AccountHandler::_handlePacket() call below handle the actual joining.
+			// This could mean that when the actual joining fails (unlikely), we have
+			// a bogus session ID stored. I doubt it will ever really be a problem though.
+			break;
+		}
+
+		default:
+			break;
+	}
+
+	AccountHandler::_handlePacket(packet, buddy);
+}
+
 bool SugarAccountHandler::offerTube(FV_View* pView, const UT_UTF8String& tubeDBusAddress)
 {
 	UT_DEBUGMSG(("SugarAccountHandler::offerTube()\n"));
@@ -313,11 +358,13 @@ bool SugarAccountHandler::offerTube(FV_View* pView, const UT_UTF8String& tubeDBu
 
 	m_bLocallyControlled = true;
 
+	// start hosting a session on the current document
+	UT_return_val_if_fail(m_sSessionId == "", false);
+	AbiCollab* pSession = pManager->startSession(pDoc, m_sSessionId, this, true, NULL, "");
+	UT_return_val_if_fail(pSession, false);
+
 	// we are "connected" now, time to start sending out, and listening to messages (such as events)
 	pManager->registerEventListener(this);
-	// start hosting a session on the current document
-	UT_UTF8String sID;
-	pManager->startSession(pDoc, sID, this, true, NULL, "");
 
 	return true;
 }

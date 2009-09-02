@@ -103,12 +103,14 @@ public:
 protected:
 	// control management
 	void									_registerEditMethods();
+	virtual	void							_handlePacket(Packet* packet, BuddyPtr buddy);
 
 private:
 	static SugarAccountHandler* 			m_pHandler;
 	DBusConnection*							m_pTube;
 	bool									m_bLocallyControlled;
 	std::set<UT_UTF8String>					m_ignoredBuddies;
+	UT_UTF8String							m_sSessionId;
 };
 
 #endif /* __SUGARACCOUNTHANDLER__ */
