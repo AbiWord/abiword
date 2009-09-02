@@ -207,9 +207,7 @@ bool SugarAccountHandler::send(const Packet* pPacket)
 	UT_return_val_if_fail(pPacket, false);
 	UT_return_val_if_fail(m_pTube, false);
 
-	// TODO: implement me
-
-	return true;
+	return _send(pPacket, NULL);
 }
 
 bool SugarAccountHandler::send(const Packet* pPacket, BuddyPtr pBuddy)
@@ -221,10 +219,32 @@ bool SugarAccountHandler::send(const Packet* pPacket, BuddyPtr pBuddy)
 	SugarBuddyPtr pSugarBuddy = boost::static_pointer_cast<SugarBuddy>(pBuddy);
 	UT_DEBUGMSG(("Sending packet to sugar buddy on dbus addess: %s\n", pSugarBuddy->getDBusAddress().utf8_str()));
 
-	DBusMessage* pMessage = dbus_message_new_method_call(pSugarBuddy->getDBusAddress().utf8_str(), "/org/laptop/Sugar/Presence/Buddies", INTERFACE, SEND_ONE_METHOD);
-	// TODO: check dst
-	/*bool dst =*/ dbus_message_set_destination(pMessage, pSugarBuddy->getDBusAddress().utf8_str());
-	UT_DEBUGMSG(("Destination (%s) set on message\n", pSugarBuddy->getDBusAddress().utf8_str()));
+	return _send(pPacket, pSugarBuddy->getDBusAddress().utf8_str());
+}
+
+Packet* SugarAccountHandler::createPacket(const std::string& packet, BuddyPtr pBuddy)
+{
+	return _createPacket(packet, pBuddy);
+}
+
+bool SugarAccountHandler::_send(const Packet* pPacket, const char* dbusAddress)
+{
+	UT_DEBUGMSG(("SugarAccountHandler::_send() - dbusAddress: %s\n", dbusAddress ? dbusAddress : "(broadcast)"));
+	UT_return_val_if_fail(pPacket, false);
+	UT_return_val_if_fail(m_pTube, false);
+
+	DBusMessage* pMessage = dbus_message_new_method_call(dbusAddress, "/org/laptop/Sugar/Presence/Buddies", INTERFACE, SEND_ONE_METHOD);
+	if (dbusAddress)
+	{
+		// TODO: isn't this redudant? we already set a destination in dbus_message_new_method_call()
+		if (!dbus_message_set_destination(pMessage, dbusAddress))
+		{
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			dbus_message_unref(pMessage);
+			return false;
+		}
+		UT_DEBUGMSG(("Destination (%s) set on message\n", dbusAddress));
+	}
 
 	// we don't want replies, because then then easily run into dbus timeout problems 
 	// when sending large packets
@@ -236,9 +256,13 @@ bool SugarAccountHandler::send(const Packet* pPacket, BuddyPtr pBuddy)
 	_createPacketStream( data, pPacket );
 
 	const char* packet_contents = &data[0];
-	/*bool append =*/ dbus_message_append_args(pMessage,
-					DBUS_TYPE_ARRAY, DBUS_TYPE_BYTE, &packet_contents, data.size(),
-					DBUS_TYPE_INVALID);
+	if (!dbus_message_append_args(pMessage, DBUS_TYPE_ARRAY, DBUS_TYPE_BYTE, &packet_contents, data.size(), DBUS_TYPE_INVALID))
+	{
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		dbus_message_unref(pMessage);
+		return false;
+	}
+
 	UT_DEBUGMSG(("Appended packet contents\n"));
 
 	bool sent = dbus_connection_send(m_pTube, pMessage, NULL);
@@ -246,12 +270,8 @@ bool SugarAccountHandler::send(const Packet* pPacket, BuddyPtr pBuddy)
 	if (sent)
 		dbus_connection_flush(m_pTube);
 	dbus_message_unref(pMessage);
-	return sent;
-}
 
-Packet* SugarAccountHandler::createPacket(const std::string& packet, BuddyPtr pBuddy)
-{
-	return _createPacket(packet, pBuddy);
+	return sent;	
 }
 
 void SugarAccountHandler::_registerEditMethods()
@@ -395,6 +415,12 @@ bool SugarAccountHandler::joinTube(FV_View* pView, const UT_UTF8String& tubeDBus
 	// we are "connected" now, time to start sending out, and listening to messages (such as events)
 	pManager->registerEventListener(this);
 
+	// broadcast a request for sessions; if everything is alright then we should
+	// receive exactly 1 session in all the responses combined
+	UT_DEBUGMSG(("Sending a broadcast GetSessionsEvent\n"));
+	GetSessionsEvent event;
+	send(&event);
+
 	return true;
 }
 
@@ -437,8 +463,8 @@ bool SugarAccountHandler::joinBuddy(FV_View* pView, const UT_UTF8String& buddyDB
 	}
 	else
 	{
-		UT_DEBUGMSG(("Buddy joined, while we are NOT hosting a session; requesting sessions buddy: %s\n", pBuddy->getDescriptor(false).utf8_str()));
-		getSessionsAsync(pBuddy);
+		UT_DEBUGMSG(("Buddy %s joined while we are NOT hosting a session; doing nothing...\n", pBuddy->getDescriptor(false).utf8_str()));
+		//getSessionsAsync(pBuddy);
 		return true;
 	}
 
@@ -628,7 +654,9 @@ DBusHandlerResult s_dbus_handle_message(DBusConnection *connection, DBusMessage 
 				BuddyPtr pBuddy = pHandler->getBuddy(senderDBusAddress);
 				if (!pBuddy)
 				{
-					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+					// this can actually happen, for example when joining a tube
+					// we send out a broadcast GetSessionsEvent. Responses from
+					// that can return before joinBuddy() was called for that buddy.
 					pBuddy = boost::shared_ptr<SugarBuddy>(new SugarBuddy( pHandler, senderDBusAddress));
 					pHandler->addBuddy(pBuddy);
 				}

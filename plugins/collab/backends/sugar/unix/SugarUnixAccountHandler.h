@@ -101,7 +101,7 @@ public:
 		{ return m_ignoredBuddies.find(buddyName) != m_ignoredBuddies.end(); }
 	
 protected:
-	// control management
+	bool									_send(const Packet* pPacket, const char* dbusAddress);
 	void									_registerEditMethods();
 	virtual	void							_handlePacket(Packet* packet, BuddyPtr buddy);
 
