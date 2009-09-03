@@ -169,17 +169,32 @@ AbiCollab::~AbiCollab(void)
 {
 	UT_DEBUGMSG(("AbiCollab::~AbiCollab()\n"));
 	
+/*
+	We should unregister ourselves as a mouse listener here, but
+	the following sequence needs to be handled before we can do that:
+
+	-> XAP_UnixFrameImpl::_fe::delete_event
+	-> ...
+	-> AP_UnixFrame::~AP_UnixFrame()
+	-> XAP_Frame::~XAP_Frame()
+			DELETEP(m_pFrameImpl);   <== kills off EV_Mouse
+			DELETEP(m_pViewListener);
+			DELETEP(m_pView);
+			UNREFP(m_pDoc);
+				-> removeConnections() <== will lead to ~AbiCollab destructor
+
 	if (m_iMouseLID != -1)
 	{
-		XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
-		if (pFrame)
+		
+		// FIXME: we should do this for all frames that display this document!
+		if (m_pFrame)
 		{
-			// FIXME: we should do this for all frames that display this document!
-			EV_Mouse* pMouse = pFrame->getMouse();
+			EV_Mouse* pMouse = m_pFrame->getMouse();
 			if (pMouse)
 				pMouse->unregisterListener(m_iMouseLID);
 		}
 	}
+*/
 	
 	if (m_iDocListenerId != 0)
 		m_pDoc->removeListener(m_iDocListenerId);
