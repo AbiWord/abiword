@@ -4707,6 +4707,8 @@ fp_Line * fp_TableContainer::getLastLineInColumn(fp_Column * pCol)
 				{
 					pLast = static_cast<fp_Container *>(pLast->getPrev());
 				}
+				if(!pLast)
+					return NULL;
 				if(pLast->getContainerType() == FP_CONTAINER_LINE)
 				{
 					return static_cast<fp_Line *>(pLast);
