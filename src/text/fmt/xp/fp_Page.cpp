@@ -861,6 +861,14 @@ bool fp_Page::containsPageBreak(void) const
 	}
 	return false;
 }
+
+/*!
+ * Returns the page number
+ */
+UT_sint32 fp_Page::getPageNumber(void)
+{
+	return m_pLayout->findPage(this);
+}
 /*!
  * This method returns the height available to the requested column. It 
  * subtracts the height given to previous columns on the page as well as the 
@@ -873,7 +881,7 @@ UT_sint32 fp_Page::getAvailableHeightForColumn(const fp_Column * pColumn) const
 	fl_DocSectionLayout * pDSL = pCurLeader->getDocSectionLayout();
 	UT_sint32 avail = getHeight() - pDSL->getTopMargin() - pDSL->getBottomMargin();
 	UT_sint32 i =0;
-	UT_DEBUGMSG(("fp_Page:: Total avail after margins subtracted %d \n",avail));
+	xxx_UT_DEBUGMSG(("fp_Page:: Total avail after margins subtracted %d \n",avail));
 	UT_sint32 nLeaders = static_cast<UT_sint32>(countColumnLeaders()); 
 	while((pCurLeader != pLeader) && (nLeaders > 1))	
 	{
@@ -1184,7 +1192,7 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool /*bAlwaysUseWhiteBackground*/)
 			da.xoff += pCol->getX();
 			da.yoff += pCol->getY(pDA->pG);
 
-			UT_DEBUGMSG(("Draw in page col Y offset %d \n",da.yoff));
+			xxx_UT_DEBUGMSG(("Draw in page col Y offset %d \n",da.yoff));
 			pCol->draw(&da);
 
 			fp_Column *pNextCol = pCol->getFollower();

@@ -2429,6 +2429,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	UT_Rect bRec;
 	fp_Page * pPage;
 	_getBrokenRect(pBroke, pPage, bRec,pG);
+	xxx_UT_DEBUGMSG(("Draw Broken Table %p ybreak %d On Page %d cell %p \n",pBroke,pBroke->getYBreak(),pPage->getPageNumber(),this));
 	if((bRec.height < 0) || (bRec.width < 0))
 		return;
 	if(getFillType()->getFillType() == FG_FILL_IMAGE && (getContainer() != NULL))
@@ -2522,7 +2523,22 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 			UT_sint32 ydiff = da.yoff + pContainer->getHeight();
 			if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
 			{
-				ydiff = da.yoff + static_cast<fp_TableContainer *>(pContainer)->getHeight();
+				UT_sint32 TabHeight= 0;
+				fp_TableContainer * pTCon = static_cast<fp_TableContainer *>(pContainer);
+				if(pTCon->isThisBroken())
+				{
+					TabHeight = pTCon->getHeight();
+				}
+				else if(pTCon->getFirstBrokenTable())
+				{
+					pContainer = pTCon->getFirstBrokenTable();
+					TabHeight = static_cast<fp_TableContainer *>(pContainer)->getHeight();
+				}
+				else
+				{
+					TabHeight = static_cast<fp_TableContainer *>(pContainer)->getHeight();
+				}
+				ydiff = da.yoff + TabHeight;
 			}
 			xxx_UT_DEBUGMSG((" -1- da.yoff %d ydiff %d \n",da.yoff,ydiff));
 			//			UT_ASSERT(da.yoff > 1000);
@@ -2551,7 +2567,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 					fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pContainer);
 					if(pTab->isThisBroken())
 					{
-						xxx_UT_DEBUGMSG(("Draw nested broken table da.yoff %d yBreak %d \n",da.yoff,pTab->getYBreak()));
+						xxx_UT_DEBUGMSG(("Draw nested broken table %p da.yoff %d yBreak %d \n",pTab,da.yoff,pTab->getYBreak()));
 						dg_DrawArgs daa = da;
 						daa.yoff -= pTab->getYBreak();
 						pTab->draw(&daa);
@@ -2559,11 +2575,12 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 					}
 					else
 					{
+						xxx_UT_DEBUGMSG(("Draw nested unbroken table %p da.yoff %d yBreak %d \n",pTab,da.yoff,pTab->getYBreak()));
 						fp_TableContainer * pT= pTab->getFirstBrokenTable();
 						if(pT == NULL)
 						{
+							UT_DEBUGMSG(("No Broken Table in draw !! \n"));
 							UT_sint32 iY = pTab->getY();
-							xxx_UT_DEBUGMSG(("No Broken Table!! \n"));
 							pTab = static_cast<fp_TableContainer *>(pTab->VBreakAt(0));
 							pTab->setY(iY);
 						}
@@ -2573,6 +2590,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 						}
 						if(pTab)
 						{
+							xxx_UT_DEBUGMSG(("Draw first nested broken table %p da.yoff %d yBreak %d height %d next %p \n",pTab,da.yoff,pTab->getYBreak(),pTab->getHeight(),pTab->getNext()));							
 							pTab->draw(&da);
 							iLastDraw = i;
 						}
@@ -2655,11 +2673,11 @@ fp_ContainerObject * fp_CellContainer::VBreakAt(UT_sint32 vpos)
 	}
 	vpos -= 2; // make broken container wholly within the cell.
 	UT_sint32 count = countCons();
-	xxx_UT_DEBUGMSG(("vBREAK cell at  %d \n",vpos));
+	UT_DEBUGMSG(("vBREAK cell at  %d \n",vpos));
 	UT_sint32 i =0;
 	fp_Container * pCon;
 	bool bBreak = false;
-	fp_ContainerObject * pBroke = NULL;
+	fp_TableContainer * pBroke = NULL;
 	UT_sint32 iY = 0;
 	for(i=0; i< count; i++)
 	{
@@ -2667,7 +2685,7 @@ fp_ContainerObject * fp_CellContainer::VBreakAt(UT_sint32 vpos)
 		xxx_UT_DEBUGMSG(("Looking Container iY  %d height %d \n",iY,pCon->getHeight()));
 		if(pCon->getContainerType() == FP_CONTAINER_TABLE)
 		{
-			 xxx_UT_DEBUGMSG(("Looking at nested table to break at  %d height %d \n",vpos,pCon->getHeight()));
+			 UT_DEBUGMSG(("Looking at nested table to break at  %d height %d \n",vpos,pCon->getHeight()));
   		}
 		if(iY <= vpos && iY + pCon->getHeight() > vpos)
 		{
@@ -2680,7 +2698,7 @@ fp_ContainerObject * fp_CellContainer::VBreakAt(UT_sint32 vpos)
 			{
 				if(pCon->getContainerType() == FP_CONTAINER_TABLE)
 				{
-					xxx_UT_DEBUGMSG(("Want to break nested table at %d \n",vpos));
+					UT_DEBUGMSG(("Want to break nested table at %d \n",vpos));
 					fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCon);
 					if(!pTab->isThisBroken())
 					{
@@ -2697,8 +2715,8 @@ fp_ContainerObject * fp_CellContainer::VBreakAt(UT_sint32 vpos)
 							pCon = static_cast<fp_Container *>(pTab->VBreakAt(0));
 							fp_TableContainer * pBTab = static_cast<fp_TableContainer *>(pCon);
 							pBTab->setY(iY);
-							xxx_UT_DEBUGMSG(("Break Nested table Con %x at 0 y %d height %d \n",pCon,pCon->getY(),pCon->getHeight()));
-							xxx_UT_DEBUGMSG(("Break Nested table Table %x at 0 y %d height %d \n",pBTab,pBTab->getY(),pBTab->getHeight()));
+							UT_DEBUGMSG(("Break Nested table Con %p at 0 y %d height %d \n",pCon,pCon->getY(),pCon->getHeight()));
+							UT_DEBUGMSG(("Break Nested table Table %p at 0 y %d height %d \n",pBTab,pBTab->getY(),pBTab->getHeight()));
 						}
 					}
 				}
@@ -2715,12 +2733,15 @@ fp_ContainerObject * fp_CellContainer::VBreakAt(UT_sint32 vpos)
 					// tables are broken over columns and heights are 
 					// calculated from within these columns.
 					//
+					if(iY > vpos)
+						vpos = iY+1;
 					fp_TableContainer * pPrevTab = static_cast<fp_TableContainer *>(pCon);
 					fp_TableContainer * pMaster = pPrevTab->getMasterTable();
-					pBroke = pPrevTab->VBreakAt(vpos - pMaster->getY() - pPrevTab->getYBreak());
+					pBroke = static_cast<fp_TableContainer *>(pPrevTab->VBreakAt(vpos - pMaster->getY() - pPrevTab->getYBreak()));
 					pBroke->setY(vpos);
 					static_cast<fp_TableContainer *>(pBroke)->setY(pBroke->getY());
-					xxx_UT_DEBUGMSG(("Made broken nested Table %x Y %d height %d \n",pBroke,pBroke->getY(),pBroke->getHeight()));
+					UT_DEBUGMSG(("Made broken nested Table %p Y %d height %d \n",pBroke,pBroke->getY(),pBroke->getHeight()));
+					UT_ASSERT(pBroke->getContainer() == this);
 					bBreak = true;
 					break;
 				}
@@ -2733,7 +2754,7 @@ fp_ContainerObject * fp_CellContainer::VBreakAt(UT_sint32 vpos)
 	{
 		//layout();
 	}
-	return pBroke;
+	return static_cast<fp_ContainerObject *>(pBroke);
 }
 
 /*!
@@ -4312,7 +4333,12 @@ void fp_TableContainer::breakCellsAt(UT_sint32 vpos)
 fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 {
 //
-// If this table is nested in a cell we don't break. The offsets for each line
+// If this table is nested in a cell we break it and leave it in the cell. 
+//
+// cell->Master------>more lines
+//       \
+//        Broke->Broke->Broke|more lines
+// The offsets for each line
 // will be calculated only with the top level broken table.
 //
 	fp_Container * pCon = getContainer();
@@ -5587,17 +5613,26 @@ bool fp_TableContainer::isInBrokenTable(fp_CellContainer * pCell, fp_Container *
 	//
 	// Short circuit things if the BrokenContainer pointer is set.
     //
+	xxx_UT_DEBUGMSG(("isInBrokenTable %p pcell %p line %p\n",this,pCell,pCon));
+#if 1
  	if(pCon->getMyBrokenContainer() == static_cast<fp_Container *>(this))
  	{
+		xxx_UT_DEBUGMSG(("Already set to this %p\n",this));
  		return true;
  	}
  	if(pCon->getMyBrokenContainer() != NULL)
  	{
+		xxx_UT_DEBUGMSG(("Already set to other  %p\n",pCon->getMyBrokenContainer() ));
  		return false;
  	}
+#endif
 	UT_sint32 iTop = 0;
 	iTop = pCell->getY() + pCon->getY();
 	UT_sint32 iHeight = pCon->getHeight();
+	if(!getContainer())
+	{
+		UT_DEBUGMSG(("This broken table has NO container ! %p \n",this));
+	}
 	if(pCon->getContainerType() == FP_CONTAINER_TABLE)
 	{
 		fp_TableContainer * ppTab = static_cast<fp_TableContainer *>(pCon);
@@ -5609,14 +5644,27 @@ bool fp_TableContainer::isInBrokenTable(fp_CellContainer * pCell, fp_Container *
 		}
 		iHeight = static_cast<fp_TableContainer *>(pCon)->getHeight();
 	}
+
 	UT_sint32 iBot = iTop + iHeight;
 
 	UT_sint32 iBreak = getYBreak();
 	UT_sint32 iBottom = getYBottom();
-	xxx_UT_DEBUGMSG(("Column %x iTop = %d ybreak %d iBot= %d ybottom= %d \n",getBrokenColumn(),iTop,iBreak,iBot,iBottom));
-	if(iBot >= iBreak)
+	
+	xxx_UT_DEBUGMSG(("Column %p iTop = %d ybreak %d iBot= %d ybottom= %d \n",getBrokenColumn(),iTop,iBreak,iBot,iBottom));
+	//
+	// When breaking a nested table, it is possible that the pieces don't
+	// quite fit into the containing broken table. This "Delta" allows
+	// a degree of sloppiness to find the correct matching broken table
+	// for a broken nested table.
+	//
+	UT_sint32 iDelta = 0;
+	if(pCon->getContainerType() ==  FP_CONTAINER_TABLE)
 	{
-		if(iBot < iBottom)
+		iDelta = iBot * 0.03;
+	}
+	if((iBot >= (iBreak - iDelta)) && (iTop >= (iBreak - iDelta)))
+	{
+		if(iBot < (iBottom+iDelta) )
 		{
 			//			pCon->setMyBrokenContainer(this);
 			return true;

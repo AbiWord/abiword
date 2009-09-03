@@ -5074,7 +5074,7 @@ bool   fl_BlockLayout::itemizeSpan(PT_BlockOffset blockOffset, UT_uint32 len,GR_
 												NULL,
 												m_pLayout->getGraphics());
 
-	UT_DEBUGMSG(("Got [%s], %s\n", pFont->getFamily(), szLang));
+	xxx_UT_DEBUGMSG(("Got [%s], %s\n", pFont->getFamily(), szLang));
 	I.setLang(szLang);
 	I.setFont(pFont);
 	

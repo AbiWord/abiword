@@ -273,6 +273,7 @@ fp_TableContainer * fp_VerticalContainer::getCorrectBrokenTable(fp_Container * p
 	UT_sint32 iCount  =0;
 	while(pTab && !bFound)
 	{
+	        xxx_UT_DEBUGMSG(("getCorrectBrokenTable YBreak %d height %d \n",pTab->getYBreak(),pTab->getHeight()));
 		if(pTab->isInBrokenTable(pCell,pCon))
 		{
 			bFound = true;
@@ -292,6 +293,7 @@ fp_TableContainer * fp_VerticalContainer::getCorrectBrokenTable(fp_Container * p
 		xxx_UT_DEBUGMSG(("Container y %d height %d was found in table %d ybreak %d ybottom y %d \n",pCon->getY(),pCon->getHeight(),iCount,pTab->getYBreak(),pTab->getYBottom()));
 		return  pTab;
 	}
+     
 	xxx_UT_DEBUGMSG(("getCorrectBroken: No table found after %d tries, Y of Con \n",iCount,pCon->getY()));
 	if(pMasterTab)
 	{
@@ -398,6 +400,7 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 			if(pVCon->getContainer()->getContainerType() == FP_CONTAINER_CELL)
 			{
 				pContainer = static_cast<fp_Container *>(pVCon);
+				xxx_UT_DEBUGMSG(("pContainer set to %p height %d \n",pContainer,pContainer->getHeight()));
 			}
 			pCon = static_cast<fp_Container *>(pVCon);
 		}

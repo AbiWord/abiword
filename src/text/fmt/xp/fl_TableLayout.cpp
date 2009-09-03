@@ -581,6 +581,7 @@ void fl_TableLayout::format(void)
 		markAllRunsDirty();
 	}
 	bool bSim = false;
+	fl_ContainerLayout * myL = myContainingLayout();
 	if((m_iHeightChanged == 1)  && !getDocument()->isDontImmediateLayout())
 	{
 		//
@@ -652,7 +653,6 @@ void fl_TableLayout::format(void)
 			isBroken = true;
 		}
 	}
-	fl_ContainerLayout * myL = myContainingLayout();
 	if((iNewHeight != iOldHeight)  || !isBroken)
 	{
 		//
@@ -687,6 +687,22 @@ void fl_TableLayout::format(void)
 		if(pSC)
 		{
 			pSC->layout(true);
+		}
+	}
+	if(myL && (myL->getContainerType() == FL_CONTAINER_CELL))
+	{
+		if(iNewHeight != iOldHeight)
+		{
+			fl_CellLayout * pCL = static_cast<fl_CellLayout *>(myL);
+			pCL->setNeedsReformat(pCL);
+			fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pCL->myContainingLayout());
+			pTL->setDirty();
+			fp_Container * pTCon = pTL->getFirstContainer();
+			if(pTCon)
+			{
+				fp_Page * pTP = pTCon->getPage();
+				getDocSectionLayout()->setNeedsSectionBreak(true,pTP);
+			}
 		}
 	}
 	m_bRecursiveFormat = false;

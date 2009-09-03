@@ -425,6 +425,7 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 		fp_Container * pPrevWorking = pCurContainer;
 		while (pCurContainer)
 		{
+		  //		        pCurContainer->setMyBrokenContainer(NULL);
 		        iColCons++;
 		        xxx_UT_DEBUGMSG(("curContainer pointer %p type %s \n",iLoop,pCurContainer,pCurContainer->getContainerString()));
 			if(pCurContainer->getDocSectionLayout() != m_pDocSec)
