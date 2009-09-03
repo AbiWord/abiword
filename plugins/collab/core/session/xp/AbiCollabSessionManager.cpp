@@ -834,13 +834,16 @@ void AbiCollabSessionManager::joinSession(const UT_UTF8String& sSessionId, PD_Do
 	UT_return_if_fail(pDoc);
 	UT_return_if_fail(pAclAccount);
 	
-#ifdef ABICOLLAB_HANDLER_SUGAR		
-	// HACK, remove this some day: the sugar backend should just pass us a frame to use
-	pFrame = XAP_App::getApp()->getLastFocussedFrame();
-	pFrame->loadDocument(pDoc);
-#else
-	UT_return_if_fail(_setupFrame(&pFrame, pDoc));
-#endif
+	if (pAclAccount->getStaticStorageType() == SUGAR_STATIC_STORAGE_TYPE)
+	{
+		// HACK, remove this some day: the sugar backend should just pass us a frame to use
+		pFrame = XAP_App::getApp()->getLastFocussedFrame();
+		pFrame->loadDocument(pDoc);
+	}
+	else
+	{
+		UT_return_if_fail(_setupFrame(&pFrame, pDoc));
+	}
 
 	AbiCollab* pSession = new AbiCollab(sSessionId, pDoc, docUUID, iRev, pCollaborator, pAclAccount, bLocallyOwned, pFrame);
 	m_vecSessions.push_back(pSession);

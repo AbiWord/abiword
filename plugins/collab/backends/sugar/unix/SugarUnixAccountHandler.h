@@ -28,6 +28,8 @@
 #include <dbus/dbus-glib-lowlevel.h>
 #include "SugarBuddy.h"
 
+#define SUGAR_STATIC_STORAGE_TYPE "com.abisource.abiword.abicollab.backend.sugar"
+
 extern AccountHandlerConstructor SugarAccountHandlerConstructor;
 
 class Session;

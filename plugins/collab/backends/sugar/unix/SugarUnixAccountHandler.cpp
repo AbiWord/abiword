@@ -71,7 +71,7 @@ UT_UTF8String SugarAccountHandler::getDisplayType()
 
 UT_UTF8String SugarAccountHandler::getStaticStorageType()
 {
-	return "com.abisource.abiword.abicollab.backend.sugar";
+	return SUGAR_STATIC_STORAGE_TYPE;
 }
 
 void SugarAccountHandler::storeProperties()

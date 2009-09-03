@@ -1332,6 +1332,12 @@ void ServiceAccountHandler::signal(const Event& event, BuddyPtr pSource)
 			{
 				UT_DEBUGMSG(("Got a PCT_CloseSessionEvent\n"));
 				const CloseSessionEvent cse = static_cast<const CloseSessionEvent&>(event);
+				// check if this event came from this account in the first place
+				if (pSource && pSource->getHandler() != this)
+				{
+					// nope, a session was closed on some other account; ignore this...
+					return;
+				}
 				UT_return_if_fail(!pSource); // we shouldn't receive these events over the wire on this backend
 				ConnectionPtr connection_ptr = _getConnection(cse.getSessionId().utf8_str());
 				// if we don't host this session, then we have no connection for it; 
@@ -1670,7 +1676,7 @@ void ServiceAccountHandler::_handleMessages(ConnectionPtr connection)
 						boost::shared_ptr<PendingDocumentProperties> pdp = connection->getPendingDocProps();
 						UT_return_if_fail(pdp);
 
-						UT_DEBUGMSG(("Joining received document..."));
+						UT_DEBUGMSG(("Joining received document...\n"));
 						_handleJoinSessionRequestResponse(static_cast<JoinSessionRequestResponseEvent*>(pPacket), buddy_ptr, pdp->pFrame, pdp->pDoc, pdp->filename, pdp->bLocallyOwned);
 						DELETEP(pPacket);
 						UT_return_if_fail(pdp->pDlg);
