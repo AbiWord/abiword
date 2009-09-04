@@ -729,7 +729,7 @@ void fl_AnnotationLayout::_insertAnnotationContainer(fp_Container * pNewAC)
 
 void fl_AnnotationLayout::format(void)
 {
-	UT_DEBUGMSG(("SEVIOR: Formatting Annotations first container is %x \n",getFirstContainer()));
+	UT_DEBUGMSG(("SEVIOR: Formatting Annotations first container is %p\n", getFirstContainer()));
 	if(getFirstContainer() == NULL)
 	{
 		getNewContainer();

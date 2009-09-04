@@ -517,6 +517,7 @@ static void _abi_widget_class_install_signals (AbiWidgetClass * klazz)
 
 #define FIRE_BOOL(query, var, fire) do { bool val = (query); if (val != var) { var = val; fire(val); } } while(0)
 #define FIRE_SINT32(query, var, fire) do { UT_sint32 val = (query); if (val != var) { var = val; fire(val); } } while(0)
+#define FIRE_UINT32(query, var, fire) do { UT_uint32 val = (query); if (val != var) { var = val; fire(val); } } while(0)
 #define FIRE_UTF8STRING(query, var, fire) do { const UT_UTF8String& val = (query); if (val != var) { var = val; fire(val.utf8_str()); } } while(0)
 
 #define FIRE_BOOL_CHARFMT(prop, prop_val, multiple, var, fire) do {\
@@ -620,8 +621,8 @@ public:
 			UT_uint32 _page_count = m_pView->getLayout()->countPages();
 			UT_uint32 _current_page = m_pView->getCurrentPageNumForStatusBar();
 
-			FIRE_SINT32(_page_count, pageCount_, pageCount); // should be UINT32 ofcourse
-			FIRE_SINT32(_current_page, currentPage_, currentPage); // should be UINT32 ofcourse
+			FIRE_UINT32(_page_count, pageCount_, pageCount); // should be UINT32 ofcourse
+			FIRE_UINT32(_current_page, currentPage_, currentPage); // should be UINT32 ofcourse
 		}
 
 		if ((AV_CHG_FMTBLOCK | AV_CHG_MOTION) & mask)

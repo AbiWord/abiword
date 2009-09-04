@@ -4332,15 +4332,15 @@ void fp_TableContainer::breakCellsAt(UT_sint32 vpos)
  */
 fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 {
-//
-// If this table is nested in a cell we break it and leave it in the cell. 
-//
-// cell->Master------>more lines
-//       \
-//        Broke->Broke->Broke|more lines
-// The offsets for each line
-// will be calculated only with the top level broken table.
-//
+/*
+ If this table is nested in a cell we break it and leave it in the cell. 
+
+ cell->Master------>more lines
+       \
+        Broke->Broke->Broke|more lines
+ The offsets for each line
+ will be calculated only with the top level broken table.
+*/
 	fp_Container * pCon = getContainer();
 	UT_return_val_if_fail(pCon, NULL);
 	bool bIsNested = false;
