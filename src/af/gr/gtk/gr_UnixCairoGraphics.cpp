@@ -35,6 +35,20 @@
 	(GTK_MAJOR_VERSION == (major) && GTK_MINOR_VERSION == (minor) && \
 	GTK_MICRO_VERSION >= (micro)))
 
+// remove this define and our own gdk_cairo_reset_clip function when gtk 2.18 is released
+#define GTK_2_17_DEV_VERSION_WITHOUT_RESET_CLIP \
+	(GTK_MAJOR_VERSION == 2 && GTK_MINOR_VERSION == 17 && \
+    (GTK_MICRO_VERSION >= 0 && GTK_MICRO_VERSION <= 10))
+
+#if GTK_2_17_DEV_VERSION_WITHOUT_RESET_CLIP
+void gdk_cairo_reset_clip (cairo_t *cr, GdkDrawable *drawable)
+{
+	cairo_reset_clip (cr);
+	if (GDK_DRAWABLE_GET_CLASS (drawable)->set_cairo_clip)
+		GDK_DRAWABLE_GET_CLASS (drawable)->set_cairo_clip (drawable, cr);
+}
+#endif
+
 GR_UnixCairoGraphicsBase::~GR_UnixCairoGraphicsBase()
 {
 }
@@ -131,7 +145,7 @@ inline UT_RGBColor _convertGdkColor(const GdkColor &c)
 
 void GR_UnixCairoGraphics::widget_size_allocate(GtkWidget* /*widget*/, GtkAllocation* /*allocation*/, GR_UnixCairoGraphics* me)
 {
-#if GTK_CHECK_VERSION(2,17,11) 
+#if GTK_CHECK_VERSION(2,17,11) || GTK_2_17_DEV_VERSION_WITHOUT_RESET_CLIP
 	UT_return_if_fail(me);
 	me->m_clipRectDirty = TRUE;
 #else
@@ -141,7 +155,7 @@ void GR_UnixCairoGraphics::widget_size_allocate(GtkWidget* /*widget*/, GtkAlloca
 
 void GR_UnixCairoGraphics::initWidget(GtkWidget* widget)
 {
-#if GTK_CHECK_VERSION(2,17,11)
+#if GTK_CHECK_VERSION(2,17,11) || GTK_2_17_DEV_VERSION_WITHOUT_RESET_CLIP
 	UT_return_if_fail(widget);
 	g_signal_connect_after(G_OBJECT(widget), "size_allocate", G_CALLBACK(widget_size_allocate), this);
 #else
@@ -386,7 +400,7 @@ void GR_UnixCairoGraphics::createPixmapFromXPM( char ** pXPM,GdkPixmap *source,
 
 void GR_UnixCairoGraphics::_resetClip(void)
 {
-#if GTK_CHECK_VERSION(2,17,11)
+#if GTK_CHECK_VERSION(2,17,11) || GTK_2_17_DEV_VERSION_WITHOUT_RESET_CLIP
 	gdk_cairo_reset_clip (m_cr, _getDrawable());
 #else
 	cairo_reset_clip (m_cr);
