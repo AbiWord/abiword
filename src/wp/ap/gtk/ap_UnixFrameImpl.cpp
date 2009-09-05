@@ -353,8 +353,7 @@ void AP_UnixFrameImpl::_setWindowIcon()
 	// are installed in a custom prefix, so let's try to load the icon manually.
 
 	GError* error = NULL;
-	std::string icon_path = XAP_App::getApp()->getAbiSuiteLibDir();
-	icon_path += std::string(G_DIR_SEPARATOR_S) + ".." G_DIR_SEPARATOR_S + "icons" + G_DIR_SEPARATOR_S + "abiword_48.png";
+	std::string icon_path = std::string(DATADIR) + G_DIR_SEPARATOR_S + "icons" + G_DIR_SEPARATOR_S + "abiword_48.png";
 	icon = gdk_pixbuf_new_from_file(icon_path.c_str(), &error);
 	if (icon)
 	{

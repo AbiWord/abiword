@@ -6,8 +6,8 @@ AM_CPPFLAGS = 						\
 	-I$(top_srcdir)/src/wp/ap/xp/ToolbarIcons 		\
 	-DPREFIX=\""$(prefix)"\" 				\
 	-DSYSCONFDIR=\""$(sysconfdir)"\" 			\
-	-DABIWORD_PLUGINSDIR="\"$(ABIWORD_PLUGINSDIR)"\"
-
+	-DABIWORD_PLUGINSDIR="\"$(ABIWORD_PLUGINSDIR)"\"	\
+	-DDATADIR="\"$(datadir)\""
 
 
 # source and ui files for Hildon
