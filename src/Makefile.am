@@ -40,7 +40,8 @@ endif
 
 libabiword_2_8_la_CPPFLAGS = \
 	$(WP_CPPFLAGS) \
-	-DABIWORD_DATADIR="\"$(ABIWORD_DATADIR)\""
+	-DABIWORD_DATADIR="\"$(ABIWORD_DATADIR)\"" \
+	-DABI_BUILD_VERSION="\"$(VERSION)\""
 
 libabiword_2_8_la_LDFLAGS = \
 	$(DEPS_LIBS) \
