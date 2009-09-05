@@ -1540,10 +1540,25 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Container * pFirstContaine
 		{
 			prevContainer = static_cast<fp_Container *>(pFirstContainer->getPrevContainerInSection());
 		}
+		//
+		// Look to see if this page already has columns from this docSections
+		//
+		bool bColAlready = false;
+		UT_sint32 iCol = 0;
+		for(iCol =0; pTmpPage->countColumnLeaders(); iCol++)
+		{
+		    if(pTmpPage->getNthColumnLeader(iCol)->getDocSectionLayout() == this)
+		    {
+		 	 bColAlready = true;
+			 break;
+		    }
+		}
 //
 // Calculate from the page height up to prevContainer
 //
 		pageHeight = pTmpPage->getFilledHeight(prevContainer);
+		UT_sint32 avail =  pTmpPage->getAvailableHeight();
+		UT_sint32 newHeight = pageHeight+ 3*iNextCtrHeight;
 
 		if(pFirstContainer != NULL)
 		{
@@ -1557,11 +1572,8 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Container * pFirstContaine
 		{
 			iNextCtrHeight =12*14; // approximately one average line
 		}
-		UT_sint32 avail =  pTmpPage->getAvailableHeight();
-
-		UT_sint32 newHeight = pageHeight+ 3*iNextCtrHeight;
 		xxx_UT_DEBUGMSG(("SEVIOR: Pageheight =%d nextlineheight =%d newheight = %d availableheight =%d linepos %d \n",pageHeight,iNextCtrHeight,newHeight,avail));
-		if( newHeight  >= avail || pFirstContainer == NULL)
+		if( (newHeight  >= avail) || (pFirstContainer == NULL) || bColAlready)
 		{
 			xxx_UT_DEBUGMSG(("SEVIOR: Container on new page \n"));
 			if (pTmpPage->getNext())
