@@ -26,7 +26,9 @@
 #include <vector>
 #include <gsf/gsf-utils.h>
 #include "ut_rand.h"
+#include "ut_jpeg.h"
 #include "ut_go_file.h"
+#include "ut_bytebuf.h"
 #include "png.h"
 #include "xap_Module.h"
 #include "xap_App.h"
@@ -37,29 +39,9 @@
 
 using namespace std;
 
-#ifdef ABI_PLUGIN_BUILTIN
-#define abi_plugin_register abipgn_garble_register
-#define abi_plugin_unregister abipgn_garble_unregister
-#define abi_plugin_supports_version abipgn_garble_supports_version
-// dll exports break static linking
-#define ABI_BUILTIN_FAR_CALL extern "C"
-#else
-#define ABI_BUILTIN_FAR_CALL ABI_FAR_CALL
-ABI_PLUGIN_DECLARE("AbiGarble")
-#endif
-
 class abiword_garble;
 
 class abiword_document {
-
-	private:
-		struct png_read_data {
-			void*	data;
-			size_t	size;
-			size_t	pos;
-		};
-		static void _png_read( png_structp png_ptr, png_bytep data, png_size_t length );
-		static void _png_write( png_structp png_ptr, png_bytep data, png_size_t length );
 
 	private:
 		string				mFilename;
@@ -73,6 +55,7 @@ class abiword_document {
 		void garble_image_node( xmlNodePtr node );
 		bool garble_png( void*& data, size_t& size );
 		bool garble_jpeg( void*& data, size_t& size );
+		void garble_image_line( char* line, size_t bytes );
 		char get_random_char();
 	public:
 		abiword_document( abiword_garble* abigarble, const string& filename );

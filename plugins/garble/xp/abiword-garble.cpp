@@ -134,109 +134,18 @@ void abiword_document::garble() {
 }
 
 //-----------------------------------------------------------------------------
-/*static*/ void abiword_document::_png_read(png_structp png_ptr, png_bytep data, png_size_t length) {
+void abiword_document::garble_image_line( char* line, size_t bytes ) {
 
-	png_read_data* _data = (png_read_data*) png_get_io_ptr( png_ptr );
-	memcpy( data, (char*)_data->data + _data->pos, length );
-	_data->pos += length;
-}
-
-//-----------------------------------------------------------------------------
-/*static*/ void abiword_document::_png_write( png_structp png_ptr, png_bytep data, png_size_t length ) {
-
-	string* _data = (string*) png_get_io_ptr( png_ptr );
-	size_t offset = _data->size();
-	_data->resize( offset + length );
-	memcpy( &(*_data)[offset], data, length );
-}
-
-//-----------------------------------------------------------------------------
-bool abiword_document::garble_png( void*& data, size_t& size ) {
-
-	png_bytep * dib;
-	png_uint_32 width;
-	png_uint_32 height;
-	int compression_type;
-	int filter_type;
-	int interlace_type;
-	int bit_depth;
-	int color_type;
-	png_uint_32 rowbytes;
-
-	// read PNG data
-	{
-		png_structp png_ptr = png_create_read_struct( PNG_LIBPNG_VER_STRING, (void*) NULL, NULL, NULL );
-		if (!png_ptr)
-			return false;
-		png_infop info_ptr = png_create_info_struct(png_ptr);
-		if (!info_ptr) {
-			png_destroy_read_struct( &png_ptr, (png_infopp)NULL, (png_infopp)NULL );
-			return false;
-		}
-		png_read_data _png_read_data = { data, size, 0 };
-		png_set_read_fn( png_ptr, (void*)&_png_read_data, &abiword_document::_png_read );
-		png_read_info( png_ptr, info_ptr );
-		png_get_IHDR( png_ptr, info_ptr, &width, &height, &bit_depth, &color_type, &interlace_type, &compression_type, &filter_type );
-		png_set_packing( png_ptr );
-		png_set_expand( png_ptr );
-		png_set_strip_16( png_ptr );
-		png_set_gray_to_rgb( png_ptr );
-		png_set_strip_alpha( png_ptr );
-		png_set_interlace_handling( png_ptr );
-		png_set_bgr( png_ptr );
-		rowbytes = info_ptr->rowbytes;
-		png_destroy_read_struct( &png_ptr, &info_ptr, NULL );
-	}
-
-	// we don't care about the image data itself, we just want a random garbled
-	// image of the same size
-	dib = (png_bytep*) malloc( sizeof(png_bytep) * height );
-	png_byte newChar = 0;
+	char newChar = 0;
 	size_t count = 0;
-	for (size_t i=0; i<height; ++i) {
-		dib[i] = (png_byte*) malloc( rowbytes );
-		for (size_t j=0; j<rowbytes; ++j) {
-			if (count==0) {
-				newChar = UT_rand();
-				count = 1 + (UT_rand() % 768);
-			}
-			--count;
-
-			dib[i][j] = newChar;
+	for (size_t j=0; j<bytes; ++j) {
+		if (count==0) {
+			newChar = UT_rand();
+			count = 1 + (UT_rand() % 768);
 		}
+		--count;
+		line[j] = newChar;
 	}
-
-	{
-		// write it back
-		png_structp png_ptrw = png_create_write_struct( PNG_LIBPNG_VER_STRING, NULL, NULL, NULL );
-		if (!png_ptrw)
-			return false;
-		png_infop info_ptrw = png_create_info_struct( png_ptrw );
-		png_set_IHDR( png_ptrw, info_ptrw, width, height, bit_depth, color_type, interlace_type, compression_type, filter_type );
-		string newdata;
-		png_set_write_fn( png_ptrw, (void*)&newdata, &abiword_document::_png_write, NULL );
-		png_write_info( png_ptrw, info_ptrw );
-		png_write_image( png_ptrw, dib );
-		png_write_end( png_ptrw, NULL );
-		png_destroy_write_struct( &png_ptrw, NULL );
-
-		free(data);
-		size = newdata.size();
-		data = malloc( size );
-		memcpy( data, &newdata[0], size );
-	}
-
-	// cleanup
-	for (size_t i=0; i<height; i++)
-		free( dib[i] );
-	free( dib );
-	return true;
-}
-
-//-----------------------------------------------------------------------------
-bool abiword_document::garble_jpeg( void*&, size_t& ) {
-
-	return false;
 }
 
 //-----------------------------------------------------------------------------
@@ -487,6 +396,18 @@ static void Garble_RemoveFromMethods () {
 
 //-----------------------------------------------------------------------------
 // Abiword Plugin Interface 
+//-----------------------------------------------------------------------------
+#ifdef ABI_PLUGIN_BUILTIN
+#define abi_plugin_register abipgn_garble_register
+#define abi_plugin_unregister abipgn_garble_unregister
+#define abi_plugin_supports_version abipgn_garble_supports_version
+// dll exports break static linking
+#define ABI_BUILTIN_FAR_CALL extern "C"
+#else
+#define ABI_BUILTIN_FAR_CALL ABI_FAR_CALL
+ABI_PLUGIN_DECLARE("AbiGarble")
+#endif
+
 //-----------------------------------------------------------------------------
 ABI_BUILTIN_FAR_CALL int abi_plugin_register( XAP_ModuleInfo* mi ) {
 
