@@ -191,7 +191,7 @@ bool abiword_document::garble_png( void*& data, size_t& size ) {
 	// we don't care about the image data itself, we just want a random garbled
 	// image of the same size
 	dib = (png_bytep*) malloc( sizeof(png_bytep) * height );
-	png_byte newChar;
+	png_byte newChar = 0;
 	size_t count = 0;
 	for (size_t i=0; i<height; ++i) {
 		dib[i] = (png_byte*) malloc( rowbytes );
