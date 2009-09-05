@@ -337,22 +337,40 @@ void AP_UnixFrameImpl::_hideMenuScroll(bool bHideMenuScroll)
 }
 void AP_UnixFrameImpl::_setWindowIcon()
 {
-    GError * error = NULL;
 	// attach program icon to window
 	GtkWidget * window = getTopLevelWindow();
 
-    GtkIconTheme * theme = gtk_icon_theme_get_default();
-    GdkPixbuf * icon = gtk_icon_theme_load_icon(theme, "abiword_48", 48, GTK_ICON_LOOKUP_USE_BUILTIN, &error);
-    if(icon) {
-        gtk_window_set_icon (GTK_WINDOW (window), icon);
-        g_object_unref (G_OBJECT(icon));
-    }
-    else {
-        g_warning("Unable to load AbiWord icon: %s", error ? error->message : "(null)");
-        if(error) {
-            g_error_free(error);
-        }
-    }
+	GtkIconTheme * theme = gtk_icon_theme_get_default();
+	GdkPixbuf * icon = gtk_icon_theme_load_icon(theme, "abiword_48", 48, GTK_ICON_LOOKUP_USE_BUILTIN, NULL);
+	if (icon)
+	{
+		gtk_window_set_icon (GTK_WINDOW (window), icon);
+		g_object_unref (G_OBJECT(icon));
+		return;
+	}
+
+	// Hmm, we can't load the icon from the theme. This happens when we are
+	// are installed in a custom prefix, so let's try to load the icon manually.
+
+	GError* error = NULL;
+	std::string icon_path = XAP_App::getApp()->getAbiSuiteLibDir();
+	icon_path += std::string(G_DIR_SEPARATOR_S) + ".." G_DIR_SEPARATOR_S + "icons" + G_DIR_SEPARATOR_S + "abiword_48.png";
+	icon = gdk_pixbuf_new_from_file(icon_path.c_str(), &error);
+	if (icon)
+	{
+		gtk_window_set_icon (GTK_WINDOW (window), icon);
+		g_object_unref (G_OBJECT(icon));	
+	}
+	else
+	{
+		if (error)
+		{
+			g_warning("Unable to load AbiWord icon: %s\n", error ? error->message : "(null)");
+			g_error_free(error);
+		}
+		else
+			g_warning("Unable to load AbiWord icon %s\n", icon_path.c_str());
+	}
 }
 
 void AP_UnixFrameImpl::_createWindow()
