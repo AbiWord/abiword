@@ -2382,7 +2382,7 @@ void GR_CairoGraphics::drawImage(GR_Image* pImg,
 	double idy = _tdudY(yDest);
 
 	cairo_save(m_cr);
-	cairo_reset_clip(m_cr);
+	_resetClip();
 
 	if (pImg->getType() == GR_Image::GRT_Raster) {
 		static_cast<GR_CairoRasterImage*>(pImg)->cairoSetSource(m_cr, idx, idy);
