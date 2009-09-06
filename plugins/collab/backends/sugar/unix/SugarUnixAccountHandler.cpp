@@ -46,7 +46,7 @@ SugarAccountHandler* SugarAccountHandler::getHandler() { return m_pHandler; }
 SugarAccountHandler::SugarAccountHandler()
 	: AccountHandler(),
 	m_pTube(NULL),
-	m_bLocallyControlled(false)
+	m_bIsInSession(false)
 {
 	UT_DEBUGMSG(("SugarAccountHandler::SugarAccountHandler()\n"));
 	m_pHandler = this;
@@ -177,6 +177,16 @@ void SugarAccountHandler::signal(const Event& event, BuddyPtr pSource)
 
 		case PCT_AccountBuddyAddDocumentEvent:
 			{
+				// Prevent joining other dochandles that come over the wire after having
+				// already joined the one we received just now. This should ofcourse never 
+				// happen, but it will in practice because of a Write/Activity bug.
+				// See ... for details.
+				if (m_bIsInSession)
+				{
+					UT_DEBUGMSG(("Received a bogus AccountBuddyAddDocumentEvent: we are already connected to a session.\n"));
+					return;
+				}
+
 				// We've received a document handle from the other side. This obviously only 
 				// makes sense for a joining party, not an offering one: the offering party 
 				// should never even receive such an event
@@ -184,14 +194,14 @@ void SugarAccountHandler::signal(const Event& event, BuddyPtr pSource)
 				UT_DEBUGMSG(("We received a document handle from an offering party; let's join it immediately!\n"));
 				AccountBuddyAddDocumentEvent& abade = (AccountBuddyAddDocumentEvent&)event;
 
-				UT_return_if_fail(!m_bLocallyControlled);
+				// FIXME: should we check if we were waiting for a document to come our way?
 
 				DocHandle* pDocHandle = abade.getDocHandle();
 				UT_return_if_fail(pDocHandle);
 
 				UT_DEBUGMSG(("Got dochandle, going to initiate a join on it!\n"));
-				// FIXME: remove const cast
 				pManager->joinSessionInitiate(pSource, pDocHandle);
+				m_bIsInSession = true;
 			}
 			break;
 
@@ -376,8 +386,6 @@ bool SugarAccountHandler::offerTube(FV_View* pView, const UT_UTF8String& tubeDBu
 	UT_DEBUGMSG(("Adding message filter\n"));
 	dbus_connection_add_filter(m_pTube, s_dbus_handle_message, this, NULL);
 
-	m_bLocallyControlled = true;
-
 	// start hosting a session on the current document
 	UT_return_val_if_fail(m_sSessionId == "", false);
 	AbiCollab* pSession = pManager->startSession(pDoc, m_sSessionId, this, true, NULL, "");
@@ -385,6 +393,8 @@ bool SugarAccountHandler::offerTube(FV_View* pView, const UT_UTF8String& tubeDBu
 
 	// we are "connected" now, time to start sending out, and listening to messages (such as events)
 	pManager->registerEventListener(this);
+
+	m_bIsInSession = true;
 
 	return true;
 }
@@ -409,8 +419,6 @@ bool SugarAccountHandler::joinTube(FV_View* pView, const UT_UTF8String& tubeDBus
 
 	UT_DEBUGMSG(("Adding message filter\n"));
 	dbus_connection_add_filter(m_pTube, s_dbus_handle_message, this, NULL);
-
-	m_bLocallyControlled = false;
 
 	// we are "connected" now, time to start sending out, and listening to messages (such as events)
 	pManager->registerEventListener(this);
@@ -444,31 +452,13 @@ bool SugarAccountHandler::disconnectTube(FV_View* pView)
 
 bool SugarAccountHandler::joinBuddy(FV_View* pView, const UT_UTF8String& buddyDBusAddress)
 {
-	UT_DEBUGMSG(("SugarAccountHandler::joinBuddy()\n"));
+	UT_DEBUGMSG(("SugarAccountHandler::joinBuddy() - buddyDBusAddress: %s\n", buddyDBusAddress.utf8_str()));
 	UT_return_val_if_fail(pView, false);
 
 	SugarBuddyPtr pBuddy = boost::shared_ptr<SugarBuddy>(new SugarBuddy(this, buddyDBusAddress));
 	addBuddy(pBuddy);
 
-	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	UT_return_val_if_fail(pManager, false);
-
-	PD_Document * pDoc = pView->getDocument();
-	UT_return_val_if_fail(pDoc, false);
-
-	if (m_bLocallyControlled)
-	{
-		UT_DEBUGMSG(("Buddy joined while hosting a session; waiting for his GetSessions request\n"));
-		return true;
-	}
-	else
-	{
-		UT_DEBUGMSG(("Buddy %s joined while we are NOT hosting a session; doing nothing...\n", pBuddy->getDescriptor(false).utf8_str()));
-		//getSessionsAsync(pBuddy);
-		return true;
-	}
-
-	return false;
+	return true;
 }
 
 bool SugarAccountHandler::disjoinBuddy(FV_View* pView, const UT_UTF8String& buddyDBusAddress)
@@ -484,25 +474,14 @@ bool SugarAccountHandler::disjoinBuddy(FV_View* pView, const UT_UTF8String& budd
 	
 	m_ignoredBuddies.erase( buddyDBusAddress ); // buddy name is buddyDBusAddress!
 
- 	if (m_bLocallyControlled)
-	{
-		UT_DEBUGMSG(("Dropping buddy %s from the session!", buddyDBusAddress.utf8_str()));
-		AbiCollab* pSession = pManager->getSessionFromDocumentId(pDoc->getDocUUIDString());
-		if (pSession)
-		{	
-			SugarBuddyPtr pTmpBuddy = boost::shared_ptr<SugarBuddy>(new SugarBuddy(this, buddyDBusAddress));
-			pSession->removeCollaborator(pTmpBuddy);
-			return true;
-		}
-	}
-	else
-	{
-		UT_DEBUGMSG(("The session owner (%s) left!", buddyDBusAddress.utf8_str()));
-		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-		return true;
-	}
+	BuddyPtr pBuddy = getBuddy(buddyDBusAddress);
+	UT_return_val_if_fail(pBuddy, false);
 
-	return false;
+	pManager->removeBuddy(pBuddy, false);
+	
+	// TODO: shouldn't we remove this buddy from our own buddy list?	
+
+	return true;
 }
 
 void SugarAccountHandler::forceDisconnectBuddy(BuddyPtr pBuddy)
@@ -606,22 +585,10 @@ static bool s_buddyLeft(AV_View* v, EV_EditMethodCallData *d)
 	UT_UTF8String buddyPath(d->m_pData, d->m_dataLength);
 	UT_DEBUGMSG(("Removing buddy with dbus path %s\n", buddyPath.utf8_str()));
 
-	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	UT_return_val_if_fail(pManager, false);
-
 	SugarAccountHandler* pHandler = SugarAccountHandler::getHandler();
 	UT_return_val_if_fail(pHandler, false);
 
-	if (pHandler->isLocallyControlled())
-	{
-		return pHandler->disjoinBuddy(pView, buddyPath);
-	}
-	else
-	{
-		// not much we can do here, but cry; kill off the entire handler
-		pManager->destroyAccount(pHandler);
-		return true;
-	}
+	return pHandler->disjoinBuddy(pView, buddyPath);
 }
 
 DBusHandlerResult s_dbus_handle_message(DBusConnection *connection, DBusMessage *message, void *user_data)

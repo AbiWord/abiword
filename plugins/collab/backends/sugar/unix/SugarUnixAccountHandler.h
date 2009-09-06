@@ -60,8 +60,6 @@ public:
 	virtual ConnectResult					connect();
 	virtual bool							disconnect();
 	virtual bool							isOnline();
-	bool									isLocallyControlled()
-		{ return m_bLocallyControlled; }
 	
 	// user management
 	virtual BuddyPtr						constructBuddy(const PropertyMap& props);
@@ -110,7 +108,7 @@ protected:
 private:
 	static SugarAccountHandler* 			m_pHandler;
 	DBusConnection*							m_pTube;
-	bool									m_bLocallyControlled;
+	bool									m_bIsInSession;
 	std::set<UT_UTF8String>					m_ignoredBuddies;
 	UT_UTF8String							m_sSessionId;
 };
