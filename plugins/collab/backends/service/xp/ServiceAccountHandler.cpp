@@ -1354,6 +1354,12 @@ void ServiceAccountHandler::signal(const Event& event, BuddyPtr pSource)
 			{
 				UT_DEBUGMSG(("Got a PCT_DisjoinSessionEvent, disconnecting the realm connection...\n"));
 				const DisjoinSessionEvent dse = static_cast<const DisjoinSessionEvent&>(event);
+				// check if this event came from this account in the first place
+				if (pSource && pSource->getHandler() != this)
+				{
+					// nope, a session was closed on some other account; ignore this...
+					return;
+				}
 				UT_return_if_fail(!pSource); // we shouldn't receive these events over the wire on this backend
 				ConnectionPtr connection_ptr = _getConnection(dse.getSessionId().utf8_str());
 				UT_return_if_fail(connection_ptr);
