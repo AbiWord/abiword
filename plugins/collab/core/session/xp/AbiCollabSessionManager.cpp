@@ -834,7 +834,7 @@ void AbiCollabSessionManager::joinSession(const UT_UTF8String& sSessionId, PD_Do
 	UT_return_if_fail(pDoc);
 	UT_return_if_fail(pAclAccount);
 	
-	if (pAclAccount->getStaticStorageType() == "com.abisource.abiword.abicollab.backend.sugar")
+	if (pAclAccount->getStorageType() == "com.abisource.abiword.abicollab.backend.sugar")
 	{
 		// HACK, remove this some day: the sugar backend should just pass us a frame to use
 		pFrame = XAP_App::getApp()->getLastFocussedFrame();
