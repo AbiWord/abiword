@@ -11826,6 +11826,7 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 //
 	if(!isEnd)
 	{
+		UT_return_val_if_fail(m_pEditShadow->getFirstLayout(), false);
 		posEOD = m_pEditShadow->getFirstLayout()->getPosition();
 		return true;
 	}
