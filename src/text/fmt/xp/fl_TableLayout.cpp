@@ -342,6 +342,10 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 		{
 			pUpCon = pUPCL->getLastContainer();
 		}
+		if(pUpCon == NULL)
+		{
+			pUpCon = pUPCL->getNewContainer(NULL);
+		}
 		UT_ASSERT(pUpCon);
 	}
 	else if((pUPCL->getContainerType() == FL_CONTAINER_HDRFTR) || (pUPCL->getContainerType() == FL_CONTAINER_SHADOW) || (pUPCL->getContainerType() == FL_CONTAINER_FRAME))
@@ -369,7 +373,6 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 		xxx_UT_DEBUGMSG(("SEVIOR!!!!!!!!!! New Table %x added into %x \n",pNewTab,pUpCon));
 		pUpCon->addCon(pNewTab);
 		pNewTab->setContainer(pUpCon);
-;
 	}
 	else
 	{
