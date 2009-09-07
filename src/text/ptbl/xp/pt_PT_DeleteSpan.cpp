@@ -460,10 +460,10 @@ bool pt_PieceTable::_fixHdrFtrReferences(const gchar * pszHdrType, const gchar *
 				{
 					const gchar* pAttrs [3];
 					pAttrs[0] = pszHdrType;
-					pAttrs[1] = "";
+					pAttrs[1] = pszMyHdrId2;
 					pAttrs[2] = NULL;
 
-					bRet &= _fmtChangeStruxWithNotify(PTC_SetFmt, (pf_Frag_Strux*)pFrag,
+					bRet &= _fmtChangeStruxWithNotify(PTC_RemoveFmt, (pf_Frag_Strux*)pFrag,
 													  pAttrs, NULL, false);
 				}
 			}
