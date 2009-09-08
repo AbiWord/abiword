@@ -7,7 +7,8 @@ plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = garble.la
 
 garble_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(GARBLE_LIBS) -lpng12 -ljpeg
 
 garble_la_LDFLAGS = \
 	$(GARBLE_LIBS) \
@@ -16,6 +17,7 @@ garble_la_LDFLAGS = \
 	-no-undefined
 
 garble_la_SOURCES = 
+nodist_EXTRA_garble_la_SOURCES = dummy.cpp
 
 if TOOLKIT_WIN
 
@@ -30,7 +32,7 @@ CLEANFILES = \
 .libs/garble.a: garble.la
 
 garble.dll: .libs/garble.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(GARBLE_LIBS)
+	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(GARBLE_LIBS) -lpng12 -ljpeg
 
 endif # TOOLKIT_WIN
 endif
