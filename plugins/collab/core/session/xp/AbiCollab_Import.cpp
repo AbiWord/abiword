@@ -531,8 +531,7 @@ bool ABI_Collab_Import::import(const SessionPacket& packet, BuddyPtr collaborato
 }
 
 /*!
- * Take a packet contained with a UT_UTF8string, interpret it's
- * contents and apply the implied operations on the document.
+ * Take a packet, interpret it's contents and apply the implied operations on the document.
  */
 bool ABI_Collab_Import::_import(const SessionPacket& packet, UT_sint32 iImportAdjustment, BuddyPtr pCollaborator, bool inGlob)
 {
