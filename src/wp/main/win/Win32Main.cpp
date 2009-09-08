@@ -36,7 +36,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	}
     else
     {
-		typedef WINBOOL (WINAPI * AttachConsole_t) (DWORD);
+		typedef BOOL (WINAPI * AttachConsole_t) (DWORD);
 
 		AttachConsole_t p_AttachConsole =
 			(AttachConsole_t) GetProcAddress (GetModuleHandle ("kernel32.dll"), "AttachConsole");
