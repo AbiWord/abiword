@@ -21,11 +21,36 @@
 #include "config.h"
 #endif
 
+#include <io.h>
 #include <windows.h>
 #include "ap_Win32App.h"
 
 int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     PSTR szCmdLine, int iCmdShow)
 {
+#ifdef _WIN32
+	if (fileno (stdout) != -1 &&
+		_get_osfhandle (fileno (stdout)) != -1)
+	{
+		/* stdout is fine, presumably redirected to a file or pipe */
+	}
+    else
+    {
+		typedef BOOL (* WINAPI AttachConsole_t) (DWORD);
+
+		AttachConsole_t p_AttachConsole =
+			(AttachConsole_t) GetProcAddress (GetModuleHandle ("kernel32.dll"), "AttachConsole");
+
+		if (p_AttachConsole != NULL && p_AttachConsole (ATTACH_PARENT_PROCESS))
+		{
+			freopen ("CONOUT$", "w", stdout);
+			dup2 (fileno (stdout), 1);
+			freopen ("CONOUT$", "w", stderr);
+			dup2 (fileno (stderr), 2);
+
+		}
+	}
+#endif
+
 	return AP_Win32App::WinMain("AbiWord", hInstance, hPrevInstance, szCmdLine, iCmdShow);
 }
