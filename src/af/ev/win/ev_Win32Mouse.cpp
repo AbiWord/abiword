@@ -80,6 +80,7 @@ void EV_Win32Mouse::onButtonDown(AV_View * pView,
 	case EV_EEMR_COMPLETE:
 		UT_ASSERT(pEM);
 		invokeMouseMethod(pView,pEM,x,y);
+		signal(emc|EV_EMO_SINGLECLICK|emb|ems, x, y);
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.
@@ -147,6 +148,7 @@ void EV_Win32Mouse::onButtonMove(AV_View * pView,
 	case EV_EEMR_COMPLETE:
 		UT_ASSERT(pEM);
 		invokeMouseMethod(pView,pEM,x,y);
+		signal(emc|mop|emb|ems, x, y);
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.
@@ -201,6 +203,7 @@ void EV_Win32Mouse::onButtonUp(AV_View * pView,
 	case EV_EEMR_COMPLETE:
 		UT_ASSERT(pEM);
 		invokeMouseMethod(pView,pEM,x,y);
+		signal(emc|mop|m_embCaptured|ems, x, y);
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.
@@ -255,6 +258,7 @@ void EV_Win32Mouse::onDoubleClick(AV_View * pView,
 	case EV_EEMR_COMPLETE:
 		UT_ASSERT(pEM);
 		invokeMouseMethod(pView,pEM,x,y);
+		signal(emc|EV_EMO_DOUBLECLICK|emb|ems, x, y);
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.
@@ -298,6 +302,7 @@ void EV_Win32Mouse::onButtonWheel(AV_View * pView, HWND /*hWnd*/, EV_EditMouseBu
 	case EV_EEMR_COMPLETE:
 		UT_ASSERT(pEM);
 		invokeMouseMethod(pView,pEM,x,y);
+		signal(emc|mop|emb|ems, x, y);
 		return;
 
 	case EV_EEMR_INCOMPLETE:		
