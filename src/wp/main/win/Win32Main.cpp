@@ -28,7 +28,7 @@
 int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     PSTR szCmdLine, int iCmdShow)
 {
-#ifdef __MINGW32__
+#ifdef _WIN32
 	if (fileno (stdout) != -1 &&
 		_get_osfhandle (fileno (stdout)) != -1)
 	{
@@ -36,7 +36,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	}
     else
     {
-		typedef BOOL (* WINAPI AttachConsole_t) (DWORD);
+		typedef WINBOOL (WINAPI * AttachConsole_t) (DWORD);
 
 		AttachConsole_t p_AttachConsole =
 			(AttachConsole_t) GetProcAddress (GetModuleHandle ("kernel32.dll"), "AttachConsole");
