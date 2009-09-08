@@ -28,7 +28,7 @@
 int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     PSTR szCmdLine, int iCmdShow)
 {
-#ifdef _WIN32
+#ifdef __MINGW32__
 	if (fileno (stdout) != -1 &&
 		_get_osfhandle (fileno (stdout)) != -1)
 	{
