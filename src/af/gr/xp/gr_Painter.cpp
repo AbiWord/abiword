@@ -24,40 +24,32 @@
 #include "gr_Painter.h"
 #include "gr_Graphics.h"
 
-GR_Painter::GR_Painter (GR_Graphics * pGr)
+GR_Painter::GR_Painter (GR_Graphics * pGr, bool bDisableCarets)
 	: m_pGr (pGr),
-		m_pCaretDisabler(NULL)
+	m_bCaretsDisabled(bDisableCarets)
 {
 	UT_ASSERT (m_pGr);
-	m_pCaretDisabler = new GR_CaretDisabler(m_pGr->getCaret());
-	UT_sint32 i = 0;
-	GR_Caret * pCaret = pGr->getNthCaret(i);
-	while(pCaret)
+
+	if (m_bCaretsDisabled)
 	{
-	    GR_CaretDisabler * pCaretDisabler = new GR_CaretDisabler(pCaret);
-	    m_vecDisablers.addItem(pCaretDisabler);
-	    i++;
-	    pCaret = pGr->getNthCaret(i);
+		AllCarets* pAc = pGr->allCarets();
+		if (pAc)
+			pAc->disable();
 	}
-	m_pGr->beginPaint ();
-}
 
-
-GR_Painter::GR_Painter (GR_Graphics * pGr, bool bCaret)
-	: m_pGr (pGr),
-		m_pCaretDisabler(NULL)
-{
-	UT_ASSERT (m_pGr);
-	if(bCaret)
-	  m_pCaretDisabler = NULL;
 	m_pGr->beginPaint ();
 }
 
 GR_Painter::~GR_Painter ()
 {
 	m_pGr->endPaint ();
-	DELETEP(m_pCaretDisabler);
-	UT_VECTOR_PURGEALL(GR_CaretDisabler *, m_vecDisablers);
+
+	if (m_bCaretsDisabled)
+	{
+		AllCarets* pAc = m_pGr->allCarets();
+		if (pAc)
+			pAc->enable();
+	}
 }
 
 void GR_Painter::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)

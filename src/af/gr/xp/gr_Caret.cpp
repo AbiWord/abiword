@@ -336,7 +336,7 @@ void GR_Caret::_blink(bool bExplicit)
 		return;
 
 	m_bRecursiveDraw = true;
-	GR_Painter painter (m_pG,true);
+	GR_Painter painter (m_pG, false);
 	m_bRecursiveDraw = false;
 
 	// After any autoblink, we want there to be BLINK_TIME 

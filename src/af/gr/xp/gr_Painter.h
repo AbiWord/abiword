@@ -27,8 +27,7 @@ class ABI_EXPORT GR_Painter
 {
 public:
 
-	GR_Painter (GR_Graphics * pGr);
-	GR_Painter (GR_Graphics * pGr, bool bCaret);
+	GR_Painter (GR_Graphics * pGr, bool bDisableCarets = true);
 	~GR_Painter ();
 
 	void drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2);
@@ -83,8 +82,7 @@ private:
 	GR_Painter& operator=(const GR_Painter & rhs);
 
 	GR_Graphics * m_pGr;
-	GR_CaretDisabler * m_pCaretDisabler;
-	UT_GenericVector<GR_CaretDisabler *> m_vecDisablers;
+	bool m_bCaretsDisabled;
 };
 
 #endif // GR_PAINTER_H
