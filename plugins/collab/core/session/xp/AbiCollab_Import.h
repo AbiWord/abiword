@@ -74,7 +74,7 @@ private:
 	bool								_handleCollision(UT_sint32 iIncommingRev, UT_sint32 iLocalRev, BuddyPtr pCollaborator);
 	bool								_shouldIgnore(BuddyPtr pCollaborator);
 	void								_disableUpdates(UT_GenericVector<AV_View *>& vecViews, bool bIsGlob);
-	void								_enableUpdates(UT_GenericVector<AV_View *>& vecViews, bool bIsGlob);
+	void								_enableUpdates(UT_GenericVector<AV_View *> vecViews, bool bIsGlob);
 	bool								_import(const SessionPacket& packet, UT_sint32 iImportAdjustment, BuddyPtr pCollaborator, bool inGlob = false);
 
 	PD_Document*						m_pDoc;

@@ -425,7 +425,7 @@ void ABI_Collab_Import::_disableUpdates(UT_GenericVector<AV_View *>& vecViews, b
 	}
 }
 
-void ABI_Collab_Import::_enableUpdates(UT_GenericVector<AV_View *>& vecViews, bool bIsGlob)
+void ABI_Collab_Import::_enableUpdates(UT_GenericVector<AV_View *> vecViews, bool bIsGlob)
 {
 	if (bIsGlob)
 	{
