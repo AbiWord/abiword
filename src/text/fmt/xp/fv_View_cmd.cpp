@@ -3360,30 +3360,29 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const gch
 
 bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 {
-  //
-  // Look if we should insert a pargraph before the table
-  //
-        if(m_bInsertAtTablePending && (count==1) && (text[0] != UCS_FF) && (text[0] != UCS_VTAB))
-	{
-
-	        m_pDoc->beginUserAtomicGlob();
-
-	// Prevent access to Piecetable for things like spellchecks until
-	// paragraphs have stablized
 	//
+	// Look if we should insert a pargraph before the table
+	//
+	if(m_bInsertAtTablePending && (count==1) && (text[0] != UCS_FF) && (text[0] != UCS_VTAB))
+	{
+		m_pDoc->beginUserAtomicGlob();
+
+		// Prevent access to Piecetable for things like spellchecks until
+		// paragraphs have stablized
+		//
 		_saveAndNotifyPieceTableChange();
 		m_pDoc->disableListUpdates();
 		PT_DocPosition pos = m_iPosAtTable;
-	        m_pDoc->insertStrux( m_iPosAtTable,PTX_Block);
+		m_pDoc->insertStrux( m_iPosAtTable,PTX_Block);
 		m_bInsertAtTablePending = false;
 
-	// Signal piceTable is stable again
+		// Signal piceTable is stable again
 		_restorePieceTableState();
 
-	// Signal piceTable is stable again
-	// Signal PieceTable Changes have finished
+		// Signal piceTable is stable again
+		// Signal PieceTable Changes have finished
 		_generalUpdate();
-	// restore updates and clean up dirty lists
+		// restore updates and clean up dirty lists
 		m_pDoc->enableListUpdates();
 		m_pDoc->updateDirtyLists();
 		setPoint(pos+1);
@@ -3393,6 +3392,7 @@ bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForc
 		m_pDoc->endUserAtomicGlob();
 		return res;
 	}
+
 	// the code below inserts a direction marker before a space if the automatic insertion of such
 	// markers is indicated by user's preferences and if the current keyboard language direction is
 	// inconsistent with the dominant direction of the paragraph (this makes phone numbers and similar
@@ -3449,27 +3449,28 @@ bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForc
 	}
 	else if(count == 1 && text[0] == UCS_FF)
 	{
-	       m_pDoc->beginUserAtomicGlob();
-	       bool b = _charInsert(text, count, bForce);
-	       if(b)
-	       {
-		     insertParagraphBreak();
-	       }
-	       m_pDoc->endUserAtomicGlob();
-	       return b;
+		m_pDoc->beginUserAtomicGlob();
+		bool b = _charInsert(text, count, bForce);
+		if(b)
+		{
+			insertParagraphBreak();
+		}
+		m_pDoc->endUserAtomicGlob();
+		return b;
 	}
 	else if(count == 1 && text[0] == UCS_VTAB)
 	{
-	       m_pDoc->beginUserAtomicGlob();
-	       bool b = _charInsert(text, count, bForce);
-	       if(b)
-	       {
-		     insertParagraphBreak();
-	       }
-	       m_pDoc->endUserAtomicGlob();
-	       return b;
+		m_pDoc->beginUserAtomicGlob();
+		bool b = _charInsert(text, count, bForce);
+		if(b)
+		{
+			insertParagraphBreak();
+		}
+		m_pDoc->endUserAtomicGlob();
+		return b;
 	}
-   normal_insert:
+
+normal_insert:
 	return _charInsert(text, count, bForce);
 }
 
