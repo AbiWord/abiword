@@ -178,6 +178,7 @@ public:
 
 	// mouse listener functionality
 	virtual void						signalMouse(EV_EditBits eb, UT_sint32 xPos, UT_sint32 yPos);
+	virtual void						removeMouse(EV_Mouse* pMouse);
 
 protected:
 	// TODO: make all Packets shared pointers, so this isn't needed anymore
@@ -249,8 +250,9 @@ private:
 	
 	SessionRecorderInterface*			m_pRecorder;
 
-	UT_sint32							m_iMouseLID;
+	std::map<EV_Mouse*, UT_sint32>		m_mMouseListenerIds;
 	bool								m_bDoingMouseDrag;
+
 	std::vector<std::pair<SessionPacket*,BuddyPtr> >
 										m_vIncomingQueue;
 

@@ -40,6 +40,10 @@ EV_Mouse::EV_Mouse(EV_EditEventMapper * pEEM):
 	setEditEventMap(pEEM);
 }
 
+EV_Mouse::~EV_Mouse()
+{
+	removeListeners();
+}
 
 void EV_Mouse::clearMouseContext(void)
 {
@@ -103,4 +107,15 @@ void EV_Mouse::unregisterListener(UT_sint32 iListenerId)
 	UT_return_if_fail(iListenerId >= 0);
 	UT_return_if_fail(iListenerId >= 0 && iListenerId < static_cast<UT_sint32>(m_listeners.size()));	
 	m_listeners[iListenerId] = NULL;
+}
+
+void EV_Mouse::removeListeners()
+{
+	for (UT_uint32 i = 0; i < m_listeners.size(); i++)
+	{
+		EV_MouseListener* pListener = m_listeners[i];
+		UT_continue_if_fail(pListener);
+		pListener->removeMouse(this);
+	}
+	m_listeners.clear();
 }

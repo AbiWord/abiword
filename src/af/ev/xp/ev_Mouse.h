@@ -36,6 +36,8 @@ class ABI_EXPORT EV_Mouse
 {
 public:
 	EV_Mouse(EV_EditEventMapper * pEEM);
+	~EV_Mouse();
+
 	bool invokeMouseMethod(AV_View * pView,
 							  EV_EditMethod * pEM,
 							  UT_sint32 xPos,
@@ -47,6 +49,7 @@ public:
 	void signal(EV_EditBits eb, UT_sint32 xPos, UT_sint32 yPos);
 	UT_sint32 registerListener(EV_MouseListener* pListener);
 	void unregisterListener(UT_sint32 iListenerId);
+	void removeListeners();
 protected:
 	EV_EditEventMapper *	m_pEEM;
 	UT_uint32			m_clickState;	/* {NoClick,SingleClick,DoubleClick} */

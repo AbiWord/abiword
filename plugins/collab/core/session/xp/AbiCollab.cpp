@@ -95,7 +95,6 @@ AbiCollab::AbiCollab(PD_Document* pDoc,
 	m_pActivePacket(NULL),
 	m_bIsReverting(false),
 	m_pRecorder(NULL),
-	m_iMouseLID(-1),
 	m_bDoingMouseDrag(false),
 	m_eTakeoveState(STS_NONE),
 	m_bProposedController(false),
@@ -138,7 +137,6 @@ AbiCollab::AbiCollab(const UT_UTF8String& sSessionId,
 	m_pActivePacket(NULL),
 	m_bIsReverting(false),
 	m_pRecorder(NULL),
-	m_iMouseLID(-1),
 	m_bDoingMouseDrag(false),
 	m_eTakeoveState(STS_NONE),
 	m_bProposedController(false),
@@ -169,38 +167,18 @@ AbiCollab::~AbiCollab(void)
 {
 	UT_DEBUGMSG(("AbiCollab::~AbiCollab()\n"));
 	
-/*
-	We should unregister ourselves as a mouse listener here, but
-	the following sequence needs to be handled before we can do that:
-
-	-> XAP_UnixFrameImpl::_fe::delete_event
-	-> ...
-	-> AP_UnixFrame::~AP_UnixFrame()
-	-> XAP_Frame::~XAP_Frame()
-			DELETEP(m_pFrameImpl);   <== kills off EV_Mouse
-			DELETEP(m_pViewListener);
-			DELETEP(m_pView);
-			UNREFP(m_pDoc);
-				-> removeConnections() <== will lead to ~AbiCollab destructor
-
-	if (m_iMouseLID != -1)
+	for (std::map<EV_Mouse*, UT_sint32>::iterator cit = m_mMouseListenerIds.begin(); cit != m_mMouseListenerIds.end(); cit++)
 	{
-		
-		// FIXME: we should do this for all frames that display this document!
-		if (m_pFrame)
-		{
-			EV_Mouse* pMouse = m_pFrame->getMouse();
-			if (pMouse)
-				pMouse->unregisterListener(m_iMouseLID);
-		}
+		EV_Mouse* pMouse = (*cit).first;
+		UT_sint32 iListenerId = (*cit).second;
+		pMouse->unregisterListener(iListenerId);
 	}
-*/
+	m_mMouseListenerIds.clear();
 	
 	if (m_iDocListenerId != 0)
 		m_pDoc->removeListener(m_iDocListenerId);
 	m_iDocListenerId = 0;
-	
-	
+
 	DELETEP(m_pRecorder);
 }
 
@@ -319,16 +297,10 @@ void AbiCollab::_setDocument(PD_Document* pDoc, XAP_Frame* pFrame)
 	m_pDoc = pDoc;
 
 	// register ourselves as a mouse listener
-	// FIXME: we should do this for all frames that display this document!
+	// FIXME: we should do this for all frames that display this document
 	EV_Mouse* pMouse = pFrame->getMouse();
 	if (pMouse)
-    {
-		m_iMouseLID = pMouse->registerListener(this);
-    }
-	else
-    {
-		UT_DEBUGMSG(("No current frame!\n"));
-    }
+		m_mMouseListenerIds[pMouse] = pMouse->registerListener(this);
 
 	// add the new export listeners
 	UT_uint32 lid = 0;
@@ -678,6 +650,12 @@ void AbiCollab::signalMouse(EV_EditBits eb, UT_sint32 /*xPos*/, UT_sint32 /*yPos
 			_releaseMouseDrag();
 			break;
 	}
+}
+
+void AbiCollab::removeMouse(EV_Mouse* pMouse)
+{
+	UT_return_if_fail(pMouse);
+	m_mMouseListenerIds.erase(pMouse);
 }
 
 void AbiCollab::_releaseMouseDrag()
