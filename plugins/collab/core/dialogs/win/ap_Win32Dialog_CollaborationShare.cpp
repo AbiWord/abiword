@@ -344,11 +344,13 @@ void AP_Win32Dialog_CollaborationShare::_freeBuddyList()
 		lviBuddy.mask = LVIF_PARAM;
 		lviBuddy.iItem = i;
 		lviBuddy.iSubItem = 0;
-		if (ListView_GetItem(m_hBuddyList, &lviBuddy))
-		{
-			BuddyPtrWrapper* buddy_wrapper = reinterpret_cast<BuddyPtrWrapper*>(lviBuddy.lParam);
-			DELETEP(buddy_wrapper);
-		}
+		UT_continue_if_fail(ListView_GetItem(m_hBuddyList, &lviBuddy));
+
+		BuddyPtrWrapper* buddy_wrapper = reinterpret_cast<BuddyPtrWrapper*>(lviBuddy.lParam);
+		DELETEP(buddy_wrapper);
+
+		lviBuddy.lParam = (LPARAM)NULL;
+		UT_continue_if_fail(ListView_SetItem(m_hBuddyList, &lviBuddy));
 	}
 
 	ListView_DeleteAllItems(m_hBuddyList);
