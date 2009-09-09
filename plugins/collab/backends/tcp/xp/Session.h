@@ -26,6 +26,9 @@
 #include <sync/xp/lock.h>
 #include <sync/xp/Synchronizer.h>
 
+// 64MB seems reasonable enough for now...
+#define MAX_PACKET_DATA_SIZE 64*1024*1024
+
 class TCPAccountHandler;
 
 class Session : public Synchronizer, public boost::noncopyable, public boost::enable_shared_from_this<Session>
@@ -166,6 +169,13 @@ private:
 		{
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			disconnect(); // TODO: should not happen, handle this
+			return;
+		}
+
+		if (packet_size < 0 || packet_size > MAX_PACKET_DATA_SIZE)
+		{
+			UT_DEBUGMSG(("Packet size (%d bytes) error - min size: 0, max size %d\n", packet_size, MAX_PACKET_DATA_SIZE));
+			disconnect();
 			return;
 		}
 		
