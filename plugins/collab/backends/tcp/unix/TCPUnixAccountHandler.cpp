@@ -37,7 +37,6 @@ TCPUnixAccountHandler::TCPUnixAccountHandler()
 	client_button(NULL),
 	server_entry(NULL),
 	port_button(NULL),
-	ssl_button(NULL),
 	autoconnect_button(NULL)
 {
 }
@@ -47,7 +46,7 @@ void TCPUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	UT_DEBUGMSG(("TCPUnixAccountHandler::embedDialogWidgets()\n"));
 	UT_return_if_fail(pEmbeddingParent);
 
-	vbox = gtk_vbox_new(FALSE, 6);
+	vbox = gtk_vbox_new(FALSE, 5);
 	GtkVBox* parent = (GtkVBox*)pEmbeddingParent;
 	
 	// host a session (we should really use a GtkAction for this)
@@ -86,12 +85,6 @@ void TCPUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(port_button), DEFAULT_TCP_PORT);
 	gtk_box_pack_start(GTK_BOX(portHBox), port_button, false, false, 0);
 	gtk_box_pack_start(GTK_BOX(vbox), portHBox, false, false, 0);
-	
-	// ssl
-	ssl_button = gtk_check_button_new_with_label("Use a secure connection (SSL)");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(ssl_button), false);
-	gtk_box_pack_start(GTK_BOX(vbox), ssl_button, TRUE, TRUE, 0);	
-	gtk_widget_set_sensitive(ssl_button, false); // not supported for now
 	
 	// autoconnect
 	autoconnect_button = gtk_check_button_new_with_label("Connect on application startup");

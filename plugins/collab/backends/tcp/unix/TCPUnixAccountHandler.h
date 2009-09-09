@@ -41,7 +41,6 @@ private:
 	GtkWidget*								client_button;
 	GtkWidget*								server_entry;
 	GtkWidget*								port_button;
-	GtkWidget*								ssl_button;
 	GtkWidget*								autoconnect_button;
 };
 
