@@ -56,7 +56,6 @@ private:
 	HWND									m_hServerLabel;
 	HWND									m_hPortLabel;
 	HWND									m_hAutoconnectCheck;
-	HWND									m_hUseSecureCheck;
 	
 	void									_checkButtonHwnd(HWND hCtrl, bool bChecked);
 	bool									_isCheckedHwnd(HWND hCtrl);

@@ -110,8 +110,7 @@ TCPWin32AccountHandler::TCPWin32AccountHandler()
 	m_hJoinRadio(NULL),
 	m_hServerLabel(NULL),
 	m_hPortLabel(NULL),
-	m_hAutoconnectCheck(NULL),
-	m_hUseSecureCheck(NULL)
+	m_hAutoconnectCheck(NULL)
 {
 	AbiCollabSessionManager * pSessionManager = AbiCollabSessionManager::getManager();
 	if (pSessionManager)
@@ -164,14 +163,9 @@ void TCPWin32AccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	80, 85, 60, 20, hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_PORTENTRY,  m_hInstance, 0);
 	UT_return_if_fail(m_hPortEntry);
 	
-	// Checkbox for future secure support - currently disabled
-	m_hUseSecureCheck = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "BUTTON", "Use Secure Connection", BS_CHECKBOX | BS_AUTOCHECKBOX | WS_CHILD | WS_VISIBLE | WS_DISABLED | WS_TABSTOP | WS_GROUP,
-	14, 115, 174, 15, hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_USESECURECHECK,  m_hInstance, 0);
-	UT_return_if_fail(m_hUseSecureCheck);
-	
 	// Checkbox for Connect on Startup
-	m_hAutoconnectCheck = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "BUTTON", "Connect Automatically", BS_CHECKBOX | BS_AUTOCHECKBOX | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_GROUP,
-	14, 135, 172, 15 , hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_AUTOCONNECTCHECK,  m_hInstance, 0);
+	m_hAutoconnectCheck = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "BUTTON", "Connect on Application Startup", BS_CHECKBOX | BS_AUTOCHECKBOX | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_GROUP,
+	14, 115, 174, 15, hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_AUTOCONNECTCHECK,  m_hInstance, 0);
 	UT_return_if_fail(m_hAutoconnectCheck);
 	
 	// Font setting code borrowed from XAP_Win32Dlg_About
@@ -181,7 +175,7 @@ void TCPWin32AccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	lf.lfWeight = 0;
 	HFONT hfontPrimary = CreateFontIndirect(&lf);
 	HWND rgFontReceivers[] =
-		{ m_hServerRadio, m_hJoinRadio, m_hServerLabel, m_hPortLabel, m_hServerEntry, m_hPortEntry, m_hAutoconnectCheck, m_hUseSecureCheck};
+		{ m_hServerRadio, m_hJoinRadio, m_hServerLabel, m_hPortLabel, m_hServerEntry, m_hPortEntry, m_hAutoconnectCheck};
 	for (UT_uint32 iWnd = 0; iWnd < G_N_ELEMENTS(rgFontReceivers); iWnd++)
 		SendMessage(rgFontReceivers[iWnd], WM_SETFONT, (WPARAM) hfontPrimary, 0);
 	
@@ -210,8 +204,7 @@ void TCPWin32AccountHandler::removeDialogWidgets(void* pEmbeddingParent)
 	DESTROY_WINDOW(m_hServerRadio);
 	DESTROY_WINDOW(m_hJoinRadio);
 	DESTROY_WINDOW(m_hAutoconnectCheck);
-	DESTROY_WINDOW(m_hUseSecureCheck);
-	
+
 	// destroying a window does not repaint the area it owned, so do it here
 	RedrawWindow(GetParent(hBox), NULL, NULL, RDW_ERASE | RDW_INVALIDATE | RDW_UPDATENOW);
 }
