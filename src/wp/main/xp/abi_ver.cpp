@@ -28,9 +28,9 @@
 #define ABI_BUILD_ID		"unknown"
 #endif /* ABI_BUILD_ID */
 
-#ifndef ABI_BUILD_VERSION
-#define ABI_BUILD_VERSION		""
-#endif /* ABI_BUILD_VERSION */
+#ifndef PACKAGE_VERSION
+#define PACKAGE_VERSION		""
+#endif /* PACKAGE_VERSION */
 
 #ifndef ABI_BUILD_OPTIONS
 #define ABI_BUILD_OPTIONS		""
@@ -42,7 +42,7 @@
 
 const char* XAP_App::s_szBuild_ID = ABI_BUILD_ID;
 const char* XAP_App::s_szAbiSuite_Home = ABIWORD_DATADIR;
-const char* XAP_App::s_szBuild_Version = ABI_BUILD_VERSION;
+const char* XAP_App::s_szBuild_Version = PACKAGE_VERSION;
 const char* XAP_App::s_szBuild_Options = ABI_BUILD_OPTIONS;
 const char* XAP_App::s_szBuild_Target = ABI_BUILD_TARGET;
 const char* XAP_App::s_szBuild_CompileTime = __TIME__;
