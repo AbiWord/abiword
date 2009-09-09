@@ -111,15 +111,43 @@ ConnectResult TCPAccountHandler::connect()
 	}
 	else
 	{
+		UT_DEBUGMSG(("Connecting to server %s on port %d...\n", getProperty("server").c_str(), _getPort(getProperties())));
+
 		try
 		{
-			UT_DEBUGMSG(("Connecting to server %s on port %d...\n", getProperty("server").c_str(), _getPort(getProperties())));
-			boost::shared_ptr<Session> session_ptr(new Session(m_io_service, boost::bind(&TCPAccountHandler::handleEvent, this, _1)));
 			asio::ip::tcp::resolver resolver(m_io_service);
 			asio::ip::tcp::resolver::query query(getProperty("server"), getProperty("port"));
 			asio::ip::tcp::resolver::iterator iterator(resolver.resolve(query));
 
-			session_ptr->connect(iterator);
+			bool connected = false;
+			boost::shared_ptr<Session> session_ptr(new Session(m_io_service, boost::bind(&TCPAccountHandler::handleEvent, this, _1)));
+			while (iterator != tcp::resolver::iterator())
+			{
+				try
+				{
+					UT_DEBUGMSG(("Attempting to connect...\n"));
+					session_ptr->connect(iterator);
+					UT_DEBUGMSG(("Connected!\n"));
+					connected = true;
+					break;
+				}
+				catch (asio::system_error se)
+				{
+					UT_DEBUGMSG(("Connection attempt failed: %s\n", se.what()));
+					// make sure we close the socket after a failed attempt, as it
+					// may have been opened by the connect() call.
+					try { session_ptr->getSocket().close(); } catch(...) {}
+				}
+				iterator++;
+			}
+
+			if (!connected)
+			{
+				UT_DEBUGMSG(("Giving up to connecting to server!\n"));
+				_teardownAndDestroyHandler();
+				return CONNECT_FAILED;
+			}
+
 			session_ptr->asyncReadHeader();
 			m_bConnected = true; // todo: ask it to the socket
 			// Add a buddy
@@ -131,7 +159,7 @@ ConnectResult TCPAccountHandler::connect()
 		}
 		catch (asio::system_error se)
 		{
-			UT_DEBUGMSG(("Failed to connect to server: %s\n", se.what()));
+			UT_DEBUGMSG(("Failed to resolve %s:%d: %s\n", getProperty("server").c_str(), _getPort(getProperties()), se.what()));
 			_teardownAndDestroyHandler();
 			return CONNECT_FAILED;
 		}
