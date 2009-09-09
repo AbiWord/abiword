@@ -106,8 +106,7 @@ public:
 	AbiCollab(PD_Document* pDoc,
 					const UT_UTF8String& sSessionId, 
 					AccountHandler* pAclAccount,
-					bool bLocallyOwned,
-					XAP_Frame* pFrame);
+					bool bLocallyOwned);
 
 	// slave constructor
 	AbiCollab(const UT_UTF8String& sSessionId, 
@@ -116,8 +115,7 @@ public:
 					UT_sint32 iRev,
 					BuddyPtr pControler,
 					AccountHandler* pAclAccount,
-					bool m_bLocallyOwned,
-					XAP_Frame* pFrame);
+					bool m_bLocallyOwned);
 
 	virtual ~AbiCollab();
 
@@ -156,8 +154,6 @@ public:
 	// document management
 	PD_Document*						getDocument(void) const
 		{ return m_pDoc; }
-	XAP_Frame*							getFrame(void) const
-		{ return m_pFrame; }
 
 	const UT_UTF8String					getSessionId() const
 		{ return m_sId; }
@@ -203,7 +199,7 @@ private:
 
 
 	// document management
-	void								_setDocument(PD_Document* pDoc, XAP_Frame* pFrame);
+	void								_setDocument(PD_Document* pDoc);
 	void								_setDocListenerId(UT_uint32 iDocListenerId)
 		{ m_iDocListenerId = iDocListenerId; }
 	
@@ -226,7 +222,6 @@ private:
 	void								_pushOutgoingQueue();
 
 	PD_Document *						m_pDoc;
-	XAP_Frame*							m_pFrame;
 	ABI_Collab_Import					m_Import;
 	ABI_Collab_Export					m_Export;
 

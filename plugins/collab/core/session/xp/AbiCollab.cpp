@@ -79,11 +79,9 @@ ChangeAdjust::~ChangeAdjust()
 AbiCollab::AbiCollab(PD_Document* pDoc, 
 						const UT_UTF8String& sSessionId, 
 						AccountHandler* pAclAccount,
-						bool bLocallyOwned,
-						XAP_Frame* pFrame)
+						bool bLocallyOwned)
 	: EV_MouseListener(),
 	m_pDoc(pDoc),
-	m_pFrame(pFrame),
 	m_Import(this, pDoc),
 	m_Export(this, pDoc),
 	m_pAclAccount(pAclAccount),
@@ -104,7 +102,7 @@ AbiCollab::AbiCollab(PD_Document* pDoc,
 	// TODO: this can be made a lil' more efficient, as setDocument
 	// will create import and export listeners, which is kinda useless
 	// when there is no single collaborator yet
-	_setDocument(pDoc, pFrame);
+	_setDocument(pDoc);
 	
 	m_Import.masterInit();
 	m_Export.masterInit();
@@ -121,11 +119,9 @@ AbiCollab::AbiCollab(const UT_UTF8String& sSessionId,
 						UT_sint32 iRev, 
 						BuddyPtr pController,
 						AccountHandler* pAclAccount,
-						bool bLocallyOwned,
-						XAP_Frame* pFrame)
+						bool bLocallyOwned)
 	: EV_MouseListener(),
 	m_pDoc(pDoc),
-	m_pFrame(pFrame),
 	m_Import(this, pDoc),
 	m_Export(this, pDoc),
 	m_pAclAccount(pAclAccount),
@@ -146,7 +142,7 @@ AbiCollab::AbiCollab(const UT_UTF8String& sSessionId,
 	// TODO: this can be made a lil' more efficient, as setDocument
 	// will create import and export listeners, which is kinda useless
 	// when there is no single collaborator yet
-	_setDocument(pDoc, pFrame);
+	_setDocument(pDoc);
 
 	m_Import.slaveInit(pController, iRev);
 	m_Export.slaveInit(docUUID, iRev);
@@ -281,26 +277,32 @@ void AbiCollab::setAcl(const std::vector<std::string> vAcl)
 	m_vAcl = vAcl;
 }
 
-void AbiCollab::_setDocument(PD_Document* pDoc, XAP_Frame* pFrame)
+void AbiCollab::_setDocument(PD_Document* pDoc)
 {
 	UT_DEBUGMSG(("AbiCollab::setDocument()\n"));
 	UT_return_if_fail(pDoc);
-	UT_return_if_fail(pFrame);
 
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_if_fail(pManager);
 
 	// assume clean state
 	UT_return_if_fail(m_iDocListenerId==0);
-
-	// update the frame
 	m_pDoc = pDoc;
 
-	// register ourselves as a mouse listener
-	// FIXME: we should do this for all frames that display this document
-	EV_Mouse* pMouse = pFrame->getMouse();
-	if (pMouse)
-		m_mMouseListenerIds[pMouse] = pMouse->registerListener(this);
+	// register ourselves as a mouse listener to all frames showing this document
+	for (UT_sint32 i = 0; i < XAP_App::getApp()->getFrameCount(); i++)
+	{
+		XAP_Frame* pFrame = XAP_App::getApp()->getFrame(i);
+		UT_continue_if_fail(pFrame);
+
+		if (pFrame->getCurrentDoc() == m_pDoc)
+		{
+			// this frame is showing our document, attach a mouse listener to it
+			EV_Mouse* pMouse = pFrame->getMouse();
+			if (pMouse)
+				m_mMouseListenerIds[pMouse] = pMouse->registerListener(this);
+		}
+	}
 
 	// add the new export listeners
 	UT_uint32 lid = 0;

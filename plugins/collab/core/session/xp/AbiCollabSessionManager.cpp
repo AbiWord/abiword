@@ -750,7 +750,7 @@ AbiCollab* AbiCollabSessionManager::startSession(PD_Document* pDoc, UT_UTF8Strin
 	UT_DEBUGMSG(("Creating a new collaboration session with UUID: %s\n", sSessionId.utf8_str()));
 
 	UT_return_val_if_fail(_setupFrame(&pFrame, pDoc), NULL);
-	AbiCollab* pAbiCollab = new AbiCollab(pDoc, sSessionId, pAclAccount, bLocallyOwned, pFrame);
+	AbiCollab* pAbiCollab = new AbiCollab(pDoc, sSessionId, pAclAccount, bLocallyOwned);
 	m_vecSessions.push_back(pAbiCollab);
 	
 	// notify all people we are sharing a new document
@@ -845,7 +845,7 @@ void AbiCollabSessionManager::joinSession(const UT_UTF8String& sSessionId, PD_Do
 		UT_return_if_fail(_setupFrame(&pFrame, pDoc));
 	}
 
-	AbiCollab* pSession = new AbiCollab(sSessionId, pDoc, docUUID, iRev, pCollaborator, pAclAccount, bLocallyOwned, pFrame);
+	AbiCollab* pSession = new AbiCollab(sSessionId, pDoc, docUUID, iRev, pCollaborator, pAclAccount, bLocallyOwned);
 	m_vecSessions.push_back(pSession);
 
 	// signal everyone that we have joined this session
