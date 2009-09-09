@@ -362,17 +362,24 @@ void AP_Win32Dialog_CollaborationJoin::_addDocument(BuddyPtr pBuddy, DocHandle* 
 	UT_ASSERT_HARMLESS(htiDoc);
 }
 
-ShareListItem* s_get_treeview_lparam(HWND hTreeView, HTREEITEM hItem)
+static void s_treeview_delete_lparam(HWND hTreeView, HTREEITEM hItem)
 {
-	UT_return_val_if_fail(hTreeView, NULL);
-	UT_return_val_if_fail(hItem, NULL);
+	UT_return_if_fail(hTreeView);
+	UT_return_if_fail(hItem);
 
+	// fetch the lparam
 	TVITEM item;
 	item.mask = TVIF_PARAM;
 	item.hItem = hItem;
-	UT_return_val_if_fail(TreeView_GetItem(hTreeView, &item), NULL);
+	UT_return_if_fail(TreeView_GetItem(hTreeView, &item));
 
-	return reinterpret_cast<ShareListItem*>(item.lParam);
+	// delete the lparam
+	ShareListItem* sli = reinterpret_cast<ShareListItem*>(item.lParam);
+	DELETEP(sli);
+
+	// reset the lparam to NULL
+	item.lParam = (LPARAM)NULL;
+	UT_return_if_fail(TreeView_SetItem(hTreeView, &item));
 }
 
 void AP_Win32Dialog_CollaborationJoin::_freeBuddyList()
@@ -386,14 +393,12 @@ void AP_Win32Dialog_CollaborationJoin::_freeBuddyList()
 		HTREEITEM hChildItem = TreeView_GetNextItem(m_hDocumentTreeview, hItem, TVGN_CHILD);
 		while (hChildItem)
 		{
-			ShareListItem* sli = s_get_treeview_lparam(m_hDocumentTreeview, hChildItem);
-			DELETEP(sli);
+			s_treeview_delete_lparam(m_hDocumentTreeview, hChildItem);
 			hChildItem = TreeView_GetNextItem(m_hDocumentTreeview, hChildItem, TVGN_NEXT);
 		}
 
 		// ... and delete the parent buddy item as well
-		ShareListItem* sli = s_get_treeview_lparam(m_hDocumentTreeview, hItem);
-		DELETEP(sli);
+		s_treeview_delete_lparam(m_hDocumentTreeview, hItem);
 		hItem = TreeView_GetNextItem(m_hDocumentTreeview, hItem, TVGN_NEXT);
 	}
 
