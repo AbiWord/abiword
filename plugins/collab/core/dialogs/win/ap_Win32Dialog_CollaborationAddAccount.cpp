@@ -30,6 +30,10 @@
 
 #include "ap_Win32Dialog_CollaborationAddAccount.h"
 
+// We can't seem to pass user data to our custom message proc,
+// which is why we have the static dialog pointer below
+static AP_Win32Dialog_CollaborationAddAccount* s_pThis = NULL;
+
 BOOL CALLBACK AP_Win32Dialog_CollaborationAddAccount::s_dlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)
@@ -87,16 +91,20 @@ AP_Win32Dialog_CollaborationAddAccount::AP_Win32Dialog_CollaborationAddAccount(X
 	m_pWin32Dialog(NULL),
 	m_hInstance(NULL),
 	m_hOk(NULL),
+	m_pOldDetailsProc(NULL),
+	m_hWnd(NULL),
 	m_hDetails(NULL),
-	m_pOldDetailsProc(NULL)
+	m_hDetailsHook(NULL)
 {
 	AbiCollabSessionManager * pSessionManager = AbiCollabSessionManager::getManager();
 	if (pSessionManager)
 	{
 		m_hInstance=pSessionManager->getInstance();
 	}
-}
 
+	// hack
+	s_pThis = this;
+}
 
 void AP_Win32Dialog_CollaborationAddAccount::runModal(XAP_Frame * pFrame)
 {
@@ -119,12 +127,18 @@ void AP_Win32Dialog_CollaborationAddAccount::runModal(XAP_Frame * pFrame)
 		default:
 			break;
 	};
+
+	UnhookWindowsHookEx(m_hDetailsHook);
+	m_hDetailsHook = NULL;
+
+	s_pThis = NULL;
 }
 
 /*****************************************************************/
 BOOL AP_Win32Dialog_CollaborationAddAccount::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	// Store handles for easy access
+	m_hWnd = hWnd;
 	m_hOk = GetDlgItem(hWnd, AP_RID_DIALOG_COLLABORATIONADDACCOUNT_OK_BUTTON);
 	UT_return_val_if_fail(m_hOk, false);
 	m_hDetails = GetDlgItem(hWnd, AP_RID_DIALOG_COLLABORATIONADDACCOUNT_DETAILS_BOX);
@@ -135,6 +149,10 @@ BOOL AP_Win32Dialog_CollaborationAddAccount::_onInitDialog(HWND hWnd, WPARAM wPa
 	m_pOldDetailsProc = GetWindowLongPtr(m_hDetails, GWLP_WNDPROC);
 	SetWindowLongPtr(m_hDetails, GWLP_WNDPROC, (LPARAM)s_detailsProc);
 	SetWindowLongPtr(m_hDetails, GWLP_USERDATA, (LPARAM)this);
+
+	// we need to trap the account details window's message hook,
+	// so we can make TAB stops work
+	m_hDetailsHook = SetWindowsHookEx(WH_GETMESSAGE, (HOOKPROC)s_detailsGetMsgProc, m_hInstance, GetCurrentThreadId());
 
 	// Get ourselves a custom DialogHelper
 	DELETEP(m_pWin32Dialog);
@@ -211,6 +229,39 @@ BOOL AP_Win32Dialog_CollaborationAddAccount::detailsProc(HWND hWnd, UINT msg, WP
 	return CallWindowProc((WNDPROC)m_pOldDetailsProc, hWnd, msg, wParam, lParam);
 }
 
+LRESULT AP_Win32Dialog_CollaborationAddAccount::s_detailsGetMsgProc(int nCode, WPARAM wParam, LPARAM lParam)
+{
+	if (s_pThis)
+		return s_pThis->detailsGetMsgProc(nCode, wParam, lParam);
+	return CallNextHookEx(NULL, nCode, wParam, lParam);
+}
+
+LRESULT AP_Win32Dialog_CollaborationAddAccount::detailsGetMsgProc(int nCode, WPARAM wParam, LPARAM lParam)
+{
+	LPMSG lpMsg = (LPMSG)lParam;
+
+	if (nCode >= 0 && PM_REMOVE == wParam)
+	{
+		// Don't translate non-input events.
+		if ((lpMsg->message >= WM_KEYFIRST && lpMsg->message <= WM_KEYLAST))
+		{
+			AccountHandler* pAccount = _getActiveAccountHandler();
+			HWND hwnd = pAccount && pAccount->shouldProcessFocus() ? m_hDetails : m_hWnd;
+			if (IsDialogMessage(hwnd, lpMsg))
+			{
+				// The value returned from this hookproc is ignored, 
+				// and it cannot be used to tell Windows the message
+				// has been handled. To avoid further processing,
+				// convert the message to WM_NULL before returning.
+				lpMsg->message = WM_NULL;
+				lpMsg->lParam = 0;
+				lpMsg->wParam  = 0;
+			}
+		}
+	}
+	return CallNextHookEx(NULL, nCode, wParam, lParam);
+}
+
 void AP_Win32Dialog_CollaborationAddAccount::_populateWindowData()
 {
 	UT_DEBUGMSG(("AP_Win32Dialog_CollaborationAddAccount::_populateWindowData()\n"));
@@ -266,6 +317,11 @@ void AP_Win32Dialog_CollaborationAddAccount::_populateWindowData()
 		m_pWin32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONADDACCOUNT_TYPECOMBO, false);
 		m_pWin32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONADDACCOUNT_OK_BUTTON, false);
 	}
+}
+
+void* AP_Win32Dialog_CollaborationAddAccount::_getEmbeddingParent()
+{
+	return m_hDetails;
 }
 
 AccountHandler* AP_Win32Dialog_CollaborationAddAccount::_getActiveAccountHandler()

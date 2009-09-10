@@ -452,14 +452,6 @@ void AccountHandler::_handlePacket(Packet* packet, BuddyPtr buddy)
 	}
 }
 
-#ifdef WIN32
-// return true if we process the command, false otherwise
-BOOL AccountHandler::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
-{
-	return false;
-}
-#endif
-
 void AccountHandler::_reportProtocolError(UT_sint32 remoteVersion, UT_sint32 errorEnum, BuddyPtr pBuddy)
 {
 #ifndef DEBUG

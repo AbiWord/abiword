@@ -43,7 +43,8 @@ public:
 	virtual void							removeDialogWidgets(void* pEmbeddingParent);
 	virtual void							storeProperties();
 	virtual BOOL							_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	
+	virtual bool							shouldProcessFocus();
+
 private:
 	XAP_Win32DialogHelper *					m_pWin32Dialog;
 	

@@ -99,6 +99,10 @@ BOOL TCPWin32AccountHandler::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	}
 }
 
+bool TCPWin32AccountHandler::shouldProcessFocus()
+{
+	return GetFocus() != m_hAutoconnectCheck;
+}
 
 TCPWin32AccountHandler::TCPWin32AccountHandler()
 	: TCPAccountHandler(),
@@ -130,41 +134,38 @@ void TCPWin32AccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	/* Non-Tabbable Labels */
 	
 	// "Address:"
-	m_hServerLabel = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "STATIC", "Address:", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP,
+	m_hServerLabel = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "STATIC", "Address:", SS_LEFT | WS_CHILD | WS_VISIBLE,
 	15, 57, 51, 15, hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_SERVERLABEL,  m_hInstance, 0);
 	UT_return_if_fail(m_hServerLabel);
 	
 	// "Port:"
-	m_hPortLabel = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "STATIC", "Port:", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 
+	m_hPortLabel = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "STATIC", "Port:", SS_LEFT | WS_CHILD | WS_VISIBLE, 
 	15, 87, 47, 15, hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_PORTLABEL,  m_hInstance, 0);
 	UT_return_if_fail(m_hPortLabel);
 	
 	/* Radio Button Group */
-	// Act As Server radio button
-	m_hServerRadio = CreateWindowEx(WS_EX_NOPARENTNOTIFY |  WS_EX_TRANSPARENT, "BUTTON", "Accept Incoming Connections", BS_NOTIFY | BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE |WS_GROUP|WS_TABSTOP,
+	m_hServerRadio = CreateWindowEx(WS_EX_NOPARENTNOTIFY |  WS_EX_TRANSPARENT, "BUTTON", "Accept Incoming Connections", BS_NOTIFY | BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 	15, 15, 200, 15, hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_SERVERRADIO,  m_hInstance, 0);
 	UT_return_if_fail(m_hServerRadio);
 	
 	// Join a Server radio button
-	m_hJoinRadio = CreateWindowEx(WS_EX_NOPARENTNOTIFY |  WS_EX_TRANSPARENT, "BUTTON", "Connect to Another Computer", BS_NOTIFY  | BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE,
+	m_hJoinRadio = CreateWindowEx(WS_EX_NOPARENTNOTIFY |  WS_EX_TRANSPARENT, "BUTTON", "Connect to Another Computer", BS_NOTIFY  | BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 	15, 35, 200, 15, hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_JOINRADIO,  m_hInstance, 0);
 	UT_return_if_fail(m_hJoinRadio);
 	
-	/* Tabbable */
 	// Entry box for IP address of server
 	// should be disabled when in server mode, and OK should be disabled when this is empty in join mode
-	m_hServerEntry = CreateWindowEx(WS_EX_NOPARENTNOTIFY | WS_EX_CLIENTEDGE, "EDIT", "", ES_LEFT | ES_AUTOHSCROLL | WS_CHILD | WS_BORDER | WS_VISIBLE | WS_TABSTOP | WS_GROUP,
+	m_hServerEntry = CreateWindowEx(WS_EX_NOPARENTNOTIFY | WS_EX_CLIENTEDGE, "EDIT", "", ES_LEFT | ES_AUTOHSCROLL | WS_CHILD | WS_BORDER | WS_VISIBLE | WS_TABSTOP,
 	80, 55, 121, 20, hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_SERVERENTRY,  m_hInstance, 0);
 	UT_return_if_fail(m_hServerEntry);
 	
 	// Port entry box
-	// OK should be disabled when this is empty
-	m_hPortEntry = CreateWindowEx(WS_EX_NOPARENTNOTIFY | WS_EX_CLIENTEDGE, "EDIT", boost::lexical_cast<std::string>(DEFAULT_TCP_PORT).c_str(), ES_LEFT | WS_CHILD | WS_BORDER | WS_VISIBLE | WS_TABSTOP| WS_GROUP,
+	m_hPortEntry = CreateWindowEx(WS_EX_NOPARENTNOTIFY | WS_EX_CLIENTEDGE, "EDIT", boost::lexical_cast<std::string>(DEFAULT_TCP_PORT).c_str(), ES_LEFT | WS_CHILD | WS_BORDER | WS_VISIBLE | WS_TABSTOP,
 	80, 85, 60, 20, hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_PORTENTRY,  m_hInstance, 0);
 	UT_return_if_fail(m_hPortEntry);
 	
 	// Checkbox for Connect on Startup
-	m_hAutoconnectCheck = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "BUTTON", "Connect on Application Startup", BS_CHECKBOX | BS_AUTOCHECKBOX | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_GROUP,
+	m_hAutoconnectCheck = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "BUTTON", "Connect on Application Startup", BS_CHECKBOX | BS_AUTOCHECKBOX | WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 	14, 115, 174, 15, hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_AUTOCONNECTCHECK,  m_hInstance, 0);
 	UT_return_if_fail(m_hAutoconnectCheck);
 	

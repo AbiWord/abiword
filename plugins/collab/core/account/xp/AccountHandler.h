@@ -99,7 +99,8 @@ public:
 	virtual void							storeProperties() = 0;
 	
 	#ifdef WIN32
-	virtual BOOL							_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	virtual BOOL							_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam) = 0;
+	virtual bool							shouldProcessFocus() = 0;
 	#endif
 
 	// connection management
