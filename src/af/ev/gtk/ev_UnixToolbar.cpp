@@ -77,9 +77,9 @@
 #define PROP_HANDLER_ID "handler-id"
 
 #ifndef UINT_RGBA_R
-#	define UINT_RGBA_R GO_UINT_RGBA_R
-#	define UINT_RGBA_G GO_UINT_RGBA_G
-#	define UINT_RGBA_B GO_UINT_RGBA_B
+#	define UINT_RGBA_R GO_COLOR_UINT_R
+#	define UINT_RGBA_G GO_COLOR_UINT_G
+#	define UINT_RGBA_B GO_COLOR_UINT_B
 #endif
 
 class _wd;
