@@ -67,7 +67,29 @@ bool RealmConnection::connect()
 		asio::ip::tcp::resolver::query query(m_tls_tunnel_ptr->local_address(), boost::lexical_cast<std::string>(m_tls_tunnel_ptr->local_port()));
 		asio::ip::tcp::resolver resolver(m_io_service);
 		asio::ip::tcp::resolver::iterator iterator(resolver.resolve(query));
-		m_socket.connect(*iterator);
+
+		bool connected = false;
+		asio::error_code error_code;
+		while (iterator != asio::ip::tcp::resolver::iterator())
+		{
+			try
+			{
+				m_socket.connect(*iterator);
+				connected = true;
+				break;
+			}
+			catch (asio::system_error se)
+			{
+				error_code = se.code();
+				try { m_socket.close(); } catch(...) {}
+			}
+			iterator++;
+		}
+		if (!connected)
+		{
+			UT_DEBUGMSG(("Error connecting to realm: %s", asio::system_error(error_code).what()));
+			return false;
+		}
 	}
 	catch (tls_tunnel::Exception& e)
 	{

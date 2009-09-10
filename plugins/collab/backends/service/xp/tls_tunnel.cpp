@@ -198,7 +198,29 @@ void ClientTransport::connect() {
 	asio::ip::tcp::resolver::query query(host_, boost::lexical_cast<std::string>(port_));
 	asio::ip::tcp::resolver::iterator iterator(resolver.resolve(query));
 	socket_ptr_t socket_ptr(new asio::ip::tcp::socket(io_service()));
-	socket_ptr->connect(*iterator);
+
+	if (iterator == asio::ip::tcp::resolver::iterator())
+		throw asio::system_error(asio::error::host_not_found);
+
+	bool connected = false;
+	asio::error_code error_code;
+	while (iterator != asio::ip::tcp::resolver::iterator())
+	{
+		try
+		{
+			socket_ptr->connect(*iterator);
+			connected = true;
+			break;
+		}
+		catch (asio::system_error se)
+		{
+			error_code = se.code();
+			try { socket_ptr->close(); } catch(...) {}
+		}
+		iterator++;
+	}
+	if (!connected)
+		throw asio::system_error(error_code); // throw the last error on failure
 	on_connect_(shared_from_this(), socket_ptr);
 }
 
@@ -541,8 +563,30 @@ void ServerProxy::on_transport_connect(transport_ptr_t transport_ptr, socket_ptr
 	try {
 		asio::ip::tcp::resolver resolver(transport_ptr->io_service());
 		asio::ip::tcp::resolver::query query("127.0.0.1", boost::lexical_cast<std::string>(local_port_));
-		asio::ip::tcp::resolver::iterator iterator(resolver.resolve(query));		
-		local_socket_ptr->connect(*iterator);		
+		asio::ip::tcp::resolver::iterator iterator(resolver.resolve(query));
+
+		bool connected = false;
+		while (iterator != asio::ip::tcp::resolver::iterator())
+		{
+			try
+			{
+				local_socket_ptr->connect(*iterator);
+				connected = true;
+				break;
+			}
+			catch (asio::system_error /*se*/)
+			{
+				// make sure we close the socket after a failed attempt, as it
+				// may have been opened by the connect() call.
+				try { local_socket_ptr->close(); } catch(...) {}
+			}
+			iterator++;
+		}
+		if (!connected)
+		{
+			disconnect_(transport_ptr, session_ptr, local_socket_ptr, remote_socket_ptr);
+			return;
+		}
 	} catch (asio::system_error& /*se*/) {
 		disconnect_(transport_ptr, session_ptr, local_socket_ptr, remote_socket_ptr);
 		return;
