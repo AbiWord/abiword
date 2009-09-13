@@ -92,7 +92,7 @@ void ODi_StylesStream_ListenerState::startElement (const gchar* pName,
 
         ODi_ListenerState* pStyle;
 
-        pStyle = m_pStyles->addStyle(ppAtts, m_rElementStack);
+        pStyle = m_pStyles->addStyle(ppAtts, m_rElementStack,m_rAbiData);
         
         // pStyle can be null for unsupported (ignored) styles.
         if (pStyle) {
@@ -110,7 +110,7 @@ void ODi_StylesStream_ListenerState::startElement (const gchar* pName,
     } else if (!strcmp (pName, "style:default-style")) {
         ODi_ListenerState* pStyle;
         
-        pStyle = m_pStyles->addDefaultStyle(ppAtts, m_rElementStack);
+        pStyle = m_pStyles->addDefaultStyle(ppAtts, m_rElementStack,m_rAbiData);
         
         if (pStyle) {
             rAction.pushState(pStyle, false);

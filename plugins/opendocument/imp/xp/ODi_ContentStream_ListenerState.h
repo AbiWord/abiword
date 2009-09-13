@@ -37,7 +37,7 @@ class ODi_Office_Styles;
 
 // AbiWord classes
 class PD_Document;
-
+class ODi_Abi_Data;
 /**
  * Class to handle the content stream.
  */
@@ -49,7 +49,8 @@ public:
                                     GsfInfile* pGsfInfile,
                                     ODi_Office_Styles* pStyles,
                                     ODi_FontFaceDecls& rFontFaceDecls,
-                                    ODi_ElementStack& rElementStack);
+				     ODi_ElementStack& rElementStack,
+				     ODi_Abi_Data & rAbiData);
                                     
     virtual ~ODi_ContentStream_ListenerState();
     
@@ -66,6 +67,7 @@ private:
     GsfInfile* m_pGsfInfile;
     ODi_Office_Styles* m_pStyles;
     ODi_FontFaceDecls& m_rFontFaceDecls;
+    ODi_Abi_Data& m_rAbiData;
 };
 
 #endif //_ODI_CONTENTSTREAM_LISTENERSTATE_H_

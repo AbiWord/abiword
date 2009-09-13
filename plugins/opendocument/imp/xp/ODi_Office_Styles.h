@@ -63,7 +63,8 @@ public:
     ~ODi_Office_Styles();
 
     ODi_Style_Style* addStyle(const gchar** ppAtts,
-    						 ODi_ElementStack& rElementStack);
+			      ODi_ElementStack& rElementStack,
+			      ODi_Abi_Data& rAbiData);
 
     ODi_Style_PageLayout* addPageLayout(const gchar** ppAtts,
                                        ODi_ElementStack& rElementStack,
@@ -74,7 +75,8 @@ public:
                                        ODi_ElementStack& rElementStack);
 
     ODi_Style_Style* addDefaultStyle(const gchar** ppAtts,
-    								ODi_ElementStack& rElementStack);
+				     ODi_ElementStack& rElementStack,
+				     ODi_Abi_Data &rAbiData );
     
     ODi_Style_List* addList(const gchar** ppAtts,
     					   ODi_ElementStack& rElementStack);

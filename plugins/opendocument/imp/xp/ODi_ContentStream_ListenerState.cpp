@@ -31,7 +31,7 @@
 #include "ODi_Style_Style.h"
 #include "ODi_Style_List.h"
 #include "ODi_ListenerStateAction.h"
-
+#include "ODi_Abi_Data.h"
 
 
 /**
@@ -42,12 +42,14 @@ ODi_ContentStream_ListenerState::ODi_ContentStream_ListenerState (
                 GsfInfile* pGsfInfile,
                 ODi_Office_Styles* pStyles,
                 ODi_FontFaceDecls& rFontFaceDecls,
-                ODi_ElementStack& rElementStack)
+                ODi_ElementStack& rElementStack,
+		ODi_Abi_Data& rAbiData  )
                 : ODi_ListenerState("ContentStream", rElementStack),
                   m_pAbiDocument (pDocument),
                   m_pGsfInfile(pGsfInfile),
                   m_pStyles(pStyles),
-                  m_rFontFaceDecls(rFontFaceDecls)
+                  m_rFontFaceDecls(rFontFaceDecls),
+		  m_rAbiData(rAbiData)
 {
     UT_ASSERT_HARMLESS(m_pAbiDocument);
     UT_ASSERT_HARMLESS(m_pStyles);
@@ -86,7 +88,9 @@ void ODi_ContentStream_ListenerState::startElement (const gchar* pName,
     } else if (!strcmp(pName, "style:style")) {
         ODi_ListenerState* pStyle = NULL;
         
-        pStyle = m_pStyles->addStyle(ppAtts, m_rElementStack);
+        pStyle = m_pStyles->addStyle(ppAtts, 
+				     m_rElementStack,
+				     m_rAbiData);
         
         // pStyle can be null for unsupported (ignored) styles.
         if (pStyle) {

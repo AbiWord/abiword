@@ -31,6 +31,7 @@
 
 // Internal classes
 class ODi_FontFaceDecls;
+class ODi_Abi_Data;
 
 // AbiWord classes
 class PD_Document;
@@ -51,7 +52,9 @@ public:
     };
 
 
-    ODi_Style_Style(ODi_ElementStack& rElementStack);
+    ODi_Style_Style(ODi_ElementStack& rElementStack,
+		    ODi_Abi_Data & rAbiData);
+
     virtual ~ODi_Style_Style() {}
 
     void startElement(const gchar* pName, const gchar** ppAtts,
@@ -76,7 +79,8 @@ public:
      * @param pDocument The AbiWord document on which the style will be defined.
      */
     void defineAbiStyle(PD_Document* pDocument);
-    
+    ODi_Abi_Data & getAbiData(void)
+      { return m_rAbiData;} 
     
     /**
      * Builds the AbiWord "props" attribute value that describes this
@@ -164,6 +168,7 @@ public:
 	       !m_VerticalRel.empty() ||
              
                !m_backgroundColor.empty() ||
+               !m_backgroundImageID.empty() ||
     
                !m_columnWidth.empty() ||
                
@@ -189,6 +194,7 @@ public:
     const UT_UTF8String* getVerticalPos(bool local) const;
     
     const UT_UTF8String* getBackgroundColor() const;
+    const UT_UTF8String* getBackgroundImageID() const;
     
     const UT_UTF8String* getColumnWidth() const {return &m_columnWidth;}
     
@@ -245,6 +251,9 @@ private:
     
     // <style:table-cell-properties />
     void _parse_style_tableCellProperties(const gchar** ppProps);
+
+    // <style:background-image />
+    void _parse_style_background_image(const gchar** ppProps);
     
     /**
      * If pString is "0.0556in solid #0000ff", rColor will receive "#0000ff",
@@ -364,6 +373,9 @@ private:
     // For <style:table-properties> and <style:table-cell-properties>
     UT_UTF8String m_backgroundColor;
 
+    // <style:bakground-image>
+    UT_UTF8String m_backgroundImageID; // xlink:href
+
     // For <style:table-properties 
     // fo:margin-left
     // fo:margin-right
@@ -420,7 +432,9 @@ private:
     UT_UTF8String m_borderRight_thickness;
     UT_UTF8String m_borderRight_color;
     HAVE_BORDER m_haveRightBorder;
-    
+
+    ODi_Abi_Data& m_rAbiData;
+   
     // OBS: If "fo:border" is defined, its value will fill all "fo:border-*"
 };
 

@@ -33,7 +33,8 @@
 #include "ODi_NotesConfiguration.h"
 #include "ODi_ListLevelStyle.h"
 #include "ODi_ElementStack.h"
- 
+#include "ODi_Abi_Data.h" 
+
 // AbiWord includes
 #include <ut_misc.h>
 #include <pd_Document.h>
@@ -61,7 +62,8 @@ ODi_Office_Styles::~ODi_Office_Styles()
  *         specified style is not currently supported (like graphic styles).
  */
 ODi_Style_Style* ODi_Office_Styles::addStyle(const gchar** ppAtts,
-                                           ODi_ElementStack& rElementStack) 
+					     ODi_ElementStack& rElementStack,
+					     ODi_Abi_Data & rAbiData) 
 {
 
     const gchar* pFamily;
@@ -96,10 +98,11 @@ ODi_Style_Style* ODi_Office_Styles::addStyle(const gchar** ppAtts,
             }
             
             pStyle = m_textStyleStyles.addStyle(ppAtts, rElementStack,
+						rAbiData,
                                                 &replacementName,
                                                 &replacementDisplayName);
         } else {
-            pStyle = m_textStyleStyles.addStyle(ppAtts, rElementStack);
+	  pStyle = m_textStyleStyles.addStyle(ppAtts, rElementStack,rAbiData);
         }
         
     } else if(!strcmp(pFamily, "paragraph")) {
@@ -118,30 +121,32 @@ ODi_Style_Style* ODi_Office_Styles::addStyle(const gchar** ppAtts,
                 replacementDisplayName += "_paragraph";
             }
             
-            pStyle = m_paragraphStyleStyles.addStyle(ppAtts, rElementStack,
+            pStyle = m_paragraphStyleStyles.addStyle(ppAtts, 
+						     rElementStack,
+						     rAbiData,
                                                      &replacementName,
                                                      &replacementDisplayName);
         } else {
-            pStyle = m_paragraphStyleStyles.addStyle(ppAtts, rElementStack);
+	  pStyle = m_paragraphStyleStyles.addStyle(ppAtts, rElementStack,rAbiData);
         }
         
     } else if(!strcmp(pFamily, "section")) {
-        pStyle = m_sectionStyleStyles.addStyle(ppAtts, rElementStack);
+      pStyle = m_sectionStyleStyles.addStyle(ppAtts, rElementStack,rAbiData);
         
     } else if(!strcmp(pFamily, "graphic")) {
-        pStyle = m_graphicStyleStyles.addStyle(ppAtts, rElementStack);
+      pStyle = m_graphicStyleStyles.addStyle(ppAtts, rElementStack,rAbiData);
         
     } else if(!strcmp(pFamily, "table")) {
-        pStyle = m_tableStyleStyles.addStyle(ppAtts, rElementStack);
+      pStyle = m_tableStyleStyles.addStyle(ppAtts, rElementStack,rAbiData);
         
     } else if(!strcmp(pFamily, "table-column")) {
-        pStyle = m_tableColumnStyleStyles.addStyle(ppAtts, rElementStack);
+      pStyle = m_tableColumnStyleStyles.addStyle(ppAtts, rElementStack,rAbiData);
         
     } else if(!strcmp(pFamily, "table-row")) {
-        pStyle = m_tableRowStyleStyles.addStyle(ppAtts, rElementStack);
+      pStyle = m_tableRowStyleStyles.addStyle(ppAtts, rElementStack,rAbiData);
         
     } else if(!strcmp(pFamily, "table-cell")) {
-        pStyle = m_tableCellStyleStyles.addStyle(ppAtts, rElementStack);
+      pStyle = m_tableCellStyleStyles.addStyle(ppAtts, rElementStack,rAbiData);
     }
     
     return pStyle;   
@@ -192,7 +197,7 @@ ODi_Style_MasterPage* ODi_Office_Styles::addMasterPage(const gchar** ppAtts,
  * 
  */
 ODi_Style_Style* ODi_Office_Styles::addDefaultStyle(const gchar** ppAtts,
-                                                  ODi_ElementStack& rElementStack) {
+						    ODi_ElementStack& rElementStack, ODi_Abi_Data & rAbiData) {
     
     const gchar* pAttr = NULL;
     
@@ -200,11 +205,11 @@ ODi_Style_Style* ODi_Office_Styles::addDefaultStyle(const gchar** ppAtts,
 
     if (pAttr && !strcmp("paragraph", pAttr)) {
         
-        return m_paragraphStyleStyles.addDefaultStyle(rElementStack);
+      return m_paragraphStyleStyles.addDefaultStyle(rElementStack,rAbiData);
         
     } else if (pAttr && !strcmp("table", pAttr)) {
         
-        return m_tableStyleStyles.addDefaultStyle(rElementStack);        
+      return m_tableStyleStyles.addDefaultStyle(rElementStack,rAbiData);        
 
     } else {
         // Not currently supported

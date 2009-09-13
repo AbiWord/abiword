@@ -38,7 +38,7 @@ class ODi_FontFaceDecls;
 
 // AbiWord classes
 class PD_Document;
-
+class ODi_Abi_Data;
 /**
  * Used by ODi_Office_Styles to handle a family of "style:style" styles.
  * Some family names: "text", "paragraph", "section", "graphic", "table", etc.
@@ -51,11 +51,13 @@ public:
     
     ODi_Style_Style* addStyle(const gchar** ppAtts,
                              ODi_ElementStack& rElementStack,
+			     ODi_Abi_Data & rAbiData,
                              UT_UTF8String* pReplacementName = NULL,
                              UT_UTF8String* pReplacementDisplayName = NULL);
                              
-    ODi_Style_Style* addDefaultStyle(ODi_ElementStack& rElementStack) {
-        m_pDefaultStyle = new ODi_Style_Style(rElementStack);
+    ODi_Style_Style* addDefaultStyle(ODi_ElementStack& rElementStack,
+				     ODi_Abi_Data & rAbiData) {
+      m_pDefaultStyle = new ODi_Style_Style(rElementStack,rAbiData);
         return m_pDefaultStyle;
     }
     

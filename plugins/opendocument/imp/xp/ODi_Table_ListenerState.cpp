@@ -303,13 +303,13 @@ void ODi_Table_ListenerState::_parseCellStart (const gchar** ppAtts,
     } else {    
 
         UT_UTF8String props;
-        const gchar *cell_props[3];        
+        const gchar *cell_props[5];        
         const gchar* pVal;
         const ODi_Style_Style* pStyle = NULL;
         UT_sint32 colSpan;
         UT_sint32 rowSpan;
         m_col++;
-        
+        UT_UTF8String dataID;
         
         pVal = UT_getAttribute("table:number-columns-spanned", ppAtts);
         if (pVal) {
@@ -445,12 +445,23 @@ void ODi_Table_ListenerState::_parseCellStart (const gchar** ppAtts,
                 props += "; background-color:";
                 props += pStyle->getBackgroundColor()->utf8_str();
             }
+
+	    // background-image
+	    if(!pStyle->getBackgroundImageID()->empty())
+	    {
+	        dataID = pStyle->getBackgroundImageID()->utf8_str();
+	    }
         }
 
         cell_props[0] = "props";
         cell_props[1] = props.utf8_str();
         cell_props[2] = 0;
-
+	if(dataID.length() > 0)
+	{
+	    cell_props[2] = "strux-image-dataid";
+	    cell_props[3] = dataID.utf8_str();
+	    cell_props[4] = 0;
+	}
         m_pAbiDocument->appendStrux(PTX_SectionCell, cell_props);
 
         // Now parse the cell text content.

@@ -29,7 +29,8 @@
 #include "ODi_FontFaceDecls.h"
 #include "ODi_ListenerStateAction.h"
 #include "ODi_ElementStack.h"
- 
+#include "ODi_Abi_Data.h"
+
 // AbiWord includes
 #include <pd_Document.h>
 #include <ut_math.h>
@@ -42,14 +43,16 @@
 /**
  * Constructor
  */
-ODi_Style_Style::ODi_Style_Style(ODi_ElementStack& rElementStack) :
+ODi_Style_Style::ODi_Style_Style(ODi_ElementStack& rElementStack,
+				  ODi_Abi_Data & rAbiData) :
                        ODi_ListenerState("StyleStyle", rElementStack),
                        m_pParentStyle(NULL),
                        m_pNextStyle(NULL),
                        m_haveTopBorder(HAVE_BORDER_UNSPECIFIED),
                        m_haveBottomBorder(HAVE_BORDER_UNSPECIFIED),
                        m_haveLeftBorder(HAVE_BORDER_UNSPECIFIED),
-                       m_haveRightBorder(HAVE_BORDER_UNSPECIFIED)
+                       m_haveRightBorder(HAVE_BORDER_UNSPECIFIED),
+		       m_rAbiData(rAbiData)
 {
     if (rElementStack.hasElement("office:automatic-styles")) {
         m_bAutomatic = true;
@@ -102,6 +105,10 @@ void ODi_Style_Style::startElement(const gchar* pName,
     } else if (!strcmp("style:table-cell-properties", pName)) {
         
         _parse_style_tableCellProperties(ppAtts);
+        
+    } else if (!strcmp("style:background-image", pName)) {
+        
+        _parse_style_background_image(ppAtts);
         
     } else if (!strcmp("style:default-style", pName)) {
         
@@ -609,6 +616,28 @@ void ODi_Style_Style::_parse_style_tableRowProperties(const gchar** ppProps) {
 
 
 /**
+ * <style:background-image />
+ */
+void ODi_Style_Style::_parse_style_background_image(const gchar** ppProps) 
+{
+    const gchar* pVal;
+    
+    // only implement link:href for now
+    pVal = UT_getAttribute("xlink:href", ppProps);
+    if (pVal) 
+    {
+         UT_String dataId; // id of the data item that contains the image.
+	 if(!m_rAbiData.addImageDataItem(dataId, ppProps)) 
+	 {
+	     UT_DEBUGMSG(("ODT import: no suitable image importer found\n"));
+	     return;
+	 }
+	 m_backgroundImageID = dataId.c_str();
+    }
+}
+
+
+/**
  * <style:table-cell-properties />
  */
 void ODi_Style_Style::_parse_style_tableCellProperties(const gchar** ppProps) {
@@ -925,6 +954,16 @@ const UT_UTF8String* ODi_Style_Style::getBackgroundColor() const
     }
 
     return &m_backgroundColor;
+}
+
+
+const UT_UTF8String* ODi_Style_Style::getBackgroundImageID() const
+{
+    if (m_backgroundImageID.empty() && m_pParentStyle) {
+        return m_pParentStyle->getBackgroundImageID();
+    }
+
+    return &m_backgroundImageID;
 }
 
 

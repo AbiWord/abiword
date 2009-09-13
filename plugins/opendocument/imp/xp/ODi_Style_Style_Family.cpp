@@ -25,6 +25,7 @@
 
 // Internal includes
 #include "ODi_ElementStack.h"
+#include "ODi_Abi_Data.h"
 
 // AbiWord includes
 #include "ut_misc.h"
@@ -48,6 +49,7 @@ ODi_Style_Style_Family::~ODi_Style_Style_Family()
  */
 ODi_Style_Style* ODi_Style_Style_Family::addStyle(const gchar** ppAtts,
                              ODi_ElementStack& rElementStack,
+			     ODi_Abi_Data & rAbiData,
                              UT_UTF8String* pReplacementName,
                              UT_UTF8String* pReplacementDisplayName) {
                                 
@@ -67,7 +69,7 @@ ODi_Style_Style* ODi_Style_Style_Family::addStyle(const gchar** ppAtts,
             StyleMap::const_iterator iter = m_styles_contentStream.find(pReplacementName->utf8_str());
 
             if (iter == m_styles_contentStream.end()) {
-                pStyle = new ODi_Style_Style(rElementStack);
+	      pStyle = new ODi_Style_Style(rElementStack,rAbiData);
                 
                 m_styles_contentStream.insert(std::make_pair(pReplacementName->utf8_str(),
                                                                   pStyle));
@@ -80,7 +82,7 @@ ODi_Style_Style* ODi_Style_Style_Family::addStyle(const gchar** ppAtts,
             StyleMap::const_iterator iter = m_styles_contentStream.find(pName);
 
             if (iter == m_styles_contentStream.end()) {
-                pStyle = new ODi_Style_Style(rElementStack);
+	      pStyle = new ODi_Style_Style(rElementStack,rAbiData);
                 
                 m_styles_contentStream.insert(std::make_pair(pName, pStyle));
             }
@@ -94,7 +96,7 @@ ODi_Style_Style* ODi_Style_Style_Family::addStyle(const gchar** ppAtts,
             StyleMap::const_iterator iter = m_styles.find(pReplacementName->utf8_str());
             
             if (iter == m_styles.end()) {
-                pStyle = new ODi_Style_Style(rElementStack);
+	      pStyle = new ODi_Style_Style(rElementStack,rAbiData);
                 
                 m_styles.insert(std::make_pair(pReplacementName->utf8_str(), pStyle));
                                                    
@@ -106,7 +108,7 @@ ODi_Style_Style* ODi_Style_Style_Family::addStyle(const gchar** ppAtts,
             StyleMap::const_iterator iter = m_styles.find(pName);
             
             if (iter == m_styles.end()) {
-                pStyle = new ODi_Style_Style(rElementStack);
+	      pStyle = new ODi_Style_Style(rElementStack,rAbiData);
                 
                 m_styles.insert(std::make_pair(pName, pStyle));
             }
