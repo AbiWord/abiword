@@ -1621,6 +1621,15 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
         // TODO: handle transparent?
         m_backgroundColor = UT_colorToHex(pValue, true);
     }
+
+    // Background Image
+    ok = rAP.getAttribute("strux-image-dataid", pValue);
+    if (ok && pValue != NULL) 
+    {
+        m_backgroundImage = "Pictures/";
+        m_backgroundImage += pValue;
+    }
+
 }
 
 
@@ -1635,8 +1644,11 @@ write(UT_UTF8String& rOutput, const UT_UTF8String& rSpacesOffset) const {
     }
     
     rOutput += rSpacesOffset;
-    rOutput += "<style:table-cell-properties";
-    
+    if(m_backgroundImage.length()==0)
+      rOutput += "<style:table-cell-properties";
+    else
+      rOutput += "<style:table-cell-properties>";
+
     ODe_writeAttribute(rOutput, "fo:border-left", m_leftThickness + " solid " + m_leftColor);
     ODe_writeAttribute(rOutput, "fo:border-right",m_rightThickness + " solid " + m_rightColor);
     ODe_writeAttribute(rOutput, "fo:border-top", m_topThickness + " solid " + m_topColor);
@@ -1644,6 +1656,18 @@ write(UT_UTF8String& rOutput, const UT_UTF8String& rSpacesOffset) const {
     ODe_writeAttribute(rOutput, "fo:background-color", m_backgroundColor);
     
     rOutput += "/>\n";
+
+    if(m_backgroundImage.length()>0)
+    {
+      rOutput += "<style:background-image";
+      ODe_writeAttribute(rOutput,"xlink:href",m_backgroundImage);
+      ODe_writeAttribute(rOutput,"xlink:type","simple");
+      ODe_writeAttribute(rOutput,"xlink:actuate","onLoad");
+      ODe_writeAttribute(rOutput,"style:repeat","stretch");
+      rOutput += "/>\n";
+      rOutput += "</style:table-cell-properties>\n";
+    }
+
 }
 
 

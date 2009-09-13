@@ -261,6 +261,7 @@ private:
         UT_UTF8String m_bottomThickness; // part of fo:border-bottom
         UT_UTF8String m_bottomColor;     // part of fo:border-bottom
         UT_UTF8String m_backgroundColor; // fo:background-color
+	UT_UTF8String m_backgroundImage; // style:background-image
 
         // TODO: support line styles
     } *m_pCellProps;

@@ -375,7 +375,7 @@ void ODe_Table_Cell::loadAbiProps(const PP_AttrProp* pAP) {
         return;
     }
     m_bottomAttach = atoi(pValue);
-
+   
     // A few sanity checks
     UT_ASSERT(m_leftAttach   <  m_rightAttach);
     UT_ASSERT(m_topAttach    <  m_bottomAttach);
@@ -393,6 +393,8 @@ void ODe_Table_Cell::loadAbiProps(const PP_AttrProp* pAP) {
         UT_UTF8String_sprintf(m_numberRowsSpanned, "%d",
                               m_bottomAttach - m_topAttach);
     }
+
+    
 }
 
 
@@ -409,7 +411,6 @@ void ODe_Table_Cell::write(GsfOutput* pTableOutput, const UT_UTF8String& rSpaces
       ODe_writeAttribute(output, "table:number-columns-spanned", m_numberColumnsSpanned);
     if(m_numberRowsSpanned.size() > 0)
       ODe_writeAttribute(output, "table:number-rows-spanned", m_numberRowsSpanned);
-
     output += ">\n";
     ODe_writeUTF8String(pTableOutput, output);
     gsf_output_write (pTableOutput, gsf_output_size (m_pTextContent),
