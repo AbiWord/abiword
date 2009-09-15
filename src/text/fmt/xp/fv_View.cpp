@@ -13965,9 +13965,14 @@ UT_uint32 FV_View::getNumHorizPages() const
 
 void FV_View::calculateNumHorizPages()
 {
-	UT_uint32 scrollbarWidth = 1000; //Because my scrollbar is about this wide.
-	UT_uint32 windowWidth = getWindowWidth() - scrollbarWidth;
-	UT_uint32 iOldNo = m_iNumHorizPages;
+	UT_sint32 scrollbarWidth = 1000; //Because my scrollbar is about this wide.
+	UT_sint32 windowWidth = getWindowWidth() - scrollbarWidth;
+	UT_sint32 iOldNo = m_iNumHorizPages;
+	if(windowWidth < 0)
+	{
+		m_iNumHorizPages = 1;
+		return;
+	}
 	if(!getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		m_iNumHorizPages = 1;
@@ -13982,11 +13987,15 @@ void FV_View::calculateNumHorizPages()
 	{
 		m_iNumHorizPages = 20;
 	}
+	else if(getWindowWidth() < m_pLayout->getFirstPage()->getWidth())
+	{
+		m_iNumHorizPages = 1;
+	}
 	else //Find the new m_iNumPages
 	{
 		m_getNumHorizPagesCachedWindowWidth = windowWidth;
-		UT_uint32 widthPagesInRow = 0;
-		UT_uint32 iFirstPageInRow = 0; //iRow * m_iNumHorizPages; //TODO:make this use the row of the current page.
+		UT_sint32 widthPagesInRow = 0;
+		UT_sint32 iFirstPageInRow = 0; //iRow * m_iNumHorizPages; //TODO:make this use the row of the current page.
 		fp_Page * pPage = m_pLayout->getNthPage(iFirstPageInRow);
 		
 		widthPagesInRow = getWidthPagesInRow(pPage);
@@ -13999,17 +14008,24 @@ void FV_View::calculateNumHorizPages()
 				widthPagesInRow = getWidthPagesInRow(pPage);
 			}while ((windowWidth < widthPagesInRow) && (m_iNumHorizPages > 1));
 		}
-		else if ((windowWidth > widthPagesInRow) && (widthPagesInRow + pPage->getWidth() + getHorizPageSpacing() < windowWidth))
+		else if ((windowWidth > widthPagesInRow) && (widthPagesInRow + pPage->getWidth() + static_cast<UT_sint32>(getHorizPageSpacing()) < windowWidth))
 		{
 			do
 			{
 				m_iNumHorizPages++;
 				widthPagesInRow = getWidthPagesInRow(pPage);
-			} while ((windowWidth > widthPagesInRow) && (widthPagesInRow + pPage->getWidth() + getHorizPageSpacing() < windowWidth));
+			} while ((windowWidth > widthPagesInRow) && (widthPagesInRow + static_cast<UT_sint32>(pPage->getWidth()) + static_cast<UT_sint32>(getHorizPageSpacing()) < windowWidth) && (static_cast<UT_sint32>(m_iNumHorizPages) <= m_pLayout->countPages()));
 		}
 		xxx_UT_DEBUGMSG(("m_iNumHorizPages %d | windowWidth %d | widthPagesInRow %d | pPage->getWidth() %d\n", m_iNumHorizPages,windowWidth,widthPagesInRow,pPage->getWidth()));
 	}
-	
+	if (m_iNumHorizPages > 20) //20 seems like a reasonable max...
+	{
+		m_iNumHorizPages = 20;
+	}
+	if(static_cast<UT_sint32>(m_iNumHorizPages) > m_pLayout->countPages())
+	{
+		m_iNumHorizPages = m_pLayout->countPages();
+	}
 	if (m_iNumHorizPages > 1)
 	{
 		XAP_App::getApp()->setEnableSmoothScrolling(false);
@@ -14018,7 +14034,7 @@ void FV_View::calculateNumHorizPages()
 	{
 		XAP_App::getApp()->setEnableSmoothScrolling(true);
 	}
-	if(iOldNo != m_iNumHorizPages)
+	if(iOldNo != static_cast<UT_sint32>(m_iNumHorizPages))
 	{
 		UT_uint32 iPrevYOffset = m_yScrollOffset;
 		XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
@@ -14098,10 +14114,10 @@ UT_uint32 FV_View::getWidthPrevPagesInRow(UT_uint32 iPageNumber) const
 		return 0;
 	}
 	
-	UT_uint32 totalWidth = 0;
-	UT_uint32 iRow = iPageNumber/getNumHorizPages(); //yay truncation.
-	UT_uint32 iFirstPageInRow = 0;
-	UT_uint32 diff = 0; //diff between current & prev pages in row
+	UT_sint32 totalWidth = 0;
+	UT_sint32 iRow = iPageNumber/getNumHorizPages(); //yay truncation.
+	UT_sint32 iFirstPageInRow = 0;
+	UT_sint32 diff = 0; //diff between current & prev pages in row
 	
 	if(!rtlPages())
 	{
@@ -14113,21 +14129,26 @@ UT_uint32 FV_View::getWidthPrevPagesInRow(UT_uint32 iPageNumber) const
 		iFirstPageInRow = (iRow * getNumHorizPages()) + (getNumHorizPages() -1);
 		diff = iFirstPageInRow - iPageNumber;
 	}
-	
-	if (iFirstPageInRow != iPageNumber)
+	if(diff < 0)
+		diff = 0;
+	if (iFirstPageInRow != static_cast<UT_sint32>(iPageNumber))
 	{
 		fp_Page * pPage = 0;
 		
 		if (m_pLayout->getNthPage(iFirstPageInRow))
 		{
 			pPage = m_pLayout->getNthPage(iFirstPageInRow);
-			for (unsigned int i = 0; i < diff; i++)
+			for (UT_sint32 i = 0; i < diff; i++)
 			{
 				totalWidth += getHorizPageSpacing() + pPage->getWidth();
 				
 				if (pPage->getNext())
 				{
 					pPage = pPage->getNext();
+				}
+				else
+				{
+					break;
 				}
 			}
 		}
@@ -14137,7 +14158,15 @@ UT_uint32 FV_View::getWidthPrevPagesInRow(UT_uint32 iPageNumber) const
 
 UT_uint32 FV_View::getWidthPagesInRow(fp_Page *page) const
 {
-	UT_uint32 iPageNumber	= m_pLayout->findPage(page);
+	UT_sint32 iPageNumber	= m_pLayout->findPage(page);
+	if(iPageNumber < 0)
+	{
+		fp_Page * pPage = m_pLayout->getFirstPage();
+		if(pPage)
+			return pPage->getWidth();
+		else
+			return m_pLayout->getFirstSection()->getWidth();
+	}	
 	fp_Page * pPage = m_pLayout->getNthPage(iPageNumber);
 	UT_uint32 iRow = iPageNumber/getNumHorizPages();
 	UT_uint32 iLastPageInRow = 0;
