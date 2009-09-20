@@ -81,7 +81,7 @@ void ODe_Table_Listener::openTable(const PP_AttrProp* pAP,
     ODe_Style_Style* pStyle;
     std::string buffer;
     UT_UTF8String styleName;
-
+    UT_GenericVector< ODe_Style_Style*> vecStyles;
     m_rAuxiliaryData.m_tableCount++;
     UT_UTF8String_sprintf(m_tableName, "Table%u", m_rAuxiliaryData.m_tableCount);
 
@@ -120,6 +120,7 @@ void ODe_Table_Listener::openTable(const PP_AttrProp* pAP,
                                           m_tableName.utf8_str(), curColProp);
                                           
                     pStyle = m_rAutomatiStyles.addTableColumnStyle(styleName);
+		    vecStyles.addItem(pStyle);
                     pStyle->setColumnWidth(buffer.c_str());
 
                     columnStyleNames.addItem(new UT_UTF8String(styleName));
@@ -129,6 +130,33 @@ void ODe_Table_Listener::openTable(const PP_AttrProp* pAP,
                     columnStyleNames.addItem(new UT_UTF8String(""));
                 }
             } else {
+                buffer += *pVar;
+            }
+            pVar++;
+        }
+    }
+
+    buffer.clear();
+
+    UT_sint32 cnt = 0;
+    ok = pAP->getProperty("table-rel-column-props", pValue);
+    if (ok && pValue != NULL) 
+    {
+        pVar = pValue;
+        while (*pVar != 0) 
+	{
+            if (*pVar == '/') 
+	    {
+                if (!buffer.empty()) 
+		{
+                    pStyle = vecStyles.getNthItem(cnt);
+		    cnt++;
+                    pStyle->setRelColumnWidth(buffer.c_str());
+                    buffer.clear();
+                } 
+            } 
+	    else 
+	    {
                 buffer += *pVar;
             }
             pVar++;

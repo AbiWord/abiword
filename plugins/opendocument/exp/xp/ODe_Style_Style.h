@@ -100,6 +100,9 @@ public:
 
     void setBreakBefore(const gchar* pBreakBefore);    
     void setColumnWidth(const gchar* pColumnWidth);
+    void setRelColumnWidth(const gchar* pRelColumnWidth);
+    void setRelTableWidth(const gchar* pRelTableWidth);
+    void setTableWidth(const gchar* pTableWidth);
     void setRowHeight(const gchar* pRowHeight);
     void setMinRowHeight(const gchar* pMinRowHeight);
     void inheritTableCellProperties(const ODe_Style_Style& tableStyle);
@@ -203,8 +206,9 @@ private:
         void write(UT_UTF8String& rOutput, const UT_UTF8String& rSpacesOffset) const ;
         TableProps& operator=(const TableProps& rTableProps);
         bool operator==(const TableProps& rTableProps) const;
-        
+      
         UT_UTF8String m_width;           // style:width
+        UT_UTF8String m_RelTableWidth;     // style:rel-width
         UT_UTF8String m_backgroundColor; // fo:background-color
         UT_UTF8String m_align;           // table:align
         UT_UTF8String m_marginLeft;      // fo:margin-left
@@ -223,6 +227,7 @@ private:
         bool operator==(const ColumnProps& rColumnProps) const;
         
         UT_UTF8String m_columnWidth;     // style:column-width
+        UT_UTF8String m_RelColumnWidth;     // style:rel-column-width
     } *m_pColumnProps;
     
     

@@ -615,6 +615,13 @@ void ODe_Style_Style::setColumnWidth(const gchar* pColumnWidth) {
     m_pColumnProps->m_columnWidth = pColumnWidth;
 }
 
+void ODe_Style_Style::setRelColumnWidth(const gchar* pRelColumnWidth) {
+    if (m_pColumnProps == NULL) {
+        m_pColumnProps = new ColumnProps();
+    }
+    m_pColumnProps->m_RelColumnWidth = pRelColumnWidth;
+}
+
 
 /**
  * 
@@ -651,6 +658,62 @@ bool ODe_Style_Style::hasTableStyleProps(const PP_AttrProp* pAP) {
     }
     
     ok = pAP->getProperty("table-column-props", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+
+    ok = pAP->getProperty("table-width", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+
+
+    ok = pAP->getProperty("table-rel-width", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+
+    ok = pAP->getProperty("table-margin-left", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+
+    ok = pAP->getProperty("table-margin-top", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+
+    ok = pAP->getProperty("table-margin-right", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+
+    ok = pAP->getProperty("table-margin-bottom", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+
+    ok = pAP->getProperty("table-line-thickness", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+
+    ok = pAP->getProperty("table-col-spacing", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+
+    ok = pAP->getProperty("table-row-spacing", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+
+    ok = pAP->getProperty("table-column-leftpos", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+
+    ok = pAP->getProperty("table-rel-column-props", pValue);
     if (ok && pValue != NULL) {
         return true;
     }
@@ -1290,6 +1353,7 @@ bool ODe_Style_Style::TextProps::operator==(
  */
 bool ODe_Style_Style::TableProps::isEmpty() const {
     return m_width.empty() &&
+           m_RelTableWidth.empty() &&
            m_backgroundColor.empty() &&
            m_align.empty() &&
            m_marginLeft.empty() &&
@@ -1350,6 +1414,13 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     } else {
         m_align = "left";
     }
+
+    ok = rAP.getProperty("table-rel-width", pValue);
+    if (ok && pValue != NULL) 
+    {
+        m_RelTableWidth = pValue;
+    }
+
 }
 
 
@@ -1363,6 +1434,7 @@ void ODe_Style_Style::TableProps::write(UT_UTF8String& rOutput,
     rOutput += "<style:table-properties";
     
     ODe_writeAttribute(rOutput, "style:width", m_width);
+    ODe_writeAttribute(rOutput, "style:rel-width", m_RelTableWidth);
     ODe_writeAttribute(rOutput, "fo:background-color", m_backgroundColor);
     ODe_writeAttribute(rOutput, "table:align", m_align);
     ODe_writeAttribute(rOutput, "fo:margin-left", m_marginLeft);
@@ -1379,6 +1451,7 @@ ODe_Style_Style::TableProps& ODe_Style_Style::TableProps::operator=(
                                               const TableProps& rTableProps) {
 
     m_width = rTableProps.m_width;
+    m_RelTableWidth = rTableProps.m_RelTableWidth;
     m_backgroundColor = rTableProps.m_backgroundColor;
     m_align = rTableProps.m_align;
     m_marginLeft = rTableProps.m_marginLeft;
@@ -1396,6 +1469,7 @@ bool ODe_Style_Style::TableProps::operator==(
                             
     return
         m_width           == rTableProps.m_width &&
+        m_RelTableWidth   == rTableProps.m_RelTableWidth &&
         m_backgroundColor == rTableProps.m_backgroundColor &&
         m_align           == rTableProps.m_align &&
         m_marginLeft      == rTableProps.m_marginLeft &&
@@ -1412,7 +1486,7 @@ bool ODe_Style_Style::TableProps::operator==(
  * 
  */
 bool ODe_Style_Style::ColumnProps::isEmpty() const {
-    return m_columnWidth.empty();
+  return (m_columnWidth.empty() && m_RelColumnWidth.empty());
 }
 
 
@@ -1429,6 +1503,7 @@ void ODe_Style_Style::ColumnProps::write(UT_UTF8String& rOutput,
     rOutput += "<style:table-column-properties";
     
     ODe_writeAttribute(rOutput, "style:column-width", m_columnWidth);
+    ODe_writeAttribute(rOutput, "style:rel-column-width", m_RelColumnWidth);
     
     rOutput += "/>\n";
 }
@@ -1451,7 +1526,8 @@ ODe_Style_Style::ColumnProps& ODe_Style_Style::ColumnProps::operator=(
 bool ODe_Style_Style::ColumnProps::operator==(
                       const ODe_Style_Style::ColumnProps& rColumnProps) const {
                         
-    return m_columnWidth == rColumnProps.m_columnWidth;
+    return m_columnWidth == rColumnProps.m_columnWidth &&
+     m_RelColumnWidth ==  rColumnProps.m_RelColumnWidth;
 }
 
 /*******************************************************************************
