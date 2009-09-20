@@ -56,6 +56,9 @@ const char * UT_dimensionName(UT_Dimension dim)
 	case DIM_PERCENT:
 		return "%";
 
+	case DIM_STAR:
+		return "%";
+
 	case DIM_none:
 		return "";
 
@@ -101,6 +104,9 @@ UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback)
       
       else if (g_ascii_strcasecmp(p,"%") == 0)
 	return DIM_PERCENT;
+
+      else if (g_ascii_strcasecmp(p,"*") == 0)
+	return DIM_STAR;
 
       UT_DEBUGMSG(("ut_units - unknown unit presented '%s' \n",p));
       UT_ASSERT_NOT_REACHED();

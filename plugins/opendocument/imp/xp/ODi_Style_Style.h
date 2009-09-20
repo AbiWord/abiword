@@ -171,11 +171,13 @@ public:
                !m_backgroundImageID.empty() ||
     
                !m_columnWidth.empty() ||
+               !m_columnRelWidth.empty() ||
                
                !m_minRowHeight.empty() ||
                !m_TableMarginLeft.empty() ||
                !m_TableMarginRight.empty() ||
                !m_TableWidth.empty() ||
+               !m_TableRelWidth.empty() ||
                !m_rowHeight.empty();
     }
     
@@ -197,6 +199,7 @@ public:
     const UT_UTF8String* getBackgroundImageID() const;
     
     const UT_UTF8String* getColumnWidth() const {return &m_columnWidth;}
+    const UT_UTF8String* getColumnRelWidth() const {return &m_columnRelWidth;}
     
     const UT_UTF8String* getMinRowHeight() const {return &m_minRowHeight;}
     const UT_UTF8String* getRowHeight() const {return &m_rowHeight;}
@@ -223,6 +226,7 @@ public:
     const UT_UTF8String* getTableMarginLeft() const {return &m_TableMarginLeft;}
     const UT_UTF8String* getTableMarginRight() const {return &m_TableMarginRight;}
     const UT_UTF8String* getTableWidth() const {return &m_TableWidth;}
+    const UT_UTF8String* getTableRelWidth() const {return &m_TableRelWidth;}
 private:
 
     // <style:style />
@@ -380,10 +384,12 @@ private:
     // fo:margin-left
     // fo:margin-right
     // style:width
+    // style:rel-width
     
     UT_UTF8String   m_TableMarginLeft;
     UT_UTF8String   m_TableMarginRight;
     UT_UTF8String   m_TableWidth;
+    UT_UTF8String   m_TableRelWidth;
 
     
     ////
@@ -402,7 +408,10 @@ private:
 
     ////
     // <style:table-column-properties>
+    // style:column-width
+    // rel-column-width
     UT_UTF8String m_columnWidth; // style:column-width
+    UT_UTF8String m_columnRelWidth; // style:rel-column-width
     
     ////
     // <style:table-row-properties>

@@ -576,10 +576,14 @@ void ODi_Style_Style::_parse_style_tableProperties(const gchar** ppProps) {
         m_TableMarginRight = pVal;
     }
 
-
     pVal = UT_getAttribute("style:width",ppProps);
     if (pVal) {
         m_TableWidth = pVal;
+    }
+
+    pVal = UT_getAttribute("style:rel-width",ppProps);
+    if (pVal) {
+        m_TableRelWidth = pVal;
     }
 }
 
@@ -593,6 +597,11 @@ void ODi_Style_Style::_parse_style_tableColumnProperties(const gchar** ppProps) 
     pVal = UT_getAttribute("style:column-width", ppProps);
     if (pVal) {
         m_columnWidth = pVal;
+    }
+
+    pVal = UT_getAttribute("style:rel-column-width", ppProps);
+    if (pVal) {
+        m_columnRelWidth = pVal;
     }
 }
 

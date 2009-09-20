@@ -104,8 +104,9 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh,
 	  m_bIsEndTableIn(false),
 	  m_iHeightChanged(0),
       m_pNewHeightCell(NULL),
-	  m_bDoingDestructor(false)
-
+	  m_bDoingDestructor(false),
+	  m_iTableWidth(0),
+	  m_dTableRelWidth(0.0)
 {
 	UT_DEBUGMSG(("Created Table Layout %p \n",this));
 	UT_ASSERT(pLayout);
@@ -1130,6 +1131,29 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_bIsHomogeneous = false;
 	}
+	const char* pszTableWidth = NULL;
+	const char* pszRelTableWidth = NULL;
+	pSectionAP->getProperty("table-width", (const gchar *&)pszTableWidth);
+	pSectionAP->getProperty("table-rel-width", (const gchar *&)pszRelTableWidth);
+	if(pszTableWidth && pszTableWidth[0])
+	{
+		m_iTableWidth = UT_convertToLogicalUnits(pszTableWidth);
+	}
+	else
+	{
+		m_iTableWidth = getDocSectionLayout()->getActualColumnWidth();
+	}
+	if(pszRelTableWidth && pszRelTableWidth[0])
+	{
+		m_iTableWidth = getDocSectionLayout()->getActualColumnWidth();
+		//
+		// Assume the relative table width is in percent
+		//
+		double rel = UT_convertDimensionless(pszRelTableWidth);
+		m_dTableRelWidth = static_cast<double>(m_iTableWidth)*rel/100.;
+		m_iTableWidth = m_dTableRelWidth;
+	}
+
 	const char* pszLeftOffset = NULL;
 	const char* pszTopOffset = NULL;
 	const char* pszRightOffset = NULL;
@@ -1281,8 +1305,11 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 //
 	const char * pszLeftColPos = NULL;
 	const char * pszColumnProps = NULL;
+	const char * pszRelColumnProps = NULL;
 	pSectionAP->getProperty("table-column-leftpos", (const gchar *&)pszLeftColPos);
 	pSectionAP->getProperty("table-column-props", (const gchar *&)pszColumnProps);
+	pSectionAP->getProperty("table-rel-column-props", (const gchar *&)pszRelColumnProps);
+
 	if(pszLeftColPos && *pszLeftColPos)
 	{
 //
@@ -1317,6 +1344,7 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
    The format of the string of properties is:
 
    table-column-props:1.2in/3.0in/1.3in/;
+   table-rel-column-props are ignored here
 
    So we read back in pszColumnProps
    1.2in/3.0in/1.3in/
@@ -1341,6 +1369,7 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 				i = j + 1;
 				fl_ColProps * pColP = new fl_ColProps;
 				pColP->m_iColWidth = UT_convertToLogicalUnits(sSub.c_str());
+				pColP->m_dColRelWidth = 0.0;
 				m_vecColProps.addItem(pColP);
 				UT_DEBUGMSG(("SEVIOR: width char %s width layout %d \n",sSub.c_str(),pColP->m_iColWidth));
 			}
@@ -1359,6 +1388,65 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		UT_VECTOR_PURGEALL(fl_ColProps *,m_vecColProps);
 		m_vecColProps.clear();
 	}
+
+
+	if(pszRelColumnProps && *pszRelColumnProps)
+	{
+/*
+   These will be properties applied to all columns. To start with, just the 
+    widths of each column are specifed. These are translated to layout units.
+ 
+   The format of the string of properties is:
+
+   table-column-props are ignored here
+   table-rel-column-props 
+
+   So we read back in pszRelColumnProps
+   23* /25* /28* / (except that theere is no space between the * and the /!)
+
+   The "/" characters will be used to delineate different column entries.
+*/
+		xxx_UT_DEBUGMSG(("Processing Column width string %s \n",pszRelColumnProps));
+		UT_VECTOR_PURGEALL(fl_ColProps *,m_vecColProps);
+		m_vecColProps.clear();
+		UT_String sProps = pszColumnProps;
+		UT_sint32 sizes = sProps.size();
+		UT_sint32 i =0;
+		UT_sint32 j =0;
+		double tot = 0.0;
+		fl_ColProps * pColP = NULL;
+		while(i < sizes)
+		{
+			for (j=i; (j<sizes) && (sProps[j] != '/') ; j++) {}
+			if((j+1)>i && sProps[j] == '/')
+			{
+				UT_String sSub = sProps.substr(i,(j-i));
+				i = j + 1;
+				pColP = new fl_ColProps;
+				pColP->m_iColWidth = 0;
+				pColP->m_dColRelWidth = UT_convertDimensionless(sSub.c_str());
+				m_vecColProps.addItem(pColP);
+				UT_DEBUGMSG(("SEVIOR: width char %s width layout %f \n",sSub.c_str(),pColP->m_dColRelWidth));
+				tot += pColP->m_dColRelWidth;
+			}
+			else
+			{
+				// something not right here
+				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+
+				// we need to quit the main loop
+				break;
+			}
+		}
+		//
+		// Now set the actual column width from the relative width
+		//
+		for(i=0; i<	m_vecColProps.getItemCount();i++)
+		{
+			pColP = m_vecColProps.getNthItem(i);
+			pColP->m_iColWidth = static_cast<double>(m_iTableWidth)*pColP->m_dColRelWidth/tot;
+		}
+ 	}
 
 //
 // global row height type

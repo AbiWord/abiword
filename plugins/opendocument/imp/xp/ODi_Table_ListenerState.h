@@ -90,7 +90,8 @@ private:
     
     UT_UTF8String m_columnWidths;
     UT_UTF8String m_rowHeights;
-    
+    UT_UTF8String m_columnRelWidths;
+
     bool m_gotAllColumnWidths;
     
     UT_UTF8String m_waitingEndElement;

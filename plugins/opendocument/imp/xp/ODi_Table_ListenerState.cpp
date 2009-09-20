@@ -206,6 +206,31 @@ void ODi_Table_ListenerState::_parseTableStart(const gchar** ppAtts,
 		    
                 }
             }
+
+            // table width
+            if (pStyle != NULL) {
+                if (!pStyle->getTableWidth()->empty()) {
+		    if (!props.empty()) {
+		        props += "; ";
+		    }
+		    props += "table-width:";
+		    props += pStyle->getTableWidth()->utf8_str();
+		    
+                }
+            }
+
+
+            // table relative width 
+            if (pStyle != NULL) {
+                if (!pStyle->getTableRelWidth()->empty()) {
+		    if (!props.empty()) {
+		        props += "; ";
+		    }
+		    props += "table-rel-width:";
+		    props += pStyle->getTableRelWidth()->utf8_str();
+		    
+                }
+            }
   
             // Column widths
             if (m_gotAllColumnWidths) {
@@ -214,6 +239,17 @@ void ODi_Table_ListenerState::_parseTableStart(const gchar** ppAtts,
                 }
                 props += "table-column-props:";
                 props += m_columnWidths;
+            }
+ 
+           // Column Rel widths
+            if (m_gotAllColumnWidths && !m_columnRelWidths.empty()) 
+	    {
+                if (!props.empty()) 
+		{
+                    props += "; ";
+                }
+                props += "table-rel-column-props:";
+                props += m_columnRelWidths;
             }
             
             // Row heights
@@ -257,35 +293,51 @@ void ODi_Table_ListenerState::_parseTableStart(const gchar** ppAtts,
 void ODi_Table_ListenerState::_parseColumnStart (const gchar** ppAtts,
                                                  ODi_ListenerStateAction& /*rAction*/)
 {
-    if (m_onFirstPass) {
+    if (m_onFirstPass) 
+    {
         const gchar* pStyleName;
         const ODi_Style_Style* pStyle;
         const gchar* pNumberColumnsRepeated;
         int nColsRepeated, i;
         
         pStyleName = UT_getAttribute("table:style-name", ppAtts);
-        if (pStyleName != NULL) {
+        if (pStyleName != NULL) 
+	{
             pStyle = m_pStyles->getTableColumnStyle(pStyleName,
                                                     m_onContentStream);
             UT_ASSERT_HARMLESS(pStyle != NULL);
             
-            if (pStyle && (pStyle->getColumnWidth()->empty())) {
+            if (pStyle && (pStyle->getColumnWidth()->empty())) 
+	    {
                 m_gotAllColumnWidths = false;
-            } else if (pStyle) {
+            } 
+	    else if (pStyle) 
+	    {
                 pNumberColumnsRepeated = UT_getAttribute("table:number-columns-repeated", ppAtts);
-                if (pNumberColumnsRepeated != NULL) {
+                if (pNumberColumnsRepeated != NULL) 
+		{
                     nColsRepeated = atoi(pNumberColumnsRepeated);
                     UT_ASSERT(nColsRepeated > 0);
-                } else {
+                } 
+		else 
+		{
                     nColsRepeated = 1;
                 }
 
-                for (i=0; i<nColsRepeated; i++) {
+                for (i=0; i<nColsRepeated; i++) 
+		{
                     m_columnWidths += *(pStyle->getColumnWidth());
                     m_columnWidths += "/";
                 }
+		if(!pStyle->getColumnRelWidth()->empty())
+		{
+                    m_columnRelWidths += *(pStyle->getColumnRelWidth());
+                    m_columnRelWidths += "/";
+		}
             }
-        } else {
+        } 
+	else 
+	{
             m_gotAllColumnWidths = false;
         }
     }

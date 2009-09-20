@@ -86,6 +86,7 @@ class ABI_EXPORT fl_ColProps
 {
 public:
 	UT_sint32 m_iColWidth;
+	double    m_dColRelWidth;
 };
 
 class ABI_EXPORT fl_RowProps
@@ -260,6 +261,8 @@ private:
     UT_sint32              m_iHeightChanged;
 	fp_CellContainer *     m_pNewHeightCell;
 	bool                   m_bDoingDestructor;
+	UT_sint32              m_iTableWidth;
+	double                 m_dTableRelWidth;
 };
 
 
