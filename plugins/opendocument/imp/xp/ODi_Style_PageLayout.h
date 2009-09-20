@@ -58,7 +58,7 @@ public:
     
     // Returns the value to be used on every <section> tag of the AbiWord
     // document. 
-    inline const UT_UTF8String& getSectionProps() const {return m_sectionProps;}
+    const UT_UTF8String getSectionProps(bool hasHeader, bool hasFooter) const;
 
     inline const UT_UTF8String& getSectionDataID() const {return m_sectionDataID;}
     
@@ -69,7 +69,7 @@ private:
     void _parseHeaderFooterProperties(const gchar** ppAtts);
     void _parsePageLayoutProperties(const gchar** ppAtts);
     void _parseBackgroundImage(const gchar** ppAtts);
-    void _buildSectionPropsString();
+    UT_UTF8String _buildSectionPropsString(bool hasHeader, bool hasFooter) const;
     void _buildSectionDataIDString();
 
     ODi_Abi_Data& m_rAbiData;
@@ -109,10 +109,6 @@ private:
     ////
     // <style:background-image>
     UT_UTF8String m_backgroundImage; // xlink:href
-    
-    // Properties that goes to the <section> tag of AbiWord, as the "props"
-    // attribute value.
-    UT_UTF8String m_sectionProps;
 
     // The strux-image-dataid attribute for the section
     UT_UTF8String m_sectionDataID;

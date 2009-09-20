@@ -61,8 +61,10 @@ public:
         m_pPageLayoutStyle->definePageSizeTag(pDocument);
     }
     
-    inline const UT_UTF8String& getSectionProps() const {
-        return m_pPageLayoutStyle->getSectionProps();
+    inline const UT_UTF8String getSectionProps() const {
+        return m_pPageLayoutStyle->getSectionProps(
+			!m_AW_headerSectionID.empty() || !m_AW_evenHeaderSectionID.empty(),
+			!m_AW_footerSectionID.empty() || !m_AW_evenFooterSectionID.empty());
     }
 
     inline const UT_UTF8String& getSectionDataID() const {

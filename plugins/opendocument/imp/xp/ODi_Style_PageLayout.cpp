@@ -107,7 +107,6 @@ void ODi_Style_PageLayout::endElement(const gchar* pName,
                                      ODi_ListenerStateAction& rAction) {
                                         
     if (!strcmp("style:page-layout", pName)) {
-        _buildSectionPropsString();
         _buildSectionDataIDString();
         rAction.popState();
     }
@@ -170,6 +169,10 @@ void ODi_Style_PageLayout::definePageSizeTag(PD_Document* pDocument) const {
     pDocument->setPageSizeFromFile(pageAtts);
 }
 
+const UT_UTF8String ODi_Style_PageLayout::getSectionProps(bool hasHeader, bool hasFooter) const
+{
+	return _buildSectionPropsString(hasHeader, hasFooter);
+}
 
 /**
  * Parses <style:header-footer-properties> start tags.
@@ -275,22 +278,21 @@ void ODi_Style_PageLayout::_parseBackgroundImage(const gchar** ppAtts) {
 /**
  * 
  */
-void ODi_Style_PageLayout::_buildSectionPropsString() {
+UT_UTF8String ODi_Style_PageLayout::_buildSectionPropsString(bool hasHeader, bool hasFooter) const {
+    UT_UTF8String sectionProps;
     double val;
     UT_UTF8String str;
     UT_LocaleTransactor lt(LC_NUMERIC, "C");
-    
-    m_sectionProps.clear();
-        
+
         
 #define APPEND_STYLE(abiStyName, styValue) \
     if (styValue.size()) { \
-        if(m_sectionProps.size()) { \
-            m_sectionProps += "; "; \
+        if(sectionProps.size()) { \
+            sectionProps += "; "; \
         } \
-        m_sectionProps += abiStyName; \
-        m_sectionProps += ":"; \
-        m_sectionProps += styValue; \
+        sectionProps += abiStyName; \
+        sectionProps += ":"; \
+        sectionProps += styValue; \
     }
 
     APPEND_STYLE("page-margin-left", m_marginLeft);
@@ -299,7 +301,7 @@ void ODi_Style_PageLayout::_buildSectionPropsString() {
     APPEND_STYLE("page-height",m_pageHeight);
     APPEND_STYLE("page-orientation",m_printOrientation);
 
-    if (m_headerHeight.empty()) {
+    if (!hasHeader) {
         // We don't have a header.
         // The property maps directly.
         APPEND_STYLE("page-margin-top", m_marginTop);
@@ -309,9 +311,20 @@ void ODi_Style_PageLayout::_buildSectionPropsString() {
         //                         OD's header svg:height +
         //                         OD's header fo:margim-bottom
 
+		// The problem with this calculation however is that in ODF the
+		// header height is often implicit, and depends on the layout.
+		// AbiWord on the other hand always needs an explicit header height. 
+		// As a quick workaround we just specify the header height to be 
+		// 0.5in (AbiWord's default).
+		// This is far from perfect, as this might be too small or to large.
+		// But until AbiWord supports implicit header heights, this is the best 
+		// we can do.
+		//
+		// See http://bugzilla.abisource.com/show_bug.cgi?id=12371 for more details.
+
         val = UT_convertToDimension(m_marginTop.utf8_str(), DIM_CM);
         
-        val += UT_convertToDimension(m_headerHeight.utf8_str(), DIM_CM);
+		val += UT_convertToDimension(!m_headerHeight.empty() ? m_headerHeight.utf8_str() : "0.5in", DIM_CM);
         
         if (!m_headerMarginBottom.empty()) {
             val += UT_convertToDimension(m_headerMarginBottom.utf8_str(), DIM_CM);
@@ -322,7 +335,7 @@ void ODi_Style_PageLayout::_buildSectionPropsString() {
         APPEND_STYLE("page-margin-header", m_marginTop);
     }
     
-    if (m_footerHeight.empty()) {
+    if (!hasFooter) {
         // We don't have a footer.
         // The property maps directly.
         APPEND_STYLE("page-margin-bottom", m_marginTop);
@@ -332,9 +345,20 @@ void ODi_Style_PageLayout::_buildSectionPropsString() {
         //                            OD's footer svg:height +
         //                            OD's footer fo:margim-top
 
+		// The problem with this calculation however is that in ODF the
+		// footer height is often implicit, and depends on the layout.
+		// AbiWord on the other hand always needs an explicit footer height. 
+		// As a quick workaround we just specify the footer height to be 
+		// 0.5in (AbiWord's default).
+		// This is far from perfect, as this might be too small or to large.
+		// But until AbiWord supports implicit footer heights, this is the best 
+		// we can do.
+		//
+		// See http://bugzilla.abisource.com/show_bug.cgi?id=12371 for more details.
+
         val = UT_convertToDimension(m_marginBottom.utf8_str(), DIM_CM);
         
-        val += UT_convertToDimension(m_footerHeight.utf8_str(), DIM_CM);
+		val += UT_convertToDimension(!m_footerHeight.empty() ? m_footerHeight.utf8_str() : "0.5in", DIM_CM);
         
         if (!m_footerMarginTop.empty()) {
             val += UT_convertToDimension(m_footerMarginTop.utf8_str(), DIM_CM);
@@ -351,6 +375,7 @@ void ODi_Style_PageLayout::_buildSectionPropsString() {
     APPEND_STYLE("background-color", m_backgroundColor);
 #undef APPEND_STYLE
 
+    return sectionProps;
 }
 
 
