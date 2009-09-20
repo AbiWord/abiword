@@ -1405,6 +1405,12 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
    23* /25* /28* / (except that theere is no space between the * and the /!)
 
    The "/" characters will be used to delineate different column entries.
+
+   The formula used to set the actual column widths is
+   width_i = rel_i*m_axiTableWidth/tot_rel
+
+   Where tot_rel is the sum of all the relative column widths.
+
 */
 		xxx_UT_DEBUGMSG(("Processing Column width string %s \n",pszRelColumnProps));
 		UT_VECTOR_PURGEALL(fl_ColProps *,m_vecColProps);

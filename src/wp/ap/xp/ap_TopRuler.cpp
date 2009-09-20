@@ -3215,11 +3215,76 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			}
 			m_draggingWhat = DW_NOTHING;
 			FV_View * pView = static_cast<FV_View *>(m_pView);
-			const gchar * props[3] = {NULL,NULL,NULL};
+			// table-width,table-rel-width,table-rel-column-props
+			const gchar * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,
+						  NULL,NULL,NULL};
+			if(pTInfo == NULL)
+			{
+				pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecFullTable->getNthItem(0));
+			}
+			fp_CellContainer * pCell = pTInfo->m_pCell;
+			fl_SectionLayout * pSL = pCell->getSectionLayout();
+			fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pSL->myContainingLayout());
+			UT_String sVal;
+			UT_String srelTab;
+			UT_String sRelWidths;
 			if(!bDragLeftMost)
 			{
-				props[0] = "table-column-props";
-				props[1] = sColWidths.c_str();
+			     props[0] = "table-column-props";
+			     props[1] = sColWidths.c_str();
+			     if(pTL->getTableRelWidth()>1.0e-6)
+			     {
+			          UT_GenericVector<UT_sint32> vecRelWidths;
+				  UT_String sProps = sColWidths.c_str();;
+				  UT_sint32 sizes = sProps.size();
+				  i = 0;
+				  UT_sint32 j =0;
+				  UT_sint32 tot = 0;
+				  while(i < sizes)
+				  {
+				    for (j=i; (j<sizes) && (sProps[j] != '/') ; j++) {}
+				    if((j+1)>i && sProps[j] == '/')
+				    {
+					UT_String sSub = sProps.substr(i,(j-i));
+					i = j + 1;
+					UT_sint32 width = UT_convertToLogicalUnits(sSub.c_str());
+					vecRelWidths.addItem(width);
+					tot += width;
+				    }
+				    else
+				    {
+				      // something not right here
+				      UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+
+				      // we need to quit the main loop
+				      break;
+				    }
+				  }
+				  //
+				  // Build the relative table properties now
+				  //
+				  double dtot = tot/1440.;
+				  UT_String stot = UT_formatDimensionString(DIM_IN,dtot);
+				  fl_DocSectionLayout * pDSL = pTL->getDocSectionLayout();
+				  double relTab = 100.*static_cast<double>(tot)/static_cast<double>(pDSL->getActualColumnWidth());
+				  UT_String_sprintf(sVal,"%f",relTab);
+				  srelTab = sVal;
+				  srelTab += "%";
+				  props[2] = "table-width";
+				  props[3] = stot.c_str();
+				  props[4] = "table-rel-width";
+				  props[5] = srelTab.c_str();
+				  sRelWidths.clear();;
+				  for(i=0;i<vecRelWidths.getItemCount();i++)
+				  {
+				      UT_String_sprintf(sVal,"%d",vecRelWidths.getNthItem(i));
+				      sRelWidths += sVal;
+				      sRelWidths += "*/";
+				  }
+				  props[6] = "table-rel-column-props";
+				  props[7] = sRelWidths.c_str();
+				  props[8] = NULL;
+			     }				  
 			}
 			else
 			{
@@ -3243,8 +3308,6 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			{
 				pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecFullTable->getNthItem(0));
 			}
-			fp_CellContainer * pCell = pTInfo->m_pCell;
-			fl_SectionLayout * pSL = pCell->getSectionLayout();
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pSL->getFirstLayout());
 			PT_DocPosition pos = pBL->getPosition();
 			pView->setTableFormat(pos,props);

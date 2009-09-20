@@ -183,7 +183,8 @@ UT_sint32                    getBottomOffset(void) const;
 	bool                     isDirty(void) const
 		{ return m_bIsDirty;}
 	void                     setDirty(void);
-
+	double                   getTableRelWidth(void) const
+	{ return m_dTableRelWidth;}
 	UT_sint32                getLineThickness(void) const;
 	UT_sint32                getColSpacing(void) const;
 	UT_sint32                getRowSpacing(void) const;
