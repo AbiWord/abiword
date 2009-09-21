@@ -115,6 +115,7 @@ private:
 
     bool m_inAbiSection;
     bool m_openedFirstAbiSection;
+    bool m_bPendingSection;
     
     // For some reason AbiWord can't have a page break right before a new section.
     // In AbiWord, if you want to do that you have to first open the new section

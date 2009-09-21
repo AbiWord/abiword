@@ -62,6 +62,7 @@ ODi_TextContent_ListenerState::ODi_TextContent_ListenerState (
                   m_bOpenedBlock(false),
                   m_inAbiSection(false),
                   m_openedFirstAbiSection(false),
+                  m_bPendingSection(false),
                   m_currentODSection(ODI_SECTION_NONE),
                   m_elementParsingLevel(0),
                   m_pCurrentTOCParser(NULL),
@@ -114,8 +115,16 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
     }
     
     if (!strcmp(pName, "text:section" )) {
+		
+        if (m_bPendingSection)
+        {
+            // this can only occur when we have a section pending with 
+            // no content in it, which AbiWord does not support. Since I'm 
+            // not sure if OpenDocument even allows it, I'll assert on it
+            // for now - MARCM
+            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN); // or should it?
+        }
 
-        // OBS: AbiWord also can't have nested sections (but OpenDocument can).
 
         const gchar* pStyleName = UT_getAttribute ("text:style-name", ppAtts);
         UT_ASSERT(pStyleName != NULL);
@@ -139,8 +148,15 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         if (props.empty()) {
             m_currentODSection = ODI_SECTION_IGNORED;
         } else {
-            m_currentODSection = ODI_SECTION_MAPPED;
-            _openAbiSection(props);
+			// Styles placed on elements such as <text:p> can actually
+			// contain section related properties such as headers/footers 
+			// via the master page style. Bug 10399 shows an example of this,
+			// See http://bugzilla.abisource.com/show_bug.cgi?id=10399 for details.
+
+			// Therfore, we delay writing out the section until we encounter
+			// the first element in the section. This allows us to merge the 'section' 
+			// parts of both element's styles.
+			m_bPendingSection = true;
         }
 
     } else if (!strcmp(pName, "text:p" )) {
@@ -1120,23 +1136,8 @@ void ODi_TextContent_ListenerState::_popInlineFmt(void)
 void ODi_TextContent_ListenerState::_insureInSection(
                                          const UT_UTF8String* pMasterPageName) {
     
-    if (m_inAbiSection) {
-      //
-      // FIXME Sevior says I do not know what this ifdeffed code was 
-      // trying to do
-      // If we're in a section we should not change the section properties.
-      // I ifdeffed the code out in case some other bug shows we need it.
-      //
-#if 0
-        if (pMasterPageName == NULL ||
-            (pMasterPageName != NULL && pMasterPageName->empty()) ) {
-            // There's nothing to be done.
-                return;
-        }
-#endif
-	return;
-    }
-    
+    if (m_inAbiSection && !m_bPendingSection)
+        return;
     
     const ODi_StartTag* pStartTag;
     UT_UTF8String props = "";
@@ -1316,6 +1317,7 @@ void ODi_TextContent_ListenerState::_openAbiSection(
     }
    
     m_pAbiDocument->appendStrux(PTX_Section, (const gchar**)atts);    
+	m_bPendingSection = false;
     m_bOpenedBlock = false;
 
     // For some reason AbiWord can't have a page break right before a new section.
