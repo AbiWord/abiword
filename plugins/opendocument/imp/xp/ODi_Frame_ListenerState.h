@@ -91,6 +91,14 @@ private:
 
     UT_ByteBuf* m_pMathBB;
     bool m_bInMath;
+
+	bool m_bInlineImagePending;
+	bool m_bPositionedImagePending;
+	std::string m_sAltTitle;
+	bool m_bInAltTitle;
+	std::string m_sAltDesc;
+	bool m_bInAltDesc;
+	std::map<std::string, std::string> m_mPendingImgProps;
 };
 
 #endif //_ODI_FRAME_LISTENERSTATE_H_

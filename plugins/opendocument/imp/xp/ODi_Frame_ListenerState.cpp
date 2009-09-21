@@ -52,7 +52,11 @@ ODi_Frame_ListenerState::ODi_Frame_ListenerState(PD_Document* pDocument,
         m_inlinedImage(false),
         m_iFrameDepth(0),
         m_pMathBB(NULL),
-        m_bInMath(false)
+        m_bInMath(false),
+		m_bInlineImagePending(false),
+		m_bPositionedImagePending(false),
+		m_bInAltTitle(false),
+		m_bInAltDesc(false)
 {
     if (m_rElementStack.hasElement("office:document-content")) {
         m_bOnContentStream = true;
@@ -90,10 +94,12 @@ void ODi_Frame_ListenerState::startElement (const gchar* pName,
         } else {
             m_parsedFrameStartTag = true;
         }
-        
     } else if (!strcmp(pName, "draw:image")) {
         _drawImage(ppAtts, rAction);
-        
+	} else if (!strcmp(pName, "svg:title")) {
+		m_bInAltTitle = true;
+	} else if (!strcmp(pName, "svg:desc")) {
+		m_bInAltDesc = true;
     } else if (!strcmp(pName, "draw:text-box")) {
         if (m_rElementStack.hasElement("draw:text-box")) {
             // AbiWord doesn't support nested text boxes.
@@ -137,6 +143,48 @@ void ODi_Frame_ListenerState::endElement (const gchar* pName,
     }
 
     if (!strcmp(pName, "draw:frame")) {
+		
+		if (m_bInlineImagePending || m_bPositionedImagePending)
+		{
+			if (!m_sAltTitle.empty())
+				m_mPendingImgProps["title"] = m_sAltTitle;
+			if (!m_sAltDesc.empty())
+				m_mPendingImgProps["alt"] = m_sAltDesc;
+
+			// write out the pending image
+			const UT_sint32 size = m_mPendingImgProps.size()*2+1;
+			const gchar** attribs = (const gchar**)g_malloc(size * sizeof(const gchar*));
+			UT_sint32 i = 0;
+			for (std::map<std::string, std::string>::const_iterator cit = m_mPendingImgProps.begin(); cit != m_mPendingImgProps.end(); cit++)
+			{
+				attribs[i++] = reinterpret_cast<const gchar*>((*cit).first.c_str());
+				attribs[i++] = reinterpret_cast<const gchar*>((*cit).second.c_str());
+			}
+			attribs[i] = NULL;
+
+			if (m_bInlineImagePending)
+			{
+				if (!m_pAbiDocument->appendObject (PTO_Image, attribs)) {
+					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+				}
+				
+				m_bInlineImagePending = false;
+			}
+			else if (m_bPositionedImagePending)
+			{
+				if(!m_pAbiDocument->appendStrux(PTX_SectionFrame, attribs)) {
+					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+				} else {
+					m_iFrameDepth++;
+				}
+				m_bPositionedImagePending = false;
+			}
+
+			FREEP(attribs);
+			m_sAltTitle = "";
+			m_sAltDesc = "";
+			m_mPendingImgProps.clear();
+		}
 
         if (!m_inlinedImage && (m_iFrameDepth > 0)) {
             if(!m_pAbiDocument->appendStrux(PTX_EndFrame, NULL)) {
@@ -148,6 +196,10 @@ void ODi_Frame_ListenerState::endElement (const gchar* pName,
 
         // We're done.
         rAction.popState();
+	} else if (!strcmp(pName, "svg:title")) {
+		m_bInAltTitle = false;
+	} else if (!strcmp(pName, "svg:desc")) {
+		m_bInAltDesc = false;
     } else if (!strcmp(pName, "math:math")) {
         
         if (m_pMathBB) {
@@ -180,7 +232,11 @@ void ODi_Frame_ListenerState::charData (const gchar* pBuffer, int length)
     if (m_bInMath && m_pMathBB) {
         m_pMathBB->append(reinterpret_cast<const UT_Byte *>(pBuffer), length);
         return;
-    }
+	} else if (m_bInAltTitle) {
+		m_sAltTitle += std::string(reinterpret_cast<const char*>(pBuffer), length);
+	} else if (m_bInAltDesc) {
+		m_sAltDesc += std::string(reinterpret_cast<const char*>(pBuffer), length);
+	}
 }
 
 
@@ -194,7 +250,8 @@ void ODi_Frame_ListenerState::_drawImage (const gchar** ppAtts,
     const gchar* pChar;
     const ODi_Style_Style* pGraphicStyle;
     UT_String dataId; // id of the data item that contains the image.
-    
+ 
+	UT_return_if_fail(!m_bInlineImagePending && !m_bPositionedImagePending);
     
     //
     // Adds a reference to the added data item according to anchor mode, etc.
@@ -231,10 +288,7 @@ void ODi_Frame_ListenerState::_drawImage (const gchar** ppAtts,
             return;
         }
         
-        const gchar* attribs[5];
-        UT_UTF8String props;
-        
-        props = "frame-type:image";
+        UT_UTF8String props = "frame-type:image";
             
         if(!_getFrameProperties(props, ppAtts)) {
             // Abort mission!
@@ -252,17 +306,12 @@ void ODi_Frame_ListenerState::_drawImage (const gchar** ppAtts,
             return;
         }
         
-        attribs[0] = "strux-image-dataid";
-        attribs[1] = dataId.c_str();
-        attribs[2] = "props";
-        attribs[3] = props.utf8_str();
-        attribs[4] = 0;
+		m_mPendingImgProps["strux-image-dataid"] = dataId.c_str();
+        m_mPendingImgProps["props"] = props.utf8_str();
         
-        if(!m_pAbiDocument->appendStrux(PTX_SectionFrame, attribs)) {
-            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-        } else {
-            m_iFrameDepth++;
-        }
+		// don't write the image out yet as we might get more properties, for
+		// example alt descriptions from the <svg:desc> tag
+		m_bPositionedImagePending = true;
     }
 
 }
@@ -280,7 +329,6 @@ void ODi_Frame_ListenerState::_drawInlineImage (const gchar** ppAtts)
         return;
     }
 
-    const gchar* attribs[5];
     UT_String propsBuffer;
         
     pWidth = m_rElementStack.getStartTag(0)->getAttributeValue("svg:width");
@@ -291,16 +339,12 @@ void ODi_Frame_ListenerState::_drawInlineImage (const gchar** ppAtts)
         
     UT_String_sprintf(propsBuffer, "width:%s; height:%s", pWidth, pHeight);
         
-    attribs[0] = "props";
-    attribs[1] = propsBuffer.c_str();
-    attribs[2] = "dataid";
-    attribs[3] = dataId.c_str();
-    attribs[4] = 0;
-    
-    if (!m_pAbiDocument->appendObject (PTO_Image, attribs)) {
-        UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-    }
+	m_mPendingImgProps["props"] = propsBuffer.c_str();
+	m_mPendingImgProps["dataid"] = dataId.c_str();
 
+	// don't write the image out yet as we might get more properties, for
+	// example alt descriptions from the <svg:desc> tag
+	m_bInlineImagePending = true;
 }
 
 /**
@@ -377,11 +421,7 @@ void ODi_Frame_ListenerState::_drawObject (const gchar** ppAtts,
             return;
         }
         
-        const gchar* attribs[5];
-        UT_UTF8String props;
-        
-        props = "frame-type:image";
-            
+        UT_UTF8String props = "frame-type:image";
         if(!_getFrameProperties(props, ppAtts)) {
             return;
         }
@@ -396,17 +436,12 @@ void ODi_Frame_ListenerState::_drawObject (const gchar** ppAtts,
             return;
         }
         
-        attribs[0] = "strux-image-dataid";
-        attribs[1] = dataId.c_str();
-        attribs[2] = "props";
-        attribs[3] = props.utf8_str();
-        attribs[4] = 0;
+		m_mPendingImgProps["strux-image-dataid"] = dataId.c_str();
+		m_mPendingImgProps["props"] = props.utf8_str();
         
-        if(!m_pAbiDocument->appendStrux(PTX_SectionFrame, attribs)) {
-            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-        } else {
-            m_iFrameDepth++;
-        }
+		// don't write the image out yet as we might get more properties, for
+		// example alt descriptions from the <svg:desc> tag
+		m_bPositionedImagePending = true;
     }
 
 }
