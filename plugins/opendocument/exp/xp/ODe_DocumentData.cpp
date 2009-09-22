@@ -129,13 +129,13 @@ bool ODe_DocumentData::doPostListeningWork() {
         m_stylesXMLFontDecls.addFont( (*pStylesVector)[i]->getFontName() );
     }
     
-    pStylesVector = m_styles.getParagraphStyles();
+    pStylesVector = m_styles.getParagraphStylesEnumeration();
     count = pStylesVector->getItemCount();
     for (i=0; i<count; i++) {
         m_stylesXMLFontDecls.addFont( (*pStylesVector)[i]->getFontName() );
     }
     
-    pStylesVector = m_styles.getTextStyles();
+    pStylesVector = m_styles.getTextStylesEnumeration();
     count = pStylesVector->getItemCount();
     for (i=0; i<count; i++) {
         m_stylesXMLFontDecls.addFont( (*pStylesVector)[i]->getFontName() );

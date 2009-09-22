@@ -92,6 +92,10 @@ public:
         m_family = pFamily;
     }
     
+	void setParentStyleName(const gchar* pParentStyleName) {
+        m_parentStyleName = pParentStyleName;
+	}
+
     void setMasterPageName(const UT_UTF8String& rMasterPageName) {
         m_masterPageName = rMasterPageName;
     }

@@ -53,19 +53,31 @@ public:
     // Writes the <office:styles> element.
     bool write(GsfOutput* pODT) const;
     
-    UT_GenericVector<ODe_Style_Style*>* getParagraphStyles() {
+    UT_GenericVector<ODe_Style_Style*>* getParagraphStylesEnumeration() {
         return m_paragraphStyles.enumerate();
     }
     
-    UT_GenericVector<ODe_Style_Style*>* getTextStyles() {
+    UT_GenericVector<ODe_Style_Style*>* getTextStylesEnumeration() {
         return m_textStyles.enumerate();
     }
 
+    UT_GenericVector<ODe_Style_Style*>* getGraphicStylesEnumeration() {
+        return m_graphicStyles.enumerate();
+    }
+
+	ODe_Style_Style* getGraphicsStyle(const gchar* name) {
+        return m_graphicStyles.pick(name);
+	}
+
+	void addGraphicsStyle(ODe_Style_Style* pStyle);
+
 private:
     bool _addStyle(const PP_AttrProp* pAP);
+    bool _writeStyles(GsfOutput* pODT, UT_GenericVector<ODe_Style_Style*>* pStyleVector) const;
 
     UT_GenericStringMap<ODe_Style_Style*> m_textStyles;
     UT_GenericStringMap<ODe_Style_Style*> m_paragraphStyles;
+	UT_GenericStringMap<ODe_Style_Style*> m_graphicStyles;
 };
 
 #endif //_ODE_STYLES_H_

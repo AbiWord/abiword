@@ -113,7 +113,8 @@ public:
 class ODe_Table_Listener : public ODe_AbiDocListenerImpl {
 public:
 
-    ODe_Table_Listener(ODe_AutomaticStyles& rAutomatiStyles,
+    ODe_Table_Listener(ODe_Styles& rStyles,
+                       ODe_AutomaticStyles& rAutomatiStyles,
                        GsfOutput* pTextOutput,
                        ODe_AuxiliaryData& rAuxiliaryData,
                        UT_uint8 zIndex,
@@ -138,6 +139,7 @@ private:
     UT_GenericVector<ODe_Table_Cell*> m_cells;
     
     GsfOutput* m_pTextOutput;
+	ODe_Styles& m_rStyles;
     ODe_AutomaticStyles& m_rAutomatiStyles;
     ODe_AuxiliaryData& m_rAuxiliaryData;
     UT_uint8 m_zIndex;

@@ -116,6 +116,10 @@ bool ODe_Styles::fetchRegularStyleStyles(PD_Document* pAbiDoc) {
     return ok;
 }
 
+void ODe_Styles::addGraphicsStyle(ODe_Style_Style* pStyle)
+{
+    m_graphicStyles.insert(pStyle->getName().utf8_str(), pStyle);
+}
 
 /**
  * Adds an OpenDocumnet style (paragraph or text family)
@@ -161,43 +165,28 @@ bool ODe_Styles::_addStyle(const PP_AttrProp* pAP) {
  */
 bool ODe_Styles::write(GsfOutput* pODT) const {
     UT_UTF8String output;
-    UT_UTF8String offset;
-    UT_GenericVector<ODe_Style_Style*>* pStyleVector;
-    UT_uint32 i, count;
-    ODe_Style_Style* pStyle;
-    bool ok;
     
     output += " <office:styles>\n";
     ODe_writeUTF8String(pODT, output);
     output.clear();
     
-    offset = "  ";
-    
-    pStyleVector = m_textStyles.enumerate();
-    count = pStyleVector->getItemCount();
-    for (i=0; i<count; i++) {
-        pStyle = (*pStyleVector)[i];
-        
-        ok = pStyle->write(pODT, offset);
-        if (!ok) {
-            return false;
-        }
-    }
-    
-    pStyleVector = m_paragraphStyles.enumerate();
-    count = pStyleVector->getItemCount();
-    for (i=0; i<count; i++) {
-        pStyle = (*pStyleVector)[i];
-        
-        ok = pStyle->write(pODT, offset);
-        if (!ok) {
-            return false;
-        }
-    }
+	UT_return_val_if_fail(_writeStyles(pODT, m_textStyles.enumerate()), false);
+	UT_return_val_if_fail(_writeStyles(pODT, m_paragraphStyles.enumerate()), false);
+	UT_return_val_if_fail(_writeStyles(pODT, m_graphicStyles.enumerate()), false);
     
     output += " </office:styles>\n";
     ODe_writeUTF8String(pODT, output);
     output.clear();
     
     return true;
+}
+
+bool ODe_Styles::_writeStyles(GsfOutput* pODT, UT_GenericVector<ODe_Style_Style*>* pStyleVector) const
+{
+    for (UT_sint32 i = 0; i < pStyleVector->getItemCount(); i++) {
+        ODe_Style_Style* pStyle = (*pStyleVector)[i];
+        if (!pStyle->write(pODT, "  "))
+            return false;
+    }
+	return true;
 }

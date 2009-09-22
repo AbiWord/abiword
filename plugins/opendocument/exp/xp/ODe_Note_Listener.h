@@ -33,6 +33,7 @@
 #include <stdio.h>
 
 // Internal classes
+class ODe_Styles;
 class ODe_AutomaticStyles;
 class ODe_AuxiliaryData;
 
@@ -46,7 +47,8 @@ class PP_AttrProp;
 class ODe_Note_Listener : public ODe_AbiDocListenerImpl {
 public:
 
-    ODe_Note_Listener(ODe_AutomaticStyles& rAutomatiStyles,
+    ODe_Note_Listener(ODe_Styles& rStyles,
+                      ODe_AutomaticStyles& rAutomatiStyles,
                       GsfOutput* pTextOutput,
                       ODe_AuxiliaryData& rAuxiliaryData,
                       UT_uint8 spacesOffset);
@@ -65,6 +67,7 @@ private:
                    ODe_ListenerAction& rAction);
     void _closeNote(ODe_ListenerAction& rAction);
 
+    ODe_Styles& m_rStyles;
     ODe_AutomaticStyles& m_rAutomatiStyles;
     GsfOutput* m_pTextOutput;
     ODe_AuxiliaryData& m_rAuxiliaryData;

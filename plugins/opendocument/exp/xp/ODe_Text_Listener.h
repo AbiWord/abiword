@@ -35,6 +35,7 @@
 class ODe_AutomaticStyles;
 class ODe_AuxiliaryData;
 class ODe_ListenerAction;
+class ODe_Styles;
 class ODe_Style_List;
 
 // AbiWord classes
@@ -47,13 +48,15 @@ class PP_AttrProp;
 class ODe_Text_Listener : public ODe_AbiDocListenerImpl {
 public:
 
-    ODe_Text_Listener(ODe_AutomaticStyles& rAutomatiStyles,
+    ODe_Text_Listener(ODe_Styles& rStyles,
+                      ODe_AutomaticStyles& rAutomatiStyles,
                       GsfOutput* pTextOutput,
                       ODe_AuxiliaryData& rAuxiliaryData,
                       UT_uint8 zIndex,
                       UT_uint8 spacesOffset);
 
-    ODe_Text_Listener(ODe_AutomaticStyles& rAutomatiStyles,
+    ODe_Text_Listener(ODe_Styles& rStyles,
+                      ODe_AutomaticStyles& rAutomatiStyles,
                       GsfOutput* pTextOutput,
                       ODe_AuxiliaryData& rAuxiliaryData,
                       UT_uint8 zIndex,
@@ -142,6 +145,7 @@ private:
     bool m_pendingMasterPageStyleChange;
     UT_UTF8String m_masterPageStyleName;
     
+	ODe_Styles& m_rStyles;
     ODe_AutomaticStyles& m_rAutomatiStyles;
     GsfOutput* m_pTextOutput;
     ODe_AuxiliaryData& m_rAuxiliaryData;

@@ -35,12 +35,14 @@
 /**
  * Constructor
  */
-ODe_Note_Listener::ODe_Note_Listener(ODe_AutomaticStyles& rAutomatiStyles,
+ODe_Note_Listener::ODe_Note_Listener(ODe_Styles& rStyles,
+                                     ODe_AutomaticStyles& rAutomatiStyles,
                                      GsfOutput* pTextOutput,
                                      ODe_AuxiliaryData& rAuxiliaryData,
                                      UT_uint8 spacesOffset)
                                      :
                                      ODe_AbiDocListenerImpl(spacesOffset),
+                                     m_rStyles(rStyles),
                                      m_rAutomatiStyles(rAutomatiStyles),
                                      m_pTextOutput(pTextOutput),
                                      m_rAuxiliaryData(rAuxiliaryData)
@@ -102,7 +104,8 @@ void ODe_Note_Listener::closeEndnote(ODe_ListenerAction& rAction) {
 void ODe_Note_Listener::openBlock(const PP_AttrProp* /*pAP*/,
                                   ODe_ListenerAction& rAction) {
     ODe_Text_Listener* pTextListener;
-    pTextListener = new ODe_Text_Listener(m_rAutomatiStyles,
+    pTextListener = new ODe_Text_Listener(m_rStyles,
+                                          m_rAutomatiStyles,
                                           m_pTextOutput,
                                           m_rAuxiliaryData,
                                           0,

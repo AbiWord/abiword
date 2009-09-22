@@ -39,7 +39,8 @@
 /**
  * Constructor
  */
-ODe_Table_Listener::ODe_Table_Listener(ODe_AutomaticStyles& rAutomatiStyles,
+ODe_Table_Listener::ODe_Table_Listener(ODe_Styles& rStyles,
+                                       ODe_AutomaticStyles& rAutomatiStyles,
                                        GsfOutput* pTextOutput,
                                        ODe_AuxiliaryData& rAuxiliaryData,
                                        UT_uint8 zIndex,
@@ -51,6 +52,7 @@ ODe_Table_Listener::ODe_Table_Listener(ODe_AutomaticStyles& rAutomatiStyles,
                                        m_pRows(NULL),
                                        m_numRows(0),
                                        m_pTextOutput(pTextOutput),
+                                       m_rStyles(rStyles),
                                        m_rAutomatiStyles(rAutomatiStyles),
                                        m_rAuxiliaryData(rAuxiliaryData),
                                        m_zIndex(zIndex)
@@ -304,7 +306,9 @@ void ODe_Table_Listener::openCell(const PP_AttrProp* pAP,
     pCell->m_pTextContent = gsf_output_memory_new ();
     UT_ASSERT(pCell->m_pTextContent != NULL);
     
-    pTextListener = new ODe_Text_Listener(m_rAutomatiStyles,
+    pTextListener = new ODe_Text_Listener(
+        m_rStyles,
+        m_rAutomatiStyles,
         pCell->m_pTextContent,
         m_rAuxiliaryData,
         m_zIndex,

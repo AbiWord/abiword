@@ -26,6 +26,7 @@
 #include "ODe_AutomaticStyles.h"
 #include "ODe_AuxiliaryData.h"
 #include "ODe_Common.h"
+#include "ODe_Styles.h"
 #include "ODe_Style_Style.h"
 #include "ODe_Text_Listener.h"
 #include "ODe_ListenerAction.h"
@@ -38,13 +39,15 @@
 /**
  * Constructor
  */
-ODe_Frame_Listener::ODe_Frame_Listener(ODe_AutomaticStyles& rAutomatiStyles,
+ODe_Frame_Listener::ODe_Frame_Listener(ODe_Styles& rStyles,
+                                       ODe_AutomaticStyles& rAutomatiStyles,
                                        GsfOutput* pTextOutput,
                                        ODe_AuxiliaryData& rAuxiliaryData,
                                        UT_uint8 zIndex,
                                        UT_uint8 spacesOffset)
                                        :
                                        ODe_AbiDocListenerImpl(spacesOffset),
+                                       m_rStyles(rStyles),
                                        m_rAutomatiStyles(rAutomatiStyles),
                                        m_pTextOutput(pTextOutput),
                                        m_rAuxiliaryData(rAuxiliaryData),
@@ -95,7 +98,8 @@ void ODe_Frame_Listener::closeFrame(ODe_ListenerAction& rAction) {
 void ODe_Frame_Listener::openTable(const PP_AttrProp* /*pAP*/,
                                    ODe_ListenerAction& rAction) {
     ODe_Text_Listener* pTextListener;
-    pTextListener = new ODe_Text_Listener(m_rAutomatiStyles,
+    pTextListener = new ODe_Text_Listener(m_rStyles,
+                                          m_rAutomatiStyles,
                                           m_pTextOutput,
                                           m_rAuxiliaryData,
                                           m_zIndex+1,
@@ -110,7 +114,8 @@ void ODe_Frame_Listener::openTable(const PP_AttrProp* /*pAP*/,
 void ODe_Frame_Listener::openBlock(const PP_AttrProp* /*pAP*/,
                                    ODe_ListenerAction& rAction) {
     ODe_Text_Listener* pTextListener;
-    pTextListener = new ODe_Text_Listener(m_rAutomatiStyles,
+    pTextListener = new ODe_Text_Listener(m_rStyles,
+                                          m_rAutomatiStyles,
                                           m_pTextOutput,
                                           m_rAuxiliaryData,
                                           m_zIndex+1,
@@ -143,7 +148,21 @@ void ODe_Frame_Listener::_openODTextbox(const PP_AttrProp& rAP,
     pStyle->setHorizontalPos("from-left");
     pStyle->setVerticalPos("from-top");
     
-    m_rAutomatiStyles.storeGraphicStyle(pStyle);
+    // For OOo to recognize a textbox as being a textbox, it will
+    // need to have the parent style name "Frame". I can't find it
+    // in the ODF spec, but without it OOo considers the textbox to
+    // be a generic drawing object (check the Navigator window in OOo).
+    pStyle->setParentStyleName("Frame");
+    // Make sure an (empty) Frame style exists, for completeness sake
+	// (OOo doesn't seem to care if it exists or not).
+    if (!m_rStyles.getGraphicsStyle("Frame")) {
+        ODe_Style_Style* pFrameStyle = new ODe_Style_Style();
+		pFrameStyle->setStyleName("Frame");
+		pFrameStyle->setFamily("graphic");
+        m_rStyles.addGraphicsStyle(pFrameStyle);
+    }
+
+	m_rAutomatiStyles.storeGraphicStyle(pStyle);
 
     ////
     // Write <draw:frame>

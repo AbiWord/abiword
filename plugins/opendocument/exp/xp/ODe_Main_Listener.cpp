@@ -157,6 +157,7 @@ void ODe_Main_Listener::openSection(const PP_AttrProp* pAP,
     
     if (pendingMasterPageStyleChange) {
         pTextListener = new ODe_Text_Listener(
+			                              m_rDocumentData.m_styles,
                                           m_rDocumentData.m_contentAutoStyles,
                                           m_rDocumentData.m_pOfficeTextTemp,
                                           m_rAuxiliaryData,
@@ -164,6 +165,7 @@ void ODe_Main_Listener::openSection(const PP_AttrProp* pAP,
                                           masterPageStyleName);
     } else {
         pTextListener = new ODe_Text_Listener(
+			                              m_rDocumentData.m_styles,
                                           m_rDocumentData.m_contentAutoStyles,
                                           m_rDocumentData.m_pOfficeTextTemp,
                                           m_rAuxiliaryData,
@@ -270,7 +272,8 @@ void ODe_Main_Listener::_openHeaderFooterSection(
 
     m_openedODSection = false;
     m_onHeaderFooterSection = true;
-    rAction.pushListenerImpl(new ODe_Text_Listener(
+	rAction.pushListenerImpl(new ODe_Text_Listener(
+                                     m_rDocumentData.m_styles,
                                      m_rDocumentData.m_stylesAutoStyles,
                                      pTextOutput,
                                      m_rAuxiliaryData,

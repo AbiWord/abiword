@@ -30,6 +30,7 @@
 #include "ODe_ListenerAction.h"
 #include "ODe_ListLevelStyle.h"
 #include "ODe_Note_Listener.h"
+#include "ODe_Styles.h"
 #include "ODe_Style_List.h"
 #include "ODe_Style_Style.h"
 #include "ODe_Table_Listener.h"
@@ -50,7 +51,8 @@
  * @param pTextOutput Handle to the file (often a temp one) that will receive 
  *                    the ODT output produced by this listener.
  */
-ODe_Text_Listener::ODe_Text_Listener(ODe_AutomaticStyles& rAutomatiStyles,
+ODe_Text_Listener::ODe_Text_Listener(ODe_Styles& rStyles,
+                                     ODe_AutomaticStyles& rAutomatiStyles,
                                      GsfOutput* pTextOutput,
                                      ODe_AuxiliaryData& rAuxiliaryData,
                                      UT_uint8 zIndex,
@@ -67,6 +69,7 @@ ODe_Text_Listener::ODe_Text_Listener(ODe_AutomaticStyles& rAutomatiStyles,
                         m_pendingColumnBrake(false),
                         m_pendingPageBrake(false),
                         m_pendingMasterPageStyleChange(false),
+                        m_rStyles(rStyles),
                         m_rAutomatiStyles(rAutomatiStyles),
                         m_pTextOutput(pTextOutput),
                         m_rAuxiliaryData(rAuxiliaryData),
@@ -81,7 +84,7 @@ ODe_Text_Listener::ODe_Text_Listener(ODe_AutomaticStyles& rAutomatiStyles,
  * @param pTextOutput Handle to the file (often a temp one) that will receive 
  *                    the ODT output produced by this listener.
  */
-ODe_Text_Listener::ODe_Text_Listener(
+ODe_Text_Listener::ODe_Text_Listener(ODe_Styles& rStyles,
                              ODe_AutomaticStyles& rAutomatiStyles,
                              GsfOutput* pTextOutput,
                              ODe_AuxiliaryData& rAuxiliaryData,
@@ -101,6 +104,7 @@ ODe_Text_Listener::ODe_Text_Listener(
                         m_pendingPageBrake(false),
                         m_pendingMasterPageStyleChange(true),
                         m_masterPageStyleName(rPendingMasterPageStyleName),
+                        m_rStyles(rStyles),
                         m_rAutomatiStyles(rAutomatiStyles),
                         m_pTextOutput(pTextOutput),
                         m_rAuxiliaryData(rAuxiliaryData),
@@ -131,7 +135,8 @@ void ODe_Text_Listener::openTable(const PP_AttrProp* /*pAP*/,
     _closeODParagraph();
     _closeODList();
 
-    rAction.pushListenerImpl(new ODe_Table_Listener(m_rAutomatiStyles,
+    rAction.pushListenerImpl(new ODe_Table_Listener(m_rStyles,
+                                                    m_rAutomatiStyles,
                                                     m_pTextOutput,
                                                     m_rAuxiliaryData,
                                                     0,
@@ -241,7 +246,8 @@ void ODe_Text_Listener::openFrame(const PP_AttrProp* pAP,
         //
         // Page anchored textboxes goes inside the closest previous paragraph.
 
-        pFrameListener = new ODe_Frame_Listener(m_rAutomatiStyles,
+        pFrameListener = new ODe_Frame_Listener(m_rStyles,
+                                                m_rAutomatiStyles,
                                                 m_pTextOutput,
                                                 m_rAuxiliaryData,
                                                 m_zIndex,
@@ -368,7 +374,8 @@ void ODe_Text_Listener::openFootnote(const PP_AttrProp* /*pAP*/,
                                      ODe_ListenerAction& rAction) {
     ODe_Note_Listener* pNoteListener;
     
-    pNoteListener = new ODe_Note_Listener(m_rAutomatiStyles,
+    pNoteListener = new ODe_Note_Listener(m_rStyles,
+                                          m_rAutomatiStyles,
                                           m_pParagraphContent,
                                           m_rAuxiliaryData,
                                           m_spacesOffset);
@@ -401,7 +408,8 @@ void ODe_Text_Listener::openEndnote(const PP_AttrProp* /*pAP*/,
                                     ODe_ListenerAction& rAction) {
     ODe_Note_Listener* pNoteListener;
     
-    pNoteListener = new ODe_Note_Listener(m_rAutomatiStyles,
+    pNoteListener = new ODe_Note_Listener(m_rStyles,
+                                          m_rAutomatiStyles,
                                           m_pParagraphContent,
                                           m_rAuxiliaryData,
                                           m_spacesOffset);
@@ -796,7 +804,21 @@ void ODe_Text_Listener::insertInlinedImage(const gchar* pImageName,
     pStyle->setFamily("graphic");
     pStyle->setWrap("run-through");
     pStyle->setRunThrough("foreground");
-    m_rAutomatiStyles.storeGraphicStyle(pStyle);    
+    // For OOo to recognize an image as being an image, it will
+    // need to have the parent style name "Graphics". I can't find it
+    // in the ODF spec, but without it OOo doesn't properly recognize
+	// it (check the Navigator window in OOo).
+    pStyle->setParentStyleName("Graphics");
+    // make sure an (empty) Graphics style exists, for completeness sake
+	// (OOo doesn't seem to care if it exists or not)
+    if (!m_rStyles.getGraphicsStyle("Graphics")) {
+        ODe_Style_Style* pGraphicsStyle = new ODe_Style_Style();
+		pGraphicsStyle->setStyleName("Graphics");
+		pGraphicsStyle->setFamily("graphic");
+        m_rStyles.addGraphicsStyle(pGraphicsStyle);
+    }
+
+	m_rAutomatiStyles.storeGraphicStyle(pStyle);
     
     output = "<draw:frame text:anchor-type=\"as-char\"";
 
@@ -860,6 +882,11 @@ void ODe_Text_Listener::insertPositionedImage(const gchar* pImageName,
    
     pStyle = new ODe_Style_Style();
     pStyle->setFamily("graphic");
+    // For OOo to recognize an image as being an image, it will
+    // need to have the parent style name "Graphics". I can't find it
+    // in the ODF spec, but without it OOo doesn't properly recognize
+	// it (check the Navigator window in OOo).
+    pStyle->setParentStyleName("Graphics");
 
     //set wrapping
     ok = pAP->getProperty("wrap-mode", pValue);

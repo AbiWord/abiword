@@ -32,6 +32,7 @@
 #include <stdio.h>
 
 // Internal classes
+class ODe_Styles;
 class ODe_AutomaticStyles;
 class ODe_AuxiliaryData;
 class ODe_ListenerAction;
@@ -46,7 +47,8 @@ class PP_AttrProp;
 class ODe_Frame_Listener : public ODe_AbiDocListenerImpl {
 public:
 
-    ODe_Frame_Listener(ODe_AutomaticStyles& rAutomatiStyles,
+    ODe_Frame_Listener(ODe_Styles& rStyles,
+                       ODe_AutomaticStyles& rAutomatiStyles,
                        GsfOutput* pTextOutput,
                        ODe_AuxiliaryData& rAuxiliaryData,
                        UT_uint8 zIndex,
@@ -61,6 +63,7 @@ public:
 private:
     void _openODTextbox(const PP_AttrProp& rAP, ODe_ListenerAction& rAction);
     
+	ODe_Styles& m_rStyles;
     ODe_AutomaticStyles& m_rAutomatiStyles;
     GsfOutput* m_pTextOutput;
     ODe_AuxiliaryData& m_rAuxiliaryData;
