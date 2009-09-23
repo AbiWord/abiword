@@ -921,7 +921,8 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_bTOCsupported(false),
 	m_bInTextboxes(false),
 	m_pTextboxEndSection(NULL),
-	m_iLeftCellPos(0)
+	m_iLeftCellPos(0),
+	m_iLastAppendedHeader(-1)
 {
   for(UT_uint32 i = 0; i < 9; i++)
 	  m_iListIdIncrement[i] = 0;
@@ -6783,7 +6784,8 @@ void IE_Imp_MsWord_97::_handleHeaders(const wvParseStruct *ps)
 				m_pHeaders[i].pos = pPLCF_txt[i] + m_iHeadersStart;
 				m_pHeaders[i].len = pPLCF_txt[i+1] - pPLCF_txt[i];
 				m_pHeaders[i].pid = getDoc()->getUID(UT_UniqueId::HeaderFtr);
-				
+
+				UT_DEBUGMSG(("Header %d has pid %d \n",i,m_pHeaders[i].pid));
 				if(i < 6)
 				{
 					// document wide footnote/endnote separators
@@ -6903,7 +6905,11 @@ bool IE_Imp_MsWord_97::_insertHeaderSection(bool bDoBlockIns)
 		const gchar * attribsB[] = {NULL, NULL,
 									   NULL, NULL,
 									   NULL};
-					
+		if(m_iCurrentHeader == m_iLastAppendedHeader)
+		{
+			return false;
+		}
+		m_iLastAppendedHeader = m_iCurrentHeader;
 		if(m_paraProps.size())
 		{
 			attribsB[iOff++] = "props";
@@ -6939,7 +6945,7 @@ bool IE_Imp_MsWord_97::_insertHeaderSection(bool bDoBlockIns)
 		UT_String id;
 		UT_String_sprintf(id,"%d",m_pHeaders[m_iCurrentHeader].pid);
 		attribsS[3] = id.c_str();
-					
+		UT_DEBUGMSG(("Appending Current Header %d pid %s \n",m_iCurrentHeader,id.c_str()));		
 		switch(m_pHeaders[m_iCurrentHeader].type)
 		{
 			case HF_HeaderEven:

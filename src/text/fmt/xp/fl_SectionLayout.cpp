@@ -1223,7 +1223,7 @@ void fl_DocSectionLayout::setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pH
 void fl_DocSectionLayout::_HdrFtrChangeCallback(UT_Worker * pWorker)
 {
 	UT_return_if_fail(pWorker);
-	UT_DEBUGMSG(("Doing HdrFtr change callback \n"));
+	UT_DEBUGMSG(("Doing HdrFtr change callback %p \n",pWorker));
 	// Get the docSectionLayout
 	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pWorker->getInstanceData());
 	UT_return_if_fail(pDSL);
@@ -1285,6 +1285,7 @@ void fl_DocSectionLayout::_HdrFtrChangeCallback(UT_Worker * pWorker)
 		}
 	}
 	const char * pProps = pDSL->m_sHdrFtrChangeProps.c_str();
+	UT_DEBUGMSG(("Header/Footer change props %s \n",pProps));
 	const gchar * pszAtts[4] = {"props",pProps,NULL,NULL};
 	pDoc->notifyPieceTableChangeStart();
 	FV_View * pView =  pDSL->m_pLayout->getView();
@@ -1335,6 +1336,7 @@ void fl_DocSectionLayout::_HdrFtrChangeCallback(UT_Worker * pWorker)
     pView->setPoint(insPos);
 	pView->ensureInsertionPointOnScreen();
 	DELETEP(pDSL->m_pHdrFtrChangeTimer);
+	pDSL->m_pHdrFtrChangeTimer = NULL;
 }
 
 /*!
@@ -1396,6 +1398,7 @@ bool fl_DocSectionLayout::setHdrFtrHeightChange(bool bHdrFtr, UT_sint32 newHeigh
 //
 	if(bHdrFtr)
 	{
+	        UT_DEBUGMSG(("newHeight %d  m_iNewHdrHeight %d \n",newHeight,m_iNewHdrHeight));
 		if(newHeight <= m_iNewHdrHeight)
 		{
 			return false;
@@ -2146,12 +2149,10 @@ void fl_DocSectionLayout::_lookupMarginProperties(const PP_AttrProp* /*pSectionA
 void fl_DocSectionLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 {
 	UT_return_if_fail(pSectionAP);
-// Now turn off the HdrFtr size change locks.
 
-	m_iNewHdrHeight = 0;
-	m_iNewFtrHeight = 0;
-	getDocument()->setNewHdrHeight(0);
-	getDocument()->setNewFtrHeight(0);
+	m_iNewHdrHeight = getDocument()->getNewHdrHeight();
+	m_iNewFtrHeight = getDocument()->getNewFtrHeight();
+
 	m_sHdrFtrChangeProps.clear();
 
 
@@ -5288,6 +5289,7 @@ void fl_HdrFtrShadow::redrawUpdate(void)
 {
 	FV_View * pView = m_pLayout->getView();
 	fl_ContainerLayout*	pBL = getFirstLayout();
+	bool bDoLayout = false;
 	while (pBL && (pView != NULL))
 	{
 		if(pBL->getContainerType() == FL_CONTAINER_BLOCK && static_cast<fl_BlockLayout *>(pBL)->hasUpdatableField())
@@ -5296,6 +5298,7 @@ void fl_HdrFtrShadow::redrawUpdate(void)
 			if(bReformat)
 			{
 				pBL->format();
+				bDoLayout = true;
 			}
 		}
 		else
@@ -5309,7 +5312,10 @@ void fl_HdrFtrShadow::redrawUpdate(void)
 		}
 		pBL = pBL->getNext();
 	}
-	static_cast<fp_ShadowContainer *>(getFirstContainer())->layout();
+	if(bDoLayout)
+	{
+	       static_cast<fp_ShadowContainer *>(getFirstContainer())->layout();
+	}
 }
 bool fl_HdrFtrShadow::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
 {
