@@ -2226,12 +2226,10 @@ void fp_ShadowContainer::layout(bool bForceLayout)
 		fl_HdrFtrSectionLayout * pHFSL = getHdrFtrSectionLayout();
 		fl_DocSectionLayout * pDSL = pHFSL->getDocSectionLayout();
 		bool bHdrFtr = (pHFSL->getHFType() <= FL_HDRFTR_HEADER_LAST);
-#if 1
 		if(iNewHeight > getPage()->getHeight()/3)
 		{
 			iNewHeight = getPage()->getHeight()/3;
 		}
-#endif
 		pDSL->setHdrFtrHeightChange(bHdrFtr,iNewHeight+getGraphics()->tlu(3));
 		setHeight(getMaxHeight());
 	}
