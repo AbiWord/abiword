@@ -127,7 +127,12 @@ void XAP_UnixDialog_Print::BeginPrint(GtkPrintContext   *context)
 	xxx_UT_DEBUGMSG(("Initial Cairo Context %x \n",cr));
 	m_pPrintGraphics = (GR_Graphics *) new GR_CairoPrintGraphics(cr, gr_PRINTRES);
 	double ScreenRes = m_pView->getGraphics()->getDeviceResolution();
-	static_cast<GR_CairoPrintGraphics *>(m_pPrintGraphics)->setResolutionRatio(gr_PRINTRES/ScreenRes);
+	//
+	// A magic number that works for some reason
+	// Without this maths are a little bit too wide during a print
+	//
+	double magic_rat = 0.962;
+	static_cast<GR_CairoPrintGraphics *>(m_pPrintGraphics)->setResolutionRatio(magic_rat*static_cast<double>(gr_PRINTRES)/static_cast<double>(ScreenRes));
 	//
 	// We set the resolution of the printer context to higher than screen
 	// so we don't loose resolution when printing images.
@@ -137,7 +142,8 @@ void XAP_UnixDialog_Print::BeginPrint(GtkPrintContext   *context)
 	//
 	// In the future we can use this to do 2,4,6,8 etc pages per page
 	//
-	cairo_scale(static_cast<GR_CairoPrintGraphics *>(m_pPrintGraphics)->getCairo(), GTKPRINTRES/gr_PRINTRES,GTKPRINTRES/gr_PRINTRES);
+	double srat = static_cast<double>(GTKPRINTRES)/static_cast<double>(gr_PRINTRES);
+	cairo_scale(static_cast<GR_CairoPrintGraphics *>(m_pPrintGraphics)->getCairo(), srat,srat);
 	if(!m_pView->getPageSize().isPortrait())
 	{
 		//
