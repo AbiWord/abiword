@@ -356,6 +356,7 @@ class ABI_EXPORT AllCarets
 	void	    enable(void);
 	void		disable(bool bNoMulti = false);
 	void		setBlink(bool bBlink);
+	void        JustErase(UT_sint32 xPoint,UT_sint32 yPoint);
 	void        setWindowSize(UT_uint32 width, UT_uint32 height);
 	void		setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
 						  UT_sint32 x2 = 0, UT_sint32 y2 = 0, UT_uint32 h2 = 0, 

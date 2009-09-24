@@ -318,6 +318,30 @@ void GR_Caret::setBlink(bool bBlink)
 	m_bCursorBlink = bBlink;
 #endif
 }
+/*!
+ * Erase the current caret if it's Position overlaps calling value.
+ * This prevents remote carets saving a drawn caret in the saveRectange() call
+ */
+void GR_Caret::JustErase(UT_sint32 xPoint,UT_sint32 yPoint)
+{
+       if(m_bRecursiveDraw)
+       {
+	    xxx_UT_DEBUGMSG(("Doing recursive Erase! - abort \n"));
+	    return;
+       }
+       if (m_bCursorIsOn && (((xPoint -m_pG->tlu(2)-1) <= m_xPoint) && (xPoint >= (m_xPoint-m_pG->tlu(2))-1)) && ((yPoint - m_pG->tlu(1)) <= m_yPoint) && (yPoint >= (m_yPoint - m_pG->tlu(1))))
+       {
+	    m_pG->restoreRectangle(m_iCaretNumber*3+0);
+	    if(m_bSplitCaret)
+	    {
+	          m_pG->restoreRectangle(m_iCaretNumber*3+1);
+		  m_pG->restoreRectangle(m_iCaretNumber*3+2);
+		  m_bSplitCaret = false;
+	    }
+	    m_bCursorIsOn = !m_bCursorIsOn;
+	    m_nDisableCount = 1;
+       }
+}
 
 void GR_Caret::_erase()
 {
@@ -352,7 +376,6 @@ void GR_Caret::_blink(bool bExplicit)
 	if (bExplicit || _getCanCursorBlink () || !m_bCursorIsOn)
 	{
 		m_bRecursiveDraw = true;
-		
 		UT_RGBColor oldColor; m_pG->getColor(oldColor);
 
 		if (m_bCursorIsOn)
@@ -390,7 +413,7 @@ void GR_Caret::_blink(bool bExplicit)
 					   m_yPoint+m_pG->tlu(1),
 					   m_pG->tlu(5),
 					   m_iPointHeight+m_pG->tlu(2));
-			
+			m_pG->allCarets()->JustErase(m_xPoint,m_yPoint);
 			m_pG->saveRectangle(r0,m_iCaretNumber*3+0);
 
 			if((m_xPoint != m_xPoint2) || (m_yPoint != m_yPoint2))

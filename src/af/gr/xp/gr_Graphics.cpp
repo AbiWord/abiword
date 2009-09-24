@@ -150,6 +150,18 @@ void	    AllCarets::enable(void)
 	}
 			
 }
+
+void    AllCarets::JustErase(UT_sint32 xPoint,UT_sint32 yPoint)
+{
+	if((*m_pLocalCaret))
+		(*m_pLocalCaret)->JustErase(xPoint,yPoint);
+	for(UT_sint32 i =0; i< m_vecCarets->getItemCount();i++)
+	{
+		m_vecCarets->getNthItem(i)->JustErase(xPoint,yPoint);
+	}
+}
+
+
 void		AllCarets::disable(bool bNoMulti)
 {
 	if((*m_pLocalCaret))

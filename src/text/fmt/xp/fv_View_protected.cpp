@@ -4954,11 +4954,10 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 void FV_View::_setPoint(fv_CaretProps * pCP,PT_DocPosition pt, UT_sint32 iLen) const
 {
-
+	getGraphics()->allCarets()->disable();
 	pCP->m_iInsPoint = pt + iLen;
 	_fixInsertionPointCoords(pCP);
-	pCP->m_pCaret->disable();
-	pCP->m_pCaret->enable();
+	getGraphics()->allCarets()->enable();
 }
 
 

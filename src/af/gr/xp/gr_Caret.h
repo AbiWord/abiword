@@ -49,6 +49,7 @@ public:
 	void							disable(bool bNoMulti = false);
 	inline bool						isEnabled() const { return m_nDisableCount == 0; }
 	
+	void             JustErase(UT_sint32 xPoint,UT_sint32 yPoint);
 	void							setBlink(bool bBlink);
 	void							forceDraw(void);
 	// When you call setCoords, the cursor is explicitly shown
