@@ -3434,12 +3434,14 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 
 fp_ImageRun::fp_ImageRun(fl_BlockLayout* pBL,
 						 UT_uint32 iOffsetFirst,
-						 UT_uint32 iLen, FG_Graphic * pFG) :
+						 UT_uint32 iLen, FG_Graphic * pFG,
+						 PL_ObjectHandle oh) :
 	fp_Run(pBL, iOffsetFirst, iLen, FPRUN_IMAGE),
 	m_pFGraphic(pFG),
 	m_iPointHeight(0),
 	m_pSpanAP(NULL),
-	m_bImageForPrinter (false)
+	m_bImageForPrinter (false),
+	m_OH(oh)
 {
 #if 0	// put this back later
 	UT_ASSERT(pImage);
@@ -3559,6 +3561,21 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 			maxH = iH;
 			UT_DEBUGMSG(("Change Image Height to %d \n",maxH));
 		}
+		const char * pProps[5] = {"width",NULL,"height",NULL,NULL};
+		m_sCachedWidthProp = UT_formatDimensionString(DIM_IN,static_cast<double>(maxW)/UT_LAYOUT_RESOLUTION);
+		m_sCachedHeightProp =UT_formatDimensionString(DIM_IN,static_cast<double>(maxH)/UT_LAYOUT_RESOLUTION);
+		pProps[1] = m_sCachedWidthProp.c_str();
+		pProps[3] = m_sCachedHeightProp.c_str();
+		//
+		// Change the properties in the document
+		//
+		getBlock()->getDocument()->changeObjectFormatNoUpdate(PTC_AddFmt,m_OH,NULL,pProps);
+		//
+		// update the span Attribute/Propperties with this
+		//
+		PT_AttrPropIndex api = getBlock()->getDocument()->getAPIFromSOH(m_OH);
+		getBlock()->getDocument()->getAttrProp(api,&m_pSpanAP);
+
 		m_pImage = m_pFGraphic->generateImage(pG, pSpanAP, maxW, maxH);
 		m_bImageForPrinter = pG->queryProperties(GR_Graphics::DGP_PAPER);
 		markAsDirty();

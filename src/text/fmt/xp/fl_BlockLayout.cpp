@@ -5544,7 +5544,7 @@ bool	fl_BlockLayout::_doInsertTOCListTabRun(PT_BlockOffset blockOffset)
 	return true;
 }
 
-bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic* pFG)
+bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic* pFG, PL_ObjectHandle oh)
 {
 	if(isContainedByTOC())
 	{
@@ -5553,7 +5553,7 @@ bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic* p
 		return _doInsertRun(pDumRun);
 	}
 
-	fp_ImageRun* pNewRun = new fp_ImageRun(this, blockOffset, 1, pFG);
+	fp_ImageRun* pNewRun = new fp_ImageRun(this, blockOffset, 1, pFG,oh);
 	UT_ASSERT(pNewRun); // TODO check for outofmem
 
 	return _doInsertRun(pNewRun);
@@ -8464,7 +8464,7 @@ bool fl_BlockLayout::doclistener_populateObject(PT_BlockOffset blockOffset,
 			return false;
 
 		xxx_UT_DEBUGMSG(("Populate:InsertObject:Image:\n"));
-		_doInsertImageRun(blockOffset, pFG);
+		_doInsertImageRun(blockOffset, pFG,pcro->getObjectHandle());
 		return true;
 	}
 
@@ -8529,7 +8529,7 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 		if (pFG == NULL)
 			return false;
 
-		_doInsertImageRun(blockOffset, pFG);
+		_doInsertImageRun(blockOffset, pFG,pcro->getObjectHandle());
 		break;
 	}
 
