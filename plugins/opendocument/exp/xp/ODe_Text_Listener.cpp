@@ -804,6 +804,11 @@ void ODe_Text_Listener::insertInlinedImage(const gchar* pImageName,
     pStyle->setFamily("graphic");
     pStyle->setWrap("run-through");
     pStyle->setRunThrough("foreground");
+    //
+    // inline images are always "baseline" vertical-rel and top vertical-rel
+    //
+    pStyle->setVerticalPos("top");
+    pStyle->setVerticalRel("baseline");
     // For OOo to recognize an image as being an image, it will
     // need to have the parent style name "Graphics". I can't find it
     // in the ODF spec, but without it OOo doesn't properly recognize
@@ -835,7 +840,6 @@ void ODe_Text_Listener::insertInlinedImage(const gchar* pImageName,
     if (ok && pValue != NULL) {
         ODe_writeAttribute(output, "svg:height", pValue);
     }
-    
     output += "><draw:image xlink:href=\"Pictures/";
     output += pImageName;
     output += "\" xlink:type=\"simple\" xlink:show=\"embed\""

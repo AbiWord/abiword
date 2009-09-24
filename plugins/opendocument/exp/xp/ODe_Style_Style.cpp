@@ -808,6 +808,14 @@ void ODe_Style_Style::setVerticalPos(const UT_UTF8String& rVerticalPos) {
     m_pGraphicProps->m_verticalPos = rVerticalPos;
 }
 
+void ODe_Style_Style::setVerticalRel(const UT_UTF8String& rVerticalRel) {
+    if (m_pGraphicProps == NULL) {
+        m_pGraphicProps = new GraphicProps();
+    }
+    
+    m_pGraphicProps->m_verticalRel = rVerticalRel;
+}
+
 
 /*******************************************************************************
  * SectionProps
