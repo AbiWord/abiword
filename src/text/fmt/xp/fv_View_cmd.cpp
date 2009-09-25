@@ -3512,7 +3512,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 	fl_BlockLayout * curBlock = NULL;
 	fl_BlockLayout * nBlock = NULL;
 	UT_uint32 iRealDeleteCount = 0;
-
+	bool bSimple = false;
 
 	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
 	{
@@ -3532,7 +3532,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		_ensureInsertionPointOnScreen();
 	}
 	else if(m_FrameEdit.isActive())
-        {
+    {
 	  deleteFrame();
 	}
 	else
@@ -3542,7 +3542,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		//
 		if((bForward == false) && (count == 1))
 		{
-		        UT_sint32 myCount= 0;
+		    UT_sint32 myCount= 0;
 			if(isTabListBehindPoint(myCount) == true)
 			{
 				curBlock = _findBlockAtPosition(getPoint());
@@ -3567,7 +3567,6 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 					count = 2;
 				}
 			}
-
 		}
 //
 // Code to deal with deleting a footnote reference that embeds a footnote Layout.
@@ -3785,7 +3784,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 //
 		if(isInFrame(posCur) && !isInFrame(posCur+amt))
 		{
-		        fl_FrameLayout * pFL = getFrameLayout(posCur+amt);
+			fl_FrameLayout * pFL = getFrameLayout(posCur+amt);
 			if(pFL != NULL)
 			{
 			  //
@@ -3798,7 +3797,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		}
 		if(!isInFrame(posCur) && isInFrame(posCur+amt) && (amt > 1))
 		{
-		        fl_FrameLayout * pFL = getFrameLayout(posCur+amt);
+			fl_FrameLayout * pFL = getFrameLayout(posCur+amt);
 			if(pFL != NULL)
 			{
 			  //
@@ -3871,7 +3870,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 
 			if(fontFlag)
 			{
-			        _makePointLegal();
+				_makePointLegal();
 				setCharFormat(properties);
 			}
 		}
@@ -3885,7 +3884,10 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 			m_pDoc->deleteSpan(getPoint(), getPoint()+2,NULL,iRealDeleteCount2);
 			iRealDeleteCount += iRealDeleteCount2;
 		}
-
+		else if(count == 1)
+		{
+			bSimple = true;
+		}
 		// restore updates and clean up dirty lists
 		m_pDoc->enableListUpdates();
 		m_pDoc->updateDirtyLists();
@@ -3914,8 +3916,10 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 	_setPoint(getPoint());
-	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
-
+	if(!bSimple)
+		notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
+	else
+		notifyListeners(AV_CHG_MOTION);
 }
 
 
