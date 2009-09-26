@@ -721,6 +721,8 @@ void ODe_Text_Listener::closeHyperlink() {
  * 
  */
 void ODe_Text_Listener::insertText(const UT_UTF8String& rText) {
+	if (rText.length() == 0)
+		return;
     ODe_writeUTF8String(m_pParagraphContent, rText);
     m_isFirstCharOnParagraph = false;
 }

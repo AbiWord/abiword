@@ -1332,7 +1332,9 @@ void ODe_AbiDocListener::_outputData(const UT_UCSChar* pData, UT_uint32 length) 
                 _appendSpaces(&sBuf, nSpaces);
             nSpaces = 0;
 
+			m_pCurrentImpl->insertText(sBuf);
 			m_pCurrentImpl->insertTabChar();
+			sBuf.clear();
             p++;
             break;
 
