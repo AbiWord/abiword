@@ -21,7 +21,9 @@
  */
 
 // Class definition include
+#include "ODe_Style_List.h"
 #include "ODe_Style_Style.h"
+#include "ODe_ListLevelStyle.h"
 
 // Internal includes
 #include "ODe_Common.h"
@@ -111,7 +113,9 @@ bool ODe_Style_Style::write(GsfOutput* pODT, const UT_UTF8String& rSpacesOffset)
     escape = m_masterPageName;
     escape.escapeXML();
     ODe_writeAttribute(output, "style:master-page-name", escape);
-
+    escape = m_listStyleName;
+    escape.escapeXML();
+    ODe_writeAttribute(output, "style:list-style-name", escape);
     
     if (isEmpty()) {
         // This style has no props at all.
@@ -256,16 +260,9 @@ bool ODe_Style_Style::hasParagraphStyleProps(const PP_AttrProp* pAP) {
         return true;
     }
     
-    ok = pAP->getAttribute("listid", pValue);
+    ok = pAP->getProperty("margin-left", pValue);
     if (ok && pValue != NULL) {
-        // This block is a list item, so, its margin-left property is not
-        // valid as paragraph attribute.
-        // So, we don't check for it.
-    } else {
-        ok = pAP->getProperty("margin-left", pValue);
-        if (ok && pValue != NULL) {
-            return true;
-        }
+        return true;
     }
     
     ok = pAP->getProperty("margin-right", pValue);
@@ -353,7 +350,8 @@ bool ODe_Style_Style::isEquivalentTo(const ODe_Style_Style& rStyle) {
          m_family          == rStyle.m_family &&
          m_parentStyleName == rStyle.m_parentStyleName &&
          m_nextStyleName   == rStyle.m_nextStyleName &&
-         m_masterPageName  == rStyle.m_masterPageName;
+         m_masterPageName  == rStyle.m_masterPageName &&
+         m_listStyleName   == rStyle.m_listStyleName;
 
     if (!isEqual) {return false;}
 
@@ -510,7 +508,8 @@ void ODe_Style_Style::fetchAttributesFromAbiSpan(const PP_AttrProp* pAP) {
 /**
  * Fetch attributes from an AbiWord <p> tag. Usually paragraph style attributes.
  */
-void ODe_Style_Style::fetchAttributesFromAbiBlock(const PP_AttrProp* pAP) {
+void ODe_Style_Style::fetchAttributesFromAbiBlock(const PP_AttrProp* pAP,
+        const ODe_Style_List* pCurrentListStyle) {
     const gchar* pValue;
     bool ok;
     
@@ -531,9 +530,20 @@ void ODe_Style_Style::fetchAttributesFromAbiBlock(const PP_AttrProp* pAP) {
     
     ok = pAP->getAttribute("listid", pValue);
     if (ok && pValue != NULL) {
-        // This block is a list item, so, it's margin-left property is not
-        // valid as paragraph attribute.
-        m_pParagraphProps->m_marginLeft.clear();
+        // text:space-before and text:min-label-width are not paragraph properties,
+        // so we'll ignore those.
+        // We could also skip the fo:text-indent and fo:margin-left when they are
+        // the same size as those propties in the list style. It doesn't
+        // hurt to unconditionally write them out though, so we'll leave it
+        // as it is for now.
+        UT_UTF8String spaceBefore;
+        UT_UTF8String minLabelWidth;
+        ODe_ListLevelStyle::calculateListMargins(*pAP, m_pParagraphProps->m_textIndent, spaceBefore, minLabelWidth, m_pParagraphProps->m_marginLeft);
+
+        // store the list style name in the paragraph style
+        UT_ASSERT_HARMLESS(pCurrentListStyle);
+        if (pCurrentListStyle)
+            m_listStyleName = pCurrentListStyle->getName();
     }
 }
 

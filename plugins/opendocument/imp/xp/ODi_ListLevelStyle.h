@@ -126,6 +126,11 @@ protected:
     // Can't be translated to AbiWord easily.
     UT_UTF8String m_minLabelDistance;
     
+    // fo:text-indent attribute of <style:list-level-properties>
+	UT_UTF8String m_textIndent;
+
+	// fo:margin-left attribute of <style:list-level-properties>
+	UT_UTF8String m_marginLeft;
     
     // text:style-name attribute of <text:list-level-style-*>
     // Maps, indirectly, to the AbiWord "field-font" property.

@@ -32,6 +32,7 @@
 
 // AbiWord classes
 class PP_AttrProp;
+class ODe_Style_List;
 
 /**
  * Class representing an OpenDocument <style:style> element.
@@ -66,7 +67,7 @@ public:
     void fetchAttributesFromAbiSpan(const PP_AttrProp* pAP);
     
     // Defines the style from attributes and properties of an AbiWord <p>.
-    void fetchAttributesFromAbiBlock(const PP_AttrProp* pAP);
+    void fetchAttributesFromAbiBlock(const PP_AttrProp* pAP, const ODe_Style_List* pCurrentListStyle);
     
     // Defines the style from attributes and properties of an AbiWord <section>.
     void fetchAttributesFromAbiSection(const PP_AttrProp* pAP);
@@ -99,6 +100,10 @@ public:
     void setMasterPageName(const UT_UTF8String& rMasterPageName) {
         m_masterPageName = rMasterPageName;
     }
+
+	 void setListStyleName(const UT_UTF8String& rListStyleName) {
+        m_listStyleName = rListStyleName;
+    }
     
     const UT_UTF8String& getFontName();
 
@@ -126,6 +131,7 @@ private:
     UT_UTF8String m_parentStyleName; // style:parent-style-name
     UT_UTF8String m_nextStyleName;   // style:next-style-name
     UT_UTF8String m_masterPageName;  // style:master-page-name
+    UT_UTF8String m_listStyleName;   // style:list-style-name
 
 
     ////

@@ -50,36 +50,49 @@ void ODe_ListLevelStyle::fetchAttributesFromAbiBlock(const PP_AttrProp& rAP) {
     UT_ASSERT(ok && pValue != NULL);
     m_level = pValue;
     
-    ok = rAP.getProperty("text-indent", pValue);
-    if (ok && pValue != NULL) {
-        if (pValue[0] == '-') {
-            // We want this value to be positive
-            pValue++;
-            m_minLabelWidth = pValue;
-        } else {
-            UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-        }
-    }
-    
-    ok = rAP.getProperty("margin-left", pValue);
-    if (ok && pValue != NULL) {
-        double abiMarginLeft;
-        double abiTextIndent;
-        
-        abiMarginLeft = UT_convertToDimension(pValue, DIM_CM);
-        if (!m_minLabelWidth.empty()) {
-            rAP.getProperty("text-indent", pValue);
-            abiTextIndent = UT_convertToDimension(pValue, DIM_CM);
-        } else {
-            abiTextIndent = 0.0;
-        }
-        
-        UT_UTF8String_sprintf(m_spaceBefore, "%f%s",
-                              abiMarginLeft + abiTextIndent,
-                              UT_dimensionName(DIM_CM));
-    }
+    calculateListMargins(rAP, m_textIndent, m_spaceBefore, m_minLabelWidth, m_marginLeft);
 }
 
+void ODe_ListLevelStyle::calculateListMargins(const PP_AttrProp& rAP, 
+    UT_UTF8String& textIndent, UT_UTF8String& spaceBefore, 
+    UT_UTF8String& minLabelWidth, UT_UTF8String& marginLeft) {
+
+    const gchar* pValue;
+    bool ok;
+
+    // When abiword's text-indent is smaller than 0, it maps onto
+    // ODF's text:min-label-width. 
+    // However, when abiword's text-indent is greater than 0, it acts
+    // a bit weird: the size of the tab in the listitem represents
+    // the size of text:min-label-width. Since we don't have any numbers 
+    // here regarding the size of that tab, we'll just hardcode it to 
+    // 0.3in (0.762cm), which is abiword's default value.
+    ok = rAP.getProperty("text-indent", pValue);
+    double abiTextIndent = (ok && pValue != NULL ? UT_convertToDimension(pValue, DIM_CM) : 0.0);
+    double dMinLabelWidth = (abiTextIndent <= 0 ? -abiTextIndent : 0.762);
+    UT_UTF8String_sprintf(minLabelWidth, "%f%s", dMinLabelWidth, UT_dimensionName(DIM_CM));
+    
+    ok = rAP.getProperty("margin-left", pValue);
+    double abiMarginLeft = (ok && pValue != NULL ? UT_convertToDimension(pValue, DIM_CM) : 0.0);
+
+    // AbiWord's margin-left = OpenDocument paragraph property fo:margin-left +
+    //                         OpenDocument text:space-before +
+    //                         OpenDocument text:min-label-witdh
+   
+    double odfMarginLeft = abiMarginLeft - dMinLabelWidth - 0;
+    UT_UTF8String_sprintf(marginLeft, "%f%s",
+                          odfMarginLeft,
+                          UT_dimensionName(DIM_CM));
+
+    // OpenDocument fo:margin-left + fo:text-indent + text:space-before = AbiWord's margin-left + text-indent.
+    // Since AbiWord does not support the fo:space-before feature, we will just set that to 0. We
+    // then have all the variables to calculate fo:text-indent.
+
+    spaceBefore = "0cm";
+    UT_UTF8String_sprintf(textIndent, "%f%s",
+                          abiMarginLeft + abiTextIndent - odfMarginLeft,
+                          UT_dimensionName(DIM_CM));
+}
 
 /**
  * 
@@ -105,14 +118,16 @@ void ODe_ListLevelStyle::_writeTextProperties(GsfOutput* pODT,
 void ODe_ListLevelStyle::_writeListLevelProperties(GsfOutput* pODT,
                           const UT_UTF8String& rSpacesOffset) const {
 
-    if (!m_minLabelWidth.empty() || !m_spaceBefore.empty()) {
+    if (!m_textIndent.empty() || !m_spaceBefore.empty() || !m_minLabelWidth.empty() || !m_marginLeft.empty()) {
         UT_UTF8String output;
         
         UT_UTF8String_sprintf(output, "%s<style:list-level-properties",
             rSpacesOffset.utf8_str());
-            
-        ODe_writeAttribute(output, "text:min-label-width", m_minLabelWidth);
+
+        ODe_writeAttribute(output, "fo:text-indent", m_textIndent);
         ODe_writeAttribute(output, "text:space-before", m_spaceBefore);
+        ODe_writeAttribute(output, "text:min-label-width", m_minLabelWidth);
+        ODe_writeAttribute(output, "fo:margin-left", m_marginLeft);
             
         output += "/>\n";
             

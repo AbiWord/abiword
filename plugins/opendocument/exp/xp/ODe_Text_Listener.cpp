@@ -1233,7 +1233,7 @@ void ODe_Text_Listener::_openODParagraph(const PP_AttrProp* pAP) {
         pStyle = new ODe_Style_Style();
         pStyle->setFamily("paragraph");
         
-        pStyle->fetchAttributesFromAbiBlock(pAP);
+        pStyle->fetchAttributesFromAbiBlock(pAP, m_pCurrentListStyle);
         
         if (m_pendingMasterPageStyleChange) {
             pStyle->setMasterPageName(m_masterPageStyleName);

@@ -79,7 +79,8 @@ void ODi_ListLevelStyle::startElement (const gchar* pName,
             m_textStyleName = pVal;
         }
         
-    } else if (!strcmp("style:list-level-properties", pName)) {
+    } else if (!strcmp("style:list-level-properties", pName) ||
+               !strcmp("style:list-level-label-alignment", pName)) {
 
         pVal = UT_getAttribute ("text:space-before", ppAtts);
         if (pVal) {
@@ -94,10 +95,20 @@ void ODi_ListLevelStyle::startElement (const gchar* pName,
         } else {
             m_minLabelWidth = "0cm";
         }
-        
+
         pVal = UT_getAttribute ("text:min-label-distance", ppAtts);
         if (pVal) {
             m_minLabelDistance = pVal;
+        }
+
+        pVal = UT_getAttribute ("fo:text-indent", ppAtts);
+        if (pVal) {
+            m_textIndent = pVal;
+        }
+
+        pVal = UT_getAttribute ("fo:margin-left", ppAtts);
+        if (pVal) {
+            m_marginLeft = pVal;
         }
     }
 }
@@ -181,7 +192,49 @@ void ODi_ListLevelStyle::getAbiProperties(UT_UTF8String& rProps,
         rProps += m_abiProperties;
     }
     
-    
+    // Precedence of list styles properties:
+    //
+    // 1. The properties of the style denoted by the paragraph's style:list-style-name, overridden by
+    // 2. The properties of the paragraph's parent style, overridden by
+    // 3. The properties of the paragraph style
+
+    UT_UTF8String odMarginLeft;
+    UT_UTF8String odTextIndent;
+
+    // 1. The properties of the style denoted by the paragraph's style:list-style-name
+    if (!pStyle->getListStyleName().empty())
+    {
+        if (!m_marginLeft.empty())
+            odMarginLeft = m_marginLeft;
+        if (!m_textIndent.empty())
+            odTextIndent = m_textIndent;
+    }
+
+    // 2. The properties of the paragraph's parent style
+    if (pStyle != NULL && !strcmp(pStyle->getFamily()->utf8_str(), "paragraph")) {
+        const ODi_Style_Style* pParentStyle = pStyle->getParent();
+        if (pParentStyle != NULL && !strcmp(pParentStyle->getFamily()->utf8_str(), "paragraph")) {
+            if (pStyle->getMarginLeft() && !pStyle->getMarginLeft()->empty())
+                odMarginLeft = *(pStyle->getMarginLeft());
+            if (pStyle->getTextIndent() && !pStyle->getTextIndent()->empty())
+                odTextIndent = *(pStyle->getTextIndent());
+        }
+    }
+
+    // 3. The properties of the paragraph style
+    if (pStyle != NULL && !strcmp(pStyle->getFamily()->utf8_str(), "paragraph")) {
+        if (pStyle->getMarginLeft() && !pStyle->getMarginLeft()->empty())
+            odMarginLeft = *(pStyle->getMarginLeft());
+        if (pStyle->getTextIndent() && !pStyle->getTextIndent()->empty())
+            odTextIndent = *(pStyle->getTextIndent());
+    }
+
+    // default to some 'sane' values if not set
+    if (odMarginLeft.empty())
+        odMarginLeft = "0.0cm";
+    if (odTextIndent.empty())
+        odTextIndent = "0.0cm";
+
     // From the OpenDocument OASIS standard, v1.0:
     //
     // "The text:space-before attribute specifies the space to include before
@@ -193,37 +246,24 @@ void ODi_ListLevelStyle::getAbiProperties(UT_UTF8String& rProps,
     //                         OpenDocument text:space-before +
     //                         OpenDocument text:min-label-witdh
     //
-    // AbiWord's text-indent = - (minus) OpenDocument text:min-label-width
+    // OpenDocument fo:margin-left + fo:text-indent + text:space-before = AbiWord's margin-left + text-indent.
     //
 
-    UT_UTF8String odMarginLeft;
-
-    if (pStyle != NULL &&
-        !strcmp(pStyle->getFamily()->utf8_str(), "paragraph")) {
-
-        odMarginLeft = *(pStyle->getMarginLeft());
-    } else {
-        odMarginLeft = "0.0cm";
-    }
-    
     double spaceBefore_cm;
     double minLabelWidth_cm;
+    double marginLeft_cm;
+    double textIndent_cm;
 
-    double styMarginLeft_cm;
     gchar buffer[100];
     UT_LocaleTransactor lt(LC_NUMERIC, "C");
     
-    spaceBefore_cm = UT_convertToDimension(m_spaceBefore.utf8_str(),
-                                           DIM_CM);
-                                           
-    minLabelWidth_cm = UT_convertToDimension(m_minLabelWidth.utf8_str(),
-                                             DIM_CM);
-                                             
-    styMarginLeft_cm = UT_convertToDimension(odMarginLeft.utf8_str(),
-                                             DIM_CM);
-    
-    sprintf(buffer, "%fcm", styMarginLeft_cm + spaceBefore_cm + 
-                            minLabelWidth_cm);
+    spaceBefore_cm = UT_convertToDimension(m_spaceBefore.utf8_str(), DIM_CM);
+    minLabelWidth_cm = UT_convertToDimension(m_minLabelWidth.utf8_str(), DIM_CM);
+    marginLeft_cm = UT_convertToDimension(odMarginLeft.utf8_str(), DIM_CM);
+    textIndent_cm = UT_convertToDimension(odTextIndent.utf8_str(), DIM_CM);
+   
+    double abiMarginLeft = marginLeft_cm + spaceBefore_cm + minLabelWidth_cm;
+    sprintf(buffer, "%fcm", abiMarginLeft);
                             
     if (!rProps.empty()) {
         rProps += "; ";
@@ -231,12 +271,9 @@ void ODi_ListLevelStyle::getAbiProperties(UT_UTF8String& rProps,
     rProps += "margin-left:";
     rProps.append(buffer);
     
-    sprintf(buffer, "%fcm", -minLabelWidth_cm);
-
+    sprintf(buffer, "%fcm", marginLeft_cm + textIndent_cm + spaceBefore_cm - abiMarginLeft);
     rProps += "; text-indent:";
     rProps.append(buffer);
-
-    
 }
 
 

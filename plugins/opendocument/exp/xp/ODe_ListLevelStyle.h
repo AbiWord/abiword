@@ -51,6 +51,10 @@ public:
 
     const UT_UTF8String& getFontName() const {return m_fontName;}
 
+    static void calculateListMargins(const PP_AttrProp& rAP, 
+                    UT_UTF8String& textIndent, UT_UTF8String& spaceBefore, 
+                    UT_UTF8String& minLabelWidth, UT_UTF8String& marginLeft);
+
 protected:
 
     void _writeTextProperties(GsfOutput* pODT,
@@ -70,8 +74,10 @@ protected:
     
     ////
     // <style:list-level-properties> sub element
-    UT_UTF8String m_minLabelWidth; // text:min-label-width
+    UT_UTF8String m_textIndent;    // fo:text-indent
     UT_UTF8String m_spaceBefore;   // text:space-before
+    UT_UTF8String m_minLabelWidth; // text:min-label-width
+    UT_UTF8String m_marginLeft;    // fo:margin-left
 };
 
 
