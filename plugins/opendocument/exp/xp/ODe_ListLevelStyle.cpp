@@ -28,6 +28,7 @@
 // AbiWord includes
 #include <pp_AttrProp.h>
 #include <ut_units.h>
+#include <ut_locale.h>
 
 
 /*******************************************************************************
@@ -59,6 +60,8 @@ void ODe_ListLevelStyle::calculateListMargins(const PP_AttrProp& rAP,
 
     const gchar* pValue;
     bool ok;
+
+    UT_LocaleTransactor lt(LC_NUMERIC, "C");
 
     // When abiword's text-indent is smaller than 0, it maps onto
     // ODF's text:min-label-width. 
