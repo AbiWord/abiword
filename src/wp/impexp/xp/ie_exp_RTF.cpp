@@ -66,6 +66,7 @@ IE_Exp_RTF::IE_Exp_RTF(PD_Document * pDocument)
 	m_bLastWasKeyword = false;
 	m_atticFormat = false;
 	m_CharRTL = UT_BIDI_UNSET;
+	m_conv = UT_iconv_open("UCS-4", "utf-8");
 }
 
 IE_Exp_RTF::IE_Exp_RTF(PD_Document * pDocument,bool atticFormat)
@@ -78,6 +79,7 @@ IE_Exp_RTF::IE_Exp_RTF(PD_Document * pDocument,bool atticFormat)
 	m_bLastWasKeyword = false;
 	m_atticFormat = atticFormat;
 	m_CharRTL = UT_BIDI_UNSET;
+	m_conv = UT_iconv_open("UCS-4", "utf-8");
 }
 
 IE_Exp_RTF::~IE_Exp_RTF()
@@ -85,6 +87,10 @@ IE_Exp_RTF::~IE_Exp_RTF()
 	UT_VECTOR_FREEALL(char *,m_vecColors);
 	UT_VECTOR_PURGEALL(_rtf_font_info *,m_vecFonts);
 	_clearStyles();
+	if (UT_iconv_isValid(m_conv))
+	{
+		UT_iconv_close(m_conv);
+	}
 }
 
 /*****************************************************************/
@@ -569,7 +575,6 @@ void IE_Exp_RTF::_rtf_fontname(const char * szFontName)
  */
 void IE_Exp_RTF::_rtf_chardata(const char * pbuf, UT_uint32 buflen)
 {
-	UT_iconv_t conv;
 	const char * current = pbuf;
 	UT_uint32 count = 0;
 
@@ -588,8 +593,7 @@ void IE_Exp_RTF::_rtf_chardata(const char * pbuf, UT_uint32 buflen)
 		return;
 	}
 
-	conv = UT_iconv_open("UCS-4", "utf-8");
-	UT_return_if_fail (conv);
+	UT_return_if_fail (UT_iconv_isValid(m_conv));
 	while (count < buflen) {
 		if (*current & 0x80) {  // check for non-ASCII value
 			UT_UCS4Char wc;
@@ -597,7 +601,7 @@ void IE_Exp_RTF::_rtf_chardata(const char * pbuf, UT_uint32 buflen)
 			char * dest = (char*)(&wc);
 			insz = buflen - count;
 			sz = sizeof(wc);
-			UT_iconv(conv, &current, &insz, &dest, &sz);
+			UT_iconv(m_conv, &current, &insz, &dest, &sz);
 			if (wc > 0x00ff) {
 //				UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 			}
@@ -619,7 +623,6 @@ void IE_Exp_RTF::_rtf_chardata(const char * pbuf, UT_uint32 buflen)
 			count++;
 		}
 	}
-	UT_iconv_close(conv);
 }
 
 /*

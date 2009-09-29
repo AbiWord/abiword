@@ -25,6 +25,7 @@
 #include "ut_vector.h"
 #include "ut_hash.h"
 #include "ut_misc.h"
+#include "ut_iconv.h"
 #include "pl_Listener.h"
 #include "fl_AutoLists.h"
 #include "fl_AutoNum.h"
@@ -213,6 +214,7 @@ protected:
 	UT_Vector                   m_vecOverides;
 
 	UT_BidiCharType             m_CharRTL;
+	UT_iconv_t                  m_conv;
 };
 
 /*****************************************************************/
