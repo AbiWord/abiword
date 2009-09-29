@@ -146,7 +146,6 @@ void AP_Preview_Annotation::draw(void)
 	//
 	UT_sint32 iTop = m_gc->tlu(1);
 	UT_sint32 len = m_drawString.size();
-	UT_sint32 twidth = m_gc->measureString(m_drawString.ucs4_str(),0,len,NULL);
 	UT_sint32 iLeft = m_gc->tlu(2);
 
 	//

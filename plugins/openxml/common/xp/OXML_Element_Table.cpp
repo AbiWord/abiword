@@ -287,7 +287,6 @@ UT_Error OXML_Element_Table::addToPT(PD_Document * pDocument)
 {
 	UT_Error ret = UT_OK;
 
-	const gchar * szValue = NULL;
 	const gchar * bgColor = NULL;
 	if(getProperty("background-color", bgColor) != UT_OK)
 		bgColor = NULL;

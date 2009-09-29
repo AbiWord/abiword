@@ -687,9 +687,9 @@ bool s_abicollab_join(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 
 					// Just raise a frame that contains this session, instead of
 					// opening the document again
-					XAP_Frame* pFrame = pManager->findFrameForSession(pSession);
-					UT_return_val_if_fail(pFrame, false);
-					pFrame->raise();
+					XAP_Frame* pFrameForSession = pManager->findFrameForSession(pSession);
+					UT_return_val_if_fail(pFrameForSession, false);
+					pFrameForSession->raise();
 				}
 				else
 					pManager->joinSessionInitiate(pBuddy, pDocHandle);	

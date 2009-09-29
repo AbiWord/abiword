@@ -161,7 +161,7 @@ namespace soup_soa {
 	
 	/* private functions */
 	
-	static bool _invoke(const std::string& /*url*/, const soa::method_invocation& mi, SoaSoupSession& sess, std::string& result) {
+	static bool _invoke(const std::string& /*url*/, const soa::method_invocation& /*mi*/, SoaSoupSession& sess, std::string& result) {
 		if (!sess.m_session || !sess.m_msg )
 			return soa::GenericPtr();
 

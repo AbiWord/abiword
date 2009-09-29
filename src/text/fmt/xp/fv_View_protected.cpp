@@ -1731,7 +1731,6 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	bool bNOOP = false;
 	bool bEOL = false, bBOL = false;
 	fp_Line * pNextLine = NULL; 
-	fp_Container * pNext = NULL;
 	fp_Page* pPage = NULL;
 	xxx_UT_DEBUGMSG(("fv_View::_moveInsPtNextPrevLine: old line 0x%x\n", pOldLine));
 
