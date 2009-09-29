@@ -441,8 +441,8 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             pVal = UT_getAttribute("text:style-name", ppAtts);
             
             
-            
-            m_pCurrentListStyle = m_pStyles->getList(pVal);
+            if (pVal && *pVal)
+                m_pCurrentListStyle = m_pStyles->getList(pVal);
             UT_ASSERT(m_pCurrentListStyle != NULL);
             
             m_listLevel = 1;
