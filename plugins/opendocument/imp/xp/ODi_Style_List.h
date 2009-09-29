@@ -63,6 +63,9 @@ public:
 
     ODi_ListLevelStyle* getLevelStyle(UT_uint32 level) const
         {
+            UT_return_val_if_fail(level > 0, NULL);
+            UT_return_val_if_fail(!m_levelStyles.empty(), NULL);
+
             // Levels starts from 1, but our vector starts from 0 (zero).
             return m_levelStyles[level-1];
         }
