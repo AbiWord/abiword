@@ -129,8 +129,11 @@ public:
     inline void setNextStyleName(const char* pName) {m_nextStyleName.assign(pName);}
     void setNextStyleName(const UT_UTF8String& rName) {m_nextStyleName = rName;}
  
+	const UT_UTF8String& getListStyleName() const {return m_listStyleName;}
+
     bool hasProperties() const {
-        return !m_masterPageName.empty() ||
+        return !m_listStyleName.empty() ||
+               !m_masterPageName.empty() ||
         
                !m_lineHeight.empty() ||
                !m_align.empty() ||
@@ -183,6 +186,7 @@ public:
     
     bool isAutomatic() const {return m_bAutomatic;}
     const UT_UTF8String* getMarginLeft() const {return &m_marginLeft;}
+    const UT_UTF8String* getTextIndent() const {return &m_textIndent;}
     const UT_UTF8String* getFamily() const {return &m_family;}
     const UT_UTF8String* getFontName() const {return &m_fontName;}
     
