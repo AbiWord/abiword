@@ -3481,9 +3481,11 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	_setField(fd);
 	const gchar * szWidth = NULL;
 	pSpanAP->getProperty("width", szWidth);
+	bool bNoSize = false;
 	if(szWidth == NULL)
 	{
 		szWidth = "0in";
+		bNoSize = true;
 	}
 	const gchar * szHeight = NULL;
 	pSpanAP->getProperty("height", szHeight);
@@ -3494,8 +3496,9 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	if(szHeight == NULL)
 	{
 		szHeight = "0in";
+		bNoSize = true;
 	}
-
+	UT_DEBUGMSG(("Orig szHeight = %s \n",szHeight));
 	// Also get max width, height ready for generateImage.
 
 	fl_DocSectionLayout * pDSL = getBlock()->getDocSectionLayout();
@@ -3561,22 +3564,33 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 			maxH = iH;
 			UT_DEBUGMSG(("Change Image Height to %d \n",maxH));
 		}
+		m_pImage = m_pFGraphic->generateImage(pG, pSpanAP, maxW, maxH);
+		if(bNoSize)
+		{
+			iW = pG->tlu(m_pImage->getDisplayWidth());
+			iH = pG->tlu(m_pImage->getDisplayHeight());
+			if(iW < maxW)
+				maxW = iW;
+			if(iH < maxH)
+				maxH = iH;
+		}
 		const char * pProps[5] = {"width",NULL,"height",NULL,NULL};
 		m_sCachedWidthProp = UT_formatDimensionString(DIM_IN,static_cast<double>(maxW)/UT_LAYOUT_RESOLUTION);
 		m_sCachedHeightProp =UT_formatDimensionString(DIM_IN,static_cast<double>(maxH)/UT_LAYOUT_RESOLUTION);
 		pProps[1] = m_sCachedWidthProp.c_str();
 		pProps[3] = m_sCachedHeightProp.c_str();
-		//
-		// Change the properties in the document
-		//
-		getBlock()->getDocument()->changeObjectFormatNoUpdate(PTC_AddFmt,m_OH,NULL,pProps);
-		//
-		// update the span Attribute/Propperties with this
-		//
-		PT_AttrPropIndex api = getBlock()->getDocument()->getAPIFromSOH(m_OH);
-		getBlock()->getDocument()->getAttrProp(api,&m_pSpanAP);
-
-		m_pImage = m_pFGraphic->generateImage(pG, pSpanAP, maxW, maxH);
+		if(!pG->queryProperties(GR_Graphics::DGP_PAPER))
+		{
+			//
+			// Change the properties in the document
+			//
+			getBlock()->getDocument()->changeObjectFormatNoUpdate(PTC_AddFmt,m_OH,NULL,pProps);
+			//
+			// update the span Attribute/Propperties with this
+			//
+			PT_AttrPropIndex api = getBlock()->getDocument()->getAPIFromSOH(m_OH);
+			getBlock()->getDocument()->getAttrProp(api,&m_pSpanAP);
+		}
 		m_bImageForPrinter = pG->queryProperties(GR_Graphics::DGP_PAPER);
 		markAsDirty();
 		if(getLine())
