@@ -128,7 +128,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
     m_bRestartEndSection(false),
     m_bPlaceAtDocEnd(false),
     m_bPlaceAtSecEnd(true),
-    m_iGraphicTick(1), 
+    m_iGraphicTick(0), 
     m_iDocSize(0),
     m_iFilled(0),
     m_bSpellCheckInProgress(false),
@@ -2754,6 +2754,7 @@ void FL_DocLayout::formatAll()
 	clearAllCountWraps();
 	while (pSL)
 	{
+		pSL->recalculateFields(0);
 		pSL->format();
 		if(pSL->getContainerType() == FL_CONTAINER_DOCSECTION)
 		{

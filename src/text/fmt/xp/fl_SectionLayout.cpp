@@ -1978,6 +1978,7 @@ void fl_DocSectionLayout::completeBreakSection(void)
 	m_bNeedsSectionBreak = false;
 }
 
+
 void fl_DocSectionLayout::redrawUpdate(void)
 {
 	fl_ContainerLayout*	pBL = getFirstLayout();
