@@ -332,7 +332,7 @@ on the image, it just stores the values. Values in device units.
 */
 void GR_Image::setDisplaySize(UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) 
 { 
-  UT_DEBUGMSG(("DisplayWidth set to %d DisplayeHeight set to %d \n",iDisplayWidth,iDisplayHeight));
+  xxx_UT_DEBUGMSG(("DisplayWidth set to %d DisplayeHeight set to %d \n",iDisplayWidth,iDisplayHeight));
   m_iDisplayWidth = iDisplayWidth; 
   m_iDisplayHeight = iDisplayHeight; 
 }

@@ -890,7 +890,7 @@ void fl_SectionLayout::checkGraphicTick(GR_Graphics * pG)
     {
       xxx_UT_DEBUGMSG(("Current tick == %d layout Tick == %d \n",m_iGraphicTick,getDocLayout()->getGraphicTick()));
     }
-	if(m_pImageImage && (getDocLayout()->getGraphicTick() != m_iGraphicTick))
+  if(m_pGraphicImage && ((getDocLayout()->getGraphicTick() != m_iGraphicTick) || (m_pImageImage == NULL) ))
 	{
 		DELETEP(m_pImageImage);
 		m_pImageImage = m_pGraphicImage->regenerateImage(pG);

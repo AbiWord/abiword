@@ -1012,9 +1012,8 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 		 xxx_UT_DEBUGMSG(("Fill type Image ! srcX %d srcY %d x  %d y %d width %d height %d \n",srcX,srcY,x,y,width,height));
 		 if((m_pDocImage == NULL) && (m_pDocLayout->getGraphicTick() != m_iGraphicTick))
 		 {
-			 _regenerateImage(pG);
+		         _regenerateImage(pG);
 		 }
-		 
 		 if(srcX < 0)
 		 {
 			 UT_sint32 iX = -srcX;

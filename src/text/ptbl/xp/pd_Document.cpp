@@ -1555,10 +1555,9 @@ bool PD_Document::repairDoc(void)
 		appendStrux(PTX_Section, NULL);
 		appendStrux(PTX_Block,NULL);
 		return true;
-	}
-
+	} 
 	// Now check if the document starts with a section
-
+	pf = m_pPieceTable->getFragments().getFirst();
 	if(pf->getType() != pf_Frag::PFT_Strux)
 	{
 		insertStruxBeforeFrag(pf, PTX_Section,NULL);
