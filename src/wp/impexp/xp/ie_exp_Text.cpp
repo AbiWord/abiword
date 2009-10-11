@@ -316,7 +316,10 @@ void IE_Exp_Text::_setEncoding(const char *szEncoding)
 
 	// TODO Should BOM use be a user pref?
 	// TODO Does Mac OSX prefer BOMs?
-	if (szEncoding && !strcmp(szEncoding,XAP_EncodingManager::get_instance()->getUCS2LEName()))
+	const char *szUCS2LEName = XAP_EncodingManager::get_instance()->getUCS2LEName();
+	const char *szUCS2BEName = XAP_EncodingManager::get_instance()->getUCS2BEName();
+
+	if (szEncoding && szUCS2LEName && !strcmp(szEncoding,szUCS2LEName))
 	{
 		m_bIs16Bit = true;
 		m_bBigEndian = false;
@@ -327,7 +330,7 @@ void IE_Exp_Text::_setEncoding(const char *szEncoding)
 #endif
 		m_bUnicode = true;
 	}
-	else if (szEncoding && !strcmp(szEncoding,XAP_EncodingManager::get_instance()->getUCS2BEName()))
+	else if (szEncoding && szUCS2BEName && !strcmp(szEncoding,szUCS2BEName))
 	{
 		m_bIs16Bit = true;
 		m_bBigEndian = true;
