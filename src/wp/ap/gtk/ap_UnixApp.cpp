@@ -636,7 +636,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 	{
 		IE_Imp_Text_Sniffer SniffBuf;
 		const char * szRes = SniffBuf.recognizeContentsType(reinterpret_cast<const char *>(pData),iLen);
-		if(strcmp(szRes,"none") != 0)
+		if(szRes && strcmp(szRes,"none") != 0)
 		{
 			UT_uint32 iread,iwritten = 0;
 			const char * szutf8= static_cast<const char *>(UT_convert(reinterpret_cast<const char *>(pData),iLen,szRes,"UTF-8",&iread,&iwritten));
