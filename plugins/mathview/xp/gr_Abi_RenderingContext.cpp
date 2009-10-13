@@ -79,11 +79,15 @@ GR_Abi_RenderingContext::fill(const UT_RGBColor& color, const scaled& x, const s
 		   toAbiLayoutUnits(x), toAbiLayoutUnits(y),
 		   toAbiLayoutUnits(box.width), toAbiLayoutUnits(box.height), toAbiLayoutUnits(box.depth)));
   GR_Painter Painter(m_pGraphics);
+  UT_sint32 iHeight = toAbiLayoutUnits(box.verticalExtent());
+  m_pGraphics->antiAliasAlways(true);
+  UT_DEBUGMSG(("Doing Fill in Math iHeight %d \n",iHeight));
   Painter.fillRect(color,
 		   toAbiX(x),
 		   toAbiY(y + box.verticalExtent()),
 		   toAbiLayoutUnits(box.horizontalExtent()),
-		   toAbiLayoutUnits(box.verticalExtent()));
+		   iHeight);
+  m_pGraphics->antiAliasAlways(false);
 }
 
 void
@@ -117,15 +121,18 @@ GR_Abi_RenderingContext::drawChar(const scaled& x, const scaled& y, GR_Font* f, 
 void
 GR_Abi_RenderingContext::drawBox(const scaled& x, const scaled& y, const BoundingBox& box) const
 {
+  UT_DEBUGMSG(("Doing drawBox in Math \n"));
   const UT_sint32 x0 = toAbiX(x);
   const UT_sint32 x1 = toAbiX(x + box.width);
   const UT_sint32 y0 = toAbiY(y);
   const UT_sint32 y1 = toAbiY(y + box.height);
   const UT_sint32 y2 = toAbiY(y - box.depth);
   GR_Painter Painter(m_pGraphics);
+  m_pGraphics->antiAliasAlways(true);
   Painter.drawLine(x0, y0, x1, y0);
   Painter.drawLine(x0, y1, x0, y2);
   Painter.drawLine(x1, y1, x1, y2);
   Painter.drawLine(x0, y1, x1, y1);
   Painter.drawLine(x0, y2, x1, y2);
+  m_pGraphics->antiAliasAlways(false);
 }

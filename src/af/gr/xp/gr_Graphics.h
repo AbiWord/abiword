@@ -400,6 +400,11 @@ class ABI_EXPORT GR_Graphics
 	UT_sint32	tlu(UT_sint32 deviceUnits) const;
 	double	    tduD(double layoutUnits) const;
 	double  	tluD(double deviceUnits) const;
+	void        antiAliasAlways(bool bAntiAlias)
+	{ m_bAntiAliasAlways = bAntiAlias;}
+	bool        getAntiAliasAlways(void)
+	{ return m_bAntiAliasAlways;}
+
 	/*!
 		Font units to layout units. Returns the dimension in layout units since font
 		are not Zoomed
@@ -871,6 +876,7 @@ class ABI_EXPORT GR_Graphics
 	static UT_UCS4Char      s_cDefaultGlyph;
 	UT_GenericVector<GR_Caret *>  m_vecCarets;
 	AllCarets               m_AllCarets;
+	bool                    m_bAntiAliasAlways;
 };
 
 #endif /* GR_GRAPHICS_H */

@@ -244,7 +244,8 @@ GR_Graphics::GR_Graphics()
 	  m_iPrevXOffset(0),
 	  m_hashFontCache(19),
 	  m_paintCount(0),
-	  m_AllCarets(this,&m_pCaret,&m_vecCarets)
+	  m_AllCarets(this,&m_pCaret,&m_vecCarets),
+	  m_bAntiAliasAlways(false)
 {
 }
 
