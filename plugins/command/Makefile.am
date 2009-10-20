@@ -17,20 +17,4 @@ command_la_LDFLAGS = \
 
 command_la_SOURCES = 
 
-if TOOLKIT_WIN
-
-plugin_DATA = \
-	command.dll
-
-CLEANFILES = \
-	command.def \
-	command.dll \
-	command.dll.a
-
-.libs/command.a: command.la
-
-command.dll: .libs/command.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(COMMAND_LIBS)
-
-endif # TOOLKIT_WIN
 endif

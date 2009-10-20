@@ -9,23 +9,6 @@ else
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = applix.la
 
-if TOOLKIT_WIN
-
-plugin_DATA = \
-	applix.dll
-
-CLEANFILES = \
-	applix.def \
-	applix.dll \
-	applix.dll.a
-
-.libs/applix.a: applix.la
-
-applix.dll: .libs/applix.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(APPLIX_LIBS)
-
-endif # TOOLKIT_WIN
-
 endif # APPLIX_BUILTIN
 
 applix_la_LIBADD = \

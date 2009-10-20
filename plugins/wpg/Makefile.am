@@ -19,20 +19,3 @@ nodist_EXTRA_wpg_la_SOURCES = dummy.cpp
 EXTRA_DIST = \
 	plugin.m4
 
-if TOOLKIT_WIN
-
-plugin_DATA = \
-	wpg.dll
-
-CLEANFILES = \
-	wpg.def \
-	wpg.dll \
-	wpg.dll.a
-
-.libs/wpg.a: wpg.la
-
-wpg.dll: .libs/wpg.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(WPG_LIBS)
-
-endif # TOOLKIT_WIN
-

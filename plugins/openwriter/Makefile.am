@@ -9,23 +9,6 @@ else
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = openwriter.la
 
-if TOOLKIT_WIN
-
-plugin_DATA = \
-	openwriter.dll
-
-CLEANFILES = \
-	openwriter.def \
-	openwriter.dll \
-	openwriter.dll.a
-
-.libs/openwriter.a: openwriter.la
-
-openwriter.dll: .libs/openwriter.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(OPENWRITER_LIBS)
-
-endif # TOOLKIT_WIN
-
 endif
 
 openwriter_la_LIBADD = \

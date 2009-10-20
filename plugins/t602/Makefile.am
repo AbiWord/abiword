@@ -9,23 +9,6 @@ else
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = t602.la
 
-if TOOLKIT_WIN
-
-plugin_DATA = \
-	t602.dll
-
-CLEANFILES = \
-	t602.def \
-	t602.dll \
-	t602.dll.a
-
-.libs/t602.a: t602.la
-
-t602.dll: .libs/t602.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(T602_LIBS)
-
-endif # TOOLKIT_WIN
-
 endif
 
 t602_la_LIBADD = \

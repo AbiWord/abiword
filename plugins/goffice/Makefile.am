@@ -18,20 +18,3 @@ goffice_la_SOURCES =
 EXTRA_DIST = \
 	plugin.m4
 
-if TOOLKIT_WIN
-
-plugin_DATA = \
-	goffice.dll
-
-CLEANFILES = \
-	goffice.def \
-	goffice.dll \
-	goffice.dll.a
-
-.libs/goffice.a: goffice.la
-
-goffice.dll: .libs/goffice.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(GOFFICE_LIBS)
-
-endif # TOOLKIT_WIN
-

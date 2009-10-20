@@ -13,23 +13,6 @@ else
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = latex.la
 
-if TOOLKIT_WIN
-
-plugin_DATA = \
-	latex.dll
-
-CLEANFILES = \
-	latex.def \
-	latex.dll \
-	latex.dll.a
-
-.libs/latex.a: latex.la
-
-latex.dll: .libs/latex.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(LATEX_LIBS)
-
-endif # TOOLKIT_WIN
-
 endif
 
 latex_la_LIBADD = \

@@ -19,20 +19,3 @@ nodist_EXTRA_mht_la_SOURCES =  dummy.cpp
 EXTRA_DIST = \
 	plugin.m4
 
-if TOOLKIT_WIN
-
-plugin_DATA = \
-	mht.dll
-
-CLEANFILES = \
-	mht.def \
-	mht.dll \
-	mht.dll.a
-
-.libs/mht.a: mht.la
-
-mht.dll: .libs/mht.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(MHT_LIBS)
-
-endif # TOOLKIT_WIN
-

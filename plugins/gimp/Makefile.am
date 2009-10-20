@@ -9,23 +9,6 @@ else
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = gimp.la
 
-if TOOLKIT_WIN
-
-plugin_DATA = \
-	gimp.dll
-
-CLEANFILES = \
-	gimp.def \
-	gimp.dll \
-	gimp.dll.a
-
-.libs/gimp.a: gimp.la
-
-gimp.dll: .libs/gimp.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
-
-endif # TOOLKIT_WIN
-
 endif
 
 gimp_la_LIBADD = \

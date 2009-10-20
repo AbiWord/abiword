@@ -9,23 +9,6 @@ else
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = urldict.la
 
-if TOOLKIT_WIN
-
-plugin_DATA = \
-	urldict.dll
-
-CLEANFILES = \
-	urldict.def \
-	urldict.dll \
-	urldict.dll.a
-
-.libs/urldict.a: urldict.la
-
-urldict.dll: .libs/urldict.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
-
-endif # TOOLKIT_WIN
-
 endif
 
 urldict_la_LIBADD = \

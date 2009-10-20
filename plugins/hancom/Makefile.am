@@ -9,23 +9,6 @@ else
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = hancom.la
 
-if TOOLKIT_WIN
-
-plugin_DATA = \
-	hancom.dll
-
-CLEANFILES = \
-	hancom.def \
-	hancom.dll \
-	hancom.dll.a
-
-.libs/hancom.a: hancom.la
-
-hancom.dll: .libs/hancom.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(HANCOM_LIBS)
-
-endif # TOOLKIT_WIN
-
 endif
 
 hancom_la_LIBADD = \

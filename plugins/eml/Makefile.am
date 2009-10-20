@@ -9,23 +9,6 @@ else
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = eml.la
 
-if TOOLKIT_WIN
-
-plugin_DATA = \
-	eml.dll
-
-CLEANFILES = \
-	eml.def \
-	eml.dll \
-	eml.dll.a
-
-.libs/eml.a: eml.la
-
-eml.dll: .libs/eml.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
-
-endif # TOOLKIT_WIN
-
 endif
 
 eml_la_LIBADD = \

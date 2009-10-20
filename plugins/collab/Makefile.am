@@ -30,21 +30,4 @@ nodist_EXTRA_collab_la_SOURCES = dummy.cpp
 EXTRA_DIST = \
 	plugin.m4
 
-if TOOLKIT_WIN
-
-plugin_DATA = \
-	collab.dll
-
-CLEANFILES = \
-	collab.def \
-	collab.dll \
-	collab.dll.a
-
-.libs/collab.a: collab.la
-
-collab.dll: .libs/collab.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(COLLAB_LIBS) $(SYSTEM_LIBS)
-
-endif # TOOLKIT_WIN
-
 endif # TOOLKIT_COCOA

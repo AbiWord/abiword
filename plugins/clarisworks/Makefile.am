@@ -9,23 +9,6 @@ else
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = clarisworks.la
 
-if TOOLKIT_WIN
-
-plugin_DATA = \
-	clarisworks.dll
-
-CLEANFILES = \
-	clarisworks.def \
-	clarisworks.dll \
-	clarisworks.dll.a
-
-.libs/clarisworks.a: clarisworks.la
-
-clarisworks.dll: .libs/clarisworks.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(CLARISWORKS_LIBS)
-
-endif # TOOLKIT_WIN
-
 endif
 
 clarisworks_la_LIBADD = \

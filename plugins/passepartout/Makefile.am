@@ -9,23 +9,6 @@ else
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = passepartout.la
 
-if TOOLKIT_WIN
-
-plugin_DATA = \
-	passepartout.dll
-
-CLEANFILES = \
-	passepartout.def \
-	passepartout.dll \
-	passepartout.dll.a
-
-.libs/passepartout.a: passepartout.la
-
-passepartout.dll: .libs/passepartout.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
-
-endif # TOOLKIT_WIN
-
 endif
 
 passepartout_la_LIBADD = \

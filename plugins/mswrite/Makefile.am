@@ -9,23 +9,6 @@ else
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = mswrite.la
 
-if TOOLKIT_WIN
-
-plugin_DATA = \
-	mswrite.dll
-
-CLEANFILES = \
-	mswrite.def \
-	mswrite.dll \
-	mswrite.dll.a
-
-.libs/mswrite.a: mswrite.la
-
-mswrite.dll: .libs/mswrite.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(MSWRITE_LIBS)
-
-endif # TOOLKIT_WIN
-
 endif
 
 mswrite_la_LIBADD = \

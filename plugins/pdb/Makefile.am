@@ -9,23 +9,6 @@ else
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = pdb.la
 
-if TOOLKIT_WIN
-
-plugin_DATA = \
-	pdb.dll
-
-CLEANFILES = \
-	pdb.def \
-	pdb.dll \
-	pdb.dll.a
-
-.libs/pdb.a: pdb.la
-
-pdb.dll: .libs/pdb.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PDB_LIBS)
-
-endif # TOOLKIT_WIN
-
 endif
 
 pdb_la_LIBADD = \

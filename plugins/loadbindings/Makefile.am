@@ -9,23 +9,6 @@ else
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = loadbindings.la
 
-if TOOLKIT_WIN
-
-plugin_DATA = \
-	loadbindings.dll
-
-CLEANFILES = \
-	loadbindings.def \
-	loadbindings.dll \
-	loadbindings.dll.a
-
-.libs/loadbindings.a: loadbindings.la
-
-loadbindings.dll: .libs/loadbindings.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(LOADBINDINGS_LIBS)
-
-endif # TOOLKIT_WIN
-
 endif
 
 loadbindings_la_LIBADD = \

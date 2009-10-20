@@ -9,23 +9,6 @@ else
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = pdf.la
 
-if TOOLKIT_WIN
-
-plugin_DATA = \
-	pdf.dll
-
-CLEANFILES = \
-	pdf.def \
-	pdf.dll \
-	pdf.dll.a
-
-.libs/pdf.a: pdf.la
-
-pdf.dll: .libs/pdf.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PDF_LIBS)
-
-endif # TOOLKIT_WIN
-
 endif # PDF_BUILTIN
 
 pdf_la_LIBADD = \

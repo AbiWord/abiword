@@ -17,20 +17,3 @@ grammar_la_LDFLAGS = \
 nodist_EXTRA_grammar_la_SOURCES = dummy.cpp
 grammar_la_SOURCES = 
 
-if TOOLKIT_WIN
-
-plugin_DATA = \
-	grammar.dll
-
-CLEANFILES = \
-	grammar.def \
-	grammar.dll \
-	grammar.dll.a
-
-.libs/grammar.a: grammar.la
-
-grammar.dll: .libs/grammar.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(GRAMMAR_LIBS)
-
-endif # TOOLKIT_WIN
-

@@ -9,23 +9,6 @@ else
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = babelfish.la
 
-if TOOLKIT_WIN
-
-plugin_DATA = \
-	babelfish.dll
-
-CLEANFILES = \
-	babelfish.def \
-	babelfish.dll \
-	babelfish.dll.a
-
-.libs/babelfish.a: babelfish.la
-
-babelfish.dll: .libs/babelfish.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
-
-endif # TOOLKIT_WIN
-
 endif
 
 babelfish_la_LIBADD = \

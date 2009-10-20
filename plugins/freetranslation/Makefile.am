@@ -9,23 +9,6 @@ else
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = freetranslation.la
 
-if TOOLKIT_WIN
-
-plugin_DATA = \
-	freetranslation.dll
-
-CLEANFILES = \
-	freetranslation.def \
-	freetranslation.dll \
-	freetranslation.dll.a
-
-.libs/freetranslation.a: freetranslation.la
-
-freetranslation.dll: .libs/freetranslation.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
-
-endif # TOOLKIT_WIN
-
 endif
 
 freetranslation_la_LIBADD = \

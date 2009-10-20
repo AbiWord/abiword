@@ -9,23 +9,6 @@ else
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = presentation.la
 
-if TOOLKIT_WIN
-
-plugin_DATA = \
-	presentation.dll
-
-CLEANFILES = \
-	presentation.def \
-	presentation.dll \
-	presentation.dll.a
-
-.libs/presentation.a: presentation.la
-
-presentation.dll: .libs/presentation.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PRESENTATION_LIBS)
-
-endif # TOOLKIT_WIN
-
 endif
 
 presentation_la_LIBADD = \

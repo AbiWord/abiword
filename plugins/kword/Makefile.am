@@ -9,23 +9,6 @@ else
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = kword.la
 
-if TOOLKIT_WIN
-
-plugin_DATA = \
-	kword.dll
-
-CLEANFILES = \
-	kword.def \
-	kword.dll \
-	kword.dll.a
-
-.libs/kword.a: kword.la
-
-kword.dll: .libs/kword.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(KWORD_LIBS)
-
-endif # TOOLKIT_WIN
-
 endif
 
 kword_la_LIBADD = \

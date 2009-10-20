@@ -20,20 +20,3 @@ mathview_la_SOURCES =
 EXTRA_DIST = \
 	plugin.m4
 
-if TOOLKIT_WIN
-
-plugin_DATA = \
-	mathview.dll
-
-CLEANFILES = \
-	mathview.def \
-	mathview.dll \
-	mathview.dll.a
-
-.libs/mathview.a: mathview.la
-
-mathview.dll: .libs/mathview.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(MATHVIEW_LIBS)
-
-endif # TOOLKIT_WIN
-

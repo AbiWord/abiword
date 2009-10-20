@@ -10,23 +10,6 @@ else
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = paint.la
 
-if TOOLKIT_WIN
-
-plugin_DATA = \
-	paint.dll
-
-CLEANFILES = \
-	paint.def \
-	paint.dll \
-	paint.dll.a
-
-.libs/paint.a: paint.la
-
-paint.dll: .libs/paint.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PAINT_LIBS)
-
-endif # TOOLKIT_WIN
-
 endif
 
 paint_la_LIBADD = \

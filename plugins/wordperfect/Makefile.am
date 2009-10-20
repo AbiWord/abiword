@@ -19,20 +19,3 @@ nodist_EXTRA_wordperfect_la_SOURCES = dummy.cpp
 EXTRA_DIST = \
 	plugin.m4
 
-if TOOLKIT_WIN
-
-plugin_DATA = \
-	wordperfect.dll
-
-CLEANFILES = \
-	wordperfect.def \
-	wordperfect.dll \
-	wordperfect.dll.a
-
-.libs/wordperfect.a: wordperfect.la
-
-wordperfect.dll: .libs/wordperfect.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(WORDPERFECT_LIBS)
-
-endif # TOOLKIT_WIN
-
