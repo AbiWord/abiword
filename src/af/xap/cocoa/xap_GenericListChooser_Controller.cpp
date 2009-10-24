@@ -21,7 +21,7 @@
 
 #include "ut_types.h"
 
-#import "XAP_GenericListChooser_Controller.h"
+#import "xap_GenericListChooser_Controller.h"
 
 
 @implementation XAP_GenericListChooser_Controller
