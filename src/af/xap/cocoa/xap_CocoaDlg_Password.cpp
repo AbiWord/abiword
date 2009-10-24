@@ -33,7 +33,6 @@
 
 #include "xap_Strings.h"
 #include "xap_Dialog_Id.h"
-#include "xap_Dlg_Stub.h"
 #include "xap_CocoaDlg_Password.h"
 
 /*****************************************************************/
