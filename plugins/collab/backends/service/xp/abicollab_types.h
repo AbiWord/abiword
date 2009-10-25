@@ -29,7 +29,11 @@ public:
 	static boost::shared_ptr<File> construct(soa::GenericPtr value) {
 		if (soa::CollectionPtr coll = value->as<soa::Collection>()) {
 			boost::shared_ptr<File> file(new File());
-			if (soa::StringPtr doc_id_ = coll->get<soa::String>("doc_id"))
+			if (soa::IntPtr doc_id = coll->get<soa::Int>("doc_id"))
+				file->doc_id = boost::lexical_cast<std::string>(doc_id->value());
+			else if (soa::StringPtr doc_id_ = coll->get<soa::String>("doc_id")) 
+				// HACK: sometimes the webapp returns the IDs as strings instead of
+				// integers. Until the webapp is fixed, we'll just handle both types.
 				file->doc_id = doc_id_->value();
 			if (soa::StringPtr filename_ = coll->get<soa::String>("filename"))
 				file->filename = filename_->value();
