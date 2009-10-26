@@ -1637,10 +1637,29 @@ bool GR_CairoGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext,
 }
 
 
-bool GR_CairoGraphics::needsSpecialCaretPositioning(GR_RenderInfo &)
+bool GR_CairoGraphics::needsSpecialCaretPositioning(GR_RenderInfo &ri)
 {
 	// something smarter is needed here, so we do not go through this for
 	// langugages that do not need it.
+	// HACK HACK HACK
+	// This simple code will return false for European Languages, 
+	// otherwise it will return true
+	// We should really some fancy pango function to determine if 
+	// we have a complex script with combining chars
+	//
+	GR_PangoRenderInfo & RI = (GR_PangoRenderInfo &)ri;
+	if(RI.m_pText == NULL)
+		return false;
+
+	UT_TextIterator & text = *RI.m_pText;
+
+	for(UT_uint32 i = 0; i < RI.m_iCharCount && text.getStatus() == UTIter_OK;
+		++i, ++text)
+	{
+		UT_UCS4Char c = text.getChar();
+		if(c != ' ' && c<256)
+			return false;
+	}
 	return true;
 }
 
@@ -2389,12 +2408,16 @@ void GR_CairoGraphics::drawImage(GR_Image* pImg,
 	} else if (pImg->getType() == GR_Image::GRT_Vector) {
 		static_cast<GR_CairoVectorImage*>(pImg)->cairoSetSource(m_cr, idx, idy);
 	}
+	cairo_antialias_t prevAntiAlias = cairo_get_antialias(m_cr);
+	if(!getAntiAliasAlways() && queryProperties(GR_Graphics::DGP_PAPER ))
+		cairo_set_antialias(m_cr,CAIRO_ANTIALIAS_NONE);
 
 	cairo_pattern_t *pattern = cairo_get_source(m_cr);
 	cairo_pattern_set_extend(pattern, CAIRO_EXTEND_NONE);
 	cairo_rectangle(m_cr, idx, idy, iImageWidth, iImageHeight);
 	cairo_fill(m_cr);
 
+	cairo_set_antialias(m_cr,prevAntiAlias);
 	cairo_restore(m_cr);
 }
 
