@@ -3347,10 +3347,6 @@ UT_uint32 fp_TextRun::adjustCaretPosition(UT_uint32 iDocumentPosition, bool bFor
 						   m_pRenderInfo,
 						   iDocumentPosition);
 
-	if(!getGraphics()->needsSpecialCaretPositioning(*m_pRenderInfo))
-	   return iDocumentPosition;
-
-	// OK, this is the hard case ...
 	PD_StruxIterator text(getBlock()->getStruxDocHandle(),
 						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 	
@@ -3361,6 +3357,9 @@ UT_uint32 fp_TextRun::adjustCaretPosition(UT_uint32 iDocumentPosition, bool bFor
 	m_pRenderInfo->m_pText = &text;
 	m_pRenderInfo->m_iOffset = iDocumentPosition - iRunOffset;
 	m_pRenderInfo->m_iLength = getLength();
+	if(!getGraphics()->needsSpecialCaretPositioning(*m_pRenderInfo))
+	   return iDocumentPosition;
+
 	UT_uint32 adjustedPos = iRunOffset + getGraphics()->adjustCaretPosition(*m_pRenderInfo, bForward);
 	if((adjustedPos - iRunOffset) > getLength())
 		adjustedPos = iRunOffset + getLength();
