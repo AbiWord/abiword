@@ -17,6 +17,8 @@
  * 02111-1307, USA.
  */
 
+#include <stdio.h>
+
 #include <MathView/ShapingContext.hh>
 #include <MathView/ShaperManager.hh>
 #include <MathView/MathGraphicDevice.hh>

@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#include <stdio.h>
 #include "ut_types.h" // for UT_UCS4Char
 #include "gr_Graphics.h"
 
