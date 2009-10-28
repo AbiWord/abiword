@@ -3358,8 +3358,11 @@ UT_uint32 fp_TextRun::adjustCaretPosition(UT_uint32 iDocumentPosition, bool bFor
 	m_pRenderInfo->m_iOffset = iDocumentPosition - iRunOffset;
 	m_pRenderInfo->m_iLength = getLength();
 	if(!getGraphics()->needsSpecialCaretPositioning(*m_pRenderInfo))
+	{
+		DELETEP(text);
+		m_pRenderInfo->m_pText = NULL;
 	   return iDocumentPosition;
-
+	}
 	UT_uint32 adjustedPos = iRunOffset + getGraphics()->adjustCaretPosition(*m_pRenderInfo, bForward);
 	DELETEP(text);
 	m_pRenderInfo->m_pText = NULL;
@@ -3388,8 +3391,11 @@ void fp_TextRun::adjustDeletePosition(UT_uint32 &iDocumentPosition, UT_uint32 &i
 	m_pRenderInfo->m_iOffset = iDocumentPosition - iRunOffset;
 	m_pRenderInfo->m_iLength = getLength();
 	if(!getGraphics()->needsSpecialCaretPositioning(*m_pRenderInfo))
-	   return;
-	
+	{
+		DELETEP(text);
+		m_pRenderInfo->m_pText = NULL;
+		return;
+	}
 	getGraphics()->adjustDeletePosition(*m_pRenderInfo);
 
 	iDocumentPosition = iRunOffset + m_pRenderInfo->m_iOffset;
