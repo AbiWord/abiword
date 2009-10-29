@@ -3340,27 +3340,29 @@ void fp_TextRun::updateOnDelete(UT_uint32 offset, UT_uint32 iLenToDelete)
 
 UT_uint32 fp_TextRun::adjustCaretPosition(UT_uint32 iDocumentPosition, bool bForward)
 {
-
 	UT_uint32 iRunOffset = getBlockOffset() + getBlock()->getPosition();
 
 	UT_return_val_if_fail( iDocumentPosition >= iRunOffset && iDocumentPosition <= iRunOffset + getLength() &&
 						   m_pRenderInfo,
 						   iDocumentPosition);
 
-	PD_StruxIterator text(getBlock()->getStruxDocHandle(),
+	PD_StruxIterator * text =  new PD_StruxIterator(getBlock()->getStruxDocHandle(),
 						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 	
-	UT_return_val_if_fail(text.getStatus() == UTIter_OK, iDocumentPosition);
-	
-	text.setUpperLimit(text.getPosition() + getLength() - 1);
+	UT_return_val_if_fail(text->getStatus() == UTIter_OK, iDocumentPosition);
+	xxx_UT_DEBUGMSG(("sdh %p text->getPosition() %d getLength() %d \n",getBlock()->getStruxDocHandle(),text->getPosition(),getLength()));
+	text->setUpperLimit(text->getPosition() + getLength() - 1);
+	xxx_UT_DEBUGMSG(("text->getUpperLimit() %d \n",text->getUpperLimit()));
 		
-	m_pRenderInfo->m_pText = &text;
+	m_pRenderInfo->m_pText = text;
 	m_pRenderInfo->m_iOffset = iDocumentPosition - iRunOffset;
 	m_pRenderInfo->m_iLength = getLength();
 	if(!getGraphics()->needsSpecialCaretPositioning(*m_pRenderInfo))
 	   return iDocumentPosition;
 
 	UT_uint32 adjustedPos = iRunOffset + getGraphics()->adjustCaretPosition(*m_pRenderInfo, bForward);
+	DELETEP(text);
+	m_pRenderInfo->m_pText = NULL;
 	if((adjustedPos - iRunOffset) > getLength())
 		adjustedPos = iRunOffset + getLength();
 	_refreshDrawBuffer();
@@ -3374,24 +3376,25 @@ void fp_TextRun::adjustDeletePosition(UT_uint32 &iDocumentPosition, UT_uint32 &i
 	UT_return_if_fail( iDocumentPosition >= iRunOffset && iDocumentPosition < iRunOffset + getLength() &&
 						   m_pRenderInfo);
 
-	if(!getGraphics()->needsSpecialCaretPositioning(*m_pRenderInfo))
-	   return;
-
-	// OK, this is the hard case ...
-	PD_StruxIterator text(getBlock()->getStruxDocHandle(),
+	PD_StruxIterator * text =  new PD_StruxIterator(getBlock()->getStruxDocHandle(),
 						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 	
-	UT_return_if_fail(text.getStatus() == UTIter_OK);
-	
-	text.setUpperLimit(text.getPosition() + getLength() - 1);
+	UT_return_if_fail(text->getStatus() == UTIter_OK);
+	xxx_UT_DEBUGMSG(("sdh %p text->getPosition() %d getLength() %d \n",getBlock()->getStruxDocHandle(),text->getPosition(),getLength()));
+	text->setUpperLimit(text->getPosition() + getLength() - 1);
+	xxx_UT_DEBUGMSG(("text->getUpperLimit() %d \n",text->getUpperLimit()));
 		
-	m_pRenderInfo->m_pText = &text;
+	m_pRenderInfo->m_pText = text;
 	m_pRenderInfo->m_iOffset = iDocumentPosition - iRunOffset;
-	m_pRenderInfo->m_iLength = iCount;
+	m_pRenderInfo->m_iLength = getLength();
+	if(!getGraphics()->needsSpecialCaretPositioning(*m_pRenderInfo))
+	   return;
 	
 	getGraphics()->adjustDeletePosition(*m_pRenderInfo);
 
 	iDocumentPosition = iRunOffset + m_pRenderInfo->m_iOffset;
 	iCount = m_pRenderInfo->m_iLength;
+	DELETEP(text);
+	m_pRenderInfo->m_pText = NULL;
 }
 

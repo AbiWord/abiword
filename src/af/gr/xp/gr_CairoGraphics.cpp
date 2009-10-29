@@ -1651,7 +1651,7 @@ bool GR_CairoGraphics::needsSpecialCaretPositioning(GR_RenderInfo &ri)
 	if(RI.m_pText == NULL)
 		return false;
 
-	UT_TextIterator & text = *RI.m_pText;
+	UT_TextIterator & text = static_cast<UT_TextIterator &>(*RI.m_pText);
 
 	for(UT_uint32 i = 0; i < RI.m_iLength && text.getStatus() == UTIter_OK;
 		++i, ++text)
