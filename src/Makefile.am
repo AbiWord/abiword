@@ -35,7 +35,11 @@ endif
 if TOOLKIT_COCOA
 frameworks_LTLIBRARIES = libabiword-2.8.la
 else
+if TOOLKIT_WIN
+noinst_LTLIBRARIES = libabiword-2.8.la
+else
 lib_LTLIBRARIES = libabiword-2.8.la
+endif
 endif
 
 libabiword_2_8_la_CPPFLAGS = \
@@ -44,7 +48,7 @@ libabiword_2_8_la_CPPFLAGS = \
 
 libabiword_2_8_la_LDFLAGS = \
 	$(DEPS_LIBS) \
-	--no-undefined \
+	-no-undefined \
 	-avoid-version \
 	-export-dynamic
 
@@ -107,7 +111,7 @@ AbiWord_CPPFLAGS = \
 
 AbiWord_LDFLAGS = \
 	$(DEPS_LIBS) \
-	--no-undefined \
+	-no-undefined \
 	-avoid-version \
 	-export-dynamic \
 	-headerpad_max_install_names 
@@ -129,7 +133,7 @@ abiword_CPPFLAGS = \
 
 abiword_LDFLAGS = \
 	$(platform_ldflags) \
-	--no-undefined      \
+	-no-undefined      \
 	-avoid-version      \
 	-export-dynamic
 

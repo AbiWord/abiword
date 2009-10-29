@@ -11,7 +11,6 @@ AC_CONFIG_HEADERS(config.h)
 
 AM_INIT_AUTOMAKE
 
-
 dnl we use AM_MAINTAINER_MODE and enable it to allow to disable it.
 dnl very usefull to build in scratchbox where the maintainer mode is used for the PC
 dnl build but the embedded build just use pregenerated one (with a different version)
@@ -128,10 +127,7 @@ AC_PROG_CC
 AC_PROG_CXX
 #AC_PROG_OBJC
 AC_PROG_INSTALL
-#building static abiword by default
-#AC_DISABLE_STATIC
-AC_LIBTOOL_WIN32_DLL
-AC_PROG_LIBTOOL
+LT_INIT([disable-static win32-dll])
 DOLT
 AC_PROG_LN_S
 
@@ -656,8 +652,8 @@ AM_CONDITIONAL([TOOLKIT_COCOA], test "$TOOLKIT" == "cocoa")
 AM_CONDITIONAL([TOOLKIT_GTK], test "$TOOLKIT" == "gtk")
 AM_CONDITIONAL([TOOLKIT_WIN], test "$TOOLKIT" == "win")
 
-if test "$enable_dynamic" == ""; then
-	enable_dynamic="no"
+if test "$enable_shared" == ""; then
+	enable_shared="no"
 fi
 
 if test "$enable_static" == ""; then
@@ -668,31 +664,28 @@ if test "$TOOLKIT" == "win"; then
 	AC_DEFINE([TOOLKIT_WIN], [1], [Build win32 user interface])
 	AC_DEFINE([_WIN32_IE], [0x0501], [minimal comctl.dll v4.70 for toolbars])
 	AC_DEFINE([_WIN32_WINNT], [0x0500], [support collaboration plugin in Windows 2000 or higher])
-	# override static/dynamic, on win32 only static is possible
-	enable_dynamic="no"
-	enable_static="yes"
 elif test "$TOOLKIT" == "cocoa"; then
 	AC_DEFINE([TOOLKIT_COCOA], [1], [Build cocoa user interface])
-	# override static/dynamic, on cocoa. dynamic only
-	enable_dynamic="yes"
+	# override static/shared, on cocoa. shared only
+	enable_shared="yes"
 	enable_static="no"
 else
 	AC_DEFINE([TOOLKIT_GTK], [1], [Build gtk+ user interface])
 dnl We have no reason to mess with that.
 dnl	# build static binary by default
-dnl	if test "$enable_dynamic" == "no" && \
+dnl	if test "$enable_shared" == "no" && \
 dnl	   test "$enable_static" == "no"; then 
-dnl		enable_dynamic="no"
+dnl		enable_shared="no"
 dnl		enable_static="yes"
 dnl	fi
 fi
-AM_CONDITIONAL([ENABLE_DYNAMIC], test "$enable_dynamic" == "yes")
+AM_CONDITIONAL([ENABLE_DYNAMIC], test "$enable_shared" == "yes")
 AM_CONDITIONAL([ENABLE_STATIC], test "$enable_static" == "yes")
 
 PKG_CHECK_MODULES(PLUGIN,[$glib_req])
 PLUGIN_CFLAGS="$PLUGIN_CFLAGS "'${WP_CPPFLAGS} -DABI_DLL'
 if test "$TOOLKIT" == "gtk" && 
-   test "$enable_dynamic" == "yes"; then
+   test "$enable_shared" == "yes"; then
 	# link plugins to work around gcc visibility issue with 
 	# derived classes in dlopened modules
 	PLUGIN_LIBS="$PLUGIN_LIBS "'-L${top_builddir}/src'" -labiword-$ABIWORD_SERIES"
@@ -921,7 +914,7 @@ AC_OUTPUT(
 echo "
 Configuration:
   host                  ${host}
-  dynamic binary        ${enable_dynamic}
+  dynamic binary        ${enable_shared}
   static binary         ${enable_static}
   platform              ${PLATFORM} (embedded: $abi_cv_embedded_platform)
   toolkit               ${TOOLKIT}
