@@ -1653,7 +1653,7 @@ bool GR_CairoGraphics::needsSpecialCaretPositioning(GR_RenderInfo &ri)
 
 	UT_TextIterator & text = static_cast<UT_TextIterator &>(*RI.m_pText);
 
-	for(UT_uint32 i = 0; i < RI.m_iLength && text.getStatus() == UTIter_OK;
+	for(UT_sint32 i = 0; i < RI.m_iLength && text.getStatus() == UTIter_OK;
 		++i, ++text)
 	{
 		UT_UCS4Char c = text.getChar();
