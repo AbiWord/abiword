@@ -71,10 +71,6 @@ public:
 	virtual void		   setRun (UT_sint32 uid, fp_Run * run);
 	virtual void		   updateData(UT_sint32 uid, UT_sint32 api);
 
-    bool           createPNGSnapshot(AD_Document * pDoc, UT_Rect & rec,
-					   const char * szDataID);
-    bool           updatePNGSnapshot(AD_Document * pDoc, UT_Rect & rec,
-					   const char * szDataID);
 private:
     UT_sint32                              _makeGOComponentView(void);
     UT_sint32                              _getNextUID(void);
@@ -101,6 +97,7 @@ public:
 	GOComponent *getComponent (void) {return component;}
 	bool IsEdittable () {return go_component_is_editable (component);}
 	bool IsResizable () {return go_component_is_resizable (component);}
+	UT_ByteBuf *exportToPNG ();
 	UT_ByteBuf *exportToSVG ();
 	void SetRun (fp_Run *pRun) {m_pRun = pRun;}
 
