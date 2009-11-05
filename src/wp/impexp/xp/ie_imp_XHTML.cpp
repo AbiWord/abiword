@@ -2504,8 +2504,20 @@ static void s_props_append (UT_UTF8String & props, UT_uint32 css_mask,
 						}
 					// else inherit
 				}
-			else if ((strcmp (name, "font-size")    == 0) ||
-					 (strcmp (name, "font-stretch") == 0) ||
+			else if((strcmp (name, "font-size")    == 0))
+				{
+					UT_Dimension siz_u = UT_determineDimension (value, DIM_none);
+					if(siz_u != DIM_none)
+					{
+						double dval = UT_convertToPoints(value);
+						verbatim =  UT_formatDimensionedValue(dval,"pt");
+					}
+					else
+					{
+						verbatim = "12pt";
+					}
+				}
+			else if ((strcmp (name, "font-stretch") == 0) ||
 					 (strcmp (name, "font-variant") == 0))
 				{
 					verbatim = value;

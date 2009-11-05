@@ -397,7 +397,14 @@ double UT_convertToPoints(const char* s)
 	  default:
 	    UT_DEBUGMSG(("Unknown dimension type for: %s", s));
 	    UT_ASSERT_NOT_REACHED();
-	    result = f;
+	    if(f > 0.9)
+	    {
+		result = f;
+	    }
+	    else
+	    {
+		result = 12.; // default for a font-size
+	    }
 	  }
 
 	return result;
