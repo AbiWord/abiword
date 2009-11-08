@@ -31,6 +31,7 @@
 #include "xap_Frame.h"
 #include "ut_locale.h"
 #include "AbiGOChart.h"
+#include "AbiGOffice.h"
 #include "gr_UnixImage.h"
 #include "gr_UnixCairoGraphics.h"
 #include "xap_Menu_Layouts.h"
@@ -750,7 +751,7 @@ UT_ByteBuf *GOChartView::exportToPNG ()
 	gog_renderer_render_to_cairo (m_Renderer, cr, width, height);
 	cairo_destroy (cr);
 	cairo_surface_write_to_png_stream (surface,
-	    reinterpret_cast<cairo_write_func_t>(UT_ByteBuf::CairoWrite), pBuf);
+	    reinterpret_cast<cairo_write_func_t>(abi_CairoWrite), pBuf);
 	cairo_surface_destroy (surface);
 	return pBuf;
 }

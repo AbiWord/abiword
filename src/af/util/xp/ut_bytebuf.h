@@ -72,8 +72,6 @@ public:
 	bool                            insertFromURI(UT_uint32 iPosition, const char* pszURI);
 	bool                            insertFromInput(UT_uint32 iPosition, GsfInput * fp);
 	bool                insertFromFile(UT_uint32 iPosition, FILE * fp);
-	static cairo_status_t
-                        CairoWrite(UT_ByteBuf * buf, unsigned char * data, unsigned int length);
 private:
 	bool				_byteBuf(UT_uint32 spaceNeeded);
 

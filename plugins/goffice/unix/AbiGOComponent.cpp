@@ -37,6 +37,7 @@
 #include "xap_UnixFrameImpl.h"
 #include "AbiGOComponent.h"
 #include "ie_imp_GOComponent.h"
+#include "AbiGOffice.h"
 #include <math.h>
 #include <goffice/component/go-component-factory.h>
 #include <goffice/goffice.h>
@@ -827,7 +828,7 @@ UT_ByteBuf *GOComponentView::exportToPNG ()
 	go_component_render (component, cr, width, height);
 	cairo_destroy (cr);
 	cairo_surface_write_to_png_stream (surface,
-	    reinterpret_cast<cairo_write_func_t>(UT_ByteBuf::CairoWrite), pBuf);
+	    reinterpret_cast<cairo_write_func_t>(abi_CairoWrite), pBuf);
 	cairo_surface_destroy (surface);
 	return pBuf;
 }

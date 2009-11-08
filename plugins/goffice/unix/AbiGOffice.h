@@ -29,4 +29,6 @@
 GType		abi_cmd_context_get_type   (void);
 GOCmdContext *abi_goffice_get_cmd_context (void);
 
+cairo_status_t abi_CairoWrite(UT_ByteBuf * buf, unsigned char * data, unsigned int length);
+
 #endif // __gr_AbiGOffice_h__
