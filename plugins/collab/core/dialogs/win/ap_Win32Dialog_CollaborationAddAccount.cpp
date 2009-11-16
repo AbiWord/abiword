@@ -42,19 +42,19 @@ BOOL CALLBACK AP_Win32Dialog_CollaborationAddAccount::s_dlgProc(HWND hWnd, UINT 
 		{
 			AP_Win32Dialog_CollaborationAddAccount* pThis = (AP_Win32Dialog_CollaborationAddAccount *)lParam;
 			UT_return_val_if_fail(pThis, false);
-			SetWindowLong(hWnd,DWL_USER,lParam);
+			SetWindowLongPtr(hWnd,DWLP_USER,lParam);
 			return pThis->_onInitDialog(hWnd,wParam,lParam);
 		}
 		case WM_COMMAND:
 		{
-			AP_Win32Dialog_CollaborationAddAccount* pThis = (AP_Win32Dialog_CollaborationAddAccount *)GetWindowLongPtr(hWnd,DWL_USER);
+			AP_Win32Dialog_CollaborationAddAccount* pThis = (AP_Win32Dialog_CollaborationAddAccount *)GetWindowLongPtr(hWnd,DWLP_USER);
 			UT_return_val_if_fail(pThis, false);
 			return pThis->_onCommand(hWnd,wParam,lParam);
 		}
 		case WM_DESTROY:
 		{
 			UT_DEBUGMSG(("Got WM_DESTROY\n"));
-			AP_Win32Dialog_CollaborationAddAccount* pThis = (AP_Win32Dialog_CollaborationAddAccount *)GetWindowLongPtr(hWnd,DWL_USER);
+			AP_Win32Dialog_CollaborationAddAccount* pThis = (AP_Win32Dialog_CollaborationAddAccount *)GetWindowLongPtr(hWnd,DWLP_USER);
 			UT_return_val_if_fail(pThis, false);
 			DELETEP(pThis->m_pWin32Dialog);
 			return true;

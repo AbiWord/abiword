@@ -94,11 +94,11 @@ BOOL CALLBACK XAP_Win32Dialog_ListDocuments::s_dlgProc(HWND hWnd,UINT msg,WPARAM
 	{
 	case WM_INITDIALOG:
 		pThis = (XAP_Win32Dialog_ListDocuments *)lParam;
-		SetWindowLong(hWnd,DWL_USER,lParam);
+		SetWindowLongPtr(hWnd,DWLP_USER,lParam);
 		return pThis->_onInitDialog(hWnd,wParam,lParam);
 
 	case WM_COMMAND:
-		pThis = (XAP_Win32Dialog_ListDocuments *)GetWindowLong(hWnd,DWL_USER);
+		pThis = (XAP_Win32Dialog_ListDocuments *)GetWindowLongPtr(hWnd,DWLP_USER);
 		return pThis->_onCommand(hWnd,wParam,lParam);
 
 	default:
@@ -125,7 +125,7 @@ BOOL XAP_Win32Dialog_ListDocuments::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, 
 	// set the column headings
 	HWND h = GetDlgItem(hWnd, XAP_RID_DIALOG_LIST_DOCUMENTS_LIST);
 
-	DWORD dwStyle = GetWindowLong(h, GWL_STYLE);
+	DWORD dwStyle = GetWindowLongPtr(h, GWL_STYLE);
 
 	RECT r;
 	GetWindowRect(h, &r);

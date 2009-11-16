@@ -37,8 +37,8 @@
 #define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_FORMATFOOTNOTES_##c,pSS->getValue(AP_STRING_ID_##s))
 #define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_FORMATFOOTNOTES_##c,pSS->getValue(XAP_STRING_ID_##s))
 
-#define GWL(hwnd)		(AP_Win32Dialog_FormatFootnotes*)GetWindowLong((hwnd), DWL_USER)
-#define SWL(hwnd, d)	(AP_Win32Dialog_FormatFootnotes*)SetWindowLong((hwnd), DWL_USER,(LONG)(d))
+#define GWL(hwnd)		(AP_Win32Dialog_FormatFootnotes*)GetWindowLongPtr((hwnd), DWLP_USER)
+#define SWL(hwnd, d)	(AP_Win32Dialog_FormatFootnotes*)SetWindowLongPtr((hwnd), DWLP_USER,(LONG_PTR)(d))
 
 /*****************************************************************/
 

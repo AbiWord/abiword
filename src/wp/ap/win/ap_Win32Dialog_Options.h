@@ -46,7 +46,7 @@ public:
 		void setParent(AP_Win32Dialog_Options*	pData){m_pParent=pData;};
 		AP_Win32Dialog_Options* getParent(){return m_pParent;};
 		int _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
-		static int CALLBACK s_sheetInit(HWND hwnd,  UINT uMsg,  LPARAM lParam);
+		static INT_PTR CALLBACK s_sheetInit(HWND hwnd,  UINT uMsg,  LPARAM lParam);
 		
 private:		
 	
@@ -68,7 +68,7 @@ public:
 	void						setContainer(AP_Win32Dialog_Options*	pParent){m_pParent=pParent;};
 	AP_Win32Dialog_Options*		getContainer(){return m_pParent;};
 	void						transferData();
-	static int CALLBACK			s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,   LPARAM lParam);
+	static INT_PTR CALLBACK		s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,   LPARAM lParam);
 	
 private:
 
@@ -94,7 +94,7 @@ public:
 	void						setContainer(AP_Win32Dialog_Options*	pParent){m_pParent=pParent;};
 	AP_Win32Dialog_Options*		getContainer(){return m_pParent;};
 	void						transferData();
-	static int CALLBACK			s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,   LPARAM lParam);
+	static INT_PTR CALLBACK		s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,   LPARAM lParam);
 	
 private:
 
@@ -121,7 +121,7 @@ public:
 	void						setContainer(AP_Win32Dialog_Options*	pParent){m_pParent=pParent;};
 	AP_Win32Dialog_Options*		getContainer(){return m_pParent;};
 	void						transferData();
-	static int CALLBACK			s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,   LPARAM lParam);
+	static INT_PTR CALLBACK		s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,   LPARAM lParam);
 	bool						isAutoSaveInRange();
 	
 private:

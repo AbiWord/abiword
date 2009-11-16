@@ -93,18 +93,18 @@ BOOL CALLBACK XAP_Win32DialogHelper::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,
 		pThis = (XAP_Win32DialogHelper *)lParam;
 		pThis->m_hDlg = hWnd;
 		_assertValidDlgHandle(hWnd);
-		SetWindowLong(hWnd,DWL_USER,lParam);
+		SetWindowLongPtr(hWnd,DWLP_USER,lParam);
 		return pThis->m_pDialog->_onInitDialog(hWnd,wParam,lParam);
 
 	case WM_COMMAND:
-		pThis = (XAP_Win32DialogHelper *)GetWindowLong(hWnd,DWL_USER);
+		pThis = (XAP_Win32DialogHelper *)GetWindowLongPtr(hWnd,DWLP_USER);
 		if(pThis)
 			return pThis->m_pDialog->_onCommand(hWnd,wParam,lParam);
 		else
 			return 0;
 
 	case WM_NOTIFY:
-		pThis = (XAP_Win32DialogHelper *)GetWindowLong(hWnd,DWL_USER);
+		pThis = (XAP_Win32DialogHelper *)GetWindowLongPtr(hWnd,DWLP_USER);
 		switch (((LPNMHDR)lParam)->code)
 		{
 			case UDN_DELTAPOS:		return pThis->m_pDialog->_onDeltaPos((NM_UPDOWN *)lParam);
@@ -294,7 +294,7 @@ bool XAP_Win32DialogHelper::isControlVisible(UT_sint32 controlId) const
 	_assertValidDlgHandle(m_hDlg);
 	HWND hControl = GetDlgItem(m_hDlg, controlId);
 	if (hControl) {
-		return (GetWindowLong(m_hDlg, GWL_STYLE) & WS_VISIBLE) ?
+		return (GetWindowLongPtr(m_hDlg, GWL_STYLE) & WS_VISIBLE) ?
 				true : false;
 	}
 	return false;
@@ -304,14 +304,14 @@ bool XAP_Win32DialogHelper::isParentFrame(/*const*/ XAP_Frame& frame) const
 {
 	_assertValidDlgHandle(m_hDlg);
 	XAP_FrameImpl *pFrameImpl = frame.getFrameImpl();
-	return ((HWND)GetWindowLong(m_hDlg, GWL_HWNDPARENT) ==
+	return ((HWND)GetWindowLongPtr(m_hDlg, GWLP_HWNDPARENT) ==
 		static_cast<XAP_Win32FrameImpl *>(pFrameImpl)->getTopLevelWindow()) ? true : false;
 }
 
 void XAP_Win32DialogHelper::setParentFrame(const XAP_Frame* pFrame)
 {
 	_assertValidDlgHandle(m_hDlg);
-	SetWindowLong(m_hDlg, GWL_HWNDPARENT, (long)(pFrame ? static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow() : NULL));
+	SetWindowLongPtr(m_hDlg, GWLP_HWNDPARENT, (LONG_PTR)(pFrame ? static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow() : NULL));
 	SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 }
 
@@ -320,7 +320,7 @@ XAP_Frame* XAP_Win32DialogHelper::getParentFrame()
 {
 	_assertValidDlgHandle(m_hDlg);
 	return reinterpret_cast<XAP_Frame*>(
-			GetWindowLong(m_hDlg, GWL_HWNDPARENT));
+			GetWindowLongPtr(m_hDlg, GWLP_HWNDPARENT));
 }
 
 void XAP_Win32DialogHelper::centerDialog()

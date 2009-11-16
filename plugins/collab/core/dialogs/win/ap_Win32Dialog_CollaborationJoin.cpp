@@ -40,16 +40,16 @@ BOOL CALLBACK AP_Win32Dialog_CollaborationJoin::s_dlgProc(HWND hWnd, UINT msg, W
 	case WM_INITDIALOG:
 		pThis = (AP_Win32Dialog_CollaborationJoin *)lParam;
 		UT_return_val_if_fail(pThis, 0);
-		SetWindowLong(hWnd,DWL_USER,lParam);
+		SetWindowLongPtr(hWnd,DWLP_USER,lParam);
 		return pThis->_onInitDialog(hWnd,wParam,lParam);
 		
 	case WM_COMMAND:
-		pThis = (AP_Win32Dialog_CollaborationJoin *)GetWindowLong(hWnd,DWL_USER);
+		pThis = (AP_Win32Dialog_CollaborationJoin *)GetWindowLongPtr(hWnd,DWLP_USER);
 		UT_return_val_if_fail(pThis, 0);
 		return pThis->_onCommand(hWnd,wParam,lParam);
 		
 	case WM_DESTROY:
-		pThis = (AP_Win32Dialog_CollaborationJoin *)GetWindowLong(hWnd,DWL_USER);
+		pThis = (AP_Win32Dialog_CollaborationJoin *)GetWindowLongPtr(hWnd,DWLP_USER);
 		pThis->_freeBuddyList();
 		if (pThis->p_win32Dialog)
 		{
@@ -60,7 +60,7 @@ BOOL CALLBACK AP_Win32Dialog_CollaborationJoin::s_dlgProc(HWND hWnd, UINT msg, W
 		return 0;
 		
 	case WM_NOTIFY:
-		pThis = (AP_Win32Dialog_CollaborationJoin *)GetWindowLong(hWnd,DWL_USER);
+		pThis = (AP_Win32Dialog_CollaborationJoin *)GetWindowLongPtr(hWnd,DWLP_USER);
 		UT_return_val_if_fail(pThis, 0);
 		UT_return_val_if_fail(lParam, 0);
 		return pThis->_onNotify(hWnd, wParam, lParam);
@@ -231,7 +231,7 @@ void AP_Win32Dialog_CollaborationJoin::_populateWindowData()
 	const std::vector<AccountHandler *>& accounts = pManager->getAccounts();
 	
 	// clear out the old contents, if any; items will not be displayed until the window styles are reset
-	DWORD styles = GetWindowLong(m_hDocumentTreeview, GWL_STYLE);
+	LONG_PTR styles = GetWindowLongPtr(m_hDocumentTreeview, GWL_STYLE);
 	_freeBuddyList();
 
 	// Loop through accounts
@@ -264,7 +264,7 @@ void AP_Win32Dialog_CollaborationJoin::_populateWindowData()
 	}
 	
 	// reset the window styles; shows all items
-	SetWindowLong(m_hDocumentTreeview, GWL_STYLE, styles);
+	SetWindowLongPtr(m_hDocumentTreeview, GWL_STYLE, styles);
 
 	_updateSelection();
 }

@@ -38,8 +38,8 @@
 #define BITMAP_WITDH	32
 #define BITMAP_HEIGHT	32
 
-#define GWL(hwnd)		(AP_Win32Dialog_MergeCells*)GetWindowLong((hwnd), DWL_USER)
-#define SWL(hwnd, d)	(AP_Win32Dialog_MergeCells*)SetWindowLong((hwnd), DWL_USER,(LONG)(d))
+#define GWL(hwnd)		(AP_Win32Dialog_MergeCells*)GetWindowLongPtr((hwnd), DWLP_USER)
+#define SWL(hwnd, d)	(AP_Win32Dialog_MergeCells*)SetWindowLongPtr((hwnd), DWLP_USER,(LONG_PTR)(d))
 
 
 XAP_Dialog * AP_Win32Dialog_MergeCells::static_constructor(XAP_DialogFactory * pFactory,
@@ -223,12 +223,12 @@ void AP_Win32Dialog_MergeCells::event_Close(void)
 
 void AP_Win32Dialog_MergeCells::notifyActiveFrame(XAP_Frame *pFrame)
 {
-	if((HWND)GetWindowLong(m_hwndDlg, GWL_HWNDPARENT) != static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
+	if((HWND)GetWindowLongPtr(m_hwndDlg, GWLP_HWNDPARENT) != static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
 		ConstructWindowName();
 		SetWindowText(m_hwndDlg, m_WindowName);
 
-		SetWindowLong(m_hwndDlg, GWL_HWNDPARENT, (long)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
+		SetWindowLongPtr(m_hwndDlg, GWLP_HWNDPARENT, (LONG_PTR)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
 		SetWindowPos(m_hwndDlg, NULL, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}

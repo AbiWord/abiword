@@ -51,8 +51,8 @@
 #define UNICODE_NOCHAR 0xFFFF
 #endif
 
-#define GWL(hwnd)		reinterpret_cast<AP_Win32Frame *>(GetWindowLong((hwnd), GWL_USERDATA))
-#define SWL(hwnd, f)	reinterpret_cast<AP_Win32Frame *>(SetWindowLong((hwnd), GWL_USERDATA,(LONG)(f)))
+#define GWL(hwnd)		reinterpret_cast<AP_Win32Frame *>(GetWindowLongPtr((hwnd), GWLP_USERDATA))
+#define SWL(hwnd, f)	reinterpret_cast<AP_Win32Frame *>(SetWindowLongPtr((hwnd), GWLP_USERDATA,(LONG_PTR)(f)))
 
 // reserve space for static variables
 char AP_Win32FrameImpl::s_ContainerWndClassName[MAXCNTWNDCLSNMSIZE];
@@ -843,7 +843,7 @@ void AP_Win32FrameImpl::_track(UT_sint32 x, UT_sint32 y)
 
 LRESULT CALLBACK AP_Win32FrameImpl::_ContainerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
-	AP_Win32Frame * f = reinterpret_cast<AP_Win32Frame *>(GetWindowLong(hwnd, GWL_USERDATA));
+	AP_Win32Frame * f = reinterpret_cast<AP_Win32Frame *>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 
 	if (!f)
 	{
@@ -1049,7 +1049,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_ContainerWndProc(HWND hwnd, UINT iMsg, WPAR
 
 LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
-	AP_Win32Frame * f = reinterpret_cast<AP_Win32Frame *>(GetWindowLong(hwnd, GWL_USERDATA));
+	AP_Win32Frame * f = reinterpret_cast<AP_Win32Frame *>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 
 	if (!f || !IsWindow(hwnd))
 	{

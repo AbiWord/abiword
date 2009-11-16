@@ -134,7 +134,7 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 	XAP_Win32FrameImpl *pFImp =  (XAP_Win32FrameImpl *) pFrame->getFrameImpl();
 	UT_return_val_if_fail(pFImp, false);
 
-	int res = (int) ShellExecute(pFImp->getTopLevelWindow() /*(HWND)*/,
+	intptr_t res = (intptr_t) ShellExecute(pFImp->getTopLevelWindow() /*(HWND)*/,
 								 "open", sBrowser.c_str(), sParams.c_str(), NULL, SW_SHOW );
 
 	// TODO: localized error messages

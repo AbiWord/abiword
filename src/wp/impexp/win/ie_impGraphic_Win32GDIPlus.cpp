@@ -34,9 +34,9 @@
 
 */
 
-typedef DWORD Status;
-typedef DWORD ULONG_PTR;
-typedef DWORD EncoderParameters;
+typedef ULONG_PTR Status;
+// typedef DWORD ULONG_PTR;
+typedef ULONG_PTR EncoderParameters;
 class GpImage {};
 
 

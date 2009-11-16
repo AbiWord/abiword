@@ -278,18 +278,18 @@ UINT CALLBACK XAP_Win32Dialog_FontChooser::s_hookProc(HWND hDlg, UINT msg, WPARA
 	{
 	case WM_INITDIALOG:
 		pThis = (XAP_Win32Dialog_FontChooser *) ((CHOOSEFONT *)lParam)->lCustData;
-		SetWindowLong(hDlg,DWL_USER,(LPARAM) pThis);
+		SetWindowLongPtr(hDlg,DWLP_USER,(LPARAM) pThis);
 		return pThis->_onInitDialog(hDlg,wParam,lParam);
 
 	case WM_COMMAND:
-		pThis = (XAP_Win32Dialog_FontChooser *)GetWindowLong(hDlg,DWL_USER);
+		pThis = (XAP_Win32Dialog_FontChooser *)GetWindowLongPtr(hDlg,DWLP_USER);
 		if (pThis)
 			return pThis->_onCommand(hDlg,wParam,lParam);
 		else
 			return 0;
 		
 	case WM_HELP:
-		pThis = (XAP_Win32Dialog_FontChooser *)GetWindowLong(hDlg,DWL_USER);
+		pThis = (XAP_Win32Dialog_FontChooser *)GetWindowLongPtr(hDlg,DWLP_USER);
 		if (pThis)
 			return pThis->_callHelp();
 		else

@@ -96,11 +96,11 @@ BOOL CALLBACK XAP_Win32Dialog_DocComparison::s_dlgProc(HWND hWnd,UINT msg,WPARAM
 	{
 	case WM_INITDIALOG:
 		pThis = (XAP_Win32Dialog_DocComparison *)lParam;
-		SetWindowLong(hWnd,DWL_USER,lParam);
+		SetWindowLongPtr(hWnd,DWLP_USER,lParam);
 		return pThis->_onInitDialog(hWnd,wParam,lParam);
 
 	case WM_COMMAND:
-		pThis = (XAP_Win32Dialog_DocComparison *)GetWindowLong(hWnd,DWL_USER);
+		pThis = (XAP_Win32Dialog_DocComparison *)GetWindowLongPtr(hWnd,DWLP_USER);
 		return pThis->_onCommand(hWnd,wParam,lParam);
 
 	default:

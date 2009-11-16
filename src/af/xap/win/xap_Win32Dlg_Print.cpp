@@ -31,7 +31,7 @@
 #include "ap_Win32App.h"
 
 /*****************************************************************/
-static UINT CALLBACK s_PrintHookProc(
+static UINT_PTR CALLBACK s_PrintHookProc(
   HWND hdlg,      // handle to the dialog box window
   UINT uiMsg,     // message identifier
   WPARAM wParam,  // message parameter
@@ -44,7 +44,7 @@ static UINT CALLBACK s_PrintHookProc(
 	{
 		PRINTDLG * pDlgInfo = (PRINTDLG*)lParam;
 		pThis = (XAP_Win32Dialog_Print*)pDlgInfo->lCustData;
-		SetWindowLong(hdlg, DWL_USER, (LONG) pThis);
+		SetWindowLongPtr(hdlg, DWLP_USER, (LONG_PTR) pThis);
 
 		// reset the 'closed' flag which indicates that the dialog should be considered
 		// 'closed' rather than aborted
@@ -65,7 +65,7 @@ static UINT CALLBACK s_PrintHookProc(
 	}
 	else
 	{
-		pThis = (XAP_Win32Dialog_Print*)GetWindowLong(hdlg, DWL_USER);
+		pThis = (XAP_Win32Dialog_Print*)GetWindowLongPtr(hdlg, DWLP_USER);
 	}
 	
 	if(uiMsg == WM_COMMAND)
@@ -196,7 +196,7 @@ void XAP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 	m_pPersistPrintDlg->nMaxPage	= (WORD)m_nLastPage;
 	m_pPersistPrintDlg->Flags		= PD_ALLPAGES | PD_RETURNDC | PD_ENABLEPRINTHOOK;
 	m_pPersistPrintDlg->lpfnPrintHook   = s_PrintHookProc;
-	m_pPersistPrintDlg->lCustData       = (DWORD)this;
+	m_pPersistPrintDlg->lCustData       = (INT_PTR)this;
 		
 	if (!m_bEnablePageRange)
 		m_pPersistPrintDlg->Flags	|= PD_NOPAGENUMS;

@@ -32,7 +32,7 @@
 
 LRESULT APIENTRY StatusbarWndProc (HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) { 
 
-	AP_Win32StatusBar *pBar = reinterpret_cast<AP_Win32StatusBar *>(GetWindowLong(hwnd, GWL_USERDATA));
+	AP_Win32StatusBar *pBar = reinterpret_cast<AP_Win32StatusBar *>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 	UT_return_val_if_fail (pBar, 0);
 
     if ((uMsg == WM_SIZE || uMsg == SB_SETPARTS) && hwnd) {
@@ -203,13 +203,13 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 	UT_return_val_if_fail (m_hwndStatusBar,0);	
 
 	// route messages through our handler first (to size the status panels).
-	m_pOrgStatusbarWndProc = reinterpret_cast<WNDPROC>(SetWindowLong(
-		m_hwndStatusBar, GWL_WNDPROC, reinterpret_cast<LONG>(StatusbarWndProc))
+	m_pOrgStatusbarWndProc = reinterpret_cast<WNDPROC>(SetWindowLongPtr(
+		m_hwndStatusBar, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(StatusbarWndProc))
 		);
 	
 	// attach a pointer to the s:tatusbar window to <this> so we can get the 
 	// original wndproc and previous window-width
-	SetWindowLong(m_hwndStatusBar, GWL_USERDATA, reinterpret_cast<LONG>(this));
+	SetWindowLongPtr(m_hwndStatusBar, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
 
 	for (UT_sint32 k = 0; k < getFields()->getItemCount(); k++) 
 	{

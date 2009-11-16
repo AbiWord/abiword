@@ -85,8 +85,8 @@ void AP_Win32Dialog_InsertTable::runModal(XAP_Frame *pFrame)
 
 /*****************************************************************/
 
-#define GWL(hwnd)		(AP_Win32Dialog_InsertTable*)GetWindowLong((hwnd), DWL_USER)
-#define SWL(hwnd, d)	(AP_Win32Dialog_InsertTable*)SetWindowLong((hwnd), DWL_USER,(LONG)(d))
+#define GWL(hwnd)		(AP_Win32Dialog_InsertTable*)GetWindowLongPtr((hwnd), DWLP_USER)
+#define SWL(hwnd, d)	(AP_Win32Dialog_InsertTable*)SetWindowLongPtr((hwnd), DWLP_USER,(LONG_PTR)(d))
 
 
 BOOL CALLBACK AP_Win32Dialog_InsertTable::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)

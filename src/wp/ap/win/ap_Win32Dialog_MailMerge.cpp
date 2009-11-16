@@ -33,8 +33,8 @@
 #include "ap_Win32Dialog_MailMerge.h"
 #include "ap_Win32Resources.rc2"
 
-#define GWL(hwnd)		(AP_Win32Dialog_MailMerge*)GetWindowLong((hwnd), DWL_USER)
-#define SWL(hwnd, d)	(AP_Win32Dialog_MailMerge*)SetWindowLong((hwnd), DWL_USER,(LONG)(d))
+#define GWL(hwnd)		(AP_Win32Dialog_MailMerge*)GetWindowLongPtr((hwnd), DWLP_USER)
+#define SWL(hwnd, d)	(AP_Win32Dialog_MailMerge*)SetWindowLongPtr((hwnd), DWLP_USER,(LONG_PTR)(d))
 
 
 /*****************************************************************/

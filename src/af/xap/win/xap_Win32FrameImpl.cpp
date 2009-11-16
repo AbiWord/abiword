@@ -150,7 +150,7 @@ XAP_Win32FrameImpl::~XAP_Win32FrameImpl(void)
 
 	// have to reset the window long, so our message functions do not
 	// try to derefernce it
-	SetWindowLong(m_hwndFrame, GWL_USERDATA,0);
+	SetWindowLongPtr(m_hwndFrame, GWLP_USERDATA,0);
 
 }
 
@@ -246,8 +246,8 @@ void XAP_Win32FrameImpl::_createTopLevelWindow(void)
 
 	// bind this frame to its window
 	// WARNING: We assume in many places this refers to a XAP_Frame or descendant!!!
-	//SetWindowLong(m_hwndFrame, GWL_USERDATA,(LONG)this);
-	SetWindowLong(m_hwndFrame, GWL_USERDATA,(LONG)getFrame());
+	//SetWindowLongPtr(m_hwndFrame, GWLP_USERDATA,(LONG_PTR)this);
+	SetWindowLongPtr(m_hwndFrame, GWLP_USERDATA,(LONG_PTR)getFrame());
 
 	m_mouseWheelMessage = RegisterWindowMessage(MSH_MOUSEWHEEL);
 
@@ -279,8 +279,8 @@ void XAP_Win32FrameImpl::_createTopLevelWindow(void)
 	UT_ASSERT(m_hwndRebar);
 	
 	/* override the window procedure*/
-	s_oldRedBar = (WHICHPROC)GetWindowLong(m_hwndRebar, GWL_WNDPROC);
-	SetWindowLong(m_hwndRebar, GWL_WNDPROC, (LONG)s_rebarWndProc);
+	s_oldRedBar = (WHICHPROC)GetWindowLongPtr(m_hwndRebar, GWLP_WNDPROC);
+	SetWindowLongPtr(m_hwndRebar, GWLP_WNDPROC, (LONG_PTR)s_rebarWndProc);
 
 	// create a toolbar instance for each toolbar listed in our base class.
 
@@ -462,7 +462,7 @@ void XAP_Win32FrameImpl::_setFullScreen(bool isFullScreen)
 	HWND hwndFrame = static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow();
 
 	// Get the window's style so we can add or remove the titlebar later
-	long hStyle = GetWindowLong(hwndFrame, GWL_STYLE);
+	long hStyle = GetWindowLongPtr(hwndFrame, GWL_STYLE);
 
 	if (isFullScreen)
 	{
@@ -503,7 +503,7 @@ void XAP_Win32FrameImpl::_setFullScreen(bool isFullScreen)
 	}
 
 	// Add or remove title-bar and border
-	SetWindowLong(hwndFrame, GWL_STYLE, isFullScreen ? hStyle & ~WS_CAPTION : hStyle | WS_CAPTION);
+	SetWindowLongPtr(hwndFrame, GWL_STYLE, isFullScreen ? hStyle & ~WS_CAPTION : hStyle | WS_CAPTION);
 
 	// We hide the window before maximizing
 	// to ensure it displays with the proper geometry
@@ -646,7 +646,7 @@ void XAP_Win32FrameImpl::_rebuildMenus(void)
 
 LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
-	XAP_Frame * f = (XAP_Frame*)GetWindowLong(hwnd, GWL_USERDATA);
+	XAP_Frame * f = (XAP_Frame*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
 	if (!f)
 	{
@@ -799,7 +799,7 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 		case TBN_DROPDOWN:
 		{
 			HWND hWnd = ((LPNMHDR) lParam)->hwndFrom;
-			EV_Win32Toolbar * t = (EV_Win32Toolbar *)GetWindowLong(hWnd, GWL_USERDATA);						
+			EV_Win32Toolbar * t = (EV_Win32Toolbar *)GetWindowLongPtr(hWnd, GWLP_USERDATA);						
 			t->onDropArrow(((LPNMTOOLBAR) lParam)->iItem);			
 			Sleep(500); /* At least, half second where the arrow is shown as pressed*/			
 			return TBDDRET_DEFAULT;			/* Windows restores the pushed button*/

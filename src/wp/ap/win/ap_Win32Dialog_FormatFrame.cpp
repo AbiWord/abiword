@@ -39,8 +39,8 @@
 #define BITMAP_WITDH	15
 #define BITMAP_HEIGHT	15
 
-#define GWL(hwnd)		(AP_Win32Dialog_FormatFrame*)GetWindowLong((hwnd), DWL_USER)
-#define SWL(hwnd, d)	(AP_Win32Dialog_FormatFrame*)SetWindowLong((hwnd), DWL_USER,(LONG)(d))
+#define GWL(hwnd)		(AP_Win32Dialog_FormatFrame*)GetWindowLongPtr((hwnd), DWLP_USER)
+#define SWL(hwnd, d)	(AP_Win32Dialog_FormatFrame*)SetWindowLongPtr((hwnd), DWLP_USER,(LONG_PTR)(d))
 
 
 const char * sThickness[FORMAT_FRAME_NUMTHICKNESS] = {"0.25pt","0.5pt",
@@ -464,13 +464,13 @@ void AP_Win32Dialog_FormatFrame::notifyActiveFrame(XAP_Frame *pFrame)
 { 	
 	setAllSensitivities();
 	
-	if((HWND)GetWindowLong(m_hwndDlg, GWL_HWNDPARENT) != static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
+	if((HWND)GetWindowLongPtr(m_hwndDlg, GWLP_HWNDPARENT) != static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
 		// Update the caption
 		ConstructWindowName();
 		SetWindowText(m_hwndDlg, m_WindowName);
 
-		SetWindowLong(m_hwndDlg, GWL_HWNDPARENT, (long)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
+		SetWindowLongPtr(m_hwndDlg, GWLP_HWNDPARENT, (LONG_PTR)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
 		SetWindowPos(m_hwndDlg, NULL, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 

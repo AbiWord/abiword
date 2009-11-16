@@ -38,16 +38,16 @@ BOOL CALLBACK AP_Win32Dialog_CollaborationShare::s_dlgProc(HWND hWnd, UINT msg, 
 	case WM_INITDIALOG:
 		pThis = (AP_Win32Dialog_CollaborationShare *)lParam;
 		UT_return_val_if_fail(pThis, 0);
-		SetWindowLong(hWnd,DWL_USER,lParam);
+		SetWindowLongPtr(hWnd,DWLP_USER,lParam);
 		return pThis->_onInitDialog(hWnd,wParam,lParam);
 		
 	case WM_COMMAND:
-		pThis = (AP_Win32Dialog_CollaborationShare *)GetWindowLong(hWnd,DWL_USER);
+		pThis = (AP_Win32Dialog_CollaborationShare *)GetWindowLongPtr(hWnd,DWLP_USER);
 		UT_return_val_if_fail(pThis, 0);
 		return pThis->_onCommand(hWnd,wParam,lParam);
 		
 	case WM_DESTROY:
-		pThis = (AP_Win32Dialog_CollaborationShare *)GetWindowLong(hWnd,DWL_USER);
+		pThis = (AP_Win32Dialog_CollaborationShare *)GetWindowLongPtr(hWnd,DWLP_USER);
 		pThis->_freeBuddyList();
 		if (pThis->m_pWin32Dialog)
 		{

@@ -25,8 +25,8 @@
 
 /*****************************************************************/
 
-#define GWL(hwnd)		(HFONT)GetWindowLong((hwnd), GWL_USERDATA)
-#define SWL(hwnd, f)	(HFONT)SetWindowLong((hwnd), GWL_USERDATA,(LONG)(f))
+#define GWL(hwnd)		(HFONT)GetWindowLongPtr((hwnd), GWLP_USERDATA)
+#define SWL(hwnd, f)	(HFONT)SetWindowLongPtr((hwnd), GWLP_USERDATA,(LONG_PTR)(f))
 
 /*!
   Spacing between the label text and the line separator part of the 

@@ -89,11 +89,11 @@ BOOL CALLBACK AP_Win32Dialog_MarkRevisions::s_dlgProc(HWND hWnd,UINT msg,WPARAM 
 	{
 	case WM_INITDIALOG:
 		pThis = (AP_Win32Dialog_MarkRevisions *)lParam;
-		SetWindowLong(hWnd,DWL_USER,lParam);
+		SetWindowLongPtr(hWnd,DWLP_USER,lParam);
 		return pThis->_onInitDialog(hWnd,wParam,lParam);
 
 	case WM_COMMAND:
-		pThis = (AP_Win32Dialog_MarkRevisions *)GetWindowLong(hWnd,DWL_USER);
+		pThis = (AP_Win32Dialog_MarkRevisions *)GetWindowLongPtr(hWnd,DWLP_USER);
 		return pThis->_onCommand(hWnd,wParam,lParam);
 
 	default:

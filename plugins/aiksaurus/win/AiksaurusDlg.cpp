@@ -33,11 +33,11 @@ BOOL CALLBACK AiksaurusDlg::s_dlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 		pThis = (AiksaurusDlg *)lParam;
 		pThis->m_hDlg = hWnd;
 		//_assertValidDlgHandle(hWnd);
-		SetWindowLong(hWnd,DWL_USER,lParam);
+		SetWindowLongPtr(hWnd,DWL_USER,lParam);
 		return pThis->_onInitDialog(hWnd,wParam,lParam);
 
 	case WM_SETCURSOR:
-		pThis = (AiksaurusDlg *)GetWindowLong(hWnd,DWL_USER);
+		pThis = (AiksaurusDlg *)GetWindowLongPtr(hWnd,DWL_USER);
 		if(pThis)
 			return pThis->_onSetCursor(hWnd,wParam,lParam);
 		else
@@ -45,14 +45,14 @@ BOOL CALLBACK AiksaurusDlg::s_dlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 
 		
 	case WM_COMMAND:
-		pThis = (AiksaurusDlg *)GetWindowLong(hWnd,DWL_USER);
+		pThis = (AiksaurusDlg *)GetWindowLongPtr(hWnd,DWL_USER);
 		if(pThis)
 			return pThis->_onCommand(hWnd,wParam,lParam);
 		else
 			return 0;
 
 	case WM_NOTIFY:
-		pThis = (AiksaurusDlg *)GetWindowLong(hWnd,DWL_USER);
+		pThis = (AiksaurusDlg *)GetWindowLongPtr(hWnd,DWL_USER);
 		switch (((LPNMHDR)lParam)->code)
 		{
 			case UDN_DELTAPOS:		return pThis->_onDeltaPos((NM_UPDOWN *)lParam);

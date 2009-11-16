@@ -81,11 +81,11 @@ BOOL CALLBACK AP_Win32Dialog_Field::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,L
 	switch (msg){
 	case WM_INITDIALOG:
 		pThis = (AP_Win32Dialog_Field *)lParam;
-		SetWindowLong(hWnd,DWL_USER,lParam);
+		SetWindowLongPtr(hWnd,DWLP_USER,lParam);
 		return pThis->_onInitDialog(hWnd,wParam,lParam);
 		
 	case WM_COMMAND:
-		pThis = (AP_Win32Dialog_Field *)GetWindowLong(hWnd,DWL_USER);
+		pThis = (AP_Win32Dialog_Field *)GetWindowLongPtr(hWnd,DWLP_USER);
 		return pThis->_onCommand(hWnd,wParam,lParam);
 		
 	default:

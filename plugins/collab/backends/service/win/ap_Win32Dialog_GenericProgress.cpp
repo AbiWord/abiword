@@ -35,18 +35,18 @@ BOOL CALLBACK AP_Win32Dialog_GenericProgress::s_dlgProc(HWND hWnd, UINT msg, WPA
 		{
 			AP_Win32Dialog_GenericProgress* pThis = (AP_Win32Dialog_GenericProgress *)lParam;
 			UT_return_val_if_fail(pThis, false);
-			SetWindowLong(hWnd,DWL_USER,lParam);
+			SetWindowLongPtr(hWnd,DWL_USER,lParam);
 			return pThis->_onInitDialog(hWnd,wParam,lParam);
 		}
 		case WM_COMMAND:
 		{
-			AP_Win32Dialog_GenericProgress* pThis = (AP_Win32Dialog_GenericProgress *)GetWindowLong(hWnd,DWL_USER);
+			AP_Win32Dialog_GenericProgress* pThis = (AP_Win32Dialog_GenericProgress *)GetWindowLongPtr(hWnd,DWL_USER);
 			UT_return_val_if_fail(pThis, false);
 			return pThis->_onCommand(hWnd,wParam,lParam);
 		}
 		case WM_DESTROY:
 		{
-			AP_Win32Dialog_GenericProgress* pThis = (AP_Win32Dialog_GenericProgress *)GetWindowLong(hWnd,DWL_USER);
+			AP_Win32Dialog_GenericProgress* pThis = (AP_Win32Dialog_GenericProgress *)GetWindowLongPtr(hWnd,DWL_USER);
 			UT_return_val_if_fail(pThis, false);
 			DELETEP(pThis->m_pWin32Dialog);
 			return true;

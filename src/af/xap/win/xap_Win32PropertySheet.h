@@ -57,7 +57,7 @@ public:
 	virtual	void				_onApply(){}; 
 	virtual void				_onCommand(HWND /*hWnd*/, WPARAM /*wParam*/, LPARAM /*lParam*/){};
 	virtual void				_onNotify(LPNMHDR /*hdr*/, int /*iCtrlID*/){};
-	static int CALLBACK			s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,LPARAM lParam);
+	static INT_PTR CALLBACK		s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,LPARAM lParam);
 	void						setChanged (bool bChanged); // Unables or disables apply button
 	
 	
@@ -84,7 +84,7 @@ public:
 	int 						runModeless (XAP_Win32App* pWin32App, XAP_Frame * pFrame, XAP_String_Id nID = 0);
 	void 						addPage(XAP_Win32PropertyPage* pPage);
 	PROPSHEETPAGE* 				_buildPageArray(void);	
-	static int CALLBACK			s_sheetWndProc(HWND hWnd, UINT msg, WPARAM wParam,LPARAM lParam);	
+	static INT_PTR CALLBACK		s_sheetWndProc(HWND hWnd, UINT msg, WPARAM wParam,LPARAM lParam);	
 	virtual	void				_onInitDialog(HWND /*hwnd*/){};	
 	virtual void 				destroy(void);
 	virtual void 				cleanup(void);

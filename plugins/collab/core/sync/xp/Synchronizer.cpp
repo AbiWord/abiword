@@ -58,14 +58,14 @@ LRESULT CALLBACK Synchronizer::s_wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPA
 		UT_return_val_if_fail(pThis, 0);
 		pThis->m_hWnd = hWnd;
 		SetLastError(0);
-		swlresult=SetWindowLong(hWnd,GWL_USERDATA,long(pThis));
+		swlresult=SetWindowLongPtr(hWnd,GWLP_USERDATA,LONG_PTR(pThis));
 		if (swlresult==0)
 		{
 			// we might have an error
 			int errorcode=GetLastError();
 			if (errorcode)
 			{
-				UT_DEBUGMSG(("Error in setting the WindowLong GWL_USERDATA: %d\n", errorcode));
+				UT_DEBUGMSG(("Error in setting the WindowLong GWLP_USERDATA: %d\n", errorcode));
 			}
 			
 		}
@@ -73,7 +73,7 @@ LRESULT CALLBACK Synchronizer::s_wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPA
 		
 	case WM_ABI_SYNCHRONIZER:
 		UT_DEBUGMSG(("Received a message in Synchronizer message loop! 0x%x\n", msg));
-		pThis = (Synchronizer *)GetWindowLong(hWnd,GWL_USERDATA);
+		pThis = (Synchronizer *)GetWindowLongPtr(hWnd,GWLP_USERDATA);
 		UT_return_val_if_fail(pThis, 0);
 		if (pThis->m_bIsProcessing)
 		{
@@ -199,7 +199,7 @@ Synchronizer::Synchronizer(boost::function<void ()>  signalhandler) // Win32 Imp
 			(void *) this
 		);
 	UT_DEBUGMSG(("Created message window: HWND 0x%x\n", m_hWnd));
-	switch ((int)m_hWnd)
+	switch ((INT_PTR)m_hWnd)
 	{
 		case NULL:
 			UT_DEBUGMSG(("Win32 error: %d.\n", GetLastError()));

@@ -180,13 +180,13 @@ void AP_Win32Dialog_WordCount::activate(void)
 
 void AP_Win32Dialog_WordCount::notifyActiveFrame(XAP_Frame *pFrame)
 {
-	if((HWND)GetWindowLong(m_hWnd, GWL_HWNDPARENT) != static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
+	if((HWND)GetWindowLongPtr(m_hWnd, GWLP_HWNDPARENT) != static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
 		// Update the caption
 		ConstructWindowName();
 		SetWindowText(m_hWnd, (AP_Win32App::s_fromUTF8ToWinLocale(m_WindowName)).c_str());
 
-		SetWindowLong(m_hWnd, GWL_HWNDPARENT, (long)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
+		SetWindowLongPtr(m_hWnd, GWLP_HWNDPARENT, (LONG_PTR)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
 		SetWindowPos(m_hWnd, NULL, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 		
@@ -196,9 +196,9 @@ void AP_Win32Dialog_WordCount::notifyActiveFrame(XAP_Frame *pFrame)
 
 void AP_Win32Dialog_WordCount::notifyCloseFrame(XAP_Frame *pFrame)
 {
-	if((HWND)GetWindowLong(m_hWnd, GWL_HWNDPARENT) == static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
+	if((HWND)GetWindowLongPtr(m_hWnd, GWLP_HWNDPARENT) == static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
-		SetWindowLong(m_hWnd, GWL_HWNDPARENT, NULL);
+		SetWindowLongPtr(m_hWnd, GWLP_HWNDPARENT, NULL);
 		SetWindowPos(m_hWnd, NULL, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}
@@ -214,18 +214,18 @@ BOOL CALLBACK AP_Win32Dialog_WordCount::s_dlgProc(HWND hWnd,UINT msg,WPARAM wPar
 	{
 	case WM_INITDIALOG:
 		pThis = (AP_Win32Dialog_WordCount *)lParam;
-		SetWindowLong(hWnd,DWL_USER,lParam);
+		SetWindowLongPtr(hWnd,DWLP_USER,lParam);
 		return pThis->_onInitDialog(hWnd,wParam,lParam);
 		
 	case WM_COMMAND:
-		pThis = (AP_Win32Dialog_WordCount *)GetWindowLong(hWnd,DWL_USER);
+		pThis = (AP_Win32Dialog_WordCount *)GetWindowLongPtr(hWnd,DWLP_USER);
 		if (pThis)
 			return pThis->_onCommand(hWnd,wParam,lParam);
 		else
 			return 0;
 		
 	case WM_VSCROLL:
-		pThis = (AP_Win32Dialog_WordCount *)GetWindowLong(hWnd,DWL_USER);
+		pThis = (AP_Win32Dialog_WordCount *)GetWindowLongPtr(hWnd,DWLP_USER);
 		pThis->setUpdateCounter( (UT_uint32)HIWORD(wParam) );
 		pThis->event_Update();
 		return 1;

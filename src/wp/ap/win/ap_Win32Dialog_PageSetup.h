@@ -38,7 +38,7 @@ public:
 		void setParent(AP_Win32Dialog_PageSetup*	pData){m_pParent=pData;};
 		AP_Win32Dialog_PageSetup* getParent(){return m_pParent;};
 		int _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
-		static int CALLBACK s_sheetInit(HWND hwnd,  UINT uMsg,  LPARAM lParam);
+		static INT_PTR CALLBACK s_sheetInit(HWND hwnd,  UINT uMsg,  LPARAM lParam);
 		
 private:		
 	
@@ -56,7 +56,7 @@ public:
 
 	void						setContainer(AP_Win32Dialog_PageSetup*	pParent){m_pParent=pParent;};
 	AP_Win32Dialog_PageSetup*	getContainer(){return m_pParent;};
-	static int CALLBACK			s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,   LPARAM lParam);
+	static INT_PTR CALLBACK		s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,   LPARAM lParam);
 
 protected:
 	void						doSpinControl(UT_uint32 id, UT_sint32 delta);
@@ -82,7 +82,7 @@ public:
 
 	void						setContainer(AP_Win32Dialog_PageSetup*	pParent){m_pParent=pParent;};
 	AP_Win32Dialog_PageSetup*	getContainer(){return m_pParent;};
-	static int CALLBACK			s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,   LPARAM lParam);
+	static INT_PTR CALLBACK		s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,   LPARAM lParam);
 
 protected:
 	void						doSpinControl(UT_uint32 id, UT_sint32 delta);

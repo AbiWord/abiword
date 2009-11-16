@@ -83,11 +83,11 @@ BOOL CALLBACK AP_Win32Dialog_Insert_DateTime::s_dlgProc(HWND hWnd,UINT msg,WPARA
     switch (msg){
     case WM_INITDIALOG:
         pThis = (AP_Win32Dialog_Insert_DateTime *)lParam;
-        SetWindowLong(hWnd,DWL_USER,lParam);
+        SetWindowLongPtr(hWnd,DWLP_USER,lParam);
         return pThis->_onInitDialog(hWnd,wParam,lParam);
 
     case WM_COMMAND:
-        pThis = (AP_Win32Dialog_Insert_DateTime *)GetWindowLong(hWnd,DWL_USER);
+        pThis = (AP_Win32Dialog_Insert_DateTime *)GetWindowLongPtr(hWnd,DWLP_USER);
         return pThis->_onCommand(hWnd,wParam,lParam);
 
     default:

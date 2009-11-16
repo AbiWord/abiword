@@ -974,12 +974,12 @@ void XAP_App::rememberFocussedFrame( void * pJustFocussedFrame)
 
 UT_sint32 XAP_App::safefindFrame( XAP_Frame * f) const
 {
-	long ff = reinterpret_cast<long>(f);
+	size_t ff = reinterpret_cast<size_t>(f);
 	UT_sint32 num_frames = m_vecFrames.getItemCount();
 	UT_sint32 i;
 	for( i = 0; i< num_frames; i++)
 	{
-		long lf = reinterpret_cast<long>( m_vecFrames.getNthItem(i));
+		size_t lf = reinterpret_cast<size_t>( m_vecFrames.getNthItem(i));
 		if( lf == ff) break;
 	}
 	if( i == num_frames ) i = -1;

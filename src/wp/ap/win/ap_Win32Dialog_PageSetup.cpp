@@ -112,7 +112,7 @@ AP_Win32Dialog_PageSetup_Sheet::AP_Win32Dialog_PageSetup_Sheet() :
 XAP_Win32PropertySheet()
 {
 	m_pParent = NULL;
-	setCallBack(s_sheetInit);
+	setCallBack((PFNPROPSHEETCALLBACK)s_sheetInit);
 }
 
 /*
@@ -142,7 +142,7 @@ int AP_Win32Dialog_PageSetup_Sheet::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 	return 1;	// The application did not process the message
 }
 
-int CALLBACK AP_Win32Dialog_PageSetup_Sheet::s_sheetInit(HWND hwnd,  UINT uMsg,  LPARAM lParam)
+INT_PTR CALLBACK AP_Win32Dialog_PageSetup_Sheet::s_sheetInit(HWND hwnd,  UINT uMsg,  LPARAM lParam)
 {	
 	if (uMsg==PSCB_INITIALIZED)
 	{	
@@ -182,12 +182,12 @@ AP_Win32Dialog_PageSetup_Page::~AP_Win32Dialog_PageSetup_Page()
 
 }
 
-int CALLBACK AP_Win32Dialog_PageSetup_Page::s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK AP_Win32Dialog_PageSetup_Page::s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	
 	if (msg==WM_NOTIFY)
 	{
-		AP_Win32Dialog_PageSetup_Page *pThis = (AP_Win32Dialog_PageSetup_Page *) GetWindowLong(hWnd, GWL_USERDATA);					
+		AP_Win32Dialog_PageSetup_Page *pThis = (AP_Win32Dialog_PageSetup_Page *) GetWindowLongPtr(hWnd, GWLP_USERDATA);					
 
 		NMHDR* pHdr = (NMHDR*)lParam;
 		LPNMUPDOWN lpnmud = (LPNMUPDOWN)lParam;
@@ -509,7 +509,7 @@ void AP_Win32Dialog_PageSetup_Page::_onInitDialog()
 						(LPARAM)m_pParent->m_bmpPreview );			
 
 
-	SetWindowLong(getHandle(), GWL_USERDATA, (LONG)this);
+	SetWindowLongPtr(getHandle(), GWLP_USERDATA, (LONG_PTR)this);
 }
 
 /*
@@ -667,14 +667,14 @@ void AP_Win32Dialog_PageSetup_Margin::_onInitDialog()
 
 		// Initialize Data
 		SendMessage( hwndMarginUnits, CB_SETCURSEL, (WPARAM) m_pParent->getMarginUnits(), (LPARAM) 0 );
-		SetWindowLong(getHandle(), GWL_USERDATA, (LONG)this);
+		SetWindowLongPtr(getHandle(), GWLP_USERDATA, (LONG_PTR)this);
 }
 
-int CALLBACK AP_Win32Dialog_PageSetup_Margin::s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK AP_Win32Dialog_PageSetup_Margin::s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	if (msg==WM_NOTIFY)
 	{
-		AP_Win32Dialog_PageSetup_Margin *pThis = (AP_Win32Dialog_PageSetup_Margin *) GetWindowLong(hWnd, GWL_USERDATA);					
+		AP_Win32Dialog_PageSetup_Margin *pThis = (AP_Win32Dialog_PageSetup_Margin *) GetWindowLongPtr(hWnd, GWLP_USERDATA);					
 
 		LPNMUPDOWN lpnmud = (LPNMUPDOWN)lParam;
 

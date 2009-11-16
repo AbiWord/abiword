@@ -370,7 +370,7 @@ bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 
 					flags |= MF_POPUP;
 					stack.push(sub);
-					u = (UINT) sub;					
+					u = (size_t) sub;					
 					
 					if (szLabelName && *szLabelName)					
 					{

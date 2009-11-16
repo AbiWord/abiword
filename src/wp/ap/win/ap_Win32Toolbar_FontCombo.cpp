@@ -65,7 +65,7 @@ bool AP_Win32Toolbar_FontCombo::populate(void)
 	// populate the vector
 	HWND hwnd = NULL;
     HDC hdc = GetDC(hwnd) ;
-    EnumFontFamilies(hdc, (LPTSTR) NULL, (FONTENUMPROC) AP_Win32Toolbar_FontCombo::_EnumFontsProc, (LONG) this) ;
+    EnumFontFamilies(hdc, (LPTSTR) NULL, (FONTENUMPROC) AP_Win32Toolbar_FontCombo::_EnumFontsProc, (LONG_PTR) this) ;
     ReleaseDC(hwnd, hdc) ;
 
 	return true;

@@ -129,7 +129,7 @@ UT_uint32 XAP_Win32Clipboard::convertFormatString(const char * format) const
 
 	for (k=0; k<kLimit; k++)
 		if (g_ascii_strcasecmp(format,(const char *)m_vecFormat.getNthItem(k)) == 0)
-			return (UT_uint32)m_vecCF.getNthItem(k);
+			return (UT_uint32)(size_t)m_vecCF.getNthItem(k);
 
 	return 0;
 }
@@ -143,7 +143,7 @@ const char * XAP_Win32Clipboard::convertToFormatString(UT_uint32 fmt) const
 	int k;
 
 	for (k=0; k<kLimit; k++)
-		if (fmt == (UT_uint32)m_vecCF.getNthItem(k))
+		if (fmt == (UT_uint32)(size_t)m_vecCF.getNthItem(k))
 			return (const char *)m_vecFormat.getNthItem(k);
 
 	return NULL;

@@ -103,11 +103,11 @@ BOOL CALLBACK XAP_Win32Dialog_Language::s_dlgProc(HWND hWnd,UINT msg,WPARAM wPar
 	{			
 	case WM_INITDIALOG:
 		pThis = (XAP_Win32Dialog_Language *)lParam;
-		SetWindowLong(hWnd,DWL_USER,lParam);
+		SetWindowLongPtr(hWnd,DWLP_USER,lParam);
 		return pThis->_onInitDialog(hWnd,wParam,lParam);
 		
 	case WM_COMMAND:
-		pThis = (XAP_Win32Dialog_Language *)GetWindowLong(hWnd,DWL_USER);
+		pThis = (XAP_Win32Dialog_Language *)GetWindowLongPtr(hWnd,DWLP_USER);
 		return pThis->_onCommand(hWnd,wParam,lParam);
 		
 	default:
@@ -164,7 +164,7 @@ void  XAP_Win32Dialog_Language::_fillTreeview(HWND hTV)
 			hSel = hItem;	
 	}
 	
-	::SendMessage(hTV, TVM_SELECTITEM, TVGN_CARET,  (LONG)hSel);	
+	::SendMessage(hTV, TVM_SELECTITEM, TVGN_CARET,  (LONG_PTR)hSel);	
 	delete pVec;
 }
 
@@ -178,7 +178,7 @@ BOOL CALLBACK XAP_Win32Dialog_Language::s_treeProc(HWND hWnd,UINT msg,WPARAM wPa
 	// The user has double clicked on a tree item (a language name)
 	if (msg==WM_LBUTTONDBLCLK)
 	{
-		pThis = (XAP_Win32Dialog_Language *)GetWindowLong(hWnd,GWL_USERDATA);
+		pThis = (XAP_Win32Dialog_Language *)GetWindowLongPtr(hWnd,GWLP_USERDATA);
 		TVITEM tvi;		
 		
 		// Selected item
@@ -242,9 +242,9 @@ BOOL XAP_Win32Dialog_Language::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARA
 	
 	_fillTreeview(hTree);
 	
-	gTreeProc = (WHICHPROC) GetWindowLong(hTree, GWL_WNDPROC);
-	SetWindowLong(hTree, GWL_WNDPROC, (LONG)s_treeProc);
-	SetWindowLong(hTree, GWL_USERDATA, (LONG)this);
+	gTreeProc = (WHICHPROC) GetWindowLongPtr(hTree, GWLP_WNDPROC);
+	SetWindowLongPtr(hTree, GWLP_WNDPROC, (LONG_PTR)s_treeProc);
+	SetWindowLongPtr(hTree, GWLP_USERDATA, (LONG_PTR)this);
 	
 	CheckDlgButton(hWnd, XAP_RID_DIALOG_LANGUAGE_DOCLANG_CHKBOX, BST_UNCHECKED );
 

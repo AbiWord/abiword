@@ -61,14 +61,14 @@ UINT CALLBACK AP_Win32Dialog_Background::s_hookProc(HWND hdlg,UINT uiMsg,WPARAM 
 		CHOOSECOLOR * pCC = NULL;
 		pCC = (CHOOSECOLOR *) lParam;
 		pThis = (AP_Win32Dialog_Background *)pCC->lCustData;
-		SetWindowLong(hdlg, DWL_USER, (LONG) pThis);
+		SetWindowLongPtr(hdlg, DWLP_USER, (LONG_PTR) pThis);
 		pThis->m_hDlg = hdlg;
 		pThis->_centerDialog();
 		return 1;
 	}
 	else
 	{
-		pThis = (AP_Win32Dialog_Background *)GetWindowLong(hdlg, DWL_USER);
+		pThis = (AP_Win32Dialog_Background *)GetWindowLongPtr(hdlg, DWLP_USER);
 	}
 
 	if (uiMsg==WM_HELP)
@@ -105,7 +105,7 @@ void AP_Win32Dialog_Background::runModal(XAP_Frame * pFrame)
 	cc.lpCustColors = (LPDWORD) acrCustClr;
 	cc.rgbResult = rgbCurrent;
 	cc.Flags = CC_RGBINIT |CC_ENABLEHOOK;
-	cc.lpfnHook  = &AP_Win32Dialog_Background::s_hookProc;
+	cc.lpfnHook  = (LPCFHOOKPROC) &AP_Win32Dialog_Background::s_hookProc;
 	cc.lCustData = (LPARAM)this;
  
 	if( ChooseColor(&cc) )
