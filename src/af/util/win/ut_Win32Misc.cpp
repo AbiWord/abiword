@@ -19,7 +19,7 @@
 
 #include "ut_misc.h"
 #include <windows.h>
-#include <winsock.h>
+#include <mswsock.h>
 #ifndef __WINE__
 #include <snmp.h>
 #endif

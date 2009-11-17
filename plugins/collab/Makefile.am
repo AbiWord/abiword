@@ -5,7 +5,7 @@ else
 SUBDIRS = backends core
 
 if TOOLKIT_WIN
-SYSTEM_LIBS=-lwsock32 -lws2_32 -lcomdlg32 -lgdi32 -lcomctl32
+SYSTEM_LIBS=-lws2_32 -lmswsock -lcomdlg32 -lgdi32 -lcomctl32
 else
 SYSTEM_LIBS=
 endif
