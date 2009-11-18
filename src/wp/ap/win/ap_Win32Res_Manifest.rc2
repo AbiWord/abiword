@@ -38,6 +38,10 @@
 #define RT_MANIFEST 24
 #endif
 
-AP_RID_MANIFEST RT_MANIFEST "../../main/win/AbiWord.exe.MANIFEST"
+#ifdef _WIN64
+AP_RID_MANIFEST RT_MANIFEST "../../main/win/AbiWord.exe.amd64.MANIFEST"
+#else
+AP_RID_MANIFEST RT_MANIFEST "../../main/win/AbiWord.exe.x86.MANIFEST"
+#endif
 
 #endif /* RC_INVOKED */
