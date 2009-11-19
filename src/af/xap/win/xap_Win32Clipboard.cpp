@@ -98,7 +98,7 @@ bool XAP_Win32Clipboard::addData(const char * format, void* pData, UT_sint32 iNu
 // Caller should release using GlobalUnlock the memory handle returned 
 HANDLE XAP_Win32Clipboard::getHandleInFormat(const char * format)
 {
-	UINT iFormat = convertFormatString(format);
+	UT_uintptr iFormat = convertFormatString(format);
 	if (iFormat == 0)
 		return NULL;
 
@@ -118,7 +118,7 @@ bool XAP_Win32Clipboard::hasFormat(const char * format)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-UT_uint32 XAP_Win32Clipboard::convertFormatString(const char * format) const
+UT_uintptr XAP_Win32Clipboard::convertFormatString(const char * format) const
 {
 	// convert from named type (like "text-8bit") to a registered
 	// clipboard format (either a MSFT-defined CF_ symbol or something
@@ -129,12 +129,12 @@ UT_uint32 XAP_Win32Clipboard::convertFormatString(const char * format) const
 
 	for (k=0; k<kLimit; k++)
 		if (g_ascii_strcasecmp(format,(const char *)m_vecFormat.getNthItem(k)) == 0)
-			return (UT_uint32)(size_t)m_vecCF.getNthItem(k);
+			return (UT_uintptr)m_vecCF.getNthItem(k);
 
 	return 0;
 }
 
-const char * XAP_Win32Clipboard::convertToFormatString(UT_uint32 fmt) const
+const char * XAP_Win32Clipboard::convertToFormatString(UT_uintptr fmt) const
 {
 	// convert from a CF_ symbol or something that we registered
 	// into a named format type (like "text-8bit").
@@ -143,7 +143,7 @@ const char * XAP_Win32Clipboard::convertToFormatString(UT_uint32 fmt) const
 	int k;
 
 	for (k=0; k<kLimit; k++)
-		if (fmt == (UT_uint32)(size_t)m_vecCF.getNthItem(k))
+		if (fmt == (UT_uintptr)m_vecCF.getNthItem(k))
 			return (const char *)m_vecFormat.getNthItem(k);
 
 	return NULL;

@@ -36,8 +36,8 @@ public:
 	virtual bool			addData(const char* format, void* pData, UT_sint32 iNumBytes);
 	virtual HANDLE			getHandleInFormat(const char * format);
 	virtual bool			hasFormat(const char * format);
-	virtual UT_uint32		convertFormatString(const char * format) const;
-	virtual const char *	convertToFormatString(UT_uint32 fmt) const;
+	virtual UT_uintptr		convertFormatString(const char * format) const;
+	virtual const char *	convertToFormatString(UT_uintptr fmt) const;
 
 	bool					m_bOpen;
 	UT_Vector				m_vecFormat;

@@ -60,6 +60,9 @@ typedef gint32		    UT_sint32;
 typedef guint64 UT_uint64;
 typedef gint64 UT_sint64;
 
+typedef guintptr 	UT_uintptr;
+typedef gintptr 	UT_intptr;
+
 /** use to mark variable as unused */
 #define UT_UNUSED(x) (void)(x);
 

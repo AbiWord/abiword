@@ -752,13 +752,13 @@ bool EV_Win32Toolbar::synthesize(void)
 							ti.uFlags = TTF_IDISHWND | TTF_CENTERTIP;
 							ti.lpszText = (char *) szToolTip;
 							ti.hwnd = m_hwnd;		// TODO: should this be the frame?
-							ti.uId = (UINT)(size_t)hwndCombo;
+							ti.uId = (UINT_PTR)hwndCombo;
 							// Set up tooltips for the combo box.
 							SendMessage(hwndTT, TTM_ADDTOOL, 0, (LPARAM)(LPTOOLINFO)&ti);
 						}
 						
 						// bind this separator to its control
-						tbb.dwData = (DWORD)(size_t) hwndCombo;
+						tbb.dwData = (DWORD_PTR) hwndCombo;
 
 						// for now, we never repopulate, so can just toss it
 						DELETEP(pControl);
