@@ -24,10 +24,6 @@
 #include "config.h"
 #endif
 
-#ifdef WITH_GUCHARMAP
-#include <gucharmap/gucharmap.h>
-#endif
-
 #include <stdlib.h>
 #include <string.h>
 #include <string>
@@ -61,15 +57,11 @@
 
 #define	WIDGET_ID_TAG_KEY "id"
 
-#ifndef WITH_GUCHARMAP
 static UT_sint32 s_Insert_Symbol_first = 0;
-#endif
 static std::string s_Prev_Font;
 
-#ifndef WITH_GUCHARMAP
 static UT_UCSChar m_CurrentSymbol;
 static UT_UCSChar m_PreviousSymbol;
-#endif
 
 XAP_Dialog * XAP_UnixDialog_Insert_Symbol::static_constructor(XAP_DialogFactory * pFactory,
 															  XAP_Dialog_Id id)
@@ -84,21 +76,17 @@ XAP_UnixDialog_Insert_Symbol::XAP_UnixDialog_Insert_Symbol(XAP_DialogFactory * p
 	m_windowMain(NULL),
 	m_SymbolMap(NULL)
 {
-#ifndef WITH_GUCHARMAP
 	m_areaCurrentSym = NULL;
 	m_unixGraphics = NULL;
 	m_unixarea = NULL;
 	m_ix = 0;
 	m_iy = 0;
-#endif
 }
 
 XAP_UnixDialog_Insert_Symbol::~XAP_UnixDialog_Insert_Symbol(void)
 {
-#ifndef WITH_GUCHARMAP
 	DELETEP(m_unixGraphics);
 	DELETEP(m_unixarea);
-#endif
 }
 
 void XAP_UnixDialog_Insert_Symbol::runModal(XAP_Frame * )
@@ -128,8 +116,6 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	UT_return_if_fail(mainWindow);
 
 	abiSetupModelessDialog(GTK_DIALOG(mainWindow), pFrame, this, BUTTON_INSERT);
-
-#ifndef WITH_GUCHARMAP
 
 	// *** this is how we add the gc for symbol table ***
 	// attach a new graphics context to the drawing area
@@ -209,28 +195,12 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 
 	// return to ap_Editmethods and wait for something interesting
 	// to happen.
-#else
-	PangoFontDescription* font_desc = pango_font_description_new();
-	pango_font_description_set_family(font_desc, DEFAULT_UNIX_SYMBOL_FONT);
-	pango_font_description_set_absolute_size(font_desc, 14 * PANGO_SCALE);
-	gucharmap_charmap_set_font_desc (GUCHARMAP_CHARMAP (m_SymbolMap), font_desc);
-	pango_font_description_free(font_desc);
-#endif /* WITH_GUCHARMAP */
 }
 
 void XAP_UnixDialog_Insert_Symbol::event_Insert(void)
 {
-#ifndef WITH_GUCHARMAP
         m_Inserted_Symbol = m_CurrentSymbol;
        	_onInsertButton();
-#else
-		const char * symfont = NULL;
-		PangoFontDescription *desc;
-		g_object_get(G_OBJECT(m_SymbolMap), "font-desc", &desc, NULL);
-		symfont = pango_font_description_get_family(desc);
-		m_Inserted_Symbol = gucharmap_chartable_get_active_character(gucharmap_charmap_get_chartable(GUCHARMAP_CHARMAP(m_SymbolMap)));
-		_insert(m_Inserted_Symbol, symfont);
-#endif
 }
 
 void XAP_UnixDialog_Insert_Symbol::event_WindowDelete(void)
@@ -253,7 +223,6 @@ void XAP_UnixDialog_Insert_Symbol::New_Font(void )
 {
 	const gchar * buffer = gtk_entry_get_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(m_fontcombo))));
 
-#ifndef WITH_GUCHARMAP
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
 	UT_return_if_fail(iDrawSymbol);
 
@@ -275,13 +244,6 @@ void XAP_UnixDialog_Insert_Symbol::New_Font(void )
 	_setScrolledWindow ();
 	iDrawSymbol->draw();
 	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
-#else 
-	PangoFontDescription* font_desc = pango_font_description_new();
-	pango_font_description_set_family(font_desc, buffer);
-	pango_font_description_set_absolute_size(font_desc, 14 * PANGO_SCALE);
-	gucharmap_charmap_set_font_desc (GUCHARMAP_CHARMAP (m_SymbolMap), font_desc);
-	pango_font_description_free(font_desc);
-#endif
 }
 
 void XAP_UnixDialog_Insert_Symbol::New_Row(void)
@@ -350,13 +312,6 @@ static void s_new_font(GtkWidget * /*widget*/, XAP_UnixDialog_Insert_Symbol * dl
 	dlg->New_Font();
 }
 
-#ifdef WITH_GUCHARMAP
-static void s_charmap_activate (GucharmapCharmap */*charmap*/, gunichar /*ch*/, XAP_UnixDialog_Insert_Symbol * pDlg)
-{
-	pDlg->event_Insert ();
-}
-
-#else
 static void s_new_row(GtkWidget * /*widget*/, XAP_UnixDialog_Insert_Symbol * dlg)
 {
 	dlg->New_Row();
@@ -601,8 +556,6 @@ void XAP_UnixDialog_Insert_Symbol::CurrentSymbol_clicked(GdkEvent *event)
 	    event_Insert();
 }
 
-#endif /* WITH_GUCHARMAP */
-
 void XAP_UnixDialog_Insert_Symbol::destroy(void)
 {
 	UT_DEBUGMSG(("XAP_UnixDialog_Insert_Symbol::destroy()"));
@@ -639,7 +592,6 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	// Now put the font combo box at the top of the dialog 
 	gtk_box_pack_start(GTK_BOX(hbox), m_fontcombo, FALSE, FALSE, 0);
 
-#ifndef WITH_GUCHARMAP
 	// Now the Symbol Map. 
 	// TODO: 32 * x (19) = 608, 7 * y (21) = 147  FIXME!
 	//
@@ -649,26 +601,16 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 
 
 		
-    m_SymbolMap = _previewNew (608, 147);
-    gtk_box_pack_start (GTK_BOX (hbox1), m_SymbolMap, TRUE, TRUE, 0);
+	m_SymbolMap = _previewNew (608, 147);
+	gtk_box_pack_start (GTK_BOX (hbox1), m_SymbolMap, TRUE, TRUE, 0);
 
 	m_vadjust = GTK_ADJUSTMENT (gtk_adjustment_new (0, 0, 7, 0, 0, 7));
 	GtkWidget *vscroll = gtk_vscrollbar_new (m_vadjust);
 	gtk_widget_show (vscroll);
-    gtk_box_pack_start (GTK_BOX (hbox1), vscroll, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (hbox1), vscroll, FALSE, FALSE, 0);
 
 	m_areaCurrentSym = _previewNew (60, 45);
 	gtk_box_pack_start(GTK_BOX(hbox), m_areaCurrentSym, TRUE, FALSE, 0);
-#else
-	GucharmapChaptersModel *model = GUCHARMAP_CHAPTERS_MODEL(gucharmap_block_chapters_model_new ());
-	m_SymbolMap = gucharmap_charmap_new ();
-	gucharmap_charmap_set_chapters_model(GUCHARMAP_CHARMAP(m_SymbolMap), 
-										 model);
-	gtk_box_pack_start (GTK_BOX (tmp), m_SymbolMap, TRUE, TRUE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (m_SymbolMap), 5);
-	gtk_widget_show(m_SymbolMap);
-	gtk_widget_set_size_request (m_windowMain, 700, 300);
-#endif
 
 	gtk_widget_show_all (hbox);
 
@@ -768,8 +710,6 @@ void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
 			   G_CALLBACK(s_delete_clicked),
 			   static_cast<gpointer>(this));
 
-#ifndef WITH_GUCHARMAP
-
 
 	// The event to choose the Symbol!
 	g_signal_connect(G_OBJECT(m_SymbolMap),
@@ -815,11 +755,6 @@ void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
 	                                 "scroll_event",
 					 G_CALLBACK(s_scroll_event),
 		                         static_cast<gpointer>(this));
-
-#else
-	g_signal_connect (G_OBJECT (gucharmap_charmap_get_chartable (GUCHARMAP_CHARMAP (m_SymbolMap))), "activate",
-					  G_CALLBACK(s_charmap_activate), static_cast<gpointer>(this));
-#endif
 
 }
 
