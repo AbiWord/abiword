@@ -23,7 +23,11 @@
 #include <ctype.h>
 
 #ifdef WIN32
+#ifdef _MSC_VER
+#  include <winsock.h> // this is where timeval should be ...
+#else
 #  include <mswsock.h> // this is where timeval etc is defined ...
+#endif
 #else
 #  include <sys/time.h> // this is where timeval should be ...
 #endif
