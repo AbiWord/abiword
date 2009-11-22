@@ -1041,8 +1041,8 @@ bool EV_Win32MenuBar::synthesizeMenuBar(XAP_Frame * pFrame)
 	MENUITEMINFOW mii;
 
 	wchar_t buff[81];
-	memset(buff,80 * sizeof (wchar_t) , L' ');
-	buff[80* sizeof (wchar_t)] = 0;
+	memset(buff, 0, 80 * sizeof (wchar_t));
+	buff[80] = 0;
 	
 	mii.cbSize = sizeof(mii);
 	mii.dwTypeData = buff;
