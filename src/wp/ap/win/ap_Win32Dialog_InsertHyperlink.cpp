@@ -59,18 +59,23 @@ void AP_Win32Dialog_InsertHyperlink::runModal(XAP_Frame * pFrame)
 	UT_return_if_fail (pFrame && m_id == AP_DIALOG_ID_INSERTHYPERLINK);
 	
 	setDialog(this);
-	createModal(pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_INSERTHYPERLINK));
+	createModal(pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_INSERTHYPERLINK));
 }
+
+#define _DS(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 BOOL AP_Win32Dialog_InsertHyperlink::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
-	// localize dialog title
-	localizeDialogTitle(AP_STRING_ID_DLG_InsertHyperlink_Title);
+	const XAP_StringSet* pSS = m_pApp->getStringSet();
 
-	// localize controls
-	localizeControlText(AP_RID_DIALOG_INSERTHYPERLINK_BTN_OK,		XAP_STRING_ID_DLG_OK);
-	localizeControlText(AP_RID_DIALOG_INSERTHYPERLINK_BTN_CANCEL,	XAP_STRING_ID_DLG_Cancel);
-	localizeControlText(AP_RID_DIALOG_INSERTHYPERLINK_LBL_MSG,		AP_STRING_ID_DLG_InsertHyperlink_Msg);
+	// Update the caption
+	setDialogTitle(pSS->getValue(AP_STRING_ID_DLG_InsertHyperlink_Title));
+
+	/* Localise controls*/
+	_DSX(INSERTHYPERLINK_BTN_OK,			DLG_OK);
+	_DSX(INSERTHYPERLINK_BTN_CANCEL,		DLG_Cancel);
+	_DS(INSERTHYPERLINK_LBL_MSG,			DLG_InsertHyperlink_Msg);
 
 	// initial data
 	resetContent(AP_RID_DIALOG_INSERTHYPERLINK_LBX_LINK);

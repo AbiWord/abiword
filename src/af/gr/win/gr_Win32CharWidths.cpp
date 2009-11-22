@@ -102,8 +102,8 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 	else
 	{
 		HFONT hFont = (HFONT) GetCurrentObject(hdc, OBJ_FONT);
-		LOGFONT aLogFont;
-		int iRes = GetObject(hFont, sizeof(LOGFONT), &aLogFont);
+		LOGFONTW aLogFont;
+		int iRes = GetObjectW(hFont, sizeof(LOGFONTW), &aLogFont);
 		UT_ASSERT(iRes);
 
 		xxx_UT_DEBUGMSG(("gr_Win32Graphics::getCharWidth: extra interchar. spacing %d\n", GetTextCharacterExtra(hdc)));
@@ -192,14 +192,14 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 					if(iErrorCode)
 					{
 						LPVOID lpMsgBuf;
-						FormatMessage( 
+						FormatMessageW( 
 									  FORMAT_MESSAGE_ALLOCATE_BUFFER | 
 									  FORMAT_MESSAGE_FROM_SYSTEM | 
 									  FORMAT_MESSAGE_IGNORE_INSERTS,
 									  NULL,
 									  iErrorCode,
 									  MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-									  (LPTSTR) &lpMsgBuf,
+									  (LPWSTR) &lpMsgBuf,
 									  0,
 									  NULL 
 									  );

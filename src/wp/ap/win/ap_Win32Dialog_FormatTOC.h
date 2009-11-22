@@ -22,13 +22,14 @@
 
 #include "ap_Dialog_FormatTOC.h"
 #include "xap_Win32PropertySheet.h"
+#include "xap_Win32DialogBase.h"
 
 class XAP_Win32Frame;
 class AP_Win32Dialog_FormatTOC_General;
 class AP_Win32Dialog_FormatTOC_Sheet;
 class AP_Win32Dialog_FormatTOC_Layout;
 
-class ABI_EXPORT AP_Win32Dialog_FormatTOC: public AP_Dialog_FormatTOC
+class ABI_EXPORT AP_Win32Dialog_FormatTOC: public AP_Dialog_FormatTOC, XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_FormatTOC(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -38,7 +39,7 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
 	virtual void            setTOCPropsInGUI(void);	
-    virtual void            setSensitivity(bool bSensitive);
+   	virtual void            setSensitivity(bool bSensitive);
 	virtual void            destroy(void);
 	virtual void            activate(void);	
 	void 					setStyle(HWND hWnd, int nCtrlID);
@@ -85,7 +86,7 @@ public:
 	void						setContainer(AP_Win32Dialog_FormatTOC*	pData){m_pData=pData;};
 	AP_Win32Dialog_FormatTOC*	getContainer(){return m_pData;};	
 	void						_fillGUI(void);
-	virtual void				_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);	
+	virtual BOOL				_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);	
 private:
 
 	virtual	void				_onInitDialog();
@@ -106,7 +107,7 @@ public:
 	void						setContainer(AP_Win32Dialog_FormatTOC*	pData){m_pData=pData;};
 	AP_Win32Dialog_FormatTOC*	getContainer(){return m_pData;};	
 	void						_fillGUI(void);
-	virtual void				_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	virtual BOOL				_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	virtual void				_onNotify(LPNMHDR hdr, int iCtrlID);
 	void						saveCtrlsValuesForDetailsLevel ();	
 	void						loadCtrlsValuesForDetailsLevel ();

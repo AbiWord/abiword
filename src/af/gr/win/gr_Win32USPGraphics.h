@@ -38,7 +38,7 @@
 class ABI_EXPORT GR_Win32USPFont : public GR_Win32Font
 {
   public:
-	static  GR_Win32USPFont * newFont(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC);
+	static  GR_Win32USPFont * newFont(LOGFONTW & lf, double fPoints, HDC hdc, HDC printHDC);
 	virtual ~GR_Win32USPFont();
 
 	SCRIPT_CACHE * getScriptCache() {return &m_sc;}
@@ -50,7 +50,7 @@ class ABI_EXPORT GR_Win32USPFont : public GR_Win32Font
 
   protected:
 	// all construction has to be done via the graphics class
-	GR_Win32USPFont(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC);
+	GR_Win32USPFont(LOGFONTW & lf, double fPoints, HDC hdc, HDC printHDC);
 	
 	virtual void _clearAnyCachedInfo();
 
@@ -144,11 +144,11 @@ public:
   protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
 	GR_Win32USPGraphics(HDC, HWND);
-	GR_Win32USPGraphics(HDC, const DOCINFO *, HGLOBAL hDevMode = NULL);
+	GR_Win32USPGraphics(HDC, const DOCINFOW *, HGLOBAL hDevMode = NULL);
 	
   private:
 	bool      _constructorCommonCode();
-	virtual GR_Win32Font * _newFont(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC);
+	virtual GR_Win32Font * _newFont(LOGFONTW & lf, double fPoints, HDC hdc, HDC printHDC);
 
 	void   _setupFontOnDC(GR_Win32USPFont *pFont, bool bZoomMe);
 

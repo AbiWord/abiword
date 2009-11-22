@@ -27,6 +27,8 @@
 #include "xap_App.h"
 #include "xap_Win32App.h"
 #include "xap_Win32PreviewWidget.h"
+#include "xap_Win32DialogHelper.h"
+#include "xap_Win32LabelledSeparator.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
@@ -70,14 +72,15 @@ AP_Win32Dialog_PageNumbers::~AP_Win32Dialog_PageNumbers()
 void AP_Win32Dialog_PageNumbers::runModal(XAP_Frame* pFrame)
 {
 	UT_return_if_fail (pFrame);
-
-	// raise the dialog
-	m_helper.runModal(pFrame, AP_DIALOG_ID_PAGE_NUMBERS, AP_RID_DIALOG_PAGENUMBERS, this);
+	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
+ 
+ 	XAP_Win32LabelledSeparator_RegisterClass(pWin32App);
+	createModal(pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_PAGENUMBERS));
 }
 
 
-#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+#define _DS(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 
 BOOL AP_Win32Dialog_PageNumbers::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
@@ -87,7 +90,7 @@ BOOL AP_Win32Dialog_PageNumbers::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPA
 	const XAP_StringSet* pSS = m_pApp->getStringSet();
 
 	// Update the caption
-	m_helper.setDialogTitle(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Title));
+	setDialogTitle(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Title));
 
 	/* Localise controls*/
 	_DSX(PAGENUMBERS_BTN_OK,				DLG_OK);
@@ -113,7 +116,7 @@ BOOL AP_Win32Dialog_PageNumbers::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPA
 	m_pPreviewWidget->getGraphics()->init3dColors();
 	_updatePreview(m_align, m_control);
 	
-	m_helper.centerDialog();
+	centerDialog();
 
 	return 1;	// 0 == we called SetFocus()
 }

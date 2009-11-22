@@ -28,6 +28,7 @@
 #include "ut_bytebuf.h"
 #include "ut_debugmsg.h"
 #include "ut_string_class.h"
+#include "ut_Win32LocaleString.h"
 
 #include "xap_App.h"
 #include "xap_Strings.h"
@@ -94,29 +95,33 @@ static bool SuffixInList(const char *haystack, const char *needle)
 
  \param indx -- index into the filter list
  */
-char * XAP_Win32Dialog_FileOpenSaveAs::_getDefaultExtension(UT_uint32 indx)
+wchar_t * XAP_Win32Dialog_FileOpenSaveAs::_getDefaultExtension(UT_uint32 indx)
 {
-	static char abw_sfx[] = "abw";
+	static wchar_t abw_sfx[] = L"abw";
+    char defaultExtension[DEFAULT_EXT_SIZE + 1];
+	UT_Win32LocaleString def_ext;
 	
 	UT_uint32 end = g_strv_length((gchar **) m_szDescriptions);
 	if(indx >= end)
 	{
 		if(m_id == XAP_DIALOG_ID_FILE_SAVE_IMAGE)
-			return "png";
+			return L"png";
 
 		return abw_sfx;
 	}
 	
 	// copy at most DEFAULT_EXT_SIZE characters from the suffix;
-	strncpy(m_szDefaultExtension, m_szSuffixes[indx] + 2, DEFAULT_EXT_SIZE);
+	strncpy(defaultExtension, m_szSuffixes[indx] + 2, DEFAULT_EXT_SIZE);
 	
-	m_szDefaultExtension[DEFAULT_EXT_SIZE] = 0;
+	defaultExtension[DEFAULT_EXT_SIZE] = 0;
 	
 	// make sure that we get rid off the semicolon if it got copied
-	char * semicolon = strchr(m_szDefaultExtension, ';');
+	char * semicolon = strchr(defaultExtension, ';');
 	if(semicolon)
 		*semicolon = 0;
 	UT_DEBUGMSG(("Default sfx [%s], (from [%s]\n", m_szDefaultExtension,m_szSuffixes[indx]));
+    def_ext.fromASCII (defaultExtension);
+	wcscpy (m_szDefaultExtension, def_ext.c_str());
 	return m_szDefaultExtension;
 }
 
@@ -204,9 +209,9 @@ BOOL  XAP_Win32Dialog_FileOpenSaveAs::GetSaveFileName_Hooked(OPENFILENAME_WIN50*
 		lpofn->FlagsEx = 0;		
 		
 		if (bSave)				
-			bRslt = GetSaveFileName((OPENFILENAME *)lpofn);
+			bRslt = GetSaveFileNameW((OPENFILENAMEW *)lpofn);
 		else
-			bRslt = GetOpenFileName((OPENFILENAME *)lpofn);
+			bRslt = GetOpenFileNameW((OPENFILENAMEW *)lpofn);
 		
 		if (!bRslt) // Error
 		{			
@@ -215,11 +220,11 @@ BOOL  XAP_Win32Dialog_FileOpenSaveAs::GetSaveFileName_Hooked(OPENFILENAME_WIN50*
 			if (dwError==CDERR_STRUCTSIZE)	// This system does not support the place bar
 			{								
 					//  Try with the old one
-					lpofn->lStructSize = sizeof(OPENFILENAME);	
+					lpofn->lStructSize = sizeof(OPENFILENAMEW);	
 					if (bSave)				
-						bRslt = GetSaveFileName((OPENFILENAME *)lpofn);
+						bRslt = GetSaveFileNameW((OPENFILENAMEW *)lpofn);
 					else
-						bRslt = GetOpenFileName((OPENFILENAME *)lpofn);
+						bRslt = GetOpenFileNameW((OPENFILENAMEW *)lpofn);
 				
 			}				
 		}	
@@ -239,22 +244,24 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 	HWND hFrame = static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow();
 
-	char szFile[MAX_DLG_INS_PICT_STRING];	// buffer for filename
-	char szDir[MAX_DLG_INS_PICT_STRING];	// buffer for directory
+	wchar_t szFile[MAX_DLG_INS_PICT_STRING];	// buffer for filename
+	wchar_t szDir[MAX_DLG_INS_PICT_STRING];	// buffer for directory
 	UT_String sFilter;
 	OPENFILENAME_WIN50 ofn;						// common dialog box structure
+    UT_Win32LocaleString filter;
 
 	ZeroMemory(szFile,sizeof(szFile));
 	ZeroMemory(szDir,sizeof(szDir));
 	ZeroMemory(&ofn, sizeof(OPENFILENAME_WIN50));
 
 	_buildFilterList(sFilter);
+    filter.fromASCII (sFilter.c_str(), sFilter.size());
 
-	ofn.lStructSize = sizeof(OPENFILENAME);		// Old size
+	ofn.lStructSize = sizeof(OPENFILENAMEW);		// Old size
 	ofn.hwndOwner = hFrame;
 	ofn.lpstrFile = szFile;
 	ofn.nMaxFile = sizeof(szFile);
-	ofn.lpstrFilter = sFilter.c_str();
+	ofn.lpstrFilter = filter.c_str();
 	ofn.nFilterIndex = 1;
 	ofn.lpstrFileTitle = NULL;
 	ofn.nMaxFileTitle = 0;
@@ -279,8 +286,12 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			// the dialog there (but without a filename).
 
 			// use directory(m_szPersistPathname)
-			strcpy(szDir,m_szPersistPathname);
-			char * pLastSlash = strrchr(szDir, '/');
+
+            UT_Win32LocaleString path;
+			path.fromUTF8 (m_szPersistPathname);
+
+			wcscpy(szDir,path.c_str());
+			wchar_t * pLastSlash = wcsrchr(szDir, L'/');
 			if (pLastSlash)
 				pLastSlash[1] = 0;
 			ofn.lpstrInitialDir = szDir;
@@ -303,12 +314,15 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		// it.	either way, we need to cut the pathname into two
 		// parts -- directory and file -- for the common dlg.
 
+        UT_Win32LocaleString uri;
 		const char * szURI = g_filename_from_uri(m_szInitialPathname, NULL, NULL);
 		if(!szURI)
 			szURI = static_cast<const char *> (UT_calloc (1, sizeof (char)));
 
-		strcpy(szDir,AP_Win32App::s_fromUTF8ToWinLocale(szURI).c_str());
-		char * pLastSlash = strrchr(szDir, '/');
+        uri.fromUTF8 (szURI);
+
+		wcscpy(szDir,uri.c_str());
+		wchar_t * pLastSlash = wcsrchr(szDir, L'/');
 		if (pLastSlash)
 			pLastSlash[1] = 0;
 		ofn.lpstrInitialDir = szDir;
@@ -316,16 +330,16 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		if (m_bSuggestName)
 		{
 			if (pLastSlash)
-				strcpy(szFile, AP_Win32App::s_fromUTF8ToWinLocale(szURI).c_str() + (pLastSlash-szDir+1));
+				wcscpy(szFile, uri.c_str() + (pLastSlash-szDir+1));
 			else
-				strcpy(szFile, AP_Win32App::s_fromUTF8ToWinLocale(szURI).c_str());
+				wcscpy(szFile, uri.c_str());
 
 			// if the file name has an extension, remove it
 			// (if we don't, and the document is of a different
 			// type than the one initially selected in the dialogue
 			// and the user just clicks OK, we get type - extension
 			// mismatch)
-			char * dot = strrchr(szFile, '.');
+			wchar_t * dot = wcsrchr(szFile, L'.');
 			if(dot)
 				*dot = 0;
 		}
@@ -353,25 +367,29 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	}
 
 	const XAP_StringSet* pSS = XAP_App::getApp()->getStringSet();
+    UT_Win32LocaleString title;
 
 	switch (m_id)
 	{
-	case XAP_DIALOG_ID_FILE_OPEN:
-		ofn.lpstrTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_OpenTitle);
+	case XAP_DIALOG_ID_FILE_OPEN:		
+		title.fromUTF8 (pSS->getValue(XAP_STRING_ID_DLG_FOSA_OpenTitle));
+		ofn.lpstrTitle = title.c_str();
 		ofn.Flags |= OFN_FILEMUSTEXIST;
 		ofn.nFilterIndex = g_strv_length((gchar **) m_szDescriptions) + 1;
-		bDialogResult = GetOpenFileName((OPENFILENAME *)&ofn);
+		bDialogResult = GetOpenFileNameW((OPENFILENAMEW *)&ofn);
 		break;
 
 	case XAP_DIALOG_ID_PRINTTOFILE:
-		ofn.lpstrTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle);
-		ofn.Flags |= OFN_OVERWRITEPROMPT;
-		bDialogResult = GetSaveFileName((OPENFILENAME *)&ofn);
+	    title.fromUTF8 (pSS->getValue(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle));
+		ofn.lpstrTitle = title.c_str();	
+        ofn.Flags |= OFN_OVERWRITEPROMPT;
+		bDialogResult = GetSaveFileNameW((OPENFILENAMEW *)&ofn);
 		break;
 
 	case XAP_DIALOG_ID_FILE_SAVEAS:
 	case XAP_DIALOG_ID_FILE_SAVE_IMAGE:
-		ofn.lpstrTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_SaveAsTitle);
+		title.fromUTF8 (pSS->getValue(XAP_STRING_ID_DLG_FOSA_SaveAsTitle));
+		ofn.lpstrTitle = title.c_str();
 		ofn.lpfnHook	   = (LPOFNHOOKPROC) s_hookSaveAsProc;
 		ofn.Flags |= OFN_OVERWRITEPROMPT;
 		ofn.Flags |= OFN_EXPLORER;
@@ -381,9 +399,10 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		break;
 
 	case XAP_DIALOG_ID_INSERT_PICTURE:
-		ofn.lpstrTitle	   = pSS->getValue(XAP_STRING_ID_DLG_IP_Title);
+		title.fromUTF8 (pSS->getValue(XAP_STRING_ID_DLG_IP_Title));
+		ofn.lpstrTitle = title.c_str();
 		ofn.hInstance	   = pWin32App->getInstance();
-		ofn.lpTemplateName = MAKEINTRESOURCE(XAP_RID_DIALOG_INSERT_PICTURE);
+		ofn.lpTemplateName = MAKEINTRESOURCEW(XAP_RID_DIALOG_INSERT_PICTURE);
 		ofn.lpfnHook	   = (LPOFNHOOKPROC) s_hookInsertPicProc;
 		ofn.nFilterIndex   = g_strv_length((gchar **) m_szDescriptions) + 1;
 		ofn.Flags |= OFN_EXPLORER;
@@ -393,21 +412,24 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		break;
 
 	case XAP_DIALOG_ID_FILE_IMPORT:
-		ofn.lpstrTitle	 = pSS->getValue(XAP_STRING_ID_DLG_FOSA_ImportTitle);
+        title.fromUTF8 (pSS->getValue(XAP_STRING_ID_DLG_FOSA_ImportTitle));
+		ofn.lpstrTitle = title.c_str();
 		ofn.nFilterIndex = g_strv_length((gchar **) m_szDescriptions) + 1;
 		ofn.Flags |= OFN_FILEMUSTEXIST;
-		bDialogResult = GetOpenFileName((OPENFILENAME *)&ofn);
+		bDialogResult = GetOpenFileNameW((OPENFILENAMEW *)&ofn);
 		break;
 
 	case XAP_DIALOG_ID_INSERTMATHML:
-		ofn.lpstrTitle	 = pSS->getValue(XAP_STRING_ID_DLG_FOSA_InsertMath);
+		title.fromUTF8 (pSS->getValue(XAP_STRING_ID_DLG_FOSA_InsertMath));
+		ofn.lpstrTitle = title.c_str();
 		ofn.nFilterIndex = g_strv_length((gchar **) m_szDescriptions) + 1;
 		ofn.Flags |= OFN_FILEMUSTEXIST;
-		bDialogResult = GetOpenFileName((OPENFILENAME *)&ofn);
+		bDialogResult = GetOpenFileNameW((OPENFILENAMEW *)&ofn);
 		break;
 
 	case XAP_DIALOG_ID_FILE_EXPORT:
-		ofn.lpstrTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_ExportTitle);
+		title.fromUTF8 (pSS->getValue(XAP_STRING_ID_DLG_FOSA_ExportTitle));
+		ofn.lpstrTitle = title.c_str();
 		ofn.lpfnHook	   = (LPOFNHOOKPROC) s_hookSaveAsProc;
 		ofn.Flags |= OFN_OVERWRITEPROMPT;
 		ofn.Flags |= OFN_EXPLORER;
@@ -416,10 +438,11 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		break;
 
 	case XAP_DIALOG_ID_INSERT_FILE:
-		ofn.lpstrTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_InsertTitle);
+		title.fromUTF8 (pSS->getValue(XAP_STRING_ID_DLG_FOSA_InsertTitle));
+		ofn.lpstrTitle = title.c_str();		
 		ofn.Flags |= OFN_FILEMUSTEXIST;
 		ofn.nFilterIndex = g_strv_length((gchar **) m_szDescriptions) + 1;
-		bDialogResult = GetOpenFileName((OPENFILENAME *)&ofn);
+		bDialogResult = GetOpenFileNameW((OPENFILENAMEW *)&ofn);
 		break;
 
 	default:
@@ -433,9 +456,14 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	if (bDialogResult != FALSE)
 	{
 		UT_uint32 end = g_strv_length((gchar **) m_szSuffixes);
+        char szFileA [MAX_DLG_INS_PICT_STRING];	// buffer for filename
+		UT_Win32LocaleString sfile;
+		sfile.fromLocale (szFile);
+		
+		strcpy (szFileA, sfile.ascii_str());
 
 		if ((m_id == XAP_DIALOG_ID_FILE_SAVEAS) &&
-			(UT_pathSuffix(szFile).empty()))
+			(UT_pathSuffix(szFileA).empty()))
 		{
 			// add suffix based on selected file type
 			// if selected file is "all documents" or "all"
@@ -452,19 +480,19 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			
 			UT_ASSERT(!suffix.empty());
 
-			UT_uint32 length = strlen(szFile) + suffix.size() + 1;
+			UT_uint32 length = strlen(szFileA) + suffix.size() + 1;
 			m_szFinalPathname = (char *)UT_calloc(length,sizeof(char));
 			if (m_szFinalPathname)
 			{
 				char * p = m_szFinalPathname;
 
-				strcpy(p,szFile);
+				strcpy(p,szFileA);
 				strcat(p,suffix.c_str());
 			}
 		}
 		else
 		{
-			char *uri = UT_go_filename_to_uri(AP_Win32App::s_fromWinLocaleToUTF8(szFile).utf8_str());
+			char *uri = UT_go_filename_to_uri(sfile.utf8_str().utf8_str());
 			if(uri)
 			{
 				if(!(m_szFinalPathname = g_strdup(uri)))
@@ -508,43 +536,43 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookSaveAsProc(HWND hDlg, UINT msg, WPARAM /*wParam*/, LPARAM lParam)
 {
 	XAP_Win32Dialog_FileOpenSaveAs* pThis;
-	static char buff[MAX_DLG_INS_PICT_STRING];
+	static wchar_t buff[MAX_DLG_INS_PICT_STRING];
 	switch(msg)
 	{
 		case WM_NOTIFY:
 			{
-				const OFNOTIFY * pNotify = reinterpret_cast<OFNOTIFY *>(lParam);
+				const OFNOTIFYW * pNotify = reinterpret_cast<OFNOTIFYW *>(lParam);
 				switch (pNotify->hdr.code)
 				{
 					case CDN_TYPECHANGE:
 						{
 							UT_DEBUGMSG(("SaveAs filetype changed to %d\n", pNotify->lpOFN->nFilterIndex));
 							pThis = (XAP_Win32Dialog_FileOpenSaveAs*)pNotify->lpOFN->lCustData;
-							char * ext = pThis->_getDefaultExtension(pNotify->lpOFN->nFilterIndex - 1);
+							wchar_t * ext = pThis->_getDefaultExtension(pNotify->lpOFN->nFilterIndex - 1);
 							// for some reason the  lpstrFile member of the struct will not be set properly
 							// so we have to retrieve the text directly from the control (I could swear that
 							// this used to work, and have no idea what changed)
-							GetDlgItemText(GetParent(hDlg), edt1, buff, MAX_DLG_INS_PICT_STRING);
-							//strcpy(buff,pNotify->lpOFN->lpstrFile);
-							char * dot = strchr(buff, '.');
+							GetDlgItemTextW(GetParent(hDlg), edt1, buff, MAX_DLG_INS_PICT_STRING);
+							wcscpy(buff,pNotify->lpOFN->lpstrFile);                 //was once commented
+							wchar_t * dot = wcschr(buff, L'.');
 							if(dot)
 							{
 								*(dot+1) = 0;
 							}
 							else if(*buff)
 							{
-								UT_ASSERT(strlen(buff) < MAX_DLG_INS_PICT_STRING);
-								dot = buff + strlen(buff);
-								*dot = '.';
+								UT_ASSERT(wcslen(buff) < MAX_DLG_INS_PICT_STRING);
+								dot = buff + wcslen(buff);
+								*dot = L'.';
 								*(dot+1) = 0;
 							}
 
 							if(dot)
 							{
-								UT_ASSERT(strlen(buff) + strlen(pNotify->lpOFN->lpstrDefExt) < MAX_DLG_INS_PICT_STRING);
+								UT_ASSERT(wcslen(buff) + wcslen(pNotify->lpOFN->lpstrDefExt) < MAX_DLG_INS_PICT_STRING);
 
 								if(ext)
-									strcat(buff,ext);
+									wcscat(buff,ext);
 								else
 									*dot = 0;
 						
@@ -589,13 +617,13 @@ UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookInsertPicProc(HWND hDlg, UIN
 	case WM_NOTIFY:
 		// Only bother if Preview Image is selected
 		if ( !bPreviewImage ) return false;
-		switch ( ((OFNOTIFY*) lParam)->hdr.code )
+		switch ( ((OFNOTIFYW*) lParam)->hdr.code )
 		{
 		case CDN_FOLDERCHANGE:
 			UT_DEBUGMSG(("Folder Changed File Name Cleared\n"));
-			SetDlgItemText( GetParent(hDlg), edt1,	NULL );
-			SetDlgItemText( hDlg, XAP_RID_DIALOG_INSERT_PICTURE_TEXT_HEIGHT, NULL );
-			SetDlgItemText( hDlg, XAP_RID_DIALOG_INSERT_PICTURE_TEXT_WIDTH, NULL );
+			SetDlgItemTextW( GetParent(hDlg), edt1,	NULL );
+			SetDlgItemTextW( hDlg, XAP_RID_DIALOG_INSERT_PICTURE_TEXT_HEIGHT, NULL );
+			SetDlgItemTextW( hDlg, XAP_RID_DIALOG_INSERT_PICTURE_TEXT_WIDTH, NULL );
 			return true;
 		case CDN_SELCHANGE:
 			return ( pThis->_previewPicture(hDlg) );
@@ -650,21 +678,23 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 {
 	HWND hFOSADlg	= GetParent(hDlg);
 	HWND hThumbnail = GetDlgItem(hDlg,XAP_RID_DIALOG_INSERT_PICTURE_IMAGE_PREVIEW);
+    UT_Win32LocaleString str;
 
 	const XAP_StringSet*  pSS	= XAP_App::getApp()->getStringSet();
 	UT_return_val_if_fail(pSS, false);
 
 	// Check if File Name is for a file
-	char buf[MAX_DLG_INS_PICT_STRING];
-	SendMessage( hFOSADlg, CDM_GETFILEPATH, sizeof(buf), (LPARAM) buf );
+	wchar_t buf[MAX_DLG_INS_PICT_STRING];
+	SendMessageW( hFOSADlg, CDM_GETFILEPATH, sizeof(buf), (LPARAM) buf );
 	// If a Directory stop
-	if ( GetFileAttributes( buf ) == FILE_ATTRIBUTE_DIRECTORY )
+	if ( GetFileAttributesW( buf ) == FILE_ATTRIBUTE_DIRECTORY )
 	{
 		return false;
 	}
 
+    str.fromLocale (buf);
 	// Pass only files that can be openned
-	FILE* fitxer = fopen (buf,"r");
+	FILE* fitxer = fopen (str.ascii_str(),"r");
 
 	if (fitxer)
 		fclose(fitxer);
@@ -676,8 +706,10 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 	// Build an Import Graphic based on file type
 	UT_Error errorCode = UT_ERROR;
     FG_Graphic *pfg = NULL;
+	char *uri = UT_go_filename_to_uri(str.ascii_str());
+	if(uri)
+		errorCode = IE_ImpGraphic::loadGraphic(uri, IEGFT_Unknown, &pfg);
 
-    errorCode = IE_ImpGraphic::loadGraphic(buf, IEGFT_Unknown, &pfg);
 	if (errorCode)
 	{
 		return false;
@@ -695,19 +727,21 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
     iImageHeight = pfg->getHeight();
 
 	// Update Height and Width Strings
-	sprintf( buf, 
-			 "%s %d",
-			  pSS->getValue(XAP_STRING_ID_DLG_IP_Height_Label), 
+    str.fromUTF8 (pSS->getValue(XAP_STRING_ID_DLG_IP_Height_Label));
+	swprintf( buf, 
+			  L"%s %d",
+			  str.c_str(), 
 			  iImageHeight );
-	SetDlgItemText( hDlg,
+	SetDlgItemTextW( hDlg,
 					XAP_RID_DIALOG_INSERT_PICTURE_TEXT_HEIGHT,
 					buf );
 
-	sprintf( buf, 
-			 "%s %d",
-			 pSS->getValue(XAP_STRING_ID_DLG_IP_Width_Label),
-			 iImageWidth );
-	SetDlgItemText( hDlg,
+    str.fromUTF8 (pSS->getValue(XAP_STRING_ID_DLG_IP_Width_Label));
+	swprintf( buf, 
+			 L"%s %d",
+			 str.c_str(), 
+			  iImageWidth );
+	SetDlgItemTextW( hDlg,
 					XAP_RID_DIALOG_INSERT_PICTURE_TEXT_WIDTH,
 					buf );
 
@@ -747,29 +781,28 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 UINT XAP_Win32Dialog_FileOpenSaveAs::_initPreviewDlg(HWND hDlg)
 {
 	HWND hFOSADlg	= GetParent(hDlg);
+	UT_Win32LocaleString str;
+	setHandle (hDlg);
 
 	const XAP_StringSet*  pSS		  = XAP_App::getApp()->getStringSet();
 	UT_return_val_if_fail(pSS, false);
-	
-	SetDlgItemText( hDlg,
-					XAP_RID_DIALOG_INSERT_PICTURE_IMAGE_PREVIEW,
-					pSS->getValue(XAP_STRING_ID_DLG_IP_No_Picture_Label) );
 
-	SetDlgItemText( hDlg,
-					XAP_RID_DIALOG_INSERT_PICTURE_CHECK_ACTIVATE_PREVIEW,
-					pSS->getValue(XAP_STRING_ID_DLG_IP_Activate_Label) );
+    setDlgItemText( XAP_RID_DIALOG_INSERT_PICTURE_IMAGE_PREVIEW,
+					pSS->getValue(XAP_STRING_ID_DLG_IP_No_Picture_Label));
+  
+    setDlgItemText( XAP_RID_DIALOG_INSERT_PICTURE_CHECK_ACTIVATE_PREVIEW,
+					pSS->getValue(XAP_STRING_ID_DLG_IP_Activate_Label));
 
-	SetDlgItemText( hDlg,
-					XAP_RID_DIALOG_INSERT_PICTURE_TEXT_HEIGHT,
-					pSS->getValue(XAP_STRING_ID_DLG_IP_Height_Label) );
-
-	SetDlgItemText( hDlg,
-					XAP_RID_DIALOG_INSERT_PICTURE_TEXT_WIDTH,
-					pSS->getValue(XAP_STRING_ID_DLG_IP_Width_Label) );
-
-	SetDlgItemText( hFOSADlg,
+    setDlgItemText( XAP_RID_DIALOG_INSERT_PICTURE_TEXT_HEIGHT,
+					pSS->getValue(XAP_STRING_ID_DLG_IP_Height_Label));
+    
+    setDlgItemText( XAP_RID_DIALOG_INSERT_PICTURE_TEXT_WIDTH,
+					pSS->getValue(XAP_STRING_ID_DLG_IP_Width_Label));
+    
+    str.fromUTF8 (pSS->getValue(XAP_STRING_ID_DLG_IP_Button_Label));
+    SetDlgItemTextW( hFOSADlg,
 					IDOK,
-					pSS->getValue(XAP_STRING_ID_DLG_IP_Button_Label) );
+					str.c_str());
 
 	return true;
 

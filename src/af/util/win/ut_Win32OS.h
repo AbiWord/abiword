@@ -23,35 +23,37 @@
 
 #include <windows.h>
 #include "ut_types.h"
+#include <wchar.h>
 
-OSVERSIONINFO& UT_GetWinVersion(void);
+OSVERSIONINFOW& UT_GetWinVersion(void);
 bool UT_IsWinVista(void);
 bool UT_IsWinNT(void);
 bool UT_IsWin2K(void);
 bool UT_IsWin95(void);
 
-DLGTEMPLATE * WINAPI UT_LockDlgRes(HINSTANCE hinst, LPCTSTR lpszResName);
+DLGTEMPLATE * WINAPI UT_LockDlgRes(HINSTANCE hinst, LPCWSTR lpszResName);
 
-char * UT_GetDefaultPrinterName();
+wchar_t * UT_GetDefaultPrinterName();
 
 HDC  UT_GetDefaultPrinterDC();
 
+
 ATOM UT_RegisterClassEx(UINT style, WNDPROC wndproc, HINSTANCE hInstance,
-						HICON hIcon, HCURSOR hCursor, HBRUSH hbrBackground, HICON hIconSm,
-						const char * menu, const char * name, bool bForceANSI = false);
+ 						HICON hIcon, HCURSOR hCursor, HBRUSH hbrBackground, HICON hIconSm,
+						const wchar_t * menu, const wchar_t * name);
+
 
 // NB: the default value for bForceANSI is intentionally set to true, otherwise the
 // tooltips do not work, see bug 8976
-HWND UT_CreateWindowEx(DWORD dwExStyle, LPCTSTR lpClassName, LPCTSTR lpWindowName, DWORD dwStyle,
+HWND UT_CreateWindowEx(DWORD dwExStyle, const wchar_t* lpClassName, const wchar_t* lpWindowName, DWORD dwStyle,
 					   int x, int y, int nWidth, int nHeight,
-					   HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam, bool bForceANSI = true);
+					   HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam);
 
-LRESULT UT_DefWindowProc(HWND hWnd, UINT Msg, WPARAM wParam,LPARAM lParam, bool bForceANSI = false);
 
-BOOL UT_SetWindowText(HWND hWnd, const char * lpString, bool bForceANSI = false);
+LRESULT UT_DefWindowProc(HWND hWnd, UINT Msg, WPARAM wParam,LPARAM lParam);
+BOOL UT_SetWindowText(HWND hWnd, const wchar_t * lpString);
 
-// If you change bForceANSI, you must also change m_bForceAnsi in ap_Win32App.h
-BOOL UT_GetMessage(LPMSG lpMsg,HWND hWnd,UINT wMsgFilterMin,UINT wMsgFilterMax, bool bForceANSI = false);
+BOOL UT_GetMessage(LPMSG lpMsg,HWND hWnd,UINT wMsgFilterMin,UINT wMsgFilterMax);
 
-LRESULT UT_DispatchMessage(const MSG *lpmsg, bool bForceANSI = false);
+LRESULT UT_DispatchMessage(const MSG *lpmsg);
 #endif /* UT_Win32OS_H */

@@ -57,7 +57,7 @@ void XAP_Win32Dialog_HTMLOptions::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(m_id == XAP_DIALOG_ID_HTMLOPTIONS);
 
 	setDialog(this);
-	createModal(pFrame, MAKEINTRESOURCE(XAP_RID_DIALOG_HTMLOPTIONS));
+	createModal(pFrame, MAKEINTRESOURCEW(XAP_RID_DIALOG_HTMLOPTIONS));
 }
 
 #define _DS(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))

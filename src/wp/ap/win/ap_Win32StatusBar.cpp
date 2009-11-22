@@ -29,6 +29,7 @@
 #include "xap_Win32App.h"
 #include "ap_Win32Frame.h"
 #include "ap_Win32App.h"
+#include "ut_Win32LocaleString.h"
 
 LRESULT APIENTRY StatusbarWndProc (HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) { 
 
@@ -38,7 +39,7 @@ LRESULT APIENTRY StatusbarWndProc (HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
     if ((uMsg == WM_SIZE || uMsg == SB_SETPARTS) && hwnd) {
 	
 		// default processing
-		LRESULT lresult = CallWindowProc(pBar->getOrgWndProc(), hwnd, uMsg, wParam, lParam);
+		LRESULT lresult = CallWindowProcW(pBar->getOrgWndProc(), hwnd, uMsg, wParam, lParam);
 		
 		// resize the 2nd pane so the panels fill-up the whole statusbar width
 		// when the statusbar has been resized.
@@ -52,7 +53,7 @@ LRESULT APIENTRY StatusbarWndProc (HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 			
 			// retrieve the number of parts
 			int i, width, offset;
-			int nParts = SendMessage(hwnd, SB_GETPARTS, 0, 0);
+			int nParts = SendMessageW(hwnd, SB_GETPARTS, 0, 0);
 
 			int *pArOffsets = new int[nParts];    
 			int *pArWidths = new int[nParts];    
@@ -61,7 +62,7 @@ LRESULT APIENTRY StatusbarWndProc (HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 			int *w = pArWidths;
 
 			// retrieve the current offsets
-			SendMessage(hwnd, SB_GETPARTS, nParts, (LPARAM)pArOffsets);
+			SendMessageW(hwnd, SB_GETPARTS, nParts, (LPARAM)pArOffsets);
 
 			// determine the individual panel widths and how much space we 
 			// have available for the 2nd panel.
@@ -104,7 +105,7 @@ LRESULT APIENTRY StatusbarWndProc (HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 				}
 				
 			// update
-			SendMessage(hwnd, SB_SETPARTS, nParts, (LPARAM)pArOffsets);
+			SendMessageW(hwnd, SB_SETPARTS, nParts, (LPARAM)pArOffsets);
 
 			delete [] pArWidths;
 			delete [] pArOffsets;
@@ -113,7 +114,7 @@ LRESULT APIENTRY StatusbarWndProc (HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 		return lresult;
 		}
  
-    return CallWindowProc(pBar->getOrgWndProc(), hwnd, uMsg, wParam, lParam); 
+    return CallWindowProcW(pBar->getOrgWndProc(), hwnd, uMsg, wParam, lParam); 
 	} 
 
 /*
@@ -143,8 +144,9 @@ void ap_usb_TextListener::notify()
 
 	UT_return_if_fail (m_hWnd && m_pSB);	
 	AP_StatusBarField_TextInfo * textInfo = ((AP_StatusBarField_TextInfo *)m_pStatusBarField);
-	UT_String 	s =	AP_Win32App::s_fromUTF8ToWinLocale(textInfo->getBuf().utf8_str());	
-	SendMessage(m_hWnd, SB_SETTEXT, m_nID | m_pSB->getDir(), (LPARAM)  s.c_str());
+	UT_Win32LocaleString str;	
+	str.fromUTF8 (textInfo->getBuf().utf8_str());	
+	SendMessageW(m_hWnd, SB_SETTEXTW, m_nID | m_pSB->getDir(), (LPARAM)  str.c_str());
 	
 }
 
@@ -196,10 +198,10 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 		specified in the CreateWindowEx function.	
 	
 	*/
-	m_hwndStatusBar = UT_CreateWindowEx(0, STATUSCLASSNAME, NULL,
+	m_hwndStatusBar = UT_CreateWindowEx(0, STATUSCLASSNAMEW, NULL,
 										WS_CHILD | WS_VISIBLE | SBS_SIZEGRIP,
 										0, 0, 0, 0,
-										hwndFrame, NULL, app->getInstance(), NULL);
+										hwndFrame, NULL, app->getInstance(),NULL);
 	UT_return_val_if_fail (m_hwndStatusBar,0);	
 
 	// route messages through our handler first (to size the status panels).
@@ -243,7 +245,7 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 		
 	
 	// Set the numer of elements in the statusbar and their size
-    SendMessage(m_hwndStatusBar, SB_SETPARTS, getFields()->getItemCount()+1, (LPARAM)pArWidths);
+    SendMessageW(m_hwndStatusBar, SB_SETPARTS, getFields()->getItemCount()+1, (LPARAM)pArWidths);
 	    
     delete [] pArWidths;
 

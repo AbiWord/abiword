@@ -22,11 +22,11 @@
 
 #include "ap_Dialog_SplitCells.h"
 #include "xap_Frame.h"
-
+#include "xap_Win32DialogBase.h"
 
 /*****************************************************************/
 
-class ABI_EXPORT AP_Win32Dialog_SplitCells: public AP_Dialog_SplitCells
+class ABI_EXPORT AP_Win32Dialog_SplitCells: public AP_Dialog_SplitCells, XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_SplitCells(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -37,9 +37,8 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
 	virtual BOOL			_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	static BOOL CALLBACK	s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
 	virtual BOOL 			_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	virtual void * 			pGetWindowHandle( void ) { return  (void *)  m_hwndDlg; }
+	virtual void * 			pGetWindowHandle( void ) { return  (void *) m_hDlg; }
 
 	// callbacks can fire these events
 	virtual void			event_Close(void);
@@ -52,7 +51,6 @@ public:
 		
 protected:
 
-	HWND						m_hwndDlg;	//  dialog box Windows
 	HBITMAP						m_hBitmapAbove;
 	HBITMAP						m_hBitmapHoriMid;
 	HBITMAP						m_hBitmapBelow;

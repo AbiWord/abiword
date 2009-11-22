@@ -33,7 +33,7 @@
 #include "xap_Frame.h"
 #include "xap_ModuleManager.h"
 #include "pd_Document.h"
-
+#include "ut_Win32LocaleString.h"
 #include "ie_imp.h"
 
 #if defined(TOOLKIT_WIN)
@@ -78,7 +78,9 @@ bool AP_App::openCmdLineFiles(const AP_Args * args)
 		char * uri = NULL;
 
 #if defined(TOOLKIT_WIN)
-		uri = UT_go_shell_arg_to_uri (AP_Win32App::s_fromWinLocaleToUTF8(file).utf8_str());
+        UT_Win32LocaleString str;	
+		str.fromASCII (file);	
+		uri = UT_go_shell_arg_to_uri (str.utf8_str().utf8_str());
 #else
 		uri = UT_go_shell_arg_to_uri (file);
 #endif

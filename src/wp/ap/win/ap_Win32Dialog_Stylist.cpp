@@ -22,10 +22,12 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_Win32LocaleString.h"
 
 #include "xap_App.h"
 #include "xap_Win32App.h"
 #include "xap_Win32FrameImpl.h"
+#include "xap_Win32DialogBase.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
@@ -70,20 +72,12 @@ void AP_Win32Dialog_Stylist::runModal(XAP_Frame * pFrame)
 	UT_return_if_fail(pFrame);
 	
 	UT_return_if_fail(m_id == AP_DIALOG_ID_STYLIST);
-
 	m_bIsModal = true;
 
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);	
 
-	LPCTSTR lpTemplate = lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_STYLIST);
-
-	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
-						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-						(DLGPROC)s_dlgProc,(LPARAM)this);
-
-	UT_ASSERT_HARMLESS((result != -1));	
-
+    createModal (pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_STYLIST));
 }
 
 void AP_Win32Dialog_Stylist::runModeless(XAP_Frame * pFrame)
@@ -91,76 +85,33 @@ void AP_Win32Dialog_Stylist::runModeless(XAP_Frame * pFrame)
 	// raise the dialog
 	int iResult;
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-
-	LPCTSTR lpTemplate = NULL;
 	m_bIsModal = false;
-
 	UT_return_if_fail (m_id == AP_DIALOG_ID_STYLIST);
-
-	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_STYLIST);
-
-	HWND hResult = CreateDialogParam(pWin32App->getInstance(),lpTemplate,
-							static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-							(DLGPROC)s_dlgProc,(LPARAM)this);
-
-	UT_ASSERT_HARMLESS((hResult != NULL));
-
-	m_hWnd = hResult;
+	createModeless (pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_STYLIST));
 
 	// Save dialog the ID number and pointer to the widget
 	UT_sint32 sid =(UT_sint32)  getDialogId();
 	m_pApp->rememberModelessId( sid, (XAP_Dialog_Modeless *) m_pDialog);
+	iResult = ShowWindow( m_hDlg, SW_SHOW );
 
-	iResult = ShowWindow( m_hWnd, SW_SHOW );
-
-	iResult = BringWindowToTop( m_hWnd );
+	iResult = BringWindowToTop( m_hDlg );
 
 	UT_ASSERT_HARMLESS((iResult != 0));
 }
 
-BOOL CALLBACK AP_Win32Dialog_Stylist::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
-{
-	// This is a static function.
-
-	AP_Win32Dialog_Stylist * pThis;
-	
-	switch (msg)
-	{
-		case WM_INITDIALOG:
-			pThis = (AP_Win32Dialog_Stylist *)lParam;
-			SetWindowLongPtr(hWnd,DWLP_USER,lParam);
-			return pThis->_onInitDialog(hWnd,wParam,lParam);
-			
-		case WM_COMMAND:
-			pThis = (AP_Win32Dialog_Stylist *)GetWindowLongPtr(hWnd,DWLP_USER);
-			if (pThis)
-				return pThis->_onCommand(hWnd,wParam,lParam);
-			else
-				return 0;
-
-		case WM_DESTROY:
-			pThis = (AP_Win32Dialog_Stylist *)GetWindowLongPtr(hWnd,DWLP_USER);
-			if (pThis)
-				pThis->destroy();
-			return 0;
-			
-		default:
-			return 0;
-	}
-}
 
 void  AP_Win32Dialog_Stylist::destroy(void)
 {
 	if (!m_bIsModal)
 	{
-		int iResult = DestroyWindow( m_hWnd );
+		int iResult = DestroyWindow( m_hDlg );
 
 		UT_ASSERT_HARMLESS((iResult != 0));
 
 		modeless_cleanup();
 	}
 	else
-		EndDialog(m_hWnd,0);
+		EndDialog(m_hDlg,0);
 	
 }
 
@@ -182,7 +133,7 @@ void  AP_Win32Dialog_Stylist::setStyleInGUI(void)
 	UT_UTF8String sPathRow = UT_UTF8String_sprintf("%d",row);
 	UT_DEBUGMSG(("Full Path string is %s \n",sPathFull.utf8_str()));
 
-	HWND hTree = GetDlgItem(m_hWnd, AP_RID_DIALOG_STYLIST_TREE_STYLIST);
+	HWND hTree = GetDlgItem(m_hDlg, AP_RID_DIALOG_STYLIST_TREE_STYLIST);
 	HTREEITEM hitem = NULL;
 
 	hitem = TreeView_GetRoot(hTree);
@@ -206,11 +157,11 @@ void  AP_Win32Dialog_Stylist::activate(void)
 
 	//// Update the caption
 	//ConstructWindowName();
-	//SetWindowText(m_hWnd, m_WindowName);
+	//SetWindowText(m_hDlg, m_WindowName);
 
-	iResult = ShowWindow( m_hWnd, SW_SHOW );
+	iResult = ShowWindow( m_hDlg, SW_SHOW );
 
-	iResult = BringWindowToTop( m_hWnd );
+	iResult = BringWindowToTop( m_hDlg );
 
 	UT_ASSERT_HARMLESS((iResult != 0));
 }
@@ -222,16 +173,15 @@ void AP_Win32Dialog_Stylist::notifyActiveFrame(XAP_Frame * pFrame)
 	setStyleInGUI();
 }
 
-#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_STYLIST_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_STYLIST_##c,pSS->getValue(XAP_STRING_ID_##s))
+#define _DS(c,s)	setDlgItemText(AP_RID_DIALOG_STYLIST_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_STYLIST_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 BOOL AP_Win32Dialog_Stylist::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	m_hWnd = hWnd;
-	
-	// Localise caption
-	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_Stylist_Title));	
+    //localize Caption
+  	
+	setDialogTitle(pSS->getValue(AP_STRING_ID_DLG_Stylist_Title));	
 			
 	// localize controls
 	_DSX(BTN_OK,		DLG_OK);
@@ -241,11 +191,11 @@ BOOL AP_Win32Dialog_Stylist::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 
 	_populateWindowData();
 
-	HWND hTree = GetDlgItem(m_hWnd, AP_RID_DIALOG_STYLIST_TREE_STYLIST);
+	HWND hTree = GetDlgItem(m_hDlg, AP_RID_DIALOG_STYLIST_TREE_STYLIST);
 	hTreeProc = (WHICHPROC) GetWindowLongPtr(hTree, GWLP_WNDPROC); // save off our prior callback
 	SetWindowLongPtr(hTree, GWLP_WNDPROC, (LONG_PTR)s_treeProc); // tie the treeview to the new callback
 	SetWindowLongPtr(hTree, GWLP_USERDATA, (LONG_PTR)this);
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);
+	centerDialog();
 
 	return 1;							// 1 == we did not call SetFocus()
 }
@@ -300,13 +250,13 @@ void AP_Win32Dialog_Stylist::_fillTree(void)
 	}
 	UT_DEBUGMSG(("Number of rows of styles in document %d \n",pStyleTree->getNumRows()));
 
-	HWND hTree = GetDlgItem(m_hWnd, AP_RID_DIALOG_STYLIST_TREE_STYLIST);
+	HWND hTree = GetDlgItem(m_hDlg, AP_RID_DIALOG_STYLIST_TREE_STYLIST);
 
 	// Purge any existing TreeView items
 	TreeView_DeleteAllItems(hTree);
 
-	TV_ITEM tvi;
-	TV_INSERTSTRUCT tvins;
+	TV_ITEMW tvi;
+	TV_INSERTSTRUCTW tvins;
     HTREEITEM hParentItem; // Parent handle to link Styles to their Heading
 
 	tvi.mask = TVIF_TEXT | TVIF_PARAM | TVIF_CHILDREN;               
@@ -314,8 +264,9 @@ void AP_Win32Dialog_Stylist::_fillTree(void)
 
 	UT_sint32 row, col;
 	UT_UTF8String sTmp(""), str_loc;
+    
 	UT_String str;		   		 
-
+    // UT_Win32LocaleString str;
 	//int iter = 0; // Unique key for each item in the treeview
 	for(row= 0; row < pStyleTree->getNumRows(); row++)
 	{
@@ -326,12 +277,13 @@ void AP_Win32Dialog_Stylist::_fillTree(void)
 		}
 		
 		pt_PieceTable::s_getLocalisedStyleName (sTmp.utf8_str(), str_loc);
-		str = AP_Win32App::s_fromUTF8ToWinLocale (str_loc.utf8_str());
+        str = AP_Win32App::s_fromUTF8ToWinLocale (str_loc.utf8_str());
+		// str.fromUTF8 (str_loc);
 
 		xxx_UT_DEBUGMSG(("Adding Heading %s at row %d \n",sTmp.utf8_str(),row));
 
 		// Insert the item into the treeview
-		tvi.pszText = (LPTSTR)str.c_str();
+		tvi.pszText = (LPWSTR)str.c_str();
 		tvi.cchTextMax = str.length() + 1;
 		tvi.lParam = row;
 		if (pStyleTree->getNumCols(row) > 0)
@@ -359,10 +311,10 @@ void AP_Win32Dialog_Stylist::_fillTree(void)
 
 				pt_PieceTable::s_getLocalisedStyleName (sTmp.utf8_str(), str_loc);
 				str = AP_Win32App::s_fromUTF8ToWinLocale (str_loc.utf8_str());
-
+                // str.fromUTF8(str_loc);
 
 				// Insert the item into the treeview
-				tvi.pszText = (LPTSTR)str.c_str();
+				tvi.pszText = (LPWSTR)str.c_str();
 				tvi.cchTextMax = str.length() + 1;
 				tvi.cChildren = 0;
 				tvi.lParam = col;
@@ -390,16 +342,16 @@ BOOL CALLBACK AP_Win32Dialog_Stylist::s_treeProc(HWND hWnd,UINT msg,WPARAM wPara
 		return 1;
 	}
 
-	return CallWindowProc(hTreeProc, hWnd, msg, wParam, lParam);
+	return CallWindowProcW(hTreeProc, hWnd, msg, wParam, lParam);
 }
 
 BOOL AP_Win32Dialog_Stylist::_styleClicked(void)
 {
 
 	UT_sint32 row, col;
-	TVITEM tvi;		
+	TVITEMW tvi;		
 
-	HWND hTree = GetDlgItem(m_hWnd, AP_RID_DIALOG_STYLIST_TREE_STYLIST);
+	HWND hTree = GetDlgItem(m_hDlg, AP_RID_DIALOG_STYLIST_TREE_STYLIST);
 
 	// Selected item
 	tvi.hItem =  TreeView_GetSelection(hTree);

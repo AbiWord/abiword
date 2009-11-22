@@ -67,7 +67,7 @@ void AP_Win32Dialog_Latex::runModeless(XAP_Frame * pFrame)
 	UT_return_if_fail(m_id == AP_DIALOG_ID_LATEX);
 
 	setDialog(this);
-	HWND hWndDialog = createModeless( pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_LATEX) );
+	HWND hWndDialog = createModeless( pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_LATEX) );
 
 	UT_return_if_fail((hWndDialog != NULL));
 	ShowWindow(hWndDialog, SW_SHOW);

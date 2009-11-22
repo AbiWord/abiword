@@ -38,10 +38,6 @@
 #define BITMAP_WITDH	32
 #define BITMAP_HEIGHT	32
 
-#define GWL(hwnd)		(AP_Win32Dialog_MergeCells*)GetWindowLongPtr((hwnd), DWLP_USER)
-#define SWL(hwnd, d)	(AP_Win32Dialog_MergeCells*)SetWindowLongPtr((hwnd), DWLP_USER,(LONG_PTR)(d))
-
-
 XAP_Dialog * AP_Win32Dialog_MergeCells::static_constructor(XAP_DialogFactory * pFactory,
 													       XAP_Dialog_Id id)
 {
@@ -69,65 +65,20 @@ AP_Win32Dialog_MergeCells::~AP_Win32Dialog_MergeCells(void)
 
 void AP_Win32Dialog_MergeCells::runModeless(XAP_Frame * pFrame)
 {
-	// raise the dialog
-	int iResult;
-	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-
-	LPCTSTR lpTemplate = NULL;
-
+ 	UT_return_if_fail (pFrame);
 	UT_return_if_fail (m_id == AP_DIALOG_ID_MERGE_CELLS);
 
-	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_MERGECELLS);
-
-	HWND hResult = CreateDialogParam(pWin32App->getInstance(),lpTemplate,
-							static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-							(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT_HARMLESS((hResult != NULL));
-
-	m_hwndDlg = hResult;
+	createModeless(pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_MERGECELLS));
 
 	// Save dialog the ID number and pointer to the widget
 	UT_sint32 sid =(UT_sint32)  getDialogId();
 	m_pApp->rememberModelessId( sid, (XAP_Dialog_Modeless *) m_pDialog);
 
-	iResult = ShowWindow( m_hwndDlg, SW_SHOW );
-
-	iResult = BringWindowToTop( m_hwndDlg );
-
 	startUpdater();
-
-	UT_ASSERT_HARMLESS((iResult != 0));
-
 }
 
-BOOL CALLBACK AP_Win32Dialog_MergeCells::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
-{		
-	AP_Win32Dialog_MergeCells * pThis;
-	
-	switch (msg)
-	{
-	case WM_INITDIALOG:
-		pThis = (AP_Win32Dialog_MergeCells *)lParam;
-		SWL(hWnd,lParam);
-		return pThis->_onInitDialog(hWnd,wParam,lParam);
-
-	case WM_COMMAND:
-		pThis = GWL(hWnd);
-		return pThis->_onCommand(hWnd,wParam,lParam);
-
-	case WM_DESTROY:
-		pThis = GWL(hWnd);
-		if(pThis)
-			pThis->destroy();
-		return 0;
-
-	default:
-		return 0;
-	}
-}
-#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_MERGECELLS_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_MERGECELLS_##c,pSS->getValue(XAP_STRING_ID_##s))
-
+#define _DS(c,s)	setDlgItemText(AP_RID_DIALOG_MERGECELLS_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_MERGECELLS_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 HBITMAP AP_Win32Dialog_MergeCells::_loadBitmap(HWND hWnd, UINT nId, char* pName, int width, int height, UT_RGBColor color)
 {
@@ -135,7 +86,7 @@ HBITMAP AP_Win32Dialog_MergeCells::_loadBitmap(HWND hWnd, UINT nId, char* pName,
 	
 	AP_Win32Toolbar_Icons::getBitmapForIcon(hWnd, width,height, &color,	pName,	&hBitmap);	
 				
-	SendDlgItemMessage(hWnd,  nId, 
+	SendDlgItemMessageW(hWnd,  nId, 
         	            BM_SETIMAGE,  IMAGE_BITMAP, (LPARAM) hBitmap);				
 	
 	return hBitmap; 
@@ -150,8 +101,9 @@ BOOL AP_Win32Dialog_MergeCells::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM l
 	DWORD dwColor = GetSysColor(COLOR_BTNFACE);	
 	UT_RGBColor Color(GetRValue(dwColor),GetGValue(dwColor),GetBValue(dwColor));
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	
-	m_hwndDlg = hWnd;
+
+    // Localise caption
+	setDialogTitle (pSS->getValue(AP_STRING_ID_DLG_MergeCellsTitle));
 
 	// localise controls 		
 	_DS(TEXT_LEFT,		DLG_MergeCells_Left);		
@@ -161,10 +113,6 @@ BOOL AP_Win32Dialog_MergeCells::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM l
 	_DS(TEXT_FRAME,		DLG_MergeCells_Frame);		
 	_DSX(BTN_CANCEL,	DLG_Close);				
 				
-	// Localise caption
-	ConstructWindowName();
-	SetWindowText(m_hwndDlg, m_WindowName);
-
 	// The four items are the same size
 	GetClientRect(GetDlgItem(hWnd, AP_RID_DIALOG_MERGECELLS_BMP_LEFT), &rect);			
 		
@@ -179,7 +127,7 @@ BOOL AP_Win32Dialog_MergeCells::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM l
     m_hBitmapBelow = _loadBitmap(hWnd,AP_RID_DIALOG_MERGECELLS_BMP_BELOW, "MERGEBELOW", BITMAP_WITDH, BITMAP_HEIGHT, Color);
 	
 	setAllSensitivities();
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
+	centerDialog();	
 	
 	SetFocus(GetDlgItem(hWnd,AP_RID_DIALOG_MERGECELLS_BTN_CANCEL));
 	return 0; // 0 because we called SetFocus
@@ -192,21 +140,21 @@ void AP_Win32Dialog_MergeCells::setSensitivity(AP_Dialog_MergeCells::mergeWithCe
 	switch(mergeThis)
 	{
 	case AP_Dialog_MergeCells::radio_left:
-		EnableWindow(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_MERGECELLS_BMP_LEFT), bSens);
-		EnableWindow(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_MERGECELLS_TEXT_LEFT), bSens);
+		EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_MERGECELLS_BMP_LEFT), bSens);
+		EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_MERGECELLS_TEXT_LEFT), bSens);
 		break;
 		
 	case AP_Dialog_MergeCells::radio_right:
-		EnableWindow(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_MERGECELLS_BMP_RIGHT), bSens);
-		EnableWindow(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_MERGECELLS_TEXT_RIGHT), bSens);
+		EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_MERGECELLS_BMP_RIGHT), bSens);
+		EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_MERGECELLS_TEXT_RIGHT), bSens);
 		break;	
 	case AP_Dialog_MergeCells::radio_above:
-		EnableWindow(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_MERGECELLS_BMP_ABOVE), bSens);
-		EnableWindow(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_MERGECELLS_TEXT_ABOVE), bSens);
+		EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_MERGECELLS_BMP_ABOVE), bSens);
+		EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_MERGECELLS_TEXT_ABOVE), bSens);
 		break;
 	case AP_Dialog_MergeCells::radio_below:
-		EnableWindow(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_MERGECELLS_BMP_BELOW), bSens);
-		EnableWindow(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_MERGECELLS_TEXT_BELOW), bSens);
+		EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_MERGECELLS_BMP_BELOW), bSens);
+		EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_MERGECELLS_TEXT_BELOW), bSens);
 		break;		
 	default:
 		break;
@@ -223,13 +171,13 @@ void AP_Win32Dialog_MergeCells::event_Close(void)
 
 void AP_Win32Dialog_MergeCells::notifyActiveFrame(XAP_Frame *pFrame)
 {
-	if((HWND)GetWindowLongPtr(m_hwndDlg, GWLP_HWNDPARENT) != static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
+	if((HWND)GetWindowLongPtr(m_hDlg, GWLP_HWNDPARENT) != static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
 		ConstructWindowName();
-		SetWindowText(m_hwndDlg, m_WindowName);
+		setDialogTitle (m_WindowName);
 
-		SetWindowLongPtr(m_hwndDlg, GWLP_HWNDPARENT, (LONG_PTR)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
-		SetWindowPos(m_hwndDlg, NULL, 0, 0, 0, 0,
+		SetWindowLongPtr(m_hDlg, GWLP_HWNDPARENT, (LONG_PTR)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
+		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}
 	setAllSensitivities();
@@ -286,13 +234,13 @@ void AP_Win32Dialog_MergeCells::destroy(void)
 {
 	finalize();
 
-	int iResult = DestroyWindow( m_hwndDlg );
+	int iResult = DestroyWindow( m_hDlg );
 	UT_ASSERT_HARMLESS((iResult != 0));
 }
 void AP_Win32Dialog_MergeCells::activate(void)
 {
 	ConstructWindowName();
-	SetWindowText(m_hwndDlg, m_WindowName);
+	setDialogTitle (m_WindowName);
 
 	setAllSensitivities();
 }

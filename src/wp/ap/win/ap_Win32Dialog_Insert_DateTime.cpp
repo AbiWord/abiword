@@ -59,46 +59,15 @@ XAP_Dialog * AP_Win32Dialog_Insert_DateTime::static_constructor(XAP_DialogFactor
 void AP_Win32Dialog_Insert_DateTime::runModal(XAP_Frame * pFrame)
 {
     // raise the dialog
-    XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-
-    LPCTSTR lpTemplate = NULL;
-
+    
     UT_return_if_fail (m_id == AP_DIALOG_ID_INSERT_DATETIME);
-
-    lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_DATETIME);
-
-    int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
-                static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-                (DLGPROC)s_dlgProc,(LPARAM)this);
-    UT_ASSERT_HARMLESS((result != -1));
-}
-
-BOOL CALLBACK AP_Win32Dialog_Insert_DateTime::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
-{
-    // This is a static function.
-
-    AP_Win32Dialog_Insert_DateTime * pThis;
-
-
-    switch (msg){
-    case WM_INITDIALOG:
-        pThis = (AP_Win32Dialog_Insert_DateTime *)lParam;
-        SetWindowLongPtr(hWnd,DWLP_USER,lParam);
-        return pThis->_onInitDialog(hWnd,wParam,lParam);
-
-    case WM_COMMAND:
-        pThis = (AP_Win32Dialog_Insert_DateTime *)GetWindowLongPtr(hWnd,DWLP_USER);
-        return pThis->_onCommand(hWnd,wParam,lParam);
-
-    default:
-        return 0;
-    }
+    createModal(pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_DATETIME));
 }
 
 void AP_Win32Dialog_Insert_DateTime::SetFormatsList(void)
 {
     int i;
-    char szCurrentDateTime[CURRENT_DATE_TIME_SIZE];
+    wchar_t szCurrentDateTime[CURRENT_DATE_TIME_SIZE];
     time_t  tim = time(NULL);
     struct tm *pTime = localtime(&tim);
 
@@ -124,22 +93,25 @@ void AP_Win32Dialog_Insert_DateTime::SetFormatsList(void)
 	s += buf;
 	
 	UT_LocaleTransactor t(LC_ALL, s.c_str());
+    UT_Win32LocaleString str;
 
-    for (i = 0;InsertDateTimeFmts[i] != NULL;i++) {
-        strftime(szCurrentDateTime, CURRENT_DATE_TIME_SIZE, InsertDateTimeFmts[i], pTime);
-        SendMessage(m_hwndFormats, LB_ADDSTRING, 0, (LPARAM)szCurrentDateTime);
+    for (i = 0;InsertDateTimeFmts[i] != NULL;i++)
+    {
+      	str.fromASCII (InsertDateTimeFmts[i]);
+        wcsftime(szCurrentDateTime, CURRENT_DATE_TIME_SIZE, str.c_str(), pTime);
+        SendMessageW(m_hwndFormats, LB_ADDSTRING, 0, (LPARAM)szCurrentDateTime);
     }
 }
 
 
-#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+#define _DS(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 BOOL AP_Win32Dialog_Insert_DateTime::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_DateTime_DateTimeTitle));
+	setDialogTitle(pSS->getValue(AP_STRING_ID_DLG_DateTime_DateTimeTitle));
 
 	// localize controls
 	_DSX(DATETIME_BTN_OK,			DLG_OK);
@@ -150,7 +122,7 @@ BOOL AP_Win32Dialog_Insert_DateTime::_onInitDialog(HWND hWnd, WPARAM /*wParam*/,
 	// set initial state
     m_hwndFormats = GetDlgItem(hWnd, AP_RID_DIALOG_DATETIME_LIST_FORMATS);
     SetFormatsList();
-    SendMessage(m_hwndFormats,LB_SETCURSEL,(WPARAM)0,(LPARAM)0);
+    SendMessageW(m_hwndFormats,LB_SETCURSEL,(WPARAM)0,(LPARAM)0);
     
     XAP_Win32DialogHelper::s_centerDialog(hWnd);	
 
@@ -169,6 +141,7 @@ BOOL AP_Win32Dialog_Insert_DateTime::_onCommand(HWND hWnd, WPARAM wParam, LPARAM
     case IDOK:              // also AP_RID_DIALOG_DATETIME_BTN_OK
         EndDialog(hWnd,0);
         return 1;
+    
     case AP_RID_DIALOG_DATETIME_LIST_FORMATS:
         switch (HIWORD(wParam)){
             case LBN_SELCHANGE:
@@ -192,6 +165,6 @@ BOOL AP_Win32Dialog_Insert_DateTime::_onCommand(HWND hWnd, WPARAM wParam, LPARAM
 
 void AP_Win32Dialog_Insert_DateTime::_FormatListBoxChange(void)
 {
-    m_iFormatIndex = SendMessage(m_hwndFormats, LB_GETCURSEL, 0, 0);
+    m_iFormatIndex = SendMessageW(m_hwndFormats, LB_GETCURSEL, 0, 0);
 }
 

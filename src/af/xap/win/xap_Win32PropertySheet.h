@@ -23,6 +23,7 @@
 #include <commctrl.h>
 #include "ut_vector.h"
 #include "xap_Frame.h"
+#include "xap_Win32DialogBase.h"
 #define ID_APPLY	0x3021
 
 /*****************************************************************/
@@ -39,36 +40,35 @@ class XAP_Win32PropertySheet;
 #define ID_APPLY_NOW                    0x3021
 
 
-class ABI_EXPORT XAP_Win32PropertyPage
+class ABI_EXPORT XAP_Win32PropertyPage : public XAP_Win32DialogBase
 {
 public:
 	
 	XAP_Win32PropertyPage();	
 	virtual ~XAP_Win32PropertyPage();	
 	
-	void 						createPage(XAP_Win32App* pWin32App, WORD wRscID, XAP_String_Id	nID = 0);	
-	PROPSHEETPAGE*				getStruct(){return &m_page;}
-	XAP_Win32App*				getApp(){return m_pWin32App;}
-	HWND						getHandle(){return m_hWnd;}	
-	void						setDialogProc(DLGPROC pfnDlgProc){m_pfnDlgProc=pfnDlgProc;};	
-	virtual	void				_onInitDialog(){};
-	virtual	void				_onKillActive(){}; 	
-	virtual	void				_onOK(){}; 		
-	virtual	void				_onApply(){}; 
-	virtual void				_onCommand(HWND /*hWnd*/, WPARAM /*wParam*/, LPARAM /*lParam*/){};
-	virtual void				_onNotify(LPNMHDR /*hdr*/, int /*iCtrlID*/){};
+	void 						 createPage(XAP_Win32App* pWin32App, WORD wRscID, XAP_String_Id	nID = 0);	
+	PROPSHEETPAGEW*	 getStruct(){return &m_page;}
+	XAP_Win32App*		 getApp(){return m_pWin32App;}
+	HWND						 getHandle(){return m_hDlg;}	
+	void						     setDialogProc(DLGPROC pfnDlgProc){m_pfnDlgProc=pfnDlgProc;};	
+	virtual void			 _onInitDialog(){};
+	virtual void			 _onKillActive(){}; 	
+	virtual void			 _onOK(){}; 		
+	virtual void			 _onApply(){}; 
+	virtual void			 _onNotify(LPNMHDR /*hdr*/, int /*iCtrlID*/){};
 	static INT_PTR CALLBACK		s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,LPARAM lParam);
-	void						setChanged (bool bChanged); // Unables or disables apply button
+	void						     setChanged (bool bChanged); // Unables or disables apply button
 	
 	
 private:
 		
-	PROPSHEETPAGE				m_page;
-	HPROPSHEETPAGE	 			m_hdle;	
-	HWND						m_hWnd;
+	PROPSHEETPAGEW			m_page;
+	HPROPSHEETPAGE 			m_hdle;	
 	XAP_Win32App*				m_pWin32App;
 	XAP_Win32PropertySheet*		m_pParent;
 	DLGPROC						m_pfnDlgProc;
+    UT_Win32LocaleString 		m_title;
 		
 };
 
@@ -81,11 +81,11 @@ public:
 public:
 
 	int							runModal(XAP_Win32App* pWin32App,XAP_Frame*	pFrame, XAP_String_Id	nID = 0);
-	int 						runModeless (XAP_Win32App* pWin32App, XAP_Frame * pFrame, XAP_String_Id nID = 0);
+	int 						    runModeless (XAP_Win32App* pWin32App, XAP_Frame * pFrame, XAP_String_Id nID = 0);
 	void 						addPage(XAP_Win32PropertyPage* pPage);
-	PROPSHEETPAGE* 				_buildPageArray(void);	
+	PROPSHEETPAGEW* 				_buildPageArray(void);	
 	static INT_PTR CALLBACK		s_sheetWndProc(HWND hWnd, UINT msg, WPARAM wParam,LPARAM lParam);	
-	virtual	void				_onInitDialog(HWND /*hwnd*/){};	
+	virtual	 void				_onInitDialog(HWND /*hwnd*/){};	
 	virtual void 				destroy(void);
 	virtual void 				cleanup(void);
 	HWND						getHandle(){return m_hWnd;}
@@ -97,24 +97,24 @@ public:
 	void						setCancelButton(bool b){m_bCancelButton=b;};
 	
 
-	virtual int					_onCommand(HWND /*hWnd*/, WPARAM /*wParam*/, LPARAM /*lParam*/){return 1;};
-	virtual	void				_onOK(){}; 
-	virtual	void				_onApply(){}; 
-	virtual	void				_onCancel(){}; 
+	virtual BOOL				_onCommand(HWND /*hWnd*/, WPARAM /*wParam*/, LPARAM /*lParam*/){return 1;};
+	virtual	 void				_onOK(){}; 
+	virtual	 void				_onApply(){}; 
+	virtual	 void				_onCancel(){}; 
 	
 	int							m_nRslt;
 private:	
 	
 	HWND						m_hWnd;
 	UT_Vector					m_vecPages;
-	PROPSHEETHEADER				m_psh;	
+	PROPSHEETHEADERW				m_psh;	
 	PFNPROPSHEETCALLBACK		m_pCallback;
 	DLGPROC						m_pfnDlgProc;
 	WHICHPROC 					m_lpfnDefSheet; 
 	bool						m_bApplyButton;
 	bool						m_bOkButton;
 	bool						m_bCancelButton;
-	PROPSHEETPAGE*				m_pages;
+	PROPSHEETPAGEW*				m_pages;
 	bool						m_modeless;
 	
 };

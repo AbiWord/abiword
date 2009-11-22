@@ -48,7 +48,7 @@ bool AP_Win32Prefs::loadBuiltinPrefs(void)
 	bool ret = AP_Prefs::loadBuiltinPrefs();
 
 	// Add information from Win32 system and user setup
-	if( GetLocaleInfo( LOCALE_USER_DEFAULT, LOCALE_IMEASURE, szLocaleInfo, sizeof( szLocaleInfo ) / sizeof( szLocaleInfo[0] ) ) )
+	if( GetLocaleInfoA( LOCALE_USER_DEFAULT, LOCALE_IMEASURE, szLocaleInfo, sizeof( szLocaleInfo ) / sizeof( szLocaleInfo[0] ) ) )
 	{
 		m_builtinScheme->setValue( AP_PREF_KEY_RulerUnits, UT_dimensionName( szLocaleInfo[0] == '0' ? DIM_CM : DIM_IN ) );
 	}

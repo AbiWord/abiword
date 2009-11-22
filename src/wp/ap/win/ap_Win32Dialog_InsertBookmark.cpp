@@ -57,20 +57,24 @@ void AP_Win32Dialog_InsertBookmark::runModal(XAP_Frame * pFrame)
 	UT_return_if_fail (pFrame && m_id == AP_DIALOG_ID_INSERTBOOKMARK);
 	
 	setDialog(this);
-	createModal(pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_INSERTBOOKMARK));	
+	createModal(pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_INSERTBOOKMARK));	
 }
+
+#define _DS(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 BOOL AP_Win32Dialog_InsertBookmark::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	// localize dialog title
-	localizeDialogTitle(AP_STRING_ID_DLG_InsertBookmark_Title);
+	const XAP_StringSet* pSS = m_pApp->getStringSet();
 
-	// localize controls
-	localizeControlText(AP_RID_DIALOG_INSERTBOOKMARK_BTN_OK, 		XAP_STRING_ID_DLG_OK);
-	localizeControlText(AP_RID_DIALOG_INSERTBOOKMARK_BTN_DELETE, 	XAP_STRING_ID_DLG_Delete);
-	localizeControlText(AP_RID_DIALOG_INSERTBOOKMARK_BTN_CANCEL, 	XAP_STRING_ID_DLG_Cancel);
+	// Update the caption
+	setDialogTitle(pSS->getValue(AP_STRING_ID_DLG_InsertBookmark_Title));
 
-	localizeControlText(AP_RID_DIALOG_INSERTBOOKMARK_LBL_MESSAGE, 	AP_STRING_ID_DLG_InsertBookmark_Msg);
+	/* Localise controls*/
+	_DSX(INSERTBOOKMARK_BTN_OK,			DLG_OK);
+	_DSX(INSERTBOOKMARK_BTN_DELETE,			DLG_Delete);
+	_DSX(INSERTBOOKMARK_BTN_CANCEL,			DLG_Cancel);
+	_DS(INSERTBOOKMARK_LBL_MESSAGE,			DLG_InsertBookmark_Msg);
 
 	// initial data
 	resetComboContent(AP_RID_DIALOG_INSERTBOOKMARK_CBX_BOOKMARK);

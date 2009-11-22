@@ -46,9 +46,9 @@ void XAP_Win32DialogHelper::runModal(XAP_Frame * pFrame, XAP_Dialog_Id dialog_id
 
 	UT_ASSERT(p_dialog->getDialogId() == dialog_id);
 
-	LPCTSTR lpTemplate = MAKEINTRESOURCE(resource_id);
+	LPCWSTR lpTemplate = MAKEINTRESOURCEW(resource_id);
 
-	int result = DialogBoxParam(pWin32App->getInstance(), lpTemplate,
+	int result = DialogBoxParamW(pWin32App->getInstance(), lpTemplate,
 								static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 								(DLGPROC)s_dlgProc, (LPARAM)this);
 	UT_ASSERT((result != -1));
@@ -63,20 +63,19 @@ void XAP_Win32DialogHelper::runModeless(XAP_Frame * pFrame, XAP_Dialog_Id dialog
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(p_dialog->getApp());
 
-	LPCTSTR lpTemplate = NULL;
+	LPCWSTR lpTemplate = NULL;
 
 	UT_ASSERT(p_dialog->getDialogId() == dialog_id);
 
-	lpTemplate = MAKEINTRESOURCE(resource_id);
+	lpTemplate = MAKEINTRESOURCEW(resource_id);
 
-	HWND hWndDialog = CreateDialogParam(pWin32App->getInstance(),lpTemplate,
+	HWND hWndDialog = CreateDialogParamW(pWin32App->getInstance(),lpTemplate,
 								static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 								(DLGPROC)s_dlgProc,(LPARAM)this);
 	ShowWindow(hWndDialog, SW_SHOW);
 	UT_ASSERT((hWndDialog != NULL));
 
 	p_dialog->getApp()->rememberModelessId(dialog_id, p_dialog);
-
 
 }
 
@@ -136,7 +135,7 @@ void XAP_Win32DialogHelper::destroyWindow()
 	DestroyWindow(m_hDlg);
 }
 
-void XAP_Win32DialogHelper::setDialogTitle(LPCSTR p_str)
+void XAP_Win32DialogHelper::setDialogTitle(LPCTSTR p_str)
 {
 	_assertValidDlgHandle(m_hDlg);
 	SetWindowText(m_hDlg, p_str);
@@ -169,38 +168,38 @@ int XAP_Win32DialogHelper::bringWindowToTop()
 int XAP_Win32DialogHelper::addItemToCombo(UT_sint32 controlId, LPCSTR p_str)
 {
 	_assertValidDlgHandle(m_hDlg);
-	return SendDlgItemMessage(m_hDlg, controlId, CB_ADDSTRING, 0, (LPARAM)p_str);
+	return SendDlgItemMessageW(m_hDlg, controlId, CB_ADDSTRING, 0, (LPARAM)p_str);
 }
 
 int XAP_Win32DialogHelper::setComboDataItem(UT_sint32 controlId, int nIndex, DWORD dwData)
 {
 	_assertValidDlgHandle(m_hDlg);
-	return SendDlgItemMessage(m_hDlg, controlId, CB_SETITEMDATA, nIndex, dwData);
+	return SendDlgItemMessageW(m_hDlg, controlId, CB_SETITEMDATA, nIndex, dwData);
 }
 
 
 int XAP_Win32DialogHelper::getComboDataItem(UT_sint32 controlId, int nIndex)
 {
 	_assertValidDlgHandle(m_hDlg);
-	return SendDlgItemMessage(m_hDlg, controlId, CB_GETITEMDATA, nIndex,0);
+	return SendDlgItemMessageW(m_hDlg, controlId, CB_GETITEMDATA, nIndex,0);
 }
 
 void XAP_Win32DialogHelper::selectComboItem(UT_sint32 controlId, int index)
 {
 	_assertValidDlgHandle(m_hDlg);
-	SendDlgItemMessage(m_hDlg, controlId, CB_SETCURSEL, index, 0);
+	SendDlgItemMessageW(m_hDlg, controlId, CB_SETCURSEL, index, 0);
 }
 
 int XAP_Win32DialogHelper::getComboSelectedIndex(UT_sint32 controlId) const
 {
 	_assertValidDlgHandle(m_hDlg);
-	return SendDlgItemMessage(m_hDlg, controlId, CB_GETCURSEL, 0, 0);
+	return SendDlgItemMessageW(m_hDlg, controlId, CB_GETCURSEL, 0, 0);
 }
 
 void XAP_Win32DialogHelper::resetComboContent(UT_sint32 controlId)
 {
 	_assertValidDlgHandle(m_hDlg);
-	SendDlgItemMessage(m_hDlg, controlId, CB_RESETCONTENT, 0, 0);
+	SendDlgItemMessageW(m_hDlg, controlId, CB_RESETCONTENT, 0, 0);
 }
 
 // List boxes
@@ -208,50 +207,50 @@ void XAP_Win32DialogHelper::resetComboContent(UT_sint32 controlId)
 void XAP_Win32DialogHelper::resetContent(UT_sint32 controlId)
 {
 	_assertValidDlgHandle(m_hDlg);
-	SendDlgItemMessage(m_hDlg, controlId, LB_RESETCONTENT, 0, 0);
+	SendDlgItemMessageW(m_hDlg, controlId, LB_RESETCONTENT, 0, 0);
 }
 
 
 int XAP_Win32DialogHelper::addItemToList(UT_sint32 controlId, LPCSTR p_str)
 {
 	_assertValidDlgHandle(m_hDlg);
-	return SendDlgItemMessage(m_hDlg, controlId, LB_ADDSTRING, 0, (LPARAM)p_str);
+	return SendDlgItemMessageW(m_hDlg, controlId, LB_ADDSTRING, 0, (LPARAM)p_str);
 }
 
 int XAP_Win32DialogHelper::setListDataItem(UT_sint32 controlId, int nIndex, DWORD dwData)
 {
 	_assertValidDlgHandle(m_hDlg);
-	return SendDlgItemMessage(m_hDlg, controlId, LB_SETITEMDATA, nIndex, dwData);
+	return SendDlgItemMessageW(m_hDlg, controlId, LB_SETITEMDATA, nIndex, dwData);
 }
 
 
 int XAP_Win32DialogHelper::getListDataItem(UT_sint32 controlId, int nIndex)
 {
 	_assertValidDlgHandle(m_hDlg);
-	return SendDlgItemMessage(m_hDlg, controlId, LB_GETITEMDATA, nIndex,0);
+	return SendDlgItemMessageW(m_hDlg, controlId, LB_GETITEMDATA, nIndex,0);
 }
 
 int XAP_Win32DialogHelper::getListSelectedIndex(UT_sint32 controlId) const
 {
 	_assertValidDlgHandle(m_hDlg);
-	return SendDlgItemMessage(m_hDlg, controlId, LB_GETCURSEL, 0, 0);
+	return SendDlgItemMessageW(m_hDlg, controlId, LB_GETCURSEL, 0, 0);
 }
 
 void XAP_Win32DialogHelper::selectListItem(UT_sint32 controlId, int index)
 {
 	_assertValidDlgHandle(m_hDlg);
-	SendDlgItemMessage(m_hDlg, controlId, LB_SETCURSEL, index, 0);
+	SendDlgItemMessageW(m_hDlg, controlId, LB_SETCURSEL, index, 0);
 }
 
 void XAP_Win32DialogHelper::getListText(UT_sint32 controlId, int index, char *p_str) const
 {
 	_assertValidDlgHandle(m_hDlg);
-	SendDlgItemMessage(m_hDlg, controlId, LB_GETTEXT, index, (LPARAM)p_str);
+	SendDlgItemMessageW(m_hDlg, controlId, LB_GETTEXT, index, (LPARAM)p_str);
 }
 
 
 // Controls
-void XAP_Win32DialogHelper::setControlText(UT_sint32 controlId, LPCSTR p_str)
+void XAP_Win32DialogHelper::setControlText(UT_sint32 controlId, LPCTSTR p_str)
 {
 	_assertValidDlgHandle(m_hDlg);
 	SetDlgItemText(m_hDlg, controlId, p_str);
@@ -272,7 +271,7 @@ int XAP_Win32DialogHelper::getControlInt(UT_sint32 controlId) const
 void XAP_Win32DialogHelper::selectControlText(UT_sint32 controlId, UT_sint32 start, UT_sint32 end)
 {
 	_assertValidDlgHandle(m_hDlg);
-	SendDlgItemMessage(m_hDlg, controlId, EM_SETSEL, start,end);
+	SendDlgItemMessageW(m_hDlg, controlId, EM_SETSEL, start,end);
 }
 
 int XAP_Win32DialogHelper::isChecked(UT_sint32 controlId) const
@@ -282,7 +281,7 @@ int XAP_Win32DialogHelper::isChecked(UT_sint32 controlId) const
 }
 
 void XAP_Win32DialogHelper::getControlText(	UT_sint32 controlId,
-											LPSTR p_buffer,
+											LPTSTR p_buffer,
 											UT_sint32 Buffer_length) const
 {
 	_assertValidDlgHandle(m_hDlg);
@@ -327,8 +326,7 @@ void XAP_Win32DialogHelper::centerDialog()
 {
 	_assertValidDlgHandle(m_hDlg);
 	
-	s_centerDialog(m_hDlg);
-    
+	s_centerDialog(m_hDlg);    
 } 	
 
 void XAP_Win32DialogHelper::s_centerDialog(HWND hWnd)

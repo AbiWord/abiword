@@ -28,6 +28,7 @@
 #include "gr_Win32Graphics.h"
 #include "xap_Win32App.h"
 #include "ap_Win32FrameImpl.h"
+#include "ut_Win32LocaleString.h"
 
 #include "fv_View.h"
 
@@ -38,7 +39,7 @@
 
 #define ENSUREP(p)		do { UT_ASSERT_HARMLESS(p); if (!p) goto Cleanup; } while (0)
 
-static char s_TopRulerWndClassName[256];
+static wchar_t s_TopRulerWndClassName[256];
 
 /*****************************************************************/
 
@@ -74,7 +75,7 @@ void AP_Win32TopRuler::setView(AV_View * pView)
 	pG->init3dColors();
 
 	if (IsWindow(m_hwndTopRuler))
-		SendMessage(m_hwndTopRuler, WM_ERASEBKGND, (WPARAM)GetDC(m_hwndTopRuler), 0);
+		SendMessageW(m_hwndTopRuler, WM_ERASEBKGND, (WPARAM)GetDC(m_hwndTopRuler), 0);
 }
 
 /*****************************************************************/
@@ -82,9 +83,12 @@ void AP_Win32TopRuler::setView(AV_View * pView)
 bool AP_Win32TopRuler::RegisterClass(XAP_Win32App * app)
 {
 	ATOM a;
+
+    UT_Win32LocaleString str;	
+	str.fromASCII (app->getApplicationName());
 	
 	// register class for the top ruler
-	sprintf(s_TopRulerWndClassName, "%sTopRuler", app->getApplicationName());
+	swprintf(s_TopRulerWndClassName, L"%sTopRuler",str.c_str());
 
 	a = UT_RegisterClassEx(CS_OWNDC, AP_Win32TopRuler::_TopRulerWndProc, app->getInstance(),
 						   NULL, LoadCursor(NULL, IDC_ARROW), GetSysColorBrush(COLOR_BTNFACE), NULL,

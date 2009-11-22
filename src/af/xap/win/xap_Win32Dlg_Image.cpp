@@ -64,7 +64,7 @@ void XAP_Win32Dialog_Image::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(m_id == XAP_DIALOG_ID_IMAGE);
 
 	setDialog(this);
-	createModal(pFrame, MAKEINTRESOURCE(XAP_RID_DIALOG_IMAGE));
+	createModal(pFrame, MAKEINTRESOURCEW(XAP_RID_DIALOG_IMAGE));
 }
 
 BOOL XAP_Win32Dialog_Image::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
@@ -99,9 +99,9 @@ BOOL XAP_Win32Dialog_Image::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /
 	// Initialize controls
 	setControlText( XAP_RID_DIALOG_IMAGE_EBX_HEIGHT, getHeightString() );
 	setControlText( XAP_RID_DIALOG_IMAGE_EBX_WIDTH, getWidthString() );
-	setControlText(XAP_RID_DIALOG_IMAGE_EBX_TITLE, AP_Win32App::s_fromUTF8ToWinLocale(getTitle().utf8_str()).c_str());
-	setControlText(XAP_RID_DIALOG_IMAGE_EBX_DESCRIPTION, AP_Win32App::s_fromUTF8ToWinLocale(getDescription().utf8_str()).c_str());
-	checkButton( XAP_RID_DIALOG_IMAGE_CHK_ASPECT, getPreserveAspect());
+	setControlText(XAP_RID_DIALOG_IMAGE_EBX_TITLE, getTitle().utf8_str());
+	setControlText(XAP_RID_DIALOG_IMAGE_EBX_DESCRIPTION, getDescription().utf8_str());
+    checkButton( XAP_RID_DIALOG_IMAGE_CHK_ASPECT, getPreserveAspect());
 
 	// Initialize text wrapping radio buttons
 	if(getWrapping() == WRAP_INLINE)
@@ -238,14 +238,17 @@ BOOL XAP_Win32Dialog_Image::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam
 	case XAP_RID_DIALOG_IMAGE_EBX_HEIGHT:
 		if( wNotifyCode == EN_KILLFOCUS )
 		{
-			char bufHeight[BUFSIZE];
-			GetDlgItemText( hWnd, wId, bufHeight, BUFSIZE );
+			//char bufHeight[BUFSIZE];
+			//GetDlgItemText( hWnd, wId, bufHeight, BUFSIZE );
+            UT_Win32LocaleString str, units;
+			getDlgItemText (wId, str);
+			units.fromASCII (UT_dimensionName(getPreferedUnits()));
 
 			//let the user manually change dimensions too
-			if(!strstr(bufHeight,UT_dimensionName(getPreferedUnits())))
-				strcat(bufHeight,UT_dimensionName(getPreferedUnits()));
+			if(!wcsstr(str.c_str(), units.c_str()))
+				str.appendLocale (units.c_str());
 
-			setHeight( bufHeight );
+			setHeight( str.ascii_str());
 			setControlText( XAP_RID_DIALOG_IMAGE_EBX_HEIGHT, getHeightString() );
 			setControlText( XAP_RID_DIALOG_IMAGE_EBX_WIDTH, getWidthString() );
 		}
@@ -254,14 +257,14 @@ BOOL XAP_Win32Dialog_Image::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam
 	case XAP_RID_DIALOG_IMAGE_EBX_WIDTH:
 		if( wNotifyCode == EN_KILLFOCUS )
 		{
-			char bufWidth[BUFSIZE];
-			GetDlgItemText( hWnd, wId, bufWidth, BUFSIZE );
+			UT_Win32LocaleString str, units;
+			getDlgItemText (wId, str);
 
 			//let the user manually change dimensions too
-			if(!strstr(bufWidth,UT_dimensionName(getPreferedUnits())))
-				strcat(bufWidth,UT_dimensionName(getPreferedUnits()));
+			if(!wcsstr(str.c_str(), units.c_str()))
+				str.appendLocale (units.c_str());
 
-			setWidth( bufWidth );
+            setWidth( str.ascii_str() );
 			setControlText( XAP_RID_DIALOG_IMAGE_EBX_HEIGHT, getHeightString() );
 			setControlText( XAP_RID_DIALOG_IMAGE_EBX_WIDTH, getWidthString() );
 		}

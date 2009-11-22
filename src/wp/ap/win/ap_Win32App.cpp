@@ -82,6 +82,7 @@
 #include "ut_Win32OS.h"
 #include "ut_Win32Idle.h"
 #include "ut_Language.h"
+#include "ut_Win32LocaleString.h"
 
 #include "ie_impexp_Register.h"
 
@@ -136,7 +137,7 @@ static bool s_createDirectoryIfNecessary(const char * szDir)
 		return false;
 	}
 
-	if (CreateDirectory(szDir,NULL))
+	if (CreateDirectoryA(szDir,NULL))
 		return true;
 
 	UT_DEBUGMSG(("Could not create Directory [%s].\n",szDir));
@@ -314,11 +315,11 @@ bool AP_Win32App::initialize(void)
 #endif
 
 	// Ensure that common control DLL is loaded
-	HINSTANCE hinstCC = LoadLibrary("comctl32.dll");
+	HINSTANCE hinstCC = LoadLibraryW(L"comctl32.dll");
 	UT_return_val_if_fail (hinstCC, false);
 	InitCommonControlsEx_fn  pInitCommonControlsEx = NULL;
 	if( hinstCC != NULL )
-		pInitCommonControlsEx = (InitCommonControlsEx_fn)GetProcAddress( hinstCC, "InitCommonControlsEx" );
+		pInitCommonControlsEx = (InitCommonControlsEx_fn)GetProcAddress( hinstCC, "InitCommonControlsEx");
 	if( pInitCommonControlsEx != NULL )
 	{
 		INITCOMMONCONTROLSEX icex;
@@ -332,10 +333,9 @@ bool AP_Win32App::initialize(void)
 	{
 		InitCommonControls();
 
-		UT_String sErr(UT_String_sprintf(m_pStringSet->getValue(AP_STRING_ID_WINDOWS_COMCTL_WARNING),
-										 "Unicows"));
-
-		MessageBox(NULL, sErr.c_str(), NULL, MB_OK);
+	    UT_Win32LocaleString err;
+		err.fromUTF8 (m_pStringSet->getValue(AP_STRING_ID_WINDOWS_COMCTL_WARNING));		
+		MessageBoxW(NULL, err.c_str(), NULL, MB_OK);
 	}
 
 	//////////////////////////////////////////////////////////////////
@@ -460,9 +460,9 @@ HICON AP_Win32App::getIcon(void)
 	UT_DEBUGMSG(("GetIcon(): system metrics [%d %d]\n",sx,sy));
 	
 	if ((sx==32) && (sy==32))
-		return LoadIcon(getInstance(), MAKEINTRESOURCE(AP_RID_ICON_APPLICATION_32));
+		return LoadIconW(getInstance(), MAKEINTRESOURCEW(AP_RID_ICON_APPLICATION_32));
 	else
-		return (HICON) LoadImage(getInstance(), MAKEINTRESOURCE(AP_RID_ICON_APPLICATION_32), IMAGE_ICON, 0,0,0);
+		return (HICON) LoadImageW(getInstance(), MAKEINTRESOURCEW(AP_RID_ICON_APPLICATION_32), IMAGE_ICON, 0,0,0);
 }
 
 HICON AP_Win32App::getSmallIcon(void)
@@ -473,9 +473,9 @@ HICON AP_Win32App::getSmallIcon(void)
 	UT_DEBUGMSG(("GetIcon(): system metrics [%d %d]\n",sx,sy));
 
 	if ((sx==16) && (sy==16))
-		return LoadIcon(getInstance(), MAKEINTRESOURCE(AP_RID_ICON_APPLICATION_16));
+		return LoadIconW(getInstance(), MAKEINTRESOURCEW(AP_RID_ICON_APPLICATION_16));
 	else
-		return (HICON) LoadImage(getInstance(), MAKEINTRESOURCE(AP_RID_ICON_APPLICATION_16), IMAGE_ICON, 0,0,0);
+		return (HICON) LoadImageW(getInstance(), MAKEINTRESOURCEW(AP_RID_ICON_APPLICATION_16), IMAGE_ICON, 0,0,0);
 }
 
 const XAP_StringSet * AP_Win32App::getStringSet(void) const
@@ -493,7 +493,7 @@ void AP_Win32App::_indicateFmtToClipboard(const char * pszFmt) const
 	UT_return_if_fail(m_pClipboard && pszFmt);
 	UINT iFmt = m_pClipboard->convertFormatString(pszFmt);
 
-	SetClipboardData(iFmt, NULL);
+	SetClipboardDataW(iFmt, NULL);
 }
 
 bool AP_Win32App::_cacheClipboardDoc(PD_DocumentRange *pDocRange)
@@ -772,7 +772,7 @@ PBITMAPINFO CreateBitmapInfoStruct(HBITMAP hBmp)
 	WORD    	cClrBits; 
 
 	// Retrieve the bitmap's color format, width, and height. 
-    	if (!GetObject(hBmp, sizeof(BITMAP), (LPSTR)&bmp)) 
+    	if (!GetObjectW(hBmp, sizeof(BITMAP), (LPSTR)&bmp)) 
 		return NULL;
 	
 	if (bmp.bmBitsPixel==16) bmp.bmBitsPixel=24;	// 16 bit BMPs are not supported by all programs
@@ -1085,9 +1085,9 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	// TODO: fix Spell dlg so we don't rely on this
 	// ALT:  make it a Preview widget instead
 
-	HINSTANCE hinstRich = LoadLibrary("riched32.dll");
+	HINSTANCE hinstRich = LoadLibraryW(L"riched32.dll");
 	if (!hinstRich)
-		hinstRich = LoadLibrary("riched20.dll");
+		hinstRich = LoadLibraryW(L"riched20.dll");
 	UT_return_val_if_fail (hinstRich, 1);
 	
 	AP_Win32App * pMyWin32App;
@@ -1170,7 +1170,7 @@ try
 		}	
 
 		// do dispatch loop
-		while(UT_GetMessage(&msg, NULL, 0, 0, m_bForceAnsi))
+		while(UT_GetMessage(&msg, NULL, 0, 0))
 	    {
    	      	// TranslateMessage is not called because AbiWord
 	      	// has its own way of decoding keyboard accelerators
@@ -1182,7 +1182,7 @@ try
 	    	
 			// Check for idle condition
 			while( !UT_Win32Idle::_isEmpty() &&
-                   !PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE) ) 
+                   !PeekMessageW(&msg, NULL, 0, 0, PM_NOREMOVE) ) 
 			{
 				// Fire idle functions when no pending messages
 		    	UT_Win32Idle::_fireall();
@@ -1323,18 +1323,8 @@ bool AP_Win32App::handleModelessDialogMessage( MSG * msg )
 		{
 			hWnd = (HWND) m_IdTable[ iCounter ].pDialog->pGetWindowHandle();
 
-			if(!m_bForceAnsi && UT_IsWinNT())
-			{
-				// Since the message was fetched with GetMessageW,
-				// it must be processed with Unicode functions
-				if( hWnd && IsDialogMessageW( hWnd, msg ) )
-					return true;
-			}
-			else
-			{
-				if( hWnd && IsDialogMessage( hWnd, msg ) )
-					return true;
-			}
+			if( hWnd && IsDialogMessageW( hWnd, msg ) )
+				return true;
 		}
 		else
 			break;
@@ -1407,8 +1397,11 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 			UT_String s = "AbiWord: ";
 			s+= Args->m_sFiles[0];
 			
-			GR_Graphics * pG = GR_Win32Graphics::getPrinterGraphics(Args->m_sPrintTo, s.c_str());
-			if(!pG)
+            UT_Win32LocaleString prn, doc;
+			prn.fromASCII (Args->m_sPrintTo);
+			doc.fromASCII (s.c_str());
+			GR_Graphics * pG = GR_Win32Graphics::getPrinterGraphics(prn.c_str(), doc.c_str());			
+            if(!pG)
 			{
 				// do not assert here, if the graphics creation failed, the static
 				// constructor has asserted already somewhere more relevant
@@ -1545,19 +1538,12 @@ bool	AP_Win32App::doesStringSetExist(const char* pLocale)
 	return false;
 }
 
+
 /* From UCS4 To WinLocale */
 UT_String  	AP_Win32App::s_fromUCS4ToWinLocale(const UT_UCS4Char * szIn)
 {		
-	UT_UCS4String sUCS4(szIn);
 	UT_String sRslt;
-	
-	char *pText = UT_convert ((char *)sUCS4.ucs4_str(),
-							  sUCS4.length()*sizeof(UT_UCS4Char),
-							  ucs4Internal(),
-							  XAP_App::getApp()->getDefaultEncoding(),
-							  NULL, NULL);
-	sRslt = pText;
-	g_free(pText);
+    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return sRslt;
 
 }

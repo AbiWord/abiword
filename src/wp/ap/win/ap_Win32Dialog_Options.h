@@ -26,6 +26,7 @@
 #include "ap_Dialog_Options.h"
 #include "xap_Win32PropertySheet.h"
 #include "xap_Frame.h"
+#include "xap_Win32DialogBase.h"
 
 
 class UT_String;
@@ -45,7 +46,7 @@ public:
 		
 		void setParent(AP_Win32Dialog_Options*	pData){m_pParent=pData;};
 		AP_Win32Dialog_Options* getParent(){return m_pParent;};
-		int _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+		BOOL _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 		static INT_PTR CALLBACK s_sheetInit(HWND hwnd,  UINT uMsg,  LPARAM lParam);
 		
 private:		
@@ -74,7 +75,6 @@ private:
 
 	void						_onInitDialog();
 	void						_onKillActive(){};
-	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 		
 	AP_Win32Dialog_Options*		m_pParent;		
 	
@@ -100,7 +100,7 @@ private:
 
 	void						_onInitDialog();
 	void						_onKillActive(){};
-	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 		
 	AP_Win32Dialog_Options*		m_pParent;
 	int							m_nCentered;
@@ -128,7 +128,7 @@ private:
 
 	void						_onInitDialog();
 	void						_onKillActive(){};
-	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 		
 	AP_Win32Dialog_Options*		m_pParent;	
 	
@@ -151,7 +151,7 @@ private:
 
 	void						_onInitDialog();
 	void						_onKillActive(){};
-	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 		
 	AP_Win32Dialog_Options*		m_pParent;
 	
@@ -159,7 +159,7 @@ private:
 
 
 /*****************************************************************/
-class ABI_EXPORT AP_Win32Dialog_Options: public AP_Dialog_Options
+class ABI_EXPORT AP_Win32Dialog_Options: public AP_Dialog_Options, public XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_Options(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -252,11 +252,10 @@ public:
 	BOOL						_onNotify(HWND hWnd, LPARAM lParam);
 	BOOL						_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
-	HWND						m_hwndDlg;		// parent dialog
 	HWND						m_hwndTab;		// tab control in parent dialog
 
-	int 						m_nrSubDlgs;		// number of tabs on tab control
-	UT_Vector					m_vecSubDlgHWnd;	// hwnd to each sub-dialog
+	int 					        m_nrSubDlgs;		// number of tabs on tab control
+	UT_Vector				m_vecSubDlgHWnd;	// hwnd to each sub-dialog
 
 private:
 	XAP_DialogFactory * 		m_pDialogFactory;

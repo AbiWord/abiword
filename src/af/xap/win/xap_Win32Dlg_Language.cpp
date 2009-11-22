@@ -45,7 +45,7 @@
 #endif
  
 WHICHPROC gTreeProc;
-#define _DS(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+#define _DS(c,s)	setDlgItemText(XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 
 /*****************************************************************/
@@ -72,57 +72,17 @@ XAP_Win32Dialog_Language::~XAP_Win32Dialog_Language(void)
 
 void XAP_Win32Dialog_Language::runModal(XAP_Frame * pFrame)
 {
-	UT_return_if_fail(pFrame);
-
-	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-	UT_return_if_fail(pWin32App);
-	
-	LPCTSTR lpTemplate = NULL;
-
 	UT_ASSERT(m_id == XAP_DIALOG_ID_LANGUAGE);
-
-	lpTemplate = MAKEINTRESOURCE(XAP_RID_DIALOG_LANGUAGE);
-
-	int result = DialogBoxParam(pWin32App->getInstance(),
-						lpTemplate,
-						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-						(DLGPROC)s_dlgProc,
-						(LPARAM)this );
-	UT_ASSERT((result != -1));
+    createModal(pFrame, MAKEINTRESOURCEW(XAP_RID_DIALOG_LANGUAGE));    
 }
-
-/*
-	
-*/
-BOOL CALLBACK XAP_Win32Dialog_Language::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
-{
-	// This is a static function.
-	XAP_Win32Dialog_Language * pThis;
-	
-	switch (msg)
-	{			
-	case WM_INITDIALOG:
-		pThis = (XAP_Win32Dialog_Language *)lParam;
-		SetWindowLongPtr(hWnd,DWLP_USER,lParam);
-		return pThis->_onInitDialog(hWnd,wParam,lParam);
-		
-	case WM_COMMAND:
-		pThis = (XAP_Win32Dialog_Language *)GetWindowLongPtr(hWnd,DWLP_USER);
-		return pThis->_onCommand(hWnd,wParam,lParam);
-		
-	default:
-		return 0;
-	}
-}
-
 
 /*
 	Fills up the tree with the languages names
 */
 void  XAP_Win32Dialog_Language::_fillTreeview(HWND hTV) 
 {
-	TV_INSERTSTRUCT tvins;
-	TV_ITEM tvi;
+	TV_INSERTSTRUCTW tvins;
+	TV_ITEMW tvi;
 	HTREEITEM hItem;
 	HTREEITEM hSel = NULL;	
 	
@@ -153,9 +113,11 @@ void  XAP_Win32Dialog_Language::_fillTreeview(HWND hTV)
 				tvi.iSelectedImage = tvi.iImage;
 				break;
 			}
-		}		
-		tvi.pszText = (char *)sLang;
-		tvi.cchTextMax = lstrlen(sLang);				
+		}
+		UT_Win32LocaleString str;
+		str.fromUTF8 (sLang);
+		tvi.pszText = (wchar_t *) str.c_str();
+		tvi.cchTextMax = str.length();		
 		tvi.lParam=i;
 		tvins.item = tvi;
 		hItem = TreeView_InsertItem(hTV, &tvins);
@@ -164,7 +126,7 @@ void  XAP_Win32Dialog_Language::_fillTreeview(HWND hTV)
 			hSel = hItem;	
 	}
 	
-	::SendMessage(hTV, TVM_SELECTITEM, TVGN_CARET,  (LONG_PTR)hSel);	
+	::SendMessageW(hTV, TVM_SELECTITEM, TVGN_CARET,  (LONG_PTR)hSel);	
 	delete pVec;
 }
 
@@ -182,19 +144,19 @@ BOOL CALLBACK XAP_Win32Dialog_Language::s_treeProc(HWND hWnd,UINT msg,WPARAM wPa
 		TVITEM tvi;		
 		
 		// Selected item
-		tvi.hItem =  (HTREEITEM)::SendMessage(hWnd, TVM_GETNEXTITEM, TVGN_CARET, 0);
+		tvi.hItem =  (HTREEITEM)::SendMessageW(hWnd, TVM_GETNEXTITEM, TVGN_CARET, 0);
 				
 		if (tvi.hItem)
 		{
 			// Associated data		 
 			tvi.mask = TVIF_PARAM;
-			SendMessage(hWnd, TVM_GETITEM, 0, (LPARAM)&tvi);
+			SendMessageW(hWnd, TVM_GETITEMW, 0, (LPARAM)&tvi);
 			pThis->_setLanguageAndExit(tvi.lParam);			
 		}
 		return 1;						
 	}	
 		
-	return CallWindowProc(gTreeProc,  hWnd, msg, wParam, lParam);
+	return CallWindowProcW(gTreeProc,  hWnd, msg, wParam, lParam);
 }
 
 /*
@@ -213,9 +175,7 @@ BOOL XAP_Win32Dialog_Language::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARA
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	
-	m_hWnd = hWnd;
-	
-	SetWindowText(hWnd, pSS->getValue(XAP_STRING_ID_DLG_ULANG_LangTitle));
+	setDialogTitle (pSS->getValue(XAP_STRING_ID_DLG_ULANG_LangTitle));
 
 	// localize controls
 	_DS(LANGUAGE_BTN_OK,			DLG_OK);
@@ -237,8 +197,8 @@ BOOL XAP_Win32Dialog_Language::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARA
 	ImageList_Add(m_hNormIml, hBitmap, NULL);		
 	DeleteObject(hBitmap);
 	
-	SendMessage(hTree, TVM_SETIMAGELIST, TVSIL_NORMAL, (LPARAM)m_hNormIml);		
-	SendMessage(hTree, TVM_SETIMAGELIST, TVSIL_STATE, (LPARAM)m_hNormIml);
+	SendMessageW(hTree, TVM_SETIMAGELIST, TVSIL_NORMAL, (LPARAM)m_hNormIml);		
+	SendMessageW(hTree, TVM_SETIMAGELIST, TVSIL_STATE, (LPARAM)m_hNormIml);
 	
 	_fillTreeview(hTree);
 	
@@ -250,14 +210,12 @@ BOOL XAP_Win32Dialog_Language::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARA
 
 	UT_UTF8String s;
 	getDocDefaultLangDescription(s);
-	SetDlgItemText(hWnd, XAP_RID_DIALOG_LANGUAGE_DOCLANG_STATIC,
-				   AP_Win32App::s_fromUTF8ToWinLocale(s.utf8_str()).c_str());
+	setDlgItemText(XAP_RID_DIALOG_LANGUAGE_DOCLANG_STATIC, s.utf8_str());
 
 	getDocDefaultLangCheckboxLabel(s);
-	SetDlgItemText(hWnd, XAP_RID_DIALOG_LANGUAGE_DOCLANG_CHKBOX,
-				   AP_Win32App::s_fromUTF8ToWinLocale(s.utf8_str()).c_str());
+	setDlgItemText(XAP_RID_DIALOG_LANGUAGE_DOCLANG_CHKBOX, s.utf8_str());
 	
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
+    centerDialog();
 			
 	return 1;							// 1 == we did not call SetFocus()
 }
@@ -276,17 +234,17 @@ BOOL XAP_Win32Dialog_Language::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lPa
 
 		case IDOK:							// also XAP_RID_DIALOG_LANGUAGE_BTN_OK
 			{
-				TVITEM tvi;		
+				TVITEMW tvi;		
 				HWND hWndTree = GetDlgItem(hWnd, XAP_RID_DIALOG_LANGUAGE_TREE_LANGUAGE);
 		
 				// Selected item
-				tvi.hItem =  (HTREEITEM)::SendMessage(hWndTree, TVM_GETNEXTITEM, TVGN_CARET, 0);
+				tvi.hItem =  (HTREEITEM)::SendMessageW(hWndTree, TVM_GETNEXTITEM, TVGN_CARET, 0);
 		
 				if (tvi.hItem)
 				{				
 					// Associated data		 
 					tvi.mask = TVIF_PARAM;
-					SendMessage(hWndTree, TVM_GETITEM, 0, (LPARAM)&tvi);		
+					SendMessageW(hWndTree, TVM_GETITEMW, 0, (LPARAM)&tvi);		
 					_setLanguage( m_ppLanguages[tvi.lParam]);
 					m_bChangedLanguage = true;
 					m_answer = a_OK;

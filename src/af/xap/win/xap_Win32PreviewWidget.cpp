@@ -36,9 +36,9 @@
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-ATOM		XAP_Win32PreviewWidget::m_atomPreviewWidgetClass = NULL;
+ATOM		    XAP_Win32PreviewWidget::m_atomPreviewWidgetClass = NULL;
 UT_uint32	XAP_Win32PreviewWidget::m_iInstanceCount = 0;
-char		XAP_Win32PreviewWidget::m_bufClassName[100];
+wchar_t		XAP_Win32PreviewWidget::m_bufClassName[100];
 
 XAP_Win32PreviewWidget::XAP_Win32PreviewWidget(XAP_Win32App * pWin32App, HWND hwndParent, UINT style)
 {
@@ -50,7 +50,7 @@ XAP_Win32PreviewWidget::XAP_Win32PreviewWidget(XAP_Win32App * pWin32App, HWND hw
 
 	if(!m_atomPreviewWidgetClass)
 	{
-		sprintf(m_bufClassName,"PreviewWidget");
+		swprintf(m_bufClassName,L"PreviewWidget");
 
 		m_atomPreviewWidgetClass = UT_RegisterClassEx(CS_OWNDC | CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS | style,
 													  _wndProc, m_pWin32App->getInstance(),
@@ -93,7 +93,7 @@ XAP_Win32PreviewWidget::~XAP_Win32PreviewWidget(void)
 	if(m_iInstanceCount == 0)
 	{
 		m_atomPreviewWidgetClass = NULL;
-		bool bResult = (UnregisterClass(m_bufClassName,m_pWin32App->getInstance()) == TRUE);
+		bool bResult = (UnregisterClassW(m_bufClassName,m_pWin32App->getInstance()) == TRUE);
 		UT_ASSERT_HARMLESS(bResult);
 	}
 

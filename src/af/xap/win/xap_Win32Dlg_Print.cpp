@@ -28,7 +28,7 @@
 #include "xap_Win32FrameImpl.h"
 #include "xav_View.h"
 #include "gr_Win32Graphics.h"
-#include "ap_Win32App.h"
+#include "xap_Win32DialogBase.h"
 
 /*****************************************************************/
 static UINT_PTR CALLBACK s_PrintHookProc(
@@ -36,13 +36,13 @@ static UINT_PTR CALLBACK s_PrintHookProc(
   UINT uiMsg,     // message identifier
   WPARAM wParam,  // message parameter
   LPARAM lParam   // message parameter
-  )
+  )                                                                             
 {
 	XAP_Win32Dialog_Print * pThis = NULL;
 	
 	if(uiMsg == WM_INITDIALOG)
 	{
-		PRINTDLG * pDlgInfo = (PRINTDLG*)lParam;
+		PRINTDLGW * pDlgInfo = (PRINTDLGW*)lParam;
 		pThis = (XAP_Win32Dialog_Print*)pDlgInfo->lCustData;
 		SetWindowLongPtr(hdlg, DWLP_USER, (LONG_PTR) pThis);
 
@@ -59,7 +59,7 @@ static UINT_PTR CALLBACK s_PrintHookProc(
 
 		// remember the original printer selected; we use this to decide if upon closure
 		// we should notify associated views to rebuild to reflect the new font metrics
-		UT_uint32 iPrinter = SendDlgItemMessage(hdlg, cmb4, CB_GETCURSEL, 0, 0);
+		UT_uint32 iPrinter = SendDlgItemMessageW(hdlg, cmb4, CB_GETCURSEL, 0, 0);
 		pThis->setOrigPrinter(iPrinter);
 		pThis->setNewPrinter(iPrinter);
 	}
@@ -74,20 +74,20 @@ static UINT_PTR CALLBACK s_PrintHookProc(
 		// button to Close; make sure we have valid this pointer.
 		if((int)LOWORD(wParam) == cmb4 && HIWORD(wParam) == CBN_SELCHANGE)
 		{
-			pThis->setNewPrinter(SendDlgItemMessage(hdlg, cmb4, CB_GETCURSEL, 0, 0));
+			pThis->setNewPrinter(SendDlgItemMessageW(hdlg, cmb4, CB_GETCURSEL, 0, 0));
 
-			XAP_App*              pApp        = XAP_App::getApp();
+			XAP_App*                    pApp      = XAP_App::getApp();
 			const XAP_StringSet*  pSS         = pApp->getStringSet();
 			
 			if(pThis->getNewPrinter() != pThis->getOrigPrinter())
 			{
-				SetDlgItemText(hdlg,IDCANCEL,pSS->getValue(XAP_STRING_ID_DLG_Close));
+			    XAP_Win32DialogBase::setDlgItemText(hdlg,IDCANCEL,pSS->getValue(XAP_STRING_ID_DLG_Close));
 			}
 			else
 			{
 				// the user set the printer back to what it used to be -- revert back to
 				// cancel button
-				SetDlgItemText(hdlg,IDCANCEL,pSS->getValue(XAP_STRING_ID_DLG_Cancel));
+			    XAP_Win32DialogBase::setDlgItemText(hdlg,IDCANCEL,pSS->getValue(XAP_STRING_ID_DLG_Cancel));
 			}
 		}
 		else if((int)LOWORD(wParam) == IDCANCEL && HIWORD(wParam) == 0)
@@ -101,7 +101,7 @@ static UINT_PTR CALLBACK s_PrintHookProc(
 				// with the data we need; set the m_bClosed flag, so we can differentiate
 				// this from the user pressing the OK button
 				pThis->setClosed(true);
-				PostMessage(hdlg, WM_COMMAND, IDOK, 0);
+				PostMessageW(hdlg, WM_COMMAND, IDOK, 0);
 
 				return 1; // eat the message
 			}
@@ -125,7 +125,7 @@ XAP_Win32Dialog_Print::XAP_Win32Dialog_Print(XAP_DialogFactory * pDlgFactory,
 	m_iNewPrinter(0),
 	m_bClosed(false)
 {
-	m_pPersistPrintDlg = (PRINTDLG *)UT_calloc(1,sizeof(PRINTDLG));
+	m_pPersistPrintDlg = (PRINTDLGW *)UT_calloc(1,sizeof(PRINTDLGW));
 	UT_return_if_fail(m_pPersistPrintDlg);
 	
 	memset(m_pPersistPrintDlg,0,sizeof(m_pPersistPrintDlg));
@@ -152,11 +152,17 @@ GR_Graphics * XAP_Win32Dialog_Print::getPrinterGraphicsContext(void)
 		return NULL; /* Prevents from passing NULL to GR_Win32Graphics*/
 
 	memset(&m_DocInfo,0,sizeof(m_DocInfo));
-	m_DocInfo.cbSize = sizeof(DOCINFO);
-	m_docName = AP_Win32App::s_fromUTF8ToWinLocale(m_szDocumentPathname);
+	m_DocInfo.cbSize = sizeof(DOCINFOW);
+	m_docName.fromUTF8 (m_szDocumentPathname);
 	m_DocInfo.lpszDocName = m_docName.c_str();
-	m_DocInfo.lpszOutput = ((m_bDoPrintToFile) ? m_szPrintToFilePathname : NULL);
 	
+    if (m_bDoPrintToFile) {
+		m_fileName.fromUTF8 (m_szPrintToFilePathname);
+		m_DocInfo.lpszOutput = m_fileName.c_str();
+	} else {
+		m_DocInfo.lpszOutput = NULL;	
+	}	
+
 	GR_Win32AllocInfo ai(m_pPersistPrintDlg->hDC,&m_DocInfo, m_pPersistPrintDlg->hDevMode);
 	GR_Win32Graphics *pGr = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
 	UT_ASSERT(pGr);
@@ -235,12 +241,12 @@ void XAP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 		{
 			// create a new hDC for this printer...
 			
-			DEVMODE * pDevMode = (DEVMODE *)GlobalLock(m_pPersistPrintDlg->hDevMode);
+			DEVMODEW * pDevMode = (DEVMODEW *)GlobalLock(m_pPersistPrintDlg->hDevMode);
 			DEVNAMES * pDevNames = (DEVNAMES *)GlobalLock(m_pPersistPrintDlg->hDevNames);
 			UT_return_if_fail(pDevNames); //GlobalLock can return NULL
 
-			char * p = (char *)pDevNames;
-			m_pPersistPrintDlg->hDC = CreateDC(p + pDevNames->wDriverOffset,
+			wchar_t * p = (wchar_t *)pDevNames;
+			m_pPersistPrintDlg->hDC = CreateDCW(p + pDevNames->wDriverOffset,
 											   p + pDevNames->wDeviceOffset,
 											   NULL,
 											   pDevMode);
@@ -254,7 +260,7 @@ void XAP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 			pG->setPrintDC(m_pPersistPrintDlg->hDC);
 		}
 	}
-	else if (PrintDlg(m_pPersistPrintDlg))		// raise the actual dialog.
+	else if (PrintDlgW(m_pPersistPrintDlg))		// raise the actual dialog.
 	{
 		_extractResults(pFrame);
 
@@ -297,7 +303,7 @@ void XAP_Win32Dialog_Print::_extractResults(XAP_Frame *pFrame)
 
 	// Most Win32 printer drivers support multicopies and collating, 
 	//however we want Abi to do both by himself, like in the rest of platforms		
-	DEVMODE *pDevMode=(DEVMODE *)GlobalLock(m_pPersistPrintDlg->hDevMode);
+	DEVMODEW *pDevMode=(DEVMODEW *)GlobalLock(m_pPersistPrintDlg->hDevMode);
 	UT_return_if_fail(pDevMode); //GlobalLock can return NULL
 	m_nCopies = pDevMode->dmCopies;
 	m_bCollate	= ((pDevMode->dmCollate  & DMCOLLATE_TRUE) != 0);		
@@ -310,8 +316,8 @@ void XAP_Win32Dialog_Print::_extractResults(XAP_Frame *pFrame)
 	// modified structure can be used !!!
 	GR_Win32Graphics::fixDevMode(m_pPersistPrintDlg->hDevMode);
 
-	pDevMode=(DEVMODE *)GlobalLock(m_pPersistPrintDlg->hDevMode);
-	ResetDC(m_pPersistPrintDlg->hDC,pDevMode);
+	pDevMode=(DEVMODEW *)GlobalLock(m_pPersistPrintDlg->hDevMode);
+	ResetDCW(m_pPersistPrintDlg->hDC,pDevMode);
 	GlobalUnlock(pDevMode);
 	
 	if (m_bDoPrintToFile)

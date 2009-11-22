@@ -71,7 +71,7 @@ void XAP_Win32Dialog_Insert_Symbol::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(m_id == XAP_DIALOG_ID_INSERT_SYMBOL);
 	
 	setDialog(this);
-	createModal(pFrame, MAKEINTRESOURCE(XAP_RID_DIALOG_INSERT_SYMBOL));
+	createModal(pFrame, MAKEINTRESOURCEW(XAP_RID_DIALOG_INSERT_SYMBOL));
 }
 
 void XAP_Win32Dialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
@@ -80,7 +80,7 @@ void XAP_Win32Dialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	UT_ASSERT(m_id == XAP_DIALOG_ID_INSERT_SYMBOL);
 
 	setDialog(this);
-	HWND hWndDialog = createModeless( pFrame, MAKEINTRESOURCE(XAP_RID_DIALOG_INSERT_SYMBOL) );
+	HWND hWndDialog = createModeless( pFrame, MAKEINTRESOURCEW(XAP_RID_DIALOG_INSERT_SYMBOL) );
 
 	UT_ASSERT((hWndDialog != NULL));
 	ShowWindow(hWndDialog, SW_SHOW);
@@ -100,7 +100,7 @@ void XAP_Win32Dialog_Insert_Symbol::activate(void)
 
 	// Update the caption
 	ConstructWindowName();
-	SetWindowText(m_hDlg, (AP_Win32App::s_fromUTF8ToWinLocale(m_WindowName)).c_str());
+    setDialogTitle(m_WindowName);
 
 	iResult = ShowWindow( m_hDlg, SW_SHOW );
 
@@ -119,7 +119,7 @@ void XAP_Win32Dialog_Insert_Symbol::notifyActiveFrame(XAP_Frame *pFrame)
 	{
 		// Update the caption
 		ConstructWindowName();
-		SetWindowText(m_hDlg, (AP_Win32App::s_fromUTF8ToWinLocale(m_WindowName)).c_str());
+        setDialogTitle(m_WindowName);
 
 		SetWindowLongPtr(m_hDlg, GWLP_HWNDPARENT, (LONG_PTR)frameHWND);
 		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
@@ -187,23 +187,23 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, 
 
 	// Fill the list box with symbol fonts.
 
-	HDC hDCScreen = CreateDC("DISPLAY", NULL, NULL, NULL);
+	HDC hDCScreen = CreateDCW(L"DISPLAY", NULL, NULL, NULL);
 
 #if 1
-	EnumFontFamilies(hDCScreen, (const char *)NULL, (FONTENUMPROC)fontEnumProcedure, (LPARAM)this);
+	EnumFontFamiliesW(hDCScreen, (const wchar_t *)NULL, (FONTENUMPROCW)fontEnumProcedure, (LPARAM)this);
 #else
-	LOGFONT LogFont;
+	LOGFONTW LogFont;
 //	LogFont.lfCharSet = SYMBOL_CHARSET; - all fonts enum is more inline with XP nature
 	LogFont.lfCharSet = DEFAULT_CHARSET;
 	LogFont.lfFaceName[0] = '\0';
-	EnumFontFamiliesEx(hDCScreen, &LogFont, (FONTENUMPROC)fontEnumProcedure, (LPARAM)this, 0);
+	EnumFontFamiliesExW(hDCScreen, &LogFont, (FONTENUMPROCW)fontEnumProcedure, (LPARAM)this, 0);
 #endif	
 	
 	DeleteDC(hDCScreen);
 
 	// Select the current font.
 
-	UT_sint32 Index = SendDlgItemMessage(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_FINDSTRING, -1, (LPARAM)Symbol_font_selected);
+	UT_sint32 Index = SendDlgItemMessageW(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_FINDSTRING, -1, (LPARAM)Symbol_font_selected);
 
 	if(Index != -1)
 	{
@@ -216,8 +216,8 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, 
 
 	// Update the caption
 	ConstructWindowName();
-	setDialogTitle((LPCSTR)(AP_Win32App::s_fromUTF8ToWinLocale(m_WindowName)).c_str());
-	centerDialog();	
+    setDialogTitle(m_WindowName);	
+    centerDialog();	
 
 	return 1;							// 1 == we did not call SetFocus()
 }
@@ -242,7 +242,7 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onCommand(HWND /*hWnd*/, WPARAM wParam, LPA
 		switch(wNotifyCode)
 		{
 		case CBN_SELCHANGE:
-			_setFontFromCombo(SendDlgItemMessage(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_GETCURSEL, 0, 0));
+			_setFontFromCombo(SendDlgItemMessageW(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_GETCURSEL, 0, 0));
 			return 1;
 		}
 		return 0;
@@ -258,7 +258,7 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onDeltaPos(NM_UPDOWN * /*pnmud*/)
 	return FALSE;
 }
 
-int CALLBACK XAP_Win32Dialog_Insert_Symbol::fontEnumProcedure(const LOGFONT *pLogFont, const TEXTMETRIC *pTextMetric, DWORD Font_type, LPARAM lParam)
+int CALLBACK XAP_Win32Dialog_Insert_Symbol::fontEnumProcedure(const LOGFONTW *pLogFont, const TEXTMETRICW *pTextMetric, DWORD Font_type, LPARAM lParam)
 {
 
 	XAP_Win32Dialog_Insert_Symbol *pThis = (XAP_Win32Dialog_Insert_Symbol *)lParam;
@@ -266,11 +266,11 @@ int CALLBACK XAP_Win32Dialog_Insert_Symbol::fontEnumProcedure(const LOGFONT *pLo
 	return pThis->_enumFont(pLogFont, pTextMetric, Font_type);
 }
 
-int XAP_Win32Dialog_Insert_Symbol::_enumFont(const LOGFONT *pLogFont, const TEXTMETRIC * /*pTextMetric*/, DWORD Font_type)
+int XAP_Win32Dialog_Insert_Symbol::_enumFont(const LOGFONTW *pLogFont, const TEXTMETRICW * /*pTextMetric*/, DWORD Font_type)
 {
 	if( ((int)Font_type) & TRUETYPE_FONTTYPE ) // Only except true type fonts.
 	{
-		SendDlgItemMessage(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_ADDSTRING, 0, (LPARAM)pLogFont->lfFaceName);
+		SendDlgItemMessageW(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_ADDSTRING, 0, (LPARAM)pLogFont->lfFaceName);
 	}
 //	if(Font_type & TRUETYPE_FONTTYPE) // Only accept true type fonts.
 //	{
@@ -283,15 +283,15 @@ void XAP_Win32Dialog_Insert_Symbol::_setFontFromCombo(UT_sint32 Index)
 {
 	if(Index >= 0)
 	{
-		SendDlgItemMessage(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_SETCURSEL, Index, 0);
+		SendDlgItemMessageW(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_SETCURSEL, Index, 0);
 
-		int Length = SendDlgItemMessage(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_GETLBTEXTLEN, Index, 0);
+		int Length = SendDlgItemMessageW(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_GETLBTEXTLEN, Index, 0);
 
 		if(Length != CB_ERR)
 		{
 			char *p_buffer = new char[Length + 1];
 
-			SendDlgItemMessage(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_GETLBTEXT, Index, (LPARAM)p_buffer);
+			SendDlgItemMessageW(m_hDlg, XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST, CB_GETLBTEXT, Index, (LPARAM)p_buffer);
 
 			strcpy(Symbol_font_selected, p_buffer);
 

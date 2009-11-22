@@ -55,7 +55,7 @@ protected:
 	virtual void			hide();
 
 	HWND					m_hwndStatusBar;
-	WNDPROC					m_pOrgStatusbarWndProc; 
+	WNDPROC			m_pOrgStatusbarWndProc; 
 	int						m_iPrevWidth;
 	UINT                    m_iDIR;
 

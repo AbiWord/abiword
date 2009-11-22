@@ -87,7 +87,7 @@ void AP_Win32Preview_Annotation::_createToolTip(HWND hwndParent)
     ti.uFlags = TTF_SUBCLASS;
     ti.hwnd = hwndParent;
     ti.hinst = hinst;
-    ti.lpszText = (LPSTR)getDescription().c_str();
+    ti.lpszText = (LPTSTR)getDescription().c_str();
     GetClientRect (hwndParent, &ti.rect);
     SendMessage(m_hToolTip, TTM_ADDTOOL, 0, (LPARAM) (LPTOOLINFO) &ti);
 

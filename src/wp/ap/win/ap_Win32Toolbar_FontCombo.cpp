@@ -27,6 +27,7 @@
 #include "ap_Toolbar_Id.h"
 #include "xap_Frame.h"
 #include "ut_debugmsg.h"
+#include "ut_Win32LocaleString.h"
 
 /*****************************************************************/
 
@@ -65,14 +66,14 @@ bool AP_Win32Toolbar_FontCombo::populate(void)
 	// populate the vector
 	HWND hwnd = NULL;
     HDC hdc = GetDC(hwnd) ;
-    EnumFontFamilies(hdc, (LPTSTR) NULL, (FONTENUMPROC) AP_Win32Toolbar_FontCombo::_EnumFontsProc, (LONG_PTR) this) ;
+    EnumFontFamiliesW(hdc, (LPWSTR) NULL, (FONTENUMPROCW) AP_Win32Toolbar_FontCombo::_EnumFontsProc, (LONG_PTR) this) ;
     ReleaseDC(hwnd, hdc) ;
 
 	return true;
 }
 
-int CALLBACK AP_Win32Toolbar_FontCombo::_EnumFontsProc(LPLOGFONT lplf, 
-													  LPTEXTMETRIC lptm,
+int CALLBACK AP_Win32Toolbar_FontCombo::_EnumFontsProc(LPLOGFONTW lplf, 
+													  LPTEXTMETRICW lptm,
 													  DWORD dwStyle, 
 													  LONG lParam)
 {
@@ -95,7 +96,9 @@ int CALLBACK AP_Win32Toolbar_FontCombo::_EnumFontsProc(LPLOGFONT lplf,
 		return 1 ;
 #endif	
 
-	char * p = g_strdup(lplf->lfFaceName);
+	UT_Win32LocaleString str;
+	str.fromLocale (lplf->lfFaceName);
+	char * p = g_strdup((str.utf8_str().utf8_str()));
 	ctl->m_vecContents.addItem(p);
 	ctl->m_vecFontCharSet.addItem((void*)lplf->lfCharSet);
 

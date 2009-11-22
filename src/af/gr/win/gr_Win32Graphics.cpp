@@ -30,8 +30,8 @@
 #include "gr_Win32Graphics.h"
 #include "gr_Win32Image.h"
 #include "gr_Painter.h"
-#include <xap_Win32App.h>
 
+#include <xap_Win32App.h>
 #include <xap_Win32Res_Cursors.rc2>
 
 #include "xap_Prefs.h"
@@ -44,6 +44,7 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_Win32OS.h"
+#include "ut_Win32LocaleString.h"
 
 #ifdef __MINGW32__
 #include <w32api.h>
@@ -201,7 +202,7 @@ void GR_Win32Graphics::setPrintDC(HDC dc)
 }
 
 
-GR_Win32Graphics::GR_Win32Graphics(HDC hdc, const DOCINFO * pDocInfo, HGLOBAL hDevMode)
+GR_Win32Graphics::GR_Win32Graphics(HDC hdc, const DOCINFOW * pDocInfo, HGLOBAL hDevMode)
 {
 	_constructorCommonCode(hdc);
  	m_bPrint = true;
@@ -263,7 +264,7 @@ bool GR_Win32Graphics::queryProperties(GR_Graphics::Properties gp) const
 	}
 }
 
-GR_Win32Font * GR_Win32Graphics::_newFont(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC)
+GR_Win32Font * GR_Win32Graphics::_newFont(LOGFONTW & lf, double fPoints, HDC hdc, HDC printHDC)
 {
 	return GR_Win32Font::newFont(lf, fPoints, hdc, printHDC);
 }
@@ -274,8 +275,8 @@ GR_Font* GR_Win32Graphics::getGUIFont(void)
 	{
 		// lazily grab this (once)
 		HFONT f = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
-		LOGFONT lf;
-		int iRes = GetObject(f, sizeof(LOGFONT), &lf);
+		LOGFONTW lf;
+		int iRes = GetObjectW(f, sizeof(LOGFONTW), &lf);
 		m_pFontGUI = _newFont(lf, 0, m_hdc, m_hdc);
 		UT_ASSERT(m_pFontGUI);
 		DeleteObject(f);
@@ -288,12 +289,12 @@ GR_Font* GR_Win32Graphics::getGUIFont(void)
 
 extern "C"
 int CALLBACK
-win32Internal_fontEnumProcedure(ENUMLOGFONT* pLogFont,
-								NEWTEXTMETRICEX* /*pTextMetric*/,
+win32Internal_fontEnumProcedure(ENUMLOGFONTW* pLogFont,
+								NEWTEXTMETRICEXW* /*pTextMetric*/,
 								int /*Font_type*/,
 								LPARAM lParam)
 {
-	LOGFONT *lf = (LOGFONT*)lParam;
+	LOGFONTW *lf = (LOGFONTW*)lParam;
 	lf->lfCharSet = pLogFont->elfLogFont.lfCharSet;
 	return 0;
 }
@@ -310,7 +311,7 @@ GR_Font* GR_Win32Graphics::_findFont(const char* pszFontFamily,
 	UT_DEBUGMSG(("GR_Win32Graphics::findFont %s %s %s\n", pszFontFamily, pszFontStyle, pszFontSize));	
 	#endif
 	
-	LOGFONT lf;
+	LOGFONTW lf;
 	memset(&lf, 0, sizeof(lf));
 
 	HDC hPrintDC = m_printHDC ? m_printHDC : m_hdc;
@@ -358,19 +359,21 @@ GR_Font* GR_Win32Graphics::_findFont(const char* pszFontFamily,
 		// This convertion is needed because the windows API expects fontnames
 		// in the native encoding and later lf will be passing to a windows
 		// API funcion (CreateFontIndirect()).
-		strncpy(lf.lfFaceName, 
-		        XAP_App::getApp()->getEncodingManager()->strToNative(pszFontFamily, "UTF-8", false),
+    	UT_Win32LocaleString str;
+		str.fromUTF8 (pszFontFamily);
+		wcsncpy(lf.lfFaceName, 
+		        str.c_str(),
 		        LF_FACESIZE);
 	}
 
 	// Get character set value from the font itself
-	LOGFONT enumlf;
+	LOGFONTW enumlf;
 	memset(&enumlf, 0, sizeof(enumlf));
 
 	enumlf.lfCharSet = DEFAULT_CHARSET;
-	strcpy(enumlf.lfFaceName, lf.lfFaceName);
-	EnumFontFamiliesEx(m_hdc, &enumlf,
-		(FONTENUMPROC)win32Internal_fontEnumProcedure, (LPARAM)&lf, 0);
+	wcscpy(enumlf.lfFaceName, lf.lfFaceName);
+	EnumFontFamiliesExW(m_hdc, &enumlf,
+		(FONTENUMPROCW)win32Internal_fontEnumProcedure, (LPARAM)&lf, 0);
 
 	lf.lfOutPrecision = OUT_TT_ONLY_PRECIS;		// Choose only True Type fonts.
 	lf.lfQuality = PROOF_QUALITY;
@@ -416,8 +419,8 @@ void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 	// of the font file is defined.
 	// Reference Microsoft knowledge base:
 	// Q145754 - PRB ExtTextOutW or TextOutW Unicode Text Output Is Blank
-	LOGFONT lf;
-	int iRes = GetObject(m_pFont->getFontHandle(), sizeof(LOGFONT), &lf);
+	LOGFONTW lf;
+	int iRes = GetObjectW(m_pFont->getFontHandle(), sizeof(LOGFONTW), &lf);
 	UT_ASSERT(iRes);
 	if (UT_IsWinNT() == false && lf.lfCharSet == SYMBOL_CHARSET)
 	{
@@ -509,8 +512,8 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 	// of the font file is defined.
 	// Reference Microsoft knowledge base:
 	// Q145754 - PRB ExtTextOutW or TextOutW Unicode Text Output Is Blank
-	LOGFONT lf;
-	int iRes = GetObject(hFont, sizeof(LOGFONT), &lf);
+	LOGFONTW lf;
+	int iRes = GetObjectW(hFont, sizeof(LOGFONTW), &lf);
 	UT_ASSERT(iRes);
 
 	if (UT_IsWinNT() == false && lf.lfCharSet == SYMBOL_CHARSET)
@@ -585,7 +588,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 		{
 			UT_ASSERT(m_remapIndices);
 			GCP_RESULTSW gcpResult;
-			gcpResult.lStructSize = sizeof(GCP_RESULTS);
+			gcpResult.lStructSize = sizeof(GCP_RESULTSW);
 			gcpResult.lpOutString = NULL;			// Output string
 			gcpResult.lpOrder = NULL;				// Ordering indices
 			// we must set here lpDx to NULL so that
@@ -622,7 +625,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 		}
 		else
 		{
-simple_exttextout:
+            simple_exttextout:
 			ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, (LPCWSTR) currentChars, iLength, pCharAdvances);
 		}
 
@@ -936,7 +939,7 @@ void GR_Win32Graphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, 
 	// CreateSolidBrush is dog slow.
 	HDC hdc = m_hdc;
 	const COLORREF cr = ::SetBkColor(hdc,  clr);
-	::ExtTextOut(hdc, 0, 0, ETO_OPAQUE, &r, NULL, 0, NULL);
+	::ExtTextOutW(hdc, 0, 0, ETO_OPAQUE, &r, NULL, 0, NULL);
 	::SetBkColor(hdc, cr);
 	setExposePending(false);
 }
@@ -948,7 +951,7 @@ bool GR_Win32Graphics::startPrint(void)
 
 	if (!m_bIsPreview)
 	  {
-	    m_bStartPrint = ( StartDoc(m_hdc,m_pDocInfo) > 0 );
+	    m_bStartPrint = ( StartDocW(m_hdc,m_pDocInfo) > 0 );
 	  }
 	else
 	  {
@@ -973,7 +976,7 @@ bool GR_Win32Graphics::startPage(const char * /*szPageLabel*/, UT_uint32 /*pageN
 	// Correct for Portrait vs Lanscape mode
 	if (m_hDevMode)
 	{
-		DEVMODE *pDevMode = (DEVMODE*) GlobalLock(m_hDevMode);
+		DEVMODEW *pDevMode = (DEVMODEW*) GlobalLock(m_hDevMode);
 		UT_return_val_if_fail(pDevMode, false); //GlobalLock can return NULL
 		pDevMode->dmFields = DM_ORIENTATION | DM_PAPERLENGTH | DM_PAPERWIDTH;
 		pDevMode->dmOrientation = (bPortrait) ? DMORIENT_PORTRAIT : DMORIENT_LANDSCAPE;
@@ -987,8 +990,8 @@ bool GR_Win32Graphics::startPage(const char * /*szPageLabel*/, UT_uint32 /*pageN
 		// the private part
 		fixDevMode(m_hDevMode);
 		
-		pDevMode = (DEVMODE*) GlobalLock(m_hDevMode);
-		ResetDC(m_hdc, pDevMode);
+		pDevMode = (DEVMODEW*) GlobalLock(m_hDevMode);
+		ResetDCW(m_hdc, pDevMode);
 		GlobalUnlock(m_hDevMode);
 	}
 
@@ -1104,11 +1107,11 @@ void GR_Win32Graphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_s
 #else
 	// this is the method used by fillRect(); if we were to use it, it we should
 	// cache lb.lbColor from inside setBrush() to avoid calling GetObject() all the time
-	LOGBRUSH lb;
-	GetObject(m_hClearBrush, sizeof(LOGBRUSH), &lb);
+	LOGBRUSHW lb;
+	GetObjectW(m_hClearBrush, sizeof(LOGBRUSHW), &lb);
 	
-	const COLORREF cr = ::SetBkColor(m_hdc,  lb.lbColor);
-	::ExtTextOut(m_hdc, 0, 0, ETO_OPAQUE, &r, NULL, 0, NULL);
+	const COLORREFW cr = ::SetBkColor(m_hdc,  lb.lbColor);
+	::ExtTextOutW(m_hdc, 0, 0, ETO_OPAQUE, &r, NULL, 0, NULL);
 	::SetBkColor(m_hdc, cr);
 #endif
 }
@@ -1282,7 +1285,7 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(XAP_App::getApp());
 	HINSTANCE hinst = pWin32App->getInstance();
-	LPCTSTR cursor_name;
+	LPCTSTR cursor_name;                //TODO : CHECK
 
 	switch (m_cursor)
 	{
@@ -1424,7 +1427,7 @@ void GR_Win32Graphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint3
 	COLORREF clr = RGB(GetRValue(m_3dColors[c]), GetGValue(m_3dColors[c]), GetBValue(m_3dColors[c]));
 	
 	const COLORREF cr = ::SetBkColor(hdc,  clr);
-	::ExtTextOut(hdc, 0, 0, ETO_OPAQUE, &r, NULL, 0, NULL);
+	::ExtTextOutW(hdc, 0, 0, ETO_OPAQUE, &r, NULL, 0, NULL);
 	::SetBkColor(hdc, cr);
 	setExposePending(false);
 }
@@ -1450,10 +1453,10 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 
 	// we borrow some code from GR_Win32Graphics::findFont()
 
-	LOGFONT lf;
+	LOGFONTW lf;
 	memset(&lf, 0, sizeof(lf));
 
-	TEXTMETRIC tm;
+	TEXTMETRICW tm;
 	memset(&tm, 0, sizeof(tm));
 
 	// TODO i'm not sure why we special case these, but the other
@@ -1471,8 +1474,10 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_MODERN;
 	else
 	{
-			strncpy(lf.lfFaceName, 
-				    XAP_EncodingManager::get_instance()->strToNative(szFontName, "UTF-8", false),
+		UT_Win32LocaleString str;
+		str.fromUTF8 (szFontName);
+			wcsncpy(lf.lfFaceName, 
+				    str.c_str(),
 			        LF_FACESIZE);
 	}
 
@@ -1481,10 +1486,10 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 	// created.  hopefully, this will let us more accurately
 	// reflect what is being seen on screen.
 
-	HFONT hFont = CreateFontIndirect(&lf);
-	HDC hdc = CreateDC("DISPLAY",NULL,NULL,NULL);
+	HFONT hFont = CreateFontIndirectW(&lf);
+	HDC hdc = CreateDCW(L"DISPLAY",NULL,NULL,NULL);
 	HFONT hFontOld = (HFONT) SelectObject(hdc,hFont);
-	GetTextMetrics(hdc,&tm);
+	GetTextMetricsW(hdc,&tm);
 	SelectObject(hdc,hFontOld);
 	DeleteObject(hFont);
 	DeleteDC(hdc);
@@ -1516,19 +1521,19 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
     hdc - the primary hdc on which we are expected to draw
     printHDC - the hdc for which to retrive metrics
 */
-GR_Win32Font::GR_Win32Font(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC)
+GR_Win32Font::GR_Win32Font(LOGFONTW & lf, double fPoints, HDC hdc, HDC printHDC)
 :	m_hdc(hdc),
 	m_xhdc(0), // once all the processing is done, this is changed to printHDC
 	m_yhdc(0), // once all the processing is done, this is changed to printHDC
 	m_defaultCharWidth(0),
 	m_layoutFont (0),
-	m_tm(TEXTMETRIC()),
+	m_tm(TEXTMETRICW()),
 	m_bGUIFont(false),
 	m_fPointSize(fPoints)
 {
 	m_iHeight = abs(lf.lfHeight);
 
-	m_layoutFont = CreateFontIndirect(&lf); // this is what we see to start with
+	m_layoutFont = CreateFontIndirectW(&lf); // this is what we see to start with
 
 	if(!m_layoutFont)
 	{
@@ -1548,7 +1553,7 @@ GR_Win32Font::GR_Win32Font(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC)
 		// (lfHeight already carries a rounding error from conversion pts -> screen pixels)
 		// lf.lfHeight = MulDiv(lf.lfHeight, nPrintLogPixelsY, nLogPixelsY);
 		lf.lfHeight =  (int)(-fPoints * (double)nPrintLogPixelsY / 72.00 + 0.5);
-		printFont = CreateFontIndirect(&lf);
+		printFont = CreateFontIndirectW(&lf);
 		
 		if(!printFont)
 		{
@@ -1585,9 +1590,9 @@ GR_Win32Font::GR_Win32Font(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC)
 		else
 		{
 			// Setting the m_hashKey 
-			char lpFaceName[1000];
+			wchar_t lpFaceName[1000];
 			
-			GetTextFace(printHDC, 1000, lpFaceName );
+			GetTextFaceW(printHDC, 1000*sizeof(wchar_t), lpFaceName );
 
 			_updateFontYMetrics(hdc, printHDC);
 
@@ -1623,7 +1628,7 @@ GR_Win32Font::GR_Win32Font(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC)
 	}
 }
 
-GR_Win32Font * GR_Win32Font::newFont(LOGFONT &lf, double fPoints, HDC hdc, HDC printHDC)
+GR_Win32Font * GR_Win32Font::newFont(LOGFONTW &lf, double fPoints, HDC hdc, HDC printHDC)
 {
 	GR_Win32Font * f = new GR_Win32Font(lf, fPoints, hdc, printHDC);
 
@@ -1695,7 +1700,7 @@ void GR_Win32Font::_updateFontYMetrics(HDC hdc, HDC printHDC)
 	// we have to remeasure if (a) the printer changed, or (b) the primary device changed
 	if(printHDC != m_yhdc || hdc != m_hdc)
 	{
-		GetTextMetrics(printHDC,&m_tm);
+		GetTextMetricsW(printHDC,&m_tm);
 
 		// now we have to scale the metrics down from the printHDC to our layout units
 		// 
@@ -1765,7 +1770,7 @@ UT_sint32 GR_Win32Font::measureUnremappedCharForCache(UT_UCSChar cChar) const
 	// calculate the limits of the 256-char page
 	UT_UCS4Char base = (cChar & 0xffffff00);
 	UT_UCS4Char limit = (cChar | 0x000000ff);
-	HDC hdc = CreateDC("DISPLAY",NULL,NULL,NULL);
+	HDC hdc = CreateDCW(L"DISPLAY",NULL,NULL,NULL);
 	SelectObject(hdc,m_layoutFont);
 	_getCharWidths()->setCharWidthsOfRange(hdc, base, limit);
 	DeleteDC(hdc);
@@ -1942,14 +1947,14 @@ void GR_Win32Font::insertFontInCache(UT_uint32 pixelsize, HFONT pFont) const
 
 void GR_Win32Font::fetchFont(UT_uint32 pixelsize) const
 {
-	LOGFONT lf;
+	LOGFONTW lf;
 
-	GetObject(m_layoutFont, sizeof(LOGFONT), &lf);
+	GetObjectW(m_layoutFont, sizeof(LOGFONTW), &lf);
 	lf.lfHeight = pixelsize;
 
 	if (lf.lfHeight>0) lf.lfHeight = - lf.lfHeight;
 
-	HFONT pFont = CreateFontIndirect(&lf);
+	HFONT pFont = CreateFontIndirectW(&lf);
 
 	insertFontInCache(pixelsize, pFont);
 }
@@ -2175,7 +2180,7 @@ BITMAPINFO * GR_Win32Graphics::ConvertDDBToDIB(HBITMAP bitmap, HPALETTE hPal, DW
 		hPal = (HPALETTE)GetStockObject(DEFAULT_PALETTE);	
 		
 	// Get bitmap information
-	::GetObject(bitmap, sizeof(bm),(LPSTR)&bm);	
+	::GetObjectW(bitmap, sizeof(bm),(LPSTR)&bm);	
 	
 	// Initialize the bitmapinfoheader
 	bi.biSize			= sizeof(BITMAPINFOHEADER);	
@@ -2349,8 +2354,8 @@ if(!(x))                                        \
 	goto cleanup;                               \
 }
 
-GR_Graphics * GR_Win32Graphics::getPrinterGraphics(const char * pPrinterName,
-												   const char * pDocName)
+GR_Graphics * GR_Win32Graphics::getPrinterGraphics(const wchar_t * pPrinterName,
+												   const wchar_t * pDocName)
 {
 	UT_return_val_if_fail( pDocName, NULL );
 	GR_Win32Graphics *pGr = NULL;
@@ -2358,15 +2363,15 @@ GR_Graphics * GR_Win32Graphics::getPrinterGraphics(const char * pPrinterName,
 	HANDLE hPrinter = NULL;
 	LONG iBuffSize = 0;
 	HDC hPDC = NULL;
-	DOCINFO * pDI = NULL;
-	PDEVMODE pDM = NULL;
+	DOCINFOW * pDI = NULL;
+	PDEVMODEW pDM = NULL;
 	
 	bool bFreePN = false;
 
 	// we will use '-' as a shortcut for default printer (the --print command has to have
 	// a parameter)
-	char * pPN = strcmp("-", pPrinterName) == 0 ? NULL : (char *) pPrinterName;
-	const char * pDriver = UT_IsWinNT() ? "WINSPOOL" : NULL;
+	wchar_t * pPN = wcscmp(L"-", pPrinterName) == 0 ? NULL : (wchar_t *) pPrinterName;
+	const wchar_t * pDriver = UT_IsWinNT() ? L"WINSPOOL" : NULL;
 	
 	if(!pPN)
 	{
@@ -2376,29 +2381,29 @@ GR_Graphics * GR_Win32Graphics::getPrinterGraphics(const char * pPrinterName,
 
 	_test_and_cleanup(pPN);
 
-	hPDC = CreateDC(pDriver, pPN, NULL, NULL);
+	hPDC = CreateDCW(pDriver, pPN, NULL, NULL);
 
 	_test_and_cleanup(hPDC);
 	
-	_test_and_cleanup( OpenPrinter(pPN, &hPrinter, NULL));
+	_test_and_cleanup( OpenPrinterW(pPN, &hPrinter, NULL));
 		
 	// first, get the size of the buffer needed for the document mode
-	iBuffSize = DocumentProperties(NULL, hPrinter,	pPN, NULL, NULL, 0);
+	iBuffSize = DocumentPropertiesW(NULL, hPrinter,	pPN, NULL, NULL, 0);
 	_test_and_cleanup( iBuffSize );
 
 	// must be global movable memory
 	hDM = GlobalAlloc(GHND, iBuffSize);
-	pDM = (PDEVMODE)GlobalLock(hDM);
-	_test_and_cleanup(hDM && 0<DocumentProperties(NULL, hPrinter, pPN, pDM, NULL, DM_OUT_BUFFER));
+	pDM = (PDEVMODEW)GlobalLock(hDM);
+	_test_and_cleanup(hDM && 0<DocumentPropertiesW(NULL, hPrinter, pPN, pDM, NULL, DM_OUT_BUFFER));
 	GlobalUnlock(hDM);
 
 	// we have all we need to fill in the doc info structure ...
-	pDI = (DOCINFO*) UT_calloc(1, sizeof(DOCINFO));
+	pDI = (DOCINFOW*) UT_calloc(1, sizeof(DOCINFOW));
 	_test_and_cleanup(pDI);
 
-	memset(pDI, 0, sizeof(DOCINFO));
+	memset(pDI, 0, sizeof(DOCINFOW));
 	
-	pDI->cbSize = sizeof(DOCINFO);
+	pDI->cbSize = sizeof(DOCINFOW);
 	pDI->lpszDocName = pDocName;
 	pDI->lpszOutput  = NULL; // for now we do not support printing into file from cmd line
 	pDI->lpszDatatype = NULL;
@@ -2454,7 +2459,7 @@ GR_Graphics * GR_Win32Graphics::getPrinterGraphics(const char * pPrinterName,
 */
 bool GR_Win32Graphics::fixDevMode(HGLOBAL hDevMode)
 {
-	DEVMODE * pDM = (DEVMODE*)GlobalLock(hDevMode);
+	DEVMODEW * pDM = (DEVMODEW*)GlobalLock(hDevMode);
 	UT_return_val_if_fail( pDM, false );
 	
 	// find out how big structure this particular printer really needs
@@ -2462,7 +2467,7 @@ bool GR_Win32Graphics::fixDevMode(HGLOBAL hDevMode)
 	DWORD       dwNeeded, dwRet;
 
 	//Start by opening the printer
-	if(!OpenPrinter((char*)& pDM->dmDeviceName, &hPrinter, NULL))
+	if(!OpenPrinterW((wchar_t*)& pDM->dmDeviceName, &hPrinter, NULL))
 	{
 		UT_String msg;
 		UT_String_sprintf(msg,"Unable to open printer [%s]", (char*)& pDM->dmDeviceName);
@@ -2472,7 +2477,7 @@ bool GR_Win32Graphics::fixDevMode(HGLOBAL hDevMode)
 		return false;
 	}
 	
-	dwNeeded = DocumentProperties(NULL,hPrinter, (char*)& pDM->dmDeviceName, NULL, NULL, 0);
+	dwNeeded = DocumentPropertiesW(NULL,hPrinter, (wchar_t*)& pDM->dmDeviceName, NULL, NULL, 0);
 
 	if( (int) dwNeeded > pDM->dmSize + pDM->dmDriverExtra )
 	{
@@ -2489,7 +2494,7 @@ bool GR_Win32Graphics::fixDevMode(HGLOBAL hDevMode)
 	}
 	
 	// now get the printer driver to merge the data in the public section into its private part
-	dwRet = DocumentProperties(NULL,hPrinter, (char*)& pDM->dmDeviceName, pDM, pDM, DM_OUT_BUFFER | DM_IN_BUFFER);
+	dwRet = DocumentPropertiesW(NULL,hPrinter, (wchar_t*)& pDM->dmDeviceName, pDM, pDM, DM_OUT_BUFFER | DM_IN_BUFFER);
 
 	// g_free what needs be ...
 	ClosePrinter(hPrinter);
@@ -2499,16 +2504,16 @@ bool GR_Win32Graphics::fixDevMode(HGLOBAL hDevMode)
 	return true;
 }
 
-DOCINFO *GR_Win32Graphics::getDocInfo()
+DOCINFOW *GR_Win32Graphics::getDocInfo()
 {
-  DOCINFO *di;
+  DOCINFOW *di;
   
-  di = (DOCINFO*) UT_calloc(1, sizeof(DOCINFO));
-  memset( di, 0, sizeof(DOCINFO) );
-  di->cbSize = sizeof(DOCINFO);
-  di->lpszDocName = (LPCTSTR)TEXT("AbiWord Print Preview");
-  di->lpszOutput = (LPTSTR) NULL;
-  di->lpszDatatype = (LPTSTR) NULL;
+  di = (DOCINFOW*) UT_calloc(1, sizeof(DOCINFOW));
+  memset( di, 0, sizeof(DOCINFOW) );
+  di->cbSize = sizeof(DOCINFOW);
+  di->lpszDocName = L"AbiWord Print Preview";
+  di->lpszOutput = (LPWSTR) NULL;
+  di->lpszDatatype = (LPWSTR) NULL;
   di->fwType = 0;
   
   return di;
@@ -2521,15 +2526,15 @@ HDC GR_Win32Graphics::createbestmetafilehdc()
 {
   DWORD neededsize;
   DWORD noprinters;
-  LPPRINTER_INFO_5 printerinfo = NULL;
+  LPPRINTER_INFO_5W printerinfo = NULL;
   int bestres = 0;
   HDC besthdc = 0;
   
-  EnumPrinters(PRINTER_ENUM_CONNECTIONS|PRINTER_ENUM_LOCAL, NULL, 5, NULL, 0,
+  EnumPrintersW(PRINTER_ENUM_CONNECTIONS|PRINTER_ENUM_LOCAL, NULL, 5, NULL, 0,
 	       &neededsize, &noprinters);
-  printerinfo = (LPPRINTER_INFO_5) malloc(neededsize);
+  printerinfo = (LPPRINTER_INFO_5W) malloc(neededsize);
   
-  if (EnumPrinters(PRINTER_ENUM_CONNECTIONS|PRINTER_ENUM_LOCAL, NULL, 5,
+  if (EnumPrintersW(PRINTER_ENUM_CONNECTIONS|PRINTER_ENUM_LOCAL, NULL, 5,
 		   (LPBYTE)printerinfo, neededsize, &neededsize, &noprinters)) {
     // init best resolution for hdc=0, which is screen resolution:    
     HDC curhdc = GetDC(NULL);
@@ -2540,7 +2545,7 @@ HDC GR_Win32Graphics::createbestmetafilehdc()
     }
       
     for (UT_uint32 i = 0; i < noprinters; i++) {
-      curhdc = CreateDC("WINSPOOL", printerinfo[i].pPrinterName, NULL, NULL);
+      curhdc = CreateDCW(L"WINSPOOL", printerinfo[i].pPrinterName, NULL, NULL);
       if (curhdc) {
 	int curres = GetDeviceCaps(curhdc, LOGPIXELSX) + GetDeviceCaps(curhdc,
 								       LOGPIXELSY);

@@ -24,6 +24,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_Win32OS.h"
+#include "ut_Win32LocaleString.h"
 
 #include "xap_App.h"
 #include "xap_Dialog_Id.h"
@@ -36,7 +37,6 @@
 #include "xap_Dlg_About.h"
 #include "xap_Win32Dlg_About.h"
 
-// #include "xap_Win32Resources.rc2"
 #include "gr_Win32Graphics.h"
 #include "gr_Win32Image.h"
 #include "gr_Win32USPGraphics.h"
@@ -86,6 +86,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 {
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(XAP_App::getApp());
+    UT_Win32LocaleString str, strbis;
 	m_pFrame = pFrame;
 
 	UT_ByteBuf * pBB = new UT_ByteBuf(g_pngSidebar_sizeof);
@@ -100,7 +101,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 	m_pGrImageSidebar->convertFromBuffer(pBB, "image/png", iImageWidth, iImageHeight);
 
 	DELETEP(pBB);
-	const char * pClassName = "AbiSource_About";
+	const wchar_t * pClassName = L"AbiSource_About";
 	
 	ATOM a = UT_RegisterClassEx(CS_HREDRAW | CS_VREDRAW, (WNDPROC) s_dlgProc, pWin32App->getInstance(),
 								NULL, LoadCursor(NULL, IDC_ARROW), GetSysColorBrush(COLOR_BTNFACE), NULL,
@@ -119,10 +120,11 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 	BringWindowToTop(hWndFrame);
 	pWin32App->enableAllTopLevelWindows(FALSE);
 
-	char buf[1024];
-	const XAP_StringSet*  pSS = XAP_App::getApp()->getStringSet();	
-	sprintf(buf, pSS->getValue(XAP_STRING_ID_DLG_ABOUT_Title), 
-			XAP_App::getApp()->getApplicationName());
+	wchar_t buf[1024];
+	const XAP_StringSet*  pSS = XAP_App::getApp()->getStringSet();
+	str.fromUTF8 (pSS->getValue(XAP_STRING_ID_DLG_ABOUT_Title));
+	strbis.fromASCII (XAP_App::getApp()->getApplicationName());
+	swprintf(buf, str.c_str(), strbis.c_str());
 
 	HWND hwndAbout = UT_CreateWindowEx(	0L, pClassName,
 										buf,
@@ -137,7 +139,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 										NULL);
 	if (!hwndAbout)
 	{
-		UnregisterClass(pClassName, pWin32App->getInstance());
+		UnregisterClassW(pClassName, pWin32App->getInstance());
 		::MessageBeep(MB_ICONEXCLAMATION);
 		return;
 	}
@@ -148,9 +150,10 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 	GetClientRect(hwndAbout, &rcClient);
 	const int iWidth  = rcClient.right;
 	const int iHeight = rcClient.bottom;
-		
-	HWND hwndOK = CreateWindow("BUTTON",
-							   pSS->getValue(XAP_STRING_ID_DLG_OK),
+	
+	str.fromUTF8 (pSS->getValue(XAP_STRING_ID_DLG_OK));		
+	HWND hwndOK = CreateWindowW(L"BUTTON",
+							   str.c_str(),
 							   WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 							   iWidth - BUTTON_WIDTH - BUTTON_GAP,
 							   iHeight - BUTTON_HEIGHT - BUTTON_GAP,
@@ -161,8 +164,8 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 							   pWin32App->getInstance(),
 							   NULL);
 
-	HWND hwndURL = CreateWindow("BUTTON",
-								"www.abisource.com",
+	HWND hwndURL = CreateWindowW(L"BUTTON",
+								L"www.abisource.com",
 								WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 								iWidth - BUTTON_WIDTH - BUTTON_GAP - 2*BUTTON_WIDTH - BUTTON_GAP,
 								iHeight - BUTTON_HEIGHT - BUTTON_GAP,
@@ -173,8 +176,9 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 								pWin32App->getInstance(),
 								NULL);
 
-	HWND hwndStatic_Heading = CreateWindow("STATIC",
-										   XAP_App::getApp()->getApplicationName(),
+    str.fromUTF8 (XAP_App::getApp()->getApplicationName());
+	HWND hwndStatic_Heading = CreateWindowW(L"STATIC",
+										   str.c_str(),
 										   WS_CHILD | WS_VISIBLE | SS_CENTER,
 										   iImageWidth,
 										   BUTTON_GAP,
@@ -185,9 +189,10 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 										   pWin32App->getInstance(),
 										   NULL);
 
-	sprintf(buf, XAP_ABOUT_VERSION, XAP_App::s_szBuild_Version); 
-	HWND hwndStatic_Version = CreateWindow("STATIC",
-										   buf,
+    str.fromASCII (XAP_App::s_szBuild_Version);
+   
+	HWND hwndStatic_Version = CreateWindowW(L"STATIC",
+										   str.c_str(),
 										   WS_CHILD | WS_VISIBLE | SS_CENTER,
 										   iImageWidth + BUTTON_GAP,
 										   BUTTON_GAP + HEADING_HEIGHT + BUTTON_GAP,
@@ -198,8 +203,9 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 										   pWin32App->getInstance(),
 										   NULL);
 
-	HWND hwndStatic_Copyright = CreateWindow("STATIC",
-											 XAP_ABOUT_COPYRIGHT,
+    str.fromASCII (XAP_ABOUT_COPYRIGHT);
+	HWND hwndStatic_Copyright = CreateWindowW(L"STATIC",
+											 str.c_str(),
 											 WS_CHILD | WS_VISIBLE | SS_LEFT,
 											 iImageWidth + BUTTON_GAP,
 											 BUTTON_GAP + HEADING_HEIGHT + BUTTON_GAP + VERSION_HEIGHT + 1*BUTTON_GAP,
@@ -210,8 +216,10 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 											 pWin32App->getInstance(),
 											 NULL);
 
-	sprintf(buf, XAP_ABOUT_GPL_LONG, XAP_App::getApp()->getApplicationName());
-	HWND hwndStatic_GPL = CreateWindow("STATIC",
+    str.fromASCII (XAP_App::getApp()->getApplicationName());
+	strbis.fromASCII (XAP_ABOUT_GPL_LONG);
+	swprintf(buf, strbis.c_str(), str.c_str());
+	HWND hwndStatic_GPL = CreateWindowW(L"STATIC",
 									   buf,
 									   WS_CHILD | WS_VISIBLE | SS_LEFT,
 									   iImageWidth + BUTTON_GAP,
@@ -229,9 +237,10 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 	{
 		GR_Win32USPGraphics * pUSP = static_cast<GR_Win32USPGraphics*>(
 												  pWin32App->getLastFocussedFrame()->getCurrentView()->getGraphics());
-		
-		hwndStatic_USP_Version = CreateWindow("STATIC",
-												   pUSP->getUSPVersion(),
+
+		str.fromASCII (pUSP->getUSPVersion());
+		hwndStatic_USP_Version = CreateWindowW(L"STATIC",
+												   str.c_str(),
 												   WS_CHILD | WS_VISIBLE | SS_LEFT,
 												   BUTTON_GAP/2,
  				   								   iHeight - 3*BUTTON_HEIGHT/4,
@@ -245,38 +254,38 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 		
 	}
 	
-	LOGFONT lf;
+	LOGFONTW lf;
 	memset(&lf, 0, sizeof(lf));
 
-	strcpy(lf.lfFaceName, "MS Sans Serif");
+	wcscpy(lf.lfFaceName, L"MS Sans Serif");
 	
 	lf.lfHeight = 12;
 	lf.lfWeight = 0;
-	HFONT hfontPrimary = CreateFontIndirect(&lf);
+	HFONT hfontPrimary = CreateFontIndirectW(&lf);
 
 	lf.lfHeight = 6;
 	lf.lfWeight = 0;
-	HFONT hfontSmall = CreateFontIndirect(&lf);
+	HFONT hfontSmall = CreateFontIndirectW(&lf);
 
-	strcpy(lf.lfFaceName, "Arial");
+	wcscpy(lf.lfFaceName, L"Arial");
 	lf.lfHeight = 36;
 	lf.lfWeight = FW_BOLD; 
-	HFONT hfontHeading = CreateFontIndirect(&lf);
+	HFONT hfontHeading = CreateFontIndirectW(&lf);
 	
-	SendMessage(hwndStatic_Heading, WM_SETFONT, (WPARAM) hfontHeading, 0);
+	SendMessageW(hwndStatic_Heading, WM_SETFONT, (WPARAM) hfontHeading, 0);
 
 	HWND rgFontReceivers[] =
 		{ hwndOK, hwndURL, hwndStatic_Version, hwndStatic_Copyright };
 
 	for (UT_uint32 iWnd = 0; iWnd < G_N_ELEMENTS(rgFontReceivers); ++iWnd)
 	{
-		SendMessage(rgFontReceivers[iWnd], WM_SETFONT, (WPARAM) hfontPrimary, 0);
+		SendMessageW(rgFontReceivers[iWnd], WM_SETFONT, (WPARAM) hfontPrimary, 0);
 	}
 
-	SendMessage(hwndStatic_GPL, WM_SETFONT, (WPARAM) hfontSmall, 0);
+	SendMessageW(hwndStatic_GPL, WM_SETFONT, (WPARAM) hfontSmall, 0);
 
 	if(hwndStatic_USP_Version)
-		SendMessage(hwndStatic_USP_Version, WM_SETFONT, (WPARAM) hfontSmall, 0);
+		SendMessageW(hwndStatic_USP_Version, WM_SETFONT, (WPARAM) hfontSmall, 0);
 	
 	// the event loop
 	{
@@ -286,13 +295,13 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 	
 		while (!s_bEventLoopDone)
 		{
-			if (GetMessage(&msg, NULL, 0, 0))
+			if (GetMessageW(&msg, NULL, 0, 0))
 			{
 				if( hwndAbout && IsDialogMessage( hwndAbout, &msg ) )
 					continue;
 
 				TranslateMessage(&msg);
-				DispatchMessage(&msg);
+				DispatchMessageW(&msg);
 			}
 			else
 			{
@@ -303,7 +312,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 
 	DestroyWindow(hwndAbout);
 
-	UnregisterClass(pClassName, pWin32App->getInstance());
+	UnregisterClassW(pClassName, pWin32App->getInstance());
 
 	pWin32App->enableAllTopLevelWindows(true);
 

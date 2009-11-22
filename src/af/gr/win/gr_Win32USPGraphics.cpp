@@ -289,7 +289,7 @@ GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, HWND hwnd)
 }
 
 
-GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, const DOCINFO * pDI, HGLOBAL hDevMode)
+GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, const DOCINFOW * pDI, HGLOBAL hDevMode)
 	:GR_Win32Graphics(hdc, pDI, hDevMode),
 	 m_bConstructorSucceeded(false)
 {
@@ -302,7 +302,7 @@ GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, const DOCINFO * pDI, HGLOBAL h
 	m_bConstructorSucceeded = true;
 }
 
-GR_Win32Font * GR_Win32USPGraphics::_newFont(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC)
+GR_Win32Font * GR_Win32USPGraphics::_newFont(LOGFONTW & lf, double fPoints, HDC hdc, HDC printHDC)
 {
 	return GR_Win32USPFont::newFont(lf, fPoints, hdc, printHDC);
 }
@@ -354,7 +354,7 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 		s_sDescription = "Uniscribe-based graphics";
 		s_Version.set(0,1,0,0);
 		
-		s_hUniscribe = LoadLibrary("usp10.dll");
+		s_hUniscribe = LoadLibraryW(L"usp10.dll");
 
 		if(!s_hUniscribe)
 		{
@@ -363,21 +363,21 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 		}
 		
 #if 1 //def DEBUG
-		char FileName[250];
-		if(GetModuleFileName(s_hUniscribe,&FileName[0],250))
+		wchar_t FileName[250];
+		if(GetModuleFileNameW(s_hUniscribe,&FileName[0],250))
 		{
 			DWORD dummy;
-			DWORD iSize = GetFileVersionInfoSize(FileName,&dummy);
+			DWORD iSize = GetFileVersionInfoSizeW(FileName,&dummy);
 
 			if(iSize)
 			{
 				char * pBuff = (char*)g_try_malloc(iSize);
-				if(pBuff && GetFileVersionInfo(FileName, 0, iSize, pBuff))
+				if(pBuff && GetFileVersionInfoW(FileName, 0, iSize, pBuff))
 				{
 					LPVOID buff2;
 					UINT   buff2size;
 					
-					if(VerQueryValue(pBuff,"\\",
+					if(VerQueryValueW(pBuff,L"\\",
 									 &buff2,
 									 &buff2size))
 					{
@@ -671,17 +671,17 @@ void GR_Win32USPGraphics::_setupFontOnDC(GR_Win32USPFont *pFont, bool bZoomMe)
 			DWORD e = GetLastError();
 			LPVOID lpMsgBuf;
  
-			FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+			FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
 						  NULL,
 						  e,
 						  MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-						  (LPTSTR) &lpMsgBuf,
+						  (LPWSTR) &lpMsgBuf,
 						  0,
 						  NULL);
 
 			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
-			LOGFONT lf;
-			if(GetObject(hFont, sizeof(LOGFONT), &lf))
+			LOGFONTW lf;
+			if(GetObjectW(hFont, sizeof(LOGFONTW), &lf))
 			{
 				// this assumes that the lfFaceName is a char string; it could be wchar in
 				// fact but it seems to work elsewhere in the win32 graphics class
@@ -692,7 +692,7 @@ void GR_Win32USPGraphics::_setupFontOnDC(GR_Win32USPFont *pFont, bool bZoomMe)
 				LOG_USP_EXCPT("Could not select font into DC")
 			}
 
-			LocalFree( lpMsgBuf );
+			LocalFree(lpMsgBuf );
 		}
 
 		// remember which font we loaded
@@ -1308,10 +1308,10 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 
 		if(!iAscentScreen)
 		{
-			TEXTMETRIC tm;
+			TEXTMETRICW tm;
 			memset(&tm, 0, sizeof(tm));
 
-			GetTextMetrics(m_hdc, &tm);
+			GetTextMetricsW(m_hdc, &tm);
 			iAscentScreen = (UT_sint32)((double)tm.tmAscent*(double)getResolution()*100.0/
 										((double)getDeviceResolution()*(double)getZoomPercentage()));
 		
@@ -1457,10 +1457,10 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 			_setupFontOnDC(pFont, false);
 			bFontSetUpOnDC = true;
 			
-			TEXTMETRIC tm;
+			TEXTMETRICW tm;
 			memset(&tm, 0, sizeof(tm));
 
-			GetTextMetrics(getPrintDC(), &tm);
+			GetTextMetricsW(getPrintDC(), &tm);
 
 #if 0 //def DEBUG
 			HDC printHDC = UT_GetDefaultPrinterDC();
@@ -1950,6 +1950,7 @@ void GR_Win32USPGraphics::adjustDeletePosition(GR_RenderInfo & ri)
 	// restore the original length
 	ri.m_iLength = iCharCount;
 }
+
 bool GR_Win32USPGraphics::needsSpecialCaretPositioning(GR_RenderInfo & ri)
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE, false);
@@ -2573,7 +2574,7 @@ bool GR_Win32USPRenderInfo::isJustified() const
 	return (m_pJustify != NULL);
 }
 
-GR_Win32USPFont *  GR_Win32USPFont::newFont(LOGFONT &lf, double fPoints, HDC hdc, HDC printHDC)
+GR_Win32USPFont *  GR_Win32USPFont::newFont(LOGFONTW &lf, double fPoints, HDC hdc, HDC printHDC)
 {
 	GR_Win32USPFont * f = new GR_Win32USPFont(lf, fPoints, hdc, printHDC);
 
@@ -2586,7 +2587,7 @@ GR_Win32USPFont *  GR_Win32USPFont::newFont(LOGFONT &lf, double fPoints, HDC hdc
 	return f;
 }
 
-GR_Win32USPFont::GR_Win32USPFont(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC)
+GR_Win32USPFont::GR_Win32USPFont(LOGFONTW & lf, double fPoints, HDC hdc, HDC printHDC)
 	: GR_Win32Font(lf, fPoints, hdc, printHDC),
 	  m_sc(NULL),
 	  m_printHDC(NULL),

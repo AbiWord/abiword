@@ -66,8 +66,8 @@ void AP_Win32Dialog_Tab::runModal(XAP_Frame * pFrame)
 	_win32Dialog.runModal(pFrame, AP_DIALOG_ID_TAB, AP_RID_DIALOG_TABS, this);
 }
 
-#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+#define _DS(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 BOOL AP_Win32Dialog_Tab::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
@@ -76,7 +76,7 @@ BOOL AP_Win32Dialog_Tab::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lP
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_Tab_TabTitle));
+	  setDialogTitle (pSS->getValue(AP_STRING_ID_DLG_Tab_TabTitle));
 
 	// localize controls
 	_DSX(TABS_OK_BUTTON,				DLG_OK);

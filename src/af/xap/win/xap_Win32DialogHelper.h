@@ -82,42 +82,42 @@ public:
 	void				checkButton(UT_sint32 controlId, bool bChecked = true);
 	void				enableControl(UT_sint32 controlId, bool bEnabled = true);
 	void				destroyWindow();
-	void				setDialogTitle(LPCSTR p_str);
-	int					showWindow( int Mode );
-	int					showControl(UT_sint32 controlId, int Mode);
-	int					bringWindowToTop();
+	void				setDialogTitle(LPCTSTR p_str);
+	int				showWindow( int Mode );
+	int				showControl(UT_sint32 controlId, int Mode);
+	int				bringWindowToTop();
 
 	// Combo boxes.
 
-	int					addItemToCombo(UT_sint32 controlId, LPCSTR p_str);
+	int				addItemToCombo(UT_sint32 controlId, LPCSTR p_str);
 	void				selectComboItem(UT_sint32 controlId, int index);
 	int 				setComboDataItem(UT_sint32 controlId, int nIndex, DWORD dwData);
 	int 				getComboDataItem(UT_sint32 controlId, int nIndex);
-	int					getComboSelectedIndex(UT_sint32 controlId) const;
+	int				getComboSelectedIndex(UT_sint32 controlId) const;
 	void				resetComboContent(UT_sint32 controlId);
 
 	// List boxes
 
 	void				resetContent(UT_sint32 controlId);
-	int					addItemToList(UT_sint32 controlId, LPCSTR p_str);
-	int					getListSelectedIndex(UT_sint32 controlId) const;
+	int				addItemToList(UT_sint32 controlId, LPCSTR p_str);
+	int				getListSelectedIndex(UT_sint32 controlId) const;
 	int 				setListDataItem(UT_sint32 controlId, int nIndex, DWORD dwData);
 	int 				getListDataItem(UT_sint32 controlId, int nIndex);
 	void				selectListItem(UT_sint32 controlId, int index);
 	void				getListText(UT_sint32 controlId, int index, char *p_str) const;
 
 	// Controls
-	void				setControlText(UT_sint32 controlId, LPCSTR p_str);
+	void				setControlText(UT_sint32 controlId, LPCTSTR p_str);
 	void				setControlInt(UT_sint32 controlId, int value);
-	int					getControlInt(UT_sint32 controlId) const;
+	int				getControlInt(UT_sint32 controlId) const;
 	
-	void                selectControlText(UT_sint32 controlId,
+	void				selectControlText(UT_sint32 controlId,
 										  UT_sint32 start,
 										  UT_sint32 end);
 	
-	int					isChecked(UT_sint32 controlId) const;
+	int				isChecked(UT_sint32 controlId) const;
 	void				getControlText(	UT_sint32	controlId,
-										LPSTR		p_buffer,
+										LPTSTR		p_buffer,
 										UT_sint32	Buffer_length) const;
 
 	bool				isControlVisible(UT_sint32	controlId) const;

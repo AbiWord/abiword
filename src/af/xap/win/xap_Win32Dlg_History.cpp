@@ -68,62 +68,26 @@ XAP_Win32Dialog_History::~XAP_Win32Dialog_History(void)
 
 void XAP_Win32Dialog_History::runModal(XAP_Frame * pFrame)
 {
-	UT_return_if_fail(pFrame);
-	// raise the dialog
-	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
+ 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 
 	XAP_Win32LabelledSeparator_RegisterClass(pWin32App);
-
-	LPCTSTR lpTemplate = NULL;
-
-	UT_ASSERT(m_id == XAP_DIALOG_ID_HISTORY);
-
-	lpTemplate = MAKEINTRESOURCE(XAP_RID_DIALOG_HISTORY);
-
-	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
-						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-						(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT_HARMLESS((result != -1));
-	if(result == -1)
-	{
-		UT_DEBUGMSG(( "XAP_Win32Dialog_History::runModal error %d\n", GetLastError() ));
-	}
-}
-
-BOOL CALLBACK XAP_Win32Dialog_History::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
-{
-	// This is a static function.
-
-	XAP_Win32Dialog_History * pThis;
-
-	switch (msg)
-	{
-	case WM_INITDIALOG:
-		pThis = (XAP_Win32Dialog_History *)lParam;
-		SetWindowLongPtr(hWnd,DWLP_USER,lParam);
-		return pThis->_onInitDialog(hWnd,wParam,lParam);
-
-	case WM_COMMAND:
-		pThis = (XAP_Win32Dialog_History *)GetWindowLongPtr(hWnd,DWLP_USER);
-		return pThis->_onCommand(hWnd,wParam,lParam);
-
-	default:
-		return 0;
-	}
+	UT_ASSERT(m_id == XAP_DIALOG_ID_HISTORY);	
+	createModal(pFrame, MAKEINTRESOURCEW(XAP_RID_DIALOG_HISTORY));	
 }
 
 BOOL XAP_Win32Dialog_History::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
+    UT_Win32LocaleString str;
 	// set the window title
-	SetWindowText(hWnd, getWindowLabel());
+	setDialogTitle(getWindowLabel());
 	
 	// localize buttons
-	SetDlgItemText(hWnd,XAP_RID_DIALOG_HISTORY_BTN_OK,getButtonLabel(0));
-	//SetDlgItemText(hWnd,XAP_RID_DIALOG_HISTORY_BTN_SHOW,getButtonLabel(1));
-	SetDlgItemText(hWnd,XAP_RID_DIALOG_HISTORY_BTN_CANCEL,getButtonLabel(getButtonCount()-1));
+	setDlgItemText(XAP_RID_DIALOG_HISTORY_BTN_OK,getButtonLabel(0));
+	//setDlgItemText(XAP_RID_DIALOG_HISTORY_BTN_SHOW,getButtonLabel(1));
+	setDlgItemText(XAP_RID_DIALOG_HISTORY_BTN_CANCEL,getButtonLabel(getButtonCount()-1));
 
 	// set the list title
-	SetDlgItemText(hWnd, XAP_RID_DIALOG_HISTORY_FRAME,getListTitle());
+	setDlgItemText(XAP_RID_DIALOG_HISTORY_FRAME,getListTitle());
 	
 	// fill in the section above the list
 	UT_uint32 i;
@@ -132,7 +96,7 @@ BOOL XAP_Win32Dialog_History::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM
 								  
 	for(i = 0; i < getHeaderItemCount(); i++)
 	{
-		SetDlgItemText(hWnd,k1 + i,getHeaderLabel(i));
+		setDlgItemText(k1 + i,getHeaderLabel(i));
 		
 		char * t = getHeaderValue(i);
 		SetDlgItemText(hWnd,k2 + i, t);
@@ -142,26 +106,28 @@ BOOL XAP_Win32Dialog_History::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM
 	// set the column headings
 	HWND h = GetDlgItem(hWnd, XAP_RID_DIALOG_HISTORY_LIST_VERSIONS);
 
-	LVCOLUMN col;
+	LVCOLUMNW col;
+  
 
 	for(i = 0; i < getListColumnCount(); i++)
 	{
+        str.fromUTF8(getListHeader(i));
 		col.mask = LVCF_TEXT | LVCF_SUBITEM | LVCF_WIDTH;
 		col.iSubItem = i;
 		col.cx = 120;
-		col.pszText = const_cast<char*>(getListHeader(i));
+		col.pszText = (wchar_t *)str.c_str();
 		ListView_InsertColumn(h,i,&col);
 	}
 
 	// fill the list
 	ListView_SetItemCount(h, getListItemCount());
 
-	LVITEM item;
+	LVITEMW item;
 	item.state = 0;
 	item.stateMask = 0;
 	item.iImage = 0;
 
-	char buf[35];
+	wchar_t buf[35];
 	item.pszText = buf;
 	char * t;
 
@@ -173,8 +139,9 @@ BOOL XAP_Win32Dialog_History::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM
 		{
 			item.iSubItem = j;
 			t = getListValue(i,j);
-			item.pszText = t;
-			item.mask = LVIF_TEXT;
+			str.fromUTF8(t);
+			item.pszText = (wchar_t *) str.c_str();
+            item.mask = LVIF_TEXT;
 			
 			if(j==0)
 			{
@@ -191,8 +158,8 @@ BOOL XAP_Win32Dialog_History::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM
 		}
 	}
 	
-	SendMessage(h, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);  								
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
+	SendMessageW(h, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);  								
+	centerDialog();	
 
 	return 1;							// 1 == we did not call SetFocus()
 }
@@ -215,7 +182,7 @@ BOOL XAP_Win32Dialog_History::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lPar
 				int iSelCount = ListView_GetSelectedCount(h);
 				if(iSelCount)
 				{
-					LVITEM item;
+					LVITEMW item;
 
 					item.iSubItem = 0;
 					item.iItem = ListView_GetSelectionMark(h);

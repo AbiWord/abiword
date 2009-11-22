@@ -64,64 +64,27 @@ XAP_Win32Dialog_ListDocuments::~XAP_Win32Dialog_ListDocuments(void)
 
 void XAP_Win32Dialog_ListDocuments::runModal(XAP_Frame * pFrame)
 {
-	UT_return_if_fail(pFrame);
-	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 
 	XAP_Win32LabelledSeparator_RegisterClass(pWin32App);
-
-	LPCTSTR lpTemplate = NULL;
-
-	lpTemplate = MAKEINTRESOURCE(XAP_RID_DIALOG_LIST_DOCUMENTS);
-
-	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
-						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-						(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT_HARMLESS((result != -1));
-	if(result == -1)
-	{
-		UT_DEBUGMSG(( "XAP_Win32Dialog_ListDocuments::runModal error %d\n", GetLastError() ));
-	}
+	createModal(pFrame, MAKEINTRESOURCEW(XAP_RID_DIALOG_LIST_DOCUMENTS));
 }
 
-BOOL CALLBACK XAP_Win32Dialog_ListDocuments::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
-{
-	// This is a static function.
-
-	XAP_Win32Dialog_ListDocuments * pThis;
-
-	switch (msg)
-	{
-	case WM_INITDIALOG:
-		pThis = (XAP_Win32Dialog_ListDocuments *)lParam;
-		SetWindowLongPtr(hWnd,DWLP_USER,lParam);
-		return pThis->_onInitDialog(hWnd,wParam,lParam);
-
-	case WM_COMMAND:
-		pThis = (XAP_Win32Dialog_ListDocuments *)GetWindowLongPtr(hWnd,DWLP_USER);
-		return pThis->_onCommand(hWnd,wParam,lParam);
-
-	default:
-		return 0;
-	}
-}
-
-#define _DSX(c,s) SetDlgItemText(hWnd,XAP_RID_DIALOG_LIST_DOCUMENTS_##c,pSS->getValue(XAP_STRING_ID_##s))
-
-#define _DSXS(c,s) SetDlgItemText(hWnd,XAP_RID_DIALOG_LIST_DOCUMENTS_##c,s)
+#define _DSX(c,s) setDlgItemText(XAP_RID_DIALOG_LIST_DOCUMENTS_##c,pSS->getValue(XAP_STRING_ID_##s))
+#define _DSXS(c,s) setDlgItemText(XAP_RID_DIALOG_LIST_DOCUMENTS_##c,s)
 
 BOOL XAP_Win32Dialog_ListDocuments::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	SetWindowText(hWnd, _getTitle());
+    
+	setDialogTitle(_getTitle());
 
 	// localize controls
 	_DSXS(BTN_OK,    _getOKButtonText());
 	_DSX(BTN_CANCEL, DLG_Cancel);
 
-	SetDlgItemText(hWnd, XAP_RID_DIALOG_LIST_DOCUMENTS_HEADING,_getHeading());
-
+	//  setDlgItemText(XAP_RID_DIALOG_LIST_DOCUMENTS_HEADING,_getHeading());
+    
 	// set the column headings
 	HWND h = GetDlgItem(hWnd, XAP_RID_DIALOG_LIST_DOCUMENTS_LIST);
 
@@ -151,7 +114,7 @@ BOOL XAP_Win32Dialog_ListDocuments::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, 
 		ListView_InsertItem(h, &item);
 	}
 
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);
+	centerDialog();
 	return 1;							// 1 == we did not call SetFocus()
 }
 

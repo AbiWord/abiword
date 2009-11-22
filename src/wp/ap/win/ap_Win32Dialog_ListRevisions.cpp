@@ -69,89 +69,58 @@ AP_Win32Dialog_ListRevisions::~AP_Win32Dialog_ListRevisions(void)
 
 void AP_Win32Dialog_ListRevisions::runModal(XAP_Frame * pFrame)
 {
-	UT_return_if_fail (pFrame);
-	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 
 	XAP_Win32LabelledSeparator_RegisterClass(pWin32App);
 
-	LPCTSTR lpTemplate = NULL;
-
 	UT_return_if_fail (m_id == AP_DIALOG_ID_LIST_REVISIONS);
 
-	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_LIST_REVISIONS);
-
-	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
-						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-						(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT_HARMLESS((result != -1));
-	if (result == -1)
-	{
-		UT_DEBUGMSG(( "AP_Win32Dialog_ListRevisions::runModal error %d\n", GetLastError() ));
-	}
+    createModal(pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_LIST_REVISIONS));
 }
 
-BOOL CALLBACK AP_Win32Dialog_ListRevisions::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
-{
-	// This is a static function.
-
-	AP_Win32Dialog_ListRevisions * pThis;
-
-	switch (msg)
-	{
-	case WM_INITDIALOG:
-		pThis = (AP_Win32Dialog_ListRevisions *)lParam;
-		SetWindowLongPtr(hWnd,DWLP_USER,lParam);
-		return pThis->_onInitDialog(hWnd,wParam,lParam);
-
-	case WM_COMMAND:
-		pThis = (AP_Win32Dialog_ListRevisions *)GetWindowLongPtr(hWnd,DWLP_USER);
-		return pThis->_onCommand(hWnd,wParam,lParam);
-
-	default:
-		return 0;
-	}
-}
-
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_LIST_REVISIONS_##c,pSS->getValue(XAP_STRING_ID_##s))
+#define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_LIST_REVISIONS_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 BOOL AP_Win32Dialog_ListRevisions::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	SetWindowText(hWnd, getTitle());
+    
+	setDialogTitle (getTitle());
 
 	// localize controls
 	_DSX(BTN_OK,			DLG_OK);
 	_DSX(BTN_CANCEL,		DLG_Cancel);
 
-	SetDlgItemText(hWnd, AP_RID_DIALOG_LIST_REVISIONS_FRAME,getLabel1());
+	setDlgItemText(AP_RID_DIALOG_LIST_REVISIONS_FRAME,getLabel1());
 
 	// set the column headings
 	HWND h = GetDlgItem(hWnd, AP_RID_DIALOG_LIST_REVISIONS_LIST);
 
-	LVCOLUMN col;
+    LVCOLUMNW col;
+    UT_Win32LocaleString str;
 	col.mask = LVCF_TEXT | LVCF_SUBITEM | LVCF_WIDTH;
 
 	col.iSubItem = 0;
 	col.cx = 80;
-
-	col.pszText = const_cast<char*>(getColumn1Label());
+    str.fromUTF8(getColumn1Label());
+    col.pszText = (wchar_t *) str.c_str();    
 	ListView_InsertColumn(h,0,&col);
 
 	col.iSubItem = 1;
 	col.cx = 160;
-	col.pszText = const_cast<char*>(getColumn2Label());
+    str.fromUTF8(getColumn2Label());
+	col.pszText = (wchar_t *) str.c_str();   
 	ListView_InsertColumn(h,1,&col);
 
 	col.iSubItem = 2;
 	col.cx = 230;
-	col.pszText = const_cast<char*>(getColumn3Label());
+    str.fromUTF8(getColumn3Label());
+	col.pszText = (wchar_t *) str.c_str();   
 	ListView_InsertColumn(h,2,&col);
 	
 	ListView_SetItemCount(h, getItemCount());
 
-	LVITEM item;
+    /*TODO : CHECK*/
+    LVITEM item;
 	item.state = 0;
 	item.stateMask = 0;
 	item.iImage = 0;
@@ -182,9 +151,9 @@ BOOL AP_Win32Dialog_ListRevisions::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, L
 		ListView_SetItem(h, &item);
 		FREEP(t);
 	}
-	
-	SendMessage(h, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);  								
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
+   
+	SendMessageW(h, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);  								
+    centerDialog();	
 
 	return 1;							// 1 == we did not call SetFocus()
 }
@@ -207,7 +176,7 @@ BOOL AP_Win32Dialog_ListRevisions::_onCommand(HWND hWnd, WPARAM wParam, LPARAM l
 				m_answer = a_OK;
 				if(iSelCount)
 				{
-					LVITEM item;
+					LVITEMW item;
 
 					item.iSubItem = 0;
 					item.iItem = ListView_GetSelectionMark(h);

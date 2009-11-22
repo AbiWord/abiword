@@ -27,6 +27,7 @@
 #include "gr_Win32Graphics.h"
 #include "xap_Win32App.h"
 #include "ap_Win32Frame.h"
+#include "ut_Win32LocaleString.h"
 
 /*****************************************************************/
 
@@ -35,7 +36,7 @@
 
 #define ENSUREP(p)		do { UT_ASSERT_HARMLESS(p); if (!p) goto Cleanup; } while (0)
 
-static char s_LeftRulerWndClassName[256];
+static wchar_t s_LeftRulerWndClassName[256];
 
 /*****************************************************************/
 
@@ -76,9 +77,11 @@ void AP_Win32LeftRuler::setView(AV_View * pView)
 bool AP_Win32LeftRuler::RegisterClass(XAP_Win32App * app)
 {
 	ATOM a;
-	
-	// register class for the top ruler
-	sprintf(s_LeftRulerWndClassName, "%sLeftRuler", app->getApplicationName());
+	UT_Win32LocaleString str;
+ 	
+	str.fromASCII (app->getApplicationName());
+	// register class for the left ruler
+	swprintf(s_LeftRulerWndClassName, L"%sLeftRuler",  str.c_str());
 
 	a = UT_RegisterClassEx(CS_DBLCLKS | CS_OWNDC, AP_Win32LeftRuler::_LeftRulerWndProc, app->getInstance(),
 						   NULL, LoadCursor(NULL, IDC_ARROW), GetSysColorBrush(COLOR_BTNFACE), NULL,

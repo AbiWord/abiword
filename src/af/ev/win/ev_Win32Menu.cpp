@@ -22,6 +22,7 @@
 	In Vista we use SetMenuItemBitmaps that is more powerful that previous Windows editions
 */
 
+#include <wchar.h>
 #include <windows.h>
 #include <stdio.h>
 #include <string.h>
@@ -48,6 +49,7 @@
 #include "xap_Win32Toolbar_Icons.h"
 #include "ap_Win32App.h"
 #include "ut_Win32OS.h"
+#include "ut_Win32LocaleString.h"
 
 #define SPACE_ICONTEXT	4	// Pixels between the icon and the text
 #define BITMAP_WITDH	16
@@ -132,28 +134,32 @@ static const EV_Menu_Bitmap s_bitmaps[] =
 /*
 
 */
-static const char * _ev_GetLabelName(XAP_Win32App * pWin32App,
+static const wchar_t * _ev_GetLabelName(XAP_Win32App * pWin32App,
 									 XAP_Frame * /*pFrame*/, 
 									 const EV_EditEventMapper * pEEM,
 									 const EV_Menu_Action * pAction,
-									 EV_Menu_Label * pLabel)
+									 EV_Menu_Label * pLabel) 
 {
-	const char * szLabelName;
+	const wchar_t * szLabelName;
+	const char * szLabelName_utf8;
 	
 	if (pAction->hasDynamicLabel())
-		szLabelName = pAction->getDynamicLabel(pLabel);
+		szLabelName_utf8 = pAction->getDynamicLabel(pLabel);
 	else
-		szLabelName = pLabel->getMenuLabel();
+		szLabelName_utf8 = pLabel->getMenuLabel();
 
-	if (!szLabelName || !*szLabelName)
+	if (!szLabelName_utf8 || !*szLabelName_utf8)
 		return NULL;
 
-	UT_String str = AP_Win32App::s_fromUTF8ToWinLocale(szLabelName);
+	UT_Win32LocaleString str;
+	str.fromUTF8 (szLabelName_utf8);
 	szLabelName = str.c_str();
 
+	const char * szShortcut_ascii = NULL;
+	const wchar_t * szShortcut = NULL;
+	UT_Win32LocaleString shortcut;
 	
-	const char * szShortcut = NULL;
-	int len = 0;
+    int len = 0;
 
 	if (pEEM)
 	{
@@ -168,10 +174,14 @@ static const char * _ev_GetLabelName(XAP_Win32App * pWin32App,
 			EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 			UT_ASSERT(pEM);					// make sure it's bound to something
 
-			szShortcut = pEEM->getShortcutFor(pEM);
-			if (szShortcut && *szShortcut)
-				len = strlen(szShortcut) + 1;	// extra char is for the tab
+			szShortcut_ascii = pEEM->getShortcutFor(pEM);
+			if (szShortcut_ascii && *szShortcut_ascii)
+				len = strlen(szShortcut_ascii) + 1;	// extra char is for the tab
 		}
+	}
+
+    if (szShortcut && *szShortcut) {
+		shortcut.fromASCII (szShortcut_ascii);
 	}
 	
 	if (pAction->raisesDialog())
@@ -179,24 +189,25 @@ static const char * _ev_GetLabelName(XAP_Win32App * pWin32App,
 
 	if (!len)
 	{
-		static char buf[128];
-		strcpy(buf,szLabelName);
+		static wchar_t buf[128];
+		wcscpy(buf,szLabelName);
 		return buf;
 	}
 
-	static char buf[128];
-	memset(buf,0,G_N_ELEMENTS(buf));
-	strncpy(buf,szLabelName,G_N_ELEMENTS(buf)-len);
+	static wchar_t buf[128];
+    int l = G_N_ELEMENTS(buf);
+	memset(buf,0,l);
+	wcscpy(buf,szLabelName);           //strncpy
 
 	// append "..." to menu item if it raises a dialog
 	if (pAction->raisesDialog())
-		strcat(buf,"...");
+		wcscat(buf, L"...");                  //todo
 
 	// append shortcut mnemonic, if any
-	if (szShortcut && *szShortcut)
+	if (shortcut.length())
 	{
-		strcat(buf, "\t");
-		strcat(buf, szShortcut);
+		wcscat(buf, L"\t");              //todo
+		wcscat(buf, shortcut.c_str());
 	}
 										  
 	return buf;
@@ -264,7 +275,7 @@ EV_Win32Menu::~EV_Win32Menu()
 }
 
 bool EV_Win32Menu::onCommand(AV_View * pView,
-							 HWND /*hWnd*/, WPARAM wParam)
+							 HWND /*hWnd*/, WPARAM wParam)         
 {
 	// TODO do we need the hWnd parameter....
 
@@ -335,7 +346,7 @@ bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 
 		// get the name for the menu item
 
-		const char * szLabelName = _ev_GetLabelName(m_pWin32App,pFrame,m_pEEM,pAction,pLabel);
+		const wchar_t * szLabelName = _ev_GetLabelName(m_pWin32App,pFrame,m_pEEM,pAction,pLabel);
 		
 		switch (pLayoutItem->getMenuLayoutFlags())
 		{
@@ -378,18 +389,18 @@ bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 						item->id = id;					
 						item->pMenu= this;							
 						
-						strcpy (item->szText, szLabelName);					
+						wcscpy (item->szText, szLabelName);					
 						m_vecItems.addItem(item);
 							
 						if (!m_bTrack && stack.getDepth()==2)
-							AppendMenu(m, flags,u, szLabelName);
+							AppendMenuW(m, flags,u, szLabelName);
 						else {
 							if (UT_IsWinVista()) {
-								AppendMenu(m, flags|MF_STRING,u, szLabelName);
+								AppendMenuW(m, flags|MF_STRING,u, szLabelName);
 								_setBitmapforID(m, id, u);
 							}
 							else
-								AppendMenu(m, flags|MF_OWNERDRAW,u, (const char*) item);
+								AppendMenuW(m, flags|MF_OWNERDRAW,u, (const wchar_t*) item);
 						}
 					}		
 						
@@ -401,15 +412,15 @@ bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 						EV_Menu_Item*	item = new EV_Menu_Item;
 						item->id = id;
 						item->pMenu= this;						
-						strcpy (item->szText, szLabelName);
+						wcscpy (item->szText, szLabelName);
 						m_vecItems.addItem(item);
 						
-						if (UT_IsWinVista()) {
-							AppendMenu(m, MF_STRING, u, szLabelName);
+						if (UT_IsWinVista()) {                                      //todo: code for windows vista : investigate this
+							AppendMenuW(m, MF_STRING, u, szLabelName);
 							_setBitmapforID (m, id, u);
 						}
 						else
-							AppendMenu(m, MF_OWNERDRAW, u, (const char*) item);
+							AppendMenuW(m, MF_OWNERDRAW, u, (const wchar_t*) item);
 					}
 				}
 
@@ -433,7 +444,7 @@ bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 				UT_ASSERT(bResult);
 				UT_ASSERT(m);
 
-				AppendMenu(m, MF_SEPARATOR, 0, NULL);
+				AppendMenuW(m, MF_SEPARATOR, 0, NULL);
 				UT_DEBUGMSG(("menu::synthesize [separator appended to submenu 0x%08lx]\n",m));
 			}
 			break;
@@ -523,19 +534,19 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND /*hWnd*/
 
 				// get the current menu info for this item.
 				
-				MENUITEMINFO mif;
-				char bufMIF[128];
+				MENUITEMINFOW mif;
+				wchar_t bufMIF[128];
 				mif.cbSize = sizeof(mif);
 				mif.dwTypeData = bufMIF;
 				mif.cch = G_N_ELEMENTS(bufMIF)-1;
 				mif.fMask = MIIM_STATE | MIIM_TYPE | MIIM_ID;
-				BOOL bPresent = GetMenuItemInfo(hMenuBar,cmd,FALSE,&mif);
+				BOOL bPresent = GetMenuItemInfoW(hMenuBar,cmd,FALSE,&mif);
 
 				// this item has a dynamic label...
 				// compute the value for the label.
 				// if it is blank, we remove the item from the menu.
 
-				const char * szLabelName = _ev_GetLabelName(m_pWin32App,pFrame,m_pEEM,pAction,pLabel);
+				const wchar_t * szLabelName = _ev_GetLabelName(m_pWin32App,pFrame,m_pEEM,pAction,pLabel);
 
 				BOOL bRemoveIt = (!szLabelName || !*szLabelName);
 
@@ -560,14 +571,14 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND /*hWnd*/
 						item = (EV_Menu_Item*)m_vecItems.getNthItem(i);
 						if (id==item->id)
 						{
-							strcpy (item->szText, szLabelName);					
+							wcscpy (item->szText, szLabelName);					
 							//UT_DEBUGMSG(("Menu changing text->%s\n",szLabelName));
 							if (UT_IsWinVista()) 
 							{
 								mif.fState = uCheck | uEnable | uBold;
 								mif.fType = MFT_STRING;
-								mif.dwTypeData = (LPTSTR)szLabelName;
-								SetMenuItemInfo (hMenuBar,cmd,FALSE,&mif);
+								mif.dwTypeData = (LPWSTR)szLabelName;
+								SetMenuItemInfoW (hMenuBar,cmd,FALSE,&mif);
 							}
 							break;
 						}
@@ -578,16 +589,16 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND /*hWnd*/
 					EV_Menu_Item*	item = new EV_Menu_Item;
 					item->id = id;					
 					item->pMenu= this;													
-					strcpy (item->szText, szLabelName);					
+					wcscpy (item->szText, szLabelName);					
 					m_vecItems.addItem(item);
 					//UT_DEBUGMSG(("Menu adding menu->%s\n",szLabelName));
 										
 					if (UT_IsWinVista()) {
-						AppendMenu(m, MF_STRING, cmd, szLabelName);
+						AppendMenuW(m, MF_STRING, cmd, szLabelName);
 						_setBitmapforID(m, id, cmd);
 					}
 					else
-						AppendMenu(m, MF_OWNERDRAW,cmd, (const char*) item);
+						AppendMenuW(m, MF_OWNERDRAW,cmd, (const wchar_t*) item);
 				}
 				
 				EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
@@ -698,11 +709,11 @@ bool EV_Win32Menu::_isAMenuBar(XAP_Menu_Id id, HMENU hMenu)
 		if (ids[i]==id)
 		{		
 			
-			MENUITEMINFO menuInfo;	 
-			memset (&menuInfo, 0, sizeof(MENUITEMINFO));
-			menuInfo.cbSize = sizeof(MENUITEMINFO);
+			MENUITEMINFOW menuInfo;	 
+			memset (&menuInfo, 0, sizeof(MENUITEMINFOW));
+			menuInfo.cbSize = sizeof(MENUITEMINFOW);
 			menuInfo.fMask = MIIM_DATA;
-			GetMenuItemInfo(hMenu, 0, TRUE, &menuInfo);		
+			GetMenuItemInfoW(hMenu, 0, TRUE, &menuInfo);		
 			EV_Menu_Item*	item = (EV_Menu_Item *) menuInfo.dwItemData;            			           				
 
 			if (item && id==item->id)		
@@ -720,7 +731,7 @@ bool EV_Win32Menu::_isAMenuBar(XAP_Menu_Id id, HMENU hMenu)
 
 
 /*
-	Process message WM_MEASUREITEM
+	Process message WM_MEASUREITEM                          
 */
 void EV_Win32Menu::onMeasureItem(HWND hwnd, WPARAM /*wParam*/, LPARAM lParam)
 {
@@ -732,7 +743,7 @@ void EV_Win32Menu::onMeasureItem(HWND hwnd, WPARAM /*wParam*/, LPARAM lParam)
 	HFONT hfontOld = (HFONT) SelectObject(hdc, m_hFont); 
 
 	// Retrieve the width and height of the item's string 
-	GetTextExtentPoint32(hdc, item->szText, lstrlen(item->szText), &size); 
+	GetTextExtentPoint32W(hdc, item->szText, lstrlenW(item->szText), &size); 
 		
 	if (size.cy < item->pMenu->m_nBitmapCY)
 		lpmis->itemHeight = item->pMenu->m_nBitmapCY;
@@ -751,30 +762,30 @@ void EV_Win32Menu::onMeasureItem(HWND hwnd, WPARAM /*wParam*/, LPARAM lParam)
 LPARAM EV_Win32Menu::onMenuChar(HWND /*hwnd*/, WPARAM wParam, LPARAM lParam)
 {	
 	HMENU hMenu = (HMENU) lParam;
-	MENUITEMINFO	menuInfo;
+	MENUITEMINFOW	menuInfo;
 	int nItems = GetMenuItemCount(hMenu);
-	char szBuff[1024];
+	wchar_t szBuff[1024];
 	
 	for (int i=0; i<nItems; i++)
 	{					
-		memset (&menuInfo, 0, sizeof(MENUITEMINFO));
-		menuInfo.cbSize = sizeof(MENUITEMINFO);
+		memset (&menuInfo, 0, sizeof(MENUITEMINFOW));
+		menuInfo.cbSize = sizeof(MENUITEMINFOW);
 		menuInfo.fMask = MIIM_DATA;
 
-		GetMenuItemInfo(hMenu, i, TRUE, &menuInfo);		
+		GetMenuItemInfoW(hMenu, i, TRUE, &menuInfo);		
 
 		EV_Menu_Item*	item = (EV_Menu_Item *) menuInfo.dwItemData;            			           	
 
 		if (item)
 		{
-			strcpy (szBuff, item->szText);
-			strlwr(szBuff);			
+			wcscpy (szBuff, item->szText);
+			_wcslwr(szBuff);			
 
-			char* pHotKeyPos = strchr (szBuff, '&');
+			wchar_t* pHotKeyPos = wcschr (szBuff, L'&');
 				
 			if (pHotKeyPos)
 			{								
-				char n = (char)wParam & 0x000000ff;
+				wchar_t n = (wchar_t)wParam & 0x000000ff;
 
 				pHotKeyPos++;
 
@@ -800,10 +811,10 @@ void EV_Win32Menu::onDrawItem(HWND /*hwnd*/, WPARAM /*wParam*/, LPARAM lParam)
     COLORREF crBkgnd;   
 	DWORD dwColor;
 	RECT rect;
-	UT_String sTextRight, sTextLeft;
 	HBITMAP hBitmap;	
 	int colorID;
-	UT_ASSERT(lpdis->CtlType==ODT_MENU); 						
+	UT_ASSERT(lpdis->CtlType==ODT_MENU); 	
+    UT_Win32LocaleString sTextRight, sTextLeft;					
 
 	/* Rect to draw the text */	
 	rect.top =  lpdis->rcItem.top;
@@ -862,23 +873,23 @@ void EV_Win32Menu::onDrawItem(HWND /*hwnd*/, WPARAM /*wParam*/, LPARAM lParam)
 	/* 
 		Process tabs
 	*/	
-	char* pTabPos = strchr (item->szText, '\t');
+	wchar_t* pTabPos = wcschr (item->szText, L'\t');
 
 	if (pTabPos)
 	{
-		char szTmp[255];
-		char* pTmp;
+		wchar_t szTmp[255];
+		wchar_t* pTmp;
 		
-		strncpy (szTmp, item->szText, pTabPos-item->szText);
+		wcsncpy (szTmp, item->szText, pTabPos-item->szText);
 		pTmp = szTmp; pTmp+=pTabPos-item->szText; *pTmp=NULL;
-		sTextLeft = szTmp;
+		sTextLeft.fromLocale (szTmp);
 		
-		strcpy (szTmp, pTabPos+1);
-		sTextRight = szTmp;
-		sTextRight +="  ";
+		wcscpy (szTmp, pTabPos+1);
+		sTextRight.fromLocale (szTmp);
+		sTextRight.appendASCII ("  ");
 	}
 	else
-		sTextLeft = item->szText;		
+		sTextLeft.fromLocale (item->szText);	
 	
 	if (lpdis->itemState & ODS_SELECTED) 
 		crBkgnd = SetBkColor(lpdis->hDC, GetSysColor(COLOR_HIGHLIGHT));
@@ -886,20 +897,20 @@ void EV_Win32Menu::onDrawItem(HWND /*hwnd*/, WPARAM /*wParam*/, LPARAM lParam)
 	/* Draw text*/
 	if(m_iDIR)
 	{
-		DrawText(lpdis->hDC, sTextLeft.c_str(),  sTextLeft.length() , &rect,
+		DrawTextW(lpdis->hDC, sTextLeft.c_str(),  sTextLeft.length() , &rect,
 				 DT_RIGHT | DT_VCENTER | DT_SINGLELINE | m_iDIR);
 		
 		if (sTextRight.length())
-			DrawText(lpdis->hDC, sTextRight.c_str(), sTextRight.length(), &rect,
+			DrawTextW(lpdis->hDC, sTextRight.c_str(), sTextRight.length(), &rect,
 					 DT_LEFT | DT_VCENTER | DT_SINGLELINE | m_iDIR);
 	}
 	else
 	{
-		DrawText(lpdis->hDC, sTextLeft.c_str(),  sTextLeft.length() , &rect,
+		DrawTextW(lpdis->hDC, sTextLeft.c_str(),  sTextLeft.length() , &rect,
 				 DT_LEFT | DT_VCENTER | DT_SINGLELINE | m_iDIR);
 		
 		if (sTextRight.length())
-			DrawText(lpdis->hDC, sTextRight.c_str(), sTextRight.length(), &rect,
+			DrawTextW(lpdis->hDC, sTextRight.c_str(), sTextRight.length(), &rect,
 					 DT_RIGHT | DT_VCENTER | DT_SINGLELINE | m_iDIR);
 	}
 	
@@ -993,8 +1004,9 @@ bool EV_Win32Menu::onMenuSelect(XAP_Frame * pFrame, AV_View * /*pView*/,
 	if (!szMsg || !*szMsg)
 		szMsg = "TODO This menu item doesn't have a StatusMessage defined.";
 	
-	UT_String str = AP_Win32App::s_fromUTF8ToWinLocale(szMsg);
-	pFrame->setStatusMessage(str.c_str());
+    UT_Win32LocaleString str;
+	str.fromUTF8(szMsg);
+	pFrame->setStatusMessage( (char *)str.c_str());
 	return true;
 }
 
@@ -1026,22 +1038,23 @@ bool EV_Win32MenuBar::synthesizeMenuBar(XAP_Frame * pFrame)
 	// when dealing with RTL interface language, we need to tell do some tricks here to
 	// make the menubar to layout RTL
 	// see http://www.microsoft.com/middleeast/msdn/faq.aspx
-	MENUITEMINFO mii;
-	char buff[81];
-	memset(buff,80,' ');
-	buff[80] = 0;
+	MENUITEMINFOW mii;
+
+	wchar_t buff[81];
+	memset(buff,80 * sizeof (wchar_t) , L' ');
+	buff[80* sizeof (wchar_t)] = 0;
 	
 	mii.cbSize = sizeof(mii);
 	mii.dwTypeData = buff;
 	mii.fType = MF_STRING;
-	mii.cch = 80;
+    mii.cch = 80* sizeof (wchar_t);
 	mii.fState = MFS_DEFAULT;
 	mii.fMask = MIIM_ID | MIIM_DATA | MIIM_TYPE | MIIM_SUBMENU;
 	
-	if(m_iDIR && GetMenuItemInfo(m_myMenu, 0, 1, &mii))
+	if(m_iDIR && GetMenuItemInfoW(m_myMenu, 0, 1, &mii))
 	{
 		mii.fType |= MFT_RIGHTORDER;
-		SetMenuItemInfo(m_myMenu, 0, 1, &mii);
+		SetMenuItemInfoW(m_myMenu, 0, 1, &mii);
 	}
 	
 	return bRet;
@@ -1074,22 +1087,22 @@ bool EV_Win32MenuPopup::synthesizeMenuPopup(XAP_Frame * pFrame)
 	// when dealing with RTL interface language, we need to tell do some tricks here to
 	// make the menubar to layout RTL
 	// see http://www.microsoft.com/middleeast/msdn/faq.aspx
-	MENUITEMINFO mii;
-	char buff[81];
-	memset(buff,80,' ');
-	buff[80] = 0;
+	MENUITEMINFOW mii;
+	wchar_t buff[81];
+	memset(buff, 80 * sizeof (wchar_t), L' ');
+	buff[80* sizeof (wchar_t)] = 0;
 	
 	mii.cbSize = sizeof(mii);
 	mii.dwTypeData = buff;
 	mii.fType = MF_STRING;
-	mii.cch = 80;
+	mii.cch = 80* sizeof (wchar_t);
 	mii.fState = MFS_DEFAULT;
 	mii.fMask = MIIM_ID | MIIM_DATA | MIIM_TYPE | MIIM_SUBMENU;
 	
-	if(m_iDIR && GetMenuItemInfo(m_myMenu, 0, 1, &mii))
+	if(m_iDIR && GetMenuItemInfoW(m_myMenu, 0, 1, &mii))
 	{
 		mii.fType |= MFT_RIGHTORDER;
-		SetMenuItemInfo(m_myMenu, 0, 1, &mii);
+		SetMenuItemInfoW(m_myMenu, 0, 1, &mii);
 	}
 	
 	return bRet;

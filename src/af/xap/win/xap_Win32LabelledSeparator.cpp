@@ -45,7 +45,7 @@
 /*!
   Windows control class name to use in the creation function or template.
  */
-static const char s_LabelledSeparatorWndClassName[] = "AbiLabelledSeparator";
+static const wchar_t s_LabelledSeparatorWndClassName[] = L"AbiLabelledSeparator";
 /*!
   Window procedure function of the control base class.
  */
@@ -60,22 +60,22 @@ static WNDPROC s_pfnWndProc;
   \param text the text to be shown by the control
   \param hFont the font handle used to represent text
  */
-static void AdaptSeparatorLength(HWND hwnd, const char* text, HFONT hFont)
+static void AdaptSeparatorLength(HWND hwnd, const wchar_t* text, HFONT hFont)
 {
 	// Provide the right font
-	LOGFONT logFont;
-	int status = GetObject(hFont, sizeof(LOGFONT), &logFont);
+	LOGFONTW logFont;
+	int status = GetObjectW(hFont, sizeof(LOGFONTW), &logFont);
 	UT_return_if_fail(status);
-	HFONT hCtrlFont = CreateFontIndirect(&logFont);
+	HFONT hCtrlFont = CreateFontIndirectW(&logFont);
 	UT_return_if_fail(hCtrlFont);
 
 	// Evaluate text size
-	int length = strlen(text);
+	int length = wcslen(text);
 	SIZE textSize;
 	HFONT hPrevCtrlFont;
 	HDC hdc = GetDC(hwnd);
 	hPrevCtrlFont = (HFONT) SelectObject(hdc, hFont);
-	GetTextExtentPoint32(hdc, text, length, &textSize);
+	GetTextExtentPoint32W(hdc, text, length, &textSize);
 	SelectObject(hdc, hPrevCtrlFont);
 
 	// Modifiy separator line length
@@ -113,8 +113,8 @@ static LRESULT CALLBACK _LabelledSeparatorWndProc(HWND hwnd, UINT iMsg, WPARAM w
 	{
 	case WM_CREATE:
 		{
-			CREATESTRUCT* lpCreate = (CREATESTRUCT *) lParam;
-			HWND separator = CreateWindow("STATIC", NULL, 
+			CREATESTRUCTW* lpCreate = (CREATESTRUCTW *) lParam;
+			HWND separator = CreateWindowW(L"STATIC", NULL, 
 				SS_ETCHEDHORZ | WS_CHILD | WS_VISIBLE,
 				0, lpCreate->cy / 2, lpCreate->cx, LINE_HEIGHT,
 				hwnd, (HMENU) IDC_LINE_SEPARATOR, lpCreate->hInstance, NULL);
@@ -126,9 +126,9 @@ static LRESULT CALLBACK _LabelledSeparatorWndProc(HWND hwnd, UINT iMsg, WPARAM w
 		{
 			SWL(hwnd, (HFONT) wParam);
 
-			int length = GetWindowTextLength(hwnd);
-			char* text = new char[length + 1];
-			length = GetWindowText(hwnd, text, length + 1);
+			int length = GetWindowTextLengthW(hwnd);
+			wchar_t* text = new wchar_t[length + 1];
+			length = GetWindowTextW(hwnd, text, length + 1);
 			AdaptSeparatorLength(hwnd, text, (HFONT) wParam);
 			delete [] text;
 			break;
@@ -136,7 +136,7 @@ static LRESULT CALLBACK _LabelledSeparatorWndProc(HWND hwnd, UINT iMsg, WPARAM w
 
 	case WM_SETTEXT:
 		{
-			AdaptSeparatorLength(hwnd, (const char*) lParam, (HFONT) GWL(hwnd));
+			AdaptSeparatorLength(hwnd, (const wchar_t*) lParam, (HFONT) GWL(hwnd));
 			break;
 		}
 		
@@ -144,7 +144,7 @@ static LRESULT CALLBACK _LabelledSeparatorWndProc(HWND hwnd, UINT iMsg, WPARAM w
 		break;
 	}
 
-	return CallWindowProc(s_pfnWndProc, hwnd, iMsg, wParam, lParam);   	
+	return CallWindowProcW(s_pfnWndProc, hwnd, iMsg, wParam, lParam);   	
 }
 
 /*!
@@ -170,19 +170,19 @@ static LRESULT CALLBACK _LabelledSeparatorWndProc(HWND hwnd, UINT iMsg, WPARAM w
  */
 bool XAP_Win32LabelledSeparator_RegisterClass(XAP_Win32App * app)
 {
-	WNDCLASSEX  wndclass;
+	WNDCLASSEXW  wndclass;
 	HINSTANCE hinst = app->getInstance();
 	ATOM a;
 
-	wndclass.cbSize = sizeof(WNDCLASSEX);
-	if(GetClassInfoEx(hinst, s_LabelledSeparatorWndClassName, &wndclass))
+	wndclass.cbSize = sizeof(WNDCLASSEXW);
+	if(GetClassInfoExW(hinst, s_LabelledSeparatorWndClassName, &wndclass))
 	{
 		// class information already registered
 		return true;
 	}
 
 	// get base class information
-	if( ! GetClassInfoEx(NULL, "STATIC", &wndclass))
+	if( ! GetClassInfoExW(NULL, L"STATIC", &wndclass))
 	{
 		return false;
 	}
@@ -194,7 +194,7 @@ bool XAP_Win32LabelledSeparator_RegisterClass(XAP_Win32App * app)
 	wndclass.lpszClassName = s_LabelledSeparatorWndClassName;
 	wndclass.lpszMenuName  = NULL;
 
-	a = RegisterClassEx(&wndclass);
+	a = RegisterClassExW(&wndclass);
 	UT_ASSERT(a);
 
 	return true;

@@ -21,6 +21,7 @@
 #define XAP_WIN32DIALOG_FILEOPENSAVEAS_H
 
 #include "xap_Dlg_FileOpenSaveAs.h"
+#include "xap_Win32DialogBase.h"
 
 class UT_String;
 #include "xap_Frame.h"
@@ -29,7 +30,7 @@ class UT_String;
 
 /*****************************************************************/
 
-class ABI_EXPORT XAP_Win32Dialog_FileOpenSaveAs : public XAP_Dialog_FileOpenSaveAs
+class ABI_EXPORT XAP_Win32Dialog_FileOpenSaveAs : public XAP_Dialog_FileOpenSaveAs, public XAP_Win32DialogBase
 {
 public:
 	XAP_Win32Dialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -47,8 +48,8 @@ protected:
 
 	void _buildFilterList(UT_String& sFilter);
 private:
-	char * _getDefaultExtension(UT_uint32 indx);
-	char m_szDefaultExtension[DEFAULT_EXT_SIZE + 1];
+	wchar_t * _getDefaultExtension(UT_uint32 indx);
+	wchar_t m_szDefaultExtension[DEFAULT_EXT_SIZE + 1];
 	
 	//
 	// This the new OPENFILENAME struct included in the most
@@ -59,23 +60,23 @@ private:
 			DWORD         lStructSize; 
 			HWND          hwndOwner; 
 			HINSTANCE     hInstance; 
-			LPCTSTR       lpstrFilter; 
-			LPTSTR        lpstrCustomFilter; 
+			LPCWSTR       lpstrFilter; 
+			LPWSTR        lpstrCustomFilter; 
 			DWORD         nMaxCustFilter; 
 			DWORD         nFilterIndex; 
-			LPTSTR        lpstrFile; 
+			LPWSTR        lpstrFile; 
 			DWORD         nMaxFile; 
-			LPTSTR        lpstrFileTitle; 
+			LPWSTR        lpstrFileTitle;         
 			DWORD         nMaxFileTitle; 
-			LPCTSTR       lpstrInitialDir; 
-			LPCTSTR       lpstrTitle; 
+			LPCWSTR       lpstrInitialDir; 
+			LPCWSTR       lpstrTitle; 
 			DWORD         Flags; 
 			WORD          nFileOffset; 
 			WORD          nFileExtension; 
-			LPCTSTR       lpstrDefExt; 
+			LPCWSTR       lpstrDefExt; 
 			LPARAM        lCustData; 
 			LPOFNHOOKPROC lpfnHook; 
-			LPCTSTR       lpTemplateName; 
+			LPCWSTR       lpTemplateName;           
 			
 			//#if (_WIN32_WINNT >= 0x0500)			
 			void *        pvReserved;

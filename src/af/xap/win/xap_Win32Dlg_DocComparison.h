@@ -23,11 +23,12 @@
 
 #include "xap_Dlg_DocComparison.h"
 #include "xap_Frame.h"
+#include "xap_Win32DialogBase.h"
 
 
 /*****************************************************************/
 
-class ABI_EXPORT XAP_Win32Dialog_DocComparison: public XAP_Dialog_DocComparison
+class ABI_EXPORT XAP_Win32Dialog_DocComparison: public XAP_Dialog_DocComparison, XAP_Win32DialogBase
 {
 public:
 	XAP_Win32Dialog_DocComparison(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -37,7 +38,6 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
-	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
 
 protected:
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);

@@ -25,6 +25,8 @@
 #include "gr_Graphics.h"
 #include "gr_Win32CharWidths.h"
 #include "ut_vector.h"
+#include <wchar.h>
+#include <winuser.h>
 
 class UT_ByteBuf;
 
@@ -36,13 +38,13 @@ class UT_ByteBuf;
 class ABI_EXPORT GR_Win32Font : public GR_Font
 {
 public:
-	static GR_Win32Font * newFont(LOGFONT & lf, double fPoints, HDC hdc, HDC printDC);
+	static GR_Win32Font * newFont(LOGFONTW & lf, double fPoints, HDC hdc, HDC printDC);
 	virtual ~GR_Win32Font();
 
 	// need these to allow for adjustements in response to changes of device
-	void    	setAscent(UT_uint32 n)  { m_tm.tmAscent = n; }
+	void        	setAscent(UT_uint32 n)  { m_tm.tmAscent = n; }
 	void 	    setDescent(UT_uint32 n) { m_tm.tmDescent = n; }
-	void        setHeight(UT_uint32 n)  { m_tm.tmHeight = n; }
+	void         setHeight(UT_uint32 n)  { m_tm.tmHeight = n; }
 	
 	UT_uint32	getAscent(HDC hdc, HDC printHDC);
 	UT_uint32	getDescent(HDC hdc, HDC printHDC);
@@ -88,7 +90,7 @@ public:
 
 protected:
 	// all construction has to be done via the graphics class
-	GR_Win32Font(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC);
+	GR_Win32Font(LOGFONTW & lf, double fPoints, HDC hdc, HDC printHDC);
 
 	GR_Win32CharWidths * _getCharWidths() const
 	{
@@ -112,7 +114,7 @@ public:
 
 	void         fetchFont(UT_uint32 pixelsize) const;
 
-	const TEXTMETRIC & getTextMetric() const {return m_tm;}
+	const TEXTMETRICW & getTextMetric() const {return m_tm;}
    	
 private:
 
@@ -138,7 +140,7 @@ private:
 	
 	UT_uint32				m_defaultCharWidth;
 	HFONT                   m_layoutFont;
-	TEXTMETRIC				m_tm;
+	TEXTMETRICW				m_tm;
 	UT_uint32		        m_iHeight; // unscaled height
 
 	// a cache of 'allocFont *' at a given size
@@ -159,7 +161,7 @@ class ABI_EXPORT GR_Win32AllocInfo : public GR_AllocInfo
 	GR_Win32AllocInfo(HDC hdc, HWND hwnd):
 		m_hdc(hdc), m_hwnd(hwnd), m_pDocInfo(NULL), m_hDevMode(NULL) {};
 	
-	GR_Win32AllocInfo(HDC hdc, const DOCINFO* pDoc, HGLOBAL devmode):
+	GR_Win32AllocInfo(HDC hdc, const DOCINFOW* pDoc, HGLOBAL devmode):
 		m_hdc(hdc), m_hwnd(0), m_pDocInfo(pDoc), m_hDevMode(devmode) {};
 
 	virtual GR_GraphicsId getType() const {return GRID_WIN32;}
@@ -167,7 +169,7 @@ class ABI_EXPORT GR_Win32AllocInfo : public GR_AllocInfo
 	
 	HDC               m_hdc;
 	HWND              m_hwnd;
-	const DOCINFO *   m_pDocInfo;
+	const DOCINFOW *   m_pDocInfo;
 	HGLOBAL           m_hDevMode;
 };
 
@@ -187,8 +189,8 @@ public:
 	static const char *    graphicsDescriptor(){return "Win32 Default";}
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 
-	static  GR_Graphics *   getPrinterGraphics(const char * pPrinterName,
-											   const char * pDocName);
+	static  GR_Graphics *   getPrinterGraphics(const wchar_t * pPrinterName,
+											   const wchar_t * pDocName);
 	
 	virtual void			drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void			drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff);
@@ -278,15 +280,15 @@ public:
 
 	static bool fixDevMode(HGLOBAL hModDev);
 
-	static DOCINFO *getDocInfo();
+	static DOCINFOW *getDocInfo();
 	static HDC createbestmetafilehdc();
 	
 protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
 	GR_Win32Graphics(HDC, HWND);					/* for screen */
-	GR_Win32Graphics(HDC, const DOCINFO *, HGLOBAL hDevMode = NULL);	/* for printing */
+	GR_Win32Graphics(HDC, const DOCINFOW *, HGLOBAL hDevMode = NULL);	/* for printing */
 	
-	BITMAPINFO * ConvertDDBToDIB(HBITMAP bitmap, HPALETTE hPal, DWORD dwCompression);
+	BITMAPINFO * ConvertDDBToDIB(HBITMAP bitmap, HPALETTE hPal, DWORD dwCompression);  
 
 	virtual GR_Font*		_findFont(const char* pszFontFamily,
 									  const char* pszFontStyle,
@@ -300,7 +302,7 @@ protected:
 	void					_setColor(DWORD clrRef);
 
   private:
-	virtual GR_Win32Font * _newFont(LOGFONT & lf, double fPointSize, HDC hdc, HDC printDC);
+	virtual GR_Win32Font * _newFont(LOGFONTW & lf, double fPointSize, HDC hdc, HDC printDC);
 
   protected:
 
@@ -311,7 +313,7 @@ protected:
 	static HDC				m_defPrintHDC;
 	static UT_uint32		s_iInstanceCount;
 	HWND 					m_hwnd;
-	const DOCINFO *			m_pDocInfo;
+	const DOCINFOW *			m_pDocInfo;
 	bool					m_bPrint;
 	bool					m_bStartPrint;
 	bool					m_bStartPage;

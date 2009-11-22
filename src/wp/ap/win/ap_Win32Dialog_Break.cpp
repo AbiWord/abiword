@@ -62,25 +62,32 @@ void AP_Win32Dialog_Break::runModal(XAP_Frame * pFrame)
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 	XAP_Win32LabelledSeparator_RegisterClass(pWin32App);
 	setDialog(this);
-	createModal(pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_BREAK));
+	createModal(pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_BREAK));
 }
+
+#define _DS(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 BOOL AP_Win32Dialog_Break::_onInitDialog(HWND /*hWnd*/, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
-	localizeDialogTitle(AP_STRING_ID_DLG_Break_BreakTitle);
+	const XAP_StringSet* pSS = m_pApp->getStringSet();
+
+	// Update the caption
+	setDialogTitle(pSS->getValue(AP_STRING_ID_DLG_Break_BreakTitle));
+
+	/* Localise controls*/
+	_DSX(BREAK_BTN_OK,				DLG_OK);
+	_DSX(BREAK_BTN_CANCEL,				DLG_Cancel);
 
 	// localize controls
-	localizeControlText(AP_RID_DIALOG_BREAK_BTN_OK,	 XAP_STRING_ID_DLG_OK);
-	localizeControlText(AP_RID_DIALOG_BREAK_BTN_CANCEL, XAP_STRING_ID_DLG_Cancel);
-
-	localizeControlText(AP_RID_DIALOG_BREAK_TEXT_INSERT, AP_STRING_ID_DLG_Break_Insert);
-	localizeControlText(AP_RID_DIALOG_BREAK_TEXT_SECTION,AP_STRING_ID_DLG_Break_SectionBreaks);
-	localizeControlText(AP_RID_DIALOG_BREAK_RADIO_PAGE,	AP_STRING_ID_DLG_Break_PageBreak);
-	localizeControlText(AP_RID_DIALOG_BREAK_RADIO_COL,	AP_STRING_ID_DLG_Break_ColumnBreak);
-	localizeControlText(AP_RID_DIALOG_BREAK_RADIO_NEXT,	AP_STRING_ID_DLG_Break_NextPage);
-	localizeControlText(AP_RID_DIALOG_BREAK_RADIO_CONT,	AP_STRING_ID_DLG_Break_Continuous);
-	localizeControlText(AP_RID_DIALOG_BREAK_RADIO_EVEN,	AP_STRING_ID_DLG_Break_EvenPage);
-	localizeControlText(AP_RID_DIALOG_BREAK_RADIO_ODD,	AP_STRING_ID_DLG_Break_OddPage);
+	_DS(BREAK_TEXT_INSERT,		DLG_Break_Insert);
+	_DS(BREAK_TEXT_SECTION,		DLG_Break_SectionBreaks);
+	_DS(BREAK_RADIO_PAGE,		DLG_Break_PageBreak);
+	_DS(BREAK_RADIO_COL,		DLG_Break_ColumnBreak);
+	_DS(BREAK_RADIO_NEXT,		DLG_Break_NextPage);
+	_DS(BREAK_RADIO_CONT,		DLG_Break_Continuous);
+	_DS(BREAK_RADIO_EVEN,		DLG_Break_EvenPage);
+	_DS(BREAK_RADIO_ODD,		DLG_Break_OddPage);
 
 	// set initial state
 	checkButton(AP_RID_DIALOG_BREAK_RADIO_PAGE + m_break);

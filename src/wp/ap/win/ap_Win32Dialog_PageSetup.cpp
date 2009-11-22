@@ -20,14 +20,11 @@
 
 #include <windows.h>
 #include <math.h>
-//#include <commdlg.h>
-//#include <commctrl.h>
 
 #include "ut_types.h"
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-//#include "ut_Win32OS.h"
 #include "ut_Xpm2Bmp.h"
 
 #include "xap_App.h"
@@ -102,7 +99,7 @@ void AP_Win32Dialog_PageSetup::runModal(XAP_Frame *pFrame)
 		m_answer = a_CANCEL;
 }
 
-#define _DS(c,s)	SetDlgItemText(getHandle(),AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DS(c,s)	setDlgItemText(getHandle(),AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
 #define _GVX(s)		(pSS->getValue(XAP_STRING_ID_##s))
 
 /*
@@ -156,8 +153,8 @@ INT_PTR CALLBACK AP_Win32Dialog_PageSetup_Sheet::s_sheetInit(HWND hwnd,  UINT uM
 void AP_Win32Dialog_PageSetup_Sheet::_onInitDialog(HWND hwnd)
 {		
 	const XAP_StringSet * pSS = getParent()->getApp()->getStringSet();	
-	SetWindowText(GetDlgItem(hwnd, IDOK), pSS->getValue(XAP_STRING_ID_DLG_OK));
-	SetWindowText(GetDlgItem(hwnd, IDCANCEL), pSS->getValue(XAP_STRING_ID_DLG_Cancel));	
+	setWindowText(GetDlgItem(hwnd, IDOK), pSS->getValue(XAP_STRING_ID_DLG_OK));
+	setWindowText(GetDlgItem(hwnd, IDCANCEL), pSS->getValue(XAP_STRING_ID_DLG_Cancel));	
 
 	PropSheet_SetCurSel(hwnd, 0, 0);
 
@@ -261,7 +258,7 @@ void AP_Win32Dialog_PageSetup_Page::doSpinControl(UT_uint32 id, UT_sint32 delta)
 	}
 }
 
-void AP_Win32Dialog_PageSetup_Page::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_PageSetup_Page::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
@@ -296,12 +293,12 @@ void AP_Win32Dialog_PageSetup_Page::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 				m_pParent->updatePreview();
 			}
 		}
-		return;
+		return TRUE;
 
 	case AP_RID_DIALOG_PAGE_SETUP_LBX_UNITS:
 		if( wNotifyCode == CBN_SELCHANGE )
 		{
-			UT_Dimension unit = (UT_Dimension)SendMessage( hWndCtrl, CB_GETCURSEL, (WPARAM) 0, (LPARAM) 0 );
+			UT_Dimension unit = (UT_Dimension)SendMessage( hWndCtrl, CB_GETCURSEL, (WPARAM) 0, (LPARAM) 0 ); 
 			if( unit != m_pParent->m_PageSize.getDims() )
 			{
 				m_pParent->updateWidth();
@@ -309,7 +306,7 @@ void AP_Win32Dialog_PageSetup_Page::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 				m_pParent->updatePreview();
 			}
 		}
-		return;
+		return TRUE;
 
 	case AP_RID_DIALOG_PAGE_SETUP_EBX_WIDTH:
 		if( wNotifyCode == EN_KILLFOCUS )
@@ -327,7 +324,7 @@ void AP_Win32Dialog_PageSetup_Page::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 			}
 			m_pParent->updateWidth();		
 		}
-		return;
+		return TRUE;
 
 	case AP_RID_DIALOG_PAGE_SETUP_EBX_HEIGHT:
 		if( wNotifyCode == EN_KILLFOCUS )
@@ -344,7 +341,7 @@ void AP_Win32Dialog_PageSetup_Page::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 			}
 			m_pParent->updateHeight();
 		}
-		return;
+		return TRUE;
 
 	case AP_RID_DIALOG_PAGE_SETUP_EBX_SCALE:
 		if( wNotifyCode == EN_KILLFOCUS )
@@ -359,7 +356,7 @@ void AP_Win32Dialog_PageSetup_Page::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 			SetDlgItemText( hWnd, wId, itoa( m_pParent->getPageScale() , buf, 10 ) );
 
 		}
-		return;
+		return TRUE;
 
 	case AP_RID_DIALOG_PAGE_SETUP_RDO_PORTRAIT:
 		if( m_pParent->getPageOrientation() != m_pParent->PORTRAIT )
@@ -375,7 +372,7 @@ void AP_Win32Dialog_PageSetup_Page::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 			m_pParent->updateHeight();
 			m_pParent->updatePreview();
 		}
-		return;
+		return TRUE;
 		
 	case AP_RID_DIALOG_PAGE_SETUP_RDO_LANDSCAPE:
 		if( m_pParent->getPageOrientation() != m_pParent->LANDSCAPE )
@@ -391,12 +388,13 @@ void AP_Win32Dialog_PageSetup_Page::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 			m_pParent->updateHeight();
 			m_pParent->updatePreview();
 		}
-		return;
+		return TRUE;
 
 	default:
 		UT_DEBUGMSG(("WM_Command for id %ld for Page sub-dialog\n",wId));
-		return;
+		return TRUE;
 	}
+	return FALSE;
 }
 
 void AP_Win32Dialog_PageSetup_Page::_onInitDialog()
@@ -417,21 +415,17 @@ void AP_Win32Dialog_PageSetup_Page::_onInitDialog()
 	_DS(PAGE_SETUP_LBL_PERCENTOFSIZE,	DLG_PageSetup_Percent);	
 
 	// Populate Paper Size combo box
-	HWND hwndPaperSize = GetDlgItem(getHandle(), AP_RID_DIALOG_PAGE_SETUP_LBX_PAPERSIZE);
 	for (UT_uint32 i = (UT_uint32)fp_PageSize::_first_predefined_pagesize_; i < (UT_uint32)fp_PageSize::_last_predefined_pagesize_dont_use_; i++)
 	{
-		SendMessage( hwndPaperSize, CB_INSERTSTRING ,
-					 (WPARAM) (fp_PageSize::Predefined)i,
-				     (LPARAM) fp_PageSize::PredefinedToName( (fp_PageSize::Predefined)i ) );
+        addItemToCombo (AP_RID_DIALOG_PAGE_SETUP_LBX_PAPERSIZE, fp_PageSize::PredefinedToName( (fp_PageSize::Predefined)i ));
 	}
 
 	// Populate Units combo box
-	HWND hwndUnits = GetDlgItem(getHandle(), AP_RID_DIALOG_PAGE_SETUP_LBX_UNITS);
 	// NB: cannot insert string at index 1 before inserting one at index 0
-	SendMessage( hwndUnits, CB_INSERTSTRING , (WPARAM) DIM_IN, (LPARAM) _GVX(DLG_Unit_inch) );
-	SendMessage( hwndUnits, CB_INSERTSTRING , (WPARAM) DIM_CM,   (LPARAM) _GVX(DLG_Unit_cm) );
-	SendMessage( hwndUnits, CB_INSERTSTRING , (WPARAM) DIM_MM,   (LPARAM) _GVX(DLG_Unit_mm) );
-			
+    addItemToCombo (AP_RID_DIALOG_PAGE_SETUP_LBX_UNITS, _GVX(DLG_Unit_inch));
+    addItemToCombo (AP_RID_DIALOG_PAGE_SETUP_LBX_UNITS, _GVX(DLG_Unit_cm));
+    addItemToCombo (AP_RID_DIALOG_PAGE_SETUP_LBX_UNITS, _GVX(DLG_Unit_mm));
+  			
 	m_pParent->m_PageSize = m_pParent->getPageSize();
 	if( m_pParent->getPageOrientation() == m_pParent->PORTRAIT )
 	{
@@ -459,7 +453,7 @@ void AP_Win32Dialog_PageSetup_Page::_onInitDialog()
 	m_pParent->updatePageSize();
 
 	int nUnit =  m_pParent->m_PageSize.getDims();
-	SendMessage( hwndUnits, CB_SETCURSEL, (WPARAM) nUnit, (LPARAM) 0 );
+	selectComboItem (AP_RID_DIALOG_PAGE_SETUP_LBX_UNITS, (WPARAM) nUnit );                 
 
 	// Load Appropriate XPM to BMPs
 	COLORREF ColorRef = GetSysColor(COLOR_BTNFACE);
@@ -527,7 +521,7 @@ AP_Win32Dialog_PageSetup_Margin::~AP_Win32Dialog_PageSetup_Margin()
 
 }
 
-void AP_Win32Dialog_PageSetup_Margin::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_PageSetup_Margin::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
@@ -554,7 +548,7 @@ void AP_Win32Dialog_PageSetup_Margin::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 				m_pParent->setMarginUnits( (UT_Dimension) selected );
 			}
 		}
-		return;
+		return TRUE;
 
 	case AP_RID_DIALOG_PAGE_SETUP_EBX_TOP:
 		if( wNotifyCode == EN_KILLFOCUS )
@@ -568,7 +562,7 @@ void AP_Win32Dialog_PageSetup_Margin::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 			}
 			m_pParent->updateTopMargin();
 		}
-		return;
+		return TRUE;
 
 	case AP_RID_DIALOG_PAGE_SETUP_EBX_BOTTOM:
 		if( wNotifyCode == EN_KILLFOCUS )
@@ -582,7 +576,7 @@ void AP_Win32Dialog_PageSetup_Margin::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 			}
 			m_pParent->updateBottomMargin();
 		}
-		return;
+		return TRUE;
 
 	case AP_RID_DIALOG_PAGE_SETUP_EBX_LEFT:
 		if( wNotifyCode == EN_KILLFOCUS )
@@ -596,7 +590,7 @@ void AP_Win32Dialog_PageSetup_Margin::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 			}
 			m_pParent->updateLeftMargin();
 		}
-		return;
+		return TRUE;
 
 	case AP_RID_DIALOG_PAGE_SETUP_EBX_RIGHT:
 		if( wNotifyCode == EN_KILLFOCUS )
@@ -610,7 +604,7 @@ void AP_Win32Dialog_PageSetup_Margin::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 			}
 			m_pParent->updateRightMargin();
 		}
-		return;
+		return TRUE;
 
 	case AP_RID_DIALOG_PAGE_SETUP_EBX_HEADER:
 		if( wNotifyCode == EN_KILLFOCUS )
@@ -624,7 +618,7 @@ void AP_Win32Dialog_PageSetup_Margin::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 			}
 			m_pParent->updateHeaderMargin();
 		}
-		return;
+		return TRUE;
 
 	case AP_RID_DIALOG_PAGE_SETUP_EBX_FOOTER:
 		if( wNotifyCode == EN_KILLFOCUS )
@@ -638,12 +632,13 @@ void AP_Win32Dialog_PageSetup_Margin::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 			}
 			m_pParent->updateFooterMargin();
 		}
-		return;
+		return TRUE;
 
 	default:
 		UT_DEBUGMSG(("WM_Command for id %ld for Page sub-dialog\n",wId));
-		return;
+		return TRUE;
 	}
+	return FALSE;
 }
 
 void AP_Win32Dialog_PageSetup_Margin::_onInitDialog()
@@ -659,14 +654,13 @@ void AP_Win32Dialog_PageSetup_Margin::_onInitDialog()
 		_DS(PAGE_SETUP_LBL_HEADER,			DLG_PageSetup_Header);			
 		_DS(PAGE_SETUP_LBL_FOOTER,			DLG_PageSetup_Footer);			
 
-		// Populate Margin Units combo box
-		HWND hwndMarginUnits = GetDlgItem(getHandle(), AP_RID_DIALOG_PAGE_SETUP_LBX_MARGINUNITS);
-		SendMessage( hwndMarginUnits, CB_INSERTSTRING , (WPARAM) DIM_IN, (LPARAM) _GVX(DLG_Unit_inch) );                                
-		SendMessage( hwndMarginUnits, CB_INSERTSTRING , (WPARAM) DIM_CM,   (LPARAM) _GVX(DLG_Unit_cm) );                                
-		SendMessage( hwndMarginUnits, CB_INSERTSTRING , (WPARAM) DIM_MM,   (LPARAM) _GVX(DLG_Unit_mm) );                                
-
+		// Populate Margin Units combo box                      
+                               
+        addItemToCombo (AP_RID_DIALOG_PAGE_SETUP_LBX_MARGINUNITS, _GVX(DLG_Unit_inch));
+        addItemToCombo (AP_RID_DIALOG_PAGE_SETUP_LBX_MARGINUNITS, _GVX(DLG_Unit_cm));
+        addItemToCombo (AP_RID_DIALOG_PAGE_SETUP_LBX_MARGINUNITS, _GVX(DLG_Unit_mm));
 		// Initialize Data
-		SendMessage( hwndMarginUnits, CB_SETCURSEL, (WPARAM) m_pParent->getMarginUnits(), (LPARAM) 0 );
+        selectComboItem (AP_RID_DIALOG_PAGE_SETUP_LBX_MARGINUNITS, (WPARAM) m_pParent->getMarginUnits() );   		
 		SetWindowLongPtr(getHandle(), GWLP_USERDATA, (LONG_PTR)this);
 }
 

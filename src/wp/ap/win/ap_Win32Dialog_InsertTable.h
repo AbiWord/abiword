@@ -21,8 +21,9 @@
 #define AP_Win32Dialog_InsertTable_H
 
 #include "ap_Dialog_InsertTable.h"
+#include "xap_Win32DialogBase.h"
 
-class ABI_EXPORT AP_Win32Dialog_InsertTable : public AP_Dialog_InsertTable
+class ABI_EXPORT AP_Win32Dialog_InsertTable : public AP_Dialog_InsertTable, public XAP_Win32DialogBase
 {
 public:
 	
@@ -32,11 +33,9 @@ public:
 	virtual void				runModal(XAP_Frame * pFrame);
 	static XAP_Dialog *			static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);	
 	BOOL 						_onDeltaPos(NM_UPDOWN * pnmud);
-	static BOOL CALLBACK		s_dlgProc(HWND,UINT,WPARAM,LPARAM);	
 
 protected:
 
-	HWND						m_hwndDlg;	//  dialog box Windows	
 	BOOL						_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);   
 	

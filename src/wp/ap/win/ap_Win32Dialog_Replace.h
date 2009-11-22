@@ -22,11 +22,12 @@
 
 #include "ap_Dialog_Replace.h"
 #include "xap_Frame.h"
+#include "xap_Win32DialogBase.h"
 
 
 /*****************************************************************/
 
-class ABI_EXPORT AP_Win32Dialog_Replace: public AP_Dialog_Replace
+class ABI_EXPORT AP_Win32Dialog_Replace: public AP_Dialog_Replace, XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_Replace(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -38,20 +39,18 @@ public:
 	virtual void			notifyCloseFrame(XAP_Frame *pFrame);
 	virtual void			destroy(void);
 	virtual void			activate(void);
-	virtual void *			pGetWindowHandle(void) { return (void *) m_hWnd; }
+	virtual void *			pGetWindowHandle( void ) { return (void*)m_hDlg; }
 
 	static XAP_Dialog * 	static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
 	
     virtual void                    _updateLists();    
 	      
 protected:
-	void					_initButtons(HWND hWnd);
+	void					    _initButtons(HWND hWnd);
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL					_onBtn_Find(HWND hWnd, tFindType tFindType);
 	void 					_updateList(HWND hWnd, UT_GenericVector<UT_UCS4Char*>* vec);
-	HWND					m_hWnd;
 };
 
 #endif /* AP_WIN32DIALOG_REPLACE_H */

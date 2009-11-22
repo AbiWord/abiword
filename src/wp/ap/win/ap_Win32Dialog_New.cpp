@@ -25,6 +25,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_path.h"
+#include "ut_Win32LocaleString.h"
 
 #include "xap_App.h"
 #include "xap_Frame.h"
@@ -123,11 +124,13 @@ BOOL AP_Win32Dialog_New::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			if(!strstr(templateName.c_str(), "normal.awt-")) // don't truncate localized template names
 				templateName = templateName.substr ( 0, templateName.size () - 4 ) ;
 
-			char *uri = UT_go_filename_to_uri(AP_Win32App::s_fromWinLocaleToUTF8(templateName.c_str()).utf8_str());
+			UT_Win32LocaleString str;
+			str.fromASCII (templateName.c_str());
+			char *uri = UT_go_filename_to_uri(str.utf8_str().utf8_str());
 			UT_continue_if_fail(uri);
 
-			UT_sint32 nIndex = SendMessage( hControl, LB_ADDSTRING, 0, (LPARAM) UT_basename( uri ) );
-			SendMessage( hControl, LB_SETITEMDATA, (WPARAM) nIndex, (LPARAM) 0 );
+			UT_sint32 nIndex = SendMessageW( hControl, LB_ADDSTRING, 0, (LPARAM) UT_basename( uri ) );
+			SendMessageW( hControl, LB_SETITEMDATA, (WPARAM) nIndex, (LPARAM) 0 );
 
 			g_free(uri);
 		} while( _findnext( findtag, &cfile ) == 0 );
@@ -148,11 +151,13 @@ BOOL AP_Win32Dialog_New::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			if(!strstr(templateName.c_str(), "normal.awt-"))  // don't truncate localized template names
 				templateName = templateName.substr ( 0, templateName.size () - 4 ) ;
 
-			char *uri = UT_go_filename_to_uri(AP_Win32App::s_fromWinLocaleToUTF8(templateName.c_str()).utf8_str());
+            UT_Win32LocaleString str;
+			str.fromASCII (templateName.c_str());
+			char *uri = UT_go_filename_to_uri(str.utf8_str().utf8_str());
 			UT_continue_if_fail(uri);
 
-			UT_sint32 nIndex = SendMessage( hControl, LB_ADDSTRING, 0, (LPARAM) UT_basename( uri ) );
-			SendMessage( hControl, LB_SETITEMDATA, (WPARAM) nIndex, (LPARAM) 1 );
+			UT_sint32 nIndex = SendMessageW( hControl, LB_ADDSTRING, 0, (LPARAM) UT_basename( uri ) );
+			SendMessageW( hControl, LB_SETITEMDATA, (WPARAM) nIndex, (LPARAM) 1 );
 
 			g_free(uri);
 		} while( _findnext( findtag, &cfile ) == 0 );
@@ -202,7 +207,7 @@ BOOL AP_Win32Dialog_New::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			if( nIndex == LB_ERR )
 			{
 				HWND hControl = GetDlgItem(hWnd, AP_RID_DIALOG_NEW_LBX_TEMPLATE);
-				nIndex = SendMessage( hControl, LB_FINDSTRING , (WPARAM) -1, (LPARAM) "Normal" );
+				nIndex = SendMessageW( hControl, LB_FINDSTRING , (WPARAM) -1, (LPARAM) "Normal" );
 				_win32Dialog.selectListItem(AP_RID_DIALOG_NEW_LBX_TEMPLATE, nIndex);
 				_setFileName( nIndex );
 			}
@@ -327,7 +332,7 @@ void AP_Win32Dialog_New::_setFileName( UT_sint32 nIndex )
 		char buf[PATH_MAX];
 		_win32Dialog.getListText( AP_RID_DIALOG_NEW_LBX_TEMPLATE, nIndex, buf );
 		UT_String templateName; 
-		switch ( SendMessage( hControl, LB_GETITEMDATA, nIndex, 0 ) )
+		switch ( SendMessageW( hControl, LB_GETITEMDATA, nIndex, 0 ) )
 		{
 		case 0:
 			templateName = XAP_App::getApp()->getUserPrivateDirectory();
@@ -344,7 +349,7 @@ void AP_Win32Dialog_New::_setFileName( UT_sint32 nIndex )
 		if(!strstr(buf, "normal.awt-")) // don't append awt to localized templates
 			templateName += ".awt";
 
-		char *uri = UT_go_filename_to_uri(AP_Win32App::s_fromWinLocaleToUTF8(templateName.c_str()).utf8_str());
+		char *uri = NULL;//UT_go_filename_to_uri(AP_Win32App::s_fromWinLocaleToUTF8(templateName.c_str()).utf8_str());
 		UT_return_if_fail(uri);
 
 		setFileName(uri);

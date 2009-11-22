@@ -22,12 +22,12 @@
 
 #include "xap_Dlg_FontChooser.h"
 #include "xap_Win32PreviewWidget.h"
-
+#include "xap_Win32DialogBase.h"
 #include "xap_Frame.h"
 
 /*****************************************************************/
 
-class ABI_EXPORT XAP_Win32Dialog_FontChooser : public XAP_Dialog_FontChooser
+class ABI_EXPORT XAP_Win32Dialog_FontChooser : public XAP_Dialog_FontChooser, XAP_Win32DialogBase
 {
 public:
 	XAP_Win32Dialog_FontChooser(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

@@ -24,38 +24,35 @@
 #include "ap_Dialog_WordCount.h"
 #include "ut_timer.h"
 #include "xap_Frame.h"
-
+#include "xap_Win32DialogBase.h"
 
 /*****************************************************************/
 
-class ABI_EXPORT AP_Win32Dialog_WordCount: public AP_Dialog_WordCount
+class ABI_EXPORT AP_Win32Dialog_WordCount: public AP_Dialog_WordCount, public XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_WordCount(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Win32Dialog_WordCount(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
-
 	virtual void			runModeless(XAP_Frame * pFrame);
 	virtual void			destroy(void);
 	virtual void			activate(void);
 	virtual void			notifyActiveFrame(XAP_Frame *pFrame);
-	virtual void			notifyCloseFrame(XAP_Frame *pFrame);
-
+	
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	static void				autoupdateWC(UT_Worker * pTimer);
 	virtual void			setUpdateCounter( UT_uint32 );
 	virtual void			event_Update(void);
-	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
-	virtual void * 			pGetWindowHandle(void) { return  (void *) m_hWnd; }
+	void *					pGetWindowHandle( void ) { return (void*)m_hDlg; }
+	virtual BOOL 			_onDlgMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	
 protected:
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	void					_setDlgItemInt(UINT nCtrl, int nValue);
+	void 					_setDlgItemInt(UINT nCtrl, int nValue);
 	void 					_updateWindowData(void);       
-
-	HWND                    m_hWnd;
+	
 	bool					m_bAutoWC;
 
 	UT_Timer *				m_pAutoUpdateWC;

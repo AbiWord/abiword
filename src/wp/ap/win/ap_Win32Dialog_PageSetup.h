@@ -24,12 +24,13 @@
 #include "ap_Dialog_PageSetup.h"
 #include "xap_Win32PropertySheet.h"
 #include "xap_Frame.h"
+#include "xap_Win32DialogBase.h"
 
 class AP_Win32Dialog_PageSetup;
 /*
 	Sheet
 */
-class ABI_EXPORT AP_Win32Dialog_PageSetup_Sheet: public XAP_Win32PropertySheet
+class ABI_EXPORT AP_Win32Dialog_PageSetup_Sheet: public XAP_Win32PropertySheet, XAP_Win32DialogBase
 {
 public:	
 		AP_Win32Dialog_PageSetup_Sheet();				
@@ -65,7 +66,7 @@ private:
 
 	void						_onInitDialog();
 	void						_onKillActive(){};
-	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 		
 	AP_Win32Dialog_PageSetup*	m_pParent;	
     int							m_nCentered;	
@@ -91,7 +92,7 @@ private:
 
 	void						_onInitDialog();
 	void						_onKillActive(){};
-	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 		
 	AP_Win32Dialog_PageSetup*	m_pParent;	
 	

@@ -24,11 +24,13 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_misc.h"
+#include "ut_Win32LocaleString.h"
 
 #include "xap_App.h"
 #include "xap_EncodingManager.h"
 #include "xap_Win32App.h"
 #include "xap_Win32FrameImpl.h"
+#include "xap_Win32DialogBase.h"
 
 #include "xap_Strings.h"
 #include "xap_Dialog_Id.h"
@@ -72,6 +74,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 	UT_return_if_fail(pApp);
 	const XAP_EncodingManager *pEncMan = pApp->getEncodingManager();
 	UT_return_if_fail(pEncMan);
+    UT_Win32LocaleString family;
 
 	UT_DEBUGMSG(("FontChooserStart: Family[%s] Size[%s] Weight[%s] Style[%s] Color[%s] Underline[%d] StrikeOut[%d]\n",
 				 m_sFontFamily.c_str(),
@@ -92,10 +95,10 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 	   WARNING: any changes to this function should be closely coordinated
 	   with the equivalent logic in Win32Graphics::FindFont()
 	*/
-	LOGFONT lf;
+	LOGFONTW lf;
 	memset(&lf, 0, sizeof(lf));
 
-	CHOOSEFONT cf;
+	CHOOSEFONTW cf;
 	memset(&cf, 0, sizeof(cf));
 	cf.lStructSize = sizeof(cf);
 	cf.hwndOwner = static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow();
@@ -105,13 +108,16 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
                CF_ENABLEHOOK |
                CF_ENABLETEMPLATE |
                CF_INITTOLOGFONTSTRUCT;
-    cf.lpTemplateName = MAKEINTRESOURCE(XAP_RID_DIALOG_FONT);
+    cf.lpTemplateName = MAKEINTRESOURCEW(XAP_RID_DIALOG_FONT);
     cf.lpfnHook = (LPCFHOOKPROC) s_hookProc;
 	cf.lCustData = (LPARAM) this;
 	cf.hInstance = pApp->getInstance();
 
 	if (!m_sFontFamily.empty())
-		strcpy(lf.lfFaceName,pEncMan->strToNative(m_sFontFamily.c_str(), "UTF-8"));
+    {
+        family.fromUTF8 (m_sFontFamily.c_str());
+		wcscpy(lf.lfFaceName,family.c_str());
+    }
 	else
 		cf.Flags |= CF_NOFACESEL;
 
@@ -153,11 +159,11 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 		lf.lfStrikeOut = TRUE;
 
 	// run the actual dialog...
-	m_answer = (ChooseFont(&cf) ? a_OK : a_CANCEL);
+	m_answer = (ChooseFontW(&cf) ? a_OK : a_CANCEL);
 	// Convert the font name returned by the Windows Font Chooser
 	// to UTF-8.
-	// (strToNative() puts the string in a static buffer).
-	const char *szFontFamily = pEncMan->strToNative(lf.lfFaceName, "UTF-8", true);
+	family.fromLocale (lf.lfFaceName);
+	const char *szFontFamily = family.utf8_str().utf8_str();
 
 	if (m_answer == a_OK)
 	{
@@ -277,7 +283,7 @@ UINT CALLBACK XAP_Win32Dialog_FontChooser::s_hookProc(HWND hDlg, UINT msg, WPARA
 	switch(msg)
 	{
 	case WM_INITDIALOG:
-		pThis = (XAP_Win32Dialog_FontChooser *) ((CHOOSEFONT *)lParam)->lCustData;
+		pThis = (XAP_Win32Dialog_FontChooser *) ((CHOOSEFONTW *)lParam)->lCustData;
 		SetWindowLongPtr(hDlg,DWLP_USER,(LPARAM) pThis);
 		return pThis->_onInitDialog(hDlg,wParam,lParam);
 
@@ -303,14 +309,16 @@ UINT CALLBACK XAP_Win32Dialog_FontChooser::s_hookProc(HWND hDlg, UINT msg, WPARA
 	return 0;
 }
 
-#define _DS(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+#define _DS(c,s)	setDlgItemText(XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 BOOL XAP_Win32Dialog_FontChooser::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	XAP_App*              pApp        = XAP_App::getApp();
 	const XAP_StringSet*  pSS         = pApp->getStringSet();
 
-	SetWindowText(hWnd, pSS->getValue(XAP_STRING_ID_DLG_UFS_FontTitle));
+    m_hDlg = hWnd;
+	
+	setDialogTitle(pSS->getValue(XAP_STRING_ID_DLG_UFS_FontTitle));
 
 	// localize controls
 	_DS(FONT_TEXT_FONT,			DLG_UFS_FontLabel);
@@ -345,23 +353,23 @@ BOOL XAP_Win32Dialog_FontChooser::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LP
 	// use the owner-draw-control dialog-item (aka window) specified in the
 	// dialog resource file as a parent to the window/widget that we create
 	// here and thus have complete control of.
-//	m_pPreviewWidget = new XAP_Win32PreviewWidget(static_cast<XAP_Win32App *>(m_pApp),
-//												  GetDlgItem(hWnd, XAP_RID_DIALOG_FONT_PREVIEW),
-//												  0);
+    // m_pPreviewWidget = new XAP_Win32PreviewWidget(static_cast<XAP_Win32App *>(m_pApp),
+    //												  GetDlgItem(hWnd, XAP_RID_DIALOG_FONT_PREVIEW),
+    //												  0);
 
 	// instantiate the XP preview object using the win32 preview widget (window)
 	// we just created.  we seem to have a mish-mash of terms here, sorry.
 
-//	UT_uint32 w,h;
-//	m_pPreviewWidget->getWindowSize(&w,&h);
-//	_createPreviewFromGC(m_pPreviewWidget->getGraphics(),w,h);
-//	m_pPreviewWidget->setPreview(); // we need this to call draw() on WM_PAINTs
-//	_updatePreviewZoomPercent(getZoomPercent());
+    //	UT_uint32 w,h;
+    //	m_pPreviewWidget->getWindowSize(&w,&h);
+    //	_createPreviewFromGC(m_pPreviewWidget->getGraphics(),w,h);
+    //	m_pPreviewWidget->setPreview(); // we need this to call draw() on WM_PAINTs
+    //	_updatePreviewZoomPercent(getZoomPercent());
 
 	// get the initial offset in the text color dlg so that we can tell if the user
 	// changed color
-	m_iColorIndx = SendDlgItemMessage(hWnd, 1139, CB_GETCURSEL, 0, 0);
-	m_iColorCount = SendDlgItemMessage(hWnd, 1139, CB_GETCOUNT, 0, 0);
+	m_iColorIndx = SendDlgItemMessageW(hWnd, 1139, CB_GETCURSEL, 0, 0);
+	m_iColorCount = SendDlgItemMessageW(hWnd, 1139, CB_GETCOUNT, 0, 0);
 
 	if(m_iColorIndx == 0 && !m_sColor.empty() && strcmp(m_sColor.c_str(), "000000") != 0)
 	{
@@ -370,20 +378,20 @@ BOOL XAP_Win32Dialog_FontChooser::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LP
 		// of the list
 
 		// we have no name for this color, so left it empty
-		SendDlgItemMessage(hWnd, 1139, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)"");
+		SendDlgItemMessageW(hWnd, 1139, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)"");
 
 		// set the color for the entry
 		UT_RGBColor c;
 		UT_parseColor(m_sColor.c_str(),c);
 		DWORD dColor = RGB(c.m_red,c.m_grn,c.m_blu);
-		SendDlgItemMessage(hWnd, 1139, CB_SETITEMDATA, m_iColorCount, (LPARAM)(DWORD)dColor);
+		SendDlgItemMessageW(hWnd, 1139, CB_SETITEMDATA, m_iColorCount, (LPARAM)(DWORD)dColor);
 
 		// make sure this worked and select the color
 		int iOldCount = m_iColorCount;
-		m_iColorCount = SendDlgItemMessage(hWnd, 1139, CB_GETCOUNT, 0, 0);
+		m_iColorCount = SendDlgItemMessageW(hWnd, 1139, CB_GETCOUNT, 0, 0);
 		if(iOldCount + 1 == m_iColorCount)
 		{
-			SendDlgItemMessage(hWnd, 1139, CB_SETCURSEL, m_iColorCount-1, 0);
+			SendDlgItemMessageW(hWnd, 1139, CB_SETCURSEL, m_iColorCount-1, 0);
 			m_iColorIndx = m_iColorCount-1;
 		}
 	}
@@ -421,7 +429,7 @@ BOOL XAP_Win32Dialog_FontChooser::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*
 		case 1139: // this is hardcoded in the dlg
 			if(wNotifyCode == CBN_SELCHANGE)
 			{
-				int iIndx = SendDlgItemMessage(hWnd, 1139, CB_GETCURSEL, 0, 0);
+				int iIndx = SendDlgItemMessageW(hWnd, 1139, CB_GETCURSEL, 0, 0);
 				if(iIndx != m_iColorIndx)
 					m_bChangedColor = true;
 

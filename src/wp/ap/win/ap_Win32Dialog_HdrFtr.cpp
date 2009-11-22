@@ -69,8 +69,8 @@ void AP_Win32Dialog_HdrFtr::runModal(XAP_Frame * pFrame)
 	         		       this );
 }
 
-#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+#define _DS(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 BOOL AP_Win32Dialog_HdrFtr::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
@@ -81,7 +81,7 @@ BOOL AP_Win32Dialog_HdrFtr::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	// localize dialog title
-	_win32Dialog.setDialogTitle( pSS->getValue(AP_STRING_ID_DLG_HdrFtr_Title) );
+	setDialogTitle( pSS->getValue(AP_STRING_ID_DLG_HdrFtr_Title) );
 
 	// localize controls
 	_DSX(HDRFTR_BTN_OK,				DLG_OK);
@@ -113,7 +113,7 @@ BOOL AP_Win32Dialog_HdrFtr::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /
 	_win32Dialog.enableControl(AP_RID_DIALOG_HDRFTR_EBX_SECTION, bRestart);
 	_win32Dialog.enableControl(AP_RID_DIALOG_HDRFTR_SPN_SECTION, bRestart);
 	
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);			
+    centerDialog();
 	return 1;
 }
 

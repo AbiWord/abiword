@@ -23,8 +23,9 @@
 #include "xap_Strings.h"
 #include "xap_Win32DialogBase.h"
 #include "xap_Win32FrameImpl.h"
+#include "ut_Win32LocaleString.h"
 
-void XAP_Win32DialogBase::createModal(XAP_Frame* pFrame, LPCTSTR dlgTemplate)
+void XAP_Win32DialogBase::createModal(XAP_Frame* pFrame, LPCWSTR dlgTemplate)
 {
 	UT_ASSERT(m_tag == magic_tag);
 
@@ -42,8 +43,7 @@ void XAP_Win32DialogBase::createModal(XAP_Frame* pFrame, LPCTSTR dlgTemplate)
 	HWND hFrameWnd = pWin32FrameImpl->getTopLevelWindow();
 
 	// raise the dialog
-	const int result =
-		DialogBoxParam(pWin32App->getInstance(),
+	int result = DialogBoxParamW(pWin32App->getInstance(),
 						dlgTemplate,
 						hFrameWnd,
 						(DLGPROC)&XAP_Win32DialogBase::s_dlgProc,
@@ -54,9 +54,10 @@ void XAP_Win32DialogBase::createModal(XAP_Frame* pFrame, LPCTSTR dlgTemplate)
 }
 
 
-HWND XAP_Win32DialogBase::createModeless(XAP_Frame* pFrame, LPCTSTR dlgTemplate)
+HWND XAP_Win32DialogBase::createModeless(XAP_Frame* pFrame, LPCWSTR dlgTemplate)
 {
 	UT_ASSERT(m_tag == magic_tag);
+   	UT_ASSERT(pFrame);
 
 	XAP_App* pApp = XAP_App::getApp();
 	UT_ASSERT(pApp);
@@ -65,14 +66,11 @@ HWND XAP_Win32DialogBase::createModeless(XAP_Frame* pFrame, LPCTSTR dlgTemplate)
 
 	XAP_FrameImpl* pFrameImpl = pFrame->getFrameImpl();
 
-	UT_ASSERT(pFrame);
-
 	XAP_Win32FrameImpl* pWin32FrameImpl = static_cast<XAP_Win32FrameImpl*>(pFrameImpl);
 
 	HWND hFrameWnd = pWin32FrameImpl->getTopLevelWindow();
 
-	HWND hWnd =
-		CreateDialogParam(pWin32App->getInstance(),
+	HWND hWnd = CreateDialogParamW(pWin32App->getInstance(),
 							dlgTemplate,
 							hFrameWnd,
 							(DLGPROC)&XAP_Win32DialogBase::s_dlgProc,
@@ -80,36 +78,30 @@ HWND XAP_Win32DialogBase::createModeless(XAP_Frame* pFrame, LPCTSTR dlgTemplate)
 	// possibly we shouldn't check for success/failure here?
 	UT_ASSERT(hWnd != NULL);
 
+    m_hDlg = hWnd;
+	showWindow(SW_SHOW);
+	bringWindowToTop();
+
 	return hWnd;
 }
 
 
 BOOL CALLBACK XAP_Win32DialogBase::s_dlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	static const char szProp[] = "abiWin23base_dlgproc";
-
-	XAP_Win32DialogBase* pThis;
+	XAP_Win32DialogBase* pThis = NULL;
 
 	if (msg == WM_INITDIALOG)
 	{
 		pThis = (XAP_Win32DialogBase*)lParam;
+        SetWindowLongW(hWnd, DWL_USER, lParam);
 		pThis->m_hDlg = hWnd;
-		SetProp(hWnd, szProp, (HANDLE)lParam /* XAP_Win32DialogBase* */);
 		return pThis->_onInitDialog(hWnd, wParam, lParam);
 	}
-	else
-	{
-		pThis = (XAP_Win32DialogBase*)GetProp(hWnd, szProp);
-	}
 
-	if (!pThis)
-	{
-		// ... then we must assume this is some init out of our control,
-		// and pass it to the system
+    pThis = (XAP_Win32DialogBase *) GetWindowLongW(hWnd,DWL_USER);
+	
+	if (pThis == NULL)
 		return FALSE;
-	}
-
-	UT_ASSERT(pThis);
 	UT_ASSERT(pThis->m_tag == magic_tag);
 
 
@@ -167,13 +159,16 @@ void XAP_Win32DialogBase::enableControl(UT_sint32 controlId, bool bChecked)
 void XAP_Win32DialogBase::destroyWindow()
 {
 	UT_ASSERT(IsWindow(m_hDlg));
-	DestroyWindow(m_hDlg);
+	int iResult = DestroyWindow(m_hDlg);
+	UT_ASSERT_HARMLESS((iResult != 0));
 }
 
-void XAP_Win32DialogBase::setDialogTitle(LPCSTR p_str)
+void XAP_Win32DialogBase::setDialogTitle(const char* uft8_str)
 {
 	UT_ASSERT(IsWindow(m_hDlg));
-	SetWindowText(m_hDlg, p_str);
+	UT_Win32LocaleString str;
+	str.fromUTF8 (uft8_str);
+	SetWindowTextW (m_hDlg, str.c_str());
 }
 
 int XAP_Win32DialogBase::showWindow(int Mode )
@@ -188,14 +183,20 @@ int XAP_Win32DialogBase::showControl(UT_sint32 controlId, int Mode)
 	return ShowWindow(GetDlgItem(m_hDlg, controlId), Mode);
 }
 
-int XAP_Win32DialogBase::bringWindowToTop()
+int XAP_Win32DialogBase::bringWindowToTop()                     
 {
 	UT_ASSERT(IsWindow(m_hDlg));
-	const UINT uFlags =	SWP_NOMOVE |
-						SWP_NOOWNERZORDER |
-						SWP_NOSIZE |
-						SWP_NOACTIVATE;
-	return SetWindowPos(m_hDlg, HWND_TOP, 0, 0, 0, 0, uFlags);
+    return BringWindowToTop(m_hDlg);
+}
+
+void XAP_Win32DialogBase::notifyCloseFrame(XAP_Frame *pFrame)
+{
+	if((HWND)GetWindowLongW(m_hDlg, GWL_HWNDPARENT) == static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
+	{
+		SetWindowLongW(m_hDlg, GWL_HWNDPARENT, NULL);
+		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
+						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+	}
 }
 
 // Combo boxes.
@@ -203,44 +204,57 @@ int XAP_Win32DialogBase::bringWindowToTop()
 int XAP_Win32DialogBase::addItemToCombo(UT_sint32 controlId, LPCSTR p_str)
 {
 	UT_ASSERT(IsWindow(m_hDlg));
-	return SendDlgItemMessage(m_hDlg, controlId, CB_ADDSTRING, 0, (LPARAM)p_str);
+    UT_Win32LocaleString str;
+	str.fromUTF8 (p_str); 	
+	return SendDlgItemMessageW(m_hDlg, controlId, CB_ADDSTRING, 0, (LPARAM)str.c_str());	
 }
 
 int XAP_Win32DialogBase::setComboDataItem(UT_sint32 controlId, int nIndex, DWORD dwData)
 {
 	UT_ASSERT(IsWindow(m_hDlg));
-	return SendDlgItemMessage(m_hDlg, controlId, CB_SETITEMDATA, nIndex, dwData);
+	return SendDlgItemMessageW(m_hDlg, controlId, CB_SETITEMDATA, nIndex, dwData);
 }
 
 
 int XAP_Win32DialogBase::getComboDataItem(UT_sint32 controlId, int nIndex)
 {
 	UT_ASSERT(IsWindow(m_hDlg));
-	return SendDlgItemMessage(m_hDlg, controlId, CB_GETITEMDATA, nIndex,0);
+	return SendDlgItemMessageW(m_hDlg, controlId, CB_GETITEMDATA, nIndex,0);
 }
 
 int XAP_Win32DialogBase::getComboItemIndex(UT_sint32 controlId, LPCSTR p_str)
 {
 	UT_ASSERT(IsWindow(m_hDlg));
-	return SendDlgItemMessage(m_hDlg, controlId, CB_FINDSTRINGEXACT, -1, (LPARAM) p_str);
+	return SendDlgItemMessageW(m_hDlg, controlId, CB_FINDSTRINGEXACT, -1, (LPARAM) p_str);
 }
 
 void XAP_Win32DialogBase::selectComboItem(UT_sint32 controlId, int index)
 {
 	UT_ASSERT(IsWindow(m_hDlg));
-	SendDlgItemMessage(m_hDlg, controlId, CB_SETCURSEL, index, 0);
+	SendDlgItemMessageW(m_hDlg, controlId, CB_SETCURSEL, index, 0);
 }
 
 int XAP_Win32DialogBase::getComboSelectedIndex(UT_sint32 controlId) const
 {
 	UT_ASSERT(IsWindow(m_hDlg));
-	return SendDlgItemMessage(m_hDlg, controlId, CB_GETCURSEL, 0, 0);
+	return SendDlgItemMessageW(m_hDlg, controlId, CB_GETCURSEL, 0, 0);
 }
 
 void XAP_Win32DialogBase::resetComboContent(UT_sint32 controlId)
 {
 	UT_ASSERT(IsWindow(m_hDlg));
-	SendDlgItemMessage(m_hDlg, controlId, CB_RESETCONTENT, 0, 0);
+	SendDlgItemMessageW(m_hDlg, controlId, CB_RESETCONTENT, 0, 0);
+}
+
+void XAP_Win32DialogBase::getComboTextItem(UT_sint32 controlId, int index, UT_Win32LocaleString& str)
+{
+	UT_ASSERT(IsWindow(m_hDlg));	
+	wchar_t szBuff[1024];	
+
+	if (SendDlgItemMessageW(m_hDlg, controlId, CB_GETLBTEXT, index, (LPARAM)szBuff) != CB_ERR)
+		str.fromLocale(szBuff);
+	else
+		str.clear();
 }
 
 // List boxes
@@ -248,45 +262,45 @@ void XAP_Win32DialogBase::resetComboContent(UT_sint32 controlId)
 void XAP_Win32DialogBase::resetContent(UT_sint32 controlId)
 {
 	UT_ASSERT(IsWindow(m_hDlg));
-	SendDlgItemMessage(m_hDlg, controlId, LB_RESETCONTENT, 0, 0);
+	SendDlgItemMessageW(m_hDlg, controlId, LB_RESETCONTENT, 0, 0);
 }
 
 
 int XAP_Win32DialogBase::addItemToList(UT_sint32 controlId, LPCSTR p_str)
 {
 	UT_ASSERT(IsWindow(m_hDlg));
-	return SendDlgItemMessage(m_hDlg, controlId, LB_ADDSTRING, 0, (LPARAM)p_str);
+	return SendDlgItemMessageW(m_hDlg, controlId, LB_ADDSTRING, 0, (LPARAM)p_str);
 }
 
 int XAP_Win32DialogBase::setListDataItem(UT_sint32 controlId, int nIndex, DWORD dwData)
 {
 	UT_ASSERT(IsWindow(m_hDlg));
-	return SendDlgItemMessage(m_hDlg, controlId, LB_SETITEMDATA, nIndex, dwData);
+	return SendDlgItemMessageW(m_hDlg, controlId, LB_SETITEMDATA, nIndex, dwData);
 }
 
 
 int XAP_Win32DialogBase::getListDataItem(UT_sint32 controlId, int nIndex)
 {
 	UT_ASSERT(IsWindow(m_hDlg));
-	return SendDlgItemMessage(m_hDlg, controlId, LB_GETITEMDATA, nIndex,0);
+	return SendDlgItemMessageW(m_hDlg, controlId, LB_GETITEMDATA, nIndex,0);
 }
 
 int XAP_Win32DialogBase::getListSelectedIndex(UT_sint32 controlId) const
 {
 	UT_ASSERT(IsWindow(m_hDlg));
-	return SendDlgItemMessage(m_hDlg, controlId, LB_GETCURSEL, 0, 0);
+	return SendDlgItemMessageW(m_hDlg, controlId, LB_GETCURSEL, 0, 0);
 }
 
 void XAP_Win32DialogBase::selectListItem(UT_sint32 controlId, int index)
 {
 	UT_ASSERT(IsWindow(m_hDlg));
-	SendDlgItemMessage(m_hDlg, controlId, LB_SETCURSEL, index, 0);
+	SendDlgItemMessageW(m_hDlg, controlId, LB_SETCURSEL, index, 0);
 }
 
 void XAP_Win32DialogBase::getListText(UT_sint32 controlId, int index, char *p_str) const
 {
 	UT_ASSERT(IsWindow(m_hDlg));
-	SendDlgItemMessage(m_hDlg, controlId, LB_GETTEXT, index, (LPARAM)p_str);
+	SendDlgItemMessageW(m_hDlg, controlId, LB_GETTEXT, index, (LPARAM)p_str);
 }
 
 
@@ -294,8 +308,32 @@ void XAP_Win32DialogBase::getListText(UT_sint32 controlId, int index, char *p_st
 void XAP_Win32DialogBase::setControlText(UT_sint32 controlId, LPCSTR p_str)
 {
 	UT_ASSERT(IsWindow(m_hDlg));
-	SetDlgItemText(m_hDlg, controlId, p_str);
+	//  SetDlgItemTextW(m_hDlg, controlId, p_str);
 }
+
+bool XAP_Win32DialogBase::setDlgItemText(int nIDDlgItem,  const char* uft8_str)
+{
+	UT_ASSERT(IsWindow(m_hDlg));
+	
+	UT_Win32LocaleString str;
+	str.fromUTF8 (uft8_str);
+	return (bool) SetDlgItemTextW (m_hDlg, nIDDlgItem, str.c_str());
+}
+
+bool XAP_Win32DialogBase::getDlgItemText(int nIDDlgItem, UT_Win32LocaleString& str)
+{	
+	wchar_t szBuff [1024];	
+	bool rslt;
+	
+	rslt = (bool) GetDlgItemTextW(m_hDlg, nIDDlgItem, szBuff, 1024);
+	
+	if (rslt == true)
+		str.fromLocale(szBuff);
+	else
+		str.clear();
+	
+	return rslt;
+ }
 
 void XAP_Win32DialogBase::setControlInt(UT_sint32 controlId, int value)
 {
@@ -312,7 +350,7 @@ int XAP_Win32DialogBase::getControlInt(UT_sint32 controlId) const
 void XAP_Win32DialogBase::selectControlText(UT_sint32 controlId, UT_sint32 start, UT_sint32 end)
 {
 	UT_ASSERT(IsWindow(m_hDlg));
-	SendDlgItemMessage(m_hDlg, controlId, EM_SETSEL, start,end);
+	SendDlgItemMessageW(m_hDlg, controlId, EM_SETSEL, start,end);
 }
 
 int XAP_Win32DialogBase::isChecked(UT_sint32 controlId) const
@@ -326,8 +364,8 @@ bool XAP_Win32DialogBase::isDialogValid() const
 	return IsWindow(m_hDlg)!=0;
 }
 
-void XAP_Win32DialogBase::getControlText(	UT_sint32 controlId,
-											LPSTR p_buffer,
+void XAP_Win32DialogBase::getControlText(UT_sint32 controlId,
+											LPTSTR p_buffer,
 											UT_sint32 Buffer_length) const
 {
 	UT_ASSERT(IsWindow(m_hDlg));
@@ -414,4 +452,38 @@ BOOL XAP_Win32DialogBase::_callHelp()
 	return TRUE;
 }
 
+bool XAP_Win32DialogBase::setWindowText (HWND hWnd, const char* uft8_str)
+{
+	UT_ASSERT(IsWindow(hWnd));
+	
+	UT_Win32LocaleString str;
+	str.fromUTF8 (uft8_str);
+	return (bool) SetWindowTextW (hWnd, str.c_str());
+}
+
+bool XAP_Win32DialogBase::getDlgItemText(HWND hWnd, int nIDDlgItem, UT_Win32LocaleString& str)
+{	
+	UT_ASSERT(IsWindow(hWnd));
+	
+	wchar_t szBuff [1024];	
+	bool rslt;
+	
+	rslt = (bool) GetDlgItemTextW(hWnd, nIDDlgItem, szBuff, 1024);
+	
+	if (rslt == true)
+		str.fromLocale(szBuff);
+	else
+		str.clear();
+	
+	return rslt;
+}
+
+bool XAP_Win32DialogBase::setDlgItemText(HWND hWnd, int nIDDlgItem,  const char* uft8_str)
+{
+	UT_ASSERT(IsWindow(hWnd));
+	
+	UT_Win32LocaleString str;
+	str.fromUTF8 (uft8_str);
+	return (bool) SetDlgItemTextW (hWnd, nIDDlgItem, str.c_str());
+}
 

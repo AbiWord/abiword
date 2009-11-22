@@ -58,8 +58,8 @@ UINT CALLBACK AP_Win32Dialog_Background::s_hookProc(HWND hdlg,UINT uiMsg,WPARAM 
 	AP_Win32Dialog_Background * pThis = NULL;
 	if (uiMsg==WM_INITDIALOG)
 	{
-		CHOOSECOLOR * pCC = NULL;
-		pCC = (CHOOSECOLOR *) lParam;
+		CHOOSECOLORW * pCC = NULL;
+		pCC = (CHOOSECOLORW *) lParam;
 		pThis = (AP_Win32Dialog_Background *)pCC->lCustData;
 		SetWindowLongPtr(hdlg, DWLP_USER, (LONG_PTR) pThis);
 		pThis->m_hDlg = hdlg;
@@ -92,15 +92,15 @@ void AP_Win32Dialog_Background::runModal(XAP_Frame * pFrame)
 	}
 
 
-	CHOOSECOLOR cc;                 // common dialog box structure 
+	CHOOSECOLORW cc;                 // common dialog box structure 
 	static COLORREF acrCustClr[16]; // array of custom colors 
 	DWORD rgbCurrent;				// initial color selection
 
 	rgbCurrent = RGB( rgbColor.m_red, rgbColor.m_grn, rgbColor.m_blu );
 
 	// Initialize CHOOSECOLOR 
-	ZeroMemory(&cc, sizeof(CHOOSECOLOR));
-	cc.lStructSize = sizeof(CHOOSECOLOR);
+	ZeroMemory(&cc, sizeof(CHOOSECOLORW));
+	cc.lStructSize = sizeof(CHOOSECOLORW);
 	cc.hwndOwner = static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow();
 	cc.lpCustColors = (LPDWORD) acrCustClr;
 	cc.rgbResult = rgbCurrent;
@@ -108,7 +108,7 @@ void AP_Win32Dialog_Background::runModal(XAP_Frame * pFrame)
 	cc.lpfnHook  = (LPCFHOOKPROC) &AP_Win32Dialog_Background::s_hookProc;
 	cc.lCustData = (LPARAM)this;
  
-	if( ChooseColor(&cc) )
+	if( ChooseColorW(&cc) )
 	{
 		rgbCurrent = cc.rgbResult;
 

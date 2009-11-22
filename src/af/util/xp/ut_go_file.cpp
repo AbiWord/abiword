@@ -1655,12 +1655,17 @@ check_program (char const *prog)
 }
 #endif
 
+#ifdef G_OS_WIN32
+#include "ut_Win32LocaleString.h"
+#endif
+
 GError *
 UT_go_url_show (gchar const *url)
 {
 #ifdef G_OS_WIN32
-	ShellExecute (NULL, "open", url, NULL, NULL, SW_SHOWNORMAL);
-
+	UT_Win32LocaleString str;
+	str.fromUTF8 (url);
+	ShellExecuteW (NULL, L"open", str.c_str(), NULL, NULL, SW_SHOWNORMAL);
 	return NULL;
 #else
 	GError *err = NULL;

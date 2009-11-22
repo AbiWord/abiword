@@ -142,10 +142,10 @@ BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 		}
 	}
 	
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);			
+	centerDialog();			
 
 	const XAP_StringSet* pSS = m_pApp->getStringSet();
-
+    setDialogTitle(pSS->getValue(AP_STRING_ID_DLG_Lists_Title));
 	UT_return_val_if_fail (pSS,1);	// TODO: Would an error handler be more appropriate here?
 
 	// Set the locale specific strings

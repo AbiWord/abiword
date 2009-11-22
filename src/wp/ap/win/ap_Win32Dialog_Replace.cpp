@@ -50,7 +50,7 @@ AP_Win32Dialog_Replace::AP_Win32Dialog_Replace(XAP_DialogFactory * pDlgFactory,
 											   XAP_Dialog_Id id)
 	: AP_Dialog_Replace(pDlgFactory,id)
 {
-	m_hWnd = 0;
+
 }
 
 AP_Win32Dialog_Replace::~AP_Win32Dialog_Replace(void)
@@ -60,29 +60,27 @@ AP_Win32Dialog_Replace::~AP_Win32Dialog_Replace(void)
 void AP_Win32Dialog_Replace::activate(void)
 {
 	int iResult;
+    UT_Win32LocaleString findstr;
 
 	// Update the caption
 	ConstructWindowName();
-	SetWindowText(m_hWnd, (AP_Win32App::s_fromUTF8ToWinLocale(m_WindowName)).c_str()); 
+	setDialogTitle(m_WindowName);
 
-	SetFocus( GetDlgItem( m_hWnd,AP_RID_DIALOG_REPLACE_COMBO_FIND) );
+	SetFocus( GetDlgItem( m_hDlg,AP_RID_DIALOG_REPLACE_COMBO_FIND) );
 
-	iResult = ShowWindow( m_hWnd, SW_SHOW );
+	iResult = ShowWindow( m_hDlg, SW_SHOW );
 
-	iResult = BringWindowToTop( m_hWnd );
+	iResult = BringWindowToTop( m_hDlg );
 	
 	UT_return_if_fail ((iResult != 0));
 	
 	{
 	UT_UCSChar * bufferUnicode = getFindString();
-	UT_uint32 lenUnicode = UT_UCS4_strlen(bufferUnicode);
-	if (lenUnicode)
+	findstr.fromUCS4 (bufferUnicode);
+	if (!findstr.empty())
 	{
-		char * bufferNormal = new char [lenUnicode + 1];
-		UT_UCS4_strcpy_to_char(bufferNormal, bufferUnicode);
-		SetDlgItemText(m_hWnd,AP_RID_DIALOG_REPLACE_COMBO_FIND,bufferNormal);
-		SendMessage(GetDlgItem(m_hWnd,AP_RID_DIALOG_REPLACE_COMBO_FIND), CB_SETEDITSEL, 0, MAKELONG (0, -1));
-		DELETEP(bufferNormal);
+	    SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_REPLACE_COMBO_FIND,findstr.c_str());
+		SendMessageW(GetDlgItem(m_hDlg,AP_RID_DIALOG_REPLACE_COMBO_FIND), CB_SETEDITSEL, 0, MAKELONG (0, -1));	
 	}
 	FREEP(bufferUnicode);
 	}
@@ -91,14 +89,11 @@ void AP_Win32Dialog_Replace::activate(void)
 	{
 	
 		UT_UCSChar * bufferUnicode = getReplaceString();
-		UT_uint32 lenUnicode = UT_UCS4_strlen(bufferUnicode);
-		if (lenUnicode)
-		{
-			char * bufferNormal = new char [lenUnicode + 1];
-			UT_UCS4_strcpy_to_char(bufferNormal, bufferUnicode);
-			SetDlgItemText(m_hWnd,AP_RID_DIALOG_REPLACE_COMBO_REPLACE,bufferNormal);
-			SendMessage(GetDlgItem(m_hWnd,AP_RID_DIALOG_REPLACE_COMBO_FIND), CB_SETEDITSEL, 0, MAKELONG (0, -1));
-			DELETEP(bufferNormal);
+		findstr.fromUCS4 (bufferUnicode);
+		if (!findstr.empty())
+		{			
+			SetDlgItemTextW(m_hDlg,AP_RID_DIALOG_REPLACE_COMBO_REPLACE,findstr.c_str());
+			SendMessageW(GetDlgItem(m_hDlg,AP_RID_DIALOG_REPLACE_COMBO_FIND), CB_SETEDITSEL, 0, MAKELONG (0, -1));		
 		}
 		FREEP(bufferUnicode);
 	}
@@ -107,7 +102,7 @@ void AP_Win32Dialog_Replace::activate(void)
 
 void AP_Win32Dialog_Replace::destroy(void)
 {
-	int iResult = DestroyWindow( m_hWnd );
+	int iResult = DestroyWindow( m_hDlg );
 
 	UT_ASSERT_HARMLESS((iResult != 0));
 
@@ -116,24 +111,24 @@ void AP_Win32Dialog_Replace::destroy(void)
 
 void AP_Win32Dialog_Replace::notifyActiveFrame(XAP_Frame *pFrame)
 {
-	if((HWND)GetWindowLongPtr(m_hWnd, GWLP_HWNDPARENT) != static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
+	if((HWND)GetWindowLongPtr(m_hDlg, GWLP_HWNDPARENT) != static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
 		// Update the caption
 		ConstructWindowName();
-		SetWindowText(m_hWnd, (AP_Win32App::s_fromUTF8ToWinLocale(m_WindowName)).c_str()); 
+		setDialogTitle(m_WindowName);
 
-		SetWindowLongPtr(m_hWnd, GWLP_HWNDPARENT, (LONG_PTR)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
-		SetWindowPos(m_hWnd, NULL, 0, 0, 0, 0,
+		SetWindowLongPtr(m_hDlg, GWLP_HWNDPARENT, (LONG_PTR)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
+		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}
 }
 
 void AP_Win32Dialog_Replace::notifyCloseFrame(XAP_Frame *pFrame)
 {
-	if((HWND)GetWindowLongPtr(m_hWnd, GWLP_HWNDPARENT) == static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
+	if((HWND)GetWindowLongPtr(m_hDlg, GWLP_HWNDPARENT) == static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
-		SetWindowLongPtr(m_hWnd, GWLP_HWNDPARENT, NULL);
-		SetWindowPos(m_hWnd, NULL, 0, 0, 0, 0,
+		SetWindowLongPtr(m_hDlg, GWLP_HWNDPARENT, NULL);
+		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}
 }
@@ -142,11 +137,11 @@ void AP_Win32Dialog_Replace::runModeless(XAP_Frame * pFrame)
 {
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(XAP_App::getApp());
 
-	LPCTSTR lpTemplate = NULL;
+	LPCWSTR lpTemplate = NULL;
 	if (m_id == AP_DIALOG_ID_REPLACE)
-		lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_REPLACE);
+		lpTemplate = MAKEINTRESOURCEW(AP_RID_DIALOG_REPLACE);
 	else if (m_id == AP_DIALOG_ID_FIND)
-		lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_FIND);
+		lpTemplate = MAKEINTRESOURCEW(AP_RID_DIALOG_FIND);
 	else
 	{
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
@@ -154,67 +149,25 @@ void AP_Win32Dialog_Replace::runModeless(XAP_Frame * pFrame)
 	}
 
 	setView(static_cast<FV_View *> (pFrame->getCurrentView()) );
+    createModeless(pFrame, lpTemplate);
 
-	int iResult;
-	HWND hResult = CreateDialogParam(pWin32App->getInstance(),lpTemplate,
-							static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-							(DLGPROC)s_dlgProc,(LPARAM)this);
-
-	UT_return_if_fail ((hResult != NULL));
-
-	m_hWnd = hResult;
-
-	// Save dialog the ID number and pointer to the widget
-	UT_sint32 sid =(UT_sint32)	getDialogId();
-	m_pApp->rememberModelessId( sid, (XAP_Dialog_Modeless *) m_pDialog);
+    //  Save dialog the ID number and pointer to the widget	
+	m_pApp->rememberModelessId(/* (UT_sint32)*/	getDialogId(), (XAP_Dialog_Modeless *) m_pDialog);
 
 	// Update the caption
 	ConstructWindowName();
-	SetWindowText(m_hWnd, (AP_Win32App::s_fromUTF8ToWinLocale(m_WindowName)).c_str()); 
+	setDialogTitle(m_WindowName);
 
-	iResult = ShowWindow( m_hWnd, SW_SHOW );
-
-	iResult = BringWindowToTop( m_hWnd );
-	UT_ASSERT_HARMLESS((iResult != 0));
+    ShowWindow( m_hDlg, SW_SHOW );	
 	m_pView->focusChange(AV_FOCUS_MODELESS);
-}
-
-BOOL CALLBACK AP_Win32Dialog_Replace::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
-{
-	// This is a static function.
-
-	AP_Win32Dialog_Replace * pThis;
-	xxx_UT_DEBUGMSG(("s_dlgProc: msg 0x%x\n",msg));
-	switch (msg)
-	{
-	
-	     	
-	case WM_INITDIALOG:
-		pThis = (AP_Win32Dialog_Replace *)lParam;
-		SetWindowLongPtr(hWnd,DWLP_USER,lParam);
-		return pThis->_onInitDialog(hWnd,wParam,lParam);
-	
-	// The second time that the dialog box is displayed
-	// if he hit return it does not process the order
-	// because it sends an IDOK msg
-	case WM_COMMAND:
-		if (wParam==IDOK)
-			wParam=AP_RID_DIALOG_REPLACE_BTN_FINDNEXT;
-			
-		pThis = (AP_Win32Dialog_Replace *)GetWindowLongPtr(hWnd,DWLP_USER);
-		return pThis->_onCommand(hWnd,wParam,lParam);
-
-	default:
-		return 0;
-	}
 }
 
 void AP_Win32Dialog_Replace::_initButtons(HWND hWnd)
 {
 	HWND hWndEditFind = GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_COMBO_FIND);
 	HWND hWndEditReplace = GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_COMBO_REPLACE);
-	DWORD lenFind = GetWindowTextLength(hWndEditFind);
-	DWORD lenReplace = GetWindowTextLength(hWndEditReplace);
+	DWORD lenFind = GetWindowTextLengthW(hWndEditFind);
+	DWORD lenReplace = GetWindowTextLengthW(hWndEditReplace);
 
 	BOOL bEnableFind = (lenFind > 0);
 	EnableWindow(GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_BTN_FINDNEXT),bEnableFind);
@@ -240,19 +193,18 @@ void AP_Win32Dialog_Replace::_initButtons(HWND hWnd)
 	return;
 }
 
-#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+#define _DS(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 BOOL AP_Win32Dialog_Replace::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
-{
-	
+{	
 	
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	if (m_id == AP_DIALOG_ID_FIND)
-		SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_FR_FindTitle));
+		setDialogTitle(pSS->getValue(AP_STRING_ID_DLG_FR_FindTitle));
 	else
-		SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceTitle));
+		setDialogTitle(pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceTitle));
 
 	// localize controls shared across dialogs
 	_DS(REPLACE_BTN_FINDNEXT,		DLG_FR_FindNextButton);
@@ -277,7 +229,7 @@ BOOL AP_Win32Dialog_Replace::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM 
 
 	SetFocus( GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_COMBO_FIND) );
 
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
+	centerDialog();
 	
 	return 0;							// 0 == we did call SetFocus()
 }
@@ -361,48 +313,44 @@ BOOL AP_Win32Dialog_Replace::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lPara
 
 BOOL AP_Win32Dialog_Replace::_onBtn_Find(HWND hWnd, tFindType tFindType)
 {
-	char * pBufFromDialogFind = NULL;
-	UT_UCSChar * pUCSFind = NULL;
-	char * pBufFromDialogReplace = NULL;
+	wchar_t * pBufFromDialogFind = NULL;
+	wchar_t * pBufFromDialogReplace = NULL;
 	UT_UCSChar * pUCSReplace = NULL;
+    UT_Win32LocaleString findstr;    
+    UT_Win32LocaleString replacestr;
 
 	// Check find string
 	HWND hWndEditFind = GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_COMBO_FIND);
-	DWORD lenFind = GetWindowTextLength(hWndEditFind);
+	DWORD lenFind = GetWindowTextLengthW(hWndEditFind);
 	if (!lenFind)
 		return 1;
 
-	pBufFromDialogFind = new char [lenFind + 1];
+	pBufFromDialogFind = new wchar_t [lenFind + 1];
 	if (!pBufFromDialogFind)
 		goto FreeMemory;
-	GetWindowText(hWndEditFind,pBufFromDialogFind,lenFind+1);
+	GetWindowTextW(hWndEditFind,pBufFromDialogFind,lenFind+1);
 
 	UT_DEBUGMSG(("Find entry contents: [%s]\n",pBufFromDialogFind));
 
-	UT_UCS4_cloneString_char(&pUCSFind,pBufFromDialogFind);
-	if (!pUCSFind)
-		goto FreeMemory;
+    findstr.fromLocale (pBufFromDialogFind);
 
-	setFindString(pUCSFind);
+	setFindString(findstr.ucs4_str().ucs4_str());
 
-	if (m_id == AP_DIALOG_ID_REPLACE)
+    if (m_id == AP_DIALOG_ID_REPLACE)
 	{
 		// Check Replace string
 		HWND hWndEditReplace = GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_COMBO_REPLACE);
-		DWORD lenReplace = GetWindowTextLength(hWndEditReplace);
+		DWORD lenReplace = GetWindowTextLengthW(hWndEditReplace);
 
-		pBufFromDialogReplace = new char [lenReplace + 1];
+		pBufFromDialogReplace = new wchar_t [lenReplace + 1];
 		if (!pBufFromDialogReplace)
 			goto FreeMemory;
-		GetWindowText(hWndEditReplace,pBufFromDialogReplace,lenReplace+1);
+		GetWindowTextW(hWndEditReplace,pBufFromDialogReplace,lenReplace+1);
 
 		UT_DEBUGMSG(("Replace entry contents: [%s]\n",pBufFromDialogReplace));
 
-		UT_UCS4_cloneString_char(&pUCSReplace,pBufFromDialogReplace);
-		if (!pUCSReplace)
-			goto FreeMemory;
-
-		setReplaceString(pUCSReplace);
+	    replacestr.fromLocale (pBufFromDialogReplace);
+		setReplaceString(replacestr.ucs4_str().ucs4_str());
 	}
 
 	if (tFindType == find_REPLACE_ALL)
@@ -426,9 +374,8 @@ BOOL AP_Win32Dialog_Replace::_onBtn_Find(HWND hWnd, tFindType tFindType)
 			findPrev();
 	}
 
-FreeMemory:
+    FreeMemory:
 	DELETEP(pBufFromDialogFind);
-	FREEP(pUCSFind);
 	DELETEP(pBufFromDialogReplace);
 	FREEP(pUCSReplace);
 	return 1;
@@ -436,32 +383,26 @@ FreeMemory:
 
 void AP_Win32Dialog_Replace::_updateLists()
 {		
-	_updateList(GetDlgItem(m_hWnd, AP_RID_DIALOG_REPLACE_COMBO_FIND), 		&m_findList);
-	_updateList(GetDlgItem(m_hWnd, AP_RID_DIALOG_REPLACE_COMBO_REPLACE), 	&m_replaceList);	
+	_updateList(GetDlgItem(m_hDlg, AP_RID_DIALOG_REPLACE_COMBO_FIND), 		&m_findList);
+	_updateList(GetDlgItem(m_hDlg, AP_RID_DIALOG_REPLACE_COMBO_REPLACE), 	&m_replaceList);
 }
 
 void AP_Win32Dialog_Replace::_updateList(HWND hWnd, UT_GenericVector<UT_UCS4Char*> *list)
 {
 	UT_DEBUGMSG(("AP_Win32Dialog_Replace::_updateList\n"));
 	
-	SendMessage(hWnd, CB_RESETCONTENT, 0,0);		
+	UT_uint32 i = 0;
+    UT_Win32LocaleString str;
+	
+	SendMessageW(hWnd, CB_RESETCONTENT, 0,0);		
 	
 	for (UT_sint32 i = 0; i < list->getItemCount(); i++)
 	{
 		// leaving the size 0 causes the string class to determine the length itself
-		UT_UCS4String ucs4s((UT_UCS4Char*)list->getNthItem(i), 0); 
-		
-		// clone the string, since we can't use utf8_str()'s result -> ucs4s will disappear from stack
-		char* utf8s = g_strdup(ucs4s.utf8_str()); 
-		
-		// add it to the list
-		UT_DEBUGMSG(("FODDEX: find/replace list: %d = '%s'\n", i, utf8s));   
-				
-    	SendMessage(hWnd, CB_ADDSTRING, 0, (LPARAM)(AP_Win32App::s_fromUTF8ToWinLocale(utf8s)).c_str());    		
-
-		g_free(utf8s);
+        str.fromUCS4 ((UT_UCS4Char*)list->getNthItem(i));
+    	SendMessageW(hWnd, CB_ADDSTRING, 0, (LPARAM) str.c_str());		
 	}		
 	
-	SendMessage(hWnd, CB_SETCURSEL, 0,0);		
+	SendMessageW(hWnd, CB_SETCURSEL, 0,0);		
 }
 

@@ -54,10 +54,8 @@
 #include <w32api.h>
 #endif
 
-#ifdef UNICODE
 char XAP_Win32App::m_buffer[MAX_CONVBUFFER] = "";
 WCHAR XAP_Win32App::m_wbuffer[MAX_CONVBUFFER] = L"";
-#endif
 
 // do not want to include wv.h here, since it defines some types that
 // overlap with stuff in windov.h
@@ -119,7 +117,7 @@ XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, const char * szAppName)
 #if ABI_OPT_DISABLE_USP
 		HINSTANCE hUniscribe = NULL;
 #else
-		HINSTANCE hUniscribe = LoadLibrary("usp10.dll");
+		HINSTANCE hUniscribe = LoadLibraryW(L"usp10.dll");
 #endif
 
 		if(hUniscribe && (NULL == g_getenv("ABIWORD_DISABLE_UNISCRIBE")))
@@ -471,16 +469,9 @@ void XAP_Win32App::_setBidiOS(void)
 
 const char * XAP_Win32App::getDefaultEncoding () const
 {
-	#ifdef UNICODE
-	return "UTF-8";
-	#else
-	XAP_EncodingManager * pEncodingManager = XAP_EncodingManager::get_instance();
-	return pEncodingManager->getNativeSystemEncodingName();
-	#endif
-	
+	return "UTF-8";	
 }
 
-#ifdef UNICODE
 const WCHAR * XAP_Win32App::getWideString (const char * utf8input)
 {
 	int wlen = MultiByteToWideChar(CP_UTF8, 0, utf8input, -1, NULL, 0);
@@ -514,20 +505,6 @@ const char * XAP_Win32App::getUTF8String (const WCHAR * p_str)
 		return NULL;
 	}
 }
-
-
-#else
-const char * XAP_Win32App::getWideString (const char * utf8input)
-{
-	return utf8input;
-}
-
-const char * XAP_Win32App::getUTF8String (const char * p_str)
-{
-	return p_str;
-}
-
-#endif
 
 
 void XAP_Win32App::getDefaultGeometry(UT_uint32& width, UT_uint32& height, UT_uint32& flags)

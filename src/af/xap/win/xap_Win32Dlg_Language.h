@@ -23,10 +23,11 @@
 #include "xap_Dlg_Language.h"
 #include "xap_Win32DialogHelper.h"
 #include "xap_Frame.h"
+#include "xap_Win32DialogBase.h"
 
 /*****************************************************************/
 
-class ABI_EXPORT XAP_Win32Dialog_Language: public XAP_Dialog_Language
+class ABI_EXPORT XAP_Win32Dialog_Language: public XAP_Dialog_Language, public XAP_Win32DialogBase
 {
 public:
 	XAP_Win32Dialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -36,7 +37,6 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
-	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
 	static BOOL CALLBACK 	s_treeProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
 	void 					_setLanguageAndExit(UINT nLang);
 		

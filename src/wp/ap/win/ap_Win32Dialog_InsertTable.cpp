@@ -40,7 +40,7 @@
 #include "ap_Win32Resources.rc2"
 #include "xap_Win32DialogHelper.h"
 
-#define BUFSIZE		128
+#define BUFSIZE		64
 
 /*****************************************************************/
 
@@ -54,7 +54,7 @@ XAP_Dialog* AP_Win32Dialog_InsertTable::static_constructor(XAP_DialogFactory* pD
 // Init
 //
 AP_Win32Dialog_InsertTable::AP_Win32Dialog_InsertTable (XAP_DialogFactory *pDlgFactory, XAP_Dialog_Id id)
-: AP_Dialog_InsertTable (pDlgFactory, id), m_hwndDlg(NULL)
+: AP_Dialog_InsertTable (pDlgFactory, id)
 {
 	
 }
@@ -63,70 +63,24 @@ AP_Win32Dialog_InsertTable::~AP_Win32Dialog_InsertTable()
 }
 
 
-void AP_Win32Dialog_InsertTable::runModal(XAP_Frame *pFrame)
-{
-	UT_return_if_fail (pFrame);	
-	
-	// raise the dialog
-	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 
-	LPCTSTR lpTemplate = NULL;
 
-	UT_return_if_fail (m_id == AP_DIALOG_ID_INSERT_TABLE);
+ void AP_Win32Dialog_InsertTable::runModal(XAP_Frame *pFrame)
+ {
+    createModal(pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_INSERT_TABLE));
+ }
 
-	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_INSERT_TABLE);
-
-	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
-						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-						(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT_HARMLESS((result != -1));
-
-}
 
 /*****************************************************************/
 
-#define GWL(hwnd)		(AP_Win32Dialog_InsertTable*)GetWindowLongPtr((hwnd), DWLP_USER)
-#define SWL(hwnd, d)	(AP_Win32Dialog_InsertTable*)SetWindowLongPtr((hwnd), DWLP_USER,(LONG_PTR)(d))
-
-
-BOOL CALLBACK AP_Win32Dialog_InsertTable::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
-{
-		
-	AP_Win32Dialog_InsertTable * pThis;
-	
-	switch (msg)
-	{
-	case WM_INITDIALOG:
-		pThis = (AP_Win32Dialog_InsertTable *)lParam;
-		SWL(hWnd,lParam);
-		return pThis->_onInitDialog(hWnd,wParam,lParam);
-
-	case WM_NOTIFY:
-		pThis = GWL(hWnd);
-		switch (((LPNMHDR)lParam)->code)
-		{
-			case UDN_DELTAPOS:		return pThis->_onDeltaPos((NM_UPDOWN *)lParam);
-			default:				return 0;
-		}
-		
-	case WM_COMMAND:
-		pThis = GWL(hWnd);
-		return pThis->_onCommand(hWnd,wParam,lParam);
-	default:
-		return 0;
-	}
-}
-
-
-#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_INSERTTABLE_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_INSERTTABLE_##c,pSS->getValue(XAP_STRING_ID_##s))
+#define _DS(c,s)	setDlgItemText(AP_RID_DIALOG_INSERTTABLE_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_INSERTTABLE_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 // This handles the WM_INITDIALOG message for the top-level dialog.
 BOOL AP_Win32Dialog_InsertTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {	
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	char 	szValue[BUFSIZE];	
-	m_hwndDlg = hWnd;
+	wchar_t 	szValue[BUFSIZE];	
 		
 		
 	// localize controls 
@@ -140,90 +94,98 @@ BOOL AP_Win32Dialog_InsertTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	_DS(RADIO_FIXED,	DLG_InsertTable_FixedColSize);			
 		
 	// Localise caption
-	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_InsertTable_TableTitle));
+	setDialogTitle (pSS->getValue(AP_STRING_ID_DLG_InsertTable_TableTitle));
 
 	// Set Spin range (TODO: check if the max value is correct, copied from the unix version)
-	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_SPIN_COLUMN),UDM_SETRANGE,(WPARAM)0,(LPARAM)MAKELONG((short)64,(short)1));
-	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_SPIN_ROW),UDM_SETRANGE,(WPARAM)0,(LPARAM)MAKELONG((short)500,(short)1));
-	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_SPIN_SIZE),UDM_SETRANGE,(WPARAM)0,(LPARAM)MAKELONG((short)9999,(short)1));
+	SendMessageW(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_SPIN_COLUMN),UDM_SETRANGE,(WPARAM)0,(LPARAM)MAKELONG((short)64,(short)1));
+	SendMessageW(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_SPIN_ROW),UDM_SETRANGE,(WPARAM)0,(LPARAM)MAKELONG((short)500,(short)1));
+	SendMessageW(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_SPIN_SIZE),UDM_SETRANGE,(WPARAM)0,(LPARAM)MAKELONG((short)9999,(short)1));
 	
 	// Limit to four chars
-	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_TEXT_COLUMN),EM_LIMITTEXT,(WPARAM)5,(WPARAM)0);
-	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_TEXT_ROW),EM_LIMITTEXT,(WPARAM)5,(WPARAM)0);
-	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_TEXT_SIZE),EM_LIMITTEXT,(WPARAM)5,(WPARAM)0);
+	SendMessageW(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_TEXT_COLUMN),EM_LIMITTEXT,(WPARAM)5,(WPARAM)0);
+	SendMessageW(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_TEXT_ROW),EM_LIMITTEXT,(WPARAM)5,(WPARAM)0);
+	SendMessageW(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_TEXT_SIZE),EM_LIMITTEXT,(WPARAM)5,(WPARAM)0);
 
 	CheckRadioButton(hWnd, AP_RID_DIALOG_INSERTTABLE_RADIO_AUTO,
 		AP_RID_DIALOG_INSERTTABLE_RADIO_FIXED, AP_RID_DIALOG_INSERTTABLE_RADIO_AUTO);
 	
 	
 	SetFocus(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_VAL_COLUMN));
-	SendDlgItemMessage(hWnd, AP_RID_DIALOG_INSERTTABLE_VAL_COLUMN, EM_SETSEL, 0, -1);
+	SendDlgItemMessageW(hWnd, AP_RID_DIALOG_INSERTTABLE_VAL_COLUMN, EM_SETSEL, 0, -1);
 	
 	// Set default values		
-	sprintf(szValue, "%u", getNumCols());
-	SetDlgItemText(hWnd, AP_RID_DIALOG_INSERTTABLE_VAL_COLUMN, szValue);
+	swprintf(szValue, L"%u", getNumCols());
+	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_INSERTTABLE_VAL_COLUMN, szValue);
 		
-	sprintf(szValue, "%u", getNumRows());
-	SetDlgItemText(hWnd, AP_RID_DIALOG_INSERTTABLE_VAL_ROW, szValue);
+	swprintf(szValue, L"%u", getNumRows());
+	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_INSERTTABLE_VAL_ROW, szValue);
 				
-	sprintf(szValue, "%02.2f", getColumnWidth());
-	SetDlgItemText(hWnd, AP_RID_DIALOG_INSERTTABLE_VAL_SIZE, szValue);
+	swprintf(szValue, L"%02.2f", getColumnWidth());
+	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_INSERTTABLE_VAL_SIZE, szValue);
 
 	/* Units name*/
-	SetDlgItemText(hWnd, AP_RID_DIALOG_INSERTTABLE_TEXT_UNITS, UT_dimensionName(m_dim));	
+	setDlgItemText(AP_RID_DIALOG_INSERTTABLE_TEXT_UNITS, UT_dimensionName(m_dim));	
 
 	/* Autosize by default*/
-	EnableWindow(GetDlgItem(m_hwndDlg,AP_RID_DIALOG_INSERTTABLE_VAL_SIZE), FALSE);
-	EnableWindow(GetDlgItem(m_hwndDlg,AP_RID_DIALOG_INSERTTABLE_SPIN_SIZE), FALSE);
+	EnableWindow(GetDlgItem(m_hDlg,AP_RID_DIALOG_INSERTTABLE_VAL_SIZE), FALSE);
+	EnableWindow(GetDlgItem(m_hDlg,AP_RID_DIALOG_INSERTTABLE_SPIN_SIZE), FALSE);
 
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
+	centerDialog();	
 	
 	return 0; // 0 because we called SetFocus
 }
+
+float atofw (const WCHAR *st)
+{
+	UT_Win32LocaleString str;
+	str.fromLocale (st);
+	return atof (str.ascii_str ());
+}
+
+
 
 //
 // Gets the values from the spin controls
 //
 void AP_Win32Dialog_InsertTable::getCtrlValues(void)
 {	
-	char 	szValue[BUFSIZE];	
+	UT_Win32LocaleString str;
 		
-	if (GetDlgItemText(m_hwndDlg, AP_RID_DIALOG_INSERTTABLE_VAL_COLUMN, szValue, BUFSIZE ))	
-		m_numCols = atoi(szValue);
+	if (getDlgItemText(AP_RID_DIALOG_INSERTTABLE_VAL_COLUMN, str))
+		m_numCols = _wtoi(str.c_str ());
 	
-	if (GetDlgItemText(m_hwndDlg, AP_RID_DIALOG_INSERTTABLE_VAL_ROW, szValue, BUFSIZE ))	
-		m_numRows = atoi(szValue);
+	if (getDlgItemText(AP_RID_DIALOG_INSERTTABLE_VAL_ROW, str))
+		m_numRows = _wtoi(str.c_str ());
 		
-	if (GetDlgItemText(m_hwndDlg, AP_RID_DIALOG_INSERTTABLE_VAL_SIZE, szValue, BUFSIZE ))	
-		setColumnWidth((float) atof(szValue));
+	if (getDlgItemText(AP_RID_DIALOG_INSERTTABLE_VAL_SIZE, str))
+		setColumnWidth((float) atofw(str.c_str ()));
 	
-	if (IsDlgButtonChecked(m_hwndDlg, AP_RID_DIALOG_INSERTTABLE_RADIO_AUTO))
+	if (IsDlgButtonChecked(m_hDlg, AP_RID_DIALOG_INSERTTABLE_RADIO_AUTO))
 		m_columnType = AP_Dialog_InsertTable::b_AUTOSIZE;
 		
-	if (IsDlgButtonChecked(m_hwndDlg, AP_RID_DIALOG_INSERTTABLE_RADIO_FIXED))
+	if (IsDlgButtonChecked(m_hDlg, AP_RID_DIALOG_INSERTTABLE_RADIO_FIXED))
 		m_columnType = AP_Dialog_InsertTable::b_FIXEDSIZE;
 }
 
 BOOL AP_Win32Dialog_InsertTable::_onDeltaPos(NM_UPDOWN * pnmud)
 {
 	if(pnmud->hdr.idFrom!=AP_RID_DIALOG_INSERTTABLE_SPIN_SIZE)
-		return false;
+		return FALSE;
 
 	UT_DEBUGMSG(("onDeltaPos: [idFrom %d][iPos %d][iDelta %d]\n",
 				 pnmud->hdr.idFrom,pnmud->iPos,pnmud->iDelta));
 				 
-	char szBuff[256]="";			 					 
+	UT_Win32LocaleString str;
+	wchar_t szBuff[255]; 					 
 	double dValue = 0;
 	
-	if (GetDlgItemText(m_hwndDlg, AP_RID_DIALOG_INSERTTABLE_VAL_SIZE, szBuff, 255 ))	
-		dValue = (float) atof(szBuff);
-												 
-	dValue = atof(szBuff);						 
+	if (GetDlgItemTextW(m_hDlg, AP_RID_DIALOG_INSERTTABLE_VAL_SIZE, szBuff, 255 ))	
+		dValue = (float) atofw(szBuff);				 
 	
 	_doSpin((0 - (UT_sint32) (-1) *pnmud->iDelta), dValue);
 	
-	sprintf (szBuff, "%02.2f", dValue);
-	SetWindowText (GetDlgItem(m_hwndDlg,AP_RID_DIALOG_INSERTTABLE_VAL_SIZE), szBuff);
+	swprintf (szBuff, L"%02.2f", dValue);
+	SetWindowTextW (GetDlgItem(m_hDlg,AP_RID_DIALOG_INSERTTABLE_VAL_SIZE), szBuff);
 	
 	return TRUE;	
 }
@@ -248,10 +210,10 @@ BOOL AP_Win32Dialog_InsertTable::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 		case AP_RID_DIALOG_INSERTTABLE_RADIO_FIXED:
 		case AP_RID_DIALOG_INSERTTABLE_RADIO_AUTO:
 		{
-			BOOL bEnable = IsDlgButtonChecked(m_hwndDlg, AP_RID_DIALOG_INSERTTABLE_RADIO_FIXED);
+			BOOL bEnable = IsDlgButtonChecked(m_hDlg, AP_RID_DIALOG_INSERTTABLE_RADIO_FIXED);
 
-			EnableWindow(GetDlgItem(m_hwndDlg,AP_RID_DIALOG_INSERTTABLE_VAL_SIZE), bEnable);
-			EnableWindow(GetDlgItem(m_hwndDlg,AP_RID_DIALOG_INSERTTABLE_SPIN_SIZE), bEnable);
+			EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_INSERTTABLE_VAL_SIZE), bEnable);
+			EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_INSERTTABLE_SPIN_SIZE), bEnable);
 			return 1;
 		}
 			

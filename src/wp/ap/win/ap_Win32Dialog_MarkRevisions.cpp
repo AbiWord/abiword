@@ -57,57 +57,20 @@ AP_Win32Dialog_MarkRevisions::~AP_Win32Dialog_MarkRevisions(void)
 
 void AP_Win32Dialog_MarkRevisions::runModal(XAP_Frame * pFrame)
 {
-	UT_return_if_fail (pFrame);
-	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-
 	XAP_Win32LabelledSeparator_RegisterClass(pWin32App);
-
-	LPCTSTR lpTemplate = NULL;
-
 	UT_return_if_fail (m_id == AP_DIALOG_ID_MARK_REVISIONS);
 
-	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_MARK_REVISIONS);
-
-	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
-						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-						(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT_HARMLESS((result != -1));
-	if(result == -1)
-	{
-		UT_DEBUGMSG(( "AP_Win32Dialog_MarkRevisions::runModal error %d\n", GetLastError() ));
-	}
+    createModal(pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_MARK_REVISIONS));
 }
 
-BOOL CALLBACK AP_Win32Dialog_MarkRevisions::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
-{
-	// This is a static function.
-
-	AP_Win32Dialog_MarkRevisions * pThis;
-
-	switch (msg)
-	{
-	case WM_INITDIALOG:
-		pThis = (AP_Win32Dialog_MarkRevisions *)lParam;
-		SetWindowLongPtr(hWnd,DWLP_USER,lParam);
-		return pThis->_onInitDialog(hWnd,wParam,lParam);
-
-	case WM_COMMAND:
-		pThis = (AP_Win32Dialog_MarkRevisions *)GetWindowLongPtr(hWnd,DWLP_USER);
-		return pThis->_onCommand(hWnd,wParam,lParam);
-
-	default:
-		return 0;
-	}
-}
-
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_MARK_REVISIONS_##c,pSS->getValue(XAP_STRING_ID_##s))
+#define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_MARK_REVISIONS_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 BOOL AP_Win32Dialog_MarkRevisions::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	SetWindowText(hWnd, getTitle());
+	setDialogTitle (getTitle());
 
 	// localize controls
 	_DSX(BTN_OK,			DLG_OK);
@@ -116,7 +79,7 @@ BOOL AP_Win32Dialog_MarkRevisions::_onInitDialog(HWND hWnd, WPARAM wParam, LPARA
 	char * pStr = getRadio1Label();
 	if(pStr)
 	{
-		SetDlgItemText(hWnd, AP_RID_DIALOG_MARK_REVISIONS_RADIO1,pStr);
+		setDlgItemText(AP_RID_DIALOG_MARK_REVISIONS_RADIO1,pStr);
 		FREEP(pStr);
 
 		CheckDlgButton(hWnd, AP_RID_DIALOG_MARK_REVISIONS_RADIO1,BST_CHECKED);
@@ -124,10 +87,10 @@ BOOL AP_Win32Dialog_MarkRevisions::_onInitDialog(HWND hWnd, WPARAM wParam, LPARA
 		SetFocus(h);
 
 		pStr = getComment1();
-		SetDlgItemText(hWnd, AP_RID_DIALOG_MARK_REVISIONS_LABEL1,pStr);
+		setDlgItemText(AP_RID_DIALOG_MARK_REVISIONS_LABEL1,pStr);
 		FREEP(pStr);
 
-		SetDlgItemText(hWnd, AP_RID_DIALOG_MARK_REVISIONS_RADIO2,getRadio2Label());
+		setDlgItemText(AP_RID_DIALOG_MARK_REVISIONS_RADIO2,getRadio2Label());
 
 		//disable the edit box
 		h = GetDlgItem(hWnd,AP_RID_DIALOG_MARK_REVISIONS_EDIT2);
@@ -159,10 +122,10 @@ BOOL AP_Win32Dialog_MarkRevisions::_onInitDialog(HWND hWnd, WPARAM wParam, LPARA
 
 	}
 
-	SetDlgItemText(hWnd, AP_RID_DIALOG_MARK_REVISIONS_LABEL2,getComment2Label());
+	setDlgItemText(AP_RID_DIALOG_MARK_REVISIONS_LABEL2,getComment2Label());
 
 
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
+	centerDialog();	
 
 	return 0;							// 1 == we did not call SetFocus()
 }
@@ -203,10 +166,9 @@ BOOL AP_Win32Dialog_MarkRevisions::_onCommand(HWND hWnd, WPARAM wParam, LPARAM l
 
 		if(n == 1 || n == -1)
 		{
-			// get the text from the edit control
-			char text[200];
-			GetDlgItemText(hWnd, AP_RID_DIALOG_MARK_REVISIONS_EDIT2, text, 200);
-			setComment2(text);
+            UT_Win32LocaleString str;
+			getDlgItemText(hWnd, AP_RID_DIALOG_MARK_REVISIONS_EDIT2, str);
+			setComment2(str.ascii_str());
 		}
 
 		m_answer = a_OK;

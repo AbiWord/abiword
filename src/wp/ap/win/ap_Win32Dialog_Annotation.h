@@ -24,8 +24,9 @@
 
 #include "xap_Dialog.h"
 #include "ap_Dialog_Annotation.h"
+#include "xap_Win32DialogBase.h"
 
-class ABI_EXPORT AP_Win32Dialog_Annotation: public AP_Dialog_Annotation
+class ABI_EXPORT AP_Win32Dialog_Annotation: public AP_Dialog_Annotation, public XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_Annotation(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -34,7 +35,6 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 	
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);	
-	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
 
 protected:
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
@@ -43,8 +43,6 @@ protected:
 private:	
 	void		 			_get_text(int nID, std::string &text);
 	void 					_set_text(int nID, const std::string & text);
-	
-	HWND					m_hwndDlg;	//  dialog box Windows	
 
 };
 

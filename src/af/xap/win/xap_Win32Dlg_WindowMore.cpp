@@ -65,7 +65,7 @@ void XAP_Win32Dialog_WindowMore::runModal(XAP_Frame * pFrame)
 
 	// raise the dialog
 	setDialog(this);
-	createModal(pFrame, MAKEINTRESOURCE(XAP_RID_DIALOG_WINDOWMORE));
+	createModal(pFrame, MAKEINTRESOURCEW(XAP_RID_DIALOG_WINDOWMORE));
 
 }
 
