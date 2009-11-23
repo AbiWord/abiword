@@ -367,7 +367,7 @@ void UT_Win32LocaleString::fromUCS4 (const UT_UCS4Char* usc4_in)
 void UT_Win32LocaleString::fromUTF8 (const char* utf8_str)
 {
 	UT_UCS2Char * pText = (UT_UCS2Char *) UT_convert (utf8_str,
-							  strlen (utf8_str),
+							  -1,
 							  "UTF-8",
 							  "UCS-2LE",
 							  NULL, NULL);

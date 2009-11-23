@@ -92,18 +92,18 @@ BOOL CALLBACK XAP_Win32DialogHelper::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,
 		pThis = (XAP_Win32DialogHelper *)lParam;
 		pThis->m_hDlg = hWnd;
 		_assertValidDlgHandle(hWnd);
-		SetWindowLongPtr(hWnd,DWLP_USER,lParam);
+		SetWindowLongPtrW(hWnd,DWLP_USER,lParam);
 		return pThis->m_pDialog->_onInitDialog(hWnd,wParam,lParam);
 
 	case WM_COMMAND:
-		pThis = (XAP_Win32DialogHelper *)GetWindowLongPtr(hWnd,DWLP_USER);
+		pThis = (XAP_Win32DialogHelper *)GetWindowLongPtrW(hWnd,DWLP_USER);
 		if(pThis)
 			return pThis->m_pDialog->_onCommand(hWnd,wParam,lParam);
 		else
 			return 0;
 
 	case WM_NOTIFY:
-		pThis = (XAP_Win32DialogHelper *)GetWindowLongPtr(hWnd,DWLP_USER);
+		pThis = (XAP_Win32DialogHelper *)GetWindowLongPtrW(hWnd,DWLP_USER);
 		switch (((LPNMHDR)lParam)->code)
 		{
 			case UDN_DELTAPOS:		return pThis->m_pDialog->_onDeltaPos((NM_UPDOWN *)lParam);

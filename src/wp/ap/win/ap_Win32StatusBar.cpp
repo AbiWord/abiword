@@ -205,7 +205,7 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 	UT_return_val_if_fail (m_hwndStatusBar,0);	
 
 	// route messages through our handler first (to size the status panels).
-	m_pOrgStatusbarWndProc = reinterpret_cast<WNDPROC>(SetWindowLongPtr(
+	m_pOrgStatusbarWndProc = reinterpret_cast<WNDPROC>(SetWindowLongPtrW(
 		m_hwndStatusBar, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(StatusbarWndProc))
 		);
 	

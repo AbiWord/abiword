@@ -202,9 +202,9 @@ BOOL XAP_Win32Dialog_Language::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARA
 	
 	_fillTreeview(hTree);
 	
-	gTreeProc = (WHICHPROC) GetWindowLongPtr(hTree, GWLP_WNDPROC);
-	SetWindowLongPtr(hTree, GWLP_WNDPROC, (LONG_PTR)s_treeProc);
-	SetWindowLongPtr(hTree, GWLP_USERDATA, (LONG_PTR)this);
+	gTreeProc = (WHICHPROC) GetWindowLongPtrW(hTree, GWLP_WNDPROC);
+	SetWindowLongPtrW(hTree, GWLP_WNDPROC, (LONG_PTR)s_treeProc);
+	SetWindowLongPtrW(hTree, GWLP_USERDATA, (LONG_PTR)this);
 	
 	CheckDlgButton(hWnd, XAP_RID_DIALOG_LANGUAGE_DOCLANG_CHKBOX, BST_UNCHECKED );
 

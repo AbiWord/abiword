@@ -111,10 +111,7 @@ LRESULT CALLBACK s_rebarWndProc( HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM
 			break;		
 	}
 
-	if(UT_IsWinNT())
-		return CallWindowProcW(s_oldRedBar, hWnd, uMessage, wParam, lParam);
-	else
-		return CallWindowProc(s_oldRedBar, hWnd, uMessage, wParam, lParam);
+	return CallWindowProcW(s_oldRedBar, hWnd, uMessage, wParam, lParam);
 }
 
 
@@ -152,7 +149,7 @@ XAP_Win32FrameImpl::~XAP_Win32FrameImpl(void)
 
 	// have to reset the window long, so our message functions do not
 	// try to derefernce it
-	SetWindowLongPtr(m_hwndFrame, GWLP_USERDATA,0);
+	SetWindowLongPtrW(m_hwndFrame, GWLP_USERDATA,0);
 }
 
 
@@ -252,7 +249,7 @@ void XAP_Win32FrameImpl::_createTopLevelWindow(void)
 	// bind this frame to its window
 	// WARNING: We assume in many places this refers to a XAP_Frame or descendant!!!
 	//SetWindowLongPtr(m_hwndFrame, GWLP_USERDATA,(LONG_PTR)this);
-	SetWindowLongPtr(m_hwndFrame, GWLP_USERDATA,(LONG_PTR)getFrame());
+	SetWindowLongPtrW(m_hwndFrame, GWLP_USERDATA,(LONG_PTR)getFrame());
 
 #ifndef UNICODE
 	// remove this when we are a true unicode app
@@ -289,8 +286,8 @@ void XAP_Win32FrameImpl::_createTopLevelWindow(void)
 	UT_ASSERT(m_hwndRebar);
 	
 	/* override the window procedure*/
-	s_oldRedBar = (WHICHPROC)GetWindowLongPtr(m_hwndRebar, GWLP_WNDPROC);
-	SetWindowLongPtr(m_hwndRebar, GWLP_WNDPROC, (LONG_PTR)s_rebarWndProc);
+	s_oldRedBar = (WHICHPROC)GetWindowLongPtrW(m_hwndRebar, GWLP_WNDPROC);
+	SetWindowLongPtrW(m_hwndRebar, GWLP_WNDPROC, (LONG_PTR)s_rebarWndProc);
 
 	// create a toolbar instance for each toolbar listed in our base class.
 
@@ -656,7 +653,7 @@ void XAP_Win32FrameImpl::_rebuildMenus(void)
 
 LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
-	XAP_Frame * f = (XAP_Frame*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+	XAP_Frame * f = (XAP_Frame*)GetWindowLongPtrW(hwnd, GWLP_USERDATA);
 	if (!f)
 	{
 		return UT_DefWindowProc(hwnd,iMsg,wParam,lParam);
@@ -808,13 +805,13 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 		case TBN_DROPDOWN:
 		{
 			HWND hWnd = ((LPNMHDR) lParam)->hwndFrom;
-			EV_Win32Toolbar * t = (EV_Win32Toolbar *)GetWindowLongPtr(hWnd, GWLP_USERDATA);						
+			EV_Win32Toolbar * t = (EV_Win32Toolbar *)GetWindowLongPtrW(hWnd, GWLP_USERDATA);						
 			t->onDropArrow(((LPNMTOOLBARW) lParam)->iItem);			
 			Sleep(500); /* At least, half second where the arrow is shown as pressed*/			
 			return TBDDRET_DEFAULT;			/* Windows restores the pushed button*/
 		}
 
-		case TTN_NEEDTEXT:
+		case TTN_NEEDTEXTW:
 			{
 				UT_uint32 nrToolbars, k;
 				nrToolbars = fimpl->m_vecToolbars.getItemCount();

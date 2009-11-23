@@ -35,18 +35,18 @@ BOOL CALLBACK AP_Win32Dialog_GenericInput::s_dlgProc(HWND hWnd, UINT msg, WPARAM
 		{
 			AP_Win32Dialog_GenericInput* pThis = (AP_Win32Dialog_GenericInput *)lParam;
 			UT_return_val_if_fail(pThis, false);
-			SetWindowLongPtr(hWnd,DWL_USER,lParam);
+			SetWindowLongPtrW(hWnd,DWLP_USER,lParam);
 			return pThis->_onInitDialog(hWnd,wParam,lParam);
 		}
 		case WM_COMMAND:
 		{
-			AP_Win32Dialog_GenericInput* pThis = (AP_Win32Dialog_GenericInput *)GetWindowLongPtr(hWnd,DWL_USER);
+			AP_Win32Dialog_GenericInput* pThis = (AP_Win32Dialog_GenericInput *)GetWindowLongPtrW(hWnd,DWLP_USER);
 			UT_return_val_if_fail(pThis, false);
 			return pThis->_onCommand(hWnd,wParam,lParam);
 		}
 		case WM_DESTROY:
 		{
-			AP_Win32Dialog_GenericInput* pThis = (AP_Win32Dialog_GenericInput *)GetWindowLongPtr(hWnd,DWL_USER);
+			AP_Win32Dialog_GenericInput* pThis = (AP_Win32Dialog_GenericInput *)GetWindowLongPtrW(hWnd,DWLP_USER);
 			UT_return_val_if_fail(pThis, false);
 			DELETEP(pThis->m_pWin32Dialog);
 			return true;

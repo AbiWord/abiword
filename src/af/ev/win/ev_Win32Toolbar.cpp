@@ -285,7 +285,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 		/* Draws the font preview in the font selection combobox*/
 		case WM_DRAWITEM:
 		{						
-			EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLongPtr(hWnd, GWLP_USERDATA);			
+			EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLongPtrW(hWnd, GWLP_USERDATA);			
 			UINT u = GetDlgCtrlID(hWnd);
 			XAP_Toolbar_Id id = t->ItemIdFromWmCommand(u);
 						
@@ -418,7 +418,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
                         UT_UCS4_strncpy_char(ucs_buf, str.utf8_str().utf8_str(), COMBO_BUF_LEN-1);
 						UT_UCSChar * pData = (UT_UCSChar *) ucs_buf;	// HACK: should be void *
 
-						EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLongPtr(hWnd, GWLP_USERDATA);
+						EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLongPtrW(hWnd, GWLP_USERDATA);
 						UT_ASSERT(t);
 
 						if(dataLength)
@@ -469,7 +469,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 			
 		case WM_KEYDOWN:
 		{
-			EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLongPtr(hWnd, GWLP_USERDATA);
+			EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLongPtrW(hWnd, GWLP_USERDATA);
 			UT_ASSERT(t);
 
 			switch (wParam)
@@ -568,9 +568,9 @@ bool EV_Win32Toolbar::synthesize(void)
 	UT_ASSERT(m_hwnd);
 
 	// override the window procedure 		
-	s_lpfnDefToolBar = (WHICHPROC)GetWindowLongPtr(m_hwnd, GWLP_WNDPROC);
-	SetWindowLongPtr(m_hwnd, GWLP_WNDPROC, (LONG_PTR)_ToolBarWndProc);
-	SetWindowLongPtr(m_hwnd, GWLP_USERDATA, (LONG_PTR)this);
+	s_lpfnDefToolBar = (WHICHPROC)GetWindowLongPtrW(m_hwnd, GWLP_WNDPROC);
+	SetWindowLongPtrW(m_hwnd, GWLP_WNDPROC, (LONG_PTR)_ToolBarWndProc);
+	SetWindowLongPtrW(m_hwnd, GWLP_USERDATA, (LONG_PTR)this);
 
 
 	SendMessageW(m_hwnd, TB_BUTTONSTRUCTSIZE, (WPARAM) sizeof(TBBUTTON), 0);  
@@ -737,9 +737,9 @@ bool EV_Win32Toolbar::synthesize(void)
 						}
 
 						// override the window procedure for the combo box
-						s_lpfnDefCombo = (WHICHPROC)GetWindowLongPtr(hwndCombo, GWLP_WNDPROC);
-						SetWindowLongPtr(hwndCombo, GWLP_WNDPROC, (LONG_PTR)_ComboWndProc);
-						SetWindowLongPtr(hwndCombo, GWLP_USERDATA, (LONG_PTR)this);
+						s_lpfnDefCombo = (WHICHPROC)GetWindowLongPtrW(hwndCombo, GWLP_WNDPROC);
+						SetWindowLongPtrW(hwndCombo, GWLP_WNDPROC, (LONG_PTR)_ComboWndProc);
+						SetWindowLongPtrW(hwndCombo, GWLP_USERDATA, (LONG_PTR)this);
 
 						// Get the handle to the tooltip window.
 						HWND hwndTT = (HWND)SendMessageW(m_hwnd, TB_GETTOOLTIPS, 0, 0);

@@ -493,11 +493,11 @@ BOOL CALLBACK UT_Win32AssertDlg::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPAR
 	switch (msg){
 	case WM_INITDIALOG:
 		pThis = (UT_Win32AssertDlg *)lParam;
-		SetWindowLongPtr(hWnd,DWLP_USER,lParam);
+		SetWindowLongPtrW(hWnd,DWLP_USER,lParam);
 		return pThis->_onInitDialog(hWnd,wParam,lParam);
 		
 	case WM_COMMAND:
-		pThis = (UT_Win32AssertDlg *)GetWindowLongPtr(hWnd,DWLP_USER);
+		pThis = (UT_Win32AssertDlg *)GetWindowLongPtrW(hWnd,DWLP_USER);
 		return pThis->_onCommand(hWnd,wParam,lParam);
 		
 	default:
