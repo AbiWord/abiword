@@ -93,12 +93,12 @@ BOOL CALLBACK XAP_Win32DialogBase::s_dlgProc(HWND hWnd, UINT msg, WPARAM wParam,
 	if (msg == WM_INITDIALOG)
 	{
 		pThis = (XAP_Win32DialogBase*)lParam;
-        SetWindowLongW(hWnd, DWL_USER, lParam);
+        SetWindowLongW(hWnd, DWLP_USER, lParam);
 		pThis->m_hDlg = hWnd;
 		return pThis->_onInitDialog(hWnd, wParam, lParam);
 	}
 
-    pThis = (XAP_Win32DialogBase *) GetWindowLongW(hWnd,DWL_USER);
+    pThis = (XAP_Win32DialogBase *) GetWindowLongW(hWnd,DWLP_USER);
 	
 	if (pThis == NULL)
 		return FALSE;
@@ -191,9 +191,9 @@ int XAP_Win32DialogBase::bringWindowToTop()
 
 void XAP_Win32DialogBase::notifyCloseFrame(XAP_Frame *pFrame)
 {
-	if((HWND)GetWindowLongW(m_hDlg, GWL_HWNDPARENT) == static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
+	if((HWND)GetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT) == static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
-		SetWindowLongW(m_hDlg, GWL_HWNDPARENT, NULL);
+		SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, NULL);
 		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}
