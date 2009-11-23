@@ -30,8 +30,8 @@
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-#define GWL(hwnd)		(XAP_Win32PreviewWidget *)GetWindowLongPtr((hwnd), GWLP_USERDATA)
-#define SWL(hwnd, f)	(XAP_Win32PreviewWidget *)SetWindowLongPtr((hwnd), GWLP_USERDATA,(LONG_PTR)(f))
+#define GWL(hwnd)		(XAP_Win32PreviewWidget *)GetWindowLongPtrW((hwnd), GWLP_USERDATA)
+#define SWL(hwnd, f)	(XAP_Win32PreviewWidget *)SetWindowLongPtrW((hwnd), GWLP_USERDATA,(LONG_PTR)(f))
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////

@@ -56,8 +56,8 @@
 
 /*****************************************************************/
 
-#define GWL(hwnd)		(AP_Win32Dialog_Options*)GetWindowLongPtr((hwnd), DWLP_USER)
-#define SWL(hwnd, d)	(AP_Win32Dialog_Options*)SetWindowLongPtr((hwnd), DWLP_USER,(LONG_PTR)(d))
+#define GWL(hwnd)		(AP_Win32Dialog_Options*)GetWindowLongPtrW((hwnd), DWLP_USER)
+#define SWL(hwnd, d)	(AP_Win32Dialog_Options*)SetWindowLongPtrW((hwnd), DWLP_USER,(LONG_PTR)(d))
 #define MINAUTOSAVEPERIOD	1
 #define MAXAUTOSAVEPERIOD	120
 
@@ -511,9 +511,9 @@ BOOL AP_Win32Dialog_Options_Sheet::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /
 	
 	if (wID==IDOK)
 	{			
-		AP_Win32Dialog_Options_Sheet * t = (AP_Win32Dialog_Options_Sheet *) GetWindowLongPtr(hWnd, GWLP_USERDATA);					
+		AP_Win32Dialog_Options_Sheet * t = (AP_Win32Dialog_Options_Sheet *) GetWindowLongPtrW(hWnd, GWLP_USERDATA);					
 		HWND hWndPref = t->getParent()->getPage(PG_DOCUMENT);
-		AP_Win32Dialog_Options_Document * prefPag = (AP_Win32Dialog_Options_Document *) GetWindowLongPtr(hWndPref, GWLP_USERDATA);							
+		AP_Win32Dialog_Options_Document * prefPag = (AP_Win32Dialog_Options_Document *) GetWindowLongPtrW(hWndPref, GWLP_USERDATA);							
 				
 		if (!prefPag->isAutoSaveInRange()) return 0;
 		
@@ -524,7 +524,7 @@ BOOL AP_Win32Dialog_Options_Sheet::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /
 	
 	if (wID==ID_APPLY_NOW)	// Save default button
 	{
-		AP_Win32Dialog_Options_Sheet * t = (AP_Win32Dialog_Options_Sheet *) GetWindowLongPtr(hWnd, GWLP_USERDATA);					
+		AP_Win32Dialog_Options_Sheet * t = (AP_Win32Dialog_Options_Sheet *) GetWindowLongPtrW(hWnd, GWLP_USERDATA);					
 		t->getParent()->_event_SetDefaults();				
 		return 0;
 	}
@@ -752,7 +752,7 @@ void AP_Win32Dialog_Options_General::_onInitDialog()
 		EnableWindow(GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_COMBO_UILANG), FALSE);
 
 
-	SetWindowLongPtr(getHandle(), GWLP_USERDATA, (LONG_PTR)this);
+	SetWindowLongPtrW(getHandle(), GWLP_USERDATA, (LONG_PTR)this);
     SendMessageW(GetDlgItem (m_hDlg, AP_RID_DIALOG_OPTIONS_COMBO_UNITS), 
 		WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), MAKELPARAM(TRUE, 0));
 		
@@ -766,7 +766,7 @@ INT_PTR CALLBACK AP_Win32Dialog_Options_General::s_pageWndProc(HWND hWnd, UINT m
 { 	
 	if (msg==WM_NOTIFY)
 	{
-		AP_Win32Dialog_Options_General *pThis = (AP_Win32Dialog_Options_General *)GetWindowLongPtr(hWnd, GWLP_USERDATA);					
+		AP_Win32Dialog_Options_General *pThis = (AP_Win32Dialog_Options_General *)GetWindowLongPtrW(hWnd, GWLP_USERDATA);					
 		
 		NMHDR* pHdr = (NMHDR*)lParam;
 
@@ -856,7 +856,7 @@ void AP_Win32Dialog_Options_Document::_onInitDialog()
 	
 	// Limit the extension to 5 characters (plus the period)
 	SendMessage(GetDlgItem(getHandle(),AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension),EM_LIMITTEXT,(WPARAM)6,(WPARAM)0);
-	SetWindowLongPtr(getHandle(), GWLP_USERDATA, (LONG_PTR)this);	
+	SetWindowLongPtrW(getHandle(), GWLP_USERDATA, (LONG_PTR)this);	
 	
 	// Setup bold font for some controls	
 	UINT boldFields[]={AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile, AP_RID_DIALOG_OPTIONS_STATIC_BidiOptions, 0};

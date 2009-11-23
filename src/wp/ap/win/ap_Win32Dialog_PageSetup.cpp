@@ -184,7 +184,7 @@ INT_PTR CALLBACK AP_Win32Dialog_PageSetup_Page::s_pageWndProc(HWND hWnd, UINT ms
 	
 	if (msg==WM_NOTIFY)
 	{
-		AP_Win32Dialog_PageSetup_Page *pThis = (AP_Win32Dialog_PageSetup_Page *) GetWindowLongPtr(hWnd, GWLP_USERDATA);					
+		AP_Win32Dialog_PageSetup_Page *pThis = (AP_Win32Dialog_PageSetup_Page *) GetWindowLongPtrW(hWnd, GWLP_USERDATA);					
 
 		NMHDR* pHdr = (NMHDR*)lParam;
 		LPNMUPDOWN lpnmud = (LPNMUPDOWN)lParam;
@@ -503,7 +503,7 @@ void AP_Win32Dialog_PageSetup_Page::_onInitDialog()
 						(LPARAM)m_pParent->m_bmpPreview );			
 
 
-	SetWindowLongPtr(getHandle(), GWLP_USERDATA, (LONG_PTR)this);
+	SetWindowLongPtrW(getHandle(), GWLP_USERDATA, (LONG_PTR)this);
 }
 
 /*
@@ -661,14 +661,14 @@ void AP_Win32Dialog_PageSetup_Margin::_onInitDialog()
         addItemToCombo (AP_RID_DIALOG_PAGE_SETUP_LBX_MARGINUNITS, _GVX(DLG_Unit_mm));
 		// Initialize Data
         selectComboItem (AP_RID_DIALOG_PAGE_SETUP_LBX_MARGINUNITS, (WPARAM) m_pParent->getMarginUnits() );   		
-		SetWindowLongPtr(getHandle(), GWLP_USERDATA, (LONG_PTR)this);
+		SetWindowLongPtrW(getHandle(), GWLP_USERDATA, (LONG_PTR)this);
 }
 
 INT_PTR CALLBACK AP_Win32Dialog_PageSetup_Margin::s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	if (msg==WM_NOTIFY)
 	{
-		AP_Win32Dialog_PageSetup_Margin *pThis = (AP_Win32Dialog_PageSetup_Margin *) GetWindowLongPtr(hWnd, GWLP_USERDATA);					
+		AP_Win32Dialog_PageSetup_Margin *pThis = (AP_Win32Dialog_PageSetup_Margin *) GetWindowLongPtrW(hWnd, GWLP_USERDATA);					
 
 		LPNMUPDOWN lpnmud = (LPNMUPDOWN)lParam;
 

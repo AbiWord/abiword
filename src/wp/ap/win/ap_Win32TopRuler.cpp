@@ -34,8 +34,8 @@
 
 /*****************************************************************/
 
-#define GWL(hwnd)		(AP_Win32TopRuler*)GetWindowLongPtr((hwnd), GWLP_USERDATA)
-#define SWL(hwnd, f)	(AP_Win32TopRuler*)SetWindowLongPtr((hwnd), GWLP_USERDATA,(LONG_PTR)(f))
+#define GWL(hwnd)		(AP_Win32TopRuler*)GetWindowLongPtrW((hwnd), GWLP_USERDATA)
+#define SWL(hwnd, f)	(AP_Win32TopRuler*)SetWindowLongPtrW((hwnd), GWLP_USERDATA,(LONG_PTR)(f))
 
 #define ENSUREP(p)		do { UT_ASSERT_HARMLESS(p); if (!p) goto Cleanup; } while (0)
 

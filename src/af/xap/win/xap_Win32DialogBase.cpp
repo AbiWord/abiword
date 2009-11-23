@@ -377,7 +377,7 @@ bool XAP_Win32DialogBase::isControlVisible(UT_sint32 controlId) const
 	UT_ASSERT(IsWindow(m_hDlg));
 	HWND hControl = GetDlgItem(m_hDlg, controlId);
 	if (hControl) {
-		return (GetWindowLongPtr(m_hDlg, GWL_STYLE) & WS_VISIBLE) ?
+		return (GetWindowLongPtrW(m_hDlg, GWL_STYLE) & WS_VISIBLE) ?
 				true : false;
 	}
 	return false;

@@ -72,7 +72,7 @@ INT_PTR CALLBACK XAP_Win32PropertyPage::s_pageWndProc(HWND hWnd, UINT msg, WPARA
 		{	
 			PROPSHEETPAGEW*	pStruct = (PROPSHEETPAGEW*)lParam;  		
 			XAP_Win32PropertyPage *pThis = (XAP_Win32PropertyPage *)pStruct->lParam;
-			SetWindowLongPtr(hWnd,DWLP_USER,pStruct->lParam);
+			SetWindowLongPtrW(hWnd,DWLP_USER,pStruct->lParam);
 			pThis->m_hDlg = hWnd;
 			pThis->_onInitDialog();
 			return 0;
@@ -81,7 +81,7 @@ INT_PTR CALLBACK XAP_Win32PropertyPage::s_pageWndProc(HWND hWnd, UINT msg, WPARA
 
 		case WM_NOTIFY:
 		{
-			XAP_Win32PropertyPage *pThis = (XAP_Win32PropertyPage *)GetWindowLongPtr(hWnd,DWLP_USER);
+			XAP_Win32PropertyPage *pThis = (XAP_Win32PropertyPage *)GetWindowLongPtrW(hWnd,DWLP_USER);
 
 			if (pThis)
 				pThis->_onNotify((LPNMHDR) lParam, wParam); 
@@ -89,7 +89,7 @@ INT_PTR CALLBACK XAP_Win32PropertyPage::s_pageWndProc(HWND hWnd, UINT msg, WPARA
 			pNMHDR = (NMHDR*)lParam;					
 			if (pNMHDR->code==PSN_KILLACTIVE)
 			{
-				XAP_Win32PropertyPage *pThis = (XAP_Win32PropertyPage *)GetWindowLongPtr(hWnd,DWLP_USER);
+				XAP_Win32PropertyPage *pThis = (XAP_Win32PropertyPage *)GetWindowLongPtrW(hWnd,DWLP_USER);
 				pThis->_onKillActive();
 			}
 			break;
@@ -97,7 +97,7 @@ INT_PTR CALLBACK XAP_Win32PropertyPage::s_pageWndProc(HWND hWnd, UINT msg, WPARA
 		
 		case WM_COMMAND:
 		{
-			XAP_Win32PropertyPage *pThis = (XAP_Win32PropertyPage *)GetWindowLongPtr(hWnd,DWLP_USER);
+			XAP_Win32PropertyPage *pThis = (XAP_Win32PropertyPage *)GetWindowLongPtrW(hWnd,DWLP_USER);
 
 			if (pThis)
 				pThis->_onCommand(hWnd, wParam, lParam); 	
@@ -170,7 +170,7 @@ XAP_Win32PropertySheet::XAP_Win32PropertySheet()
 */
 INT_PTR CALLBACK XAP_Win32PropertySheet::s_sheetWndProc(HWND hWnd, UINT msg, WPARAM wParam,  LPARAM lParam)
 {			
-	XAP_Win32PropertySheet *pThis = (XAP_Win32PropertySheet*)GetWindowLongPtr(hWnd, GWLP_USERDATA);			
+	XAP_Win32PropertySheet *pThis = (XAP_Win32PropertySheet*)GetWindowLongPtrW(hWnd, GWLP_USERDATA);			
 	
 	switch(msg) 
 	{			
@@ -329,9 +329,9 @@ int XAP_Win32PropertySheet::runModal(XAP_Win32App* pWin32App, XAP_Frame * pFrame
 	EnableWindow(m_psh.hwndParent, FALSE);
 
 	/* Subclassing */
-	m_lpfnDefSheet = (WHICHPROC)GetWindowLongPtr(m_hWnd, GWLP_WNDPROC);
-	SetWindowLongPtr(m_hWnd, GWLP_USERDATA, (LONG_PTR)this);	
-	SetWindowLongPtr(m_hWnd, GWLP_WNDPROC, (LONG_PTR)m_pfnDlgProc);
+	m_lpfnDefSheet = (WHICHPROC)GetWindowLongPtrW(m_hWnd, GWLP_WNDPROC);
+	SetWindowLongPtrW(m_hWnd, GWLP_USERDATA, (LONG_PTR)this);	
+	SetWindowLongPtrW(m_hWnd, GWLP_WNDPROC, (LONG_PTR)m_pfnDlgProc);
 		
 	_onInitDialog(m_hWnd);		
 
@@ -394,9 +394,9 @@ int XAP_Win32PropertySheet::runModeless (XAP_Win32App* pWin32App, XAP_Frame * pF
 
 	/* Subclassing */
 
-	m_lpfnDefSheet = (WHICHPROC)GetWindowLongPtr(m_hWnd, GWLP_WNDPROC);
-	SetWindowLongPtr(m_hWnd, GWLP_USERDATA, (LONG_PTR)this);	
-	SetWindowLongPtr(m_hWnd, GWLP_WNDPROC, (LONG_PTR)m_pfnDlgProc);
+	m_lpfnDefSheet = (WHICHPROC)GetWindowLongPtrW(m_hWnd, GWLP_WNDPROC);
+	SetWindowLongPtrW(m_hWnd, GWLP_USERDATA, (LONG_PTR)this);	
+	SetWindowLongPtrW(m_hWnd, GWLP_WNDPROC, (LONG_PTR)m_pfnDlgProc);
 		
 	_onInitDialog(m_hWnd);	
 	XAP_Win32DialogHelper::s_centerDialog(m_hWnd);

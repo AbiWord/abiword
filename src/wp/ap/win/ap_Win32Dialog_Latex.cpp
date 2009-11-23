@@ -97,13 +97,13 @@ void AP_Win32Dialog_Latex::notifyActiveFrame(XAP_Frame *pFrame)
 	UT_return_if_fail(pFrame);
 
 	HWND frameHWND = static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow();
-	if((HWND)GetWindowLongPtr(m_hDlg, GWLP_HWNDPARENT) != frameHWND)
+	if((HWND)GetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT) != frameHWND)
 	{
 		// Update the caption
 		ConstructWindowName();
 		setDialogTitle((LPCSTR)(AP_Win32App::s_fromUTF8ToWinLocale(m_sWindowName.utf8_str())).c_str());
 
-		SetWindowLongPtr(m_hDlg, GWLP_HWNDPARENT, (LONG_PTR)frameHWND);
+		SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, (LONG_PTR)frameHWND);
 		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}
@@ -112,9 +112,9 @@ void AP_Win32Dialog_Latex::notifyActiveFrame(XAP_Frame *pFrame)
 void AP_Win32Dialog_Latex::notifyCloseFrame(XAP_Frame *pFrame)
 {
 	UT_return_if_fail(pFrame);
-	if((HWND)GetWindowLongPtr(m_hDlg, GWLP_HWNDPARENT) == static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
+	if((HWND)GetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT) == static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
-		SetWindowLongPtr(m_hDlg, GWLP_HWNDPARENT, NULL);
+		SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, NULL);
 		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}

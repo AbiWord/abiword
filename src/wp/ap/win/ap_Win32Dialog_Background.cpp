@@ -61,14 +61,14 @@ UINT CALLBACK AP_Win32Dialog_Background::s_hookProc(HWND hdlg,UINT uiMsg,WPARAM 
 		CHOOSECOLORW * pCC = NULL;
 		pCC = (CHOOSECOLORW *) lParam;
 		pThis = (AP_Win32Dialog_Background *)pCC->lCustData;
-		SetWindowLongPtr(hdlg, DWLP_USER, (LONG_PTR) pThis);
+		SetWindowLongPtrW(hdlg, DWLP_USER, (LONG_PTR) pThis);
 		pThis->m_hDlg = hdlg;
 		pThis->_centerDialog();
 		return 1;
 	}
 	else
 	{
-		pThis = (AP_Win32Dialog_Background *)GetWindowLongPtr(hdlg, DWLP_USER);
+		pThis = (AP_Win32Dialog_Background *)GetWindowLongPtrW(hdlg, DWLP_USER);
 	}
 
 	if (uiMsg==WM_HELP)

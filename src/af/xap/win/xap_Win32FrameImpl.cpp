@@ -248,7 +248,7 @@ void XAP_Win32FrameImpl::_createTopLevelWindow(void)
 
 	// bind this frame to its window
 	// WARNING: We assume in many places this refers to a XAP_Frame or descendant!!!
-	//SetWindowLongPtr(m_hwndFrame, GWLP_USERDATA,(LONG_PTR)this);
+	//SetWindowLongPtrW(m_hwndFrame, GWLP_USERDATA,(LONG_PTR)this);
 	SetWindowLongPtrW(m_hwndFrame, GWLP_USERDATA,(LONG_PTR)getFrame());
 
 #ifndef UNICODE
@@ -469,7 +469,7 @@ void XAP_Win32FrameImpl::_setFullScreen(bool isFullScreen)
 	HWND hwndFrame = static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow();
 
 	// Get the window's style so we can add or remove the titlebar later
-	long hStyle = GetWindowLongPtr(hwndFrame, GWL_STYLE);
+	long hStyle = GetWindowLongPtrW(hwndFrame, GWL_STYLE);
 
 	if (isFullScreen)
 	{
@@ -510,7 +510,7 @@ void XAP_Win32FrameImpl::_setFullScreen(bool isFullScreen)
 	}
 
 	// Add or remove title-bar and border
-	SetWindowLongPtr(hwndFrame, GWL_STYLE, isFullScreen ? hStyle & ~WS_CAPTION : hStyle | WS_CAPTION);
+	SetWindowLongPtrW(hwndFrame, GWL_STYLE, isFullScreen ? hStyle & ~WS_CAPTION : hStyle | WS_CAPTION);
 
 	// We hide the window before maximizing
 	// to ensure it displays with the proper geometry

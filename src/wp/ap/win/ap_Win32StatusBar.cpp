@@ -33,7 +33,7 @@
 
 LRESULT APIENTRY StatusbarWndProc (HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) { 
 
-	AP_Win32StatusBar *pBar = reinterpret_cast<AP_Win32StatusBar *>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+	AP_Win32StatusBar *pBar = reinterpret_cast<AP_Win32StatusBar *>(GetWindowLongPtrW(hwnd, GWLP_USERDATA));
 	UT_return_val_if_fail (pBar, 0);
 
     if ((uMsg == WM_SIZE || uMsg == SB_SETPARTS) && hwnd) {
@@ -211,7 +211,7 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 	
 	// attach a pointer to the s:tatusbar window to <this> so we can get the 
 	// original wndproc and previous window-width
-	SetWindowLongPtr(m_hwndStatusBar, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
+	SetWindowLongPtrW(m_hwndStatusBar, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
 
 	for (UT_sint32 k = 0; k < getFields()->getItemCount(); k++) 
 	{

@@ -42,7 +42,7 @@ BOOL TCPWin32AccountHandler::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	if (!m_hServerEntry || !m_hPortEntry)
 		return false; // we are still initializing the dialog
 
-	AP_Win32Dialog_CollaborationAddAccount* pThis = (AP_Win32Dialog_CollaborationAddAccount *)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+	AP_Win32Dialog_CollaborationAddAccount* pThis = (AP_Win32Dialog_CollaborationAddAccount *)GetWindowLongPtrW(hWnd, GWLP_USERDATA);
 	UT_return_val_if_fail(pThis, false);
 
 	WORD wId = LOWORD(wParam);

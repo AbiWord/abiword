@@ -111,13 +111,13 @@ void AP_Win32Dialog_Replace::destroy(void)
 
 void AP_Win32Dialog_Replace::notifyActiveFrame(XAP_Frame *pFrame)
 {
-	if((HWND)GetWindowLongPtr(m_hDlg, GWLP_HWNDPARENT) != static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
+	if((HWND)GetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT) != static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
 		// Update the caption
 		ConstructWindowName();
 		setDialogTitle(m_WindowName);
 
-		SetWindowLongPtr(m_hDlg, GWLP_HWNDPARENT, (LONG_PTR)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
+		SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, (LONG_PTR)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
 		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}
@@ -125,9 +125,9 @@ void AP_Win32Dialog_Replace::notifyActiveFrame(XAP_Frame *pFrame)
 
 void AP_Win32Dialog_Replace::notifyCloseFrame(XAP_Frame *pFrame)
 {
-	if((HWND)GetWindowLongPtr(m_hDlg, GWLP_HWNDPARENT) == static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
+	if((HWND)GetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT) == static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
-		SetWindowLongPtr(m_hDlg, GWLP_HWNDPARENT, NULL);
+		SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, NULL);
 		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}

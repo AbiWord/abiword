@@ -42,19 +42,19 @@ BOOL CALLBACK AP_Win32Dialog_CollaborationAddAccount::s_dlgProc(HWND hWnd, UINT 
 		{
 			AP_Win32Dialog_CollaborationAddAccount* pThis = (AP_Win32Dialog_CollaborationAddAccount *)lParam;
 			UT_return_val_if_fail(pThis, false);
-			SetWindowLongPtr(hWnd,DWLP_USER,lParam);
+			SetWindowLongPtrW(hWnd,DWLP_USER,lParam);
 			return pThis->_onInitDialog(hWnd,wParam,lParam);
 		}
 		case WM_COMMAND:
 		{
-			AP_Win32Dialog_CollaborationAddAccount* pThis = (AP_Win32Dialog_CollaborationAddAccount *)GetWindowLongPtr(hWnd,DWLP_USER);
+			AP_Win32Dialog_CollaborationAddAccount* pThis = (AP_Win32Dialog_CollaborationAddAccount *)GetWindowLongPtrW(hWnd,DWLP_USER);
 			UT_return_val_if_fail(pThis, false);
 			return pThis->_onCommand(hWnd,wParam,lParam);
 		}
 		case WM_DESTROY:
 		{
 			UT_DEBUGMSG(("Got WM_DESTROY\n"));
-			AP_Win32Dialog_CollaborationAddAccount* pThis = (AP_Win32Dialog_CollaborationAddAccount *)GetWindowLongPtr(hWnd,DWLP_USER);
+			AP_Win32Dialog_CollaborationAddAccount* pThis = (AP_Win32Dialog_CollaborationAddAccount *)GetWindowLongPtrW(hWnd,DWLP_USER);
 			UT_return_val_if_fail(pThis, false);
 			DELETEP(pThis->m_pWin32Dialog);
 			return true;
@@ -66,7 +66,7 @@ BOOL CALLBACK AP_Win32Dialog_CollaborationAddAccount::s_dlgProc(HWND hWnd, UINT 
 
 BOOL CALLBACK AP_Win32Dialog_CollaborationAddAccount::s_detailsProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	AP_Win32Dialog_CollaborationAddAccount* pThis = (AP_Win32Dialog_CollaborationAddAccount *)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+	AP_Win32Dialog_CollaborationAddAccount* pThis = (AP_Win32Dialog_CollaborationAddAccount *)GetWindowLongPtrW(hWnd, GWLP_USERDATA);
 	UT_return_val_if_fail(pThis, false);
 
 	switch (msg)
@@ -146,9 +146,9 @@ BOOL AP_Win32Dialog_CollaborationAddAccount::_onInitDialog(HWND hWnd, WPARAM wPa
 
 	// trap the messages that will be sent to the m_hDetails window, so we can forward
 	// them to the account handler
-	m_pOldDetailsProc = GetWindowLongPtr(m_hDetails, GWLP_WNDPROC);
-	SetWindowLongPtr(m_hDetails, GWLP_WNDPROC, (LPARAM)s_detailsProc);
-	SetWindowLongPtr(m_hDetails, GWLP_USERDATA, (LPARAM)this);
+	m_pOldDetailsProc = GetWindowLongPtrW(m_hDetails, GWLP_WNDPROC);
+	SetWindowLongPtrW(m_hDetails, GWLP_WNDPROC, (LPARAM)s_detailsProc);
+	SetWindowLongPtrW(m_hDetails, GWLP_USERDATA, (LPARAM)this);
 
 	// we need to trap the account details window's message hook,
 	// so we can make TAB stops work

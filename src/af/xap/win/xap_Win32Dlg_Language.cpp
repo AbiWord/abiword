@@ -140,7 +140,7 @@ BOOL CALLBACK XAP_Win32Dialog_Language::s_treeProc(HWND hWnd,UINT msg,WPARAM wPa
 	// The user has double clicked on a tree item (a language name)
 	if (msg==WM_LBUTTONDBLCLK)
 	{
-		pThis = (XAP_Win32Dialog_Language *)GetWindowLongPtr(hWnd,GWLP_USERDATA);
+		pThis = (XAP_Win32Dialog_Language *)GetWindowLongPtrW(hWnd,GWLP_USERDATA);
 		TVITEM tvi;		
 		
 		// Selected item

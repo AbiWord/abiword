@@ -58,7 +58,7 @@ LRESULT CALLBACK Synchronizer::s_wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPA
 		UT_return_val_if_fail(pThis, 0);
 		pThis->m_hWnd = hWnd;
 		SetLastError(0);
-		swlresult=SetWindowLongPtr(hWnd,GWLP_USERDATA,LONG_PTR(pThis));
+		swlresult=SetWindowLongPtrW(hWnd,GWLP_USERDATA,LONG_PTR(pThis));
 		if (swlresult==0)
 		{
 			// we might have an error
@@ -73,7 +73,7 @@ LRESULT CALLBACK Synchronizer::s_wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPA
 		
 	case WM_ABI_SYNCHRONIZER:
 		UT_DEBUGMSG(("Received a message in Synchronizer message loop! 0x%x\n", msg));
-		pThis = (Synchronizer *)GetWindowLongPtr(hWnd,GWLP_USERDATA);
+		pThis = (Synchronizer *)GetWindowLongPtrW(hWnd,GWLP_USERDATA);
 		UT_return_val_if_fail(pThis, 0);
 		if (pThis->m_bIsProcessing)
 		{

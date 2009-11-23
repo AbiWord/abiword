@@ -192,9 +192,9 @@ BOOL AP_Win32Dialog_Stylist::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 	_populateWindowData();
 
 	HWND hTree = GetDlgItem(m_hDlg, AP_RID_DIALOG_STYLIST_TREE_STYLIST);
-	hTreeProc = (WHICHPROC) GetWindowLongPtr(hTree, GWLP_WNDPROC); // save off our prior callback
-	SetWindowLongPtr(hTree, GWLP_WNDPROC, (LONG_PTR)s_treeProc); // tie the treeview to the new callback
-	SetWindowLongPtr(hTree, GWLP_USERDATA, (LONG_PTR)this);
+	hTreeProc = (WHICHPROC) GetWindowLongPtrW(hTree, GWLP_WNDPROC); // save off our prior callback
+	SetWindowLongPtrW(hTree, GWLP_WNDPROC, (LONG_PTR)s_treeProc); // tie the treeview to the new callback
+	SetWindowLongPtrW(hTree, GWLP_USERDATA, (LONG_PTR)this);
 	centerDialog();
 
 	return 1;							// 1 == we did not call SetFocus()
@@ -336,7 +336,7 @@ BOOL CALLBACK AP_Win32Dialog_Stylist::s_treeProc(HWND hWnd,UINT msg,WPARAM wPara
 	if (msg == WM_LBUTTONDBLCLK)
 	{
 		// The user has double clicked on a tree item
-		AP_Win32Dialog_Stylist * pThis = (AP_Win32Dialog_Stylist *)GetWindowLongPtr(hWnd,GWLP_USERDATA);
+		AP_Win32Dialog_Stylist * pThis = (AP_Win32Dialog_Stylist *)GetWindowLongPtrW(hWnd,GWLP_USERDATA);
 		if (pThis->_styleClicked())
 			pThis->Apply();
 		return 1;

@@ -44,7 +44,7 @@ static UINT_PTR CALLBACK s_PrintHookProc(
 	{
 		PRINTDLGW * pDlgInfo = (PRINTDLGW*)lParam;
 		pThis = (XAP_Win32Dialog_Print*)pDlgInfo->lCustData;
-		SetWindowLongPtr(hdlg, DWLP_USER, (LONG_PTR) pThis);
+		SetWindowLongPtrW(hdlg, DWLP_USER, (LONG_PTR) pThis);
 
 		// reset the 'closed' flag which indicates that the dialog should be considered
 		// 'closed' rather than aborted
@@ -65,7 +65,7 @@ static UINT_PTR CALLBACK s_PrintHookProc(
 	}
 	else
 	{
-		pThis = (XAP_Win32Dialog_Print*)GetWindowLongPtr(hdlg, DWLP_USER);
+		pThis = (XAP_Win32Dialog_Print*)GetWindowLongPtrW(hdlg, DWLP_USER);
 	}
 	
 	if(uiMsg == WM_COMMAND)

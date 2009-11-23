@@ -144,7 +144,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 		return;
 	}
 
-	SetWindowLongPtr(hwndAbout, GWLP_USERDATA, (LONG_PTR)this);
+	SetWindowLongPtrW(hwndAbout, GWLP_USERDATA, (LONG_PTR)this);
 
 	RECT rcClient;
 	GetClientRect(hwndAbout, &rcClient);
@@ -331,7 +331,7 @@ BOOL CALLBACK XAP_Win32Dialog_About::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,
 {
 	// This is a static function.
 
-	XAP_Win32Dialog_About * pThis = (XAP_Win32Dialog_About *)GetWindowLongPtr(hWnd,GWLP_USERDATA);
+	XAP_Win32Dialog_About * pThis = (XAP_Win32Dialog_About *)GetWindowLongPtrW(hWnd,GWLP_USERDATA);
 
 	if (!pThis)
 	{

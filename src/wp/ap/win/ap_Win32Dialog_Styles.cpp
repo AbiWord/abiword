@@ -83,12 +83,12 @@ BOOL CALLBACK AP_Win32Dialog_Styles::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,
 	{
 	case WM_INITDIALOG:	
 		pThis = (AP_Win32Dialog_Styles *)lParam;		
-		SetWindowLongPtr(hWnd,DWLP_USER,lParam);
+		SetWindowLongPtrW(hWnd,DWLP_USER,lParam);
 		return pThis->_onInitDialog(hWnd,wParam,lParam);
 
 	case WM_COMMAND:
 		
-		pThis = (AP_Win32Dialog_Styles *)GetWindowLongPtr(hWnd,DWLP_USER);
+		pThis = (AP_Win32Dialog_Styles *)GetWindowLongPtrW(hWnd,DWLP_USER);
 		if(pThis)
 			return pThis->_onCommand(hWnd,wParam,lParam);
 		else		
@@ -129,7 +129,7 @@ void AP_Win32Dialog_Styles::_onDrawButton(LPDRAWITEMSTRUCT lpDrawItemStruct, HWN
 	
 	// Get parent object and get the App object from there
 	hParent = GetParent(hWnd);	
-	lData = GetWindowLongPtr(hWnd,DWLP_USER);			
+	lData = GetWindowLongPtrW(hWnd,DWLP_USER);			
 	AP_Win32Dialog_Styles * pParent = (AP_Win32Dialog_Styles *)lData;
 	const XAP_StringSet * pSS = pParent->m_pApp->getStringSet();		
 	
