@@ -1051,7 +1051,7 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 			{
 				bool bGrayed = EV_TIS_ShouldBeGray(tis);
 
-				SendMessageW(m_hwnd, TB_ENABLEBUTTON, u, (LONG)!bGrayed) ;
+				SendMessageW(m_hwnd, TB_ENABLEBUTTON, u, (!bGrayed ? 1 : 0)) ;
 
 				//UT_DEBUGMSG(("refreshToolbar: PushButton [%s] is %s\n",
 				//			m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
@@ -1065,8 +1065,8 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 				bool bGrayed = EV_TIS_ShouldBeGray(tis);
 				bool bToggled = EV_TIS_ShouldBeToggled(tis);
 				
-				SendMessageW(m_hwnd, TB_ENABLEBUTTON, u, (LONG)!bGrayed);
-				SendMessageW(m_hwnd, TB_CHECKBUTTON, u, (LONG)bToggled);
+				SendMessageW(m_hwnd, TB_ENABLEBUTTON, u, (!bGrayed ? 1 : 0));
+				SendMessageW(m_hwnd, TB_CHECKBUTTON, u, (bToggled ? 1 : 0));
 
 				//UT_DEBUGMSG(("refreshToolbar: ToggleButton [%s] is %s and %s\n",
 				//			 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),

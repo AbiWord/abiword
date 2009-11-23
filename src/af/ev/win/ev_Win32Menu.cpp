@@ -480,7 +480,7 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND /*hWnd*/
 	UT_uint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
 	
 
-	UT_uint32 pos = 0;
+	UT_uintptr pos = 0;
 	bool bResult;
 	UT_Stack stackPos;
 	stackPos.push((void*)pos);
