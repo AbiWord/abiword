@@ -136,9 +136,9 @@ BOOL AiksaurusDlg::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	}
 
 	// Set the Icon of the Dialog
-	m_hOrigIcon = (HICON) SetClassLong( hWnd,
+	m_hOrigIcon = (HICON) SetClassLongPtr( hWnd,
                   GCL_HICON,
-				  (LONG)LoadIcon(m_hInstance, MAKEINTRESOURCE(ID_ICON_AIK)) ); 
+				  reinterpret_cast<LONG_PTR>(LoadIcon(m_hInstance, MAKEINTRESOURCE(ID_ICON_AIK))) ); 
 
 	// Center Window
 	RECT rectDesktop, rectDlg;
@@ -168,7 +168,7 @@ BOOL AiksaurusDlg::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	case IDCANCEL:
 		SetWindowText( m_hSynText, "");
 		// Reset Icon and end Dialog
-		SetClassLong( hWnd, GCL_HICON, (LONG)m_hOrigIcon );
+		SetClassLongPtr( hWnd, GCL_HICON, reinterpret_cast<LONG_PTR>(m_hOrigIcon) );
 		EndDialog(hWnd,0);
 		return 1;
 
@@ -226,7 +226,7 @@ BOOL AiksaurusDlg::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			m_szReplacementWord = buf;
 		}
 		// Reset Icon and end Dialog
-		SetClassLong( hWnd, GCL_HICON, (LONG)m_hOrigIcon );
+		SetClassLongPtr( hWnd, GCL_HICON, reinterpret_cast<LONG_PTR>(m_hOrigIcon) );
 		EndDialog(hWnd,0);
 
 	case ID_BTN_SEARCH:
