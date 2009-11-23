@@ -33,11 +33,11 @@
 #include "xap_Frame.h"
 #include "xap_ModuleManager.h"
 #include "pd_Document.h"
-#include "ut_Win32LocaleString.h"
 #include "ie_imp.h"
 
 #if defined(TOOLKIT_WIN)
 
+#include "ut_Win32LocaleString.h"
 #include "ap_Win32App.h" //needed for AP_Win32App::s_fromWinLocaleToUTF8()
 
 AP_App::AP_App (HINSTANCE hInstance, const char * szAppName)
