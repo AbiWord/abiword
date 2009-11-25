@@ -3565,7 +3565,7 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 			UT_DEBUGMSG(("Change Image Height to %d \n",maxH));
 		}
 		m_pImage = m_pFGraphic->generateImage(pG, pSpanAP, maxW, maxH);
-		if(bNoSize)
+		if(bNoSize && m_pImage)
 		{
 			iW = pG->tlu(m_pImage->getDisplayWidth());
 			iH = pG->tlu(m_pImage->getDisplayHeight());

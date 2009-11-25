@@ -209,6 +209,9 @@ bool OXMLi_ListenerState_Image::addImage(const std::string & id)
 	OXMLi_PackageManager * mgr = OXMLi_PackageManager::getInstance();
 	const UT_ByteBuf* imageData = mgr->parseImageStream(id.c_str());
 
+	if (!imageData)
+		return false;
+
 	err = IE_ImpGraphic::loadGraphic (*imageData, IEGFT_Unknown, &pFG);
 	if ((err != UT_OK) || !pFG) 
 	{
