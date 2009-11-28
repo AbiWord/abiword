@@ -54,7 +54,7 @@ bool ODe_MetaDataWriter::writeMetaData(PD_Document* pDoc, GsfOutfile* oo) {
             " xmlns:dc=\"http://purl.org/dc/elements/1.1/\""
             " xmlns:meta=\"urn:oasis:names:tc:opendocument:xmlns:meta:1.0\""
             " xmlns:ooo=\"http://openoffice.org/2004/office\""
-            " office:version=\"1.0\">\n",
+            " office:version=\"1.1\">\n",
         "<office:meta>\n",
         "<meta:generator>AbiWord</meta:generator>\n"
     };
