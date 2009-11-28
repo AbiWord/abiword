@@ -21,3 +21,5 @@ include $(top_srcdir)/src/wp/main/cocoa/bundle.mk
 nobase_resources_DATA = MainMenu.nib/*.nib
 resources_DATA = bundle/*.icns bundle/*.tif bundle/*.png
 contents_DATA = bundle/Info.plist bundle/PkgInfo
+
+EXTRA_DIST = MainMenu.nib
