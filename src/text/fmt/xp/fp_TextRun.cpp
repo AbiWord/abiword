@@ -385,6 +385,7 @@ void fp_TextRun::printText(void)
 	while(text.getStatus() == UTIter_OK)
 	{
 		UT_UCS4Char c = text.getChar();
+		xxx_UT_DEBUGMSG(("| %d |",c));
 		if(c >= ' ' && c <128)
 			sTmp +=  static_cast<char>(c);
 		++text;
@@ -1159,15 +1160,17 @@ void fp_TextRun::mergeWithNext(void)
 
 }
 
-bool fp_TextRun::split(UT_uint32 iSplitOffset)
+bool fp_TextRun::split(UT_uint32 iSplitOffset, UT_sint32 iLenSkip)
 {
 	xxx_UT_DEBUGMSG(("fp_TextRun::split: iSplitOffset=%d\n", iSplitOffset));
 	UT_ASSERT(iSplitOffset >= getBlockOffset());
 	UT_ASSERT(iSplitOffset < (getBlockOffset() + getLength()));
 
 	UT_BidiCharType iVisDirection = getVisDirection();
-	fp_TextRun* pNew = new fp_TextRun(getBlock(), iSplitOffset,
-									  getLength() - (iSplitOffset - getBlockOffset()), false);
+	UT_sint32 iNewLen =  static_cast<UT_sint32>(getLength()) - (static_cast<UT_sint32>(iSplitOffset) - static_cast<UT_sint32>(getBlockOffset()));
+	UT_return_val_if_fail(iNewLen >= 0,false);
+
+	fp_TextRun* pNew = new fp_TextRun(getBlock(), iSplitOffset+static_cast<UT_uint32>(iLenSkip),static_cast<UT_uint32>(iNewLen), false);
 
 
 	UT_ASSERT(pNew);
@@ -1352,6 +1355,10 @@ bool fp_TextRun::_addupCharWidths(void)
 
 	if(m_pRenderInfo == NULL)
 		return false;
+#ifdef DEBUG
+	 xxx_UT_DEBUGMSG(("_addupCharWidths() \n"));
+	 //printText();
+#endif
 
 	m_pRenderInfo->m_iOffset = 0;
 	m_pRenderInfo->m_iLength = getLength();
@@ -1541,7 +1548,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	UT_sint32 iWidth = getWidth();
 	xxx_UT_DEBUGMSG(("textRun Xoff %d width %d \n",pDA->xoff,iWidth));
 #if DEBUG
-	//	printText();
+	//printText();
 #endif
 //
 // This code makes sure we don't fill past the right edge of text.

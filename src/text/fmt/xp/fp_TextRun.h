@@ -55,7 +55,7 @@ public:
 #ifdef ENABLE_SPELL
 	void				drawSquiggle(UT_uint32, UT_uint32,FL_SQUIGGLE_TYPE iSquiggle);
 #endif
-	bool					split(UT_uint32 iSplitOffset);
+	bool				split(UT_uint32 iSplitOffset,UT_sint32 iLenSkip=0);
 #if DEBUG
 	virtual void            printText(void);
 #endif
