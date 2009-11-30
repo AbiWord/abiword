@@ -50,7 +50,7 @@ public:
 	fl_AutoNum(	UT_uint32 id,
 				UT_uint32 start,
 				PL_StruxDocHandle pItem,
-				fl_AutoNum * pParent,
+				UT_uint32 parent_id,
 				const gchar * lDelim,
 				const gchar * lDecimal,
 				FL_ListType lType,
@@ -119,7 +119,7 @@ public:
 	PL_StruxDocHandle			getLastItem(void);
 	bool						isLastOnLevel(PL_StruxDocHandle pItem);
 
-	fl_AutoNum *				getParent(void) const { return m_pParent; }
+	fl_AutoNum *				getParent(void) const;
 	fl_AutoNum *				getActiveParent(void);
 	fl_AutoNum *				getAutoNumFromSdh(PL_StruxDocHandle sdh);
 	const fl_AutoNum *			getAutoNumFromSdh(PL_StruxDocHandle sdh) const;
@@ -150,8 +150,6 @@ protected:
 												PL_StruxDocHandle pLayout) const;
 	void						_updateItems(UT_sint32 start, PL_StruxDocHandle notMe );
 	UT_uint32					_getLevelValue(fl_AutoNum * pAutoNum);
-
-	fl_AutoNum *				m_pParent;
 
 	UT_Vector					m_pItems;
 	PD_Document *               m_pDoc;

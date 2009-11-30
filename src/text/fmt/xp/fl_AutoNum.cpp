@@ -47,19 +47,17 @@ class pf_Frag;
 fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 						UT_uint32 start,
 						PL_StruxDocHandle pFirst,
-						fl_AutoNum * pParent,
+						UT_uint32 iParentID,
 						const gchar * lDelim,
 						const gchar * lDecimal,
 						FL_ListType lType,
 						PD_Document * pDoc,
 						FV_View * pView)
-	:	m_pParent(pParent),
-		m_pDoc(pDoc),
+	:	m_pDoc(pDoc),
 		m_pView(pView),
 		m_List_Type(lType),
 		m_iID(id),
-		m_iParentID(0),
-		m_iLevel(pParent ? pParent->getLevel() + 1 : 1),
+		m_iParentID(iParentID),
 		m_iStartValue(start),
 		m_iAsciiOffset(0),
 		m_bUpdatingItems(false),
@@ -68,7 +66,8 @@ fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 		m_bWordMultiStyle(true),
 		m_pParentItem(0)
 {
-	_setParent(pParent);
+	_setParent(getParent());
+	m_iLevel = (getParent() ? getParent()->getLevel() + 1 : 1);
 	memset(m_pszDelim, 0, 80);
 	memset(m_pszDecimal, 0, 80);
 	strncpy( m_pszDelim, lDelim, 80);
@@ -88,8 +87,7 @@ fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 						const gchar * lDecimal,
 						PD_Document * pDoc,
 						FV_View * pView)
-	:	m_pParent(0),
-		m_pDoc(pDoc),
+	:	m_pDoc(pDoc),
 		m_pView(pView),
 		m_List_Type(lType),
 		m_iID(id),
@@ -121,15 +119,24 @@ fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 
 bool fl_AutoNum::checkReference(fl_AutoNum * pAuto)
 {
-	if(pAuto == m_pParent)
+	if(pAuto == getParent())
 	{
 		return false;
 	}
-	if(m_pParent)
+	if(getParent())
 	{
-		return m_pParent->checkReference(pAuto);
+		return getParent()->checkReference(pAuto);
 	}
 	return true;
+}
+
+fl_AutoNum * fl_AutoNum::getParent(void) const
+{
+	if(m_iParentID == 0)
+	{
+		return NULL;
+	}
+	return m_pDoc->getListByID(m_iParentID);
 }
 
 void fl_AutoNum::addItem(PL_StruxDocHandle pItem)
@@ -188,13 +195,10 @@ void fl_AutoNum::fixHierarchy(void)
 	else
 		pParent = NULL;
 
-	if(pParent != m_pParent)
-	{
-		_setParent(pParent);
-	}
+	_setParent(pParent);
 	UT_uint32 oldlevel = m_iLevel;
-	if (m_pParent)
-		m_iLevel = m_pParent->getLevel() + 1;
+	if (getParent())
+		m_iLevel = getParent()->getLevel() + 1;
 	else
 		m_iLevel = 1;
 	if(oldlevel != m_iLevel)
@@ -249,23 +253,10 @@ void    fl_AutoNum::findAndSetParentItem(void)
 	{
 		return;
 	}
-	else if( m_pParent == NULL)
+	else
 	{
 		_setParent(m_pDoc->getListByID(m_iParentID));
 	}
-	else
-	{
-		fl_AutoNum * pParent = m_pDoc->getListByID(m_iParentID);
-		if(pParent == NULL)
-		{
-			_setParent(NULL);
-		}
-	}
-
-//	pCurDoc = m_pDoc;
-//   	fixListOrder();
-//   	m_pParent->fixListOrder();
-//   	m_pParent->update(0);
 
 	if (m_pItems.getItemCount() == 0)
 	{
@@ -283,19 +274,19 @@ void    fl_AutoNum::findAndSetParentItem(void)
 	PT_DocPosition posClosest = 0;
 	PL_StruxDocHandle pClosestItem = NULL;
 	bool bReparent = false;
-	if(m_pParent != NULL)
+	if(getParent() != NULL)
 	{
 		UT_uint32 i=0;
-		for(i=0; i <m_pParent->getNumLabels(); i++)
+		for(i=0; i <getParent()->getNumLabels(); i++)
 		{
-			PL_StruxDocHandle pParentItem = m_pParent->getNthBlock(i);
+			PL_StruxDocHandle pParentItem = getParent()->getNthBlock(i);
 			if(pParentItem != NULL)
 			{
 				posParent = m_pDoc->getStruxPosition(pParentItem);
 				if( posParent > posClosest && posParent < posCur)
 				{
 					posClosest = posParent;
-					pClosestAuto = m_pParent;
+					pClosestAuto = getParent();
 					pClosestItem = pParentItem;
 					bReparent = true;
 				}
@@ -306,7 +297,7 @@ void    fl_AutoNum::findAndSetParentItem(void)
 // Reparent this list if the first item of the parent is after the first
 // item of this list.
 //
-	if((m_pParent == NULL) || (posClosest == 0))
+	if((getParent() == NULL) || (posClosest == 0))
 	{
 		for(iList = 0; iList < cnt; iList++)
 		{
@@ -344,20 +335,20 @@ void    fl_AutoNum::findAndSetParentItem(void)
 	}
 	if(m_pParentItem != pClosestItem)
 		m_bDirty = true;
-	if(m_pParent != pClosestAuto)
+	if(getParent() != pClosestAuto)
 		m_bDirty = true;
 	if(bReparent)
 	{
 		m_pParentItem = pClosestItem;
-		if(m_pParent != pClosestAuto)
+		if(getParent() != pClosestAuto)
 		{
+			_setParentID(pClosestAuto->getID());
 			_setParent(pClosestAuto);
-			_setParentID(m_pParent->getID());
 		}
 	}
-	if(m_pParent != NULL)
+	if(getParent() != NULL)
 	{
-		m_iLevel = m_pParent->getLevel()+ 1;
+		m_iLevel = getParent()->getLevel()+ 1;
 		//
 		// TODO: change all the para attributes in the list to reflect
 		// this change of Parent ID and Level.
@@ -433,9 +424,9 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 	}
 	rightDelim[i - rTmp] = '\0';
 
-	if(m_pParent != NULL  && m_List_Type < BULLETED_LIST)
+	if(getParent() != NULL  && m_List_Type < BULLETED_LIST)
 	{
-		m_pParent->_getLabelstr( labelStr, insPoint, depth+1,getParentItem());
+		getParent()->_getLabelstr( labelStr, insPoint, depth+1,getParentItem());
 		if(*insPoint != 0)
 		{
 			psz = strlen(m_pszDecimal);
@@ -696,7 +687,7 @@ void fl_AutoNum::insertFirstItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pLas
 	{
 		fixListOrder();
 	}
-	if (m_pParent)
+	if (getParent())
 	{
 		m_pParentItem = pLast;
 		m_bDirty = true;
@@ -1041,7 +1032,7 @@ bool fl_AutoNum::isLastOnLevel(PL_StruxDocHandle pItem)
 
 fl_AutoNum * fl_AutoNum::getActiveParent(void)
 {
-	fl_AutoNum * pAutoNum = m_pParent;
+	fl_AutoNum * pAutoNum = getParent();
 
 	while (pAutoNum && pAutoNum->isEmpty())
 		pAutoNum = pAutoNum->getParent();
@@ -1071,39 +1062,32 @@ void fl_AutoNum::_setParent(fl_AutoNum * pParent)
 {
 	if(pParent == this)
 	{
-		m_pParent = NULL;
 		m_iParentID = 0;
 		m_bDirty = true;
 		return;
 	}
-	if(pParent != m_pParent)
+	char szParent[13];
+	if(pParent != NULL)
 	{
-		char szParent[13];
-		m_pParent = pParent;
-		if(m_pParent != NULL)
+		if(!pParent->checkReference(this))
 		{
-			if(!pParent->checkReference(this))
-			{
-				m_pParent = NULL;
-				m_iParentID = 0;
-				m_bDirty = true;
-				return;
-			}
-			m_iParentID  = pParent->getID();
+			m_iParentID = 0;
+			m_bDirty = true;
+			return;
 		}
-		else
-		{
-			m_iParentID  = 0;
-		}
-
-		sprintf(szParent,"%d",m_iParentID);
-		m_bDirty = true;
-		UT_sint32 i = 0;
-		for(i=0; i < m_pItems.getItemCount() ; i++)
-		{
-			PL_StruxDocHandle sdh = static_cast<PL_StruxDocHandle>(m_pItems.getNthItem(i));
-			m_pDoc->changeStruxForLists(sdh, static_cast<const char *>(szParent));
-		}
+		m_iParentID  = pParent->getID();
+	}
+	else
+	{
+		m_iParentID  = 0;
+	}
+	sprintf(szParent,"%d",m_iParentID);
+	m_bDirty = true;
+	UT_sint32 i = 0;
+	for(i=0; i < m_pItems.getItemCount() ; i++)
+	{
+		PL_StruxDocHandle sdh = static_cast<PL_StruxDocHandle>(m_pItems.getNthItem(i));
+		m_pDoc->changeStruxForLists(sdh, static_cast<const char *>(szParent));
 	}
 }
 
@@ -1122,10 +1106,10 @@ void fl_AutoNum::update(UT_uint32 start)
 	//_calculateLabelStr(0);
 	_updateItems(start, NULL);
 	void * sdh = const_cast<void *>( getFirstItem());
-	if (m_pParent && !m_pParent->isUpdating())
+	if (getParent() && !getParent()->isUpdating())
 	{
-		UT_uint32 ndx = m_pParent->m_pItems.findItem(sdh);
-		m_pParent->update(ndx + 1);
+		UT_uint32 ndx = getParent()->m_pItems.findItem(sdh);
+		getParent()->update(ndx + 1);
 	}
 }
 
@@ -1416,8 +1400,8 @@ void fl_AutoNum::getAttributes (std::vector<UT_UTF8String> & v,
 	v.push_back("id");
 	v.push_back(szID);
 
-	if (m_pParent)
-		sprintf(szPid, "%i", m_pParent->getID());
+	if (getParent())
+		sprintf(szPid, "%i", getParent()->getID());
 	else
 		sprintf(szPid, "0");
 	v.push_back("parentid");
