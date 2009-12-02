@@ -284,11 +284,11 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 
 	_s("Endnote Reference",false,"C", "None", "Current Settings", "text-position:superscript; font-size:10pt");
 	_s("Endnote Text",false,"P", "Normal", "Current Settings", "text-position:normal");
-	_s("Endnote",false,"P", "Normal", "Current Settings", "text-position:normal;text-indent:-0.3in;margin-left:0.3in;tabstops:0.3in/L0");
+	_s("Endnote",false,"P", "Normal", "Current Settings", "text-position:normal;text-indent:-0.2in;margin-left:0.2in");
 
 	_s("Footnote Reference",false,"C", "None", "Current Settings", "text-position:superscript; font-size:10pt");
 	_s("Footnote Text",false,"P", "Normal", "Current Settings", "text-position:normal; font-size:10pt");
-	_s("Footnote",false,"P", "Normal", "Current Settings", "text-position:normal; font-size:10pt;text-indent:-0.3in;margin-left:0.3in");
+	_s("Footnote",false,"P", "Normal", "Current Settings", "text-position:normal; font-size:10pt;text-indent:-0.2in;margin-left:0.2in");
 
 	return true;
 
