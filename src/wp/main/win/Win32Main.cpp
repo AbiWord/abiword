@@ -22,6 +22,8 @@
 #endif
 
 #include <io.h>
+#include <conio.h>
+#define _WIN32_WINNT 0x0501
 #include <windows.h>
 #include "ap_Win32App.h"
 
