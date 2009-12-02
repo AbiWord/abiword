@@ -111,6 +111,7 @@ void ODe_Note_Listener::openBlock(const PP_AttrProp* /*pAP*/,
                                           0,
                                           m_spacesOffset);
     rAction.pushListenerImpl(pTextListener, true);
+    pTextListener->setIgnoreFirstTab(true);
 }
 
 

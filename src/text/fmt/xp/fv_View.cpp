@@ -12985,9 +12985,9 @@ bool FV_View::insertFootnote(bool bFootnote)
 
 	FanchEnd = FanchStart+1;
 	UT_DEBUGMSG(("insertFootnote: Inserting space after anchor field \n"));
-	//insert a space after the anchor
-	UT_UCSChar space = UCS_SPACE;
-	m_pDoc->insertSpan(FanchEnd, &space, 1);
+	//insert a TAB after the anchor
+	UT_UCSChar tab = UCS_TAB;
+	m_pDoc->insertSpan(FanchEnd, &tab, 1);
 
 
 	// apply footnote text style to the body of the footnote and the
@@ -12996,20 +12996,11 @@ bool FV_View::insertFootnote(bool bFootnote)
 	propListTag[1]="superscript";
 	if(bFootnote)
 	{
-		setStyleAtPos("Footnote Text", FanchStart, FanchEnd, true);
-//
-// Superscript the anchor
-//
-		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,FanchStart,FanchStart+1,NULL,propListTag);
-
+		setStyleAtPos("Footnote", FanchStart-1, FanchEnd, true);
 	}
 	else
 	{
-		setStyleAtPos("Endnote Text", FanchStart, FanchEnd, true);
-//
-// Superscript the anchor
-//
-		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,FanchStart,FanchStart+1,NULL,propListTag);
+		setStyleAtPos("Endnote", FanchStart, FanchEnd, true);
 	}
 
 	_setPoint(FanchEnd+1);

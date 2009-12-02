@@ -63,6 +63,7 @@ ODe_Text_Listener::ODe_Text_Listener(ODe_Styles& rStyles,
                         m_isFirstCharOnParagraph(true),
                         m_openedODTextboxFrame(false),
                         m_openedODNote(false),
+			m_bIgoreFirstTab(false),
                         m_pParagraphContent(NULL),
                         m_currentListLevel(0),
                         m_pCurrentListStyle(NULL),
@@ -97,6 +98,7 @@ ODe_Text_Listener::ODe_Text_Listener(ODe_Styles& rStyles,
                         m_isFirstCharOnParagraph(true),
                         m_openedODTextboxFrame(false),
                         m_openedODNote(false),
+			m_bIgoreFirstTab(false),
                         m_pParagraphContent(NULL),
                         m_currentListLevel(0),
                         m_pCurrentListStyle(NULL),
@@ -780,11 +782,15 @@ void ODe_Text_Listener::insertPageBreak() {
 void ODe_Text_Listener::insertTabChar() {
     // We will not write the tab char that abi inserts right after each
     // list item bullet/number.
-    if (!m_isFirstCharOnParagraph || m_currentListLevel == 0) {
-        ODe_writeUTF8String(m_pParagraphContent, "<text:tab/>");
+  // Also don't write out the tab after a note anchor
+    
+  if (!m_bIgoreFirstTab && (!m_isFirstCharOnParagraph || (m_currentListLevel == 0)))
+    {
+      ODe_writeUTF8String(m_pParagraphContent, "<text:tab/>");
     }
 
     m_isFirstCharOnParagraph = false;
+    m_bIgoreFirstTab = false;
 }
 
 

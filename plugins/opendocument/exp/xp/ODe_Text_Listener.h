@@ -115,6 +115,10 @@ public:
 
     virtual void insertPositionedImage(const gchar* pImageName,
                                     const PP_AttrProp* pAP);
+    void setOpenedODNote(bool b)
+    { m_openedODNote = b;}
+    void setIgnoreFirstTab(bool b)
+    { m_bIgoreFirstTab = b;}
 
 private:
     bool _blockIsPlainParagraph(const PP_AttrProp* pAP) const;
@@ -130,6 +134,7 @@ private:
     bool m_isHeadingParagraph;
     bool m_openedODTextboxFrame;
     bool m_openedODNote;
+    bool m_bIgoreFirstTab;
 
     // Content of the current paragraph.
     GsfOutput* m_pParagraphContent;

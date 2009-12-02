@@ -96,8 +96,10 @@ ST_LOCALISED_STYLES stLocalised[] =
 	{"Section Heading",         XAP_STRING_ID_STYLE_SECTHEADING},	
 	{"Endnote Reference",       XAP_STRING_ID_STYLE_ENDREFERENCE},	
 	{"Endnote Text",            XAP_STRING_ID_STYLE_ENDTEXT},		
+	{"Endnote",                 XAP_STRING_ID_STYLE_ENDNOTE},		
 	{"Footnote Reference",      XAP_STRING_ID_STYLE_FOOTREFERENCE},	
 	{"Footnote Text",           XAP_STRING_ID_STYLE_FOOTTEXT},		
+	{"Footnote",                XAP_STRING_ID_STYLE_FOOTNOTE},		
 	{"Numbered Heading 1",      XAP_STRING_ID_STYLE_NUMHEAD1},		
 	{"Numbered Heading 2",      XAP_STRING_ID_STYLE_NUMHEAD2},		
 	{"Numbered Heading 3",      XAP_STRING_ID_STYLE_NUMHEAD3},		
@@ -281,10 +283,12 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
     _s("Section Heading",true,"P","Numbered Heading 1","Normal", stTmp.c_str());
 
 	_s("Endnote Reference",false,"C", "None", "Current Settings", "text-position:superscript; font-size:10pt");
-	_s("Endnote Text",false,"C", "Normal", "Current Settings", "text-position:normal");
+	_s("Endnote Text",false,"P", "Normal", "Current Settings", "text-position:normal");
+	_s("Endnote",false,"P", "Normal", "Current Settings", "text-position:normal;text-indent:-0.3in;margin-left:0.3in;tabstops:0.3in/L0");
 
 	_s("Footnote Reference",false,"C", "None", "Current Settings", "text-position:superscript; font-size:10pt");
-	_s("Footnote Text",false,"C", "Normal", "Current Settings", "text-position:normal; font-size:10pt");
+	_s("Footnote Text",false,"P", "Normal", "Current Settings", "text-position:normal; font-size:10pt");
+	_s("Footnote",false,"P", "Normal", "Current Settings", "text-position:normal; font-size:10pt;text-indent:-0.3in;margin-left:0.3in");
 
 	return true;
 
