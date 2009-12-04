@@ -368,6 +368,9 @@ private:
 	void                   _localCollapse();
 	UT_sint32              m_iNumNestedTables;
 	bool                   m_bDoingFormat;
+
+// Vertical alignment property
+	UT_sint32	m_iVertAlign;
 };
 
 ///

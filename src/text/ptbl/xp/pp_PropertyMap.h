@@ -224,6 +224,7 @@ public:
 		abi_top_color,
 		abi_top_style,
 		abi_top_thickness,
+		abi_vert_align,
 		abi_widows,
 		abi_width,
 		abi_wrap_mode,

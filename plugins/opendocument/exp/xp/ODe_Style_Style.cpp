@@ -752,6 +752,7 @@ void ODe_Style_Style::inheritTableCellProperties(const ODe_Style_Style& tableSty
     m_pCellProps->m_topColor = tableStyle.m_pCellProps->m_topColor;
     m_pCellProps->m_bottomThickness = tableStyle.m_pCellProps->m_bottomThickness;
     m_pCellProps->m_bottomColor = tableStyle.m_pCellProps->m_bottomColor;
+    m_pCellProps->m_verticalAlign = tableStyle.m_pCellProps->m_verticalAlign;
 
     // Table background colors are not inherited in AbiWord and an OpenDocument
     // table can have its own background color as well, so we don't inherit
@@ -1619,7 +1620,8 @@ bool ODe_Style_Style::CellProps::isEmpty() const {
            m_topColor.empty() &&
            m_bottomThickness.empty() &&
            m_bottomColor.empty() &&
-           m_backgroundColor.empty();
+           m_backgroundColor.empty() &&
+	   m_verticalAlign.empty();
 }
 
 
@@ -1724,6 +1726,19 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
         m_backgroundImage += pValue;
     }
 
+    // Vertical alignment
+    ok = rAP.getProperty("vert-align", pValue);
+    if (ok && pValue != NULL){
+	if(atoi(pValue) < 33)
+		m_verticalAlign = "top";
+	else if(atoi(pValue) < 66)
+		m_verticalAlign = "middle";
+	else
+		m_verticalAlign = "bottom";
+    } else if (m_verticalAlign.empty()) {
+	m_verticalAlign = "top";
+    }
+
 }
 
 
@@ -1743,11 +1758,13 @@ write(UT_UTF8String& rOutput, const UT_UTF8String& rSpacesOffset) const {
     else
       rOutput += "<style:table-cell-properties>";
 
+    ODe_writeAttribute(rOutput, "style:vertical-align", m_verticalAlign);
     ODe_writeAttribute(rOutput, "fo:border-left", m_leftThickness + " solid " + m_leftColor);
     ODe_writeAttribute(rOutput, "fo:border-right",m_rightThickness + " solid " + m_rightColor);
     ODe_writeAttribute(rOutput, "fo:border-top", m_topThickness + " solid " + m_topColor);
     ODe_writeAttribute(rOutput, "fo:border-bottom", m_bottomThickness + " solid " + m_bottomColor);
     ODe_writeAttribute(rOutput, "fo:background-color", m_backgroundColor);
+
     
     rOutput += "/>\n";
 
@@ -1780,6 +1797,7 @@ ODe_Style_Style::CellProps& ODe_Style_Style::CellProps::operator=(
     m_bottomThickness = rCellProps.m_bottomThickness;
     m_bottomColor = rCellProps.m_bottomColor;
     m_backgroundColor = rCellProps.m_backgroundColor;
+    m_verticalAlign = rCellProps.m_verticalAlign;
     
     return *this;
 }
@@ -1799,7 +1817,8 @@ bool ODe_Style_Style::CellProps::operator==(
         m_topColor           == rCellProps.m_topColor &&
         m_bottomThickness    == rCellProps.m_bottomThickness &&
         m_bottomColor        == rCellProps.m_bottomColor &&
-        m_backgroundColor    == rCellProps.m_backgroundColor;
+        m_backgroundColor    == rCellProps.m_backgroundColor &&
+	m_verticalAlign      == rCellProps.m_verticalAlign;
 }
 
 

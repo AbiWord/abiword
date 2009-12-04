@@ -126,7 +126,8 @@ fp_CellContainer::fp_CellContainer(fl_SectionLayout* pSectionLayout)
 	  m_bBgDirty(true),
 	  m_bIsSelected(false),
 	  m_bDirty(true),
-	  m_bIsRepeated(false)
+	  m_bIsRepeated(false),
+	  m_iVertAlign(0)
 {
 }
 
@@ -2502,6 +2503,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 //
 // Only draw the lines in the clipping region.
 //
+
 	xxx_UT_DEBUGMSG(("number containers %d \n",countCons()));
 	UT_sint32 iLastDraw = 0;
 	for ( i = 0; (i< countCons() && !bStop); i++)
@@ -2509,6 +2511,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 		fp_Container* pContainer = static_cast<fp_Container*>(getNthCon(i));
 		if(pBroke->isInBrokenTable(this, pContainer))
 		{
+
 			dg_DrawArgs da = *pDA;
 //
 // pDA has xoff set at the columns left edge, we need to offset this
@@ -3074,7 +3077,6 @@ void fp_CellContainer::setToAllocation(void)
 	setX(static_cast<UT_sint32>(m_MyAllocation.x));
 	xxx_UT_DEBUGMSG(("SEVIOR: set to width %d, height %d,y %d,x %d \n", m_MyAllocation.width,m_MyAllocation.height,m_MyAllocation.y,m_MyAllocation.x));
 	setMaxHeight(m_MyAllocation.height);
-	setY(m_MyAllocation.y);
 	layout();
 }
 
@@ -3165,9 +3167,23 @@ void fp_CellContainer::setLineMarkers(void)
 		m_iBotY -= static_cast<UT_sint32>(2.0 * static_cast<double>(pTab->getBorderWidth()));
 		m_iBotY +=  pTab->getNthRow(pTab->getNumRows()-1)->spacing/2;
 	}
-	
-	xxx_UT_DEBUGMSG(("SEVIOR getX %d left %d right %d top %d bot %d \n",getX(),m_iLeft,m_iRight,m_iTopY,m_iBotY));
 
+	xxx_UT_DEBUGMSG(("SEVIOR getX %d left %d right %d top %d bot %d \n",getX(),m_iLeft,m_iRight,m_iTopY,m_iBotY));
+}
+
+void fp_CellContainer::doVertAlign(void)
+{
+	// Vertical alignment - EA
+	// Note, must be called right after the cell's boundary lines have been determined with setLineMarkers.
+	// Currently, doVertAlign is called fp_TableContainer::setToAllocation() although the most direct method
+	// would be to call it at the end of fp_CellContainer::setLineMarkers() because I don't want the call to
+	// be too deeply buried in code.
+
+	setY( m_MyAllocation.y - (getHeight() * (m_iVertAlign/100.0)) + ((m_iBotY - m_iTopY) * (m_iVertAlign/100.0)) );
+	if( (getY() + getHeight()) > m_MyAllocation.y + (m_iBotY - m_iTopY) - getBotPad() ) // Make sure not to exceed cell's bottom padding
+		setY( m_MyAllocation.y + (m_iBotY - m_iTopY) - getBotPad() - getHeight() );
+	if( getY() < m_MyAllocation.y + getTopPad() ) // Make sure not to exceed cell's top padding
+		setY( m_MyAllocation.y + getTopPad() );
 }
 
 //---------------------------------------------------------------------
@@ -5034,6 +5050,7 @@ void fp_TableContainer::setToAllocation(void)
 	while(pCon)
 	{
 		pCon->setLineMarkers();
+		pCon->doVertAlign();
 		pCon = static_cast<fp_CellContainer *>(pCon->getNext());
 	}
 	setYBottom(m_MyAllocation.height);

@@ -1929,7 +1929,8 @@ fl_CellLayout::fl_CellLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_At
 	  m_bCellPositionedOnPage(false),
 	  m_iCellHeight(0),
 	  m_iCellWidth(0),
-	  m_iNumNestedTables(0)
+	  m_iNumNestedTables(0),
+	  m_iVertAlign(0)
 {
 	createCellContainer();
 }
@@ -2051,6 +2052,7 @@ void fl_CellLayout::setCellContainerProperties(fp_CellContainer * pCell)
 	pCell->setLeftStyle(m_lineLeft);
 	pCell->setRightStyle(m_lineRight);
 	pCell->setTopStyle(m_lineTop);
+	pCell->setVertAlign(m_iVertAlign);
 	if(m_pGraphicImage)
 	{
 		if(m_pImageImage == NULL)
@@ -2685,6 +2687,17 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	pSectionAP->getProperty ("top-thickness",   pszBorderWidth);
 
 	s_border_properties_cell (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineTop,pTL->getTopStyle());
+
+	const char* pszVertAlign = NULL;
+	pSectionAP->getProperty("vert-align", (const gchar *&)pszVertAlign);
+	if(pszVertAlign && pszVertAlign[0])
+	{
+		m_iVertAlign = atoi(pszVertAlign);
+	}
+	else
+	{
+		m_iVertAlign = 0;
+	}
 
 
 	/* cell fill

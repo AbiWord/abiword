@@ -701,6 +701,11 @@ void ODi_Style_Style::_parse_style_tableCellProperties(const gchar** ppProps) {
     if (pVal) {
         m_backgroundColor = pVal;
     }
+
+    pVal = UT_getAttribute("style:vertical-align", ppProps);
+    if(pVal) {
+	m_VerticalAlign = pVal;
+    }
 }
 
 

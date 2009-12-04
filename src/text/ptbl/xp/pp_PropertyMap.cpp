@@ -202,6 +202,7 @@ static const char * AbiPropertyName[PP_PropertyMap::abi__count] = {
 	"top-color",
 	"top-style",
 	"top-thickness",
+	"vert-align",
 	"widows",
 	"width",
 	"wrap-mode"

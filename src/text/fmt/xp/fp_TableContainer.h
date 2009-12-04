@@ -247,6 +247,8 @@ public:
 	bool                isInNestedTable(void);
 	bool                containsNestedTables(void);
 	bool                isRepeated(void) const;
+	void                setVertAlign(UT_sint32 i) { m_iVertAlign = i; }
+	void doVertAlign(void);
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
@@ -341,6 +343,10 @@ private:
 	bool                   m_bDirty;
 
 	bool                   m_bIsRepeated;
+
+// Vertical alignment property
+
+	UT_sint32	m_iVertAlign;
 };
 
 class ABI_EXPORT fp_TableContainer : public fp_VerticalContainer
@@ -545,6 +551,6 @@ private:
 	fp_CellContainer *  m_pLastBrokenCell;
 	bool                m_bRecursiveClear;
 	UT_sint32           m_iAdditionalMarginAfter;
- };
+};
 
 #endif /* TABLECONTAINER_H */

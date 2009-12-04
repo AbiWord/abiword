@@ -503,6 +503,17 @@ void ODi_Table_ListenerState::_parseCellStart (const gchar** ppAtts,
 	    {
 	        dataID = pStyle->getBackgroundImageID()->utf8_str();
 	    }
+
+	    // Vertical align
+	    if (!pStyle->getVerticalAlign()->empty())
+	    {
+		if (!strcmp(pStyle->getVerticalAlign()->utf8_str(), "top"))
+			props += "; vert-align:0";
+		else if (!strcmp(pStyle->getVerticalAlign()->utf8_str(), "middle"))
+			props += "; vert-align:50";
+		else if (!strcmp(pStyle->getVerticalAlign()->utf8_str(), "bottom"))
+			props += "; vert-align:100";
+	    }
         }
 
         cell_props[0] = "props";

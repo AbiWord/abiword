@@ -245,6 +245,8 @@ static PP_Property _props[] =
 	{ "top-style",             "1",           false, NULL, PP_LEVEL_TABLE},
 	{ "top-thickness",         "1px",             false, NULL, PP_LEVEL_TABLE},
 
+	{ "vert-align",            "0",               false, NULL, PP_LEVEL_TABLE},
+
 	{ "widows",                "2",               false, NULL, PP_LEVEL_BLOCK},
 	{ "width",                 "0in",             false, NULL, PP_LEVEL_CHAR}, 
 	{ "wrap-mode",             "above-text",      false, NULL, PP_LEVEL_FRAME} 

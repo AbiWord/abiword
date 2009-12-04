@@ -231,6 +231,8 @@ public:
     const UT_UTF8String* getTableMarginRight() const {return &m_TableMarginRight;}
     const UT_UTF8String* getTableWidth() const {return &m_TableWidth;}
     const UT_UTF8String* getTableRelWidth() const {return &m_TableRelWidth;}
+
+    const UT_UTF8String* getVerticalAlign() const {return &m_VerticalAlign;}
 private:
 
     // <style:style />
@@ -425,7 +427,10 @@ private:
     
     ////
     // <style:table-cell-properties>
-    
+
+    // style:vertical-align
+    UT_UTF8String m_VerticalAlign;
+
     // fo:border-top
     UT_UTF8String m_borderTop_thickness;
     UT_UTF8String m_borderTop_color;
