@@ -325,6 +325,8 @@ void XAP_Prefs::addRecent(const char * szRecent)
 	char * sz;
 	bool bFound = false;
 
+	UT_return_if_fail(szRecent);
+
 	if (m_iMaxRecent == 0)
 		return;		// NOOP
 
@@ -337,6 +339,8 @@ void XAP_Prefs::addRecent(const char * szRecent)
 	for (UT_sint32 i=0; i<m_vecRecent.getItemCount(); i++)
 	{
 		sz = m_vecRecent.getNthItem(i);
+		UT_continue_if_fail(sz);
+
 		if ((sz==szRecent) || !strcmp(sz, szRecent))
 		{
 			// yep, we're gonna move it up
