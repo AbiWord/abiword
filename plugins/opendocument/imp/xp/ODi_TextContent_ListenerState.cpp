@@ -1374,7 +1374,6 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
         }
 
         pStyleName = UT_getAttribute ("text:style-name", ppParagraphAtts);
-
         if (pStyleName) {
             pStyle = m_pStyles->getParagraphStyle(pStyleName, m_bOnContentStream);
 
@@ -1586,6 +1585,11 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
             ppAtts[4] = 0;
             
             ok = m_pAbiDocument->appendObject(PTO_Field, ppAtts);
+	    //
+	    // Now insert the tab after the anchor
+	    //
+	    UT_UCSChar ucs = UCS_TAB;
+	    m_pAbiDocument->appendSpan (&ucs, 1);
             UT_ASSERT(ok);           
         }
 }
