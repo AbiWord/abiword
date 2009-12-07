@@ -156,6 +156,7 @@ void ODi_Table_ListenerState::endElement (const gchar* pName,
         
     } else if (!strcmp(pName, "table:table-cell")) {
     
+      UT_DEBUGMSG(("ODi endCell \n"));
         if (m_onFirstPass) {
             // Do nothing.
         } else{
@@ -295,10 +296,11 @@ void ODi_Table_ListenerState::_parseColumnStart (const gchar** ppAtts,
 {
     if (m_onFirstPass) 
     {
-        const gchar* pStyleName;
-        const ODi_Style_Style* pStyle;
-        const gchar* pNumberColumnsRepeated;
-        int nColsRepeated, i;
+        const gchar* pStyleName=NULL;
+        const ODi_Style_Style* pStyle=NULL;
+        const gchar* pNumberColumnsRepeated = NULL;
+        int nColsRepeated= 0;
+	UT_sint32 i=0;
         
         pStyleName = UT_getAttribute("table:style-name", ppAtts);
         if (pStyleName != NULL) 
@@ -306,8 +308,8 @@ void ODi_Table_ListenerState::_parseColumnStart (const gchar** ppAtts,
             pStyle = m_pStyles->getTableColumnStyle(pStyleName,
                                                     m_onContentStream);
             UT_ASSERT_HARMLESS(pStyle != NULL);
-            
-            if (pStyle && (pStyle->getColumnWidth()->empty())) 
+            UT_DEBUGMSG(("style-name %s pstyle = %p \n",pStyleName,pStyle));
+            if (pStyle && (pStyle->getColumnWidth()->empty() && pStyle->getColumnRelWidth()->empty())) 
 	    {
                 m_gotAllColumnWidths = false;
             } 
@@ -323,17 +325,20 @@ void ODi_Table_ListenerState::_parseColumnStart (const gchar** ppAtts,
 		{
                     nColsRepeated = 1;
                 }
-
-                for (i=0; i<nColsRepeated; i++) 
+		if(!pStyle->getColumnWidth()->empty())
 		{
-                    m_columnWidths += *(pStyle->getColumnWidth());
-                    m_columnWidths += "/";
-                }
+		  for (i=0; i<nColsRepeated; i++) 
+		  {
+		      m_columnWidths += *(pStyle->getColumnWidth());
+		      m_columnWidths += "/";
+		  }
+		}
 		if(!pStyle->getColumnRelWidth()->empty())
 		{
                     m_columnRelWidths += *(pStyle->getColumnRelWidth());
                     m_columnRelWidths += "/";
 		}
+		UT_DEBUGMSG(("m_columnRelWidths %s \n",m_columnRelWidths.utf8_str()));
             }
         } 
 	else 

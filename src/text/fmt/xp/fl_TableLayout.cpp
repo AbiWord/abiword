@@ -2489,7 +2489,7 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		UT_DEBUGMSG(("!!!!!!!!!!!!!!!!!!------------------!!!!!!!!!!!\n"));
 	}
 
-	xxx_UT_DEBUGMSG(("SEVIOR: indexAp in Cell Layout %d \n",m_apIndex));
+	UT_DEBUGMSG(("SEVIOR: indexAp in Cell Layout %d \n",m_apIndex));
 	/*
 	  TODO shouldn't we be using PP_evalProperty like
 	  the blockLayout does?
@@ -2550,7 +2550,7 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		break;
 
 	}
-	defaultOffset = "0.01in";
+	defaultOffset = "0.03in";
 
 	static UT_sint32 idefaultOffsetLogicalUnits =  UT_convertToLogicalUnits("0.01in");
 	static double idefaultOffsetDimensionless =  UT_convertDimensionless("0.01in");

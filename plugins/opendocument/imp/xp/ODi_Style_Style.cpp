@@ -602,6 +602,7 @@ void ODi_Style_Style::_parse_style_tableColumnProperties(const gchar** ppProps) 
     pVal = UT_getAttribute("style:rel-column-width", ppProps);
     if (pVal) {
         m_columnRelWidth = pVal;
+	UT_DEBUGMSG(("style %p name %s style:rel-column-width found with %s \n",this, m_name.utf8_str(), pVal));
     }
 }
 

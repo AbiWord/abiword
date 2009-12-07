@@ -4237,6 +4237,8 @@ void fp_TableContainer::setHeight(UT_sint32 iHeight)
 	{
 		xxx_UT_DEBUGMSG(("Unbroken Table Height set to %d from %d \n",iHeight,getHeight()));
 	}
+	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
+	iHeight += (pTL->getBottomOffset() + pTL->getTopOffset());
 	fp_VerticalContainer::setHeight(iHeight);
 }
 
@@ -5007,7 +5009,7 @@ void fp_TableContainer::layout(void)
 	alloc.x = getX();
 	alloc.y = getY() + pTL->getTopOffset();
 	alloc.width = getWidth();
-	alloc.height = requisition.height + pTL->getTopOffset() + pTL->getBottomOffset();
+	alloc.height = requisition.height;
 	sizeAllocate(&alloc);
 	setToAllocation();
 #if BENCHLAYOUT
