@@ -69,7 +69,7 @@
 	#else
 		#define UT_LITTLE_ENDIAN
 	#endif
-#elif defined(SunOS)	/* this is defined by src/config/platform/sunos.mk */
+#elif defined(__sun)
         #include <sys/isa_defs.h>
         #if defined(_BIG_ENDIAN)
                 #define UT_BIG_ENDIAN
