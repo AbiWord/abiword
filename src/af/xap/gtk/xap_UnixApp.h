@@ -60,6 +60,7 @@ public:
 	  }
 
 	virtual bool					initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue);
+	void							shutdown();
 	virtual XAP_Frame * 					newFrame() = 0;
 	virtual void							reallyExit();
 

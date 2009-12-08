@@ -492,6 +492,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
     AbiGOffice_removeFromMenus();
 	go_component_set_command_context (NULL);
 	g_object_unref (cc);
+	libgoffice_shutdown();
 
     return 1;
 }

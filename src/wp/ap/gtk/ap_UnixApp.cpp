@@ -53,6 +53,7 @@
 #include "ap_UnixFrame.h"
 #include "ap_UnixFrameImpl.h"
 #include "ap_UnixApp.h"
+#include "xap_UnixApp.h"
 
 #ifdef ENABLE_SPELL
   #include "spell_manager.h"
@@ -411,6 +412,7 @@ bool AP_UnixApp::shutdown(void)
 	{
 		if (m_prefs->getAutoSavePrefs())
 			m_prefs->savePrefsFile();
+		XAP_UnixApp::shutdown();
 	}
     return true;
 }

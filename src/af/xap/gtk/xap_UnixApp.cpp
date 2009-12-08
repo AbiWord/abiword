@@ -179,6 +179,11 @@ bool XAP_UnixApp::initialize(const char * szKeyBindingsKey, const char * szKeyBi
 	return true;
 }
 
+void XAP_UnixApp::shutdown()
+{
+	libgoffice_shutdown();
+}
+
 void XAP_UnixApp::reallyExit()
 {
 	
