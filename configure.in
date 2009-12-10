@@ -126,7 +126,9 @@ AC_PROG_CC
 AC_PROG_CXX
 #AC_PROG_OBJC
 AC_PROG_INSTALL
-LT_INIT([disable-static win32-dll])
+# For libtool 1.5.x compatability (AC_PROG_LIBTOOL is deprecated version of LT_INIT)
+m4_ifdef([LT_INIT], [LT_INIT([disable-static win32-dll])], [AC_LIBTOOL_WIN32_DLL])
+m4_ifdef([LT_INIT], [], [AC_PROG_LIBTOOL])
 DOLT
 AC_PROG_LN_S
 
