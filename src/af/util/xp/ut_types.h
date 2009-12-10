@@ -65,7 +65,8 @@ typedef guintptr 	UT_uintptr;
 typedef gintptr 	UT_sintptr;
 #else
 typedef unsigned long UT_uintptr;
-typedef long        UT_sintptr
+typedef long        UT_sintptr;
+#endif
 
 /** use to mark variable as unused */
 #define UT_UNUSED(x) (void)(x);
