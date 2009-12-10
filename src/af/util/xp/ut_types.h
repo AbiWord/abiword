@@ -60,8 +60,12 @@ typedef gint32		    UT_sint32;
 typedef guint64 UT_uint64;
 typedef gint64 UT_sint64;
 
+#ifdef _WIN32
 typedef guintptr 	UT_uintptr;
-typedef gintptr 	UT_intptr;
+typedef gintptr 	UT_sintptr;
+#else
+typedef unsigned long UT_uintptr;
+typedef long        UT_sintptr
 
 /** use to mark variable as unused */
 #define UT_UNUSED(x) (void)(x);
