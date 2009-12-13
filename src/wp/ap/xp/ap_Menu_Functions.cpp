@@ -120,8 +120,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Recent)
         if (szRecent)
             g_free(szRecent);
 
-        if (!buf)
-            g_free(buf);
+        g_free(buf);
         buf = g_strdup_printf(szFormat, sFile.utf8_str());
         return buf;
     }
