@@ -66,3 +66,7 @@ zip:
 	rm -rf $(PACKAGE)-$(VERSION) ./zip
 endif
 
+# needed to make sure we don't include .svn directories.
+dist-hook:
+	rm -rf `find $(distdir) -name .svn`
+

@@ -142,3 +142,18 @@ libcocoa_la_SOURCES = \
 	xap_PrintingNSView.h \
 	xap_PrintingNSView.cpp
 
+EXTRA_DIST = xap_CocoaDlg_About.nib \
+	xap_CocoaDlg_DocComparison.nib \
+	xap_CocoaDlg_FontChooser.nib \
+	xap_CocoaDlg_HTMLOptions.nib \
+	xap_CocoaDlg_History.nib \
+	xap_CocoaDlg_Image.nib \
+	xap_CocoaDlg_Insert_Symbol.nib \
+	xap_CocoaDlg_Language.nib \
+	xap_CocoaDlg_Password.nib \
+	xap_CocoaDlg_PluginManager.nib \
+	xap_CocoaDlg_Zoom.nib \
+	xap_CocoaFileOpen_Views.nib \
+	xap_CocoaToolPalette.nib \
+	xap_GenericListChooser_Controller.nib \
+	$(NULL)

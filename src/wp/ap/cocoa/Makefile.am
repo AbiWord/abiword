@@ -182,3 +182,41 @@ libcocoa_la_SOURCES = \
 	ap_PrintingDelegate.h \
 	ap_PrintingDelegate.cpp
 
+EXTRA_DIST = \
+	ap_CocoaDialog_Annotation.nib \
+	ap_CocoaDialog_Background.nib \
+	ap_CocoaDialog_Break.nib \
+	ap_CocoaDialog_Columns.nib \
+	ap_CocoaDialog_Field.nib \
+	ap_CocoaDialog_FormatFootnotes.nib \
+	ap_CocoaDialog_FormatFrame.nib \
+	ap_CocoaDialog_FormatTOC.nib \
+	ap_CocoaDialog_FormatTable.nib \
+	ap_CocoaDialog_Goto.nib \
+	ap_CocoaDialog_HdrFtr.nib \
+	ap_CocoaDialog_InsertBookmark.nib \
+	ap_CocoaDialog_InsertHyperlink.nib \
+	ap_CocoaDialog_InsertTable.nib \
+	ap_CocoaDialog_Latex.nib \
+	ap_CocoaDialog_ListRevisions.nib \
+	ap_CocoaDialog_Lists.nib \
+	ap_CocoaDialog_MailMerge.nib \
+	ap_CocoaDialog_MarkRevisions.nib \
+	ap_CocoaDialog_MergeCells.nib \
+	ap_CocoaDialog_MetaData.nib \
+	ap_CocoaDialog_New.nib \
+	ap_CocoaDialog_Options.nib \
+	ap_CocoaDialog_PageNumbers.nib \
+	ap_CocoaDialog_PageSetup.nib \
+	ap_CocoaDialog_Paragraph.nib \
+	ap_CocoaDialog_Replace.nib \
+	ap_CocoaDialog_Spell.nib \
+	ap_CocoaDialog_SplitCells.nib \
+	ap_CocoaDialog_Styles.nib \
+	ap_CocoaDialog_StylesModify.nib \
+	ap_CocoaDialog_Stylist.nib \
+	ap_CocoaDialog_Tab.nib \
+	ap_CocoaDialog_ToggleCase.nib \
+	ap_CocoaDialog_WordCount.nib \
+	ap_CocoaFrame.nib \
+	$(NULL)
