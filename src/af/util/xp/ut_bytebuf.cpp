@@ -306,9 +306,3 @@ bool UT_ByteBuf::writeToURI(const char* pszURI) const
 
 	return static_cast<bool>(res);
 }
-
-cairo_status_t UT_ByteBuf::CairoWrite(UT_ByteBuf * buf, unsigned char * data, unsigned int length)
-{
-	return (buf->append (static_cast<UT_Byte*>(data), static_cast<UT_uint32>(length)))?
-			CAIRO_STATUS_SUCCESS: CAIRO_STATUS_WRITE_ERROR;
-}

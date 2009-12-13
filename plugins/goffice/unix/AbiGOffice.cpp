@@ -501,3 +501,9 @@ int abi_plugin_supports_version (G_GNUC_UNUSED UT_uint32 major, G_GNUC_UNUSED UT
 {
     return 1; 
 }
+
+cairo_status_t abi_CairoWrite(UT_ByteBuf * buf, unsigned char * data, unsigned int length)
+{
+	return (buf->append (static_cast<UT_Byte*>(data), static_cast<UT_uint32>(length)))?
+			CAIRO_STATUS_SUCCESS: CAIRO_STATUS_WRITE_ERROR;
+}
