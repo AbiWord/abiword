@@ -369,7 +369,7 @@ UT_sint32 GR_GOComponentManager::makeEmbedView(AD_Document * pDoc, UT_uint32 api
   return iNew;
 }
 
-void GR_GOComponentManager::makeSnapShot(UT_sint32 uid, UT_Rect & rec)
+void GR_GOComponentManager::makeSnapShot(UT_sint32 uid, G_GNUC_UNUSED UT_Rect & rec)
 {
 	GR_AbiGOComponentItems * pItem = m_vecItems.getNthItem(uid);
 	UT_return_if_fail(pItem);  
@@ -380,94 +380,43 @@ void GR_GOComponentManager::makeSnapShot(UT_sint32 uid, UT_Rect & rec)
 	const char * pszDataID = NULL;
 	pSpanAP->getAttribute("dataid", pszDataID);
 	UT_ByteBuf *pBuf = NULL;
-	if ((pBuf = pGOComponentView->exportToSVG ())) {
+	if ((pBuf = pGOComponentView->exportToSVG ()))
+	  {
 		UT_UTF8String sID = "snapshot-svg-";
 		sID += pszDataID;
 		if(pItem->m_bHasSnapshot)
-		{
+		  {
 			m_pDoc->replaceDataItem(sID.utf8_str(),reinterpret_cast< const UT_ByteBuf *>(pBuf));
-		}
+		  }
 		else
-		{
+		  {
 			const std::string mimetypeSVG = "image/svg";
 			m_pDoc->createDataItem(sID.utf8_str(),false,reinterpret_cast< const UT_ByteBuf *>(pBuf),mimetypeSVG,NULL);
 			pItem->m_bHasSnapshot = true;
-		}
+		  }
 		delete pBuf;
-	} else {
-		if(!getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
-			return;
+	  }
+	else if ((pBuf = pGOComponentView->exportToPNG ()))
+	  {
+		UT_UTF8String sID = "snapshot-png-";
+		sID += pszDataID;
 		if(pItem->m_bHasSnapshot)
-		{
-			updatePNGSnapshot(static_cast<AD_Document *>(m_pDoc),rec,pszDataID);
-		}
+		  {
+			m_pDoc->replaceDataItem(sID.utf8_str(),reinterpret_cast< const UT_ByteBuf *>(pBuf));
+		  }
 		else
-		{
-			createPNGSnapshot(static_cast<AD_Document *>(m_pDoc),rec,pszDataID);
+		  {
+			const std::string mimetypePNG = "image/png";
+			m_pDoc->createDataItem(sID.utf8_str(),false,reinterpret_cast< const UT_ByteBuf *>(pBuf),mimetypePNG,NULL);
 			pItem->m_bHasSnapshot = true;
-		}
-	}
+		  }
+		delete pBuf;
+	  }
 }
 
 bool GR_GOComponentManager::isDefault(void)
 {
   return false;
-}
-
-
-bool GR_GOComponentManager::createPNGSnapshot(AD_Document * pDoc, UT_Rect & rec,
-					   const char * szDataID)
-{
-  if(isDefault())
-  {
-    return false;
-  }
-  if((rec.width == 0) || (rec.height ==0))
-  {
-    return false;
-  }
-  // TODO: use the goffice framework to get a high resolution png.
-  GR_Image * pImage = static_cast<GR_UnixCairoGraphics*>(getGraphics())->genImageFromRectangle(rec);
-  if(pImage == NULL)
-  {
-    return false;
-  }
-  UT_ByteBuf * pBuf = NULL;
-  pImage->convertToBuffer(&pBuf);
-  UT_UTF8String sID = "snapshot-png-";
-  sID += szDataID;
-  const std::string mimetypePNG = "image/png";
-  pDoc->createDataItem(sID.utf8_str(),false,reinterpret_cast< const UT_ByteBuf *>(pBuf),mimetypePNG,NULL);
-  delete pBuf;
-  delete pImage;
-  return true;
-}
-
-bool GR_GOComponentManager::updatePNGSnapshot(AD_Document * pDoc, UT_Rect & rec,
-					   const char * szDataID)
-{
-  if(isDefault())
-  {
-    return false;
-  }
-  if((rec.width == 0) || (rec.height ==0))
-  {
-    return false;
-  }
-  // TODO: use the goffice framework to get a high resolution png.
-  GR_Image * pImage = static_cast<GR_UnixCairoGraphics*>(getGraphics())->genImageFromRectangle(rec);
-  if(pImage == NULL)
-  {
-    return false;
-  }
-  UT_ByteBuf * pBuf = NULL;
-  pImage->convertToBuffer(&pBuf);
-  UT_UTF8String sID = "snapshot-png-";
-  sID += szDataID;
-   pDoc->replaceDataItem(sID.utf8_str(),reinterpret_cast< const UT_ByteBuf *>(pBuf));
-  delete pBuf;
-  delete pImage;
-  return true;
 }
 
 bool GR_GOComponentManager::modify(UT_sint32 uid)
@@ -863,6 +812,24 @@ void GOComponentView::update ()
 		if (clearfunc)
 			clearfunc ((user_data)? user_data: buf);
 	}
+}
+
+UT_ByteBuf *GOComponentView::exportToPNG ()
+{
+	UT_return_val_if_fail (component, NULL);
+	int height = ascent + descent;
+	if (height == 0 || (int) width == 0)
+		return NULL;
+	UT_ByteBuf *pBuf = new UT_ByteBuf ();
+	cairo_surface_t *surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
+										width, height);
+	cairo_t *cr = cairo_create (surface);
+	go_component_render (component, cr, width, height);
+	cairo_destroy (cr);
+	cairo_surface_write_to_png_stream (surface,
+	    reinterpret_cast<cairo_write_func_t>(UT_ByteBuf::CairoWrite), pBuf);
+	cairo_surface_destroy (surface);
+	return pBuf;
 }
 
 UT_ByteBuf *GOComponentView::exportToSVG ()

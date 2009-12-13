@@ -486,7 +486,7 @@ UT_sint32 GR_GOChartManager::makeEmbedView(AD_Document * pDoc, UT_uint32 api, G_
   return iNew;
 }
 
-void GR_GOChartManager::makeSnapShot(UT_sint32 uid, UT_Rect & rec)
+void GR_GOChartManager::makeSnapShot(UT_sint32 uid, G_GNUC_UNUSED UT_Rect & rec)
 {
   if(!getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
     {
@@ -520,79 +520,27 @@ void GR_GOChartManager::makeSnapShot(UT_sint32 uid, UT_Rect & rec)
       delete pBuf;
     }
   else */
+  if ((pBuf = pGOChartView->exportToPNG ()))
     {
+      UT_UTF8String sID = "snapshot-png-";
+      sID += pszDataID;
       if(pItem->m_bHasSnapshot)
         {
-           updatePNGSnapshot(static_cast<AD_Document *>(m_pDoc),rec,pszDataID);
+          m_pDoc->replaceDataItem(sID.utf8_str(),reinterpret_cast< const UT_ByteBuf *>(pBuf));
         }
       else
         {
-           createPNGSnapshot(static_cast<AD_Document *>(m_pDoc),rec,pszDataID);
-           pItem->m_bHasSnapshot = true;
+          const std::string mimetypePNG = "image/png";
+          m_pDoc->createDataItem(sID.utf8_str(),false,reinterpret_cast< const UT_ByteBuf *>(pBuf),mimetypePNG,NULL);
+          pItem->m_bHasSnapshot = true;
         }
+      delete pBuf;
     }
 }
 
 bool GR_GOChartManager::isDefault(void)
 {
   return false;
-}
-
-
-bool GR_GOChartManager::createPNGSnapshot(AD_Document * pDoc, UT_Rect & rec,
-					   const char * szDataID)
-{
-  if(isDefault())
-  {
-    return false;
-  }
-  if((rec.width == 0) || (rec.height ==0))
-  {
-    return false;
-  }
-  // TODO: use the goffice framework to get a high resolution png.
-  GR_Image * pImage = static_cast<GR_UnixCairoGraphics*>(getGraphics())->genImageFromRectangle(rec);
-  if(pImage == NULL)
-  {
-    return false;
-  }
-  UT_ByteBuf * pBuf = NULL;
-  pImage->convertToBuffer(&pBuf);
-  UT_UTF8String sID = "snapshot-png-";
-  sID += szDataID;
-  const std::string mimetypePNG = "image/png";
-  pDoc->createDataItem(sID.utf8_str(),false,reinterpret_cast< const UT_ByteBuf *>(pBuf),mimetypePNG,NULL);
-  delete pBuf;
-  delete pImage;
-  return true;
-}
-
-
-bool GR_GOChartManager::updatePNGSnapshot(AD_Document * pDoc, UT_Rect & rec,
-					   const char * szDataID)
-{
-  if(isDefault())
-  {
-    return false;
-  }
-  if((rec.width == 0) || (rec.height ==0))
-  {
-    return false;
-  }
-  // TODO: use the goffice framework to get a high resolution png.
-  GR_Image * pImage = static_cast<GR_UnixCairoGraphics*>(getGraphics())->genImageFromRectangle(rec);
-  if(pImage == NULL)
-  {
-    return false;
-  }
-  UT_ByteBuf * pBuf = NULL;
-  pImage->convertToBuffer(&pBuf);
-  UT_UTF8String sID = "snapshot-png-";
-  sID += szDataID;
-   pDoc->replaceDataItem(sID.utf8_str(),reinterpret_cast< const UT_ByteBuf *>(pBuf));
-  delete pBuf;
-  delete pImage;
-  return true;
 }
 
 bool GR_GOChartManager::modify(UT_sint32 uid)
@@ -790,6 +738,21 @@ void GOChartView::render(UT_Rect & rec)
 	gog_renderer_render_to_cairo (m_Renderer, cr, _width, _height);
 	cairo_new_path (cr); // just in case a path has not been ended
 	cairo_restore (cr);
+}
+
+UT_ByteBuf *GOChartView::exportToPNG ()
+{
+	UT_return_val_if_fail (m_Graph, NULL);
+	UT_ByteBuf *pBuf = new UT_ByteBuf ();
+	cairo_surface_t *surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
+										width, height);
+	cairo_t *cr = cairo_create (surface);
+	gog_renderer_render_to_cairo (m_Renderer, cr, width, height);
+	cairo_destroy (cr);
+	cairo_surface_write_to_png_stream (surface,
+	    reinterpret_cast<cairo_write_func_t>(UT_ByteBuf::CairoWrite), pBuf);
+	cairo_surface_destroy (surface);
+	return pBuf;
 }
 
 UT_ByteBuf *GOChartView::exportToSVG ()

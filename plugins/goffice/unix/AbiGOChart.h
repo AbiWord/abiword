@@ -67,10 +67,6 @@ public:
     virtual bool           convert(UT_uint32 iConv, UT_ByteBuf & From, UT_ByteBuf & To);
 	virtual void		   updateData(UT_sint32 uid, UT_sint32 api);
 
-    bool           createPNGSnapshot(AD_Document * pDoc, UT_Rect & rec,
-					   const char * szDataID);
-    bool           updatePNGSnapshot(AD_Document * pDoc, UT_Rect & rec,
-					   const char * szDataID);
     virtual bool           isEdittable(UT_sint32 uid);
 	virtual void		   setRun (UT_sint32 uid, fp_Run * run);
 	EV_EditMouseContext		getContextualMenu(void) const
@@ -104,6 +100,7 @@ public:
 	void SetRun (fp_Run *pRun) {m_pRun = pRun;}
 	fp_Run *getRun () {return m_pRun;}
 	void SetGuru (GtkWidget *guru) {m_Guru = guru;}
+	UT_ByteBuf *exportToPNG ();
 	UT_ByteBuf *exportToSVG ();
 private:
 	GR_GOChartManager  * m_pGOMan;
