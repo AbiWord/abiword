@@ -881,7 +881,7 @@ void GR_MathManager::setColor(UT_sint32 /*uid*/, UT_RGBColor c)
 void GR_MathManager::render(UT_sint32 uid, UT_Rect & rec)
 {
 	scaled x = m_pAbiContext->fromAbiX(rec.left);
-	scaled y = m_pAbiContext->fromAbiLayoutUnits(-rec.top);// should be fromAbiY()
+	scaled y = m_pAbiContext->fromAbiY(rec.top);
 	SmartPtr<libxml2_MathView>  pMathView = m_vecMathView.getNthItem(uid);
 	UT_return_if_fail(pMathView);
 	pMathView->render(*m_pAbiContext, x, y);

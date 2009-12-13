@@ -49,12 +49,12 @@ GR_Abi_RenderingContext::getColor(RGBColor& c) const
 
  UT_sint32 GR_Abi_RenderingContext::toAbiLayoutUnits(const scaled& s) const
 {
-  return round((s * m_pGraphics->getResolutionRatio()* UT_LAYOUT_RESOLUTION) / 72.0).toInt();
+  return round(s.toDouble() * UT_LAYOUT_RESOLUTION / 72.0);
 }
 
 scaled GR_Abi_RenderingContext::fromAbiLayoutUnits(UT_sint32 s)  const
 {
-  return scaled((s * 72.0) / (UT_LAYOUT_RESOLUTION *  m_pGraphics->getResolutionRatio())); 
+  return scaled(s * 72.0 / UT_LAYOUT_RESOLUTION);
 }
 
  scaled GR_Abi_RenderingContext::fromAbiX(UT_sint32 x) const

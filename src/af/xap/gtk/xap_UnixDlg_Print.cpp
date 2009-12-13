@@ -130,13 +130,11 @@ void XAP_UnixDialog_Print::BeginPrint(GtkPrintContext   *context)
 
 	xxx_UT_DEBUGMSG(("Initial Cairo Context %x \n",cr));
 	m_pPrintGraphics = (GR_Graphics *) new GR_CairoPrintGraphics(cr, gr_PRINTRES);
+
 	double ScreenRes = m_pView->getGraphics()->getDeviceResolution();
-	//
-	// A magic number that works for some reason
-	// Without this maths are a little bit too wide during a print
-	//
-	double magic_rat = 0.962;
-	static_cast<GR_CairoPrintGraphics *>(m_pPrintGraphics)->setResolutionRatio(magic_rat*static_cast<double>(gr_PRINTRES)/static_cast<double>(ScreenRes));
+	static_cast<GR_CairoPrintGraphics *>(m_pPrintGraphics)
+        ->setResolutionRatio(gr_PRINTRES/ScreenRes);
+
 	if(m_pView->getViewMode() == VIEW_PRINT )
 	{
 			m_pPrintLayout = m_pDL;
