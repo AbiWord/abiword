@@ -110,22 +110,21 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Recent)
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail (pPrefs, NULL);
 
-	if (ndx <= pPrefs->getRecentCount())
-	{
-		const char * szFormat = pLabel->getMenuLabel();
-		static char buf[PATH_MAX];
+    static char *buf = NULL;
+    if (ndx <= pPrefs->getRecentCount())
+    {
+        const char * szFormat = pLabel->getMenuLabel();
+        const char * szURI = pPrefs->getRecent(ndx);
+        char *szRecent = g_filename_from_uri(szURI, NULL, NULL);
+        UT_UTF8String sFile(szRecent ? g_path_get_basename (szRecent) : "");
+        if (szRecent)
+            g_free(szRecent);
 
-		const char * szURI = pPrefs->getRecent(ndx);
-		char *szRecent = g_filename_from_uri(szURI, NULL, NULL);
-		char *szFile = NULL;
-		UT_UTF8String sFile(szRecent ? szFile = g_path_get_basename (szRecent) : "");
-
-		snprintf(buf, PATH_MAX, szFormat, sFile.utf8_str());
-		g_free (szRecent);
-		if (szFile)
-		    g_free(szFile);
-		return buf;
-	}
+        if (!buf)
+            g_free(buf);
+        buf = g_strdup_printf(szFormat, sFile.utf8_str());
+        return buf;
+    }
 
 	// for the other slots, return a null string to tell
 	// the menu code to remove this item from the menu.

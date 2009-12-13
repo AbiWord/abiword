@@ -225,22 +225,32 @@ void XAP_UnixApp::getWinGeometry(int * x, int * y, UT_uint32 * width,
 const char * XAP_UnixApp::getUserPrivateDirectory()
 {
 	/* return a pointer to a static buffer */
-	
-	const char * szAbiDir = ".AbiSuite";
-	static char buf[PATH_MAX];
-	memset(buf,0,sizeof(buf));
-	
-	const char * szHome = getenv("HOME");
-	if (!szHome || !*szHome)
-		szHome = "./";
-	
-	if (strlen(szHome)+strlen(szAbiDir)+2 >= PATH_MAX)
-		return NULL;
-	
-	strcpy(buf,szHome);
-	if (buf[strlen(buf)-1] != '/')
-		strcat(buf,"/");
-	strcat(buf,szAbiDir);
+    static char *buf = NULL;
+
+    if (buf == NULL)
+    {
+        const char * szHome = getenv("HOME");
+        if (!szHome || !*szHome)
+            szHome = "./";
+
+        const char * szAbiDir = ".AbiSuite";
+
+        buf = new char[strlen(szHome)+strlen(szAbiDir)+2];
+
+        strcpy(buf, szHome);
+        if (buf[strlen(buf)-1] != '/')
+            strcat(buf, "/");
+        strcat(buf, szAbiDir);
+
+#ifdef PATH_MAX
+        if (strlen(szHome)+strlen(szAbiDir)+2 >= PATH_MAX)
+        {
+            delete buf;
+            buf = NULL;
+        }
+#endif
+    }
+
 	return buf;
 }
 
