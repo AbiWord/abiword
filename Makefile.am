@@ -22,6 +22,8 @@ mime_DATA = abiword.keys
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = abiword-$(ABIWORD_SERIES).pc
+
+dist_man1_MANS = abiword.1
 endif
 
 icondir= $(datadir)/icons
