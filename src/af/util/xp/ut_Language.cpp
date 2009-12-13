@@ -117,6 +117,7 @@ static UT_LangRecord s_Table[] =
 	{"mi-NZ",       NULL, XAP_STRING_ID_LANG_MI_NZ, UTLANG_LTR},
 	{"mk",			NULL, XAP_STRING_ID_LANG_MK,    UTLANG_LTR},		// Hipi: Why not mk-MK?
     {"mn-MN",       NULL, XAP_STRING_ID_LANG_MN_MN, UTLANG_LTR},
+    {"mnk-SN",       NULL, XAP_STRING_ID_LANG_MNK_SN, UTLANG_LTR},
     {"mr-IN",       NULL, XAP_STRING_ID_LANG_MR_IN, UTLANG_LTR},
     {"ms-MY",       NULL, XAP_STRING_ID_LANG_MS_MY, UTLANG_LTR},
 	{"nb-NO",		NULL, XAP_STRING_ID_LANG_NB_NO, UTLANG_LTR},
