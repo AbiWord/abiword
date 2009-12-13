@@ -244,10 +244,7 @@ const char * XAP_UnixApp::getUserPrivateDirectory()
 
 #ifdef PATH_MAX
         if (strlen(szHome)+strlen(szAbiDir)+2 >= PATH_MAX)
-        {
-            delete buf;
-            buf = NULL;
-        }
+            DELETEPV(buf);
 #endif
     }
 
