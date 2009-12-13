@@ -847,6 +847,17 @@ void ODe_Text_Listener::insertInlinedImage(const gchar* pImageName,
     output += "\" xlink:type=\"simple\" xlink:show=\"embed\""
               " xlink:actuate=\"onLoad\"/>";
 
+    ok = pAP->getAttribute("title", pValue);
+    if (ok && pValue != NULL) {
+       escape = pValue;
+       escape.escapeXML();
+       if(escape.length()) {
+           output += "<svg:title>";
+           output += escape.utf8_str();
+           output += "</svg:title>";
+       }
+    }
+
     ok = pAP->getAttribute("alt", pValue);
     if (ok && pValue != NULL) {
        escape = pValue;
@@ -857,17 +868,6 @@ void ODe_Text_Listener::insertInlinedImage(const gchar* pImageName,
            output += "</svg:desc>";
        }
        escape.clear();
-    }
-
-    ok = pAP->getAttribute("title", pValue);
-    if (ok && pValue != NULL) {
-       escape = pValue;
-       escape.escapeXML();
-       if(escape.length()) {
-           output += "<svg:title>";
-           output += escape.utf8_str();
-           output += "</svg:title>";
-       }
     }
 
     output += "</draw:frame>";
@@ -1018,6 +1018,17 @@ void ODe_Text_Listener::insertPositionedImage(const gchar* pImageName,
     output += "\" xlink:type=\"simple\" xlink:show=\"embed\""
               " xlink:actuate=\"onLoad\"/>";
 
+    ok = pAP->getAttribute("title", pValue);
+    if (ok && pValue != NULL) {
+       escape = pValue;
+       escape.escapeXML();
+       if(escape.length()) {
+           output += "<svg:title>";
+           output += escape.utf8_str();
+           output += "</svg:title>";
+       }
+    }
+
     ok = pAP->getAttribute("alt", pValue);
     if (ok && pValue != NULL) {
        escape = pValue;
@@ -1028,17 +1039,6 @@ void ODe_Text_Listener::insertPositionedImage(const gchar* pImageName,
            output += "</svg:desc>";
        }
        escape.clear();
-    }
-
-    ok = pAP->getAttribute("title", pValue);
-    if (ok && pValue != NULL) {
-       escape = pValue;
-       escape.escapeXML();
-       if(escape.length()) {
-           output += "<svg:title>";
-           output += escape.utf8_str();
-           output += "</svg:title>";
-       }
     }
 
     output += "</draw:frame></text:p>";
