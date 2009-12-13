@@ -2432,7 +2432,10 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	_getBrokenRect(pBroke, pPage, bRec,pG);
 	xxx_UT_DEBUGMSG(("Draw Broken Table %p ybreak %d On Page %d cell %p \n",pBroke,pBroke->getYBreak(),pPage->getPageNumber(),this));
 	if((bRec.height < 0) || (bRec.width < 0))
+	{
+		xxx_UT_DEBUGMSG(("brokenRect off page - bailing out \n"));
 		return;
+	}
 	if(getFillType()->getFillType() == FG_FILL_IMAGE && (getContainer() != NULL))
 	{
 		fl_DocSectionLayout * pDSL = getSectionLayout()->getDocSectionLayout();
@@ -2773,6 +2776,8 @@ UT_sint32 fp_CellContainer::wantVBreakAt(UT_sint32 vpos)
 	fp_Container * pCon;
 	fp_Line * pLine = NULL;
 	UT_sint32 footHeight = 0;
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
+	UT_return_val_if_fail(pTab,0);
 	for(i=0; i< count; i++)
 	{
 		pCon = static_cast<fp_Container *>(getNthCon(i));
@@ -5809,9 +5814,10 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 				botY -= 2 * pMaster->getBorderWidth();
 				botY +=  pMaster->getNthRow(pMaster->getNumRows()-1)->spacing/2;
 			}
-
-			if(pCell->getY() > getYBottom())
+			UT_sint32 yOffset = pCell->getY() - getYOfRow(pCell->getTopAttach()) ;
+			if((pCell->getY() - yOffset) > getYBottom())
 			{
+				xxx_UT_DEBUGMSG(("yOffset %d \n",yOffset));
 				xxx_UT_DEBUGMSG(("SEVIOR: _drawBroken skipping cell %x cellY %d cellHeight %d YBreak %d yBottom %d \n",pCell,pCell->getY(), pCell->getHeight(), getYBreak(),getYBottom()));
 				break;
 				pCell = static_cast<fp_CellContainer *>(pCell->getNext());
