@@ -205,7 +205,7 @@ bool ODe_DocumentData::writeStylesXML(GsfOutfile* pOdt) const {
     " xmlns:ooow=\"http://openoffice.org/2004/writer\""
     " xmlns:oooc=\"http://openoffice.org/2004/calc\""
     " xmlns:dom=\"http://www.w3.org/2001/xml-events\""
-    " office:version=\"1.0\">\n"};
+    " office:version=\"1.1\">\n"};
     
     ODe_writeToStream(pStylesStream, preamble, G_N_ELEMENTS(preamble));
     
@@ -271,7 +271,7 @@ bool ODe_DocumentData::writeContentXML(GsfOutfile* pOdt) {
     " xmlns:xforms=\"http://www.w3.org/2002/xforms\""
     " xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\""
     " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
-    " office:version=\"1.0\">\n"};
+    " office:version=\"1.1\">\n"};
     
     ODe_writeToStream(pContentStream, preamble, G_N_ELEMENTS(preamble));
     
