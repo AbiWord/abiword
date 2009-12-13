@@ -115,6 +115,10 @@ void XAP_UnixDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics
 
 void XAP_UnixDialog_Print::BeginPrint(GtkPrintContext   *context)
 {
+    // Note: Help landscape printing survive, don't do anything on the cairo
+    // context in this function.  Any transformations etc. shall take place in
+    // PrintPage, because GtkPrint may do some transformations itself (which
+    // will come out differently if we scale here).
 	cairo_t* cr = gtk_print_context_get_cairo_context (context);
 	//
 	// The cairo context is automatically unref'd at the end of the print
@@ -133,36 +137,6 @@ void XAP_UnixDialog_Print::BeginPrint(GtkPrintContext   *context)
 	//
 	double magic_rat = 0.962;
 	static_cast<GR_CairoPrintGraphics *>(m_pPrintGraphics)->setResolutionRatio(magic_rat*static_cast<double>(gr_PRINTRES)/static_cast<double>(ScreenRes));
-	//
-	// We set the resolution of the printer context to higher than screen
-	// so we don't loose resolution when printing images.
-	//
-	// We then correct for this with thise scale. GtkPrint contexts always
-	// assume 72 DPI
-	//
-	// In the future we can use this to do 2,4,6,8 etc pages per page
-	//
-	double srat = static_cast<double>(GTKPRINTRES)/static_cast<double>(gr_PRINTRES);
-	cairo_scale(static_cast<GR_CairoPrintGraphics *>(m_pPrintGraphics)->getCairo(), srat,srat);
-	if(!m_pView->getPageSize().isPortrait())
-	{
-		//
-		// Don't ask me why cairo needs this. I just work here
-		//
-		double width = gtk_page_setup_get_paper_width(m_pPageSetup,GTK_UNIT_MM);
-		double height = gtk_page_setup_get_paper_height(m_pPageSetup,GTK_UNIT_MM);
-		// This magic number is a good heuristic.
-		// One day we might work out why this works and the correct value for
-		// this. We need this for the print to start at the top of the landscape
-		// page.
-
-		double magic_number = 2.85;
-		double offset = magic_number*height;
-		UT_DEBUGMSG(("width %f height %f offset %f \n",width,height,offset));
-		cairo_translate(static_cast<GR_CairoPrintGraphics *>(m_pPrintGraphics)->getCairo(),offset,0.0);
-	}
-	xxx_UT_DEBUGMSG(("Resolution Ratio set to %f \n",gr_PrintRes/ScreenRes));
-	UT_DEBUGMSG(("Resolution Ratio of Direct call is %f Cast call is %f \n",m_pPrintGraphics->getResolutionRatio(),	static_cast<GR_CairoPrintGraphics *>(m_pPrintGraphics)->getResolutionRatio()));
 	if(m_pView->getViewMode() == VIEW_PRINT )
 	{
 			m_pPrintLayout = m_pDL;
@@ -191,6 +165,22 @@ void XAP_UnixDialog_Print::BeginPrint(GtkPrintContext   *context)
 void XAP_UnixDialog_Print::PrintPage(gint page_nr)
 {
 	xxx_UT_DEBUGMSG(("Print Page %d \n",page_nr));
+
+    cairo_t *cr = (static_cast<GR_CairoGraphics*>(m_pPrintGraphics))->getCairo();
+	//
+	// We set the resolution of the printer context to higher than screen
+	// so we don't loose resolution when printing images.
+	//
+	// We then correct for this with thise scale. GtkPrint contexts always
+	// assume 72 DPI
+	//
+	// In the future we can use this to do 2,4,6,8 etc pages per page
+	//
+	double srat = static_cast<double>(GTKPRINTRES)/static_cast<double>(gr_PRINTRES);
+	cairo_scale(static_cast<GR_CairoPrintGraphics *>(m_pPrintGraphics)->getCairo(), srat,srat);
+	xxx_UT_DEBUGMSG(("Resolution Ratio set to %f \n",gr_PrintRes/ScreenRes));
+	UT_DEBUGMSG(("Resolution Ratio of Direct call is %f Cast call is %f \n",m_pPrintGraphics->getResolutionRatio(),	static_cast<GR_CairoPrintGraphics *>(m_pPrintGraphics)->getResolutionRatio()));
+
 	dg_DrawArgs da;
 	da.pG = m_pPrintGraphics;
 	da.xoff = 0;
