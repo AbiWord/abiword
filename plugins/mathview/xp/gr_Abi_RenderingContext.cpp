@@ -49,7 +49,7 @@ GR_Abi_RenderingContext::getColor(RGBColor& c) const
 
  UT_sint32 GR_Abi_RenderingContext::toAbiLayoutUnits(const scaled& s) const
 {
-  return round(s.toDouble() * UT_LAYOUT_RESOLUTION / 72.0);
+  return round(s * UT_LAYOUT_RESOLUTION / 72.0).toDouble();
 }
 
 scaled GR_Abi_RenderingContext::fromAbiLayoutUnits(UT_sint32 s)  const
