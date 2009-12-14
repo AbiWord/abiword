@@ -1170,43 +1170,8 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	else
 		dim = DIM_IN;
 
-	UT_String defaultOffset;
-	switch(dim)
-	{
-	case DIM_IN:
-		defaultOffset = "0.0in"; //was 0.02in
-		break;
-
-	case DIM_CM:
-		defaultOffset = "0.0cm";
-		break;
-
-	case DIM_PI:
-		defaultOffset = "0.0pi";
-		break;
-
-	case DIM_PT:
-		defaultOffset= "0.0pt";
-		break;
-
-	case DIM_MM:
-		defaultOffset= "0.0mm"; //was 0.508
-		break;
-
-		// TODO: PX, and PERCENT
-		// let them fall through to the default now
-		// and we don't use them anyway
-#if 0
-	case DIM_PX:
-	case DIM_PERCENT:
-#endif
-	case DIM_none:
-	default:
-		defaultOffset = "0.0in";	// TODO: what to do with this. was 0.01in
-		break;
-
-	}
-	defaultOffset = "0.01in";	// TODO: what to do with this. was 0.01in
+	UT_String defaultVOffset = "0.5in";
+	UT_String defaultHOffset = "0.01in";
 	if(pszLeftOffset && pszLeftOffset[0])
 	{
 		m_iLeftOffset = UT_convertToLogicalUnits(pszLeftOffset);
@@ -1214,8 +1179,8 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		m_iLeftOffset = UT_convertToLogicalUnits(defaultOffset.c_str());
-		m_dLeftOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
+		m_iLeftOffset = UT_convertToLogicalUnits(defaultHOffset.c_str());
+		m_dLeftOffsetUserUnits = UT_convertDimensionless(defaultHOffset.c_str());
 	}
 
 	if(pszTopOffset && pszTopOffset[0])
@@ -1225,8 +1190,8 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		m_iTopOffset = UT_convertToLogicalUnits(defaultOffset.c_str());
-		m_dTopOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
+		m_iTopOffset = UT_convertToLogicalUnits(defaultVOffset.c_str());
+		m_dTopOffsetUserUnits = UT_convertDimensionless(defaultVOffset.c_str());
 	}
 
 	if(pszRightOffset && pszRightOffset[0])
@@ -1236,8 +1201,8 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		m_iRightOffset = UT_convertToLogicalUnits(defaultOffset.c_str());
-		m_dRightOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
+		m_iRightOffset = UT_convertToLogicalUnits(defaultHOffset.c_str());
+		m_dRightOffsetUserUnits = UT_convertDimensionless(defaultHOffset.c_str());
 	}
 
 	if(pszBottomOffset && pszBottomOffset[0])
@@ -1247,8 +1212,8 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		m_iBottomOffset = UT_convertToLogicalUnits(defaultOffset.c_str());
-		m_dBottomOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
+		m_iBottomOffset = UT_convertToLogicalUnits(defaultVOffset.c_str());
+		m_dBottomOffsetUserUnits = UT_convertDimensionless(defaultVOffset.c_str());
 	}
 	const char * pszLineThick = NULL;
 	pSectionAP->getProperty("table-line-thickness", (const gchar *&)pszLineThick);
@@ -1415,7 +1380,7 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		xxx_UT_DEBUGMSG(("Processing Column width string %s \n",pszRelColumnProps));
 		UT_VECTOR_PURGEALL(fl_ColProps *,m_vecColProps);
 		m_vecColProps.clear();
-		UT_String sProps = pszColumnProps;
+		UT_String sProps = pszRelColumnProps;
 		UT_sint32 sizes = sProps.size();
 		UT_sint32 i =0;
 		UT_sint32 j =0;
@@ -1747,6 +1712,7 @@ UT_sint32 fl_TableLayout::getTopOffset(void) const
 
 UT_sint32 fl_TableLayout::getBottomOffset(void) const
 {
+	UT_DEBUGMSG(("BottomOffset = %d \n",m_iBottomOffset));
 	return m_iBottomOffset;
 }
 
