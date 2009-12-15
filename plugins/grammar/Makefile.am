@@ -17,3 +17,5 @@ grammar_la_LDFLAGS = \
 nodist_EXTRA_grammar_la_SOURCES = dummy.cpp
 grammar_la_SOURCES = 
 
+EXTRA_DIST = \
+	plugin.m4
