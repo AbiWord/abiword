@@ -116,11 +116,12 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Recent)
         const char * szFormat = pLabel->getMenuLabel();
         const char * szURI = pPrefs->getRecent(ndx);
         char *szRecent = g_filename_from_uri(szURI, NULL, NULL);
-        UT_UTF8String sFile(szRecent ? g_path_get_basename (szRecent) : "");
+        char *szBasename = g_path_get_basename (szRecent);
         g_free(szRecent);
 
         g_free(buf);
-        buf = g_strdup_printf(szFormat, sFile.utf8_str());
+        buf = g_strdup_printf(szFormat, szBasename ? szBasename : "");
+        g_free(szBasename);
         return buf;
     }
 
