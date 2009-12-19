@@ -2839,7 +2839,7 @@ void fp_TextRun::itemize(void)
 	//
 	// Should only be one item per run
 	//
-	GR_Item * pItem = I.getNthItem(0)->makeCopy();
+	GR_Item * pItem = I.getNthItem(0);
 	UT_return_if_fail(pItem);
 	setItem(pItem->makeCopy());
 }
