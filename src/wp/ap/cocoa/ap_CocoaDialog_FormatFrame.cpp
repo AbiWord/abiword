@@ -34,6 +34,8 @@
 #include "xap_CocoaDialog_Utilities.h"
 #include "xap_CocoaFrame.h"
 #include "xap_CocoaToolbar_Icons.h"
+#include "xap_CocoaCompat.h"
+
 
 #include "fl_TableLayout.h"
 
@@ -528,10 +530,10 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 	UT_UNUSED(sender);
 	NSColor * color = [_bgColorWell color];
 
-	float red;
-	float green;
-	float blue;
-	float alpha;
+	XAP_CGFloat red;
+	XAP_CGFloat green;
+	XAP_CGFloat blue;
+	XAP_CGFloat alpha;
 
 	[color getRed:&red green:&green blue:&blue alpha:&alpha]; // TODO: is color necessarily RGBA? if not, could be a problem...
 
@@ -570,10 +572,10 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 			break;
 		}
 
-	float red;
-	float green;
-	float blue;
-	float alpha;
+	XAP_CGFloat red;
+	XAP_CGFloat green;
+	XAP_CGFloat blue;
+	XAP_CGFloat alpha;
 
 	[color getRed:&red green:&green blue:&blue alpha:&alpha]; // TODO: is color necessarily RGBA? if not, could be a problem...
 

@@ -59,6 +59,7 @@ libcocoa_la_SOURCES = \
 	xap_CocoaAssert.cpp \
 	xap_CocoaClipboard.h \
 	xap_CocoaClipboard.cpp \
+	xap_CocoaCompat.h \
 	xap_CocoaDialogFactory.h \
 	xap_CocoaDialog_Utilities.h \
 	xap_CocoaDialog_Utilities.cpp \

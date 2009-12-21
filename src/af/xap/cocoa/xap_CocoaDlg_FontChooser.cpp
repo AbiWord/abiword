@@ -31,6 +31,8 @@
 #include "xap_CocoaDialog_Utilities.h"
 #include "xap_CocoaDlg_FontChooser.h"
 #include "xap_CocoaApp.h"
+#include "xap_CocoaCompat.h"
+
 #include "xap_EncodingManager.h"
 #include "gr_CocoaCairoGraphics.h"
 
@@ -196,7 +198,7 @@ void XAP_CocoaDialog_FontChooser::sizeRowChanged(void)
  */
 void XAP_CocoaDialog_FontChooser::_colorChanged(NSColor * color, const gchar * attr, char * buf)
 {
-	float r,g,b,a;
+	XAP_CGFloat r,g,b,a;
 	color = [color colorUsingColorSpaceName:NSDeviceRGBColorSpace];
 	[color getRed:&r green:&g blue:&b alpha:&a];
 	snprintf(buf, 7, "%02x%02x%02x",
