@@ -187,14 +187,10 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
 	m_pCurrentListStyle =  m_pStyles->getList( sHeadingListName.utf8_str());
 	if(m_pCurrentListStyle && m_pCurrentListStyle->getLevelStyle(m_listLevel)->isVisible())
 	{
-	     UT_DEBUGMSG(("Found %s ! outline level %s \n",sHeadingListName.utf8_str(),pOutlineLevel));
+	     xxx_UT_DEBUGMSG(("Found %s ! outline level %s \n",sHeadingListName.utf8_str(),pOutlineLevel));
 	     m_bHeadingList = true;
 	}
-	else
-	{
-	     UT_DEBUGMSG(("Not present or defined as list \n",sHeadingListName.utf8_str()));
 
-	}
         pStyleName = UT_getAttribute("text:style-name", ppAtts);
         if (pStyleName) 
         {
@@ -1481,7 +1477,7 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
                 // the <l> tag.
                 ppAtts[i++] = "parentid";
                 ppAtts[i++] = pListLevelStyle->getAbiListParentID()->utf8_str();
-		UT_DEBUGMSG(("Level |%s| Listid |%s| Parentid |%s| \n",ppAtts[i-5],ppAtts[i-3],ppAtts[i-1]));
+		xxx_UT_DEBUGMSG(("Level |%s| Listid |%s| Parentid |%s| \n",ppAtts[i-5],ppAtts[i-3],ppAtts[i-1]));
             }
             
             if (pStyle!=NULL) {

@@ -88,7 +88,7 @@ void ODi_ListLevelStyle::startElement (const gchar* pName,
 	    UT_UTF8String sStyleName = "BaseHeading ";
 	    sStyleName += m_level;
 	    m_textStyleName =  sStyleName;
-	    UT_DEBUGMSG(("Outline List level Style name %s \n",sStyleName.utf8_str()));
+	    xxx_UT_DEBUGMSG(("Outline List level Style name %s \n",sStyleName.utf8_str()));
 	     pVal = UT_getAttribute ("style:num-format", ppAtts);
 	     if(pVal && *pVal)
 	     {
@@ -149,7 +149,7 @@ void ODi_ListLevelStyle::endElement (const gchar* pName,
         !strcmp("text:list-level-style-image", pName)) {
             
         // We're done.
-        UT_DEBUGMSG(("Finished Level %s \n",m_textStyleName.utf8_str()));
+        xxx_UT_DEBUGMSG(("Finished Level %s \n",m_textStyleName.utf8_str()));
         rAction.popState();
     }
 }
@@ -510,7 +510,7 @@ void ODi_Numbered_ListLevelStyle::startElement (const gchar* pName,
     if (!strcmp("text:list-level-style-number", pName) || 
 	!strcmp("text:outline-level-style", pName)) {
         UT_UTF8String prefix, suffix;
-        UT_DEBUGMSG(("Doing a numbered list type %s \n",pName));
+        xxx_UT_DEBUGMSG(("Doing a numbered list type %s \n",pName));
         pVal = UT_getAttribute ("style:num-format", ppAtts);
         UT_ASSERT_HARMLESS(pVal);
         _setAbiListType(pVal);

@@ -76,7 +76,7 @@ void ODi_Style_List::startElement (const gchar* pName, const gchar** ppAtts,
     else if(!strcmp("text:outline-level-style", pName))
     {
         ODi_ListLevelStyle* pLevelStyle = NULL;
-	UT_DEBUGMSG(("Found outline-level-style \n"));
+	xxx_UT_DEBUGMSG(("Found outline-level-style \n"));
         pVal = UT_getAttribute ("style:num-format", ppAtts);
 	if(pVal)
 	{

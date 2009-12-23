@@ -201,6 +201,6 @@ void ODi_StylesStream_ListenerState::endElement (const gchar* pName,
       //
       // Don't pop here it's done ODi_Style_List
       //
-      UT_DEBUGMSG(("Finished text:outline-style \n"));
+      xxx_UT_DEBUGMSG(("Finished text:outline-style \n"));
     }
 }
