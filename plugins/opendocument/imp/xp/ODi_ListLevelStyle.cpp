@@ -60,12 +60,12 @@ void ODi_ListLevelStyle::startElement (const gchar* pName,
 
     if (!strcmp("text:list-level-style-bullet", pName) ||
         !strcmp("text:list-level-style-number", pName) ||
+	!strcmp("text:outline-level-style",pName) ||
         !strcmp("text:list-level-style-image", pName)) {
 
         UT_uint32 result = 0;
             
         pVal = UT_getAttribute ("text:level", ppAtts);
-        
         if (pVal) {
             result = sscanf(pVal, "%u", &m_levelNumber);
             // TODO: check result?
@@ -73,12 +73,35 @@ void ODi_ListLevelStyle::startElement (const gchar* pName,
         } else {
             UT_DEBUGMSG(("ODi_ListLevelStyle::startElement: missing text:level attribute\n"));
         }
-        
+	bool bHeading = false;
+	if(!strcmp("text:outline-level-style",pName))
+	{
+	  bHeading = true;
+	}
         pVal = UT_getAttribute ("text:style-name", ppAtts);
-        if (pVal) {
+        if (pVal) 
+	{
             m_textStyleName = pVal;
         }
-        
+        else if(bHeading)
+	{
+	    UT_UTF8String sStyleName = "BaseHeading ";
+	    sStyleName += m_level;
+	    m_textStyleName =  sStyleName;
+	    UT_DEBUGMSG(("Outline List level Style name %s \n",sStyleName.utf8_str()));
+	     pVal = UT_getAttribute ("style:num-format", ppAtts);
+	     if(pVal && *pVal)
+	     {
+		 if (pVal && !strcmp(pVal, "")) 
+		 {
+		     // We have an empty number format.
+            
+		     // Empty list label or "invisible" list.
+		     m_abiListListDelim = "";
+		 }
+	       
+	     }
+	}
     } else if (!strcmp("style:list-level-properties", pName) ||
                !strcmp("style:list-level-label-alignment", pName)) {
 
@@ -122,13 +145,19 @@ void ODi_ListLevelStyle::endElement (const gchar* pName,
                                         
     if (!strcmp("text:list-level-style-bullet", pName) ||
         !strcmp("text:list-level-style-number", pName) ||
+	!strcmp("text:outline-level-style",pName) ||
         !strcmp("text:list-level-style-image", pName)) {
             
         // We're done.
+        UT_DEBUGMSG(("Finished Level %s \n",m_textStyleName.utf8_str()));
         rAction.popState();
     }
 }
 
+bool  ODi_ListLevelStyle::isVisible(void) const
+{
+  return  (m_abiListListDelim.size() > 0);
+}
 
 /**
  * 
@@ -465,6 +494,7 @@ ODi_Numbered_ListLevelStyle::ODi_Numbered_ListLevelStyle(ODi_ElementStack& rElem
 }
 
 
+
 /**
  * 
  */
@@ -477,9 +507,10 @@ void ODi_Numbered_ListLevelStyle::startElement (const gchar* pName,
     // Let the parent class do the processing common to all list types.
     ODi_ListLevelStyle::startElement (pName, ppAtts, rAction);
                                                 
-    if (!strcmp("text:list-level-style-number", pName)) {
+    if (!strcmp("text:list-level-style-number", pName) || 
+	!strcmp("text:outline-level-style", pName)) {
         UT_UTF8String prefix, suffix;
-        
+        UT_DEBUGMSG(("Doing a numbered list type %s \n",pName));
         pVal = UT_getAttribute ("style:num-format", ppAtts);
         UT_ASSERT_HARMLESS(pVal);
         _setAbiListType(pVal);
@@ -490,7 +521,8 @@ void ODi_Numbered_ListLevelStyle::startElement (const gchar* pName,
             // Empty list label or "invisible" list.
             m_abiListListDelim = "";
             
-        } else {
+        }
+	else {
             // We have a number format defined.
             
             pVal = UT_getAttribute ("style:num-prefix", ppAtts);

@@ -67,6 +67,7 @@ private:
     GsfInfile* m_pGsfInfile;
     ODi_Office_Styles* m_pStyles;
     ODi_Abi_Data& m_rAbiData;
+    bool          m_bOutlineStyle;
 };
 
 #endif //_ODI_STYLESSTREAM_LISTENERSTATE_H_

@@ -60,6 +60,7 @@ public:
     void charData (const gchar* /*pBuffer*/, int /*length*/) { };
     
     void defineAbiList(PD_Document* pDocument);
+    void redefine(PD_Document* pDocument, UT_sint32 iLevel);
 
     ODi_ListLevelStyle* getLevelStyle(UT_uint32 level) const
         {
