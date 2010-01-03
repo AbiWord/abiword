@@ -2066,6 +2066,19 @@ abi_widget_size_allocate (GtkWidget     *widget,
 }
 
 static void
+abi_widget_grab_focus (GtkWidget * widget)
+{
+       UT_return_if_fail(widget != NULL);
+       UT_return_if_fail(IS_ABI_WIDGET(widget));
+
+       XAP_Frame *pFrame = ABI_WIDGET(widget)->priv->m_pFrame;
+       UT_return_if_fail(pFrame);
+
+       GtkWidget *dArea = static_cast<AP_UnixFrameImpl *>(pFrame->getFrameImpl())->getDrawingArea();
+       gtk_widget_grab_focus(dArea);
+}
+
+static void
 abi_widget_realize (GtkWidget * widget)
 {
 	AbiWidget * abi;
