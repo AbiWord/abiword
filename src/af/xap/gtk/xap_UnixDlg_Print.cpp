@@ -164,7 +164,6 @@ void XAP_UnixDialog_Print::PrintPage(gint page_nr)
 {
 	xxx_UT_DEBUGMSG(("Print Page %d \n",page_nr));
 
-    cairo_t *cr = (static_cast<GR_CairoGraphics*>(m_pPrintGraphics))->getCairo();
 	//
 	// We set the resolution of the printer context to higher than screen
 	// so we don't loose resolution when printing images.
