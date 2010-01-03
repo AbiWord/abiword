@@ -300,7 +300,7 @@ void UT_UTF8Stringbuf::appendUCS4 (const UT_UCS4Char * sz, size_t n /* == 0 => n
 	if (!sz || (!n && !*sz))
 		return;
 
-	/* The vast majority of calls to appendUCS4 -- maybe all? -- pass in
+	/* The vast majority of calls to appendUCS4 pass in
 	   1 for n, so we can halve the number of calls to g_unichar_to_utf8
 	   (in most cases) by caching the first byte length. */
 	int iCache = 0;
