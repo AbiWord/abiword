@@ -414,6 +414,7 @@ public:
 	bool            isTOCSelected(void) const;
 	bool            setTOCProps(PT_DocPosition pos, const char * szProps);
 
+	bool			cmdSelectNoNotify(PT_DocPosition dpBeg, PT_DocPosition dpEnd);
 	void			cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd);
 	void			cmdCharMotion(bool bForward, UT_uint32 count);
 	bool			cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce = false);
