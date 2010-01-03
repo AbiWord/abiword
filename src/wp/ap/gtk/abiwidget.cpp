@@ -2203,6 +2203,7 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 	widget_class->realize       = abi_widget_realize;
 	widget_class->size_request  = abi_widget_size_request;
    	widget_class->size_allocate = abi_widget_size_allocate; 
+	widget_class->grab_focus    = abi_widget_grab_focus;
 
 	// For the container methods
 	container_class->add = abiwidget_add;
