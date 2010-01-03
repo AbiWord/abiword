@@ -61,7 +61,7 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 	static const gchar *documenters[] = {"David Chart <linux@dchart.demon.co.uk>",
 										 NULL};
 
-	static const gchar *copyright = "(c) 1998-2009 Dom Lachowicz and other contributors, GNU GPL v2.0";
+	static const gchar *copyright = "(c) 1998-2010 Dom Lachowicz and other contributors, GNU GPL v2.0";
 
 	static const gchar *website = "http://www.abisource.com";
 
