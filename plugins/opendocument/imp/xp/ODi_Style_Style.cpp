@@ -846,7 +846,13 @@ void ODi_Style_Style::buildAbiPropsAttrString(ODi_FontFaceDecls& rFontFaceDecls)
     APPEND_STYLE("margin-left: ", m_marginLeft);
     APPEND_STYLE("margin-right: ", m_marginRight);
     APPEND_STYLE("margin-top: ", m_marginTop);
-    APPEND_STYLE("margin-bottom: ", m_marginBottom);       
+    APPEND_STYLE("margin-bottom: ", m_marginBottom);
+    if(m_bgcolor.size() > 0)
+    {
+        UT_UTF8String sPat("1");
+        APPEND_STYLE("shading-pattern: ",sPat);
+        APPEND_STYLE("shading-foreground-color: ",m_bgcolor);
+    }
     APPEND_STYLE("bgcolor: ", m_bgcolor);
     APPEND_STYLE("keep-with-next: ", m_keepWithNext);
     APPEND_STYLE("text-indent: ", m_textIndent);
