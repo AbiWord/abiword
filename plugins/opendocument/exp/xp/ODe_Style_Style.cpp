@@ -285,6 +285,11 @@ bool ODe_Style_Style::hasParagraphStyleProps(const PP_AttrProp* pAP) {
         return true;
     }
     
+    ok = pAP->getProperty("shading-pattern", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+    
     return false;
 }
 
@@ -943,15 +948,30 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     const gchar* pValue;
     bool ok;
     
-    ok = rAP.getProperty("bgcolor", pValue);
-    if (ok && pValue && *pValue) {
-        if (!strcmp("transparent", pValue)) { 
+    ok = rAP.getProperty("shading-foreground-color", pValue);
+    if (ok && pValue && *pValue) 
+    {
+        if (!strcmp("transparent", pValue)) 
+	{ 
             m_backgroundColor = pValue;
-        } else {
+        } 
+	else 
+	{
             m_backgroundColor = UT_colorToHex(pValue, true);
         }
     }
-    
+    ok = rAP.getProperty("shading-pattern", pValue);
+    if (ok && pValue && *pValue) 
+    {
+      if(atoi(pValue) == 0)
+      {
+	  m_backgroundColor = "transparent";
+      }
+    }
+    else if( !m_backgroundColor.empty())
+    {
+	m_backgroundColor = "transparent";
+    }
     ok = rAP.getProperty("line-height", pValue);
     if (ok && pValue != NULL) {
         UT_LocaleTransactor t(LC_NUMERIC, "C");
@@ -1252,17 +1272,6 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
             m_fontWeight = "normal";
         }
     }
-
-
-    ok = rAP.getProperty("bgcolor", pValue);
-    if (ok && pValue && *pValue) {
-        if (!strcmp("transparent", pValue)) {
-            m_backgroundColor = pValue;
-        } else {
-            m_backgroundColor = UT_colorToHex(pValue, true);
-        }
-    }
-
 
     ok = rAP.getProperty("display", pValue);
     if (ok && pValue != NULL) {
