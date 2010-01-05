@@ -3090,8 +3090,6 @@ void GR_CairoGraphics::setClipRect(const UT_Rect* pRect)
 {
 	m_pRect = pRect;
 	m_clipRectDirty = true;
-	if(pRect == NULL)
-		_resetClip();
 }
 
 void GR_CairoGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
