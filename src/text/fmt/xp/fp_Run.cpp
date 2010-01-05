@@ -1029,6 +1029,7 @@ void fp_Run::Run_ClearScreen(bool bFullLineHeightRect)
 		return;
 	}
 	xxx_UT_DEBUGMSG(("SEVIOR: Doing Run_ClearScreen in run %x \n",this));
+	getLine()->getFillType()->setIgnoreLineLevel(true);
 	if(getLine()->getContainer() != NULL)
 	{
 		if(getLine()->getContainer()->getPage() != 0)
@@ -1102,6 +1103,7 @@ void fp_Run::Run_ClearScreen(bool bFullLineHeightRect)
 	if(pLine)
     {
 		pLine->setNeedsRedraw();
+		pLine->getFillType()->setIgnoreLineLevel(false);
 	}
 
 	xxx_UT_DEBUGMSG(("fp_Run: clearscreen applied \n"));

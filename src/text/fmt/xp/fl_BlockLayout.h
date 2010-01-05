@@ -46,6 +46,7 @@
 #include "fl_SectionLayout.h"
 #include "fb_LineBreaker.h"
 #include "ut_string_class.h"
+#include "ut_misc.h"
 
 // number of DocPositions occupied by the block strux
 #define fl_BLOCK_STRUX_OFFSET	1
@@ -390,7 +391,9 @@ public:
 												UT_UTF8String & sWord,
 												bool bIgnoreSpace) const;
 	bool                   itemizeSpan(PT_BlockOffset blockOffset, UT_uint32 len,GR_Itemization & I);
-
+	const UT_RGBColor      getShadingingForeColor(void) const;
+	const UT_RGBColor      getShadingingBackColor(void) const;
+	UT_sint32              getPattern(void) const;
 #ifdef ENABLE_SPELL
 	/** put in queue for spellchecking after prev. If prev == NULL is put at the head */
 	void enqueueToSpellCheckAfter(fl_BlockLayout *prev);
@@ -547,6 +550,9 @@ protected:
 	bool                    m_bForceSectionBreak;
 	bool                    m_bPrevListLabel;
     UT_sint32               m_iAdditionalMarginAfter;
+	UT_RGBColor             m_ShadingForeColor;
+	UT_RGBColor             m_ShadingBackColor;
+	UT_sint32               m_iPattern;
 };
 
 /*

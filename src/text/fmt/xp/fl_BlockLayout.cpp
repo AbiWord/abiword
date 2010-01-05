@@ -1090,8 +1090,58 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 			m_bStyleInTOC = m_pLayout->addOrRemoveBlockFromTOC(this);
 		}
 	}
+	//
+	// Shading now
+	//
+	{
+		const gchar * sPattern = NULL;
+		const gchar * sShadingForeCol = NULL;
+		const gchar * sShadingBackCol = NULL;
+		sPattern = getProperty("shading-pattern",true);
+		if(sPattern)
+		{
+			m_iPattern = atoi(sPattern);
+		}
+		else
+		{
+			m_iPattern = 0;
+		}
+		sShadingForeCol = getProperty("shading-foreground-color",true);
+		if(sShadingForeCol)
+		{
+			m_ShadingForeColor.setColor(sShadingForeCol);
+		}
+		else
+		{
+			m_ShadingForeColor.setColor("white");
+		}
+		sShadingBackCol = getProperty("shading-background-color",true);
+		if(sShadingBackCol)
+		{
+			m_ShadingBackColor.setColor(sShadingBackCol);
+		}
+		else
+		{
+			m_ShadingBackColor.setColor("white");
+		}
 
+	}
 	// latter we will need to add here revision handling ...
+}
+
+UT_sint32 fl_BlockLayout::getPattern(void) const
+{
+	return m_iPattern;
+}
+
+const UT_RGBColor fl_BlockLayout::getShadingingForeColor(void) const
+{
+	return m_ShadingForeColor;
+}
+
+const UT_RGBColor fl_BlockLayout::getShadingingBackColor(void) const
+{
+	return m_ShadingBackColor;
 }
 
 fl_BlockLayout::~fl_BlockLayout()

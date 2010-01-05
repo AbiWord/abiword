@@ -147,7 +147,7 @@ public:
 	const FL_DocLayout * getDocLayout(void) const;
 	const UT_RGBColor *  getColor(void) const;
 	void           setImagePointer(FG_Graphic ** pDocGraphic, GR_Image ** pDocImage);
-	
+	void           setIgnoreLineLevel(bool b);
 private:
     void        	     _regenerateImage(GR_Graphics * pG);
 	fg_FillType *        m_pParent;
@@ -166,6 +166,7 @@ private:
 	UT_sint32            m_iHeight;
 	GR_Image **          m_pDocImage;
 	FG_Graphic **        m_pDocGraphic;
+	bool                 m_bIgnoreLineLevel;
 };
 
 

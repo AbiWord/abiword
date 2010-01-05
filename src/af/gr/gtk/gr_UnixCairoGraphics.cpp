@@ -400,10 +400,13 @@ void GR_UnixCairoGraphics::createPixmapFromXPM( char ** pXPM,GdkPixmap *source,
 
 void GR_UnixCairoGraphics::_resetClip(void)
 {
+	
 #if GTK_CHECK_VERSION(2,17,11) || GTK_2_17_DEV_VERSION_WITHOUT_RESET_CLIP
 	gdk_cairo_reset_clip (m_cr, _getDrawable());
+	xxx_UT_DEBUGMSG(("!!!!!! gdk Reset clip in gtk cairo \n"));
 #else
 	cairo_reset_clip (m_cr);
+	xxx_UT_DEBUGMSG(("Reset clip in gtk cairo \n"));
 #endif
 }
 

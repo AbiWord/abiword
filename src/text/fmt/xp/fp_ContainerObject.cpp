@@ -535,7 +535,8 @@ fg_FillType::fg_FillType(fg_FillType *pParent, fp_ContainerObject * pContainer, 
 	m_iWidth(0),
 	m_iHeight(0),
 	m_pDocImage(NULL),
-	m_pDocGraphic(NULL)
+	m_pDocGraphic(NULL),
+	m_bIgnoreLineLevel(false)
 {
 }
 
@@ -553,6 +554,13 @@ void  fg_FillType::setParent(fg_FillType * pParent)
 	m_pParent = pParent;
 }
 
+/*!
+ *
+ */
+void  fg_FillType::setIgnoreLineLevel(bool b)
+{
+        m_bIgnoreLineLevel = b;
+}
 /*!
  * set this class to have a solid color fill
  */
@@ -905,6 +913,16 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 			if(m_pDocImage == NULL)
 			    m_pDocImage = getParent()->m_pDocImage;
 		}
+	}
+	if(m_pContainer && (m_pContainer->getContainerType() == FP_CONTAINER_LINE))
+	{
+	    if(m_bIgnoreLineLevel && getParent() && m_pContainer)
+	    {
+		UT_sint32 newX = srcX + (m_pContainer->getX());
+		UT_sint32 newY = srcY + (m_pContainer->getY());
+		getParent()->Fill(pG,newX,newY,x,y,width,height);
+		return;
+	    }
 	}
 	if(m_pContainer && (m_pContainer->getContainerType() == FP_CONTAINER_RUN))
 	{

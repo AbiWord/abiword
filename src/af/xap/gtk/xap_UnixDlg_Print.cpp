@@ -437,6 +437,7 @@ void XAP_UnixDialog_Print::cleanup(void)
 	m_pPO= NULL;
 	if(!m_bDidQuickPrint)
 	{
+		UT_DEBUGMSG(("Deleting PrintView %p \n",m_pPrintView));
 		DELETEP(m_pPrintLayout);
 		DELETEP(m_pPrintView);
 	}
@@ -451,6 +452,7 @@ void XAP_UnixDialog_Print::cleanup(void)
 			m_pView->setShowPara(true);
 		m_pDL->incrementGraphicTick();
 	}
+	UT_DEBUGMSG(("Reset fontmap m_pView %p Graphics %p \n",m_pView,m_pView->getGraphics()));
 	static_cast<GR_CairoGraphics *>(m_pView->getGraphics())->resetFontMapResolution();
 	DELETEP(m_pPrintGraphics);
 	//

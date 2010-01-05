@@ -44,7 +44,7 @@
 #include "ap_Prefs.h"
 #include "fp_FootnoteContainer.h"
 #include "fp_FrameContainer.h"
-
+#include "ut_color.h"
 
 #ifdef USE_STATIC_MAP
 //initialize the static members of the class
@@ -541,6 +541,10 @@ bool fp_Line::removeRun(fp_Run* pRun, bool bTellTheRunAboutIt)
 	}
 	if (bTellTheRunAboutIt)
 	{
+	        if(pRun == getLastRun())
+	        {
+		     clearScreenFromRunToEnd(pRun);
+		}
 		pRun->setLine(NULL);
 	}
 
@@ -851,12 +855,17 @@ void fp_Line::getScreenOffsets(fp_Run* pRun,
 
 void fp_Line::setBlock(fl_BlockLayout * pBlock)
 {
-  if(pBlock != NULL)
+    if(pBlock != NULL)
     {
       UT_ASSERT(m_pBlock == NULL);
       //      UT_ASSERT(pBlock->findLineInBlock(this) >= 0);
     }
-  m_pBlock = pBlock;
+    m_pBlock = pBlock;
+    if(m_pBlock && (m_pBlock->getPattern() > 0))
+    {
+        UT_RGBColor c = m_pBlock->getShadingingForeColor();
+        getFillType()->setColor(c);
+    }
 }
 
 /*!
@@ -1096,6 +1105,7 @@ void fp_Line::clearScreen(void)
 	{
 		return;
 	}
+	getFillType()->setIgnoreLineLevel(true);
 	if(count)
 	{
 		fp_Run* pRun;
@@ -1150,6 +1160,7 @@ void fp_Line::clearScreen(void)
 			// revision underlines
 			if(getPage() == NULL)
 			{
+			        getFillType()->setIgnoreLineLevel(false);
 				return;
 			}
 //			UT_sint32 iExtra = getGraphics()->getFontAscent()/2;
@@ -1187,7 +1198,7 @@ void fp_Line::clearScreen(void)
 			}
 		}
 	}
-
+	getFillType()->setIgnoreLineLevel(false);
 }
 
 /*!
@@ -1204,6 +1215,7 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 	if(count > 0 && !pRun->getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
 		return;
 
+	getFillType()->setIgnoreLineLevel(true);
 
 	// not sure what the reason for this is (Tomas, Oct 25, 2003)
 	fp_Run * pLeftVisualRun = pRun;
@@ -1329,7 +1341,7 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 #endif
 		recalcHeight();
 #if DEBUG
-		UT_ASSERT(oldheight == getHeight());
+		//UT_ASSERT(oldheight == getHeight());
 #endif
 		
 		fp_VerticalContainer * pVCon= (static_cast<fp_VerticalContainer *>(getContainer()));
@@ -1358,6 +1370,7 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 		if(getPage() == NULL)
 		{
 			xxx_UT_DEBUGMSG(("pl_Line _doClear no Page \n"));
+			getFillType()->setIgnoreLineLevel(false);
 			return;
 		}
 
@@ -1471,6 +1484,7 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 		getBlock()->setNeedsRedraw();
 		setNeedsRedraw();
 	}
+	getFillType()->setIgnoreLineLevel(false);
 }
 
 /*!
@@ -1585,20 +1599,21 @@ void fp_Line::draw(GR_Graphics* pG)
 	da.pG = pG;
 	da.bDirtyRunsOnly = true; //magic line to give a factor 2 speed up!
 	const UT_Rect* pRect = pG->getClipRect();
-
+	bool bDoShade = (getBlock() && (getBlock()->getPattern() > 0));
+	if(bDoShade)
+        {
+	    da.bDirtyRunsOnly = false;
+	    //
+	    // Calculate the region of the fill for a shaded paragraph.
+	    //
+	    UT_sint32 xs = my_xoff;
+	    UT_sint32 ys = my_yoff;
+	    getFillType()->Fill(pG,xs,ys,xs,ys,getMaxWidth(),getHeight());
+	    xxx_UT_DEBUGMSG(("pG Fill at y %d and to width %d \n",ys,getMaxWidth()));
+	}
 	for (int i=0; i < count; i++)
 	{
-#if 0
-		// This is no longer necessary, and drawing in visual order
-		// fixes bug 2811. Tomas, Apr 10, 2003
-		// 
-		// NB !!! In the BiDi build drawing has to be done in the logical
-		// order, otherwise overstriking characters cannot be seen
-		fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(i));
-#else
 		fp_Run* pRun = getRunAtVisPos(i);
-#endif
-		
 		if(pRun->isHidden())
 			continue;
 
@@ -1640,7 +1655,7 @@ void fp_Line::draw(GR_Graphics* pG)
 		pCell->drawLinesAdjacent();
 	}
 #endif
-
+	  
 }
 
 void fp_Line::draw(dg_DrawArgs* pDA)
@@ -1664,56 +1679,57 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 	}
 	xxx_UT_DEBUGMSG(("Drawing line %x in line pDA, width %d \n",this,getWidth()));
 	pDA->yoff += m_iAscent;
-	xxx_UT_DEBUGMSG(("fp_Line::draw getAscent() %d m_iAscent %d \n",getAscent(),m_iAscent));
+	xxx_UT_DEBUGMSG(("fp_Line::draw getAscent() %d m_iAscent %d yoff %d \n",getAscent(),m_iAscent,pDA->yoff));
 	const UT_Rect* pRect = pDA->pG->getClipRect();
-
+	bool bResetRect = false;
+	if(getBlock() && (getBlock()->getPattern() > 0))
+	{
+	      xxx_UT_DEBUGMSG(("pRect in fp_Line::draw is %p \n",pRect));
+	      UT_sint32 x = pDA->xoff;
+	      UT_sint32 y = pDA->yoff - m_iAscent;
+	      if(!pDA->bDirtyRunsOnly)
+	      {
+		    getFillType()->Fill(pDA->pG,x,y,x,y,getMaxWidth(),getHeight());
+		    xxx_UT_DEBUGMSG(("Fill at y %d and to width %d \n",y,getMaxWidth()));
+	      }
+	}
 	for (i=0; i<count; i++)
 	{
-#if 0
-		// This is no longer necessary, and drawing in visual order
-		// fixes bug 2811. Tomas, Apr 10, 2003
-		// 
-		// NB !!! In the BiDi build drawing has to be done in the logical
-		// order, otherwise overstriking characters cannot be seen
-		fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(i));
-#else
-		fp_Run* pRun = getRunAtVisPos(i);
-#endif
+	      fp_Run* pRun = getRunAtVisPos(i);
+	      if(pRun->isHidden())
+		  continue;
 
-		if(pRun->isHidden())
-			continue;
+	      FP_RUN_TYPE rType = pRun->getType();
 
-		FP_RUN_TYPE rType = pRun->getType();
+	      dg_DrawArgs da = *pDA;
 
-		dg_DrawArgs da = *pDA;
-
-		// for these two types of runs, we want to draw for the
-		// entire line-width on the next line. see bug 1301
-		if (rType == FPRUN_FORCEDCOLUMNBREAK ||
+	      // for these two types of runs, we want to draw for the
+	      // entire line-width on the next line. see bug 1301
+	      if (rType == FPRUN_FORCEDCOLUMNBREAK ||
 			rType == FPRUN_FORCEDPAGEBREAK)
-		{
-			UT_sint32 my_xoff = 0, my_yoff = 0;
-			fp_VerticalContainer * pVCon= (static_cast<fp_VerticalContainer *>(getContainer()));
-			pVCon->getScreenOffsets(this, my_xoff, my_yoff);
-			da.xoff = my_xoff;
-		}
-		else
-		{
-			da.xoff += pRun->getX();
-		}
+	      {
+		   UT_sint32 my_xoff = 0, my_yoff = 0;
+		   fp_VerticalContainer * pVCon= (static_cast<fp_VerticalContainer *>(getContainer()));
+		   pVCon->getScreenOffsets(this, my_xoff, my_yoff);
+		   da.xoff = my_xoff;
+	      }
+	      else
+	      {
+		   da.xoff += pRun->getX();
+	      }
 
-		da.yoff += pRun->getY();
-		UT_Rect runRect(da.xoff, da.yoff - pRun->getAscent(), pRun->getWidth(), pRun->getHeight());
-		xxx_UT_DEBUGMSG(("fp_Line: Draw run in line at yoff %d pRun->getY() \n",da.yoff,pRun->getY()));
-		if (pRect == NULL || pRect->intersectsRect(&runRect))
-		{
-			pRun->draw(&da);
-		}
-		else
-		{
-			xxx_UT_DEBUGMSG(("Run not in clip, pRect top %d height %d run top %d height %d \n",pRect->top,pRect->height,runRect.top,runRect.height));
-		}
-		da.yoff -= pRun->getY();
+	      da.yoff += pRun->getY();
+	      UT_Rect runRect(da.xoff, da.yoff - pRun->getAscent(), pRun->getWidth(), pRun->getHeight());
+	      xxx_UT_DEBUGMSG(("fp_Line: Draw run in line at yoff %d pRun->getY() \n",da.yoff,pRun->getY()));
+	      if (pRect == NULL || pRect->intersectsRect(&runRect))
+	      {
+		   pRun->draw(&da);
+	      }
+	      else
+	      {
+		   xxx_UT_DEBUGMSG(("Run not in clip, pRect top %d height %d run top %d height %d \n",pRect->top,pRect->height,runRect.top,runRect.height));
+	      }
+	      da.yoff -= pRun->getY();
 	}
 	if(bQuickPrint)
         {
