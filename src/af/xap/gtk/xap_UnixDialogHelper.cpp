@@ -255,7 +255,7 @@ static void sDoHelp ( XAP_Dialog * pDlg )
 	// open the url
 	if ( pDlg->getHelpUrl().size () > 0 )
     {
-		helpLocalizeAndOpenURL ("AbiWord/help", pDlg->getHelpUrl().c_str(), NULL );
+		helpLocalizeAndOpenURL ("help", pDlg->getHelpUrl().c_str(), NULL );
     }
 	else
     {

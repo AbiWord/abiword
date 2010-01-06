@@ -3496,12 +3496,12 @@ bool helpLocalizeAndOpenURL(const char* pathBeforeLang, const char* pathAfterLan
 
 Defun0(helpContents)
 {
-	return helpLocalizeAndOpenURL("AbiWord/help", "index", "http://www.abisource.com/help/");
+	return helpLocalizeAndOpenURL("help", "index", "http://www.abisource.com/help/");
 }
 
 Defun0(helpIntro)
 {
-	return helpLocalizeAndOpenURL("AbiWord/help", "introduction", "http://www.abisource.com/help/");
+	return helpLocalizeAndOpenURL("help", "introduction", "http://www.abisource.com/help/");
 }
 
 Defun0(helpCheckVer)
@@ -3526,12 +3526,12 @@ Defun0(helpReportBug)
 
 Defun0(helpSearch)
 {
-	return helpLocalizeAndOpenURL("AbiWord/help", "search", "http://www.abisource.com/help/");
+	return helpLocalizeAndOpenURL("help", "search", "http://www.abisource.com/help/");
 }
 
 Defun0(helpCredits)
 {
-	return helpLocalizeAndOpenURL("AbiWord/help", "credits", "http://www.abisource.com/help/");
+	return helpLocalizeAndOpenURL("help", "credits", "http://www.abisource.com/help/");
 }
 
 Defun0(helpAboutGnomeOffice)
