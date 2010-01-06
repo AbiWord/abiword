@@ -54,6 +54,7 @@ public:
 		abi_background_color,
 		abi_background_image,
 		abi_bgcolor,
+		abi_border_merge,
 		abi_border_shadow_merge,
 		abi_bot_attach,
 		abi_bot_color,
@@ -61,6 +62,7 @@ public:
 		abi_bot_thickness,
 		abi_bot_shadow,
 		abi_bot_shadow_color,
+		abi_bot_space,
 		abi_bounding_space,
 		abi_cell_margin_bottom,
 		abi_cell_margin_left,
@@ -125,6 +127,7 @@ public:
 		abi_left_thickness,
 		abi_left_shadow,
 		abi_left_shadow_color,
+		abi_left_space,
 		abi_line_height,
 		abi_list_decimal,
 		abi_list_delim,
@@ -148,6 +151,7 @@ public:
 		abi_right_thickness,
 		abi_right_shadow,
 		abi_right_shadow_color,
+		abi_right_space,
 		abi_section_footnote_line_thickness,
 		abi_section_footnote_yoff,
 		abi_section_max_column_height,
@@ -236,6 +240,7 @@ public:
 		abi_top_thickness,
 		abi_top_shadow,
 		abi_top_shadow_color,
+		abi_top_space,
 		abi_vert_align,
 		abi_widows,
 		abi_width,
@@ -302,6 +307,7 @@ public:
 
 		UT_RGBColor		m_color;		// in case of color_color
 		UT_uint32		m_thickness;	// in case of thickness_length
+		UT_sint32       m_spacing;      // gap in logical unit to content
 	};
 	class ABI_EXPORT Background
 	{

@@ -75,11 +75,13 @@ static PP_Property _props[] =
 {
 	{ "background-color",      "transparent",     false, NULL, PP_LEVEL_SECT},
 	{ "bgcolor",               "transparent",     true,  NULL, PP_LEVEL_CHAR},
+	{"border-merge",           "0",               true,  NULL, PP_LEVEL_BLOCK},
 	{"border-shadow-merge",    "0",               true,  NULL, PP_LEVEL_BLOCK},
 	{ "bot-attach",            "",               false,  NULL, PP_LEVEL_TABLE},
 	{ "bot-color",             "000000",          false, NULL, PP_LEVEL_TABLE},
 	{ "bot-shadow",            "0",               false, NULL, PP_LEVEL_BLOCK},
 	{ "bot-shadow-color",      "grey",            false, NULL, PP_LEVEL_BLOCK},
+	{ "bot-space",             "0.02in",          false, NULL, PP_LEVEL_BLOCK},
 	{ "bot-style",             "1",           false, NULL, PP_LEVEL_TABLE},
 	{ "bot-thickness",         "1px",             false, NULL, PP_LEVEL_TABLE},
 
@@ -138,8 +140,9 @@ static PP_Property _props[] =
 	{ "lang",                  "en-US",           true,  NULL, PP_LEVEL_CHAR},
 	{ "left-attach",           "",               false,  NULL, PP_LEVEL_TABLE},
 	{ "left-color",            "000000",          false, NULL, PP_LEVEL_TABLE},
-	{ "left-shadow",            "0",               false, NULL, PP_LEVEL_BLOCK},
-	{ "left-shadow-color",      "grey",            false, NULL, PP_LEVEL_BLOCK},
+	{ "left-shadow",           "0",               false, NULL, PP_LEVEL_BLOCK},
+	{ "left-shadow-color",     "grey",            false, NULL, PP_LEVEL_BLOCK},
+	{ "left-space",            "0.02in",          false, NULL, PP_LEVEL_BLOCK},
 	{ "left-style",            "1",           false, NULL, PP_LEVEL_TABLE},
 	{ "left-thickness",        "1px",             false, NULL, PP_LEVEL_TABLE},
 
@@ -167,6 +170,7 @@ static PP_Property _props[] =
 	{ "right-color",           "000000",          false, NULL, PP_LEVEL_TABLE},
 	{ "right-shadow",          "0",               false, NULL, PP_LEVEL_BLOCK},
 	{ "right-shadow-color",    "grey",            false, NULL, PP_LEVEL_BLOCK},
+	{ "right-space",           "0.02in",          false, NULL, PP_LEVEL_BLOCK},
 	{ "right-style",           "1",           false, NULL, PP_LEVEL_TABLE},
 	{ "right-thickness",       "1px",             false, NULL, PP_LEVEL_TABLE},
 
@@ -255,6 +259,7 @@ static PP_Property _props[] =
 	{ "top-color",             "000000",          false, NULL, PP_LEVEL_TABLE},
 	{ "top-shadow",            "0",               false, NULL, PP_LEVEL_BLOCK},
 	{ "top-shadow-color",      "grey",            false, NULL, PP_LEVEL_BLOCK},
+	{ "top-space",             "0.02in",          false, NULL, PP_LEVEL_BLOCK},
 	{ "top-style",             "1",               false, NULL, PP_LEVEL_TABLE},
 	{ "top-thickness",         "1px",             false, NULL, PP_LEVEL_TABLE},
 

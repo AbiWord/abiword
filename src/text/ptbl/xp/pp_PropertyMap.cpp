@@ -33,10 +33,12 @@ static const char * AbiPropertyName[PP_PropertyMap::abi__count] = {
 	"background-image",
 	"bgcolor",
 	"border-shadow-merge",
+	"border-merge",
 	"bot-attach",
 	"bot-color",
 	"bot-shadow",
 	"bot-shadow-color"
+	"bot-space"
 	"bot-style",
 	"bot-thickness",
 	"bounding-space",
@@ -101,6 +103,7 @@ static const char * AbiPropertyName[PP_PropertyMap::abi__count] = {
 	"left-color",
 	"left-shadow",
 	"left-shadow-color",
+	"left-space",
 	"left-style",
 	"left-thickness",
 	"line-height",
@@ -124,6 +127,7 @@ static const char * AbiPropertyName[PP_PropertyMap::abi__count] = {
 	"right-color",
 	"right-shadow",
 	"right-shadow-color",
+	"right-space",
 	"right-style",
 	"right-thickness",
 	"section-footnote-line-thickness",
@@ -211,7 +215,8 @@ static const char * AbiPropertyName[PP_PropertyMap::abi__count] = {
 	"top-attach",
 	"top-color",
 	"top-shadow",
-	"top-shadow-color"
+	"top-shadow-color",
+	"top-space",
 	"top-style",
 	"top-thickness",
 	"vert-align",

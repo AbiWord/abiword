@@ -85,15 +85,15 @@ public:
 
 	inline fl_BlockLayout*		getBlock(void) const 		{ return m_pBlock; }
 	//! Return height of line as it will appear on screen
-	virtual inline UT_sint32	getHeight(void) const 		{ return m_iHeight; }
-	virtual inline UT_sint32	getX(void) const 			{ return m_iX; }
-	virtual inline UT_sint32	getY(void) const 			{ return m_iY; }
+	virtual UT_sint32	getHeight(void) const;
 
-	inline UT_sint32			getMaxWidth(void) const 	{ return m_iMaxWidth; }
-	
-	inline UT_sint32			getAscent(void) const 		{ return m_iAscent; }
-	inline UT_sint32			getDescent(void) const 		{ return m_iDescent; }
-	UT_sint32                   getNumRunsInLine(void) const {return m_vecRuns.getItemCount();}
+	virtual UT_sint32	getX(void) const;
+	virtual UT_sint32	getY(void) const;
+
+	UT_sint32		getMaxWidth(void) const ;
+	UT_sint32		getAscent(void) const; 	
+	UT_sint32		getDescent(void) const;
+	UT_sint32               getNumRunsInLine(void) const {return m_vecRuns.getItemCount();}
 	UT_sint32			        getColumnGap(void);
 	void				        setAssignedScreenHeight(UT_sint32);
 	bool                        assertLineListIntegrity(void);
@@ -215,6 +215,18 @@ public:
 	void        genOverlapRects(UT_Rect & recLeft, UT_Rect & recRight);
 
 	bool        canContainPoint() const;
+	UT_sint32   calcLeftBorderThick(void);
+	UT_sint32   calcRightBorderThick(void);
+	UT_sint32   calcTopBorderThick(void);
+	UT_sint32   calcBotBorderThick(void);
+	void        calcBorderThickness(void);
+	UT_sint32   getLeftThick(void) const;
+	UT_sint32   getRightThick(void) const;
+	UT_sint32   getTopThick(void) const;
+	UT_sint32   getBotThick(void) const;
+
+	void        drawBorders(void);
+
 #ifdef FMT_TEST
 	void		__dump(FILE * fp) const;
 #endif
@@ -293,6 +305,10 @@ private:
 	bool            m_bIsWrapped;
 	bool            m_bIsSameYAsPrevious;
         UT_sint32       m_iAdditionalMarginAfter;
+	UT_sint32       m_iLeftThick;
+	UT_sint32       m_iRightThick;
+	UT_sint32       m_iTopThick;
+	UT_sint32       m_iBotThick;
 };
 
 #endif /* FP_LINE_H */

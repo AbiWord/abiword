@@ -90,7 +90,11 @@ fp_Line::fp_Line(fl_SectionLayout * pSectionLayout) :
 	m_bContainsFootnoteRef(false),
 	m_bIsWrapped(false),
 	m_bIsSameYAsPrevious(false),
-	m_iAdditionalMarginAfter(0)
+	m_iAdditionalMarginAfter(0),
+	m_iLeftThick(0),
+	m_iRightThick(0),
+	m_iTopThick(0),
+	m_iBotThick(0)
 {
 	if(!s_iClassInstanceCounter)
 	{
@@ -165,6 +169,121 @@ fp_Line::~fp_Line()
 	//UT_ASSERT(getRefCount() == 0);
 }
 
+//
+// All these methods need to be adjusted to take account of the thinkness
+// of the borders drawn around paragraphs. The borders take up additional space 
+// within the dimensions of the lines assigned by the layout calculations.
+//
+//
+// Calculation of the border thickness occurs when:
+// 1. The previous paragraph changes it's properties
+// 2. The line is placed in a different container
+// 3. When the next or previous line is placed in a different container.
+
+// The Ascent of the line is the  max ascent of all the runs plus the top border
+// thickness
+UT_sint32 fp_Line::getAscent(void) const
+{
+  return m_iAscent + getTopThick();
+}
+
+//
+// The Descent is the max descent of all the runs plus the bot border thickness
+UT_sint32 fp_Line::getDescent(void) const
+{
+  return m_iDescent + getBotThick();
+}
+
+//
+// The height is calculated from the sum of all the getAscents and getDescents
+// so has the height of the top and bot borders included.
+//
+UT_sint32 fp_Line::getHeight(void) const
+{
+  return m_iHeight;
+}
+
+//
+// The location of the start of the line should take account of the
+// LeftBorder thickness
+//
+UT_sint32 fp_Line::getX(void) const
+{
+  return m_iX;
+}
+
+//
+// The top of the line locates the position of the line including
+// the top border thickness
+//
+UT_sint32 fp_Line::getY(void) const
+{
+  return m_iY;
+}
+
+//
+// The calculation of the MaxWidth includes the effects of the thickness
+// of the left and right borders
+//
+UT_sint32 fp_Line::getMaxWidth(void) const
+{
+  return m_iMaxWidth;
+}
+
+UT_sint32 fp_Line::calcLeftBorderThick(void)
+{
+  m_iLeftThick = 0;
+  return m_iLeftThick;
+}
+
+UT_sint32 fp_Line::calcRightBorderThick(void)
+{
+  m_iRightThick = 0;
+  return m_iRightThick;
+}
+
+UT_sint32 fp_Line::calcTopBorderThick(void)
+{
+  m_iTopThick = 0;
+  return m_iTopThick;
+}
+
+UT_sint32 fp_Line::calcBotBorderThick(void)
+{
+  m_iBotThick = 0;
+  return m_iBotThick;
+}
+
+void fp_Line::calcBorderThickness(void)
+{
+  calcLeftBorderThick();
+  calcRightBorderThick();
+  calcTopBorderThick();
+  calcBotBorderThick();
+}
+
+UT_sint32 fp_Line::getLeftThick(void) const
+{
+  return m_iLeftThick;
+}
+
+
+UT_sint32 fp_Line::getRightThick(void) const
+{
+  return m_iRightThick;
+}
+
+
+UT_sint32 fp_Line::getTopThick(void) const
+{
+  return m_iTopThick;
+}
+
+
+UT_sint32 fp_Line::getBotThick(void) const
+{
+  return m_iBotThick;
+}
 
 #ifdef DEBUG
 bool fp_Line::assertLineListIntegrity(void)
@@ -706,7 +825,7 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 		xxx_UT_DEBUGMSG(("fp_Line::mapXYToPosition [0x%x]: x=%d, first run x=%d\n", this, x, pFirstRun->getX()));
 		bBOL = true;
 		bool bBBOL = true;
-		UT_sint32 y2 = y - pFirstRun->getY() - m_iAscent + pFirstRun->getAscent();
+		UT_sint32 y2 = y - pFirstRun->getY() - getAscent() + pFirstRun->getAscent();
 		pFirstRun->mapXYToPosition(0, y2, pos, bBBOL, bEOL,isTOC);
 		return;
 	}
@@ -722,7 +841,7 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 
 		if (pRun2->canContainPoint() || pRun2->isField())
 		{
-			UT_sint32 y2 = y - pRun2->getY() - m_iAscent + pRun2->getAscent();
+		  UT_sint32 y2 = y - pRun2->getY() - getAscent() + pRun2->getAscent();
 			if ((x >= static_cast<UT_sint32>(pRun2->getX())) && (x < static_cast<UT_sint32>(pRun2->getX() + pRun2->getWidth())))
 			{
 				// when hit testing runs within a line, we ignore the Y coord
@@ -793,7 +912,7 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 
 		if(pClosestRun && pClosestRun->getType() == FPRUN_ENDOFPARAGRAPH)
 		{
-			UT_sint32 y2 = y - pClosestRun->getY() - m_iAscent + pClosestRun->getAscent();
+		  UT_sint32 y2 = y - pClosestRun->getY() - getAscent() + pClosestRun->getAscent();
 			pClosestRun->mapXYToPosition(x - pClosestRun->getX(), y2, pos, bBOL, bEOL,isTOC);
 			return;
 		}
@@ -804,7 +923,7 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 	}
 	
 
-	UT_sint32 y2 = y - pClosestRun->getY() - m_iAscent + pClosestRun->getAscent();
+	UT_sint32 y2 = y - pClosestRun->getY() - getAscent() + pClosestRun->getAscent();
 	if(pClosestRun->isField())
 	{
 		UT_uint32 width = pClosestRun->getWidth() + 1;
@@ -825,7 +944,7 @@ void fp_Line::getOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff)
 	fp_VerticalContainer * pVCon= (static_cast<fp_VerticalContainer *>(getContainer()));
 	pVCon->getOffsets(this, my_xoff, my_yoff);
 	xoff = my_xoff + pRun->getX();
-	yoff = my_yoff + pRun->getY() + m_iAscent - pRun->getAscent();
+	yoff = my_yoff + pRun->getY() + getAscent() - pRun->getAscent();
 }
 
 void fp_Line::getScreenOffsets(fp_Run* pRun,
@@ -968,7 +1087,7 @@ void fp_Line::recalcHeight(fp_Run * pLastRun)
 	// left of the line.
 	//
 	m_iClearLeftOffset = iMaxDescent;
-	UT_sint32 iOldHeight = m_iHeight;
+	UT_sint32 iOldHeight = getHeight();
 	UT_sint32 iOldAscent = m_iAscent;
 	UT_sint32 iOldDescent = m_iDescent;
 
@@ -1594,7 +1713,7 @@ void fp_Line::draw(GR_Graphics* pG)
 	}
 	dg_DrawArgs da;
 
-	da.yoff = my_yoff + m_iAscent;
+	da.yoff = my_yoff + getAscent();
 	da.xoff = my_xoff;
 	da.pG = pG;
 	da.bDirtyRunsOnly = true; //magic line to give a factor 2 speed up!
@@ -1678,15 +1797,15 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 	      }
 	}
 	xxx_UT_DEBUGMSG(("Drawing line %x in line pDA, width %d \n",this,getWidth()));
-	pDA->yoff += m_iAscent;
-	xxx_UT_DEBUGMSG(("fp_Line::draw getAscent() %d m_iAscent %d yoff %d \n",getAscent(),m_iAscent,pDA->yoff));
+	pDA->yoff += getAscent();
+	xxx_UT_DEBUGMSG(("fp_Line::draw getAscent() %d getAscent() %d yoff %d \n",getAscent(),getAscent(),pDA->yoff));
 	const UT_Rect* pRect = pDA->pG->getClipRect();
 	bool bResetRect = false;
 	if(getBlock() && (getBlock()->getPattern() > 0))
 	{
 	      xxx_UT_DEBUGMSG(("pRect in fp_Line::draw is %p \n",pRect));
 	      UT_sint32 x = pDA->xoff;
-	      UT_sint32 y = pDA->yoff - m_iAscent;
+	      UT_sint32 y = pDA->yoff - getAscent();
 	      if(!pDA->bDirtyRunsOnly)
 	      {
 		    getFillType()->Fill(pDA->pG,x,y,x,y,getMaxWidth(),getHeight());

@@ -99,6 +99,15 @@
 
 #define BIG_NUM_BLOCKBL 1000000
 
+
+static void s_border_properties (const char * border_color, 
+								 const char * border_style, 
+								 const char * border_width,
+								 const char * color,
+								 const char * spacing, PP_PropertyMap::Line & line);
+
+
+
 #ifdef ENABLE_SPELL
 SpellChecker *
 fl_BlockLayout::_getSpellChecker (UT_uint32 blockPos) const
@@ -205,7 +214,11 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	  m_iLinePosInContainer(0),
 	  m_bForceSectionBreak(false),
 	  m_bPrevListLabel(false),
-	  m_iAdditionalMarginAfter(0)
+	  m_iAdditionalMarginAfter(0),
+	  m_ShadingForeColor(0,0,0),
+	  m_ShadingBackColor(0,0,0),
+	  m_iPattern(0),
+	  m_bCanMergeBordersWithNext(true)
 {
 	xxx_UT_DEBUGMSG(("BlockLayout %x created sdh %x \n",this,getStruxDocHandle()));
 	setPrev(pPrev);
@@ -1126,7 +1139,71 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 		}
 
 	}
-	// latter we will need to add here revision handling ...
+	//
+	// Borders now
+	//
+	{
+		m_bCanMergeBordersWithNext = false;
+		const gchar * pszCanMergeBorders = NULL;
+		getProperty("border-merge",pszCanMergeBorders);
+		if(pszCanMergeBorders && strcmp(pszCanMergeBorders,"0"))
+		{
+			m_bCanMergeBordersWithNext = true;
+		}
+		const gchar * pszBorderColor = NULL;
+		const gchar * pszBorderStyle = NULL;
+		const gchar * pszBorderWidth = NULL;
+		const gchar * pszBorderSpacing = NULL;
+		//
+		// Default color
+		//
+		const gchar * pszColor= NULL;
+
+		getProperty ("bot-color",       pszBorderColor);
+		getProperty ("bot-style",       pszBorderStyle);
+		getProperty ("bot-thickness",   pszBorderWidth);
+		getProperty ("bot-space",       pszBorderSpacing);
+
+		s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, pszBorderSpacing,m_lineBottom);
+
+		pszBorderColor = NULL;
+		pszBorderStyle = NULL;
+		pszBorderWidth = NULL;
+		pszBorderSpacing = NULL;
+
+		getProperty ("left-color",      pszBorderColor);
+		getProperty ("left-style",      pszBorderStyle);
+		getProperty ("left-thickness",  pszBorderWidth);
+		getProperty ("left-space",      pszBorderSpacing);
+
+		s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, pszBorderSpacing,m_lineLeft);
+
+		pszBorderColor = NULL;
+		pszBorderStyle = NULL;
+		pszBorderWidth = NULL;
+		pszBorderSpacing = NULL;
+
+		getProperty ("right-color",     pszBorderColor);
+		getProperty ("right-style",     pszBorderStyle);
+		getProperty ("right-thickness", pszBorderWidth);
+		getProperty ("right-space",      pszBorderSpacing);
+
+		s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, pszBorderSpacing,m_lineRight);
+
+		pszBorderColor = NULL;
+		pszBorderStyle = NULL;
+		pszBorderWidth = NULL;
+		pszBorderSpacing = NULL;
+
+		getProperty ("top-color",       pszBorderColor);
+		getProperty ("top-style",       pszBorderStyle);
+		getProperty ("top-thickness",   pszBorderWidth);
+		getProperty ("top-space",       pszBorderSpacing);
+
+		s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, pszBorderSpacing,m_lineTop);
+
+	}
+	// later we will need to add here revision handling ...
 }
 
 UT_sint32 fl_BlockLayout::getPattern(void) const
@@ -11838,3 +11915,72 @@ fl_BlockSpellIterator::_ignoreLastWordCharacter(const UT_UCSChar c) const
     }
 }
 #endif /* without spell */
+
+
+static void s_border_properties (const char * border_color, 
+								 const char * border_style, 
+								 const char * border_width,
+								 const char * color, 
+								 const char * spacing, PP_PropertyMap::Line & line)
+{
+	/* cell-border properties:
+	 * 
+	 * (1) color      - defaults to value of "color" property
+	 * (2) line-style - defaults to solid (in contrast to "none" in CSS)
+	 * (3) thickness  - defaults to 1 layout unit (??, vs "medium" in CSS)
+	 */
+	line.reset ();
+
+	PP_PropertyMap::TypeColor t_border_color = PP_PropertyMap::color_type (border_color);
+	if (t_border_color)
+	{
+		line.m_t_color = t_border_color;
+		if (t_border_color == PP_PropertyMap::color_color)
+			UT_parseColor (border_color, line.m_color);
+	}
+	else if (color)
+	{
+		PP_PropertyMap::TypeColor t_color = PP_PropertyMap::color_type (color);
+
+		line.m_t_color = t_color;
+		if (t_color == PP_PropertyMap::color_color)
+			UT_parseColor (color, line.m_color);
+	}
+
+	line.m_t_linestyle = PP_PropertyMap::linestyle_type (border_style);
+	if (!line.m_t_linestyle)
+		line.m_t_linestyle = PP_PropertyMap::linestyle_solid;
+
+	line.m_t_thickness = PP_PropertyMap::thickness_type (border_width);
+	if (line.m_t_thickness == PP_PropertyMap::thickness_length)
+	{
+		if (UT_determineDimension (border_width, (UT_Dimension)-1) == DIM_PX)
+		{
+			double thickness = UT_LAYOUT_RESOLUTION * UT_convertDimensionless (border_width);
+			line.m_thickness = static_cast<UT_sint32>(thickness / UT_PAPER_UNITS_PER_INCH);
+		}
+		else
+			line.m_thickness = UT_convertToLogicalUnits (border_width);
+
+		if (!line.m_thickness)
+		{
+			// default to 0.72pt
+			double thickness = UT_LAYOUT_RESOLUTION;
+			line.m_thickness = static_cast<UT_sint32>(thickness / UT_PAPER_UNITS_PER_INCH);
+		}
+	}
+	else // ??
+	{
+		// default to 0.72pt
+		double thickness = UT_LAYOUT_RESOLUTION;
+		line.m_thickness = static_cast<UT_sint32>(thickness / UT_PAPER_UNITS_PER_INCH);
+	}
+	if(spacing)
+	{
+		line.m_spacing = UT_convertToLogicalUnits(spacing);
+	}
+	else
+	{
+		line.m_spacing = UT_convertToLogicalUnits("0.02in");
+	}
+}

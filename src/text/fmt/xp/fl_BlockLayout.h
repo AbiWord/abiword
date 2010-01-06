@@ -47,6 +47,7 @@
 #include "fb_LineBreaker.h"
 #include "ut_string_class.h"
 #include "ut_misc.h"
+#include "pp_PropertyMap.h"
 
 // number of DocPositions occupied by the block strux
 #define fl_BLOCK_STRUX_OFFSET	1
@@ -394,6 +395,16 @@ public:
 	const UT_RGBColor      getShadingingForeColor(void) const;
 	const UT_RGBColor      getShadingingBackColor(void) const;
 	UT_sint32              getPattern(void) const;
+
+	const PP_PropertyMap::Line & getBottom () const { return m_lineBottom; }
+	const PP_PropertyMap::Line & getLeft ()   const { return m_lineLeft; }
+	const PP_PropertyMap::Line & getRight ()  const { return m_lineRight; }
+	const PP_PropertyMap::Line & getTop ()    const { return m_lineTop; }
+
+	bool                   hasBorders(void);
+	bool                   sameBordersAsPrev(void);
+	bool                   canMergeBordersWithNext(void);
+
 #ifdef ENABLE_SPELL
 	/** put in queue for spellchecking after prev. If prev == NULL is put at the head */
 	void enqueueToSpellCheckAfter(fl_BlockLayout *prev);
@@ -553,6 +564,12 @@ protected:
 	UT_RGBColor             m_ShadingForeColor;
 	UT_RGBColor             m_ShadingBackColor;
 	UT_sint32               m_iPattern;
+
+	PP_PropertyMap::Line    m_lineBottom;
+	PP_PropertyMap::Line    m_lineLeft;
+	PP_PropertyMap::Line    m_lineRight;
+	PP_PropertyMap::Line    m_lineTop;
+	bool                    m_bCanMergeBordersWithNext;
 };
 
 /*
