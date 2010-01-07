@@ -396,6 +396,6 @@ public:
 	}
 #endif
 };
-ABI_EXPORT bool operator==(PP_PropertyMap::Line& L1, PP_PropertyMap::Line& L2);
+ABI_EXPORT bool operator==(const PP_PropertyMap::Line L1, const PP_PropertyMap::Line L2);
 
 #endif /* ! PP_PROPERTYMAP_H */

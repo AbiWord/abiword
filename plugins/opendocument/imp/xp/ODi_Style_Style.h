@@ -187,6 +187,7 @@ public:
 	       !m_paddingRight.empty() ||
 	       !m_paddingTop.empty()||
 	       !m_paddingBot.empty()||
+	       !m_mergeBorders.empty()||
 
 	  (m_haveTopBorder == HAVE_BORDER_YES) ||
 	  (m_haveBottomBorder == HAVE_BORDER_YES) ||
@@ -467,6 +468,9 @@ private:
     UT_UTF8String m_paddingTop;
     UT_UTF8String m_paddingBot;
 
+    // style:merge-borders
+    UT_UTF8String m_mergeBorders;
+    
     ODi_Abi_Data& m_rAbiData;
    
     // OBS: If "fo:border" is defined, its value will fill all "fo:border-*"

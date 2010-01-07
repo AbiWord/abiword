@@ -379,7 +379,12 @@ void ODi_Style_Style::_parse_style_paragraphProperties(const gchar** ppProps) {
                               m_haveRightBorder, pVal);
         }
     }
-
+    pVal=  UT_getAttribute("style:join-border", ppProps);
+    m_mergeBorders.clear();
+    if(pVal)
+    {
+	m_mergeBorders = pVal;
+    }
     // If "fo:padding" is defined, its value will fill all "fo:padding-*"
     pVal = UT_getAttribute("fo:padding", ppProps);
     if (pVal) 
@@ -971,6 +976,7 @@ void ODi_Style_Style::buildAbiPropsAttrString(ODi_FontFaceDecls& rFontFaceDecls)
     }
     APPEND_STYLE("top-thickness: ", m_borderTop_thickness);
     APPEND_STYLE("top-color: ", m_borderTop_color);
+    APPEND_STYLE("border-merge: ", m_mergeBorders);
     
     // <style:text-properties />
     APPEND_STYLE("color: ", m_color);

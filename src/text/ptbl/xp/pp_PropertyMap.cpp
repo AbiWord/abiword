@@ -394,10 +394,12 @@ void PP_PropertyMap::Line::reset ()
 	m_t_thickness = thickness__unset;
 }
 
-bool operator==( PP_PropertyMap::Line& L1, PP_PropertyMap::Line& L2)
+bool operator==( const PP_PropertyMap::Line L1, const PP_PropertyMap::Line L2)
 {
 	return (L1.m_thickness == L2.m_thickness) &&
-		(L1.m_color == L2.m_color) &&
+		(L1.m_color.m_red == L2.m_color.m_red) &&
+		(L1.m_color.m_grn == L2.m_color.m_grn) &&
+		(L1.m_color.m_blu == L2.m_color.m_blu) &&
 		(L1.m_t_linestyle == L2.m_t_linestyle) &&
 		(L1.m_spacing == L2.m_spacing);
 }

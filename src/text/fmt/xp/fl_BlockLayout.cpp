@@ -987,12 +987,12 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 		m_lineTop.m_t_linestyle =  PP_PropertyMap::linestyle_none;
 		m_lineLeft.m_t_linestyle =  PP_PropertyMap::linestyle_none;
 		m_lineRight.m_t_linestyle =  PP_PropertyMap::linestyle_none;
-		m_bCanMergeBordersWithNext = false;
+		m_bCanMergeBordersWithNext = true;
 		const gchar * pszCanMergeBorders = NULL;
 		pszCanMergeBorders = getProperty("border-merge");
-		if(pszCanMergeBorders && strcmp(pszCanMergeBorders,"0"))
+		if(pszCanMergeBorders && !strcmp(pszCanMergeBorders,"false"))
 		{
-			m_bCanMergeBordersWithNext = true;
+			m_bCanMergeBordersWithNext = false;
 		}
 		const gchar * pszBorderColor = NULL;
 		const gchar * pszBorderStyle = NULL;
@@ -1238,12 +1238,44 @@ const UT_RGBColor fl_BlockLayout::getShadingingBackColor(void) const
 
 bool fl_BlockLayout::canMergeBordersWithPrev(void) const
 {
+	if(!getPrev())
+		return false;
+	if(getPrev()->getContainerType() !=  FL_CONTAINER_BLOCK)
+		return false;
+	const fl_BlockLayout * pPrev = static_cast<const fl_BlockLayout *>(getPrev());
+	if((pPrev->getBottom() == getBottom()) &&
+	   (pPrev->getTop() == getTop()) &&
+	   (pPrev->getLeft() == getLeft()) &&
+	   (pPrev->getRight() == getRight()) &&
+	   (pPrev->getLeftMargin() == getLeftMargin()) &&
+	   (pPrev->getRightMargin() == getRightMargin()) &&
+	   (pPrev->getTextIndent() == getTextIndent()) &&
+	   (pPrev->m_bCanMergeBordersWithNext))
+		{
+			return true;
+		}
 	return false;
 }
 
 
 bool fl_BlockLayout::canMergeBordersWithNext(void) const
 {
+	if(!getNext())
+		return false;
+	if(getNext()->getContainerType() !=  FL_CONTAINER_BLOCK)
+		return false;
+	fl_BlockLayout * pNext = static_cast<fl_BlockLayout *>(getNext());
+	if((pNext->getBottom() == getBottom()) &&
+	   (pNext->getTop() == getTop()) &&
+	   (pNext->getLeft() == getLeft()) &&
+	   (pNext->getRight() == getRight()) &&
+	   (pNext->getLeftMargin() == getLeftMargin()) &&
+	   (pNext->getRightMargin() == getRightMargin()) &&
+	   (pNext->getTextIndent() == getTextIndent()) &&
+	   m_bCanMergeBordersWithNext)
+		{
+			return true;
+		}
 	return false;
 }
 
@@ -1251,6 +1283,7 @@ bool fl_BlockLayout::hasBorders(void) const
 {
 	return m_bHasBorders;
 }
+
 
 fl_BlockLayout::~fl_BlockLayout()
 {

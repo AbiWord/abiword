@@ -208,11 +208,18 @@ void fp_Line::drawBorders(GR_Graphics * pG)
   if(!getBlock())
       return;
   fp_Line * pFirst = const_cast<fp_Line *>(getFirstInContainer());
+  bool bDrawTop = false;
+  bool bDrawBot = false;
   if(!pFirst)
       return;
   fp_Line * pLast = const_cast<fp_Line *>(getLastInContainer());
   if(!pLast)
       return;
+  if(pFirst->canDrawTopBorder())
+      bDrawTop = true;
+  if(pLast->canDrawBotBorder())
+      bDrawBot = true;
+
   UT_Rect * pFirstR = pFirst->getScreenRect();
   if(!pFirstR)
       return;
@@ -222,18 +229,46 @@ void fp_Line::drawBorders(GR_Graphics * pG)
       delete pFirstR;
       return;
   }
+  UT_Rect * pConR = static_cast<fp_VerticalContainer *>(getContainer())->getScreenRect();
+  if(!pConR)
+  {
+      delete pFirstR;
+      delete pLastR;
+      return;
+  }
   UT_sint32 iTop = pFirstR->top;
   UT_sint32 iBot = pLastR->top + pLastR->height;
-  UT_sint32 iLeft = pFirstR->left - getBlock()->getTextIndent();
-  UT_sint32 iRight = pLastR->left+pLastR->width;
+  UT_sint32 iLeft = pConR->left + getLeftEdge();
+  UT_sint32 iRight = pConR->left + getRightEdge();
   if(getBlock()->getBottom().m_t_linestyle > 1)
   {
       iBot = iBot-getBlock()->getBottom().m_thickness;
   }
   //
+  // Now correct for printing
+  //
+  fp_Page * pPage = getPage();
+  if(pPage == NULL)
+       return;
+  if(pPage->getDocLayout()->getView() && pG->queryProperties(GR_Graphics::DGP_PAPER))
+  {
+       UT_sint32 xdiff,ydiff;
+       pPage->getDocLayout()->getView()->getPageScreenOffsets(pPage, xdiff, ydiff);
+       iTop = iTop - ydiff;
+       iBot = iBot - ydiff;
+       iLeft = iLeft - xdiff;
+       iRight = iRight - xdiff;
+       if(pPage->getDocLayout()->getView()->getViewMode() != VIEW_PRINT)
+       {
+	    iTop += static_cast<fl_DocSectionLayout *>(getSectionLayout()->getDocSectionLayout())->getTopMargin();
+	    iBot += static_cast<fl_DocSectionLayout *>(getSectionLayout()->getDocSectionLayout())->getTopMargin();
+       }
+  }
+
+  //
   // Draw top border
   PP_PropertyMap::Line line;
-  if(getBlock()->getTop().m_t_linestyle > 1)
+  if(bDrawTop && (getBlock()->getTop().m_t_linestyle > 1))
   {
       line = getBlock()->getTop();
       drawLine(line,iLeft,iTop,iRight,iTop,pG);
@@ -248,13 +283,45 @@ void fp_Line::drawBorders(GR_Graphics * pG)
       line = getBlock()->getRight();
       drawLine(line,iRight,iTop,iRight,iBot,pG);
   }
-  if(getBlock()->getBottom().m_t_linestyle > 1)
+  if(bDrawBot && (getBlock()->getBottom().m_t_linestyle > 1))
   {
       line = getBlock()->getBottom();
       drawLine(line,iLeft,iBot,iRight,iBot,pG);
   }
+  delete pFirstR;
+  delete pLastR;
+  delete pConR;
 }
 
+/*!
+ * The left most esge of the paragraph relative to it's container.
+ */
+UT_sint32 fp_Line::getLeftEdge(void)
+{
+        if(!getBlock())
+	     return 0;
+	UT_sint32 iLeft = getBlock()->getLeftMargin();
+	if(getBlock()->getTextIndent() < 0)
+	{
+	     iLeft += getBlock()->getTextIndent();
+	}
+	return iLeft;
+}
+
+
+/*!
+ * The left most esge of the paragraph relative to it's container.
+ */
+UT_sint32 fp_Line::getRightEdge(void)
+{
+	fp_VerticalContainer * pVCon = static_cast<fp_VerticalContainer *>(getContainer());
+	if(!pVCon)
+	  return getMaxWidth();
+	if(!getBlock())
+	  return getMaxWidth();
+	UT_sint32 iRight = pVCon->getWidth() - getBlock()->getRightMargin();
+	return iRight;
+}
 
 //
 // The location of the start of the line should take account of the
@@ -426,7 +493,9 @@ bool fp_Line::canDrawTopBorder(void) const
     return false;
   if(pFirst == pMyCon->getNthCon(0))
     return true;
-  fp_ContainerObject * pPrev = pFirst->getPrev();
+  if(!getBlock())
+    return true;
+  fp_ContainerObject * pPrev = pFirst->getPrevContainerInSection();
   if(!pPrev || (pPrev->getContainerType() != FP_CONTAINER_LINE))
     return true;
   fl_BlockLayout * pPrevBlock = static_cast<fp_Line *>(pPrev)->getBlock();
@@ -447,7 +516,7 @@ bool fp_Line::canDrawBotBorder(void) const
   fp_Container * pMyCon = getContainer();
   if(pMyCon == NULL)
     return false;
-  fp_ContainerObject * pNext = pLast->getNext();
+  fp_Container * pNext = pLast->getNextContainerInSection();
   if(pNext == NULL)
     return true;
   fp_Line * pNextL = static_cast<fp_Line *>(pNext);
