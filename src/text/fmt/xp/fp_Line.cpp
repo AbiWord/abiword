@@ -203,6 +203,59 @@ UT_sint32 fp_Line::getHeight(void) const
   return m_iHeight;
 }
 
+void fp_Line::drawBorders(GR_Graphics * pG)
+{
+  if(!getBlock())
+      return;
+  fp_Line * pFirst = const_cast<fp_Line *>(getFirstInContainer());
+  if(!pFirst)
+      return;
+  fp_Line * pLast = const_cast<fp_Line *>(getLastInContainer());
+  if(!pLast)
+      return;
+  UT_Rect * pFirstR = pFirst->getScreenRect();
+  if(!pFirstR)
+      return;
+  UT_Rect * pLastR = pLast->getScreenRect();
+  if(!pLastR)
+  {
+      delete pFirstR;
+      return;
+  }
+  UT_sint32 iTop = pFirstR->top;
+  UT_sint32 iBot = pLastR->top + pLastR->height;
+  UT_sint32 iLeft = pFirstR->left - getBlock()->getTextIndent();
+  UT_sint32 iRight = pLastR->left+pLastR->width;
+  if(getBlock()->getBottom().m_t_linestyle > 1)
+  {
+      iBot = iBot-getBlock()->getBottom().m_thickness;
+  }
+  //
+  // Draw top border
+  PP_PropertyMap::Line line;
+  if(getBlock()->getTop().m_t_linestyle > 1)
+  {
+      line = getBlock()->getTop();
+      drawLine(line,iLeft,iTop,iRight,iTop,pG);
+  }
+  if(getBlock()->getLeft().m_t_linestyle > 1)
+  {
+      line = getBlock()->getLeft();
+      drawLine(line,iLeft,iTop,iLeft,iBot,pG);
+  }
+  if(getBlock()->getRight().m_t_linestyle > 1)
+  {
+      line = getBlock()->getRight();
+      drawLine(line,iRight,iTop,iRight,iBot,pG);
+  }
+  if(getBlock()->getBottom().m_t_linestyle > 1)
+  {
+      line = getBlock()->getBottom();
+      drawLine(line,iLeft,iBot,iRight,iBot,pG);
+  }
+}
+
+
 //
 // The location of the start of the line should take account of the
 // LeftBorder thickness
@@ -230,27 +283,88 @@ UT_sint32 fp_Line::getMaxWidth(void) const
   return m_iMaxWidth;
 }
 
+UT_sint32 fp_Line::getAvailableWidth(void) const
+{
+  return getMaxWidth() - getLeftThick() - getRightThick();
+}
+
 UT_sint32 fp_Line::calcLeftBorderThick(void)
 {
   m_iLeftThick = 0;
+  if(getBlock() && !getBlock()->hasBorders())
+  {
+      m_iLeftThick = 0;
+  }
+  else if(getBlock())
+  {
+      bool bGetThick = true;
+      if(!getPrev() || getPrev()->getContainerType() != FP_CONTAINER_LINE)
+      {
+	  bGetThick = true;
+      }
+      else if (isSameYAsPrevious())
+      {
+	  bGetThick = false;
+      }
+      if(bGetThick)
+      {
+	  m_iLeftThick =getBlock()->getLeft().m_thickness + getBlock()->getLeft().m_spacing;
+      }
+  }
   return m_iLeftThick;
 }
 
 UT_sint32 fp_Line::calcRightBorderThick(void)
 {
   m_iRightThick = 0;
+  if(getBlock() && !getBlock()->hasBorders())
+  {
+      m_iRightThick = 0;
+  }
+  else if(getBlock())
+  {
+      bool bGetThick = true;
+      if(!getNext() || getNext()->getContainerType() != FP_CONTAINER_LINE)
+      {
+	  bGetThick = true;
+      }
+      else if (static_cast<fp_Line *>(getNext())->isSameYAsPrevious())
+      {
+	  bGetThick = false;
+      }
+      if(bGetThick)
+      {
+	  m_iRightThick =getBlock()->getRight().m_thickness + getBlock()->getRight().m_spacing;
+      }
+  }
   return m_iRightThick;
 }
 
 UT_sint32 fp_Line::calcTopBorderThick(void)
 {
   m_iTopThick = 0;
+  if(getBlock() && !getBlock()->hasBorders())
+  {
+       m_iTopThick = 0;
+  }
+  else if(getBlock() && canDrawTopBorder())
+  {
+       m_iTopThick = getBlock()->getTop().m_thickness + getBlock()->getTop().m_spacing;
+  }
   return m_iTopThick;
 }
 
 UT_sint32 fp_Line::calcBotBorderThick(void)
 {
   m_iBotThick = 0;
+  if(getBlock() && !getBlock()->hasBorders())
+  {
+       m_iBotThick = 0;
+  }
+  else if(getBlock() && canDrawBotBorder())
+  {
+       m_iBotThick = getBlock()->getBottom().m_thickness + getBlock()->getBottom().m_spacing;
+  }
   return m_iBotThick;
 }
 
@@ -260,6 +374,91 @@ void fp_Line::calcBorderThickness(void)
   calcRightBorderThick();
   calcTopBorderThick();
   calcBotBorderThick();
+  setHeight(getAscent()+getDescent());
+}
+
+const fp_Line * fp_Line::getFirstInContainer(void) const
+{
+  const fp_Container * pMyCon = getContainer();
+  if(pMyCon == NULL)
+    return NULL;
+  const fp_ContainerObject * pPrev = getPrev();
+  const fp_ContainerObject * pCurrent = static_cast<const fp_ContainerObject*>(this);
+  while(pPrev && (pPrev->getContainerType() == FP_CONTAINER_LINE) &&
+	(static_cast<const fp_Line *>(pPrev)->getBlock()) &&
+	(static_cast<const fp_Line *>(pPrev)->getBlock() == getBlock()) &&
+	(static_cast<const fp_Line *>(pPrev)->getContainer() == pMyCon))
+  {
+        pCurrent = pPrev;
+        pPrev = pPrev->getPrev();
+  }
+  return static_cast<const fp_Line *>(pCurrent);
+}
+
+const fp_Line * fp_Line::getLastInContainer(void) const
+{
+  const fp_Container * pMyCon = getContainer();
+  if(pMyCon == NULL)
+    return NULL;
+  const fp_ContainerObject * pNext = getNext();
+  const fp_ContainerObject * pCurrent = static_cast<const fp_ContainerObject *>(this);
+  while(pNext && (pNext->getContainerType() == FP_CONTAINER_LINE) &&
+	(static_cast<const fp_Line *>(pNext)->getBlock()) &&
+	(static_cast<const fp_Line *>(pNext)->getBlock() == getBlock()) &&
+	(static_cast<const fp_Line *>(pNext)->getContainer() == pMyCon))
+  {
+        pCurrent = pNext;
+        pNext = pNext->getNext();
+  }
+  return static_cast<const fp_Line *>(pCurrent);
+}
+
+bool fp_Line::canDrawTopBorder(void) const
+{
+  const fp_Line * pFirst = getFirstInContainer();
+  //
+  // This line could be wrapped at the same Y as the first line
+  //
+  if((pFirst != this) && (pFirst->getY() != getY()))
+     return false;
+  fp_Container * pMyCon = getContainer();
+  if(pMyCon == NULL)
+    return false;
+  if(pFirst == pMyCon->getNthCon(0))
+    return true;
+  fp_ContainerObject * pPrev = pFirst->getPrev();
+  if(!pPrev || (pPrev->getContainerType() != FP_CONTAINER_LINE))
+    return true;
+  fl_BlockLayout * pPrevBlock = static_cast<fp_Line *>(pPrev)->getBlock();
+  if(pPrevBlock->canMergeBordersWithNext())
+    return false;
+  return true;
+}
+
+
+bool fp_Line::canDrawBotBorder(void) const
+{
+  const fp_Line * pLast = getLastInContainer();
+  //
+  // This line could be wrapped at the same Y as the last line
+  //
+  if((pLast != this) && (pLast->getY() != getY()))
+     return false;
+  fp_Container * pMyCon = getContainer();
+  if(pMyCon == NULL)
+    return false;
+  fp_ContainerObject * pNext = pLast->getNext();
+  if(pNext == NULL)
+    return true;
+  fp_Line * pNextL = static_cast<fp_Line *>(pNext);
+  if(pNextL->getContainer() == NULL)
+    return true;
+  if(pNextL->getContainer() != pMyCon)
+    return true;
+  fl_BlockLayout * pNextBlock = pNextL->getBlock();
+  if(pNextBlock->canMergeBordersWithPrev())
+    return false;
+  return true;
 }
 
 UT_sint32 fp_Line::getLeftThick(void) const
@@ -436,6 +635,7 @@ UT_Rect * fp_Line::getScreenRect(void)
 	UT_Rect * pRec = NULL; 
 	fp_Run * pRun = getFirstRun();
 	getScreenOffsets(pRun,xoff,yoff);
+	xoff -= getLeftThick();
 	pRec= new UT_Rect(xoff,yoff,getMaxWidth(),getHeight());
 	return pRec;
 }
@@ -614,11 +814,14 @@ void fp_Line::setContainer(fp_Container* pContainer)
 	{
 		setMaxWidth(pContainer->getWidth());
 	}
+	calcLeftBorderThick();
+	calcRightBorderThick();
 }
 
 UT_sint32 fp_Line::getWidthToRun(fp_Run * pLastRun)
 {
-	UT_sint32 width = 0;
+	calcLeftBorderThick();
+	UT_sint32 width = getLeftThick();
 	UT_sint32 count = m_vecRuns.getItemCount();
 	UT_sint32 i = 0;
 	for(i=0;i<count;i++)
@@ -630,12 +833,12 @@ UT_sint32 fp_Line::getWidthToRun(fp_Run * pLastRun)
 		}
 		width += pRun->getWidth();
 	}
-	return 0;
+	return getLeftThick();
 }
 
 UT_sint32 fp_Line::getFilledWidth(void)
 {
-	UT_sint32 width = 0;
+	UT_sint32 width = getLeftThick();
 	UT_sint32 count = m_vecRuns.getItemCount();
 	UT_sint32 i = 0;
 	for(i=0;i<count;i++)
@@ -1774,7 +1977,8 @@ void fp_Line::draw(GR_Graphics* pG)
 		pCell->drawLinesAdjacent();
 	}
 #endif
-	  
+	if(getBlock() && getBlock()->hasBorders())
+	     drawBorders(pG);
 }
 
 void fp_Line::draw(dg_DrawArgs* pDA)
@@ -1800,7 +2004,6 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 	pDA->yoff += getAscent();
 	xxx_UT_DEBUGMSG(("fp_Line::draw getAscent() %d getAscent() %d yoff %d \n",getAscent(),getAscent(),pDA->yoff));
 	const UT_Rect* pRect = pDA->pG->getClipRect();
-	bool bResetRect = false;
 	if(getBlock() && (getBlock()->getPattern() > 0))
 	{
 	      xxx_UT_DEBUGMSG(("pRect in fp_Line::draw is %p \n",pRect));
@@ -1868,6 +2071,9 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 		pCell->drawLinesAdjacent();
 	}
 #endif
+	if(getBlock() && getBlock()->hasBorders())
+	        drawBorders(pDA->pG);
+
 }
 
 //this is a helper function for getRunWith; it works out working direction and
@@ -2329,7 +2535,8 @@ void fp_Line::layout(void)
 
 	// first of all, work out the height
 	recalcHeight();
-
+	calcLeftBorderThick();
+	calcRightBorderThick();
 	UT_sint32 iCountRuns		  = m_vecRuns.getItemCount();
 	// I think we cannot return before the call to recalcHeight above, since we
 	// could be called in response to all runs being removed, and that potentially
@@ -2384,7 +2591,7 @@ void fp_Line::layout(void)
 
 	UT_ASSERT(s_pOldXs);
 
-	UT_sint32 iStartX = 0;
+	UT_sint32 iStartX = getLeftThick();
 
 	// find out the direction of the paragraph
 	UT_BidiCharType iDomDirection = m_pBlock->getDominantDirection();
@@ -2419,7 +2626,7 @@ void fp_Line::layout(void)
 				eUseTabStop = USE_PREV_TABSTOP;
 
 			eWorkingDirection = WORK_BACKWARD;
-			iStartX = getMaxWidth();
+			iStartX = getAvailableWidth();
 			break;
 
 		case FB_ALIGNMENT_CENTER:
@@ -3111,7 +3318,9 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 	{
 		return;
 	}
+        calcLeftBorderThick();
 	UT_sint32 iX = m_pBlock->getLeftMargin();
+	UT_sint32 iX_orig = iX;
 	UT_sint32 iMaxWidth = getContainer()->getWidth();
 
 	UT_BidiCharType iBlockDir = m_pBlock->getDominantDirection();

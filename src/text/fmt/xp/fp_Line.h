@@ -224,8 +224,12 @@ public:
 	UT_sint32   getRightThick(void) const;
 	UT_sint32   getTopThick(void) const;
 	UT_sint32   getBotThick(void) const;
-
-	void        drawBorders(void);
+	UT_sint32   getAvailableWidth(void) const;
+	const fp_Line *   getFirstInContainer(void) const;
+	const fp_Line *   getLastInContainer(void) const;
+	bool        canDrawTopBorder(void) const;
+	bool        canDrawBotBorder(void) const;
+	void        drawBorders(GR_Graphics * pG);
 
 #ifdef FMT_TEST
 	void		__dump(FILE * fp) const;

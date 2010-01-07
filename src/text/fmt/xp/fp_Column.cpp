@@ -1900,6 +1900,17 @@ void fp_Column::layout(void)
 	fp_Container *pPrevContainer = NULL;
 	UT_sint32 i  = 0;
 	//
+	// First calculate the border widths
+	//
+	for(i=0; i< countCons();i++)
+	{
+		pContainer = static_cast<fp_Container*>(getNthCon(i));
+		if(pContainer->getContainerType() == FP_CONTAINER_LINE)
+		{
+		    static_cast<fp_Line *>(pContainer)->calcBorderThickness();
+		}
+	}
+	//
 	// RedrawHeight makes sure we redraw from whereever a line
 	// changes position.
 	//

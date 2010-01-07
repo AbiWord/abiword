@@ -107,9 +107,9 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock,
 			m_pFirstRunToKeep = pLine->getFirstRun();
 			m_pLastRunToKeep = NULL;
 			
-			m_iMaxLineWidth = pLine->getMaxWidth();
+			m_iMaxLineWidth = pLine->getAvailableWidth();
 
-			m_iWorkingLineWidth = 0;
+			m_iWorkingLineWidth = pLine->getLeftThick();
 
 //			bool bFoundBreakAfter = false;
 //			bool bFoundSplit = false;

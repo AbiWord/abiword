@@ -401,9 +401,11 @@ public:
 	const PP_PropertyMap::Line & getRight ()  const { return m_lineRight; }
 	const PP_PropertyMap::Line & getTop ()    const { return m_lineTop; }
 
-	bool                   hasBorders(void);
-	bool                   sameBordersAsPrev(void);
-	bool                   canMergeBordersWithNext(void);
+	bool                   hasBorders(void) const;
+	bool                   canMergeBordersWithPrev(void) const;
+	bool                   canMergeBordersWithNext(void) const;
+	UT_sint32              getLeftEdge(void);
+	UT_sint32              getRightEdge(void);
 
 #ifdef ENABLE_SPELL
 	/** put in queue for spellchecking after prev. If prev == NULL is put at the head */
@@ -570,6 +572,7 @@ protected:
 	PP_PropertyMap::Line    m_lineRight;
 	PP_PropertyMap::Line    m_lineTop;
 	bool                    m_bCanMergeBordersWithNext;
+	bool                    m_bHasBorders;
 };
 
 /*

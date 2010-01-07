@@ -209,6 +209,56 @@ void fp_Container::setMyBrokenContainer(fp_Container * pMyBroken)
 	}
 }
 
+void fp_Container::drawLine(const PP_PropertyMap::Line & style,
+				     UT_sint32 left, UT_sint32 top, 
+				     UT_sint32 right, UT_sint32 bot,
+				     GR_Graphics * pGr)
+{
+	if (style.m_t_linestyle == PP_PropertyMap::linestyle_none &&
+		!pGr->queryProperties(GR_Graphics::DGP_SCREEN))
+		return; // do not draw the dotted line when printing	
+	
+	GR_Graphics::JoinStyle js = GR_Graphics::JOIN_MITER;
+	GR_Graphics::CapStyle  cs = GR_Graphics::CAP_PROJECTING;
+
+	switch (style.m_t_linestyle)
+	{
+		case PP_PropertyMap::linestyle_none:
+			pGr->setLineProperties (pGr->tlu(1), js, cs, GR_Graphics::LINE_DOTTED);
+			break;
+		case PP_PropertyMap::linestyle_dotted:
+			pGr->setLineProperties (pGr->tlu(1), js, cs, GR_Graphics::LINE_DOTTED);
+			break;
+		case PP_PropertyMap::linestyle_dashed:
+			pGr->setLineProperties (pGr->tlu(1), js, cs, GR_Graphics::LINE_ON_OFF_DASH);
+			break;
+		case PP_PropertyMap::linestyle_solid:
+			pGr->setLineProperties (pGr->tlu(1), js, cs, GR_Graphics::LINE_SOLID);
+			break;
+		default: // do nothing; shouldn't happen
+			break;
+	}
+
+	pGr->setLineWidth (static_cast<UT_sint32>(style.m_thickness));
+	if (style.m_t_linestyle == PP_PropertyMap::linestyle_none)
+	{
+	        pGr->setLineProperties (pGr->tlu(1), js, cs, GR_Graphics::LINE_SOLID);
+		return;
+	}
+	else
+	{
+		pGr->setColor (style.m_color);
+	}
+
+	xxx_UT_DEBUGMSG(("_drawLine: top %d bot %d \n",top,bot));
+
+	GR_Painter painter(pGr);
+
+	painter.drawLine (left, top, right, bot);
+	pGr->setLineProperties (pGr->tlu(1), js, cs, GR_Graphics::LINE_SOLID);
+}
+
+
 void fp_Container::setNext(fp_ContainerObject * pNext)
 {
   m_pNext = pNext;

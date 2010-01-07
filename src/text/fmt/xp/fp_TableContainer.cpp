@@ -826,25 +826,25 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 
 		lineLeft.m_t_linestyle = PP_PropertyMap::linestyle_solid;
 		lineLeft.m_color = pageCol;
-		_drawLine (lineLeft, bRec.left, bRec.top, bRec.left,  bRec.top + bRec.height,getGraphics());
+		drawLine (lineLeft, bRec.left, bRec.top, bRec.left,  bRec.top + bRec.height,getGraphics());
 
 		lineTop.m_t_linestyle = PP_PropertyMap::linestyle_solid;
 		lineTop.m_color =  pageCol;
-		_drawLine (lineTop, bRec.left, bRec.top, bRec.left + bRec.width,  bRec.top,getGraphics()); 
+		drawLine (lineTop, bRec.left, bRec.top, bRec.left + bRec.width,  bRec.top,getGraphics()); 
 		if(pBroke && pBroke->getPage() && pBroke->getBrokenTop() > 0)
 		{
 			UT_sint32 col_x,col_y;
 			fp_Column * pCol = static_cast<fp_Column *>(pBroke->getBrokenColumn());
 			pBroke->getPage()->getScreenOffsets(pCol, col_x,col_y);
-			_drawLine (lineTop, bRec.left, col_y, bRec.left + bRec.width,  col_y,getGraphics());
+			drawLine (lineTop, bRec.left, col_y, bRec.left + bRec.width,  col_y,getGraphics());
 		}
 		lineRight.m_t_linestyle = PP_PropertyMap::linestyle_solid;
 		lineRight.m_color =  pageCol;
-		_drawLine (lineRight, bRec.left + bRec.width, bRec.top, bRec.left + bRec.width, bRec.top + bRec.height,getGraphics()); 
+		drawLine (lineRight, bRec.left + bRec.width, bRec.top, bRec.left + bRec.width, bRec.top + bRec.height,getGraphics()); 
 		
 		lineBottom.m_t_linestyle = PP_PropertyMap::linestyle_solid;
 		lineBottom.m_color = pageCol;
-		_drawLine (lineBottom, bRec.left, bRec.top + bRec.height, bRec.left + bRec.width , bRec.top + bRec.height,getGraphics());
+		drawLine (lineBottom, bRec.left, bRec.top + bRec.height, bRec.left + bRec.width , bRec.top + bRec.height,getGraphics());
 		xxx_UT_DEBUGMSG(("_Clear: pBroke %x \n",pBroke));
 		if(pBroke && pBroke->getPage() && pBroke->getBrokenBot() >= 0)
 		{
@@ -853,7 +853,7 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 			pBroke->getPage()->getScreenOffsets(pCol, col_x,col_y);
 			UT_sint32 bot = col_y + pCol->getHeight();
 			xxx_UT_DEBUGMSG(("_clear: Clear broken bottom %d \n",bot));
-			_drawLine (lineBottom, bRec.left, bot, bRec.left + bRec.width,  bot,getGraphics());
+			drawLine (lineBottom, bRec.left, bot, bRec.left + bRec.width,  bot,getGraphics());
 		}
 		getGraphics()->setLineWidth(1 );
 		xxx_UT_DEBUGMSG(("_clear: BRec.top %d  Brec.height %d \n",bRec.top,bRec.height));
@@ -950,56 +950,6 @@ void fp_CellContainer::setContainer(fp_Container * pContainer)
 	UT_sint32 iWidth = pTable->getWidth();
 
 	fp_CellContainer::setWidth(iWidth);
-}
-
-/* just a little helper function
- */
-void fp_CellContainer::_drawLine (const PP_PropertyMap::Line & style,
-								  UT_sint32 left, UT_sint32 top, UT_sint32 right, UT_sint32 bot,GR_Graphics * pGr)
-{
-
-	if (style.m_t_linestyle == PP_PropertyMap::linestyle_none &&
-		!pGr->queryProperties(GR_Graphics::DGP_SCREEN))
-		return; // do not draw the dotted line when printing	
-	
-	GR_Graphics::JoinStyle js = GR_Graphics::JOIN_MITER;
-	GR_Graphics::CapStyle  cs = GR_Graphics::CAP_PROJECTING;
-
-	switch (style.m_t_linestyle)
-	{
-		case PP_PropertyMap::linestyle_none:
-			pGr->setLineProperties (pGr->tlu(1), js, cs, GR_Graphics::LINE_DOTTED);
-			break;
-		case PP_PropertyMap::linestyle_dotted:
-			pGr->setLineProperties (pGr->tlu(1), js, cs, GR_Graphics::LINE_DOTTED);
-			break;
-		case PP_PropertyMap::linestyle_dashed:
-			pGr->setLineProperties (pGr->tlu(1), js, cs, GR_Graphics::LINE_ON_OFF_DASH);
-			break;
-		case PP_PropertyMap::linestyle_solid:
-			pGr->setLineProperties (pGr->tlu(1), js, cs, GR_Graphics::LINE_SOLID);
-			break;
-		default: // do nothing; shouldn't happen
-			break;
-	}
-
-	pGr->setLineWidth (static_cast<UT_sint32>(style.m_thickness));
-	if (style.m_t_linestyle == PP_PropertyMap::linestyle_none)
-	{
-		pGr->setColor (m_borderColorNone);
-	}
-	else
-	{
-		pGr->setColor (style.m_color);
-	}
-
-	xxx_UT_DEBUGMSG(("_drawLine: top %d bot %d \n",top,bot));
-
-	GR_Painter painter(pGr);
-
-	painter.drawLine (left, top, right, bot);
-	
-	pGr->setLineProperties (pGr->tlu(1), js, cs, GR_Graphics::LINE_SOLID);
 }
 
 PP_PropertyMap::Background fp_CellContainer::getBackground () const
@@ -1455,7 +1405,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG, bo
 			{
 				clineLeft.m_color = white;
 				clineLeft.m_thickness  += 3*onePix;
-				_drawLine (clineLeft, iLeft, iTop, iLeft,  iBot,pG);
+				drawLine (clineLeft, iLeft, iTop, iLeft,  iBot,pG);
 			}
 			else
 		    {
@@ -1463,7 +1413,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG, bo
 					iextTop = 0;
 				if(bBotScreen)
 					iextBot = 0;
-				_drawLine(lineLeft, iLeft, iTop-iextTop, iLeft, iBot+iextBot,pG);
+				drawLine(lineLeft, iLeft, iTop-iextTop, iLeft, iBot+iextBot,pG);
 			}
 		}
 		if(m_bDrawTop || bDrawTop)
@@ -1472,11 +1422,11 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG, bo
 			{
 				clineTop.m_color = white;
 				clineTop.m_thickness  += 3*onePix;
-				_drawLine(clineTop, iLeft, iTop, iRight, iTop,pG);
+				drawLine(clineTop, iLeft, iTop, iRight, iTop,pG);
 			}
 			else
 			{
-				_drawLine(lineTop, iLeft-iextLeft, iTop, iRight+iextRight, iTop,pG);
+				drawLine(lineTop, iLeft-iextLeft, iTop, iRight+iextRight, iTop,pG);
 			}
 		}
 		if(m_bDrawRight)
@@ -1485,7 +1435,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG, bo
 			{
 				clineRight.m_color = white;
 				clineRight.m_thickness  += 3*onePix;
-				_drawLine(clineRight, iRight, iTop, iRight, iBot,pG);
+				drawLine(clineRight, iRight, iTop, iRight, iBot,pG);
 			}
 			else
 			{
@@ -1493,7 +1443,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG, bo
 					iextTop = 0;
 				if(bBotScreen)
 					iextBot = 0;
-				_drawLine(lineRight, iRight, iTop-iextTop, iRight, iBot+iextBot,pG);
+				drawLine(lineRight, iRight, iTop-iextTop, iRight, iBot+iextBot,pG);
 			}
 		}
 		if(m_bDrawBot || bDrawBot)
@@ -1502,11 +1452,11 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG, bo
 			{
 				clineBottom.m_color = white;
 				clineBottom.m_thickness  += 3*onePix;
-				_drawLine(clineBottom, iLeft, iBot, iRight, iBot,pG);
+				drawLine(clineBottom, iLeft, iBot, iRight, iBot,pG);
 			}
 			else
 			{
-				_drawLine(lineBottom, iLeft-iextLeft, iBot, iRight+iextRight, iBot,pG);
+				drawLine(lineBottom, iLeft-iextLeft, iBot, iRight+iextRight, iBot,pG);
 			}
 		}
 	}

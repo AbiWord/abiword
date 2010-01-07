@@ -256,8 +256,6 @@ public:
 private:
 		
 	void                _clear(fp_TableContainer * pBroke);
-	void				_drawLine(const PP_PropertyMap::Line & style,
-								  UT_sint32 left, UT_sint32 top, UT_sint32 right, UT_sint32 bot,GR_Graphics * pG);
 	void				_getBrokenRect(fp_TableContainer * pBroke, fp_Page* &pPage, UT_Rect &bRec, GR_Graphics * pG);
 		
 //

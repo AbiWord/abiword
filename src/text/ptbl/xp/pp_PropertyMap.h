@@ -300,7 +300,6 @@ public:
 		Line ();
 
 		void reset (); // restore defaults
-
 		TypeColor		m_t_color;
 		TypeLineStyle	m_t_linestyle;
 		TypeThickness	m_t_thickness;
@@ -309,6 +308,8 @@ public:
 		UT_uint32		m_thickness;	// in case of thickness_length
 		UT_sint32       m_spacing;      // gap in logical unit to content
 	};
+
+
 	class ABI_EXPORT Background
 	{
 	public:
@@ -324,6 +325,7 @@ public:
 	static const char * abi_property_name (AbiPropertyIndex index);
 
 	static bool abi_property_lookup (const char * name, AbiPropertyIndex & index);
+
 #if 0
 	typedef std::map<UT_sint32, UT_UTF8String *> map_type;
 private:
@@ -394,5 +396,6 @@ public:
 	}
 #endif
 };
+ABI_EXPORT bool operator==(PP_PropertyMap::Line& L1, PP_PropertyMap::Line& L2);
 
 #endif /* ! PP_PROPERTYMAP_H */

@@ -218,7 +218,8 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	  m_ShadingForeColor(0,0,0),
 	  m_ShadingBackColor(0,0,0),
 	  m_iPattern(0),
-	  m_bCanMergeBordersWithNext(true)
+	  m_bCanMergeBordersWithNext(true),
+	  m_bHasBorders(false)
 {
 	xxx_UT_DEBUGMSG(("BlockLayout %x created sdh %x \n",this,getStruxDocHandle()));
 	setPrev(pPrev);
@@ -455,6 +456,7 @@ void fl_BlockLayout::refreshRunProperties(void) const
 		pRun = pRun->getNextRun();
 	}
 }
+
 /*!
     this function is only to be called by fl_ContainerLayout::lookupMarginProperties()
     all other code must call lookupMarginProperties() instead
@@ -940,7 +942,120 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 		if(m_dLineSpacing > dSpacing1) 
 			m_dLineSpacing = UT_convertDimensionless("1.2");
 	}
+	//
+	// Shading now
+	//
+	{
+		const gchar * sPattern = NULL;
+		const gchar * sShadingForeCol = NULL;
+		const gchar * sShadingBackCol = NULL;
+		sPattern = getProperty("shading-pattern",true);
+		if(sPattern)
+		{
+			m_iPattern = atoi(sPattern);
+		}
+		else
+		{
+			m_iPattern = 0;
+		}
+		sShadingForeCol = getProperty("shading-foreground-color",true);
+		if(sShadingForeCol)
+		{
+			m_ShadingForeColor.setColor(sShadingForeCol);
+		}
+		else
+		{
+			m_ShadingForeColor.setColor("white");
+		}
+		sShadingBackCol = getProperty("shading-background-color",true);
+		if(sShadingBackCol)
+		{
+			m_ShadingBackColor.setColor(sShadingBackCol);
+		}
+		else
+		{
+			m_ShadingBackColor.setColor("white");
+		}
+
+	}
+	//
+	// Borders now
+	//
+	{
+		m_bHasBorders = false;
+		m_lineBottom.m_t_linestyle = PP_PropertyMap::linestyle_none;
+		m_lineTop.m_t_linestyle =  PP_PropertyMap::linestyle_none;
+		m_lineLeft.m_t_linestyle =  PP_PropertyMap::linestyle_none;
+		m_lineRight.m_t_linestyle =  PP_PropertyMap::linestyle_none;
+		m_bCanMergeBordersWithNext = false;
+		const gchar * pszCanMergeBorders = NULL;
+		pszCanMergeBorders = getProperty("border-merge");
+		if(pszCanMergeBorders && strcmp(pszCanMergeBorders,"0"))
+		{
+			m_bCanMergeBordersWithNext = true;
+		}
+		const gchar * pszBorderColor = NULL;
+		const gchar * pszBorderStyle = NULL;
+		const gchar * pszBorderWidth = NULL;
+		const gchar * pszBorderSpacing = NULL;
+		//
+		// Default color
+		//
+		const gchar * pszColor= NULL;
+
+		pszBorderColor = getProperty ("bot-color");
+		pBlockAP->getProperty ("bot-style",pszBorderStyle);
+		pszBorderWidth = getProperty ("bot-thickness");
+		pszBorderSpacing= getProperty ("bot-space");
+		if(pBlockAP && pBlockAP->getProperty ("bot-style",pszBorderStyle) && pszBorderStyle)
+		{
+			s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, pszBorderSpacing,m_lineBottom);
+			m_bHasBorders |= (m_lineBottom.m_t_linestyle > 1);  
+		}
+		pszBorderColor = NULL;
+		pszBorderStyle = NULL;
+		pszBorderWidth = NULL;
+		pszBorderSpacing = NULL;
+
+		pszBorderColor = getProperty ("left-color");
+		pszBorderWidth = getProperty ("left-thickness");
+		pszBorderSpacing = getProperty ("left-space");
+
+		if(pBlockAP && pBlockAP->getProperty ("left-style",pszBorderStyle) && pszBorderStyle)
+		{
+			s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, pszBorderSpacing,m_lineLeft);
+			m_bHasBorders |= (m_lineLeft.m_t_linestyle > 1);  
+		}
+		pszBorderColor = NULL;
+		pszBorderStyle = NULL;
+		pszBorderWidth = NULL;
+		pszBorderSpacing = NULL;
+
+		pszBorderColor = getProperty ("right-color");
+		pszBorderStyle = getProperty ("right-style");
+		pszBorderWidth = getProperty ("right-thickness");
+		pszBorderSpacing = getProperty ("right-space");
+
+		if(pBlockAP && pBlockAP->getProperty ("right-style",pszBorderStyle) && pszBorderStyle)
+		{
+			s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, pszBorderSpacing,m_lineRight);
+			m_bHasBorders |= (m_lineRight.m_t_linestyle > 1);  
+		}
+		pszBorderColor = NULL;
+		pszBorderStyle = NULL;
+		pszBorderWidth = NULL;
+		pszBorderSpacing = NULL;
+
+		pszBorderColor = getProperty ("top-color");
+		pszBorderWidth = getProperty ("top-thickness");
+		pszBorderSpacing = getProperty ("top-space");
 	
+		if(pBlockAP && pBlockAP->getProperty ("top-style",pszBorderStyle) && pszBorderStyle)
+		{
+			s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, pszBorderSpacing,m_lineTop);
+			m_bHasBorders |= (m_lineTop.m_t_linestyle > 1); 
+		} 
+	}	
 	//
 	// No numbering in headers/footers
 	//
@@ -1103,106 +1218,6 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 			m_bStyleInTOC = m_pLayout->addOrRemoveBlockFromTOC(this);
 		}
 	}
-	//
-	// Shading now
-	//
-	{
-		const gchar * sPattern = NULL;
-		const gchar * sShadingForeCol = NULL;
-		const gchar * sShadingBackCol = NULL;
-		sPattern = getProperty("shading-pattern",true);
-		if(sPattern)
-		{
-			m_iPattern = atoi(sPattern);
-		}
-		else
-		{
-			m_iPattern = 0;
-		}
-		sShadingForeCol = getProperty("shading-foreground-color",true);
-		if(sShadingForeCol)
-		{
-			m_ShadingForeColor.setColor(sShadingForeCol);
-		}
-		else
-		{
-			m_ShadingForeColor.setColor("white");
-		}
-		sShadingBackCol = getProperty("shading-background-color",true);
-		if(sShadingBackCol)
-		{
-			m_ShadingBackColor.setColor(sShadingBackCol);
-		}
-		else
-		{
-			m_ShadingBackColor.setColor("white");
-		}
-
-	}
-	//
-	// Borders now
-	//
-	{
-		m_bCanMergeBordersWithNext = false;
-		const gchar * pszCanMergeBorders = NULL;
-		getProperty("border-merge",pszCanMergeBorders);
-		if(pszCanMergeBorders && strcmp(pszCanMergeBorders,"0"))
-		{
-			m_bCanMergeBordersWithNext = true;
-		}
-		const gchar * pszBorderColor = NULL;
-		const gchar * pszBorderStyle = NULL;
-		const gchar * pszBorderWidth = NULL;
-		const gchar * pszBorderSpacing = NULL;
-		//
-		// Default color
-		//
-		const gchar * pszColor= NULL;
-
-		getProperty ("bot-color",       pszBorderColor);
-		getProperty ("bot-style",       pszBorderStyle);
-		getProperty ("bot-thickness",   pszBorderWidth);
-		getProperty ("bot-space",       pszBorderSpacing);
-
-		s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, pszBorderSpacing,m_lineBottom);
-
-		pszBorderColor = NULL;
-		pszBorderStyle = NULL;
-		pszBorderWidth = NULL;
-		pszBorderSpacing = NULL;
-
-		getProperty ("left-color",      pszBorderColor);
-		getProperty ("left-style",      pszBorderStyle);
-		getProperty ("left-thickness",  pszBorderWidth);
-		getProperty ("left-space",      pszBorderSpacing);
-
-		s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, pszBorderSpacing,m_lineLeft);
-
-		pszBorderColor = NULL;
-		pszBorderStyle = NULL;
-		pszBorderWidth = NULL;
-		pszBorderSpacing = NULL;
-
-		getProperty ("right-color",     pszBorderColor);
-		getProperty ("right-style",     pszBorderStyle);
-		getProperty ("right-thickness", pszBorderWidth);
-		getProperty ("right-space",      pszBorderSpacing);
-
-		s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, pszBorderSpacing,m_lineRight);
-
-		pszBorderColor = NULL;
-		pszBorderStyle = NULL;
-		pszBorderWidth = NULL;
-		pszBorderSpacing = NULL;
-
-		getProperty ("top-color",       pszBorderColor);
-		getProperty ("top-style",       pszBorderStyle);
-		getProperty ("top-thickness",   pszBorderWidth);
-		getProperty ("top-space",       pszBorderSpacing);
-
-		s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, pszBorderSpacing,m_lineTop);
-
-	}
 	// later we will need to add here revision handling ...
 }
 
@@ -1219,6 +1234,22 @@ const UT_RGBColor fl_BlockLayout::getShadingingForeColor(void) const
 const UT_RGBColor fl_BlockLayout::getShadingingBackColor(void) const
 {
 	return m_ShadingBackColor;
+}
+
+bool fl_BlockLayout::canMergeBordersWithPrev(void) const
+{
+	return false;
+}
+
+
+bool fl_BlockLayout::canMergeBordersWithNext(void) const
+{
+	return false;
+}
+
+bool fl_BlockLayout::hasBorders(void) const
+{
+	return m_bHasBorders;
 }
 
 fl_BlockLayout::~fl_BlockLayout()
@@ -11949,7 +11980,7 @@ static void s_border_properties (const char * border_color,
 
 	line.m_t_linestyle = PP_PropertyMap::linestyle_type (border_style);
 	if (!line.m_t_linestyle)
-		line.m_t_linestyle = PP_PropertyMap::linestyle_solid;
+		line.m_t_linestyle = PP_PropertyMap::linestyle_none;
 
 	line.m_t_thickness = PP_PropertyMap::thickness_type (border_width);
 	if (line.m_t_thickness == PP_PropertyMap::thickness_length)

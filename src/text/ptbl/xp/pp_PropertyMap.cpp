@@ -394,6 +394,14 @@ void PP_PropertyMap::Line::reset ()
 	m_t_thickness = thickness__unset;
 }
 
+bool operator==( PP_PropertyMap::Line& L1, PP_PropertyMap::Line& L2)
+{
+	return (L1.m_thickness == L2.m_thickness) &&
+		(L1.m_color == L2.m_color) &&
+		(L1.m_t_linestyle == L2.m_t_linestyle) &&
+		(L1.m_spacing == L2.m_spacing);
+}
+
 PP_PropertyMap::Background::Background () :
 	m_t_background(background__unset),
 	m_color(255,255,255)
@@ -405,3 +413,4 @@ void PP_PropertyMap::Background::reset () // restore defaults
 {
 	m_t_background = background__unset;
 }
+

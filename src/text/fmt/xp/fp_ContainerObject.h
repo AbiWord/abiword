@@ -56,6 +56,7 @@
 #include "ut_vector.h"
 #include "pt_Types.h"
 #include "gr_Image.h"
+#include "pp_PropertyMap.h"
 
 class fp_ContainerObject;
 
@@ -296,6 +297,11 @@ public:
 			m_cBrokenContainers -= 1; }}
 
         fg_FillType *       getFillType(void);
+	void                drawLine(const PP_PropertyMap::Line & style,
+				     UT_sint32 left, UT_sint32 top, 
+				     UT_sint32 right, UT_sint32 bot,
+				     GR_Graphics * pGr);
+
 private:
 	fp_Container*          m_pContainer;
 	fp_ContainerObject *   m_pNext;

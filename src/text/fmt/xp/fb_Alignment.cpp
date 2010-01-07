@@ -35,11 +35,11 @@ void fb_Alignment_left::initialize(fp_Line * pLine )
 {
 		if(pLine->getBlock()->getDominantDirection() == UT_BIDI_RTL)
 		{
-	    	m_iStartPosition = 0 - pLine->calculateWidthOfTrailingSpaces();
+		    m_iStartPosition = pLine->getRightThick() - pLine->calculateWidthOfTrailingSpaces();
 	 	}
 	 	else
 	 	{
-	 		m_iStartPosition = 0;
+		    m_iStartPosition = pLine->getLeftThick();
 		}
 }
 
@@ -61,7 +61,7 @@ void fb_Alignment_center::initialize(fp_Line *pLine)
 {
 	UT_sint32 iWidth = pLine->calculateWidthOfLine();
 
-	UT_sint32 m_iExtraWidth = pLine->getMaxWidth() - iWidth;
+	UT_sint32 m_iExtraWidth = pLine->getAvailableWidth() - iWidth;
 
 	m_startPosition = m_iExtraWidth / 2;
 }
@@ -85,11 +85,11 @@ void fb_Alignment_right::initialize(fp_Line *pLine)
 	UT_sint32 iTrailing = pLine->calculateWidthOfTrailingSpaces();
 	UT_sint32 iWidth = pLine->calculateWidthOfLine() - iTrailing;
 
-	m_startPosition = pLine->getMaxWidth() - iWidth;
+	m_startPosition = pLine->getAvailableWidth() - iWidth;
 	
 	if(pLine->getBlock()->getDominantDirection() == UT_BIDI_RTL)
 	{
-		m_startPosition -= iTrailing;
+	     m_startPosition -= iTrailing;
 	}
 }
 
@@ -124,28 +124,28 @@ void fb_Alignment_justify::initialize(fp_Line *pLine)
 
 		UT_sint32 iWidth = pLine->calculateWidthOfLine() - pLine->calculateWidthOfTrailingSpaces();
 
-		m_iExtraWidth = pLine->getMaxWidth() - iWidth;
+		m_iExtraWidth = pLine->getAvailableWidth() - iWidth;
 
 		xxx_UT_DEBUGMSG(("fb_Alignment_justify::initialize (0x%x), iWidth %d, m_iExtraWidth %d\n",this,iWidth,m_iExtraWidth));
 		pLine->justify(m_iExtraWidth);
 
 		if(pLine->getBlock()->getDominantDirection() == UT_BIDI_RTL)
 		{
-			m_iStartPosition = pLine->getMaxWidth();
+			m_iStartPosition = pLine->getAvailableWidth();
 		}
 		else
 		{
-			m_iStartPosition = 0;
+		  m_iStartPosition = pLine->getLeftThick();
 		}
 	}
 	else if(pLine->getBlock()->getDominantDirection() == UT_BIDI_RTL) //this is RTL block, the last line behaves as if right-justified
 	{
-	    m_iStartPosition = pLine->getMaxWidth();
+	    m_iStartPosition = pLine->getAvailableWidth();
 	}
 	else
 	{
 	    xxx_UT_DEBUGMSG(("Justified block, last line, left justified\n"));
-	    m_iStartPosition = 0;
+	    m_iStartPosition = pLine->getLeftThick();
 	}
 }
 

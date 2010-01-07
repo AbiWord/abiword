@@ -335,6 +335,84 @@ void ODi_Style_Style::_parse_style_paragraphProperties(const gchar** ppProps) {
             m_direction = "ltr";
         }
     }
+
+    // If "fo:border" is defined, its value will fill all "fo:border-*"
+    pVal = UT_getAttribute("fo:border", ppProps);
+    if (pVal) {
+        _stripColorLength(m_borderTop_color, m_borderTop_thickness,
+                          m_haveTopBorder, pVal);
+        
+        m_borderBottom_color = m_borderTop_color;
+        m_borderBottom_thickness = m_borderTop_thickness;
+        m_haveBottomBorder = m_haveTopBorder;
+        
+        m_borderLeft_color = m_borderTop_color;
+        m_borderLeft_thickness = m_borderTop_thickness;
+        m_haveLeftBorder = m_haveTopBorder;
+        
+        m_borderRight_color = m_borderTop_color;
+        m_borderRight_thickness = m_borderTop_thickness;
+        m_haveRightBorder = m_haveTopBorder;
+        
+    } else {
+        pVal = UT_getAttribute("fo:border-top", ppProps);
+        if (pVal) {
+            _stripColorLength(m_borderTop_color, m_borderTop_thickness,
+                              m_haveTopBorder, pVal);
+        }
+        
+        pVal = UT_getAttribute("fo:border-bottom", ppProps);
+        if (pVal) {
+            _stripColorLength(m_borderBottom_color, m_borderBottom_thickness,
+                              m_haveBottomBorder, pVal);
+        }
+        
+        pVal = UT_getAttribute("fo:border-left", ppProps);
+        if (pVal) {
+            _stripColorLength(m_borderLeft_color, m_borderLeft_thickness,
+                              m_haveLeftBorder, pVal);
+        }
+        
+        pVal = UT_getAttribute("fo:border-right", ppProps);
+        if (pVal) {
+            _stripColorLength(m_borderRight_color, m_borderRight_thickness,
+                              m_haveRightBorder, pVal);
+        }
+    }
+
+    // If "fo:padding" is defined, its value will fill all "fo:padding-*"
+    pVal = UT_getAttribute("fo:padding", ppProps);
+    if (pVal) 
+    {
+         m_paddingLeft = pVal;
+	 m_paddingRight = pVal;
+	 m_paddingTop = pVal;
+	 m_paddingBot = pVal;
+    }
+    else
+    {
+         pVal = UT_getAttribute("fo:padding-left", ppProps);
+	 if(pVal)
+	 {
+	     m_paddingLeft = pVal;
+	 }
+         pVal = UT_getAttribute("fo:padding-right", ppProps);
+	 if(pVal)
+	 {
+	     m_paddingRight = pVal;
+	 }
+         pVal = UT_getAttribute("fo:padding-top", ppProps);
+	 if(pVal)
+	 {
+	     m_paddingTop = pVal;
+	 }
+         pVal = UT_getAttribute("fo:padding-bot", ppProps);
+	 if(pVal)
+	 {
+	     m_paddingBot = pVal;
+	 }
+    }
+
 }
 
 
@@ -857,6 +935,42 @@ void ODi_Style_Style::buildAbiPropsAttrString(ODi_FontFaceDecls& rFontFaceDecls)
     APPEND_STYLE("keep-with-next: ", m_keepWithNext);
     APPEND_STYLE("text-indent: ", m_textIndent);
     APPEND_STYLE("dom-dir: ", m_direction);
+
+    APPEND_STYLE("bot-space: ", m_paddingBot);
+    if(m_haveBottomBorder == HAVE_BORDER_YES)
+    {
+        UT_UTF8String solid("1");
+        APPEND_STYLE("bot-style: ", solid);
+    }
+    APPEND_STYLE("bot-thickness: ", m_borderBottom_thickness);
+    APPEND_STYLE("bot-color: ", m_borderBottom_color);
+
+    APPEND_STYLE("left-space: ", m_paddingLeft);
+    if(m_haveLeftBorder == HAVE_BORDER_YES)
+    {
+        UT_UTF8String solid("1");
+        APPEND_STYLE("left-style: ", solid);
+    }
+    APPEND_STYLE("left-thickness: ", m_borderLeft_thickness);
+    APPEND_STYLE("left-color: ", m_borderLeft_color);
+
+    APPEND_STYLE("right-space: ", m_paddingRight);
+    if(m_haveRightBorder == HAVE_BORDER_YES)
+    {
+        UT_UTF8String solid("1");
+        APPEND_STYLE("right-style: ", solid);
+    }
+    APPEND_STYLE("right-thickness: ", m_borderRight_thickness);
+    APPEND_STYLE("right-color: ", m_borderRight_color);
+
+    APPEND_STYLE("top-space: ", m_paddingTop);
+    if(m_haveTopBorder == HAVE_BORDER_YES)
+    {
+        UT_UTF8String solid("1");
+        APPEND_STYLE("top-style: ", solid);
+    }
+    APPEND_STYLE("top-thickness: ", m_borderTop_thickness);
+    APPEND_STYLE("top-color: ", m_borderTop_color);
     
     // <style:text-properties />
     APPEND_STYLE("color: ", m_color);

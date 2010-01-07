@@ -181,7 +181,17 @@ public:
                !m_TableMarginRight.empty() ||
                !m_TableWidth.empty() ||
                !m_TableRelWidth.empty() ||
-               !m_rowHeight.empty();
+               !m_rowHeight.empty() ||
+
+	       !m_paddingLeft.empty() ||
+	       !m_paddingRight.empty() ||
+	       !m_paddingTop.empty()||
+	       !m_paddingBot.empty()||
+
+	  (m_haveTopBorder == HAVE_BORDER_YES) ||
+	  (m_haveBottomBorder == HAVE_BORDER_YES) ||
+	  (m_haveLeftBorder == HAVE_BORDER_YES) ||
+	  (m_haveRightBorder == HAVE_BORDER_YES);
     }
     
     bool isAutomatic() const {return m_bAutomatic;}
@@ -450,6 +460,12 @@ private:
     UT_UTF8String m_borderRight_thickness;
     UT_UTF8String m_borderRight_color;
     HAVE_BORDER m_haveRightBorder;
+
+    // fo:padding
+    UT_UTF8String m_paddingLeft;
+    UT_UTF8String m_paddingRight;
+    UT_UTF8String m_paddingTop;
+    UT_UTF8String m_paddingBot;
 
     ODi_Abi_Data& m_rAbiData;
    
