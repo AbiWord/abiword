@@ -232,7 +232,7 @@ public:
 	void        drawBorders(GR_Graphics * pG);
 	UT_sint32              getLeftEdge(void);
 	UT_sint32              getRightEdge(void);
-
+	bool        hasBordersOrShading(void);
 #ifdef FMT_TEST
 	void		__dump(FILE * fp) const;
 #endif

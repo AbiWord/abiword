@@ -264,7 +264,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 	if(getPrev())
 		{
 			iPage = getDocLayout()->findPage(getPrev());
-			xxx_UT_DEBUGMSG(("Prev page %x Prev page number %d Number Frames %d \n",getPrev(),iPage,getPrev()->countAboveFrameContainers() ));
+			UT_DEBUGMSG(("Prev page %x Prev page number %d Number Frames %d \n",getPrev(),iPage,getPrev()->countAboveFrameContainers() ));
 		}
 #endif
 	if(m_iCountWrapPasses > 10)
@@ -275,6 +275,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 	UT_sint32 nWrapped = 0;
 	fp_Container * pFirst2 = NULL;
 	fl_BlockLayout * pFirstBL = NULL;
+	bool bEmptySpace = false;
 	for(i=0; i < static_cast<UT_sint32>(countColumnLeaders()); i++)
 	{
 		fp_Column * pCol = getNthColumnLeader(i);
@@ -288,6 +289,17 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 		}
 		while(pCol)
 		{
+			if(pCol->hasEmptySpaceAtBottom())
+			{
+				//
+				// We have can have a problem laying out lines with
+				// borders defined. This should fix that.
+				//
+				if(pCol->countCons() > 0)
+				{
+					return static_cast<fp_Container *>(pCol->getNthCon(pCol->countCons()-1));
+				}
+			}
 			if(m_iCountWrapPasses > 10)
 			{
 				nWrapped += pCol->countWrapped();

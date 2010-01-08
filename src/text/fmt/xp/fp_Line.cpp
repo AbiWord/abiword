@@ -407,6 +407,15 @@ UT_sint32 fp_Line::calcRightBorderThick(void)
   return m_iRightThick;
 }
 
+bool fp_Line::hasBordersOrShading(void)
+{
+  if(getBlock() && (getBlock()->hasBorders() || (getBlock()->getPattern() > 0)))
+  {
+    return true;
+  }
+  return false;
+}
+
 UT_sint32 fp_Line::calcTopBorderThick(void)
 {
   m_iTopThick = 0;
@@ -837,6 +846,10 @@ void fp_Line::setMaxWidth(UT_sint32 iMaxWidth)
 	// OK set up the clearscreen parameters
 	//
 	m_iClearToPos = iMaxWidth;
+	if(hasBordersOrShading())
+	{
+	  m_iClearToPos = getRightEdge();
+	}
 	//
 	// The problem we're trying to solve here is that some character have
 	// extensions to left of their position on a line. So if you just
@@ -850,7 +863,10 @@ void fp_Line::setMaxWidth(UT_sint32 iMaxWidth)
 	m_iClearLeftOffset = getHeight()/5;
 	if(getGraphics() && (m_iClearLeftOffset < getGraphics()->tlu(3)))
 	     m_iClearLeftOffset = getGraphics()->tlu(3);
-	
+	if(hasBordersOrShading())
+	{
+	  m_iClearLeftOffset = 0;
+	}
 }
 
 void fp_Line::setContainer(fp_Container* pContainer)
@@ -1359,6 +1375,8 @@ void fp_Line::recalcHeight(fp_Run * pLastRun)
 	// left of the line.
 	//
 	m_iClearLeftOffset = iMaxDescent;
+	if(hasBordersOrShading())
+	  m_iClearLeftOffset = 0;
 	UT_sint32 iOldHeight = getHeight();
 	UT_sint32 iOldAscent = m_iAscent;
 	UT_sint32 iOldDescent = m_iDescent;
@@ -1997,9 +2015,11 @@ void fp_Line::draw(GR_Graphics* pG)
 	    //
 	    // Calculate the region of the fill for a shaded paragraph.
 	    //
-	    UT_sint32 xs = my_xoff;
+	    UT_Rect * pVRec = 	pVCon->getScreenRect();
+	    UT_sint32 xs = pVRec->left + getLeftEdge();
+	    UT_sint32 width = getRightEdge() - getLeftEdge(); 
 	    UT_sint32 ys = my_yoff;
-	    getFillType()->Fill(pG,xs,ys,xs,ys,getMaxWidth(),getHeight());
+	    getFillType()->Fill(pG,xs,ys,xs,ys,width,getHeight());
 	    xxx_UT_DEBUGMSG(("pG Fill at y %d and to width %d \n",ys,getMaxWidth()));
 	}
 	for (int i=0; i < count; i++)
@@ -2078,9 +2098,11 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 	      xxx_UT_DEBUGMSG(("pRect in fp_Line::draw is %p \n",pRect));
 	      UT_sint32 x = pDA->xoff;
 	      UT_sint32 y = pDA->yoff - getAscent();
+	      x= x - getX() + getLeftEdge();
+	      UT_sint32 width = getRightEdge() - getLeftEdge();
 	      if(!pDA->bDirtyRunsOnly)
 	      {
-		    getFillType()->Fill(pDA->pG,x,y,x,y,getMaxWidth(),getHeight());
+		    getFillType()->Fill(pDA->pG,x,y,x,y,width,getHeight());
 		    xxx_UT_DEBUGMSG(("Fill at y %d and to width %d \n",y,getMaxWidth()));
 	      }
 	}
@@ -3471,7 +3493,11 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 			m_iClearLeftOffset = pSL->getLeftMargin() - getGraphics()->tlu(1);
 		}
 	}
-
+	if( hasBordersOrShading())
+	{
+	        m_iClearToPos = getRightEdge();
+		m_iClearLeftOffset = 0;
+	}
 
 	iMaxWidth -= m_pBlock->getRightMargin();
 	iMaxWidth -= m_pBlock->getLeftMargin();

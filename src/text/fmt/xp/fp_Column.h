@@ -146,7 +146,6 @@ public:
 	{
 		UT_UNUSED(bDontClearIfNeeded);
 	}
-
 	virtual UT_sint32   getMarginBefore(void) const { return 0;}
 	virtual UT_sint32   getMarginAfter(void) const { return 0;}
 	virtual void        setAssignedScreenHeight(UT_sint32) {}
@@ -215,7 +214,7 @@ public:
 	~fp_Column();
 
 	fl_DocSectionLayout*	getDocSectionLayout(void) const;
-
+	bool                    hasEmptySpaceAtBottom(void);
 	void			setLeader(fp_Column* p) { m_pLeader = p; }
 	void			setFollower(fp_Column* p) { m_pFollower = p; }
 	fp_Column*	getLeader(void) const  { return m_pLeader; }

@@ -2110,6 +2110,47 @@ void fp_Column::layout(void)
 	}
 }
 
+bool fp_Column::hasEmptySpaceAtBottom(void)
+{
+        if(countCons() == 0)
+	    return false;
+        UT_sint32 iDiff = getMaxHeight() - getHeight();
+	fp_Container * pLast = static_cast<fp_Container *>(getNthCon(countCons()-1));
+	if(pLast->getContainerType() != FP_CONTAINER_LINE)
+	    return false;
+	fp_Line * pLLast = static_cast<fp_Line *>(pLast);
+	if(pLLast->getContainer()->getContainerType() == FP_CONTAINER_ENDNOTE)
+	    return false;
+	if(pLLast->containsForcedColumnBreak() || pLLast->containsForcedPageBreak())
+	    return false;
+	fp_Container * pNext = pLast->getNextContainerInSection();
+	if(pNext == NULL)
+	  return false;
+	if(pNext->getContainerType() != FP_CONTAINER_LINE)
+	  return false;
+	if(pNext->getContainerType() == FP_CONTAINER_ENDNOTE)
+	    return false;
+	if(pNext->getContainer()->getContainerType() == FP_CONTAINER_ENDNOTE)
+	    return false;
+	fp_Line * pNLine = static_cast<fp_Line *>(pNext);
+	if(pNLine->containsFootnoteReference())
+	{
+	  //
+	  // Just bail out for now. Later we can add up the height of the 
+	  // footnotes
+	  //
+	  return false;
+	}
+
+	UT_sint32 iHeight = pNLine->getHeight();
+	if(2*iHeight < iDiff)
+	{
+	  UT_DEBUGMSG((" height %d iDiff %d pNLine %p \n",iHeight,iDiff,pNLine));
+	     return true;
+	}
+	return false;
+}
+
 UT_sint32 fp_Column::getMaxHeight(void) const
 {
 	const fp_VerticalContainer * pVC = static_cast<const fp_VerticalContainer *>(this);
