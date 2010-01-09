@@ -323,6 +323,36 @@ UT_sint32 fp_Line::getRightEdge(void)
 	return iRight;
 }
 
+/*!
+ * The absolue left and right edge of the paragraph in terms of the
+ * current graphics context.
+ */
+bool    fp_Line::getAbsLeftRight(UT_sint32& left,UT_sint32& right)
+{
+	fp_VerticalContainer * pVCon = static_cast<fp_VerticalContainer *>(getContainer());
+	if(!pVCon)
+	  return false;
+	if(!getBlock())
+	  return false;
+	UT_Rect * pR = pVCon->getScreenRect();
+	left = pR->left + getLeftEdge();
+	right = pR->left + pVCon->getWidth() - getBlock()->getRightMargin();
+	delete pR;
+	//
+	// Correct for printing
+	//
+	fp_Page * pPage = getPage();
+	if(pPage == NULL)
+	    return false;
+	if(pPage->getDocLayout()->getView() &&  getGraphics()->queryProperties(GR_Graphics::DGP_PAPER))
+	{
+	    UT_sint32 xdiff,ydiff;
+	    pPage->getDocLayout()->getView()->getPageScreenOffsets(pPage, xdiff, ydiff);
+	    left = left - xdiff;
+	    right= right - xdiff;
+	}
+	return true;
+}
 //
 // The location of the start of the line should take account of the
 // LeftBorder thickness
@@ -899,8 +929,12 @@ void fp_Line::setContainer(fp_Container* pContainer)
 	{
 		setMaxWidth(pContainer->getWidth());
 	}
-	calcLeftBorderThick();
-	calcRightBorderThick();
+	calcBorderThickness();
+	fp_Container * pNext = getNextContainerInSection();
+	if(pNext != NULL && pNext->getContainerType() == FP_CONTAINER_LINE)
+	{
+	       static_cast<fp_Line *>(pNext)->calcBorderThickness();
+	}
 }
 
 UT_sint32 fp_Line::getWidthToRun(fp_Run * pLastRun)

@@ -2143,7 +2143,7 @@ bool fp_Column::hasEmptySpaceAtBottom(void)
 	}
 
 	UT_sint32 iHeight = pNLine->getHeight();
-	if(2*iHeight < iDiff)
+	if(1.3*static_cast<float>(iHeight) < static_cast<float>(iDiff))
 	{
 	  UT_DEBUGMSG((" height %d iDiff %d pNLine %p \n",iHeight,iDiff,pNLine));
 	     return true;

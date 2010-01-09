@@ -1270,6 +1270,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	}
 	pG->setColor(getFGColor());
 	UT_Rect clip(0,0,0,0);
+	bool bSetClip = false;
 	if(isSelectionDraw())
 	{
 		if((getType() == FPRUN_TEXT) && getLine())
@@ -1316,6 +1317,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 			}
 			UT_sint32 width = xRight-xLeft;
 			clip.set(xLeft,pDA->yoff-getLine()->getAscent(),width,getLine()->getHeight());
+			bSetClip = true;
 			pDA->pG->setClipRect(&clip);
 			xxx_UT_DEBUGMSG(("draw cliprect left %d width %d \n",clip.left,clip.width));
 		}
@@ -1333,7 +1335,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	{
 		m_FillType.setColor(OldCol); // restore the old clear color
 	}
-	if(isSelectionDraw())
+	if(bSetClip)
 	{
 		pDA->pG->setClipRect(pPrevClip);
 	}
