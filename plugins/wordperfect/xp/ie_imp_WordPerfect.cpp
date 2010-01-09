@@ -1262,8 +1262,6 @@ public:
 protected:
     virtual UT_Error _loadFile(GsfInput * input)
 	{
-		GError *err = NULL;
-
 		AbiWordperfectInputStream gsfInput(input);
 		WPSResult error = WPSDocument::parse(&gsfInput, static_cast<WPXHLListenerImpl *>(this));
 
