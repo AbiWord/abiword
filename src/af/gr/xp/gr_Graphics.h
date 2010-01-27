@@ -394,7 +394,9 @@ class ABI_EXPORT GR_Graphics
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&){UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED); return NULL;}
 #endif
 
-	AllCarets *   allCarets(void);
+	AllCarets *	allCarets();
+	void		disableAllCarets();
+	void		enableAllCarets();
 	
 	UT_sint32	tdu(UT_sint32 layoutUnits) const;
 	UT_sint32	tlu(UT_sint32 deviceUnits) const;
@@ -723,7 +725,7 @@ class ABI_EXPORT GR_Graphics
 		{ return  m_paintCount;}
 
 	static GR_Graphics* newNullGraphics();
-	
+
  protected:
 
 	GR_Graphics();

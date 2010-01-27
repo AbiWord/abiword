@@ -31,11 +31,7 @@ GR_Painter::GR_Painter (GR_Graphics * pGr, bool bDisableCarets)
 	UT_ASSERT (m_pGr);
 
 	if (m_bCaretsDisabled)
-	{
-		AllCarets* pAc = pGr->allCarets();
-		if (pAc)
-			pAc->disable();
-	}
+		m_pGr->disableAllCarets();
 
 	m_pGr->beginPaint ();
 }
@@ -45,11 +41,7 @@ GR_Painter::~GR_Painter ()
 	m_pGr->endPaint ();
 
 	if (m_bCaretsDisabled)
-	{
-		AllCarets* pAc = m_pGr->allCarets();
-		if (pAc)
-			pAc->enable();
-	}
+		m_pGr->enableAllCarets();
 }
 
 void GR_Painter::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)

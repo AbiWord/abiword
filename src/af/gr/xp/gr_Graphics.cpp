@@ -331,6 +331,16 @@ AllCarets * GR_Graphics::allCarets(void)
 	return &m_AllCarets;
 }
 
+void GR_Graphics::disableAllCarets()
+{
+	m_AllCarets.disable();
+}
+
+void GR_Graphics::enableAllCarets()
+{
+	m_AllCarets.enable();
+}
+
 GR_Caret * GR_Graphics::createCaret(const std::string& sID)
 {
 	GR_Caret * pCaret = new GR_Caret(this,sID);

@@ -73,9 +73,6 @@ GtkStyle * get_ensured_style (GtkWidget * w);
 // creates a GtkDrawingArea, and pushes/pops correct visual and colormap
 GtkWidget *createDrawingArea ();
 
-// Sets up a drawing area, normally called by CreateDrawingArea
-void setupDrawingArea (GtkWidget *area);
-
 void abiSetupModalDialog(GtkDialog * me, XAP_Frame *pFrame, XAP_Dialog * pDlg, gint dfl_id);
 gint abiRunModalDialog(GtkDialog * me, bool destroyDialog, AtkRole role = ATK_ROLE_DIALOG);
 gint abiRunModalDialog(GtkDialog * me, XAP_Frame *pFrame, XAP_Dialog * pDlg, gint dfl_id, bool destroyDialog, AtkRole role = ATK_ROLE_DIALOG);

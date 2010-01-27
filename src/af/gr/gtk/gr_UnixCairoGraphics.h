@@ -104,6 +104,10 @@ protected:
 
 	UT_GenericVector<UT_Rect*>     m_vSaveRect;
 	UT_GenericVector<GdkPixbuf *>  m_vSaveRectBuf;
+
+	virtual void _beginPaint();
+	virtual void _endPaint();
+
 private:
 	GdkWindow *m_pWin;
 	bool m_double_buffered;

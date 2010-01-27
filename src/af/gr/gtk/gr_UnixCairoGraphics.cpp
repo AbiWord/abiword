@@ -98,8 +98,7 @@ GR_UnixCairoGraphics::GR_UnixCairoGraphics(GdkDrawable * win, bool double_buffer
 {
 	if (_getDrawable())
 	{
-		m_cr = gdk_cairo_create (GDK_DRAWABLE (m_pWin));
-		_initCairo();
+		m_cr = NULL;
 		// Set GraphicsExposes so that XCopyArea() causes an expose on
 		// obscured regions rather than just tiling in the default background.
 		// TODO: is this still needed with cairo, and if yes can it be emulated
@@ -334,7 +333,6 @@ void GR_UnixCairoGraphics::setCursor(GR_Graphics::Cursor c)
 
 void GR_UnixCairoGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
-	GR_Painter caretDisablerPainter(this); // not an elegant way to disable all carets, but it works beautifully - MARCM
 	UT_sint32 oldDY = tdu(getPrevYOffset());
 	UT_sint32 oldDX = tdu(getPrevXOffset());
 	UT_sint32 newY = getPrevYOffset() + dy;
@@ -347,6 +345,9 @@ void GR_UnixCairoGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	{
 		return;
 	}
+
+	disableAllCarets();
+
 	UT_sint32 iddy = labs(ddy);
 	bool bEnableSmooth = XAP_App::getApp()->isSmoothScrollingEnabled();
 	bEnableSmooth = bEnableSmooth && (iddy < 30) && (ddx == 0);
@@ -373,6 +374,7 @@ void GR_UnixCairoGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	{
 		gdk_window_scroll(m_pWin,ddx,ddy);
 	}
+	enableAllCarets();
 }
 
 void GR_UnixCairoGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
@@ -381,12 +383,12 @@ void GR_UnixCairoGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 {
 	GdkGC *gc;
 
-	GR_Painter caretDisablerPainter(this); // not an elegant way to disable all carets, but it works beautifully - MARCM
-
+	disableAllCarets();
 	gc = gdk_gc_new(_getDrawable());
    	gdk_draw_drawable(_getDrawable(), gc, _getDrawable(), tdu(x_src), tdu(y_src),
 					  tdu(x_dest), tdu(y_dest), tdu(width), tdu(height));
 	g_object_unref(G_OBJECT(gc)), gc = NULL;
+	enableAllCarets();
 }
 
 void GR_UnixCairoGraphics::createPixmapFromXPM( char ** pXPM,GdkPixmap *source,
@@ -482,6 +484,47 @@ GR_Image * GR_UnixCairoGraphics::genImageFromRectangle(const UT_Rect &rec)
 	return pImg;
 }
 
+void GR_UnixCairoGraphics::_beginPaint()
+{
+	GR_CairoGraphics::_beginPaint();
+
+	UT_ASSERT(m_pWin);
+	UT_ASSERT(!m_cr);
+
+#ifndef NDEBUG
+	/* should only be called inside an expose event, messes up
+	 * double-buffering and all sorts of other GTK assumptions otherwise
+	 * we make this extra effort here to track down old wrong code
+	 */
+	/* for the time being, ignore it for non-double-buffered widgets that
+	 * might be very hard to migrate */
+	if (m_double_buffered)
+	{
+		GdkEvent *ev = gtk_get_current_event();
+		UT_ASSERT(ev);
+		if (ev)
+		{
+			UT_ASSERT(ev->type == GDK_EXPOSE || ev->type == GDK_DAMAGE);
+			if (ev->type == GDK_EXPOSE || ev->type == GDK_DAMAGE)
+				UT_ASSERT(ev->expose.window == m_pWin);
+		}
+	}
+#endif
+
+	m_cr = gdk_cairo_create(GDK_DRAWABLE(m_pWin));
+	UT_ASSERT(m_cr);
+	_initCairo();
+}
+
+void GR_UnixCairoGraphics::_endPaint()
+{
+	UT_return_if_fail(m_cr);
+
+	cairo_destroy(m_cr);
+	m_cr = NULL;
+
+	GR_CairoGraphics::_endPaint();
+}
 
 cairo_t *GR_UnixCairoAllocInfo::createCairo()
 {

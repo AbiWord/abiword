@@ -798,7 +798,6 @@ get_ensured_style (GtkWidget * w)
 
 /*!
  * Creates a new GdkDrawingArea with the proper colormap and visual
- * NB: drawing areas returned are not double buffered
  */
 GtkWidget *createDrawingArea ()
 {
@@ -806,16 +805,7 @@ GtkWidget *createDrawingArea ()
   
   area = gtk_drawing_area_new ();
 
-  setupDrawingArea(area);
   return area;
-}
-
-/*!
- * Performs setup as needed for a drawing area
- */
-void setupDrawingArea (GtkWidget *area)
-{
-  gtk_widget_set_double_buffered(area, FALSE);
 }
 
 /*!
