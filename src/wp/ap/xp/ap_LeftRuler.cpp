@@ -1237,8 +1237,7 @@ bool AP_LeftRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 
 	if (mask & (/*AV_CHG_MOTION |*/ AV_CHG_FMTSECTION | AV_CHG_HDRFTR))
 	{
-		(static_cast<FV_View *>(m_pView))->getLeftRulerInfo(&m_tempInfo);
-			draw(NULL,&m_tempInfo);
+		draw(NULL);
 	}
 	
 	return true;
@@ -1679,12 +1678,10 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect)
 	{
 		return;
 	}
-	pView->getLeftRulerInfo(&m_tempInfo);
-	
-// lfi will be reference to m_lfi which will be deleted before taking this.
-// value. This prevents a memory leak.
 
-	draw(pClipRect,&m_tempInfo);
+	AP_LeftRulerInfo lri;
+	pView->getLeftRulerInfo(&lri);
+	draw(pClipRect, &lri);
 }
 
 void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
