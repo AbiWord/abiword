@@ -80,9 +80,11 @@ typedef UT_uint32 EV_EditMouseContext;								/* may not be ORed */
 #define EV_EMC_HYPERLINKTEXT      ((EV_EditMouseContext) 0x000000002)
 #define EV_EMC_HYPERLINKMISSPELLED ((EV_EditMouseContext) 0x000000001)
 // RIVERA
-#define EV_EMC_ANNOTATIONTEXT      ((EV_EditMouseContext) 0x000000005)
+#define EV_EMC_ANNOTATIONTEXT      ((EV_EditMouseContext) 0x000000003)
 #define EV_EMC_ANNOTATIONMISSPELLED ((EV_EditMouseContext) 0x000000004)
-#define EV_EMC_AVAIL			  ((EV_EditMouseContext) 0x000000003)
+// dynamic values will be generated starting from EV_EMC_AVAIL, should
+// be changed if needed.
+#define EV_EMC_AVAIL			  ((EV_EditMouseContext) 0x000000005)
 
 #define EV_EMC_ToNumber(emc)			((((emc)&EV_EMC__MASK__)>>27)-1)
 #define EV_EMC_FromNumber(n)			(((n+1)<<27)&EV_EMC__MASK__)

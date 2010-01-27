@@ -805,7 +805,21 @@ EV_EditMouseContext XAP_Menu_Factory::createContextMenu(const char * szMenu)
 
 void XAP_Menu_Factory::removeContextMenu(EV_EditMouseContext menuID)
 {
-	_vectt * pVectt;
-	m_vecTT.setNthItem (menuID, NULL, (const void**)&pVectt);
+	UT_sint32 k = 0;
+	bool bFoundMenu = false;
+	_vectt * pVectt = NULL;
+	for (k=0; (k< m_vecTT.getItemCount()) && !bFoundMenu; k++)
+	{
+		pVectt = (_vectt *)m_vecTT.getNthItem(k);
+    if (pVectt == NULL)
+			continue;
+		bFoundMenu = (pVectt->m_emc==menuID);
+	}
+	if(!bFoundMenu)
+	{
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		return;
+	}
+	m_vecTT.deleteNthItem(k-1);
 	DELETEP(pVectt);
 }
