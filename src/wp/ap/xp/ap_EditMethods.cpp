@@ -4382,10 +4382,6 @@ Defun1(warpInsPtPrevLine)
 //
 	UT_return_val_if_fail (pView, false);
 	GR_Graphics * pG = pView->getGraphics();
-	if(pG && pG->isExposePending())
-	{
-		return true;
-	}
 	pView->warpInsPtNextPrevLine(false);
 	if(pView->getGraphics() && pView->getGraphics()->allCarets()->getBaseCaret())
 	{
@@ -4406,10 +4402,6 @@ Defun1(warpInsPtNextLine)
 //
 	UT_return_val_if_fail (pView, false);
 	GR_Graphics * pG = pView->getGraphics();
-	if(pG && pG->isExposePending())
-	{
-		return true;
-	}
 	pView->warpInsPtNextPrevLine(true);
 	if(pView->getGraphics() && pView->getGraphics()->allCarets()->getBaseCaret())
 	{

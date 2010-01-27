@@ -1195,61 +1195,9 @@ gint XAP_UnixFrameImpl::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 		rClip.top = pGr->tlu(pExposeEvent->area.y);
 		rClip.width = pGr->tlu(pExposeEvent->area.width)+1;
 		rClip.height = pGr->tlu(pExposeEvent->area.height)+1;
-		pGr->setExposePending(false);
 		pView->draw(&rClip);
 	}
 	return FALSE;
-}
-
-/*!
- * Background abi repaint function.
-\param XAP_UnixFrameImpl * p pointer to the FrameImpl that initiated this background
-       repainter.
- */
-gint XAP_UnixFrameImpl::_fe::abi_expose_repaint(gpointer p)
-{
-//
-// Grab our pointer so we can do useful stuff.
-//
-	UT_DEBUGMSG(("-----------------Doing Repaint----------------\n"));
-	UT_Rect localCopy;
-	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(p);
-	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
-	FV_View * pV = static_cast<FV_View *>(pFrame->getCurrentView());
-	if(!pV || (pV->getPoint() == 0))
-		return TRUE;
-
-	GR_Graphics * pG = pV->getGraphics();
-	if(pG->isDontRedraw())
-	{
-//
-// Come back later
-//
-		return TRUE;
-	}
-	pG->setSpawnedRedraw(true);
-	if(pG->isExposePending())
-	{
-		while(pG->isExposedAreaAccessed())
-		{
-			pFrame->nullUpdate();
-			UT_usleep(10); // 10 microseconds
-		}
-		pG->setExposedAreaAccessed(true);
-		localCopy.set(pG->getPendingRect()->left,pG->getPendingRect()->top,
-					  pG->getPendingRect()->width,pG->getPendingRect()->height);
-//
-// Clear out this set of expose info
-//
-		pG->setExposePending(false);
-		pG->setExposedAreaAccessed(false);
-		pV->draw(&localCopy);
-	}
-//
-// OK we've finshed. Wait for the next signal
-//
-	pG->setSpawnedRedraw(false);
-	return TRUE;
 }
 
 static bool bScrollWait = false;
@@ -1328,19 +1276,6 @@ void XAP_UnixFrameImpl::_initialize()
 
 	m_pMouse = new EV_UnixMouse(pEEM);
 	UT_ASSERT(m_pMouse);
-
-	//
-	// Start background repaint
-	//
-#if 0
-	if(m_iAbiRepaintID == 0)
-		m_iAbiRepaintID = g_timeout_add_full(0,100,static_cast<GtkFunction>(XAP_UnixFrameImpl::_fe::abi_expose_repaint), static_cast<gpointer>(this),NULL);
-	else
-	{
-		g_source_remove(m_iAbiRepaintID);
-		m_iAbiRepaintID = g_timeout_add_full(0, 100,static_cast<GtkFunction>(XAP_UnixFrameImpl::_fe::abi_expose_repaint), static_cast<gpointer>(this), NULL);
-	}
-#endif
 }
 
 void XAP_UnixFrameImpl::_setCursor(GR_Graphics::Cursor c)

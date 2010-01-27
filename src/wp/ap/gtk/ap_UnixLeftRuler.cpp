@@ -64,10 +64,6 @@ AP_UnixLeftRuler::~AP_UnixLeftRuler(void)
 	if (toplevel && g_signal_handler_is_connected(G_OBJECT(toplevel), m_iBackgroundRedrawID)) {
 		g_signal_handler_disconnect(G_OBJECT(toplevel),m_iBackgroundRedrawID);
 	}
-	while(m_pG && m_pG->isSpawnedRedraw())
-	{
-		UT_usleep(100);
-	}
 	DELETEP(m_pG);
 }
 
@@ -291,62 +287,6 @@ gint AP_UnixLeftRuler::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 		pUnixLeftRuler->draw(&rClip);
 	}
 	return 0;
-}
-
-
-/*!
- * Background abi repaint function.
-\param XAP_UnixFrame * p pointer to the Frame that initiated this background
-       repainter.
- */
-gint AP_UnixLeftRuler::_fe::abi_expose_repaint( gpointer p)
-{
-//
-// Grab our pointer so we can do useful stuff.
-//
-	UT_Rect localCopy;
-	AP_UnixLeftRuler * pR = static_cast<AP_UnixLeftRuler *>(p);
-	GR_Graphics * pG = pR->getGraphics();
-	if(pG == NULL || pG->isDontRedraw())
-	{
-//
-// Come back later
-//
-		return TRUE;
-	}
-	FV_View * pView = static_cast<FV_View *>(pR->m_pFrame->getCurrentView());
-	if(pView && pView->getPoint()==0)
-	{
-//
-// Come back later
-//
-		return TRUE;
-	}
-		
-	pG->setSpawnedRedraw(true);
-	if(pG->isExposePending())
-	{
-		while(pG->isExposedAreaAccessed())
-		{
-			UT_usleep(10); // 10 microseconds
-		}
-		pG->setExposedAreaAccessed(true);
-		localCopy.set(pG->getPendingRect()->left,pG->getPendingRect()->top,
-			      pG->getPendingRect()->width,pG->getPendingRect()->height);
-//
-// Clear out this set of expose info
-//
-		pG->setExposePending(false);
-		pG->setExposedAreaAccessed(false);
-		xxx_UT_DEBUGMSG(("Painting area on Left ruler:  left=%d, top=%d, width=%d, height=%d\n", localCopy.left, localCopy.top, localCopy.width, localCopy.height));
-		xxx_UT_DEBUGMSG(("SEVIOR: Repaint now \n"));
-		pR->draw(&localCopy);
-	}
-//
-// OK we've finshed. Wait for the next signal
-//
-	pG->setSpawnedRedraw(false);
-	return TRUE;
 }
 
 void AP_UnixLeftRuler::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)

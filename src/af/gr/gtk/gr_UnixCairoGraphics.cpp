@@ -372,7 +372,6 @@ void GR_UnixCairoGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	{
 		gdk_window_scroll(m_pWin,ddx,ddy);
 	}
-	setExposePending(true);
 }
 
 void GR_UnixCairoGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,

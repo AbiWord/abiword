@@ -153,7 +153,6 @@ protected:
 			static gint key_release_event(GtkWidget* w, GdkEventKey* e);
 			static gint delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/);
 			static gint expose(GtkWidget * w, GdkEventExpose* pExposeEvent);
-			static gint abi_expose_repaint( gpointer /* xap_UnixFrame * */ p);
 			static gint do_ZoomUpdate( gpointer /* xap_UnixFrame * */ p);
 			static void vScrollChanged(GtkAdjustment * w, gpointer /*data*/);
 			static void hScrollChanged(GtkAdjustment * w, gpointer /*data*/);

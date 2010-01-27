@@ -602,31 +602,6 @@ class ABI_EXPORT GR_Graphics
 	virtual bool      getColor3D(GR_Color3D /*name*/, UT_RGBColor & /*color*/) 
 	{ return false; }
 
-	//
-	// Methods to deal with background repainting as used in the Unix FE. These
-	// make redraws really fast and fix bug 119
-	//
-	bool              isSpawnedRedraw(void) const;
-	void              setSpawnedRedraw(bool exposeState);
-
-	void              setPendingRect(UT_sint32 x,
-									 UT_sint32 y,
-									 UT_sint32 width,
-									 UT_sint32 height);
-
-	void              unionPendingRect( UT_Rect * pRect);
-	void              setRecentRect( UT_Rect * pRect);
-	const UT_Rect *   getPendingRect(void) const;
-	bool              isExposePending(void) const;
-	void              setExposePending(bool bExposePending);
-	bool              isExposedAreaAccessed(void) const;
-	void              setExposedAreaAccessed(bool bAccessedState);
-	void              setDontRedraw( bool bDontRedraw);
-	bool              isDontRedraw(void);
-	void              doRepaint(UT_Rect * rClip);
-	void              setDoMerge( bool bMergeState);
-	bool              doMerge(void) const;
-
 	const GR_Transform & getTransform() const {return m_Transform;}
 
 	/* returns true on success, false on failure */
