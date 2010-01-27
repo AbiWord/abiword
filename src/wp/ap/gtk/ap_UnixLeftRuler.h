@@ -29,12 +29,13 @@
 #include <gdk/gdk.h>
 #include "ut_types.h"
 #include "ap_LeftRuler.h"
-class XAP_Frame;
+#include "xap_UnixCustomWidget.h"
 
+class XAP_Frame;
 
 /*****************************************************************/
 
-class AP_UnixLeftRuler : public AP_LeftRuler
+class AP_UnixLeftRuler : public AP_LeftRuler, public XAP_UnixCustomWidget
 {
 public:
 	AP_UnixLeftRuler(XAP_Frame * pFrame);
@@ -47,8 +48,6 @@ public:
 	void				getWidgetPosition(gint * x, gint * y);
 	GtkWidget * 		getWidget(void) { return m_wLeftRuler; };
 	GdkWindow * 	getRootWindow(void);
-
-	virtual void queueDraw(const UT_Rect *clip=NULL);
 
 	void _ruler_style_changed (void);
 	

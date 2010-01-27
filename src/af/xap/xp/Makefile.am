@@ -44,6 +44,8 @@ libxp_la_SOURCES = \
 	xap_Args.h \
 	xap_Clipboard.cpp \
 	xap_Clipboard.h \
+	xap_CustomWidget.cpp \
+	xap_CustomWidget.h \
 	xap_Dialog.cpp \
 	xap_DialogFactory.cpp \
 	xap_DialogFactory.h \

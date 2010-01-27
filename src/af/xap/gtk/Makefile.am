@@ -39,6 +39,8 @@ libgtk_la_SOURCES = \
 	xap_UnixAppImpl.h \
 	xap_UnixClipboard.cpp \
 	xap_UnixClipboard.h \
+	xap_UnixCustomWidget.cpp \
+	xap_UnixCustomWidget.h \
 	xap_UnixDialogFactory.h \
 	xap_UnixDialogHelper.cpp \
 	xap_UnixDialogHelper.h \

@@ -36,6 +36,7 @@
 #include "ev_EditBits.h"
 #include "pt_Types.h"
 #include "xap_Strings.h"
+#include "xap_CustomWidget.h"
 
 class XAP_App;
 class XAP_Frame;
@@ -116,7 +117,7 @@ public:
 	
 /*****************************************************************/
 
-class ABI_EXPORT AP_LeftRuler : public AV_Listener
+class ABI_EXPORT AP_LeftRuler : public AV_Listener, virtual public XAP_CustomWidget
 {
 public:
 	AP_LeftRuler(XAP_Frame * pFrame);
@@ -134,7 +135,6 @@ public:
 	UT_uint32			getHeight(void) const;
 	void				setWidth(UT_uint32 iWidth);
 	UT_uint32			getWidth(void) const;
-	virtual void		queueDraw(const UT_Rect *clip=NULL);
 	void				scrollRuler(UT_sint32 yoff, UT_sint32 ylimit);
 
 	void			    mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y);
@@ -157,8 +157,8 @@ public:
 protected:
 	void                _refreshView(void);
 
-	/* don't call this function directly, use queueDraw() instead */
-	void				draw(const UT_Rect *clip);
+	/* don't call this function directly, use XAP_CustomWidget::queueDraw() instead */
+	virtual void		draw(const UT_Rect *clip);
 
 //	void				_draw3DFrame(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
 //									 UT_sint32 x, UT_sint32 h);

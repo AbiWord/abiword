@@ -53,8 +53,9 @@
 /*****************************************************************/
 
 AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
+	: XAP_CustomWidget()
 #if XAP_DONTUSE_XOR
-	: m_guideCache(NULL)
+	, m_guideCache(NULL)
 #endif
 {
 	m_pFrame = pFrame;
@@ -1659,16 +1660,6 @@ void AP_LeftRuler::_drawCellMark(UT_Rect *prDrag, bool /*bUp*/)
 }
 
 /*****************************************************************/
-
-void AP_LeftRuler::queueDraw(const UT_Rect *clip)
-{
-	/* We provide a generic implementation here, calling draw() directly.  On
-	 * some platforms this may not be practical, so don't rely on this
-	 * behaviour. In future this might default to a generic mechanism that
-	 * combines multiple drawing requests.
-	 */
-	draw(clip);
-}
 
 void AP_LeftRuler::draw(const UT_Rect *clip)
 {

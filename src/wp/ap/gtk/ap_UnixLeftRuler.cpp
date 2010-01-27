@@ -44,7 +44,8 @@ ruler_style_changed (GtkWidget 			* /*w*/,
 }
 
 AP_UnixLeftRuler::AP_UnixLeftRuler(XAP_Frame * pFrame)
-	: AP_LeftRuler(pFrame)
+	: AP_LeftRuler(pFrame),
+	  XAP_UnixCustomWidget()
 {
 	m_rootWindow = NULL;
 	m_wLeftRuler = NULL;
@@ -144,24 +145,6 @@ GdkWindow * AP_UnixLeftRuler::getRootWindow(void)
 
 	m_rootWindow  = ::getRootWindow(m_wLeftRuler);
 	return m_rootWindow;
-}
-
-void AP_UnixLeftRuler::queueDraw(const UT_Rect *clip)
-{
-	UT_ASSERT(m_pG);
-
-	if (!clip)
-		gtk_widget_queue_draw(m_wLeftRuler);
-	else
-	{
-		gtk_widget_queue_draw_area(
-				m_wLeftRuler,
-				m_pG->tdu(clip->left),
-				m_pG->tdu(clip->top),
-				m_pG->tdu(clip->width),
-				m_pG->tdu(clip->height)
-			);
-	}
 }
 
 /*****************************************************************/
