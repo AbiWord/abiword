@@ -305,8 +305,7 @@ on_motion_notify_event (GtkWidget *window, GdkEventMotion *ev, gpointer user_dat
 		table->total_cols = my_max(table->selected_cols + 1, 3);
 
 		abi_table_resize(table);
-		gtk_widget_queue_draw_area (window, 0, 0, 
-					    window->allocation.width, window->allocation.height);
+		gtk_widget_queue_draw (window);
 
 		changed = TRUE;
 	}
@@ -384,8 +383,7 @@ on_leave_event (GtkWidget *area,
 		table->total_cols = my_max(table->selected_cols + 1, 3);
 
 		abi_table_resize(table);
-		gtk_widget_queue_draw_area (area, 0, 0, area->allocation.width,
-					    area->allocation.height);
+		gtk_widget_queue_draw (area);
 	}
 
 	return TRUE;
@@ -500,8 +498,7 @@ on_key_event(GtkWidget *widget, GdkEventKey *event, gpointer user_data)
 	table->total_cols = my_max(table->selected_cols + 1, 3);
 
 	abi_table_resize(table);
-	gtk_widget_queue_draw_area (widget, 0, 0, widget->allocation.width,
-				    widget->allocation.height);
+	gtk_widget_queue_draw (widget);
 
 	return TRUE;
 }
