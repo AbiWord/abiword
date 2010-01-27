@@ -9224,32 +9224,11 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 
 	fl_SectionLayout * pSection = pContainer->getSectionLayout();
 	UT_return_if_fail(pSection);
-	if(pInfo->m_vecTableColInfo)
-	{
-		UT_sint32 count = pInfo->m_vecTableColInfo->getItemCount();
-		UT_sint32 i =0;
-		for(i=0; i< count; i++)
-		{
-			delete static_cast<AP_TopRulerTableInfo *>(pInfo->m_vecTableColInfo->getNthItem(i));
-		}
-		delete pInfo->m_vecTableColInfo;
-		pInfo->m_vecTableColInfo =NULL;
-	}
-	if(pInfo->m_vecFullTable)
-	{
-		UT_sint32 count = pInfo->m_vecFullTable->getItemCount();
-		UT_sint32 i =0;
-		for(i=0; i< count; i++)
-		{
-			delete static_cast<AP_TopRulerTableInfo *>(pInfo->m_vecFullTable->getNthItem(i));
-		}
-		delete pInfo->m_vecFullTable;
-		pInfo->m_vecFullTable =NULL;
-	}
-//
-// Clear the rest of the info
-//
-	memset(pInfo,0,sizeof(*pInfo));
+
+	/* clear pInfo */
+	pInfo->~AP_TopRulerInfo();
+	new(pInfo) AP_TopRulerInfo();
+
 	if (pSection->getType() == FL_SECTION_DOC || pSection->getContainerType() == FL_CONTAINER_FOOTNOTE || pSection->getContainerType() == FL_CONTAINER_ANNOTATION || pSection->getContainerType() == FL_CONTAINER_ENDNOTE)
 	{
 		fp_Column* pColumn = NULL;
@@ -9589,18 +9568,10 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 		return;
 	}
 
-	if(pInfo->m_vecTableRowInfo)
-	{
-		UT_sint32 count = pInfo->m_vecTableRowInfo->getItemCount();
-		UT_sint32 i =0;
-		for(i=0; i< count; i++)
-		{
-			delete static_cast<AP_LeftRulerTableInfo *>(pInfo->m_vecTableRowInfo->getNthItem(i));
-		}
-		delete pInfo->m_vecTableRowInfo;
-		pInfo->m_vecTableRowInfo =NULL;
-	}
-	memset(pInfo,0,sizeof(*pInfo));
+	/* clear pInfo */
+	pInfo->~AP_LeftRulerInfo();
+	new(pInfo) AP_LeftRulerInfo();
+
 	xxx_UT_DEBUGMSG(("ap_LeftRulerInfo: get Leftruler info \n"));
 
 	if (1)					

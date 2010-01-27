@@ -92,10 +92,9 @@ public:
 				{
 					delete m_vecTableRowInfo->getNthItem(i);
 				}
-				delete m_vecTableRowInfo;
+				DELETEP(m_vecTableRowInfo);
 			}
-			m_vecTableRowInfo = NULL;
-		}		
+		}
 		
 	Mode					m_mode;
 
