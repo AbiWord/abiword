@@ -118,6 +118,7 @@ AP_LeftRuler::~AP_LeftRuler(void)
 	UT_DEBUGMSG(("AP_LeftRuler::~AP_LeftRuler (this=%p scroll=%p)\n", this, m_pScrollObj));
 
 	DELETEP(m_pScrollObj);
+	DELETEP(m_lfi);
 }
 
 /*****************************************************************/
@@ -809,7 +810,7 @@ UT_sint32 AP_LeftRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 & iFixed,
 	pView->getLeftRulerInfo(pos,&m_infoCache);
 	UT_ASSERT(m_infoCache.m_yTopMargin >= 0);
 
-	draw(NULL, &m_infoCache);
+	queueDraw();
 
 	iFixed = static_cast<UT_sint32>(UT_MAX(pG->tlu(m_iWidth),pG->tlu(s_iFixedWidth)));
 
@@ -1060,8 +1061,8 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 			m_infoCache.m_yBottomMargin -= m_draggingCenter - oldDragCenter;
 			UT_DEBUGMSG(("Dragging bottom margin new value %d \n",	m_infoCache.m_yBottomMargin));
 		}
-				
-		draw(NULL, &m_infoCache);
+
+		queueDraw();
 		_xorGuide();
 		m_bBeforeFirstMotion = false;
 
@@ -1142,7 +1143,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 			{
 				clip.set(xLeft, m_draggingCenter-pG->tlu(4),lFixedHeight, oldDragCenter - m_draggingCenter+ lFixedHeight);
 			}
-			draw(&clip);
+			queueDraw(&clip);
 //
 // FIXME need to clear the old cell mark
 //
@@ -1193,7 +1194,7 @@ void AP_LeftRuler::_ignoreEvent(bool /*bDone*/)
 	{
 	case DW_TOPMARGIN:
 	case DW_BOTTOMMARGIN:
-		draw(NULL, &m_infoCache);
+		queueDraw();
 		break;
 
 	case DW_NOTHING:
@@ -1237,7 +1238,7 @@ bool AP_LeftRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 
 	if (mask & (/*AV_CHG_MOTION |*/ AV_CHG_FMTSECTION | AV_CHG_HDRFTR))
 	{
-		draw(NULL);
+		queueDraw();
 	}
 	
 	return true;
@@ -1300,7 +1301,7 @@ void AP_LeftRuler::scrollRuler(UT_sint32 yoff, UT_sint32 ylimit)
 	}
 	else
 	{
-		// the current page is the same as the last call to draw().
+		// the current page is the same as the last call to queueDraw().
 		// all we need to draw is the area exposed by the scroll.
 		
 		rClip.left = 0;
@@ -1325,12 +1326,12 @@ void AP_LeftRuler::scrollRuler(UT_sint32 yoff, UT_sint32 ylimit)
 	
 	m_pG->scroll(0,dy);
 	m_yScrollOffset = yoff;
-	draw(prClip);
+	queueDraw(prClip);
 }
 
 /*****************************************************************/
  
-void AP_LeftRuler::_getMarginMarkerRects(AP_LeftRulerInfo * pInfo, UT_Rect &rTop, UT_Rect &rBottom)
+void AP_LeftRuler::_getMarginMarkerRects(const AP_LeftRulerInfo * pInfo, UT_Rect &rTop, UT_Rect &rBottom)
 {
 	UT_sint32 yStart = pInfo->m_yPageStart + pInfo->m_yTopMargin - m_yScrollOffset;
 	UT_sint32 yEnd = pInfo->m_yPageStart + pInfo->m_yPageSize - pInfo->m_yBottomMargin - m_yScrollOffset;
@@ -1349,7 +1350,7 @@ void AP_LeftRuler::_getMarginMarkerRects(AP_LeftRulerInfo * pInfo, UT_Rect &rTop
 }
 
 void AP_LeftRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
-										AP_LeftRulerInfo * pInfo, GR_Graphics::GR_Color3D /*clr*/)
+										const AP_LeftRulerInfo * pInfo, GR_Graphics::GR_Color3D /*clr*/)
 {
 	//FV_View *pView = static_cast<FV_View *>(m_pView);
 	//bool hdrftr = pView->isHdrFtrEdit();
@@ -1403,7 +1404,7 @@ void AP_LeftRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 }
 
  
-void AP_LeftRuler::_getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell, 
+void AP_LeftRuler::_getCellMarkerRects(const AP_LeftRulerInfo * pInfo, UT_sint32 iCell, 
 									   UT_Rect &rCell, fp_TableContainer * pBroke)
 {
 	if(pInfo->m_mode !=  AP_LeftRulerInfo::TRI_MODE_TABLE)
@@ -1552,7 +1553,7 @@ void AP_LeftRuler::_getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell
 /*!
  * Draw simple cell markers at each row position.
  */
-void AP_LeftRuler::_drawCellProperties(AP_LeftRulerInfo * pInfo)
+void AP_LeftRuler::_drawCellProperties(const AP_LeftRulerInfo * pInfo)
 {
 	if(pInfo->m_mode != AP_LeftRulerInfo::TRI_MODE_TABLE)
 	{
@@ -1659,9 +1660,18 @@ void AP_LeftRuler::_drawCellMark(UT_Rect *prDrag, bool /*bUp*/)
 
 /*****************************************************************/
 
-void AP_LeftRuler::draw(const UT_Rect * pClipRect)
+void AP_LeftRuler::queueDraw(const UT_Rect *clip)
 {
+	/* We provide a generic implementation here, calling draw() directly.  On
+	 * some platforms this may not be practical, so don't rely on this
+	 * behaviour. In future this might default to a generic mechanism that
+	 * combines multiple drawing requests.
+	 */
+	draw(clip);
+}
 
+void AP_LeftRuler::draw(const UT_Rect *clip)
+{
 	FV_View * pView = static_cast<FV_View *>(m_pView);
 	if (!pView)
 		return;
@@ -1679,38 +1689,21 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect)
 		return;
 	}
 
-	AP_LeftRulerInfo lri;
-	pView->getLeftRulerInfo(&lri);
-	draw(pClipRect, &lri);
-}
-
-void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
-{
 	if (!m_pG)
 		return;
+
+	if (!m_lfi)
+		m_lfi = new AP_LeftRulerInfo;
+
+	AP_LeftRulerInfo *lfi = m_lfi;
+	pView->getLeftRulerInfo(lfi);
 
 	GR_Painter painter(m_pG);
 
 	UT_ASSERT(lfi->m_yTopMargin >= 0);
-	UT_Rect r;
-	UT_Rect * pClipRect = NULL;
- 
-	if (pCR)
-	{
-		r.left   = pCR->left;
-		r.top    = pCR->top;
-		r.width  = pCR->width;
-		r.height = pCR->height;
-		pClipRect = &r;
-		//UT_DEBUGMSG(("LeftRuler:: draw [clip %ld %ld %ld %ld]\n",pClipRect->left,pClipRect->top,pClipRect->width,pClipRect->height));
-		m_pG->setClipRect(pClipRect);
-	}
-	else
-	{
-		m_pG->setClipRect(NULL);
-		//UT_DEBUGMSG(("LeftRuler:: draw [no clip]\n"));
-	}
-	
+
+	m_pG->setClipRect(clip);
+
 	/* if you get one of these two asserts then you forgot to call setWidth() or setHeight() */
 	UT_ASSERT(m_iHeight);
 	UT_ASSERT(m_iWidth);
@@ -1867,18 +1860,16 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 	// 
 	
 	// section properties {left-margin, right-margin};
-	_drawMarginProperties(pClipRect, lfi, GR_Graphics::CLR3D_Foreground);
+	_drawMarginProperties(clip, lfi, GR_Graphics::CLR3D_Foreground);
 
 	// draw the cell properties for a table
-	_drawCellProperties(lfi);	
+	_drawCellProperties(lfi);
 	
 	// reset the current clip rect
-	if (pClipRect)
+	if (clip)
 	{
 		m_pG->setClipRect(NULL);
 	}
-	m_lfi = lfi;
-
 }
 
 /*****************************************************************/
@@ -1963,7 +1954,7 @@ void AP_LeftRuler::_prefsListener( XAP_Prefs *pPrefs, UT_StringPtrMap * /*phChan
 void AP_LeftRuler::setDimension( UT_Dimension newdim )
 {
 	m_dim = newdim;
-	draw( static_cast<const UT_Rect *>(0) );
+	queueDraw();
 }
 
 void AP_LeftRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue)

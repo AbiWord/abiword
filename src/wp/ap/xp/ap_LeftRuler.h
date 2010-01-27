@@ -135,8 +135,7 @@ public:
 	UT_uint32			getHeight(void) const;
 	void				setWidth(UT_uint32 iWidth);
 	UT_uint32			getWidth(void) const;
-	void				draw(const UT_Rect * pClipRect);
-	void				draw(const UT_Rect * pClipRect, AP_LeftRulerInfo * lfi);
+	virtual void		queueDraw(const UT_Rect *clip=NULL);
 	void				scrollRuler(UT_sint32 yoff, UT_sint32 ylimit);
 
 	void			    mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y);
@@ -159,6 +158,9 @@ public:
 protected:
 	void                _refreshView(void);
 
+	/* don't call this function directly, use queueDraw() instead */
+	void				draw(const UT_Rect *clip);
+
 //	void				_draw3DFrame(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
 //									 UT_sint32 x, UT_sint32 h);
 
@@ -177,22 +179,22 @@ private:
 	double              _scalePixelDistanceToUnits(UT_sint32 yDist, ap_RulerTicks & tick);
 	void                _ignoreEvent(bool bDone);
 protected:
-	void                _getMarginMarkerRects(AP_LeftRulerInfo * pInfo, UT_Rect &rTop, UT_Rect &rBottom);
+	void                _getMarginMarkerRects(const AP_LeftRulerInfo * pInfo, UT_Rect &rTop, UT_Rect &rBottom);
 
 	virtual void		_drawMarginProperties(const UT_Rect * pClipRect,
-											  AP_LeftRulerInfo * pInfo, 
+											  const AP_LeftRulerInfo * pInfo, 
 											  GR_Graphics::GR_Color3D clr);
 private:
 
-	void                _getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell, UT_Rect &rCell, fp_TableContainer * pBroke=NULL);
-	void		        _drawCellProperties( AP_LeftRulerInfo * pInfo);
+	void                _getCellMarkerRects(const AP_LeftRulerInfo * pInfo, UT_sint32 iCell, UT_Rect &rCell, fp_TableContainer * pBroke=NULL);
+	void		        _drawCellProperties(const AP_LeftRulerInfo * pInfo);
 protected:
 	virtual void		_drawCellMark(UT_Rect *prDrag, bool bUp);
 private:
 	void                _xorGuide(bool bClear=false);
 	void				_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue);
 
-	AP_LeftRulerInfo  * m_lfi;					/* the values we last drew with */
+	AP_LeftRulerInfo *	m_lfi; /* the values we last drew with */
 
 	// scrolling objects
 	AV_ScrollObj *		m_pScrollObj;

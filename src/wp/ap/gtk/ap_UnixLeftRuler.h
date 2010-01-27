@@ -48,6 +48,8 @@ public:
 	GtkWidget * 		getWidget(void) { return m_wLeftRuler; };
 	GdkWindow * 	getRootWindow(void);
 
+	virtual void queueDraw(const UT_Rect *clip=NULL);
+
 	void _ruler_style_changed (void);
 	
 protected:

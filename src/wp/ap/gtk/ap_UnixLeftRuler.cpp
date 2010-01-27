@@ -49,7 +49,6 @@ AP_UnixLeftRuler::AP_UnixLeftRuler(XAP_Frame * pFrame)
 	m_rootWindow = NULL;
 	m_wLeftRuler = NULL;
 	m_pG = NULL;
-	m_iBackgroundRedrawID = 999999;
     // change ruler color on theme change
 	GtkWidget * toplevel = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl())->getTopLevelWindow();
 	m_iBackgroundRedrawID = g_signal_connect_after (G_OBJECT(toplevel),
@@ -145,6 +144,24 @@ GdkWindow * AP_UnixLeftRuler::getRootWindow(void)
 
 	m_rootWindow  = ::getRootWindow(m_wLeftRuler);
 	return m_rootWindow;
+}
+
+void AP_UnixLeftRuler::queueDraw(const UT_Rect *clip)
+{
+	UT_ASSERT(m_pG);
+
+	if (!clip)
+		gtk_widget_queue_draw(m_wLeftRuler);
+	else
+	{
+		gtk_widget_queue_draw_area(
+				m_wLeftRuler,
+				m_pG->tdu(clip->left),
+				m_pG->tdu(clip->top),
+				m_pG->tdu(clip->width),
+				m_pG->tdu(clip->height)
+			);
+	}
 }
 
 /*****************************************************************/
@@ -267,7 +284,7 @@ gint AP_UnixLeftRuler::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*event
 	// a static function
 	return 1;
 }
-	
+
 gint AP_UnixLeftRuler::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 {
 	// a static function

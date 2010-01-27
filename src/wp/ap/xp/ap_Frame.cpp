@@ -119,7 +119,7 @@ void AP_Frame::quickZoom(UT_uint32 iZoom)
 		}
 		if(pLeft && !pLeft->isHidden())
 		{
-			pLeft->draw(NULL);
+			pLeft->queueDraw();
 		}
 //
 // Redraw the entire screen
@@ -715,7 +715,7 @@ UT_Error AP_Frame::_showDocument(UT_uint32 iZoom)
 		if ( static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler )
 		{
 			static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler->setZoom(iZoom);
-			static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler->draw(NULL);
+			static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler->queueDraw();
 		}
 	}
 	if(isStatusBarShown())
