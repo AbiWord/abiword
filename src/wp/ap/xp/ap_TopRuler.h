@@ -37,6 +37,7 @@
 #include "gr_Graphics.h"
 #include "fl_BlockLayout.h"
 #include "xap_Strings.h"
+#include "xap_CustomWidget.h"
 
 class XAP_App;
 class XAP_Frame;
@@ -182,7 +183,7 @@ public:
 	} u;
 };
 
-class ABI_EXPORT AP_TopRuler : public AV_Listener
+class ABI_EXPORT AP_TopRuler : public AV_Listener, virtual public XAP_CustomWidget
 {
 public:
 	AP_TopRuler(XAP_Frame * pFrame);
@@ -201,7 +202,6 @@ public:
 	GR_Graphics *	getGraphics(void) const { return m_pG;}
 	bool            isHidden(void) const
 		{ return m_bIsHidden;}
-	void			draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo = NULL);
 	void			scrollRuler(UT_sint32 xoff, UT_sint32 xlimit);
 
 	UT_sint32       setTableLineDrag(PT_DocPosition pos, UT_sint32 x, UT_sint32 & iFixed);
@@ -227,6 +227,9 @@ public:
 	static UT_uint32 getFixedWidth(){return s_iFixedWidth;}
 	
 protected:
+	/* implement XAP_CustomWidget::draw */
+	virtual void draw(const UT_Rect *clip);
+
 	void	_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo);
 	void	_drawBar(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
 					 GR_Graphics::GR_Color3D clr3d, UT_sint32 x, UT_sint32 w);

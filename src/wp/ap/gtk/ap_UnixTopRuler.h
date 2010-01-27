@@ -29,12 +29,13 @@
 #include <gdk/gdk.h>
 #include "ut_types.h"
 #include "ap_TopRuler.h"
-class XAP_Frame;
+#include "xap_UnixCustomWidget.h"
 
+class XAP_Frame;
 
 /*****************************************************************/
 
-class AP_UnixTopRuler : public AP_TopRuler
+class AP_UnixTopRuler : public AP_TopRuler, public XAP_UnixCustomWidget
 {
 public:
 	AP_UnixTopRuler(XAP_Frame * pFrame);

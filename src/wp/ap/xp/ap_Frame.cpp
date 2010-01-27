@@ -115,7 +115,7 @@ void AP_Frame::quickZoom(UT_uint32 iZoom)
 		setXScrollRange();
 		if(pTop && !pTop->isHidden())
 		{
-			pTop->draw(NULL);
+			pTop->queueDraw();
 		}
 		if(pLeft && !pLeft->isHidden())
 		{
@@ -710,7 +710,7 @@ UT_Error AP_Frame::_showDocument(UT_uint32 iZoom)
 		if ( static_cast<AP_FrameData*>(m_pData)->m_pTopRuler )
 		{
 			static_cast<AP_FrameData*>(m_pData)->m_pTopRuler->setZoom(iZoom);
-			static_cast<AP_FrameData*>(m_pData)->m_pTopRuler->draw(NULL);
+			static_cast<AP_FrameData*>(m_pData)->m_pTopRuler->queueDraw();
 		}
 		if ( static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler )
 		{

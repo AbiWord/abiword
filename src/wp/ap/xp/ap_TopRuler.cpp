@@ -311,7 +311,7 @@ bool AP_TopRuler::notify(AV_View * _pView, const AV_ChangeMask mask)
 
 		pClipRect.height = getHeight();
 		pClipRect.width = getWidth();
-		draw(&pClipRect);
+		queueDraw(&pClipRect);
 	}
 
 	return true;
@@ -390,28 +390,17 @@ void AP_TopRuler::scrollRuler(UT_sint32 xoff, UT_sint32 xlimit)
 
 	m_pG->scroll(x_dest,y_dest,x_src,y_src,width,height);
 	m_xScrollOffset = xoff;
-	draw(&rClip);
+	queueDraw(&rClip);
 }
 
 /*****************************************************************/
 
-void AP_TopRuler::draw(const UT_Rect * pCR, AP_TopRulerInfo * pUseInfo)
+void AP_TopRuler::draw(const UT_Rect *clip)
 {
 	if (!m_pG)
 		return;
 
-	UT_Rect r;
-	UT_Rect * pClipRect = NULL;
-	
-	if (pCR)
-	{
-		r.left   = pCR->left;
-		r.top    = pCR->top;
-		r.width  = pCR->width;
-		r.height = pCR->height;
-		pClipRect = &r;
-		m_pG->setClipRect(pClipRect);
-	}
+	m_pG->setClipRect(clip);
 
 	/* if you get one of these two asserts then you forgot to call setWidth() or setHeight() */
 	UT_ASSERT_HARMLESS(m_iHeight);
@@ -424,9 +413,9 @@ void AP_TopRuler::draw(const UT_Rect * pCR, AP_TopRulerInfo * pUseInfo)
 
 	// draw the foreground
 
-	_draw(pClipRect,pUseInfo);
+	_draw(clip, NULL);
 
-	if (pClipRect)
+	if (clip)
 		m_pG->setClipRect(NULL);
 }
 
@@ -2075,7 +2064,7 @@ UT_sint32 AP_TopRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 x, UT_sint
 	}
 	pView->getTopRulerInfo(pos,&m_infoCache);
 	if(m_pG)
-		draw(NULL, &m_infoCache);
+		queueDraw();
 
 	iFixed = static_cast<UT_sint32>(pView->getGraphics()->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth)));
 
@@ -2258,7 +2247,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 			currentTabType = --currentTabType <= FL_TAB_NONE ? __FL_TAB_MAX-1 :  currentTabType;
 		}
 		m_iDefaultTabType = static_cast<eTabType>(currentTabType);
-		_drawTabToggle(NULL, true);
+		queueDraw();
 		XAP_String_Id baseTabName = AP_STRING_ID_TabToggleLeftTab-1;
 		_displayStatusMessage(baseTabName + m_iDefaultTabType);
 		m_bValidMouseClick = true;
@@ -2513,8 +2502,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 
 		_getTabStopRect(&m_infoCache,m_draggingCenter,&m_draggingRect);
 		if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
-			draw(&oldDraggingRect,&m_infoCache);
-		_drawTabProperties(NULL,&m_infoCache,false);
+			queueDraw();
 		_xorGuide();
 
 		m_bBeforeFirstMotion = false;
@@ -3518,7 +3506,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState /*ems*/, UT_sint32 x, UT_sint
 			x = getWidth () - 10;
 
 		if(m_pG)
-			draw(NULL, &m_infoCache);
+			queueDraw();
 	}
 
 	// by now, if the cursor if off the ruler we will have created a timer and set it and returned.
@@ -3529,7 +3517,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState /*ems*/, UT_sint32 x, UT_sint
 		DELETEP(m_pAutoScrollTimer);
 		m_pAutoScrollTimer = NULL;
 		if(m_pG)
-			draw(NULL, &m_infoCache);
+			queueDraw();
 		_xorGuide(true);
 	}
 
@@ -3630,7 +3618,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState /*ems*/, UT_sint32 x, UT_sint
 			deltaLeftMargin = newMargin - m_infoCache.u.c.m_xaLeftMargin;
 			m_infoCache.u.c.m_xaLeftMargin += deltaLeftMargin;
 			m_infoCache.u.c.m_xColumnWidth -= deltaLeftMargin / static_cast<UT_sint32>(m_infoCache.m_iNumColumns);
-			draw(NULL, &m_infoCache);
+			queueDraw();
 			m_infoCache.u.c.m_xaLeftMargin -= deltaLeftMargin;
 			m_infoCache.u.c.m_xColumnWidth += deltaLeftMargin / static_cast<UT_sint32>(m_infoCache.m_iNumColumns);
 		}
@@ -3695,7 +3683,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState /*ems*/, UT_sint32 x, UT_sint
 		m_infoCache.u.c.m_xaRightMargin += deltaRightMargin;
 		m_infoCache.u.c.m_xColumnWidth -= deltaRightMargin / static_cast<UT_sint32>(m_infoCache.m_iNumColumns);
 
-		draw(NULL, &m_infoCache);
+		queueDraw();
 		m_infoCache.u.c.m_xaRightMargin -= deltaRightMargin;
 		m_infoCache.u.c.m_xColumnWidth += deltaRightMargin / static_cast<UT_sint32>(m_infoCache.m_iNumColumns);
 		_xorGuide();
@@ -3757,9 +3745,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState /*ems*/, UT_sint32 x, UT_sint
 
 
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
-				draw(((oldDraggingRect.width > m_draggingRect.width ) ? &oldDraggingRect : &m_draggingRect),
-					 &m_infoCache);
-			_drawColumnProperties(NULL,&m_infoCache,0);
+				queueDraw();
 			_xorGuide();
 
 			double dgrid = tick.scalePixelDistanceToUnits(m_draggingRect.width);
@@ -3836,8 +3822,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState /*ems*/, UT_sint32 x, UT_sint
 
 			_getParagraphMarkerRects(&m_infoCache,m_draggingCenter,0,0,&m_draggingRect,NULL,NULL);
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
-				draw(&oldDraggingRect,&m_infoCache);
-			_drawParagraphProperties(NULL,&m_infoCache,false);
+				queueDraw();
 			_xorGuide();
 
 		    double dxrel;
@@ -3964,11 +3949,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState /*ems*/, UT_sint32 x, UT_sint
 									 m_draggingCenter,0,m_dragging2Center,
 									 &m_draggingRect,NULL,&m_dragging2Rect);
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
-			{
-				draw(&oldDraggingRect,&m_infoCache);
-				draw(&oldDragging2Rect,&m_infoCache);
-			}
-			_drawParagraphProperties(NULL,&m_infoCache,false);
+				queueDraw();
 			_xorGuide();
 
 			double dxrel;
@@ -4039,8 +4020,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState /*ems*/, UT_sint32 x, UT_sint
 
 			_getParagraphMarkerRects(&m_infoCache,0,m_draggingCenter,0,NULL,&m_draggingRect,NULL);
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
-				draw(&oldDraggingRect,&m_infoCache);
-			_drawParagraphProperties(NULL,&m_infoCache,false);
+				queueDraw();
 			_xorGuide();
 
 			double dxrel;
@@ -4116,8 +4096,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState /*ems*/, UT_sint32 x, UT_sint
 
 			_getParagraphMarkerRects(&m_infoCache,0,0,m_draggingCenter,NULL,NULL,&m_draggingRect);
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
-				draw(&oldDraggingRect,&m_infoCache);
-			_drawParagraphProperties(NULL,&m_infoCache,false);
+				queueDraw();
 			xxx_UT_DEBUGMSG(("FirstLineIndent: r [%ld %ld %ld %ld]]n",
 						 m_draggingRect.left,m_draggingRect.top,m_draggingRect.width,m_draggingRect.height));
 			_xorGuide();
@@ -4150,8 +4129,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState /*ems*/, UT_sint32 x, UT_sint
 			m_draggingCenter = xStartPixel + xgrid;
 			_getTabStopRect(&m_infoCache,m_draggingCenter,&m_draggingRect);
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
-				draw(&oldDraggingRect,&m_infoCache);
-			_drawTabProperties(NULL,&m_infoCache,false);
+				queueDraw();
 			_xorGuide();
 
 			double dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter - xStartPixel);
@@ -4193,8 +4171,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState /*ems*/, UT_sint32 x, UT_sint
 			m_draggingRect.set(m_draggingCenter-ileft,ileft,pView->getGraphics()->tlu(s_iFixedHeight)/2,pView->getGraphics()->tlu(s_iFixedHeight)/2); // left/top/width/height
 
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
-				draw(&oldDraggingRect,&m_infoCache);
-			_drawCellProperties(NULL,&m_infoCache,false);
+				queueDraw();
 			_xorGuide();
 		}
 		m_bBeforeFirstMotion = false;
@@ -4295,9 +4272,7 @@ void AP_TopRuler::_ignoreEvent(bool bDone)
 		// erase the widget we are dragging by invalidating
 		// the region that's under it and letting it repaint.
 		// to avoid flashing, we only do this once.
-		draw(&m_draggingRect, &m_infoCache);
-		if (dw == DW_LEFTINDENTWITHFIRST)
-			draw(&m_dragging2Rect, &m_infoCache);
+		queueDraw();
 		m_bBeforeFirstMotion = true;
 	}
 
@@ -4310,13 +4285,13 @@ void AP_TopRuler::_ignoreEvent(bool bDone)
 	case DW_LEFTMARGIN:
 	case DW_RIGHTMARGIN:
 		if(m_pG)
-			draw(NULL, &m_infoCache);
+			queueDraw();
 		break;
 
 	case DW_COLUMNGAP:
 	case DW_COLUMNGAPLEFTSIDE:
 		if(m_pG)
-			_drawColumnProperties(NULL,&m_infoCache,0);
+			queueDraw();
 		break;
 
 	case DW_LEFTINDENT:
@@ -4324,7 +4299,7 @@ void AP_TopRuler::_ignoreEvent(bool bDone)
 	case DW_FIRSTLINEINDENT:
 	case DW_LEFTINDENTWITHFIRST:
 		if(m_pG)
-			_drawParagraphProperties(NULL,&m_infoCache,true);
+			queueDraw();
 		break;
 
 	case DW_TABSTOP:
@@ -4346,7 +4321,7 @@ void AP_TopRuler::_ignoreEvent(bool bDone)
 	case DW_CELLMARK:
 		if(m_pG)
 		{
-			_drawCellProperties(NULL,&m_infoCache,true);
+			queueDraw();
 		}
 		break;
 		
