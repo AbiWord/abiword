@@ -59,7 +59,7 @@ void AP_UnixPreview_Annotation::runModeless(XAP_Frame * pFrame)
 	DELETEP(m_gc);
 	
 	XAP_App *pApp = XAP_App::getApp();
-	GR_UnixCairoAllocInfo ai(GTK_WIDGET(m_pDrawingArea)->window);
+	GR_UnixCairoAllocInfo ai(GTK_WIDGET(m_pDrawingArea));
 	m_gc = (GR_CairoGraphics*) pApp->newGraphics(ai);
 	
 	_createAnnotationPreviewFromGC(m_gc, m_pPreviewWindow->allocation.width, m_pPreviewWindow->allocation.height);

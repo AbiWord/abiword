@@ -1108,7 +1108,7 @@ GR_Graphics * AP_UnixApp::newDefaultScreenGraphics() const
 	GtkWidget * da = pFI->getDrawingArea();
 	UT_return_val_if_fail( da, NULL );
 	
-	GR_UnixCairoAllocInfo ai(da->window);
+	GR_UnixCairoAllocInfo ai(da);
 	return XAP_App::getApp()->newGraphics(ai);
 }
 

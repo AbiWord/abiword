@@ -152,9 +152,10 @@ class ABI_EXPORT GR_CairoAllocInfo
 	: public GR_AllocInfo
 {
 public:
-	GR_CairoAllocInfo(bool bPreview , bool bPrinter)
+	GR_CairoAllocInfo(bool bPreview, bool bPrinter, bool double_buffered)
 		: m_bPreview(bPreview),
-		  m_bPrinter(bPrinter)
+		  m_bPrinter(bPrinter),
+		  m_double_buffered(double_buffered)
 	{
 	}
 	virtual GR_GraphicsId getType() const {return GRID_UNIX;}
@@ -163,6 +164,7 @@ public:
 
 	bool            m_bPreview;
 	bool            m_bPrinter;
+	bool m_double_buffered;
 };
 
 

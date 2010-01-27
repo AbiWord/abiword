@@ -269,7 +269,7 @@ void AP_UnixDialog_FormatTable::runModeless(XAP_Frame * pFrame)
 
 	// make a new Unix GC
 	DELETEP (m_pPreviewWidget);
-	GR_UnixCairoAllocInfo ai(m_wPreviewArea->window);
+	GR_UnixCairoAllocInfo ai(m_wPreviewArea);
 	m_pPreviewWidget =
 	    (GR_UnixCairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 

@@ -514,7 +514,7 @@ bool AP_UnixFrame::_createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom)
 	AP_UnixFrameImpl * pImpl = static_cast<AP_UnixFrameImpl *>(getFrameImpl());
 	UT_ASSERT(pImpl);
 	UT_DEBUGMSG(("Got FrameImpl %p area %p \n",pImpl,pImpl->m_dArea));
-	GR_UnixCairoAllocInfo ai(pImpl->m_dArea->window);
+	GR_UnixCairoAllocInfo ai(pImpl->m_dArea);
 	pG = (GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 	GtkWidget *widget = GTK_WIDGET(static_cast<AP_UnixFrameImpl *>(getFrameImpl())->m_dArea);

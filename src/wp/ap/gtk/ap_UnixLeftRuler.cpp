@@ -118,7 +118,7 @@ void AP_UnixLeftRuler::setView(AV_View * pView)
 	
 	DELETEP(m_pG);
 
-	GR_UnixCairoAllocInfo ai(m_wLeftRuler->window);
+	GR_UnixCairoAllocInfo ai(m_wLeftRuler);
 	m_pG = XAP_App::getApp()->newGraphics(ai);
 
 	UT_ASSERT(m_pG);

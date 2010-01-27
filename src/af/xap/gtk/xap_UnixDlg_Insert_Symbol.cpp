@@ -128,7 +128,7 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	DELETEP (m_unixGraphics);
 	
 	{
-		GR_UnixCairoAllocInfo ai(m_SymbolMap->window);
+		GR_UnixCairoAllocInfo ai(m_SymbolMap);
 		m_unixGraphics =
 			(GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 	}
@@ -143,7 +143,7 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	// make a new Unix GC
 	DELETEP (m_unixarea);
     {
-		GR_UnixCairoAllocInfo ai(m_areaCurrentSym->window);
+		GR_UnixCairoAllocInfo ai(m_areaCurrentSym);
 		m_unixarea =
 			(GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 	}

@@ -872,7 +872,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	UT_return_val_if_fail( pSS, 0 );
 	
 	// attach and clear the area immediately
-	GR_UnixCairoAllocInfo ai(m_preview->window);
+	GR_UnixCairoAllocInfo ai(m_preview);
 	GR_CairoGraphics* pGr =
 		(GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 

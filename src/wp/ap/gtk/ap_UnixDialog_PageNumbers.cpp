@@ -120,7 +120,7 @@ void AP_UnixDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 	DELETEP (m_unixGraphics);
 	
 	// make a new Unix GC
-	GR_UnixCairoAllocInfo ai(m_previewArea->window);
+	GR_UnixCairoAllocInfo ai(m_previewArea);
 	m_unixGraphics =
 	    (GR_UnixCairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 	

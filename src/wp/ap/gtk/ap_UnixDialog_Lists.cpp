@@ -203,7 +203,7 @@ void AP_UnixDialog_Lists::runModal( XAP_Frame * pFrame)
 	UT_ASSERT(m_wPreviewArea && m_wPreviewArea->window);
 
 	// make a new Unix GC
-	GR_UnixCairoAllocInfo ai(m_wPreviewArea->window);
+	GR_UnixCairoAllocInfo ai(m_wPreviewArea);
 	m_pPreviewWidget =
 	    (GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 

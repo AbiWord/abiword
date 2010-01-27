@@ -120,7 +120,7 @@ void AP_UnixTopRuler::setView(AV_View * pView)
 
 	DELETEP(m_pG);
 
-	GR_UnixCairoAllocInfo ai(m_wTopRuler->window);
+	GR_UnixCairoAllocInfo ai(m_wTopRuler);
 	m_pG = XAP_App::getApp()->newGraphics(ai);
 
 	UT_ASSERT(m_pG);

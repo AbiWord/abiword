@@ -29,13 +29,17 @@
 class ABI_EXPORT GR_UnixCairoAllocInfo : public GR_CairoAllocInfo
 {
 public:
- 	GR_UnixCairoAllocInfo(GdkWindow * win)
-		: GR_CairoAllocInfo(false, false),
+	GR_UnixCairoAllocInfo(GdkWindow * win, bool double_buffered=false)
+		: GR_CairoAllocInfo(false, false, double_buffered),
 		m_win(win)
 		{}
+	GR_UnixCairoAllocInfo(GtkWidget *widget)
+		: GR_CairoAllocInfo(false, false, gtk_widget_get_double_buffered(widget)),
+		  m_win(GTK_WIDGET(widget)->window)
+	{}
 	
 	GR_UnixCairoAllocInfo(bool bPreview)
-		: GR_CairoAllocInfo(bPreview, true),
+		: GR_CairoAllocInfo(bPreview, true, false),
 		  m_win(NULL){}
 	virtual cairo_t *createCairo();
 
@@ -94,15 +98,15 @@ protected:
 	static void		widget_size_allocate (GtkWidget        *widget,
 									  GtkAllocation    *allocation,
 									  GR_UnixCairoGraphics *me);
-	GR_UnixCairoGraphics(GdkDrawable * win = NULL);
+	GR_UnixCairoGraphics(GdkDrawable * win = NULL, bool double_buffered=false);
 	virtual GdkDrawable * _getDrawable(void)
 	{  return static_cast<GdkDrawable *>(m_pWin);}
 
 	UT_GenericVector<UT_Rect*>     m_vSaveRect;
 	UT_GenericVector<GdkPixbuf *>  m_vSaveRectBuf;
 private:
-	GdkWindow *       m_pWin;
-
+	GdkWindow *m_pWin;
+	bool m_double_buffered;
 };
 
 

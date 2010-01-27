@@ -91,9 +91,10 @@ GR_UnixCairoGraphicsBase::GR_UnixCairoGraphicsBase(cairo_t *cr, UT_uint32 iDevic
 {
 }
 
-GR_UnixCairoGraphics::GR_UnixCairoGraphics(GdkDrawable * win)
-	: GR_UnixCairoGraphicsBase()
-	, m_pWin(win)
+GR_UnixCairoGraphics::GR_UnixCairoGraphics(GdkDrawable * win, bool double_buffered)
+	: GR_UnixCairoGraphicsBase(),
+	  m_pWin(win),
+	  m_double_buffered(double_buffered)
 {
 	if (_getDrawable())
 	{
@@ -131,7 +132,7 @@ GR_Graphics *   GR_UnixCairoGraphics::graphicsAllocator(GR_AllocInfo& info)
 	UT_return_val_if_fail(!info.isPrinterGraphics(), NULL);
 	GR_UnixCairoAllocInfo &AI = (GR_UnixCairoAllocInfo&)info;
 
-	return new GR_UnixCairoGraphics(AI.m_win);
+	return new GR_UnixCairoGraphics(AI.m_win, AI.m_double_buffered);
 }
 
 inline UT_RGBColor _convertGdkColor(const GdkColor &c)

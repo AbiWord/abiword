@@ -208,7 +208,7 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 
 	// make a new Unix GC
 	DELETEP (m_pPreviewWidget);
-	GR_UnixCairoAllocInfo ai(m_wpreviewArea->window);
+	GR_UnixCairoAllocInfo ai(m_wpreviewArea);
 	m_pPreviewWidget =
 	    (GR_UnixCairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 	
