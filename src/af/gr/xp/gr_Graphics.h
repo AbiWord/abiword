@@ -724,6 +724,12 @@ class ABI_EXPORT GR_Graphics
 	UT_uint32         getPaintCount(void) const
 		{ return  m_paintCount;}
 
+	/* all drawing should happen between calls to these two functions. this
+	 * arranges for cairo contexts to be created/destroyed etc.  if you don't
+	 * call these functions, bad things can and will happen */
+	void beginPaint ();
+	void endPaint ();
+
 	static GR_Graphics* newNullGraphics();
 
  protected:
@@ -791,9 +797,6 @@ class ABI_EXPORT GR_Graphics
 	
 	virtual GR_Image *	  genImageFromRectangle(const UT_Rect & r) = 0;
 
-	// only called by us and GR_Painter
-	void beginPaint ();
-	void endPaint ();
  private:
 	virtual bool _setTransform(const GR_Transform & /*tr*/)
 		{
