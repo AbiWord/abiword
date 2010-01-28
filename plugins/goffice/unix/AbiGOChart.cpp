@@ -720,6 +720,7 @@ void GOChartView::render(UT_Rect & rec)
 		return;
 	}
 	GR_CairoGraphics *pUGG = static_cast<GR_CairoGraphics*>(m_pGOMan->getGraphics());
+	pUGG->beginPaint();
 	cairo_t *cr = pUGG->getCairo ();
 	UT_sint32 _width = pUGG->tdu(rec.width);
 	UT_sint32 _height = pUGG->tdu(rec.height);
@@ -739,6 +740,7 @@ void GOChartView::render(UT_Rect & rec)
 	gog_renderer_render_to_cairo (m_Renderer, cr, _width, _height);
 	cairo_new_path (cr); // just in case a path has not been ended
 	cairo_restore (cr);
+	pUGG->endPaint();
 }
 
 UT_ByteBuf *GOChartView::exportToPNG ()

@@ -565,7 +565,6 @@ void GOComponentView::render(UT_Rect & rec)
 	if (rec.width == 0 || rec.height == 0) // Nothing to render
 		return;
 	GR_CairoGraphics *pUGG = static_cast<GR_CairoGraphics*>(m_pGOMan->getGraphics());
-	cairo_t *cr = pUGG->getCairo ();
 	UT_sint32 myWidth = pUGG->tdu(rec.width);
 	UT_sint32 myHeight = pUGG->tdu(rec.height);
 	UT_sint32 x = pUGG->tdu(rec.left);
@@ -588,11 +587,14 @@ void GOComponentView::render(UT_Rect & rec)
 	}
 	else
 	{
+		pUGG->beginPaint();
+		cairo_t *cr = pUGG->getCairo ();
 		cairo_save (cr);
 		cairo_translate (cr, x, y);
 		go_component_render (component, cr, myWidth, myHeight);
 		cairo_new_path (cr); // just in case a path has not been ended
 		cairo_restore (cr);
+		pUGG->endPaint();
 	}
 }
 
