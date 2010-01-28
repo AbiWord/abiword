@@ -1219,7 +1219,7 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool /*bAll  = false *
 									(AP_Dialog_Paragraph::tSpacingState) _getMenuItemValue(id_MENU_SPECIAL_SPACING),
 								  iDir);
 
-	m_paragraphPreview->draw();
+	m_paragraphPreview->queueDraw();
 }
 
 bool AP_Dialog_Paragraph::_wasChanged(tControl item)

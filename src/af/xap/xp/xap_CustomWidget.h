@@ -33,7 +33,7 @@ public:
 
 protected:
 	/* derived classes should do their actual drawing here */
-	virtual void draw(const UT_Rect *clip) = 0;
+	virtual void draw(const UT_Rect *clip=NULL) = 0;
 };
 
 /* utility class for widgets drawing in layout units */

@@ -25,6 +25,7 @@
 #include "xap_Frame.h"
 #include "xap_Dialog.h"
 #include "xav_View.h"
+#include "xap_CustomWidget.h"
 
 class XAP_Frame;
 class AP_Preview_Paragraph;

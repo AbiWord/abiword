@@ -297,7 +297,7 @@ void AP_Dialog_FormatFrame::askForGraphicPathName(void)
 
 	// draw the preview with the changed properties
 	if(m_pFormatFramePreview)
-		m_pFormatFramePreview->draw();
+		m_pFormatFramePreview->queueDraw();
 
 }
 
@@ -654,7 +654,7 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 	/* draw the preview with the changed properties
 	 */
 	if(m_pFormatFramePreview) {
-		m_pFormatFramePreview->draw();
+		m_pFormatFramePreview->queueDraw();
 	}
 
 	m_bSettingsChanged = false;
@@ -1027,7 +1027,7 @@ void AP_Dialog_FormatFrame::clearImage(void)
 	m_sImagePath.clear();
 	// draw the preview with the changed properties
 	if(m_pFormatFramePreview)
-		m_pFormatFramePreview->draw();
+		m_pFormatFramePreview->queueDraw();
 
 }
 
@@ -1087,8 +1087,9 @@ AP_FormatFrame_preview::~AP_FormatFrame_preview()
 {
 }
 
-void AP_FormatFrame_preview::draw(void)
+void AP_FormatFrame_preview::draw(const UT_Rect *clip)
 {
+	UT_UNUSED(clip);
 	GR_Painter painter(m_gc);
 	
 	UT_sint32 iWidth = m_gc->tlu (getWindowWidth());

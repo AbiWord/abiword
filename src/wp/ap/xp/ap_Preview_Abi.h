@@ -43,7 +43,7 @@ public:
 
 	FV_View * getView(void) const;
 	PD_Document * getDoc(void) const;
-	virtual void draw(void);
+	virtual void draw(const UT_Rect *clip=NULL);
 	
 protected:
 	

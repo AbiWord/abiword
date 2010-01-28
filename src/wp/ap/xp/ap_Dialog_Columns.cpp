@@ -398,8 +398,9 @@ AP_Columns_preview::~AP_Columns_preview()
 {
 }
 
-void AP_Columns_preview::draw(void)
+void AP_Columns_preview::draw(const UT_Rect *clip)
 {
+	UT_UNUSED(clip);
 	GR_Painter painter(m_gc);
 
 	UT_sint32 iWidth = m_gc->tlu(getWindowWidth());

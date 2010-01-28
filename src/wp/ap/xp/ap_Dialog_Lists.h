@@ -46,7 +46,7 @@ public:
 	virtual ~AP_Lists_preview(void);
 
 	// data twiddlers
-	void				draw(void);
+	void				draw(const UT_Rect *clip=NULL);
 	AP_Dialog_Lists*	getLists(void);
 	void				setData(const gchar * pszFont,float fAlign,float fIndent);
 	void				setData(const std::string & font, float fAlign,

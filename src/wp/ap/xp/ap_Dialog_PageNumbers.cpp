@@ -66,7 +66,7 @@ void AP_Dialog_PageNumbers::_updatePreview(AP_Dialog_PageNumbers::tAlign align,
 	UT_return_if_fail (m_preview);
 	m_preview->setHdrFtr (ctrl);
 	m_preview->setAlign (align);
-	m_preview->draw ();
+	m_preview->queueDraw ();
 }
 
 void AP_Dialog_PageNumbers::_createPreviewFromGC(GR_Graphics * gc,
@@ -112,8 +112,9 @@ void AP_Preview_PageNumbers::setAlign(AP_Dialog_PageNumbers::tAlign align)
 	m_align = align;
 }
 
-void AP_Preview_PageNumbers::draw (void)
+void AP_Preview_PageNumbers::draw (const UT_Rect *clip)
 {
+	UT_UNUSED(clip);
 	GR_Painter painter(m_gc);
 
 	int x = 0, y = 0;	

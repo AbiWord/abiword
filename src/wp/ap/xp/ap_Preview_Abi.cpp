@@ -217,7 +217,7 @@ AP_Preview_Abi::~AP_Preview_Abi()
 	UNREFP(m_pDocument);
 }
 
-void AP_Preview_Abi::draw(void)
+void AP_Preview_Abi::draw(const UT_Rect *clip)
 {
 	getView()->updateScreen(false);
 }

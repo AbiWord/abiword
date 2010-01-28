@@ -56,7 +56,7 @@ public:
 	bool	setString(UT_UCSChar * string);
 
     // where all the zoom-specific drawing happens
-	void	draw(void);
+	void	draw(const UT_Rect *clip=NULL);
 		
 protected:
 

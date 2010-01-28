@@ -243,8 +243,9 @@ UT_uint32 XAP_Draw_Symbol::getSymbolRows (void)
 	return rows;
 }
 
-void XAP_Draw_Symbol::draw(void)
+void XAP_Draw_Symbol::draw(const UT_Rect *clip)
 {
+	UT_UNUSED(clip);
 	UT_ASSERT(m_gc);
 	UT_uint32 wwidth, wheight, yoff, xoff, x, y;
 	UT_sint32 i;

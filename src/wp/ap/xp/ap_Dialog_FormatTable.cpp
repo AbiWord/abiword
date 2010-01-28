@@ -280,7 +280,7 @@ void AP_Dialog_FormatTable::askForGraphicPathName(void)
 	
 	// draw the preview with the changed properties
 	if(m_pFormatTablePreview)
-		m_pFormatTablePreview->draw();
+		m_pFormatTablePreview->queueDraw();
 
 }
 
@@ -472,7 +472,7 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 		
 		// draw the preview with the changed properties
 		if(m_pFormatTablePreview)
-			m_pFormatTablePreview->draw();
+			m_pFormatTablePreview->queueDraw();
 	}
 }
 
@@ -595,7 +595,7 @@ void AP_Dialog_FormatTable::clearImage(void)
 	m_sImagePath.clear();
 	// draw the preview with the changed properties
 	if(m_pFormatTablePreview)
-		m_pFormatTablePreview->draw();
+		m_pFormatTablePreview->queueDraw();
 
 }
 
@@ -696,8 +696,9 @@ AP_FormatTable_preview::~AP_FormatTable_preview()
 {
 }
 
-void AP_FormatTable_preview::draw(void)
+void AP_FormatTable_preview::draw(const UT_Rect *clip)
 {
+	UT_UNUSED(clip);
 	GR_Painter painter(m_gc);
 
 	UT_sint32 iWidth = m_gc->tlu (getWindowWidth());

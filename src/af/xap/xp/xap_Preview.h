@@ -29,12 +29,13 @@
 #include "ut_types.h"
 #endif
 #include "ut_misc.h"
+#include "xap_CustomWidget.h"
 
 /* #include "ev_EditBits.h" */
 
 class GR_Graphics;
 
-class ABI_EXPORT XAP_Preview
+class ABI_EXPORT XAP_Preview: virtual public XAP_CustomWidget
 {
 public:
 	XAP_Preview(GR_Graphics * gc);
@@ -49,8 +50,6 @@ public:
   inline GR_Graphics * 	getGraphicsContext(void) const { return m_graphics; };
 */
 
-	// function triggered by platform events to handle any drawing
-	virtual void			draw(void) = 0;
 	// function to handle mouse down event.
 	virtual void			onLeftButtonDown(UT_sint32 /*x*/, UT_sint32 /*y*/) {  };
 

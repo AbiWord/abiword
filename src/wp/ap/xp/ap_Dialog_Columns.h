@@ -51,7 +51,7 @@ public:
 	virtual ~AP_Columns_preview(void);
 
 	// data twiddlers
-	void			draw(void);
+	void			draw(const UT_Rect *clip=NULL);
 
 	void			set(UT_uint32 iColumns, bool bLines)
 					{

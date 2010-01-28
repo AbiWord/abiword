@@ -57,7 +57,7 @@ public:
 
     // where all the Symbol-specific drawing happens
 	
-	void						draw(void);
+	void						draw(const UT_Rect *clip=NULL);
 	void						drawarea(UT_UCSChar c, UT_UCSChar p);
 
 	UT_UCSChar					calcSymbol(UT_uint32 x, UT_uint32 y);

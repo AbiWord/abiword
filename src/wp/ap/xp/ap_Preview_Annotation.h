@@ -62,7 +62,7 @@ public:
 	{  return m_iAID; }
 
 	
-	virtual void	draw(void);
+	virtual void	draw(const UT_Rect *clip=NULL);
 	void			clearScreen(void);
 	void			setXY(UT_sint32 x, UT_sint32 y);                                void            setOffset(UT_sint32 ioff);
 	void			setActiveFrame(XAP_Frame *pFrame);

@@ -525,8 +525,9 @@ const std::string XAP_Preview_FontPreview::getVal(const std::string & sProp)
  * Finally draw the characters in the preview.
  *
  */
-void XAP_Preview_FontPreview::draw(void)
+void XAP_Preview_FontPreview::draw(const UT_Rect *clip)
 {
+	UT_UNUSED(clip);
 //
 // Get text decorations.
 //
