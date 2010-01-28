@@ -3246,6 +3246,18 @@ void GR_CairoGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 	}
 }
 
+cairo_t *GR_CairoGraphics::getCairo()
+{
+	if (m_paintCount <= 0)
+	{
+		UT_DEBUGMSG(("GR_CairoGraphics::getCairo() called outside beginPaint/endPaint!\n"));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_DEBUGMSG(("GR_CairoGraphics::getCairo: calling beginPaint() for you, expect strange side-effects.\n"));
+		beginPaint();
+	}
+	UT_ASSERT(m_cr);
+	return m_cr;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //

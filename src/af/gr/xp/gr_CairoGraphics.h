@@ -328,7 +328,7 @@ public:
 					 GR_Graphics::JoinStyle inJoinStyle = JOIN_MITER,
 					 GR_Graphics::CapStyle inCapStyle   = CAP_BUTT,
 					 GR_Graphics::LineStyle inLineStyle = LINE_SOLID);
-	cairo_t* getCairo () {return m_cr;}
+	cairo_t* getCairo ();
 
 	static UT_uint32 getDefaultDeviceResolution();
 

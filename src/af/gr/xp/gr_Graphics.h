@@ -790,16 +790,16 @@ class ABI_EXPORT GR_Graphics
 											 int* pCharWidths = NULL);
 	
 	virtual GR_Image *	  genImageFromRectangle(const UT_Rect & r) = 0;
+
+	// only called by us and GR_Painter
+	void beginPaint ();
+	void endPaint ();
  private:
 	virtual bool _setTransform(const GR_Transform & /*tr*/)
 		{
 			UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
 			return false;
 		}
-
-	// only called by GR_Painter
-	void beginPaint ();
-	void endPaint ();
 
  public:
 	// TODO -- this should not be public, create access methods !!!
@@ -825,6 +825,8 @@ class ABI_EXPORT GR_Graphics
 
 	bool m_bHave3DColors;
 
+	UT_uint32 m_paintCount;
+
  private:
 	GR_Caret *		 m_pCaret;
     bool             _PtInPolygon(UT_Point * pts,UT_uint32 nPoints,UT_sint32 x,UT_sint32 y);
@@ -845,8 +847,6 @@ class ABI_EXPORT GR_Graphics
 	GR_Transform     m_Transform;
 
 	UT_GenericStringMap<GR_Font*> m_hashFontCache;
-
-	UT_uint32 m_paintCount;
 
 	static UT_VersionInfo   s_Version;
 	static UT_uint32        s_iInstanceCount;
