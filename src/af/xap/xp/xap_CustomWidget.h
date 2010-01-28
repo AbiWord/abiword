@@ -29,12 +29,23 @@ public:
 	XAP_CustomWidget() {}
 	virtual ~XAP_CustomWidget() {}
 
-	virtual GR_Graphics *getGraphics() const = 0;
 	virtual void queueDraw(const UT_Rect *clip=NULL);
 
 protected:
 	/* derived classes should do their actual drawing here */
 	virtual void draw(const UT_Rect *clip) = 0;
+};
+
+/* utility class for widgets drawing in layout units */
+class XAP_CustomWidgetLU: virtual public XAP_CustomWidget
+{
+public:
+	virtual GR_Graphics *getGraphics() const = 0;
+	virtual void queueDrawLU(const UT_Rect *clip=NULL);
+
+protected:
+	virtual void draw(const UT_Rect *clip);
+	virtual void drawLU(const UT_Rect *clip) = 0;
 };
 
 #endif

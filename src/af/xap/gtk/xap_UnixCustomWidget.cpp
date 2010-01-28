@@ -21,9 +21,6 @@
 
 void XAP_UnixCustomWidget::queueDraw(const UT_Rect *clip)
 {
-	GR_Graphics *gr = getGraphics();
-	UT_ASSERT(gr);
-
 	GtkWidget *widget = getWidget();
 	UT_ASSERT(widget);
 
@@ -33,10 +30,10 @@ void XAP_UnixCustomWidget::queueDraw(const UT_Rect *clip)
 	{
 		gtk_widget_queue_draw_area(
 				widget,
-				gr->tdu(clip->left),
-				gr->tdu(clip->top),
-				gr->tdu(clip->width),
-				gr->tdu(clip->height)
+				clip->left,
+				clip->top,
+				clip->width,
+				clip->height
 			);
 	}
 }

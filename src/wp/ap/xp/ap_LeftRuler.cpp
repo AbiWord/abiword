@@ -1661,7 +1661,7 @@ void AP_LeftRuler::_drawCellMark(UT_Rect *prDrag, bool /*bUp*/)
 
 /*****************************************************************/
 
-void AP_LeftRuler::draw(const UT_Rect *clip)
+void AP_LeftRuler::drawLU(const UT_Rect *clip)
 {
 	FV_View * pView = static_cast<FV_View *>(m_pView);
 	if (!pView)

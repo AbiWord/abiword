@@ -395,7 +395,7 @@ void AP_TopRuler::scrollRuler(UT_sint32 xoff, UT_sint32 xlimit)
 
 /*****************************************************************/
 
-void AP_TopRuler::draw(const UT_Rect *clip)
+void AP_TopRuler::drawLU(const UT_Rect *clip)
 {
 	if (!m_pG)
 		return;

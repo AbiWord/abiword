@@ -117,7 +117,7 @@ public:
 	
 /*****************************************************************/
 
-class ABI_EXPORT AP_LeftRuler : public AV_Listener, virtual public XAP_CustomWidget
+class ABI_EXPORT AP_LeftRuler : public AV_Listener, virtual public XAP_CustomWidgetLU
 {
 public:
 	AP_LeftRuler(XAP_Frame * pFrame);
@@ -158,7 +158,7 @@ protected:
 	void                _refreshView(void);
 
 	/* don't call this function directly, use XAP_CustomWidget::queueDraw() instead */
-	virtual void		draw(const UT_Rect *clip);
+	virtual void		drawLU(const UT_Rect *clip);
 
 //	void				_draw3DFrame(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
 //									 UT_sint32 x, UT_sint32 h);

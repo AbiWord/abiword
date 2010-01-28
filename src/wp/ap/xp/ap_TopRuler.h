@@ -183,7 +183,7 @@ public:
 	} u;
 };
 
-class ABI_EXPORT AP_TopRuler : public AV_Listener, virtual public XAP_CustomWidget
+class ABI_EXPORT AP_TopRuler : public AV_Listener, virtual public XAP_CustomWidgetLU
 {
 public:
 	AP_TopRuler(XAP_Frame * pFrame);
@@ -227,8 +227,8 @@ public:
 	static UT_uint32 getFixedWidth(){return s_iFixedWidth;}
 	
 protected:
-	/* implement XAP_CustomWidget::draw */
-	virtual void draw(const UT_Rect *clip);
+	/* implement XAP_CustomWidgetLU::drawLU */
+	virtual void drawLU(const UT_Rect *clip);
 
 	void	_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo);
 	void	_drawBar(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
