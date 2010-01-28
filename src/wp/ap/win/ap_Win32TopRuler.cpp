@@ -224,10 +224,10 @@ LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM
 			HDC hdc = BeginPaint(hwnd, &ps);
 			UT_return_val_if_fail(hdc, 0);
 
-			UT_Rect r(pG->tlu(ps.rcPaint.left),
-					  pG->tlu(ps.rcPaint.top),
-					  pG->tlu(ps.rcPaint.right-ps.rcPaint.left+1),
-					  pG->tlu(ps.rcPaint.bottom-ps.rcPaint.top+1));
+			UT_Rect r(ps.rcPaint.left,
+					  ps.rcPaint.top,
+					  ps.rcPaint.right-ps.rcPaint.left+1,
+					  ps.rcPaint.bottom-ps.rcPaint.top+1);
 
 			pRuler->draw(&r);
 			EndPaint(hwnd,&ps);

@@ -415,10 +415,10 @@ bool AP_CocoaTopRuler::_graphicsUpdateCB(NSRect * aRect, GR_CocoaCairoGraphics *
 		return false;
 
 	UT_Rect rClip;
-	rClip.left   = (UT_sint32) rint(pG->tluD(aRect->origin.x));
-	rClip.top    = (UT_sint32) rint(pG->tluD(aRect->origin.y));
-	rClip.width  = (UT_sint32) rint(pG->tluD(aRect->size.width));
-	rClip.height = (UT_sint32) rint(pG->tluD(aRect->size.height));
+	rClip.left   = aRect->origin.x;
+	rClip.top    = aRect->origin.y;
+	rClip.width  = aRect->size.width;
+	rClip.height = aRect->size.height;
 	xxx_UT_DEBUGMSG(("Cocoa in topruler expose painting area:  left=%d, top=%d, width=%d, height=%d\n", rClip.left, rClip.top, rClip.width, rClip.height));
 	if(pG != NULL)
 	{
