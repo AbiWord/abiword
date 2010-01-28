@@ -78,7 +78,7 @@ GtkWidget * AP_UnixTopRuler::createWidget(void)
 {
 	UT_ASSERT(!m_pG && !m_wTopRuler);
 	
-	m_wTopRuler = createDrawingArea ();
+	m_wTopRuler = gtk_drawing_area_new();
 
 	g_object_set_data(G_OBJECT(m_wTopRuler),"user_data", this);
 	gtk_widget_show(m_wTopRuler);

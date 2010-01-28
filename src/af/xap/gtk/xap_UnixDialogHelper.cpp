@@ -798,12 +798,16 @@ get_ensured_style (GtkWidget * w)
 
 /*!
  * Creates a new GdkDrawingArea with the proper colormap and visual
+ * This returns a single-buffered widget.
+ * DEPRECATED: please use gtk_drawing_area_new() directly and make your
+ * implementation work with double-buffering in new code!
  */
 GtkWidget *createDrawingArea ()
 {
   GtkWidget *area;
   
   area = gtk_drawing_area_new ();
+  gtk_widget_set_double_buffered(area, FALSE);
 
   return area;
 }
