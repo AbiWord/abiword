@@ -64,7 +64,6 @@ protected:
 		static gint motion_notify_event(GtkWidget* w, GdkEventMotion* e);
 		static gint key_press_event(GtkWidget* w, GdkEventKey* e);
 		static gint delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/);
-		static gint expose(GtkWidget * w, GdkEventExpose* pExposeEvent);
 		static void destroy (GtkWidget * /*widget*/, gpointer /*data*/);
 	};
 

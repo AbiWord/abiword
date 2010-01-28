@@ -89,8 +89,8 @@ GtkWidget * AP_UnixLeftRuler::createWidget(void)
 													 GDK_KEY_PRESS_MASK |
 													 GDK_KEY_RELEASE_MASK));
 
-	g_signal_connect(G_OBJECT(m_wLeftRuler), "expose_event",
-					   G_CALLBACK(_fe::expose), NULL);
+	g_signal_connect_swapped(G_OBJECT(m_wLeftRuler), "expose_event",
+					   G_CALLBACK(XAP_UnixCustomWidget::_fe::expose), static_cast<XAP_UnixCustomWidget *>(this));
   
 	g_signal_connect(G_OBJECT(m_wLeftRuler), "button_press_event",
 					   G_CALLBACK(_fe::button_press_event), NULL);
@@ -266,27 +266,6 @@ gint AP_UnixLeftRuler::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*event
 {
 	// a static function
 	return 1;
-}
-
-gint AP_UnixLeftRuler::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
-{
-	// a static function
-	AP_UnixLeftRuler * pUnixLeftRuler = static_cast<AP_UnixLeftRuler *>(g_object_get_data(G_OBJECT(w), "user_data"));
-	if (!pUnixLeftRuler)
-		return 0;
-
-	GR_Graphics * pG = pUnixLeftRuler->getGraphics();
-	if(pG != NULL)
-	{
-		UT_Rect rClip;
-		rClip.left = pG->tlu(pExposeEvent->area.x);
-		rClip.top = pG->tlu(pExposeEvent->area.y);
-		rClip.width = pG->tlu(pExposeEvent->area.width);
-		rClip.height = pG->tlu(pExposeEvent->area.height);
-
-		pUnixLeftRuler->draw(&rClip);
-	}
-	return 0;
 }
 
 void AP_UnixLeftRuler::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)

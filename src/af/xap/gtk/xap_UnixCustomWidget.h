@@ -28,6 +28,14 @@ class XAP_UnixCustomWidget: virtual public XAP_CustomWidget
 public:
 	virtual GtkWidget *getWidget() = 0;
 	virtual void queueDraw(const UT_Rect *clip=NULL);
+
+protected:
+	class _fe
+	{
+	public:
+		static void expose(XAP_UnixCustomWidget *self, GdkEventExpose *ev);
+	};
+	friend class _fe;
 };
 
 #endif

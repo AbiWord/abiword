@@ -311,7 +311,7 @@ bool AP_TopRuler::notify(AV_View * _pView, const AV_ChangeMask mask)
 
 		pClipRect.height = getHeight();
 		pClipRect.width = getWidth();
-		queueDraw(&pClipRect);
+		queueDrawLU(&pClipRect);
 	}
 
 	return true;
@@ -390,7 +390,7 @@ void AP_TopRuler::scrollRuler(UT_sint32 xoff, UT_sint32 xlimit)
 
 	m_pG->scroll(x_dest,y_dest,x_src,y_src,width,height);
 	m_xScrollOffset = xoff;
-	queueDraw(&rClip);
+	queueDrawLU(&rClip);
 }
 
 /*****************************************************************/

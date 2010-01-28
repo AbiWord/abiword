@@ -41,7 +41,7 @@ class XAP_CustomWidgetLU: virtual public XAP_CustomWidget
 {
 public:
 	virtual GR_Graphics *getGraphics() const = 0;
-	virtual void queueDrawLU(const UT_Rect *clip=NULL);
+	virtual void queueDrawLU(const UT_Rect *clip);
 
 protected:
 	virtual void draw(const UT_Rect *clip);

@@ -38,3 +38,13 @@ void XAP_UnixCustomWidget::queueDraw(const UT_Rect *clip)
 	}
 }
 
+void XAP_UnixCustomWidget::_fe::expose(XAP_UnixCustomWidget *self, GdkEventExpose *ev)
+{
+	UT_Rect r(
+			ev->area.x,
+			ev->area.y,
+			ev->area.width,
+			ev->area.height
+		);
+	self->draw(&r);
+}

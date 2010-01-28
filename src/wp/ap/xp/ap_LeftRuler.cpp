@@ -1144,7 +1144,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 			{
 				clip.set(xLeft, m_draggingCenter-pG->tlu(4),lFixedHeight, oldDragCenter - m_draggingCenter+ lFixedHeight);
 			}
-			queueDraw(&clip);
+			queueDrawLU(&clip);
 //
 // FIXME need to clear the old cell mark
 //
@@ -1327,7 +1327,7 @@ void AP_LeftRuler::scrollRuler(UT_sint32 yoff, UT_sint32 ylimit)
 	
 	m_pG->scroll(0,dy);
 	m_yScrollOffset = yoff;
-	queueDraw(prClip);
+	queueDrawLU(prClip);
 }
 
 /*****************************************************************/
