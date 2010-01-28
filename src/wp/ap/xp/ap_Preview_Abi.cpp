@@ -219,6 +219,7 @@ AP_Preview_Abi::~AP_Preview_Abi()
 
 void AP_Preview_Abi::draw(const UT_Rect *clip)
 {
+	UT_UNUSED(clip);
 	getView()->updateScreen(false);
 }
 
