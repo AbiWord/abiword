@@ -164,6 +164,9 @@ void XAP_UnixDialog_Print::PrintPage(gint page_nr)
 {
 	xxx_UT_DEBUGMSG(("Print Page %d \n",page_nr));
 
+	m_pPrintGraphics->beginPaint();
+	cairo_t *cr = static_cast<GR_CairoPrintGraphics *>(m_pPrintGraphics)->getCairo();
+
 	//
 	// We set the resolution of the printer context to higher than screen
 	// so we don't loose resolution when printing images.
@@ -174,7 +177,7 @@ void XAP_UnixDialog_Print::PrintPage(gint page_nr)
 	// In the future we can use this to do 2,4,6,8 etc pages per page
 	//
 	double srat = static_cast<double>(GTKPRINTRES)/static_cast<double>(gr_PRINTRES);
-	cairo_scale(static_cast<GR_CairoPrintGraphics *>(m_pPrintGraphics)->getCairo(), srat,srat);
+	cairo_scale(cr, srat, srat);
 	xxx_UT_DEBUGMSG(("Resolution Ratio set to %f \n",gr_PrintRes/ScreenRes));
 	UT_DEBUGMSG(("Resolution Ratio of Direct call is %f Cast call is %f \n",m_pPrintGraphics->getResolutionRatio(),	static_cast<GR_CairoPrintGraphics *>(m_pPrintGraphics)->getResolutionRatio()));
 
@@ -191,7 +194,8 @@ void XAP_UnixDialog_Print::PrintPage(gint page_nr)
 		m_pFrame->setStatusMessage ( msgBuf );
 		m_pFrame->nullUpdate();
 	}
-	m_pPrintView->draw(page_nr, &da);						
+	m_pPrintView->draw(page_nr, &da);
+	m_pPrintGraphics->endPaint();
 }
 
 void XAP_UnixDialog_Print::setPreview(bool b)
