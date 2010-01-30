@@ -34,14 +34,9 @@ static void trap_handler(int signal)
 	trap_reached = 1;
 }
 
-int UT_UnixAssertMsg(const char * szMsg, const char * szFile, int iLine)
+/* returns false if no debugger handled the signal */
+static bool break_into_debugger()
 {
-	static int count = 0;
-	
-	printf("\n");
-	printf("**** (%d) Assert ****\n", ++count);
-	printf("**** (%d) %s at %s:%d ****\n", count,szMsg,szFile,iLine);
-
 	/* some SIGTRAP magic for convenient debugging */
 
 	trap_reached = 0;
@@ -57,15 +52,20 @@ int UT_UnixAssertMsg(const char * szMsg, const char * szFile, int iLine)
 	kill(0, SIGTRAP);
 	sigaction(SIGTRAP, &oldact, NULL);
 
-	if (!trap_reached)
-	{
-		/* we're running under a debugger, don't bother the user */
-		return 1;
-	}
+	return !trap_reached;
+}
+
+int UT_UnixAssertMsg(const char * szMsg, const char * szFile, int iLine)
+{
+	static int count = 0;
+
+	printf("\n");
+	printf("**** (%d) Assert ****\n", ++count);
+	printf("**** (%d) %s at %s:%d ****\n", count,szMsg,szFile,iLine);
 
 	while (1)
 	{
-		printf("**** (%d) Continue ? (y/n/i(gnore)) [y] : ", count);
+		printf("**** (%d) Continue? (y)es/(n)o/(i)gnore/(b)reak [y] : ", count);
 		fflush(stdout);
 
 		char buf[10];
@@ -89,6 +89,13 @@ int UT_UnixAssertMsg(const char * szMsg, const char * szFile, int iLine)
 		case 'i':
 		case 'I':
 			return -1;
+
+		case 'b':
+		case 'B':
+			if (break_into_debugger())
+				return 1;
+			else
+				printf("**** No debugger attached\n");
 
 		default:
 			break;						// ?? ask them again
