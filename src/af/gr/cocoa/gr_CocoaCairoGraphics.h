@@ -33,13 +33,13 @@ class GR_PangoFont;
 class ABI_EXPORT GR_CocoaCairoAllocInfo : public GR_CairoAllocInfo
 {
 public:
- 	GR_CocoaCairoAllocInfo(XAP_CocoaNSView * win)
-		: GR_CairoAllocInfo(false, false),
+ 	explicit GR_CocoaCairoAllocInfo(XAP_CocoaNSView * win, bool double_buffered = false)
+		: GR_CairoAllocInfo(false, false, double_buffered),
 		m_win(win)
 		{}
 	
-	GR_CocoaCairoAllocInfo(bool bPreview)
-		: GR_CairoAllocInfo(bPreview, true),
+	explicit GR_CocoaCairoAllocInfo(bool bPreview)
+		: GR_CairoAllocInfo(bPreview, true, false),
 		  m_win(NULL){}
 	virtual cairo_t *createCairo();
 
@@ -135,13 +135,14 @@ public:
 	bool				_callUpdateCallback(NSRect *aRect);
 	static	float		_getScreenResolution(void);
 protected:
-	GR_CocoaCairoGraphics(XAP_CocoaNSView * win = nil);
+	GR_CocoaCairoGraphics(XAP_CocoaNSView * win = nil, bool double_buffered = false);
 
 	virtual UT_uint32 	_getResolution(void) const;
 
 private:
 	static UT_uint32                s_iInstanceCount;
 	XAP_CocoaNSView *               m_pWin;
+	bool                            m_double_buffered;
 	gr_cocoa_graphics_update	m_updateCallback;
 	void 				*m_updateCBparam;
 	std::vector<cairo_rectangle_t>	m_cacheRectArray;

@@ -389,8 +389,9 @@ void GR_CocoaCairoGraphics::_initColorAndImage(void)
 
 
 
-GR_CocoaCairoGraphics::GR_CocoaCairoGraphics(XAP_CocoaNSView * win) 
+GR_CocoaCairoGraphics::GR_CocoaCairoGraphics(XAP_CocoaNSView * win, bool double_buffered) 
 	: m_pWin(win),
+	m_double_buffered(double_buffered),
 	m_updateCallback(NULL),
 	m_updateCBparam (NULL),
 	m_cacheRectArray (10),
@@ -916,7 +917,7 @@ GR_Graphics *  GR_CocoaCairoGraphics::graphicsAllocator(GR_AllocInfo& info)
 {
 	GR_CocoaCairoAllocInfo & allocator = static_cast<GR_CocoaCairoAllocInfo&>(info);
 	
-	return new GR_CocoaCairoGraphics(allocator.m_win);
+	return new GR_CocoaCairoGraphics(allocator.m_win, allocator.m_double_buffered);
 }
 
 

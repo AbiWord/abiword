@@ -58,65 +58,13 @@ NSString* XAP_CocoaFrameImpl::XAP_FrameNeedToolbar = @"XAP_FrameNeedToolbar";
 NSString* XAP_CocoaFrameImpl::XAP_FrameReleaseToolbar = @"XAP_FrameReleaseToolbar";
 
 
-/*!
- * Background abi repaint function.
-\param XAP_CocoaFrameImpl * p pointer to the Frame that initiated this background
-       repainter.
- */
-int XAP_CocoaFrameImpl::_fe::abi_expose_repaint(void * p)
-{
-//
-// Grab our pointer so we can do useful stuff.
-//
-	UT_Rect localCopy;
-	XAP_Frame * pF = (XAP_Frame *)p;
-	FV_View * pV = dynamic_cast<FV_View *>(pF->getCurrentView());
-	if(!pV)
-	{ 
-		return TRUE;
-	}
-	GR_Graphics * pG = pV->getGraphics();
-	if(pG->isDontRedraw())
-	{
-//
-// Come back later
-//
-		return TRUE;
-	}
-	pG->setSpawnedRedraw(true);
-	if(pG->isExposePending())
-	{
-		while(pG->isExposedAreaAccessed())
-		{
-			UT_usleep(10); // 10 microseconds
-		}
-		pG->setExposedAreaAccessed(true);
-		localCopy.set(pG->getPendingRect()->left,pG->getPendingRect()->top,
-					  pG->getPendingRect()->width,pG->getPendingRect()->height);
-//
-// Clear out this set of expose info
-//
-		pG->setExposePending(false);
-		pG->setExposedAreaAccessed(false);
-//			UT_DEBUGMSG(("Painting area:  left=%d, top=%d, width=%d, height=%d\n", localCopy.left, localCopy.top, localCopy.width, localCopy.height));
-		xxx_UT_DEBUGMSG(("SEVIOR: Repaint now \n"));
-		pV->draw(&localCopy);
-	}
-//
-// OK we've finshed. Wait for the next signal
-//
-	pG->setSpawnedRedraw(false);
-	return TRUE;
-}
-	
 /*****************************************************************/
 
 XAP_CocoaFrameImpl::XAP_CocoaFrameImpl(XAP_Frame* frame)
 	: XAP_FrameImpl (frame),
 	  m_dialogFactory(XAP_App::getApp(), frame),
 	  m_pCocoaPopup(NULL),
-	  m_frameController(nil),
-	  m_iAbiRepaintID(0)
+	  m_frameController(nil)
 {
 //	m_pView = NULL;
 
@@ -137,8 +85,7 @@ XAP_CocoaFrameImpl::XAP_CocoaFrameImpl(XAP_CocoaFrameImpl * f)
 	  m_dialogFactory(XAP_App::getApp(), f->m_pFrame),
 	  m_pCocoaMenu(NULL),
 	  m_pCocoaPopup(NULL),
-	  m_frameController(nil),
-	  m_iAbiRepaintID(0)
+	  m_frameController(nil)
 {
 	m_pView = NULL;
 }
@@ -147,11 +94,6 @@ XAP_CocoaFrameImpl::XAP_CocoaFrameImpl(XAP_CocoaFrameImpl * f)
 XAP_CocoaFrameImpl::~XAP_CocoaFrameImpl(void)
 {
 	// only delete the things we created...
-	if(m_iAbiRepaintID)
-	{
-		XAP_stopCocoaTimer(m_iAbiRepaintID);
-	}
-
 	if 	(m_frameController != nil) {
 		[m_frameController release];
 	}
@@ -190,19 +132,6 @@ void XAP_CocoaFrameImpl::_initialize()
 	
 	m_pMouse = new EV_CocoaMouse(pEEM);
 	UT_ASSERT(m_pMouse);
-
-//
-// Start background repaint
-//
-	if(m_iAbiRepaintID == 0)
-	{
-		m_iAbiRepaintID = XAP_newCocoaTimer(100, _fe::abi_expose_repaint, this);
-	}
-	else
-	{
-		XAP_stopCocoaTimer(m_iAbiRepaintID);
-		m_iAbiRepaintID = XAP_newCocoaTimer(100, _fe::abi_expose_repaint, this);
-	}
 }
 
 void XAP_CocoaFrameImpl::notifyViewChanged(AV_View * pView) // called from XAP_Frame::setView(pView)

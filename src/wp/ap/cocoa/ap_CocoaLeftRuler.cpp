@@ -62,10 +62,6 @@ AP_CocoaLeftRuler::AP_CocoaLeftRuler(XAP_Frame * pFrame)
 
 AP_CocoaLeftRuler::~AP_CocoaLeftRuler(void)
 {
-	while(m_pG->isSpawnedRedraw())
-	{
-		UT_usleep(100);
-	}
 	static_cast<GR_CocoaCairoGraphics *>(m_pG)->_setUpdateCallback (NULL, NULL);
 	DELETEP(m_pG);
 	if (m_delegate) {

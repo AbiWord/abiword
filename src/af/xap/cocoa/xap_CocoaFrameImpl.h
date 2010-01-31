@@ -131,17 +131,6 @@ private:
 	EV_CocoaMenuPopup *			m_pCocoaPopup; /* only valid while a context popup is up */
 	
 	XAP_CocoaFrameController *		m_frameController;
-
-	UT_uint32					m_iAbiRepaintID;
-
-protected:
-	class _fe
-	{
-	friend class XAP_Frame;
-	public:
-		static int abi_expose_repaint(void * p);
-	};
-	friend class _fe;
 };
 
 
