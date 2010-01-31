@@ -161,6 +161,10 @@ bool LinkGrammarWrap::parseSentence(PieceOfText * pT)
 	    {
 	      if(!bNew)
 	      {
+		if(pErr)
+		{
+		  delete pErr;
+		}
 		pErr = new AbiGrammarError();
 	      }
 	      iHigh = iLow + strlen(sentence_get_nth_word(sent, i));
@@ -177,6 +181,7 @@ bool LinkGrammarWrap::parseSentence(PieceOfText * pT)
 	      pErr->m_iWordNum = i;
 	      // UT_DEBUGMSG(("Add Error %x low %d High %d\n",pErr,pErr->m_iErrLow,pErr->m_iErrHigh));
 	      pT->m_vecGrammarErrors.addItem(pErr);
+		  pErr = NULL;
 	    }
 	    else
 	    {
@@ -199,6 +204,10 @@ bool LinkGrammarWrap::parseSentence(PieceOfText * pT)
 	//
 	if(pT->m_vecGrammarErrors.getItemCount() == 0)
 	{
+      if(pErr)
+      {
+        delete pErr;
+      }
 	  pErr = new AbiGrammarError();
 	  pErr->m_iErrLow = pT->iInLow;
 	  pErr->m_iErrHigh = pT->iInHigh;
@@ -210,6 +219,7 @@ bool LinkGrammarWrap::parseSentence(PieceOfText * pT)
 	  pT->m_vecGrammarErrors.addItem(pErr);
 	  pErr->m_sErrorDesc = linkage_get_violation_name(linkage);
 	  //UT_DEBUGMSG(("Complete Sentence had error %s\n",pErr->m_sErrorDesc.utf8_str()));
+	  pErr = NULL;
 	}
 
 	//	  for(i=0; i< pT->m_vecGrammarErrors.getItemCount(); i++)
@@ -253,6 +263,10 @@ bool LinkGrammarWrap::parseSentence(PieceOfText * pT)
     }
     else
     {
+      if(pErr)
+      {
+        delete pErr;
+      }
       pErr = new AbiGrammarError();
       pErr->m_iErrLow = pT->iInLow;
       pErr->m_iErrHigh = pT->iInHigh;
@@ -262,8 +276,10 @@ bool LinkGrammarWrap::parseSentence(PieceOfText * pT)
       }
       //      UT_DEBUGMSG(("Final Add Error %x low %d High %d\n",pErr,pErr->m_iErrLow,pErr->m_iErrHigh));
       pT->m_vecGrammarErrors.addItem(pErr);
-
+	  pErr = NULL;
     }
+    if(pErr)
+      delete pErr;
   }
   sentence_delete(sent);
   return res;
