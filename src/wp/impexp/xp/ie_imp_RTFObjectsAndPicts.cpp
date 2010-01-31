@@ -1041,12 +1041,22 @@ IE_Imp_ShpGroupParser::tokenKeyword(IE_Imp_RTF * ie, RTF_KEYWORD_ID kwID,
 */
 void IE_Imp_RTF::HandleShape(void)
 {
+	// save state
+	RTFStateStore * pState = m_currentRTFState.clone();
+	m_stateStack.push(pState);
+	m_currentRTFState.m_bInKeywordStar = false;
+	
 	IE_Imp_ShpGroupParser *parser = new IE_Imp_ShpGroupParser(this);
 	m_bFrameStruxIn = false;
 	StandardKeywordParser(parser);
 	delete parser;
 	
-
+	// restore state
+	pState = NULL;
+	m_stateStack.pop((void**)(&pState));
+	m_currentRTFState = *pState;
+	delete pState;
+	
 	// Formely in HandleEndFrame()
 	UT_DEBUGMSG((">>>>End frame\n"));
 	if(!bUseInsertNotAppend()) 
