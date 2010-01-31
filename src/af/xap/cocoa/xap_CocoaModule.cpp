@@ -57,7 +57,7 @@ bool XAP_CocoaModule::getModuleName (char ** dest) const
 {
 	if (dest)
 	{
-		*dest = (char *) g_strdup(m_szname.utf8_str());
+		*dest = (char *) g_strdup(m_szname.c_str());
 		return (*dest ? true : false);
 	}
 	return false;
@@ -65,11 +65,7 @@ bool XAP_CocoaModule::getModuleName (char ** dest) const
 
 bool XAP_CocoaModule::load (const char * name)
 {
-	if (m_bLoaded) {
-		return false;
-	}
-
-	if (!name) {
+	if (m_bLoaded || !name) {
 		return false;
 	}
 
@@ -77,42 +73,33 @@ bool XAP_CocoaModule::load (const char * name)
 
 	m_module_path = name;
 
-	if (m_module_path.byteLength() > 7) 
+	if (hasPluginExtension(m_module_path)) 
 	{
-		if (strcmp(m_module_path.utf8_str() + m_module_path.byteLength() - 7, ".so-abi") == 0)
+		/* This is an ordinary plugin.
+		 */
+		m_bLoaded = false;
+		m_module = g_module_open(name, G_MODULE_BIND_LAZY);
+		if (m_module)
 		{
-			/* This is an ordinary plugin.
-			 */
-			m_bLoaded = false;
-			m_module = g_module_open(name, G_MODULE_BIND_LAZY);
-			if (m_module)
+			m_bLoaded = true;
+			UT_DEBUGMSG(("FJF: plugin loaded: \"%s\"\n", m_module_path.c_str()));
+
+			std::string config_path(m_module_path.c_str(), m_module_path.size() - 5);
+
+			config_path += "config";
+
+			if (FILE * config = fopen(config_path.c_str(), "r"))
 			{
-				m_bLoaded = true;
-				UT_DEBUGMSG(("FJF: plugin loaded: \"%s\"\n", m_module_path.utf8_str()));
+				fclose(config);
+				UT_DEBUGMSG(("FJF: plugin config: \"%s\"\n", config_path.c_str()));
 
-				UT_UTF8String config_path(m_module_path.utf8_str(), m_module_path.byteLength() - 6);
+				int (*plugin_preconfigure_func) (const char * config_path);
 
-				config_path += "config";
-
-				if (FILE * config = fopen(config_path.utf8_str(), "r"))
+				if (resolveSymbol("abi_plugin_preconfigure", reinterpret_cast<void **>(&plugin_preconfigure_func)))
 				{
-					fclose(config);
-					UT_DEBUGMSG(("FJF: plugin config: \"%s\"\n", config_path.utf8_str()));
-
-					int (*plugin_preconfigure_func) (const char * config_path);
-
-					if (resolveSymbol("abi_plugin_preconfigure", reinterpret_cast<void **>(&plugin_preconfigure_func)))
-					{
-						plugin_preconfigure_func(config_path.utf8_str());
-					}
+					plugin_preconfigure_func(config_path.c_str());
 				}
 			}
-#if 0
-			else
-			{
-				fprintf(stderr, "module failed to load: error=\"%s\"\n", g_module_error());
-			}
-#endif
 		}
 	}
 	return m_bLoaded;
@@ -161,27 +148,14 @@ bool XAP_CocoaModule::getErrorMsg (char ** dest) const
 }
 
 /**
- * return > 0 for directory entries ending in ".Abi"
+ * return > 0 for directory entries ending in ".dylib"
  */
 static int s_Abi_only (struct dirent * d)
 {
 	const char * name = d->d_name;
 
-	if (name)
-	{
-		int length = strlen (name);
-
-		if (length > 4) {
-			if (strcmp (name + length - 4, ".Abi") == 0) {
-				return 1;
-			}
-		}
-
-		if (length > 7) {
-			if (strcmp (name + length - 7, ".so-abi") == 0) {
-				return 1;
-			}
-		}
+	if (name && XAP_CocoaModule::hasPluginExtension(name)) {
+		return 1;
 	}
 	return 0;
 }
@@ -234,11 +208,11 @@ static bool s_createDirectoryIfNecessary(const char * szDir, bool publicdir = fa
 }	
 
 /**
- * MacOSX applications look for plugins in Contents/Plug-ins, and there's probably
+ * MacOSX applications look for plugins in Contents/PlugIns, and there's probably
  * no need to jump through scandir hoops identifying these. Third party plugins or
  * plugins not distributed with AbiWord.app can be found in the system directory
  * "/Library/Application Support" or in the user's home equivalent - I'm choosing
- * to make the plug-in directory "/Library/Application Support/AbiWord/Plug-ins".
+ * to make the plug-in directory "/Library/Application Support/AbiWord/PlugIns".
  * 
  * The System Overview recommends that plugins be given a suffix that the
  * application claims (presumably as a document type) so I'm opting for the suffix
@@ -248,7 +222,7 @@ void XAP_CocoaModule::loadAllPlugins ()
 {
 	int support_dir_count = 0;
 
-	UT_UTF8String support_dir[3];
+	std::string support_dir[3];
 
 	/* Load from:
 	 *  a. "/Library/Application Support/AbiSuite/Plug-ins"
@@ -259,18 +233,19 @@ void XAP_CocoaModule::loadAllPlugins ()
 	NSString * app_path = [[NSBundle mainBundle] bundlePath];
 	if (app_path) 
 	{
-		if (NSString * plugin_path = [app_path stringByAppendingString:@"/Contents/Plug-ins"])
+		NSString * plugin_path = [app_path stringByAppendingString:@"/Contents/PlugIns"];
+		if (plugin_path)
 		{
 			support_dir[support_dir_count] = [plugin_path UTF8String];
 
-			if (s_dir_exists (support_dir[support_dir_count].utf8_str()))
+			if (s_dir_exists (support_dir[support_dir_count].c_str()))
 			{
-				UT_DEBUGMSG(("FJF: path to bundle's plug-ins: %s\n",support_dir[support_dir_count].utf8_str()));
+				UT_DEBUGMSG(("FJF: path to bundle's plug-ins: %s\n",support_dir[support_dir_count].c_str()));
 				support_dir_count++;
 			}
 			else
 			{
-				UT_DEBUGMSG(("FJF: path to bundle's plug-ins: %s (not found)\n",support_dir[support_dir_count].utf8_str()));
+				UT_DEBUGMSG(("FJF: path to bundle's plug-ins: %s (not found)\n",support_dir[support_dir_count].c_str()));
 			}
 		}
 	}
@@ -281,18 +256,18 @@ void XAP_CocoaModule::loadAllPlugins ()
 		&& s_createDirectoryIfNecessary("/Library/Application Support", true)
 		&& s_createDirectoryIfNecessary("/Library/Application Support/AbiSuite", true)) 
 	{
-		s_createDirectoryIfNecessary ("/Library/Application Support/AbiSuite/Plug-ins", true);
+		s_createDirectoryIfNecessary ("/Library/Application Support/AbiSuite/PlugIns", true);
 	}
 
-	support_dir[support_dir_count] = "/Library/Application Support/AbiSuite/Plug-ins";
+	support_dir[support_dir_count] = "/Library/Application Support/AbiSuite/PlugIns";
 
-	if (!s_dir_exists (support_dir[support_dir_count].utf8_str()))
+	if (!s_dir_exists (support_dir[support_dir_count].c_str()))
 	{
-		UT_DEBUGMSG(("FJF: %s: no such directory\n",support_dir[support_dir_count].utf8_str()));
+		UT_DEBUGMSG(("FJF: %s: no such directory\n",support_dir[support_dir_count].c_str()));
 	}
 	else
 	{
-		UT_DEBUGMSG(("FJF: adding to plug-in search path: %s\n",support_dir[support_dir_count].utf8_str()));
+		UT_DEBUGMSG(("FJF: adding to plug-in search path: %s\n",support_dir[support_dir_count].c_str()));
 		support_dir_count++;
 	}
 
@@ -307,15 +282,15 @@ void XAP_CocoaModule::loadAllPlugins ()
 	}
 	else
 	{
-		UT_UTF8String plugin_dir(homedir);
-		plugin_dir += "/Plug-ins";
-		if (!s_createDirectoryIfNecessary (plugin_dir.utf8_str()))
+		std::string plugin_dir(homedir);
+		plugin_dir += "/PlugIns";
+		if (!s_createDirectoryIfNecessary (plugin_dir.c_str()))
 		{
-			UT_DEBUGMSG(("FJF: %s: no such directory\n",plugin_dir.utf8_str()));
+			UT_DEBUGMSG(("FJF: %s: no such directory\n",plugin_dir.c_str()));
 		}
 		else
 		{
-			UT_DEBUGMSG(("FJF: adding to plug-in search path: %s\n",plugin_dir.utf8_str()));
+			UT_DEBUGMSG(("FJF: adding to plug-in search path: %s\n",plugin_dir.c_str()));
 			support_dir[support_dir_count++] = plugin_dir;
 		}
 	}
@@ -323,26 +298,24 @@ void XAP_CocoaModule::loadAllPlugins ()
 	for (int i = 0; i < support_dir_count; i++)
 	{
 		struct dirent ** namelist = NULL;
-		int n = scandir (support_dir[i].utf8_str(), &namelist, s_Abi_only, alphasort);
-		UT_DEBUGMSG(("DOM: found %d plug-ins in %s\n", n, support_dir[i].utf8_str()));
+		int n = scandir (support_dir[i].c_str(), &namelist, s_Abi_only, alphasort);
+		UT_DEBUGMSG(("DOM: found %d plug-ins in %s\n", n, support_dir[i].c_str()));
 		if (n < 0)
 		{
 			continue;
 		}
 		if (n == 0)
 		{
-			FREEP (namelist);
+			free(namelist);
 			continue;
 		}
 
-		UT_UTF8String plugin_path;
+		std::string plugin_path;
 		while (n--)
 		{
-			plugin_path  = support_dir[i];
-			plugin_path += '/';
-			plugin_path += namelist[n]->d_name;
+			plugin_path  = support_dir[i] + "/" + namelist[n]->d_name;
 
-			UT_DEBUGMSG(("FJF: loading plugin %s\n", plugin_path.utf8_str()));
+			UT_DEBUGMSG(("FJF: loading plugin %s\n", plugin_path.c_str()));
 
 			if (XAP_CocoaModule::loadPlugin (plugin_path))
 			{
@@ -352,55 +325,31 @@ void XAP_CocoaModule::loadAllPlugins ()
 			{
 				UT_DEBUGMSG(("FJF: didn't load plug-in: %s\n", namelist[n]->d_name));
 			}
-			g_free (namelist[n]);
+			free (namelist[n]);
 		}
-		g_free (namelist);
+		free (namelist);
 	}
 }
 
-bool XAP_CocoaModule::loadPlugin (const UT_UTF8String & path)
+bool XAP_CocoaModule::loadPlugin (const std::string & path)
 {
-	bool bAbi = false;
 	bool bLoaded = false;
 
-	if (path.length() > 4) {
-		if (strcmp(path.utf8_str() + path.length() - 4, ".Abi") == 0) {
-			XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
-
-			XAP_CocoaPlugin * plugin = [pController loadPlugin:[NSString stringWithUTF8String:(path.utf8_str())]];
-
-			if (plugin) {
-				[[plugin delegate] pluginActivate];
-				bLoaded = true; // we have no idea if activate succeeded. just assume so.
-			}
-			bAbi = true;
-		}
-	}
-
-	if (!bAbi && (path.length() > 7) 
-		&& (strcmp(path.utf8_str() + path.length() - 7, ".so-abi") == 0)) 
+	if (hasPluginExtension(path))
 	{
-		bLoaded = XAP_ModuleManager::instance().loadModule (path.utf8_str());
+		bLoaded = XAP_ModuleManager::instance().loadModule (path.c_str());
 	}
 
 	return bLoaded;
 }
 
-bool XAP_CocoaModule::hasPluginExtension (const UT_UTF8String & path)
+bool XAP_CocoaModule::hasPluginExtension (const std::string & path)
 {
 	bool bHasPluginExtension = false;
 
-	if (path.length() > 4)
+	if (path.length() > 6)
 	{
-		if (strcmp(path.utf8_str() + path.length() - 4, ".Abi") == 0)
-		{
-			bHasPluginExtension = true;
-		}
-	}
-
-	if (!bHasPluginExtension && (path.length() > 7))
-	{
-		if (strcmp(path.utf8_str() + path.length() - 7, ".so-abi") == 0)
+		if (strcmp(path.c_str() + path.length() - 6, ".dylib") == 0)
 		{
 			bHasPluginExtension = true;
 		}

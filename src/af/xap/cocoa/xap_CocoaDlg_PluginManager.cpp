@@ -74,27 +74,23 @@ void XAP_CocoaDialog_PluginManager::event_Load ()
 	if (!pDialog)
 		return;
 	
-	UT_UTF8String plugin_path = [[[NSBundle mainBundle] bundlePath] UTF8String];
-	plugin_path += "/Contents/Plug-ins/AbiHack.so-abi";
+	std::string plugin_path = [[[NSBundle mainBundle] bundlePath] UTF8String];
+	plugin_path += "/Contents/PlugIns/AbiHack.dylib";
 
-	pDialog->setCurrentPathname(plugin_path.utf8_str ());
+	pDialog->setCurrentPathname(plugin_path.c_str ());
 	pDialog->setSuggestFilename(false);
 	
-	const char * szDescList[3];
-	const char * szSuffixList[3];
-	IEFileType   nTypeList[3];
+	const char * szDescList[2];
+	const char * szSuffixList[2];
+	IEFileType   nTypeList[2];
 
-	szDescList[0]   = "AbiWord Plugin (.so-abi)";
-	szSuffixList[0] = "*.so-abi";
+	szDescList[0]   = "AbiWord Plugin (.dylib)";
+	szSuffixList[0] = "*.dylib";
 	nTypeList[0]    = (IEFileType) 1;
 
-	szDescList[1]   = "AbiWord Bundle-Plugin (.Abi)";
-	szSuffixList[1] = "*.Abi";
-	nTypeList[1]    = (IEFileType) 1;
-	
-	szDescList[2]   = 0;
-	szSuffixList[2] = 0;
-	nTypeList[2]    = 0;
+	szDescList[1]   = 0;
+	szSuffixList[1] = 0;
+	nTypeList[1]    = 0;
 	
 	pDialog->setFileTypeList(szDescList, szSuffixList, (const UT_sint32 *) nTypeList);
 	
@@ -283,53 +279,23 @@ void XAP_CocoaDialog_PluginManager::runModal(XAP_Frame * pFrame)
 
 - (void)dealloc
 {
-	if (m_name)
-	{
-		[m_name release];
-		m_name = 0;
-	}
-	if (m_author)
-	{
-		[m_author release];
-		m_author = 0;
-	}
-	if (m_version)
-	{
-		[m_version release];
-		m_version = 0;
-	}
-	if (m_description)
-	{
-		[m_description release];
-		m_description = 0;
-	}
-	if (m_usage)
-	{
-		[m_usage release];
-		m_usage = 0;
-	}
-	if (m_entry)
-	{
-		[m_entry release];
-		m_entry = 0;
-	}
+	[m_name release];
+	[m_author release];
+	[m_version release];
+	[m_description release];
+	[m_usage release];
+	[m_entry release];
 	[super dealloc];
 }
 
 - (void)setActive:(BOOL)active
 {
-	if (m_entry)
-	{
-		[m_entry release];
-		m_entry = 0;
-	}
+	[m_entry release];
+	m_entry = nil;
 
 	NSDictionary * attr = 0;
 
-	if (active)
-		attr = [NSDictionary dictionaryWithObject:[NSColor blackColor] forKey:NSForegroundColorAttributeName];
-	else
-		attr = [NSDictionary dictionaryWithObject:[NSColor  grayColor] forKey:NSForegroundColorAttributeName];
+	attr = [NSDictionary dictionaryWithObject:(active ? [NSColor blackColor] : [NSColor  grayColor]) forKey:NSForegroundColorAttributeName];
 
 	m_entry = [[NSAttributedString alloc] initWithString:m_name attributes:attr];
 }
@@ -384,21 +350,12 @@ void XAP_CocoaDialog_PluginManager::runModal(XAP_Frame * pFrame)
 		return nil;
 	}
 	m_PluginRefs = [[NSMutableArray alloc] initWithCapacity:16];
-	if (!m_PluginRefs)
-	{
-		[self dealloc];
-		return nil;
-	}
 	return self;
 }
 
 - (void)dealloc
 {
-	if (m_PluginRefs)
-	{
-		[m_PluginRefs release];
-		m_PluginRefs = 0;
-	}
+	[m_PluginRefs release];
 	[super dealloc];
 }
 
@@ -423,9 +380,11 @@ void XAP_CocoaDialog_PluginManager::runModal(XAP_Frame * pFrame)
 
 	for (UT_uint32 i = 0; i < count; i++) {
 		if (XAP_CocoaModule * pModule = static_cast<XAP_CocoaModule *>(pModuleVec->getNthItem(i))) {
-			if (XAP_CocoaPluginReference * pRef = [[XAP_CocoaPluginReference alloc] initWithModule:pModule])
+			XAP_CocoaPluginReference * pRef = [[XAP_CocoaPluginReference alloc] initWithModule:pModule];
+			if (pRef)
 			{
 				[m_PluginRefs addObject:pRef];
+				[pRef release];
 			}
 		}
 	}
@@ -439,10 +398,11 @@ void XAP_CocoaDialog_PluginManager::runModal(XAP_Frame * pFrame)
 	for (unsigned i = 0; i < plugin_count; i++)
 	{
 		XAP_CocoaPlugin * pPlugin = (XAP_CocoaPlugin *) [Plugins objectAtIndex:i];
-
-		if (XAP_CocoaPluginReference * pRef = [[XAP_CocoaPluginReference alloc] initWithPlugin:pPlugin])
+		XAP_CocoaPluginReference * pRef = [[XAP_CocoaPluginReference alloc] initWithPlugin:pPlugin];
+		if (pRef)
 		{
 			[m_PluginRefs addObject:pRef];
+			[pRef release];
 		}
 	}
 }

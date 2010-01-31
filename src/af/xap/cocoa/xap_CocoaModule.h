@@ -24,13 +24,7 @@
 #ifndef XAP_COCOAMODULE_H
 #define XAP_COCOAMODULE_H
 
-/*
-    This is the version for Mach-O runtime
-    PEF / CFM version is in xap_MacCFMModule.{h,cpp}
-*/
-
-#include "ut_string_class.h"
-
+#include <string>
 #include "xap_Module.h"
 
 class XAP_CocoaModule : public XAP_Module 
@@ -56,12 +50,12 @@ public:
 
 	/* used by CocoaAppController to auto-load plugins selected through the Finder
 	 */
-	static bool		loadPlugin (const UT_UTF8String & path);
-	static bool		hasPluginExtension (const UT_UTF8String & path);
+	static bool		loadPlugin (const std::string & path);
+	static bool		hasPluginExtension (const std::string & path);
 
 private:
-	UT_UTF8String	m_szname;
-	UT_UTF8String	m_module_path;
+	std::string		m_szname;
+	std::string		m_module_path;
 
 	void *			m_module;
 
