@@ -792,7 +792,8 @@ void fp_Run::setLine(fp_Line* pLine)
 	{
 		return;
 	}
-	clearScreen();
+	if(!getBlock()->getDocSectionLayout()->isCollapsing())
+		clearScreen();
 
 	m_pLine = pLine;
 	if(pLine != NULL)
