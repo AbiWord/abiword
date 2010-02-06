@@ -775,11 +775,6 @@ fi
 AM_CONDITIONAL([WITH_GOFFICE_BUILTIN], test "$TOOLKIT" == "gtk" && test "$abi_cv_goffice" != "yes")
 AC_SUBST([GOFFICE_BUILTIN_LIBS])
 
-if test "$abi_cv_gucharmap" == "yes"; then
-	AC_DEFINE([WITH_GUCHARMAP], [1], [Define if using gucharmap])
-fi
-AM_CONDITIONAL([WITH_GUCHARMAP], test "$abi_cv_gucharmap" == "yes")
-
 ALL_PLUGINS_="\
   m4_include([plugin-list.m4])"
 # strip trailing newline from the included file, it messes up sed on windows

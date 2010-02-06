@@ -62,14 +62,12 @@ public:
 		  BUTTON_CLOSE = GTK_RESPONSE_CLOSE
 		} ResponseId ;
 	
-#ifndef WITH_GUCHARMAP
 	// callbacks can fire these events
 	void			SymbolMap_exposed( void);
 	void			Symbolarea_exposed( void);
 	void			SymbolMap_clicked(GdkEvent * event);
-	void            CurrentSymbol_clicked(GdkEvent *event);
+	void			CurrentSymbol_clicked(GdkEvent *event);
 	gboolean		Key_Pressed(GdkEventKey * e);
-#endif
 
 private:
 
@@ -84,9 +82,8 @@ private:
 	GtkWidget * m_SymbolMap;
 	GtkWidget * m_fontcombo;
 	GtkAdjustment * m_vadjust;
-    std::list<std::string>     m_InsertS_Font_list;
+	std::list<std::string> m_InsertS_Font_list;
 
-#ifndef WITH_GUCHARMAP
 	// private construction functions
 	GtkWidget * _previewNew(int w, int h);
 
@@ -95,7 +92,6 @@ private:
 	GR_CairoGraphics * m_unixarea;
 	UT_uint32 m_ix;
 	UT_uint32 m_iy;
-#endif /* WITH_GUCHARMAP */
 };
 
 #endif /* XAP_UNIXDIALOG_INSERT_SYMBOL_H */
