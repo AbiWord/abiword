@@ -4622,7 +4622,7 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 
 			m_pView->moveInsPtTo(quotable_at);
 			// delete/insert create change records for UNDO
-			m_pView->cmdSelect(quotable_at, quotable_at + 1);
+			m_pView->cmdSelectNoNotify(quotable_at, quotable_at + 1);
 			m_pView->cmdCharInsert(&replacement, 1);
 			m_pView->moveInsPtTo(saved_pos);
 		}

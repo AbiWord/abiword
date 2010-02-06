@@ -4022,10 +4022,8 @@ void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 
 }
 
-
-void FV_View::cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd)
+bool FV_View::cmdSelectNoNotify(PT_DocPosition dpBeg, PT_DocPosition dpEnd)
 {
-
 	if (!isSelectionEmpty())
 	{
 		_clearSelection();
@@ -4050,10 +4048,18 @@ void FV_View::cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd)
 
 	if (dpBeg == dpEnd)
 	{
-		return;
+		return false;
 	}
-	_drawSelection();
-	notifyListeners(AV_CHG_EMPTYSEL);
+	return true;
+}
+
+void FV_View::cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd)
+{
+	if(cmdSelectNoNotify(dpBeg, dpEnd))
+	{  
+		_drawSelection();
+		notifyListeners(AV_CHG_EMPTYSEL);
+	}
 }
 
 #define IS_SELECTALL(a, b) ((a) == FV_DOCPOS_BOD && (b) == FV_DOCPOS_EOD)
