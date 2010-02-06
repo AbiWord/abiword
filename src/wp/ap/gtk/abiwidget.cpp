@@ -621,8 +621,8 @@ public:
 			UT_uint32 _page_count = m_pView->getLayout()->countPages();
 			UT_uint32 _current_page = m_pView->getCurrentPageNumForStatusBar();
 
-			FIRE_UINT32(_page_count, pageCount_, pageCount); // should be UINT32 ofcourse
-			FIRE_UINT32(_current_page, currentPage_, currentPage); // should be UINT32 ofcourse
+			FIRE_UINT32(_page_count, pageCount_, pageCount);
+			FIRE_UINT32(_current_page, currentPage_, currentPage);
 		}
 
 		if ((AV_CHG_FMTBLOCK | AV_CHG_MOTION) & mask)
