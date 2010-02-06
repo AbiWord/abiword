@@ -76,7 +76,7 @@ abi_set_sensitive (G_GNUC_UNUSED GOCmdContext *cc,
 }
 
 static void
-abi_progress_set (G_GNUC_UNUSED GOCmdContext *cc, G_GNUC_UNUSED gfloat val)
+abi_progress_set (G_GNUC_UNUSED GOCmdContext *cc, G_GNUC_UNUSED double val)
 {
 }
 
