@@ -805,8 +805,8 @@ const XAP_SmartQuoteStyle XAP_EncodingManager::smartQuoteStyles[] =
 	{ ((UT_UCSChar)0x201a), UCS_RQUOTE }, // 8
 	{ UCS_LDBLQUOTE, ((UT_UCSChar)0x201e) }, // 9
 	{ UCS_RDBLQUOTE, UCS_RDBLQUOTE }, // 10
-	{ ((UT_UCSChar)0x201e), UCS_RDBLQUOTE }, // 11 German double
-	{ ((UT_UCSChar)0x201e), UCS_LDBLQUOTE }, // 12
+	{ ((UT_UCSChar)0x201e), UCS_RDBLQUOTE }, // 11
+	{ ((UT_UCSChar)0x201e), UCS_LDBLQUOTE }, // 12 German double
 	{ ((UT_UCSChar)0x2039), ((UT_UCSChar)0x203a) }, // 13 French single
 	{ ((UT_UCSChar)0x203a), ((UT_UCSChar)0x2039) }, // 14 reverse French single
 	{ ((UT_UCSChar)0x300c), ((UT_UCSChar)0x300d) }, // 15 Dark corner bracket
@@ -871,7 +871,7 @@ const XAP_LangInfo XAP_EncodingManager::langinfo[] =
     {{   "Galician",          "gl",     "",     "",       "",                                  "",     },   0,   1   },
     {{   "Galla",             "",       "",     "",       "langGalla",                         "87",   },   0,   1   },
     {{   "Georgian",          "ka",     "",     "",       "langGeorgian",                      "52",   },   0,   1   },
-    {{   "German",            "de",     "",     "0x0007", "langGerman",                        "2",    },  11,   7   },
+    {{   "German",            "de",     "",     "0x0007", "langGerman",                        "2",    },  12,   7   },
     {{   "German",            "de",     "CH",   "0x0007", "langGerman",                        "2",    },   2,  13   }, // Swiss
     {{   "Greek",             "el",     "",     "0x0008", "langGreek",                         "14",   },   2,  19   },
     {{   "Greenlandic",       "kl",     "",     "",       "",                                  "",     },   0,   1   },
