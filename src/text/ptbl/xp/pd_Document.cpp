@@ -1067,8 +1067,9 @@ UT_Error PD_Document::_saveAs(const char * szFilename, int ieft, bool cpy,
 		signalListeners(PD_SIGNAL_DOCNAME_CHANGED);	
 	}
 
-	//if (strstr(szFilename, "normal.awt") == NULL)
-	XAP_App::getApp()->getPrefs()->addRecent(szFilename);
+	if (szFilename)
+		XAP_App::getApp()->getPrefs()->addRecent(szFilename);
+
 	return UT_OK;
 }
 
@@ -1126,8 +1127,9 @@ UT_Error PD_Document::_saveAs(GsfOutput *output, int ieft, bool cpy, const char 
 		signalListeners(PD_SIGNAL_DOCNAME_CHANGED);	
 	}
 
-	//if (strstr(szFilename, "normal.awt") == NULL)
-	XAP_App::getApp()->getPrefs()->addRecent(szFilename);
+	if (szFilename)
+		XAP_App::getApp()->getPrefs()->addRecent(szFilename);
+
 	return UT_OK;
 }
 
