@@ -29,6 +29,7 @@
 #import "xap_CocoaAppController.h"
 #import "xap_CocoaToolPalette.h"
 #import "xap_CocoaToolbar_Icons.h"
+#import "xap_CocoaCompat.h"
 
 #include "xap_Frame.h"
 #include "xap_Toolbar_LabelSet.h"
@@ -1175,10 +1176,10 @@ static XAP_CocoaToolPalette * s_instance = nil;
 
 	UT_DEBUGMSG(("XAP_CocoaToolPalette -setColor: have edit method\n"));
 
-	float red;
-	float green;
-	float blue;
-	float alpha;
+	XAP_CGFloat red;
+	XAP_CGFloat green;
+	XAP_CGFloat blue;
+	XAP_CGFloat alpha;
 
 	NSColor * color = [[NSColorPanel sharedColorPanel] color];
 

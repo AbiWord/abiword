@@ -44,6 +44,7 @@
 #include "gr_CocoaImage.h"
 #include "gr_CharWidths.h"
 #include "xap_CocoaFrame.h"
+#include "xap_CocoaCompat.h"
 
 #include "xap_EncodingManager.h"
 
@@ -484,7 +485,7 @@ void GR_CocoaCairoGraphics::_utNSColorToRGBColor (NSColor *c, UT_RGBColor &clr)
 		clr.setPattern(new GR_CairoPatternImpl(surface));
 	}
 	else {
-		float r, g, b, a;
+		XAP_CGFloat r, g, b, a;
 		[[c colorUsingColorSpaceName:NSDeviceRGBColorSpace] getRed:&r green:&g blue:&b alpha:&a];
 		UT_DEBUGMSG(("color rgba is %f %f %f %f\n", r, g, b, a));
 		clr.m_red = static_cast<unsigned char>(r * 255.0f);
