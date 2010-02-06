@@ -402,7 +402,7 @@ AC_ARG_WITH([darwinports],
         if test "x$withval" != "xno"; then
                 CPPFLAGS="$CPPFLAGS -I/opt/local/include"
                 LDFLAGS="$LDFLAGS -L/opt/local/lib"
-		CC=g++
+		CC=$CXX
         fi
 ])
 
@@ -412,7 +412,7 @@ AC_ARG_WITH([fink],
         if test "x$withval" != "xno"; then
                 CPPFLAGS="$CPPFLAGS -I/sw/include"
                 LDFLAGS="$LDFLAGS -L/sw/lib"
-		CC=g++
+		CC=$CXX
         fi
 ])
 
@@ -427,7 +427,7 @@ AC_ARG_WITH([abisdk],
 		PKG_CONFIG_PATH=/usr/lib/pkgconfig ; export PKG_CONFIG_PATH
 		CPPFLAGS="$CPPFLAGS -isysroot $withval -I/opt/abi/include"
 		LDFLAGS="$LDFLAGS -isysroot $withval -L/opt/abi/lib"
-		CC=g++
+		CC=$CXX
 	fi
 ])
 
