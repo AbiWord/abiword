@@ -36,7 +36,9 @@
 
 // AbiWord includes
 #include <ut_assert.h>
-
+#include <ut_misc.h>
+#include <pd_Document.h>
+#include <ut_debugmsg.h>
 
 /**
  * Constructor
@@ -58,7 +60,8 @@ ODi_StylesStream_ListenerState::ODi_StylesStream_ListenerState (
               m_pAbiDocument (pAbiDocument),
               m_pGsfInfile (pGsfInfile),
               m_pStyles (pStyles),
-              m_rAbiData (rAbiData)
+              m_rAbiData (rAbiData),
+	      m_bOutlineStyle(false)
 {
     UT_ASSERT_HARMLESS(m_pStyles);
     UT_ASSERT_HARMLESS(m_pAbiDocument);
@@ -90,7 +93,7 @@ void ODi_StylesStream_ListenerState::startElement (const gchar* pName,
 
     } else if (!strcmp (pName, "style:style")) {
 
-        ODi_ListenerState* pStyle;
+        ODi_ListenerState* pStyle=NULL;
 
         pStyle = m_pStyles->addStyle(ppAtts, m_rElementStack,m_rAbiData);
         
@@ -135,8 +138,33 @@ void ODi_StylesStream_ListenerState::startElement (const gchar* pName,
             pStyle = m_pStyles->addList(ppAtts, m_rElementStack);
             rAction.pushState(pStyle, false);
         }
-        
-    } else if (!strcmp (pName, "text:notes-configuration")) {
+    }
+    else if(!strcmp (pName, "text:outline-style"))
+    {
+      //
+      // This is the default list structure for headings
+      //
+      // Need to add the Heading style name to the attributes list
+      //
+      ODi_ListenerState* pStyle=NULL;
+      UT_sint32 icnt = 0;
+      for(icnt=0; ppAtts[icnt] != NULL;icnt++);
+      const gchar ** ppExtra = new const gchar*[icnt+2];
+      UT_sint32 i = 0;
+      UT_UTF8String sLName="BaseHeading";
+      for(i=0; i<icnt;i++)
+      {
+	  ppExtra[i] = ppAtts[i];
+      }
+      ppExtra[i++] = "style:name";
+      ppExtra[i++] = sLName.utf8_str();
+      ppExtra[i] = NULL;
+      pStyle = m_pStyles->addList(ppExtra, m_rElementStack);
+      delete [] ppExtra;
+      rAction.pushState(pStyle, false);
+      m_bOutlineStyle = true;
+    }
+    else if (!strcmp (pName, "text:notes-configuration")) {
         
         ODi_ListenerState* pNotesConfig;
 
@@ -166,5 +194,13 @@ void ODi_StylesStream_ListenerState::endElement (const gchar* pName,
     if (!strcmp (pName, "office:document-styles")) {
         // We're done.
         rAction.popState();
+    }
+    if(!strcmp (pName, "text:outline-style"))
+    {
+      m_bOutlineStyle = false;
+      //
+      // Don't pop here it's done ODi_Style_List
+      //
+      UT_DEBUGMSG(("Finished text:outline-style \n"));
     }
 }

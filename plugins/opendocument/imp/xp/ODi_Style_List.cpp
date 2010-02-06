@@ -48,10 +48,8 @@ ODi_Style_List::~ODi_Style_List()
 void ODi_Style_List::startElement (const gchar* pName, const gchar** ppAtts,
                                ODi_ListenerStateAction& rAction) 
 {
-
+    const gchar* pVal = NULL;
     if (!strcmp("text:list-style", pName)) {
-        const gchar* pVal;
-
         pVal = UT_getAttribute ("style:name", ppAtts);
         UT_ASSERT(pVal);
         m_name = pVal;
@@ -75,6 +73,23 @@ void ODi_Style_List::startElement (const gchar* pName, const gchar** ppAtts,
         
         rAction.pushState(pLevelStyle, false);
     }
+    else if(!strcmp("text:outline-level-style", pName))
+    {
+        ODi_ListLevelStyle* pLevelStyle = NULL;
+	UT_DEBUGMSG(("Found outline-level-style \n"));
+        pVal = UT_getAttribute ("style:num-format", ppAtts);
+	if(pVal)
+	{
+	     pLevelStyle = new ODi_Numbered_ListLevelStyle(m_rElementStack);
+	     m_levelStyles.push_back(pLevelStyle);
+	}
+        else
+	{
+	     pLevelStyle = new ODi_Numbered_ListLevelStyle(m_rElementStack);
+	     m_levelStyles.push_back(pLevelStyle);
+	}
+        rAction.pushState(pLevelStyle, false);
+    }
 }
 
 
@@ -88,8 +103,63 @@ void ODi_Style_List::endElement (const gchar* pName,
         // We're done.
         rAction.popState();
     }
-}
+    if(!strcmp("text:outline-style",pName))
+    {
+        // We're done.
+        rAction.popState();
+    }
+  }
 
+/*!
+ * Each sublist in abiword needs it own unique identifier. When we drop
+ * back a level we have to redefine the ID's of the child levels
+ * This method gets called when this happens
+ */
+void ODi_Style_List::redefine(PD_Document* pDocument, UT_sint32 iLevel)
+{
+    UT_uint32 level=0;
+    bool foundParent;
+    const UT_UTF8String* pString;
+    
+    // reset the appropriate the id attribute of the <l> tags.
+
+    for(std::vector<ODi_ListLevelStyle*>::const_iterator iter = m_levelStyles.begin();
+        iter != m_levelStyles.end(); ++iter) 
+    {
+
+         level++;
+	 if(level >= iLevel)
+	 {
+             (*iter)->setAbiListID(pDocument->getUID(UT_UniqueId::List));
+	 }
+    }
+    
+    // Reset the parent ID's now
+
+    for(std::vector<ODi_ListLevelStyle*>::const_iterator iter = m_levelStyles.begin();
+        iter != m_levelStyles.end(); ++iter) 
+    {
+
+        level = (*iter)->getLevelNumber();
+        
+        // Let's find the ID of the parent list level
+        if (level > iLevel) 
+	{
+            std::vector<ODi_ListLevelStyle*>::const_iterator iter2;
+            for(iter2 = m_levelStyles.begin(), foundParent=false;
+                iter2 != m_levelStyles.end() && !foundParent; ++iter2) 
+	    {
+                
+                if ((*iter2)->getLevelNumber() == level-1) 
+		{
+                    pString = (*iter2)->getAbiListID();
+                    (*iter)->setAbiListParentID(*pString);
+                    foundParent = true;
+                }
+            }
+        } 
+    }
+}
 
 /**
  * 

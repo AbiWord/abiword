@@ -447,7 +447,7 @@ ODi_Style_List* ODi_Office_Styles::addList(const gchar** ppAtts,
 
     pStyle = new ODi_Style_List(rElementStack);
     pAttrValue = UT_getAttribute("style:name", ppAtts);
-                                            
+    UT_DEBUGMSG(("Adding list |%s| to outline collection \n",pAttrValue));
     m_listStyles.insert(std::make_pair(pAttrValue, pStyle));
             
     return pStyle;

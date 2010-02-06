@@ -58,6 +58,8 @@ public:
         m_abiListParentID = rAbiListParentID;
     }
     
+    bool isVisible(void) const;
+
     void setAbiListParentID(const gchar* pParentID) {
         m_abiListParentID.assign(pParentID);
     }

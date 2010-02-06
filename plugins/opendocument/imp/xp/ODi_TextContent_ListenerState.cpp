@@ -81,7 +81,9 @@ ODi_TextContent_ListenerState::ODi_TextContent_ListenerState (
 		  m_dYpos(0.0),
 		  m_sProps(""),
 		  m_rAbiData(rAbiData),
-		  m_bPendingTextbox(false)
+		  m_bPendingTextbox(false),
+		  m_bHeadingList(false),
+		  m_prevLevel(0)
 {
     UT_ASSERT_HARMLESS(m_pAbiDocument);
     UT_ASSERT_HARMLESS(m_pStyles);
@@ -113,7 +115,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
     if (strcmp(pName, "text:section" ) != 0 ) {
         _flushPendingParagraphBreak();
     }
-    
+    m_bHeadingList = false;
     if (!strcmp(pName, "text:section" )) {
 		
         if (m_bPendingSection)
@@ -180,9 +182,22 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             // be at level 1.
             pOutlineLevel = "1";
         }
+	UT_UTF8String sHeadingListName = "BaseHeading";
+	m_listLevel = atoi(pOutlineLevel);
+	m_pCurrentListStyle =  m_pStyles->getList( sHeadingListName.utf8_str());
+	if(m_pCurrentListStyle && m_pCurrentListStyle->getLevelStyle(m_listLevel)->isVisible())
+	{
+	     UT_DEBUGMSG(("Found %s ! outline level %s \n",sHeadingListName.utf8_str(),pOutlineLevel));
+	     m_bHeadingList = true;
+	}
+	else
+	{
+	     UT_DEBUGMSG(("Not present or defined as list \n",sHeadingListName.utf8_str()));
 
+	}
         pStyleName = UT_getAttribute("text:style-name", ppAtts);
-        if (pStyleName) {
+        if (pStyleName) 
+        {
             pStyle = m_pStyles->getParagraphStyle(pStyleName, m_bOnContentStream);
         }
         
@@ -206,8 +221,10 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         }
         
         // It's so big that it deserves its own function.
+        m_alreadyDefinedAbiParagraphForList = false;
         _startParagraphElement(pName, ppAtts, rAction);
-        
+        m_bHeadingList = false;
+	m_pCurrentListStyle = NULL;
     } else if (!strcmp(pName, "text:s")) {
         // A number of consecutive white-space characters.
         
@@ -1358,7 +1375,7 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
                                           const gchar** ppParagraphAtts,
 															ODi_ListenerStateAction& /*rAction*/) 
 {
-        bool bIsListParagraph = false;
+        bool bIsListParagraph = m_bHeadingList ;
         const gchar* pStyleName;
         const gchar *ppAtts[50];
         UT_uint8 i;
@@ -1450,7 +1467,14 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
             
             ppAtts[i++] = "level";
             ppAtts[i++] = listLevel;
-            if (pListLevelStyle && pListLevelStyle->getAbiListID() && pListLevelStyle->getAbiListParentID()) {
+            if (pListLevelStyle && pListLevelStyle->getAbiListID() && pListLevelStyle->getAbiListParentID())
+	    {
+	        if(m_listLevel < m_prevLevel)
+		{
+		     m_pCurrentListStyle->redefine( m_pAbiDocument,m_prevLevel);
+		}
+		m_prevLevel = m_listLevel;
+		
                 ppAtts[i++] = "listid";
                 ppAtts[i++] = pListLevelStyle->getAbiListID()->utf8_str();
             
@@ -1458,6 +1482,7 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
                 // the <l> tag.
                 ppAtts[i++] = "parentid";
                 ppAtts[i++] = pListLevelStyle->getAbiListParentID()->utf8_str();
+		UT_DEBUGMSG(("Level |%s| Listid |%s| Parentid |%s| \n",ppAtts[i-5],ppAtts[i-3],ppAtts[i-1]));
             }
             
             if (pStyle!=NULL) {
