@@ -100,7 +100,6 @@ done
 if test "x$goffice_req" = x; then
   goffice_req=libgoffice-0.6
 fi
-gucharmap_req='gucharmap-2'
 hildon_pkgs='hildon-1 hildon-fm-2 dbus-1 libosso'
 dnl libosso-gsf-1'
 # placeholder for accumulated optional deps
@@ -395,28 +394,6 @@ else
 	GOFFICE_BUILTIN_LIBS='${top_builddir}/goffice-bits/libgoffice.la'
 	AC_SUBST(GOFFICE_BUILTIN_CPPFLAGS)
 	AC_SUBST(GOFFICE_BUILTIN_LIBS)
-fi
-
-AC_ARG_WITH([gucharmap], 
-	[AS_HELP_STRING([--with-gucharmap], [(Gtk+ only) use gucharmap library])], 
-[
-	abi_cv_gucharmap="$withval"
-],[
-	# use gucharmap if detected
-	if test "$TOOLKIT" == "gtk"; then
-		PKG_CHECK_EXISTS([ $gucharmap_req ],
-		[
-			abi_cv_gucharmap="yes"
-		], [
-			abi_cv_gucharmap="no"
-		])
-	else
-		abi_cv_gucharmap="no"
-	fi
-])
-
-if test "$abi_cv_gucharmap" == "yes"; then
-	opt_pkgs="$opt_pkgs $gucharmap_req"
 fi
 
 AC_ARG_WITH([darwinports],
@@ -938,7 +915,6 @@ Optional dependencies:
   gio			${abi_cv_gio}
   gsf-gio               ${abi_cv_gsf_gio}
   goffice               ${abi_cv_goffice}
-  gucharmap             ${abi_cv_gucharmap}
 
 Builtin plugins         ${BUILTIN_PLUGINS}
 Plugins                 ${PLUGINS}
