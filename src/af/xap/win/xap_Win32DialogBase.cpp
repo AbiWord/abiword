@@ -403,7 +403,7 @@ BOOL XAP_Win32DialogBase::_callHelp()
 {
 	if ( m_pDlg->getHelpUrl().size () > 0 )
     {
-		helpLocalizeAndOpenURL ("AbiWord/help", m_pDlg->getHelpUrl().c_str(), "http://www.abisource.com/help/" );
+		helpLocalizeAndOpenURL ("help", m_pDlg->getHelpUrl().c_str(), "http://www.abisource.com/help/" );
     }
 	else
     {

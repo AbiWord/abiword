@@ -160,7 +160,7 @@ void AP_Win32Dialog_Background::_callHelp()
 {
 	if ( getHelpUrl().size () > 0 )
     {
-		helpLocalizeAndOpenURL ("AbiWord/help", getHelpUrl().c_str(), "http://www.abisource.com/help/");
+		helpLocalizeAndOpenURL ("help", getHelpUrl().c_str(), "http://www.abisource.com/help/");
     }
 	else
     {

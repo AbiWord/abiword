@@ -442,7 +442,7 @@ BOOL XAP_Win32Dialog_FontChooser::_callHelp()
 {
 	if ( getHelpUrl().size () > 0 )
     {
-		helpLocalizeAndOpenURL ("AbiWord/help", getHelpUrl().c_str(), "http://www.abisource.com/help/" );
+		helpLocalizeAndOpenURL ("help", getHelpUrl().c_str(), "http://www.abisource.com/help/" );
     }
 	else
     {
