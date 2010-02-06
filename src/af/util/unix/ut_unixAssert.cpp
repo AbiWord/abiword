@@ -22,8 +22,17 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <signal.h>
 #include "ut_assert.h"
 #include "ut_unixAssert.h"
+
+static volatile sig_atomic_t trap_reached = 0;
+
+static void trap_handler(int signal)
+{
+	trap_reached = 1;
+}
 
 int UT_UnixAssertMsg(const char * szMsg, const char * szFile, int iLine)
 {
@@ -32,6 +41,28 @@ int UT_UnixAssertMsg(const char * szMsg, const char * szFile, int iLine)
 	printf("\n");
 	printf("**** (%d) Assert ****\n", ++count);
 	printf("**** (%d) %s at %s:%d ****\n", count,szMsg,szFile,iLine);
+
+	/* some SIGTRAP magic for convenient debugging */
+
+	trap_reached = 0;
+
+	struct sigaction act;
+	act.sa_handler = trap_handler;
+	sigemptyset(&act.sa_mask);
+	act.sa_flags = 0;
+
+	struct sigaction oldact;
+
+	sigaction(SIGTRAP, &act, &oldact);
+	kill(0, SIGTRAP);
+	sigaction(SIGTRAP, &oldact, NULL);
+
+	if (!trap_reached)
+	{
+		/* we're running under a debugger, don't bother the user */
+		return 1;
+	}
+
 	while (1)
 	{
 		printf("**** (%d) Continue ? (y/n/i(gnore)) [y] : ", count);
