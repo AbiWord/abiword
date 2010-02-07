@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: AbiWord 2.4.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-10-20 05:17+0200\n"
-"PO-Revision-Date: 2009-11-24 15:40-0000\n"
+"PO-Revision-Date: 2010-01-05 16:29-0000\n"
 "Last-Translator: Keebaa TUNKARA <artacine@yahoo.fr>\n"
 "Language-Team: Ousmane Faty Ndongo, Dominique Rochefort, Cheikh Tidiane Guèye <direction@anafa.org>\n"
 "MIME-Version: 1.0\n"
@@ -46,7 +46,7 @@ msgstr " "
 msgid ""
 " - Reserved. \n"
 " You cannot use this name. Choose Another \n"
-msgstr " - I te i faŋ nafaa noo la ñiŋ too la A ye maariyo soto le"
+msgstr "I te i faŋ nafaa noo la ñiŋ too la. A ye maariyo soto le"
 
 #. DLG_WordCount_Auto_Update
 #: po/tmp/ap_String_Id.h.h:29
@@ -86,13 +86,13 @@ msgid ""
 "\n"
 "Otherwise, please be patient."
 msgstr ""
-"%s.A maŋ paree foloo. Niŋ i mu porogaramooroo le ti, i se tamanseero safee no\n"
+"%s. A maŋ lakura foloo. Niŋ i mu porogaraamulaa le ti, i se tamanseeroo safee noo\n"
 "Buntuŋo kono %s, i ye  seyi jonjuloo %d\n"
-" toAniŋ fanaŋ yelemandiroolu minnu be:\n"
+" to. Aniŋ fanaŋ yelemandiroolu minnu be:\n"
 " kono\n"
 "\tabiword-dev@abisource.com\n"
 "\n"
-"Abaraka baturoo to."
+"N be i tentu la baturoo to."
 
 #. MENU_LABEL_FILE_RECENT_1
 #. MENU_LABEL_VIEW_TB_1
@@ -201,7 +201,7 @@ msgstr "tembendiroo feŋ na "
 #. DLG_PageSetup_Adjust
 #: po/tmp/ap_String_Id.h.h:91
 msgid "&Adjust to:"
-msgstr "Sumandiroo ñiŋ kuwolu konoi:"
+msgstr "Sumandiroo ñiŋ kuwolu kono :"
 
 #. MENU_LABEL_ALIGN
 #: po/tmp/ap_String_Id.h.h:93
@@ -292,7 +292,7 @@ msgstr "Jooseyiroo ñiŋ na :"
 #. MENU_LABEL_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h.h:128
 msgid "&Clip Art"
-msgstr "Muluŋolu la fudoo"
+msgstr "Muluŋolu la buntuŋo"
 
 #. DLG_CloseButton
 #. MENU_LABEL_FILE_CLOSE
@@ -303,12 +303,12 @@ msgstr "Sorondiroo"
 #. MENU_LABEL_TABLE_DELETE_COLUMNS
 #: po/tmp/ap_String_Id.h.h:133
 msgid "&Column"
-msgstr "Laalu"
+msgstr "Silalaalu"
 
 #. DLG_Break_ColumnBreak
 #: po/tmp/ap_String_Id.h.h:135
 msgid "&Column break"
-msgstr "Sawuàno laala"
+msgstr "Sawuŋo niŋ silalaala"
 
 #. MENU_LABEL_FMT_COLUMNS
 #: po/tmp/ap_String_Id.h.h:137
@@ -318,7 +318,7 @@ msgstr "Laalu"
 #. MENU_LABEL_TOOLS_REVISIONS_COMPARE_DOCUMENTS
 #: po/tmp/ap_String_Id.h.h:139
 msgid "&Compare documents"
-msgstr "Ka safandionlo kumbenbeŋ "
+msgstr "Ka safandiŋolu kumbenbeŋ "
 
 #. MENU_LABEL_EDIT_COPY
 #: po/tmp/ap_String_Id.h.h:141
@@ -353,12 +353,12 @@ msgstr "Jonjuloo la jaŋayaa fitoo"
 #. DLG_Options_Btn_CustomDict
 #: po/tmp/ap_String_Id.h.h:153
 msgid "&Dictionary..."
-msgstr "Kitaaboo miŋ ka kumakaŋolu faranfansi "
+msgstr "Kumakaŋolu faranfansilaŋ bukoo "
 
 #. MENU_LABEL_INSERT_DIRECTIONMARKER
 #: po/tmp/ap_String_Id.h.h:155
 msgid "&Direction Marker"
-msgstr "Tilinta Siloo miŋ na taamanseerilaŋo "
+msgstr "A tilinta Siloo miŋ na taamanseerilaŋo "
 
 #. MENU_LABEL_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h.h:157
@@ -394,7 +394,7 @@ msgstr "Miŋ safeeta karadandaŋo la muuloo "
 #. MENU_LABEL_INSERT_EDIT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:170
 msgid "&Edit hyperlink"
-msgstr "Jonjuloo muuloo "
+msgstr "Teemataamalaa baalu muuli "
 
 #. DLG_Options_Label_SmartQuotesEnable
 #: po/tmp/ap_String_Id.h.h:172
@@ -414,7 +414,7 @@ msgstr "Leeri kunsaalu "
 #. MENU_LABEL_INSERT_FIELD
 #: po/tmp/ap_String_Id.h.h:178
 msgid "&Field"
-msgstr "Kunkkoo "
+msgstr "Kunkoo "
 
 #. DLG_Field_Fields_No_Colon
 #: po/tmp/ap_String_Id.h.h:180
@@ -459,12 +459,12 @@ msgstr "Leeroo siŋo koto "
 #. MENU_LABEL_TABLE_FORMAT
 #: po/tmp/ap_String_Id.h.h:196
 msgid "&Format Table"
-msgstr "Walaa tembendoo  "
+msgstr "Kaatime walaa tembendoo  "
 
 #. MENU_LABEL_EDIT_GOTO
 #: po/tmp/ap_String_Id.h.h:198
 msgid "&Go To"
-msgstr "Ka taa... :   "
+msgstr "Ka taa fo......to :   "
 
 #. DLG_FormatTOC_HasHeading
 #: po/tmp/ap_String_Id.h.h:200
@@ -686,7 +686,7 @@ msgstr "Yirikoo :"
 #. DLG_FormatTOC_NumberingType
 #: po/tmp/ap_String_Id.h.h:289
 msgid "&Numbering type:"
-msgstr "Kasabiriéñaa siifadoolu :"
+msgstr "Kasabiriñaa siifadoolu :"
 
 #. DLG_Break_OddPage
 #: po/tmp/ap_String_Id.h.h:291
@@ -696,7 +696,7 @@ msgstr "Leeri kilinkilitaalu "
 #. MENU_LABEL_FILE_OPEN
 #: po/tmp/ap_String_Id.h.h:293
 msgid "&Open"
-msgstr "Ka a yele"
+msgstr "Yeleroo"
 
 #. DLG_MailMerge_OpenFile
 #: po/tmp/ap_String_Id.h.h:295
@@ -888,7 +888,7 @@ msgstr "Safeeriñaa "
 #. DLG_FormatTOC_StartAt
 #: po/tmp/ap_String_Id.h.h:371
 msgid "&Start at:"
-msgstr "Ka a foloo..........to :"
+msgstr "Ka a foloo..........to fo :"
 
 #. DLG_Options_Label_ViewStatusBar
 #: po/tmp/ap_String_Id.h.h:373
@@ -930,12 +930,12 @@ msgstr "Kaatimu walaalu..."
 #. MENU_LABEL_VIEW_TOOLBARS
 #: po/tmp/ap_String_Id.h.h:389
 msgid "&Toolbars"
-msgstr "Jooraŋolu la  bululaa "
+msgstr "Jooraŋ bululaalu "
 
 #. MENU_LABEL_TOOLS
 #: po/tmp/ap_String_Id.h.h:391
 msgid "&Tools"
-msgstr "Jooraçnolu"
+msgstr "Jooraŋolu"
 
 #. DLG_PageSetup_Top
 #: po/tmp/ap_String_Id.h.h:393
@@ -966,7 +966,7 @@ msgstr "Burukaroo"
 #. DLG_PageSetup_Units
 #: po/tmp/ap_String_Id.h.h:404
 msgid "&Units:"
-msgstr "Kilinkiliçnolu"
+msgstr "Kilinkiliŋolu"
 
 #. MENU_LABEL_VIEW
 #. DLG_MW_ViewButton
@@ -993,7 +993,7 @@ msgstr "Kumakaŋo muumee"
 #. DLG_Para_PushWidowOrphanControl
 #: po/tmp/ap_String_Id.h.h:414
 msgid "&Widow/Orphan control"
-msgstr "Ka furujaa musoolu niŋ kilondiŋolu lanfee  "
+msgstr "Ka furujaa musoolu niŋ kilondiŋolu kotoboo  "
 
 #. DLG_PageSetup_Width
 #: po/tmp/ap_String_Id.h.h:416
@@ -1003,7 +1003,7 @@ msgstr "Fanoo :"
 #. MENU_LABEL_TOOLS_WORDCOUNT
 #: po/tmp/ap_String_Id.h.h:418
 msgid "&Word Count"
-msgstr "Kasabiroolu / Isitatistikoolu"
+msgstr "Leeri kasabiroolu / Sitatistikoolu"
 
 #. MENU_LABEL_VIEW_ZOOM_MENU
 #. MENU_LABEL_VIEW_ZOOM
@@ -1014,7 +1014,7 @@ msgstr "Warandiroo / Yambalandiroo"
 #. DLG_ListRevisions_LevelZero
 #: po/tmp/ap_String_Id.h.h:423
 msgid "(All revisions visible)"
-msgstr "(Seyinkadiroolu muumee sefunti )"
+msgstr "(Seyinkadiroolu muumee se funti )"
 
 #. DLG_Spell_NoSuggestions
 #: po/tmp/ap_String_Id.h.h:425
@@ -1078,7 +1078,7 @@ msgstr "Miŋ tambita"
 msgid ""
 "A fatal error has just occurred. AbiWord is going to shutdown.\n"
 "The current document has been saved to disc with a \".saved\" extension."
-msgstr "Filoo miŋ te dadaa noo la le sotota. AbiWord be a faŋ sorŋ na.#10 ; Safandiŋo miŋ be nuŋ jee tankandita le aniŋ a fanudita « .tankandita »."
+msgstr "Filoo miŋ te dadaa noo la le sotota. AbiWord be a faŋ soroŋ na.#10 ; Safandiŋo miŋ be nuŋ jee tankandita le aniŋ a fanundita « .tankandita »."
 
 #. DLG_Options_Label_SpellSuggest
 #: po/tmp/ap_String_Id.h.h:454
@@ -1105,7 +1105,7 @@ msgstr "AbiWord ye i bandii le miŋ ñaalatombonta korosiroo la."
 #: po/tmp/ap_String_Id.h.h:462
 #, c-format
 msgid "AbiWord has finished its search of the document and has made %d replacements."
-msgstr "AbiWord ye i bandii le ñinindiroo la safandiŋo kono, a ye minnu ñantoo jooseyi la ke le "
+msgstr "AbiWord ye i bandii le ñinindiroo la safandiŋo kono, a ye minnu ñanto jooseyi la ke le "
 
 #. DLG_FR_FinishedFind
 #: po/tmp/ap_String_Id.h.h:464
@@ -1123,12 +1123,13 @@ msgid ""
 "\n"
 "You can use the program, but the toolbar may be missing."
 msgstr ""
-"zzAbiWord dadaata le fo a se taamandi noo aniŋ COMCTL32.DL\ safa buntuŋo yelemandiriŋo taamandiñaa miŋ kutayaata miŋ be nuon jee ti. COMCTL32.DLL\n"
-"aduŋ ate le kutayaata miŋ be nuŋ jee ti. COMCTL32.DLL veryelemandi 4.72 dooyaata ta jee\n"
-". Alu wo kuu koleŋo makatibayiyaŋo tara la KAQ Web Mayaŋ\n"
+"AbiWord dadaata le fo a se taamandi noo aniŋ COMCTL32.DL\ safa buntuŋ yelemandiriŋo taamandiñaa miŋ kutayaata miŋ be nuŋ jee ti. COMCTL32.DLL\n"
+" aduŋ ate le kutayaata miŋ be nuŋ jee ti. COMCTL32.DLL yelemandi 4.72 dooyaata ta jee\n"
+". Alu wo kuu koleŋo makatibayiraŋo tara la KAQ Web Mayaŋo. com\n"
 "\n"
-"\thttp://www. abimayaon.com\n"
-"\n"
+" kono. I se i faŋ nafaanoo\n"
+"\thttp://www. abimayaŋo.com\n"
+" barattaa la, bari a se noo le ko jooraŋ bululaalu te tara noo la jee\n"
 ".  Alu se alu faŋ nafaa noo baarataa la, bari a se noo le ko jooraŋolu la bululaa te tara noo la jee.\n"
 "Mën ngeen jëfandikoo tërëlin bi, wante mën nga baña am banqaasu jumtukaay yi."
 
@@ -1140,7 +1141,7 @@ msgid ""
 "Please download and install it from http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
 msgstr ""
 "AbiWord soolata butuŋo.....%s.dll\n"
-" la alu a dundi a janfa faandoo koola  ka bonaŋhttp://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm niŋ i ye i bandii i ye a tutuu"
+" la alu a dundi a janfa faandoo koola  ka bonaŋ http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm niŋ i ye i bandii i ye a tutuu"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h.h:470
@@ -1161,7 +1162,7 @@ msgstr "Soŋ yelemandiroolu minnu dandalaata la "
 #. TOOLBAR_TOOLTIP_ADD_COLUMN
 #: po/tmp/ap_String_Id.h.h:477
 msgid "Add a column to this table after the current column"
-msgstr "Ka silalaa kiliŋ kafundaŋ  walaabaa kono silalaa kooma."
+msgstr "Ka silalaa kiliŋ kafundaŋ  walaabaa kaatimoo kono silalaa kooma."
 
 #. TOOLBAR_STATUSLINE_ADD_ROW
 #. TOOLBAR_TOOLTIP_ADD_ROW
@@ -1177,12 +1178,12 @@ msgstr "Dandaŋolu niŋ jaloo miŋ ñaalatombonta kaŋ "
 #. TOOLBAR_LABEL_ADD_COLUMN
 #: po/tmp/ap_String_Id.h.h:484
 msgid "Add column after"
-msgstr "Ka silalaa kiliŋ kandaŋ wo koolaa."
+msgstr "Ka silalaa kiliŋ kafundaŋ wo koolaa."
 
 #. MENU_STATUSLINE_FMT_BULLETS
 #: po/tmp/ap_String_Id.h.h:486
 msgid "Add or modify bullets and numbering for selected paragraphs"
-msgstr "Jatakoloolu niŋ hijiboolu minnu ñaalatombonta kafundaŋ waraŋ ye i yelemandi"
+msgstr "Jatakoloolu niŋ hijiboolu minnu ñaalatombonta kafundaŋ waraŋ ye ì yelemandi "
 
 #. TOOLBAR_LABEL_ADD_ROW
 #: po/tmp/ap_String_Id.h.h:488
@@ -1192,7 +1193,7 @@ msgstr "Ka silaa kiliŋ kafu"
 #. MENU_STATUSLINE_SPELL_ADD
 #: po/tmp/ap_String_Id.h.h:490
 msgid "Add this word to the custom dictionary"
-msgstr "Wo kumakaŋo kafundaŋ i fansuŋ kumakaŋ faranfansilaa kitaaboo kono"
+msgstr "Wo kumakaŋo kafundaŋ i fansuŋ kumakaŋ faranfansilaa bukoo kono "
 
 #. DLG_Styles_ModifyTemplate
 #: po/tmp/ap_String_Id.h.h:492
@@ -1230,7 +1231,7 @@ msgstr "A muumee"
 #. DLG_Options_Label_CheckAllowCustomToolbars
 #: po/tmp/ap_String_Id.h.h:505
 msgid "Allow Custom Toolbars"
-msgstr "Ka soŋ jooraŋ silalaalu minnu tembendita"
+msgstr "Ka soŋ jooraŋ silalaalu minnu tembendita la"
 
 #. MENU_STATUSLINE_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h.h:507
@@ -1263,27 +1264,27 @@ msgstr "Keeroo"
 #. TOOLBAR_TOOLTIP_FMTPAINTER
 #: po/tmp/ap_String_Id.h.h:518
 msgid "Apply the previously copied paragraph formatting onto the selected text"
-msgstr "Ka hijiboo miŋ ñaalayelemata safoo miŋ ñaalatonta  kono tembendiJëfe lalinu xise bi ñu duppee ci xët wi ñu fal"
+msgstr "Ka hijiboo miŋ ñaalayelemata safoo miŋ ñaalatonta  kono tembendi "
 
 #. DLG_Lists_Apply_Current
 #: po/tmp/ap_String_Id.h.h:520
 msgid "Apply to Current List"
-msgstr "Jëfe ci lim bi teew"
+msgstr "A ke kasabiroo miŋ funtita to "
 
 #. DLG_FormatTable_Apply_To
 #: po/tmp/ap_String_Id.h.h:522
 msgid "Apply to:"
-msgstr "Ka a kee ...........kaŋ:"
+msgstr "Ka a ke ...........kaŋ:"
 
 #. DLG_Lists_Arabic_List
 #: po/tmp/ap_String_Id.h.h:524
 msgid "Arabic List"
-msgstr "Arabu kasabiroo"
+msgstr "Araabu kasabiroo"
 
 #. MSG_AutoRevisionOffWarning
 #: po/tmp/ap_String_Id.h.h:526
 msgid "Are you sure you do not want to maintain full history record? If you proceed, you will not be able to restore earlier versions of this document."
-msgstr "A koyita i ma le baŋ ko i lafita kandiyoo faa la le baŋ ?\ Niŋ tambita ñaato, alu te a noo la ka alu ye miŋ foloo ke buntuŋo kono seyindi noo la"
+msgstr "A koyita i ma le ko i lafita kandiyoo faa la le baŋ ?\ Niŋ tambita ñaato, i te a noo la ka i ye miŋ foloo ke buntuŋo kono seyindi noo la"
 
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h.h:528
@@ -1336,7 +1337,7 @@ msgstr "Katabakiliŋ tembendiroo"
 #. MENU_STATUSLINE_TABLE_AUTOFIT
 #: po/tmp/ap_String_Id.h.h:547
 msgid "Autofit Table"
-msgstr "Walaa ye a fansuŋ tembendi."
+msgstr "Walaa ye a fansuŋ tembendi le."
 
 #. DLG_Options_Label_Grammar
 #: po/tmp/ap_String_Id.h.h:549
@@ -1371,7 +1372,7 @@ msgstr "Kafuñoomoo a faŋ ye katabakiliŋ"
 #. DLG_MailMerge_AvailableFields
 #: po/tmp/ap_String_Id.h.h:561
 msgid "Available Fields"
-msgstr "Kenoolu feŋ te minnu to.minnu tuta"
+msgstr "Kenoolu feŋ te minnu to,.minnu tuta"
 
 #. DLG_DateTime_AvailableFormats_Capital
 #: po/tmp/ap_String_Id.h.h:563
@@ -1386,7 +1387,7 @@ msgstr "Maañaalu minnu tuta "
 #. DLG_Para_LabelBy
 #: po/tmp/ap_String_Id.h.h:567
 msgid "B&y:"
-msgstr "tambinddi siloo "
+msgstr "tambindi siloo "
 
 #. DLG_FormatFrame_Background
 #. DLG_FormatTable_Background
@@ -1443,7 +1444,7 @@ msgstr "Taamanseerilaŋo"
 #: po/tmp/ap_String_Id.h.h:591
 #, c-format
 msgid "Bookmark \"%s\" was not found in this document."
-msgstr "Taamanseerilaŋo maŋ jee safandiŋo kono."
+msgstr "Taamanseerilaŋo maŋ je safandiŋo kono."
 
 #. DLG_FormatFrame_Border_Color
 #. DLG_FormatTable_Border_Color
@@ -1483,7 +1484,7 @@ msgstr "Duumaa jonjuloo"
 #: po/tmp/ap_String_Id.h.h:608
 #: po/tmp/xap_String_Id.h.h:125
 msgid "Box List"
-msgstr "Kasabiriŋo niŋ kunneendiŋo (boyitindiŋo )"
+msgstr "Kasabiriŋo niŋ boyitindiŋo "
 
 #. FIELD_Application_BuildId
 #: po/tmp/ap_String_Id.h.h:610
@@ -1542,17 +1543,17 @@ msgstr "Jonjulubaa taaraŋo ñaalayelema"
 #. MENU_LABEL_HELP_CREDITS
 #: po/tmp/ap_String_Id.h.h:632
 msgid "C&redits"
-msgstr "Kerediyoolu nŋ tenturoo"
+msgstr "Kerediyoolu niŋ tenturoo"
 
 #. MSG_NoBreakInsideTable
 #: po/tmp/ap_String_Id.h.h:634
 msgid "Can not insert a Break inside a table"
-msgstr "Kana leeri sawuŋo taabuloo kono"
+msgstr "Kana leeri sawuŋo dundi walaa kaatimoo kono"
 
 #. MSG_NoBreakInsideFrame
 #: po/tmp/ap_String_Id.h.h:636
 msgid "Can not insert a Break inside a text box"
-msgstr "Leeri sawuŋo te dundi noo la safeeri boyitoo kon"
+msgstr "Leeri sawuŋo te dundi noo la safeeri boyitoo kono"
 
 #. DLG_Styles_ErrStyleCantDelete
 #: po/tmp/ap_String_Id.h.h:638
@@ -1579,7 +1580,7 @@ msgstr "siifaa :"
 #. TOOLBAR_LABEL_ALIGN_CENTER
 #: po/tmp/ap_String_Id.h.h:648
 msgid "Center"
-msgstr "Teematendita"
+msgstr "Teematembendita"
 
 #. TabToggleCenterTab
 #: po/tmp/ap_String_Id.h.h:650
@@ -1605,7 +1606,7 @@ msgstr "Teematembendita"
 #. DLG_Spell_ChangeTo
 #: po/tmp/ap_String_Id.h.h:659
 msgid "Change &to:"
-msgstr "Ka jooseyi...............la"
+msgstr "Ka........ jooseyi."
 
 #. DLG_Spell_ChangeAll
 #: po/tmp/ap_String_Id.h.h:661
@@ -1663,7 +1664,7 @@ msgstr "Safoo la safeerikuloolu minnu ñaalatombonta yelemandi"
 #. MENU_STATUSLINE_FMT_FONT
 #: po/tmp/ap_String_Id.h.h:682
 msgid "Change the font of the selected text"
-msgstr "safoo miŋ ñaalatombonta la safeerikulu buntuŋo (poliisoo ) yelemandi"
+msgstr "safoo miŋ ñaalatombonta la safeerikulu buntuŋo yelemandi"
 
 #. MENU_STATUSLINE_FMT_PARAGRAPH
 #: po/tmp/ap_String_Id.h.h:684
@@ -1722,7 +1723,7 @@ msgstr "Harafoo"
 #. FIELD_Numbers_CharCount
 #: po/tmp/ap_String_Id.h.h:711
 msgid "Character Count"
-msgstr "Character Count"
+msgstr "Harafu yirikoo"
 
 #. FIELD_Numbers_NbspCount
 #: po/tmp/ap_String_Id.h.h:713
@@ -1762,7 +1763,7 @@ msgstr "Tembendiroolu ñiniŋo"
 #. MENU_STATUSLINE_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h.h:727
 msgid "Check online for newer versions of AbiWord"
-msgstr "Ka AbiWord yelemandi kutoolu ñiniŋ minnu be keeriŋ Interinet kono"
+msgstr "Ka AbiWord la yelemandi kutoolu ñiniŋ minnu be keeriŋ Interineti kono"
 
 #. DLG_Options_Label_SpellCheckAsType
 #: po/tmp/ap_String_Id.h.h:729
@@ -1799,12 +1800,12 @@ msgstr "Yelemandiroo miŋ be juubee la ñaalatomboŋ"
 msgid ""
 "Choose your target in the left side.\n"
 "If you want to use the \"Go To\" button, just fill the Number Entry with the desired number.  You can use + and - to perform relative movement.\tI.e., if you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines below your current position."
-msgstr "I ka miŋ bayindi ñaalatomboŋ maraa kararoo lafo i se futa noo fandikoo\"ka futa\" butoŋo ma, yirikoo miŋ beteyaata dundi kunkoo kono.i. Alu se alu faŋ nafaa noo + niŋ - na.  ko, niŋ ye a safee \"+2\" aniŋ ye \"jonjuloo\" ñaalatomboŋ, butoŋo \"ka futa ama\" be ñorindiraŋo be ñori la jonjulu fula la ñaato ñorindiraŋo be temboo miŋ to saayiŋ."
+msgstr "I ka miŋ bayindi ñaalatomboŋ ka bo maraa kararoo la. fo i se futa noo fandiki\"ka futa\" butoŋo ma, yirikoo miŋ beteyaata dundi kunkoo kono.i. Alu se alu faŋ nafaa noo + ñiŋ - na.  ko, niŋ ye a safee \"+2\" aniŋ ye \"jonjuloo\" ñaalatomboŋ, butoŋo \"ka futa ama\" be ñorindiraŋo be ñori la jonjulu fula la ñaato ñorindiraŋo be temboo miŋ to saayiŋ."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h.h:743
 msgid "Cle&ar"
-msgstr "Ka afita"
+msgstr "Ka a fita"
 
 #. DLG_Tab_Button_Clear
 #: po/tmp/ap_String_Id.h.h:745
@@ -1824,17 +1825,17 @@ msgstr "ka koomalaa ñaajiyo fita"
 #. DLG_Background_ClearHighlight
 #: po/tmp/ap_String_Id.h.h:751
 msgid "Clear Highlight Color"
-msgstr "Ka yitandiraŋ ñaajiyo fita i"
+msgstr "Ka yitandiraŋ ñaajiyo fita "
 
 #. MSG_QueryExit
 #: po/tmp/ap_String_Id.h.h:753
 msgid "Close all windows and exit?"
-msgstr "Ka palanteeroolu bee soroŋ i ye bo ?"
+msgstr "Ka palanteeroolu bee soroŋ baŋ, i ye bo ? "
 
 #. MENU_STATUSLINE_FILE_EXIT
 #: po/tmp/ap_String_Id.h.h:755
 msgid "Close all windows in the application and exit"
-msgstr "Palanteeroolu muumee soroŋ i ye bo keeraŋo kono "
+msgstr "Palanteeroolu muumee soroŋ, i ye bo keeraŋo kono "
 
 #. MENU_STATUSLINE_FILE_CLOSE
 #: po/tmp/ap_String_Id.h.h:757
@@ -1899,7 +1900,7 @@ msgstr "Ila miiroo seyinkandiroo kunna :"
 #. MENU_STATUSLINE_TOOLS_REVISIONS_COMPARE_DOCUMENTS
 #: po/tmp/ap_String_Id.h.h:780
 msgid "Compare active document to another document"
-msgstr "Safoo miŋ be keeriŋ niŋ doo tembendi "
+msgstr "Safoo miŋ be keeriŋ niŋ doo koteŋ tembendi "
 
 #. FIELD_Application_CompileDate
 #: po/tmp/ap_String_Id.h.h:782
@@ -1940,12 +1941,12 @@ msgstr "Walindirilaalu :"
 #. MENU_STATUSLINE_TABLE_TEXTTOTABLE
 #: po/tmp/ap_String_Id.h.h:796
 msgid "Convert Selected Text to a Table"
-msgstr "Safoo miŋ ñaalatombonta Soppi yelemandi walaa ti"
+msgstr "Safoo miŋ ñaalatombonta yelemandi walaa ti"
 
 #. MENU_LABEL_TABLE_TABLETOTEXT
 #: po/tmp/ap_String_Id.h.h:798
 msgid "Convert Table to Text"
-msgstr "Walaa yelemandi safoo ti "
+msgstr "Kaatime walaa yelemandi safoo ti "
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE
 #: po/tmp/ap_String_Id.h.h:800
@@ -1972,7 +1973,7 @@ msgstr "Miŋ dundita ñaalayelema "
 #. MENU_LABEL_EDIT_COPYIMAGE
 #: po/tmp/ap_String_Id.h.h:810
 msgid "Copy Image"
-msgstr "Mulŋo ñaalayema"
+msgstr "Muluŋo ñaalayema"
 
 #. MENU_LABEL_EDIT_COPYEMBED
 #: po/tmp/ap_String_Id.h.h:812
@@ -1992,7 +1993,7 @@ msgstr "Jonjulu baa taadulaa ñaalayema"
 #. MENU_STATUSLINE_EDIT_COPY_FRAME
 #: po/tmp/ap_String_Id.h.h:818
 msgid "Copy the Text Box to the clipboard"
-msgstr "Safa boyitoo ñaalayema kayiti buntuŋo kono boo paree nga far ko"
+msgstr "Safa boyitoo ñaalayema kayiti buntuŋo kono niŋ i i bandii i ye a fita"
 
 #. MENU_STATUSLINE_EDIT_CUT_FRAME
 #: po/tmp/ap_String_Id.h.h:820
@@ -2002,7 +2003,7 @@ msgstr "Safa boyitoo ñaalayelema kayiti buntuŋo kono niŋ i ye i bandii ye a b
 #. MENU_STATUSLINE_EDIT_COPY
 #: po/tmp/ap_String_Id.h.h:822
 msgid "Copy the selection and put it on the Clipboard"
-msgstr "Miŋ ñaalatombonta ñaalayelema i ye a laandi kayiti buntuŋo kono"
+msgstr "Miŋ ñaalatombonta ñaalayelema i ye a maaboo kayiti buntuŋo kono"
 
 #. MSG_IE_CouldNotOpen
 #: po/tmp/ap_String_Id.h.h:824
@@ -2014,7 +2015,7 @@ msgstr "Safoo te yele noo la %s safeerikuloo kamma"
 #: po/tmp/ap_String_Id.h.h:826
 #, c-format
 msgid "Could not open file %s."
-msgstr "Moo te safoo te yele noo la."
+msgstr "Moo te safoo yele noo la."
 
 #. MSG_IE_CouldNotWrite
 #: po/tmp/ap_String_Id.h.h:828
@@ -2026,7 +2027,7 @@ msgstr "Safoo te yele noo la %s"
 #: po/tmp/ap_String_Id.h.h:830
 #, c-format
 msgid "Could not write to the file %s."
-msgstr "Moo te safeeroo te ke noo la safoo kono %s."
+msgstr "Moo te safeeroo ke noo la safoo kono %s."
 
 #. MENU_STATUSLINE_TOOLS_WORDCOUNT
 #: po/tmp/ap_String_Id.h.h:832
@@ -2078,7 +2079,7 @@ msgstr "Safoo dadaa feŋ te miŋ kono"
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h.h:852
 msgid "Create from &selection"
-msgstr "Dadaaroo ke ka a suŋ ñaalatombodiriŋo kaŋ"
+msgstr "Dadaaroo ke, ka a suŋ ñaalatombodiriŋo kaŋ"
 
 #. FIELD_Document_Creator
 #: po/tmp/ap_String_Id.h.h:854
@@ -2108,7 +2109,7 @@ msgstr "Kasabiri Etiketoo miŋ maabeeta"
 #. DLG_Lists_Current_List_Type
 #: po/tmp/ap_String_Id.h.h:864
 msgid "Current List Type"
-msgstr "Etjketi kasabiriliŋ siifaa miŋ be keeriŋ"
+msgstr "Tikeeti kasabiriliŋ siifaa miŋ be keeriŋ"
 
 #. MSG_EmptySelection
 #: po/tmp/ap_String_Id.h.h:866
@@ -2175,7 +2176,7 @@ msgstr "Safeeriŋo miŋ be boyitoo kono kuntoo"
 #. MENU_STATUSLINE_EDIT_CUT
 #: po/tmp/ap_String_Id.h.h:892
 msgid "Cut the selection and put it on the Clipboard"
-msgstr "Miŋ ñaalatombonta niŋ maanoo kuntu kayiti buntuŋo kono"
+msgstr "Miŋ ñaalatombonta niŋ a maanoo kuntu kayiti buntuŋo kono"
 
 #. MENU_LABEL_FMT_DIRECTION
 #: po/tmp/ap_String_Id.h.h:894
@@ -2198,7 +2199,7 @@ msgstr "Luŋo"
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h.h:901
 msgid "Date and &Time"
-msgstr "Luŋo niàn waatoo"
+msgstr "Luŋo niŋ waatoo"
 
 #. FIELD_Type_Datetime
 #: po/tmp/ap_String_Id.h.h:903
@@ -2223,7 +2224,7 @@ msgstr "Tanjaŋo"
 #. TabToggleDecimalTab
 #: po/tmp/ap_String_Id.h.h:911
 msgid "Decimal Tab"
-msgstr "Tantaŋ taabuloo"
+msgstr "Taŋ teleŋ walaa"
 
 #. TOOLBAR_LABEL_UNINDENT
 #. TOOLBAR_STATUSLINE_UNINDENT
@@ -2279,7 +2280,7 @@ msgstr "A bondi"
 #. MENU_STATUSLINE_TABLE_DELETE_CELLS
 #: po/tmp/ap_String_Id.h.h:935
 msgid "Delete Cells"
-msgstr "Suwolu fita"
+msgstr "silalaalu fita"
 
 #. MENU_LABEL_TABLE_DELETECOLUMN
 #: po/tmp/ap_String_Id.h.h:937
@@ -2397,17 +2398,17 @@ msgstr "Kasabiriŋo niŋ losansoo "
 #. DLG_Options_Label_SpellDictionaries
 #: po/tmp/ap_String_Id.h.h:985
 msgid "Dictionaries"
-msgstr "Kumakaŋ faranfansilaŋ kitaaboo"
+msgstr "Kumakaŋ faranfansilaŋ bukoolu"
 
 #. DLG_HdrFtr_FooterEven
 #: po/tmp/ap_String_Id.h.h:987
 msgid "Different footer on facing pages"
-msgstr "Leeri siŋo miŋ maŋ miŋ niŋ leeroo miŋ be a ñaatiliŋo la"
+msgstr "Leeri siŋo miŋ niŋ leeroo miŋ be a ñaatiliŋo la fatata"
 
 #. DLG_HdrFtr_FooterFirst
 #: po/tmp/ap_String_Id.h.h:989
 msgid "Different footer on first page"
-msgstr "Leeri siŋo miŋ fatata leeri foloo to"
+msgstr "Leeri siŋo miŋ fatandita leeri foloo to"
 
 #. DLG_HdrFtr_FooterLast
 #: po/tmp/ap_String_Id.h.h:991
@@ -2422,12 +2423,12 @@ msgstr "Kunto leeri siŋo miŋ fatata leeroo miŋ be a ñaatiliŋo la"
 #. DLG_HdrFtr_HeaderFirst
 #: po/tmp/ap_String_Id.h.h:995
 msgid "Different header on first page"
-msgstr "Kunto leeri siŋo miŋ fatata leeri foloo to"
+msgstr "Kunto leeri siŋo miŋ fatatandita leeri foloo to"
 
 #. DLG_HdrFtr_HeaderLast
 #: po/tmp/ap_String_Id.h.h:997
 msgid "Different header on last page"
-msgstr "Kunto leeri siŋo miŋ fatata leeri labaŋo to"
+msgstr "Kunto leeri siŋo miŋ fatatandita leeri labaŋo to"
 
 #. DLG_Styles_StylesLocked
 #: po/tmp/ap_String_Id.h.h:999
@@ -2457,7 +2458,7 @@ msgstr "Harafoolu minnu te muuli noo la yitandi waraŋ i ye ì nukuŋ"
 #. MENU_STATUSLINE_HELP_ABOUT
 #: po/tmp/ap_String_Id.h.h:1009
 msgid "Display program information, version number, and copyright"
-msgstr "Fahamundiroolu dookuutaa kunna yitandi, yelemandiroo la yirikoo aniŋ siloo miŋ loondita a kunna"
+msgstr "Fahamundiroolu dookuutaa yitandi, yelemandiroo la yirikoo aniŋ siloo miŋ loondita a kunna"
 
 #. DLG_FormatTOC_DispStyle
 #: po/tmp/ap_String_Id.h.h:1011
@@ -2467,12 +2468,12 @@ msgstr "Yitandiroo maañaa"
 #. DLG_Options_Prompt_IgnoreResetAll
 #: po/tmp/ap_String_Id.h.h:1013
 msgid "Do you want to reset ignored words in all the documents?"
-msgstr "I lafita le baŋ ka kumakaŋo moo daa te minnu to jooseyi la le safoo muumee kono ?"
+msgstr "I lafita le ka kumakaŋo moo daa te minnu to jooseyi la le safoo muumee kono baŋ ?"
 
 #. DLG_Options_Prompt_IgnoreResetCurrent
 #: po/tmp/ap_String_Id.h.h:1015
 msgid "Do you want to reset ignored words in the current document?"
-msgstr "I lafita ka safoo miŋ be jee teŋ  la kumakaŋolu moo daa te minnu to jooseyi la le baŋ ?"
+msgstr "I lafita ka safoo, miŋ bi jee teŋ,  la kumakaŋolu moo daa te minnu to jooseyi la le baŋ ?"
 
 #. FIELD_Type_Document
 #: po/tmp/ap_String_Id.h.h:1017
@@ -2497,12 +2498,12 @@ msgstr "Ka balaŋ a maloo la koteke"
 #. DLG_Para_SpacingDouble
 #: po/tmp/ap_String_Id.h.h:1025
 msgid "Double"
-msgstr "Kunsaalu"
+msgstr "Fulafuloolu"
 
 #. TOOLBAR_LABEL_DOUBLE_SPACE
 #: po/tmp/ap_String_Id.h.h:1027
 msgid "Double Spacing"
-msgstr "Jonjulu fula teema kunsaa"
+msgstr "Jonjulu fulafuloolu teema "
 
 #. TOOLBAR_STATUSLINE_DOUBLE_SPACE
 #. TOOLBAR_TOOLTIP_DOUBLE_SPACE
@@ -2554,7 +2555,7 @@ msgstr "Jonjulu jaŋo muuli"
 #. MENU_STATUSLINE_VIEW_HEADFOOT
 #: po/tmp/ap_String_Id.h.h:1052
 msgid "Edit text at the top or bottom of every page"
-msgstr "Safeeriŋo miŋ be leeri siŋo to niŋ kuto leeri sŋo to muuli"
+msgstr "Miŋ be safeeriŋ leeri siŋo to niŋ kunto leeri siŋo to muuli"
 
 #. MENU_STATUSLINE_EDIT_EDITFOOTER
 #: po/tmp/ap_String_Id.h.h:1054
@@ -2579,7 +2580,7 @@ msgstr "Ka soŋ tembendirilaŋ jooraŋolu la"
 #. DLG_Options_Label_CheckEnableSmoothScrolling
 #: po/tmp/ap_String_Id.h.h:1062
 msgid "Enable Smooth Scrolling"
-msgstr "Ka soŋ taariŋ tambitamboo "
+msgstr "Ka soŋ taariŋ tambitamboo la Enable smart (curly) quotes "
 
 #. DLG_Options_Label_SmartQuotes
 #: po/tmp/ap_String_Id.h.h:1064
@@ -2599,7 +2600,7 @@ msgstr "Tembenfee miŋ safeeta safoo duuma to ye"
 #. DLG_FormatFootnotes_EndStyle
 #: po/tmp/ap_String_Id.h.h:1070
 msgid "Endnote style"
-msgstr "Maañaa miŋ safeeta duuma to ye"
+msgstr "Maañaa miŋ safeeta duumoo to ye"
 
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h.h:1072
@@ -2674,12 +2675,12 @@ msgstr "Buuñaa"
 #. DLG_Field_Parameters_Capital
 #: po/tmp/ap_String_Id.h.h:1099
 msgid "Extra Parameters"
-msgstr "Baarasilaa kufuriŋolu"
+msgstr "Baarasila kafuriŋolu"
 
 #. DLG_Options_Label_ViewExtraTB
 #: po/tmp/ap_String_Id.h.h:1101
 msgid "Extra Toolbar"
-msgstr "Jooraŋ bulu kafuriŋolu "
+msgstr "Jooraŋ bululaa kafuriŋolu "
 
 #. DLG_Field_Parameters
 #: po/tmp/ap_String_Id.h.h:1103
@@ -2720,25 +2721,25 @@ msgstr "Kunkoo too :"
 #: po/tmp/ap_String_Id.h.h:1117
 #, c-format
 msgid "File %s is not of a currently supported file type"
-msgstr "Buntuŋ...%s maŋ ke ñaadaalu ti minnu se duni noo saayiŋ"
+msgstr "% buntuŋo maŋ ke ñaadaalu ti minnu se duni noo saayiŋ"
 
 #. MSG_IE_FakeType
 #: po/tmp/ap_String_Id.h.h:1119
 #, c-format
 msgid "File %s is not of the type it claims to be"
-msgstr "Ñiŋ buntuŋo...%s maŋ ke ñaadaa a ko a mu miŋ ti"
+msgstr "% buntuŋo maŋ ke ñaadaa ti a ko a mu miŋ ti"
 
 #. MSG_IE_UnknownType
 #: po/tmp/ap_String_Id.h.h:1121
 #, c-format
 msgid "File %s is of unknown type"
-msgstr "Buntuŋo...%s moo maŋ a ñaadaa loŋ "
+msgstr "% buntuŋo...%s moo maŋ a ñaadaa loŋ "
 
 #. MSG_IE_FileNotFound
 #: po/tmp/ap_String_Id.h.h:1123
 #, c-format
 msgid "File %s not found"
-msgstr "Buntuŋo....%s moo maŋ a je"
+msgstr "% buntuŋo....%s moo maŋ a je"
 
 #. FIELD_Application_Filename
 #: po/tmp/ap_String_Id.h.h:1125
@@ -2773,7 +2774,7 @@ msgstr "Ka seyinkandiriŋo noolankoo miŋ funtita safa buntuŋo kono"
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h.h:1137
 msgid "Find previous visible revision in the document"
-msgstr "Ka safoo miŋ ye a saawaŋ teduŋ a funtita buntuŋo kono"
+msgstr "Ka safoo miŋ ye a saawaŋ aduŋ a funtita buntuŋo kono"
 
 #. MENU_STATUSLINE_EDIT_FIND
 #: po/tmp/ap_String_Id.h.h:1139
@@ -2809,7 +2810,7 @@ msgstr "Talaaroo tembe 2ŋ duuma"
 #. DLG_Lists_FoldingLevel3
 #: po/tmp/ap_String_Id.h.h:1151
 msgid "Fold below level 3"
-msgstr "Talaaroo tembe 3ŋ duuma Wàññi ci suufu tollu tollu 3"
+msgstr "Talaaroo tembe 3ŋ duuma "
 
 #. DLG_Lists_FoldingLevel4
 #: po/tmp/ap_String_Id.h.h:1153
@@ -2819,7 +2820,7 @@ msgstr "Talaaroo tembe 4ŋ duuma"
 #. DLG_Para_PreviewFollowParagraph
 #: po/tmp/ap_String_Id.h.h:1155
 msgid "Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph"
-msgstr "Hijiboo miŋ be a nooma Hijiboo miŋ be a nooma Hijiboo miŋ be a nooma Hijiboo miŋ be a nooma Hijiboo miŋ be a nooma Hijiboo miŋ be a noomaHijiboo miŋ be a nooma"
+msgstr "Hijiboo miŋ be a nooma Hijiboo miŋ be a nooma Hijiboo miŋ be a nooma Hijiboo miŋ be a nooma Hijiboo miŋ be a nooma Hijiboo miŋ be a nooma Hijiboo miŋ be a nooma"
 
 #. DLG_Styles_ModifyFont
 #. TOOLBAR_LABEL_FMT_FONT
@@ -2893,7 +2894,7 @@ msgstr "Leeri duumoo [%s]"
 #. FIELD_Numbers_FootnoteAnchor
 #: po/tmp/ap_String_Id.h.h:1187
 msgid "Footnote anchor"
-msgstr "Taamanseerilaŋo miŋ karadandaŋ safeeriŋ leeri siŋo to"
+msgstr "Taamanseerilaŋo miŋ be karadandaŋ safeeriŋ leeri siŋo to"
 
 #. FIELD_Numbers_FootnoteReference
 #: po/tmp/ap_String_Id.h.h:1189
@@ -2966,7 +2967,7 @@ msgstr "Miŋ be karadandaŋ saafeeriŋ safoo labaŋo to tembendi"
 #. DLG_FormatFootnotes_Title
 #: po/tmp/ap_String_Id.h.h:1218
 msgid "Format Footnotes and Endnotes"
-msgstr "Miŋ be karadandaŋ safeeriŋ leeroo duuma niŋ safoo labaŋo"
+msgstr "Miŋ be karadandaŋ safeeriŋ leeroo duuma niŋ safoo feñoo to"
 
 #. DLG_HdrFtr_Title
 #: po/tmp/ap_String_Id.h.h:1220
@@ -3086,7 +3087,7 @@ msgstr "A maŋ kaati"
 #. MENU_LABEL_INSERT_HEADER
 #: po/tmp/ap_String_Id.h.h:1268
 msgid "Header"
-msgstr "Leeroo santo ( kunto leeri siŋo)"
+msgstr "Kunto leeri siŋo"
 
 #. DLG_HdrFtr_HeaderFrame
 #: po/tmp/ap_String_Id.h.h:1270
@@ -3102,7 +3103,7 @@ msgstr "Kunto leeri siŋo [%s]"
 #. MENU_LABEL_FMT_HDRFTR
 #: po/tmp/ap_String_Id.h.h:1274
 msgid "Header/Footers"
-msgstr "Kunto leeri sŋo / Duuma leeri siŋo"
+msgstr "Kunto leeri siŋo / Duuma leeri siŋo"
 
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h.h:1276
@@ -3112,13 +3113,13 @@ msgid ""
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
 "Kunto leeri siŋo niŋ duuma leeri siŋo be ke noo la aniŋ ka muuli noo leeroo ñaadaa doroŋ ne ti.  \n"
-"Niŋ i lafita futa la wo leeri ñaadaa le ma feeneeroo niŋ leeroo ñaalatomboŋ buntuŋ bululaa to. \n"
-"I lafita ka futa wo buntuŋ bululaa ma biriŋ saayiŋ ne baŋ ?"
+" Niŋ i lafita futa la wo leeri ñaadaa le ma, feeneeroo niŋ leeroo ñaalatomboŋ buntuŋ bululaa to. \n"
+" I lafita ka futa wo buntuŋ bululaa le ma biriŋ saayiŋ ne baŋ ?"
 
 #. DLG_Stylist_HeadingStyles
 #: po/tmp/ap_String_Id.h.h:1278
 msgid "Heading Styles"
-msgstr "Jeerkuŋ maañaa"
+msgstr "Jeerikuŋ maañaa"
 
 #. DLG_FormatTOC_HeadingStyle
 #: po/tmp/ap_String_Id.h.h:1280
@@ -3162,7 +3163,7 @@ msgstr "Ka a nukuŋ"
 #. DLG_Options_Label_SpellHideErrors
 #: po/tmp/ap_String_Id.h.h:1296
 msgid "Hide &spelling errors in the document"
-msgstr "Ka kumakaŋolu filoo be minnu to nukkuŋ "
+msgstr "Ka kumakaŋolu nukuŋ filoo be minnu to   "
 
 #. DLG_Lists_FoldingLevelexp
 #: po/tmp/ap_String_Id.h.h:1298
@@ -3179,7 +3180,7 @@ msgstr "Malamalandiroo"
 #. DLG_Spell_IgnoreAll
 #: po/tmp/ap_String_Id.h.h:1304
 msgid "I&gnore All"
-msgstr "I ka na a topotoo"
+msgstr "I ka na a muumee dankuŋ"
 
 #. DLG_FormatTOC_Indent
 #: po/tmp/ap_String_Id.h.h:1306
@@ -3189,7 +3190,7 @@ msgstr "Janfa a la :"
 #. InsertModeFieldINS
 #: po/tmp/ap_String_Id.h.h:1308
 msgid "INS"
-msgstr "INS (Dundiroo)"
+msgstr "Dundiroo"
 
 #. DLG_Options_Label_Icons
 #: po/tmp/ap_String_Id.h.h:1310
@@ -3199,22 +3200,22 @@ msgstr "Mulundiŋolu "
 #. DLG_Options_Label_Ignore
 #: po/tmp/ap_String_Id.h.h:1312
 msgid "Ignore"
-msgstr "I kana a topotoo"
+msgstr "I kana a dankuŋ"
 
 #. DLG_Options_Label_SpellIgnoreWords
 #: po/tmp/ap_String_Id.h.h:1314
 msgid "Ignore Words"
-msgstr "I kana kumakaŋolu topotoo"
+msgstr "I kana kumakaŋolu dankuŋ"
 
 #. MENU_STATUSLINE_SPELL_IGNOREALL
 #: po/tmp/ap_String_Id.h.h:1316
 msgid "Ignore all occurrences of this word in the document"
-msgstr "I kana kumakaŋo topotoo niŋ benta a fee tuma woo tuma safoo kono"
+msgstr "I kana kumakaŋo dankuŋ niŋ i benta a fee tuma woo tuma safoo kono"
 
 #. DLG_Options_Label_SpellIgnoredWord
 #: po/tmp/ap_String_Id.h.h:1318
 msgid "Ignored words:"
-msgstr "Kumakaŋolu minnu maŋ topotoo"
+msgstr "Kumakaŋolu minnu maŋ dankuŋ"
 
 #. DLG_FormatFrame_SetImageBackground
 #. DLG_FormatTable_SetImageBackground
@@ -3227,7 +3228,7 @@ msgstr "Koomalaa muluŋo"
 #: po/tmp/ap_String_Id.h.h:1323
 #: po/tmp/xap_String_Id.h.h:433
 msgid "Implies List"
-msgstr "Kasabiroo niŋ fet"
+msgstr "Kasabiroo niŋ laañaa"
 
 #. MENU_STATUSLINE_FILE_IMPORTSTYLES
 #: po/tmp/ap_String_Id.h.h:1325
@@ -3249,12 +3250,12 @@ msgstr "Yeleyaŋ kumakaŋo miŋ maŋ kaati "
 #. TOOLBAR_TOOLTIP_INDENT
 #: po/tmp/ap_String_Id.h.h:1333
 msgid "Increase indent"
-msgstr "Ñorroo kooma kafu"
+msgstr "Ñorindiroooo koomala kafu"
 
 #. DLG_Para_LabelIndentation
 #: po/tmp/ap_String_Id.h.h:1335
 msgid "Indentation"
-msgstr "Kooma sabaroo"
+msgstr "Kooma ñorindiroo"
 
 #. DLG_Para_TabLabelIndentsAndSpacing
 #: po/tmp/ap_String_Id.h.h:1337
@@ -3269,12 +3270,12 @@ msgstr "Harafu kumbaa foloo "
 #. DLG_FormatFootnotes_EndInitialVal
 #: po/tmp/ap_String_Id.h.h:1341
 msgid "Initial Endnote value"
-msgstr "Daŋ foloo"
+msgstr "Yirika foloo"
 
 #. DLG_FormatFootnotes_FootInitialVal
 #: po/tmp/ap_String_Id.h.h:1343
 msgid "Initial Footnote value"
-msgstr "Daŋ foloo "
+msgstr "Yirika foloo "
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h.h:1345
@@ -3323,7 +3324,7 @@ msgstr "Buŋ dundoo"
 #. MENU_STATUSLINE_EDIT_PASTE
 #: po/tmp/ap_String_Id.h.h:1363
 msgid "Insert Clipboard contents"
-msgstr "Miŋ be leeri dete buŋo kono dundi beŋ tomboo to"
+msgstr "Miŋ be leeri deteraŋ buŋo kono dundi bediraŋ tomboo to"
 
 #. DLG_DateTime_DateTimeTitle
 #: po/tmp/ap_String_Id.h.h:1365
@@ -3338,7 +3339,7 @@ msgstr "Dandiri kiliŋ dundi"
 #. MENU_LABEL_TOOLTIP_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h.h:1369
 msgid "Insert Equation from a LaTeX expression"
-msgstr "Ka dandiri kiliŋ dundi kabiriŋ LaTex jeeri kilŋ to "
+msgstr "Ka dandiri kiliŋ dundi kabiriŋ LaTex jeeri kiliŋ to "
 
 #. DLG_Field_FieldTitle_Capital
 #: po/tmp/ap_String_Id.h.h:1371
@@ -3376,7 +3377,7 @@ msgstr "Ka kaatime walaa dundi"
 #. MENU_STATUSLINE_INSERT_DIRECTIONMARKER
 #: po/tmp/ap_String_Id.h.h:1386
 msgid "Insert Unicode direction marker into the document"
-msgstr "Unicode taañaa ytandiraŋ kiliŋ dundi safoo kono"
+msgstr "Unicode taañaa yitandiraŋ kiliŋ dundi safoo kono"
 
 #. MENU_STATUSLINE_INSERT_FOOTER
 #: po/tmp/ap_String_Id.h.h:1388
@@ -3386,12 +3387,12 @@ msgstr "Leeri duuma siŋ kiliŋ dundi"
 #. MENU_STATUSLINE_INSERT_HEADER
 #: po/tmp/ap_String_Id.h.h:1390
 msgid "Insert a Header"
-msgstr "Kunto leeri siŋ kiliŋ dundi Roof benn kow xët"
+msgstr "Kunto leeri kunto siŋ kiliŋ dundi "
 
 #. MENU_STATUSLINE_INSERT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h.h:1392
 msgid "Insert a Table of Contents based on Headings"
-msgstr "Walaakunlaa kiliŋ dundi minnu keta ka a suŋ  jeerikuŋolu la "
+msgstr "Walaakunlaa kiliŋ dundi minnu keta, ka a suŋ  jeerikunlaalu la "
 
 #. MENU_STATUSLINE_INSERT_TEXTBOX
 #: po/tmp/ap_String_Id.h.h:1394
@@ -3440,7 +3441,7 @@ msgstr "Pibilipositaasi kunku kiliŋ dundi  "
 #. TOOLBAR_TOOLTIP_INSERT_TABLE
 #: po/tmp/ap_String_Id.h.h:1414
 msgid "Insert a new table into your document"
-msgstr "Walalaa kutoo dundi  ila safoo kono"
+msgstr "Kaatime walaa kutoo dundi ila safoo kono"
 
 #. MENU_STATUSLINE_INSERT_BREAK
 #: po/tmp/ap_String_Id.h.h:1416
@@ -3461,7 +3462,7 @@ msgstr "Jonjuloolu dundi duuma"
 #. MENU_STATUSLINE_INSERT_SYMBOL
 #: po/tmp/ap_String_Id.h.h:1423
 msgid "Insert a symbol or other special character"
-msgstr "Simbooli waraŋ safeerikulu siifaa kiliŋ dundi"
+msgstr "Sembooli waraŋ safeerikulu siifaa kiliŋ dundi"
 
 #. MENU_STATUSLINE_TOOLS_ANNOTATIONS_INSERT
 #: po/tmp/ap_String_Id.h.h:1425
@@ -3533,7 +3534,7 @@ msgstr "Safoo miŋ ñaalatombonta karadandaŋ saafeeriŋ kutoo to"
 #. TOOLBAR_TOOLTIP_INSERT_SYMBOL
 #: po/tmp/ap_String_Id.h.h:1453
 msgid "Insert symbol"
-msgstr "Simbooli kiliŋ dundi"
+msgstr "Sembooli kiliŋ dundi"
 
 #. TOOLBAR_LABEL_INSERT_TABLE
 #: po/tmp/ap_String_Id.h.h:1455
@@ -3563,7 +3564,7 @@ msgstr "Luŋo niŋ waatoo dundi"
 #. MENU_STATUSLINE_EDIT_PASTE_SPECIAL
 #: po/tmp/ap_String_Id.h.h:1465
 msgid "Insert unformatted clipboard contents"
-msgstr "Miŋ be kayiti buntuŋokono dundi aniŋ ala sumaŋo te taa la"
+msgstr "Miŋ be kayiti buntuŋo kono dundi, aniŋ ala sumaŋo te taa la"
 
 #. DLG_Options_Label_ViewUnprintable
 #: po/tmp/ap_String_Id.h.h:1467
@@ -3577,7 +3578,7 @@ msgstr "Harafoolu minnu te muuli noo la"
 #: po/tmp/ap_String_Id.h.h:1471
 #: po/tmp/xap_String_Id.h.h:473
 msgid "Italic"
-msgstr "Safeeri jenkendiriŋo"
+msgstr "Safeeri ñinkelendiŋo"
 
 #. MENU_STATUSLINE_GOTO_ANNOTATION
 #: po/tmp/ap_String_Id.h.h:1473
@@ -3618,7 +3619,7 @@ msgstr "Hijiboolu minnu be ñoo la "
 #. FIELD_PieceTable_Test
 #: po/tmp/ap_String_Id.h.h:1488
 msgid "Kevins Test"
-msgstr "Kiwiŋ korosiroo (Testu Kevin)"
+msgstr "Kiwiŋ korosiroo"
 
 #. FIELD_Document_Keywords
 #: po/tmp/ap_String_Id.h.h:1490
@@ -3639,7 +3640,7 @@ msgstr "LaTeX dandiroo"
 #. DLG_Lists_Indent
 #: po/tmp/ap_String_Id.h.h:1497
 msgid "Label Align:"
-msgstr "Karalaa tembendiriŋo (Leru Bedd.) :"
+msgstr "Karalaa ñorindiriçno:"
 
 #. DLG_FormatTOC_DetailsTop
 #: po/tmp/ap_String_Id.h.h:1499
@@ -3651,7 +3652,7 @@ msgstr "Etiketoolu faranfasoo"
 #. FIELD_Document_Language
 #: po/tmp/ap_String_Id.h.h:1503
 msgid "Language"
-msgstr "Kaŋo/Neŋo"
+msgstr "Kaŋo"
 
 #. DLG_Options_Label_LangSettings
 #: po/tmp/ap_String_Id.h.h:1505
@@ -3707,7 +3708,7 @@ msgstr "Maraa karadandaŋo [%s]"
 #. TabToggleLeftTab
 #: po/tmp/ap_String_Id.h.h:1526
 msgid "Left Tab"
-msgstr "Maraa taabulu loondoo"
+msgstr "Maraa walaa loondoo"
 
 #. TOOLBAR_STATUSLINE_ALIGN_LEFT
 #. TOOLBAR_TOOLTIP_ALIGN_LEFT
@@ -3748,7 +3749,7 @@ msgstr "Tonkondiroo :"
 #. DLG_Lists_Level
 #: po/tmp/ap_String_Id.h.h:1543
 msgid "Level:"
-msgstr "Tollu tollu :"
+msgstr "Temboo :"
 
 #. DLG_Para_LabelLineSpacing
 #: po/tmp/ap_String_Id.h.h:1545
@@ -3832,7 +3833,7 @@ msgstr "Kasabirilaa safeeriŋo harafundiŋolu la"
 #: po/tmp/ap_String_Id.h.h:1575
 #: po/tmp/xap_String_Id.h.h:514
 msgid "Lower Roman List"
-msgstr "Kasabirilaa aniŋ Romin harafoolu la"
+msgstr "Kasabirilaa aniŋ Roman harafoolu la"
 
 #. FIELD_Application_MailMerge
 #. MENU_STATUSLINE_TOOLS_MAILMERGE
@@ -3858,7 +3859,7 @@ msgstr "Miŋ ñaalatombonta duuma karalaandi (a birikintiŋ)"
 #. MENU_STATUSLINE_FMT_SUPERSCRIPT
 #: po/tmp/ap_String_Id.h.h:1586
 msgid "Make the selection superscript (toggle)"
-msgstr "Miŋ énaalatombonta karalaandi santo (a birikintiŋ)"
+msgstr "Miŋ ñaalatombonta karalaandi santo (a birikintiŋ)"
 
 #. MENU_STATUSLINE_TOOLS_ANNOTATIONS
 #: po/tmp/ap_String_Id.h.h:1588
@@ -3883,12 +3884,12 @@ msgstr "Seyinkanditaalu taamansee safeeri tumoo"
 #. MENU_STATUSLINE_TOOLS_REVISIONS_MARK
 #: po/tmp/ap_String_Id.h.h:1596
 msgid "Mark changes as you type"
-msgstr "Mandargaal nafar yi boo dee tappe"
+msgstr "Buntuŋo taamansee niŋ i be a safee la  "
 
 #. FIELD_PieceTable_MartinTest
 #: po/tmp/ap_String_Id.h.h:1598
 msgid "Martins Test"
-msgstr "Mariten sumaŋo (Mariten Tesitoo)"
+msgstr "Martins tembesumaŋo "
 
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h.h:1600
@@ -3988,7 +3989,7 @@ msgstr "Ka a seŋ bulubaa silalaa kaŋ "
 #. FIELD_DateTime_MilTime
 #: po/tmp/ap_String_Id.h.h:1644
 msgid "Military Time"
-msgstr "Kelejara waatoo (Milteeri waatoo)"
+msgstr "Kelejawaroolu la waatoo "
 
 #. DLG_Options_TabLabel_Misc
 #: po/tmp/ap_String_Id.h.h:1646
@@ -4028,7 +4029,7 @@ msgstr "Karoo, Luŋo, Saŋo"
 #. DLG_Para_SpacingMultiple
 #: po/tmp/ap_String_Id.h.h:1660
 msgid "Multiple"
-msgstr "Jamaa / siidulaandiriŋo"
+msgstr "Siidulaandiriŋo"
 
 #. TOOLBAR_LABEL_FILE_NEW
 #: po/tmp/ap_String_Id.h.h:1662
@@ -4038,7 +4039,7 @@ msgstr "Kutamaa"
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT
 #: po/tmp/ap_String_Id.h.h:1664
 msgid "New &annotation"
-msgstr "Sila laañaa la etiketi kutoo"
+msgstr "Sila laañaa niŋ tikeeti kutoo"
 
 #. DLG_NEW_Title
 #: po/tmp/ap_String_Id.h.h:1666
@@ -4048,7 +4049,7 @@ msgstr "Karadandaŋ safeeriŋ kutoo"
 #. DLG_Lists_New_List_Label
 #: po/tmp/ap_String_Id.h.h:1668
 msgid "New List Label"
-msgstr "Silalaañaa Etiketi kutoo"
+msgstr "Silalaañaa tikeeti kutoo"
 
 #. DLG_Lists_New_List_Type
 #: po/tmp/ap_String_Id.h.h:1670
@@ -4103,7 +4104,7 @@ msgstr ""
 #. SCRIPT_NOSCRIPTS
 #: po/tmp/ap_String_Id.h.h:1686
 msgid "No scripts found"
-msgstr "Skiript hani kiliŋ ti jee"
+msgstr "Sikiript hani kiliŋ ti jee"
 
 #. DLG_FormatTOC_None
 #. DLG_Styles_DefNone
@@ -4273,7 +4274,7 @@ msgstr ""
 #: po/tmp/ap_String_Id.h.h:1764
 #: po/tmp/xap_String_Id.h.h:572
 msgid "Overline"
-msgstr "Santo bantambiloo"
+msgstr "Santo bantambiloo "
 
 #. MENU_STATUSLINE_FMT_OVERLINE
 #: po/tmp/ap_String_Id.h.h:1766
@@ -4283,12 +4284,12 @@ msgstr "Miŋ ñaalatombonta bantambili (birikintiŋo)"
 #. MENU_LABEL_FILE_PROPERTIES
 #: po/tmp/ap_String_Id.h.h:1768
 msgid "P&roperties"
-msgstr "A fansuŋ taalu (Jikoolu)"
+msgstr "A fansuŋ jikoolu"
 
 #. MENU_LABEL_TOOLS_REVISIONS_PURGE
 #: po/tmp/ap_String_Id.h.h:1770
 msgid "P&urge revisions"
-msgstr "Sinkadiriŋolu koonoo kuu"
+msgstr "Seyinkadiriŋolu koonoo kuu"
 
 #. MENU_LABEL_EDIT_PASTE_SPECIAL
 #: po/tmp/ap_String_Id.h.h:1772
@@ -4396,7 +4397,7 @@ msgstr "Hijiboolu"
 #. TOOLBAR_LABEL_FMT_DOM_DIRECTION
 #: po/tmp/ap_String_Id.h.h:1814
 msgid "Paragraph Direction"
-msgstr "Hijiboolu tiliñaa"
+msgstr "Hijiboolu ñaatiliŋo"
 
 #. DLG_Styles_ParaPrev
 #: po/tmp/ap_String_Id.h.h:1816
@@ -4433,7 +4434,7 @@ msgstr "Muluŋo"
 #. FIELD_Type_PieceTable
 #: po/tmp/ap_String_Id.h.h:1830
 msgid "Piece Table"
-msgstr "Piyeesi taabuloo (Piece Table)"
+msgstr "Walaa teleŋo "
 
 #. DLG_FormatFootnotes_EndPlaceEndDoc
 #: po/tmp/ap_String_Id.h.h:1832
@@ -4443,7 +4444,7 @@ msgstr "A ke safoo duuma "
 #. DLG_FormatFootnotes_EndPlaceEndSec
 #: po/tmp/ap_String_Id.h.h:1834
 msgid "Place at end of section"
-msgstr "A ke karakilŋo duuma "
+msgstr "A ke karakiliŋo duuma "
 
 #. DLG_FormatFootnotes_EndPlacement
 #: po/tmp/ap_String_Id.h.h:1836
@@ -4490,7 +4491,7 @@ msgstr "Diyaannakuwolu"
 #. DLG_Options_Label_Schemes
 #: po/tmp/ap_String_Id.h.h:1854
 msgid "Preference Schemes"
-msgstr "Diyaannakuu teemoolu (Tem)"
+msgstr "Diyaannakuu kaccaataa"
 
 #. DLG_Options_OptionsTitle
 #: po/tmp/ap_String_Id.h.h:1856
@@ -4526,7 +4527,7 @@ msgstr "Ka safoo fele janniŋ a be muuli la"
 #. DLG_Para_PreviewPrevParagraph
 #: po/tmp/ap_String_Id.h.h:1873
 msgid "Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph"
-msgstr "Hijibe koomankoo Hijibe Koomankoo Hijibe koomankooHijibe koomankoo Hijibe koomankoo Hijibe koomankooHijibe koomankoo Hijibe koomankoo Hijibe koomankooHijibe koomnkoo"
+msgstr "Hijibe koomankoo Hijibe Koomankoo Hijibe koomankoo Hijibe koomankoo Hijibe koomankoo Hijibe koomankooHijibe koomankoo Hijibe koomankoo Hijibe koomankoo Hijibe koomnkoo"
 
 #. TOOLBAR_LABEL_FILE_PRINT
 #. DLG_UP_PrintTitle
@@ -4591,7 +4592,7 @@ msgstr "Muulilaa"
 #. DLG_MetaData_Publisher_LBL
 #: po/tmp/ap_String_Id.h.h:1898
 msgid "Publisher:"
-msgstr "Muulilaa :"
+msgstr "Muulilaa "
 
 #. MENU_LABEL_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h.h:1900
@@ -4601,12 +4602,12 @@ msgstr "Ka a jooseyi"
 #. MENU_LABEL_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h.h:1902
 msgid "RTL &Document"
-msgstr "Safoo bulubaa la ka taa maraa la"
+msgstr "Ka bo safoo bulubaa la ka taa maraa la"
 
 #. MENU_LABEL_FMT_DIRECTION_DD_RTL
 #: po/tmp/ap_String_Id.h.h:1904
 msgid "RTL &Paragraph"
-msgstr "Hijboo bulubaa la ka taa maraa la"
+msgstr "Ka bo hijiboo bulubaa la ka taa maraa la"
 
 #. MENU_LABEL_FMT_DIRECTION_SD_RTL
 #: po/tmp/ap_String_Id.h.h:1906
@@ -4719,7 +4720,7 @@ msgstr "Kunto leeri siŋo bondi safoo la ñiŋ leeroo to"
 #. MENU_STATUSLINE_EDIT_CUTIMAGE
 #: po/tmp/ap_String_Id.h.h:1954
 msgid "Remove the Image and save a copy on the clipboard"
-msgstr "Muluŋ kuntoo ka a ke kayiti buntuŋo kono"
+msgstr "Muluŋo kuntoo ka a ke kayiti buntuŋo kono"
 
 #. MENU_STATUSLINE_EDIT_DELETEIMAGE
 #: po/tmp/ap_String_Id.h.h:1956
@@ -4760,12 +4761,12 @@ msgstr "Muumee jooseyiroo"
 #. DLG_Annotation_Replace_tooltip
 #: po/tmp/ap_String_Id.h.h:1971
 msgid "Replace selection with annotation"
-msgstr "Safeeroo miŋ funtita la tabuloo dundi"
+msgstr "Safeeroo miŋ ñaalatombonta dundi kutake"
 
 #. MENU_STATUSLINE_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h.h:1973
 msgid "Replace the specified text with different text"
-msgstr "Ñinindiroo ke i ye safoo miŋ waaliitoo yitandita jooseyi"
+msgstr "Ñinindiroo ke, i ye safoo miŋ waaliitoo yitandita jooseyi"
 
 #. MENU_LABEL_HELP_REPORT_BUG
 #: po/tmp/ap_String_Id.h.h:1975
@@ -4821,7 +4822,7 @@ msgstr "Minnu muumee yelemandita safoo kono maaboo"
 #. MSG_RevertFile
 #: po/tmp/ap_String_Id.h.h:1996
 msgid "Revert file to last saved state?"
-msgstr "Ka seyinaŋ safoo miŋ maŋ kaarinuŋ buntuŋo kono ?"
+msgstr "Ka seyinaŋ safoo miŋ maŋ kaarinuŋ buntuŋo kono baŋ ?"
 
 #. MENU_STATUSLINE_FILE_REVERT
 #: po/tmp/ap_String_Id.h.h:1998
@@ -4832,7 +4833,7 @@ msgstr "Ka seyinaŋ buntuŋo miŋ tambita to"
 #: po/tmp/ap_String_Id.h.h:2000
 #, c-format
 msgid "Revert to saved copy of %s?"
-msgstr "Ka .........%s' yele ko a benuŋ a kaari labaŋo to ?"
+msgstr "Ka .........%s' yele ko a benuŋ a kaari labaŋo to baŋ ?"
 
 #. DLG_ListRevisions_Column1Label
 #: po/tmp/ap_String_Id.h.h:2002
@@ -4851,7 +4852,7 @@ msgstr "Bulubaa la"
 #: po/tmp/ap_String_Id.h.h:2009
 #, c-format
 msgid "Right Indent [%s]"
-msgstr "Jenkendiroo maraa la [%s]"
+msgstr "Ñorindiroo maraa la [%s]"
 
 #. RightMarginStatus
 #: po/tmp/ap_String_Id.h.h:2011
@@ -4878,7 +4879,7 @@ msgstr "Ka hijiboo tembendi bulubaa la"
 #. DLG_Para_DomDirection
 #: po/tmp/ap_String_Id.h.h:2020
 msgid "Right-to-left &dominant"
-msgstr "Ka a laa maraa la a taa bulubaa la "
+msgstr "Ka a laa maraa la ka taa bulubaa la "
 
 #. FIELD_Document_Rights
 #: po/tmp/ap_String_Id.h.h:2022
@@ -4953,13 +4954,13 @@ msgstr "Ka a tankandi ñiŋ ................too la "
 #. MENU_STATUSLINE_EDIT_COPYIMAGE
 #: po/tmp/ap_String_Id.h.h:2050
 msgid "Save a copy of the image on the clipboard"
-msgstr "Ka muluŋo la ñaalayeleme kiliŋ tankandi kayiti buntuŋo kono"
+msgstr "Ka muluŋo la ñaalayelema kiliŋ tankandi kayiti buntuŋo kono"
 
 #. MSG_ConfirmSave
 #: po/tmp/ap_String_Id.h.h:2052
 #, c-format
 msgid "Save changes to document %s before closing?"
-msgstr "I lafita le baŋ ka yelemandiroolu minnu keta........%s kono tankandi la le baŋ ?"
+msgstr "I lafita le ka yelemandiroolu minnu keta........%s kono tankandi la le baŋ ?"
 
 #. MENU_STATUSLINE_FILE_SAVEEMBED
 #: po/tmp/ap_String_Id.h.h:2054
@@ -4983,12 +4984,12 @@ msgstr "Safoo tankandi ko tembenfee "
 #. TOOLBAR_TOOLTIP_FILE_SAVEAS
 #: po/tmp/ap_String_Id.h.h:2064
 msgid "Save the document under a different name"
-msgstr "Safoo tankandii too doo to"
+msgstr "Safoo tankandii too doo la"
 
 #. MENU_STATUSLINE_FILE_EXPORT
 #: po/tmp/ap_String_Id.h.h:2066
 msgid "Save the document without changing the current name"
-msgstr "Safoo tankandi bari de i te a too yelemandi la"
+msgstr "Safoo tankandi bari de i te a too yelemandi noo la"
 
 #. MENU_STATUSLINE_FILE_SAVEIMAGE
 #: po/tmp/ap_String_Id.h.h:2068
@@ -5003,12 +5004,12 @@ msgstr "Tankandiroo buntuŋo kono"
 #. DLG_PageSetup_Scale
 #: po/tmp/ap_String_Id.h.h:2072
 msgid "Scale..."
-msgstr "Seeloo/Selenselendaŋo/temboolu..........."
+msgstr "Selenselendaŋo............."
 
 #. MENU_STATUSLINE_HELP_SEARCH
 #: po/tmp/ap_String_Id.h.h:2074
 msgid "Search for help about..."
-msgstr "Walindiroo ñiniŋ ñiŋ ......... kunna"
+msgstr "Walindiroo ñiniŋ ......... kunna"
 
 #. DLG_WordCount_Update_Rate
 #: po/tmp/ap_String_Id.h.h:2076
@@ -5118,7 +5119,7 @@ msgstr "Kumoo sambañaa"
 #. MENU_STATUSLINE_TABLE_TABLETOTEXTCOMMAS
 #: po/tmp/ap_String_Id.h.h:2117
 msgid "Separate table items with commas"
-msgstr "kuwolu minnu be walaalaa kono fatandi feñindiŋo niŋ walaalaalu la"
+msgstr "Kuwolu minnu be walaalaa kono fatandi feñindiŋo niŋ walaalaalu la"
 
 #. MENU_STATUSLINE_TABLE_TABLETOTEXTCOMMASTABS
 #: po/tmp/ap_String_Id.h.h:2119
@@ -5158,7 +5159,7 @@ msgstr "Kaŋo"
 #. DLG_Lists_SetDefault
 #: po/tmp/ap_String_Id.h.h:2133
 msgid "Set Default Values"
-msgstr "Ka minnu ñanta waaliyo la loondi"
+msgstr "Ka minnu ñanta, waaliyo la, loondi"
 
 #. DLG_FormatFrame_SetImage
 #. DLG_FormatTable_SetImage
@@ -5184,12 +5185,12 @@ msgstr "Muluŋo nakindi leeroo la koomalaa to"
 #. MENU_STATUSLINE_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h.h:2144
 msgid "Set dominant direction of document to RTL"
-msgstr "Ka safoo taañaa baa faranfansi bulubaa la ka taa maraa la"
+msgstr "Ka safoo taañaa baa faranfansi, ka bo bulubaa la ka taa maraa la"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DD_RTL
 #: po/tmp/ap_String_Id.h.h:2146
 msgid "Set dominant direction of paragraph to RTL"
-msgstr "Hijiboo taañaa ñaalatomboŋ bulubaa la ka taa maraa la"
+msgstr "Hijiboo taañaa ñaalatomboŋ, ka bo bulubaa la ka taa maraa la"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_SD_RTL
 #: po/tmp/ap_String_Id.h.h:2148
@@ -5265,7 +5266,7 @@ msgstr "Safoo fansuŋ konoto feŋolu faranfansi minnu be ko leeroo la fanoo niŋ
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h.h:2177
 msgid "Shortcut Key"
-msgstr "Sutumaa/Sutiyaariŋo"
+msgstr "Caabi sutumaa "
 
 #. DLG_Options_Label_Show
 #. DLG_Show
@@ -5325,7 +5326,7 @@ msgstr "Keeñaa bululaa yitandi waraŋ i ye ì nukuŋ"
 #. MENU_STATUSLINE_VIEW_TB_4
 #: po/tmp/ap_String_Id.h.h:2202
 msgid "Show or hide the toolbar"
-msgstr "Jooraŋ bululaa yitandi waraŋ i ye ì nukuŋ "
+msgstr "Jooraŋ bululaa yitandi waraŋ i ye a nukuŋ "
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW
 #: po/tmp/ap_String_Id.h.h:2204
@@ -5345,7 +5346,7 @@ msgstr "Safoo laañaa niŋ seyinkandiroolu yitandi"
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_BEFORE
 #: po/tmp/ap_String_Id.h.h:2210
 msgid "Show what the document looks like before revisions"
-msgstr "Safoo laañaa jitandi janniŋ seyinkandiroo be ke la"
+msgstr "Safoo laañaa yitandi janniŋ seyinkandiroo be ke la"
 
 #. DLG_Options_Label_ViewShowHide
 #: po/tmp/ap_String_Id.h.h:2212
@@ -5361,12 +5362,12 @@ msgstr "Yitandiroo / Nukundiroo"
 #. TOOLBAR_TOOLTIP_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h.h:2217
 msgid "Show/hide formatting marks"
-msgstr "Yitandiroo / Nukundiroo ¶"
+msgstr "Yitandiroo / Nukundiroo "
 
 #. TB_Simple
 #: po/tmp/ap_String_Id.h.h:2219
 msgid "Simple"
-msgstr "Feeyaata "
+msgstr "Feemaa "
 
 #. DLG_Options_Label_ViewSimpleTB
 #: po/tmp/ap_String_Id.h.h:2221
@@ -5402,17 +5403,17 @@ msgstr "Walaalaa ñaalatomboŋ"
 #. MENU_LABEL_TABLE_SORTCOLSASCEND
 #: po/tmp/ap_String_Id.h.h:2234
 msgid "Sort Columns in Ascending Order"
-msgstr "Walaalaalu ñaalatomboŋ ì laata ñookaŋ ka taa santo la ñaamiŋ"
+msgstr "Walaalaalu ñaalatomboŋ ì laata ñookaŋ ñaamiŋ ka taa santo la  "
 
 #. MENU_STATUSLINE_TABLE_SORTCOLSASCEND
 #: po/tmp/ap_String_Id.h.h:2236
 msgid "Sort Columns in Ascending Order based on Selected Row"
-msgstr "Walaalu ñaalatomboŋ ì laata ñoo ka taa duuma la ñaamiŋ"
+msgstr "Walaalu ñaalatomboŋ ì laata ñookaŋ ñaamiŋ ka taa duuma la "
 
 #. MENU_LABEL_TABLE_SORTCOLSDESCEND
 #: po/tmp/ap_String_Id.h.h:2238
 msgid "Sort Columns in Descending Order"
-msgstr "Walaa silalaalu ñaalatomboŋ ì laata ñoo kaŋ duumaa la ñaamiŋ"
+msgstr "Walaa silalaalu ñaalatomboŋ ì laata ñookaŋ ñaamiŋ ka taa duumaa la  "
 
 #. MENU_STATUSLINE_TABLE_SORTCOLSDESCEND
 #: po/tmp/ap_String_Id.h.h:2240
@@ -5437,7 +5438,7 @@ msgstr "Jonjuloolu ñaalatomboŋ ì laata ñookaŋ duuma la ñaamiŋ "
 #. MENU_STATUSLINE_TABLE_SORTROWSDESCEND
 #: po/tmp/ap_String_Id.h.h:2248
 msgid "Sort Rows in Descending Order based on Selected Column"
-msgstr "Jonjuloolu ñaalatomboŋ ì laata ñoo kaŋ duuma la ñaamiŋ ka a suŋ walaa silalaa miŋ ñaalatombonta kaŋ"
+msgstr "Jonjuloolu ñaalatomboŋ ì laata ñoo kaŋ duuma la ñaamiŋ, ka a suŋ walaa silalaa miŋ ñaalatombonta kaŋ"
 
 #. MENU_STATUSLINE_TABLE_SORT
 #: po/tmp/ap_String_Id.h.h:2250
@@ -5447,24 +5448,24 @@ msgstr "Walaa ñaalatomboŋ "
 #. DLG_MetaData_Source_LBL
 #: po/tmp/ap_String_Id.h.h:2252
 msgid "Source:"
-msgstr "Mayaŋo / bonsuŋo :"
+msgstr "Mayaŋo :"
 
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h.h:2254
 msgid "Space after Column"
-msgstr "Kenoo walaa silalaa koola :"
+msgstr "Kenoo walaa silalaa koolaa :"
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
 #. TOOLBAR_TOOLTIP_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h.h:2257
 msgid "Space before: 12 pt"
-msgstr "Fanundiroo ñaato : 12 pt"
+msgstr "Fanundiroo ñaato la : 12 pt"
 
 #. TOOLBAR_STATUSLINE_PARA_0BEFORE
 #. TOOLBAR_TOOLTIP_PARA_0BEFORE
 #: po/tmp/ap_String_Id.h.h:2260
 msgid "Space before: None"
-msgstr "Fanundiroo hanifeŋ ñaato : "
+msgstr "Fanundiroo hanifeŋ ñaato la : "
 
 #. DLG_Para_LabelSpacing
 #: po/tmp/ap_String_Id.h.h:2262
@@ -5513,12 +5514,12 @@ msgstr "Ka walaa silalaa teleŋ"
 #. MENU_STATUSLINE_TABLE_SPLIT_TABLE
 #: po/tmp/ap_String_Id.h.h:2282
 msgid "Split Table"
-msgstr "Walaa fara"
+msgstr "Walaa talantee"
 
 #. TOOLBAR_LABEL_SPLIT_CELLS
 #: po/tmp/ap_String_Id.h.h:2284
 msgid "Split cells"
-msgstr "Ka walaa silalaalu fara"
+msgstr "Ka walaa silalaalu teleŋ"
 
 #. DLG_SplitCells_HoriMid
 #. DLG_SplitCells_VertMid
@@ -5529,32 +5530,32 @@ msgstr "Telendiroo teema"
 #. DLG_SplitCells_Below
 #: po/tmp/ap_String_Id.h.h:2289
 msgid "Split on Bottom Side"
-msgstr "Teleŋo miŋ be duuma teleŋ "
+msgstr "Talantee miŋ be duuma teleŋ "
 
 #. DLG_SplitCells_Left
 #: po/tmp/ap_String_Id.h.h:2291
 msgid "Split on Left Side"
-msgstr "Teleŋo miŋ be maraa la teleŋ "
+msgstr "Talantee miŋ be maraa la teleŋ "
 
 #. DLG_SplitCells_Right
 #: po/tmp/ap_String_Id.h.h:2293
 msgid "Split on Right Side"
-msgstr "Teleŋo miŋ be bulubaa la teleŋ"
+msgstr "Talantee miŋ be bulubaa la teleŋ"
 
 #. DLG_SplitCells_Above
 #: po/tmp/ap_String_Id.h.h:2295
 msgid "Split on Top Side"
-msgstr "Teleŋo miŋ be santo teleŋ"
+msgstr "Talantee miŋ be santo teleŋ"
 
 #. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
 #: po/tmp/ap_String_Id.h.h:2297
 msgid "Split on all delimiters except spaces"
-msgstr "Fararoo ke kaduuraŋolu temboo to, kenoolu daatijee "
+msgstr "Telendiroo ke kaduuraŋolu temboo to,  i se a taraa kenoolu daatijee "
 
 #. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h.h:2299
 msgid "Split on all word delimiters including spaces"
-msgstr "Fararoo ke kaduuraŋolu temboo to, kenoolu daabijee"
+msgstr "Telendiroo ke kaduuraŋolu temboo to,  i se a tara kenoolu daabijee"
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
 #: po/tmp/ap_String_Id.h.h:2301
@@ -5577,7 +5578,7 @@ msgstr "Walaa silalaa fara"
 #: po/tmp/ap_String_Id.h.h:2308
 #: po/tmp/xap_String_Id.h.h:699
 msgid "Square List"
-msgstr "Kasabilaa niŋ karanaanimaa (kaaree)"
+msgstr "Kasabilaa niŋ karanaanimaa"
 
 #. MENU_LABEL_FMT_STYLE
 #: po/tmp/ap_String_Id.h.h:2310
@@ -5635,7 +5636,7 @@ msgstr "Ka seyinkandiri kutoo foloo miŋ niŋ miŋ be taamandoo la fatata"
 #. DLG_WordCount_Statistics
 #: po/tmp/ap_String_Id.h.h:2331
 msgid "Statistics:"
-msgstr "Kasabiroolu (Tatisitikoolu) :"
+msgstr "Kasabiroolu :"
 
 #. DLG_Lists_Stop_Current_List
 #: po/tmp/ap_String_Id.h.h:2333
@@ -5691,7 +5692,7 @@ msgstr "Maañaa tembenfee :"
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h.h:2355
 msgid "Style for following paragraph"
-msgstr "Maañaa hijiboo miŋ be a nooma ye"
+msgstr "Maañaa ke hijiboo miŋ be a nooma ye"
 
 #. DLG_Styles_ErrBlankName
 #: po/tmp/ap_String_Id.h.h:2357
@@ -5813,7 +5814,7 @@ msgstr "Looñaa :"
 #. DLG_Tab_Label_TabToClear
 #: po/tmp/ap_String_Id.h.h:2404
 msgid "Tab stops to be cleared:"
-msgstr "Walaa laañaa miŋ ñanta fita la"
+msgstr "Walaa laañaa looriŋo miŋ ñanta fita la"
 
 #. DLG_FormatTable_Apply_To_Table
 #. MENU_STATUSLINE_TABLE
@@ -5837,12 +5838,12 @@ msgstr "Walaa la jooraŋ bululaa "
 #. MENU_LABEL_FMT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h.h:2415
 msgid "Table of Contents"
-msgstr "Jeerikuŋlaa walaa"
+msgstr "Jeerikunlaa walaa"
 
 #. FIELD_Numbers_TOCListLabel
 #: po/tmp/ap_String_Id.h.h:2417
 msgid "Table of Contents List Label"
-msgstr "Jeerikunlaalu la walaa la etiketoo la kasabilaa  "
+msgstr "Jeerikunlaalu la walaa la tiketoo la kasabilaa  "
 
 #. FIELD_Numbers_TOCPageNumber
 #: po/tmp/ap_String_Id.h.h:2419
@@ -5914,12 +5915,12 @@ msgstr "Safoo niŋ mulundiŋolu"
 #. DLG_PageSetup_ErrBigMargins
 #: po/tmp/ap_String_Id.h.h:2447
 msgid "The margins selected are too large to fit on the page."
-msgstr "Karadandaŋolu minnu ñaalatombonta fanuta le baake fo ì se kunŋ noo leeroo kono."
+msgstr "Karadandaŋolu minnu ñaalatombonta fanuta le baake, fo ì se kunuŋ noo leeroo kono."
 
 #. DLG_Options_Prompt_YouMustRestart
 #: po/tmp/ap_String_Id.h.h:2449
 msgid "The new user interface language will take effect the next time that you start the application"
-msgstr "Fannafaalaa la ñaatiliŋo la kaŋ kutoo be ke laniŋ miŋ bi naa la foloodulaa le to."
+msgstr "Fannafaalaa la ñaatiliŋo la, kuu kutoo be ke la miŋ be naa la foloodulaa le to."
 
 #. MSG_SpellDone
 #: po/tmp/ap_String_Id.h.h:2451
@@ -5949,12 +5950,12 @@ msgstr "Yelemandiroolu be foloo la AbiWord folooroo miŋ bi naa le to waraŋ ni�
 #. MSG_HiddenRevisions
 #: po/tmp/ap_String_Id.h.h:2461
 msgid "This document contains revisions which are currently hidden from view. Please see AbiWord documentation for information on working with revisions."
-msgstr "Wo safoo, seyinkandiroolu minnu nukundita le be a kono. #10 Niŋ a diyaata alu ye alu AbiWord #10; la karandirilaŋ safoo kono juubee fahamuroo kamma seyinkandiroolu kunna."
+msgstr "Wo safoo, seyinkandiroolu minnu nukundita, le be a kono. #10 Niŋ a diyaata alu ye alu AbiWord #10; la karandirilaŋ safoo kono juubee fahamuroo kamma, seyinkandiroolu kunna."
 
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h.h:2463
 msgid "This paragraph represents words as they might appear in your document.  To see text from your document used in this preview, position your cursor in a document paragraph with some text in it and open this dialog."
-msgstr "Ñiŋ hijiboo be looriŋ kumakaŋolu le ye ko ì ñanta bola ñaamiŋ alu la buntuŋo kono. Niŋ alu lafita ka alu la buntuŋo la safoo je miŋ taamandita ñiŋ jeeroo to, alu alu la kuruntulaa loondi buntuŋo la hijiboo konosafoo be miŋ kono, i se kaccaa foloo."
+msgstr "Ñiŋ hijiboo be looriŋ kumakaŋolu le ye ko ì ñanta bo la ñaamiŋ alu la buntuŋo kono. Niŋ alu lafita ka alu la buntuŋo la safoo je miŋ taamandita ñiŋ jeeroo to, alu  kurunturilaa loondi buntuŋo la hijiboo kono, safoo be miŋ kono, alu se kaccaa foloo."
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h.h:2465
@@ -5975,7 +5976,7 @@ msgstr "Saba"
 #: po/tmp/ap_String_Id.h.h:2469
 #: po/tmp/xap_String_Id.h.h:757
 msgid "Tick List"
-msgstr "Kasabiroo aniŋ tik"
+msgstr "Kasabiroo aniŋ tiki"
 
 #. FIELD_DateTime_TimeZone
 #: po/tmp/ap_String_Id.h.h:2471
@@ -6031,7 +6032,7 @@ msgstr "Kasabirilaa niŋ tonkonsaboo"
 #. DLG_Column_Two
 #: po/tmp/ap_String_Id.h.h:2491
 msgid "Two"
-msgstr "Fula / Fila"
+msgstr "Fila"
 
 #. FIELD_Document_Type
 #: po/tmp/ap_String_Id.h.h:2493
@@ -6051,7 +6052,7 @@ msgstr "Temboo :"
 #. DLG_ToggleCase_UpperCase
 #: po/tmp/ap_String_Id.h.h:2499
 msgid "UPPERCASE"
-msgstr "Harahukumbaa"
+msgstr "Harafukumbaa"
 
 #. TOOLBAR_LABEL_FMT_UNDERLINE
 #. TOOLBAR_STATUSLINE_FMT_UNDERLINE
@@ -6096,7 +6097,7 @@ msgstr "Kasabirilaa aniŋ harafukumbaa la"
 #: po/tmp/ap_String_Id.h.h:2517
 #: po/tmp/xap_String_Id.h.h:825
 msgid "Upper Roman List"
-msgstr "Kasabirilaa aniŋ Romin harafukumbaa la "
+msgstr "Kasabirilaa aniŋ Roman harafukumbaa la "
 
 #. DLG_Column_RtlOrder
 #: po/tmp/ap_String_Id.h.h:2519
@@ -6121,7 +6122,7 @@ msgstr "Fannafaalaa ñaatiliŋo"
 #. DLG_Options_Label_UILang
 #: po/tmp/ap_String_Id.h.h:2527
 msgid "User Interface Language"
-msgstr "Ñaatiliŋo miŋ ka a fannafaa a la la kaŋo"
+msgstr "Miŋ be ñaatiliŋo la, miŋ ka a fannafaa ala la kaŋo la"
 
 #. DLG_Stylist_UserStyles
 #: po/tmp/ap_String_Id.h.h:2529
@@ -6192,7 +6193,7 @@ msgstr "A jeta le "
 #: po/tmp/ap_String_Id.h.h:2559
 #, c-format
 msgid "Warning: the bookmark you provided [%s] does not exist."
-msgstr "Dandalaaroo : taamanseerilaŋo \"%s\" a ta keeriŋ."
+msgstr "Dandalaaroo : taamanseerilaŋo \"%s\" a te keeriŋ."
 
 #. MENU_STATUSLINE_VIEW_WEB
 #: po/tmp/ap_String_Id.h.h:2561
@@ -6223,7 +6224,7 @@ msgstr "Safa baaroo"
 #. DLG_WordCount_Words_No_Notes
 #: po/tmp/ap_String_Id.h.h:2572
 msgid "Words (no footnotes/endnotes):"
-msgstr "Kumakaŋolu (leeri siŋ karadandan saafeeriŋolu te miŋ to aniŋ labaŋo)"
+msgstr "Kumakaŋolu (leeri siŋ karadandaŋ saafeeriŋolu te miŋ to aniŋ labaŋo)"
 
 #. DLG_Options_Label_SpellUppercase
 #: po/tmp/ap_String_Id.h.h:2574
@@ -6333,12 +6334,12 @@ msgstr "Warandirilaŋ keelaa tembendi 200% la"
 #. DLG_Options_Label_CustomDict
 #: po/tmp/ap_String_Id.h.h:2616
 msgid "custom.dic"
-msgstr "custom.dic"
+msgstr "custom.dic "
 
 #. FIELD_DateTime_DDMMYY
 #: po/tmp/ap_String_Id.h.h:2618
 msgid "dd/mm/yy"
-msgstr "bb/ww/aa"
+msgstr "ll/kk/ss"
 
 #. DLG_ToggleCase_LowerCase
 #: po/tmp/ap_String_Id.h.h:2620
@@ -6353,7 +6354,7 @@ msgstr "Minitoolu"
 #. FIELD_DateTime_MMDDYY
 #: po/tmp/ap_String_Id.h.h:2624
 msgid "mm/dd/yy"
-msgstr "ww/bb/aa"
+msgstr "ll/kk/ss"
 
 #. DLG_ToggleCase_ToggleCase
 #: po/tmp/ap_String_Id.h.h:2626
@@ -6367,7 +6368,7 @@ msgstr "Ka saafeerikulu yelemandirilaŋ taañaa yelemandi "
 #. DLG_UP_To
 #: po/tmp/xap_String_Id.h.h:7
 msgid " to "
-msgstr " fo "
+msgstr "fo "
 
 #. DLG_Zoom_100
 #: po/tmp/xap_String_Id.h.h:9
@@ -6402,17 +6403,17 @@ msgstr "Leeroo muumee"
 #. LANG_0
 #: po/tmp/xap_String_Id.h.h:25
 msgid "(no proofing)"
-msgstr "Korosiroo maŋ soto "
+msgstr "( Korosiroo maŋ soto ) "
 
 #. DLG_DocComparison_TestSkipped
 #: po/tmp/xap_String_Id.h.h:27
 msgid "(test skipped)"
-msgstr "(féem bu ñu dindi)"
+msgstr "( Feeree miŋ bondita )"
 
 #. DLG_NoSaveFile_DirNotExist
 #: po/tmp/xap_String_Id.h.h:29
 msgid "A directory in the given pathname does not exist."
-msgstr "Dundaŋ siloo yitandiraŋolu te keeriŋ."
+msgstr "Dundiraŋ siloo yitandiraŋolu te keeriŋ."
 
 #. DLG_PLUGIN_MANAGER_TITLE
 #: po/tmp/xap_String_Id.h.h:31
@@ -6426,9 +6427,9 @@ msgid ""
 "AbiWord cannot find the spelling file %s.dll\n"
 "Please download and install Aspell from http://aspell.net/win32/"
 msgstr ""
-"AbiWord maŋ kumakaŋ faranfansiraŋ kitaaboo la buntuŋo taradulaa je noo %s.dll\n"
-"Niŋ a diyaata i ye, Bu la neexe, Aspell\n"
-" janfajaŋ sabaanaŋ i ye dundiadareesoo to miŋ mu : web http://aspell.net/win32/"
+"AbiWord maŋ kumakaŋ faranfansiraŋ bukoo la buntuŋo taradulaa je noo %s.dll\n"
+"Niŋ a diyaata i ye, Aspell\n"
+" janfajaŋo sabaanaŋ, i ye dundi adareesoo to miŋ mu : web http://aspell.net/win32/"
 
 #. MSG_HistoryPartRestore1
 #: po/tmp/xap_String_Id.h.h:35
@@ -6476,7 +6477,7 @@ msgstr "Albanais"
 #. DLG_FOSA_ALL
 #: po/tmp/xap_String_Id.h.h:53
 msgid "All (*.*)"
-msgstr "Muluŋlu muumee la buntuŋolu "
+msgstr "Muluŋolu muumee la buntuŋolu "
 
 #. DLG_FOSA_ALLDOCS
 #: po/tmp/xap_String_Id.h.h:55
@@ -6501,12 +6502,12 @@ msgstr "Amharique (Ethiopie)"
 #. LANG_AR
 #: po/tmp/xap_String_Id.h.h:65
 msgid "Arabic"
-msgstr "Limu araab"
+msgstr "Araabu kasabiroo"
 
 #. LANG_AR_EG
 #: po/tmp/xap_String_Id.h.h:67
 msgid "Arabic (Egypt)"
-msgstr "Arabe (Egypte)"
+msgstr "Arabe (Egypt)"
 
 #. LANG_AR_SA
 #: po/tmp/xap_String_Id.h.h:69
@@ -6526,7 +6527,7 @@ msgstr "Arabe, Macintosh"
 #. ENC_ARAB_WIN
 #: po/tmp/xap_String_Id.h.h:75
 msgid "Arabic, Windows Code Page 1256"
-msgstr "Arabe, Windows 1256 Taamanseerilaŋdiŋolu la leero  1256"
+msgstr "Arabe, Windows 1256 la leeri taamanseerilaŋolu "
 
 #. LANG_HY_AM
 #: po/tmp/xap_String_Id.h.h:77
@@ -6541,12 +6542,12 @@ msgstr "Arménien, ARMSCII-8"
 #. LANG_AS_IN
 #: po/tmp/xap_String_Id.h.h:81
 msgid "Assamese"
-msgstr "Assamais"
+msgstr "Assamese"
 
 #. LANG_AST_ES
 #: po/tmp/xap_String_Id.h.h:83
 msgid "Asturian (Spain)"
-msgstr "Asturien (Espagne)"
+msgstr "Asturian (Espagne)"
 
 #. DLG_Options_Label_DirMarkerAfterClosingParenthesis
 #: po/tmp/xap_String_Id.h.h:87
@@ -6596,7 +6597,7 @@ msgstr "Baltique, ISO-8859-4"
 #. ENC_BALT_WIN
 #: po/tmp/xap_String_Id.h.h:105
 msgid "Baltic, Windows Code Page 1257"
-msgstr "Baltique, Page de codes Windows 1257"
+msgstr "Baltique, Windows 1257 la Leeri Taamanseerilaŋ leeroo  "
 
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h.h:107
@@ -6677,7 +6678,7 @@ msgstr "Européen central, Macintosh"
 #. ENC_CENT_WIN
 #: po/tmp/xap_String_Id.h.h:145
 msgid "Central European, Windows Code Page 1250"
-msgstr "Européen central, Page de codes Windows 1250"
+msgstr "Européen central, Windows 1250 la Leeri Taamanseerilaŋo"
 
 #. DLG_Options_Label_LangWithKeyboard
 #: po/tmp/xap_String_Id.h.h:147
@@ -6687,7 +6688,7 @@ msgstr "Ka kaŋo niŋ harafu walaa yelemandi ñoo la"
 #. STYLE_CHAPHEADING
 #: po/tmp/xap_String_Id.h.h:149
 msgid "Chapter Heading"
-msgstr "Hijibe jeerkuŋo"
+msgstr "Hijibe jeerikuŋo"
 
 #. LANG_ZH_HK
 #: po/tmp/xap_String_Id.h.h:151
@@ -6712,42 +6713,42 @@ msgstr "Chinois (Taiwan)"
 #. ENC_CHSI_EUC
 #: po/tmp/xap_String_Id.h.h:159
 msgid "Chinese Simplified, EUC-CN (GB2312)"
-msgstr "Chinois simplifié, EUC-CN"
+msgstr "Chinois feemaa, EUC-CN"
 
 #. ENC_CHSI_GB
 #: po/tmp/xap_String_Id.h.h:161
 msgid "Chinese Simplified, GB_2312-80"
-msgstr "Chinois simplifié, GB_2312-80"
+msgstr "Chinois feemaa, GB_2312-80"
 
 #. ENC_CHSI_HZ
 #: po/tmp/xap_String_Id.h.h:163
 msgid "Chinese Simplified, HZ"
-msgstr "Chinois simplifié, HZ"
+msgstr "Chinois feemaa, HZ"
 
 #. ENC_CHSI_WIN
 #: po/tmp/xap_String_Id.h.h:165
 msgid "Chinese Simplified, Windows Code Page 936"
-msgstr "Chinois simplifié, Page de codes Windows 936"
+msgstr "Chinois feemaa, Windows 936 la leeri taamanseerilaŋo"
 
 #. ENC_CHTR_BIG5
 #: po/tmp/xap_String_Id.h.h:167
 msgid "Chinese Traditional, BIG5"
-msgstr "Chinois traditionnel, BIG5"
+msgstr "Chinois kotoo, BIG5"
 
 #. ENC_CHTR_BIG5HKSCS
 #: po/tmp/xap_String_Id.h.h:169
 msgid "Chinese Traditional, BIG5-HKSCS"
-msgstr "Chinois traditionnel, BIG5-HKSCS"
+msgstr "Chinois kotoo, BIG5-HKSCS"
 
 #. ENC_CHTR_EUC
 #: po/tmp/xap_String_Id.h.h:171
 msgid "Chinese Traditional, EUC-TW"
-msgstr "Chinois traditionnel, EUC-TW"
+msgstr "Chinois kotoo, EUC-TW"
 
 #. ENC_CHTR_WIN
 #: po/tmp/xap_String_Id.h.h:173
 msgid "Chinese Traditional, Windows Code Page 950"
-msgstr "Chinois traditionnel, Page de codes Windows 950"
+msgstr "Chinois kotoo, Windows 950 la leeri taamanseerilaŋo"
 
 #. DLG_LISTDOCS_Heading1
 #: po/tmp/xap_String_Id.h.h:175
@@ -6762,12 +6763,12 @@ msgstr "Koomalaa fita"
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h.h:179
 msgid "Clip Art"
-msgstr "Muluŋ fudoo / buntuŋo"
+msgstr "Muluŋ buntuŋo"
 
 #. DLG_CLIPART_Error
 #: po/tmp/xap_String_Id.h.h:181
 msgid "Clip Art could not be loaded"
-msgstr "Muluŋ bunto maŋ dunindi noo"
+msgstr "Muluŋ buntuŋo maŋ dunindi noo"
 
 #. DLG_Close
 #: po/tmp/xap_String_Id.h.h:183
@@ -6777,7 +6778,7 @@ msgstr "Sorondiroo"
 #. DLG_Exit_CloseWithoutSaving
 #: po/tmp/xap_String_Id.h.h:185
 msgid "Close &Without Saving"
-msgstr "Ka soroŋ a maŋ tankandi"
+msgstr "Ka a soroŋ a maŋ tankandi"
 
 #. DLG_UP_Collate
 #: po/tmp/xap_String_Id.h.h:187
@@ -6858,7 +6859,7 @@ msgstr "A te modiloo dubeŋ noo la "
 #: po/tmp/xap_String_Id.h.h:219
 #, c-format
 msgid "Could not load the dictionary for the %s language"
-msgstr "A te kumakaŋ faranfansirilaa kitaaboo fandi noo la kaŋo ye \"%s\"."
+msgstr "A te kumakaŋ faranfansirilaa bukoo fandi noo la kaŋo ye \"%s\"."
 
 #. DLG_History_Version_Started
 #: po/tmp/xap_String_Id.h.h:221
@@ -6928,22 +6929,22 @@ msgstr "Ka a dantee ko XML (sumb 1.0)"
 #. DLG_ULANG_DefaultLangLabel
 #: po/tmp/xap_String_Id.h.h:249
 msgid "Default language: "
-msgstr "Kaŋo niŋ a maŋ tembe : "
+msgstr "Kaŋo, niŋ a maŋ tembe : "
 
 #. DLG_Image_Placement
 #: po/tmp/xap_String_Id.h.h:251
 msgid "Define Image Placement"
-msgstr "Muluŋo looñaa"
+msgstr "Muluŋo looñaa faranfansi"
 
 #. DLG_Image_TextWrapping
 #: po/tmp/xap_String_Id.h.h:253
 msgid "Define Text Wrapping"
-msgstr "Ka seyinaŋ katabakiliŋ a faŋ safeerikuloo to"
+msgstr "Ka seyinaŋ katabakiliŋ faŋ safeerikuloo to"
 
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h.h:262
 msgid "Do you want to remove this icon from the toolbar?"
-msgstr "Alu lafita le baŋ ka jooraŋolu la bululaa mulundiŋo dondi ?"
+msgstr "Alu lafita le ka jooraŋolu la bululaa mulundiŋo dondi le baŋ ?"
 
 #. DLG_DocComparison_WindowLabel
 #: po/tmp/xap_String_Id.h.h:264
@@ -6978,7 +6979,7 @@ msgstr "Hollandais (Pays-Bas)"
 #. DLG_History_EditTime
 #: po/tmp/xap_String_Id.h.h:276
 msgid "Editing time:"
-msgstr "A yelemandita luŋo miŋ na :"
+msgstr "A yelemandita luŋo miŋ na : "
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h.h:278
@@ -6994,7 +6995,7 @@ msgstr "Maañaa kayitoo miŋ dundita (CSS)"
 #. DLG_UP_EmbedFonts
 #: po/tmp/xap_String_Id.h.h:282
 msgid "Embed Fonts"
-msgstr "Harafu buntuŋolu minnu dunita"
+msgstr "Harafu buntuŋolu minnu dundita"
 
 #. DLG_HTMLOPT_ExpEmbedImages
 #: po/tmp/xap_String_Id.h.h:284
@@ -7110,7 +7111,7 @@ msgstr "Buntuŋolu tembendiroo temboolu be tankandi la daamiŋ :"
 #. DLG_FOSA_ReplayFromFileLabel
 #: po/tmp/xap_String_Id.h.h:328
 msgid "File to replay editing:"
-msgstr "Buntuŋo tembendiroo temboolu be taalanaŋ kutake daamiŋ :"
+msgstr "Buntuŋo tembendiroo temboolu be taa la ñaamiŋ kutake daamiŋ :"
 
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h.h:330
@@ -7155,7 +7156,7 @@ msgstr "Français (Suisse)"
 #. LANG_FY_NL
 #: po/tmp/xap_String_Id.h.h:353
 msgid "Frisian"
-msgstr "Frison"
+msgstr "Frisian"
 
 #. DLG_UP_From
 #: po/tmp/xap_String_Id.h.h:355
@@ -7220,12 +7221,12 @@ msgstr "Grec, Macintosh"
 #. ENC_GREE_WIN
 #: po/tmp/xap_String_Id.h.h:379
 msgid "Greek, Windows Code Page 1253"
-msgstr "Grec, Page de codes Windows 1253"
+msgstr "Grec, Windows 1253 la leeri ñalatombondiraŋolu"
 
 #. DLG_HTMLOPT_ExpTitle
 #: po/tmp/xap_String_Id.h.h:381
 msgid "HTML Export Options"
-msgstr "Options d'exportation HTML"
+msgstr "Kiilaaroo ñaalatombondiroolu HTML"
 
 #. LANG_HA_NE
 #: po/tmp/xap_String_Id.h.h:385
@@ -7280,7 +7281,7 @@ msgstr "Hébreu, Macintosh"
 #. ENC_HEBR_WIN
 #: po/tmp/xap_String_Id.h.h:407
 msgid "Hebrew, Windows Code Page 1255"
-msgstr "Hébreu, Page de codes Windows 1255"
+msgstr "Hébreu, Windows 1255 la leeri taamanseerilaŋolu"
 
 #. DLG_Image_Height
 #: po/tmp/xap_String_Id.h.h:409
@@ -7300,7 +7301,7 @@ msgstr "Nukundita"
 #. DLG_UFS_BGColorTab
 #: po/tmp/xap_String_Id.h.h:415
 msgid "HighLight Color"
-msgstr "Yitandiraŋo ñaajiyoo"
+msgstr "Yitandiraŋo ñaajiyo"
 
 #. LANG_HI_IN
 #: po/tmp/xap_String_Id.h.h:417
@@ -7345,7 +7346,7 @@ msgstr "Muluŋo miŋ be laariŋ jonjuloo kaŋ (a te a faŋ seyindi noo la jonjul
 #. DLG_FOSA_ImportTitle
 #: po/tmp/xap_String_Id.h.h:435
 msgid "Import File"
-msgstr "Ka a naatiŋaŋ "
+msgstr "Ka a naatinaŋ "
 
 #. MSG_ImportingDoc
 #: po/tmp/xap_String_Id.h.h:437
@@ -7370,12 +7371,12 @@ msgstr "Ka feŋo dundi miŋ se dundi noo"
 #. DLG_FOSA_FileInsertObject
 #: po/tmp/xap_String_Id.h.h:447
 msgid "Insert Embeddable Object file:"
-msgstr "Ka feŋ duntuŋol dundi minnu se dunnooma noo"
+msgstr "Ka feŋ duntuŋo dundi minnu se dunñooma noo"
 
 #. DLG_FOSA_InsertTitle
 #: po/tmp/xap_String_Id.h.h:449
 msgid "Insert File"
-msgstr "ka buntuŋo dundi "
+msgstr "Ka buntuŋo dundi "
 
 #. DLG_FOSA_InsertMath
 #: po/tmp/xap_String_Id.h.h:451
@@ -7405,7 +7406,7 @@ msgstr "Ka sembooli kiliŋ dundi"
 #. DLG_PLUGIN_MANAGER_INSTALL
 #: po/tmp/xap_String_Id.h.h:461
 msgid "Install new plugin"
-msgstr "Ka moili kutoo loondi"
+msgstr "Ka moyili kutoo loondi"
 
 #. LANG_IA
 #: po/tmp/xap_String_Id.h.h:463
@@ -7531,7 +7532,7 @@ msgstr "Macédonien"
 #. DLG_ULANG_DefaultLangChkbox
 #: po/tmp/xap_String_Id.h.h:518
 msgid "Make default for document"
-msgstr "Safoo la kaŋo miŋ maŋ tembe"
+msgstr "Safoo la kaŋo, niŋ a maŋ tembe"
 
 #. LANG_MS_MY
 #: po/tmp/xap_String_Id.h.h:520
@@ -7651,7 +7652,7 @@ msgstr "Ka tembenfee buntuŋo yele :"
 #. DLG_LISTDOCS_Title
 #: po/tmp/xap_String_Id.h.h:568
 msgid "Opened Documents"
-msgstr "Safoolu minnu yeleta"
+msgstr "Safoolu minnu yeleta "
 
 #. TB_Zoom_Percent
 #: po/tmp/xap_String_Id.h.h:570
@@ -7688,12 +7689,12 @@ msgstr "Yeleraŋ kumakaŋo :"
 #. STYLE_PLAIN_TEXT
 #: po/tmp/xap_String_Id.h.h:584
 msgid "Plain Text"
-msgstr "Folooto sfeeriñaa  "
+msgstr "Nunto safeeriñaa  "
 
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h.h:586
 msgid "Plugin Details:"
-msgstr "Modiloo la kiliŋkililaa"
+msgstr "Modiloo la kilinkilinlaa"
 
 #. DLG_PLUGIN_MANAGER_LIST
 #: po/tmp/xap_String_Id.h.h:588
@@ -7868,7 +7869,7 @@ msgstr "Tankandiroo"
 #. DLG_FOSA_FileSaveTypeLabel
 #: po/tmp/xap_String_Id.h.h:661
 msgid "Save file as type:"
-msgstr "Ka safoo tankandi ñiŋ tembenfee to.... :"
+msgstr "Ka safoo tankandi................. tembenfee to :"
 
 #. DLG_UFS_ScriptLabel
 #: po/tmp/xap_String_Id.h.h:663
@@ -7878,7 +7879,7 @@ msgstr "Script :"
 #. STYLE_SECTHEADING
 #: po/tmp/xap_String_Id.h.h:665
 msgid "Section Heading"
-msgstr "Talantee kunto too "
+msgstr "Kunto talantee, too "
 
 #. DLG_UENC_EncLabel
 #: po/tmp/xap_String_Id.h.h:669
@@ -7888,7 +7889,7 @@ msgstr "Nukundiriŋo ñaalatomboŋ :"
 #. DLG_HTMLOPT_ExpLabel
 #: po/tmp/xap_String_Id.h.h:671
 msgid "Select HTML export options:"
-msgstr "Ka kiirilaŋolu keeñaalu ñaalatomboŋ :"
+msgstr "Ka kiilaarilaŋolu keeñaalu ñaalatomboŋ :"
 
 #. DLG_ULANG_LangLabel
 #: po/tmp/xap_String_Id.h.h:673
@@ -7918,7 +7919,7 @@ msgstr "Kaŋo"
 #. DLG_UFS_TransparencyCheck
 #: po/tmp/xap_String_Id.h.h:685
 msgid "Set no Highlight Color"
-msgstr "Yitandiraŋ ñaajiyo ti jee"
+msgstr "Yitandiraŋo ñaajiyo ti jee"
 
 #. DLG_UFS_SizeLabel
 #: po/tmp/xap_String_Id.h.h:689
@@ -7968,7 +7969,7 @@ msgstr "Suédois"
 #. TB_Font_Symbol
 #: po/tmp/xap_String_Id.h.h:719
 msgid "Symbols"
-msgstr "Symbols"
+msgstr "Symbooloolu"
 
 #. LANG_SYR
 #: po/tmp/xap_String_Id.h.h:721
@@ -7998,7 +7999,7 @@ msgstr "Ñaajiyo"
 #. DLG_Image_WrappedBoth
 #: po/tmp/xap_String_Id.h.h:733
 msgid "Text wrapped on both sides of the Image"
-msgstr "Safeeriŋo muluŋo kara fuloo to "
+msgstr "Safeeriŋo muluŋo karalaa fuloolu to "
 
 #. DLG_Image_WrappedLeft
 #: po/tmp/xap_String_Id.h.h:735
@@ -8028,13 +8029,13 @@ msgstr "Thaï, TIS-620"
 #. ENC_THAI_WIN
 #: po/tmp/xap_String_Id.h.h:745
 msgid "Thai, Windows Code Page 874"
-msgstr "Thaï, Page de codes Windows 874"
+msgstr "Thaï, Windows 874 la Leeri Taamanseerilaŋo"
 
 #. DLG_NoSaveFile_DirNotWriteable
 #: po/tmp/xap_String_Id.h.h:747
 #, c-format
 msgid "The directory '%s' is write-protected."
-msgstr "Yitandiraŋo '%s' lasafeeriŋo tankandita le"
+msgstr "Yitandiraŋo '%s' la safeeriŋo tankandita le"
 
 #. DLG_FOSA_ExtensionDoesNotMatch
 #: po/tmp/xap_String_Id.h.h:749
@@ -8045,32 +8046,32 @@ msgstr ""
 #: po/tmp/xap_String_Id.h.h:751
 #, c-format
 msgid "The nearest version that can be restored fully is %d. Would you like to restore this version instead? To partially restore version %d press No."
-msgstr "Yelemandiroo miŋ katata a bee ti miŋ muumee se seyindinaŋ noo mu %d. le ti. Ilafita le baŋ ka wo yelemandiriŋo seyindinaŋ ne baŋ a noo to ?Niŋ duŋ i lafita ka yelemandiroo %d karakiliŋ doroŋ ne seyindi la naŋ  Hani ñaalatomboŋ "
+msgstr "Yelemandiroo miŋ katata a bee ti, miŋ muumee se seyindinaŋ noo mu %d. le ti. I lafita le ka wo yelemandiriŋo seyindinaŋ ne baŋ a noo to ? Niŋ duŋ i lafita ka yelemandiroo %d karakiliŋ doroŋ ne seyindi la naŋ,  hani ñaalatomboŋ "
 
 #. DLG_UP_InvalidPrintString
 #: po/tmp/xap_String_Id.h.h:753
 msgid "The print command string is not valid."
-msgstr "Muuliraŋ kiilaa maŋ kaati."
+msgstr "Muuliraŋo kiilaadiŋo maŋ kaati."
 
 #. MSG_NoUndo
 #: po/tmp/xap_String_Id.h.h:755
 msgid "This operation cannot be undone. Are you sure you want to proceed?"
-msgstr "Ñiŋ baaroo te burukandi noo la. I lafita le baŋ ka taañaato ?"
+msgstr "Ñiŋ baaroo te burukandi noo la. I lafita le baŋ ka taa ñaato ?"
 
 #. DLG_Image_TightWrap
 #: po/tmp/xap_String_Id.h.h:759
 msgid "Tight text wrapping"
-msgstr "Safee duŋ feŋo deteta le "
+msgstr "Safee dunfeŋo deteta le "
 
 #. MSG_HistoryPartRestore3
 #: po/tmp/xap_String_Id.h.h:763
 msgid "To continue anyway, press OK."
-msgstr "Niŋ i lafita taala ñaato haniwoo, OK dete"
+msgstr "Niŋ i lafita taa la ñaato haniwoo, OK diki"
 
 #. MSG_HistoryPartRestore4
 #: po/tmp/xap_String_Id.h.h:765
 msgid "To quit the restoration attempt, press Cancel."
-msgstr "Fo yelemadiriŋo se seyi a be nuŋ ñaamiŋ, a buruka diki."
+msgstr "Fo yelemandiriŋo se seyi a be nuŋ ñaamiŋ, a buruka diki."
 
 #. LANG_TR_TR
 #: po/tmp/xap_String_Id.h.h:771
@@ -8090,7 +8091,7 @@ msgstr "Turc, Macintosh"
 #. ENC_TURK_WIN
 #: po/tmp/xap_String_Id.h.h:777
 msgid "Turkish, Windows Code Page 1254"
-msgstr "Turc, Page de codes Windows 1254"
+msgstr "Turc, 1254 la Leeri Taamanseerilaŋo"
 
 #. DLG_Image_WrapType
 #: po/tmp/xap_String_Id.h.h:779
@@ -8125,12 +8126,12 @@ msgstr "Unicode UCS-2"
 #. ENC_UNIC_UCS_2BE
 #: po/tmp/xap_String_Id.h.h:793
 msgid "Unicode UCS-2 Big Endian"
-msgstr "Unicode UCS-2 Gros-boutiste"
+msgstr "Unicode UCS-2 Butisiti-waramaa"
 
 #. ENC_UNIC_UCS_2LE
 #: po/tmp/xap_String_Id.h.h:795
 msgid "Unicode UCS-2 Little Endian"
-msgstr "Unicode UCS-2 Petit-boutiste"
+msgstr "Unicode UCS-2 Butisitindiŋo"
 
 #. ENC_UNIC_UCS4
 #: po/tmp/xap_String_Id.h.h:797
@@ -8140,7 +8141,7 @@ msgstr "Unicode UCS-4"
 #. ENC_UNIC_UCS_4BE
 #: po/tmp/xap_String_Id.h.h:799
 msgid "Unicode UCS-4 Big Endian"
-msgstr "Unicode UCS-4 Gros-boutiste"
+msgstr "Unicode UCS-4 Butisiti-waramaa"
 
 #. ENC_UNIC_UCS_4LE
 #: po/tmp/xap_String_Id.h.h:801
@@ -8155,27 +8156,27 @@ msgstr "Unicode UTF-16"
 #. ENC_UNIC_UTF_16BE
 #: po/tmp/xap_String_Id.h.h:805
 msgid "Unicode UTF-16 Big Endian"
-msgstr "Unicode UTF-16 Gros-boutiste"
+msgstr "Unicode UTF-16 Butisiti-waramaa"
 
 #. ENC_UNIC_UTF_16LE
 #: po/tmp/xap_String_Id.h.h:807
 msgid "Unicode UTF-16 Little Endian"
-msgstr "Unicode UTF-16 Petit-boutiste"
+msgstr "Unicode UTF-16 Butisitindiŋo"
 
 #. ENC_UNIC_UTF_32
 #: po/tmp/xap_String_Id.h.h:809
 msgid "Unicode UTF-32"
-msgstr "Unicode UTF-32 Gros-boutiste"
+msgstr "Unicode UTF-32"
 
 #. ENC_UNIC_UTF_32BE
 #: po/tmp/xap_String_Id.h.h:811
 msgid "Unicode UTF-32 Big Endian"
-msgstr "Unicode UTF-32 Gros-boutiste"
+msgstr "Unicode UTF-32 Butisiti-waramaa"
 
 #. ENC_UNIC_UTF_32LE
 #: po/tmp/xap_String_Id.h.h:813
 msgid "Unicode UTF-32 Little Endian"
-msgstr "Unicode UTF-32 Petit-boutiste"
+msgstr "Unicode UTF-32 Butisitindiŋo"
 
 #. ENC_UNIC_UTF_7
 #: po/tmp/xap_String_Id.h.h:815
@@ -8222,7 +8223,7 @@ msgstr "Yelemandiroolu la kandiyo"
 #. DLG_History_Version
 #: po/tmp/xap_String_Id.h.h:838
 msgid "Version:"
-msgstr "Selemadiroo :"
+msgstr "Yelemandiroo :"
 
 #. LANG_VI_VN
 #: po/tmp/xap_String_Id.h.h:840
@@ -8242,7 +8243,7 @@ msgstr "Vietnamien, VISCII"
 #. ENC_VIET_WIN
 #: po/tmp/xap_String_Id.h.h:846
 msgid "Vietnamese, Windows Code Page 1258"
-msgstr "Vietnamien, Page de codes Windows 1258"
+msgstr "Vietnamien, 1258 la Leeri Taamanseerilaŋo"
 
 #. DLG_MW_MoreWindows
 #: po/tmp/xap_String_Id.h.h:848
@@ -8262,12 +8263,12 @@ msgstr "Gallois"
 #. ENC_US_DOS
 #: po/tmp/xap_String_Id.h.h:854
 msgid "Western European, DOS/Windows Code Page 437"
-msgstr "Européen de l'Ouest, Page de codes DOS/Windows 437"
+msgstr "Européen de l'Ouest, DOS/Windows 437 la Leeri Taamanseerilaŋo"
 
 #. ENC_MLNG_DOS
 #: po/tmp/xap_String_Id.h.h:856
 msgid "Western European, DOS/Windows Code Page 850"
-msgstr "Européen de l'Ouest, Page de codes DOS/Windows 850"
+msgstr "Européen de l'Ouest, DOS/Windows 850 la Leeri Taamanseerilaŋo"
 
 #. ENC_WEST_HP
 #: po/tmp/xap_String_Id.h.h:858
@@ -8292,7 +8293,7 @@ msgstr "Européen de l'Ouest, NeXT"
 #. ENC_WEST_WIN
 #: po/tmp/xap_String_Id.h.h:866
 msgid "Western European, Windows Code Page 1252"
-msgstr "Européen de l'Ouest, Page de codes Windows 1252"
+msgstr "Européen de l'Ouest, Windows 1252 la Leeri Taamanseerilaŋo"
 
 #. TB_Zoom_WholePage
 #: po/tmp/xap_String_Id.h.h:868
@@ -8312,7 +8313,7 @@ msgstr "A fanoo :  "
 #. LANG_WO_SN
 #: po/tmp/xap_String_Id.h.h:874
 msgid "Wolof (Senegal)"
-msgstr "Wolof (Senegal)"
+msgstr "Wolofu (Senegal)"
 
 #. DLG_MB_Yes
 #: po/tmp/xap_String_Id.h.h:876
@@ -8328,7 +8329,7 @@ msgstr "Yiddish"
 #: po/tmp/xap_String_Id.h.h:880
 #, c-format
 msgid "You have to save changes to document %s before proceeding. Save now?"
-msgstr "I ñanta miŋ yelemandita safoo %s kono tankandi la le janniŋ i be tambila ñaato. Ka a tankandi saayiŋ ?"
+msgstr "I ñanta miŋ yelemandita safoo %s kono tankandi la le, janniŋ i be tambila ñaato. Ka a tankandi saayiŋ baŋ ?"
 
 #. DLG_Zoom_RadioFrameCaption
 #: po/tmp/xap_String_Id.h.h:884
@@ -8359,7 +8360,7 @@ msgstr "Fatariŋo"
 #: po/tmp/xap_String_Id.h.h:894
 #, c-format
 msgid "diverging after document position %d"
-msgstr "Waliyo safoo %d looñaa koolaa "
+msgstr "Waaliyo, safoo %d looñaa koolaa "
 
 #. DLG_DocComparison_Diverging
 #: po/tmp/xap_String_Id.h.h:896
@@ -8375,7 +8376,7 @@ msgstr "I Mulunta"
 #. DLG_Unit_inch
 #: po/tmp/xap_String_Id.h.h:900
 msgid "inch"
-msgstr "pouce / bulukumbaa"
+msgstr "Bulukumbaa"
 
 #. DLG_Unit_mm
 #: po/tmp/xap_String_Id.h.h:902
@@ -8385,7 +8386,7 @@ msgstr "mm"
 #. DLG_Unit_pica
 #: po/tmp/xap_String_Id.h.h:904
 msgid "pica"
-msgstr "pica"
+msgstr "Pica"
 
 #. DLG_Unit_points
 #: po/tmp/xap_String_Id.h.h:906
