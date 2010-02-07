@@ -21,6 +21,7 @@
  * 02111-1307, USA.
  */
 
+#import <string>
 
 #include "ut_debugmsg.h"
 
@@ -440,7 +441,7 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 	{
 		NSString * filename = (NSString *) [m_FilesRequestedDuringLaunch objectAtIndex:i];
 
-		UT_UTF8String path([filename UTF8String]);
+		std::string path([filename UTF8String]);
 
 		if (XAP_CocoaModule::hasPluginExtension(path))
 		{
@@ -451,7 +452,7 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 	{
 		NSString * filename = (NSString *) [m_FilesRequestedDuringLaunch objectAtIndex:i];
 
-		UT_UTF8String path([filename UTF8String]);
+		std::string path([filename UTF8String]);
 
 		if (!XAP_CocoaModule::hasPluginExtension(path))
 			if ([self application:NSApp openFile:filename])
@@ -495,7 +496,7 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 	UT_DEBUGMSG(("Requested to open %s\n", [filename UTF8String]));
 
-	UT_UTF8String path([filename UTF8String]);
+	std::string path([filename UTF8String]);
 
 	if (XAP_CocoaModule::hasPluginExtension(path))
 	{
