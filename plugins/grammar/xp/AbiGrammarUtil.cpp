@@ -58,6 +58,7 @@ PieceOfText::PieceOfText(void):
 
 PieceOfText::~PieceOfText(void)
 {
+	UT_VECTOR_PURGEALL(AbiGrammarError*, m_vecGrammarErrors);
 }
 
 UT_sint32 PieceOfText::countWords(void)
