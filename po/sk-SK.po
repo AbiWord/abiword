@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: AbiWord 2.7.x\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-08-03 05:18+0200\n"
-"PO-Revision-Date: 2009-08-03 19:32+0200\n"
+"PO-Revision-Date: 2010-01-29 20:33+0100\n"
 "Last-Translator: Jaroslav Ryník <jrynik@yahoo.co.uk>\n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -3287,9 +3287,8 @@ msgstr "Štýl jednoduchých úvodzoviek"
 #. DLG_IP_Button_Label
 #: po/tmp/ap_String_Id.h.h:1346
 #: po/tmp/xap_String_Id.h.h:457
-#, fuzzy
 msgid "Insert"
-msgstr "Vložiť"
+msgstr "Insert"
 
 #. MENU_LABEL_TABLE_INSERTCOLUMN
 #: po/tmp/ap_String_Id.h.h:1348
