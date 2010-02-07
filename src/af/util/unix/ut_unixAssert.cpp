@@ -26,11 +26,13 @@
 #include <signal.h>
 #include "ut_assert.h"
 #include "ut_unixAssert.h"
+#include "ut_types.h"
 
 static volatile sig_atomic_t trap_reached = 0;
 
 static void trap_handler(int signal)
 {
+	UT_UNUSED(signal);
 	trap_reached = 1;
 }
 
