@@ -8,7 +8,7 @@ plugin_LTLIBRARIES = garble.la
 
 garble_la_LIBADD = \
 	xp/libxp.la \
-	$(GARBLE_LIBS) -lpng12 -ljpeg
+	$(GARBLE_LIBS) $PNB_LIBS -ljpeg
 
 garble_la_LDFLAGS = \
 	$(GARBLE_LIBS) \
