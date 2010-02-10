@@ -476,7 +476,6 @@ if test x$abi_cv_png != xyes; then
   [
     AC_MSG_ERROR([`png.h' not found, install libpng or specify CPPFLAGS to include custom locations])
   ])
-else
   PNG_CFLAGS=
   PNG_LIBS=-lpng
 fi
