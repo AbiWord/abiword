@@ -462,12 +462,27 @@ AC_LANG_POP
 # Dependency tests
 #
 
-# TODO need to check for libpng too, at least on win32
-# check using pkg-config instead
-AC_CHECK_HEADER([png.h], [], 
-[
-	AC_MSG_ERROR([`png.h' not found, install libpng or specify CPPFLAGS to include custom locations])
-])
+# We need libpng
+PNG_CFLAGS=
+PNG_LIBS=-lpng
+for l in libpng libpng14 libpng12; do
+  AC_MSG_CHECKING(for $l)
+  if $PKG_CONFIG --exists $l ; then
+    AC_MSG_RESULT(yes)
+    PNG='png'
+    PNG_CFLAGS=`$PKG_CONFIG --cflags $l`
+    PNG_LIBS=`$PKG_CONFIG --libs $l`
+    break
+  else
+    AC_MSG_RESULT(no)
+  fi
+done
+if test x$PNG != xpng; then
+  AC_CHECK_HEADER([png.h], [], 
+  [
+    AC_MSG_ERROR([`png.h' not found, install libpng or specify CPPFLAGS to include custom locations])
+  ])
+fi
 
 # We need ljpeg
 AC_CHECK_HEADER(jpeglib.h,[
@@ -493,7 +508,7 @@ if test "$TOOLKIT" == "win"; then
 	deps_pkgs="$deps_pkgs $win_pkgs"
 	# nonstandard dlls go below the blank line
 	SYSTEM_LIBS="-ladvapi32 -lcomctl32 -lcomdlg32 -lgdi32 -lkernel32 -lole32 -loleaut32 -lshell32 -luser32 -luuid -lversion -lwinspool \
-		     -lpng12 -lz -ljpeg"
+		      $PNG_LIBS -lz -ljpeg"
 	SYSTEM_CFLAGS="-mthreads"
 elif test "$TOOLKIT" == "cocoa"; then
 	deps_pkgs="$deps_pkgs $cocoa_pkgs"
