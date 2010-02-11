@@ -463,25 +463,23 @@ AC_LANG_POP
 #
 
 # We need libpng
-PNG_CFLAGS=
-PNG_LIBS=-lpng
 for l in libpng libpng14 libpng12; do
   AC_MSG_CHECKING(for $l)
   if $PKG_CONFIG --exists $l ; then
     AC_MSG_RESULT(yes)
-    PNG='png'
-    PNG_CFLAGS=`$PKG_CONFIG --cflags $l`
-    PNG_LIBS=`$PKG_CONFIG --libs $l`
+    PKG_CHECK_MODULES(PNG, $l, [abi_cv_png=yes],[abi_cv_png=no])
     break
   else
     AC_MSG_RESULT(no)
   fi
 done
-if test x$PNG != xpng; then
+if test x$abi_cv_png != xyes; then
   AC_CHECK_HEADER([png.h], [], 
   [
     AC_MSG_ERROR([`png.h' not found, install libpng or specify CPPFLAGS to include custom locations])
   ])
+  PNG_CFLAGS=
+  PNG_LIBS=-lpng
 fi
 
 # We need ljpeg
