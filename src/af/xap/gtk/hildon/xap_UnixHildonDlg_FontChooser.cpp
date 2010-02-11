@@ -81,7 +81,7 @@ void XAP_UnixHildonDialog_FontChooser::fillFontInfo()
 	color.blue = static_cast<guint16> ((c.m_blu / 255.0) * 65535.0);
 
 	
-       	pszFontName = g_strdup_printf ("%s %d", getVal("font-family").c_str(), 
+       	pszFontName = g_strdup_printf ("%s,%d", getVal("font-family").c_str(), 
 						atoi(std_size_string(UT_convertToPoints(getVal("font-size").c_str()))));
 						
 	PangoFontDescription* ptrFontDesc = pango_font_description_from_string (pszFontName);
