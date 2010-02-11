@@ -1328,7 +1328,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 			UT_ASSERT(pRun->getType() == FPRUN_TEXT);
 			fp_TextRun * pTRun = static_cast<fp_TextRun *>(pRun);
 			xxx_UT_DEBUGMSG(("updateOffsets: Split at offset %d \n",splitOffset));
-			bool bres = pTRun->split(splitOffset);
+			bool bres = pTRun->split(splitOffset,0);
 			UT_UNUSED(bres);
 			UT_ASSERT(bres);
 			pRun = pTRun->getNextRun();
@@ -5977,20 +5977,17 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 			UT_ASSERT(pRun->getType() == FPRUN_TEXT);	// only textual runs can be split anyway
 
 			fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pRun);
-			pTextRun->split(blockOffset);
+			//
+			// Have to take account of the length of the new run in the
+			// block.
+			//
+			pTextRun->split(blockOffset,pNewRun->getLength());
 
 			UT_ASSERT(pRun->getNextRun());
-			UT_ASSERT(pRun->getNextRun()->getBlockOffset() == blockOffset);
+			UT_ASSERT(pRun->getNextRun()->getBlockOffset() == (blockOffset+pNewRun->getLength()));
 
 			UT_ASSERT(pTextRun->getNextRun());
 			UT_ASSERT(pTextRun->getNextRun()->getType() == FPRUN_TEXT);
-
-// sterwill -- is the call to getNextRun() needed?  pOtherHalfOfSplitRun
-//			   is not used.
-
-//			fp_TextRun* pOtherHalfOfSplitRun = static_cast<fp_TextRun*>(pTextRun->getNextRun());
-
-//			pTextRun->recalcWidth();
 
 			bInserted = true;
 
@@ -5999,10 +5996,10 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 			iRunBlockOffset = pRun->getBlockOffset();
 			iRunLength = pRun->getLength();
 
-			UT_ASSERT(iRunBlockOffset == blockOffset);
+			UT_ASSERT(iRunBlockOffset == (blockOffset+pNewRun->getLength()));
 
 			// the insert is right before this run.
-			pRun->setBlockOffset(iRunBlockOffset + len);
+	
 			pRun->insertIntoRunListBeforeThis(*pNewRun);
 
 			if(pRun->getLine())
@@ -6850,7 +6847,7 @@ bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange * p
 		if (FPRUN_TEXT == pPrevRun->getType())
 		{
 			fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pPrevRun);
-			pTextRun->split(blockOffset);
+			pTextRun->split(blockOffset,0);
 		}
 		pRun = pPrevRun->getNextRun();
 	}
@@ -6876,7 +6873,7 @@ bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange * p
 			if (FPRUN_TEXT == pRun->getType())
 			{
 				fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pRun);
-				pTextRun->split(blockOffset+len);
+				pTextRun->split(blockOffset+len,0);
 			}
 		}
 
@@ -7500,7 +7497,7 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 
 				// split here
 				fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pRun);
-				pTextRun->split(blockOffset);
+				pTextRun->split(blockOffset,0);
 				pFirstNewRun = pRun->getNextRun();
 			}
 			break;
