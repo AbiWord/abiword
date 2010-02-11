@@ -6,7 +6,7 @@ plugin_LTLIBRARIES = rsvg.la
 
 rsvg_la_LIBADD = \
 	xp/libxp.la \
-	$(RSVG_LIBS) $PNB_LIBS
+	$(RSVG_LIBS) $(PNG_LIBS)
 
 rsvg_la_LDFLAGS = \
 	-avoid-version \
