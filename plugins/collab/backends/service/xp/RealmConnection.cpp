@@ -26,13 +26,14 @@
 
 namespace rpv1 = realm::protocolv1;
 
-RealmConnection::RealmConnection(const std::string& ca_file, const std::string& address, int port, 
+RealmConnection::RealmConnection(const std::string& ca_file, const std::string& address, int port, bool tls,
 								 const std::string& cookie, UT_uint64 _doc_id, bool _master, const std::string& _session_id,
 								 boost::function<void (boost::shared_ptr<RealmConnection>)> sig)
 	: m_io_service(),
 	m_ca_file(ca_file),
 	m_address(address),
 	m_port(port),
+	m_tls(tls),
 	m_socket(m_io_service),
 	m_thread_ptr(),
 	m_cookie(cookie),
@@ -58,13 +59,24 @@ bool RealmConnection::connect()
 	UT_return_val_if_fail(!m_thread_ptr, false);
 
 	try {
-		// setup our local TLS tunnel to the realm
-		m_tls_tunnel_ptr.reset(new tls_tunnel::ClientProxy(m_address, m_port, m_ca_file, false));
-		m_tls_tunnel_ptr->setup();
-		asio::thread thread(boost::bind(&tls_tunnel::ClientProxy::run, m_tls_tunnel_ptr));
 
-		// connect to the tunnel
-		asio::ip::tcp::resolver::query query(m_tls_tunnel_ptr->local_address(), boost::lexical_cast<std::string>(m_tls_tunnel_ptr->local_port()));
+		std::string address = m_address;
+		int port = m_port;
+
+		if (m_tls)
+		{
+			// setup our local TLS tunnel to the realm
+			m_tls_tunnel_ptr.reset(new tls_tunnel::ClientProxy(m_address, m_port, m_ca_file, false));
+			m_tls_tunnel_ptr->setup();
+			asio::thread thread(boost::bind(&tls_tunnel::ClientProxy::run, m_tls_tunnel_ptr));
+
+			// make sure we connect to the tunnel, and not directly to the realm
+			address = m_tls_tunnel_ptr->local_address();
+			port = m_tls_tunnel_ptr->local_port();
+		}
+
+		// connect!
+		asio::ip::tcp::resolver::query query(address, boost::lexical_cast<std::string>(port));
 		asio::ip::tcp::resolver resolver(m_io_service);
 		asio::ip::tcp::resolver::iterator iterator(resolver.resolve(query));
 

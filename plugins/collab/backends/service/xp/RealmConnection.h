@@ -61,7 +61,7 @@ typedef boost::shared_ptr<realm::protocolv1::UserJoinedPacket> UserJoinedPacketP
 class RealmConnection : public boost::enable_shared_from_this<RealmConnection>
 {
 public:
-	RealmConnection(const std::string& ca_file, const std::string& address, int port, 
+	RealmConnection(const std::string& ca_file, const std::string& address, int port, bool tls,
 					const std::string& cookie, UT_uint64 doc_id, bool master, const std::string& session_id,
 					boost::function<void (boost::shared_ptr<RealmConnection>)> sig);
 	
@@ -127,6 +127,7 @@ private:
 	std::string							m_ca_file;
 	std::string							m_address;
 	int									m_port;
+	int									m_tls;
 	asio::ip::tcp::socket				m_socket;
 	boost::shared_ptr<asio::thread>		m_thread_ptr;
 	std::string							m_cookie;
