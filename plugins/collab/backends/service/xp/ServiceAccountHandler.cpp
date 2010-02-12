@@ -889,7 +889,12 @@ ConnectionPtr ServiceAccountHandler::_realmConnect(soa::CollectionPtr rcp,
 
 	soa::StringPtr realm_address = rcp->get<soa::String>("realm_address");
 	soa::IntPtr realm_port = rcp->get<soa::Int>("realm_port");
+	soa::BoolPtr realm_tls_ptr = rcp->get<soa::Bool>("realm_tls");
 	soa::StringPtr cookie = rcp->get<soa::String>("cookie");
+
+	bool realm_tls = true; // "realm_tls" can be missing from the soap response, in which case the default is "use tls"
+	if (realm_tls_ptr)
+		realm_tls = realm_tls_ptr->value();
 	
 	// some sanity checking
 	if (!realm_address || realm_address->value().size() == 0 || !realm_port || realm_port->value() <= 0 || !cookie || cookie->value().size() == 0)
@@ -899,10 +904,14 @@ ConnectionPtr ServiceAccountHandler::_realmConnect(soa::CollectionPtr rcp,
 	}   
 	
 	// open the realm connection!
-	UT_DEBUGMSG(("realm_address: %s, realm_port: %lld, cookie: %s\n", realm_address->value().c_str(), realm_port->value(), cookie->value().c_str()));
+	UT_DEBUGMSG(("realm_address: %s, realm_port: %lld, realm_tls: %s, cookie: %s\n",
+	    realm_address->value().c_str(), 
+	    realm_port->value(), 
+	    realm_tls ? "yes" : "no",
+	    cookie->value().c_str()));
 	ConnectionPtr connection = 
 		boost::shared_ptr<RealmConnection>(new RealmConnection(m_ssl_ca_file, realm_address->value(), 
-								realm_port->value(), cookie->value(), doc_id, master, session_id,
+								realm_port->value(), realm_tls, cookie->value(), doc_id, master, session_id,
 								boost::bind(&ServiceAccountHandler::_handleRealmPacket, this, _1)));
 
 	// TODO: this connect() call is blocking, so it _could_ take a while; we should
@@ -1856,18 +1865,28 @@ bool ServiceAccountHandler::_splitDescriptor(const std::string& descriptor, uint
 	return true;
 }
 
-std::string ServiceAccountHandler::_getDomain()
+std::string ServiceAccountHandler::_getDomain(const std::string& protocol)
 {
 	std::string uri = getProperty("uri");
+	if (!uri.compare(0, protocol.size(), protocol) == 0)
+		return "";
 
-	// NOTE: we only allow https for the service backend, so we don't have to check for http uri's
-	std::string https = "https://";
-	UT_return_val_if_fail(uri.compare(0, https.size(), https) == 0, "")
-
-	size_t slash_pos = uri.find_first_of("/", https.size());
+	size_t slash_pos = uri.find_first_of("/", protocol.size());
 	if (slash_pos == std::string::npos)
 		slash_pos = uri.size();
-	std::string domain = uri.substr(https.size(), slash_pos-https.size());
-	UT_return_val_if_fail(domain.size() > 0, "");
-	return domain;
+	return uri.substr(protocol.size(), slash_pos-protocol.size());
+}
+
+std::string ServiceAccountHandler::_getDomain()
+{
+	std::string domain = _getDomain("https://");
+	if (domain != "")
+		return domain;
+
+	domain = _getDomain("http://");
+	if (domain != "")
+		return domain;
+
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+	return "";
 }

@@ -183,6 +183,7 @@ private:
 	void									_handleMessages(ConnectionPtr connection);
 	void									_parseSessionFiles(soa::ArrayPtr files_array, GetSessionsResponseEvent& gsre);
 	bool									_splitDescriptor(const std::string& descriptor, uint64_t& user_id, uint8_t& conn_id, std::string& domain);
+	std::string								_getDomain(const std::string& protocol);
 	std::string								_getDomain();
 	bool									_parseUserInfo(const std::string& userinfo, uint64_t& user_id);
 
