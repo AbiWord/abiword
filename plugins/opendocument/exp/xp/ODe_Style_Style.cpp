@@ -290,6 +290,96 @@ bool ODe_Style_Style::hasParagraphStyleProps(const PP_AttrProp* pAP) {
         return true;
     }
     
+    ok = pAP->getProperty("shading-foreground-color", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+    
+    ok = pAP->getProperty("border-merge", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+    
+    ok = pAP->getProperty("bot-color", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+    
+    ok = pAP->getProperty("bot-style", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+    
+    ok = pAP->getProperty("bot-thickness", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+    
+    ok = pAP->getProperty("bot-space", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+    
+    ok = pAP->getProperty("left-color", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+    
+    ok = pAP->getProperty("left-style", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+    
+    ok = pAP->getProperty("left-thickness", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+    
+    ok = pAP->getProperty("left-space", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+    
+    ok = pAP->getProperty("right-color", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+    
+    ok = pAP->getProperty("right-style", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+    
+    ok = pAP->getProperty("right-thickness", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+    
+    ok = pAP->getProperty("right-space", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+    
+    ok = pAP->getProperty("top-color", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+    
+    ok = pAP->getProperty("top-style", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+    
+    ok = pAP->getProperty("top-thickness", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+    
+    ok = pAP->getProperty("top-space", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+    
     return false;
 }
 
@@ -937,7 +1027,16 @@ bool ODe_Style_Style::ParagraphProps::isEmpty() const {
              m_marginBottom.empty() &&
              m_keepWithNext.empty() &&
              m_breakBefore.empty() &&
-             m_writingMode.empty());
+             m_writingMode.empty()) &&
+             m_borderMerge.empty() &&
+             m_borderLeft.empty() &&
+             m_borderRight.empty() &&
+             m_borderTop.empty() &&
+             m_borderBottom.empty() &&
+             m_botSpace.empty() &&
+             m_leftSpace.empty() &&
+             m_rightSpace.empty() &&
+             m_topSpace.empty();
 }
 
 /**
@@ -1056,6 +1155,157 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
             m_keepWithNext = "auto";
         }
     }
+
+    
+    // Left border
+
+    ok = rAP.getProperty("left-style", pValue);
+    if(!ok)
+      m_borderLeft.clear();
+    if (pValue && (*pValue == '0')) {
+      m_borderLeft.clear();
+    } else {
+        ok = rAP.getProperty("left-thickness", pValue);
+        if (ok && pValue != NULL) {
+            m_borderLeft = pValue;
+        }
+        
+        ok = rAP.getProperty("left-color", pValue);
+        if (ok && pValue != NULL) {
+            if (!m_borderLeft.empty()) {
+                m_borderLeft += " ";
+            }
+            m_borderLeft += "solid ";
+            m_borderLeft += UT_colorToHex(pValue, true);
+        }
+    }
+    
+    
+    // Right border
+
+    ok = rAP.getProperty("right-style", pValue);
+    if(!ok)
+      m_borderRight.clear();
+    if (pValue && (*pValue == '0')) {
+      m_borderRight.clear();
+    } else {
+        ok = rAP.getProperty("right-thickness", pValue);
+        if (ok && pValue != NULL) {
+            m_borderRight = pValue;
+        }
+        
+        ok = rAP.getProperty("right-color", pValue);
+        if (ok && pValue != NULL) {
+            if (!m_borderRight.empty()) {
+                m_borderRight += " ";
+            }
+            m_borderRight += "solid ";
+            m_borderRight += UT_colorToHex(pValue, true);
+        }
+    }
+   
+    
+    // Top border
+    
+    ok = rAP.getProperty("top-style", pValue);
+    if(!ok)
+      m_borderTop.clear();
+    if (pValue && (*pValue == '0')) {
+      m_borderTop.clear();
+    } else {
+        ok = rAP.getProperty("top-thickness", pValue);
+        if (ok && pValue != NULL) {
+            m_borderTop = pValue;
+        }
+        
+        ok = rAP.getProperty("top-color", pValue);
+        if (ok && pValue != NULL) {
+            if (!m_borderTop.empty()) {
+                m_borderTop += " ";
+            }
+            m_borderTop += "solid ";
+            m_borderTop += UT_colorToHex(pValue, true);
+        }
+    }
+    
+    
+    // Bottom border
+    
+    ok = rAP.getProperty("bot-style", pValue);
+    if(!ok)
+      m_borderBottom.clear();
+    if (pValue && (*pValue == '0')) {
+      m_borderBottom.clear();
+    } else {
+        ok = rAP.getProperty("bot-thickness", pValue);
+        if (ok && pValue != NULL) {
+            m_borderBottom = pValue;
+        }
+        
+        ok = rAP.getProperty("bot-color", pValue);
+        if (ok && pValue != NULL) {
+            if (!m_borderBottom.empty()) {
+                m_borderBottom += " ";
+            }
+            
+            m_borderBottom += "solid ";
+            m_borderBottom += UT_colorToHex(pValue, true);
+        }
+    }
+     
+    // Border merge
+
+    ok = rAP.getProperty("border-merge", pValue);
+    if(!ok)
+      m_borderMerge.clear();
+
+    if (pValue && (*pValue == '0')) 
+    {
+      m_borderMerge.clear();
+    }
+    else if (!strcmp(pValue, "false"))
+    { 
+      m_borderMerge.clear();
+    }
+    else if(ok)
+      m_borderMerge = pValue;
+
+    // padding
+
+    ok = rAP.getProperty("bot-space", pValue);
+    if(!ok)
+      m_botSpace.clear();
+    else
+    {
+      m_botSpace = pValue;
+    }
+
+
+    ok = rAP.getProperty("left-space", pValue);
+    UT_DEBUGMSG(("ok %d left-space %s \n",ok,pValue));
+    if(!ok)
+      m_leftSpace.clear();
+    else 
+    {
+      m_leftSpace = pValue;
+    }
+    UT_DEBUGMSG(("1 -m_leftspace %s \n",m_leftSpace.utf8_str()));
+
+    ok = rAP.getProperty("right-space", pValue);
+    if(!ok)
+      m_rightSpace.clear();
+    else
+    {
+      m_rightSpace = pValue;
+    }
+
+    ok = rAP.getProperty("top-space", pValue);
+    if(!ok)
+      m_topSpace.clear();
+    else
+    {
+      m_topSpace = pValue;
+    }
 }
 
 
@@ -1086,6 +1336,16 @@ write(UT_UTF8String& rOutput, const UT_UTF8String& rSpacesOffset) const {
     ODe_writeAttribute(rOutput, "fo:keep-with-next", m_keepWithNext);
     ODe_writeAttribute(rOutput, "fo:break-before", m_breakBefore);
     ODe_writeAttribute(rOutput, "style:writing-mode", m_writingMode);
+    ODe_writeAttribute(rOutput, "fo:border-left", m_borderLeft);
+    ODe_writeAttribute(rOutput, "fo:border-right", m_borderRight);
+    ODe_writeAttribute(rOutput, "fo:border-top", m_borderTop);
+    ODe_writeAttribute(rOutput, "fo:border-bottom", m_borderBottom);
+    ODe_writeAttribute(rOutput, "fo:padding-bottom", m_botSpace);
+    ODe_writeAttribute(rOutput, "fo:padding-left", m_leftSpace);
+    UT_DEBUGMSG(("2 -m_leftspace %s \n",m_leftSpace.utf8_str()));
+    ODe_writeAttribute(rOutput, "fo:padding-right", m_rightSpace);
+    ODe_writeAttribute(rOutput, "fo:padding-top", m_topSpace);
+    ODe_writeAttribute(rOutput, "style:join-border", m_borderMerge);
 
     rOutput += "/>\n";
 }
@@ -1111,7 +1371,15 @@ ODe_Style_Style::ParagraphProps& ODe_Style_Style::ParagraphProps::operator=(
     m_keepWithNext = rParagraphProps.m_keepWithNext;
     m_breakBefore = rParagraphProps.m_breakBefore;
     m_writingMode = rParagraphProps.m_writingMode;
-    
+    m_borderMerge = rParagraphProps.m_borderMerge;
+    m_borderLeft = rParagraphProps.m_borderLeft;
+    m_borderRight = rParagraphProps.m_borderRight;
+    m_borderTop = rParagraphProps.m_borderTop;
+    m_borderBottom = rParagraphProps.m_borderBottom;
+    m_botSpace = rParagraphProps.m_botSpace;
+    m_leftSpace = rParagraphProps.m_leftSpace;
+    m_rightSpace = rParagraphProps.m_rightSpace;
+    m_topSpace = rParagraphProps.m_topSpace;   
     return *this;
 }
 
@@ -1136,7 +1404,16 @@ bool ODe_Style_Style::ParagraphProps::operator==(
         m_marginBottom    == rParagraphProps.m_marginBottom &&
         m_keepWithNext    == rParagraphProps.m_keepWithNext &&
         m_breakBefore     == rParagraphProps.m_breakBefore &&
-        m_writingMode     == rParagraphProps.m_writingMode;
+        m_writingMode     == rParagraphProps.m_writingMode &&
+        m_borderMerge     == rParagraphProps.m_borderMerge &&
+        m_borderLeft      == rParagraphProps.m_borderLeft &&
+        m_borderRight     == rParagraphProps.m_borderRight &&
+        m_borderTop       == rParagraphProps.m_borderTop &&
+        m_borderBottom    == rParagraphProps.m_borderBottom &&
+        m_botSpace        == rParagraphProps.m_botSpace &&
+        m_leftSpace       == rParagraphProps.m_leftSpace &&
+        m_rightSpace      == rParagraphProps.m_rightSpace &&
+        m_topSpace        == rParagraphProps.m_topSpace;
 }
 
 

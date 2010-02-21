@@ -177,6 +177,16 @@ private:
         UT_UTF8String m_keepWithNext;    // fo:keep-with-next
         UT_UTF8String m_breakBefore;     // fo:break-before
         UT_UTF8String m_writingMode;     // style:writing-mode
+        UT_UTF8String m_borderMerge;     // style:join-border
+        UT_UTF8String m_borderLeft;      // fo:border-left
+        UT_UTF8String m_borderRight;     // fo:border-right
+        UT_UTF8String m_borderTop;       // fo:border-top
+        UT_UTF8String m_borderBottom;    // fo:border-bottom
+        UT_UTF8String m_botSpace;        // fo:padding-bottom
+        UT_UTF8String m_leftSpace;       // fo:padding-left
+        UT_UTF8String m_rightSpace;      // fo:padding-right
+        UT_UTF8String m_topSpace;        // fo:padding-top
+       
     } *m_pParagraphProps;
     
     
