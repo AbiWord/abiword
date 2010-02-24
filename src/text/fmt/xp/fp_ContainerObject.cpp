@@ -238,7 +238,7 @@ void fp_Container::drawLine(const PP_PropertyMap::Line & style,
 		default: // do nothing; shouldn't happen
 			break;
 	}
-
+	UT_sint32 dth = style.m_thickness/2;
 	pGr->setLineWidth (static_cast<UT_sint32>(style.m_thickness));
 	if (style.m_t_linestyle == PP_PropertyMap::linestyle_none)
 	{

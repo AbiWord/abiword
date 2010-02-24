@@ -268,6 +268,12 @@ void fp_Line::drawBorders(GR_Graphics * pG)
   //
   // Draw top border
   PP_PropertyMap::Line line;
+
+  line = getBlock()->getLeft();
+  iLeft += line.m_thickness/2;
+  line = getBlock()->getRight();
+  iRight -= line.m_thickness/2;
+ 
   if(bDrawTop && (getBlock()->getTop().m_t_linestyle > 1))
   {
       line = getBlock()->getTop();
