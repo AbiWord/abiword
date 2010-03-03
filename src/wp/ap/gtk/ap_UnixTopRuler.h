@@ -58,6 +58,8 @@ protected:
 	class _fe
 	{
 	public:
+		static void realize(AP_UnixTopRuler *self);
+		static void unrealize(AP_UnixTopRuler *self);
 		static gint button_press_event(GtkWidget * w, GdkEventButton * e);
 		static gint button_release_event(GtkWidget * w, GdkEventButton * e);
 		static gint configure_event(GtkWidget* w, GdkEventConfigure *e);

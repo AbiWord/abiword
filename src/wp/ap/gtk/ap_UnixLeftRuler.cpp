@@ -89,9 +89,15 @@ GtkWidget * AP_UnixLeftRuler::createWidget(void)
 													 GDK_KEY_PRESS_MASK |
 													 GDK_KEY_RELEASE_MASK));
 
+	g_signal_connect_swapped(G_OBJECT(m_wLeftRuler), "realize",
+					   G_CALLBACK(_fe::realize), this);
+
+	g_signal_connect_swapped(G_OBJECT(m_wLeftRuler), "unrealize",
+					   G_CALLBACK(_fe::unrealize), this);
+
 	g_signal_connect_swapped(G_OBJECT(m_wLeftRuler), "expose_event",
 					   G_CALLBACK(XAP_UnixCustomWidget::_fe::expose), static_cast<XAP_UnixCustomWidget *>(this));
-  
+
 	g_signal_connect(G_OBJECT(m_wLeftRuler), "button_press_event",
 					   G_CALLBACK(_fe::button_press_event), NULL);
 
@@ -100,7 +106,7 @@ GtkWidget * AP_UnixLeftRuler::createWidget(void)
 
 	g_signal_connect(G_OBJECT(m_wLeftRuler), "motion_notify_event",
 					   G_CALLBACK(_fe::motion_notify_event), NULL);
-  
+
 	g_signal_connect(G_OBJECT(m_wLeftRuler), "configure_event",
 					   G_CALLBACK(_fe::configure_event), NULL);
 
@@ -111,17 +117,8 @@ void AP_UnixLeftRuler::setView(AV_View * pView)
 {
 	AP_LeftRuler::setView(pView);
 
-	// We really should allocate m_pG in createWidget(), but
-	// unfortunately, the actual window (m_wLeftRuler->window)
-	// is not created until the frame's top-level window is
-	// shown.
-	
-	DELETEP(m_pG);
+	UT_ASSERT(GTK_WIDGET_REALIZED(m_wLeftRuler));
 
-	GR_UnixCairoAllocInfo ai(m_wLeftRuler);
-	m_pG = XAP_App::getApp()->newGraphics(ai);
-
-	UT_ASSERT(m_pG);
 	m_pG->setZoomPercentage(pView->getGraphics()->getZoomPercentage());
 
 	GtkWidget * ruler = gtk_vruler_new ();
@@ -148,6 +145,21 @@ GdkWindow * AP_UnixLeftRuler::getRootWindow(void)
 }
 
 /*****************************************************************/
+
+void AP_UnixLeftRuler::_fe::realize(AP_UnixLeftRuler *self)
+{
+	UT_ASSERT(!self->m_pG);
+
+	GR_UnixCairoAllocInfo ai(self->m_wLeftRuler);
+	self->m_pG = XAP_App::getApp()->newGraphics(ai);
+	UT_ASSERT(self->m_pG);
+}
+
+void AP_UnixLeftRuler::_fe::unrealize(AP_UnixLeftRuler *self)
+{
+	UT_ASSERT(self->m_pG);
+	DELETEP(self->m_pG);
+}
 
 gint AP_UnixLeftRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 {
