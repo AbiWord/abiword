@@ -47,7 +47,7 @@ bool ODe_MetaDataWriter::writeMetaData(PD_Document* pDoc, GsfOutfile* oo) {
     GsfOutput* meta = gsf_outfile_new_child (oo, "meta.xml", FALSE);
 
     static const char * const preamble [] = {
-        "<?xml version='1.0' encoding='UTF-8'?>\n",
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
         "<office:document-meta"
             " xmlns:office=\"urn:oasis:names:tc:opendocument:xmlns:office:1.0\""
             " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
