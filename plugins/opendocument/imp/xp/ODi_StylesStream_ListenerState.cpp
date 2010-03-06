@@ -149,7 +149,7 @@ void ODi_StylesStream_ListenerState::startElement (const gchar* pName,
       ODi_ListenerState* pStyle=NULL;
       UT_sint32 icnt = 0;
       for(icnt=0; ppAtts[icnt] != NULL;icnt++);
-      const gchar ** ppExtra = new const gchar*[icnt+2];
+      const gchar ** ppExtra = new const gchar*[icnt+3];
       UT_sint32 i = 0;
       UT_UTF8String sLName="BaseHeading";
       for(i=0; i<icnt;i++)
