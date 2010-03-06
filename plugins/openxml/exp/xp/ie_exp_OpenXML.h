@@ -76,7 +76,7 @@ public:
 	UT_Error startParagraph(int target);
 	UT_Error finishParagraph(int target);
 	UT_Error startText(int target);
-	UT_Error writeText(int target, const char* text);
+	UT_Error writeText(int target, const UT_UCS4Char* text);
 	UT_Error finishText(int target);
 	UT_Error startRun(int target);
 	UT_Error finishRun(int target);

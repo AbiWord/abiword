@@ -258,19 +258,36 @@ UT_Error IE_Exp_OpenXML::startText(int target)
 /**
  * Writes the actual content of OXML_Element_Text object
  */
-UT_Error IE_Exp_OpenXML::writeText(int target, const char* text)
+UT_Error IE_Exp_OpenXML::writeText(int target, const UT_UCS4Char* text)
 {
-	UT_UTF8String sEscText = "";
+	// This shouldn't happen, but if it does just return UT_OK
+	// to prevent export errors
+	UT_return_val_if_fail(text, UT_OK);
 
-	while(text && *text)
+	UT_uint32 len = UT_UCS4_strlen(text);
+
+	UT_UTF8String sEscText;
+	sEscText.reserve(len);
+
+	const UT_UCS4Char* pText;
+	for(pText = text; pText < text + len; pText++)
 	{
-		// ignore invalid XML characters
-		if((*text >= 0x20 && *text != 0x7f) || (*text == '\n' || *text == '\r' || *text == '\t'))
-			sEscText += *text;
+		switch(*pText)
+		{
+			// any other special handling needed?
 
-		// TODO: column breaks and page breaks are being discarded due to the above check
+			default:
 
-		text++;
+				if((*pText >= 0x20 && *pText != 0x7f) ||
+					(*pText == '\n' || *pText == '\r' || *pText == '\t'))
+				{
+					sEscText.appendUCS4(pText, 1);
+				}
+				else
+				{
+					xxx_UT_DEBUGMSG(("OOXML export: dropping character (%d)\n", *pText));
+				}
+		}
 	}
 
 	sEscText.escapeXML();
