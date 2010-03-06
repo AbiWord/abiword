@@ -626,6 +626,7 @@ changed_cb (GOComponent *component, gpointer data)
 				for (i = 0; i < nbprops; i++) {
 					if (specs[i]->flags & GOC_PARAM_PERSISTENT) {
 						prop_type = G_PARAM_SPEC_VALUE_TYPE (specs[i]);
+						memset(&value, 0, sizeof(value));
 						g_value_init (&value, prop_type);
 						g_object_get_property  (G_OBJECT (component), specs[i]->name, &value);
 						if (!g_param_value_defaults (specs[i], &value))
@@ -640,6 +641,7 @@ changed_cb (GOComponent *component, gpointer data)
 							case G_TYPE_FLOAT:
 							case G_TYPE_DOUBLE: {
 								GValue str;
+								memset(&str, 0, sizeof(str));
 								g_value_init (&str, G_TYPE_STRING);
 								g_value_transform (&value, &str);
 								prop = g_strdup (g_value_get_string (&str));
