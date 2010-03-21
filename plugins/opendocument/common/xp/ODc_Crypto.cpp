@@ -17,7 +17,6 @@
  */
 
 #include <stdlib.h>
-#include <strings.h>
 
 #include <zlib.h>
 #include <glib.h>
@@ -26,7 +25,7 @@
 
 #include "sha1.h"
 #include "gc-pbkdf2-sha1.h"
-#include "blowfish.h"
+#include "blowfish/blowfish.h"
 
 #include "ut_assert.h"
 #include "ODc_Crypto.h"
@@ -55,14 +54,14 @@ UT_Error ODc_Crypto::performDecrypt(GsfInput* pStream,
 	BF_set_key(&bf_key, PBKDF2_KEYLEN, (const unsigned char*)key);
 
 	// perform the actual decryption
-	UT_sint64 content_size = gsf_input_size(pStream); 
+	UT_sint32 content_size = gsf_input_size(pStream); 
 	if (content_size == -1)
 		return UT_ERROR;
 	const unsigned char* content = gsf_input_read(pStream, content_size, NULL);
 	if (!content)
 		return UT_ERROR;
 	int num = 0;
-	unsigned char* content_decrypted = (unsigned char*)malloc(content_size);
+	unsigned char* content_decrypted = (unsigned char*)g_malloc(content_size);
 	BF_cfb64_encrypt(content, content_decrypted, content_size, &bf_key, ivec, &num, BF_DECRYPT);
 
 	// deflate the decrypted content
@@ -78,7 +77,7 @@ UT_Error ODc_Crypto::performDecrypt(GsfInput* pStream,
 	if (err != Z_OK)
 		return UT_ERROR;
 
-	unsigned char* decrypted = (unsigned char*)malloc(decrypted_size);
+	unsigned char* decrypted = (unsigned char*)g_malloc(decrypted_size);
 	zs.avail_in = content_size;
 	zs.avail_out = decrypted_size;
 	zs.next_in = content_decrypted;
@@ -108,8 +107,8 @@ UT_Error ODc_Crypto::decrypt(GsfInput* pStream, const ODc_CryptoInfo& cryptInfo,
 	UT_return_val_if_fail(pDecryptedInput, UT_ERROR);
 	
 	// check if we support the requested decryption method
-	UT_return_val_if_fail(strcasecmp(cryptInfo.m_algorithm.c_str(), "Blowfish CFB") == 0, UT_ERROR);
-	UT_return_val_if_fail(strcasecmp(cryptInfo.m_keyType.c_str(), "PBKDF2") == 0, UT_ERROR);
+	UT_return_val_if_fail(g_ascii_strcasecmp(cryptInfo.m_algorithm.c_str(), "Blowfish CFB") == 0, UT_ERROR);
+	UT_return_val_if_fail(g_ascii_strcasecmp(cryptInfo.m_keyType.c_str(), "PBKDF2") == 0, UT_ERROR);
 	
 	// base64 decode the salt
 	gsize salt_length;
@@ -124,8 +123,8 @@ UT_Error ODc_Crypto::decrypt(GsfInput* pStream, const ODc_CryptoInfo& cryptInfo,
 			ivec, password, cryptInfo.m_decryptedSize, pDecryptedInput);
 
 	// cleanup
-	free(salt);
-	free(ivec);
+	FREEP(salt);
+	FREEP(ivec);
 
 	return result;
 }

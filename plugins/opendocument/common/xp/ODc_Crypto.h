@@ -24,10 +24,10 @@
 #include <gsf/gsf-input.h>
 #include "ut_types.h"
 
-class ABI_EXPORT ODc_CryptoInfo {
+class ODc_CryptoInfo {
 public:
 	// stream information
-	UT_uint64		m_decryptedSize;
+	UT_uint32		m_decryptedSize;
 	
 	// algorithm information
 	std::string		m_algorithm;
@@ -39,7 +39,7 @@ public:
 	std::string		m_salt;
 };
 
-class ABI_EXPORT ODc_Crypto {
+class ODc_Crypto {
 public:
 	static UT_Error decrypt(GsfInput* pStream, const ODc_CryptoInfo& cryptInfo, 
 							const std::string& password, GsfInput** pDecryptedInput);
