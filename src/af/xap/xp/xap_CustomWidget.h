@@ -23,7 +23,7 @@
 #include "ut_misc.h"
 #include "gr_Graphics.h"
 
-class XAP_CustomWidget
+class ABI_EXPORT XAP_CustomWidget
 {
 public:
 	XAP_CustomWidget() {}
@@ -37,7 +37,7 @@ protected:
 };
 
 /* utility class for widgets drawing in layout units */
-class XAP_CustomWidgetLU: virtual public XAP_CustomWidget
+class ABI_EXPORT XAP_CustomWidgetLU: virtual public XAP_CustomWidget
 {
 public:
 	virtual GR_Graphics *getGraphics() const = 0;
