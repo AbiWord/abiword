@@ -35,7 +35,7 @@
 
 class GR_Graphics;
 
-class ABI_EXPORT XAP_Preview: virtual public XAP_CustomWidget
+class ABI_EXPORT XAP_Preview: public XAP_CustomWidget
 {
 public:
 	XAP_Preview(GR_Graphics * gc);

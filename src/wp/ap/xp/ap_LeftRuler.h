@@ -117,7 +117,7 @@ public:
 	
 /*****************************************************************/
 
-class ABI_EXPORT AP_LeftRuler : public AV_Listener, virtual public XAP_CustomWidgetLU
+class ABI_EXPORT AP_LeftRuler : public AV_Listener, public XAP_CustomWidgetLU
 {
 public:
 	AP_LeftRuler(XAP_Frame * pFrame);
