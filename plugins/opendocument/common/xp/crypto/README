@@ -1,0 +1,13 @@
+The following files were taken from gnulib:
+
+  * gc-pbkdf2-sha1.c
+  * hmac-sha1.c
+  * hmac.h
+  * memxor.c
+  * memxor.h
+  * sha1.c
+  * sha1.h
+
+I added gc-pbkdf2-sha1.h to have a nice header file to use.
+
+  - Marc Maurer, March 20, 2010

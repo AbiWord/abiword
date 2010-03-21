@@ -34,24 +34,69 @@
  */
 ODi_ManifestStream_ListenerState::ODi_ManifestStream_ListenerState(
                                                 PD_Document* pDocument,
-                                                ODi_ElementStack& rElementStack)
+                                                ODi_ElementStack& rElementStack,
+                                                std::map<std::string, ODc_CryptoInfo>& cryptoInfo)
         : ODi_ListenerState("ManifestStream", rElementStack),
           m_pDocument(pDocument),
-          m_isDocumentEncripted(false)
+          m_sFullPath(""),
+          m_iSize(-1),
+          m_pCryptoInfo(NULL),
+          m_cryptoInfo(cryptoInfo)
 {
 }
 
+/**
+ * Destructor
+ */
+ODi_ManifestStream_ListenerState::~ODi_ManifestStream_ListenerState()
+{
+    DELETEP(m_pCryptoInfo);
+}
 
 /**
  * Called to signal that the start tag of an element has been reached.
  */
 void ODi_ManifestStream_ListenerState::startElement (const gchar* pName,
-													 const gchar** /*ppAtts*/,
+													 const gchar** ppAtts,
 													 ODi_ListenerStateAction& /*rAction*/) 
 {
+    const char* pVal;
+
+    if (!strcmp(pName, "manifest:file-entry")) {
+        pVal = UT_getAttribute ("manifest:full-path", ppAtts);
+		m_sFullPath = pVal ? pVal : "";
+
+        pVal = UT_getAttribute ("manifest:size", ppAtts);
+		m_iSize = pVal ? atoll(pVal) : -1;
+	}
+	
     if (!strcmp(pName, "manifest:encryption-data")) {
-        m_isDocumentEncripted = true;
+        DELETEP(m_pCryptoInfo);
+        m_pCryptoInfo = new ODc_CryptoInfo();
     }
+
+    if (!strcmp(pName, "manifest:algorithm")) {
+        UT_return_if_fail(m_pCryptoInfo);
+
+        pVal = UT_getAttribute ("manifest:algorithm-name", ppAtts);
+        m_pCryptoInfo->m_algorithm = pVal ? pVal : "";
+
+        pVal = UT_getAttribute ("manifest:initialisation-vector", ppAtts);
+        m_pCryptoInfo->m_initVector = pVal ? pVal : "";
+	}
+
+	if (!strcmp(pName, "manifest:key-derivation")) {
+        UT_return_if_fail(m_pCryptoInfo);
+
+        pVal = UT_getAttribute ("manifest:key-derivation-name", ppAtts);
+        m_pCryptoInfo->m_keyType = pVal ? pVal : "";
+
+        pVal = UT_getAttribute ("manifest:iteration-count", ppAtts);
+        m_pCryptoInfo->m_iterCount = pVal ? atoll(pVal) : -1;
+
+        pVal = UT_getAttribute ("manifest:salt", ppAtts);
+        m_pCryptoInfo->m_salt = pVal ? pVal : "";
+	}
 }
 
 
@@ -61,7 +106,16 @@ void ODi_ManifestStream_ListenerState::startElement (const gchar* pName,
 void ODi_ManifestStream_ListenerState::endElement (const gchar* pName,
                                               ODi_ListenerStateAction& rAction)
 {
-    if (!strcmp(pName, "manifest:manifest")) {
+    if (!strcmp(pName, "manifest:encryption-data")) {
+        UT_return_if_fail(m_pCryptoInfo);
+		
+        // store the encryption information
+		m_pCryptoInfo->m_decryptedSize = m_iSize;
+        m_cryptoInfo[m_sFullPath] = *m_pCryptoInfo;
+        DELETEP(m_pCryptoInfo);
+    }
+
+	if (!strcmp(pName, "manifest:manifest")) {
         rAction.popState();
     }
 }

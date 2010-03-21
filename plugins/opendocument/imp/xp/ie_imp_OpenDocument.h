@@ -25,8 +25,11 @@
 #ifndef _IE_IMP_OPENDOCUMENT_H_
 #define _IE_IMP_OPENDOCUMENT_H_
 
+#include <map>
+#include <string>
 
 // Internal includes
+#include "ODc_Crypto.h"
 #include "ODi_Office_Styles.h"
 #include "ODi_Abi_Data.h"
 
@@ -63,15 +66,15 @@ private:
     UT_Error _handleContentStream ();
     void _setDocumentProperties();
 
-    static UT_Error _handleStream (GsfInfile* pGsfInfile,
+    UT_Error _handleStream(GsfInfile* pGsfInfile,
                    const char* pStream, UT_XML::Listener& rListener);
 
-    static UT_Error _parseStream ( GsfInfile* pGsfInfile, 
-                  const char* pStream,
-                  UT_XML & parser );
+    UT_Error _parseStream(GsfInput* pInput, UT_XML & parser);
 
     GsfInfile* m_pGsfInfile;
-    
+
+    UT_UTF8String m_sPassword;
+    std::map<std::string, ODc_CryptoInfo> m_cryptoInfo;
     ODi_StreamListener* m_pStreamListener;
     ODi_Office_Styles m_styles;
     ODi_Abi_Data* m_pAbiData;

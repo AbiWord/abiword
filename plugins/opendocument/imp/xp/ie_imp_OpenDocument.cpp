@@ -31,6 +31,11 @@
 
 // AbiWord includes
 #include <ut_types.h>
+#include "xap_App.h"
+#include "xap_Frame.h"
+#include "xap_DialogFactory.h"
+#include "xap_Dlg_Password.h"
+#include "ap_Dialog_Id.h"
 
 // External includes
 #include <glib-object.h>
@@ -43,7 +48,9 @@
  * Constructor
  */
 IE_Imp_OpenDocument::IE_Imp_OpenDocument (PD_Document * pDocument)
-  : IE_Imp (pDocument), m_pGsfInfile (0)
+  : IE_Imp (pDocument),
+  m_pGsfInfile (0),
+  m_sPassword ("")
 {
 }
 
@@ -127,27 +134,74 @@ UT_Error IE_Imp_OpenDocument::_loadFile (GsfInput * oo_src)
 
 
 /**
+ * Asks the user for a password.
+ *
+ * Taken from ie_imp_MsWord97.cpp
+ */
+
+#define GetPassword() _getPassword ( XAP_App::getApp()->getLastFocussedFrame() )
+
+static UT_UTF8String _getPassword (XAP_Frame * pFrame)
+{
+  UT_UTF8String password ( "" );
+
+  if ( pFrame )
+    {
+      pFrame->raise ();
+
+      XAP_DialogFactory * pDialogFactory
+		  = (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+      XAP_Dialog_Password * pDlg = static_cast<XAP_Dialog_Password*>(pDialogFactory->requestDialog(XAP_DIALOG_ID_PASSWORD));
+      UT_return_val_if_fail(pDlg, password);
+
+      pDlg->runModal (pFrame);
+
+      XAP_Dialog_Password::tAnswer ans = pDlg->getAnswer();
+      bool bOK = (ans == XAP_Dialog_Password::a_OK);
+
+      if (bOK)
+		  password = pDlg->getPassword ();
+
+      pDialogFactory->releaseDialog(pDlg);
+    }
+
+  return password;
+}
+
+
+/**
  * Handle the manifest file.
  */
 UT_Error IE_Imp_OpenDocument::_handleManifestStream() {
-    GsfInput* pMetaInf = gsf_infile_child_by_name(m_pGsfInfile, "META-INF");
-    ODi_ManifestStream_ListenerState manifestListener(getDoc(),
-                                          *(m_pStreamListener->getElementStack()));
-    UT_Error error;
-    
-    m_pStreamListener->setState(&manifestListener, false);
+    // clear the cryptography state
+    m_cryptoInfo.clear();
+    m_sPassword = "";
 
-    error = _handleStream (GSF_INFILE(pMetaInf), "manifest.xml", *m_pStreamListener);
+	GsfInput* pMetaInf = gsf_infile_child_by_name(m_pGsfInfile, "META-INF");
+    ODi_ManifestStream_ListenerState manifestListener(getDoc(),
+                                          *(m_pStreamListener->getElementStack()),
+                                           m_cryptoInfo);
+
+	m_pStreamListener->setState(&manifestListener, false);
+
+    UT_Error error = _handleStream (GSF_INFILE(pMetaInf), "manifest.xml", *m_pStreamListener);
 
     g_object_unref (G_OBJECT (pMetaInf));
     
     if (error != UT_OK) {
         return error;
-    } else if (manifestListener.isDocumentEncripted()) {
-        return UT_IE_UNSUPTYPE;
-    } else {
-        return UT_OK;
     }
+
+    if (m_cryptoInfo.size() > 0) {
+        // there is at least one entry in the manifest that is encrypted, so
+        // ask the user for a password
+        m_sPassword = GetPassword();
+        if (m_sPassword.size() == 0)
+            return UT_IE_PROTECTED;
+    }
+	
+    return UT_OK;
 }
 
 
@@ -283,9 +337,36 @@ UT_Error IE_Imp_OpenDocument::_handleContentStream ()
 UT_Error IE_Imp_OpenDocument::_handleStream ( GsfInfile* pGsfInfile,
                    const char * pStream, UT_XML::Listener& rListener)
 {
-  UT_XML reader;
-  reader.setListener ( &rListener );
-  return _parseStream (pGsfInfile, pStream, reader);
+    GsfInput* pInput = gsf_infile_child_by_name(pGsfInfile, pStream);
+    UT_return_val_if_fail(pInput, UT_ERROR);
+
+	// check if the stream is encrypted, and if so, decrypt it
+    std::map<std::string, ODc_CryptoInfo>::iterator pos = m_cryptoInfo.find(pStream);
+    if (pos != m_cryptoInfo.end())
+	{
+        UT_DEBUGMSG(("Running decrypt on stream %s\n", pStream));
+		
+        GsfInput* pDecryptedInput = NULL;
+        UT_Error err = ODc_Crypto::decrypt(pInput, (*pos).second, m_sPassword.utf8_str(), &pDecryptedInput);
+        g_object_unref (G_OBJECT (pInput));
+		
+        if (err != UT_OK) {
+            UT_DEBUGMSG(("Decryption failed!\n"));
+            return err;
+        }
+		
+        UT_DEBUGMSG(("Stream %s decrypted\n", pStream));
+        pInput = pDecryptedInput;
+	}
+
+	// parse the XML stream
+    UT_XML reader;
+    reader.setListener ( &rListener );
+    UT_Error err = _parseStream (pInput, reader);
+
+    g_object_unref (G_OBJECT (pInput));
+	
+    return err;
 }
 
 
@@ -293,20 +374,14 @@ UT_Error IE_Imp_OpenDocument::_handleStream ( GsfInfile* pGsfInfile,
  * Static utility method to read a file/stream embedded inside of the
  * zipfile into an xml parser
  */
-UT_Error IE_Imp_OpenDocument::_parseStream ( GsfInfile* pGsfInfile, 
-                  const char* pStream,
-                  UT_XML & parser )
+UT_Error IE_Imp_OpenDocument::_parseStream (GsfInput* pInput, UT_XML & parser)
 {
     guint8 const *data = NULL;
     size_t len = 0;
     UT_Error ret = UT_OK;
 
-    GsfInput* pInput = gsf_infile_child_by_name(pGsfInfile, pStream);
-
-    if (!pInput) {
-        return UT_ERROR;
-    }
-
+	UT_return_val_if_fail(pInput, UT_ERROR);
+	
     if (gsf_input_size (pInput) > 0) {
         while ((len = gsf_input_remaining (pInput)) > 0) {
             // FIXME: we want to pass the stream in chunks, but libXML2 finds this disagreeable.
@@ -324,7 +399,6 @@ UT_Error IE_Imp_OpenDocument::_parseStream ( GsfInfile* pGsfInfile,
         }
     }
   
-    g_object_unref (G_OBJECT (pInput));
     return ret;
 }
 
