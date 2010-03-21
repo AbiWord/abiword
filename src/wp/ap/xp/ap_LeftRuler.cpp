@@ -53,7 +53,7 @@
 /*****************************************************************/
 
 AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
-	: XAP_CustomWidget()
+	: XAP_CustomWidgetLU()
 #if XAP_DONTUSE_XOR
 	, m_guideCache(NULL)
 #endif
