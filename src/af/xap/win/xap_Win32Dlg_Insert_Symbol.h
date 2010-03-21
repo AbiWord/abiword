@@ -47,7 +47,7 @@ public:
 		{
 		}
 				
-	void	draw(void)
+	void	draw(const UT_Rect *clip=NULL)
 		{
 		m_pSymbolDraw->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 		}
