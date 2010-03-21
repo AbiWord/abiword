@@ -21,7 +21,14 @@
 # define SHA1_H 1
 
 # include <stdio.h>
+
+#ifndef _MSC_VER
 # include <stdint.h>
+#else
+typedef unsigned int uint32_t;
+#define inline __inline
+#endif
+
 
 # ifdef __cplusplus
 extern "C" {

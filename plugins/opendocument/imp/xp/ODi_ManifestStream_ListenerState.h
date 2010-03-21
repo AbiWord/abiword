@@ -26,7 +26,7 @@
 #include <string>
 
 // Internal includes
-#include "ODc_Crypto.h"
+#include "../../common/xp/ODc_Crypto.h"
 #include "ODi_ListenerState.h"
 
 // AbiWord classes

@@ -67,7 +67,7 @@ void ODi_ManifestStream_ListenerState::startElement (const gchar* pName,
 		m_sFullPath = pVal ? pVal : "";
 
         pVal = UT_getAttribute ("manifest:size", ppAtts);
-		m_iSize = pVal ? atoll(pVal) : -1;
+		m_iSize = pVal ? atol(pVal) : -1;
 	}
 	
     if (!strcmp(pName, "manifest:encryption-data")) {
@@ -92,7 +92,7 @@ void ODi_ManifestStream_ListenerState::startElement (const gchar* pName,
         m_pCryptoInfo->m_keyType = pVal ? pVal : "";
 
         pVal = UT_getAttribute ("manifest:iteration-count", ppAtts);
-        m_pCryptoInfo->m_iterCount = pVal ? atoll(pVal) : -1;
+        m_pCryptoInfo->m_iterCount = pVal ? atol(pVal) : -1;
 
         pVal = UT_getAttribute ("manifest:salt", ppAtts);
         m_pCryptoInfo->m_salt = pVal ? pVal : "";
