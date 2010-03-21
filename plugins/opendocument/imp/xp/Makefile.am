@@ -2,6 +2,7 @@
 noinst_LTLIBRARIES = libxp.la
 
 AM_CPPFLAGS = \
+	-I$(srcdir)/../../common/xp \
 	$(OPENDOCUMENT_CFLAGS)
 
 libxp_la_SOURCES = \

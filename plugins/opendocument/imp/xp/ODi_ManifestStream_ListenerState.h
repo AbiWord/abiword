@@ -22,7 +22,11 @@
 #ifndef ODI_MANIFESTSTREAM_LISTENERSTATE_H_
 #define ODI_MANIFESTSTREAM_LISTENERSTATE_H_
 
+#include <map>
+#include <string>
+
 // Internal includes
+#include "ODc_Crypto.h"
 #include "ODi_ListenerState.h"
 
 // AbiWord classes
@@ -36,9 +40,10 @@ class ODi_ManifestStream_ListenerState : public ODi_ListenerState {
 public:
     
     ODi_ManifestStream_ListenerState(PD_Document* pDocument,
-                                ODi_ElementStack& rElementStack);
+                                ODi_ElementStack& rElementStack,
+                                std::map<std::string, ODc_CryptoInfo>& cryptoInfo);
                                 
-    virtual ~ODi_ManifestStream_ListenerState() {}
+    virtual ~ODi_ManifestStream_ListenerState();
     
     void startElement (const gchar* pName, const gchar** ppAtts,
                                ODi_ListenerStateAction& rAction);
@@ -46,14 +51,15 @@ public:
     void endElement (const gchar* pName, ODi_ListenerStateAction& rAction);
                              
     void charData (const gchar* /*pBuffer*/, int /*length*/) {}
-    
-    bool isDocumentEncripted() const {return m_isDocumentEncripted;};
 
 private:
 
     PD_Document* m_pDocument;
     
-    bool m_isDocumentEncripted;
+    std::string m_sFullPath;
+	UT_sint64 m_iSize;
+    ODc_CryptoInfo* m_pCryptoInfo;
+	std::map<std::string, ODc_CryptoInfo>& m_cryptoInfo;
 };
 
 #endif /*ODI_MANIFESTSTREAM_LISTENERSTATE_H_*/
