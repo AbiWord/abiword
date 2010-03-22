@@ -36,7 +36,7 @@ public:
 };
 
 /* utility class for widgets drawing in layout units */
-class ABI_EXPORT XAP_CustomWidgetLU: public XAP_CustomWidget
+class ABI_EXPORT XAP_CustomWidgetLU: virtual public XAP_CustomWidget
 {
 public:
 	virtual GR_Graphics *getGraphics() const = 0;
