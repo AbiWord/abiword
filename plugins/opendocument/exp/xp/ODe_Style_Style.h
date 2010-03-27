@@ -23,6 +23,7 @@
 #ifndef _ODE_STYLE_STYLE_H_
 #define _ODE_STYLE_STYLE_H_
 
+#include <vector>
 
 // AbiWord includes
 #include <ut_string_class.h>
@@ -153,6 +154,19 @@ private:
 
 
     ////
+    // <style:tab-stops> members
+    class TabStop {
+        public:
+        bool operator==(const TabStop& rTabStop) const;
+
+        UT_UTF8String m_type;            // style:type
+        UT_UTF8String m_char;            // style:char
+        UT_UTF8String m_position;        // style:position
+        UT_UTF8String m_leaderStyle;     // style:leader-style
+        UT_UTF8String m_leaderText;      // style:leader-text
+    };
+    
+    ////
     // <style:paragraph-properties> attributes
     class ParagraphProps {
         public:
@@ -187,6 +201,7 @@ private:
         UT_UTF8String m_rightSpace;      // fo:padding-right
         UT_UTF8String m_topSpace;        // fo:padding-top
        
+        std::vector<TabStop> m_tabStops; // style:tab-stops
     } *m_pParagraphProps;
     
     
