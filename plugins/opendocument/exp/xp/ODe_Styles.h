@@ -25,6 +25,9 @@
 // AbiWord includes
 #include <ut_hash.h>
 
+// Internal includes
+#include "ODe_DefaultStyles.h"
+
 // External includes
 #include <gsf/gsf-output.h>
 
@@ -52,6 +55,10 @@ public:
 
     // Writes the <office:styles> element.
     bool write(GsfOutput* pODT) const;
+
+    ODe_DefaultStyles& getDefaultStyles() {
+        return m_defaultStyles;
+    }
     
     UT_GenericVector<ODe_Style_Style*>* getParagraphStylesEnumeration() {
         return m_paragraphStyles.enumerate();
@@ -75,6 +82,7 @@ private:
     bool _addStyle(const PP_AttrProp* pAP);
     bool _writeStyles(GsfOutput* pODT, UT_GenericVector<ODe_Style_Style*>* pStyleVector) const;
 
+    ODe_DefaultStyles m_defaultStyles;
     UT_GenericStringMap<ODe_Style_Style*> m_textStyles;
     UT_GenericStringMap<ODe_Style_Style*> m_paragraphStyles;
 	UT_GenericStringMap<ODe_Style_Style*> m_graphicStyles;
