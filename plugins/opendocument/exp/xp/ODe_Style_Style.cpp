@@ -1372,6 +1372,7 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
                     
                     tabStop.m_type = "char";
                     tabStop.m_char.appendUCS4(pDecimalStr);
+                    FREEP(pDecimalStr);
                     break;
                 }
                 case FL_TAB_NONE: // huh, a tab that is no tab?!
@@ -1383,6 +1384,7 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
             }
             
             // style:position
+            UT_LocaleTransactor t(LC_NUMERIC, "C");
             double pos = (double)pTabStop->getPosition() / UT_LAYOUT_RESOLUTION;
             tabStop.m_position = UT_UTF8String_sprintf("%fin", pos);
 
