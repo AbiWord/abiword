@@ -192,7 +192,9 @@ public:
 	  (m_haveTopBorder == HAVE_BORDER_YES) ||
 	  (m_haveBottomBorder == HAVE_BORDER_YES) ||
 	  (m_haveLeftBorder == HAVE_BORDER_YES) ||
-	  (m_haveRightBorder == HAVE_BORDER_YES);
+	  (m_haveRightBorder == HAVE_BORDER_YES) ||
+
+               !m_tabStops.empty();
     }
     
     bool isAutomatic() const {return m_bAutomatic;}
@@ -251,7 +253,10 @@ private:
     
     // <style:paragraph-properties />
     void _parse_style_paragraphProperties(const gchar** ppProps);
-    
+
+    // <style:tab-stop />
+    void _parse_style_tabStopProperties(const gchar** ppProps);
+        
     // <style:text-properties />
     void _parse_style_textProperties(const gchar** ppProps);
     
@@ -374,6 +379,8 @@ private:
     UT_UTF8String m_keepWithNext;
     UT_UTF8String m_textIndent; // fo:text-indent
     UT_UTF8String m_direction; // style:writing-mode
+    UT_UTF8String m_defaultTabInterval; // style:tab-stop-distance
+    UT_UTF8String m_tabStops; // style:tab-stops
     
     ////
     // <style:text-properties />
