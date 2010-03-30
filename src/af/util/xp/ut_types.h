@@ -93,8 +93,10 @@ typedef UT_uint8 UT_Confidence_t;
      #define ABI_EXPORT __declspec(dllexport)
   #endif
 #elif defined (DISABLE_EXPORTS)
+  /* ignore DISABLE_EXPORTS until we have assigned all symbols proper
+   * visibility */
   #define ABI_PLUGIN_EXPORT
-  #define ABI_EXPORT __attribute__ ((visibility ("hidden")))
+  #define ABI_EXPORT
 #else
   #define ABI_PLUGIN_EXPORT
   #define ABI_EXPORT
