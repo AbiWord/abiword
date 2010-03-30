@@ -229,7 +229,8 @@ UT_Error IE_Imp_OpenDocument::_handleMimetype ()
     UT_Error err = UT_OK;
 
     if ((strcmp("application/vnd.oasis.opendocument.text", mimetype.utf8_str()) != 0) &&
-        (strcmp("application/vnd.oasis.opendocument.text-template", mimetype.utf8_str()) != 0))
+        (strcmp("application/vnd.oasis.opendocument.text-template", mimetype.utf8_str()) != 0) &&
+        (strcmp("application/vnd.oasis.opendocument.text-web", mimetype.utf8_str()) != 0))
     {
         UT_DEBUGMSG(("*** Unknown mimetype '%s'\n", mimetype.utf8_str()));
         err = UT_IE_BOGUSDOCUMENT;

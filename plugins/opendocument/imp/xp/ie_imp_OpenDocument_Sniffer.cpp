@@ -66,6 +66,7 @@ const IE_SuffixConfidence * IE_Imp_OpenDocument_Sniffer::getSuffixConfidence ()
 static IE_MimeConfidence IE_Imp_OpenDocument_Sniffer__MimeConfidence[] = {
 	{ IE_MIME_MATCH_FULL, 	"application/vnd.oasis.opendocument.text", 	UT_CONFIDENCE_GOOD 	},
 	{ IE_MIME_MATCH_FULL, 	"application/vnd.oasis.opendocument.text-template", UT_CONFIDENCE_GOOD 	},
+	{ IE_MIME_MATCH_FULL, 	"application/vnd.oasis.opendocument.text-web", UT_CONFIDENCE_GOOD 	},
 	{ IE_MIME_MATCH_BOGUS, 	"", 										UT_CONFIDENCE_ZILCH }
 };
 
@@ -100,7 +101,8 @@ UT_Confidence_t IE_Imp_OpenDocument_Sniffer::recognizeContents (GsfInput * input
 					}
 
 					if ((strcmp("application/vnd.oasis.opendocument.text", mimetype.utf8_str()) == 0) ||
-						(strcmp("application/vnd.oasis.opendocument.text-template", mimetype.utf8_str()) == 0))
+						(strcmp("application/vnd.oasis.opendocument.text-template", mimetype.utf8_str()) == 0) ||
+						(strcmp("application/vnd.oasis.opendocument.text-web", mimetype.utf8_str()) == 0))
 						confidence = UT_CONFIDENCE_PERFECT;
 
 					g_object_unref (G_OBJECT (pInput));
