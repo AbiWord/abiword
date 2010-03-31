@@ -82,7 +82,10 @@ UT_Error OXML_Element_Text::serialize(IE_Exp_OpenXML* exporter)
 	if(err != UT_OK)
 		return err;
 
-	err = exporter->writeText(TARGET, getText());
+	const UT_UCS4Char * text = getText_UCS4String();
+	if(text)
+		err = exporter->writeText(TARGET, text);
+
 	if(err != UT_OK)
 		return err;
 	
