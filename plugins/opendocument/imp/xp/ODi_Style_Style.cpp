@@ -29,6 +29,7 @@
 #include "ODi_FontFaceDecls.h"
 #include "ODi_ListenerStateAction.h"
 #include "ODi_ElementStack.h"
+#include "ODi_StartTag.h"
 #include "ODi_Abi_Data.h"
 
 // AbiWord includes
@@ -77,6 +78,22 @@ void ODi_Style_Style::startElement(const gchar* pName,
     } else if (!strcmp("style:paragraph-properties", pName)) {
         
         _parse_style_paragraphProperties(ppAtts);
+
+    } else if (!strcmp("style:tab-stop", pName)) {
+
+        if (m_rElementStack.getStackSize() >= 2 &&
+            !strcmp(m_rElementStack.getStartTag(1)->getName(), "style:paragraph-properties") &&
+            !strcmp(m_rElementStack.getStartTag(0)->getName(), "style:tab-stops")) {
+
+            UT_DEBUGMSG(("TAB STOPS IN PARAGRAPH!!!!!!!!!!!!1\n"));
+            _parse_style_tabStopProperties(ppAtts);
+            
+        } else {
+
+            // we only know tabstops inside paragraphs
+            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+            
+        }
         
     } else if (!strcmp("style:text-properties", pName)) {
         
@@ -334,6 +351,130 @@ void ODi_Style_Style::_parse_style_paragraphProperties(const gchar** ppProps) {
         } else {
             m_direction = "ltr";
         }
+    }
+
+    // style:tab-stop-distance
+    pVal = UT_getAttribute("style:tab-stop-distance", ppProps);
+       if (pVal) {
+        m_defaultTabInterval = pVal;
+    }
+}
+
+
+
+
+/**
+ *  <style:tab-stop />
+ */
+void ODi_Style_Style::_parse_style_tabStopProperties(const gchar** ppProps) {
+    
+    const gchar* pVal = NULL;
+    UT_UTF8String type;
+    UT_UTF8String position;
+    UT_UTF8String leaderStyle;
+    UT_UTF8String leaderText;
+    
+    pVal = UT_getAttribute("style:type", ppProps);
+    if (pVal) {
+        type = pVal;
+    }
+
+    pVal = UT_getAttribute("style:position", ppProps);
+    if (pVal) {
+        position = pVal;
+    }
+
+    pVal = UT_getAttribute("style:leader-style", ppProps);
+    if (pVal) {
+        leaderStyle = pVal;
+    }
+
+    pVal = UT_getAttribute("style:leader-text", ppProps);
+    if (pVal) {
+        leaderText = pVal;
+    }
+
+    pVal = UT_getAttribute("style:char", ppProps);
+    if (pVal) {
+        // We ignore the "style:char" attribute if it exists, as abiword has no
+        // equivalent: it will always use the locale-defined decimal point as the
+        // decimal tab character. See fp_Line::_calculateWidthOfRun() for details.
+    }
+
+    // convert the tab information into an AbiWord property value
+    
+    UT_return_if_fail(!position.empty()); // a tab position is required (at least for AbiWord)
+
+    if (!m_tabStops.empty())
+        m_tabStops += ",";
+
+    // tab position
+    m_tabStops += position;
+    m_tabStops += "/";
+
+    // tab type
+    if (type == "left") {
+        m_tabStops += "L";
+    } else if (type == "center") {
+        m_tabStops += "C";
+    } else if (type == "right") {
+        m_tabStops += "R";
+    } else if (type == "char") {
+        m_tabStops += "D";
+    } else {
+        UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+        m_tabStops += "L";
+    }
+
+    // tab leader style: AbiWord's 4 tab styles map not to ODF's leader-styles but 
+    // to leader-text's, with style 1 mapping to character ".", 2 to "-" and 3 to "_".
+    // AbiWord tab style 0 means no leader style. ODF's leader-styles denoting a
+    // line style are not supported.
+    //
+    // NOTE: in ODF, leader text (if present) *always* has a higher priority than 
+    // leader styles, even if the text character is not supported.
+    if (!leaderText.empty()) {
+        UT_UCS4String leaderTextUCS4 = leaderText.ucs4_str();
+        UT_UCS4Char ucs4char = leaderTextUCS4[0];
+
+        switch (ucs4char) {
+            case '.':
+                m_tabStops += "1";
+                break;
+            case '-':
+                m_tabStops += "2";
+                break;
+            case '_':
+                m_tabStops += "3";
+                break;
+            default:
+                m_tabStops += "0";
+                break;
+        }
+    } else if (!leaderStyle.empty()) {
+        
+        // AbiWord does not really support leader-styles, so do a best effort conversion.
+        // Note: leader-styles describe the *underlining* line style. This means that we
+        //       won't map "dash" for example to AbiWord's tab style "2" (dashed), as that
+        //       does not represent underlining.
+
+        if (leaderStyle == "none") {
+                    m_tabStops += "0";
+        } else if (leaderStyle == "solid") {
+                    m_tabStops += "3";
+        } else if (leaderStyle == "dotted") {
+               m_tabStops += "1";
+        } else if (leaderStyle == "dash" || leaderStyle == "long-dash" ||
+                   leaderStyle == "dot-dash" || leaderStyle == "dot-dot-dash" ||
+                   leaderStyle == "wave") {
+            // 
+               m_tabStops += "3";
+        } else {
+             m_tabStops += "0";
+        }
+    } else {
+        // fall back to style "none"
+        m_tabStops += "0";
     }
 }
 
@@ -845,6 +986,8 @@ void ODi_Style_Style::buildAbiPropsAttrString(ODi_FontFaceDecls& rFontFaceDecls)
     APPEND_STYLE("keep-with-next: ", m_keepWithNext);
     APPEND_STYLE("text-indent: ", m_textIndent);
     APPEND_STYLE("dom-dir: ", m_direction);
+    APPEND_STYLE("default-tab-interval: ", m_defaultTabInterval);
+    APPEND_STYLE("tabstops: ", m_tabStops);
     
     // <style:text-properties />
     APPEND_STYLE("color: ", m_color);
