@@ -178,7 +178,7 @@ void OXMLi_StreamListener::startElement (const gchar* pName, const gchar** ppAtt
 		++it;
 		if(!rqst.valid)
 		{
-			UT_DEBUGMSG(("FRT:Invalid startElement request: [%s]\n", rqst.pName.c_str()));
+			xxx_UT_DEBUGMSG(("FRT:Invalid startElement request: [%s]\n", rqst.pName.c_str()));
 		}
 	} while ( this->getStatus() == UT_OK && it!=m_states.end() && !rqst.handled);
 
@@ -199,7 +199,7 @@ void OXMLi_StreamListener::endElement (const gchar* pName)
 		++it;
 		if(!rqst.valid)
 		{
-			UT_DEBUGMSG(("FRT:Invalid endElement request: [%s]\n", rqst.pName.c_str()));
+			xxx_UT_DEBUGMSG(("FRT:Invalid endElement request: [%s]\n", rqst.pName.c_str()));
 		}
 	} while ( this->getStatus() == UT_OK && it!=m_states.end() && !rqst.handled);
 }
