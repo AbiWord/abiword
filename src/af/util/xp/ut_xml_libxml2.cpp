@@ -298,18 +298,3 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
 
   return ret;
 }
-
-// guardian because (afaik) xmlParserXXX aren't guaranteed to be idempotent
-static volatile int iLibXml2Guardian = 0;
-
-void UT_XML::_init()
-{
-  if(++iLibXml2Guardian == 1)
-    xmlInitParser();
-}
-
-void UT_XML::_cleanup()
-{
-  if(--iLibXml2Guardian == 0)
-    xmlCleanupParser();
-}
