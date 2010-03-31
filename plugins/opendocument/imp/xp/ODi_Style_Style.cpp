@@ -422,7 +422,6 @@ void ODi_Style_Style::_parse_style_tabStopProperties(const gchar** ppProps) {
     } else if (type == "char") {
         m_tabStops += "D";
     } else {
-        UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
         m_tabStops += "L";
     }
 
