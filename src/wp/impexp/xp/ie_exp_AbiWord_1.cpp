@@ -1525,7 +1525,6 @@ void s_AbiWord_1_Listener::_handleMetaData(void)
 	      _outputXMLChar ( cursor.key().c_str(), cursor.key().size() ) ;
 	      m_pie->write ( "\">" ) ;
 		  UT_UTF8String esc = *stringval;
-		  esc.escapeXML();
 	      _outputXMLChar ( esc.utf8_str(), esc.byteLength() ) ;
 	      m_pie->write ( "</m>\n" ) ;
 	    }
