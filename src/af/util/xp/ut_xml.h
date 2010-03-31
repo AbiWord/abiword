@@ -68,9 +68,6 @@ class ABI_EXPORT UT_XML
 
   bool grow (char *& buffer, UT_uint32 & length, UT_uint32 & max, UT_uint32 require);
 
-  void _init();
-  void _cleanup();
-
  protected:
   bool reset_all ();
  private:

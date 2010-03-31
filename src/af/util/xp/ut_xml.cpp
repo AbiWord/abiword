@@ -115,13 +115,10 @@ UT_XML::UT_XML () :
   m_pExpertListener(0),
   m_pReader(0)
 {
-	_init();
 }
 
 UT_XML::~UT_XML ()
 {
-  _cleanup();
-
   if (m_chardata_buffer) g_free (m_chardata_buffer);
 
   FREEP (m_namespace);
