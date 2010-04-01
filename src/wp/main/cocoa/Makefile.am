@@ -22,4 +22,4 @@ nobase_resources_DATA = MainMenu.nib/*.nib
 resources_DATA = bundle/*.icns bundle/*.tif bundle/*.png
 contents_DATA = bundle/Info.plist bundle/PkgInfo
 
-EXTRA_DIST = MainMenu.nib
+EXTRA_DIST = MainMenu.nib bundle
