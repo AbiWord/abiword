@@ -103,7 +103,7 @@ typedef enum {
 
 class SpellChecker;
 class fl_TabStop;
-void buildTabStops(const char* pszTabStops, UT_GenericVector<fl_TabStop*> &m_vecTabs);
+ABI_EXPORT void buildTabStops(const char* pszTabStops, UT_GenericVector<fl_TabStop*> &m_vecTabs);
 
 class ABI_EXPORT fl_BlockLayout : public fl_ContainerLayout
 {
