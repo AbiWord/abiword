@@ -32,6 +32,7 @@
 #include <pp_AttrProp.h>
 #include <pt_Types.h>
 #include <ut_locale.h>
+#include <fl_BlockLayout.h> // for fl_TabStop
 
 // External includes
 #include <ctype.h>
@@ -281,6 +282,11 @@ bool ODe_Style_Style::hasParagraphStyleProps(const PP_AttrProp* pAP) {
     }
     
     ok = pAP->getProperty("keep-with-next", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+
+    ok = pAP->getProperty("tabstops", pValue);
     if (ok && pValue != NULL) {
         return true;
     }
@@ -910,6 +916,23 @@ bool ODe_Style_Style::SectionProps::operator==(
 
 
 /*******************************************************************************
+ * TabStop
+ ******************************************************************************/
+
+
+bool ODe_Style_Style::TabStop::operator==(
+                 const ODe_Style_Style::TabStop& rTabStop) const {
+
+    return
+        m_type           == rTabStop.m_type &&
+        m_char           == rTabStop.m_char &&
+        m_position       == rTabStop.m_position &&
+        m_leaderStyle    == rTabStop.m_leaderStyle &&
+        m_leaderText     == rTabStop.m_leaderText;
+}
+
+
+/*******************************************************************************
  * ParagraphProps
  ******************************************************************************/
 
@@ -931,7 +954,8 @@ bool ODe_Style_Style::ParagraphProps::isEmpty() const {
              m_marginBottom.empty() &&
              m_keepWithNext.empty() &&
              m_breakBefore.empty() &&
-             m_writingMode.empty());
+             m_writingMode.empty() &&
+             m_tabStops.size() == 0);
 }
 
 /**
@@ -1035,6 +1059,93 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
             m_keepWithNext = "auto";
         }
     }
+
+    // tab stops
+    ok = rAP.getProperty("tabstops", pValue);
+    if(!ok)
+        m_tabStops.clear();
+    else
+    {
+        // use a convenience function from fl_BlockLayout to parse the tabstops property
+        UT_GenericVector<fl_TabStop*> tabStops;
+        buildTabStops(pValue, tabStops);
+
+        // convert the tabstops to a format we can write out
+        for (UT_sint32 i = 0; i < tabStops.size(); i++)
+        {
+            fl_TabStop* pTabStop = tabStops[i];
+            UT_continue_if_fail(pTabStop);
+
+            TabStop tabStop;
+
+            // style:type
+            switch (pTabStop->getType())
+            {
+                case FL_TAB_LEFT:
+                    tabStop.m_type = "left";
+                    break;
+                case FL_TAB_CENTER:
+                    tabStop.m_type = "center";
+                    break;
+                case FL_TAB_RIGHT:
+                    tabStop.m_type = "right";
+                    break;
+                case FL_TAB_DECIMAL:
+                {
+                    // AbiWord always uses the locale-defined decimal point as the
+                    // decimal tab character. See fp_Line::_calculateWidthOfRun()
+                    // for details.
+					lconv *loc = localeconv();
+                    UT_UCSChar *pDecimalStr = NULL;
+					UT_UCS4_cloneString_char(&pDecimalStr, loc->decimal_point);
+                    
+                    tabStop.m_type = "char";
+                    tabStop.m_char.appendUCS4(pDecimalStr);
+                    break;
+                }
+                case FL_TAB_NONE: // huh, a tab that is no tab?!
+                case FL_TAB_BAR: // I have no clue what this is supposed to do, and ODF does not have any equivalent for it anyway.
+                default:
+                    // default to a left tab
+                    tabStop.m_type = "left";
+                    break;
+            }
+            
+            // style:position
+            double pos = (double)pTabStop->getPosition() / UT_LAYOUT_RESOLUTION;
+            tabStop.m_position = UT_UTF8String_sprintf("%fin", pos);
+
+            // style:leader-style & style:leader-text
+            switch (pTabStop->getLeader())
+            {
+                case FL_LEADER_NONE:
+                    // no need to write out a style or text
+                    break;
+                case FL_LEADER_DOT:
+                    tabStop.m_leaderStyle = "dotted";
+                    tabStop.m_leaderText = ".";
+                    break;
+                case FL_LEADER_HYPHEN:
+                    tabStop.m_leaderStyle = "dash"; // OOo uses "solid" for this case, but dash seems more appropriate
+                    tabStop.m_leaderText = "-";
+                    break;
+                case FL_LEADER_UNDERLINE:
+                case FL_LEADER_THICKLINE: // we don't have this in the interface, but this looks like the best choice if it ever occurs
+                case FL_LEADER_EQUALSIGN: // we don't have this in the interface, but this looks like the best choice if it ever occurs
+                    tabStop.m_leaderStyle = "solid";
+                    tabStop.m_leaderText = "_";
+                    break;
+                default:
+                    // no need to write out a style or text
+                    break;
+            }
+            m_tabStops.push_back(tabStop);
+
+            DELETEP(pTabStop);
+        }
+        
+        tabStops.clear();
+    }
 }
 
 
@@ -1066,7 +1177,29 @@ write(UT_UTF8String& rOutput, const UT_UTF8String& rSpacesOffset) const {
     ODe_writeAttribute(rOutput, "fo:break-before", m_breakBefore);
     ODe_writeAttribute(rOutput, "style:writing-mode", m_writingMode);
 
-    rOutput += "/>\n";
+    if (!m_tabStops.size())
+        rOutput += "/>\n";
+    else
+    {
+        rOutput += ">\n";
+
+        rOutput += UT_UTF8String_sprintf("%s  <style:tab-stops>\n", rSpacesOffset.utf8_str());
+        for (UT_uint32 i = 0; i < m_tabStops.size(); i++)
+        {
+            rOutput += UT_UTF8String_sprintf("%s    <style:tab-stop", rSpacesOffset.utf8_str());
+
+            ODe_writeAttribute(rOutput, "style:type", m_tabStops[i].m_type);
+            ODe_writeAttribute(rOutput, "style:char", m_tabStops[i].m_char);
+            ODe_writeAttribute(rOutput, "style:position", m_tabStops[i].m_position);
+            ODe_writeAttribute(rOutput, "style:leader-style", m_tabStops[i].m_leaderStyle);
+            ODe_writeAttribute(rOutput, "style:leader-text", m_tabStops[i].m_leaderText);
+            
+            rOutput += "/>\n";
+        }
+        rOutput += UT_UTF8String_sprintf("%s  </style:tab-stops>\n", rSpacesOffset.utf8_str());
+
+        rOutput += UT_UTF8String_sprintf("%s</style:paragraph-properties>\n", rSpacesOffset.utf8_str());
+    }
 }
 
 
@@ -1090,6 +1223,7 @@ ODe_Style_Style::ParagraphProps& ODe_Style_Style::ParagraphProps::operator=(
     m_keepWithNext = rParagraphProps.m_keepWithNext;
     m_breakBefore = rParagraphProps.m_breakBefore;
     m_writingMode = rParagraphProps.m_writingMode;
+    m_tabStops = rParagraphProps.m_tabStops;
     
     return *this;
 }
@@ -1115,7 +1249,8 @@ bool ODe_Style_Style::ParagraphProps::operator==(
         m_marginBottom    == rParagraphProps.m_marginBottom &&
         m_keepWithNext    == rParagraphProps.m_keepWithNext &&
         m_breakBefore     == rParagraphProps.m_breakBefore &&
-        m_writingMode     == rParagraphProps.m_writingMode;
+        m_writingMode     == rParagraphProps.m_writingMode &&
+        m_tabStops        == rParagraphProps.m_tabStops;
 }
 
 
