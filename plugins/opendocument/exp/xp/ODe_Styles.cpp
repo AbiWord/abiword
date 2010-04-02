@@ -169,7 +169,8 @@ bool ODe_Styles::write(GsfOutput* pODT) const {
     output += " <office:styles>\n";
     ODe_writeUTF8String(pODT, output);
     output.clear();
-    
+
+    UT_return_val_if_fail(_writeStyles(pODT, m_defaultStyles.enumerate()), false);
 	UT_return_val_if_fail(_writeStyles(pODT, m_textStyles.enumerate()), false);
 	UT_return_val_if_fail(_writeStyles(pODT, m_paragraphStyles.enumerate()), false);
 	UT_return_val_if_fail(_writeStyles(pODT, m_graphicStyles.enumerate()), false);

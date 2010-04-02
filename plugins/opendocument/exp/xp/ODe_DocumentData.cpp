@@ -166,7 +166,59 @@ bool ODe_DocumentData::doPostListeningWork() {
         }
     }
     
+    ////
+    // Build/expand the <style:default-style> paragraph elements for the Styles
+    // XML file based on the existence of AbiWord's default-tab-interval 
+    // property in any of the automatic or normal styles.
+    // 
+    pStylesVector = m_contentAutoStyles.getParagraphStyles();
+    count = pStylesVector->getItemCount();
+    for (i=0; i<count; i++) {
+        handleDefaultTabInterval((*pStylesVector)[i]);
+    }
+
+    pStylesVector = m_stylesAutoStyles.getTextStyles();
+    count = pStylesVector->getItemCount();
+    for (i=0; i<count; i++) {
+        handleDefaultTabInterval((*pStylesVector)[i]);
+    }
+
+    pStylesVector = m_styles.getParagraphStylesEnumeration();
+    count = pStylesVector->getItemCount();
+    for (i=0; i<count; i++) {
+        handleDefaultTabInterval((*pStylesVector)[i]);
+    }
+    
     return true;
+}
+
+
+/**
+ * 
+ */
+void ODe_DocumentData::handleDefaultTabInterval(ODe_Style_Style* pStyle) {
+    UT_return_if_fail(pStyle);
+    
+    UT_UTF8String defaultTabInterval = pStyle->getDefaultTabInterval();
+    if (defaultTabInterval.empty())
+        return;
+
+    // remove the default tab interval property from the style
+    pStyle->setDefaultTabInterval("");
+
+    // ... and create a default style to hold the default tab interval property
+    ODe_Style_Style* pDefaultStyle = m_styles.getDefaultStyles().getStyle("paragraph");
+    if (!pDefaultStyle) {
+        pDefaultStyle = new ODe_Style_Style();
+        pDefaultStyle->setFamily("paragraph");
+        pDefaultStyle->makeDefaultStyle();
+        m_styles.getDefaultStyles().storeStyle("paragraph", pDefaultStyle);
+    }
+    // NOTE: if a paragraph default style already exists with a default tab interval
+    // property set, then we'll just overwrite it. This can happen because AbiWord 
+    // supports such a property on every paragraph and paragraph style, but ODT only 
+    // supports one on the default paragraph style.
+    pDefaultStyle->setDefaultTabInterval(defaultTabInterval);
 }
 
 

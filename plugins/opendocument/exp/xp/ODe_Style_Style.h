@@ -81,6 +81,12 @@ public:
     
     // Defines the style from attributes and properties of an AbiWord <frame>.
     void fetchAttributesFromAbiFrame(const PP_AttrProp& rAP);
+
+    void makeDefaultStyle() {
+        m_defaultStyle = true;
+        if (m_pParagraphProps)
+            m_pParagraphProps->m_defaultStyle = m_defaultStyle;
+    }
     
     void setStyleName(const UT_UTF8String& rStyleName) {
         m_name = rStyleName;
@@ -106,7 +112,7 @@ public:
         m_listStyleName = rListStyleName;
     }
     
-    const UT_UTF8String& getFontName();
+    const UT_UTF8String& getFontName();    
 
     void setBreakBefore(const gchar* pBreakBefore);    
     void setColumnWidth(const gchar* pColumnWidth);
@@ -122,11 +128,15 @@ public:
     void setHorizontalPos(const UT_UTF8String& rHorizontalPos);
     void setVerticalPos(const UT_UTF8String& rVerticalPos);
     void setVerticalRel(const UT_UTF8String& rVerticalRel);
+
+    const UT_UTF8String& getDefaultTabInterval();
+    void setDefaultTabInterval(const UT_UTF8String& rDefaultTabInterval);
     
 private:
     
     ////
     // <style:style> attributes
+    bool m_defaultStyle;             // if we are a <style:style>, or a <style:default-style>
     UT_UTF8String m_name;            // text:style-name
     UT_UTF8String m_family;          // style:family
     UT_UTF8String m_parentStyleName; // style:parent-style-name
@@ -170,13 +180,22 @@ private:
     // <style:paragraph-properties> attributes
     class ParagraphProps {
         public:
+        ParagraphProps() {
+            // Rule of thumb: never use this constructor, it only exists for
+            // ODe_Style_Style::operator=(const ODe_Style_Style& rStyle)
+        }
+        ParagraphProps(bool defaultStyle)
+            : m_defaultStyle(defaultStyle)
+        { }
         
         bool isEmpty() const;
         void fetchAttributesFromAbiProps(const PP_AttrProp& rAP);
         void write(UT_UTF8String& rOutput, const UT_UTF8String& rSpacesOffset) const ;
         ParagraphProps& operator=(const ParagraphProps& rParagraphProps);
         bool operator==(const ParagraphProps& rParagraphProps) const;
-        
+
+        bool m_defaultStyle;             // if we are a <style:style>, or a <style:default-style>
+            
         UT_UTF8String m_textAlign;       // fo:text-align
         UT_UTF8String m_textIndent;      // fo:text-indent
         UT_UTF8String m_lineHeight;      // fo:line-height    
@@ -192,6 +211,7 @@ private:
         UT_UTF8String m_breakBefore;     // fo:break-before
         UT_UTF8String m_writingMode;     // style:writing-mode
 
+        UT_UTF8String m_defaultTabInterval; // style:tab-stop-distance
         std::vector<TabStop> m_tabStops; // style:tab-stops
     } *m_pParagraphProps;
     

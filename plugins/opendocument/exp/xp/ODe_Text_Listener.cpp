@@ -1257,7 +1257,15 @@ void ODe_Text_Listener::_openODParagraph(const PP_AttrProp* pAP) {
         
         m_rAutomatiStyles.storeParagraphStyle(pStyle);
         styleName = pStyle->getName();
-        
+
+        // There is a special case for the default-tab-interval property, as in
+        // AbiWord that is a paragraph property, but in ODF it belongs in the
+        // default style for the "paragraph" family.
+        ok = pAP->getProperty("default-tab-interval", pValue);
+        if (ok && pValue != NULL) {
+            UT_DEBUGMSG(("Got a default tab interval:  !!!!!!!!!!!!! %s\n", pValue));
+        }
+            
     } else {
         ok = pAP->getAttribute("style", pValue);
         if (ok) {

@@ -19,6 +19,8 @@ libxp_la_SOURCES = \
 	ODe_AuxiliaryData.h \
 	ODe_Common.cpp \
 	ODe_Common.h \
+	ODe_DefaultStyles.cpp \
+	ODe_DefaultStyles.h \
 	ODe_DocumentData.cpp \
 	ODe_DocumentData.h \
 	ODe_FontFaceDecls.cpp \

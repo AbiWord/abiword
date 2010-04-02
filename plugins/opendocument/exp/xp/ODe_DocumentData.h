@@ -59,8 +59,6 @@ public:
     bool writeStylesXML(GsfOutfile* pOdt) const;
     bool writeContentXML(GsfOutfile* pOdt);
 
-
-
     // <office:automatic-styles> for <office:document-styles>
     ODe_AutomaticStyles m_stylesAutoStyles;
     
@@ -82,6 +80,9 @@ public:
     // after having written the entire <office:text>, but, on
     // content.xml, <office:automatic-styles> must appear *before* <office:text>.
     GsfOutput* m_pOfficeTextTemp;
+
+private:
+    void handleDefaultTabInterval(ODe_Style_Style* pStyle);
 };
 
 #endif /*ODE_DOCUMENTDATA_H_*/

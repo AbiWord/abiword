@@ -47,6 +47,7 @@
  * Constructor
  */
 ODe_Style_Style::ODe_Style_Style() :
+    m_defaultStyle(false),
     m_pSectionProps(NULL),
     m_pParagraphProps(NULL),
     m_pTextProps(NULL),
@@ -86,17 +87,8 @@ bool ODe_Style_Style::write(GsfOutput* pODT, const UT_UTF8String& rSpacesOffset)
     UT_UTF8String escape;
     
     output += rSpacesOffset;
-    output += "<style:style";
-    
-    if (m_name.empty()) {
-        UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-        return false;
-    }
-    escape = m_name;
-    output += " style:name=\"";
-    output += escape.escapeXML();
-    output += "\"";
-    
+    output += !m_defaultStyle ? "<style:style" : "<style:default-style";
+
     if (m_family.empty()) {
         UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
         return false;
@@ -104,20 +96,31 @@ bool ODe_Style_Style::write(GsfOutput* pODT, const UT_UTF8String& rSpacesOffset)
     output += " style:family=\"";
     output += m_family;
     output += "\"";
-    
-    escape = m_parentStyleName;
-    escape.escapeXML();
-    ODe_writeAttribute(output, "style:parent-style-name", escape);
-    escape = m_nextStyleName;
-    escape.escapeXML();
-    ODe_writeAttribute(output, "style:next-style-name", escape);
-    escape = m_masterPageName;
-    escape.escapeXML();
-    ODe_writeAttribute(output, "style:master-page-name", escape);
-    escape = m_listStyleName;
-    escape.escapeXML();
-    ODe_writeAttribute(output, "style:list-style-name", escape);
-    
+
+    if (!m_defaultStyle) {
+        if (m_name.empty()) {
+            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+            return false;
+        }
+        escape = m_name;
+        output += " style:name=\"";
+        output += escape.escapeXML();
+        output += "\"";
+        
+        escape = m_parentStyleName;
+        escape.escapeXML();
+        ODe_writeAttribute(output, "style:parent-style-name", escape);
+        escape = m_nextStyleName;
+        escape.escapeXML();
+        ODe_writeAttribute(output, "style:next-style-name", escape);
+        escape = m_masterPageName;
+        escape.escapeXML();
+        ODe_writeAttribute(output, "style:master-page-name", escape);
+        escape = m_listStyleName;
+        escape.escapeXML();
+        ODe_writeAttribute(output, "style:list-style-name", escape);
+    }
+
     if (isEmpty()) {
         // This style has no props at all.
         output += "/>\n";
@@ -125,8 +128,7 @@ bool ODe_Style_Style::write(GsfOutput* pODT, const UT_UTF8String& rSpacesOffset)
         return true;
     } else {
         output += ">\n";
-    }
-    
+    }    
     
     // Increase the offset for sub elements.
     subOffset = rSpacesOffset;
@@ -147,7 +149,8 @@ bool ODe_Style_Style::write(GsfOutput* pODT, const UT_UTF8String& rSpacesOffset)
 #undef ODE_WRITE_STYLE_PROPS
     
     output += rSpacesOffset;
-    output += "</style:style>\n";
+    output += !m_defaultStyle ? "</style:style>" : "</style:default-style>";
+    output += "\n";
     
     ODe_writeUTF8String(pODT, output);
     return true;
@@ -286,6 +289,11 @@ bool ODe_Style_Style::hasParagraphStyleProps(const PP_AttrProp* pAP) {
         return true;
     }
 
+    ok = pAP->getProperty("default-tab-interval", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+    
     ok = pAP->getProperty("tabstops", pValue);
     if (ok && pValue != NULL) {
         return true;
@@ -483,7 +491,7 @@ bool ODe_Style_Style::fetchAttributesFromAbiStyle(const PP_AttrProp* pAP) {
     m_pTextProps->fetchAttributesFromAbiProps(*pAP);
     
     if (m_pParagraphProps == NULL) {
-        m_pParagraphProps = new ParagraphProps();
+        m_pParagraphProps = new ParagraphProps(m_defaultStyle);
     }
     m_pParagraphProps->fetchAttributesFromAbiProps(*pAP);
     
@@ -530,7 +538,7 @@ void ODe_Style_Style::fetchAttributesFromAbiBlock(const PP_AttrProp* pAP,
     m_pTextProps->fetchAttributesFromAbiProps(*pAP);
     
     if (m_pParagraphProps == NULL) {
-        m_pParagraphProps = new ParagraphProps();
+        m_pParagraphProps = new ParagraphProps(m_defaultStyle);
     }
     m_pParagraphProps->fetchAttributesFromAbiProps(*pAP);
     
@@ -604,7 +612,7 @@ void ODe_Style_Style::fetchAttributesFromAbiFrame(const PP_AttrProp& rAP) {
  */
 void ODe_Style_Style::setBreakBefore(const gchar* pBreakBefore) {
     if (m_pParagraphProps == NULL) {
-        m_pParagraphProps = new ParagraphProps();
+        m_pParagraphProps = new ParagraphProps(m_defaultStyle);
     }
     m_pParagraphProps->m_breakBefore = pBreakBefore;
 }
@@ -833,6 +841,27 @@ void ODe_Style_Style::setVerticalRel(const UT_UTF8String& rVerticalRel) {
 }
 
 
+/**
+ * 
+ */
+const UT_UTF8String& ODe_Style_Style::getDefaultTabInterval() {
+    if (m_pParagraphProps == NULL) {
+        m_pParagraphProps = new ParagraphProps(m_defaultStyle);
+    }
+    return m_pParagraphProps->m_defaultTabInterval;
+}
+
+/**
+ * 
+ */
+void ODe_Style_Style::setDefaultTabInterval(const UT_UTF8String& rDefaultTabInterval) {
+    if (m_pParagraphProps == NULL) {
+        m_pParagraphProps = new ParagraphProps(m_defaultStyle);
+    }
+    m_pParagraphProps->m_defaultTabInterval = rDefaultTabInterval;
+}
+
+
 /*******************************************************************************
  * SectionProps
  ******************************************************************************/
@@ -955,6 +984,7 @@ bool ODe_Style_Style::ParagraphProps::isEmpty() const {
              m_keepWithNext.empty() &&
              m_breakBefore.empty() &&
              m_writingMode.empty() &&
+             m_defaultTabInterval.empty() &&
              m_tabStops.size() == 0);
 }
 
@@ -1060,6 +1090,11 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
         }
     }
 
+    ok = rAP.getProperty("default-tab-interval", pValue);
+    if (ok && pValue != NULL) {
+        m_defaultTabInterval = pValue;
+    }
+    
     // tab stops
     ok = rAP.getProperty("tabstops", pValue);
     if(!ok)
@@ -1182,6 +1217,10 @@ write(UT_UTF8String& rOutput, const UT_UTF8String& rSpacesOffset) const {
     ODe_writeAttribute(rOutput, "fo:break-before", m_breakBefore);
     ODe_writeAttribute(rOutput, "style:writing-mode", m_writingMode);
 
+    if (m_defaultStyle) {
+        ODe_writeAttribute(rOutput, "style:tab-stop-distance", m_defaultTabInterval); 
+    }
+    
     if (!m_tabStops.size())
         rOutput += "/>\n";
     else
@@ -1228,6 +1267,7 @@ ODe_Style_Style::ParagraphProps& ODe_Style_Style::ParagraphProps::operator=(
     m_keepWithNext = rParagraphProps.m_keepWithNext;
     m_breakBefore = rParagraphProps.m_breakBefore;
     m_writingMode = rParagraphProps.m_writingMode;
+    m_defaultTabInterval = rParagraphProps.m_defaultTabInterval;
     m_tabStops = rParagraphProps.m_tabStops;
     
     return *this;
@@ -1255,6 +1295,7 @@ bool ODe_Style_Style::ParagraphProps::operator==(
         m_keepWithNext    == rParagraphProps.m_keepWithNext &&
         m_breakBefore     == rParagraphProps.m_breakBefore &&
         m_writingMode     == rParagraphProps.m_writingMode &&
+        m_defaultTabInterval == rParagraphProps.m_defaultTabInterval &&
         m_tabStops        == rParagraphProps.m_tabStops;
 }
 
