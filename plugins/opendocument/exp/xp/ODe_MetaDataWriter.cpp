@@ -56,7 +56,7 @@ bool ODe_MetaDataWriter::writeMetaData(PD_Document* pDoc, GsfOutfile* oo) {
             " xmlns:ooo=\"http://openoffice.org/2004/office\""
             " office:version=\"1.1\">\n"
         "<office:meta>\n"
-        "<meta:generator>AbiWord/") + PACKAGE_VERSION + " (" + PLATFORM + ")</meta:generator>\n";
+        "<meta:generator>AbiWord/") + PACKAGE_VERSION + " (" + PLATFORM + ", " + TOOLKIT + ")</meta:generator>\n";
 
     static const char * const postamble [] = {
         "</office:meta>\n",
