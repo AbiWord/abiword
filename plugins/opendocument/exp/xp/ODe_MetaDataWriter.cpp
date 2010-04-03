@@ -46,25 +46,24 @@ bool ODe_MetaDataWriter::writeMetaData(PD_Document* pDoc, GsfOutfile* oo) {
     
     GsfOutput* meta = gsf_outfile_new_child (oo, "meta.xml", FALSE);
 
-    static const char * const preamble [] = {
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
+    static const UT_UTF8String preamble =
+        UT_UTF8String("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
         "<office:document-meta"
             " xmlns:office=\"urn:oasis:names:tc:opendocument:xmlns:office:1.0\""
             " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
             " xmlns:dc=\"http://purl.org/dc/elements/1.1/\""
             " xmlns:meta=\"urn:oasis:names:tc:opendocument:xmlns:meta:1.0\""
             " xmlns:ooo=\"http://openoffice.org/2004/office\""
-            " office:version=\"1.1\">\n",
-        "<office:meta>\n",
-        "<meta:generator>AbiWord</meta:generator>\n"
-    };
+            " office:version=\"1.1\">\n"
+        "<office:meta>\n"
+        "<meta:generator>AbiWord/") + PACKAGE_VERSION + " (" + PLATFORM + ")</meta:generator>\n";
 
     static const char * const postamble [] = {
         "</office:meta>\n",
         "</office:document-meta>\n"
     };
 
-    ODe_writeToStream(meta, preamble, G_N_ELEMENTS(preamble));
+    ODe_writeUTF8String(meta, preamble);
 
     UT_UTF8String meta_val, val;
     
