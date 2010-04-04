@@ -168,7 +168,7 @@ BOOL AP_Win32Dialog_MarkRevisions::_onCommand(HWND hWnd, WPARAM wParam, LPARAM l
 		{
             UT_Win32LocaleString str;
 			getDlgItemText(hWnd, AP_RID_DIALOG_MARK_REVISIONS_EDIT2, str);
-			setComment2(str.ascii_str());
+			setComment2(str.utf8_str().utf8_str());
 		}
 
 		m_answer = a_OK;

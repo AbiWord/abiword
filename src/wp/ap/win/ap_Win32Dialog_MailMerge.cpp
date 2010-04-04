@@ -107,8 +107,15 @@ BOOL AP_Win32Dialog_MailMerge::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 			
 			if (nItem!=LB_ERR)
 			{	
-				SendMessageW(GetDlgItem(m_hDlg, AP_RID_DIALOG_MAILMERGE_LISTBOX), LB_GETTEXT, nItem,  (LPARAM)(str.ascii_str ()));			
-				setMergeField(str.utf8_str ());			
+				// get the mail merge field from the listbox
+				HWND lBox = GetDlgItem(m_hDlg, AP_RID_DIALOG_MAILMERGE_LISTBOX);
+				UT_sint32 len = SendMessageW(lBox, LB_GETTEXTLEN, nItem, (LPARAM)0);
+				wchar_t* szBuff = (wchar_t*)g_malloc(sizeof(wchar_t) * (len + 1));
+				SendMessageW(lBox, LB_GETTEXT, nItem, (LPARAM)szBuff);
+				str.fromLocale(szBuff);
+				FREEP(szBuff);
+
+				setMergeField(str.utf8_str());			
 				addClicked();
 			}
 			return 1;
@@ -120,7 +127,7 @@ BOOL AP_Win32Dialog_MailMerge::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 		
 		case AP_RID_DIALOG_MAILMERGE_BTN_INSERT:		
 		{	
-			UT_Win32LocaleString str;			
+			UT_Win32LocaleString str;	
 			int nChars = getDlgItemText(AP_RID_DIALOG_MAILMERGE_EDIT_FIELD, str);
 			if (nChars > 0)
 			{
@@ -133,8 +140,15 @@ BOOL AP_Win32Dialog_MailMerge::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 			
 				if (nItem!=LB_ERR)
 				{	
-					SendMessageW(GetDlgItem(m_hDlg, AP_RID_DIALOG_MAILMERGE_LISTBOX), LB_GETTEXT, nItem,  (LPARAM)(str.ascii_str ()));			
-					setMergeField(str.utf8_str ());			
+					// get the mail merge field from the listbox
+					HWND lBox = GetDlgItem(m_hDlg, AP_RID_DIALOG_MAILMERGE_LISTBOX);
+					UT_sint32 len = SendMessageW(lBox, LB_GETTEXTLEN, nItem, (LPARAM)0);
+					wchar_t* szBuff = (wchar_t*)g_malloc(sizeof(wchar_t) * (len + 1));
+					SendMessageW(lBox, LB_GETTEXT, nItem, (LPARAM)szBuff);
+					str.fromLocale(szBuff);
+					FREEP(szBuff);
+
+					setMergeField(str.utf8_str());
 					addClicked();
 				}				 
 			}
@@ -165,21 +179,21 @@ BOOL AP_Win32Dialog_MailMerge::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 
 void AP_Win32Dialog_MailMerge::setFieldList()
 {
-	if(!m_vecFields.size())	return;	
+	if (!m_vecFields.size())
+		return;	
 
-	UT_UTF8String * str;
-	UT_String	sAnsi;
-	
-	SendMessageW(GetDlgItem(m_hDlg, AP_RID_DIALOG_MAILMERGE_LISTBOX), LB_RESETCONTENT,	0, 0);
+	resetContent(AP_RID_DIALOG_MAILMERGE_LISTBOX);
 		
  	// build a list of all items
     for (UT_sint32 i = 0; i < m_vecFields.size(); i++)
 	{
-		str = (UT_UTF8String*)m_vecFields[i];
-		sAnsi = 	str->utf8_str();
+		UT_continue_if_fail(m_vecFields[i]);
+		
+		UT_Win32LocaleString str;
+		str.fromUTF8(((UT_UTF8String*)m_vecFields[i])->utf8_str());
 		
 		SendMessageW(GetDlgItem(m_hDlg, AP_RID_DIALOG_MAILMERGE_LISTBOX), LB_ADDSTRING,
-			0, (LPARAM)sAnsi.c_str());
+			0, (LPARAM)str.ucs2_str());
 	}
 	
 }

@@ -227,7 +227,7 @@ BOOL AP_Win32Dialog_Columns::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lPara
 		{
 			GetDlgItemTextW( hWnd, wId, buf, BUFSIZE );
 			str.fromLocale (buf);
-			setSpaceAfter( str.ascii_str () );
+			setSpaceAfter( str.utf8_str().utf8_str() );
 			str.fromUTF8 (getSpaceAfterString ());
 			SetDlgItemTextW(m_hDlg, wId, str.c_str ());
 		}
@@ -238,7 +238,7 @@ BOOL AP_Win32Dialog_Columns::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lPara
 		{
 			GetDlgItemTextW( hWnd, wId, buf, BUFSIZE );
             str.fromLocale (buf);
-			setMaxHeight( str.ascii_str () );
+			setMaxHeight( str.utf8_str().utf8_str() );
             str.fromUTF8 (getHeightString());
             SetDlgItemTextW(m_hDlg, wId, str.c_str ());
 		}

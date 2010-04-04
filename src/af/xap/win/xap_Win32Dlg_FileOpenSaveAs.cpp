@@ -456,14 +456,11 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	if (bDialogResult != FALSE)
 	{
 		UT_uint32 end = g_strv_length((gchar **) m_szSuffixes);
-        char szFileA [MAX_DLG_INS_PICT_STRING];	// buffer for filename
 		UT_Win32LocaleString sfile;
 		sfile.fromLocale (szFile);
-		
-		strcpy (szFileA, sfile.ascii_str());
 
 		if ((m_id == XAP_DIALOG_ID_FILE_SAVEAS) &&
-			(UT_pathSuffix(szFileA).empty()))
+			(UT_pathSuffix(sfile.utf8_str().utf8_str()).empty()))
 		{
 			// add suffix based on selected file type
 			// if selected file is "all documents" or "all"
@@ -480,13 +477,13 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			
 			UT_ASSERT(!suffix.empty());
 
-			UT_uint32 length = strlen(szFileA) + suffix.size() + 1;
+			UT_uint32 length = strlen(sfile.utf8_str().utf8_str()) + suffix.size() + 1;
 			m_szFinalPathname = (char *)UT_calloc(length,sizeof(char));
 			if (m_szFinalPathname)
 			{
 				char * p = m_szFinalPathname;
 
-				strcpy(p,szFileA);
+				strcpy(p,sfile.utf8_str().utf8_str());
 				strcat(p,suffix.c_str());
 			}
 		}
@@ -693,20 +690,12 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 	}
 
     str.fromLocale (buf);
-	// Pass only files that can be openned
-	FILE* fitxer = fopen (str.ascii_str(),"r");
-
-	if (fitxer)
-		fclose(fitxer);
-	else
-		return false;
-
-	UT_DEBUGMSG(("File Selected is %s\n", buf));
+	UT_DEBUGMSG(("File Selected is %s\n", str.utf8_str().utf8_str()));
 
 	// Build an Import Graphic based on file type
 	UT_Error errorCode = UT_ERROR;
     FG_Graphic *pfg = NULL;
-	char *uri = UT_go_filename_to_uri(str.ascii_str());
+	char *uri = UT_go_filename_to_uri(str.utf8_str().utf8_str());
 	if(uri)
 		errorCode = IE_ImpGraphic::loadGraphic(uri, IEGFT_Unknown, &pfg);
 

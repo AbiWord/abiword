@@ -139,7 +139,7 @@ float atofw (const WCHAR *st)
 {
 	UT_Win32LocaleString str;
 	str.fromLocale (st);
-	return atof (str.ascii_str ());
+	return atof (str.utf8_str().utf8_str());
 }
 
 

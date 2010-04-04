@@ -355,7 +355,7 @@ void AP_Win32Dialog_Options::_gatherAutoSaveFileExt(UT_String &stRetVal)
 {
 	UT_Win32LocaleString str;
 	XAP_Win32DialogBase::getDlgItemText(getPage(PG_DOCUMENT), AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension, str);
-    stRetVal = str.ascii_str();
+	stRetVal = str.utf8_str().utf8_str();
 }
 
 void AP_Win32Dialog_Options::_setAutoSaveFileExt(const UT_String &stExt)

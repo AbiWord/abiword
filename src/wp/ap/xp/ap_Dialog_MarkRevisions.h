@@ -65,7 +65,7 @@ private:
 	void          _initRevision();
 
 	PD_Document *                       m_pDoc;
-	UT_UCS4Char *                       m_pComment2;
+	UT_UTF8String *                     m_pComment2;
 	const XAP_StringSet *               m_pSS;
 	const AD_Revision *                 m_pRev;
 	bool                                m_bForceNew;

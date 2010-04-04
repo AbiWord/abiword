@@ -248,7 +248,7 @@ BOOL XAP_Win32Dialog_Image::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam
 			if(!wcsstr(str.c_str(), units.c_str()))
 				str.appendLocale (units.c_str());
 
-			setHeight( str.ascii_str());
+			setHeight( str.utf8_str().utf8_str() );
 			setControlText( XAP_RID_DIALOG_IMAGE_EBX_HEIGHT, getHeightString() );
 			setControlText( XAP_RID_DIALOG_IMAGE_EBX_WIDTH, getWidthString() );
 		}
@@ -264,7 +264,7 @@ BOOL XAP_Win32Dialog_Image::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam
 			if(!wcsstr(str.c_str(), units.c_str()))
 				str.appendLocale (units.c_str());
 
-            setWidth( str.ascii_str() );
+            setWidth( str.utf8_str().utf8_str() );
 			setControlText( XAP_RID_DIALOG_IMAGE_EBX_HEIGHT, getHeightString() );
 			setControlText( XAP_RID_DIALOG_IMAGE_EBX_WIDTH, getWidthString() );
 		}

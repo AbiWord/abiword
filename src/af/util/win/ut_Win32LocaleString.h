@@ -107,7 +107,6 @@ public:
 	void appendLocale (const wchar_t* szLocale);
 	const wchar_t * c_str() const;
 	UT_UTF8String utf8_str() const;
-	const char* ascii_str() const;
 	UT_UCS4String ucs4_str() const;
 	UT_Win32LocaleString substr(size_t iStart, size_t nChars) const;
 

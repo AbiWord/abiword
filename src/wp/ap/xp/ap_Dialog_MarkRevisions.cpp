@@ -39,7 +39,7 @@ AP_Dialog_MarkRevisions::AP_Dialog_MarkRevisions(XAP_DialogFactory * pDlgFactory
 
 AP_Dialog_MarkRevisions::~AP_Dialog_MarkRevisions(void)
 {
-	delete [] m_pComment2;
+	DELETEP(m_pComment2);
 }
 
 void AP_Dialog_MarkRevisions::setAnswer(AP_Dialog_MarkRevisions::tAnswer a)
@@ -140,11 +140,8 @@ char * AP_Dialog_MarkRevisions::getComment1()
 
 void AP_Dialog_MarkRevisions::setComment2(const char * pszComment)
 {
-	DELETEPV(m_pComment2);
-	m_pComment2 = new UT_UCS4Char [strlen(pszComment) + 1];
-	UT_return_if_fail(m_pComment2);
-
-	UT_UCS4_strcpy_char(m_pComment2,pszComment);
+	DELETEP(m_pComment2);
+	m_pComment2 = new UT_UTF8String(pszComment);
 }
 
 
@@ -164,7 +161,7 @@ void AP_Dialog_MarkRevisions::addRevision()
 {
 	UT_return_if_fail(m_pDoc);
 
-	if(!m_pComment2)
+	if (!m_pComment2)
 		return;
 
 	_initRevision();
@@ -175,7 +172,7 @@ void AP_Dialog_MarkRevisions::addRevision()
 		iId = m_pRev->getId() + 1;
 
 	time_t tStart = time(NULL);
-	m_pDoc->addRevision(iId,m_pComment2, UT_UCS4_strlen(m_pComment2), tStart, 0, true);
+	m_pDoc->addRevision(iId, m_pComment2->ucs4_str().ucs4_str(), UT_UCS4_strlen(m_pComment2->ucs4_str().ucs4_str()), tStart, 0, true);
 	m_pRev = NULL;
 }
 

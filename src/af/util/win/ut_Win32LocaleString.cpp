@@ -329,19 +329,6 @@ UT_UCS4String UT_Win32LocaleString::ucs4_str() const
 	return str;
 }
 
-const char* UT_Win32LocaleString::ascii_str() const
-{
-	char * pText = UT_convert ((const char *) ucs2_str(),
-							size () * sizeof (wchar_t), // -1 does not work, expects a UTF-8 string
-							"UCS-2LE",
-							"ASCII",
-							NULL, NULL);
-
-	UT_String str (pText);
-	g_free(pText);
-	return str.c_str();
-}
-
 void UT_Win32LocaleString::fromUCS2 (const UT_UCS2Char * szIn)
 {
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
