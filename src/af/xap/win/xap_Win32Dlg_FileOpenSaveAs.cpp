@@ -607,13 +607,15 @@ UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookInsertPicProc(HWND hDlg, UIN
 	{
 
 	case WM_PAINT:
-		if (bPreviewImage) pThis->_previewPicture(hDlg);
+		if (bPreviewImage)
+			pThis->_previewPicture(hDlg);
 		return false;
-		break;
 
 	case WM_NOTIFY:
 		// Only bother if Preview Image is selected
-		if ( !bPreviewImage ) return false;
+		if (!bPreviewImage)
+			return false;
+
 		switch ( ((OFNOTIFYW*) lParam)->hdr.code )
 		{
 		case CDN_FOLDERCHANGE:
@@ -623,10 +625,9 @@ UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookInsertPicProc(HWND hDlg, UIN
 			SetDlgItemTextW( hDlg, XAP_RID_DIALOG_INSERT_PICTURE_TEXT_WIDTH, NULL );
 			return true;
 		case CDN_SELCHANGE:
-			return ( pThis->_previewPicture(hDlg) );
+			return pThis->_previewPicture(hDlg);
 		}
 		return false;
-		break;
 
 	case WM_COMMAND:
 		// Check box to Activate Image Preview
@@ -651,20 +652,17 @@ UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookInsertPicProc(HWND hDlg, UIN
 								 SW_HIDE );
 					ShowWindow( GetDlgItem(hDlg,XAP_RID_DIALOG_INSERT_PICTURE_TEXT_WIDTH),
 								 SW_HIDE );
-					return ( pThis->_initPreviewDlg(hDlg) );
+					return pThis->_initPreviewDlg(hDlg);
 				}	
 			} 
 		}			  
 		return false;
-		break;
 
 	case WM_INITDIALOG:
-		return ( pThis->_initPreviewDlg(hDlg) );
-		break;
+		return pThis->_initPreviewDlg(hDlg);
 
 	default:
 		return false;
-		break;
 
 	}
 	// Default Dialog handles all other issues
