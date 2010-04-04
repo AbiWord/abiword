@@ -55,11 +55,12 @@ AP_Win32Dialog_MailMerge::~AP_Win32Dialog_MailMerge(void)
 
 void AP_Win32Dialog_MailMerge::runModeless(XAP_Frame * pFrame)
 {
-	UT_return_if_fail (pFrame);	
+	UT_return_if_fail (pFrame);
    	UT_return_if_fail (m_id == AP_DIALOG_ID_MAILMERGE);
 	createModeless(pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_MAILMERGE));
 
 	// Save dialog the ID number and pointer to the widget
+	m_pFrame = pFrame;
 	UT_sint32 sid =(UT_sint32)  getDialogId();
 	m_pApp->rememberModelessId( sid, (XAP_Dialog_Modeless *) m_pDialog);
 }
