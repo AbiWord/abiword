@@ -659,6 +659,8 @@ UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookInsertPicProc(HWND hDlg, UIN
 		return false;
 
 	case WM_INITDIALOG:
+		pThis = (XAP_Win32Dialog_FileOpenSaveAs *)reinterpret_cast<OPENFILENAMEW*>(lParam)->lCustData;
+		SetWindowLongPtrW(hDlg, DWLP_USER, lParam);
 		return pThis->_initPreviewDlg(hDlg);
 
 	default:
