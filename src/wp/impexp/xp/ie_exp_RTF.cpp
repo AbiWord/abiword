@@ -1285,6 +1285,40 @@ void IE_Exp_RTF::_write_parafmt(const PP_AttrProp * pSpanAP, const PP_AttrProp *
 	const gchar * szKeepWithNext = PP_evalProperty("keep-with-next",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
 	const gchar * szTabStops = PP_evalProperty("tabstops",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
 
+	// Borders
+
+	const gchar * pszCanMergeBorders = PP_evalProperty("border-merge",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const gchar * pszBotBorderColor = PP_evalProperty("bot-color",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const gchar * pszBotBorderStyle = NULL;
+	pBlockAP->getProperty ("bot-style",pszBotBorderStyle );
+	const gchar * pszBotBorderWidth = PP_evalProperty("bot-thickness",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const gchar * pszBotBorderSpacing = PP_evalProperty("bot-space",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+
+	const gchar * pszLeftBorderColor = PP_evalProperty("left-color",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const gchar * pszLeftBorderStyle = NULL;
+	pBlockAP->getProperty ("left-style",pszLeftBorderStyle );
+	const gchar * pszLeftBorderWidth = PP_evalProperty("left-thickness",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const gchar * pszLeftBorderSpacing = PP_evalProperty("left-space",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+
+	const gchar * pszRightBorderColor = PP_evalProperty("right-color",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const gchar * pszRightBorderStyle = NULL;
+	pBlockAP->getProperty ("right-style",pszRightBorderStyle );
+	const gchar * pszRightBorderWidth = PP_evalProperty("right-thickness",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const gchar * pszRightBorderSpacing = PP_evalProperty("right-space",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+
+	const gchar * pszTopBorderColor = PP_evalProperty("top-color",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const gchar * pszTopBorderStyle = NULL;
+	pBlockAP->getProperty ("top-style",pszTopBorderStyle );
+	const gchar * pszTopBorderWidth = PP_evalProperty("top-thickness",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const gchar * pszTopBorderSpacing = PP_evalProperty("top-space",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+
+	// Shading
+
+	const gchar * szPattern = PP_evalProperty("shading-pattern",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const gchar * szShadingForeCol =  PP_evalProperty("shading-foreground-color",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const gchar * szShadingBackCol =  PP_evalProperty("shading-background-color",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+
+
 	// TODO add other properties here
 
 	// Do abi specific list information.
@@ -1708,6 +1742,99 @@ void IE_Exp_RTF::_write_parafmt(const PP_AttrProp * pSpanAP, const PP_AttrProp *
 		_rtf_keyword("keepn");
 
 	_write_tabdef(szTabStops);
+
+	// Export Borders
+	UT_sint32 ndx_col = 0;
+	if(pszCanMergeBorders != NULL && strcmp(pszCanMergeBorders,"0") != 0)
+	{
+		_rtf_keyword("brdrbtw");
+	}
+	if(pszBotBorderStyle != NULL && *pszBotBorderStyle && strcmp(pszBotBorderStyle,"0") != 0)
+	{
+		UT_DEBUGMSG(("pszBotBorderStyle is %s \n",pszBotBorderStyle));
+		write(" ");
+		_rtf_keyword("brdrb");
+		_rtf_keyword("brdrs");
+		ndx_col =_findOrAddColor(pszBotBorderColor);
+		if(ndx_col < 0)
+			ndx_col = 0;
+		_rtf_keyword("brdrcf",ndx_col);
+		if(pszBotBorderWidth)
+		{
+			_rtf_keyword_ifnotdefault_twips("brdrw",static_cast<const char*>(pszBotBorderWidth),0);			
+		}
+		if(pszBotBorderSpacing)
+		{
+			_rtf_keyword_ifnotdefault_twips("brsp",static_cast<const char*>(pszBotBorderSpacing),0);			
+		}
+		write(" ");
+	}	
+	if(pszLeftBorderStyle != NULL && *pszLeftBorderStyle && strcmp(pszLeftBorderStyle,"0") != 0)
+	{
+		_rtf_keyword("brdrl");
+		_rtf_keyword("brdrs");
+		ndx_col =_findOrAddColor(pszLeftBorderColor);
+		if(ndx_col < 0)
+			ndx_col = 0;
+		_rtf_keyword("brdrcf",ndx_col);
+		if(pszLeftBorderWidth)
+		{
+			_rtf_keyword_ifnotdefault_twips("brdrw",static_cast<const char*>(pszLeftBorderWidth),0);			
+		}
+		if(pszLeftBorderSpacing)
+		{
+			_rtf_keyword_ifnotdefault_twips("brsp",static_cast<const char*>(pszLeftBorderSpacing),0);			
+		}
+		write(" ");
+	}	
+	if(pszRightBorderStyle != NULL && *pszRightBorderStyle && strcmp(pszRightBorderStyle,"0") != 0)
+	{
+		_rtf_keyword("brdrr");
+		_rtf_keyword("brdrs");
+		ndx_col =_findOrAddColor(pszRightBorderColor);
+		if(ndx_col < 0)
+			ndx_col = 0;
+		_rtf_keyword("brdrcf",ndx_col);
+		if(pszRightBorderWidth)
+		{
+			_rtf_keyword_ifnotdefault_twips("brdrw",static_cast<const char*>(pszRightBorderWidth),0);			
+		}
+		if(pszRightBorderSpacing)
+		{
+			_rtf_keyword_ifnotdefault_twips("brsp",static_cast<const char*>(pszRightBorderSpacing),0);			
+		}
+		write(" ");
+	}	
+	if(pszTopBorderStyle != NULL && *pszTopBorderStyle && strcmp(pszTopBorderStyle,"0") != 0)
+	{
+		_rtf_keyword("brdrt");
+		_rtf_keyword("brdrs");
+		ndx_col =_findOrAddColor(pszTopBorderColor);
+		if(ndx_col < 0)
+			ndx_col = 0;
+		_rtf_keyword("brdrcf",ndx_col);
+		if(pszTopBorderWidth)
+		{
+			_rtf_keyword_ifnotdefault_twips("brdrw",static_cast<const char*>(pszTopBorderWidth),0);			
+		}
+		if(pszTopBorderSpacing)
+		{
+			_rtf_keyword_ifnotdefault_twips("brsp",static_cast<const char*>(pszTopBorderSpacing),0);			
+		}
+		write(" ");
+	}	
+
+	// export shadings
+
+	if(szPattern != NULL && *szPattern && strcmp(szPattern,"1") == 0)
+	{
+		// Can only handle solid shadings right now
+		ndx_col =_findOrAddColor(szShadingForeCol);
+		if(ndx_col < 0)
+			ndx_col = 0;
+		_rtf_keyword("cbpat",ndx_col);
+		
+	}
 
 }
 

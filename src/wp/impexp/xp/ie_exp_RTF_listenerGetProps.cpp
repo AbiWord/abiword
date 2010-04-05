@@ -298,6 +298,59 @@ bool s_RTF_ListenerGetProps::populateStrux(PL_StruxDocHandle /*sdh*/,
 			m_bInBlock = true;
 			m_bHasBlock = true;
 			m_apiThisBlock = pcr->getIndexAP();
+
+			// Find colours of the Paragraph borders and shading
+
+			const PP_AttrProp * pBlockAP = NULL;
+			m_pDocument->getAttrProp(m_apiThisBlock,&pBlockAP);
+			const gchar * szColor = PP_evalProperty("bot-color",pBlockAP,NULL,NULL,m_pDocument,true);
+			UT_sint32 ndxColor = 0;
+			if (szColor)
+			{
+			    ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
+			    if (ndxColor == -1)
+			      m_pie->_addColor(static_cast<const char*>(szColor));
+			}
+			szColor = PP_evalProperty("left-color",pBlockAP,NULL,NULL,m_pDocument,true);
+			if (szColor)
+			{
+			    ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
+			    if (ndxColor == -1)
+			      m_pie->_addColor(static_cast<const char*>(szColor));
+			}
+
+			szColor = PP_evalProperty("right-color",pBlockAP,NULL,NULL,m_pDocument,true);
+			if (szColor)
+			{
+			    ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
+			    if (ndxColor == -1)
+			      m_pie->_addColor(static_cast<const char*>(szColor));
+			}
+
+			szColor = PP_evalProperty("top-color",pBlockAP,NULL,NULL,m_pDocument,true);
+			if (szColor)
+			{
+			    ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
+			    if (ndxColor == -1)
+			      m_pie->_addColor(static_cast<const char*>(szColor));
+			}
+
+			szColor =  PP_evalProperty("shading-foreground-color",pBlockAP,NULL,NULL,m_pDocument,true);
+			if (szColor)
+			{
+			    ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
+			    if (ndxColor == -1)
+			      m_pie->_addColor(static_cast<const char*>(szColor));
+			}
+
+			szColor =  PP_evalProperty("shading-background-color",pBlockAP,NULL,NULL,m_pDocument,true);
+			if (szColor)
+			{
+			    ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
+			    if (ndxColor == -1)
+			      m_pie->_addColor(static_cast<const char*>(szColor));
+			}
+
 			return true;
 		}
 
