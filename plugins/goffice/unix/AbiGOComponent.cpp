@@ -225,6 +225,12 @@ AbiGOComponent_FileInsert(G_GNUC_UNUSED AV_View* v, G_GNUC_UNUSED EV_EditMethodC
     return true;
 }
 
+static bool button_press_cb(GtkDialog *dlg, GdkEventButton *ev)
+{
+	if (ev->type == GDK_2BUTTON_PRESS)
+		gtk_dialog_response(dlg, GTK_RESPONSE_OK);
+	return false;
+}
 //
 // AbiGOComponent_Create
 // -------------------
@@ -240,6 +246,7 @@ AbiGOComponent_Create (G_GNUC_UNUSED AV_View* v, G_GNUC_UNUSED EV_EditMethodCall
 		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_OK, GTK_RESPONSE_OK, NULL));
 	GtkListStore *list = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_STRING);
 	GtkWidget *w = gtk_tree_view_new_with_model (GTK_TREE_MODEL (list));
+	g_signal_connect_swapped(w, "button-press-event", G_CALLBACK(button_press_cb), dialog);
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *column;
 	renderer = gtk_cell_renderer_text_new ();
