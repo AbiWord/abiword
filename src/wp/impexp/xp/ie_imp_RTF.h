@@ -163,10 +163,19 @@ struct ABI_EXPORT _rtfListTable
 
 enum rtfCellBorder
 {
-	rtfCellBorderTop,
+	rtfCellBorderBot,
 	rtfCellBorderLeft,
 	rtfCellBorderRight,
-	rtfCellBorderBot
+	rtfCellBorderTop
+};
+
+
+enum rtfBorder
+{
+	rtfBorderBot,
+	rtfBorderLeft,
+	rtfBorderRight,
+	rtfBorderTop
 };
 
 struct ABI_EXPORT RTFProps_CellProps
@@ -232,6 +241,37 @@ struct ABI_EXPORT RTFProps_ParaProps
 	bool            m_bInTable; // true if paragraph is in a table
 	PP_RevisionType m_eRevision;
 	UT_uint32 m_iCurrentRevisionId;
+	// Borders & shading
+	bool            m_bMergeBordersShading;
+	bool            m_bBotBorder;
+	UT_sint32       m_iBotBorderStyle; // Number to represent style of border
+	UT_sint32       m_iBotBorderCol; // index to color table
+	UT_sint32       m_iBotBorderWidth;  // Thickness in twips
+	UT_sint32       m_iBotBorderSpacing; // Spacing to text in twips
+	bool            m_bLeftBorder;
+	UT_sint32       m_iLeftBorderStyle; // Number to represent style of border
+	UT_sint32       m_iLeftBorderCol; // index to color table
+	UT_sint32       m_iLeftBorderWidth;  // Thickness in twips
+	UT_sint32       m_iLeftBorderSpacing; // Spacing to text in twips
+	bool            m_bRightBorder;
+	UT_sint32       m_iRightBorderStyle; // Number to represent style of border
+	UT_sint32       m_iRightBorderCol; // index to color table
+	UT_sint32       m_iRightBorderWidth;  // Thickness in twips
+	UT_sint32       m_iRightBorderSpacing; // Spacing to text in twips
+	bool            m_bTopBorder;
+	UT_sint32       m_iTopBorderStyle; // Number to represent style of border
+	                                   // 0 no border
+	                                   // 1 solid
+                                       // 2 dotted
+                                       // 3 dashed
+	UT_sint32       m_iTopBorderCol; // index to color table
+	UT_sint32       m_iTopBorderWidth;  // Thickness in twips
+	UT_sint32       m_iTopBorderSpacing; // Spacing to text in twips
+	UT_sint32       m_iCurBorder; // 0=bot,1=left,2=right,3=top
+	UT_sint32       m_iShadingPattern; // Number to represent the style of shading
+	UT_sint32       m_iShadingForeCol; // The Foreground color
+	UT_sint32       m_iShadingBackCol; // The Foreground color
+
 };
 
 // These are set true if changed in list definitions.
@@ -944,6 +984,8 @@ private:
 	PT_DocPosition        m_posSavedDocPosition;
 	bool                  m_bInAnnotation;
 	bool                  m_bFrameTextBox;
+	bool                  m_bParaActive;
+	bool                  m_bCellActive;
 };
 
 #endif /* IE_IMP_RTF_H */

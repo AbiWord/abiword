@@ -1219,6 +1219,32 @@ RTFProps_ParaProps::RTFProps_ParaProps(void)
 	m_bInTable = false;
 	m_eRevision = PP_REVISION_NONE;
 	m_iCurrentRevisionId = 0;
+	m_bMergeBordersShading = false;
+	m_bBotBorder = false;
+	m_iBotBorderStyle = 0; // Number to represent style of border
+	m_iBotBorderCol = 0; // index to color table
+	m_iBotBorderWidth = 10;  // Thickness in twips
+	m_iBotBorderSpacing = 10; // Spacing to text in twips
+	m_bLeftBorder =  false;
+	m_iLeftBorderStyle = 0; // Number to represent style of border
+	m_iLeftBorderCol = 0; // index to color table
+	m_iLeftBorderWidth = 10;  // Thickness in twips
+	m_iLeftBorderSpacing = 10; // Spacing to text in twips
+	m_bRightBorder = false;
+	m_iRightBorderStyle = 0; // Number to represent style of border
+	m_iRightBorderCol = 0; // index to color table
+	m_iRightBorderWidth = 10;  // Thickness in twips
+	m_iRightBorderSpacing = 10; // Spacing to text in twips
+	m_bTopBorder = false;
+	m_iTopBorderStyle = 0; // Number to represent style of border
+	m_iTopBorderCol = 0; // index to color table
+	m_iTopBorderWidth = 10;  // Thickness in twips
+	m_iTopBorderSpacing = 0; // Spacing to text in twips
+	m_iCurBorder = -1; // 0=bot,1=left,2=right,3=top
+	m_iShadingPattern = 0; // Number to represent the style of shading
+	m_iShadingForeCol = 0; // The Foreground color
+	m_iShadingBackCol = 0; // The Foreground color
+
 }
 
 RTFProps_ParaProps& RTFProps_ParaProps::operator=(const RTFProps_ParaProps& other)
@@ -1289,10 +1315,36 @@ RTFProps_ParaProps& RTFProps_ParaProps::operator=(const RTFProps_ParaProps& othe
 		m_rtfListTable = other.m_rtfListTable;
 		m_styleNumber = other.m_styleNumber;
 		m_bInTable = other.m_bInTable;
+		m_bMergeBordersShading = other.m_bMergeBordersShading;
+		m_bBotBorder = other.m_bBotBorder;
+		m_iBotBorderStyle = other.m_iBotBorderStyle;
+		m_iBotBorderCol = other.m_iBotBorderCol;
+		m_iBotBorderWidth = other.m_iBotBorderWidth;
+		m_iBotBorderSpacing = other.m_iBotBorderSpacing;
+		m_bLeftBorder = other.m_bLeftBorder;
+		m_iLeftBorderStyle = other.m_iLeftBorderStyle;
+		m_iLeftBorderCol = other.m_iLeftBorderCol;
+		m_iLeftBorderWidth = other.m_iLeftBorderWidth;
+		m_iLeftBorderSpacing = other.m_iLeftBorderSpacing;
+		m_bRightBorder = other.m_bRightBorder;
+		m_iRightBorderStyle = other.m_iRightBorderStyle;
+		m_iRightBorderCol = other.m_iRightBorderCol;
+		m_iRightBorderWidth = other.m_iRightBorderWidth;
+		m_iRightBorderSpacing = other.m_iRightBorderSpacing;
+		m_bTopBorder = other.m_bTopBorder;
+		m_iTopBorderStyle = other.m_iTopBorderStyle;
+		m_iTopBorderCol = other.m_iTopBorderCol;
+		m_iTopBorderWidth = other.m_iTopBorderWidth;
+		m_iTopBorderSpacing = other.m_iTopBorderSpacing;
+		m_iCurBorder= other.m_iCurBorder;
+		m_iShadingPattern = other.m_iShadingPattern;
+		m_iShadingForeCol = other.m_iShadingForeCol;
+		m_iShadingBackCol = other.m_iShadingBackCol;
 	}
 
 	m_dir = other.m_dir;
 	m_tableLevel = other.m_tableLevel;
+
 	return *this;
 }
 
@@ -1466,7 +1518,9 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_pDelayedFrag(NULL),
 	m_posSavedDocPosition(0),
 	m_bInAnnotation(false),
-	m_bFrameTextBox(false)
+	m_bFrameTextBox(false),
+	m_bParaActive(false),
+	m_bCellActive(false)
 {
 	UT_DEBUGMSG(("New ie_imp_RTF %p \n",this));
 	m_sImageName.clear();
@@ -4326,59 +4380,154 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		return HandleBold(fParam ? false : true);
 	case RTF_KW_bullet:
 		return ParseChar(UCS_BULLET);
+	case RTF_KW_brdrt:
+		xxx_UT_DEBUGMSG(("Border Top set \n"));
+		m_currentRTFState.m_paraProps.m_iCurBorder = (int) rtfBorderTop;
+		m_currentRTFState.m_paraProps.m_bTopBorder = true;
+		m_bCellActive = false;
+		m_bParaActive = true;
+		return true;
+	case RTF_KW_brdrl:
+		xxx_UT_DEBUGMSG(("Border left set \n"));
+		m_currentRTFState.m_paraProps.m_iCurBorder = (int) rtfBorderLeft;
+		m_currentRTFState.m_paraProps.m_bLeftBorder = true;
+		m_bCellActive = false;
+		m_bParaActive = true;
+		return true;
+	case RTF_KW_brdrb:
+		xxx_UT_DEBUGMSG(("Border Bot set \n"));
+		m_currentRTFState.m_paraProps.m_iCurBorder = (int) rtfBorderBot;
+		m_currentRTFState.m_paraProps.m_bBotBorder = true;
+		m_bCellActive = false;
+		m_bParaActive = true;
+		return true;
+	case RTF_KW_brdrr:
+		xxx_UT_DEBUGMSG(("Border Right set \n"));
+		m_currentRTFState.m_paraProps.m_iCurBorder = (int) rtfBorderRight;
+		m_currentRTFState.m_paraProps.m_bRightBorder = true;
+		m_bCellActive = false;
+		m_bParaActive = true;
+		return true;
 	case RTF_KW_brdrs:
-		if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
+		if(m_bCellActive)
 		{
-			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"top-style","solid");
+			if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"top-style","solid");
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderLeft)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"left-style","solid");
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderBot)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"bot-style","solid");
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderRight)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"right-style","solid");
+			}
 		}
-		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderLeft)
+		else if(m_bParaActive)
 		{
-			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"left-style","solid");
-		}
-		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderBot)
-		{
-			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"bot-style","solid");
-		}
-		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderRight)
-		{
-			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"right-style","solid");
+			if (m_currentRTFState.m_paraProps.m_iCurBorder == (int) rtfBorderTop)
+			{
+				m_currentRTFState.m_paraProps.m_iTopBorderStyle = 1;
+			}
+			else if (m_currentRTFState.m_paraProps.m_iCurBorder == (int) rtfBorderLeft)
+			{
+				m_currentRTFState.m_paraProps.m_iLeftBorderStyle = 1;
+			}
+			else if (m_currentRTFState.m_paraProps.m_iCurBorder == (int) rtfBorderBot)
+			{
+				m_currentRTFState.m_paraProps.m_iBotBorderStyle = 1;
+			}
+			else if (m_currentRTFState.m_paraProps.m_iCurBorder == (int) rtfBorderRight)
+			{
+				m_currentRTFState.m_paraProps.m_iRightBorderStyle = 1;
+			}
 		}
 		return true;
 	case RTF_KW_brdrdot:
-		if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
+		if(m_bCellActive)
 		{
-			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"top-style","dotted");
+			if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"top-style","dotted");
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderLeft)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"left-style","dotted");
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderBot)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"bot-style","dotted");
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderRight)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"right-style","dotted");
+			}
 		}
-		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderLeft)
+		else if(m_bParaActive)
 		{
-			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"left-style","dotted");
-		}
-		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderBot)
-		{
-			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"bot-style","dotted");
-		}
-		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderRight)
-		{
-			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"right-style","dotted");
+			if (m_currentRTFState.m_paraProps.m_iCurBorder == (int) rtfBorderTop)
+			{
+				m_currentRTFState.m_paraProps.m_iTopBorderStyle = 2;
+			}
+			else if (m_currentRTFState.m_paraProps.m_iCurBorder == (int) rtfBorderLeft)
+			{
+				m_currentRTFState.m_paraProps.m_iLeftBorderStyle = 2;
+			}
+			else if (m_currentRTFState.m_paraProps.m_iCurBorder == (int) rtfBorderBot)
+			{
+				m_currentRTFState.m_paraProps.m_iBotBorderStyle = 2;
+			}
+			else if (m_currentRTFState.m_paraProps.m_iCurBorder == (int) rtfBorderRight)
+			{
+				m_currentRTFState.m_paraProps.m_iRightBorderStyle = 2;
+			}
 		}
 		return true;
 	case RTF_KW_brdrdash:
-		if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
+		if(m_bCellActive)
 		{
-			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"top-style","dashed");
+			if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"top-style","dashed");
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderLeft)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"left-style","dashed");
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderBot)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"bot-style","dashed");
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderRight)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"right-style","dashed");
+			}
 		}
-		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderLeft)
+		else if(m_bParaActive)
 		{
-			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"left-style","dashed");
+			if (m_currentRTFState.m_paraProps.m_iCurBorder == (int) rtfBorderTop)
+			{
+				m_currentRTFState.m_paraProps.m_iTopBorderStyle = 3;
+			}
+			else if (m_currentRTFState.m_paraProps.m_iCurBorder == (int) rtfBorderLeft)
+			{
+				m_currentRTFState.m_paraProps.m_iLeftBorderStyle = 3;
+			}
+			else if (m_currentRTFState.m_paraProps.m_iCurBorder == (int) rtfBorderBot)
+			{
+				m_currentRTFState.m_paraProps.m_iBotBorderStyle = 3;
+			}
+			else if (m_currentRTFState.m_paraProps.m_iCurBorder == (int) rtfBorderRight)
+			{
+				m_currentRTFState.m_paraProps.m_iRightBorderStyle = 3;
+			}
 		}
-		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderBot)
-		{
-			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"bot-style","dashed");
-		}
-		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderRight)
-		{
-			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"right-style","dashed");
-		}
+		
 		return true;
 	case RTF_KW_brdrw:
 	{
@@ -4388,21 +4537,43 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 			UT_LocaleTransactor t(LC_NUMERIC, "C");
 			UT_String_sprintf(sWidth,"%fin",dWidth);
 		}
-		if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
+		if(m_bCellActive)
 		{
-			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"top-thickness",sWidth.c_str());
+			if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"top-thickness",sWidth.c_str());
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderLeft)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"left-thickness",sWidth.c_str());
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderBot)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"bot-thickness",sWidth.c_str());
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderRight)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"right-thickness",sWidth.c_str());
+			}
 		}
-		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderLeft)
+		else if(m_bParaActive)
 		{
-			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"left-thickness",sWidth.c_str());
-		}
-		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderBot)
-		{
-			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"bot-thickness",sWidth.c_str());
-		}
-		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderRight)
-		{
-			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"right-thickness",sWidth.c_str());
+			if (m_currentRTFState.m_paraProps.m_iCurBorder == (int) rtfBorderTop)
+			{
+				m_currentRTFState.m_paraProps.m_iTopBorderWidth = (int) param;
+			}
+			else if (m_currentRTFState.m_paraProps.m_iCurBorder == (int) rtfBorderLeft)
+			{
+				m_currentRTFState.m_paraProps.m_iLeftBorderWidth = (int) param;
+			}
+			else if (m_currentRTFState.m_paraProps.m_iCurBorder == (int) rtfBorderBot)
+			{
+				m_currentRTFState.m_paraProps.m_iBotBorderWidth = (int) param;
+			}
+			else if (m_currentRTFState.m_paraProps.m_iCurBorder == (int) rtfBorderRight)
+			{
+				m_currentRTFState.m_paraProps.m_iRightBorderWidth = (int) param;
+			}
 		}
 		return true;
 	}
@@ -4412,24 +4583,104 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		UT_sint32 iCol = static_cast<UT_sint32>(param);
 		UT_uint32 colour = GetNthTableColour(iCol);
 		UT_String_sprintf(sColor, "%06x", colour);
-		if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
+		if(m_bCellActive)
 		{
-			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"top-color",sColor.c_str());
+			if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"top-color",sColor.c_str());
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderLeft)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"left-color",sColor.c_str());
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderBot)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"bot-color",sColor.c_str());
+			}
+			else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderRight)
+			{
+				_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"right-color",sColor.c_str());
+			}
 		}
-		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderLeft)
+		else if(m_bParaActive)
 		{
-			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"left-color",sColor.c_str());
-		}
-		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderBot)
-		{
-			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"bot-color",sColor.c_str());
-		}
-		else if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderRight)
-		{
-			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"right-color",sColor.c_str());
+			if (m_currentRTFState.m_paraProps.m_iCurBorder == (int) rtfBorderTop)
+			{
+				m_currentRTFState.m_paraProps.m_iTopBorderCol = (int) param;
+			}
+			else if (m_currentRTFState.m_paraProps.m_iCurBorder == (int) rtfBorderLeft)
+			{
+				m_currentRTFState.m_paraProps.m_iLeftBorderCol = (int) param;
+			}
+			else if (m_currentRTFState.m_paraProps.m_iCurBorder == (int) rtfBorderBot)
+			{
+				m_currentRTFState.m_paraProps.m_iBotBorderCol = (int) param;
+			}
+			else if (m_currentRTFState.m_paraProps.m_iCurBorder == (int) rtfBorderRight)
+			{
+				m_currentRTFState.m_paraProps.m_iRightBorderCol = (int) param;
+			}
 		}
 		return true;
 	}
+	case RTF_KW_brsp:
+		if(m_bParaActive)
+		{
+			if (m_currentRTFState.m_paraProps.m_iCurBorder == (int) rtfBorderTop)
+			{
+				m_currentRTFState.m_paraProps.m_iTopBorderSpacing = (int) param;
+			}
+			else if (m_currentRTFState.m_paraProps.m_iCurBorder == (int) rtfBorderLeft)
+			{
+				m_currentRTFState.m_paraProps.m_iLeftBorderSpacing = (int) param;
+			}
+			else if (m_currentRTFState.m_paraProps.m_iCurBorder == (int) rtfBorderBot)
+			{
+				m_currentRTFState.m_paraProps.m_iBotBorderSpacing = (int) param;
+			}
+			else if (m_currentRTFState.m_paraProps.m_iCurBorder == (int) rtfBorderRight)
+			{
+				m_currentRTFState.m_paraProps.m_iRightBorderSpacing = (int) param;
+			}
+		}
+	case RTF_KW_brdrnone:
+		if(m_bCellActive)
+		{
+			if(m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderRight)
+				m_currentRTFState.m_cellProps.m_bRightBorder = false;
+			else if(m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderBot)
+				m_currentRTFState.m_cellProps.m_bBotBorder = false;
+			else if(m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderLeft)
+				m_currentRTFState.m_cellProps.m_bLeftBorder = false;
+			else if(m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
+				m_currentRTFState.m_cellProps.m_bTopBorder = false;
+		}
+		if(m_bParaActive)
+		{
+			if (m_currentRTFState.m_paraProps.m_iCurBorder == (int) rtfBorderTop)
+			{
+				m_currentRTFState.m_paraProps.m_bTopBorder = false;
+				m_currentRTFState.m_paraProps.m_iTopBorderStyle = 0;
+			}
+			else if (m_currentRTFState.m_paraProps.m_iCurBorder == (int) rtfBorderLeft)
+			{
+				m_currentRTFState.m_paraProps.m_bLeftBorder = false;
+				m_currentRTFState.m_paraProps.m_iLeftBorderStyle = 0;
+			}
+			else if (m_currentRTFState.m_paraProps.m_iCurBorder == (int) rtfBorderBot)
+			{
+				m_currentRTFState.m_paraProps.m_bBotBorder = false;
+				m_currentRTFState.m_paraProps.m_iBotBorderStyle = 0;
+			}
+			else if (m_currentRTFState.m_paraProps.m_iCurBorder == (int) rtfBorderRight)
+			{
+				m_currentRTFState.m_paraProps.m_bRightBorder = false;
+				m_currentRTFState.m_paraProps.m_iRightBorderStyle = 0;
+			}
+		}
+
+		return true;
+
 	case RTF_KW_colortbl:
 		// It is import that we don't fail if this fail
 		// Just continue
@@ -4499,31 +4750,29 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		xxx_UT_DEBUGMSG(("Border Top set \n"));
 		m_currentRTFState.m_cellProps.m_iCurBorder = rtfCellBorderTop;
 		m_currentRTFState.m_cellProps.m_bTopBorder = true;
+		m_bCellActive = true;
+		m_bParaActive = false;
 		return true;
 	case RTF_KW_clbrdrl:
 		xxx_UT_DEBUGMSG(("Border left set \n"));
 		m_currentRTFState.m_cellProps.m_iCurBorder = rtfCellBorderLeft;
 		m_currentRTFState.m_cellProps.m_bLeftBorder = true;
+		m_bCellActive = true;
+		m_bParaActive = false;
 		return true;
 	case RTF_KW_clbrdrb:
 		xxx_UT_DEBUGMSG(("Border Bot set \n"));
 		m_currentRTFState.m_cellProps.m_iCurBorder = rtfCellBorderBot;
 		m_currentRTFState.m_cellProps.m_bBotBorder = true;
+		m_bCellActive = true;
+		m_bParaActive = false;
 		return true;
 	case RTF_KW_clbrdrr:
 		xxx_UT_DEBUGMSG(("Border Right set \n"));
 		m_currentRTFState.m_cellProps.m_iCurBorder = rtfCellBorderRight;
 		m_currentRTFState.m_cellProps.m_bRightBorder = true;
-		return true;
-	case RTF_KW_brdrnone:
-		if(m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderRight)
-			m_currentRTFState.m_cellProps.m_bRightBorder = false;
-		else if(m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderBot)
-			m_currentRTFState.m_cellProps.m_bBotBorder = false;
-		else if(m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderLeft)
-			m_currentRTFState.m_cellProps.m_bLeftBorder = false;
-		else if(m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
-			m_currentRTFState.m_cellProps.m_bTopBorder = false;
+		m_bCellActive = true;
+		m_bParaActive = false;
 		return true;
 	case RTF_KW_clcbpat:
 	{
@@ -4533,6 +4782,16 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		UT_String_sprintf(sColor, "%06x", colour);
 		xxx_UT_DEBUGMSG(("Writing background color %s to properties \n",sColor.c_str()));
 		_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"background-color",sColor.c_str());
+	}
+	case RTF_KW_cfpat:
+	{
+		m_currentRTFState.m_paraProps.m_iShadingPattern = 1;
+		m_currentRTFState.m_paraProps.m_iShadingForeCol = (int) param;
+	}
+	case RTF_KW_cbpat:
+	{
+		m_currentRTFState.m_paraProps.m_iShadingPattern = 1;
+		m_currentRTFState.m_paraProps.m_iShadingBackCol = (int) param;
 	}
 	break;
 	case RTF_KW_deff: 
@@ -7187,6 +7446,9 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 		attribs1[attribsCount++] = styleName;
 		attribs1[attribsCount]   = NULL;
 	}
+
+	// Borders & Shading are exported here
+
 //
 // If there are character properties defined now write them into our buffer
 //
