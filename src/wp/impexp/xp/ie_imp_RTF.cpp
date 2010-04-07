@@ -1242,8 +1242,8 @@ RTFProps_ParaProps::RTFProps_ParaProps(void)
 	m_iTopBorderSpacing = 0; // Spacing to text in twips
 	m_iCurBorder = -1; // 0=bot,1=left,2=right,3=top
 	m_iShadingPattern = 0; // Number to represent the style of shading
-	m_iShadingForeCol = 0; // The Foreground color
-	m_iShadingBackCol = 0; // The Foreground color
+	m_iShadingForeCol = -1; // The Foreground color
+	m_iShadingBackCol = -1; // The Background color
 
 }
 
@@ -4381,7 +4381,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 	case RTF_KW_bullet:
 		return ParseChar(UCS_BULLET);
 	case RTF_KW_brdrt:
-		xxx_UT_DEBUGMSG(("Border Top set \n"));
+		UT_DEBUGMSG(("Border Top set \n"));
 		m_currentRTFState.m_paraProps.m_iCurBorder = (int) rtfBorderTop;
 		m_currentRTFState.m_paraProps.m_bTopBorder = true;
 		m_bCellActive = false;
@@ -4407,6 +4407,9 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		m_currentRTFState.m_paraProps.m_bRightBorder = true;
 		m_bCellActive = false;
 		m_bParaActive = true;
+		return true;
+	case RTF_KW_brdrbtw:
+		m_currentRTFState.m_paraProps.m_bMergeBordersShading = true;
 		return true;
 	case RTF_KW_brdrs:
 		if(m_bCellActive)
@@ -4643,6 +4646,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 				m_currentRTFState.m_paraProps.m_iRightBorderSpacing = (int) param;
 			}
 		}
+		return true;
 	case RTF_KW_brdrnone:
 		if(m_bCellActive)
 		{
@@ -7448,7 +7452,93 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 	}
 
 	// Borders & Shading are exported here
+	double w = 0.0;
+	UT_sint32 iCol = 0;
+	if(m_currentRTFState.m_paraProps.m_bMergeBordersShading)
+	{
+		UT_String_sprintf(tempBuffer, "border-merge:1; ");
+		propBuffer += tempBuffer;	
+	}
+	if( m_currentRTFState.m_paraProps.m_bBotBorder)
+	{
+		UT_String_sprintf(tempBuffer, "bot-style:%d; ",m_currentRTFState.m_paraProps.m_iBotBorderStyle);
+		propBuffer += tempBuffer;
+		w = static_cast<double>(m_currentRTFState.m_paraProps.m_iBotBorderWidth)/1440.;
+		UT_String_sprintf(tempBuffer, "bot-thickness:%fin; ",w);
+		propBuffer += tempBuffer;
+		w = static_cast<double>(m_currentRTFState.m_paraProps.m_iBotBorderSpacing)/1440.;
+		UT_String_sprintf(tempBuffer, "bot-space:%fin; ",w);
+		propBuffer += tempBuffer;
+		iCol = GetNthTableBgColour(m_currentRTFState.m_paraProps.m_iBotBorderCol);
+		UT_String_sprintf(tempBuffer, "bot-color:%06x; ",iCol);
+		propBuffer += tempBuffer;
+	}
+	if( m_currentRTFState.m_paraProps.m_bLeftBorder)
+	{
+		UT_String_sprintf(tempBuffer, "left-style:%d; ",m_currentRTFState.m_paraProps.m_iLeftBorderStyle);
+		propBuffer += tempBuffer;
+		w = static_cast<double>(m_currentRTFState.m_paraProps.m_iLeftBorderWidth)/1440.;
+		UT_String_sprintf(tempBuffer, "left-thickness:%fin; ",w);
+		propBuffer += tempBuffer;
+		w = static_cast<double>(m_currentRTFState.m_paraProps.m_iLeftBorderSpacing)/1440.;
+		UT_String_sprintf(tempBuffer, "left-space:%fin; ",w);
+		propBuffer += tempBuffer;
+		iCol = GetNthTableBgColour(m_currentRTFState.m_paraProps.m_iLeftBorderCol);
+		UT_String_sprintf(tempBuffer, "left-color:%06x; ",iCol);
+		propBuffer += tempBuffer;
+	}
+	if( m_currentRTFState.m_paraProps.m_bRightBorder)
+	{
+		UT_String_sprintf(tempBuffer, "right-style:%d; ",m_currentRTFState.m_paraProps.m_iRightBorderStyle);
+		propBuffer += tempBuffer;
+		w = static_cast<double>(m_currentRTFState.m_paraProps.m_iRightBorderWidth)/1440.;
+		UT_String_sprintf(tempBuffer, "right-thickness:%fin; ",w);
+		propBuffer += tempBuffer;
+		w = static_cast<double>(m_currentRTFState.m_paraProps.m_iRightBorderSpacing)/1440.;
+		UT_String_sprintf(tempBuffer, "right-space:%fin; ",w);
+		propBuffer += tempBuffer;
+		iCol = GetNthTableBgColour(m_currentRTFState.m_paraProps.m_iRightBorderCol);
+		UT_String_sprintf(tempBuffer, "right-color:%06x; ",iCol);
+		propBuffer += tempBuffer;
+	}
+	if( m_currentRTFState.m_paraProps.m_bTopBorder)
+	{
+		UT_String_sprintf(tempBuffer, "top-style:%d; ",m_currentRTFState.m_paraProps.m_iTopBorderStyle);
+		propBuffer += tempBuffer;
+		w = static_cast<double>(m_currentRTFState.m_paraProps.m_iTopBorderWidth)/1440.;
+		UT_String_sprintf(tempBuffer, "top-thickness:%fin; ",w);
+		propBuffer += tempBuffer;
+		w = static_cast<double>(m_currentRTFState.m_paraProps.m_iTopBorderSpacing)/1440.;
+		UT_String_sprintf(tempBuffer, "top-space:%fin; ",w);
+		propBuffer += tempBuffer;
+		iCol = GetNthTableBgColour(m_currentRTFState.m_paraProps.m_iTopBorderCol);
+		UT_String_sprintf(tempBuffer, "top-color:%06x; ",iCol);
+		propBuffer += tempBuffer;
+	}
+	if(m_currentRTFState.m_paraProps.m_iShadingPattern)
+	{
+		UT_String_sprintf(tempBuffer, "shading-pattern:%d; ",m_currentRTFState.m_paraProps.m_iShadingPattern);
+		propBuffer += tempBuffer;
 
+		if(m_currentRTFState.m_paraProps.m_iShadingForeCol > -1)
+		{
+			iCol = GetNthTableBgColour(m_currentRTFState.m_paraProps.m_iShadingForeCol);
+			UT_String_sprintf(tempBuffer, "shading-foreground-color:%06x; ",iCol);
+			propBuffer += tempBuffer;
+		}
+
+		if(m_currentRTFState.m_paraProps.m_iShadingBackCol > -1)
+		{
+			iCol = GetNthTableBgColour(m_currentRTFState.m_paraProps.m_iShadingBackCol);
+			UT_String_sprintf(tempBuffer, "shading-background-color:%06x; ",iCol);
+			propBuffer += tempBuffer;
+			if(m_currentRTFState.m_paraProps.m_iShadingPattern == 1)
+			{
+				UT_String_sprintf(tempBuffer, "shading-foreground-color:%06x; ",iCol);
+				propBuffer += tempBuffer;
+			}
+		}
+	}
 //
 // If there are character properties defined now write them into our buffer
 //
