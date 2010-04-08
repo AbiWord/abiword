@@ -67,34 +67,39 @@ void XAP_Win32Dialog_Image::runModal(XAP_Frame * pFrame)
 	createModal(pFrame, MAKEINTRESOURCEW(XAP_RID_DIALOG_IMAGE));
 }
 
+#define _DS(c,s)	setDlgItemText(XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+#define _DSX(c,s)	setDlgItemText(XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+
 BOOL XAP_Win32Dialog_Image::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
-	// localize dialog title
-	localizeDialogTitle(XAP_STRING_ID_DLG_Image_Title);
+	const XAP_StringSet* pSS = m_pApp->getStringSet();
 
-	// localize controls
-	localizeControlText(XAP_RID_DIALOG_IMAGE_BTN_OK,		XAP_STRING_ID_DLG_OK);
-	localizeControlText(XAP_RID_DIALOG_IMAGE_BTN_CANCEL,	XAP_STRING_ID_DLG_Cancel);
-	localizeControlText(XAP_RID_DIALOG_IMAGE_LBL_HEIGHT,	XAP_STRING_ID_DLG_Image_Height);
-	localizeControlText(XAP_RID_DIALOG_IMAGE_LBL_WIDTH,		XAP_STRING_ID_DLG_Image_Width);
-	localizeControlText(XAP_RID_DIALOG_IMAGE_CHK_ASPECT,	XAP_STRING_ID_DLG_Image_Aspect);
-	localizeControlText(XAP_RID_DIALOG_IMAGE_LBL_TITLE,		XAP_STRING_ID_DLG_Image_LblTitle);
-	localizeControlText(XAP_RID_DIALOG_IMAGE_LBL_DESCRIPTION,XAP_STRING_ID_DLG_Image_LblDescription);
-	localizeControlText(XAP_RID_DIALOG_IMAGE_LBL_SIZE,		XAP_STRING_ID_DLG_Image_ImageSize);
-	localizeControlText(XAP_RID_DIALOG_IMAGE_LBL_NAME,		XAP_STRING_ID_DLG_Image_ImageDesc);
-	localizeControlText(XAP_RID_DIALOG_IMAGE_LBL_WRAPPING,	XAP_STRING_ID_DLG_Image_TextWrapping);
-	localizeControlText(XAP_RID_DIALOG_IMAGE_LBL_PLACEMENT,	XAP_STRING_ID_DLG_Image_Placement);
-	localizeControlText(XAP_RID_DIALOG_IMAGE_RADIO_INLINE,	XAP_STRING_ID_DLG_Image_InLine);
-	localizeControlText(XAP_RID_DIALOG_IMAGE_RADIO_FLOAT, XAP_STRING_ID_DLG_Image_WrappedNone);
-	localizeControlText(XAP_RID_DIALOG_IMAGE_RADIO_RIGHT,	XAP_STRING_ID_DLG_Image_WrappedRight);
-	localizeControlText(XAP_RID_DIALOG_IMAGE_RADIO_LEFT,	XAP_STRING_ID_DLG_Image_WrappedLeft);
-	localizeControlText(XAP_RID_DIALOG_IMAGE_RADIO_BOTHSIDES,XAP_STRING_ID_DLG_Image_WrappedBoth);
-	localizeControlText(XAP_RID_DIALOG_IMAGE_RADIO_PARAGRAPH,XAP_STRING_ID_DLG_Image_PlaceParagraph);
-	localizeControlText(XAP_RID_DIALOG_IMAGE_RADIO_COLUMN,	XAP_STRING_ID_DLG_Image_PlaceColumn);
-	localizeControlText(XAP_RID_DIALOG_IMAGE_RADIO_PAGE,	XAP_STRING_ID_DLG_Image_PlacePage);
-	localizeControlText(XAP_RID_DIALOG_IMAGE_LBL_TYPE, XAP_STRING_ID_DLG_Image_WrapType);
-	localizeControlText(XAP_RID_DIALOG_IMAGE_RADIO_SQUARE, XAP_STRING_ID_DLG_Image_SquareWrap);
-	localizeControlText(XAP_RID_DIALOG_IMAGE_RADIO_TIGHT, XAP_STRING_ID_DLG_Image_TightWrap);
+	// Update the caption
+	setDialogTitle(pSS->getValue(XAP_STRING_ID_DLG_Image_Title));
+ 
+	/* Localise controls*/
+	_DSX(IMAGE_BTN_OK,			DLG_OK);
+	_DSX(IMAGE_BTN_CANCEL,			DLG_Cancel);
+	_DS(IMAGE_LBL_HEIGHT,			DLG_Image_Height);
+	_DS(IMAGE_LBL_WIDTH,			DLG_Image_Width);
+	_DS(IMAGE_CHK_ASPECT,			DLG_Image_Aspect);
+	_DS(IMAGE_LBL_TITLE,			DLG_Image_LblTitle);
+	_DS(IMAGE_LBL_DESCRIPTION,			DLG_Image_LblDescription);
+	_DS(IMAGE_LBL_SIZE,			DLG_Image_ImageSize);
+	_DS(IMAGE_LBL_NAME,			DLG_Image_ImageDesc);
+	_DS(IMAGE_LBL_WRAPPING,			DLG_Image_TextWrapping);
+	_DS(IMAGE_LBL_PLACEMENT,			DLG_Image_Placement);
+	_DS(IMAGE_RADIO_INLINE,			DLG_Image_InLine);
+	_DS(IMAGE_RADIO_FLOAT,			DLG_Image_WrappedNone);
+	_DS(IMAGE_RADIO_RIGHT,			DLG_Image_WrappedRight);	
+	_DS(IMAGE_RADIO_LEFT,			DLG_Image_WrappedLeft);
+	_DS(IMAGE_RADIO_BOTHSIDES,			DLG_Image_WrappedBoth);
+	_DS(IMAGE_RADIO_PARAGRAPH,			DLG_Image_PlaceParagraph);
+	_DS(IMAGE_RADIO_COLUMN,			DLG_Image_PlaceColumn);
+	_DS(IMAGE_RADIO_PAGE,			DLG_Image_PlacePage);
+	_DS(IMAGE_LBL_TYPE,			DLG_Image_WrapType);
+	_DS(IMAGE_RADIO_SQUARE,			DLG_Image_SquareWrap);
+	_DS(IMAGE_RADIO_TIGHT,			DLG_Image_TightWrap);
 
 	// Initialize controls
 	setControlText( XAP_RID_DIALOG_IMAGE_EBX_HEIGHT, getHeightString() );
