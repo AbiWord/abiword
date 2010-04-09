@@ -106,7 +106,7 @@ BOOL XAP_Win32Dialog_Image::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /
 	setControlText( XAP_RID_DIALOG_IMAGE_EBX_WIDTH, getWidthString() );
 	setControlText(XAP_RID_DIALOG_IMAGE_EBX_TITLE, getTitle().utf8_str());
 	setControlText(XAP_RID_DIALOG_IMAGE_EBX_DESCRIPTION, getDescription().utf8_str());
-    checkButton( XAP_RID_DIALOG_IMAGE_CHK_ASPECT, getPreserveAspect());
+	checkButton( XAP_RID_DIALOG_IMAGE_CHK_ASPECT, getPreserveAspect());
 
 	// Initialize text wrapping radio buttons
 	if(getWrapping() == WRAP_INLINE)
@@ -245,7 +245,7 @@ BOOL XAP_Win32Dialog_Image::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam
 		{
 			//char bufHeight[BUFSIZE];
 			//GetDlgItemText( hWnd, wId, bufHeight, BUFSIZE );
-            UT_Win32LocaleString str, units;
+			UT_Win32LocaleString str, units;
 			getDlgItemText (wId, str);
 			units.fromASCII (UT_dimensionName(getPreferedUnits()));
 
@@ -269,7 +269,7 @@ BOOL XAP_Win32Dialog_Image::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam
 			if(!wcsstr(str.c_str(), units.c_str()))
 				str.appendLocale (units.c_str());
 
-            setWidth( str.utf8_str().utf8_str() );
+			setWidth( str.utf8_str().utf8_str() );
 			setControlText( XAP_RID_DIALOG_IMAGE_EBX_HEIGHT, getHeightString() );
 			setControlText( XAP_RID_DIALOG_IMAGE_EBX_WIDTH, getWidthString() );
 		}
