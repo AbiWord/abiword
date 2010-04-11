@@ -1158,17 +1158,10 @@ PangoFont *  GR_CairoGraphics::_adjustedPangoFont (GR_PangoFont * pFont, PangoFo
 	double dSize = pFont->getPointSize ();
 
 	/* We cache this font to avoid all this huha if we can */
-	if (m_pAdjustedLayoutPangoFont) 
-	{
-		g_object_unref(m_pAdjustedLayoutPangoFont);
-	}
 	if (m_pAdjustedPangoFont) 
 	{
 		g_object_unref(m_pAdjustedPangoFont);
 	}
-	pango_font_description_set_size (pfd, (gint)dSize * PANGO_SCALE);
-	m_pAdjustedLayoutPangoFont = pango_context_load_font(getLayoutContext(), pfd);
-	m_pAdjustedPangoFontSource = pFont;
 
 	dSize =
 		(gint)(dSize*(double)PANGO_SCALE *(double)getZoomPercentage() / 100.0);
@@ -1193,10 +1186,8 @@ PangoFont *  GR_CairoGraphics::_adjustedLayoutPangoFont (GR_PangoFont * pFont, P
 	UT_return_val_if_fail(pFont, NULL);
 	
 	if (!pf)
-		{
-			xxx_UT_DEBUGMSG(("Getting Layout font \n"));
-			return pFont->getPangoLayoutFont();
-		}
+		return pFont->getPangoLayoutFont();
+
 	/* See if this is not the font we have currently cached */
 	if (pFont == m_pAdjustedPangoFontSource &&
 		m_iAdjustedPangoFontZoom == getZoomPercentage())
@@ -1221,18 +1212,8 @@ PangoFont *  GR_CairoGraphics::_adjustedLayoutPangoFont (GR_PangoFont * pFont, P
 	{
 		g_object_unref(m_pAdjustedLayoutPangoFont);
 	}
-	if (m_pAdjustedPangoFont )
-	{
-		g_object_unref(m_pAdjustedPangoFont);
-	}
 	m_pAdjustedLayoutPangoFont = pango_context_load_font(getLayoutContext(), pfd);
 	m_pAdjustedPangoFontSource = pFont;
-
-	dSize =
-		(gint)(dSize* (double)getZoomPercentage() / 100.0);
-	pango_font_description_set_size (pfd, (gint)dSize);
-	m_pAdjustedPangoFont = pango_context_load_font(getContext(), pfd);
-	m_iAdjustedPangoFontZoom = getZoomPercentage();
 	
 	pango_font_description_free(pfd);
 	
