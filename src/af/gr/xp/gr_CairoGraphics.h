@@ -376,10 +376,15 @@ public:
 	GR_PangoFont* m_pPFont;
 	GR_PangoFont* m_pPFontGUI;
 
+	// adjusted device front caching
 	PangoFont *       m_pAdjustedPangoFont;
+	PangoFontDescription* m_pAdjustedPangoFontDescription;
+	UT_sint32         m_iAdjustedPangoFontSize;
+		
+	// adjusted layout font caching
 	PangoFont *       m_pAdjustedLayoutPangoFont;
-	GR_PangoFont* m_pAdjustedPangoFontSource;
-	UT_uint32         m_iAdjustedPangoFontZoom;
+	PangoFontDescription* m_pAdjustedLayoutPangoFontDescription;
+	UT_sint32         m_iAdjustedLayoutPangoFontSize;
 	
 	UT_uint32         m_iDeviceResolution;
 

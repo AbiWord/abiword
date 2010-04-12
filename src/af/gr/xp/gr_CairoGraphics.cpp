@@ -342,9 +342,11 @@ GR_CairoGraphics::GR_CairoGraphics(cairo_t *cr, UT_uint32 iDeviceResolution)
 	m_pPFont(NULL),
 	m_pPFontGUI(NULL),
 	m_pAdjustedPangoFont(NULL),
+	m_pAdjustedPangoFontDescription(NULL),
+	m_iAdjustedPangoFontSize(0),
 	m_pAdjustedLayoutPangoFont(NULL),
-	m_pAdjustedPangoFontSource(NULL),
-	m_iAdjustedPangoFontZoom (0),
+	m_pAdjustedLayoutPangoFontDescription(NULL),
+	m_iAdjustedLayoutPangoFontSize(0),
 	m_iDeviceResolution(iDeviceResolution),
 	m_cr(cr),
 	m_cursor(GR_CURSOR_INVALID),
@@ -376,9 +378,11 @@ GR_CairoGraphics::GR_CairoGraphics()
 	m_pPFont(NULL),
 	m_pPFontGUI(NULL),
 	m_pAdjustedPangoFont(NULL),
+	m_pAdjustedPangoFontDescription(NULL),
+	m_iAdjustedPangoFontSize(0),
 	m_pAdjustedLayoutPangoFont(NULL),
-	m_pAdjustedPangoFontSource(NULL),
-	m_iAdjustedPangoFontZoom (0),
+	m_pAdjustedLayoutPangoFontDescription(NULL),
+	m_iAdjustedLayoutPangoFontSize(0),
 	m_iDeviceResolution(getDefaultDeviceResolution()),
 	m_cr(NULL),
 	m_cursor(GR_CURSOR_INVALID),
@@ -436,9 +440,17 @@ GR_CairoGraphics::~GR_CairoGraphics()
 	{
 		g_object_unref(m_pAdjustedPangoFont);
 	}
+	if(m_pAdjustedPangoFontDescription)
+	{
+		pango_font_description_free(m_pAdjustedPangoFontDescription);
+	}
 	if(m_pAdjustedLayoutPangoFont!= NULL)
 	{
 		g_object_unref(m_pAdjustedLayoutPangoFont);
+	}
+	if(m_pAdjustedLayoutPangoFontDescription)
+	{
+		pango_font_description_free(m_pAdjustedLayoutPangoFontDescription);
 	}
 	if (m_pContext != NULL)
 	{
@@ -1141,42 +1153,38 @@ PangoFont *  GR_CairoGraphics::_adjustedPangoFont (GR_PangoFont * pFont, PangoFo
 	if (!pf)
 		return pFont->getPangoFont();
 
-	/* See if this is not the font we have currently cached */
-	if (pFont == m_pAdjustedPangoFontSource &&
-		m_iAdjustedPangoFontZoom == getZoomPercentage())
-	{
-		return m_pAdjustedPangoFont;
-	}
-
 	/*
 	 * When Pango is doing font substitution for us, the substitute font
 	 * we are getting always has size 12pt, so we have to use the size of
 	 * our own font to fix this.
 	 */
 	PangoFontDescription * pfd = pango_font_describe (pf);
+	UT_sint32 dSize = (gint)(pFont->getPointSize() * (double)PANGO_SCALE * (double)getZoomPercentage() / 100.0);
+	pango_font_description_set_size (pfd, dSize);
 
-	double dSize = pFont->getPointSize ();
-
-	/* We cache this font to avoid all this huha if we can */
-	if (m_pAdjustedPangoFont) 
+	// Check if we have already cached a font with this description and size
+	if (m_pAdjustedPangoFontDescription && pango_font_description_equal(m_pAdjustedPangoFontDescription, pfd) && m_iAdjustedPangoFontSize == dSize)
 	{
-		g_object_unref(m_pAdjustedPangoFont);
+		pango_font_description_free(pfd);
+		return m_pAdjustedPangoFont;
 	}
-
-	dSize =
-		(gint)(dSize*(double)PANGO_SCALE *(double)getZoomPercentage() / 100.0);
-	pango_font_description_set_size (pfd, (gint)dSize);
-	m_pAdjustedPangoFont = pango_context_load_font(getContext(), pfd);
-	m_iAdjustedPangoFontZoom = getZoomPercentage();
 	
-	pango_font_description_free(pfd);
+	/* Create and cache this font to avoid all this huha if we can */
+	if (m_pAdjustedPangoFont) 
+		g_object_unref(m_pAdjustedPangoFont);
+	if (m_pAdjustedPangoFontDescription)
+		pango_font_description_free(m_pAdjustedPangoFontDescription);
+	
+	m_pAdjustedPangoFont = pango_context_load_font(getContext(), pfd);
+	m_pAdjustedPangoFontDescription = pfd;
+	m_iAdjustedPangoFontSize = dSize;
 	
 	return m_pAdjustedPangoFont;
 }
 
 
 /*
- * This is used to get Layout PangoFont that is correct for present zoom level.
+ * This is used to get Layout PangoFont (that is independent from the zoom level).
  * pFont is the font that we are supposed to be using (the user-selected font)
  * pf is the PangoFont that we are actually using (possibly a different,
  * substituted font).
@@ -1188,34 +1196,31 @@ PangoFont *  GR_CairoGraphics::_adjustedLayoutPangoFont (GR_PangoFont * pFont, P
 	if (!pf)
 		return pFont->getPangoLayoutFont();
 
-	/* See if this is not the font we have currently cached */
-	if (pFont == m_pAdjustedPangoFontSource &&
-		m_iAdjustedPangoFontZoom == getZoomPercentage())
-	{
-		return m_pAdjustedLayoutPangoFont;
-	}
-
 	/*
 	 * When Pango is doing font substitution for us, the substitute font
 	 * we are getting always has size 12pt, so we have to use the size of
 	 * our own font to fix this.
 	 */
 	PangoFontDescription * pfd = pango_font_describe (pf);
+	UT_sint32 dSize = (gint)(pFont->getPointSize()*(double)PANGO_SCALE);
+	pango_font_description_set_size (pfd, dSize);
 
-	double dSize = pFont->getPointSize()*(double)PANGO_SCALE;
-   
-	xxx_UT_DEBUGMSG(("Setting adjustedLayout point size %f \n",dSize));
-	pango_font_description_set_size (pfd, (gint)dSize);
-
-	/* We cache this font to avoid all this huha if we can */
-	if (m_pAdjustedLayoutPangoFont) 
+	// Check if we have already cached a font with this description and size
+	if (m_pAdjustedLayoutPangoFontDescription && pango_font_description_equal(m_pAdjustedLayoutPangoFontDescription, pfd) && m_iAdjustedLayoutPangoFontSize == dSize)
 	{
-		g_object_unref(m_pAdjustedLayoutPangoFont);
+		pango_font_description_free(pfd);
+		return m_pAdjustedLayoutPangoFont;
 	}
-	m_pAdjustedLayoutPangoFont = pango_context_load_font(getLayoutContext(), pfd);
-	m_pAdjustedPangoFontSource = pFont;
+   
+	/* Create and cache this font to avoid all this huha if we can */
+	if (m_pAdjustedLayoutPangoFont) 
+		g_object_unref(m_pAdjustedLayoutPangoFont);
+	if (m_pAdjustedLayoutPangoFontDescription)
+		pango_font_description_free(m_pAdjustedLayoutPangoFontDescription);
 	
-	pango_font_description_free(pfd);
+	m_pAdjustedLayoutPangoFont = pango_context_load_font(getLayoutContext(), pfd);
+	m_pAdjustedLayoutPangoFontDescription = pfd;
+	m_iAdjustedLayoutPangoFontSize = dSize;
 	
 	return m_pAdjustedLayoutPangoFont;
 }
