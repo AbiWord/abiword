@@ -309,7 +309,7 @@ bool GR_PangoRenderInfo::getUTF8Text()
 	if(s_pOwnerUTF8 == this)
 		return true;
 	
-	UT_return_val_if_fail( m_pText, false );
+	UT_return_val_if_fail( m_pText && m_pText->getStatus() == UTIter_OK, false );
 
 	UT_TextIterator & text = *m_pText;
 	sUTF8->clear();
@@ -1652,14 +1652,22 @@ bool GR_CairoGraphics::needsSpecialCaretPositioning(GR_RenderInfo &ri)
 		return false;
 
 	UT_TextIterator & text = static_cast<UT_TextIterator &>(*RI.m_pText);
+	UT_uint32 origPos = text.getPosition();
 
 	for(UT_sint32 i = 0; i < RI.m_iLength && text.getStatus() == UTIter_OK;
 		++i, ++text)
 	{
 		UT_UCS4Char c = text.getChar();
 		if(c != ' ' && c<256)
+		{
+			// restore the iterator back to its original position
+			text.setPosition(origPos);
 			return false;
+		}
 	}
+
+	// restore the iterator back to its original position
+	text.setPosition(origPos);
 	return true;
 }
 
