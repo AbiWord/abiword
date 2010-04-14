@@ -1296,31 +1296,49 @@ void GR_CairoGraphics::renderChars(GR_RenderInfo & ri)
 		
 		UT_sint32 iOffsetStart
 			= RI.m_iVisDir == UT_BIDI_RTL ?
-			                 RI.m_iCharCount - RI.m_iOffset - 1 : RI.m_iOffset;
+			                 RI.m_iCharCount - RI.m_iOffset - RI.m_iLength : RI.m_iOffset;
+		xxx_UT_DEBUGMSG(("\n\niOffsetStart (in chars): %d\n", iOffsetStart));
 		
 		const char * pUtf8   = utf8.utf8_str();
 		const char * pOffset = g_utf8_offset_to_pointer (pUtf8, iOffsetStart);
 		
 		if (pOffset)
 			iOffsetStart = pOffset - pUtf8;
+		xxx_UT_DEBUGMSG(("iOffsetStart (in bytes): %d\n", iOffsetStart));
 		
 		UT_sint32 iOffsetEnd
 			= RI.m_iVisDir == UT_BIDI_RTL ?
-			                 RI.m_iCharCount - RI.m_iOffset - RI.m_iLength:
-			                 RI.m_iOffset + RI.m_iLength - 1;
+			                 RI.m_iCharCount - RI.m_iOffset:
+			                 RI.m_iOffset + RI.m_iLength;
+		xxx_UT_DEBUGMSG(("iOffsetEnd (in chars): %d\n", iOffsetEnd));
 		
 		pOffset = g_utf8_offset_to_pointer (pUtf8, iOffsetEnd);
-		
+
+		xxx_UT_DEBUGMSG(("RI.m_iCharCount: %d, RI.m_iOffset: %d, RI.m_iLength: %d, rtl: %s\n", RI.m_iCharCount, RI.m_iOffset, RI.m_iLength, RI.m_iVisDir == UT_BIDI_RTL ? "yes" : "no"));
+			
 		if (pOffset)
 			iOffsetEnd = pOffset - pUtf8;
-		
-		// now we need to work out the glyph offsets
+		xxx_UT_DEBUGMSG(("iOffsetEnd (in bytes): %d\n", iOffsetEnd));
+
+		//	
+		// now we need to work out the glyph offsets given the start and end offsets in bytes
+		//
+			
+		// the glyph end offset should point to the offset of the first glyph that is to be rendered
 		UT_sint32 iGlyphsStart = -1;
-		UT_sint32 iGlyphsEnd = -1;
-		
-		i = 0;
+		// the glyph end offset should point to the offset of the first glyph that is NOT to be rendered anymore
+		// (which in the special case of "render everything from iGlyphsStart to the end" for rtl text means
+		// offset -1, as index 0 points the the "last" glyph of the string. For ltr text this simply means 
+		// offset "num_glyphs".
+		UT_sint32 iGlyphsEnd 
+			= RI.m_iVisDir == UT_BIDI_RTL ?
+							-1 : RI.m_pScaledGlyphs->num_glyphs;
+
+		// count downwards for RTL text, so we include the full character clusters
+		i = RI.m_iVisDir == UT_BIDI_RTL ? RI.m_pScaledGlyphs->num_glyphs - 1 : 0;
 		while(i < (UT_uint32)RI.m_pScaledGlyphs->num_glyphs)
 		{
+			xxx_UT_DEBUGMSG(("RI.m_pScaledGlyphs->log_clusters[%d] == %d\n", i, RI.m_pScaledGlyphs->log_clusters[i]));
 			if(iGlyphsStart < 0 && RI.m_pScaledGlyphs->log_clusters[i] == iOffsetStart)
 				iGlyphsStart = i;
 
@@ -1330,19 +1348,37 @@ void GR_CairoGraphics::renderChars(GR_RenderInfo & ri)
 				break;
 			}
 			
-			++i;
+			RI.m_iVisDir == UT_BIDI_RTL ? --i : ++i;
+		}
+		if (RI.m_iVisDir == UT_BIDI_RTL)
+		{
+			// Swap the start and end offset for rtl text, so start <= end again.
+			// Note that this means that iGlyphsStart now points to the offset of
+			// the "last  glyph that should not rendered yet". The glyphs starting from
+			// this offset + 1 should be rendered. iGlyphsEnd on the other hand now 
+			// points to the offset of the last glyph that should be rendered.
+			std::swap(iGlyphsStart, iGlyphsEnd);
 		}
 
+		xxx_UT_DEBUGMSG(("iGlyphsStart: %d, iGlyphsEnd: %d\n", iGlyphsStart, iGlyphsEnd));
+		UT_return_if_fail(iGlyphsStart <= iGlyphsEnd);
+
 		// both of these can be 0 (iGlyphsEnd == 0 => only 1 glyph)
-		//	UT_return_if_fail( iGlyphsStart >= 0 && iGlyphsEnd >= 0 );
-		xxx_UT_DEBUGMSG(("Drawing glyph subset from %d to %d (offsets %d, %d)\n",
+		xxx_UT_DEBUGMSG(("Drawing glyph subset from %d to %d (byte offsets %d, %d)\n",
 					 iGlyphsStart, iGlyphsEnd,
 					 iOffsetStart, iOffsetEnd));
 		
-		gs.num_glyphs = iGlyphsEnd - iGlyphsStart + 1; // including the last glyph
-		gs.glyphs = RI.m_pScaledGlyphs->glyphs + iGlyphsStart;
-		gs.log_clusters = RI.m_pGlyphs->log_clusters + iGlyphsStart;
+		gs.num_glyphs = iGlyphsEnd - iGlyphsStart;
+		gs.glyphs
+			= RI.m_iVisDir == UT_BIDI_RTL ?
+				RI.m_pScaledGlyphs->glyphs + iGlyphsStart + 1 :
+				RI.m_pScaledGlyphs->glyphs + iGlyphsStart;
+		gs.log_clusters
+			= RI.m_iVisDir == UT_BIDI_RTL ?
+				RI.m_pGlyphs->log_clusters + iGlyphsStart + 1 :
+				RI.m_pGlyphs->log_clusters + iGlyphsStart;
 
+		// finally we can render the substring
 		cairo_save(m_cr);
 		cairo_translate(m_cr, xoff, yoff);
 		pango_cairo_show_glyph_string(m_cr, pf, &gs);
