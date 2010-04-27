@@ -3936,6 +3936,7 @@ Defun1(fileInsertGraphic)
 	FREEP(pNewFile);
 	DELETEP(pFG);
 
+	UT_DEBUGMSG(("Image has been inserted!!!\n"));
 	return true;
 }
 

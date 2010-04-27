@@ -733,6 +733,8 @@ public:
 	bool                _deleteCellAt(PT_DocPosition posTable,UT_sint32 row, UT_sint32 col);
 	bool                _restoreCellParams(PT_DocPosition posTable, UT_sint32 iLineWidth);
 	UT_sint32           _changeCellParams(PT_DocPosition posTable,PL_StruxDocHandle tableSDH );
+	bool                _calcRectTableSel(PT_DocPosition anchor, PT_DocPosition pos, 
+                        UT_sint32* left, UT_sint32* right, UT_sint32* top, UT_sint32* bot);
 	bool                deleteCellAt(PT_DocPosition posTable,UT_sint32 row, UT_sint32 col);
 	bool                cmdDeleteCell(PT_DocPosition pos);
 	bool                cmdDeleteCol(PT_DocPosition pos);

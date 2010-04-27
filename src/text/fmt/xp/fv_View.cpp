@@ -7289,7 +7289,6 @@ void FV_View::endDrag(UT_sint32 xPos, UT_sint32 yPos)
 {
 	if (!m_pAutoScrollTimer)
 		return;
-
 	// figure out whether we're still on screen
 	bool bOnScreen = true;
 

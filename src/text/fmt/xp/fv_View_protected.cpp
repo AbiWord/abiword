@@ -185,6 +185,9 @@ void FV_View::_eraseSelection(void)
 	_clearBetweenPositions(iPos1, iPos2, true);
 }
 
+// noticed this made the selection in table flicker once when clearing
+// need to figure out why, will do this later
+// guessing because of the drawBetweenPositions
 void FV_View::_clearSelection(void)
 {
 	if( isSelectionEmpty() )
@@ -328,7 +331,7 @@ void FV_View::_resetSelection(void)
 
 void FV_View::_setSelectionAnchor(void)
 {
-	m_Selection.setMode(FV_SelectionMode_Single);
+	m_Selection.setMode(FV_SelectionMode_Single);	
 	m_Selection.setSelectionAnchor(getPoint());
 }
 
@@ -849,6 +852,53 @@ bool FV_View::_changeCellTo(PT_DocPosition posTable, UT_sint32 rowold, UT_sint32
 
 	return bres;
 }
+
+/*!
+ * This method calculates the attach values of a rectangular selection inside a table.
+ * \param anchor	Document Position of the anchor.
+ * \param pos		Document Position of the cornor opossite of the anchor.
+ * \param left		If succesful will contain left attach of rectangle. 
+ * \param right		If succesful will contain right attach of rectangle. 
+ * \param top		If succesful will contain top attach of rectangle. 
+ * \param bot		If succesful will contain bot attach of rectangle. 
+ * \return 	True if there was a real selection, false if there wasn't.
+ */
+ bool FV_View::_calcRectTableSel(PT_DocPosition anchor, PT_DocPosition pos, 
+ UT_sint32* left, UT_sint32* right, UT_sint32* top, UT_sint32* bot)
+ {		
+ 			
+	UT_sint32 iAnchLeft, iAnchRight, iAnchBot, iAnchTop,
+			  iNewLeft, iNewRight, iNewBot, iNewTop;
+					
+	// load the attach values
+	getCellParams(anchor, &iAnchLeft, &iAnchRight, &iAnchTop, &iAnchBot);
+	getCellParams(pos, &iNewLeft, &iNewRight, &iNewTop, &iNewBot);
+	
+	// if anchor and pos are in same cell, no selection, return false
+	// rect bounds equal the attach values of the anchor
+	if(getCellAtPos(anchor) == getCellAtPos(pos)){
+		getCellParams(anchor, left, right, top, bot);
+		return false; 
+	}
+	
+	// calculate top and bottom of our rectangle
+	*top = iAnchTop;
+	*bot = iNewBot;
+	if( iAnchTop > iNewTop ){		// using a "swap(x,y)" function would be neater
+		*top = iNewTop;			
+		*bot = iAnchBot;
+	}
+				
+	// calculate left and right of the rectangle
+	*left = iAnchLeft;
+	*right = iNewRight;
+	if( iAnchLeft > iNewLeft ){		// idem
+		*left = iNewLeft;
+		*right = iAnchRight;
+	} 
+	
+	return true;
+ }
 
 
 /*!
@@ -3609,39 +3659,205 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 	*/
 	UT_uint32 iNewPoint = getPoint();
 	xxx_UT_DEBUGMSG(("_extSel: iNewPoint %d ioldPoint %d selectionAnchor %d \n",iNewPoint,iOldPoint,m_Selection.getSelectionAnchor()));
-	PT_DocPosition posBOD,posEOD,dNewPoint,dOldPoint;
+	PT_DocPosition posBOD,posEOD,dNewPoint,dOldPoint, posLow;
 	dNewPoint = static_cast<PT_DocPosition>(iNewPoint);
 	dOldPoint = static_cast<PT_DocPosition>(iOldPoint);
+	posLow = getSelectionAnchor();
 	getEditableBounds(false,posBOD);
 	getEditableBounds(true,posEOD);
-	if(dNewPoint < posBOD || dNewPoint > posEOD || dOldPoint < posBOD
-	   || dOldPoint > posEOD)
-	{
-		return;
-	}
-	if (iNewPoint == iOldPoint)
-	{
-		return;
-	}
-	if(iOldPoint < iNewPoint)
-	{
-		_drawBetweenPositions(iOldPoint, iNewPoint);
-	}
-	else
-	{
-		_drawBetweenPositions(iNewPoint,iOldPoint);
-	}
-	if(getPoint() > getSelectionAnchor())
-	{
-		m_Selection.setSelectionLeftAnchor(getSelectionAnchor());
-		m_Selection.setSelectionRightAnchor(getPoint());
-	}
-	else
-	{
-		m_Selection.setSelectionRightAnchor(m_Selection.getSelectionAnchor());
-		m_Selection.setSelectionLeftAnchor(getPoint());
-	}
 	
+	// 14 apr 2010
+	// Think I FIXED a ( unknown ) BUG here!!! The conditions are wrong.
+	// The last check should be against dOldPoint not dNewPoint
+	// Also merged the sequent if's.
+	if(dNewPoint < posBOD || dNewPoint > posEOD || dOldPoint < posBOD
+	   || dOldPoint > posEOD || iNewPoint == iOldPoint )
+		return;
+	
+	// get possible cells
+	fp_CellContainer* pLowCell = NULL;
+	fp_CellContainer* pHighCell = NULL;
+		
+	pLowCell = getCellAtPos(posLow+1);
+	pHighCell =  getCellAtPos(getPoint());
+		
+	// if the anchor was in a table but the current point is not
+	if( isInTable(posLow+1) && !isInTable(iNewPoint) ){
+		// we have to choose.. cancel selection or just ignore
+		// let's choose ignore for now
+		return;
+	// if the selection anchor is not in a table we do the normal selection
+	// or if we are selecting text in one cell
+	}else if( !isInTable(posLow) || ( pLowCell != NULL && pLowCell == pHighCell ) ){
+		if(iOldPoint < iNewPoint)
+			_drawBetweenPositions(iOldPoint, iNewPoint);
+		else
+			_drawBetweenPositions(iNewPoint,iOldPoint);
+		
+		if(getPoint() > getSelectionAnchor()){
+
+			m_Selection.setSelectionLeftAnchor(getSelectionAnchor());
+			m_Selection.setSelectionRightAnchor(getPoint());
+		}
+		else
+		{
+			m_Selection.setSelectionRightAnchor(m_Selection.getSelectionAnchor());
+			m_Selection.setSelectionLeftAnchor(getPoint());
+		}
+	// if the selection anchor was in a table and the current pos is too
+	// and both are not in the same cell ( = anchor )
+	// we do rectangular table selection
+	}else{		
+		// Changed this so we only execute the code when a new cell is entered with the mousepointer
+		// AND when we are in the same table the anchor is in
+		if( (pLowCell != NULL) && ( pHighCell != getCellAtPos(iOldPoint)) &&
+			getTableAtPos(getSelectionAnchor()) == getTableAtPos(iNewPoint) ){
+		    
+			/*------------------------------------------------------------------
+			 * Determine the borders of the old and new rectangular selection
+			 *----------------------------------------------------------------*/	 						
+			UT_sint32 iLeftSelEnd, iRightSelEnd, iBotSelEnd, iTopSelEnd, 
+					  iOldLeft, iOldRight, iOldBot, iOldTop;
+			
+			_calcRectTableSel(posLow+1, iNewPoint, &iLeftSelEnd, &iRightSelEnd, &iTopSelEnd, &iBotSelEnd);
+			 			
+			m_Selection.getRectTableSel(&iOldLeft, &iOldRight, &iOldTop, &iOldBot);
+			m_Selection.setRectTableSel(iLeftSelEnd, iRightSelEnd, iTopSelEnd, iBotSelEnd);
+			
+			// For now we print the rectangle for debug purposes
+			UT_DEBUGMSG(("SELECTED RECTANGLE:\n\tleft attach: %d\n\tright attach: %d\n\tbottom attach: %d\n\ttop attach: %d\n",
+			iLeftSelEnd, iRightSelEnd, iBotSelEnd, iTopSelEnd));	
+			
+			
+			/*------------------------------------------------------------------
+			 * calculating direction of shrink/expand
+			 *----------------------------------------------------------------*/
+			bool bShrink = true;
+			UT_sint32 row, col;
+			row = col = -1;
+			
+			// selection shrinked or expanded?	 
+			if( iOldLeft > iLeftSelEnd || iOldRight < iRightSelEnd 
+			|| iOldTop > iTopSelEnd || iOldBot < iBotSelEnd )
+				bShrink = false;
+			
+			// where are the changed cells ?
+			// SHRINK
+			if(!bShrink){
+				// horizontal
+				if( iOldTop != iTopSelEnd )
+					row = iTopSelEnd;
+				else if( iOldBot != iBotSelEnd )
+					row = iBotSelEnd-1;		
+				// vertical
+				if( iOldLeft != iLeftSelEnd )
+					col = iLeftSelEnd;
+				else if( iOldRight != iRightSelEnd )
+					col = iRightSelEnd-1;
+			// EXPAND
+			}else{
+				// horizontal
+				if( iOldTop != iTopSelEnd )
+					row = iOldTop;
+				else if( iOldBot != iBotSelEnd )
+					row = iOldBot-1;		
+				// vertical
+				if( iOldLeft != iLeftSelEnd )
+					col = iOldLeft;
+				else if( iOldRight != iRightSelEnd )
+					col = iOldRight-1;
+			}
+			
+			
+			/*------------------------------------------------------------------
+			 * making adjustements to the selection
+			 *----------------------------------------------------------------*/			 
+			fl_TableLayout* tableLayout = getTableAtPos(posLow);
+			fp_TableContainer* table = static_cast<fp_TableContainer *>(tableLayout->getFirstContainer());
+			fl_CellLayout * tmpCell = NULL;
+			PT_DocPosition pos1, pos2;
+			
+			m_Selection.setMode(FV_SelectionMode_InTable);
+			
+			// special case, we want the anchor cell to be added too
+			if( pLowCell == getCellAtPos(iOldPoint) ){
+				tmpCell = static_cast<fl_CellLayout *>(pLowCell->getSectionLayout());
+				m_Selection.addCellToSelection(tmpCell);	
+			}	
+			
+			// We need to add/delete a partial row
+			if( row >= 0 ){
+				for(int iCol = iLeftSelEnd; iCol <= iRightSelEnd-1; iCol++){
+					tmpCell = static_cast<fl_CellLayout *>(table->getCellAtRowColumn(row,iCol)->getSectionLayout());
+					if(!bShrink){
+						m_Selection.addCellToSelection(tmpCell);
+						UT_DEBUGMSG(("Row constant, Added cell at row: %d col: %d\n",row,iCol));
+					}else{
+						UT_DEBUGMSG(("Row constant, Deleted cell at row: %d col: %d\n",row,iCol));
+						m_Selection.removeCellFromSelection(tmpCell);
+					}	
+				}
+				
+				// determing points for our redraw/clear
+				// getting left top doc pos of our first cell
+				/*tmpCell = static_cast<fl_CellLayout *>(table->getCellAtRowColumn(row, iLeftSelEnd)->getSectionLayout());
+				PL_StruxDocHandle sdh = tmpCell->getStruxDocHandle();
+				pos1 = getDocument()->getStruxPosition(sdh) +1;
+				
+				// getting bottom right doc pos of our last cell
+				tmpCell = static_cast<fl_CellLayout *>(table->getCellAtRowColumn(row, iRightSelEnd-1)->getSectionLayout());
+				PL_StruxDocHandle sdhStart = tmpCell->getStruxDocHandle();
+				PL_StruxDocHandle sdhEnd = NULL;
+				getDocument()->getNextStruxOfType(sdhStart,PTX_EndCell,&sdhEnd);
+				pos2 = getDocument()->getStruxPosition(sdhEnd) -1;
+				
+				if( bShrink )
+					_clearBetweenPositions(pos1, pos2, true);
+				else
+					_drawBetweenPositions(pos1, pos2);*/
+			}
+			
+			// We need to add/delete a partial column
+			if( col >= 0 ){
+				for(int iRow = iTopSelEnd; iRow <= iBotSelEnd-1; iRow++){
+					tmpCell = static_cast<fl_CellLayout *>(table->getCellAtRowColumn(iRow,col)->getSectionLayout());
+					if(!bShrink){
+						m_Selection.addCellToSelection(tmpCell);
+						UT_DEBUGMSG(("Col constant, Added cell at row: %d col: %d\n",iRow,col));
+					}else{
+						UT_DEBUGMSG(("Col constant, Deleted cell at row: %d col: %d\n",iRow,col));
+						m_Selection.removeCellFromSelection(tmpCell);
+					}
+				}
+				
+				// determing points for our redraw/clear
+				// getting left top doc pos of our first cell
+				/*tmpCell = static_cast<fl_CellLayout *>(table->getCellAtRowColumn(iTopSelEnd,col)->getSectionLayout());
+				PL_StruxDocHandle sdh = tmpCell->getStruxDocHandle();
+				pos1 = getDocument()->getStruxPosition(sdh) +1;
+				
+				// getting bottom right doc pos of our last cell
+				tmpCell = static_cast<fl_CellLayout *>(table->getCellAtRowColumn(iBotSelEnd-1,col)->getSectionLayout());
+				PL_StruxDocHandle sdhStart = tmpCell->getStruxDocHandle();
+				PL_StruxDocHandle sdhEnd = NULL;
+				getDocument()->getNextStruxOfType(sdhStart,PTX_EndCell,&sdhEnd);
+				pos2 = getDocument()->getStruxPosition(sdhEnd) -1;
+				
+				if( bShrink )
+					_clearBetweenPositions(pos1, pos2, true);
+				else
+					_drawBetweenPositions(pos1, pos2);*/
+			}
+			
+			// !!! NEED TO USE POS1 AND POS2 HERE BUT THEY ARE NOT YET CALCULATED CORRECT
+			// !!! WHOLE DOCUMENT IS REDRAWN ATM THIS HAS TO CHANGE OFC!
+			// need to draw or clear our selection between the right points  			
+			if( bShrink )
+				_clearBetweenPositions(posBOD, posEOD, true);
+			else
+				_drawBetweenPositions(posBOD, posEOD);
+		}
+	}
 }
 
 void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
@@ -3655,11 +3871,13 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 	dOldPoint = static_cast<PT_DocPosition>(iOldPoint);
 	getEditableBounds(false,posBOD);
 	getEditableBounds(true,posEOD);
-	if(dNewPoint < posBOD || dNewPoint > posEOD || dOldPoint < posBOD
-	   || dNewPoint > posEOD)
-	{
+	
+	// 14 apr 2010
+	// Think I FIXED a ( unknown ) BUG here!!! The conditions are wrong.
+	// The last check should be against dOldPoint not dNewPoint
+	if(dNewPoint < posBOD || dNewPoint > posEOD || dOldPoint < posBOD 
+	|| dOldPoint > posEOD)
 		return;
-	}
 
 	if (isSelectionEmpty())
 	{
@@ -3667,50 +3885,17 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 		_clearIfAtFmtMark(getPoint());
 		_setSelectionAnchor();
 	}
-	m_Selection.setMode(FV_SelectionMode_Single);
+	
+	/*if( !isInTable(iNewPoint) )
+		m_Selection.setMode(FV_SelectionMode_Single);
+	else
+		m_Selection.setMode(FV_SelectionMode_InTable);*/
+		
 	_setPoint(iNewPoint);
 //
 // Look if we should select the initial cell.
 //
 	_extSel(iOldPoint);
-	if(getSelectionAnchor() < getPoint())
-	{
-		PT_DocPosition posLow = getSelectionAnchor();
-		fp_CellContainer * pLowCell = NULL;
-		fp_CellContainer * pHighCell = NULL;
-		if(isInTable(posLow) )
-		{
-			pLowCell = getCellAtPos(posLow+1);
-			pHighCell =  getCellAtPos(getPoint());
-			if((pLowCell != NULL) && (pLowCell != pHighCell))
-			{
-				fl_CellLayout * pCell = static_cast<fl_CellLayout *>(pLowCell->getSectionLayout());
-				PT_DocPosition posCell = pCell->getPosition(true);
-				xxx_UT_DEBUGMSG(("posCell %d posLow %d \n",posCell,posLow));
-				if((posCell == posLow) && (m_iGrabCell == 0))
-				{
-					m_iGrabCell++;
-					m_Selection.setSelectionAnchor(posCell-1);
-					_drawBetweenPositions(posCell-1, getPoint());
-				}
-				else if(((posCell + 1) == posLow) && (m_iGrabCell == 0))
-				{
-					m_iGrabCell++;
-					m_Selection.setSelectionAnchor(posCell-1);
-					_drawBetweenPositions(posCell-1, getPoint());
-				}
-				else if(((posCell + 2) == posLow) && (m_iGrabCell == 0))
-				{
-					m_iGrabCell++;
-					m_Selection.setSelectionAnchor(posCell-1);
-					_drawBetweenPositions(posCell-1, getPoint());
-				}
-//
-// FIXME look to see if we've selected a whole row.
-//
-			}
-		}
-	}
 
 	if (isSelectionEmpty())
 	{
@@ -3856,6 +4041,7 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 			if(pCP)
 			{
 				pCell = static_cast<fp_CellContainer *>(pCP);
+	//			UT_DEBUGMSG(("KABAM top %d  left %d\n", pCell->getTopAttach(), pCell->getLeftAttach()));
 				fp_TableContainer * pTab = pCell->getBrokenTable(pLine);
 				if(pTab)
 				{
@@ -4966,6 +5152,15 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 		return;
 	if(!m_pDoc->isPieceTableChanging())
 	{
+		
+		// assignement for GSoC
+		if( isInTable() ){
+			// coordinates of cell relative to table
+			UT_sint32 l, r, t, b;
+			if(getCellParams(pt, &l, &r, &t, &b))
+				UT_DEBUGMSG(("Cell position:\nLeft:   %d\nRight:  %d\nTop:    %d\nBottom: %d\n", l, r, t, b));
+			
+		}
 //
 // Have to deal with special case of point being exactly on a footnote/endnote
 // boundary. Move the point past the footnote so we always have Footnote field

@@ -46,7 +46,11 @@ FV_Selection::FV_Selection (FV_View * pView)
 	  m_iSelectRightAnchor(0),
 	  m_pTableOfSelectedColumn(NULL),
 	  m_pSelectedTOC(NULL),
-	  m_bSelectAll(false)
+	  m_bSelectAll(false),
+	  m_iLeftTableRect(-1),
+	  m_iRightTableRect(-1),
+	  m_iTopTableRect(-1),
+	  m_iBottomTableRect(-1)
 {
 	UT_ASSERT (pView);
 	m_vecSelRanges.clear();
@@ -110,7 +114,10 @@ void FV_Selection::setMode(FV_SelectionMode iSelMode)
 		m_pSelectedTOC = NULL;
 	}
 	m_iSelectionMode = iSelMode;
-	if(m_iSelectionMode != FV_SelectionMode_NONE)
+	
+	// 16 april 2010 BUG FIX!!
+	// this should be '==' and not '!=' I think?
+	if(m_iSelectionMode == FV_SelectionMode_NONE)
 	{
 		m_pTableOfSelectedColumn = NULL;
 		UT_VECTOR_PURGEALL(PD_DocumentRange *,m_vecSelRanges);
@@ -119,6 +126,10 @@ void FV_Selection::setMode(FV_SelectionMode iSelMode)
 		m_vecSelRanges.clear();
 		m_vecSelRTFBuffers.clear();
 		m_vecSelCellProps.clear();
+		m_iLeftTableRect = -1;
+	    m_iRightTableRect = -1;
+	    m_iTopTableRect = -1;
+	    m_iBottomTableRect = -1;
 	}
 	setSelectAll(false);
 }
@@ -317,13 +328,91 @@ void FV_Selection::setSelectionRightAnchor(PT_DocPosition pos)
 	setSelectAll(bSelAll);
 }
 
+/*! Return the current attach values of the table selection rectangle 
+ *  \return False if none were set yet, else true.
+ */
+bool FV_Selection::getRectTableSel
+(UT_sint32* left, UT_sint32* right, UT_sint32* top, UT_sint32* bottom)
+{
+    // if one isn't set they all aren't
+    if( m_iLeftTableRect < 0 )
+        return false;
+        
+    *left = m_iLeftTableRect;
+	*right = m_iRightTableRect;
+	*top = m_iTopTableRect;
+	*bottom = m_iBottomTableRect;	
+	return true;                               
+}
+
+/*! Set the attach values of the table selection rectangle
+*/
+void FV_Selection::setRectTableSel
+(UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bottom)
+{
+    m_iLeftTableRect = left;
+	m_iRightTableRect = right;
+	m_iTopTableRect = top;
+	m_iBottomTableRect = bottom;
+}
+	                                      
 bool FV_Selection::isPosSelected(PT_DocPosition pos) const
 {
 	if(m_iSelectionMode == FV_SelectionMode_NONE)
 	{
 		return false;
 	}
-	if(m_iSelectionMode < FV_SelectionMode_Multiple)
+	if( m_iSelectionMode == FV_SelectionMode_InTable ){
+	    // check if the given pos is in a selected cell
+	    /*
+	     * This could be done in many ways and probably faster ways too.
+	     * Now I iterate over the vector, this could be avoided.
+	     * This is temporarily, other options should be discussed.
+	     * ^ One other way would be remembering the max of the attach values 
+	     *   in AddCellTo and comparing these against the cell at the pos argument.
+	     *   
+	     * A binary search in the vector woud speed up too in big selections.
+	     * An advantage of this would be the user is able to select multiple single cells.
+	     *
+	     * If this way would be kept we can just place the InTable selection mode
+	     * after the Multiple mode and then we don't need this if anymore, the code
+	     * in the bottom of this function would have the same effect.
+	     */
+	    /*UT_sint32 i =0;
+	    PD_DocumentRange * pDocRange = NULL;
+	    for(i=0; i < m_vecSelRanges.getItemCount(); i++){
+	        pDocRange = m_vecSelRanges.getNthItem(i);           
+	        if ((pos >= pDocRange->m_pos1) && (pos <= pDocRange->m_pos2+1)) 
+	            return true;
+	    }
+	    // no cell found around the pos
+	    return false;*/
+	    
+	    // due problem mentioned in mail I'm going to use attach values
+	    
+	    // if one rect border isn't set yet they all aren't
+		if( m_iLeftTableRect < 0 || !m_pView->isInTable(pos) )
+		    return false;
+		  
+		// make sure we are in the same table the anchor is in
+		if( m_pView->getTableAtPos(getSelectionAnchor()) != 
+		    m_pView->getTableAtPos(pos) )
+		    return false;
+		
+	    UT_sint32 iLeft, iRight, iTop, iBot;
+	    m_pView->getCellParams(pos,&iLeft,&iRight,&iTop,&iBot);
+		
+		// see if our cell is in the selection
+	    if( iLeft >= m_iLeftTableRect &&
+	        iRight <= m_iRightTableRect &&
+	        iTop >= m_iTopTableRect &&
+	        iBot <= m_iBottomTableRect )
+	        return true;
+	        
+	    else
+	        return false;
+	}
+	else if(m_iSelectionMode < FV_SelectionMode_Multiple)
 	{
 		if(m_iSelectAnchor == m_pView->getPoint())
 		{
@@ -380,6 +469,89 @@ void FV_Selection::addSelectedRange(PT_DocPosition /*posLow*/, PT_DocPosition /*
 
 }
 
+/*!
+ * Remove a cell from the selection. This is the inverse of the addCellToSelection.
+ * \return True if cell was selected, false if it wasn't.
+ */
+bool FV_Selection::removeCellFromSelection(fl_CellLayout* pCell){
+    
+    // this should only be done in the right selection modes!
+    UT_ASSERT((m_iSelectionMode == 	FV_SelectionMode_TableColumn) 
+	    || ( m_iSelectionMode == 	FV_SelectionMode_TableRow)
+	    || ( m_iSelectionMode == FV_SelectionMode_InTable));
+			  
+    /*-----------------------------------------------------------------
+    *  removing it from the ranges-vector
+    *----------------------------------------------------------------*/
+    // seeking a DocPoint inside our cell
+	PL_StruxDocHandle sdhCell = pCell->getStruxDocHandle();
+	PT_DocPosition posInCell = getDoc()->getStruxPosition(sdhCell)+1;
+	
+	// iterating the ranges vector checking if it was in it
+	UT_sint32 i = 0;
+	UT_sint32 iItemCount = m_vecSelRanges.getItemCount();
+	PD_DocumentRange* pDocRange = NULL;
+	bool bFound = false;
+	
+	while( !bFound && i < iItemCount ){
+	    pDocRange = m_vecSelRanges.getNthItem(i);  
+	    if ((posInCell >= pDocRange->m_pos1) && (posInCell <= pDocRange->m_pos2+1))
+	        bFound = true;  
+	    ++i;
+	}
+	
+	// remember! if found our 'i' will be 1 to large
+    // could use 'break' in loop too but I prefer this.
+	
+	// removing the range if it was in it, otherwise return false
+	if( bFound ){
+	    m_vecSelRanges.deleteNthItem(i-1);
+	    // don't know if this is needed but when created 'new' was used and
+	    // I couldn't find where the memory get's released otherwise..
+	    // and we don't want memory leaks :)
+	    delete pDocRange;
+	} else return false;
+	
+	
+	/*-----------------------------------------------------------------
+    *  removing it from SelCellProps vector
+    *----------------------------------------------------------------*/
+    // getting the attach values of the cell we want to remove
+    UT_sint32 iLeft,iRight,iTop,iBot;
+	m_pView->getCellParams(posInCell,&iLeft,&iRight,&iTop,&iBot); 
+	
+	// again iterating over the vector
+	FV_SelectionCellProps* pCellProps = NULL;
+	i = 0;
+	bFound = false;
+	
+	while( !bFound && i < iItemCount ){
+	    pCellProps = m_vecSelCellProps.getNthItem(i);  
+	        
+	    // checking if it matches our cell since it's only 1 cell not a selection
+	    // checking top and left only should do the trick
+	    if( pCellProps->m_iLeft == iLeft && pCellProps->m_iTop == iTop )
+	        bFound = true;  
+	    ++i;
+	}
+	
+	// remember! if found our 'i' will be 1 to large
+    // could use 'break' in loop too but I prefer this.
+	
+	// removing the range if it was in it, otherwise return false
+	if( bFound ){
+	    m_vecSelCellProps.deleteNthItem(i-1);
+	    delete pCellProps;
+	}else return false;  // shouldn't be possible.. but to be sure
+	
+	
+	/*-----------------------------------------------------------------
+    *  removing it from RTF buffers
+    *----------------------------------------------------------------*/
+    // needs to be done!
+    // don't really know how to find the right one in the vector..
+    // need some guidance
+}
 
 /*!
  * Add a cell to the list of selected regions.
@@ -387,17 +559,22 @@ void FV_Selection::addSelectedRange(PT_DocPosition /*posLow*/, PT_DocPosition /*
 void FV_Selection::addCellToSelection(fl_CellLayout * pCell)
 {
 	UT_ASSERT((m_iSelectionMode == 	FV_SelectionMode_TableColumn) 
-			  || ( m_iSelectionMode == 	FV_SelectionMode_TableRow));
+			  || ( m_iSelectionMode == 	FV_SelectionMode_TableRow)
+			  || ( m_iSelectionMode == FV_SelectionMode_InTable));
+	
+	// getting beginning and end Document Position of the cell	  
 	PL_StruxDocHandle sdhEnd = NULL;
 	PL_StruxDocHandle sdhStart = pCell->getStruxDocHandle();
 	PT_DocPosition posLow = getDoc()->getStruxPosition(sdhStart) +1; // First block
-
-	bool bres;
-	bres = getDoc()->getNextStruxOfType(sdhStart,PTX_EndCell,&sdhEnd);
+	bool bres = getDoc()->getNextStruxOfType(sdhStart,PTX_EndCell,&sdhEnd);
 	PT_DocPosition posHigh = getDoc()->getStruxPosition(sdhEnd) -1;
+	
+	// creating and adding a DocumentRange based on the DocPosition's
 	UT_ASSERT(bres && sdhEnd);
 	PD_DocumentRange * pDocRange = new PD_DocumentRange(getDoc(),posLow,posHigh);
 	m_vecSelRanges.addItem(pDocRange);
+	
+	//
 	IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(pDocRange->m_pDoc);
 	UT_ByteBuf * pByteBuf = new UT_ByteBuf;
     if (pExpRtf)
@@ -416,6 +593,8 @@ void FV_Selection::addCellToSelection(fl_CellLayout * pCell)
 		DELETEP(pExpRtf);
     }
 	m_vecSelRTFBuffers.addItem(pByteBuf);
+	
+	// adding the cell params to a selected cells list
 	FV_SelectionCellProps * pCellProps = new FV_SelectionCellProps;
 	UT_sint32 iLeft,iRight,iTop,iBot;
 	m_pView->getCellParams(posLow,&iLeft,&iRight,&iTop,&iBot);

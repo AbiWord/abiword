@@ -29,6 +29,7 @@ typedef enum _FV_SelectionMode
 	FV_SelectionMode_NONE,
 	FV_SelectionMode_TOC,
 	FV_SelectionMode_TableRow,
+	FV_SelectionMode_InTable,
 	FV_SelectionMode_Single,
 	FV_SelectionMode_Multiple,
 	FV_SelectionMode_TableColumn
@@ -80,6 +81,11 @@ public:
 	void                  setSelectionLeftAnchor(PT_DocPosition pos);
 	PT_DocPosition        getSelectionRightAnchor(void) const;
 	void                  setSelectionRightAnchor(PT_DocPosition pos);
+	// again could use a FV_SelectionCellProp stuct for this
+	bool                  getRectTableSel(UT_sint32* left, UT_sint32* right, 
+	                                      UT_sint32* top, UT_sint32* bottom);
+	void                  setRectTableSel(UT_sint32 left, UT_sint32 right, 
+	                                      UT_sint32 top, UT_sint32 bottom);
 	UT_sint32             getNumSelections(void) const;
 	PD_DocumentRange *    getNthSelection(UT_sint32 i) const;
 	void                  addSelectedRange(PT_DocPosition posLow, PT_DocPosition posHigh, bool bAddData);
@@ -89,6 +95,7 @@ public:
 	void                  setTableLayout(fl_TableLayout * pFL);
 	fl_TableLayout *      getTableLayout(void) const;
 	void                  addCellToSelection(fl_CellLayout * pCell);
+	bool                  removeCellFromSelection(fl_CellLayout* pCell);
 	void                  pasteRowOrCol(void);
 	void                  checkSelectAll(void);
 	void                  setSelectAll(bool bSelectAll);
@@ -107,6 +114,12 @@ private:
 	UT_GenericVector<UT_ByteBuf*> m_vecSelRTFBuffers;
 	UT_GenericVector<FV_SelectionCellProps*> m_vecSelCellProps;
 	bool                  m_bSelectAll;
+	// current table rectangle selection attach values
+	// could use a FV_SelectionCellProp struct but using this for now.
+	UT_sint32             m_iLeftTableRect;
+	UT_sint32             m_iRightTableRect;
+	UT_sint32             m_iTopTableRect;
+	UT_sint32             m_iBottomTableRect;
 };
 
 #endif /* FV_Selection_H */
