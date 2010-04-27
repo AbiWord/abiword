@@ -117,15 +117,17 @@ bool pf_Frag_Text::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 void pf_Frag_Text::changeLength(UT_uint32 newLength)
 {
 	UT_ASSERT_HARMLESS(newLength > 0);
+	UT_sint32 delta = static_cast<UT_sint32>(newLength) -  static_cast<UT_sint32>(m_length);
 	m_length = newLength;
-	m_pPieceTable->getFragments().setFragsDirty();
+	lengthChanged(delta);
 }
 
 void pf_Frag_Text::adjustOffsetLength(PT_BufIndex bi, UT_uint32 newLength)
 {
 	m_bufIndex = bi;
+	UT_sint32 delta = static_cast<UT_sint32>(newLength) -  static_cast<UT_sint32>(m_length);
 	m_length = newLength;
-	m_pPieceTable->getFragments().setFragsDirty();
+	lengthChanged(delta);
 }
 
 void pf_Frag_Text::setField(fd_Field * pField)

@@ -2758,8 +2758,8 @@ void FL_DocLayout::formatAll()
 		pSL->format();
 		if(pSL->getContainerType() == FL_CONTAINER_DOCSECTION)
 		{
-			static_cast<fl_DocSectionLayout *>(pSL)->completeBreakSection();
-			static_cast<fl_DocSectionLayout *>(pSL)->checkAndRemovePages();
+		        fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pSL);
+			pDSL->checkAndRemovePages();
 		}
 		pSL = static_cast<fl_SectionLayout *>(pSL->getNext());
 	}

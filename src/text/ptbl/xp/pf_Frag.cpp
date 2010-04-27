@@ -25,14 +25,12 @@
 
 pf_Frag::pf_Frag(pt_PieceTable * pPT, PFType type, UT_uint32 length):
 	m_type(type),
-	m_length(length),
-	m_next(NULL),
-	m_prev(NULL),
 	m_pField(NULL),
 	m_pPieceTable(pPT),
 	m_indexAP(0),
-	m_docPos(0),
-	m_iXID(0)
+	m_length(length),
+	m_iXID(0),
+	m_pMyNode(NULL)
 {
 }
 
@@ -94,18 +92,43 @@ bool pf_Frag::isContentEqual(const pf_Frag & f2) const
 	return _isContentEqual(f2);
 }
 
-pf_Frag * pf_Frag::setNext(pf_Frag * pNext)
+PT_DocPosition pf_Frag::getPos(void) const
 {
-	pf_Frag * pOld = m_next;
-	m_next = pNext;
-	return pOld;
+       UT_return_val_if_fail(m_pMyNode,0);
+       pf_Fragments * fragments = &(m_pPieceTable->getFragments());
+       const pf_Fragments::Iterator it(fragments,m_pMyNode);
+       PT_DocPosition pos = fragments->documentPosition(it);
+       return pos;
 }
 
-pf_Frag * pf_Frag::setPrev(pf_Frag * pPrev)
+/*!
+ * Tell the fragments tree that the length of this item changed by
+ * delta.
+ * delta = new_length - old_length
+ */
+void  pf_Frag::lengthChanged(UT_sint32 delta)
 {
-	pf_Frag * pOld = m_prev;
-	m_prev = pPrev;
-	return pOld;
+       UT_return_if_fail(m_pMyNode);
+       pf_Fragments * fragments = &(m_pPieceTable->getFragments());
+       fragments->changeSize(delta);
+       pf_Fragments::Iterator it(fragments,m_pMyNode);
+       fragments->fixSize(it);
+}
+
+	/* We need the following function to accumulate left tree length */
+void  pf_Frag:: accLeftTreeLength(PT_DocPosition length)
+{
+       m_leftTreeLength += length; 
+}
+ 
+void pf_Frag::_setNode(pf_Fragments::Node * pNode)
+{
+       m_pMyNode = pNode;
+}
+
+pf_Fragments::Node * pf_Frag::_getNode(void) const
+{
+       return m_pMyNode;
 }
 
 bool pf_Frag::createSpecialChangeRecord(PX_ChangeRecord ** /*ppcr*/,
@@ -124,4 +147,21 @@ bool pf_Frag::createSpecialChangeRecord(PX_ChangeRecord ** /*ppcr*/,
 fd_Field * pf_Frag::getField(void) const
 {
     return m_pField;
+}
+
+pf_Frag* pf_Frag::getNext(void) const
+{
+        UT_return_val_if_fail(m_pMyNode,NULL);
+ 	pf_Fragments::Iterator it(&(m_pPieceTable->getFragments()),m_pMyNode);
+	it++;
+	return it.value();
+}
+
+
+pf_Frag* pf_Frag::getPrev(void) const
+{
+        UT_return_val_if_fail(m_pMyNode,NULL);
+ 	pf_Fragments::Iterator it(&(m_pPieceTable->getFragments()),m_pMyNode);
+	it--;
+	return it.value();
 }

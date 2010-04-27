@@ -536,7 +536,6 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 		// OK now insert a new end of hyperlink at pf
 		//
 		insertObject(dpos, PTO_Hyperlink,NULL,NULL);
-		m_fragments.cleanFrags();
 		dpos++;
 		if(posEnd > 0)
 		{
@@ -551,7 +550,6 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 									static_cast<pf_Frag_Object*>(pEndHype),
 									offset,1,pfsContainer,&pfEnd,&newOff,true);
 		}
-		m_fragments.cleanFrags();
 		bFoundFrag = getFragFromPosition(dpos,&pf,&fragOffset);
 		UT_return_val_if_fail (bFoundFrag, false);
 	}	

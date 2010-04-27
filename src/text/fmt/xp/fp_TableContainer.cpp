@@ -258,6 +258,10 @@ fp_VerticalContainer * fp_CellContainer::getColumn(fp_Container * _pCon)
 	while(pBroke && pBroke->isThisBroken() && !bStop)
 	{
 		fp_Container * pCon = pBroke->getContainer();
+		if(pCon == NULL)
+		{
+			return NULL;
+		}
 		if(pCon->isColumnType())
 		{
 			if(pCon->getContainerType() == FP_CONTAINER_COLUMN)

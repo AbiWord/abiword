@@ -1798,6 +1798,22 @@ void fl_DocSectionLayout::format(void)
 
 		pBL = pBL->getNext();
 	}
+	fp_Column * pCol = static_cast<fp_Column *>(getFirstContainer());
+	//
+	// When the document is first loaded, all the lines
+	// in the section have been stuffed into the first column. 
+	// When we do a break section, the lines that don't
+	// fit in the first column are shuffled into the
+	// second, then the ones that don't fit are shuffled
+	// into the third etc. This leads to a N^2 slow down
+	// in Breaksection. So instead we empty this column
+	// and let BreakSection fill each empty column as 
+	// needed.
+	// 
+      	if(m_pLayout->isLayoutFilling())
+	{
+	      pCol->removeAll();
+	}
 
 	m_ColumnBreaker.breakSection();
 	m_bNeedsFormat = false;
@@ -1981,6 +1997,8 @@ void fl_DocSectionLayout::completeBreakSection(void)
 
 void fl_DocSectionLayout::redrawUpdate(void)
 {
+        if(getDocLayout()->isLayoutFilling())
+	         return;
 	fl_ContainerLayout*	pBL = getFirstLayout();
 
 	// we only need to break and redo this section if its contents

@@ -1434,10 +1434,6 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 // First delete the EndTable Strux
 //
 					stDelayStruxDelete->pop(reinterpret_cast<void **>(&pfs));
-					if(m_fragments.areFragsDirty())
-					{
-						m_fragments.cleanFrags();
-					}
 					PT_DocPosition myPos2 = pfs->getPos();
 					_deleteFormatting(myPos2 - pfs->getLength(), myPos2);
 					UT_DEBUGMSG(("DELeteing EndTable Strux, pos= %d \n",pfs->getPos()));
@@ -1482,10 +1478,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 //
 				UT_DEBUGMSG(("Doing Footnote delete immediately \n"));
 				stDelayStruxDelete->pop(reinterpret_cast<void **>(&pfs));
-				if(m_fragments.areFragsDirty())
-				{
-					m_fragments.cleanFrags();
-				}
+
 				PT_DocPosition myPos2 = pfs->getPos();
 				_deleteFormatting(myPos2 - pfs->getLength(), myPos2);
 				bResult = _deleteStruxWithNotify(myPos2, pfs,
@@ -1510,10 +1503,6 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 						UT_DEBUGMSG(("Found and deleted Block strux in footnote \n"));
 					}
 					PT_DocPosition myPos = pfs->getPos();
-					if(m_fragments.areFragsDirty())
-					{
-						m_fragments.cleanFrags();
-					}
 					_deleteFormatting(myPos - pfs->getLength(), myPos);
 					bResult = _deleteStruxWithNotify(myPos, pfs, &pff, &dpp);
 //
@@ -1547,10 +1536,6 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 //
 				UT_DEBUGMSG(("Doing Frame delete now \n"));
 				stDelayStruxDelete->pop(reinterpret_cast<void **>(&pfs));
-				if(m_fragments.areFragsDirty())
-				{
-					m_fragments.cleanFrags();
-				}
 				PT_DocPosition myPos2 = pfs->getPos();
 				_deleteFormatting(myPos2 - pfs->getLength(), myPos2);
 				bool isFrame =  pfs->getStruxType() == PTX_SectionFrame;
@@ -1571,10 +1556,6 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 				while(bResult && !isFrame)
 				{
 					stDelayStruxDelete->pop(reinterpret_cast<void **>(&pfs));
-					if(m_fragments.areFragsDirty())
-					{
-						m_fragments.cleanFrags();
-					}
 					PT_DocPosition myPos = 0;
 					if(pfs)
 					{
@@ -2211,10 +2192,6 @@ bool pt_PieceTable::_realDeleteSpan(PT_DocPosition dpos1,
 				prevDepthReached = true;
 			}
 			stDelayStruxDelete.pop(reinterpret_cast<void **>(&pfs));
-			if(m_fragments.areFragsDirty())
-			{
-				m_fragments.cleanFrags();
-			}
 
  			pf_Frag *pf;
 			PT_DocPosition dp;

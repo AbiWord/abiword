@@ -589,10 +589,6 @@ bool pt_PieceTable::undoCmd(void)
 	// corresponding other end.
 	m_history.setScanningUndoGLOB(false);
 	UT_Byte flagsFirst = GETGLOBFLAGS(pcr);
-	if(m_fragments.areFragsDirty())
-	{
-		m_fragments.cleanFrags();
-	}
 	do
 	{
 		PX_ChangeRecord * pcrRev = pcr->reverse(); // we must delete this.
@@ -637,10 +633,6 @@ bool pt_PieceTable::redoCmd(void)
 	// corresponding other end.
 
 	UT_Byte flagsRevFirst = GETREVGLOBFLAGS(pcr);
-	if(m_fragments.areFragsDirty())
-	{
-		m_fragments.cleanFrags();
-	}
 
 	while (m_history.getRedo(&pcr))
 	{

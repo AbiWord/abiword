@@ -150,10 +150,6 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 	// find the previous strux (either a paragraph or something else).
 
 	pf_Frag_Strux * pfsPrev = NULL;
-	if(m_fragments.areFragsDirty())
-	{
-	    getFragments().cleanFrags(); // clean up to be safe...
-	}
 	_getStruxFromPosition(pfs->getPos(),&pfsPrev, true); // should that really skip footnotes?
 	UT_return_val_if_fail (pfsPrev, false);			// we have a block that's not in a section ??
 	//
@@ -591,7 +587,6 @@ bool pt_PieceTable::_deleteHdrFtrsFromSectionStruxIfPresent(pf_Frag_Strux_Sectio
 // if there is a header strux somewhere with an ID that matches our section.
 //
 	pf_Frag * curFrag = NULL;
-	getFragments().cleanFrags(); // clean up to be safe...
 //
 // Do this loop for all and headers and footers.
 //
@@ -638,10 +633,6 @@ bool pt_PieceTable::_deleteHdrFtrsFromSectionStruxIfPresent(pf_Frag_Strux_Sectio
 		// This Header belongs to our section. It must be deleted.
 		//
 			_deleteHdrFtrStruxWithNotify(curStrux);
-//
-// Clean up after deleting the text in the Header.
-//
-			getFragments().cleanFrags();
 		}
 	}
 	return true;
@@ -744,9 +735,7 @@ void pt_PieceTable::_deleteHdrFtrStruxWithNotify( pf_Frag_Strux * pfFragStruxHdr
 // the HdrFtr to be properly recreated on undo (Since it needs blocks to be
 // present before it can be created.)
 //
-	m_fragments.cleanFrags();
 	bres = _deleteStruxWithNotify(pfFragStruxHdrFtr->getPos(),pfFragStruxHdrFtr,NULL,NULL);
-	m_fragments.cleanFrags();
 	for(i=1; i<count; i++)
 	{
 		pf_Frag_Strux * pfs = (pf_Frag_Strux *) vecFragStrux.getNthItem(i);
