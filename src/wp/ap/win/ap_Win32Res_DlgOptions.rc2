@@ -1,0 +1,212 @@
+// AbiWord
+// Copyright (C) 1998,1999 AbiSource, Inc.
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+// the main dialog
+#define AP_RID_DIALOG_OPTIONS_TAB				1001
+#define AP_RID_DIALOG_OPTIONS_BTN_SAVE			1002
+#define AP_RID_DIALOG_OPTIONS_BTN_DEFAULT		1003
+#define AP_RID_DIALOG_OPTIONS_BTN_OK			IDOK
+#define AP_RID_DIALOG_OPTIONS_BTN_CANCEL		IDCANCEL
+
+
+// sub-dialog for the "SPELL" tab
+#define AP_RID_DIALOG_OPTIONS_FRM_SpellGeneral			1200
+#define AP_RID_DIALOG_OPTIONS_CHK_SpellCheckAsType		1201
+#define AP_RID_DIALOG_OPTIONS_CHK_SpellHideErrors		1202
+#define AP_RID_DIALOG_OPTIONS_CHK_SpellSuggest			1203
+#define AP_RID_DIALOG_OPTIONS_CHK_SpellMainOnly 		1204
+#define AP_RID_DIALOG_OPTIONS_FRM_SpellIgnore			1205
+#define AP_RID_DIALOG_OPTIONS_CHK_SpellUppercase		1206
+#define AP_RID_DIALOG_OPTIONS_CHK_SpellNumbers			1207
+#define AP_RID_DIALOG_OPTIONS_LBL_CUSTOMDICT			1209
+#define AP_RID_DIALOG_OPTIONS_COMBO_CUSTOMDICT			1210
+#define AP_RID_DIALOG_OPTIONS_BTN_CUSTOMDICT			1211
+#define AP_RID_DIALOG_OPTIONS_LBL_IGNOREDWORD			1212
+#define AP_RID_DIALOG_OPTIONS_BTN_IGNOREDRESET			1213
+#define AP_RID_DIALOG_OPTIONS_BTN_IGNOREDEDIT			1214
+#define AP_RID_DIALOG_OPTIONS_CHK_GrammarCheck			1215
+#define AP_RID_DIALOG_OPTIONS_STATIC_General			1220
+#define AP_RID_DIALOG_OPTIONS_STATIC_SpellIgnoreWords	1221
+#define AP_RID_DIALOG_OPTIONS_STATIC_SpellDictionaries	1222
+#define AP_RID_DIALOG_OPTIONS_STATIC_Grammar			1223
+#define AP_RID_DIALOG_OPTIONS_CHK_HighLight				1224
+
+// sub-dialog for the "GENERAL" tab
+#define AP_RID_DIALOG_OPTIONS_LBL_UNITS 				1302
+#define AP_RID_DIALOG_OPTIONS_COMBO_UNITS				1303
+#define AP_RID_DIALOG_OPTIONS_BTN_BGColor				1305
+#define AP_RID_DIALOG_OPTIONS_CHK_AutoLoadPlugins		1308
+#define AP_RID_DIALOG_OPTIONS_STATIC_UI					1309
+#define AP_RID_DIALOG_OPTIONS_STATIC_APPSTARTUP			1310
+#define AP_RID_DIALOG_OPTIONS_TEXT_UILANG				1311
+#define AP_RID_DIALOG_OPTIONS_CHK_LanguageWithKeyboard  1312
+#define AP_RID_DIALOG_OPTIONS_COMBO_UILANG				1313
+#define AP_RID_DIALOG_OPTIONS_STATIC_LANGUAGE			1314
+#define AP_RID_DIALOG_OPTIONS_CHK_EnableOverwrite		1315
+
+// sub-dialog for the "Documents" tab
+#define AP_RID_DIALOG_OPTIONS_STATIC_BidiOptions		1400
+#define AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile	 		1401
+#define AP_RID_DIALOG_OPTIONS_STATIC_Interval			1402
+#define AP_RID_DIALOG_OPTIONS_LBL_AutoSaveMinutes		1403
+#define AP_RID_DIALOG_OPTIONS_SPN_AutoSavePeriodSpin	1404
+#define AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod		1405
+#define AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl 	1406
+#define AP_RID_DIALOG_OPTIONS_LBL_AutoSaveExtension 	1413
+#define AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension 	1414
+
+#define AP_RID_DIALOG_OPTIONS_CHK_DirMarkerAfterClosingParenthesis	  1417
+
+// sub-dialog for the "Smart Quotes" tab
+#define AP_RID_DIALOG_OPTIONS_CHK_SmartQuotes			1501
+#define AP_RID_DIALOG_OPTIONS_CHK_CustomSmartQuotes		1502
+#define AP_RID_DIALOG_OPTIONS_LBL_OuterQuoteStyle		1503
+#define AP_RID_DIALOG_OPTIONS_LBL_InnerQuoteStyle		1504
+#define AP_RID_DIALOG_OPTIONS_COMBO_OUTERQUOTE			1505
+#define AP_RID_DIALOG_OPTIONS_COMBO_INNERQUOTE			1506
+
+#ifdef RC_INVOKED
+// NOTE -- these placeholder strings get overridden at runtime 
+// NOTE -- they're just here to make sizing easier
+
+
+// The sub-dialog for the General tab of the Preference dialog
+
+AP_RID_DIALOG_OPT_SPELL DIALOG DISCARDABLE  0, 0, 251, 233
+STYLE WS_CHILD
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "Check s&pelling as you type",
+                    AP_RID_DIALOG_OPTIONS_CHK_SpellCheckAsType,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,14,31,210,10
+    CONTROL         "Check &grammar as you type",
+                    AP_RID_DIALOG_OPTIONS_CHK_GrammarCheck,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,14,192,210,10
+    CONTROL         "A&lways suggest corrections",
+                    AP_RID_DIALOG_OPTIONS_CHK_SpellSuggest,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,14,138,210,10
+    CONTROL         "Suggest from &main only",
+                    AP_RID_DIALOG_OPTIONS_CHK_SpellMainOnly,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,14,155,210,10
+    LTEXT           "User Interface",AP_RID_DIALOG_OPTIONS_STATIC_General,7,
+                    15,218,8
+    CONTROL         "Check s&pelling as you type",
+                    AP_RID_DIALOG_OPTIONS_CHK_HighLight,"Button",
+                    BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,14,48,162,10
+    LTEXT           "Ignore Words",
+                    AP_RID_DIALOG_OPTIONS_STATIC_SpellIgnoreWords,8,69,217,8
+    CONTROL         "Ignore words in &UPPERCASE",
+                    AP_RID_DIALOG_OPTIONS_CHK_SpellUppercase,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,14,85,210,10
+    CONTROL         "Ignore words with num&bers",
+                    AP_RID_DIALOG_OPTIONS_CHK_SpellNumbers,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,14,102,210,10
+    LTEXT           "Dictionaries",
+                    AP_RID_DIALOG_OPTIONS_STATIC_SpellDictionaries,7,122,162,
+                    8
+    LTEXT           "Automatic Grammar Checking",
+                    AP_RID_DIALOG_OPTIONS_STATIC_Grammar,7,176,212,8
+END
+
+AP_RID_DIALOG_OPT_GENERAL DIALOG DISCARDABLE  0, 0, 251, 233
+STYLE WS_CHILD
+FONT 8, "MS Sans Serif"
+BEGIN
+	LTEXT           "Units:",AP_RID_DIALOG_OPTIONS_LBL_UNITS,14,29,24,12,
+                    SS_CENTERIMAGE | NOT WS_GROUP
+    COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_UNITS,43,29,61,75,
+                    CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Choose Screen Color",AP_RID_DIALOG_OPTIONS_BTN_BGColor,
+                    15,50,90,14
+    CONTROL         "Enable overwrite mode toggle",
+                    AP_RID_DIALOG_OPTIONS_CHK_EnableOverwrite,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,14,74,240,8
+    LTEXT           "User Interface",AP_RID_DIALOG_OPTIONS_STATIC_UI,7,15,
+                    127,8    
+    LTEXT           "Application Startup",
+                    AP_RID_DIALOG_OPTIONS_STATIC_APPSTARTUP,10,98,127,8
+    CONTROL         "Plugins",AP_RID_DIALOG_OPTIONS_CHK_AutoLoadPlugins,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,114,228,10
+    LTEXT           "User Interface Language",
+                    AP_RID_DIALOG_OPTIONS_TEXT_UILANG,14,154,99,8
+    COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_UILANG,114,152,105,200,
+                    CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Change language when changing keyboard",
+                    AP_RID_DIALOG_OPTIONS_CHK_LanguageWithKeyboard,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,14,173,240,8
+    LTEXT           "Language Settings",
+                    AP_RID_DIALOG_OPTIONS_STATIC_LANGUAGE,10,138,208,8
+END
+
+AP_RID_DIALOG_OPT_DOCUMENTS DIALOG DISCARDABLE  0, 0, 251, 233
+STYLE WS_CHILD
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "Auto Save",AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,15,217,10
+    EDITTEXT        AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod,80,29,30,12
+    CONTROL         "Spin",AP_RID_DIALOG_OPTIONS_SPN_AutoSavePeriodSpin,
+                    "msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | 
+                    UDS_ARROWKEYS | UDS_NOTHOUSANDS,109,31,8,8
+    LTEXT           "minutes",AP_RID_DIALOG_OPTIONS_LBL_AutoSaveMinutes,120,
+                    31,95,8
+    LTEXT           "File extension:",
+                    AP_RID_DIALOG_OPTIONS_LBL_AutoSaveExtension,13,48,64,8,
+                    NOT WS_GROUP
+    EDITTEXT        AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension,80,46,25,12
+    LTEXT           "Interval:",AP_RID_DIALOG_OPTIONS_STATIC_Interval,14,31,
+                    65,8,NOT WS_GROUP
+    LTEXT           "Bi-Directional Options",
+                    AP_RID_DIALOG_OPTIONS_STATIC_BidiOptions,7,75,186,8
+    CONTROL         "Default to right-to-left direction of text",
+                    AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,14,91,240,10
+END
+
+AP_RID_DIALOG_OPT_SMARTQUOTES DIALOG DISCARDABLE  0, 0, 251, 233
+STYLE WS_CHILD
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "Enable smart (curly) quotes",AP_RID_DIALOG_OPTIONS_CHK_SmartQuotes,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,15,217,10
+    CONTROL         "Use custom smart quote style",AP_RID_DIALOG_OPTIONS_CHK_CustomSmartQuotes,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,35,217,10
+    LTEXT           "Outer (double) quote style",AP_RID_DIALOG_OPTIONS_LBL_OuterQuoteStyle,20,
+                    55,217,8
+    LTEXT           "Inner (single) quote style",AP_RID_DIALOG_OPTIONS_LBL_InnerQuoteStyle,20,
+                    85,217,8
+    COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_OUTERQUOTE,20,65,105,200,
+                    CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_INNERQUOTE,20,95,105,200,
+                    CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+END
+
+#endif /* RC_INVOKED */
+
+
+

@@ -1,0 +1,100 @@
+// AbiWord
+// Copyright (C) 2002 Tomas Frydrych <tomas@frydrych.uklinux.net>
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+#if defined(RC_INVOKED) && defined(ABI_BUILD_VERSION)
+
+#define _VM ABI_BUILD_VERSION_MAJOR
+#define _VN ABI_BUILD_VERSION_MINOR
+#define _VI ABI_BUILD_VERSION_MICRO
+
+#ifndef ABI_BUILD_VERSION_STRING
+#define mk_str2(x) # x
+#define mk_str(x) mk_str2(x)
+#define ABI_BUILD_VERSION_STRING mk_str(ABI_BUILD_VERSION)
+#endif
+
+#define _VS ABI_BUILD_VERSION_STRING "\0"
+
+// for tinderbox builds and other automatic builds
+// ABI_BUILD_VERSION_BUILD is defined and nonzero, else it should be undefined
+#ifdef ABI_BUILD_VERSION_BUILD
+#define _VB ABI_BUILD_VERSION_BUILD
+#else
+#define _VB 0
+#endif
+
+#define VS_FF_NORMAL            0x00000000L  // ok I made this one up
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION _VM,_VN,_VI,_VB
+ PRODUCTVERSION _VM,_VN,_VI,_VB
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS VS_FF_DEBUG | VS_FF_PRERELEASE    // a debug build is never a release
+#elif defined(_VB) && (_VB != 0)
+ FILEFLAGS VS_FF_NORMAL | VS_FF_PRERELEASE   // CVS/tinderbox/automatic build
+#else
+ FILEFLAGS VS_FF_NORMAL
+#endif
+ FILEOS VOS_NT_WINDOWS32
+ FILETYPE VFT_APP
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080904b0"
+        BEGIN
+            VALUE "Comments", "AbiWord is a free word processing program.\0"
+            VALUE "CompanyName", "http://www.abisource.com\0"
+            VALUE "FileDescription", "AbiWord\0"
+            VALUE "FileVersion", _VS
+            VALUE "InternalName", "AbiWord\0"
+// Only about the 1st 45+ characters are shown in Windows 2000 properties Version dialog
+//            VALUE "LegalCopyright", "AbiWord is a free software distributed under the terms of the GNU Public licence.\0"
+            VALUE "LegalCopyright", "Distributed under the GNU Public licence ... \0"
+            VALUE "LegalTrademarks", "AbiSource, AbiSuite, and AbiWord are trademarks of SourceGear Corporation.\0"
+            VALUE "OriginalFilename", "AbiWord.exe\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "AbiWord\0"
+            VALUE "ProductVersion", _VS
+#if defined(_VB) && (_VB != 0)
+            VALUE "SpecialBuild", "This is an automatically generated build.  Perhaps a CVS and/or Tinderbox build.\0"
+#else
+            VALUE "SpecialBuild", "\0"
+#endif
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x809, 1200
+    END
+END
+
+#undef _VM
+#undef _VN
+#undef _VI
+#undef _VB
+#undef _VS
+
+#endif

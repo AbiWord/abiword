@@ -1,0 +1,115 @@
+// AbiWord
+// Copyright (C) 2003 Jordi Mas i Hernàndez
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+
+
+#define AP_RID_DIALOG_FORMATTABLE_STATIC_PREVIEW	1000
+#define AP_RID_DIALOG_FORMATTABLE_BMP_BOTTOM		1001
+#define AP_RID_DIALOG_FORMATTABLE_BMP_TOP			1002
+#define AP_RID_DIALOG_FORMATTABLE_BMP_RIGHT			1003
+#define AP_RID_DIALOG_FORMATTABLE_BMP_LEFT			1004
+#define AP_RID_DIALOG_FORMATTABLE_TEXT_PREVIEW		1005
+#define AP_RID_DIALOG_FORMATTABLE_BTN_BACKCOLOR		1006
+#define AP_RID_DIALOG_FORMATTABLE_TEXT_BACKGROUND	1007
+#define AP_RID_DIALOG_FORMATTABLE_TEXT_BORDER		1008
+#define AP_RID_DIALOG_FORMATTABLE_BTN_BORDERCOLOR	1009
+#define AP_RID_DIALOG_FORMATTABLE_BTN_APPLY			1010
+#define AP_RID_DIALOG_FORMATTABLE_TEXT_BORDERS		1011
+#define AP_RID_DIALOG_FORMATTABLE_TEXT_BACKGROUNDS	1012
+#define AP_RID_DIALOG_FORMATTABLE_COMBO_APPLYTO		1013
+#define AP_RID_DIALOG_FORMATTABLE_TEXT_APPLYTO		1014
+#define AP_RID_DIALOG_FORMATTABLE_TEXT_THICKNESS	1015
+#define AP_RID_DIALOG_FORMATTABLE_TEXT_IMGBACK		1016
+#define AP_RID_DIALOG_FORMATTABLE_BUTTON_NOIMAGE	1017
+#define AP_RID_DIALOG_FORMATTABLE_COMBO_THICKNESS	1018
+#define AP_RID_DIALOG_FORMATTABLE_BUTTON_SELIMAGE	1019
+#define AP_RID_DIALOG_FORMATTABLE_BTN_CANCEL		IDCANCEL
+
+
+#define IDC_STATIC -1
+#define IDC_COMBO1 1200
+
+#ifdef RC_INVOKED
+// NOTE -- these placeholder strings get overridden at runtime 
+// NOTE -- they're just here to make sizing easier
+
+AP_RID_DIALOG_FORMATTABLE DIALOG 0, 0, 360, 209
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Format Table"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "Preview",AP_RID_DIALOG_FORMATTABLE_TEXT_PREVIEW,186,8,
+                    162,136
+    CONTROL         "",AP_RID_DIALOG_FORMATTABLE_BMP_BOTTOM,"Button",
+                    BS_AUTOCHECKBOX | BS_BITMAP | BS_PUSHLIKE | WS_TABSTOP,
+                    254,122,21,14
+    CONTROL         "",AP_RID_DIALOG_FORMATTABLE_BMP_TOP,"Button",
+                    BS_AUTOCHECKBOX | BS_BITMAP | BS_PUSHLIKE | WS_TABSTOP,
+                    254,20,21,14
+    CONTROL         "",AP_RID_DIALOG_FORMATTABLE_BMP_RIGHT,"Button",
+                    BS_AUTOCHECKBOX | BS_BITMAP | BS_PUSHLIKE | WS_TABSTOP,
+                    317,68,21,14
+    CONTROL         "",AP_RID_DIALOG_FORMATTABLE_BMP_LEFT,"Button",
+                    BS_AUTOCHECKBOX | BS_BITMAP | BS_PUSHLIKE | WS_TABSTOP,
+                    192,68,21,14
+    CONTROL         "",AP_RID_DIALOG_FORMATTABLE_STATIC_PREVIEW,"Static",
+                    SS_BLACKFRAME,226,40,86,76,WS_EX_CLIENTEDGE
+    LTEXT           "Background Color",
+                    AP_RID_DIALOG_FORMATTABLE_TEXT_BACKGROUND,18,102,77,8
+    CONTROL         "",AP_RID_DIALOG_FORMATTABLE_BTN_BACKCOLOR,"Button",
+                    BS_OWNERDRAW | WS_TABSTOP,100,99,22,14
+    LTEXT           "Border Color",AP_RID_DIALOG_FORMATTABLE_TEXT_BORDER,16,
+                    26,69,8
+    CONTROL         "",AP_RID_DIALOG_FORMATTABLE_BTN_BORDERCOLOR,"Button",
+                    BS_OWNERDRAW | WS_TABSTOP,100,25,22,14
+    DEFPUSHBUTTON   "Apply",AP_RID_DIALOG_FORMATTABLE_BTN_APPLY,297,186,50,
+                    14
+    PUSHBUTTON      "Cancel",AP_RID_DIALOG_FORMATTABLE_BTN_CANCEL,236,186,50,
+                    14
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,47,13,121,1
+    LTEXT           "Borders",AP_RID_DIALOG_FORMATTABLE_TEXT_BORDERS,9,9,35,
+                    8
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,64,86,107,1
+    LTEXT           "Background",AP_RID_DIALOG_FORMATTABLE_TEXT_BACKGROUNDS,
+                    9,83,46,8
+    LTEXT           "Apply to:",AP_RID_DIALOG_FORMATTABLE_TEXT_APPLYTO,190,
+                    156,48,8
+    COMBOBOX        AP_RID_DIALOG_FORMATTABLE_COMBO_APPLYTO,242,154,104,50,
+                    CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Thickness:",AP_RID_DIALOG_FORMATTABLE_TEXT_THICKNESS,16,
+                    49,57,8
+    COMBOBOX        AP_RID_DIALOG_FORMATTABLE_COMBO_THICKNESS,100,46,62,50,CBS_DROPDOWN | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,92,136,80,1
+    LTEXT           "Image for Background",
+					AP_RID_DIALOG_FORMATTABLE_TEXT_IMGBACK,9,132,72,8
+    PUSHBUTTON      "Select Image From File",AP_RID_DIALOG_FORMATTABLE_BUTTON_SELIMAGE,16,149,120,14
+    PUSHBUTTON      "Set no image", AP_RID_DIALOG_FORMATTABLE_BUTTON_NOIMAGE,16,167,120,14
+END
+
+#endif /* RC_INVOKED */

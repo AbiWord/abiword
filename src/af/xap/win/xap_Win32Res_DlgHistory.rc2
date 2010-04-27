@@ -1,0 +1,104 @@
+// AbiWord
+// Copyright (C) 2004 Tomas Frydrych <tomasfrydrych@yahoo.co.uk>
+
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+
+#define XAP_RID_DIALOG_HISTORY_FRAME            1001
+#define XAP_RID_DIALOG_HISTORY_LIST_VERSIONS    1002
+
+// header labels start at 1100
+// must be consequtive
+#define XAP_RID_DIALOG_HISTORY_LABEL_PATH       1101
+#define XAP_RID_DIALOG_HISTORY_LABEL_CREATED    1102
+#define XAP_RID_DIALOG_HISTORY_LABEL_VERSION    1103
+#define XAP_RID_DIALOG_HISTORY_LABEL_LASTSAVED  1104
+#define XAP_RID_DIALOG_HISTORY_LABEL_EDITTIME   1105
+#define XAP_RID_DIALOG_HISTORY_LABEL_ID         1106
+
+// header controls start at 1200
+// must be consequtive and match corresponding labels in sequence
+#define XAP_RID_DIALOG_HISTORY_PATH             1201
+#define XAP_RID_DIALOG_HISTORY_CREATED          1202
+#define XAP_RID_DIALOG_HISTORY_VERSION          1203
+#define XAP_RID_DIALOG_HISTORY_LASTSAVED        1204
+#define XAP_RID_DIALOG_HISTORY_EDITTIME         1205
+#define XAP_RID_DIALOG_HISTORY_ID               1206
+
+// buttons start at 1300
+#define XAP_RID_DIALOG_HISTORY_BTN_SHOW         1301
+#define XAP_RID_DIALOG_HISTORY_BTN_OK  	        IDOK
+#define XAP_RID_DIALOG_HISTORY_BTN_CANCEL	    IDCANCEL
+
+#ifdef RC_INVOKED
+// NOTE -- these placeholder strings get overridden at runtime
+// NOTE -- they're just here to make sizing easier
+
+XAP_RID_DIALOG_HISTORY DIALOG DISCARDABLE  0, 0, 302, 220
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,245,13,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,245,32,50,14
+
+	LTEXT			"Document Name:", XAP_RID_DIALOG_HISTORY_LABEL_PATH,
+					7,7,80,10, SS_CENTERIMAGE
+	LTEXT			"path", XAP_RID_DIALOG_HISTORY_PATH,
+					75,7,170,10, SS_CENTERIMAGE
+
+	LTEXT			"Created:", XAP_RID_DIALOG_HISTORY_LABEL_CREATED,
+					7,17,80,10, SS_CENTERIMAGE
+	LTEXT			"created", XAP_RID_DIALOG_HISTORY_CREATED,
+					75,17,170,10, SS_CENTERIMAGE
+
+	LTEXT			"Version:", XAP_RID_DIALOG_HISTORY_LABEL_VERSION,
+					7,27,80,10, SS_CENTERIMAGE
+	LTEXT			"version", XAP_RID_DIALOG_HISTORY_VERSION,
+					75,27,170,10, SS_CENTERIMAGE
+
+	LTEXT			"Saved:", XAP_RID_DIALOG_HISTORY_LABEL_LASTSAVED,
+					7,37,80,10, SS_CENTERIMAGE
+	LTEXT			"saved", XAP_RID_DIALOG_HISTORY_LASTSAVED,
+					75,37,170,10, SS_CENTERIMAGE
+
+	LTEXT			"Edit time:", XAP_RID_DIALOG_HISTORY_LABEL_EDITTIME,
+					7,47,80,10, SS_CENTERIMAGE
+	LTEXT			"edit time", XAP_RID_DIALOG_HISTORY_EDITTIME,
+					75,47,170,10, SS_CENTERIMAGE
+
+	LTEXT			"UUID:", XAP_RID_DIALOG_HISTORY_LABEL_ID,
+					7,57,80,10, SS_CENTERIMAGE
+	LTEXT			"uuid", XAP_RID_DIALOG_HISTORY_ID,
+					75,57,170,10, SS_CENTERIMAGE
+
+    GROUPBOX        "Version history",XAP_RID_DIALOG_HISTORY_FRAME,7,74,277,137
+    CONTROL         "List1",XAP_RID_DIALOG_HISTORY_LIST_VERSIONS,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_AUTOARRANGE | WS_BORDER | WS_TABSTOP,
+                    19,89,251,111
+END
+#endif /* RC_INVOKED */

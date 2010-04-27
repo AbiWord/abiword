@@ -1,0 +1,25 @@
+<!-- =====================================================================  -->
+<!-- This file is an AbiWord document.                                      -->
+<!-- AbiWord is a free, Open Source word processor.                         -->
+<!-- You may obtain more information about AbiWord at www.abisource.com     -->
+<!-- You should not edit this file by hand.                                 -->
+<!-- =====================================================================  -->
+
+<!--         Build_ID          = (none) -->
+<!--         Build_Version     = unnumbered -->
+<!--         Build_Options     = LicensedTrademarks:Off Debug:On -->
+<!--         Build_Target      = /abisource/build/abi/src/WIN32_20.1_i386_DBG/obj -->
+<!--         Build_CompileTime = 12:49:54 -->
+<!--         Build_CompileDate = Dec  4 1999 -->
+
+<abiword version="unnumbered">
+<section>
+<p>Ok, first here is a line with normal tabs.  </p>
+<p></p>
+<p>	|	1	|	2	|	3	|	4	|	5</p>
+<p></p>
+<p>Now both the 3'' tab and the following 3 1/2'' bar will be missing. </p>
+<p></p>
+<p props="tabstops:5.0000in/L,0.5000in/L,1.0000in/L,1.5000in/L,2.0000in/L,2.5000in/L,4.0000in/L,4.5000in/L">	|	1	|	2	|	4	|	5</p>
+</section>
+</abiword>

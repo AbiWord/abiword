@@ -1,0 +1,80 @@
+// AbiWord
+// Copyright (C) 2000 AbiSource, Inc.
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+
+#define AP_RID_DIALOG_WORDCOUNT_TEXT_STATS			1001
+#define AP_RID_DIALOG_WORDCOUNT_TEXT_PAGE			1002
+#define AP_RID_DIALOG_WORDCOUNT_TEXT_WORD			1003
+#define AP_RID_DIALOG_WORDCOUNT_TEXT_CH				1004
+#define AP_RID_DIALOG_WORDCOUNT_TEXT_CHSP			1005
+#define AP_RID_DIALOG_WORDCOUNT_TEXT_PARA			1006
+#define AP_RID_DIALOG_WORDCOUNT_TEXT_LINE			1007
+#define AP_RID_DIALOG_WORDCOUNT_VAL_PAGE			1012
+#define AP_RID_DIALOG_WORDCOUNT_VAL_WORD			1013
+#define AP_RID_DIALOG_WORDCOUNT_VAL_CH				1014
+#define AP_RID_DIALOG_WORDCOUNT_VAL_CHSP			1015
+#define AP_RID_DIALOG_WORDCOUNT_VAL_PARA			1016
+#define AP_RID_DIALOG_WORDCOUNT_VAL_LINE			1017
+#define AP_RID_DIALOG_WORDCOUNT_TEXT_WORDSONLY		1018
+#define AP_RID_DIALOG_WORDCOUNT_VAL_WORDSONLY		1019
+#define AP_RID_DIALOG_WORDCOUNT_BTN_CLOSE			IDCANCEL
+#define AP_RID_DIALOG_WORDCOUNT_BOX					-1
+
+#ifdef RC_INVOKED
+// NOTE -- these placeholder strings get overridden at runtime 
+// NOTE -- they're just here to make sizing easier
+
+
+AP_RID_DIALOG_WORDCOUNT DIALOG DISCARDABLE  0, 0, 200, 130
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Word Count"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Statistics:",AP_RID_DIALOG_WORDCOUNT_TEXT_STATS,7,6,43,8
+    GROUPBOX        "",AP_RID_DIALOG_WORDCOUNT_BOX,7,14,119,86    
+    LTEXT           "Words",AP_RID_DIALOG_WORDCOUNT_TEXT_WORD,12,23,109,8
+	LTEXT           "Words (no foot/no end)",AP_RID_DIALOG_WORDCOUNT_TEXT_WORDSONLY,12,33,109,8
+	LTEXT           "Paragraphs",AP_RID_DIALOG_WORDCOUNT_TEXT_PARA,12,43,109,8    
+    LTEXT           "Characters (with spaces)",
+                    AP_RID_DIALOG_WORDCOUNT_TEXT_CHSP,12,53,109,8
+	LTEXT           "Characters (no spaces)",AP_RID_DIALOG_WORDCOUNT_TEXT_CH,
+                    12,63,109,8    
+    LTEXT           "Lines",AP_RID_DIALOG_WORDCOUNT_TEXT_LINE,12,73,109,8
+	LTEXT           "Pages",AP_RID_DIALOG_WORDCOUNT_TEXT_PAGE,12,83,109,8
+    GROUPBOX        "",AP_RID_DIALOG_WORDCOUNT_BOX,125,14,67,86
+	RTEXT           "100,000,000",AP_RID_DIALOG_WORDCOUNT_VAL_WORD,136,23,51,8
+	RTEXT           "100,000,000",AP_RID_DIALOG_WORDCOUNT_VAL_WORDSONLY,136,33,51,8
+	RTEXT           "100,000,000",AP_RID_DIALOG_WORDCOUNT_VAL_PARA,136,43,51,8
+	RTEXT           "100,000,000",AP_RID_DIALOG_WORDCOUNT_VAL_CHSP,136,53,51,8
+    RTEXT           "100,000,000",AP_RID_DIALOG_WORDCOUNT_VAL_CH,136,63,51,8
+    RTEXT           "100,000,000",AP_RID_DIALOG_WORDCOUNT_VAL_LINE,136,73,51,8
+    RTEXT           "100,000,000",AP_RID_DIALOG_WORDCOUNT_VAL_PAGE,136,83,51,8
+    DEFPUSHBUTTON   "&Close",AP_RID_DIALOG_WORDCOUNT_BTN_CLOSE,130,109,62,14
+END
+
+#endif /* RC_INVOKED */

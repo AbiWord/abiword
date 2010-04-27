@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ==============================================================  -->
+<!-- This file contains AbiWord Strings.  AbiWord is an Open Source  -->
+<!-- word processor developed by AbiSource, Inc.  Information about  -->
+<!-- this application can be found at http://www.abisource.com       -->
+<!-- This file contains the string translations for one language.    -->
+<!-- This file is covered by the GNU Public License (GPL).           -->
+<!-- ==============================================================  -->
+
+<AbiStrings ver="1.0" language="mh-MH">
+
+<Strings    class="XAP"
+LANG_MH_MH="Ebon (Marshall Islands)"
+LANG_MH_NR="Ebon (Nauru)"
+/>
+
+<Strings    class="AP"
+/>
+
+</AbiStrings>
+

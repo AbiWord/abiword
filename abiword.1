@@ -1,0 +1,128 @@
+.\" -*- nroff -*-
+.\" vim:set tw=78 noet:
+.\" Copyright 1998-2004 AbiSource, Inc.
+.\" AbiWord and AbiSource are trademarks of
+.\" AbiSource, Inc.
+.\"
+.\" AbiWord is free software; you can redistribute it
+.\" and/or modify it under the terms of the GNU General
+.\" Public License as published by the Free Software
+.\" Foundation; either version 2 of the License, or (at your
+.\" option) any later version.
+.\"
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the
+.\" implied warranty of MERCHANTABILITY or FITNESS
+.\" FOR A PARTICULAR PURPOSE.  See the GNU General
+.\" Public License for more details.
+.\"
+.\" Copyright 2009 Patrik Fimml
+.
+.TH ABIWORD 1 "2009-12-11" "AbiWord 2.8"
+.
+.SH NAME
+abiword \(em flexible cross-platform word processor
+.
+.SH SYNOPSIS
+.B abiword
+.RI [ OPTIONS ]
+.RI [ FILENAME... ]
+.
+.SH DESCRIPTION
+AbiWord is a full-featured, efficient word processing application suitable for
+a wide range of word processing tasks, and extensible with a variety of
+plugins. It integrates with
+.BR enchant (1)
+to provide spell-checking.
+.
+.SH OPTIONS
+.TP
+.BI "\-g " W\fRx\fIH\fR[+\fIX\fR+\fIY\fR] ", \-\-geometry=" W\fRx\fIH\fR[+\fIX\fR+\fIY\fR]
+Specifies window geometry at startup.
+.TP
+.BI "\-E " PLUGIN ", \-\-plugin=" PLUGIN
+Execute the specified plugin instead of the main application.
+.TP
+.BI \-\-import\-extension= EXT
+Import the given file as if it had extension \fIEXT\fR, overriding automatic
+file type detection.
+.TP
+.BI "\-u " PROFILE ", \-\-userprofile=" PROFILE
+Use \fIPROFILE\fR instead of the default ~/.AbiSuite/AbiWord.Profile to read
+and store settings.
+.TP
+.BI "\-t " DEST ", \-\-to=" DEST
+Convert the given file to another format, writing the result to
+.IR DEST .
+The format of
+.I DEST
+is determined by its extension.
+.br
+See also \fB\-\-to=\fIFORMAT\fR and \fB\-\-to\-name\fR.
+.TP
+.BI "\-t " FORMAT ", \-\-to=" FORMAT
+Convert the given files(s) to the given format. Unless explicitly specified
+with \fB\-\-to\-name\fR, the original filename will be used (with a different
+extension, if necessary). See also \fBEXAMPLES\fR.
+.RS
+.TP
+The more popular values for \fIFORMAT\fR include:
+.TS
+lb	lx.
+abw	T{
+Abiword XML format (\fBzabw\fR for gzip, \fBbzabw\fR for bzip2 compression)
+T}
+dbk	DocBook XML
+doc	Microsoft Word binary format
+docx	T{
+Office Open XML (newer Microsoft Word versions)
+T}
+html	Hypertext Markup Language
+kwd	KWord
+odt	OpenDocument Text
+pdf	Portable Document Format
+rtf	Rich Text Format
+sxw	OpenOffice.org Writer 1.0
+txt	Plain text
+.TE
+.RE
+.TP
+.BI \-\-to\-name= DEST
+Only useful in conjunction with
+.BI \-\-to= FORMAT \fR.
+Specifies where the converted document shall be written to.
+.TP
+.BI \-\-verbose= LEVEL
+Set level of verbosity [0\-2], 2 giving the most detailed output.
+.TP
+.B \-h, \-\-help
+Display a short help message and exit.
+.TP
+.B \-\-version
+Report the version of AbiWord.
+.
+.SH EXAMPLES
+To convert the document \fIexample.abw\fR to RTF:
+.in +4n
+abiword \-\-to=rtf example.abw
+.in
+The resulting file will be named \fIexample.rtf\fR.
+.P
+To print a document:
+.in +4n
+abiword \-\-to=ps \-\-to\-name=fd://1 \fIFILENAME\fR | lp
+.in
+.
+.SH REPORTING BUGS
+Report bugs to the Bugzilla bug tracking system at
+.RI < http://bugzilla.abisource.com >.
+.SH SEE ALSO
+.BR enchant (1)
+.SH HISTORY
+AbiWord was started in 1998 by AbiSource Inc., a company founded by SourceGear
+corporation. The initial plan was to build a free office suite named AbiSuite,
+encompassing word processing, spreadsheet and presentation applications. As
+they didn’t have a usable product when their venture capital was up, the code
+already developed (namely AbiWord) was made open source.  AbiWord development
+was subsequently taken over by volunteers and is driven by the community to
+date.

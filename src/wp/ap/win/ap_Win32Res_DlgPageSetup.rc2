@@ -1,0 +1,257 @@
+// AbiWord
+// Copyright (C) 2000 AbiSource, Inc.
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+
+// The main tab dialog
+#define AP_RID_DIALOG_PAGE_SETUP_BTN_OK						IDOK
+#define AP_RID_DIALOG_PAGE_SETUP_BTN_CANCEL					IDCANCEL
+#define AP_RID_DIALOG_PAGE_SETUP_TAB						1001
+
+// The Page Tab
+#define AP_RID_DIALOG_PAGE_SETUP_BMP_ORIENTATION			1101
+#define AP_RID_DIALOG_PAGE_SETUP_BMP_PREVIEW				1102
+#define AP_RID_DIALOG_PAGE_SETUP_LBX_PAPERSIZE				1103
+#define AP_RID_DIALOG_PAGE_SETUP_LBX_UNITS					1104
+#define AP_RID_DIALOG_PAGE_SETUP_GBX_PAPER					1105
+#define AP_RID_DIALOG_PAGE_SETUP_GBX_ORIENTATION			1106
+#define AP_RID_DIALOG_PAGE_SETUP_GBX_SCALE					1107
+#define AP_RID_DIALOG_PAGE_SETUP_LBL_PAPERSIZE				1108
+#define AP_RID_DIALOG_PAGE_SETUP_LBL_WITDH					1109
+#define AP_RID_DIALOG_PAGE_SETUP_LBL_HEIGHT					1110
+#define AP_RID_DIALOG_PAGE_SETUP_LBL_UNITS					1111
+#define AP_RID_DIALOG_PAGE_SETUP_LBL_ADJUSTTO				1114
+#define AP_RID_DIALOG_PAGE_SETUP_LBL_PERCENTOFSIZE			1115
+#define AP_RID_DIALOG_PAGE_SETUP_EBX_WIDTH					1116
+#define AP_RID_DIALOG_PAGE_SETUP_EBX_HEIGHT					1117
+#define AP_RID_DIALOG_PAGE_SETUP_EBX_SCALE					1118
+#define AP_RID_DIALOG_PAGE_SETUP_RDO_PORTRAIT				1119
+#define AP_RID_DIALOG_PAGE_SETUP_RDO_LANDSCAPE				1120
+#define AP_RID_DIALOG_PAGE_SETUP_SPN_WIDTH					1121
+#define AP_RID_DIALOG_PAGE_SETUP_SPN_HEIGHT					1122
+#define AP_RID_DIALOG_PAGE_SETUP_SPN_SCALE					1123
+
+// The Margins Tab
+#define AP_RID_DIALOG_PAGE_SETUP_LBL_TOP					1201
+#define AP_RID_DIALOG_PAGE_SETUP_LBL_BOTTOM					1202
+#define AP_RID_DIALOG_PAGE_SETUP_LBL_LEFT					1203
+#define AP_RID_DIALOG_PAGE_SETUP_LBL_RIGHT					1204
+#define AP_RID_DIALOG_PAGE_SETUP_LBL_HEADER					1205
+#define AP_RID_DIALOG_PAGE_SETUP_LBL_FOOTER					1206
+#define AP_RID_DIALOG_PAGE_SETUP_EBX_TOP					1207
+#define AP_RID_DIALOG_PAGE_SETUP_EBX_BOTTOM					1208
+#define AP_RID_DIALOG_PAGE_SETUP_EBX_LEFT					1209
+#define AP_RID_DIALOG_PAGE_SETUP_EBX_RIGHT					1210
+#define AP_RID_DIALOG_PAGE_SETUP_EBX_HEADER					1211
+#define AP_RID_DIALOG_PAGE_SETUP_EBX_FOOTER					1212
+#define AP_RID_DIALOG_PAGE_SETUP_SPN_TOP					1213
+#define AP_RID_DIALOG_PAGE_SETUP_SPN_BOTTOM					1214
+#define AP_RID_DIALOG_PAGE_SETUP_SPN_LEFT					1215
+#define AP_RID_DIALOG_PAGE_SETUP_SPN_RIGHT					1216
+#define AP_RID_DIALOG_PAGE_SETUP_SPN_HEADER					1217
+#define AP_RID_DIALOG_PAGE_SETUP_SPN_FOOTER					1218
+#define AP_RID_DIALOG_PAGE_SETUP_LBX_MARGINUNITS			1219
+#define AP_RID_DIALOG_PAGE_SETUP_BMP_MARGINPREVIEW			1220
+
+#ifdef RC_INVOKED
+// NOTE -- these placeholder strings get overridden at runtime 
+// NOTE -- they're just here to make sizing easier
+
+//// The main tab dialog
+//AP_RID_DIALOG_PAGE_SETUP DIALOG DISCARDABLE  40, 40, 255, 225
+//STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+//CAPTION "Dialog"
+//FONT 8, "MS Sans Serif"
+//BEGIN
+//    CONTROL         "Tab1",
+//                    AP_RID_DIALOG_PAGE_SETUP_TAB,
+//                    "SysTabControl32", TCS_FOCUSONBUTTONDOWN | WS_TABSTOP,
+//                    5,5,245,195, WS_EX_CONTROLPARENT
+//    DEFPUSHBUTTON   "OK",
+// 					AP_RID_DIALOG_PAGE_SETUP_BTN_OK,
+//					146,204,50,14
+//    PUSHBUTTON      "Cancel",
+//					AP_RID_DIALOG_PAGE_SETUP_BTN_CANCEL,
+//					200,204,50,14
+//END
+
+// The sub-dialog for the Page tab of the PageSetup dialog
+AP_RID_DIALOG_PAGE_SETUP_PAGE DIALOG DISCARDABLE  0, 0, 240, 180
+STYLE WS_CHILD
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "Paper...",
+					AP_RID_DIALOG_PAGE_SETUP_GBX_PAPER,
+					5,5,132,85
+    LTEXT           "Paper Size:",
+					AP_RID_DIALOG_PAGE_SETUP_LBL_PAPERSIZE,
+					15,18,113,8
+    COMBOBOX        AP_RID_DIALOG_PAGE_SETUP_LBX_PAPERSIZE,
+					29,26,102,65,
+					CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    RTEXT           "Width:",
+					AP_RID_DIALOG_PAGE_SETUP_LBL_WITDH,
+					11,41,66,14, SS_CENTERIMAGE
+    EDITTEXT        AP_RID_DIALOG_PAGE_SETUP_EBX_WIDTH,
+					81,41,40,14, ES_AUTOHSCROLL
+    CONTROL         "Spin1",
+					AP_RID_DIALOG_PAGE_SETUP_SPN_WIDTH,
+					"msctls_updown32",  UDS_ARROWKEYS | UDS_WRAP,
+					120,41,11,14
+    RTEXT           "Height:",
+					AP_RID_DIALOG_PAGE_SETUP_LBL_HEIGHT,
+					11,57,66,14,SS_CENTERIMAGE
+    EDITTEXT        AP_RID_DIALOG_PAGE_SETUP_EBX_HEIGHT,
+					82,57,40,14,ES_AUTOHSCROLL
+    CONTROL         "Spin1",
+                    AP_RID_DIALOG_PAGE_SETUP_SPN_HEIGHT,
+                    "msctls_updown32", UDS_ARROWKEYS | UDS_WRAP,
+					120,57,11,14
+    RTEXT           "Units:",
+					AP_RID_DIALOG_PAGE_SETUP_LBL_UNITS,
+					11,73,66,12,SS_CENTERIMAGE
+    COMBOBOX        AP_RID_DIALOG_PAGE_SETUP_LBX_UNITS,
+					82,73,49,65,
+					CBS_DROPDOWNLIST |  WS_VSCROLL | WS_TABSTOP
+
+    GROUPBOX        "Orientation...",
+					AP_RID_DIALOG_PAGE_SETUP_GBX_ORIENTATION,
+					5,95,131,48
+    CONTROL         "Portrait",
+					AP_RID_DIALOG_PAGE_SETUP_RDO_PORTRAIT,
+					"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,
+					52,111, 83,10
+    CONTROL         "Landscape",
+					AP_RID_DIALOG_PAGE_SETUP_RDO_LANDSCAPE,
+					"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,
+					52,122,83,10
+    CONTROL         "",
+					AP_RID_DIALOG_PAGE_SETUP_BMP_ORIENTATION,
+					"Static", SS_BITMAP | SS_CENTERIMAGE,
+					14,106,32,32
+    
+    GROUPBOX        "Scale...",
+					AP_RID_DIALOG_PAGE_SETUP_GBX_SCALE,
+					5,146,230,29
+    RTEXT           "Adjust to: ",
+					AP_RID_DIALOG_PAGE_SETUP_LBL_ADJUSTTO,
+					11,155,57,14,SS_CENTERIMAGE
+    EDITTEXT        AP_RID_DIALOG_PAGE_SETUP_EBX_SCALE,
+					73,155,40,14,ES_AUTOHSCROLL
+    CONTROL         "Spin1",
+					AP_RID_DIALOG_PAGE_SETUP_SPN_SCALE,
+					"msctls_updown32", UDS_ARROWKEYS | UDS_WRAP,
+					112,155,11,14
+    LTEXT           "% of normal size",
+					AP_RID_DIALOG_PAGE_SETUP_LBL_PERCENTOFSIZE,
+					127,155,102,14, SS_CENTERIMAGE
+
+    CONTROL         "",
+					AP_RID_DIALOG_PAGE_SETUP_BMP_PREVIEW,
+					"Static", SS_BITMAP,
+                    146,15,90,130
+END
+
+// The sub-dialog for the Margins tab of the PageSetup dialog
+AP_RID_DIALOG_PAGE_SETUP_MARGINS DIALOG DISCARDABLE  0, 0, 240, 180
+STYLE WS_CHILD
+FONT 8, "MS Sans Serif"
+BEGIN
+	RTEXT           "Units:",
+					AP_RID_DIALOG_PAGE_SETUP_LBL_UNITS,
+					14,5,66,12,SS_CENTERIMAGE
+    COMBOBOX        AP_RID_DIALOG_PAGE_SETUP_LBX_MARGINUNITS,
+					85,5,49,65,
+					CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+
+    RTEXT           "Top:",
+					AP_RID_DIALOG_PAGE_SETUP_LBL_TOP,
+					14,30,66,14,SS_CENTERIMAGE
+    EDITTEXT        AP_RID_DIALOG_PAGE_SETUP_EBX_TOP,
+					84,30,40,14,ES_AUTOHSCROLL
+    CONTROL         "Spin1",
+					AP_RID_DIALOG_PAGE_SETUP_SPN_TOP,
+					"msctls_updown32", UDS_ARROWKEYS | UDS_WRAP,
+					123,30,11,14
+
+    RTEXT           "Bottom:",
+					AP_RID_DIALOG_PAGE_SETUP_LBL_BOTTOM,
+					14,46,66,14,SS_CENTERIMAGE
+    EDITTEXT        AP_RID_DIALOG_PAGE_SETUP_EBX_BOTTOM,
+					84,46,40,14,ES_AUTOHSCROLL
+    CONTROL         "Spin1",
+					AP_RID_DIALOG_PAGE_SETUP_SPN_BOTTOM,
+					"msctls_updown32", UDS_ARROWKEYS | UDS_WRAP,
+					123,46,11,14
+
+    RTEXT           "Left:",
+					AP_RID_DIALOG_PAGE_SETUP_LBL_LEFT,
+					14,62,66,14,SS_CENTERIMAGE
+    EDITTEXT        AP_RID_DIALOG_PAGE_SETUP_EBX_LEFT,
+					84,62,40,14,ES_AUTOHSCROLL
+    CONTROL         "Spin1",
+					AP_RID_DIALOG_PAGE_SETUP_SPN_LEFT,
+					"msctls_updown32", UDS_ARROWKEYS | UDS_WRAP,
+					123,62,11,14
+
+    RTEXT           "Right:",
+					AP_RID_DIALOG_PAGE_SETUP_LBL_RIGHT,
+					14,78,66,14,SS_CENTERIMAGE
+    EDITTEXT        AP_RID_DIALOG_PAGE_SETUP_EBX_RIGHT,
+					84,78,40,14,ES_AUTOHSCROLL
+    CONTROL         "Spin1",
+					AP_RID_DIALOG_PAGE_SETUP_SPN_RIGHT,
+					"msctls_updown32", UDS_ARROWKEYS | UDS_WRAP,
+					123,78,11,14
+
+    RTEXT           "Header:",
+					AP_RID_DIALOG_PAGE_SETUP_LBL_HEADER,
+					14,106,66,14,SS_CENTERIMAGE
+    EDITTEXT        AP_RID_DIALOG_PAGE_SETUP_EBX_HEADER,
+					84,106,40,14,ES_AUTOHSCROLL
+    CONTROL         "Spin1",
+					AP_RID_DIALOG_PAGE_SETUP_SPN_HEADER,
+					"msctls_updown32", UDS_ARROWKEYS | UDS_WRAP,
+					123,106,11,14
+
+    RTEXT           "Footer:",
+					AP_RID_DIALOG_PAGE_SETUP_LBL_FOOTER,
+					14,122,66,14,SS_CENTERIMAGE
+    EDITTEXT        AP_RID_DIALOG_PAGE_SETUP_EBX_FOOTER,
+					84,122,40,14,ES_AUTOHSCROLL
+    CONTROL         "Spin1",
+					AP_RID_DIALOG_PAGE_SETUP_SPN_FOOTER,
+					"msctls_updown32", UDS_ARROWKEYS | UDS_WRAP,
+					123,122,11,14
+
+    CONTROL         "",
+					AP_RID_DIALOG_PAGE_SETUP_BMP_MARGINPREVIEW,
+					"Static", SS_BITMAP,
+					146,15,90,130
+END
+
+#endif /* RC_INVOKED */

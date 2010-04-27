@@ -1,0 +1,90 @@
+// AbiWord
+// Copyright (C) 1998,1999 AbiSource, Inc.
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+// the main dialog
+#define XAP_RID_DIALOG_HTMLOPTIONS_CHK_HTML4	 	1001
+#define XAP_RID_DIALOG_HTMLOPTIONS_CHK_PHP      	1002
+#define XAP_RID_DIALOG_HTMLOPTIONS_CHK_XML	     	1003
+#define XAP_RID_DIALOG_HTMLOPTIONS_CHK_AWML     	1004
+#define XAP_RID_DIALOG_HTMLOPTIONS_CHK_EMBEDCSS 	1005
+#define XAP_RID_DIALOG_HTMLOPTIONS_CHK_URLIMAGE 	1006
+#define XAP_RID_DIALOG_HTMLOPTIONS_LBL			 	1007
+#define XAP_RID_DIALOG_HTMLOPTIONS_BTN_SAVE			1008
+#define XAP_RID_DIALOG_HTMLOPTIONS_BTN_RESTORE		1009
+#define XAP_RID_DIALOG_HTMLOPTIONS_BTN_OK			IDOK
+#define XAP_RID_DIALOG_HTMLOPTIONS_BTN_CANCEL		IDCANCEL
+#define XAP_RID_DIALOG_HTMLOPTIONS_STATIC         	-1
+
+#ifdef RC_INVOKED
+// NOTE -- these placeholder strings get overridden at runtime 
+// NOTE -- they're just here to make sizing easier
+
+// The main tab dialog
+XAP_RID_DIALOG_HTMLOPTIONS DIALOG DISCARDABLE  10, 10, 270, 135
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "HTML Export Options"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "Save Settings", XAP_RID_DIALOG_HTMLOPTIONS_BTN_SAVE,
+                    4,115,64,14
+    PUSHBUTTON      "Restore Settings", XAP_RID_DIALOG_HTMLOPTIONS_BTN_RESTORE,
+                    70,115,64,14
+
+	DEFPUSHBUTTON   "OK", XAP_RID_DIALOG_HTMLOPTIONS_BTN_OK,
+                    136,115,64,14
+    PUSHBUTTON      "Cancel", XAP_RID_DIALOG_HTMLOPTIONS_BTN_CANCEL,
+                    202,115,64,14
+
+	LTEXT			"Select HTML export optons:", XAP_RID_DIALOG_HTMLOPTIONS_LBL,
+					5,5,145,14, SS_CENTERIMAGE
+
+    CONTROL         "Export HTML", XAP_RID_DIALOG_HTMLOPTIONS_CHK_HTML4,
+                    "Button", BS_AUTOCHECKBOX | WS_TABSTOP,
+                    10,20,230,10
+    CONTROL         "Export PHP", XAP_RID_DIALOG_HTMLOPTIONS_CHK_PHP,
+                    "Button", BS_AUTOCHECKBOX | WS_TABSTOP,
+                    10,35,230,10
+    CONTROL         "XML", XAP_RID_DIALOG_HTMLOPTIONS_CHK_XML,
+                    "Button", BS_AUTOCHECKBOX | WS_TABSTOP,
+                    10,50,230,10
+    CONTROL         "AWML", XAP_RID_DIALOG_HTMLOPTIONS_CHK_AWML,
+                    "Button", BS_AUTOCHECKBOX | WS_TABSTOP,
+                    10,65,230,10
+    CONTROL         "Embed CSS", XAP_RID_DIALOG_HTMLOPTIONS_CHK_EMBEDCSS,
+                    "Button", BS_AUTOCHECKBOX | WS_TABSTOP,
+                    10,80,230,10
+	CONTROL			"Embed images in URL", XAP_RID_DIALOG_HTMLOPTIONS_CHK_URLIMAGE,
+                    "Button", BS_AUTOCHECKBOX | WS_TABSTOP,
+                    10,95,230,10
+
+	CONTROL			"", XAP_RID_DIALOG_HTMLOPTIONS_STATIC,
+					"Static", SS_BLACKFRAME | SS_SUNKEN,
+					3, 109, 264, 1
+END
+
+#endif /* RC_INVOKED */

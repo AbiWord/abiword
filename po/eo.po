@@ -1,0 +1,7585 @@
+# ESPERANTO TRANSLATION FOR ABIWORD
+# ESPERANTA TRADUKO DE ABIWORD
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-07-16 23:45-0400\n"
+"PO-Revision-Date: 2007-01-04 23:33+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. ****************************************************************
+#. ******************************************************************
+#. ** IT IS IMPORTANT THAT THIS FILE ALLOW ITSELF TO BE INCLUDED
+#. ** MORE THAN ONE TIME.
+#. ******************************************************************
+#. ****************************************************************
+#. Default Heading used in TOC
+#: ../src/wp/ap/xp/ap_String_Id.h:32
+msgid "Contents"
+msgstr "Enhavo"
+
+#. Message Boxes used in AP_EditMethods
+#: ../src/wp/ap/xp/ap_String_Id.h:34
+#, c-format
+msgid "Could not write to the file %s."
+msgstr "Ne povis skribi al la dosiero %s."
+
+#: ../src/wp/ap/xp/ap_String_Id.h:35
+#, c-format
+msgid "Writing error when attempting to save %s"
+msgstr "Skriberaro dum la provo savi la dosieron %s"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:36
+#, c-format
+msgid "Error while attempting to save %s: could not construct exporter"
+msgstr ""
+"Eraro dum la provo konservi la dosieron %s: ne povis konstrui eksportilon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:37
+#, c-format
+msgid "Error while attempting to save %s: invalid name"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:38
+#, c-format
+msgid "Could not open file %s."
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:39
+#, c-format
+msgid ""
+"%s not implemented yet.\n"
+"\n"
+"If you are a programmer, feel free to add code in %s, line %d\n"
+"and mail patches to:\n"
+"\n"
+"\tabiword-dev@abisource.com\n"
+"\n"
+"Otherwise  please be patient."
+msgstr ""
+"%s ankoraŭ ne realigita.\n"
+"\n"
+"Se vi estas programisto, bonvolu aldoni kodon en %s, linio %d\n"
+"kaj sendi flikojn al:\n"
+"\n"
+"\tabiword-dev@abisource.com\n"
+"\n"
+"Aŭ bonvolu esti pacienca."
+
+#: ../src/wp/ap/xp/ap_String_Id.h:40
+#, c-format
+msgid "Revert to saved copy of %s?"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:41
+msgid "Close all windows and exit?"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:42
+#, c-format
+msgid "Save changes to document %s before closing?"
+msgstr "Ĉu konservi la ŝanĝojn al dokumento %s antaŭ fermado?"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:43
+msgid "Your changes will be lost if you don't save them."
+msgstr "Viaj ŝanĝoj perdiĝos se vi ne konservas ilin."
+
+#: ../src/wp/ap/xp/ap_String_Id.h:44
+#, c-format
+msgid "Error importing file %s."
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:45
+#, c-format
+msgid "File %s not found"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:46
+#, c-format
+msgid "Out of memory attempting to open %s"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:47
+#, c-format
+msgid "File %s is of unknown type"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:48
+#, c-format
+msgid "File %s is not of the type it claims to be"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:49
+#, c-format
+msgid "File %s is not of a currently supported file type"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:50
+#, c-format
+msgid "AbiWord cannot open %s. It appears to be an invalid document"
+msgstr "AbiWord ne povas legi %s. Ŝajnas esti malvalida dokumento."
+
+#: ../src/wp/ap/xp/ap_String_Id.h:51
+#, c-format
+msgid "Could not open file %s for writing"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:52
+#, c-format
+msgid "Could not write to file %s"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:53
+msgid "AbiWord finished checking the selection."
+msgstr "AbiWord finis la inspektadon de la elektado."
+
+#: ../src/wp/ap/xp/ap_String_Id.h:54
+msgid "The spelling check is complete."
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:55
+#, c-format
+msgid "Printing page %d of %d"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:56
+msgid "Revert file to last saved state?"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:57
+msgid "Printing Document.."
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:58
+msgid "Can not insert a Break inside a table"
+msgstr "Oni ne povas emeti impozadon en tabelo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:59
+msgid "Can not insert a Break inside a text box"
+msgstr "Oni ne povas emeti impozadon en teksta kadro"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:60
+msgid ""
+"Are you sure you do not want to maintain full history record? If you "
+"proceed  you will not be able to restore earlier versions of this document."
+msgstr ""
+"Ĉu vi certas, ke vi ne volas konservi la plenan kronikon? Se vi daŭras, vi "
+"ne povas regeneri antaŭajn eldonojn de la dokumento."
+
+#. Abi has just crashed
+#: ../src/wp/ap/xp/ap_String_Id.h:63
+msgid ""
+"A fatal error has just occurred. AbiWord is going to shutdown.\n"
+"The current document has been saved to disc with a \".saved\" extension."
+msgstr ""
+"Finiga eraro okazis. Abiword ĉesos.\n"
+"La dokumento estis konservita kun la finaĵo \".saved\"."
+
+#. Status Bar Messages
+#: ../src/wp/ap/xp/ap_String_Id.h:66
+#, c-format
+msgid "Page: %d/%d"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:67
+#, c-format
+msgid "Left Margin [%s]"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:68
+#, c-format
+msgid "Right Margin [%s]"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:69
+#, c-format
+msgid "First Line Indent [%s]"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:70
+#, c-format
+msgid "Left Indent [%s] First Line Indent [%s]"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:71
+#, c-format
+msgid "Column Gap [%s]"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:72
+#, c-format
+msgid "Left Indent [%s]"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:73
+#, c-format
+msgid "Right Indent [%s]"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:74
+#, c-format
+msgid "Tab Stop [%s]"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:75
+#, c-format
+msgid "Top Margin [%s]"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:76
+#, c-format
+msgid "Bottom Margin [%s]"
+msgstr "Suba rando [%s]"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:77
+#, c-format
+msgid "Header [%s]"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:78
+#, c-format
+msgid "Footer [%s]"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:79
+#, c-format
+msgid "Column [%d]"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:80
+msgid "INS"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:81
+msgid "OVR"
+msgstr ""
+
+#.
+#: ../src/wp/ap/xp/ap_String_Id.h:84
+#: ../src/wp/ap/gtk/ap_UnixDialog_New.xml.h:2
+msgid "New Document"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:85
+#: ../src/wp/ap/gtk/ap_UnixDialog_New.xml.h:1
+msgid "Create a new document from a template"
+msgstr "Krei novan dokumenton el ŝablono"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:86 ../src/wp/ap/xp/ap_String_Id.h:1128
+#: ../src/wp/ap/xp/ap_String_Id.h:1483 ../src/wp/ap/xp/ap_String_Id.h:1556
+#: ../src/wp/ap/gtk/ap_UnixDialog_New.xml.h:3
+msgid "Open an existing document"
+msgstr "Malfermi jaman dokumenton"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:87
+msgid "No File"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:88
+msgid "Choose"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:89
+msgid "Create an empty document"
+msgstr "Krei malplenan dokumenton"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:91
+msgid "Wordprocessing"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:92
+msgid "Create a new blank document"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:93
+msgid "Create a fax"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:95 ../src/wp/ap/xp/ap_String_Id.h:929
+#: ../src/wp/ap/xp/ap_String_Id.h:1030 ../src/af/xap/xp/xap_String_Id.h:92
+msgid "&Insert"
+msgstr "&Enmeti"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:96 ../src/wp/ap/xp/ap_String_Id.h:850
+msgid "&Close"
+msgstr "&Fermi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:97
+msgid "&Apply"
+msgstr "Apliki"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:98 ../src/wp/ap/xp/ap_String_Id.h:1101
+msgid "&Help"
+msgstr "&Helpo"
+
+#. Tab Types - the order here must be consistent with the
+#. order in fl_BlockLayout.h
+#: ../src/wp/ap/xp/ap_String_Id.h:102
+msgid "Left Tab"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:103
+msgid "Center Tab"
+msgstr "Centrigi tabon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:104
+msgid "Right Tab"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:105
+msgid "Decimal Tab"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:106
+msgid "Bar Tab"
+msgstr "Bartabo"
+
+#. Find and Replace strings
+#: ../src/wp/ap/xp/ap_String_Id.h:109
+msgid "Find"
+msgstr "Serĉi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:110 ../src/wp/ap/xp/ap_String_Id.h:824
+#: ../src/wp/ap/gtk/ap_UnixDialog_Annotation.xml.h:4
+#: ../src/wp/ap/gtk/ap_UnixDialog_Replace.xml.h:3
+msgid "Replace"
+msgstr "Anstataŭigi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:111
+msgid "Fi&nd what:"
+msgstr "Serĉi kio&n:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:112
+msgid "Re&place with:"
+msgstr "Anstataŭigi &per:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:113
+msgid "&Match case"
+msgstr "&Kongruu uskleco"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:114
+msgid "&Whole word"
+msgstr "&Tuta vorto"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:115
+msgid "Re&verse find"
+msgstr "In&verse serĉi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:116
+msgid "&Find Next"
+msgstr "&Pluserĉi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:117
+msgid "&Replace"
+msgstr "&Anstataŭigi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:118
+msgid "Replace &All"
+msgstr "&Anstataŭigi ĉiun"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:119
+msgid "AbiWord has finished searching the document."
+msgstr "AbiWord finis traserĉi la dokumenton."
+
+#: ../src/wp/ap/xp/ap_String_Id.h:120
+#, c-format
+msgid ""
+"AbiWord has finished its search of the document and has made %d replacements."
+msgstr "AbiWord finis traserĉi la dokumenton kaj faris %d anstataŭigojn."
+
+#. Break dialog
+#: ../src/wp/ap/xp/ap_String_Id.h:123
+msgid "Insert break"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:124
+#: ../src/wp/ap/gtk/ap_UnixDialog_Break.xml.h:4
+msgid "Insert Break"
+msgstr "Enmeti rompojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:125 ../src/wp/ap/xp/ap_String_Id.h:1309
+#: ../src/af/xap/xp/xap_String_Id.h:238
+msgid "Insert"
+msgstr "Enmeti"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:126
+msgid "Section breaks"
+msgstr "Sekciaj interrompoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:127
+msgid "Section Breaks"
+msgstr "Sekciaj interrompoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:128
+msgid "&Page break"
+msgstr "Paĝa &rompado"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:129
+msgid "&Column break"
+msgstr "&Kolumna rompado"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:130
+msgid "&Next page"
+msgstr "&Sekva paĝo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:131
+msgid "Con&tinuous"
+msgstr "Kon&tinue"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:132
+msgid "&Even page"
+msgstr "&Para paĝo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:133
+msgid "&Odd page"
+msgstr "&Nepara paĝo"
+
+#. Insert Table dialog
+#: ../src/wp/ap/xp/ap_String_Id.h:136 ../src/wp/ap/xp/ap_String_Id.h:1310
+#: ../src/wp/ap/xp/ap_String_Id.h:1311
+#: ../src/wp/ap/gtk/ap_UnixDialog_InsertTable.xml.h:6
+msgid "Insert Table"
+msgstr "Enmeti Tabelon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:137
+msgid "Table size"
+msgstr "Tabela grandeco"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:138
+msgid "Table Size"
+msgstr "Tabela grandeco"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:139
+#: ../src/wp/ap/gtk/ap_UnixDialog_InsertTable.xml.h:7
+msgid "Number of columns:"
+msgstr "Nombro da kolumnoj:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:140
+#: ../src/wp/ap/gtk/ap_UnixDialog_InsertTable.xml.h:8
+msgid "Number of rows:"
+msgstr "Nombro da vicoj:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:141
+msgid "AutoFit behavior"
+msgstr "Aŭtomata alĝustigo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:142
+msgid "AutoFit Behavior"
+msgstr "Aŭtomata Alĝustigo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:143
+#: ../src/wp/ap/gtk/ap_UnixDialog_InsertTable.xml.h:4
+msgid "Automatic column size"
+msgstr "Aŭtomata alĝustigo de la kolumno"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:144
+#: ../src/wp/ap/gtk/ap_UnixDialog_InsertTable.xml.h:5
+msgid "Fixed column size:"
+msgstr "Fiksita kolumna grandeco:"
+
+#. Format FootNotes dialog
+#: ../src/wp/ap/xp/ap_String_Id.h:147
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatFootnotes.xml.h:6
+msgid "Format Footnotes and Endnotes"
+msgstr "Aranĝi piednotojn kaj finnotojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:148
+msgid "Format Footnotes"
+msgstr "Aranĝi piednotojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:149
+msgid "Format Endnotes"
+msgstr "Aranĝi finnotojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:150
+msgid "Footnote style"
+msgstr "Piednota stilo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:151 ../src/wp/ap/xp/ap_String_Id.h:156
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatFootnotes.xml.h:11
+msgid "Restart on each section"
+msgstr "Restarti ĉe ĉiu sekcio"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:152
+msgid "Restart on each page"
+msgstr "Restarti ĉe ĉiu paĝo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:153
+msgid "Don't restart"
+msgstr "Ne restarti"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:154
+msgid "Initial Footnote value"
+msgstr "Komenca piednota valoro"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:155
+msgid "Endnote style"
+msgstr "Finnota stilo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:157
+msgid "Initial Endnote value"
+msgstr "Komenca finnota valoro"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:158
+msgid "Place at end of document"
+msgstr "Meti je fino de dokumento"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:159
+msgid "Place at end of section"
+msgstr "Meti je fino de sekcio"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:160
+msgid "Placement"
+msgstr "Allokigo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:161 ../src/wp/ap/xp/ap_String_Id.h:256
+#: ../src/wp/ap/xp/ap_String_Id.h:1459 ../src/wp/ap/xp/ap_String_Id.h:1532
+#: ../src/wp/ap/xp/ap_String_Id.h:1605
+msgid "Numbering"
+msgstr "Numerado"
+
+#. Format TOC dialog
+#: ../src/wp/ap/xp/ap_String_Id.h:164
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTOC.xml.h:9
+msgid "Format Table of Contents"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:165 ../src/wp/ap/xp/ap_String_Id.h:459
+#: ../src/wp/ap/xp/ap_String_Id.h:795
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTOC.xml.h:10
+#: ../src/wp/ap/gtk/ap_UnixDialog_MetaData.xml.h:8
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:16
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:15
+msgid "General"
+msgstr "Ĝenerala"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:166
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTOC.xml.h:16
+msgid "Layout Details"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:167 ../src/wp/ap/xp/ap_String_Id.h:260
+#: ../src/wp/ap/xp/ap_String_Id.h:476 ../src/wp/ap/xp/ap_String_Id.h:677
+msgid "None"
+msgstr "Neniu"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:168
+msgid "&Has Heading"
+msgstr "&Havas kapon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:169
+msgid "H&eading text:"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:170
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTOC.xml.h:13
+msgid "Heading style:"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:171
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTOC.xml.h:6
+msgid "Change Style"
+msgstr "Ŝanĝi stilon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:172
+msgid "Define Main Properties"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:173
+msgid "H&as label"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:174
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTOC.xml.h:8
+msgid "Fill style:"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:175
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTOC.xml.h:7
+msgid "Display style:"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:176
+msgid "Label Definitions"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:177
+msgid "&Start at:"
+msgstr "&Komenci je:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:178
+msgid "Text &before:"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:179
+msgid "&Numbering type:"
+msgstr "&Stilo de numerado:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:180
+msgid "Text &after:"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:181
+msgid "&Inherit label"
+msgstr "&Heredigi etikedadon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:182
+msgid "&Tab leader:"
+msgstr "&Taba signo:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:183
+msgid "I&ndent:"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:184
+msgid "&Page numbering:"
+msgstr "&Paĝa numerado:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:185
+msgid "Tabs and Page Numbering"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:186
+msgid "Level 1"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:187
+msgid "Level 2"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:188
+msgid "Level 3"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:189
+msgid "Level 4"
+msgstr ""
+
+#. Latex dialog
+#: ../src/wp/ap/xp/ap_String_Id.h:192 ../src/wp/ap/xp/ap_String_Id.h:193
+msgid "LaTeX Equation"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:194
+#: ../src/wp/ap/gtk/ap_UnixDialog_Latex.xml.h:3
+msgid "Example:"
+msgstr ""
+
+#. Equation Menus
+#: ../src/wp/ap/xp/ap_String_Id.h:197
+msgid "Equation"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:198
+msgid "Insert Equation"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:199
+msgid "From File"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:200
+msgid "Insert MathML from a file"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:201
+msgid "From LaTeX"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:202
+msgid "Insert Equation from a LaTeX expression"
+msgstr ""
+
+#. Word Count dialog
+#: ../src/wp/ap/xp/ap_String_Id.h:205 ../src/wp/ap/xp/ap_String_Id.h:580
+#: ../src/wp/ap/gtk/ap_UnixDialog_WordCount.xml.h:9
+msgid "Word Count"
+msgstr "Vortnombro"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:206
+msgid "Statistics:"
+msgstr "Statistikaĵoj:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:207
+#: ../src/wp/ap/gtk/ap_UnixDialog_WordCount.xml.h:7
+msgid "Pages:"
+msgstr "Paĝoj:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:208
+#: ../src/wp/ap/gtk/ap_UnixDialog_WordCount.xml.h:11
+msgid "Words:"
+msgstr "Vortoj:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:209
+#: ../src/wp/ap/gtk/ap_UnixDialog_WordCount.xml.h:10
+msgid "Words (no footnotes/endnotes):"
+msgstr "Vortoj (ekskluzive de piednotoj/piednotoj):"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:210
+#: ../src/wp/ap/gtk/ap_UnixDialog_WordCount.xml.h:4
+msgid "Characters (no spaces):"
+msgstr "Signojn (sen spacetoj):"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:211
+#: ../src/wp/ap/gtk/ap_UnixDialog_WordCount.xml.h:5
+msgid "Characters (with spaces):"
+msgstr "Signojn (kun spacetoja:)"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:212
+#: ../src/wp/ap/gtk/ap_UnixDialog_WordCount.xml.h:8
+msgid "Paragraphs:"
+msgstr "Alineoj:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:213
+#: ../src/wp/ap/gtk/ap_UnixDialog_WordCount.xml.h:6
+msgid "Lines:"
+msgstr "Linioj:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:214
+msgid "Seconds between updates"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:215
+msgid " Auto Update"
+msgstr "Aktualigi aŭtomate "
+
+#. Spell dialog
+#: ../src/wp/ap/xp/ap_String_Id.h:218 ../src/wp/ap/xp/ap_String_Id.h:358
+#: ../src/wp/ap/gtk/ap_UnixDialog_Spell.xml.h:5
+msgid "Spelling"
+msgstr "Literumilo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:219
+msgid "Not in dictionary&:"
+msgstr "Ne en vortaro&:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:220
+msgid "Change &to:"
+msgstr "Ŝanĝi &al:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:221
+msgid "&Change"
+msgstr "&Ŝanĝi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:222
+msgid "Change A&ll"
+msgstr "Ŝanĝi &ĉiun"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:223
+msgid "&Ignore"
+msgstr "&Ignori"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:224
+msgid "I&gnore All"
+msgstr "I&gnori ĉiun"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:225 ../src/wp/ap/xp/ap_String_Id.h:1120
+msgid "&Add"
+msgstr "&Aldoni"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:226
+msgid "Sugg&estions:"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:227
+msgid "(no spelling suggestions)"
+msgstr "(neniaj proponoj)"
+
+#. Style Dialog
+#: ../src/wp/ap/xp/ap_String_Id.h:230 ../src/wp/ap/xp/ap_String_Id.h:282
+#: ../src/wp/ap/gtk/ap_UnixDialog_Styles.xml.h:10
+msgid "Styles"
+msgstr "Stiloj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:231
+msgid "Available Styles"
+msgstr "Disponeblaj stiloj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:232
+msgid "List"
+msgstr "Listo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:233
+msgid "Paragraph Preview"
+msgstr "Alinea antaŭvido"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:234
+msgid "Character Preview"
+msgstr "Signa antaŭvido"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:235 ../src/wp/ap/xp/ap_String_Id.h:248
+#: ../src/wp/ap/xp/ap_String_Id.h:630
+msgid "Description"
+msgstr "Priskribo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:236
+msgid "New..."
+msgstr "Nova..."
+
+#: ../src/wp/ap/xp/ap_String_Id.h:237
+#: ../src/wp/ap/gtk/ap_UnixDialog_Styles.xml.h:9
+msgid "Modify..."
+msgstr "Modifi..."
+
+#: ../src/wp/ap/xp/ap_String_Id.h:238 ../src/wp/ap/xp/ap_String_Id.h:1319
+#: ../src/af/xap/xp/xap_String_Id.h:95
+msgid "Delete"
+msgstr "Forigi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:239
+#: ../src/wp/ap/gtk/ap_UnixDialog_Styles.xml.h:8
+msgid "In Use"
+msgstr "Uzataj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:240 ../src/af/xap/xp/xap_String_Id.h:215
+#: ../src/wp/ap/gtk/ap_UnixDialog_Styles.xml.h:7
+msgid "All"
+msgstr "Ĉiuj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:241
+#: ../src/wp/ap/gtk/ap_UnixDialog_Styles.xml.h:11
+msgid "User-defined styles"
+msgstr "Propre difinitaj stiloj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:242
+msgid "What Hath God Wrought"
+msgstr "Kion Dio elfaris"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:243
+msgid "Modify Styles"
+msgstr "Modifi stilojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:244
+msgid "Style Name:"
+msgstr "Stila nomo:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:245
+msgid "Based On:"
+msgstr "Bazita sur:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:246
+msgid "Style for following paragraph"
+msgstr "Stilo por la aktuala alineo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:247 ../src/wp/ap/xp/ap_String_Id.h:318
+#: ../src/wp/ap/xp/ap_String_Id.h:335 ../src/wp/ap/xp/ap_String_Id.h:521
+#: ../src/wp/ap/xp/ap_String_Id.h:540 ../src/wp/ap/xp/ap_String_Id.h:691
+#: ../src/wp/ap/xp/ap_String_Id.h:713 ../src/af/xap/xp/xap_String_Id.h:197
+msgid "Preview"
+msgstr "Antaŭvido"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:249
+msgid "Add to template"
+msgstr "Aldoni al ŝablono"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:250
+msgid "Automatically update"
+msgstr "Aŭtomata ĝisdatigo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:251
+msgid "Shortcut Key"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:252 ../src/wp/ap/xp/ap_String_Id.h:1403
+msgid "Format"
+msgstr "Formato"
+
+#. Paragraph dialog
+#: ../src/wp/ap/xp/ap_String_Id.h:253 ../src/wp/ap/xp/ap_String_Id.h:285
+msgid "Paragraph"
+msgstr "Alineo"
+
+#. Font Selector dialog
+#: ../src/wp/ap/xp/ap_String_Id.h:254 ../src/wp/ap/xp/ap_String_Id.h:1428
+#: ../src/wp/ap/xp/ap_String_Id.h:1501 ../src/wp/ap/xp/ap_String_Id.h:1574
+#: ../src/af/xap/xp/xap_String_Id.h:130 ../src/af/xap/xp/xap_String_Id.h:141
+msgid "Font"
+msgstr "Tiparo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:255 ../src/wp/ap/xp/ap_String_Id.h:466
+#: ../src/wp/ap/gtk/ap_UnixDialog_Tab.xml.h:6
+msgid "Tabs"
+msgstr "Taboj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:257 ../src/wp/ap/xp/ap_String_Id.h:464
+#: ../src/wp/ap/xp/ap_String_Id.h:626
+msgid "Language"
+msgstr "Lingvo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:258
+msgid "Character"
+msgstr "Signo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:259
+msgid "Style Type"
+msgstr "Stila tipo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:261
+msgid "Current Settings"
+msgstr "Aktuala agordo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:262
+msgid "New Style"
+msgstr "Nova stilo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:263
+msgid "Remove Property from Style"
+msgstr "Forigi de la stilo la econ"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:264
+msgid "Remove"
+msgstr "Forigi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:265
+msgid "Style Name - "
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:266
+msgid ""
+" - Reserved. \n"
+" You cannot use this name. Choose Another \n"
+msgstr ""
+" - Rezervita. \n"
+" Vi ne povas uzi tiun nomon. Elekti alian. \n"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:267
+msgid ""
+"No Style selected \n"
+" so it cannot be modified"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:268
+msgid ""
+"This style does not exist \n"
+" so it cannot be modified"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:269
+msgid "Cannot modify a builtin style"
+msgstr "Ne povas modifii instalitan stilon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:270
+msgid "Cannot delete this style"
+msgstr "Ne povas viŝsigi tiun stilon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:271
+msgid "Style name cannot be left blank"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:272
+msgid "Disable all formatting commands  except styles"
+msgstr ""
+
+#. Stylist dialog
+#: ../src/wp/ap/xp/ap_String_Id.h:276
+#: ../src/wp/ap/gtk/ap_UnixDialog_Stylist.xml.h:1
+#: ../src/wp/ap/gtk/ap_UnixDialog_Stylist_modal.xml.h:1
+msgid "Stylist"
+msgstr "Stililo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:277
+msgid "List Styles"
+msgstr "Listaj stiloj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:278
+msgid "Heading Styles"
+msgstr "Kapaj stiloj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:279
+msgid "Note Styles"
+msgstr "Notaj stiloj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:280
+msgid "User defined Styles"
+msgstr "Propre difinitaj stiloj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:281
+msgid "Miscellaneous Styles"
+msgstr "Diversaj stiloj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:287 ../src/wp/ap/xp/ap_String_Id.h:477
+#: ../src/wp/ap/xp/ap_String_Id.h:708 ../src/wp/ap/xp/ap_String_Id.h:1443
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageNumbers.xml.h:7
+msgid "Left"
+msgstr "Maldekstren"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:288
+msgid "Centered"
+msgstr "Centrigita"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:289 ../src/wp/ap/xp/ap_String_Id.h:479
+#: ../src/wp/ap/xp/ap_String_Id.h:709 ../src/wp/ap/xp/ap_String_Id.h:1445
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageNumbers.xml.h:8
+msgid "Right"
+msgstr "Dekstren"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:290
+msgid "Justified"
+msgstr "Alkadrigita"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:292
+msgid "(none)"
+msgstr "(nenia)"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:293
+msgid "First line"
+msgstr "Komenca linio"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:294
+msgid "Hanging"
+msgstr "Penda"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:296
+msgid "Single"
+msgstr "unuobla"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:297
+msgid "1.5 lines"
+msgstr "1.5-obla"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:298
+msgid "Double"
+msgstr "duobla"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:299
+msgid "At least"
+msgstr "minimume"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:300
+msgid "Exactly"
+msgstr "ĝusta"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:301
+msgid "Multiple"
+msgstr "multaj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:303
+msgid "Indents and Spacing"
+msgstr "Deŝovo kaj spaco"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:304
+msgid "Line and Page Breaks"
+msgstr "Liniaj kaj paĝaj rompoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:306
+msgid "Ali&gnment:"
+msgstr "S&amniveligo:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:307
+msgid "B&y:"
+msgstr "&De:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:308 ../src/wp/ap/xp/ap_String_Id.h:737
+msgid "&Left:"
+msgstr "&Maldekstren:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:309 ../src/wp/ap/xp/ap_String_Id.h:738
+msgid "&Right:"
+msgstr "&Dekstren:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:310
+msgid "&Special:"
+msgstr "&Speciala:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:311
+msgid "&Before:"
+msgstr "&Antaŭ:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:312
+msgid "Aft&er:"
+msgstr "&Post:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:313
+msgid "Li&ne spacing:"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:314
+msgid "&At:"
+msgstr "&De:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:316
+msgid "Indentation"
+msgstr "Deŝovado"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:317
+msgid "Spacing"
+msgstr "Spaco"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:319
+msgid "Pagination"
+msgstr "Paĝio"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:321
+msgid "&Widow/Orphan control"
+msgstr "&vidvina/orfa kontrolo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:322
+msgid "&Keep lines together"
+msgstr "&Konservi apudajn liniojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:323
+msgid "Page &break before"
+msgstr "Paĝa rom&po antaŭe"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:324
+msgid "&Suppress line numbers"
+msgstr "nenia numerado"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:325
+msgid "&Don't hyphenate"
+msgstr "&Ne dividi vortojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:326
+msgid "Keep with ne&xt"
+msgstr "Konservi kun se&kva"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:328
+msgid "&Tabs..."
+msgstr "&Taboj..."
+
+#: ../src/wp/ap/xp/ap_String_Id.h:330
+msgid "Right-to-left &dominant"
+msgstr "Plejparte mal&dekstren"
+
+#. Columns dialog
+#: ../src/wp/ap/xp/ap_String_Id.h:333
+msgid "Columns"
+msgstr "Kolumnoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:334
+msgid "Number of columns"
+msgstr "Nombro da kolumnoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:336
+msgid "One"
+msgstr "Unu"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:337
+msgid "Two"
+msgstr "Du"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:338
+msgid "Three"
+msgstr "Tri"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:339
+msgid "Line between"
+msgstr "Apartigita per linio"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:340
+msgid "Number of Columns"
+msgstr "Nombro da kolumnoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:341
+msgid "Space after Column"
+msgstr "Spaceto post kolumno"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:342
+msgid "Max Column size"
+msgstr "Maksimuma kolumna grandeco"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:344
+msgid "Use RTL Order"
+msgstr "Aranĝi maldekstren"
+
+#. when translating these, the important thing to remember is to get a
+#. similar amount of text in the translation.  Microsoft Word uses
+#. strings just like this to simulate text, and if your translation
+#. ends up very, very wordy, it will take up too much room in the preview.
+#.
+#: ../src/wp/ap/xp/ap_String_Id.h:351
+msgid ""
+"This paragraph represents words as they might appear in your document.  To "
+"see text from your document used in this preview  position your cursor in a "
+"document paragraph with some text in it and open this dialog."
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:352
+msgid ""
+"Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph "
+"Previous Paragraph Previous Paragraph Previous Paragraph"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:353
+msgid ""
+"Following Paragraph Following Paragraph Following Paragraph Following "
+"Paragraph Following Paragraph Following Paragraph Following Paragraph"
+msgstr ""
+
+#. Options dialog
+#: ../src/wp/ap/xp/ap_String_Id.h:356
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:20
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:19
+msgid "Preferences"
+msgstr "Agordo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:359
+msgid "Other"
+msgstr "Alia"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:360 ../src/wp/ap/xp/ap_String_Id.h:463
+msgid "Preference Schemes"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:361
+msgid "View"
+msgstr "Vidi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:362
+msgid "Misc."
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:363
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:21
+msgid "Smart Quotes"
+msgstr "Unikodaj citiloj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:365
+msgid "Sa&ve"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:366 ../src/af/xap/xp/xap_String_Id.h:94
+msgid "Apply"
+msgstr "Apliki"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:367
+msgid "De&faults"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:369
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:22
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:21
+msgid "Spell Checking"
+msgstr "Literumilo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:371
+msgid "Check s&pelling as you type"
+msgstr "Kontroli literumo dum taj&pado"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:372
+msgid "Hide &spelling errors in the document"
+msgstr "Ka&ŝi erarojn literumajn en la dokumento"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:373
+msgid "&Highlight misspelled words"
+msgstr "&Prilumi misliterumitajn vortojn"
+
+#. Opposite of HideErrors
+#. Grammar Check
+#: ../src/wp/ap/xp/ap_String_Id.h:376
+msgid "Automatic Grammar Checking"
+msgstr "Aŭtomata gramatika kontrolo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:377
+msgid "Check &grammar as you type"
+msgstr "Kontroli &gramatikon dum tajpado."
+
+#: ../src/wp/ap/xp/ap_String_Id.h:379
+msgid "Enable smart (curly) quotes"
+msgstr "Ebligi unikodajn citilojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:380
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:23
+msgid "Use custom smart quote style"
+msgstr "Uzi elektitajn citilojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:381
+msgid "Outer (double) quote style"
+msgstr "Citila anstataŭo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:382
+msgid "Inner (single) quote style"
+msgstr "Apostrofa anstataŭo"
+
+#. should be merged one day
+#: ../src/wp/ap/xp/ap_String_Id.h:384
+msgid "A&lways suggest corrections"
+msgstr "Ĉiam proponi korektojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:385
+msgid "Suggest from &main dictionary only"
+msgstr "Proponi nur el la &ĉefa vortaro"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:386
+msgid "Words in &UPPERCASE"
+msgstr "Maj&usklaj VORTOJ"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:387
+msgid "Words with num&bers"
+msgstr "Vortoj kun ci&feroj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:388
+msgid "Custom Dictionary:"
+msgstr "Propra vortaro"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:389
+msgid "Ignored words:"
+msgstr "Ignoritaj vortoj:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:390
+msgid "Ignore Words"
+msgstr "Ignori vortojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:391
+msgid "&Dictionary..."
+msgstr "&Vortaro..."
+
+#: ../src/wp/ap/xp/ap_String_Id.h:392
+msgid "&Reset"
+msgstr "&Apriorigi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:393 ../src/wp/ap/xp/ap_String_Id.h:875
+msgid "&Edit"
+msgstr "&Redakti"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:394
+msgid "Auto replace misspelled words"
+msgstr "Aŭtomate anstataŭi misliterumitajn vortojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:395
+msgid "Dictionaries"
+msgstr "Vortaroj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:397
+msgid "&Enable smart quotes"
+msgstr "&Ebligi unikodajn citilojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:398
+msgid "Default page size"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:400
+msgid "Default to right-to-left direction of text"
+msgstr "Apriore skribi maldekstren"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:401
+msgid "Bi-Directional Options"
+msgstr "Ambaŭdirektaj elektoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:402
+msgid "Use glyph shaping for Hebrew"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:404
+msgid "User Interface"
+msgstr "Fasado"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:405
+msgid "Application Startup"
+msgstr "Apliklanĉo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:406
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:14
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:13
+msgid "Documents"
+msgstr "Dokumentoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:408
+msgid "User Interface Language"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:409
+msgid "Language settings"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:412
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:12
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:10
+msgid "Auto Save"
+msgstr "Konservi aŭtomate"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:413
+msgid "Auto &Save"
+msgstr "&Konservi aŭtomate"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:414
+msgid "Auto &save current file every"
+msgstr "&Konservi aŭtomate aktualan dosieron je ĉiu"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:415
+msgid "&Interval:"
+msgstr "&Intervalo:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:416
+msgid "minutes"
+msgstr "minutoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:417
+msgid "&File extension:"
+msgstr "&Dosiernoma finaĵo:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:418
+msgid "With extension:"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:420
+msgid "&Automatically save this Scheme"
+msgstr "Konservi ĉi tiun aranĝo aŭtomate"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:421
+msgid "&Current Preferences Scheme"
+msgstr "&Aktuala agordaĵa skemo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:423
+msgid "Automatically load all plugins found"
+msgstr "Aŭtomata ŝargado de trovitaj kromprogramoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:425
+msgid "Show..."
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:426
+msgid "&Ruler"
+msgstr "&Mezurilo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:427 ../src/wp/ap/xp/ap_String_Id.h:725
+msgid "&Units:"
+msgstr "&Mezurunuo:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:428
+msgid "Cursor &blink"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:429
+msgid "Standard Toolbar"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:430
+msgid "Format Toolbar"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:431
+msgid "Table Toolbar"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:432
+msgid "Extra Toolbar"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:433
+msgid "Simple Toolbar"
+msgstr "Simpla ilobreto"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:434
+msgid "&Status bar"
+msgstr "&Statbreto"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:435
+msgid "View..."
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:436
+msgid "&All"
+msgstr "&Ĉio"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:437
+msgid "&Hidden Text"
+msgstr "&Kaŝita teksto"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:438
+msgid "Invisible &Layout Marks"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:439
+msgid "Enable Smooth Scrolling"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:441
+msgid "Allow screen colors other than white"
+msgstr "Permesi alian ekranan koloron ol blanko"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:442
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options_ColorSel.xml.h:1
+msgid "Choose Screen Color"
+msgstr "Elekti ekranan koloron"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:443
+msgid "Choose screen color for AbiWord"
+msgstr "Elekti ekranan koloron por AbiWord"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:444
+msgid "You should choose a range from 1 to 120 for the auto save frequency"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:445
+msgid ""
+"The new user interface language will take effect the next time that you "
+"start the application"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:447
+msgid "Do you want to reset ignored words in the current document?"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:448
+msgid "Do you want to reset ignored words in all the documents?"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:450
+msgid "Icons"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:451
+msgid "Text"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:452
+msgid "Text and Icon"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:453 ../src/af/xap/xp/xap_String_Id.h:99
+msgid "Show"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:454
+msgid "Hide"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:455
+msgid "Toolbars"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:456
+msgid "Button Style"
+msgstr "Butona stilo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:457
+msgid "Visible"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:458
+msgid "View tooltips"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:460
+msgid "Ignore"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:461
+msgid "custom.dic"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:462
+msgid "Layout"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:467
+msgid "User-defined Tabs"
+msgstr "Propre difinitaj taboj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:468
+msgid "Set new Tab"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:469
+#: ../src/wp/ap/gtk/ap_UnixDialog_Tab.xml.h:5
+msgid "Tab stop position:"
+msgstr "Taba larĝo unua:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:470
+msgid "Tab stops to be cleared:"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:471
+msgid "Default tab stops:"
+msgstr "Taba larĝo apriora:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:473 ../src/wp/ap/xp/ap_String_Id.h:717
+msgid "Position"
+msgstr "Pozicio"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:475 ../src/wp/ap/xp/ap_String_Id.h:715
+#: ../src/wp/ap/gtk/ap_UnixDialog_Tab.xml.h:3
+msgid "Alignment"
+msgstr "Samniveligo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:478 ../src/wp/ap/xp/ap_String_Id.h:710
+#: ../src/wp/ap/xp/ap_String_Id.h:1444
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageNumbers.xml.h:4
+msgid "Center"
+msgstr "Centrigi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:480
+msgid "Decimal"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:481
+msgid "Bar"
+msgstr "Baro"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:483
+#: ../src/wp/ap/gtk/ap_UnixDialog_Tab.xml.h:4
+msgid "Leader"
+msgstr "Kondukilo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:484
+msgid "&1 None"
+msgstr "&1 Nenia"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:485
+msgid "&2 .........."
+msgstr "&2 .........."
+
+#: ../src/wp/ap/xp/ap_String_Id.h:486
+msgid "&3 ----------"
+msgstr "&3 ----------"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:487
+msgid "&4 __________"
+msgstr "&4 __________"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:489
+msgid "Set"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:490
+msgid "Clear"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:491
+msgid "Clear &All"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:493
+#: ../src/wp/ap/gtk/ap_UnixDialog_Insert_DateTime.xml.h:2
+msgid "Insert Date and Time"
+msgstr "Enmeti la daton kaj tempon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:494
+msgid "&Available formats:"
+msgstr "&Disponeblaj prezentoj:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:495
+msgid "Available Formats"
+msgstr "Disponeblaj formatoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:497 ../src/wp/ap/xp/ap_String_Id.h:498
+#: ../src/wp/ap/xp/ap_String_Id.h:1332
+msgid "Merge Cells"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:499
+msgid "Merge Left"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:500
+msgid "Merge Right"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:501
+msgid "Merge Above"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:502
+msgid "Merge Below"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:505 ../src/wp/ap/xp/ap_String_Id.h:506
+#: ../src/wp/ap/xp/ap_String_Id.h:1333
+msgid "Split Cells"
+msgstr "Apartigi ĉelojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:507
+msgid "Split on Left Side"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:508 ../src/wp/ap/xp/ap_String_Id.h:511
+msgid "Split in Middle"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:509
+msgid "Split on Right Side"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:510
+msgid "Split on Top Side"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:512
+msgid "Split on Bottom Side"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:515
+msgid "Format Text Box"
+msgstr "Aranĝi tekstan kampon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:516 ../src/wp/ap/xp/ap_String_Id.h:534
+msgid "Borders"
+msgstr "Borderoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:517 ../src/wp/ap/xp/ap_String_Id.h:535
+msgid "Background"
+msgstr "Fono"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:518 ../src/wp/ap/xp/ap_String_Id.h:536
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTable.xml.h:7
+msgid "Border color:"
+msgstr "Kadra koloro:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:519 ../src/wp/ap/xp/ap_String_Id.h:537
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatFrame.xml.h:7
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTable.xml.h:6
+msgid "Background color:"
+msgstr "Fona koloro:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:520 ../src/wp/ap/xp/ap_String_Id.h:538
+#: ../src/af/xap/xp/xap_String_Id.h:150
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatFrame.xml.h:8
+msgid "Color:"
+msgstr "Koloro:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:522 ../src/wp/ap/xp/ap_String_Id.h:546
+msgid "Image For Background"
+msgstr "Bildo por fono"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:523 ../src/wp/ap/xp/ap_String_Id.h:547
+msgid "Set Image"
+msgstr "Elekti bildon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:524 ../src/wp/ap/xp/ap_String_Id.h:548
+msgid "Select image from File"
+msgstr "Elekti bildon el dosiero"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:525 ../src/wp/ap/xp/ap_String_Id.h:549
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatFrame.xml.h:15
+msgid "Set no image"
+msgstr "Malŝalti bildojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:526
+msgid "Text Wrapping"
+msgstr "Teksta faldado"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:527
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatFrame.xml.h:14
+msgid "Set Text Wrapping"
+msgstr "Ŝalti tekstan faldadon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:528
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatFrame.xml.h:12
+msgid "Position to Paragraph"
+msgstr "Rilati al alineo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:529
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatFrame.xml.h:10
+msgid "Position to Column"
+msgstr "Rilati al kolumno"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:530
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatFrame.xml.h:11
+msgid "Position to Page"
+msgstr "Rilati al paĝo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:531
+msgid "Position Text Box"
+msgstr "Teksta kampo pri rilatado"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:533 ../src/wp/ap/xp/ap_String_Id.h:1335
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTable.xml.h:8
+msgid "Format Table"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:539
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatFrame.xml.h:16
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTable.xml.h:11
+msgid "Thickness:"
+msgstr "Diko:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:541
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTable.xml.h:5
+msgid "Apply to:"
+msgstr "Apliki al:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:542 ../src/af/xap/xp/xap_String_Id.h:218
+msgid "Selection"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:543
+msgid "Row"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:544
+msgid "Column"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:545 ../src/wp/ap/xp/ap_String_Id.h:1308
+#: ../src/wp/ap/xp/ap_String_Id.h:1407 ../src/af/xap/xp/xap_String_Id.h:310
+msgid "Table"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:552
+msgid "Insert field"
+msgstr "Enmeti kampon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:553
+#: ../src/wp/ap/gtk/ap_UnixDialog_Field.xml.h:4
+msgid "Insert Field"
+msgstr "Enmeti kampon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:554
+msgid "&Types:"
+msgstr "&Tipoj:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:555
+msgid "&Types"
+msgstr "&Tipoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:556
+msgid "&Fields:"
+msgstr "&Kampoj:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:557
+msgid "&Fields"
+msgstr "&Kampoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:558
+msgid "Extra parameters:"
+msgstr "Aldonaj parametroj:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:559
+msgid "Extra Parameters"
+msgstr "Aldonaj parametroj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:561
+#: ../src/wp/ap/gtk/ap_UnixDialog_MailMerge.xml.h:3
+msgid "Insert Mail Merge Field"
+msgstr "Enmeti kampon en retpoŝtan kunfandon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:562
+msgid "Available Fields"
+msgstr "Haveblaj kampoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:563
+msgid "Field Name:"
+msgstr "Kampa nomo:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:564
+msgid "Field Name"
+msgstr "Kampa nomo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:565
+msgid "&Open File"
+msgstr "&Malfermi dosieron"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:567
+msgid "Error calculating value!"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:568
+msgid "Date and Time"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:569
+msgid "Numbers"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:570
+msgid "Piece Table"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:571
+msgid "Current Time"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:572
+msgid "Page Number"
+msgstr "Paĝa numero"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:573
+msgid "Table of Contents Page"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:574
+msgid "Table of Contents List Label"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:575
+msgid "Page Reference"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:576
+msgid "Number of Pages"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:577
+msgid "List Label"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:578
+msgid "Sum a Table Row"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:579
+msgid "Sum a Table Column"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:581
+msgid "Character Count"
+msgstr "Signonombrado"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:582
+msgid "Line Count"
+msgstr "Lininombrado"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:583
+msgid "Paragraph Count"
+msgstr "Alinenombrado"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:584
+msgid "Character Count (w/o spaces)"
+msgstr "Signonombro (sen spacetoj)"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:585
+msgid "Endnote reference"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:586
+msgid "Endnote anchor"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:587
+msgid "Footnote reference"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:588
+msgid "Footnote anchor"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:589
+msgid "Kevins Test"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:590
+msgid "Martins Test"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:591
+msgid "Current Date"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:593
+msgid "mm/dd/yy"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:594
+msgid "dd/mm/yy"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:595
+msgid "Month Day  Year"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:596
+msgid "Mth. Day  Year"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:597
+msgid "Default date representation"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:598
+msgid "Default date (w/o time)"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:599
+msgid "The weekday"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:600
+msgid "Day # in the year"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:602
+msgid "Military Time"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:603
+msgid "AM/PM"
+msgstr "antaŭtagmezo/posttagmezo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:604
+msgid "Time Zone"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:605
+msgid "Seconds since the epoch"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:606
+msgid "Customizable date/time"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:608
+msgid "Application"
+msgstr "Apliko"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:609
+msgid "File Name"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:610 ../src/af/xap/xp/xap_String_Id.h:578
+msgid "Version"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:611
+msgid "Build Id."
+msgstr "Munta kodo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:612
+msgid "Build Options"
+msgstr "Munta agordaĵo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:613
+msgid "Build Target"
+msgstr "Munta platformo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:614
+msgid "Compile Date"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:615
+msgid "Compile Time"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:616 ../src/wp/ap/xp/ap_String_Id.h:1279
+msgid "Mail Merge"
+msgstr "Kunfandi retmesaĝojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:618
+msgid "Document"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:619
+msgid "Title"
+msgstr "Titolo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:620
+msgid "Creator"
+msgstr "Kreinto"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:621
+msgid "Subject"
+msgstr "Temo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:622
+msgid "Publisher"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:623
+msgid "Contributor"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:624 ../src/wp/ap/xp/ap_String_Id.h:814
+msgid "Date"
+msgstr "Dato"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:625
+msgid "Type"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:627
+msgid "Coverage"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:628
+msgid "Rights"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:629
+msgid "Keywords"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:632
+#: ../src/wp/ap/gtk/ap_UnixDialog_Goto.xml.h:2
+msgid "Go to..."
+msgstr "Iri al..."
+
+#: ../src/wp/ap/xp/ap_String_Id.h:633
+msgid ""
+"Choose your target in the left side.\n"
+"If you want to use the \"Go To\" button, just fill the Number Entry with the "
+"desired number.  You can use + and - to perform relative movement.\tI.e., if "
+"you write \"+2\" and you select \"Line\"  the \"Go To\" will go 2 lines "
+"below your current position."
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:634
+msgid "<< Prev"
+msgstr "<< Antaŭa"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:635
+msgid "Next >>"
+msgstr "Sekva"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:636
+msgid "Go To &What:"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:637
+msgid "&Number:"
+msgstr "&Numero:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:638
+msgid "&Name:"
+msgstr "&Nomo:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:639
+msgid "Go To"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:640 ../src/wp/ap/xp/ap_String_Id.h:732
+#: ../src/wp/ap/gtk/ap_UnixDialog_Goto.xml.h:4
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:15
+msgid "Page"
+msgstr "Paĝo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:641
+#: ../src/wp/ap/gtk/ap_UnixDialog_Goto.xml.h:3
+msgid "Line"
+msgstr "Linio"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:642
+msgid "Picture"
+msgstr "Bildo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:643
+#: ../src/wp/ap/gtk/ap_UnixDialog_Goto.xml.h:1
+msgid "Bookmark"
+msgstr "Legosigno"
+
+#. Lists Dialog
+#: ../src/wp/ap/xp/ap_String_Id.h:648
+msgid "Lists for "
+msgstr "Listoj por"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:649 ../src/wp/ap/xp/ap_String_Id.h:692
+msgid "Start New List"
+msgstr "Komenci novan liston"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:650
+msgid "Stop Current List"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:651
+msgid "Resume Previous List"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:652
+msgid ""
+"New List \n"
+"Type"
+msgstr ""
+
+#. Styles
+#: ../src/wp/ap/xp/ap_String_Id.h:653 ../src/af/xap/xp/xap_String_Id.h:49
+msgid "Numbered List"
+msgstr "Numerita listo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:654 ../src/af/xap/xp/xap_String_Id.h:62
+msgid "Lower Case List"
+msgstr "Minuskla listo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:655 ../src/af/xap/xp/xap_String_Id.h:63
+msgid "Upper Case List"
+msgstr "Majuskla listo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:656 ../src/af/xap/xp/xap_String_Id.h:64
+msgid "Lower Roman List"
+msgstr "Minuskla romia listo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:657 ../src/af/xap/xp/xap_String_Id.h:65
+msgid "Upper Roman List"
+msgstr "Majuskla listo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:658
+msgid "Arabic List"
+msgstr "Araba listo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:659
+msgid "Hebrew List"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:660 ../src/af/xap/xp/xap_String_Id.h:66
+msgid "Bullet List"
+msgstr "Listo kun rondaj buloj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:661 ../src/af/xap/xp/xap_String_Id.h:67
+msgid "Dashed List"
+msgstr "Streka listo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:662 ../src/af/xap/xp/xap_String_Id.h:68
+msgid "Square List"
+msgstr "Kvadrata listo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:663 ../src/af/xap/xp/xap_String_Id.h:69
+msgid "Triangle List"
+msgstr "Triangula listo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:664 ../src/af/xap/xp/xap_String_Id.h:70
+msgid "Diamond List"
+msgstr "Diamanta listo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:665 ../src/af/xap/xp/xap_String_Id.h:71
+msgid "Star List"
+msgstr "Steleta listo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:666 ../src/af/xap/xp/xap_String_Id.h:85
+msgid "Implies List"
+msgstr "Implica listo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:667 ../src/af/xap/xp/xap_String_Id.h:72
+msgid "Tick List"
+msgstr "Oblikva streka listo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:668 ../src/af/xap/xp/xap_String_Id.h:73
+msgid "Box List"
+msgstr "Listo kun kvadrataj buloj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:669 ../src/af/xap/xp/xap_String_Id.h:74
+msgid "Hand List"
+msgstr "Manlisto"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:670 ../src/af/xap/xp/xap_String_Id.h:75
+msgid "Heart List"
+msgstr "Korlisto"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:671
+msgid ""
+"New Starting \n"
+"Value"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:672
+msgid "New List Label"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:673
+msgid "Current List Type"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:674
+msgid "Current List Label"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:675
+msgid ""
+"Change Current \n"
+"List"
+msgstr ""
+"Ŝanĝi aktualan\n"
+"liston"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:676
+msgid "Type:"
+msgstr "Speco:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:678
+msgid "Bullet"
+msgstr "Buloj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:679
+msgid "Numbered"
+msgstr "Numerita"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:680 ../src/af/xap/xp/xap_String_Id.h:132
+msgid "Style:"
+msgstr "Stilo:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:681
+msgid "Customized List"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:682 ../src/af/xap/xp/xap_String_Id.h:587
+#: ../src/af/xap/gtk/xap_UnixDlg_DocComparison.xml.h:7
+msgid "Format:"
+msgstr "Formato:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:683 ../src/af/xap/xp/xap_String_Id.h:131
+msgid "Font:"
+msgstr "Tiparo:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:684
+msgid "Font..."
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:685
+msgid "Level Delimiter:"
+msgstr "Nivela limsigno:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:686
+msgid "Level:"
+msgstr "Nivelo:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:687
+msgid "Start At:"
+msgstr "Komenci je:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:688
+msgid "Text Align:"
+msgstr "Teksta samniveligo:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:689
+msgid "Label Align:"
+msgstr "Etikeda samniveligo:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:690
+msgid "Current Font"
+msgstr "Aktuala tiparo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:693
+msgid "Apply to Current List"
+msgstr "Apliki al la kuranta listo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:694
+msgid "Start Sublist"
+msgstr "Komenci subliston"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:695
+msgid "Attach to Previous List"
+msgstr "Almeti al la antaŭa listo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:696
+msgid "Set Default Values"
+msgstr "Valorizi apriorajn valorojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:697
+msgid "List Properties"
+msgstr "Listaj ecoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:698
+msgid "Text Folding"
+msgstr "Teksta faldado"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:699
+msgid "Hide text below List Levels"
+msgstr "Kaŝi tekston sub listaj niveloj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:700
+msgid "No Folding"
+msgstr "Neniu faldado"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:701
+msgid "Fold below level 1"
+msgstr "Faldi sub nivelo 1a"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:702
+msgid "Fold below level 2"
+msgstr "Faldi sub nivelo 2a"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:703
+msgid "Fold below level 3"
+msgstr "Faldi sub nivelo 3a"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:704
+msgid "Fold below level 4"
+msgstr "Faldi sub nivelo 4a"
+
+#. page numbers dialog
+#: ../src/wp/ap/xp/ap_String_Id.h:707
+msgid "Page Numbers"
+msgstr "Paĝaj numeroj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:711 ../src/wp/ap/xp/ap_String_Id.h:894
+msgid "Header"
+msgstr "Kapo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:712 ../src/wp/ap/xp/ap_String_Id.h:895
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageNumbers.xml.h:5
+msgid "Footer"
+msgstr "Piedo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:714
+msgid "Alignment:"
+msgstr "Samniveligo:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:716
+msgid "Position:"
+msgstr ""
+
+#. page setup dialog
+#: ../src/wp/ap/xp/ap_String_Id.h:720
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:16
+msgid "Page Setup"
+msgstr "Agordi paĝon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:721
+msgid "Paper..."
+msgstr "Papero..."
+
+#: ../src/wp/ap/xp/ap_String_Id.h:722
+msgid "&Width:"
+msgstr "&Larĝo:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:723
+msgid "&Height:"
+msgstr "&Alto:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:724
+msgid "Paper Si&ze:"
+msgstr "Papera Grande&co:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:726
+msgid "Orientation..."
+msgstr "Orientiĝo..."
+
+#: ../src/wp/ap/xp/ap_String_Id.h:727
+msgid "&Landscape"
+msgstr "&Horizontala formato"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:728
+msgid "&Portrait"
+msgstr "&Vertikala formato"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:729
+msgid "Scale..."
+msgstr "Skali..."
+
+#: ../src/wp/ap/xp/ap_String_Id.h:730
+msgid "&Adjust to:"
+msgstr "&Ŝanĝi al:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:731
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:3
+#, no-c-format
+msgid "% of normal size"
+msgstr "% de la normala grandeco"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:733
+msgid "&Top:"
+msgstr "&Supre:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:734
+msgid "&Header:"
+msgstr "&Kapo:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:735
+msgid "&Footer:"
+msgstr "&Piedo:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:736
+msgid "&Bottom:"
+msgstr "&Sube:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:739
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:14
+msgid "Margin"
+msgstr "Marĝeno"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:740
+msgid "The margins selected are too large to fit on the page."
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:742
+msgid "Automerge"
+msgstr "Aŭtomata kunigo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:743
+msgid "You have changed the direction mode."
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:744
+msgid "You have changed the default direction."
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:745
+msgid ""
+"This change will only take effect when you restart AbiWord or create a new "
+"document."
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:746
+#, c-format
+msgid "Bookmark \"%s\" was not found in this document."
+msgstr "La legosigno %s ne estis trovita en tiu dokumento."
+
+#: ../src/wp/ap/xp/ap_String_Id.h:747
+msgid "You must select a portion of the document before inserting a hyperlink."
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:748
+#, c-format
+msgid "Warning: the bookmark you provided [%s] does not exist."
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:749
+msgid ""
+"The text to which the hyperlink is to be attached must be within a single "
+"paragraph."
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:750
+msgid ""
+"This document contains revisions which are currently hidden from view. "
+"Please see AbiWord documentation for information on working with revisions."
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:752
+msgid "Change Case"
+msgstr "Majuskligo/minuskligo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:753
+msgid "Sentence case"
+msgstr "Kutima uskleco de frazo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:754
+msgid "lowercase"
+msgstr "minusklo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:755
+msgid "UPPERCASE"
+msgstr "MAJUSKLO"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:756
+msgid "Title Case"
+msgstr "Plejparte Komenca Majusklo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:757
+msgid "Initial Caps"
+msgstr "Komenca Majusklo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:758
+msgid "tOGGLE cASE"
+msgstr "iNVERSA kOMENCA mAJUSKLO"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:760
+msgid "Change Background Color"
+msgstr "Ŝanĝi fonan koloron"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:761
+msgid "Clear Background Color"
+msgstr "Forigi fonan koloron"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:762
+msgid "Change Text Color"
+msgstr "Ŝanĝi tekstan koloron"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:763
+msgid "Change Highlight Color"
+msgstr "Ŝanĝi priluman koloron"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:764
+msgid "Clear Highlight Color"
+msgstr "Forigi priluman koloron"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:766
+#: ../src/wp/ap/gtk/ap_UnixDialog_HdrFtr.xml.h:10
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_HdrFtr.xml.h:10
+msgid "Format Header/Footers"
+msgstr "Aranĝi kapon/piedojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:767
+msgid "Header Properties"
+msgstr "Kapaj ecoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:768
+#: ../src/wp/ap/gtk/ap_UnixDialog_HdrFtr.xml.h:7
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_HdrFtr.xml.h:7
+msgid "Different header on facing pages"
+msgstr "Malsama kapo en apudaj paĝoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:769
+#: ../src/wp/ap/gtk/ap_UnixDialog_HdrFtr.xml.h:8
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_HdrFtr.xml.h:8
+msgid "Different header on first page"
+msgstr "Malsama kapo en unua paĝo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:770
+#: ../src/wp/ap/gtk/ap_UnixDialog_HdrFtr.xml.h:9
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_HdrFtr.xml.h:9
+msgid "Different header on last page"
+msgstr "Malsama kapo en fina paĝo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:771
+msgid "Footer Properties"
+msgstr "Piedaj ecoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:772
+#: ../src/wp/ap/gtk/ap_UnixDialog_HdrFtr.xml.h:4
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_HdrFtr.xml.h:4
+msgid "Different footer on facing pages"
+msgstr "Malsama piedo en apudaj paĝoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:773
+#: ../src/wp/ap/gtk/ap_UnixDialog_HdrFtr.xml.h:5
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_HdrFtr.xml.h:5
+msgid "Different footer on first page"
+msgstr "Malsama piedo en unua paĝo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:774
+#: ../src/wp/ap/gtk/ap_UnixDialog_HdrFtr.xml.h:6
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_HdrFtr.xml.h:6
+msgid "Different footer on last page"
+msgstr "Malsama piedo en fina paĝo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:775
+msgid "Page Number Properties"
+msgstr "Paĝnumeraj ecoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:776
+#: ../src/wp/ap/gtk/ap_UnixDialog_HdrFtr.xml.h:12
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_HdrFtr.xml.h:12
+msgid "Restart page numbers on new sections"
+msgstr "Restarti paĝnumerojn ĉe novaj sekcioj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:777
+#: ../src/wp/ap/gtk/ap_UnixDialog_HdrFtr.xml.h:11
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_HdrFtr.xml.h:11
+msgid "Restart numbering at:"
+msgstr "Restarti numerado je:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:779
+#: ../src/wp/ap/gtk/ap_UnixDialog_MetaData.xml.h:7
+msgid "Document Properties"
+msgstr "Dokumentaj ecoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:780 ../src/wp/ap/xp/ap_String_Id.h:821
+#: ../src/af/xap/xp/xap_String_Id.h:284
+#: ../src/af/xap/gtk/xap_UnixDlg_Image.xml.h:20
+#: ../src/wp/ap/gtk/ap_UnixDialog_Annotation.xml.h:6
+#: ../src/wp/ap/gtk/ap_UnixDialog_MetaData.xml.h:18
+msgid "Title:"
+msgstr "Titolo:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:781
+#: ../src/wp/ap/gtk/ap_UnixDialog_MetaData.xml.h:16
+msgid "Subject:"
+msgstr "Temo:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:782 ../src/wp/ap/xp/ap_String_Id.h:822
+#: ../src/af/xap/xp/xap_String_Id.h:249
+#: ../src/af/xap/gtk/xap_UnixDlg_PluginManager.xml.h:4
+#: ../src/wp/ap/gtk/ap_UnixDialog_Annotation.xml.h:1
+#: ../src/wp/ap/gtk/ap_UnixDialog_MetaData.xml.h:2
+msgid "Author:"
+msgstr "Verkisto:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:783
+#: ../src/wp/ap/gtk/ap_UnixDialog_MetaData.xml.h:12
+msgid "Publisher:"
+msgstr "Eldonisto:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:784
+#: ../src/wp/ap/gtk/ap_UnixDialog_MetaData.xml.h:4
+msgid "Contributor(s):"
+msgstr "Kontribuinto(j):"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:785
+#: ../src/wp/ap/gtk/ap_UnixDialog_MetaData.xml.h:3
+msgid "Category:"
+msgstr "Kategorio:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:786
+#: ../src/wp/ap/gtk/ap_UnixDialog_MetaData.xml.h:9
+msgid "Keywords:"
+msgstr "Ŝlosilvortoj:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:787
+#: ../src/wp/ap/gtk/ap_UnixDialog_MetaData.xml.h:10
+msgid "Language(s):"
+msgstr "Lingvo(j):"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:788 ../src/wp/ap/xp/ap_String_Id.h:823
+#: ../src/af/xap/xp/xap_String_Id.h:248 ../src/af/xap/xp/xap_String_Id.h:285
+#: ../src/af/xap/gtk/xap_UnixDlg_Image.xml.h:6
+#: ../src/af/xap/gtk/xap_UnixDlg_PluginManager.xml.h:5
+#: ../src/wp/ap/gtk/ap_UnixDialog_Annotation.xml.h:2
+#: ../src/wp/ap/gtk/ap_UnixDialog_MetaData.xml.h:6
+msgid "Description:"
+msgstr "Priskribo:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:789
+#: ../src/wp/ap/gtk/ap_UnixDialog_MetaData.xml.h:15
+msgid "Source:"
+msgstr "Deveno:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:790
+#: ../src/wp/ap/gtk/ap_UnixDialog_MetaData.xml.h:13
+msgid "Relation:"
+msgstr "Rilato:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:791
+#: ../src/wp/ap/gtk/ap_UnixDialog_MetaData.xml.h:5
+msgid "Coverage:"
+msgstr "Kovrado:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:792
+#: ../src/wp/ap/gtk/ap_UnixDialog_MetaData.xml.h:14
+msgid "Rights:"
+msgstr "Rajtoj:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:793
+#: ../src/wp/ap/gtk/ap_UnixDialog_MetaData.xml.h:11
+msgid "Permissions"
+msgstr "Permesoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:794
+#: ../src/wp/ap/gtk/ap_UnixDialog_MetaData.xml.h:17
+msgid "Summary"
+msgstr "Resumo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:797
+msgid "Current Selection is Empty"
+msgstr "Aktuala elekto malplenas"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:799 ../src/wp/ap/xp/ap_String_Id.h:1430
+msgid "Insert Bookmark"
+msgstr "Enmeti Legosignon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:800
+msgid "Type a name for the bookmark  or select an existing from the list."
+msgstr "Tajpi nomon por la legosigno aŭ elekti jaman el la listo."
+
+#: ../src/wp/ap/xp/ap_String_Id.h:802 ../src/wp/ap/xp/ap_String_Id.h:1429
+msgid "Insert Hyperlink"
+msgstr "Enmeti hiperligilon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:803
+msgid "Select a target bookmark from the list."
+msgstr "Elekti celan legosignon el la listo."
+
+#. Mark revisions dialog
+#: ../src/wp/ap/xp/ap_String_Id.h:806
+msgid "Mark Revisions"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:807
+#, c-format
+msgid "Continue previous revision (number %d)"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:808
+msgid "Start a new revision"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:809
+msgid "Comment to be associated with the revision:"
+msgstr ""
+
+#. List revisions dialog
+#: ../src/wp/ap/xp/ap_String_Id.h:812
+msgid "Select Revision"
+msgstr "Elekti revizion"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:813
+msgid "Revision ID"
+msgstr "Identigilo de revizio"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:815
+msgid "Comment"
+msgstr "Komento"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:816
+msgid "Existing revisions:"
+msgstr "Jamaj revizioj:"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:817
+msgid "(All revisions visible)"
+msgstr "(Ĉiuj ŝanĝoj videblaj)"
+
+#. RIVERA
+#: ../src/wp/ap/xp/ap_String_Id.h:820
+#: ../src/wp/ap/gtk/ap_UnixDialog_Annotation.xml.h:3
+msgid "Edit Annotation"
+msgstr "Redakti prinoton"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:825
+#: ../src/wp/ap/gtk/ap_UnixDialog_Annotation.xml.h:7
+msgid "Update the annotation"
+msgstr "Aktualigi la prinoton"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:826
+#: ../src/wp/ap/gtk/ap_UnixDialog_Annotation.xml.h:5
+msgid "Replace selection with annotation"
+msgstr "Anstataŭigi per prinoto la elekton"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:827
+msgid "Name"
+msgstr "Nomo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:829
+msgid "Password required  this is an encrypted document"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:830
+msgid "Incorrect Password"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:831
+msgid "No scripts found"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:832
+#, c-format
+msgid "Error executing script %s"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:833
+msgid "Cannot start print job"
+msgstr "Ne povas komenci printi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:835
+msgid ""
+"Headers and Footers can only be created and edited while in Print View "
+"Mode. \n"
+" To enter this mode choose View then Print Layout from the Menus. \n"
+" Would you like to enter Print Layout mode right now?"
+msgstr ""
+
+#. Windows ap_App
+#: ../src/wp/ap/xp/ap_String_Id.h:839
+#, c-format
+msgid ""
+"AbiWord needs the file %s.dll\n"
+"Please download and install it from http://www.microsoft.com/msdownload/"
+"platformsdk/sdkupdate/psdkredist.htm"
+msgstr ""
+"AbiWord bezonas la dosieron  %s.dll\n"
+"Bonvolu elŝuti kaj instali ĝin el http://www.microsoft.com/msdownload/"
+"platformsdk/sdkupdate/psdkredist.htm"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:840
+msgid ""
+"AbiWord is designed for a newer version of the system file COMCTL32.DLL\n"
+"than the one currently on your system. (COMCTL32.DLL version 4.72 or newer)\n"
+"A solution to this problem is explained in the FAQ on the AbiSource web "
+"site\n"
+"\n"
+"\thttp://www.abisource.com\n"
+"\n"
+"You can use the program  but the toolbar may be missing."
+msgstr ""
+"AbiWord estis destinita por pli nova versio de la sistema dosiero COMCTL32."
+"DLL\n"
+"ol tiu aktuale en via sistemo. (COMCTL32.DLL version 4.72 aŭ pli nova)\n"
+"Vidi la FAQ-ajn paĝojn por trovi solvon:\n"
+"\n"
+"\thttp://www.abisource.com\n"
+"\n"
+"Vi povas uzi la programon, sed la ilobreton eble mankos."
+
+#: ../src/wp/ap/xp/ap_String_Id.h:842 ../src/wp/ap/xp/ap_String_Id.h:843
+#: ../src/wp/ap/xp/ap_String_Id.h:1122 ../src/wp/ap/xp/ap_String_Id.h:1123
+#: ../src/wp/ap/xp/ap_String_Id.h:1124 ../src/wp/ap/xp/ap_String_Id.h:1125
+#: ../src/wp/ap/xp/ap_String_Id.h:1155 ../src/wp/ap/xp/ap_String_Id.h:1182
+#: ../src/wp/ap/xp/ap_String_Id.h:1186 ../src/wp/ap/xp/ap_String_Id.h:1207
+#: ../src/wp/ap/xp/ap_String_Id.h:1233 ../src/wp/ap/xp/ap_String_Id.h:1234
+#: ../src/wp/ap/xp/ap_String_Id.h:1270 ../src/wp/ap/xp/ap_String_Id.h:1271
+#: ../src/wp/ap/xp/ap_String_Id.h:1358 ../src/wp/ap/xp/ap_String_Id.h:1365
+#: ../src/wp/ap/xp/ap_String_Id.h:1377
+#: ../src/wp/ap/gtk/ap_UnixDialog_InsertTable.xml.h:1
+#: ../src/wp/ap/gtk/ap_UnixDialog_Styles.xml.h:1
+msgid " "
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:844
+msgid "Open Template"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:845
+msgid "&File"
+msgstr "&Dosiero"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:846
+msgid "&New"
+msgstr "&Nova"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:847
+msgid "&New using Template"
+msgstr "Nova el &ŝablono"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:848
+msgid "&Open"
+msgstr "&Malfermi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:849
+msgid "&Import Styles"
+msgstr "&Importi stilojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:851
+msgid "&Save"
+msgstr "&Konservi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:852
+msgid "Save &As"
+msgstr "K&onservi kiel"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:853
+msgid "Save &Template"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:854
+msgid "&Save Image As"
+msgstr "&Konservi bildon kiel"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:855
+msgid "Op&en Copy"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:856
+msgid "Sav&e Copy"
+msgstr "Konservi ekzempleron"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:857
+msgid "P&roperties"
+msgstr "&Ecoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:858
+msgid "Page Set&up"
+msgstr "&Agordi paĝon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:859
+msgid "&Print"
+msgstr "&Printi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:860
+msgid "Print &directly"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:861
+msgid "Print P&review"
+msgstr "Antaŭvidi printaĵon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:862
+msgid "Recent &Files"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:863 ../src/wp/ap/xp/ap_String_Id.h:909
+#: ../src/wp/ap/xp/ap_String_Id.h:1091
+#, c-format
+msgid "&1 %s"
+msgstr "&1 %s"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:864 ../src/wp/ap/xp/ap_String_Id.h:910
+#: ../src/wp/ap/xp/ap_String_Id.h:1092
+#, c-format
+msgid "&2 %s"
+msgstr "&2 %s"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:865 ../src/wp/ap/xp/ap_String_Id.h:911
+#: ../src/wp/ap/xp/ap_String_Id.h:1093
+#, c-format
+msgid "&3 %s"
+msgstr "&3 %s"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:866 ../src/wp/ap/xp/ap_String_Id.h:912
+#: ../src/wp/ap/xp/ap_String_Id.h:1094
+#, c-format
+msgid "&4 %s"
+msgstr "&4 %s"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:867 ../src/wp/ap/xp/ap_String_Id.h:1095
+#, c-format
+msgid "&5 %s"
+msgstr "&5 %s"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:868 ../src/wp/ap/xp/ap_String_Id.h:1096
+#, c-format
+msgid "&6 %s"
+msgstr "&6 %s"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:869 ../src/wp/ap/xp/ap_String_Id.h:1097
+#, c-format
+msgid "&7 %s"
+msgstr "&7 %s"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:870 ../src/wp/ap/xp/ap_String_Id.h:1098
+#, c-format
+msgid "&8 %s"
+msgstr "&8 %s"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:871 ../src/wp/ap/xp/ap_String_Id.h:1099
+#, c-format
+msgid "&9 %s"
+msgstr "&9 %s"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:872
+msgid "Re&vert"
+msgstr "Malprogresigi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:873
+msgid "Save to file"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:874
+msgid "&Quit"
+msgstr "F&ini"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:876
+msgid "&Undo"
+msgstr "&Malfari"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:877
+msgid "&Redo"
+msgstr "&Refari"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:878
+msgid "Cu&t"
+msgstr "&Eltondi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:879
+msgid "&Copy"
+msgstr "&Kopii"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:880
+msgid "&Paste"
+msgstr "Al&glui"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:881
+msgid "Pa&ste Unformatted"
+msgstr "&Senformate alglui"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:882
+msgid "Cle&ar"
+msgstr "&Viŝi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:883
+msgid "Select A&ll"
+msgstr "E&lekti ĉion"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:884
+msgid "&Find"
+msgstr "Ser&ĉi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:885
+msgid "R&eplace"
+msgstr "&Anstataŭigi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:886
+msgid "&Go To"
+msgstr "&Iri al"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:887
+msgid "Delete Text Box"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:888
+msgid "Delete Image"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:889
+msgid "Cut Image"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:890
+msgid "Copy Image"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:891
+msgid "Cut Text Box"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:892
+msgid "Copy Text Box"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:893
+msgid "Select Text Box"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:896 ../src/wp/ap/xp/ap_String_Id.h:1420
+#: ../src/wp/ap/xp/ap_String_Id.h:1493 ../src/wp/ap/xp/ap_String_Id.h:1566
+msgid "Edit Header"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:897 ../src/wp/ap/xp/ap_String_Id.h:1421
+#: ../src/wp/ap/xp/ap_String_Id.h:1494 ../src/wp/ap/xp/ap_String_Id.h:1567
+msgid "Edit Footer"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:898 ../src/wp/ap/xp/ap_String_Id.h:1422
+#: ../src/wp/ap/xp/ap_String_Id.h:1495 ../src/wp/ap/xp/ap_String_Id.h:1568
+msgid "Remove Header"
+msgstr "Forigi kapon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:899 ../src/wp/ap/xp/ap_String_Id.h:1423
+#: ../src/wp/ap/xp/ap_String_Id.h:1496 ../src/wp/ap/xp/ap_String_Id.h:1569
+msgid "Remove Footer"
+msgstr "Forigi piedon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:900
+msgid "Cut Object"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:901
+msgid "Copy Object"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:902
+msgid "Delete Object"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:903
+msgid "Edit Equation"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:904 ../src/af/xap/xp/xap_String_Id.h:124
+msgid "&View"
+msgstr "&Vidaĵo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:905
+msgid "&Normal Layout"
+msgstr "&Normala aranĝo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:906
+msgid "&Web Layout"
+msgstr "&TTT-simila aranĝo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:907
+msgid "&Print Layout"
+msgstr "&Printa aranĝo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:908
+msgid "&Toolbars"
+msgstr "&Ilobretoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:913
+msgid "&Lock layout"
+msgstr "&Fiksi aranĝaĵon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:914
+msgid "&Reset to default layout"
+msgstr "&Reen al defaŭlta aranĝo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:915
+msgid "Show &Ruler"
+msgstr "Montri Mezu&rilon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:916
+msgid "&Show Status Bar"
+msgstr "Montri &statbreton"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:917
+msgid "Show For&matting Marks"
+msgstr "Montri &markojn pri formatado"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:918
+msgid "Enable F&ormatting Tools"
+msgstr "Ebligi il&ojn por formatado"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:919
+msgid "&Header and Footer"
+msgstr "&Kapo kaj Piedo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:920
+msgid "F&ull Screen"
+msgstr "T&utekrane"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:921 ../src/wp/ap/xp/ap_String_Id.h:922
+msgid "&Zoom"
+msgstr "Zomi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:923
+msgid "Zoom to &200%"
+msgstr "Zomi al &200%"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:924
+msgid "Zoom to &100%"
+msgstr "Zomi al &100%"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:925
+msgid "Zoom to &75%"
+msgstr "Zomi al &75%"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:926
+msgid "Zoom to &50%"
+msgstr "Zomi al &50%"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:927
+msgid "&Page Width"
+msgstr "&Larĝo de la paĝo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:928
+msgid "&Whole Page"
+msgstr "&Tutpaĝe"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:930
+msgid "&Break"
+msgstr "&Rompado"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:931
+msgid "Page N&umbers"
+msgstr "Paĝn&umeroj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:932
+msgid "Date and &Time"
+msgstr "Dato kaj &tempo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:933 ../src/wp/ap/xp/ap_String_Id.h:981
+msgid "Text Box"
+msgstr "Teksta kampo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:934
+msgid "&Mail Merge Field"
+msgstr "Kampo por retpoŝta kunfandado."
+
+#: ../src/wp/ap/xp/ap_String_Id.h:935
+msgid "&Field"
+msgstr "&Kampo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:936
+msgid "F&ile"
+msgstr "&Dosiero"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:937
+msgid "Sy&mbol"
+msgstr "Si&mbolo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:938
+msgid "&Endnote"
+msgstr "&Finnoto"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:939
+msgid "Foot&note"
+msgstr "Piedn&oto"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:940 ../src/wp/ap/xp/ap_String_Id.h:962
+msgid "Table of Contents"
+msgstr "&Enhavo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:941
+msgid "&Clip Art"
+msgstr "B&ildetaro"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:942
+msgid "&Picture"
+msgstr "&Bildo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:943
+msgid "Boo&kmark"
+msgstr "&Legosigno"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:944
+msgid "&Hyperlink"
+msgstr "&Hiperligilo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:945
+msgid "&Jump to hyperlink"
+msgstr "&Iri al hiperligilo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:946
+msgid "&Edit hyperlink"
+msgstr "&Redakti hiperligilojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:947
+msgid "C&opy hyperlink location"
+msgstr "&Kopii adreson de hiperligilo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:948
+msgid "&Delete hyperlink"
+msgstr "&Forigi hiperligilon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:949
+msgid "&Direction Marker"
+msgstr "Marko de la tekta direkto"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:950
+msgid "&LRM"
+msgstr "&Maldekstren"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:951
+msgid "&RLM"
+msgstr "&Dekstren"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:952
+msgid "F&ormat"
+msgstr "&Aranĝi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:953
+msgid "Te&xt Formatting"
+msgstr "Te&ksta formatado"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:954
+msgid "Set &Language"
+msgstr "Elekti la &lingvon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:955
+msgid "&Font"
+msgstr "&Tiparo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:956
+msgid "&Paragraph"
+msgstr "&Alineo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:957
+msgid "Bullets and &Numbering"
+msgstr "&Numerado kaj bulado"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:958
+msgid "&Document"
+msgstr "&Dokumento"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:959
+msgid "Borders and Shading"
+msgstr "Borderoj kaj Ombrumoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:960
+msgid "Header/Footers"
+msgstr "Kapo/piedoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:961
+msgid "Footnotes and Endnotes"
+msgstr "Piednotoj kaj finnotoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:963
+msgid "&Columns"
+msgstr "K&olumnoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:964
+msgid "C&hange Case"
+msgstr "&Ŝanĝi la usklecon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:965
+msgid "Page Background"
+msgstr "Paĝa fono"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:966
+msgid "Page C&olor"
+msgstr "Paĝa k&oloro"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:967
+msgid "Page Image"
+msgstr "Paĝa bildo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:968
+msgid "Sty&list"
+msgstr "&Stililo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:969
+msgid "St&yle"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:970
+msgid "&Create and Modify Styles"
+msgstr "&Krei kaj modifi stilojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:971
+msgid "&Tabs"
+msgstr "&Taboj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:972
+msgid "&Bold"
+msgstr "&Grasa"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:973
+msgid "&Italic"
+msgstr "&Kursiva"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:974
+msgid "&Underline"
+msgstr "&Substreki"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:975
+msgid "&Overline"
+msgstr "&Superstreki"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:976
+msgid "Stri&ke"
+msgstr "&Forstreki"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:977 ../src/wp/ap/xp/ap_String_Id.h:1437
+#: ../src/wp/ap/xp/ap_String_Id.h:1510 ../src/wp/ap/xp/ap_String_Id.h:1583
+#: ../src/af/xap/xp/xap_String_Id.h:148
+msgid "Topline"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:978 ../src/wp/ap/xp/ap_String_Id.h:1438
+#: ../src/wp/ap/xp/ap_String_Id.h:1511 ../src/wp/ap/xp/ap_String_Id.h:1584
+#: ../src/af/xap/xp/xap_String_Id.h:149
+msgid "Bottomline"
+msgstr "Suba linio"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:979
+msgid "Supe&rscript"
+msgstr "Su&pra indico"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:980
+msgid "&Subscript"
+msgstr "Su&ba indico"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:982 ../src/wp/ap/xp/ap_String_Id.h:984
+msgid "&Image"
+msgstr "&Bildo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:983
+msgid "Set Positioned Image"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:985
+msgid "D&irectional"
+msgstr "D&irekta"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:986
+msgid "RTL &Document"
+msgstr "&Dokumento maldekstren"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:987
+msgid "RTL &Section"
+msgstr "&Sekcio maldekstren"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:988
+msgid "RTL &Paragraph"
+msgstr "&Alineo maldekstren"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:989
+msgid "&Left-to-right text"
+msgstr "&Dekstren skribi tekston"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:990
+msgid "&Right-to-left text"
+msgstr "&Maldekstren skribi tekston"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:991
+msgid "Format Object"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:992
+msgid "&Tools"
+msgstr "&Iloj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:993
+msgid "&Spelling"
+msgstr "&Ortografio"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:994
+msgid "Check &Spelling"
+msgstr "&Kontroli literumon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:995
+msgid "&Auto Spellcheck"
+msgstr "&Aŭtomata literumilo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:996
+msgid "Spelling &Options"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:997
+msgid "&Word Count"
+msgstr "&Vortnombro"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:998
+msgid "Pr&eferences"
+msgstr "A&gordo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:999
+msgid "&Language"
+msgstr "&Lingvo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1000
+msgid "&Plugins"
+msgstr "&Kromprogramoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1001
+msgid "S&cripts"
+msgstr "&Programetoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1002
+msgid "&Mail Merge"
+msgstr "Retpoŝta ku&nfandado"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1003
+msgid "&Document History"
+msgstr "&Dokumenta historio"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1004
+msgid "&Show History"
+msgstr "Montri historio"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1005
+msgid "&Purge History"
+msgstr "&Forigi historion"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1006
+msgid "&Maintain Full History"
+msgstr "Teni planan historion"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1007
+msgid "&Revisions"
+msgstr "&Revizioj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1008
+msgid "&Mark revisions while typing"
+msgstr "&Marki ŝanĝojn tajpante"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1009
+msgid "S&how revisions"
+msgstr "Montri reviziojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1010
+msgid "Show document a&fter revisions"
+msgstr "Montri dokumenton p&ost revizioj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1011
+msgid "Show document after &previous revisions"
+msgstr "Montri dokumenton post antaŭa revizio"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1012
+msgid "Show document &before revisions"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1013
+msgid "&Select revision"
+msgstr "&Elekti revizion"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1014
+msgid "&Accept revision"
+msgstr "Akcepti ŝanĝiĝojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1015
+msgid "&Reject revision"
+msgstr "&Rifuzi ŝanĝojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1016
+msgid "Find &next revision"
+msgstr "Serĉi &sekvan revizion"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1017
+msgid "Find &previous revision"
+msgstr "Serĉi &antaŭan revizion"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1018
+msgid "&Compare documents"
+msgstr "&Kompari dokumentojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1019
+msgid "Start ne&w revision"
+msgstr "Komenci no&van revizion"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1020
+msgid "P&urge revisions"
+msgstr "F&origi la reviziojn"
+
+#. RIVERA
+#: ../src/wp/ap/xp/ap_String_Id.h:1022
+msgid "&Annotations"
+msgstr "&Prinotoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1023
+msgid "New &annotation"
+msgstr "Nova &prinoto"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1024
+msgid "Create from &selection"
+msgstr "Krei el &elekto"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1025
+msgid "&Show annotations"
+msgstr "&Montri prinotojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1026
+msgid "&Jump to annotation"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1027
+msgid "&Edit annotation"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1028
+msgid "&Delete annotation"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1029
+msgid "T&able"
+msgstr "&Tabelo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1031 ../src/wp/ap/xp/ap_String_Id.h:1043
+#: ../src/wp/ap/xp/ap_String_Id.h:1051
+msgid "&Table"
+msgstr "&Tabelo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1032
+msgid "Insert &Table"
+msgstr "Enmeti &tabelon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1033
+msgid "Columns &Left"
+msgstr "Kolumnoj &maldekstre"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1034
+msgid "Columns &Right"
+msgstr "Kolumnoj &dekstre"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1035
+msgid "Insert &Columns"
+msgstr "Enmeti &kolumnoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1036
+msgid "Rows &Above"
+msgstr "Vicoj su&pre"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1037
+msgid "Rows &Below"
+msgstr "Vicoj su&be"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1038
+msgid "Insert &Rows"
+msgstr "Enmeti &vicojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1039 ../src/wp/ap/xp/ap_String_Id.h:1049
+msgid "&Cells"
+msgstr "&Ĉeloj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1040
+msgid "Sum a Row"
+msgstr "Sumigi vicon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1041
+msgid "Sum a Column"
+msgstr "Sumigi kolumnon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1042
+msgid "&Delete"
+msgstr "&Forigi tabelon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1044
+msgid "Delete Tabl&e"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1045
+msgid "&Column"
+msgstr "&Kolumno"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1046
+msgid "Delete Co&lumn"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1047 ../src/wp/ap/xp/ap_String_Id.h:1053
+msgid "&Row"
+msgstr "&Vico"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1048
+msgid "Delete Ro&w"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1050
+msgid "&Select"
+msgstr "&Elekti"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1052
+msgid "Co&lumn"
+msgstr "Ko&lumno"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1054
+msgid "&Cell"
+msgstr "&Ĉelo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1055
+msgid "&Merge Cells"
+msgstr "&Kunigi ĉelojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1056
+msgid "S&plit Cells"
+msgstr "A&partigi ĉelojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1057
+msgid "Spli&t Table"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1058
+msgid "&Format Table"
+msgstr "&Formati tabelon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1059
+msgid "&Autofit Table"
+msgstr "&Alĝustigi la tabelon aŭtomate"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1060
+msgid "Convert Text to Table"
+msgstr "Tabeligi tekston"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1061
+msgid "Split text at spaces, commas  or tabs"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1062
+msgid "Split text at commas or tabs"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1063
+msgid "Convert Table to Text"
+msgstr "Tekstigi tabelon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1064
+msgid "Separate with commas"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1065
+msgid "Separate with tabs"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1066
+msgid "Separate with commas and tabs"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1067
+msgid "Repeat Row as Heading"
+msgstr "Ripeti vicon kiel kapon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1068
+msgid "Set this Row as Heading"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1069
+msgid "Remove Row as Heading"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1070
+msgid "So&rt Table"
+msgstr "O&rdigi tabelon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1071
+msgid "Sort Rows in Ascending Order"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1072
+msgid "Sort Rows in Descending Order"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1073
+msgid "Sort Columns in Ascending Order"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1074
+msgid "Sort Columns in Descending Order"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1082
+msgid "&Align"
+msgstr "&Samniveligi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1083
+msgid "&Left"
+msgstr "&Maldekstre"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1084
+msgid "&Center"
+msgstr "&Centrigi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1085
+msgid "&Right"
+msgstr "&Dekstre"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1086
+msgid "&Justify"
+msgstr "&Remburi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1087
+msgid "&In web browser"
+msgstr "&En TTT-legilo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1088
+msgid "&Save web page"
+msgstr "&Konservi retpaĝon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1089
+msgid "&Documents"
+msgstr "&Dokumentoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1090
+msgid "&New Window"
+msgstr "&Nova fenestro"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1100
+msgid "&More Documents"
+msgstr "&Pliaj dokumentoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1102
+msgid "C&redits"
+msgstr "&kontribuantoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1103
+msgid "Help &Contents"
+msgstr "Helpa &enhavo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1104
+msgid "Help &Introduction"
+msgstr "&Helpa enkonduko"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1105
+msgid "Check for &Updates"
+msgstr "Kontroli promociojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1106
+msgid "&Search for Help"
+msgstr "Serĉi en helpo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1107
+#, c-format
+msgid "&About %s"
+msgstr "&Pri %s"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1108
+msgid "About G&NOME Office"
+msgstr "Pri G&NOME-Office"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1109
+msgid "Report a &Bug"
+msgstr "Raporti cimon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1110 ../src/wp/ap/xp/ap_String_Id.h:1111
+#: ../src/wp/ap/xp/ap_String_Id.h:1112 ../src/wp/ap/xp/ap_String_Id.h:1113
+#: ../src/wp/ap/xp/ap_String_Id.h:1114 ../src/wp/ap/xp/ap_String_Id.h:1115
+#: ../src/wp/ap/xp/ap_String_Id.h:1116 ../src/wp/ap/xp/ap_String_Id.h:1117
+#: ../src/wp/ap/xp/ap_String_Id.h:1118
+#: ../src/af/xap/gtk/xap_UnixDlg_DocComparison.xml.h:2
+#: ../src/af/xap/gtk/xap_UnixDlg_History.xml.h:2
+#, no-c-format
+msgid "%s"
+msgstr "%s"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1119
+msgid "&Ignore All"
+msgstr "&Ignori ĉiujn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1126 ../src/wp/ap/xp/ap_String_Id.h:1482
+#: ../src/wp/ap/xp/ap_String_Id.h:1555
+msgid "Create a new document"
+msgstr "Krei novan dokumenton"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1127
+msgid "Create a new document using a template"
+msgstr "Krei novan dokumenton el ŝablono"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1129
+msgid "Import style definitions from a document"
+msgstr "Importi stildifinojn el dokumento"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1130
+msgid "Close the document"
+msgstr "Fermi la dokumenton"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1131 ../src/wp/ap/xp/ap_String_Id.h:1484
+#: ../src/wp/ap/xp/ap_String_Id.h:1557
+msgid "Save the document"
+msgstr "Konservi la dokumenton"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1132 ../src/wp/ap/xp/ap_String_Id.h:1485
+#: ../src/wp/ap/xp/ap_String_Id.h:1558
+msgid "Save the document under a different name"
+msgstr "Konservi la dokumenton kun malsama nomo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1133
+msgid "Save the document as a template"
+msgstr "Konservi la dokumenton kiel ŝablonon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1134
+msgid "Save the selected image to a file"
+msgstr "Konservi la elektitan bildo al dosiero"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1135
+msgid "Open a document by making a copy"
+msgstr "Malfermi dokumenton per farado de kopio"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1136
+msgid "Save the document without changing the current name"
+msgstr "Konservi la dokumenton sen ŝanĝado de la aktuala nomo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1137
+msgid "Set meta-data properties"
+msgstr "Specifi metadatumajn ecojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1138
+msgid "Change the printing options"
+msgstr "Ŝanĝi printan agordon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1139
+msgid "Print all or part of the document"
+msgstr "Printi la tuton aŭ parton de la dokumento"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1140
+msgid "Print using the internal PS driver"
+msgstr "Printi per la interna Postskripta pelilo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1141 ../src/wp/ap/xp/ap_String_Id.h:1487
+#: ../src/wp/ap/xp/ap_String_Id.h:1560
+msgid "Preview the document before printing"
+msgstr "Antaŭvidi la dokumenton antaŭ printado"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1142
+msgid "Open a recently used document"
+msgstr "Malfermi freŝe uzitan dokumenton"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1143 ../src/wp/ap/xp/ap_String_Id.h:1144
+#: ../src/wp/ap/xp/ap_String_Id.h:1145 ../src/wp/ap/xp/ap_String_Id.h:1146
+#: ../src/wp/ap/xp/ap_String_Id.h:1147 ../src/wp/ap/xp/ap_String_Id.h:1148
+#: ../src/wp/ap/xp/ap_String_Id.h:1149 ../src/wp/ap/xp/ap_String_Id.h:1150
+#: ../src/wp/ap/xp/ap_String_Id.h:1151
+msgid "Open this document"
+msgstr "Malfermi ĉi tiun dokumenton"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1152
+msgid "Revert the document to the last saved state"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1153
+msgid "Close all windows in the application and exit"
+msgstr "Fermi ĉiujn fenestrojn de la aplikaĵo kaj eliri"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1154
+msgid "Save the Embedded Object"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1156 ../src/wp/ap/xp/ap_String_Id.h:1488
+#: ../src/wp/ap/xp/ap_String_Id.h:1561
+msgid "Undo editing"
+msgstr "Malfermi redaktaĵo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1157
+msgid "Redo previously undone editing"
+msgstr "Refari antaŭe malfarita redaktaĵo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1158
+msgid "Cut the selection and put it on the Clipboard"
+msgstr "Eltondi la elekton kaj enmeti en la poŝon ĝin"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1159
+msgid "Copy the selection and put it on the Clipboard"
+msgstr "Kopii la elekton kaj enmeti en la poŝon ĝin"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1160
+msgid "Insert Clipboard contents"
+msgstr "Enmeti poŝan enhavon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1161
+msgid "Insert unformatted clipboard contents"
+msgstr "Enmeti nearanĝitan poŝan enhavon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1162
+msgid "Delete the selection"
+msgstr "Forigi la elekton"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1163
+msgid "Select the entire document"
+msgstr "Elekti la tutan dokumenton"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1164
+msgid "Find the specified text"
+msgstr "Serĉi la specifan tekston"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1165
+msgid "Replace the specified text with different text"
+msgstr "Anstataŭigi per malsama teksto la specifan tekston"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1166
+msgid "Move the insertion point to a specific location"
+msgstr "Movi al specifa loko la enmetan punkton"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1167
+msgid "Edit the Header on the current page"
+msgstr "Redakti la kapo de la aktuala paĝo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1168
+msgid "Edit the Footer on the current page"
+msgstr "Redakti la piedo de la aktuala paĝo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1169
+msgid "Remove the Header on this page from the Document"
+msgstr "Forigi de la dokumento la kapon de ĉi tiu paĝo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1170
+msgid "Remove the Footer on this page from the Document"
+msgstr "Forigi de la dokumento la piedon de ĉi tiu paĝo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1171
+msgid "Remove the Text Box from the Document"
+msgstr "Forigi de la dokumento la tekstan kampon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1172
+msgid "Remove the Image from the Document"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1173
+msgid "Remove the Image and save a copy on the clipboard"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1174
+msgid "Save a copy of the image on the clipboard"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1175
+msgid "Copy the Text Box to the clipboard then remove it"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1176
+msgid "Copy the Text Box to the clipboard"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1177
+msgid "Select the Text Box"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1178
+msgid "Cut Embedded Object"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1179
+msgid "Copy Embedded Object"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1180
+msgid "Delete Embedded Object"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1181
+msgid "Edit Latex Equation"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1183
+msgid "Normal View"
+msgstr "Normala aranĝo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1184
+msgid "Web Layout"
+msgstr "TTT-simila aranĝo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1185
+msgid "Print Layout"
+msgstr "Printi aranĝo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1187 ../src/wp/ap/xp/ap_String_Id.h:1188
+#: ../src/wp/ap/xp/ap_String_Id.h:1189 ../src/wp/ap/xp/ap_String_Id.h:1190
+msgid "Show or hide the toolbar"
+msgstr "Montri aŭ kaŝi la ilobreton"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1191
+msgid "Lock the layout of the current toolbars"
+msgstr "Fiksi la aranĝon de la aktualaj ilobretoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1192
+msgid "Reset the current toolbar layout to its defaults"
+msgstr "Apriorigi la aranĝon de la ilobretoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1193
+msgid "Show or hide the rulers"
+msgstr "Montri aŭ kaŝi la mezurilojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1194
+msgid "Show or hide the status bar"
+msgstr "Montri aŭ kaŝi la statbreton"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1195
+msgid "Display non-printing characters"
+msgstr "Vidigi eksterprintajn signojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1196
+msgid "Allow formatting using styles only"
+msgstr "Permesi formatojn uzante nur stilojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1197
+msgid "Edit text at the top or bottom of every page"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1198
+msgid "View the document in full screen mode"
+msgstr "Vidi al dokumenton laŭ tutekrana reĝimo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1199 ../src/wp/ap/xp/ap_String_Id.h:1200
+msgid "Reduce or enlarge the document display"
+msgstr "Zomi aŭ malzomi la dokumenton"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1201
+msgid "Zoom to 200%"
+msgstr "Zomi al 200%"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1202
+msgid "Zoom to 100%"
+msgstr "Zomi al 100%"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1203
+msgid "Zoom to 75%"
+msgstr "Zomi al 75%"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1204
+msgid "Zoom to 50%"
+msgstr "Zomi al 50%"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1205
+msgid "Zoom to page width"
+msgstr "Zomi al paĝa larĝo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1206
+msgid "Zoom to whole page"
+msgstr "Tutpaĝe zomi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1208
+msgid "Insert a page, column  or section break"
+msgstr "Enmeti interrompon paĝan, kolumnan aŭ sekcian"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1209
+msgid "Insert an automatically-updated page number"
+msgstr "Enmeti aŭtomatan paĝan numerilon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1210
+msgid "Insert the date and/or time"
+msgstr "Enmeti la daton kajaŭ tempon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1211
+msgid "Insert a calculated field"
+msgstr "Enmeti kalkulitan kampon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1212
+msgid "Insert a Text Box"
+msgstr "Enmeti tekstan kampon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1213
+msgid "Insert a mail merge field"
+msgstr "Enmeti kampon pri retpoŝta kunfandado"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1214
+msgid "Insert the contents of another file"
+msgstr "Enmeti la enhavon de alia dosiero"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1215
+msgid "Insert a symbol or other special character"
+msgstr "En meti simbolon aŭ alian specialan signon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1216
+msgid "Insert a footnote"
+msgstr "Enmeti piednoton"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1217
+msgid "Insert a Table of Contents based on Headings"
+msgstr "Enmeti enhavon bazita sur kapoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1218
+msgid "Insert an endnote"
+msgstr "Enmeti finnoton"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1219
+msgid "Insert clipart"
+msgstr "Enmeti bildeton"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1220
+msgid "Insert a Header"
+msgstr "Enmeti kapon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1221
+msgid "Insert a Footer"
+msgstr "Enmeti piedon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1222
+msgid "Insert an existing picture from another file"
+msgstr "Enmeti jaman bildon el alia dosiero"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1223
+msgid "Insert bookmark"
+msgstr "Enmeti legosignon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1224
+msgid "Insert hyperlink"
+msgstr "Enmeti hiperligilon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1225
+msgid "Jump to hyperlink"
+msgstr "Iri hiperligilon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1226
+msgid "Edit hyperlink"
+msgstr "Redakti hiperligilon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1227
+msgid "Copy hyperlink location"
+msgstr "Kopii hiperligan lokon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1228
+msgid "Delete hyperlink"
+msgstr "Forigi hiperligilon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1229
+msgid "Insert Unicode direction marker into the document"
+msgstr "Enmeti en la dokumenton unikodan direktan markilon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1230
+msgid "Insert left-to-right direction marker (LRM)"
+msgstr "Enmeti aldekstran markilon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1231
+msgid "Insert right-to-left direction marker (RLM)"
+msgstr "Enmeti almaldekstran markilon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1235 ../src/wp/ap/xp/ap_String_Id.h:1277
+msgid "Change the language of the selected text"
+msgstr "Ŝanĝi la lingvon de la elektita teksto"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1236
+msgid "Change the font of the selected text"
+msgstr "Ŝanĝi la tiparon de la elektita teksto"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1237
+msgid "Change the format of the selected paragraph"
+msgstr "Ŝanĝi la formaton de elektita alineo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1238
+msgid "Add or modify bullets and numbering for selected paragraphs"
+msgstr "Enmeti aŭ ŝanĝi bulojn/numeradojn por la elektitaj alineoj."
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1239
+msgid "Setup your document's page properties such as page size and margins"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1240
+msgid "Add borders and shading to the selection"
+msgstr "Aldoni al la elekton borderojn kaj ombrumadon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1241
+msgid "Set the types of Headers and Footers"
+msgstr "Agordi la tipojn de kapoj kaj piedoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1242
+msgid "Set the types of Footnotes and Endnotes"
+msgstr "Elekti la tipojn de piednotoj kaj finnotoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1243
+msgid "Set the type and styles of the Table of Contents"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1244
+msgid "Change the number of columns"
+msgstr "Ŝanĝi la nombron da kolumnoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1245
+msgid "Change the case of the selected text"
+msgstr "Ŝanĝi la usklecon de la elektita teksto"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1246
+msgid "Change your document's page background"
+msgstr "Ŝanĝi la fono de la dokumenta paĝo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1247
+msgid "Change your document's page color"
+msgstr "Ŝanĝi la koloron de la dokumenta paĝo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1248
+msgid "Set an image as a background for your page"
+msgstr "Elekti bildon por via paĝa fono"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1249
+msgid "Format your document using styles"
+msgstr "Formati vian dokumenton per stiloj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1250 ../src/wp/ap/xp/ap_String_Id.h:1251
+msgid "Define or apply style for the selection"
+msgstr "Difini aŭ apliki stilon por la elekto"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1252
+msgid "Set tab stops"
+msgstr "Agordi taban larĝon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1253
+msgid "Make the selection bold (toggle)"
+msgstr "Grasigi la elekton (dustata)"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1254
+msgid "Make the selection italic (toggle)"
+msgstr "Oblikvigi la elekton (dustata)"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1255
+msgid "Underline the selection (toggle)"
+msgstr "Substreki la elekton (dustata)"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1256
+msgid "Overline the selection (toggle)"
+msgstr "Superstreki la elekton (dustata)"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1257
+msgid "Strikeout the selection (toggle)"
+msgstr "Forstreki la elekton (dustata)"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1258
+msgid "Line above the selection (toggle)"
+msgstr "Linio super la elekto (dustata)"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1259
+msgid "Line below the selection (toggle)"
+msgstr "Linio sub la elekton (dustata)"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1260
+msgid "Make the selection superscript (toggle)"
+msgstr "Igi la elekton supra indico (dustata)"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1261
+msgid "Make the selection subscript (toggle)"
+msgstr "Igi la elekton suba indico (dustata)"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1262
+msgid "Change the properties of the Text Box"
+msgstr "Ŝanĝi la ecojn de la teksta kampo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1263
+msgid "Change directional properties of text"
+msgstr "Ŝanĝi la direktajn ecojn de la teksto"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1264
+msgid "Set dominant direction of document to RTL"
+msgstr "Ŝanĝi la superregan direkton de la alineo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1265
+msgid "Set dominant direction of section to RTL"
+msgstr "Ŝanĝi la superregan direkton de sekcio maldekstren"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1266
+msgid "Set dominant direction of paragraph to RTL"
+msgstr "Ŝanĝi superregan direkton de alineo maldekstren"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1267
+msgid "Force left-to-right direction of text"
+msgstr "Forte dekstren montriĝi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1268
+msgid "Force right-to-left direction of text"
+msgstr "Forte maldekstren montriĝi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1269
+msgid "Format Embedded Object"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1272
+msgid "Check the document for incorrect spelling"
+msgstr "Kontroli la dokumenton por erara literumo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1273
+msgid "Automatically spell-check the document"
+msgstr "Aŭtomata ortografia kontrolo de la dokumento"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1274
+msgid "Set your spelling preferences"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1275
+msgid "Count the number of words in the document"
+msgstr "Nombri la nombro da vortoj en la dokumento"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1276
+msgid "Set preferences"
+msgstr "Agordi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1278
+msgid "Manage plugins"
+msgstr "Administri kromprogramojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1280
+msgid "Execute helper scripts"
+msgstr "Plenumi helpan programetojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1281
+msgid "See history of the current document"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1282
+msgid "View document history"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1283
+msgid "Remove full document history from the document"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1285
+msgid "Choose which revision you wish to view"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1286
+msgid "Mark changes as you type"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1287
+msgid "Show revisions that are present in document"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1288
+msgid "Show what the document looks like after revisions"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1289
+msgid "Show what the document looks like after previous revisions"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1290
+msgid "Show what the document looks like before revisions"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1291
+msgid "Accept the suggested change"
+msgstr "Akcepti la proponitajn ŝanĝitaĵojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1292
+msgid "Remove the suggested change"
+msgstr "Forigi la proponitan ŝanĝon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1293
+msgid "Find next visible revision in the document"
+msgstr "Serĉi sekvan videblan revizion en la dokumento"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1294
+msgid "Find previous visible revision in the document"
+msgstr "Serĉi antaŭan videblan revizion en la dokumenton"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1295
+msgid "Compare active document to another document"
+msgstr "Kompari aktivan dokumentan al alia"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1296
+msgid "Merge another document into the active document using revision marks"
+msgstr "Kunfandi en aktivan dokumenton alian dokumenton per reviziaj markoj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1297
+msgid "Start revision distinct from the current one"
+msgstr "Komenci revizion aparta de la aktuala"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1298
+msgid "Remove all revision information from the document"
+msgstr "Forigi de la dokumento ĉiujn reviziajn informojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1299
+msgid "Retain all document changes"
+msgstr "Konservi ĉiujn dokumentajn ŝanĝojn"
+
+#. RIVERA
+#: ../src/wp/ap/xp/ap_String_Id.h:1301
+msgid "Manage annotations in document"
+msgstr "Administri prinotojn en la dokumento"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1302
+msgid "Insert an annotation"
+msgstr "Enmeti prinoton"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1303
+msgid "Insert selected text into a new annotation"
+msgstr "Enmeti en novan prinoton la elektitan tekston"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1304
+msgid "Show/hide annotations"
+msgstr "Montri/kaŝi prinotojn"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1305
+msgid "Jump to annotation"
+msgstr "Iri prinoton"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1306
+msgid "Edit annotation"
+msgstr "Redakti prinoton"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1307
+msgid "Delete annotation"
+msgstr "Forigi prinoton"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1312
+msgid "Insert a column to the left"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1313 ../src/wp/ap/xp/ap_String_Id.h:1314
+msgid "Insert a column to the right"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1315
+msgid "Insert a row above"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1316 ../src/wp/ap/xp/ap_String_Id.h:1317
+msgid "Insert a row below"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1318
+msgid "Insert Cells"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1320 ../src/wp/ap/xp/ap_String_Id.h:1321
+msgid "Delete Table"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1322 ../src/wp/ap/xp/ap_String_Id.h:1323
+msgid "Delete Column"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1324 ../src/wp/ap/xp/ap_String_Id.h:1325
+msgid "Delete Row"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1326
+msgid "Delete Cells"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1327 ../src/af/xap/xp/xap_String_Id.h:97
+msgid "Select"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1328
+msgid "Select Table"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1329
+msgid "Select Column"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1330
+msgid "Select Row"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1331
+msgid "Select Cell"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1334
+msgid "Split Table"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1336
+msgid "Autofit Table"
+msgstr "Aŭtomata alĝustigo de la tabelon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1337
+msgid "Repeat Row as Heading on each new page"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1338
+msgid "Set this Row as the Heading on each page"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1339
+msgid "Remove Row as the page Heading"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1340
+msgid "Sort Table"
+msgstr "Ordigi tabelon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1341
+msgid "Convert Selected Text to a Table"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1342
+msgid "Split on all word delimiters including spaces"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1343
+msgid "Split on all delimiters except spaces"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1344
+msgid "Convert from a Table to Text"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1345
+msgid "Separate table items with commas"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1346
+msgid "Separate table items with tabs"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1347
+msgid "Separate table items with commas and tabs"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1348
+msgid "Sort Rows in Ascending Order based on selected Column"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1349
+msgid "Sort Rows in Descending Order based on Selected Column"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1350
+msgid "Sort Columns in Ascending Order based on Selected Row"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1351
+msgid "Sort Columns in Descending Order based on Selected Row"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1352
+msgid "Insert the Sum of a Table Row"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1353
+msgid "Insert the Sum of a Table Column"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1359
+msgid "Left-align the paragraph"
+msgstr "Maldekstre niveli la alinieon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1360
+msgid "Center-align the paragraph"
+msgstr "Centrige niveli la alineon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1361
+msgid "Right-align the paragraph"
+msgstr "Dekstre niveli la alineon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1362
+msgid "Justify the paragraph"
+msgstr "Alkadrigi la alineon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1363 ../src/wp/ap/xp/ap_String_Id.h:1364
+msgid "Preview the document as a web page"
+msgstr "Antaŭvidi la dokumenton kiel TTT-paĝon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1366
+msgid "Open another window for the document"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1367 ../src/wp/ap/xp/ap_String_Id.h:1368
+#: ../src/wp/ap/xp/ap_String_Id.h:1369 ../src/wp/ap/xp/ap_String_Id.h:1370
+#: ../src/wp/ap/xp/ap_String_Id.h:1371 ../src/wp/ap/xp/ap_String_Id.h:1372
+#: ../src/wp/ap/xp/ap_String_Id.h:1373 ../src/wp/ap/xp/ap_String_Id.h:1374
+#: ../src/wp/ap/xp/ap_String_Id.h:1375
+msgid "View this document"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1376
+msgid "Show full list of documents"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1378
+msgid "Display Credits"
+msgstr "Vidi verkistaron"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1379
+msgid "Display Help Contents"
+msgstr "Montri helpan enhavon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1380
+msgid "Display Help Index"
+msgstr "Montri helpan indekson"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1381
+msgid "Check online for newer versions of AbiWord"
+msgstr "Rete kontroli pro pli novaj eldonoj de AbiWord"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1382
+msgid "Search for help about..."
+msgstr "Serĉi helpan pri..."
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1383
+msgid "Display program information, version number  and copyright"
+msgstr "Montri informojn, numeron kaj kopirajton de la programo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1384
+msgid "About the GNOME Office project"
+msgstr "Informoj pri la projekto GNOME Office"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1385
+msgid "Report a bug and help AbiWord become a better product"
+msgstr "Raporti cimon kaj helpi, ke AbiWord iĝu pli bona produktaĵo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1386 ../src/wp/ap/xp/ap_String_Id.h:1387
+#: ../src/wp/ap/xp/ap_String_Id.h:1388 ../src/wp/ap/xp/ap_String_Id.h:1389
+#: ../src/wp/ap/xp/ap_String_Id.h:1390 ../src/wp/ap/xp/ap_String_Id.h:1391
+#: ../src/wp/ap/xp/ap_String_Id.h:1392 ../src/wp/ap/xp/ap_String_Id.h:1393
+#: ../src/wp/ap/xp/ap_String_Id.h:1394
+msgid "Change to this suggested spelling"
+msgstr "Uzi tiun proponitan literumon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1395
+msgid "Ignore all occurrences of this word in the document"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1396
+msgid "Add this word to the custom dictionary"
+msgstr "Enmeti tiun vorton en la propran vortaron"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1397
+msgid "Resize this image"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1398
+msgid "Format this image"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1399
+msgid "Set this image to be positioned"
+msgstr ""
+
+#. Toolbar labels
+#: ../src/wp/ap/xp/ap_String_Id.h:1402
+msgid "Extra"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1404
+msgid "Standard"
+msgstr "Kutima"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1405
+msgid "Simple"
+msgstr "Simpla"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1406
+msgid "Embedded"
+msgstr "Enmetita"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1409
+msgid "New"
+msgstr "Nova"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1410
+msgid "Open"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1411
+msgid "Save"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1412
+msgid "Save As"
+msgstr ""
+
+#. Unix Print dialog
+#: ../src/wp/ap/xp/ap_String_Id.h:1413 ../src/af/xap/xp/xap_String_Id.h:208
+#: ../src/af/xap/xp/xap_String_Id.h:222
+msgid "Print"
+msgstr "Printi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1414
+msgid "Print Preview"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1415
+msgid "Undo"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1416
+msgid "Redo"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1417 ../src/wp/ap/xp/ap_String_Id.h:1490
+#: ../src/wp/ap/xp/ap_String_Id.h:1563
+msgid "Cut"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1418 ../src/wp/ap/xp/ap_String_Id.h:1491
+#: ../src/wp/ap/xp/ap_String_Id.h:1564
+msgid "Copy"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1419 ../src/wp/ap/xp/ap_String_Id.h:1492
+#: ../src/wp/ap/xp/ap_String_Id.h:1565
+msgid "Paste"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1424
+msgid "Spellcheck"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1425
+msgid "Insert Image"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1426 ../src/wp/ap/xp/ap_String_Id.h:1499
+#: ../src/wp/ap/xp/ap_String_Id.h:1572
+msgid "Style"
+msgstr "Stilo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1427
+msgid "Font choose"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1431 ../src/wp/ap/xp/ap_String_Id.h:1504
+#: ../src/wp/ap/xp/ap_String_Id.h:1577
+msgid "Font Size"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1432 ../src/wp/ap/xp/ap_String_Id.h:1505
+#: ../src/wp/ap/xp/ap_String_Id.h:1578 ../src/af/xap/xp/xap_String_Id.h:146
+msgid "Bold"
+msgstr "Grasa"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1433 ../src/wp/ap/xp/ap_String_Id.h:1506
+#: ../src/wp/ap/xp/ap_String_Id.h:1579 ../src/af/xap/xp/xap_String_Id.h:145
+msgid "Italic"
+msgstr "Oblikva"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1434 ../src/wp/ap/xp/ap_String_Id.h:1507
+#: ../src/wp/ap/xp/ap_String_Id.h:1580 ../src/af/xap/xp/xap_String_Id.h:137
+msgid "Underline"
+msgstr "Substreki"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1435 ../src/wp/ap/xp/ap_String_Id.h:1508
+#: ../src/wp/ap/xp/ap_String_Id.h:1581 ../src/af/xap/xp/xap_String_Id.h:138
+msgid "Overline"
+msgstr "Superstreki"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1436 ../src/wp/ap/xp/ap_String_Id.h:1509
+#: ../src/wp/ap/xp/ap_String_Id.h:1582 ../src/af/xap/xp/xap_String_Id.h:136
+msgid "Strike"
+msgstr "Forstreki"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1439 ../src/wp/ap/xp/ap_String_Id.h:1512
+#: ../src/wp/ap/xp/ap_String_Id.h:1585
+msgid "Help"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1440 ../src/wp/ap/xp/ap_String_Id.h:1513
+#: ../src/wp/ap/xp/ap_String_Id.h:1586 ../src/af/xap/xp/xap_String_Id.h:153
+msgid "Superscript"
+msgstr "Supra indico"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1441 ../src/wp/ap/xp/ap_String_Id.h:1514
+#: ../src/wp/ap/xp/ap_String_Id.h:1587 ../src/af/xap/xp/xap_String_Id.h:154
+msgid "Subscript"
+msgstr "Suba indico"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1442
+msgid "Symbol"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1446
+msgid "Justify"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1447
+msgid "None before"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1448
+msgid "12 pt before"
+msgstr "12 pt antaŭ"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1449
+msgid "Single Spacing"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1450
+msgid "1.5 Spacing"
+msgstr "1.5-obla interlinia distanco"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1451
+msgid "Double Spacing"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1452 ../src/wp/ap/xp/ap_String_Id.h:1525
+#: ../src/wp/ap/xp/ap_String_Id.h:1598
+msgid "1 Column"
+msgstr "1 Vertikalo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1453 ../src/wp/ap/xp/ap_String_Id.h:1526
+#: ../src/wp/ap/xp/ap_String_Id.h:1599
+msgid "2 Columns"
+msgstr "2 Vertikaloj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1454 ../src/wp/ap/xp/ap_String_Id.h:1527
+#: ../src/wp/ap/xp/ap_String_Id.h:1600
+msgid "3 Columns"
+msgstr "3 Vertikaloj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1455
+msgid "Show All"
+msgstr ""
+
+#. Zoom dialog
+#: ../src/wp/ap/xp/ap_String_Id.h:1456 ../src/wp/ap/xp/ap_String_Id.h:1529
+#: ../src/wp/ap/xp/ap_String_Id.h:1602 ../src/af/xap/xp/xap_String_Id.h:189
+#: ../src/af/xap/gtk/xap_UnixDlg_Zoom.xml.h:11
+msgid "Zoom"
+msgstr "Zomi"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1457 ../src/wp/ap/xp/ap_String_Id.h:1530
+#: ../src/wp/ap/xp/ap_String_Id.h:1603
+msgid "Full Screen"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1458 ../src/wp/ap/xp/ap_String_Id.h:1531
+#: ../src/wp/ap/xp/ap_String_Id.h:1604
+msgid "Bullets"
+msgstr "Buloj"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1460 ../src/wp/ap/xp/ap_String_Id.h:1533
+#: ../src/wp/ap/xp/ap_String_Id.h:1606
+msgid "Font color"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1461 ../src/wp/ap/xp/ap_String_Id.h:1534
+#: ../src/wp/ap/xp/ap_String_Id.h:1607
+msgid "Highlight"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1462 ../src/wp/ap/xp/ap_String_Id.h:1535
+#: ../src/wp/ap/xp/ap_String_Id.h:1608
+msgid "Increase indent"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1463 ../src/wp/ap/xp/ap_String_Id.h:1536
+#: ../src/wp/ap/xp/ap_String_Id.h:1609
+msgid "Decrease indent"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1464
+msgid "Ex. script"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1465
+msgid "Format Painter"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1466
+msgid "Force text LTR"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1467
+msgid "Force text RTL"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1468
+msgid "Paragraph Direction"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1469
+msgid "Insert table"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1470
+msgid "Add row after"
+msgstr "Enmeti vicon sube"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1471
+msgid "Add column after"
+msgstr "Enmeti sekvan kolumnon"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1472
+msgid "Delete row"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1473
+msgid "Delete column"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1474 ../src/wp/ap/xp/ap_String_Id.h:1547
+#: ../src/wp/ap/xp/ap_String_Id.h:1620
+msgid "Merge cells"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1475
+msgid "Split cells"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1476
+msgid "Merge left"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1477
+msgid "Merge right"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1478
+msgid "Merge above"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1479
+msgid "Merge below"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1480 ../src/wp/ap/xp/ap_String_Id.h:1553
+#: ../src/wp/ap/xp/ap_String_Id.h:1626
+msgid "Menu"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1486 ../src/wp/ap/xp/ap_String_Id.h:1559
+msgid "Print the document"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1489 ../src/wp/ap/xp/ap_String_Id.h:1562
+msgid "Redo editing"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1497 ../src/wp/ap/xp/ap_String_Id.h:1570
+msgid "Spellcheck the document"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1498 ../src/wp/ap/xp/ap_String_Id.h:1571
+msgid "Insert an image into the document"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1500
+msgid "Font Choose"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1502 ../src/wp/ap/xp/ap_String_Id.h:1575
+msgid "Insert a hyperlink into the document"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1503 ../src/wp/ap/xp/ap_String_Id.h:1576
+msgid "Insert a bookmark into the document"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1515 ../src/wp/ap/xp/ap_String_Id.h:1588
+msgid "Insert symbol"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1516 ../src/wp/ap/xp/ap_String_Id.h:1589
+msgid "Left alignment"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1517 ../src/wp/ap/xp/ap_String_Id.h:1590
+msgid "Center alignment"
+msgstr "Centriga aranĝo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1518 ../src/wp/ap/xp/ap_String_Id.h:1591
+msgid "Right alignment"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1519 ../src/wp/ap/xp/ap_String_Id.h:1592
+msgid "Justify paragraph"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1520 ../src/wp/ap/xp/ap_String_Id.h:1593
+msgid "Space before: None"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1521 ../src/wp/ap/xp/ap_String_Id.h:1594
+msgid "Space before: 12 pt"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1522 ../src/wp/ap/xp/ap_String_Id.h:1595
+msgid "Single spacing"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1523 ../src/wp/ap/xp/ap_String_Id.h:1596
+msgid "1.5 spacing"
+msgstr "1.5-obla interlinia distanco"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1524 ../src/wp/ap/xp/ap_String_Id.h:1597
+msgid "Double spacing"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1528 ../src/wp/ap/xp/ap_String_Id.h:1601
+msgid "Show/hide formatting marks"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1537 ../src/wp/ap/xp/ap_String_Id.h:1610
+msgid "Execute script"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1538 ../src/wp/ap/xp/ap_String_Id.h:1611
+msgid "Apply the previously copied paragraph formatting onto the selected text"
+msgstr "Apliki la antaŭe kopiitan alinean formaton al la elektita teksto."
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1539 ../src/wp/ap/xp/ap_String_Id.h:1612
+msgid "Force LTR direction of text"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1540 ../src/wp/ap/xp/ap_String_Id.h:1613
+msgid "Force RTL direction of text"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1541 ../src/wp/ap/xp/ap_String_Id.h:1614
+msgid "Change dominant direction of paragraph"
+msgstr "Ŝanĝi la superregan direkton de la alineo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1542 ../src/wp/ap/xp/ap_String_Id.h:1615
+msgid "Insert a new table into your document"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1543 ../src/wp/ap/xp/ap_String_Id.h:1616
+msgid "Add a row to this table after the current row"
+msgstr "Enmeti vicon en ĉi tiu tabelo post la aktuala vico"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1544 ../src/wp/ap/xp/ap_String_Id.h:1617
+msgid "Add a column to this table after the current column"
+msgstr "Enmeti kolumnon en tiu tabelo post la aktuala kolumno"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1545 ../src/wp/ap/xp/ap_String_Id.h:1618
+msgid "Delete this row from its table"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1546 ../src/wp/ap/xp/ap_String_Id.h:1619
+msgid "Delete this column from its table"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1548 ../src/wp/ap/xp/ap_String_Id.h:1621
+msgid "Split this cell"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1549 ../src/wp/ap/xp/ap_String_Id.h:1622
+msgid "Merge with left cell"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1550 ../src/wp/ap/xp/ap_String_Id.h:1623
+msgid "Merge with right cell"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1551 ../src/wp/ap/xp/ap_String_Id.h:1624
+msgid "Merge with cell above"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1552 ../src/wp/ap/xp/ap_String_Id.h:1625
+msgid "Merge with cell below"
+msgstr ""
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1573
+msgid "Select Font"
+msgstr "Elekti tiparo"
+
+#: ../src/wp/ap/xp/ap_String_Id.h:1628
+msgid ""
+"The '--print' option has been removed as of AbiWord 2.8. You can achieve the "
+"desired behavior using AbiWord's command-line conversion tools and then "
+"piping the output to a print spooler. Eg: 'abiword --to=ps --to-name fd://1 "
+"myfile.txt | lpr'"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:32
+msgid "Importing Document..."
+msgstr "Importanta dokumenton..."
+
+#: ../src/af/xap/xp/xap_String_Id.h:33
+msgid "Building Document:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:34
+msgid "Autorevision"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:35
+#, c-format
+msgid ""
+"AbiWord cannot fully restore version %d of the document because the version "
+"information is incomplete."
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:36
+#, c-format
+msgid ""
+"The nearest version that can be restored fully is %d. Would you like to "
+"restore this version instead? To partially restore version %d press No."
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:37
+msgid "To continue anyway, press OK."
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:38
+msgid "To quit the restoration attempt, press Cancel."
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:39
+#, c-format
+msgid ""
+"AbiWord cannot restore version %d of the document because the version "
+"information is missing."
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:40
+#, c-format
+msgid "You have to save changes to document %s before proceeding. Save now?"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:42
+msgid "This operation cannot be undone. Are you sure you want to proceed?"
+msgstr ""
+
+#. Default name for new, untitled document
+#: ../src/af/xap/xp/xap_String_Id.h:45
+#, c-format
+msgid "Untitled%d"
+msgstr "Sentitola n-ro %da"
+
+#: ../src/af/xap/xp/xap_String_Id.h:46
+msgid "Read-Only"
+msgstr "Nurlega"
+
+#: ../src/af/xap/xp/xap_String_Id.h:50
+msgid "Plain Text"
+msgstr "Plata teksto"
+
+#: ../src/af/xap/xp/xap_String_Id.h:51
+msgid "Normal"
+msgstr "Normala"
+
+#: ../src/af/xap/xp/xap_String_Id.h:52
+msgid "Heading 1"
+msgstr "Kapo 1a"
+
+#: ../src/af/xap/xp/xap_String_Id.h:53
+msgid "Heading 2"
+msgstr "Kapo 2a"
+
+#: ../src/af/xap/xp/xap_String_Id.h:54
+msgid "Heading 3"
+msgstr "Kapo 3a"
+
+#: ../src/af/xap/xp/xap_String_Id.h:55
+msgid "Heading 4"
+msgstr "Kapo 4a"
+
+#: ../src/af/xap/xp/xap_String_Id.h:56
+msgid "Contents Header"
+msgstr "Enhava kapo"
+
+#: ../src/af/xap/xp/xap_String_Id.h:57
+msgid "Contents 1"
+msgstr "Enhavo 1a"
+
+#: ../src/af/xap/xp/xap_String_Id.h:58
+msgid "Contents 2"
+msgstr "Enhavo 2a"
+
+#: ../src/af/xap/xp/xap_String_Id.h:59
+msgid "Contents 3"
+msgstr "Enhavo 3a"
+
+#: ../src/af/xap/xp/xap_String_Id.h:60
+msgid "Contents 4"
+msgstr "Enhavo 4a"
+
+#: ../src/af/xap/xp/xap_String_Id.h:61
+msgid "Block Text"
+msgstr "Bloka teksto"
+
+#: ../src/af/xap/xp/xap_String_Id.h:76
+msgid "Chapter Heading"
+msgstr "Ĉapitra kapo"
+
+#: ../src/af/xap/xp/xap_String_Id.h:77
+msgid "Section Heading"
+msgstr "Sekcia kapo"
+
+#: ../src/af/xap/xp/xap_String_Id.h:78
+msgid "Endnote Reference"
+msgstr "Finnota referenco"
+
+#: ../src/af/xap/xp/xap_String_Id.h:79
+msgid "Endnote Text"
+msgstr "Finnota teksto"
+
+#: ../src/af/xap/xp/xap_String_Id.h:80
+msgid "Footnote Reference"
+msgstr "Piednota referenco"
+
+#: ../src/af/xap/xp/xap_String_Id.h:81
+msgid "Footnote Text"
+msgstr "Piednoto teksto"
+
+#: ../src/af/xap/xp/xap_String_Id.h:82
+msgid "Numbered Heading 1"
+msgstr "Numerita kapo 1a"
+
+#: ../src/af/xap/xp/xap_String_Id.h:83
+msgid "Numbered Heading 2"
+msgstr "Numerita kapo 2a"
+
+#: ../src/af/xap/xp/xap_String_Id.h:84
+msgid "Numbered Heading 3"
+msgstr "Numerita kapo 3a"
+
+#. Common to many dialogs
+#: ../src/af/xap/xp/xap_String_Id.h:89
+msgid "OK"
+msgstr "Bone"
+
+#: ../src/af/xap/xp/xap_String_Id.h:90
+msgid "Cancel"
+msgstr "Nuligi"
+
+#: ../src/af/xap/xp/xap_String_Id.h:91
+msgid "Close"
+msgstr "Fermi"
+
+#: ../src/af/xap/xp/xap_String_Id.h:93
+msgid "Update"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:96
+msgid "Compare"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:98
+msgid "Merge"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:100
+msgid "Restore"
+msgstr ""
+
+#. Units
+#: ../src/af/xap/xp/xap_String_Id.h:103
+msgid "inch"
+msgstr "coloj"
+
+#: ../src/af/xap/xp/xap_String_Id.h:104
+msgid "cm"
+msgstr "centimetroj"
+
+#: ../src/af/xap/xp/xap_String_Id.h:105
+msgid "mm"
+msgstr "milimetroj"
+
+#: ../src/af/xap/xp/xap_String_Id.h:106
+msgid "points"
+msgstr "punktoj"
+
+#: ../src/af/xap/xp/xap_String_Id.h:107
+msgid "pica"
+msgstr "ciceroj"
+
+#. Message box
+#. These are tagged _("UnixMB") because the underscores precede accelerator
+#. #define XAP_STRING_ID_acters.	It should be an ampersand on Windows, but Windows doesn't
+#. need a hand-constructed message box (Win32 API provides one).
+#.
+#: ../src/af/xap/xp/xap_String_Id.h:114
+msgid "_Yes"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:115
+msgid "_No"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:117
+msgid "Yes"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:118
+msgid "No"
+msgstr ""
+
+#. More Windows dialog
+#: ../src/af/xap/xp/xap_String_Id.h:121
+#: ../src/af/xap/gtk/xap_UnixDlg_WindowMore.xml.h:2
+msgid "View Document"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:122
+msgid "View:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:123
+msgid "Available Documents"
+msgstr ""
+
+#. Remove Toolbar Icon
+#: ../src/af/xap/xp/xap_String_Id.h:127
+msgid "Do you want to remove this icon from the toolbar?"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:133
+msgid "Size:"
+msgstr "Grandeco:"
+
+#: ../src/af/xap/xp/xap_String_Id.h:134
+msgid "Encoding:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:135
+msgid "Effects"
+msgstr "Efikoj"
+
+#: ../src/af/xap/xp/xap_String_Id.h:139
+msgid "Hidden"
+msgstr "Kaŝita"
+
+#: ../src/af/xap/xp/xap_String_Id.h:140
+msgid "Set no Highlight Color"
+msgstr "Fiksi neniun priluman koloron"
+
+#: ../src/af/xap/xp/xap_String_Id.h:142
+msgid "Text Color"
+msgstr "Teksta koloro"
+
+#: ../src/af/xap/xp/xap_String_Id.h:143
+msgid "HighLight Color"
+msgstr "Priluma koloro"
+
+#: ../src/af/xap/xp/xap_String_Id.h:144
+msgid "Regular"
+msgstr "Regula"
+
+#: ../src/af/xap/xp/xap_String_Id.h:147
+msgid "Bold Italic"
+msgstr "Grase oblikva"
+
+#: ../src/af/xap/xp/xap_String_Id.h:151
+msgid "Script:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:152
+msgid "Sample"
+msgstr ""
+
+#. Unix FileOpenSaveAs dialog
+#: ../src/af/xap/xp/xap_String_Id.h:157
+msgid "Open File"
+msgstr "Malfermi dosieron"
+
+#: ../src/af/xap/xp/xap_String_Id.h:158
+msgid "Save File As"
+msgstr "Konservi dosieron kiel"
+
+#: ../src/af/xap/xp/xap_String_Id.h:159
+msgid "Export File"
+msgstr "Eksporti dosieron"
+
+#: ../src/af/xap/xp/xap_String_Id.h:160
+msgid "Import File"
+msgstr "Importi dosieron"
+
+#: ../src/af/xap/xp/xap_String_Id.h:161
+msgid "Insert File"
+msgstr "Enmeti dosieron"
+
+#: ../src/af/xap/xp/xap_String_Id.h:162
+msgid "Insert Math File"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:163
+msgid "Insert Embeddable Object"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:164
+msgid "Print To File"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:165
+msgid "Record Editing to File"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:166
+msgid "Replay Editing from File"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:167
+msgid "Open file as type:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:168
+msgid "Insert MathML file:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:169
+msgid "Insert Embeddable Object file:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:170
+msgid "Save file as type:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:171
+msgid "Print file as type:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:172
+msgid "File to record editing:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:173
+msgid "File to replay editing:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:174
+msgid "Automatically Detected"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:175
+msgid "All Image Files"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:176
+msgid "All Documents"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:177
+msgid "All (*.*)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:178
+msgid "Invalid pathname."
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:179
+msgid "A directory in the given pathname does not exist."
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:180
+#, c-format
+msgid "The directory '%s' is write-protected."
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:181
+#, c-format
+msgid "File already exists.  Overwrite file '%s'?"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:182
+msgid ""
+"The given file extension does not match the chosen file type. Do you want to "
+"use this name anyway?"
+msgstr ""
+
+#. Password dialog
+#: ../src/af/xap/xp/xap_String_Id.h:185
+#: ../src/af/xap/gtk/xap_UnixDlg_Password.xml.h:2
+msgid "Enter Password"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:186
+#: ../src/af/xap/gtk/xap_UnixDlg_Password.xml.h:3
+msgid "Password:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:190
+msgid "Zoom to"
+msgstr "Zomi al"
+
+#: ../src/af/xap/xp/xap_String_Id.h:191
+msgid "&200%"
+msgstr "&200%"
+
+#: ../src/af/xap/xp/xap_String_Id.h:192
+msgid "&100%"
+msgstr "&100%"
+
+#: ../src/af/xap/xp/xap_String_Id.h:193
+msgid "&75%"
+msgstr "&75%"
+
+#: ../src/af/xap/xp/xap_String_Id.h:194
+msgid "&Page width"
+msgstr "&Paĝa larĝo"
+
+#: ../src/af/xap/xp/xap_String_Id.h:195
+msgid "&Whole page"
+msgstr "&Tutpaĝe"
+
+#: ../src/af/xap/xp/xap_String_Id.h:196
+msgid "P&ercent:"
+msgstr "Elcento"
+
+#. Zoom tool bar -- Truncated to fit small combobox size
+#: ../src/af/xap/xp/xap_String_Id.h:200
+msgid "Page Width"
+msgstr "Paĝa larĝo"
+
+#: ../src/af/xap/xp/xap_String_Id.h:201
+msgid "Whole Page"
+msgstr "Tutpaĝe"
+
+#: ../src/af/xap/xp/xap_String_Id.h:202
+msgid "Other..."
+msgstr "Alia..."
+
+#. Font tool bar
+#: ../src/af/xap/xp/xap_String_Id.h:205
+msgid "Symbols"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:209
+msgid "AbiWord: Print Preview"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:210
+msgid "Print to: "
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:211
+msgid "Printer"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:212
+msgid "File"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:213
+msgid "Printer command: "
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:214
+msgid "Page ranges:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:216
+msgid "From: "
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:217
+msgid " to "
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:219
+msgid "Collate"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:220
+msgid "Embed Fonts"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:221
+msgid "Copies: "
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:223
+msgid "The print command string is not valid."
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:224
+msgid "Print in: "
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:225
+msgid "Black & White"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:226
+msgid "Grayscale"
+msgstr "Grizaskalo"
+
+#: ../src/af/xap/xp/xap_String_Id.h:227
+msgid "Color"
+msgstr "Koloro"
+
+#. Insert Symbol dialog
+#: ../src/af/xap/xp/xap_String_Id.h:230
+msgid "Insert Symbol"
+msgstr "Enmeti simbolon"
+
+#. Insert Picture Preview Dialog (Win32)
+#: ../src/af/xap/xp/xap_String_Id.h:233
+msgid "Insert Picture"
+msgstr "Enmeti bildon"
+
+#: ../src/af/xap/xp/xap_String_Id.h:234
+msgid "Preview Picture"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:235
+msgid "No Picture"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:236
+msgid "Height: "
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:237
+msgid "Width:  "
+msgstr ""
+
+#. Plugin dialog
+#: ../src/af/xap/xp/xap_String_Id.h:241
+#: ../src/af/xap/gtk/xap_UnixDlg_PluginManager.xml.h:3
+msgid "AbiWord Plugin Manager"
+msgstr "Kromprograma administrilo de AbiWord"
+
+#: ../src/af/xap/xp/xap_String_Id.h:242
+msgid "Active Plugins"
+msgstr "Aktivaj kromprogramoj"
+
+#: ../src/af/xap/xp/xap_String_Id.h:243
+msgid "Deactivate plugin"
+msgstr "Malaktivigi kromprogramon"
+
+#: ../src/af/xap/xp/xap_String_Id.h:244
+msgid "Deactivate all plugins"
+msgstr "Malaktivigi ĉiujn kromprogramojn"
+
+#: ../src/af/xap/xp/xap_String_Id.h:245
+msgid "Install new plugin"
+msgstr "Instali novan kromprogramon"
+
+#: ../src/af/xap/xp/xap_String_Id.h:246
+msgid "Plugin List"
+msgstr "Kromprogramaro"
+
+#: ../src/af/xap/xp/xap_String_Id.h:247
+#: ../src/af/xap/gtk/xap_UnixDlg_History.xml.h:9
+#: ../src/af/xap/gtk/xap_UnixDlg_PluginManager.xml.h:6
+msgid "Name:"
+msgstr "Nomo:"
+
+#: ../src/af/xap/xp/xap_String_Id.h:250 ../src/af/xap/xp/xap_String_Id.h:572
+#: ../src/af/xap/gtk/xap_UnixDlg_History.xml.h:11
+#: ../src/af/xap/gtk/xap_UnixDlg_PluginManager.xml.h:8
+msgid "Version:"
+msgstr "Eldono:"
+
+#: ../src/af/xap/xp/xap_String_Id.h:251
+msgid "Plugin Details:"
+msgstr "Detaloj pri la kromprogramo"
+
+#: ../src/af/xap/xp/xap_String_Id.h:252
+#: ../src/af/xap/gtk/xap_UnixDlg_PluginManager.xml.h:7
+msgid "Not available"
+msgstr "Ne havebla"
+
+#. spellchecker
+#: ../src/af/xap/xp/xap_String_Id.h:255
+#, c-format
+msgid "Could not load the dictionary for the %s language"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:256
+#, c-format
+msgid ""
+"AbiWord cannot find the spelling file %s.dll\n"
+"Please download and install Aspell from http://aspell.net/win32/"
+msgstr ""
+
+#. plugin error messages
+#: ../src/af/xap/xp/xap_String_Id.h:259
+msgid "Could not activate/load plugin"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:260
+msgid "Could not deactivate plugin"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:261
+msgid "No plugin selected"
+msgstr ""
+
+#. Language Dialog
+#: ../src/af/xap/xp/xap_String_Id.h:264
+#: ../src/af/xap/gtk/xap_UnixDlg_Language.xml.h:4
+msgid "Set Language"
+msgstr "Elekti la lingvon"
+
+#: ../src/af/xap/xp/xap_String_Id.h:265
+msgid "Select Language:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:266
+msgid "Available Languages"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:267
+msgid "&Set Language"
+msgstr "&Elekti la lingvon"
+
+#: ../src/af/xap/xp/xap_String_Id.h:268
+msgid "Default language: "
+msgstr "Lingvo apriora: "
+
+#: ../src/af/xap/xp/xap_String_Id.h:269
+#: ../src/af/xap/gtk/xap_UnixDlg_Language.xml.h:3
+msgid "Make default for document"
+msgstr "Tutdokumente"
+
+#. ClipArt Dialog
+#: ../src/af/xap/xp/xap_String_Id.h:272
+msgid "Clip Art"
+msgstr "Bildetaro"
+
+#: ../src/af/xap/xp/xap_String_Id.h:273
+msgid "Loading Clip Art"
+msgstr "Ŝarĝanta bildetaron"
+
+#: ../src/af/xap/xp/xap_String_Id.h:274
+msgid "Clip Art could not be loaded"
+msgstr ""
+
+#. About Dialog
+#: ../src/af/xap/xp/xap_String_Id.h:277
+#, c-format
+msgid "About %s"
+msgstr ""
+
+#. image size dialog
+#: ../src/af/xap/xp/xap_String_Id.h:280
+#: ../src/af/xap/gtk/xap_UnixDlg_Image.xml.h:8
+msgid "Image Properties"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:281
+#: ../src/af/xap/gtk/xap_UnixDlg_Image.xml.h:21
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:22
+msgid "Width:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:282
+#: ../src/af/xap/gtk/xap_UnixDlg_Image.xml.h:7
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:11
+msgid "Height:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:283
+#: ../src/af/xap/gtk/xap_UnixDlg_Image.xml.h:14
+msgid "Preserve aspect ratio"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:286
+msgid "Set Image Size"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:287
+msgid "Set Image Name"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:288
+msgid "Define Text Wrapping"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:289
+msgid "Define Image Placement"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:290
+msgid "Image placed in-line (no text wrapping)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:291
+msgid "Image floats above text"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:292
+msgid "Text wrapped to the Right of the Image"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:293
+msgid "Text wrapped to the Left of the Image"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:294
+msgid "Text wrapped on both sides of the Image"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:295
+#: ../src/af/xap/gtk/xap_UnixDlg_Image.xml.h:13
+msgid "Position relative to nearest paragraph"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:296
+msgid "Position relative to its Column"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:297
+#: ../src/af/xap/gtk/xap_UnixDlg_Image.xml.h:11
+msgid "Position relative to its Page"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:298
+msgid "Type of text wrapping"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:299
+msgid "Square text wrapping"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:300
+msgid "Tight text wrapping"
+msgstr ""
+
+#. ListDocuments Dialog
+#: ../src/af/xap/xp/xap_String_Id.h:303
+#: ../src/af/xap/gtk/xap_UnixDlg_ListDocuments.xml.h:2
+msgid "Opened Documents"
+msgstr "Malfermitaj dokumentoj"
+
+#: ../src/af/xap/xp/xap_String_Id.h:304
+msgid "Choose document from the list:"
+msgstr "Elekti dokumenton el la listo:"
+
+#.
+#. For insert Table widget
+#.
+#: ../src/af/xap/xp/xap_String_Id.h:309
+msgid "Insert New Table"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:311
+msgid "Clear Background"
+msgstr "Viŝi fonon"
+
+#.
+#. Language property in different languages; alphabetical except English first.
+#. Please when translating the first entry, put it also into parenthesis
+#. or, surround it by some other #define XAP_STRING_ID_acters, so that it will appear on the top
+#. of the list when sorted alphabetically.
+#.
+#: ../src/af/xap/xp/xap_String_Id.h:319
+msgid "(no proofing)"
+msgstr "(neniu provlegado)"
+
+#: ../src/af/xap/xp/xap_String_Id.h:320
+msgid "English (Australia)"
+msgstr "Angla (aŭstralie)"
+
+#: ../src/af/xap/xp/xap_String_Id.h:321
+msgid "English (Canada)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:322
+msgid "English (UK)"
+msgstr "Angla (brite)"
+
+#: ../src/af/xap/xp/xap_String_Id.h:323
+msgid "English (Ireland)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:324
+msgid "English (New Zealand)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:325
+msgid "English (South Africa)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:326
+msgid "English (US)"
+msgstr "Angla (usone)"
+
+#: ../src/af/xap/xp/xap_String_Id.h:327
+msgid "Afrikaans"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:328
+msgid "Akan"
+msgstr ""
+
+#.
+#: ../src/af/xap/xp/xap_String_Id.h:329
+msgid "Albanian"
+msgstr ""
+
+#. Jordi 19/10/2002
+#: ../src/af/xap/xp/xap_String_Id.h:330
+msgid "Amharic (Ethiopia)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:331
+msgid "Arabic"
+msgstr "Araba"
+
+#: ../src/af/xap/xp/xap_String_Id.h:332
+msgid "Arabic (Egypt)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:333
+msgid "Arabic (Saudi Arabia)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:334
+msgid "Armenian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:335
+msgid "Assamese"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:336
+msgid "Asturian (Spain)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:337
+msgid "Aymara (La Paz)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:338
+msgid "Aymara (Oruro)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:339
+msgid "Central Aymara"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:340
+msgid "Basque"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:341
+msgid "Belarusian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:342
+msgid "Belarusian, Latin"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:343
+msgid "Bengali"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:344
+msgid "Breton"
+msgstr ""
+
+#. Jordi 19/10/2002
+#: ../src/af/xap/xp/xap_String_Id.h:345
+msgid "Bulgarian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:346
+msgid "Catalan"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:347
+msgid "Cornish"
+msgstr ""
+
+#. Jordi 19/10/2002
+#: ../src/af/xap/xp/xap_String_Id.h:348
+msgid "Corsican"
+msgstr ""
+
+#. Jordi 19/10/2002
+#: ../src/af/xap/xp/xap_String_Id.h:349
+msgid "Croatian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:350
+msgid "Chinese (Hong Kong)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:351
+msgid "Chinese (PRC)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:352
+msgid "Chinese (Singapore)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:353
+msgid "Chinese (Taiwan)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:354
+msgid "Coptic"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:355
+msgid "Czech"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:356
+msgid "Danish"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:357
+msgid "Dutch (Netherlands)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:358
+msgid "Esperanto"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:359
+msgid "Estonian"
+msgstr ""
+
+#. Hipi: Why not et-EE?
+#: ../src/af/xap/xp/xap_String_Id.h:360
+msgid "Farsi"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:361
+msgid "Finnish"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:362
+msgid "Flemish (Belgium)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:363
+msgid "French (Belgium)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:364
+msgid "French (Canada)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:365
+msgid "French (France)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:366
+msgid "French (Switzerland)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:367
+msgid "Frisian"
+msgstr ""
+
+#. Jordi 19/10/2002
+#: ../src/af/xap/xp/xap_String_Id.h:368
+msgid "Galician (Galego)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:369
+msgid "Georgian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:370
+msgid "German (Austria)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:371
+msgid "German (Germany)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:372
+msgid "German (Switzerland)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:373
+msgid "Greek"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:374
+msgid "Hausa (Niger)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:375
+msgid "Hausa (Nigeria)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:376
+msgid "Hawaiian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:377
+msgid "Hebrew"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:378
+msgid "Hindi"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:379
+msgid "Hungarian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:380
+msgid "Icelandic"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:381
+msgid "Indonesian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:382
+msgid "Inuktitut"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:383
+msgid "Interlingua"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:384
+msgid "Irish"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:385
+msgid "Italian (Italy)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:386
+msgid "Japanese"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:387
+msgid "Kannada"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:388 ../src/af/xap/xp/xap_String_Id.h:389
+msgid "Korean"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:390
+msgid "Kurdish"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:391
+msgid "Lao"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:392
+msgid "Latin (Renaissance)"
+msgstr ""
+
+#. Is _IT the right thing here?
+#: ../src/af/xap/xp/xap_String_Id.h:393
+msgid "Latvian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:394
+msgid "Lithuanian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:395
+msgid "Macedonian"
+msgstr ""
+
+#. Jordi 19/10/2002 Hipi: Why not mk-MK?
+#: ../src/af/xap/xp/xap_String_Id.h:396
+msgid "Malay"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:397
+msgid "Maori"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:398
+msgid "Marathi"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:399
+msgid "Marshallese (Marshall Islands)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:400
+msgid "Marshallese (Nauru)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:401
+msgid "Mongolian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:402
+msgid "Norwegian Bokmal"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:403
+msgid "Nepali (Nepal)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:404
+msgid "Norwegian Nynorsk"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:405
+msgid "Occitan"
+msgstr ""
+
+#. Jordi 19/10/2002
+#: ../src/af/xap/xp/xap_String_Id.h:406
+msgid "Polish"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:407
+msgid "Pashto"
+msgstr "Paŝtoa"
+
+#: ../src/af/xap/xp/xap_String_Id.h:408
+msgid "Portuguese (Brazil)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:409
+msgid "Portuguese (Portugal)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:410
+msgid "Punjabi (Gurmukhi)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:411
+msgid "Punjabi (Shahmukhi)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:412
+msgid "Quechua"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:413
+msgid "Quechua (3 vowels)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:414
+msgid "Quechua (5 vowels)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:415
+msgid "Romanian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:416
+msgid "Russian (Russia)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:417
+msgid "Sardinian"
+msgstr ""
+
+#. Jordi 19/10/2002
+#: ../src/af/xap/xp/xap_String_Id.h:418
+msgid "Serbian"
+msgstr ""
+
+#. Jordi 19/10/2002 Hipi: Why not sr-YU?
+#: ../src/af/xap/xp/xap_String_Id.h:419
+msgid "Slovak"
+msgstr ""
+
+#. or Slovakian?
+#: ../src/af/xap/xp/xap_String_Id.h:420
+msgid "Slovenian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:421
+msgid "Spanish (Mexico)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:422
+msgid "Spanish (Spain)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:423
+msgid "Swahili"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:424
+msgid "Swedish"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:425
+msgid "Syriac"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:426
+msgid "Tagalog"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:427
+msgid "Tamil"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:428
+msgid "Telugu"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:429
+msgid "Thai"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:430
+msgid "Turkish"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:431
+msgid "Ukrainian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:432
+msgid "Urdu (Pakistan)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:433
+msgid "Urdu"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:434
+msgid "Uzbek"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:435
+msgid "Vietnamese"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:436
+msgid "Welsh"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:437
+msgid "Wolof (Senegal)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:438
+msgid "Yiddish"
+msgstr ""
+
+#. Encoding Dialog
+#: ../src/af/xap/xp/xap_String_Id.h:442
+msgid "Select Encoding:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:443
+#: ../src/af/xap/gtk/xap_UnixDlg_Encoding.xml.h:2
+msgid "Encoding"
+msgstr ""
+
+#. Encoding description in different encodings; keep sorted by the numerical id's
+#. Ordered by 1) number of bits, 2) region & language, 3) platform / standard.
+#. 1) 7 bit, 8 bit, multibyte, Unicode.
+#. 2) Western, Eastern, Asian, multilingual; common before rare.
+#. 3) ISO, de facto standards, MS Windows, Macintosh
+#. It may be desirable to change this order for each platform.
+#. 7 bit
+#: ../src/af/xap/xp/xap_String_Id.h:453
+msgid "US-ASCII"
+msgstr ""
+
+#. 8 bit
+#. Western Europe
+#: ../src/af/xap/xp/xap_String_Id.h:456
+msgid "Western European, ISO-8859-1"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:457
+msgid "Western European, Windows Code Page 1252"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:458
+msgid "Western European, DOS/Windows Code Page 437"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:459
+msgid "Western European, DOS/Windows Code Page 850"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:460
+msgid "Western European, Macintosh"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:461
+msgid "Western European, HP"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:462
+msgid "Western European, NeXT"
+msgstr ""
+
+#. Central & Eastern Europe
+#: ../src/af/xap/xp/xap_String_Id.h:464
+msgid "Central European, ISO-8859-2"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:465
+msgid "Central European, Windows Code Page 1250"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:466
+msgid "Central European, Macintosh"
+msgstr ""
+
+#. Baltic
+#: ../src/af/xap/xp/xap_String_Id.h:468
+msgid "Baltic, ISO-8859-4"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:469
+msgid "Baltic, Windows Code Page 1257"
+msgstr ""
+
+#. Greek
+#: ../src/af/xap/xp/xap_String_Id.h:471
+msgid "Greek, ISO-8859-7"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:472
+msgid "Greek, Windows Code Page 1253"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:473
+msgid "Greek, Macintosh"
+msgstr ""
+
+#. Cyrillic
+#: ../src/af/xap/xp/xap_String_Id.h:475
+msgid "Cyrillic, ISO-8859-5"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:476
+msgid "Cyrillic, KOI8-R"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:477
+msgid "Cyrillic, Windows Code Page 1251"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:478
+msgid "Cyrillic, Macintosh"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:479
+msgid "Ukrainian, KOI8-U"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:480
+msgid "Ukrainian, Macintosh"
+msgstr ""
+
+#. Turkish
+#: ../src/af/xap/xp/xap_String_Id.h:482
+msgid "Turkish, ISO-8859-9"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:483
+msgid "Turkish, Windows Code Page 1254"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:484
+msgid "Turkish, Macintosh"
+msgstr ""
+
+#. Other Roman-based encodings
+#: ../src/af/xap/xp/xap_String_Id.h:486
+msgid "Croatian, Macintosh"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:487
+msgid "Icelandic, Macintosh"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:488
+msgid "Romanian, Macintosh"
+msgstr ""
+
+#. Thai
+#: ../src/af/xap/xp/xap_String_Id.h:490
+msgid "Thai, TIS-620"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:491
+msgid "Thai, Windows Code Page 874"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:492
+msgid "Thai, Macintosh"
+msgstr ""
+
+#. Vietnamese
+#: ../src/af/xap/xp/xap_String_Id.h:494
+msgid "Vietnamese, VISCII"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:495
+msgid "Vietnamese, TCVN"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:496
+msgid "Vietnamese, Windows Code Page 1258"
+msgstr ""
+
+#. Hebrew
+#: ../src/af/xap/xp/xap_String_Id.h:498
+msgid "Hebrew, ISO-8859-8"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:499
+msgid "Hebrew, Windows Code Page 1255"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:500
+msgid "Hebrew, Macintosh"
+msgstr ""
+
+#. Arabic
+#: ../src/af/xap/xp/xap_String_Id.h:502
+msgid "Arabic, ISO-8859-6"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:503
+msgid "Arabic, Windows Code Page 1256"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:504
+msgid "Arabic, Macintosh"
+msgstr ""
+
+#. Armenian
+#: ../src/af/xap/xp/xap_String_Id.h:506
+msgid "Armenian, ARMSCII-8"
+msgstr ""
+
+#. Georgian
+#: ../src/af/xap/xp/xap_String_Id.h:508
+msgid "Georgian, Academy"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:509
+msgid "Georgian, PS"
+msgstr ""
+
+#. Multibyte CJK
+#. Chinese Simplified
+#: ../src/af/xap/xp/xap_String_Id.h:512
+msgid "Chinese Simplified, EUC-CN (GB2312)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:513
+msgid "Chinese Simplified, GB_2312-80"
+msgstr ""
+
+#. Cf. EUC
+#: ../src/af/xap/xp/xap_String_Id.h:514
+msgid "Chinese Simplified, HZ"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:515
+msgid "Chinese Simplified, Windows Code Page 936"
+msgstr ""
+
+#. Chinese Traditional
+#: ../src/af/xap/xp/xap_String_Id.h:517
+msgid "Chinese Traditional, BIG5"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:518
+msgid "Chinese Traditional, BIG5-HKSCS"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:519
+msgid "Chinese Traditional, EUC-TW"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:520
+msgid "Chinese Traditional, Windows Code Page 950"
+msgstr ""
+
+#. Japanese
+#: ../src/af/xap/xp/xap_String_Id.h:522
+msgid "Japanese, ISO-2022-JP"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:523
+msgid "Japanese, EUC-JP"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:524
+msgid "Japanese, Shift-JIS"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:525
+msgid "Japanese, Windows Code Page 932"
+msgstr ""
+
+#. Korean
+#: ../src/af/xap/xp/xap_String_Id.h:527
+msgid "Korean, KSC_5601"
+msgstr ""
+
+#. ISO
+#: ../src/af/xap/xp/xap_String_Id.h:528
+msgid "Korean, EUC-KR"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:529
+msgid "Korean, Johab"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:530
+msgid "Korean, Windows Code Page 949"
+msgstr ""
+
+#. Unicode
+#: ../src/af/xap/xp/xap_String_Id.h:532
+msgid "Unicode UTF-7"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:533
+msgid "Unicode UTF-8"
+msgstr ""
+
+#. #define XAP_STRING_ID_ENC_UNIC_UTF_16  _("Unicode UTF-16")
+#: ../src/af/xap/xp/xap_String_Id.h:535
+msgid "Unicode UTF-16 Big Endian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:536
+msgid "Unicode UTF-16 Little Endian"
+msgstr ""
+
+#. #define XAP_STRING_ID_ENC_UNIC_UTF_32  _("Unicode UTF-32")
+#: ../src/af/xap/xp/xap_String_Id.h:538
+msgid "Unicode UTF-32 Big Endian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:539
+msgid "Unicode UTF-32 Little Endian"
+msgstr ""
+
+#. #define XAP_STRING_ID_ENC_UNIC_UCS2  _("Unicode UCS-2")
+#: ../src/af/xap/xp/xap_String_Id.h:541
+msgid "Unicode UCS-2 Big Endian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:542
+msgid "Unicode UCS-2 Little Endian"
+msgstr ""
+
+#. #define XAP_STRING_ID_ENC_UNIC_UCS4  _("Unicode UCS-4")
+#: ../src/af/xap/xp/xap_String_Id.h:544
+msgid "Unicode UCS-4 Big Endian"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:545
+msgid "Unicode UCS-4 Little Endian"
+msgstr ""
+
+#. HTML Options Dialog
+#: ../src/af/xap/xp/xap_String_Id.h:548
+msgid "HTML Export Options"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:549
+msgid "Select HTML export options:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:550
+msgid "Save Settings"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:551
+msgid "Restore Settings"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:552
+msgid "Export as HTML 4.01"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:553
+msgid "Export with PHP instructions"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:554
+msgid "Declare as XML (version 1.0)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:555
+msgid "Allow extra markup in AWML namespace"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:556
+msgid "Embed (CSS) style sheet"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:557
+msgid "Embed images in URLs (Base64-encoded)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:558
+msgid "Close &Without Saving"
+msgstr "Fermi &sen konservado"
+
+#. X11 input methods
+#: ../src/af/xap/xp/xap_String_Id.h:561
+msgid "Input Methods"
+msgstr ""
+
+#. since this string goes with XAP preference, I put it here, rather
+#. than ap_String_Id.h
+#: ../src/af/xap/xp/xap_String_Id.h:565
+msgid "Change Language when changing keyboard"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:566
+msgid "Auto-insert direction markers"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:568
+#: ../src/af/xap/gtk/xap_UnixDlg_History.xml.h:6
+msgid "Document History"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:569
+msgid "Document Details"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:570
+msgid "Document name:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:571
+#: ../src/af/xap/gtk/xap_UnixDlg_History.xml.h:5
+msgid "Created:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:573
+msgid "Last saved:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:574
+msgid "Editing time:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:575
+#: ../src/af/xap/gtk/xap_UnixDlg_History.xml.h:8
+msgid "Identifier:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:577
+msgid "Version history"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:579
+msgid "Created"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:580
+msgid "Auto-revision"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:582
+#: ../src/af/xap/gtk/xap_UnixDlg_DocComparison.xml.h:6
+msgid "Document Comparison"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:583
+msgid "Documents compared"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:584
+msgid "Results"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:585
+#: ../src/af/xap/gtk/xap_UnixDlg_DocComparison.xml.h:8
+msgid "Relationship:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:586
+#: ../src/af/xap/gtk/xap_UnixDlg_DocComparison.xml.h:5
+msgid "Content:"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:588
+#: ../src/af/xap/gtk/xap_UnixDlg_DocComparison.xml.h:9
+msgid "Styles:"
+msgstr "Stiloj:"
+
+#: ../src/af/xap/xp/xap_String_Id.h:590
+msgid "identical"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:591
+msgid "unrelated"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:592
+msgid "siblings"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:593
+#, c-format
+msgid "diverging after version %d of %s"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:594
+#, c-format
+msgid "diverging after document position %d"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:595
+msgid "(test skipped)"
+msgstr ""
+
+#: ../src/af/xap/xp/xap_String_Id.h:596
+msgid "different"
+msgstr ""
+
+#: ../src/af/xap/gtk/xap_UnixDlg_DocComparison.xml.h:3
+msgid "<b>Documents compared</b>"
+msgstr "<b>Dokumentoj komparitaj</b>"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_DocComparison.xml.h:4
+msgid "<b>Results</b>"
+msgstr "<b>Rezultato</b>"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_Encoding.xml.h:1
+msgid "<b>Select  Encoding:</b>"
+msgstr "<b>Elekti la kodsistemon</b>"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_History.xml.h:3
+msgid "<b>Document Details</b>"
+msgstr "<b>Dokumentaj detaloj</b>"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_History.xml.h:4
+msgid "<b>Version History</b>"
+msgstr "<b>Eldona historio</b>"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_History.xml.h:7
+msgid "Editing Time:"
+msgstr "Redakta tempo:"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_History.xml.h:10
+msgid "Saved:"
+msgstr "Konservita:"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_Image.xml.h:1
+msgid "<b>Define Image Placement</b>"
+msgstr "<b>Difini bildan allokigon</b>"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_Image.xml.h:2
+msgid "<b>Define Text Wrapping</b>"
+msgstr "<b>Difini tekstan faldado</b>"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_Image.xml.h:3
+msgid "<b>Set Image Name</b>"
+msgstr "<b>Elekti la bildan nomon</b>"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_Image.xml.h:4
+msgid "<b>Set Image Size</b>"
+msgstr "<b>Elekti la bildan grandecon</b>"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_Image.xml.h:5
+msgid "<b>Type of text wrapping</b>"
+msgstr "<b>Speco de teksta faldado</b>"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_Image.xml.h:9
+msgid "Image placed in line"
+msgstr "Nivele metita bildo"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_Image.xml.h:10
+msgid "No Text wrapping"
+msgstr "Neniu teksta faldado"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_Image.xml.h:12
+msgid "Position relative to its column"
+msgstr "Pozicio relativa al ĝia kolumno"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_Image.xml.h:15
+msgid "Square Wrap"
+msgstr "Kvadrata faldo"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_Image.xml.h:16
+msgid "Text wrapped on both sizes of the image"
+msgstr "Teksto faldita ambaŭflanke de la bildo"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_Image.xml.h:17
+msgid "Text wrapped to Left of Image"
+msgstr "Teksto faldita maldekstre de la bildo"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_Image.xml.h:18
+msgid "Text wrapped to the right of Image"
+msgstr "Teksto faldita dekstre de la bildo"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_Image.xml.h:19
+msgid "Tight Wrap"
+msgstr "Streĉa faldo"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_Language.xml.h:1
+msgid "<b>Select Language</b>"
+msgstr "<b>Elekti la lingvon</b>"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_Language.xml.h:2
+msgid "Default Language: "
+msgstr "Lingvo apriora: "
+
+#: ../src/af/xap/gtk/xap_UnixDlg_ListDocuments.xml.h:1
+msgid "<b>Choose document from the list:</b>"
+msgstr "<b>Elekti dokumenton el la listo:</b>"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_ListDocuments.xml.h:3
+#: ../src/af/xap/gtk/xap_UnixDlg_WindowMore.xml.h:3
+msgid "_View"
+msgstr "_Vidi"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_Password.xml.h:1
+#: ../src/wp/ap/gtk/ap_UnixDialog_MetaData.xml.h:1
+msgid "*"
+msgstr "*"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_PluginManager.xml.h:1
+msgid "<b>Active Plugins</b>"
+msgstr "<b>Aktivaj kromprogramoj</b>"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_PluginManager.xml.h:2
+msgid "<b>Plugin Details:</b>"
+msgstr "<b>Detaloj pri la kromprogramo</b>"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_PluginManager.xml.h:9
+msgid "_Install New Plugin..."
+msgstr "_Instali novan kromprogramon..."
+
+#: ../src/af/xap/gtk/xap_UnixDlg_WindowMore.xml.h:1
+msgid "<b>Available Documents</b>"
+msgstr "<b>Disponeblaj formatoj</b>"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_Zoom.xml.h:2
+#, no-c-format
+msgid "100%"
+msgstr "100%"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_Zoom.xml.h:4
+#, no-c-format
+msgid "200%"
+msgstr "200%"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_Zoom.xml.h:6
+#, no-c-format
+msgid "75%"
+msgstr "75%"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_Zoom.xml.h:7
+msgid "<b>Zoom to</b>"
+msgstr "<b>Zomi al</b>"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_Zoom.xml.h:8
+msgid "Page width"
+msgstr "Paĝa larĝo"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_Zoom.xml.h:9
+msgid "Percent:"
+msgstr "Elcento:"
+
+#: ../src/af/xap/gtk/xap_UnixDlg_Zoom.xml.h:10
+msgid "Whole page"
+msgstr "Tutpaĝe"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Break.xml.h:1
+msgid "<b>Insert</b>"
+msgstr "<b>Enmeti</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Break.xml.h:2
+msgid "<b>Section Breaks</b>"
+msgstr "<b>Sekciaj interrompoj</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Break.xml.h:3
+msgid "Con_tinuous"
+msgstr "Kon_tinue"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Break.xml.h:5
+msgid "_Column break"
+msgstr "_Kolumna rompado"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Break.xml.h:6
+msgid "_Even page"
+msgstr "_Para paĝo"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Break.xml.h:7
+#: ../src/wp/ap/gtk/ap_UnixDialog_Field.xml.h:5
+#: ../src/wp/ap/gtk/ap_UnixDialog_InsertTable.xml.h:9
+#: ../src/wp/ap/gtk/ap_UnixDialog_Insert_DateTime.xml.h:3
+#: ../src/wp/ap/gtk/ap_UnixDialog_Latex.xml.h:5
+#: ../src/wp/ap/gtk/ap_UnixDialog_MailMerge.xml.h:4
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageNumbers.xml.h:9
+msgid "_Insert"
+msgstr "_Enmeti"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Break.xml.h:8
+msgid "_Next page"
+msgstr "_Sekva paĝo"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Break.xml.h:9
+msgid "_Odd page"
+msgstr "_Nepara paĝo"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Break.xml.h:10
+msgid "_Page break"
+msgstr "Paĝa _rompado"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Field.xml.h:1
+msgid "<b>Extra Parameters</b>"
+msgstr "<b>Aldonaj parametroj</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Field.xml.h:2
+msgid "<b>Fields</b>"
+msgstr "<b>Kampoj</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Field.xml.h:3
+msgid "<b>Types</b>"
+msgstr "<b>Tipoj</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatFootnotes.xml.h:1
+msgid "1"
+msgstr "1"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatFootnotes.xml.h:2
+msgid "<b>Format Endnotes</b>"
+msgstr "<b>Aranĝi finnotojn</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatFootnotes.xml.h:3
+msgid "<b>Format Footnotes</b>"
+msgstr "<b>Aranĝi piednotojn</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatFootnotes.xml.h:4
+msgid "Endnote Style:"
+msgstr "Finnota stilo:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatFootnotes.xml.h:5
+msgid "Footnote Style:"
+msgstr "Piednota stilo:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatFootnotes.xml.h:7
+msgid "Initial Endnote value:"
+msgstr "Komenca finnota valoro:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatFootnotes.xml.h:8
+msgid "Initial Footnote value:"
+msgstr "Komenca piednota valoro:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatFootnotes.xml.h:9
+msgid "Numbering:"
+msgstr "Numerado:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatFootnotes.xml.h:10
+msgid "Placement:"
+msgstr "Allokigo:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatFrame.xml.h:1
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTable.xml.h:1
+msgid "<b>Background</b>"
+msgstr "<b>Fono</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatFrame.xml.h:2
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTable.xml.h:2
+msgid "<b>Borders</b>"
+msgstr "<b>Borderoj</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatFrame.xml.h:3
+msgid "<b>Image For Background</b>"
+msgstr "<b>Bildo por fono</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatFrame.xml.h:4
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageNumbers.xml.h:2
+msgid "<b>Position</b>"
+msgstr "<b>Pozicio</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatFrame.xml.h:5
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTable.xml.h:3
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageNumbers.xml.h:3
+msgid "<b>Preview</b>"
+msgstr "<b>Antaŭvido</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatFrame.xml.h:6
+msgid "<b>Text Wrapping</b>"
+msgstr "<b>Tekstan faldado</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatFrame.xml.h:9
+msgid "Format Frame"
+msgstr "Formati kadron"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatFrame.xml.h:13
+msgid "Select Image from File"
+msgstr "Elekti bildon el dosiero"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTOC.xml.h:1
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:1
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:1
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:1
+msgid "    "
+msgstr "    "
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTOC.xml.h:2
+msgid "<auto>"
+msgstr "<aŭtomata>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTOC.xml.h:3
+msgid "<b>Define Main Properties</b>"
+msgstr "<b>Difini ĉefajn ecojn</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTOC.xml.h:4
+msgid "<b>Label Definitions</b>"
+msgstr "<b>Etikedaj difinoj</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTOC.xml.h:5
+msgid "<b>Tabs and Page Numbering</b>"
+msgstr "<b>Taboj kaj paĝnumerado</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTOC.xml.h:11
+msgid "H_as label"
+msgstr "H_avas etikedon"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTOC.xml.h:12
+msgid "H_eading text:"
+msgstr "Kapa t&eksto"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTOC.xml.h:14
+msgid "Indent:"
+msgstr "Deŝovado:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTOC.xml.h:15
+msgid "Inherit label"
+msgstr "Heredigi etikedadon"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTOC.xml.h:17
+msgid "Numbering type:"
+msgstr "Numra numerado:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTOC.xml.h:18
+msgid "Page numbering:"
+msgstr "Paĝa numerado:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTOC.xml.h:19
+msgid "Start at:"
+msgstr "Komenci je:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTOC.xml.h:20
+msgid "Tab leader:"
+msgstr "Taba kondukilo:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTOC.xml.h:21
+msgid "Text after:"
+msgstr "Teksta post:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTOC.xml.h:22
+msgid "Text before:"
+msgstr "Teksto antaŭ:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTOC.xml.h:23
+msgid "_Has Heading"
+msgstr "_Havas kapon"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTable.xml.h:4
+msgid "<b>Set Image</b>"
+msgstr "<b>Elekti la bildon</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTable.xml.h:9
+msgid "Select Image from file"
+msgstr "Elekti bildon el dosiero"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_FormatTable.xml.h:10
+msgid "Set No Image"
+msgstr "Elekti neniun bildon"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_HdrFtr.xml.h:1
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_HdrFtr.xml.h:1
+msgid "<b>Footer Properties</b>"
+msgstr "<b>Piedaj ecoj</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_HdrFtr.xml.h:2
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_HdrFtr.xml.h:2
+msgid "<b>Header Properties</b>"
+msgstr "<b>Kapaj ecoj</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_HdrFtr.xml.h:3
+msgid "<b>Page Number Properties</b>"
+msgstr "<b>Paĝnumeraj ecoj</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_InsertTable.xml.h:2
+msgid "<b>AutoFit behavior</b>"
+msgstr "<b>Konduto de aŭtomata alĝustigo</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_InsertTable.xml.h:3
+msgid "<b>Table Size</b>"
+msgstr "<b>Tabela gradeco</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_InsertTable.xml.h:10
+msgid "in"
+msgstr "da coloj"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Insert_DateTime.xml.h:1
+msgid "<b>Available Formats:</b>"
+msgstr "<b>Disponeblaj formatoj:</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Latex.xml.h:1
+msgid "<b>LaTeX Equation</b>"
+msgstr "<b>Ekvacio per LaTeX</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Latex.xml.h:2
+msgid "E = mc^2"
+msgstr "E = mc^2"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Latex.xml.h:4
+msgid "Latex Equation"
+msgstr "Ekvacio per LaTeX"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_MailMerge.xml.h:1
+msgid "<b>Available Fields</b>"
+msgstr "<b>Haveblaj kampoj</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_MailMerge.xml.h:2
+msgid "<b>Field Name</b>"
+msgstr "<b>Kampa nomo</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_MailMerge.xml.h:5
+msgid "_Open File"
+msgstr "_Malfermi dosieron"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:2
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:2
+msgid ".bak~"
+msgstr ".bak"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:3
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:3
+msgid "<b>Application Startup</b>"
+msgstr "<b>Programa plenumiĝo</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:4
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:4
+msgid "<b>Automatic Grammar Checking</b>"
+msgstr "<b>Aŭtomata gramatika kontrolo</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:5
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:5
+msgid "<b>Bi-Directional Options</b>"
+msgstr "<b>Ambaŭdirektaj elektoj</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:6
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:6
+msgid "<b>Dictionaries</b>"
+msgstr "<b>Vortaroj</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:7
+msgid "<b>General</b>"
+msgstr "<b>Ĝenerala</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:8
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:7
+msgid "<b>Ignore Words</b>"
+msgstr "<b>Ignori vortojn</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:9
+msgid "<b>Inner (single) quote style</b>"
+msgstr "<b>Apostrofa anstataŭo</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:10
+msgid "<b>Outer (double) quote style</b>"
+msgstr "<b>Citila anstataŭo</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:11
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:9
+msgid "<b>User Interface</b>"
+msgstr "<b>Fasado</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:13
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:11
+msgid "Check spelling as you type"
+msgstr "Kontroli literumo dum tajpado"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:15
+msgid "Enable smart quotes"
+msgstr "Ebligi unikodajn citilojn"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:17
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:16
+msgid "Highlight misspelled words"
+msgstr "_Prilumi misliterumitajn vortojn"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:18
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:17
+msgid "Ignore _UPPERCASE words"
+msgstr "Ignori MAJ_USKLAJ vortoj:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:19
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:18
+msgid "Ignore words containing _numbers"
+msgstr "Ig_nori vortojn kun ciferoj"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:24
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:22
+msgid "_Always suggest corrections"
+msgstr "_Ĉiam proponi korektojn"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:25
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:23
+msgid "_Automatically load all plugins"
+msgstr "_Aŭtomata ŝargado de trovitaj kromprogramoj"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:26
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:24
+msgid "_Check grammar as you type"
+msgstr "Kontroli _gramatikon dum tajpado"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:27
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:25
+msgid "_Choose Screen Color"
+msgstr "_Elekti ekranan koloron"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:28
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:26
+msgid "_Default to right-to-left text direction"
+msgstr "Apriore skribi mal_dekstren"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:29
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:27
+msgid "_File extension:"
+msgstr "_Dosiernoma finaĵo:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:30
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:28
+msgid "_Interval:"
+msgstr "_Intervalo:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:31
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:29
+msgid "_Only suggest from main dictionary"
+msgstr "Proponi nur el la _ĉefa vortaro"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:32
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:30
+msgid "_Units:"
+msgstr "_Mezurunuo:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Options.xml.h:33
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:31
+msgid "minute(s)"
+msgstr "minuto(j)"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageNumbers.xml.h:1
+msgid "<b>Arrangement</b>"
+msgstr "<b>Aranĝo</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageNumbers.xml.h:6
+msgid "Insert Page Numbers"
+msgstr "Enmeti paĝajn numerojn"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:4
+msgid "<b>Orientation</b>"
+msgstr "<b>Orientiĝo</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:5
+msgid "<b>Paper</b>"
+msgstr "<b>Papero</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:6
+msgid "<b>Scale</b>"
+msgstr "<b>Skali</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:7
+msgid "Adjust to:"
+msgstr "Ŝanĝi al:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:8
+msgid "Bottom:"
+msgstr "Sube:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:9
+msgid "Footer:"
+msgstr "Piedo:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:10
+msgid "Header:"
+msgstr "Kapo:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:12
+msgid "Landscape"
+msgstr "Horizontala formato"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:13
+msgid "Left:"
+msgstr "Maldekstre:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:17
+msgid "Paper Size:"
+msgstr "Papera Grandeco:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:18
+msgid "Portrait"
+msgstr "Vertikala formato"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:19
+msgid "Right:"
+msgstr "Dekstre:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:20
+msgid "Top:"
+msgstr "Supre:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_PageSetup.xml.h:21
+msgid "Units:"
+msgstr "Mezurunuo:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Replace.xml.h:1
+msgid "Find what:"
+msgstr "Serĉi kion:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Replace.xml.h:2
+msgid "Re_verse find"
+msgstr "In_verse serĉi"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Replace.xml.h:4
+msgid "Replace _All"
+msgstr "_Anstataŭigi ĉiun"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Replace.xml.h:5
+msgid "Replace with: "
+msgstr "Anstataŭigi per:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Replace.xml.h:6
+msgid "_Match case"
+msgstr "_Kongruu uskleco"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Replace.xml.h:7
+msgid "_Whole word"
+msgstr "_Tuta vorto"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Spell.xml.h:1
+msgid "Change A_ll"
+msgstr "Ŝanĝi _ĉiun"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Spell.xml.h:2
+msgid "Change to:"
+msgstr "Ŝanĝi al:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Spell.xml.h:3
+msgid "I_gnore All"
+msgstr "I_gnori ĉiun"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Spell.xml.h:4
+msgid "Not in Dictionary:"
+msgstr "Ne en vortaro:"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Spell.xml.h:6
+msgid "_Change"
+msgstr "_Ŝanĝi"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Spell.xml.h:7
+msgid "_Ignore"
+msgstr "_Ignori"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Styles.xml.h:2
+msgid "<b>Available Styles</b>"
+msgstr "<b>Disponeblaj kampoj</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Styles.xml.h:3
+msgid "<b>Character Preview</b>"
+msgstr "<b>Signa antaŭvido</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Styles.xml.h:4
+msgid "<b>Description</b>"
+msgstr "<b>Priskribo</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Styles.xml.h:5
+msgid "<b>List</b>"
+msgstr "<b>Listo</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Styles.xml.h:6
+msgid "<b>Paragraph Preview</b>"
+msgstr "<b>Alinea antaŭvido</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Tab.xml.h:1
+msgid "<b>Default tab stops:</b>"
+msgstr "<b>Taba larĝo apriora:</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_Tab.xml.h:2
+msgid "<b>User-defined Tabs</b>"
+msgstr "<b>Propre difinitaj taboj</b>"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_WordCount.xml.h:1
+msgid "0"
+msgstr "0"
+
+#: ../src/wp/ap/gtk/ap_UnixDialog_WordCount.xml.h:3
+#, no-c-format
+msgid "<b>%s</b>"
+msgstr "<b>%s</b>"
+
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_HdrFtr.xml.h:3
+msgid "<b>Page Numbering</b>"
+msgstr "<b>Paĝnumerado</b>"
+
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:8
+msgid "<b>Spell Checking</b>"
+msgstr "<b>Literumilo</b>"
+
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:12
+msgid "Cursor _blink"
+msgstr "Kursora _pulsado"
+
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:14
+msgid "Enable smart _quotes"
+msgstr "Ebligi unikodajn _citilojn"
+
+#: ../src/wp/ap/gtk/hildon/ap_UnixHildonDialog_Options.xml.h:20
+msgid "Show splash screen"
+msgstr "Montri salutan ŝildon"
+
+#, fuzzy
+#~ msgid "Characters (no spaces)"
+#~ msgstr "Signojn (sen spacetoj)"
+
+#, fuzzy
+#~ msgid "Characters (with spaces)"
+#~ msgstr "Signojn (kun spacetoj)"
+
+#, fuzzy
+#~ msgid "Lines"
+#~ msgstr "Linioj:"
+
+#, fuzzy
+#~ msgid "Pages"
+#~ msgstr "Paĝoj:"
+
+#, fuzzy
+#~ msgid "Paragraphs"
+#~ msgstr "Alineoj:"
+
+#, fuzzy
+#~ msgid "Words"
+#~ msgstr "Vortoj:"
+
+#, fuzzy
+#~ msgid "Words (no footnotes/endnotes)"
+#~ msgstr "Vortoj (ekskluzive de piednotoj/piednotoj):"

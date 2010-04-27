@@ -1,0 +1,124 @@
+// AbiWord
+// Copyright (C) 1998 AbiSource, Inc.
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+
+#define AP_RID_DIALOG_STYLES_NEWMODIFY_LBL_NAME			1101
+#define AP_RID_DIALOG_STYLES_NEWMODIFY_LBL_BASEDON		1102
+#define AP_RID_DIALOG_STYLES_NEWMODIFY_LBL_TYPE			1103
+#define AP_RID_DIALOG_STYLES_NEWMODIFY_LBL_FOLLOWPARA	1104
+#define AP_RID_DIALOG_STYLES_NEWMODIFY_LBL_REMOVE		1105
+#define	AP_RID_DIALOG_STYLES_NEWMODIFY_GBX_PREVIEW		1106
+#define AP_RID_DIALOG_STYLES_NEWMODIFY_GBX_DESC			1107
+#define AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_NAME			1108
+#define AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_TYPE			1110
+#define AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON		1112
+#define AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_TYPE			1113
+#define AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA	1114
+#define	AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_REMOVE		1115
+#define AP_RID_DIALOG_STYLES_NEWMODIFY_CTL_PREVIEW		1116
+#define AP_RID_DIALOG_STYLES_NEWMODIFY_CTL_DESC			1117
+#define AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_REMOVE		1118
+#define AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEITEMS	1119
+#define AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_SHORTCUT		1120
+#define AP_RID_DIALOG_STYLES_NEWMODIFY_GBX_LINE			1122
+
+
+#define AP_RID_DIALOG_STYLES_NEWMODIFY_TEXT_DEFAULT		-1
+
+#define AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_OK			IDOK
+#define AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_CANCEL		IDCANCEL
+
+#ifdef RC_INVOKED
+// NOTE these placeholder strings get overridden at runtime 
+
+AP_RID_DIALOG_STYLES_NEWMODIFY DIALOG DISCARDABLE  0, 0, 280, 230
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "New Style"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Style Name:",AP_RID_DIALOG_STYLES_NEWMODIFY_LBL_NAME,
+                    5,5,131,8
+    LTEXT           "Based On:",AP_RID_DIALOG_STYLES_NEWMODIFY_LBL_BASEDON,
+                    5,36,131,8
+    LTEXT           "Style Type:",AP_RID_DIALOG_STYLES_NEWMODIFY_LBL_TYPE,
+                    143,5,131,8
+    LTEXT           "Style for following paragraph:",AP_RID_DIALOG_STYLES_NEWMODIFY_LBL_FOLLOWPARA,
+                    143,36,131,8
+    EDITTEXT        AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_NAME,
+                    5,17,131,14,
+                    ES_AUTOHSCROLL
+
+// These controls are used for New Dialog
+    COMBOBOX        AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON,
+                    5,49,131,60,
+                    CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_TYPE,
+                    143,17,131,60,
+                    CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA,
+                    143,49,131,60,
+                    CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+
+// These controls are used for Modified Dialog
+   EDITTEXT        AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_TYPE,
+                    143,17,131,14,
+                    ES_AUTOHSCROLL | NOT WS_VISIBLE
+
+    GROUPBOX        "Preview",AP_RID_DIALOG_STYLES_NEWMODIFY_GBX_PREVIEW,
+                    5,69,269,69
+    CONTROL         "",AP_RID_DIALOG_STYLES_NEWMODIFY_CTL_PREVIEW,
+                    "Static",SS_BLACKFRAME | SS_SUNKEN, 
+                    11,80,257,52
+    GROUPBOX        "Description",AP_RID_DIALOG_STYLES_NEWMODIFY_GBX_DESC,
+                    5,141,269,43
+    LTEXT	        "",AP_RID_DIALOG_STYLES_NEWMODIFY_CTL_DESC,
+                    11,152,257,26
+
+    LTEXT           "Remove Property from Style: ",AP_RID_DIALOG_STYLES_NEWMODIFY_LBL_REMOVE,
+                    5,191,104,12, SS_CENTERIMAGE
+    COMBOBOX        AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_REMOVE,
+                    117,191,102,40,
+                    CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Remove",AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_REMOVE,
+                    224,191,50,12
+	
+	CONTROL			"",AP_RID_DIALOG_STYLES_NEWMODIFY_TEXT_DEFAULT,
+                    "Static",SS_BLACKFRAME | SS_SUNKEN, 
+                    5,208,270,1
+
+    DEFPUSHBUTTON   "OK",AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_OK,
+                    45,213,57,14
+    PUSHBUTTON      "Cancel",AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_CANCEL,
+                    114,213,57,14  
+	CONTROL         "Format",AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEITEMS,"Button",
+					BS_OWNERDRAW  | WS_TABSTOP, 184,213,50,14                   
+                    
+
+END
+
+#endif /* RC_INVOKED */

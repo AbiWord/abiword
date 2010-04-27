@@ -1,0 +1,95 @@
+// AbiWord
+// Copyright (C) 1998 AbiSource, Inc.
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+
+#define AP_RID_DIALOG_REPLACE_BTN_FINDNEXT			1001
+#define AP_RID_DIALOG_REPLACE_BTN_REPLACE			1002
+#define AP_RID_DIALOG_REPLACE_BTN_REPLACEALL		1003
+#define AP_RID_DIALOG_REPLACE_BTN_CLOSE				IDCANCEL
+
+
+
+#define AP_RID_DIALOG_REPLACE_TEXT_FIND				1004
+#define AP_RID_DIALOG_REPLACE_TEXT_REPLACE			1005
+#define AP_RID_DIALOG_REPLACE_CHECK_MATCHCASE		1006
+#define AP_RID_DIALOG_REPLACE_COMBO_FIND			1007
+#define AP_RID_DIALOG_REPLACE_COMBO_REPLACE			1008
+#define AP_RID_DIALOG_REPLACE_CHECK_WHOLEWORD		1009
+#define AP_RID_DIALOG_REPLACE_CHECK_REVERSEFIND		1010
+
+#ifdef RC_INVOKED
+// NOTE -- these placeholder strings get overridden at runtime 
+// NOTE -- they're just here to make sizing easier
+
+AP_RID_DIALOG_REPLACE DIALOG DISCARDABLE  0, 0, 274, 93
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Replace"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "F&ind:",AP_RID_DIALOG_REPLACE_TEXT_FIND,7,7,54,14,
+                    SS_CENTERIMAGE
+    COMBOBOX        AP_RID_DIALOG_REPLACE_COMBO_FIND,67,7,129,50,
+                    CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Replace:",AP_RID_DIALOG_REPLACE_TEXT_REPLACE,7,25,56,
+                    14,SS_CENTERIMAGE
+    COMBOBOX        AP_RID_DIALOG_REPLACE_COMBO_REPLACE,67,25,129,50,
+                    CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "&Match Case",AP_RID_DIALOG_REPLACE_CHECK_MATCHCASE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,49,183,10
+    CONTROL         "&Whole word",AP_RID_DIALOG_REPLACE_CHECK_WHOLEWORD,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,61,181,10
+    CONTROL         "R&everse find",AP_RID_DIALOG_REPLACE_CHECK_REVERSEFIND,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,73,188,10
+    DEFPUSHBUTTON   "&Find",AP_RID_DIALOG_REPLACE_BTN_FINDNEXT,204,7,65,14
+    PUSHBUTTON      "Re&place",AP_RID_DIALOG_REPLACE_BTN_REPLACE,204,25,65,
+                    14
+    PUSHBUTTON      "Replace &All",AP_RID_DIALOG_REPLACE_BTN_REPLACEALL,204,
+                    43,65,14
+    PUSHBUTTON      "&Close",AP_RID_DIALOG_REPLACE_BTN_CLOSE,204,61,65,14
+END
+
+AP_RID_DIALOG_FIND DIALOG DISCARDABLE  0, 0, 274, 71
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Find"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "F&ind:",AP_RID_DIALOG_REPLACE_TEXT_FIND,7,7,50,14,
+                    SS_CENTERIMAGE
+    COMBOBOX        AP_RID_DIALOG_REPLACE_COMBO_FIND,63,7,129,50,
+                    CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "&Match Case",AP_RID_DIALOG_REPLACE_CHECK_MATCHCASE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,31,174,10
+    DEFPUSHBUTTON   "&Find",AP_RID_DIALOG_REPLACE_BTN_FINDNEXT,199,7,65,14
+    CONTROL         "&Whole word",AP_RID_DIALOG_REPLACE_CHECK_WHOLEWORD,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,43,176,10
+    CONTROL         "R&everse find",AP_RID_DIALOG_REPLACE_CHECK_REVERSEFIND,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,55,182,10
+    PUSHBUTTON      "&Close",AP_RID_DIALOG_REPLACE_BTN_CLOSE,199,25,65,14
+END
+
+#endif /* RC_INVOKED */

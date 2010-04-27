@@ -1,0 +1,48 @@
+// AbiWord
+// Copyright (C) 2009 by AbiSource Corporation B.V.
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+
+
+#define AP_RID_DIALOG_COLLABORATIONSHARE		 				605
+#define AP_RID_DIALOG_COLLABORATIONSHARE_CANCEL_BUTTON			IDCANCEL
+#define AP_RID_DIALOG_COLLABORATIONSHARE_OK_BUTTON				1001
+#define AP_RID_DIALOG_COLLABORATIONSHARE_BUDDY_LIST				1002
+#define AP_RID_DIALOG_COLLABORATIONSHARE_ACCCOUNTBOX			1003
+#define AP_RID_DIALOG_COLLABORATIONSHARE_ACCOUNTCOMBO			1004
+
+#ifdef RC_INVOKED
+// NOTE -- these placeholder strings get overridden at runtime 
+// NOTE -- they're just here to make sizing easier
+
+AP_RID_DIALOG_COLLABORATIONSHARE DIALOG DISCARDABLE  0, 0, 199, 228
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Share Document"
+FONT 8, "MS Sans Serif"
+BEGIN
+	GROUPBOX		"Account", AP_RID_DIALOG_COLLABORATIONSHARE_ACCCOUNTBOX, 7, 3, 185, 27 
+	COMBOBOX		AP_RID_DIALOG_COLLABORATIONSHARE_ACCOUNTCOMBO, 11, 12, 178, 80, WS_TABSTOP | CBS_DROPDOWNLIST | CBS_SORT
+
+	LTEXT			"Select the buddies you want to share this document with:", 0, 8, 33, 196, 13 
+	CONTROL 		"", AP_RID_DIALOG_COLLABORATIONSHARE_BUDDY_LIST, "SysListView32", LVS_REPORT | LVS_SORTASCENDING | LVS_NOCOLUMNHEADER | WS_TABSTOP | WS_BORDER, 7, 46, 185, 154
+
+	DEFPUSHBUTTON   "OK",AP_RID_DIALOG_COLLABORATIONSHARE_OK_BUTTON,85,207,50,14, WS_TABSTOP
+	PUSHBUTTON		"Cancel",AP_RID_DIALOG_COLLABORATIONSHARE_CANCEL_BUTTON,142,207,50,14, WS_TABSTOP
+END
+
+#endif /* RC_INVOKED */

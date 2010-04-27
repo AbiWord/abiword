@@ -1,0 +1,143 @@
+// AbiWord
+// Copyright (C) 1998 AbiSource, Inc.
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+
+#define XAP_RID_DIALOG_IMAGE_BTN_OK					IDOK
+#define XAP_RID_DIALOG_IMAGE_BTN_CANCEL				IDCANCEL
+#define XAP_RID_DIALOG_IMAGE_LBL_HEIGHT                     1001
+#define XAP_RID_DIALOG_IMAGE_LBL_WIDTH				1002
+#define XAP_RID_DIALOG_IMAGE_EBX_HEIGHT				1003
+#define XAP_RID_DIALOG_IMAGE_EBX_WIDTH				1004
+#define XAP_RID_DIALOG_IMAGE_CHK_ASPECT   			1005
+#define XAP_RID_DIALOG_IMAGE_SPN_HEIGHT				1006
+#define XAP_RID_DIALOG_IMAGE_SPN_WIDTH				1007
+#define XAP_RID_DIALOG_IMAGE_EBX_TITLE                      1008
+#define XAP_RID_DIALOG_IMAGE_EBX_DESCRIPTION                1009
+#define XAP_RID_DIALOG_IMAGE_LBL_SIZE                       1010
+#define XAP_RID_DIALOG_IMAGE_LBL_NAME                       1011
+#define XAP_RID_DIALOG_IMAGE_LBL_WRAPPING                   1012
+#define XAP_RID_DIALOG_IMAGE_LBL_PLACEMENT                  1013
+#define XAP_RID_DIALOG_IMAGE_LBL_TITLE                      1014
+#define XAP_RID_DIALOG_IMAGE_LBL_DESCRIPTION                1015
+#define XAP_RID_DIALOG_IMAGE_RADIO_INLINE                   1016
+#define XAP_RID_DIALOG_IMAGE_RADIO_FLOAT                    1017
+#define XAP_RID_DIALOG_IMAGE_RADIO_RIGHT                    1018
+#define XAP_RID_DIALOG_IMAGE_RADIO_LEFT                     1019
+#define XAP_RID_DIALOG_IMAGE_RADIO_BOTHSIDES                1020
+#define XAP_RID_DIALOG_IMAGE_RADIO_PARAGRAPH                1021
+#define XAP_RID_DIALOG_IMAGE_RADIO_COLUMN                   1022
+#define XAP_RID_DIALOG_IMAGE_RADIO_PAGE                     1023
+#define XAP_RID_DIALOG_IMAGE_LBL_TYPE                 	1024
+#define XAP_RID_DIALOG_IMAGE_RADIO_SQUARE                   1025
+#define XAP_RID_DIALOG_IMAGE_RADIO_TIGHT                    1026
+//#define XAP_RID_DIALOG_IMAGE_STATIC   				-1
+
+#ifdef RC_INVOKED
+// NOTE -- these placeholder strings get overridden at runtime 
+// NOTE -- they're just here to make sizing easier
+
+XAP_RID_DIALOG_IMAGE DIALOG DISCARDABLE  0, 0, 200, 292
+STYLE DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Image Properties"
+FONT 8, "MS Sans Serif"
+BEGIN
+      LTEXT         "Set Image Size",XAP_RID_DIALOG_IMAGE_LBL_SIZE,7,6,100,12
+
+	LTEXT          "Height:",	XAP_RID_DIALOG_IMAGE_LBL_HEIGHT,
+                             	15,23,39,12, SS_CENTERIMAGE	  	
+	EDITTEXT					XAP_RID_DIALOG_IMAGE_EBX_HEIGHT,
+								49,23,104,12, ES_AUTOHSCROLL | WS_TABSTOP
+	CONTROL		   "SpinHeight",XAP_RID_DIALOG_IMAGE_SPN_HEIGHT,
+                                "msctls_updown32", UDS_ARROWKEYS | UDS_WRAP,
+                                154,22,7,12
+
+    LTEXT	       "Width:",	XAP_RID_DIALOG_IMAGE_LBL_WIDTH,	
+								15,39,41,12, SS_CENTERIMAGE
+	EDITTEXT					XAP_RID_DIALOG_IMAGE_EBX_WIDTH, 
+								49,38,104,12, ES_AUTOHSCROLL | WS_TABSTOP
+	CONTROL		   "SpinWidth", XAP_RID_DIALOG_IMAGE_SPN_WIDTH,
+                                "msctls_updown32", UDS_ARROWKEYS | UDS_WRAP,
+                                154,38,7,12
+
+	CONTROL         "Preserve aspect ratio",		XAP_RID_DIALOG_IMAGE_CHK_ASPECT,
+								"Button", BS_AUTOCHECKBOX | WS_TABSTOP,	
+								15,55,152,10
+
+    LTEXT           "Set Image Name",XAP_RID_DIALOG_IMAGE_LBL_NAME,7,71,100,12
+
+    LTEXT           "Title:",XAP_RID_DIALOG_IMAGE_LBL_TITLE,15,88,55,12
+
+    LTEXT           "Description:",XAP_RID_DIALOG_IMAGE_LBL_DESCRIPTION,15,104,55,12
+
+    EDITTEXT        XAP_RID_DIALOG_IMAGE_EBX_TITLE,61,87,100,12,ES_AUTOHSCROLL | WS_TABSTOP
+
+    EDITTEXT        XAP_RID_DIALOG_IMAGE_EBX_DESCRIPTION,61,102,100,12,ES_AUTOHSCROLL | WS_TABSTOP
+
+    LTEXT           "Define Text Wrapping",XAP_RID_DIALOG_IMAGE_LBL_WRAPPING,7,119,110,12
+
+    CONTROL         "Image placed in-line (no text wrapping)",XAP_RID_DIALOG_IMAGE_RADIO_INLINE,
+                    "Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,15,134,175,8
+
+    CONTROL         "Image floats above text",XAP_RID_DIALOG_IMAGE_RADIO_FLOAT,
+                    "Button",BS_AUTORADIOBUTTON,15,144,175,8
+
+    CONTROL         "Text wrapped to the Right of the Image",XAP_RID_DIALOG_IMAGE_RADIO_RIGHT,
+                    "Button",BS_AUTORADIOBUTTON,15,154,175,8
+
+    CONTROL         "Text wrapped to the Left of the Image",XAP_RID_DIALOG_IMAGE_RADIO_LEFT,
+                    "Button",BS_AUTORADIOBUTTON,15,164,175,8
+
+    CONTROL         "Text wrapped on both sides of the Image",XAP_RID_DIALOG_IMAGE_RADIO_BOTHSIDES,
+                    "Button",BS_AUTORADIOBUTTON,15,174,161,8
+
+    LTEXT           "Define Image Placement",XAP_RID_DIALOG_IMAGE_LBL_PLACEMENT,7,186,100,12
+
+    CONTROL         "Position relative to nearest paragraph",XAP_RID_DIALOG_IMAGE_RADIO_PARAGRAPH,
+                    "Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,15,201,175,8
+
+    CONTROL         "Position relative to its Column",XAP_RID_DIALOG_IMAGE_RADIO_COLUMN,"Button",
+                    BS_AUTORADIOBUTTON,15,211,175,8
+
+    CONTROL         "Position relative to its Page",XAP_RID_DIALOG_IMAGE_RADIO_PAGE,"Button",
+                    BS_AUTORADIOBUTTON,15,221,175,8
+
+    LTEXT           "Type of text wrapping",XAP_RID_DIALOG_IMAGE_LBL_TYPE,7,233,100,12
+
+    CONTROL         "Square text wrapping",XAP_RID_DIALOG_IMAGE_RADIO_SQUARE,
+                    "Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,15,248,175,8
+
+    CONTROL         "Tight text wrapping",XAP_RID_DIALOG_IMAGE_RADIO_TIGHT,"Button",
+                    BS_AUTORADIOBUTTON,15,258,175,8
+
+    DEFPUSHBUTTON  "OK",		XAP_RID_DIALOG_IMAGE_BTN_OK,
+								40,275,50,14
+    PUSHBUTTON     "Cancel",	XAP_RID_DIALOG_IMAGE_BTN_CANCEL,		
+								108,275,50,14
+END
+
+#endif /* RC_INVOKED */

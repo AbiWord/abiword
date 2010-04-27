@@ -1,0 +1,67 @@
+// AbiWord
+// Copyright (C) 2001 Mike Nordell
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// Compile-time dependencies galore!
+//
+//////////////////////////////////////////////////////////////////
+
+// the main dialog
+#define AP_RID_DIALOG_PAGENUMBERS_STATIC_POSITION		1002
+#define AP_RID_DIALOG_PAGENUMBERS_STATIC_PREVIEW		1004
+#define AP_RID_DIALOG_PAGENUMBERS_STATIC_ALIGNMENT		1005
+#define AP_RID_DIALOG_PAGENUMBERS_STATIC_PREVIEW_WIDGET	1006
+#define AP_RID_DIALOG_PAGENUMBERS_RADIO_POSITIONLEFT	1007
+#define AP_RID_DIALOG_PAGENUMBERS_RADIO_POSITIONRIGHT	1008
+#define AP_RID_DIALOG_PAGENUMBERS_RADIO_POSITIONCENTER	1009
+#define AP_RID_DIALOG_PAGENUMBERS_RADIO_ALIGNFOOTER		1010
+#define AP_RID_DIALOG_PAGENUMBERS_RADIO_ALIGNHEADER		1011
+
+#define AP_RID_DIALOG_PAGENUMBERS_BTN_OK				IDOK
+#define AP_RID_DIALOG_PAGENUMBERS_BTN_CANCEL			IDCANCEL
+
+#ifdef RC_INVOKED
+
+AP_RID_DIALOG_PAGENUMBERS DIALOGEX 0, 0, 170, 140
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Page Numbers"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Position:",AP_RID_DIALOG_PAGENUMBERS_STATIC_POSITION,7,10,90,8    
+    LTEXT           "Alignment:",AP_RID_DIALOG_PAGENUMBERS_STATIC_ALIGNMENT,7,52,90,8    
+    LTEXT           "Preview:",AP_RID_DIALOG_PAGENUMBERS_STATIC_PREVIEW,100,10,55,8
+    CONTROL         "",AP_RID_DIALOG_PAGENUMBERS_STATIC_PREVIEW_WIDGET,"Static",SS_BLACKFRAME,100,20,60,
+                    80,WS_EX_CLIENTEDGE
+                    
+    CONTROL         "Header",AP_RID_DIALOG_PAGENUMBERS_RADIO_ALIGNHEADER,"Button",BS_AUTORADIOBUTTON|WS_GROUP|WS_TABSTOP,11,25,78,10
+    CONTROL         "Footer",AP_RID_DIALOG_PAGENUMBERS_RADIO_ALIGNFOOTER,"Button",BS_AUTORADIOBUTTON,11,38,81,10
+    
+    DEFPUSHBUTTON   "OK",IDOK,50,117,50,15
+    PUSHBUTTON      "Cancel",IDCANCEL,110,117,50,15        
+    
+    CONTROL         "Left",AP_RID_DIALOG_PAGENUMBERS_RADIO_POSITIONLEFT,"Button",BS_AUTORADIOBUTTON|WS_GROUP|WS_TABSTOP,12,69,81,10
+    CONTROL         "Center",AP_RID_DIALOG_PAGENUMBERS_RADIO_POSITIONCENTER,"Button",BS_AUTORADIOBUTTON,12,82,80,
+                    10
+    CONTROL         "Right",AP_RID_DIALOG_PAGENUMBERS_RADIO_POSITIONRIGHT,"Button",BS_AUTORADIOBUTTON,12,96,77, 10                    
+                            
+END
+
+#endif /* RC_INVOKED */

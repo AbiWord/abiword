@@ -1,0 +1,75 @@
+// AbiWord
+// Copyright (C) 1998 AbiSource, Inc.
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+
+#define AP_RID_DIALOG_MERGECELLS_BMP_LEFT		1901
+#define AP_RID_DIALOG_MERGECELLS_BMP_RIGHT		1902
+#define AP_RID_DIALOG_MERGECELLS_BMP_ABOVE		1903
+#define AP_RID_DIALOG_MERGECELLS_BMP_BELOW		1904
+#define AP_RID_DIALOG_MERGECELLS_TEXT_LEFT		1905
+#define AP_RID_DIALOG_MERGECELLS_TEXT_RIGHT		1906
+#define AP_RID_DIALOG_MERGECELLS_TEXT_ABOVE		1907
+#define AP_RID_DIALOG_MERGECELLS_TEXT_BELOW		1908
+#define AP_RID_DIALOG_MERGECELLS_TEXT_FRAME		1909
+#define AP_RID_DIALOG_MERGECELLS_BTN_CANCEL		1910
+
+#ifdef RC_INVOKED
+
+AP_RID_DIALOG_MERGECELLS DIALOG DISCARDABLE  0, 0, 151, 189
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "Merge Cells",AP_RID_DIALOG_MERGECELLS_TEXT_FRAME,7,5,
+                    140,155
+
+    LTEXT           "Merge Left",AP_RID_DIALOG_MERGECELLS_TEXT_LEFT,13,26,
+					92,8
+    PUSHBUTTON      "",AP_RID_DIALOG_MERGECELLS_BMP_LEFT,111,19,30,30,
+                    BS_BITMAP
+
+    LTEXT           "Merge Right",AP_RID_DIALOG_MERGECELLS_TEXT_RIGHT,13,61,
+                    92,8
+    PUSHBUTTON      "",AP_RID_DIALOG_MERGECELLS_BMP_RIGHT,111,54,30,30,
+                    BS_BITMAP
+
+    LTEXT           "Merge Above",AP_RID_DIALOG_MERGECELLS_TEXT_ABOVE,13,96,
+                    92,8
+    PUSHBUTTON      "",AP_RID_DIALOG_MERGECELLS_BMP_ABOVE,111,89,30,30,
+                    BS_BITMAP
+
+    LTEXT           "Merge Below",AP_RID_DIALOG_MERGECELLS_TEXT_BELOW,13,131,
+                    92,8
+    PUSHBUTTON      "",AP_RID_DIALOG_MERGECELLS_BMP_BELOW,111,124,30,30,
+                    BS_BITMAP
+
+	PUSHBUTTON      "Close",AP_RID_DIALOG_MERGECELLS_BTN_CANCEL,97,167,50,14
+END
+
+#endif /* RC_INVOKED */
+

@@ -1,0 +1,183 @@
+// AbiWord
+// Copyright (C) 1998 AbiSource, Inc.
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+
+#include <winresrc.h>
+
+#define AP_RID_ICON_APPLICATION_32		10000
+#define AP_RID_ICON_APPLICATION_16		10001
+
+
+#ifdef RC_INVOKED
+
+AP_RID_TI_1COLUMN BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/1column.bmp"
+AP_RID_TI_2COLUMN BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/2column.bmp"
+AP_RID_TI_3COLUMN BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/3column.bmp"
+AP_RID_TI_ADD_COLUMN BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/add_column.bmp"
+AP_RID_TI_ADD_ROW BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/add_row.bmp"
+AP_RID_TI_ALIGN_CENTER BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/align_center.bmp"
+AP_RID_TI_ALIGN_JUSTIFY BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/align_justify.bmp"
+AP_RID_TI_ALIGN_LEFT BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/align_left.bmp"
+AP_RID_TI_ALIGN_RIGHT BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/align_right.bmp"
+AP_RID_TI_COLOR_BACK BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/color_back.bmp"
+AP_RID_TI_COLOR_FORE BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/color_fore.bmp"
+AP_RID_TI_DELETE_COLUMN BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/delete_column.bmp"
+AP_RID_TI_DELETE_ROW BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/delete_row.bmp"
+AP_RID_TI_DOUBLE_SPACE BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/double_space.bmp"
+AP_RID_TI_EDIT_COPY BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/edit_copy.bmp"
+AP_RID_TI_EDIT_CUT BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/edit_cut.bmp"
+AP_RID_TI_EDIT_FOOTER BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/edit_footer.bmp"
+AP_RID_TI_EDIT_HEADER BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/edit_header.bmp"
+AP_RID_TI_EDIT_PASTE BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/edit_paste.bmp"
+AP_RID_TI_EDIT_REDO BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/edit_redo.bmp"
+AP_RID_TI_EDIT_REMOVEFOOTER BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/edit_removefooter.bmp"
+AP_RID_TI_EDIT_REMOVEHEADER BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/edit_removeheader.bmp"
+AP_RID_TI_EDIT_UNDO BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/edit_undo.bmp"
+AP_RID_TI_FILE_NEW BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/file_new.bmp"
+AP_RID_TI_FILE_OPEN BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/file_open.bmp"
+AP_RID_TI_FILE_PRINT BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/file_print.bmp"
+AP_RID_TI_FILE_PRINT_PREVIEW BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/file_print_preview.bmp"
+AP_RID_TI_FILE_SAVE BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/file_save.bmp"
+AP_RID_TI_FILE_SAVEAS BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/file_saveas.bmp"
+AP_RID_TI_FMT_BOLD BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/fmt_bold.bmp"
+AP_RID_TI_FMT_BOOKMARK BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/fmt_bookmark.bmp"
+AP_RID_TI_FMT_BOTTOMLINE BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/fmt_bottomline.bmp"
+AP_RID_TI_FMT_DIR_OVERRIDE_LTR BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/fmt_dir_override_ltr.bmp"
+AP_RID_TI_FMT_DIR_OVERRIDE_RTL BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/fmt_dir_override_rtl.bmp"
+AP_RID_TI_FMT_DOM_DIRECTION BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/fmt_dom_direction.bmp"
+AP_RID_TI_FMT_HYPERLINK BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/fmt_hyperlink.bmp"
+AP_RID_TI_FMT_ITALIC BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/fmt_italic.bmp"
+AP_RID_TI_FMT_OVERLINE BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/fmt_overline.bmp"
+AP_RID_TI_FMT_STRIKE BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/fmt_strike.bmp"
+AP_RID_TI_FMT_SUBSCRIPT BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/fmt_subscript.bmp"
+AP_RID_TI_FMT_SUPERSCRIPT BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/fmt_superscript.bmp"
+AP_RID_TI_FMT_TOPLINE BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/fmt_topline.bmp"
+AP_RID_TI_FMT_UNDERLINE BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/fmt_underline.bmp"
+AP_RID_TI_FMTPAINTER BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/fmtpainter.bmp"
+AP_RID_TI_FT_LINEBOTTOM BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/ft_linebottom.bmp"
+AP_RID_TI_FT_LINELEFT BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/ft_lineleft.bmp"
+AP_RID_TI_FT_LINERIGHT BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/ft_lineright.bmp"
+AP_RID_TI_FT_LINETOP BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/ft_linetop.bmp"
+AP_RID_TI_HELP BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/help.bmp"
+AP_RID_TI_IMG BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/img.bmp"
+AP_RID_TI_INDENT BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/indent.bmp"
+AP_RID_TI_INSERT_SYMBOL BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/insert_symbol.bmp"
+AP_RID_TI_INSERT_TABLE BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/insert_table.bmp"
+AP_RID_TI_LISTS_BULLETS BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/lists_bullets.bmp"
+AP_RID_TI_LISTS_NUMBERS BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/lists_numbers.bmp"
+AP_RID_TI_Menu_AbiWord_About BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_about.bmp"
+AP_RID_TI_Menu_AbiWord_Add_Column BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_add_column.bmp"
+AP_RID_TI_Menu_AbiWord_Add_Row BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_add_row.bmp"
+AP_RID_TI_Menu_AbiWord_Align_Center BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_align_center.bmp"
+AP_RID_TI_Menu_AbiWord_Align_Justify BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_align_justify.bmp"
+AP_RID_TI_Menu_AbiWord_Align_Left BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_align_left.bmp"
+AP_RID_TI_Menu_AbiWord_Align_Right BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_align_right.bmp"
+AP_RID_TI_Menu_AbiWord_Bold BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_bold.bmp"
+AP_RID_TI_Menu_AbiWord_Book BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_book.bmp"
+AP_RID_TI_Menu_AbiWord_Bookmark BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_bookmark.bmp"
+AP_RID_TI_Menu_AbiWord_Bottomline BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_bottomline.bmp"
+AP_RID_TI_Menu_AbiWord_Clear BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_clear.bmp"
+AP_RID_TI_Menu_AbiWord_Close BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_close.bmp"
+AP_RID_TI_Menu_AbiWord_Copy BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_copy.bmp"
+AP_RID_TI_Menu_AbiWord_Credits BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_credits.bmp"
+AP_RID_TI_Menu_AbiWord_Cut BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_cut.bmp"
+AP_RID_TI_Menu_AbiWord_Delete_Column BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_delete_column.bmp"
+AP_RID_TI_Menu_AbiWord_Delete_Row BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_delete_row.bmp"
+AP_RID_TI_Menu_AbiWord_Delete_Table BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_delete_table.bmp"
+AP_RID_TI_Menu_AbiWord_Execute BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_execute.bmp"
+AP_RID_TI_Menu_AbiWord_Exit BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_exit.bmp"
+AP_RID_TI_Menu_AbiWord_Export BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_export.bmp"
+AP_RID_TI_Menu_AbiWord_Font BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_font.bmp"
+AP_RID_TI_Menu_AbiWord_Goto BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_goto.bmp"
+AP_RID_TI_Menu_AbiWord_Help BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_help.bmp"
+AP_RID_TI_Menu_AbiWord_Hyperlink BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_hyperlink.bmp"
+AP_RID_TI_Menu_AbiWord_Img BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_img.bmp"
+AP_RID_TI_Menu_AbiWord_Import BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_import.bmp"
+AP_RID_TI_Menu_AbiWord_Insert_Symbol BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_insert_symbol.bmp"
+AP_RID_TI_Menu_AbiWord_Insert_Table BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_insert_table.bmp"
+AP_RID_TI_Menu_AbiWord_Italic BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_italic.bmp"
+AP_RID_TI_Menu_AbiWord_Merge_Cells BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_merge_cells.bmp"
+AP_RID_TI_Menu_AbiWord_New BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_new.bmp"
+AP_RID_TI_Menu_AbiWord_Open BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_open.bmp"
+AP_RID_TI_Menu_AbiWord_Overline BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_overline.bmp"
+AP_RID_TI_Menu_AbiWord_Paste BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_paste.bmp"
+AP_RID_TI_Menu_AbiWord_Preferences BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_preferences.bmp"
+AP_RID_TI_Menu_AbiWord_Print BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_print.bmp"
+AP_RID_TI_Menu_AbiWord_Print_Preview BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_print_preview.bmp"
+AP_RID_TI_Menu_AbiWord_Print_Setup BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_print_setup.bmp"
+AP_RID_TI_Menu_AbiWord_Properties BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_properties.bmp"
+AP_RID_TI_Menu_AbiWord_Redo BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_redo.bmp"
+AP_RID_TI_Menu_AbiWord_Replace BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_replace.bmp"
+AP_RID_TI_Menu_AbiWord_Revert BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_revert.bmp"
+AP_RID_TI_Menu_AbiWord_Save BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_save.bmp"
+AP_RID_TI_Menu_AbiWord_SaveAs BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_saveas.bmp"
+AP_RID_TI_Menu_AbiWord_Search BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_search.bmp"
+AP_RID_TI_Menu_AbiWord_Spellcheck BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_spellcheck.bmp"
+AP_RID_TI_Menu_AbiWord_Split_Cells BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_split_cells.bmp"
+AP_RID_TI_Menu_AbiWord_Strike BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_strike.bmp"
+AP_RID_TI_Menu_AbiWord_Subscript BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_subscript.bmp"
+AP_RID_TI_Menu_AbiWord_Superscript BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_superscript.bmp"
+AP_RID_TI_Menu_AbiWord_Topline BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_topline.bmp"
+AP_RID_TI_Menu_AbiWord_Underline BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_underline.bmp"
+AP_RID_TI_Menu_AbiWord_Undo BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/menu_abiword_undo.bmp"
+AP_RID_TI_MERGE_CELLS BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/merge_cells.bmp"
+AP_RID_TI_MERGEABOVE BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/mergeabove.bmp"
+AP_RID_TI_MERGEBELOW BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/mergebelow.bmp"
+AP_RID_TI_MERGELEFT BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/mergeleft.bmp"
+AP_RID_TI_MERGERIGHT BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/mergeright.bmp"
+AP_RID_TI_MIDDLE_SPACE BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/middle_space.bmp"
+AP_RID_TI_OPTIONSDLG BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/optionsdlg.bmp"
+AP_RID_TI_PARA_0BEFORE BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/para_0before.bmp"
+AP_RID_TI_PARA_12BEFORE BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/para_12before.bmp"
+AP_RID_TI_SCRIPT_PLAY BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/script_play.bmp"
+AP_RID_TI_SINGLE_SPACE BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/single_space.bmp"
+AP_RID_TI_SPELLCHECK BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/spellcheck.bmp"
+AP_RID_TI_SPLIT_CELLS BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/split_cells.bmp"
+AP_RID_TI_SPLITABOVE BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/splitabove.bmp"
+AP_RID_TI_SPLITBELOW BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/splitbelow.bmp"
+AP_RID_TI_SPLITHORIMID BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/splithorimid.bmp"
+AP_RID_TI_SPLITLEFT BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/splitleft.bmp"
+AP_RID_TI_SPLITRIGHT BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/splitright.bmp"
+AP_RID_TI_SPLITVERTMID BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/splitvertmid.bmp"
+AP_RID_TI_TB_ADD_COLUMN BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/tb_add_column.bmp"
+AP_RID_TI_TB_ADD_ROW BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/tb_add_row.bmp"
+AP_RID_TI_TB_DELETE_COLUMN BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/tb_delete_column.bmp"
+AP_RID_TI_TB_DELETE_ROW BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/tb_delete_row.bmp"
+AP_RID_TI_TB_MERGE_CELLS BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/tb_merge_cells.bmp"
+AP_RID_TI_TB_SPLIT_CELLS BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/tb_split_cells.bmp"
+AP_RID_TI_TRANSPARENTLANG BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/transparentlang.bmp"
+AP_RID_TI_UNINDENT BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/unindent.bmp"
+AP_RID_TI_VIEW_SHOWPARA BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/view_showpara.bmp"
+			
+AP_RID_ICON_APPLICATION_32           ICON    DISCARDABLE     "abiword_app_32.ico"
+AP_RID_ICON_APPLICATION_16           ICON    DISCARDABLE     "abiword_app_16.ico"
+AP_RID_ICON_DOCUMENT             ICON    DISCARDABLE     "abiword_doc.ico"
+
+
+
+#endif /* RC_INVOKED */

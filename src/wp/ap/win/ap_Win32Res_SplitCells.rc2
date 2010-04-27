@@ -1,0 +1,94 @@
+// AbiWord
+// Copyright (C) 1998 AbiSource, Inc.
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+
+#define AP_RID_DIALOG_SPLITCELLS_BMP_LEFT		1001
+#define AP_RID_DIALOG_SPLITCELLS_BMP_HORIMID		1002
+#define AP_RID_DIALOG_SPLITCELLS_BMP_RIGHT		1003
+#define AP_RID_DIALOG_SPLITCELLS_BMP_ABOVE		1004
+#define AP_RID_DIALOG_SPLITCELLS_BMP_VERTMID		1005
+#define AP_RID_DIALOG_SPLITCELLS_BMP_BELOW		1006
+#define AP_RID_DIALOG_SPLITCELLS_TEXT_LEFT		1007
+#define AP_RID_DIALOG_SPLITCELLS_TEXT_HORIMID		1008
+#define AP_RID_DIALOG_SPLITCELLS_TEXT_RIGHT		1009
+#define AP_RID_DIALOG_SPLITCELLS_TEXT_ABOVE		1010
+#define AP_RID_DIALOG_SPLITCELLS_TEXT_VERTMID		1011
+#define AP_RID_DIALOG_SPLITCELLS_TEXT_BELOW		1012
+#define AP_RID_DIALOG_SPLITCELLS_TEXT_FRAME		1013
+#define AP_RID_DIALOG_SPLITCELLS_BTN_CANCEL		IDCANCEL
+
+#ifdef RC_INVOKED
+
+AP_RID_DIALOG_SPLITCELLS DIALOG DISCARDABLE  0, 0, 157, 284
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "Split Cells",AP_RID_DIALOG_SPLITCELLS_TEXT_FRAME,7,5,
+                    146,252
+
+    LTEXT           "Split on Left Side",AP_RID_DIALOG_SPLITCELLS_TEXT_LEFT,13,25,92,
+                    8
+    PUSHBUTTON      "",AP_RID_DIALOG_SPLITCELLS_BMP_LEFT,111,16,35,35,
+                    BS_BITMAP
+
+    LTEXT           "Split in Middle",AP_RID_DIALOG_SPLITCELLS_TEXT_HORIMID,13,65,
+                    92,8
+    PUSHBUTTON      "",AP_RID_DIALOG_SPLITCELLS_BMP_HORIMID,111,56,35,35,
+                    BS_BITMAP
+
+    LTEXT           "Split on Right Side",AP_RID_DIALOG_SPLITCELLS_TEXT_RIGHT,13,105,
+                    92,8
+    PUSHBUTTON      "",AP_RID_DIALOG_SPLITCELLS_BMP_RIGHT,111,96,35,35,
+                    BS_BITMAP
+
+    LTEXT           "Split on Top Side",AP_RID_DIALOG_SPLITCELLS_TEXT_ABOVE,13,145,
+                    92,8
+    PUSHBUTTON      "",AP_RID_DIALOG_SPLITCELLS_BMP_ABOVE,111,136,35,35,
+                    BS_BITMAP
+
+    LTEXT           "Split in Middle",AP_RID_DIALOG_SPLITCELLS_TEXT_VERTMID,13,185,
+                    92,8
+    PUSHBUTTON      "",AP_RID_DIALOG_SPLITCELLS_BMP_VERTMID,111,176,35,35,
+                    BS_BITMAP
+
+    LTEXT           "Split on Bottom Side",AP_RID_DIALOG_SPLITCELLS_TEXT_BELOW,13,225,
+                    92,8
+    PUSHBUTTON      "",AP_RID_DIALOG_SPLITCELLS_BMP_BELOW,111,216,35,35,
+                    BS_BITMAP
+
+    PUSHBUTTON      "Close",AP_RID_DIALOG_SPLITCELLS_BTN_CANCEL,103,263,50,14
+
+END
+
+
+
+
+#endif /* RC_INVOKED */
+
+

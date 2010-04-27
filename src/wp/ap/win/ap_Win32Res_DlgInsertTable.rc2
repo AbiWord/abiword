@@ -1,0 +1,97 @@
+// AbiWord
+// Copyright (C) 2000 AbiSource, Inc.
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+
+#define AP_RID_DIALOG_INSERTTABLE_BTN_CANCEL			IDCANCEL
+#define AP_RID_DIALOG_INSERTTABLE_BTN_OK			IDOK
+
+#define AP_RID_DIALOG_INSERTTABLE_COLUMN			1200
+#define AP_RID_DIALOG_INSERTTABLE_SPIN_COLUMN		1201
+#define AP_RID_DIALOG_INSERTTABLE_VAL_COLUMN		1202
+#define AP_RID_DIALOG_INSERTTABLE_TEXT_COLUMN		1203
+#define AP_RID_DIALOG_INSERTTABLE_SPIN_ROW			1204
+#define AP_RID_DIALOG_INSERTTABLE_TEXT_ROW			1205
+#define AP_RID_DIALOG_INSERTTABLE_VAL_ROW			1206
+#define AP_RID_DIALOG_INSERTTABLE_RADIO_AUTO		1207
+#define AP_RID_DIALOG_INSERTTABLE_RADIO_FIXED		1208
+#define AP_RID_DIALOG_INSERTTABLE_SPIN_SIZE			1209
+#define AP_RID_DIALOG_INSERTTABLE_TEXT_SIZE			1210
+#define AP_RID_DIALOG_INSERTTABLE_VAL_SIZE			1211
+#define AP_RID_DIALOG_INSERTTABLE_TEXT_UNITS		1212
+#define AP_RID_DIALOG_INSERTTABLE_TEXT_AUTOFIT		1213
+
+#ifdef RC_INVOKED
+// NOTE -- these placeholder strings get overridden at runtime 
+// NOTE -- they're just here to make sizing easier
+
+
+AP_RID_DIALOG_INSERT_TABLE DIALOG DISCARDABLE  0, 0, 207, 154
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Insert Table"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",AP_RID_DIALOG_INSERTTABLE_BTN_OK,46,132,50,14
+    PUSHBUTTON      "Cancel",AP_RID_DIALOG_INSERTTABLE_BTN_CANCEL,106,132,50,
+                    14
+    EDITTEXT        AP_RID_DIALOG_INSERTTABLE_VAL_COLUMN,124,19,20,14,
+                    ES_AUTOHSCROLL
+    CONTROL         "Spin2",AP_RID_DIALOG_INSERTTABLE_SPIN_COLUMN,
+                    "msctls_updown32",UDS_SETBUDDYINT | UDS_AUTOBUDDY | 
+                    UDS_ARROWKEYS | UDS_NOTHOUSANDS,143,19,11,14
+    LTEXT           "Number of columns:",
+                    AP_RID_DIALOG_INSERTTABLE_TEXT_COLUMN,13,21,97,12
+    EDITTEXT        AP_RID_DIALOG_INSERTTABLE_VAL_ROW,124,39,20,14,
+                    ES_AUTOHSCROLL
+    CONTROL         "Spin2",AP_RID_DIALOG_INSERTTABLE_SPIN_ROW,
+                    "msctls_updown32",UDS_SETBUDDYINT | UDS_AUTOBUDDY | 
+                    UDS_ARROWKEYS | UDS_NOTHOUSANDS,144,39,11,14
+    LTEXT           "Number of rows:",AP_RID_DIALOG_INSERTTABLE_TEXT_ROW,13,
+                    42,92,12
+    LTEXT           "Table size",AP_RID_DIALOG_INSERTTABLE_TEXT_SIZE,5,5,
+                    80,8
+    CONTROL         "",AP_RID_DIALOG_STYLES_TOP_TEXT_DEFAULT,"Static",
+                    SS_BLACKFRAME | SS_SUNKEN,5,61,195,1
+    LTEXT           "Autofit behavior",AP_RID_DIALOG_INSERTTABLE_TEXT_AUTOFIT,
+                    7,69,140,8
+    CONTROL         "Automatic column size",AP_RID_DIALOG_INSERTTABLE_RADIO_AUTO,"Button",
+                    BS_AUTORADIOBUTTON,13,83,148,10
+    CONTROL         "Fixed column size:",AP_RID_DIALOG_INSERTTABLE_RADIO_FIXED,"Button",
+                    BS_AUTORADIOBUTTON,13,100,99,10
+    EDITTEXT        AP_RID_DIALOG_INSERTTABLE_VAL_SIZE,124,96,30,14,
+                    ES_AUTOHSCROLL
+    CONTROL         "Spin2",AP_RID_DIALOG_INSERTTABLE_SPIN_SIZE,
+                    "msctls_updown32",/*UDS_SETBUDDYINT |*/ UDS_AUTOBUDDY | 
+                    UDS_ARROWKEYS | UDS_NOTHOUSANDS,154,96,11,14
+    CONTROL         "",-1,"Static",
+                    SS_BLACKFRAME | SS_SUNKEN,9,122,195,1
+    LTEXT           "inc",AP_RID_DIALOG_INSERTTABLE_TEXT_UNITS,170,99,31,8
+END
+
+
+#endif /* RC_INVOKED */
+

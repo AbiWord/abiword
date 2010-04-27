@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE abiword PUBLIC "-//ABISOURCE//DTD AWML 1.0 Strict//EN" "http://www.abisource.com/awml.dtd">
+<abiword template="false" styles="unlocked" version="0.99.2" xmlns:svg="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/" fileformat="1.0" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:math="http://www.w3.org/1998/Math/MathML" xmlns:awml="http://www.abisource.com/awml.dtd" xmlns="http://www.abisource.com/awml.dtd" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" props="dom-dir:ltr; lang:en-US">
+<!-- ======================================================================== -->
+<!-- This file is an AbiWord document.                                        -->
+<!-- AbiWord is a free, Open Source word processor.                           -->
+<!-- More information about AbiWord is available at http://www.abisource.com/ -->
+<!-- You should not edit this file by hand.                                   -->
+<!-- ======================================================================== -->
+
+<metadata>
+<m key="dc.format">application/x-abiword</m>
+<m key="abiword.generator">AbiWord</m>
+</metadata>
+<history version="4" edit-time="1060" last-saved="1097285263" uid="c94377b2-1493-11d9-9525-9e1170ef822d">
+<version id="1" started="1096736888" uid="a22a447e-1495-11d9-9525-9e1170ef822d" auto="0"/>
+<version id="2" started="1097281174" uid="e5f5a9b2-1988-11d9-96cf-8c2b84983fa0" auto="0"/>
+<version id="3" started="1097281315" uid="39c310ca-1989-11d9-96d0-8c2b84983fa0" auto="0"/>
+<version id="4" started="1097285263" uid="6ad98dfc-1992-11d9-90cf-d572573794e2" auto="0"/>
+</history>
+<styles>
+<s followedby="Return Address Section" name="Return Address Section" basedon="Normal" type="P" props="font-weight:normal; font-family:Times New Roman; margin-top:0pt; font-style:normal; margin-left:0.0000in; bgcolor:transparent; text-decoration:none; text-indent:0in; font-variant:normal; color:000000; lang:en-US; margin-right:0.0000in; margin-bottom:0pt; font-size:12pt; line-height:1.0; text-align:left; widows:2; font-stretch:normal"/>
+<s type="P" name="Normal" followedby="Current Settings" props="text-indent:0in; margin-top:0pt; margin-left:0pt; font-stretch:normal; line-height:1.0; text-align:left; bgcolor:transparent; lang:en-US; margin-bottom:0pt; font-weight:normal; text-decoration:none; font-variant:normal; color:000000; text-position:normal; font-size:12pt; margin-right:0pt; font-style:normal; widows:2; font-family:Times New Roman"/>
+<s followedby="Letter Body" name="Inside Address" basedon="Block Text" type="P" props="text-indent:0in; orphans:2; margin-top:0pt; margin-left:0.0000in; list-decimal:.; line-height:1.0; keep-with-next:no; text-align:left; list-style:None; bgcolor:transparent; lang:en-US; margin-bottom:0pt; font-weight:normal; text-decoration:none; start-value:1; font-variant:normal; color:000000; font-stretch:normal; keep-together:no; font-size:12pt; margin-right:0.0000in; font-style:normal; widows:2; list-delim:%L; font-family:Times New Roman"/>
+<s type="P" name="Block Text" basedon="Normal" followedby="Current Settings" props="margin-bottom:6pt; margin-right:1in; margin-left:1in"/>
+<s followedby="Letter Body" name="Letter Body" basedon="Normal" type="P" props="font-weight:normal; font-family:Times New Roman; margin-top:12pt; font-style:normal; margin-left:0pt; bgcolor:transparent; text-decoration:none; text-indent:0.0000in; font-variant:normal; color:000000; lang:en-US; margin-right:0pt; margin-bottom:0pt; font-size:12pt; line-height:1.0; text-align:left; widows:2; font-stretch:normal"/>
+<s followedby="Letter Body" name="Greeting" basedon="Normal" type="P" props="font-family:Times New Roman; margin-top:12pt; font-variant:normal; margin-left:0pt; text-align:left; font-style:normal; text-indent:0in; color:000000; line-height:1.0; widows:2; bgcolor:transparent; margin-right:0pt; text-decoration:none; font-size:12pt; font-weight:normal; margin-bottom:0pt; lang:en-US; font-stretch:normal"/>
+<s followedby="Signature Line" name="Closing" basedon="Normal" type="P" props="font-weight:normal; font-family:Times New Roman; margin-top:12pt; font-style:normal; margin-left:0.0000in; bgcolor:transparent; text-decoration:none; text-indent:0in; font-variant:normal; color:000000; lang:en-US; margin-right:0pt; margin-bottom:48pt; font-size:12pt; line-height:1.0; text-align:left; widows:2; font-stretch:normal"/>
+<s followedby="Block Text" name="Signature Line" basedon="Return Address Section" type="P" props="font-weight:normal; font-family:Times New Roman; margin-top:0pt; font-style:normal; margin-left:0.0000in; bgcolor:transparent; text-decoration:none; text-indent:0in; font-variant:normal; color:000000; lang:en-US; margin-right:0.0000in; margin-bottom:0pt; font-size:12pt; line-height:1.0; text-align:left; widows:2; font-stretch:normal"/>
+</styles>
+<pagesize pagetype="Letter" orientation="portrait" width="8.500000" height="11.000000" units="in" page-scale="1.000000"/>
+<section props="page-margin-footer:0.5in; page-margin-header:0.5in">
+<p style="Return Address Section"><c props="lang:en-US">&lt;RETURN ADDRESS 1&gt;</c></p>
+<p style="Return Address Section"><c props="lang:en-US">&lt;RETURN CITY/ST/ZIP&gt;</c></p>
+<p style="Return Address Section"><field type="date_mdy" props="lang:en-US"></field></p>
+<p style="Return Address Section"></p>
+<p style="Inside Address">&lt;AD<c props="lang:en-US">D</c>RESSEE NAME&gt;</p>
+<p style="Inside Address">&lt;ADDRESS&gt;</p>
+<p style="Inside Address">&lt;CITY/ST/ZIP&gt;</p>
+<p style="Greeting"><c props="lang:en-US">Dear &lt;FORMAL ADDRESSEE NAME&gt;:</c></p>
+<p style="Letter Body"><c props="lang:en-US">This is where the body of your letter goes.  Just select this section and type over.  To fill in the other fields, you can do the same.  The date field auto-updates to the current date.  If you wish to save the current date in the file (for archival purposes, for instance), select and type over it.  When using this form, there is no need to manually indent or double-space after a paragraph.  AbiWord's styles take care of this for you.  If you wish to change the letter style from the recommended block format, you can do this easily through the Format, Styles, Create and Modify menu.  You'll see styles for each part of the document there to edit and customize to become your own.</c></p>
+<p style="Closing"><c props="lang:en-US">Sincerely,</c></p>
+<p style="Signature Line"><c props="lang:en-US">&lt;YOUR NAME&gt;</c></p>
+</section>
+</abiword>

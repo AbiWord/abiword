@@ -1,0 +1,262 @@
+/* AbiWord
+ * Copyright (C) 1998-2000 AbiSource, Inc.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * 02111-1307, USA.
+ */
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+
+#define AP_RID_DIALOG_REPLACE					200
+#define AP_RID_DIALOG_FIND						201	// shares class with _REPLACE
+#define AP_RID_DIALOG_BREAK						202
+#define AP_RID_DIALOG_SPELL						203
+#define AP_RID_DIALOG_PARAGRAPH					204
+#define AP_RID_DIALOG_PARA_TAB1					205
+#define AP_RID_DIALOG_PARA_TAB2					206
+#define AP_RID_DIALOG_OPTIONS					207
+#define AP_RID_DIALOG_OPT_SPELL					209		// tab-sub-dlg
+#define AP_RID_DIALOG_OPT_GENERAL				210		// tab-sub-dlg
+#define AP_RID_DIALOG_OPT_DOCUMENTS				211		// tab-sub-dlg
+#define AP_RID_DIALOG_DATETIME					212
+#define AP_RID_DIALOG_FIELD						213
+#define AP_RID_DIALOG_WORDCOUNT					214
+#define AP_RID_DIALOG_GOTO						215
+#define AP_RID_DIALOG_COLUMNS					216
+#define AP_RID_DIALOG_LIST						217
+#define AP_RID_DIALOG_TABS						218
+#define AP_RID_DIALOG_PAGENUMBERS				219
+#define AP_RID_DIALOG_PAGE_SETUP				220
+#define AP_RID_DIALOG_TOGGLECASE				221
+#define AP_RID_DIALOG_STYLES_TOP				222
+#define AP_RID_DIALOG_STYLES_NEWMODIFY			223
+#define AP_RID_DIALOG_PAGE_SETUP_PAGE			224	// tab-sub-dialog
+#define AP_RID_DIALOG_PAGE_SETUP_MARGINS		225	// tab-sub-dialog
+#define AP_RID_DIALOG_HDRFTR					226
+#define AP_RID_DIALOG_INSERTBOOKMARK			227
+#define AP_RID_DIALOG_INSERTHYPERLINK			228
+#define AP_RID_DIALOG_NEW						229
+#define AP_RID_DIALOG_MARK_REVISIONS            230
+#define AP_RID_DIALOG_LIST_REVISIONS            231
+#define AP_RID_DIALOG_INSERT_TABLE				232
+#define AP_RID_DIALOG_DOWNLOADFILE				233
+#define AP_RID_DIALOG_META_GENERAL				234	// Property Page
+#define AP_RID_DIALOG_META_SUMMARY				235	// Property Page
+#define AP_RID_DIALOG_META_PERMISSIONS			236	// Property Page
+#define AP_RID_DIALOG_MERGECELLS				237	
+#define AP_RID_DIALOG_OPT_LANGUAGE				238	// tab-sub-dlg
+#define AP_RID_DIALOG_FORMATTABLE				239	
+#define AP_RID_DIALOG_FORMATFOOTNOTES			240
+#define AP_RID_DIALOG_MAILMERGE					241 
+#define AP_RID_DIALOG_FORMATFRAME				242
+#define AP_RID_DIALOG_STYLIST					243
+#define AP_RID_DIALOG_SPLITCELLS				244
+#define AP_RID_DIALOG_FORMATTOC_GENERAL			245	// Property Page
+#define AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS	246	// Property Page
+#define AP_RID_DIALOG_LATEX						247
+#define AP_RID_DIALOG_ANNOTATION				248
+#define AP_RID_DIALOG_OPT_SMARTQUOTES				249	// tab-sub-dlg
+
+// Bitmaps IDs
+#define AP_RID_TI_1COLUMN 3000
+#define AP_RID_TI_2COLUMN 3001
+#define AP_RID_TI_3COLUMN 3002
+#define AP_RID_TI_ADD_COLUMN 3003
+#define AP_RID_TI_ADD_ROW 3004
+#define AP_RID_TI_ALIGN_CENTER 3005
+#define AP_RID_TI_ALIGN_JUSTIFY 3006
+#define AP_RID_TI_ALIGN_LEFT 3007
+#define AP_RID_TI_ALIGN_RIGHT 3008
+#define AP_RID_TI_COLOR_BACK 3009
+#define AP_RID_TI_COLOR_FORE 3010
+#define AP_RID_TI_DELETE_COLUMN 3011
+#define AP_RID_TI_DELETE_ROW 3012
+#define AP_RID_TI_DOUBLE_SPACE 3013
+#define AP_RID_TI_EDIT_COPY 3014
+#define AP_RID_TI_EDIT_CUT 3015
+#define AP_RID_TI_EDIT_FOOTER 3016
+#define AP_RID_TI_EDIT_HEADER 3017
+#define AP_RID_TI_EDIT_PASTE 3018
+#define AP_RID_TI_EDIT_REDO 3019
+#define AP_RID_TI_EDIT_REMOVEFOOTER 3020
+#define AP_RID_TI_EDIT_REMOVEHEADER 3021
+#define AP_RID_TI_EDIT_UNDO 3022
+#define AP_RID_TI_FILE_NEW 3023
+#define AP_RID_TI_FILE_OPEN 3024
+#define AP_RID_TI_FILE_PRINT 3025
+#define AP_RID_TI_FILE_PRINT_PREVIEW 3026
+#define AP_RID_TI_FILE_SAVE 3027
+#define AP_RID_TI_FILE_SAVEAS 3028
+#define AP_RID_TI_FMT_BOLD 3029
+#define AP_RID_TI_FMT_BOOKMARK 3030
+#define AP_RID_TI_FMT_BOTTOMLINE 3031
+#define AP_RID_TI_FMT_DIR_OVERRIDE_LTR 3032
+#define AP_RID_TI_FMT_DIR_OVERRIDE_RTL 3033
+#define AP_RID_TI_FMT_DOM_DIRECTION 3034
+#define AP_RID_TI_FMT_FONT 3035
+#define AP_RID_TI_FMT_HYPERLINK 3036
+#define AP_RID_TI_FMT_ITALIC 3037
+#define AP_RID_TI_FMT_OVERLINE 3038
+#define AP_RID_TI_FMT_SIZE 3039
+#define AP_RID_TI_FMT_STRIKE 3040
+#define AP_RID_TI_FMT_STYLE 3041
+#define AP_RID_TI_FMT_SUBSCRIPT 3042
+#define AP_RID_TI_FMT_SUPERSCRIPT 3043
+#define AP_RID_TI_FMT_TOPLINE 3044
+#define AP_RID_TI_FMT_UNDERLINE 3045
+#define AP_RID_TI_FMTPAINTER 3046
+#define AP_RID_TI_FT_LINEBOTTOM 3047
+#define AP_RID_TI_FT_LINELEFT 3048
+#define AP_RID_TI_FT_LINERIGHT 3049
+#define AP_RID_TI_FT_LINETOP 3050
+#define AP_RID_TI_HELP 3051
+#define AP_RID_TI_IMG 3052
+#define AP_RID_TI_INDENT 3053
+#define AP_RID_TI_INSERT_SYMBOL 3054
+#define AP_RID_TI_INSERT_TABLE 3055
+#define AP_RID_TI_LISTS_BULLETS 3056
+#define AP_RID_TI_LISTS_NUMBERS 3057
+#define AP_RID_TI_Menu_AbiWord_About 3058
+#define AP_RID_TI_Menu_AbiWord_Add_Column 3059
+#define AP_RID_TI_Menu_AbiWord_Add_Row 3060
+#define AP_RID_TI_Menu_AbiWord_Align_Center 3061
+#define AP_RID_TI_Menu_AbiWord_Align_Justify 3062
+#define AP_RID_TI_Menu_AbiWord_Align_Left 3063
+#define AP_RID_TI_Menu_AbiWord_Align_Right 3064
+#define AP_RID_TI_Menu_AbiWord_Bold 3065
+#define AP_RID_TI_Menu_AbiWord_Book 3066
+#define AP_RID_TI_Menu_AbiWord_Bookmark 3067
+#define AP_RID_TI_Menu_AbiWord_Bottomline 3068
+#define AP_RID_TI_Menu_AbiWord_Clear 3069
+#define AP_RID_TI_Menu_AbiWord_Close 3070
+#define AP_RID_TI_Menu_AbiWord_Copy 3071
+#define AP_RID_TI_Menu_AbiWord_Credits 3072
+#define AP_RID_TI_Menu_AbiWord_Cut 3073
+#define AP_RID_TI_Menu_AbiWord_Delete_Column 3074
+#define AP_RID_TI_Menu_AbiWord_Delete_Row 3075
+#define AP_RID_TI_Menu_AbiWord_Delete_Table 3076
+#define AP_RID_TI_Menu_AbiWord_Execute 3077
+#define AP_RID_TI_Menu_AbiWord_Exit 3078
+#define AP_RID_TI_Menu_AbiWord_Export 3079
+#define AP_RID_TI_Menu_AbiWord_Font 3080
+#define AP_RID_TI_Menu_AbiWord_Goto 3081
+#define AP_RID_TI_Menu_AbiWord_Help 3082
+#define AP_RID_TI_Menu_AbiWord_Hyperlink 3083
+#define AP_RID_TI_Menu_AbiWord_Img 3084
+#define AP_RID_TI_Menu_AbiWord_Import 3085
+#define AP_RID_TI_Menu_AbiWord_Insert_Symbol 3086
+#define AP_RID_TI_Menu_AbiWord_Insert_Table 3087
+#define AP_RID_TI_Menu_AbiWord_Italic 3088
+#define AP_RID_TI_Menu_AbiWord_Merge_Cells 3089
+#define AP_RID_TI_Menu_AbiWord_New 3090
+#define AP_RID_TI_Menu_AbiWord_Open 3091
+#define AP_RID_TI_Menu_AbiWord_Overline 3092
+#define AP_RID_TI_Menu_AbiWord_Paste 3093
+#define AP_RID_TI_Menu_AbiWord_Preferences 3094
+#define AP_RID_TI_Menu_AbiWord_Print 3095
+#define AP_RID_TI_Menu_AbiWord_Print_Preview 3096
+#define AP_RID_TI_Menu_AbiWord_Print_Setup 3097
+#define AP_RID_TI_Menu_AbiWord_Properties 3098
+#define AP_RID_TI_Menu_AbiWord_Redo 3099
+#define AP_RID_TI_Menu_AbiWord_Replace 3100
+#define AP_RID_TI_Menu_AbiWord_Revert 3101
+#define AP_RID_TI_Menu_AbiWord_Save 3102
+#define AP_RID_TI_Menu_AbiWord_SaveAs 3103
+#define AP_RID_TI_Menu_AbiWord_Search 3104
+#define AP_RID_TI_Menu_AbiWord_Spellcheck 3105
+#define AP_RID_TI_Menu_AbiWord_Split_Cells 3106
+#define AP_RID_TI_Menu_AbiWord_Strike 3107
+#define AP_RID_TI_Menu_AbiWord_Subscript 3108
+#define AP_RID_TI_Menu_AbiWord_Superscript 3109
+#define AP_RID_TI_Menu_AbiWord_Topline 3110
+#define AP_RID_TI_Menu_AbiWord_Underline 3111
+#define AP_RID_TI_Menu_AbiWord_Undo 3112
+#define AP_RID_TI_MERGE_CELLS 3113
+#define AP_RID_TI_MERGEABOVE 3114
+#define AP_RID_TI_MERGEBELOW 3115
+#define AP_RID_TI_MERGELEFT 3116
+#define AP_RID_TI_MERGERIGHT 3117
+#define AP_RID_TI_MIDDLE_SPACE 3118
+#define AP_RID_TI_OPTIONSDLG 3119
+#define AP_RID_TI_PARA_0BEFORE 3120
+#define AP_RID_TI_PARA_12BEFORE 3121
+#define AP_RID_TI_SCRIPT_PLAY 3122
+#define AP_RID_TI_SINGLE_SPACE 3123
+#define AP_RID_TI_SPELLCHECK 3124
+#define AP_RID_TI_SPLIT_CELLS 3125
+#define AP_RID_TI_SPLITABOVE 3126
+#define AP_RID_TI_SPLITBELOW 3127
+#define AP_RID_TI_SPLITHORIMID 3128
+#define AP_RID_TI_SPLITLEFT 3129
+#define AP_RID_TI_SPLITRIGHT 3130
+#define AP_RID_TI_SPLITVERTMID 3131
+#define AP_RID_TI_TB_ADD_COLUMN 3132
+#define AP_RID_TI_TB_ADD_ROW 3133
+#define AP_RID_TI_TB_DELETE_COLUMN 3134
+#define AP_RID_TI_TB_DELETE_ROW 3135
+#define AP_RID_TI_TB_MERGE_CELLS 3136
+#define AP_RID_TI_TB_SPLIT_CELLS 3137
+#define AP_RID_TI_TRANSPARENTLANG 3138
+#define AP_RID_TI_UNINDENT 3139
+#define AP_RID_TI_VIEW_SHOWPARA 3140
+
+
+#include "ap_Win32Res_DlgPageSetup.rc2"
+#include "ap_Win32Resources_DialogReplace.rc2"
+#include "ap_Win32Res_DlgBreak.rc2"
+#include "ap_Win32Res_DlgField.rc2"
+#include "ap_Win32Res_DlgInsert_DateTime.rc2"
+#include "ap_Win32Res_DlgSpell.rc2"
+#include "ap_Win32Res_DlgParagraph.rc2"
+#include "ap_Win32Res_DlgOptions.rc2"
+#include "ap_Win32Res_DlgWordCount.rc2"
+#include "ap_Win32Res_DlgGoto.rc2"
+#include "ap_Win32Res_DlgColumns.rc2"
+#include "ap_Win32Res_DlgList.rc2"
+#include "ap_Win32Res_DlgTabs.rc2"
+#include "ap_Win32Res_Icons.rc2"
+#include "ap_Win32Res_DlgPageNumbers.rc2"
+#include "ap_Win32Res_DlgToggleCase.rc2"
+#include "ap_Win32Res_DlgStylesTop.rc2"
+#include "ap_Win32Res_DlgStylesNewModify.rc2"
+#include "ap_Win32Res_DlgHdrFtr.rc2"
+#include "ap_Win32Res_DlgInsertBookmark.rc2"
+#include "ap_Win32Res_DlgInsertHyperlink.rc2"
+#include "ap_Win32Res_DlgNew.rc2"
+#include "ap_Win32Res_DlgMarkRevisions.rc2"
+#include "ap_Win32Res_DlgListRevisions.rc2"
+#include "ap_Win32Res_DlgInsertTable.rc2"
+#include "ap_Win32Res_DlgDownload_File.rc2"
+#include "ap_Win32Res_Version.rc2"
+#include "ap_Win32Res_DlgMetaData.rc2"
+#include "ap_Win32Res_MergeCells.rc2"
+#include "ap_Win32Res_FormatTable.rc2"
+#include "ap_Win32Res_FormatFootnotes.rc2"
+#include "ap_Win32Res_MailMerge.rc2"
+#include "ap_Win32Res_Manifest.rc2"
+#include "ap_Win32Res_FormatFrame.rc2"
+#include "ap_Win32Res_DlgStylist.rc2"
+#include "ap_Win32Res_SplitCells.rc2"
+#include "ap_Win32Res_DlgFormatTOC.rc2"
+#include "ap_Win32Res_DlgLatex.rc2"
+#include "ap_Win32Res_DlgAnnotation.rc2"

@@ -1,0 +1,59 @@
+// AbiWord
+// Copyright (C) 2003 Jordi Mas i Hernàndez, jmas@softcatala.org
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+
+
+#define AP_RID_DIALOG_MAILMERGE_BTN_INSERT		1100
+#define AP_RID_DIALOG_MAILMERGE_BTN_CLOSE		1101
+#define AP_RID_DIALOG_MAILMERGE_BTN_OPEN		1102
+#define AP_RID_DIALOG_MAILMERGE_STATIC_AVAIL	1103
+#define AP_RID_DIALOG_MAILMERGE_STATIC_FIELD	1104
+#define AP_RID_DIALOG_MAILMERGE_EDIT_FIELD		1105
+#define AP_RID_DIALOG_MAILMERGE_LISTBOX			1107
+
+#ifdef RC_INVOKED
+
+AP_RID_DIALOG_MAILMERGE DIALOG DISCARDABLE  0, 0, 276, 157
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Insert Mail Merge Field"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Insert",AP_RID_DIALOG_MAILMERGE_BTN_INSERT,148,130,50,14
+    PUSHBUTTON      "Close",AP_RID_DIALOG_MAILMERGE_BTN_CLOSE,217,130,50,14
+    DEFPUSHBUTTON   "Open",AP_RID_DIALOG_MAILMERGE_BTN_OPEN,81,130,50,14
+    LTEXT           "Available fields",AP_RID_DIALOG_MAILMERGE_STATIC_AVAIL,14,20,223,8
+    EDITTEXT        AP_RID_DIALOG_MAILMERGE_EDIT_FIELD,25,102,212,14,ES_AUTOHSCROLL
+    LTEXT           "Field Name",AP_RID_DIALOG_MAILMERGE_STATIC_FIELD,14,87,223,8
+    LISTBOX         AP_RID_DIALOG_MAILMERGE_LISTBOX,25,37,212,40,LBS_SORT | LBS_NOINTEGRALHEIGHT | 
+                    WS_VSCROLL | WS_TABSTOP
+END
+
+#endif /* RC_INVOKED */
+
+
+

@@ -1,0 +1,67 @@
+// AbiWord
+// Copyright (C) 2004 Tomas Frydrych <tomasfrydrych@yahoo.co.uk>
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+
+// start at 500 (ap id's start at 200 and will soon reach 300)
+#define UT_RID_DIALOG_ASSERT 500
+#define UT_RID_DIALOG_ASSERT_DEBUG           5001
+#define UT_RID_DIALOG_ASSERT_IGNORE          5002
+#define UT_RID_DIALOG_ASSERT_IGNOREALLWAYS   5003
+#define UT_RID_DIALOG_ASSERT_ABORT           5004
+#define UT_RID_DIALOG_ASSERT_STATIC          5005
+#define UT_RID_DIALOG_ASSERT_LABEL1          5006
+#define UT_RID_DIALOG_ASSERT_LABEL2          5007
+#define UT_RID_DIALOG_ASSERT_LABEL3          5008
+#define UT_RID_DIALOG_ASSERT_LABEL4          5009
+#define UT_RID_DIALOG_ASSERT_FILE            5010
+#define UT_RID_DIALOG_ASSERT_LINE            5011
+#define UT_RID_DIALOG_ASSERT_CONDITION       5012
+#define UT_RID_DIALOG_ASSERT_COUNT           5013
+
+#ifdef RC_INVOKED
+
+UT_RID_DIALOG_ASSERT DIALOG DISCARDABLE  0, 0, 363, 103
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU | DS_CENTER
+CAPTION "AbiWord Debug Assertion"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "&Debug",UT_RID_DIALOG_ASSERT_DEBUG,66,82,50,14
+    PUSHBUTTON      "&Ignore",UT_RID_DIALOG_ASSERT_IGNORE,124,82,50,14
+    PUSHBUTTON      "Ignore &Always",UT_RID_DIALOG_ASSERT_IGNOREALLWAYS,184,82,50,14
+    PUSHBUTTON      "A&bort",UT_RID_DIALOG_ASSERT_ABORT,244,82,50,14
+    LTEXT           "The following assertion failed:",UT_RID_DIALOG_ASSERT_STATIC,7,7,349,9
+    LTEXT           "File:",UT_RID_DIALOG_ASSERT_LABEL1,50,23,37,10
+    LTEXT           "Line:",UT_RID_DIALOG_ASSERT_LABEL2,50,36,37,10
+    LTEXT           "Condition:",UT_RID_DIALOG_ASSERT_LABEL3,50,49,37,10
+    LTEXT           "Count:",UT_RID_DIALOG_ASSERT_LABEL4,50,62,37,10
+    LTEXT           "filename",UT_RID_DIALOG_ASSERT_FILE,92,23,253,10
+    LTEXT           "linenumber",UT_RID_DIALOG_ASSERT_LINE,92,36,253,10
+    LTEXT           "condition",UT_RID_DIALOG_ASSERT_CONDITION,92,49,253,10
+    LTEXT           "count",UT_RID_DIALOG_ASSERT_COUNT,92,62,253,10
+END
+#endif /* RC_INVOKED */
