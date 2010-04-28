@@ -2154,6 +2154,8 @@ bool fp_Column::hasEmptySpaceAtBottom(void)
 	  return false;
 	if(pNext->getContainerType() == FP_CONTAINER_ENDNOTE)
 	    return false;
+	if(pNext->getContainer() == NULL)
+	    return false;
 	if(pNext->getContainer()->getContainerType() == FP_CONTAINER_ENDNOTE)
 	    return false;
 	fp_Line * pNLine = static_cast<fp_Line *>(pNext);
