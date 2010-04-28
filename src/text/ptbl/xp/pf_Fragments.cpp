@@ -37,7 +37,7 @@ void pf_Fragments::Node::print()
   if (!item)
     return;
 				
-  printf("%c (%i, %i) \n", color == red ? 'R' : 'B', item->m_leftTreeLength, item->m_length);
+  printf("%c (%i, %i) \n", color == red ? 'R' : 'B', item->getLeftTreeLength(), item->getLength());
 
   if (left && left->item)
   {
