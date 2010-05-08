@@ -148,6 +148,12 @@ UT_Error IE_Imp_AbiCollab::_openDocument(GsfInput * input, ServiceAccountHandler
 	return UT_ERROR;
 }
 
+#define get_xml_str(S,X) { \
+	xmlChar* pS = xmlNodeGetContent(X); \
+	S = reinterpret_cast<const char*>(pS); \
+	xmlFree(pS); \
+}
+
 bool IE_Imp_AbiCollab::_parse(GsfInput * input, std::string& email, std::string& server, UT_sint64& doc_id, UT_sint64& revision)
 {
 	guint8 const* contents = gsf_input_read(input, gsf_input_size(input), NULL);
@@ -169,14 +175,23 @@ bool IE_Imp_AbiCollab::_parse(GsfInput * input, std::string& email, std::string&
 	{
 		if (child->type != XML_ELEMENT_NODE)
 			continue;
+
 		if (strcmp(reinterpret_cast<const char*>(child->name), "email") == 0)
-			email = reinterpret_cast<const char*>(xmlNodeGetContent(child)); // FIXME: memory leak
+		{
+			get_xml_str(email, child);
+		}
 		else if (strcmp(reinterpret_cast<const char*>(child->name), "server") == 0)
-			server = reinterpret_cast<const char*>(xmlNodeGetContent(child)); // FIXME: memory leak
+		{
+			get_xml_str(server, child);
+		}
 		else if (strcmp(reinterpret_cast<const char*>(child->name), "doc_id") == 0)
-			doc_id_ = reinterpret_cast<const char*>(xmlNodeGetContent(child)); // FIXME: memory leak
+		{
+			get_xml_str(doc_id_, child);
+		}
 		else if (strcmp(reinterpret_cast<const char*>(child->name), "revision") == 0)
-			revision_ = reinterpret_cast<const char*>(xmlNodeGetContent(child)); // FIXME: memory leak
+		{
+			get_xml_str(revision_, child);
+		}
 	}
 	
 	UT_return_val_if_fail(email != "" && server != "" && doc_id_ != "" && revision_ != "", false);
