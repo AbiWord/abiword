@@ -1002,7 +1002,7 @@ bool pt_PieceTable::_getStruxFromPosition(PT_DocPosition docPos,
 	xxx_UT_DEBUGMSG(("countEndNotes final %d \n",countEndFootnotes));
   	pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pfFirst);
   	*ppfs = pfs;
-    return true;
+	return pfs != NULL;
 }
 
 bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
