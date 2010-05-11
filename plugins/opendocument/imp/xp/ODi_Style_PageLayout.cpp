@@ -338,7 +338,7 @@ UT_UTF8String ODi_Style_PageLayout::_buildSectionPropsString(bool hasHeader, boo
     if (!hasFooter) {
         // We don't have a footer.
         // The property maps directly.
-        APPEND_STYLE("page-margin-bottom", m_marginTop);
+        APPEND_STYLE("page-margin-bottom", m_marginBottom);
     } else {
         // We do have a footer.
         // Abi's page-margin-bottom = OD's page fo:margin-bottom +
