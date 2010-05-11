@@ -190,7 +190,7 @@ void pf_Fragments::insertFragBefore(pf_Frag * pfPlace, pf_Frag * pfNew)
 void pf_Fragments::unlinkFrag(pf_Frag * pf)
 {
 	// NOTE:  it is the caller's responsibility to delete pf if appropriate.
-	
+        UT_DEBUGMSG(("Unlinking frag %p \n",pf));
 	UT_return_if_fail (pf->getType() != pf_Frag::PFT_EndOfDoc);
 
 	Iterator it(this,pf->_getNode());
@@ -501,8 +501,10 @@ void
 pf_Fragments::erase(Iterator& it)
 {
 	if (!it.is_valid())
+	{
+	  UT_DEBUGMSG(("Inavlid frag %p in erase \n",it.getNode()->item));
 		return;
-
+	}
 	Node* pNode = it.getNode();
 	UT_ASSERT(pNode);
 
@@ -521,13 +523,15 @@ pf_Fragments::erase(Iterator& it)
 	if (!y->parent)
 	{
 		m_pRoot = son;
-		xxx_UT_DEBUGMSG(("2 Root node set to %p \n",son));
+		UT_DEBUGMSG(("2 Root node set to %p \n",son));
 	}
 	else
+	{
 		if (y->parent->left == y)
 			y->parent->left = son;
 		else
 			y->parent->right = son;
+	}
 
 	if (y != pNode)
 	{
@@ -543,6 +547,7 @@ pf_Fragments::erase(Iterator& it)
 		pNode->item->_setNode(pNode);
 		Iterator it_temp(this, pNode);
 		fixSize(it_temp);
+		UT_DEBUGMSG(("Fixed size of pNode \n"));
 	}
 
 	if (son->parent)
@@ -550,12 +555,16 @@ pf_Fragments::erase(Iterator& it)
 		/* and fix the whole left branch of the tree */
 		Iterator it_temp(this, son);
 		fixSize(it_temp);
+		UT_DEBUGMSG(("Fixed size of parent \n"));
 	}
 		
 	if (y->color == Node::black)
+	{
 		_eraseFixup(son);
-
+		UT_DEBUGMSG(("called eraseFixup \n"));
+	}
 	delete y;
+	verifyDoc();
 }
 
 /**
@@ -689,13 +698,16 @@ pf_Fragments::_eraseFixup(Node* x)
 	x->color = Node::black;
 }
 
+
 pf_Fragments::Iterator
-pf_Fragments::find(PT_DocPosition pos) const
+pf_Fragments::find(PT_DocPosition orig_pos) const
 {
 	Node* x = m_pRoot;
+	PT_DocPosition pos = orig_pos;
 	while (x != m_pLeaf)
 	{
 		pf_Frag* p = x->item;
+		xxx_UT_DEBUGMSG(("pos %d leftLength %d length %d",pos,p->getLeftTreeLength(),p->getLength()));
 		if(p == NULL)
 		{
 		    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -712,8 +724,29 @@ pf_Fragments::find(PT_DocPosition pos) const
 		}
 	}
 
-	UT_ASSERT(pos >= sizeDocument());
+	//	UT_ASSERT(orig_pos >= sizeDocument());
+	if(orig_pos < sizeDocument())
+	{
+	  verifyDoc();
+	}
 	return Iterator(this, 0);
+}
+
+void pf_Fragments::verifyDoc(void) const
+{
+  PT_DocPosition pos = 0;
+  pf_Frag * pf = getFirst();
+  UT_sint32 count = 0;
+  while(pf && (pf->getType() !=  pf_Frag::PFT_EndOfDoc))
+  {
+    
+    UT_DEBUGMSG(("frag %d pointer %p pos %d leftLength %d length %d PT Pos %d \n",count,pf,pos,pf->getLeftTreeLength(),pf->getLength(),pf->getPos()));
+    UT_ASSERT(pos == pf->getPos());
+    count++;
+    pos += pf->getLength();
+    pf = pf->getNext();
+  }
+  
 }
 
 PT_DocPosition

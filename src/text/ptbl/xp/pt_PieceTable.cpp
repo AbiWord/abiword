@@ -124,6 +124,24 @@ bool pt_PieceTable::deleteFragNoUpdate(pf_Frag * pf)
 	return true;
 }
 
+/*!
+ * Itterate through the document to calculate the document size
+ * Don't call this in production code. This is used only for recovery and 
+ * testing purposes
+ */
+UT_sint32 pt_PieceTable::calcDocsize(void)
+{
+	UT_sint32 size = 0;
+	pf_Frag * pf = getFragments().getFirst();
+	while(pf && (pf->getType() !=  pf_Frag::PFT_EndOfDoc))
+	{
+		size += static_cast<UT_sint32>(pf->getLength());
+		pf = pf->getNext();
+	}
+	UT_ASSERT(pf->getType() ==  pf_Frag::PFT_EndOfDoc);
+	return size;
+}
+
 bool pt_PieceTable::createAndSendDocPropCR( const gchar ** pAtts, const gchar ** pProps)
 {
 	PT_AttrPropIndex indexAP = 0;

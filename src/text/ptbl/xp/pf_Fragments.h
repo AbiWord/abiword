@@ -51,7 +51,7 @@ public:
 
 	pf_Frag *				getFirst() const;
 	pf_Frag *				getLast() const;
-
+	void                                    verifyDoc(void) const;
 #ifdef PT_TEST
 	void					__dump(FILE * fp) const;
 #endif

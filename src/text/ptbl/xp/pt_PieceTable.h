@@ -355,6 +355,7 @@ public:
 	UT_uint32               getTopXID() const {return m_iXID;}
 	void                    setXIDThreshold(UT_uint32 i){m_iXID = i;}
 	void                    fixMissingXIDs();
+	UT_sint32               calcDocsize(void);
 	void                    setCRNumber(UT_sint32 iCRNumber)
 	{ m_iCurCRNumber = iCRNumber;}
 #ifdef PT_TEST
