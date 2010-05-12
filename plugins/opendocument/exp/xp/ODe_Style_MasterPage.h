@@ -47,7 +47,16 @@ public:
     void setName(const UT_UTF8String& rName) {
         m_name = rName;
     }
-    
+
+    void setPageLayoutName(const UT_UTF8String& rPageLayoutName) {
+        m_pageLayoutName = rPageLayoutName;
+    }
+
+    bool hasProperties() const {
+        return !m_abiHeaderId.empty() ||
+               !m_abiFooterId.empty();
+    }
+
     // Write the <style:master-page> element.
     bool write(GsfOutput* pODT) const;
     
