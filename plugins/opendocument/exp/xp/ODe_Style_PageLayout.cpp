@@ -58,22 +58,6 @@ void ODe_Style_PageLayout::fetchAttributesFromAbiDoc(PD_Document* pAbiDoc) {
     } else {
             m_printOrientation = "landscape";
     }
-    
-    UT_UTF8String_sprintf(m_marginTop, "%f%s",
-                          pAbiDoc->m_docPageSize.MarginTop(docUnit),
-                          pDimensionName);
-                          
-    UT_UTF8String_sprintf(m_marginBottom, "%f%s",
-                          pAbiDoc->m_docPageSize.MarginBottom(docUnit),
-                          pDimensionName);
-                          
-    UT_UTF8String_sprintf(m_marginLeft, "%f%s",
-                          pAbiDoc->m_docPageSize.MarginLeft(docUnit),
-                          pDimensionName);
-                          
-    UT_UTF8String_sprintf(m_marginRight, "%f%s",
-                          pAbiDoc->m_docPageSize.MarginRight(docUnit),
-                          pDimensionName);
 }
 
 
@@ -127,7 +111,7 @@ void ODe_Style_PageLayout::fetchAttributesFromAbiSection(const PP_AttrProp* pAP)
     if (ok && pValue != NULL)
         m_marginTop = pValue;
     if (m_marginTop.size() == 0)
-	    m_marginTop = "1.0in";
+	    m_marginTop = fp_PageSize::getDefaultPageMargin(DIM_IN);
     
     if (hasHeader)
     {
@@ -154,7 +138,7 @@ void ODe_Style_PageLayout::fetchAttributesFromAbiSection(const PP_AttrProp* pAP)
     if (ok && pValue != NULL)
         m_marginBottom = pValue;
     if (m_marginBottom.size() == 0)
-	    m_marginBottom = "1.0in";
+	    m_marginBottom = fp_PageSize::getDefaultPageMargin(DIM_IN);
 
     if (hasFooter)
     {
@@ -177,13 +161,13 @@ void ODe_Style_PageLayout::fetchAttributesFromAbiSection(const PP_AttrProp* pAP)
     if (ok && pValue != NULL)
         m_marginLeft = pValue;
     if (m_marginLeft.size() == 0)
-	    m_marginLeft = "1.0in";
+		m_marginLeft = fp_PageSize::getDefaultPageMargin(DIM_IN);
 
     ok = pAP->getProperty("page-margin-right", pValue);
     if (ok && pValue != NULL)
         m_marginRight = pValue;
     if(m_marginRight.size() == 0)
-	    m_marginRight = "1.0in";
+	    m_marginRight = fp_PageSize::getDefaultPageMargin(DIM_IN);
 
     ok = pAP->getProperty("background-color", pValue);
     if (ok && pValue && *pValue) {

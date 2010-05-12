@@ -2281,42 +2281,7 @@ void fl_DocSectionLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	else
 		dim = DIM_IN;
 
-	UT_String defaultMargin;
-	switch(dim)
-	{
-	case DIM_IN:
-		defaultMargin = "1.0in";
-		break;
-
-	case DIM_CM:
-		defaultMargin = "2.54cm";
-		break;
-
-	case DIM_PI:
-		defaultMargin = "6.0pi";
-		break;
-
-	case DIM_PT:
-		defaultMargin= "72.0pt";
-		break;
-
-	case DIM_MM:
-		defaultMargin= "25.4mm";
-		break;
-
-		// TODO: PX, and PERCENT
-		// let them fall through to the default now
-		// and we don't use them anyway
-#if 0
-	case DIM_PX:
-	case DIM_PERCENT:
-#endif
-	case DIM_none:
-	default:
-		defaultMargin = "1.0in";	// TODO: what to do with this.
-		break;
-
-	}
+	UT_UTF8String defaultMargin = fp_PageSize::getDefaultPageMargin(dim);
 
 	if(pszLeftMargin && pszLeftMargin[0])
 	{
@@ -2325,8 +2290,8 @@ void fl_DocSectionLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		m_iLeftMargin = UT_convertToLogicalUnits(defaultMargin.c_str());
-		m_dLeftMarginUserUnits = UT_convertDimensionless(defaultMargin.c_str());
+		m_iLeftMargin = UT_convertToLogicalUnits(defaultMargin.utf8_str());
+		m_dLeftMarginUserUnits = UT_convertDimensionless(defaultMargin.utf8_str());
 	}
 
 	if(pszTopMargin && pszTopMargin[0])
@@ -2336,8 +2301,8 @@ void fl_DocSectionLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		m_iTopMargin = UT_convertToLogicalUnits(defaultMargin.c_str());
-		m_dTopMarginUserUnits = UT_convertDimensionless(defaultMargin.c_str());
+		m_iTopMargin = UT_convertToLogicalUnits(defaultMargin.utf8_str());
+		m_dTopMarginUserUnits = UT_convertDimensionless(defaultMargin.utf8_str());
 	}
 
 	if(pszRightMargin && pszRightMargin[0])
@@ -2347,8 +2312,8 @@ void fl_DocSectionLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		m_iRightMargin = UT_convertToLogicalUnits(defaultMargin.c_str());
-		m_dRightMarginUserUnits = UT_convertDimensionless(defaultMargin.c_str());
+		m_iRightMargin = UT_convertToLogicalUnits(defaultMargin.utf8_str());
+		m_dRightMarginUserUnits = UT_convertDimensionless(defaultMargin.utf8_str());
 	}
 
 	if(pszBottomMargin && pszBottomMargin[0])
@@ -2358,8 +2323,8 @@ void fl_DocSectionLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		m_iBottomMargin = UT_convertToLogicalUnits(defaultMargin.c_str());
-		m_dBottomMarginUserUnits = UT_convertDimensionless(defaultMargin.c_str());
+		m_iBottomMargin = UT_convertToLogicalUnits(defaultMargin.utf8_str());
+		m_dBottomMarginUserUnits = UT_convertDimensionless(defaultMargin.utf8_str());
 	}
 
 	if(pszFooterMargin && pszFooterMargin[0])
