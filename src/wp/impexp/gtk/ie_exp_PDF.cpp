@@ -89,13 +89,9 @@ public:
     std::set<UT_sint32> pages;
     const std::string & pages_prop = getProperty ("pages");
 
-    double mrgnTop, mrgnBottom, mrgnLeft, mrgnRight, width, height;
+    double width, height;
     bool portrait;
 
-    mrgnTop = getDoc()->m_docPageSize.MarginTop(DIM_IN);
-    mrgnBottom = getDoc()->m_docPageSize.MarginBottom(DIM_IN);
-    mrgnLeft = getDoc()->m_docPageSize.MarginLeft(DIM_IN);
-    mrgnRight = getDoc()->m_docPageSize.MarginRight(DIM_IN);
     width = getDoc()->m_docPageSize.Width (DIM_IN);
     height = getDoc()->m_docPageSize.Height (DIM_IN);
     portrait = getDoc()->m_docPageSize.isPortrait();

@@ -39,6 +39,7 @@
 #include "ap_FrameData.h"
 #include "gr_DrawArgs.h"
 #include "ap_Strings.h"
+#include "ap_EditMethods.h"
 
 #define GTKPRINTRES 72.
 
@@ -201,7 +202,8 @@ void XAP_UnixDialog_Print::setPreview(bool b)
 
 void XAP_UnixDialog_Print::setupPrint()
 {
-	double mrgnTop, mrgnBottom, mrgnLeft, mrgnRight, width, height;
+	double blockMrgnLeft, blockMrgnRight, mrgnTop, mrgnBottom, mrgnLeft, mrgnRight = 0.;
+	double width, height;
 	bool portrait;
 
 	m_pView = static_cast<FV_View*>(m_pFrame->getCurrentView());
@@ -228,10 +230,7 @@ void XAP_UnixDialog_Print::setupPrint()
         g_object_unref(pSettings);
     }
 
-	mrgnTop = m_pView->getPageSize().MarginTop(DIM_MM);
-	mrgnBottom = m_pView->getPageSize().MarginBottom(DIM_MM);
-	mrgnLeft = m_pView->getPageSize().MarginLeft(DIM_MM);
-	mrgnRight = m_pView->getPageSize().MarginRight(DIM_MM);
+	s_getPageMargins(m_pView, blockMrgnLeft, blockMrgnRight, mrgnLeft, mrgnRight,  mrgnTop, mrgnBottom);
 
 	portrait = m_pView->getPageSize().isPortrait();
 		
@@ -378,10 +377,10 @@ void XAP_UnixDialog_Print::setupPrint()
 	//
 	// Set the margins
 	//
-	gtk_page_setup_set_top_margin(m_pPageSetup,mrgnTop,GTK_UNIT_MM);
-	gtk_page_setup_set_bottom_margin(m_pPageSetup,mrgnBottom,GTK_UNIT_MM);
-	gtk_page_setup_set_left_margin(m_pPageSetup,mrgnLeft,GTK_UNIT_MM);
-	gtk_page_setup_set_right_margin(m_pPageSetup,mrgnRight,GTK_UNIT_MM);
+	gtk_page_setup_set_top_margin(m_pPageSetup,mrgnTop,GTK_UNIT_INCH);
+	gtk_page_setup_set_bottom_margin(m_pPageSetup,mrgnBottom,GTK_UNIT_INCH);
+	gtk_page_setup_set_left_margin(m_pPageSetup,mrgnLeft,GTK_UNIT_INCH);
+	gtk_page_setup_set_right_margin(m_pPageSetup,mrgnRight,GTK_UNIT_INCH);
 	//
 	// Set orientation
 	//

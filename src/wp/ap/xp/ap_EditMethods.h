@@ -45,7 +45,9 @@ void s_getPageMargins(FV_View * inView,
 					  double &margin_left,
 					  double &margin_right,
 					  double &page_margin_left,
-					  double &page_margin_right);
+					  double &page_margin_right,
+					  double &page_margin_top,
+					  double &page_margin_bottom );
 
 bool s_doTabDlg(FV_View * pView);
 
