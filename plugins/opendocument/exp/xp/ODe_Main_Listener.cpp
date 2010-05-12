@@ -82,38 +82,40 @@ void ODe_Main_Listener::openSection(const PP_AttrProp* pAP,
 
     if (ODe_Style_PageLayout::hasPageLayoutInfo(pAP)) {
 
-        ODe_Style_PageLayout* pPageLayout;        
-
         if (m_isFirstSection) {
             // Use stantard master page and page layout.
 
-            pPageLayout = m_rDocumentData.m_stylesAutoStyles.getPageLayout("Standard");
+            ODe_Style_PageLayout* pPageLayout = m_rDocumentData.m_stylesAutoStyles.getPageLayout("Standard");
+            pPageLayout->fetchAttributesFromAbiSection(pAP);
             pMPStyle = m_rDocumentData.m_masterStyles.pick("Standard");
+            pMPStyle->fetchAttributesFromAbiSection(pAP);
             UT_DEBUGMSG(("Got PageLayout %p AutoStyles %p \n",pPageLayout,&m_rDocumentData.m_stylesAutoStyles));
             m_isFirstSection = false;
 
         } else {
 
             UT_UTF8String styleName;
-            UT_UTF8String layoutName;
-    		
     		UT_UTF8String_sprintf(styleName, "MasterStyle%d",
                                   m_rDocumentData.m_masterStyles.size());
     		
+            pMPStyle = new ODe_Style_MasterPage(styleName.utf8_str(), "");
+            pMPStyle->fetchAttributesFromAbiSection(pAP);
 
-        	pPageLayout = m_rDocumentData.m_stylesAutoStyles.addPageLayout();
-        	layoutName = pPageLayout->getName();
-            
-            pMPStyle = new ODe_Style_MasterPage(styleName.utf8_str(),
-                                                layoutName.utf8_str());
+            // only write out a new MasterPage when it actually has some
+            // useful properties in it
+            if (pMPStyle->hasProperties())
+            {
+                ODe_Style_PageLayout* pPageLayout = m_rDocumentData.m_stylesAutoStyles.addPageLayout();
+                pPageLayout->fetchAttributesFromAbiSection(pAP);
+                pMPStyle->setPageLayoutName(pPageLayout->getName());
 
-            m_rDocumentData.m_masterStyles.insert(styleName.utf8_str(),pMPStyle);
-            pendingMasterPageStyleChange = true;
-            masterPageStyleName = styleName;
+                m_rDocumentData.m_masterStyles.insert(styleName.utf8_str(),pMPStyle);
+                pendingMasterPageStyleChange = true;
+                masterPageStyleName = styleName;
+            }
         }
+
         
-        pMPStyle->fetchAttributesFromAbiSection(pAP);
-        pPageLayout->fetchAttributesFromAbiSection(pAP);
 	//
 	// OK Set up a "standard" default set of properties
 	//
