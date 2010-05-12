@@ -12152,7 +12152,9 @@ void s_getPageMargins(FV_View * pView,
 					  double &margin_left,
 					  double &margin_right,
 					  double &page_margin_left,
-					  double &page_margin_right)
+					  double &page_margin_right,
+					  double &page_margin_top,
+					  double &page_margin_bottom)
 {
   UT_return_if_fail(pView);
   // get current char properties from pView
@@ -12191,6 +12193,22 @@ void s_getPageMargins(FV_View * pView,
 		page_margin_right = UT_convertToInches(sz);
 		FREEP(props_in);
 	}
+
+	{
+		prop = "page-margin-top";
+		pView->getSectionFormat(&props_in);
+		sz = UT_getAttribute(prop, props_in);
+		page_margin_top	 = UT_convertToInches(sz);
+		FREEP(props_in);
+	}
+
+	{
+		prop = "page-margin-bottom";
+		pView->getSectionFormat(&props_in);
+		sz = UT_getAttribute(prop, props_in);
+		page_margin_bottom = UT_convertToInches(sz);
+		FREEP(props_in);
+	}
 }
 
 // MSWord defines this to 1/2 an inch, so we do too
@@ -12205,10 +12223,12 @@ Defun1(toggleIndent)
   double page_size = pView->getPageSize().Width (DIM_IN);
 
   double margin_left = 0., margin_right = 0., allowed = 0.,
-	  page_margin_left = 0., page_margin_right = 0.;
+	  page_margin_left = 0., page_margin_right = 0.,
+	  page_margin_top = 0., page_margin_bottom = 0.;
 
   s_getPageMargins (pView, margin_left, margin_right,
-					page_margin_left, page_margin_right);
+					page_margin_left, page_margin_right,
+					page_margin_top, page_margin_bottom);
 
   allowed = page_size - page_margin_left - page_margin_right;
   if (margin_left >= allowed)
@@ -12232,10 +12252,12 @@ Defun1(toggleUnIndent)
   bool doLists = true;
 
   double margin_left = 0., margin_right = 0., allowed = 0.,
-	  page_margin_left = 0., page_margin_right = 0.;
+	  page_margin_left = 0., page_margin_right = 0.,
+	  page_margin_top = 0., page_margin_bottom = 0.;
 
   s_getPageMargins (pView, margin_left, margin_right,
-					page_margin_left, page_margin_right);
+					page_margin_left, page_margin_right,
+					page_margin_top, page_margin_bottom);
 
   fl_BlockLayout * pBL = pView->getCurrentBlock();
   UT_BidiCharType iBlockDir = UT_BIDI_LTR;
