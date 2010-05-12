@@ -27,6 +27,8 @@
 #pragma warning(disable: 4522) // multiple assignment operators specified
 #endif
 
+class UT_UTF8String;
+
 class ABI_EXPORT fp_PageSize
 {
 public:
@@ -50,6 +52,8 @@ public:
 		_last_predefined_pagesize_dont_use_
 	};
 
+	UT_UTF8String static getDefaultPageMargin(UT_Dimension dim);
+
 	fp_PageSize(Predefined preDef);
 	fp_PageSize(const char *name);
 	fp_PageSize(double w, double h, UT_Dimension u);
@@ -69,14 +73,6 @@ public:
 	double Width(UT_Dimension u) const;
 	double Height(UT_Dimension u) const;
 
-	/* These accessor methods should be used with the 
-	 * predefined page sizes to set proper initial margins. */
-	/* I don't think this is done at present. */
-	double MarginLeft(UT_Dimension u) const;
-	double MarginRight(UT_Dimension u) const;
-	double MarginTop(UT_Dimension u) const;
-	double MarginBottom(UT_Dimension u) const;
-
 	double getScale(void) const { return m_scale; } 
 	UT_Dimension getDims(void) const { return m_unit; }
 	inline char * getPredefinedName (void) const { return m_predefined; }
@@ -90,11 +86,6 @@ private:
 
 	double m_iWidth;
 	double m_iHeight;
-
-	double m_iMarginLeft;
-	double m_iMarginRight;
-	double m_iMarginTop;
-	double m_iMarginBottom;
 
 	bool m_bisPortrait;
 	double m_scale;

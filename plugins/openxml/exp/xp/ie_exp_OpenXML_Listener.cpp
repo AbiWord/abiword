@@ -1089,22 +1089,14 @@ UT_Error IE_Exp_OpenXML_Listener::setPageSize()
 	double w = ps->Width(DIM_IN) * 1440; //1440 twips = 1 in
 	double h = ps->Height(DIM_IN) * 1440;
 	bool portrait = ps->isPortrait();
-	double mt = ps->MarginTop(DIM_IN);
-	double ml = ps->MarginLeft(DIM_IN);
-	double mr = ps->MarginRight(DIM_IN);
-	double mb = ps->MarginBottom(DIM_IN);
 
 	std::string width(UT_convertToDimensionlessString(w, ".0"));
 	std::string height(UT_convertToDimensionlessString(h, ".0"));
 	std::string orientation("portrait");
-	std::string marginTop(UT_convertToDimensionlessString(mt, ".0"));
-	std::string marginLeft(UT_convertToDimensionlessString(ml, ".0"));
-	std::string marginRight(UT_convertToDimensionlessString(mr, ".0"));
-	std::string marginBottom(UT_convertToDimensionlessString(mb, ".0"));
-	marginTop += "in";
-	marginLeft += "in";
-	marginRight += "in";
-	marginBottom += "in";
+	std::string marginTop = fp_PageSize::getDefaultPageMargin(DIM_IN).utf8_str();
+	std::string marginLeft = fp_PageSize::getDefaultPageMargin(DIM_IN).utf8_str();
+	std::string marginRight = fp_PageSize::getDefaultPageMargin(DIM_IN).utf8_str();
+	std::string marginBottom = fp_PageSize::getDefaultPageMargin(DIM_IN).utf8_str();
 
 	if(!portrait)
 		orientation = "landscape";

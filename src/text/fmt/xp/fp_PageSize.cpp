@@ -5,7 +5,7 @@
 #include "ut_units.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-
+#include "ut_string_class.h"
 
 // This class stores the pagesize in mm. The resoning behind
 // that is that mm is at least a derived unit from an ISO standard.
@@ -34,6 +34,11 @@ struct private_pagesize_sizes
 // find these out ASAP!
 #define MARGIN_UNKNOWN 28.0
 
+// We don't actually use the page margins listed in the table below anywhere. 
+// The layout engine looks for the margins defined in the (template) document
+// and if it doesn't find them there, it simply calls fp_PageSize::getDefaultPageMargin()
+// to get the default margin value. In the future we might want to use the margins
+// defined in the table below to get a better default value to use.
 const private_pagesize_sizes
 pagesizes[fp_PageSize::_last_predefined_pagesize_dont_use_] =
 {
@@ -133,14 +138,37 @@ pagesizes[fp_PageSize::_last_predefined_pagesize_dont_use_] =
 	{ 210.0,  297.0, DIM_MM,	"Custom", 28.0, 28.0, 28.0, 28.0 }
 };
 
+UT_UTF8String fp_PageSize::getDefaultPageMargin(UT_Dimension dim)
+{
+	switch(dim)
+	{
+	case DIM_IN:
+		return "1.0in";
+	case DIM_CM:
+		return "2.54cm";
+	case DIM_PI:
+		return "6.0pi";
+	case DIM_PT:
+		return "72.0pt";
+	case DIM_MM:
+		return "25.4mm";
+		// TODO: PX, and PERCENT
+		// let them fall through to the default now
+		// and we don't use them anyway
+#if 0
+	case DIM_PX:
+	case DIM_PERCENT:
+#endif
+	case DIM_none:
+	default:
+		return "1.0in";	// TODO: what to do with this.
+	}
+}
+
 fp_PageSize::fp_PageSize(Predefined preDef)
 	: m_predefined(NULL)
 	, m_iWidth(0)
 	, m_iHeight(0)
-	, m_iMarginLeft(0)
-	, m_iMarginRight(0)
-	, m_iMarginTop(0)
-	, m_iMarginBottom(0)
 	, m_unit(DIM_MM)
 {
 	m_bisPortrait = true;
@@ -156,10 +184,6 @@ fp_PageSize::fp_PageSize(const char *name)
 	: m_predefined(NULL)
 	, m_iWidth(0)
 	, m_iHeight(0)
-	, m_iMarginLeft(0)
-	, m_iMarginRight(0)
-	, m_iMarginTop(0)
-	, m_iMarginBottom(0)
 	, m_unit(DIM_MM)
 {
 	m_bisPortrait = true;
@@ -175,10 +199,6 @@ fp_PageSize::fp_PageSize(double w, double h, UT_Dimension u)
 	: m_predefined(NULL)
 	, m_iWidth(w)
 	, m_iHeight(w)
-	, m_iMarginLeft(0)
-	, m_iMarginRight(0)
-	, m_iMarginTop(0)
-	, m_iMarginBottom(0)
 	, m_unit(u)
 {
 	UT_ASSERT(u >= DIM_IN && u <= DIM_none);
@@ -193,10 +213,6 @@ fp_PageSize& fp_PageSize::operator=(fp_PageSize& rhs)
   m_predefined = rhs.m_predefined;
   m_iWidth = rhs.m_iWidth;
   m_iHeight = rhs.m_iHeight;
-  m_iMarginLeft = rhs.m_iMarginLeft;
-  m_iMarginRight = rhs.m_iMarginRight;
-  m_iMarginTop = rhs.m_iMarginTop;
-  m_iMarginBottom = rhs.m_iMarginBottom;
   m_bisPortrait = rhs.m_bisPortrait;
   m_scale = rhs.m_scale;
   m_unit = rhs.m_unit;
@@ -209,10 +225,6 @@ fp_PageSize& fp_PageSize::operator=(const fp_PageSize& rhs)
   m_predefined = rhs.m_predefined;
   m_iWidth = rhs.m_iWidth;
   m_iHeight = rhs.m_iHeight;
-  m_iMarginLeft = rhs.m_iMarginLeft;
-  m_iMarginRight = rhs.m_iMarginRight;
-  m_iMarginTop = rhs.m_iMarginTop;
-  m_iMarginBottom = rhs.m_iMarginBottom;
   m_bisPortrait = rhs.m_bisPortrait;
   m_scale = rhs.m_scale;
   m_unit = rhs.m_unit;
@@ -316,10 +328,6 @@ void fp_PageSize::Set(Predefined preDef, UT_Dimension u)
 	// Always scale to mm's, which we store.
 		m_iWidth        = UT_convertDimensions(size.w, size.u, FUND);
 		m_iHeight       = UT_convertDimensions(size.h, size.u, FUND);
-		m_iMarginTop    = UT_convertDimensions(size.t, size.u, FUND);
-		m_iMarginBottom = UT_convertDimensions(size.b, size.u, FUND);
-		m_iMarginLeft   = UT_convertDimensions(size.l, size.u, FUND);
-		m_iMarginRight  = UT_convertDimensions(size.r, size.u, FUND);
 	}
 	m_predefined = (char*)(pagesizes [preDef].name);
 }
@@ -438,46 +446,6 @@ double fp_PageSize::Height(UT_Dimension u) const
 		return m_scale * UT_convertDimensions(m_iHeight, FUND, u);
 	else
 		return m_scale * UT_convertDimensions(m_iWidth, FUND, u);
-}
-
-double fp_PageSize::MarginTop(UT_Dimension u) const
-{
-	UT_ASSERT(u >= DIM_IN && u <= DIM_none);
-
-	if(m_bisPortrait == true)
-		return m_scale * UT_convertDimensions(m_iMarginTop, FUND, u);
-	else
-		return m_scale * UT_convertDimensions(m_iMarginRight, FUND, u);
-}
-
-double fp_PageSize::MarginBottom(UT_Dimension u) const
-{
-	UT_ASSERT(u >= DIM_IN && u <= DIM_none);
-
-	if(m_bisPortrait == true)
-		return m_scale * UT_convertDimensions(m_iMarginBottom, FUND, u);
-	else
-		return m_scale * UT_convertDimensions(m_iMarginLeft, FUND, u);
-}
-
-double fp_PageSize::MarginLeft(UT_Dimension u) const
-{
-	UT_ASSERT(u >= DIM_IN && u <= DIM_none);
-
-	if(m_bisPortrait == true)
-		return m_scale * UT_convertDimensions(m_iMarginLeft, FUND, u);
-	else
-		return m_scale * UT_convertDimensions(m_iMarginTop, FUND, u);
-}
-
-double fp_PageSize::MarginRight(UT_Dimension u) const
-{
-	UT_ASSERT(u >= DIM_IN && u <= DIM_none);
-
-	if(m_bisPortrait == true)
-		return m_scale * UT_convertDimensions(m_iMarginRight, FUND, u);
-	else
-		return m_scale * UT_convertDimensions(m_iMarginBottom, FUND, u);
 }
 
 bool fp_PageSize::IsPredefinedName(const char* szPageSizeName)
