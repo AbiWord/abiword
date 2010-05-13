@@ -60,6 +60,14 @@ public:
     // document. 
     const UT_UTF8String getSectionProps(bool hasHeader, bool hasFooter) const;
 
+    const UT_UTF8String getMarginLeft() const {
+        return m_marginLeft;
+    }
+
+    const UT_UTF8String getMarginRight() const {
+        return m_marginRight;
+    }
+
     inline const UT_UTF8String& getSectionDataID() const {return m_sectionDataID;}
     
     inline const UT_UTF8String& getName() const {return m_name;}
