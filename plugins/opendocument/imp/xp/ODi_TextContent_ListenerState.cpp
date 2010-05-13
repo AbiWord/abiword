@@ -182,14 +182,14 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             // be at level 1.
             pOutlineLevel = "1";
         }
-	UT_UTF8String sHeadingListName = "BaseHeading";
-	m_listLevel = atoi(pOutlineLevel);
-	m_pCurrentListStyle =  m_pStyles->getList( sHeadingListName.utf8_str());
-	if(m_pCurrentListStyle && m_pCurrentListStyle->getLevelStyle(m_listLevel)->isVisible())
-	{
-	     xxx_UT_DEBUGMSG(("Found %s ! outline level %s \n",sHeadingListName.utf8_str(),pOutlineLevel));
-	     m_bHeadingList = true;
-	}
+        UT_UTF8String sHeadingListName = "BaseHeading";
+        m_listLevel = atoi(pOutlineLevel);
+        m_pCurrentListStyle =  m_pStyles->getList( sHeadingListName.utf8_str());
+        if(m_pCurrentListStyle && m_pCurrentListStyle->getLevelStyle(m_listLevel)->isVisible())
+        {
+            xxx_UT_DEBUGMSG(("Found %s ! outline level %s \n",sHeadingListName.utf8_str(),pOutlineLevel));
+            m_bHeadingList = true;
+        }
 
         pStyleName = UT_getAttribute("text:style-name", ppAtts);
         if (pStyleName) 
@@ -220,7 +220,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         m_alreadyDefinedAbiParagraphForList = false;
         _startParagraphElement(pName, ppAtts, rAction);
         m_bHeadingList = false;
-	m_pCurrentListStyle = NULL;
+        m_pCurrentListStyle = NULL;
     } else if (!strcmp(pName, "text:s")) {
         // A number of consecutive white-space characters.
         
@@ -492,8 +492,8 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
 	else if (!strcmp(m_rElementStack.getStartTag(0)->getName(), "office:text")) 
 	{
             
-            // A page anchored frame.
-            // Store this in the PD_Document until after the rest of the
+ 	  // A page anchored frame.
+ 	  // Store this in the PD_Document until after the rest of the
 	  // is layed out.
 	  // First acquired the info we need
 	  const gchar* pVal = NULL;
@@ -1219,45 +1219,45 @@ void ODi_TextContent_ListenerState::_openAbiSection(
             dataID = pMasterPageStyle->getSectionDataID();
             UT_ASSERT(!allProps.empty());
         }
-	//
-	// Page size is defined from the first section properties
-	//
+        //
+        // Page size is defined from the first section properties
+        //
         if(!m_openedFirstAbiSection)
-	{
-	    UT_UTF8String sProp(""),sWidth(""),sHeight(""),sOri("");
-	    bool bValid = true;
+        {
+            UT_UTF8String sProp(""),sWidth(""),sHeight(""),sOri("");
+            bool bValid = true;
 	    
-	    sProp="page-width";
-	    sWidth = UT_UTF8String_getPropVal(allProps,sProp);
-	    if(sWidth.size()==0)
-	        bValid = false;
+            sProp="page-width";
+            sWidth = UT_UTF8String_getPropVal(allProps,sProp);
+            if(sWidth.size()==0)
+                bValid = false;
 
-	    sProp="page-height";
-	    sHeight = UT_UTF8String_getPropVal(allProps,sProp);
-	    if(sHeight.size()==0)
-	        bValid = false;
+            sProp="page-height";
+            sHeight = UT_UTF8String_getPropVal(allProps,sProp);
+            if(sHeight.size()==0)
+                bValid = false;
 
-	    sProp="page-orientation";
-	    sOri = UT_UTF8String_getPropVal(allProps,sProp);
-	    if(sOri.size()==0)
-	        bValid = false;
-	    if(bValid)
-	    {
-	        UT_UTF8String sUnits = UT_dimensionName(UT_determineDimension(sWidth.utf8_str()));
-	        const gchar * atts[13] ={"pagetype","Custom",
-					 "orientation",NULL,
-					 "width",NULL,
-					 "height",NULL,
-					 "units",NULL,
-					 "page-scale","1.0",
-					 NULL};
-		atts[3] = sOri.utf8_str();
-		atts[5] = sWidth.utf8_str();
-		atts[7] = sHeight.utf8_str();
-		atts[9] = sUnits.utf8_str();
-		m_pAbiDocument->setPageSizeFromFile(atts);
-	    }
-	}
+            sProp="page-orientation";
+            sOri = UT_UTF8String_getPropVal(allProps,sProp);
+            if(sOri.size()==0)
+	            bValid = false;
+            if(bValid)
+            {
+                UT_UTF8String sUnits = UT_dimensionName(UT_determineDimension(sWidth.utf8_str()));
+                const gchar * atts[13] ={"pagetype","Custom",
+                        "orientation",NULL,
+                        "width",NULL,
+                        "height",NULL,
+                        "units",NULL,
+                        "page-scale","1.0",
+                        NULL};
+                atts[3] = sOri.utf8_str();
+                atts[5] = sWidth.utf8_str();
+                atts[7] = sHeight.utf8_str();
+                atts[9] = sUnits.utf8_str();
+                m_pAbiDocument->setPageSizeFromFile(atts);
+            }
+        }
         m_openedFirstAbiSection = true;
     }
 
