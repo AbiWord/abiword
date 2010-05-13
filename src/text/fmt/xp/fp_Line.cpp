@@ -943,7 +943,7 @@ void fp_Line::setContainer(fp_Container* pContainer)
 	fp_Container * pNext = getNextContainerInSection();
 	if(pNext != NULL && pNext->getContainerType() == FP_CONTAINER_LINE)
 	{
-	  //	       static_cast<fp_Line *>(pNext)->calcBorderThickness();
+	        static_cast<fp_Line *>(pNext)->calcBorderThickness();
 	}
 }
 
