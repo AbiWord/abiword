@@ -198,24 +198,24 @@ void ODi_Table_ListenerState::_parseTableStart(const gchar** ppAtts,
             // Left table pos
             if (pStyle != NULL) {
                 if (!pStyle->getTableMarginLeft()->empty()) {
-		    if (!props.empty()) {
-		        props += "; ";
-		    }
-		    props += "table-column-leftpos:";
-		    props += pStyle->getTableMarginLeft()->utf8_str();
-		    
+                    if (!props.empty()) {
+                        props += "; ";
+                    }
+                    props += "table-column-leftpos:";
+                    props += pStyle->getTableMarginLeft()->utf8_str();
+                    
                 }
             }
 
             // table width
             if (pStyle != NULL) {
                 if (!pStyle->getTableWidth()->empty()) {
-		    if (!props.empty()) {
-		        props += "; ";
-		    }
-		    props += "table-width:";
-		    props += pStyle->getTableWidth()->utf8_str();
-		    
+            if (!props.empty()) {
+                props += "; ";
+            }
+            props += "table-width:";
+            props += pStyle->getTableWidth()->utf8_str();
+            
                 }
             }
 
@@ -223,12 +223,12 @@ void ODi_Table_ListenerState::_parseTableStart(const gchar** ppAtts,
             // table relative width 
             if (pStyle != NULL) {
                 if (!pStyle->getTableRelWidth()->empty()) {
-		    if (!props.empty()) {
-		        props += "; ";
-		    }
-		    props += "table-rel-width:";
-		    props += pStyle->getTableRelWidth()->utf8_str();
-		    
+                    if (!props.empty()) {
+                        props += "; ";
+                    }
+                    props += "table-rel-width:";
+                    props += pStyle->getTableRelWidth()->utf8_str();
+                    
                 }
             }
   
@@ -243,9 +243,9 @@ void ODi_Table_ListenerState::_parseTableStart(const gchar** ppAtts,
  
            // Column Rel widths
             if (m_gotAllColumnWidths && !m_columnRelWidths.empty()) 
-	    {
+            {
                 if (!props.empty()) 
-		{
+                {
                     props += "; ";
                 }
                 props += "table-rel-column-props:";
@@ -259,7 +259,7 @@ void ODi_Table_ListenerState::_parseTableStart(const gchar** ppAtts,
             props += "table-row-heights:";
             props += m_rowHeights;
             
-	    
+            
             
             if (!props.empty()) {
                 ppAttribs[0] = "props";
@@ -302,42 +302,42 @@ void ODi_Table_ListenerState::_parseColumnStart (const gchar** ppAtts,
         
         pStyleName = UT_getAttribute("table:style-name", ppAtts);
         if (pStyleName != NULL) 
-	{
+        {
             pStyle = m_pStyles->getTableColumnStyle(pStyleName,
                                                     m_onContentStream);
             UT_ASSERT_HARMLESS(pStyle != NULL);
             
             if (pStyle && (pStyle->getColumnWidth()->empty())) 
-	    {
+            {
                 m_gotAllColumnWidths = false;
             } 
-	    else if (pStyle) 
-	    {
+            else if (pStyle) 
+            {
                 pNumberColumnsRepeated = UT_getAttribute("table:number-columns-repeated", ppAtts);
                 if (pNumberColumnsRepeated != NULL) 
-		{
+                {
                     nColsRepeated = atoi(pNumberColumnsRepeated);
                     UT_ASSERT(nColsRepeated > 0);
                 } 
-		else 
-		{
+                else 
+                {
                     nColsRepeated = 1;
                 }
 
                 for (i=0; i<nColsRepeated; i++) 
-		{
+                {
                     m_columnWidths += *(pStyle->getColumnWidth());
                     m_columnWidths += "/";
                 }
-		if(!pStyle->getColumnRelWidth()->empty())
-		{
+                if(!pStyle->getColumnRelWidth()->empty())
+                {
                     m_columnRelWidths += *(pStyle->getColumnRelWidth());
                     m_columnRelWidths += "/";
-		}
+                }
             }
         } 
-	else 
-	{
+        else 
+        {
             m_gotAllColumnWidths = false;
         }
     }
@@ -411,7 +411,7 @@ void ODi_Table_ListenerState::_parseCellStart (const gchar** ppAtts,
                     props += *(pStyle->getBorderTop_color());
                 }
                 
-			}
+            }
             else if (pStyle->hasTopBorder() == ODi_Style_Style::HAVE_BORDER_NO) {
                 //
                 // Work Around for AbiWord Drawing bug/feature
@@ -447,7 +447,7 @@ void ODi_Table_ListenerState::_parseCellStart (const gchar** ppAtts,
                     props += "; bot-style:solid";
                 else
                     props += "; bot-style:none";
-			}
+                }
             
             
             ////
@@ -498,22 +498,22 @@ void ODi_Table_ListenerState::_parseCellStart (const gchar** ppAtts,
                 props += pStyle->getBackgroundColor()->utf8_str();
             }
 
-	    // background-image
-	    if(!pStyle->getBackgroundImageID()->empty())
-	    {
-	        dataID = pStyle->getBackgroundImageID()->utf8_str();
-	    }
+            // background-image
+            if(!pStyle->getBackgroundImageID()->empty())
+            {
+                dataID = pStyle->getBackgroundImageID()->utf8_str();
+            }
         }
 
         cell_props[0] = "props";
         cell_props[1] = props.utf8_str();
         cell_props[2] = 0;
-	if(dataID.length() > 0)
-	{
-	    cell_props[2] = "strux-image-dataid";
-	    cell_props[3] = dataID.utf8_str();
-	    cell_props[4] = 0;
-	}
+        if(dataID.length() > 0)
+        {
+            cell_props[2] = "strux-image-dataid";
+            cell_props[3] = dataID.utf8_str();
+            cell_props[4] = 0;
+        }
         m_pAbiDocument->appendStrux(PTX_SectionCell, cell_props);
 
         // Now parse the cell text content.
