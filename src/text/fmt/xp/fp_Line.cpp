@@ -528,6 +528,8 @@ const fp_Line * fp_Line::getLastInContainer(void) const
 bool fp_Line::canDrawTopBorder(void) const
 {
   const fp_Line * pFirst = getFirstInContainer();
+  if(pFirst == NULL)
+    return false;
   //
   // This line could be wrapped at the same Y as the first line
   //
@@ -553,6 +555,8 @@ bool fp_Line::canDrawTopBorder(void) const
 bool fp_Line::canDrawBotBorder(void) const
 {
   const fp_Line * pLast = getLastInContainer();
+  if(pLast == NULL)
+    return false;
   //
   // This line could be wrapped at the same Y as the last line
   //
@@ -939,7 +943,7 @@ void fp_Line::setContainer(fp_Container* pContainer)
 	fp_Container * pNext = getNextContainerInSection();
 	if(pNext != NULL && pNext->getContainerType() == FP_CONTAINER_LINE)
 	{
-	       static_cast<fp_Line *>(pNext)->calcBorderThickness();
+	  //	       static_cast<fp_Line *>(pNext)->calcBorderThickness();
 	}
 }
 
