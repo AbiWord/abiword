@@ -41,7 +41,9 @@ ODe_Style_MasterPage::ODe_Style_MasterPage (const gchar* pName,
     m_pageLayoutName = pPageLayoutName;
 
     m_pFooterContentTemp = gsf_output_memory_new ();
+    m_pFooterEvenContentTemp = gsf_output_memory_new ();
     m_pHeaderContentTemp = gsf_output_memory_new ();
+    m_pHeaderEvenContentTemp = gsf_output_memory_new ();
 }
 
 
@@ -52,9 +54,17 @@ ODe_Style_MasterPage::~ODe_Style_MasterPage() {
     if (m_pHeaderContentTemp != NULL) {
         ODe_gsf_output_close(m_pHeaderContentTemp);
     }
-    
+ 
+    if (m_pHeaderEvenContentTemp != NULL) {
+        ODe_gsf_output_close(m_pHeaderEvenContentTemp);
+    }
+
     if (m_pFooterContentTemp != NULL) {
         ODe_gsf_output_close(m_pFooterContentTemp);
+    }
+
+    if (m_pFooterEvenContentTemp != NULL) {
+        ODe_gsf_output_close(m_pFooterEvenContentTemp);
     }
 }
 
@@ -70,10 +80,20 @@ void ODe_Style_MasterPage::fetchAttributesFromAbiSection(const PP_AttrProp* pAP)
     if (ok && pValue != NULL) {
         m_abiHeaderId = pValue;
     }
-    
+
+    ok = pAP->getAttribute("header-even", pValue);
+    if (ok && pValue != NULL) {
+        m_abiHeaderEvenId = pValue;
+    }
+
     ok = pAP->getAttribute("footer", pValue);
     if (ok && pValue != NULL) {
         m_abiFooterId = pValue;
+    }
+
+    ok = pAP->getAttribute("footer-even", pValue);
+    if (ok && pValue != NULL) {
+        m_abiFooterEvenId = pValue;
     }
 }
 
@@ -91,26 +111,68 @@ bool ODe_Style_MasterPage::write(GsfOutput* pODT) const {
         
     ODe_writeUTF8String(pODT, output);
     
+    /*
+    We have to deal with two confusion things when writing out header/footers:
+    
+    1. Oddly enough AbiWord uses "header-even" and "footer-even" for page 1, 3, 5, etc :)
+    
+    2. In OpenDocument you can specify an alternative header/footer for "left" pages.
+       Oddly enough OpenOffice.org seems to interpret "left" pages as page 2, 4, 6, etc.
+    */
+
     if (!m_abiHeaderId.empty()) {
         // It has a header
         ODe_writeUTF8String(pODT, "   <style:header>\n");
 
-	ODe_gsf_output_write(pODT, gsf_output_size (m_pHeaderContentTemp), 
-			     gsf_output_memory_get_bytes (GSF_OUTPUT_MEMORY (m_pHeaderContentTemp)));
+        // Swap even/uneven when there is an alternative header for uneven pages to
+        // match what OpenOffice expects
+        if (m_abiHeaderEvenId.empty()) {
+            ODe_gsf_output_write(pODT, gsf_output_size (m_pHeaderContentTemp), 
+                   gsf_output_memory_get_bytes (GSF_OUTPUT_MEMORY (m_pHeaderContentTemp)));
+        } else {
+            ODe_gsf_output_write(pODT, gsf_output_size (m_pHeaderEvenContentTemp), 
+                   gsf_output_memory_get_bytes (GSF_OUTPUT_MEMORY (m_pHeaderEvenContentTemp)));
+        }
         
         ODe_writeUTF8String(pODT, "   </style:header>\n");
+    }
+
+    if (!m_abiHeaderEvenId.empty()) {
+        // It has a different header for uneven pages
+        ODe_writeUTF8String(pODT, "   <style:header-left>\n");
+
+        ODe_gsf_output_write(pODT, gsf_output_size (m_pHeaderContentTemp), 
+                gsf_output_memory_get_bytes (GSF_OUTPUT_MEMORY (m_pHeaderContentTemp)));
+        
+        ODe_writeUTF8String(pODT, "   </style:header-left>\n");
     }
 
     if (!m_abiFooterId.empty()) {
         // It has a footer
         ODe_writeUTF8String(pODT, "   <style:footer>\n");
 
-	ODe_gsf_output_write(pODT, gsf_output_size (m_pFooterContentTemp), 
-			     gsf_output_memory_get_bytes (GSF_OUTPUT_MEMORY (m_pFooterContentTemp)));
+        // Swap even/uneven when there is an alternative footer for uneven pages to
+        // match what OpenOffice expects
+        if (m_abiFooterEvenId.empty()) {
+            ODe_gsf_output_write(pODT, gsf_output_size (m_pFooterContentTemp), 
+                   gsf_output_memory_get_bytes (GSF_OUTPUT_MEMORY (m_pFooterContentTemp)));
+        } else {
+            ODe_gsf_output_write(pODT, gsf_output_size (m_pFooterEvenContentTemp), 
+                   gsf_output_memory_get_bytes (GSF_OUTPUT_MEMORY (m_pFooterEvenContentTemp)));
+        }
 
         ODe_writeUTF8String(pODT, "   </style:footer>\n");
     }
 
+    if (!m_abiFooterEvenId.empty()) {
+        // It has a footer for uneven pages
+        ODe_writeUTF8String(pODT, "   <style:footer-left>\n");
+
+        ODe_gsf_output_write(pODT, gsf_output_size (m_pFooterContentTemp), 
+                gsf_output_memory_get_bytes (GSF_OUTPUT_MEMORY (m_pFooterContentTemp)));
+
+        ODe_writeUTF8String(pODT, "   </style:footer-left>\n");
+    }
 
     ODe_writeUTF8String(pODT, "  </style:master-page>\n");
 

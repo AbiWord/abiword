@@ -202,7 +202,8 @@ bool ODe_Main_Listener::_isHeaderFooterSection(const PP_AttrProp* pAP) const {
     
     ok = pAP->getAttribute("type", pValue);
     if (ok && pValue != NULL) {
-        if (!strcmp(pValue, "header") || !strcmp(pValue, "footer")) {
+        if (!strcmp(pValue, "header") || !strcmp(pValue, "header-even") || 
+            !strcmp(pValue, "footer") || !strcmp(pValue, "footer-even")) {
             return true;
         }
     }
@@ -254,8 +255,18 @@ void ODe_Main_Listener::_openHeaderFooterSection(
             }
         }
         
-    } else {
-        // It's a footer
+    } else if (!strcmp("header-even", pValue)) {
+        
+        for (i=0; i<count && !ok; i++) {
+            pMPageStyle = (*pMasterPageVector)[i];
+            pValue = pMPageStyle->getAbiHeaderEvenId().utf8_str();
+            if (!strcmp(pId, pValue)) {
+                ok = true; // found it. get out of this "for" loop
+                pTextOutput =  pMPageStyle->getHeaderEvenContentTempFile();
+            }
+        }
+
+    } else if (!strcmp("footer", pValue)) {
         
         for (i=0; i<count && !ok; i++) {
             pMPageStyle = (*pMasterPageVector)[i];
@@ -263,6 +274,17 @@ void ODe_Main_Listener::_openHeaderFooterSection(
             if (!strcmp(pId, pValue)) {
                 ok = true; // found it. get out of this "for" loop
                 pTextOutput = pMPageStyle->getFooterContentTempFile();
+            }
+        }
+
+    } else if (!strcmp("footer-even", pValue)) {
+        
+        for (i=0; i<count && !ok; i++) {
+            pMPageStyle = (*pMasterPageVector)[i];
+            pValue = pMPageStyle->getAbiFooterEvenId().utf8_str();
+            if (!strcmp(pId, pValue)) {
+                ok = true; // found it. get out of this "for" loop
+                pTextOutput = pMPageStyle->getFooterEvenContentTempFile();
             }
         }
     }

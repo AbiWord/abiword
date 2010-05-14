@@ -103,6 +103,8 @@ void ODe_Style_PageLayout::fetchAttributesFromAbiSection(const PP_AttrProp* pAP)
      * heights.
      */
 
+    // Note: no need to check separately for the existence of a "header-even"
+    // property: "header-even" only exists in AbiWord when "header" also exists.
     ok = pAP->getAttribute("header", pValue);
     if (ok && pValue != NULL)
          hasHeader = true;
@@ -130,6 +132,8 @@ void ODe_Style_PageLayout::fetchAttributesFromAbiSection(const PP_AttrProp* pAP)
         }
     }
 
+    // Note: no need to check separately for the existence of a "footer-even"
+    // property: "footer-even" only exists in AbiWord when "footer" also exists.
     ok = pAP->getAttribute("footer", pValue);
     if (ok && pValue != NULL)
          hasFooter = true;
