@@ -159,9 +159,9 @@ public:
 	inline tPropLevel       getLevel() const {return m_iLevel;}
 };
 
-const PP_Property * PP_lookupProperty(const gchar * pszName);
+ABI_EXPORT const PP_Property * PP_lookupProperty(const gchar * pszName);
 
-void PP_resetInitialBiDiValues(const gchar * pszValue);
+ABI_EXPORT void PP_resetInitialBiDiValues(const gchar * pszValue);
 
 ABI_EXPORT void PP_setDefaultFontFamily(const char* pszFamily);
 

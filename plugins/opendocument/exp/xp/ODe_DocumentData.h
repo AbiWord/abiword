@@ -42,13 +42,13 @@ class PD_Document;
 class ODe_DocumentData {
 public:
 
-    ODe_DocumentData();
+    ODe_DocumentData(PD_Document* pAbiDoc);
     virtual ~ODe_DocumentData();
     
     bool init();
     
     // Do all necessary work before starting to listen the AbiWord document.
-    bool doPreListeningWork(PD_Document* pAbiDoc);
+    bool doPreListeningWork();
     
     ////    
     // Post listening methods
@@ -83,6 +83,8 @@ public:
 
 private:
     void handleDefaultTabInterval(ODe_Style_Style* pStyle);
+
+    PD_Document* m_pAbiDoc;
 };
 
 #endif /*ODE_DOCUMENTDATA_H_*/

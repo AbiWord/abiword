@@ -31,6 +31,7 @@
 #include "ODe_Common.h"
 #include "ODe_DocumentData.h"
 #include "ODe_HeadingSearcher_Listener.h"
+#include "ODe_TOC_Listener.h"
 #include "ODe_ManifestWriter.h"
 #include "ODe_Main_Listener.h"
 #include "ODe_MetaDataWriter.h"
@@ -94,7 +95,7 @@ GsfOutput* IE_Exp_OpenDocument::_openFile(const char *szFilename)
  */
 UT_Error IE_Exp_OpenDocument::_writeDocument(void)
 {
-	ODe_DocumentData docData;
+	ODe_DocumentData docData(getDoc());
 	ODe_AuxiliaryData auxData;
 	ODe_AbiDocListener* pAbiDocListener = NULL;
 	ODe_AbiDocListenerImpl* pAbiDocListenerImpl = NULL;
@@ -164,9 +165,10 @@ UT_Error IE_Exp_OpenDocument::_writeDocument(void)
 	}
 
 
-    // Gather all paragraph style names used by heading paragraphs.
+    // Gather all paragraph style names used by heading paragraphs
+    // (ie. all paragraph styles that are used to build up TOCs).
 
-    pAbiDocListenerImpl = new ODe_HeadingSearcher_Listener(auxData);
+    pAbiDocListenerImpl = new ODe_HeadingSearcher_Listener(docData.m_styles, auxData);
     pAbiDocListener = new ODe_AbiDocListener(getDoc(),
                                              pAbiDocListenerImpl, false);
 
@@ -179,10 +181,36 @@ UT_Error IE_Exp_OpenDocument::_writeDocument(void)
     
     DELETEP(pAbiDocListener);
     DELETEP(pAbiDocListenerImpl);
+
+    // Now that we have all paragraph styles that build up the TOCs in the 
+    // document (if any), we can build up the TOC bodies. We do this because
+    // OpenOffice.org requires the TOC bodies to be present and filled
+    // when initially opening the document. Without it, it will show 
+    // an empty TOC until the user regenerates it, which is not that pretty.
+    // Annoyingly we have to build up the TOC ourselves during export, as
+    // it doesn't exist within AbiWord's PieceTable. Until that changes, this
+    // is the best we can do.
+
+    if (auxData.m_pTOCContents) {
+        pAbiDocListenerImpl = new ODe_TOC_Listener(auxData);
+        pAbiDocListener = new ODe_AbiDocListener(getDoc(),
+                                                 pAbiDocListenerImpl, false);
+
+	    if (!getDoc()->tellListener(static_cast<PL_Listener *>(pAbiDocListener)))
+	    {
+		    ODe_gsf_output_close(GSF_OUTPUT(m_odt));
+		    return UT_ERROR;
+	    }
+        pAbiDocListener->finished();
+        
+        DELETEP(pAbiDocListener);
+        DELETEP(pAbiDocListenerImpl);
+    }
+
     
     // Gather document content and styles
 
-    if (!docData.doPreListeningWork(getDoc())) {
+    if (!docData.doPreListeningWork()) {
       ODe_gsf_output_close(GSF_OUTPUT(m_odt));
       return UT_ERROR;
     }

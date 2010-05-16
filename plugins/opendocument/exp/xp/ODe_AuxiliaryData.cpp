@@ -22,14 +22,21 @@
 // Class definition include
 #include "ODe_AuxiliaryData.h"
 
+// Internal includes
+#include "ODe_Common.h"
+
 
 ODe_AuxiliaryData::ODe_AuxiliaryData() :
+    m_pTOCContents(NULL),
     m_tableCount(0),
     m_frameCount(0),
-    m_noteCount(0),
-    m_TOCCount(0)
+    m_noteCount(0)
 {
+}
 
+ODe_AuxiliaryData::~ODe_AuxiliaryData() {
+    if (m_pTOCContents)
+        ODe_gsf_output_close(m_pTOCContents);
 }
 
 /**

@@ -36,8 +36,10 @@
 /**
  * Constructor
  */
-ODe_DocumentData::ODe_DocumentData() :
-    m_pOfficeTextTemp(NULL)
+ODe_DocumentData::ODe_DocumentData(PD_Document* pAbiDoc) :
+    m_styles(pAbiDoc),
+    m_pOfficeTextTemp(NULL),
+    m_pAbiDoc(pAbiDoc)
 {
 }
 
@@ -65,10 +67,10 @@ ODe_DocumentData::~ODe_DocumentData() {
 /**
  * Do all necessary work before starting to listen the AbiWord document.
  */
-bool ODe_DocumentData::doPreListeningWork(PD_Document* pAbiDoc) {
+bool ODe_DocumentData::doPreListeningWork() {
     bool ok;
     
-    ok = m_styles.fetchRegularStyleStyles(pAbiDoc);
+    ok = m_styles.fetchRegularStyleStyles();
     if (!ok) {
         return false;
     }
@@ -84,7 +86,7 @@ bool ODe_DocumentData::doPreListeningWork(PD_Document* pAbiDoc) {
     
     m_stylesAutoStyles.addPageLayout(pPageLayout);
 
-    pPageLayout->fetchAttributesFromAbiDoc(pAbiDoc);
+    pPageLayout->fetchAttributesFromAbiDoc(m_pAbiDoc);
     
     
     

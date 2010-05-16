@@ -32,6 +32,13 @@
 #include <pd_Style.h>
 #include <pp_AttrProp.h>
 
+/**
+ * Constructor
+ */
+ODe_Styles::ODe_Styles(PD_Document* pAbiDoc)
+    : m_pAbiDoc(pAbiDoc)
+{
+}
 
 /**
  * Destructor
@@ -57,11 +64,11 @@ ODe_Styles::~ODe_Styles() {
 /**
  * Fetch all paragraph and text (character) styles defined in the Abi document.
  */
-bool ODe_Styles::fetchRegularStyleStyles(PD_Document* pAbiDoc) {
+bool ODe_Styles::fetchRegularStyleStyles() {
     
     const PD_Style* pStyle = NULL;
     UT_GenericVector<PD_Style*> vecStyles;
-    pAbiDoc->getAllUsedStyles(&vecStyles);
+    m_pAbiDoc->getAllUsedStyles(&vecStyles);
     const PP_AttrProp* pAP;
     PT_AttrPropIndex api;
     
@@ -70,7 +77,7 @@ bool ODe_Styles::fetchRegularStyleStyles(PD_Document* pAbiDoc) {
         pStyle = vecStyles.getNthItem(k);
 
         api = pStyle->getIndexAP();
-        if( !pAbiDoc->getAttrProp(api, &pAP) ) {
+        if( !m_pAbiDoc->getAttrProp(api, &pAP) ) {
             return false;
         }
         
@@ -83,11 +90,11 @@ bool ODe_Styles::fetchRegularStyleStyles(PD_Document* pAbiDoc) {
 
 
     UT_GenericVector<PD_Style*>* pStyles = NULL;
-    pAbiDoc->enumStyles(pStyles);
+    m_pAbiDoc->enumStyles(pStyles);
     if (pStyles == NULL) {
         return false;
     }
-    UT_uint32 iStyleCount = pAbiDoc->getStyleCount();
+    UT_uint32 iStyleCount = m_pAbiDoc->getStyleCount();
     bool ok = true;
     
     for (UT_uint32 k=0; k < iStyleCount && ok; k++)
@@ -102,7 +109,7 @@ bool ODe_Styles::fetchRegularStyleStyles(PD_Document* pAbiDoc) {
             continue;
 
         api = pStyle->getIndexAP();
-        if( !pAbiDoc->getAttrProp(api, &pAP) ) {
+        if( !m_pAbiDoc->getAttrProp(api, &pAP) ) {
             return false;
         }
 
@@ -119,6 +126,26 @@ bool ODe_Styles::fetchRegularStyleStyles(PD_Document* pAbiDoc) {
 void ODe_Styles::addGraphicsStyle(ODe_Style_Style* pStyle)
 {
     m_graphicStyles.insert(pStyle->getName().utf8_str(), pStyle);
+}
+
+/**
+ * Add an OpenDocument style (paragraph or text family
+ * given an AbiWord style.
+ */
+void ODe_Styles::addStyle(const UT_UTF8String& sStyle)
+{
+    UT_return_if_fail(sStyle != "");
+
+    PD_Style* pStyle = NULL;
+    m_pAbiDoc->getStyle(sStyle.utf8_str(), &pStyle);
+    UT_return_if_fail(pStyle);
+
+    PT_AttrPropIndex api = pStyle->getIndexAP();
+    const PP_AttrProp* pAP = NULL;    
+    if (!m_pAbiDoc->getAttrProp(api, &pAP))
+        return;
+
+    _addStyle(pAP);
 }
 
 /**

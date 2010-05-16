@@ -24,17 +24,21 @@
 
 // Internal includes
 #include "ODe_AuxiliaryData.h"
+#include "ODe_Styles.h"
 
 // AbiWord includes
 #include <pp_AttrProp.h>
+#include <fl_TOCLayout.h>
 
 
 /**
  * Constructor
  */
 ODe_HeadingSearcher_Listener::ODe_HeadingSearcher_Listener(
+                                    ODe_Styles& rStyles,
                                     ODe_AuxiliaryData& rAuxiliaryData)
                                     :
+                                    m_rStyles(rStyles),
                                     m_rAuxiliaryData(rAuxiliaryData) {
 }
 
@@ -44,26 +48,36 @@ ODe_HeadingSearcher_Listener::ODe_HeadingSearcher_Listener(
  */
 void ODe_HeadingSearcher_Listener::openTOC(const PP_AttrProp* pAP) {
     
-    const gchar* pValue;
-    bool ok;
-    
-    ok = pAP->getProperty("toc-source-style1", pValue);
-    if (ok && pValue != NULL) {
-        m_rAuxiliaryData.m_headingStyles.addStyleName(pValue, 1);
+    if (!m_rAuxiliaryData.m_pTOCContents ) {
+        m_rAuxiliaryData.m_pTOCContents = gsf_output_memory_new();
     }
-    
-    ok = pAP->getProperty("toc-source-style2", pValue);
-    if (ok && pValue != NULL) {
-        m_rAuxiliaryData.m_headingStyles.addStyleName(pValue, 2);
-    }
-    
-    ok = pAP->getProperty("toc-source-style3", pValue);
-    if (ok && pValue != NULL) {
-        m_rAuxiliaryData.m_headingStyles.addStyleName(pValue, 3);
-    }
-    
-    ok = pAP->getProperty("toc-source-style4", pValue);
-    if (ok && pValue != NULL) {
-        m_rAuxiliaryData.m_headingStyles.addStyleName(pValue, 4);
+
+    for (UT_sint32 iLevel = 1; iLevel <= 4; iLevel++) {
+        bool ok = FALSE;
+        const gchar* pValue = NULL;
+
+        // gather the source style names for all levels
+        UT_UTF8String sSourceStyle = UT_UTF8String_sprintf("toc-source-style%d", iLevel);
+        ok = pAP->getProperty(sSourceStyle.utf8_str(), pValue);
+        if (ok && pValue != NULL) {
+            m_rAuxiliaryData.m_headingStyles.addStyleName(pValue, iLevel);
+        } else {
+            const PP_Property* pProp = PP_lookupProperty(sSourceStyle.utf8_str());
+            UT_continue_if_fail(pProp);
+            m_rAuxiliaryData.m_headingStyles.addStyleName(pProp->getInitial(), iLevel);
+        }
+
+        // gather the destination style names for all levels
+        UT_UTF8String sDestStyle = UT_UTF8String_sprintf("toc-dest-style%u", iLevel);
+        ok = pAP->getProperty(sDestStyle.utf8_str(), pValue);
+        UT_UTF8String destStyle;
+        if (ok && pValue)
+            destStyle = pValue;
+        else
+            destStyle = fl_TOCLayout::getDefaultDestStyle(iLevel);
+        m_rAuxiliaryData.m_mDestStyles[iLevel] = destStyle;
+
+        // make sure this destination style is exported to the ODT style list
+        m_rStyles.addStyle(destStyle);
     }
 }

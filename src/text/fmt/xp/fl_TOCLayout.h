@@ -145,6 +145,10 @@ public:
 
 	void                     purgeLayout(void) {_purgeLayout();}
 	
+	static UT_UTF8String     getDefaultHeading();
+	static UT_UTF8String     getDefaultSourceStyle(UT_uint32 iLevel);
+	static UT_UTF8String     getDefaultDestStyle(UT_uint32 iLevel);
+
 private:
 	virtual void             _purgeLayout(void);
 	virtual void		     _lookupProperties(const PP_AttrProp* pAP);
