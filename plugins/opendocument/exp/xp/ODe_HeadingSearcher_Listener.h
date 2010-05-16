@@ -30,6 +30,7 @@ class ODe_AuxiliaryData;
 
 // AbiWord classes
 class PP_AttrProp;
+class ODe_Styles;
 
 
 /**
@@ -38,11 +39,12 @@ class PP_AttrProp;
  */
 class ODe_HeadingSearcher_Listener: public ODe_AbiDocListenerImpl {
 public:
-    ODe_HeadingSearcher_Listener(ODe_AuxiliaryData& rAuxiliaryData);
+    ODe_HeadingSearcher_Listener(ODe_Styles& m_rStyles, ODe_AuxiliaryData& rAuxiliaryData);
     
     virtual void openTOC(const PP_AttrProp* pAP);
     
 private:
+    ODe_Styles& m_rStyles;
     ODe_AuxiliaryData& m_rAuxiliaryData;
 };
 

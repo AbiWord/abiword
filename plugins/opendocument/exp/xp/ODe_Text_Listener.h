@@ -150,6 +150,9 @@ private:
     GsfOutput* m_pTextOutput;
     ODe_AuxiliaryData& m_rAuxiliaryData;
     UT_uint8 m_zIndex;
+
+    // The number of TOCs (Table of Confents) already added to the document.
+    UT_sint32 m_iCurrentTOC;
 };
 
 #endif /*ODE_TEXT_LISTENER_H_*/

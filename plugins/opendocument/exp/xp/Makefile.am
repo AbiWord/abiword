@@ -57,5 +57,7 @@ libxp_la_SOURCES = \
 	ODe_Table_Listener.cpp \
 	ODe_Table_Listener.h \
 	ODe_Text_Listener.cpp \
-	ODe_Text_Listener.h
+	ODe_Text_Listener.h \
+	ODe_TOC_Listener.cpp \
+	ODe_TOC_Listener.h
 

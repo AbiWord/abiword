@@ -40,6 +40,7 @@
 #include <pp_AttrProp.h>
 #include <gsf/gsf-output-memory.h>
 #include <ut_units.h>
+#include <fl_TOCLayout.h>
 
 // External includes
 #include <stdlib.h>
@@ -73,7 +74,8 @@ ODe_Text_Listener::ODe_Text_Listener(ODe_Styles& rStyles,
                         m_rAutomatiStyles(rAutomatiStyles),
                         m_pTextOutput(pTextOutput),
                         m_rAuxiliaryData(rAuxiliaryData),
-                        m_zIndex(zIndex)
+                        m_zIndex(zIndex),
+                        m_iCurrentTOC(0)
 {
 }
 
@@ -108,7 +110,8 @@ ODe_Text_Listener::ODe_Text_Listener(ODe_Styles& rStyles,
                         m_rAutomatiStyles(rAutomatiStyles),
                         m_pTextOutput(pTextOutput),
                         m_rAuxiliaryData(rAuxiliaryData),
-                        m_zIndex(zIndex)
+                        m_zIndex(zIndex),
+                        m_iCurrentTOC(0)
 {
 }
 
@@ -491,10 +494,10 @@ void ODe_Text_Listener::openTOC(const PP_AttrProp* pAP) {
     _closeODParagraph();
     _closeODList();
     
-    m_rAuxiliaryData.m_TOCCount++;
+	m_iCurrentTOC++;
     
     ////
-    // Write <text:table-of-content> and <text:table-of-content-source>
+    // Write <text:table-of-content>, <text:table-of-content-source> and <text:index-body>
     
     str.clear();
     _printSpacesOffset(str);
@@ -502,7 +505,7 @@ void ODe_Text_Listener::openTOC(const PP_AttrProp* pAP) {
     UT_UTF8String_sprintf(output,
         "%s<text:table-of-content text:protected=\"true\""
         " text:name=\"Table of Contents%u\">\n",
-        str.utf8_str(), m_rAuxiliaryData.m_TOCCount);
+        str.utf8_str(), m_iCurrentTOC);
    
     ODe_writeUTF8String(m_pTextOutput, output);
     m_spacesOffset++;
@@ -519,35 +522,48 @@ void ODe_Text_Listener::openTOC(const PP_AttrProp* pAP) {
     ////
     // Write <text:index-title-template>
     
+    bool hasHeading = true; // AbiWord's default
     ok = pAP->getProperty("toc-has-heading", pValue);
-    UT_ASSERT_HARMLESS(ok && pValue != NULL);
+    if (ok && pValue) {
+        hasHeading = (*pValue == '1');
+    }
 
-    if (pValue && (*pValue == '1')) {
-    
+    // determine the style of the TOC heading
+    UT_UTF8String headingStyle;
+    ok = pAP->getProperty("toc-heading-style", pValue);
+    if (ok && pValue) {
+        headingStyle = pValue;
+    } else {
+        const PP_Property* pProp = PP_lookupProperty("toc-heading-style");
+        UT_ASSERT_HARMLESS(pProp);
+        if (pProp)
+            headingStyle = pProp->getInitial();
+    }
+
+    if (hasHeading) {
+        // make sure this TOC headering style is exported to the ODT style list
+        m_rStyles.addStyle(headingStyle);
+    }
+
+    // determine the contents of the TOC heading
+    UT_UTF8String tocHeading;
+    ok = pAP->getProperty("toc-heading", pValue);
+    if (ok && pValue) {
+        tocHeading = pValue;
+    } else {
+        tocHeading = fl_TOCLayout::getDefaultHeading();
+    }
+
+    if (hasHeading) {
         _printSpacesOffset(output);
         output += "<text:index-title-template text:style-name=\"";
-        
-        ok = pAP->getProperty("toc-heading-style", pValue);
-        UT_ASSERT_HARMLESS(ok && pValue != NULL);
-        if (ok && pValue) {
-            UT_UTF8String escape = pValue;
-            output += escape.escapeXML();
-        }
-        
+        output += headingStyle.escapeXML();     
         output += "\">";
-        
-        ok = pAP->getProperty("toc-heading", pValue);
-        UT_ASSERT_HARMLESS(ok && pValue != NULL);
-        if (ok && pValue) {
-            UT_UTF8String escape = pValue;
-            output += escape.escapeXML();
-        }
-        
+        output += tocHeading.escapeXML();        
         output += "</text:index-title-template>\n";
         
         ODe_writeUTF8String(m_pTextOutput, output);
         output.assign("");
-    
     }
     
     
@@ -564,15 +580,9 @@ void ODe_Text_Listener::openTOC(const PP_AttrProp* pAP) {
             " text:outline-level=\"%u\" text:style-name=\"",
             str.utf8_str(), outlineLevel);
 
-
-        UT_UTF8String_sprintf(str, "toc-dest-style%u", outlineLevel);
-        ok = pAP->getProperty(str.utf8_str(), pValue);
-        UT_ASSERT_HARMLESS(ok && pValue != NULL);
-        
-        if (ok && pValue) {
-            UT_UTF8String escape = pValue;
-            output += escape.escapeXML();
-        }
+        UT_UTF8String destStyle = m_rAuxiliaryData.m_mDestStyles[outlineLevel];
+        UT_ASSERT_HARMLESS(destStyle != "");
+        output += destStyle.escapeXML();
         
         output += "\">\n";
         m_spacesOffset++;
@@ -600,12 +610,54 @@ void ODe_Text_Listener::openTOC(const PP_AttrProp* pAP) {
         ODe_writeUTF8String(m_pTextOutput, output);
         output.assign("");
     }
-    
 
     m_spacesOffset--;
     _printSpacesOffset(output);
     output += "</text:table-of-content-source>\n";
     ODe_writeUTF8String(m_pTextOutput, output);
+
+    ////
+	// write <text:index-body>
+    UT_ASSERT_HARMLESS(m_rAuxiliaryData.m_pTOCContents);
+    if (m_rAuxiliaryData.m_pTOCContents) {
+        output.assign("");
+        _printSpacesOffset(output);
+
+        output += "<text:index-body>\n";
+        ODe_writeUTF8String(m_pTextOutput, output);
+        output.assign("");
+
+        m_spacesOffset++;
+
+        if (hasHeading) {
+            output += "<text:index-title>\n";
+
+            m_spacesOffset++;
+            _printSpacesOffset(output);
+            output += "<text:p text:style-name=\"";
+            output += headingStyle.escapeXML();
+            output += "\">";
+            output += tocHeading.escapeXML();
+            output += "</text:p>\n"; 
+
+            m_spacesOffset--;
+            _printSpacesOffset(output);
+            output += "</text:index-title>\n";
+
+            ODe_writeUTF8String(m_pTextOutput, output);
+            output.assign("");
+        }
+
+        gsf_output_write(m_pTextOutput, gsf_output_size(m_rAuxiliaryData.m_pTOCContents),
+                gsf_output_memory_get_bytes(GSF_OUTPUT_MEMORY(m_rAuxiliaryData.m_pTOCContents)));
+
+        m_spacesOffset--;
+        _printSpacesOffset(output);
+        output += "</text:index-body>\n";
+
+        ODe_writeUTF8String(m_pTextOutput, output);
+        output.assign("");
+    }
 }
 
 
@@ -1210,6 +1262,7 @@ void ODe_Text_Listener::_openODListItem(const PP_AttrProp* pAP) {
  * 
  */
 void ODe_Text_Listener::_openODParagraph(const PP_AttrProp* pAP) {
+	UT_UTF8String abiStyleName;
     UT_UTF8String styleName;
     UT_UTF8String output;
     UT_UTF8String str;
@@ -1284,10 +1337,16 @@ void ODe_Text_Listener::_openODParagraph(const PP_AttrProp* pAP) {
         output += "<text:p>";
         m_isHeadingParagraph = false;
     } else {
-        UT_uint8 outlineLevel;
+        UT_uint8 outlineLevel = 0;
         
-        outlineLevel = m_rAuxiliaryData.m_headingStyles.
-                            getHeadingOutlineLevel(styleName);
+        // Use the original AbiWord style name to see which outline level this
+        // style belongs to (if any). Don't use the generated ODT style for this,
+        // as that name is not what AbiWord based its decisions on.
+        ok = pAP->getAttribute("style", pValue);
+        if (ok) {
+            outlineLevel = m_rAuxiliaryData.m_headingStyles.
+                            getHeadingOutlineLevel(pValue);
+        }
         
         if (outlineLevel > 0) {
             // It's a heading.

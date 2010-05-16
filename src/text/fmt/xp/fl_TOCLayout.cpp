@@ -1571,6 +1571,40 @@ void fl_TOCLayout::format(void)
 	m_bNeedsReformat = false;
 }
 
+UT_UTF8String fl_TOCLayout::getDefaultHeading()
+{
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+	UT_UTF8String sDefaultHeading;
+	pSS->getValueUTF8(AP_STRING_ID_TOC_TocHeading, sDefaultHeading);
+	return sDefaultHeading;
+}
+
+UT_UTF8String fl_TOCLayout::getDefaultSourceStyle(UT_uint32 iLevel)
+{
+	// fetch the default TOC destination style from the buildin defaults
+	UT_UTF8String sStyle = UT_UTF8String_sprintf("toc-source-style%d", iLevel);
+	const PP_Property* pProp = PP_lookupProperty(sStyle.utf8_str());
+	if (pProp)
+		return pProp->getInitial();
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+
+	// we're desperate, just use something, anything...
+	return UT_UTF8String_sprintf("Heading %d", iLevel);
+}
+
+UT_UTF8String fl_TOCLayout::getDefaultDestStyle(UT_uint32 iLevel)
+{
+	// fetch the default TOC destination style from the buildin defaults
+	UT_UTF8String sStyle = UT_UTF8String_sprintf("toc-dest-style%d", iLevel);
+	const PP_Property* pProp = PP_lookupProperty(sStyle.utf8_str());
+	if (pProp)
+		return pProp->getInitial();
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+
+	// we're desperate, just use something, anything...
+	return UT_UTF8String_sprintf("Contents %d", iLevel);
+}
+
 /*!
     this function is only to be called by fl_ContainerLayout::lookupProperties()
     all other code must call lookupProperties() instead
@@ -1639,7 +1673,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	const gchar *pszTOCSRC = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-source-style1",pszTOCSRC))
 	{
-		m_sSourceStyle1 = "Heading 1";
+		m_sSourceStyle1 = getDefaultSourceStyle(1);
 	}
 	else
 	{
@@ -1648,7 +1682,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	pszTOCSRC = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-source-style2",pszTOCSRC))
 	{
-		m_sSourceStyle2 = "Heading 2";
+		m_sSourceStyle2 = getDefaultSourceStyle(2);
 	}
 	else
 	{
@@ -1657,7 +1691,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	pszTOCSRC = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-source-style3",pszTOCSRC))
 	{
-		m_sSourceStyle3 = "Heading 3";
+		m_sSourceStyle3 = getDefaultSourceStyle(3);
 	}
 	else
 	{
@@ -1666,7 +1700,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	pszTOCSRC = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-source-style4",pszTOCSRC))
 	{
-		m_sSourceStyle4 = "Heading 4";
+		m_sSourceStyle4 = getDefaultSourceStyle(4);
 	}
 	else
 	{
@@ -1675,7 +1709,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	const gchar * pszTOCDEST = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-dest-style1",pszTOCDEST))
 	{
-		m_sDestStyle1 = "Contents 1";
+		m_sDestStyle1 = getDefaultDestStyle(1);
 	}
 	else
 	{
@@ -1684,7 +1718,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	pszTOCDEST = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-dest-style2",pszTOCDEST))
 	{
-		m_sDestStyle2 = "Contents 2";
+		m_sDestStyle2 = getDefaultDestStyle(2);
 	}
 	else
 	{
@@ -1693,7 +1727,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	pszTOCDEST = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-dest-style3",pszTOCDEST))
 	{
-		m_sDestStyle3 = "Contents 3";
+		m_sDestStyle3 = getDefaultDestStyle(3);
 	}
 	else
 	{
@@ -1702,17 +1736,17 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	pszTOCDEST = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-dest-style4",pszTOCDEST))
 	{
-		m_sDestStyle4 = "Contents 4";
+		m_sDestStyle4 = getDefaultDestStyle(4);
 	}
 	else
 	{
 		m_sDestStyle4 = pszTOCDEST;
 	}
-	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+
 	const gchar * pszTOCHEADING = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-heading",pszTOCHEADING))
 	{
-		pSS->getValueUTF8(AP_STRING_ID_TOC_TocHeading, m_sTOCHeading);
+		m_sTOCHeading = getDefaultHeading();
 	}
 	else
 	{
@@ -2278,6 +2312,9 @@ fl_TOCListener::fl_TOCListener(fl_TOCLayout* pTOCL, fl_BlockLayout* pPrevBL, PD_
 	m_bListening = false;
 	m_pCurrentBL = NULL;
 	m_pStyle = pStyle;
+	// Mark this style as used, so it will be available in the list of used styles when
+	// exporters need to export this TOC
+	m_pStyle->used(1);
 }
 
 fl_TOCListener::~fl_TOCListener()
