@@ -1,3 +1,4 @@
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2002 Martin Sevior (msevior@physics.unimelb.edu.au>
@@ -1799,6 +1800,11 @@ void fl_DocSectionLayout::format(void)
 		pBL = pBL->getNext();
 	}
 	fp_Column * pCol = static_cast<fp_Column *>(getFirstContainer());
+	if(pCol == NULL)
+	{
+	        m_bNeedsFormat = false;
+		return;
+	}
 	//
 	// When the document is first loaded, all the lines
 	// in the section have been stuffed into the first column. 
@@ -1810,7 +1816,7 @@ void fl_DocSectionLayout::format(void)
 	// and let BreakSection fill each empty column as 
 	// needed.
 	// 
-      	if(m_pLayout->isLayoutFilling())
+      	if(pCol && m_pLayout->isLayoutFilling())
 	{
 	      pCol->removeAll();
 	}

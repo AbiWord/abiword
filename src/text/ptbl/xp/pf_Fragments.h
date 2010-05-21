@@ -107,10 +107,10 @@ public:
 			return tmp;
 		}
 
-		bool operator==(const Iterator& other)
+		bool operator==(const Iterator other)
 		{ return (m_pOwner == other.m_pOwner && m_pNode == other.m_pNode); }
 
-		bool operator!=(const Iterator& other)
+		bool operator!=(const Iterator other)
 		{ return !(*this == other); }
 
 		const pf_Frag* value() const;
@@ -142,11 +142,11 @@ private:
 	mutable pf_Frag*		m_pCache;
 
 	Iterator insertRoot(pf_Frag* new_piece); // throws std::bad_alloc (strong)
-	Iterator insertLeft(pf_Frag* new_piece, Iterator& it); // throws std::bad_alloc (strong)
-	Iterator insertRight(pf_Frag* new_piece, Iterator& it); // throws std::bad_alloc (strong)
-	void erase(Iterator& it); // throws ()
-	void fixSize(Iterator& it); // throws ()
-	PT_DocPosition documentPosition(const Iterator& it) const; // throws ()
+	Iterator insertLeft(pf_Frag* new_piece, Iterator it); // throws std::bad_alloc (strong)
+	Iterator insertRight(pf_Frag* new_piece, Iterator it); // throws std::bad_alloc (strong)
+	void erase(Iterator it); // throws ()
+	void fixSize(Iterator it); // throws ()
+	PT_DocPosition documentPosition(const Iterator it) const; // throws ()
 	void changeSize(int delta); // throws ()
 
 	Iterator begin() { return Iterator(this, _first()); }
@@ -169,7 +169,7 @@ private:
 	PT_DocPosition _calculateSize(Node* x);
 	
 #ifdef DEBUG
-	int _countBlackNodes(const Iterator& it) const;
+	int _countBlackNodes(const Iterator it) const;
 #endif
 
 	void delete_tree(Node* node);
