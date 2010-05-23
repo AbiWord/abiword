@@ -58,22 +58,6 @@ void ODe_Style_PageLayout::fetchAttributesFromAbiDoc(PD_Document* pAbiDoc) {
     } else {
             m_printOrientation = "landscape";
     }
-    
-    UT_UTF8String_sprintf(m_marginTop, "%f%s",
-                          pAbiDoc->m_docPageSize.MarginTop(docUnit),
-                          pDimensionName);
-                          
-    UT_UTF8String_sprintf(m_marginBottom, "%f%s",
-                          pAbiDoc->m_docPageSize.MarginBottom(docUnit),
-                          pDimensionName);
-                          
-    UT_UTF8String_sprintf(m_marginLeft, "%f%s",
-                          pAbiDoc->m_docPageSize.MarginLeft(docUnit),
-                          pDimensionName);
-                          
-    UT_UTF8String_sprintf(m_marginRight, "%f%s",
-                          pAbiDoc->m_docPageSize.MarginRight(docUnit),
-                          pDimensionName);
 }
 
 
@@ -82,9 +66,9 @@ void ODe_Style_PageLayout::fetchAttributesFromAbiDoc(PD_Document* pAbiDoc) {
  */
 void ODe_Style_PageLayout::fetchAttributesFromAbiSection(const PP_AttrProp* pAP) {
     const gchar* pValue;
-    bool ok;
-    bool hasAbiHeaderMargin = false;
-    bool hasAbiFooterMargin = false;
+    bool ok; 
+    bool hasHeader = false;
+    bool hasFooter = false;
     double abiHeaderMarginCM = 0.0;
     double abiFooterMarginCM = 0.0;
     double abiTopMarginCM;
@@ -101,90 +85,93 @@ void ODe_Style_PageLayout::fetchAttributesFromAbiSection(const PP_AttrProp* pAP)
      * 
      * OpenDocument's header height == AbiWord's top margin -
      *                                 AbiWord's header margin
+     *
+     * Note 1: OpenOffice.org will ignore the header height when
+     * no actual header is specified, so don't use it when there
+     * is no header in the document. Same holds for footers.
+     * 
+     * Note 2: When there is a header on the page, OpenOffice.org (v3.1)
+     * forces a margin/spacing just below the page content that is not
+     * specified in the actual document (as far as I can tell). The size
+     * of this vertical spacing odly enough depends on the *height
+     * of the header*. The higher the header, the more spacing below the
+     * main document content is forced. There seems to be a maximum height
+     * of about 0.5" for this spacing. When the height is "small enough",
+     * no additional spacing is enforced. The same holds for footers.
+     * The above can thus result in differences in rendering between AbiWord
+     * and OpenOffice.org, depending on the header/footer usage and their
+     * heights.
      */
 
+    // Note: no need to check separately for the existence of a "header-even"
+    // property: "header-even" only exists in AbiWord when "header" also exists.
+    ok = pAP->getAttribute("header", pValue);
+    if (ok && pValue != NULL)
+         hasHeader = true;
+
     ok = pAP->getProperty("page-margin-top", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != NULL)
+        m_marginTop = pValue;
+    if (m_marginTop.size() == 0)
+	    m_marginTop = fp_PageSize::getDefaultPageMargin(DIM_IN);
+    
+    if (hasHeader)
+    {
+        ok = pAP->getProperty("page-margin-header", pValue);
+        if (ok && pValue != NULL) {
         
-        if (hasAbiHeaderMargin) {
-            abiTopMarginCM = UT_convertToDimension(pValue, DIM_CM);
-            
+            abiHeaderMarginCM = UT_convertToDimension(pValue, DIM_CM);
+        
+            // Set the header height
+            abiTopMarginCM = UT_convertToDimension(m_marginTop.utf8_str(), DIM_CM);
             UT_UTF8String_sprintf(m_headerHeight, "%fcm",
                                   abiTopMarginCM - abiHeaderMarginCM);
-        } else {
-            m_marginTop = pValue;
+        
+            // Redefine the top margin
+            UT_UTF8String_sprintf(m_marginTop, "%fcm",abiHeaderMarginCM);
         }
     }
-    if(m_marginTop.size() == 0)
-    {
-	m_marginTop = "1.0in";
-    }
-    
-    ok = pAP->getProperty("page-margin-header", pValue);
-    if (ok && pValue != NULL) {
-        
-        abiHeaderMarginCM = UT_convertToDimension(pValue, DIM_CM);
-        
-        // Set the header height
-        abiTopMarginCM = UT_convertToDimension(m_marginTop.utf8_str(), DIM_CM);
-        UT_UTF8String_sprintf(m_headerHeight, "%fcm",
-                              abiTopMarginCM - abiHeaderMarginCM);
-        
-        // Redefine the top margin
-        hasAbiHeaderMargin = true;
-        UT_UTF8String_sprintf(m_marginTop, "%fcm",abiHeaderMarginCM);
-    }
+
+    // Note: no need to check separately for the existence of a "footer-even"
+    // property: "footer-even" only exists in AbiWord when "footer" also exists.
+    ok = pAP->getAttribute("footer", pValue);
+    if (ok && pValue != NULL)
+         hasFooter = true;
 
     ok = pAP->getProperty("page-margin-bottom", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != NULL)
+        m_marginBottom = pValue;
+    if (m_marginBottom.size() == 0)
+	    m_marginBottom = fp_PageSize::getDefaultPageMargin(DIM_IN);
+
+    if (hasFooter)
+    {
+        ok = pAP->getProperty("page-margin-footer", pValue);
+        if (ok && pValue != NULL) {
         
-        if (hasAbiFooterMargin) {
-            abiBottomMarginCM = UT_convertToDimension(pValue, DIM_CM);
-            
+            abiFooterMarginCM = UT_convertToDimension(pValue, DIM_CM);
+        
+            // Set the footer height
+            abiBottomMarginCM = UT_convertToDimension(m_marginBottom.utf8_str(), DIM_CM);
             UT_UTF8String_sprintf(m_footerHeight, "%fcm",
                                   abiBottomMarginCM - abiFooterMarginCM);
-        } else {
-            m_marginBottom = pValue;
+        
+            // Redefine the bottom margin
+            UT_UTF8String_sprintf(m_marginBottom, "%fcm",abiFooterMarginCM);
         }
-    }
-    if(m_marginBottom.size() == 0)
-    {
-	m_marginBottom = "1.0in";
-    }
-
-    ok = pAP->getProperty("page-margin-footer", pValue);
-    if (ok && pValue != NULL) {
-        
-        abiFooterMarginCM = UT_convertToDimension(pValue, DIM_CM);
-        
-        // Set the footer height
-        abiBottomMarginCM = UT_convertToDimension(m_marginBottom.utf8_str(), DIM_CM);
-        UT_UTF8String_sprintf(m_footerHeight, "%fcm",
-                              abiBottomMarginCM - abiFooterMarginCM);
-        
-        // Redefine the bottom margin
-        hasAbiFooterMargin = true;
-        UT_UTF8String_sprintf(m_marginBottom, "%fcm",abiFooterMarginCM);
     }
 
     ok = pAP->getProperty("page-margin-left", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != NULL)
         m_marginLeft = pValue;
-	UT_DEBUGMSG(("Found MarginLeft of section %s \n",pValue));
-    }
-    if(m_marginLeft.size() == 0)
-    {
-	m_marginLeft = "1.0in";
-    }
+    if (m_marginLeft.size() == 0)
+		m_marginLeft = fp_PageSize::getDefaultPageMargin(DIM_IN);
 
     ok = pAP->getProperty("page-margin-right", pValue);
-    if (ok && pValue != NULL) {
+    if (ok && pValue != NULL)
         m_marginRight = pValue;
-    }
     if(m_marginRight.size() == 0)
-    {
-	m_marginRight = "1.0in";
-    }
+	    m_marginRight = fp_PageSize::getDefaultPageMargin(DIM_IN);
 
     ok = pAP->getProperty("background-color", pValue);
     if (ok && pValue && *pValue) {

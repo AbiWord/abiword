@@ -25,6 +25,7 @@
 // AbiWord includes
 #include <ut_vector.h>
 #include <ut_string_class.h>
+#include <gsf/gsf-output-memory.h>
 
 
 /**
@@ -65,9 +66,19 @@ private:
 class ODe_AuxiliaryData {
 public:
     ODe_AuxiliaryData();
+    ~ODe_AuxiliaryData();
 
     ODe_HeadingStyles m_headingStyles;
     
+    // Content of the TOC
+    // Note: we only support 1 TOC body per document right now. It's wasted
+    // effort try to manually build up multiple different TOC bodies,
+    // until we can get to the actual TOC data that AbiWord generates.
+    GsfOutput* m_pTOCContents;
+
+    // The destination TOC style names for all levels
+    std::map<UT_sint32, UT_UTF8String> m_mDestStyles;
+
     // The number of tables already added to the document.
     UT_uint32 m_tableCount;
     
@@ -76,9 +87,6 @@ public:
     
     // The number of notes (footnotes and endnotes) already added to the document.
     UT_uint32 m_noteCount;
-    
-    // The number of TOCs (Table of Confents) already added to the document.
-    UT_uint32 m_TOCCount;
 };
 
 #endif /*ODE_AUXILIARYDATA_H_*/

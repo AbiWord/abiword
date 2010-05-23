@@ -39,7 +39,7 @@ class ODe_Style_PageLayout;
 // AbiWord classes
 class PD_Document;
 class PP_AttrProp;
-
+class PD_Style;
 
 /**
  * This class stores all normal and automatic styles.
@@ -47,11 +47,13 @@ class PP_AttrProp;
 class ODe_Styles {
 public:
 
+    ODe_Styles(PD_Document* pAbiDoc);
+
     ~ODe_Styles();
 
     // Fetch all regular <style:style> elements (the ones that will be defined
     // inside <office:styles>).
-    bool fetchRegularStyleStyles(PD_Document* pAbiDoc);
+    bool fetchRegularStyleStyles();
 
     // Writes the <office:styles> element.
     bool write(GsfOutput* pODT) const;
@@ -78,10 +80,13 @@ public:
 
 	void addGraphicsStyle(ODe_Style_Style* pStyle);
 
+    void addStyle(const UT_UTF8String& sStyle);
+
 private:
     bool _addStyle(const PP_AttrProp* pAP);
     bool _writeStyles(GsfOutput* pODT, UT_GenericVector<ODe_Style_Style*>* pStyleVector) const;
 
+	PD_Document* m_pAbiDoc;
     ODe_DefaultStyles m_defaultStyles;
     UT_GenericStringMap<ODe_Style_Style*> m_textStyles;
     UT_GenericStringMap<ODe_Style_Style*> m_paragraphStyles;

@@ -47,15 +47,28 @@ public:
     void setName(const UT_UTF8String& rName) {
         m_name = rName;
     }
-    
+
+    void setPageLayoutName(const UT_UTF8String& rPageLayoutName) {
+        m_pageLayoutName = rPageLayoutName;
+    }
+
+    bool hasProperties() const {
+        return !m_abiHeaderId.empty() ||
+               !m_abiFooterId.empty();
+    }
+
     // Write the <style:master-page> element.
     bool write(GsfOutput* pODT) const;
     
     GsfOutput* getHeaderContentTempFile() const {return m_pHeaderContentTemp;}
+    GsfOutput* getHeaderEvenContentTempFile() const {return m_pHeaderEvenContentTemp;}
     GsfOutput* getFooterContentTempFile() const {return m_pFooterContentTemp;}
+    GsfOutput* getFooterEvenContentTempFile() const {return m_pFooterEvenContentTemp;}
     
     const UT_UTF8String& getAbiHeaderId() const {return m_abiHeaderId;}
+    const UT_UTF8String& getAbiHeaderEvenId() const {return m_abiHeaderEvenId;}
     const UT_UTF8String& getAbiFooterId() const {return m_abiFooterId;}
+    const UT_UTF8String& getAbiFooterEvenId() const {return m_abiFooterEvenId;}
     
 private:
     UT_UTF8String m_name;           // style:name
@@ -63,13 +76,19 @@ private:
     
     // <section header="2" ... >
     UT_UTF8String m_abiHeaderId;
+    // <section header-even="3" ... >
+    UT_UTF8String m_abiHeaderEvenId;
     
     // <section footer="5" ... >
     UT_UTF8String m_abiFooterId;
+    // <section footer-even="6" ... >
+    UT_UTF8String m_abiFooterEvenId;
     
     // Temporary files that will hold header and footer content.
     GsfOutput* m_pHeaderContentTemp;
+    GsfOutput* m_pHeaderEvenContentTemp;
     GsfOutput* m_pFooterContentTemp;
+    GsfOutput* m_pFooterEvenContentTemp;
 };
 
 #endif //_ODE_STYLE_MASTERPAGE_H_

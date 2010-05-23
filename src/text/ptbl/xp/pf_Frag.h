@@ -56,6 +56,9 @@ public:
 	pf_Frag *                       getPrev(void) const;
 
 	inline UT_uint32		getLength(void) const	{ return m_length; }
+	inline void                     zero(void)
+	{ m_length = 0;}
+
 	pt_PieceTable *			getPieceTable(void) const { return m_pPieceTable;}
 	fd_Field *				getField(void) const;
 	PT_DocPosition          getPos(void) const;

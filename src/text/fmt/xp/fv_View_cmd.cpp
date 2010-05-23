@@ -22,7 +22,7 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-#define BENCHLAYOUT 1
+#define BENCHLAYOUT 0
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>

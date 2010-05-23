@@ -1961,7 +1961,7 @@ void fp_Column::layout(void)
 // Handle case of lines broken around a positioned object with text wrap on
 //
 			fp_Line * pLine = static_cast<fp_Line *>(pContainer);
-			xxx_UT_DEBUGMSG(("Line %x X %d Y %d MaxWidth %d Width %d \n",pLine,pLine->getX(),pLine->getY(),pLine->getMaxWidth(),pLine->getWidth()));
+			xxx_UT_DEBUGMSG(("Line %x X %d Y %d MaxWidth %d Width %d Height %d \n",pLine,pLine->getX(),pLine->getY(),pLine->getMaxWidth(),pLine->getWidth(),pLine->getHeight()));
 			if(pLine->isWrapped())
 			{
 				addWrappedLine(pLine);

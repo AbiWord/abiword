@@ -1214,9 +1214,7 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     // Left border
 
     ok = rAP.getProperty("left-style", pValue);
-    if(!ok)
-      m_borderLeft.clear();
-    if (pValue && (*pValue == '0')) {
+	if(!ok || (pValue && (*pValue == '0'))) {
       m_borderLeft.clear();
     } else {
         ok = rAP.getProperty("left-thickness", pValue);
@@ -1238,9 +1236,7 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     // Right border
 
     ok = rAP.getProperty("right-style", pValue);
-    if(!ok)
-      m_borderRight.clear();
-    if (pValue && (*pValue == '0')) {
+    if(!ok || (pValue && (*pValue == '0'))) {
       m_borderRight.clear();
     } else {
         ok = rAP.getProperty("right-thickness", pValue);
@@ -1262,9 +1258,7 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     // Top border
     
     ok = rAP.getProperty("top-style", pValue);
-    if(!ok)
-      m_borderTop.clear();
-    if (pValue && (*pValue == '0')) {
+    if(!ok || (pValue && (*pValue == '0'))) {
       m_borderTop.clear();
     } else {
         ok = rAP.getProperty("top-thickness", pValue);
@@ -1286,9 +1280,7 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     // Bottom border
     
     ok = rAP.getProperty("bot-style", pValue);
-    if(!ok)
-      m_borderBottom.clear();
-    if (pValue && (*pValue == '0')) {
+    if(!ok || (pValue && (*pValue == '0'))) {
       m_borderBottom.clear();
     } else {
         ok = rAP.getProperty("bot-thickness", pValue);
@@ -1310,19 +1302,11 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     // Border merge
 
     ok = rAP.getProperty("border-merge", pValue);
-    if(!ok)
+    if(!ok || (pValue && ((*pValue == '0') || strcmp(pValue, "false") == 0)))
       m_borderMerge.clear();
-
-    if (pValue && (*pValue == '0')) 
-    {
-      m_borderMerge.clear();
-    }
-    else if (!strcmp(pValue, "false"))
-    { 
-      m_borderMerge.clear();
-    }
-    else if(ok)
+    else
       m_borderMerge = pValue;
+      
 
     // padding
 
@@ -1336,11 +1320,11 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
 
 
     ok = rAP.getProperty("left-space", pValue);
-    UT_DEBUGMSG(("ok %d left-space %s \n",ok,pValue));
     if(!ok)
       m_leftSpace.clear();
     else 
     {
+     UT_DEBUGMSG(("ok %d left-space %s \n",ok,pValue));
       m_leftSpace = pValue;
     }
     UT_DEBUGMSG(("1 -m_leftspace %s \n",m_leftSpace.utf8_str()));

@@ -442,10 +442,12 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Indents)
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
 	double margin_left = 0., margin_right = 0., allowed = 0.,
-		page_margin_left = 0., page_margin_right = 0.;
+		page_margin_left = 0., page_margin_right = 0.,
+		page_margin_top = 0., page_margin_bottom = 0.;
 
 	s_getPageMargins(pView, margin_left, margin_right,
-					 page_margin_left, page_margin_right);
+					 page_margin_left, page_margin_right,
+					 page_margin_top, page_margin_bottom);
 
 	UT_BidiCharType iBlockDir = UT_BIDI_LTR;
 	if(pView->getCurrentBlock())

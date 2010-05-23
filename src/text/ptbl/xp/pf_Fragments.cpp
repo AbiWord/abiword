@@ -37,7 +37,7 @@ void pf_Fragments::Node::print()
   if (!item)
     return;
 				
-  printf("%c (%i, %i) \n", color == red ? 'R' : 'B', item->m_leftTreeLength, item->m_length);
+  printf("%c (%i, %i) \n", color == red ? 'R' : 'B', item->getLeftTreeLength(), item->getLength());
 
   if (left && left->item)
   {
@@ -190,7 +190,7 @@ void pf_Fragments::insertFragBefore(pf_Frag * pfPlace, pf_Frag * pfNew)
 void pf_Fragments::unlinkFrag(pf_Frag * pf)
 {
 	// NOTE:  it is the caller's responsibility to delete pf if appropriate.
-	
+        UT_DEBUGMSG(("Unlinking frag %p \n",pf));
 	UT_return_if_fail (pf->getType() != pf_Frag::PFT_EndOfDoc);
 
 	Iterator it(this,pf->_getNode());
@@ -401,7 +401,7 @@ pf_Fragments::insertRoot(pf_Frag* new_piece)
  * @param it iterator to the reference node
  */
 pf_Fragments::Iterator
-pf_Fragments::insertRight(pf_Frag* new_piece, Iterator& it)
+pf_Fragments::insertRight(pf_Frag* new_piece, Iterator it)
 {
 	Node* pNode = it.getNode();
 
@@ -451,7 +451,7 @@ pf_Fragments::insertRight(pf_Frag* new_piece, Iterator& it)
  * @param it iterator to the reference node
  */
 pf_Fragments::Iterator
-pf_Fragments::insertLeft(pf_Frag* new_piece, Iterator& it)
+pf_Fragments::insertLeft(pf_Frag* new_piece, Iterator it)
 {
 	Node* pNode = it.getNode();
 
@@ -498,24 +498,34 @@ pf_Fragments::insertLeft(pf_Frag* new_piece, Iterator& it)
  * @param it iterator to the node to erase.
  */
 void
-pf_Fragments::erase(Iterator& it)
+pf_Fragments::erase(Iterator it)
 {
 	if (!it.is_valid())
+	{
+	        UT_DEBUGMSG(("Inavlid frag %p in erase \n",it.getNode()->item));
 		return;
-
+	}
 	Node* pNode = it.getNode();
 	UT_ASSERT(pNode);
 
 	--m_nSize;
 	m_nDocumentSize -= pNode->item->getLength();
-	
-	Node* y = (pNode->left == m_pLeaf || pNode->right == m_pLeaf) ?
-		pNode :
-		_prev(pNode);
+	pNode->item->zero();
+	fixSize(it);
 
+	Node* y;
+	if (pNode->left == m_pLeaf || pNode->right == m_pLeaf)
+		y = pNode;
+	else
+		y = _next(pNode);
 	UT_ASSERT(y->left == m_pLeaf || y->right == m_pLeaf);
+
 	Node* son = y->left != m_pLeaf ? y->left : y->right;
 	UT_ASSERT(son);
+	/* Note that "son" can be the fake m_pLeaf */
+
+	/* switch the Node "y" by the Node "son". Note that this operation can't
+	   change the size_left of "son", because "son" is unchanged. */
 	son->parent = y->parent;
 
 	if (!y->parent)
@@ -524,13 +534,30 @@ pf_Fragments::erase(Iterator& it)
 		xxx_UT_DEBUGMSG(("2 Root node set to %p \n",son));
 	}
 	else
+	{
 		if (y->parent->left == y)
 			y->parent->left = son;
 		else
 			y->parent->right = son;
+	}
+
+	if (y->item->getLength() > 0)
+	{
+		Iterator it_son(this, son);
+		fixSize(it_son);
+	}
+
+/* 
+   At this point we have removed the "y" node from the tree. Now we need to
+   copy the item in "y" to the item in "pNode" (if they are different Nodes).
+   Before we do it, we have to update the size_left member of "y", as "y"'s
+   item is changing its position in the tree 
+
+*/
 
 	if (y != pNode)
 	{
+	        y->item->setLeftTreeLength(pNode->item->getLeftTreeLength());
 		/* ADITYA: To conform with the existing interface, we
 		  do not delete the pf_Frag object - it is responsibility of
 		  the caller of unlinkFrag().
@@ -543,19 +570,16 @@ pf_Fragments::erase(Iterator& it)
 		pNode->item->_setNode(pNode);
 		Iterator it_temp(this, pNode);
 		fixSize(it_temp);
-	}
-
-	if (son->parent)
-	{
-		/* and fix the whole left branch of the tree */
-		Iterator it_temp(this, son);
-		fixSize(it_temp);
+		xxx_UT_DEBUGMSG(("Fixed size of pNode \n"));
 	}
 		
 	if (y->color == Node::black)
+	{
 		_eraseFixup(son);
-
+		xxx_UT_DEBUGMSG(("called eraseFixup \n"));
+	}
 	delete y;
+	//	verifyDoc();
 }
 
 /**
@@ -568,7 +592,7 @@ pf_Fragments::erase(Iterator& it)
  * @param it Iterator to the node that changed its size
  */
 void
-pf_Fragments::fixSize(Iterator& it)
+pf_Fragments::fixSize(Iterator it)
 {
 	UT_ASSERT(it.is_valid());
 	Node* pn = it.getNode();
@@ -689,13 +713,16 @@ pf_Fragments::_eraseFixup(Node* x)
 	x->color = Node::black;
 }
 
+
 pf_Fragments::Iterator
-pf_Fragments::find(PT_DocPosition pos) const
+pf_Fragments::find(PT_DocPosition orig_pos) const
 {
 	Node* x = m_pRoot;
+	PT_DocPosition pos = orig_pos;
 	while (x != m_pLeaf)
 	{
 		pf_Frag* p = x->item;
+		xxx_UT_DEBUGMSG(("pos %d leftLength %d length %d",pos,p->getLeftTreeLength(),p->getLength()));
 		if(p == NULL)
 		{
 		    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -712,12 +739,33 @@ pf_Fragments::find(PT_DocPosition pos) const
 		}
 	}
 
-	UT_ASSERT(pos >= sizeDocument());
+	//	UT_ASSERT(orig_pos >= sizeDocument());
+	if(orig_pos < sizeDocument())
+	{
+	  verifyDoc();
+	}
 	return Iterator(this, 0);
 }
 
+void pf_Fragments::verifyDoc(void) const
+{
+  PT_DocPosition pos = 0;
+  pf_Frag * pf = getFirst();
+  UT_sint32 count = 0;
+  while(pf && (pf->getType() !=  pf_Frag::PFT_EndOfDoc))
+  {
+    
+    UT_DEBUGMSG(("frag %d pointer %p pos %d leftLength %d length %d PT Pos %d \n",count,pf,pos,pf->getLeftTreeLength(),pf->getLength(),pf->getPos()));
+    UT_ASSERT(pos == pf->getPos());
+    count++;
+    pos += pf->getLength();
+    pf = pf->getNext();
+  }
+  
+}
+
 PT_DocPosition
-pf_Fragments::documentPosition(const Iterator& it) const
+pf_Fragments::documentPosition(const Iterator it) const
 {
 	UT_ASSERT(it.is_valid());
 
@@ -1016,7 +1064,7 @@ pf_Fragments::print() const
 
 // Iterator should be a ConstIterator
 int
-pf_Fragments::_countBlackNodes(const Iterator& it) const
+pf_Fragments::_countBlackNodes(const Iterator it) const
 {
 	int retval = 0;
 	const Node* pn = it.getNode();
@@ -1077,14 +1125,14 @@ pf_Fragments::checkInvariants() const
 }
 
 bool
-pf_Fragments::checkSizeInvariant(const Node* pn, PT_DocPosition* size) const
+pf_Fragments::checkSizeInvariant(const Node* pn, PT_DocPosition* doc_size) const
 {
 	PT_DocPosition m_lengthLeft, size_right;
 	
 	if (pn == m_pLeaf)
 	{
-		if (size)
-			*size = 0;
+		if (doc_size)
+			*doc_size = 0;
 
 		return true;
 	}
@@ -1101,8 +1149,8 @@ pf_Fragments::checkSizeInvariant(const Node* pn, PT_DocPosition* size) const
 		return false;
 	}
 
-	if (size)
-		*size = pn->item->m_length + m_lengthLeft + size_right;
+	if (doc_size)
+		*doc_size = pn->item->m_length + m_lengthLeft + size_right;
 
 	return true;
 }

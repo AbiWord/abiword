@@ -350,6 +350,7 @@ void ODi_Bullet_ListLevelStyle::startElement(const gchar* pName,
                         break;
                         
                     case 8211: // U+2013 EN DASH
+                    case 8722: // U+2212 MINUS SIGN
                         // Dashed List
                         UT_UTF8String_sprintf(m_abiListType, "%d", DASHED_LIST);
                         break;

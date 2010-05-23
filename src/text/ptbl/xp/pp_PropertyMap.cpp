@@ -382,7 +382,8 @@ PP_PropertyMap::Line::Line () :
 	m_t_linestyle(linestyle__unset),
 	m_t_thickness(thickness__unset),
 	m_color(0,0,0),	// in case of color_color
-	m_thickness(1)	// in case of thickness_length
+	m_thickness(0), // in case of thickness_length
+    m_spacing(0)
 {
 	// 
 }

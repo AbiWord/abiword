@@ -182,14 +182,14 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             // be at level 1.
             pOutlineLevel = "1";
         }
-	UT_UTF8String sHeadingListName = "BaseHeading";
-	m_listLevel = atoi(pOutlineLevel);
-	m_pCurrentListStyle =  m_pStyles->getList( sHeadingListName.utf8_str());
-	if(m_pCurrentListStyle && m_pCurrentListStyle->getLevelStyle(m_listLevel)->isVisible())
-	{
-	     xxx_UT_DEBUGMSG(("Found %s ! outline level %s \n",sHeadingListName.utf8_str(),pOutlineLevel));
-	     m_bHeadingList = true;
-	}
+        UT_UTF8String sHeadingListName = "BaseHeading";
+        m_listLevel = atoi(pOutlineLevel);
+        m_pCurrentListStyle =  m_pStyles->getList( sHeadingListName.utf8_str());
+        if(m_pCurrentListStyle && m_pCurrentListStyle->getLevelStyle(m_listLevel)->isVisible())
+        {
+            xxx_UT_DEBUGMSG(("Found %s ! outline level %s \n",sHeadingListName.utf8_str(),pOutlineLevel));
+            m_bHeadingList = true;
+        }
 
         pStyleName = UT_getAttribute("text:style-name", ppAtts);
         if (pStyleName) 
@@ -220,7 +220,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         m_alreadyDefinedAbiParagraphForList = false;
         _startParagraphElement(pName, ppAtts, rAction);
         m_bHeadingList = false;
-	m_pCurrentListStyle = NULL;
+        m_pCurrentListStyle = NULL;
     } else if (!strcmp(pName, "text:s")) {
         // A number of consecutive white-space characters.
         
@@ -492,8 +492,8 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
 	else if (!strcmp(m_rElementStack.getStartTag(0)->getName(), "office:text")) 
 	{
             
-            // A page anchored frame.
-            // Store this in the PD_Document until after the rest of the
+ 	  // A page anchored frame.
+ 	  // Store this in the PD_Document until after the rest of the
 	  // is layed out.
 	  // First acquired the info we need
 	  const gchar* pVal = NULL;
@@ -1204,9 +1204,10 @@ void ODi_TextContent_ListenerState::_openAbiSection(
                                          const UT_UTF8String& rProps,
                                          const UT_UTF8String* pMasterPageName) {
 
-    UT_UTF8String allProps;
+    UT_UTF8String masterPageProps;
     UT_UTF8String dataID;
-    
+    bool hasLeftPageMargin = false;
+    bool hasRightPageMargin = false;
 
     const ODi_Style_MasterPage* pMasterPageStyle = NULL;
 
@@ -1215,53 +1216,61 @@ void ODi_TextContent_ListenerState::_openAbiSection(
         pMasterPageStyle = m_pStyles->getMasterPageStyle(pMasterPageName->utf8_str());
         
         if (pMasterPageStyle && pMasterPageStyle->getPageLayout()) {
-            allProps = pMasterPageStyle->getSectionProps();
+            masterPageProps = pMasterPageStyle->getSectionProps();
             dataID = pMasterPageStyle->getSectionDataID();
-            UT_ASSERT(!allProps.empty());
+            if (pMasterPageStyle->getPageLayout()->getMarginLeft().size()) {
+                m_currentPageMarginLeft = pMasterPageStyle->getPageLayout()->getMarginLeft();
+                hasLeftPageMargin = true;
+            }
+            if (pMasterPageStyle->getPageLayout()->getMarginRight().size()) {
+                m_currentPageMarginRight = pMasterPageStyle->getPageLayout()->getMarginRight();
+                hasRightPageMargin = true;
+            }
+            UT_ASSERT(!masterPageProps.empty());
         }
-	//
-	// Page size is defined from the first section properties
-	//
+        //
+        // Page size is defined from the first section properties
+        //
         if(!m_openedFirstAbiSection)
-	{
-	    UT_UTF8String sProp(""),sWidth(""),sHeight(""),sOri("");
-	    bool bValid = true;
+        {
+            UT_UTF8String sProp(""),sWidth(""),sHeight(""),sOri("");
+            bool bValid = true;
 	    
-	    sProp="page-width";
-	    sWidth = UT_UTF8String_getPropVal(allProps,sProp);
-	    if(sWidth.size()==0)
-	        bValid = false;
+            sProp="page-width";
+            sWidth = UT_UTF8String_getPropVal(masterPageProps,sProp);
+            if(sWidth.size()==0)
+                bValid = false;
 
-	    sProp="page-height";
-	    sHeight = UT_UTF8String_getPropVal(allProps,sProp);
-	    if(sHeight.size()==0)
-	        bValid = false;
+            sProp="page-height";
+            sHeight = UT_UTF8String_getPropVal(masterPageProps,sProp);
+            if(sHeight.size()==0)
+                bValid = false;
 
-	    sProp="page-orientation";
-	    sOri = UT_UTF8String_getPropVal(allProps,sProp);
-	    if(sOri.size()==0)
-	        bValid = false;
-	    if(bValid)
-	    {
-	        UT_UTF8String sUnits = UT_dimensionName(UT_determineDimension(sWidth.utf8_str()));
-	        const gchar * atts[13] ={"pagetype","Custom",
-					 "orientation",NULL,
-					 "width",NULL,
-					 "height",NULL,
-					 "units",NULL,
-					 "page-scale","1.0",
-					 NULL};
-		atts[3] = sOri.utf8_str();
-		atts[5] = sWidth.utf8_str();
-		atts[7] = sHeight.utf8_str();
-		atts[9] = sUnits.utf8_str();
-		m_pAbiDocument->setPageSizeFromFile(atts);
-	    }
-	}
+            sProp="page-orientation";
+            sOri = UT_UTF8String_getPropVal(masterPageProps,sProp);
+            if(sOri.size()==0)
+	            bValid = false;
+            if(bValid)
+            {
+                UT_UTF8String sUnits = UT_dimensionName(UT_determineDimension(sWidth.utf8_str()));
+                const gchar * atts[13] ={"pagetype","Custom",
+                        "orientation",NULL,
+                        "width",NULL,
+                        "height",NULL,
+                        "units",NULL,
+                        "page-scale","1.0",
+                        NULL};
+                atts[3] = sOri.utf8_str();
+                atts[5] = sWidth.utf8_str();
+                atts[7] = sHeight.utf8_str();
+                atts[9] = sUnits.utf8_str();
+                m_pAbiDocument->setPageSizeFromFile(atts);
+            }
+        }
         m_openedFirstAbiSection = true;
     }
 
-    if (!m_openedFirstAbiSection) {
+	if (!m_openedFirstAbiSection) {
         // We haven't defined any page properties yet. It's done on the
         // first abi section.
         
@@ -1271,13 +1280,42 @@ void ODi_TextContent_ListenerState::_openAbiSection(
         pMasterPageStyle = m_pStyles->getMasterPageStyle("Standard");
 
         if (pMasterPageStyle) {
-            allProps = pMasterPageStyle->getSectionProps();
+            masterPageProps = pMasterPageStyle->getSectionProps();
             dataID = pMasterPageStyle->getSectionDataID();
+            if (pMasterPageStyle->getPageLayout() && pMasterPageStyle->getPageLayout()->getMarginLeft().size()){
+                m_currentPageMarginLeft = pMasterPageStyle->getPageLayout()->getMarginLeft();
+                hasLeftPageMargin = true;
+            }
+            if (pMasterPageStyle->getPageLayout() && pMasterPageStyle->getPageLayout()->getMarginRight().size()) {
+                m_currentPageMarginRight = pMasterPageStyle->getPageLayout()->getMarginRight();
+                hasRightPageMargin = true;
+            }
         }
 
         m_openedFirstAbiSection = true;
     }
     
+    // AbiWord always needs to have the page-margin-left and page-margin-right properties
+    // set on a section, otherwise AbiWord will reset those properties to their default
+    // values. This is because AbiWord can have multiple left and right margins on 1 page,
+    // something OpenOffice.org/OpenDocument can't do. Left and right page margins in 
+    // OpenDocument are only set once per page layout.
+    // This means that when we encounter a new OpenDocument section without an accompanying
+    // page layout style (a section that thus causes no left or right page margin changes), 
+    // we will manually need to add the 'current' left and right page margin to AbiWord's
+    // section properties to achieve the same effect.
+    // Bug 10884 has an example of this situation.
+    if (!hasLeftPageMargin && m_currentPageMarginLeft.size()) {
+       if (!masterPageProps.empty())
+            masterPageProps += "; ";
+        masterPageProps += "page-margin-left:" + m_currentPageMarginLeft;
+    }
+    if (!hasRightPageMargin && m_currentPageMarginRight.size()) {
+        if (!masterPageProps.empty())
+            masterPageProps += "; ";
+        masterPageProps += "page-margin-right:" + m_currentPageMarginRight;
+    }
+
     // The AbiWord section properties are taken part from the OpenDocument 
     // page layout (from the master page style) and part from the OpenDocument
     // section properties.
@@ -1285,11 +1323,11 @@ void ODi_TextContent_ListenerState::_openAbiSection(
     // TODO: What happens if there are duplicated properties on the page layout
     // and on the section?
 
+    UT_UTF8String allProps = masterPageProps;
     if (!allProps.empty() && !rProps.empty()) {
         allProps += "; ";
     }
     allProps += rProps;
-
     
     const gchar* atts[20];
     UT_uint8 i = 0;
