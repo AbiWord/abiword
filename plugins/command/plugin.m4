@@ -20,10 +20,10 @@ if test "$enable_command" != ""; then
 	fi
 fi
 
-if test "$enable_command" == "yes" || \
-   test "$command_deps" == "yes"; then
+if test "$enable_command" = "yes" || \
+   test "$command_deps" = "yes"; then
 
-if test "$enable_command_builtin" == "yes"; then
+if test "$enable_command_builtin" = "yes"; then
 AC_MSG_ERROR([command plugin: static linking not supported])
 fi
 
@@ -35,7 +35,7 @@ else
         COMMAND_LIBS="-lreadline -lhistory $COMMAND_LIBS"
 fi
 
-test "$enable_command" == "auto" && PLUGINS="$PLUGINS command"
+test "$enable_command" = "auto" && PLUGINS="$PLUGINS command"
 
 COMMAND_CFLAGS="$COMMAND_CFLAGS "'${PLUGIN_CFLAGS}'
 COMMAND_LIBS="$COMMAND_LIBS "'${PLUGIN_LIBS}'

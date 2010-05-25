@@ -29,17 +29,17 @@ PKG_CHECK_EXISTS([ $mht_pkgs ],
 [
 	mht_deps="yes"
 ], [
-	test "$enable_mht" == "auto" && AC_MSG_WARN([mht plugin: dependencies not satisfied - $mht_pkgs])
+	test "$enable_mht" = "auto" && AC_MSG_WARN([mht plugin: dependencies not satisfied - $mht_pkgs])
 ])
 
 fi
 
-if test "$enable_mht" == "yes" || \
-   test "$mht_deps" == "yes"; then
+if test "$enable_mht" = "yes" || \
+   test "$mht_deps" = "yes"; then
 
-test "$enable_mht" == "auto" && PLUGINS="$PLUGINS mht"
+test "$enable_mht" = "auto" && PLUGINS="$PLUGINS mht"
 
-if test "$enable_mht_builtin" == "yes"; then
+if test "$enable_mht_builtin" = "yes"; then
 AC_MSG_ERROR([mht plugin: static linking not supported])
 fi
 
@@ -65,23 +65,23 @@ AC_CHECK_HEADERS([tidy/tidy.h],
 # Settings
 #
 
-if test "$mht_cv_inter7eps" == "yes" &&
-   test "$inter7eps_found" == "no"; then
+if test "$mht_cv_inter7eps" = "yes" &&
+   test "$inter7eps_found" = "no"; then
 	AC_MSG_ERROR([MHT plugin: error - inter7 EPS headers not found])
-elif test "$mht_cv_inter7eps" == "auto"; then
+elif test "$mht_cv_inter7eps" = "auto"; then
 	mht_cv_inter7eps="$inter7eps_found"
 fi
-if test "$mht_cv_inter7eps" == "yes"; then
+if test "$mht_cv_inter7eps" = "yes"; then
 	MHT_OPT_LIBS="$MHT_OPT_LIBS -leps"
 fi
 
-if test "$mht_cv_libtidy" == "yes" &&
-   test "$libtidy_found" == "no"; then
+if test "$mht_cv_libtidy" = "yes" &&
+   test "$libtidy_found" = "no"; then
 	AC_MSG_ERROR([MHT plugin: error - libtidy headers not found])
-elif test "$mht_cv_libtidy" == "auto"; then
+elif test "$mht_cv_libtidy" = "auto"; then
 	mht_cv_libtidy="$libtidy_found"
 fi
-if test "$mht_cv_libtidy" == "yes"; then
+if test "$mht_cv_libtidy" = "yes"; then
 	MHT_OPT_LIBS="$MHT_OPT_LIBS -ltidy"
 fi
 
@@ -97,6 +97,6 @@ AC_SUBST([MHT_LIBS])
 
 # TODO we depend on libxml2 anyways, so get rid of alternatives
 AM_CONDITIONAL([ABI_XHTML_XML2], test /bin/true)
-AM_CONDITIONAL([ABI_XHTML_MHT], test "$mht_cv_inter7eps" == "yes")
-AM_CONDITIONAL([ABI_XHTML_TIDY], test "$mht_cv_libtidy" == "yes")
+AM_CONDITIONAL([ABI_XHTML_MHT], test "$mht_cv_inter7eps" = "yes")
+AM_CONDITIONAL([ABI_XHTML_TIDY], test "$mht_cv_libtidy" = "yes")
 

@@ -9,7 +9,7 @@ find plugins -name Makefile.am | sed  's|.am$||g' > plugin-makefiles.m4
 # create conditionals for builtin plugins
 (for plugin in `cat plugin-list.m4`; do
 	u=`echo $plugin | tr '[:lower:]' '[:upper:]'`
-	echo 'AM_CONDITIONAL(['$u'_BUILTIN], test "$enable_'$plugin'_builtin" == "yes")'
+	echo 'AM_CONDITIONAL(['$u'_BUILTIN], test "$enable_'$plugin'_builtin" = "yes")'
 done) > plugin-builtin.m4
 
 # create plugin configuration

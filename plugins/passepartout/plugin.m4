@@ -4,12 +4,12 @@ PASSEPARTOUT_LIBS=
 
 if test "$enable_passepartout" != ""; then
 
-test "$enable_passepartout" == "auto" && PLUGINS="$PLUGINS passepartout"
+test "$enable_passepartout" = "auto" && PLUGINS="$PLUGINS passepartout"
 
 PASSEPARTOUT_CFLAGS="$PASSEPARTOUT_CFLAGS "'${PLUGIN_CFLAGS}'
 PASSEPARTOUT_LIBS="$PASSEPARTOUT_LIBS "'${PLUGIN_LIBS}'
 
-if test "$enable_passepartout_builtin" == "yes"; then
+if test "$enable_passepartout_builtin" = "yes"; then
 	PASSEPARTOUT_CFLAGS="$PASSEPARTOUT_CFLAGS -DABI_PLUGIN_BUILTIN"
 fi
 

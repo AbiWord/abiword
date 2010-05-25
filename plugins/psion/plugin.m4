@@ -15,8 +15,8 @@ psion_deps="no"
 
 if test "$enable_psion" != ""; then
 
-	if test "$psiconvconfig" == ""; then
-		if test "$enable_psion" == "yes"; then
+	if test "$psiconvconfig" = ""; then
+		if test "$enable_psion" = "yes"; then
 		  AC_MSG_ERROR([psiconv plugin: program psiconv-config not found in path])
 		else
 		  AC_MSG_WARN([psiconv plugin: program psiconv-config not found in path])
@@ -42,15 +42,15 @@ if test "$enable_psion" != ""; then
 	fi
 fi
 
-if test "$enable_psion" == "yes" || \
-   test "$psion_deps" == "yes"; then
+if test "$enable_psion" = "yes" || \
+   test "$psion_deps" = "yes"; then
 
-if test "$enable_psion_builtin" == "yes"; then
+if test "$enable_psion_builtin" = "yes"; then
 AC_MSG_ERROR([psion plugin: static linking not supported])
 fi
 
 AC_MSG_CHECKING([for psiconv >= ${psiconv_major_req}.${psiconv_minor_req}.${psiconv_micro_req}])
-if test "$psion_deps" == "yes"; then
+if test "$psion_deps" = "yes"; then
 	AC_MSG_RESULT([version ${psiconv_major_found}.${psiconv_minor_found}.${psiconv_micro_found} (ok)])
 	PSION_CFLAGS=`$psiconvconfig --cflags`
 	PSION_LIBS=`$psiconvconfig --libs`
@@ -58,7 +58,7 @@ else
 	AC_MSG_ERROR([version ${psiconv_major_found}.${psiconv_minor_found}.${psiconv_micro_found} (too old!)])
 fi
 
-test "$enable_psion" == "auto" && PLUGINS="$PLUGINS psion"
+test "$enable_psion" = "auto" && PLUGINS="$PLUGINS psion"
 
 PSION_CFLAGS="$PSION_CFLAGS $PNG_CFLAGS "'${PLUGIN_CFLAGS}'
 PSION_LIBS="$PSION_LIBS $PNG_LIBS -lgsf-1 "'${PLUGIN_LIBS}'
