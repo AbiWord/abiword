@@ -2834,11 +2834,11 @@ bool PD_Document::isFrameAtPos(PT_DocPosition pos)
 	PT_BlockOffset pOffset;
 	pf_Frag * pf = NULL;
 	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
-	while(pf && (pf->getLength() == 0))
-    {
+	if(!pf)
+		return false;
+	while(pf && pf->getLength() == 0)
 		pf = pf->getPrev();
-    }
-	if(pf && (pf->getType() == pf_Frag::PFT_Strux))
+	if(pf && pf->getType() == pf_Frag::PFT_Strux)
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
 		if(pfs->getStruxType() == PTX_SectionFrame)
@@ -2860,9 +2860,11 @@ bool PD_Document::isEndFrameAtPos(PT_DocPosition pos)
 	PT_BlockOffset pOffset;
 	pf_Frag * pf = NULL;
 	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
-	while(pf->getLength() == 0)
+	if(!pf)
+		return false;
+	while(pf && pf->getLength() == 0)
 		pf = pf->getPrev();
-	if(pf->getType() == pf_Frag::PFT_Strux)
+	if(pf && pf->getType() == pf_Frag::PFT_Strux)
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
 		if(pfs->getStruxType() == PTX_EndFrame)
@@ -2883,9 +2885,11 @@ bool PD_Document::isHdrFtrAtPos(PT_DocPosition pos)
 	PT_BlockOffset pOffset;
 	pf_Frag * pf = NULL;
 	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
-	while(pf->getLength() == 0)
+	if(!pf)
+		return false;
+	while(pf && pf->getLength() == 0)
 		pf = pf->getPrev();
-	if(pf->getType() == pf_Frag::PFT_Strux)
+	if(pf && pf->getType() == pf_Frag::PFT_Strux)
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
 		if(pfs->getStruxType() == PTX_SectionHdrFtr)
@@ -2907,9 +2911,11 @@ bool PD_Document::isSectionAtPos(PT_DocPosition pos)
 	PT_BlockOffset pOffset;
 	pf_Frag * pf = NULL;
 	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
-	while(pf->getLength() == 0)
+	if(!pf)
+		return false;
+	while(pf && pf->getLength() == 0)
 		pf = pf->getPrev();
-	if(pf->getType() == pf_Frag::PFT_Strux)
+	if(pf && pf->getType() == pf_Frag::PFT_Strux)
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
 		if(pfs->getStruxType() == PTX_Section)
@@ -2930,9 +2936,11 @@ bool PD_Document::isBlockAtPos(PT_DocPosition pos)
 	PT_BlockOffset pOffset;
 	pf_Frag * pf = NULL;
 	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
-	while(pf->getLength() == 0)
+	if(!pf)
+		return false;
+	while(pf && pf->getLength() == 0)
 		pf = pf->getPrev();
-	if(pf->getType() == pf_Frag::PFT_Strux)
+	if(pf && pf->getType() == pf_Frag::PFT_Strux)
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
 		if(pfs->getStruxType() == PTX_Block)
@@ -2957,9 +2965,11 @@ bool PD_Document::isTableAtPos(PT_DocPosition pos)
 	PT_BlockOffset pOffset;
 	pf_Frag * pf = NULL;
 	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
-	while(pf->getLength() == 0)
+	if(!pf)
+		return false;
+	while(pf && pf->getLength() == 0)
 		pf = pf->getPrev();
-	if(pf->getType() == pf_Frag::PFT_Strux)
+	if(pf && pf->getType() == pf_Frag::PFT_Strux)
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
 		if(pfs->getStruxType() == PTX_SectionTable)
@@ -2980,9 +2990,11 @@ bool PD_Document::isEndTableAtPos(PT_DocPosition pos)
 	PT_BlockOffset pOffset;
 	pf_Frag * pf = NULL;
 	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
-	while(pf->getLength() == 0)
+	if(!pf)
+		return false;
+	while(pf && pf->getLength() == 0)
 		pf = pf->getPrev();
-	if(pf->getType() == pf_Frag::PFT_Strux)
+	if(pf && pf->getType() == pf_Frag::PFT_Strux)
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
 		if(pfs->getStruxType() == PTX_EndTable)
@@ -3003,9 +3015,11 @@ bool PD_Document::isCellAtPos(PT_DocPosition pos)
 	PT_BlockOffset pOffset;
 	pf_Frag * pf = NULL;
 	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
-	while(pf->getLength() == 0)
+	if(!pf)
+		return false;
+	while(pf && pf->getLength() == 0)
 		pf = pf->getPrev();
-	if(pf->getType() == pf_Frag::PFT_Strux)
+	if(pf && pf->getType() == pf_Frag::PFT_Strux)
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
 		if(pfs->getStruxType() == PTX_SectionCell)

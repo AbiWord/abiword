@@ -756,7 +756,7 @@ void pf_Fragments::verifyDoc(void) const
   {
     
     UT_DEBUGMSG(("frag %d pointer %p pos %d leftLength %d length %d PT Pos %d \n",count,pf,pos,pf->getLeftTreeLength(),pf->getLength(),pf->getPos()));
-    UT_ASSERT(pos == pf->getPos());
+    //    UT_ASSERT(pos == pf->getPos());
     count++;
     pos += pf->getLength();
     pf = pf->getNext();
