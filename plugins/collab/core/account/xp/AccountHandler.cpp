@@ -151,7 +151,7 @@ void AccountHandler::signal(const Event& event, BuddyPtr pSource)
 	UT_DEBUGMSG(("AccountHandler::signal()\n"));
 
 	// we will not forward an event over this account that came from another
-	// acount: if you do that, then you very easily get packets running around
+	// account: if you do that, then you very easily get packets running around
 	// forever.
 	if (pSource && pSource->getHandler() != this)
 		return;
@@ -309,6 +309,16 @@ void AccountHandler::_handlePacket(Packet* packet, BuddyPtr buddy)
 			// lookup session
 			AbiCollab* pSession = pManager->getSessionFromSessionId(jse->getSessionId());
 			UT_return_if_fail(pSession);
+
+            // check if this buddy is allowed to access this document
+            // TODO: this should be done for every session packet, not just join session packets
+            if (!hasAccess(pSession->getAcl(), buddy))
+            {
+                // we should only reach this point if someone is brute forcing trying
+                // out session IDs while not being on the ACL. Ban this uses.
+                UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+                return;
+            }
 		
 			// lookup exporter
 			ABI_Collab_Export* pExport = pSession->getExport();
@@ -413,18 +423,22 @@ void AccountHandler::_handlePacket(Packet* packet, BuddyPtr buddy)
 				AbiCollab* pSession = sessions.getNthItem(i);
 				if (pSession && pSession->isLocallyControlled())
 				{
+                    // check if the buddy has access to this session
+                    if (!hasAccess(pSession->getAcl(), buddy))
+                    {
+                        UT_DEBUGMSG(("Buddy %s denied access to session %s by ALC\n", buddy->getDescriptor(true).utf8_str(), pSession->getSessionId().utf8_str()));
+                        continue;
+                    }
+
 					const PD_Document * pDoc = pSession->getDocument();
-					if (pDoc)
-					{
-						// determine name
-						UT_UTF8String documentBaseName;
-						if (pDoc->getFilename())
-							documentBaseName = UT_go_basename_from_uri(pDoc->getFilename());
-						// set session info
-						gsre.m_Sessions[ pSession->getSessionId() ] = documentBaseName;
-					}
-					else
-						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+                    UT_continue_if_fail(pDoc);
+
+                    // determine name
+					UT_UTF8String documentBaseName;
+					if (pDoc->getFilename())
+						documentBaseName = UT_go_basename_from_uri(pDoc->getFilename());
+					// set session info
+					gsre.m_Sessions[ pSession->getSessionId() ] = documentBaseName;
 				}
 			}
 			send(&gsre, buddy);
