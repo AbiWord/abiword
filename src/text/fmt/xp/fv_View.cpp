@@ -709,20 +709,19 @@ void FV_View::updateCarets(PT_DocPosition docPos, UT_sint32 iLen)
 
 void FV_View::removeCaret(const std::string& sUUID)
 {
-	fv_CaretProps* pCaretProps = NULL;
-	UT_sint32 iCount = m_vecCarets.getItemCount();
-	bool bFoundID = false;
-	for (UT_sint32 i = 0; i < iCount; i++)
+	for (UT_sint32 i = 0; i < m_vecCarets.getItemCount(); i++)
 	{
-		pCaretProps = m_vecCarets.getNthItem(i);
-		if(pCaretProps->m_sCaretID == sUUID)
+		fv_CaretProps* pCaretProps = m_vecCarets.getNthItem(i);
+        UT_continue_if_fail(pCaretProps);
+
+		if (pCaretProps->m_sCaretID == sUUID)
 		{
-			bFoundID = true;
 			pCaretProps->m_pCaret->disable(false);
 			m_pG->removeCaret(pCaretProps->m_sCaretID);
 			removeListener(pCaretProps->m_ListenerID);
 			DELETEP(pCaretProps);
 			m_vecCarets.deleteNthItem(i);
+            break;
 		}
 	}
 }
