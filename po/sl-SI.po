@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.8.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-07-14 05:18+0200\n"
-"PO-Revision-Date: 2009-07-14 23:07+0100\n"
+"POT-Creation-Date: 2010-05-02 05:25+0200\n"
+"PO-Revision-Date: 2010-05-02 13:49+0100\n"
 "Last-Translator: Martin Srebotnjak  <miles@filmsi.net>\n"
 "Language-Team: Martin Srebotnjak <miles@filmsi.net>\n"
 "MIME-Version: 1.0\n"
@@ -582,7 +582,7 @@ msgstr "&Ohrani vrstice skupaj"
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_LRM
 #: po/tmp/ap_String_Id.h.h:246
 msgid "&LRM"
-msgstr "&L->D"
+msgstr "Od &leve proti desni"
 
 #. DLG_PageSetup_Landscape
 #: po/tmp/ap_String_Id.h.h:248
@@ -668,7 +668,7 @@ msgstr "&Novo okno"
 #. MENU_LABEL_FILE_NEW_USING_TEMPLATE
 #: po/tmp/ap_String_Id.h.h:281
 msgid "&New using Template"
-msgstr "&Nov iz predloge"
+msgstr "Nov iz pre&dloge"
 
 #. DLG_Break_NextPage
 #: po/tmp/ap_String_Id.h.h:283
@@ -773,12 +773,12 @@ msgstr "Iz&hod"
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_RLM
 #: po/tmp/ap_String_Id.h.h:323
 msgid "&RLM"
-msgstr "&D->L"
+msgstr "Od &desne proti levi"
 
 #. MENU_LABEL_EDIT_REDO
 #: po/tmp/ap_String_Id.h.h:325
 msgid "&Redo"
-msgstr "&Obnovi"
+msgstr "&Ponovi"
 
 #. MENU_LABEL_TOOLS_REVISIONS_REJECT_REVISION
 #: po/tmp/ap_String_Id.h.h:327
@@ -870,7 +870,7 @@ msgstr "&Pokaži zgodovino"
 #. MENU_LABEL_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h.h:363
 msgid "&Show Status Bar"
-msgstr "&Pokaži vrstico stanja"
+msgstr "Pokaži vrstico &stanja"
 
 #. MENU_LABEL_TOOLS_ANNOTATIONS_TOGGLE_DISPLAY
 #: po/tmp/ap_String_Id.h.h:365
@@ -938,7 +938,7 @@ msgstr "Orodne &vrstice"
 #. MENU_LABEL_TOOLS
 #: po/tmp/ap_String_Id.h.h:392
 msgid "&Tools"
-msgstr "&Orodja"
+msgstr "O&rodja"
 
 #. DLG_PageSetup_Top
 #: po/tmp/ap_String_Id.h.h:394
@@ -963,7 +963,7 @@ msgstr "Podč&rtano"
 #. MENU_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h.h:402
 msgid "&Undo"
-msgstr "Razvel&javi"
+msgstr "Razve&ljavi"
 
 #. DLG_Options_Label_ViewUnits
 #. DLG_PageSetup_Units
@@ -976,12 +976,12 @@ msgstr "&Enote:"
 #: po/tmp/ap_String_Id.h.h:407
 #: po/tmp/xap_String_Id.h.h:27
 msgid "&View"
-msgstr "Po&gled"
+msgstr "Pogl&ed"
 
 #. MENU_LABEL_VIEW_WEB
 #: po/tmp/ap_String_Id.h.h:409
 msgid "&Web Layout"
-msgstr "&Spletna postavitev"
+msgstr "S&pletna postavitev"
 
 #. MENU_LABEL_VIEW_ZOOM_WHOLE
 #: po/tmp/ap_String_Id.h.h:411
@@ -1012,7 +1012,7 @@ msgstr "Štetje &besed"
 #. MENU_LABEL_VIEW_ZOOM
 #: po/tmp/ap_String_Id.h.h:422
 msgid "&Zoom"
-msgstr "&Zoom"
+msgstr "&Povečava"
 
 #. DLG_ListRevisions_LevelZero
 #: po/tmp/ap_String_Id.h.h:424
@@ -1245,12 +1245,12 @@ msgstr "Dovoli druge barve zaslona (poleg bele)"
 #. FIELD_Application
 #: po/tmp/ap_String_Id.h.h:510
 msgid "Application"
-msgstr "Aplikacija"
+msgstr "Program"
 
 #. DLG_Options_Label_AppStartup
 #: po/tmp/ap_String_Id.h.h:512
 msgid "Application Startup"
-msgstr "Zagon aplikacije"
+msgstr "Zagon programa"
 
 #. DLG_Options_Btn_Apply
 #. DLG_Apply
@@ -2441,7 +2441,7 @@ msgstr "Drugačna glava na zadnji strani"
 #. DLG_Styles_StylesLocked
 #: po/tmp/ap_String_Id.h.h:1000
 msgid "Disable all formatting commands, except styles"
-msgstr "Izključi vse oblikovne ukaze razen slogov"
+msgstr "Izključi vse oblikovalne ukaze razen slogov"
 
 #. MENU_STATUSLINE_HELP_CREDITS
 #: po/tmp/ap_String_Id.h.h:1002
@@ -2453,10 +2453,10 @@ msgstr "Pokaži zasluge"
 msgid "Display Help Contents"
 msgstr "Pokaži vsebino pomoči"
 
-#. MENU_STATUSLINE_HELP_INDEX
+#. MENU_STATUSLINE_HELP_INTRO
 #: po/tmp/ap_String_Id.h.h:1006
-msgid "Display Help Index"
-msgstr "Pokaži kazalo pomoči"
+msgid "Display Help Introduction"
+msgstr "Prikaži uvod v pomoč"
 
 #. MENU_STATUSLINE_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h.h:1008
@@ -2703,12 +2703,12 @@ msgstr "&Datoteka"
 #. MENU_LABEL_FORMAT
 #: po/tmp/ap_String_Id.h.h:1108
 msgid "F&ormat"
-msgstr "&Oblika"
+msgstr "O&blika"
 
 #. MENU_LABEL_VIEW_FULLSCREEN
 #: po/tmp/ap_String_Id.h.h:1110
 msgid "F&ull Screen"
-msgstr "&Celozaslonsko"
+msgstr "&Celozaslonski način"
 
 #. DLG_FR_FindLabel
 #: po/tmp/ap_String_Id.h.h:1112
@@ -3044,7 +3044,7 @@ msgstr "Iz LaTeX-a"
 #. TOOLBAR_TOOLTIP_VIEW_FULL_SCREEN
 #: po/tmp/ap_String_Id.h.h:1247
 msgid "Full Screen"
-msgstr "Celozaslonsko"
+msgstr "Celozaslonski način"
 
 #. DLG_FormatTOC_General
 #. DLG_Options_Label_General
@@ -3156,7 +3156,7 @@ msgstr "Pomoč"
 msgid "Help &Contents"
 msgstr "&Vsebina pomoči"
 
-#. MENU_LABEL_HELP_INDEX
+#. MENU_LABEL_HELP_INTRO
 #: po/tmp/ap_String_Id.h.h:1291
 msgid "Help &Introduction"
 msgstr "&Uvod v pomoč"
@@ -3520,12 +3520,12 @@ msgstr "Vstavi hiperpovezavo"
 #. MENU_STATUSLINE_INSERT_DIRECTIONMARKER_LRM
 #: po/tmp/ap_String_Id.h.h:1444
 msgid "Insert left-to-right direction marker (LRM)"
-msgstr "Vstavi označbo smeri z desne na levo (D->L)"
+msgstr "Vstavi označbo smeri od desne proti levi (D->L)"
 
 #. MENU_STATUSLINE_INSERT_DIRECTIONMARKER_RLM
 #: po/tmp/ap_String_Id.h.h:1446
 msgid "Insert right-to-left direction marker (RLM)"
-msgstr "Vstavi označbo smeri leve na desno (L->D)"
+msgstr "Vstavi označbo smeri od leve proti desni (L->D)"
 
 #. MENU_STATUSLINE_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h.h:1448
@@ -4171,7 +4171,7 @@ msgstr "Oštevilčeno"
 #. DLG_Lists_Numbered_List
 #. STYLE_NUMBER_LIST
 #: po/tmp/ap_String_Id.h.h:1711
-#: po/tmp/xap_String_Id.h.h:574
+#: po/tmp/xap_String_Id.h.h:576
 msgid "Numbered List"
 msgstr "Oštevilčen seznam"
 
@@ -4271,7 +4271,7 @@ msgstr "Slog zunanjega (dvojnega) navedka"
 #. TOOLBAR_TOOLTIP_FMT_OVERLINE
 #. DLG_UFS_OverlineCheck
 #: po/tmp/ap_String_Id.h.h:1760
-#: po/tmp/xap_String_Id.h.h:588
+#: po/tmp/xap_String_Id.h.h:590
 msgid "Overline"
 msgstr "Nadčrtano"
 
@@ -4354,7 +4354,7 @@ msgstr "Sklic strani"
 #. MENU_LABEL_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h.h:1793
 msgid "Page Set&up"
-msgstr "N&astavitev strani"
+msgstr "Nastav&itve strani"
 
 #. DLG_PageSetup_Title
 #: po/tmp/ap_String_Id.h.h:1795
@@ -4511,7 +4511,7 @@ msgstr "Nastavitve"
 #. DLG_PageNumbers_Preview
 #. DLG_Zoom_PreviewFrame
 #: po/tmp/ap_String_Id.h.h:1862
-#: po/tmp/xap_String_Id.h.h:620
+#: po/tmp/xap_String_Id.h.h:622
 msgid "Preview"
 msgstr "Predogled"
 
@@ -4537,7 +4537,7 @@ msgstr "Prejšnji odstavek Prejšnji odstavek Prejšnji odstavek Prejšnji odsta
 #. DLG_UP_PrintTitle
 #. DLG_UP_PrintButton
 #: po/tmp/ap_String_Id.h.h:1873
-#: po/tmp/xap_String_Id.h.h:625
+#: po/tmp/xap_String_Id.h.h:627
 msgid "Print"
 msgstr "Natisni"
 
@@ -4554,7 +4554,7 @@ msgstr "Postavitev tiskanja"
 #. MENU_LABEL_FILE_PRINT_PREVIEW
 #: po/tmp/ap_String_Id.h.h:1879
 msgid "Print P&review"
-msgstr "P&redogled tiskanja"
+msgstr "Predo&gled tiskanja"
 
 #. TOOLBAR_LABEL_FILE_PRINT_PREVIEW
 #: po/tmp/ap_String_Id.h.h:1881
@@ -4580,13 +4580,13 @@ msgstr "Tiskaj z uporabo notranjega gonilnika PS"
 #. MSG_PrintingDoc
 #: po/tmp/ap_String_Id.h.h:1890
 msgid "Printing Document.."
-msgstr "Tiskam dokument..."
+msgstr "Tiskanje dokumenta ..."
 
 #. MSG_PrintStatus
 #: po/tmp/ap_String_Id.h.h:1892
 #, c-format
 msgid "Printing page %d of %d"
-msgstr "Tiskam stran %d od %d"
+msgstr "Tiskanje strani %d od %d"
 
 #. FIELD_Document_Publisher
 #: po/tmp/ap_String_Id.h.h:1894
@@ -4606,17 +4606,17 @@ msgstr "&Zamenjaj"
 #. MENU_LABEL_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h.h:1900
 msgid "RTL &Document"
-msgstr "&Dokument D->L"
+msgstr "&Dokument od desne proti levi"
 
 #. MENU_LABEL_FMT_DIRECTION_DD_RTL
 #: po/tmp/ap_String_Id.h.h:1902
 msgid "RTL &Paragraph"
-msgstr "Odst&avek D->L"
+msgstr "Odst&avek od desne proti levi"
 
 #. MENU_LABEL_FMT_DIRECTION_SD_RTL
 #: po/tmp/ap_String_Id.h.h:1904
 msgid "RTL &Section"
-msgstr "&Odsek D->L"
+msgstr "&Odsek od desne proti levi"
 
 #. DLG_FR_ReplaceWithLabel
 #: po/tmp/ap_String_Id.h.h:1906
@@ -4626,7 +4626,7 @@ msgstr "&Zamenjaj z:"
 #. DLG_FR_ReverseFind
 #: po/tmp/ap_String_Id.h.h:1908
 msgid "Re&verse find"
-msgstr "O&brnjeno iskanje"
+msgstr "O&bratno iskanje"
 
 #. MENU_LABEL_FILE_REVERT
 #: po/tmp/ap_String_Id.h.h:1910
@@ -4636,23 +4636,23 @@ msgstr "&Povrni"
 #. MENU_LABEL_FILE_RECENT
 #: po/tmp/ap_String_Id.h.h:1912
 msgid "Recent &Files"
-msgstr "Nedavne &datoteke"
+msgstr "Nedavni dok&umenti"
 
 #. TOOLBAR_LABEL_EDIT_REDO
 #: po/tmp/ap_String_Id.h.h:1914
 msgid "Redo"
-msgstr "Obnovi"
+msgstr "Ponovi"
 
 #. TOOLBAR_STATUSLINE_EDIT_REDO
 #. TOOLBAR_TOOLTIP_EDIT_REDO
 #: po/tmp/ap_String_Id.h.h:1917
 msgid "Redo editing"
-msgstr "Obnovi urejanje"
+msgstr "Ponovi urejanje"
 
 #. MENU_STATUSLINE_EDIT_REDO
 #: po/tmp/ap_String_Id.h.h:1919
 msgid "Redo previously undone editing"
-msgstr "Obnovi prej razveljavjeno urejanje"
+msgstr "Ponovi prej razveljavjeno urejanje"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_MENU
 #. MENU_STATUSLINE_VIEW_ZOOM
@@ -4689,7 +4689,7 @@ msgstr "Odstrani glavo"
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h.h:1938
 msgid "Remove Property from Style"
-msgstr "Stilu odstrani lastnost"
+msgstr "Slogu odstrani lastnost"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h.h:1940
@@ -4744,7 +4744,7 @@ msgstr "Odstrani predlagano spremembo"
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT
 #: po/tmp/ap_String_Id.h.h:1960
 msgid "Repeat Row as Heading"
-msgstr "Ponovi vrstico kot glavo"
+msgstr "Ponovi vrstico kot naslovno"
 
 #. MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT
 #: po/tmp/ap_String_Id.h.h:1962
@@ -4785,7 +4785,7 @@ msgstr "Poročajte o hrošču in pomagajte pri izboljšanju AbiWorda"
 #. MENU_STATUSLINE_VIEW_DEFAULT_TB_LAYOUT
 #: po/tmp/ap_String_Id.h.h:1977
 msgid "Reset the current toolbar layout to its defaults"
-msgstr "Ponastavi trenutno postavitev orodjarn na privzeto"
+msgstr "Ponastavi trenutno postavitev orodnih vrstic na privzeto"
 
 #. MENU_STATUSLINE_FMT_IMAGE
 #: po/tmp/ap_String_Id.h.h:1979
@@ -4831,13 +4831,13 @@ msgstr "Želite povrniti datoteko v zadnje shranjeno stanje?"
 #. MENU_STATUSLINE_FILE_REVERT
 #: po/tmp/ap_String_Id.h.h:1996
 msgid "Revert the document to the last saved state"
-msgstr "Povrni datoteko na zadnjo shranjeno različico"
+msgstr "Povrni dokument v nazadnje shranjeno stanje"
 
 #. MSG_RevertBuffer
 #: po/tmp/ap_String_Id.h.h:1998
 #, c-format
 msgid "Revert to saved copy of %s?"
-msgstr "Želite povrniti shranjeno kopijo %s?"
+msgstr "Želite povrniti v shranjeno kopijo %s?"
 
 #. DLG_ListRevisions_Column1Label
 #: po/tmp/ap_String_Id.h.h:2000
@@ -4933,7 +4933,7 @@ msgstr "&Shrani"
 #. MENU_LABEL_FILE_EXPORT
 #: po/tmp/ap_String_Id.h.h:2038
 msgid "Sav&e Copy"
-msgstr "&Shrani kopijo"
+msgstr "S&hrani kopijo"
 
 #. TOOLBAR_LABEL_FILE_SAVE
 #: po/tmp/ap_String_Id.h.h:2040
@@ -4964,7 +4964,7 @@ msgstr "Shrani kopijo slike v odložišče"
 #: po/tmp/ap_String_Id.h.h:2050
 #, c-format
 msgid "Save changes to document %s before closing?"
-msgstr "Pred zapiranjem shranim dokument %s?"
+msgstr "Želite pred zapiranjem shraniti dokument %s?"
 
 #. MENU_STATUSLINE_FILE_SAVEEMBED
 #: po/tmp/ap_String_Id.h.h:2052
@@ -5043,7 +5043,7 @@ msgstr "Pokaži zgodovino trenutnega dokumenta"
 #. MENU_STATUSLINE_TABLE_SELECT
 #. DLG_Select
 #: po/tmp/ap_String_Id.h.h:2084
-#: po/tmp/xap_String_Id.h.h:685
+#: po/tmp/xap_String_Id.h.h:687
 msgid "Select"
 msgstr "Izberi"
 
@@ -5101,7 +5101,7 @@ msgstr "Izberi sliko iz datoteke"
 #. MENU_STATUSLINE_EDIT_SELECT_FRAME
 #: po/tmp/ap_String_Id.h.h:2107
 msgid "Select the Text Box"
-msgstr "Izbere okvir z besedilom"
+msgstr "Izberi okvir z besedilom"
 
 #. MENU_STATUSLINE_EDIT_SELECTALL
 #: po/tmp/ap_String_Id.h.h:2109
@@ -5111,9 +5111,9 @@ msgstr "Izberi celoten dokument"
 #. DLG_FormatTable_Apply_To_Selection
 #. DLG_UP_Selection
 #: po/tmp/ap_String_Id.h.h:2111
-#: po/tmp/xap_String_Id.h.h:693
+#: po/tmp/xap_String_Id.h.h:695
 msgid "Selection"
-msgstr "Izbira"
+msgstr "Izbor"
 
 #. DLG_ToggleCase_SentenceCase
 #: po/tmp/ap_String_Id.h.h:2113
@@ -5184,22 +5184,22 @@ msgstr "Določite oblivanje besedila"
 #. MENU_STATUSLINE_FMT_BACKGROUND_PAGE_IMAGE
 #: po/tmp/ap_String_Id.h.h:2140
 msgid "Set an image as a background for your page"
-msgstr "Nastavi sliko za ozadje svoje strani"
+msgstr "Nastavite sliko za ozadje svoje strani"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h.h:2142
 msgid "Set dominant direction of document to RTL"
-msgstr "Spremeni prednostno smer dokumenta v D->L"
+msgstr "Spremeni prednostno smer dokumenta v desno proti levi"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DD_RTL
 #: po/tmp/ap_String_Id.h.h:2144
 msgid "Set dominant direction of paragraph to RTL"
-msgstr "Spremeni prednostno smer odstavka v D->L"
+msgstr "Spremeni prednostno smer odstavka v desno proti levi"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_SD_RTL
 #: po/tmp/ap_String_Id.h.h:2146
 msgid "Set dominant direction of section to RTL"
-msgstr "Spremeni prednostno smer odseka v D->L"
+msgstr "Spremeni prednostno smer odseka v desno proti levi"
 
 #. MENU_STATUSLINE_FILE_PROPERTIES
 #: po/tmp/ap_String_Id.h.h:2148
@@ -5275,7 +5275,7 @@ msgstr "Tipka za bližnjico"
 #. DLG_Options_Label_Show
 #. DLG_Show
 #: po/tmp/ap_String_Id.h.h:2177
-#: po/tmp/xap_String_Id.h.h:705
+#: po/tmp/xap_String_Id.h.h:707
 msgid "Show"
 msgstr "Pokaži"
 
@@ -5292,7 +5292,7 @@ msgstr "Pokaži vse"
 #. MENU_LABEL_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h.h:2183
 msgid "Show For&matting Marks"
-msgstr "Pokaži o&blikovne oznake"
+msgstr "Pokaži o&blikovalne oznake"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_BEFORE
 #: po/tmp/ap_String_Id.h.h:2185
@@ -5585,7 +5585,7 @@ msgstr "Razdeli to celico"
 #. DLG_Lists_Square_List
 #. STYLE_SQUARELIST
 #: po/tmp/ap_String_Id.h.h:2308
-#: po/tmp/xap_String_Id.h.h:719
+#: po/tmp/xap_String_Id.h.h:721
 msgid "Square List"
 msgstr "Kvadratki"
 
@@ -5607,7 +5607,7 @@ msgstr "Navadna orodna vrstica"
 #. DLG_Lists_Star_List
 #. STYLE_STARLIST
 #: po/tmp/ap_String_Id.h.h:2316
-#: po/tmp/xap_String_Id.h.h:723
+#: po/tmp/xap_String_Id.h.h:725
 msgid "Star List"
 msgstr "Zvezdice"
 
@@ -5662,7 +5662,7 @@ msgstr "P&rečrtano"
 #. TOOLBAR_TOOLTIP_FMT_STRIKE
 #. DLG_UFS_StrikeoutCheck
 #: po/tmp/ap_String_Id.h.h:2339
-#: po/tmp/xap_String_Id.h.h:725
+#: po/tmp/xap_String_Id.h.h:727
 msgid "Strike"
 msgstr "Prečrtano"
 
@@ -5711,7 +5711,7 @@ msgstr "Vpisati morate ime sloga"
 #. DLG_Lists_Style
 #. DLG_UFS_StyleLabel
 #: po/tmp/ap_String_Id.h.h:2359
-#: po/tmp/xap_String_Id.h.h:727
+#: po/tmp/xap_String_Id.h.h:729
 msgid "Style:"
 msgstr "Slog:"
 
@@ -5741,7 +5741,7 @@ msgstr "Zadeva:"
 #. TOOLBAR_TOOLTIP_FMT_SUBSCRIPT
 #. DLG_UFS_SubScript
 #: po/tmp/ap_String_Id.h.h:2372
-#: po/tmp/xap_String_Id.h.h:731
+#: po/tmp/xap_String_Id.h.h:733
 msgid "Subscript"
 msgstr "Podpisano"
 
@@ -5790,7 +5790,7 @@ msgstr "&Nadpisano"
 #. TOOLBAR_TOOLTIP_FMT_SUPERSCRIPT
 #. DLG_UFS_SuperScript
 #: po/tmp/ap_String_Id.h.h:2392
-#: po/tmp/xap_String_Id.h.h:733
+#: po/tmp/xap_String_Id.h.h:735
 msgid "Superscript"
 msgstr "Nadpisano"
 
@@ -5807,7 +5807,7 @@ msgstr "Poseben &znak"
 #. MENU_LABEL_TABLE
 #: po/tmp/ap_String_Id.h.h:2398
 msgid "T&able"
-msgstr "T&abela"
+msgstr "&Tabela"
 
 #. TabStopStatus
 #: po/tmp/ap_String_Id.h.h:2400
@@ -5829,7 +5829,7 @@ msgstr "Tabulatorska mesta, ki bodo počiščena:"
 #. MENU_STATUSLINE_TABLE
 #. TB_Table
 #: po/tmp/ap_String_Id.h.h:2408
-#: po/tmp/xap_String_Id.h.h:743
+#: po/tmp/xap_String_Id.h.h:745
 msgid "Table"
 msgstr "Tabela"
 
@@ -5878,7 +5878,7 @@ msgstr "Tabulatorji in oštevilčevanje strani"
 #. MENU_LABEL_FMT
 #: po/tmp/ap_String_Id.h.h:2428
 msgid "Te&xt Formatting"
-msgstr "&Oblika"
+msgstr "&Oblika besedila"
 
 #. DLG_Options_Label_Text
 #: po/tmp/ap_String_Id.h.h:2430
@@ -5934,7 +5934,7 @@ msgstr "Izbrani odmiki so preveliki, da bi ustrezali strani."
 #. DLG_Options_Prompt_YouMustRestart
 #: po/tmp/ap_String_Id.h.h:2451
 msgid "The new user interface language will take effect the next time that you start the application"
-msgstr "Nov jezik uporabniškega vmesnika bo uveljavljen šele ob ponovnem zagonu aplikacije."
+msgstr "Nov jezik uporabniškega vmesnika bo uveljavljen šele ob ponovnem zagonu programa."
 
 #. MSG_SpellDone
 #: po/tmp/ap_String_Id.h.h:2453
@@ -5956,23 +5956,28 @@ msgstr "Delovni dan"
 msgid "Thickness:"
 msgstr "Debelina:"
 
-#. MSG_AfterRestartNew
+#. MSG_BookmarkAlreadyExists
 #: po/tmp/ap_String_Id.h.h:2461
+msgid "This bookmark already exists. Would you like to replace the existing bookmark with this new one?"
+msgstr "Ta zaznamek že obstaja. Želite zamenjati obstoječi zaznamek s tem novim?"
+
+#. MSG_AfterRestartNew
+#: po/tmp/ap_String_Id.h.h:2463
 msgid "This change will only take effect when you restart AbiWord or create a new document."
 msgstr "Ta sprememba bo stopila v veljavo le z vnovičnim zagonom AbiWorda ali ob ustvarjanju novih dokumentov."
 
 #. MSG_HiddenRevisions
-#: po/tmp/ap_String_Id.h.h:2463
+#: po/tmp/ap_String_Id.h.h:2465
 msgid "This document contains revisions which are currently hidden from view. Please see AbiWord documentation for information on working with revisions."
 msgstr "Ta dokument vsebuje revizije, ki so trenutno skrite pred ogledovanjem. Oglejte si dokumentacijo AbiWord za dodatne informacije o delu z revizijami."
 
 #. DLG_Para_PreviewSampleFallback
-#: po/tmp/ap_String_Id.h.h:2465
+#: po/tmp/ap_String_Id.h.h:2467
 msgid "This paragraph represents words as they might appear in your document.  To see the text from your document used in this preview, position your cursor in a document paragraph with some text in it and open this dialog."
 msgstr "Ta odstavek predstavlja besede, kot bi se lahko pojavile v vašem dokumentu. Če želite tu videti besedilo iz svojega dokumenta, postavite kazalko v besedilo odstavka in odprite to pogovorno okno."
 
 #. DLG_Styles_ErrStyleNot
-#: po/tmp/ap_String_Id.h.h:2467
+#: po/tmp/ap_String_Id.h.h:2469
 msgid ""
 "This style does not exist \n"
 " so it cannot be modified"
@@ -5981,54 +5986,54 @@ msgstr ""
 " zato ne more biti spremenjen"
 
 #. DLG_Column_Three
-#: po/tmp/ap_String_Id.h.h:2469
+#: po/tmp/ap_String_Id.h.h:2471
 msgid "Three"
 msgstr "Trije"
 
 #. DLG_Lists_Tick_List
 #. STYLE_TICKLIST
-#: po/tmp/ap_String_Id.h.h:2471
-#: po/tmp/xap_String_Id.h.h:777
+#: po/tmp/ap_String_Id.h.h:2473
+#: po/tmp/xap_String_Id.h.h:779
 msgid "Tick List"
 msgstr "Kljukice"
 
 #. FIELD_DateTime_TimeZone
-#: po/tmp/ap_String_Id.h.h:2473
+#: po/tmp/ap_String_Id.h.h:2475
 msgid "Time Zone"
 msgstr "Časovni pas"
 
 #. FIELD_Document_Title
-#: po/tmp/ap_String_Id.h.h:2475
+#: po/tmp/ap_String_Id.h.h:2477
 msgid "Title"
 msgstr "Naslov"
 
 #. DLG_ToggleCase_TitleCase
 #. DLG_UFS_Effects_TitleCase
-#: po/tmp/ap_String_Id.h.h:2477
-#: po/tmp/xap_String_Id.h.h:781
+#: po/tmp/ap_String_Id.h.h:2479
+#: po/tmp/xap_String_Id.h.h:783
 msgid "Title Case"
 msgstr "Vsaka Beseda"
 
 #. DLG_MetaData_Title_LBL
 #. DLG_Annotation_Title_LBL
 #. DLG_Image_LblTitle
-#: po/tmp/ap_String_Id.h.h:2480
-#: po/tmp/xap_String_Id.h.h:783
+#: po/tmp/ap_String_Id.h.h:2482
+#: po/tmp/xap_String_Id.h.h:785
 msgid "Title:"
 msgstr "Naslov:"
 
 #. DLG_Options_Label_Toolbars
-#: po/tmp/ap_String_Id.h.h:2482
+#: po/tmp/ap_String_Id.h.h:2484
 msgid "Toolbars"
 msgstr "Orodne vrstice"
 
 #. DLG_PageNumbers_Header
-#: po/tmp/ap_String_Id.h.h:2484
+#: po/tmp/ap_String_Id.h.h:2486
 msgid "Top"
 msgstr "Zgoraj"
 
 #. TopMarginStatus
-#: po/tmp/ap_String_Id.h.h:2486
+#: po/tmp/ap_String_Id.h.h:2488
 #, c-format
 msgid "Top Margin [%s]"
 msgstr "Zgornji rob [%s]"
@@ -6038,40 +6043,40 @@ msgstr "Zgornji rob [%s]"
 #. TOOLBAR_STATUSLINE_FMT_TOPLINE
 #. TOOLBAR_TOOLTIP_FMT_TOPLINE
 #. DLG_UFS_ToplineCheck
-#: po/tmp/ap_String_Id.h.h:2491
-#: po/tmp/xap_String_Id.h.h:789
+#: po/tmp/ap_String_Id.h.h:2493
+#: po/tmp/xap_String_Id.h.h:791
 msgid "Topline"
 msgstr "Črta zgoraj"
 
 #. DLG_Lists_Triangle_List
 #. STYLE_TRIANGLELIST
-#: po/tmp/ap_String_Id.h.h:2493
-#: po/tmp/xap_String_Id.h.h:791
+#: po/tmp/ap_String_Id.h.h:2495
+#: po/tmp/xap_String_Id.h.h:793
 msgid "Triangle List"
 msgstr "Seznam s trikotniki"
 
 #. DLG_Column_Two
-#: po/tmp/ap_String_Id.h.h:2495
+#: po/tmp/ap_String_Id.h.h:2497
 msgid "Two"
 msgstr "Dva"
 
 #. FIELD_Document_Type
-#: po/tmp/ap_String_Id.h.h:2497
+#: po/tmp/ap_String_Id.h.h:2499
 msgid "Type"
 msgstr "Vrsta"
 
 #. DLG_InsertBookmark_Msg
-#: po/tmp/ap_String_Id.h.h:2499
+#: po/tmp/ap_String_Id.h.h:2501
 msgid "Type a name for the bookmark, or select an existing from the list."
 msgstr "Vpišite ime zaznamka ali izberite obstoječega iz seznama."
 
 #. DLG_Lists_Type
-#: po/tmp/ap_String_Id.h.h:2501
+#: po/tmp/ap_String_Id.h.h:2503
 msgid "Type:"
 msgstr "Vrsta seznama:"
 
 #. DLG_ToggleCase_UpperCase
-#: po/tmp/ap_String_Id.h.h:2503
+#: po/tmp/ap_String_Id.h.h:2505
 msgid "UPPERCASE"
 msgstr "VELIKE ČRKE"
 
@@ -6079,106 +6084,106 @@ msgstr "VELIKE ČRKE"
 #. TOOLBAR_STATUSLINE_FMT_UNDERLINE
 #. TOOLBAR_TOOLTIP_FMT_UNDERLINE
 #. DLG_UFS_UnderlineCheck
-#: po/tmp/ap_String_Id.h.h:2507
-#: po/tmp/xap_String_Id.h.h:811
+#: po/tmp/ap_String_Id.h.h:2509
+#: po/tmp/xap_String_Id.h.h:813
 msgid "Underline"
 msgstr "Podčrtano"
 
 #. MENU_STATUSLINE_FMT_UNDERLINE
-#: po/tmp/ap_String_Id.h.h:2509
+#: po/tmp/ap_String_Id.h.h:2511
 msgid "Underline the selection (toggle)"
 msgstr "Podčrtaj izbiro (preklopi)"
 
 #. TOOLBAR_LABEL_EDIT_UNDO
-#: po/tmp/ap_String_Id.h.h:2511
+#: po/tmp/ap_String_Id.h.h:2513
 msgid "Undo"
 msgstr "Razveljavi"
 
 #. MENU_STATUSLINE_EDIT_UNDO
 #. TOOLBAR_STATUSLINE_EDIT_UNDO
 #. TOOLBAR_TOOLTIP_EDIT_UNDO
-#: po/tmp/ap_String_Id.h.h:2515
+#: po/tmp/ap_String_Id.h.h:2517
 msgid "Undo editing"
 msgstr "Razveljavi urejanje"
 
 #. DLG_Annotation_OK_tooltip
-#: po/tmp/ap_String_Id.h.h:2517
+#: po/tmp/ap_String_Id.h.h:2519
 msgid "Update the annotation"
 msgstr "Posodobi pripombo"
 
 #. DLG_Lists_Upper_Case_List
 #. STYLE_UPPERCASTELIST
-#: po/tmp/ap_String_Id.h.h:2519
-#: po/tmp/xap_String_Id.h.h:845
+#: po/tmp/ap_String_Id.h.h:2521
+#: po/tmp/xap_String_Id.h.h:847
 msgid "Upper Case List"
 msgstr "Seznam z velikimi črkami"
 
 #. DLG_Lists_Upper_Roman_List
 #. STYLE_UPPERROMANLIST
-#: po/tmp/ap_String_Id.h.h:2521
-#: po/tmp/xap_String_Id.h.h:847
+#: po/tmp/ap_String_Id.h.h:2523
+#: po/tmp/xap_String_Id.h.h:849
 msgid "Upper Roman List"
 msgstr "Seznam z velikimi rimskimi številkami"
 
 #. DLG_Column_RtlOrder
-#: po/tmp/ap_String_Id.h.h:2523
+#: po/tmp/ap_String_Id.h.h:2525
 msgid "Use RTL Order"
 msgstr "Vrstni red od desne proti levi"
 
 #. DLG_Options_Label_CustomSmartQuotes
-#: po/tmp/ap_String_Id.h.h:2525
+#: po/tmp/ap_String_Id.h.h:2527
 msgid "Use custom smart quote style"
 msgstr "Uporabi slog pametnih navedkov po meri"
 
 #. DLG_Options_Label_HebrewContextGlyphs
-#: po/tmp/ap_String_Id.h.h:2527
+#: po/tmp/ap_String_Id.h.h:2529
 msgid "Use glyph shaping for Hebrew"
 msgstr "Uporabi oblikovanje glifov za hebrejščino"
 
 #. DLG_Options_Label_UI
-#: po/tmp/ap_String_Id.h.h:2529
+#: po/tmp/ap_String_Id.h.h:2531
 msgid "User Interface"
 msgstr "Uporabniški vmesnik"
 
 #. DLG_Options_Label_UILang
-#: po/tmp/ap_String_Id.h.h:2531
+#: po/tmp/ap_String_Id.h.h:2533
 msgid "User Interface Language"
 msgstr "Jezik uporabniškega vmesnika"
 
 #. DLG_Stylist_UserStyles
-#: po/tmp/ap_String_Id.h.h:2533
+#: po/tmp/ap_String_Id.h.h:2535
 msgid "User defined Styles"
 msgstr "Uporabniško določeni slogi"
 
 #. DLG_Tab_Label_Existing
-#: po/tmp/ap_String_Id.h.h:2535
+#: po/tmp/ap_String_Id.h.h:2537
 msgid "User-defined Tabs"
 msgstr "Uporabniško določeni tabulatorji"
 
 #. DLG_Styles_LBL_UserDefined
-#: po/tmp/ap_String_Id.h.h:2537
+#: po/tmp/ap_String_Id.h.h:2539
 msgid "User-defined styles"
 msgstr "Uporabniško navedeni slogi"
 
 #. FIELD_Application_Version
 #. DLG_History_Version_Version
-#: po/tmp/ap_String_Id.h.h:2539
-#: po/tmp/xap_String_Id.h.h:857
+#: po/tmp/ap_String_Id.h.h:2541
+#: po/tmp/xap_String_Id.h.h:859
 msgid "Version"
 msgstr "Različica"
 
 #. DLG_Options_TabLabel_View
-#: po/tmp/ap_String_Id.h.h:2541
+#: po/tmp/ap_String_Id.h.h:2543
 msgid "View"
 msgstr "Pogled"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY_SHOW
-#: po/tmp/ap_String_Id.h.h:2543
+#: po/tmp/ap_String_Id.h.h:2545
 msgid "View document history"
 msgstr "Pokaži zgodovino dokumenta"
 
 #. MENU_STATUSLINE_VIEW_FULLSCREEN
-#: po/tmp/ap_String_Id.h.h:2545
+#: po/tmp/ap_String_Id.h.h:2547
 msgid "View the document in full screen mode"
 msgstr "Pokaži dokument v celozaslonskem načinu"
 
@@ -6191,105 +6196,105 @@ msgstr "Pokaži dokument v celozaslonskem načinu"
 #. MENU_STATUSLINE_WINDOW_7
 #. MENU_STATUSLINE_WINDOW_8
 #. MENU_STATUSLINE_WINDOW_9
-#: po/tmp/ap_String_Id.h.h:2555
+#: po/tmp/ap_String_Id.h.h:2557
 msgid "View this document"
 msgstr "Pokaži ta dokument"
 
 #. DLG_Options_Label_ViewTooltips
-#: po/tmp/ap_String_Id.h.h:2557
+#: po/tmp/ap_String_Id.h.h:2559
 msgid "View tooltips"
 msgstr "Pokaži nasvete"
 
 #. DLG_Options_Label_ViewViewFrame
-#: po/tmp/ap_String_Id.h.h:2559
+#: po/tmp/ap_String_Id.h.h:2561
 msgid "View..."
 msgstr "Pogled ..."
 
 #. DLG_Options_Label_Visible
-#: po/tmp/ap_String_Id.h.h:2561
+#: po/tmp/ap_String_Id.h.h:2563
 msgid "Visible"
 msgstr "Vidno"
 
 #. MSG_HyperlinkNoBookmark
-#: po/tmp/ap_String_Id.h.h:2563
+#: po/tmp/ap_String_Id.h.h:2565
 #, c-format
 msgid "Warning: the bookmark you provided [%s] does not exist."
 msgstr "Opozorilo: zaznamek, ki ste ga navedli [%s] ne obstaja."
 
 #. MENU_STATUSLINE_VIEW_WEB
-#: po/tmp/ap_String_Id.h.h:2565
+#: po/tmp/ap_String_Id.h.h:2567
 msgid "Web Layout"
 msgstr "Spletna postavitev"
 
 #. DLG_Styles_LBL_TxtMsg
-#: po/tmp/ap_String_Id.h.h:2567
+#: po/tmp/ap_String_Id.h.h:2569
 msgid "What Hath God Wrought"
 msgstr "Kar koli že je in bo"
 
 #. DLG_Options_Label_WithExtension
-#: po/tmp/ap_String_Id.h.h:2569
+#: po/tmp/ap_String_Id.h.h:2571
 msgid "With extension:"
 msgstr "S pripono:"
 
 #. DLG_WordCount_WordCountTitle
 #. FIELD_Numbers_WordCount
-#: po/tmp/ap_String_Id.h.h:2572
+#: po/tmp/ap_String_Id.h.h:2574
 msgid "Word Count"
 msgstr "Štetje besed"
 
 #. DLG_NEW_Tab1
-#: po/tmp/ap_String_Id.h.h:2574
+#: po/tmp/ap_String_Id.h.h:2576
 msgid "Wordprocessing"
 msgstr "Urejanje beseedila"
 
 #. DLG_WordCount_Words_No_Notes
-#: po/tmp/ap_String_Id.h.h:2576
+#: po/tmp/ap_String_Id.h.h:2578
 msgid "Words (no footnotes/endnotes):"
 msgstr "Besed (brez sprotnih/končnih opomb):"
 
 #. DLG_Options_Label_SpellUppercase
-#: po/tmp/ap_String_Id.h.h:2578
+#: po/tmp/ap_String_Id.h.h:2580
 msgid "Words in &UPPERCASE"
 msgstr "Besede napisane z &VELIKIMI ČRKAMI"
 
 #. DLG_Options_Label_SpellNumbers
-#: po/tmp/ap_String_Id.h.h:2580
+#: po/tmp/ap_String_Id.h.h:2582
 msgid "Words with num&bers"
 msgstr "Besede s š&tevilkami"
 
 #. DLG_WordCount_Words
-#: po/tmp/ap_String_Id.h.h:2582
+#: po/tmp/ap_String_Id.h.h:2584
 msgid "Words:"
 msgstr "Besede:"
 
 #. MSG_SaveFailedWrite
-#: po/tmp/ap_String_Id.h.h:2584
+#: po/tmp/ap_String_Id.h.h:2586
 #, c-format
 msgid "Writing error when attempting to save %s"
 msgstr "Napaka pisanja ob poskusu shranjevanja %s"
 
 #. MSG_DefaultDirectionChg
-#: po/tmp/ap_String_Id.h.h:2586
+#: po/tmp/ap_String_Id.h.h:2588
 msgid "You have changed the default direction."
 msgstr "Spremenili ste privzeto smer."
 
 #. MSG_DirectionModeChg
-#: po/tmp/ap_String_Id.h.h:2588
+#: po/tmp/ap_String_Id.h.h:2590
 msgid "You have changed the direction mode."
 msgstr "Spremenili ste način smeri."
 
 #. MSG_HyperlinkNoSelection
-#: po/tmp/ap_String_Id.h.h:2590
+#: po/tmp/ap_String_Id.h.h:2592
 msgid "You must select a portion of the document before inserting a hyperlink."
 msgstr "Pred vstavitvijo hiperpovezave morate izbrati del dokumenta."
 
 #. DLG_Options_Label_InvalidRangeForAutoSave
-#: po/tmp/ap_String_Id.h.h:2592
+#: po/tmp/ap_String_Id.h.h:2594
 msgid "You should choose a range from 1 to 120 for the auto save frequency"
 msgstr "Za pogostost samodejnega shranjevanja bi morali izbrati vrednost med 1 in 120"
 
 #. MSG_ConfirmSaveSecondary
-#: po/tmp/ap_String_Id.h.h:2594
+#: po/tmp/ap_String_Id.h.h:2596
 msgid "Your changes will be lost if you don't save them."
 msgstr "V kolikor sprememb ne shranite, bodo izgubljene."
 
@@ -6297,88 +6302,88 @@ msgstr "V kolikor sprememb ne shranite, bodo izgubljene."
 #. TOOLBAR_STATUSLINE_ZOOM
 #. TOOLBAR_TOOLTIP_ZOOM
 #. DLG_Zoom_ZoomTitle
-#: po/tmp/ap_String_Id.h.h:2598
-#: po/tmp/xap_String_Id.h.h:908
+#: po/tmp/ap_String_Id.h.h:2600
+#: po/tmp/xap_String_Id.h.h:910
 msgid "Zoom"
-msgstr "Zoom"
+msgstr "Povečava"
 
 #. MENU_LABEL_VIEW_ZOOM_100
-#: po/tmp/ap_String_Id.h.h:2600
+#: po/tmp/ap_String_Id.h.h:2602
 msgid "Zoom to &100%"
-msgstr "Zoom na &100%"
+msgstr "&100%"
 
 #. MENU_LABEL_VIEW_ZOOM_200
-#: po/tmp/ap_String_Id.h.h:2602
+#: po/tmp/ap_String_Id.h.h:2604
 msgid "Zoom to &200%"
-msgstr "Zoom na &200%"
+msgstr "&200%"
 
 #. MENU_LABEL_VIEW_ZOOM_50
-#: po/tmp/ap_String_Id.h.h:2604
+#: po/tmp/ap_String_Id.h.h:2606
 msgid "Zoom to &50%"
-msgstr "Zoom na &50%"
+msgstr "&50%"
 
 #. MENU_LABEL_VIEW_ZOOM_75
-#: po/tmp/ap_String_Id.h.h:2606
+#: po/tmp/ap_String_Id.h.h:2608
 msgid "Zoom to &75%"
-msgstr "Zoom na &75%"
+msgstr "&75%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_100
-#: po/tmp/ap_String_Id.h.h:2608
+#: po/tmp/ap_String_Id.h.h:2610
 msgid "Zoom to 100%"
-msgstr "Zoom na 100%"
+msgstr "Povečaj na 100%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_200
-#: po/tmp/ap_String_Id.h.h:2610
+#: po/tmp/ap_String_Id.h.h:2612
 msgid "Zoom to 200%"
-msgstr "Zoom na 200%"
+msgstr "Povečaj na 200%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_50
-#: po/tmp/ap_String_Id.h.h:2612
+#: po/tmp/ap_String_Id.h.h:2614
 msgid "Zoom to 50%"
-msgstr "Zoom na 50%"
+msgstr "Pomanjšaj na 50%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_75
-#: po/tmp/ap_String_Id.h.h:2614
+#: po/tmp/ap_String_Id.h.h:2616
 msgid "Zoom to 75%"
-msgstr "Zoom na 75%"
+msgstr "Pomanjšaj na 75%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_WIDTH
-#: po/tmp/ap_String_Id.h.h:2616
+#: po/tmp/ap_String_Id.h.h:2618
 msgid "Zoom to page width"
-msgstr "Na širino strani"
+msgstr "Povečaj na širino strani"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_WHOLE
-#: po/tmp/ap_String_Id.h.h:2618
+#: po/tmp/ap_String_Id.h.h:2620
 msgid "Zoom to whole page"
-msgstr "Celostransko"
+msgstr "Povečaj na celo stran"
 
 #. DLG_Options_Label_CustomDict
-#: po/tmp/ap_String_Id.h.h:2620
+#: po/tmp/ap_String_Id.h.h:2622
 msgid "custom.dic"
 msgstr "po_meri.dic"
 
 #. FIELD_DateTime_DDMMYY
-#: po/tmp/ap_String_Id.h.h:2622
+#: po/tmp/ap_String_Id.h.h:2624
 msgid "dd/mm/yy"
 msgstr "dd/mm/ll"
 
 #. DLG_ToggleCase_LowerCase
-#: po/tmp/ap_String_Id.h.h:2624
+#: po/tmp/ap_String_Id.h.h:2626
 msgid "lowercase"
 msgstr "male črke"
 
 #. DLG_Options_Label_Minutes
-#: po/tmp/ap_String_Id.h.h:2626
+#: po/tmp/ap_String_Id.h.h:2628
 msgid "minutes"
 msgstr "minut"
 
 #. FIELD_DateTime_MMDDYY
-#: po/tmp/ap_String_Id.h.h:2628
+#: po/tmp/ap_String_Id.h.h:2630
 msgid "mm/dd/yy"
 msgstr "mm/dd/ll"
 
 #. DLG_ToggleCase_ToggleCase
-#: po/tmp/ap_String_Id.h.h:2630
+#: po/tmp/ap_String_Id.h.h:2632
 msgid "tOGGLE cASE"
 msgstr "pREKLOPI vELIKOST"
 
@@ -7603,911 +7608,927 @@ msgstr "Naredi privzeto za dokument"
 msgid "Malay"
 msgstr "malajski"
 
-#. LANG_MI_NZ
+#. LANG_MNK_SN
 #: po/tmp/xap_String_Id.h.h:538
+msgid "Mandinka (Senegal)"
+msgstr "mandinški (Senegal)"
+
+#. LANG_MI_NZ
+#: po/tmp/xap_String_Id.h.h:540
 msgid "Maori"
 msgstr "maorski"
 
 #. LANG_MR_IN
-#: po/tmp/xap_String_Id.h.h:540
+#: po/tmp/xap_String_Id.h.h:542
 msgid "Marathi"
 msgstr "maratski"
 
 #. LANG_MH_MH
-#: po/tmp/xap_String_Id.h.h:542
+#: po/tmp/xap_String_Id.h.h:544
 msgid "Marshallese (Marshall Islands)"
 msgstr "maršalski (Maršalovi otoki)"
 
 #. LANG_MH_NR
-#: po/tmp/xap_String_Id.h.h:544
+#: po/tmp/xap_String_Id.h.h:546
 msgid "Marshallese (Nauru)"
 msgstr "maršalski (Nauru)"
 
 #. DLG_Merge
-#: po/tmp/xap_String_Id.h.h:546
+#: po/tmp/xap_String_Id.h.h:548
 msgid "Merge"
 msgstr "Spoji"
 
 #. LANG_MN_MN
-#: po/tmp/xap_String_Id.h.h:548
+#: po/tmp/xap_String_Id.h.h:550
 msgid "Mongolian"
 msgstr "mongolski"
 
 #. DLG_PLUGIN_MANAGER_NAME
-#: po/tmp/xap_String_Id.h.h:550
+#: po/tmp/xap_String_Id.h.h:552
 msgid "Name:"
 msgstr "Ime:"
 
 #. LANG_NE_NP
-#: po/tmp/xap_String_Id.h.h:552
+#: po/tmp/xap_String_Id.h.h:554
 msgid "Nepali (Nepal)"
 msgstr "nepalski (Nepal)"
 
 #. DLG_MB_No
-#: po/tmp/xap_String_Id.h.h:554
+#: po/tmp/xap_String_Id.h.h:556
 msgid "No"
 msgstr "Ne"
 
 #. DLG_IP_No_Picture_Label
-#: po/tmp/xap_String_Id.h.h:556
+#: po/tmp/xap_String_Id.h.h:558
 msgid "No Picture"
 msgstr "Brez slike"
 
 #. DLG_PLUGIN_MANAGER_NONE_SELECTED
-#: po/tmp/xap_String_Id.h.h:558
+#: po/tmp/xap_String_Id.h.h:560
 msgid "No plugin selected"
 msgstr "Izbran ni noben vtičnik"
 
 #. STYLE_NORMAL
-#: po/tmp/xap_String_Id.h.h:560
+#: po/tmp/xap_String_Id.h.h:562
 msgid "Normal"
 msgstr "Navaden"
 
 #. LANG_NB_NO
-#: po/tmp/xap_String_Id.h.h:562
+#: po/tmp/xap_String_Id.h.h:564
 msgid "Norwegian Bokmal"
 msgstr "norveški Bokmal"
 
 #. LANG_NN_NO
-#: po/tmp/xap_String_Id.h.h:564
+#: po/tmp/xap_String_Id.h.h:566
 msgid "Norwegian Nynorsk"
 msgstr "norveški Nynorsk"
 
 #. DLG_PLUGIN_MANAGER_NOT_AVAILABLE
-#: po/tmp/xap_String_Id.h.h:566
+#: po/tmp/xap_String_Id.h.h:568
 msgid "Not available"
 msgstr "Ni na voljo"
 
 #. STYLE_NUMHEAD1
-#: po/tmp/xap_String_Id.h.h:568
+#: po/tmp/xap_String_Id.h.h:570
 msgid "Numbered Heading 1"
 msgstr "Oštevilčeni naslov 1"
 
 #. STYLE_NUMHEAD2
-#: po/tmp/xap_String_Id.h.h:570
+#: po/tmp/xap_String_Id.h.h:572
 msgid "Numbered Heading 2"
 msgstr "Oštevilčeni naslov 2"
 
 #. STYLE_NUMHEAD3
-#: po/tmp/xap_String_Id.h.h:572
+#: po/tmp/xap_String_Id.h.h:574
 msgid "Numbered Heading 3"
 msgstr "Oštevilčeni naslov 3"
 
 #. DLG_OK
-#: po/tmp/xap_String_Id.h.h:576
+#: po/tmp/xap_String_Id.h.h:578
 msgid "OK"
 msgstr "V redu"
 
 #. LANG_OC_FR
-#: po/tmp/xap_String_Id.h.h:578
+#: po/tmp/xap_String_Id.h.h:580
 msgid "Occitan"
 msgstr "oksitanski"
 
 #. DLG_FOSA_OpenTitle
-#: po/tmp/xap_String_Id.h.h:580
+#: po/tmp/xap_String_Id.h.h:582
 msgid "Open File"
 msgstr "Odpri datoteko"
 
 #. DLG_FOSA_FileOpenTypeLabel
-#: po/tmp/xap_String_Id.h.h:582
+#: po/tmp/xap_String_Id.h.h:584
 msgid "Open file as &type:"
 msgstr "Odpri datoteko ko&t:"
 
 #. DLG_LISTDOCS_Title
-#: po/tmp/xap_String_Id.h.h:584
+#: po/tmp/xap_String_Id.h.h:586
 msgid "Opened Documents"
 msgstr "Odprti dokumenti"
 
 #. TB_Zoom_Percent
-#: po/tmp/xap_String_Id.h.h:586
+#: po/tmp/xap_String_Id.h.h:588
 msgid "Other..."
 msgstr "Drugo ..."
 
 #. DLG_Zoom_Percent
-#: po/tmp/xap_String_Id.h.h:590
+#: po/tmp/xap_String_Id.h.h:592
 msgid "P&ercent:"
 msgstr "&Odstotkov:"
 
 #. TB_Zoom_PageWidth
-#: po/tmp/xap_String_Id.h.h:592
+#: po/tmp/xap_String_Id.h.h:594
 msgid "Page Width"
 msgstr "Širina strani"
 
 #. DLG_UP_PageRanges
-#: po/tmp/xap_String_Id.h.h:594
+#: po/tmp/xap_String_Id.h.h:596
 msgid "Page ranges:"
 msgstr "Obsegi strani:"
 
 #. LANG_PS
-#: po/tmp/xap_String_Id.h.h:596
+#: po/tmp/xap_String_Id.h.h:598
 msgid "Pashto"
 msgstr "paštunski"
 
 #. DLG_Password_Password
-#: po/tmp/xap_String_Id.h.h:598
+#: po/tmp/xap_String_Id.h.h:600
 msgid "Password:"
 msgstr "Geslo:"
 
 #. STYLE_PLAIN_TEXT
-#: po/tmp/xap_String_Id.h.h:600
+#: po/tmp/xap_String_Id.h.h:602
 msgid "Plain Text"
 msgstr "Enostavno besedilo"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
-#: po/tmp/xap_String_Id.h.h:602
+#: po/tmp/xap_String_Id.h.h:604
 msgid "Plugin Details:"
 msgstr "Podrobnosti vtičnika:"
 
 #. DLG_PLUGIN_MANAGER_LIST
-#: po/tmp/xap_String_Id.h.h:604
+#: po/tmp/xap_String_Id.h.h:606
 msgid "Plugin List"
 msgstr "Seznam vtičnikov"
 
 #. LANG_PL_PL
-#: po/tmp/xap_String_Id.h.h:606
+#: po/tmp/xap_String_Id.h.h:608
 msgid "Polish"
 msgstr "poljski"
 
 #. LANG_PT_BR
-#: po/tmp/xap_String_Id.h.h:608
+#: po/tmp/xap_String_Id.h.h:610
 msgid "Portuguese (Brazil)"
 msgstr "portugalski (Brazilija)"
 
 #. LANG_PT_PT
-#: po/tmp/xap_String_Id.h.h:610
+#: po/tmp/xap_String_Id.h.h:612
 msgid "Portuguese (Portugal)"
 msgstr "portugalski (Portugalska)"
 
 #. DLG_Image_PlaceColumn
-#: po/tmp/xap_String_Id.h.h:612
+#: po/tmp/xap_String_Id.h.h:614
 msgid "Position relative to its Column"
 msgstr "Položaj, relativen glede na njegov stolpec"
 
 #. DLG_Image_PlacePage
-#: po/tmp/xap_String_Id.h.h:614
+#: po/tmp/xap_String_Id.h.h:616
 msgid "Position relative to its Page"
 msgstr "Položaj, relativen glede na njegovo stran"
 
 #. DLG_Image_PlaceParagraph
-#: po/tmp/xap_String_Id.h.h:616
+#: po/tmp/xap_String_Id.h.h:618
 msgid "Position relative to nearest paragraph"
 msgstr "Položaj, relativen glede na najbližji odstavek"
 
 #. DLG_Image_Aspect
-#: po/tmp/xap_String_Id.h.h:618
+#: po/tmp/xap_String_Id.h.h:620
 msgid "Preserve aspect ratio"
 msgstr "Ohrani razmerje stranic"
 
 #. DLG_IP_Activate_Label
-#: po/tmp/xap_String_Id.h.h:622
+#: po/tmp/xap_String_Id.h.h:624
 msgid "Preview Picture"
 msgstr "Predogled slike"
 
 #. DLG_FOSA_PrintToFileTitle
-#: po/tmp/xap_String_Id.h.h:627
+#: po/tmp/xap_String_Id.h.h:629
 msgid "Print To File"
 msgstr "Natisni v datoteko"
 
 #. DLG_FOSA_FilePrintTypeLabel
-#: po/tmp/xap_String_Id.h.h:629
+#: po/tmp/xap_String_Id.h.h:631
 msgid "Print file as &type:"
 msgstr "Natisni datoteko ko&t:"
 
 #. DLG_UP_PrintIn
-#: po/tmp/xap_String_Id.h.h:631
+#: po/tmp/xap_String_Id.h.h:633
 msgid "Print in: "
 msgstr "Natisni v: "
 
 #. DLG_UP_PrintTo
-#: po/tmp/xap_String_Id.h.h:633
+#: po/tmp/xap_String_Id.h.h:635
 msgid "Print to: "
 msgstr "Natisni na: "
 
 #. DLG_UP_Printer
-#: po/tmp/xap_String_Id.h.h:635
+#: po/tmp/xap_String_Id.h.h:637
 msgid "Printer"
 msgstr "Tiskalnik"
 
 #. DLG_UP_PrinterCommand
-#: po/tmp/xap_String_Id.h.h:637
+#: po/tmp/xap_String_Id.h.h:639
 msgid "Printer command: "
 msgstr "Ukaz za tiskanje: "
 
 #. LANG_PA_IN
-#: po/tmp/xap_String_Id.h.h:639
+#: po/tmp/xap_String_Id.h.h:641
 msgid "Punjabi (Gurmukhi)"
 msgstr "pundžabski (Gurmukški)"
 
 #. LANG_PA_PK
-#: po/tmp/xap_String_Id.h.h:641
+#: po/tmp/xap_String_Id.h.h:643
 msgid "Punjabi (Shahmukhi)"
 msgstr "pundžabski (Šamukški)"
 
 #. LANG_QU_BO
-#: po/tmp/xap_String_Id.h.h:643
+#: po/tmp/xap_String_Id.h.h:645
 msgid "Quechua"
 msgstr "kečuanski"
 
 #. LANG_QUH_BO
-#: po/tmp/xap_String_Id.h.h:645
+#: po/tmp/xap_String_Id.h.h:647
 msgid "Quechua (3 vowels)"
 msgstr "kečuanski (3 samoglasniki)"
 
 #. LANG_QUL_BO
-#: po/tmp/xap_String_Id.h.h:647
+#: po/tmp/xap_String_Id.h.h:649
 msgid "Quechua (5 vowels)"
 msgstr "kečuanski (5 samoglasnikov)"
 
 #. ReadOnly
-#: po/tmp/xap_String_Id.h.h:649
+#: po/tmp/xap_String_Id.h.h:651
 msgid "Read-Only"
 msgstr "Samo za branje"
 
 #. DLG_FOSA_RecordToFileTitle
-#: po/tmp/xap_String_Id.h.h:651
+#: po/tmp/xap_String_Id.h.h:653
 msgid "Record Editing to File"
 msgstr "Beleži urejanje v datoteko"
 
 #. DLG_UFS_StyleRegular
-#: po/tmp/xap_String_Id.h.h:653
+#: po/tmp/xap_String_Id.h.h:655
 msgid "Regular"
 msgstr "Navadno"
 
 #. DLG_DocComparison_Relationship
-#: po/tmp/xap_String_Id.h.h:655
+#: po/tmp/xap_String_Id.h.h:657
 msgid "Relationship:"
 msgstr "Razmerje:"
 
 #. DLG_FOSA_ReplayFromFileTitle
-#: po/tmp/xap_String_Id.h.h:657
+#: po/tmp/xap_String_Id.h.h:659
 msgid "Replay Editing from File"
 msgstr "Ponovi urejanje iz datoteke"
 
 #. DLG_Restore
-#: po/tmp/xap_String_Id.h.h:659
+#: po/tmp/xap_String_Id.h.h:661
 msgid "Restore"
 msgstr "Povrni"
 
 #. DLG_HTMLOPT_ExpRestore
-#: po/tmp/xap_String_Id.h.h:661
+#: po/tmp/xap_String_Id.h.h:663
 msgid "Restore Settings"
 msgstr "Povrni nastavitve"
 
 #. DLG_DocComparison_Results
-#: po/tmp/xap_String_Id.h.h:663
+#: po/tmp/xap_String_Id.h.h:665
 msgid "Results"
 msgstr "Rezultati"
 
 #. LANG_RO_RO
-#: po/tmp/xap_String_Id.h.h:665
+#: po/tmp/xap_String_Id.h.h:667
 msgid "Romanian"
 msgstr "romunski"
 
 #. ENC_ROMA_MAC
-#: po/tmp/xap_String_Id.h.h:667
+#: po/tmp/xap_String_Id.h.h:669
 msgid "Romanian, Macintosh"
 msgstr "romunski, Macintosh"
 
 #. LANG_RU_RU
-#: po/tmp/xap_String_Id.h.h:669
+#: po/tmp/xap_String_Id.h.h:671
 msgid "Russian (Russia)"
 msgstr "ruski (Rusija)"
 
 #. DLG_UFS_SampleFrameLabel
-#: po/tmp/xap_String_Id.h.h:671
+#: po/tmp/xap_String_Id.h.h:673
 msgid "Sample"
 msgstr "Vzorec"
 
 #. LANG_SC_IT
-#: po/tmp/xap_String_Id.h.h:673
+#: po/tmp/xap_String_Id.h.h:675
 msgid "Sardinian"
 msgstr "sardinski"
 
 #. DLG_FOSA_SaveAsTitle
-#: po/tmp/xap_String_Id.h.h:675
+#: po/tmp/xap_String_Id.h.h:677
 msgid "Save File As"
 msgstr "Shrani datoteko kot"
 
 #. DLG_HTMLOPT_ExpSave
-#: po/tmp/xap_String_Id.h.h:677
+#: po/tmp/xap_String_Id.h.h:679
 msgid "Save Settings"
 msgstr "Shrani nastavitve"
 
 #. DLG_FOSA_FileSaveTypeLabel
-#: po/tmp/xap_String_Id.h.h:679
+#: po/tmp/xap_String_Id.h.h:681
 msgid "Save file as &type:"
 msgstr "Shrani datoteko ko&t:"
 
 #. DLG_UFS_ScriptLabel
-#: po/tmp/xap_String_Id.h.h:681
+#: po/tmp/xap_String_Id.h.h:683
 msgid "Script:"
 msgstr "Skript:"
 
 #. STYLE_SECTHEADING
-#: po/tmp/xap_String_Id.h.h:683
+#: po/tmp/xap_String_Id.h.h:685
 msgid "Section Heading"
 msgstr "Naslov odseka"
 
 #. DLG_UENC_EncLabel
-#: po/tmp/xap_String_Id.h.h:687
+#: po/tmp/xap_String_Id.h.h:689
 msgid "Select Encoding:"
 msgstr "Izberi nabor znakov:"
 
 #. DLG_HTMLOPT_ExpLabel
-#: po/tmp/xap_String_Id.h.h:689
+#: po/tmp/xap_String_Id.h.h:691
 msgid "Select HTML export options:"
 msgstr "Izberi možnosti izvoza HTML:"
 
 #. DLG_ULANG_LangLabel
-#: po/tmp/xap_String_Id.h.h:691
+#: po/tmp/xap_String_Id.h.h:693
 msgid "Select Language:"
 msgstr "Izberi jezik:"
 
 #. LANG_SR
-#: po/tmp/xap_String_Id.h.h:695
+#: po/tmp/xap_String_Id.h.h:697
 msgid "Serbian"
 msgstr "srbski"
 
 #. DLG_Image_ImageDesc
-#: po/tmp/xap_String_Id.h.h:697
+#: po/tmp/xap_String_Id.h.h:699
 msgid "Set Image Name"
 msgstr "Določi ime slike"
 
 #. DLG_Image_ImageSize
-#: po/tmp/xap_String_Id.h.h:699
+#: po/tmp/xap_String_Id.h.h:701
 msgid "Set Image Size"
 msgstr "Določi velikost slike"
 
 #. DLG_ULANG_LangTitle
-#: po/tmp/xap_String_Id.h.h:701
+#: po/tmp/xap_String_Id.h.h:703
 msgid "Set Language"
 msgstr "Nastavi jezik"
 
 #. DLG_UFS_TransparencyCheck
-#: po/tmp/xap_String_Id.h.h:703
+#: po/tmp/xap_String_Id.h.h:705
 msgid "Set no Highlight Color"
 msgstr "Brez osvetlitvene barve"
 
 #. DLG_UFS_SizeLabel
-#: po/tmp/xap_String_Id.h.h:707
+#: po/tmp/xap_String_Id.h.h:709
 msgid "Size:"
 msgstr "Velikost:"
 
 #. LANG_SK_SK
-#: po/tmp/xap_String_Id.h.h:709
+#: po/tmp/xap_String_Id.h.h:711
 msgid "Slovak"
 msgstr "slovaški"
 
 #. LANG_SL_SI
-#: po/tmp/xap_String_Id.h.h:711
+#: po/tmp/xap_String_Id.h.h:713
 msgid "Slovenian"
 msgstr "slovenski"
 
 #. DLG_UFS_Effects_SmallCaps
-#: po/tmp/xap_String_Id.h.h:713
+#: po/tmp/xap_String_Id.h.h:715
 msgid "Small Capitals"
 msgstr "Majhne začetnice"
 
 #. LANG_ES_MX
-#: po/tmp/xap_String_Id.h.h:715
+#: po/tmp/xap_String_Id.h.h:717
 msgid "Spanish (Mexico)"
 msgstr "španski (Mehika)"
 
 #. LANG_ES_ES
-#: po/tmp/xap_String_Id.h.h:717
+#: po/tmp/xap_String_Id.h.h:719
 msgid "Spanish (Spain)"
 msgstr "španski (Španija)"
 
 #. DLG_Image_SquareWrap
-#: po/tmp/xap_String_Id.h.h:721
+#: po/tmp/xap_String_Id.h.h:723
 msgid "Square text wrapping"
 msgstr "Kvadratno oblivanje besedila"
 
 #. DLG_DocComparison_Styles
-#: po/tmp/xap_String_Id.h.h:729
+#: po/tmp/xap_String_Id.h.h:731
 msgid "Styles:"
 msgstr "Slogi:"
 
 #. LANG_SW
-#: po/tmp/xap_String_Id.h.h:735
+#: po/tmp/xap_String_Id.h.h:737
 msgid "Swahili"
 msgstr "svahilski"
 
 #. LANG_SV_SE
-#: po/tmp/xap_String_Id.h.h:737
+#: po/tmp/xap_String_Id.h.h:739
 msgid "Swedish"
 msgstr "švedski"
 
 #. TB_Font_Symbol
-#: po/tmp/xap_String_Id.h.h:739
+#: po/tmp/xap_String_Id.h.h:741
 msgid "Symbols"
 msgstr "Simboli"
 
 #. LANG_SYR
-#: po/tmp/xap_String_Id.h.h:741
+#: po/tmp/xap_String_Id.h.h:743
 msgid "Syriac"
 msgstr "sirijaški"
 
 #. LANG_TL_PH
-#: po/tmp/xap_String_Id.h.h:745
+#: po/tmp/xap_String_Id.h.h:747
 msgid "Tagalog"
 msgstr "tagaloški"
 
 #. LANG_TA_IN
-#: po/tmp/xap_String_Id.h.h:747
+#: po/tmp/xap_String_Id.h.h:749
 msgid "Tamil"
 msgstr "tamilski"
 
 #. LANG_TE_IN
-#: po/tmp/xap_String_Id.h.h:749
+#: po/tmp/xap_String_Id.h.h:751
 msgid "Telugu"
 msgstr "teluški"
 
 #. DLG_UFS_ColorTab
-#: po/tmp/xap_String_Id.h.h:751
+#: po/tmp/xap_String_Id.h.h:753
 msgid "Text Color"
 msgstr "Barva besedila"
 
 #. DLG_Image_WrappedBoth
-#: po/tmp/xap_String_Id.h.h:753
+#: po/tmp/xap_String_Id.h.h:755
 msgid "Text wrapped on both sides of the Image"
 msgstr "Besedilo obliva sliko z obeh strani"
 
 #. DLG_Image_WrappedLeft
-#: po/tmp/xap_String_Id.h.h:755
+#: po/tmp/xap_String_Id.h.h:757
 msgid "Text wrapped to the Left of the Image"
 msgstr "Besedilo obliva sliko na levi"
 
 #. DLG_Image_WrappedRight
-#: po/tmp/xap_String_Id.h.h:757
+#: po/tmp/xap_String_Id.h.h:759
 msgid "Text wrapped to the Right of the Image"
 msgstr "Besedilo obliva sliko na desni"
 
 #. LANG_TH_TH
-#: po/tmp/xap_String_Id.h.h:759
+#: po/tmp/xap_String_Id.h.h:761
 msgid "Thai"
 msgstr "tajski"
 
 #. ENC_THAI_MAC
-#: po/tmp/xap_String_Id.h.h:761
+#: po/tmp/xap_String_Id.h.h:763
 msgid "Thai, Macintosh"
 msgstr "tajski, Macintosh"
 
 #. ENC_THAI_TIS
-#: po/tmp/xap_String_Id.h.h:763
+#: po/tmp/xap_String_Id.h.h:765
 msgid "Thai, TIS-620"
 msgstr "tajski, TIS-620"
 
 #. ENC_THAI_WIN
-#: po/tmp/xap_String_Id.h.h:765
+#: po/tmp/xap_String_Id.h.h:767
 msgid "Thai, Windows Code Page 874"
 msgstr "tajski, nabor znakov Windows-874"
 
 #. DLG_NoSaveFile_DirNotWriteable
-#: po/tmp/xap_String_Id.h.h:767
+#: po/tmp/xap_String_Id.h.h:769
 #, c-format
 msgid "The directory '%s' is write-protected."
 msgstr "Mapa '%s' je zaščitena proti pisanju."
 
 #. DLG_FOSA_ExtensionDoesNotMatch
-#: po/tmp/xap_String_Id.h.h:769
+#: po/tmp/xap_String_Id.h.h:771
 msgid "The given file extension does not match the chosen file type. Do you want to use this name anyway?"
 msgstr "Podana končnica datoteke se ne ujema z izbrano vrsto datoteke. Želite kljub temu uporabiti to ime?"
 
 #. MSG_HistoryPartRestore2
-#: po/tmp/xap_String_Id.h.h:771
+#: po/tmp/xap_String_Id.h.h:773
 #, c-format
 msgid "The nearest version that can be restored fully is %d. Would you like to restore this version instead? To partially restore version %d press No."
 msgstr "Najbližja različica, ki jo lahko v celoti obnovite, je %d. Želite obnoviti to različico? Če želite delno obnoviti različico %d, izberite Ne."
 
 #. DLG_UP_InvalidPrintString
-#: po/tmp/xap_String_Id.h.h:773
+#: po/tmp/xap_String_Id.h.h:775
 msgid "The print command string is not valid."
 msgstr "Ukaz za tiskanje ni veljaven."
 
 #. MSG_NoUndo
-#: po/tmp/xap_String_Id.h.h:775
+#: po/tmp/xap_String_Id.h.h:777
 msgid "This operation cannot be undone. Are you sure you want to proceed?"
 msgstr "Te operacije ni mogoče povrniti. Ste prepričani, da želite nadaljevati?"
 
 #. DLG_Image_TightWrap
-#: po/tmp/xap_String_Id.h.h:779
+#: po/tmp/xap_String_Id.h.h:781
 msgid "Tight text wrapping"
 msgstr "Tesno oblivanje besedila"
 
 #. MSG_HistoryPartRestore3
-#: po/tmp/xap_String_Id.h.h:785
+#: po/tmp/xap_String_Id.h.h:787
 msgid "To continue anyway, press OK."
 msgstr "Če želite kljub temu nadaljevati, pritisnite V redu."
 
 #. MSG_HistoryPartRestore4
-#: po/tmp/xap_String_Id.h.h:787
+#: po/tmp/xap_String_Id.h.h:789
 msgid "To quit the restoration attempt, press Cancel."
 msgstr "Če želite poskus obnovitve zaključiti, pritisnite Prekliči."
 
 #. LANG_TR_TR
-#: po/tmp/xap_String_Id.h.h:793
+#: po/tmp/xap_String_Id.h.h:795
 msgid "Turkish"
 msgstr "turški"
 
 #. ENC_TURK_ISO
-#: po/tmp/xap_String_Id.h.h:795
+#: po/tmp/xap_String_Id.h.h:797
 msgid "Turkish, ISO-8859-9"
 msgstr "turški, ISO-8859-9"
 
 #. ENC_TURK_MAC
-#: po/tmp/xap_String_Id.h.h:797
+#: po/tmp/xap_String_Id.h.h:799
 msgid "Turkish, Macintosh"
 msgstr "turški, Macintosh"
 
 #. ENC_TURK_WIN
-#: po/tmp/xap_String_Id.h.h:799
+#: po/tmp/xap_String_Id.h.h:801
 msgid "Turkish, Windows Code Page 1254"
 msgstr "turški, nabor znakov Windows-1254"
 
 #. DLG_Image_WrapType
-#: po/tmp/xap_String_Id.h.h:801
+#: po/tmp/xap_String_Id.h.h:803
 msgid "Type of text wrapping"
 msgstr "Vrsta oblivanja besedila"
 
 #. ENC_WEST_ASCII
-#: po/tmp/xap_String_Id.h.h:803
+#: po/tmp/xap_String_Id.h.h:805
 msgid "US-ASCII"
 msgstr "US-ASCII"
 
 #. LANG_UK_UA
-#: po/tmp/xap_String_Id.h.h:805
+#: po/tmp/xap_String_Id.h.h:807
 msgid "Ukrainian"
 msgstr "ukrajinski"
 
 #. ENC_UKRA_KOI
-#: po/tmp/xap_String_Id.h.h:807
+#: po/tmp/xap_String_Id.h.h:809
 msgid "Ukrainian, KOI8-U"
 msgstr "ukrajinski, KOI8-U"
 
 #. ENC_UKRA_MAC
-#: po/tmp/xap_String_Id.h.h:809
+#: po/tmp/xap_String_Id.h.h:811
 msgid "Ukrainian, Macintosh"
 msgstr "ukrajinski, Macintosh"
 
 #. ENC_UNIC_UCS2
-#: po/tmp/xap_String_Id.h.h:813
+#: po/tmp/xap_String_Id.h.h:815
 msgid "Unicode UCS-2"
 msgstr "Unicode UCS-2"
 
 #. ENC_UNIC_UCS_2BE
-#: po/tmp/xap_String_Id.h.h:815
+#: po/tmp/xap_String_Id.h.h:817
 msgid "Unicode UCS-2 Big Endian"
 msgstr "Unicode UCS-2 BE"
 
 #. ENC_UNIC_UCS_2LE
-#: po/tmp/xap_String_Id.h.h:817
+#: po/tmp/xap_String_Id.h.h:819
 msgid "Unicode UCS-2 Little Endian"
 msgstr "Unicode UCS-2 LE"
 
 #. ENC_UNIC_UCS4
-#: po/tmp/xap_String_Id.h.h:819
+#: po/tmp/xap_String_Id.h.h:821
 msgid "Unicode UCS-4"
 msgstr "Unicode UCS-4"
 
 #. ENC_UNIC_UCS_4BE
-#: po/tmp/xap_String_Id.h.h:821
+#: po/tmp/xap_String_Id.h.h:823
 msgid "Unicode UCS-4 Big Endian"
 msgstr "Unicode UCS-4 BE"
 
 #. ENC_UNIC_UCS_4LE
-#: po/tmp/xap_String_Id.h.h:823
+#: po/tmp/xap_String_Id.h.h:825
 msgid "Unicode UCS-4 Little Endian"
 msgstr "Unicode UCS-4 LE"
 
 #. ENC_UNIC_UTF_16
-#: po/tmp/xap_String_Id.h.h:825
+#: po/tmp/xap_String_Id.h.h:827
 msgid "Unicode UTF-16"
 msgstr "Unicode UTF-16"
 
 #. ENC_UNIC_UTF_16BE
-#: po/tmp/xap_String_Id.h.h:827
+#: po/tmp/xap_String_Id.h.h:829
 msgid "Unicode UTF-16 Big Endian"
 msgstr "Unicode UFT-16 BE"
 
 #. ENC_UNIC_UTF_16LE
-#: po/tmp/xap_String_Id.h.h:829
+#: po/tmp/xap_String_Id.h.h:831
 msgid "Unicode UTF-16 Little Endian"
 msgstr "Unicode UTF-16 LE"
 
 #. ENC_UNIC_UTF_32
-#: po/tmp/xap_String_Id.h.h:831
+#: po/tmp/xap_String_Id.h.h:833
 msgid "Unicode UTF-32"
 msgstr "Unicode UTF-32"
 
 #. ENC_UNIC_UTF_32BE
-#: po/tmp/xap_String_Id.h.h:833
+#: po/tmp/xap_String_Id.h.h:835
 msgid "Unicode UTF-32 Big Endian"
 msgstr "Unicode UTF-32 BE"
 
 #. ENC_UNIC_UTF_32LE
-#: po/tmp/xap_String_Id.h.h:835
+#: po/tmp/xap_String_Id.h.h:837
 msgid "Unicode UTF-32 Little Endian"
 msgstr "Unicode UTF-32 LE"
 
 #. ENC_UNIC_UTF_7
-#: po/tmp/xap_String_Id.h.h:837
+#: po/tmp/xap_String_Id.h.h:839
 msgid "Unicode UTF-7"
 msgstr "Unicode UTF-7"
 
 #. ENC_UNIC_UTF_8
-#: po/tmp/xap_String_Id.h.h:839
+#: po/tmp/xap_String_Id.h.h:841
 msgid "Unicode UTF-8"
 msgstr "Unicode UTF-8"
 
 #. UntitledDocument
-#: po/tmp/xap_String_Id.h.h:841
+#: po/tmp/xap_String_Id.h.h:843
 #, c-format
 msgid "Untitled%d"
 msgstr "Neimenovano-%d"
 
 #. DLG_Update
-#: po/tmp/xap_String_Id.h.h:843
+#: po/tmp/xap_String_Id.h.h:845
 msgid "Update"
 msgstr "Posodobi"
 
 #. DLG_UFS_Effects_UpperCase
-#: po/tmp/xap_String_Id.h.h:849
+#: po/tmp/xap_String_Id.h.h:851
 msgid "Uppercase"
 msgstr "Velike črke"
 
 #. LANG_UR
-#: po/tmp/xap_String_Id.h.h:851
+#: po/tmp/xap_String_Id.h.h:853
 msgid "Urdu"
 msgstr "urdujski"
 
 #. LANG_UR_PK
-#: po/tmp/xap_String_Id.h.h:853
+#: po/tmp/xap_String_Id.h.h:855
 msgid "Urdu (Pakistan)"
 msgstr "urdujski (Pakistan)"
 
 #. LANG_UZ_UZ
-#: po/tmp/xap_String_Id.h.h:855
+#: po/tmp/xap_String_Id.h.h:857
 msgid "Uzbek"
 msgstr "uzbeški"
 
 #. DLG_History_List_Title
-#: po/tmp/xap_String_Id.h.h:859
+#: po/tmp/xap_String_Id.h.h:861
 msgid "Version history"
 msgstr "Zgodovina različic"
 
 #. DLG_PLUGIN_MANAGER_VERSION
 #. DLG_History_Version
-#: po/tmp/xap_String_Id.h.h:862
+#: po/tmp/xap_String_Id.h.h:864
 msgid "Version:"
 msgstr "Različica:"
 
 #. DLG_ABOUT_Version
-#: po/tmp/xap_String_Id.h.h:864
+#: po/tmp/xap_String_Id.h.h:866
 #, c-format
 msgid "Version: %s"
 msgstr "Različica: %s"
 
 #. LANG_VI_VN
-#: po/tmp/xap_String_Id.h.h:866
+#: po/tmp/xap_String_Id.h.h:868
 msgid "Vietnamese"
 msgstr "vietnamski"
 
 #. ENC_VIET_TCVN
-#: po/tmp/xap_String_Id.h.h:868
+#: po/tmp/xap_String_Id.h.h:870
 msgid "Vietnamese, TCVN"
 msgstr "vietnamski, TCVN"
 
 #. ENC_VIET_VISCII
-#: po/tmp/xap_String_Id.h.h:870
+#: po/tmp/xap_String_Id.h.h:872
 msgid "Vietnamese, VISCII"
 msgstr "vietnamski, VISCII"
 
 #. ENC_VIET_WIN
-#: po/tmp/xap_String_Id.h.h:872
+#: po/tmp/xap_String_Id.h.h:874
 msgid "Vietnamese, Windows Code Page 1258"
 msgstr "vietnamski, nabor znakov Windows-1258"
 
 #. DLG_MW_MoreWindows
-#: po/tmp/xap_String_Id.h.h:874
+#: po/tmp/xap_String_Id.h.h:876
 msgid "View Document"
 msgstr "Pokaži dokument"
 
 #. DLG_MW_Activate
-#: po/tmp/xap_String_Id.h.h:876
+#: po/tmp/xap_String_Id.h.h:878
 msgid "View:"
 msgstr "Pogled:"
 
 #. LANG_CY_GB
-#: po/tmp/xap_String_Id.h.h:878
+#: po/tmp/xap_String_Id.h.h:880
 msgid "Welsh"
 msgstr "velški"
 
 #. ENC_US_DOS
-#: po/tmp/xap_String_Id.h.h:880
+#: po/tmp/xap_String_Id.h.h:882
 msgid "Western European, DOS/Windows Code Page 437"
 msgstr "zahodnoevropski, nabor znakov DOS/Windows-437"
 
 #. ENC_MLNG_DOS
-#: po/tmp/xap_String_Id.h.h:882
+#: po/tmp/xap_String_Id.h.h:884
 msgid "Western European, DOS/Windows Code Page 850"
 msgstr "zahodnoevropski, nabor znakov DOS/Windows-850"
 
 #. ENC_WEST_HP
-#: po/tmp/xap_String_Id.h.h:884
+#: po/tmp/xap_String_Id.h.h:886
 msgid "Western European, HP"
 msgstr "zahodnoevropski, HP"
 
 #. ENC_WEST_ISO
-#: po/tmp/xap_String_Id.h.h:886
+#: po/tmp/xap_String_Id.h.h:888
 msgid "Western European, ISO-8859-1"
 msgstr "zahodnoevropski, ISO-8859-2"
 
 #. ENC_WEST_MAC
-#: po/tmp/xap_String_Id.h.h:888
+#: po/tmp/xap_String_Id.h.h:890
 msgid "Western European, Macintosh"
 msgstr "zahodnoevropski, Macintosh"
 
 #. ENC_WEST_NXT
-#: po/tmp/xap_String_Id.h.h:890
+#: po/tmp/xap_String_Id.h.h:892
 msgid "Western European, NeXT"
 msgstr "zahodnoevropski, NeXT"
 
 #. ENC_WEST_WIN
-#: po/tmp/xap_String_Id.h.h:892
+#: po/tmp/xap_String_Id.h.h:894
 msgid "Western European, Windows Code Page 1252"
 msgstr "zahodnoevropski, nabor znakov Windows-1252"
 
 #. TB_Zoom_WholePage
-#: po/tmp/xap_String_Id.h.h:894
+#: po/tmp/xap_String_Id.h.h:896
 msgid "Whole Page"
-msgstr "Celostransko"
+msgstr "Cela stran"
 
 #. DLG_Image_Width
-#: po/tmp/xap_String_Id.h.h:896
+#: po/tmp/xap_String_Id.h.h:898
 msgid "Width:"
 msgstr "Širina:"
 
 #. DLG_IP_Width_Label
-#: po/tmp/xap_String_Id.h.h:898
+#: po/tmp/xap_String_Id.h.h:900
 msgid "Width:  "
 msgstr "Širina:  "
 
 #. LANG_WO_SN
-#: po/tmp/xap_String_Id.h.h:900
+#: po/tmp/xap_String_Id.h.h:902
 msgid "Wolof (Senegal)"
 msgstr "volofski (Senegal)"
 
 #. DLG_MB_Yes
-#: po/tmp/xap_String_Id.h.h:902
+#: po/tmp/xap_String_Id.h.h:904
 msgid "Yes"
 msgstr "Da"
 
 #. LANG_YI
-#: po/tmp/xap_String_Id.h.h:904
+#: po/tmp/xap_String_Id.h.h:906
 msgid "Yiddish"
 msgstr "jidiš"
 
 #. MSG_HistoryConfirmSave
-#: po/tmp/xap_String_Id.h.h:906
+#: po/tmp/xap_String_Id.h.h:908
 #, c-format
 msgid "You have to save changes to document %s before proceeding. Save now?"
 msgstr "Pred nadaljevanjem morate dokument %s shraniti. Ga želite shraniti zdaj?"
 
 #. DLG_Zoom_RadioFrameCaption
-#: po/tmp/xap_String_Id.h.h:910
+#: po/tmp/xap_String_Id.h.h:912
 msgid "Zoom to"
 msgstr "Povečaj na"
 
 #. DLG_UnixMB_No
-#: po/tmp/xap_String_Id.h.h:912
+#: po/tmp/xap_String_Id.h.h:914
 msgid "_No"
 msgstr "_Ne"
 
 #. DLG_UnixMB_Yes
-#: po/tmp/xap_String_Id.h.h:914
+#: po/tmp/xap_String_Id.h.h:916
 msgid "_Yes"
 msgstr "_Da"
 
 #. DLG_Unit_cm
-#: po/tmp/xap_String_Id.h.h:916
+#: po/tmp/xap_String_Id.h.h:918
 msgid "cm"
 msgstr "cm"
 
 #. DLG_DocComparison_Different
-#: po/tmp/xap_String_Id.h.h:918
+#: po/tmp/xap_String_Id.h.h:920
 msgid "different"
 msgstr "različen"
 
 #. DLG_DocComparison_DivergingPos
-#: po/tmp/xap_String_Id.h.h:920
+#: po/tmp/xap_String_Id.h.h:922
 #, c-format
 msgid "diverging after document position %d"
 msgstr "se razlikuje od položaja %d naprej"
 
 #. DLG_DocComparison_Diverging
-#: po/tmp/xap_String_Id.h.h:922
+#: po/tmp/xap_String_Id.h.h:924
 #, c-format
 msgid "diverging after version %d of %s"
 msgstr "se razlikuje od različice %d od %s"
 
 #. DLG_DocComparison_Identical
-#: po/tmp/xap_String_Id.h.h:924
+#: po/tmp/xap_String_Id.h.h:926
 msgid "identical"
 msgstr "identičen"
 
 #. DLG_Unit_inch
-#: po/tmp/xap_String_Id.h.h:926
+#: po/tmp/xap_String_Id.h.h:928
 msgid "inch"
 msgstr "palci"
 
 #. DLG_Unit_mm
-#: po/tmp/xap_String_Id.h.h:928
+#: po/tmp/xap_String_Id.h.h:930
 msgid "mm"
 msgstr "mm"
 
 #. DLG_Unit_pica
-#: po/tmp/xap_String_Id.h.h:930
+#: po/tmp/xap_String_Id.h.h:932
 msgid "pica"
 msgstr "pica"
 
 #. DLG_Unit_points
-#: po/tmp/xap_String_Id.h.h:932
+#: po/tmp/xap_String_Id.h.h:934
 msgid "points"
 msgstr "pike"
 
 #. DLG_DocComparison_Siblings
-#: po/tmp/xap_String_Id.h.h:934
+#: po/tmp/xap_String_Id.h.h:936
 msgid "siblings"
 msgstr "soroden"
 
 #. DLG_DocComparison_Unrelated
-#: po/tmp/xap_String_Id.h.h:936
+#: po/tmp/xap_String_Id.h.h:938
 msgid "unrelated"
 msgstr "nepovezan"
 
+#~ msgid "Display Help Index"
+#~ msgstr "Pokaži kazalo pomoči"
+
 #~ msgid "&Format Table"
 #~ msgstr "&Oblikuj tabelo"
+
 #~ msgid "INS"
 #~ msgstr "VRI"
+
 #~ msgid "OVR"
 #~ msgstr "PRE"
+
 #~ msgid "Replace selection with annotation"
 #~ msgstr "Zamenjaj izbor s pripombo"
+
 #~ msgid "Allow Custom Toolbars"
 #~ msgstr "Dovoli orodne vrstice po meri"
+
 #~ msgid "Show the AbiWord splash screen on application startup"
 #~ msgstr "Pokaži začetni zaslon AbiWorda ob zagonu aplikacije"
+
 #~ msgid "M&erge documents"
 #~ msgstr "&Spoji dokumente"
+
 #~ msgid ""
 #~ "The documents you are trying to merge are unrelated. AbiWord will attempt "
 #~ "to merge them, but the result might be meaningless."
 #~ msgstr ""
 #~ "Dokumenti, ki jih želite spojiti, niso povezani med seboj. AbiWord jih bo "
 #~ "poskusil spojiti, vendar pa bo rezultat morda neuporaben."
+
 #~ msgid "&From File"
 #~ msgstr "&Iz datoteke"
+
 #~ msgid "Insert a picture"
 #~ msgstr "Vstavi sliko"
-
