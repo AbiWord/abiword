@@ -469,6 +469,10 @@ fp_ContainerObject * fp_TOCContainer::VBreakAt(UT_sint32 vpos)
 	{
 		return getLastBrokenTOC()->VBreakAt(vpos);
 	}
+	if(getContainer() == NULL)
+	{
+	    return NULL;
+	}
 	pBroke = new fp_TOCContainer(getSectionLayout(),getMasterTOC());
 	getMasterTOC()->setLastBrokenTOC(pBroke);
 

@@ -635,6 +635,8 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 					bool bIsTableOrTOC = false;
 					fl_BlockLayout* pBlock = NULL;
 					fl_ContainerLayout * pConLayout = NULL;
+					if(pOffendingContainer == NULL)
+					        break;
 					if(pOffendingContainer->getContainerType() == FP_CONTAINER_LINE)
 					{
 						pBlock = static_cast<fp_Line *>(pOffendingContainer)->getBlock();
