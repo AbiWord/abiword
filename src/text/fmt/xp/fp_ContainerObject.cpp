@@ -269,6 +269,7 @@ void *, const void *))
  */
 void fp_Container::setContainer(fp_Container * pCO)
 {
+        UT_ASSERT(pCO != this);
 	m_pContainer = pCO;
 	if(pCO != NULL)
 	{
@@ -364,6 +365,7 @@ void fp_Container::insertConAt(fp_ContainerObject * pCon, UT_sint32 i)
 		}
 	}
 #endif
+        UT_ASSERT(pCon != this);
 	m_vecContainers.insertItemAt(pCon,i);
 	pCon->ref();
 }
@@ -388,6 +390,7 @@ void fp_Container::addCon(fp_ContainerObject * pCon)
 		}
 	}
 #endif
+        UT_ASSERT(pCon != this);
 	m_vecContainers.addItem(pCon);
 	pCon->ref();
 }
@@ -481,7 +484,6 @@ void  fp_Container::deleteNthCon(UT_sint32 i)
 	fp_Container * pCon = static_cast<fp_Container *>(getNthCon(i));
 	if(pCon->getContainer() == this)
 	{
-		UT_ASSERT(0);
 		pCon->setContainer(NULL);
 	}
 	pCon->unref();
