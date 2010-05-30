@@ -1233,7 +1233,7 @@ bool PD_Document::insertSpan(PT_DocPosition dpos,
 	addAuthorAttributeIfBlank(p_AttrProp);
 	if(p_AttrProp)
 	{
-		m_pPieceTable->insertFmtMark(PTC_AddFmt, dpos, p_AttrProp);
+		m_pPieceTable->insertFmtMark(PTC_SetExactly, dpos, p_AttrProp);
 	}
 #if DEBUG
 #if 1

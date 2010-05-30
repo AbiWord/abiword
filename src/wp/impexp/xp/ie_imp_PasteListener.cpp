@@ -95,7 +95,7 @@ bool  IE_Imp_PasteListener::populate(PL_StruxFmtHandle /* sfh */,
 
 	case PX_ChangeRecord::PXT_InsertFmtMark:
 	{
-		m_pPasteDocument->changeSpanFmt(PTC_AddFmt,m_insPoint,m_insPoint,atts,props);
+		m_pPasteDocument->changeSpanFmt(PTC_SetExactly,m_insPoint,m_insPoint,atts,props);
 		return true;
 	}
 	default:
