@@ -24,7 +24,7 @@ AC_ARG_ENABLE([collab-backend-telepathy],
 ], [
 	enable_collab_backend_telepathy="no"
 ])
-test "$enable_collab_backend_telepathy" == "yes" && collab_pkgs="$collab_pkgs $collab_telepathy_req"
+test "$enable_collab_backend_telepathy" = "yes" && collab_pkgs="$collab_pkgs $collab_telepathy_req"
 AC_MSG_CHECKING([for collab telepathy backend])
 AC_MSG_RESULT([$enable_collab_backend_telepathy])
 
@@ -39,7 +39,7 @@ AC_ARG_ENABLE([collab-backend-xmpp],
 		enable_collab_backend_xmpp="yes"
 	])
 ])
-test "$enable_collab_backend_xmpp" == "yes" && collab_pkgs="$collab_pkgs $collab_xmpp_req"
+test "$enable_collab_backend_xmpp" = "yes" && collab_pkgs="$collab_pkgs $collab_xmpp_req"
 AC_MSG_CHECKING([for collab xmpp backend])
 AC_MSG_RESULT([$enable_collab_backend_xmpp])
 
@@ -74,7 +74,7 @@ AC_ARG_ENABLE([collab-backend-sugar],
 		enable_collab_backend_sugar="yes"
 	])
 ])
-test "$enable_collab_backend_sugar" == "yes" && collab_pkgs="$collab_pkgs $collab_sugar_req"
+test "$enable_collab_backend_sugar" = "yes" && collab_pkgs="$collab_pkgs $collab_sugar_req"
 AC_MSG_CHECKING([for collab sugar backend])
 AC_MSG_RESULT([$enable_collab_backend_sugar])
 
@@ -96,7 +96,7 @@ AC_ARG_ENABLE([collab-backend-service],
 	])
 	AC_LANG_POP
 ])
-test "$enable_collab_backend_service" == "yes" && collab_pkgs="$collab_pkgs $collab_service_req"
+test "$enable_collab_backend_service" = "yes" && collab_pkgs="$collab_pkgs $collab_service_req"
 AC_MSG_CHECKING([for collab service backend])
 AC_MSG_RESULT([$enable_collab_backend_service])
 
@@ -121,69 +121,69 @@ PKG_CHECK_EXISTS([ $collab_pkgs ],
 
 fi
 
-if test "$enable_collab" == "yes" || \
-   test "$collab_deps" == "yes"; then
+if test "$enable_collab" = "yes" || \
+   test "$collab_deps" = "yes"; then
 
-if test "$enable_collab_builtin" == "yes"; then
+if test "$enable_collab_builtin" = "yes"; then
 AC_MSG_ERROR([collab plugin: static linking not supported])
 fi
 
 # HACK, no way to detect, check only if explicitely enabled
-if test "$enable_collab" == "yes"; then
+if test "$enable_collab" = "yes"; then
 # check for various boost libs, needs to be done before
 AX_BOOST_BASE([1.33.1])
 fi
 
 PKG_CHECK_MODULES(COLLAB,[ $collab_pkgs ])
 
-if test "$enable_collab_backend_fake" == "yes"; then
+if test "$enable_collab_backend_fake" = "yes"; then
 	COLLAB_CFLAGS="$COLLAB_CFLAGS -DABICOLLAB_HANDLER_FAKE"
 	COLLAB_RCFLAGS="$COLLAB_RCFLAGS -DABICOLLAB_HANDLER_FAKE"
 fi
-if test "$enable_collab_backend_telepathy" == "yes"; then
+if test "$enable_collab_backend_telepathy" = "yes"; then
 	COLLAB_CFLAGS="$COLLAB_CFLAGS -DABICOLLAB_HANDLER_TELEPATHY"
 	COLLAB_RCFLAGS="$COLLAB_RCFLAGS -DABICOLLAB_HANDLER_TELEPATHY"
 fi
-if test "$enable_collab_backend_xmpp" == "yes"; then
+if test "$enable_collab_backend_xmpp" = "yes"; then
 	COLLAB_CFLAGS="$COLLAB_CFLAGS -DABICOLLAB_HANDLER_XMPP"
 	COLLAB_RCFLAGS="$COLLAB_RCFLAGS -DABICOLLAB_HANDLER_XMPP"
 fi
-if test "$enable_collab_backend_tcp" == "yes"; then
+if test "$enable_collab_backend_tcp" = "yes"; then
 	COLLAB_CFLAGS="$COLLAB_CFLAGS -DABICOLLAB_HANDLER_TCP"
 	COLLAB_RCFLAGS="$COLLAB_RCFLAGS -DABICOLLAB_HANDLER_TCP"
 fi
-if test "$enable_collab_backend_sugar" == "yes"; then
+if test "$enable_collab_backend_sugar" = "yes"; then
 	COLLAB_CFLAGS="$COLLAB_CFLAGS -DABICOLLAB_HANDLER_SUGAR"
 	COLLAB_RCFLAGS="$COLLAB_RCFLAGS -DABICOLLAB_HANDLER_SUGAR"
 fi
-if test "$enable_collab_backend_service" == "yes"; then
+if test "$enable_collab_backend_service" = "yes"; then
 	COLLAB_CFLAGS="$COLLAB_CFLAGS -DABICOLLAB_HANDLER_SERVICE -DSOUP24"
 	COLLAB_RCFLAGS="$COLLAB_RCFLAGS -DABICOLLAB_HANDLER_SERVICE"
 fi
-if test "$enable_collab_record_always" == "yes"; then
+if test "$enable_collab_record_always" = "yes"; then
 	COLLAB_CFLAGS="$COLLAB_CFLAGS -DABICOLLAB_RECORD_ALWAYS"
 	COLLAB_RCFLAGS="$COLLAB_RCFLAGS -DABICOLLAB_RECORD_ALWAYS"
 fi
 
-if test "$enable_collab_backend_tcp" == "yes" || \
-   test "$enable_collab_backend_service" == "yes"; then
+if test "$enable_collab_backend_tcp" = "yes" || \
+   test "$enable_collab_backend_service" = "yes"; then
 	COLLAB_LIBS="$COLLAB_LIBS -lgcrypt -lpthread"
 fi
 
-test "$enable_collab" == "auto" && PLUGINS="$PLUGINS collab"
+test "$enable_collab" = "auto" && PLUGINS="$PLUGINS collab"
 
 COLLAB_CFLAGS="$COLLAB_CFLAGS "'${PLUGIN_CFLAGS}'
 COLLAB_LIBS="$COLLAB_LIBS "'${PLUGIN_LIBS}'
 
 fi # plugin conditional
 
-AM_CONDITIONAL([COLLAB_BACKEND_FAKE], [test "$enable_collab_backend_fake" == "yes"])
-AM_CONDITIONAL([COLLAB_BACKEND_TELEPATHY], [test "$enable_collab_backend_telepathy" == "yes"])
-AM_CONDITIONAL([COLLAB_BACKEND_XMPP], [test "$enable_collab_backend_xmpp" == "yes"])
-AM_CONDITIONAL([COLLAB_BACKEND_TCP], [test "$enable_collab_backend_tcp" == "yes"])
-AM_CONDITIONAL([COLLAB_BACKEND_SUGAR], [test "$enable_collab_backend_sugar" == "yes"])
-AM_CONDITIONAL([COLLAB_BACKEND_SERVICE], [test "$enable_collab_backend_service" == "yes"])
-AM_CONDITIONAL([COLLAB_RECORD_ALWAYS], [test "$enable_collab_record_always" == "yes"])
+AM_CONDITIONAL([COLLAB_BACKEND_FAKE], [test "$enable_collab_backend_fake" = "yes"])
+AM_CONDITIONAL([COLLAB_BACKEND_TELEPATHY], [test "$enable_collab_backend_telepathy" = "yes"])
+AM_CONDITIONAL([COLLAB_BACKEND_XMPP], [test "$enable_collab_backend_xmpp" = "yes"])
+AM_CONDITIONAL([COLLAB_BACKEND_TCP], [test "$enable_collab_backend_tcp" = "yes"])
+AM_CONDITIONAL([COLLAB_BACKEND_SUGAR], [test "$enable_collab_backend_sugar" = "yes"])
+AM_CONDITIONAL([COLLAB_BACKEND_SERVICE], [test "$enable_collab_backend_service" = "yes"])
+AM_CONDITIONAL([COLLAB_RECORD_ALWAYS], [test "$enable_collab_record_always" = "yes"])
 
 AC_SUBST([COLLAB_CFLAGS])
 AC_SUBST([COLLAB_RCFLAGS])

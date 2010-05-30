@@ -13,15 +13,15 @@ PKG_CHECK_EXISTS([ $wordperfect_pkgs ],
 [
 	wordperfect_deps="yes"
 ], [
-	test "$enable_wordperfect" == "auto" && AC_MSG_WARN([wordperfect plugin: dependencies not satisfied - $wordperfect_pkgs])
+	test "$enable_wordperfect" = "auto" && AC_MSG_WARN([wordperfect plugin: dependencies not satisfied - $wordperfect_pkgs])
 ])
 
 fi
 
-if test "$enable_wordperfect" == "yes" || \
-   test "$wordperfect_deps" == "yes"; then
+if test "$enable_wordperfect" = "yes" || \
+   test "$wordperfect_deps" = "yes"; then
 
-if test "$enable_wordperfect_builtin" == "yes"; then
+if test "$enable_wordperfect_builtin" = "yes"; then
 AC_MSG_ERROR([wordperfect plugin: static linking not supported])
 fi
 
@@ -35,7 +35,7 @@ PKG_CHECK_EXISTS([ $wordperfect_wps_pkgs ],
 
 PKG_CHECK_MODULES(WORDPERFECT,[ $wp_deps_pkgs ])
 
-test "$enable_wordperfect" == "auto" && PLUGINS="$PLUGINS wordperfect"
+test "$enable_wordperfect" = "auto" && PLUGINS="$PLUGINS wordperfect"
 
 WORDPERFECT_CFLAGS="$WORDPERFECT_CFLAGS "'${PLUGIN_CFLAGS}'"$WPS_DEFINE"
 WORDPERFECT_LIBS="$WORDPERFECT_LIBS "'${PLUGIN_LIBS}'

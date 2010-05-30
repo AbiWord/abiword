@@ -32,7 +32,7 @@ GTK_VERSION_REQ=2.12.0
 # This check MUST be done early.
 #
 # We define EMBEDDED_TARGET to a numerical value so that we can do like
-# #if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+# #if EMBEDDED_TARGET = EMBEDDED_TARGET_HILDON
 #
 # The following have to be defined unconditionally, because we want 
 # EMBEDDED_TARGET to be undefined if not building for embedded so that we 
@@ -166,14 +166,14 @@ win_funcs=
 xp_funcs='localeconv strcspn strncasecmp strtoul' # "sqrt" test fails, hmm
 funcs=
 
-if test "$PLATFORM" == "cocoa"; then
+if test "$PLATFORM" = "cocoa"; then
 	funcs="$cocoa_funcs $xp_funcs"
-elif test "$PLATFORM" == "unix"; then
+elif test "$PLATFORM" = "unix"; then
 	AC_CHECK_HEADERS([sys/time.h], [], [$header_err])
 	AC_FUNC_STRTOD
 	AC_TYPE_UINT32_T
 	funcs="$unix_funcs $xp_funcs"
-elif test "$PLATFORM" == "win"; then
+elif test "$PLATFORM" = "win"; then
 	funcs="$win_funcs $xp_funcs"
 fi
 
@@ -189,7 +189,7 @@ AC_CHECK_FUNCS([ $funcs ],
 AC_ARG_ENABLE([default-plugins], 
 	[AS_HELP_STRING([--disable-default-plugins], [do not build any plugins by default])], 
 [
-	if test "$enableval" == "no"; then
+	if test "$enableval" = "no"; then
 		abi_cv_disable_default_plugins="yes"
 	fi
 ])
@@ -197,11 +197,11 @@ AC_ARG_ENABLE([default-plugins],
 AC_ARG_ENABLE([plugins], 
 	[AS_HELP_STRING([--enable-plugins], [="foo bar baz", list of plugins to build. Use --disable-plugins to disable plugin loading support, resulting in a smaller binary size.])], 
 [
-	if test "$enableval" == "no"; then
+	if test "$enableval" = "no"; then
 		abi_cv_disable_exports="yes"
 		abi_cv_disable_default_plugins="yes"
 		abi_cv_plugins=""
-	elif test "$enableval" == "yes"; then
+	elif test "$enableval" = "yes"; then
 		# auto-detect which plugins can be built
 		abi_cv_plugins="auto"
 	else
@@ -213,9 +213,9 @@ AC_ARG_ENABLE([plugins],
 AC_ARG_ENABLE([builtin-plugins], 
 	[AS_HELP_STRING([--enable-builtin-plugins], [="foo bar baz", list of plugins to link statically])], 
 [
-	if test "$enableval" == "no"; then
+	if test "$enableval" = "no"; then
 		abi_cv_builtin_plugins=""
-	elif test "$enableval" == "yes"; then
+	elif test "$enableval" = "yes"; then
 		# just build default plugins
 		abi_cv_builtin_plugins=""
 	else
@@ -240,8 +240,8 @@ AC_ARG_ENABLE([print],
 	abi_cv_print="yes"
 ])
 
-if test "$abi_cv_print" == "yes" &&
-   test "$TOOLKIT" == "gtk"; then
+if test "$abi_cv_print" = "yes" &&
+   test "$TOOLKIT" = "gtk"; then
 	opt_pkgs="$opt_pkgs"
 fi
 
@@ -251,7 +251,7 @@ AC_ARG_ENABLE([spell],
 	abi_cv_spell="$enableval"
 ],[
 	# autodetect
-	if test "$TOOLKIT" == "gtk"; then
+	if test "$TOOLKIT" = "gtk"; then
 		PKG_CHECK_EXISTS([ $enchant_req ],
 		[
 			abi_cv_spell="yes"
@@ -263,7 +263,7 @@ AC_ARG_ENABLE([spell],
 	fi
 ])
 
-if test "$abi_cv_spell" == "yes"; then
+if test "$abi_cv_spell" = "yes"; then
 	opt_pkgs="$opt_pkgs $enchant_req"
 fi
 
@@ -311,7 +311,7 @@ AC_ARG_ENABLE([templates],
 #
 # deferred from the "enable-embedded"
 #
-if test "$abi_cv_embedded_platform" == "hildon"; then
+if test "$abi_cv_embedded_platform" = "hildon"; then
 	opt_pkgs="$opt_pkgs $hildon_pkgs"
 fi
 
@@ -319,7 +319,7 @@ fi
 AC_ARG_ENABLE([debug], 
 	[AS_HELP_STRING([--enable-debug], [Enable debugging functionality, verbose terminal output])], 
 [
-	if test "$enableval" == "yes"; then
+	if test "$enableval" = "yes"; then
 		abi_cv_debug="yes"
 	fi
 ], [
@@ -336,7 +336,7 @@ AC_ARG_WITH([gnomevfs],
 	abi_cv_gnomevfs="$withval"
 ],[
 	# use gnomevfs if detected
-	if test "$TOOLKIT" == "gtk"; then
+	if test "$TOOLKIT" = "gtk"; then
 		PKG_CHECK_EXISTS([ $gnomevfs_req ],
 		[
 			abi_cv_gnomevfs="yes"
@@ -348,7 +348,7 @@ AC_ARG_WITH([gnomevfs],
 	fi
 ])
 
-if test "$abi_cv_gnomevfs" == "yes"; then
+if test "$abi_cv_gnomevfs" = "yes"; then
 	opt_pkgs="$opt_pkgs $gnomevfs_req"
 fi
 
@@ -366,7 +366,7 @@ AC_ARG_WITH([gio],
 	])
 ])
 
-if test "$abi_cv_gio" == "yes"; then
+if test "$abi_cv_gio" = "yes"; then
 	opt_pkgs="$opt_pkgs $gio_req"
 fi
 
@@ -376,7 +376,7 @@ AC_ARG_WITH([goffice],
 	abi_cv_goffice="$withval"
 ],[
 	# use goffice if detected
-	if test "$TOOLKIT" == "gtk"; then
+	if test "$TOOLKIT" = "gtk"; then
 	PKG_CHECK_EXISTS([ $goffice_req ],
 	[
 		abi_cv_goffice="yes"
@@ -388,8 +388,8 @@ AC_ARG_WITH([goffice],
 
 GOFFICE_BUILTIN_CPPFLAGS=
 GOFFICE_BUILTIN_LIBS=
-if test "$PLATFORM" == "unix" && \
-   test "$abi_cv_goffice" == "yes"; then
+if test "$PLATFORM" = "unix" && \
+   test "$abi_cv_goffice" = "yes"; then
 	opt_pkgs="$opt_pkgs $goffice_req"
 else
 	GOFFICE_BUILTIN_CPPFLAGS='-I${top_srcdir}/goffice-bits'
@@ -421,7 +421,7 @@ AC_ARG_WITH([fink],
 AC_ARG_WITH([abisdk],
 	[AS_HELP_STRING([--with-abisdk], [(Mac OSX only) use the AbiSDK])], 
 [
-	if test "x$withval" == "x"; then
+	if test "x$withval" = "x"; then
 		AC_MSG_ERROR([The AbiSDK path must be specified.])
 	fi
 	if test "x$withval" != "xno"; then
@@ -504,13 +504,13 @@ AC_CHECK_HEADER([zlib.h], [],
 deps_pkgs="$xp_pkgs $opt_pkgs"
 SYSTEM_LIBS=
 SYSTEM_CFLAGS=
-if test "$TOOLKIT" == "win"; then
+if test "$TOOLKIT" = "win"; then
 	deps_pkgs="$deps_pkgs $win_pkgs"
 	# nonstandard dlls go below the blank line
 	SYSTEM_LIBS="-ladvapi32 -lcomctl32 -lcomdlg32 -lgdi32 -lkernel32 -lole32 -loleaut32 -lshell32 -luser32 -luuid -lversion -lwinspool \
 		      $PNG_LIBS -lz -ljpeg"
 	SYSTEM_CFLAGS="-mthreads"
-elif test "$TOOLKIT" == "cocoa"; then
+elif test "$TOOLKIT" = "cocoa"; then
 	deps_pkgs="$deps_pkgs $cocoa_pkgs"
 	SYSTEM_LIBS="-framework Cocoa"
 	AC_CHECK_PROG([CONVERT], [convert], convert, AC_MSG_ERROR(Cannot find ImageMagick convert))
@@ -520,28 +520,28 @@ fi
 
 PKG_CHECK_MODULES(DEPS,[$deps_pkgs])
 dnl specific gtk214 test.
-if test "$TOOLKIT" == "gtk"; then
+if test "$TOOLKIT" = "gtk"; then
 	PKG_CHECK_MODULES(GTK214, gtk+-2.0 > 2.14, [abi_cv_gtk214=yes], 
                  [abi_cv_gtk214=no])
-	if test "$abi_cv_gtk214" == "yes" ; then
+	if test "$abi_cv_gtk214" = "yes" ; then
 		AC_DEFINE([HAVE_GTK214], [1], [GTK is at least 2.14])
 	fi
 fi
 
 dnl make that for all.
-if test "$TOOLKIT" == "gtk" -o "$TOOLKIT" == "cocoa"; then
+if test "$TOOLKIT" = "gtk" -o "$TOOLKIT" = "cocoa"; then
 	dnl move away
 	AC_DEFINE([WITH_CAIRO], [1], [Using Cairo])
 	WITH_CAIRO=1
 fi
-AM_CONDITIONAL([WITH_CAIRO], test "$WITH_CAIRO" == "1")
+AM_CONDITIONAL([WITH_CAIRO], test "$WITH_CAIRO" = "1")
 
 
 AC_SUBST([DEPS_CFLAGS])
-if test "$abi_cv_gio" == "yes"; then
+if test "$abi_cv_gio" = "yes"; then
 	PKG_CHECK_MODULES(GSFGI, [$gsf_gio_req], [abi_cv_gsf_gio=yes], 
                  [abi_cv_gsf_gio=no])
-	if test "$abi_cv_gsf_gio" == "yes" ; then
+	if test "$abi_cv_gsf_gio" = "yes" ; then
 		AC_DEFINE([HAVE_GSF_GIO], [1], [GSF has GIO support])
 	fi
 else
@@ -628,7 +628,7 @@ ABIWORD_SERIES="abi_series"
 AC_DEFINE_UNQUOTED([ABIWORD_SERIES], [ "$ABIWORD_SERIES" ], [major.minor])
 AC_SUBST(ABIWORD_SERIES)
 AC_SUBST(ABIWORD_HEADERSDIR, "${includedir}/${PACKAGE_NAME}-${ABIWORD_SERIES}")
-if test "$TOOLKIT" == "cocoa"; then
+if test "$TOOLKIT" = "cocoa"; then
 AC_SUBST(ABIWORD_CONTENTSDIR, "/AbiWord.app/Contents")
 AC_SUBST(ABIWORD_DATADIR,    "${ABIWORD_CONTENTSDIR}/Resources")
 AC_SUBST(ABIWORD_UIDIR,      "${ABIWORD_CONTENTSDIR}/Resources")
@@ -775,7 +775,7 @@ for p in $(echo $ALL_PLUGINS_); do ALL_PLUGINS="$ALL_PLUGINS $p"; done
 AC_SUBST([ALL_PLUGINS])
 
 PLUGINS=
-if test "$abi_cv_plugins" == "auto"; then
+if test "$abi_cv_plugins" = "auto"; then
 
 	# which plugins to auto-enable
 	# this creates variables like "enable_wordperfect=auto"

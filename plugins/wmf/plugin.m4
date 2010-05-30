@@ -15,8 +15,8 @@ wmf_deps="no"
 
 if test "$enable_wmf" != ""; then
 
-	if test "$libwmfconfig" == ""; then
-		if test "$enable_wmf" == "yes"; then
+	if test "$libwmfconfig" = ""; then
+		if test "$enable_wmf" = "yes"; then
 		  AC_MSG_ERROR([wmf plugin: program libwmf-config not found in path])
 		else
 		  AC_MSG_WARN([wmf plugin: program libwmf-config not found in path])
@@ -42,15 +42,15 @@ if test "$enable_wmf" != ""; then
 	fi
 fi
 
-if test "$enable_wmf" == "yes" || \
-   test "$wmf_deps" == "yes"; then
+if test "$enable_wmf" = "yes" || \
+   test "$wmf_deps" = "yes"; then
 
-if test "$enable_wmf_builtin" == "yes"; then
+if test "$enable_wmf_builtin" = "yes"; then
 AC_MSG_ERROR([wmf plugin: static linking not supported])
 fi
 
 AC_MSG_CHECKING([for libwmf >= ${libwmf_major_req}.${libwmf_minor_req}.${libwmf_micro_req}])
-if test "$wmf_deps" == "yes"; then
+if test "$wmf_deps" = "yes"; then
 	AC_MSG_RESULT([version ${libwmf_major_found}.${libwmf_minor_found}.${libwmf_micro_found} (ok)])
 	WMF_CFLAGS=`$libwmfconfig --cflags`
 	WMF_LIBS=`$libwmfconfig --libs`
@@ -58,7 +58,7 @@ else
 	AC_MSG_ERROR([version ${libwmf_major_found}.${libwmf_minor_found}.${libwmf_micro_found} (too old!)])
 fi
 
-test "$enable_wmf" == "auto" && PLUGINS="$PLUGINS wmf"
+test "$enable_wmf" = "auto" && PLUGINS="$PLUGINS wmf"
 
 WMF_CFLAGS="$WMF_CFLAGS "'${PLUGIN_CFLAGS}'
 WMF_LIBS="$WMF_LIBS "'${PLUGIN_LIBS}'

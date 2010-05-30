@@ -26,21 +26,21 @@ PKG_CHECK_EXISTS([ $mathview_pkgs ],
 [
 	mathview_deps="yes"
 ], [
-	test "$enable_mathview" == "auto" && AC_MSG_WARN([mathview plugin: dependencies not satisfied - $mathview_pkgs])
+	test "$enable_mathview" = "auto" && AC_MSG_WARN([mathview plugin: dependencies not satisfied - $mathview_pkgs])
 ])
 
 fi
 
-if test "$enable_mathview" == "yes" || \
-   test "$mathview_deps" == "yes"; then
+if test "$enable_mathview" = "yes" || \
+   test "$mathview_deps" = "yes"; then
 
-if test "$enable_mathview_builtin" == "yes"; then
+if test "$enable_mathview_builtin" = "yes"; then
 AC_MSG_ERROR([mathview plugin: static linking not supported])
 fi
 
 PKG_CHECK_MODULES(MATHVIEW,[ $mathview_pkgs ])
 
-test "$enable_mathview" == "auto" && PLUGINS="$PLUGINS mathview"
+test "$enable_mathview" = "auto" && PLUGINS="$PLUGINS mathview"
 
 MATHVIEW_CFLAGS="$MATHVIEW_CFLAGS $HASHMAP_CFLAGS "'${PLUGIN_CFLAGS}'
 MATHVIEW_LIBS="$MATHVIEW_LIBS "'${PLUGIN_LIBS}'

@@ -8,17 +8,17 @@ PKG_CHECK_EXISTS([ $ots_pkgs ],
 [
 	ots_deps="yes"
 ], [
-	test "$enable_ots" == "auto" && AC_MSG_WARN([ots plugin: dependencies not satisfied - $ots_pkgs])
+	test "$enable_ots" = "auto" && AC_MSG_WARN([ots plugin: dependencies not satisfied - $ots_pkgs])
 ])
 
 fi
 
-if test "$enable_ots" == "yes" || \
-   test "$ots_deps" == "yes"; then
+if test "$enable_ots" = "yes" || \
+   test "$ots_deps" = "yes"; then
 
-test "$enable_ots" == "auto" && PLUGINS="$PLUGINS ots"
+test "$enable_ots" = "auto" && PLUGINS="$PLUGINS ots"
 
-if test "$enable_ots_builtin" == "yes"; then
+if test "$enable_ots_builtin" = "yes"; then
 AC_MSG_ERROR([ots plugin: static linking not supported])
 fi
 

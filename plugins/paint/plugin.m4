@@ -4,10 +4,10 @@ PAINT_LIBS=
 
 if test "$enable_paint" != ""; then
 
-test "$enable_paint" == "auto" && PLUGINS="$PLUGINS paint"
+test "$enable_paint" = "auto" && PLUGINS="$PLUGINS paint"
 
 # TODO check for libpng
-if test "$TOOLKIT" == "win"; then
+if test "$TOOLKIT" = "win"; then
 	PAINT_LIBS="-lgdi32 $PNG_LIBS"
 	PAINT_CFLAGS="$PAINT_CFLAGS $PNG_CFLAGS"
 fi
@@ -15,7 +15,7 @@ fi
 PAINT_CFLAGS="$PAINT_CFLAGS "'${PLUGIN_CFLAGS}'
 PAINT_LIBS="$PAINT_LIBS "'${PLUGIN_LIBS}'
 
-if test "$enable_paint_builtin" == "yes"; then
+if test "$enable_paint_builtin" = "yes"; then
 	PAINT_CFLAGS="$PAINT_CFLAGS -DABI_PLUGIN_BUILTIN"
 fi
 
