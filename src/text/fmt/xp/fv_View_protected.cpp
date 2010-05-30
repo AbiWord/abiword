@@ -3615,7 +3615,7 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 	getEditableBounds(false,posBOD);
 	getEditableBounds(true,posEOD);
 	if(dNewPoint < posBOD || dNewPoint > posEOD || dOldPoint < posBOD
-	   || dNewPoint > posEOD)
+	   || dOldPoint > posEOD)
 	{
 		return;
 	}
@@ -3656,7 +3656,7 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 	getEditableBounds(false,posBOD);
 	getEditableBounds(true,posEOD);
 	if(dNewPoint < posBOD || dNewPoint > posEOD || dOldPoint < posBOD
-	   || dNewPoint > posEOD)
+	   || dOldPoint > posEOD)
 	{
 		return;
 	}
