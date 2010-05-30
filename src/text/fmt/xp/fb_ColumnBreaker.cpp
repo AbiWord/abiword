@@ -575,6 +575,10 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 				*/
 
 				xxx_UT_DEBUGMSG(("SEVIOR: iWorkingColHeight %d iTotalContainerSpace %d iMaxColHeight %d pCurContainer %x height %d \n",iWorkingColHeight,iTotalContainerSpace,iMaxColHeight,   pCurContainer,  iContainerHeight));
+				if(pOffendingContainer == NULL)
+				{
+				        break;
+				}
 				if(pOffendingContainer->isVBreakable())
 				{
 					xxx_UT_DEBUGMSG(("fb_ColumnBreak 1 Broken Container num %d \n",(static_cast<fp_TableContainer *>(pOffendingContainer))->getBrokenNumber()));
@@ -586,7 +590,7 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 						pPrevWorking = pCurContainer;
 						pCurContainer = pOffendingContainer;
 					}
-					else if(pOffendingContainer->getContainerType() == FP_CONTAINER_TABLE)
+					else if(pOffendingContainer && pOffendingContainer->getContainerType() == FP_CONTAINER_TABLE)
 					{
 //
 // Can't break the table so bump it.
@@ -596,6 +600,10 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 						pLastContainerToKeep = pTabOffend->getPrevContainerInSection();
 						xxx_UT_DEBUGMSG(("Can't break table. pCurContainer %x pTabOffend %x pLastContainerToKeep %x \n",pCurContainer,pTabOffend,pLastContainerToKeep));
 						break;
+					}
+					else if( pOffendingContainer == NULL)
+					{
+					        break;
 					}
 					else
 					{
@@ -1516,6 +1524,10 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 		{
 			pBroke = pTab;
 		}
+		if(pBroke == NULL)
+		{
+			pBroke = pTab;
+		}
 //
 // Look to see if we have to move the table out of this container.
 //
@@ -1534,10 +1546,14 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 //
 			fp_TableContainer * pNewTab = static_cast<fp_TableContainer *>(pBroke->VBreakAt(iBreakAt));
 			pOffendingContainer = static_cast<fp_Container *>(pNewTab);
+			pLastContainerToKeep = static_cast<fp_Container *>(pTab);
+                        if(pNewTab == NULL)
+			{
+			  return false;
+			}
 		        xxx_UT_DEBUGMSG(("SEVIOR: Created broken table %p height %d \n",pOffendingContainer,pOffendingContainer->getHeight()));
 			UT_ASSERT(pBroke->getHeight() > 0);
 			UT_ASSERT(pNewTab->getHeight() > 0);
-			pLastContainerToKeep = static_cast<fp_Container *>(pTab);
 			xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 1 %x \n",pLastContainerToKeep));
 		}
 		return true;
