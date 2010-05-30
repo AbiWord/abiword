@@ -90,6 +90,8 @@ private:
 
     UT_sint16 m_row;
     UT_sint16 m_col;
+
+    UT_sint32 m_rowsLeftToRepeat;
     
     UT_UTF8String m_columnWidths;
     UT_UTF8String m_rowHeights;
@@ -98,7 +100,6 @@ private:
     bool m_gotAllColumnWidths;
     
     UT_UTF8String m_waitingEndElement;
-    UT_sint32 m_RowsRepeated;
 };
 
 #endif //_ODI_TABLE_LISTENERSTATE_H_

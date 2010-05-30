@@ -45,8 +45,10 @@ ODi_Table_ListenerState::ODi_Table_ListenerState (PD_Document* pDocument,
                                  m_elementLevel(0),
                                  m_pAbiDocument(pDocument),
                                  m_pStyles(pStyles),
-                                 m_gotAllColumnWidths(true),
-				 m_RowsRepeated(1)
+                                 m_row(0),
+                                 m_col(0),
+                                 m_rowsLeftToRepeat(0),
+                                 m_gotAllColumnWidths(true)
 {
     if (m_rElementStack.hasElement("office:document-content")) {
         m_onContentStream = true;
@@ -266,15 +268,19 @@ void ODi_Table_ListenerState::_parseTableStart(const gchar** ppAtts,
  * Used to parse a <table:table-row start element.
  */
 void ODi_Table_ListenerState::_parseRowStart (const gchar** ppAtts,
-                                                 ODi_ListenerStateAction& /*rAction*/)
+                                                 ODi_ListenerStateAction& rAction)
 {
     if (m_onFirstPass) 
     {
-        const gchar* pStyleName;
+        const gchar* pStyleName = UT_getAttribute("table:style-name", ppAtts);
 	const ODi_Style_Style* pStyle;
-	const gchar* pNumberRowsRepeated = NULL;           
-	pStyleName = UT_getAttribute("table:style-name", ppAtts);
-        UT_sint32 nRowsRepeated = 1;
+        
+        const gchar* pNumberRowsRepeated = UT_getAttribute("table:number-rows-repeated", ppAtts);           
+        UT_sint32 nRowsRepeated = !pNumberRowsRepeated ? 1 : atoi(pNumberRowsRepeated);
+        UT_ASSERT_HARMLESS(nRowsRepeated > 0);
+
+        UT_UTF8String rowHeight = "";
+
 	if (pStyleName != NULL) 
 	{
 	    pStyle = m_pStyles->getTableRowStyle(pStyleName,
@@ -283,39 +289,38 @@ void ODi_Table_ListenerState::_parseRowStart (const gchar** ppAtts,
 
 	    if (pStyle)
 	    {
-	        pNumberRowsRepeated =  UT_getAttribute("table:number-columns-repeated", ppAtts); 
 	        if (!pStyle->getRowHeight()->empty()) 
 		{
-		    m_rowHeights += *(pStyle->getRowHeight());
+                    rowHeight = *(pStyle->getRowHeight());
 		} 
 		else if (!pStyle->getMinRowHeight()->empty()) 
 		{
-		    m_rowHeights += *(pStyle->getMinRowHeight());
-		}
-		else if (pNumberRowsRepeated != NULL) 
-		{
-                    nRowsRepeated = atoi(pNumberRowsRepeated);
-                    UT_ASSERT(nRowsRepeated > 0);
+                    rowHeight = *(pStyle->getMinRowHeight());
 		}
 	    }
 	}
-	m_RowsRepeated = nRowsRepeated;
-	//
-	// TODO implement nRowsRepeated!!
-	// This is a substantial project as it will require recording
-	// both cell structure and the content of each cell in the
-	// row and writing each out the whole row for the repeat number
-	// of times.
-	//            
+
 	// AbiWord supports unspecified row heights mixed among specified ones.
             // e.g.: "table-row-heights:2.37cm//3.62cm/"
-            // So, we aways write the "/" regardless of having a defined height.
-	m_rowHeights += "/";
+        for (UT_sint32 i = 0; i < nRowsRepeated; i++) {
+            m_rowHeights += rowHeight + "/";
+        }
     } 
     else
     {
+        if (m_rowsLeftToRepeat == 0) {
+            const gchar* pNumberRowsRepeated = UT_getAttribute("table:number-rows-repeated", ppAtts);           
+            m_rowsLeftToRepeat = !pNumberRowsRepeated ? 1 : atoi(pNumberRowsRepeated);
+            UT_ASSERT_HARMLESS(m_rowsLeftToRepeat > 0);
+        }
+
         m_row++;
 	m_col = 0;
+        m_rowsLeftToRepeat--;
+        if (m_rowsLeftToRepeat > 0) {
+            // We want another pass over this table:table-row element
+            rAction.repeatElement();
+        }
     }
 }
 
