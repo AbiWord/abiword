@@ -85,6 +85,7 @@ int read_wri_struct (struct wri_struct *cfg, GsfInput *f) {
 }
 
 void dump_wri_struct (struct wri_struct *cfg) {
+#if 0
     int i = 0;
 
     while (cfg[i].name) {
@@ -101,12 +102,18 @@ void dump_wri_struct (struct wri_struct *cfg) {
 	}
 	i++;
     }
+#else
+	(void) cfg;
+#endif
 }
 
 void free_wri_struct (struct wri_struct *cfg) {
     int i = 0;
     while (cfg[i].name) {
-	if (cfg[i].data) free (cfg[i].data);
+	if (cfg[i].data) {
+		free (cfg[i].data);
+		cfg[i].data = NULL;
+	}
 	i++;
     }
 }

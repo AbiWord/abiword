@@ -30,6 +30,7 @@
 
 #include "ie_imp.h"
 #include "ie_impexp_MSWrite.h"
+#include "ut_mbtowc.h"
 
 class PD_Document;
 
@@ -76,16 +77,18 @@ public:
 protected:
 	virtual UT_Error    _loadFile(GsfInput * input);
 	UT_Error			_parseFile();
-	UT_Error			_writeHeader();
 	
 private:
 	void free_ffntb ();
 	int read_ffntb ();
 	void translate_char (char ch, UT_UCS4String & buf);
+	int read_sep();
 	int read_pap ();
 	int read_char (int fcFirst2, int fcLim2);
+#if 0
 	int wri_pict_read (unsigned char *data, int size);
 	int wri_pict_print_data ();
+#endif
 	
 	GsfInput* mFile;
 	
@@ -99,6 +102,8 @@ private:
 	
 	UT_UCS4String mCharBuf;    // buffer for char runs.
 	UT_ByteBuf mTextBuf;       // complete text buffer as extracted out of the file.
+	UT_UCS4_mbtowc charconv;   // CP1252 to unicode conversion.
+	bool lf;
 };
 
 #endif /* IE_IMP_MSWRITE_H */
