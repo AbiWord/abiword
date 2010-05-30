@@ -510,15 +510,12 @@ pf_Fragments::erase(Iterator it)
 
 	--m_nSize;
 	m_nDocumentSize -= pNode->item->getLength();
-	pNode->item->zero();
-	fixSize(it);
+	
+       	Node* y = (pNode->left == m_pLeaf || pNode->right == m_pLeaf) ?
+       		pNode :
+		_prev(pNode);
 
-	Node* y;
-	if (pNode->left == m_pLeaf || pNode->right == m_pLeaf)
-		y = pNode;
-	else
-		y = _next(pNode);
-	UT_ASSERT(y->left == m_pLeaf || y->right == m_pLeaf);
+      	UT_ASSERT(y->left == m_pLeaf || y->right == m_pLeaf);
 
 	Node* son = y->left != m_pLeaf ? y->left : y->right;
 	UT_ASSERT(son);

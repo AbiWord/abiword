@@ -299,21 +299,26 @@ bool XAP_UnixClipboard::_getDataFromServer(T_AllowGet tFrom, const char** format
 	
 	int len = atoms.size () ;
 	
-	for(int i = 0; i < len && !rval; i++)
+	//	for(int i = 0; i < len && !rval; i++)
+	for(int i = 0; i < len; i++)
     {
 		GdkAtom atom = atoms.getNthItem(i);
 		GtkSelectionData * selection = gtk_clipboard_wait_for_contents (clipboard, atom);
-		
+		UT_DEBUGMSG(("Looking for %s on clipbaord \n",formatList[i]));
 		if(selection)
 		{
 			if (selection->data && (selection->length > 0))
 			{
+			  if(!rval)
+			    {
 				m_databuf.truncate(0);
 				m_databuf.append(static_cast<UT_Byte *>(selection->data), static_cast<UT_uint32>(selection->length));
 				*pLen = selection->length;
 				*ppData = (void *)(m_databuf.getPointer(0));
 				*pszFormatFound = formatList[i];
 				rval = true;
+			    }
+			  UT_DEBUGMSG(("Found format %s on clipbaord \n",formatList[i]));
 			}
 			gtk_selection_data_free(selection);
 		}

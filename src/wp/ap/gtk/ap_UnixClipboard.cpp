@@ -40,6 +40,8 @@
 #define AP_CLIPBOARD_TXT_HTML                   "text/html"
 #define AP_CLIPBOARD_APPLICATION_XHTML          "application/xhtml+xml"
 
+#define AP_CLIPBOARD_APPLICATION_ODF            "application/vnd.oasis.opendocument.text"
+
 // Images: cut and paste
 #define AP_CLIPBOARD_IMAGE_PNG                  "image/png"
 
@@ -70,6 +72,7 @@
 static const char * rtfszFormatsAccepted[] = {
   AP_CLIPBOARD_TXT_RTF,
   AP_CLIPBOARD_APPLICATION_RTF,
+  AP_CLIPBOARD_APPLICATION_ODF,
   0 } ;
 
 static const char * htmlszFormatsAccepted[] = {
@@ -136,6 +139,10 @@ AP_UnixClipboard::AP_UnixClipboard(AP_UnixApp * pApp)
   AddFmt ( AP_CLIPBOARD_TXT_HTML ) ; // actually XHTML, but who's counting?
   AddFmt ( AP_CLIPBOARD_APPLICATION_XHTML ) ;
   vec_DynamicFormatsAccepted.insert(vec_DynamicFormatsAccepted.begin(), NULL);
+
+  // ODF format. This is provided by a plugin
+
+  addFormat(AP_CLIPBOARD_APPLICATION_ODF);
 }
 
 bool AP_UnixClipboard::addTextData(T_AllowGet tTo, const void* pData, UT_sint32 iNumBytes)

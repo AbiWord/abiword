@@ -52,6 +52,10 @@ public:
 
     IE_Imp_OpenDocument (PD_Document * pDocument);
     virtual ~IE_Imp_OpenDocument ();
+   virtual bool   pasteFromBuffer(PD_DocumentRange * pDocRange,
+				const unsigned char * pData, 
+				UT_uint32 lenData, 
+				const char * szEncoding = 0);
 
  protected:
     virtual UT_Error _loadFile(GsfInput * input);

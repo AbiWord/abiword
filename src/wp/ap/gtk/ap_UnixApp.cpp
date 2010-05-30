@@ -325,7 +325,6 @@ bool AP_UnixApp::initialize(bool has_display)
 	if (has_display) {	   
 		m_pClipboard = new AP_UnixClipboard(this);
 		UT_ASSERT(m_pClipboard);
-		m_pClipboard->initialize();
 
 		abi_stock_init ();
     }
@@ -380,6 +379,11 @@ bool AP_UnixApp::initialize(bool has_display)
 	bool bFound = getPrefsValueBool(XAP_PREF_KEY_AutoLoadPlugins,&bLoadPlugins);
 	if(bLoadPlugins || !bFound)
 		loadAllPlugins();
+	//
+	// Now all the plugins are loaded we can initialize the clipboard
+	//
+	if(m_pClipboard)
+		m_pClipboard->initialize();
 
     return true;
 }
@@ -627,7 +631,10 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 		UT_DEBUGMSG(("PasteFromClipboard: did not find anything to paste.\n"));
 		return;
     }
-
+    if (AP_UnixClipboard::isDynamicTag (szFormatFound))
+	{
+		UT_DEBUGMSG(("Dynamic Format Found = %s \n",szFormatFound));
+	}
     if (AP_UnixClipboard::isRichTextTag(szFormatFound))
     {
 		IE_Imp_RTF * pImpRTF = new IE_Imp_RTF(pDocRange->m_pDoc);

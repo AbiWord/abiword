@@ -36,21 +36,24 @@
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_Password.h"
 #include "ap_Dialog_Id.h"
+#include "ie_imp_PasteListener.h"
 
 // External includes
 #include <glib-object.h>
 #include <gsf/gsf-input-stdio.h>
 #include <gsf/gsf-infile.h>
 #include <gsf/gsf-infile-zip.h>
-
+#include <gsf/gsf-input-memory.h>
 
 /**
  * Constructor
  */
 IE_Imp_OpenDocument::IE_Imp_OpenDocument (PD_Document * pDocument)
   : IE_Imp (pDocument),
-  m_pGsfInfile (0),
-  m_sPassword ("")
+    m_pGsfInfile (0),
+    m_sPassword (""),
+    m_pStreamListener(NULL),
+    m_pAbiData(NULL)
 {
 }
 
@@ -68,6 +71,38 @@ IE_Imp_OpenDocument::~IE_Imp_OpenDocument ()
     DELETEP(m_pAbiData);
 } 
 
+bool IE_Imp_OpenDocument::pasteFromBuffer(PD_DocumentRange * pDocRange,
+				    const unsigned char * pData, 
+				    UT_uint32 lenData, 
+				    const char * szEncoding)
+{
+    UT_return_val_if_fail(getDoc() == pDocRange->m_pDoc,false);
+    UT_return_val_if_fail(pDocRange->m_pos1 == pDocRange->m_pos2,false);
+	
+    PD_Document * newDoc = new PD_Document();
+    newDoc->createRawDocument();
+    IE_Imp_OpenDocument * pODImp = new IE_Imp_OpenDocument(newDoc);
+    //
+    // Turn pData into something that can be imported by the open documenb
+    // importer.
+    //
+    GsfInput * pInStream =  gsf_input_memory_new((const guint8 *) pData, 
+						 (gsf_off_t) lenData,
+						 FALSE);
+    pODImp->loadFile(newDoc, pInStream);
+    // pInStream deleted after load.
+    newDoc->finishRawCreation();
+    //
+    // OK Broadcast from the just filled source document into our current
+    // doc via the paste listener
+    //
+    IE_Imp_PasteListener * pPasteListen = new  IE_Imp_PasteListener(getDoc(),pDocRange->m_pos1,newDoc);
+    newDoc->tellListener(static_cast<PL_Listener *>(pPasteListen));
+    delete pPasteListen;
+    delete pODImp;
+    UNREFP( newDoc);
+    return true;
+}
 
 /**
  * Import the given file
