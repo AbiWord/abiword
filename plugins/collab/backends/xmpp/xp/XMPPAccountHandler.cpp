@@ -220,7 +220,8 @@ ConnectResult XMPPAccountHandler::connect()
 	
 	UT_DEBUGMSG(("Connecting to server: |%s|, username: |%s|, resource: |%s|\n",
 	             server.c_str(), username.c_str(), resource.c_str()));
-	m_pConnection = lm_connection_new(server.c_str());
+	// NULL means perform SRV record lookup based on JID (Loudmouth 1.3.2+)
+	m_pConnection = lm_connection_new(NULL);
 	UT_return_val_if_fail(m_pConnection, CONNECT_INTERNAL_ERROR);
 
 	lm_connection_set_jid(m_pConnection, jid.c_str());

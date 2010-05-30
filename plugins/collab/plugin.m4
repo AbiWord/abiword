@@ -1,7 +1,7 @@
 
 collab_req="libgsf-1 >= 1.12 libxml-2.0 >= 2.4.0"
 collab_telepathy_req="libmissioncontrol >= 4.60 telepathy-glib >= 0.7.28 libempathy-gtk >= 2.27"
-collab_xmpp_req="loudmouth-1.0 >= 1.0.1 gtk+-2.0"
+collab_xmpp_req="loudmouth-1.0 >= 1.3.2 gtk+-2.0"
 collab_sugar_req="dbus-glib-1 >= 0.70"
 collab_service_req="libsoup-2.4 gnutls"
 collab_pkgs="$collab_req" 	# accumulate required packages
