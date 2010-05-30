@@ -74,6 +74,9 @@ private:
     void _parseColumnStart(const gchar** ppAtts,
                            ODi_ListenerStateAction& rAction);
 
+    void _parseRowStart(const gchar** ppAtts,
+                           ODi_ListenerStateAction& rAction);
+
     void _parseCellStart(const gchar** ppAtts,
                          ODi_ListenerStateAction& rAction);
     
@@ -95,6 +98,7 @@ private:
     bool m_gotAllColumnWidths;
     
     UT_UTF8String m_waitingEndElement;
+    UT_sint32 m_RowsRepeated;
 };
 
 #endif //_ODI_TABLE_LISTENERSTATE_H_

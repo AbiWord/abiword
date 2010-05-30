@@ -45,7 +45,8 @@ ODi_Table_ListenerState::ODi_Table_ListenerState (PD_Document* pDocument,
                                  m_elementLevel(0),
                                  m_pAbiDocument(pDocument),
                                  m_pStyles(pStyles),
-                                 m_gotAllColumnWidths(true)
+                                 m_gotAllColumnWidths(true),
+				 m_RowsRepeated(1)
 {
     if (m_rElementStack.hasElement("office:document-content")) {
         m_onContentStream = true;
@@ -80,36 +81,9 @@ void ODi_Table_ListenerState::startElement (const gchar* pName,
         _parseColumnStart(ppAtts, rAction);
 
     } else if (!strcmp(pName, "table:table-row")) {
-        
-        if (m_onFirstPass) {
-            const gchar* pStyleName;
-            const ODi_Style_Style* pStyle;
-            
-            pStyleName = UT_getAttribute("table:style-name", ppAtts);
-            
-            if (pStyleName != NULL) {
-                pStyle = m_pStyles->getTableRowStyle(pStyleName,
-                                                     m_onContentStream);
-                UT_ASSERT(pStyle != NULL);
-
-                if (pStyle) {
-                    if (!pStyle->getRowHeight()->empty()) {
-                        m_rowHeights += *(pStyle->getRowHeight());
-                    } else if (!pStyle->getMinRowHeight()->empty()) {
-                        m_rowHeights += *(pStyle->getMinRowHeight());
-                    }
-                }
-            }
-            
-            // AbiWord supports unspecified row heights mixed among specified ones.
-            // e.g.: "table-row-heights:2.37cm//3.62cm/"
-            // So, we aways write the "/" regardless of having a defined height.
-            m_rowHeights += "/";
-        } else {
-            m_row++;
-            m_col = 0;
-        }
-        
+      
+       _parseRowStart(ppAtts, rAction);
+       
     } else if (!strcmp(pName, "table:table-cell")) {
         _parseCellStart (ppAtts, rAction);
     }
@@ -283,6 +257,65 @@ void ODi_Table_ListenerState::_parseTableStart(const gchar** ppAtts,
         } else {
             rAction.pushState("Table");
         }
+    }
+}
+
+
+
+/**
+ * Used to parse a <table:table-row start element.
+ */
+void ODi_Table_ListenerState::_parseRowStart (const gchar** ppAtts,
+                                                 ODi_ListenerStateAction& /*rAction*/)
+{
+    if (m_onFirstPass) 
+    {
+        const gchar* pStyleName;
+	const ODi_Style_Style* pStyle;
+	const gchar* pNumberRowsRepeated = NULL;           
+	pStyleName = UT_getAttribute("table:style-name", ppAtts);
+        UT_sint32 nRowsRepeated = 1;
+	if (pStyleName != NULL) 
+	{
+	    pStyle = m_pStyles->getTableRowStyle(pStyleName,
+						 m_onContentStream);
+	    UT_ASSERT(pStyle != NULL);
+
+	    if (pStyle)
+	    {
+	        pNumberRowsRepeated =  UT_getAttribute("table:number-columns-repeated", ppAtts); 
+	        if (!pStyle->getRowHeight()->empty()) 
+		{
+		    m_rowHeights += *(pStyle->getRowHeight());
+		} 
+		else if (!pStyle->getMinRowHeight()->empty()) 
+		{
+		    m_rowHeights += *(pStyle->getMinRowHeight());
+		}
+		else if (pNumberRowsRepeated != NULL) 
+		{
+                    nRowsRepeated = atoi(pNumberRowsRepeated);
+                    UT_ASSERT(nRowsRepeated > 0);
+		}
+	    }
+	}
+	m_RowsRepeated = nRowsRepeated;
+	//
+	// TODO implement nRowsRepeated!!
+	// This is a substantial project as it will require recording
+	// both cell structure and the content of each cell in the
+	// row and writing each out the whole row for the repeat number
+	// of times.
+	//            
+	// AbiWord supports unspecified row heights mixed among specified ones.
+            // e.g.: "table-row-heights:2.37cm//3.62cm/"
+            // So, we aways write the "/" regardless of having a defined height.
+	m_rowHeights += "/";
+    } 
+    else
+    {
+        m_row++;
+	m_col = 0;
     }
 }
 
