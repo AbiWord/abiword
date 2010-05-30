@@ -4,6 +4,7 @@
  * Copyright (C) 2001 Sean Young <sean@mess.org>
  * Copyright (C) 2001 Hubert Figuiere
  * Copyright (C) 2001 Dom Lachowicz 
+ *               2010 Ingo Brueckl
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,12 +21,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  *
+ * Documentation at http://www.msxnet.org/word2rtf/formats/write
+ *
  * TODO: 
  *  - pictures: clean up / polish off code, add wmf
  *  - OLE: no support yet
  *  - headers/footers (can only be page numbers)
- *  - page size and margins
- *  - convert character sets
  *  - speed it up!
  */
 
@@ -135,9 +136,10 @@ UT_Confidence_t IE_Imp_MSWrite_Sniffer::recognizeContents(const char * szBuf,
     {
         if ( (szBuf[0] == static_cast<char>(0x31) || szBuf[0] == static_cast<char>(0x32)) && 
              szBuf[1] == static_cast<char>(0xbe) &&
+             szBuf[2] == static_cast<char>(0) && szBuf[3] == static_cast<char>(0) &&
              szBuf[4] == static_cast<char>(0) && szBuf[5] == static_cast<char>(0xab) )
         {
-            return(UT_CONFIDENCE_POOR);
+            return(UT_CONFIDENCE_PERFECT);
         }
     }
     return(UT_CONFIDENCE_ZILCH);
@@ -187,16 +189,16 @@ void IE_Imp_MSWrite::free_ffntb ()
 
 int IE_Imp_MSWrite::read_ffntb () 
 {
-    int	page, fcMac, font_count, cbFfn;
+    int	page, pnMac, font_count, cbFfn;
     unsigned char byt[2], ffid;
     char *ffn;
     struct wri_font *wri_fonts_tmp;
 	
-    /* if the page is the same as fcMac, there are no fonts */
+    /* if the page is the same as pnMac, there are no fonts */
     page = wri_struct_value (write_file_header, "pnFfntb");
-    fcMac = wri_struct_value (write_file_header, "fcMac");
-    if (page == fcMac) {
-		wri_fonts_count = 0;
+    pnMac = wri_struct_value (write_file_header, "pnMac");
+    if (page == pnMac) {
+		return 0;
     }
 	
     if (gsf_input_seek (mFile, page++ * 0x80, G_SEEK_SET) ) {
@@ -264,16 +266,93 @@ int IE_Imp_MSWrite::read_ffntb ()
     return 0;
 }
 
-void IE_Imp_MSWrite::translate_char (char ch, UT_UCS4String & buf) {
-    switch (ch) {
-    case 0x0c: /* page break */
-		buf += UCS_LF;
-		break;
+void IE_Imp_MSWrite::translate_char (char ch, UT_UCS4String &buf)
+{
+  UT_UCS4Char wch;
+
+  lf = false;
+
+  switch (ch)
+  {
+    case 9:
+      buf += UCS_TAB;
+      break;
+
+    case 12:
+      buf += UCS_FF;
+      break;
+
+    case 10: /* line feed */
+      lf = true;
+    case 13: /* carriage return */
+    case 31: /* soft hyphen */
+      break;
+
     default:
-		if (ch & 0x80) 
-			ch = 'x';
-		buf += ch;
-    }
+      if (ch & 0x80)
+      {
+        charconv.mbtowc(wch, ch);
+        buf += wch;
+      }
+      else buf += ch;
+  }
+}
+
+/* the section property */
+int IE_Imp_MSWrite::read_sep ()
+{
+  int page, pnSetb, cch;
+  int yaMac, yaTop, dyaText, yaBot, xaMac, xaLeft, dxaText, xaRight;
+  unsigned char sep_page[0x80];
+  UT_String propBuffer;
+
+  page = wri_struct_value(write_file_header, "pnSep");
+  pnSetb = wri_struct_value(write_file_header, "pnSetb");
+
+  /* default values */
+  yaMac = 15840;
+  yaTop = 1440;
+  dyaText = 12960;
+
+  xaMac = 12240;
+  xaLeft = 1800;
+  dxaText = 8640;
+
+  if (page != pnSetb)
+  {
+    gsf_input_seek(mFile, page * 0x80, G_SEEK_SET);
+    gsf_input_read(mFile, 0x80, sep_page);
+    cch = *sep_page;
+
+    if (cch >= 4) yaMac = READ_WORD(sep_page + 3);
+    if (cch >= 6) xaMac = READ_WORD(sep_page + 5);
+    if (cch >= 10) yaTop = READ_WORD(sep_page + 9);
+    if (cch >= 12) dyaText = READ_WORD(sep_page + 11);
+    if (cch >= 14) xaLeft = READ_WORD(sep_page + 13);
+    if (cch >= 16) dxaText = READ_WORD(sep_page + 15);
+  }
+
+  yaBot = yaMac - yaTop - dyaText;
+  xaRight = xaMac - xaLeft - dxaText;
+
+  UT_LocaleTransactor lt(LC_NUMERIC, "C");
+  UT_String_sprintf(propBuffer, "page-margin-right:%.4fin; "
+                                "page-margin-left:%.4fin; "
+                                "page-margin-top:%.4fin; "
+                                "page-margin-bottom:%.4fin",
+                                static_cast<float>(xaRight) / 1440.0,
+                                static_cast<float>(xaLeft) / 1440.0,
+                                static_cast<float>(yaTop) / 1440.0,
+                                static_cast<float>(yaBot) / 1440.0);
+
+  const gchar *propsArray[3];
+  propsArray[0] = PT_PROPS_ATTRIBUTE_NAME;
+  propsArray[1] = propBuffer.c_str();
+  propsArray[2] = NULL;
+
+  appendStrux(PTX_Section, propsArray);
+
+  return 0;
 }
 
 /* the paragraph information */
@@ -284,9 +363,10 @@ int IE_Imp_MSWrite::read_pap ()
     unsigned char pap_page[0x80];
     static const char *text_align[] = { "left", "center", "right", "justify" };
 
-	const gchar* pProps = "props";
     UT_String propBuffer;
     UT_String tempBuffer;
+    UT_String lastProp;
+    lastProp.clear();
 	
     fcMac = wri_struct_value (write_file_header, "fcMac");
     page = wri_struct_value (write_file_header, "pnPara");
@@ -316,8 +396,7 @@ int IE_Imp_MSWrite::read_pap ()
 			tab_count = 0;
 			dxaLeft = dxaRight = dxaLeft1 = 0;
 			
-			if ((bfProp != 0xffff) && (bfProp + 13 < 0x80)) {
-				cch = pap_page[bfProp + 4];
+			if ((bfProp != 0xffff) && (bfProp + (cch = pap_page[bfProp + 4]) < 0x80)) {
 				if (cch >= 2) {
 					jc = pap_page[bfProp + 6]  & 3;
 				}
@@ -400,12 +479,16 @@ int IE_Imp_MSWrite::read_pap ()
 
 				// end of formatting
 
-				const gchar* propsArray[3];
-				propsArray[0] = pProps;
-				propsArray[1] = propBuffer.c_str();
-				propsArray[2] = NULL;
+				if (lf || (strcmp(propBuffer.c_str(), lastProp.c_str()) != 0)) {
+				// only if fod has changed or last char was line feed
+					const gchar* propsArray[3];
+					propsArray[0] = PT_PROPS_ATTRIBUTE_NAME;
+					propsArray[1] = propBuffer.c_str();
+					propsArray[2] = NULL;
 				
-				appendStrux (PTX_Block, propsArray);
+					appendStrux (PTX_Block, propsArray);
+					lastProp = propBuffer;
+				}
 				
 				if (fGraphics) {
 //					wri_pict_read (static_cast<unsigned char*>(wri_text) + fcFirst - 0x80, 
@@ -430,7 +513,6 @@ int IE_Imp_MSWrite::read_char (int fcFirst2, int fcLim2) {
     int fcLim, fcMac;
     unsigned char char_page[0x80];
 
-	const gchar* pProps = "props";
 	UT_String propBuffer;
 	UT_String tempBuffer;
 	
@@ -457,8 +539,7 @@ int IE_Imp_MSWrite::read_char (int fcFirst2, int fcLim2) {
 			hps = 24;
 			bold = italic = underline = hpsPos = 0;
 			
-			if ((bfProp != 0xffff) && (bfProp + 10 < 0x80)) {
-				cch = char_page[bfProp + 4];
+			if ((bfProp != 0xffff) && (bfProp + (cch = char_page[bfProp + 4]) < 0x80)) {
 				
 				if (cch >= 2) 
 					ftc = char_page[bfProp + 6] / 4;
@@ -485,16 +566,19 @@ int IE_Imp_MSWrite::read_char (int fcFirst2, int fcLim2) {
 				UT_LocaleTransactor lt (LC_NUMERIC, "C");
 				
 				UT_String_sprintf (propBuffer, "font-weight:%s", bold ? "bold" : "normal");
+				if (hps != 24) {
+					UT_String_sprintf(tempBuffer, "; font-size:%dpt", hps / 2);
+					propBuffer += tempBuffer;
+                                }
 				if (italic)  {
 					propBuffer += "; font-style:italic";
 				}
 				if (underline) {
-					propBuffer += "; font-decoration:underline";
+					propBuffer += "; text-decoration:underline";
 				}
 				if (hpsPos) {
-					UT_String_sprintf (tempBuffer, "; font-position:%s; font-size:%dpt", 
-							   hpsPos >= 128 ? "superscript" : "subscript",
-							   hps / 2);
+					UT_String_sprintf (tempBuffer, "; text-position:%s",
+							   hpsPos < 128 ? "superscript" : "subscript");
 					propBuffer += tempBuffer;
 				}
 				if (wri_fonts_count) {
@@ -503,7 +587,7 @@ int IE_Imp_MSWrite::read_char (int fcFirst2, int fcLim2) {
 				}
 				
 				while (fcFirst2 >= fcFirst) {
-					if ((fcFirst2 >= fcLim) || (fcFirst2 >= fcLim2) ||
+					if ((fcFirst2 >= fcLim) || (fcFirst2 > fcLim2) ||
 						(fcFirst2 - 0x80 >= static_cast<UT_sint32>(mTextBuf.getLength()))) {
 						break;
 					}
@@ -512,7 +596,7 @@ int IE_Imp_MSWrite::read_char (int fcFirst2, int fcLim2) {
 				}
 				
 				const gchar* propsArray[3];
-				propsArray[0] = pProps;
+				propsArray[0] = PT_PROPS_ATTRIBUTE_NAME;
 				propsArray[1] = propBuffer.c_str();
 				propsArray[2] = NULL;
 				
@@ -550,7 +634,6 @@ UT_Error IE_Imp_MSWrite::_loadFile (GsfInput * input)
     
     UT_Error iestatus;
     
-    X_CleanupIfError(iestatus, _writeHeader());
     X_CleanupIfError(iestatus, _parseFile());
     
     iestatus = UT_OK;
@@ -587,6 +670,7 @@ static const struct wri_struct WRITE_FILE_HEADER[] = {
 };
 
 static const struct wri_struct WRITE_PICTURE[] = {
+#if 0
 	/* value, data, size, type, name */		/* word no. */
 	/* METAFILEPICT structure */
 	{ 0,	NULL, 	2,  CT_VALUE, "mm" },		/* 0 */
@@ -612,34 +696,35 @@ static const struct wri_struct WRITE_PICTURE[] = {
 	{ 0,	NULL,	2,  CT_VALUE, "mx" },		/* 18 */
 	{ 0,	NULL,	2,  CT_VALUE, "my" },		/* 19 */
 	{ 0,    NULL,   0,  CT_IGNORE, NULL }           /* EOF */
+#endif
 };
 
 IE_Imp_MSWrite::~IE_Imp_MSWrite()
 {
   free_wri_struct (write_file_header);
+  free(write_file_header);
+#if 0
   free_wri_struct (write_picture);
+  free(write_picture);
+#endif
 }
 
 
 IE_Imp_MSWrite::IE_Imp_MSWrite(PD_Document * pDocument)
   : IE_Imp(pDocument), mFile(0), wri_fonts_count(0),
-    wri_fonts(0), wri_images(0), wri_images_count(0)
+    wri_fonts(0), wri_images(0), wri_images_count(0),
+    charconv("WINDOWS-1252"), lf(false)
 {
 	write_file_header = static_cast<struct wri_struct*>(malloc (sizeof (WRITE_FILE_HEADER)));
 	memcpy (write_file_header, WRITE_FILE_HEADER, sizeof (WRITE_FILE_HEADER));
+#if 0
 	write_picture = static_cast<struct wri_struct*>(malloc (sizeof (WRITE_PICTURE)));
 	memcpy (write_picture, WRITE_PICTURE, sizeof (WRITE_PICTURE));
+#endif
 }
 
 /*****************************************************************/
 /*****************************************************************/
-
-UT_Error IE_Imp_MSWrite::_writeHeader()
-{
-    X_ReturnNoMemIfError(appendStrux(PTX_Section, NULL));
-    
-    return UT_OK;
-}
 
 UT_Error IE_Imp_MSWrite::_parseFile()
 {
@@ -675,6 +760,8 @@ UT_Error IE_Imp_MSWrite::_parseFile()
     read_ffntb ();
 	mTextBuf.truncate(0);
     mTextBuf.append(thetext, size);
+    free(thetext);
+    read_sep();
     read_pap ();
     free_ffntb ();
 #if 0
@@ -744,15 +831,14 @@ static int base64encode_binary (char *encoded,
 }
 #endif
 
+#if 0
 int IE_Imp_MSWrite::wri_pict_read (unsigned char *data, int size) 
 {
-#if 0
     png_structp png_ptr;
     png_infop info_ptr;
     png_byte **rows;
     int height, width, width_bytes, i;
     struct wri_image *img, **imgs;
-#endif
     int mm;
 	
     if (size < 40) {
@@ -771,7 +857,6 @@ int IE_Imp_MSWrite::wri_pict_read (unsigned char *data, int size)
 	   metafile; xExt and yExt contain the size in inch 
 	   (divide by 1440.)) */
     } else if (mm == 0xe3) { /* this is a picture */
-#if 0
 		if (wri_struct_value (write_picture, "bmPlanes") != 1) {
 			UT_DEBUGMSG(("Only one bitplane supported, please send this "
 						 "write file to sean@mess.org\n"));
@@ -833,7 +918,6 @@ int IE_Imp_MSWrite::wri_pict_read (unsigned char *data, int size)
 		fprintf (fout, "<image dataid=\"image%d\"/>", wri_images_count);
 		wri_images_count++;
 		free (rows);
-#endif
     } else {
 		UT_DEBUGMSG(("OLE object not supported, skipping...\n"));
 		//wri_ole_read (data, size, mFile);
@@ -844,3 +928,4 @@ int IE_Imp_MSWrite::wri_pict_read (unsigned char *data, int size)
 	
     return 0;
 }
+#endif
