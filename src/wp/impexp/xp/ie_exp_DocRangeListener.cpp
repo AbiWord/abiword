@@ -31,6 +31,9 @@
 #include "px_CR_StruxChange.h"
 #include "ie_exp_DocRangeListener.h"
 #include "pd_Style.h"
+#include "ut_string_class.h"
+#include <string.h>
+#include <glib.h>
 
 /*!
  * This nifty little class allows a docrange to be exported into blank
@@ -45,7 +48,8 @@ IE_Exp_DocRangeListener::IE_Exp_DocRangeListener(PD_DocumentRange * pDocRange, P
   m_bFirstSection(false),
   m_bFirstBlock(false),
   m_pSourceDoc(pDocRange->m_pDoc),
-  m_pDocRange(pDocRange)
+  m_pDocRange(pDocRange),
+  m_iLastAP(0)
 {
   //
   // Start by exporting the data items to the document
@@ -79,7 +83,95 @@ IE_Exp_DocRangeListener::IE_Exp_DocRangeListener(PD_DocumentRange * pDocRange, P
 	  getDoc()->appendStyle(atts);
      }
 }
-	
+
+/*!
+ * outAtts must be freed after use.
+ */	
+void  IE_Exp_DocRangeListener::assembleAtts(const char ** inAtts, const char ** inProps, const char **& sAtts)
+{
+  const char * szKey = NULL;
+  const char * szVal = NULL;
+  UT_sint32 i= 0;
+  UT_UTF8String sAllProps;
+  UT_UTF8String sProp;
+  UT_UTF8String sVal;
+  bool bHasProps = false;
+  UT_GenericVector<const char *> vecAtts;
+  while(inAtts && inAtts[i])
+  {
+    szKey = inAtts[i++];
+    szVal = inAtts[i++];
+    xxx_UT_DEBUGMSG((" attribute %d key %s val %s \n",i-2,szKey,szVal));
+    vecAtts.addItem(szKey);
+    vecAtts.addItem(szVal);
+    if(g_strcmp0(szKey,"props") == 0)
+    {
+	bHasProps = true;
+    }
+  }
+  UT_sint32 attsCount = i;
+  UT_sint32 propsCount = 0;
+  if(!bHasProps)
+  {
+    i= 0;
+    while(inProps && inProps[i])
+    {
+        xxx_UT_DEBUGMSG((" Prip %d prop %s val %s \n",i,inProps[i],inProps[i+1]));
+	sProp = inProps[i++];
+	sVal = inProps[i++];
+	UT_UTF8String_setProperty(sAllProps,sProp,sVal);
+    }	
+    propsCount = i;
+  }
+  UT_sint32 iSpace = 0;
+  if(bHasProps || (propsCount == 0))
+  {
+    sAtts = new const char*[attsCount+1];
+    iSpace = attsCount+1;
+  }
+  else if(propsCount > 0)
+  {
+     sAtts = new const char*[attsCount+3];
+     iSpace = attsCount+1;
+  }
+  else if((attsCount == 0) && (propsCount == 0))
+  {
+    sAtts = NULL;
+    return;
+  }
+
+  xxx_UT_DEBUGMSG(("iSpace count %d \n",iSpace));
+  for(i=0; i<vecAtts.getItemCount();i++)
+  {
+    szVal = vecAtts.getNthItem(i);
+    xxx_UT_DEBUGMSG((" attribute %d val %s \n",i,szVal));
+     sAtts[i] = g_strdup(szVal);
+  }
+  if(bHasProps ||(propsCount == 0) )
+  {
+      sAtts[i] = NULL;
+      return;
+  }
+  sAtts[i++] = g_strdup("props");
+  sAtts[i++] = g_strdup(sAllProps.utf8_str());
+  sAtts[i++] = NULL;
+  return;
+}
+ 
+void  IE_Exp_DocRangeListener::freeAtts(const char *** allAtts)
+{
+  const gchar ** sAtts = *allAtts;
+  if(sAtts == NULL)
+    return;
+  UT_sint32 i=0;
+  while(sAtts[i])
+  {
+      delete [] (sAtts[i]);
+      i++;
+  }
+  delete [] sAtts;
+}
+
 bool  IE_Exp_DocRangeListener::populate(PL_StruxFmtHandle /* sfh */,
 					 const PX_ChangeRecord * pcr)
 {
@@ -95,7 +187,7 @@ bool  IE_Exp_DocRangeListener::populate(PL_StruxFmtHandle /* sfh */,
 	}
 	PT_AttrPropIndex indexAP = pcr->getIndexAP();
 	const PP_AttrProp* pAP = NULL;
-	UT_DEBUGMSG(("SEVIOR: Doing Populate Section in PasteListener \n"));
+	xxx_UT_DEBUGMSG(("SEVIOR: Doing Populate in PasteListener indexAP %d \n",indexAP));
 	const char ** atts = NULL;
 	const char ** props = NULL;
 	if (m_pSourceDoc->getAttrProp(indexAP, &pAP) && pAP)
@@ -107,30 +199,44 @@ bool  IE_Exp_DocRangeListener::populate(PL_StruxFmtHandle /* sfh */,
 	{
 		return false;
 	}
-
+	const char ** allAtts= NULL;
+	assembleAtts(atts, props, allAtts);
+	UT_sint32 i = 0;
+	const char * szKey = NULL;
+	const char * szVal = NULL;
+	bool bAppendFmt = (m_iLastAP != indexAP);
+	m_iLastAP = indexAP; 
 	switch (pcr->getType())
 	{
 	case PX_ChangeRecord::PXT_InsertSpan:
 	{
 		const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *>(pcr);
 		UT_uint32 len = pcrs->getLength();
-  
+		xxx_UT_DEBUGMSG(("Insert span index AP %d \n",indexAP));
 		PT_BufIndex bi = pcrs->getBufIndex();
 		const UT_UCSChar* pChars = 	m_pSourceDoc->getPointer(bi);
+		if(bAppendFmt)
+		{
+		    getDoc()->appendFmt(allAtts);
+		}
 		getDoc()->appendSpan(pChars,len);
+		freeAtts(&allAtts);
 		return true;
 	}
 
 	case PX_ChangeRecord::PXT_InsertObject:
 	{
 		const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *>(pcr);
-		getDoc()->appendObject(pcro->getObjectType(),atts);
+		getDoc()->appendObject(pcro->getObjectType(),allAtts);
+		freeAtts(&allAtts);
 		return true;
 	}
 
 	case PX_ChangeRecord::PXT_InsertFmtMark:
 	{
-	        getDoc()->appendFmt(atts);
+		xxx_UT_DEBUGMSG(("Insert FmtMark index AP %d \n",indexAP));
+	        getDoc()->appendFmt(allAtts);
+		freeAtts(&allAtts);
 		return true;
 	}
 	default:
@@ -152,7 +258,7 @@ bool  IE_Exp_DocRangeListener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
 	PT_AttrPropIndex indexAP = pcr->getIndexAP();
 	const PP_AttrProp* pAP = NULL;
-	UT_DEBUGMSG(("SEVIOR: Doing Populate Strux in PasteListener \n"));
+	xxx_UT_DEBUGMSG(("SEVIOR: Doing Populate Strux in PasteListener \n"));
 	const char ** atts = NULL;
 	const char ** props = NULL;
 	if (m_pSourceDoc->getAttrProp(indexAP, &pAP) && pAP)
@@ -164,6 +270,8 @@ bool  IE_Exp_DocRangeListener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	{
 		return false;
 	}
+	const char ** allAtts= NULL;
+	assembleAtts(atts, props, allAtts);
 	if((pcrx->getStruxType()== PTX_Section) && !m_bFirstSection)
 	{
 	    m_bFirstSection = true;
@@ -182,7 +290,8 @@ bool  IE_Exp_DocRangeListener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	     getDoc()->appendStrux(PTX_Block,NULL);
 	     m_bFirstBlock = true;
 	}
-	getDoc()->appendStrux(pcrx->getStruxType(),atts);
+	getDoc()->appendStrux(pcrx->getStruxType(),allAtts);
+	freeAtts(&allAtts);
 	return true;
 }
 
