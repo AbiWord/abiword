@@ -29,6 +29,8 @@
 #include "px_CR_SpanChange.h"
 #include "px_CR_Strux.h"
 #include "px_CR_StruxChange.h"
+#include "ie_exp_DocRangeListener.h"
+#include "pd_Style.h"
 
 /*!
  * This nifty little class allows a docrange to be exported into blank
@@ -39,7 +41,7 @@
  * application to read.
  */
 IE_Exp_DocRangeListener::IE_Exp_DocRangeListener(PD_DocumentRange * pDocRange, PD_Document * pOutDoc) : 
-  m_pOutDocument(pOutDoc)
+  m_pOutDocument(pOutDoc),
   m_bFirstSection(false),
   m_bFirstBlock(false),
   m_pSourceDoc(pDocRange->m_pDoc),
@@ -59,14 +61,14 @@ IE_Exp_DocRangeListener::IE_Exp_DocRangeListener(PD_DocumentRange * pDocRange, P
 	  k++;
      }
   //
-  // Next epxort all the styles
+  // Next export all the styles
   //
-     UT_GenericVector<PD_Style*> * pVecStyles = NULL;
-     m_pSourceDoc->getAllUsedStyles(pVecStyles);
+     UT_GenericVector<PD_Style*> VecStyles;
+     m_pSourceDoc->getAllUsedStyles(&VecStyles);
      UT_sint32 i = 0;
-     for(i=0;i<pVecStyles->getitemCount();i++)
+     for(i=0; i< VecStyles.getItemCount();i++)
      {
-          PD_Style * pStyle = pVecStyle->getNthItem(i);
+          PD_Style * pStyle = VecStyles.getNthItem(i);
           PT_AttrPropIndex iAP = pStyle->getIndexAP();
           const char ** atts = NULL;
           const PP_AttrProp* pAP = NULL;
@@ -115,7 +117,6 @@ bool  IE_Exp_DocRangeListener::populate(PL_StruxFmtHandle /* sfh */,
   
 		PT_BufIndex bi = pcrs->getBufIndex();
 		const UT_UCSChar* pChars = 	m_pSourceDoc->getPointer(bi);
-		PP_AttrProp* pfAP = const_cast<PP_AttrProp *>(pAP);
 		getDoc()->appendSpan(pChars,len);
 		return true;
 	}
@@ -129,7 +130,7 @@ bool  IE_Exp_DocRangeListener::populate(PL_StruxFmtHandle /* sfh */,
 
 	case PX_ChangeRecord::PXT_InsertFmtMark:
 	{
-	        getDoc()->appendFmtt(atts);
+	        getDoc()->appendFmt(atts);
 		return true;
 	}
 	default:

@@ -39,6 +39,7 @@
 #include <signal.h>
 #include <X11/Xlib.h>
 #include <glib.h>
+#include <gsf/gsf-output-memory.h>
 
 #include "ut_debugmsg.h"
 #include "ut_path.h"
@@ -115,6 +116,7 @@
 #include "xap_UnixDialogHelper.h"
 #include "gr_UnixCairoGraphics.h"
 #include "gr_UnixPangoPixmapGraphics.h"
+#include "ie_exp_DocRangeListener.h"
 
 #ifdef GTK_WIN_POS_CENTER_ALWAYS
 #define WIN_POS GTK_WIN_POS_CENTER_ALWAYS
@@ -511,6 +513,7 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboar
     UT_ByteBuf bufHTML4;
     UT_ByteBuf bufXHTML;
     UT_ByteBuf bufTEXT;
+    UT_ByteBuf bufODT;
 
     // create RTF buffer to put on the clipboard
 		
@@ -541,6 +544,29 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboar
 			DELETEP(pExpHtml);
 		}
 
+	// Look to see if the ODT plugin is loaded
+
+	IEFileType ftODT = IE_Exp::fileTypeForMimetype("application/vnd.oasis.opendocument.text");
+	bool bExpODT = false;
+	if(ftODT != IEFT_Unknown)
+	{
+		// ODT plugin is present construct an exporter
+		//
+		IE_Exp * pODT = NULL;
+		IEFileType genIEFT = IEFT_Unknown;
+		GsfOutput * outBuf =  gsf_output_memory_new();
+		UT_Error err = IE_Exp::constructExporter(pDocRange->m_pDoc,outBuf,
+												 ftODT,&pODT,& genIEFT);
+		if(pODT && (genIEFT == ftODT))
+		{
+			//												 
+			// Copy to the buffer
+			//
+			err = pODT->copyToBuffer(pDocRange, &bufODT);
+			bExpODT = (err == UT_OK);
+		}
+	}
+
     // create UTF-8 text buffer to put on the clipboard
 		
     IE_Exp_Text * pExpText = new IE_Exp_Text(pDocRange->m_pDoc, "UTF-8");
@@ -568,6 +594,8 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboar
 		m_pClipboard->addHtmlData (target, bufXHTML.getPointer (0), bufXHTML.getLength (), true);
 	if (bufHTML4.getLength () > 0)
 		m_pClipboard->addHtmlData (target, bufHTML4.getPointer (0), bufHTML4.getLength (), false);
+	if (bExpODT && bufODT.getLength () > 0)
+		m_pClipboard->addODTData (target, bufODT.getPointer (0), bufODT.getLength ());
 	if (bufTEXT.getLength () > 0)
 		m_pClipboard->addTextData (target, bufTEXT.getPointer (0), bufTEXT.getLength ());
 

@@ -42,13 +42,24 @@
 #include <ut_assert.h>
 #include <ut_locale.h>
 #include <pd_Document.h>
+#include "ie_exp_DocRangeListener.h"
 
 // External includes
 #include <gsf/gsf-outfile.h>
 #include <gsf/gsf-output-stdio.h>
 #include <gsf/gsf-outfile-zip.h>
 #include <gsf/gsf-outfile-stdio.h>
+#include <gsf/gsf-output-memory.h>
+#include <gsf/gsf-infile.h>
+#include <gsf/gsf-input.h>
+#include <gsf/gsf-input-stdio.h>
 
+
+#ifdef WIN32
+#include <io.h>
+#endif
+#include <glib.h>
+#include <glib/gstdio.h>
 
 /**
  * Constructor
@@ -87,6 +98,68 @@ GsfOutput* IE_Exp_OpenDocument::_openFile(const char *szFilename)
     }
 
   return output;
+}
+
+void IE_Exp_OpenDocument::setGSFOutput(GsfOutput * pBuf)
+{
+    m_odt = gsf_output_container(pBuf);
+}
+
+/*!
+ * This method copies the selection defined by pDocRange to ODT format
+ * placed in the ByteBuf bufODT
+ */
+UT_Error IE_Exp_OpenDocument::copyToBuffer(PD_DocumentRange * pDocRange,UT_ByteBuf *  bufODT)
+{
+    //
+    // First export selected range to a tempory document
+    //
+    PD_Document * outDoc = new PD_Document();
+    outDoc->createRawDocument();
+    IE_Exp_DocRangeListener * pRangeListener = new IE_Exp_DocRangeListener(pDocRange,outDoc);
+    pDocRange->m_pDoc->tellListenerSubset(pRangeListener,pDocRange);
+    outDoc->finishRawCreation();
+    //
+    // OK now we have a complete and valid document containing our selected 
+    // content. We export this to an in memory GSF buffer
+    //
+    IE_Exp * pNewExp = NULL; 
+    char *szTempFileName = NULL;
+    GError *err = NULL;
+    g_file_open_tmp ("XXXXXX", &szTempFileName, &err);
+    GsfOutput * outBuf =  gsf_output_stdio_new (szTempFileName,&err);
+    IEFileType ftODT = IE_Exp::fileTypeForMimetype("application/vnd.oasis.opendocument.text");
+    UT_Error aerr = IE_Exp::constructExporter(pDocRange->m_pDoc,outBuf,
+					     ftODT,&pNewExp);
+    if(pNewExp == NULL)
+    {
+         return aerr;
+    }
+    aerr = pNewExp->writeFile(szTempFileName);
+    if(aerr != UT_OK)
+    {
+	delete pNewExp;
+	delete pRangeListener;
+	UNREFP( outDoc);
+	g_remove(szTempFileName);
+	g_free (szTempFileName);
+	return aerr;
+    }
+    //
+    // File is closed at the end of the export. Open it again.
+    //
+
+    GsfInput *  fData = gsf_input_stdio_new(szTempFileName,&err);
+    UT_sint32 siz = gsf_input_size(fData);
+    const UT_Byte * pData = gsf_input_read(fData,gsf_input_size(fData),NULL);
+     UT_DEBUGMSG(("Writing %d bytes to clipboard \n",siz));
+    bufODT->append( pData, gsf_input_size(fData));
+    delete pNewExp;
+    delete pRangeListener;
+    UNREFP( outDoc);
+    g_remove(szTempFileName);
+    g_free (szTempFileName);
+    return aerr;
 }
 
 /**

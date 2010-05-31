@@ -70,5 +70,6 @@ libxp_la_SOURCES = \
 	ie_TOC.cpp \
 	ie_TOC.h \
 	ie_types.h \
-	MathSVGScript.h
-
+	MathSVGScript.h\
+	ie_exp_DocRangeListener.cpp \
+        ie_exp_DocRangeListener.h

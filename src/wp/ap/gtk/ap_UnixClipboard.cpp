@@ -40,7 +40,7 @@
 #define AP_CLIPBOARD_TXT_HTML                   "text/html"
 #define AP_CLIPBOARD_APPLICATION_XHTML          "application/xhtml+xml"
 
-#define AP_CLIPBOARD_APPLICATION_ODF            "application/vnd.oasis.opendocument.text"
+#define AP_CLIPBOARD_APPLICATION_ODT            "application/vnd.oasis.opendocument.text"
 
 // Images: cut and paste
 #define AP_CLIPBOARD_IMAGE_PNG                  "image/png"
@@ -72,7 +72,7 @@
 static const char * rtfszFormatsAccepted[] = {
   AP_CLIPBOARD_TXT_RTF,
   AP_CLIPBOARD_APPLICATION_RTF,
-  AP_CLIPBOARD_APPLICATION_ODF,
+  AP_CLIPBOARD_APPLICATION_ODT,
   0 } ;
 
 static const char * htmlszFormatsAccepted[] = {
@@ -140,9 +140,9 @@ AP_UnixClipboard::AP_UnixClipboard(AP_UnixApp * pApp)
   AddFmt ( AP_CLIPBOARD_APPLICATION_XHTML ) ;
   vec_DynamicFormatsAccepted.insert(vec_DynamicFormatsAccepted.begin(), NULL);
 
-  // ODF format. This is provided by a plugin
+  // O Dformat. This is provided by a plugin
 
-  addFormat(AP_CLIPBOARD_APPLICATION_ODF);
+  addFormat(AP_CLIPBOARD_APPLICATION_ODT);
 }
 
 bool AP_UnixClipboard::addTextData(T_AllowGet tTo, const void* pData, UT_sint32 iNumBytes)
@@ -171,6 +171,11 @@ bool AP_UnixClipboard::addHtmlData(T_AllowGet tTo, const void* pData, UT_sint32 
       return addData (tTo, AP_CLIPBOARD_APPLICATION_XHTML, pData, iNumBytes) ? true : false;
     }
   return addData (tTo, AP_CLIPBOARD_TXT_HTML, pData, iNumBytes) ? true : false;
+}
+
+bool AP_UnixClipboard::addODTData(T_AllowGet tTo, const void* pData, UT_sint32 iNumBytes)
+{
+  return addData ( tTo, AP_CLIPBOARD_APPLICATION_ODT, pData, iNumBytes );
 }
 
 bool AP_UnixClipboard::addPNGData(T_AllowGet tTo, const void* pData, UT_sint32 iNumBytes)

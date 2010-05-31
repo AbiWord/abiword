@@ -38,11 +38,12 @@ class IE_Exp_OpenDocument : public IE_Exp
 public:
     IE_Exp_OpenDocument(PD_Document * pDocument);
     virtual ~IE_Exp_OpenDocument();
-
+    void setGSFOutput(GsfOutput * pBuf);
 protected:
     virtual GsfOutput* _openFile(const char *szFilename);
     virtual UT_Error  _writeDocument(void);
-  
+    virtual UT_Error copyToBuffer(PD_DocumentRange * pDocRange,UT_ByteBuf *  bufODT);
+
 private:
     // The OpenDocument Text file.
     GsfOutfile* m_odt;
