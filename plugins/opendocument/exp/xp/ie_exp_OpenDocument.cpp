@@ -117,6 +117,7 @@ UT_Error IE_Exp_OpenDocument::copyToBuffer(PD_DocumentRange * pDocRange,UT_ByteB
     PD_Document * outDoc = new PD_Document();
     outDoc->createRawDocument();
     IE_Exp_DocRangeListener * pRangeListener = new IE_Exp_DocRangeListener(pDocRange,outDoc);
+    UT_DEBUGMSG(("DocumentRange low %d High %d \n",pDocRange->m_pos1,pDocRange->m_pos2));
     pDocRange->m_pDoc->tellListenerSubset(pRangeListener,pDocRange);
     outDoc->finishRawCreation();
     //
@@ -129,7 +130,7 @@ UT_Error IE_Exp_OpenDocument::copyToBuffer(PD_DocumentRange * pDocRange,UT_ByteB
     g_file_open_tmp ("XXXXXX", &szTempFileName, &err);
     GsfOutput * outBuf =  gsf_output_stdio_new (szTempFileName,&err);
     IEFileType ftODT = IE_Exp::fileTypeForMimetype("application/vnd.oasis.opendocument.text");
-    UT_Error aerr = IE_Exp::constructExporter(pDocRange->m_pDoc,outBuf,
+    UT_Error aerr = IE_Exp::constructExporter(outDoc,outBuf,
 					     ftODT,&pNewExp);
     if(pNewExp == NULL)
     {
