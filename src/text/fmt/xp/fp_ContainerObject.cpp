@@ -994,17 +994,19 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 	if(m_pContainer && (m_pContainer->getContainerType() == FP_CONTAINER_RUN))
 	{
 	        fp_Line * pLine = static_cast<fp_Run *>(m_pContainer)->getLine();
+		if(pLine == NULL)
+		  return;
 	        UT_sint32 left,right = 0;
 	        pLine->getAbsLeftRight(left,right);
 	        if(x < left)
 		{
-		  UT_DEBUGMSG(("Run x fill outside bounds!! x %d left %d \n",x,left));
+		  xxx_UT_DEBUGMSG(("Run x fill outside bounds!! x %d left %d \n",x,left));
 		  // UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		  x= left;
 		}
 	        if((x + width) > right)
 		{
-		  UT_DEBUGMSG(("run right fill outside bounds!! r %d right %d \n",x+width,left));
+		  xxx_UT_DEBUGMSG(("run right fill outside bounds!! r %d right %d \n",x+width,left));
 		  // UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		  width = right -x;
 		}

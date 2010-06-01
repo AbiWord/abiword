@@ -889,6 +889,10 @@ bool pt_PieceTable::getFragsFromPositions(PT_DocPosition dPos1, PT_DocPosition d
 		if (pf->getType() == pf_Frag::PFT_EndOfDoc)
 			break;						// TODO if we haven't quite reached dPos2, we should probably complain...
 		pf = pf->getNext();
+		if(pf == NULL)
+		{
+			return false;
+		}
 		length = pf->getLength();
 	}
 
