@@ -380,6 +380,7 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 									fd_Field * pField,
 									bool bAddChangeRec)
 {
+	UT_DEBUGMSG(("  _realInsertSpan: beginning\n"));
 	// insert character data into the document at the given position.
 
 	UT_return_val_if_fail (m_pts==PTS_Editing, false);
@@ -428,6 +429,8 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 	bool bNeedGlob = false;
 	PT_AttrPropIndex indexAP = 0;
 
+
+	UT_DEBUGMSG(("  _realInsertSpan: middle\n"));
 	if ( (fragOffset==0) && (pf->getPrev()) )
 	{
 		bool bRightOfFmtMark = (pf->getPrev()->getType() == pf_Frag::PFT_FmtMark);
@@ -539,6 +542,8 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fragOffset;
 	PX_ChangeRecord_Span * pcr = NULL;
 
+
+	UT_DEBUGMSG(("  _realInsertSpan: end\n"));
 	// PLAM: This is the list of field attrs that should not inherit
 	// PLAM: to the span following a field.
 	const gchar * pFieldAttrs[12];
@@ -613,6 +618,8 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 Finish:
 	if (bNeedGlob)
 		endMultiStepGlob();
+
+	UT_DEBUGMSG(("  _realInsertSpan: finish\n"));
 
 	return bSuccess;
 }

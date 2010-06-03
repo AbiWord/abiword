@@ -255,6 +255,7 @@ void AV_View::sendHorizontalScrollEvent(UT_sint32 xoff, UT_sint32 xlimit)
 
 UT_sint32 AV_View::getWindowHeight(void) const
 { 
+	xxx_UT_DEBUGMSG(("getWindowHeight() = %d\n", m_iWindowHeight * m_dOneTDU / getGraphics()->tduD(1.0)));
 	return static_cast<UT_sint32>(m_iWindowHeight * m_dOneTDU /
 								  getGraphics()->tduD(1.0)); 
 }

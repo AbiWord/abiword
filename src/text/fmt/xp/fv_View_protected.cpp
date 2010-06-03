@@ -4685,6 +4685,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			// since all other pages are below this one, we
 			// don't need to draw them either.	exit loop now.
 			bNotEnd = true;
+			pPage->setOffScreen();
 			break;
 		}
 		else if (adjustedBottom < 0)
@@ -4696,6 +4697,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 							 curY,
 							 m_yScrollOffset,
 							 getWindowHeight()));
+			pPage->setOffScreen();
 			//jumpDownARow = true;
 			//break;
 		}
@@ -4712,6 +4714,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 							 y,height));
 			jumpDownARow = true;
 			bNotEnd = true;
+			pPage->setOffScreen();
 			break;
 		}
 		else if (adjustedBottom < y)
@@ -4726,6 +4729,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 							 m_yScrollOffset,
 							 getWindowHeight(),
 							 y,height));
+			pPage->setOffScreen();
 			//TF NOTE: Can we break out here?
 		}
 		else
@@ -4772,6 +4776,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			  da.bDirtyRunsOnly = false;
 			}
 			pPage->draw(&da);
+			pPage->setOnScreen();
 
 			// draw page decorations
 			UT_RGBColor clr(0,0,0); 	// black

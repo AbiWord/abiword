@@ -8080,6 +8080,7 @@ void FV_View::getPageScreenOffsets(const fp_Page* pThePage, UT_sint32& xoff,
 	{
 		for (UT_sint32 i = 0; i < iRow; i++)
 		{
+			xxx_UT_DEBUGMSG(("FV_View::getPageScreenOffsets, iRow = %d, i = %d, y = %d\n", iRow, i, y));
 			y += getMaxHeight(i) + getPageViewSep();
 		}
 	}

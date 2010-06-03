@@ -798,6 +798,7 @@ bool pt_PieceTable::getFragFromPosition(PT_DocPosition docPos,
 //
 // Sevior do a binary search here now
 //
+
 	pf_Frag * pfLast = m_fragments.findFirstFragBeforePos(docPos);
 	if(pfLast)
 	{

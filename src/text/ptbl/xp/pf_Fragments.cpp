@@ -205,6 +205,10 @@ void pf_Fragments::unlinkFrag(pf_Frag * pf)
 */
 pf_Frag * pf_Fragments::findFirstFragBeforePos(PT_DocPosition pos) const
 {       
+#if 0
+	m_pRoot->print();
+	printf("*****************\n\n");
+#endif
 	if (pos >= sizeDocument())
 	  pos = sizeDocument()-1;
 	Iterator it = find(pos);

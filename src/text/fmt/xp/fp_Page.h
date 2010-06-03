@@ -169,6 +169,10 @@ public:
 #endif
 
 	void                updateColumnX();
+
+	void		setOnScreen() { m_bOnScreen = true; };
+	void		setOffScreen() { m_bOnScreen = false; };
+
 protected:
     void                _drawCropMarks(dg_DrawArgs*);
 	void				_reformat(void);
@@ -207,6 +211,8 @@ private:
 
 	UT_Rect             m_rDamageRect;
 	UT_sint32           m_iCountWrapPasses;
+
+	bool		m_bOnScreen;
 };
 
 #endif /* PAGE_H */

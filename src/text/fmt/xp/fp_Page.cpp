@@ -198,7 +198,7 @@ void fp_Page::getAllLayouts(UT_GenericVector<fl_ContainerLayout *> & AllLayouts)
 
 bool fp_Page::isOnScreen(void)
 {
-	if(!m_pView)
+/*	if(!m_pView)
 	{
 	    return false;
 	}
@@ -213,7 +213,10 @@ bool fp_Page::isOnScreen(void)
 	if(yoff > m_pView->getWindowHeight())
 	{
 		return false;
-	}
+	} */
+	if(!m_bOnScreen)
+		return false;
+
 	return true;
 }
 
@@ -1122,9 +1125,12 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool /*bAlwaysUseWhiteBackground*/)
 // only call this for printing and honour the option to not fill the paper with
 // color.
 //
+
+	xxx_UT_DEBUGMSG(("Drawing page %d\n", getPageNumber()));
 	xxx_UT_DEBUGMSG(("Draw wrap passes = %d \n",m_iCountWrapPasses));
 	m_iCountWrapPasses = 0;
 	int i=0;
+
 	if(!pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		getOwningSection()->getDocLayout()->incrementGraphicTick();
