@@ -10668,7 +10668,9 @@ void fl_BlockLayout::_createListLabel(void)
 	if(m_pDoc->isDoingPaste() == false)
 	{
 		UT_UCSChar c = UCS_TAB;
-		bResult = m_pDoc->insertSpan(getPosition()+1,&c,1);
+		const PP_AttrProp * pSpanAP = NULL;
+		getSpanAP(1, false, pSpanAP);
+		bResult = m_pDoc->insertSpan(getPosition()+1,&c,1,const_cast< PP_AttrProp *>(pSpanAP));
 		diff = 2;
 	}
 //

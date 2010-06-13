@@ -12789,7 +12789,10 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 	else
 	{
 		UT_UCS4String sUCS4(sDescr);
-		bRet = m_pDoc->insertSpan(posAnnotation+2, sUCS4.ucs4_str(),sUCS4.length(),NULL);
+		const PP_AttrProp * pSpanAP = NULL;
+		const PP_AttrProp * pBlockAP = NULL;
+		getAttributes(&pSpanAP,&pBlockAP,posAnnotation+2);
+		bRet = m_pDoc->insertSpan(posAnnotation+2, sUCS4.ucs4_str(),sUCS4.length(),const_cast<PP_AttrProp *>(pSpanAP));
 
 	}
 	// Signal piceTable is stable again and close off the glob
@@ -12986,7 +12989,11 @@ bool FV_View::insertFootnote(bool bFootnote)
 	UT_DEBUGMSG(("insertFootnote: Inserting space after anchor field \n"));
 	//insert a space after the anchor
 	UT_UCSChar space = UCS_SPACE;
-	m_pDoc->insertSpan(FanchEnd, &space, 1);
+	const PP_AttrProp * pSpanAP = NULL;
+	const PP_AttrProp * pBlockAP = NULL;
+	getAttributes(&pSpanAP,&pBlockAP,FanchStart);
+
+	m_pDoc->insertSpan(FanchEnd, &space, 1,const_cast<PP_AttrProp *>(pSpanAP));
 
 
 	// apply footnote text style to the body of the footnote and the

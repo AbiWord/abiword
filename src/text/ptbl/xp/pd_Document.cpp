@@ -1223,6 +1223,12 @@ bool	PD_Document::insertObject(PT_DocPosition dpos,
 	return b;
 }
 
+/*!
+ * Note that the text will be set to exactly the properties of given by
+ *  p_AttrProp.
+ * If pAttrProp is set to NULL, the text will be set to exactly
+ * the properties of the style of the current paragraph.
+ */
 bool PD_Document::insertSpan(PT_DocPosition dpos,
 							 const UT_UCSChar * pbuf,
 							 UT_uint32 length,

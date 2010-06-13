@@ -6405,7 +6405,8 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 			}
 			insertParaBreakIfNeededAtPos(getPoint());
 			const fl_BlockLayout * pBL = getCurrentBlock();
-			bResult = m_pDoc->insertSpan(getPoint(), text, count,NULL);
+			PP_AttrProp * pSpanAP = const_cast<PP_AttrProp *>(getAttrPropForPoint());
+			bResult = m_pDoc->insertSpan(getPoint(), text, count,pSpanAP);
 
 			if(!bResult)
 			{
