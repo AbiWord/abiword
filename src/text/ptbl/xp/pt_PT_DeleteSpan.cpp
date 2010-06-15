@@ -68,6 +68,7 @@ bool pt_PieceTable::deleteSpanWithTable(PT_DocPosition dpos1,
 										UT_uint32 &iRealDeleteCount,
 										bool bDeleteTableStruxes)
 {
+  //        getFragments().verifyDoc();
 	return deleteSpan(dpos1,
 					  dpos2,
 					  p_AttrProp_Before,
@@ -84,6 +85,7 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 							   bool bDeleteTableStruxes,
 							   bool bDontGlob)
 {
+  //        getFragments().verifyDoc();
 	if(m_pDocument->isMarkRevisions())
 	{
 		

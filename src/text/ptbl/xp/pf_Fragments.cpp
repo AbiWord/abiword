@@ -128,6 +128,12 @@ void pf_Fragments::appendFrag(pf_Frag * pf)
 		//Since this fragment is at the end of the document,
 		//we find the last piece and insert it to its right.
 		Iterator lastIt = find(sizeDocument()-1);
+		// Find returns the first fragment before the position
+		// requested. If we have zero length frags, these are
+		// not accounted for. So we itterate to find the truley last
+		// fragment
+		while( lastIt.value()->getNext() != NULL)
+		  lastIt++;
 		insertRight(pf, lastIt);
 	}
 
@@ -168,10 +174,11 @@ void pf_Fragments::insertFrag(pf_Frag * pfPlace, pf_Frag * pfNew)
 	UT_return_if_fail (pfNew);
 	UT_return_if_fail (pfPlace->_getNode());
 
-	xxx_UT_DEBUGMSG(("Inserting frag %x of type %d after frag %x of type %d\n",pfNew,pfNew->getType(),pfPlace,pfPlace->getType()));
+	UT_DEBUGMSG(("Inserting frag %x of type %d after frag %x of type %d at position %d \n",pfNew,pfNew->getType(),pfPlace,pfPlace->getType(),pfPlace->getPos()));
 
 	Iterator it(this,pfPlace->_getNode());
 	insertRight(pfNew, it);
+	//	verifyDoc();
 }
 
 void pf_Fragments::insertFragBefore(pf_Frag * pfPlace, pf_Frag * pfNew)
@@ -181,10 +188,11 @@ void pf_Fragments::insertFragBefore(pf_Frag * pfPlace, pf_Frag * pfNew)
 	UT_return_if_fail (pfNew);
 	UT_return_if_fail (pfPlace->_getNode());
 
-	xxx_UT_DEBUGMSG(("Inserting frag %x of type %d after frag %x of type %d\n",pfNew,pfNew->getType(),pfPlace,pfPlace->getType()));
+	UT_DEBUGMSG(("Inserting frag %x of type %d after frag %x of type %d\n",pfNew,pfNew->getType(),pfPlace,pfPlace->getType()));
 
 	Iterator it(this,pfPlace->_getNode());
 	insertLeft(pfNew, it);
+	//	verifyDoc();
 }
 
 void pf_Fragments::unlinkFrag(pf_Frag * pf)
@@ -192,7 +200,7 @@ void pf_Fragments::unlinkFrag(pf_Frag * pf)
 	// NOTE:  it is the caller's responsibility to delete pf if appropriate.
         UT_DEBUGMSG(("Unlinking frag %p \n",pf));
 	UT_return_if_fail (pf->getType() != pf_Frag::PFT_EndOfDoc);
-
+	//	verifyDoc();
 	Iterator it(this,pf->_getNode());
 	erase(it);
 }
@@ -756,12 +764,14 @@ void pf_Fragments::verifyDoc(void) const
   {
     
     UT_DEBUGMSG(("frag %d pointer %p pos %d leftLength %d length %d PT Pos %d \n",count,pf,pos,pf->getLeftTreeLength(),pf->getLength(),pf->getPos()));
-    //    UT_ASSERT(pos == pf->getPos());
+    UT_ASSERT(pos == pf->getPos());
     count++;
     pos += pf->getLength();
     pf = pf->getNext();
   }
-  
+  UT_ASSERT(pf && (pf->getType() ==  pf_Frag::PFT_EndOfDoc));
+  UT_ASSERT(pf && (pf->getNext() == NULL));
+  UT_DEBUGMSG(("Last Frag is %p Type is %d pos is %d \n",getLast(),getLast()->getType(),getLast()->getPos()));
 }
 
 PT_DocPosition

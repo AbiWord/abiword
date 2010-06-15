@@ -816,6 +816,8 @@ UT_Error PD_Document::_importFile(GsfInput * input, int ieft,
 		_setClean();
 	else
 	  	_setForceDirty(true); // force this to be dirty
+	//	m_pPieceTable->getFragments().verifyDoc();
+
 
 	// show warning if document contains revisions and they are hidden
 	// from view ...
@@ -877,6 +879,7 @@ void PD_Document::finishRawCreation(void)
 	m_pPieceTable->setPieceTableState(PTS_Editing);
 	updateFields();
 	_setClean();							// mark the document as not-dirty
+	//	m_pPieceTable->getFragments().verifyDoc();
 }
 
 UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
@@ -993,6 +996,7 @@ UT_Error PD_Document::newDocument(void)
 
 			m_pPieceTable->setPieceTableState(PTS_Editing);
 	}
+	//	m_pPieceTable->getFragments().verifyDoc();
 
 	setDocVersion(0);
 	setEditTime(0);
