@@ -89,6 +89,8 @@
 #   include "ap_Win32Preview_Annotation.h"
 	// ... add new dialogs here ...
 
+//	Maleesh 6/8/2010 - 
+#	include "ap_Win32Dialog_Border_Shading.h"
 #else
 
 	DeclareDialog(XAP_DIALOG_ID_MESSAGE_BOX,	XAP_Win32Dialog_MessageBox)
@@ -153,7 +155,7 @@
 	DeclareDialog(AP_DIALOG_ID_METADATA,		AP_Win32Dialog_MetaData)	
 	DeclareDialog(AP_DIALOG_ID_MERGE_CELLS,		AP_Win32Dialog_MergeCells)
 	DeclareDialog(AP_DIALOG_ID_SPLIT_CELLS,		AP_Win32Dialog_SplitCells)
-	DeclareDialog(AP_DIALOG_ID_FORMAT_TABLE,	AP_Win32Dialog_FormatTable)
+ 	DeclareDialog(AP_DIALOG_ID_FORMAT_TABLE,	AP_Win32Dialog_FormatTable)
 	DeclareDialog(AP_DIALOG_ID_FORMAT_FRAME,	AP_Win32Dialog_FormatFrame)
 	DeclareDialog(AP_DIALOG_ID_FORMAT_FOOTNOTES,AP_Win32Dialog_FormatFootnotes)
 	DeclareDialog(AP_DIALOG_ID_FORMAT_TOC,      AP_Win32Dialog_FormatTOC)
@@ -163,6 +165,9 @@
 	DeclareDialog(AP_DIALOG_ID_LATEX,			AP_Win32Dialog_Latex)
 	DeclareDialog(AP_DIALOG_ID_ANNOTATION_PREVIEW,	AP_Win32Preview_Annotation)
  	// ... also add new dialogs here ...
+
+	//	Maleesh 6/8/2010 - 
+	DeclareDialog(AP_DIALOG_ID_BORDER_SHADING,	AP_Win32Dialog_Border_Shading)
 
 	// Remember to place the dialog box with the higher ID
 	// as the latest member. See XAP_DialogFactory::getNextId
