@@ -4644,7 +4644,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	curY = curY + nPage*totPageHeight;
 #endif
 	bool bNotEnd = false;
-	xxx_UT_DEBUGMSG(("Starting at page %x \n",pPage));
+	UT_DEBUGMSG(("Starting at page %x \n",pPage));
 	
 	while (pPage)
 	{
@@ -4675,7 +4675,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		{
 			// the start of this page is past the bottom
 			// of the window, so we don't need to draw it.
-			xxx_UT_DEBUGMSG(("not drawing page A: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d iPageNumber=%d\n",
+			UT_DEBUGMSG(("not drawing page A: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d iPageNumber=%d\n",
 							 iPageHeight,
 							 curY,
 							 m_yScrollOffset,
@@ -4692,7 +4692,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		{
 			// the end of this page is above the top of
 			// the window, so we don't need to draw it.
-			xxx_UT_DEBUGMSG(("not drawing page B: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d\n",
+			UT_DEBUGMSG(("not drawing page B: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d\n",
 							 iPageHeight,
 							 curY,
 							 m_yScrollOffset,
@@ -4706,7 +4706,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			// the top of this page is beyond the end
 			// of the clipping region, so we don't need
 			// to draw it.
-			xxx_UT_DEBUGMSG(("not drawing page C: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d y=%d h=%d\n",
+			UT_DEBUGMSG(("not drawing page C: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d y=%d h=%d\n",
 							 iPageHeight,
 							 curY,
 							 m_yScrollOffset,
@@ -4723,7 +4723,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			// of the clipping region, so we don't need
 			// to draw it.
 			
-			xxx_UT_DEBUGMSG(("not drawing page D: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d y=%d h=%d\n",
+			UT_DEBUGMSG(("not drawing page D: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d y=%d h=%d\n",
 							 iPageHeight,
 							 curY,
 							 m_yScrollOffset,
@@ -4736,14 +4736,14 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		{
 			// this page is on screen and intersects the clipping region,
 			// so we *DO* draw it.
-			xxx_UT_DEBUGMSG(("drawing page E: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d y=%d h=%d\n",
+			UT_DEBUGMSG(("drawing page E: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d y=%d h=%d\n",
 							 iPageHeight,curY,m_yScrollOffset,getWindowHeight(),y,height));
 			
 			dg_DrawArgs da;
 			
 			da.bDirtyRunsOnly = bDirtyRunsOnly;
 			da.pG = m_pG;
-			xxx_UT_DEBUGMSG(("Drawing page da.xoff %d getPageViewLeftMargin() %d \n",da.xoff,getPageViewLeftMargin())); 
+			UT_DEBUGMSG(("Drawing page da.xoff %d getPageViewLeftMargin() %d \n",da.xoff,getPageViewLeftMargin())); 
 			da.yoff = adjustedTop;
 			
 			UT_sint32 adjustedLeft = 0;

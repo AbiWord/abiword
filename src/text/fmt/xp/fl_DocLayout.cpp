@@ -2382,7 +2382,9 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner, bool bNoUpdate)
 	fp_Page* pPage = new fp_Page(	this,
 									m_pView,
 									m_docViewPageSize,
-									pOwner);
+									pOwner,
+									0,
+									0); //TODO: change xoff yoff dummy values
 	if (pLastPage)
 	{
 		UT_ASSERT(pLastPage->getNext() == NULL);

@@ -66,7 +66,9 @@ public:
 	fp_Page(FL_DocLayout*,
 			FV_View*,
 			const fp_PageSize& pageSize,
-			fl_DocSectionLayout* pOwner
+			fl_DocSectionLayout* pOwner,
+			UT_sint32 xoff,
+			UT_sint32 yoff
 		);
 	~fp_Page();
 
@@ -172,6 +174,10 @@ public:
 
 	void		setOnScreen() { m_bOnScreen = true; };
 	void		setOffScreen() { m_bOnScreen = false; };
+	void		setX(UT_sint32 x) { m_iX = x; };
+	void		setY(UT_sint32 y) { m_iY = y; };
+	UT_sint32		getX() { return m_iX; }
+	UT_sint32		getY() { return m_iY; }
 
 protected:
     void                _drawCropMarks(dg_DrawArgs*);
@@ -213,6 +219,8 @@ private:
 	UT_sint32           m_iCountWrapPasses;
 
 	bool		m_bOnScreen;
+	UT_sint32	m_iX;
+	UT_sint32	m_iY;
 };
 
 #endif /* PAGE_H */
