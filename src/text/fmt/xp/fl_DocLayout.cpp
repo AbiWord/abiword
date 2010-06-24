@@ -2346,6 +2346,7 @@ void FL_DocLayout::deletePage(fp_Page* pPage, bool bDontNotify /* default false 
 	{
 		pPage->getNext()->setPrev(pPage->getPrev());
 	}
+	updateCanvasLayout(NULL, pPage, true);
 	pPage->setPrev(NULL);
 	pPage->setNext(NULL);
 	m_vecPages.deleteNthItem(ndx);
@@ -2395,7 +2396,7 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner, bool bNoUpdate)
 	m_vecPages.addItem(pPage);
 	pOwner->addOwnedPage(pPage);
 
-	updateCanvasLayout(m_pView->getCurrentPage(), pPage);
+	updateCanvasLayout(m_pView->getCurrentPage(), pPage, false);
 
 	// let the view know that we created a new page,
 	// so that it can update the scroll bar ranges
@@ -2409,9 +2410,23 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner, bool bNoUpdate)
 	return pPage;
 }
 
-void FL_DocLayout::updateCanvasLayout(fp_Page* pCachedPage, fp_Page* pPage)
+void FL_DocLayout::updateCanvasLayout(fp_Page* pCachedPage, fp_Page* pPage, bool bDeletePage)
 {
-	if( !pCachedPage && getFirstPage() ) // If there are pages but no cached page was passed
+	if(bDeletePage) // If we're deleting a page
+	{
+		if(pPage->getLeft())
+			pPage->getLeft()->setRight(pPage->getRight());
+		if(pPage->getRight())
+			pPage->getRight()->setLeft(pPage->getLeft());
+		if(pPage->getUp())
+			pPage->getUp()->setDown(pPage->getDown());
+		if(pPage->getDown())
+			pPage->getDown()->setUp(pPage->getUp());
+
+		return;
+	}
+
+	if(!pCachedPage && getFirstPage()) // If there are pages but no cached page was passed
 	{
 		if(m_pView)
 			pCachedPage = m_pView->getCurrentPage();  // Intelligent guess

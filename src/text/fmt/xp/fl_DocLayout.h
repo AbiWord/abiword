@@ -374,7 +374,7 @@ public:
 
 	UT_sint32	getNewPageXPos(void);
 	UT_sint32	getNewPageYPos(void);
-	void		updateCanvasLayout(fp_Page* pCachedPage, fp_Page* pPage);
+	void		updateCanvasLayout(fp_Page* pCachedPage, fp_Page* pPage, bool bDeletePage);
 
 protected:
 	static void			_backgroundCheck(UT_Worker * pTimer);

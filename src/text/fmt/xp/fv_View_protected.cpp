@@ -4612,13 +4612,82 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	
 	UT_sint32 curY = getPageViewTopMargin();
 	fl_DocSectionLayout * pDSL = NULL;
-/*	if(m_vecPagesOnScreen->getItemCount() == 0)
-		return; // Shouldn't happen
-	else */
-		fp_Page* pPage = getLayout()->getFirstPage();
+	fp_Page* pCurrentPageCache = getCurrentPage();
+	fp_Page* pPage = pCurrentPageCache;
+	bool	 bFindingPagesOnScreen = true;
+	bool	 bPageIsOnScreen = false;
+	bool     bTraversingLeftRight = false; // False means going left, true means going right
+	bool	 bTraversingUpDown = false;    // False means going up, true means going down
+	bool	 bNextPageIsNull = false;
 	
 	if (pPage)	// pPage can be NULL at this point
 		pDSL = pPage->getOwningSection();
+
+	while(bFindingPagesOnScreen)
+	{
+		UT_sint32 iPageWidthLU = m_pG->tlu(pPage->getWidth());
+		UT_sint32 iPageHeightLU = m_pG->tlu(pPage->getHeight());
+
+		// Check whether the upper left corner of the page is in the viewport
+		if( (getXScrollOffset() <= pPage->getX()) &&
+		    (pPage->getX() <= getXScrollOffset() + getWindowWidthLU()) &&
+		    (getYScrollOffset() <= pPage->getY()) &&
+		    (pPage->getY() <= getYScrollOffset() + getWindowHeightLU()) )
+			bPageIsOnScreen = true;
+
+		// Check whether the upper right corner of the page is in the viewport
+		else if( (getXScrollOffset() <= pPage->getX() + iPageWidthLU) &&
+		         (pPage->getX() + iPageWidthLU <= getXScrollOffset() + getWindowWidthLU()) &&
+		         (getYScrollOffset() <= pPage->getY()) &&
+		         (pPage->getY() <= getYScrollOffset() + getWindowHeightLU()) )
+			bPageIsOnScreen = true;
+
+		// Check whether the lower left corner of the page is in the viewport
+		else if( (getXScrollOffset() <= pPage->getX()) &&
+		         (pPage->getX() <= getXScrollOffset() + getWindowWidthLU()) &&
+		         (getYScrollOffset() <= pPage->getY() + iPageHeightLU) &&
+		         (pPage->getY() + iPageHeightLU <= getYScrollOffset() + getWindowHeightLU()) )
+			bPageIsOnScreen = true;
+
+		// Check whether the lower right corner of the page is in the viewport
+		else if( (getXScrollOffset() <= pPage->getX() + iPageWidthLU) &&
+		         (pPage->getX() + iPageWidthLU <= getXScrollOffset() + getWindowWidthLU()) &&
+		         (getYScrollOffset() <= pPage->getY() + iPageHeightLU) &&
+		         (pPage->getY() + iPageHeightLU <= getYScrollOffset() + getWindowHeightLU()) )
+			bPageIsOnScreen = true;
+
+		if(bPageIsOnScreen)
+		{
+			m_vecPagesOnScreen.addItem(pPage);
+			bPageIsOnScreen = false;
+			if(!bTraversingLeftRight && !bTraversingUpDown && pPage->getLeft())
+				pPage = pPage->getLeft();
+			else if(bTraversingLeftRight && !bTraversingUpDown && pPage->getRight())
+				pPage = pPage->getRight();
+			else if(!bTraversingLeftRight && bTraversingUpDown && pPage->getDown())
+				pPage = pPage->getDown();
+			else if(bTraversingLeftRight && bTraversingUpDown && pPage->getUp())
+				pPage = pPage->getUp();
+			else // Nothing else in the direction that we're going
+				bNextPageIsNull = true;				
+		}
+		if(!bPageIsOnScreen || bNextPageIsNull)
+		{
+			pPage = pCurrentPageCache; // Reset to the center
+			bNextPageIsNull = false;
+			if(!bTraversingLeftRight && !bTraversingUpDown)
+				bTraversingLeftRight = true; // Start going right
+			else if(bTraversingLeftRight && !bTraversingUpDown)
+			{
+				bTraversingLeftRight = false;
+				bTraversingUpDown = true; // Start going down
+			}
+			else if(!bTraversingLeftRight && bTraversingUpDown)
+				bTraversingLeftRight = true; // Start going up
+			else // All done!
+				bFindingPagesOnScreen = false;
+		}
+	}
 
 #if 0
 //
@@ -4647,7 +4716,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	curY = curY + nPage*totPageHeight;
 #endif
 	bool bNotEnd = false;
-	UT_DEBUGMSG(("Starting at page %x \n",pPage));
+	UT_DEBUGMSG(("Starting at page %x \n",pPage->getPageNumber()));
 
 	// If the viewport has changed at all, we need to update which pages are on screen
 /*	if( (getXScrollOffset() != getXScrollOffsetOld()) ||
@@ -4658,6 +4727,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		while (pPage)
 		{ */
 
+	pPage = m_vecPagesOnScreen.getNthItem(0);
 	while (pPage)
 	{
 		bool jumpDownARow = false;
