@@ -67,54 +67,54 @@ public:
 			FV_View*,
 			const fp_PageSize& pageSize,
 			fl_DocSectionLayout* pOwner,
-			UT_sint32 xoff,
-			UT_sint32 yoff
+			UT_sint32 xpos,
+			UT_sint32 ypos
 		);
 	~fp_Page();
 
 	UT_sint32			getWidth(void) const;
-	const fp_PageSize&	getPageSize() const;
+	const fp_PageSize&		getPageSize() const;
 	UT_sint32			getHeight(void) const;
 	UT_sint32			getBottom(void) const;
 	fp_Page*			getNext(void) const;
 	fp_Page*			getPrev(void) const;
 	void				setNext(fp_Page*);
 	void				setPrev(fp_Page*);
-	void                markAllDirty(void) {m_bNeedsRedraw = true;}
+	void				markAllDirty(void) {m_bNeedsRedraw = true;}
 	UT_sint32			getColumnGap(void) const;
-	FL_DocLayout*		getDocLayout() const;
+	FL_DocLayout*			getDocLayout() const;
 	void				setView(FV_View*);
-    bool                isOnScreen(void);
+	bool				isOnScreen(void);
 
-	inline fl_DocSectionLayout* getOwningSection(void) const { return m_pOwner; }
+	inline fl_DocSectionLayout*	getOwningSection(void) const { return m_pOwner; }
 
-	PT_DocPosition		getFirstLastPos(bool bFirst) const;
+	PT_DocPosition			getFirstLastPos(bool bFirst) const;
 	void				mapXYToPosition(bool bNotFrames,UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL,bool & isTOC, bool bUseHdrFtr = false, fl_HdrFtrShadow ** pShadow = NULL) const;
 	void				mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC,bool bUseHdrFtr = false, fl_HdrFtrShadow ** pShadow = NULL) const;
 	void				getScreenOffsets(fp_Container*, UT_sint32& xoff, UT_sint32& yoff) const;
 
 	void				draw(dg_DrawArgs*, bool bAlaysUseWhiteBackground=false);
 	bool				needsRedraw(void) const;
-    UT_sint32           getFilledHeight(fp_Container * prevContainer) const;
-	UT_sint32           getAvailableHeight(void) const;
-	UT_sint32           getAvailableHeightForColumn(const fp_Column * pColumn) const;
-	fp_TableContainer * getContainingTable(PT_DocPosition pos);
-	void                clearCountWrapNumber(void);
+	UT_sint32			getFilledHeight(fp_Container * prevContainer) const;
+	UT_sint32			getAvailableHeight(void) const;
+	UT_sint32			getAvailableHeightForColumn(const fp_Column * pColumn) const;
+	fp_TableContainer *		getContainingTable(PT_DocPosition pos);
+	void				clearCountWrapNumber(void);
 	// Leader (e.g. column) functions.
-	void 				columnHeightChanged(fp_Column* pLeader);
-	bool                breakPage(void);
+	void				columnHeightChanged(fp_Column* pLeader);
+	bool				breakPage(void);
 	UT_sint32 			countColumnLeaders(void) const;
 	fp_Column*			getNthColumnLeader(UT_sint32 n) const;
 	bool				insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter);
 	void				removeColumnLeader(fp_Column* pLeader);
 	bool				isEmpty(void) const;
 	bool                            containsPageBreak(void) const;
-	fp_Container *      updatePageForWrapping(fp_Column *& pNextCol);
+	fp_Container *			updatePageForWrapping(fp_Column *& pNextCol);
 	// Header/Footer functions.
-	void                removeHdrFtr(HdrFtrType hfType);
-	fp_ShadowContainer* getHdrFtrP(HdrFtrType hfType) const;
-	fp_ShadowContainer*	getHdrFtrContainer(fl_HdrFtrSectionLayout*);
-	fp_ShadowContainer*	buildHdrFtrContainer(fl_HdrFtrSectionLayout*, 
+	void				removeHdrFtr(HdrFtrType hfType);
+	fp_ShadowContainer*		getHdrFtrP(HdrFtrType hfType) const;
+	fp_ShadowContainer*		getHdrFtrContainer(fl_HdrFtrSectionLayout*);
+	fp_ShadowContainer*		buildHdrFtrContainer(fl_HdrFtrSectionLayout*, 
 											 HdrFtrType hfType);
 
 	// Footnote functions.
@@ -179,6 +179,15 @@ public:
 	UT_sint32		getX() { return m_iX; }
 	UT_sint32		getY() { return m_iY; }
 
+	fp_Page*	getLeft(void) { return m_pLeft; }
+	fp_Page*	getRight(void) { return m_pRight; }
+	fp_Page*	getUp(void) { return m_pUp; }
+	fp_Page*	getDown(void) { return m_pDown; }
+	void		setLeft(fp_Page* pPage) { m_pLeft = pPage; }
+	void		setRight(fp_Page* pPage) { m_pRight = pPage; }
+	void		setUp(fp_Page* pPage) { m_pUp = pPage; }
+	void		setDown(fp_Page* pPage) { m_pDown = pPage; }
+
 protected:
     void                _drawCropMarks(dg_DrawArgs*);
 	void				_reformat(void);
@@ -195,6 +204,10 @@ private:
 	FV_View*			m_pView;
 	fp_Page*			m_pNext;
 	fp_Page*			m_pPrev;
+	fp_Page*			m_pUp;
+	fp_Page*			m_pDown;
+	fp_Page*			m_pLeft;
+	fp_Page*			m_pRight;
 
 	fp_PageSize			m_pageSize;
 	UT_uint32			m_iResolution;	// in points per inch

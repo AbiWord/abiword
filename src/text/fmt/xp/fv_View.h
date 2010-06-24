@@ -1089,6 +1089,7 @@ private:
 	UT_uint32			m_iAnnPviewID;
 	bool                m_bAllowSmartQuoteReplacement;  // Enable/disable replacing of quote with smart quote
 														// This allows temporarily disabling smart quotes to allow inserting ANSI quote.
+	UT_GenericVector<fp_Page *> m_vecPagesOnScreen;
 };
 
 #endif /* FV_VIEW_H */

@@ -49,8 +49,8 @@ fp_Page::fp_Page(FL_DocLayout* pLayout,
 		 FV_View* pView,
 		 const fp_PageSize& pageSize,
 		 fl_DocSectionLayout* pOwner,
-		 UT_sint32 xoff,
-		 UT_sint32 yoff)
+		 UT_sint32 xpos,
+		 UT_sint32 ypos)
 	:	m_pLayout(pLayout),
 		m_pView(pView),
 		m_pNext(0),
@@ -62,7 +62,13 @@ fp_Page::fp_Page(FL_DocLayout* pLayout,
 		m_pHeader(0),
 		m_FillType(NULL,NULL,FG_FILL_TRANSPARENT),
 		m_pLastMappedTOC(NULL),
-		m_iCountWrapPasses(0)
+		m_iCountWrapPasses(0),
+		m_iX(xpos),
+		m_iY(ypos),
+		m_pLeft(NULL),
+		m_pRight(NULL),
+		m_pUp(NULL),
+		m_pDown(NULL)
 {
 	UT_ASSERT(pLayout);
 	UT_ASSERT(pOwner);
@@ -79,17 +85,6 @@ fp_Page::fp_Page(FL_DocLayout* pLayout,
 	m_vecAnnotations.clear();
 	m_vecAboveFrames.clear();
 	m_vecBelowFrames.clear();
-
-	if(pLayout->countPages() > 0)
-	{
-		setX(pLayout->getLastPage()->getX() + xoff);
-		setY(pLayout->getLastPage()->getY() + yoff);
-	}
-	else
-	{
-		setX(0);
-		setY(0);
-	}
 
 	xxx_UT_DEBUGMSG(("!!!!!!!!!!!!!!!!!!!!!!!!!!Created Page %x \n",this));
 }

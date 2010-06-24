@@ -168,12 +168,24 @@ public:
 	void   setConfigure(bool b)
 	{ m_bConfigureChanged = b;}
 
+	UT_sint32	getXScrollOffset(void) { return m_xScrollOffset; }
+	UT_sint32	getYScrollOffset(void) { return m_yScrollOffset; }
+	UT_sint32	getXScrollOffsetOld(void) { return m_xScrollOffsetOld; }
+	UT_sint32	getYScrollOffsetOld(void) { return m_yScrollOffsetOld; }
+	UT_sint32	getWindowWidthLU(void) { return m_iWindowWidth; }
+	UT_sint32	getWindowHeightLU(void) { return m_iWindowHeight; }
+	UT_sint32	getWindowWidthOldLU(void) { return m_iWindowWidth; }
+	UT_sint32	getWindowHeightOldLU(void) { return m_iWindowHeight; }
+	
+
 protected:
 	XAP_App *			m_pApp;
 	void*				m_pParentData;
 
 	UT_sint32			m_xScrollOffset;
 	UT_sint32			m_yScrollOffset;
+	UT_sint32			m_xScrollOffsetOld;
+	UT_sint32			m_yScrollOffsetOld;
 	AV_Focus			m_focus;
 	UT_uint32                       m_iTick; // Count changes
 	bool				m_bInsertMode;
@@ -188,6 +200,8 @@ private:
 
 	UT_sint32			m_iWindowHeight;
 	UT_sint32			m_iWindowWidth;
+	UT_sint32			m_iWindowHeightOld;
+	UT_sint32			m_iWindowWidthOld;
 	double				m_dOneTDU;
 	bool                            m_bCouldBeActive;
 	bool                            m_bConfigureChanged;

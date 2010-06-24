@@ -2383,8 +2383,8 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner, bool bNoUpdate)
 									m_pView,
 									m_docViewPageSize,
 									pOwner,
-									0,
-									0); //TODO: change xoff yoff dummy values
+									getNewPageXPos(),
+									getNewPageYPos());
 	if (pLastPage)
 	{
 		UT_ASSERT(pLastPage->getNext() == NULL);
@@ -2394,6 +2394,8 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner, bool bNoUpdate)
 	pPage->setPrev(pLastPage);
 	m_vecPages.addItem(pPage);
 	pOwner->addOwnedPage(pPage);
+
+	updateCanvasLayout(m_pView->getCurrentPage(), pPage);
 
 	// let the view know that we created a new page,
 	// so that it can update the scroll bar ranges
@@ -2405,6 +2407,75 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner, bool bNoUpdate)
 	}
 
 	return pPage;
+}
+
+void FL_DocLayout::updateCanvasLayout(fp_Page* pCachedPage, fp_Page* pPage)
+{
+	if( !pCachedPage && getFirstPage() ) // If there are pages but no cached page was passed
+	{
+		if(m_pView)
+			pCachedPage = m_pView->getCurrentPage();  // Intelligent guess
+		else
+			pCachedPage = getLastPage(); // Next best thing
+	}
+
+	if(pCachedPage) // Begin code for positioning page on XY canvas
+	                // REMEMBER: left to right goes from negative to positive,
+	                //           down to up goes from positive to negative
+	{
+		fp_Page* pFindPage = pCachedPage;
+
+		if(pFindPage->getX() <= pPage->getX()) // Traverse from cached page to the right
+		{
+			while( (pFindPage->getRight()) && (pFindPage->getRight()->getX() < pPage->getX()) )
+				pFindPage = pFindPage->getRight();
+
+			pPage->setLeft(pFindPage);
+			pPage->setRight(pFindPage->getRight());
+			pFindPage->getRight()->setLeft(pPage);
+			pFindPage->setRight(pPage);
+		}
+		else // Or, traverse to the left
+		{
+			while( (pFindPage->getLeft()) && (pFindPage->getLeft()->getX() > pPage->getX()) )
+				pFindPage = pFindPage->getLeft();
+
+			pPage->setLeft(pFindPage->getLeft());
+			pPage->setRight(pFindPage);
+			pFindPage->getLeft()->setRight(pPage);
+			pFindPage->setLeft(pPage);
+		}
+
+		pFindPage = pCachedPage;
+
+		if(pFindPage->getY() >= pPage->getY()) // Traverse from the cached page up
+		{
+			while( (pFindPage->getUp()) && (pFindPage->getUp()->getY() > pPage->getY()) )
+				pFindPage = pFindPage->getUp();
+
+			pPage->setUp(pFindPage->getUp());
+			pPage->setDown(pFindPage);
+			pFindPage->getUp()->setDown(pPage);
+			pFindPage->setUp(pPage);
+		}
+		else // Or, traverse down
+		{
+			while( (pFindPage->getDown()) && (pFindPage->getDown()->getY() < pPage->getY()) )
+				pFindPage = pFindPage->getDown();
+
+			pPage->setUp(pFindPage);
+			pPage->setDown(pFindPage->getDown());
+			pFindPage->getDown()->setUp(pPage);
+			pFindPage->setDown(pPage);
+		}
+	}
+	else // There are no pages yet
+	{
+		pPage->setLeft(NULL);
+		pPage->setRight(NULL);
+		pPage->setUp(NULL);
+		pPage->setDown(NULL);
+	}
 }
 
 /*!
@@ -4671,4 +4742,32 @@ void FL_DocLayout::notifyListeners(AV_ChangeMask mask)
 {
 	if (m_pView)
 		m_pView->notifyListeners(mask);
+}
+
+UT_sint32 FL_DocLayout::getNewPageXPos(void)
+{
+	/* TODO: This function will be the foundation of a generalized framework for getting
+	   a page's starting X offset for placement on the canvas.  For right now, we're using
+	   arbitrary layout unit values inspired by fl_PAGEVIEW_MARGIN_* and fl_PAGEVIEW_PAGE_SEP to
+	   mimic the current behavior, but this should change in the future to support non-linear
+	   pagination schemes. -Ersin */
+
+	return 200; // Arbitrary value
+}
+
+UT_sint32 FL_DocLayout::getNewPageYPos(void)
+{
+	/* TODO: This function will be the foundation of a generalized framework for getting
+	   a page's starting Y offset for placement on the canvas.  For right now, we're using
+	   arbitrary layout unit values inspired by fl_PAGEVIEW_MARGIN_* and fl_PAGEVIEW_PAGE_SEP to
+	   mimic the current behavior, but this should change in the future to support non-linear
+	   pagination schemes. -Ersin */
+
+	if(getLastPage())
+		// Y coord of last page + last page's height + arbitrary separator value,
+		// i.e. the gray space between each page in page view
+		return getLastPage()->getY() + getLastPage()->getHeight() + 160;
+	else
+		return 200; // Arbitrary top margin value, i.e. the gray space at the top
+		            // of the document
 }

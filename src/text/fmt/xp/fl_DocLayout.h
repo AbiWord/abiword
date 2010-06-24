@@ -372,6 +372,10 @@ public:
 	void		__dump(FILE * fp) const;
 #endif
 
+	UT_sint32	getNewPageXPos(void);
+	UT_sint32	getNewPageYPos(void);
+	void		updateCanvasLayout(fp_Page* pCachedPage, fp_Page* pPage);
+
 protected:
 	static void			_backgroundCheck(UT_Worker * pTimer);
 #ifdef ENABLE_SPELL
@@ -453,6 +457,10 @@ private:
 	bool                m_bDisplayAnnotations;
         fp_Container *      m_pSavedContainer;
 	fl_BlockLayout *    m_pRebuiltBlockLayout;
+/*	UT_GenericVector<fp_Page *>	m_vecXPages;
+	UT_GenericVector<fp_Page *>	m_vecYPages;
+	fp_Page *			m_pLastXPage;
+	fp_Page *			m_pLastYPage;*/
 };
 
 #endif /* DOCLAYOUT_H */

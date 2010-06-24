@@ -4611,8 +4611,11 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	}
 	
 	UT_sint32 curY = getPageViewTopMargin();
-	fp_Page* pPage = m_pLayout->getFirstPage();
 	fl_DocSectionLayout * pDSL = NULL;
+/*	if(m_vecPagesOnScreen->getItemCount() == 0)
+		return; // Shouldn't happen
+	else */
+		fp_Page* pPage = getLayout()->getFirstPage();
 	
 	if (pPage)	// pPage can be NULL at this point
 		pDSL = pPage->getOwningSection();
@@ -4645,7 +4648,16 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 #endif
 	bool bNotEnd = false;
 	UT_DEBUGMSG(("Starting at page %x \n",pPage));
-	
+
+	// If the viewport has changed at all, we need to update which pages are on screen
+/*	if( (getXScrollOffset() != getXScrollOffsetOld()) ||
+	    (getYScrollOffset() != getYScrollOffsetOld()) ||
+	    (getWindowHeightLU() != getWindowHeightOldLU()) ||
+	    (getWindowWidthLU() != getWindowWidthOldLU()) )
+	{
+		while (pPage)
+		{ */
+
 	while (pPage)
 	{
 		bool jumpDownARow = false;
@@ -4657,7 +4669,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		UT_sint32 adjustedTop		= getPageViewTopMargin() - m_yScrollOffset;
 		pDSL = pPage->getOwningSection();
 		
-		if(iPageNumber >= getNumHorizPages()) //Add the height of all previous rows. Works with pages of different height.
+		/*if(iPageNumber >= getNumHorizPages()) //Add the height of all previous rows. Works with pages of different height.
 		{
 			for (unsigned int i = 0; i < iRow; i++) //This is probably slowish...
 			{
@@ -4668,10 +4680,10 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		if(getViewMode() != VIEW_PRINT)
 		{
 			iPageHeight = iPageHeight - pDSL->getTopMargin() - pDSL->getBottomMargin();
-		}
+		}*/
 
 		UT_sint32 adjustedBottom = adjustedTop + iPageHeight + getPageViewSep(); //+ pDSL->getBottomMargin(); //TODO: page boundries?
-		if (adjustedTop > getWindowHeight())
+/*		if (adjustedTop > getWindowHeight())
 		{
 			// the start of this page is past the bottom
 			// of the window, so we don't need to draw it.
@@ -4731,8 +4743,22 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 							 y,height));
 			pPage->setOffScreen();
 			//TF NOTE: Can we break out here?
-		}
-		else
+		}*/
+
+		bool drawPage = false;
+
+		// Check whether the upper left corner of the page is in the viewport
+		if( (getXScrollOffset() <= pPage->getX()) && (pPage->getX() <= getXScrollOffset() + getWindowWidthLU()) &&
+		    (getYScrollOffset() <= pPage->getY()) && (pPage->getY() <= getYScrollOffset() + getWindowHeightLU()) )
+			drawPage = true;
+		// If not, check whether the lower right corner of the page is in the viewport
+		else if( (getXScrollOffset() <= pPage->getX() + m_pG->tlu(pPage->getWidth())) &&
+		         (pPage->getX() + m_pG->tlu(pPage->getWidth()) <= getXScrollOffset() + getWindowWidthLU()) &&
+		         (getYScrollOffset() <= pPage->getY() + m_pG->tlu(pPage->getHeight())) &&
+		         (pPage->getY() + m_pG->tlu(pPage->getHeight()) <= getYScrollOffset() + getWindowHeightLU()) )
+			drawPage = true;
+
+		if(drawPage)
 		{
 			// this page is on screen and intersects the clipping region,
 			// so we *DO* draw it.

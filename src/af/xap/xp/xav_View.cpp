@@ -31,12 +31,16 @@ AV_View::AV_View(XAP_App * pApp, void* pParentData)
 	m_pParentData(pParentData),
 	m_xScrollOffset(0),
 	m_yScrollOffset(0),
+	m_xScrollOffsetOld(0),
+	m_yScrollOffsetOld(0),
 	m_focus(AV_FOCUS_NONE),
 	m_iTick(0),
 	m_bInsertMode(true),
 	m_bIsLayoutFilling(false),
 	m_iWindowHeight(0),
 	m_iWindowWidth(0),
+	m_iWindowHeightOld(0),
+	m_iWindowWidthOld(0),
 	m_dOneTDU(0),
 	m_bCouldBeActive(true),
 	m_bConfigureChanged(false)
@@ -242,13 +246,11 @@ void AV_View::sendHorizontalScrollEvent(UT_sint32 xoff, UT_sint32 xlimit)
 {
 	if(getWindowHeight() < getGraphics()->tlu(20))
 		return;
-
 	UT_sint32 count = m_scrollListeners.getItemCount();
 
 	for (UT_sint32 i = 0; i < count; i++)
 	{
 		AV_ScrollObj* pObj = m_scrollListeners.getNthItem(i);
-
 		pObj->m_pfnX(pObj->m_pData, xoff, xlimit);
 	}
 }
