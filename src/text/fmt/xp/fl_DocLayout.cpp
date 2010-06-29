@@ -2447,7 +2447,8 @@ void FL_DocLayout::updateCanvasLayout(fp_Page* pCachedPage, fp_Page* pPage, bool
 
 			pPage->setLeft(pFindPage);
 			pPage->setRight(pFindPage->getRight());
-			pFindPage->getRight()->setLeft(pPage);
+			if(pFindPage->getRight())
+			        pFindPage->getRight()->setLeft(pPage);
 			pFindPage->setRight(pPage);
 		}
 		else // Or, traverse to the left
@@ -2457,7 +2458,8 @@ void FL_DocLayout::updateCanvasLayout(fp_Page* pCachedPage, fp_Page* pPage, bool
 
 			pPage->setLeft(pFindPage->getLeft());
 			pPage->setRight(pFindPage);
-			pFindPage->getLeft()->setRight(pPage);
+			if(pFindPage->getLeft())
+			        pFindPage->getLeft()->setRight(pPage);
 			pFindPage->setLeft(pPage);
 		}
 
@@ -2470,7 +2472,8 @@ void FL_DocLayout::updateCanvasLayout(fp_Page* pCachedPage, fp_Page* pPage, bool
 
 			pPage->setUp(pFindPage->getUp());
 			pPage->setDown(pFindPage);
-			pFindPage->getUp()->setDown(pPage);
+			if(pFindPage->getUp())
+			        pFindPage->getUp()->setDown(pPage);
 			pFindPage->setUp(pPage);
 		}
 		else // Or, traverse down
@@ -2480,7 +2483,8 @@ void FL_DocLayout::updateCanvasLayout(fp_Page* pCachedPage, fp_Page* pPage, bool
 
 			pPage->setUp(pFindPage);
 			pPage->setDown(pFindPage->getDown());
-			pFindPage->getDown()->setUp(pPage);
+			if(pFindPage->getDown())
+			        pFindPage->getDown()->setUp(pPage);
 			pFindPage->setDown(pPage);
 		}
 	}
