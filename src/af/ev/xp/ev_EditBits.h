@@ -67,6 +67,7 @@ typedef UT_uint32 EV_EditMouseContext;								/* may not be ORed */
 #define EV_EMC_POSOBJECT        ((EV_EditMouseContext) 0x88000000)
 #define EV_EMC_MATH             ((EV_EditMouseContext) 0x90000000)
 #define EV_EMC_EMBED            ((EV_EditMouseContext) 0x98000000)
+#define EV_EMC_LEFTCELL         ((EV_EditMouseContext) 0xa0000000)
 
 // NB: the following two values are not included in EV_COUNT_EMC
 // because they are not used in the bindings, and are, therefore,
@@ -146,7 +147,7 @@ typedef UT_uint32 EV_EditBits;	/* union of all the above bits */
 
 #define EV_COUNT_EMB			6		// simple count (not 'OR')
 #define EV_COUNT_EMO			6		// simple count (not 'OR')
-#define EV_COUNT_EMC			19		// simple count (not 'OR')
+#define EV_COUNT_EMC			20		// simple count (not 'OR')
 
 #define EV_IsMouse(eb)			(((eb) & EV_EMO__MASK__))
 #define EV_IsKeyboard(eb)		(((eb) & EV_EKP__MASK__))
