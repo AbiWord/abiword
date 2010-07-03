@@ -89,9 +89,13 @@ class fp_Container;
 
 // the following get used by view and layout code, 
 // since they're private to the formatter, we stick 'em here
-#define fl_PAGEVIEW_PAGE_SEP	m_pG->tlu(20)		// must be <= MARGIN_Y
-#define fl_PAGEVIEW_MARGIN_X	m_pG->tlu(25)
-#define fl_PAGEVIEW_MARGIN_Y	m_pG->tlu(25)
+//#define fl_PAGEVIEW_PAGE_SEP	m_pG->tlu(20)		// must be <= MARGIN_Y
+//#define fl_PAGEVIEW_MARGIN_X	m_pG->tlu(25)
+//#define fl_PAGEVIEW_MARGIN_Y	m_pG->tlu(25)
+
+#define fl_PAGEVIEW_PAGE_SEP	300		// must be <= MARGIN_Y
+#define fl_PAGEVIEW_MARGIN_X	400
+#define fl_PAGEVIEW_MARGIN_Y	400
 
 // ----------------------------------------------------------------
 

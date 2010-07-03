@@ -2396,7 +2396,10 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner, bool bNoUpdate)
 	m_vecPages.addItem(pPage);
 	pOwner->addOwnedPage(pPage);
 
-	updateCanvasLayout(m_pView->getCurrentPage(), pPage, false);
+/*	if(getFirstPage()) // Only update if there's a page...various asserts fail otherwise while starting AbiWord
+		updateCanvasLayout(m_pView->getCurrentPage(), pPage, false);
+	else
+		updateCanvasLayout(NULL, pPage, false); */
 
 	// let the view know that we created a new page,
 	// so that it can update the scroll bar ranges
@@ -2406,6 +2409,8 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner, bool bNoUpdate)
 	{
 		m_pView->notifyListeners(AV_CHG_PAGECOUNT);
 	}
+
+	updateCanvasLayout(m_pView->getCurrentPage(), pPage, false);
 
 	return pPage;
 }
@@ -4771,7 +4776,7 @@ UT_sint32 FL_DocLayout::getNewPageXPos(void)
 	   mimic the current behavior, but this should change in the future to support non-linear
 	   pagination schemes. -Ersin */
 
-	return 200; // Arbitrary value
+	return fl_PAGEVIEW_MARGIN_X;
 }
 
 UT_sint32 FL_DocLayout::getNewPageYPos(void)
@@ -4783,10 +4788,9 @@ UT_sint32 FL_DocLayout::getNewPageYPos(void)
 	   pagination schemes. -Ersin */
 
 	if(getLastPage())
-		// Y coord of last page + last page's height + arbitrary separator value,
+		// Y coord of last page + last page's height + separator value,
 		// i.e. the gray space between each page in page view
-		return getLastPage()->getY() + getLastPage()->getHeight() + 160;
+		return getLastPage()->getY() + getLastPage()->getHeight() + fl_PAGEVIEW_PAGE_SEP;
 	else
-		return 200; // Arbitrary top margin value, i.e. the gray space at the top
-		            // of the document
+		return fl_PAGEVIEW_MARGIN_Y; // The gray space at the top of the document
 }
