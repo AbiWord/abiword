@@ -2431,74 +2431,70 @@ void FL_DocLayout::updateCanvasLayout(fp_Page* pCachedPage, fp_Page* pPage, bool
 		return;
 	}
 
-	if(!pCachedPage && getFirstPage()) // If there are pages but no cached page was passed
-	{
-		if(m_pView)
-			pCachedPage = m_pView->getCurrentPage();  // Intelligent guess
-		else
-			pCachedPage = getLastPage(); // Next best thing
-	}
-
-	if(pCachedPage) // Begin code for positioning page on XY canvas
-	                // REMEMBER: left to right goes from negative to positive,
-	                //           down to up goes from positive to negative
-	{
-		fp_Page* pFindPage = pCachedPage;
-
-		if(pFindPage->getX() <= pPage->getX()) // Traverse from cached page to the right
-		{
-			while( (pFindPage->getRight()) && (pFindPage->getRight()->getX() < pPage->getX()) )
-				pFindPage = pFindPage->getRight();
-
-			pPage->setLeft(pFindPage);
-			pPage->setRight(pFindPage->getRight());
-			if(pFindPage->getRight())
-			        pFindPage->getRight()->setLeft(pPage);
-			pFindPage->setRight(pPage);
-		}
-		else // Or, traverse to the left
-		{
-			while( (pFindPage->getLeft()) && (pFindPage->getLeft()->getX() > pPage->getX()) )
-				pFindPage = pFindPage->getLeft();
-
-			pPage->setLeft(pFindPage->getLeft());
-			pPage->setRight(pFindPage);
-			if(pFindPage->getLeft())
-			        pFindPage->getLeft()->setRight(pPage);
-			pFindPage->setLeft(pPage);
-		}
-
-		pFindPage = pCachedPage;
-
-		if(pFindPage->getY() >= pPage->getY()) // Traverse from the cached page up
-		{
-			while( (pFindPage->getUp()) && (pFindPage->getUp()->getY() > pPage->getY()) )
-				pFindPage = pFindPage->getUp();
-
-			pPage->setUp(pFindPage->getUp());
-			pPage->setDown(pFindPage);
-			if(pFindPage->getUp())
-			        pFindPage->getUp()->setDown(pPage);
-			pFindPage->setUp(pPage);
-		}
-		else // Or, traverse down
-		{
-			while( (pFindPage->getDown()) && (pFindPage->getDown()->getY() < pPage->getY()) )
-				pFindPage = pFindPage->getDown();
-
-			pPage->setUp(pFindPage);
-			pPage->setDown(pFindPage->getDown());
-			if(pFindPage->getDown())
-			        pFindPage->getDown()->setUp(pPage);
-			pFindPage->setDown(pPage);
-		}
-	}
-	else // There are no pages yet
+	if(pPage && pPage->getPageNumber() == 0) // If we're adding the first page
 	{
 		pPage->setLeft(NULL);
 		pPage->setRight(NULL);
 		pPage->setUp(NULL);
 		pPage->setDown(NULL);
+		return;
+	}
+
+	if(!pCachedPage && getFirstPage()) // If there are pages but no cached page was passed (generally happens when we load a document and getCurrentPage returns null)
+		pCachedPage = getLastPage()->getPrev();
+
+	// Begin code for positioning page on XY canvas
+	// REMEMBER: left to right goes from negative to positive,
+	// down to up goes from positive to negative
+
+	fp_Page* pFindPage = pCachedPage;
+
+	if(pFindPage->getX() <= pPage->getX()) // Traverse from cached page to the right
+	{
+		while( (pFindPage->getRight()) && (pFindPage->getRight()->getX() < pPage->getX()) )
+			pFindPage = pFindPage->getRight();
+
+		pPage->setLeft(pFindPage);
+		pPage->setRight(pFindPage->getRight());
+		if(pFindPage->getRight())
+		        pFindPage->getRight()->setLeft(pPage);
+		pFindPage->setRight(pPage);
+	}
+	else // Or, traverse to the left
+	{
+		while( (pFindPage->getLeft()) && (pFindPage->getLeft()->getX() > pPage->getX()) )
+			pFindPage = pFindPage->getLeft();
+
+		pPage->setLeft(pFindPage->getLeft());
+		pPage->setRight(pFindPage);
+		if(pFindPage->getLeft())
+		        pFindPage->getLeft()->setRight(pPage);
+		pFindPage->setLeft(pPage);
+	}
+
+	pFindPage = pCachedPage;
+
+	if(pFindPage->getY() >= pPage->getY()) // Traverse from the cached page up
+	{
+		while( (pFindPage->getUp()) && (pFindPage->getUp()->getY() > pPage->getY()) )
+			pFindPage = pFindPage->getUp();
+
+		pPage->setUp(pFindPage->getUp());
+		pPage->setDown(pFindPage);
+		if(pFindPage->getUp())
+		        pFindPage->getUp()->setDown(pPage);
+		pFindPage->setUp(pPage);
+	}
+	else // Or, traverse down
+	{
+		while( (pFindPage->getDown()) && (pFindPage->getDown()->getY() < pPage->getY()) )
+			pFindPage = pFindPage->getDown();
+
+		pPage->setUp(pFindPage);
+		pPage->setDown(pFindPage->getDown());
+		if(pFindPage->getDown())
+		        pFindPage->getDown()->setUp(pPage);
+		pFindPage->setDown(pPage);
 	}
 }
 

@@ -4538,6 +4538,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 					UT_sint32 width, UT_sint32 height,
 					bool bDirtyRunsOnly, bool bClip)
 {
+	bDirtyRunsOnly = false;
 	xxx_UT_DEBUGMSG(("FV_View::draw_3 [x %ld][y %ld][w %ld][h %ld][bClip %ld]\n"
 					 "\t\twith [yScrollOffset %ld][windowHeight %ld][bDirtyRunsOnly %d]\n",
 					 x,y,width,height,bClip,
@@ -4595,7 +4596,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		clrMargin = getColorMargin();
 	}
 
-	if (!bDirtyRunsOnly)
+/*	if (!bDirtyRunsOnly)
 	{
 		if ((m_xScrollOffset < getPageViewLeftMargin()) && (getViewMode() == VIEW_PRINT) && !pFrame->isMenuScrollHidden())
 		{
@@ -4608,101 +4609,84 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			// fill top margin
 			painter.fillRect(clrMargin, 0, 0, getWindowWidth() + m_pG->tlu(1), getPageViewTopMargin() - m_yScrollOffset);
 		}
-	}
+	} */
 	
 	UT_sint32 curY = getPageViewTopMargin();
 	fl_DocSectionLayout * pDSL = NULL;
-	fp_Page* pCurrentPageCache = getCurrentPage();
+	fp_Page* pCurrentPageCache = NULL;
+	pCurrentPageCache = getCurrentPage();
 	fp_Page* pPage = pCurrentPageCache;
-	bool	 bFindingPagesOnScreen = true;
-	bool	 bPageIsOnScreen = false;
+	bool	 bFindingPagesOnScreen = false;
 	bool     bTraversingLeftRight = false; // False means going left, true means going right
 	bool	 bTraversingUpDown = false;    // False means going up, true means going down
-	bool	 bNextPageIsNull = false;
+	bool	 bInViewport = false;          // Whether pPage has reached the viewport yet
 	UT_GenericVector<fp_Page *> vecPagesOnScreen;
 	
 	if (pPage)	// pPage can be NULL at this point
+	{
 		pDSL = pPage->getOwningSection();
+		bFindingPagesOnScreen = true;
+	}
 
 	while(bFindingPagesOnScreen)
 	{
-		xxx_UT_DEBUGMSG(("--Searching for pages to render in _draw:\n  page = %i\n  getX() = %i, getY() = %i\n  getWidth() = %i, getHeight() = %i\n  getXScrollOffset() = %i, getYScrollOffset() = %i\n", pPage->getPageNumber(), pPage->getX(), pPage->getY(), pPage->getWidth(), pPage->getHeight(), getXScrollOffset(), getYScrollOffset()));
+		if(pPage)
+			xxx_UT_DEBUGMSG(("--Searching for pages to render in _draw:\n  page = %i\n  getX() = %i, getY() = %i\n  getWidth() = %i, getHeight() = %i\n  getXScrollOffset() = %i, getYScrollOffset() = %i\n", pPage->getPageNumber(), pPage->getX(), pPage->getY(), pPage->getWidth(), pPage->getHeight(), getXScrollOffset(), getYScrollOffset()));
 
-		/*// Check whether the upper left corner of the page is in the viewport
-		if( (getXScrollOffset() <= pPage->getX()) &&
-		    (pPage->getX() <= getXScrollOffset() + getWindowWidthLU()) &&
-		    (getYScrollOffset() <= pPage->getY()) &&
-		    (pPage->getY() <= getYScrollOffset() + getWindowHeightLU()) )
-			bPageIsOnScreen = true;
-
-		// Check whether the upper right corner of the page is in the viewport
-		else if( (getXScrollOffset() <= pPage->getX() + iPageWidthLU) &&
-		         (pPage->getX() + iPageWidthLU <= getXScrollOffset() + getWindowWidthLU()) &&
-		         (getYScrollOffset() <= pPage->getY()) &&
-		         (pPage->getY() <= getYScrollOffset() + getWindowHeightLU()) )
-			bPageIsOnScreen = true;
-
-		// Check whether the lower left corner of the page is in the viewport
-		else if( (getXScrollOffset() <= pPage->getX()) &&
-		         (pPage->getX() <= getXScrollOffset() + getWindowWidthLU()) &&
-		         (getYScrollOffset() <= pPage->getY() + iPageHeightLU) &&
-		         (pPage->getY() + iPageHeightLU <= getYScrollOffset() + getWindowHeightLU()) )
-			bPageIsOnScreen = true;
-
-		// Check whether the lower right corner of the page is in the viewport
-		else if( (getXScrollOffset() <= pPage->getX() + iPageWidthLU) &&
-		         (pPage->getX() + iPageWidthLU <= getXScrollOffset() + getWindowWidthLU()) &&
-		         (getYScrollOffset() <= pPage->getY() + iPageHeightLU) &&
-		         (pPage->getY() + iPageHeightLU <= getYScrollOffset() + getWindowHeightLU()) )
-			bPageIsOnScreen = true; */
-
-		bPageIsOnScreen = false;
+		// Is the page on screen?
 		if( pPage &&
 		    (pPage->getX() <= getXScrollOffset() + getWindowWidthLU()) &&
 		    (pPage->getX() + pPage->getWidth() >= getXScrollOffset()) &&
 		    (pPage->getY() <= getYScrollOffset() + getWindowHeightLU()) &&
 		    (pPage->getY() + pPage->getHeight() >= getYScrollOffset()) )
-			bPageIsOnScreen = true;
-
-
-		if(bPageIsOnScreen)
 		{
 			vecPagesOnScreen.addItem(pPage);
-//			bPageIsOnScreen = false;
+			bInViewport = true;
 			if(!bTraversingLeftRight && !bTraversingUpDown)
 				pPage = pPage->getLeft();
-//			else if( (bTraversingLeftRight && !bTraversingUpDown && pPage->getRight()) ||  (!bTraversingLeftRight && !bTraversingUpDown && pPage->getLeft()) )
 			else if(bTraversingLeftRight && !bTraversingUpDown)
 				pPage = pPage->getRight();
-//			else if( (!bTraversingLeftRight && bTraversingUpDown && pPage->getDown()) || (bTraversingLeftRight && !bTraversingUpDown && pPage->getRight()) )
 			else if(!bTraversingLeftRight && bTraversingUpDown)
 				pPage = pPage->getDown();
-//			else if( (bTraversingLeftRight && bTraversingUpDown && pPage->getUp()) || (!bTraversingLeftRight && bTraversingUpDown && pPage->getDown()) )
 			else
 				pPage = pPage->getUp();
 		}
-		else
+		else // If not or if there is no page yet
 		{
-			pPage = pCurrentPageCache; // Reset to the center
-//			bNextPageIsNull = false;
-			if(!bTraversingLeftRight && !bTraversingUpDown)
+			if(!bInViewport && pPage) // If we haven't reached the viewport yet, keep traversing in the same direction
 			{
-				bTraversingLeftRight = true; // Start going right
-				pPage = pPage->getRight();
+				if(!bTraversingLeftRight && !bTraversingUpDown)
+					pPage = pPage->getLeft();
+				else if(bTraversingLeftRight && !bTraversingUpDown)
+					pPage = pPage->getRight();
+				else if(!bTraversingLeftRight && bTraversingUpDown)
+					pPage = pPage->getDown();
+				else
+					pPage = pPage->getUp();
 			}
-			else if(bTraversingLeftRight && !bTraversingUpDown)
+			else // If we have reached the viewport or the end of a linked list, change directions
 			{
-				bTraversingLeftRight = false;
-				bTraversingUpDown = true; // Start going down
-				pPage = pPage->getDown();
+				pPage = pCurrentPageCache; // Reset to the center
+				bInViewport = false;
+				if(!bTraversingLeftRight && !bTraversingUpDown)
+				{
+					bTraversingLeftRight = true; // Start going right
+					pPage = pPage->getRight();
+				}
+				else if(bTraversingLeftRight && !bTraversingUpDown)
+				{
+					bTraversingLeftRight = false;
+					bTraversingUpDown = true; // Start going down
+					pPage = pPage->getDown();
+				}
+				else if(!bTraversingLeftRight && bTraversingUpDown)
+				{
+					bTraversingLeftRight = true; // Start going up
+					pPage = pPage->getUp();
+				}
+				else // All done!
+					bFindingPagesOnScreen = false;
 			}
-			else if(!bTraversingLeftRight && bTraversingUpDown)
-			{
-				bTraversingLeftRight = true; // Start going up
-				pPage = pPage->getUp();
-			}
-			else // All done!
-				bFindingPagesOnScreen = false;
 		}
 	}
 
@@ -4733,7 +4717,6 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	curY = curY + nPage*totPageHeight;
 #endif
 	bool bNotEnd = false;
-	UT_DEBUGMSG(("Starting at page %x \n",pPage->getPageNumber()));
 
 	pPage = NULL;
 
@@ -4741,6 +4724,11 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		pPage = vecPagesOnScreen.getFirstItem();
 
 	UT_uint32 iVecCount = 0;
+
+	if(pPage)
+		UT_DEBUGMSG(("Starting at page %x \n",pPage->getPageNumber()));
+	if(getViewMode() == VIEW_PRINT)
+		painter.fillRect(clrMargin, 0, 0, getWindowWidth(), getWindowHeight());
 
 	while (pPage)
 	{
@@ -4750,86 +4738,35 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		UT_uint32 iCol			= iPageNumber - iRow * getNumHorizPages();
 		UT_sint32 iPageWidth		= pPage->getWidth();
 		UT_sint32 iPageHeight		= pPage->getHeight();
-		UT_sint32 adjustedTop		= pPage->getY() - m_yScrollOffset; // Top line of the page that defines the page's top margin
-		UT_sint32 adjustedBottom	= adjustedTop + iPageHeight + getPageViewSep(); // Bottom line of the page that defines the page's bottom margin
+		UT_sint32 adjustedTop		= pPage->getY() - getYScrollOffset(); // Top line of the page that defines the page's top margin,
+		                    		                                   // relative to the top of the screen and in layout units
+		UT_DEBUGMSG(("getY() = %i, getYScrollOffset() = %i\n", pPage->getY(), getYScrollOffset()));
+		UT_sint32 adjustedBottom	= adjustedTop + iPageHeight; // Bottom line of the page that defines the page's bottom margin,
+		                        	                             // relative to the top of the screen and in layout units
+		UT_sint32 adjustedLeft		= pPage->getX() - getXScrollOffset();
+		UT_sint32 adjustedRight		= adjustedLeft + iPageWidth;
+		UT_RGBColor paperColor = *(pPage->getFillType()->getColor());
 		pDSL = pPage->getOwningSection();
 
-		UT_DEBUGMSG(("--Entered _draw loop:\n  iPageNumber = %i, vecitemcount = %i\n  iRow = %i, iCol = %i\n  iPageWidth = %i, iPageHeight = %i\n  getPageViewTopMargin() = %i, m_yScrollOffset = %i\n", iPageNumber, vecPagesOnScreen.getItemCount(), iRow, iCol, iPageWidth, iPageHeight, getPageViewTopMargin(), m_yScrollOffset));
+		xxx_UT_DEBUGMSG(("--Entered _draw loop:\n  iPageNumber = %i, vecitemcount = %i\n  iRow = %i, iCol = %i\n  iPageWidth = %i, iPageHeight = %i\n  getPageViewTopMargin() = %i, m_yScrollOffset = %i\n", iPageNumber, vecPagesOnScreen.getItemCount(), iRow, iCol, iPageWidth, iPageHeight, getPageViewTopMargin(), m_yScrollOffset));
+
+		if((getViewMode() != VIEW_PRINT) || pFrame->isMenuScrollHidden())
+		{
+			painter.fillRect(paperColor, 0, 0, getWindowWidth(), iPageHeight);
+		}
 		
-		/*if(iPageNumber >= getNumHorizPages()) //Add the height of all previous rows. Works with pages of different height.
+/*		if(iPageNumber >= getNumHorizPages()) //Add the height of all previous rows. Works with pages of different height.
 		{
 			for (unsigned int i = 0; i < iRow; i++) //This is probably slowish...
 			{
 				adjustedTop += getMaxHeight(iRow) + getPageViewSep();
 			}
-		}
+		}*/
 
 		if(getViewMode() != VIEW_PRINT)
 		{
 			iPageHeight = iPageHeight - pDSL->getTopMargin() - pDSL->getBottomMargin();
-		}*/
-
-/*		if (adjustedTop > getWindowHeight())
-		{
-			// the start of this page is past the bottom
-			// of the window, so we don't need to draw it.
-			UT_DEBUGMSG(("not drawing page A: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d iPageNumber=%d\n",
-							 iPageHeight,
-							 curY,
-							 m_yScrollOffset,
-							 getWindowHeight(),
-							 iPageNumber));
-
-			// since all other pages are below this one, we
-			// don't need to draw them either.	exit loop now.
-			bNotEnd = true;
-			pPage->setOffScreen();
-			break;
 		}
-		else if (adjustedBottom < 0)
-		{
-			// the end of this page is above the top of
-			// the window, so we don't need to draw it.
-			UT_DEBUGMSG(("not drawing page B: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d\n",
-							 iPageHeight,
-							 curY,
-							 m_yScrollOffset,
-							 getWindowHeight()));
-			pPage->setOffScreen();
-			//jumpDownARow = true;
-			//break;
-		}
-		else if (adjustedTop > y + height)
-		{
-			// the top of this page is beyond the end
-			// of the clipping region, so we don't need
-			// to draw it.
-			UT_DEBUGMSG(("not drawing page C: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d y=%d h=%d\n",
-							 iPageHeight,
-							 curY,
-							 m_yScrollOffset,
-							 getWindowHeight(),
-							 y,height));
-			jumpDownARow = true;
-			bNotEnd = true;
-			pPage->setOffScreen();
-			break;
-		}
-		else if (adjustedBottom < y)
-		{
-			// the bottom of this page is above the top
-			// of the clipping region, so we don't need
-			// to draw it.
-			
-			UT_DEBUGMSG(("not drawing page D: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d y=%d h=%d\n",
-							 iPageHeight,
-							 curY,
-							 m_yScrollOffset,
-							 getWindowHeight(),
-							 y,height));
-			pPage->setOffScreen();
-			//TF NOTE: Can we break out here?
-		}*/
 
 		UT_DEBUGMSG(("drawing page E: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d y=%d h=%d\n",
 						 iPageHeight,curY,m_yScrollOffset,getWindowHeight(),y,height));
@@ -4840,30 +4777,15 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		da.pG = m_pG;
 		UT_DEBUGMSG(("Drawing page da.xoff %d getPageViewLeftMargin() %d \n",da.xoff,getPageViewLeftMargin())); 
 		da.yoff = adjustedTop;
-
-		UT_sint32 adjustedLeft = 0;
-		UT_sint32 adjustedRight = 0;
-
-		if (!rtlPages() || getNumHorizPages() == 1) // Left to right display of pages 
-		{
-			da.xoff = getPageViewLeftMargin() - m_xScrollOffset + getWidthPrevPagesInRow(iPageNumber);
-			adjustedLeft = da.xoff;
-			adjustedRight = adjustedLeft + iPageWidth;
-		}
-		else // Right to left display of pages
-		{
-			da.xoff = getPageViewLeftMargin() - m_xScrollOffset + getWidthPrevPagesInRow(iPageNumber);
-			adjustedLeft = da.xoff;
-			adjustedRight = adjustedLeft + iPageWidth;
-		}
+		da.xoff = adjustedLeft;
 
 
-		adjustedBottom -= getPageViewSep();
-
-		if (!bDirtyRunsOnly || (pPage->needsRedraw() && (getViewMode() == VIEW_PRINT)))
+		if(!bDirtyRunsOnly || (pPage->needsRedraw() && (getViewMode() == VIEW_PRINT)))
 		{
 			const UT_RGBColor * pClr = pPage->getFillType()->getColor();
 			painter.fillRect(*pClr,adjustedLeft+m_pG->tlu(1),adjustedTop+m_pG->tlu(1),iPageWidth + m_pG->tlu(1),iPageHeight + m_pG->tlu(1));
+//			painter.fillRect(*pClr, adjustedLeft + m_pG->tlu(1), adjustedTop + m_pG->tlu(1), adjustedRight + m_pG->tlu(1), adjustedBottom + m_pG->tlu(1));
+			UT_DEBUGMSG(("Painting page, left = %i, top = %i, right = %i, bottom = %i\n", adjustedLeft + m_pG->tlu(1), adjustedTop + m_pG->tlu(1), adjustedRight + m_pG->tlu(1), adjustedBottom + m_pG->tlu(1)));
 			//
 			// Since we're clearing everything we have to draw every run no matter
 			// what.
@@ -4871,7 +4793,6 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			da.bDirtyRunsOnly = false;
 		}
 		pPage->draw(&da);
-		pPage->setOnScreen();
 
 		// draw page decorations
 		UT_RGBColor clr(0,0,0); 	// black
@@ -4891,11 +4812,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			painter.drawLine(adjustedLeft, adjustedTop, adjustedLeft, adjustedBottom);
 		}
 
-		//
 		// Draw page seperator
-		//
-		UT_RGBColor paperColor = *(pPage->getFillType()->getColor());
-
 		// only in NORMAL MODE - draw a line across the screen
 		// at a page boundary. Not used in online/web and print
 		// layout modes
@@ -4918,13 +4835,13 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		{
 			// In normal mode, the right margin is
 			// white (since the whole screen is white).
-			if((getViewMode() != VIEW_PRINT) || pFrame->isMenuScrollHidden())
+/*			if((getViewMode() != VIEW_PRINT) || pFrame->isMenuScrollHidden())
 			{
 				painter.fillRect(paperColor, adjustedRight, adjustedTop, getWindowWidth() - adjustedRight + m_pG->tlu(1), iPageHeight);
-			}
+			}*/
 			// Otherwise, the right margin is the
 			// margin color (gray).
-			else if (!rtlPages() || getNumHorizPages() == 1) //Fill in the margins for right to left
+		/*	else if (!rtlPages() || getNumHorizPages() == 1) //Fill in the margins for right to left
 			{
 				if (iCol +1 == getNumHorizPages()) // Fill to the right of the pages with gray
 				{
@@ -4949,15 +4866,15 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 				{
 					painter.fillRect(clrMargin, adjustedRight + m_pG->tlu(1), adjustedTop, getHorizPageSpacing() - m_pG->tlu(1), iPageHeight + m_pG->tlu(3));
 				}
-				/*else if (iCol + 1 != getNumHorizPages()) //Fill to the left of the last page if it's not at the end of the last column.
-				{
-					painter.fillRect(clrMargin, getPageViewLeftMargin() - m_xScrollOffset, adjustedTop, adjustedLeft + m_pG->tlu(1), iPageHeight + m_pG->tlu(3));
-				}*/
-			}
+//				else if (iCol + 1 != getNumHorizPages()) //Fill to the left of the last page if it's not at the end of the last column.
+//				{
+//					painter.fillRect(clrMargin, getPageViewLeftMargin() - m_xScrollOffset, adjustedTop, adjustedLeft + m_pG->tlu(1), iPageHeight + m_pG->tlu(3));
+//				}
+			}*/
 		}
 
 		// fill separator below page
-		if ((getWindowHeight() - (adjustedBottom + m_pG->tlu(1)) > 0) && (VIEW_PRINT == getViewMode()) &&  !pFrame->isMenuScrollHidden())
+/*		if ((getWindowHeight() - (adjustedBottom + m_pG->tlu(1)) > 0) && (VIEW_PRINT == getViewMode()) &&  !pFrame->isMenuScrollHidden())
 		{
 			if(pPage->getNext() != NULL)
 			{
@@ -4968,7 +4885,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 				UT_sint32 botfill = getWindowHeight() - adjustedBottom - m_pG->tlu(1) ;
 				painter.fillRect(clrMargin, adjustedLeft, adjustedBottom + m_pG->tlu(1), getWindowWidth() - adjustedLeft + m_pG->tlu(1), botfill + m_pG->tlu(1));
 			}
-		}
+		} */
 
 		// two pixel drop shadow
 			
@@ -5027,7 +4944,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		} */
 	}
 
-	if ((curY <= iDocHeight) && !bNotEnd)
+/*	if ((curY <= iDocHeight) && !bNotEnd)
 	{
 		// fill below bottom of document
 		UT_sint32 yPos = curY - m_yScrollOffset;
@@ -5049,7 +4966,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			}
 			painter.fillRect(clrFillColor, 0, yPos, getWindowWidth() + m_pG->tlu(1), h + m_pG->tlu(1));
 		}
-	}
+	}*/
 	
 	if (bClip)
 	{

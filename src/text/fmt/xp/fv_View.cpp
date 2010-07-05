@@ -10860,7 +10860,7 @@ fp_Page* FV_View::getCurrentPage(void) const
 //
 // Detect if we have no Lines at the curren tpoint and bail out.
 //
- 	if(pRun == NULL || pRun->getLine() == NULL || iPointHeight == 0)
+ 	if(pRun == NULL || pRun->getLine() == NULL || iPointHeight == 0 || pBlock == NULL)
  	{
  		return NULL;
  	}
