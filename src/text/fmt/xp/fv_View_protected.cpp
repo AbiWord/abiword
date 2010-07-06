@@ -3683,9 +3683,11 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 	// get possible cells
 	fp_CellContainer* pLowCell = NULL;
 	fp_CellContainer* pHighCell = NULL;
+	fp_CellContainer* pPrevCell = NULL;
 		
 	pLowCell = getCellAtPos(posLow+1);
 	pHighCell =  getCellAtPos(getPoint());
+	pPrevCell = getCellAtPos(iOldPoint);
 		
 	// if the anchor was in a table but the current point is not
 	if( isInTable(posLow+1) && !isInTable(iNewPoint) ){
@@ -3694,7 +3696,8 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 		return;
 	// if the selection anchor is not in a table we do the normal non-table selection
 	// or if we are selecting text in one cell
-	}else if( !isInTable(posLow) || ( pLowCell != NULL && pLowCell == pHighCell ) ){
+	}else if( !isInTable(posLow) || ( pLowCell != NULL && pLowCell == pHighCell && pHighCell == pPrevCell) ){
+		if( pLowCell != NULL && pLowCell == pHighCell ) UT_DEBUGMSG(("\n\nNOT IN TABLE"));
 		if(iOldPoint < iNewPoint)
 			_drawBetweenPositions(iOldPoint, iNewPoint);
 		else
@@ -3809,7 +3812,7 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 				
 				// determing points for our redraw/clear
 				// getting left top doc pos of our first cell
-				tmpCell = static_cast<fl_CellLayout *>(table->getCellAtRowColumn(row, iLeftSelEnd)->getSectionLayout());
+				/*tmpCell = static_cast<fl_CellLayout *>(table->getCellAtRowColumn(row, iLeftSelEnd)->getSectionLayout());
 				PL_StruxDocHandle sdh = tmpCell->getStruxDocHandle();
 				pos1 = getDocument()->getStruxPosition(sdh) +1;
 				
@@ -3823,7 +3826,7 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 				if( bShrink )
 					_clearBetweenPositions(pos1, pos2, true);
 				else
-					_drawBetweenPositions(pos1, pos2);
+					_drawBetweenPositions(pos1, pos2);*/
 			}
 			
 			// We need to add/delete a partial column
@@ -3861,10 +3864,10 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 			// !!! NEED TO USE POS1 AND POS2 HERE BUT THEY ARE NOT YET CALCULATED CORRECT
 			// !!! WHOLE DOCUMENT IS REDRAWN ATM THIS HAS TO CHANGE OFC!
 			// need to draw or clear our selection between the right points  			
-			/*if( bShrink )
+			if( bShrink )
 				_clearBetweenPositions(posBOD, posEOD, true);
 			else
-				_drawBetweenPositions(posBOD, posEOD);*/
+				_drawBetweenPositions(posBOD, posEOD);
 		}
 	}
 }
