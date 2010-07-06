@@ -205,7 +205,11 @@ void FV_View::_clearSelection(void)
 	}
 
 	UT_uint32 iPos1, iPos2;
-	if(m_Selection.getSelectionMode() < FV_SelectionMode_Multiple)
+	
+//
+// REGULAR TEXT SELECTION, anchors are set!
+//
+	if(m_Selection.getSelectionMode() != FV_SelectionMode_InTable)
 	{
 		if (m_Selection.getSelectionAnchor() < getPoint())
 		{
@@ -227,6 +231,9 @@ void FV_View::_clearSelection(void)
 
  		_drawBetweenPositions(iPos1, iPos2);
 	}
+// 
+// TABLE SELECTION ( selection of cells, not text in table ), no anchors!
+//
 	else
 	{
 		UT_sint32 i = 0;
@@ -249,7 +256,7 @@ void FV_View::_clearSelection(void)
 				{
 					iPos2++;
 				}
-				/*bool bres =*/ _clearBetweenPositions(iPos1, iPos2, true);
+				_clearBetweenPositions(iPos1, iPos2, true);
 			}
 		}
 		_resetSelection();
@@ -269,6 +276,7 @@ void FV_View::_clearSelection(void)
 		}
 		UT_VECTOR_PURGEALL(PD_DocumentRange *,vecRanges);
 	}
+	
 	_resetSelection();
 	m_iLowDrawPoint = 0;
 	m_iHighDrawPoint = 0;
@@ -3666,10 +3674,8 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 	getEditableBounds(false,posBOD);
 	getEditableBounds(true,posEOD);
 	
-	// 14 apr 2010
-	// Think I FIXED a ( unknown ) BUG here!!! The conditions are wrong.
-	// The last check should be against dOldPoint not dNewPoint
-	// Also merged the sequent if's.
+	// selection anchor beyond document end/beginning?
+	// old anchor equals new anchor?
 	if(dNewPoint < posBOD || dNewPoint > posEOD || dOldPoint < posBOD
 	   || dOldPoint > posEOD || iNewPoint == iOldPoint )
 		return;
@@ -3686,7 +3692,7 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 		// we have to choose.. cancel selection or just ignore
 		// let's choose ignore for now
 		return;
-	// if the selection anchor is not in a table we do the normal selection
+	// if the selection anchor is not in a table we do the normal non-table selection
 	// or if we are selecting text in one cell
 	}else if( !isInTable(posLow) || ( pLowCell != NULL && pLowCell == pHighCell ) ){
 		if(iOldPoint < iNewPoint)
@@ -3715,6 +3721,7 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 		    
 			/*------------------------------------------------------------------
 			 * Determine the borders of the old and new rectangular selection
+			 * Set them with setRectTableSel(...)
 			 *----------------------------------------------------------------*/	 						
 			UT_sint32 iLeftSelEnd, iRightSelEnd, iBotSelEnd, iTopSelEnd, 
 					  iOldLeft, iOldRight, iOldBot, iOldTop;
@@ -3725,8 +3732,8 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 			m_Selection.setRectTableSel(iLeftSelEnd, iRightSelEnd, iTopSelEnd, iBotSelEnd);
 			
 			// For now we print the rectangle for debug purposes
-			UT_DEBUGMSG(("SELECTED RECTANGLE:\n\tleft attach: %d\n\tright attach: %d\n\tbottom attach: %d\n\ttop attach: %d\n",
-			iLeftSelEnd, iRightSelEnd, iBotSelEnd, iTopSelEnd));	
+			/*UT_DEBUGMSG(("SELECTED RECTANGLE:\n\tleft attach: %d\n\tright attach: %d\n\tbottom attach: %d\n\ttop attach: %d\n",
+			iLeftSelEnd, iRightSelEnd, iBotSelEnd, iTopSelEnd));	*/
 			
 			
 			/*------------------------------------------------------------------
@@ -3771,6 +3778,8 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 			
 			/*------------------------------------------------------------------
 			 * making adjustements to the selection
+			 * expand selection with addCellToSelection(cell)
+			 * then draw the new part with clear/drawBetweenPosition(a, b)
 			 *----------------------------------------------------------------*/			 
 			fl_TableLayout* tableLayout = getTableAtPos(posLow);
 			fp_TableContainer* table = static_cast<fp_TableContainer *>(tableLayout->getFirstContainer());
@@ -3791,16 +3800,16 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 					tmpCell = static_cast<fl_CellLayout *>(table->getCellAtRowColumn(row,iCol)->getSectionLayout());
 					if(!bShrink){
 						m_Selection.addCellToSelection(tmpCell);
-						UT_DEBUGMSG(("Row constant, Added cell at row: %d col: %d\n",row,iCol));
+						//UT_DEBUGMSG(("Row constant, Added cell at row: %d col: %d\n",row,iCol));
 					}else{
-						UT_DEBUGMSG(("Row constant, Deleted cell at row: %d col: %d\n",row,iCol));
+						//UT_DEBUGMSG(("Row constant, Deleted cell at row: %d col: %d\n",row,iCol));
 						m_Selection.removeCellFromSelection(tmpCell);
 					}	
 				}
 				
 				// determing points for our redraw/clear
 				// getting left top doc pos of our first cell
-				/*tmpCell = static_cast<fl_CellLayout *>(table->getCellAtRowColumn(row, iLeftSelEnd)->getSectionLayout());
+				tmpCell = static_cast<fl_CellLayout *>(table->getCellAtRowColumn(row, iLeftSelEnd)->getSectionLayout());
 				PL_StruxDocHandle sdh = tmpCell->getStruxDocHandle();
 				pos1 = getDocument()->getStruxPosition(sdh) +1;
 				
@@ -3814,7 +3823,7 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 				if( bShrink )
 					_clearBetweenPositions(pos1, pos2, true);
 				else
-					_drawBetweenPositions(pos1, pos2);*/
+					_drawBetweenPositions(pos1, pos2);
 			}
 			
 			// We need to add/delete a partial column
@@ -3852,10 +3861,10 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 			// !!! NEED TO USE POS1 AND POS2 HERE BUT THEY ARE NOT YET CALCULATED CORRECT
 			// !!! WHOLE DOCUMENT IS REDRAWN ATM THIS HAS TO CHANGE OFC!
 			// need to draw or clear our selection between the right points  			
-			if( bShrink )
+			/*if( bShrink )
 				_clearBetweenPositions(posBOD, posEOD, true);
 			else
-				_drawBetweenPositions(posBOD, posEOD);
+				_drawBetweenPositions(posBOD, posEOD);*/
 		}
 	}
 }
@@ -3872,9 +3881,6 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 	getEditableBounds(false,posBOD);
 	getEditableBounds(true,posEOD);
 	
-	// 14 apr 2010
-	// Think I FIXED a ( unknown ) BUG here!!! The conditions are wrong.
-	// The last check should be against dOldPoint not dNewPoint
 	if(dNewPoint < posBOD || dNewPoint > posEOD || dOldPoint < posBOD 
 	|| dOldPoint > posEOD)
 		return;
@@ -5152,15 +5158,6 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 		return;
 	if(!m_pDoc->isPieceTableChanging())
 	{
-		
-		// assignement for GSoC
-		if( isInTable() ){
-			// coordinates of cell relative to table
-			UT_sint32 l, r, t, b;
-			if(getCellParams(pt, &l, &r, &t, &b))
-				UT_DEBUGMSG(("Cell position:\nLeft:   %d\nRight:  %d\nTop:    %d\nBottom: %d\n", l, r, t, b));
-			
-		}
 //
 // Have to deal with special case of point being exactly on a footnote/endnote
 // boundary. Move the point past the footnote so we always have Footnote field

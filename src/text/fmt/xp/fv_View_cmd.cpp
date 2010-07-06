@@ -729,6 +729,14 @@ void  FV_View::cmdSelectTOC(UT_sint32 x, UT_sint32 y)
 }
 
 /*!
+ * Select the row of the table  identified by the document position 
+ * posOfRow
+ */
+bool FV_View::cmdSelectRow(PT_DocPosition posOfRow){
+	UT_DEBUGMSG(("ROW SELECTED!!!!"));
+}
+
+/*!
  * Select the column of the table  identified by the document position 
  * posOfColumn
  */
@@ -765,8 +773,12 @@ bool FV_View::cmdSelectColumn(PT_DocPosition posOfColumn)
 //
 // Ok set the selection type to that of a column
 //
-	m_Selection.setMode(FV_SelectionMode_TableColumn);
+	m_Selection.setMode(FV_SelectionMode_InTable);
 
+//
+// Retreiving the fl_TableLayout of the table we are handling
+// Then set it to your current selection
+//
 	fl_BlockLayout * pBlock = NULL;
 	fp_Run * pRun = NULL;
 	UT_sint32 xCaret, yCaret;
@@ -805,9 +817,23 @@ bool FV_View::cmdSelectColumn(PT_DocPosition posOfColumn)
 		m_Selection.addCellToSelection(pCell);
 		jPrev = j;
 	}
+	
+//
+// We used addCellToSelection, now set our rectangle with setRectTableSel
+//
+	m_Selection.setRectTableSel(iLeft, iRight, iTop, numRows);
+//
+// Draw selection
+//
 	PD_DocumentRange * pRange = getNthSelection(getNumSelections()-1);
 	_setPoint(pRange->m_pos2);
-	_drawSelection();
+	
+	PT_DocPosition posBOD,posEOD;
+	getEditableBounds(false,posBOD);
+	getEditableBounds(true,posEOD);
+	_drawBetweenPositions(posBOD, posEOD);
+	
+	//_drawSelection();
 	notifyListeners(AV_CHG_MOTION);
 	return true;
 }

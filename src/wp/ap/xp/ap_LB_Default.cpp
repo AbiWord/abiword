@@ -70,6 +70,7 @@
 #define _CTF		EV_EMC_FRAME
 #define _CVD		EV_EMC_VISUALTEXTDRAG
 #define _CTC		EV_EMC_TOPCELL
+#define _CLC        EV_EMC_LEFTCELL
 #define _CTO		EV_EMC_TOC
 #define _CPO		EV_EMC_POSOBJECT
 #define _CMA		EV_EMC_MATH
@@ -176,12 +177,13 @@ ap_bs_Mouse MouseTable[] =
 
 //	Button-1, TableLine-context
 
-	{_CTV _B1,	{ "beginVDrag",		 "clearSetCols", "dragVline",	"",		"endDragVline",	""				}},
-	{_CTH _B1,	{ "beginHDrag",		 "clearSetRows", "dragHline",	"",		"endDragHline",	""				}},
-	{_CTC _B1,	{ "selectColumnClick","clearSetCols", "dragHline",	"",		"endDragVline",	""				}},
-	{_CTC _B2,	{ "selectColumnClick","clearSetCols", "dragHline",	"",		"endDragVline",	""				}},
-
-
+	{_CTV _B1,	{ "beginVDrag",		    "clearSetCols",     "dragVline",	"",		"endDragVline",	""				}},
+	{_CTH _B1,	{ "beginHDrag",		    "clearSetRows",     "dragHline",	"",		"endDragHline",	""				}},
+	{_CTC _B1,	{ "selectColumnClick",  "clearSetCols",     "dragHline",	"",		"endDragVline",	""				}},
+	{_CTC _B2,	{ "selectColumnClick",  "clearSetCols",     "dragHline",	"",		"endDragVline",	""				}},
+    {_CLC _B1,	{ "selectRowClick",     "",                 "",	            "",		""            , ""				}},
+    {_CLC _B2,	{ "selectRowClick",     "",                 "",	            "",		""            , ""				}},
+    
 //	Button-1, ImageSize-context
 //  { context	{ click				doubleclick		drag,		dbldrag,	release,		doublerelease	}},
 //	{_CI _B1,	{ "startImageSize",	"",				"dragImageSize","",		"endImageSize",	""				}},

@@ -47,27 +47,28 @@ typedef UT_uint32 EV_EditMouseContext;								/* may not be ORed */
 //			0xe0000000 >> 27 = 28, which is bigger than EV_COUNT_EMC. I therefor
 //			rearranged the values. I just hope noone ever was so stupid to use 
 //			hardcoded values...
-#define EV_EMC__MASK__			((EV_EditMouseContext) 0xf8000000)
+//                                                                      EMC
+#define EV_EMC__MASK__			((EV_EditMouseContext) 0xf8000000)      
 #define EV_EMC_UNKNOWN			((EV_EditMouseContext) 0x08000000)
-#define EV_EMC_TEXT				((EV_EditMouseContext) 0x10000000)
-#define EV_EMC_LEFTOFTEXT		((EV_EditMouseContext) 0x18000000)
-#define EV_EMC_MISSPELLEDTEXT	((EV_EditMouseContext) 0x20000000)
-#define EV_EMC_IMAGE			((EV_EditMouseContext) 0x28000000)
-#define EV_EMC_IMAGESIZE		((EV_EditMouseContext) 0x30000000)
-#define EV_EMC_FIELD			((EV_EditMouseContext) 0x38000000)
-#define EV_EMC_HYPERLINK		((EV_EditMouseContext) 0x40000000)
-#define EV_EMC_RIGHTOFTEXT		((EV_EditMouseContext) 0x48000000)
-#define EV_EMC_REVISION		    ((EV_EditMouseContext) 0x50000000)
-#define EV_EMC_VLINE            ((EV_EditMouseContext) 0x58000000)
-#define EV_EMC_HLINE            ((EV_EditMouseContext) 0x60000000)
-#define EV_EMC_FRAME            ((EV_EditMouseContext) 0x68000000)
-#define EV_EMC_VISUALTEXTDRAG   ((EV_EditMouseContext) 0x70000000)
-#define EV_EMC_TOPCELL          ((EV_EditMouseContext) 0x78000000)
-#define EV_EMC_TOC              ((EV_EditMouseContext) 0x80000000)
-#define EV_EMC_POSOBJECT        ((EV_EditMouseContext) 0x88000000)
-#define EV_EMC_MATH             ((EV_EditMouseContext) 0x90000000)
-#define EV_EMC_EMBED            ((EV_EditMouseContext) 0x98000000)
-#define EV_EMC_LEFTCELL         ((EV_EditMouseContext) 0xa0000000)
+#define EV_EMC_TEXT				((EV_EditMouseContext) 0x10000000)      // 1
+#define EV_EMC_LEFTOFTEXT		((EV_EditMouseContext) 0x18000000)      // 2
+#define EV_EMC_MISSPELLEDTEXT	((EV_EditMouseContext) 0x20000000)      // 3
+#define EV_EMC_IMAGE			((EV_EditMouseContext) 0x28000000)      // 4
+#define EV_EMC_IMAGESIZE		((EV_EditMouseContext) 0x30000000)      // 5
+#define EV_EMC_FIELD			((EV_EditMouseContext) 0x38000000)      // 6
+#define EV_EMC_HYPERLINK		((EV_EditMouseContext) 0x40000000)      // 7
+#define EV_EMC_RIGHTOFTEXT		((EV_EditMouseContext) 0x48000000)      // 8
+#define EV_EMC_REVISION		    ((EV_EditMouseContext) 0x50000000)      // 9
+#define EV_EMC_VLINE            ((EV_EditMouseContext) 0x58000000)      // 10
+#define EV_EMC_HLINE            ((EV_EditMouseContext) 0x60000000)      // 11
+#define EV_EMC_FRAME            ((EV_EditMouseContext) 0x68000000)      // 12
+#define EV_EMC_VISUALTEXTDRAG   ((EV_EditMouseContext) 0x70000000)      // 13
+#define EV_EMC_TOPCELL          ((EV_EditMouseContext) 0x78000000)      // 14
+#define EV_EMC_TOC              ((EV_EditMouseContext) 0x80000000)      // 15
+#define EV_EMC_POSOBJECT        ((EV_EditMouseContext) 0x88000000)      // 16
+#define EV_EMC_MATH             ((EV_EditMouseContext) 0x90000000)      // 17
+#define EV_EMC_EMBED            ((EV_EditMouseContext) 0x98000000)      // 18
+#define EV_EMC_LEFTCELL         ((EV_EditMouseContext) 0xa0000000)      // 19
 
 // NB: the following two values are not included in EV_COUNT_EMC
 // because they are not used in the bindings, and are, therefore,

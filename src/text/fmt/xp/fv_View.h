@@ -744,6 +744,7 @@ public:
 	bool                cmdInsertCol(PT_DocPosition posTable, bool bBefore);
 	bool                cmdSplitCells(AP_CellSplitType iSplitType);
 	bool                cmdSelectColumn(PT_DocPosition posOfColumn);
+	bool                cmdSelectRow(PT_DocPosition posOfRow);
 	bool                cmdAutoFitTable(void);
 	bool                cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestination);
 	bool                cmdTableToText(PT_DocPosition posSource,UT_sint32 iSepType);

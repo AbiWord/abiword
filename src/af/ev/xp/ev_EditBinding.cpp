@@ -206,6 +206,7 @@ static EV_EditBits MakeMouseEditBits( UT_uint32 button, UT_uint32 op, UT_uint32 
 		case 16: eb |= EV_EMC_POSOBJECT; break;
 		case 17: eb |= EV_EMC_MATH; break;
 		case 18: eb |= EV_EMC_EMBED; break;
+		case 19: eb |= EV_EMC_LEFTCELL; break;
 		default: UT_ASSERT(UT_SHOULD_NOT_HAPPEN); break;
 	}
 	return eb;
@@ -350,9 +351,11 @@ EV_EditBinding * EV_EditBindingMap::findEditBinding(EV_EditBits eb)
 		class ev_EB_MouseTable * p = m_pebMT[n_emb];
 		if (!p)
 			return 0;					// no bindings of anykind for this mouse button
+		
 		UT_uint32 n_emo = EV_EMO_ToNumber(eb)-1;
 		UT_uint32 n_ems = EV_EMS_ToNumber(eb);
 		UT_uint32 n_emc = EV_EMC_ToNumber(eb);
+		UT_DEBUGMSG(("MOUSE PARAMETERS emo %d  ems %d  emc %d\n", n_emo, n_ems, n_emc));
 		return p->m_peb[n_emo][n_ems][n_emc];
 
 	}

@@ -297,6 +297,7 @@ public:
 	static EV_EditMethod_Fn selectCell;
 	static EV_EditMethod_Fn selectColumn;
 	static EV_EditMethod_Fn selectColumnClick;
+	static EV_EditMethod_Fn selectRowClick;
 	static EV_EditMethod_Fn selectMath;
 	static EV_EditMethod_Fn selectTOC;
 
@@ -1103,6 +1104,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(selectMath),			0,	""),
 	EV_EditMethod(NF(selectObject), 		0,	""),
 	EV_EditMethod(NF(selectRow),			0,	""),
+	EV_EditMethod(NF(selectRowClick),			0,	""),
 	EV_EditMethod(NF(selectTOC),			0,	""),
 	EV_EditMethod(NF(selectTable),			0,	""),
 	EV_EditMethod(NF(selectWord),			0,	""),
@@ -5501,6 +5503,7 @@ Defun(selectMath)
 
 Defun1(selectRow)
 {
+UT_DEBUGMSG(("LOLIE BOLIE"));
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, false);
@@ -5539,6 +5542,7 @@ Defun1(selectRow)
 	posEndRow = pDoc->getStruxPosition(endRowSDH)+1;
 	pView->cmdSelect(posStartRow,posEndRow);
 	pView->setSelectionMode(FV_SelectionMode_TableRow);
+	UT_DEBUGMSG(("LOLIE BOLIE"));
 	return true;
 }
 
@@ -5584,6 +5588,7 @@ Defun1(selectColumn)
 
 Defun(selectColumnClick)
 {
+	UT_DEBUGMSG(("\n\nHEYAAAA1\n\n"));
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, false);
@@ -5598,6 +5603,22 @@ Defun(selectColumnClick)
 	return true;
 }
 
+Defun(selectRowClick)
+{
+	UT_DEBUGMSG(("\n\nHEYAAAA2\n\n"));
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
+	UT_sint32 y = pCallData->m_yPos;
+	UT_sint32 x = pCallData->m_xPos;
+	PT_DocPosition pos = pView->getDocPositionFromXY(x,y);
+	if(!pView->isInTable(pos))
+	{
+		return false;
+	}
+	//pView->cmdSelectColumn(pos);
+	return true;
+}
 
 static void sActualDelLeft(AV_View *  pAV_View, EV_EditMethodCallData * /*pCallData*/)
 {

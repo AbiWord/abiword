@@ -2929,6 +2929,7 @@ void FV_View::moveInsPtTo(FV_DocPos dp, bool bClearSelection)
 	{
 		if (!isSelectionEmpty())
 			_clearSelection();
+			
 	}
 
 

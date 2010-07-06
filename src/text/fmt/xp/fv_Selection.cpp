@@ -101,6 +101,13 @@ void  FV_Selection::setSelectAll(bool bSelectAll)
 }
 void FV_Selection::setMode(FV_SelectionMode iSelMode)
 {
+    // WE SHOULD NO LONGER USE THE ROW AND COL MODES, ALL SHOULD BE IN_TABLE
+    if( iSelMode == FV_SelectionMode_TableColumn || iSelMode == FV_SelectionMode_TableRow )
+    {
+        xxx_UT_DEBUGMSG(("USING A DEPRACATED SELECTION MODE!!! FIX THIS!!!"));
+    }
+    
+    // shouldn't this be '&&' ?
 	if( (m_iSelectionMode != FV_SelectionMode_NONE) || (iSelMode !=  FV_SelectionMode_NONE))
 	{
 		m_iPrevSelectionMode = m_iSelectionMode;
@@ -115,8 +122,6 @@ void FV_Selection::setMode(FV_SelectionMode iSelMode)
 	}
 	m_iSelectionMode = iSelMode;
 	
-	// 16 april 2010 BUG FIX!!
-	// this should be '==' and not '!=' I think?
 	if(m_iSelectionMode == FV_SelectionMode_NONE)
 	{
 		m_pTableOfSelectedColumn = NULL;
@@ -346,6 +351,8 @@ bool FV_Selection::getRectTableSel
 }
 
 /*! Set the attach values of the table selection rectangle
+*   This won't add cells to a selection properly, one should use
+    addCellToSelection(..) for that.
 */
 void FV_Selection::setRectTableSel
 (UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bottom)
@@ -456,7 +463,8 @@ void FV_Selection::clearSelection(void)
 void FV_Selection::setTableLayout(fl_TableLayout * pFL)
 {
 	UT_ASSERT((m_iSelectionMode == 	FV_SelectionMode_TableColumn) 
-			  || ( m_iSelectionMode == 	FV_SelectionMode_TableRow));
+			  || ( m_iSelectionMode == 	FV_SelectionMode_TableRow) 
+			  || ( m_iSelectionMode == 	FV_SelectionMode_InTable));
 	m_pTableOfSelectedColumn = pFL;
 }
 
@@ -476,6 +484,8 @@ void FV_Selection::addSelectedRange(PT_DocPosition /*posLow*/, PT_DocPosition /*
 bool FV_Selection::removeCellFromSelection(fl_CellLayout* pCell){
     
     // this should only be done in the right selection modes!
+    // all table selections should use mode InTable so this should be only
+    // assert here, for now ( compatibility ) I check others too
     UT_ASSERT((m_iSelectionMode == 	FV_SelectionMode_TableColumn) 
 	    || ( m_iSelectionMode == 	FV_SelectionMode_TableRow)
 	    || ( m_iSelectionMode == FV_SelectionMode_InTable));
@@ -546,7 +556,7 @@ bool FV_Selection::removeCellFromSelection(fl_CellLayout* pCell){
 	
 	
 	/*-----------------------------------------------------------------
-    *  removing it from RTF buffers
+    *  removing it from RTF copy buffers
     *----------------------------------------------------------------*/
     // needs to be done!
     // don't really know how to find the right one in the vector..
