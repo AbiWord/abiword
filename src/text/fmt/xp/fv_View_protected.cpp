@@ -190,6 +190,7 @@ void FV_View::_eraseSelection(void)
 // guessing because of the drawBetweenPositions
 void FV_View::_clearSelection(void)
 {
+	UT_DEBUGMSG(("CLEAR CALLED\n"));
 	if( isSelectionEmpty() )
 	{
 		return;
@@ -234,9 +235,28 @@ void FV_View::_clearSelection(void)
 // 
 // TABLE SELECTION ( selection of cells, not text in table ), no anchors!
 //
+/*
+ * NEEDED: way faster way of clearing selection in a table, this one is VERY SLOW
+ *         I will try this: Purge the 3 vectors and redraw whole table only 1 time
+ *		   I left the old code in comment for now.
+ */
 	else
 	{
-		UT_sint32 i = 0;
+		UT_DEBUGMSG(("CLEAR TABLE CALLED\n"));
+		_resetSelection();
+		
+		//
+		// FOR NOW REDRAW WHOLE PAGE
+		// TODO: figure out correct area to redraw!!
+		PT_DocPosition posBOD,posEOD;
+		getEditableBounds(false,posBOD);
+		getEditableBounds(true,posEOD);
+		
+		// clear area
+		_clearBetweenPositions(posBOD, posEOD, true);
+		
+		
+		/*UT_sint32 i = 0;
 		UT_GenericVector<PD_DocumentRange *> vecRanges;
 
 		for(i=0; i<m_Selection.getNumSelections();i++)
@@ -274,7 +294,7 @@ void FV_View::_clearSelection(void)
 				_drawBetweenPositions(iPos1, iPos2);
 			}
 		}
-		UT_VECTOR_PURGEALL(PD_DocumentRange *,vecRanges);
+		UT_VECTOR_PURGEALL(PD_DocumentRange *,vecRanges);*/
 	}
 	
 	_resetSelection();
@@ -3690,14 +3710,16 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 	pPrevCell = getCellAtPos(iOldPoint);
 		
 	// if the anchor was in a table but the current point is not
-	if( isInTable(posLow+1) && !isInTable(iNewPoint) ){
+	if( isInTable(posLow+1) && !isInTable(iNewPoint) )
+	{
 		// we have to choose.. cancel selection or just ignore
 		// let's choose ignore for now
 		return;
 	// if the selection anchor is not in a table we do the normal non-table selection
 	// or if we are selecting text in one cell
-	}else if( !isInTable(posLow) || ( pLowCell != NULL && pLowCell == pHighCell && pHighCell == pPrevCell) ){
-		if( pLowCell != NULL && pLowCell == pHighCell ) UT_DEBUGMSG(("\n\nNOT IN TABLE"));
+	}
+	else if( !isInTable(posLow) || ( pLowCell != NULL && pLowCell == pHighCell && pHighCell == pPrevCell) ){
+		
 		if(iOldPoint < iNewPoint)
 			_drawBetweenPositions(iOldPoint, iNewPoint);
 		else
@@ -3716,12 +3738,15 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 	// if the selection anchor was in a table and the current pos is too
 	// and both are not in the same cell ( = anchor )
 	// we do rectangular table selection
-	}else{		
+	}
+	else
+	{		
 		// Changed this so we only execute the code when a new cell is entered with the mousepointer
 		// AND when we are in the same table the anchor is in
 		if( (pLowCell != NULL) && ( pHighCell != getCellAtPos(iOldPoint)) &&
 			getTableAtPos(getSelectionAnchor()) == getTableAtPos(iNewPoint) ){
 		    
+		    UT_DEBUGMSG(("CALLED!!!!\n\n\n"));
 			/*------------------------------------------------------------------
 			 * Determine the borders of the old and new rectangular selection
 			 * Set them with setRectTableSel(...)
@@ -3753,7 +3778,8 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 			
 			// where are the changed cells ?
 			// SHRINK
-			if(!bShrink){
+			if(!bShrink)
+			{
 				// horizontal
 				if( iOldTop != iTopSelEnd )
 					row = iTopSelEnd;
@@ -3765,7 +3791,9 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 				else if( iOldRight != iRightSelEnd )
 					col = iRightSelEnd-1;
 			// EXPAND
-			}else{
+			}
+			else
+			{
 				// horizontal
 				if( iOldTop != iTopSelEnd )
 					row = iOldTop;
@@ -3792,82 +3820,85 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 			m_Selection.setMode(FV_SelectionMode_InTable);
 			
 			// special case, we want the anchor cell to be added too
-			if( pLowCell == getCellAtPos(iOldPoint) ){
+			if( pLowCell == getCellAtPos(iOldPoint) )
+			{
 				tmpCell = static_cast<fl_CellLayout *>(pLowCell->getSectionLayout());
 				m_Selection.addCellToSelection(tmpCell);	
 			}	
 			
-			// We need to add/delete a partial row
-			if( row >= 0 ){
-				for(int iCol = iLeftSelEnd; iCol <= iRightSelEnd-1; iCol++){
-					tmpCell = static_cast<fl_CellLayout *>(table->getCellAtRowColumn(row,iCol)->getSectionLayout());
-					if(!bShrink){
-						m_Selection.addCellToSelection(tmpCell);
-						//UT_DEBUGMSG(("Row constant, Added cell at row: %d col: %d\n",row,iCol));
-					}else{
-						//UT_DEBUGMSG(("Row constant, Deleted cell at row: %d col: %d\n",row,iCol));
-						m_Selection.removeCellFromSelection(tmpCell);
-					}	
-				}
-				
-				// determing points for our redraw/clear
-				// getting left top doc pos of our first cell
-				/*tmpCell = static_cast<fl_CellLayout *>(table->getCellAtRowColumn(row, iLeftSelEnd)->getSectionLayout());
+	//--------------------------------------------------------------------------
+	// We need to add/delete a partial row
+	//--------------------------------------------------------------------------
+			if( row >= 0 )
+			{	
+				// determing top left pos of the cell
+				tmpCell = static_cast<fl_CellLayout *>(table->getCellAtRowColumn(row,iLeftSelEnd)->getSectionLayout());
 				PL_StruxDocHandle sdh = tmpCell->getStruxDocHandle();
-				pos1 = getDocument()->getStruxPosition(sdh) +1;
+				pos1 = getDocument()->getStruxPosition(sdh);
 				
-				// getting bottom right doc pos of our last cell
-				tmpCell = static_cast<fl_CellLayout *>(table->getCellAtRowColumn(row, iRightSelEnd-1)->getSectionLayout());
-				PL_StruxDocHandle sdhStart = tmpCell->getStruxDocHandle();
+				// change selection
+				for(int iCol = iLeftSelEnd; iCol <= iRightSelEnd-1; iCol++)
+				{
+					tmpCell = static_cast<fl_CellLayout *>(table->getCellAtRowColumn(row,iCol)->getSectionLayout());			
+					
+					if(!bShrink) m_Selection.addCellToSelection(tmpCell);
+					else		 m_Selection.removeCellFromSelection(tmpCell);					
+				}
+					
+				// determing the bottom right position of the cell
+				tmpCell = static_cast<fl_CellLayout *>(table->getCellAtRowColumn(row,iRightSelEnd-1)->getSectionLayout());
+				sdh = tmpCell->getStruxDocHandle();
 				PL_StruxDocHandle sdhEnd = NULL;
-				getDocument()->getNextStruxOfType(sdhStart,PTX_EndCell,&sdhEnd);
-				pos2 = getDocument()->getStruxPosition(sdhEnd) -1;
+				getDocument()->getNextStruxOfType(sdh,PTX_EndCell,&sdhEnd);
+				pos2 = getDocument()->getStruxPosition(sdhEnd);
 				
-				if( bShrink )
-					_clearBetweenPositions(pos1, pos2, true);
-				else
-					_drawBetweenPositions(pos1, pos2);*/
+				// Because redrawing a row is the same 'run' we do it all at once,
+				// not each cell on its own like we handle columns
+				// => attempt to reduce flickering and/or lagging
+				if(bShrink)	_clearBetweenPositions(pos1, pos2, true);
+				else		_drawBetweenPositions(pos1, pos2);		
 			}
 			
-			// We need to add/delete a partial column
-			if( col >= 0 ){
-				for(int iRow = iTopSelEnd; iRow <= iBotSelEnd-1; iRow++){
+	//--------------------------------------------------------------------------
+	// We need to add/delete a partial column
+	//--------------------------------------------------------------------------
+			if( col >= 0 )
+			{
+				for(int iRow = iTopSelEnd; iRow <= iBotSelEnd-1; iRow++)
+				{
 					tmpCell = static_cast<fl_CellLayout *>(table->getCellAtRowColumn(iRow,col)->getSectionLayout());
-					if(!bShrink){
+					
+					// determing top left pos of the cell
+					PL_StruxDocHandle sdh = tmpCell->getStruxDocHandle();
+					pos1 = getDocument()->getStruxPosition(sdh);
+					
+					// determing the bottom right position of the cell
+					PL_StruxDocHandle sdhEnd = NULL;
+					getDocument()->getNextStruxOfType(sdh,PTX_EndCell,&sdhEnd);
+					pos2 = getDocument()->getStruxPosition(sdhEnd);				
+					
+					// testing
+					
+					if(!bShrink)
+					{
 						m_Selection.addCellToSelection(tmpCell);
-						UT_DEBUGMSG(("Col constant, Added cell at row: %d col: %d\n",iRow,col));
-					}else{
-						UT_DEBUGMSG(("Col constant, Deleted cell at row: %d col: %d\n",iRow,col));
+						_drawBetweenPositions(pos1, pos2);
+					}
+					else
+					{
 						m_Selection.removeCellFromSelection(tmpCell);
+						_clearBetweenPositions(pos1, pos2, true);
 					}
 				}
-				
-				// determing points for our redraw/clear
-				// getting left top doc pos of our first cell
-				/*tmpCell = static_cast<fl_CellLayout *>(table->getCellAtRowColumn(iTopSelEnd,col)->getSectionLayout());
-				PL_StruxDocHandle sdh = tmpCell->getStruxDocHandle();
-				pos1 = getDocument()->getStruxPosition(sdh) +1;
-				
-				// getting bottom right doc pos of our last cell
-				tmpCell = static_cast<fl_CellLayout *>(table->getCellAtRowColumn(iBotSelEnd-1,col)->getSectionLayout());
-				PL_StruxDocHandle sdhStart = tmpCell->getStruxDocHandle();
-				PL_StruxDocHandle sdhEnd = NULL;
-				getDocument()->getNextStruxOfType(sdhStart,PTX_EndCell,&sdhEnd);
-				pos2 = getDocument()->getStruxPosition(sdhEnd) -1;
-				
-				if( bShrink )
-					_clearBetweenPositions(pos1, pos2, true);
-				else
-					_drawBetweenPositions(pos1, pos2);*/
 			}
 			
 			// !!! NEED TO USE POS1 AND POS2 HERE BUT THEY ARE NOT YET CALCULATED CORRECT
 			// !!! WHOLE DOCUMENT IS REDRAWN ATM THIS HAS TO CHANGE OFC!
 			// need to draw or clear our selection between the right points  			
-			if( bShrink )
+			/*if( bShrink )
 				_clearBetweenPositions(posBOD, posEOD, true);
 			else
-				_drawBetweenPositions(posBOD, posEOD);
+				_drawBetweenPositions(posBOD, posEOD);*/
 		}
 	}
 }
@@ -4008,7 +4039,7 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 		_findPositionCoords(iPos1, false, x, y, x2, y2, uheight, bDirection, &pBlock1, &pRun1);
 		_findPositionCoords(iPos2, false, x, y, x2, y2, uheight, bDirection, &pBlock2, &pRun2);
 	}
-
+	
 	UT_return_val_if_fail(pRun1 && pRun2, false );
 	
 	bool bDone = false;
@@ -4020,7 +4051,6 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 	PT_DocPosition posEnd = pBlockEnd->getPosition() + pRun2->getBlockOffset();
 	while ((!bDone || bIsDirty) && pCurRun)
 	{
-
 		fl_BlockLayout* pBlock2 = pCurRun->getBlock();
 		fp_Line * pLine = pCurRun->getLine();
 		if(pLine == NULL || (pLine->getContainer()->getPage()== NULL))
@@ -4037,7 +4067,7 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 		{
 //			break;
 		}
-		xxx_UT_DEBUGMSG(("draw_between positions pos is %d width is %d \n",curpos,pCurRun->getWidth()));
+		xxx_UT_DEBUGMSG(("\ndraw_between positions pos is %d width is %d \n",curpos,pCurRun->getWidth()));
 		UT_return_val_if_fail(pBlock2,false);
 //
 // Look to see if the Block is in a table.
@@ -4058,7 +4088,7 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 					pCellLine->m_pCell = pCell;
 					pCellLine->m_pLine = pLine;
 					pCellLine->m_pBrokenTable = pTab;
-					xxx_UT_DEBUGMSG(("cellLine %x cell %x Table %x Line %x \n",pCellLine,pCellLine->m_pCell,pCellLine->m_pBrokenTable,pCellLine->m_pLine));
+					xxx_UT_DEBUGMSG(("\ncellLine %x cell %x Table %x Line %x \n",pCellLine,pCellLine->m_pCell,pCellLine->m_pBrokenTable,pCellLine->m_pLine));
 					vecTables.addItem(pCellLine);
 					fp_Page * pPage = pTab->getPage();
 					if((pPage != NULL) && (vecPages.findItem(pPage) <0))

@@ -104,10 +104,10 @@ void FV_Selection::setMode(FV_SelectionMode iSelMode)
     // WE SHOULD NO LONGER USE THE ROW AND COL MODES, ALL SHOULD BE IN_TABLE
     if( iSelMode == FV_SelectionMode_TableColumn || iSelMode == FV_SelectionMode_TableRow )
     {
-        xxx_UT_DEBUGMSG(("USING A DEPRACATED SELECTION MODE!!! FIX THIS!!!"));
+        UT_DEBUGMSG(("USING A DEPRACATED SELECTION MODE!!! FIX THIS!!!"));
     }
     
-    // shouldn't this be '&&' ?
+    // shouldn't this be '&&' ? - dzan
 	if( (m_iSelectionMode != FV_SelectionMode_NONE) || (iSelMode !=  FV_SelectionMode_NONE))
 	{
 		m_iPrevSelectionMode = m_iSelectionMode;
