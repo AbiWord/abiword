@@ -63,7 +63,6 @@ AP_Dialog_Border_Shading::AP_Dialog_Border_Shading(XAP_DialogFactory * pDlgFacto
 	  m_bSettingsChanged(false),
 	  m_pAutoUpdaterMC(NULL),
 	  m_borderToggled(false),
-	  m_ApplyTo(FORMAT_TABLE_SELECTION),
 	  m_bDestroy_says_stopupdating(false),
 	  m_bAutoUpdate_happening_now(false),
 	  m_iOldPos(0),
@@ -72,17 +71,26 @@ AP_Dialog_Border_Shading::AP_Dialog_Border_Shading(XAP_DialogFactory * pDlgFacto
 	  m_pImage(NULL),
 	  m_pGraphic(NULL)
 {
-	//
-	// These are hardwired into the GUI.
-	//
-	const char * sThickness[BORDER_SHADING_NUMTHICKNESS] ={"0.25pt","0.5pt",
+	const char * sBordersThickness[BORDER_SHADING_NUMTHICKNESS] ={"0.25pt","0.5pt",
 													   "0.75pt","1.0pt",
 													   "1.5pt","2.25pt","3pt",
 													   "4.5pt","6.0pt"};
+
+	const char * sShadingOffset[BORDER_SHADING_NUMOFFSETS] ={"0.25pt","0.5pt",
+														"0.75pt","1.0pt",
+														"1.5pt","2.25pt","3pt",
+														"4.5pt","6.0pt"};
+
 	UT_sint32 i = 0;
 	for(i=0; i< BORDER_SHADING_NUMTHICKNESS ;i++)
 	{
-		m_dThickness[i] = UT_convertToInches(sThickness[i]);
+		m_dThickness[i] = UT_convertToInches(sBordersThickness[i]);
+	}
+
+	UT_sint32 j = 0;
+	for(j=0; j< BORDER_SHADING_NUMOFFSETS ;j++)
+	{
+		m_dShadingOffset[i] = UT_convertToInches(sShadingOffset[i]);
 	}
 
 	if(m_vecProps.getItemCount() > 0)
@@ -128,7 +136,7 @@ void AP_Dialog_Border_Shading::startUpdater(void)
 	m_bDestroy_says_stopupdating = false;
 	m_bAutoUpdate_happening_now = false;
 	m_pAutoUpdaterMC =  UT_Timer::static_constructor(autoUpdateMC,this);
-	m_pAutoUpdaterMC->set(100); // use a fast time, so the dialogs behaviour looks "snappy"
+	m_pAutoUpdaterMC->set(100); // use a fast time, so the dialogs behavior looks "snappy"
 	m_pAutoUpdaterMC->start();
 }
 
@@ -144,7 +152,7 @@ void AP_Dialog_Border_Shading::stopUpdater(void)
 	m_pAutoUpdaterMC = NULL;
 }
 /*!
- Autoupdater of the dialog.
+ Auto-updater of the dialog.
  */
 void AP_Dialog_Border_Shading::autoUpdateMC(UT_Worker * pTimer)
 {
@@ -165,7 +173,7 @@ void AP_Dialog_Border_Shading::autoUpdateMC(UT_Worker * pTimer)
 
 /*! 
  Sets the sensitivity of the radio buttons to top/bottom/left/right line buttons
- Call this right after contructing the widget and before dropping into the main loop.
+ Call this right after constructing the widget and before dropping into the main loop.
  */
 void AP_Dialog_Border_Shading::setAllSensitivities(void)
 {
@@ -305,11 +313,6 @@ void AP_Dialog_Border_Shading::setCurCellProps(void)
 	}
 }
 
-void AP_Dialog_Border_Shading::setApplyFormatTo(FormatTable applyTo)
-{
-	m_ApplyTo = applyTo;
-}
-
 void AP_Dialog_Border_Shading::applyChanges()
 {
 	UT_DEBUGMSG(("Doing apply changes number props %d \n",m_vecProps.getItemCount()));
@@ -328,7 +331,10 @@ void AP_Dialog_Border_Shading::applyChanges()
 		propsArray[j+1] = static_cast<gchar *>(m_vecProps.getNthItem(j+1));
 	}
 
-	pView->setCellFormat(propsArray, m_ApplyTo,m_pGraphic,m_sImagePath);
+	// Maleesh 7/5/2010 -  
+	pView->setBlockFormat(propsArray);
+// 	pView->setCellFormat(propsArray, m_ApplyTo,m_pGraphic,m_sImagePath);
+
 	delete [] propsArray;
 	m_bSettingsChanged = false;
 }
@@ -394,7 +400,19 @@ void AP_Dialog_Border_Shading::setBorderThickness(UT_UTF8String & sThick)
 	m_vecProps.addOrReplaceProp("bot-thickness",m_sBorderThickness.utf8_str());
 	
 	m_bSettingsChanged = true;
+}
 
+void AP_Dialog_Border_Shading::setBorderStyle(UT_UTF8String & sStyle)
+{
+	m_sBorderStyle = sStyle;
+	if(m_borderToggled)
+		return;
+	m_vecProps.addOrReplaceProp("left-thickness", m_sBorderStyle.utf8_str());
+	m_vecProps.addOrReplaceProp("right-thickness",m_sBorderStyle.utf8_str());
+	m_vecProps.addOrReplaceProp("top-thickness",m_sBorderStyle.utf8_str());
+	m_vecProps.addOrReplaceProp("bot-thickness",m_sBorderStyle.utf8_str());
+
+	m_bSettingsChanged = true;
 }
 
 void AP_Dialog_Border_Shading::setBorderColor(UT_RGBColor clr)
@@ -428,19 +446,25 @@ void AP_Dialog_Border_Shading::clearImage(void)
 
 }
 
-void AP_Dialog_Border_Shading::setBackgroundColor(UT_RGBColor clr)
+void AP_Dialog_Border_Shading::setShadingColor(UT_RGBColor clr)
 {
 	UT_String bgcol = UT_String_sprintf("%02x%02x%02x", clr.m_red, clr.m_grn, clr.m_blu);
 
-	m_vecProps.removeProp ("bg-style"); // Why do we remove this property?  We still use it in frames. -MG
-	m_vecProps.removeProp ("bgcolor"); // this is only here for backward compatibility with AbiWord < 2.0. Could be removed as far as I can see - MARCM
+	// Maleesh 7/5/2010 - Removed. Don't know whether I needed to use this. 
+// 	m_vecProps.removeProp ("bg-style"); // Why do we remove this property?  We still use it in frames. -MG
+// 	m_vecProps.removeProp ("bgcolor"); // this is only here for backward compatibility with AbiWord < 2.0. Could be removed as far as I can see - MARCM
 
 	if (clr.isTransparent ())
-		m_vecProps.removeProp ("background-color");
+		m_vecProps.removeProp ("shading-background-color");
 	else
-		m_vecProps.addOrReplaceProp ("background-color", bgcol.c_str ());
+		m_vecProps.addOrReplaceProp ("shading-background-color", bgcol.c_str ());
 
 	m_bSettingsChanged = true;
+}
+
+void AP_Dialog_Border_Shading::setShadingOffset(UT_UTF8String & sOffset)
+{
+	// Maleesh 7/7/2010 - TODO 
 }
 
 void AP_Dialog_Border_Shading::_createPreviewFromGC(GR_Graphics * gc,
@@ -490,14 +514,13 @@ bool AP_Dialog_Border_Shading::getLeftToggled()
 	return _getToggleButtonStatus("left-style");
 }
 
-
 guint AP_Dialog_Border_Shading::_findClosestThickness(const char *sthickness) const
 {
 	double thickness = UT_convertToInches(sthickness);
-	guint i =0;
+	guint i = 0;
 	guint closest = 0;
 	double dClose = 100000000.;
-	for(i=0; i<BORDER_SHADING_NUMTHICKNESS; i++)
+	for(i = 0; i < BORDER_SHADING_NUMTHICKNESS; i++)
 	{
 		double diff = thickness - m_dThickness[i];
 		if(diff < 0)

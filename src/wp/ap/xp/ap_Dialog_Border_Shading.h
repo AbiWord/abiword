@@ -98,14 +98,15 @@ public:
 		
 	void                                setAllSensitivities(void);
 	void 								setCurCellProps(void);	
-	void								setApplyFormatTo(FormatTable applyTo);
 	void								applyChanges(void);
 	void                                toggleLineType(toggle_button btn, bool enabled);
-	void								setBorderColor(UT_RGBColor clr);
-	void								setBackgroundColor(UT_RGBColor clr);
 	virtual void						setBackgroundColorInGUI(UT_RGBColor clr) = 0;	
+	void								setBorderColor(UT_RGBColor clr);
 	void                                setBorderThickness(UT_UTF8String & sThick);
+	void                                setBorderStyle(UT_UTF8String & sStyle);
 	virtual void                        setBorderThicknessInGUI(UT_UTF8String & sThick) = 0;
+	void								setShadingColor(UT_RGBColor clr);
+	void								setShadingOffset(UT_UTF8String & sOffset);
 	void                                clearImage(void);
 // 	void                                askForGraphicPathName(void);
 // 	void                                ShowErrorBox(UT_String & sFile, UT_Error errorCode);
@@ -124,16 +125,19 @@ public:
 				
 	UT_RGBColor							m_borderColor;
 	UT_sint32							m_lineStyle;
-	gchar *							m_bgFillStyle;
-	UT_PropVector                           m_vecProps;
-	UT_UTF8String                           m_sBorderThickness;
+	gchar *								m_bgFillStyle;
+	UT_PropVector                       m_vecProps;
+	UT_UTF8String                       m_sBorderThickness;
+	UT_UTF8String                       m_sBorderStyle;
 protected:
 	guint                               _findClosestThickness(const char *) const;
-	AP_Dialog_Border_Shading::tAnswer		m_answer;
+	AP_Dialog_Border_Shading::tAnswer	m_answer;
 	char                                m_WindowName[100];
-	AP_Border_Shading_preview				*m_pBorderShadingPreview;
-	AP_Border_Shading_preview_drawer		m_previewDrawer;
+	AP_Border_Shading_preview			*m_pBorderShadingPreview;
+	AP_Border_Shading_preview_drawer	m_previewDrawer;
+
 	double      m_dThickness[BORDER_SHADING_NUMTHICKNESS];
+	double      m_dShadingOffset[BORDER_SHADING_NUMOFFSETS];
 		
 private:
 	bool								_getToggleButtonStatus(const char * lineStyle);
@@ -147,8 +151,6 @@ private:
 	
 	bool								m_borderToggled;
 	
-	FormatTable							m_ApplyTo;
-
 	// Handshake variables
 	bool m_bDestroy_says_stopupdating;
 	bool m_bAutoUpdate_happening_now;

@@ -265,7 +265,7 @@ BOOL AP_Win32Dialog_Border_Shading::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 			cc.Flags = CC_FULLOPEN | CC_RGBINIT;
 			if(ChooseColorW(&cc))			
 			{
-				setBackgroundColor(UT_RGBColor(GetRValue( cc.rgbResult), GetGValue(cc.rgbResult), GetBValue(cc.rgbResult)));						
+				setShadingColor(UT_RGBColor(GetRValue( cc.rgbResult), GetGValue(cc.rgbResult), GetBValue(cc.rgbResult)));						
 				m_backgButton.setColour(cc.rgbResult);
 				/*Force redraw*/
 				InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_BORDERSHADING_BTN_SHADING_COLOR), NULL, FALSE);
