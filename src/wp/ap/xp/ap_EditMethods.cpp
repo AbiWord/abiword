@@ -7280,6 +7280,19 @@ Defun(pasteSelection)
 // this is intended for the X11 middle mouse thing.
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView, false);
+	
+//--------------------------------------------------------------------
+//	TEMPORARLY CODE - DZAN
+//  Using this to mark a row as header untill I made a dialogue.
+//--------------------------------------------------------------------
+	if(pView->isInTable(pView->getPoint()))
+	{
+		pView->cmdMarkRowAsHeader(pView->getPoint());
+	}
+//--------------------------------------------------------------------
+//--------------------------------------------------------------------
+
+
 	pView->cmdPasteSelectionAt(pCallData->m_xPos, pCallData->m_yPos);
 
 	return true;

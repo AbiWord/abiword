@@ -28,11 +28,13 @@ typedef enum _FV_SelectionMode
 {
 	FV_SelectionMode_NONE,
 	FV_SelectionMode_TOC,
-	FV_SelectionMode_TableRow,
+	// DEPRECATED ALL SHOULD BE InTable now!! Should be removed
+	    FV_SelectionMode_TableRow,  
 	FV_SelectionMode_InTable,
 	FV_SelectionMode_Single,
 	FV_SelectionMode_Multiple,
-	FV_SelectionMode_TableColumn
+	// DEPRECATED ALL SHOULD BE InTable now!! Should be removed
+	    FV_SelectionMode_TableColumn
 } FV_SelectionMode;
 
 class UT_ByteBuf;
@@ -91,6 +93,8 @@ public:
 	void                  addSelectedRange(PT_DocPosition posLow, PT_DocPosition posHigh, bool bAddData);
 	bool                  isPosSelected(PT_DocPosition pos) const;
 	bool                  isSelected(void) const;
+	bool                  isSingleTableRowSelected(void) const;
+	bool                  isSingleTableColumnSelected(void) const;
 	void                  clearSelection(void);
 	void                  setTableLayout(fl_TableLayout * pFL);
 	fl_TableLayout *      getTableLayout(void) const;

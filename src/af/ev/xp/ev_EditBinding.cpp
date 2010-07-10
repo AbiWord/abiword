@@ -355,7 +355,7 @@ EV_EditBinding * EV_EditBindingMap::findEditBinding(EV_EditBits eb)
 		UT_uint32 n_emo = EV_EMO_ToNumber(eb)-1;
 		UT_uint32 n_ems = EV_EMS_ToNumber(eb);
 		UT_uint32 n_emc = EV_EMC_ToNumber(eb);
-		UT_DEBUGMSG(("MOUSE PARAMETERS emo %d  ems %d  emc %d\n", n_emo, n_ems, n_emc));
+		//UT_DEBUGMSG(("MOUSE PARAMETERS emo %d  ems %d  emc %d\n", n_emo, n_ems, n_emc));
 		return p->m_peb[n_emo][n_ems][n_emc];
 
 	}

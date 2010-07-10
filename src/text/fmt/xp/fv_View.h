@@ -508,6 +508,8 @@ public:
 	PD_DocumentRange * getNthSelection(UT_sint32 i) const;
 	UT_sint32          getNumSelections(void) const;
 	void            setSelectionMode(FV_SelectionMode selMode);
+	bool                  isSingleTableRowSelected(void) const;
+	bool                  isSingleTableColumnSelected(void) const;
 #ifdef ENABLE_SPELL
 // ----------------------
 // Stuff for spellcheck context menu
@@ -736,6 +738,7 @@ public:
 	bool                _calcRectTableSel(PT_DocPosition anchor, PT_DocPosition pos, 
                         UT_sint32* left, UT_sint32* right, UT_sint32* top, UT_sint32* bot);
 	bool                deleteCellAt(PT_DocPosition posTable,UT_sint32 row, UT_sint32 col);
+	bool                cmdMarkRowAsHeader(PT_DocPosition pos);
 	bool                cmdDeleteCell(PT_DocPosition pos);
 	bool                cmdDeleteCol(PT_DocPosition pos);
 	bool                cmdDeleteRow(PT_DocPosition pos);

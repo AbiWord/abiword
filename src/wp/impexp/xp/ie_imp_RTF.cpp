@@ -2464,7 +2464,7 @@ UT_Error IE_Imp_RTF::_parseText()
     int cNibble = 2;
 	int b = 0;
 	unsigned char c;
-
+	UT_DEBUGMSG(("\n\n PASTING PASTING PASTING BITCHERS 1 \n\n"));
 	// remember the depth of stack on entry, and if the depth of stack
 	// drops bellow this level return (this is so that we can call
 	// this method recursively)
@@ -2624,10 +2624,11 @@ UT_Error IE_Imp_RTF::_parseText()
 			UT_DEBUGMSG(("FlushStoredChars()\n"));
 		}
 	}
+	UT_DEBUGMSG(("\n\n PASTING PASTING PASTING BITCHERS 2\n\n"));
 //	UT_DEBUGMSG(("dumping document\n"));
 //	getDoc()->__dump(stderr);
 	return ok ? UT_OK : UT_ERROR;
-
+	
 }
 
 /*
@@ -2836,7 +2837,7 @@ bool IE_Imp_RTF::StartNewSection()
 // inserted into the document in batches - see FlushStoredChars
 //
 bool IE_Imp_RTF::AddChar(UT_UCSChar ch)
-{
+{	
 	if(!m_gbBlock.ins(m_gbBlock.getLength(), reinterpret_cast<UT_GrowBufElement*>(&ch), 1))
 		return false;
 
@@ -3266,7 +3267,7 @@ bool IE_Imp_RTF::ReadCharFromFileWithCRLF(unsigned char* pCh)
 	else								// else we are pasting from a buffer
 	{
 		if (m_pCurrentCharInPasteBuffer < m_pPasteBuffer+m_lenPasteBuffer)
-		{
+		{		
 			*pCh = *m_pCurrentCharInPasteBuffer++;
 			ok = true;
 		}
@@ -10048,6 +10049,9 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 	}
 	if(bFound)
 	{
+	// DZAN - MUST LOOK AT THIS I THINK !!
+	// determine if row was selected and if it fits in current table
+	// then paste across
 		posTable = getDoc()->getStruxPosition(sdhTable);
 		sdhEndTable = getDoc()->getEndTableStruxFromTableSDH(sdhTable);
 		if(sdhEndTable != NULL)
@@ -10061,11 +10065,26 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 				UT_String sThisTableSDH;
 				UT_String_sprintf(sThisTableSDH,"%x",sdhTable);
 				UT_DEBUGMSG(("sThisTableSDH %s sPasteTableSDH %s \n",sThisTableSDH.c_str(),sPasteTableSDH.c_str()));
-				bool isRow = (pView->getSelectionMode() == FV_SelectionMode_TableRow);
+				
+	//
+	// REPLACED BY DZAN
+	//
+				/*bool isRow = (pView->getSelectionMode() == FV_SelectionMode_TableRow);
 				if(!isRow && pView->getSelectionMode() == FV_SelectionMode_NONE)
 				{
 					isRow = (pView->getPrevSelectionMode() == FV_SelectionMode_TableRow);
+				}*/
+				bool isRow = pView->isSingleTableRowSelected();
+				
+				
+				// Make sure the row we paste in will fit, else do previous kind of paste!
+				/*if( isSingleRow && ( || ) )
+				{
 				}
+				else
+				{
+				}*/
+				
 				if((sThisTableSDH == sPasteTableSDH) && isRow)
 				{
 					UT_DEBUGMSG(("Paste Whole Row into same Table!!!!! \n"));
@@ -11391,7 +11410,7 @@ bool IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 {
 	UT_return_val_if_fail(getDoc() == pDocRange->m_pDoc,false);
 	UT_return_val_if_fail(pDocRange->m_pos1 == pDocRange->m_pos2,false);
-
+	
 	m_pPasteBuffer = pData;
 	m_lenPasteBuffer = lenData;
 	m_pCurrentCharInPasteBuffer = pData;
@@ -11502,6 +11521,7 @@ bool IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	// note, we skip the _writeHeader() call since we don't
 	// want to assume that selection starts with a section
 	// break.
+		UT_DEBUGMSG(("\n\n BUFFER: \n %s \n\n\n",m_pCurrentCharInPasteBuffer));
 	_parseFile(NULL);
 
 	if(m_newParaFlagged)
@@ -11530,6 +11550,7 @@ bool IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	m_pPasteBuffer = NULL;
 	m_lenPasteBuffer = 0;
 	m_pCurrentCharInPasteBuffer = NULL;
+	
 	return true;
 }
 

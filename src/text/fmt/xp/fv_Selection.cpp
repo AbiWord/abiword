@@ -149,6 +149,9 @@ void FV_Selection::setTOCSelected(fl_TOCLayout * pTOCL)
 	setSelectAll(false);
 }
 
+//
+// dzan - This seems never to be called?!?
+//
 void FV_Selection::pasteRowOrCol(void)
 {
 	PL_StruxDocHandle cellSDH,tableSDH;
@@ -362,7 +365,19 @@ void FV_Selection::setRectTableSel
 	m_iTopTableRect = top;
 	m_iBottomTableRect = bottom;
 }
-	                                      
+
+/*! Return true if only a single row is selected */
+bool FV_Selection::isSingleTableRowSelected(void) const
+{
+    return ( m_iTopTableRect == m_iBottomTableRect-1);
+}
+
+/*! Return true if only a single column is selected */
+bool FV_Selection::isSingleTableColumnSelected(void) const
+{
+    return ( m_iLeftTableRect == m_iRightTableRect-1);
+}
+                                   
 bool FV_Selection::isPosSelected(PT_DocPosition pos) const
 {
 	if(m_iSelectionMode == FV_SelectionMode_NONE)

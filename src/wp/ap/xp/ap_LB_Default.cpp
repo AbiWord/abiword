@@ -181,8 +181,9 @@ ap_bs_Mouse MouseTable[] =
 	{_CTH _B1,	{ "beginHDrag",		    "clearSetRows",     "dragHline",	"",		"endDragHline",	""				}},
 	{_CTC _B1,	{ "selectColumnClick",  "clearSetCols",     "dragHline",	"",		"endDragVline",	""				}},
 	{_CTC _B2,	{ "selectColumnClick",  "clearSetCols",     "dragHline",	"",		"endDragVline",	""				}},
-    {_CLC _B1,	{ "selectRowClick",     "",                 "",	            "",		""            , ""				}},
+	// TODO: MAKE THIS WORK!!! - dzan
     {_CLC _B2,	{ "selectRowClick",     "",                 "",	            "",		""            , ""				}},
+    {_CLC _B3,	{ "selectRowClick",     "",                 "",	            "",		""            , ""				}},
     
 //	Button-1, ImageSize-context
 //  { context	{ click				doubleclick		drag,		dbldrag,	release,		doublerelease	}},

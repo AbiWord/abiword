@@ -2299,6 +2299,41 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 }
 
 /*!
+ * This method will mark the row at the given position to be treated 
+ * as a table header, repeating on each page. 
+ * TODO: use a dialogue for this
+ */
+bool FV_View::cmdMarkRowAsHeader(PT_DocPosition pos){
+
+ 	//
+ 	// getting the table container
+ 	//
+	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(pos);
+	fp_Run * pRun;
+	UT_sint32 xPoint,yPoint,xPoint2,yPoint2,iPointHeight;
+	bool bDirection;
+	pRun = pBL->findPointCoords(pos, false, xPoint,
+							    yPoint, xPoint2, yPoint2,
+							    iPointHeight, bDirection);
+
+	UT_return_val_if_fail(pRun, false);
+
+	fp_Line * pLine = pRun->getLine();
+	UT_return_val_if_fail(pLine, false);
+
+	fp_Container * pCon = pLine->getContainer();
+	UT_return_val_if_fail(pCon, false);
+
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCon->getContainer());
+	UT_return_val_if_fail(pTab, false);
+	
+	//
+	// marking the row
+	//
+}
+
+
+/*!
  * posRow is the position of the start of the selection in the table.
  * insert rows into the table.
  */
@@ -4555,20 +4590,24 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 //
 // Look to see if should paste a table column or row
 //
-	if((m_Selection.getPrevSelectionMode() == FV_SelectionMode_TableColumn)
-	   || (m_Selection.getPrevSelectionMode() == 	FV_SelectionMode_TableRow))
-	{
+	/*if((m_Selection.getPrevSelectionMode() == FV_SelectionMode_TableColumn)
+	   || (m_Selection.getPrevSelectionMode() == 	FV_SelectionMode_TableRow))*/
+	if(m_Selection.getPrevSelectionMode() == 	FV_SelectionMode_InTable)
+	{	
+		UT_DEBUGMSG(("\n\n\n\nBOEJA !!\n\n\n\n"));
 		if(isInTable())
 		{
+			UT_DEBUGMSG(("\n\n\n\nBOEJA 1!!\n\n\n\n"));
 			fl_TableLayout * pTab = getTableAtPos(getPoint());
 			if(pTab && pTab == m_Selection.getTableLayout())
 			{
 				m_Selection.pasteRowOrCol();
+				UT_DEBUGMSG(("\n\n\n\nBOEJA 2!!\n\n\n\n"));
 				return;
 			}
 		}
 	}
-
+	UT_DEBUGMSG(("\n\n\n\nBOEJA 3!!\n\n\n\n"));
 	// set UAG markers around everything that the actual paste does
 	// so that undo/redo will treat it as one step.
 

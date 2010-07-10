@@ -190,7 +190,6 @@ void FV_View::_eraseSelection(void)
 // guessing because of the drawBetweenPositions
 void FV_View::_clearSelection(void)
 {
-	UT_DEBUGMSG(("CLEAR CALLED\n"));
 	if( isSelectionEmpty() )
 	{
 		return;
@@ -242,7 +241,6 @@ void FV_View::_clearSelection(void)
  */
 	else
 	{
-		UT_DEBUGMSG(("CLEAR TABLE CALLED\n"));
 		_resetSelection();
 		
 		//
@@ -3746,7 +3744,6 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 		if( (pLowCell != NULL) && ( pHighCell != getCellAtPos(iOldPoint)) &&
 			getTableAtPos(getSelectionAnchor()) == getTableAtPos(iNewPoint) ){
 		    
-		    UT_DEBUGMSG(("CALLED!!!!\n\n\n"));
 			/*------------------------------------------------------------------
 			 * Determine the borders of the old and new rectangular selection
 			 * Set them with setRectTableSel(...)

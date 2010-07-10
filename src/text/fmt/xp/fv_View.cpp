@@ -8547,6 +8547,16 @@ FV_SelectionMode FV_View::getPrevSelectionMode(void) const
 	return m_Selection.getPrevSelectionMode();
 }
 
+bool FV_View::isSingleTableRowSelected(void) const
+{
+	return m_Selection.isSingleTableRowSelected();
+}
+
+bool FV_View::isSingleTableColumnSelected(void) const
+{
+	return m_Selection.isSingleTableColumnSelected();
+}
+
 PD_DocumentRange * FV_View::getNthSelection(UT_sint32 i) const
 {
 	return m_Selection.getNthSelection(i);
