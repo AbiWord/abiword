@@ -348,8 +348,6 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock,
 
 			pBlock->_removeLine(pOldLine,true,true);
 		}
-
-
 	}
 
 	return 0; // TODO return code

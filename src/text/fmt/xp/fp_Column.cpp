@@ -1992,7 +1992,7 @@ void fp_Column::layout(void)
 			  m_iRedrawHeight = pContainer->getY();
 
 		}
-		xxx_UT_DEBUGMSG(("Layout: container %d setY %d \n",i,iY));
+		xxx_UT_DEBUGMSG(("Layout: container %d Height %d setY %d \n",i,iY));
 //
 // fxime comeback and re-evaluate this
 //		UT_ASSERT(iY>=0);
@@ -2051,6 +2051,7 @@ void fp_Column::layout(void)
 			iContainerHeight = pTOC->getHeight();
 		}
 		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
+		xxx_UT_DEBUGMSG(("Layout: container %d Height %d Margin %d setY %d \n",i,iContainerHeight,iContainerMarginAfter,iY));
 		//	UT_ASSERT(iContainerHeight > 0);
 		// Update height of previous line now we know the gap between
 		// it and the current line.
