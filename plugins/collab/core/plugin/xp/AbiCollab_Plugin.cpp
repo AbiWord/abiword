@@ -40,6 +40,7 @@
 #include "xap_Menu_Layouts.h"
 #include "fv_View.h"
 #include "pd_Document.h"
+#include "pd_DocumentRDF.h"
 #include "ut_vector.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_FileOpenSaveAs.h"
@@ -163,6 +164,9 @@ static const char * szCollaborationJoinTip = "Open a shared document";
 static const char * szCollaborationAccounts = "Accounts";
 static const char * szCollaborationAccountsTip = "Manage collaboration accounts";
 
+static const char * szCollaborationRdf = "RDF Test";
+static const char * szCollaborationRdfTip = "Run a quick RDF test for AbiCollab";
+
 static const char * szCollaborationShowAuthors = "Show Authors";
 static const char * szCollaborationShowAuthorsTip = "Show who wrote each piece of text by with different colors";
 
@@ -186,7 +190,7 @@ static bool s_abicollab_authors(AV_View* v, EV_EditMethodCallData *d);
 static bool s_abicollab_record(AV_View* v, EV_EditMethodCallData *d);
 static bool s_abicollab_viewrecord(AV_View* v, EV_EditMethodCallData *d);
 static bool s_abicollab_command_invoke(AV_View* v, EV_EditMethodCallData *d);
-
+static bool s_abicollab_rdftest(AV_View* v, EV_EditMethodCallData *d);
 #define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
 
 /*!
@@ -421,6 +425,31 @@ void s_abicollab_add_menus()
 	);
 	pEMC->addEditMethod(myEditMethodAccounts);
 
+
+	// The Join Collaboration connect item
+	XAP_Menu_Id collabRdfId = pFact->addNewMenuAfter("Main", NULL, collabJoinId, EV_MLF_Normal);
+    pFact->addNewLabel(NULL, collabRdfId, szCollaborationRdf, szCollaborationRdfTip);
+	EV_Menu_Action* myActionRdf = new EV_Menu_Action (
+		collabRdfId,   		// id that the layout said we could use
+		0,                      // no, we don't have a sub menu.
+		1,                      // yes, we raise a dialog.
+		0,                      // no, we don't have a checkbox.
+		0,                      // no radio buttons for me, thank you
+		"s_abicollab_rdftest",     // name of callback function to call.
+		NULL,                   // Function for whether not label is enabled/disabled checked/unchecked
+		NULL                    // Function to compute Menu Label "Dynamic Label"
+	);
+	pActionSet->addAction(myActionRdf);
+	EV_EditMethod *myEditMethodRdf = new EV_EditMethod (
+		"s_abicollab_rdftest",     // name of callback function
+		s_abicollab_rdftest,       // callback function itself.
+		0,                      // no additional data required.
+		""                      // description -- allegedly never used for anything
+	);
+	pEMC->addEditMethod(myEditMethodRdf);
+    
+
+    
 	// The Show Authors item
 	XAP_Menu_Id ShowAuthorId = pFact->addNewMenuAfter("Main", NULL, collabAccountsId, EV_MLF_Normal);
     pFact->addNewLabel(NULL, ShowAuthorId,  szCollaborationShowAuthors,  szCollaborationShowAuthorsTip);
@@ -717,6 +746,20 @@ bool s_abicollab_accounts(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 	pFactory->releaseDialog(pDialog);
 	return true;
 }
+
+bool s_abicollab_rdftest(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
+{
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
+	UT_return_val_if_fail(pFrame, false);
+	PD_Document* pDoc = static_cast<PD_Document *>(pFrame->getCurrentDoc());
+	UT_return_val_if_fail(pDoc, false);
+
+    UT_DEBUGMSG(("s_abicollab_rdftest... running ml2 test\n"));
+    pDoc->getDocumentRDF()->runMilestone2Test();
+    return true;
+}
+
 
 bool s_abicollab_record(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 {

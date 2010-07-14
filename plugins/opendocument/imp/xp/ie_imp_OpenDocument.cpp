@@ -37,6 +37,7 @@
 #include "xap_Dlg_Password.h"
 #include "ap_Dialog_Id.h"
 #include "ie_imp_PasteListener.h"
+#include "pd_DocumentRDF.h"
 
 // External includes
 #include <glib-object.h>
@@ -44,6 +45,12 @@
 #include <gsf/gsf-infile.h>
 #include <gsf/gsf-infile-zip.h>
 #include <gsf/gsf-input-memory.h>
+
+#include <boost/shared_array.hpp>
+
+// RDF support
+#include <redland.h>
+#include <rasqal.h>
 
 /**
  * Constructor
@@ -154,6 +161,15 @@ UT_Error IE_Imp_OpenDocument::_loadFile (GsfInput * oo_src)
     }
     
     err = _handleContentStream ();
+    if ( UT_IE_TRY_RECOVER == err ) {
+        try_recover = true;        
+    }
+    else if ( UT_OK != err ) {
+        return err;
+    }
+
+    UT_DEBUGMSG(("IE_Imp_OpenDocument::_loadFile()\n"));
+    err = _handleRDFStreams ();
     if ( UT_IE_TRY_RECOVER == err ) {
         try_recover = true;        
     }
@@ -361,6 +377,223 @@ UT_Error IE_Imp_OpenDocument::_handleContentStream ()
     }
     
     return _handleStream (m_pGsfInfile, "content.xml", *m_pStreamListener);
+}
+
+/**
+ * A class purely to pass parsers and models and other redland stuff
+ * to other methods without exposing their types in the header file.
+ */
+class RDFArguments
+{
+public:
+    librdf_world* world;
+    librdf_parser* parser;
+    librdf_model*  model;
+    RDFArguments( librdf_world* _world, librdf_parser* _parser, librdf_model* _model )
+        : world(_world)
+        , parser(_parser)
+        , model(_model)
+    {
+    }
+};
+
+
+UT_Error IE_Imp_OpenDocument::_loadRDFFromFile ( GsfInfile* pGsfInfile,
+                                                 const char * pStream,
+                                                 RDFArguments* args )
+{
+    UT_Error ret = UT_OK;
+    
+    GsfInput* pInput = gsf_infile_child_by_name(pGsfInfile, pStream);
+    UT_return_val_if_fail(pInput, UT_ERROR);
+
+    int sz = gsf_input_size (pInput);
+    if (sz > 0)
+    {
+        // I would have liked to pass 0 to input_read() and
+        // get a shared buffer back, but doing so seems to
+        // return a non-null terminated buffer, so we make a
+        // smart_ptr to an array an explicitly nul-terminate it.
+        boost::shared_array<char> data( new char[sz+1] );
+        data[sz] = '\0';
+        gsf_input_read ( pInput, sz, (guint8*)data.get() );
+        if( sz && !data )
+        {
+            g_object_unref (G_OBJECT (pInput));
+            return UT_ERROR;
+        }
+
+        // Note that although the API docs say you can use NULL for base_uri
+        // you will likely find it an error to try to call that way.
+        librdf_uri* base_uri = librdf_new_uri( args->world,
+                                               (const unsigned char*)pStream );
+        if( !base_uri )
+        {
+            UT_DEBUGMSG(("Failed to create a base URI to parse RDF into model. stream:%s sz:%d\n",
+                         pStream, sz ));
+            g_object_unref (G_OBJECT (pInput));
+            return UT_ERROR;
+        }
+
+        UT_DEBUGMSG(("_handleRDFStreams() stream:%s RDF/XML:::%s:::\n", pStream, data.get() ));
+        if( librdf_parser_parse_string_into_model( args->parser,
+                                                   (const unsigned char*)data.get(),
+                                                   base_uri, args->model ))
+        {
+            UT_DEBUGMSG(("Failed to parse RDF into model. stream:%s sz:%d\n",
+                         pStream, sz ));
+            librdf_free_uri( base_uri );
+            g_object_unref (G_OBJECT (pInput));
+            return UT_ERROR;
+        }
+        librdf_free_uri( base_uri );
+    }
+
+    g_object_unref (G_OBJECT (pInput));
+    return ret;
+}
+
+std::string toString( librdf_uri *node )
+{
+    unsigned char* z = librdf_uri_as_string( node );
+    std::string ret = (const char*)z;
+    // For this as_string(), we do not free z.
+    return ret;
+}
+
+
+std::string toString( librdf_node *node )
+{
+    unsigned char *z = librdf_node_to_string( node );
+    std::string ret = (const char*)z;
+    free(z);
+    return ret;
+}
+                      
+UT_Error IE_Imp_OpenDocument::_handleRDFStreams ()
+{
+    UT_Error error = UT_OK;
+
+    UT_DEBUGMSG(("IE_Imp_OpenDocument::_handleRDFStreams()\n"));
+    librdf_world* world = librdf_new_world();
+    librdf_world_open( world );
+    librdf_storage* storage = librdf_new_storage( world, "memory", "/", 0 );    
+    librdf_model*     model = librdf_new_model(   world, storage, 0 );
+    librdf_parser*   parser = librdf_new_parser(  world, 0, 0, 0 );
+
+    RDFArguments args( world, parser, model );
+    error = _loadRDFFromFile( m_pGsfInfile, "manifest.rdf", &args );
+
+    // find other RDF/XML files referenced in the manifest
+    const char* query_string = ""
+        "prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n"
+        "prefix odf: <http://docs.oasis-open.org/opendocument/meta/package/odf#> \n"
+        "prefix odfcommon: <http://docs.oasis-open.org/opendocument/meta/package/common#> \n"
+        "select ?subj ?fileName \n"
+        " where { \n"
+        "  ?subj rdf:type odf:MetaDataFile . \n"
+        "  ?subj odfcommon:path ?fileName  \n"
+        " } \n";
+    // rasqal_world*  rworld = rasqal_new_world();
+    // rasqal_world_open( rworld );
+    // raptor_uri* base_uri = 0;
+    // rasqal_query* query = rasqal_new_query(rworld,"sparql",NULL);
+    // rasqal_query_prepare( query, (unsigned char*)query_string, base_uri );
+    // rasqal_query_results *results = rasqal_query_execute( query );
+    // if( !results )
+    // {
+    //     UT_DEBUGMSG(("IE_Imp_OpenDocument::_handleRDFStreams() SPARQL query to find auxillary RDF/XML files failed! q:%p\n", query ));
+    // }
+    // else
+    // {
+    //     UT_DEBUGMSG(("IE_Imp_OpenDocument::_handleRDFStreams() aux RDF/XML file count:%d\n",
+    //                  rasqal_query_results_get_count( results )));
+        
+    //     while( !rasqal_query_results_finished(results) )
+    //     {
+    //         rasqal_query_results_next(results);
+    //     }
+    // }
+    // rasqal_free_query_results(results);
+    // rasqal_free_query(query);
+
+
+    librdf_uri* base_uri = 0;
+    librdf_query* query = librdf_new_query( world, "sparql", 0,
+                                            (unsigned char*)query_string,
+                                            base_uri );
+    librdf_query_results* results = librdf_query_execute( query, model );
+
+    if( !results )
+    {
+        UT_DEBUGMSG(("IE_Imp_OpenDocument::_handleRDFStreams() SPARQL query to find auxillary RDF/XML files failed! q:%p\n", query ));
+    }
+    else
+    {
+        UT_DEBUGMSG(("IE_Imp_OpenDocument::_handleRDFStreams() aux RDF/XML file count:%d\n",
+                     librdf_query_results_get_count( results )));
+
+        // parse auxillary RDF/XML files too
+        // FIXME
+        for( ; !librdf_query_results_finished( results ) ;
+             librdf_query_results_next( results ))
+        {
+            librdf_node* fnNode = librdf_query_results_get_binding_value_by_name
+                ( results, "fileName" );
+            UT_DEBUGMSG(("_handleRDFStreams() fnNode:%p\n", fnNode ));
+            std::string fn = toString(fnNode);
+        
+            UT_DEBUGMSG(("_handleRDFStreams() loading auxilary RDF/XML file from:%s\n",
+                         fn.c_str()));
+            error = _loadRDFFromFile( m_pGsfInfile, fn.c_str(), &args );
+        }
+        librdf_free_query_results( results );
+    }
+    librdf_free_query( query );
+
+    UT_DEBUGMSG(("_handleRDFStreams() model.sz:%d\n",
+                 librdf_model_size( model )));
+
+    // convert the redland model into native AbiWord RDF triples
+    {
+        PD_DocumentRDFHandle rdf = getDoc()->getDocumentRDF();
+        PD_DocumentRDFMutationHandle m = rdf->createMutation();
+
+        librdf_statement* statement = librdf_new_statement( world );
+        librdf_stream* stream = librdf_model_find_statements( model, statement );
+
+		while (!librdf_stream_end(stream))
+        {
+            librdf_statement* current = librdf_stream_get_object( stream );
+
+            std::string objectType = "";
+            if( librdf_node_is_literal( librdf_statement_get_object( current )))
+            {
+                if( librdf_uri* u = librdf_node_get_literal_value_datatype_uri(
+                        librdf_statement_get_object( current )))
+                {
+                    objectType = toString(u);
+                }
+            }
+            
+            m->add( PD_URI( toString( librdf_statement_get_subject( current ))),
+                    PD_URI( toString( librdf_statement_get_predicate( current ))),
+                    PD_Object( toString( librdf_statement_get_object( current )),
+                               objectType ));
+
+            librdf_stream_next(stream);
+        }
+        
+        librdf_free_stream( stream );
+        librdf_free_statement( statement );
+    }
+    
+    librdf_free_parser( parser );
+    librdf_free_model( model );
+    librdf_free_storage( storage );
+    librdf_free_world( world );
+    getDoc()->getDocumentRDF()->dumpModel("Loaded RDF from ODF file");
+    return error;
 }
 
 

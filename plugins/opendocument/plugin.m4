@@ -1,5 +1,5 @@
 
-opendocument_pkgs="$gsf_req"
+opendocument_pkgs="$gsf_req redland >= 1.0.10 rasqal >= 0.9.17"
 opendocument_deps="no"
 
 if test "$enable_opendocument" != ""; then

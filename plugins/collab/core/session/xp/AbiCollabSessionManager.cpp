@@ -32,6 +32,7 @@
 #include "fv_View.h"
 #include "xav_View.h"
 #include "pd_Document.h"
+#include "pd_DocumentRDF.h"
 #include "ut_assert.h"
 #include "ie_types.h"
 #include "ut_misc.h"
@@ -204,7 +205,7 @@ UT_Error AbiCollabSessionManager::deserializeDocument(PD_Document** pDoc, const 
 			DELETEP(imp);
 			g_object_unref(G_OBJECT(gzabwBuf));
 			res = UT_OK;
-		}
+        }
 		else
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		g_object_unref(G_OBJECT(source));

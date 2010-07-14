@@ -13,6 +13,8 @@ libxp_la_SOURCES = \
 	pd_Document.cpp \
 	pd_Document.h \
 	pd_Document_TestRoutines.cpp \
+	pd_DocumentRDF.h \
+	pd_DocumentRDF.cpp \
 	pd_Iterator.cpp \
 	pd_Iterator.h \
 	pd_Style.cpp \
