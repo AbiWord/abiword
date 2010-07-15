@@ -500,26 +500,43 @@ const XAP_StringSet * AP_UnixApp::getStringSet(void) const
   server (well sorta) all at one time.
   \param pDocRange a range of the document to be copied
 */
-void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard)
+void AP_UnixApp::copyToClipboard(PD_DocumentRange* pDocRange, bool bUseClipboard)
 {
+	UT_DEBUGMSG(("\n\nCOPYTOCLIPBOARD CALLED"));
+	std::vector<PD_DocumentRange> ranges;
+	ranges.push_back(*pDocRange);
+	copyToClipboard(ranges, bUseClipboard);
+	return;
+}
 
+void AP_UnixApp::copyToClipboard(std::vector<PD_DocumentRange> &ranges, bool bUseClipboard)
+{
+	UT_DEBUGMSG(("\nCOPYTOCLIPBOARD VECTOR CALLED"));
+
+	/*for(int i=0; i<pDocRange->getItemCount(); ++i)
+	UT_DEBUGMSG(("\nSelection ranges %d: %d  to  %d\n",i, pDocRange->getNthItem(i)->m_pos1, pDocRange->getNthItem(i)->m_pos2));*/
+	
     UT_ByteBuf bufRTF;
     UT_ByteBuf bufHTML4;
     UT_ByteBuf bufXHTML;
     UT_ByteBuf bufTEXT;
 
+	// Dzan - Assuming all ranges in same document ( which they should be )
+	PD_Document* pDoc = ranges[0].m_pDoc;
+	
     // create RTF buffer to put on the clipboard
 		
-    IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(pDocRange->m_pDoc);
+    IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(pDoc);
     if (pExpRtf)
     {
-		pExpRtf->copyToBuffer(pDocRange,&bufRTF);
+		pExpRtf->copyToBuffer(ranges,&bufRTF);
 		DELETEP(pExpRtf);
     }
-
+	UT_DEBUGMSG(("\nEXPORTED TO RTF BUFFER"));
+/*
 	// create XHTML buffer to put on the clipboard
 
-	IE_Exp_HTML * pExpHtml = new IE_Exp_HTML(pDocRange->m_pDoc);
+	IE_Exp_HTML * pExpHtml = new IE_Exp_HTML(pDoc);
 	if (pExpHtml)
 		{
 			pExpHtml->set_HTML4 (false);
@@ -529,7 +546,7 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboar
 
 	// create HTML4 buffer to put on the clipboard
 	
-	pExpHtml = new IE_Exp_HTML(pDocRange->m_pDoc);
+	pExpHtml = new IE_Exp_HTML(pDoc);
 	if (pExpHtml)
 		{
 			pExpHtml->set_HTML4 (true);
@@ -539,7 +556,7 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboar
 
     // create UTF-8 text buffer to put on the clipboard
 		
-    IE_Exp_Text * pExpText = new IE_Exp_Text(pDocRange->m_pDoc, "UTF-8");
+    IE_Exp_Text * pExpText = new IE_Exp_Text(pDoc, "UTF-8");
     if (pExpText)
     {
 		pExpText->copyToBuffer(pDocRange,&bufTEXT);
@@ -553,14 +570,15 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboar
     // NOTE: (like adding the new stuff).
     // m_pClipboard->clearData(true,false);
 	
-    // TODO: handle CLIPBOARD vs PRIMARY
+    // TODO: handle CLIPBOARD vs PRIMARY*/
     XAP_UnixClipboard::T_AllowGet target = ((bUseClipboard)
 					    ? XAP_UnixClipboard::TAG_ClipboardOnly
 					    : XAP_UnixClipboard::TAG_PrimaryOnly);
 
 	if (bufRTF.getLength () > 0)
 		m_pClipboard->addRichTextData (target, bufRTF.getPointer (0), bufRTF.getLength ());
-	if (bufXHTML.getLength () > 0)
+	UT_DEBUGMSG(("\nRTF BUFFER MOVED TO CLIPBOARD\n\n"));
+	/*if (bufXHTML.getLength () > 0)
 		m_pClipboard->addHtmlData (target, bufXHTML.getPointer (0), bufXHTML.getLength (), true);
 	if (bufHTML4.getLength () > 0)
 		m_pClipboard->addHtmlData (target, bufHTML4.getPointer (0), bufHTML4.getLength (), false);
@@ -585,7 +603,7 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboar
 					}
 			}
     }
-
+*/
 	m_pClipboard->finishedAddingData();
 
     return;

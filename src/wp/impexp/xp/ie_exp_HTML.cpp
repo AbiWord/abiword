@@ -6963,7 +6963,7 @@ void IE_Exp_HTML::_buildStyleTree ()
 	delete pStyles;
 	
 	if (isCopying ()) // clipboard
-		getDoc()->tellListenerSubset (m_style_tree, getDocRange ());
+		getDoc()->tellListenerSubsets(m_style_tree, getDocRanges ());
 	else
 		getDoc()->tellListener (m_style_tree);
 }
@@ -7327,7 +7327,7 @@ UT_Error IE_Exp_HTML::_writeDocument (bool bClipBoard, bool bTemplateBody)
  	
 	if (bClipBoard)
 	{
-		okay = getDoc()->tellListenerSubset (pL, getDocRange ());
+		okay = getDoc()->tellListenerSubsets (pL, getDocRanges ());
 	}
 	else if (okay) {
 		okay = getDoc()->tellListener (pL);

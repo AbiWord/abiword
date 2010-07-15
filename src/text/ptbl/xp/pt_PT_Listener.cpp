@@ -17,7 +17,6 @@
  * 02111-1307, USA.
  */
 
-
 #include "ut_types.h"
 #include "ut_misc.h"
 #include "ut_assert.h"
@@ -37,7 +36,6 @@
 #include "px_CR_Span.h"
 #include "px_CR_SpanChange.h"
 #include "px_CR_Strux.h"
-
 
 /*****************************************************************/
 /*****************************************************************/
@@ -249,6 +247,17 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 
 	// TODO assert that sum == our cached value.
 	
+	return true;
+}
+
+bool pt_PieceTable::tellListenerSubsets(PL_Listener* pListener,
+                                        std::vector<PD_DocumentRange>& ranges){
+	UT_DEBUGMSG(("\n\nREACHED RANGES LISTENER!!!!!!"));
+	bool hasFailed = false;
+	for(std::vector<PD_DocumentRange>::iterator i = ranges.begin(); i != ranges.end(); ++i){
+		tellListenerSubset(pListener, &(*i));
+		//UT_DEBUGMSG(("\n\t\tRange in listener: %d  to  %d",i->m_pos1, i->m_pos2));
+	}
 	return true;
 }
 

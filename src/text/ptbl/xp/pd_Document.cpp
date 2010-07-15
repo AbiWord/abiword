@@ -3773,6 +3773,15 @@ bool PD_Document::tellListenerSubset(PL_Listener* pListener, PD_DocumentRange * 
 	return m_pPieceTable->tellListenerSubset(pListener,pDocRange);
 }
 
+bool PD_Document::tellListenerSubsets(PL_Listener* pListener, std::vector<PD_DocumentRange>& pDocRanges)
+{
+	UT_return_val_if_fail (pListener, false);
+	UT_return_val_if_fail (m_pPieceTable, false);
+	UT_return_val_if_fail (!pDocRanges.empty() && pDocRanges[0].m_pDoc==this, false);
+
+	return m_pPieceTable->tellListenerSubsets(pListener,pDocRanges);
+}
+
 bool PD_Document::addListener(PL_Listener * pListener,
 								 PL_ListenerId * pListenerId)
 {

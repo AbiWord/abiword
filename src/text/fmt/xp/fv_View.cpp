@@ -3448,8 +3448,20 @@ void FV_View::processSelectedBlocks(FL_ListType listType)
  * This returns the number of distinct columns in a selection. If part of the 
  * the selection is outside a table, it returns 0.
  */
-UT_sint32 FV_View::getNumColumnsInSelection(void) const
+UT_sint32 FV_View::getNumColumnsInSelection(void)
 {
+	// Dzan - GSoC
+	/*
+	 * This code seems to suffer from the same error as the whole rectangular selection:
+	 * It produces faults when we drag fast!!!
+	 * Code I provided is never faulty and much faster but I need to find the cause of lagg first!
+	 */
+	
+	// Dzan - GSoC should eventually be replaced with ( never faulty ):
+	/*UT_sint32 top, bot, left, right;
+	m_Selection.getRectTableSel (&left, &right, &top, &bot);
+	return ( right - left );*/
+	
 	UT_GenericVector<fl_BlockLayout *> vecBlocks;
 	getBlocksInSelection(&vecBlocks);
 	UT_sint32 i =0;
@@ -3484,8 +3496,21 @@ UT_sint32 FV_View::getNumColumnsInSelection(void) const
  * This returns the number of distinct rows in a selection. If part of the 
  * the selection is outside a table, it returns 0.
  */
-UT_sint32 FV_View::getNumRowsInSelection(void) const
+UT_sint32 FV_View::getNumRowsInSelection(void)
 {
+
+	// Dzan - GSoC
+	/*
+	 * This code seems to suffer from the same error as the whole rectangular selection:
+	 * It produces faults when we drag fast!!!
+	 * Code I provided is never faulty and much faster but I need to find the cause of lagg first!
+	 */
+	
+	// Dzan - GSoC should eventually be replaced with ( never faulty ):
+	/*UT_sint32 top, bot, left, right;
+	m_Selection.getRectTableSel (&left, &right, &top, &bot);
+	return ( bot - top );*/
+	
 	UT_GenericVector<fl_BlockLayout *> vecBlocks;
 	getBlocksInSelection(&vecBlocks);
 	UT_sint32 i =0;

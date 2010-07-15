@@ -487,8 +487,8 @@ UT_Error IE_Exp_MsWord_97::_writeDocument(void)
 	if(!m_pListener)
 		return UT_IE_NOMEMORY;
 
-	if (getDocRange())
-	    getDoc()->tellListenerSubset(static_cast<PL_Listener *>(m_pListener),getDocRange());
+	if (!isRangesEmpty())
+	    getDoc()->tellListenerSubsets(static_cast<PL_Listener *>(m_pListener),getDocRanges());
 	else
 	    getDoc()->tellListener(static_cast<PL_Listener *>(m_pListener));
 

@@ -26,6 +26,7 @@
 
 #include <stdio.h>
 #include <string>
+#include <vector>
 
 #include "ut_types.h"
 #include "ut_vector.h"
@@ -388,6 +389,8 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	bool					tellListener(PL_Listener * pListener);
 	bool					tellListenerSubset(PL_Listener * pListener,
 											   PD_DocumentRange * pDocRange);
+	bool					tellListenerSubsets(PL_Listener* pListener,
+                                    			std::vector<PD_DocumentRange>& pDocRanges);
 	bool					addListener(PL_Listener * pListener, PL_ListenerId * pListenerId);
 	bool					removeListener(PL_ListenerId listenerId);
 	bool					signalListeners(UT_uint32 iSignal) const;

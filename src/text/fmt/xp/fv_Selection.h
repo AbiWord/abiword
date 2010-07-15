@@ -23,6 +23,9 @@
 #include "pt_Types.h"
 #include "ut_vector.h"
 #include "ut_string_class.h"
+#include "fl_TableLayout.h"
+#include "fp_TableContainer.h"
+#include <vector>
 
 typedef enum _FV_SelectionMode
 {
@@ -37,89 +40,110 @@ typedef enum _FV_SelectionMode
 	    FV_SelectionMode_TableColumn
 } FV_SelectionMode;
 
-class UT_ByteBuf;
 class FL_DocLayout;
 class PD_Document;
 class FV_View;
-class fl_TableLayout;
 class fl_CellLayout;
 class fl_TOCLayout;
+
+
 class ABI_EXPORT FV_Selection
 {
 	friend class fv_View;
 
-public:
-class ABI_EXPORT FV_SelectionCellProps
-{
-public:
-	FV_SelectionCellProps(void):m_iLeft(0),
-								m_iRight(0),
-								m_iTop(0),
-								m_iBot(0),
-								m_sProps("")
-		{}
-	UT_sint32 m_iLeft;
-	UT_sint32 m_iRight;
-	UT_sint32 m_iTop;
-	UT_sint32 m_iBot;
-	UT_String m_sProps;
-};
+	public:
+	class ABI_EXPORT FV_SelectionCellProps
+	{
+	public:
+		FV_SelectionCellProps(void):m_iLeft(0),
+									m_iRight(0),
+									m_iTop(0),
+									m_iBot(0),
+									m_sProps("")
+			{}
+		UT_sint32 m_iLeft;
+		UT_sint32 m_iRight;
+		UT_sint32 m_iTop;
+		UT_sint32 m_iBot;
+		UT_String m_sProps;
+	};
 
+		
+// Constructor & Destructor
+////////////////////////////////////////////////////////////////////////////////////////
 	FV_Selection(FV_View * pView);
 	~FV_Selection();
+
+
+// Global getters & setters
+////////////////////////////////////////////////////////////////////////////////////////
+	void                  setMode(FV_SelectionMode iSelMode);
+	void                  setTOCSelected(fl_TOCLayout * pTOCL);
+
 	PD_Document *         getDoc(void) const;
 	FL_DocLayout *        getLayout(void) const;
-    void                  setMode(FV_SelectionMode iSelMode);
-	FV_SelectionMode      getSelectionMode(void) const 
-		{ return m_iSelectionMode;}
-	FV_SelectionMode      getPrevSelectionMode(void) const 
-		{ return m_iPrevSelectionMode;}
-	void                  setTOCSelected(fl_TOCLayout * pTOCL);
-	fl_TOCLayout *        getSelectedTOC(void)
-		{ return m_pSelectedTOC;}
-	PT_DocPosition        getSelectionAnchor(void) const;
-	void                  setSelectionAnchor(PT_DocPosition pos);
-	PT_DocPosition        getSelectionLeftAnchor(void) const;
-	void                  setSelectionLeftAnchor(PT_DocPosition pos);
-	PT_DocPosition        getSelectionRightAnchor(void) const;
-	void                  setSelectionRightAnchor(PT_DocPosition pos);
-	// again could use a FV_SelectionCellProp stuct for this
-	bool                  getRectTableSel(UT_sint32* left, UT_sint32* right, 
-	                                      UT_sint32* top, UT_sint32* bottom);
-	void                  setRectTableSel(UT_sint32 left, UT_sint32 right, 
-	                                      UT_sint32 top, UT_sint32 bottom);
+	FV_SelectionMode      getSelectionMode(void) const 			{ return m_iSelectionMode;}
+	FV_SelectionMode      getPrevSelectionMode(void) const 		{ return m_iPrevSelectionMode;}
+	fl_TOCLayout *        getSelectedTOC(void)					{ return m_pSelectedTOC;}
+
 	UT_sint32             getNumSelections(void) const;
 	PD_DocumentRange *    getNthSelection(UT_sint32 i) const;
 	void                  addSelectedRange(PT_DocPosition posLow, PT_DocPosition posHigh, bool bAddData);
 	bool                  isPosSelected(PT_DocPosition pos) const;
 	bool                  isSelected(void) const;
+	void                  clearSelection(void);
+	void                  checkSelectAll(void);
+	bool                  isSelectAll(void) const	{ return m_bSelectAll;}
+
+
+// Anchor stuff
+/////////////////////////////////////////////////////////////////////////////////////////
+	PT_DocPosition        getSelectionAnchor(void) const;
+	PT_DocPosition        getSelectionLeftAnchor(void) const;
+	PT_DocPosition        getSelectionRightAnchor(void) const;
+
+	void                  setSelectionAnchor(PT_DocPosition pos);
+	void                  setSelectionLeftAnchor(PT_DocPosition pos);
+	void                  setSelectionRightAnchor(PT_DocPosition pos);
+
+
+// Table stuff
+/////////////////////////////////////////////////////////////////////////////////////////
+	bool                  getRectTableSel(UT_sint32* left, UT_sint32* right, UT_sint32* top, UT_sint32* bottom);
+	void                  setRectTableSel(UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bottom);	
 	bool                  isSingleTableRowSelected(void) const;
 	bool                  isSingleTableColumnSelected(void) const;
-	void                  clearSelection(void);
-	void                  setTableLayout(fl_TableLayout * pFL);
-	fl_TableLayout *      getTableLayout(void) const;
 	void                  addCellToSelection(fl_CellLayout * pCell);
 	bool                  removeCellFromSelection(fl_CellLayout* pCell);
-	void                  pasteRowOrCol(void);
-	void                  checkSelectAll(void);
-	void                  setSelectAll(bool bSelectAll);
-	bool                  isSelectAll(void) const
-	{ return m_bSelectAll;}
+	bool 				  getTableSelAsRangesVector(std::vector<PD_DocumentRange> &ranges);
+
+
 private:
+	void				  _checkSelectAll(PT_DocPosition low, PT_DocPosition high);
+	void                  _setSelectAll(bool bSelectAll);
+
+	// pointer to the view the selections belongs too
 	FV_View *             m_pView;
+
+	// selection modes
 	FV_SelectionMode      m_iSelectionMode;
 	FV_SelectionMode      m_iPrevSelectionMode;
+
+	// anchors used
 	PT_DocPosition        m_iSelectAnchor;
 	PT_DocPosition        m_iSelectLeftAnchor;
 	PT_DocPosition        m_iSelectRightAnchor;
-	fl_TableLayout *      m_pTableOfSelectedColumn;
+
+	// if a table of content is selected, pointer to it
 	fl_TOCLayout  *       m_pSelectedTOC;
-	UT_GenericVector<PD_DocumentRange *> m_vecSelRanges;
-	UT_GenericVector<UT_ByteBuf*> m_vecSelRTFBuffers;
-	UT_GenericVector<FV_SelectionCellProps*> m_vecSelCellProps;
+
+	// vector with all ranges selected
+	UT_GenericVector<PD_DocumentRange *> 		m_vecSelRanges;
+
+	// is whole document selected?
 	bool                  m_bSelectAll;
-	// current table rectangle selection attach values
-	// could use a FV_SelectionCellProp struct but using this for now.
+
+	// table rectangle selection
 	UT_sint32             m_iLeftTableRect;
 	UT_sint32             m_iRightTableRect;
 	UT_sint32             m_iTopTableRect;

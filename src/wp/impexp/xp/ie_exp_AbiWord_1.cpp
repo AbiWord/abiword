@@ -1342,9 +1342,9 @@ UT_Error IE_Exp_AbiWord_1::_writeDocument(void)
 			return UT_IE_NOMEMORY;
 		}
 
-	if (getDocRange())
+	if (!isRangesEmpty())
 	{
-		if(!getDoc()->tellListenerSubset(static_cast<PL_Listener *>(m_pListener),getDocRange()))
+		if(!getDoc()->tellListenerSubsets(static_cast<PL_Listener *>(m_pListener),getDocRanges()))
 			{
 				close_gsf_handle(m_output);
 				return UT_ERROR;

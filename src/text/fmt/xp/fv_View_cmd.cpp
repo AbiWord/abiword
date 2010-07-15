@@ -793,7 +793,7 @@ bool FV_View::cmdSelectColumn(PT_DocPosition posOfColumn)
 	UT_return_val_if_fail(pCL2,false);
 	UT_return_val_if_fail((pCL2->getContainerType() == FL_CONTAINER_TABLE),false);
 	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pCL2);
-	m_Selection.setTableLayout(pTL);
+	//m_Selection.setTableLayout(pTL);   Dzan - GSoC not needed? is never used
 //
 // Now loop through the column and collect all the cells.
 //
@@ -4573,41 +4573,43 @@ void FV_View::cmdCut(void)
 // selection on UNIX, as opposed to some PRIMARY selection
 void FV_View::cmdCopy(bool bToClipboard)
 {
-	if (isSelectionEmpty())
-	{
-		// clipboard does nothing if there is no selection
-		return;
-	}
+	if (isSelectionEmpty()) return;
 
-	PD_DocumentRange dr;
-	getDocumentRangeOfCurrentSelection(&dr);
-	m_pApp->copyToClipboard(&dr, bToClipboard);
-	notifyListeners(AV_CHG_CLIPBOARD);
+	// Dzan - GSoC: This needs to change; the FV_Selection should treat all
+	// selections same way: vector of ranges. Will do that later
+
+	if( getSelectionMode() == FV_SelectionMode_InTable )
+	{
+		std::vector<PD_DocumentRange> ranges;
+		
+		if(m_Selection.getTableSelAsRangesVector(ranges))
+		{	
+			for(int i = 0; i != ranges.size(); i++)
+			UT_DEBUGMSG(("\nSelection ranges %d: %d  to  %d\n",i, ranges[i].m_pos1, ranges[i].m_pos2));
+			
+			m_pApp->copyToClipboard(ranges, bToClipboard);
+			notifyListeners(AV_CHG_CLIPBOARD);
+		}
+	}
+	else
+	{
+		/*UT_GenericVector<PD_DocumentRange*> ranges;
+		PD_DocumentRange dr, dr1, dr2;
+		getDocumentRangeOfCurrentSelection(&dr);
+		getDocumentRangeOfCurrentSelection(&dr1);
+		getDocumentRangeOfCurrentSelection(&dr2);
+		ranges.addItem(&dr);
+		ranges.addItem(&dr1);
+		ranges.addItem(&dr2);*/
+		PD_DocumentRange dr;
+		getDocumentRangeOfCurrentSelection(&dr);
+		m_pApp->copyToClipboard(&dr, bToClipboard);
+		notifyListeners(AV_CHG_CLIPBOARD);
+	}
 }
 
 void FV_View::cmdPaste(bool bHonorFormatting)
 {
-//
-// Look to see if should paste a table column or row
-//
-	/*if((m_Selection.getPrevSelectionMode() == FV_SelectionMode_TableColumn)
-	   || (m_Selection.getPrevSelectionMode() == 	FV_SelectionMode_TableRow))*/
-	if(m_Selection.getPrevSelectionMode() == 	FV_SelectionMode_InTable)
-	{	
-		UT_DEBUGMSG(("\n\n\n\nBOEJA !!\n\n\n\n"));
-		if(isInTable())
-		{
-			UT_DEBUGMSG(("\n\n\n\nBOEJA 1!!\n\n\n\n"));
-			fl_TableLayout * pTab = getTableAtPos(getPoint());
-			if(pTab && pTab == m_Selection.getTableLayout())
-			{
-				m_Selection.pasteRowOrCol();
-				UT_DEBUGMSG(("\n\n\n\nBOEJA 2!!\n\n\n\n"));
-				return;
-			}
-		}
-	}
-	UT_DEBUGMSG(("\n\n\n\nBOEJA 3!!\n\n\n\n"));
 	// set UAG markers around everything that the actual paste does
 	// so that undo/redo will treat it as one step.
 

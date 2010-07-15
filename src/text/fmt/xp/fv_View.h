@@ -355,8 +355,8 @@ public:
 	bool	isTabListAheadPoint(void) const;
 	void	processSelectedBlocks(FL_ListType listType);
 	void	getBlocksInSelection(UT_GenericVector<fl_BlockLayout*> * vBlock) const;
-	UT_sint32 getNumColumnsInSelection(void) const;
-	UT_sint32 getNumRowsInSelection(void) const;
+	UT_sint32 getNumColumnsInSelection(void);
+	UT_sint32 getNumRowsInSelection(void);
 	void	getAllBlocksInList(UT_GenericVector<fl_BlockLayout *> * vBlock) const;
 	bool	isPointBeforeListLabel(void) const;
 	bool	isCurrentListBlockEmpty(void) const;

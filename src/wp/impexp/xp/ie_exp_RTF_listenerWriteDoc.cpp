@@ -3764,7 +3764,7 @@ double s_RTF_ListenerWriteDoc::_getColumnWidthInches(void)
 }
 
 /*!
- * This exports all the properties in atable strux by extend rtf with
+ * This exports all the properties in a table strux by extend rtf with
  * a \*\abitableproperties keyword.
  * Code mostly copied for fl_TableLayout::_lookupProperties. This code should
  * should be updated when new properties are defined.
@@ -4061,6 +4061,15 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, UT_String & s
 	sProp = "table-sdh";
 	UT_String_sprintf(sPropVal,"%p",m_Table.getTableSDH());
 	UT_String_setProperty(sTableProps,sProp,sPropVal);
+
+	/* Dzan - GSOC: Added these to enable pasting 
+	 * across rows or columns with only data in buffers */
+	sProp = "rowcount";
+	UT_String_setProperty(sTableProps,sProp,UT_String_sprintf("%d",m_Table.getNumRows()));
+
+	sProp = "colcount";
+	UT_String_setProperty(sTableProps,sProp,UT_String_sprintf("%d",m_Table.getNumCols()));
+
 	if(sTableProps.size() == 0)
 	{
 		sTableProps += " ";

@@ -702,8 +702,18 @@ bool AP_Win32App::_copyFmtToClipboard(PD_DocumentRange * pDocRange, const char *
     copy data to the clipboard; this is what gets called when the user
     presses Ctrl+C
 */
-void AP_Win32App::copyToClipboard(PD_DocumentRange * pDocRange, bool /*bUseClipboard*/)
+void AP_Win32App::copyToClipboard(PD_DocumentRange* pDocRanges, bool bUseClipboard){
+	UT_DEBUGMSG(("\n\nCOPYTOCLIPBOARD CALLED"));
+	std::vector<PD_DocumentRange> ranges;
+	ranges.push_back(*pDocRange);
+	copyToClipboard(ranges, bUseClipboard);
+	return;
+}
+
+void AP_Win32App::copyToClipboard(UT_GenericVector<PD_DocumentRange*>* pDocRange, bool bUseClipboard)
 {
+	/*
+	 
 	// copy the given subset of the given document to the
 	// system clipboard in a variety of formats.
 	// MSFT requests that we post them in the order of
@@ -760,6 +770,8 @@ void AP_Win32App::copyToClipboard(PD_DocumentRange * pDocRange, bool /*bUseClipb
 	}
 
 	m_pClipboard->closeClipboard();				// release clipboard lock
+	*/
+	return;
 }
 
 //

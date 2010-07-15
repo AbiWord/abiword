@@ -681,7 +681,8 @@ bool FV_View::_MergeCells( PT_DocPosition posDestination,PT_DocPosition posSourc
 // Copy to and from clipboard to populate the destination cell
 //
 		UT_DEBUGMSG(("SEVIOR: Copy to clipboard merging cells \n"));
-		m_pApp->copyToClipboard(&dr_source);
+		// added 'false' here, strange it compiled there is no copyToClipboard taking just range as argument :s - Dzan
+		m_pApp->copyToClipboard(&dr_source, false);
 	}
 //
 // Now delete the source cell. We can use the old source position since it
@@ -3758,7 +3759,7 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 			
 			// For now we print the rectangle for debug purposes
 			/*UT_DEBUGMSG(("SELECTED RECTANGLE:\n\tleft attach: %d\n\tright attach: %d\n\tbottom attach: %d\n\ttop attach: %d\n",
-			iLeftSelEnd, iRightSelEnd, iBotSelEnd, iTopSelEnd));	*/
+			iLeftSelEnd, iRightSelEnd, iBotSelEnd, iTopSelEnd));*/	
 			
 			
 			/*------------------------------------------------------------------
@@ -3888,14 +3889,10 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 					}
 				}
 			}
-			
-			// !!! NEED TO USE POS1 AND POS2 HERE BUT THEY ARE NOT YET CALCULATED CORRECT
-			// !!! WHOLE DOCUMENT IS REDRAWN ATM THIS HAS TO CHANGE OFC!
-			// need to draw or clear our selection between the right points  			
-			/*if( bShrink )
-				_clearBetweenPositions(posBOD, posEOD, true);
-			else
-				_drawBetweenPositions(posBOD, posEOD);*/
+
+		    // Dzan - GSoC Enable this to see the error when dragging fast!
+			/*UT_DEBUGMSG(("\n\nNum of columns: %d\n\n",getNumColumnsInSelection()));
+			UT_DEBUGMSG(("\n\nNum of rows: %d\n\n",getNumRowsInSelection()));*/
 		}
 	}
 }
@@ -4077,7 +4074,6 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 			if(pCP)
 			{
 				pCell = static_cast<fp_CellContainer *>(pCP);
-	//			UT_DEBUGMSG(("KABAM top %d  left %d\n", pCell->getTopAttach(), pCell->getLeftAttach()));
 				fp_TableContainer * pTab = pCell->getBrokenTable(pLine);
 				if(pTab)
 				{
@@ -6334,7 +6330,8 @@ void FV_View::_populateThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtrSrc, fl_HdrFtr
 // Copy to and from clipboard to populate the header/Footer
 //
 	UT_DEBUGMSG(("SEVIOR: Copy to clipboard making header/footer \n"));
-	m_pApp->copyToClipboard(&dr_source);
+	// added 'false' here, strange it compiled there is no copyToClipboard taking just range as argument :s - Dzan
+	m_pApp->copyToClipboard(&dr_source, false);
 	PT_DocPosition posDest = 0;
 	posDest = pHdrFtrDest->getFirstLayout()->getPosition(true);
 	PD_DocumentRange dr_dest(m_pDoc,posDest,posDest);

@@ -10011,6 +10011,11 @@ bool IE_Imp_RTF::HandleAbiEmbed(void)
 
 bool IE_Imp_RTF::HandleAbiTable(void)
 {
+
+	UT_DEBUGMSG(("\n\nBUFFER:\n%s\n\n", m_pCurrentCharInPasteBuffer));
+    //------------------------------------------------------------- 
+	// Read in rest of the table props in the rtf buffer
+	//-------------------------------------------------------------
 	UT_String sProps;
 	unsigned char ch;
 	if (!ReadCharFromFile(&ch))
@@ -10026,6 +10031,12 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 		if (!ReadCharFromFile(&ch))
 			return false;
 	}
+
+
+	//------------------------------------------------------------- 
+	// Initialise some stuff and get the table at the paste location
+	// if there is one ( => bFound )
+	//-------------------------------------------------------------
 	ABI_Paste_Table * pPaste = new ABI_Paste_Table();
 	m_pasteTableStack.push(pPaste);
 	pPaste->m_bHasPastedTableStrux = false;
@@ -10033,10 +10044,15 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 	
 	UT_DEBUGMSG(("RTF_Import: Paste: Tables props are: %s \n",sProps.c_str()));
 	bool bIsPasteIntoSame = false;
-	PL_StruxDocHandle sdhTable = NULL;
-	PL_StruxDocHandle sdhEndTable = NULL;
+	PL_StruxDocHandle sdhTable = NULL;			// table at paste location
+	PL_StruxDocHandle sdhEndTable = NULL;		// endtable at paste location
+	PT_DocPosition posTable = 0;				// pos of table pasted to!
+
 	bool bFound = getDoc()->getStruxOfTypeFromPosition(m_dposPaste,PTX_SectionTable,&sdhTable);
-	PT_DocPosition posTable = 0;
+
+	// ------------------------------------------------------------------
+	// Get the current View, Hack?
+	//-------------------------------------------------------------------
 	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	if(pFrame == NULL)
 	{
@@ -10047,45 +10063,71 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 	{
 		return false;
 	}
+
+
+	//------------------------------------------------------------- 
+	// A table was found at the pasteposition, enable our 
+	// table-into-table paste code
+	//-------------------------------------------------------------
 	if(bFound)
 	{
-	// DZAN - MUST LOOK AT THIS I THINK !!
-	// determine if row was selected and if it fits in current table
-	// then paste across
 		posTable = getDoc()->getStruxPosition(sdhTable);
 		sdhEndTable = getDoc()->getEndTableStruxFromTableSDH(sdhTable);
+
 		if(sdhEndTable != NULL)
 		{
 			PT_DocPosition posEndTable = getDoc()->getStruxPosition(sdhEndTable);
-			if(posEndTable > m_dposPaste)
+			if(posEndTable > m_dposPaste)	// we paste in the table check..?
 			{
 				UT_String sPasteTableSDH;
 				UT_String sProp = "table-sdh";
 				sPasteTableSDH = UT_String_getPropVal(sProps,sProp);
 				UT_String sThisTableSDH;
 				UT_String_sprintf(sThisTableSDH,"%x",sdhTable);
-				UT_DEBUGMSG(("sThisTableSDH %s sPasteTableSDH %s \n",sThisTableSDH.c_str(),sPasteTableSDH.c_str()));
 				
 	//
-	// REPLACED BY DZAN
+	// REPLACED BY DZAN - GSOC
 	//
-				/*bool isRow = (pView->getSelectionMode() == FV_SelectionMode_TableRow);
-				if(!isRow && pView->getSelectionMode() == FV_SelectionMode_NONE)
-				{
-					isRow = (pView->getPrevSelectionMode() == FV_SelectionMode_TableRow);
-				}*/
-				bool isRow = pView->isSingleTableRowSelected();
+	
+	/* What if a user made more then 2 selections after his last copy action and his
+	 * paste action now? Then this code would be faulty right? My first replacement
+	 * is equal faulty. 
+	 *
+	 * Solution: I mark the selection when a copy action is done. Then I can go check
+	 * 			 now against the cached selection properties.
+	 *
+	 * Problem : This is not a neat solution... WE SHOULD EXTRACT ALL THE INFO FROM
+	 *			 THE DATA IN THE PASTEBUFFER ITSELF ONLY!!!! Because the original table
+	 *			 could have been deleted between copy and paste!
+	 */
+
+	// OLD CODE: 
+        /*bool isRow = (pView->getSelectionMode() == FV_SelectionMode_TableRow);
+        if(!isRow && pView->getSelectionMode() == FV_SelectionMode_NONE)
+        {
+          isRow = (pView->getPrevSelectionMode() == FV_SelectionMode_TableRow);
+        }*/
+
+	// FIRST REPLACEMENT
+	    //bool isSingleRow = pView->isSingleTableRowSelected();
+
+				bool bFits 		= false;
+				bool bSingleRow = false;
+
 				
-				
+				//UT_DEBUGMSG(("\n\n\n\nAANTAL RIJEN: %d\n\n\n\n",getTable()->getNumRows()));
 				// Make sure the row we paste in will fit, else do previous kind of paste!
-				/*if( isSingleRow && ( || ) )
+				if( bSingleRow && bFits )
 				{
 				}
 				else
 				{
-				}*/
+				}
+
+				// This code should be reviewed then should then go in the else part above.
+				// => use the old behaviour as a backup when we are not handling single rows or it wont fit.
 				
-				if((sThisTableSDH == sPasteTableSDH) && isRow)
+				/*if((sThisTableSDH == sPasteTableSDH) && isRow)
 				{
 					UT_DEBUGMSG(("Paste Whole Row into same Table!!!!! \n"));
 					bIsPasteIntoSame = true;
@@ -10152,7 +10194,7 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 					sDumProp[2] = NULL;
 					getDoc()->changeStruxFmt(PTC_AddFmt,posTable+1,posTable+1,NULL,sDumProp,PTX_SectionTable);
 
-				}
+				}*/
 			}
 		}
 	}

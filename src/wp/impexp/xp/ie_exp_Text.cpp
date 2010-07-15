@@ -212,7 +212,7 @@ PL_Listener * IE_Exp_Text::_constructListener(void)
 		}
 	}
 
-	return new Text_Listener(getDoc(),this,(getDocRange()!=NULL),m_szEncoding,
+	return new Text_Listener(getDoc(),this,!isRangesEmpty(),m_szEncoding,
 							 m_bIs16Bit,m_bUnicode,m_bUseBOM,m_bBigEndian);
 }
 
@@ -234,7 +234,7 @@ UT_Error IE_Exp_Text::_writeDocument(void)
 	// TODO If we're going to the clipboard and the OS supports unicode, set encoding.
 	// TODO Only supports Windows so far.
 	// TODO Should use a finer-grain technique than IsWinNT() since Win98 supports unicode clipboard.
-	if (getDocRange())
+	if (!isRangesEmpty())
 	{
 #ifdef WIN32
 		if (UT_IsWinNT())
@@ -246,8 +246,8 @@ UT_Error IE_Exp_Text::_writeDocument(void)
 	if (!m_pListener)
 		return UT_IE_NOMEMORY;
 
-	if (getDocRange())
-		getDoc()->tellListenerSubset(static_cast<PL_Listener *>(m_pListener),getDocRange());
+	if (!isRangesEmpty())
+		getDoc()->tellListenerSubsets(static_cast<PL_Listener *>(m_pListener),getDocRanges());
 	else
 		getDoc()->tellListener(static_cast<PL_Listener *>(m_pListener));
 	DELETEP(m_pListener);

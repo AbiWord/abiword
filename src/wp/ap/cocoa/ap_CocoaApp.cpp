@@ -540,28 +540,40 @@ const XAP_StringSet * AP_CocoaApp::getStringSet(void) const
   server (well sorta) all at one time.
   \param pDocRange a range of the document to be copied
 */
-void AP_CocoaApp::copyToClipboard(PD_DocumentRange * pDocRange, bool /*bUseClipboard*/)
+void AP_CocoaApp::copyToClipboard(PD_DocumentRange* pDocRanges, bool bUseClipboard){
+{
+	UT_DEBUGMSG(("\n\nCOPYTOCLIPBOARD CALLED"));
+	std::vector<PD_DocumentRange> ranges;
+	ranges.push_back(*pDocRange);
+	copyToClipboard(ranges, bUseClipboard);
+	return;
+}
+
+void AP_CocoaApp::copyToClipboard(std::vector<PD_DocumentRange> &ranges, bool bUseClipboard)
 {
 
     UT_ByteBuf bufRTF;
     UT_ByteBuf bufTEXT;
 
 	// create RTF buffer to put on the clipboard
-		
-    IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(pDocRange->m_pDoc);
+
+	// Dzan - Assuming all ranges in same document ( which they should be )
+	PD_Document pDoc = pDocRange[0].m_pDoc;
+	
+    IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(pDoc);
     if (pExpRtf)
     {
-		pExpRtf->copyToBuffer(pDocRange,&bufRTF);
+		//pExpRtf->copyToBuffer(pDocRange,&bufRTF);
 		DELETEP(pExpRtf);
 		UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in RTF format.\n",bufRTF.getLength()));
     }
 
     // create raw 8bit text buffer to put on the clipboard
 		
-    IE_Exp_Text * pExpText = new IE_Exp_Text(pDocRange->m_pDoc, "UTF-8");
+    IE_Exp_Text * pExpText = new IE_Exp_Text(pDoc, "UTF-8");
     if (pExpText)
     {
-		pExpText->copyToBuffer(pDocRange,&bufTEXT);
+		//pExpText->copyToBuffer(pDocRange,&bufTEXT);
 		DELETEP(pExpText);
 		UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in TEXTPLAIN (UTF-8) format.\n",bufTEXT.getLength()));
     }

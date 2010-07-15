@@ -176,7 +176,7 @@ void IE_Exp::unregisterAllExporters ()
 
 IE_Exp::IE_Exp(PD_Document * pDocument, UT_Confidence_t fidelity)
 	: m_error(false), m_pDocument(pDocument),
-	  m_pDocRange (0), m_pByteBuf(0),
+	  m_pByteBuf(0),
 	  m_szFileName(0), m_fp(0), m_bOwnsFp(false), m_fidelity(fidelity),
 	  m_fieldUpdater(0)
 {
@@ -293,9 +293,14 @@ PD_Document * IE_Exp::getDoc () const
   return m_pDocument;
 }
 
-PD_DocumentRange * IE_Exp::getDocRange() const
+bool IE_Exp::isRangesEmpty() const
 {
-  return m_pDocRange;
+	return m_pDocRanges.empty();
+}
+
+std::vector<PD_DocumentRange>& IE_Exp::getDocRanges()
+{
+  return m_pDocRanges;
 }
 
 UT_Error IE_Exp::writeFile(GsfOutput * fp)
@@ -335,14 +340,21 @@ UT_Error IE_Exp::writeFile(const char * szFilename)
 	return error;
 }
 
-UT_Error IE_Exp::copyToBuffer(PD_DocumentRange * pDocRange, UT_ByteBuf * pBuf)
+UT_Error IE_Exp::copyToBuffer(PD_DocumentRange* pDocRange, UT_ByteBuf* pBuf)
+{
+	std::vector<PD_DocumentRange> ranges;
+	ranges.push_back(*pDocRange);
+	return copyToBuffer(ranges, pBuf);
+}
+
+UT_Error IE_Exp::copyToBuffer(std::vector<PD_DocumentRange> &ranges, UT_ByteBuf * pBuf)
 {
 	// copy selected range of the document into the provided
 	// byte buffer.  (this will be given to the clipboard later)
 
-	UT_return_val_if_fail(m_pDocument == pDocRange->m_pDoc, UT_ERROR);
+	UT_return_val_if_fail(m_pDocument == ranges[0].m_pDoc, UT_ERROR);
 	
-	m_pDocRange = pDocRange;
+	m_pDocRanges = ranges;
 	m_pByteBuf = pBuf;
 
 	UT_Error err = _writeDocument();

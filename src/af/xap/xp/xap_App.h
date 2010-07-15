@@ -37,6 +37,7 @@
 #include "ut_string_class.h"
 #include "xap_AppImpl.h"
 #include "xav_Listener.h"
+#include <vector>
 
 #define NUM_MODELESSID 39
 
@@ -180,6 +181,7 @@ public:
 	virtual bool					findAbiSuiteLibFile(UT_String & path, const char * filename, const char * subdir = 0);
 	virtual bool					findAbiSuiteAppFile(UT_String & path, const char * filename, const char * subdir = 0); // doesn't check user-dir
 	virtual void					copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true) = 0;
+	virtual void					copyToClipboard(std::vector<PD_DocumentRange> &ranges, bool bUseClipboard = true) = 0;
 	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting = true) = 0;
 	virtual bool					canPasteFromClipboard() = 0;
 	virtual void					cacheCurrentSelection(AV_View *) = 0;

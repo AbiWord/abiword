@@ -221,8 +221,8 @@ UT_Error IE_Exp_RTF::_writeDocumentLocal(bool bSkipHeader)
 	s_RTF_ListenerGetProps * listenerGetProps = new s_RTF_ListenerGetProps(getDoc(),this);
 	if (!listenerGetProps)
 		return UT_IE_NOMEMORY;
-	if (getDocRange() && !bSkipHeader)
-		getDoc()->tellListenerSubset(listenerGetProps,getDocRange());
+	if (!isRangesEmpty() && !bSkipHeader)
+		getDoc()->tellListenerSubsets(listenerGetProps,getDocRanges());
 	else
 		getDoc()->tellListener(listenerGetProps);
 
@@ -246,11 +246,11 @@ UT_Error IE_Exp_RTF::_writeDocumentLocal(bool bSkipHeader)
 	// create and install a listener to receive the document
 	// and write its content in rtf.
 
-	m_pListenerWriteDoc = new s_RTF_ListenerWriteDoc(getDoc(),this, (getDocRange()!=NULL), hasBlock);
+	m_pListenerWriteDoc = new s_RTF_ListenerWriteDoc(getDoc(),this, !isRangesEmpty(), hasBlock);
 	if (!m_pListenerWriteDoc)
 		return UT_IE_NOMEMORY;
-	if (getDocRange())
-		getDoc()->tellListenerSubset(m_pListenerWriteDoc,getDocRange());
+	if (!isRangesEmpty())
+		getDoc()->tellListenerSubsets(m_pListenerWriteDoc,getDocRanges());
 	else
 		getDoc()->tellListener(m_pListenerWriteDoc);
 	DELETEP(m_pListenerWriteDoc);

@@ -33,6 +33,7 @@
 #include "pt_VarSet.h"
 #include "pp_Revision.h"
 #include "px_ChangeHistory.h"
+#include <vector>
 
 class pf_Frag_Object;
 class pf_Frag_FmtMark;
@@ -284,6 +285,8 @@ public:
 	bool					tellListener(PL_Listener * pListener);
 	bool					tellListenerSubset(PL_Listener * pListener,
 											   PD_DocumentRange * pDocRange);
+	bool					tellListenerSubsets(PL_Listener* pListener,
+                                        std::vector<PD_DocumentRange>& ranges);
 
 	bool					addListener(PL_Listener * pListener,
 										PL_ListenerId listenerId);

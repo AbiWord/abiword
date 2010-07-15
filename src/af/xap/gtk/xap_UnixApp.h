@@ -70,6 +70,7 @@ public:
 	virtual const char *					getAbiSuiteAppDir() const = 0;
 	virtual const std::string&					getAbiSuiteAppUIDir() const = 0;	  
 	virtual void							copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true) = 0;
+	virtual void							copyToClipboard(std::vector<PD_DocumentRange> &ranges, bool bUseClipboard = true) = 0;
 	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting = true) = 0;
 	virtual bool							canPasteFromClipboard() = 0;
 	virtual const char *					getUserPrivateDirectory();

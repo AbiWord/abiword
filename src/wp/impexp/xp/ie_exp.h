@@ -25,7 +25,9 @@
 #include <stdio.h>
 #include <map>
 #include <string>
+#include <vector>
 
+#include "ut_vector.h"
 #include "ie_types.h"
 
 #include "ut_go_file.h"
@@ -100,14 +102,14 @@ public:
 	// responsible for destroying the exporter when finished
 	// with it.
 
-	static IEFileType	fileTypeForSuffix(const char * szSuffix);
-	static IEFileType	fileTypeForMimetype(const char * szMimetype);
-	static IEFileType	fileTypeForDescription(const char * szSuffix);
-	static IEFileType fileTypeForSuffixes(const char * suffixList);
-	static IE_ExpSniffer * snifferForFileType(IEFileType ieft);
-	static const char * suffixesForFileType(IEFileType ieft);
-	static const char * descriptionForFileType(IEFileType ieft);
-	static UT_UTF8String preferredSuffixForFileType(IEFileType ieft);
+	static IEFileType		fileTypeForSuffix(const char * szSuffix);
+	static IEFileType		fileTypeForMimetype(const char * szMimetype);
+	static IEFileType		fileTypeForDescription(const char * szSuffix);
+	static IEFileType		fileTypeForSuffixes(const char * suffixList);
+	static IE_ExpSniffer*   snifferForFileType(IEFileType ieft);
+	static const char*		suffixesForFileType(IEFileType ieft);
+	static const char*	 	descriptionForFileType(IEFileType ieft);
+	static UT_UTF8String	preferredSuffixForFileType(IEFileType ieft);
 	
 	static UT_Error		constructExporter(PD_Document * pDocument,
 										  const char * szFilename,
@@ -133,7 +135,8 @@ public:
 
 	UT_Error		writeFile(const char * szFilename);
 	UT_Error        writeFile(GsfOutput * fp);
-	virtual UT_Error	copyToBuffer(PD_DocumentRange * pDocRange, UT_ByteBuf * pBuf);
+	UT_Error	copyToBuffer(std::vector<PD_DocumentRange> &ranges, UT_ByteBuf * pBuf);
+	UT_Error			copyToBuffer(PD_DocumentRange* pDocRange, UT_ByteBuf* pBuf);
 	virtual void		write(const char * sz);
 	virtual void		write(const char * sz, UT_uint32 length);
 	virtual char        rewindChar(void);
@@ -150,9 +153,7 @@ public:
 
 	void setProps (const char * props);
 
-	bool isCopying () const {
-		return getDocRange () != NULL;
-	}
+	bool isCopying () const {return isRangesEmpty(); }
 
 	void populateFields();
 
@@ -177,13 +178,13 @@ protected:
 	virtual UT_uint32	_writeBytes(const UT_Byte * pBytes, UT_uint32 length);
 	virtual bool		_writeBytes(const UT_Byte * sz);
 	virtual void		_abortFile(void);
-
 	void				_cancelExport () { m_bCancelled = true; }
+	bool				_closeFile(void);
 
-	bool		_closeFile(void);
-
-	PD_Document * getDoc() const;
-	PD_DocumentRange * getDocRange() const;
+	PD_Document *						getDoc() const;
+	std::vector<PD_DocumentRange>&		getDocRanges();
+	bool								isRangesEmpty() const;
+	
 	/** Return the file pointer, for convenience */
 	GsfOutput*          getFp()
 		{
@@ -202,14 +203,13 @@ public:
 	}
 
 private:
-	PD_Document *		m_pDocument;
-	PD_DocumentRange *	m_pDocRange;
-	UT_ByteBuf *		m_pByteBuf;
-	char *                  m_szFileName;
-	GsfOutput *				m_fp;
-	bool                m_bOwnsFp;
-
-	bool				m_bCancelled;
+	PD_Document *							m_pDocument;
+	std::vector<PD_DocumentRange>		    m_pDocRanges;
+	UT_ByteBuf *							m_pByteBuf;
+	char *              					m_szFileName;
+	GsfOutput *								m_fp;
+	bool            						m_bOwnsFp;
+	bool									m_bCancelled;
 
 	std::map<std::string, std::string>	m_props_map;
 
