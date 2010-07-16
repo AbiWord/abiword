@@ -546,7 +546,7 @@ bool fp_Line::canDrawTopBorder(void) const
   fl_BlockLayout * pPrevBlock = static_cast<fp_Line *>(pPrev)->getBlock();
   if(pPrevBlock->canMergeBordersWithNext())
     return false;
-  return true;
+  return (pFirst == this);
 }
 
 
@@ -572,12 +572,18 @@ bool fp_Line::canDrawBotBorder(void) const
   fl_BlockLayout * pNextBlock = pNextL->getBlock();
   if(pNextBlock->canMergeBordersWithPrev())
     return false;
-  return true;
+  return (pLast == this);
 }
 
 UT_sint32 fp_Line::getLeftThick(void) const
 {
   return m_iLeftThick;
+}
+
+void fp_Line::setHeight(UT_sint32 i)
+{
+    xxx_UT_DEBUGMSG(("Line %p set to height %d \n",this,i));
+    m_iHeight = i;
 }
 
 
@@ -1384,6 +1390,9 @@ void fp_Line::recalcHeight(fp_Run * pLastRun)
 	bool bSetByImage = false;
 	fp_Run* pRun = m_vecRuns.getNthItem(0);
 	xxx_UT_DEBUGMSG(("Orig Height = %d \n",getHeight()));
+	UT_sint32 iOldHeight = getHeight();
+	UT_sint32 iOldAscent = m_iAscent;
+	UT_sint32 iOldDescent = m_iDescent;
 	for (i=0; (i<count && ((pRun != pLastRun) || ((i== 0) && (getHeight() ==0)))); i++)
 	{
 		UT_sint32 iAscent;
@@ -1417,9 +1426,6 @@ void fp_Line::recalcHeight(fp_Run * pLastRun)
 	m_iClearLeftOffset = iMaxDescent;
 	if(hasBordersOrShading())
 	  m_iClearLeftOffset = 0;
-	UT_sint32 iOldHeight = getHeight();
-	UT_sint32 iOldAscent = m_iAscent;
-	UT_sint32 iOldDescent = m_iDescent;
 
 	UT_sint32 iNewHeight = iMaxAscent + iMaxDescent;
 	UT_sint32 iNewAscent = iMaxAscent;
