@@ -10012,7 +10012,7 @@ bool IE_Imp_RTF::HandleAbiEmbed(void)
 bool IE_Imp_RTF::HandleAbiTable(void)
 {
 
-	UT_DEBUGMSG(("\n\nBUFFER:\n%s\n\n", m_pCurrentCharInPasteBuffer));
+	UT_DEBUGMSG(("\n\nTABLE IMPORT BUFFER CONTENT:\n\n%s\n",m_pCurrentCharInPasteBuffer));
     //------------------------------------------------------------- 
 	// Read in rest of the table props in the rtf buffer
 	//-------------------------------------------------------------
@@ -11563,7 +11563,6 @@ bool IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	// note, we skip the _writeHeader() call since we don't
 	// want to assume that selection starts with a section
 	// break.
-		UT_DEBUGMSG(("\n\n BUFFER: \n %s \n\n\n",m_pCurrentCharInPasteBuffer));
 	_parseFile(NULL);
 
 	if(m_newParaFlagged)

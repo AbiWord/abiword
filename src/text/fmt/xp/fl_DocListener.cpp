@@ -1772,6 +1772,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
+
 #if DEBUG
 #if 1
 	if(pcrx->getStruxType() == PTX_Block)

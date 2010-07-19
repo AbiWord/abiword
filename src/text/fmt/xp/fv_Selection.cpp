@@ -227,18 +227,27 @@ bool FV_Selection::isSingleTableColumnSelected(void) const
 	fl_CellLayout* tmpCell;
 	for( int i= m_iTopTableRect; i<m_iBottomTableRect; ++i)
 	{	
+	 	PT_DocPosition pos1, pos2;
+		
 		// Start point, first cell left
 		tmpCell = static_cast<fl_CellLayout *>(table->getCellAtRowColumn(i,m_iLeftTableRect)->getSectionLayout());
 		sdh = tmpCell->getStruxDocHandle();
+		pos1 = getDoc()->getStruxPosition(sdh);
 		
 		// End point
 	    tmpCell = static_cast<fl_CellLayout *>(table->getCellAtRowColumn(i,m_iRightTableRect-1)->getSectionLayout());
 		sdh = tmpCell->getStruxDocHandle();
 		sdhEnd = NULL;
 		getDoc()->getNextStruxOfType(sdh,PTX_EndCell,&sdhEnd);
+		pos2 = getDoc()->getStruxPosition(sdhEnd)+1;	
+		// VERY VERY IMPORTANT +1 !!!! =>
+		// Dzan - GSoC if left out we will never select the cellend strux and
+		// the exporter will produce wrong => importer will freak
+
+		UT_DEBUGMSG(("\nCellAtRowColumn %d , %d  en %d , %d resulteert in pos1: %d en pos2: %d",i,m_iLeftTableRect,i,m_iRightTableRect,pos1,pos2));
 		
 		// adding to vector
-		PD_DocumentRange linerange(getDoc(), getDoc()->getStruxPosition(sdh), getDoc()->getStruxPosition(sdhEnd));
+		PD_DocumentRange linerange(getDoc(), pos1, pos2);
 		ranges.push_back(linerange);		
 	}
 	 

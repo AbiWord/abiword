@@ -4193,6 +4193,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
 	*psfh = 0;							// we don't need it.
 
+	UT_DEBUGMSG(("\t\tSTRUX TYPE: %d\t\t",pcrx->getStruxType()));
 	m_posDoc = pcrx->getPosition();
 	switch (pcrx->getStruxType())
 	{
@@ -4509,11 +4510,15 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 		}
 	case PTX_SectionCell:
 	    {
+			UT_DEBUGMSG(("\nCELL STRUX GEOPEND!!\n"));
 			_closeSpan();
 			// in rtf cell is a block, while in AW cell contains a block
 			// in order to avoid a superfluous paragraph marker we will pretend that we
 			// are not in a block
-			// see comments under case PTX_SectionFootnote:
+			// we set m_bInBlock to false to prevent issue of \par keyword; the block
+			// which gets inserted into the footnote resets this into the normal state, so
+			// that when we exit the footnote section, we will be again in block and the
+			// block that contains the footnote will get closed as normal
 			m_bInBlock = false;
 			_setTabEaten(false);
 			m_sdh = sdh;
