@@ -393,6 +393,11 @@ char IE_Exp::rewindChar(void)
 
 void IE_Exp::write(const char * sz, UT_uint32 length)
 {
+
+	char* comp = "abicellprops ";
+	if( strcmp(comp, sz) == 0 )
+			UT_DEBUGMSG(("\nHIT HIT HIT\tOutput:    %s",sz));
+	
 	if (m_error)
 		return;
 

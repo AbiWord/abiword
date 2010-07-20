@@ -2564,6 +2564,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
  */
 void s_RTF_ListenerWriteDoc::_export_AbiWord_Cell_props(PT_AttrPropIndex api, bool bFill)
 {
+	UT_DEBUGMSG(("\n\nDzan - EXPORT ABIWORD CELL PROPS CALLED \n")); 
 //
 // Export abiword table properties as an extension
 // Use these for cutting and pasting within abiword.
@@ -2575,16 +2576,18 @@ void s_RTF_ListenerWriteDoc::_export_AbiWord_Cell_props(PT_AttrPropIndex api, bo
 	UT_String sTop = UT_String_getPropVal(sCellProps,sTopAttach);
 	UT_String sBotAttach = "bot-attach";
 	UT_String sBot = UT_String_getPropVal(sCellProps,sBotAttach);
-	if(bFill)
+	/*if(bFill)
 	{
 		UT_String sLeftAttach = "left-attach";
 		m_iFirstTop = atoi(sTop.c_str());
 		UT_String sLeft = UT_String_getPropVal(sCellProps,sLeftAttach);
 		UT_sint32 iFirstLeft = atoi(sLeft.c_str());
-//
+
+// DZan - GSoC 'part of the big fix' This is unneeded now! rectangular selections ftw! :p
+//			   We don't ! want the left cells to be copied.
 // Export cells to the left of the current cell.
 //
-		UT_sint32 i = 0;
+		/*UT_sint32 i = 0;
 		UT_String sRightAttach = "right-attach";
 		UT_String sTempProps;
 		UT_String sTTop = "0";
@@ -2611,7 +2614,7 @@ void s_RTF_ListenerWriteDoc::_export_AbiWord_Cell_props(PT_AttrPropIndex api, bo
 			m_pie->_rtf_keyword("abiendcell");
 			m_pie->_rtf_close_brace();
 		}
-	}
+	}*/
 //
 // Adjust the top and bottom attaches for the offset within the table if the
 // select starts before the start of the table
@@ -3297,6 +3300,9 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 // If we copy text to the clipboard we may not cover a open table strux.
 // Put this in to prevent crashes.
 //
+
+	// Open new table?
+	UT_DEBUGMSG(("\n\t\tDzan - _open_cell() called!!"));
 	if(m_Table.getNestDepth() < 1)
 	{
 		_open_table(api,true);
@@ -3311,9 +3317,13 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 	UT_sint32 iOldRight = m_iRight;
 	xxx_UT_DEBUGMSG(("Setting cell API 1 NOW!!!!!!!!!!!!!!!!! %d \n",api));
 	PT_AttrPropIndex prevAPI = api;
+	
 	m_Table.OpenCell(api);
+	
 	bool bNewRow = false;
 	xxx_UT_DEBUGMSG(("iOldRow %d newTop %d \n",iOldRow,m_Table.getTop()));
+
+	// Open new row?
 	if(	(m_Table.getLeft() < iOldRight) || m_bNewTable)
 	{
 		xxx_UT_DEBUGMSG(("NEW ROW DETECTED !!!!!!!!!!!!!!!!!\n"));
@@ -3552,6 +3562,7 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 //
 // Autofit (or not) the row. Look up col widths
 //
+		// Dzan - GSoC Have to be here If don't want to expand over whole row each copy/paste!
 		m_pie->_rtf_keyword("trautofit",1);
 	}
 //
@@ -3605,6 +3616,7 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 		xxx_UT_DEBUGMSG(("SEVIOR: set to row %d i %d left %d right %d \n",row,i,m_Table.getLeft(),m_Table.getRight()));
 		if(m_Table.getRight() <= i)
 		{
+			// Dzan - This will only work when other table still exists? Otherwise TableSDH would be gone..?
 			PL_StruxDocHandle cellSDH = m_pDocument->getCellSDHFromRowCol(m_Table.getTableSDH(),true,PD_MAX_REVISION,
 																		  row,i);
 			UT_ASSERT_HARMLESS(cellSDH);
@@ -4194,6 +4206,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 	*psfh = 0;							// we don't need it.
 
 	UT_DEBUGMSG(("\t\tSTRUX TYPE: %d\t\t",pcrx->getStruxType()));
+	UT_DEBUGMSG((""));
 	m_posDoc = pcrx->getPosition();
 	switch (pcrx->getStruxType())
 	{
@@ -4510,7 +4523,6 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 		}
 	case PTX_SectionCell:
 	    {
-			UT_DEBUGMSG(("\nCELL STRUX GEOPEND!!\n"));
 			_closeSpan();
 			// in rtf cell is a block, while in AW cell contains a block
 			// in order to avoid a superfluous paragraph marker we will pretend that we

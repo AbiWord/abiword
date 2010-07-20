@@ -239,8 +239,8 @@ bool FV_Selection::isSingleTableColumnSelected(void) const
 		sdh = tmpCell->getStruxDocHandle();
 		sdhEnd = NULL;
 		getDoc()->getNextStruxOfType(sdh,PTX_EndCell,&sdhEnd);
-		pos2 = getDoc()->getStruxPosition(sdhEnd)+1;	
-		// VERY VERY IMPORTANT +1 !!!! =>
+		pos2 = getDoc()->getStruxPosition(sdhEnd) + 1;	
+		// VERY VERY IMPORTANT +1 !!!! -> -> -> -> -^
 		// Dzan - GSoC if left out we will never select the cellend strux and
 		// the exporter will produce wrong => importer will freak
 
