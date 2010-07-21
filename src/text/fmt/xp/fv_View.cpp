@@ -8745,7 +8745,7 @@ bool FV_View::getCellLineStyle(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sin
  *				 The real fix for this requires adapting the drawing code.
  */
 bool FV_View::setCellFormat
-(const gchar * properties[], bool bHack, const gchar * bottomprops[], const gchar * rightprops[], 
+(const gchar * properties[], bool bSetAdjacent, const gchar * bottomprops[], const gchar * rightprops[], 
  FormatTable applyTo, FG_Graphic * pFG,UT_String & sDataID)
 {
 
@@ -8943,10 +8943,62 @@ bool FV_View::setCellFormat
 				}
 			}
 		}
-	}
 
-	// Dzan - GSoC
-	// Implementing the hack
+		// Dzan - GSoC
+		// Implementing the hack
+		if( bSetAdjacent )
+		{ 
+			// check if not at bottom, if not, reset cells under selection
+			if( rowEnd != numRows-1)
+			{
+				for (i = colStart; i <= colEnd; i++)
+				{
+					PL_StruxDocHandle cellSDH = m_pDoc->getCellSDHFromRowCol(tableSDH, isShowRevisions(), getRevisionLevel(),rowEnd+1, i);
+					if(cellSDH)
+					{
+						// Do the actual change
+						posStart = m_pDoc->getStruxPosition(cellSDH)+1;
+						bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posStart,NULL,bottomprops,PTX_SectionCell);
+						if(pFG != NULL)
+						{
+							pFG->insertAtStrux(m_pDoc,72,posStart,PTX_SectionCell,sDataID.c_str());
+						}
+						else
+						{
+							const gchar * attributes[3] = {PT_STRUX_IMAGE_DATAID,NULL,NULL};
+							bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt,posStart,posStart,attributes,NULL,PTX_SectionCell);	
+						}
+					}
+					else UT_DEBUGMSG(("(Hack-Bottom) Yikes! There is no cell at position (%dx%d)!\n", j, i));
+				}					
+			}
+
+			// check if not at right edge of table, if not, reset cells right of selection
+			if( colEnd != numCols-1 )
+			{
+				for (i = rowStart; i <= rowEnd; i++)
+				{
+					PL_StruxDocHandle cellSDH = m_pDoc->getCellSDHFromRowCol(tableSDH, isShowRevisions(), getRevisionLevel(),i, colEnd+1);
+					if(cellSDH)
+					{
+						// Do the actual change
+						posStart = m_pDoc->getStruxPosition(cellSDH)+1;
+						bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posStart,NULL,rightprops,PTX_SectionCell);
+						if(pFG != NULL)
+						{
+							pFG->insertAtStrux(m_pDoc,72,posStart,PTX_SectionCell,sDataID.c_str());
+						}
+						else
+						{
+							const gchar * attributes[3] = {PT_STRUX_IMAGE_DATAID,NULL,NULL};
+							bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt,posStart,posStart,attributes,NULL,PTX_SectionCell);	
+						}
+					}
+					else UT_DEBUGMSG(("(Hack-Right) Yikes! There is no cell at position (%dx%d)!\n", j, i));
+				}	
+			}
+		}
+	}
 	
 	// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
 	// with the restored line-type property it has before.

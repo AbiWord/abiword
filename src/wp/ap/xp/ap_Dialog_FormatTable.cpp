@@ -525,6 +525,14 @@ void AP_Dialog_FormatTable::applyChanges()
 	delete [] propsArray;
 	delete [] propsBottom;
 	delete [] propsRight;
+
+	// Dzan - Must clear these or next change will reset adjacent borders to last know value
+	if(m_vecPropsAdjRight.getItemCount() > 0)
+		m_vecPropsAdjRight.clear();
+	  
+	if(m_vecPropsAdjBottom.getItemCount() > 0)
+		m_vecPropsAdjBottom.clear();
+	
 	m_bSettingsChanged = false;
 }
 
