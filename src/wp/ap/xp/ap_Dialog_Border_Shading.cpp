@@ -90,7 +90,7 @@ AP_Dialog_Border_Shading::AP_Dialog_Border_Shading(XAP_DialogFactory * pDlgFacto
 	UT_sint32 j = 0;
 	for(j=0; j< BORDER_SHADING_NUMOFFSETS ;j++)
 	{
-		m_dShadingOffset[i] = UT_convertToInches(sShadingOffset[i]);
+		m_dShadingOffset[j] = UT_convertToInches(sShadingOffset[j]);
 	}
 
 	if(m_vecProps.getItemCount() > 0)
@@ -304,8 +304,9 @@ void AP_Dialog_Border_Shading::setCurCellProps(void)
 			m_sImagePath.clear();
 		}
 
-		UT_String bstmp = UT_String_sprintf("%d", FS_FILL);
-		m_vecProps.addOrReplaceProp("bg-style", bstmp.c_str());
+		// Maleesh 7/10/2010 - Removed.  
+// 		UT_String bstmp = UT_String_sprintf("%d", FS_FILL);
+// 		m_vecProps.addOrReplaceProp("bg-style", bstmp.c_str());
 		
 		// draw the preview with the changed properties
 		if(m_pBorderShadingPreview)
@@ -407,10 +408,10 @@ void AP_Dialog_Border_Shading::setBorderStyle(UT_UTF8String & sStyle)
 	m_sBorderStyle = sStyle;
 	if(m_borderToggled)
 		return;
-	m_vecProps.addOrReplaceProp("left-thickness", m_sBorderStyle.utf8_str());
-	m_vecProps.addOrReplaceProp("right-thickness",m_sBorderStyle.utf8_str());
-	m_vecProps.addOrReplaceProp("top-thickness",m_sBorderStyle.utf8_str());
-	m_vecProps.addOrReplaceProp("bot-thickness",m_sBorderStyle.utf8_str());
+	m_vecProps.addOrReplaceProp("left-style", m_sBorderStyle.utf8_str());
+	m_vecProps.addOrReplaceProp("right-style",m_sBorderStyle.utf8_str());
+	m_vecProps.addOrReplaceProp("top-style",m_sBorderStyle.utf8_str());
+	m_vecProps.addOrReplaceProp("bot-style",m_sBorderStyle.utf8_str());
 
 	m_bSettingsChanged = true;
 }
@@ -450,14 +451,16 @@ void AP_Dialog_Border_Shading::setShadingColor(UT_RGBColor clr)
 {
 	UT_String bgcol = UT_String_sprintf("%02x%02x%02x", clr.m_red, clr.m_grn, clr.m_blu);
 
-	// Maleesh 7/5/2010 - Removed. Don't know whether I needed to use this. 
-// 	m_vecProps.removeProp ("bg-style"); // Why do we remove this property?  We still use it in frames. -MG
-// 	m_vecProps.removeProp ("bgcolor"); // this is only here for backward compatibility with AbiWord < 2.0. Could be removed as far as I can see - MARCM
-
 	if (clr.isTransparent ())
-		m_vecProps.removeProp ("shading-background-color");
+	{
+		m_vecProps.removeProp ("shading-foreground-color");
+		m_vecProps.removeProp ("shading-pattern");
+	}
 	else
-		m_vecProps.addOrReplaceProp ("shading-background-color", bgcol.c_str ());
+	{
+		m_vecProps.addOrReplaceProp ("shading-foreground-color", bgcol.c_str ());
+		m_vecProps.addOrReplaceProp ("shading-pattern", "1");
+	}
 
 	m_bSettingsChanged = true;
 }

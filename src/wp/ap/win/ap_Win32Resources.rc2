@@ -223,6 +223,10 @@
 #define AP_RID_TI_UNINDENT 3139
 #define AP_RID_TI_VIEW_SHOWPARA 3140
 
+// Maleesh - 
+#define AP_RID_TI_BORDER_STYLE_DASHED	3141
+#define AP_RID_TI_BORDER_STYLE_DOTTED	3142
+#define AP_RID_TI_BORDER_STYLE_SOLID	3143
 
 #include "ap_Win32Res_DlgPageSetup.rc2"
 #include "ap_Win32Resources_DialogReplace.rc2"

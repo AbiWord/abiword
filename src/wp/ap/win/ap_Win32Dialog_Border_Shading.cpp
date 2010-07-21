@@ -37,6 +37,10 @@
 
 #define BITMAP_WITDH	15
 #define BITMAP_HEIGHT	15
+#define BORDER_STYLE_BITMAP_WIDTH 180
+#define BORDER_STYLE_BITMAP_HEIGHT 30
+#define BORDER_STYLE_COMBO_POSITION_X 45
+#define BORDER_STYLE_COMBO_POSITION_Y 125
 
 const char * sThicknessTable_Border_Shading[BORDER_SHADING_NUMTHICKNESS] = {"0.25pt","0.5pt",
 													   "0.75pt","1.0pt",
@@ -116,6 +120,59 @@ BOOL AP_Win32Dialog_Border_Shading::_onDlgMessage(HWND hWnd, UINT msg, WPARAM wP
     return FALSE;
 }
 
+//=============================================================================
+HWND CreateComboboxEx(const HWND hParent,const HINSTANCE hInst,DWORD dwStyle,
+					  const RECT& rc,const int id)
+{
+	dwStyle|=WS_CHILD|WS_VISIBLE;
+	return CreateWindowEx(0,                  //extended styles
+		WC_COMBOBOXEX,      //control 'class' name
+		0,                  //control caption
+		dwStyle,            //wnd style
+		rc.left,            //position: left
+		rc.top,             //position: top
+		rc.right,           //width
+		rc.bottom,          //height
+		hParent,            //parent window handle
+		//control's ID
+		reinterpret_cast<HMENU>(static_cast<INT_PTR>(id)),
+		hInst,              //instance
+		0);                 //user defined info
+}
+
+//convenience constant
+const UINT CBX_ITEM_MASK = CBEIF_IMAGE|CBEIF_TEXT|CBEIF_SELECTEDIMAGE;
+
+//=============================================================================
+int InsertItem(HWND hCbx, const char* txt,int img_index,
+			   int selimg_index,INT_PTR index=-1,
+			   UINT mask = CBX_ITEM_MASK)
+{
+	//insert in item into the comboboxex,'hCbx' with zero-based index of 
+	//'index'(default value is -1 which adds item to end of list),
+	//text of 'txt', image index of 'img_index', selected image index of 
+	//'selimg_index' and mask which defines which of these parameters are actually
+	//used.
+
+	//copy the text into a temporary array (vector) so it's in a suitable form
+	//for the pszText member of the COMBOBOXEXITEM struct to use. This avoids using
+	//const_cast on 'txt.c_str()' or variations applied directly to the string that
+	//break its constant nature.
+// 	std::vector<TCHAR> tmp(txt.begin(),txt.end());
+// 	tmp.push_back(_T('\0'));
+
+	COMBOBOXEXITEM cbei={0};
+
+	cbei.mask=mask;
+	cbei.iItem=index;
+	cbei.pszText=(LPSTR)txt;
+	cbei.iImage=img_index;
+	cbei.iSelectedImage=selimg_index;
+
+	return static_cast<int>(SendMessage(hCbx,CBEM_INSERTITEM,0,
+		reinterpret_cast<LPARAM>(&cbei)));
+}
+
 HBITMAP AP_Win32Dialog_Border_Shading::_loadBitmap(HWND hWnd, UINT nId, char* pName, int width, int height, UT_RGBColor color)
 {
 	HBITMAP hBitmap = NULL;
@@ -157,6 +214,7 @@ BOOL AP_Win32Dialog_Border_Shading::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
     m_hBitmapRight = _loadBitmap(hWnd,AP_RID_DIALOG_BORDERSHADING_BMP_RIGHT, "FT_LINERIGHT",  BITMAP_WITDH, BITMAP_HEIGHT, Color);
     m_hBitmapLeft = _loadBitmap(hWnd,AP_RID_DIALOG_BORDERSHADING_BMP_LEFT, "FT_LINELEFT",  BITMAP_WITDH, BITMAP_HEIGHT, Color); 
     
+	
 	/* Preview*/
 	HWND hwndChild = GetDlgItem(hWnd, AP_RID_DIALOG_BORDERSHADING_STATIC_PREVIEW);	
 	UT_return_val_if_fail (hwndChild,0);
@@ -186,6 +244,45 @@ BOOL AP_Win32Dialog_Border_Shading::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 	for(i=0; i < BORDER_SHADING_NUMOFFSETS ;i++)
 		addItemToCombo (AP_RID_DIALOG_BORDERSHADING_COMBO_SHADING_OFFSET, sOffsetTable_Border_Shading[i]);
 	selectComboItem (AP_RID_DIALOG_BORDERSHADING_COMBO_SHADING_OFFSET, 0);
+
+	// Maleesh 7/10/2010 - TEST
+	RECT combo_rect = {
+		BORDER_STYLE_COMBO_POSITION_X, 
+		BORDER_STYLE_COMBO_POSITION_Y, 
+		BORDER_STYLE_BITMAP_WIDTH, 
+		BORDER_STYLE_BITMAP_HEIGHT};
+// 	StartCommonControls(ICC_USEREX_CLASSES);
+
+	XAP_App* pApp = XAP_App::getApp();
+	UT_ASSERT(pApp);
+	XAP_Win32App* pWin32App = static_cast<XAP_Win32App*>(pApp);
+	HWND hwndComboEx = CreateComboboxEx(
+										m_hDlg,
+										pWin32App->getInstance(), 
+										CBS_DROPDOWNLIST, 
+										combo_rect, 
+										AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_STYLE);
+
+	HIMAGELIST hImageList =	ImageList_Create(
+		BORDER_STYLE_BITMAP_WIDTH, 
+		BORDER_STYLE_BITMAP_HEIGHT, 
+		ILC_MASK|ILC_COLOR32, 
+		BORDER_SHADING_NUMOFSTYLES, 
+		0);
+
+	HBITMAP tmp_bmp1 = _loadBitmap(hWnd, 0, "BORDER_STYLE_DASHED",  BORDER_STYLE_BITMAP_WIDTH, BORDER_STYLE_BITMAP_HEIGHT, Color); 
+	HBITMAP tmp_bmp2 = _loadBitmap(hWnd, 0, "BORDER_STYLE_DOTTED",  BORDER_STYLE_BITMAP_WIDTH, BORDER_STYLE_BITMAP_HEIGHT, Color); 
+	HBITMAP tmp_bmp3 = _loadBitmap(hWnd, 0, "BORDER_STYLE_SOLID",  BORDER_STYLE_BITMAP_WIDTH, BORDER_STYLE_BITMAP_HEIGHT, Color); 
+
+	ImageList_Add(hImageList, tmp_bmp1, NULL);
+	ImageList_Add(hImageList, tmp_bmp2, NULL);
+	ImageList_Add(hImageList, tmp_bmp3, NULL);
+
+	SendMessage(hwndComboEx, CBEM_SETIMAGELIST, 0, reinterpret_cast<LPARAM>(hImageList));
+
+	InsertItem(hwndComboEx, NULL,0,0);
+	InsertItem(hwndComboEx, NULL,1,1);
+	InsertItem(hwndComboEx, NULL,2,2);
 
     centerDialog();
 	return 1; 
@@ -308,7 +405,7 @@ BOOL AP_Win32Dialog_Border_Shading::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 						getComboTextItem(AP_RID_DIALOG_BORDERSHADING_COMBO_SHADING_OFFSET, nSelected, offset);
 						
 						//	Maleesh 6/14/2010 -  TODO:Replace this with the correct function.
-// 						setBorderThickness(offset_utf8);                                        
+						setShadingOffset(offset_utf8);					                                     
 						/*Force redraw*/
 						InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_BORDERSHADING_BTN_SHADING_COLOR), NULL, FALSE);
 						event_previewExposed();	
