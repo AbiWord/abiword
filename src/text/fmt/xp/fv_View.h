@@ -757,7 +757,10 @@ public:
 									  UT_sint32 *iRight,UT_sint32 *iTop, UT_sint32 *iBot) const;
 	bool				getCellLineStyle(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sint32 * pRight,
 										 UT_sint32 * pTop, UT_sint32 * pBot) const;
-	bool				setCellFormat(const gchar * properties[], FormatTable applyTo, FG_Graphic * pFG, UT_String & sDataID);
+/*	bool				setCellFormat(const gchar * properties[], FormatTable applyTo, FG_Graphic * pFG, UT_String & sDataID); */
+/* Dzan - GSoC: This has to be changed back later when the hack is no longer needed, check comments in the implementation */
+	bool				setCellFormat(const gchar * properties[], bool bHack, const gchar * bottomprops[], const gchar * rightprops[], 
+										FormatTable applyTo, FG_Graphic * pFG,UT_String & sDataID);
 	bool				getCellProperty(const gchar * szPropName, gchar * &szPropValue) const;
 	bool	            setTableFormat(const gchar * properties[]);
 	bool	            setTableFormat(PT_DocPosition pos,const gchar * properties[]);

@@ -8735,8 +8735,20 @@ bool FV_View::getCellLineStyle(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sin
  \param applyTo the range to apply the changes to
  \return True if the operation was succesful, false otherwise
  */
-bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_Graphic * pFG,UT_String & sDataID)
+
+/*bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_Graphic * pFG,UT_String & sDataID)*/
+/* Dzan - GSoC : This is the 'hacked' version, it cheats by setting and repainting the bottom/right adjacent cells too.
+ *				 I used this approach because it's the 'cleanest' other options were creating extra methods for the hack
+ *				 they would have been 'complex' for a hack.
+ *				 The only call of this method is in the applyChanges method of the ap_Dialog_FormatTable class.
+ *				 For 'regular' unhacked use, just set the boolean tot false and there is no need to pass the bottomprops/rightprops.
+ *				 The real fix for this requires adapting the drawing code.
+ */
+bool FV_View::setCellFormat
+(const gchar * properties[], bool bHack, const gchar * bottomprops[], const gchar * rightprops[], 
+ FormatTable applyTo, FG_Graphic * pFG,UT_String & sDataID)
 {
+
 	bool bRet;
 	setCursorWait();
 
@@ -8752,17 +8764,6 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 	PT_DocPosition posTable = 0;
 	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
-	if (!isSelectionEmpty())
-	{
-		if (m_Selection.getSelectionAnchor() < posStart)
-			posStart = m_Selection.getSelectionAnchor();
-		else
-			posEnd = m_Selection.getSelectionAnchor();
-		if(posStart < 2)
-		{
-			posStart = 2;
-		}
-	}
 	
 	// Find the enclosing table. If just look for the first one we can get fooled by nested tables.
 	PL_StruxDocHandle tableSDH;
@@ -8795,78 +8796,16 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 	}
 	// Need this to trigger a table update!
 	UT_sint32 iLineType = _changeCellParams(posTable, tableSDH);
-	
-	// The Format Selection case needs some special attention
-	if (applyTo == FORMAT_TABLE_SELECTION)
-	{
-		PL_StruxDocHandle cellSDH;
-        bRet = m_pDoc->getStruxOfTypeFromPosition(posStart,PTX_SectionCell,&cellSDH);
-        if(!bRet)
-        {
-//
-// Might have exactly selected the table start and end struxes
-//
-			bRet = m_pDoc->getStruxOfTypeFromPosition(posStart+2,PTX_SectionCell,&cellSDH);
-			if(!bRet)
-			{
-                // Allow table updates
-                m_pDoc->setDontImmediatelyLayout(false);
-                                                                                                                                                                                                         
-                // Signal PieceTable Changes have finished
-                _restorePieceTableState();
-				clearCursorWait();
-                return false;
-			}
-		}
-        posStart = m_pDoc->getStruxPosition(cellSDH)+1;
-		
-//
-// Make sure posEnd is inside the Table.
-//
-		PL_StruxDocHandle endTableSDH = m_pDoc->getEndTableStruxFromTablePos(posTable);
-		UT_ASSERT(endTableSDH);
-		if(endTableSDH == NULL)
-		{
-			return false;
-		}
-		PT_DocPosition posEndTable = m_pDoc->getStruxPosition(endTableSDH);
-		if(posEnd > posEndTable)
-		{
-			posEnd = posEndTable -1;
-		}
-		// Do the actual change
-		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_SectionCell);	
-		UT_GenericVector<fl_BlockLayout*> vBlock;
-		getBlocksInSelection(&vBlock);
-		fl_ContainerLayout * pCL = NULL;
-		fl_CellLayout * pCell = NULL;
-		UT_sint32 i =0;
-		for(i=0; i<vBlock.getItemCount();i++)
-		{
-			fl_BlockLayout * pBL = vBlock.getNthItem(i);
-			pCL = pBL->myContainingLayout();
-			if(pCL->getContainerType() == FL_CONTAINER_CELL)
-			{
-				if(static_cast<fl_CellLayout *>(pCL) != pCell)
-				{
-					if(pFG != NULL)
-					{
-						pCell = static_cast<fl_CellLayout *>(pCL);
-						pFG->insertAtStrux(m_pDoc,72,pBL->getPosition(),
-										   PTX_SectionCell,sDataID.c_str());
-					}
-					else
-					{
-						const gchar * attributes[3] = {
-							PT_STRUX_IMAGE_DATAID,NULL,NULL};
-						bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt,pBL->getPosition(),pBL->getPosition(),attributes,NULL,PTX_SectionCell);	
-						
-					}
-				}
-			}
-		}
-	}
-	else if(applyTo == FORMAT_TABLE_TABLE)
+
+	/*
+	 * Dzan - GSoC: 
+	 *  We'll treat two case: whole table selections and other!
+	 *	Reason I treat this different is when the whole table is selected
+	 *	we want to delete the individual cell props and make them all
+	 *	inherit from the table props. In row/column/custom selections
+	 *  we set the cell props themselfs.
+	 */
+	if(applyTo == FORMAT_TABLE_TABLE)
 	{
 		UT_DEBUGMSG(("Doing apply FORMAT_TABLE_TABLE \n"));
 		// Loop through the table cells to adjust their formatting		
@@ -8905,6 +8844,7 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 	}
 	else
 	{
+		UT_DEBUGMSG(("Entered the else!!, Type is: %d\n", applyTo));
 		fp_CellContainer * cell = getCellAtPos(posStart);
 		if (!cell)
 		{
@@ -8945,13 +8885,21 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 			colStart = 0;
 			colEnd = numCols-1;
 		}
-		else if( applyTo == FORMAT_TABLE_COLUMN)
+		else if( applyTo == FORMAT_TABLE_COLUMN )
 		{
 			rowStart = 0;
 			rowEnd = numRows-1;
 			colStart = cell->getLeftAttach();
 			colEnd = cell->getLeftAttach();
-		}		
+		}
+		else if ( applyTo == FORMAT_TABLE_SELECTION )
+		{
+			UT_DEBUGMSG(("\nTable selection detected!!"));
+			m_Selection.getRectTableSel(&colStart, &colEnd,&rowStart, &rowEnd);
+			colEnd--;
+			rowEnd--;
+			UT_DEBUGMSG(("\n\nTable selection: top %d bottom %d left %d right %d\n",rowStart, rowEnd, colStart, colEnd));
+		}
 		else
 		{
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -8996,6 +8944,10 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 			}
 		}
 	}
+
+	// Dzan - GSoC
+	// Implementing the hack
+	
 	// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
 	// with the restored line-type property it has before.
 	iLineType += 1;
@@ -9018,7 +8970,8 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 	notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
-	return bRet;
+	return bRet;	
+	
 }
 
 /*!

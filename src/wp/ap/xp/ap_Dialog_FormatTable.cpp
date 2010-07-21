@@ -488,19 +488,43 @@ void AP_Dialog_FormatTable::applyChanges()
 		return;
 
     FV_View * pView = static_cast<FV_View *>(XAP_App::getApp()->getLastFocussedFrame()->getCurrentView());
-	const gchar ** propsArray  = new const gchar * [m_vecProps.getItemCount()+1];
-	propsArray[m_vecProps.getItemCount()] = NULL;
+
+	UT_sint32 i, j;
 	
-	UT_sint32 i = m_vecProps.getItemCount();
-	UT_sint32 j;
+	// Convert normal props vector to double array
+	const gchar ** propsArray  = new const gchar * [m_vecProps.getItemCount()+1];	
+	i = m_vecProps.getItemCount();
+	propsArray[i] = NULL;
 	for(j= 0; j<i; j=j+2)
 	{
 		propsArray[j] = static_cast<gchar *>(m_vecProps.getNthItem(j));
 		propsArray[j+1] = static_cast<gchar *>(m_vecProps.getNthItem(j+1));
 	}
 
-	pView->setCellFormat(propsArray, m_ApplyTo,m_pGraphic,m_sImagePath);
+	// Convert right props vector
+	const gchar ** propsRight  = new const gchar * [m_vecPropsAdjRight.getItemCount()+1];
+	i = m_vecPropsAdjRight.getItemCount();
+	propsRight[i] = NULL;
+	for(j= 0; j<i; j=j+2)
+	{
+		propsRight[j] = static_cast<gchar *>(m_vecPropsAdjRight.getNthItem(j));
+		propsRight[j+1] = static_cast<gchar *>(m_vecPropsAdjRight.getNthItem(j+1));
+	}
+
+	// Convert right props vector
+	const gchar ** propsBottom  = new const gchar * [m_vecPropsAdjBottom.getItemCount()+1];
+	i = m_vecPropsAdjBottom.getItemCount();
+	propsBottom[i] = NULL;
+	for(j= 0; j<i; j=j+2)
+	{
+		propsBottom[j] = static_cast<gchar *>(m_vecPropsAdjBottom.getNthItem(j));
+		propsBottom[j+1] = static_cast<gchar *>(m_vecPropsAdjBottom.getNthItem(j+1));
+	}
+
+	pView->setCellFormat(propsArray, true, propsBottom, propsRight, m_ApplyTo,m_pGraphic,m_sImagePath);
 	delete [] propsArray;
+	delete [] propsBottom;
+	delete [] propsRight;
 	m_bSettingsChanged = false;
 }
 
