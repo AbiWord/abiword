@@ -52,6 +52,12 @@ const char * sOffsetTable_Border_Shading[BORDER_SHADING_NUMOFFSETS] = {"0.25pt",
 														"1.5pt","2.25pt","3pt",
 														"4.5pt","6.0pt"};
 
+const char * sBorderStyle_Border_Shading[BORDER_SHADING_NUMOFSTYLES] = {
+														"0",	//No line
+														"1",	//Solid line
+														"2",	//Dashed line
+														"3"};	//Dotted line
+
 XAP_Dialog * AP_Win32Dialog_Border_Shading::static_constructor(XAP_DialogFactory * pFactory,
 													       XAP_Dialog_Id id)
 {
@@ -385,6 +391,24 @@ BOOL AP_Win32Dialog_Border_Shading::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
                     setBorderThickness(thickness_utf8);                                        
                     /*Force redraw*/
 					InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_BORDERSHADING_BTN_BORDER_COLOR), NULL, FALSE);
+					event_previewExposed();	
+				}
+			}
+			return 1;
+		}
+
+		case AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_STYLE:             //TODO: CHECK
+		{
+			if (wNotifyCode == CBN_SELCHANGE)                       
+			{
+				int nSelected = getComboSelectedIndex (AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_STYLE);  
+
+				if (nSelected != CB_ERR && nSelected >= 0 && nSelected <= BORDER_SHADING_NUMOFSTYLES)
+				{
+					UT_UTF8String thickness_utf8 = sBorderStyle_Border_Shading[nSelected];
+					setBorderStyle(thickness_utf8);                                        
+					/*Force redraw*/
+					InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_STYLE), NULL, FALSE);
 					event_previewExposed();	
 				}
 			}

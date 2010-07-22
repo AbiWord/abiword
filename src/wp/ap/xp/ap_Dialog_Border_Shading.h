@@ -38,7 +38,7 @@
 #include "xap_Dlg_FileOpenSaveAs.h"
 #define BORDER_SHADING_NUMTHICKNESS 9
 #define BORDER_SHADING_NUMOFFSETS 9
-#define BORDER_SHADING_NUMOFSTYLES 3
+#define BORDER_SHADING_NUMOFSTYLES 4
 
 class UT_Timer;
 class XAP_Frame;
