@@ -68,7 +68,8 @@ fp_Page::fp_Page(FL_DocLayout* pLayout,
 		m_pLeft(NULL),
 		m_pRight(NULL),
 		m_pUp(NULL),
-		m_pDown(NULL)
+		m_pDown(NULL),
+		m_iYForNormalView(0)
 {
 	UT_ASSERT(pLayout);
 	UT_ASSERT(pOwner);

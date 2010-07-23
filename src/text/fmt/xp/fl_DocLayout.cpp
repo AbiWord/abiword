@@ -2346,7 +2346,19 @@ void FL_DocLayout::deletePage(fp_Page* pPage, bool bDontNotify /* default false 
 	{
 		pPage->getNext()->setPrev(pPage->getPrev());
 	}
+
 	updateCanvasLayout(NULL, pPage, true);
+
+	fp_Page* pP = pPage->getNext(); // Code for updating normal view coords, perhaps costly
+	UT_uint32 ydiff = 0;
+	if(pP)
+		ydiff = pP->getYForNormalView() - pPage->getYForNormalView();
+	while(pP)
+	{
+		pP->setYForNormalView(pP->getYForNormalView() - ydiff);
+		pP = pP->getNext();
+	}
+
 	pPage->setPrev(NULL);
 	pPage->setNext(NULL);
 	m_vecPages.deleteNthItem(ndx);
@@ -2411,6 +2423,11 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner, bool bNoUpdate)
 	}
 
 	updateCanvasLayout(m_pView->getCurrentPage(), pPage, false);
+
+	if(countPages() > 1)
+		pPage->setYForNormalView( pPage->getPrev()->getYForNormalView() + pPage->getHeight() - pOwner->getTopMargin() - pOwner->getBottomMargin() );
+	else
+		pPage->setYForNormalView( pPage->getHeight() - pOwner->getTopMargin() - pOwner->getBottomMargin() );
 
 	return pPage;
 }

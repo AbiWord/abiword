@@ -188,6 +188,9 @@ public:
 	void		setUp(fp_Page* pPage) { m_pUp = pPage; }
 	void		setDown(fp_Page* pPage) { m_pDown = pPage; }
 
+	UT_uint32	getYForNormalView(void) { return m_iYForNormalView; }
+	void		setYForNormalView(UT_uint32 ypos) { m_iYForNormalView = ypos; }
+
 protected:
     void                _drawCropMarks(dg_DrawArgs*);
 	void				_reformat(void);
@@ -234,6 +237,7 @@ private:
 	bool		m_bOnScreen;
 	UT_sint32	m_iX;
 	UT_sint32	m_iY;
+	UT_uint32	m_iYForNormalView;
 };
 
 #endif /* PAGE_H */
