@@ -2564,7 +2564,6 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
  */
 void s_RTF_ListenerWriteDoc::_export_AbiWord_Cell_props(PT_AttrPropIndex api, bool bFill)
 {
-	UT_DEBUGMSG(("\n\nDzan - EXPORT ABIWORD CELL PROPS CALLED \n")); 
 //
 // Export abiword table properties as an extension
 // Use these for cutting and pasting within abiword.
@@ -3302,7 +3301,6 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 //
 
 	// Open new table?
-	UT_DEBUGMSG(("\n\t\tDzan - _open_cell() called!!"));
 	if(m_Table.getNestDepth() < 1)
 	{
 		_open_table(api,true);
@@ -4109,6 +4107,7 @@ void s_RTF_ListenerWriteDoc::_open_table(PT_AttrPropIndex api,bool bIsCell)
 	m_iTop = -1;
 	m_iBot = -1;
 	m_iFirstTop = 0;
+	
 //
 // Export the AbiWord table Properties as RTF extension
 //
@@ -4147,6 +4146,20 @@ void s_RTF_ListenerWriteDoc::_close_cell(void)
 
 void s_RTF_ListenerWriteDoc::_close_table(void)
 {
+
+	/*//
+// Export the AbiWord table Properties as RTF extension
+//
+	_export_AbiWord_Table_props(m_Table.getTableAPI());
+#if 1 //#TF
+	m_pie->_rtf_keyword("par");
+#endif
+	
+	if(m_Table.getNestDepth() > 1)
+	{
+		m_pie->_rtf_open_brace();
+	}	*/
+	
 //
 // First output the cells we need to cover any vertically merged cells
 //
@@ -4205,8 +4218,6 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
 	*psfh = 0;							// we don't need it.
 
-	UT_DEBUGMSG(("\t\tSTRUX TYPE: %d\t\t",pcrx->getStruxType()));
-	UT_DEBUGMSG((""));
 	m_posDoc = pcrx->getPosition();
 	switch (pcrx->getStruxType())
 	{

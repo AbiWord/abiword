@@ -362,11 +362,11 @@ UT_Error IE_Exp::copyToBuffer(std::vector<PD_DocumentRange> &ranges, UT_ByteBuf 
   	// write trailing zero to byte buffer (not required for file)
   	write("",1);
 
-//#if (DEBUG && 0)
+#if (DEBUG && 0)
 	printf("Text from copy is... \n");
 	printf("%s",reinterpret_cast<const char *>(m_pByteBuf->getPointer(0)));
 	printf("\n");
-//#endif
+#endif
 	return err;
 }
 
@@ -392,12 +392,7 @@ char IE_Exp::rewindChar(void)
 }
 
 void IE_Exp::write(const char * sz, UT_uint32 length)
-{
-
-	char* comp = "abicellprops ";
-	if( strcmp(comp, sz) == 0 )
-			UT_DEBUGMSG(("\nHIT HIT HIT\tOutput:    %s",sz));
-	
+{	
 	if (m_error)
 		return;
 

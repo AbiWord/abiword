@@ -532,15 +532,17 @@ void AP_UnixApp::copyToClipboard(std::vector<PD_DocumentRange> &ranges, bool bUs
 		pExpRtf->copyToBuffer(ranges,&bufRTF);
 		DELETEP(pExpRtf);
     }
-	UT_DEBUGMSG(("\nEXPORTED TO RTF BUFFER"));
-/*
+	UT_DEBUGMSG(("\nEXPORTED TO RTF BUFFER: \n"));
+	UT_DEBUGMSG(("\n%s\n\n",bufRTF.getPointer(0)));
+
 	// create XHTML buffer to put on the clipboard
 
 	IE_Exp_HTML * pExpHtml = new IE_Exp_HTML(pDoc);
 	if (pExpHtml)
 		{
 			pExpHtml->set_HTML4 (false);
-			pExpHtml->copyToBuffer (pDocRange, &bufXHTML);
+			UT_DEBUGMSG(("\n\nXHTML OUTPUT:\n\n"));
+			pExpHtml->copyToBuffer (ranges, &bufXHTML);
 			DELETEP(pExpHtml);
 		}
 
@@ -550,10 +552,11 @@ void AP_UnixApp::copyToClipboard(std::vector<PD_DocumentRange> &ranges, bool bUs
 	if (pExpHtml)
 		{
 			pExpHtml->set_HTML4 (true);
-			pExpHtml->copyToBuffer(pDocRange, &bufHTML4);
+			UT_DEBUGMSG(("\n\nHTML 4.0 OUTPUT:\n\n"));
+			pExpHtml->copyToBuffer(ranges, &bufHTML4);
 			DELETEP(pExpHtml);
 		}
-
+/*
     // create UTF-8 text buffer to put on the clipboard
 		
     IE_Exp_Text * pExpText = new IE_Exp_Text(pDoc, "UTF-8");
@@ -578,14 +581,14 @@ void AP_UnixApp::copyToClipboard(std::vector<PD_DocumentRange> &ranges, bool bUs
 	if (bufRTF.getLength () > 0)
 		m_pClipboard->addRichTextData (target, bufRTF.getPointer (0), bufRTF.getLength ());
 	UT_DEBUGMSG(("\nRTF BUFFER MOVED TO CLIPBOARD\n\n"));
-	/*if (bufXHTML.getLength () > 0)
+	if (bufXHTML.getLength () > 0)
 		m_pClipboard->addHtmlData (target, bufXHTML.getPointer (0), bufXHTML.getLength (), true);
 	if (bufHTML4.getLength () > 0)
 		m_pClipboard->addHtmlData (target, bufHTML4.getPointer (0), bufHTML4.getLength (), false);
-	if (bufTEXT.getLength () > 0)
-		m_pClipboard->addTextData (target, bufTEXT.getPointer (0), bufTEXT.getLength ());
+	/*if (bufTEXT.getLength () > 0)
+		m_pClipboard->addTextData (target, bufTEXT.getPointer (0), bufTEXT.getLength ());*/
 
-	{
+	
 		// TODO: we have to make a good way to tell if the current selection is just an image
 		FV_View * pView = NULL;
 		if(getLastFocussedFrame())
@@ -602,8 +605,7 @@ void AP_UnixApp::copyToClipboard(std::vector<PD_DocumentRange> &ranges, bool bUs
 						m_pClipboard->addPNGData(target, static_cast<const UT_Byte*>(png->getPointer(0)), png->getLength());
 					}
 			}
-    }
-*/
+
 	m_pClipboard->finishedAddingData();
 
     return;

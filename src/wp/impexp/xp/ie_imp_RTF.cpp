@@ -1505,6 +1505,7 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_iIsInHeaderFooter(0),
 	m_bSectionHasPara(false),
 	m_bStruxInserted(false),
+	m_bInTablePaste(false),
 	m_bStruxImage(false),
 	m_bFrameStruxIn(false),
 	m_iAutoBidiOverride(UT_BIDI_UNSET),
@@ -10032,7 +10033,6 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 			return false;
 	}
 
-
 	//------------------------------------------------------------- 
 	// Initialise some stuff and get the table at the paste location
 	// if there is one ( => bFound )
@@ -10041,9 +10041,9 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 	m_pasteTableStack.push(pPaste);
 	pPaste->m_bHasPastedTableStrux = false;
 	pPaste->m_iRowNumberAtPaste = 0;
+	bool bIsPasteIntoSame = false;
 	
 	UT_DEBUGMSG(("RTF_Import: Paste: Tables props are: %s \n",sProps.c_str()));
-	bool bIsPasteIntoSame = false;
 	PL_StruxDocHandle sdhTable = NULL;			// table at paste location
 	PL_StruxDocHandle sdhEndTable = NULL;		// endtable at paste location
 	PT_DocPosition posTable = 0;				// pos of table pasted to!
@@ -10051,7 +10051,7 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 	bool bFound = getDoc()->getStruxOfTypeFromPosition(m_dposPaste,PTX_SectionTable,&sdhTable);
 
 	// ------------------------------------------------------------------
-	// Get the current View, Hack?
+	// Get the current View, Dirty..
 	//-------------------------------------------------------------------
 	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	if(pFrame == NULL)
@@ -10077,45 +10077,72 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 		if(sdhEndTable != NULL)
 		{
 			PT_DocPosition posEndTable = getDoc()->getStruxPosition(sdhEndTable);
-			if(posEndTable > m_dposPaste)	// we paste in the table check..?
+			if(posEndTable > m_dposPaste)	
 			{
 				UT_String sPasteTableSDH;
 				UT_String sProp = "table-sdh";
 				sPasteTableSDH = UT_String_getPropVal(sProps,sProp);
 				UT_String sThisTableSDH;
 				UT_String_sprintf(sThisTableSDH,"%x",sdhTable);
+
 				
-	//
-	// REPLACED BY DZAN - GSOC
-	//
-	
-	/* What if a user made more then 2 selections after his last copy action and his
-	 * paste action now? Then this code would be faulty right? My first replacement
-	 * is equal faulty. 
-	 *
-	 * Solution: I mark the selection when a copy action is done. Then I can go check
-	 * 			 now against the cached selection properties.
-	 *
-	 * Problem : This is not a neat solution... WE SHOULD EXTRACT ALL THE INFO FROM
-	 *			 THE DATA IN THE PASTEBUFFER ITSELF ONLY!!!! Because the original table
-	 *			 could have been deleted between copy and paste!
-	 */
-
-	// OLD CODE: 
-        /*bool isRow = (pView->getSelectionMode() == FV_SelectionMode_TableRow);
-        if(!isRow && pView->getSelectionMode() == FV_SelectionMode_NONE)
-        {
-          isRow = (pView->getPrevSelectionMode() == FV_SelectionMode_TableRow);
-        }*/
-
-	// FIRST REPLACEMENT
-	    //bool isSingleRow = pView->isSingleTableRowSelected();
-
+				// We'll set these now an they'll be used to decide what 
+				// 'paste-mode' we'll use.
 				bool bFits 		= false;
 				bool bSingleRow = false;
 
 				
-				//UT_DEBUGMSG(("\n\n\n\nAANTAL RIJEN: %d\n\n\n\n",getTable()->getNumRows()));
+				// Dzan :
+				// we are going to read ahead and cheat with the pastebuffer...
+				// how evil of us *gniffle*
+				UT_sint32 iFTop, iFBot, iFRight, iFLeft,		// attach values of top left cell in buffer
+						  iLTop, iLBot, iLRight, iLLeft,		// attach values of bottom right cell in buffer
+						  numColsPasteTable, numRowsPasteTable; // number of cols/rows in table in buffer
+				UT_String sDum, sTemp, sFirstCellProps, sLastCellProps;	 
+				const char* key = "abicellprops";
+
+				
+				// Get first top left corner cellprop
+				char* first = strstr((char*)m_pCurrentCharInPasteBuffer, key);
+				while( *(++first) != '}' ) sFirstCellProps += *first;
+
+				
+				// Get last bottom right corner cellprop
+				//	  TODO: We need to replace this with an 'algorithm' later that detects:
+				//	  - Nested tables
+				//	  - Multiple tables
+				char* last = (char*)m_pCurrentCharInPasteBuffer + std::string((char*)m_pCurrentCharInPasteBuffer).rfind(key);
+				while( *(++last) != '}' ) sLastCellProps += *last;
+
+				
+				// Parse the results out of the abicellprop string
+				sDum = "top-attach";
+				sTemp = UT_String_getPropVal(sFirstCellProps,sDum);
+				iFTop = atoi(sTemp.c_str());
+				sTemp = UT_String_getPropVal(sLastCellProps,sDum);
+				iLTop = atoi(sTemp.c_str());
+				/* ====> */ numRowsPasteTable = iLBot - iFBot + 1;	// num of rows in buffer
+
+				
+				sDum = "left-attach";
+				sTemp = UT_String_getPropVal(sFirstCellProps,sDum);
+				iFLeft = atoi(sTemp.c_str());
+				sTemp = UT_String_getPropVal(sLastCellProps,sDum);
+				iLLeft = atoi(sTemp.c_str());		
+				/* ====> */ numColsPasteTable = iLLeft - iFLeft + 1;	// num of cols in buffer
+			
+				// Get stats of table at pastelocation
+				UT_sint32 numColsThisTable, numRowsThisTable,    // number of cols/rows in table we paste into
+						  colStartThisTable, rowStartThisTable;	 // under mouse pointer atm..
+				getDoc()->getRowsColsFromTableSDH(sdhTable, false, 0, &numRowsThisTable, &numColsThisTable);
+				
+				//UT_DEBUGMSG(("\nRESULTATEN IN BUFFER: cols: %d,   rows: %d\n",numColsPasteTable,numRowsPasteTable));
+				//UT_DEBUGMSG(("\nRESULTATEN IN PASTETABLE: cols: %d,   rows: %d\n",numColsThisTable,numRowsThisTable));
+
+				bSingleRow = ( numRowsPasteTable == 1 ) ? true : false;
+				bFits = ( numRowsPasteTable <= numRowsThisTable && numColsPasteTable <= numColsThisTable ) ? true : false;
+				bIsPasteIntoSame = ( sThisTableSDH == sPasteTableSDH ) ? true : false;
+				
 				// Make sure the row we paste in will fit, else do previous kind of paste!
 				if( bSingleRow && bFits )
 				{
@@ -10127,7 +10154,7 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 				// This code should be reviewed then should then go in the else part above.
 				// => use the old behaviour as a backup when we are not handling single rows or it wont fit.
 				
-				/*if((sThisTableSDH == sPasteTableSDH) && isRow)
+				/*if((sThisTableSDH == sPasteTableSDH) )//&& isRow)
 				{
 					UT_DEBUGMSG(("Paste Whole Row into same Table!!!!! \n"));
 					bIsPasteIntoSame = true;

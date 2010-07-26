@@ -945,6 +945,10 @@ private:
 	bool                  m_bCellBlank;
 	bool                  m_bEndTableOpen;
 	bool                  m_bInFootnote;
+	// Dzan - GSoC
+	// when true we are pasting part of a table into another and it fits!
+	// => so just copying over content of cells! no table nesting!
+	bool				  m_bInTablePaste;	  
 	UT_sint32             m_iDepthAtFootnote;
 	UT_uint32             m_iLastFootnoteId;
 	UT_uint32             m_iLastEndnoteId;

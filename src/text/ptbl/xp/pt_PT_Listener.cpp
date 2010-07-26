@@ -256,7 +256,7 @@ bool pt_PieceTable::tellListenerSubsets(PL_Listener* pListener,
 	bool hasFailed = false;
 	int debugCount = 0;										
 	for(std::vector<PD_DocumentRange>::iterator i = ranges.begin(); i != ranges.end(); ++i){
-		UT_DEBUGMSG(("\n\n\nRANGE NUMBER IN VECTOR: %d\t\t\t", debugCount)); 
+		//UT_DEBUGMSG(("\n\n\nRANGE NUMBER IN VECTOR: %d\t\t\t", debugCount)); 
 		tellListenerSubset(pListener, &(*i));
 		debugCount++;
 	}
@@ -283,13 +283,13 @@ bool pt_PieceTable::tellListenerSubset(PL_Listener * pListener,
 	int debugCount = 0;
 	for (pf_Frag * pf = pf1; (pf); pf=pf->getNext())
 	{
-		UT_DEBUGMSG(("\nFRAG IN RANGE NUMBER: %d\t\t\t", debugCount)); 
+		//UT_DEBUGMSG(("\nFRAG IN RANGE NUMBER: %d\t\t\t", debugCount)); 
 		debugCount++;
 		switch (pf->getType())
 		{
 		case pf_Frag::PFT_Text:
 			{
-				UT_DEBUGMSG(("\n\tLISTENER: TEXT BLOCK"));
+				//UT_DEBUGMSG(("\n\tLISTENER: TEXT BLOCK"));
 				pf_Frag_Text * pft = static_cast<pf_Frag_Text *> (pf);
 				PX_ChangeRecord * pcr = NULL;
 				if (pDocRange->m_pos2 < sum+pf->getLength())
@@ -310,7 +310,7 @@ bool pt_PieceTable::tellListenerSubset(PL_Listener * pListener,
 			
 		case pf_Frag::PFT_Strux:
 			{
-				UT_DEBUGMSG(("\n\tLISTENER: STRUX"));
+				//UT_DEBUGMSG(("\n\tLISTENER: STRUX"));
 				pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf);
 				PL_StruxDocHandle sdh = (PL_StruxDocHandle)pf;
 				sfh = 0;
@@ -328,7 +328,7 @@ bool pt_PieceTable::tellListenerSubset(PL_Listener * pListener,
 
 		case pf_Frag::PFT_Object:
 			{
-				UT_DEBUGMSG(("\n\tLISTENER: OBJECT"));
+				//UT_DEBUGMSG(("\n\tLISTENER: OBJECT"));
 				pf_Frag_Object * pfo = static_cast<pf_Frag_Object *> (pf);
 				PX_ChangeRecord * pcr = NULL;
 				bool bStatus1 = pfo->createSpecialChangeRecord(&pcr,sum,blockOffset);
@@ -344,7 +344,7 @@ bool pt_PieceTable::tellListenerSubset(PL_Listener * pListener,
 
 		case pf_Frag::PFT_FmtMark:
 			{
-				UT_DEBUGMSG(("\n\tLISTENER: FmtMark"));
+				//UT_DEBUGMSG(("\n\tLISTENER: FmtMark"));
 				pf_Frag_FmtMark * pffm = static_cast<pf_Frag_FmtMark *> (pf);
 				PX_ChangeRecord * pcr = NULL;
 				bool bStatus1 = pffm->createSpecialChangeRecord(&pcr,sum,blockOffset);

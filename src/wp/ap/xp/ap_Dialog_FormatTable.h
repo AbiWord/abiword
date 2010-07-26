@@ -123,9 +123,9 @@ public:
 				
 	UT_RGBColor							m_borderColor;
 	UT_sint32							m_lineStyle;
-	gchar *							m_bgFillStyle;
-	UT_PropVector                           m_vecProps;
-	UT_UTF8String                           m_sBorderThickness;
+	gchar *								m_bgFillStyle;
+	UT_PropVector                       m_vecProps;
+	UT_UTF8String                       m_sBorderThickness;
 protected:
 	guint                               _findClosestThickness(const char *) const;
 	AP_Dialog_FormatTable::tAnswer		m_answer;

@@ -153,7 +153,7 @@ public:
 
 	void setProps (const char * props);
 
-	bool isCopying () const {return isRangesEmpty(); }
+	bool isCopying () const {return !isRangesEmpty(); }
 
 	void populateFields();
 
