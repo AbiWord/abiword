@@ -39,7 +39,7 @@
 #define BITMAP_HEIGHT	15
 #define BORDER_STYLE_BITMAP_WIDTH 180
 #define BORDER_STYLE_BITMAP_HEIGHT 30
-#define BORDER_STYLE_COMBO_POSITION_X 45
+#define BORDER_STYLE_COMBO_POSITION_X 60
 #define BORDER_STYLE_COMBO_POSITION_Y 125
 
 const char * sThicknessTable_Border_Shading[BORDER_SHADING_NUMTHICKNESS] = {"0.25pt","0.5pt",
@@ -256,7 +256,7 @@ BOOL AP_Win32Dialog_Border_Shading::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 		BORDER_STYLE_COMBO_POSITION_X, 
 		BORDER_STYLE_COMBO_POSITION_Y, 
 		BORDER_STYLE_BITMAP_WIDTH, 
-		BORDER_STYLE_BITMAP_HEIGHT};
+		BORDER_STYLE_BITMAP_HEIGHT * (BORDER_SHADING_NUMOFSTYLES * 2)};
 // 	StartCommonControls(ICC_USEREX_CLASSES);
 
 	XAP_App* pApp = XAP_App::getApp();
@@ -276,19 +276,22 @@ BOOL AP_Win32Dialog_Border_Shading::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 		BORDER_SHADING_NUMOFSTYLES, 
 		0);
 
-	HBITMAP tmp_bmp1 = _loadBitmap(hWnd, 0, "BORDER_STYLE_DASHED",  BORDER_STYLE_BITMAP_WIDTH, BORDER_STYLE_BITMAP_HEIGHT, Color); 
-	HBITMAP tmp_bmp2 = _loadBitmap(hWnd, 0, "BORDER_STYLE_DOTTED",  BORDER_STYLE_BITMAP_WIDTH, BORDER_STYLE_BITMAP_HEIGHT, Color); 
-	HBITMAP tmp_bmp3 = _loadBitmap(hWnd, 0, "BORDER_STYLE_SOLID",  BORDER_STYLE_BITMAP_WIDTH, BORDER_STYLE_BITMAP_HEIGHT, Color); 
+	HBITMAP tmp_bmp0 = _loadBitmap(hWnd, 0, "BORDER_STYLE_NONE",	BORDER_STYLE_BITMAP_WIDTH, BORDER_STYLE_BITMAP_HEIGHT, Color); 
+ 	HBITMAP tmp_bmp1 = _loadBitmap(hWnd, 0, "BORDER_STYLE_DASHED",  BORDER_STYLE_BITMAP_WIDTH, BORDER_STYLE_BITMAP_HEIGHT, Color); 
+ 	HBITMAP tmp_bmp2 = _loadBitmap(hWnd, 0, "BORDER_STYLE_DOTTED",  BORDER_STYLE_BITMAP_WIDTH, BORDER_STYLE_BITMAP_HEIGHT, Color); 
+	HBITMAP tmp_bmp3 = _loadBitmap(hWnd, 0, "BORDER_STYLE_SOLID",	BORDER_STYLE_BITMAP_WIDTH, BORDER_STYLE_BITMAP_HEIGHT, Color); 
 
+	ImageList_Add(hImageList, tmp_bmp0, NULL);
 	ImageList_Add(hImageList, tmp_bmp1, NULL);
 	ImageList_Add(hImageList, tmp_bmp2, NULL);
 	ImageList_Add(hImageList, tmp_bmp3, NULL);
 
 	SendMessage(hwndComboEx, CBEM_SETIMAGELIST, 0, reinterpret_cast<LPARAM>(hImageList));
 
-	InsertItem(hwndComboEx, NULL,0,0);
-	InsertItem(hwndComboEx, NULL,1,1);
-	InsertItem(hwndComboEx, NULL,2,2);
+	InsertItem(hwndComboEx, NULL, 0, 0);
+	InsertItem(hwndComboEx, NULL, 1, 1);
+	InsertItem(hwndComboEx, NULL, 2, 2);
+	InsertItem(hwndComboEx, NULL, 3, 3);
 
     centerDialog();
 	return 1; 
@@ -397,23 +400,23 @@ BOOL AP_Win32Dialog_Border_Shading::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 			return 1;
 		}
 
-		case AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_STYLE:             //TODO: CHECK
-		{
-			if (wNotifyCode == CBN_SELCHANGE)                       
-			{
-				int nSelected = getComboSelectedIndex (AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_STYLE);  
-
-				if (nSelected != CB_ERR && nSelected >= 0 && nSelected <= BORDER_SHADING_NUMOFSTYLES)
-				{
-					UT_UTF8String thickness_utf8 = sBorderStyle_Border_Shading[nSelected];
-					setBorderStyle(thickness_utf8);                                        
-					/*Force redraw*/
-					InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_STYLE), NULL, FALSE);
-					event_previewExposed();	
-				}
-			}
-			return 1;
-		}
+// 		case AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_STYLE:             //TODO: CHECK
+// 		{
+// 			if (wNotifyCode == CBN_SELCHANGE)                       
+// 			{
+// 				int nSelected = getComboSelectedIndex (AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_STYLE);  
+// 
+// 				if (nSelected != CB_ERR && nSelected >= 0 && nSelected <= BORDER_SHADING_NUMOFSTYLES)
+// 				{
+// 					UT_UTF8String thickness_utf8 = sBorderStyle_Border_Shading[nSelected];
+// 					setBorderStyle(thickness_utf8);                                        
+// 					/*Force redraw*/
+// 					InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_STYLE), NULL, FALSE);
+// 					event_previewExposed();	
+// 				}
+// 			}
+// 			return 1;
+// 		}
 
 		case AP_RID_DIALOG_BORDERSHADING_COMBO_SHADING_OFFSET:      
 			{
