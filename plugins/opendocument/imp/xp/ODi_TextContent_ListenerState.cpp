@@ -1666,6 +1666,8 @@ void ODi_TextContent_ListenerState::_endParagraphElement (
                                             
     const gchar* pStyleName;
     const ODi_Style_Style* pStyle;
+
+//    UT_DEBUGMSG(("RDF: L::_endParagraphElement() cdata:%s\n", m_charData.utf8_str() ));
     
     _flush ();
     m_bAcceptingText = false;

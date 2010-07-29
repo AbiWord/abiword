@@ -37,6 +37,11 @@
 
 class PD_Document;
 
+#include <boost/shared_ptr.hpp>
+class PD_DocumentRDFMutation;
+typedef boost::shared_ptr<PD_DocumentRDFMutation> PD_DocumentRDFMutationHandle;
+                            
+
 struct ABI_EXPORT xmlToIdMapping {
   const char *m_name;
   int m_type;
@@ -131,7 +136,9 @@ protected:
 				   _PS_HistorySec,
 				   _PS_Table,
 				   _PS_Cell,
-				   _PS_Version
+				   _PS_Version,
+				   _PS_RDFTriple,
+				   _PS_RDFData,
     } ParseState;
 
  protected:
@@ -163,6 +170,13 @@ protected:
 	time_t          m_currentRevisionTime;
 	UT_uint32       m_currentRevisionVersion;
 
+    // For reading RDF triples
+    std::string     m_rdfSubject;
+    std::string     m_rdfPredicate;
+    std::string     m_rdfXSDType;
+    int             m_rdfObjectType;
+    PD_DocumentRDFMutationHandle m_rdfMutation;
+    
 	typedef std::map<std::string, UT_sint32> token_map_t;
 	token_map_t m_tokens;
 

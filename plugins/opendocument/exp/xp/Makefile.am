@@ -36,6 +36,8 @@ libxp_la_SOURCES = \
 	ODe_Main_Listener.h \
 	ODe_ManifestWriter.cpp \
 	ODe_ManifestWriter.h \
+	ODe_RDFWriter.cpp \
+	ODe_RDFWriter.h \
 	ODe_MetaDataWriter.cpp \
 	ODe_MetaDataWriter.h \
 	ODe_Note_Listener.cpp \

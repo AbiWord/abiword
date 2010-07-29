@@ -59,30 +59,63 @@ class ABI_EXPORT PD_URI
 };
 
 /**
- * An RDF Object is either a URI or a Literal value. While inheritance
+ * An RDF Object is either a URI, a bnode, or a Literal value. While inheritance
  * is not strictly correct for this relation, since the main features of
  * a PD_URI are to get a string value, if the Object is a literal it can
  * return it's literal value via toString().
  *
  * The main additions for an Object are the type information of the
  * literal and also the context if the Object forms part of a triple.
+ *
+ * There are two types for an Object, use getObjectType() to see if it
+ * is a URI, LITERAL, BNODE etc. Use getXSDType() to get the XSD
+ * schema type for the literal. While using getXSDType() for a URI or
+ * BNODE will result in "", the object type is still needed to
+ * differentiate properly between URI and BNodes and makes this
+ * explicit.
  * 
  */
 class ABI_EXPORT PD_Object : public PD_URI
 {
-  protected:
-    std::string m_type;
-    std::string m_context;
   public:
+    enum
+    {
+        OBJECT_TYPE_URI = 1,
+        OBJECT_TYPE_LITERAL,
+        OBJECT_TYPE_BNODE
+    };
+    
     PD_Object( const std::string& v = "" );
-    PD_Object( const std::string& v, const std::string& type );
+    PD_Object( const std::string& v, int objectType, const std::string& xsdtype = "" );
 
-    std::string getType() const;
-    bool hastype() const;
-
+    std::string getXSDType() const;
+    bool hasXSDType() const;
+    int getObjectType() const;
+    bool isLiteral() const;
+    bool isURI() const;
+    bool isBNode() const;
+    
     virtual bool read( std::istream& ss );
     virtual bool write( std::ostream& ss ) const;
+
+  protected:
+    std::string m_xsdType;
+    std::string m_context;
+    int m_objectType;
 };
+/**
+ * Convenience class for creating Literal values. Note that object
+ * slicing is OK here because there are no local member variables in
+ * this class and the type is explicitly preserved in m_objectType in
+ * the parent class.
+ */
+class ABI_EXPORT PD_Literal : public PD_Object
+{
+  public:
+    PD_Literal( const std::string& v = "", const std::string& xsdtype = "" );
+};
+
+
 typedef std::list< PD_URI > PD_URIList;
 // REQUIRES: ordered, same key can -> many different values
 typedef std::multimap< PD_URI, PD_Object > POCol;
@@ -111,6 +144,7 @@ class ABI_EXPORT PD_RDFModel
     virtual PD_URI     getObject( const PD_URI& s, const PD_URI& p ) = 0;
     virtual PD_URIList getSubjects( const PD_URI& p, const PD_Object& o ) = 0;
     virtual PD_URI     getSubject( const PD_URI& p, const PD_Object& o ) = 0;
+    virtual PD_URIList getAllSubjects() = 0;
     virtual POCol      getArcsOut( const PD_URI& s ) = 0;
     virtual bool       contains( const PD_URI& s, const PD_URI& p, const PD_Object& o ) = 0;
     virtual bool       contains( const PD_URI& s, const PD_URI& p ) = 0;
@@ -142,10 +176,12 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
     virtual PD_URI     getObject( const PD_URI& s, const PD_URI& p );
     virtual PD_URIList getSubjects( const PD_URI& p, const PD_Object& o );
     virtual PD_URI     getSubject( const PD_URI& p, const PD_Object& o );
+    virtual PD_URIList getAllSubjects();
     virtual POCol      getArcsOut( const PD_URI& s );
     virtual bool       contains( const PD_URI& s, const PD_URI& p, const PD_Object& o );
     virtual bool       contains( const PD_URI& s, const PD_URI& p );
-
+    long getTripleCount();
+    
 
     PD_DocumentRDFMutationHandle createMutation();
     void handleCollabEvent( gchar** szAtts, gchar** szProps );
@@ -227,6 +263,7 @@ class ABI_EXPORT PD_DocumentRDFMutation
     friend class PD_DocumentRDF;
     PD_DocumentRDF* m_rdf; ///< DocumentRDF we are changing
     bool m_rolledback;     ///< Should we rollback
+    bool m_committed;      ///< Only commit() once.
     bool m_handlingAbiCollabNotification; ///< If we are handling a remote CR
     PP_AttrProp* m_pAP;        ///< AP that is changed incrementally (deprecated)
     PP_AttrProp* m_crRemoveAP; ///< Triples to remove during commit()

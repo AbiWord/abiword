@@ -31,13 +31,54 @@
 #include "ut_std_string.h"
 #include "pd_Document.h"
 
+#include <set>
+#include <string>
+#include <vector>
+
 // Class definition include
 #include "ODe_ManifestWriter.h"
  
 // Internal includes
 #include "ODe_Common.h"
+#include <boost/algorithm/string.hpp>
 
- 
+/**
+ * Ensure that the manifest:file-entry XML elements exist for all the parent
+ * directories for path. If such an element already has been written (according to
+ * pathsAlreadyWritten) then it will not be done again.
+ */
+void ODe_ManifestWriter::ensureDirectoryManifest( PD_Document* pDoc,
+                                                  GsfOutput* manifest,
+                                                  const std::string& path,
+                                                  std::set< std::string >& pathsAlreadyWritten )
+{
+    std::vector<std::string> directories;
+    boost::split(directories, path, boost::is_any_of("/"));
+    if( !directories.empty() )
+    {
+        directories.pop_back();
+    }
+
+    std::string runningPath;
+    for( std::vector<std::string>::iterator iter = directories.begin();
+         iter != directories.end(); ++iter )
+    {
+        runningPath = runningPath + *iter + "/";
+
+        if( !pathsAlreadyWritten.count( runningPath ) )
+        { 
+            pathsAlreadyWritten.insert( runningPath );
+
+            std::string name = UT_std_string_sprintf(
+                " <manifest:file-entry manifest:media-type=\"\" manifest:full-path=\"%s\"/>\n",
+                runningPath.c_str() );
+            ODe_gsf_output_write(manifest, name.size(),
+                                 reinterpret_cast<const guint8 *>(name.c_str()));
+            
+        }
+    }
+}
+
 
  
 /**
@@ -68,12 +109,19 @@ bool ODe_ManifestWriter::writeManifest(PD_Document* pDoc, GsfOutfile* pODT)
         "</manifest:manifest>\n"
     };
 
+    typedef std::set< std::string > absolutePathMimeTypes_t;
+    static absolutePathMimeTypes_t absolutePathMimeTypes;
+    if( absolutePathMimeTypes.empty() )
+    {
+        absolutePathMimeTypes.insert("application/rdf+xml");
+    }
+    
     ODe_writeToStream (manifest, preamble, G_N_ELEMENTS(preamble));
 
     const char* szName;
     std::string mimeType;
     const UT_ByteBuf* pByteBuf;
-    bool wroteDirManifest = false;
+    std::set< std::string > pathsAlreadyWritten;
     
     for (UT_uint32 k = 0;
          (pDoc->enumDataItems(k,
@@ -83,19 +131,17 @@ bool ODe_ManifestWriter::writeManifest(PD_Document* pDoc, GsfOutfile* pODT)
                               &mimeType)); k++) {
                                 
         if (!mimeType.empty()) {
-            
-            if (!wroteDirManifest) {
-                name = " <manifest:file-entry manifest:media-type=\"\" manifest:full-path=\"Pictures/\"/>\n";
-                ODe_gsf_output_write(manifest, name.size(),
-                    reinterpret_cast<const guint8 *>(name.c_str()));
-                    
-                wroteDirManifest = true;
-            }
 
+            ensureDirectoryManifest( pDoc, manifest, szName, pathsAlreadyWritten );
+
+            std::string automaticPathPrefix = "Pictures/";
+            if( absolutePathMimeTypes.count(mimeType) )
+                automaticPathPrefix = "";
+            
             name = UT_std_string_sprintf(
-                " <manifest:file-entry manifest:media-type=\"%s\" manifest:full-path=\"Pictures/%s\"/>\n",
-                mimeType.c_str(), szName);
-                
+                " <manifest:file-entry manifest:media-type=\"%s\" manifest:full-path=\"%s%s\"/>\n",
+                mimeType.c_str(), automaticPathPrefix.c_str(), szName);
+            
             ODe_gsf_output_write (manifest, name.size(),
                 reinterpret_cast<const guint8 *>(name.c_str()));
         }

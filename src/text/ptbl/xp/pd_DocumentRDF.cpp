@@ -174,21 +174,45 @@ PD_Object::PD_Object( const std::string& v )
 {
 }
 
-PD_Object::PD_Object( const std::string& v, const std::string& type )
+PD_Object::PD_Object( const std::string& v, int objectType, const std::string& type )
     :
     PD_URI(v),
-    m_type(type)
+    m_xsdType(type),
+    m_objectType(objectType)
 {
 }
 
-std::string PD_Object::getType() const
+int PD_Object::getObjectType() const
 {
-    return m_type;
+    return m_objectType;
 }
 
-bool PD_Object::hastype() const
+bool PD_Object::isLiteral() const
 {
-    return !m_type.empty();
+    return m_objectType == OBJECT_TYPE_LITERAL;
+}
+
+bool PD_Object::isURI() const
+{
+    return m_objectType == OBJECT_TYPE_URI;
+}
+
+bool PD_Object::isBNode() const
+{
+    return m_objectType == OBJECT_TYPE_BNODE;
+}
+
+
+
+
+std::string PD_Object::getXSDType() const
+{
+    return m_xsdType;
+}
+
+bool PD_Object::hasXSDType() const
+{
+    return !m_xsdType.empty();
 }
 
 
@@ -199,9 +223,10 @@ bool PD_Object::read( std::istream& ss )
     int numParts = 0;
     ss >> version  >> std::noskipws >> ch;
     ss >> numParts >> std::noskipws >> ch;
+    ss >> m_objectType >> std::noskipws >> ch;
     m_value = readLengthPrefixedString(ss);
     ss >> std::noskipws >> ch;
-    m_type = readLengthPrefixedString(ss);
+    m_xsdType = readLengthPrefixedString(ss);
     ss >> std::noskipws >> ch;
     m_context = readLengthPrefixedString(ss);
     ss >> std::noskipws >> ch;
@@ -211,12 +236,19 @@ bool PD_Object::read( std::istream& ss )
 bool PD_Object::write( std::ostream& ss ) const
 {
     int version = 1;
-    int numParts = 3;
+    int numParts = 4;
     ss << version << " " << numParts << " ";
+    ss << m_objectType << " ";
     ss << createLengthPrefixedString(m_value)   << " ";
-    ss << createLengthPrefixedString(m_type)    << " ";
+    ss << createLengthPrefixedString(m_xsdType) << " ";
     ss << createLengthPrefixedString(m_context) << " ";
     return true;
+}
+
+PD_Literal::PD_Literal( const std::string& v, const std::string& xsdtype )
+    :
+    PD_Object( v, OBJECT_TYPE_LITERAL, xsdtype )
+{
 }
 
 
@@ -394,11 +426,38 @@ PD_URIList PD_DocumentRDF::getSubjects( const PD_URI& p, const PD_Object& o )
  * more than one. Use this method when the RDF schema only allows a single
  * matching triple.
  */
-PD_URI PD_DocumentRDF::getSubject( const PD_URI& p, const PD_Object& o )
+PD_URI
+PD_DocumentRDF::getSubject( const PD_URI& p, const PD_Object& o )
 {
     PD_URIList l = getSubjects( p,o );
     return front(l);
 }
+
+/**
+ * Get a list of every subject in the model.
+ * If you want to get all triples, then first get all subjects
+ * and then use getArcsOut() to get the predicate-object combinations
+ * for each of the subjects.
+ */
+PD_URIList
+PD_DocumentRDF::getAllSubjects()
+{
+    PD_URIList ret;
+
+    size_t count = getAP()->getPropertyCount();
+    for( size_t i = 0; i<count; ++i )
+    {
+        const gchar * szName = 0;
+        const gchar * szValue = 0;
+        if( getAP()->getNthProperty( i, szName, szValue) )
+        {
+            std::string subj = szName;
+            ret.push_back(subj);
+        }
+    }
+    return ret;
+}
+
 
 /**
  * Get the predicate and objects which have the given subject.
@@ -453,6 +512,37 @@ bool  PD_DocumentRDF::contains( const PD_URI& s, const PD_URI& p )
     PD_URI u = getObject( s, p );
     return u.isValid();
 }
+
+/**
+ * Get the total number of triples in the model. This can be
+ * relatively expensive to calculate. So definately don't keep
+ * dpindoing it in a loop.
+ */
+long PD_DocumentRDF::getTripleCount()
+{
+    long ret = 0;
+    
+    PD_URIList subjects = getAllSubjects();
+    PD_URIList::iterator subjend = subjects.end();
+    for( PD_URIList::iterator subjiter = subjects.begin();
+         subjiter != subjend; ++subjiter )
+    {
+        PD_URI subject = *subjiter;
+        POCol polist = getArcsOut( subject );
+        POCol::iterator poend = polist.end();
+        for( POCol::iterator poiter = polist.begin();
+             poiter != poend; ++poiter )
+        {
+            PD_URI    predicate = poiter->first;
+            PD_Object object = poiter->second;
+            ++ret;
+        }
+    }
+    return ret;
+}
+
+
+
 
 /**
  * The single way that you can update the document RDF is through
@@ -587,11 +677,11 @@ void PD_DocumentRDF::runMilestone2Test()
         PD_DocumentRDFMutationHandle m = createMutation();
         m->add( PD_URI("http://www.example.com/foo"),
                 PD_URI("http://www.example.com/bar"),
-                PD_Object("AABBCC") );
+                PD_Literal("AABBCC") );
         m->add( PD_URI("http://www.example.com/koala"),
                 PD_URI("http://www.example.com/is-a"),
-                PD_Object("http://www.example.com/dangeroo",
-                          "http://www.w3.org/2001/XMLSchema#boolean" ));
+                PD_Literal("dangeroo",
+                           "http://www.w3.org/2001/XMLSchema#boolean" ));
         
     }
     dumpModel();
@@ -602,10 +692,10 @@ void PD_DocumentRDF::runMilestone2Test()
         PD_DocumentRDFMutationHandle m = createMutation();
         m->add( PD_URI("http://www.example.com/foo"),
                 PD_URI("http://www.example.com/bar2"),
-                PD_Object("extra data") );
+                PD_Literal("extra data") );
         m->add( PD_URI("http://www.example.com/foo"),
                 PD_URI("http://www.example.com/magic"),
-                PD_Object("card trick",
+                PD_Literal("card trick",
                           "http://www.w3.org/2001/XMLSchema#string" ));
         m->add( PD_URI("http://www.example.com/emu"),
                 PD_URI("http://www.example.com/lives-in"),
@@ -631,7 +721,7 @@ void PD_DocumentRDF::runMilestone2Test()
                    PD_Object("http://www.example.com/dangeroo"));
         m->remove( PD_URI("http://www.example.com/foo"),
                    PD_URI("http://www.example.com/bar"),
-                   PD_Object("AABBCC") );
+                   PD_Literal("AABBCC") );
 
     }
     dumpModel();
@@ -704,6 +794,7 @@ void PD_DocumentRDF::dumpModelFromAP( const PP_AttrProp* AP, const std::string& 
 {
     UT_DEBUGMSG(("PD_DocumentRDF::dumpModelFromAP() ----------------------------------\n"));
     UT_DEBUGMSG(("PD_DocumentRDF::dumpModelFromAP() %s\n", headerMsg.c_str()));
+    UT_DEBUGMSG(("PD_DocumentRDF::dumpModelFromAP() triple count:%d\n", getTripleCount()));
     UT_DEBUGMSG(("PD_DocumentRDF::dumpModelFromAP() ----------------------------------\n"));
 
     size_t count = AP->getPropertyCount();
@@ -730,10 +821,10 @@ void PD_DocumentRDF::dumpModelFromAP( const PP_AttrProp* AP, const std::string& 
                              pred.c_str()));
                 UT_DEBUGMSG(("PD_DocumentRDF::dumpModel()     o:%s\n",
                              obj.c_str()));
-                if( iter->second.hastype() )
+                if( iter->second.hasXSDType() )
                 {
                     UT_DEBUGMSG(("PD_DocumentRDF::dumpModel()  type:%s\n",
-                                 iter->second.getType().c_str()));
+                                 iter->second.getXSDType().c_str()));
                 }
             }
         }
@@ -750,6 +841,7 @@ PD_DocumentRDFMutation::PD_DocumentRDFMutation( PD_DocumentRDF* rdf )
     :
     m_rdf(rdf),
     m_rolledback(false),
+    m_committed(false),
     m_pAP( 0 ),
     m_handlingAbiCollabNotification( false )
 {
@@ -760,7 +852,9 @@ PD_DocumentRDFMutation::PD_DocumentRDFMutation( PD_DocumentRDF* rdf )
 
 PD_DocumentRDFMutation::~PD_DocumentRDFMutation()
 {
-    commit();
+    if( !m_committed )
+        commit();
+    
     if(m_pAP)
         delete m_pAP;
     if(m_crRemoveAP)
@@ -863,7 +957,7 @@ void PD_DocumentRDFMutation::remove( const PD_URI& s, const PD_URI& p, const PD_
 
 void PD_DocumentRDFMutation::handleCollabEvent( gchar** szAtts, gchar** szProps )
 {
-    UT_DEBUGMSG(("PD_DocumentRDFMutation::handleCollabEvent rdf:%p\n", m_rdf));
+    UT_DEBUGMSG(("PD_DocumentRDFMutation::handleCollabEvent (remote) rdf:%p\n", m_rdf));
     m_handlingAbiCollabNotification = true;
     
     PP_AttrProp* addAP    = new PP_AttrProp();
@@ -888,7 +982,7 @@ void PD_DocumentRDFMutation::handleCollabEvent( gchar** szAtts, gchar** szProps 
  */
 UT_Error PD_DocumentRDFMutation::handleAddAndRemove( PP_AttrProp* add, PP_AttrProp* remove )
 {
-    UT_DEBUGMSG(("PD_DocumentRDFMutation::handleCollabEvent rdf:%p\n", m_rdf));
+    UT_DEBUGMSG(("PD_DocumentRDFMutation::handleCollabEvent (general) rdf:%p\n", m_rdf));
     m_rdf->dumpModelFromAP( remove, "remove from model" );
     m_rdf->dumpModelFromAP( add, "add to model" );
 
@@ -1005,6 +1099,10 @@ UT_Error PD_DocumentRDFMutation::handleAddAndRemove( PP_AttrProp* add, PP_AttrPr
  * instances to add/remove so we might as well try to use the same
  * code to handle the mutation in both this and other abiword
  * instances.
+ *
+ * Note that you can only commit() once per PD_DocumentRDFMutation object.
+ * So you should throw it away after a commit to avoid the temptation of
+ * trying to add() more to it.
  */
 UT_Error PD_DocumentRDFMutation::commit()
 {
@@ -1014,6 +1112,11 @@ UT_Error PD_DocumentRDFMutation::commit()
     UT_DEBUGMSG(("PD_DocumentRDF::commit(top2) m_rolledback:%d\n", m_rolledback));
     UT_DEBUGMSG(("PD_DocumentRDF::commit(top3) rm.hasP:%d add.hasP:%d\n",
                  m_crRemoveAP->hasProperties(), m_crAddAP->hasProperties()));
+    if( m_crAddAP->hasProperties() )
+    {
+        UT_DEBUGMSG(("PD_DocumentRDF::commit(top3) add count:%d\n",
+                     m_crAddAP->getPropertyCount()));
+    }
     
     if(m_rolledback)
         return UT_OK;
@@ -1021,7 +1124,9 @@ UT_Error PD_DocumentRDFMutation::commit()
         return UT_OK;
     if( m_handlingAbiCollabNotification )
         return UT_OK;
-    
+    if( m_committed )
+        return UT_OK;
+        
     UT_DEBUGMSG(("PD_DocumentRDF::commit(running) rdf:%p\n", m_rdf));
     m_pAP->prune();
     m_pAP->markReadOnly();
@@ -1059,6 +1164,7 @@ UT_Error PD_DocumentRDFMutation::commit()
     doc->notifyListeners( 0, pcr );
     delete pcr;
     UT_DEBUGMSG(("PD_DocumentRDF::commit(done) rdf:%p\n", m_rdf));
+    m_committed = true;
     return UT_OK;
 }
 

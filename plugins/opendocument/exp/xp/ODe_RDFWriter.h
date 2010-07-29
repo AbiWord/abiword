@@ -1,10 +1,7 @@
 /* AbiSource
  * 
- * Copyright (C) 2002 Dom Lachowicz <cinamod@hotmail.com>
- * Copyright (C) 2004 Robert Staudinger <robsta@stereolyzer.net>
- * 
- * Copyright (C) 2005 INdT
- * Author: Daniel d'Andrada T. de Carvalho <daniel.carvalho@indt.org.br>
+ * Copyright (c) 2010 GPL. V2+ copyright to AbiSource B.V.
+ * Author: This file was originally written by Ben Martin in 2010.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,38 +19,28 @@
  * 02111-1307, USA.
  */
 
-
-
-
-
-
-#ifndef _ODE_MANIFESTWRITER_H_
-#define _ODE_MANIFESTWRITER_H_
+#ifndef _ODE_RDFWRITER_H_
+#define _ODE_RDFWRITER_H_
 
 // External includes
 #include <gsf/gsf.h>
-#include <set>
 
 // Abiword classes
 class PD_Document;
 
 /**
  * Class holding 1 static member. Its sole duty is to create 
- * the OpenDocument manifest file
+ * the OpenDocument RDF/XML file(s)
  */
-class ODe_ManifestWriter
+class ODe_RDFWriter
 {
 public:
 
-    static bool writeManifest(PD_Document* pDoc, GsfOutfile* pODT);
+    static bool writeRDF(PD_Document* pDoc, GsfOutfile* pODT);
 
 private:
-    ODe_ManifestWriter ();
-    static void ensureDirectoryManifest( PD_Document* pDoc,
-                                         GsfOutput* manifest,
-                                         const std::string& path,
-                                         std::set< std::string >& pathsAlreadyWritten );
+    ODe_RDFWriter ();
 };
 
 
-#endif //_ODE_MANIFESTWRITER_H_
+#endif //_ODE_RDFWRITER_H_

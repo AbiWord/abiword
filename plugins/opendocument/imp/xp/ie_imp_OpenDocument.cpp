@@ -51,6 +51,8 @@
 // RDF support
 #include <redland.h>
 #include <rasqal.h>
+#define DEBUG_RDF_IO 1
+
 
 /**
  * Constructor
@@ -380,22 +382,81 @@ UT_Error IE_Imp_OpenDocument::_handleContentStream ()
 }
 
 /**
- * A class purely to pass parsers and models and other redland stuff
- * to other methods without exposing their types in the header file.
+ * A class purely to pass redland objects like world, parsers and
+ * models and other redland stuff to other methods without exposing
+ * their types in the header file.
+ *
+ * Instead of passing in these things to
+ * the constructor, I moved to a design where the objects are owned
+ * by this class, so if you declaure a RDFArguments on the stack, RAII
+ * will deallocate the world, parser, and model for you. Less to possibly leak.
  */
 class RDFArguments
 {
 public:
-    librdf_world* world;
-    librdf_parser* parser;
-    librdf_model*  model;
-    RDFArguments( librdf_world* _world, librdf_parser* _parser, librdf_model* _model )
-        : world(_world)
-        , parser(_parser)
-        , model(_model)
+    librdf_world*   world;
+    librdf_storage* storage;
+    librdf_model*   model;
+    librdf_parser*  parser;
+    
+    RDFArguments()
+        :
+        world(0), storage(0), model(0), parser(0)
     {
+        world = librdf_new_world();
+        librdf_world_open( world );
+        storage = librdf_new_storage( world, "memory", "/", 0 );    
+        model   = librdf_new_model(   world, storage, 0 );
+        parser  = librdf_new_parser(  world, 0, 0, 0 );
     }
+
+    ~RDFArguments()
+    {
+        librdf_free_parser( parser );
+        librdf_free_model( model );
+        librdf_free_storage( storage );
+        librdf_free_world( world );
+    }
+private:
+    // NoCopying!
+    RDFArguments&  operator=(const RDFArguments& other);
+    RDFArguments(const RDFArguments& other);
 };
+
+static std::string toString( librdf_uri *node )
+{
+    unsigned char* z = librdf_uri_as_string( node );
+    std::string ret = (const char*)z;
+    // For this redland as_string() function, we do not free z.
+    return ret;
+}
+
+
+static std::string toString( librdf_node *node )
+{
+    unsigned char* z = 0;
+    std::string s;
+    librdf_node_type t = librdf_node_get_type( node );
+    switch( t )
+    {
+        case LIBRDF_NODE_TYPE_BLANK:
+            z = librdf_node_get_blank_identifier( node );
+            s = (const char*)z;
+            return s;
+        case  LIBRDF_NODE_TYPE_LITERAL:
+            z = librdf_node_get_literal_value( node );
+            s = (const char*)z;
+            return s;
+        case LIBRDF_NODE_TYPE_RESOURCE:
+            return toString( librdf_node_get_uri(node) );
+    }
+
+    // fallback
+    z = librdf_node_to_string( node );
+    std::string ret = (const char*)z;
+    free(z);
+    return ret;
+}
 
 
 UT_Error IE_Imp_OpenDocument::_loadRDFFromFile ( GsfInfile* pGsfInfile,
@@ -453,35 +514,15 @@ UT_Error IE_Imp_OpenDocument::_loadRDFFromFile ( GsfInfile* pGsfInfile,
     return ret;
 }
 
-std::string toString( librdf_uri *node )
-{
-    unsigned char* z = librdf_uri_as_string( node );
-    std::string ret = (const char*)z;
-    // For this as_string(), we do not free z.
-    return ret;
-}
-
-
-std::string toString( librdf_node *node )
-{
-    unsigned char *z = librdf_node_to_string( node );
-    std::string ret = (const char*)z;
-    free(z);
-    return ret;
-}
                       
 UT_Error IE_Imp_OpenDocument::_handleRDFStreams ()
 {
     UT_Error error = UT_OK;
 
     UT_DEBUGMSG(("IE_Imp_OpenDocument::_handleRDFStreams()\n"));
-    librdf_world* world = librdf_new_world();
-    librdf_world_open( world );
-    librdf_storage* storage = librdf_new_storage( world, "memory", "/", 0 );    
-    librdf_model*     model = librdf_new_model(   world, storage, 0 );
-    librdf_parser*   parser = librdf_new_parser(  world, 0, 0, 0 );
 
-    RDFArguments args( world, parser, model );
+    RDFArguments args;
+    librdf_model* model = args.model;
     error = _loadRDFFromFile( m_pGsfInfile, "manifest.rdf", &args );
 
     // find other RDF/XML files referenced in the manifest
@@ -494,39 +535,19 @@ UT_Error IE_Imp_OpenDocument::_handleRDFStreams ()
         "  ?subj rdf:type odf:MetaDataFile . \n"
         "  ?subj odfcommon:path ?fileName  \n"
         " } \n";
-    // rasqal_world*  rworld = rasqal_new_world();
-    // rasqal_world_open( rworld );
-    // raptor_uri* base_uri = 0;
-    // rasqal_query* query = rasqal_new_query(rworld,"sparql",NULL);
-    // rasqal_query_prepare( query, (unsigned char*)query_string, base_uri );
-    // rasqal_query_results *results = rasqal_query_execute( query );
-    // if( !results )
-    // {
-    //     UT_DEBUGMSG(("IE_Imp_OpenDocument::_handleRDFStreams() SPARQL query to find auxillary RDF/XML files failed! q:%p\n", query ));
-    // }
-    // else
-    // {
-    //     UT_DEBUGMSG(("IE_Imp_OpenDocument::_handleRDFStreams() aux RDF/XML file count:%d\n",
-    //                  rasqal_query_results_get_count( results )));
-        
-    //     while( !rasqal_query_results_finished(results) )
-    //     {
-    //         rasqal_query_results_next(results);
-    //     }
-    // }
-    // rasqal_free_query_results(results);
-    // rasqal_free_query(query);
 
-
-    librdf_uri* base_uri = 0;
-    librdf_query* query = librdf_new_query( world, "sparql", 0,
+    librdf_uri*   base_uri = 0;
+    librdf_query* query = librdf_new_query( args.world, "sparql", 0,
                                             (unsigned char*)query_string,
                                             base_uri );
     librdf_query_results* results = librdf_query_execute( query, model );
 
     if( !results )
     {
+        // Query failed is a failure to execute the SPARQL,
+        // in which case there might be results but we couldn't find them
         UT_DEBUGMSG(("IE_Imp_OpenDocument::_handleRDFStreams() SPARQL query to find auxillary RDF/XML files failed! q:%p\n", query ));
+        error = UT_ERROR;
     }
     else
     {
@@ -534,7 +555,6 @@ UT_Error IE_Imp_OpenDocument::_handleRDFStreams ()
                      librdf_query_results_get_count( results )));
 
         // parse auxillary RDF/XML files too
-        // FIXME
         for( ; !librdf_query_results_finished( results ) ;
              librdf_query_results_next( results ))
         {
@@ -546,40 +566,67 @@ UT_Error IE_Imp_OpenDocument::_handleRDFStreams ()
             UT_DEBUGMSG(("_handleRDFStreams() loading auxilary RDF/XML file from:%s\n",
                          fn.c_str()));
             error = _loadRDFFromFile( m_pGsfInfile, fn.c_str(), &args );
+            if( error != UT_OK )
+                break;
         }
         librdf_free_query_results( results );
     }
     librdf_free_query( query );
 
-    UT_DEBUGMSG(("_handleRDFStreams() model.sz:%d\n",
-                 librdf_model_size( model )));
-
+    UT_DEBUGMSG(("_handleRDFStreams() error:%d model.sz:%d\n",
+                 error, librdf_model_size( model )));
+    if( error != UT_OK )
+    {
+        return error;
+    }
+    
     // convert the redland model into native AbiWord RDF triples
     {
         PD_DocumentRDFHandle rdf = getDoc()->getDocumentRDF();
         PD_DocumentRDFMutationHandle m = rdf->createMutation();
 
-        librdf_statement* statement = librdf_new_statement( world );
+        librdf_statement* statement = librdf_new_statement( args.world );
         librdf_stream* stream = librdf_model_find_statements( model, statement );
 
 		while (!librdf_stream_end(stream))
         {
             librdf_statement* current = librdf_stream_get_object( stream );
 
-            std::string objectType = "";
+            int objectType = PD_Object::OBJECT_TYPE_URI;
+            
+            std::string xsdType = "";
+            if( librdf_node_is_blank( librdf_statement_get_object( current )))
+            {
+                objectType = PD_Object::OBJECT_TYPE_BNODE;
+            }
             if( librdf_node_is_literal( librdf_statement_get_object( current )))
             {
+                objectType = PD_Object::OBJECT_TYPE_LITERAL;
                 if( librdf_uri* u = librdf_node_get_literal_value_datatype_uri(
                         librdf_statement_get_object( current )))
                 {
-                    objectType = toString(u);
+                    xsdType = toString(u);
                 }
             }
+
+            if( DEBUG_RDF_IO )
+            {
+                UT_DEBUGMSG(("_handleRDFStreams() adding s:%s p:%s o:%s rotv:%d otv:%d ots:%s\n",
+                             toString( librdf_statement_get_subject( current )).c_str(),
+                             toString( librdf_statement_get_predicate( current )).c_str(),
+                             toString( librdf_statement_get_object( current )).c_str(),
+                             librdf_node_get_type(librdf_statement_get_object( current )),
+                             objectType,
+                             xsdType.c_str()
+                                ));
+            }
+            
             
             m->add( PD_URI( toString( librdf_statement_get_subject( current ))),
                     PD_URI( toString( librdf_statement_get_predicate( current ))),
                     PD_Object( toString( librdf_statement_get_object( current )),
-                               objectType ));
+                               objectType,
+                               xsdType ));
 
             librdf_stream_next(stream);
         }
@@ -587,12 +634,11 @@ UT_Error IE_Imp_OpenDocument::_handleRDFStreams ()
         librdf_free_stream( stream );
         librdf_free_statement( statement );
     }
-    
-    librdf_free_parser( parser );
-    librdf_free_model( model );
-    librdf_free_storage( storage );
-    librdf_free_world( world );
-    getDoc()->getDocumentRDF()->dumpModel("Loaded RDF from ODF file");
+
+    if( DEBUG_RDF_IO )
+    {
+        getDoc()->getDocumentRDF()->dumpModel("Loaded RDF from ODF file");
+    }
     return error;
 }
 

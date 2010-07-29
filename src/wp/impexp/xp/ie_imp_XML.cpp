@@ -37,11 +37,14 @@
 #endif
 
 #include "pd_Document.h"
+#include "pd_DocumentRDF.h"
 
 #include "ap_Prefs.h"
 
 #include "ie_imp_XML.h"
 #include "ie_types.h"
+
+#define DEBUG_RDF_IO  1
 
 /*****************************************************************/
 /*****************************************************************/
@@ -250,6 +253,7 @@ void IE_Imp_XML::charData(const gchar *s, int len)
 		case _PS_Block:
 		case _PS_IgnoredWordsItem:
 		case _PS_Meta:
+		case _PS_RDFTriple:
 		case _PS_Revision:
 			{
 				UT_UCS4String buf(s,static_cast<size_t>(len),!m_bWhiteSignificant);
@@ -284,6 +288,40 @@ void IE_Imp_XML::charData(const gchar *s, int len)
 							getDoc()->setMetaDataProp(m_currentMetaDataName, data);
 							return;
 						}
+					case _PS_RDFTriple:
+                    {
+                        std::string data(s,len);
+
+                        if(!m_rdfMutation)
+                        {
+                            UT_DEBUGMSG(("ie_imp_XML should be parsing triple, but we are not in right parse state!\n"));
+                            return;
+                        }
+
+#ifdef DEBUG_RDF_IO                        
+                        UT_DEBUGMSG(("xml::import() adding s:%s p:%s o:%s otv:%d ots:%s\n",
+                                     m_rdfSubject.c_str(),
+                                     m_rdfPredicate.c_str(),
+                                     data.c_str(),
+                                     m_rdfObjectType,
+                                     m_rdfXSDType.c_str()
+                            ));
+                        {
+                            static int addCount = 0;
+                            addCount++;
+                            UT_DEBUGMSG(("xml::import() addCount:%d\n", addCount ));
+                        }
+#endif
+                        
+                        m_rdfMutation->add(
+                            m_rdfSubject,
+                            m_rdfPredicate,
+                            PD_Object( data,
+                                       m_rdfObjectType,
+                                       m_rdfXSDType ));
+
+                        return;
+                    }
 					case _PS_Revision:
 
 						// 0 is not a valid revision Id
