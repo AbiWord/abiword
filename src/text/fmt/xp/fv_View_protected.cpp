@@ -4722,6 +4722,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		    (pPage->getYForNormalView() <= getYScrollOffset() + getWindowHeightLU()) &&
 		    (pPage->getYForNormalView() + pPage->getHeight() - pDSL->getTopMargin() - pDSL->getBottomMargin() >= getYScrollOffset()) )
 		{
+			UT_DEBUGMSG(("Normal view, adding page %d to pages on screen vector\n", pPage->getPageNumber()));
 			vecPagesOnScreen.addItem(pPage);
 			bInViewport = true;
 			if(!bTraversingLeftRight && !bTraversingUpDown)
@@ -4813,6 +4814,8 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		UT_sint32 adjustedBottom	= adjustedTop + iPageHeight; // Bottom line of the page that defines the page's bottom margin,
 		                        	                             // relative to the top of the screen and in layout units
 		UT_sint32 adjustedLeft		= pPage->getX() - getXScrollOffset();
+		if( (getViewMode() == VIEW_NORMAL) || (getViewMode() == VIEW_WEB) )
+			adjustedLeft = 0;
 		UT_sint32 adjustedRight		= adjustedLeft + iPageWidth;
 		UT_RGBColor paperColor = *(pPage->getFillType()->getColor());
 		pDSL = pPage->getOwningSection();

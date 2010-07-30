@@ -2427,7 +2427,7 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner, bool bNoUpdate)
 	if(countPages() > 1)
 		pPage->setYForNormalView( pPage->getPrev()->getYForNormalView() + pPage->getHeight() - pOwner->getTopMargin() - pOwner->getBottomMargin() );
 	else
-		pPage->setYForNormalView( pPage->getHeight() - pOwner->getTopMargin() - pOwner->getBottomMargin() );
+		pPage->setYForNormalView(0);
 
 	return pPage;
 }
