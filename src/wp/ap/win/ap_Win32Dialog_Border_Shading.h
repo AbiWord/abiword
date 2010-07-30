@@ -47,6 +47,7 @@ public:
 	virtual void            destroy(void);
 	virtual void            activate(void);
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
+	virtual void			initDialogParams();
 	
 	HBITMAP 				_loadBitmap(HWND hWnd,UINT nId, char* pName, int width, int height, UT_RGBColor Color);
 	virtual BOOL			_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
@@ -64,6 +65,7 @@ protected:
 	XAP_Win32ColourButton	m_borderButton;
 	double					m_dThickness[BORDER_SHADING_NUMTHICKNESS];	
 	double					m_dOffset[BORDER_SHADING_NUMOFFSETS];	
+	HWND					m_hwndComboEx;
 };
 
 #endif /* AP_WIN32DIALOG_BORDER_SHADING_H */

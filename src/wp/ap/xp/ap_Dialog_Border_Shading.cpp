@@ -413,6 +413,16 @@ void AP_Dialog_Border_Shading::setBorderStyle(UT_UTF8String & sStyle)
 	m_vecProps.addOrReplaceProp("top-style",m_sBorderStyle.utf8_str());
 	m_vecProps.addOrReplaceProp("bot-style",m_sBorderStyle.utf8_str());
 
+	const gchar* left_space = "3.0mm";
+	const gchar* right_space = "3.0mm";
+	const gchar* top_space = "3.0mm";
+	const gchar* bot_space = "3.0mm";
+
+	m_vecProps.addOrReplaceProp("left-space", left_space);
+	m_vecProps.addOrReplaceProp("right-space", right_space);
+	m_vecProps.addOrReplaceProp("top-space", top_space);
+	m_vecProps.addOrReplaceProp("bot-space", bot_space);
+
 	m_bSettingsChanged = true;
 }
 

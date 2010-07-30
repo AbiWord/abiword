@@ -72,7 +72,8 @@ AP_Win32Dialog_Border_Shading::AP_Win32Dialog_Border_Shading(XAP_DialogFactory *
 	m_hBitmapTop(NULL), 
 	m_hBitmapRight(NULL),
 	m_hBitmapLeft(NULL),
-	m_pPreviewWidget(NULL)
+	m_pPreviewWidget(NULL),
+	m_hwndComboEx(NULL)
 {		
 	UT_sint32 i = 0;
 	for(i=0; i < BORDER_SHADING_NUMTHICKNESS ;i++)
@@ -101,6 +102,17 @@ void AP_Win32Dialog_Border_Shading::runModeless(XAP_Frame * pFrame)
 	// Save dialog the ID number and pointer to the widget
 	UT_sint32 sid =(UT_sint32)  getDialogId();
 	m_pApp->rememberModelessId( sid, (XAP_Dialog_Modeless *) m_pDialog);
+
+	initDialogParams();
+}
+
+void AP_Win32Dialog_Border_Shading::initDialogParams()
+{
+	int initial_style_index = 0;
+	SendMessageA(m_hwndComboEx, CB_SETCURSEL, WPARAM(initial_style_index), NULL);
+
+	UT_UTF8String initial_style_utf8 = sBorderStyle_Border_Shading[initial_style_index];
+	setBorderStyle(initial_style_utf8);       
 }
 
 BOOL AP_Win32Dialog_Border_Shading::_onDlgMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -262,12 +274,12 @@ BOOL AP_Win32Dialog_Border_Shading::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 	XAP_App* pApp = XAP_App::getApp();
 	UT_ASSERT(pApp);
 	XAP_Win32App* pWin32App = static_cast<XAP_Win32App*>(pApp);
-	HWND hwndComboEx = CreateComboboxEx(
-										m_hDlg,
-										pWin32App->getInstance(), 
-										CBS_DROPDOWNLIST, 
-										combo_rect, 
-										AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_STYLE);
+	m_hwndComboEx = CreateComboboxEx(
+									m_hDlg,
+									pWin32App->getInstance(), 
+									CBS_DROPDOWNLIST, 
+									combo_rect, 
+									AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_STYLE);
 
 	HIMAGELIST hImageList =	ImageList_Create(
 		BORDER_STYLE_BITMAP_WIDTH, 
@@ -286,12 +298,12 @@ BOOL AP_Win32Dialog_Border_Shading::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 	ImageList_Add(hImageList, tmp_bmp2, NULL);
 	ImageList_Add(hImageList, tmp_bmp3, NULL);
 
-	SendMessage(hwndComboEx, CBEM_SETIMAGELIST, 0, reinterpret_cast<LPARAM>(hImageList));
+	SendMessage(m_hwndComboEx, CBEM_SETIMAGELIST, 0, reinterpret_cast<LPARAM>(hImageList));
 
-	InsertItem(hwndComboEx, NULL, 0, 0);
-	InsertItem(hwndComboEx, NULL, 1, 1);
-	InsertItem(hwndComboEx, NULL, 2, 2);
-	InsertItem(hwndComboEx, NULL, 3, 3);
+	InsertItem(m_hwndComboEx, NULL, 0, 0);
+	InsertItem(m_hwndComboEx, NULL, 1, 1);
+	InsertItem(m_hwndComboEx, NULL, 2, 2);
+	InsertItem(m_hwndComboEx, NULL, 3, 3);
 
     centerDialog();
 	return 1; 
@@ -400,23 +412,23 @@ BOOL AP_Win32Dialog_Border_Shading::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 			return 1;
 		}
 
-// 		case AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_STYLE:             //TODO: CHECK
-// 		{
-// 			if (wNotifyCode == CBN_SELCHANGE)                       
-// 			{
-// 				int nSelected = getComboSelectedIndex (AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_STYLE);  
-// 
-// 				if (nSelected != CB_ERR && nSelected >= 0 && nSelected <= BORDER_SHADING_NUMOFSTYLES)
-// 				{
-// 					UT_UTF8String thickness_utf8 = sBorderStyle_Border_Shading[nSelected];
-// 					setBorderStyle(thickness_utf8);                                        
-// 					/*Force redraw*/
-// 					InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_STYLE), NULL, FALSE);
-// 					event_previewExposed();	
-// 				}
-// 			}
-// 			return 1;
-// 		}
+		case AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_STYLE:             //TODO: CHECK
+		{
+			if (wNotifyCode == CBN_SELCHANGE)                       
+			{
+				int nSelected = getComboSelectedIndex (AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_STYLE);  
+
+				if (nSelected != CB_ERR && nSelected >= 0 && nSelected <= BORDER_SHADING_NUMOFSTYLES)
+				{
+					UT_UTF8String thickness_utf8 = sBorderStyle_Border_Shading[nSelected];
+					setBorderStyle(thickness_utf8);                                        
+					/*Force redraw*/
+					InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_STYLE), NULL, FALSE);
+					event_previewExposed();	
+				}
+			}
+			return 1;
+		}
 
 		case AP_RID_DIALOG_BORDERSHADING_COMBO_SHADING_OFFSET:      
 			{
