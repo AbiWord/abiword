@@ -2131,7 +2131,7 @@ bool pt_PieceTable::_realDeleteSpan(PT_DocPosition dpos1,
 	// remove (dpos2-dpos1) characters from the document at the given position.
 
 	UT_return_val_if_fail (m_pts==PTS_Editing, false);
-	UT_return_val_if_fail (dpos2 > dpos1, false);
+	UT_return_val_if_fail (dpos2 >= dpos1, false);
 
 	bool bSuccess = true;
 	UT_Stack stDelayStruxDelete;

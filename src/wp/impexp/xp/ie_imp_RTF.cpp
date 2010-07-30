@@ -1505,7 +1505,10 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_iIsInHeaderFooter(0),
 	m_bSectionHasPara(false),
 	m_bStruxInserted(false),
-	m_bInTablePaste(false),
+	m_bPasteAcross(false),
+	m_iCurPasteRow(-1),
+	m_iCurPasteCol(-1),
+	m_pSDHPasteTable(NULL),
 	m_bStruxImage(false),
 	m_bFrameStruxIn(false),
 	m_iAutoBidiOverride(UT_BIDI_UNSET),
@@ -2005,7 +2008,7 @@ void IE_Imp_RTF::HandleCell(void)
 	m_bCellHandled = true;
 	m_bDoCloseTable = false;
 	m_iNoCellsSinceLastRow++;
-	UT_DEBUGMSG(("Num Cell on row %d \n",m_iNoCellsSinceLastRow));
+	UT_DEBUGMSG(("Num Cell on this row: %d \n",m_iNoCellsSinceLastRow));
 	if(bUseInsertNotAppend())
 	{
 		return;
@@ -2465,7 +2468,7 @@ UT_Error IE_Imp_RTF::_parseText()
     int cNibble = 2;
 	int b = 0;
 	unsigned char c;
-	UT_DEBUGMSG(("\n\n PASTING PASTING PASTING BITCHERS 1 \n\n"));
+	
 	// remember the depth of stack on entry, and if the depth of stack
 	// drops bellow this level return (this is so that we can call
 	// this method recursively)
@@ -6717,10 +6720,10 @@ bool IE_Imp_RTF::_insertSpan()
 		p = reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(0));
 		if(getDoc()->isFrameAtPos(m_dposPaste-1) || getDoc()->isTableAtPos(m_dposPaste-1) || getDoc()->isCellAtPos(m_dposPaste-1))
 		{
-			getDoc()->insertStrux(m_dposPaste,PTX_Block);
+			/*getDoc()->insertStrux(m_dposPaste,PTX_Block);
 			m_dposPaste++;
 			if(m_posSavedDocPosition > 0)
-				m_posSavedDocPosition++;
+				m_posSavedDocPosition++;*/
 		}
 		if(!getDoc()->insertSpan(m_dposPaste, p ,iLen))
 			return false;
@@ -7722,7 +7725,9 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 			if(!bDontInsert)
 			{
 				markPasteBlock();
-				insertStrux(PTX_Block);
+				// Dzan - GSoC: quick dirty fix!!! ( No extra line when pasting
+				// table row into another )
+				if(!m_bPasteAcross)insertStrux(PTX_Block);
 			}
 			m_newParaFlagged = false;
 			m_bSectionHasPara = true;
@@ -10013,8 +10018,8 @@ bool IE_Imp_RTF::HandleAbiEmbed(void)
 bool IE_Imp_RTF::HandleAbiTable(void)
 {
 
-	UT_DEBUGMSG(("\n\nTABLE IMPORT BUFFER CONTENT:\n\n%s\n",m_pCurrentCharInPasteBuffer));
-    //------------------------------------------------------------- 
+	//UT_DEBUGMSG(("\n\nTABLE IMPORT BUFFER CONTENT:\n\n%s\n",m_pCurrentCharInPasteBuffer));
+	//------------------------------------------------------------- 
 	// Read in rest of the table props in the rtf buffer
 	//-------------------------------------------------------------
 	UT_String sProps;
@@ -10037,39 +10042,23 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 	// Initialise some stuff and get the table at the paste location
 	// if there is one ( => bFound )
 	//-------------------------------------------------------------
-	ABI_Paste_Table * pPaste = new ABI_Paste_Table();
-	m_pasteTableStack.push(pPaste);
-	pPaste->m_bHasPastedTableStrux = false;
-	pPaste->m_iRowNumberAtPaste = 0;
 	bool bIsPasteIntoSame = false;
 	
 	UT_DEBUGMSG(("RTF_Import: Paste: Tables props are: %s \n",sProps.c_str()));
 	PL_StruxDocHandle sdhTable = NULL;			// table at paste location
 	PL_StruxDocHandle sdhEndTable = NULL;		// endtable at paste location
+	PL_StruxDocHandle cursorCell = NULL;		// cell under current cursor				
 	PT_DocPosition posTable = 0;				// pos of table pasted to!
 
 	bool bFound = getDoc()->getStruxOfTypeFromPosition(m_dposPaste,PTX_SectionTable,&sdhTable);
-
-	// ------------------------------------------------------------------
-	// Get the current View, Dirty..
-	//-------------------------------------------------------------------
-	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
-	if(pFrame == NULL)
-	{
-		return false;
-	}
-	FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
-	if(pView == NULL)
-	{
-		return false;
-	}
+	bool bCell = getDoc()->getStruxOfTypeFromPosition(m_dposPaste,PTX_SectionCell,&cursorCell);
+	if( !bCell ) bCell = getDoc()->getStruxOfTypeFromPosition(m_dposPaste+1,PTX_SectionCell,&cursorCell); 
 
 
 	//------------------------------------------------------------- 
-	// A table was found at the pasteposition, enable our 
-	// table-into-table paste code
+	// A TABLE WAS FOUND AT THE PASTE POSITION
 	//-------------------------------------------------------------
-	if(bFound)
+	if(bFound && bCell)
 	{
 		posTable = getDoc()->getStruxPosition(sdhTable);
 		sdhEndTable = getDoc()->getEndTableStruxFromTableSDH(sdhTable);
@@ -10095,8 +10084,8 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 				// Dzan :
 				// we are going to read ahead and cheat with the pastebuffer...
 				// how evil of us *gniffle*
-				UT_sint32 iFTop, iFBot, iFRight, iFLeft,		// attach values of top left cell in buffer
-						  iLTop, iLBot, iLRight, iLLeft,		// attach values of bottom right cell in buffer
+				UT_sint32 iFTop, iFLeft,		// attach values of top left cell in buffer
+						  iLTop, iLLeft,		// attach values of bottom right cell in buffer
 						  numColsPasteTable, numRowsPasteTable; // number of cols/rows in table in buffer
 				UT_String sDum, sTemp, sFirstCellProps, sLastCellProps;	 
 				const char* key = "abicellprops";
@@ -10121,7 +10110,7 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 				iFTop = atoi(sTemp.c_str());
 				sTemp = UT_String_getPropVal(sLastCellProps,sDum);
 				iLTop = atoi(sTemp.c_str());
-				/* ====> */ numRowsPasteTable = iLBot - iFBot + 1;	// num of rows in buffer
+				/* ====> */ numRowsPasteTable = iLTop - iFTop + 1;	// num of rows in buffer
 
 				
 				sDum = "left-attach";
@@ -10130,110 +10119,85 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 				sTemp = UT_String_getPropVal(sLastCellProps,sDum);
 				iLLeft = atoi(sTemp.c_str());		
 				/* ====> */ numColsPasteTable = iLLeft - iFLeft + 1;	// num of cols in buffer
-			
+
+				
 				// Get stats of table at pastelocation
 				UT_sint32 numColsThisTable, numRowsThisTable,    // number of cols/rows in table we paste into
 						  colStartThisTable, rowStartThisTable;	 // under mouse pointer atm..
 				getDoc()->getRowsColsFromTableSDH(sdhTable, false, 0, &numRowsThisTable, &numColsThisTable);
 				
-				//UT_DEBUGMSG(("\nRESULTATEN IN BUFFER: cols: %d,   rows: %d\n",numColsPasteTable,numRowsPasteTable));
-				//UT_DEBUGMSG(("\nRESULTATEN IN PASTETABLE: cols: %d,   rows: %d\n",numColsThisTable,numRowsThisTable));
 
+				// Get position of current cell: POSITION IN TABLE: COUNT FROM ZERO!!
+				const char* szLeft;
+				const char* szTop;
+				UT_sint32 pLeft, pTop;
+				
+				getDoc()->getPropertyFromSDH(cursorCell,false,0,"left-attach",&szLeft);
+				if(szLeft) pLeft = atoi(szLeft);
+
+				
+				getDoc()->getPropertyFromSDH(cursorCell,false,0,"top-attach",&szTop);
+				if(szTop)   pTop = atoi(szTop);
+
+				
+				UT_DEBUGMSG(("\nRESULTATEN IN BUFFER: cols: %d,   rows: %d\n",numColsPasteTable,numRowsPasteTable));
+				UT_DEBUGMSG(("\nRESULTATEN IN PASTETABLE: cols: %d,   rows: %d\n",numColsThisTable,numRowsThisTable));
+				UT_DEBUGMSG(("\nRESULTATEN CURRENT CELL: col: %d,   row: %d\n",pLeft, pTop));
+				
 				bSingleRow = ( numRowsPasteTable == 1 ) ? true : false;
-				bFits = ( numRowsPasteTable <= numRowsThisTable && numColsPasteTable <= numColsThisTable ) ? true : false;
+				bFits = (  numRowsPasteTable <= numRowsThisTable - pTop && 
+				     	   numColsPasteTable <= numColsThisTable - pLeft ) ? true : false;
 				bIsPasteIntoSame = ( sThisTableSDH == sPasteTableSDH ) ? true : false;
+
+				UT_DEBUGMSG(("\nRESULTAAT FIT: %d\t\tRuimte Over: cols: %d rows:%d\n",bFits, (numColsThisTable-pLeft), (numRowsThisTable-pTop)));
+				UT_DEBUGMSG(("\nBOOLEANS CALCULATED: bSingleRow: %d\tbFits: %d\tbIsPasteIntoSame: %d\tbPasteAcross: %d\n",bSingleRow,bFits,bIsPasteIntoSame,m_bPasteAcross));
 				
 				// Make sure the row we paste in will fit, else do previous kind of paste!
 				if( bSingleRow && bFits )
+				// if ( bFits )	 // Dzan - drop the bSingleRow later for multirow/column in table paste 
 				{
+					m_bPasteAcross = true;
+					m_iCurPasteRow = pTop;
+					m_iCurPasteCol = pLeft;
+					m_pSDHPasteTable = sdhTable;
+					UT_DEBUGMSG(("\nFITTED SO EXITED THE HANDLEABITTABLE FUNCTION EARLY!!!!\n"));
+
+					// MAYBE OLD CODE NEEDS TO BE HERE, DON'T THINK SO
+					// check comment piece in ie_imp_RTF.cpp
+					
+					return true;
 				}
 				else
 				{
-				}
+					// WHAT TO DO IF PASTING IN A TABLE BUT DOESN'T FIT??
+					// - extend table?
+					// - ... ?
+					// for now: just don't return so we do a nested paste afterall
 
-				// This code should be reviewed then should then go in the else part above.
-				// => use the old behaviour as a backup when we are not handling single rows or it wont fit.
-				
-				/*if((sThisTableSDH == sPasteTableSDH) )//&& isRow)
-				{
-					UT_DEBUGMSG(("Paste Whole Row into same Table!!!!! \n"));
-					bIsPasteIntoSame = true;
-					pPaste->m_bPasteAfterRow = true;
-					PL_StruxDocHandle sdhCell = NULL;
-					bool b = getDoc()->getStruxOfTypeFromPosition(m_dposPaste,PTX_SectionCell,&sdhCell);
-					UT_return_val_if_fail(b,false);
-					const char * szTop = NULL;
-					getDoc()->getPropertyFromSDH(sdhCell,
-												 true,
-												 PD_MAX_REVISION,
-												 "top-attach",&szTop);
-					UT_return_val_if_fail(szTop,false);
-					UT_sint32 iOldTop = atoi(szTop); 
-					PT_DocPosition posCell = getDoc()->getStruxPosition(sdhCell);
-					b = true;
-					bool atEnd = false;
-					while(b)
-					{
-						b = getDoc()->getNextStruxOfType(sdhCell,PTX_SectionCell,&sdhCell);
-						if(b && sdhCell)
-						{
-							posCell = getDoc()->getStruxPosition(sdhCell);
-						}
-						if(!b || (posCell > posEndTable))
-						{
-							atEnd = true;
-							b = false;
-						}
-						else if(b)
-						{
-							getDoc()->getPropertyFromSDH(sdhCell,
-														 true,
-														 PD_MAX_REVISION,
-														 "top-attach",&szTop);
-							UT_return_val_if_fail(szTop,false);
-							UT_sint32 iNewTop = atoi(szTop); 
-							b = (iNewTop == iOldTop);
-						}
-					}
-					pPaste->m_iRowNumberAtPaste = iOldTop;
-					if(atEnd)
-					{
-//
-// At end of Table. Position just after last encCell strux
-//
-						m_dposPaste = posEndTable;
-					}
-					else
-					{
-//
-// Position just before the first cell of the next row.
-//
-						m_dposPaste = getDoc()->getStruxPosition(sdhCell);
-					}
-//
-// Now a change strux on the table to make it rebuild.
-//
-					const char * sDumProp[3] = {NULL,NULL,NULL};
-					sDumProp[0] = "list-tag";
-					UT_String sVal;
-					UT_String_sprintf(sVal,"%d",getDoc()->getUID(UT_UniqueId::List));
-					sDumProp[1] = sVal.c_str();
-					sDumProp[2] = NULL;
-					getDoc()->changeStruxFmt(PTC_AddFmt,posTable+1,posTable+1,NULL,sDumProp,PTX_SectionTable);
-
-				}*/
+					// IF CODE IS ADDED HERE LATER REMEMBER TO CREATE A PASTETABLE INSTANCE!!!
+				}		
 			}
 		}
 	}
 
-//
+	
+// ------------------------------------------------------------------
+// No table was found! We are pasting/creating a new one!
+//-------------------------------------------------------------------
+
+// Creating a pastetable instance
+	ABI_Paste_Table * pPaste = new ABI_Paste_Table();
+	m_pasteTableStack.push(pPaste);
+	pPaste->m_bHasPastedTableStrux = false;
+	pPaste->m_iRowNumberAtPaste = 0;
+	
 // Remove the table-sdh property
-//
 	UT_String sProp = "table-sdh";	
 	UT_String_removeProperty(sProps,sProp);
 	const gchar * attrs[3] = {"props",NULL,NULL};
 	if(! bIsPasteIntoSame)
 	{
+		UT_DEBUGMSG(("\nENTERED THE !BIsPasteIntoSame BRANCH!!!\n"));
 		attrs[1] = sProps.c_str();
 //
 // insert a block to terminate the text before this if needed,
@@ -10368,26 +10332,37 @@ bool IE_Imp_RTF::isBlockNeededForPasteTable(void)
 
 bool IE_Imp_RTF::HandleAbiEndCell(void)
 {
-	ABI_Paste_Table * pPaste = NULL;
-	m_pasteTableStack.viewTop((void**)(&pPaste));
-	if(pPaste == NULL)
+	if(m_bPasteAcross)
 	{
-		return false;
+		m_iCurPasteCol++;
+		return true;
 	}
-	if(!pPaste->m_bHasPastedBlockStrux)
+	else
 	{
-		UT_DEBUGMSG(("Insert Block  -4 \n"));
-	    insertStrux(PTX_Block);
+		// Get pastetable instance from stack
+		ABI_Paste_Table * pPaste = NULL;
+		m_pasteTableStack.viewTop((void**)(&pPaste));
+		if(pPaste == NULL)  return false;
+
+		// If no content in the cell quickly insert a block before closing
+		if(!pPaste->m_bHasPastedBlockStrux)
+			insertStrux(PTX_Block);
+
+		// Insert endcellstrux
+		UT_DEBUGMSG(("Insert EndCell -1!!!!!!!!!!!!!! \n"));
+		insertStrux(PTX_EndCell);
+		pPaste->m_bHasPastedCellStrux = false;
+		pPaste->m_bHasPastedBlockStrux = false;
+		
+		return true;
 	}
-	UT_DEBUGMSG(("Insert EndCell -1!!!!!!!!!!!!!! \n"));
-	insertStrux(PTX_EndCell);
-	pPaste->m_bHasPastedCellStrux = false;
-	pPaste->m_bHasPastedBlockStrux = false;
-	return true;
 }
 
 bool IE_Imp_RTF::HandleAbiCell(void)
 {
+	//------------------------------------------------------------- 
+	// Read in rest of the table props in the rtf buffer
+	//-------------------------------------------------------------
 	UT_String sProps;
 	unsigned char ch;
 	if (!ReadCharFromFile(&ch))
@@ -10402,57 +10377,117 @@ bool IE_Imp_RTF::HandleAbiCell(void)
 		sProps += ch;
 		if (!ReadCharFromFile(&ch))
 			return false;
-	}
-	ABI_Paste_Table * pPaste = NULL;
-	m_pasteTableStack.viewTop((void**)(&pPaste));
-	if(pPaste == NULL)
+	}   
+
+
+	//------------------------------------------------------------- 
+	//  Deal with pasting across a partial table
+	//-------------------------------------------------------------
+	if(m_bPasteAcross)
 	{
-		return false;
+		// Dzan - This is for later ( handling whole subtables )
+		// focusing on row paste now
+		// check to see if we should jump to next row
+		//
+			/*UT_String sDum = "top-attach";
+			UT_String sTop = UT_String_getPropVal(sProps,sDum);
+			UT_sint32 row = atoi(sTop.c_str());
+			if( row > m_iCurPasteRow ){
+				m_iCurPasteRow++;
+				m_iCurPasteCol--;
+			}*/
+
+		
+		// get cellSDH -> position and reset pasteposition
+		PL_StruxDocHandle cellSDH = NULL;
+		cellSDH = getDoc()->getCellSDHFromRowCol(m_pSDHPasteTable, false, 0, m_iCurPasteRow, m_iCurPasteCol);
+		if( cellSDH )   m_dposPaste = getDoc()->getStruxPosition(cellSDH)+2;
+		else UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
+		
+		// Dzan - This could be made optional using a private boolean as switch
+		//		  A user could choose in the context menu to overwrite all or to add
+		//		  the content to the existing content. If add boolean is set, this
+		//		  shouldn't be excecuted.
+		/// =>
+		// clear cell if there is data in it			
+		PT_DocPosition end = getDoc()->getStruxPosition(getDoc()->getEndCellStruxFromCellSDH(cellSDH));
+		UT_uint32 iRealDeleteCount;
+		
+		getDoc()->beginUserAtomicGlob();
+		getDoc()->deleteSpan(m_dposPaste, end, NULL, iRealDeleteCount, false);
+		getDoc()->endUserAtomicGlob();
+		
+		return true;
 	}
-	UT_String sDum = "top-attach";
-	UT_String sTop = UT_String_getPropVal(sProps,sDum);
-	pPaste->m_iCurTopCell = atoi(sTop.c_str());
-	UT_sint32 iAdditional = 0;
-	//
-	// Look for the next row of the table
-	//
-	iAdditional = pPaste->m_iCurTopCell - pPaste->m_iPrevPasteTop;
-	pPaste->m_iPrevPasteTop = pPaste->m_iCurTopCell;
-	pPaste->m_iRowNumberAtPaste += iAdditional;
-	pPaste->m_iNumRows += iAdditional;
-	sDum = "right-attach";
-	UT_String sRight = UT_String_getPropVal(sProps,sDum);
-	pPaste->m_iCurRightCell = atoi(sRight.c_str());
-	if(pPaste->m_iCurRightCell > pPaste->m_iMaxRightCell)
+	//------------------------------------------------------------- 
+	// Deal with normal pasting 
+	//  ( in a newly created table )
+	// => this could be a nested one that was made because the paste
+	//	  would not fit in the table pasted in 
+	//-------------------------------------------------------------
+	else
 	{
-		pPaste->m_iMaxRightCell = pPaste->m_iCurRightCell;
+		// Retrieving the top pastetable instance from the pastetablesstack
+		ABI_Paste_Table * pPaste = NULL;
+		m_pasteTableStack.viewTop((void**)(&pPaste));
+		if(pPaste == NULL)  return false;
+
+		// Reading the top attach value from the rtfbuffer
+		UT_String sDum = "top-attach";
+		UT_String sTop = UT_String_getPropVal(sProps,sDum);
+		pPaste->m_iCurTopCell = atoi(sTop.c_str());
+
+		// Look for the next row of the table
+		UT_sint32 iAdditional = 0;
+		iAdditional = pPaste->m_iCurTopCell - pPaste->m_iPrevPasteTop;
+		pPaste->m_iPrevPasteTop = pPaste->m_iCurTopCell;
+		pPaste->m_iRowNumberAtPaste += iAdditional;
+		pPaste->m_iNumRows += iAdditional;
+
+		// Reading the right attach value from rtf buffer
+		sDum = "right-attach";
+		UT_String sRight = UT_String_getPropVal(sProps,sDum);
+		pPaste->m_iCurRightCell = atoi(sRight.c_str());
+	
+		if(pPaste->m_iCurRightCell > pPaste->m_iMaxRightCell)
+		{
+			pPaste->m_iMaxRightCell = pPaste->m_iCurRightCell;
+		}
+		pPaste->m_bHasPastedCellStrux = true;
+		pPaste->m_bHasPastedBlockStrux = false;
+		UT_sint32 iMyTop = pPaste->m_iCurTopCell;
+
+		// Reading the bottom attach value from the rtf buffer
+		sDum = "bot-attach";
+		UT_String sBot =  UT_String_getPropVal(sProps,sDum);
+		UT_sint32 iMyBot = atoi(sBot.c_str());
+		
+		if(pPaste->m_bPasteAfterRow)
+		{
+			UT_sint32 idiff = pPaste->m_iRowNumberAtPaste - iMyTop +1;
+			iMyTop += idiff;
+			sTop = UT_String_sprintf("%d",iMyTop);
+			iMyBot += idiff;
+			sBot = UT_String_sprintf("%d",iMyBot);
+			UT_String sTopProp = "top-attach";
+			UT_String sBotProp = "bot-attach";
+			UT_String_setProperty(sProps,sTopProp,sTop);
+			UT_String_setProperty(sProps,sBotProp,sBot);
+			pPaste->m_iCurTopCell = iMyTop;
+		}
+
+		// Inserting the new Cell strux in the piecetable
+		UT_DEBUGMSG(("RTF_Import: Pos %d Paste: Cell props are: %s \n",m_dposPaste,sProps.c_str()));
+		const gchar * attrs[3] = {"props",NULL,NULL};
+		attrs[1] = sProps.c_str();
+	 	insertStrux(PTX_SectionCell,attrs,NULL);
+		
+		m_newParaFlagged = true;
+		m_bSectionHasPara = true;
+		
+		return true;
 	}
-	pPaste->m_bHasPastedCellStrux = true;
-	pPaste->m_bHasPastedBlockStrux = false;
-	UT_sint32 iMyTop = pPaste->m_iCurTopCell;
-	sDum = "bot-attach";
-	UT_String sBot =  UT_String_getPropVal(sProps,sDum);
-	UT_sint32 iMyBot = atoi(sBot.c_str());
-	if(pPaste->m_bPasteAfterRow)
-	{
-		UT_sint32 idiff = pPaste->m_iRowNumberAtPaste - iMyTop +1;
-		iMyTop += idiff;
-		sTop = UT_String_sprintf("%d",iMyTop);
-		iMyBot += idiff;
-		sBot = UT_String_sprintf("%d",iMyBot);
-		UT_String sTopProp = "top-attach";
-		UT_String sBotProp = "bot-attach";
-		UT_String_setProperty(sProps,sTopProp,sTop);
-		UT_String_setProperty(sProps,sBotProp,sBot);
-		pPaste->m_iCurTopCell = iMyTop;
-	}
-	UT_DEBUGMSG(("RTF_Import: Pos %d Paste: Cell props are: %s \n",m_dposPaste,sProps.c_str()));
-	const gchar * attrs[3] = {"props",NULL,NULL};
-	attrs[1] = sProps.c_str();
- 	insertStrux(PTX_SectionCell,attrs,NULL);
-	m_newParaFlagged = true;
-	m_bSectionHasPara = true;
-	return true;
 }
 
 /*!
@@ -10463,6 +10498,7 @@ bool IE_Imp_RTF::HandleAbiCell(void)
  */
 bool IE_Imp_RTF::insertStrux(PTStruxType pts , const gchar ** attrs, const gchar ** props)
 {
+	UT_DEBUGMSG(("\n\nSTRUX INSERTED!! TYPE: %d\n\n",pts));
 	bool bInHyperlink = false;
 	bool bDoExtraBlock = false;
 	bool res = false;
@@ -11521,6 +11557,9 @@ bool IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 		}
 		else
 		{
+			// Dzan - GSoC : guessing I could have used this switch to branch off
+			// pasting in a table... think my solution now is "cleaner"
+			
 			// what kind of strux have we hit ?
 			pf_Frag_Strux * pfs = (pf_Frag_Strux*) pf;
 			switch(pfs->getStruxType())

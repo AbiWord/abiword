@@ -948,7 +948,11 @@ private:
 	// Dzan - GSoC
 	// when true we are pasting part of a table into another and it fits!
 	// => so just copying over content of cells! no table nesting!
-	bool				  m_bInTablePaste;	  
+	bool				  m_bPasteAcross;	
+	UT_sint32			  m_iCurPasteRow;
+	UT_sint32			  m_iCurPasteCol;
+	PL_StruxDocHandle	  m_pSDHPasteTable;
+	
 	UT_sint32             m_iDepthAtFootnote;
 	UT_uint32             m_iLastFootnoteId;
 	UT_uint32             m_iLastEndnoteId;
