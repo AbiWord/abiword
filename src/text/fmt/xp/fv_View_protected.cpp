@@ -4534,10 +4534,49 @@ void FV_View::_fixInsertionPointCoords(bool bIgnoreAll)
 #endif
 }
 
+/* FV_View::_draw is the heart of the rendering engine; it's the method
+ * that actually draws the pages and their content on the screen.  The
+ * process is split into three stages: 1) find which pages need to be
+ * drawn, 2) draw the pages' content, and 3) draw the page decorations:
+ * 
+ *   1) The algorithm for finding which pages need to be drawn is
+ *      detailed below and results in a vector (vecPagesOnScreen) that
+ *      holds pointers to all the pages that need to be drawn.
+ *
+ *   2) _draw then calls the draw method for each page in that vector,
+ *      and each page's draw calls the draw method for each column on
+ *      the page, and each column's draw calls the draw method for each
+ *      line in the column, until finally each line's draw calls the
+ *      draw method for each run in the line (page->column->line->run).
+ *      The actual physical rendering of the text on screen is done
+ *      by fp_Run::draw and fp_Run::_draw.  Each successive draw method
+ *      receives and modifies the relative x/ypos of the element it's
+ *      positioning and passes it along to the next draw method.  So,
+ *      adjustedTop in fv_View::_draw determines how far the top edge
+ *      of the page that's being rendered is from the top of the
+ *      screen's viewport, and adjustedTop then gets passed along
+ *      (through a set of drawargs) to pPage->draw in the render loop;
+ *      similarly, when the page is trying to position its columns, it
+ *      passes along the x/ypos of each column relative to the top and
+ *      left of the page to the column's draw method, but the absolute
+ *      x/ypos has now been adjusted and is equal to the relative
+ *      position of the page in the view port plus the relative
+ *      position of the column on the page.  The position gets passed
+ *      down all the way to the run level.
+ *
+ *   3) Depending on the view mode, FV_View::_draw renders various
+ *      page "decorations", broadly conceived.  In page view, for
+ *      example, this stage renders the actual page itself (not the
+ *      content but the background rectangle and backdrop).  In
+ *      normal view (but not web view), the thin delimiting line
+ *      between each page is rendered.  Etc.
+ */
+
 void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 					UT_sint32 width, UT_sint32 height,
 					bool bDirtyRunsOnly, bool bClip)
 {
+
 	bDirtyRunsOnly = false;
 	xxx_UT_DEBUGMSG(("FV_View::draw_3 [x %ld][y %ld][w %ld][h %ld][bClip %ld]\n"
 					 "\t\twith [yScrollOffset %ld][windowHeight %ld][bDirtyRunsOnly %d]\n",
@@ -4716,7 +4755,8 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		// sans spacing between pages.  So, we maintain separate Y coordinates exclusively for
 		// normal/web view purposes.  Unlike print view, however, the ypos of each page in normal
 		// view depends on the ypos of each previous page, so we have to do a costly update every
-		// time we change a page's size to each subsequent page's ypos.
+		// time we change a page's size to each subsequent page's ypos.  That will be implemented in
+		// fl_DocLayout when the page size changes.
 
 		if( pPage && ( (getViewMode() == VIEW_NORMAL) || (getViewMode() == VIEW_WEB) ) &&
 		    (pPage->getYForNormalView() <= getYScrollOffset() + getWindowHeightLU()) &&
@@ -4807,7 +4847,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		                    		                                   // relative to the top of the screen and in layout units
 		if( (getViewMode() == VIEW_NORMAL) || (getViewMode() == VIEW_WEB) )
 		{
-			adjustedTop = pPage->getYForNormalView() - getYScrollOffset();
+			adjustedTop = pPage->getYForNormalView() - getYScrollOffset() + (pPage->getPageNumber() * m_pG->tluD(1.0));
 			iPageHeight = iPageHeight - pDSL->getTopMargin() - pDSL->getBottomMargin();
 		}
 		UT_DEBUGMSG(("getY() = %i, getYScrollOffset() = %i\n", pPage->getY(), getYScrollOffset()));
@@ -4824,7 +4864,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 		if((getViewMode() != VIEW_PRINT) || pFrame->isMenuScrollHidden())
 		{
-			painter.fillRect(paperColor, 0, 0, getWindowWidth(), iPageHeight);
+			painter.fillRect(paperColor, 0, 0, getWindowWidth(), getWindowHeight());
 		}
 		
 /*		if(iPageNumber >= getNumHorizPages()) //Add the height of all previous rows. Works with pages of different height.
@@ -4847,7 +4887,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		da.xoff = adjustedLeft;
 
 
-		if(!bDirtyRunsOnly || (pPage->needsRedraw() && (getViewMode() == VIEW_PRINT)))
+/*		if(!bDirtyRunsOnly || (pPage->needsRedraw() && (getViewMode() == VIEW_PRINT)))
 		{
 			const UT_RGBColor * pClr = pPage->getFillType()->getColor();
 			painter.fillRect(*pClr,adjustedLeft+m_pG->tlu(1),adjustedTop+m_pG->tlu(1),iPageWidth + m_pG->tlu(1),iPageHeight + m_pG->tlu(1));
@@ -4858,7 +4898,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			// what.
 			//
 			da.bDirtyRunsOnly = false;
-		}
+		} */
 		pPage->draw(&da);
 
 		// draw page decorations
