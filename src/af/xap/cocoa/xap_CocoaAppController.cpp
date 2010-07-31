@@ -100,6 +100,12 @@ static struct EV_CocoaKeyEquiv KeyEquiv[] = {
 	ev_EditMethod_invoke("dlgOptions", ucs4_empty);
 }
 
+- (void)showHelp:(id)sender
+{
+	UT_UCS4String ucs4_empty; // Can we use this to override help-contents location? e.g., to bundle help files? [TODO]
+	ev_EditMethod_invoke("helpContents", ucs4_empty); // [TODO: this needs to be redireced to firstResponder]	
+}
+
 - (void)openContextHelp:(id)sender
 {
 	UT_UNUSED(sender);
@@ -144,7 +150,6 @@ static struct EV_CocoaKeyEquiv KeyEquiv[] = {
 							}
 							break;
 
-						case '/': // how to do this, since ? = Shift-/
 						case '?': // Cmd-? (help)
 							if (!(modifierFlags & NSAlternateKeyMask))
 							{
