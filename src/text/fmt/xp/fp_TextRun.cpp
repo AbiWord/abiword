@@ -1613,6 +1613,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	UT_uint32 iSel1 = UT_MIN(iSelAnchor, iPoint);
 	UT_uint32 iSel2 = UT_MAX(iSelAnchor, iPoint);
+	xxx_UT_DEBUGMSG(("iPoint == %i, iSelAnchor == %i\n", iPoint, iSelAnchor));
 //
 // Handle fully selected cells
 //

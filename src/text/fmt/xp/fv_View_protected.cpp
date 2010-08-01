@@ -4847,7 +4847,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		                    		                                   // relative to the top of the screen and in layout units
 		if( (getViewMode() == VIEW_NORMAL) || (getViewMode() == VIEW_WEB) )
 		{
-			adjustedTop = pPage->getYForNormalView() - getYScrollOffset() + (pPage->getPageNumber() * m_pG->tluD(1.0));
+			adjustedTop = pPage->getYForNormalView() - getYScrollOffset() + ( (UT_sint32) pPage->getPageNumber() * (UT_sint32) m_pG->tluD(1.0));
 			iPageHeight = iPageHeight - pDSL->getTopMargin() - pDSL->getBottomMargin();
 		}
 		UT_DEBUGMSG(("getY() = %i, getYScrollOffset() = %i\n", pPage->getY(), getYScrollOffset()));
@@ -4887,7 +4887,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		da.xoff = adjustedLeft;
 
 
-/*		if(!bDirtyRunsOnly || (pPage->needsRedraw() && (getViewMode() == VIEW_PRINT)))
+		if(!bDirtyRunsOnly || (pPage->needsRedraw() && (getViewMode() == VIEW_PRINT)))
 		{
 			const UT_RGBColor * pClr = pPage->getFillType()->getColor();
 			painter.fillRect(*pClr,adjustedLeft+m_pG->tlu(1),adjustedTop+m_pG->tlu(1),iPageWidth + m_pG->tlu(1),iPageHeight + m_pG->tlu(1));
@@ -4898,7 +4898,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			// what.
 			//
 			da.bDirtyRunsOnly = false;
-		} */
+		}
 		pPage->draw(&da);
 
 		// draw page decorations

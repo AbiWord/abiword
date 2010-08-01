@@ -210,8 +210,8 @@ public:
 	void  setGraphics(GR_Graphics *pG);
 	void  replaceGraphics(GR_Graphics *pG);
 
-	virtual inline PT_DocPosition   getPoint(void) const { return m_iInsPoint; }
-	PT_DocPosition	getSelectionAnchor(void) const;
+	virtual inline PT_DocPosition   getPoint(void) const { return m_iInsPoint; } // Returns position of insertion point in document
+	PT_DocPosition	getSelectionAnchor(void) const; // Returns the position where the selection started
 	PT_DocPosition	getSelectionLeftAnchor(void) const;
 	PT_DocPosition	getSelectionRightAnchor(void) const;
 	UT_uint32       getSelectionLength(void) const;

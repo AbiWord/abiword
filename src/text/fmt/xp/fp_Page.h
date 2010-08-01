@@ -237,7 +237,7 @@ private:
 	bool		m_bOnScreen;
 	UT_sint32	m_iX;
 	UT_sint32	m_iY;
-	UT_uint32	m_iYForNormalView;
+	UT_sint32	m_iYForNormalView;
 };
 
 #endif /* PAGE_H */
