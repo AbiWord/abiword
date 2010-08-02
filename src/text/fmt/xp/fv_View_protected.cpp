@@ -4576,9 +4576,8 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 					UT_sint32 width, UT_sint32 height,
 					bool bDirtyRunsOnly, bool bClip)
 {
-
-	bDirtyRunsOnly = false;
-	xxx_UT_DEBUGMSG(("FV_View::draw_3 [x %ld][y %ld][w %ld][h %ld][bClip %ld]\n"
+//	bDirtyRunsOnly = false;
+	UT_DEBUGMSG(("FV_View::_draw [x %ld][y %ld][w %ld][h %ld][bClip %ld]\n"
 					 "\t\twith [yScrollOffset %ld][windowHeight %ld][bDirtyRunsOnly %d]\n",
 					 x,y,width,height,bClip,
 					 m_yScrollOffset,getWindowHeight(),bDirtyRunsOnly));
@@ -4832,8 +4831,10 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 	if(pPage)
 		UT_DEBUGMSG(("Starting at page %x \n",pPage->getPageNumber()));
-	if(getViewMode() == VIEW_PRINT)
+	if(!bDirtyRunsOnly && (getViewMode() == VIEW_PRINT))
 		painter.fillRect(clrMargin, 0, 0, getWindowWidth(), getWindowHeight());
+//	if((getViewMode() != VIEW_PRINT) || pFrame->isMenuScrollHidden())
+//		painter.fillRect(clrMargin, 0, 0, getWindowWidth(), getWindowHeight());
 
 	while (pPage) // This loop is to actually draw those pages
 	{
@@ -4844,7 +4845,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		UT_sint32 iPageWidth		= pPage->getWidth();
 		UT_sint32 iPageHeight		= pPage->getHeight();
 		UT_sint32 adjustedTop		= pPage->getY() - getYScrollOffset(); // Top line of the page that defines the page's top margin,
-		                    		                                   // relative to the top of the screen and in layout units
+		                    		                                      // relative to the top of the screen and in layout units
 		if( (getViewMode() == VIEW_NORMAL) || (getViewMode() == VIEW_WEB) )
 		{
 			adjustedTop = pPage->getYForNormalView() - getYScrollOffset() + ( (UT_sint32) pPage->getPageNumber() * (UT_sint32) m_pG->tluD(1.0));
@@ -4862,10 +4863,6 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 		xxx_UT_DEBUGMSG(("--Entered _draw loop:\n  iPageNumber = %i, vecitemcount = %i\n  iRow = %i, iCol = %i\n  iPageWidth = %i, iPageHeight = %i\n  getPageViewTopMargin() = %i, m_yScrollOffset = %i\n", iPageNumber, vecPagesOnScreen.getItemCount(), iRow, iCol, iPageWidth, iPageHeight, getPageViewTopMargin(), m_yScrollOffset));
 
-		if((getViewMode() != VIEW_PRINT) || pFrame->isMenuScrollHidden())
-		{
-			painter.fillRect(paperColor, 0, 0, getWindowWidth(), getWindowHeight());
-		}
 		
 /*		if(iPageNumber >= getNumHorizPages()) //Add the height of all previous rows. Works with pages of different height.
 		{
@@ -4893,6 +4890,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			painter.fillRect(*pClr,adjustedLeft+m_pG->tlu(1),adjustedTop+m_pG->tlu(1),iPageWidth + m_pG->tlu(1),iPageHeight + m_pG->tlu(1));
 //			painter.fillRect(*pClr, adjustedLeft + m_pG->tlu(1), adjustedTop + m_pG->tlu(1), adjustedRight + m_pG->tlu(1), adjustedBottom + m_pG->tlu(1));
 			UT_DEBUGMSG(("Painting page, left = %i, top = %i, right = %i, bottom = %i\n", adjustedLeft + m_pG->tlu(1), adjustedTop + m_pG->tlu(1), adjustedRight + m_pG->tlu(1), adjustedBottom + m_pG->tlu(1)));
+			UT_DEBUGMSG(("   ---PAINTING PAGE %i---\n", pPage->getPageNumber()));
 			//
 			// Since we're clearing everything we have to draw every run no matter
 			// what.
@@ -4942,13 +4940,13 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		{
 			// In normal mode, the right margin is
 			// white (since the whole screen is white).
-/*			if((getViewMode() != VIEW_PRINT) || pFrame->isMenuScrollHidden())
+			if((getViewMode() != VIEW_PRINT) || pFrame->isMenuScrollHidden())
 			{
 				painter.fillRect(paperColor, adjustedRight, adjustedTop, getWindowWidth() - adjustedRight + m_pG->tlu(1), iPageHeight);
-			}*/
+			}
 			// Otherwise, the right margin is the
 			// margin color (gray).
-		/*	else if (!rtlPages() || getNumHorizPages() == 1) //Fill in the margins for right to left
+/*			else if (!rtlPages() || getNumHorizPages() == 1) //Fill in the margins for right to left
 			{
 				if (iCol +1 == getNumHorizPages()) // Fill to the right of the pages with gray
 				{
@@ -4981,7 +4979,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		}
 
 		// fill separator below page
-/*		if ((getWindowHeight() - (adjustedBottom + m_pG->tlu(1)) > 0) && (VIEW_PRINT == getViewMode()) &&  !pFrame->isMenuScrollHidden())
+		if ((getWindowHeight() - (adjustedBottom + m_pG->tlu(1)) > 0) && (VIEW_PRINT == getViewMode()) &&  !pFrame->isMenuScrollHidden())
 		{
 			if(pPage->getNext() != NULL)
 			{
@@ -4992,7 +4990,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 				UT_sint32 botfill = getWindowHeight() - adjustedBottom - m_pG->tlu(1) ;
 				painter.fillRect(clrMargin, adjustedLeft, adjustedBottom + m_pG->tlu(1), getWindowWidth() - adjustedLeft + m_pG->tlu(1), botfill + m_pG->tlu(1));
 			}
-		} */
+		}
 
 		// two pixel drop shadow
 			
