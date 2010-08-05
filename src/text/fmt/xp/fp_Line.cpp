@@ -2181,10 +2181,11 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 	      if (pRect == NULL || pRect->intersectsRect(&runRect))
 	      {
 		   pRun->draw(&da);
+	           UT_DEBUGMSG(("Just drew a run, xoff = %i, yoff = %i\n", da.xoff, da.yoff));
 	      }
 	      else
 	      {
-		   xxx_UT_DEBUGMSG(("Run not in clip, pRect top %d height %d run top %d height %d \n",pRect->top,pRect->height,runRect.top,runRect.height));
+	           UT_DEBUGMSG(("Run not in clip, pRect top %d height %d run top %d height %d \n",pRect->top,pRect->height,runRect.top,runRect.height));
 	      }
 	      da.yoff -= pRun->getY();
 	}

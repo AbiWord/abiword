@@ -4576,7 +4576,9 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 					UT_sint32 width, UT_sint32 height,
 					bool bDirtyRunsOnly, bool bClip)
 {
-//	bDirtyRunsOnly = false;
+	if( !(m_pLayout->findBlockAtPosition(0)) )
+		return;
+	//bDirtyRunsOnly = false;
 	UT_DEBUGMSG(("FV_View::_draw [x %ld][y %ld][w %ld][h %ld][bClip %ld]\n"
 					 "\t\twith [yScrollOffset %ld][windowHeight %ld][bDirtyRunsOnly %d]\n",
 					 x,y,width,height,bClip,
@@ -4935,7 +4937,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			adjustedBottom += m_pG->tlu(1);
 			m_pG->setColor(clr);
 		}
-		// fill to right of page
+		// fill from the right edge of page to the right edge of the screen
 		if (getWindowWidth() - (adjustedRight + m_pG->tlu(1)) > 0)
 		{
 			// In normal mode, the right margin is
@@ -4979,7 +4981,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		}
 
 		// fill separator below page
-		if ((getWindowHeight() - (adjustedBottom + m_pG->tlu(1)) > 0) && (VIEW_PRINT == getViewMode()) &&  !pFrame->isMenuScrollHidden())
+/*		if ((getViewMode() == VIEW_PRINT) && (getWindowHeight() - (adjustedBottom + m_pG->tlu(1)) > 0) && !pFrame->isMenuScrollHidden())
 		{
 			if(pPage->getNext() != NULL)
 			{
@@ -4987,10 +4989,10 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			}
 			else // found last page
 			{
-				UT_sint32 botfill = getWindowHeight() - adjustedBottom - m_pG->tlu(1) ;
+				UT_sint32 botfill = getWindowHeight() - adjustedBottom - m_pG->tlu(1);
 				painter.fillRect(clrMargin, adjustedLeft, adjustedBottom + m_pG->tlu(1), getWindowWidth() - adjustedLeft + m_pG->tlu(1), botfill + m_pG->tlu(1));
 			}
-		}
+		}*/
 
 		// two pixel drop shadow
 			

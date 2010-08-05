@@ -1155,8 +1155,11 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool /*bAlwaysUseWhiteBackground*/)
  		UT_sint32 xmin = pDA->xoff;
   		UT_sint32 ymin = pDA->yoff;
 
-		UT_sint32 height =getHeight();
+		UT_sint32 height = getHeight();
 		UT_sint32 width = getWidth();
+		if( (m_pView->getViewMode() == VIEW_NORMAL) || (m_pView->getViewMode() == VIEW_WEB) )
+			height = height - (getOwningSection())->getTopMargin() - (getOwningSection())->getBottomMargin();
+
 		UT_sint32 srcX = 0;
 		UT_sint32 srcY = 0;
 		getFillType()->Fill(pDA->pG,srcX,srcY,xmin,ymin,width,height);
@@ -1181,6 +1184,7 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool /*bAlwaysUseWhiteBackground*/)
 		da.xoff += pFC->getX();
 		da.yoff += pFC->getY();
 		pFC->draw(&da);
+		UT_DEBUGMSG(("Drawing Below Frame %i, xoff = %i, yoff = %i\n", i, da.xoff, da.yoff));
 	}
 	//
 	// Handle Tight wrapped frames
