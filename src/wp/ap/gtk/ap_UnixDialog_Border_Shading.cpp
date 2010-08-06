@@ -42,6 +42,9 @@
 #include "ap_UnixDialog_Border_Shading.h"
 #include "ap_UnixDialog_Columns.h"
 
+GdkColor gLastBorderColour;
+GdkColor gLastShadingColour;
+
 static void s_apply_changes(GtkWidget *widget, gpointer data )
 {
 	AP_UnixDialog_Border_Shading * dlg = reinterpret_cast<AP_UnixDialog_Border_Shading *>(data);
@@ -125,6 +128,8 @@ static gboolean s_on_border_color_clicked (GtkWidget 		*button,
 		gtk_color_selection_get_current_color (colorsel, &color);
 		gtk_color_button_set_color (colorbtn, &color);
 
+		gLastBorderColour = color;
+
 		// update dialog
 		UT_RGBColor* rgb = UT_UnixGdkColorToRGBColor (color);
 		dlg->setBorderColor (*rgb);
@@ -181,6 +186,8 @@ static gboolean s_on_shading_color_clicked (GtkWidget 		*button,
 		gtk_color_selection_get_current_color (colorsel, &color);
 		gtk_color_button_set_color (colorbtn, &color);
 
+		gLastShadingColour = color;
+
 		// update dialog
 		UT_RGBColor* rgb = UT_UnixGdkColorToRGBColor (color);
 		dlg->setShadingColor (*rgb);
@@ -210,7 +217,6 @@ static void s_on_shading_offset_clicked(GtkWidget *widget, gpointer data )
 XAP_Dialog * AP_UnixDialog_Border_Shading::static_constructor(XAP_DialogFactory * pFactory,
 													       XAP_Dialog_Id id)
 {
-	UT_DEBUGMSG(("======================= In the static constructor \n"));
 	AP_UnixDialog_Border_Shading * p = new AP_UnixDialog_Border_Shading(pFactory,id);
 	return p;
 }
@@ -234,11 +240,17 @@ AP_UnixDialog_Border_Shading::AP_UnixDialog_Border_Shading(XAP_DialogFactory * p
 	m_iBorderThicknessConnect = 0;
 	m_iBorderStyleConnect = 0;
 	m_iShadingOffsetConnect = 0;
+	m_iLastBorderThicknessIndex = 0;
+	m_iLastBorderStyleIndex = 0;
+	m_iLastShadingOffsetIndex = 0;
+
+	gLastShadingColour.red 		= G_MAXUSHORT;
+	gLastShadingColour.green 	= G_MAXUSHORT;
+	gLastShadingColour.blue 	= G_MAXUSHORT;
 }
 
 AP_UnixDialog_Border_Shading::~AP_UnixDialog_Border_Shading(void)
 {
-
 	DELETEP (m_pPreviewWidget);
 }
 
@@ -249,8 +261,6 @@ void AP_UnixDialog_Border_Shading::runModeless(XAP_Frame * pFrame)
 	m_windowMain = _constructWindow();
 	UT_return_if_fail(m_windowMain);
 
-	UT_DEBUGMSG(("========================= middle1 the unModeless \n"));
-
 	// Populate the window's data items
 	_populateWindowData();
 	_connectSignals();
@@ -260,7 +270,6 @@ void AP_UnixDialog_Border_Shading::runModeless(XAP_Frame * pFrame)
 	// attach a new graphics context to the drawing area
 	UT_return_if_fail(m_wPreviewArea && m_wPreviewArea->window);
 
-UT_DEBUGMSG(("========================= middle the unModeless \n"));
 	// make a new Unix GC
 	DELETEP (m_pPreviewWidget);
 	GR_UnixCairoAllocInfo ai(m_wPreviewArea);
@@ -278,8 +287,10 @@ UT_DEBUGMSG(("========================= middle the unModeless \n"));
 						 static_cast<UT_uint32>(m_wPreviewArea->allocation.width),
 						 static_cast<UT_uint32>(m_wPreviewArea->allocation.height));	
 	
+	loadLastKnownValues();
+
 	m_pBorderShadingPreview->draw();
-	
+
 	startUpdater();
 	UT_DEBUGMSG(("========================= End the unModeless \n"));
 }
@@ -290,7 +301,7 @@ void AP_UnixDialog_Border_Shading::setSensitivity(bool bSens)
 	gtk_widget_set_sensitive(m_wBorderThickness, bSens);
 	gtk_widget_set_sensitive(m_wBorderStyle, bSens);
 	gtk_widget_set_sensitive(m_wShadingOffset, bSens);
-	gtk_widget_set_sensitive(m_wBackgroundColorButton, bSens);
+	gtk_widget_set_sensitive(m_wShadingColorButton, bSens);
 	gtk_widget_set_sensitive(m_wLineLeft, bSens);
 	gtk_widget_set_sensitive(m_wLineRight, bSens);
 	gtk_widget_set_sensitive(m_wLineTop, bSens);
@@ -310,6 +321,26 @@ void AP_UnixDialog_Border_Shading::event_previewExposed(void)
 		m_pBorderShadingPreview->draw();
 }
 
+void AP_UnixDialog_Border_Shading::loadLastKnownValues()
+{
+	UT_DEBUGMSG(("========================= Loading last known values \n"));
+
+	XAP_GtkSignalBlocker b1(G_OBJECT(m_wBorderThickness),m_iBorderThicknessConnect);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(m_wBorderThickness), m_iLastBorderThicknessIndex);
+
+	XAP_GtkSignalBlocker b2(G_OBJECT(m_wBorderStyle),m_iBorderStyleConnect);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(m_wBorderStyle), m_iLastBorderStyleIndex);
+
+	XAP_GtkSignalBlocker b3(G_OBJECT(m_wShadingOffset),m_iShadingOffsetConnect);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(m_wShadingOffset), m_iLastShadingOffsetIndex);
+
+	GtkColorButton *colorbtn_border = GTK_COLOR_BUTTON (m_wBorderColorButton);
+	gtk_color_button_set_color (colorbtn_border, &gLastBorderColour);
+
+	GtkColorButton *colorbtn_shading = GTK_COLOR_BUTTON (m_wShadingColorButton);
+	gtk_color_button_set_color (colorbtn_shading, &gLastShadingColour);
+}
+
 void AP_UnixDialog_Border_Shading::setBorderThicknessInGUI(UT_UTF8String & sThick)
 {
 	guint closest = _findClosestThickness(sThick.utf8_str());
@@ -317,10 +348,10 @@ void AP_UnixDialog_Border_Shading::setBorderThicknessInGUI(UT_UTF8String & sThic
 	gtk_combo_box_set_active(GTK_COMBO_BOX(m_wBorderThickness), closest);
 }
 
-void AP_UnixDialog_Border_Shading::setBackgroundColorInGUI(UT_RGBColor clr)
+void AP_UnixDialog_Border_Shading::setShadingColorInGUI(UT_RGBColor clr)
 {
 	GdkColor* color = UT_UnixRGBColorToGdkColor(clr);
-	gtk_color_button_set_color (GTK_COLOR_BUTTON (m_wBackgroundColorButton), color);
+	gtk_color_button_set_color (GTK_COLOR_BUTTON (m_wShadingColorButton), color);
 	gdk_color_free(color);
 }
 
@@ -329,6 +360,7 @@ void AP_UnixDialog_Border_Shading::event_BorderThicknessChanged(void)
 	if(m_wBorderThickness)
 	{
 		gint history = gtk_combo_box_get_active(GTK_COMBO_BOX(m_wBorderThickness));
+		m_iLastBorderThicknessIndex = history;
 		double thickness = m_dThickness[history];
 
 		UT_UTF8String sThickness;
@@ -347,6 +379,7 @@ void AP_UnixDialog_Border_Shading::event_BorderStyleChanged(void)
 	if(m_wBorderStyle)
 	{
 		gint history = gtk_combo_box_get_active(GTK_COMBO_BOX(m_wBorderStyle));
+		m_iLastBorderStyleIndex = history;
 		int style = 1; //m_dThickness[history];
 
 		UT_UTF8String sStyle;
@@ -365,6 +398,7 @@ void AP_UnixDialog_Border_Shading::event_ShadingOffsetChanged(void)
 	if(m_wShadingOffset)
 	{
 		gint history = gtk_combo_box_get_active(GTK_COMBO_BOX(m_wShadingOffset));
+		m_iLastShadingOffsetIndex = history;
 		double offset = m_dShadingOffset[history];
 
 		UT_UTF8String sOffset;
@@ -407,6 +441,8 @@ void AP_UnixDialog_Border_Shading::notifyActiveFrame(XAP_Frame */*pFrame*/)
 
 GtkWidget * AP_UnixDialog_Border_Shading::_constructWindow(void)
 {
+	UT_DEBUGMSG(("========================= Constructing the window \n"));
+
 	GtkWidget * window;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
@@ -420,21 +456,15 @@ GtkWidget * AP_UnixDialog_Border_Shading::_constructWindow(void)
 	GtkBuilder* builder = gtk_builder_new();
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 
-	if (builder)
-	{
-		UT_DEBUGMSG(("========================= Good builder\n"));
-		UT_DEBUGMSG( (ui_path.c_str()));
-	}
+	UT_DEBUGMSG(("========================= UI config path: %s \n", ui_path.c_str()));
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
 	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Border_Shading"));
-	m_wLineTop = GTK_WIDGET(gtk_builder_get_object(builder, "tbBorderTop"));
-	m_wLineLeft = GTK_WIDGET(gtk_builder_get_object(builder, "tbBorderLeft"));
-	m_wLineRight = GTK_WIDGET(gtk_builder_get_object(builder, "tbBorderRight"));
-	m_wLineBottom = GTK_WIDGET(gtk_builder_get_object(builder, "tbBorderBottom"));
-
-	if (window)	{ 	UT_DEBUGMSG(("========================= Good window \n")); }
+	m_wLineTop 		= GTK_WIDGET(gtk_builder_get_object(builder, "tbBorderTop"));
+	m_wLineLeft 	= GTK_WIDGET(gtk_builder_get_object(builder, "tbBorderLeft"));
+	m_wLineRight 	= GTK_WIDGET(gtk_builder_get_object(builder, "tbBorderRight"));
+	m_wLineBottom 	= GTK_WIDGET(gtk_builder_get_object(builder, "tbBorderBottom"));
 	
 	// the toggle buttons created by GtkBuilder already contain a label, remove that, so we can add a pixmap as a child
 	gtk_container_remove(GTK_CONTAINER(m_wLineTop), gtk_bin_get_child(GTK_BIN(m_wLineTop)));
@@ -471,7 +501,7 @@ GtkWidget * AP_UnixDialog_Border_Shading::_constructWindow(void)
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbPreview")), pSS, AP_STRING_ID_DLG_FormatTable_Preview);
 
 	m_wBorderColorButton = GTK_WIDGET(gtk_builder_get_object(builder, "cbtBorderColorButton"));
-	m_wBackgroundColorButton = GTK_WIDGET(gtk_builder_get_object(builder, "cbtShadingColorButton"));
+	m_wShadingColorButton = GTK_WIDGET(gtk_builder_get_object(builder, "cbtShadingColorButton"));
 
 //
 // Border Thickness Option menu
@@ -488,9 +518,9 @@ GtkWidget * AP_UnixDialog_Border_Shading::_constructWindow(void)
 	gtk_combo_box_append_text(combo, "4 1/2 pt");
 	gtk_combo_box_append_text(combo, "6 pt");
 	gtk_combo_box_set_active(combo, 0);
-	
+
 //
-// Border Thickness Option menu
+// Border Style Option menu
 //
 	m_wBorderStyle = GTK_WIDGET(gtk_builder_get_object(builder, "cmbBorderStyle"));
 	GtkComboBox *combo_style = GTK_COMBO_BOX(m_wBorderStyle);
@@ -516,18 +546,6 @@ GtkWidget * AP_UnixDialog_Border_Shading::_constructWindow(void)
 	gtk_combo_box_append_text(combo_offset, "4 1/2 pt");
 	gtk_combo_box_append_text(combo_offset, "6 pt");
 	gtk_combo_box_set_active(combo_offset, 0);
-
-	UT_UTF8String s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Selection,s);
-	gtk_combo_box_append_text(combo, s.utf8_str());
-	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Row,s);
-	gtk_combo_box_append_text(combo, s.utf8_str());
-	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Column,s);
-	gtk_combo_box_append_text(combo, s.utf8_str());
-	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Table,s);
-	gtk_combo_box_append_text(combo, s.utf8_str());
-
-	gtk_combo_box_set_active(combo, 0);
 
 	// add the apply and ok buttons to the dialog
 	m_wCloseButton = GTK_WIDGET(gtk_builder_get_object(builder, "btClose"));
@@ -598,7 +616,7 @@ void AP_UnixDialog_Border_Shading::_connectSignals(void)
 							G_CALLBACK(s_on_border_color_clicked),
 							reinterpret_cast<gpointer>(this));
 
-	g_signal_connect(G_OBJECT(m_wBackgroundColorButton),
+	g_signal_connect(G_OBJECT(m_wShadingColorButton),
 							"button-release-event",
 							G_CALLBACK(s_on_shading_color_clicked),
 							reinterpret_cast<gpointer>(this));

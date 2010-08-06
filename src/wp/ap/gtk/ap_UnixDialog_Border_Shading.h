@@ -46,12 +46,13 @@ public:
 	void                    event_ShadingOffsetChanged(void);
 
 	virtual void           	setBorderThicknessInGUI(UT_UTF8String & sThick);
-	virtual void			setBackgroundColorInGUI(UT_RGBColor clr);
+	virtual void			setShadingColorInGUI(UT_RGBColor clr);
 	virtual void           	setSensitivity(bool bsens);
 	virtual void           	destroy(void);
 	virtual void            activate(void);
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
 	const GtkWidget 	  * getWindow (void) const { return m_windowMain; }
+	void 					loadLastKnownValues();
 protected:
 	typedef enum
 	{
@@ -72,7 +73,7 @@ protected:
 	GtkWidget * m_wCloseButton;
 
 	GtkWidget * m_wBorderColorButton;
-	GtkWidget * m_wBackgroundColorButton;
+	GtkWidget * m_wShadingColorButton;
 	GtkWidget * m_wLineLeft;
 	GtkWidget * m_wLineRight;
 	GtkWidget * m_wLineTop;
@@ -86,6 +87,10 @@ protected:
 	guint       m_iBorderThicknessConnect;
 	guint       m_iBorderStyleConnect;
 	guint       m_iShadingOffsetConnect;
+
+	guint		m_iLastBorderThicknessIndex;
+	guint		m_iLastBorderStyleIndex;
+	guint		m_iLastShadingOffsetIndex;
 };
 
 #endif /* AP_UNIXDIALOG_BORDER_SHADING_H */
