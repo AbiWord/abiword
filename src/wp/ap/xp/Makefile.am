@@ -82,6 +82,8 @@ libxp_la_SOURCES = \
 	ap_Dialog_Annotation.h \
 	ap_Dialog_Background.cpp \
 	ap_Dialog_Background.h \
+	ap_Dialog_Border_Shading.cpp \ 
+	ap_Dialog_Border_Shading.h \
 	ap_Dialog_Break.cpp \
 	ap_Dialog_Break.h \
 	ap_Dialog_Columns.cpp \

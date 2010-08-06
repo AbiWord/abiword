@@ -2,6 +2,7 @@
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Marc Maurer
  * Copyright (c) 2009 Hubert Figuiere
+ * Copyright (c) 2010 Maleesh Prasan
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -36,6 +37,7 @@
 #include "ie_types.h"
 #include "fg_Graphic.h"
 #include "xap_Dlg_FileOpenSaveAs.h"
+
 #define BORDER_SHADING_NUMTHICKNESS 9
 #define BORDER_SHADING_NUMOFFSETS 9
 #define BORDER_SHADING_NUMOFSTYLES 4
@@ -109,7 +111,6 @@ public:
 	void								setShadingColor(UT_RGBColor clr);
 	void								setShadingOffset(UT_UTF8String & sOffset);
 	void                                clearImage(void);
-// 	void                                askForGraphicPathName(void);
 // 	void                                ShowErrorBox(UT_String & sFile, UT_Error errorCode);
 	void								_createPreviewFromGC(GR_Graphics * gc,
 															 UT_uint32 width,

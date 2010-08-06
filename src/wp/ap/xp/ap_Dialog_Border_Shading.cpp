@@ -2,6 +2,7 @@
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Marc Maurer
  * Copyright (c) 2009 Hubert Figuiere
+ * Copyright (c) 2010 Maleesh Prasan
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -177,14 +178,7 @@ void AP_Dialog_Border_Shading::autoUpdateMC(UT_Worker * pTimer)
  */
 void AP_Dialog_Border_Shading::setAllSensitivities(void)
 {
-	XAP_Frame *frame = XAP_App::getApp()->getLastFocussedFrame();
-	if (frame) {
-		FV_View * pView = static_cast<FV_View *>(frame->getCurrentView());
-		setSensitivity(pView->isInTable());
-	}
-	else {
-		setSensitivity(false);
-	}
+	setSensitivity(true);
 }
 
 void AP_Dialog_Border_Shading::setCurCellProps(void)
@@ -330,6 +324,8 @@ void AP_Dialog_Border_Shading::applyChanges()
 	{
 		propsArray[j] = static_cast<gchar *>(m_vecProps.getNthItem(j));
 		propsArray[j+1] = static_cast<gchar *>(m_vecProps.getNthItem(j+1));
+
+		UT_DEBUGMSG(("======================= %s ||| %s \n", propsArray[j], propsArray[j + 1]));
 	}
 
 	// Maleesh 7/5/2010 -  

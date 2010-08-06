@@ -555,6 +555,7 @@ dcl(DLG_BorderShading_Border_Color,   		"Border color:")
 dcl(DLG_BorderShading_Shading_Color,		"Shading color:")
 dcl(DLG_BorderShading_Color,		        "Color:")
 dcl(DLG_BorderShading_Thickness,	        "Thickness:")
+dcl(DLG_BorderShading_Border_Style,	        "Style:")
 dcl(DLG_BorderShading_Offset,				"Offset:")
 dcl(DLG_BorderShading_Preview,	   			"Preview")
 

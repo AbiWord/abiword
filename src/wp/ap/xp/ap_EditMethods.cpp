@@ -10820,59 +10820,21 @@ static bool s_doBorderShadingDlg(FV_View * pView)
 Defun1(dlgBorders)
 {
 	CHECK_FRAME;
-
-	//	Maleesh 6/10/2010 -  
 	ABIWORD_VIEW;
 
-	//	Maleesh 6/10/2010 -  
-// 	UT_return_val_if_fail(pAV_View, false);
-// 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
-// 	UT_return_val_if_fail(pFrame, false);
-// 	s_TellNotImplemented(pFrame, "Border and shading dialog", __LINE__);
-
 	//	Maleesh 6/10/2010 - 
-//	s_doBorderShadingDlg(pView);
+	s_doBorderShadingDlg(pView);
 
-	// Maleesh 6/27/2010 - TEST
-	// 	 UT_String sFrameProps;
-	// 	 UT_String sVal = "1";
-	// 	UT_String_setProperty(sFrameProps,"border-merge",sVal);
-	//  	const gchar * properties[] = { "shading-background-color", "#FF0000", 0};
-	// // 	pView->setSectionFormat(properties);
-	// 
-	// 	pView->setBlockFormat(properties);
+	const gchar * zShading[] = { "shading-pattern", "1", "shading-foreground-color", "#FF0000", 0};
 
-	UT_RGBColor clr;
-	clr.m_red = 255;
-	clr.m_grn = 0;
-	clr.m_blu = 0;
-	UT_String bgcol = UT_String_sprintf("%02x%02x%02x", clr.m_red, clr.m_grn, clr.m_blu);
+	const char * szBorders[] = {
+	"left-style","1","left-thickness","2.0mm","left-space","3.0mm",
+	"right-style","1","right-thickness","2.0mm","right-space","3.0mm",
+	"top-style","1","top-thickness","2.0mm","top-space","3.0mm",
+	"bot-style","1","bot-thockness","2.0mm","bot-space","3.0mm",NULL };
 
-	//    	const gchar * properties1[] = { "border-merge", "1",0};
-	// // 	const gchar * properties2[] = { "shading-background-color", bgcol.c_str(),0};
-	// 
-	 	const gchar * properties3[] = { "shading-pattern", "1", "shading-foreground-color", "#FF0000", 0};
+//		pView->setBlockFormat(szBorders);
 
-// 		const gchar * properties[] = { 
-// 		"right-style", "1", "right-color","#FF0000", "right-thickness","0.04in","right-space","0.08in",0};
-		const gchar * properties[] = { 
-			"bot-style", "1", "bot-color","#FF0000", "bot-thickness","0.04in","bot-space","0.08in",0};
-		
-		pView->setBlockFormat(properties);
-
-	//  	const gchar * properties4[] = { "shading-background-color", "#FF0000", 0};
-	// 
-	// //	pView->setBlockFormat(properties1);
-	// //	pView->setBlockFormat(properties2);
-	// 
-//	  	pView->setBlockFormat(properties3);
-	// 	pView->setBlockFormat(properties4);
-
-	// 	const gchar * properties[] = { "text-align", "right", 0};
-	// 	pView->setBlockFormat(properties);
-
-// 	const gchar * prop_borders[] = { "left-style", "1", "left-color", "#FF0000", "left-thickness", "1px", 0};
-// 	pView->setBlockFormat(prop_borders);
 	return true;
 }
 

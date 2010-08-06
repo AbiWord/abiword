@@ -58,6 +58,8 @@ libgtk_la_SOURCES = \
 	ap_UnixDialog_Annotation.h \
 	ap_UnixDialog_Background.cpp \
 	ap_UnixDialog_Background.h \
+	ap_UnixDialog_Border_Shading.cpp \ 
+	ap_UnixDialog_Border_Shading.h \
 	ap_UnixDialog_Break.cpp \
 	ap_UnixDialog_Break.h \
 	ap_UnixDialog_Columns.cpp \
@@ -157,6 +159,7 @@ libgtk_la_SOURCES = \
 uidir=$(ABIWORD_UIDIR)
 ui_DATA = \
 	ap_UnixDialog_Annotation.xml \
+	ap_UnixDialog_Border_Shading.xml \
 	ap_UnixDialog_Break.xml \
 	ap_UnixDialog_Field.xml \
 	ap_UnixDialog_FormatTOC.xml \
