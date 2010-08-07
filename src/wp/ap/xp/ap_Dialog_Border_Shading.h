@@ -109,6 +109,7 @@ public:
 	void                                setBorderStyle(UT_UTF8String & sStyle);
 	virtual void                        setBorderThicknessInGUI(UT_UTF8String & sThick) = 0;
 	void								setShadingColor(UT_RGBColor clr);
+	void								setShadingEnabled(bool enable);
 	void								setShadingOffset(UT_UTF8String & sOffset);
 	void                                clearImage(void);
 // 	void                                ShowErrorBox(UT_String & sFile, UT_Error errorCode);

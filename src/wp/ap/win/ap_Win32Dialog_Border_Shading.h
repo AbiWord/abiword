@@ -1,6 +1,6 @@
  /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ * Copyright (C) 2010-11 Maleesh Prasan
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -53,7 +53,14 @@ public:
 	virtual BOOL			_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	virtual BOOL 			_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
     virtual BOOL 			_onDlgMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-   	
+	HWND					_createComboboxEx(const HWND hParent,const HINSTANCE hInst,DWORD dwStyle,const RECT& rc,const int id);
+	int						_insertItemToComboboxEx(
+										HWND hCbx, 
+										const char* txt,
+										int imgIndex,
+										int selectedImgIndex,
+										INT_PTR index,
+										UINT mask);
 
 protected:
 	HBITMAP					m_hBitmapBottom;
@@ -61,7 +68,7 @@ protected:
 	HBITMAP					m_hBitmapRight;
 	HBITMAP					m_hBitmapLeft;
 	XAP_Win32PreviewWidget*	m_pPreviewWidget;		 
-	XAP_Win32ColourButton	m_backgButton;
+	XAP_Win32ColourButton	m_shadingButton;
 	XAP_Win32ColourButton	m_borderButton;
 	double					m_dThickness[BORDER_SHADING_NUMTHICKNESS];	
 	double					m_dOffset[BORDER_SHADING_NUMOFFSETS];	

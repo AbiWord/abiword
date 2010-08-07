@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 2002-3 Jordi Mas i Hernàndez <jmas@softcatala.org>
+ * Copyright (C) 2010-11 Maleesh Prasan <maleesh.prasan@gmail.com>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -112,7 +113,23 @@ void AP_Win32Dialog_Border_Shading::initDialogParams()
 	SendMessageA(m_hwndComboEx, CB_SETCURSEL, WPARAM(initial_style_index), NULL);
 
 	UT_UTF8String initial_style_utf8 = sBorderStyle_Border_Shading[initial_style_index];
-	setBorderStyle(initial_style_utf8);       
+	setBorderStyle(initial_style_utf8);    
+
+	// 8/7/2010 Maleesh - Set the default colors of the border/shading color buttons. 
+	COLORREF color_shading	= RGB(255, 255, 255);
+	COLORREF color_border	= RGB(0, 0, 0);
+
+	m_borderButton.setColour(color_border);
+	m_shadingButton.setColour(color_shading);
+
+	// 8/7/2010 Maleesh - Disable the shading as default. 
+	CheckDlgButton(m_hDlg, AP_RID_DIALOG_BORDERSHADING_BTN_SHADING_ENABLE, BST_UNCHECKED);
+	m_shadingButton.setEnable(false);
+
+	EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_BORDERSHADING_COMBO_SHADING_OFFSET), false);
+	EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_BORDERSHADING_BTN_SHADING_COLOR), false);
+	EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_BORDERSHADING_TEXT_SHADING_COLOR), false);
+	EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_BORDERSHADING_TEXT_SHADING_OFFSET), false);
 }
 
 BOOL AP_Win32Dialog_Border_Shading::_onDlgMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -122,7 +139,7 @@ BOOL AP_Win32Dialog_Border_Shading::_onDlgMessage(HWND hWnd, UINT msg, WPARAM wP
 		DRAWITEMSTRUCT* dis =  (DRAWITEMSTRUCT*)lParam;
 		
 		if (dis->CtlID==AP_RID_DIALOG_BORDERSHADING_BTN_SHADING_COLOR)
-			m_backgButton.draw(dis);			
+			m_shadingButton.draw(dis);			
 
 		if (dis->CtlID==AP_RID_DIALOG_BORDERSHADING_BTN_BORDER_COLOR)
 			m_borderButton.draw(dis);
@@ -138,57 +155,47 @@ BOOL AP_Win32Dialog_Border_Shading::_onDlgMessage(HWND hWnd, UINT msg, WPARAM wP
     return FALSE;
 }
 
-//=============================================================================
-HWND CreateComboboxEx(const HWND hParent,const HINSTANCE hInst,DWORD dwStyle,
-					  const RECT& rc,const int id)
+HWND AP_Win32Dialog_Border_Shading::_createComboboxEx(
+														const HWND hParent,
+														const HINSTANCE hInst,
+														DWORD dwStyle,
+														const RECT& rc,const int id)
 {
 	dwStyle|=WS_CHILD|WS_VISIBLE;
-	return CreateWindowEx(0,                  //extended styles
-		WC_COMBOBOXEX,      //control 'class' name
-		0,                  //control caption
-		dwStyle,            //wnd style
-		rc.left,            //position: left
-		rc.top,             //position: top
-		rc.right,           //width
-		rc.bottom,          //height
-		hParent,            //parent window handle
-		//control's ID
-		reinterpret_cast<HMENU>(static_cast<INT_PTR>(id)),
-		hInst,              //instance
-		0);                 //user defined info
+	return CreateWindowEx(0,
+						WC_COMBOBOXEX,
+						0,    
+						dwStyle, 
+						rc.left,
+						rc.top, 
+						rc.right, 
+						rc.bottom, 
+						hParent,    
+						reinterpret_cast<HMENU>(static_cast<INT_PTR>(id)),
+						hInst,     
+						0);          
 }
 
-//convenience constant
-const UINT CBX_ITEM_MASK = CBEIF_IMAGE|CBEIF_TEXT|CBEIF_SELECTEDIMAGE;
+// 8/7/2010 Maleesh - Convenience constant
+const UINT CBX_ITEM_MASK = CBEIF_IMAGE | CBEIF_TEXT | CBEIF_SELECTEDIMAGE;
 
-//=============================================================================
-int InsertItem(HWND hCbx, const char* txt,int img_index,
-			   int selimg_index,INT_PTR index=-1,
-			   UINT mask = CBX_ITEM_MASK)
+int AP_Win32Dialog_Border_Shading::_insertItemToComboboxEx(
+															HWND hCbx, 
+															const char* txt,
+															int imgIndex,
+															int selectedImgIndex,
+															INT_PTR index = -1,
+															UINT mask = CBX_ITEM_MASK)
 {
-	//insert in item into the comboboxex,'hCbx' with zero-based index of 
-	//'index'(default value is -1 which adds item to end of list),
-	//text of 'txt', image index of 'img_index', selected image index of 
-	//'selimg_index' and mask which defines which of these parameters are actually
-	//used.
-
-	//copy the text into a temporary array (vector) so it's in a suitable form
-	//for the pszText member of the COMBOBOXEXITEM struct to use. This avoids using
-	//const_cast on 'txt.c_str()' or variations applied directly to the string that
-	//break its constant nature.
-// 	std::vector<TCHAR> tmp(txt.begin(),txt.end());
-// 	tmp.push_back(_T('\0'));
-
 	COMBOBOXEXITEM cbei={0};
 
-	cbei.mask=mask;
-	cbei.iItem=index;
-	cbei.pszText=(LPSTR)txt;
-	cbei.iImage=img_index;
-	cbei.iSelectedImage=selimg_index;
+	cbei.mask			= mask;
+	cbei.iItem			= index;
+	cbei.pszText		= (LPSTR)txt;
+	cbei.iImage			= imgIndex;
+	cbei.iSelectedImage	= selectedImgIndex;
 
-	return static_cast<int>(SendMessage(hCbx,CBEM_INSERTITEM,0,
-		reinterpret_cast<LPARAM>(&cbei)));
+	return static_cast<int>(SendMessage(hCbx, CBEM_INSERTITEM, 0, reinterpret_cast<LPARAM>(&cbei)));
 }
 
 HBITMAP AP_Win32Dialog_Border_Shading::_loadBitmap(HWND hWnd, UINT nId, char* pName, int width, int height, UT_RGBColor color)
@@ -274,7 +281,7 @@ BOOL AP_Win32Dialog_Border_Shading::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 	XAP_App* pApp = XAP_App::getApp();
 	UT_ASSERT(pApp);
 	XAP_Win32App* pWin32App = static_cast<XAP_Win32App*>(pApp);
-	m_hwndComboEx = CreateComboboxEx(
+	m_hwndComboEx = _createComboboxEx(
 									m_hDlg,
 									pWin32App->getInstance(), 
 									CBS_DROPDOWNLIST, 
@@ -300,10 +307,10 @@ BOOL AP_Win32Dialog_Border_Shading::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 
 	SendMessage(m_hwndComboEx, CBEM_SETIMAGELIST, 0, reinterpret_cast<LPARAM>(hImageList));
 
-	InsertItem(m_hwndComboEx, NULL, 0, 0);
-	InsertItem(m_hwndComboEx, NULL, 1, 1);
-	InsertItem(m_hwndComboEx, NULL, 2, 2);
-	InsertItem(m_hwndComboEx, NULL, 3, 3);
+	_insertItemToComboboxEx(m_hwndComboEx, NULL, 0, 0);
+	_insertItemToComboboxEx(m_hwndComboEx, NULL, 1, 1);
+	_insertItemToComboboxEx(m_hwndComboEx, NULL, 2, 2);
+	_insertItemToComboboxEx(m_hwndComboEx, NULL, 3, 3);
 
     centerDialog();
 	return 1; 
@@ -315,7 +322,7 @@ BOOL AP_Win32Dialog_Border_Shading::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 	WORD wId = LOWORD(wParam);
 	HWND hWndCtrl = (HWND)lParam;
 	switch (wId)
-	{			
+	{		
 		case AP_RID_DIALOG_BORDERSHADING_BMP_BOTTOM:		
 		{
 			bool bChecked;			
@@ -369,42 +376,20 @@ BOOL AP_Win32Dialog_Border_Shading::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 			}
 			return 1;
 		}
-		
-        case AP_RID_DIALOG_BORDERSHADING_BTN_SHADING_COLOR:		
-		{	
-			CHOOSECOLORW cc;               
-			static COLORREF acrCustClr2[16];
-			/* Initialize CHOOSECOLOR */
-			ZeroMemory(&cc, sizeof(CHOOSECOLORW));
-			cc.lStructSize = sizeof(CHOOSECOLORW);
-			cc.hwndOwner = m_hDlg;
-			cc.lpCustColors = (LPDWORD) acrCustClr2;
-			cc.rgbResult = 0;
-			cc.Flags = CC_FULLOPEN | CC_RGBINIT;
-			if(ChooseColorW(&cc))			
-			{
-				setShadingColor(UT_RGBColor(GetRValue( cc.rgbResult), GetGValue(cc.rgbResult), GetBValue(cc.rgbResult)));						
-				m_backgButton.setColour(cc.rgbResult);
-				/*Force redraw*/
-				InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_BORDERSHADING_BTN_SHADING_COLOR), NULL, FALSE);
-				event_previewExposed();	
-			}
-			return 1;
-		}			
 
 		case AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_THICKNESS:             //TODO: CHECK
 		{
 			if (wNotifyCode == CBN_SELCHANGE)                       
 			{
-              int nSelected = getComboSelectedIndex (AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_THICKNESS);  
-                
+				int nSelected = getComboSelectedIndex (AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_THICKNESS);  
+
 				if (nSelected != CB_ERR)
 				{
-                    UT_Win32LocaleString thickness;
-                    UT_UTF8String thickness_utf8 = thickness.utf8_str ();
+					UT_Win32LocaleString thickness;
+					UT_UTF8String thickness_utf8 = thickness.utf8_str ();
 					getComboTextItem(AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_THICKNESS, nSelected, thickness);
-                    setBorderThickness(thickness_utf8);                                        
-                    /*Force redraw*/
+					setBorderThickness(thickness_utf8);                                        
+					/*Force redraw*/
 					InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_BORDERSHADING_BTN_BORDER_COLOR), NULL, FALSE);
 					event_previewExposed();	
 				}
@@ -428,30 +413,68 @@ BOOL AP_Win32Dialog_Border_Shading::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 				}
 			}
 			return 1;
+		}	
+
+        case AP_RID_DIALOG_BORDERSHADING_BTN_SHADING_COLOR:		
+		{	
+			CHOOSECOLORW cc;               
+			static COLORREF acrCustClr2[16];
+			/* Initialize CHOOSECOLOR */
+			ZeroMemory(&cc, sizeof(CHOOSECOLORW));
+			cc.lStructSize = sizeof(CHOOSECOLORW);
+			cc.hwndOwner = m_hDlg;
+			cc.lpCustColors = (LPDWORD) acrCustClr2;
+			cc.rgbResult = 0;
+			cc.Flags = CC_FULLOPEN | CC_RGBINIT;
+			if(ChooseColorW(&cc))			
+			{
+				setShadingColor(UT_RGBColor(GetRValue( cc.rgbResult), GetGValue(cc.rgbResult), GetBValue(cc.rgbResult)));						
+				m_shadingButton.setColour(cc.rgbResult);
+				/*Force redraw*/
+				InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_BORDERSHADING_BTN_SHADING_COLOR), NULL, FALSE);
+				event_previewExposed();	
+			}
+			return 1;
+		}			
+
+		case AP_RID_DIALOG_BORDERSHADING_BTN_SHADING_ENABLE:
+		{
+			bool bChecked;			
+			bChecked = (bool)(IsDlgButtonChecked(m_hDlg, AP_RID_DIALOG_BORDERSHADING_BTN_SHADING_ENABLE)==BST_CHECKED);							
+			setShadingEnabled(bChecked);
+			m_shadingButton.setEnable(bChecked);
+
+			EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_BORDERSHADING_COMBO_SHADING_OFFSET), bChecked);
+			EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_BORDERSHADING_BTN_SHADING_COLOR), bChecked);
+			EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_BORDERSHADING_TEXT_SHADING_COLOR), bChecked);
+			EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_BORDERSHADING_TEXT_SHADING_OFFSET), bChecked);
+
+			return 1;
 		}
 
 		case AP_RID_DIALOG_BORDERSHADING_COMBO_SHADING_OFFSET:      
+		{
+			if (wNotifyCode == CBN_SELCHANGE)                       
 			{
-				if (wNotifyCode == CBN_SELCHANGE)                       
-				{
-					int nSelected = getComboSelectedIndex (AP_RID_DIALOG_BORDERSHADING_COMBO_SHADING_OFFSET);  
+				int nSelected = getComboSelectedIndex (AP_RID_DIALOG_BORDERSHADING_COMBO_SHADING_OFFSET);  
 
-					if (nSelected != CB_ERR)
-					{
-						UT_Win32LocaleString offset;
-						UT_UTF8String offset_utf8 = offset.utf8_str ();
-						
-						getComboTextItem(AP_RID_DIALOG_BORDERSHADING_COMBO_SHADING_OFFSET, nSelected, offset);
-						
-						//	Maleesh 6/14/2010 -  TODO:Replace this with the correct function.
-						setShadingOffset(offset_utf8);					                                     
-						/*Force redraw*/
-						InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_BORDERSHADING_BTN_SHADING_COLOR), NULL, FALSE);
-						event_previewExposed();	
-					}
+				if (nSelected != CB_ERR)
+				{
+					UT_Win32LocaleString offset;
+					UT_UTF8String offset_utf8 = offset.utf8_str ();
+					
+					getComboTextItem(AP_RID_DIALOG_BORDERSHADING_COMBO_SHADING_OFFSET, nSelected, offset);
+					
+					//	Maleesh 6/14/2010 -  TODO:Replace this with the correct function.
+					setShadingOffset(offset_utf8);					                                     
+					/*Force redraw*/
+					InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_BORDERSHADING_BTN_SHADING_COLOR), NULL, FALSE);
+					event_previewExposed();	
 				}
-				return 1;
 			}
+			return 1;
+		}
+
 		case AP_RID_DIALOG_BORDERSHADING_BTN_CANCEL:			
 			m_answer = AP_Dialog_Border_Shading::a_CLOSE;
 			destroy();
@@ -460,17 +483,6 @@ BOOL AP_Win32Dialog_Border_Shading::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 
 		case AP_RID_DIALOG_BORDERSHADING_BTN_APPLY:
 		{
-			int nSelected, nData = FORMAT_TABLE_SELECTION;
-			//	Maleesh 6/10/2010 -  TODO:
-// 			HWND hCombo = GetDlgItem(hWnd, AP_RID_DIALOG_BORDERSHADING_COMBO_APPLYTO);
-// 
-// 			nSelected = SendMessageW(hCombo, CB_GETCURSEL, 0, 0);					
-// 
-// 			if (nSelected!=CB_ERR)			
-// 				nData  = SendMessageW(hCombo, CB_GETITEMDATA, nSelected, 0);
-// 
-// 			setApplyFormatTo((_FormatTable) nData);
-
 			m_answer = AP_Dialog_Border_Shading::a_OK;
 			applyChanges();			
 			return 1;
@@ -489,7 +501,7 @@ void AP_Win32Dialog_Border_Shading::event_previewExposed(void)
 
 void AP_Win32Dialog_Border_Shading::setBackgroundColorInGUI(UT_RGBColor clr)
 {
-	m_backgButton.setColour(RGB(clr.m_red,clr.m_grn,clr.m_blu));
+	m_shadingButton.setColour(RGB(clr.m_red,clr.m_grn,clr.m_blu));
 	/* force redraw */
 	InvalidateRect(GetDlgItem(m_hDlg, AP_RID_DIALOG_BORDERSHADING_BTN_SHADING_COLOR), NULL, FALSE);
 }

@@ -325,7 +325,7 @@ void AP_Dialog_Border_Shading::applyChanges()
 		propsArray[j] = static_cast<gchar *>(m_vecProps.getNthItem(j));
 		propsArray[j+1] = static_cast<gchar *>(m_vecProps.getNthItem(j+1));
 
-		UT_DEBUGMSG(("======================= %s ||| %s \n", propsArray[j], propsArray[j + 1]));
+		UT_DEBUGMSG(("======================= %s | %s \n", propsArray[j], propsArray[j + 1]));
 	}
 
 	// Maleesh 7/5/2010 -  
@@ -453,6 +453,20 @@ void AP_Dialog_Border_Shading::clearImage(void)
 
 }
 
+void AP_Dialog_Border_Shading::setShadingEnabled(bool enable)
+{
+	if (enable)
+	{
+		m_vecProps.addOrReplaceProp ("shading-pattern", "1");
+	}
+	else
+	{
+//		m_vecProps.removeProp ("shading-pattern");
+		m_vecProps.addOrReplaceProp ("shading-pattern", "0");
+	}
+	m_bSettingsChanged = true;
+}
+
 void AP_Dialog_Border_Shading::setShadingColor(UT_RGBColor clr)
 {
 	UT_String bgcol = UT_String_sprintf("%02x%02x%02x", clr.m_red, clr.m_grn, clr.m_blu);
@@ -460,12 +474,12 @@ void AP_Dialog_Border_Shading::setShadingColor(UT_RGBColor clr)
 	if (clr.isTransparent ())
 	{
 		m_vecProps.removeProp ("shading-foreground-color");
-		m_vecProps.removeProp ("shading-pattern");
+//		m_vecProps.removeProp ("shading-pattern");
 	}
 	else
 	{
 		m_vecProps.addOrReplaceProp ("shading-foreground-color", bgcol.c_str ());
-		m_vecProps.addOrReplaceProp ("shading-pattern", "1");
+//		m_vecProps.addOrReplaceProp ("shading-pattern", "1");
 	}
 
 	m_bSettingsChanged = true;
