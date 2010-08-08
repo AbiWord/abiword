@@ -100,17 +100,21 @@ public:
 	void                                finalize(void);
 		
 	void                                setAllSensitivities(void);
-	void 								setCurCellProps(void);	
+	void 								setCurBlockProps(void);	
 	void								applyChanges(void);
 	void                                toggleLineType(toggle_button btn, bool enabled);
-	virtual void						setBackgroundColorInGUI(UT_RGBColor clr) = 0;	
 	void								setBorderColor(UT_RGBColor clr);
 	void                                setBorderThickness(UT_UTF8String & sThick);
 	void                                setBorderStyle(UT_UTF8String & sStyle);
+	virtual void                        setBorderStyleInGUI(UT_UTF8String & sStyle) = 0;
 	virtual void                        setBorderThicknessInGUI(UT_UTF8String & sThick) = 0;
+	virtual void                        setBorderColorInGUI(UT_RGBColor clr) = 0;
 	void								setShadingColor(UT_RGBColor clr);
-	void								setShadingEnabled(bool enable);
+	virtual void						setShadingColorInGUI(UT_RGBColor clr) = 0;	
+	void								setShadingPattern(UT_UTF8String & sPattern);
+	virtual void						setShadingPatternInGUI(UT_UTF8String & sPattern) = 0;	
 	void								setShadingOffset(UT_UTF8String & sOffset);
+	virtual void						setShadingOffsetInGUI(UT_UTF8String & sOffset) = 0;	
 	void                                clearImage(void);
 // 	void                                ShowErrorBox(UT_String & sFile, UT_Error errorCode);
 	void								_createPreviewFromGC(GR_Graphics * gc,
@@ -134,6 +138,8 @@ public:
 	UT_UTF8String                       m_sBorderStyle;
 protected:
 	guint                               _findClosestThickness(const char *) const;
+	guint                               _findClosestOffset(const char *) const;
+	guint                               _findBorderStyle(const char *) const;
 	AP_Dialog_Border_Shading::tAnswer	m_answer;
 	char                                m_WindowName[100];
 	AP_Border_Shading_preview			*m_pBorderShadingPreview;

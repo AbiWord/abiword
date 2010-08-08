@@ -41,13 +41,17 @@ public:
 	
 	virtual void			event_Close(void);
 	void					event_previewExposed(void);
-	virtual void			setBackgroundColorInGUI(UT_RGBColor clr);
+	virtual void			setShadingColorInGUI(UT_RGBColor clr);
+	virtual void			setBorderColorInGUI(UT_RGBColor clr);
+	virtual void			setBorderStyleInGUI(UT_UTF8String & sStyle);
 	virtual void            setBorderThicknessInGUI(UT_UTF8String & sThick);
+	virtual void            setShadingPatternInGUI(UT_UTF8String & sPattern);
+	virtual void            setShadingOffsetInGUI(UT_UTF8String & sOffset);
+	void					setShadingEnable(bool enable);
 	virtual void            setSensitivity(bool bsens);
 	virtual void            destroy(void);
 	virtual void            activate(void);
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
-	virtual void			initDialogParams();
 	
 	HBITMAP 				_loadBitmap(HWND hWnd,UINT nId, char* pName, int width, int height, UT_RGBColor Color);
 	virtual BOOL			_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
