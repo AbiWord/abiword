@@ -42,6 +42,9 @@
 #define BORDER_SHADING_NUMOFFSETS 9
 #define BORDER_SHADING_NUMOFSTYLES 4
 
+#define BORDER_SHADING_SHADING_DISABLE	"0"
+#define BORDER_SHADING_SHADING_ENABLE	"1"
+
 class UT_Timer;
 class XAP_Frame;
 class fp_TableContainer;
@@ -131,7 +134,6 @@ public:
 protected:
 	guint                               _findClosestThickness(const char *) const;
 	guint                               _findClosestOffset(const char *) const;
-	guint                               _findBorderStyle(const char *) const;
 	AP_Dialog_Border_Shading::tAnswer	m_answer;
 	char                                m_WindowName[100];
 	AP_Border_Shading_preview			*m_pBorderShadingPreview;
@@ -163,7 +165,9 @@ private:
 	UT_String                           m_sImagePath;
 	IEGraphicFileType                   m_iGraphicType;
 	GR_Image *                          m_pImage;
-	FG_Graphic *                        m_pGraphic;    
+	FG_Graphic *                        m_pGraphic;  
+
+	UT_String							m_sDefaultStyle;
 };
 
 #endif /* AP_DIALOG_BORDER_SHADING_H */

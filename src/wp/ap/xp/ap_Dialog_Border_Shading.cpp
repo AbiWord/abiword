@@ -51,19 +51,13 @@
 #include "gr_Painter.h"
 #include "ut_units.h"
 #include "ap_Strings.h"
-
-const char * sBorderStyle[BORDER_SHADING_NUMOFSTYLES] = {
-														"0",	//No line
-														"1",	//Solid line
-														"2",	//Dashed line
-														"3"};	//Dotted line
+#include "pp_PropertyMap.h"
 
 AP_Dialog_Border_Shading::AP_Dialog_Border_Shading(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_Modeless(pDlgFactory,id, "interface/dialogbordershading"),
 	  m_borderColor(0,0,0),
 	  m_lineStyle(LS_NORMAL),
-	  m_bgFillStyle(NULL),
-	
+	  m_bgFillStyle(NULL),	
 	  m_answer(a_OK),
 	  m_pBorderShadingPreview(NULL),
 	  m_bSettingsChanged(false),
@@ -106,6 +100,9 @@ AP_Dialog_Border_Shading::AP_Dialog_Border_Shading(XAP_DialogFactory * pDlgFacto
 	  
 	if(m_vecPropsAdjBottom.getItemCount() > 0)
 		m_vecPropsAdjBottom.clear();
+
+	guint border_style_id = (guint)PP_PropertyMap::linestyle_none - 1;
+	m_sDefaultStyle = UT_String_sprintf("%d", border_style_id);
 }
 
 AP_Dialog_Border_Shading::~AP_Dialog_Border_Shading(void)
@@ -209,16 +206,16 @@ void AP_Dialog_Border_Shading::setCurBlockProps(void)
 		const char* style_top	= current_block->getProperty("top-style");
 		const char* style_bot	= current_block->getProperty("bot-style");
 
+
 		// 8/8/2010 Maleesh - Update the border styles.
-		UT_UTF8String active_style = "0";
+		UT_UTF8String active_style	= m_sDefaultStyle.c_str();
+		UT_UTF8String default_style = m_sDefaultStyle.c_str();
 
 		if (style_left)
 		{
 			m_vecProps.addOrReplaceProp("left-style", style_left);
-			if (active_style == "0")
-			{
+			if (active_style == default_style)
 				active_style = style_left;
-			}
 		}
 		else
 			m_vecProps.removeProp("left-style");
@@ -226,10 +223,8 @@ void AP_Dialog_Border_Shading::setCurBlockProps(void)
 		if (style_right)
 		{
 			m_vecProps.addOrReplaceProp("right-style", style_right);
-			if (active_style == "0")
-			{
-				active_style = style_left;
-			}
+			if (active_style == default_style)
+				active_style = style_right;
 		}
 		else
 			m_vecProps.removeProp("right-style");
@@ -237,10 +232,8 @@ void AP_Dialog_Border_Shading::setCurBlockProps(void)
 		if (style_top)
 		{
 			m_vecProps.addOrReplaceProp("top-style", style_top);
-			if (active_style == "0")
-			{
-				active_style = style_left;
-			}	
+			if (active_style == default_style)
+				active_style = style_top;
 		}
 		else
 			m_vecProps.removeProp("top-style");
@@ -248,10 +241,8 @@ void AP_Dialog_Border_Shading::setCurBlockProps(void)
 		if (style_bot)
 		{
 			m_vecProps.addOrReplaceProp("bot-style", style_bot);
-			if (active_style == "0")
-			{
-				active_style = style_left;
-			}	
+			if (active_style == default_style)
+				active_style = style_bot;	
 		}
 		else
 			m_vecProps.removeProp("bot-style");
@@ -313,7 +304,7 @@ void AP_Dialog_Border_Shading::setCurBlockProps(void)
 		else
 		{
 			m_vecProps.removeProp("shading-pattern");
-			UT_UTF8String pattern_utf8 = "0";
+			UT_UTF8String pattern_utf8 = BORDER_SHADING_SHADING_DISABLE;
 			setShadingPatternInGUI(pattern_utf8);
 		}
 
@@ -423,7 +414,16 @@ void AP_Dialog_Border_Shading::setBorderThickness(UT_UTF8String & sThick)
 	m_vecProps.addOrReplaceProp("right-thickness", m_sBorderThickness.utf8_str());
 	m_vecProps.addOrReplaceProp("top-thickness", m_sBorderThickness.utf8_str());
 	m_vecProps.addOrReplaceProp("bot-thickness", m_sBorderThickness.utf8_str());
-	
+
+	guint index			= _findClosestThickness(sThick.utf8_str());
+	double space		= m_dThickness[index] + 0.02;	
+	UT_String str_space = UT_String_sprintf("%fin", space);	
+
+	m_vecProps.addOrReplaceProp("left-space", str_space.c_str());
+	m_vecProps.addOrReplaceProp("right-space", str_space.c_str());
+	m_vecProps.addOrReplaceProp("top-space", str_space.c_str());
+	m_vecProps.addOrReplaceProp("bot-space", str_space.c_str());
+
 	m_bSettingsChanged = true;
 }
 
@@ -433,16 +433,6 @@ void AP_Dialog_Border_Shading::setBorderStyle(UT_UTF8String & sStyle)
 	m_vecProps.addOrReplaceProp("right-style",sStyle.utf8_str());
 	m_vecProps.addOrReplaceProp("top-style",sStyle.utf8_str());
 	m_vecProps.addOrReplaceProp("bot-style",sStyle.utf8_str());
-
-	const gchar* left_space = "3.0mm";
-	const gchar* right_space = "3.0mm";
-	const gchar* top_space = "3.0mm";
-	const gchar* bot_space = "3.0mm";
-
-	m_vecProps.addOrReplaceProp("left-space", left_space);
-	m_vecProps.addOrReplaceProp("right-space", right_space);
-	m_vecProps.addOrReplaceProp("top-space", top_space);
-	m_vecProps.addOrReplaceProp("bot-space", bot_space);
 
 	m_bSettingsChanged = true;
 }
@@ -577,20 +567,6 @@ guint AP_Dialog_Border_Shading::_findClosestOffset(const char *sOffset) const
 	}
 	return closest;
 }
-
-guint AP_Dialog_Border_Shading::_findBorderStyle(const char *sStyle) const
-{
-	guint i = 0;
-	for(i = 0; i < BORDER_SHADING_NUMOFSTYLES; i++)
-	{
-		if (!strcmp(sBorderStyle[i], sStyle))
-		{
-			return i;
-		}
-	}
-	return 0;
-}
-
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////

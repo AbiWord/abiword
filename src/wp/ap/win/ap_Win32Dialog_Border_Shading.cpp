@@ -76,12 +76,6 @@ AP_Win32Dialog_Border_Shading::AP_Win32Dialog_Border_Shading(XAP_DialogFactory *
 	m_pPreviewWidget(NULL),
 	m_hwndComboEx(NULL)
 {		
-	UT_sint32 i = 0;
-	for(i=0; i < BORDER_SHADING_NUMTHICKNESS ;i++)
-		m_dThickness[i] = UT_convertToInches(sThicknessTable_Border_Shading[i]);
-
-	for(i=0; i < BORDER_SHADING_NUMOFFSETS ;i++)
-		m_dOffset[i] = UT_convertToInches(sOffsetTable_Border_Shading[i]);
 }   
     
 AP_Win32Dialog_Border_Shading::~AP_Win32Dialog_Border_Shading(void)
@@ -110,10 +104,10 @@ BOOL AP_Win32Dialog_Border_Shading::_onDlgMessage(HWND hWnd, UINT msg, WPARAM wP
 	{
 		DRAWITEMSTRUCT* dis =  (DRAWITEMSTRUCT*)lParam;
 		
-		if (dis->CtlID==AP_RID_DIALOG_BORDERSHADING_BTN_SHADING_COLOR)
+		if (dis->CtlID == AP_RID_DIALOG_BORDERSHADING_BTN_SHADING_COLOR)
 			m_shadingButton.draw(dis);			
 
-		if (dis->CtlID==AP_RID_DIALOG_BORDERSHADING_BTN_BORDER_COLOR)
+		if (dis->CtlID == AP_RID_DIALOG_BORDERSHADING_BTN_BORDER_COLOR)
 			m_borderButton.draw(dis);
 			
 		return TRUE;		
@@ -193,13 +187,13 @@ BOOL AP_Win32Dialog_Border_Shading::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 	UT_RGBColor Color(GetRValue(dwColor),GetGValue(dwColor),GetBValue(dwColor));	
 	
 	/* Localise controls*/
-	_DSX(BORDERSHADING_BTN_CANCEL,		DLG_Close);
-	_DSX(BORDERSHADING_BTN_APPLY,			DLG_Apply);
-	_DS(BORDERSHADING_TEXT_BORDER_COLOR,	DLG_BorderShading_Color);
-	_DS(BORDERSHADING_TEXT_SHADING_COLOR, 	DLG_BorderShading_Color);
-	_DS(BORDERSHADING_TEXT_PREVIEW,		DLG_BorderShading_Preview);
-	_DS(BORDERSHADING_TEXT_BORDER,		DLG_BorderShading_Borders);
- 	_DS(BORDERSHADING_TEXT_SHADING, 	DLG_BorderShading_Shading);
+	_DSX(BORDERSHADING_BTN_CANCEL,				DLG_Close);
+	_DSX(BORDERSHADING_BTN_APPLY,				DLG_Apply);
+	_DS(BORDERSHADING_TEXT_BORDER_COLOR,		DLG_BorderShading_Color);
+	_DS(BORDERSHADING_TEXT_SHADING_COLOR, 		DLG_BorderShading_Color);
+	_DS(BORDERSHADING_TEXT_PREVIEW,				DLG_BorderShading_Preview);
+	_DS(BORDERSHADING_TEXT_BORDER,				DLG_BorderShading_Borders);
+ 	_DS(BORDERSHADING_TEXT_SHADING, 			DLG_BorderShading_Shading);
 	_DS(BORDERSHADING_TEXT_BORDER_THICKNESS,	DLG_BorderShading_Thickness);
  	_DS(BORDERSHADING_TEXT_SHADING_OFFSET,		DLG_BorderShading_Offset);
 	
@@ -207,10 +201,9 @@ BOOL AP_Win32Dialog_Border_Shading::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 	
 	/* Load the bitmaps into the dialog box */	
     m_hBitmapBottom = _loadBitmap(hWnd,AP_RID_DIALOG_BORDERSHADING_BMP_BOTTOM, "FT_LINEBOTTOM",  BITMAP_WITDH, BITMAP_HEIGHT, Color);
-    m_hBitmapTop = _loadBitmap(hWnd,AP_RID_DIALOG_BORDERSHADING_BMP_TOP, "FT_LINETOP",  BITMAP_WITDH, BITMAP_HEIGHT, Color);
-    m_hBitmapRight = _loadBitmap(hWnd,AP_RID_DIALOG_BORDERSHADING_BMP_RIGHT, "FT_LINERIGHT",  BITMAP_WITDH, BITMAP_HEIGHT, Color);
-    m_hBitmapLeft = _loadBitmap(hWnd,AP_RID_DIALOG_BORDERSHADING_BMP_LEFT, "FT_LINELEFT",  BITMAP_WITDH, BITMAP_HEIGHT, Color); 
-    
+    m_hBitmapTop	= _loadBitmap(hWnd,AP_RID_DIALOG_BORDERSHADING_BMP_TOP, "FT_LINETOP",  BITMAP_WITDH, BITMAP_HEIGHT, Color);
+    m_hBitmapRight	= _loadBitmap(hWnd,AP_RID_DIALOG_BORDERSHADING_BMP_RIGHT, "FT_LINERIGHT",  BITMAP_WITDH, BITMAP_HEIGHT, Color);
+    m_hBitmapLeft	= _loadBitmap(hWnd,AP_RID_DIALOG_BORDERSHADING_BMP_LEFT, "FT_LINELEFT",  BITMAP_WITDH, BITMAP_HEIGHT, Color); 
 	
 	/* Preview*/
 	HWND hwndChild = GetDlgItem(hWnd, AP_RID_DIALOG_BORDERSHADING_STATIC_PREVIEW);	
@@ -242,7 +235,6 @@ BOOL AP_Win32Dialog_Border_Shading::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 		addItemToCombo (AP_RID_DIALOG_BORDERSHADING_COMBO_SHADING_OFFSET, sOffsetTable_Border_Shading[i]);
 	selectComboItem (AP_RID_DIALOG_BORDERSHADING_COMBO_SHADING_OFFSET, 0);
 
-	// Maleesh 7/10/2010 - TEST
 	RECT combo_rect = {
 		BORDER_STYLE_COMBO_POSITION_X, 
 		BORDER_STYLE_COMBO_POSITION_Y, 
@@ -261,16 +253,17 @@ BOOL AP_Win32Dialog_Border_Shading::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 									AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_STYLE);
 
 	HIMAGELIST hImageList =	ImageList_Create(
-		BORDER_STYLE_BITMAP_WIDTH, 
-		BORDER_STYLE_BITMAP_HEIGHT, 
-		ILC_MASK|ILC_COLOR32, 
-		BORDER_SHADING_NUMOFSTYLES, 
-		0);
+											BORDER_STYLE_BITMAP_WIDTH, 
+											BORDER_STYLE_BITMAP_HEIGHT, 
+											ILC_MASK|ILC_COLOR32, 
+											BORDER_SHADING_NUMOFSTYLES, 
+											0);
 
+	// 8/9/2010 Maleesh - Follow the PP_PropertyMap::TypeLineStyle order.
 	HBITMAP tmp_bmp0 = _loadBitmap(hWnd, 0, "BORDER_STYLE_NONE",	BORDER_STYLE_BITMAP_WIDTH, BORDER_STYLE_BITMAP_HEIGHT, Color); 
- 	HBITMAP tmp_bmp1 = _loadBitmap(hWnd, 0, "BORDER_STYLE_DASHED",  BORDER_STYLE_BITMAP_WIDTH, BORDER_STYLE_BITMAP_HEIGHT, Color); 
- 	HBITMAP tmp_bmp2 = _loadBitmap(hWnd, 0, "BORDER_STYLE_DOTTED",  BORDER_STYLE_BITMAP_WIDTH, BORDER_STYLE_BITMAP_HEIGHT, Color); 
-	HBITMAP tmp_bmp3 = _loadBitmap(hWnd, 0, "BORDER_STYLE_SOLID",	BORDER_STYLE_BITMAP_WIDTH, BORDER_STYLE_BITMAP_HEIGHT, Color); 
+	HBITMAP tmp_bmp1 = _loadBitmap(hWnd, 0, "BORDER_STYLE_SOLID",	BORDER_STYLE_BITMAP_WIDTH, BORDER_STYLE_BITMAP_HEIGHT, Color); 
+	HBITMAP tmp_bmp2 = _loadBitmap(hWnd, 0, "BORDER_STYLE_DOTTED",  BORDER_STYLE_BITMAP_WIDTH, BORDER_STYLE_BITMAP_HEIGHT, Color); 
+	HBITMAP tmp_bmp3 = _loadBitmap(hWnd, 0, "BORDER_STYLE_DASHED",  BORDER_STYLE_BITMAP_WIDTH, BORDER_STYLE_BITMAP_HEIGHT, Color); 
 
 	ImageList_Add(hImageList, tmp_bmp0, NULL);
 	ImageList_Add(hImageList, tmp_bmp1, NULL);
@@ -280,9 +273,9 @@ BOOL AP_Win32Dialog_Border_Shading::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 	SendMessage(m_hwndComboEx, CBEM_SETIMAGELIST, 0, reinterpret_cast<LPARAM>(hImageList));
 
 	_insertItemToComboboxEx(m_hwndComboEx, NULL, 0, 0);
-	_insertItemToComboboxEx(m_hwndComboEx, NULL, 3, 3);
-	_insertItemToComboboxEx(m_hwndComboEx, NULL, 2, 2);
 	_insertItemToComboboxEx(m_hwndComboEx, NULL, 1, 1);
+	_insertItemToComboboxEx(m_hwndComboEx, NULL, 2, 2);
+	_insertItemToComboboxEx(m_hwndComboEx, NULL, 3, 3);
 
 	centerDialog();
 	return 1; 
@@ -350,7 +343,7 @@ BOOL AP_Win32Dialog_Border_Shading::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 			return 1;
 		}
 
-		case AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_THICKNESS:             //TODO: CHECK
+		case AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_THICKNESS:
 		{
 			if (wNotifyCode == CBN_SELCHANGE)                       
 			{
@@ -419,14 +412,9 @@ BOOL AP_Win32Dialog_Border_Shading::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 			bChecked = (bool)(IsDlgButtonChecked(m_hDlg, AP_RID_DIALOG_BORDERSHADING_BTN_SHADING_ENABLE)==BST_CHECKED);							
 			
 			// 8/8/2010 Maleesh - TODO: Change this, when there are more shading patterns.
-			UT_UTF8String pattern_utf8 = bChecked ? "1" : "0";
+			UT_UTF8String pattern_utf8 = bChecked ? BORDER_SHADING_SHADING_ENABLE : BORDER_SHADING_SHADING_DISABLE;
 			setShadingPattern(pattern_utf8);
-
-			m_shadingButton.setEnable(bChecked);
-			EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_BORDERSHADING_COMBO_SHADING_OFFSET), bChecked);
-			EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_BORDERSHADING_BTN_SHADING_COLOR), bChecked);
-			EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_BORDERSHADING_TEXT_SHADING_COLOR), bChecked);
-			EnableWindow(GetDlgItem(m_hDlg, AP_RID_DIALOG_BORDERSHADING_TEXT_SHADING_OFFSET), bChecked);
+			setShadingEnable(bChecked);
 
 			return 1;
 		}
@@ -489,7 +477,7 @@ void AP_Win32Dialog_Border_Shading::setShadingPatternInGUI(UT_UTF8String & sPatt
 	UT_DEBUGMSG(("Maleesh =============== Setup the shading pattern in the GUI: %s \n", sPattern.utf8_str()));
 
 	// 8/8/2010 Maleesh - TODO: Change this, when there are more shading patterns.
-	bool shading_enabled = !(sPattern == "0");
+	bool shading_enabled = !(sPattern == BORDER_SHADING_SHADING_DISABLE);
 	setShadingEnable(shading_enabled);
 }
 
@@ -521,8 +509,12 @@ void AP_Win32Dialog_Border_Shading::setBorderThicknessInGUI(UT_UTF8String & sThi
 void AP_Win32Dialog_Border_Shading::setBorderStyleInGUI(UT_UTF8String & sStyle)
 {
 	UT_DEBUGMSG(("Maleesh =============== Setup the border style in the GUI: %s \n", sStyle.utf8_str()));
-	guint style_index = _findBorderStyle(sStyle.utf8_str());
-	SendMessageA(GetDlgItem(m_hDlg, AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_STYLE), CB_SETCURSEL, WPARAM(style_index), NULL);
+
+	PP_PropertyMap::TypeLineStyle style = PP_PropertyMap::linestyle_type(sStyle.utf8_str());
+	guint index = (guint)style - 1;
+
+	if (index >= 0)
+		SendMessageA(GetDlgItem(m_hDlg, AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_STYLE), CB_SETCURSEL, WPARAM(index), NULL);
 }
 
 void AP_Win32Dialog_Border_Shading::setShadingEnable(bool enable)
