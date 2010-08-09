@@ -88,7 +88,7 @@ public:
 	typedef enum { a_OK, a_CLOSE } tAnswer;
 	typedef enum { toggle_left, toggle_right, toggle_top, toggle_bottom } toggle_button;
 	
-	AP_Dialog_Border_Shading::tAnswer		getAnswer(void) const;
+	AP_Dialog_Border_Shading::tAnswer	getAnswer(void) const;
 	virtual void                        startUpdater(void);
 	virtual void                        stopUpdater(void);
 	static void                         autoUpdateMC(UT_Worker * pTimer);
@@ -115,8 +115,6 @@ public:
 	virtual void						setShadingPatternInGUI(UT_UTF8String & sPattern) = 0;	
 	void								setShadingOffset(UT_UTF8String & sOffset);
 	virtual void						setShadingOffsetInGUI(UT_UTF8String & sOffset) = 0;	
-	void                                clearImage(void);
-// 	void                                ShowErrorBox(UT_String & sFile, UT_Error errorCode);
 	void								_createPreviewFromGC(GR_Graphics * gc,
 															 UT_uint32 width,
 															 UT_uint32 height);
@@ -129,13 +127,7 @@ public:
 	bool								getLeftToggled();
 	GR_Image *                          getImage(void) { return m_pImage;}
 	FG_Graphic *                        getGraphic(void) { return m_pGraphic;}
-				
-	UT_RGBColor							m_borderColor;
-	UT_sint32							m_lineStyle;
-	gchar *								m_bgFillStyle;
-	UT_PropVector                       m_vecProps;
-	UT_UTF8String                       m_sBorderThickness;
-	UT_UTF8String                       m_sBorderStyle;
+
 protected:
 	guint                               _findClosestThickness(const char *) const;
 	guint                               _findClosestOffset(const char *) const;
@@ -145,21 +137,24 @@ protected:
 	AP_Border_Shading_preview			*m_pBorderShadingPreview;
 	AP_Border_Shading_preview_drawer	m_previewDrawer;
 
-	double      m_dThickness[BORDER_SHADING_NUMTHICKNESS];
-	double      m_dShadingOffset[BORDER_SHADING_NUMOFFSETS];
+	UT_RGBColor							m_borderColor;
+	UT_sint32							m_lineStyle;
+	gchar *								m_bgFillStyle;
+	UT_PropVector                       m_vecProps;
+	UT_UTF8String                       m_sBorderThickness;
+
+	double      						m_dThickness[BORDER_SHADING_NUMTHICKNESS];
+	double      						m_dShadingOffset[BORDER_SHADING_NUMOFFSETS];
 		
 private:
 	bool								_getToggleButtonStatus(const char * lineStyle);
 
 	bool								m_bSettingsChanged;
 
-	UT_PropVector                           m_vecPropsAdjRight;
-	UT_PropVector                           m_vecPropsAdjBottom;
-
+	UT_PropVector                       m_vecPropsAdjRight;
+	UT_PropVector                       m_vecPropsAdjBottom;
 	UT_Timer *                          m_pAutoUpdaterMC;
-	
-	bool								m_borderToggled;
-	
+
 	// Handshake variables
 	bool m_bDestroy_says_stopupdating;
 	bool m_bAutoUpdate_happening_now;

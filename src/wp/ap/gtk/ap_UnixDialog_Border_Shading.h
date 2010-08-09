@@ -44,15 +44,21 @@ public:
 	void                    event_BorderThicknessChanged(void);
 	void                    event_BorderStyleChanged(void);
 	void                    event_ShadingOffsetChanged(void);
-
+	void					event_shadingPatternChange(void);
 	virtual void           	setBorderThicknessInGUI(UT_UTF8String & sThick);
+	virtual void            setBorderColorInGUI(UT_RGBColor clr);
+	virtual void            setBorderStyleInGUI(UT_UTF8String & sStyle);
 	virtual void			setShadingColorInGUI(UT_RGBColor clr);
+	virtual void			setShadingPatternInGUI(UT_UTF8String & sPattern);
+	virtual void			setShadingOffsetInGUI(UT_UTF8String & sOffset);
+
+
 	virtual void           	setSensitivity(bool bsens);
 	virtual void           	destroy(void);
 	virtual void            activate(void);
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
 	const GtkWidget 	  * getWindow (void) const { return m_windowMain; }
-	void 					loadLastKnownValues();
+
 protected:
 	typedef enum
 	{
@@ -64,7 +70,7 @@ protected:
 	void					_populateWindowData(void);
 	void					_storeWindowData(void);
 	void					_connectSignals(void);
-	
+	void					_setShadingEnable(bool enable);
 	GR_UnixCairoGraphics	* 		m_pPreviewWidget;	
 	
 	// pointers to widgets we need to query/set
@@ -83,14 +89,16 @@ protected:
 	GtkWidget * m_wBorderThickness;
 	GtkWidget * m_wBorderStyle;
 	GtkWidget * m_wShadingOffset;
+	GtkWidget * m_wShadingEnable;
 
 	guint       m_iBorderThicknessConnect;
 	guint       m_iBorderStyleConnect;
 	guint       m_iShadingOffsetConnect;
-
-	guint		m_iLastBorderThicknessIndex;
-	guint		m_iLastBorderStyleIndex;
-	guint		m_iLastShadingOffsetIndex;
+	guint 		m_iShadingEnableConnect;
+	guint		m_iLineLeftConnect;
+	guint		m_iLineRightConnect;
+	guint		m_iLineTopConnect;
+	guint		m_iLineBotConnect;
 };
 
 #endif /* AP_UNIXDIALOG_BORDER_SHADING_H */

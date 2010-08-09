@@ -39,7 +39,6 @@
 #include "fp_Line.h"
 #include "fp_Run.h"
 #include "fp_ContainerObject.h"
-//	Maleesh 6/10/2010 -  
 #include "fp_TableContainer.h"
 #include "fl_TableLayout.h"
 #include "fl_BlockLayout.h"
@@ -60,7 +59,7 @@ const char * sBorderStyle[BORDER_SHADING_NUMOFSTYLES] = {
 														"3"};	//Dotted line
 
 AP_Dialog_Border_Shading::AP_Dialog_Border_Shading(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_Modeless(pDlgFactory,id, "interface/dialogformattable"),
+	: XAP_Dialog_Modeless(pDlgFactory,id, "interface/dialogbordershading"),
 	  m_borderColor(0,0,0),
 	  m_lineStyle(LS_NORMAL),
 	  m_bgFillStyle(NULL),
@@ -69,7 +68,6 @@ AP_Dialog_Border_Shading::AP_Dialog_Border_Shading(XAP_DialogFactory * pDlgFacto
 	  m_pBorderShadingPreview(NULL),
 	  m_bSettingsChanged(false),
 	  m_pAutoUpdaterMC(NULL),
-	  m_borderToggled(false),
 	  m_bDestroy_says_stopupdating(false),
 	  m_bAutoUpdate_happening_now(false),
 	  m_iOldPos(0),
@@ -193,9 +191,8 @@ void AP_Dialog_Border_Shading::setCurBlockProps(void)
 	if (frame) {
 		FV_View * pView = static_cast<FV_View *>(frame->getCurrentView());
 
-		if (m_bSettingsChanged || 
-			m_iOldPos == pView->getPoint()) // comparing the actual cell pos would be even better; but who cares :)
-			return;
+		if (m_bSettingsChanged || m_iOldPos == pView->getPoint())
+			return;	
 		
 		m_iOldPos = pView->getPoint();
 
@@ -316,7 +313,8 @@ void AP_Dialog_Border_Shading::setCurBlockProps(void)
 		else
 		{
 			m_vecProps.removeProp("shading-pattern");
-			setShadingPatternInGUI(UT_UTF8String("0"));
+			UT_UTF8String pattern_utf8 = "0";
+			setShadingPatternInGUI(pattern_utf8);
 		}
 
 		if (shading_color)
@@ -363,10 +361,7 @@ void AP_Dialog_Border_Shading::applyChanges()
 
 		UT_DEBUGMSG(("Maleesh ======================= %s | %s \n", propsArray[j], propsArray[j + 1]));
 	}
-
-	// Maleesh 7/5/2010 -  
 	pView->setBlockFormat(propsArray);
-// 	pView->setCellFormat(propsArray, m_ApplyTo,m_pGraphic,m_sImagePath);
 
 	delete [] propsArray;
 	m_bSettingsChanged = false;
@@ -417,33 +412,27 @@ void AP_Dialog_Border_Shading::toggleLineType(toggle_button btn, bool enabled)
 		}
 		break;
 	}
-	
-	m_borderToggled = true;
 	m_bSettingsChanged = true;
 }
 
 void AP_Dialog_Border_Shading::setBorderThickness(UT_UTF8String & sThick)
 {
 	m_sBorderThickness = sThick;
-	if(m_borderToggled)
-		return;
+
 	m_vecProps.addOrReplaceProp("left-thickness", m_sBorderThickness.utf8_str());
-	m_vecProps.addOrReplaceProp("right-thickness",m_sBorderThickness.utf8_str());
-	m_vecProps.addOrReplaceProp("top-thickness",m_sBorderThickness.utf8_str());
-	m_vecProps.addOrReplaceProp("bot-thickness",m_sBorderThickness.utf8_str());
+	m_vecProps.addOrReplaceProp("right-thickness", m_sBorderThickness.utf8_str());
+	m_vecProps.addOrReplaceProp("top-thickness", m_sBorderThickness.utf8_str());
+	m_vecProps.addOrReplaceProp("bot-thickness", m_sBorderThickness.utf8_str());
 	
 	m_bSettingsChanged = true;
 }
 
 void AP_Dialog_Border_Shading::setBorderStyle(UT_UTF8String & sStyle)
 {
-	m_sBorderStyle = sStyle;
-	if(m_borderToggled)
-		return;
-	m_vecProps.addOrReplaceProp("left-style", m_sBorderStyle.utf8_str());
-	m_vecProps.addOrReplaceProp("right-style",m_sBorderStyle.utf8_str());
-	m_vecProps.addOrReplaceProp("top-style",m_sBorderStyle.utf8_str());
-	m_vecProps.addOrReplaceProp("bot-style",m_sBorderStyle.utf8_str());
+	m_vecProps.addOrReplaceProp("left-style", sStyle.utf8_str());
+	m_vecProps.addOrReplaceProp("right-style",sStyle.utf8_str());
+	m_vecProps.addOrReplaceProp("top-style",sStyle.utf8_str());
+	m_vecProps.addOrReplaceProp("bot-style",sStyle.utf8_str());
 
 	const gchar* left_space = "3.0mm";
 	const gchar* right_space = "3.0mm";
@@ -461,9 +450,6 @@ void AP_Dialog_Border_Shading::setBorderStyle(UT_UTF8String & sStyle)
 void AP_Dialog_Border_Shading::setBorderColor(UT_RGBColor clr)
 {
 	m_borderColor = clr;
-	
-	if (m_borderToggled)
-		return;
 
 	UT_String s = UT_String_sprintf("%02x%02x%02x", clr.m_red, clr.m_grn, clr.m_blu);	
 
@@ -476,16 +462,6 @@ void AP_Dialog_Border_Shading::setBorderColor(UT_RGBColor clr)
 	m_vecPropsAdjBottom.addOrReplaceProp("top-color", s.c_str());
 	
 	m_bSettingsChanged = true;
-}
-
-void AP_Dialog_Border_Shading::clearImage(void)
-{
-	DELETEP(m_pGraphic);
-	DELETEP(m_pImage);
-	m_sImagePath.clear();
-	// draw the preview with the changed properties
-	if(m_pBorderShadingPreview)
-		m_pBorderShadingPreview->queueDraw();
 }
 
 void AP_Dialog_Border_Shading::setShadingPattern(UT_UTF8String & sPattern)
