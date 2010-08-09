@@ -42,6 +42,12 @@
 #include "ap_UnixDialog_Border_Shading.h"
 #include "ap_UnixDialog_Columns.h"
 
+const char * sBorderStyle[BORDER_SHADING_NUMOFSTYLES] = {
+														"0",	//No line
+														"1",	//Solid line
+														"2",	//Dashed line
+														"3"};	//Dotted line
+
 static void s_apply_changes(GtkWidget *widget, gpointer data )
 {
 	AP_UnixDialog_Border_Shading * dlg = reinterpret_cast<AP_UnixDialog_Border_Shading *>(data);
@@ -102,7 +108,6 @@ static gboolean s_on_shading_enable_clicked(GtkWidget 		*button,
 	UT_return_val_if_fail (button && dlg, FALSE);
 	dlg->event_shadingPatternChange();
 }
-
 
 /*!
 * Intercept clicks on the color button and show an own GtkColorSelectionDialog
@@ -347,9 +352,14 @@ void AP_UnixDialog_Border_Shading::setBorderStyleInGUI(UT_UTF8String & sStyle)
 {
 	UT_DEBUGMSG(("Maleesh =============== Setup the border style in the GUI: %s \n", sStyle.utf8_str()));
 
-	guint style_index = _findBorderStyle(sStyle.utf8_str());
-	XAP_GtkSignalBlocker b(G_OBJECT(m_wBorderStyle),m_iBorderStyleConnect);
-	gtk_combo_box_set_active(GTK_COMBO_BOX(m_wBorderStyle), style_index);
+	PP_PropertyMap::TypeLineStyle style = PP_PropertyMap::linestyle_type(sStyle.utf8_str());
+	guint index = (guint)style - 1;
+
+	if (index >= 0)
+	{
+		XAP_GtkSignalBlocker b(G_OBJECT(m_wBorderStyle),m_iBorderStyleConnect);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(m_wBorderStyle), index);
+	}
 }
 
 void AP_UnixDialog_Border_Shading::setBorderColorInGUI(UT_RGBColor clr)
@@ -375,7 +385,7 @@ void AP_UnixDialog_Border_Shading::setShadingPatternInGUI(UT_UTF8String & sPatte
 	UT_DEBUGMSG(("Maleesh =============== Setup the shading pattern in the GUI: %s \n", sPattern.utf8_str()));
 
 	// 8/8/2010 Maleesh - TODO: Change this, when there are more shading patterns.
-	bool shading_enabled = !(sPattern == "0");
+	bool shading_enabled = !(sPattern == BORDER_SHADING_SHADING_DISABLE);
 	_setShadingEnable(shading_enabled);
 }
 
@@ -400,7 +410,6 @@ void AP_UnixDialog_Border_Shading::event_BorderThicknessChanged(void)
 			UT_LocaleTransactor t(LC_NUMERIC, "C");
 			sThickness = UT_UTF8String_sprintf("%fin",thickness);
 		}
-
 		setBorderThickness(sThickness);
 		event_previewExposed();
 	}
@@ -410,17 +419,14 @@ void AP_UnixDialog_Border_Shading::event_BorderStyleChanged(void)
 {
 	if(m_wBorderStyle)
 	{
-		gint history = gtk_combo_box_get_active(GTK_COMBO_BOX(m_wBorderStyle));
-		int style = 1; //m_dThickness[history];
+		gint index = gtk_combo_box_get_active(GTK_COMBO_BOX(m_wBorderStyle));
 
-		UT_UTF8String sStyle;
+		if (index >= 0 && index <= BORDER_SHADING_NUMOFSTYLES)
 		{
-			UT_LocaleTransactor t(LC_NUMERIC, "C");
-			sStyle = UT_UTF8String_sprintf("%d",style);
+			UT_UTF8String style_utf8 = sBorderStyle[index];
+			setBorderStyle(style_utf8);
+			event_previewExposed();
 		}
-
-		setBorderStyle(sStyle);
-		event_previewExposed();
 	}
 }
 
@@ -448,7 +454,7 @@ void AP_UnixDialog_Border_Shading::event_shadingPatternChange(void)
 
 	// 8/8/2010 Maleesh - TODO: Change this, when there are more shading patterns.
 	gboolean bEnable = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wShadingEnable));
-	UT_UTF8String pattern_utf8 = bEnable ? "1" : "0";
+	UT_UTF8String pattern_utf8 = bEnable ? BORDER_SHADING_SHADING_ENABLE : BORDER_SHADING_SHADING_DISABLE;
 	setShadingPattern(pattern_utf8);
 	_setShadingEnable(bEnable);
 }
@@ -488,16 +494,14 @@ GtkWidget * AP_UnixDialog_Border_Shading::_constructWindow(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	// get the path where our UI file is located
-	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Border_Shading.xml";
+//	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Border_Shading.xml";
 
 	// Test: Avoid to use the xml files from installed path.
-	//std::string ui_path = /*static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + */ "src/wp/ap/gtk/ap_UnixDialog_Border_Shading.xml";
+	std::string ui_path = /*static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + */ "src/wp/ap/gtk/ap_UnixDialog_Border_Shading.xml";
 	
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
-
-	UT_DEBUGMSG(("========================= UI config path: %s \n", ui_path.c_str()));
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
@@ -605,7 +609,6 @@ static void s_destroy_clicked(GtkWidget * /* widget */,
 	dlg->event_Close();
 }
 
-
 static void s_delete_clicked(GtkWidget * widget,
 			     gpointer,
 			     gpointer * /*dlg*/)
@@ -615,8 +618,6 @@ static void s_delete_clicked(GtkWidget * widget,
 
 void AP_UnixDialog_Border_Shading::_connectSignals(void)
 {
-	// the catch-alls
-	// Dont use gtk_signal_connect_after for modeless dialogs
 	g_signal_connect(GTK_OBJECT(m_windowMain),
 							"destroy",
 							G_CALLBACK(s_destroy_clicked),
@@ -695,8 +696,4 @@ void AP_UnixDialog_Border_Shading::_connectSignals(void)
 void AP_UnixDialog_Border_Shading::_populateWindowData(void)
 {
    setAllSensitivities();
-}
-
-void AP_UnixDialog_Border_Shading::_storeWindowData(void)
-{
 }

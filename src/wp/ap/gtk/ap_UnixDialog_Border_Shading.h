@@ -45,13 +45,13 @@ public:
 	void                    event_BorderStyleChanged(void);
 	void                    event_ShadingOffsetChanged(void);
 	void					event_shadingPatternChange(void);
+
 	virtual void           	setBorderThicknessInGUI(UT_UTF8String & sThick);
 	virtual void            setBorderColorInGUI(UT_RGBColor clr);
 	virtual void            setBorderStyleInGUI(UT_UTF8String & sStyle);
 	virtual void			setShadingColorInGUI(UT_RGBColor clr);
 	virtual void			setShadingPatternInGUI(UT_UTF8String & sPattern);
 	virtual void			setShadingOffsetInGUI(UT_UTF8String & sOffset);
-
 
 	virtual void           	setSensitivity(bool bsens);
 	virtual void           	destroy(void);
@@ -68,7 +68,6 @@ protected:
 		
 	virtual GtkWidget *		_constructWindow(void);
 	void					_populateWindowData(void);
-	void					_storeWindowData(void);
 	void					_connectSignals(void);
 	void					_setShadingEnable(bool enable);
 	GR_UnixCairoGraphics	* 		m_pPreviewWidget;	

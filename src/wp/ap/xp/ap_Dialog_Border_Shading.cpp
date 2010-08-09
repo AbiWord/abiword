@@ -64,11 +64,11 @@ AP_Dialog_Border_Shading::AP_Dialog_Border_Shading(XAP_DialogFactory * pDlgFacto
 	  m_pAutoUpdaterMC(NULL),
 	  m_bDestroy_says_stopupdating(false),
 	  m_bAutoUpdate_happening_now(false),
-	  m_iOldPos(0),
-	  m_sImagePath(""),
-	  m_iGraphicType(0),
-	  m_pImage(NULL),
-	  m_pGraphic(NULL)
+	  m_iOldPos(0)
+// 	  m_sImagePath(""),
+// 	  m_iGraphicType(0),
+// 	  m_pImage(NULL),
+// 	  m_pGraphic(NULL)
 {
 	const char * sBordersThickness[BORDER_SHADING_NUMTHICKNESS] ={"0.25pt","0.5pt",
 													   "0.75pt","1.0pt",
@@ -94,13 +94,13 @@ AP_Dialog_Border_Shading::AP_Dialog_Border_Shading(XAP_DialogFactory * pDlgFacto
 
 	if(m_vecProps.getItemCount() > 0)
 		m_vecProps.clear();
-	  
+/*
 	if(m_vecPropsAdjRight.getItemCount() > 0)
 		m_vecPropsAdjRight.clear();
 	  
 	if(m_vecPropsAdjBottom.getItemCount() > 0)
 		m_vecPropsAdjBottom.clear();
-
+*/
 	guint border_style_id = (guint)PP_PropertyMap::linestyle_none - 1;
 	m_sDefaultStyle = UT_String_sprintf("%d", border_style_id);
 }
@@ -109,8 +109,8 @@ AP_Dialog_Border_Shading::~AP_Dialog_Border_Shading(void)
 {
 	stopUpdater();
 	DELETEP(m_pBorderShadingPreview);
-	DELETEP(m_pGraphic);
-	DELETEP(m_pImage);
+// 	DELETEP(m_pGraphic);
+// 	DELETEP(m_pImage);
 }
 
 AP_Dialog_Border_Shading::tAnswer AP_Dialog_Border_Shading::getAnswer(void) const
@@ -404,6 +404,7 @@ void AP_Dialog_Border_Shading::toggleLineType(toggle_button btn, bool enabled)
 		break;
 	}
 	m_bSettingsChanged = true;
+	UT_DEBUGMSG(("Maleesh ======================= toggleLineType\n"));
 }
 
 void AP_Dialog_Border_Shading::setBorderThickness(UT_UTF8String & sThick)
@@ -425,6 +426,7 @@ void AP_Dialog_Border_Shading::setBorderThickness(UT_UTF8String & sThick)
 	m_vecProps.addOrReplaceProp("bot-space", str_space.c_str());
 
 	m_bSettingsChanged = true;
+	UT_DEBUGMSG(("Maleesh ======================= setBorderThickness\n"));
 }
 
 void AP_Dialog_Border_Shading::setBorderStyle(UT_UTF8String & sStyle)
@@ -435,6 +437,7 @@ void AP_Dialog_Border_Shading::setBorderStyle(UT_UTF8String & sStyle)
 	m_vecProps.addOrReplaceProp("bot-style",sStyle.utf8_str());
 
 	m_bSettingsChanged = true;
+	UT_DEBUGMSG(("Maleesh ======================= setBorderStyle %s: \n", sStyle.utf8_str()));
 }
 
 void AP_Dialog_Border_Shading::setBorderColor(UT_RGBColor clr)
@@ -448,16 +451,18 @@ void AP_Dialog_Border_Shading::setBorderColor(UT_RGBColor clr)
 	m_vecProps.addOrReplaceProp("top-color", s.c_str());
 	m_vecProps.addOrReplaceProp("bot-color", s.c_str());
 	
-	m_vecPropsAdjRight.addOrReplaceProp("left-color", s.c_str());
-	m_vecPropsAdjBottom.addOrReplaceProp("top-color", s.c_str());
+//	m_vecPropsAdjRight.addOrReplaceProp("left-color", s.c_str());
+//	m_vecPropsAdjBottom.addOrReplaceProp("top-color", s.c_str());
 	
 	m_bSettingsChanged = true;
+	UT_DEBUGMSG(("Maleesh ======================= setBorderColor\n"));
 }
 
 void AP_Dialog_Border_Shading::setShadingPattern(UT_UTF8String & sPattern)
 {
 	m_vecProps.addOrReplaceProp ("shading-pattern", sPattern.utf8_str());
 	m_bSettingsChanged = true;
+	UT_DEBUGMSG(("Maleesh ======================= setShadingPattern\n"));
 }
 
 void AP_Dialog_Border_Shading::setShadingColor(UT_RGBColor clr)
@@ -473,6 +478,7 @@ void AP_Dialog_Border_Shading::setShadingColor(UT_RGBColor clr)
 		m_vecProps.addOrReplaceProp ("shading-foreground-color", bgcol.c_str ());
 	}
 	m_bSettingsChanged = true;
+	UT_DEBUGMSG(("Maleesh ======================= setShadingColor\n"));
 }
 
 void AP_Dialog_Border_Shading::setShadingOffset(UT_UTF8String & sOffset)
@@ -592,8 +598,7 @@ void AP_Border_Shading_preview::draw(const UT_Rect *clip)
 	
 	painter.fillRect(GR_Graphics::CLR3D_Background, 0, 0, iWidth, iHeight);
 	painter.clearArea(pageRect.left, pageRect.top, pageRect.width, pageRect.height);	
-	
-	
+		
 	UT_RGBColor tmpCol;
 	
 	UT_RGBColor black(0, 0, 0);
@@ -603,46 +608,19 @@ void AP_Border_Shading_preview::draw(const UT_Rect *clip)
 	int cornerLength = m_gc->tlu(5);
 
 //
-//  Draw the cell background
+//  Draw the cell background (Shading)
 //
 	
-	const gchar * pszBGCol = NULL;
-	if(m_pBorderShading->getImage())
-	{
-		GR_Image * pImg = m_pBorderShading->getImage();
-		FG_Graphic * pFG = m_pBorderShading->getGraphic();
-		const char * szName = pFG->getDataId();
-        const UT_ByteBuf * pBB = pFG->getBuffer();
-		if(pFG->getType() == FGT_Raster)
-		{
-			pImg = static_cast<GR_Image *>(
-				m_gc->createNewImage( szName,
-									pBB, pFG->getMimeType(),
-									pageRect.width - 2*border,
-									pageRect.height - 2*border,
-									GR_Image::GRT_Raster));
-		}
-		else
-		{
-			pImg = static_cast<GR_Image *>(
-				m_gc->createNewImage( szName,
-                                      pBB, pFG->getMimeType(),
-									pageRect.width - 2*border,
-									pageRect.height - 2*border,
-									GR_Image::GRT_Vector));
-		}
+	const gchar * pszShadingColor	= NULL;
+	const gchar * pszShadingPattern = NULL;
+	m_pBorderShading->getPropVector().getProp(static_cast<const gchar *>("shading-pattern"), pszShadingPattern);
 
-		UT_Rect rec(pageRect.left + border, pageRect.top + border, 
-					pageRect.width - 2*border, pageRect.height - 2*border);
-		painter.drawImage(pImg,pageRect.left + border, pageRect.top + border);
-		delete pImg;
-	}
-	else
+	if(pszShadingPattern && strcmp(pszShadingPattern, BORDER_SHADING_SHADING_DISABLE))
 	{
-		m_pBorderShading->getPropVector().getProp(static_cast<const gchar *>("background-color"), pszBGCol);
-		if (pszBGCol && *pszBGCol)
+		m_pBorderShading->getPropVector().getProp(static_cast<const gchar *>("shading-foreground-color"), pszShadingColor);
+		if (pszShadingColor && *pszShadingColor)
 		{
-			UT_parseColor(pszBGCol, tmpCol);
+			UT_parseColor(pszShadingColor, tmpCol);
 			painter.fillRect(tmpCol, pageRect.left + border, pageRect.top + border, pageRect.width - 2*border, pageRect.height - 2*border);
 		}
 	}

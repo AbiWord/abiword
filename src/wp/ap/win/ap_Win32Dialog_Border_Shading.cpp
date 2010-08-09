@@ -528,6 +528,7 @@ void AP_Win32Dialog_Border_Shading::setShadingEnable(bool enable)
 
 	/* force redraw */
 	InvalidateRect(GetDlgItem(m_hDlg, AP_RID_DIALOG_BORDERSHADING_BTN_SHADING_COLOR), NULL, FALSE);
+	event_previewExposed();	
 }
 
 void AP_Win32Dialog_Border_Shading::setSensitivity(bool bSens)

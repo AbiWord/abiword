@@ -67,12 +67,7 @@ public:
 	// data twiddlers
 	void			draw(const UT_Rect *clip=NULL);
 	GR_Graphics *   getGraphics(void) const { return m_gc;} 
-	/*void			set(UT_uint32 iColumns, bool bLines)
-					{
-						m_iColumns = iColumns;
-						m_bLineBetween = bLines;
-						draw();
-					}*/
+
 private:
 	AP_Border_Shading_preview_drawer	m_previewDrawer;
 	AP_Dialog_Border_Shading *  m_pBorderShading;
@@ -101,35 +96,34 @@ public:
 	void                                ConstructWindowName(void);
 	void                                event_update(void);
 	void                                finalize(void);
-		
 	void                                setAllSensitivities(void);
 	void 								setCurBlockProps(void);	
 	void								applyChanges(void);
 	void                                toggleLineType(toggle_button btn, bool enabled);
+
 	void								setBorderColor(UT_RGBColor clr);
 	void                                setBorderThickness(UT_UTF8String & sThick);
 	void                                setBorderStyle(UT_UTF8String & sStyle);
+	void								setShadingColor(UT_RGBColor clr);
+	void								setShadingPattern(UT_UTF8String & sPattern);
+	void								setShadingOffset(UT_UTF8String & sOffset);
+
 	virtual void                        setBorderStyleInGUI(UT_UTF8String & sStyle) = 0;
 	virtual void                        setBorderThicknessInGUI(UT_UTF8String & sThick) = 0;
 	virtual void                        setBorderColorInGUI(UT_RGBColor clr) = 0;
-	void								setShadingColor(UT_RGBColor clr);
 	virtual void						setShadingColorInGUI(UT_RGBColor clr) = 0;	
-	void								setShadingPattern(UT_UTF8String & sPattern);
 	virtual void						setShadingPatternInGUI(UT_UTF8String & sPattern) = 0;	
-	void								setShadingOffset(UT_UTF8String & sOffset);
 	virtual void						setShadingOffsetInGUI(UT_UTF8String & sOffset) = 0;	
+
 	void								_createPreviewFromGC(GR_Graphics * gc,
 															 UT_uint32 width,
 															 UT_uint32 height);
 	UT_PropVector &						getPropVector() { return m_vecProps; }
 
-	/* We use this in Win32 to know the status of line and to set the push button using this value*/
 	bool								getTopToggled();
 	bool								getBottomToggled();
 	bool								getRightToggled();
 	bool								getLeftToggled();
-	GR_Image *                          getImage(void) { return m_pImage;}
-	FG_Graphic *                        getGraphic(void) { return m_pGraphic;}
 
 protected:
 	guint                               _findClosestThickness(const char *) const;
@@ -152,22 +146,16 @@ private:
 	bool								_getToggleButtonStatus(const char * lineStyle);
 
 	bool								m_bSettingsChanged;
+	PT_DocPosition                      m_iOldPos;
+	UT_String							m_sDefaultStyle;
 
-	UT_PropVector                       m_vecPropsAdjRight;
-	UT_PropVector                       m_vecPropsAdjBottom;
+//	UT_PropVector                       m_vecPropsAdjRight;
+//	UT_PropVector                       m_vecPropsAdjBottom;
 	UT_Timer *                          m_pAutoUpdaterMC;
 
 	// Handshake variables
 	bool m_bDestroy_says_stopupdating;
 	bool m_bAutoUpdate_happening_now;
-
-	PT_DocPosition                      m_iOldPos;
-	UT_String                           m_sImagePath;
-	IEGraphicFileType                   m_iGraphicType;
-	GR_Image *                          m_pImage;
-	FG_Graphic *                        m_pGraphic;  
-
-	UT_String							m_sDefaultStyle;
 };
 
 #endif /* AP_DIALOG_BORDER_SHADING_H */
