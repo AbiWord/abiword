@@ -2422,7 +2422,11 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner, bool bNoUpdate)
 		m_pView->notifyListeners(AV_CHG_PAGECOUNT);
 	}
 
-	updateCanvasLayout(m_pView->getCurrentPage(), pPage, false);
+	// Is there only one page?  Needed at startup to avoid pBL assert failure related to getCurrentPage() later on when in debug mode
+	if(getFirstPage()->getNext() != NULL)
+		updateCanvasLayout(m_pView->getCurrentPage(), pPage, false);
+	else
+		updateCanvasLayout(getFirstPage(), pPage, false);
 
 	if(countPages() > 1)
 		pPage->setYForNormalView( pPage->getPrev()->getYForNormalView() + pPage->getHeight() - pOwner->getTopMargin() - pOwner->getBottomMargin() );
