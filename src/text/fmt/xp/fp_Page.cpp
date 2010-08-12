@@ -63,13 +63,13 @@ fp_Page::fp_Page(FL_DocLayout* pLayout,
 		m_FillType(NULL,NULL,FG_FILL_TRANSPARENT),
 		m_pLastMappedTOC(NULL),
 		m_iCountWrapPasses(0),
-		m_iX(xpos),
-		m_iY(ypos),
 		m_pLeft(NULL),
 		m_pRight(NULL),
 		m_pUp(NULL),
 		m_pDown(NULL),
-		m_iYForNormalView(0)
+		m_iXCanvasView(0),
+		m_iYCanvasView(0),
+		m_iYNormalView(0)
 {
 	UT_ASSERT(pLayout);
 	UT_ASSERT(pOwner);
@@ -1124,6 +1124,62 @@ void fp_Page::_drawCropMarks(dg_DrawArgs* pDA)
         painter.drawLine(xoffEnd, yoffEnd, xoffEnd, yoffEnd + iBottomHeight);
         painter.drawLine(xoffEnd, yoffEnd, xoffEnd + iRightWidth, yoffEnd);
     }
+}
+
+UT_sint32 fp_Page::getY(void)
+{
+	switch(m_pView->getViewMode())
+	{
+		case VIEW_CANVAS:
+			return m_iYCanvasView;
+		case VIEW_WEB:
+		case VIEW_NORMAL:
+			return m_iYNormalView;
+		case VIEW_PRINT:
+			return m_iYPrintView;
+	}
+}       
+
+void fp_Page::setY(UT_sint32 ypos)
+{
+	switch(m_pView->getViewMode())
+	{
+		case VIEW_CANVAS:
+			m_iYCanvasView = ypos;
+		case VIEW_WEB:
+		case VIEW_NORMAL:
+			m_iYNormalView = ypos;
+		case VIEW_PRINT:
+			m_iYPrintView = ypos;
+	}
+}
+
+UT_sint32 fp_Page::getX(void)
+{
+	switch(m_pView->getViewMode())
+	{
+		case VIEW_CANVAS:
+			return m_iXCanvasView;
+		case VIEW_WEB:
+		case VIEW_NORMAL:
+			return m_iXNormalView;
+		case VIEW_PRINT:
+			return m_iXPrintView;
+	}
+}       
+
+void fp_Page::setX(UT_sint32 xpos)
+{
+	switch(m_pView->getViewMode())
+	{
+		case VIEW_CANVAS:
+			m_iXCanvasView = xpos;
+		case VIEW_WEB:
+		case VIEW_NORMAL:
+			m_iXNormalView = xpos;
+		case VIEW_PRINT:
+			m_iXPrintView = xpos;
+	}
 }
 
 void fp_Page::draw(dg_DrawArgs* pDA, bool /*bAlwaysUseWhiteBackground*/)

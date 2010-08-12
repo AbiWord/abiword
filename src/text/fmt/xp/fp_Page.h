@@ -172,12 +172,10 @@ public:
 
 	void                updateColumnX();
 
-	void		setOnScreen() { m_bOnScreen = true; };
-	void		setOffScreen() { m_bOnScreen = false; };
-	void		setX(UT_sint32 x) { m_iX = x; };
-	void		setY(UT_sint32 y) { m_iY = y; };
-	UT_sint32		getX() { return m_iX; }
-	UT_sint32		getY() { return m_iY; }
+	void		setX(UT_sint32 xpos);
+	void		setY(UT_sint32 ypos);
+	UT_sint32	getX(void);
+	UT_sint32	getY(void);
 
 	fp_Page*	getLeft(void) { return m_pLeft; }
 	fp_Page*	getRight(void) { return m_pRight; }
@@ -188,15 +186,20 @@ public:
 	void		setUp(fp_Page* pPage) { m_pUp = pPage; }
 	void		setDown(fp_Page* pPage) { m_pDown = pPage; }
 
-	UT_uint32	getYForNormalView(void) { return m_iYForNormalView; }
-	void		setYForNormalView(UT_uint32 ypos) { m_iYForNormalView = ypos; }
+	UT_uint32	getYForNormalView(void) { return m_iYNormalView; }
+	void		setYForNormalView(UT_uint32 ypos) { m_iYNormalView = ypos; }
+	UT_uint32	getXForPrintView(void) { return m_iXPrintView; }
+	void		setXForPrintView(UT_uint32 xpos) { m_iXPrintView = xpos; }
+	UT_uint32	getYForPrintView(void) { return m_iYPrintView; }
+	void		setYForPrintView(UT_uint32 ypos) { m_iYPrintView = ypos; }
+	
 
 protected:
-    void                _drawCropMarks(dg_DrawArgs*);
-	void				_reformat(void);
-	void				_reformatColumns(void);
-	void				_reformatFootnotes(void);
-	void				_reformatAnnotations(void);
+	void		_drawCropMarks(dg_DrawArgs*);
+	void		_reformat(void);
+	void		_reformatColumns(void);
+	void		_reformatFootnotes(void);
+	void		_reformatAnnotations(void);
 
 private:
 	// don't allow copying
@@ -235,9 +238,12 @@ private:
 	UT_sint32           m_iCountWrapPasses;
 
 	bool		m_bOnScreen;
-	UT_sint32	m_iX;
-	UT_sint32	m_iY;
-	UT_sint32	m_iYForNormalView;
+	UT_sint32	m_iXCanvasView;
+	UT_sint32	m_iYCanvasView;
+	UT_sint32	m_iXNormalView;
+	UT_sint32	m_iYNormalView;
+	UT_sint32	m_iXPrintView;
+	UT_sint32	m_iYPrintView;
 };
 
 #endif /* PAGE_H */

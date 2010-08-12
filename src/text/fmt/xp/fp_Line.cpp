@@ -2181,7 +2181,7 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 	      if (pRect == NULL || pRect->intersectsRect(&runRect))
 	      {
 		   pRun->draw(&da);
-	           UT_DEBUGMSG(("Just drew a run, xoff = %i, yoff = %i\n", da.xoff, da.yoff));
+	           xxx_UT_DEBUGMSG(("Just drew a run, xoff = %i, yoff = %i\n", da.xoff, da.yoff));
 	      }
 	      else
 	      {

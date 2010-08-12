@@ -842,6 +842,9 @@ protected:
 	void				_restorePieceTableState(void);
 	
 	void				_draw(UT_sint32, UT_sint32, UT_sint32, UT_sint32, bool bDirtyRunsOnly, bool bClip=false);
+	void				_findPagesOnScreenCanvasView(fp_Page* pCachedPage, UT_GenericVector<fp_Page *> &vecPagesOnScreen);
+	void				_findPagesOnScreenNormalView(fp_Page* pCachedPage, UT_GenericVector<fp_Page *> &vecPagesOnScreen);
+	void				_findPagesOnScreenPrintView(fp_Page* pCachedPage, UT_GenericVector<fp_Page *> &vecPagesOnScreen, bool bRecomposePrintView);
 
 	void				_drawBetweenPositions(PT_DocPosition left, PT_DocPosition right);
 	bool				_clearBetweenPositions(PT_DocPosition left, PT_DocPosition right, bool bFullLineHeightRect);

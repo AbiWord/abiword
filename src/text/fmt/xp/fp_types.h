@@ -92,7 +92,8 @@ typedef enum
   VIEW_PRINT,
   VIEW_NORMAL,
   VIEW_WEB,
-  VIEW_PREVIEW
+  VIEW_PREVIEW,
+  VIEW_CANVAS
 } ViewMode;
 
 typedef enum
