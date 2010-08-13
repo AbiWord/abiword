@@ -124,6 +124,7 @@ BeginLayout(Main,0)
 	EndSubMenu()
 
 	BeginSubMenu(AP_MENU_ID_VIEW)
+		MenuItem(AP_MENU_ID_VIEW_CANVAS)
 		MenuItem(AP_MENU_ID_VIEW_NORMAL)
 		MenuItem(AP_MENU_ID_VIEW_WEB)
 		MenuItem(AP_MENU_ID_VIEW_PRINT)

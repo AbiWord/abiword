@@ -137,6 +137,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_EDIT_DELETEEMBED,	0,0,0,0,	"delLeft",NULL,NULL);
 
 	_s(AP_MENU_ID_VIEW,				1,0,0,0,	NULL,				NULL,					NULL);
+	_s(AP_MENU_ID_VIEW_CANVAS, 0,0,0,1, "viewCanvasLayout", ap_GetState_View, NULL);
 	_s(AP_MENU_ID_VIEW_NORMAL, 0,0,0,1, "viewNormalLayout", ap_GetState_View, NULL);
 	_s(AP_MENU_ID_VIEW_WEB,    0,0,0,1, "viewWebLayout", ap_GetState_View, NULL);
 	_s(AP_MENU_ID_VIEW_PRINT,  0,0,0,1, "viewPrintLayout", ap_GetState_View, NULL);

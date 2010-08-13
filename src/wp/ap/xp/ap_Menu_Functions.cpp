@@ -1225,6 +1225,13 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 			s = EV_MIS_ZERO;
 		break;
 
+	case AP_MENU_ID_VIEW_CANVAS:
+	  if ( pFrameData->m_pViewMode == VIEW_CANVAS)
+	    s = EV_MIS_Toggled;
+	  else
+	    s = EV_MIS_ZERO;
+	  break;
+
 	case AP_MENU_ID_VIEW_NORMAL:
 	  if ( pFrameData->m_pViewMode == VIEW_NORMAL)
 	    s = EV_MIS_Toggled;

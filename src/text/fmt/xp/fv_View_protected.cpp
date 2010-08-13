@@ -4722,9 +4722,9 @@ void FV_View::_findPagesOnScreenPrintView(fp_Page* pCachedPage, UT_GenericVector
 	bool bTraversingLeftRight     = false; // False means going left, true means going right
 	bool bTraversingUpDown        = false; // False means going up, true means going down
 	bool bInViewport              = false; // Whether pPage has reached the viewport yet
-	UT_uint32 iCurrentRowWidth    = getPageViewSep();
-	UT_uint32 iCurrentRowHeight   = getPageViewTopMargin();
-	UT_uint32 iTotalHeightOfRows  = 0;
+	UT_uint32 iCurrentRowWidth    = getPageViewLeftMargin();
+	UT_uint32 iCurrentRowHeight   = 0;
+	UT_uint32 iTotalHeightOfRows  = getPageViewTopMargin();
 	fp_Page* pFirstPageInRow      = pPage;
 
 	// Ersin Sayz: The new print view is a structured view where a page's xpos and ypos aren't absolute but rather
@@ -4744,8 +4744,8 @@ void FV_View::_findPagesOnScreenPrintView(fp_Page* pCachedPage, UT_GenericVector
 
 	while(bRecomposePrintView && pPage) // If we change zoom, we need to recalculate all the page locations before finding which are on screen
 	{
-		pPage->setXForPrintView(iCurrentRowWidth + getPageViewSep());
-		iCurrentRowWidth += pPage->getWidth();
+		pPage->setXForPrintView(iCurrentRowWidth);
+		iCurrentRowWidth += pPage->getWidth() + getPageViewSep();
 		if(pPage->getHeight() > iCurrentRowHeight)
 			iCurrentRowHeight = pPage->getHeight();
 
@@ -4755,8 +4755,6 @@ void FV_View::_findPagesOnScreenPrintView(fp_Page* pCachedPage, UT_GenericVector
 			bRecomposePrintView = false;
 		else if(iCurrentRowWidth + getPageViewSep() + pPage->getWidth() > getWindowWidthLU() ) // Jump down a row
 		{
-			iTotalHeightOfRows += getPageViewSep() + iCurrentRowHeight;
-
 			// xpos is set when we're going through a row, but ypos needs to wait until the end of the row
 			// so that we can center align it (we need to know the tallest page in the row to center pages)
 			do {
@@ -4764,6 +4762,7 @@ void FV_View::_findPagesOnScreenPrintView(fp_Page* pCachedPage, UT_GenericVector
 				pFirstPageInRow = pFirstPageInRow->getNext();
 			} while( (pFirstPageInRow != pPage) && pFirstPageInRow);
 
+			iTotalHeightOfRows += getPageViewSep() + iCurrentRowHeight;
 			iCurrentRowWidth = getPageViewLeftMargin();
 			iCurrentRowHeight = 0;
 		}
@@ -4901,7 +4900,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	// STEP 1: Find which pages are on screen //
 	////////////////////////////////////////////
 	
-	if (pPage)	// pPage can be NULL at this point
+	if (pPage) // pPage can be NULL at this point
 	{
 		pDSL = pPage->getOwningSection();
 		xxx_UT_DEBUGMSG(("--Searching for pages to render in _draw:\n  page = %i\n  getX() = %i, getY() = %i\n  getWidth() = %i, getHeight() = %i\n  getXScrollOffset() = %i, getYScrollOffset() = %i\n", pPage->getPageNumber(), pPage->getX(), pPage->getY(), pPage->getWidth(), pPage->getHeight(), getXScrollOffset(), getYScrollOffset()));
@@ -4910,17 +4909,17 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		switch(getViewMode())
 		{
 			case VIEW_CANVAS:
-				_findPagesOnScreenCanvasView(getCurrentPage(), vecPagesOnScreen);
-				break;
+			_findPagesOnScreenCanvasView(getCurrentPage(), vecPagesOnScreen);
+			break;
 
 			case VIEW_WEB:
 			case VIEW_NORMAL:
-				_findPagesOnScreenNormalView(getCurrentPage(), vecPagesOnScreen);
-				break;
+			_findPagesOnScreenNormalView(getCurrentPage(), vecPagesOnScreen);
+			break;
 
-			case VIEW_PRINT:
-				_findPagesOnScreenPrintView(getCurrentPage(), vecPagesOnScreen, true);
-				break;
+			case VIEW_PRINT: // TODO: Pass meaningful values other than just "true", i.e. false for when we don't change zoom
+			_findPagesOnScreenPrintView(getCurrentPage(), vecPagesOnScreen, true); // When true is passed, changes each page's ypos xpos
+			break;
 		}
 
 	}
@@ -4994,7 +4993,6 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			iPageHeight = pPage->getHeight() - pDSL->getTopMargin() - pDSL->getBottomMargin();
 			adjustedTop = pPage->getY() - getYScrollOffset() + ( (UT_sint32) pPage->getPageNumber() * (UT_sint32) m_pG->tluD(1.0));
 			adjustedBottom = adjustedTop + iPageHeight;
-			UT_DEBUGMSG(("normal view adjustedBottom == %i\n", adjustedBottom));
 			adjustedLeft = 0;
 			adjustedRight = adjustedLeft + iPageWidth;
 			break;
@@ -5040,9 +5038,10 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 		da.bDirtyRunsOnly = bDirtyRunsOnly;
 		da.pG = m_pG;
-		UT_DEBUGMSG(("Drawing page da.xoff %d getPageViewLeftMargin() %d \n",da.xoff,getPageViewLeftMargin())); 
+		UT_DEBUGMSG(("Drawing page da.xoff %d getPageViewLeftMargin() %d \n",da.xoff, getPageViewLeftMargin()));
 		da.yoff = adjustedTop;
 		da.xoff = adjustedLeft;
+		UT_DEBUGMSG(("Drawing page with da.yoff and da.xoff %i %i\n", da.yoff, da.xoff));
 
 
 		if(!bDirtyRunsOnly || (pPage->needsRedraw() && (getViewMode() == VIEW_PRINT)))

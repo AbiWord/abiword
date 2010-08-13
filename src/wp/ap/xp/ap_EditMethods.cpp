@@ -655,6 +655,7 @@ public:
 	static EV_EditMethod_Fn viCmd_yw;
 	static EV_EditMethod_Fn viCmd_yy;
 
+	static EV_EditMethod_Fn viewCanvasLayout;
 	static EV_EditMethod_Fn viewNormalLayout;
 	static EV_EditMethod_Fn viewPrintLayout;
 	static EV_EditMethod_Fn viewWebLayout;
@@ -1209,6 +1210,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(viCmd_yb), 	0,	""),
 	EV_EditMethod(NF(viCmd_yw), 	0,	""),
 	EV_EditMethod(NF(viCmd_yy), 	0,	""),
+	EV_EditMethod(NF(viewCanvasLayout), 0, ""),
 #if !XAP_SIMPLE_TOOLBAR
 	EV_EditMethod(NF(viewExtra),			0,		""),
 	EV_EditMethod(NF(viewFormat),			0,		""),
@@ -10101,6 +10103,42 @@ UT_return_val_if_fail(pScheme, false);
 	return true;
 }
 
+Defun1(viewCanvasLayout)
+{
+	CHECK_FRAME;
+	UT_return_val_if_fail(pAV_View, false);
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_return_val_if_fail(pFrame, false);
+
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
+UT_return_val_if_fail(pFrameData, false);
+	pFrameData->m_pViewMode = VIEW_CANVAS;
+	pFrame->toggleLeftRuler (true && (pFrameData->m_bShowRuler) &&
+				 (!pFrameData->m_bIsFullScreen));
+	if(!pFrameData->m_bIsFullScreen)
+		pFrame->toggleTopRuler (true);
+
+	FV_View * pView = static_cast<FV_View *>(pAV_View);
+	UT_DEBUGMSG(("Set mode VIEW CANVAS \n"));
+	pView->setViewMode (VIEW_CANVAS);
+
+	// POLICY: make this the default for new frames, too
+	XAP_App * pApp = XAP_App::getApp();
+	UT_return_val_if_fail(pApp, false);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_return_val_if_fail(pPrefs, false);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
+UT_return_val_if_fail(pScheme, false);
+	pScheme->setValue(AP_PREF_KEY_LayoutMode, "4");
+
+	//pView->notifyListeners(AV_CHG_ALL);
+
+	if (pFrame->getZoomType() == pFrame->z_PAGEWIDTH || pFrame->getZoomType() == pFrame->z_WHOLEPAGE)
+		pFrame->updateZoom();
+	//pView->updateScreen(false);
+
+	return true;
+}
 Defun1(viewStatus)
 {
 	CHECK_FRAME;
