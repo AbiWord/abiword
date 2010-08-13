@@ -4744,21 +4744,22 @@ void FV_View::_findPagesOnScreenPrintView(fp_Page* pCachedPage, UT_GenericVector
 
 	while(bRecomposePrintView && pPage) // If we change zoom, we need to recalculate all the page locations before finding which are on screen
 	{
+		UT_DEBUGMSG(("recomposing page %i\n", pPage->getPageNumber()));
 		pPage->setXForPrintView(iCurrentRowWidth);
+		UT_DEBUGMSG(("iCurrentRowWidth %i\n", iCurrentRowWidth));
 		iCurrentRowWidth += pPage->getWidth() + getPageViewSep();
 		if(pPage->getHeight() > iCurrentRowHeight)
 			iCurrentRowHeight = pPage->getHeight();
 
 		pPage = pPage->getNext();
 
-		if(!pPage)
-			bRecomposePrintView = false;
-		else if(iCurrentRowWidth + getPageViewSep() + pPage->getWidth() > getWindowWidthLU() ) // Jump down a row
+		if(!pPage || iCurrentRowWidth + getPageViewSep() + pPage->getWidth() > getWindowWidthLU() ) // We're at the end of the row
 		{
 			// xpos is set when we're going through a row, but ypos needs to wait until the end of the row
 			// so that we can center align it (we need to know the tallest page in the row to center pages)
 			do {
 				pFirstPageInRow->setYForPrintView(iTotalHeightOfRows + (iCurrentRowHeight/2) - (pFirstPageInRow->getHeight())/2 );
+				UT_DEBUGMSG(("setYForPrintView %i, page %i\n", pFirstPageInRow->getY(), pFirstPageInRow->getPageNumber()));
 				pFirstPageInRow = pFirstPageInRow->getNext();
 			} while( (pFirstPageInRow != pPage) && pFirstPageInRow);
 
@@ -4961,7 +4962,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 	if(pPage)
 		UT_DEBUGMSG(("Starting at page %x \n",pPage->getPageNumber()));
-	if(!bDirtyRunsOnly && (getViewMode() == VIEW_PRINT))
+	if( !bDirtyRunsOnly && ((getViewMode() == VIEW_PRINT) || (getViewMode() == VIEW_CANVAS)) )
 		painter.fillRect(clrMargin, 0, 0, getWindowWidth(), getWindowHeight());
 //	if((getViewMode() != VIEW_PRINT) || pFrame->isMenuScrollHidden())
 //		painter.fillRect(clrMargin, 0, 0, getWindowWidth(), getWindowHeight());
@@ -4969,6 +4970,8 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	//////////////////////////////////////
 	// STEP 2: Draw the pages on screen //
 	//////////////////////////////////////
+
+	dg_DrawArgs da;
 
 	while (pPage) // This loop is to actually draw those pages
 	{
@@ -5032,9 +5035,6 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		UT_DEBUGMSG(("drawing page E: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d y=%d h=%d\n",
 			 iPageHeight,curY,m_yScrollOffset,getWindowHeight(),y,height));
 
-		dg_DrawArgs da;
-
-		bDirtyRunsOnly = false;
 
 		da.bDirtyRunsOnly = bDirtyRunsOnly;
 		da.pG = m_pG;
@@ -5042,7 +5042,6 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		da.yoff = adjustedTop;
 		da.xoff = adjustedLeft;
 		UT_DEBUGMSG(("Drawing page with da.yoff and da.xoff %i %i\n", da.yoff, da.xoff));
-
 
 		if(!bDirtyRunsOnly || (pPage->needsRedraw() && (getViewMode() == VIEW_PRINT)))
 		{
@@ -5064,7 +5063,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		m_pG->setColor(clr);
 
 		// one pixel border a
-		if(!isPreview() && (getViewMode() == VIEW_PRINT) && !pFrame->isMenuScrollHidden())
+		if(!isPreview() && ((getViewMode() == VIEW_PRINT) || (getViewMode() == VIEW_CANVAS)) && !pFrame->isMenuScrollHidden())
 		{
 			m_pG->setLineProperties(m_pG->tluD(1.0),
 					GR_Graphics::JOIN_MITER,
@@ -5100,7 +5099,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		{
 			// In normal mode, the right margin is
 			// white (since the whole screen is white).
-			if((getViewMode() != VIEW_PRINT) || pFrame->isMenuScrollHidden())
+			if((getViewMode() == VIEW_NORMAL) || (getViewMode() == VIEW_WEB) || pFrame->isMenuScrollHidden())
 			{
 				painter.fillRect(paperColor, adjustedRight, adjustedTop, getWindowWidth() - adjustedRight + m_pG->tlu(1), iPageHeight);
 			}
@@ -5154,7 +5153,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 		// two pixel drop shadow
 		
-		if(!isPreview() && (getViewMode() == VIEW_PRINT) && !pFrame->isMenuScrollHidden() )
+		if(!isPreview() && ((getViewMode() == VIEW_PRINT) || (getViewMode() == VIEW_CANVAS)) && !pFrame->isMenuScrollHidden() )
 		{
 			m_pG->setLineProperties(m_pG->tluD(1.0),
 					GR_Graphics::JOIN_MITER,
