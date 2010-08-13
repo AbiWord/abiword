@@ -154,6 +154,7 @@ static void lm_connection_authenticate_async_cb(LmConnection* /*connection*/, gb
 
 	if (success)
 	{
+		UT_DEBUGMSG(("User authenticated!\n"));
 		pHandler->setup();
 	}
 	else
@@ -215,6 +216,7 @@ ConnectResult XMPPAccountHandler::connect()
 	const std::string username = getProperty("username");
 	const std::string port = getProperty("port"); // TODO: unused atm
 	const std::string resource = getProperty("resource");
+	const std::string encryption = getProperty("encryption");
 
 	std::string jid = username + "@" + server;
 	
@@ -225,6 +227,15 @@ ConnectResult XMPPAccountHandler::connect()
 	UT_return_val_if_fail(m_pConnection, CONNECT_INTERNAL_ERROR);
 
 	lm_connection_set_jid(m_pConnection, jid.c_str());
+
+	// setup SSL	
+	if (lm_ssl_is_supported() && encryption == "true")
+	{
+		LmSSL* pSSL = lm_ssl_new(NULL, NULL, NULL, NULL); // TODO: free this
+		lm_ssl_use_starttls(pSSL, TRUE, TRUE);
+		lm_connection_set_ssl(m_pConnection, pSSL);
+		lm_ssl_unref(pSSL);
+	}
 
 	GError* error = NULL;
 	if (!lm_connection_open(m_pConnection, lm_connection_open_async_cb, this, NULL, &error)) 
@@ -285,7 +296,6 @@ bool XMPPAccountHandler::authenticate()
 
 		return  false;
 	}
-	UT_DEBUGMSG(("connect() - user (%s) authenticated!\n", username.c_str()));
 
 	return true;
 }	

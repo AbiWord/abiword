@@ -41,6 +41,7 @@ private:
 	GtkWidget*				password_entry;
 	GtkWidget*				server_entry;
 	GtkWidget*				port_entry;	
+	GtkWidget*				starttls_button;
 	GtkWidget*				autoconnect_button;
 };
 
