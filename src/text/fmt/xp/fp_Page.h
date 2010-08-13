@@ -192,6 +192,11 @@ public:
 	void		setXForPrintView(UT_uint32 xpos) { m_iXPrintView = xpos; }
 	UT_uint32	getYForPrintView(void) { return m_iYPrintView; }
 	void		setYForPrintView(UT_uint32 ypos) { m_iYPrintView = ypos; }
+	UT_uint32	getXForCanvasView(void) { return m_iXCanvasView; }
+	void		setXForCanvasView(UT_uint32 xpos) { m_iXCanvasView = xpos; }
+	UT_uint32	getYForCanvasView(void) { return m_iYCanvasView; }
+	void		setYForCanvasView(UT_uint32 ypos) { m_iYCanvasView = ypos; }
+	
 	
 
 protected:

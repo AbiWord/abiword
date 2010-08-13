@@ -4657,6 +4657,7 @@ void FV_View::_findPagesOnScreenCanvasView(fp_Page* pCachedPage, UT_GenericVecto
 void FV_View::_findPagesOnScreenNormalView(fp_Page* pCachedPage, UT_GenericVector<fp_Page *> &vecPagesOnScreen)
 {
 	fp_Page* pPage                = pCachedPage;
+	fl_DocSectionLayout* pDSL     = pPage->getOwningSection();
 	bool bFindingPagesOnScreen    = true;
 	bool bTraversingLeftRight     = false; // False means going left, true means going right
 	bool bTraversingUpDown        = false; // False means going up, true means going down
@@ -4678,10 +4679,8 @@ void FV_View::_findPagesOnScreenNormalView(fp_Page* pCachedPage, UT_GenericVecto
 		// time we change a page's size to each subsequent page's ypos.  That will be implemented in
 		// fl_DocLayout when the page size changes.
 		if( pPage &&
-			(pPage->getX() <= getXScrollOffset() + getWindowWidthLU()) &&
-		    (pPage->getX() + pPage->getWidth() >= getXScrollOffset()) &&
-		    (pPage->getY() <= getYScrollOffset() + getWindowHeightLU()) &&
-		    (pPage->getY() + pPage->getHeight() >= getYScrollOffset()) )
+	  	    (pPage->getY() <= getYScrollOffset() + getWindowHeightLU()) &&
+		    (pPage->getY() + pPage->getHeight() - pDSL->getTopMargin() - pDSL->getBottomMargin() >= getYScrollOffset()) )
 		{
 			UT_DEBUGMSG(("Normal view, adding page %d to pages on screen vector\n", pPage->getPageNumber()));
 			vecPagesOnScreen.addItem(pPage);
@@ -4820,7 +4819,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 {
 	if( !(m_pLayout->findBlockAtPosition(0)) )
 		return;
-	bDirtyRunsOnly = false;
+//	bDirtyRunsOnly = false;
 	UT_DEBUGMSG(("FV_View::_draw [x %ld][y %ld][w %ld][h %ld][bClip %ld]\n"
 					 "\t\twith [yScrollOffset %ld][windowHeight %ld][bDirtyRunsOnly %d]\n",
 					 x,y,width,height,bClip,
@@ -4968,6 +4967,10 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 //	if((getViewMode() != VIEW_PRINT) || pFrame->isMenuScrollHidden())
 //		painter.fillRect(clrMargin, 0, 0, getWindowWidth(), getWindowHeight());
 
+	//////////////////////////////////////
+	// STEP 2: Draw the pages on screen //
+	//////////////////////////////////////
+
 	while (pPage) // This loop is to actually draw those pages
 	{
 		bool jumpDownARow = false;
@@ -4988,24 +4991,30 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		{
 			case VIEW_NORMAL:
 			case VIEW_WEB:
-
-			iPageHeight = iPageHeight - pDSL->getTopMargin() - pDSL->getBottomMargin();
-			adjustedTop = pPage->getYForNormalView() - getYScrollOffset() + ( (UT_sint32) pPage->getPageNumber() * (UT_sint32) m_pG->tluD(1.0));
+			iPageHeight = pPage->getHeight() - pDSL->getTopMargin() - pDSL->getBottomMargin();
+			adjustedTop = pPage->getY() - getYScrollOffset() + ( (UT_sint32) pPage->getPageNumber() * (UT_sint32) m_pG->tluD(1.0));
 			adjustedBottom = adjustedTop + iPageHeight;
+			UT_DEBUGMSG(("normal view adjustedBottom == %i\n", adjustedBottom));
 			adjustedLeft = 0;
 			adjustedRight = adjustedLeft + iPageWidth;
 			break;
 
 			case VIEW_PRINT:
-
 			iPageHeight = pPage->getHeight();
-			adjustedTop = pPage->getYForPrintView() - getYScrollOffset();
+			adjustedTop = pPage->getY() - getYScrollOffset();
 			adjustedBottom = adjustedTop + iPageHeight;
-			adjustedLeft = pPage->getXForPrintView() - getXScrollOffset();
+			adjustedLeft = pPage->getX() - getXScrollOffset();
 			adjustedRight = adjustedLeft + iPageWidth;
 			break;
 
-			// case VIEW_CANVAS:
+			case VIEW_CANVAS:
+			iPageHeight = pPage->getHeight();
+			adjustedTop = pPage->getY() - getYScrollOffset();
+			adjustedBottom = adjustedTop + iPageHeight;
+			adjustedLeft = pPage->getX() - getXScrollOffset();
+			adjustedRight = adjustedLeft + iPageWidth;
+			break;
+
 			// case VIEW_SVN:
 			// etc.
 		}
