@@ -140,6 +140,8 @@ public:
 	// Return true if you can to share a file with this buddy, false otherwise
 	virtual bool							canShare(BuddyPtr /*pBuddy*/)
 		{ return true; }
+	virtual bool							defaultShareState(BuddyPtr /*pBuddy*/)
+		{ return false; }
 
 	// session management
 	virtual void							getSessionsAsync();

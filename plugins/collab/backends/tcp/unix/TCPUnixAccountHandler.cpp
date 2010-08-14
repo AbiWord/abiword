@@ -37,6 +37,7 @@ TCPUnixAccountHandler::TCPUnixAccountHandler()
 	client_button(NULL),
 	server_entry(NULL),
 	port_button(NULL),
+	allow_all_button(NULL),
 	autoconnect_button(NULL)
 {
 }
@@ -86,6 +87,10 @@ void TCPUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	gtk_box_pack_start(GTK_BOX(portHBox), port_button, false, false, 0);
 	gtk_box_pack_start(GTK_BOX(vbox), portHBox, false, false, 0);
 	
+	// allow-all
+	allow_all_button = gtk_check_button_new_with_label("Automatically grant buddies access to shared documents");
+	gtk_box_pack_start(GTK_BOX(vbox), allow_all_button, TRUE, TRUE, 0);
+	
 	// autoconnect
 	autoconnect_button = gtk_check_button_new_with_label("Connect on application startup");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(autoconnect_button), true);
@@ -125,6 +130,9 @@ void TCPUnixAccountHandler::storeProperties()
 	
 	if (port_button && GTK_IS_ENTRY(port_button))
 			addProperty("port", gtk_entry_get_text(GTK_ENTRY(port_button)));	
+		
+	if (allow_all_button && GTK_IS_TOGGLE_BUTTON(allow_all_button))
+		addProperty("allow-all", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(allow_all_button)) ? "true" : "false" );
 			
 	if (autoconnect_button && GTK_IS_TOGGLE_BUTTON(autoconnect_button))
 		addProperty("autoconnect", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(autoconnect_button)) ? "true" : "false" );

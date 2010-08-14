@@ -71,7 +71,8 @@ protected:
 	AbiCollab*					_getActiveSession();
 	AccountHandler*				_getShareableAccountHandler();
 	std::vector<std::string>	_getSessionACL();
-	bool						_inAcl(const std::vector<std::string>& vAcl, BuddyPtr pBuddy);
+	
+	bool						_populateShareState(BuddyPtr pBuddy);
 	virtual void				_refreshWindow() = 0;
 	virtual void				_populateBuddyModel(bool refresh) = 0;
 	virtual AccountHandler*		_getActiveAccountHandler() = 0;
@@ -80,6 +81,9 @@ protected:
 	AP_Dialog_CollaborationShare::tAnswer m_answer;
 	AccountHandler*				m_pAccount;
 	std::vector<std::string>	m_vAcl;
+	
+private:
+	bool						_inAcl(const std::vector<std::string>& vAcl, BuddyPtr pBuddy);
 };
 
 #endif /* AP_DIALOG_COLLABORATIONSHARE_H */

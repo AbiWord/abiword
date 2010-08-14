@@ -56,6 +56,7 @@ private:
 	HWND									m_hJoinRadio;
 	HWND									m_hServerLabel;
 	HWND									m_hPortLabel;
+	HWND									m_hAllowAllCheck;
 	HWND									m_hAutoconnectCheck;
 	
 	void									_checkButtonHwnd(HWND hCtrl, bool bChecked);

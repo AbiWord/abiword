@@ -133,6 +133,7 @@ public:
 	AccountHandler*						getAclAccount()
 		{ return m_pAclAccount; }
 	void								setAcl(const std::vector<std::string> vAcl);
+	void								appendAcl(const std::string& sBuddyDescriptor);
 	
 
 	// import/export management

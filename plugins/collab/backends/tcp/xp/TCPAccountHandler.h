@@ -51,6 +51,7 @@ public:
 	virtual bool							isOnline();
 
 	// user management
+	void									addBuddy(BuddyPtr pBuddy);
 	virtual BuddyPtr						constructBuddy(const PropertyMap& props);
 	virtual BuddyPtr						constructBuddy(const std::string& descriptor, BuddyPtr pBuddy);
 	virtual bool							recognizeBuddyIdentifier(const std::string& identifier);
@@ -59,6 +60,7 @@ public:
 	virtual void							forceDisconnectBuddy(BuddyPtr buddy);
 	virtual bool							hasPersistentAccessControl()
 		{ return false; }
+	virtual bool							defaultShareState(BuddyPtr /*pBuddy*/);
 
 	// session management
 	virtual bool							allowsSessionTakeover()

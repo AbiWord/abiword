@@ -27,7 +27,7 @@
 #define ABI_RID_DIALOG_COLLABTCP_SERVERRADIO 205
 #define ABI_RID_DIALOG_COLLABTCP_JOINRADIO 206
 #define ABI_RID_DIALOG_COLLABTCP_AUTOCONNECTCHECK 207
-#define ABI_RID_DIALOG_COLLABTCP_USESECURECHECK 208
+#define ABI_RID_DIALOG_COLLABTCP_ALLOWALLCHECK 208
 
 AccountHandlerConstructor TCPAccountHandlerConstructor = &TCPWin32AccountHandler::static_constructor;
 
@@ -114,6 +114,7 @@ TCPWin32AccountHandler::TCPWin32AccountHandler()
 	m_hJoinRadio(NULL),
 	m_hServerLabel(NULL),
 	m_hPortLabel(NULL),
+	m_hAllowAllCheck(NULL),
 	m_hAutoconnectCheck(NULL)
 {
 	AbiCollabSessionManager * pSessionManager = AbiCollabSessionManager::getManager();
@@ -164,9 +165,14 @@ void TCPWin32AccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	80, 85, 60, 20, hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_PORTENTRY,  m_hInstance, 0);
 	UT_return_if_fail(m_hPortEntry);
 	
+	// Checkbox for "auto grant permission"
+	m_hAllowAllCheck = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "BUTTON", "Automatically grant buddies access to shared documents", BS_CHECKBOX | BS_AUTOCHECKBOX | WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+	14, 115, 290, 15, hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_ALLOWALLCHECK,  m_hInstance, 0);
+	UT_return_if_fail(m_hAllowAllCheck);
+
 	// Checkbox for Connect on Startup
 	m_hAutoconnectCheck = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "BUTTON", "Connect on Application Startup", BS_CHECKBOX | BS_AUTOCHECKBOX | WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-	14, 115, 174, 15, hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_AUTOCONNECTCHECK,  m_hInstance, 0);
+	14, 135, 174, 15, hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_AUTOCONNECTCHECK,  m_hInstance, 0);
 	UT_return_if_fail(m_hAutoconnectCheck);
 	
 	// Font setting code borrowed from XAP_Win32Dlg_About
@@ -176,7 +182,7 @@ void TCPWin32AccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	lf.lfWeight = 0;
 	HFONT hfontPrimary = CreateFontIndirect(&lf);
 	HWND rgFontReceivers[] =
-		{ m_hServerRadio, m_hJoinRadio, m_hServerLabel, m_hPortLabel, m_hServerEntry, m_hPortEntry, m_hAutoconnectCheck};
+		{ m_hServerRadio, m_hJoinRadio, m_hServerLabel, m_hPortLabel, m_hServerEntry, m_hPortEntry, m_hAllowAllCheck, m_hAutoconnectCheck};
 	for (UT_uint32 iWnd = 0; iWnd < G_N_ELEMENTS(rgFontReceivers); iWnd++)
 		SendMessage(rgFontReceivers[iWnd], WM_SETFONT, (WPARAM) hfontPrimary, 0);
 	
@@ -204,6 +210,7 @@ void TCPWin32AccountHandler::removeDialogWidgets(void* pEmbeddingParent)
 	DESTROY_WINDOW(m_hPortLabel);
 	DESTROY_WINDOW(m_hServerRadio);
 	DESTROY_WINDOW(m_hJoinRadio);
+	DESTROY_WINDOW(m_hAllowAllCheck);
 	DESTROY_WINDOW(m_hAutoconnectCheck);
 
 	// destroying a window does not repaint the area it owned, so do it here
@@ -242,6 +249,12 @@ void TCPWin32AccountHandler::storeProperties()
 			addProperty("port", sPort);
 		}
 	}
+
+	if (m_hAllowAllCheck)
+	{
+		addProperty("allow-all", _isCheckedHwnd(m_hAllowAllCheck) ? "true" : "false" );
+	}
+
 	if (m_hAutoconnectCheck)
 	{
 		addProperty("autoconnect", _isCheckedHwnd(m_hAutoconnectCheck) ? "true" : "false" );

@@ -23,6 +23,7 @@
 #include "TCPBuddy.h"
 
 #include <account/xp/AccountEvent.h>
+#include <session/xp/AbiCollab.h>
 #include <session/xp/AbiCollabSessionManager.h>
 
 TCPAccountHandler::TCPAccountHandler()
@@ -279,6 +280,32 @@ void TCPAccountHandler::_handleAccept(IOServerHandler* pHandler, boost::shared_p
 	pHandler->asyncAccept();	
 }
 
+void TCPAccountHandler::addBuddy(BuddyPtr pBuddy)
+{
+	UT_DEBUGMSG(("TCPAccountHandler::addBuddy()\n"));
+	UT_return_if_fail(pBuddy);
+	
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_if_fail(pManager);
+	
+	if (getProperty("allow-all") == "true")
+	{
+		const UT_GenericVector<AbiCollab *> pSessions = pManager->getSessions();
+		for (UT_sint32 i = 0; i < pSessions.size(); i++)
+		{
+			AbiCollab* pSession = pSessions.getNthItem(i);
+			UT_continue_if_fail(pSession);
+			
+			if (pSession->getAclAccount() != this)
+				continue;
+			
+			pSession->appendAcl(pBuddy->getDescriptor(false).utf8_str());
+		}
+	}
+	
+	AccountHandler::addBuddy(pBuddy);
+}
+
 BuddyPtr TCPAccountHandler::constructBuddy(const PropertyMap& props)
 {
 	UT_DEBUGMSG(("TCPAccountHandler::constructBuddy()\n"));
@@ -322,6 +349,11 @@ void TCPAccountHandler::forceDisconnectBuddy(BuddyPtr buddy)
 	// disconnect it
 	UT_return_if_fail(it != m_clients.end());
 	(*it).second->disconnect();
+}
+
+bool TCPAccountHandler::defaultShareState(BuddyPtr /*pBuddy*/)
+{
+	return getProperty("allow-all") == "true";
 }
 
 bool TCPAccountHandler::recognizeBuddyIdentifier(const std::string& /*identifier*/)

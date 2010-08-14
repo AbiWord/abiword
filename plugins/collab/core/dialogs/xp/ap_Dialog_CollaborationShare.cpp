@@ -123,6 +123,25 @@ bool AP_Dialog_CollaborationShare::_inAcl(const std::vector<std::string>& vAcl, 
 	return false;
 }
 
+bool AP_Dialog_CollaborationShare::_populateShareState(BuddyPtr pBuddy)
+{
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, false);
+
+	PD_Document *pDoc = static_cast<PD_Document*>(XAP_App::getApp()->getLastFocussedFrame()->getCurrentDoc());
+	UT_return_val_if_fail(pDoc, false);
+
+	if (!pManager->isInSession(pDoc))
+	{
+		AccountHandler* pHandler = pBuddy->getHandler();
+		UT_return_val_if_fail(pHandler, false);
+	
+		return pHandler->defaultShareState(pBuddy);
+	}
+
+	return _inAcl(m_vAcl, pBuddy);
+}
+
 void AP_Dialog_CollaborationShare::eventAccountChanged()
 {
 	UT_DEBUGMSG(("AP_Dialog_CollaborationShare::eventAccountChanged()\n"));
