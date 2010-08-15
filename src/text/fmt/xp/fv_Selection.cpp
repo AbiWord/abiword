@@ -160,8 +160,8 @@ bool FV_Selection::getRectTableSel
 (UT_sint32* left, UT_sint32* right, UT_sint32* top, UT_sint32* bottom)
 {
     // if one isn't set they all aren't
-    if( m_iLeftTableRect < 0 )
-        return false;
+    /*if( m_iLeftTableRect < 0 )
+        return false;*/
         
     *left = m_iLeftTableRect;
 	*right = m_iRightTableRect;

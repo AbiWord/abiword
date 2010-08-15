@@ -3758,8 +3758,8 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 			m_Selection.setRectTableSel(iLeftSelEnd, iRightSelEnd, iTopSelEnd, iBotSelEnd);
 			
 			// For now we print the rectangle for debug purposes
-			/*UT_DEBUGMSG(("SELECTED RECTANGLE:\n\tleft attach: %d\n\tright attach: %d\n\tbottom attach: %d\n\ttop attach: %d\n",
-			iLeftSelEnd, iRightSelEnd, iBotSelEnd, iTopSelEnd));*/	
+			/*UT_DEBUGMSG(("\nSELECTED RECTANGLE:\n\tleft attach: %d\n\tright attach: %d\n\tbottom attach: %d\n\ttop attach: %d\n",
+			iLeftSelEnd, iRightSelEnd, iBotSelEnd, iTopSelEnd));*/
 			
 			
 			/*------------------------------------------------------------------
