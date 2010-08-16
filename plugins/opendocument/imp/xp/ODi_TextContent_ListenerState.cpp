@@ -1041,16 +1041,18 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
 void ODi_TextContent_ListenerState::charData (
                             const gchar* pBuffer, int length)
 {
-    if (pBuffer && length) {
-        if (m_bAcceptingText) {
-            gchar *stripped_buf = g_strndup(pBuffer, length);
-            g_strstrip(stripped_buf);
-            m_charData += UT_UCS4String (stripped_buf, strlen(stripped_buf), false);
-            g_free(stripped_buf);
-        } else if (m_bPendingAnnotationAuthor) {
+    if (pBuffer && length) 
+    {
+        if (m_bAcceptingText) 
+	{
+	     m_charData += UT_UCS4String (pBuffer, length, true);
+        } 
+	else if (m_bPendingAnnotationAuthor) 
+	{
             m_sAnnotationAuthor = pBuffer;
-
-        } else if (m_bPendingAnnotationDate) {
+        } 
+	else if (m_bPendingAnnotationDate) 
+	{
             m_sAnnotationDate = pBuffer;
         }
     }
