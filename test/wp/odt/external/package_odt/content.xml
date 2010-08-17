@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<office:document-content
+	xmlns:chart="urn:oasis:names:tc:opendocument:xmlns:chart:1.0"
+	xmlns:dr3d="urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0"
+	xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+	xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"
+	xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0"
+	xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0"
+	xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0"
+	xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+	xmlns:script="urn:oasis:names:tc:opendocument:xmlns:script:1.0"
+	xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0"
+	xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"
+	xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0"
+	xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"
+	xmlns:of="urn:oasis:names:tc:opendocument:xmlns:of:1.2"
+	xmlns:rdfa="http://docs.oasis-open.org/opendocument/meta/rdfa#"
+	xmlns:dom="http://www.w3.org/2001/xml-events"
+	xmlns:math="http://www.w3.org/1998/Math/MathML"
+	xmlns:xforms="http://www.w3.org/2002/xforms"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:xhtml="http://www.w3.org/1999/xhtml"
+
+	office:version="1.2">
+	<office:scripts/>
+	<office:font-face-decls>
+		<style:font-face style:name="Nimbus Roman No9 L" svg:font-family="'Nimbus Roman No9 L'" style:font-family-generic="roman" style:font-pitch="variable"/>
+		<style:font-face style:name="Nimbus Sans L" svg:font-family="'Nimbus Sans L'" style:font-family-generic="swiss" style:font-pitch="variable"/>
+		<style:font-face style:name="DejaVu Sans" svg:font-family="'DejaVu Sans'" style:font-family-generic="system" style:font-pitch="variable"/>
+	</office:font-face-decls>
+	<office:automatic-styles>
+	  <style:style style:name="P1" style:family="paragraph" style:parent-style-name="Standard" style:list-style-name="L1"/>
+	  <text:list-style style:name="L1">
+	    <text:list-level-style-number text:level="1" text:style-name="Numbering_20_Symbols" style:num-suffix="." style:num-format="1">
+              <style:list-level-properties text:list-level-position-and-space-mode="label-alignment">
+		<style:list-level-label-alignment text:label-followed-by="listtab" text:list-tab-stop-position="1.27cm" fo:text-indent="-0.635cm" fo:margin-left="1.27cm"/>
+              </style:list-level-properties>
+	    </text:list-level-style-number>
+	    <text:list-level-style-number text:level="2" text:style-name="Numbering_20_Symbols" style:num-suffix="." style:num-format="1">
+              <style:list-level-properties text:list-level-position-and-space-mode="label-alignment">
+		<style:list-level-label-alignment text:label-followed-by="listtab" text:list-tab-stop-position="1.905cm" fo:text-indent="-0.635cm" fo:margin-left="1.905cm"/>
+              </style:list-level-properties>
+	    </text:list-level-style-number>
+	    <text:list-level-style-number text:level="3" text:style-name="Numbering_20_Symbols" style:num-suffix="." style:num-format="1">
+              <style:list-level-properties text:list-level-position-and-space-mode="label-alignment">
+		<style:list-level-label-alignment text:label-followed-by="listtab" text:list-tab-stop-position="2.54cm" fo:text-indent="-0.635cm" fo:margin-left="2.54cm"/>
+              </style:list-level-properties>
+	    </text:list-level-style-number>
+	    <text:list-level-style-number text:level="4" text:style-name="Numbering_20_Symbols" style:num-suffix="." style:num-format="1">
+              <style:list-level-properties text:list-level-position-and-space-mode="label-alignment">
+		<style:list-level-label-alignment text:label-followed-by="listtab" text:list-tab-stop-position="3.175cm" fo:text-indent="-0.635cm" fo:margin-left="3.175cm"/>
+              </style:list-level-properties>
+	    </text:list-level-style-number>
+	    <text:list-level-style-number text:level="5" text:style-name="Numbering_20_Symbols" style:num-suffix="." style:num-format="1">
+              <style:list-level-properties text:list-level-position-and-space-mode="label-alignment">
+		<style:list-level-label-alignment text:label-followed-by="listtab" text:list-tab-stop-position="3.81cm" fo:text-indent="-0.635cm" fo:margin-left="3.81cm"/>
+              </style:list-level-properties>
+	    </text:list-level-style-number>
+	    <text:list-level-style-number text:level="6" text:style-name="Numbering_20_Symbols" style:num-suffix="." style:num-format="1">
+              <style:list-level-properties text:list-level-position-and-space-mode="label-alignment">
+		<style:list-level-label-alignment text:label-followed-by="listtab" text:list-tab-stop-position="4.445cm" fo:text-indent="-0.635cm" fo:margin-left="4.445cm"/>
+              </style:list-level-properties>
+	    </text:list-level-style-number>
+	    <text:list-level-style-number text:level="7" text:style-name="Numbering_20_Symbols" style:num-suffix="." style:num-format="1">
+              <style:list-level-properties text:list-level-position-and-space-mode="label-alignment">
+		<style:list-level-label-alignment text:label-followed-by="listtab" text:list-tab-stop-position="5.08cm" fo:text-indent="-0.635cm" fo:margin-left="5.08cm"/>
+              </style:list-level-properties>
+	    </text:list-level-style-number>
+	    <text:list-level-style-number text:level="8" text:style-name="Numbering_20_Symbols" style:num-suffix="." style:num-format="1">
+              <style:list-level-properties text:list-level-position-and-space-mode="label-alignment">
+		<style:list-level-label-alignment text:label-followed-by="listtab" text:list-tab-stop-position="5.715cm" fo:text-indent="-0.635cm" fo:margin-left="5.715cm"/>
+              </style:list-level-properties>
+	    </text:list-level-style-number>
+	    <text:list-level-style-number text:level="9" text:style-name="Numbering_20_Symbols" style:num-suffix="." style:num-format="1">
+              <style:list-level-properties text:list-level-position-and-space-mode="label-alignment">
+		<style:list-level-label-alignment text:label-followed-by="listtab" text:list-tab-stop-position="6.35cm" fo:text-indent="-0.635cm" fo:margin-left="6.35cm"/>
+              </style:list-level-properties>
+	    </text:list-level-style-number>
+	    <text:list-level-style-number text:level="10" text:style-name="Numbering_20_Symbols" style:num-suffix="." style:num-format="1">
+              <style:list-level-properties text:list-level-position-and-space-mode="label-alignment">
+		<style:list-level-label-alignment text:label-followed-by="listtab" text:list-tab-stop-position="6.985cm" fo:text-indent="-0.635cm" fo:margin-left="6.985cm"/>
+              </style:list-level-properties>
+	    </text:list-level-style-number>
+	  </text:list-style>
+	</office:automatic-styles>
+	<office:body>
+		<office:text>
+			<text:sequence-decls>
+				<text:sequence-decl text:display-outline-level="0" text:name="Illustration"/>
+				<text:sequence-decl text:display-outline-level="0" text:name="Table"/>
+				<text:sequence-decl text:display-outline-level="0" text:name="Text"/>
+				<text:sequence-decl text:display-outline-level="0" text:name="Drawing"/>
+			</text:sequence-decls>
+
+			<text:h text:style-name="Heading" xml:id="intro">Both the Senarios and RDF data are in this single ODF Document</text:h>
+
+			<text:p>
+			  Instead of sending the new senarios out via email, I have decided to describe what can be done and what is new inside this ODF document file. The plan is to have numbered sections and just add new numbered headings or whatnot as new cases arise.
+			</text:p>
+
+			<text:h text:style-name="Heading" xml:id="contactsheader">Contacts and the RDF FOAF vocabulary</text:h>
+
+			<text:p>
+			  The Friend of a Friend (FOAF) vocabulary is
+			  used to store Contact information and the
+			  relationship between contacts in RDF. I use
+			  the terms FOAF and Contacts interchangably
+			  depending on what RDF background folks have.
+			</text:p>
+
+
+			<text:p>
+			  This event is in <text:meta xml:id="geo1#dec09r3">Tokyo,
+			    on 2009-12-16T16:00:00</text:meta>, so when you right click and select 
+			  Import to Calendar, you might have to check earlier or later than the date above
+			  if you are in a different time zone to Tokyo. Importing was tested with korganizer.
+ 			</text:p>
+
+ 			<text:p>
+			  Right click
+			  the <text:meta xml:id="geo1#dec09r4">Tokyo,
+			  event</text:meta> and save it to an ical
+			  file which should be loadable in other
+			  applications.
+ 			</text:p>
+
+
+			<text:h text:style-name="Heading">Some new wonderful scenario</text:h>
+
+			<text:p>
+			  Describe it.
+			</text:p>
+
+			<text:p text:style-name="Standard">
+			  A simple application of RDF that is very
+			  useful is telling a computer about Who,
+			  What, Where, When information. For example,
+			  the following statment associates the
+			  "world" with the name "Earth" using
+			  bookmarks and the text:meta tag to allow RDF
+			  to be attached.
+			</text:p>
+
+			<text:p text:style-name="Standard">
+				<text:bookmark-start text:name="name of our world" />
+				Our
+				<text:meta xml:id="id_world_r1">world</text:meta>
+				is called
+				<text:meta xml:id="id_earth_r1">Earth</text:meta>.
+				<text:bookmark-end text:name="name of our world"/>
+			</text:p>
+
+			<text:p></text:p>
+
+			<text:p>
+			  The following associates various people or creatures with each other.
+			  <text:meta xml:id="frodo3">Frodo</text:meta> has a good friend
+			  <text:meta xml:id="samwise3">Sam</text:meta>. They both know 
+			  <text:meta xml:id="gollum1">Gollum</text:meta> though Sam has expressed
+			  that the relationship is not a wise one.
+			</text:p>
+
+			<text:p>Let us meet at 
+			  <text:meta xml:id="geo1r2">13H, Jan 2003</text:meta> 
+			  in the place with no darkness.</text:p>
+
+			<text:p>
+			  And, something in <text:meta xml:id="geo1#dec09r6">December 2009</text:meta>
+			  to test imports in the current time frame. A <text:meta xml:id="geo1#addtest">second test</text:meta>
+			  for importing.
+			</text:p>
+
+			<text:p>
+			  There are a few competing geotagging ontologies, the RDF ical can link to a simple
+			  list of lat and long data, and anything can use geo84 to link to a point or just
+			  include lat and long attributes where they are needed. The geo84 data is associated
+			  with the <text:meta xml:id="dan84">Dan Brickley</text:meta> sample.
+			</text:p>
+
+			<text:p>Some extra matter at the end of document</text:p>
+
+		</office:text>
+	</office:body>
+</office:document-content>

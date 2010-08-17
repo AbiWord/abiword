@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xmlns:chart="urn:oasis:names:tc:opendocument:xmlns:chart:1.0" xmlns:dr3d="urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0" xmlns:math="http://www.w3.org/1998/Math/MathML" xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0" xmlns:script="urn:oasis:names:tc:opendocument:xmlns:script:1.0" xmlns:ooo="http://openoffice.org/2004/office" xmlns:ooow="http://openoffice.org/2004/writer" xmlns:oooc="http://openoffice.org/2004/calc" xmlns:dom="http://www.w3.org/2001/xml-events" xmlns:xforms="http://www.w3.org/2002/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rpt="http://openoffice.org/2005/report" xmlns:of="urn:oasis:names:tc:opendocument:xmlns:of:1.2" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:grddl="http://www.w3.org/2003/g/data-view#" xmlns:field="urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0" office:version="1.2" grddl:transformation="http://docs.oasis-open.org/office/1.2/xslt/odf2rdf.xsl">
+  <office:scripts/>
+  <office:font-face-decls>
+    <style:font-face style:name="FreeSans1" svg:font-family="FreeSans"/>
+    <style:font-face style:name="Times New Roman" svg:font-family="'Times New Roman'" style:font-family-generic="roman" style:font-pitch="variable"/>
+    <style:font-face style:name="Arial" svg:font-family="Arial" style:font-family-generic="swiss" style:font-pitch="variable"/>
+    <style:font-face style:name="Droid Sans" svg:font-family="'Droid Sans'" style:font-family-generic="system" style:font-pitch="variable"/>
+    <style:font-face style:name="FreeSans" svg:font-family="FreeSans" style:font-family-generic="system" style:font-pitch="variable"/>
+  </office:font-face-decls>
+  <office:automatic-styles/>
+  <office:body>
+    <office:text>
+      <text:sequence-decls>
+        <text:sequence-decl text:display-outline-level="0" text:name="Illustration"/>
+        <text:sequence-decl text:display-outline-level="0" text:name="Table"/>
+        <text:sequence-decl text:display-outline-level="0" text:name="Text"/>
+        <text:sequence-decl text:display-outline-level="0" text:name="Drawing"/>
+      </text:sequence-decls>
+      <text:p text:style-name="Standard">
+This document has RDF linked via the xml:id tag. The entire third paragraph is linked, The first time the string "Barry" appears in the subsequent paragraph is linked using text:meta, The header after that is linked (text:h), the bookmark containing the second sentence after the header is linked, and the table cell which delcares itself linked is linked. There is text before and after linked elements so you can see that when the cursor moves out of them then the RDF is no longer linked. For example, after the "Barry" text:meta link you should no longer find the RDF for barry, this is to test that scoping is working as it should. This is the first paragraph. Have you no sense of decency sir at long last? Frankly my dear, I don’t give an xml element.</text:p>
+      <text:p text:style-name="Standard"/>
+
+      <text:p text:style-name="Standard">
+      This document contains xml:id references to text:p, text:h, bookmarks, text:meta, and a table cell.
+      I should move the RDF menu entries to their own to level menu, but at the moment you move the cursor and select "Collaborate/Dump RDF for point." and the UT_debugmsgs should tell you what RDF is linked to the document elements around the current cursor position.
+      </text:p>
+      <text:p text:style-name="Standard"/>
+
+      <text:p text:style-name="Standard" xml:id="dan" >This entire paragraph is linked to dan's foaf entry. And the fun puns continue in this second paragraph. Self describing documents are load of fun eh? Why does anyone read Tolstoy when this masterpiece is available? How long is a string, longer than a USB cable?</text:p>
+      <text:p text:style-name="Standard"/>
+
+      <text:p text:style-name="Standard">This paragraph includes a text:meta tag which surrounds the following reference to <text:meta xml:id="barry">Barry</text:meta>. If you have the point on that last "Barry" then you should be able to discover some RDF information too.</text:p>
+      <text:p text:style-name="Standard"/>
+
+      <text:h text:style-name="Heading" xml:id="h1">This header is linked to RDF</text:h>
+
+      <text:p>
+      This is just some plain text in a text:p.<text:bookmark-start text:name="rdf bookmark" xml:id="mark1" />
+      You will find this sentence which is in a bookmark also has 
+      some RDF.<text:bookmark-end text:name="rdf bookmark"/> This is after the bookmark, so you shouldn't find it in the RDF at point for anything here.
+      </text:p>
+
+      <text:p>
+      What follows is a table which has some RDF linked to some cells.
+      </text:p>
+
+      <table:table table:name="mytable1" table:style-name="mytable1">
+        <table:table-column table:number-columns-repeated="3"/>
+        <table:table-header-rows>
+          <table:table-row>
+            <table:table-cell office:value-type="string">
+              <text:p text:style-name="Table_20_Heading">Header R1C1</text:p>
+            </table:table-cell>
+            <table:table-cell office:value-type="string">
+              <text:p text:style-name="Table_20_Heading">Header R1C2</text:p>
+            </table:table-cell>
+            <table:table-cell office:value-type="string">
+              <text:p text:style-name="Table_20_Heading">Header R1C3</text:p>
+            </table:table-cell>
+          </table:table-row>
+        </table:table-header-rows>
+
+        <table:table-row>
+          <table:table-cell>
+            <text:p text:style-name="Table_20_Contents">Raw data</text:p>
+          </table:table-cell>
+          <table:table-cell xml:id="r1c2" >
+            <text:p text:style-name="Table_20_Contents">This cell is linked!</text:p>
+          </table:table-cell>
+          <table:table-cell>
+            <text:p text:style-name="Table_20_Contents">No link here</text:p>
+          </table:table-cell>
+        </table:table-row>
+      </table:table>
+
+      <text:p>
+      Something after the table...
+      </text:p>
+
+    </office:text>
+  </office:body>
+</office:document-content>

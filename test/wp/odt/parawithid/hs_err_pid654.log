@@ -1,0 +1,1130 @@
+#
+# An unexpected error has been detected by Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0x0000003cf502c56f, pid=654, tid=139668356060944
+#
+# Java VM: Java HotSpot(TM) 64-Bit Server VM (10.0-b22 mixed mode linux-amd64)
+# Problematic frame:
+# C  [libuno_sal.so.3+0x2c56f]
+#
+# If you would like to submit a bug report, please visit:
+#   http://java.sun.com/webapps/bugreport/crash.jsp
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread is native thread
+
+siginfo:si_signo=SIGSEGV: si_errno=0, si_code=1 (SEGV_MAPERR), si_addr=0x0000000000000000
+
+Registers:
+RAX=0x0000000000000000, RBX=0x00007f0712bfd710, RCX=0xffffffffffffff88, RDX=0x0000000000000000
+RSP=0x00007f0712bfcd50, RBP=0x0000000000000013, RSI=0x0000000004000000, RDI=0x0000000000000000
+R8 =0x00000000ffffffff, R9 =0x0000000000000000, R10=0x0000000000004022, R11=0x0000000000000246
+R12=0x0000003cf53ed800, R13=0x00000000022c8650, R14=0x0000000000000000, R15=0x0000000000000007
+RIP=0x0000003cf502c56f, EFL=0x0000000000010206, CSGSFS=0x0000000000000033, ERR=0x0000000000000006
+  TRAPNO=0x000000000000000e
+
+Top of Stack: (sp=0x00007f0712bfcd50)
+0x00007f0712bfcd50:   0000000000000000 0000000000000000
+0x00007f0712bfcd60:   0000003cedc111a0 00007f0712bfd9d0
+0x00007f0712bfcd70:   0000000000000004 0000003cf502cdf7
+0x00007f0712bfcd80:   0000000000000000 0000000002da3350
+0x00007f0712bfcd90:   0000000000000000 0000000000000000
+0x00007f0712bfcda0:   0000000002da3330 0000000002da3330
+0x00007f0712bfcdb0:   0000000000000000 0000000000000000
+0x00007f0712bfcdc0:   0000000000000000 0000000000000000
+0x00007f0712bfcdd0:   0000000000000000 0000000000000000
+0x00007f0712bfcde0:   0000000000000000 0000000000000000
+0x00007f0712bfcdf0:   0000000000000000 0000000000000000
+0x00007f0712bfce00:   0000000000000000 0000000000000000
+0x00007f0712bfce10:   0000000000000000 0000000000000000
+0x00007f0712bfce20:   0000000000000000 07e48d9849f373b8
+0x00007f0712bfce30:   0000003cedc111a0 00007f0712bfd9d0
+0x00007f0712bfce40:   0000000000000004 0000000000000007
+0x00007f0712bfce50:   f9eaa8e7d2f373b8 079d679dd25973b8
+0x00007f0712bfce60:   0000000000000000 00007f0712bfcf30
+0x00007f0712bfce70:   0000000000000000 0000000000000000
+0x00007f0712bfce80:   0000000000000000 0000000000000000
+0x00007f0712bfce90:   0000000000000000 0000003cedc07761
+0x00007f0712bfcea0:   00007f0712bfd710 0000000000000000
+0x00007f0712bfceb0:   0000000000000000 0000000000000000
+0x00007f0712bfcec0:   0000000000000000 0000000000000000
+0x00007f0712bfced0:   0000000000000000 0000000000000000
+0x00007f0712bfcee0:   0000000000000000 0000000000000000
+0x00007f0712bfcef0:   0000000000000000 0000000000000000
+0x00007f0712bfcf00:   0000000000000000 0000000000000000
+0x00007f0712bfcf10:   0000000000000000 0000000000000000
+0x00007f0712bfcf20:   0000000000000000 0000000000000000
+0x00007f0712bfcf30:   00007f0712bfd710 07e48d9849f373b8
+0x00007f0712bfcf40:   0000003cedc111a0 00007f0712bfd9d0 
+
+Instructions: (pc=0x0000003cf502c56f)
+0x0000003cf502c55f:   90 be 01 00 00 00 bf 18 00 00 00 e8 c1 b3 ff ff
+0x0000003cf502c56f:   48 89 18 0f b7 15 6f 12 3c 00 49 89 c6 83 c2 01 
+
+Stack: 
+[error occurred during error reporting (printing stack bounds), id 0xe0000001]
+
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+C  [libuno_sal.so.3+0x2c56f]
+
+
+---------------  P R O C E S S  ---------------
+
+VM state:not at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread: None
+
+Heap
+ PSYoungGen      total 18496K, used 9221K [0x00007f0751f70000, 0x00007f0753410000, 0x00007f0766a10000)
+  eden space 15872K, 58% used [0x00007f0751f70000,0x00007f07528717b0,0x00007f0752ef0000)
+  from space 2624K, 0% used [0x00007f0753180000,0x00007f0753180000,0x00007f0753410000)
+  to   space 2624K, 0% used [0x00007f0752ef0000,0x00007f0752ef0000,0x00007f0753180000)
+ PSOldGen        total 42304K, used 0K [0x00007f0728a10000, 0x00007f072b360000, 0x00007f0751f70000)
+  object space 42304K, 0% used [0x00007f0728a10000,0x00007f0728a10000,0x00007f072b360000)
+ PSPermGen       total 21248K, used 4770K [0x00007f0723610000, 0x00007f0724ad0000, 0x00007f0728a10000)
+  object space 21248K, 22% used [0x00007f0723610000,0x00007f0723ab8af8,0x00007f0724ad0000)
+
+Dynamic libraries:
+00400000-00402000 r-xp 00000000 08:03 1354360                            /usr/lib64/openoffice.org3/program/soffice.bin
+00601000-00609000 rw-p 00001000 08:03 1354360                            /usr/lib64/openoffice.org3/program/soffice.bin
+022c7000-02ff9000 rw-p 00000000 00:00 0                                  [heap]
+3cecc00000-3cecc1e000 r-xp 00000000 09:00 16596                          /lib64/ld-2.12.so
+3cece1e000-3cece1f000 r--p 0001e000 09:00 16596                          /lib64/ld-2.12.so
+3cece1f000-3cece20000 rw-p 0001f000 09:00 16596                          /lib64/ld-2.12.so
+3cece20000-3cece21000 rw-p 00000000 00:00 0 
+3ced000000-3ced175000 r-xp 00000000 09:00 16599                          /lib64/libc-2.12.so
+3ced175000-3ced375000 ---p 00175000 09:00 16599                          /lib64/libc-2.12.so
+3ced375000-3ced379000 r--p 00175000 09:00 16599                          /lib64/libc-2.12.so
+3ced379000-3ced37a000 rw-p 00179000 09:00 16599                          /lib64/libc-2.12.so
+3ced37a000-3ced37f000 rw-p 00000000 00:00 0 
+3ced400000-3ced483000 r-xp 00000000 09:00 16696                          /lib64/libm-2.12.so
+3ced483000-3ced682000 ---p 00083000 09:00 16696                          /lib64/libm-2.12.so
+3ced682000-3ced683000 r--p 00082000 09:00 16696                          /lib64/libm-2.12.so
+3ced683000-3ced684000 rw-p 00083000 09:00 16696                          /lib64/libm-2.12.so
+3ced800000-3ced802000 r-xp 00000000 09:00 16675                          /lib64/libdl-2.12.so
+3ced802000-3ceda02000 ---p 00002000 09:00 16675                          /lib64/libdl-2.12.so
+3ceda02000-3ceda03000 r--p 00002000 09:00 16675                          /lib64/libdl-2.12.so
+3ceda03000-3ceda04000 rw-p 00003000 09:00 16675                          /lib64/libdl-2.12.so
+3cedc00000-3cedc17000 r-xp 00000000 09:00 16615                          /lib64/libpthread-2.12.so
+3cedc17000-3cede16000 ---p 00017000 09:00 16615                          /lib64/libpthread-2.12.so
+3cede16000-3cede17000 r--p 00016000 09:00 16615                          /lib64/libpthread-2.12.so
+3cede17000-3cede18000 rw-p 00017000 09:00 16615                          /lib64/libpthread-2.12.so
+3cede18000-3cede1c000 rw-p 00000000 00:00 0 
+3cee000000-3cee015000 r-xp 00000000 09:00 16699                          /lib64/libz.so.1.2.3
+3cee015000-3cee214000 ---p 00015000 09:00 16699                          /lib64/libz.so.1.2.3
+3cee214000-3cee215000 rw-p 00014000 09:00 16699                          /lib64/libz.so.1.2.3
+3cee400000-3cee407000 r-xp 00000000 09:00 16665                          /lib64/librt-2.12.so
+3cee407000-3cee606000 ---p 00007000 09:00 16665                          /lib64/librt-2.12.so
+3cee606000-3cee607000 r--p 00006000 09:00 16665                          /lib64/librt-2.12.so
+3cee607000-3cee608000 rw-p 00007000 09:00 16665                          /lib64/librt-2.12.so
+3cee800000-3cee802000 r-xp 00000000 08:03 1346424                        /usr/lib64/libXau.so.6.0.0
+3cee802000-3ceea02000 ---p 00002000 08:03 1346424                        /usr/lib64/libXau.so.6.0.0
+3ceea02000-3ceea03000 rw-p 00002000 08:03 1346424                        /usr/lib64/libXau.so.6.0.0
+3ceec00000-3ceec1b000 r-xp 00000000 08:03 1346437                        /usr/lib64/libxcb.so.1.1.0
+3ceec1b000-3ceee1a000 ---p 0001b000 08:03 1346437                        /usr/lib64/libxcb.so.1.1.0
+3ceee1a000-3ceee1b000 rw-p 0001a000 08:03 1346437                        /usr/lib64/libxcb.so.1.1.0
+3cef000000-3cef139000 r-xp 00000000 08:03 1346458                        /usr/lib64/libX11.so.6.3.0
+3cef139000-3cef339000 ---p 00139000 08:03 1346458                        /usr/lib64/libX11.so.6.3.0
+3cef339000-3cef33f000 rw-p 00139000 08:03 1346458                        /usr/lib64/libX11.so.6.3.0
+3cef400000-3cef411000 r-xp 00000000 08:03 1346504                        /usr/lib64/libXext.so.6.4.0
+3cef411000-3cef611000 ---p 00011000 08:03 1346504                        /usr/lib64/libXext.so.6.4.0
+3cef611000-3cef612000 rw-p 00011000 08:03 1346504                        /usr/lib64/libXext.so.6.4.0
+3cef800000-3cef816000 r-xp 00000000 09:00 16698                          /lib64/libgcc_s-4.4.4-20100630.so.1
+3cef816000-3cefa15000 ---p 00016000 09:00 16698                          /lib64/libgcc_s-4.4.4-20100630.so.1
+3cefa15000-3cefa16000 rw-p 00015000 09:00 16698                          /lib64/libgcc_s-4.4.4-20100630.so.1
+3cefc00000-3cefc16000 r-xp 00000000 09:00 16710                          /lib64/libresolv-2.12.so
+3cefc16000-3cefe16000 ---p 00016000 09:00 16710                          /lib64/libresolv-2.12.so
+3cefe16000-3cefe17000 r--p 00016000 09:00 16710                          /lib64/libresolv-2.12.so
+3cefe17000-3cefe18000 rw-p 00017000 09:00 16710                          /lib64/libresolv-2.12.so
+3cefe18000-3cefe1a000 rw-p 00000000 00:00 0 
+3cf0000000-3cf00fb000 r-xp 00000000 09:00 16602                          /lib64/libglib-2.0.so.0.2400.1
+3cf00fb000-3cf02fa000 ---p 000fb000 09:00 16602                          /lib64/libglib-2.0.so.0.2400.1
+3cf02fa000-3cf02fc000 rw-p 000fa000 09:00 16602                          /lib64/libglib-2.0.so.0.2400.1
+3cf0400000-3cf041c000 r-xp 00000000 09:00 16720                          /lib64/libselinux.so.1
+3cf041c000-3cf061b000 ---p 0001c000 09:00 16720                          /lib64/libselinux.so.1
+3cf061b000-3cf061c000 r--p 0001b000 09:00 16720                          /lib64/libselinux.so.1
+3cf061c000-3cf061d000 rw-p 0001c000 09:00 16720                          /lib64/libselinux.so.1
+3cf061d000-3cf061e000 rw-p 00000000 00:00 0 
+3cf0800000-3cf08e9000 r-xp 00000000 08:03 1346164                        /usr/lib64/libstdc++.so.6.0.13
+3cf08e9000-3cf0ae9000 ---p 000e9000 08:03 1346164                        /usr/lib64/libstdc++.so.6.0.13
+3cf0ae9000-3cf0af0000 r--p 000e9000 08:03 1346164                        /usr/lib64/libstdc++.so.6.0.13
+3cf0af0000-3cf0af2000 rw-p 000f0000 08:03 1346164                        /usr/lib64/libstdc++.so.6.0.13
+3cf0af2000-3cf0b07000 rw-p 00000000 00:00 0 
+3cf0c00000-3cf0c04000 r-xp 00000000 09:00 16736                          /lib64/libgthread-2.0.so.0.2400.1
+3cf0c04000-3cf0e03000 ---p 00004000 09:00 16736                          /lib64/libgthread-2.0.so.0.2400.1
+3cf0e03000-3cf0e04000 rw-p 00003000 09:00 16736                          /lib64/libgthread-2.0.so.0.2400.1
+3cf1000000-3cf1026000 r-xp 00000000 08:03 1346369                        /usr/lib64/libpng12.so.0.44.0
+3cf1026000-3cf1225000 ---p 00026000 08:03 1346369                        /usr/lib64/libpng12.so.0.44.0
+3cf1225000-3cf1226000 rw-p 00025000 08:03 1346369                        /usr/lib64/libpng12.so.0.44.0
+3cf1400000-3cf1444000 r-xp 00000000 09:00 16737                          /lib64/libgobject-2.0.so.0.2400.1
+3cf1444000-3cf1644000 ---p 00044000 09:00 16737                          /lib64/libgobject-2.0.so.0.2400.1
+3cf1644000-3cf1646000 rw-p 00044000 09:00 16737                          /lib64/libgobject-2.0.so.0.2400.1
+3cf1800000-3cf1826000 r-xp 00000000 09:00 16747                          /lib64/libexpat.so.1.5.2
+3cf1826000-3cf1a25000 ---p 00026000 09:00 16747                          /lib64/libexpat.so.1.5.2
+3cf1a25000-3cf1a28000 rw-p 00025000 09:00 16747                          /lib64/libexpat.so.1.5.2
+3cf1c00000-3cf1c97000 r-xp 00000000 08:03 1346225                        /usr/lib64/libfreetype.so.6.3.22
+3cf1c97000-3cf1e96000 ---p 00097000 08:03 1346225                        /usr/lib64/libfreetype.so.6.3.22
+3cf1e96000-3cf1e9c000 rw-p 00096000 08:03 1346225                        /usr/lib64/libfreetype.so.6.3.22
+3cf2000000-3cf2004000 r-xp 00000000 09:00 16745                          /lib64/libuuid.so.1.3.0
+3cf2004000-3cf2203000 ---p 00004000 09:00 16745                          /lib64/libuuid.so.1.3.0
+3cf2203000-3cf2204000 rw-p 00003000 09:00 16745                          /lib64/libuuid.so.1.3.0
+3cf2400000-3cf2407000 r-xp 00000000 08:03 1346392                        /usr/lib64/libSM.so.6.0.0
+3cf2407000-3cf2607000 ---p 00007000 08:03 1346392                        /usr/lib64/libSM.so.6.0.0
+3cf2607000-3cf2608000 rw-p 00007000 08:03 1346392                        /usr/lib64/libSM.so.6.0.0
+3cf2800000-3cf2817000 r-xp 00000000 08:03 1346381                        /usr/lib64/libICE.so.6.3.0
+3cf2817000-3cf2a17000 ---p 00017000 08:03 1346381                        /usr/lib64/libICE.so.6.3.0
+3cf2a17000-3cf2a18000 rw-p 00017000 08:03 1346381                        /usr/lib64/libICE.so.6.3.0
+3cf2a18000-3cf2a1c000 rw-p 00000000 00:00 0 
+3cf2c00000-3cf2c34000 r-xp 00000000 08:03 1347116                        /usr/lib64/libfontconfig.so.1.4.4
+3cf2c34000-3cf2e34000 ---p 00034000 08:03 1347116                        /usr/lib64/libfontconfig.so.1.4.4
+3cf2e34000-3cf2e36000 rw-p 00034000 08:03 1347116                        /usr/lib64/libfontconfig.so.1.4.4
+3cf3000000-3cf300f000 r-xp 00000000 08:03 1346666                        /usr/lib64/libXi.so.6.1.0
+3cf300f000-3cf320e000 ---p 0000f000 08:03 1346666                        /usr/lib64/libXi.so.6.1.0
+3cf320e000-3cf320f000 rw-p 0000e000 08:03 1346666                        /usr/lib64/libXi.so.6.1.0
+3cf3400000-3cf3409000 r-xp 00000000 08:03 1346717                        /usr/lib64/libXrender.so.1.3.0
+3cf3409000-3cf3609000 ---p 00009000 08:03 1346717                        /usr/lib64/libXrender.so.1.3.0
+3cf3609000-3cf360a000 rw-p 00009000 08:03 1346717                        /usr/lib64/libXrender.so.1.3.0
+3cf3800000-3cf3802000 r-xp 00000000 08:03 1347082                        /usr/lib64/libXinerama.so.1.0.0
+3cf3802000-3cf3a01000 ---p 00002000 08:03 1347082                        /usr/lib64/libXinerama.so.1.0.0
+3cf3a01000-3cf3a02000 rw-p 00001000 08:03 1347082                        /usr/lib64/libXinerama.so.1.0.0
+3cf3c00000-3cf3c08000 r-xp 00000000 08:03 1346718                        /usr/lib64/libXrandr.so.2.2.0
+3cf3c08000-3cf3e07000 ---p 00008000 08:03 1346718                        /usr/lib64/libXrandr.so.2.2.0
+3cf3e07000-3cf3e08000 rw-p 00007000 08:03 1346718                        /usr/lib64/libXrandr.so.2.2.0
+3cf4000000-3cf4005000 r-xp 00000000 08:03 1346765                        /usr/lib64/libXfixes.so.3.1.0
+3cf4005000-3cf4204000 ---p 00005000 08:03 1346765                        /usr/lib64/libXfixes.so.3.1.0
+3cf4204000-3cf4205000 rw-p 00004000 08:03 1346765                        /usr/lib64/libXfixes.so.3.1.0
+3cf4400000-3cf4409000 r-xp 00000000 08:03 1347031                        /usr/lib64/libXcursor.so.1.0.2
+3cf4409000-3cf4609000 ---p 00009000 08:03 1347031                        /usr/lib64/libXcursor.so.1.0.2
+3cf4609000-3cf460a000 rw-p 00009000 08:03 1347031                        /usr/lib64/libXcursor.so.1.0.2
+3cf4800000-3cf4840000 r-xp 00000000 09:00 16668                          /lib64/libdbus-1.so.3.4.0
+3cf4840000-3cf4a3f000 ---p 00040000 09:00 16668                          /lib64/libdbus-1.so.3.4.0
+3cf4a3f000-3cf4a40000 r--p 0003f000 09:00 16668                          /lib64/libdbus-1.so.3.4.0
+3cf4a40000-3cf4a41000 rw-p 00040000 09:00 16668                          /lib64/libdbus-1.so.3.4.0
+3cf4c00000-3cf4c03000 r-xp 00000000 09:00 16785                          /lib64/libgmodule-2.0.so.0.2400.1
+3cf4c03000-3cf4e02000 ---p 00003000 09:00 16785                          /lib64/libgmodule-2.0.so.0.2400.1
+3cf4e02000-3cf4e03000 rw-p 00002000 09:00 16785                          /lib64/libgmodule-2.0.so.0.2400.1
+3cf5000000-3cf51c9000 r-xp 00000000 08:03 1551322                        /usr/lib64/openoffice.org/ure/lib/libuno_sal.so.3
+3cf51c9000-3cf53c9000 ---p 001c9000 08:03 1551322                        /usr/lib64/openoffice.org/ure/lib/libuno_sal.so.3
+3cf53c9000-3cf53ee000 rw-p 001c9000 08:03 1551322                        /usr/lib64/openoffice.org/ure/lib/libuno_sal.so.3
+3cf53ee000-3cf53f7000 rw-p 00000000 00:00 0 
+3cf5400000-3cf5403000 r-xp 00000000 08:03 1551482                        /usr/lib64/openoffice.org/ure/lib/libuno_salhelpergcc3.so.3
+3cf5403000-3cf5602000 ---p 00003000 08:03 1551482                        /usr/lib64/openoffice.org/ure/lib/libuno_salhelpergcc3.so.3
+3cf5602000-3cf5603000 rw-p 00002000 08:03 1551482                        /usr/lib64/openoffice.org/ure/lib/libuno_salhelpergcc3.so.3
+3cf5800000-3cf582d000 r-xp 00000000 08:03 1551428                        /usr/lib64/openoffice.org/ure/lib/libuno_cppu.so.3
+3cf582d000-3cf5a2c000 ---p 0002d000 08:03 1551428                        /usr/lib64/openoffice.org/ure/lib/libuno_cppu.so.3
+3cf5a2c000-3cf5a2d000 rw-p 0002c000 08:03 1551428                        /usr/lib64/openoffice.org/ure/lib/libuno_cppu.so.3
+3cf5c00000-3cf5c9d000 r-xp 00000000 08:03 1552050                        /usr/lib64/openoffice.org/ure/lib/libuno_cppuhelpergcc3.so.3
+3cf5c9d000-3cf5e9d000 ---p 0009d000 08:03 1552050                        /usr/lib64/openoffice.org/ure/lib/libuno_cppuhelpergcc3.so.3
+3cf5e9d000-3cf5ea2000 rw-p 0009d000 08:03 1552050                        /usr/lib64/openoffice.org/ure/lib/libuno_cppuhelpergcc3.so.3
+3cf5ea2000-3cf5ea3000 rw-p 00000000 00:00 0 
+3cf6000000-3cf601b000 r-xp 00000000 08:03 1559635                        /usr/lib64/openoffice.org/ure/lib/libreg.so.3
+3cf601b000-3cf621a000 ---p 0001b000 08:03 1559635                        /usr/lib64/openoffice.org/ure/lib/libreg.so.3
+3cf621a000-3cf621b000 rw-p 0001a000 08:03 1559635                        /usr/lib64/openoffice.org/ure/lib/libreg.so.3
+3cf6400000-3cf641a000 r-xp 00000000 08:03 1559634                        /usr/lib64/openoffice.org/ure/lib/libstore.so.3
+3cf641a000-3cf6619000 ---p 0001a000 08:03 1559634                        /usr/lib64/openoffice.org/ure/lib/libstore.so.3
+3cf6619000-3cf661b000 rw-p 00019000 08:03 1559634                        /usr/lib64/openoffice.org/ure/lib/libstore.so.3
+3cf6800000-3cf681b000 r-xp 00000000 08:03 1559632                        /usr/lib64/openoffice.org/ure/lib/libjvmfwk.so.3
+3cf681b000-3cf6a1a000 ---p 0001b000 08:03 1559632                        /usr/lib64/openoffice.org/ure/lib/libjvmfwk.so.3
+3cf6a1a000-3cf6a1b000 rw-p 0001a000 08:03 1559632                        /usr/lib64/openoffice.org/ure/lib/libjvmfwk.so.3
+3cf6c00000-3cf6c75000 r-xp 00000000 08:03 82973                          /usr/lib64/openoffice.org/basis3.2/program/libucbhelper4gcc3.so
+3cf6c75000-3cf6e74000 ---p 00075000 08:03 82973                          /usr/lib64/openoffice.org/basis3.2/program/libucbhelper4gcc3.so
+3cf6e74000-3cf6e7a000 rw-p 00074000 08:03 82973                          /usr/lib64/openoffice.org/basis3.2/program/libucbhelper4gcc3.so
+3cf7000000-3cf70b0000 r-xp 00000000 09:00 16811                          /lib64/libgio-2.0.so.0.2400.1
+3cf70b0000-3cf72b0000 ---p 000b0000 09:00 16811                          /lib64/libgio-2.0.so.0.2400.1
+3cf72b0000-3cf72b3000 rw-p 000b0000 09:00 16811                          /lib64/libgio-2.0.so.0.2400.1
+3cf72b3000-3cf72b4000 rw-p 00000000 00:00 0 
+3cf7400000-3cf7548000 r-xp 00000000 08:03 1352130                        /usr/lib64/libxml2.so.2.7.7
+3cf7548000-3cf7747000 ---p 00148000 08:03 1352130                        /usr/lib64/libxml2.so.2.7.7
+3cf7747000-3cf7751000 rw-p 00147000 08:03 1352130                        /usr/lib64/libxml2.so.2.7.7
+3cf7751000-3cf7752000 rw-p 00000000 00:00 0 
+3cf7800000-3cf781f000 r-xp 00000000 08:03 1352154                        /usr/lib64/libgdk_pixbuf-2.0.so.0.2000.1
+3cf781f000-3cf7a1e000 ---p 0001f000 08:03 1352154                        /usr/lib64/libgdk_pixbuf-2.0.so.0.2000.1
+3cf7a1e000-3cf7a1f000 rw-p 0001e000 08:03 1352154                        /usr/lib64/libgdk_pixbuf-2.0.so.0.2000.1
+3cf7c00000-3cf7d53000 r-xp 00000000 08:03 82572                          /usr/lib64/openoffice.org/basis3.2/program/libcomphelp4gcc3.so
+3cf7d53000-3cf7f53000 ---p 00153000 08:03 82572                          /usr/lib64/openoffice.org/basis3.2/program/libcomphelp4gcc3.so
+3cf7f53000-3cf7f66000 rw-p 00153000 08:03 82572                          /usr/lib64/openoffice.org/basis3.2/program/libcomphelp4gcc3.so
+3cf7f66000-3cf7f67000 rw-p 00000000 00:00 0 
+3cf8000000-3cf8048000 r-xp 00000000 08:03 1352157                        /usr/lib64/libpango-1.0.so.0.2800.0
+3cf8048000-3cf8248000 ---p 00048000 08:03 1352157                        /usr/lib64/libpango-1.0.so.0.2800.0
+3cf8248000-3cf824b000 rw-p 00048000 08:03 1352157                        /usr/lib64/libpango-1.0.so.0.2800.0
+3cf8400000-3cf8476000 r-xp 00000000 08:03 1352156                        /usr/lib64/libcairo.so.2.10800.10
+3cf8476000-3cf8676000 ---p 00076000 08:03 1352156                        /usr/lib64/libcairo.so.2.10800.10
+3cf8676000-3cf8679000 rw-p 00076000 08:03 1352156                        /usr/lib64/libcairo.so.2.10800.10
+3cf8800000-3cf880b000 r-xp 00000000 08:03 1352159                        /usr/lib64/libpangocairo-1.0.so.0.2800.0
+3cf880b000-3cf8a0b000 ---p 0000b000 08:03 1352159                        /usr/lib64/libpangocairo-1.0.so.0.2800.0
+3cf8a0b000-3cf8a0c000 rw-p 0000b000 08:03 1352159                        /usr/lib64/libpangocairo-1.0.so.0.2800.0
+3cf8c00000-3cf8c02000 r-xp 00000000 08:03 1352161                        /usr/lib64/libXdamage.so.1.1.0
+3cf8c02000-3cf8e01000 ---p 00002000 08:03 1352161                        /usr/lib64/libXdamage.so.1.1.0
+3cf8e01000-3cf8e02000 rw-p 00001000 08:03 1352161                        /usr/lib64/libXdamage.so.1.1.0
+3cf9000000-3cf9029000 r-xp 00000000 08:03 1352158                        /usr/lib64/libpangoft2-1.0.so.0.2800.0
+3cf9029000-3cf9228000 ---p 00029000 08:03 1352158                        /usr/lib64/libpangoft2-1.0.so.0.2800.0
+3cf9228000-3cf922a000 rw-p 00028000 08:03 1352158                        /usr/lib64/libpangoft2-1.0.so.0.2800.0
+3cf9400000-3cf945d000 r-xp 00000000 08:03 1350122                        /usr/lib64/libpixman-1.so.0.18.0
+3cf945d000-3cf965d000 ---p 0005d000 08:03 1350122                        /usr/lib64/libpixman-1.so.0.18.0
+3cf965d000-3cf9661000 rw-p 0005d000 08:03 1350122                        /usr/lib64/libpixman-1.so.0.18.0
+3cf9800000-3cf9802000 r-xp 00000000 08:03 1352160                        /usr/lib64/libXcomposite.so.1.0.0
+3cf9802000-3cf9a01000 ---p 00002000 08:03 1352160                        /usr/lib64/libXcomposite.so.1.0.0
+3cf9a01000-3cf9a02000 rw-p 00001000 08:03 1352160                        /usr/lib64/libXcomposite.so.1.0.0
+3cf9c00000-3cf9c1e000 r-xp 00000000 08:03 1352163                        /usr/lib64/libatk-1.0.so.0.3009.1
+3cf9c1e000-3cf9e1e000 ---p 0001e000 08:03 1352163                        /usr/lib64/libatk-1.0.so.0.3009.1
+3cf9e1e000-3cf9e21000 rw-p 0001e000 08:03 1352163                        /usr/lib64/libatk-1.0.so.0.3009.1
+3cfa000000-3cfa0b7000 r-xp 00000000 08:03 1352162                        /usr/lib64/libgdk-x11-2.0.so.0.2000.1
+3cfa0b7000-3cfa2b7000 ---p 000b7000 08:03 1352162                        /usr/lib64/libgdk-x11-2.0.so.0.2000.1
+3cfa2b7000-3cfa2bc000 rw-p 000b7000 08:03 1352162                        /usr/lib64/libgdk-x11-2.0.so.0.2000.1
+3cfa400000-3cfa86c000 r-xp 00000000 08:03 1352166                        /usr/lib64/libgtk-x11-2.0.so.0.2000.1
+3cfa86c000-3cfaa6b000 ---p 0046c000 08:03 1352166                        /usr/lib64/libgtk-x11-2.0.so.0.2000.1
+3cfaa6b000-3cfaa76000 rw-p 0046b000 08:03 1352166                        /usr/lib64/libgtk-x11-2.0.so.0.2000.1
+3cfaa76000-3cfaa78000 rw-p 00000000 00:00 0 
+3cfac00000-3cfadad000 r-xp 00000000 08:03 1349371                        /usr/lib64/libicui18n.so.42.1
+3cfadad000-3cfafac000 ---p 001ad000 08:03 1349371                        /usr/lib64/libicui18n.so.42.1
+3cfafac000-3cfafba000 rw-p 001ac000 08:03 1349371                        /usr/lib64/libicui18n.so.42.1
+3cfb000000-3cfb024000 r-xp 00000000 08:03 1351932                        /usr/lib64/libjpeg.so.62.0.0
+3cfb024000-3cfb223000 ---p 00024000 08:03 1351932                        /usr/lib64/libjpeg.so.62.0.0
+3cfb223000-3cfb224000 rw-p 00023000 08:03 1351932                        /usr/lib64/libjpeg.so.62.0.0
+3cfb400000-3cfb4f8000 r-xp 00000000 08:03 82568                          /usr/lib64/openoffice.org/basis3.2/program/libsvllx.so
+3cfb4f8000-3cfb6f8000 ---p 000f8000 08:03 82568                          /usr/lib64/openoffice.org/basis3.2/program/libsvllx.so
+3cfb6f8000-3cfb701000 rw-p 000f8000 08:03 82568                          /usr/lib64/openoffice.org/basis3.2/program/libsvllx.so
+3cfb701000-3cfb702000 rw-p 00000000 00:00 0 
+3cfb800000-3cfb805000 r-xp 00000000 08:03 1559627                        /usr/lib64/openoffice.org/ure/lib/libjvmaccessgcc3.so.3
+3cfb805000-3cfba05000 ---p 00005000 08:03 1559627                        /usr/lib64/openoffice.org/ure/lib/libjvmaccessgcc3.so.3
+3cfba05000-3cfba06000 rw-p 00005000 08:03 1559627                        /usr/lib64/openoffice.org/ure/lib/libjvmaccessgcc3.so.3
+3cfbc00000-3cfbc59000 r-xp 00000000 08:03 82271                          /usr/lib64/openoffice.org/basis3.2/program/libsotlx.so
+3cfbc59000-3cfbe59000 ---p 00059000 08:03 82271                          /usr/lib64/openoffice.org/basis3.2/program/libsotlx.so
+3cfbe59000-3cfbe5e000 rw-p 00059000 08:03 82271                          /usr/lib64/openoffice.org/basis3.2/program/libsotlx.so
+3cfc000000-3cfc036000 r-xp 00000000 08:03 1352260                        /usr/lib64/libicule.so.42.1
+3cfc036000-3cfc236000 ---p 00036000 08:03 1352260                        /usr/lib64/libicule.so.42.1
+3cfc236000-3cfc238000 rw-p 00036000 08:03 1352260                        /usr/lib64/libicule.so.42.1
+3cfc400000-3cfc81d000 r-xp 00000000 08:03 82476                          /usr/lib64/openoffice.org/basis3.2/program/libvcllx.so
+3cfc81d000-3cfca1d000 ---p 0041d000 08:03 82476                          /usr/lib64/openoffice.org/basis3.2/program/libvcllx.so
+3cfca1d000-3cfca47000 rw-p 0041d000 08:03 82476                          /usr/lib64/openoffice.org/basis3.2/program/libvcllx.so
+3cfca47000-3cfca4b000 rw-p 00000000 00:00 0 
+3cfcc00000-3cfcc05000 r-xp 00000000 08:03 82516                          /usr/lib64/openoffice.org/basis3.2/program/libi18nisolang1gcc3.so
+3cfcc05000-3cfce05000 ---p 00005000 08:03 82516                          /usr/lib64/openoffice.org/basis3.2/program/libi18nisolang1gcc3.so
+3cfce05000-3cfce06000 rw-p 00005000 08:03 82516                          /usr/lib64/openoffice.org/basis3.2/program/libi18nisolang1gcc3.so
+3cfd000000-3cfd33a000 r-xp 00000000 08:03 82415                          /usr/lib64/openoffice.org/basis3.2/program/libtklx.so
+3cfd33a000-3cfd53a000 ---p 0033a000 08:03 82415                          /usr/lib64/openoffice.org/basis3.2/program/libtklx.so
+3cfd53a000-3cfd59e000 rw-p 0033a000 08:03 82415                          /usr/lib64/openoffice.org/basis3.2/program/libtklx.so
+3cfd59e000-3cfd5a1000 rw-p 00000000 00:00 0 
+3cfd600000-3cfd658000 r-xp 00000000 09:00 16679                          /lib64/libfreebl3.so
+3cfd658000-3cfd857000 ---p 00058000 09:00 16679                          /lib64/libfreebl3.so
+3cfd857000-3cfd859000 rw-p 00057000 09:00 16679                          /lib64/libfreebl3.so
+3cfd859000-3cfd85d000 rw-p 00000000 00:00 0 
+3cfda00000-3cfde0c000 r-xp 00000000 08:03 82410                          /usr/lib64/openoffice.org/basis3.2/program/libsvtlx.so
+3cfde0c000-3cfe00b000 ---p 0040c000 08:03 82410                          /usr/lib64/openoffice.org/basis3.2/program/libsvtlx.so
+3cfe00b000-3cfe04b000 rw-p 0040b000 08:03 82410                          /usr/lib64/openoffice.org/basis3.2/program/libsvtlx.so
+3cfe04b000-3cfe04c000 rw-p 00000000 00:00 0 
+3cfe200000-3cfe20e000 r-xp 00000000 08:03 82433                          /usr/lib64/openoffice.org/basis3.2/program/libi18nutilgcc3.so
+3cfe20e000-3cfe40e000 ---p 0000e000 08:03 82433                          /usr/lib64/openoffice.org/basis3.2/program/libi18nutilgcc3.so
+3cfe40e000-3cfe410000 rw-p 0000e000 08:03 82433                          /usr/lib64/openoffice.org/basis3.2/program/libi18nutilgcc3.so
+3cfe410000-3cfe413000 rw-p 00000000 00:00 0 
+3cfe600000-3cfe6a3000 r-xp 00000000 08:03 82475                          /usr/lib64/openoffice.org/basis3.2/program/libbasegfxlx.so
+3cfe6a3000-3cfe8a2000 ---p 000a3000 08:03 82475                          /usr/lib64/openoffice.org/basis3.2/program/libbasegfxlx.so
+3cfe8a2000-3cfe8a4000 rw-p 000a2000 08:03 82475                          /usr/lib64/openoffice.org/basis3.2/program/libbasegfxlx.so
+3cfea00000-3cfea99000 r-xp 00000000 08:03 82280                          /usr/lib64/openoffice.org/basis3.2/program/libxcrlx.so
+3cfea99000-3cfec99000 ---p 00099000 08:03 82280                          /usr/lib64/openoffice.org/basis3.2/program/libxcrlx.so
+3cfec99000-3cfeca1000 rw-p 00099000 08:03 82280                          /usr/lib64/openoffice.org/basis3.2/program/libxcrlx.so
+3cff000000-3cff007000 r-xp 00000000 09:00 16682                          /lib64/libcrypt-2.12.so
+3cff007000-3cff207000 ---p 00007000 09:00 16682                          /lib64/libcrypt-2.12.so
+3cff207000-3cff208000 r--p 00007000 09:00 16682                          /lib64/libcrypt-2.12.so
+3cff208000-3cff209000 rw-p 00008000 09:00 16682                          /lib64/libcrypt-2.12.so
+3cff209000-3cff237000 rw-p 00000000 00:00 0 
+3cff400000-3cff405000 r-xp 00000000 08:03 82577                          /usr/lib64/openoffice.org/basis3.2/program/libi18npaperlx.so
+3cff405000-3cff605000 ---p 00005000 08:03 82577                          /usr/lib64/openoffice.org/basis3.2/program/libi18npaperlx.so
+3cff605000-3cff606000 rw-p 00005000 08:03 82577                          /usr/lib64/openoffice.org/basis3.2/program/libi18npaperlx.so
+3cff800000-3cff89b000 r-xp 00000000 08:03 82513                          /usr/lib64/openoffice.org/basis3.2/program/libtllx.so
+3cff89b000-3cffa9b000 ---p 0009b000 08:03 82513                          /usr/lib64/openoffice.org/basis3.2/program/libtllx.so
+3cffa9b000-3cffa9f000 rw-p 0009b000 08:03 82513                          /usr/lib64/openoffice.org/basis3.2/program/libtllx.so
+3cffc00000-3cffc8c000 r-xp 00000000 08:03 82414                          /usr/lib64/openoffice.org/basis3.2/program/libutllx.so
+3cffc8c000-3cffe8c000 ---p 0008c000 08:03 82414                          /usr/lib64/openoffice.org/basis3.2/program/libutllx.so
+3cffe8c000-3cffe93000 rw-p 0008c000 08:03 82414                          /usr/lib64/openoffice.org/basis3.2/program/libutllx.so
+3cffe93000-3cffe94000 rw-p 00000000 00:00 0 
+3d00200000-3d00221000 r-xp 00000000 08:03 1348656                        /usr/lib64/libdbus-glib-1.so.2.1.0
+3d00221000-3d00421000 ---p 00021000 08:03 1348656                        /usr/lib64/libdbus-glib-1.so.2.1.0
+3d00421000-3d00423000 rw-p 00021000 08:03 1348656                        /usr/lib64/libdbus-glib-1.so.2.1.0
+3d00600000-3d00620000 r-xp 00000000 08:03 82694                          /usr/lib64/openoffice.org/basis3.2/program/libvos3gcc3.so
+3d00620000-3d0081f000 ---p 00020000 08:03 82694                          /usr/lib64/openoffice.org/basis3.2/program/libvos3gcc3.so
+3d0081f000-3d00822000 rw-p 0001f000 08:03 82694                          /usr/lib64/openoffice.org/basis3.2/program/libvos3gcc3.so
+3d00a00000-3d00b7b000 r-xp 00000000 08:03 82508                          /usr/lib64/openoffice.org/basis3.2/program/libsblx.so
+3d00b7b000-3d00d7a000 ---p 0017b000 08:03 82508                          /usr/lib64/openoffice.org/basis3.2/program/libsblx.so
+3d00d7a000-3d00d97000 rw-p 0017a000 08:03 82508                          /usr/lib64/openoffice.org/basis3.2/program/libsblx.so
+3d00d97000-3d00d98000 rw-p 00000000 00:00 0 
+3d00e00000-3d00e3f000 r-xp 00000000 08:03 82278                          /usr/lib64/openoffice.org/basis3.2/program/libfwilx.so
+3d00e3f000-3d0103e000 ---p 0003f000 08:03 82278                          /usr/lib64/openoffice.org/basis3.2/program/libfwilx.so
+3d0103e000-3d01042000 rw-p 0003e000 08:03 82278                          /usr/lib64/openoffice.org/basis3.2/program/libfwilx.so
+3d01200000-3d01215000 r-xp 00000000 08:03 82573                          /usr/lib64/openoffice.org/basis3.2/program/libsaxlx.so
+3d01215000-3d01414000 ---p 00015000 08:03 82573                          /usr/lib64/openoffice.org/basis3.2/program/libsaxlx.so
+3d01414000-3d01416000 rw-p 00014000 08:03 82573                          /usr/lib64/openoffice.org/basis3.2/program/libsaxlx.so
+3d01600000-3d0169b000 r-xp 00000000 08:03 82563                          /usr/lib64/openoffice.org/basis3.2/program/libfwelx.so
+3d0169b000-3d0189b000 ---p 0009b000 08:03 82563                          /usr/lib64/openoffice.org/basis3.2/program/libfwelx.so
+3d0189b000-3d018a2000 rw-p 0009b000 08:03 82563                          /usr/lib64/openoffice.org/basis3.2/program/libfwelx.so
+3d01a00000-3d01dfa000 r-xp 00000000 08:03 82413                          /usr/lib64/openoffice.org/basis3.2/program/libsfxlx.so
+3d01dfa000-3d01ff9000 ---p 003fa000 08:03 82413                          /usr/lib64/openoffice.org/basis3.2/program/libsfxlx.so
+3d01ff9000-3d0202b000 rw-p 003f9000 08:03 82413                          /usr/lib64/openoffice.org/basis3.2/program/libsfxlx.so
+3d0202b000-3d0202d000 rw-p 00000000 00:00 0 
+3d02200000-3d025e1000 r-xp 00000000 08:03 82553                          /usr/lib64/openoffice.org/basis3.2/program/libxolx.so
+3d025e1000-3d027e1000 ---p 003e1000 08:03 82553                          /usr/lib64/openoffice.org/basis3.2/program/libxolx.so
+3d027e1000-3d02821000 rw-p 003e1000 08:03 82553                          /usr/lib64/openoffice.org/basis3.2/program/libxolx.so
+3d02821000-3d02824000 rw-p 00000000 00:00 0 
+3d02a00000-3d02ae4000 r-xp 00000000 08:03 82470                          /usr/lib64/openoffice.org/basis3.2/program/libdrawinglayerlx.so
+3d02ae4000-3d02ce4000 ---p 000e4000 08:03 82470                          /usr/lib64/openoffice.org/basis3.2/program/libdrawinglayerlx.so
+3d02ce4000-3d02cef000 rw-p 000e4000 08:03 82470                          /usr/lib64/openoffice.org/basis3.2/program/libdrawinglayerlx.so
+3d02e00000-3d036b4000 r-xp 00000000 08:03 82488                          /usr/lib64/openoffice.org/basis3.2/program/libsvxcorelx.so
+3d036b4000-3d038b3000 ---p 008b4000 08:03 82488                          /usr/lib64/openoffice.org/basis3.2/program/libsvxcorelx.so
+3d038b3000-3d0395a000 rw-p 008b3000 08:03 82488                          /usr/lib64/openoffice.org/basis3.2/program/libsvxcorelx.so
+3d0395a000-3d0395d000 rw-p 00000000 00:00 0 
+3d03c00000-3d03c03000 r-xp 00000000 09:00 16770                          /lib64/libgpg-error.so.0.5.0
+3d03c03000-3d03e02000 ---p 00003000 09:00 16770                          /lib64/libgpg-error.so.0.5.0
+3d03e02000-3d03e03000 rw-p 00002000 09:00 16770                          /lib64/libgpg-error.so.0.5.0
+3d04200000-3d0422b000 r-xp 00000000 08:03 82276                          /usr/lib64/openoffice.org/basis3.2/program/libavmedialx.so
+3d0422b000-3d0442a000 ---p 0002b000 08:03 82276                          /usr/lib64/openoffice.org/basis3.2/program/libavmedialx.so
+3d0442a000-3d0442e000 rw-p 0002a000 08:03 82276                          /usr/lib64/openoffice.org/basis3.2/program/libavmedialx.so
+3d04600000-3d04631000 r-xp 00000000 08:03 82631                          /usr/lib64/openoffice.org/basis3.2/program/libcanvastoolslx.so
+3d04631000-3d04830000 ---p 00031000 08:03 82631                          /usr/lib64/openoffice.org/basis3.2/program/libcanvastoolslx.so
+3d04830000-3d04833000 rw-p 00030000 08:03 82631                          /usr/lib64/openoffice.org/basis3.2/program/libcanvastoolslx.so
+3d04a00000-3d04a71000 r-xp 00000000 08:03 82552                          /usr/lib64/openoffice.org/basis3.2/program/libsofficeapp.so
+3d04a71000-3d04c70000 ---p 00071000 08:03 82552                          /usr/lib64/openoffice.org/basis3.2/program/libsofficeapp.so
+3d04c70000-3d04c76000 rw-p 00070000 08:03 82552                          /usr/lib64/openoffice.org/basis3.2/program/libsofficeapp.so
+3d04e00000-3d04e9d000 r-xp 00000000 08:03 82275                          /usr/lib64/openoffice.org/basis3.2/program/liblnglx.so
+3d04e9d000-3d0509d000 ---p 0009d000 08:03 82275                          /usr/lib64/openoffice.org/basis3.2/program/liblnglx.so
+3d0509d000-3d050a6000 rw-p 0009d000 08:03 82275                          /usr/lib64/openoffice.org/basis3.2/program/liblnglx.so
+3d050a6000-3d050a7000 rw-p 00000000 00:00 0 
+3d05400000-3d05472000 r-xp 00000000 09:00 16775                          /lib64/libgcrypt.so.11.5.3
+3d05472000-3d05671000 ---p 00072000 09:00 16775                          /lib64/libgcrypt.so.11.5.3
+3d05671000-3d05675000 rw-p 00071000 09:00 16775                          /lib64/libgcrypt.so.11.5.3
+3d05800000-3d05862000 r-xp 00000000 08:03 82530                          /usr/lib64/openoffice.org/basis3.2/program/libpackage2.so
+3d05862000-3d05a62000 ---p 00062000 08:03 82530                          /usr/lib64/openoffice.org/basis3.2/program/libpackage2.so
+3d05a62000-3d05a68000 rw-p 00062000 08:03 82530                          /usr/lib64/openoffice.org/basis3.2/program/libpackage2.so
+3d05c00000-3d05c54000 r-xp 00000000 08:03 83010                          /usr/lib64/openoffice.org/basis3.2/program/libvclplug_gtklx.so
+3d05c54000-3d05e54000 ---p 00054000 08:03 83010                          /usr/lib64/openoffice.org/basis3.2/program/libvclplug_gtklx.so
+3d05e54000-3d05e5b000 rw-p 00054000 08:03 83010                          /usr/lib64/openoffice.org/basis3.2/program/libvclplug_gtklx.so
+3d05e5b000-3d05e5c000 rw-p 00000000 00:00 0 
+3d06000000-3d060da000 r-xp 00000000 08:03 82147                          /usr/lib64/openoffice.org/basis3.2/program/libvclplug_genlx.so
+3d060da000-3d062d9000 ---p 000da000 08:03 82147                          /usr/lib64/openoffice.org/basis3.2/program/libvclplug_genlx.so
+3d062d9000-3d062e7000 rw-p 000d9000 08:03 82147                          /usr/lib64/openoffice.org/basis3.2/program/libvclplug_genlx.so
+3d062e7000-3d062e9000 rw-p 00000000 00:00 0 
+3d06400000-3d06440000 r-xp 00000000 08:03 82544                          /usr/lib64/openoffice.org/basis3.2/program/libucb1.so
+3d06440000-3d0663f000 ---p 00040000 08:03 82544                          /usr/lib64/openoffice.org/basis3.2/program/libucb1.so
+3d0663f000-3d06644000 rw-p 0003f000 08:03 82544                          /usr/lib64/openoffice.org/basis3.2/program/libucb1.so
+3d06800000-3d06839000 r-xp 00000000 09:00 16778                          /lib64/libnspr4.so
+3d06839000-3d06a38000 ---p 00039000 09:00 16778                          /lib64/libnspr4.so
+3d06a38000-3d06a3a000 rw-p 00038000 09:00 16778                          /lib64/libnspr4.so
+3d06a3a000-3d06a3d000 rw-p 00000000 00:00 0 
+3d06c00000-3d06c5b000 r-xp 00000000 08:03 82570                          /usr/lib64/openoffice.org/basis3.2/program/libucpfile1.so
+3d06c5b000-3d06e5a000 ---p 0005b000 08:03 82570                          /usr/lib64/openoffice.org/basis3.2/program/libucpfile1.so
+3d06e5a000-3d06e5f000 rw-p 0005a000 08:03 82570                          /usr/lib64/openoffice.org/basis3.2/program/libucpfile1.so
+3d07000000-3d07b12000 r-xp 00000000 08:03 86907                          /usr/lib64/openoffice.org/basis3.2/program/libswlx.so
+3d07b12000-3d07d12000 ---p 00b12000 08:03 86907                          /usr/lib64/openoffice.org/basis3.2/program/libswlx.so
+3d07d12000-3d07de4000 rw-p 00b12000 08:03 86907                          /usr/lib64/openoffice.org/basis3.2/program/libswlx.so
+3d07de4000-3d07dea000 rw-p 00000000 00:00 0 
+3d07e00000-3d07e1a000 r-xp 00000000 08:03 1352143                        /usr/lib64/libnssutil3.so
+3d07e1a000-3d08019000 ---p 0001a000 08:03 1352143                        /usr/lib64/libnssutil3.so
+3d08019000-3d0801e000 rw-p 00019000 08:03 1352143                        /usr/lib64/libnssutil3.so
+3d0801e000-3d0801f000 rw-p 00000000 00:00 0 
+3d08200000-3d08333000 r-xp 00000000 08:03 1352144                        /usr/lib64/libnss3.so
+3d08333000-3d08532000 ---p 00133000 08:03 1352144                        /usr/lib64/libnss3.so
+3d08532000-3d08539000 rw-p 00132000 08:03 1352144                        /usr/lib64/libnss3.so
+3d08539000-3d0853a000 rw-p 00000000 00:00 0 
+3d08600000-3d08632000 r-xp 00000000 08:03 1352145                        /usr/lib64/libssl3.so
+3d08632000-3d08831000 ---p 00032000 08:03 1352145                        /usr/lib64/libssl3.so
+3d08831000-3d08834000 rw-p 00031000 08:03 1352145                        /usr/lib64/libssl3.so
+3d08a00000-3d08a44000 r-xp 00000000 08:03 1352142                        /usr/lib64/libldap-2.4.so.2.5.4
+3d08a44000-3d08c43000 ---p 00044000 08:03 1352142                        /usr/lib64/libldap-2.4.so.2.5.4
+3d08c43000-3d08c45000 rw-p 00043000 08:03 1352142                        /usr/lib64/libldap-2.4.so.2.5.4
+3d08e00000-3d08e09000 r-xp 00000000 08:03 1352182                        /usr/lib64/libltdl.so.7.2.1
+3d08e09000-3d09008000 ---p 00009000 08:03 1352182                        /usr/lib64/libltdl.so.7.2.1
+3d09008000-3d09009000 rw-p 00008000 08:03 1352182                        /usr/lib64/libltdl.so.7.2.1
+3d09200000-3d09228000 r-xp 00000000 08:03 1352146                        /usr/lib64/libsmime3.so
+3d09228000-3d09427000 ---p 00028000 08:03 1352146                        /usr/lib64/libsmime3.so
+3d09427000-3d0942b000 rw-p 00027000 08:03 1352146                        /usr/lib64/libsmime3.so
+3d0ae00000-3d0ae8d000 r-xp 00000000 08:03 1347697                        /usr/lib64/libsqlite3.so.0.8.6
+3d0ae8d000-3d0b08c000 ---p 0008d000 08:03 1347697                        /usr/lib64/libsqlite3.so.0.8.6
+3d0b08c000-3d0b08f000 rw-p 0008c000 08:03 1347697                        /usr/lib64/libsqlite3.so.0.8.6
+3d0b08f000-3d0b090000 rw-p 00000000 00:00 0 
+3d0b600000-3d0b610000 r-xp 00000000 08:03 1348595                        /usr/lib64/libtasn1.so.3.1.7
+3d0b610000-3d0b810000 ---p 00010000 08:03 1348595                        /usr/lib64/libtasn1.so.3.1.7
+3d0b810000-3d0b811000 rw-p 00010000 08:03 1348595                        /usr/lib64/libtasn1.so.3.1.7
+3d0be00000-3d0be9b000 r-xp 00000000 08:03 1352115                        /usr/lib64/libgnutls.so.26.14.12
+3d0be9b000-3d0c09a000 ---p 0009b000 08:03 1352115                        /usr/lib64/libgnutls.so.26.14.12
+3d0c09a000-3d0c0a1000 rw-p 0009a000 08:03 1352115                        /usr/lib64/libgnutls.so.26.14.12
+3d0c200000-3d0c259000 r-xp 00000000 08:03 1352148                        /usr/lib64/libcurl.so.4.2.0
+3d0c259000-3d0c459000 ---p 00059000 08:03 1352148                        /usr/lib64/libcurl.so.4.2.0
+3d0c459000-3d0c45c000 rw-p 00059000 08:03 1352148                        /usr/lib64/libcurl.so.4.2.0
+3d0c600000-3d0c627000 r-xp 00000000 08:03 1352147                        /usr/lib64/libssh2.so.1.0.1
+3d0c627000-3d0c827000 ---p 00027000 08:03 1352147                        /usr/lib64/libssh2.so.1.0.1
+3d0c827000-3d0c828000 rw-p 00027000 08:03 1352147                        /usr/lib64/libssh2.so.1.0.1
+3d0ca00000-3d0ca57000 r-xp 00000000 08:03 1347766                        /usr/lib64/libgmp.so.3.5.0
+3d0ca57000-3d0cc57000 ---p 00057000 08:03 1347766                        /usr/lib64/libgmp.so.3.5.0
+3d0cc57000-3d0cc5c000 rw-p 00057000 08:03 1347766                        /usr/lib64/libgmp.so.3.5.0
+3d0d400000-3d0d439000 r-xp 00000000 08:03 1352281                        /usr/lib64/librdf.so.0.0.0
+3d0d439000-3d0d639000 ---p 00039000 08:03 1352281                        /usr/lib64/librdf.so.0.0.0
+3d0d639000-3d0d63b000 rw-p 00039000 08:03 1352281                        /usr/lib64/librdf.so.0.0.0
+3d0dc00000-3d0eb45000 r-xp 00000000 08:03 1347225                        /usr/lib64/libicudata.so.42.1
+3d0eb45000-3d0ed44000 ---p 00f45000 08:03 1347225                        /usr/lib64/libicudata.so.42.1
+3d0ed44000-3d0ed45000 rw-p 00f44000 08:03 1347225                        /usr/lib64/libicudata.so.42.1
+3d0ee00000-3d0ef49000 r-xp 00000000 08:03 1352259                        /usr/lib64/libicuuc.so.42.1
+3d0ef49000-3d0f149000 ---p 00149000 08:03 1352259                        /usr/lib64/libicuuc.so.42.1
+3d0f149000-3d0f15a000 rw-p 00149000 08:03 1352259                        /usr/lib64/libicuuc.so.42.1
+3d0f15a000-3d0f15c000 rw-p 00000000 00:00 0 
+3d0f200000-3d0f23b000 r-xp 00000000 08:03 1347250                        /usr/lib64/libxslt.so.1.1.26
+3d0f23b000-3d0f43a000 ---p 0003b000 08:03 1347250                        /usr/lib64/libxslt.so.1.1.26
+3d0f43a000-3d0f43c000 rw-p 0003a000 08:03 1347250                        /usr/lib64/libxslt.so.1.1.26
+3d10800000-3d10865000 r-xp 00000000 08:03 1346186                        /usr/lib64/libraptor.so.1.2.0
+3d10865000-3d10a64000 ---p 00065000 08:03 1346186                        /usr/lib64/libraptor.so.1.2.0
+3d10a64000-3d10a68000 rw-p 00064000 08:03 1346186                        /usr/lib64/libraptor.so.1.2.0
+3d10c00000-3d10c4b000 r-xp 00000000 08:03 1352280                        /usr/lib64/librasqal.so.2.0.0
+3d10c4b000-3d10e4a000 ---p 0004b000 08:03 1352280                        /usr/lib64/librasqal.so.2.0.0
+3d10e4a000-3d10e4d000 rw-p 0004a000 08:03 1352280                        /usr/lib64/librasqal.so.2.0.0
+7f06e4000000-7f06e4021000 rw-p 00000000 00:00 0 
+7f06e4021000-7f06e8000000 ---p 00000000 00:00 0 
+7f06e8000000-7f06e8021000 rw-p 00000000 00:00 0 
+7f06e8021000-7f06ec000000 ---p 00000000 00:00 0 
+7f06ec000000-7f06ec021000 rw-p 00000000 00:00 0 
+7f06ec021000-7f06f0000000 ---p 00000000 00:00 0 
+7f06f0000000-7f06f0021000 rw-p 00000000 00:00 0 
+7f06f0021000-7f06f4000000 ---p 00000000 00:00 0 
+7f06f4000000-7f06f4162000 rw-p 00000000 00:00 0 
+7f06f4162000-7f06f8000000 ---p 00000000 00:00 0 
+7f06f8000000-7f06f81c2000 rw-p 00000000 00:00 0 
+7f06f81c2000-7f06fc000000 ---p 00000000 00:00 0 
+7f06fc000000-7f06fc021000 rw-p 00000000 00:00 0 
+7f06fc021000-7f0700000000 ---p 00000000 00:00 0 
+7f0700000000-7f0700021000 rw-p 00000000 00:00 0 
+7f0700021000-7f0704000000 ---p 00000000 00:00 0 
+7f0704000000-7f0704021000 rw-p 00000000 00:00 0 
+7f0704021000-7f0708000000 ---p 00000000 00:00 0 
+7f0708000000-7f0708021000 rw-p 00000000 00:00 0 
+7f0708021000-7f070c000000 ---p 00000000 00:00 0 
+7f070c000000-7f070c021000 rw-p 00000000 00:00 0 
+7f070c021000-7f0710000000 ---p 00000000 00:00 0 
+7f07121fd000-7f07121fe000 ---p 00000000 00:00 0 
+7f07121fe000-7f0712bfe000 rwxp 00000000 00:00 0                          [threadstack:009fefd0]
+7f0712bfe000-7f0712bff000 ---p 00000000 00:00 0 
+7f0712bff000-7f07135ff000 rwxp 00000000 00:00 0 
+7f07135ff000-7f0713600000 ---p 00000000 00:00 0 
+7f0713600000-7f0714000000 rwxp 00000000 00:00 0 
+7f0714000000-7f0714021000 rw-p 00000000 00:00 0 
+7f0714021000-7f0718000000 ---p 00000000 00:00 0 
+7f0718000000-7f0718021000 rw-p 00000000 00:00 0 
+7f0718021000-7f071c000000 ---p 00000000 00:00 0 
+7f071c000000-7f071c021000 rw-p 00000000 00:00 0 
+7f071c021000-7f0720000000 ---p 00000000 00:00 0 
+7f07207ee000-7f072089e000 rw-p 00000000 00:00 0 
+7f07208ae000-7f072095e000 rw-p 00000000 00:00 0 
+7f072097e000-7f0720a1e000 rw-p 00000000 00:00 0 
+7f0720a1e000-7f0720a8e000 r--s 00000000 08:03 476121                     /usr/fonts/freefont/FreeSans.ttf
+7f0720a8e000-7f0720bfa000 r-xp 00000000 08:03 82533                      /usr/lib64/openoffice.org/basis3.2/program/liblocaledata_others.so
+7f0720bfa000-7f0720df9000 ---p 0016c000 08:03 82533                      /usr/lib64/openoffice.org/basis3.2/program/liblocaledata_others.so
+7f0720df9000-7f0720e48000 rw-p 0016b000 08:03 82533                      /usr/lib64/openoffice.org/basis3.2/program/liblocaledata_others.so
+7f0720e48000-7f072106b000 r-xp 00000000 08:03 82478                      /usr/lib64/openoffice.org/basis3.2/program/libdbalx.so
+7f072106b000-7f072126b000 ---p 00223000 08:03 82478                      /usr/lib64/openoffice.org/basis3.2/program/libdbalx.so
+7f072126b000-7f0721291000 rw-p 00223000 08:03 82478                      /usr/lib64/openoffice.org/basis3.2/program/libdbalx.so
+7f0721291000-7f0721295000 rw-p 00000000 00:00 0 
+7f0721295000-7f072146c000 r-xp 00000000 08:03 86252                      /usr/lib64/openoffice.org/basis3.2/program/libswuilx.so
+7f072146c000-7f072166c000 ---p 001d7000 08:03 86252                      /usr/lib64/openoffice.org/basis3.2/program/libswuilx.so
+7f072166c000-7f0721693000 rw-p 001d7000 08:03 86252                      /usr/lib64/openoffice.org/basis3.2/program/libswuilx.so
+7f0721693000-7f07216d6000 r-xp 00000000 08:03 86864                      /usr/lib64/openoffice.org/basis3.2/program/fps_office.uno.so
+7f07216d6000-7f07218d5000 ---p 00043000 08:03 86864                      /usr/lib64/openoffice.org/basis3.2/program/fps_office.uno.so
+7f07218d5000-7f07218db000 rw-p 00042000 08:03 86864                      /usr/lib64/openoffice.org/basis3.2/program/fps_office.uno.so
+7f07218db000-7f07218de000 r-xp 00000000 08:03 86860                      /usr/lib64/openoffice.org/basis3.2/program/fpicker.uno.so
+7f07218de000-7f0721add000 ---p 00003000 08:03 86860                      /usr/lib64/openoffice.org/basis3.2/program/fpicker.uno.so
+7f0721add000-7f0721ade000 rw-p 00002000 08:03 86860                      /usr/lib64/openoffice.org/basis3.2/program/fpicker.uno.so
+7f0721ade000-7f0721b1e000 rw-p 00000000 00:00 0 
+7f0721b1e000-7f0721b26000 r-xp 00000000 08:03 82561                      /usr/lib64/openoffice.org/basis3.2/program/libi18nregexpgcc3.so
+7f0721b26000-7f0721d25000 ---p 00008000 08:03 82561                      /usr/lib64/openoffice.org/basis3.2/program/libi18nregexpgcc3.so
+7f0721d25000-7f0721d26000 rw-p 00007000 08:03 82561                      /usr/lib64/openoffice.org/basis3.2/program/libi18nregexpgcc3.so
+7f0721d26000-7f0721d31000 r-xp 00000000 08:03 86873                      /usr/lib64/openoffice.org/basis3.2/program/i18nsearch.uno.so
+7f0721d31000-7f0721f31000 ---p 0000b000 08:03 86873                      /usr/lib64/openoffice.org/basis3.2/program/i18nsearch.uno.so
+7f0721f31000-7f0721f32000 rw-p 0000b000 08:03 86873                      /usr/lib64/openoffice.org/basis3.2/program/i18nsearch.uno.so
+7f0721f32000-7f0721f42000 rw-p 00000000 00:00 0 
+7f0721f42000-7f0721f6e000 r--s 00000000 08:03 773602                     /usr/share/fonts/opensymbol/opens___.ttf
+7f0721f6e000-7f072211e000 rw-p 00000000 00:00 0 
+7f072212e000-7f072213e000 rw-p 00000000 00:00 0 
+7f072215e000-7f072216e000 rw-p 00000000 00:00 0 
+7f072217e000-7f07221be000 rw-p 00000000 00:00 0 
+7f07221ce000-7f07221fe000 rw-p 00000000 00:00 0 
+7f072220e000-7f07222ce000 rw-p 00000000 00:00 0 
+7f07222ce000-7f07222e9000 r-xp 00000000 08:03 1551453                    /usr/lib64/openoffice.org/ure/lib/libjava_uno.so
+7f07222e9000-7f07224e8000 ---p 0001b000 08:03 1551453                    /usr/lib64/openoffice.org/ure/lib/libjava_uno.so
+7f07224e8000-7f07224e9000 rw-p 0001a000 08:03 1551453                    /usr/lib64/openoffice.org/ure/lib/libjava_uno.so
+7f07224e9000-7f07224ea000 ---p 00000000 00:00 0 
+7f07224ea000-7f07225ea000 rwxp 00000000 00:00 0 
+7f07225ea000-7f07225ed000 ---p 00000000 00:00 0 
+7f07225ed000-7f07226eb000 rwxp 00000000 00:00 0 
+7f07226eb000-7f07226ee000 ---p 00000000 00:00 0 
+7f07226ee000-7f07227ec000 rwxp 00000000 00:00 0 
+7f07227ec000-7f07227ef000 ---p 00000000 00:00 0 
+7f07227ef000-7f07228ed000 rwxp 00000000 00:00 0 
+7f07228ed000-7f07228f0000 ---p 00000000 00:00 0 
+7f07228f0000-7f07229ee000 rwxp 00000000 00:00 0 
+7f07229ee000-7f07229f1000 ---p 00000000 00:00 0 
+7f07229f1000-7f0722aef000 rwxp 00000000 00:00 0 
+7f0722aef000-7f0722af2000 ---p 00000000 00:00 0 
+7f0722af2000-7f0722bf0000 rwxp 00000000 00:00 0 
+7f0722bf0000-7f0722bf1000 ---p 00000000 00:00 0 
+7f0722bf1000-7f0722cf1000 rwxp 00000000 00:00 0 
+7f0722cf1000-7f0722e7c000 r--s 02df0000 00:17 273878061                  /usr/local/java/jdk1.6.0_06_64bit/jre/lib/rt.jar
+7f0722e7c000-7f0722e7d000 ---p 00000000 00:00 0 
+7f0722e7d000-7f0722f7d000 rwxp 00000000 00:00 0 
+7f0722f7d000-7f0722f7e000 ---p 00000000 00:00 0 
+7f0722f7e000-7f072307e000 rwxp 00000000 00:00 0 
+7f072307e000-7f072307f000 ---p 00000000 00:00 0 
+7f072307f000-7f072317f000 rwxp 00000000 00:00 0 
+7f072317f000-7f0723180000 ---p 00000000 00:00 0 
+7f0723180000-7f072328b000 rwxp 00000000 00:00 0 
+7f072328b000-7f07232aa000 rwxp 00000000 00:00 0 
+7f07232aa000-7f07232bf000 rwxp 00000000 00:00 0 
+7f07232bf000-7f07233f5000 rwxp 00000000 00:00 0 
+7f07233f5000-7f0723400000 rwxp 00000000 00:00 0 
+7f0723400000-7f072341f000 rwxp 00000000 00:00 0 
+7f072341f000-7f0723434000 rwxp 00000000 00:00 0 
+7f0723434000-7f0723569000 rwxp 00000000 00:00 0 
+7f0723569000-7f0723574000 rwxp 00000000 00:00 0 
+7f0723574000-7f072360f000 rwxp 00000000 00:00 0 
+7f072360f000-7f0724ad0000 rwxp 00000000 00:00 0 
+7f0724ad0000-7f0728a10000 rwxp 00000000 00:00 0 
+7f0728a10000-7f072b360000 rwxp 00000000 00:00 0 
+7f072b360000-7f0751f70000 rwxp 00000000 00:00 0 
+7f0751f70000-7f0753410000 rwxp 00000000 00:00 0 
+7f0753410000-7f0766a10000 rwxp 00000000 00:00 0 
+7f0766a15000-7f0766a1f000 rwxp 00000000 00:00 0 
+7f0766a1f000-7f0766ad5000 rwxp 00000000 00:00 0 
+7f0766ad5000-7f0766d45000 rwxp 00000000 00:00 0 
+7f0766d45000-7f0769ad5000 rwxp 00000000 00:00 0 
+7f0769ad5000-7f0769ae3000 r-xp 00000000 00:17 544401421                  /usr/local/java/jdk1.6.0_06_64bit/jre/lib/amd64/libzip.so
+7f0769ae3000-7f0769be5000 ---p 0000e000 00:17 544401421                  /usr/local/java/jdk1.6.0_06_64bit/jre/lib/amd64/libzip.so
+7f0769be5000-7f0769be8000 rw-p 00010000 00:17 544401421                  /usr/local/java/jdk1.6.0_06_64bit/jre/lib/amd64/libzip.so
+7f0769be8000-7f0769be9000 rw-p 00000000 00:00 0 
+7f0769be9000-7f0769c11000 r-xp 00000000 00:17 544401413                  /usr/local/java/jdk1.6.0_06_64bit/jre/lib/amd64/libjava.so
+7f0769c11000-7f0769d11000 ---p 00028000 00:17 544401413                  /usr/local/java/jdk1.6.0_06_64bit/jre/lib/amd64/libjava.so
+7f0769d11000-7f0769d18000 rw-p 00028000 00:17 544401413                  /usr/local/java/jdk1.6.0_06_64bit/jre/lib/amd64/libjava.so
+7f0769d18000-7f0769d25000 r-xp 00000000 00:17 544401410                  /usr/local/java/jdk1.6.0_06_64bit/jre/lib/amd64/libverify.so
+7f0769d25000-7f0769e24000 ---p 0000d000 00:17 544401410                  /usr/local/java/jdk1.6.0_06_64bit/jre/lib/amd64/libverify.so
+7f0769e24000-7f0769e27000 rw-p 0000c000 00:17 544401410                  /usr/local/java/jdk1.6.0_06_64bit/jre/lib/amd64/libverify.so
+7f0769e27000-7f0769e2e000 r-xp 00000000 00:17 7617601                    /usr/local/java/jdk1.6.0_06_64bit/jre/lib/amd64/native_threads/libhpi.so
+7f0769e2e000-7f0769f2f000 ---p 00007000 00:17 7617601                    /usr/local/java/jdk1.6.0_06_64bit/jre/lib/amd64/native_threads/libhpi.so
+7f0769f2f000-7f0769f31000 rw-p 00008000 00:17 7617601                    /usr/local/java/jdk1.6.0_06_64bit/jre/lib/amd64/native_threads/libhpi.so
+7f0769f31000-7f0769f32000 rw-p 00000000 00:00 0 
+7f0769f32000-7f076a627000 r-xp 00000000 00:17 544401433                  /usr/local/java/jdk1.6.0_06_64bit/jre/lib/amd64/server/libjvm.so
+7f076a627000-7f076a726000 ---p 006f5000 00:17 544401433                  /usr/local/java/jdk1.6.0_06_64bit/jre/lib/amd64/server/libjvm.so
+7f076a726000-7f076a870000 rw-p 006f4000 00:17 544401433                  /usr/local/java/jdk1.6.0_06_64bit/jre/lib/amd64/server/libjvm.so
+7f076a870000-7f076a8ad000 rw-p 00000000 00:00 0 
+7f076a8b2000-7f076aa62000 rw-p 00000000 00:00 0 
+7f076aa62000-7f076aa9b000 r--s 00121000 08:03 86848                      /usr/lib64/openoffice.org/basis3.2/program/classes/unoil.jar
+7f076aa9b000-7f076aa9d000 r--s 00000000 08:03 1576764                    /usr/lib64/openoffice.org/ure/share/java/unoloader.jar
+7f076aa9d000-7f076aaa3000 r--s 00054000 08:03 1133134                    /usr/share/java/postgresql-jdbc-8.4.701.jar
+7f076aaa3000-7f076aaa6000 r--s 00021000 08:03 1281632                    /usr/share/java/lucene-contrib/lucene-analyzers-2.4.1.jar
+7f076aaa6000-7f076aab3000 r--s 000bb000 08:03 1133124                    /usr/share/java/lucene-2.4.1.jar
+7f076aab3000-7f076aabb000 r--s 000e5000 08:03 1133152                    /usr/share/java/hsqldb-1.8.0.10.jar
+7f076aabb000-7f076aac0000 r--s 00049000 08:03 1133118                    /usr/share/java/bsh-1.3.0.jar
+7f076aac0000-7f076aadd000 r-xp 00000000 08:03 1551448                    /usr/lib64/openoffice.org/ure/lib/javavm.uno.so
+7f076aadd000-7f076acdd000 ---p 0001d000 08:03 1551448                    /usr/lib64/openoffice.org/ure/lib/javavm.uno.so
+7f076acdd000-7f076acdf000 rw-p 0001d000 08:03 1551448                    /usr/lib64/openoffice.org/ure/lib/javavm.uno.so
+7f076acdf000-7f076ace7000 r-xp 00000000 08:03 1551447                    /usr/lib64/openoffice.org/ure/lib/javaloader.uno.so
+7f076ace7000-7f076aee7000 ---p 00008000 08:03 1551447                    /usr/lib64/openoffice.org/ure/lib/javaloader.uno.so
+7f076aee7000-7f076aee8000 rw-p 00008000 08:03 1551447                    /usr/lib64/openoffice.org/ure/lib/javaloader.uno.so
+7f076aee8000-7f076af38000 rw-p 00000000 00:00 0 
+7f076af38000-7f076af4c000 r-xp 00000000 08:03 86880                      /usr/lib64/openoffice.org/basis3.2/program/libtvhlp1.so
+7f076af4c000-7f076b14c000 ---p 00014000 08:03 86880                      /usr/lib64/openoffice.org/basis3.2/program/libtvhlp1.so
+7f076b14c000-7f076b14e000 rw-p 00014000 08:03 86880                      /usr/lib64/openoffice.org/basis3.2/program/libtvhlp1.so
+7f076b14e000-7f076b17e000 rw-p 00000000 00:00 0 
+7f076b17f000-7f076b1ae000 r--s 00000000 08:03 755185                     /usr/share/fonts/google-droid/DroidSans.ttf
+7f076b1ae000-7f076b1be000 rw-p 00000000 00:00 0 
+7f076b1ce000-7f076b4ee000 rw-p 00000000 00:00 0 
+7f076b4ee000-7f076b4ff000 r--s 00000000 08:03 426831                     /usr/share/fonts/bitstream-vera/Vera.ttf
+7f076b4ff000-7f076b50e000 r--s 00000000 08:03 426833                     /usr/share/fonts/bitstream-vera/VeraBd.ttf
+7f076b50e000-7f076b51e000 rw-p 00000000 00:00 0 
+7f076b51e000-7f076b52b000 r-xp 00000000 08:03 82501                      /usr/lib64/openoffice.org/basis3.2/program/libevtatt.so
+7f076b52b000-7f076b72a000 ---p 0000d000 08:03 82501                      /usr/lib64/openoffice.org/basis3.2/program/libevtatt.so
+7f076b72a000-7f076b72c000 rw-p 0000c000 08:03 82501                      /usr/lib64/openoffice.org/basis3.2/program/libevtatt.so
+7f076b72c000-7f076b8a0000 r-xp 00000000 08:03 82483                      /usr/lib64/openoffice.org/basis3.2/program/libdbtoolslx.so
+7f076b8a0000-7f076ba9f000 ---p 00174000 08:03 82483                      /usr/lib64/openoffice.org/basis3.2/program/libdbtoolslx.so
+7f076ba9f000-7f076bab1000 rw-p 00173000 08:03 82483                      /usr/lib64/openoffice.org/basis3.2/program/libdbtoolslx.so
+7f076bab1000-7f076bab2000 rw-p 00000000 00:00 0 
+7f076bab2000-7f076bd3f000 r-xp 00000000 08:03 82507                      /usr/lib64/openoffice.org/basis3.2/program/libfrmlx.so
+7f076bd3f000-7f076bf3f000 ---p 0028d000 08:03 82507                      /usr/lib64/openoffice.org/basis3.2/program/libfrmlx.so
+7f076bf3f000-7f076bf7b000 rw-p 0028d000 08:03 82507                      /usr/lib64/openoffice.org/basis3.2/program/libfrmlx.so
+7f076bf7b000-7f076c000000 rw-p 00000000 00:00 0 
+7f076c000000-7f076c038000 rw-p 00000000 00:00 0 
+7f076c038000-7f0770000000 ---p 00000000 00:00 0 
+7f0770003000-7f0770153000 rw-p 00000000 00:00 0 
+7f0770153000-7f0770198000 r-xp 00000000 08:03 82582                      /usr/lib64/openoffice.org/basis3.2/program/libxoflx.so
+7f0770198000-7f0770398000 ---p 00045000 08:03 82582                      /usr/lib64/openoffice.org/basis3.2/program/libxoflx.so
+7f0770398000-7f07703a7000 rw-p 00045000 08:03 82582                      /usr/lib64/openoffice.org/basis3.2/program/libxoflx.so
+7f07703a7000-7f07703b7000 rw-p 00000000 00:00 0 
+7f07703b7000-7f07703bc000 r-xp 00000000 09:00 16414                      /lib64/libnss_dns-2.12.so
+7f07703bc000-7f07705bb000 ---p 00005000 09:00 16414                      /lib64/libnss_dns-2.12.so
+7f07705bb000-7f07705bc000 r--p 00004000 09:00 16414                      /lib64/libnss_dns-2.12.so
+7f07705bc000-7f07705bd000 rw-p 00005000 09:00 16414                      /lib64/libnss_dns-2.12.so
+7f07705c8000-7f0770618000 rw-p 00000000 00:00 0 
+7f0770618000-7f077061f000 r-xp 00000000 08:03 1346938                    /usr/lib64/libproxy.so.0.0.0
+7f077061f000-7f077081e000 ---p 00007000 08:03 1346938                    /usr/lib64/libproxy.so.0.0.0
+7f077081e000-7f077081f000 rw-p 00006000 08:03 1346938                    /usr/lib64/libproxy.so.0.0.0
+7f077081f000-7f0770824000 r-xp 00000000 08:03 1346578                    /usr/lib64/libpakchois.so.0.1.0
+7f0770824000-7f0770a24000 ---p 00005000 08:03 1346578                    /usr/lib64/libpakchois.so.0.1.0
+7f0770a24000-7f0770a25000 rw-p 00005000 08:03 1346578                    /usr/lib64/libpakchois.so.0.1.0
+7f0770a25000-7f0770a4e000 r-xp 00000000 08:03 1347913                    /usr/lib64/libneon.so.27.2.3
+7f0770a4e000-7f0770c4d000 ---p 00029000 08:03 1347913                    /usr/lib64/libneon.so.27.2.3
+7f0770c4d000-7f0770c4f000 rw-p 00028000 08:03 1347913                    /usr/lib64/libneon.so.27.2.3
+7f0770c5a000-7f0770caa000 rw-p 00000000 00:00 0 
+7f0770caa000-7f0770cfa000 r-xp 00000000 08:03 83016                      /usr/lib64/openoffice.org/basis3.2/program/libucpdav1.so
+7f0770cfa000-7f0770efa000 ---p 00050000 08:03 83016                      /usr/lib64/openoffice.org/basis3.2/program/libucpdav1.so
+7f0770efa000-7f0770efd000 rw-p 00050000 08:03 83016                      /usr/lib64/openoffice.org/basis3.2/program/libucpdav1.so
+7f0770efd000-7f0770efe000 ---p 00000000 00:00 0 
+7f0770efe000-7f07718fe000 rwxp 00000000 00:00 0 
+7f07718fe000-7f077190e000 rw-p 00000000 00:00 0 
+7f077190e000-7f0771922000 r-xp 00000000 08:03 83922                      /usr/lib64/openoffice.org/basis3.2/program/updatefeed.uno.so
+7f0771922000-7f0771b22000 ---p 00014000 08:03 83922                      /usr/lib64/openoffice.org/basis3.2/program/updatefeed.uno.so
+7f0771b22000-7f0771b24000 rw-p 00014000 08:03 83922                      /usr/lib64/openoffice.org/basis3.2/program/updatefeed.uno.so
+7f0771b24000-7f0771b96000 r--s 00000000 08:03 492507                     /usr/fonts/ttf/ttf-dejavu/DejaVuSans.ttf
+7f0771b96000-7f0771bb8000 r--s 00000000 08:03 976769                     /usr/msttcorefonts/verdanab.ttf
+7f0771bb8000-7f0771c28000 rw-p 00000000 00:00 0 
+7f0771c28000-7f0771c90000 r-xp 00000000 08:03 86855                      /usr/lib64/openoffice.org/basis3.2/program/deploymentguilx.uno.so
+7f0771c90000-7f0771e8f000 ---p 00068000 08:03 86855                      /usr/lib64/openoffice.org/basis3.2/program/deploymentguilx.uno.so
+7f0771e8f000-7f0771e97000 rw-p 00067000 08:03 86855                      /usr/lib64/openoffice.org/basis3.2/program/deploymentguilx.uno.so
+7f0771e97000-7f0772067000 rw-p 00000000 00:00 0 
+7f0772067000-7f07720db000 r-xp 00000000 08:03 82564                      /usr/lib64/openoffice.org/basis3.2/program/libfwllx.so
+7f07720db000-7f07722da000 ---p 00074000 08:03 82564                      /usr/lib64/openoffice.org/basis3.2/program/libfwllx.so
+7f07722da000-7f07722e2000 rw-p 00073000 08:03 82564                      /usr/lib64/openoffice.org/basis3.2/program/libfwllx.so
+7f07722e2000-7f07724f2000 rw-p 00000000 00:00 0 
+7f07724f2000-7f077250d000 r-xp 00000000 08:03 82460                      /usr/lib64/openoffice.org/basis3.2/program/svtmisc.uno.so
+7f077250d000-7f077270d000 ---p 0001b000 08:03 82460                      /usr/lib64/openoffice.org/basis3.2/program/svtmisc.uno.so
+7f077270d000-7f0772710000 rw-p 0001b000 08:03 82460                      /usr/lib64/openoffice.org/basis3.2/program/svtmisc.uno.so
+7f0772710000-7f0772760000 r-xp 00000000 08:03 82169                      /usr/lib64/openoffice.org/basis3.2/program/libucpchelp1.so
+7f0772760000-7f0772960000 ---p 00050000 08:03 82169                      /usr/lib64/openoffice.org/basis3.2/program/libucpchelp1.so
+7f0772960000-7f0772964000 rw-p 00050000 08:03 82169                      /usr/lib64/openoffice.org/basis3.2/program/libucpchelp1.so
+7f0772964000-7f0772a74000 r-xp 00000000 08:03 1585110                    /usr/lib64/openoffice.org/extensions/presenter-screen.oxt/PresenterScreen.uno.so
+7f0772a74000-7f0772c73000 ---p 00110000 08:03 1585110                    /usr/lib64/openoffice.org/extensions/presenter-screen.oxt/PresenterScreen.uno.so
+7f0772c73000-7f0772c83000 rw-p 0010f000 08:03 1585110                    /usr/lib64/openoffice.org/extensions/presenter-screen.oxt/PresenterScreen.uno.so
+7f0772c83000-7f0772c8c000 r-xp 00000000 08:03 82535                      /usr/lib64/openoffice.org/basis3.2/program/libmcnttype.so
+7f0772c8c000-7f0772e8b000 ---p 00009000 08:03 82535                      /usr/lib64/openoffice.org/basis3.2/program/libmcnttype.so
+7f0772e8b000-7f0772e8c000 rw-p 00008000 08:03 82535                      /usr/lib64/openoffice.org/basis3.2/program/libmcnttype.so
+7f0772e8c000-7f0772e9d000 r-xp 00000000 08:03 82489                      /usr/lib64/openoffice.org/basis3.2/program/liblnthlx.so
+7f0772e9d000-7f077309d000 ---p 00011000 08:03 82489                      /usr/lib64/openoffice.org/basis3.2/program/liblnthlx.so
+7f077309d000-7f077309f000 rw-p 00011000 08:03 82489                      /usr/lib64/openoffice.org/basis3.2/program/liblnthlx.so
+7f077309f000-7f07730a3000 r-xp 00000000 08:03 1347592                    /usr/lib64/libhyphen.so.0.2.0
+7f07730a3000-7f07732a3000 ---p 00004000 08:03 1347592                    /usr/lib64/libhyphen.so.0.2.0
+7f07732a3000-7f07732a4000 rw-p 00004000 08:03 1347592                    /usr/lib64/libhyphen.so.0.2.0
+7f07732a4000-7f07732b3000 r-xp 00000000 08:03 82418                      /usr/lib64/openoffice.org/basis3.2/program/libhyphenlx.so
+7f07732b3000-7f07734b2000 ---p 0000f000 08:03 82418                      /usr/lib64/openoffice.org/basis3.2/program/libhyphenlx.so
+7f07734b2000-7f07734b4000 rw-p 0000e000 08:03 82418                      /usr/lib64/openoffice.org/basis3.2/program/libhyphenlx.so
+7f07734b4000-7f07734f1000 r-xp 00000000 08:03 1347336                    /usr/lib64/libhunspell-1.2.so.0.0.0
+7f07734f1000-7f07736f0000 ---p 0003d000 08:03 1347336                    /usr/lib64/libhunspell-1.2.so.0.0.0
+7f07736f0000-7f07736f5000 rw-p 0003c000 08:03 1347336                    /usr/lib64/libhunspell-1.2.so.0.0.0
+7f0773700000-7f0773750000 rw-p 00000000 00:00 0 
+7f0773750000-7f077375e000 r-xp 00000000 08:03 82440                      /usr/lib64/openoffice.org/basis3.2/program/libspelllx.so
+7f077375e000-7f077395d000 ---p 0000e000 08:03 82440                      /usr/lib64/openoffice.org/basis3.2/program/libspelllx.so
+7f077395d000-7f077395f000 rw-p 0000d000 08:03 82440                      /usr/lib64/openoffice.org/basis3.2/program/libspelllx.so
+7f077395f000-7f07739af000 rw-p 00000000 00:00 0 
+7f07739af000-7f07739cd000 r-xp 00000000 08:03 1551444                    /usr/lib64/openoffice.org/ure/lib/introspection.uno.so
+7f07739cd000-7f0773bcd000 ---p 0001e000 08:03 1551444                    /usr/lib64/openoffice.org/ure/lib/introspection.uno.so
+7f0773bcd000-7f0773bcf000 rw-p 0001e000 08:03 1551444                    /usr/lib64/openoffice.org/ure/lib/introspection.uno.so
+7f0773bcf000-7f0773bf7000 r-xp 00000000 08:03 82427                      /usr/lib64/openoffice.org/basis3.2/program/libucppkg1.so
+7f0773bf7000-7f0773df7000 ---p 00028000 08:03 82427                      /usr/lib64/openoffice.org/basis3.2/program/libucppkg1.so
+7f0773df7000-7f0773df9000 rw-p 00028000 08:03 82427                      /usr/lib64/openoffice.org/basis3.2/program/libucppkg1.so
+7f0773df9000-7f0773dff000 r-xp 00000000 08:03 83918                      /usr/lib64/openoffice.org/basis3.2/program/ucpexpand1.uno.so
+7f0773dff000-7f0773fff000 ---p 00006000 08:03 83918                      /usr/lib64/openoffice.org/basis3.2/program/ucpexpand1.uno.so
+7f0773fff000-7f0774000000 rw-p 00006000 08:03 83918                      /usr/lib64/openoffice.org/basis3.2/program/ucpexpand1.uno.so
+7f0774000000-7f0774021000 rw-p 00000000 00:00 0 
+7f0774021000-7f0778000000 ---p 00000000 00:00 0 
+7f077800e000-7f077804e000 rw-p 00000000 00:00 0 
+7f077804e000-7f077805e000 r--s 00000000 08:03 24646                      /usr/lib64/openoffice.org/share/uno_packages/cache/registry/com.sun.star.comp.deployment.component.PackageRegistryBackend/Linux_X86_64_.rdb
+7f077805e000-7f077806e000 r--s 00000000 08:03 24640                      /usr/lib64/openoffice.org/share/uno_packages/cache/registry/com.sun.star.comp.deployment.component.PackageRegistryBackend/common_.rdb
+7f077806e000-7f0778172000 rw-p 00000000 00:00 0 
+7f0778172000-7f0778189000 r-xp 00000000 08:03 82716                      /usr/lib64/openoffice.org/basis3.2/program/libhelplinkerlx.so
+7f0778189000-7f0778389000 ---p 00017000 08:03 82716                      /usr/lib64/openoffice.org/basis3.2/program/libhelplinkerlx.so
+7f0778389000-7f077838a000 rw-p 00017000 08:03 82716                      /usr/lib64/openoffice.org/basis3.2/program/libhelplinkerlx.so
+7f077838a000-7f07783a5000 r-xp 00000000 08:03 86437                      /usr/lib64/openoffice.org/basis3.2/program/libdeploymentmisclx.so
+7f07783a5000-7f07785a4000 ---p 0001b000 08:03 86437                      /usr/lib64/openoffice.org/basis3.2/program/libdeploymentmisclx.so
+7f07785a4000-7f07785a6000 rw-p 0001a000 08:03 86437                      /usr/lib64/openoffice.org/basis3.2/program/libdeploymentmisclx.so
+7f07785a6000-7f077863f000 r-xp 00000000 08:03 86856                      /usr/lib64/openoffice.org/basis3.2/program/deploymentlx.uno.so
+7f077863f000-7f077883e000 ---p 00099000 08:03 86856                      /usr/lib64/openoffice.org/basis3.2/program/deploymentlx.uno.so
+7f077883e000-7f077884a000 rw-p 00098000 08:03 86856                      /usr/lib64/openoffice.org/basis3.2/program/deploymentlx.uno.so
+7f077884a000-7f0778aaa000 rw-p 00000000 00:00 0 
+7f0778aaa000-7f0778aca000 r-xp 00000000 08:03 86866                      /usr/lib64/openoffice.org/basis3.2/program/fsstorage.uno.so
+7f0778aca000-7f0778cc9000 ---p 00020000 08:03 86866                      /usr/lib64/openoffice.org/basis3.2/program/fsstorage.uno.so
+7f0778cc9000-7f0778ccc000 rw-p 0001f000 08:03 86866                      /usr/lib64/openoffice.org/basis3.2/program/fsstorage.uno.so
+7f0778ccc000-7f0778cdc000 rw-p 00000000 00:00 0 
+7f0778cdc000-7f0778cfc000 r-xp 00000000 08:03 83919                      /usr/lib64/openoffice.org/basis3.2/program/ucpgio1.uno.so
+7f0778cfc000-7f0778efb000 ---p 00020000 08:03 83919                      /usr/lib64/openoffice.org/basis3.2/program/ucpgio1.uno.so
+7f0778efb000-7f0778efd000 rw-p 0001f000 08:03 83919                      /usr/lib64/openoffice.org/basis3.2/program/ucpgio1.uno.so
+7f0778efd000-7f0778f0e000 rw-p 00000000 00:00 0 
+7f0778f0e000-7f0778f2b000 r-xp 00000000 08:03 82441                      /usr/lib64/openoffice.org/basis3.2/program/libsrtrs1.so
+7f0778f2b000-7f077912b000 ---p 0001d000 08:03 82441                      /usr/lib64/openoffice.org/basis3.2/program/libsrtrs1.so
+7f077912b000-7f077912d000 rw-p 0001d000 08:03 82441                      /usr/lib64/openoffice.org/basis3.2/program/libsrtrs1.so
+7f077912d000-7f07791ad000 rw-p 00000000 00:00 0 
+7f07791ad000-7f07791d6000 r-xp 00000000 08:03 1559654                    /usr/lib64/openoffice.org/ure/lib/streams.uno.so
+7f07791d6000-7f07793d6000 ---p 00029000 08:03 1559654                    /usr/lib64/openoffice.org/ure/lib/streams.uno.so
+7f07793d6000-7f07793da000 rw-p 00029000 08:03 1559654                    /usr/lib64/openoffice.org/ure/lib/streams.uno.so
+7f07793da000-7f077940e000 r-xp 00000000 08:03 82546                      /usr/lib64/openoffice.org/basis3.2/program/libucphier1.so
+7f077940e000-7f077960e000 ---p 00034000 08:03 82546                      /usr/lib64/openoffice.org/basis3.2/program/libucphier1.so
+7f077960e000-7f0779611000 rw-p 00034000 08:03 82546                      /usr/lib64/openoffice.org/basis3.2/program/libucphier1.so
+7f0779611000-7f0779641000 rw-p 00000000 00:00 0 
+7f0779641000-7f0779662000 r-xp 00000000 08:03 1551464                    /usr/lib64/openoffice.org/ure/lib/reflection.uno.so
+7f0779662000-7f0779861000 ---p 00021000 08:03 1551464                    /usr/lib64/openoffice.org/ure/lib/reflection.uno.so
+7f0779861000-7f0779864000 rw-p 00020000 08:03 1551464                    /usr/lib64/openoffice.org/ure/lib/reflection.uno.so
+7f0779864000-7f0779876000 r-xp 00000000 08:03 82503                      /usr/lib64/openoffice.org/basis3.2/program/libfileacc.so
+7f0779876000-7f0779a76000 ---p 00012000 08:03 82503                      /usr/lib64/openoffice.org/basis3.2/program/libfileacc.so
+7f0779a76000-7f0779a78000 rw-p 00012000 08:03 82503                      /usr/lib64/openoffice.org/basis3.2/program/libfileacc.so
+7f0779a78000-7f0779ac5000 r-xp 00000000 08:03 82411                      /usr/lib64/openoffice.org/basis3.2/program/libxmlsecurity.so
+7f0779ac5000-7f0779cc5000 ---p 0004d000 08:03 82411                      /usr/lib64/openoffice.org/basis3.2/program/libxmlsecurity.so
+7f0779cc5000-7f0779ccb000 rw-p 0004d000 08:03 82411                      /usr/lib64/openoffice.org/basis3.2/program/libxmlsecurity.so
+7f0779ccb000-7f0779d48000 r-xp 00000000 08:03 82445                      /usr/lib64/openoffice.org/basis3.2/program/libunoxmllx.so
+7f0779d48000-7f0779f47000 ---p 0007d000 08:03 82445                      /usr/lib64/openoffice.org/basis3.2/program/libunoxmllx.so
+7f0779f47000-7f0779f57000 rw-p 0007c000 08:03 82445                      /usr/lib64/openoffice.org/basis3.2/program/libunoxmllx.so
+7f0779f57000-7f0779f68000 r-xp 00000000 08:03 1352256                    /usr/lib64/libiodbcinst.so.2.1.19
+7f0779f68000-7f077a168000 ---p 00011000 08:03 1352256                    /usr/lib64/libiodbcinst.so.2.1.19
+7f077a168000-7f077a169000 rw-p 00011000 08:03 1352256                    /usr/lib64/libiodbcinst.so.2.1.19
+7f077a169000-7f077a1ba000 r-xp 00000000 08:03 1346408                    /usr/lib64/libiodbc.so.2.1.19
+7f077a1ba000-7f077a3b9000 ---p 00051000 08:03 1346408                    /usr/lib64/libiodbc.so.2.1.19
+7f077a3b9000-7f077a3bc000 rw-p 00050000 08:03 1346408                    /usr/lib64/libiodbc.so.2.1.19
+7f077a3bc000-7f077a3c3000 r-xp 00000000 08:03 1520400                    /usr/lib64/redland/librdf_storage_virtuoso.so
+7f077a3c3000-7f077a5c3000 ---p 00007000 08:03 1520400                    /usr/lib64/redland/librdf_storage_virtuoso.so
+7f077a5c3000-7f077a5c4000 rw-p 00007000 08:03 1520400                    /usr/lib64/redland/librdf_storage_virtuoso.so
+7f077a5c4000-7f077a5cb000 r-xp 00000000 08:03 1520399                    /usr/lib64/redland/librdf_storage_sqlite.so
+7f077a5cb000-7f077a7ca000 ---p 00007000 08:03 1520399                    /usr/lib64/redland/librdf_storage_sqlite.so
+7f077a7ca000-7f077a7cb000 rw-p 00006000 08:03 1520399                    /usr/lib64/redland/librdf_storage_sqlite.so
+7f077a7cb000-7f077a814000 r-xp 00000000 08:03 1349151                    /usr/lib64/libldap_r-2.4.so.2.5.4
+7f077a814000-7f077aa14000 ---p 00049000 08:03 1349151                    /usr/lib64/libldap_r-2.4.so.2.5.4
+7f077aa14000-7f077aa17000 rw-p 00049000 08:03 1349151                    /usr/lib64/libldap_r-2.4.so.2.5.4
+7f077aa17000-7f077aa19000 rw-p 00000000 00:00 0 
+7f077aa19000-7f077aa3e000 r-xp 00000000 08:03 1352237                    /usr/lib64/libpq.so.5.2
+7f077aa3e000-7f077ac3d000 ---p 00025000 08:03 1352237                    /usr/lib64/libpq.so.5.2
+7f077ac3d000-7f077ac40000 rw-p 00024000 08:03 1352237                    /usr/lib64/libpq.so.5.2
+7f077ac40000-7f077ac49000 r-xp 00000000 08:03 1520398                    /usr/lib64/redland/librdf_storage_postgresql.so
+7f077ac49000-7f077ae49000 ---p 00009000 08:03 1520398                    /usr/lib64/redland/librdf_storage_postgresql.so
+7f077ae49000-7f077ae4a000 rw-p 00009000 08:03 1520398                    /usr/lib64/redland/librdf_storage_postgresql.so
+7f077ae4a000-7f077ae60000 r-xp 00000000 09:00 16749                      /lib64/libnsl-2.12.so
+7f077ae60000-7f077b05f000 ---p 00016000 09:00 16749                      /lib64/libnsl-2.12.so
+7f077b05f000-7f077b060000 r--p 00015000 09:00 16749                      /lib64/libnsl-2.12.so
+7f077b060000-7f077b061000 rw-p 00016000 09:00 16749                      /lib64/libnsl-2.12.so
+7f077b061000-7f077b063000 rw-p 00000000 00:00 0 
+7f077b063000-7f077b199000 r-xp 00000000 08:03 41536                      /usr/lib64/mysql/libmysqlclient.so.16.0.0
+7f077b199000-7f077b398000 ---p 00136000 08:03 41536                      /usr/lib64/mysql/libmysqlclient.so.16.0.0
+7f077b398000-7f077b3e5000 rw-p 00135000 08:03 41536                      /usr/lib64/mysql/libmysqlclient.so.16.0.0
+7f077b3e5000-7f077b3e6000 rw-p 00000000 00:00 0 
+7f077b3e6000-7f077b3f0000 r-xp 00000000 08:03 1520397                    /usr/lib64/redland/librdf_storage_mysql.so
+7f077b3f0000-7f077b5ef000 ---p 0000a000 08:03 1520397                    /usr/lib64/redland/librdf_storage_mysql.so
+7f077b5ef000-7f077b5f0000 rw-p 00009000 08:03 1520397                    /usr/lib64/redland/librdf_storage_mysql.so
+7f077b5f0000-7f077b761000 r-xp 00000000 09:00 16734                      /lib64/libcrypto.so.1.0.0a
+7f077b761000-7f077b961000 ---p 00171000 09:00 16734                      /lib64/libcrypto.so.1.0.0a
+7f077b961000-7f077b983000 rw-p 00171000 09:00 16734                      /lib64/libcrypto.so.1.0.0a
+7f077b983000-7f077b987000 rw-p 00000000 00:00 0 
+7f077b987000-7f077b9db000 r-xp 00000000 08:03 1346176                    /usr/lib64/libssl.so.1.0.0a
+7f077b9db000-7f077bbda000 ---p 00054000 08:03 1346176                    /usr/lib64/libssl.so.1.0.0a
+7f077bbda000-7f077bbe2000 rw-p 00053000 08:03 1346176                    /usr/lib64/libssl.so.1.0.0a
+7f077bbe2000-7f077bbfb000 r-xp 00000000 08:03 1352141                    /usr/lib64/libsasl2.so.2.0.23
+7f077bbfb000-7f077bdfb000 ---p 00019000 08:03 1352141                    /usr/lib64/libsasl2.so.2.0.23
+7f077bdfb000-7f077bdfc000 rw-p 00019000 08:03 1352141                    /usr/lib64/libsasl2.so.2.0.23
+7f077bdfc000-7f077be00000 r-xp 00000000 09:00 16779                      /lib64/libplc4.so
+7f077be00000-7f077bfff000 ---p 00004000 09:00 16779                      /lib64/libplc4.so
+7f077bfff000-7f077c000000 rw-p 00003000 09:00 16779                      /lib64/libplc4.so
+7f077c000000-7f077c03c000 rw-p 00000000 00:00 0 
+7f077c03c000-7f0780000000 ---p 00000000 00:00 0 
+7f0780000000-7f0780021000 rw-p 00000000 00:00 0 
+7f0780021000-7f0784000000 ---p 00000000 00:00 0 
+7f078400c000-7f078413c000 rw-p 00000000 00:00 0 
+7f078413c000-7f078418d000 r--s 00000000 08:03 976771                     /usr/msttcorefonts/times.ttf
+7f078418d000-7f07841ed000 rw-p 00000000 00:00 0 
+7f07841ed000-7f07841f0000 r-xp 00000000 09:00 16780                      /lib64/libplds4.so
+7f07841f0000-7f07843ef000 ---p 00003000 09:00 16780                      /lib64/libplds4.so
+7f07843ef000-7f07843f0000 rw-p 00002000 09:00 16780                      /lib64/libplds4.so
+7f07843f0000-7f07843fe000 r-xp 00000000 08:03 1347921                    /usr/lib64/liblber-2.4.so.2.5.4
+7f07843fe000-7f07845fd000 ---p 0000e000 08:03 1347921                    /usr/lib64/liblber-2.4.so.2.5.4
+7f07845fd000-7f07845fe000 rw-p 0000d000 08:03 1347921                    /usr/lib64/liblber-2.4.so.2.5.4
+7f07845fe000-7f078462f000 r-xp 00000000 09:00 16764                      /lib64/libidn.so.11.5.45
+7f078462f000-7f078482f000 ---p 00031000 09:00 16764                      /lib64/libidn.so.11.5.45
+7f078482f000-7f0784830000 rw-p 00031000 09:00 16764                      /lib64/libidn.so.11.5.45
+7f0784830000-7f078487d000 r-xp 00000000 08:03 1352278                    /usr/lib64/libmpfr.so.1.2.2
+7f078487d000-7f0784a7c000 ---p 0004d000 08:03 1352278                    /usr/lib64/libmpfr.so.1.2.2
+7f0784a7c000-7f0784a7e000 rw-p 0004c000 08:03 1352278                    /usr/lib64/libmpfr.so.1.2.2
+7f0784a7e000-7f0784bfa000 r-xp 00000000 09:00 16824                      /lib64/libdb-4.8.so
+7f0784bfa000-7f0784dfa000 ---p 0017c000 09:00 16824                      /lib64/libdb-4.8.so
+7f0784dfa000-7f0784dff000 rw-p 0017c000 09:00 16824                      /lib64/libdb-4.8.so
+7f0784e0a000-7f0784e5a000 rw-p 00000000 00:00 0 
+7f0784e5a000-7f0784e8d000 r-xp 00000000 08:03 82456                      /usr/lib64/openoffice.org/basis3.2/program/libunordflx.so
+7f0784e8d000-7f078508c000 ---p 00033000 08:03 82456                      /usr/lib64/openoffice.org/basis3.2/program/libunordflx.so
+7f078508c000-7f0785090000 rw-p 00032000 08:03 82456                      /usr/lib64/openoffice.org/basis3.2/program/libunordflx.so
+7f0785090000-7f0785091000 ---p 00000000 00:00 0 
+7f0785091000-7f0785a91000 rwxp 00000000 00:00 0 
+7f0785a91000-7f0785ac1000 rw-p 00000000 00:00 0 
+7f0785ac1000-7f0785b18000 r-xp 00000000 08:03 82423                      /usr/lib64/openoffice.org/basis3.2/program/libcppcanvaslx.so
+7f0785b18000-7f0785d18000 ---p 00057000 08:03 82423                      /usr/lib64/openoffice.org/basis3.2/program/libcppcanvaslx.so
+7f0785d18000-7f0785d1e000 rw-p 00057000 08:03 82423                      /usr/lib64/openoffice.org/basis3.2/program/libcppcanvaslx.so
+7f0785d1e000-7f0785d63000 r-xp 00000000 08:03 82972                      /usr/lib64/openoffice.org/basis3.2/program/libgolx.so
+7f0785d63000-7f0785f62000 ---p 00045000 08:03 82972                      /usr/lib64/openoffice.org/basis3.2/program/libgolx.so
+7f0785f62000-7f0785f66000 rw-p 00044000 08:03 82972                      /usr/lib64/openoffice.org/basis3.2/program/libgolx.so
+7f0785f66000-7f0786282000 r-xp 00000000 08:03 82529                      /usr/lib64/openoffice.org/basis3.2/program/libsvxlx.so
+7f0786282000-7f0786482000 ---p 0031c000 08:03 82529                      /usr/lib64/openoffice.org/basis3.2/program/libsvxlx.so
+7f0786482000-7f07864bc000 rw-p 0031c000 08:03 82529                      /usr/lib64/openoffice.org/basis3.2/program/libsvxlx.so
+7f07864bc000-7f07864bd000 rw-p 00000000 00:00 0 
+7f07864bd000-7f07864be000 ---p 00000000 00:00 0 
+7f07864be000-7f0786ebe000 rwxp 00000000 00:00 0 
+7f0786ebe000-7f0786ec0000 r-xp 00000000 09:00 16706                      /lib64/libkeyutils-1.2.so
+7f0786ec0000-7f07870bf000 ---p 00002000 09:00 16706                      /lib64/libkeyutils-1.2.so
+7f07870bf000-7f07870c0000 rw-p 00001000 09:00 16706                      /lib64/libkeyutils-1.2.so
+7f07870c0000-7f07870c8000 r-xp 00000000 09:00 16722                      /lib64/libkrb5support.so.0.1
+7f07870c8000-7f07872c8000 ---p 00008000 09:00 16722                      /lib64/libkrb5support.so.0.1
+7f07872c8000-7f07872c9000 rw-p 00008000 09:00 16722                      /lib64/libkrb5support.so.0.1
+7f07872c9000-7f07872d9000 r-xp 00000000 08:03 1350080                    /usr/lib64/libavahi-client.so.3.2.5
+7f07872d9000-7f07874d8000 ---p 00010000 08:03 1350080                    /usr/lib64/libavahi-client.so.3.2.5
+7f07874d8000-7f07874d9000 rw-p 0000f000 08:03 1350080                    /usr/lib64/libavahi-client.so.3.2.5
+7f07874d9000-7f07874e4000 r-xp 00000000 08:03 1352138                    /usr/lib64/libavahi-common.so.3.5.1
+7f07874e4000-7f07876e4000 ---p 0000b000 08:03 1352138                    /usr/lib64/libavahi-common.so.3.5.1
+7f07876e4000-7f07876e5000 rw-p 0000b000 08:03 1352138                    /usr/lib64/libavahi-common.so.3.5.1
+7f07876e5000-7f07876e8000 r-xp 00000000 09:00 16730                      /lib64/libcom_err.so.2.1
+7f07876e8000-7f07878e7000 ---p 00003000 09:00 16730                      /lib64/libcom_err.so.2.1
+7f07878e7000-7f07878e8000 rw-p 00002000 09:00 16730                      /lib64/libcom_err.so.2.1
+7f07878e8000-7f0787912000 r-xp 00000000 09:00 16728                      /lib64/libk5crypto.so.3.1
+7f0787912000-7f0787b12000 ---p 0002a000 09:00 16728                      /lib64/libk5crypto.so.3.1
+7f0787b12000-7f0787b14000 rw-p 0002a000 09:00 16728                      /lib64/libk5crypto.so.3.1
+7f0787b14000-7f0787bc7000 r-xp 00000000 09:00 16731                      /lib64/libkrb5.so.3.3
+7f0787bc7000-7f0787dc7000 ---p 000b3000 09:00 16731                      /lib64/libkrb5.so.3.3
+7f0787dc7000-7f0787dd1000 rw-p 000b3000 09:00 16731                      /lib64/libkrb5.so.3.3
+7f0787dd1000-7f0787dfe000 r-xp 00000000 09:00 16732                      /lib64/libgssapi_krb5.so.2.2
+7f0787dfe000-7f0787ffe000 ---p 0002d000 09:00 16732                      /lib64/libgssapi_krb5.so.2.2
+7f0787ffe000-7f0788000000 rw-p 0002d000 09:00 16732                      /lib64/libgssapi_krb5.so.2.2
+7f0788000000-7f0788021000 rw-p 00000000 00:00 0 
+7f0788021000-7f078c000000 ---p 00000000 00:00 0 
+7f078c002000-7f078c003000 r-xs 00000000 00:15 59556903                   /home/ben/.nfs00000000038cc42700000578
+7f078c003000-7f078c004000 rw-s 00000000 00:15 59556903                   /home/ben/.nfs00000000038cc42700000578
+7f078c004000-7f078c005000 r-xs 00000000 00:15 59556902                   /home/ben/.nfs00000000038cc42600000577
+7f078c005000-7f078c006000 rw-s 00000000 00:15 59556902                   /home/ben/.nfs00000000038cc42600000577
+7f078c006000-7f078c007000 r-xs 00000000 00:15 59556901                   /home/ben/.nfs00000000038cc42500000576
+7f078c007000-7f078c008000 rw-s 00000000 00:15 59556901                   /home/ben/.nfs00000000038cc42500000576
+7f078c008000-7f078c009000 r--s 00003000 08:03 86824                      /usr/lib64/openoffice.org/basis3.2/program/classes/LuceneHelpWrapper.jar
+7f078c009000-7f078c00e000 r--s 00056000 08:03 1322878                    /usr/share/openoffice.org/extensions/writer2latex.oxt/writer2latex-filter.jar
+7f078c00e000-7f078c07e000 rw-p 00000000 00:00 0 
+7f078c07e000-7f078c0de000 rw-s 00000000 00:04 19136556                   /SYSV00000000 (deleted)
+7f078c0de000-7f078c12d000 r-xp 00000000 08:03 1347434                    /usr/lib64/libcups.so.2
+7f078c12d000-7f078c32d000 ---p 0004f000 08:03 1347434                    /usr/lib64/libcups.so.2
+7f078c32d000-7f078c332000 rw-p 0004f000 08:03 1347434                    /usr/lib64/libcups.so.2
+7f078c332000-7f078c333000 rw-p 00000000 00:00 0 
+7f078c333000-7f078c33e000 r--s 00035000 08:03 1576763                    /usr/lib64/openoffice.org/ure/share/java/ridl.jar
+7f078c33e000-7f078c38e000 rw-p 00000000 00:00 0 
+7f078c38e000-7f078c3bf000 r-xp 00000000 08:03 82490                      /usr/lib64/openoffice.org/basis3.2/program/liblocaledata_en.so
+7f078c3bf000-7f078c5be000 ---p 00031000 08:03 82490                      /usr/lib64/openoffice.org/basis3.2/program/liblocaledata_en.so
+7f078c5be000-7f078c5c8000 rw-p 00030000 08:03 82490                      /usr/lib64/openoffice.org/basis3.2/program/liblocaledata_en.so
+7f078c5c8000-7f078c74d000 r-xp 00000000 08:03 82566                      /usr/lib64/openoffice.org/basis3.2/program/i18npool.uno.so
+7f078c74d000-7f078c94d000 ---p 00185000 08:03 82566                      /usr/lib64/openoffice.org/basis3.2/program/i18npool.uno.so
+7f078c94d000-7f078c96a000 rw-p 00185000 08:03 82566                      /usr/lib64/openoffice.org/basis3.2/program/i18npool.uno.so
+7f078c96a000-7f078ca9b000 rw-p 00000000 00:00 0 
+7f078ca9b000-7f078cb3b000 r-xp 00000000 08:03 82969                      /usr/lib64/openoffice.org/basis3.2/program/libxstor.so
+7f078cb3b000-7f078cd3a000 ---p 000a0000 08:03 82969                      /usr/lib64/openoffice.org/basis3.2/program/libxstor.so
+7f078cd3a000-7f078cd3f000 rw-p 0009f000 08:03 82969                      /usr/lib64/openoffice.org/basis3.2/program/libxstor.so
+7f078cd3f000-7f078cd4c000 r-xp 00000000 08:03 86251                      /usr/lib64/openoffice.org/basis3.2/program/libswdlx.so
+7f078cd4c000-7f078cf4c000 ---p 0000d000 08:03 86251                      /usr/lib64/openoffice.org/basis3.2/program/libswdlx.so
+7f078cf4c000-7f078cf4d000 rw-p 0000d000 08:03 86251                      /usr/lib64/openoffice.org/basis3.2/program/libswdlx.so
+7f078cf4d000-7f078cf8d000 rw-p 00000000 00:00 0 
+7f078cf8d000-7f078cfd5000 r-xp 00000000 08:03 82505                      /usr/lib64/openoffice.org/basis3.2/program/libfilterconfig1.so
+7f078cfd5000-7f078d1d4000 ---p 00048000 08:03 82505                      /usr/lib64/openoffice.org/basis3.2/program/libfilterconfig1.so
+7f078d1d4000-7f078d1d8000 rw-p 00047000 08:03 82505                      /usr/lib64/openoffice.org/basis3.2/program/libfilterconfig1.so
+7f078d1d8000-7f078d21c000 r-xp 00000000 08:03 82580                      /usr/lib64/openoffice.org/basis3.2/program/libuuilx.so
+7f078d21c000-7f078d41b000 ---p 00044000 08:03 82580                      /usr/lib64/openoffice.org/basis3.2/program/libuuilx.so
+7f078d41b000-7f078d420000 rw-p 00043000 08:03 82580                      /usr/lib64/openoffice.org/basis3.2/program/libuuilx.so
+7f078d420000-7f078d480000 rw-s 00000000 00:04 19103766                   /SYSV00000000 (deleted)
+7f078d480000-7f078d670000 rw-p 00000000 00:00 0 
+7f078d670000-7f078d693000 r--s 00000000 08:03 976755                     /usr/msttcorefonts/verdana.ttf
+7f078d693000-7f078d863000 rw-p 00000000 00:00 0 
+7f078d863000-7f078d877000 r-xp 00000000 08:03 1428234                    /usr/lib64/gtk-2.0/immodules/im-scim-bridge.so
+7f078d877000-7f078da76000 ---p 00014000 08:03 1428234                    /usr/lib64/gtk-2.0/immodules/im-scim-bridge.so
+7f078da76000-7f078da77000 rw-p 00013000 08:03 1428234                    /usr/lib64/gtk-2.0/immodules/im-scim-bridge.so
+7f078da77000-7f078da9a000 r--p 00000000 08:03 976755                     /usr/msttcorefonts/verdana.ttf
+7f078da9a000-7f078da9c000 r--s 00000000 fd:03 17725212                   /var/cache/fontconfig/7e24c1c3b25754604c4f46a5df32e5c1-le64.cache-3
+7f078da9c000-7f078da9e000 r--s 00000000 fd:03 17725215                   /var/cache/fontconfig/3ad840390a44011d5fc042cdf95ddcfe-le64.cache-3
+7f078da9e000-7f078dac6000 r--s 00000000 fd:03 16847932                   /var/cache/fontconfig/a016605962fdd369c8dffaf854ea48b7-le64.cache-3
+7f078dac6000-7f078daf2000 r--s 00000000 fd:03 16847931                   /var/cache/fontconfig/4529d34576f84fe15771c00003c5c5a5-le64.cache-3
+7f078daf2000-7f078db20000 r--s 00000000 fd:03 16851247                   /var/cache/fontconfig/345723524d58c340686cbc043cf3c7d7-le64.cache-3
+7f078db20000-7f078db24000 r--s 00000000 fd:03 16847920                   /var/cache/fontconfig/87f5e051180a7a75f16eb6fe7dbd3749-le64.cache-3
+7f078db24000-7f078db2d000 r--s 00000000 fd:03 18475793                   /var/cache/fontconfig/b79f3aaa7d385a141ab53ec885cc22a8-le64.cache-3
+7f078db2d000-7f078db2f000 r--s 00000000 fd:03 16854813                   /var/cache/fontconfig/ea48d9c004a65ba4238177631a89d0a5-le64.cache-3
+7f078db2f000-7f078db32000 r--s 00000000 fd:03 16854810                   /var/cache/fontconfig/a22e6f15ff0a0a50b6dbf8bbea7bc04d-le64.cache-3
+7f078db32000-7f078db3a000 r--s 00000000 fd:03 16854805                   /var/cache/fontconfig/64921e03ebaddd1a4f6cbe127decfc0f-le64.cache-3
+7f078db3a000-7f078db3d000 r--s 00000000 fd:03 16854804                   /var/cache/fontconfig/be32c813360a12176c994c219b340736-le64.cache-3
+7f078db3d000-7f078db41000 r--s 00000000 fd:03 16854796                   /var/cache/fontconfig/4815f7eb892cb239b46faae198c0f9aa-le64.cache-3
+7f078db41000-7f078db45000 r--s 00000000 00:15 867154968                  /home/ben/.fontconfig/68fe5182b80ae2709eaaf65e42dcaf33-le64.cache-3
+7f078db45000-7f078db46000 r--s 00000000 00:15 867154949                  /home/ben/.fontconfig/ac1b9faef01ec4feb36ba76b98842887-le64.cache-3
+7f078db46000-7f078db49000 r--s 00000000 00:15 867115042                  /home/ben/.fontconfig/ebb99784de50d4c4223a6523ac9c5d63-le64.cache-3
+7f078db49000-7f078db4a000 r--s 00000000 00:15 867115024                  /home/ben/.fontconfig/ad3af325ad4e0a82eb2b3e930ff23cd5-le64.cache-3
+7f078db4a000-7f078db4c000 r--s 00000000 00:15 823554106                  /home/ben/.fontconfig/0c76f5ee3a101157014da521290d0599-le64.cache-3
+7f078db4c000-7f078db4e000 r--s 00000000 fd:03 17017633                   /var/cache/fontconfig/2e1514a9fdd499050989183bb65136db-le64.cache-3
+7f078db4e000-7f078db54000 r--s 00000000 fd:03 16854794                   /var/cache/fontconfig/75726aeed9fe8691fd29315754d820cc-le64.cache-3
+7f078db54000-7f078db56000 r--s 00000000 fd:03 16854793                   /var/cache/fontconfig/b5b2c41c7b6a8c8821aeee7de8638484-le64.cache-3
+7f078db56000-7f078db57000 r--s 00000000 fd:03 16854792                   /var/cache/fontconfig/a01c43f7cd08244f295d2d5376628d67-le64.cache-3
+7f078db57000-7f078db58000 r--s 00000000 fd:03 16854788                   /var/cache/fontconfig/6cfc7d49b27ba7d3eb71ab86e04def2c-le64.cache-3
+7f078db58000-7f078db59000 r--s 00000000 fd:03 18474825                   /var/cache/fontconfig/6fcb01a03a016cc71057b587cdea6709-le64.cache-3
+7f078db59000-7f078db5a000 r--s 00000000 fd:03 16854786                   /var/cache/fontconfig/ffbf8b6abfeed51b37aeed9f12a8ca54-le64.cache-3
+7f078db5a000-7f078db68000 r--s 00000000 fd:03 16854785                   /var/cache/fontconfig/7ff07fa10e24b6559b5db1e1c6ca9d5b-le64.cache-3
+7f078db68000-7f078db6b000 r--s 00000000 fd:03 16865545                   /var/cache/fontconfig/cfde08ab28ad1d91784abb10973575e3-le64.cache-3
+7f078db6b000-7f078db6e000 r--s 00000000 fd:03 16777529                   /var/cache/fontconfig/e4307be1e5b40d775f6e65a19e2b9602-le64.cache-3
+7f078db6e000-7f078db71000 r--s 00000000 fd:03 16847935                   /var/cache/fontconfig/339f7971f0febd795a89052d3369f043-le64.cache-3
+7f078db71000-7f078db76000 r--s 00000000 fd:03 17725214                   /var/cache/fontconfig/b67b32625a2bb51b023d3814a918f351-le64.cache-3
+7f078db76000-7f078db79000 r--s 00000000 fd:03 16847933                   /var/cache/fontconfig/9080285a363f2ec8b505181342116a40-le64.cache-3
+7f078db79000-7f078db7e000 r--s 00000000 fd:03 16847929                   /var/cache/fontconfig/46b47dbc682d2ca4191e148ea7bde7f2-le64.cache-3
+7f078db7e000-7f078db81000 r--s 00000000 fd:03 17017637                   /var/cache/fontconfig/0b65734d4b05444408d43c6f04076891-le64.cache-3
+7f078db81000-7f078db84000 r--s 00000000 fd:03 17023287                   /var/cache/fontconfig/cf2648471cd3c1408333626fc428bcc9-le64.cache-3
+7f078db84000-7f078db89000 r--s 00000000 fd:03 16847925                   /var/cache/fontconfig/7b312f204090bff0956e0e66992a6837-le64.cache-3
+7f078db89000-7f078db93000 r--s 00000000 fd:03 16847924                   /var/cache/fontconfig/614d1caaa4d7914789410f6367de37ca-le64.cache-3
+7f078db93000-7f078db95000 r--s 00000000 fd:03 16847923                   /var/cache/fontconfig/b9906ec4e97df7104d5c6c3d47c0c179-le64.cache-3
+7f078db95000-7f078db96000 r--s 00000000 fd:03 16847922                   /var/cache/fontconfig/da2f63d2b1859690847530402906c0e3-le64.cache-3
+7f078db96000-7f078dba6000 r--s 00000000 fd:03 18475924                   /var/cache/fontconfig/12b26b760a24f8b4feb03ad48a333a72-le64.cache-3
+7f078dba6000-7f078dbad000 r--s 00000000 fd:03 17017620                   /var/cache/fontconfig/928306c3ad40271d946e41014a49fc28-le64.cache-3
+7f078dbad000-7f078dbb4000 r--s 00000000 fd:03 17023295                   /var/cache/fontconfig/fa1582dab13e7e8e44e5a9424d309f0e-le64.cache-3
+7f078dbb4000-7f078dbbb000 r--s 00000000 fd:03 16847887                   /var/cache/fontconfig/18db0204b1f108dd01663673626fcd3d-le64.cache-3
+7f078dbbb000-7f078dbbf000 r--s 00000000 fd:03 18474824                   /var/cache/fontconfig/f5da82313d22ae5bf5bc6e539d256292-le64.cache-3
+7f078dbbf000-7f078dbd4000 r--s 00000000 fd:03 18475856                   /var/cache/fontconfig/d066cc093611c74861a22d5ef60b042c-le64.cache-3
+7f078dbd4000-7f078dbd7000 r--s 00000000 fd:03 16847917                   /var/cache/fontconfig/e3ead4b767b8819993a6fa3ae306afa9-le64.cache-3
+7f078dbd7000-7f078dbe0000 r--s 00000000 fd:03 16854816                   /var/cache/fontconfig/5f5e15342633ab95ae6d9246037b5591-le64.cache-3
+7f078dbe0000-7f078dbe8000 r--s 00000000 fd:03 16854811                   /var/cache/fontconfig/ee315cf459bca6941b482f75effb6821-le64.cache-3
+7f078dbe8000-7f078dc18000 r--s 00000000 fd:03 16854815                   /var/cache/fontconfig/5114cf09c8a0485f7bd7148497472209-le64.cache-3
+7f078dc18000-7f078dc1d000 r--s 00000000 fd:03 16854809                   /var/cache/fontconfig/61e9093c7bc8e33c6ec94e5582bc9d8b-le64.cache-3
+7f078dc1d000-7f078dc21000 r--s 00000000 fd:03 16854814                   /var/cache/fontconfig/2fade7543b6d0d1c4bacd4e825e5d33f-le64.cache-3
+7f078dc21000-7f078dc25000 r--s 00000000 fd:03 16854812                   /var/cache/fontconfig/1bf795055f4bb0400cd2cc30d7b2f2a2-le64.cache-3
+7f078dc25000-7f078dc40000 r--s 00000000 fd:03 16854808                   /var/cache/fontconfig/ddfca8161ecf37a0ffe4bf9dc9cd46bb-le64.cache-3
+7f078dc40000-7f078dc41000 r--s 00000000 fd:03 16854807                   /var/cache/fontconfig/8bb39c67d28c3b2dcde73cde3c9d0e41-le64.cache-3
+7f078dc41000-7f078dc5c000 r--s 00000000 fd:03 16854806                   /var/cache/fontconfig/924b0efa833275cdc38fb556a771400c-le64.cache-3
+7f078dc5c000-7f078dc61000 r--s 00000000 fd:03 16854803                   /var/cache/fontconfig/170baf47053cbaf25bc06c1cb338089e-le64.cache-3
+7f078dc61000-7f078dc7c000 r--s 00000000 fd:03 16854802                   /var/cache/fontconfig/954e7c37c7fe3a6504d6b6ac75cdf969-le64.cache-3
+7f078dc7c000-7f078dc96000 r--s 00000000 fd:03 16854801                   /var/cache/fontconfig/59484181c61a0dddfc847d04b4495ff8-le64.cache-3
+7f078dc96000-7f078dc9a000 r--s 00000000 fd:03 16854800                   /var/cache/fontconfig/d04038e664b0033ae700a78c51f179d3-le64.cache-3
+7f078dc9a000-7f078dc9d000 r--s 00000000 fd:03 16854799                   /var/cache/fontconfig/beeeeb3dfe132a8a0633a017c99ce0c0-le64.cache-3
+7f078dc9d000-7f078dcbd000 rw-p 00000000 00:00 0 
+7f078dcbd000-7f078dcbe000 r-xs 00000000 00:15 6368273                    /home/ben/.nfs0000000000612c1100000573
+7f078dcbe000-7f078dcbf000 rw-s 00000000 00:15 6368273                    /home/ben/.nfs0000000000612c1100000573
+7f078dcbf000-7f078dd3f000 rw-p 00000000 00:00 0 
+7f078dd3f000-7f078dd46000 r--s 00000000 08:03 1454207                    /usr/lib64/gconv/gconv-modules.cache
+7f078dd46000-7f078dd56000 rw-p 00000000 00:00 0 
+7f078dd56000-7f078dfe0000 r-xp 00000000 08:03 82569                      /usr/lib64/openoffice.org/basis3.2/program/libfwklx.so
+7f078dfe0000-7f078e1df000 ---p 0028a000 08:03 82569                      /usr/lib64/openoffice.org/basis3.2/program/libfwklx.so
+7f078e1df000-7f078e1fa000 rw-p 00289000 08:03 82569                      /usr/lib64/openoffice.org/basis3.2/program/libfwklx.so
+7f078e1fa000-7f078e26c000 rw-p 00000000 00:00 0 
+7f078e26c000-7f078e28f000 r-xp 00000000 08:03 1618025                    /usr/lib64/gtk-2.0/2.10.0/engines/libmurrine.so
+7f078e28f000-7f078e48e000 ---p 00023000 08:03 1618025                    /usr/lib64/gtk-2.0/2.10.0/engines/libmurrine.so
+7f078e48e000-7f078e48f000 rw-p 00022000 08:03 1618025                    /usr/lib64/gtk-2.0/2.10.0/engines/libmurrine.so
+7f078e48f000-7f078e498000 r-xp 00000000 08:03 1617450                    /usr/lib64/gtk-2.0/2.10.0/engines/libpixmap.so
+7f078e498000-7f078e698000 ---p 00009000 08:03 1617450                    /usr/lib64/gtk-2.0/2.10.0/engines/libpixmap.so
+7f078e698000-7f078e699000 rw-p 00009000 08:03 1617450                    /usr/lib64/gtk-2.0/2.10.0/engines/libpixmap.so
+7f078e699000-7f078e6c3000 r-xp 00000000 08:03 1618021                    /usr/lib64/gtk-2.0/2.10.0/engines/libclearlooks.so
+7f078e6c3000-7f078e8c3000 ---p 0002a000 08:03 1618021                    /usr/lib64/gtk-2.0/2.10.0/engines/libclearlooks.so
+7f078e8c3000-7f078e8c4000 rw-p 0002a000 08:03 1618021                    /usr/lib64/gtk-2.0/2.10.0/engines/libclearlooks.so
+7f078e8c4000-7f078e9e4000 rw-p 00000000 00:00 0 
+7f078e9e4000-7f078ea16000 r-xp 00000000 08:03 82487                      /usr/lib64/openoffice.org/basis3.2/program/libspllx.so
+7f078ea16000-7f078ec16000 ---p 00032000 08:03 82487                      /usr/lib64/openoffice.org/basis3.2/program/libspllx.so
+7f078ec16000-7f078ec1a000 rw-p 00032000 08:03 82487                      /usr/lib64/openoffice.org/basis3.2/program/libspllx.so
+7f078ec1a000-7f078ec1b000 ---p 00000000 00:00 0 
+7f078ec1b000-7f078f61b000 rwxp 00000000 00:00 0 
+7f078f61b000-7f078f65b000 rw-p 00000000 00:00 0 
+7f078f65b000-7f078f65c000 ---p 00000000 00:00 0 
+7f078f65c000-7f079005c000 rwxp 00000000 00:00 0 
+7f079005c000-7f0790063000 r-xp 00000000 08:03 86818                      /usr/lib64/openoffice.org/basis3.2/program/behelper.uno.so
+7f0790063000-7f0790263000 ---p 00007000 08:03 86818                      /usr/lib64/openoffice.org/basis3.2/program/behelper.uno.so
+7f0790263000-7f0790264000 rw-p 00007000 08:03 86818                      /usr/lib64/openoffice.org/basis3.2/program/behelper.uno.so
+7f0790264000-7f079026c000 r-xp 00000000 08:03 82970                      /usr/lib64/openoffice.org/basis3.2/program/localebe1.uno.so
+7f079026c000-7f079046c000 ---p 00008000 08:03 82970                      /usr/lib64/openoffice.org/basis3.2/program/localebe1.uno.so
+7f079046c000-7f079046d000 rw-p 00008000 08:03 82970                      /usr/lib64/openoffice.org/basis3.2/program/localebe1.uno.so
+7f079046d000-7f079047d000 rw-p 00000000 00:00 0 
+7f079047d000-7f0790499000 r-xp 00000000 08:03 83908                      /usr/lib64/openoffice.org/basis3.2/program/sax.uno.so
+7f0790499000-7f0790699000 ---p 0001c000 08:03 83908                      /usr/lib64/openoffice.org/basis3.2/program/sax.uno.so
+7f0790699000-7f079069b000 rw-p 0001c000 08:03 83908                      /usr/lib64/openoffice.org/basis3.2/program/sax.uno.so
+7f079069b000-7f07906eb000 rw-p 00000000 00:00 0 
+7f07906eb000-7f07906ef000 r-xp 00000000 08:03 86857                      /usr/lib64/openoffice.org/basis3.2/program/desktopbe1.uno.so
+7f07906ef000-7f07908ee000 ---p 00004000 08:03 86857                      /usr/lib64/openoffice.org/basis3.2/program/desktopbe1.uno.so
+7f07908ee000-7f07908ef000 rw-p 00003000 08:03 86857                      /usr/lib64/openoffice.org/basis3.2/program/desktopbe1.uno.so
+7f07908ef000-7f07908f8000 r-xp 00000000 08:03 82442                      /usr/lib64/openoffice.org/basis3.2/program/sysmgr1.uno.so
+7f07908f8000-7f0790af8000 ---p 00009000 08:03 82442                      /usr/lib64/openoffice.org/basis3.2/program/sysmgr1.uno.so
+7f0790af8000-7f0790af9000 rw-p 00009000 08:03 82442                      /usr/lib64/openoffice.org/basis3.2/program/sysmgr1.uno.so
+7f0790af9000-7f0790b09000 rw-p 00000000 00:00 0 
+7f0790b09000-7f0790b26000 r-xp 00000000 08:03 1559653                    /usr/lib64/openoffice.org/ure/lib/stocservices.uno.so
+7f0790b26000-7f0790d26000 ---p 0001d000 08:03 1559653                    /usr/lib64/openoffice.org/ure/lib/stocservices.uno.so
+7f0790d26000-7f0790d29000 rw-p 0001d000 08:03 1559653                    /usr/lib64/openoffice.org/ure/lib/stocservices.uno.so
+7f0790d29000-7f0790eff000 r-xp 00000000 08:03 86853                      /usr/lib64/openoffice.org/basis3.2/program/configmgr2.uno.so
+7f0790eff000-7f07910ff000 ---p 001d6000 08:03 86853                      /usr/lib64/openoffice.org/basis3.2/program/configmgr2.uno.so
+7f07910ff000-7f079111f000 rw-p 001d6000 08:03 86853                      /usr/lib64/openoffice.org/basis3.2/program/configmgr2.uno.so
+7f079111f000-7f0791140000 rw-p 00000000 00:00 0 
+7f0791140000-7f0791668000 r--s 00000000 08:03 83910                      /usr/lib64/openoffice.org/basis3.2/program/services.rdb
+7f0791668000-7f0791678000 r--s 00000000 08:03 24646                      /usr/lib64/openoffice.org/share/uno_packages/cache/registry/com.sun.star.comp.deployment.component.PackageRegistryBackend/Linux_X86_64_.rdb
+7f0791678000-7f0791688000 r--s 00000000 08:03 24640                      /usr/lib64/openoffice.org/share/uno_packages/cache/registry/com.sun.star.comp.deployment.component.PackageRegistryBackend/common_.rdb
+7f0791688000-7f07916c8000 r--s 00000000 08:03 1584188                    /usr/lib64/openoffice.org/ure/share/misc/services.rdb
+7f07916c8000-7f0791890000 r--s 00000000 08:03 82207                      /usr/lib64/openoffice.org/basis3.2/program/oovbaapi.rdb
+7f0791890000-7f0791ec0000 r--s 00000000 08:03 82967                      /usr/lib64/openoffice.org/basis3.2/program/offapi.rdb
+7f0791ec0000-7f0791f90000 r--s 00000000 08:03 1585524                    /usr/lib64/openoffice.org/ure/share/misc/types.rdb
+7f0791f90000-7f079203d000 r-xp 00000000 08:03 1551441                    /usr/lib64/openoffice.org/ure/lib/bootstrap.uno.so
+7f079203d000-7f079223d000 ---p 000ad000 08:03 1551441                    /usr/lib64/openoffice.org/ure/lib/bootstrap.uno.so
+7f079223d000-7f079224a000 rw-p 000ad000 08:03 1551441                    /usr/lib64/openoffice.org/ure/lib/bootstrap.uno.so
+7f079224a000-7f0792258000 r-xp 00000000 08:03 1551452                    /usr/lib64/openoffice.org/ure/lib/libgcc3_uno.so
+7f0792258000-7f0792458000 ---p 0000e000 08:03 1551452                    /usr/lib64/openoffice.org/ure/lib/libgcc3_uno.so
+7f0792458000-7f0792459000 rw-p 0000e000 08:03 1551452                    /usr/lib64/openoffice.org/ure/lib/libgcc3_uno.so
+7f0792459000-7f0792465000 r-xp 00000000 09:00 16416                      /lib64/libnss_files-2.12.so
+7f0792465000-7f0792664000 ---p 0000c000 09:00 16416                      /lib64/libnss_files-2.12.so
+7f0792664000-7f0792665000 r--p 0000b000 09:00 16416                      /lib64/libnss_files-2.12.so
+7f0792665000-7f0792666000 rw-p 0000c000 09:00 16416                      /lib64/libnss_files-2.12.so
+7f0792666000-7f0792668000 r--s 00015000 08:03 86826                      /usr/lib64/openoffice.org/basis3.2/program/classes/ScriptFramework.jar
+7f0792668000-7f079266a000 r--s 0000e000 08:03 1576761                    /usr/lib64/openoffice.org/ure/share/java/juh.jar
+7f079266a000-7f079266b000 r-xs 00000000 00:15 59556897                   /home/ben/.nfs00000000038cc42100000575
+7f079266b000-7f079266c000 rw-s 00000000 00:15 59556897                   /home/ben/.nfs00000000038cc42100000575
+7f079266c000-7f079266d000 r-xs 00000000 00:15 58940435                   /home/ben/.nfs0000000003835c1300000574
+7f079266d000-7f079266e000 rw-s 00000000 00:15 58940435                   /home/ben/.nfs0000000003835c1300000574
+7f079266e000-7f0792671000 r--s 0001c000 08:03 1576762                    /usr/lib64/openoffice.org/ure/share/java/jurt.jar
+7f0792671000-7f07926e1000 rw-p 00000000 00:00 0 
+7f07926e1000-7f0798572000 r--p 00000000 08:03 66819                      /usr/lib/locale/locale-archive
+7f0798572000-7f0798573000 ---p 00000000 00:00 0 
+7f0798573000-7f0798f73000 rwxp 00000000 00:00 0 
+7f0798f73000-7f0798f84000 rw-p 00000000 00:00 0 
+7f0798f84000-7f0798f85000 r--s 00001000 08:03 1575991                    /usr/lib64/openoffice.org/ure/share/java/java_uno.jar
+7f0798f85000-7f0798f8d000 rw-s 00000000 fd:02 2473987                    /tmp/hsperfdata_ben/654
+7f0798f8d000-7f0798f8e000 rwxp 00000000 00:00 0 
+7f0798f8e000-7f0798f8f000 r--p 00000000 00:00 0 
+7f0798f8f000-7f0798fe7000 rw-p 00000000 00:00 0 
+7fffca449000-7fffca44c000 rwxp 00000000 00:00 0 
+7fffca44c000-7fffca549000 rwxp 00000000 00:00 0                          [stack]
+7fffca549000-7fffca54c000 rw-p 00000000 00:00 0 
+7fffca574000-7fffca575000 r-xp 00000000 00:00 0                          [vdso]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
+
+VM Arguments:
+jvm_args: abort -Dorg.openoffice.native= -Duser.language=en -Duser.country=US -Dappletviewer.security.mode=host -Dstardiv.security.disableSecurity=false 
+java_command: <unknown>
+Launcher Type: generic
+
+Environment Variables:
+JAVA_HOME=/usr/local/java/jdk1.6.0_06_64bit/jre
+PATH=/usr/lib64/openoffice.org3/program:~/bin/newauto/:/usr/local/java/j2sdk//bin/:~/bin/newauto/:~/bin/newauto/:/usr/lib64/qt-3.3/bin:/usr/local/java/j2sdk//bin/:/usr/kerberos/sbin:/usr/kerberos/bin:/usr/lib/courier-imap/bin:/usr/lib64/ccache:/usr/local/bin:/usr/bin:/bin:/usr/games:/usr/local/sbin:/usr/sbin:/sbin:/home/common/bin:/home/ben/bin:/usr/local/WordNet-1.7.1/bin/linux/:/usr/local/hmetis/:/usr/local/src/apache-forrest-0.8/bin:/usr/local/java/xml-xindice-1.0/bin:/usr/local/XSB/bin:/usr/local/terra-view-6.0/bin:/home/ben/bin:/home/ben/bin:/usr/local/WordNet-1.7.1/bin/linux/:/usr/local/hmetis/:/usr/local/src/apache-forrest-0.8/bin:/usr/local/java/xml-xindice-1.0/bin:/usr/local/XSB/bin:/usr/local/terra-view-6.0/bin:/home/common/bin:/home/ben/bin:/usr/local/WordNet-1.7.1/bin/linux/:/usr/local/hmetis/:/usr/local/src/apache-forrest-0.8/bin:/usr/local/java/xml-xindice-1.0/bin:/usr/local/XSB/bin:/usr/local/terra-view-6.0/bin
+USERNAME=
+LD_LIBRARY_PATH=/usr/local/java/jdk1.6.0_06_64bit/jre/lib/amd64/client:/usr/local/java/jdk1.6.0_06_64bit/jre/lib/amd64/native_threads:/usr/local/java/jdk1.6.0_06_64bit/jre/lib/amd64
+SHELL=/bin/bash
+DISPLAY=:0.0
+
+Signal Handlers:
+SIGSEGV: [libjvm.so+0x6616e0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGBUS: [libjvm.so+0x6616e0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGFPE: [libjvm.so+0x5044d0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGPIPE: [libjvm.so+0x5044d0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGXFSZ: [libjvm.so+0x5044d0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGILL: [libjvm.so+0x5044d0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGUSR1: SIG_DFL, sa_mask[0]=0x00000000, sa_flags=0x00000000
+SIGUSR2: [libjvm.so+0x506740], sa_mask[0]=0x00000000, sa_flags=0x10000004
+SIGHUP: [libjvm.so+0x5064a0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGINT: [libjvm.so+0x5064a0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGTERM: [libjvm.so+0x5064a0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGQUIT: [libjvm.so+0x5064a0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+
+
+---------------  S Y S T E M  ---------------
+
+OS:Fedora release 13 (Goddard)
+
+uname:Linux 2.6.33.4-95.fc13.x86_64 #1 SMP Thu May 13 05:16:23 UTC 2010 x86_64
+libc:glibc 2.12 NPTL 2.12 
+rlimit: STACK 10240k, CORE 0k, NPROC 1024, NOFILE 1024, AS 3300000k
+load average:0.64 0.56 0.55
+
+CPU:total 4 (4 cores per cpu, 1 threads per core) family 6 model 15 stepping 7, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ssse3
+
+Memory: 4k page, physical 4057512k(60372k free), swap 14723544k(13260728k free)
+
+vm_info: Java HotSpot(TM) 64-Bit Server VM (10.0-b22) for linux-amd64 JRE (1.6.0_06-b02), built on Mar 25 2008 01:03:02 by "java_re" with gcc 3.2.2 (SuSE Linux)
+
+time: Tue Aug 10 16:49:25 2010
+elapsed time: 330 seconds
+

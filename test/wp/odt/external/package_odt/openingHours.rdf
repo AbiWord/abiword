@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Description rdf:nodeID="r1260339662r18818r1">
+    <ns0:prodid xmlns:ns0="http://www.w3.org/2002/12/cal/icaltzd#">-//W3C//RDF Calendar Test//EN</ns0:prodid>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="r1260339662r18818r1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/12/cal/icaltzd#Vcalendar"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="r1260339662r18818r1">
+    <ns0:component xmlns:ns0="http://www.w3.org/2002/12/cal/icaltzd#" rdf:nodeID="r1260339662r18818r2"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="r1260339662r18818r1">
+    <ns0:component xmlns:ns0="http://www.w3.org/2002/12/cal/icaltzd#" rdf:nodeID="r1260339662r18818r4"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="r1260339662r18818r2">
+    <ns0:dtend xmlns:ns0="http://www.w3.org/2002/12/cal/icaltzd#" rdf:datatype="http://www.w3.org/2002/12/cal/icaltzd#dateTime">2003-01-01T23:00:00</ns0:dtend>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="r1260339662r18818r2">
+    <ns0:rrule xmlns:ns0="http://www.w3.org/2002/12/cal/icaltzd#" rdf:nodeID="r1260339662r18818r3"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="r1260339662r18818r2">
+    <ns0:dtstart xmlns:ns0="http://www.w3.org/2002/12/cal/icaltzd#" rdf:datatype="http://www.w3.org/2002/12/cal/icaltzd#dateTime">2003-01-01T16:00:00</ns0:dtstart>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="r1260339662r18818r2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/12/cal/icaltzd#Vevent"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="r1260339662r18818r3">
+    <ns0:freq xmlns:ns0="http://www.w3.org/2002/12/cal/icaltzd#">WEEKLY</ns0:freq>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="r1260339662r18818r3">
+    <ns0:byday xmlns:ns0="http://www.w3.org/2002/12/cal/icaltzd#">TU</ns0:byday>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="r1260339662r18818r4">
+    <ns0:dtend xmlns:ns0="http://www.w3.org/2002/12/cal/icaltzd#" rdf:datatype="http://www.w3.org/2002/12/cal/icaltzd#dateTime">2003-01-01T23:00:00</ns0:dtend>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="r1260339662r18818r4">
+    <ns0:rrule xmlns:ns0="http://www.w3.org/2002/12/cal/icaltzd#" rdf:nodeID="r1260339662r18818r5"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="r1260339662r18818r4">
+    <ns0:dtstart xmlns:ns0="http://www.w3.org/2002/12/cal/icaltzd#" rdf:datatype="http://www.w3.org/2002/12/cal/icaltzd#dateTime">2003-01-01T11:30:00</ns0:dtstart>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="r1260339662r18818r4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/12/cal/icaltzd#Vevent"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="r1260339662r18818r5">
+    <ns0:freq xmlns:ns0="http://www.w3.org/2002/12/cal/icaltzd#">WEEKLY</ns0:freq>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="r1260339662r18818r5">
+    <ns0:byday xmlns:ns0="http://www.w3.org/2002/12/cal/icaltzd#">WE,TH,FR,SA,SU</ns0:byday>
+  </rdf:Description>
+</rdf:RDF>

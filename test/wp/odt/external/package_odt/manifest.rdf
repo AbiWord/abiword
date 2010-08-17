@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+<rdf:RDF 
+	xmlns:pkg="http://docs.oasis-open.org/opendocument/meta/package/common#"
+	xmlns:odf="http://docs.oasis-open.org/opendocument/meta/package/odf#"
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+	<pkg:Package rdf:about="urn:uuid:51f203ce-a9bf-11de-8f3d-001cc09d970a">
+		<pkg:hasPart>
+			<odf:ContentFile pkg:path="content.xml">
+				<pkg:hasPart>
+					<odf:Element rdf:about="uri:example-element-1" 
+						pkg:idref="id_cite1"/>
+				</pkg:hasPart>
+				<pkg:hasPart>				
+					<odf:Element rdf:about="uri:example-element-2" 
+						pkg:idref="id_world_r1"/>
+				</pkg:hasPart>
+				<pkg:hasPart>				
+					<odf:Element rdf:about="uri:example-element-3" 
+						pkg:idref="id_earth_r1"/>
+				</pkg:hasPart>
+				<pkg:hasPart>				
+					<odf:Element rdf:about="uri:example-element-x" 
+						pkg:idref="hi"/>
+				</pkg:hasPart>
+
+				<pkg:hasPart>				
+					<odf:Element rdf:about="uri:dan84" pkg:idref="dan84"/>
+				</pkg:hasPart>
+
+				<pkg:hasPart>				
+					<odf:Element rdf:about="uri:frodo" pkg:idref="frodo"/>
+				</pkg:hasPart>
+				<pkg:hasPart>				
+					<odf:Element rdf:about="uri:frodo" pkg:idref="frodo1"/>
+				</pkg:hasPart>
+				<pkg:hasPart>				
+					<odf:Element rdf:about="uri:frodo" pkg:idref="frodo2"/>
+				</pkg:hasPart>
+				<pkg:hasPart>				
+					<odf:Element rdf:about="uri:frodo" pkg:idref="frodo3"/>
+				</pkg:hasPart>
+				<pkg:hasPart>				
+					<odf:Element rdf:about="uri:samwise" pkg:idref="samwise"/>
+				</pkg:hasPart>
+				<pkg:hasPart>				
+					<odf:Element rdf:about="uri:samwise" pkg:idref="samwise1"/>
+				</pkg:hasPart>
+				<pkg:hasPart>				
+					<odf:Element rdf:about="uri:samwise" pkg:idref="samwise1b"/>
+				</pkg:hasPart>
+				<pkg:hasPart>				
+					<odf:Element rdf:about="uri:samwise" pkg:idref="samwise2"/>
+				</pkg:hasPart>
+				<pkg:hasPart>				
+					<odf:Element rdf:about="uri:samwise" pkg:idref="samwise3"/>
+				</pkg:hasPart>
+				<pkg:hasPart>				
+					<odf:Element rdf:about="uri:samwise" pkg:idref="samwise4"/>
+				</pkg:hasPart>
+				<pkg:hasPart>				
+					<odf:Element rdf:about="uri:gollum" pkg:idref="gollum1"/>
+				</pkg:hasPart>
+				<pkg:hasPart>				
+					<odf:Element rdf:about="uri:1984-winston" pkg:idref="1984-winston"/>
+				</pkg:hasPart>
+				<pkg:hasPart>				
+					<odf:Element rdf:about="uri:1984-obrien" pkg:idref="1984-obrien"/>
+				</pkg:hasPart>
+
+				<pkg:hasPart>				
+					<odf:Element rdf:about="http://www.w3.org/2002/12/cal/test/geo1#CDC474D4-1393-11D7-9A2C-000393914268" pkg:idref="geo1"/>
+				</pkg:hasPart>
+				<pkg:hasPart>				
+					<odf:Element rdf:about="http://www.w3.org/2002/12/cal/test/geo1#CDC474D4-1393-11D7-9A2C-000393914268" pkg:idref="geo1r1"/>
+				</pkg:hasPart>
+				<pkg:hasPart>				
+					<odf:Element rdf:about="http://www.w3.org/2002/12/cal/test/geo1#CDC474D4-1393-11D7-9A2C-000393914268" pkg:idref="geo1r2"/>
+				</pkg:hasPart>
+
+				<pkg:hasPart>				
+					<odf:Element rdf:about="http://www.w3.org/2002/12/cal/test/geo1#dec09" pkg:idref="geo1#dec09"/>
+				</pkg:hasPart>
+				<pkg:hasPart>				
+					<odf:Element rdf:about="http://www.w3.org/2002/12/cal/test/geo1#dec09" pkg:idref="geo1#dec09r1"/>
+				</pkg:hasPart>
+				<pkg:hasPart>				
+					<odf:Element rdf:about="http://www.w3.org/2002/12/cal/test/geo1#dec09" pkg:idref="geo1#dec09r2"/>
+				</pkg:hasPart>
+				<pkg:hasPart>				
+					<odf:Element rdf:about="http://www.w3.org/2002/12/cal/test/geo1#dec09" pkg:idref="geo1#dec09r3"/>
+				</pkg:hasPart>
+				<pkg:hasPart>				
+					<odf:Element rdf:about="http://www.w3.org/2002/12/cal/test/geo1#dec09" pkg:idref="geo1#dec09r4"/>
+				</pkg:hasPart>
+				<pkg:hasPart>				
+					<odf:Element rdf:about="http://www.w3.org/2002/12/cal/test/geo1#dec09" pkg:idref="geo1#dec09r5"/>
+				</pkg:hasPart>
+				<pkg:hasPart>				
+					<odf:Element rdf:about="http://www.w3.org/2002/12/cal/test/geo1#dec09" pkg:idref="geo1#dec09r6"/>
+				</pkg:hasPart>
+				<pkg:hasPart>				
+					<odf:Element rdf:about="http://www.w3.org/2002/12/cal/test/geo1#dec09" pkg:idref="geo1#dec09r7"/>
+				</pkg:hasPart>
+
+				<pkg:hasPart>				
+					<odf:Element rdf:about="http://www.w3.org/2002/12/cal/test/geo1#addtest" pkg:idref="geo1#addtest"/>
+				</pkg:hasPart>
+
+
+
+
+			</odf:ContentFile>
+		</pkg:hasPart>
+		<pkg:hasPart>
+		  <odf:MetaDataFile rdf:about="http://www.example.org/1" pkg:path="data.rdf">
+		    <rdf:type rdf:resource="http://www.example.org/2#qname"/>
+		    <!-- <rdf:type rdf:resource="http://www.w3.org/2006/vcard/ns#FIXME"/> -->  <!-- Kept as reference -->
+		  </odf:MetaDataFile>
+		</pkg:hasPart>
+
+		<!-- These are found through their type and path -->
+		<pkg:hasPart>
+			<odf:MetaDataFile rdf:about="http://www.example.org/geo1" pkg:path="geo1.rdf">
+				<rdf:type rdf:resource="http://www.example.org/geo1"/>
+			</odf:MetaDataFile>
+		</pkg:hasPart>
+
+		<pkg:hasPart>
+			<odf:MetaDataFile rdf:about="http://www.example.org/openingHours" pkg:path="openingHours.rdf">
+			</odf:MetaDataFile>
+		</pkg:hasPart>
+
+	</pkg:Package>
+</rdf:RDF>
+
