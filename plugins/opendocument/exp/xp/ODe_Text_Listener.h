@@ -103,6 +103,9 @@ public:
     virtual void openHyperlink(const PP_AttrProp* pAP);
     virtual void closeHyperlink();
 
+    void openRDFAnchor(const PP_AttrProp* pAP);
+    void closeRDFAnchor(const PP_AttrProp* pAP);
+    
     virtual void insertText(const UT_UTF8String& rText);
 
     virtual void insertLineBreak();
@@ -158,6 +161,8 @@ private:
 
     // The number of TOCs (Table of Confents) already added to the document.
     UT_sint32 m_iCurrentTOC;
+
+    UT_UTF8String& appendAttribute( UT_UTF8String& ret, const char* key, const char* value );
 };
 
 #endif /*ODE_TEXT_LISTENER_H_*/

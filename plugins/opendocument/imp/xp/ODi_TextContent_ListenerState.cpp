@@ -46,6 +46,219 @@
 #include <pd_Document.h>
 #include <pf_Frag_Strux.h>
 
+#include <list>
+#include <boost/regex.hpp>
+
+
+class ODi_TextContent_ListenerRDFState
+{
+    int m_nestingLevel;
+    std::string m_name;
+    UT_uint32 m_iAnnotation;
+    
+public:
+    ODi_TextContent_ListenerRDFState( PD_Document* pDocument, const gchar* pName, const gchar** ppAtts );
+    void endElement( PD_Document* pDocument, const gchar* pName );
+
+    std::string getName() const
+    {
+        return m_name;
+    }
+    
+    bool isRDFa() const
+    {
+        return false;
+    }
+    bool shouldPopDueToNestingLevel() const
+    {
+        return !getNestingLevel();
+    }
+    int getNestingLevel() const
+    {
+        return m_nestingLevel;
+    }
+    void incrementNextingLevel()
+    {
+        ++m_nestingLevel;
+    }
+    void decrementNextingLevel()
+    {
+        --m_nestingLevel;
+    }
+    
+};
+
+
+ODi_TextContent_ListenerRDFState::ODi_TextContent_ListenerRDFState( PD_Document* pDocument,
+                                                                    const gchar* pName,
+                                                                    const gchar** ppAtts )
+    : m_name( pName )
+    , m_nestingLevel( 1 )
+    , m_iAnnotation( 0 )
+{
+    UT_UCS4String t;
+    t = "before ";
+    pDocument->appendSpan ( t.ucs4_str(), t.size());
+
+    m_iAnnotation = pDocument->getUID(UT_UniqueId::Annotation);
+    m_iAnnotation = pDocument->getUID(UT_UniqueId::Annotation);
+    m_iAnnotation = pDocument->getUID(UT_UniqueId::Annotation);
+    UT_UTF8String id = UT_UTF8String_sprintf("%d", m_iAnnotation);
+    UT_DEBUGMSG(("RDFHandler, adding annotation start id:%s\n", id.utf8_str() ));
+
+    {
+        const gchar* ppAtts2[5] = { NULL, NULL, NULL, NULL, NULL };
+        ppAtts2[0] = PT_ANNOTATION_NUMBER;
+        ppAtts2[1] = id.utf8_str();
+        // sanity check
+        ppAtts2[2] = "this-is-an-rdf-anchor";
+        ppAtts2[3] = "yes";
+        pDocument->appendObject(PTO_RDFAnchor, ppAtts2);
+    }
+    
+    {
+        const gchar* pPropsArray[5] = { NULL, NULL, NULL, NULL, NULL };
+        UT_UTF8String props;
+
+        pPropsArray[0] = "annotation-id";
+        pPropsArray[1] = id.utf8_str();
+        pPropsArray[2] = PT_PROPS_ATTRIBUTE_NAME;
+        props += "annotation-author: rdf";
+//        props += ";";
+//        props += "annotation-rdf-xmlid=1";
+        pPropsArray[3] = props.utf8_str();
+//        pDocument->appendStrux(PTX_RDFAnchor, pPropsArray);
+    }
+
+	const gchar* block_atts[] = {PT_STYLE_ATTRIBUTE_NAME,
+				  "Normal",
+				  NULL,
+				  NULL
+	};
+
+//    pDocument->appendStrux(PTX_Block,block_atts,NULL);
+    t = "during";
+    pDocument->appendSpan ( t.ucs4_str(), t.size());
+//    pDocument->appendStrux(PTX_EndRDFAnchor, NULL);
+    {
+        const gchar* ppAtts2[10] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+        ppAtts2[0] = PT_ANNOTATION_NUMBER;
+        ppAtts2[1] = id.utf8_str();
+        // sanity check
+        ppAtts2[2] = "this-is-an-rdf-anchor";
+        ppAtts2[3] = "end";
+        ppAtts2[4] = PT_RDF_END;
+        ppAtts2[5] = "yes";
+        pDocument->appendObject(PTO_RDFAnchor, ppAtts2);
+    }
+
+    
+    t = " after";
+    pDocument->appendSpan ( t.ucs4_str(), t.size());
+
+    
+}
+
+void ODi_TextContent_ListenerRDFState::endElement( PD_Document* pDocument, const gchar* pName )
+{
+    UT_UTF8String id = UT_UTF8String_sprintf("%d", m_iAnnotation);
+    UT_DEBUGMSG(("RDFHandler, ending annotation start id:%s\n", id.utf8_str() ));
+//    pDocument->appendStrux(PTX_EndAnnotation, NULL);
+//    pDocument->appendObject(PTO_Annotation, NULL);
+}
+
+
+/**
+ * This class contains state for two cases;
+ * (1) content.xml can contain xml:id attributes which the RDF links to.
+ * (2) RDFa can use the scope of an XML element as the RDF object, so
+ *     we need to mark the start and collect the content of this element \
+ *     to assert as part of the RDF model.
+ */
+class ODi_TextContent_ListenerRDFHandler
+{
+    typedef std::list< ODi_TextContent_ListenerRDFState > m_stack_t;
+    m_stack_t m_stack;
+    PD_Document* m_pDocument;
+    
+  public:
+    ODi_TextContent_ListenerRDFHandler( PD_Document* pDocument );
+    ~ODi_TextContent_ListenerRDFHandler();
+    
+    void startElement( const gchar* pName, const gchar** ppAtts );
+    void endElement( const gchar* pName );
+};
+
+ODi_TextContent_ListenerRDFHandler::ODi_TextContent_ListenerRDFHandler(PD_Document* pDocument)
+    :
+    m_pDocument( pDocument )
+{
+}
+
+ODi_TextContent_ListenerRDFHandler::~ODi_TextContent_ListenerRDFHandler()
+{
+}
+
+
+void ODi_TextContent_ListenerRDFHandler::startElement( const gchar* pName,
+                                                       const gchar** ppAtts )
+{
+    UT_DEBUGMSG(("RDFHandler::start pname:%s stack.sz:%d\n", pName, (int)m_stack.size() ));
+    
+    const gchar* id = UT_getAttribute( "xml:id", ppAtts );
+    if( id )
+    {
+        UT_DEBUGMSG(("RDFHandler::start have xml:id pname:%s stack.sz:%d\n", pName, (int)m_stack.size() ));
+        ODi_TextContent_ListenerRDFState e( m_pDocument, pName, ppAtts );
+        m_stack.push_back( e );
+    }
+    else
+    {
+        // Handle nesting of tags, for example,
+        // <p xml:id="foo">
+        // ... <p> ... </p>
+        // </p>
+        // The middle <p/> section should bump and drop the nextingLevel
+        // to only trigger an end of scope event for the final </p>
+        if( !m_stack.empty() )
+        {
+            ODi_TextContent_ListenerRDFState& e = m_stack.back();
+            if( e.getName() == pName )
+            {
+                e.incrementNextingLevel();
+            }
+        }
+        
+    }
+}
+
+void ODi_TextContent_ListenerRDFHandler::endElement(const gchar* pName)
+{
+    UT_DEBUGMSG(("RDFHandler::end pname:%s stack.sz:%d\n", pName, (int)m_stack.size() ));
+    
+    if( m_stack.empty() )
+        return;
+
+    ODi_TextContent_ListenerRDFState& e = m_stack.back();
+    UT_DEBUGMSG(("RDFHandler::end pname:%s e.name:%s\n", pName, e.getName().c_str() ));
+    if( e.getName() == pName )
+    {
+        e.decrementNextingLevel();
+        if( e.shouldPopDueToNestingLevel() )
+        {
+            UT_DEBUGMSG(("RDFHandler::end popping pname:%s\n", pName ));
+            e.endElement( m_pDocument, pName );
+            m_stack.pop_back();
+        }
+    }
+}
+
+
+
+
+/************************************************************/
+/************************************************************/
+/************************************************************/
 
 /**
  * Constructor
@@ -83,7 +296,8 @@ ODi_TextContent_ListenerState::ODi_TextContent_ListenerState (
 		  m_rAbiData(rAbiData),
 		  m_bPendingTextbox(false),
 		  m_bHeadingList(false),
-		  m_prevLevel(0)
+                  m_prevLevel(0),
+                  m_rdfState(new ODi_TextContent_ListenerRDFHandler(pDocument))
 {
     UT_ASSERT_HARMLESS(m_pAbiDocument);
     UT_ASSERT_HARMLESS(m_pStyles);
@@ -99,6 +313,7 @@ ODi_TextContent_ListenerState::~ODi_TextContent_ListenerState()
         UT_DEBUGMSG(("ERROR ODti: table of content props not empty\n"));
         UT_VECTOR_PURGEALL(UT_UTF8String*, m_tablesOfContentProps);
     }
+    delete m_rdfState;
 }
 
 
@@ -162,6 +377,12 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         }
 
     } else if (!strcmp(pName, "text:p" )) {
+
+//        UT_DEBUGMSG(("RDFHandler, calling rdf->start, charData.sz:%d acceptingText:%d\n",
+//                     (int) m_charData.size(), (int)m_bAcceptingText ));
+//        _insureInBlock(0);
+//        _flush();
+//        m_rdfState->startElement( pName, ppAtts );
         
         if (m_bPendingAnnotation) {
             _insertAnnotation();
@@ -323,6 +544,28 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
                 // We just ignore this <text:span>.
             }
         }
+
+    } else if (!strcmp(pName, "text:meta")) {
+        
+        _flush ();
+
+        UT_UTF8String generatedID;
+        const gchar* xmlid = UT_getAttribute("xml:id", ppAtts);
+        if( !xmlid )
+        {
+            generatedID = UT_UTF8String_sprintf("%d", m_pAbiDocument->getUID( UT_UniqueId::Annotation ));
+            xmlid = generatedID.utf8_str();
+        }
+        
+        const gchar* ppAtts[10] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+        ppAtts[0] = PT_XMLID;
+        ppAtts[1] = xmlid;
+        // sanity check
+        ppAtts[2] = "this-is-an-rdf-anchor";
+        ppAtts[3] = "yes";
+        
+        m_pAbiDocument->appendObject( PTO_RDFAnchor, ppAtts );
+        xmlidStackForTextMeta.push_back( xmlid );
         
     } else if (!strcmp(pName, "text:line-break")) {
         
@@ -342,9 +585,10 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         
         _flush ();
         const gchar * pAttr = UT_getAttribute ("text:name", ppAtts);
+        const gchar* xmlid = UT_getAttribute("xml:id", ppAtts);
 
         if(pAttr) {
-            _insertBookmark (pAttr, "start");
+            _insertBookmark (pAttr, "start", xmlid );
             _insertBookmark (pAttr, "end");
         } else {
             UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
@@ -354,9 +598,11 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
 
         _flush ();
         const gchar * pAttr = UT_getAttribute ("text:name", ppAtts);
-
+        const gchar* xmlid = UT_getAttribute("xml:id", ppAtts);
+        xmlidStackForBookmarks.push_back( xmlid ? xmlid : "" );
+        
         if(pAttr) {
-            _insertBookmark (pAttr, "start");
+            _insertBookmark (pAttr, "start", xmlid );
         } else {
             UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
         }
@@ -366,8 +612,11 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         _flush ();
         const gchar * pAttr = UT_getAttribute ("text:name", ppAtts);
 
+        std::string xmlid = xmlidStackForBookmarks.back();
+        xmlidStackForBookmarks.pop_back();
+        
         if(pAttr) {
-            _insertBookmark (pAttr, "end");
+            _insertBookmark (pAttr, "end", xmlid.c_str() );
         } else {
             UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
         }
@@ -857,12 +1106,32 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
     } else if (!strcmp(pName, "text:p" ) || !strcmp(pName, "text:h" )) {
 
         _endParagraphElement(pName, rAction);
+        m_rdfState->endElement( pName );
         
     } else if (!strcmp(pName, "text:span")) {
         
         _flush ();
         _popInlineFmt();
         m_pAbiDocument->appendFmt(&m_vecInlineFmt);
+
+    } else if (!strcmp(pName, "text:meta")) {
+        
+        _flush ();
+
+        std::string xmlid = xmlidStackForTextMeta.back();
+        xmlidStackForTextMeta.pop_back();
+        
+        const gchar* ppAtts[10] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+        ppAtts[0] = PT_XMLID;
+        ppAtts[1] = xmlid.c_str();
+        // sanity check
+        ppAtts[2] = "this-is-an-rdf-anchor";
+        ppAtts[3] = "yes";
+        ppAtts[4] = PT_RDF_END;
+        ppAtts[5] = "yes";
+        
+        m_pAbiDocument->appendObject( PTO_RDFAnchor, ppAtts );
+        
         
     } else if (!strcmp(pName, "text:a")) {
         
@@ -1043,10 +1312,49 @@ void ODi_TextContent_ListenerState::charData (
 {
     if (pBuffer && length) {
         if (m_bAcceptingText) {
-            gchar *stripped_buf = g_strndup(pBuffer, length);
-            g_strstrip(stripped_buf);
-            m_charData += UT_UCS4String (stripped_buf, strlen(stripped_buf), false);
-            g_free(stripped_buf);
+//            UT_DEBUGMSG(("RDFHandler, pBuffer:%s\n", pBuffer ));
+            
+            m_charData += UT_UCS4String (pBuffer, length, true);
+            
+            // gchar *stripped_buf = g_strndup(pBuffer, length);
+            // g_strstrip(stripped_buf);
+            // m_charData += UT_UCS4String (stripped_buf, strlen(stripped_buf), false);
+            // g_free(stripped_buf);
+
+            // gchar *stripped_buf = g_strndup(pBuffer, length);
+            // g_strstrip(stripped_buf);
+            // if( pBuffer && ( pBuffer[0] == ' ' || pBuffer[0] == '\t' ))
+            // {
+            //     m_charData += ' ';
+            // }
+            // m_charData += UT_UCS4String (stripped_buf, strlen(stripped_buf), false);
+            // g_free(stripped_buf);
+
+// gchar *             g_regex_replace                     (const GRegex *regex,
+//                                                          const gchar *string,
+//                                                          gssize string_len,
+//                                                          gint start_position,
+//                                                          const gchar *replacement,
+//                                                          GRegexMatchFlags match_options,
+//                                                          GError **error);
+            
+//             std::string strippedString(pBuffer, length);
+//             static const boost::regex leadingWhitespace("[\\n^]([\\t ])+");
+//             static const boost::regex trailingWhitespace("([\\t ])+$");
+//             strippedString = boost::regex_replace( strippedString,
+//                                                    leadingWhitespace, "\\1",
+//                                                    boost::match_default | boost::format_sed);
+//             strippedString = boost::regex_replace( strippedString,
+//                                                    trailingWhitespace, "\\1",
+//                                                    boost::match_default | boost::format_sed);
+//             if( !strippedString.empty()
+//                 && ( strippedString[0] == ' ' || strippedString[0] == '\t' ))
+//             {
+//                 m_charData += ' '; strippedString[0];
+//             }
+//             m_charData += UT_UCS4String (strippedString.c_str(), strippedString.length(), false);
+            
+
         } else if (m_bPendingAnnotationAuthor) {
             m_sAnnotationAuthor = pBuffer;
 
@@ -1061,16 +1369,23 @@ void ODi_TextContent_ListenerState::charData (
  * 
  */
 void ODi_TextContent_ListenerState::_insertBookmark (const gchar* pName,
-                                             const gchar* pType)
+                                                     const gchar* pType,
+                                                     const gchar* xmlid )
 {
     UT_return_if_fail(pName && pType);
 
-    const gchar* pPropsArray[5];
-    pPropsArray[0] = (gchar *)"name";
-    pPropsArray[1] = pName;
-    pPropsArray[2] = (gchar *)"type";
-    pPropsArray[3] = pType;
-    pPropsArray[4] = 0;
+    int idx = 0;
+    const gchar* pPropsArray[10];
+    pPropsArray[idx++] = (gchar *)"name";
+    pPropsArray[idx++] = pName;
+    pPropsArray[idx++] = (gchar *)"type";
+    pPropsArray[idx++] = pType;
+    if( xmlid && strlen(xmlid) )
+    {
+        pPropsArray[idx++] = PT_XMLID;
+        pPropsArray[idx++] = xmlid;
+    }
+    pPropsArray[idx++] = 0;
     m_pAbiDocument->appendObject (PTO_Bookmark, pPropsArray);
 }
 
@@ -1419,7 +1734,10 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
         bool ok;
         UT_UTF8String props;
         const ODi_Style_Style* pStyle;
+        const gchar* xmlid = 0;
+
         
+        xmlid = UT_getAttribute ("xml:id", ppParagraphAtts);
         
         if (!strcmp(m_rElementStack.getStartTag(0)->getName(), "text:list-item")) {
             // That's a list paragraph.
@@ -1607,7 +1925,13 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
                     ppAtts[i++] = pStyle->getDisplayName().utf8_str();
                 }
             }
-        
+
+            if( xmlid )
+            {
+                ppAtts[i++] = PT_XMLID;
+                ppAtts[i++] = xmlid;
+            }
+            
             ppAtts[i] = 0; // Marks the end of the attributes list.
             m_pAbiDocument->appendStrux(PTX_Block, (const gchar**)ppAtts);
             m_bOpenedBlock = true;
@@ -1667,7 +1991,7 @@ void ODi_TextContent_ListenerState::_endParagraphElement (
     const gchar* pStyleName;
     const ODi_Style_Style* pStyle;
 
-//    UT_DEBUGMSG(("RDF: L::_endParagraphElement() cdata:%s\n", m_charData.utf8_str() ));
+    UT_DEBUGMSG(("RDF: L::_endParagraphElement() cdata:%s\n", m_charData.utf8_str() ));
     
     _flush ();
     m_bAcceptingText = false;

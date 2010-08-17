@@ -32,6 +32,7 @@
 
 // Abiword includes
 #include <pd_Document.h>
+#include <pd_DocumentRDF.h>
 #include <px_ChangeRecord.h>
 #include <px_CR_Span.h>
 #include <px_CR_Strux.h>
@@ -191,6 +192,27 @@ bool ODe_AbiDocListener::populate(PL_StruxFmtHandle /*sfh*/,
                     return true;
                 }
 
+            case PTO_RDFAnchor:
+                {
+                    UT_DEBUGMSG(("populate() PTO_RDFAnchor\n" ));
+                    _closeSpan();
+                    _closeField();
+
+                    const PP_AttrProp* pAP = NULL;
+                    m_pDocument->getAttrProp(api,&pAP);
+                    RDFAnchor a(pAP);
+                    if( a.isEnd() )
+                    {
+                        _closeRDFAnchor(api);
+                    }
+                    else
+                    {
+                        _openRDFAnchor(api);
+                    }
+                    
+                    return true;
+                }
+                
             default:
                 UT_ASSERT_HARMLESS(UT_TODO);
                 return true;
@@ -224,7 +246,38 @@ bool ODe_AbiDocListener::populateStrux(PL_StruxDocHandle /*sdh*/,
     
     const PX_ChangeRecord_Strux * pcrx =
         static_cast<const PX_ChangeRecord_Strux *> (pcr);
-        
+
+    // // TESTING
+    // {
+    //     UT_DEBUGMSG(("TESTING AAA ... testing if we have a psfh\n"));
+    //     if( *psfh )
+    //     {
+    //         UT_DEBUGMSG(("TESTING AAA ... have psfh\n"));
+    //         PT_AttrPropIndex api = m_pDocument->getAPIFromSDH( psfh );
+    //         const PP_AttrProp * AP = NULL;
+    //         m_pDocument->getAttrProp(api,&AP);
+    //         if( AP )
+    //         {
+    //             const char * v = NULL;
+    //             if(AP->getAttribute("xml:id", v))
+    //                 UT_DEBUGMSG(("TESTING AAA ... xmlid:%s\n",v));
+    //             if(AP->getAttribute("props", v))
+    //                 UT_DEBUGMSG(("TESTING AAA ... props:%s\n",v));
+    //         }
+    //         api = pcr->getIndexAP();
+    //         m_pDocument->getAttrProp(api,&AP);
+    //         if( AP )
+    //         {
+    //             const char * v = NULL;
+    //             if(AP->getAttribute("xml:id", v))
+    //                 UT_DEBUGMSG(("TESTING AAA2 ... xmlid:%s\n",v));
+    //             if(AP->getAttribute("props", v))
+    //                 UT_DEBUGMSG(("TESTING AAA2 ... props:%s\n",v));
+    //         }
+    //     }
+    // }
+    
+    
     *psfh = 0;                          // we don't need it.
 
     PT_AttrPropIndex api = pcr->getIndexAP();
@@ -903,6 +956,16 @@ void ODe_AbiDocListener::_openCell(PT_AttrPropIndex api, bool recursiveCall) {
     if (!ok) {
         pAP = NULL;        
     }
+
+    // // testing
+    // {
+    //     const char* pValue = 0;
+    //     bool ok = pAP->getProperty(PT_XMLID, pValue);
+    //     UT_DEBUGMSG(("TESTING A... ok:%d xmlid:%s \n",ok, pValue));
+
+    //     ok = pAP->getProperty("props", pValue);
+    //     UT_DEBUGMSG(("TESTING A... ok:%d props:%s \n",ok, pValue));
+    // }
     
     m_listenerImplAction.reset();
     m_pCurrentImpl->openCell(pAP, m_listenerImplAction);
@@ -1112,6 +1175,31 @@ void ODe_AbiDocListener::_closeHyperlink() {
     m_bInHyperlink = false;
     m_pCurrentImpl->closeHyperlink();
 }
+
+
+void ODe_AbiDocListener::_openRDFAnchor(PT_AttrPropIndex api)
+{
+    const PP_AttrProp* pAP = NULL;
+    bool ok;
+                                        
+    ok = m_pDocument->getAttrProp (api, &pAP);
+    if (ok && pAP) {
+        m_pCurrentImpl->openRDFAnchor(pAP);
+    }
+}
+
+void ODe_AbiDocListener::_closeRDFAnchor(PT_AttrPropIndex api)
+{
+    _closeSpan();
+    const PP_AttrProp* pAP = NULL;
+    bool ok;
+                                        
+    ok = m_pDocument->getAttrProp (api, &pAP);
+    if (ok && pAP) {
+        m_pCurrentImpl->closeRDFAnchor(pAP);
+    }
+}
+
 
 
 /**

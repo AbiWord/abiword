@@ -24,8 +24,10 @@
 #include "pd_Document.h"
 #include "pt_PieceTable.h"
 #include "ut_debugmsg.h"
+#include "pf_Frag_Object.h"
 
 #include <sstream>
+#include <set>
 
 #define DEBUG_LOWLEVEL_IO    0
 
@@ -260,6 +262,48 @@ PD_Literal::PD_Literal( const std::string& v, const std::string& xsdtype )
 /****************************************/
 /****************************************/
 
+class PD_RDFModelFromAP : public PD_DocumentRDF
+{
+    const PP_AttrProp* m_AP;
+    
+public:
+    explicit PD_RDFModelFromAP( PD_Document* doc, const PP_AttrProp* AP )
+        :
+        PD_DocumentRDF( doc ),
+        m_AP(AP)
+    {
+    }
+    virtual ~PD_RDFModelFromAP()
+    {
+        delete m_AP;
+    }
+    virtual const PP_AttrProp* getAP(void) const
+    {
+        return m_AP;
+    }
+    virtual UT_Error setAP( PP_AttrProp* newAP )
+    {
+        delete m_AP;
+        m_AP = newAP;
+        return UT_OK;
+    }
+    virtual bool isStandAlone() const
+    {
+        return true;
+    }
+    
+    
+    
+};
+
+
+/****************************************/
+/****************************************/
+/****************************************/
+/****************************************/
+/****************************************/
+/****************************************/
+
 
 PD_DocumentRDF::PD_DocumentRDF( PD_Document* doc )
     :
@@ -341,6 +385,32 @@ PD_DocumentRDF::getAP(void) const
     pt_VarSet& m_varset = pt->getVarSet();
     const PP_AttrProp* ret = m_varset.getAP(indexAP);
     return ret;
+}
+
+UT_Error PD_DocumentRDF::setAP( PP_AttrProp* newAP )
+{
+    newAP->prune();
+    newAP->markReadOnly();
+    PD_Document*    doc = getDocument();
+    pt_PieceTable*   pt = getPieceTable();
+    pt_VarSet& m_varset = pt->getVarSet();
+
+    PT_AttrPropIndex newAPI = 0;
+    bool success = m_varset.addIfUniqueAP( newAP, &newAPI );
+    // addIfUniqueAP() eats it
+    newAP = 0;
+    
+    if(!success)
+    {
+        return UT_OUTOFMEM;
+    }
+    setIndexAP( newAPI );
+    return UT_OK;
+}
+
+bool PD_DocumentRDF::isStandAlone() const
+{
+    return false;
 }
 
 
@@ -655,17 +725,315 @@ std::string PD_DocumentRDF::encodePOCol( const POCol& l )
     return ss.str();
 }
 
-PD_RDFModelHandle PD_DocumentRDF::getRDFAtPosition( PT_DocPosition pos )
+//////////////////////////////////
+//////////////////////////////////
+//////////////////////////////////
+
+RDFAnchor::RDFAnchor( const PP_AttrProp* pAP )
+    :
+    m_isEnd( false )
 {
-    // FIXME: milestone 5 API
-    PD_RDFModelHandle ret = getDocument()->getDocumentRDF();
+    const gchar * v = 0;
+    // if(pAP->getAttribute("this-is-an-rdf-anchor", v) && v)
+    //     UT_DEBUGMSG(("RDFAnchor() is-rdf-a:%s\n",v));
+    // if(pAP->getAttribute(PT_RDF_END, v) && v)
+    //     UT_DEBUGMSG(("RDFAnchor() PT_RDF_END:%s\n",v));
+
+    if( pAP->getAttribute(PT_RDF_END, v) && v)
+    {
+        m_isEnd = !strcmp(v,"yes");
+    }
+    if( pAP->getAttribute(PT_XMLID, v) && v)
+    {
+        m_xmlid = v;
+    }
+}
+
+bool RDFAnchor::isEnd()
+{
+    return m_isEnd;
+}
+std::string RDFAnchor::getID()
+{
+    return m_xmlid;
+}
+    
+//////////////////////////////////
+//////////////////////////////////
+//////////////////////////////////
+
+
+std::list< std::string >& PD_DocumentRDF::addRelevantIDsForPosition( std::list< std::string >& ret,
+                                                                     PT_DocPosition pos )
+{
+    PD_Document*    doc = getDocument();
+    pt_PieceTable*   pt = getPieceTable();
+    PT_DocPosition curr = pos;
+    
+    UT_DEBUGMSG(("PD_DocumentRDF::addRelevantIDsForPosition() current:%d \n", curr ));
+
+    //
+    // Allow recursion of text:meta where an outside tag might encase the point but
+    // another text:meta might completely be before point. Consider:
+    // 
+    // <text:meta xml:id="outside"> ....
+    //   ... <text:meta xml:id="nested">boo</text:meta>
+    //   ... POINT ...
+    // </text:meta>
+    //
+    // In this case, we want to ignore the xml:id == nested anchors but find the
+    // xml:id == outside one
+    //
+    std::set< std::string > m_ignoreIDSet;
+    
+    //
+    // FIXME: Some form of index would be nice, rather than walking back the entire
+    // document to find the RDF Anchors.
+    //
+    for( ; curr > 0; --curr )
+    {
+        pf_Frag* pf = 0;
+        PT_BlockOffset boffset;
+        PL_StruxFmtHandle psfh;
+
+        if( pt->getFragFromPosition( curr, &pf, &boffset ) )
+        {
+            UT_DEBUGMSG(("PD_DocumentRDF::addRelevantIDsForPosition() current:%d frag type:%d len:%d \n",
+                         curr, pf->getType(), pf->getLength() ));
+
+            if(pf->getType() == pf_Frag::PFT_Object)
+            {
+                pf_Frag_Object* pOb = static_cast<pf_Frag_Object*>(pf);
+                const PP_AttrProp * pAP = NULL;
+
+                UT_DEBUGMSG(("PD_DocumentRDF::addRelevantIDsForPosition() po type:%d\n",
+                             pOb->getObjectType() ));
+
+                if(pOb->getObjectType() == PTO_Bookmark)
+                {
+                    pOb->getPieceTable()->getAttrProp(pOb->getIndexAP(),&pAP);
+                    const char* v = 0;
+                    if( pAP->getAttribute(PT_XMLID, v) && v)
+                    {
+                        std::string xmlid = v;
+                        bool isEnd = pAP->getAttribute("type", v) && v && !strcmp(v,"end");
+                        
+                        UT_DEBUGMSG(("PD_DocumentRDF::addRelevantIDsForPosition() isEnd:%d id:%s\n",
+                                     isEnd, xmlid.c_str() ));
+                        
+                        if( isEnd )
+                        {
+                            m_ignoreIDSet.insert( xmlid );
+                        }
+                        else
+                        {
+                            if( !m_ignoreIDSet.count( xmlid ))
+                                ret.push_back( xmlid );
+                        }
+                    }
+                }
+                
+                if(pOb->getObjectType() == PTO_RDFAnchor)
+                {
+                    pOb->getPieceTable()->getAttrProp(pOb->getIndexAP(),&pAP);
+
+                    RDFAnchor a(pAP);
+                    UT_DEBUGMSG(("PD_DocumentRDF::addRelevantIDsForPosition() isEnd:%d id:%s\n",
+                                 a.isEnd(), a.getID().c_str() ));
+                    
+                    if( a.isEnd() )
+                    {
+                        m_ignoreIDSet.insert( a.getID() );
+                    }
+                    else
+                    {
+                        if( !m_ignoreIDSet.count( a.getID() ))
+                            ret.push_back( a.getID() );
+                    }
+                }
+            }
+        }
+    }
+
+    //
+    // xml:id attached to containing paragraph/header
+    // <text:p> / <text:h>
+    //
+    PL_StruxFmtHandle psfh;
+    if( pt->getStruxOfTypeFromPosition( pos, PTX_Block, &psfh ) && psfh )
+    {
+        UT_DEBUGMSG(("PD_DocumentRDF::getRDFAtPosition() block pos:%d\n", pos ));
+        PT_AttrPropIndex api = doc->getAPIFromSDH( psfh );
+        const PP_AttrProp * AP = NULL;
+        doc->getAttrProp(api,&AP);
+        if( AP )
+        {
+            const char * v = NULL;
+            if(AP->getAttribute("xml:id", v))
+            {
+                UT_DEBUGMSG(("PD_DocumentRDF::getRDFAtPosition() xmlid:%s \n",v));
+                ret.push_back(v);
+            }
+        }
+    }
+
+    //
+    // xml:id attached to containing table:table-cell
+    //
+    if( pt->getStruxOfTypeFromPosition( pos, PTX_SectionCell, &psfh ) && psfh )
+    {
+        UT_DEBUGMSG(("PD_DocumentRDF::getRDFAtPosition() cell pos:%d\n", pos ));
+        PT_AttrPropIndex api = doc->getAPIFromSDH( psfh );
+        const PP_AttrProp * AP = NULL;
+        doc->getAttrProp(api,&AP);
+        if( AP )
+        {
+            const char * v = NULL;
+            if(AP->getAttribute("xml:id", v))
+            {
+                UT_DEBUGMSG(("PD_DocumentRDF::getRDFAtPosition() xmlid:%s \n",v));
+                ret.push_back(v);
+
+                if(AP->getAttribute("props", v))
+                    UT_DEBUGMSG(("PD_DocumentRDF::getRDFAtPosition() props:%s \n",v));
+
+            }
+        }
+    }
+    
     return ret;
 }
 
+
+PD_RDFModelHandle PD_DocumentRDF::getRDFAtPosition( PT_DocPosition pos )
+{
+    PD_Document*    doc = getDocument();
+    pt_PieceTable*   pt = getPieceTable();
+    PL_StruxFmtHandle psfh;
+
+    std::list< std::string > IDList;
+    addRelevantIDsForPosition( IDList, pos );
+
+    PP_AttrProp* AP = new PP_AttrProp();
+    PD_RDFModelFromAP* retModel = new PD_RDFModelFromAP( m_doc, AP );
+    PD_RDFModelHandle ret( retModel );
+
+    if( !IDList.empty() )
+    {
+        PD_DocumentRDFMutationHandle m = retModel->createMutation();
+        for( std::list< std::string >::iterator iter = IDList.begin();
+             iter != IDList.end(); ++iter )
+        {
+            std::string xmlid = *iter;
+            addRDFForID( xmlid, m );
+        }
+        m->commit();
+    }
+    
+
+    retModel->dumpModel("RDF result for xmlid");
+    return ret;
+    
+    
+    // if( pt->getStruxOfTypeFromPosition( pos, PTX_Block, &psfh ) && psfh )
+    // {
+    //     UT_DEBUGMSG(("PD_DocumentRDF::getRDFAtPosition() pos:%d\n", pos ));
+    //     PT_AttrPropIndex api = doc->getAPIFromSDH( psfh );
+    //     const PP_AttrProp * AP = NULL;
+    //     doc->getAttrProp(api,&AP);
+    //     if( AP )
+    //     {
+    //         const char * v = NULL;
+    //         if(AP->getAttribute("xml:id", v))
+    //         {
+    //             UT_DEBUGMSG(("PD_DocumentRDF::getRDFAtPosition() xmlid:%s \n",v));
+    //             PD_RDFModelHandle ret = getRDFForID( v );
+    //             return ret;
+    //         }
+    //     }
+    // }
+
+    {
+        // return an empty model
+        PP_AttrProp* AP = new PP_AttrProp();
+        PD_RDFModelHandle ret( new PD_RDFModelFromAP( doc, AP ));
+        return ret;
+    }
+    
+}
+
+void PD_DocumentRDF::addRDFForID( const std::string& xmlid, PD_DocumentRDFMutationHandle& m )
+{
+    // Execute query to find all triples related to xmlid
+    // and add them all to the mutation m
+    //
+    // prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
+    // prefix pkg:  <http://docs.oasis-open.org/opendocument/meta/package/common#> 
+    // select ?s ?p ?o 
+    // where { 
+    //  ?s pkg:idref ?xmlid . 
+    //  ?s ?p ?o . 
+    //  filter( str(?xmlid) = \"" << xmlid << "\" ) 
+    // };
+
+    PD_URI pkg_idref("http://docs.oasis-open.org/opendocument/meta/package/common#idref");
+    PD_Object xmlidNode( xmlid );
+    
+    PD_URIList subjects = getAllSubjects();
+    PD_URIList::iterator subjend = subjects.end();
+    for( PD_URIList::iterator subjiter = subjects.begin();
+         subjiter != subjend; ++subjiter )
+    {
+        bool addSubject = false;
+
+        PD_URI subject = *subjiter;
+        POCol polist = getArcsOut( subject );
+        POCol::iterator poend = polist.end();
+        for( POCol::iterator poiter = polist.begin();
+             poiter != poend; ++poiter )
+        {
+            PD_URI    predicate = poiter->first;
+            PD_Object object = poiter->second;
+            if( predicate == pkg_idref && object == xmlidNode )
+            {
+                addSubject = true;
+                break;
+            }
+        }
+
+        if( addSubject )
+        {
+            POCol polist = getArcsOut( subject );
+            POCol::iterator poend = polist.end();
+            for( POCol::iterator poiter = polist.begin();
+                 poiter != poend; ++poiter )
+            {
+                PD_URI    predicate = poiter->first;
+                PD_Object object = poiter->second;
+
+                UT_DEBUGMSG(("PD_DocumentRDF::adding s:%s p:%s o:%s\n",
+                             subject.toString().c_str(),
+                             predicate.toString().c_str(),
+                             object.toString().c_str() ));
+                
+                m->add( subject, predicate, object );
+            }
+        }
+    }
+}
+
+
 PD_RDFModelHandle PD_DocumentRDF::getRDFForID( const std::string& xmlid )
 {
-    // FIXME: milestone 5 API
-    PD_RDFModelHandle ret = getDocument()->getDocumentRDF();
+    PP_AttrProp* AP = new PP_AttrProp();
+    PD_RDFModelFromAP* retModel = new PD_RDFModelFromAP( m_doc, AP );
+    PD_RDFModelHandle ret( retModel );
+
+    PD_DocumentRDFMutationHandle m = retModel->createMutation();
+    addRDFForID( xmlid, m );
+    m->commit();
+
+    retModel->dumpModel("RDF result for xmlid");
     return ret;
 }
 
@@ -777,6 +1145,87 @@ void PD_DocumentRDF::runMilestone2Test2()
     
     
 }
+
+
+void PD_DocumentRDF::dumpObjectMarkersFromDocument()
+{
+    UT_DEBUGMSG(("PD_DocumentRDF::dumpObjectMarkersFromDocument() doc:%p\n", m_doc));
+    UT_uint32 offset = 203;
+    PD_Document*    doc = getDocument();
+    pt_PieceTable*   pt = getPieceTable();
+    PT_DocPosition curr = 0;
+    PT_DocPosition eod = 0;
+    pt->getBounds( true, eod );
+    
+    UT_DEBUGMSG(("PD_DocumentRDF::dumpObjectMarkersFromDocument() current:%d end:%d\n", curr, eod ));
+
+    for( ; curr < eod; ++curr )
+    {
+        pf_Frag* pf = 0;
+        PT_BlockOffset boffset;
+        PL_StruxFmtHandle psfh;
+
+        if( pt->getStruxOfTypeFromPosition( curr, PTX_Block, &psfh ) && psfh )
+        {
+            UT_DEBUGMSG(("PD_DocumentRDF::dumpObjectMarkersFromDocument() current:%d end:%d have PTX_BLOCK \n",
+                         curr, eod ));
+	        PT_AttrPropIndex api = doc->getAPIFromSDH( psfh );
+            const PP_AttrProp * AP = NULL;
+            doc->getAttrProp(api,&AP);
+            if( AP )
+            {
+                const char * v = NULL;
+                if(AP->getAttribute("xml:id",v))
+                {
+                    UT_DEBUGMSG(("PD_DocumentRDF::dumpObjectMarkersFromDocument() xmlid:%s \n",v));
+                }
+            }
+        }
+        
+
+        
+        if( pt->getFragFromPosition( curr, &pf, &boffset ) )
+        {
+            UT_DEBUGMSG(("PD_DocumentRDF::dumpObjectMarkersFromDocument() current:%d end:%d frag type:%d len:%d \n", curr, eod, pf->getType(), pf->getLength() ));
+
+            if(pf->getType() == pf_Frag::PFT_Object)
+            {
+                pf_Frag_Object* pOb = static_cast<pf_Frag_Object*>(pf);
+
+                UT_DEBUGMSG(("PD_DocumentRDF::dumpObjectMarkersFromDocument() po type:%d\n",
+                             pOb->getObjectType() ));
+        
+                if(pOb->getObjectType() == PTO_RDFAnchor)
+                {
+                    const PP_AttrProp * pAP = NULL;
+                    pOb->getPieceTable()->getAttrProp(pOb->getIndexAP(),&pAP);
+
+                    const gchar * v = 0;
+                    if(!pAP->getAttribute(PT_XMLID, v) || !v)
+                    {
+                    }
+                    else
+                    {
+                        UT_DEBUGMSG(("PD_DocumentRDF::dumpObjectMarkersFromDocument() xml:id:%s\n",v));
+                    }
+                    if(pAP->getAttribute("this-is-an-rdf-anchor", v) && v)
+                        UT_DEBUGMSG(("PD_DocumentRDF::dumpObjectMarkersFromDocument() is-rdf-a:%s\n",v));
+                    
+                }
+            }
+            
+        }
+    }
+
+
+    //////////////
+
+    curr = 420;
+    PD_RDFModelHandle h = getRDFAtPosition( curr );
+    
+    
+}
+
 
 /**
  * Dump the model as debug messages
@@ -1065,24 +1514,32 @@ UT_Error PD_DocumentRDFMutation::handleAddAndRemove( PP_AttrProp* add, PP_AttrPr
         }
     }
 
-    newAP->prune();
-    newAP->markReadOnly();
-    PD_Document*    doc = m_rdf->getDocument();
-    pt_PieceTable*   pt = m_rdf->getPieceTable();
-    pt_VarSet& m_varset = pt->getVarSet();
-
-    PT_AttrPropIndex newAPI = 0;
-    bool success = m_varset.addIfUniqueAP( newAP, &newAPI );
-    // addIfUniqueAP() eats it
-    newAP = 0;
-    
-    if(!success)
+    UT_Error e = m_rdf->setAP( newAP );
+    if( e != UT_OK )
     {
         UT_DEBUGMSG(("DocumentRDFMutation::handleAddAndRemove() failed to add new AttrPropIndex for RDF update\n"));
         // MIQ 2010 July: addIfUniqueAP() method states false == memory error of some kind.
-        return UT_OUTOFMEM;
+        return e;
     }
-    m_rdf->setIndexAP( newAPI );
+    
+    // newAP->prune();
+    // newAP->markReadOnly();
+    // PD_Document*    doc = m_rdf->getDocument();
+    // pt_PieceTable*   pt = m_rdf->getPieceTable();
+    // pt_VarSet& m_varset = pt->getVarSet();
+
+    // PT_AttrPropIndex newAPI = 0;
+    // bool success = m_varset.addIfUniqueAP( newAP, &newAPI );
+    // // addIfUniqueAP() eats it
+    // newAP = 0;
+    
+    // if(!success)
+    // {
+    //     UT_DEBUGMSG(("DocumentRDFMutation::handleAddAndRemove() failed to add new AttrPropIndex for RDF update\n"));
+    //     // MIQ 2010 July: addIfUniqueAP() method states false == memory error of some kind.
+    //     return UT_OUTOFMEM;
+    // }
+    // m_rdf->setIndexAP( newAPI );
 
     m_rdf->dumpModelFromAP( m_rdf->getAP(), "updated RDF model..." );
     return UT_OK;
@@ -1137,33 +1594,38 @@ UT_Error PD_DocumentRDFMutation::commit()
     handleAddAndRemove( m_crAddAP, m_crRemoveAP );    
     UT_DEBUGMSG(("PD_DocumentRDF::commit(sending CR) rdf:%p\n", m_rdf));
 
-    //
-    // Notify others about this change...
-    //
-    PP_AttrProp* crAP = new PP_AttrProp();
-	crAP->setAttributes( m_crAddAP->getProperties() );
-	crAP->setProperties( m_crRemoveAP->getProperties() );
-    crAP->markReadOnly();
-    
-    PT_AttrPropIndex crAPI = 0;
-    success = m_varset.addIfUniqueAP( crAP, &crAPI );
-    // addIfUniqueAP() eats it
-    crAP = 0;
-
-    if( !success )
+    if( !m_rdf->isStandAlone() )
     {
-        UT_DEBUGMSG(("DocumentRDFMutation::commit() failed to add new AttrPropIndex for RDF update\n"));
-        // MIQ 2010 July: addIfUniqueAP() method states false == memory error of some kind.
-        return UT_OUTOFMEM;
-    }
+        
+        //
+        // Notify others about this change...
+        //
+        PP_AttrProp* crAP = new PP_AttrProp();
+        crAP->setAttributes( m_crAddAP->getProperties() );
+        crAP->setProperties( m_crRemoveAP->getProperties() );
+        crAP->markReadOnly();
     
-    PT_DocPosition pos = 0;
-    UT_uint32 iXID = 0;
-    PX_ChangeRecord* pcr = new PX_ChangeRecord( PX_ChangeRecord::PXT_ChangeDocRDF,
-                                                pos, crAPI, iXID );
-    doc->notifyListeners( 0, pcr );
-    delete pcr;
-    UT_DEBUGMSG(("PD_DocumentRDF::commit(done) rdf:%p\n", m_rdf));
+        PT_AttrPropIndex crAPI = 0;
+        success = m_varset.addIfUniqueAP( crAP, &crAPI );
+        // addIfUniqueAP() eats it
+        crAP = 0;
+
+        if( !success )
+        {
+            UT_DEBUGMSG(("DocumentRDFMutation::commit() failed to add new AttrPropIndex for RDF update\n"));
+            // MIQ 2010 July: addIfUniqueAP() method states false == memory error of some kind.
+            return UT_OUTOFMEM;
+        }
+    
+        PT_DocPosition pos = 0;
+        UT_uint32 iXID = 0;
+        PX_ChangeRecord* pcr = new PX_ChangeRecord( PX_ChangeRecord::PXT_ChangeDocRDF,
+                                                    pos, crAPI, iXID );
+        doc->notifyListeners( 0, pcr );
+        delete pcr;
+        UT_DEBUGMSG(("PD_DocumentRDF::commit(done) rdf:%p\n", m_rdf));
+    }
+
     m_committed = true;
     return UT_OK;
 }

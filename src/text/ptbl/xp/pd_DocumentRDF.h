@@ -191,7 +191,8 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
 
     void runMilestone2Test();
     void runMilestone2Test2();
-
+    void dumpObjectMarkersFromDocument();
+    
     void dumpModel( const std::string& headerMsg = "dumpModel()" );
     
   private:
@@ -203,8 +204,9 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
     PD_URI front( const PD_URIList& l ) const;
     void setIndexAP( PT_AttrPropIndex idx );
     PT_AttrPropIndex getIndexAP(void) const;
-    const PP_AttrProp* getAP(void) const;
-
+    virtual const PP_AttrProp* getAP(void) const;
+    virtual UT_Error setAP( PP_AttrProp* newAP );
+    virtual bool isStandAlone() const;
     
     std::string combinePO(const PD_URI& p, const PD_Object& o );
     std::pair< PD_URI, PD_Object > splitPO( const std::string& po );
@@ -214,6 +216,9 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
     void dumpModelFromAP( const PP_AttrProp* AP, const std::string& headerMsg );
 
     bool apContains( const PP_AttrProp* AP, const PD_URI& s, const PD_URI& p, const PD_Object& o );
+    void addRDFForID( const std::string& xmlid, PD_DocumentRDFMutationHandle& m );
+    std::list< std::string >& addRelevantIDsForPosition( std::list< std::string >& ret,
+                                                         PT_DocPosition pos );
 };
 
 
@@ -289,6 +294,18 @@ class ABI_EXPORT PD_DocumentRDFMutation
     
     UT_Error commit();
     void rollback();
+};
+
+
+
+class RDFAnchor
+{
+    bool m_isEnd;
+    std::string m_xmlid;
+public:
+    RDFAnchor( const PP_AttrProp* pAP );
+    bool isEnd();
+    std::string getID();
 };
 
 

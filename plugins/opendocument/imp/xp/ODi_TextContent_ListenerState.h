@@ -46,6 +46,9 @@ class ODi_Abi_Data;
 // AbiWord classes
 class PD_Document;
 class pf_Frag_Strux;
+class ODi_TextContent_ListenerRDFHandler;
+
+#include <list>
 
 /**
  * It parses the regular content of a text document. It is used to parse the
@@ -90,7 +93,7 @@ public:
     
 private:
 
-    void _insertBookmark (const gchar * name, const gchar * type);
+    void _insertBookmark (const gchar * name, const gchar * type, const gchar* xmlid = 0 );
     void _flush ();
     void _startParagraphElement (const gchar* pName,
                                  const gchar** ppParagraphAtts,
@@ -187,6 +190,10 @@ private:
     std::string m_sAnnotationAuthor;
     std::string m_sAnnotationDate;
 
+    // RDF
+    std::list< std::string > xmlidStackForTextMeta;
+    std::list< std::string > xmlidStackForBookmarks;
+    
     // Page referenced stuff
     bool m_bPageReferencePending;
     UT_sint32 m_iPageNum;
@@ -197,6 +204,7 @@ private:
     bool m_bPendingTextbox;
     bool m_bHeadingList;
     UT_sint32 m_prevLevel;
+    ODi_TextContent_ListenerRDFHandler* m_rdfState;
 };
 
 #endif //_ODI_TEXTCONTENT_LISTENERSTATE_H_

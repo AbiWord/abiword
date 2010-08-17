@@ -3226,7 +3226,7 @@ void GR_CairoGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 void GR_CairoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
 	_setProps();
-	UT_ASSERT(m_bHave3DColors && c < COUNT_3D_COLORS);
+//	UT_ASSERT(m_bHave3DColors && c < COUNT_3D_COLORS);
 
 	cairo_save (m_cr);
 

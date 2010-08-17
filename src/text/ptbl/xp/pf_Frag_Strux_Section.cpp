@@ -104,6 +104,17 @@ pf_Frag_Strux_SectionAnnotation::~pf_Frag_Strux_SectionAnnotation()
 {
 }
 
+pf_Frag_Strux_SectionRDFAnchor::pf_Frag_Strux_SectionRDFAnchor(pt_PieceTable * pPT,
+											 PT_AttrPropIndex indexAP)
+	: pf_Frag_Strux(pPT,PTX_RDFAnchor,pf_FRAG_STRUX_SECTION_LENGTH,indexAP)
+{
+	m_struxType =  PTX_RDFAnchor;
+}
+
+pf_Frag_Strux_SectionRDFAnchor::~pf_Frag_Strux_SectionRDFAnchor()
+{
+}
+
 pf_Frag_Strux_SectionMarginnote::pf_Frag_Strux_SectionMarginnote(pt_PieceTable * pPT,
 											 PT_AttrPropIndex indexAP)
 	: pf_Frag_Strux(pPT,PTX_SectionHdrFtr,pf_FRAG_STRUX_SECTION_LENGTH,indexAP)
@@ -148,6 +159,18 @@ pf_Frag_Strux_SectionEndAnnotation::pf_Frag_Strux_SectionEndAnnotation(pt_PieceT
 }
 
 pf_Frag_Strux_SectionEndAnnotation::~pf_Frag_Strux_SectionEndAnnotation()
+{
+}
+
+
+pf_Frag_Strux_SectionEndRDFAnchor::pf_Frag_Strux_SectionEndRDFAnchor(pt_PieceTable * pPT,
+											 PT_AttrPropIndex indexAP)
+	: pf_Frag_Strux(pPT,PTX_EndAnnotation,pf_FRAG_STRUX_SECTION_LENGTH,indexAP)
+{
+	m_struxType =  PTX_EndAnnotation;
+}
+
+pf_Frag_Strux_SectionEndRDFAnchor::~pf_Frag_Strux_SectionEndRDFAnchor()
 {
 }
 

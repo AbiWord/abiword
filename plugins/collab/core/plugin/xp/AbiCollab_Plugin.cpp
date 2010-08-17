@@ -166,6 +166,8 @@ static const char * szCollaborationAccountsTip = "Manage collaboration accounts"
 
 static const char * szCollaborationRdf = "RDF Test";
 static const char * szCollaborationRdfTip = "Run a quick RDF test for AbiCollab";
+static const char * szCollaborationRdfDumpObjects = "RDF Dump Objects";
+static const char * szCollaborationDumpRdfForPoint = "Dump RDF for Point";
 
 static const char * szCollaborationShowAuthors = "Show Authors";
 static const char * szCollaborationShowAuthorsTip = "Show who wrote each piece of text by with different colors";
@@ -191,6 +193,8 @@ static bool s_abicollab_record(AV_View* v, EV_EditMethodCallData *d);
 static bool s_abicollab_viewrecord(AV_View* v, EV_EditMethodCallData *d);
 static bool s_abicollab_command_invoke(AV_View* v, EV_EditMethodCallData *d);
 static bool s_abicollab_rdftest(AV_View* v, EV_EditMethodCallData *d);
+static bool s_abicollab_rdfdumpobjects(AV_View* v, EV_EditMethodCallData *d);
+static bool s_abicollab_dumprdfforpoint(AV_View* v, EV_EditMethodCallData *d);
 #define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
 
 /*!
@@ -448,7 +452,51 @@ void s_abicollab_add_menus()
 	);
 	pEMC->addEditMethod(myEditMethodRdf);
     
-
+    {
+        XAP_Menu_Id id = pFact->addNewMenuAfter("Main", NULL, collabJoinId, EV_MLF_Normal);
+        pFact->addNewLabel(NULL, id, szCollaborationRdfDumpObjects, szCollaborationRdfTip);
+        EV_Menu_Action* action = new EV_Menu_Action (
+            id,   		// id that the layout said we could use
+            0,                      // no, we don't have a sub menu.
+            1,                      // yes, we raise a dialog.
+            0,                      // no, we don't have a checkbox.
+            0,                      // no radio buttons for me, thank you
+            "s_abicollab_rdfdumpobjects",     // name of callback function to call.
+            NULL,                   // Function for whether not label is enabled/disabled checked/unchecked
+            NULL                    // Function to compute Menu Label "Dynamic Label"
+            );
+        pActionSet->addAction(action);
+        EV_EditMethod *method = new EV_EditMethod (
+            "s_abicollab_rdfdumpobjects",     // name of callback function
+            s_abicollab_rdfdumpobjects,       // callback function itself.
+            0,                      // no additional data required.
+            ""                      // description -- allegedly never used for anything
+            );
+        pEMC->addEditMethod(method);
+    }
+    {
+        XAP_Menu_Id id = pFact->addNewMenuAfter("Main", NULL, collabJoinId, EV_MLF_Normal);
+        pFact->addNewLabel(NULL, id, szCollaborationDumpRdfForPoint, szCollaborationRdfTip);
+        EV_Menu_Action* action = new EV_Menu_Action (
+            id,   		// id that the layout said we could use
+            0,                      // no, we don't have a sub menu.
+            1,                      // yes, we raise a dialog.
+            0,                      // no, we don't have a checkbox.
+            0,                      // no radio buttons for me, thank you
+            "s_abicollab_dumprdfforpoint",     // name of callback function to call.
+            NULL,                   // Function for whether not label is enabled/disabled checked/unchecked
+            NULL                    // Function to compute Menu Label "Dynamic Label"
+            );
+        pActionSet->addAction(action);
+        EV_EditMethod *method = new EV_EditMethod (
+            "s_abicollab_dumprdfforpoint",     // name of callback function
+            s_abicollab_dumprdfforpoint,       // callback function itself.
+            0,                      // no additional data required.
+            ""                      // description -- allegedly never used for anything
+            );
+        pEMC->addEditMethod(method);
+    }
+    
     
 	// The Show Authors item
 	XAP_Menu_Id ShowAuthorId = pFact->addNewMenuAfter("Main", NULL, collabAccountsId, EV_MLF_Normal);
@@ -757,6 +805,40 @@ bool s_abicollab_rdftest(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 
     UT_DEBUGMSG(("s_abicollab_rdftest... running ml2 test\n"));
     pDoc->getDocumentRDF()->runMilestone2Test();
+    return true;
+}
+
+bool s_abicollab_rdfdumpobjects(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
+{
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
+	UT_return_val_if_fail(pFrame, false);
+	PD_Document* pDoc = static_cast<PD_Document *>(pFrame->getCurrentDoc());
+	UT_return_val_if_fail(pDoc, false);
+
+    UT_DEBUGMSG(("s_abicollab_rdfdumpobjects...\n"));
+    pDoc->getDocumentRDF()->dumpObjectMarkersFromDocument();
+    return true;
+}
+
+bool s_abicollab_dumprdfforpoint(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
+{
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
+	UT_return_val_if_fail(pFrame, false);
+	PD_Document* pDoc = static_cast<PD_Document *>(pFrame->getCurrentDoc());
+	UT_return_val_if_fail(pDoc, false);
+
+    UT_DEBUGMSG(("s_abicollab_dumprdfforpoint...\n"));
+
+	AV_View* view = pFrame->getCurrentView();
+    if( view )
+    {
+        PT_DocPosition curr = view->getPoint();
+        UT_DEBUGMSG(("s_abicollab_dumprdfforpoint...curr:%d\n", curr));
+        PD_RDFModelHandle h = pDoc->getDocumentRDF()->getRDFAtPosition( curr );
+    }
+    
     return true;
 }
 

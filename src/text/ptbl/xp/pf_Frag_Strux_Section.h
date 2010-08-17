@@ -191,6 +191,24 @@ public:
 
 
 /*!
+ pf_Frag_Strux_SectionRDFAnchor represents structure information for
+ a Annotation section in the document.
+*/
+
+class ABI_EXPORT pf_Frag_Strux_SectionRDFAnchor : public pf_Frag_Strux
+{
+public:
+	pf_Frag_Strux_SectionRDFAnchor(pt_PieceTable * pPT,
+						  PT_AttrPropIndex indexAP);
+	virtual ~pf_Frag_Strux_SectionRDFAnchor();
+
+#ifdef PT_TEST
+	virtual void			__dump(FILE * fp) const;
+#endif
+};
+
+
+/*!
  pf_Frag_Strux_SectionMarginnote represents structure information for
  a header/footer section in the document.
 */
@@ -279,6 +297,23 @@ public:
 #endif
 };
 
+
+/*!
+ pf_Frag_Strux_SectionEndRDFAnchor represents structure information for
+ the end of a Annotation section in the document.
+*/
+
+class ABI_EXPORT pf_Frag_Strux_SectionEndRDFAnchor : public pf_Frag_Strux
+{
+public:
+	pf_Frag_Strux_SectionEndRDFAnchor(pt_PieceTable * pPT,
+						  PT_AttrPropIndex indexAP);
+	virtual ~pf_Frag_Strux_SectionEndRDFAnchor();
+
+#ifdef PT_TEST
+	virtual void			__dump(FILE * fp) const;
+#endif
+};
 
 
 /*!

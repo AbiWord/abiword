@@ -2471,7 +2471,9 @@ bool   PD_Document::isInsertHyperLinkValid(PT_DocPosition pos) const
 		if(pf->getType() == pf_Frag::PFT_Object)
 		{
 			pf_Frag_Object * pfo = static_cast<pf_Frag_Object *>(pf);
-			if((pfo->getObjectType() != PTO_Hyperlink) && (pfo->getObjectType() != PTO_Annotation))
+			if((pfo->getObjectType() != PTO_Hyperlink)
+               && (pfo->getObjectType() != PTO_Annotation)
+               && (pfo->getObjectType() != PTO_RDFAnchor) )
 			{
 				pf = pf->getPrev();
 			}
@@ -2488,6 +2490,11 @@ bool   PD_Document::isInsertHyperLinkValid(PT_DocPosition pos) const
 					return false;
 				}
 				(pAP)->getAttribute(PT_ANNOTATION_NUMBER,pszXlink);
+				if(pszXlink)
+				{
+					return false;
+				}
+				(pAP)->getAttribute(PT_RDF_XMLID,pszXlink);
 				if(pszXlink)
 				{
 					return false;

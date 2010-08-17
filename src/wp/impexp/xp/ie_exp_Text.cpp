@@ -755,6 +755,9 @@ bool Text_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 
 			case PTO_Annotation:
 				return true;
+                
+			case PTO_RDFAnchor:
+				return true;
 
 			default:
 				UT_ASSERT_HARMLESS(UT_TODO);

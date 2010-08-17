@@ -92,12 +92,24 @@ typedef enum _PTStruxType
 	PTX_EndAnnotation,
         PTX_EndFrame,
 	PTX_EndTOC,
+    PTX_RDFAnchor,
+    PTX_EndRDFAnchor,
 	PTX_StruxDummy
 } PTStruxType;
 
 //! PTObjectType tells the sub-type of an FragObject.
 
-typedef enum _PTObjectType { PTO_Image = 0, PTO_Field, PTO_Bookmark, PTO_Hyperlink, PTO_Math, PTO_Embed,PTO_Annotation } PTObjectType;
+typedef enum _PTObjectType
+{
+    PTO_Image = 0,
+    PTO_Field,
+    PTO_Bookmark,
+    PTO_Hyperlink,
+    PTO_Math,
+    PTO_Embed,
+    PTO_Annotation,
+    PTO_RDFAnchor
+} PTObjectType;
 
 //! PieceTable states
 typedef enum _PTState { PTS_Create=0, PTS_Loading=1, PTS_Editing=2 } PTState;
@@ -159,4 +171,7 @@ typedef const void * PL_StruxFmtHandle;
 #define PT_HYPERLINK_TARGET_NAME  (static_cast<const gchar *>("xlink:href"))
 #define PT_AUTHOR_NAME          (static_cast<const gchar *>("author"))
 #define PT_ANNOTATION_NUMBER     (static_cast<const gchar *>("annotation"))
+#define PT_RDF_XMLID             (static_cast<const gchar *>("xml:id"))
+#define PT_XMLID                 (static_cast<const gchar *>("xml:id"))
+#define PT_RDF_END               (static_cast<const gchar *>("rdf:end"))
 #endif /* PT_TYPES_H */

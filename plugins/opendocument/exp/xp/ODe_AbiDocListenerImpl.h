@@ -92,6 +92,9 @@ public:
     
     virtual void openHyperlink(const PP_AttrProp* /*pAP*/) {}
     virtual void closeHyperlink() {}
+
+    virtual void openRDFAnchor(const PP_AttrProp* /*pAP*/) {}
+    virtual void closeRDFAnchor(const PP_AttrProp* /*pAP*/) {}
     
     virtual void insertInlinedImage(const gchar* /*pImageName*/,
                                     const PP_AttrProp* /*pAP*/) {}

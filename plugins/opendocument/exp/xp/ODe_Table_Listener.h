@@ -68,6 +68,9 @@ public:
     
     // From AbiWord <cell> element
     UT_sint32 m_leftAttach, m_rightAttach, m_topAttach, m_bottomAttach;
+
+    // xml:id
+    UT_UTF8String m_xmlid;
 };
 
 

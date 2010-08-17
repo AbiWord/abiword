@@ -229,6 +229,8 @@ const char * fl_ContainerLayout::getContainerString(void)
 		return "FL_CONTAINER_TOC";
 	case FL_CONTAINER_ANNOTATION:
 		return "FL_CONTAINER_ANNOTATION";
+	case FL_CONTAINER_RDFANCHOR:
+		return "FL_CONTAINER_RDFANCHOR";
 	default:
 		return "NOT_IMPLEMENTED";
 	}
@@ -623,6 +625,14 @@ fl_BlockLayout* fl_ContainerLayout::getNextBlockInDocument(void) const
 				goto next_is_null;
 			}
 		}
+		else if(pNext->getContainerType() == FL_CONTAINER_RDFANCHOR)
+		{
+			pNext = pNext->getNext();
+			if(pNext == NULL)
+			{
+				goto next_is_null;
+			}
+		}
 		else if(pNext->getContainerType() == FL_CONTAINER_ENDNOTE)
 		{
 			pNext = pNext->getNext();
@@ -708,6 +718,10 @@ fl_BlockLayout* fl_ContainerLayout::getPrevBlockInDocument(void) const
 			pPrev = pPrev->getLastLayout();
 		}
 		else if(pPrev->getContainerType() == FL_CONTAINER_ANNOTATION)
+		{
+			pPrev = pPrev->getLastLayout();
+		}
+		else if(pPrev->getContainerType() == FL_CONTAINER_RDFANCHOR)
 		{
 			pPrev = pPrev->getLastLayout();
 		}
@@ -798,7 +812,11 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 			if(pFirstC)
 			  pFirstC->recalcMaxWidth(true);
 		}
-		else
+		else if ((pPrev!= NULL) && (pPrev->getContainerType() == FL_CONTAINER_RDFANCHOR))
+		{
+			pL = static_cast<fl_ContainerLayout *>(new fl_BlockLayout(sdh,pPrev, static_cast<fl_SectionLayout *>(this), indexAP));
+        }
+        else
 		{
 			pL = static_cast<fl_ContainerLayout *>(new fl_BlockLayout(sdh, static_cast<fl_BlockLayout *>(pPrev), static_cast<fl_SectionLayout *>(this), indexAP));
 		}

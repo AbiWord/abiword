@@ -223,6 +223,7 @@ protected:
 	void				_closeField(void);
 	void				_closeHyperlink(void);
 	void				_closeAnnotation(void);
+    void                _closeRDFAnchor(void);
 	void				_closeTag(void);
 	void				_openSpan(PT_AttrPropIndex apiSpan);
 	void				_openTag(const char * szPrefix, const char * szSuffix,
@@ -354,6 +355,14 @@ void s_AbiWord_1_Listener::_closeAnnotation(void)
     _closeSpan();
 	m_pie->write("</ann>");
     m_bInAnnotation = false;
+	return;
+}
+
+void s_AbiWord_1_Listener::_closeRDFAnchor(void)
+{
+	UT_DEBUGMSG(("Doing close rdf anchor object method \n"));
+    _closeSpan();
+	m_pie->write("</textmeta>");
 	return;
 }
 
@@ -1040,6 +1049,24 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 
    				}
 
+   			case PTO_RDFAnchor:
+   				{
+   					_closeSpan();
+   					_closeField();
+					const PP_AttrProp * pAP = NULL;
+					m_pDocument->getAttrProp(api,&pAP);
+                    RDFAnchor a( pAP );
+                    if( !a.isEnd() )
+                    {
+   						_openTag("textmeta", "",false, api,pcr->getXID(),true);
+                    }
+                    else
+                    {
+   						_closeRDFAnchor();
+                    }
+   					return true;
+   				}
+                
 
 			default:
 				UT_ASSERT_NOT_REACHED();

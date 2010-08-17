@@ -426,6 +426,19 @@ void ODe_Table_Cell::loadAbiProps(const PP_AttrProp* pAP) {
                               m_bottomAttach - m_topAttach);
     }
 
+    ok = pAP->getProperty(PT_XMLID, pValue);
+    if( ok && pValue )
+    {
+        m_xmlid = pValue;
+    }
+    UT_DEBUGMSG(("ODe_Table_Cell::loadAbiProps(1) ok:%d xmlid:%s \n",ok, pValue));
+    ok = pAP->getProperty("xmlid", pValue);
+    if( ok && pValue )
+    {
+        m_xmlid = pValue;
+    }
+    UT_DEBUGMSG(("ODe_Table_Cell::loadAbiProps(2) ok:%d xmlid:%s \n",ok, pValue));
+    
     
 }
 
@@ -443,6 +456,9 @@ void ODe_Table_Cell::write(GsfOutput* pTableOutput, const UT_UTF8String& rSpaces
       ODe_writeAttribute(output, "table:number-columns-spanned", m_numberColumnsSpanned);
     if(m_numberRowsSpanned.size() > 0)
       ODe_writeAttribute(output, "table:number-rows-spanned", m_numberRowsSpanned);
+    if( !m_xmlid.empty() )
+      ODe_writeAttribute(output, "xml:id", m_xmlid);
+        
     output += ">\n";
     ODe_writeUTF8String(pTableOutput, output);
     gsf_output_write (pTableOutput, gsf_output_size (m_pTextContent),
