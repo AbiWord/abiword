@@ -47,211 +47,7 @@
 #include <pf_Frag_Strux.h>
 
 #include <list>
-#include <boost/regex.hpp>
 
-
-class ODi_TextContent_ListenerRDFState
-{
-    int m_nestingLevel;
-    std::string m_name;
-    UT_uint32 m_iAnnotation;
-    
-public:
-    ODi_TextContent_ListenerRDFState( PD_Document* pDocument, const gchar* pName, const gchar** ppAtts );
-    void endElement( PD_Document* pDocument, const gchar* pName );
-
-    std::string getName() const
-    {
-        return m_name;
-    }
-    
-    bool isRDFa() const
-    {
-        return false;
-    }
-    bool shouldPopDueToNestingLevel() const
-    {
-        return !getNestingLevel();
-    }
-    int getNestingLevel() const
-    {
-        return m_nestingLevel;
-    }
-    void incrementNextingLevel()
-    {
-        ++m_nestingLevel;
-    }
-    void decrementNextingLevel()
-    {
-        --m_nestingLevel;
-    }
-    
-};
-
-
-ODi_TextContent_ListenerRDFState::ODi_TextContent_ListenerRDFState( PD_Document* pDocument,
-                                                                    const gchar* pName,
-                                                                    const gchar** ppAtts )
-    : m_name( pName )
-    , m_nestingLevel( 1 )
-    , m_iAnnotation( 0 )
-{
-    UT_UCS4String t;
-    t = "before ";
-    pDocument->appendSpan ( t.ucs4_str(), t.size());
-
-    m_iAnnotation = pDocument->getUID(UT_UniqueId::Annotation);
-    m_iAnnotation = pDocument->getUID(UT_UniqueId::Annotation);
-    m_iAnnotation = pDocument->getUID(UT_UniqueId::Annotation);
-    UT_UTF8String id = UT_UTF8String_sprintf("%d", m_iAnnotation);
-    UT_DEBUGMSG(("RDFHandler, adding annotation start id:%s\n", id.utf8_str() ));
-
-    {
-        const gchar* ppAtts2[5] = { NULL, NULL, NULL, NULL, NULL };
-        ppAtts2[0] = PT_ANNOTATION_NUMBER;
-        ppAtts2[1] = id.utf8_str();
-        // sanity check
-        ppAtts2[2] = "this-is-an-rdf-anchor";
-        ppAtts2[3] = "yes";
-        pDocument->appendObject(PTO_RDFAnchor, ppAtts2);
-    }
-    
-    {
-        const gchar* pPropsArray[5] = { NULL, NULL, NULL, NULL, NULL };
-        UT_UTF8String props;
-
-        pPropsArray[0] = "annotation-id";
-        pPropsArray[1] = id.utf8_str();
-        pPropsArray[2] = PT_PROPS_ATTRIBUTE_NAME;
-        props += "annotation-author: rdf";
-//        props += ";";
-//        props += "annotation-rdf-xmlid=1";
-        pPropsArray[3] = props.utf8_str();
-//        pDocument->appendStrux(PTX_RDFAnchor, pPropsArray);
-    }
-
-	const gchar* block_atts[] = {PT_STYLE_ATTRIBUTE_NAME,
-				  "Normal",
-				  NULL,
-				  NULL
-	};
-
-//    pDocument->appendStrux(PTX_Block,block_atts,NULL);
-    t = "during";
-    pDocument->appendSpan ( t.ucs4_str(), t.size());
-//    pDocument->appendStrux(PTX_EndRDFAnchor, NULL);
-    {
-        const gchar* ppAtts2[10] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
-        ppAtts2[0] = PT_ANNOTATION_NUMBER;
-        ppAtts2[1] = id.utf8_str();
-        // sanity check
-        ppAtts2[2] = "this-is-an-rdf-anchor";
-        ppAtts2[3] = "end";
-        ppAtts2[4] = PT_RDF_END;
-        ppAtts2[5] = "yes";
-        pDocument->appendObject(PTO_RDFAnchor, ppAtts2);
-    }
-
-    
-    t = " after";
-    pDocument->appendSpan ( t.ucs4_str(), t.size());
-
-    
-}
-
-void ODi_TextContent_ListenerRDFState::endElement( PD_Document* pDocument, const gchar* pName )
-{
-    UT_UTF8String id = UT_UTF8String_sprintf("%d", m_iAnnotation);
-    UT_DEBUGMSG(("RDFHandler, ending annotation start id:%s\n", id.utf8_str() ));
-//    pDocument->appendStrux(PTX_EndAnnotation, NULL);
-//    pDocument->appendObject(PTO_Annotation, NULL);
-}
-
-
-/**
- * This class contains state for two cases;
- * (1) content.xml can contain xml:id attributes which the RDF links to.
- * (2) RDFa can use the scope of an XML element as the RDF object, so
- *     we need to mark the start and collect the content of this element \
- *     to assert as part of the RDF model.
- */
-class ODi_TextContent_ListenerRDFHandler
-{
-    typedef std::list< ODi_TextContent_ListenerRDFState > m_stack_t;
-    m_stack_t m_stack;
-    PD_Document* m_pDocument;
-    
-  public:
-    ODi_TextContent_ListenerRDFHandler( PD_Document* pDocument );
-    ~ODi_TextContent_ListenerRDFHandler();
-    
-    void startElement( const gchar* pName, const gchar** ppAtts );
-    void endElement( const gchar* pName );
-};
-
-ODi_TextContent_ListenerRDFHandler::ODi_TextContent_ListenerRDFHandler(PD_Document* pDocument)
-    :
-    m_pDocument( pDocument )
-{
-}
-
-ODi_TextContent_ListenerRDFHandler::~ODi_TextContent_ListenerRDFHandler()
-{
-}
-
-
-void ODi_TextContent_ListenerRDFHandler::startElement( const gchar* pName,
-                                                       const gchar** ppAtts )
-{
-    UT_DEBUGMSG(("RDFHandler::start pname:%s stack.sz:%d\n", pName, (int)m_stack.size() ));
-    
-    const gchar* id = UT_getAttribute( "xml:id", ppAtts );
-    if( id )
-    {
-        UT_DEBUGMSG(("RDFHandler::start have xml:id pname:%s stack.sz:%d\n", pName, (int)m_stack.size() ));
-        ODi_TextContent_ListenerRDFState e( m_pDocument, pName, ppAtts );
-        m_stack.push_back( e );
-    }
-    else
-    {
-        // Handle nesting of tags, for example,
-        // <p xml:id="foo">
-        // ... <p> ... </p>
-        // </p>
-        // The middle <p/> section should bump and drop the nextingLevel
-        // to only trigger an end of scope event for the final </p>
-        if( !m_stack.empty() )
-        {
-            ODi_TextContent_ListenerRDFState& e = m_stack.back();
-            if( e.getName() == pName )
-            {
-                e.incrementNextingLevel();
-            }
-        }
-        
-    }
-}
-
-void ODi_TextContent_ListenerRDFHandler::endElement(const gchar* pName)
-{
-    UT_DEBUGMSG(("RDFHandler::end pname:%s stack.sz:%d\n", pName, (int)m_stack.size() ));
-    
-    if( m_stack.empty() )
-        return;
-
-    ODi_TextContent_ListenerRDFState& e = m_stack.back();
-    UT_DEBUGMSG(("RDFHandler::end pname:%s e.name:%s\n", pName, e.getName().c_str() ));
-    if( e.getName() == pName )
-    {
-        e.decrementNextingLevel();
-        if( e.shouldPopDueToNestingLevel() )
-        {
-            UT_DEBUGMSG(("RDFHandler::end popping pname:%s\n", pName ));
-            e.endElement( m_pDocument, pName );
-            m_stack.pop_back();
-        }
-    }
-}
 
 
 
@@ -296,8 +92,7 @@ ODi_TextContent_ListenerState::ODi_TextContent_ListenerState (
 		  m_rAbiData(rAbiData),
 		  m_bPendingTextbox(false),
 		  m_bHeadingList(false),
-                  m_prevLevel(0),
-                  m_rdfState(new ODi_TextContent_ListenerRDFHandler(pDocument))
+                  m_prevLevel(0)
 {
     UT_ASSERT_HARMLESS(m_pAbiDocument);
     UT_ASSERT_HARMLESS(m_pStyles);
@@ -313,7 +108,6 @@ ODi_TextContent_ListenerState::~ODi_TextContent_ListenerState()
         UT_DEBUGMSG(("ERROR ODti: table of content props not empty\n"));
         UT_VECTOR_PURGEALL(UT_UTF8String*, m_tablesOfContentProps);
     }
-    delete m_rdfState;
 }
 
 
@@ -378,12 +172,6 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
 
     } else if (!strcmp(pName, "text:p" )) {
 
-//        UT_DEBUGMSG(("RDFHandler, calling rdf->start, charData.sz:%d acceptingText:%d\n",
-//                     (int) m_charData.size(), (int)m_bAcceptingText ));
-//        _insureInBlock(0);
-//        _flush();
-//        m_rdfState->startElement( pName, ppAtts );
-        
         if (m_bPendingAnnotation) {
             _insertAnnotation();
         }
@@ -557,14 +345,14 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             xmlid = generatedID.utf8_str();
         }
         
-        const gchar* ppAtts[10] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
-        ppAtts[0] = PT_XMLID;
-        ppAtts[1] = xmlid;
+        const gchar* pa[10] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+        pa[0] = PT_XMLID;
+        pa[1] = xmlid;
         // sanity check
-        ppAtts[2] = "this-is-an-rdf-anchor";
-        ppAtts[3] = "yes";
+        pa[2] = "this-is-an-rdf-anchor";
+        pa[3] = "yes";
         
-        m_pAbiDocument->appendObject( PTO_RDFAnchor, ppAtts );
+        m_pAbiDocument->appendObject( PTO_RDFAnchor, pa );
         xmlidStackForTextMeta.push_back( xmlid );
         
     } else if (!strcmp(pName, "text:line-break")) {
@@ -1106,7 +894,6 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
     } else if (!strcmp(pName, "text:p" ) || !strcmp(pName, "text:h" )) {
 
         _endParagraphElement(pName, rAction);
-        m_rdfState->endElement( pName );
         
     } else if (!strcmp(pName, "text:span")) {
         

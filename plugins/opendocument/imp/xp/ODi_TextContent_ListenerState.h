@@ -46,7 +46,6 @@ class ODi_Abi_Data;
 // AbiWord classes
 class PD_Document;
 class pf_Frag_Strux;
-class ODi_TextContent_ListenerRDFHandler;
 
 #include <list>
 
@@ -204,7 +203,6 @@ private:
     bool m_bPendingTextbox;
     bool m_bHeadingList;
     UT_sint32 m_prevLevel;
-    ODi_TextContent_ListenerRDFHandler* m_rdfState;
 };
 
 #endif //_ODI_TEXTCONTENT_LISTENERSTATE_H_

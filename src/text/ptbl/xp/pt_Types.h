@@ -92,8 +92,6 @@ typedef enum _PTStruxType
 	PTX_EndAnnotation,
         PTX_EndFrame,
 	PTX_EndTOC,
-    PTX_RDFAnchor,
-    PTX_EndRDFAnchor,
 	PTX_StruxDummy
 } PTStruxType;
 

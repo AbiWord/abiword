@@ -403,7 +403,6 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	case PTX_SectionFootnote:
 	case PTX_SectionEndnote:
 	case PTX_SectionAnnotation:
-    case PTX_RDFAnchor:
 	{
 		bool isFoot = (pcrx->getStruxType() == PTX_SectionFootnote);
 		UT_ASSERT(m_pCurrentSL);
@@ -423,11 +422,6 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		{
 			UT_DEBUGMSG(("fl_DocListener::populateStrux for 'SectionAnnotation'\n"));
 			pSL = (fl_SectionLayout *) m_pCurrentSL->append(sdh, pcr->getIndexAP(),FL_CONTAINER_ANNOTATION);
-		}
-		else if(pcrx->getStruxType() == PTX_RDFAnchor)
-		{
-			UT_DEBUGMSG(("fl_DocListener::populateStrux for 'RDFAnchor'\n"));
-			pSL = (fl_SectionLayout *) m_pCurrentSL->append(sdh, pcr->getIndexAP(),FL_CONTAINER_RDFANCHOR);
 		}
 		else
 		  {
