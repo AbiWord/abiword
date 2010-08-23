@@ -132,7 +132,7 @@ __DOLTCOMPILE__EOF__
     fi
 
     cat <<'__DOLTCOMPILE__EOF__' >>doltcompile
-} > "$lo"
+} >| "$lo"
 __DOLTCOMPILE__EOF__
 
 dnl Done writing out doltcompile; substitute it for libtool compilation.
