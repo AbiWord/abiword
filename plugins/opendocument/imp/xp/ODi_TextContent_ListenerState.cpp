@@ -1498,7 +1498,8 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
                     UT_UCSChar ucs = UCS_FF;
                     m_pAbiDocument->appendStrux(PTX_Block, NULL);
                     m_pAbiDocument->appendSpan (&ucs, 1);
-                    m_bOpenedBlock = false;
+                    m_bOpenedBlock = true;
+		    m_bContentWritten = false;
                 }
             } else {
                 _insureInSection();
@@ -1511,13 +1512,15 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
                         // Append an empty paragraph with this one char
                         m_pAbiDocument->appendStrux(PTX_Block, NULL);
                         m_pAbiDocument->appendSpan (&ucs, 1);
-                        m_bOpenedBlock = false;
+                        m_bOpenedBlock = true;
+			m_bContentWritten = false;
                     } else if (pStyle->getBreakBefore() == "column") {
                         ucs = UCS_VTAB;
                         // Append an empty paragraph with this one char
                         m_pAbiDocument->appendStrux(PTX_Block, NULL);
                         m_pAbiDocument->appendSpan (&ucs, 1);
-                        m_bOpenedBlock = false;
+                        m_bOpenedBlock = true;
+			m_bContentWritten = false;
                     }
                 }
             }
