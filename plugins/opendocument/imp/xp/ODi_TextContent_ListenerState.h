@@ -197,6 +197,7 @@ private:
     bool m_bPendingTextbox;
     bool m_bHeadingList;
     UT_sint32 m_prevLevel;
+    bool m_bContentWritten;
 };
 
 #endif //_ODI_TEXTCONTENT_LISTENERSTATE_H_
