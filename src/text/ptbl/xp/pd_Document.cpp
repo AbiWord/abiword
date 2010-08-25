@@ -752,7 +752,7 @@ UT_Error PD_Document::_importFile(GsfInput * input, int ieft,
     {
         return errorCode;
     }
-    m_hDocumentRDF->runMilestone2Test();
+    // m_hDocumentRDF->runMilestone2Test();
     
 	if (bImportStylesFirst) {
 		UT_String template_list[6];
