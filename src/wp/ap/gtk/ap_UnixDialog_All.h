@@ -61,6 +61,9 @@
 #	include "ap_UnixDialog_Break.h"
 #	include "ap_UnixDialog_InsertTable.h"
 #	include "ap_UnixDialog_Goto.h"
+#ifdef ENABLE_GRAMMAR
+#   include "ap_UnixDialog_Grammar.h"
+#endif
 #   include "ap_UnixDialog_PageNumbers.h"
 #   include "ap_UnixDialog_PageSetup.h"
 #	include "ap_UnixDialog_Paragraph.h"
@@ -157,6 +160,9 @@
     DeclareDialog(AP_DIALOG_ID_HDRFTR,          AP_UnixDialog_HdrFtr, 				FALSE)
     DeclareDialog(AP_DIALOG_ID_BACKGROUND,      AP_UnixDialog_Background, 			FALSE)
 	DeclareDialog(AP_DIALOG_ID_GOTO,			AP_UnixDialog_Goto, 				FALSE)
+#ifdef ENABLE_GRAMMAR	
+	DeclareDialog(AP_DIALOG_ID_GRAMMAR, 		AP_UnixDialog_Grammar, 				FALSE)
+#endif	
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_UnixDialog_Break, 				FALSE)
 #ifdef ENABLE_SPELL
 	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_UnixDialog_Spell, 				FALSE)

@@ -24,6 +24,9 @@ altgtk_ui = ap_UnixDialog_Options.xml \
 spell_src = ap_UnixDialog_Spell.cpp
 spell_ui = ap_UnixDialog_Spell.xml
 
+grammar_src = ap_UnixDialog_Grammar.cpp
+grammar_ui = ap_UnixDialog_Grammar.xml
+
 statusbar_src = ap_UnixStatusBar.cpp
 
 
@@ -31,6 +34,7 @@ statusbar_src = ap_UnixStatusBar.cpp
 conditional_src = \
 	$(hildon_src) \
 	$(spell_src) \
+	$(grammar_src) \
 	$(statusbar_src) \
 	$(NULL)
 
@@ -39,6 +43,7 @@ conditional_ui = \
 	$(hildon_ui) \
 	$(altgtk_ui) \
 	$(spell_ui) \
+	$(grammar_ui) \
 	$(NULL)
 
 
@@ -184,6 +189,11 @@ ui_DATA = \
 if ENABLE_SPELL
 libgtk_la_SOURCES += $(spell_src)
 ui_DATA += $(spell_ui)
+endif
+
+if ENABLE_GRAMMAR
+libgtk_la_SOURCES += $(grammar_src)
+ui_DATA += $(grammar_ui)
 endif
 
 if ENABLE_STATUSBAR

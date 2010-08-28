@@ -13,7 +13,9 @@ conditional_src = \
 	ispell_def.h \
 	spell_manager.cpp \
 	spell_manager.h
-	xap_StatusBar.cpp 
+	xap_StatusBar.cpp  \
+	grammar_manager.h \
+	grammar_manager.cpp
 
 
 if ENABLE_SPELL
@@ -27,12 +29,19 @@ spell_src = \
 	spell_manager.h
 endif
 
+if ENABLE_GRAMMAR
+grammar_src = \
+	grammar_manager.cpp \
+	grammar_manager.h  
+endif
+
 if ENABLE_STATUSBAR
 statusbar_src = xap_StatusBar.cpp
 endif
 
 libxp_la_SOURCES = \
 	$(spell_src) \
+	$(grammar_src) \
 	$(statusbar_src) \
 	xad_Document.cpp \
 	xad_Document.h \

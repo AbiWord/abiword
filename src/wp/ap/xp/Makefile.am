@@ -17,6 +17,7 @@ conditional_src = \
 	ap_LB_EmacsCtrlX.h \
 	ap_LB_Emacs.h \
 	ap_Dialog_Spell.cpp \
+	ap_Dialog_Grammar.cpp \
 	ap_StatusBar.cpp \
 	ap_LB_viEdit_c.cpp \
 	ap_LB_viEdit_c.h \
@@ -35,6 +36,10 @@ conditional_src = \
 
 if ENABLE_SPELL
 spell_src = ap_Dialog_Spell.cpp
+endif
+
+if ENABLE_GRAMMAR
+grammar_src = ap_Dialog_Grammar.cpp
 endif
 
 if ENABLE_STATUSBAR
@@ -69,6 +74,7 @@ endif
 
 libxp_la_SOURCES = \
 	$(spell_src) \
+	$(grammar_src) \
 	$(statusbar_src) \
 	$(emacs_keybinding_src) \
 	$(vi_keybinding_src) \

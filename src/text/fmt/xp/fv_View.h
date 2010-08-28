@@ -438,6 +438,9 @@ public:
 #ifdef ENABLE_SPELL
 	SpellChecker * getDictForSelection () const;
 #endif
+#ifdef ENABLE_GRAMMAR
+	GrammarChecker * getGrammarCheckerForSelection () const;
+#endif
 	void			extSelNextPrevLine(bool bNext);
 	void            extSelNextPrevPage(bool bNext);
 	void            extSelNextPrevScreen(bool bNext);

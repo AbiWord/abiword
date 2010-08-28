@@ -60,6 +60,10 @@
   #include "spell_manager.h"
 #endif
 
+#ifdef ENABLE_GRAMMAR
+  #include "grammar_manager.h"
+#endif
+
 #include "ap_Strings.h"
 #include "xap_EditMethods.h"
 #include "ap_LoadBindings.h"

@@ -79,6 +79,9 @@
 #ifdef ENABLE_SPELL
 #include "spell_manager.h"
 #endif
+#ifdef ENABLE_GRAMMAR
+#include "grammar_manager.h"
+#endif
 #include "ut_rand.h"
 #include "fp_TableContainer.h"
 #include "fl_TableLayout.h"
@@ -13742,6 +13745,35 @@ SpellChecker * FV_View::getDictForSelection () const
 	{
 		// we just (dumbly) default to the last dictionary
 		checker = SpellManager::instance().lastDictionary();
+	}
+
+	return checker;
+}
+#endif
+
+#ifdef ENABLE_GRAMMAR
+GrammarChecker * FV_View::getGrammarCheckerForSelection () const
+{
+	GrammarChecker * checker = NULL;
+	const char * szLang = NULL;
+
+	const gchar ** props_in = NULL;
+	if (getCharFormat(&props_in))
+	{
+		szLang = UT_getAttribute("lang", props_in);
+		FREEP(props_in);
+	}
+
+	if (szLang)
+	{
+		// we get smart and request the proper dictionary
+		checker = GrammarManager::instance().requestChecker(szLang); 
+	}
+	else
+	{
+		// we just (dumbly) default to the last dictionary
+		// TODO GPB check if metho is implemented correctly
+		checker = GrammarManager::instance().lastChecker();
 	}
 
 	return checker;

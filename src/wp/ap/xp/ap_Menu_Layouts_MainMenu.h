@@ -273,6 +273,9 @@ BeginLayout(Main,0)
 #ifdef ENABLE_SPELL
 		MenuItem(AP_MENU_ID_TOOLS_SPELL)
 #endif
+#ifdef ENABLE_GRAMMAR
+		MenuItem(AP_MENU_ID_TOOLS_GRAMMAR)
+#endif
 		MenuItem(AP_MENU_ID_FMT_LANGUAGE)
 		MenuItem(AP_MENU_ID_TOOLS_WORDCOUNT)
 #if !XAP_SIMPLE_MENU	

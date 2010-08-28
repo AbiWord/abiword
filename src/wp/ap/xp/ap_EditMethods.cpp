@@ -74,6 +74,11 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Replace.h"
 #include "ap_Dialog_Goto.h"
+
+#ifdef ENABLE_GRAMMAR
+#include "ap_Dialog_Grammar.h"
+#endif
+
 #include "ap_Dialog_Break.h"
 #include "ap_Dialog_InsertTable.h"
 #include "ap_Dialog_Paragraph.h"
@@ -499,6 +504,10 @@ public:
 	static EV_EditMethod_Fn dlgSpellPrefs;
 #endif
 	
+#ifdef ENABLE_GRAMMAR
+	static EV_EditMethod_Fn dlgGrammar;
+#endif
+
 	static EV_EditMethod_Fn dlgWordCount;
 	static EV_EditMethod_Fn dlgOptions;
     static EV_EditMethod_Fn dlgMetaData;
@@ -842,6 +851,9 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dlgFmtPosImage), 		0, ""),
 	EV_EditMethod(NF(dlgFont),				0,	""),
 	EV_EditMethod(NF(dlgFormatFrame),		0,	""),
+#ifdef ENABLE_GRAMMAR
+	EV_EditMethod(NF(dlgGrammar), 			0,	""),
+#endif
 	EV_EditMethod(NF(dlgHdrFtr),			0,	""),
 	EV_EditMethod(NF(dlgLanguage),			0,	""),
 	EV_EditMethod(NF(dlgMetaData), 			0, ""),
@@ -1804,6 +1816,15 @@ static void s_TellSaveFailed(XAP_Frame * pFrame, const char * fileName, UT_Error
 static void s_TellSpellDone(XAP_Frame * pFrame, bool bIsSelection)
 {
 	pFrame->showMessageBox(bIsSelection ? AP_STRING_ID_MSG_SpellSelectionDone : AP_STRING_ID_MSG_SpellDone,
+			       XAP_Dialog_MessageBox::b_O,
+			       XAP_Dialog_MessageBox::a_OK);
+}
+#endif
+
+#ifdef ENABLE_GRAMMAR
+static void s_TellGrammarDone(XAP_Frame * pFrame, bool bIsSelection)
+{
+	pFrame->showMessageBox(bIsSelection ? "Grammar checking complete" : "Grammar checking complete",
 			       XAP_Dialog_MessageBox::b_O,
 			       XAP_Dialog_MessageBox::a_OK);
 }
@@ -7444,6 +7465,46 @@ Defun1(dlgSpell)
 
    return s_doSpellDlg(pView,id);
 }
+#endif
+
+#ifdef ENABLE_GRAMMAR
+
+static bool s_doGrammarDlg(FV_View * pView, XAP_Dialog_Id id)
+{
+	UT_return_val_if_fail(pView,false);
+   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+   UT_return_val_if_fail(pFrame, false);
+
+   pFrame->raise();
+
+   XAP_DialogFactory * pDialogFactory
+	 = static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+
+   AP_Dialog_Grammar * pDialog
+	 = static_cast<AP_Dialog_Grammar *>(pDialogFactory->requestDialog(id));
+   UT_return_val_if_fail (pDialog, false);
+
+   // run the dialog (it probably should be modeless if anyone
+   // gets the urge to make it safe that way)
+   pDialog->runModal(pFrame);
+   bool bOK = pDialog->isComplete();
+   if (bOK)
+	   s_TellGrammarDone(pFrame, pDialog->isSelection());
+
+   pDialogFactory->releaseDialog(pDialog);
+
+   return bOK;
+}
+
+Defun1(dlgGrammar)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+   XAP_Dialog_Id id = AP_DIALOG_ID_GRAMMAR;
+
+   return s_doGrammarDlg(pView,id);	
+}
+
 #endif
 
 /*****************************************************************/

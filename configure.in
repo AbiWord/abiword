@@ -86,6 +86,7 @@ xp_pkgs="
 
 # optional deps
 enchant_req='enchant >= 1.2.0'
+accidence_req='accidence >= 0.2.0'
 gnomevfs_req='gnome-vfs-2.0 >= 2.2.0 libgsf-gnome-1 >= 1.12.0'
 gio_req='gio-2.0'
 goffice_req=
@@ -263,6 +264,38 @@ AC_ARG_ENABLE([spell],
 
 if test "$abi_cv_spell" = "yes"; then
 	opt_pkgs="$opt_pkgs $enchant_req"
+fi
+
+AC_ARG_ENABLE([grammar], 
+	[AS_HELP_STRING([--disable-grammar], [(Gtk+ only) do not include grammar checking support])], 
+[
+	abi_cv_grammar="$enableval"
+],[
+	# autodetect
+	if test "$TOOLKIT" = "gtk"; then
+		AC_CHECK_PROG(HAVE_ICU_CONFIG, icu-config, yes, no)
+
+		if test "x$HAVE_ICU_CONFIG" = "xyes"; then
+			ICU_CFLAGS=`icu-config --cflags`
+			ICU_LIBS=`icu-config --ldflags`
+
+			PKG_CHECK_EXISTS([ $accidence_req ],
+			[
+				abi_cv_grammar="yes"
+			], [
+				abi_cv_grammar="no"
+			])
+		else 
+			abi_cv_grammar="no"
+		fi
+
+	else
+		abi_cv_grammar="no"
+	fi
+])
+
+if test "$abi_cv_grammar" = "yes"; then
+	opt_pkgs="$opt_pkgs $accidence_req"
 fi
 
 AC_ARG_ENABLE([statusbar], 
@@ -546,7 +579,7 @@ else
 	abi_cv_gsf_gio=no
 fi
 
-DEPS_LIBS="$SYSTEM_LIBS $DEPS_LIBS"
+DEPS_LIBS="$SYSTEM_LIBS $ICU_LIBS $DEPS_LIBS"
 AC_SUBST([DEPS_LIBS])
 
 BASE_CPPFLAGS_='
@@ -710,11 +743,17 @@ AM_CONDITIONAL([ENABLE_PRINT], test "$abi_cv_print" = "yes")
 if test "$abi_cv_spell" = "yes"; then
 	AC_DEFINE([ENABLE_SPELL], [1], [Define if building spell checking support])
 	# TODO get rid of this after all platforms are using enchant exclusively
-	AC_DEFINE([WITH_ENCHANT], [1], [use Dom's enchanting spell checker abstraction library])
+	AC_DEFINE([WITH_ENCHANT], [1], [use Doms enchanting spell checker abstraction library])
 fi
-AM_CONDITIONAL([ENABLE_SPELL], test "$abi_cv_spell" = "yes")
+AM_CONDITIONAL([ENABLE_SPELL], test "$abi_cv_spell" == "yes")
 
-if test "$abi_cv_statusbar" = "yes"; then
+if test "$abi_cv_grammar" == "yes"; then
+	AC_DEFINE([ENABLE_GRAMMAR], [1], [Define if building grammar checking support])
+	AC_DEFINE([WITH_ACCIDENCE], [1], [use accidence grammar checker abstraction library])
+fi
+AM_CONDITIONAL([ENABLE_GRAMMAR], test "$abi_cv_grammar" == "yes")
+
+if test "$abi_cv_statusbar" == "yes"; then
 	AC_DEFINE([ENABLE_STATUSBAR], [1], [Define if building status bar])
 fi
 AM_CONDITIONAL([ENABLE_STATUSBAR], test "$abi_cv_statusbar" = "yes")
@@ -913,6 +952,7 @@ Optional features:
   menubutton            ${abi_cv_menubutton}
   printing              ${abi_cv_print}
   spell checking        ${abi_cv_spell}
+  grammar checking      ${abi_cv_grammar}
   status bar            ${abi_cv_statusbar}
   emacs keybinding      ${abi_cv_emacs_keybinding}
   vi keybinding         ${abi_cv_vi_keybinding}

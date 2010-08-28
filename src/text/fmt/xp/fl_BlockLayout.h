@@ -75,6 +75,9 @@ class PX_ChangeRecord_Strux;
 class PX_ChangeRecord_StruxChange;
 class fl_AutoNum;
 class fp_VerticalContainer;
+	
+class fl_BlockSentenceIterator;
+class fl_PieceOfText;
 
 // Tab types and leaders
 typedef enum {
@@ -104,6 +107,7 @@ typedef enum {
 */
 
 class SpellChecker;
+class GrammarChecker; // GABRIEL:added!
 class fl_TabStop;
 ABI_EXPORT void buildTabStops(const char* pszTabStops, UT_GenericVector<fl_TabStop*> &m_vecTabs);
 
@@ -276,6 +280,7 @@ public:
 
 #ifdef ENABLE_SPELL
 	bool checkSpelling(void);
+	//bool checkGrammar(void);
 #endif
 	void debugFlashing(void);
 	bool	findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX,
@@ -446,6 +451,12 @@ protected:
 #ifdef ENABLE_SPELL
 	bool					_spellCheckWord(const UT_UCSChar * word, UT_uint32 len, UT_uint32 blockPos) const;
 	SpellChecker * _getSpellChecker (UT_uint32 blockPos) const;
+#endif
+
+#ifdef ENABLE_GRAMMAR
+// GABRIEL: added!
+	bool					_grammarCheckSentence(const UT_UCSChar * sentence, UT_uint32 len, UT_uint32 blockPos);
+	GrammarChecker * _getGrammarChecker (UT_uint32 blockPos);
 #endif
 	
 	bool					_truncateLayout(fp_Run* pTruncRun);
@@ -684,6 +695,61 @@ public:
     const UT_UCSChar* getCurrentWord(UT_sint32& iLength) const;
     const UT_UCSChar* getPreWord(UT_sint32& iLength) const;
     const UT_UCSChar* getPostWord(UT_sint32& iLength) const;
+};
+#endif
+
+#ifdef ENABLE_GRAMMAR
+class ABI_EXPORT fl_BlockSentenceIterator
+{
+	friend class fl_BlockLayout;
+
+	bool _breakBlockInSentences();
+	
+	fl_BlockLayout* m_pBL;
+
+	bool	bBlockBroke;
+	UT_uint32	m_iStartIndex;
+	UT_uint32	iLastSentence;
+	UT_uint32	iCurSentence;
+	UT_uint32	nSentences;
+	UT_uint32	iLength;
+	
+	UT_GenericVector<fl_PieceOfText *> 	m_vecSentences;
+
+public:
+	fl_BlockSentenceIterator(fl_BlockLayout* pBL, UT_sint32 iPos = 0);
+	~fl_BlockSentenceIterator();
+
+	bool				nextSentForGrammarChecking(const UT_UCSChar*& pWord,
+											 UT_sint32& iLength,
+											 UT_sint32& iBlockPos,
+											 UT_sint32& iPTLength);
+	void              	updateBlock(UT_sint32 iOffset);
+	void              	updateSentenceBoundaries(void);
+
+	UT_sint32         	getBlockLength(void);
+
+	void              	revertToPreviousWord(void);
+
+    const UT_UCSChar* 	getCurrentSentence(UT_sint32& iLength);
+    const UT_UCSChar* 	getPreSent(UT_sint32& iLength);
+    const UT_UCSChar* 	getPostSent(UT_sint32& iLength);
+};
+
+class ABI_EXPORT fl_PieceOfText
+{
+public:
+	fl_PieceOfText(void);
+	virtual ~fl_PieceOfText(void);
+	UT_sint32 iInLow;
+	UT_sint32 iInHigh;
+	UT_sint32 nWords;
+	bool      bHasStop;
+	UT_UTF8String sLang;
+	UT_UTF8String sText;
+	bool      m_bGrammarChecked;
+	bool      m_bGrammarOK;
+	UT_sint32 countWords(void);
 };
 #endif
 
