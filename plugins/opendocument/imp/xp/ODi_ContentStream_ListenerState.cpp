@@ -105,8 +105,17 @@ void ODi_ContentStream_ListenerState::startElement (const gchar* pName,
         rAction.pushState(pStyle, false);
         
     } else if (!strcmp(pName, "office:text")) {
+
         rAction.pushState("TextContent");
+
     }
+    else if (!strcmp(pName, "delta:tracked-changes")) {
+
+        UT_DEBUGMSG(("ct, moving to tracked-changes\n"));
+        rAction.pushState("TrackedChanges");
+
+    }
+    
 }
 
 

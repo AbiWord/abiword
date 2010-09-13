@@ -28,6 +28,7 @@
 // Abiword includes
 #include <ut_types.h>
 #include <fd_Field.h>
+#include <sstream>
 
 // Internal classes
 class ODe_ListenerAction;
@@ -95,12 +96,32 @@ public:
     
     virtual void insertInlinedImage(const gchar* /*pImageName*/,
                                     const PP_AttrProp* /*pAP*/) {}
-                                    
+
+    virtual void setCurrentDocumentPosition( PT_DocPosition pos )
+    {
+        m_currentDocPosition = pos;
+    }
+    PT_DocPosition getCurrentDocumentPosition()
+    {
+        return m_currentDocPosition;
+    }
+    virtual void setCurrentXID( UT_uint32 currentXID )
+    {
+        m_currentXID = currentXID;
+    }
+    virtual UT_uint32 getCurrentXID()
+    {
+        return m_currentXID;
+    }
+    
 protected:
 
     void _printSpacesOffset(UT_UTF8String& rOutput);
+    void _printSpacesOffset(std::stringstream& ss);
     
     UT_uint8 m_spacesOffset;
+    PT_DocPosition m_currentDocPosition;
+    UT_uint32 m_currentXID;
 };
 
 #endif // _ODE_ABIDOCLISTENERIMPL_H_

@@ -41,9 +41,14 @@
 #include <gsf/gsf-output-memory.h>
 #include <ut_units.h>
 #include <fl_TOCLayout.h>
+#include "pp_Revision.h"
 
 // External includes
 #include <stdlib.h>
+
+#include <sstream>
+
+using std::endl;
 
 
 /**
@@ -76,7 +81,8 @@ ODe_Text_Listener::ODe_Text_Listener(ODe_Styles& rStyles,
                         m_pTextOutput(pTextOutput),
                         m_rAuxiliaryData(rAuxiliaryData),
                         m_zIndex(zIndex),
-                        m_iCurrentTOC(0)
+                        m_iCurrentTOC(0),
+                        m_ctpParagraphAdditionalSpacesOffset(0)
 {
 }
 
@@ -180,6 +186,30 @@ void ODe_Text_Listener::closeBlock() {
     }
 }
 
+template < typename T >
+static std::string tostr( T v )
+{
+    std::stringstream ss;
+    ss << v;
+    return ss.str();
+}
+
+class ODFChangeTrackerIdFactory
+{
+    std::string m_prefix;
+    UT_uint32 m_id;
+public:
+    ODFChangeTrackerIdFactory() : m_id(1) , m_prefix("ctid-")
+    {
+    };
+    std::string createId()
+    {
+        std::string ret = m_prefix + tostr(m_id);
+        m_id++;
+        return ret;
+    }
+};
+static ODFChangeTrackerIdFactory m_ctIdFactory;
 
 /**
  * 
@@ -188,6 +218,80 @@ void ODe_Text_Listener::openSpan(const PP_AttrProp* pAP) {
     UT_UTF8String styleName;
     bool ok;
     const gchar* pValue;
+
+    UT_DEBUGMSG(("ODe_Text_Listener::openSpan()\n"));
+
+    pChangeTrackingParagraphData_t ctp = m_rAuxiliaryData.getChangeTrackingParagraphData( getCurrentDocumentPosition() );
+    UT_DEBUGMSG(("CT pos:%d have ctp pointer:%p\n",getCurrentDocumentPosition(),ctp));
+    m_ctpTextSpanEnclosingElementCloseStream.rdbuf()->str("");
+    m_ctpSpanAdditionalSpacesOffset = 0;
+    if( ctp )
+    {
+        // ADD:
+        // ...  <delta:inserted-text-start delta:inserted-text-id="it632507360" 
+        //        delta:insertion-change-idref=”ct1”/>
+        //          CONTENT 
+        //      <delta:inserted-text-end delta:inserted-text-idref="it632507360"/>
+        //
+        // REMOVE:
+        //       <delta:removed-content delta:removed-text-id="it632507360" 
+        //          delta:removal-change-idref=”ct2”>
+        //           CONTENT
+        //       </delta:removed-content delta:removed-text-idref="it632507360"/>
+        //
+        if( pAP->getAttribute("revision", pValue))
+        {
+            UT_DEBUGMSG(("Text_Listener::openSpan() revision-raw:%s\n", pValue ));
+            PP_RevisionAttr ra( pValue );
+            
+            if( !ra.getRevisionsCount() )
+            {
+            }
+            else
+            {
+                const PP_Revision* last  = ra.getLastRevision();
+                std::string idref = tostr(last->getId());
+
+                if( last->getType() == PP_REVISION_DELETION )
+                {
+                    std::string itid  = m_ctIdFactory.createId();
+                    std::stringstream ss;
+                    ss << endl
+                       << "<delta:removed-content-start delta:removed-text-id="
+                       << "\"" << itid << "\""
+                       << " delta:removal-change-idref="
+                       << "\"" << idref << "\""
+                       << "/>"
+                       << endl;
+                    ODe_writeUTF8String(m_pParagraphContent, ss.str().c_str());
+
+                    m_ctpTextSpanEnclosingElementCloseStream << "<delta:removed-content-end delta:removed-text-idref="
+                                                             << "\"" << itid << "\""
+                                                             << "/>"
+                                                             << endl;
+                }
+                else if( last->getId() > ctp->getData().getVersionWhichIntroducesParagraph() )
+                {
+                    std::string itid  = m_ctIdFactory.createId();
+                    std::stringstream ss;
+                    ss << endl
+                       << "<delta:inserted-text-start delta:inserted-text-id="
+                       << "\"" << itid << "\""
+                       << " delta:insertion-change-idref="
+                       << "\"" << idref << "\""
+                       << "/>"
+                       << endl;
+                    ODe_writeUTF8String(m_pParagraphContent, ss.str().c_str());
+            
+                    m_ctpTextSpanEnclosingElementCloseStream << "<delta:inserted-text-end delta:inserted-text-idref="
+                                                             << "\"" << itid << "\""
+                                                             << "/>"
+                                                             << endl;
+                }
+            }
+        }
+    }
+    
     
     if ( ODe_Style_Style::hasTextStyleProps(pAP) ) {
             
@@ -209,8 +313,9 @@ void ODe_Text_Listener::openSpan(const PP_AttrProp* pAP) {
             styleName = pValue;
         }
     }
-    
-    if (!styleName.empty()) {
+
+    if (!styleName.empty())
+    {
         UT_UTF8String output;
         
         UT_UTF8String_sprintf(output, "<text:span text:style-name=\"%s\">",
@@ -219,6 +324,30 @@ void ODe_Text_Listener::openSpan(const PP_AttrProp* pAP) {
         ODe_writeUTF8String(m_pParagraphContent, output);
         m_openedODSpan = true;
     }
+
+   
+
+    {
+        
+//        UT_UTF8String output;
+        
+        // const gchar* pValue;
+        // bool ok = pAP->getAttribute("revision", pValue);
+        // output += " <change-record ";
+        // output += " delta:revisionok=\"";
+        // output += ( ok ? "yes" : "no");
+        // output += "\"";
+        // if(ok)
+        // {
+        //     output += " delta:revision=\"";
+        //     output += pValue;
+        //     output += "\"";
+        // }
+
+//        output += " >\n";
+//        ODe_writeUTF8String(m_pParagraphContent, output);
+    }
+    
 }
 
 
@@ -229,6 +358,10 @@ void ODe_Text_Listener::closeSpan() {
     if (m_openedODSpan) {
         ODe_writeUTF8String(m_pParagraphContent, "</text:span>");
         m_openedODSpan = false;
+    }
+    if(!m_ctpTextSpanEnclosingElementCloseStream.str().empty())
+    {
+        ODe_writeUTF8String(m_pParagraphContent, m_ctpTextSpanEnclosingElementCloseStream.str().c_str() );
     }
 }
 
@@ -1263,6 +1396,19 @@ void ODe_Text_Listener::_openODListItem(const PP_AttrProp* pAP) {
     }
 }
 
+std::string getODFChangeID( const PP_AttrProp* pAP, UT_uint32 xid )
+{
+    std::stringstream ss;
+    ss << xid;
+    return ss.str();
+    
+    // const gchar* pValue;
+    // bool ok;
+    // ok = pAP->getAttribute("xid", pValue);
+    // std::string idref = ok ? pValue : "error";
+    // return idref;
+}
+
 
 /**
  * 
@@ -1275,6 +1421,42 @@ void ODe_Text_Listener::_openODParagraph(const PP_AttrProp* pAP) {
     UT_UTF8String escape;
     const gchar* pValue;
     bool ok;
+    std::stringstream ctpTextPEnclosingElementStream;
+    std::stringstream ctpTextPAttributesStream;
+    pChangeTrackingParagraphData_t ctp = m_rAuxiliaryData.getChangeTrackingParagraphData( getCurrentDocumentPosition() );
+    UT_DEBUGMSG(("CT pos:%d have ctp pointer:%p\n",getCurrentDocumentPosition(),ctp));
+    m_ctpTextPEnclosingElementCloseStream.rdbuf()->str("");
+    m_ctpParagraphAdditionalSpacesOffset = 0;
+    if( ctp )
+    {
+        std::string insType = "insert-with-content";
+        
+        if( ctp->getData().isParagraphDeleted() )
+        {
+            UT_DEBUGMSG(("delta: paragraph is deleted...\n"));
+            ctpTextPEnclosingElementStream << "<delta:removed-content delta:removal-change-idref=\""
+                                           << ctp->getData().getVersionWhichRemovesParagraph()
+                                           << "\">" << endl;
+            m_ctpTextPEnclosingElementCloseStream << "</delta:removed-content>" << endl;
+            m_ctpParagraphAdditionalSpacesOffset = 1;
+
+            ctpTextPAttributesStream << " delta:insertion-type=\"" << insType << "\" "
+                                     << " delta:insertion-change-idref=\""
+                                     << ctp->getData().getVersionWhichIntroducesParagraph() << "\" ";
+        }
+        else
+        {
+            UT_DEBUGMSG(("ODTCT Introversion:%d\n", ctp->getData().getVersionWhichIntroducesParagraph() ));
+            ctpTextPAttributesStream << " delta:insertion-type=\"" << insType << "\" "
+                                     << " delta:insertion-change-idref=\""
+                                     << ctp->getData().getVersionWhichIntroducesParagraph() << "\" ";
+        }
+        
+
+        // <delta:removed-content delta:removal-change-idref='ct456'>
+        
+    }
+    
     
     ////
     // Figure out the paragraph style
@@ -1337,6 +1519,12 @@ void ODe_Text_Listener::_openODParagraph(const PP_AttrProp* pAP) {
     // Write the output string
     
     output.clear();
+    if( !ctpTextPEnclosingElementStream.str().empty() )
+    {
+        _printSpacesOffset(output);
+        output += ctpTextPEnclosingElementStream.str().c_str();
+    }
+    m_spacesOffset += m_ctpParagraphAdditionalSpacesOffset;
     _printSpacesOffset(output);
     
     if (styleName.empty()) {
@@ -1373,7 +1561,10 @@ void ODe_Text_Listener::_openODParagraph(const PP_AttrProp* pAP) {
             escape = styleName;
             output += "<text:p text:style-name=\"";
             output += escape.escapeXML();
-            output += "\">";
+            output += "\"";
+            output += " ";
+            output += ctpTextPAttributesStream.str();
+            output += ">";
             
             m_isHeadingParagraph = false;
         }
@@ -1438,8 +1629,20 @@ void ODe_Text_Listener::_closeODParagraph() {
 
         ODe_gsf_output_close(m_pParagraphContent);
         m_pParagraphContent = NULL;
-    
+
         m_openedODParagraph = false;
         m_spacesOffset--;
+
+        if( !m_ctpTextPEnclosingElementCloseStream.str().empty() )
+        {
+            m_spacesOffset -= m_ctpParagraphAdditionalSpacesOffset;
+
+            UT_UTF8String output;
+            _printSpacesOffset(output);
+            gsf_output_write( m_pTextOutput, output.length(), (const guint8*)output.utf8_str());
+            gsf_output_write( m_pTextOutput,
+                              m_ctpTextPEnclosingElementCloseStream.str().length(),
+                              (const guint8*)m_ctpTextPEnclosingElementCloseStream.str().c_str());
+        }
     }
 }

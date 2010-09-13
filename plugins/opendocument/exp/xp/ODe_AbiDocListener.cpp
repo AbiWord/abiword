@@ -84,6 +84,15 @@ ODe_AbiDocListener::~ODe_AbiDocListener() {
 bool ODe_AbiDocListener::populate(PL_StruxFmtHandle /*sfh*/,
                                  const PX_ChangeRecord * pcr)
 {
+    if( pcr )
+    {
+        m_pCurrentImpl->setCurrentDocumentPosition( pcr->getPosition() );
+        m_pCurrentImpl->setCurrentXID( pcr->getXID() );
+            
+        UT_DEBUGMSG(("ODe_AbiDocListener::populate(CT) %d\n", pcr->getPosition()));
+        UT_DEBUGMSG(("ODe_AbiDocListener::populateStrux(PCR) %p\n", pcr));
+    }
+    
     switch (pcr->getType()) {
         
     case PX_ChangeRecord::PXT_InsertSpan:
@@ -227,6 +236,14 @@ bool ODe_AbiDocListener::populateStrux(PL_StruxDocHandle /*sdh*/,
         
     *psfh = 0;                          // we don't need it.
 
+    if( pcr )
+    {
+        m_pCurrentImpl->setCurrentDocumentPosition( pcr->getPosition() );
+        m_pCurrentImpl->setCurrentXID( pcr->getXID() );
+        UT_DEBUGMSG(("ODe_AbiDocListener::populateStrux(CT) %d\n", pcr->getPosition()));
+        UT_DEBUGMSG(("ODe_AbiDocListener::populateStrux(PCR) %p\n", pcr));
+    }
+    
     PT_AttrPropIndex api = pcr->getIndexAP();
     //const gchar* image_name =
     //    _getObjectKey(api, static_cast<const gchar*>(PT_STRUX_IMAGE_DATAID));

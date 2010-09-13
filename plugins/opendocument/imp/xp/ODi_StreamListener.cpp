@@ -32,6 +32,7 @@
 #include "ODi_StylesStream_ListenerState.h"
 #include "ODi_Table_ListenerState.h"
 #include "ODi_TextContent_ListenerState.h"
+#include "ODi_TrackedChanges_ListenerState.h"
 
 // AbiWord includes
 #include "ut_string.h"
@@ -467,6 +468,13 @@ ODi_ListenerState* ODi_StreamListener::_createState(const char* pStateName) {
         pState = new ODi_TextContent_ListenerState(m_pAbiDocument, m_pStyles,
 						   *m_pElementStack,
 						   m_rAbiData);
+        
+    } else if (!strcmp("TrackedChanges", pStateName)) {
+        
+        pState = new ODi_TrackedChanges_ListenerState(m_pAbiDocument, m_pStyles,
+						   *m_pElementStack,
+						   m_rAbiData);
+        
     } else if (!strcmp("Frame", pStateName)) {
         
         pState = new ODi_Frame_ListenerState(m_pAbiDocument, m_pStyles,

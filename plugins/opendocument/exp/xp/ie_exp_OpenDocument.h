@@ -32,6 +32,7 @@
 
 // AbiWord includes
 #include <ie_exp.h>
+class ODe_AbiDocListenerImpl;
 
 class IE_Exp_OpenDocument : public IE_Exp
 {
@@ -45,6 +46,10 @@ protected:
     virtual UT_Error copyToBuffer(PD_DocumentRange * pDocRange,UT_ByteBuf *  bufODT);
 
 private:
+    
+    UT_Error runListenerImpl( ODe_AbiDocListenerImpl* pAbiDocListenerImpl );
+
+    
     // The OpenDocument Text file.
     GsfOutfile* m_odt;
 };

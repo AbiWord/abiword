@@ -59,5 +59,9 @@ libxp_la_SOURCES = \
 	ODe_Text_Listener.cpp \
 	ODe_Text_Listener.h \
 	ODe_TOC_Listener.cpp \
-	ODe_TOC_Listener.h
+	ODe_TOC_Listener.h \
+	ODe_ChangeTrackingParagraph_Listener.cpp \
+	ODe_ChangeTrackingParagraph_Listener.h \
+	ODe_RevisionsTable.cpp \
+	ODe_RevisionsTable.h
 

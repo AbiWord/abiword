@@ -1,9 +1,6 @@
 /* AbiSource
  * 
- * Copyright (C) 2002 Dom Lachowicz <cinamod@hotmail.com>
- * 
- * Copyright (C) 2005 INdT
- * Author: Daniel d'Andrada T. de Carvalho <daniel.carvalho@indt.org.br>
+ * Author: Ben Martin <monkeyiq@abisource.com>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,29 +18,35 @@
  * 02111-1307, USA.
  */
 
-// Class definition include
-#include "ODe_AbiDocListenerImpl.h"
+#ifndef ODE_REVISIONSTABLE_H_
+#define ODE_REVISIONSTABLE_H_
 
 // AbiWord includes
-#include <ut_string_class.h>
+#include <ut_hash.h>
 
+// External includes
+#include <gsf/gsf-output.h>
+
+// AbiWord classes
+class UT_UTF8String;
+class PD_Document;
 
 /**
- * 
+ * This class represents a <delta:tracked-changes> element and it's children.
+ * The output from write() is loaded again by ODi_TrackedChanges_ListenerState.
  */
-void ODe_AbiDocListenerImpl::_printSpacesOffset(UT_UTF8String& rOutput) {
-    UT_uint8 i;
-    
-    for (i=0; i<m_spacesOffset; i++) {
-        rOutput.append(" ", 1); // Append a space character
-    }
-}
+class ODe_RevisionsTable {
+public:
 
-void ODe_AbiDocListenerImpl::_printSpacesOffset(std::stringstream& ss)
-{
-    UT_uint8 i;
+    virtual ~ODe_RevisionsTable();
+
+    // Write ourselves to the ODT
+    UT_Error write(GsfOutput* pODT, PD_Document* pAbiDoc ) const;
+
+    static std::string timetToODTChangeTrackingString( UT_uint64 timetval64 );
     
-    for (i=0; i<m_spacesOffset; i++) {
-        ss << " ";
-    }
-}
+private:
+
+};
+
+#endif /*ODE_REVISIONSTABLE_H_*/

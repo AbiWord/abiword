@@ -325,6 +325,9 @@ bool ODe_DocumentData::writeContentXML(GsfOutfile* pOdt) {
     " xmlns:xforms=\"http://www.w3.org/2002/xforms\""
     " xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\""
     " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
+    " xmlns:delta=\"http://www.deltaxml.com/ns/track-changes/delta-namespace\""
+    " xmlns:ac=\"http://www.deltaxml.com/ns/track-changes/attribute-change-namespace\""
+    " xmlns:split=\"http://www.deltaxml.com/ns/track-changes/split-namespace\""
     " office:version=\"1.1\">\n"};
     
     ODe_writeToStream(pContentStream, preamble, G_N_ELEMENTS(preamble));
@@ -332,6 +335,8 @@ bool ODe_DocumentData::writeContentXML(GsfOutfile* pOdt) {
     m_contentXMLFontDecls.write(pContentStream);
     
     m_contentAutoStyles.write(pContentStream);
+
+    m_contentRevisions.write(pContentStream,m_pAbiDoc);
     
     ODe_writeUTF8String(pContentStream, " <office:body>\n"
                                         "  <office:text>\n");

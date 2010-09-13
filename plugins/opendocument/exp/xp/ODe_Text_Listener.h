@@ -30,6 +30,7 @@
 
 // External includes
 #include <stdio.h>
+#include <sstream>
 
 // Internal classes
 class ODe_AutomaticStyles;
@@ -158,6 +159,13 @@ private:
 
     // The number of TOCs (Table of Confents) already added to the document.
     UT_sint32 m_iCurrentTOC;
+
+    // For ODT Change Tracking
+    std::stringstream m_ctpTextPEnclosingElementCloseStream;
+    int m_ctpParagraphAdditionalSpacesOffset;
+    std::stringstream m_ctpTextSpanEnclosingElementCloseStream;
+    int m_ctpSpanAdditionalSpacesOffset;
+    
 };
 
 #endif /*ODE_TEXT_LISTENER_H_*/

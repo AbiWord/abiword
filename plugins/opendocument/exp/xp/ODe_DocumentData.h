@@ -26,6 +26,7 @@
 #include "ODe_AutomaticStyles.h"
 #include "ODe_Styles.h"
 #include "ODe_FontFaceDecls.h"
+#include "ODe_RevisionsTable.h"
 
 // External includes
 #include <gsf/gsf-output.h>
@@ -81,6 +82,9 @@ public:
     // content.xml, <office:automatic-styles> must appear *before* <office:text>.
     GsfOutput* m_pOfficeTextTemp;
 
+    // ODT Change Tracking
+    ODe_RevisionsTable  m_contentRevisions;
+    
 private:
     void handleDefaultTabInterval(ODe_Style_Style* pStyle);
 

@@ -37,6 +37,7 @@
 #include "ODe_MetaDataWriter.h"
 #include "ODe_PicturesWriter.h"
 #include "ODe_SettingsWriter.h"
+#include "ODe_ChangeTrackingParagraph_Listener.h"
 
 // Abiword includes
 #include <ut_assert.h>
@@ -290,6 +291,22 @@ UT_Error IE_Exp_OpenDocument::_writeDocument(void)
       return UT_ERROR;
     }
 
+    // Gather revision information for the ODT+CT
+    // change tracker exporting to use.
+    // if( change-tracking )
+    {
+        UT_Error e = runListenerImpl(
+            new ODe_ChangeTrackingParagraph_Listener(
+                docData.m_styles, auxData ));
+        if( e != UT_OK )
+        {
+            return e;
+        }
+        
+        auxData.dumpChangeTrackingParagraphData();
+    }
+    
+    
     pAbiDocListenerImpl = new ODe_Main_Listener(docData, auxData);
     pAbiDocListener = new ODe_AbiDocListener(getDoc(),
                                              pAbiDocListenerImpl, false);
@@ -326,3 +343,31 @@ UT_Error IE_Exp_OpenDocument::_writeDocument(void)
 	ODe_gsf_output_close(GSF_OUTPUT(m_odt));
 	return UT_OK;
 }
+
+/**
+ * Run a AbiDocListenerImpl and delete it when done.
+ *
+ * Returns UT_OK if all is well or an error code which can be propagated.
+ */
+UT_Error
+IE_Exp_OpenDocument::runListenerImpl( ODe_AbiDocListenerImpl* pAbiDocListenerImpl )
+{
+    ODe_AbiDocListener* pAbiDocListener = new ODe_AbiDocListener(getDoc(),
+                                                                 pAbiDocListenerImpl, false);
+        
+    if (!getDoc()->tellListener(static_cast<PL_Listener *>(pAbiDocListener)))
+    {
+        ODe_gsf_output_close(GSF_OUTPUT(m_odt));
+        DELETEP(pAbiDocListener);
+        DELETEP(pAbiDocListenerImpl);
+        pAbiDocListenerImpl = 0;
+        return UT_ERROR;
+    }
+    pAbiDocListener->finished();
+    
+    DELETEP(pAbiDocListener);
+    DELETEP(pAbiDocListenerImpl);
+    pAbiDocListenerImpl = 0;
+    return UT_OK;
+}
+

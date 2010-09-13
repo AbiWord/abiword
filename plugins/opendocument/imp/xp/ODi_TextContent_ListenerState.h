@@ -25,6 +25,7 @@
 #define _ODI_TEXTCONTENT_LISTENERSTATE_H_
 
 #include <string>
+#include <list>
 #include <map>
 
 // Internal includes
@@ -46,6 +47,7 @@ class ODi_Abi_Data;
 // AbiWord classes
 class PD_Document;
 class pf_Frag_Strux;
+class PP_RevisionAttr;
 
 /**
  * It parses the regular content of a text document. It is used to parse the
@@ -197,6 +199,19 @@ private:
     bool m_bPendingTextbox;
     bool m_bHeadingList;
     UT_sint32 m_prevLevel;
+
+    // ODT Change Tracking
+    UT_uint32 m_ctParagraphDeletedRevision;
+    // <delta:inserted-text-start ... <delta:inserted-text-end
+    // stack contains the text-id
+    typedef std::list< std::string > m_ctInsertedTextStack_t;
+    m_ctInsertedTextStack_t m_ctInsertedTextStack;
+    std::string m_ctMostRecentWritingVersion; //< Version of last text:p or insert-text
+    bool m_ctHaveSpanFmt;       //< inside a text:span
+    bool m_ctHaveParagraphFmt;  //< inside a text:p which has ct data
+    long m_ctSpanDepth;         //< count of current text:span nesting
+
+
 };
 
 #endif //_ODI_TEXTCONTENT_LISTENERSTATE_H_
