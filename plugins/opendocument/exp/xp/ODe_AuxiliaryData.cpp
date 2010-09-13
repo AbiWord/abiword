@@ -105,23 +105,35 @@ ODe_ChangeTrackingParagraph_Data::update( const PP_RevisionAttr* ra )
     }
 
     // check if all spans are the same version
+    if( m_allSpansAreSameVersion )
     {
         UT_uint32 lv = m_lastSpanVersion;
-        
-        for( int iter = ra->getRevisionsCount()-1; iter >= 0; --iter )
+        if( lv == -1 )
         {
-            const PP_Revision* r = ra->getNthRevision(iter);
-            if( lv == -1 )
-            {
-                m_lastSpanVersion = r->getId();
-                lv = m_lastSpanVersion;
-                continue;
-            }
-            if( lv != r->getId() )
+            m_lastSpanVersion = last->getId();
+        }
+        else
+        {
+            if( lv != last->getId() )
             {
                 m_allSpansAreSameVersion = false;
             }
         }
+        
+        // for( int iter = ra->getRevisionsCount()-1; iter >= 0; --iter )
+        // {
+        //     const PP_Revision* r = ra->getNthRevision(iter);
+        //     if( lv == -1 )
+        //     {
+        //         m_lastSpanVersion = r->getId();
+        //         lv = m_lastSpanVersion;
+        //         continue;
+        //     }
+        //     if( lv != r->getId() )
+        //     {
+        //         m_allSpansAreSameVersion = false;
+        //     }
+        // }
     }
     
 
@@ -141,8 +153,8 @@ ODe_ChangeTrackingParagraph_Data::update( const PP_RevisionAttr* ra )
 bool
 ODe_ChangeTrackingParagraph_Data::isParagraphDeleted()
 {
-    UT_DEBUGMSG(("isParagraphDeleted: m_maxRevision:%d m_maxDeletedRevision:%d\n",
-                 m_maxRevision, m_maxDeletedRevision ));
+    UT_DEBUGMSG(("isParagraphDeleted: m_maxRevision:%d m_maxDeletedRevision:%d all-spans-same-rev:%d\n",
+                 m_maxRevision, m_maxDeletedRevision, m_allSpansAreSameVersion ));
     return m_maxRevision
         && m_maxRevision == m_maxDeletedRevision
         && m_allSpansAreSameVersion;

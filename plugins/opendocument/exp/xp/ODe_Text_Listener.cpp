@@ -254,21 +254,27 @@ void ODe_Text_Listener::openSpan(const PP_AttrProp* pAP) {
 
                 if( last->getType() == PP_REVISION_DELETION )
                 {
-                    std::string itid  = m_ctIdFactory.createId();
-                    std::stringstream ss;
-                    ss << endl
-                       << "<delta:removed-content-start delta:removed-text-id="
-                       << "\"" << itid << "\""
-                       << " delta:removal-change-idref="
-                       << "\"" << idref << "\""
-                       << "/>"
-                       << endl;
-                    ODe_writeUTF8String(m_pParagraphContent, ss.str().c_str());
+                    if( ctp->getData().isParagraphDeleted() )
+                    {
+                    }
+                    else
+                    {
+                        std::string itid  = m_ctIdFactory.createId();
+                        std::stringstream ss;
+                        ss << endl
+                           << "<delta:removed-content-start delta:removed-text-id="
+                           << "\"" << itid << "\""
+                           << " delta:removal-change-idref="
+                           << "\"" << idref << "\""
+                           << "/>"
+                           << endl;
+                        ODe_writeUTF8String(m_pParagraphContent, ss.str().c_str());
 
-                    m_ctpTextSpanEnclosingElementCloseStream << "<delta:removed-content-end delta:removed-text-idref="
-                                                             << "\"" << itid << "\""
-                                                             << "/>"
-                                                             << endl;
+                        m_ctpTextSpanEnclosingElementCloseStream << "<delta:removed-content-end delta:removed-text-idref="
+                                                                 << "\"" << itid << "\""
+                                                                 << "/>"
+                                                                 << endl;
+                    }
                 }
                 else if( last->getId() > ctp->getData().getVersionWhichIntroducesParagraph() )
                 {
