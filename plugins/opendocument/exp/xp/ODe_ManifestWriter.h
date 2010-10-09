@@ -32,6 +32,7 @@
 
 // External includes
 #include <gsf/gsf.h>
+#include <set>
 
 // Abiword classes
 class PD_Document;
@@ -48,6 +49,10 @@ public:
 
 private:
     ODe_ManifestWriter ();
+    static void ensureDirectoryManifest( PD_Document* pDoc,
+                                         GsfOutput* manifest,
+                                         const std::string& path,
+                                         std::set< std::string >& pathsAlreadyWritten );
 };
 
 

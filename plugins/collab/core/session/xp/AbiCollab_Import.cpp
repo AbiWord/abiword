@@ -22,6 +22,7 @@
  */
 
 #include "pd_Document.h"
+#include "pd_DocumentRDF.h"
 #include "px_CR_SpanChange.h"
 #include "px_CR_FmtMarkChange.h"  
 #include "px_CR_SpanChange.h"
@@ -776,6 +777,26 @@ bool ABI_Collab_Import::_import(const SessionPacket& packet, UT_sint32 iImportAd
 						m_pDoc->changeSpanFmt(PTC_SetExactly, pos, pos + 1, const_cast<const gchar**>( szAtts ), const_cast<const gchar**>( szProps ));
 						break;
 					}
+                    case PX_ChangeRecord::PXT_ChangeDocRDF:
+                    {
+                        // down cast crp to get dcrp
+						const RDF_ChangeRecordSessionPacket* dcrp = static_cast<const RDF_ChangeRecordSessionPacket*>( crp );
+						gchar** szAtts = dcrp->getAtts();
+						gchar** szProps = dcrp->getProps();
+
+						if ((szProps == NULL) && (szAtts == NULL))
+						{
+							UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+							return false;
+						}
+
+                        {
+                            // update the local document RDF to remove
+                            // szAtts RDF and then add the szProps RDF
+                            m_pDoc->getDocumentRDF()->handleCollabEvent( szAtts, szProps );
+                        }                        
+                        break;
+                    }
 					case PX_ChangeRecord::PXT_InsertFmtMark:
 					{
 						const Props_ChangeRecordSessionPacket* pcrsp = static_cast<const Props_ChangeRecordSessionPacket*>( crp );

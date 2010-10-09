@@ -58,7 +58,8 @@ public:
 		PXT_RemoveStyle=19,
 		PXT_CreateDataItem=20,
 		PXT_ChangeDocProp=21,
-		PXT__LAST__ = 22
+        PXT_ChangeDocRDF=22,
+		PXT__LAST__ = 23
 	}PXType;
 
 	PX_ChangeRecord(PXType type,

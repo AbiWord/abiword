@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF 
+ xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+ xmlns:pkg="http://docs.oasis-open.org/opendocument/meta/package/common#"
+ xmlns:foaf="http://xmlns.com/foaf/0.1/"
+ xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+ xmlns:dc="http://purl.org/dc/elements/1.1/" 
+>
+  <ns1:Document xmlns:ns1="http://docs.oasis-open.org/ns/office/1.2/meta/pkg#" rdf:about="">
+    <ns1:hasPart rdf:resource="content.xml"/>
+    <ns1:hasPart rdf:resource="styles.xml"/>
+  </ns1:Document>
+  <odf:ContentFile xmlns:odf="http://docs.oasis-open.org/ns/office/1.2/meta/odf#" rdf:about="content.xml">
+
+   <pkg:hasPart>				
+      <odf:Element rdf:about="uri:dan" pkg:idref="dan"/>
+    </pkg:hasPart>
+
+   <pkg:hasPart>				
+      <odf:Element rdf:about="uri:barry" pkg:idref="barry"/>
+    </pkg:hasPart>
+
+   <pkg:hasPart>				
+      <odf:Element rdf:about="uri:h1" pkg:idref="h1"/>
+    </pkg:hasPart>
+
+   <pkg:hasPart>				
+      <odf:Element rdf:about="uri:mark1" pkg:idref="mark1"/>
+    </pkg:hasPart>
+
+   <pkg:hasPart>				
+      <odf:Element rdf:about="uri:r1c2" pkg:idref="r1c2"/>
+    </pkg:hasPart>
+
+  </odf:ContentFile>
+  <ns3:StylesFile xmlns:ns3="http://docs.oasis-open.org/ns/office/1.2/meta/odf#" rdf:about="styles.xml"/>
+
+	<foaf:Person rdf:about="uri:dan">
+	  <foaf:name>Dan Brickley</foaf:name>
+	  <foaf:homepage dc:title="Dan's home page" 
+			 rdf:resource="http://danbri.org/"/>
+	  <foaf:phone>tel:123456700</foaf:phone>
+	</foaf:Person>
+
+
+	<foaf:Person rdf:about="uri:barry">
+	  <foaf:name>Barry</foaf:name>
+	  <foaf:homepage dc:title="The joy of being Barry" 
+			 rdf:resource="http://barry.exmaple.com/"/>
+	  <foaf:phone>tel:130012341234</foaf:phone>
+	</foaf:Person>
+
+	<foaf:Person rdf:about="uri:h1">
+	  <foaf:name>Header person</foaf:name>
+	  <foaf:homepage dc:title="The joy of being in a header" 
+			 rdf:resource="http://h1.exmaple.com/"/>
+	  <foaf:phone>tel:130012341235</foaf:phone>
+	</foaf:Person>
+
+	<foaf:Person rdf:about="uri:mark1">
+	  <foaf:name>A person linked to a bookmark</foaf:name>
+	  <foaf:homepage dc:title="The joy of being in a bookmarked" 
+			 rdf:resource="http://bm.exmaple.com/?mark=mark1"/>
+	  <foaf:phone>tel:130012341236</foaf:phone>
+	</foaf:Person>
+
+	<foaf:Person rdf:about="uri:r1c2">
+	  <foaf:name>A table cell</foaf:name>
+	  <foaf:homepage dc:title="Linking right into the cell" 
+			 rdf:resource="http://cgi.exmaple.com/?cell=r1c2"/>
+	  <foaf:phone>tel:130012341237</foaf:phone>
+	</foaf:Person>
+
+
+</rdf:RDF>

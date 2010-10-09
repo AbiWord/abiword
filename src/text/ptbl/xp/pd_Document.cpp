@@ -33,6 +33,7 @@
 #include "ut_rand.h"
 #include "ut_uuid.h"
 #include "pd_Document.h"
+#include "pd_DocumentRDF.h"
 #include "xad_Document.h"
 #include "xap_Strings.h"
 #include "pt_PieceTable.h"
@@ -194,7 +195,8 @@ PD_Document::PD_Document()
 	  m_bShowAuthors(true),
 	  m_bExportAuthorAtts(false), //should be false by default. Set true to test
 	  m_iMyAuthorInt(-1),
-	  m_iLastAuthorInt(-1)
+	  m_iLastAuthorInt(-1),
+      m_hDocumentRDF( new PD_DocumentRDF( this ))
 {
 	XAP_App::getApp()->getPrefs()->getPrefsValueBool(AP_PREF_KEY_LockStyles,&m_bLockedStyles);
 	UT_ASSERT(isOrigUUID());
@@ -742,6 +744,16 @@ UT_Error PD_Document::_importFile(GsfInput * input, int ieft,
 	m_bLoading = true;
 	m_pPieceTable->setPieceTableState(PTS_Loading);
 
+	UT_Error errorCode;
+
+    UT_DEBUGMSG(("PD_Document::_importFile... name:%s\n",szFilename));
+    errorCode = m_hDocumentRDF->setupWithPieceTable();
+    if( errorCode != UT_OK )
+    {
+        return errorCode;
+    }
+    // m_hDocumentRDF->runMilestone2Test();
+    
 	if (bImportStylesFirst) {
 		UT_String template_list[6];
 
@@ -754,7 +766,6 @@ UT_Error PD_Document::_importFile(GsfInput * input, int ieft,
 		// don't worry if this fails
 	}
 
-	UT_Error errorCode;
 
 	// set standard document properties and attributes, such as dtd,
 	// lang, dom-dir, etc., which the importer can then overwite this
@@ -871,6 +882,13 @@ UT_Error PD_Document::createRawDocument(void)
 	m_indexAP = 0xffffffff;
 	setAttrProp(NULL);
 	UT_ASSERT(isOrigUUID());
+
+    UT_Error errorCode = m_hDocumentRDF->setupWithPieceTable();
+    if( errorCode != UT_OK )
+    {
+        return errorCode;
+    }
+    
 	return UT_OK;
 }
 
@@ -2453,7 +2471,9 @@ bool   PD_Document::isInsertHyperLinkValid(PT_DocPosition pos) const
 		if(pf->getType() == pf_Frag::PFT_Object)
 		{
 			pf_Frag_Object * pfo = static_cast<pf_Frag_Object *>(pf);
-			if((pfo->getObjectType() != PTO_Hyperlink) && (pfo->getObjectType() != PTO_Annotation))
+			if((pfo->getObjectType() != PTO_Hyperlink)
+               && (pfo->getObjectType() != PTO_Annotation)
+               && (pfo->getObjectType() != PTO_RDFAnchor) )
 			{
 				pf = pf->getPrev();
 			}
@@ -2470,6 +2490,11 @@ bool   PD_Document::isInsertHyperLinkValid(PT_DocPosition pos) const
 					return false;
 				}
 				(pAP)->getAttribute(PT_ANNOTATION_NUMBER,pszXlink);
+				if(pszXlink)
+				{
+					return false;
+				}
+				(pAP)->getAttribute(PT_RDF_XMLID,pszXlink);
 				if(pszXlink)
 				{
 					return false;
@@ -8174,5 +8199,10 @@ UT_uint32 PD_Document::getFragXIDforVersion(const pf_Frag * pf, UT_uint32 iVersi
 	// version of the document, and its xid cannot be used in document matching for the
 	// given version level
 	return 0;
+}
+
+PD_DocumentRDFHandle PD_Document::getDocumentRDF(void) const
+{
+    return m_hDocumentRDF;
 }
 

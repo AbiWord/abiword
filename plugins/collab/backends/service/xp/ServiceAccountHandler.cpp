@@ -47,6 +47,7 @@
 #include <core/account/xp/SessionEvent.h>
 #include <core/session/xp/AbiCollabSessionManager.h>
 #include "AbiCollabService_Export.h"
+#include "pd_DocumentRDF.h"
 
 namespace rpv1 = realm::protocolv1;
 
@@ -1576,6 +1577,7 @@ void ServiceAccountHandler::_handleJoinSessionRequestResponse(
 	(*pDoc)->setFilename(fname);
 
 	pManager->joinSession(jsre->getSessionId(), *pDoc, jsre->m_sDocumentId, jsre->m_iRev, jsre->getAuthorId(), pBuddy, this, bLocallyOwned, pFrame);
+
 }
 
 void ServiceAccountHandler::_handleRealmPacket(ConnectionPtr connection)

@@ -33,6 +33,7 @@
 #include "ODe_HeadingSearcher_Listener.h"
 #include "ODe_TOC_Listener.h"
 #include "ODe_ManifestWriter.h"
+#include "ODe_RDFWriter.h"
 #include "ODe_Main_Listener.h"
 #include "ODe_MetaDataWriter.h"
 #include "ODe_PicturesWriter.h"
@@ -228,6 +229,12 @@ UT_Error IE_Exp_OpenDocument::_writeDocument(void)
 	}
 
 	if (!ODe_PicturesWriter::writePictures(getDoc(), m_odt))
+	{
+		ODe_gsf_output_close(GSF_OUTPUT(m_odt));
+		return UT_ERROR;
+	}
+
+    if (!ODe_RDFWriter::writeRDF(getDoc(), m_odt))
 	{
 		ODe_gsf_output_close(GSF_OUTPUT(m_odt));
 		return UT_ERROR;

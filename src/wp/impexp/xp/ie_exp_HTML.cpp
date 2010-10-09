@@ -5141,6 +5141,7 @@ void s_HTML_Listener::_handleAnnotationMark (PT_AttrPropIndex api)
 	tagOpen (TT_A, m_utf8_1, ws_None);
 }
 
+
 void s_HTML_Listener::_handleBookmark (PT_AttrPropIndex api)
 {
 	m_utf8_1 = "a";
@@ -5337,7 +5338,10 @@ bool s_HTML_Listener::populate (PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord
 						case PTO_Annotation:
 							_handleAnnotationMark (api);
 							return true;
-	
+
+						case PTO_RDFAnchor:
+							return true;
+							
 						case PTO_Bookmark:
 							_handleBookmark (api);
 							return true;						

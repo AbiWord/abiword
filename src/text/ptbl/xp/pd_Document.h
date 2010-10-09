@@ -61,7 +61,9 @@ class fl_BlockLayout;
 class fp_Run;
 class UT_UTF8String;
 class pp_Author;
-
+class PD_DocumentRDF;
+#include <boost/shared_ptr.hpp>
+typedef boost::shared_ptr<PD_DocumentRDF> PD_DocumentRDFHandle;
 
 #ifdef PT_TEST
 #include "ut_test.h"
@@ -612,6 +614,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 
 	pt_PieceTable *			getPieceTable(void) const
 		{ return m_pPieceTable; }
+    PD_DocumentRDFHandle    getDocumentRDF(void) const;
 #ifdef PT_TEST
 	void					__dump(FILE * fp) const;
 	//! Pointer to last instatiated PD_Document. Used for debugging.
@@ -793,6 +796,7 @@ private:
 private:
 	bool					m_ballowListUpdates;
 	pt_PieceTable *			m_pPieceTable;
+    PD_DocumentRDFHandle    m_hDocumentRDF;
 	UT_GenericVector<PL_Listener *> m_vecListeners;
 	UT_GenericVector<fl_AutoNum *> m_vecLists;
 	bool                    m_bHasListStopped;

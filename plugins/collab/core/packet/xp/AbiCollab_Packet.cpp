@@ -184,7 +184,7 @@ void ChangeRecordSessionPacket::serialize( Archive& ar )
 
 static const std::string getPXTypeStr( PX_ChangeRecord::PXType t )
 {
-	UT_return_val_if_fail(t >= PX_ChangeRecord::PXT_GlobMarker && t <= PX_ChangeRecord::PXT_ChangeDocProp, str(boost::format( "<invalid value passed to getPXTypeStr: %d>" ) % int(t) ));
+	UT_return_val_if_fail(t >= PX_ChangeRecord::PXT_GlobMarker && t <= PX_ChangeRecord::PXT_ChangeDocRDF, str(boost::format( "<invalid value passed to getPXTypeStr: %d>" ) % int(t) ));
 	static std::string pxTypeStrs[] = {
 		"PXT_GlobMarker",
 		"PXT_InsertSpan", 
@@ -209,6 +209,7 @@ static const std::string getPXTypeStr( PX_ChangeRecord::PXType t )
 		"PXT_RemoveStyle",
 		"PXT_CreateDataItem",
 		"PXT_ChangeDocProp",
+		"PXT_ChangeDocRDF",
 	};
 	return pxTypeStrs[ int(t)+1 ];
 }
@@ -422,6 +423,11 @@ void Object_ChangeRecordSessionPacket::serialize( Archive& ar )
 	ar << (int&)m_eObjectType;
 }
 
+void RDF_ChangeRecordSessionPacket::serialize( Archive& ar )
+{
+	Props_ChangeRecordSessionPacket::serialize( ar );
+}
+
 static const std::string getPTObjectTypeStr( PTObjectType p )
 {
 	UT_return_val_if_fail(p >= PTO_Image && p <= PTO_Annotation, str(boost::format( "<invalid value passed to getPTObjectTypeStr: %d>" ) % int(p) ));
@@ -441,6 +447,12 @@ std::string Object_ChangeRecordSessionPacket::toStr() const
 {
 	return Props_ChangeRecordSessionPacket::toStr() +
 		str(boost::format("Object_ChangeRecordSessionPacket: m_eObjectType: %1%\n") % getPTObjectTypeStr(m_eObjectType).c_str() );
+}	
+
+std::string RDF_ChangeRecordSessionPacket::toStr() const
+{
+	return Props_ChangeRecordSessionPacket::toStr() +
+		str(boost::format("RDF_ChangeRecordSessionPacket: %1%\n") % 0 );
 }	
 
 void Data_ChangeRecordSessionPacket::serialize( Archive& ar )
@@ -556,6 +568,7 @@ UT_sint32 GlobSessionPacket::getLength() const
 			case PCT_InsertSpan_ChangeRecordSessionPacket:
 			case PCT_DeleteStrux_ChangeRecordSessionPacket:
 			case PCT_Object_ChangeRecordSessionPacket:
+			case PCT_RDF_ChangeRecordSessionPacket:
 			case PCT_Data_ChangeRecordSessionPacket:
 			case PCT_ChangeStrux_ChangeRecordSessionPacket:
 				{

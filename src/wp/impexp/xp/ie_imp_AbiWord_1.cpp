@@ -38,6 +38,7 @@
 #endif
 
 #include "pd_Document.h"
+#include "pd_DocumentRDF.h"
 #include "pd_Style.h"
 
 #include "ie_impexp_AbiWord_1.h"
@@ -45,6 +46,8 @@
 #include "ie_types.h"
 #include "pp_Author.h"
 #include "pp_AttrProp.h"
+
+#include <sstream>
 
 /*****************************************************************/
 /*****************************************************************/
@@ -251,6 +254,9 @@ IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
 #define TT_AUTHOR          38 //<author>
 #define TT_ANN             39 //<ann> Annotate region
 #define TT_ANNOTATE        40 //<annotate> Annotation content
+#define TT_RDFBLOCK        41 //<rdf> complete block
+#define TT_RDFTRIPLE       42 //<t> but only within an <rdf> block
+#define TT_TEXTMETA        43 //<textmeta> 
 
 
 /*
@@ -268,6 +274,7 @@ IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
 
 ///
 /// NOTE TO ALL HACKERS!! This must be in alphabetical order on Pain of Death
+/// It appears that prefix strings sort before longer ones too (a < abiword)
 ///
 static struct xmlToIdMapping s_Tokens[] =
 {
@@ -306,12 +313,15 @@ static struct xmlToIdMapping s_Tokens[] =
 	{   "pagesize",     TT_PAGESIZE     },
 	{	"pbr",			TT_PAGEBREAK	},
     {   "r",            TT_REVISION     },
+    {   "rdf",          TT_RDFBLOCK     },
 	{   "resource",     TT_RESOURCE     },
 	{   "revisions",    TT_REVISIONSECTION},
 	{	"s",			TT_STYLE		},
 	{	"section",		TT_SECTION		},
 	{	"styles",		TT_STYLESECTION	},
+	{	"t",		    TT_RDFTRIPLE	},
 	{	"table",		TT_TABLE		},
+	{	"textmeta",		TT_TEXTMETA		},
 	{	"toc",		    TT_TOC  		},
 	{   "version",      TT_VERSION      }
 	
@@ -569,10 +579,48 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 		goto cleanup;
 	}
 	case TT_BOOKMARK:
+    {
 		X_VerifyParseState(_PS_Block);
-		X_CheckError(appendObject(PTO_Bookmark,atts));
+
+
+        const gchar* type = UT_getAttribute("type", atts);
+        if( type && !strcmp(type,"end"))
+        {
+            std::string xmlid = xmlidStackForBookmarks.back();
+            xmlidStackForBookmarks.pop_back();
+            int idx = 0;
+            const gchar* pp[60];
+            for( ; atts[idx] && idx < 50; idx++ )
+            {
+                pp[idx] = atts[idx];
+            }
+            
+            pp[idx++] = PT_XMLID;
+            pp[idx++] = xmlid.c_str();
+            pp[idx++] = 0;
+            X_CheckError(appendObject(PTO_Bookmark,pp));
+        }
+        else
+        {
+            X_CheckError(appendObject(PTO_Bookmark,atts));
+            const gchar* xmlid = UT_getAttribute("xml:id", atts);
+            xmlidStackForBookmarks.push_back( xmlid ? xmlid : "" );
+        }
+        
 		goto cleanup;
-		
+    }
+    
+	case TT_TEXTMETA:
+    {
+		X_VerifyParseState(_PS_Block);
+		X_CheckError(appendObject(PTO_RDFAnchor,atts));
+        const gchar* xmlid = UT_getAttribute("xml:id", atts);
+        if( !xmlid )
+            xmlid = "";
+        xmlidStackForTextMeta.push_back(xmlid);
+		goto cleanup;
+    }
+    
 	case TT_HYPERLINK:
 		X_VerifyParseState(_PS_Block);
 		X_CheckError(appendObject(PTO_Hyperlink,atts));
@@ -932,6 +980,32 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 		m_currentMetaDataName = _getXMLPropValue("key", atts);
 		goto cleanup;
 
+	case TT_RDFBLOCK:
+    {
+		X_VerifyParseState(_PS_Doc);
+		m_parseState = _PS_RDFData;
+        PD_DocumentRDFHandle rdf = getDoc()->getDocumentRDF();
+        m_rdfMutation = rdf->createMutation();
+		goto cleanup;
+    }
+    
+	case TT_RDFTRIPLE:
+    {
+		X_VerifyParseState(_PS_RDFData);
+		m_parseState   = _PS_RDFTriple;
+		m_rdfSubject   = _getXMLPropValue("s", atts);
+		m_rdfPredicate = _getXMLPropValue("p", atts);
+        m_rdfXSDType   = _getXMLPropValue("xsdtype", atts);
+        {
+            std::stringstream ss;
+            ss << _getXMLPropValue("objecttype", atts);
+            m_rdfObjectType = PD_Object::OBJECT_TYPE_URI;
+            ss >> m_rdfObjectType;
+        }
+        // content of element is object.
+		goto cleanup;
+    }
+    
 	case TT_TABLE:
 		m_parseState = _PS_Sec;
 		m_bWroteSection = true;
@@ -1098,6 +1172,27 @@ void IE_Imp_AbiWord_1::endElement(const gchar *name)
 		X_VerifyParseState(_PS_Block);
 		return;
 
+	case TT_TEXTMETA:						// not a container, so we don't pop stack
+    {
+        std::string xmlid = xmlidStackForTextMeta.back();
+        xmlidStackForTextMeta.pop_back();
+        
+		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
+		X_VerifyParseState(_PS_Block);
+
+        const gchar* ppAtts[10] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+        ppAtts[0] = PT_XMLID;
+        ppAtts[1] = xmlid.c_str();
+        // sanity check
+        ppAtts[2] = "this-is-an-rdf-anchor";
+        ppAtts[3] = "yes";
+        ppAtts[4] = PT_RDF_END;
+        ppAtts[5] = "yes";
+        
+		X_CheckError(appendObject(PTO_RDFAnchor,ppAtts));
+		return;
+    }
+    
 	case TT_HYPERLINK:						// not a container, so we don't pop stack
 		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Block);
@@ -1271,6 +1366,21 @@ void IE_Imp_AbiWord_1::endElement(const gchar *name)
 		X_VerifyParseState(_PS_Meta);
 		m_parseState = _PS_MetaData;
 		return;
+
+	case TT_RDFBLOCK:
+		X_VerifyParseState(_PS_RDFData);
+		m_parseState = _PS_Doc;
+        if(m_rdfMutation)
+        {
+            m_rdfMutation->commit();
+        }
+		return;
+
+	case TT_RDFTRIPLE:
+		X_VerifyParseState(_PS_RDFTriple);
+		m_parseState = _PS_RDFData;
+		return;
+        
 
 	case TT_OTHER:
 	default:

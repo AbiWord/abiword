@@ -116,6 +116,9 @@ private:
     
     void _openHyperlink(PT_AttrPropIndex api);
     void _closeHyperlink();
+
+    void _openRDFAnchor(PT_AttrPropIndex api);
+    void _closeRDFAnchor(PT_AttrPropIndex api);
     
     void _insertInlinedImage(PT_AttrPropIndex api);
 

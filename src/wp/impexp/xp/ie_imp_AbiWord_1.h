@@ -36,6 +36,9 @@
 
 #include "ie_imp_XML.h"
 
+#include <list>
+#include <string>
+
 
 class PD_Document;
 
@@ -63,6 +66,9 @@ public:
 
 class ABI_EXPORT IE_Imp_AbiWord_1 : public IE_Imp_XML
 {
+    std::list< std::string > xmlidStackForTextMeta;
+    std::list< std::string > xmlidStackForBookmarks;
+
 public:
     IE_Imp_AbiWord_1(PD_Document * pDocument);
 

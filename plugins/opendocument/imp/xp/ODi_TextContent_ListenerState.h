@@ -47,6 +47,8 @@ class ODi_Abi_Data;
 class PD_Document;
 class pf_Frag_Strux;
 
+#include <list>
+
 /**
  * It parses the regular content of a text document. It is used to parse the
  * document text body itself (<office:text>) and the contents of headers
@@ -90,7 +92,7 @@ public:
     
 private:
 
-    void _insertBookmark (const gchar * name, const gchar * type);
+    void _insertBookmark (const gchar * name, const gchar * type, const gchar* xmlid = 0 );
     void _flush ();
     void _startParagraphElement (const gchar* pName,
                                  const gchar** ppParagraphAtts,
@@ -187,6 +189,10 @@ private:
     std::string m_sAnnotationAuthor;
     std::string m_sAnnotationDate;
 
+    // RDF
+    std::list< std::string > xmlidStackForTextMeta;
+    std::list< std::string > xmlidStackForBookmarks;
+    
     // Page referenced stuff
     bool m_bPageReferencePending;
     UT_sint32 m_iPageNum;

@@ -40,6 +40,7 @@
 #include "pt_Types.h"
 
 #include "pd_Document.h"
+#include "pd_DocumentRDF.h"
 #include "pd_Style.h"
 
 #include "pp_AttrProp.h"
@@ -62,6 +63,8 @@
 #include "ap_Prefs.h"
 
 #include <gsf/gsf-output-gzip.h>
+
+#include <sstream>
 
 // the fileformat that used to be defined here is now defined at the
 // top of pd_Document.cpp
@@ -220,6 +223,7 @@ protected:
 	void				_closeField(void);
 	void				_closeHyperlink(void);
 	void				_closeAnnotation(void);
+    void                _closeRDFAnchor(void);
 	void				_closeTag(void);
 	void				_openSpan(PT_AttrPropIndex apiSpan);
 	void				_openTag(const char * szPrefix, const char * szSuffix,
@@ -228,11 +232,14 @@ protected:
 								 bool bIgnoreProperties = false);
 	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
 	void				_outputXMLChar(const gchar * data, UT_uint32 length);
+	void				_outputXMLAttribute(const gchar * key, const gchar * value, UT_uint32 length);
+	void				_outputXMLAttribute(const gchar * key, const std::string& value );
 	void				_handleStyles(void);
 	void				_handleLists(void);
 	void				_handlePageSize(void);
 	void				_handleDataItems(void);
     void                _handleMetaData(void);
+    void                _handleRDF(void);
 	void                _handleRevisions(void);
 	void                _handleHistory(void);
 	void                _handleAuthors(void);
@@ -348,6 +355,14 @@ void s_AbiWord_1_Listener::_closeAnnotation(void)
     _closeSpan();
 	m_pie->write("</ann>");
     m_bInAnnotation = false;
+	return;
+}
+
+void s_AbiWord_1_Listener::_closeRDFAnchor(void)
+{
+	UT_DEBUGMSG(("Doing close rdf anchor object method \n"));
+    _closeSpan();
+	m_pie->write("</textmeta>");
 	return;
 }
 
@@ -689,6 +704,23 @@ void s_AbiWord_1_Listener::_outputXMLChar(const gchar * data, UT_uint32 length)
 	m_pie->write(sBuf.utf8_str(),sBuf.byteLength());
 }
 
+// This is very much like _outputXMLChar but adds the >>> key="value" <<< padding an quoting for you 
+void s_AbiWord_1_Listener::_outputXMLAttribute(const gchar * key, const gchar * value, UT_uint32 length)
+{
+    m_pie->write(" ");
+    m_pie->write(key);
+    m_pie->write("=\"");
+    _outputXMLChar ( value, length );
+    m_pie->write("\" ");    
+}
+
+void s_AbiWord_1_Listener::_outputXMLAttribute(const gchar * key, const std::string& value )
+{
+    _outputXMLAttribute( key, value.c_str(), value.length() );
+}
+
+
+
 void s_AbiWord_1_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 {
 	UT_UTF8String sBuf;
@@ -809,6 +841,7 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	// now we begin the actual document.
 
 	_handleMetaData();
+	_handleRDF();
 	_handleHistory();
 	_handleRevisions();
 	_handleStyles();
@@ -1016,6 +1049,24 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 
    				}
 
+   			case PTO_RDFAnchor:
+   				{
+   					_closeSpan();
+   					_closeField();
+					const PP_AttrProp * pAP = NULL;
+					m_pDocument->getAttrProp(api,&pAP);
+                    RDFAnchor a( pAP );
+                    if( !a.isEnd() )
+                    {
+   						_openTag("textmeta", "",false, api,pcr->getXID(),true);
+                    }
+                    else
+                    {
+   						_closeRDFAnchor();
+                    }
+   					return true;
+   				}
+                
 
 			default:
 				UT_ASSERT_NOT_REACHED();
@@ -1532,6 +1583,52 @@ void s_AbiWord_1_Listener::_handleMetaData(void)
     }
 
   m_pie->write("</metadata>\n");
+}
+
+void s_AbiWord_1_Listener::_handleRDF(void)
+{
+  m_pie->write("<rdf>\n");
+
+  //
+  // Walk every subject in the RDF model
+  //
+  PD_DocumentRDFHandle rdf = m_pDocument->getDocumentRDF();
+  PD_URIList subjects = rdf->getAllSubjects();
+  PD_URIList::iterator subjend = subjects.end();
+  for( PD_URIList::iterator subjiter = subjects.begin();
+       subjiter != subjend; ++subjiter )
+  {
+      PD_URI subject = *subjiter;
+      POCol polist = rdf->getArcsOut( subject );
+      POCol::iterator poend = polist.end();
+      for( POCol::iterator poiter = polist.begin();
+           poiter != poend; ++poiter )
+      {
+          //
+          // For each subject, predicate, object
+          // create an XML element.
+          //
+          PD_URI    predicate = poiter->first;
+          PD_Object object = poiter->second;
+
+          
+          m_pie->write("<t ");
+          _outputXMLAttribute( "s", subject.toString() );
+          _outputXMLAttribute( "p", predicate.toString() );
+          {
+              std::stringstream ss;
+              ss << object.getObjectType();
+              _outputXMLAttribute( "objecttype", ss.str() );
+          }
+          _outputXMLAttribute( "xsdtype",    object.getXSDType() );
+          m_pie->write(" >");
+          UT_UTF8String esc = object.toString().c_str();
+          _outputXMLChar ( esc.utf8_str(), esc.byteLength() ) ;
+          m_pie->write("</t>\n");
+      }
+  }
+  
+  m_pie->write("</rdf>\n");
 }
 
 void s_AbiWord_1_Listener::_handlePageSize(void)

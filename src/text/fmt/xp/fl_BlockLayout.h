@@ -466,6 +466,7 @@ protected:
 	bool					_doInsertBookmarkRun(PT_BlockOffset blockOffset);
 	bool					_doInsertHyperlinkRun(PT_BlockOffset blockOffset);
 	bool					_doInsertAnnotationRun(PT_BlockOffset blockOffset);
+	bool					_doInsertRDFAnchorRun(PT_BlockOffset blockOffset);
 	bool					_doInsertMathRun(PT_BlockOffset blockOffset,PT_AttrPropIndex indexAP,PL_ObjectHandle oh);
 	bool					_doInsertEmbedRun(PT_BlockOffset blockOffset,PT_AttrPropIndex indexAP,PL_ObjectHandle oh);
 //	bool					_deleteBookmarkRun(PT_BlockOffset blockOffset);

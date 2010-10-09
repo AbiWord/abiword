@@ -400,8 +400,11 @@ void ODi_Table_ListenerState::_parseCellStart (const gchar** ppAtts,
         // Do nothing.
     } else {    
 
+        const gchar* xmlid = UT_getAttribute("xml:id", ppAtts);
+        UT_DEBUGMSG(("ODi_Table_ListenerState::_parseCellStart() xmlid:%s\n",
+                     xmlid ? xmlid : "_undefined_" ));
+        
         UT_UTF8String props;
-        const gchar *cell_props[5];        
         const gchar* pVal;
         const ODi_Style_Style* pStyle = NULL;
         UT_sint32 colSpan;
@@ -550,15 +553,25 @@ void ODi_Table_ListenerState::_parseCellStart (const gchar** ppAtts,
             }
         }
 
-        cell_props[0] = "props";
-        cell_props[1] = props.utf8_str();
-        cell_props[2] = 0;
+        int idx = 0;
+        const gchar *cell_props[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        if( xmlid )
+        {
+            cell_props[idx++] = PT_XMLID;
+            cell_props[idx++] = xmlid;
+            props += "; xmlid:";
+            props += xmlid;
+            UT_DEBUGMSG(("ODi_Table_ListenerState::_parseCellStart() adding xmlid:%s\n", xmlid ));
+        }
+        cell_props[idx++] = "props";
+        cell_props[idx++] = props.utf8_str();
+        UT_DEBUGMSG(("ODi_Table_ListenerState::_parseCellStart() props:%s\n", props.utf8_str() ));
         if(dataID.length() > 0)
         {
-            cell_props[2] = "strux-image-dataid";
-            cell_props[3] = dataID.utf8_str();
-            cell_props[4] = 0;
+            cell_props[idx++] = "strux-image-dataid";
+            cell_props[idx++] = dataID.utf8_str();
         }
+        cell_props[idx++] = 0;
         m_pAbiDocument->appendStrux(PTX_SectionCell, cell_props);
 
         // Now parse the cell text content.

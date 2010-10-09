@@ -41,6 +41,7 @@
 #include <gsf/gsf-output-memory.h>
 #include <ut_units.h>
 #include <fl_TOCLayout.h>
+#include <pd_DocumentRDF.h>
 
 // External includes
 #include <stdlib.h>
@@ -692,7 +693,15 @@ void ODe_Text_Listener::openBookmark(const PP_AttrProp* pAP) {
 
             if(escape.length()) {
                 output+= escape;
-                output+="\"/>";
+                output+="\" ";
+
+                const char* xmlid = 0;
+                if( pAP->getAttribute( PT_XMLID, xmlid ) && xmlid )
+                {
+                    appendAttribute( output, "xml:id", xmlid );
+                }
+
+                output+=" />";
                 ODe_writeUTF8String(m_pParagraphContent, output);
             }
         }
@@ -768,6 +777,30 @@ void ODe_Text_Listener::openHyperlink(const PP_AttrProp* pAP) {
  */
 void ODe_Text_Listener::closeHyperlink() {
     UT_UTF8String output = "</text:a>";
+    ODe_writeUTF8String(m_pParagraphContent, output);
+}
+
+void ODe_Text_Listener::openRDFAnchor(const PP_AttrProp* pAP)
+{
+    UT_return_if_fail(pAP);
+    RDFAnchor a(pAP);
+    
+    UT_UTF8String output = "<text:meta ";
+    UT_UTF8String escape = a.getID().c_str();
+    escape.escapeURL();
+    
+    output+=" xml:id=\"";
+    output+= escape;
+    output+="\" ";
+    output+=" >";
+    ODe_writeUTF8String(m_pParagraphContent, output);
+}
+
+
+void ODe_Text_Listener::closeRDFAnchor(const PP_AttrProp* pAP)
+{
+    RDFAnchor a(pAP);
+    UT_UTF8String output = "</text:meta>";
     ODe_writeUTF8String(m_pParagraphContent, output);
 }
 
@@ -1364,7 +1397,14 @@ void ODe_Text_Listener::_openODParagraph(const PP_AttrProp* pAP) {
             output += escape.escapeXML();
             output += "\" text:outline-level=\"";
             output += str;
-            output += "\">";
+            output += "\" ";
+            const char* xmlid = 0;
+            if( pAP->getAttribute( PT_XMLID, xmlid ) && xmlid )
+            {
+                appendAttribute( output, "xml:id", xmlid );
+            }
+
+            output += " >";
             
             m_isHeadingParagraph = true;
             
@@ -1373,7 +1413,13 @@ void ODe_Text_Listener::_openODParagraph(const PP_AttrProp* pAP) {
             escape = styleName;
             output += "<text:p text:style-name=\"";
             output += escape.escapeXML();
-            output += "\">";
+            output += "\" ";
+            const char* xmlid = 0;
+            if( pAP->getAttribute( PT_XMLID, xmlid ) && xmlid )
+            {
+                appendAttribute( output, "xml:id", xmlid );
+            }
+            output += ">";
             
             m_isHeadingParagraph = false;
         }
@@ -1443,3 +1489,18 @@ void ODe_Text_Listener::_closeODParagraph() {
         m_spacesOffset--;
     }
 }
+
+UT_UTF8String& ODe_Text_Listener::appendAttribute(
+    UT_UTF8String& ret,
+    const char* key,
+    const char* value )
+{
+    UT_UTF8String escape = value;
+    ret += " ";
+    ret += key;
+    ret += "=\"";
+    ret += escape.escapeXML();
+    ret += "\" ";
+    return ret;
+}
+

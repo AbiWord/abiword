@@ -190,6 +190,7 @@ public:
 };
 
 
+
 /*!
  pf_Frag_Strux_SectionMarginnote represents structure information for
  a header/footer section in the document.
@@ -278,6 +279,7 @@ public:
 	virtual void			__dump(FILE * fp) const;
 #endif
 };
+
 
 
 

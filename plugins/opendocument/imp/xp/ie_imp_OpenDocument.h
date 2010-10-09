@@ -41,6 +41,7 @@
 
 // Internal classes
 class ODi_StreamListener;
+class RDFArguments;
 
 
 /**
@@ -68,7 +69,12 @@ private:
     UT_Error _handleSettingsStream ();
     UT_Error _handleStylesStream ();
     UT_Error _handleContentStream ();
+    UT_Error _handleRDFStreams ();
     void _setDocumentProperties();
+
+    UT_Error _loadRDFFromFile ( GsfInfile* pGsfInfile,
+                                const char * pStream,
+                                RDFArguments* args );
 
     UT_Error _handleStream(GsfInfile* pGsfInfile,
                    const char* pStream, UT_XML::Listener& rListener);

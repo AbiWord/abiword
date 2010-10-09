@@ -348,7 +348,21 @@ ChangeRecordSessionPacket* ABI_Collab_Export::_buildPacket( const PX_ChangeRecor
 			packet->setAdjust( 0 );			
 			return packet;
 
-		}		
+		}
+
+		case PX_ChangeRecord::PXT_ChangeDocRDF:
+		{
+			// build change record packet
+			RDF_ChangeRecordSessionPacket* packet = PacketFactory<RDF_ChangeRecordSessionPacket>::create( pcr, m_pAbiCollab, m_pDoc );
+			// set length and adjust
+			// Document Properties have not size
+			packet->setLength( 0 );
+			packet->setAdjust( 0 );
+			// set properties
+			_mapPropsAtts( index, packet->getPropMap(), packet->getAttMap() );
+			return packet;
+		}
+        
 		default:
 			UT_DEBUGMSG(("Unimplemented pcr->getType(): %d\n", pcr->getType()));
 			UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);

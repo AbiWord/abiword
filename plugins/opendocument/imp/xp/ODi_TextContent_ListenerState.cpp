@@ -46,6 +46,15 @@
 #include <pd_Document.h>
 #include <pf_Frag_Strux.h>
 
+#include <list>
+
+
+
+
+
+/************************************************************/
+/************************************************************/
+/************************************************************/
 
 /**
  * Constructor
@@ -163,7 +172,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         }
 
     } else if (!strcmp(pName, "text:p" )) {
-        
+
         if (m_bPendingAnnotation) {
             _insertAnnotation();
         }
@@ -326,6 +335,28 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
                 // We just ignore this <text:span>.
             }
         }
+
+    } else if (!strcmp(pName, "text:meta")) {
+        
+        _flush ();
+
+        UT_UTF8String generatedID;
+        const gchar* xmlid = UT_getAttribute("xml:id", ppAtts);
+        if( !xmlid )
+        {
+            generatedID = UT_UTF8String_sprintf("%d", m_pAbiDocument->getUID( UT_UniqueId::Annotation ));
+            xmlid = generatedID.utf8_str();
+        }
+        
+        const gchar* pa[10] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+        pa[0] = PT_XMLID;
+        pa[1] = xmlid;
+        // sanity check
+        pa[2] = "this-is-an-rdf-anchor";
+        pa[3] = "yes";
+        
+        m_pAbiDocument->appendObject( PTO_RDFAnchor, pa );
+        xmlidStackForTextMeta.push_back( xmlid );
         
     } else if (!strcmp(pName, "text:line-break")) {
         
@@ -345,9 +376,10 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         
         _flush ();
         const gchar * pAttr = UT_getAttribute ("text:name", ppAtts);
+        const gchar* xmlid = UT_getAttribute("xml:id", ppAtts);
 
         if(pAttr) {
-            _insertBookmark (pAttr, "start");
+            _insertBookmark (pAttr, "start", xmlid );
             _insertBookmark (pAttr, "end");
         } else {
             UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
@@ -357,9 +389,11 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
 
         _flush ();
         const gchar * pAttr = UT_getAttribute ("text:name", ppAtts);
-
+        const gchar* xmlid = UT_getAttribute("xml:id", ppAtts);
+        xmlidStackForBookmarks.push_back( xmlid ? xmlid : "" );
+        
         if(pAttr) {
-            _insertBookmark (pAttr, "start");
+            _insertBookmark (pAttr, "start", xmlid );
         } else {
             UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
         }
@@ -369,8 +403,11 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         _flush ();
         const gchar * pAttr = UT_getAttribute ("text:name", ppAtts);
 
+        std::string xmlid = xmlidStackForBookmarks.back();
+        xmlidStackForBookmarks.pop_back();
+        
         if(pAttr) {
-            _insertBookmark (pAttr, "end");
+            _insertBookmark (pAttr, "end", xmlid.c_str() );
         } else {
             UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
         }
@@ -866,6 +903,25 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
         _flush ();
         _popInlineFmt();
         m_pAbiDocument->appendFmt(&m_vecInlineFmt);
+
+    } else if (!strcmp(pName, "text:meta")) {
+        
+        _flush ();
+
+        std::string xmlid = xmlidStackForTextMeta.back();
+        xmlidStackForTextMeta.pop_back();
+        
+        const gchar* ppAtts[10] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+        ppAtts[0] = PT_XMLID;
+        ppAtts[1] = xmlid.c_str();
+        // sanity check
+        ppAtts[2] = "this-is-an-rdf-anchor";
+        ppAtts[3] = "yes";
+        ppAtts[4] = PT_RDF_END;
+        ppAtts[5] = "yes";
+        
+        m_pAbiDocument->appendObject( PTO_RDFAnchor, ppAtts );
+        
         
     } else if (!strcmp(pName, "text:a")) {
         
@@ -1098,16 +1154,23 @@ void ODi_TextContent_ListenerState::charData (
  * 
  */
 void ODi_TextContent_ListenerState::_insertBookmark (const gchar* pName,
-                                             const gchar* pType)
+                                                     const gchar* pType,
+                                                     const gchar* xmlid )
 {
     UT_return_if_fail(pName && pType);
 
-    const gchar* pPropsArray[5];
-    pPropsArray[0] = (gchar *)"name";
-    pPropsArray[1] = pName;
-    pPropsArray[2] = (gchar *)"type";
-    pPropsArray[3] = pType;
-    pPropsArray[4] = 0;
+    int idx = 0;
+    const gchar* pPropsArray[10];
+    pPropsArray[idx++] = (gchar *)"name";
+    pPropsArray[idx++] = pName;
+    pPropsArray[idx++] = (gchar *)"type";
+    pPropsArray[idx++] = pType;
+    if( xmlid && strlen(xmlid) )
+    {
+        pPropsArray[idx++] = PT_XMLID;
+        pPropsArray[idx++] = xmlid;
+    }
+    pPropsArray[idx++] = 0;
     m_pAbiDocument->appendObject (PTO_Bookmark, pPropsArray);
 }
 
@@ -1458,6 +1521,9 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
         UT_UTF8String props;
         const ODi_Style_Style* pStyle;
         m_bContentWritten = false;
+        const gchar* xmlid = 0;
+
+        xmlid = UT_getAttribute ("xml:id", ppParagraphAtts);
         
         if (!strcmp(m_rElementStack.getStartTag(0)->getName(), "text:list-item")) {
             // That's a list paragraph.
@@ -1650,7 +1716,13 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
                     ppAtts[i++] = pStyle->getDisplayName().utf8_str();
                 }
             }
-        
+
+            if( xmlid )
+            {
+                ppAtts[i++] = PT_XMLID;
+                ppAtts[i++] = xmlid;
+            }
+            
             ppAtts[i] = 0; // Marks the end of the attributes list.
             m_pAbiDocument->appendStrux(PTX_Block, (const gchar**)ppAtts);
             m_bOpenedBlock = true;
@@ -1710,6 +1782,8 @@ void ODi_TextContent_ListenerState::_endParagraphElement (
                                             
     const gchar* pStyleName;
     const ODi_Style_Style* pStyle;
+
+    UT_DEBUGMSG(("RDF: L::_endParagraphElement() cdata:%s\n", m_charData.utf8_str() ));
     
     _flush ();
     m_bAcceptingText = false;

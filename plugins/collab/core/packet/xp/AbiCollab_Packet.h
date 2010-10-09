@@ -80,7 +80,8 @@ enum PClassType // send over the net to identify classes
 	PCT_DeleteStrux_ChangeRecordSessionPacket,
 	PCT_Object_ChangeRecordSessionPacket,
 	PCT_Data_ChangeRecordSessionPacket,
-	PCT_Glob_ChangeRecordSessionPacket,			// update _PCT_LastChangeRecord if you move this
+	PCT_Glob_ChangeRecordSessionPacket,			
+	PCT_RDF_ChangeRecordSessionPacket,          // update _PCT_LastChangeRecord if you move this
 	/* session takeover packets */
 	PCT_SessionTakeoverRequestPacket = 0x40,	// update _PCT_FirstSessionTakeoverPacket if you move this
 	PCT_SessionTakeoverAckPacket,
@@ -116,7 +117,7 @@ enum PClassType // send over the net to identify classes
 	_PCT_LastSessionPacket = PCT_SessionReconnectAckPacket,
 	
 	_PCT_FirstChangeRecord = PCT_ChangeRecordSessionPacket,
-	_PCT_LastChangeRecord = PCT_Glob_ChangeRecordSessionPacket,
+	_PCT_LastChangeRecord = PCT_RDF_ChangeRecordSessionPacket,
 	
 	_PCT_FirstSessionTakeoverPacket = PCT_SessionTakeoverRequestPacket,
 	_PCT_LastSessionTakeoverPacket = PCT_SessionReconnectAckPacket,
@@ -430,6 +431,25 @@ public:
 
 private:
 	PTObjectType				m_eObjectType;
+};
+
+class RDF_ChangeRecordSessionPacket : public Props_ChangeRecordSessionPacket {
+public:
+	DECLARE_PACKET(RDF_ChangeRecordSessionPacket);
+	RDF_ChangeRecordSessionPacket() {} // FIXME: 0 is not a good initializer
+	RDF_ChangeRecordSessionPacket(
+			const UT_UTF8String& sSessionId,
+			PX_ChangeRecord::PXType cType, 
+			const UT_UTF8String& sDocUUID, 
+			PT_DocPosition iPos,
+			int iRev, 
+			int iRemoteRev)
+	: Props_ChangeRecordSessionPacket( sSessionId, cType, sDocUUID, iPos, iRev, iRemoteRev )
+	{}
+	
+	virtual std::string toStr() const;
+
+private:
 };
 
 class Data_ChangeRecordSessionPacket : public Props_ChangeRecordSessionPacket {
