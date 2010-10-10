@@ -459,13 +459,10 @@ static std::string toString( librdf_node *node )
 }
 
 
-UT_Error IE_Imp_OpenDocument::_loadRDFFromFile ( GsfInfile* pGsfInfile,
+UT_Error IE_Imp_OpenDocument::_loadRDFFromFile ( GsfInput* pInput,
                                                  const char * pStream,
                                                  RDFArguments* args )
 {
-    UT_Error ret = UT_OK;
-    
-    GsfInput* pInput = gsf_infile_child_by_name(pGsfInfile, pStream);
     UT_return_val_if_fail(pInput, UT_ERROR);
 
     int sz = gsf_input_size (pInput);
@@ -480,7 +477,6 @@ UT_Error IE_Imp_OpenDocument::_loadRDFFromFile ( GsfInfile* pGsfInfile,
         gsf_input_read ( pInput, sz, (guint8*)data.get() );
         if( sz && !data )
         {
-            g_object_unref (G_OBJECT (pInput));
             return UT_ERROR;
         }
 
@@ -492,7 +488,6 @@ UT_Error IE_Imp_OpenDocument::_loadRDFFromFile ( GsfInfile* pGsfInfile,
         {
             UT_DEBUGMSG(("Failed to create a base URI to parse RDF into model. stream:%s sz:%d\n",
                          pStream, sz ));
-            g_object_unref (G_OBJECT (pInput));
             return UT_ERROR;
         }
 
@@ -504,14 +499,12 @@ UT_Error IE_Imp_OpenDocument::_loadRDFFromFile ( GsfInfile* pGsfInfile,
             UT_DEBUGMSG(("Failed to parse RDF into model. stream:%s sz:%d\n",
                          pStream, sz ));
             librdf_free_uri( base_uri );
-            g_object_unref (G_OBJECT (pInput));
             return UT_ERROR;
         }
         librdf_free_uri( base_uri );
     }
 
-    g_object_unref (G_OBJECT (pInput));
-    return ret;
+    return UT_OK;
 }
 
                       
@@ -523,7 +516,16 @@ UT_Error IE_Imp_OpenDocument::_handleRDFStreams ()
 
     RDFArguments args;
     librdf_model* model = args.model;
-    error = _loadRDFFromFile( m_pGsfInfile, "manifest.rdf", &args );
+
+    // check if we can load a manifest.rdf file
+    GsfInput* pRdfManifest = gsf_infile_child_by_name(m_pGsfInfile, "manifest.rdf");
+    if (pRdfManifest)
+    {
+        error = _loadRDFFromFile( pRdfManifest, "manifest.rdf", &args );
+        g_object_unref (G_OBJECT (pRdfManifest));
+        if (error != UT_OK)
+            return error;
+    }
 
     // find other RDF/XML files referenced in the manifest
     const char* query_string = ""
@@ -565,9 +567,16 @@ UT_Error IE_Imp_OpenDocument::_handleRDFStreams ()
         
             UT_DEBUGMSG(("_handleRDFStreams() loading auxilary RDF/XML file from:%s\n",
                          fn.c_str()));
-            error = _loadRDFFromFile( m_pGsfInfile, fn.c_str(), &args );
-            if( error != UT_OK )
-                break;
+            GsfInput* pAuxRDF = gsf_infile_child_by_name(m_pGsfInfile, fn.c_str());
+            if (pAuxRDF) {
+                error = _loadRDFFromFile( pAuxRDF, fn.c_str(), &args );
+                g_object_unref (G_OBJECT (pAuxRDF));
+                if( error != UT_OK )
+                    break;
+            } else {
+                UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+                return UT_ERROR;
+            }
         }
         librdf_free_query_results( results );
     }

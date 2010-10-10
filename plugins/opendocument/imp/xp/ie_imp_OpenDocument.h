@@ -72,7 +72,7 @@ private:
     UT_Error _handleRDFStreams ();
     void _setDocumentProperties();
 
-    UT_Error _loadRDFFromFile ( GsfInfile* pGsfInfile,
+    UT_Error _loadRDFFromFile ( GsfInput* pInput,
                                 const char * pStream,
                                 RDFArguments* args );
 
