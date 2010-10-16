@@ -21,6 +21,7 @@
 #define AP_WIN32DIALOG_NEW_H
 
 #include "xap_Win32DialogHelper.h"
+#include "xap_Win32DialogBase.h"
 #include "ap_Dialog_New.h"
 
 class XAP_Frame;
@@ -28,7 +29,7 @@ class XAP_Win32Frame;
 
 /*****************************************************************/
 
-class ABI_EXPORT AP_Win32Dialog_New: public AP_Dialog_New, XAP_Win32Dialog
+class ABI_EXPORT AP_Win32Dialog_New: public AP_Dialog_New, XAP_Win32Dialog, XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_New(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
