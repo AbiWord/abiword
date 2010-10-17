@@ -45,8 +45,6 @@
 
 bool pt_PieceTable::appendStrux(PTStruxType pts, const gchar ** attributes, pf_Frag_Strux ** ppfs_ret)
 {
-    UT_DEBUGMSG(("pt_PieceTable::appendStrux type:%d\n", (int)pts ));
-    
 	pf_Frag_Strux * pfs = NULL;
 	if(!_makeStrux(pts, attributes, pfs) || !pfs)
 		return false;
