@@ -42,8 +42,8 @@
 
 /*****************************************************************/
 
-#define GWL(hwnd)		(AP_Win32Dialog_Paragraph*)GetWindowLongPtrW((hwnd), DWLP_USER)
-#define SWL(hwnd, d)	(AP_Win32Dialog_Paragraph*)SetWindowLongPtrW((hwnd), DWLP_USER,(LONG_PTR)(d))
+#define GWL(hwnd)		(AP_Win32Dialog_Paragraph*)GetWindowLongPtrW((hwnd), DWL_USER)
+#define SWL(hwnd, d)	(AP_Win32Dialog_Paragraph*)SetWindowLongPtrW((hwnd), DWL_USER,(LONG)(d))
 
 /*****************************************************************/
 
@@ -208,8 +208,8 @@ BOOL CALLBACK AP_Win32Dialog_Paragraph::s_tabProc(HWND hWnd,UINT msg,WPARAM wPar
 
 /*****************************************************************/
 
-#define _DS(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+#define _DS(c,s)	setDlgItemText(hWnd, AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	setDlgItemText(hWnd, AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 #define _GV(s)		(pSS->getValue(AP_STRING_ID_##s))
 
 BOOL AP_Win32Dialog_Paragraph::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
