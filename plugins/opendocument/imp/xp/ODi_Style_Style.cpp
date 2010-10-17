@@ -85,7 +85,6 @@ void ODi_Style_Style::startElement(const gchar* pName,
             !strcmp(m_rElementStack.getStartTag(1)->getName(), "style:paragraph-properties") &&
             !strcmp(m_rElementStack.getStartTag(0)->getName(), "style:tab-stops")) {
 
-            UT_DEBUGMSG(("TAB STOPS IN PARAGRAPH!!!!!!!!!!!!1\n"));
             _parse_style_tabStopProperties(ppAtts);
             
         } else {
