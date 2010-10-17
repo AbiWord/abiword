@@ -211,8 +211,8 @@ bool ODe_Bullet_ListLevelStyle::write(GsfOutput* pODT,
 
     output = rSpacesOffset;
     output += " ";
-    _writeTextProperties(pODT, output);
     _writeListLevelProperties(pODT, output);
+    _writeTextProperties(pODT, output);
 
 
     UT_UTF8String_sprintf(output, "%s</text:list-level-style-bullet>\n",
@@ -305,8 +305,8 @@ bool ODe_Numbered_ListLevelStyle::write(GsfOutput* pODT,
 
     output = rSpacesOffset;
     output += " ";
-    _writeTextProperties(pODT, output);
     _writeListLevelProperties(pODT, output);
+    _writeTextProperties(pODT, output);
 
 
     // Write the closing tag.
