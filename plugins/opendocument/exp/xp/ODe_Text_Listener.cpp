@@ -65,7 +65,7 @@ ODe_Text_Listener::ODe_Text_Listener(ODe_Styles& rStyles,
                         m_isFirstCharOnParagraph(true),
                         m_openedODTextboxFrame(false),
                         m_openedODNote(false),
-			m_bIgoreFirstTab(false),
+                        m_bIgoreFirstTab(false),
                         m_pParagraphContent(NULL),
                         m_currentListLevel(0),
                         m_pCurrentListStyle(NULL),
@@ -215,7 +215,7 @@ void ODe_Text_Listener::openSpan(const PP_AttrProp* pAP) {
         UT_UTF8String output;
         
         UT_UTF8String_sprintf(output, "<text:span text:style-name=\"%s\">",
-                              styleName.escapeXML().utf8_str());
+                              ODe_Style_Style::convertStyleToNCName(styleName).escapeXML().utf8_str());
                               
         ODe_writeUTF8String(m_pParagraphContent, output);
         m_openedODSpan = true;
@@ -560,7 +560,7 @@ void ODe_Text_Listener::openTOC(const PP_AttrProp* pAP) {
     if (hasHeading) {
         _printSpacesOffset(output);
         output += "<text:index-title-template text:style-name=\"";
-        output += headingStyle.escapeXML();     
+        output += ODe_Style_Style::convertStyleToNCName(headingStyle).escapeXML();     
         output += "\">";
         output += tocHeading.escapeXML();        
         output += "</text:index-title-template>\n";
@@ -585,7 +585,7 @@ void ODe_Text_Listener::openTOC(const PP_AttrProp* pAP) {
 
         UT_UTF8String destStyle = m_rAuxiliaryData.m_mDestStyles[outlineLevel];
         UT_ASSERT_HARMLESS(destStyle != "");
-        output += destStyle.escapeXML();
+        output += ODe_Style_Style::convertStyleToNCName(destStyle).escapeXML();
         
         output += "\">\n";
         m_spacesOffset++;
@@ -638,7 +638,7 @@ void ODe_Text_Listener::openTOC(const PP_AttrProp* pAP) {
             m_spacesOffset++;
             _printSpacesOffset(output);
             output += "<text:p text:style-name=\"";
-            output += headingStyle.escapeXML();
+            output += ODe_Style_Style::convertStyleToNCName(headingStyle).escapeXML();
             output += "\">";
             output += tocHeading.escapeXML();
             output += "</text:p>\n"; 
@@ -1212,7 +1212,7 @@ void ODe_Text_Listener::_openODListItem(const PP_AttrProp* pAP) {
             m_pCurrentListStyle = m_rAutomatiStyles.addListStyle();
             
             output += "<text:list text:style-name=\"";
-            output += m_pCurrentListStyle->getName();
+            output += ODe_Style_Style::convertStyleToNCName(m_pCurrentListStyle->getName()).escapeXML();
             output += "\">\n";
             
         } else {
@@ -1394,7 +1394,7 @@ void ODe_Text_Listener::_openODParagraph(const PP_AttrProp* pAP) {
             
             escape = styleName;
             output += "<text:h text:style-name=\"";
-            output += escape.escapeXML();
+            output += ODe_Style_Style::convertStyleToNCName(escape).escapeXML();
             output += "\" text:outline-level=\"";
             output += str;
             output += "\" ";
@@ -1412,7 +1412,7 @@ void ODe_Text_Listener::_openODParagraph(const PP_AttrProp* pAP) {
             // It's a regular paragraph.
             escape = styleName;
             output += "<text:p text:style-name=\"";
-            output += escape.escapeXML();
+            output += ODe_Style_Style::convertStyleToNCName(escape).escapeXML();
             output += "\" ";
             const char* xmlid = 0;
             if( pAP->getAttribute( PT_XMLID, xmlid ) && xmlid )

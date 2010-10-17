@@ -24,6 +24,7 @@
 
 // Internal includes
 #include "ODe_Common.h"
+#include "ODe_Style_Style.h"
 
 // AbiWord includes
 #include <ut_units.h>
@@ -246,7 +247,7 @@ bool ODe_Style_PageLayout::write(GsfOutput* pODT,
     UT_UTF8String output;
 
     UT_UTF8String_sprintf(output, "%s<style:page-layout style:name=\"%s\">\n",
-        rSpacesOffset.utf8_str(), m_name.utf8_str());
+        rSpacesOffset.utf8_str(), ODe_Style_Style::convertStyleToNCName(m_name).utf8_str());
 
     ODe_writeUTF8String(pODT, output);
     

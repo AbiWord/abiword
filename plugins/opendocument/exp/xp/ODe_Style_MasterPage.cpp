@@ -24,6 +24,7 @@
 
 // Internal includes
 #include "ODe_Common.h"
+#include "ODe_Style_Style.h"
 
 // AbiWord includes
 #include <pp_AttrProp.h>
@@ -107,7 +108,8 @@ bool ODe_Style_MasterPage::write(GsfOutput* pODT) const {
     
     UT_UTF8String_sprintf(output,
         "  <style:master-page style:name=\"%s\" style:page-layout-name=\"%s\">\n",
-        m_name.utf8_str(), m_pageLayoutName.utf8_str());
+        ODe_Style_Style::convertStyleToNCName(m_name).utf8_str(),
+        ODe_Style_Style::convertStyleToNCName(m_pageLayoutName).utf8_str());
         
     ODe_writeUTF8String(pODT, output);
     

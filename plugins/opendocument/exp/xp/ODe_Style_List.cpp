@@ -25,6 +25,7 @@
 // Internal includes
 #include "ODe_Common.h"
 #include "ODe_ListLevelStyle.h"
+#include "ODe_Style_Style.h"
 
 // AbiWord includes
 #include <pp_AttrProp.h>
@@ -56,7 +57,7 @@ bool ODe_Style_List::write(GsfOutput* pODT,
     bool ok;
     
     UT_UTF8String_sprintf(output, "%s<text:list-style style:name=\"%s\">\n",
-                          rSpacesOffset.utf8_str(), m_name.utf8_str());
+                          rSpacesOffset.utf8_str(), ODe_Style_Style::convertStyleToNCName(m_name).utf8_str());
     ODe_writeUTF8String(pODT, output);
     
     subElementSpacesOffset = rSpacesOffset;

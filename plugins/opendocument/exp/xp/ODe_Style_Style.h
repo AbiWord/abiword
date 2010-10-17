@@ -2,7 +2,7 @@
  * 
  * Copyright (C) 2005 INdT
  * Author: Daniel d'Andrada T. de Carvalho <daniel.carvalho@indt.org.br>
- * Copyright 2009 AbiSource Corporation B.V.
+ * Copyright 2009-2010 AbiSource Corporation B.V.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,6 +24,8 @@
 #define _ODE_STYLE_STYLE_H_
 
 #include <vector>
+#include <map>
+#include <string>
 
 // AbiWord includes
 #include <ut_string_class.h>
@@ -132,7 +134,17 @@ public:
     const UT_UTF8String& getDefaultTabInterval();
     void setDefaultTabInterval(const UT_UTF8String& rDefaultTabInterval);
     
+    static UT_UTF8String convertStyleToNCName(const UT_UTF8String& name);
+    
 private:
+
+	// It's not really nice that this mapping is static, but otherwise we'd
+	// for example have to pass an ODe_Styles object which holds the mapping to 
+	// the ODe_Style_Style constuctor. This would mean changing lots of code.
+	// Having a static mapping can do no harm whatsoever, so let's just use
+	// that -- MARCM
+	static std::map<std::string, std::string> m_NCStyleMappings;
+
     
     ////
     // <style:style> attributes

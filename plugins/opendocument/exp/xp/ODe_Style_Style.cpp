@@ -2,7 +2,7 @@
  * 
  * Copyright (C) 2005 INdT
  * Author: Daniel d'Andrada T. de Carvalho <daniel.carvalho@indt.org.br>
- * Copyright 2009 AbiSource Corporation B.V.
+ * Copyright 2009-2010 AbiSource Corporation B.V.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -42,6 +42,7 @@
  * ODe_Style_Style
  ******************************************************************************/
 
+std::map<std::string, std::string> ODe_Style_Style::m_NCStyleMappings;
 
 /**
  * Constructor
@@ -102,21 +103,28 @@ bool ODe_Style_Style::write(GsfOutput* pODT, const UT_UTF8String& rSpacesOffset)
             UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
             return false;
         }
-        escape = m_name;
+        escape = ODe_Style_Style::convertStyleToNCName(m_name);
         output += " style:name=\"";
         output += escape.escapeXML();
         output += "\"";
         
-        escape = m_parentStyleName;
+        escape = m_name;
+        escape.escapeXML();
+        ODe_writeAttribute(output, "style:display-name", escape);
+        
+        escape = ODe_Style_Style::convertStyleToNCName(m_parentStyleName);
         escape.escapeXML();
         ODe_writeAttribute(output, "style:parent-style-name", escape);
-        escape = m_nextStyleName;
+        
+        escape = ODe_Style_Style::convertStyleToNCName(m_nextStyleName);
         escape.escapeXML();
         ODe_writeAttribute(output, "style:next-style-name", escape);
-        escape = m_masterPageName;
+        
+        escape = ODe_Style_Style::convertStyleToNCName(m_masterPageName);
         escape.escapeXML();
         ODe_writeAttribute(output, "style:master-page-name", escape);
-        escape = m_listStyleName;
+        
+        escape = ODe_Style_Style::convertStyleToNCName(m_listStyleName);
         escape.escapeXML();
         ODe_writeAttribute(output, "style:list-style-name", escape);
     }
@@ -955,6 +963,43 @@ void ODe_Style_Style::setDefaultTabInterval(const UT_UTF8String& rDefaultTabInte
         m_pParagraphProps = new ParagraphProps(m_defaultStyle);
     }
     m_pParagraphProps->m_defaultTabInterval = rDefaultTabInterval;
+}
+
+/**
+ * 
+ */
+UT_UTF8String ODe_Style_Style::convertStyleToNCName(const UT_UTF8String& name) {
+    // To generate a valid NCName for a style, we simply replace
+    // all non-alphanumeric characters with a dash. Then whenever a collision
+    // occurs between the generated ncnames for two different styles, we'll
+    // just append the string "-1" until it becomes unique :)
+    //
+    // Feel free to make it not replace valid NCName characters. See
+    // http://www.w3.org/TR/REC-xml-names/#NT-NCName for the allowed values
+
+    std::string nc_name = name.utf8_str();
+    for (UT_uint32 i = 0; i < nc_name.size(); i++) {
+        if (isalnum(nc_name[i]))
+            continue;
+        nc_name[i] = '-';
+    }
+    
+    while (true) {
+        if (m_NCStyleMappings.find(nc_name) == m_NCStyleMappings.end()) {
+            // we've never used this nc_name before, so assign it to our style name
+            m_NCStyleMappings[nc_name] = name.utf8_str();
+            return nc_name.c_str();;
+        }
+        
+        if (m_NCStyleMappings[nc_name] == name.utf8_str()) {
+            // we've seen this nc_before and it matches our style name, so 
+            // reuse it!
+            return nc_name.c_str();;
+        }
+        
+        // we've encountered a collision, add "-1" and try again
+        nc_name += "-1";
+    }
 }
 
 

@@ -25,6 +25,7 @@
 // Internal includes
 #include "ODe_AuxiliaryData.h"
 #include "ODe_Common.h"
+#include "ODe_Style_Style.h"
 
 // AbiWord includes
 #include <pp_AttrProp.h>
@@ -34,7 +35,8 @@
  * Constructor
  */
 ODe_TOC_Listener::ODe_TOC_Listener(
-                                    ODe_AuxiliaryData& rAuxiliaryData)
+                                    ODe_AuxiliaryData& rAuxiliaryData
+                                    )
                                     :
                                     m_bInTOCBlock(false),
                                     m_iCurrentTOC(1),
@@ -79,7 +81,13 @@ void ODe_TOC_Listener::openBlock(const PP_AttrProp* pAP, ODe_ListenerAction& /*r
 
     UT_UTF8String sDestStyle = m_rAuxiliaryData.m_mDestStyles[iLevel];
     UT_ASSERT_HARMLESS(sDestStyle != "");
-    ODe_writeUTF8String(m_rAuxiliaryData.m_pTOCContents, "<text:p text:style-name=\"" + sDestStyle.escapeXML() + "\">");
+    
+    UT_UTF8String output;
+    _printSpacesOffset(output);
+    output += "<text:p text:style-name=\"" + ODe_Style_Style::convertStyleToNCName(sDestStyle).escapeXML();
+    output += "\">";
+        
+    ODe_writeUTF8String(m_rAuxiliaryData.m_pTOCContents, output);
 }
 
 void ODe_TOC_Listener::closeBlock() {
@@ -89,5 +97,5 @@ void ODe_TOC_Listener::closeBlock() {
     m_bInTOCBlock = false;
 
     UT_return_if_fail(m_rAuxiliaryData.m_pTOCContents);
-    ODe_writeUTF8String(m_rAuxiliaryData.m_pTOCContents, "</text:p>");
+    ODe_writeUTF8String(m_rAuxiliaryData.m_pTOCContents, "</text:p>\n");
 }
