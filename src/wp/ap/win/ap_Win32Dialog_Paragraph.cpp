@@ -42,8 +42,8 @@
 
 /*****************************************************************/
 
-#define GWL(hwnd)		(AP_Win32Dialog_Paragraph*)GetWindowLongPtrW((hwnd), DWL_USER)
-#define SWL(hwnd, d)	(AP_Win32Dialog_Paragraph*)SetWindowLongPtrW((hwnd), DWL_USER,(LONG)(d))
+#define GWL(hwnd)              (AP_Win32Dialog_Paragraph*)GetWindowLongPtrW((hwnd), DWLP_USER)
+#define SWL(hwnd, d)   (AP_Win32Dialog_Paragraph*)SetWindowLongPtrW((hwnd), DWLP_USER,(LONG_PTR)(d))
 
 /*****************************************************************/
 
