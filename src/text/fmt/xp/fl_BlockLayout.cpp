@@ -255,7 +255,6 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	m_bIsTOC = (pSectionLayout->getContainerType() == FL_CONTAINER_TOC);
 	if(m_bIsTOC)
 	{
-		UT_DEBUGMSG(("TOC BLOck created %p \n",this));
 		fl_TOCLayout * pTOCL= static_cast<fl_TOCLayout *>(getSectionLayout());
 		m_iTOCLevel = pTOCL->getCurrentLevel();
 	}
@@ -1140,8 +1139,6 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 
 	if (id != 0 && !m_pAutoNum)
 	{
-		UT_DEBUGMSG(("Adding to List, id= %d parent_id = %d \n",id,parent_id));
-
 		pAutoNum = m_pDoc->getListByID(id);
 		//
 		// Create new list if none exists

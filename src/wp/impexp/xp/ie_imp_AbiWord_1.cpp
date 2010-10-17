@@ -628,7 +628,6 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 
 	case TT_ANN:
 		X_VerifyParseState(_PS_Block);
-		UT_DEBUGMSG(("Annotation object found \n"));
 		X_CheckError(appendObject(PTO_Annotation,atts));
 		goto cleanup;
 
@@ -637,16 +636,6 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 		X_VerifyParseState(_PS_Block);
 		m_parseState = _PS_Field;
 		X_CheckError(appendObject(PTO_Field,atts));
-
-#ifdef DEBUG
-		UT_DEBUGMSG(("SEVIOR: Appending field \n"));
-		{	// M$ compilers don't regard for-loop variable scoping! :-<
-			for(UT_sint32 i=0; atts[i] != NULL; i++)
-			{
-				UT_DEBUGMSG(("Element %d is %s \n",i,atts[i]));
-			}
-		}
-#endif
 		goto cleanup;
 	}
 

@@ -105,7 +105,6 @@ bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 							  const PX_ChangeRecord * pcr)
 {
 	UT_ASSERT(m_pLayout);
-	UT_DEBUGMSG(("fl_DocListener::populate type %d \n",pcr->getType()));
 
 	bool bResult = false;
 
@@ -582,7 +581,6 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	}
 	case PTX_Block:
 	{
-		UT_DEBUGMSG(("SEVIOR: Doing populate block sdh %p \n",sdh));
 		if(m_pCurrentSL == NULL)
 		{
 			m_pDoc->miniDump(sdh,6);
@@ -905,7 +903,6 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 {
 	UT_return_val_if_fail( sfh, false );
 	
-	UT_DEBUGMSG(("fl_DocListener::change\n"));
 	bool bResult = false;
 	AV_ChangeMask chgMask = AV_CHG_NONE;
 	

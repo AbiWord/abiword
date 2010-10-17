@@ -81,7 +81,6 @@ bool PX_ChangeRecord::setCRNumber(void) const
       return false;
   }
   m_iCRNumber = m_pDoc->getNextCRNumber();
-  UT_DEBUGMSG(("!!!!!!!!!!Created CR ID number %d Doc UUID %s \n",m_iCRNumber,getDocUUID()));
   return true;
 }
 

@@ -419,7 +419,6 @@ void IE_Imp_XML::charData(const gchar *s, int len)
 			}
 			
 		default:
-			UT_DEBUGMSG(("ie_imp_XML::charData Default just return \n"));
 			return;
 		}
 }

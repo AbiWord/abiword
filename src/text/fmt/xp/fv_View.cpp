@@ -677,7 +677,6 @@ void FV_View::updateCarets(PT_DocPosition docPos, UT_sint32 iLen)
 	UT_sint32 iCount = m_vecCarets.getItemCount();
 	UT_UTF8String sUUID = m_pDoc->getMyUUIDString();
 	bool bLocal = (sUUID == m_sDocUUID);
-	UT_DEBUGMSG(("bLocal %d Cur UUID %s local UUID %s \n",bLocal,sUUID.utf8_str(),m_sDocUUID.utf8_str()));
 	UT_sint32 i = 0;
 	bool bFoundID = false;
 	for(i=0; i<iCount;i++)

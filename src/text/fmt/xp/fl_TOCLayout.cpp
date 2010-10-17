@@ -77,7 +77,6 @@ TOCEntry::TOCEntry(fl_BlockLayout * pBlock,
 	m_bInherit(bInherit),
 	m_iStartAt(iStartAt)
 {
-	UT_DEBUGMSG(("created entry %p \n",this));
 }
 
 TOCEntry::~TOCEntry(void)
@@ -684,7 +683,6 @@ void fl_TOCLayout::_createAndFillTOCEntry(PT_DocPosition posStart, PT_DocPositio
 			pNewBlock = static_cast<fl_BlockLayout *>(pNewBlock->getNext());
 		}
 	}
-	UT_DEBUGMSG(("New TOC block in TOCLayout %p \n",pNewBlock));
 
 	// OK Now add the block to our vector.
 	TOCEntry *pNewEntry = createNewEntry(pNewBlock);
@@ -826,7 +824,6 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_UTF8String & sStyl
 #endif
 	PT_DocPosition posStart = pBlock->getPosition(true);
 	PT_DocPosition posEnd = posStart + static_cast<PT_DocPosition>(pBlock->getLength());
-	UT_DEBUGMSG(("Block is %d long \n",pBlock->getLength()));
 
 	_createAndFillTOCEntry(posStart, posEnd, pPrevBL, sStyle.utf8_str(), iAllBlocks);
 	
@@ -1035,7 +1032,6 @@ void fl_TOCLayout::_calculateLabels(void)
 			UT_ASSERT(stEntry.getDepth() > 0);
 			stEntry.viewTop(&pTmp);
 			TOCEntry * pPrevLevel = static_cast<TOCEntry*>(pTmp);
-			UT_DEBUGMSG(("Using prevLevel %p thisentry %p \n",pPrevLevel,pThisEntry));
 			if(pPrevLevel && pPrevLevel->getLevel() < pThisEntry->getLevel())
 			{
 				UT_ASSERT(pPrevLevel->getLevel() >= 0);
@@ -1143,7 +1139,6 @@ bool fl_TOCLayout::_isStyleInTOC(UT_UTF8String & sStyle, UT_UTF8String & sTOCSty
 			xxx_UT_DEBUGMSG(("Level %d style is %s \n",iLoop,sTmpStyle.utf8_str()));
 			if(g_ascii_strcasecmp(sLStyle,sTmpStyle.utf8_str()) == 0)
 			{
-				UT_DEBUGMSG(("Found match  at Level %d \n",iLoop));
 				return true;
 			}
 		}
@@ -2330,7 +2325,6 @@ bool fl_TOCListener::populate(PL_StruxFmtHandle sfh,
 	}
 
 	UT_ASSERT(m_pTOCL);
-	UT_DEBUGMSG(("fl_TOCListener::populate block %p \n",m_pCurrentBL));
 
 	bool bResult = false;
 	//FV_View* pView = m_pTOCL->getDocLayout()->getView();
@@ -2383,7 +2377,6 @@ bool fl_TOCListener::populateStrux(PL_StruxDocHandle sdh,
 									  PL_StruxFmtHandle * psfh)
 {
 	UT_ASSERT(m_pTOCL);
-	UT_DEBUGMSG(("fl_TOCListener::populateStrux\n"));
 
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	PT_AttrPropIndex iTOC = m_pStyle->getIndexAP();
@@ -2402,7 +2395,6 @@ bool fl_TOCListener::populateStrux(PL_StruxDocHandle sdh,
 		{
 			// append a new BlockLayout to that SectionLayout
 			fl_ContainerLayout*	pBL = m_pTOCL->insert(sdh,pMyBL, iTOC,FL_CONTAINER_BLOCK);
-			UT_DEBUGMSG(("New TOC block %p created and set as current \n",pBL));
 			if (!pBL)
 			{
 				UT_DEBUGMSG(("no memory for BlockLayout"));

@@ -64,7 +64,6 @@ bool fp_FieldListLabelRun::calculateValue(void)
 	}
 	if(listlabel == NULL)
 	{
-		UT_DEBUGMSG(("Field List Label Got NULL \n"));
 		sz_ucs_FieldValue[0] = 0;
 	}
 	else

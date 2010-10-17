@@ -2796,7 +2796,6 @@ bool fp_TextRun::isOneItem(fp_Run * pNext)
 	GR_Itemization I;
 	bool b = getBlock()->itemizeSpan(getBlockOffset(), getLength()+pNext->getLength(),I);
 	UT_return_val_if_fail(b,false);
-	UT_DEBUGMSG(("Found %d items \n",I.getItemCount()-1));
 	if(I.getItemCount() <= 2)
 	{
 		//
