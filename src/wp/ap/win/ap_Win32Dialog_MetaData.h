@@ -22,6 +22,7 @@
 
 #include "ap_Dialog_MetaData.h"
 #include "xap_Win32PropertySheet.h"
+#include "xap_Win32DialogBase.h"
 
 // localise controls
 typedef struct
@@ -47,7 +48,7 @@ class XAP_Win32Frame;
 
 /*****************************************************************/
 
-class ABI_EXPORT AP_Win32Dialog_MetaData: public AP_Dialog_MetaData
+class ABI_EXPORT AP_Win32Dialog_MetaData: public AP_Dialog_MetaData, XAP_Win32DialogBase
 {
 public:
 	AP_Win32Dialog_MetaData(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

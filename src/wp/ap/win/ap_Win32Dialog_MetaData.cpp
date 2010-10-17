@@ -136,8 +136,11 @@ void AP_Win32Dialog_MetaData_General::_onInitDialog()
 {				
 	const XAP_StringSet * pSS = getApp()->getStringSet();		
 	
-	control_id_string_id rgMapping[] =
-	{						 
+	struct control_id_string_id {
+		UT_sint32		controlId;
+		XAP_String_Id	stringId;
+	} static const rgMapping[] =
+	{
 		{AP_RID_DIALOG_META_GENERAL_TEXT_TITLE,			AP_STRING_ID_DLG_MetaData_Title_LBL},
 		{AP_RID_DIALOG_META_GENERAL_TEXT_SUBJECT,		AP_STRING_ID_DLG_MetaData_Subject_LBL},
 		{AP_RID_DIALOG_META_GENERAL_TEXT_AUTHOR,		AP_STRING_ID_DLG_MetaData_Author_LBL},
@@ -148,7 +151,7 @@ void AP_Win32Dialog_MetaData_General::_onInitDialog()
 	
 	// Localise the controls
 	for (int i = 0; i < rgMapping[i].controlId; i++)		
-		SetDlgItemText(getHandle(), rgMapping[i].controlId, pSS->getValue(rgMapping[i].stringId));						
+		setDlgItemText(getHandle(), rgMapping[i].controlId, pSS->getValue(rgMapping[i].stringId));						
 	
 	// Setup previous text	
 	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_GENERAL_EDIT_TITLE,			fromUTF8toWinLocale(getContainer()->getTitle().utf8_str()));									
@@ -159,8 +162,8 @@ void AP_Win32Dialog_MetaData_General::_onInitDialog()
 	
 	
 	HWND hParent = GetParent(getHandle());						
-	SetDlgItemText(hParent, IDOK, pSS->getValue(XAP_STRING_ID_DLG_OK));
-	SetDlgItemText(hParent, IDCANCEL, pSS->getValue(XAP_STRING_ID_DLG_Cancel));				
+	setDlgItemText(hParent, IDOK, pSS->getValue(XAP_STRING_ID_DLG_OK));
+	setDlgItemText(hParent, IDCANCEL, pSS->getValue(XAP_STRING_ID_DLG_Cancel));				
 	
 	XAP_Win32DialogHelper::s_centerDialog(hParent);							
 }
@@ -223,8 +226,11 @@ void AP_Win32Dialog_MetaData_Summary::_onInitDialog()
 {		
 	const XAP_StringSet * pSS = getApp()->getStringSet();
 	
-	control_id_string_id rgMapping[] =
-	{						 
+	struct control_id_string_id {
+		UT_sint32		controlId;
+		XAP_String_Id	stringId;
+	} static const rgMapping[] =
+	{
 		{AP_RID_DIALOG_META_SUMMARY_TEXT_KEYWORDS,		AP_STRING_ID_DLG_MetaData_Keywords_LBL},
 		{AP_RID_DIALOG_META_SUMMARY_TEXT_LANGUAGE,		AP_STRING_ID_DLG_MetaData_Languages_LBL},			
 		{AP_RID_DIALOG_META_SUMMARY_TEXT_CATEGORY,		AP_STRING_ID_DLG_MetaData_Category_LBL},     
@@ -235,7 +241,7 @@ void AP_Win32Dialog_MetaData_Summary::_onInitDialog()
 	
 	// Localise the controls
 	for (int i = 0; i < rgMapping[i].controlId; i++)		
-		SetDlgItemText(getHandle(), rgMapping[i].controlId, pSS->getValue(rgMapping[i].stringId));				
+		setDlgItemText(getHandle(), rgMapping[i].controlId, pSS->getValue(rgMapping[i].stringId));				
 
 	// Setup previous text	
 	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_SUMMARY_EDIT_CATEGORY,		fromUTF8toWinLocale(getContainer()->getCategory().utf8_str()));									
@@ -302,8 +308,11 @@ void AP_Win32Dialog_MetaData_Permissions::_onInitDialog()
 {				
 	const XAP_StringSet * pSS = getApp()->getStringSet();
 	
-	control_id_string_id rgMapping[] =
-	{	
+	struct control_id_string_id {
+		UT_sint32		controlId;
+		XAP_String_Id	stringId;
+	} static const rgMapping[] =
+	{
 		{AP_RID_DIALOG_META_PERMISSIONS_TEXT_SOURCE,	AP_STRING_ID_DLG_MetaData_Source_LBL},
 		{AP_RID_DIALOG_META_PERMISSIONS_TEXT_RELATION,	AP_STRING_ID_DLG_MetaData_Relation_LBL},
 		{AP_RID_DIALOG_META_PERMISSIONS_TEXT_COVERAGE,	AP_STRING_ID_DLG_MetaData_Coverage_LBL},
@@ -313,7 +322,7 @@ void AP_Win32Dialog_MetaData_Permissions::_onInitDialog()
 	
 	// Localise the controls
 	for (int i = 0; i < rgMapping[i].controlId; i++)		
-		SetDlgItemText(getHandle(), rgMapping[i].controlId, pSS->getValue(rgMapping[i].stringId));				
+		setDlgItemText(getHandle(), rgMapping[i].controlId, pSS->getValue(rgMapping[i].stringId));				
 
 	// Setup previous text	
 	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_PERMISSIONS_EDIT_SOURCE,		fromUTF8toWinLocale(getContainer()->getSource().utf8_str()));											
