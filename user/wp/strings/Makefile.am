@@ -39,6 +39,7 @@ strings_DATA = \
 	it-IT.strings \
 	ja-JP.strings \
 	jbo.strings \
+	kk-KZ.strings \
 	ko.strings \
 	ku.strings \
 	lt-LT.strings \

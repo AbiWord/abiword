@@ -55,6 +55,7 @@ wp_DATA = \
 	system.profile-hu-HU \
 	system.profile-it-IT \
 	system.profile-ja-JP \
+	system.profile-kk-KZ \
 	system.profile-KOI8-R \
 	system.profile-KOI8-U \
 	system.profile-KOI8-UB \
