@@ -45,10 +45,10 @@ class ODi_Style_List
 public:
 
     ODi_Style_List(ODi_ElementStack& rElementStack) :
-      m_bListStyle(false),
-	ODi_ListenerState("StyleList", rElementStack) 
-        {
-        }
+	    ODi_ListenerState("StyleList", rElementStack),
+        m_bListStyle(false)
+    {
+    }
                                      
     virtual ~ODi_Style_List();
     
