@@ -104,6 +104,16 @@ test "$enable_collab_backend_service" = "yes" && collab_pkgs="$collab_pkgs $coll
 AC_MSG_CHECKING([for collab service backend])
 AC_MSG_RESULT([$enable_collab_backend_service])
 
+AC_ARG_ENABLE([collab-backend-sip], 
+    [AS_HELP_STRING([--enable-collab-backend-sip], [Experimental SIP backend (default: off)])], 
+[
+	enable_collab_backend_sipsimple=$enableval
+], [
+	enable_collab_backend_sipsimple="no"
+])
+AC_MSG_CHECKING([for collab sip backend])
+AC_MSG_RESULT([$enable_collab_backend_sipsimple])
+
 AC_ARG_ENABLE([collab-record-always], 
     [AS_HELP_STRING([--enable-collab-record-always], [Always record AbiCollab sessions (default: off)])], 
 [
@@ -164,6 +174,10 @@ if test "$enable_collab_backend_service" = "yes"; then
 	COLLAB_CFLAGS="$COLLAB_CFLAGS -DABICOLLAB_HANDLER_SERVICE -DSOUP24"
 	COLLAB_RCFLAGS="$COLLAB_RCFLAGS -DABICOLLAB_HANDLER_SERVICE"
 fi
+if test "$enable_collab_backend_sipsimple" = "yes"; then
+	COLLAB_CFLAGS="$COLLAB_CFLAGS -DABICOLLAB_HANDLER_SIPSIMPLE"
+	COLLAB_RCFLAGS="$COLLAB_RCFLAGS -DABICOLLAB_HANDLER_SIPSIMPLE"
+fi
 if test "$enable_collab_record_always" = "yes"; then
 	COLLAB_CFLAGS="$COLLAB_CFLAGS -DABICOLLAB_RECORD_ALWAYS"
 	COLLAB_RCFLAGS="$COLLAB_RCFLAGS -DABICOLLAB_RECORD_ALWAYS"
@@ -187,6 +201,7 @@ AM_CONDITIONAL([COLLAB_BACKEND_XMPP], [test "$enable_collab_backend_xmpp" = "yes
 AM_CONDITIONAL([COLLAB_BACKEND_TCP], [test "$enable_collab_backend_tcp" = "yes"])
 AM_CONDITIONAL([COLLAB_BACKEND_SUGAR], [test "$enable_collab_backend_sugar" = "yes"])
 AM_CONDITIONAL([COLLAB_BACKEND_SERVICE], [test "$enable_collab_backend_service" = "yes"])
+AM_CONDITIONAL([COLLAB_BACKEND_SIPSIMPLE], [test "$enable_collab_backend_sipsimple" = "yes"])
 AM_CONDITIONAL([COLLAB_RECORD_ALWAYS], [test "$enable_collab_record_always" = "yes"])
 
 AC_SUBST([COLLAB_CFLAGS])

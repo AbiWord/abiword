@@ -1,5 +1,5 @@
 
-DIST_SUBDIRS = fake service sugar tcp telepathy xmpp
+DIST_SUBDIRS = fake service sugar tcp telepathy xmpp sipsimple
 SUBDIRS = 
 
 noinst_LTLIBRARIES = libbackends.la
@@ -36,6 +36,10 @@ SUBDIRS += telepathy
 libbackends_la_LIBADD += telepathy/libtelepathy.la
 endif
 
+if COLLAB_BACKEND_SIPSIMPLE
+SUBDIRS += sipsimple
+libbackends_la_LIBADD += sipsimple/libsipsimple.la
+endif
 
 libbackends_la_SOURCES = 
 

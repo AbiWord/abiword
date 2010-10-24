@@ -90,6 +90,9 @@
 #include <backends/service/xp/ServiceAccountHandler.h>
 #include <backends/service/xp/tls_tunnel.h>
 #endif
+#ifdef ABICOLLAB_HANDLER_SIPSIMPLE
+#include <backends/sipsimple/unix/SIPSimpleUnixAccountHandler.h>
+#endif
 
 // event includes
 #include <account/xp/Event.h>
@@ -279,6 +282,9 @@ bool AbiCollabSessionManager::registerAccountHandlers()
 	IE_Imp_AbiCollabSniffer* pAbiCollabSniffer = new IE_Imp_AbiCollabSniffer();
 	IE_Imp::registerImporter(pAbiCollabSniffer);
 	m_vImpSniffers.push_back(pAbiCollabSniffer);
+#endif
+#ifdef ABICOLLAB_HANDLER_SIPSIMPLE
+	m_regAccountHandlers[SIPSimpleAccountHandler::getStaticStorageType()] = SIPSimpleAccountHandlerConstructor;
 #endif
 	return true;
 }
