@@ -191,7 +191,7 @@ private:
 
     // RDF
     std::list< std::string > xmlidStackForTextMeta;
-    std::list< std::string > xmlidStackForBookmarks;
+    std::map< std::string, std::string > xmlidMapForBookmarks;
     
     // Page referenced stuff
     bool m_bPageReferencePending;

@@ -390,7 +390,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         _flush ();
         const gchar * pAttr = UT_getAttribute ("text:name", ppAtts);
         const gchar* xmlid = UT_getAttribute("xml:id", ppAtts);
-        xmlidStackForBookmarks.push_back( xmlid ? xmlid : "" );
+        xmlidMapForBookmarks[pAttr] = ( xmlid ? xmlid : "" );
         
         if(pAttr) {
             _insertBookmark (pAttr, "start", xmlid );
@@ -402,9 +402,18 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
 
         _flush ();
         const gchar * pAttr = UT_getAttribute ("text:name", ppAtts);
+        std::string xmlid = "";
+        
 
-        std::string xmlid = xmlidStackForBookmarks.back();
-        xmlidStackForBookmarks.pop_back();
+        if( const gchar* t = UT_getAttribute("xml:id", ppAtts))
+        {
+            xmlid = t;
+        }
+        else
+        {
+            xmlid = xmlidMapForBookmarks[pAttr];
+        }
+        xmlidMapForBookmarks.erase(pAttr);
         
         if(pAttr) {
             _insertBookmark (pAttr, "end", xmlid.c_str() );
