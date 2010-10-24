@@ -1,0 +1,73 @@
+** The result of 
+load para-add-delete.abw
+save out.odt
+restart abiword
+load out.odt
+save t.abw
+
+$ tail para-add-delete.abw 
+</styles>
+<pagesize pagetype="A4" orientation="portrait" width="210.000000" height="297.000000" units="mm" page-scale="1.000000"/>
+<section xid="5" props="page-margin-footer:0.5000in; page-margin-header:0.5000in; page-margin-right:1.0000in; page-margin-left:1.0000in; page-margin-top:1.0000in; page-margin-bottom:1.0000in">
+<p style="Normal" xid="6"><c revision="1">p1: This was added in r1</c><c revision="1"></c></p>
+<p style="Normal" revision="1" xid="1"><c revision="1"></c><c></c></p>
+<p style="Normal" revision="1,-3" xid="2"><c revision="2,-3">p2: added in r2 and deleted in r3</c><c revision="2"></c></p>
+<p style="Normal" revision="2,-3" xid="3"><c revision="2"></c><c></c></p>
+<p style="Normal" revision="2" xid="4"><c revision="2">p3: This was added in r2</c><c revision="2"></c></p>
+</section>
+</abiword>
+
+$ tail t.abw 
+</styles>
+<pagesize pagetype="A4" orientation="portrait" width="210.000000" height="297.000000" units="mm" page-scale="1.000000"/>
+<section xid="1" props="page-margin-right:1.0000in; page-width:210.000000mm; page-margin-left:1.0000in; page-orientation:portrait; page-margin-bottom:1.0000in; page-margin-top:1.0000in; page-height:297.000000mm">
+<p style="Normal" revision="1" xid="2">p1: This was added in r1</p>
+<p style="Normal" revision="1" xid="3"><c></c></p>
+<p style="Normal" revision="1,-3" xid="4">p2: added in r2 and deleted in r3</p>
+<p style="Normal" revision="2,-3" xid="5"><c></c></p>
+<p style="Normal" revision="2" xid="6">p3: This was added in r2</p>
+</section>
+</abiword>
+
+===============================
+
+load t.abw and save to t.odt
+so it has gone abw -> odt -> abw -> odt again
+
+out.odt
+
+    <office:text>
+      <text:section text:style-name="Sect1" text:name="Section1">
+        <text:p text:style-name="Normal" delta:insertion-type="insert-with-content" delta:insertion-change-idref="1">
+          <text:span text:style-name="">p1: This was added in r1</text:span>
+        </text:p>
+        <text:p text:style-name="Normal" delta:insertion-type="insert-with-content" delta:insertion-change-idref="1"/>
+        <delta:removed-content delta:removal-change-idref="3">
+          <text:p text:style-name="Normal" delta:insertion-type="insert-with-content" delta:insertion-change-idref="1">
+            <text:span text:style-name="">p2: added in r2 and deleted in r3</text:span>
+          </text:p>
+        </delta:removed-content>
+        <delta:removed-content delta:removal-change-idref="3">
+          <text:p text:style-name="Normal" delta:insertion-type="insert-with-content" delta:insertion-change-idref="2"/>
+        </delta:removed-content>
+        <text:p text:style-name="Normal" delta:insertion-type="insert-with-content" delta:insertion-change-idref="2">
+          <text:span text:style-name="">p3: This was added in r2</text:span>
+        </text:p>
+      </text:section>
+    </office:text>
+
+
+t.odt
+    <office:text>
+      <text:section text:style-name="Sect1" text:name="Section1">
+        <text:p text:style-name="Normal" delta:insertion-type="insert-with-content" delta:insertion-change-idref="1">p1: This was added in r1</text:p>
+        <text:p text:style-name="Normal" delta:insertion-type="insert-with-content" delta:insertion-change-idref="1"/>
+        <delta:removed-content delta:removal-change-idref="3">
+          <text:p text:style-name="Normal" delta:insertion-type="insert-with-content" delta:insertion-change-idref="1">p2: added in r2 and deleted in r3</text:p>
+        </delta:removed-content>
+        <delta:removed-content delta:removal-change-idref="3">
+          <text:p text:style-name="Normal" delta:insertion-type="insert-with-content" delta:insertion-change-idref="2"/>
+        </delta:removed-content>
+        <text:p text:style-name="Normal" delta:insertion-type="insert-with-content" delta:insertion-change-idref="2">p3: This was added in r2</text:p>
+      </text:section>
+    </office:text>

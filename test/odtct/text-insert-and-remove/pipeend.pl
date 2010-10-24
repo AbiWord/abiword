@@ -30,6 +30,8 @@ while( $line = $io->getline )
     $line =~ s!/delta:(removed-content)!/delta:$BoldOn$1$BoldOff!g;
     $line =~ s!(change-idref="[^"]*")!$BoldOn$1$BoldOff!g;
     $line =~ s!(insert-with-content)!$BoldOn$1$BoldOff!g;
+    $line =~ s!(inserted-text-start delta:inserted-text-id)!$BoldOn$1$BoldOff!g;
+    $line =~ s!(inserted-text-end delta:inserted-text-idref)!$BoldOn$1$BoldOff!g;
 
     $line = ColourLine( $line );
     print $line;
