@@ -67,7 +67,7 @@ public:
 class ABI_EXPORT IE_Imp_AbiWord_1 : public IE_Imp_XML
 {
     std::list< std::string > xmlidStackForTextMeta;
-    std::list< std::string > xmlidStackForBookmarks;
+    std::map< std::string, std::string > xmlidMapForBookmarks;
 
 public:
     IE_Imp_AbiWord_1(PD_Document * pDocument);

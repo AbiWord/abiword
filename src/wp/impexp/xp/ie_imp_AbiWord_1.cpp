@@ -586,8 +586,13 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
         const gchar* type = UT_getAttribute("type", atts);
         if( type && !strcmp(type,"end"))
         {
-            std::string xmlid = xmlidStackForBookmarks.back();
-            xmlidStackForBookmarks.pop_back();
+            std::string  xmlid = "";
+            const gchar* name  = UT_getAttribute("name", atts);
+            if( name )
+            {
+                xmlid = xmlidMapForBookmarks[name];
+                xmlidMapForBookmarks.erase(name);
+            }
             int idx = 0;
             const gchar* pp[60];
             for( ; atts[idx] && idx < 50; idx++ )
@@ -603,8 +608,12 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
         else
         {
             X_CheckError(appendObject(PTO_Bookmark,atts));
+            const gchar* name  = UT_getAttribute("name", atts);
             const gchar* xmlid = UT_getAttribute("xml:id", atts);
-            xmlidStackForBookmarks.push_back( xmlid ? xmlid : "" );
+            if( name && xmlid )
+            {
+                xmlidMapForBookmarks[name] = ( xmlid ? xmlid : "" );
+            }
         }
         
 		goto cleanup;
