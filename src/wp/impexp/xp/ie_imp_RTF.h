@@ -673,6 +673,7 @@ private:
 	bool HandleStarKeyword();
 
 	bool HandlePCData(UT_UTF8String & str);
+	bool HandlePCData(std::string& str);
 
 	bool ReadColourTable();
 	bool ReadFontTable();
@@ -748,6 +749,7 @@ private:
 	bool HandleSubscriptPosition(UT_uint32 pos);
 	bool HandleFontSize(long sizeInHalfPoints);
 	bool HandleBookmark (RTFBookmarkType type);
+	bool HandleRDFAnchor (RTFBookmarkType type);
 	bool HandleListTag(long id);
 
 	bool HandleRevisedText(PP_RevisionType eType, UT_uint32 iId);
@@ -950,6 +952,7 @@ private:
 	UT_uint32             m_iLastEndnoteId;
 	UT_String             m_hyperlinkBase;
 	UT_uint32             m_iHyperlinkOpen;
+	UT_uint32             m_iRDFAnchorOpen;
 	bool                  m_bBidiMode;
 	UT_Stack              m_pasteTableStack;
 	bool                  m_bFootnotePending;

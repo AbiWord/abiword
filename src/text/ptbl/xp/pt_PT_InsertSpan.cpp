@@ -732,6 +732,7 @@ PT_AttrPropIndex pt_PieceTable::_chooseIndexAP(pf_Frag * pf, PT_BlockOffset frag
 			// TODO: determine what we want to do about these guys
 			case PTO_Bookmark:
 			case PTO_Hyperlink:
+            case PTO_RDFAnchor:
 				return 0;
 
 			default:

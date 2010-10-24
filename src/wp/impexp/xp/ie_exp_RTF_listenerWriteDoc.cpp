@@ -64,6 +64,8 @@
 #include "xap_EncodingManager.h"
 #include "ut_string_class.h"
 
+#include <pd_DocumentRDF.h>
+
 static UT_sint32 convertInchToTwips(double inch)
 {
 	return static_cast<UT_sint32>(inch*1440.0 +0.5);
@@ -1721,6 +1723,7 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	m_bOpennedFootnote = false;
 	m_iFirstTop = 0;
 	m_bHyperLinkOpen = false;
+	m_bRDFAnchorOpen = false;
 	m_bAnnotationOpen = false;
 	m_iAnnotationNumber = 0;
 	m_pAnnContent = NULL;
@@ -1921,6 +1924,12 @@ bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 			}
 			    return true;
 			}
+			case PTO_RDFAnchor:
+			{
+				_closeSpan ();
+				_writeRDFAnchor(pcro);
+				return true;
+			}	
 			default:
 				return false;
 			}
@@ -4962,6 +4971,32 @@ void s_RTF_ListenerWriteDoc::_writeBookmark(const PX_ChangeRecord_Object * pcro)
 }
 
 
+void s_RTF_ListenerWriteDoc::_writeRDFAnchor(const PX_ChangeRecord_Object * pcro)
+{
+	PT_AttrPropIndex api = pcro->getIndexAP();
+	const PP_AttrProp * pAP = NULL;
+	m_pDocument->getAttrProp(api,&pAP);
+	RDFAnchor a(pAP);
+	
+	m_pie->_rtf_open_brace();
+	{
+		m_pie->_rtf_keyword("*");
+		if( a.isEnd() )
+		{
+			m_bRDFAnchorOpen = false;
+			m_pie->_rtf_keyword("rdfanchorend");
+		}
+		else
+		{
+			m_bRDFAnchorOpen = true;
+			m_pie->_rtf_keyword("rdfanchorstart");
+		}
+		std::string xmlid = a.getID();
+		m_pie->_rtf_chardata( xmlid.c_str(), xmlid.length());
+		m_pie->_rtf_close_brace();
+	}
+}
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 void s_RTF_ListenerWriteDoc::_writeHyperlink(const PX_ChangeRecord_Object * pcro)
@@ -4990,6 +5025,25 @@ void s_RTF_ListenerWriteDoc::_writeHyperlink(const PX_ChangeRecord_Object * pcro
 	m_pie->_rtf_keyword("fldrslt");
 }
 
+
+// void s_RTF_ListenerWriteDoc::_writeRDFAnchorStart(const PX_ChangeRecord_Object * pcro)
+// {
+// 	PT_AttrPropIndex api = pcro->getIndexAP();
+// 	const PP_AttrProp * pHyperlinkAP = NULL;
+// 	m_pDocument->getAttrProp(api,&pHyperlinkAP);
+
+// 	_writeFieldPreamble(pHyperlinkAP);
+// 	m_pie->write("TEXTMETA ");
+// 	m_pie->write("\"");
+// //	m_pie->write(szHyper);
+// 	m_pie->write("\"");
+// 	m_bRDFAnchorOpen = true;
+// 	m_pie->_rtf_close_brace();
+// 	m_pie->_rtf_close_brace();
+// 	m_pie->_rtf_open_brace();
+// 	m_pie->_rtf_keyword("*");
+// 	m_pie->_rtf_keyword("fldrslt");
+// }
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////

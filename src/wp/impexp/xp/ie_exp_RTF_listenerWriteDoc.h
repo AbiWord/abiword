@@ -89,8 +89,9 @@ protected:
 	void				_rtf_open_block(PT_AttrPropIndex api);
 	void				_writeImageInRTF(const PX_ChangeRecord_Object * pcro);
 	void                _writeBookmark(const PX_ChangeRecord_Object * pcro);
+	void                _writeRDFAnchor(const PX_ChangeRecord_Object * pcro);
 	void                _writeHyperlink(const PX_ChangeRecord_Object * pcro);
-	void                _writeAnnotation(const PX_ChangeRecord_Object * pcro);
+    void                _writeAnnotation(const PX_ChangeRecord_Object * pcro);
     void                _writeFieldPreamble(const PP_AttrProp * pSpanAP);
 	const UT_UCSChar *  _getFieldValue(void);
 	void                _writeFieldTrailer(void);
@@ -146,6 +147,7 @@ protected:
 	UT_String           m_sLastColor;
 	UT_sint32           m_iFirstTop;
 	bool                m_bHyperLinkOpen;
+	bool                m_bRDFAnchorOpen;
 	bool                m_bOpenBlockForSpan;
 	bool                m_bTextBox;
 	//

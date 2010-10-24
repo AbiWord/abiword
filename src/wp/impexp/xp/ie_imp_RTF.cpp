@@ -1490,6 +1490,7 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_iLastFootnoteId((UT_uint32)pDocument->getUID(UT_UniqueId::Footnote)),
 	m_iLastEndnoteId((UT_uint32)pDocument->getUID(UT_UniqueId::Endnote)),
 	m_iHyperlinkOpen(0),
+	m_iRDFAnchorOpen(0),
 	m_bBidiMode(false),
 	m_bFootnotePending(false),
 	m_bFtnReferencePending(false),
@@ -3971,6 +3972,21 @@ gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & _buf, gchar *xmlField, bool 
 		}
 		break;
 	case 'T':
+		if (strcmp (instr, "TEXTMETA") == 0)
+		{
+			std::string xmlid = "";
+			const gchar* ppAtts[10] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+			ppAtts[0] = PT_XMLID;
+			ppAtts[1] = xmlid.c_str();
+			// sanity check
+			ppAtts[2] = "this-is-an-rdf-anchor";
+			ppAtts[3] = "yes";
+//			ppAtts[4] = PT_RDF_END;
+//			ppAtts[5] = "yes";
+
+			getDoc()->appendObject(PTO_RDFAnchor, ppAtts);
+			m_iRDFAnchorOpen++;
+		}
 		if (strcmp (instr, "TIME") == 0)
 		{
 			// Some Parameters from MS Word 2000 output
@@ -5852,6 +5868,11 @@ bool IE_Imp_RTF::HandleStarKeyword()
 					break;
 				case RTF_KW_bkmkend:
 					return HandleBookmark (RBT_END);
+				case RTF_KW_rdfanchorstart:
+					return HandleRDFAnchor (RBT_START);
+					break;
+				case RTF_KW_rdfanchorend:
+					return HandleRDFAnchor (RBT_END);
 				case RTF_KW_cs:
 					UT_DEBUGMSG(("Found cs in readword stream just ignore \n"));
 					return true;
@@ -11146,6 +11167,62 @@ bool IE_Imp_RTF::HandleBookmark (RTFBookmarkType type)
 }
 
 
+bool IE_Imp_RTF::HandleRDFAnchor (RTFBookmarkType type)
+{
+	UT_DEBUGMSG(("HandleRDFAnchor() of type %duse-app:%d\n",
+				 type, !bUseInsertNotAppend()  ));
+
+	std::string xmlid;
+	HandlePCData(xmlid);
+
+	UT_DEBUGMSG(("HandleRDFAnchor() of type %d xmlid:%s\n",
+				 type, xmlid.c_str()));
+	const gchar* ppAtts[10] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+	int ppIdx = 0;
+	ppAtts[ppIdx++] = PT_XMLID;
+	ppAtts[ppIdx++] = xmlid.c_str();
+	ppAtts[ppIdx++] = "this-is-an-rdf-anchor";
+	ppAtts[ppIdx++] = "yes";
+	switch (type)
+	{
+		case RBT_START:
+			m_iRDFAnchorOpen--;
+			break;
+		case RBT_END:
+			m_iRDFAnchorOpen++;
+			ppAtts[ppIdx++] = PT_RDF_END;
+			ppAtts[ppIdx++] = "yes";
+			break;
+	}
+	
+	if (!bUseInsertNotAppend()) 
+	{
+			if(m_pDelayedFrag)
+			{
+				getDoc()->insertObjectBeforeFrag(m_pDelayedFrag,PTO_RDFAnchor,ppAtts);
+			}
+			else
+			{
+				getDoc()->appendObject(PTO_RDFAnchor, ppAtts);
+			}
+	}
+	else 
+	{
+		if(isBlockNeededForPasteTable())
+		{
+			markPasteBlock();
+			insertStrux(PTX_Block);
+		}
+		getDoc()->insertObject(m_dposPaste, PTO_RDFAnchor, ppAtts, NULL);
+		m_dposPaste++;
+		if(m_posSavedDocPosition > 0)
+			m_posSavedDocPosition++;
+	}
+	
+	return true;
+}
+
+
 void IE_Imp_RTF::_appendHdrFtr ()
 {
 	UT_uint32 i;
@@ -11474,7 +11551,7 @@ bool IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	
 
 	UT_DEBUGMSG(("Pasting %d bytes of RTF\n",lenData));
-#if 0 //def DEBUG
+#if 1 //def DEBUG
 	{
 		const char * p = (const char*)pData;
 		for(UT_uint32 i = 0; i < lenData; i += 50)
@@ -12344,6 +12421,13 @@ bool IE_Imp_RTF::HandleInfoMetaData()
 	return true;
 }
 
+bool IE_Imp_RTF::HandlePCData(std::string& str)
+{
+	UT_UTF8String t;
+	bool ret = HandlePCData(t);
+	str = t.utf8_str();
+	return ret;
+}
 
 /* 
  * TODO:
