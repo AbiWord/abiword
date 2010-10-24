@@ -1100,52 +1100,53 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
 void ODi_TextContent_ListenerState::charData (
                             const gchar* pBuffer, int length)
 {
-    if (pBuffer && length) 
+    if (!pBuffer || !length)
+        return; // nothing to do
+
+    if (m_bAcceptingText) 
     {
-        if (m_bAcceptingText) 
-	{
-	     if(!m_bContentWritten)
-	     {
-	       // Strip all leading space if immediately after a paragragh
-	       // column or page break
-	           UT_UCS4String sUCS = UT_UCS4String (pBuffer, length, false);
-		   UT_UCS4Char ucs = sUCS[0];
-		   UT_uint32 i = 0;
-		   while(ucs != 0 && UT_UCS4_isspace(ucs) && (i<sUCS.size()))
-		   {
-		        i++;
-		        ucs = sUCS[i];
-		   }
-		   //
-		   // Leave a single trailing space if one or more exists
-		   //
-		   UT_uint32 j = sUCS.size()-1;
-		   ucs = sUCS[j];
-		   while(UT_UCS4_isspace(ucs) && (j>i))
-		   {
-		        j--;
-		        ucs = sUCS[j];
-		   }
-		   for(i=i; i<=j ; i++)
-		   {
-		        m_charData += sUCS[i];
-		   }
-		   if(j<sUCS.size()-1)
-		        m_charData += UCS_SPACE;
-	     }
-	     else
-	     {
-	           m_charData += UT_UCS4String (pBuffer, length, true);
-	     }
-        } 
-	else if (m_bPendingAnnotationAuthor) 
-	{
-            m_sAnnotationAuthor = pBuffer;
-        } 
-	else if (m_bPendingAnnotationDate) 
-	{
-            m_sAnnotationDate = pBuffer;
+        if(!m_bContentWritten)
+        {
+            // Strip all leading space if immediately after a paragragh
+            // column or page break
+            UT_UCS4String sUCS = UT_UCS4String (pBuffer, length, false);
+            UT_UCS4Char ucs = sUCS[0];
+            UT_uint32 i = 0;
+            while(ucs != 0 && UT_UCS4_isspace(ucs) && (i<sUCS.size()))
+            {
+                i++;
+                ucs = sUCS[i];
+            }
+            //
+            // Leave a single trailing space if one or more exists
+            //
+            UT_uint32 j = sUCS.size()-1;
+            ucs = sUCS[j];
+            while(UT_UCS4_isspace(ucs) && (j>i))
+            {
+                j--;
+                ucs = sUCS[j];
+            }
+            for(i=i; i<=j ; i++)
+            {
+                m_charData += sUCS[i];
+            }
+            if(j<sUCS.size()-1)
+               m_charData += UCS_SPACE;
         }
+        else
+        {
+            printf(">>> content written!\n");
+            m_charData += UT_UCS4String (pBuffer, length, true);
+        }
+    } 
+    else if (m_bPendingAnnotationAuthor) 
+    {
+        m_sAnnotationAuthor = pBuffer;
+    } 
+    else if (m_bPendingAnnotationDate) 
+    {
+        m_sAnnotationDate = pBuffer;
     }
 }
 
@@ -1565,7 +1566,7 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
                     m_pAbiDocument->appendStrux(PTX_Block, NULL);
                     m_pAbiDocument->appendSpan (&ucs, 1);
                     m_bOpenedBlock = true;
-		    m_bContentWritten = false;
+                    m_bContentWritten = false;
                 }
             } else {
                 _insureInSection();
@@ -1579,24 +1580,21 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
                         m_pAbiDocument->appendStrux(PTX_Block, NULL);
                         m_pAbiDocument->appendSpan (&ucs, 1);
                         m_bOpenedBlock = true;
-			m_bContentWritten = false;
+                        m_bContentWritten = false;
                     } else if (pStyle->getBreakBefore() == "column") {
                         ucs = UCS_VTAB;
                         // Append an empty paragraph with this one char
                         m_pAbiDocument->appendStrux(PTX_Block, NULL);
                         m_pAbiDocument->appendSpan (&ucs, 1);
                         m_bOpenedBlock = true;
-			m_bContentWritten = false;
+                        m_bContentWritten = false;
                     }
                 }
             }
 
         }
         
-
-
         i = 0;
-
         if (bIsListParagraph && !m_alreadyDefinedAbiParagraphForList) {
             ODi_ListLevelStyle* pListLevelStyle = NULL;
             
@@ -1610,12 +1608,12 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
             ppAtts[i++] = "level";
             ppAtts[i++] = listLevel;
             if (pListLevelStyle && pListLevelStyle->getAbiListID() && pListLevelStyle->getAbiListParentID())
-	    {
-	        if(m_listLevel < m_prevLevel)
-		{
-		     m_pCurrentListStyle->redefine( m_pAbiDocument,m_prevLevel);
-		}
-		m_prevLevel = m_listLevel;
+	        {
+	            if(m_listLevel < m_prevLevel)
+		        {
+		            m_pCurrentListStyle->redefine( m_pAbiDocument,m_prevLevel);
+		        }
+                m_prevLevel = m_listLevel;
 		
                 ppAtts[i++] = "listid";
                 ppAtts[i++] = pListLevelStyle->getAbiListID()->utf8_str();
@@ -1624,7 +1622,7 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
                 // the <l> tag.
                 ppAtts[i++] = "parentid";
                 ppAtts[i++] = pListLevelStyle->getAbiListParentID()->utf8_str();
-		xxx_UT_DEBUGMSG(("Level |%s| Listid |%s| Parentid |%s| \n",ppAtts[i-5],ppAtts[i-3],ppAtts[i-1]));
+                xxx_UT_DEBUGMSG(("Level |%s| Listid |%s| Parentid |%s| \n",ppAtts[i-5],ppAtts[i-3],ppAtts[i-1]));
             }
             
             if (pStyle!=NULL) {
@@ -1653,14 +1651,12 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
             UT_ASSERT(ok);
             m_bOpenedBlock = true;
 
-            
-
             ppAtts[0] = "type";
             ppAtts[1] = "list_label";
             ppAtts[2] = 0;
             ok = m_pAbiDocument->appendObject(PTO_Field, ppAtts);
             UT_ASSERT(ok);
-	    m_bContentWritten = true;
+            m_bContentWritten = true;
             
             // Inserts a tab character. AbiWord seems to need it in order to
             // implement the space between the list mark (number/bullet) and
@@ -1676,7 +1672,7 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
             
             UT_UCSChar ucs = UCS_LF;
             m_pAbiDocument->appendSpan(&ucs,1);
-	    m_bContentWritten = true;
+               m_bContentWritten = true;
 
             if (pStyle!=NULL) { 
                 if (pStyle->isAutomatic()) {
@@ -1761,13 +1757,13 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
             ppAtts[4] = 0;
             
             ok = m_pAbiDocument->appendObject(PTO_Field, ppAtts);
-	    //
-	    // Now insert the tab after the anchor
-	    //
-	    UT_UCSChar ucs = UCS_TAB;
-	    m_pAbiDocument->appendSpan (&ucs, 1);
-	    m_bContentWritten = true;
-            UT_ASSERT(ok);           
+	        //
+	        // Now insert the tab after the anchor
+	        //
+	        UT_UCSChar ucs = UCS_TAB;
+	        m_pAbiDocument->appendSpan (&ucs, 1);
+	        m_bContentWritten = true;
+                UT_ASSERT(ok);           
         }
 }
 
@@ -1875,13 +1871,13 @@ void ODi_TextContent_ListenerState::_flushPendingParagraphBreak() {
             UT_UCSChar ucs = UCS_FF;
             m_pAbiDocument->appendSpan (&ucs, 1);
             m_bOpenedBlock = true;
-	    m_bContentWritten = false;
+            m_bContentWritten = false;
         } else if (m_pendingParagraphBreak == "column") {
             m_pAbiDocument->appendStrux(PTX_Block, NULL);
             UT_UCSChar ucs = UCS_VTAB;
             m_pAbiDocument->appendSpan (&ucs, 1);
             m_bOpenedBlock = true;
-	    m_bContentWritten = false;
+            m_bContentWritten = false;
         }
         
         m_pendingParagraphBreak.clear();
