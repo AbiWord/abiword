@@ -1702,10 +1702,12 @@ void s_AbiWord_1_Listener::_handleRevisions(void)
 			bWroteOpenRevisionsSection = true;
 		}
 
-		UT_String_sprintf(s, "<r id=\"%d\" time-started=\"%lld\" version=\"%d\">",
+		UT_String_sprintf(s, "<r id=\"%d\" time-started=\"%lld\" version=\"%d\" author=\"%s\" >",
 						  pRev->getId(),
 						  (UT_uint64)pRev->getStartTime(),
-						  pRev->getVersion());
+						  pRev->getVersion(),
+                          pRev->getAuthor().c_str()
+            );
 		
 		m_pie->write(s.c_str());
 

@@ -45,7 +45,7 @@
 
 /*!
     A helper function which translates a revision attribute associated with fragment of type pts at
-    pos dpos into arrays of attributes and properties suitable for passing into formating and other funcitons.
+    pos dpos into arrays of attributes and properties suitable for passing into formating and other functions.
 
     Revisions -- an instance of an empty PP_RevisionsAttr (i.e., PP_RevisionsAttr(NULL);)
     

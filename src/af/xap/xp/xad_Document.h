@@ -93,8 +93,10 @@ enum AD_HISTORY_STATE
 class ABI_EXPORT AD_Revision
 {
   public:
-	AD_Revision(UT_uint32 iId, UT_UCS4Char * pDesc, time_t start, UT_uint32 iVer = 0)
-		:m_iId(iId),m_pDescription(pDesc), m_tStart(start), m_iVersion(iVer){};
+	AD_Revision(UT_uint32 iId, UT_UCS4Char * pDesc, time_t start,
+                UT_uint32 iVer = 0, std::string author="")
+		:m_iId(iId),m_pDescription(pDesc), m_tStart(start), m_iVersion(iVer), m_author(author)
+    {};
 	
 	~AD_Revision(){delete [] m_pDescription;}
 	
@@ -108,11 +110,14 @@ class ABI_EXPORT AD_Revision
 	UT_uint32         getVersion()const {return m_iVersion;}
 	void              setVersion(UT_uint32 iVer) {m_iVersion = iVer;}
 
+    std::string       getAuthor() const { return m_author; }
+    
   private:
 	UT_uint32     m_iId;
 	UT_UCS4Char * m_pDescription;
 	time_t        m_tStart;
 	UT_uint32     m_iVersion;
+    std::string   m_author;
 };
 
 enum AD_DOCUMENT_TYPE
@@ -238,6 +243,12 @@ public:
 	
 	bool            addRevision(UT_uint32 iId, const UT_UCS4Char * pDesc, UT_uint32 iLen,
 								time_t tStart, UT_uint32 iVersion, bool bGenCR=true);
+	bool            addRevision(UT_uint32 iId, const UT_UCS4Char * pDesc, UT_uint32 iLen,
+								time_t tStart, UT_uint32 iVersion, const std::string& author,
+                                bool bGenCR=true);
+	bool            addRevision(UT_uint32 iId, const std::string& desc,
+								time_t tStart, UT_uint32 iVersion, const std::string& author,
+                                bool bGenCR=true);
 	bool            addRevision(AD_Revision * pRev, bool bGenCR=true);
 	virtual bool    createAndSendDocPropCR( const gchar ** pAtts, const gchar ** pProps) = 0;
 

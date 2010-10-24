@@ -162,6 +162,7 @@ protected:
 	UT_uint32       m_currentRevisionId;
 	time_t          m_currentRevisionTime;
 	UT_uint32       m_currentRevisionVersion;
+    std::string		m_currentRevisionAuthor;
 
 	typedef std::map<std::string, UT_sint32> token_map_t;
 	token_map_t m_tokens;

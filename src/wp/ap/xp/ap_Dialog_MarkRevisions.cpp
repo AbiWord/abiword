@@ -29,6 +29,8 @@
 #include "ap_Dialog_MarkRevisions.h"
 #include "ap_Strings.h"
 
+#include "pp_Author.h"
+
 AP_Dialog_MarkRevisions::AP_Dialog_MarkRevisions(XAP_DialogFactory * pDlgFactory,
 					   XAP_Dialog_Id id)
   : XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogmarkrevisions"), m_answer(a_CANCEL),
@@ -171,8 +173,23 @@ void AP_Dialog_MarkRevisions::addRevision()
 	if(m_pRev)
 		iId = m_pRev->getId() + 1;
 
+    std::string author = "";
+	UT_sint32 myAuthorId = m_pDoc->getMyAuthorInt();
+    if( myAuthorId != -1 )
+    {
+        if( pp_Author* a = m_pDoc->getAuthorByInt( myAuthorId ))
+        {
+            const gchar * szValue;
+            if( a->getProperty( PT_AUTHOR_NAME, szValue))
+                author = szValue;
+        }
+    }
+    
 	time_t tStart = time(NULL);
-	m_pDoc->addRevision(iId, m_pComment2->ucs4_str().ucs4_str(), UT_UCS4_strlen(m_pComment2->ucs4_str().ucs4_str()), tStart, 0, true);
+	m_pDoc->addRevision( iId,
+                         m_pComment2->ucs4_str().ucs4_str(),
+                         UT_UCS4_strlen(m_pComment2->ucs4_str().ucs4_str()),
+                         tStart, 0, author, true);
 	m_pRev = NULL;
 }
 

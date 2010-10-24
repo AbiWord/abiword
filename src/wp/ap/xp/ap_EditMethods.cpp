@@ -2036,6 +2036,9 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 		}
 		else
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+
+		dflFileType = IEFT_Unknown;
+		ftype = "";
 	  }
 	else
 	  {

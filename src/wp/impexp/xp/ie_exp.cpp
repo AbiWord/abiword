@@ -633,6 +633,8 @@ UT_UTF8String IE_Exp::preferredSuffixForFileType(IEFileType ieft)
 {
 	IE_ExpSniffer * pSniffer = snifferForFileType(ieft);
 
+    if( !pSniffer )
+        return "";
 	UT_return_val_if_fail (pSniffer != NULL, "");
 
 	return pSniffer->getPreferredSuffix();
