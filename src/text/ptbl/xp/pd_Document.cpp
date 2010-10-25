@@ -1201,6 +1201,7 @@ bool PD_Document::isDirty(void) const
 
 void PD_Document::_setClean(void)
 {
+	m_pPieceTable->setClean();
 	_setForceDirty(false);
 }
 
