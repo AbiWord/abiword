@@ -333,6 +333,7 @@ public:
 	void	getPageScreenOffsets(const fp_Page* pPage, UT_sint32& xoff, UT_sint32& yoff);
 	void	getPageYOffset(fp_Page* pPage, UT_sint32& yoff)const;
 	virtual UT_sint32 getPageViewLeftMargin(void) const;
+	virtual UT_sint32 getPageViewRightMargin(void) const;
 	virtual UT_sint32 getPageViewTopMargin(void) const;
 	virtual UT_sint32 getPageViewSep(void) const;
 
@@ -836,6 +837,8 @@ public:
 	UT_uint32			getWidthPagesInRow(fp_Page *page) const;
 	UT_uint32			getHorizPageSpacing(void) const;
 	bool				rtlPages(void) const;
+
+	void				preparePrintViewAfterZoom(void);
 	
 protected:
 	void				_saveAndNotifyPieceTableChange(void);

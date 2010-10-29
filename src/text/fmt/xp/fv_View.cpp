@@ -644,6 +644,43 @@ bool FV_View::isActive(void)
 	return false;
 }
 
+void FV_View::preparePrintViewAfterZoom(void)
+{
+	fp_Page *pPage = m_pLayout->getFirstPage();
+	UT_uint32 iCurrentRowWidth    = getPageViewLeftMargin();
+	UT_uint32 iCurrentRowHeight   = 0;
+	UT_uint32 iTotalHeightOfRows  = getPageViewTopMargin();
+	fp_Page* pFirstPageInRow      = pPage;
+
+	while(pPage) // If we change zoom, we need to recalculate all the page locations before finding which are on screen
+	{
+		UT_DEBUGMSG(("recomposing page %i\n", pPage->getPageNumber()));
+		pPage->setXForPrintView(iCurrentRowWidth);
+		iCurrentRowWidth += pPage->getWidth() + getHorizPageSpacing(); // getHorizPageSpacing is a special function just for print view
+		if(pPage->getHeight() > iCurrentRowHeight)
+			iCurrentRowHeight = pPage->getHeight();
+
+		pPage = pPage->getNext();
+
+		UT_DEBUGMSG(("iCurrentRowWidth %i, window width %i\n", iCurrentRowWidth, getWindowWidthLU()));
+
+		if( !pPage || iCurrentRowWidth + pPage->getWidth() > getWindowWidthLU() ) // We're at the end of the row
+		{
+			// xpos is set when we're going through a row, but ypos needs to wait until the end of the row
+			// so that we can center align it (we need to know the tallest page in the row to center pages)
+			do {
+				pFirstPageInRow->setYForPrintView(iTotalHeightOfRows + (iCurrentRowHeight/2) - (pFirstPageInRow->getHeight())/2 );
+				UT_DEBUGMSG(("setYForPrintView %i, page %i\n", pFirstPageInRow->getY(), pFirstPageInRow->getPageNumber()));
+				pFirstPageInRow = pFirstPageInRow->getNext();
+			} while( (pFirstPageInRow != pPage) && pFirstPageInRow);
+
+			iTotalHeightOfRows += getPageViewSep() + iCurrentRowHeight;
+			iCurrentRowWidth = getPageViewLeftMargin();
+			iCurrentRowHeight = 0;
+		}
+	}
+}
+
 void FV_View::setGraphics(GR_Graphics * pG)
 {
 	if(m_caretListener != NULL)
@@ -8210,6 +8247,30 @@ UT_sint32 FV_View::getPageViewLeftMargin(void) const
 #endif		
 }
 
+UT_sint32 FV_View::getPageViewRightMargin(void) const
+{
+	// return the amount of gray-space we draw to the right
+	// of the paper in "Page View".  return zero if not in
+	// "Page View".
+	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
+	if (isPreview() || m_pG->queryProperties(GR_Graphics::DGP_PAPER) || (getViewMode() != VIEW_PRINT))
+		return 0;
+	else if (pFrame && pFrame->isMenuScrollHidden())
+	{
+			return 0;
+	}
+	else if(m_pLayout->isQuickPrint())
+	{
+		return 0;
+	}
+
+#ifdef EMBEDDED_TARGET
+		return (int) (0.2 * fl_PAGEVIEW_MARGIN_X);
+#else	
+		return fl_PAGEVIEW_MARGIN_X;
+#endif		
+}
+
 UT_sint32 FV_View::getPageViewTopMargin(void) const
 {
 	// return the amount of gray-space we draw above the top
@@ -8350,6 +8411,8 @@ void FV_View::draw(const UT_Rect* pClipRect)
 
 void FV_View::updateScreen(bool bDirtyRunsOnly)
 {
+	if((getViewMode() == VIEW_PRINT) && !bDirtyRunsOnly)
+		preparePrintViewAfterZoom();
 	_draw(0,0,getWindowWidth(),getWindowHeight(),bDirtyRunsOnly,false);
 }
 

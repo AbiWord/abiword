@@ -39,8 +39,6 @@ AV_View::AV_View(XAP_App * pApp, void* pParentData)
 	m_bIsLayoutFilling(false),
 	m_iWindowHeight(0),
 	m_iWindowWidth(0),
-	m_iWindowHeightOld(0),
-	m_iWindowWidthOld(0),
 	m_dOneTDU(0),
 	m_bCouldBeActive(true),
 	m_bConfigureChanged(false)

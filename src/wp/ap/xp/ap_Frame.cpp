@@ -127,6 +127,9 @@ void AP_Frame::quickZoom(UT_uint32 iZoom)
 		pView->setPoint(pView->getPoint()); // place the cursor correctly
 		pView->ensureInsertionPointOnScreen(); // on the screen
 		pView->updateScreen(false);
+		pView->setWindowSize(_getDocumentAreaWidth(), _getDocumentAreaHeight());
+		if(pView->getViewMode() == VIEW_PRINT)
+			pView->preparePrintViewAfterZoom();
 	}
 	else
 	{

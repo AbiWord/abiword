@@ -4144,6 +4144,7 @@ bool FV_View::_clearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2,
 #endif
 }
 
+// This function finds the actual xy coords of the caret on screen
 void FV_View::_findPositionCoords(PT_DocPosition pos,
 								  bool bEOL,
 								  UT_sint32& x,
@@ -4348,9 +4349,9 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 		//UT_uint32 iRow = iPageNumber / getNumHorizPages();
 		//UT_uint32 iCol = iPageNumber - (iRow * getNumHorizPages());
 		
-		yPoint += iPageOffset; //beware wierdness discribed in getPageYOffset(...)
+		yPoint += iPageOffset; //beware weirdness discribed in getPageYOffset(...)
 		xPoint += getPageViewLeftMargin() + getWidthPrevPagesInRow(iPageNumber);
-		yPoint2 += iPageOffset; //beware wierdness discribed in getPageYOffset(...)
+		yPoint2 += iPageOffset; //beware weirdness discribed in getPageYOffset(...)
 		xPoint2 += getPageViewLeftMargin() + getWidthPrevPagesInRow(iPageNumber);
 
 
@@ -4717,15 +4718,11 @@ void FV_View::_findPagesOnScreenNormalView(fp_Page* pCachedPage, UT_GenericVecto
 
 void FV_View::_findPagesOnScreenPrintView(fp_Page* pCachedPage, UT_GenericVector<fp_Page *> &vecPagesOnScreen, bool bRecomposePrintView)
 {
-	fp_Page* pPage                = m_pLayout->getFirstPage();
+	fp_Page* pPage                = pCachedPage;
 	bool bFindingPagesOnScreen    = true;
 	bool bTraversingLeftRight     = false; // False means going left, true means going right
 	bool bTraversingUpDown        = false; // False means going up, true means going down
 	bool bInViewport              = false; // Whether pPage has reached the viewport yet
-	UT_uint32 iCurrentRowWidth    = getPageViewLeftMargin();
-	UT_uint32 iCurrentRowHeight   = 0;
-	UT_uint32 iTotalHeightOfRows  = getPageViewTopMargin();
-	fp_Page* pFirstPageInRow      = pPage;
 
 	// Ersin Sayz: The new print view is a structured view where a page's xpos and ypos aren't absolute but rather
 	// are made to conform to a certain pattern (i.e., what you'd expect when you select "Print Layout" in OOo or
@@ -4742,42 +4739,16 @@ void FV_View::_findPagesOnScreenPrintView(fp_Page* pCachedPage, UT_GenericVector
 	// (or once we've finished recomposing/re-rendering the pages), actually find which pages are on screen using
 	// the same basic process that we do for normal view.
 
-	while(bRecomposePrintView && pPage) // If we change zoom, we need to recalculate all the page locations before finding which are on screen
-	{
-		UT_DEBUGMSG(("recomposing page %i\n", pPage->getPageNumber()));
-		pPage->setXForPrintView(iCurrentRowWidth);
-		UT_DEBUGMSG(("iCurrentRowWidth %i\n", iCurrentRowWidth));
-		iCurrentRowWidth += pPage->getWidth() + getPageViewSep();
-		if(pPage->getHeight() > iCurrentRowHeight)
-			iCurrentRowHeight = pPage->getHeight();
-
-		pPage = pPage->getNext();
-
-		if(!pPage || iCurrentRowWidth + getPageViewSep() + pPage->getWidth() > getWindowWidthLU() ) // We're at the end of the row
-		{
-			// xpos is set when we're going through a row, but ypos needs to wait until the end of the row
-			// so that we can center align it (we need to know the tallest page in the row to center pages)
-			do {
-				pFirstPageInRow->setYForPrintView(iTotalHeightOfRows + (iCurrentRowHeight/2) - (pFirstPageInRow->getHeight())/2 );
-				UT_DEBUGMSG(("setYForPrintView %i, page %i\n", pFirstPageInRow->getY(), pFirstPageInRow->getPageNumber()));
-				pFirstPageInRow = pFirstPageInRow->getNext();
-			} while( (pFirstPageInRow != pPage) && pFirstPageInRow);
-
-			iTotalHeightOfRows += getPageViewSep() + iCurrentRowHeight;
-			iCurrentRowWidth = getPageViewLeftMargin();
-			iCurrentRowHeight = 0;
-		}
-	}
-
-	pPage = pCachedPage;
+	if(bRecomposePrintView)
+		preparePrintViewAfterZoom();	// This should normally be called by quickZoom
 
 	while(bFindingPagesOnScreen)
 	{
 		if( pPage &&
-		    (pPage->getX() <= getXScrollOffset() + getWindowWidthLU()) &&
-		    (pPage->getX() + pPage->getWidth() >= getXScrollOffset()) &&
-		    (pPage->getY() <= getYScrollOffset() + getWindowHeightLU()) &&
-		    (pPage->getY() + pPage->getHeight() >= getYScrollOffset()) )
+		    (pPage->getXForPrintView() <= getXScrollOffset() + getWindowWidthLU()) &&
+		    (pPage->getXForPrintView() + pPage->getWidth() >= getXScrollOffset()) &&
+		    (pPage->getYForPrintView()  <= getYScrollOffset() + getWindowHeightLU()) &&
+		    (pPage->getYForPrintView() + pPage->getHeight() >= getYScrollOffset()) )
 		{
 			UT_DEBUGMSG(("Print view, adding page %d to pages on screen vector\n", pPage->getPageNumber()));
 			vecPagesOnScreen.addItem(pPage);
@@ -4817,9 +4788,10 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 					UT_sint32 width, UT_sint32 height,
 					bool bDirtyRunsOnly, bool bClip)
 {
+	bDirtyRunsOnly = false;
 	if( !(m_pLayout->findBlockAtPosition(0)) )
 		return;
-//	bDirtyRunsOnly = false;
+
 	UT_DEBUGMSG(("FV_View::_draw [x %ld][y %ld][w %ld][h %ld][bClip %ld]\n"
 					 "\t\twith [yScrollOffset %ld][windowHeight %ld][bDirtyRunsOnly %d]\n",
 					 x,y,width,height,bClip,
@@ -4919,7 +4891,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			break;
 
 			case VIEW_PRINT: // TODO: Pass meaningful values other than just "true", i.e. false for when we don't change zoom
-			_findPagesOnScreenPrintView(getCurrentPage(), vecPagesOnScreen, true); // When true is passed, changes each page's ypos xpos
+			_findPagesOnScreenPrintView(getCurrentPage(), vecPagesOnScreen, false); // When true is passed, changes each page's ypos xpos
 			break;
 		}
 
@@ -5002,9 +4974,9 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 			case VIEW_PRINT:
 			iPageHeight = pPage->getHeight();
-			adjustedTop = pPage->getY() - getYScrollOffset();
+			adjustedTop = pPage->getYForPrintView() - getYScrollOffset();
 			adjustedBottom = adjustedTop + iPageHeight;
-			adjustedLeft = pPage->getX() - getXScrollOffset();
+			adjustedLeft = pPage->getXForPrintView() - getXScrollOffset();
 			adjustedRight = adjustedLeft + iPageWidth;
 			break;
 
@@ -5063,7 +5035,9 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		m_pG->setColor(clr);
 
 		// one pixel border a
-		if(!isPreview() && ((getViewMode() == VIEW_PRINT) || (getViewMode() == VIEW_CANVAS)) && !pFrame->isMenuScrollHidden())
+//		if(!isPreview() && ((getViewMode() == VIEW_PRINT) || (getViewMode() == VIEW_CANVAS)) && !pFrame->isMenuScrollHidden())
+
+		if(!isPreview() && ((getViewMode() == VIEW_PRINT) || (getViewMode() == VIEW_CANVAS)) )
 		{
 			m_pG->setLineProperties(m_pG->tluD(1.0),
 					GR_Graphics::JOIN_MITER,

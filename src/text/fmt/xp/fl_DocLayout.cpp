@@ -2433,6 +2433,9 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner, bool bNoUpdate)
 	else
 		pPage->setYForNormalView(0);
 
+	if(getView()->getViewMode() == VIEW_PRINT)
+		getView()->preparePrintViewAfterZoom();
+
 	return pPage;
 }
 

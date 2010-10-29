@@ -170,12 +170,12 @@ public:
 
 	UT_sint32	getXScrollOffset(void) { return m_xScrollOffset; }
 	UT_sint32	getYScrollOffset(void) { return m_yScrollOffset; }
-	UT_sint32	getXScrollOffsetOld(void) { return m_xScrollOffsetOld; }
-	UT_sint32	getYScrollOffsetOld(void) { return m_yScrollOffsetOld; }
+//	UT_sint32	getXScrollOffsetOld(void) { return m_xScrollOffsetOld; }
+//	UT_sint32	getYScrollOffsetOld(void) { return m_yScrollOffsetOld; }
 	UT_sint32	getWindowWidthLU(void) { return m_iWindowWidth; }
 	UT_sint32	getWindowHeightLU(void) { return m_iWindowHeight; }
-	UT_sint32	getWindowWidthOldLU(void) { return m_iWindowWidth; }
-	UT_sint32	getWindowHeightOldLU(void) { return m_iWindowHeight; }
+//	void		setWindowWidthLU(UT_sint32 width) { m_iWindowWidth = width; }
+//	void		setWindowHeightLU(UT_sint32 height) { m_iWindowHeight = height; }
 	
 
 protected:
@@ -200,8 +200,6 @@ private:
 
 	UT_sint32			m_iWindowHeight;
 	UT_sint32			m_iWindowWidth;
-	UT_sint32			m_iWindowHeightOld;
-	UT_sint32			m_iWindowWidthOld;
 	double				m_dOneTDU;
 	bool                            m_bCouldBeActive;
 	bool                            m_bConfigureChanged;
