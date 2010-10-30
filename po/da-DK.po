@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-19 05:15+0200\n"
-"PO-Revision-Date: 2010-04-19 09:44-0500\n"
+"POT-Creation-Date: 2010-08-04 05:15+0200\n"
+"PO-Revision-Date: 2010-08-04 15:11-0500\n"
 "Last-Translator: Morten Juhl-Johansen Zölde-Fejér <mjjzf@syntaktisk.dk>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
 "MIME-Version: 1.0\n"
@@ -214,7 +214,6 @@ msgstr "&Alle"
 
 #. MENU_LABEL_TOOLS_ANNOTATIONS
 #: po/tmp/ap_String_Id.h.h:97
-#, fuzzy
 msgid "&Annotations"
 msgstr "Notat"
 
@@ -345,9 +344,8 @@ msgstr "&Slet"
 # Noter i teksten?
 #. MENU_LABEL_DELETE_ANNOTATION
 #: po/tmp/ap_String_Id.h.h:149
-#, fuzzy
 msgid "&Delete annotation"
-msgstr "Indsæt note"
+msgstr "&Slet note"
 
 #. MENU_LABEL_INSERT_DELETE_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:151
@@ -392,9 +390,8 @@ msgstr "&Redigér"
 
 #. MENU_LABEL_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h.h:168
-#, fuzzy
 msgid "&Edit annotation"
-msgstr "Notat"
+msgstr "&Redigér note"
 
 #. MENU_LABEL_INSERT_EDIT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:170
@@ -567,9 +564,8 @@ msgstr "&Kursiv"
 
 #. MENU_LABEL_GOTO_ANNOTATION
 #: po/tmp/ap_String_Id.h.h:238
-#, fuzzy
 msgid "&Jump to annotation"
-msgstr "Notat"
+msgstr "Spring &til note"
 
 #. MENU_LABEL_INSERT_GOTO_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:240
@@ -884,9 +880,8 @@ msgstr "Vis &statuslinje"
 
 #. MENU_LABEL_TOOLS_ANNOTATIONS_TOGGLE_DISPLAY
 #: po/tmp/ap_String_Id.h.h:365
-#, fuzzy
 msgid "&Show annotations"
-msgstr "Notat"
+msgstr "&Vis noter"
 
 #. DLG_Para_LabelSpecial
 #: po/tmp/ap_String_Id.h.h:367
@@ -1479,9 +1474,8 @@ msgstr "&Rammer og skygge"
 
 #. DLG_PageNumbers_Footer
 #: po/tmp/ap_String_Id.h.h:600
-#, fuzzy
 msgid "Bottom"
-msgstr "&Bund:"
+msgstr "&Bund"
 
 #. BottomMarginStatus
 #: po/tmp/ap_String_Id.h.h:602
@@ -2103,9 +2097,8 @@ msgstr "Opret et tomt dokument"
 
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h.h:853
-#, fuzzy
 msgid "Create from &selection"
-msgstr "Fjern det markerede"
+msgstr "Opret fra det &markerede"
 
 #. FIELD_Document_Creator
 #: po/tmp/ap_String_Id.h.h:855
@@ -2364,9 +2357,8 @@ msgstr "Slet tekstboks"
 # Noter i teksten?
 #. MENU_STATUSLINE_DELETE_ANNOTATION
 #: po/tmp/ap_String_Id.h.h:961
-#, fuzzy
 msgid "Delete annotation"
-msgstr "Indsæt note"
+msgstr "Slet note"
 
 #. TOOLBAR_LABEL_DELETE_COLUMN
 #: po/tmp/ap_String_Id.h.h:963
@@ -2475,9 +2467,8 @@ msgstr "Vis indhold af hjælp"
 
 #. MENU_STATUSLINE_HELP_INTRO
 #: po/tmp/ap_String_Id.h.h:1006
-#, fuzzy
 msgid "Display Help Introduction"
-msgstr "Hjælpe&indeks"
+msgstr "Vis introduktion til Hjælp"
 
 #. MENU_STATUSLINE_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h.h:1008
@@ -2542,9 +2533,8 @@ msgstr "Dobbel linjeafstand"
 
 #. DLG_Annotation_Title
 #: po/tmp/ap_String_Id.h.h:1033
-#, fuzzy
 msgid "Edit Annotation"
-msgstr "Notat"
+msgstr "Redigér note"
 
 #. MENU_LABEL_EDIT_LATEXEQUATION
 #: po/tmp/ap_String_Id.h.h:1035
@@ -2574,9 +2564,8 @@ msgstr "Redigér Latex-formel"
 
 #. MENU_STATUSLINE_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h.h:1049
-#, fuzzy
 msgid "Edit annotation"
-msgstr "Notat"
+msgstr "Redigér note"
 
 #. MENU_STATUSLINE_INSERT_EDIT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:1051
@@ -2615,9 +2604,8 @@ msgstr "Aktivér blød rulning"
 
 #. DLG_Options_Label_SmartQuotes
 #: po/tmp/ap_String_Id.h.h:1065
-#, fuzzy
 msgid "Enable smart (curly) quotes"
-msgstr "&Krøllede anførselstegn"
+msgstr "Aktivér &krøllede anførselstegn"
 
 #. FIELD_Numbers_EndnoteAnchor
 #: po/tmp/ap_String_Id.h.h:1067
@@ -3494,7 +3482,6 @@ msgstr "Indsæt et symbol eller andre specielle tegn"
 # Noter i teksten?
 #. MENU_STATUSLINE_TOOLS_ANNOTATIONS_INSERT
 #: po/tmp/ap_String_Id.h.h:1423
-#, fuzzy
 msgid "Insert an annotation"
 msgstr "Indsæt note"
 
@@ -3556,9 +3543,8 @@ msgstr "Indsæt højre-til-venstre-markør"
 
 #. MENU_STATUSLINE_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h.h:1448
-#, fuzzy
 msgid "Insert selected text into a new annotation"
-msgstr "Konvertér den valgte tekst til en tabel"
+msgstr "Indsæt markeret tekst i en ny note"
 
 #. TOOLBAR_STATUSLINE_INSERT_SYMBOL
 #. TOOLBAR_TOOLTIP_INSERT_SYMBOL
@@ -3612,9 +3598,8 @@ msgstr "Kursiv"
 
 #. MENU_STATUSLINE_GOTO_ANNOTATION
 #: po/tmp/ap_String_Id.h.h:1471
-#, fuzzy
 msgid "Jump to annotation"
-msgstr "Notat"
+msgstr "Gå til note"
 
 #. MENU_STATUSLINE_INSERT_GOTO_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:1473
@@ -3894,9 +3879,8 @@ msgstr "Gør den markerede tekst højere end omgivelserne (til/fra)"
 
 #. MENU_STATUSLINE_TOOLS_ANNOTATIONS
 #: po/tmp/ap_String_Id.h.h:1586
-#, fuzzy
 msgid "Manage annotations in document"
-msgstr "Administrer ændringer i dokument"
+msgstr "Administrer noter i dokumentet"
 
 #. MENU_STATUSLINE_TOOLS_PLUGINS
 #: po/tmp/ap_String_Id.h.h:1588
@@ -4070,9 +4054,8 @@ msgstr "Ny"
 
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT
 #: po/tmp/ap_String_Id.h.h:1662
-#, fuzzy
 msgid "New &annotation"
-msgstr "Notat"
+msgstr "&Ny note"
 
 #. DLG_NEW_Title
 #: po/tmp/ap_String_Id.h.h:1664
@@ -4309,7 +4292,6 @@ msgstr "Overstreg den markerede tekst (til/fra)"
 
 #. InsertModeFieldOVR
 #: po/tmp/ap_String_Id.h.h:1764
-#, fuzzy
 msgid "Overwrite"
 msgstr "Overstreg"
 
@@ -4793,9 +4775,8 @@ msgstr "Erstat &alle"
 
 #. DLG_Annotation_Replace_tooltip
 #: po/tmp/ap_String_Id.h.h:1969
-#, fuzzy
 msgid "Replace the annotated text with the annotation content"
-msgstr "Erstat en angivet tekst med en anden tekst"
+msgstr "Erstat teksten ved noten med notens indhold"
 
 #. MENU_STATUSLINE_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h.h:1971
@@ -5394,9 +5375,8 @@ msgstr "Vis..."
 
 #. MENU_STATUSLINE_TOOLS_ANNOTATIONS_TOGGLE_DISPLAY
 #: po/tmp/ap_String_Id.h.h:2212
-#, fuzzy
 msgid "Show/hide annotations"
-msgstr "Vis/skjul formatteringsmærker"
+msgstr "Vis/skjul noter"
 
 #. TOOLBAR_STATUSLINE_VIEW_SHOWPARA
 #. TOOLBAR_TOOLTIP_VIEW_SHOWPARA
@@ -5432,7 +5412,6 @@ msgstr "Enkelt linjeafstand"
 
 #. DLG_Options_TabLabel_SmartQuotes
 #: po/tmp/ap_String_Id.h.h:2228
-#, fuzzy
 msgid "Smart Quotes"
 msgstr "&Krøllede anførselstegn"
 
@@ -6011,9 +5990,8 @@ msgstr "Dette dokument indeholder revisioner, som er skjulte. Se AbiWords dokume
 
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h.h:2467
-#, fuzzy
 msgid "This paragraph represents words as they might appear in your document.  To see the text from your document used in this preview, position your cursor in a document paragraph with some text in it and open this dialog."
-msgstr "Dette afsnit præsenterer ord, som de vil se ud i dit dokument. For at se tekst fra dit dokument i denne forsmag, kan du placere din markør i et dokumentafsnit med tekst i og åbne denne dialog."
+msgstr "Dette afsnit repræsenterer ord, som de vil se ud i dit dokument. For at se tekst fra dit dokument i denne forsmag, kan du placere din markør i et dokumentafsnit med tekst i og åbne denne dialog."
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h.h:2469
@@ -6068,9 +6046,8 @@ msgstr "Værktøjslinjer"
 
 #. DLG_PageNumbers_Header
 #: po/tmp/ap_String_Id.h.h:2486
-#, fuzzy
 msgid "Top"
-msgstr "&Top:"
+msgstr "Top"
 
 #. TopMarginStatus
 #: po/tmp/ap_String_Id.h.h:2488
@@ -6149,9 +6126,8 @@ msgstr "Fortryd ændring"
 # Noter i teksten?
 #. DLG_Annotation_OK_tooltip
 #: po/tmp/ap_String_Id.h.h:2519
-#, fuzzy
 msgid "Update the annotation"
-msgstr "Indsæt note"
+msgstr "Opdatér note"
 
 #. DLG_Lists_Upper_Case_List
 #. STYLE_UPPERCASTELIST
@@ -6466,9 +6442,8 @@ msgstr "&75%"
 
 #. DLG_Image_DescTabLabel
 #: po/tmp/xap_String_Id.h.h:17
-#, fuzzy
 msgid "&Description"
-msgstr "Beskrivelse"
+msgstr "&Beskrivelse"
 
 #. DLG_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h.h:21
@@ -6477,9 +6452,8 @@ msgstr "&Sidebredde"
 
 #. DLG_Image_PlacementTabLabel
 #: po/tmp/xap_String_Id.h.h:23
-#, fuzzy
 msgid "&Placement"
-msgstr "Placering"
+msgstr "&Placering"
 
 #. DLG_ULANG_SetLangButton
 #: po/tmp/xap_String_Id.h.h:25
@@ -6493,13 +6467,11 @@ msgstr "&Hele siden"
 
 #. DLG_Image_WrapTabLabel
 #: po/tmp/xap_String_Id.h.h:31
-#, fuzzy
 msgid "&Wrapping"
-msgstr "Tekstfoldning"
+msgstr "Tekst&foldning"
 
 #. DLG_UFS_Effects_None
 #: po/tmp/xap_String_Id.h.h:33
-#, fuzzy
 msgid "(None)"
 msgstr "(ingen)"
 
@@ -6744,9 +6716,9 @@ msgstr "Bretonsk"
 
 #. DLG_ABOUT_Build
 #: po/tmp/xap_String_Id.h.h:139
-#, fuzzy, c-format
+#, c-format
 msgid "Build options: %s"
-msgstr "Byggeindstillinger"
+msgstr "Byggeindstillinger: %s"
 
 #. MSG_BuildingDoc
 #: po/tmp/xap_String_Id.h.h:141
@@ -7122,9 +7094,8 @@ msgstr "Indkodning:"
 
 #. STYLE_ENDNOTE
 #: po/tmp/xap_String_Id.h.h:302
-#, fuzzy
 msgid "Endnote"
-msgstr "&Slutnote"
+msgstr "Slutnote"
 
 #. STYLE_ENDREFERENCE
 #: po/tmp/xap_String_Id.h.h:304
@@ -7239,9 +7210,8 @@ msgstr "Flamsk (Belgien)"
 
 #. STYLE_FOOTNOTE
 #: po/tmp/xap_String_Id.h.h:353
-#, fuzzy
 msgid "Footnote"
-msgstr "Fod&note"
+msgstr "Fodnote"
 
 #. STYLE_FOOTREFERENCE
 #: po/tmp/xap_String_Id.h.h:355
@@ -7651,7 +7621,6 @@ msgstr "Indlæser Clip Art-grafik"
 
 #. DLG_UFS_Effects_LowerCase
 #: po/tmp/xap_String_Id.h.h:534
-#, fuzzy
 msgid "Lowercase"
 msgstr "små bogstaver"
 
@@ -7672,9 +7641,8 @@ msgstr "Malayisk"
 
 #. LANG_MNK_SN
 #: po/tmp/xap_String_Id.h.h:542
-#, fuzzy
 msgid "Mandinka (Senegal)"
-msgstr "Wolof (Senegal)"
+msgstr "Mandinka (Senegal)"
 
 #. LANG_MI_NZ
 #: po/tmp/xap_String_Id.h.h:544
@@ -7786,9 +7754,8 @@ msgstr "Åbn fil"
 
 #. DLG_FOSA_FileOpenTypeLabel
 #: po/tmp/xap_String_Id.h.h:588
-#, fuzzy
 msgid "Open file as &type:"
-msgstr "Åbn fil som type:"
+msgstr "Åbn fil som &type:"
 
 #. DLG_LISTDOCS_Title
 #: po/tmp/xap_String_Id.h.h:590
@@ -7888,9 +7855,8 @@ msgstr "Udskriv til fil"
 
 #. DLG_FOSA_FilePrintTypeLabel
 #: po/tmp/xap_String_Id.h.h:635
-#, fuzzy
 msgid "Print file as &type:"
-msgstr "Udskriv fil som type:"
+msgstr "Udskriv fil som &type:"
 
 #. DLG_UP_PrintIn
 #: po/tmp/xap_String_Id.h.h:637
@@ -8014,9 +7980,8 @@ msgstr "Gem indstillinger"
 
 #. DLG_FOSA_FileSaveTypeLabel
 #: po/tmp/xap_String_Id.h.h:685
-#, fuzzy
 msgid "Save file as &type:"
-msgstr "Gem fil som type:"
+msgstr "Gem fil som &type:"
 
 #. DLG_UFS_ScriptLabel
 #: po/tmp/xap_String_Id.h.h:687
@@ -8354,9 +8319,8 @@ msgstr "Opdatér"
 
 #. DLG_UFS_Effects_UpperCase
 #: po/tmp/xap_String_Id.h.h:855
-#, fuzzy
 msgid "Uppercase"
-msgstr "Liste med store bogstaver"
+msgstr "Store bogstaver"
 
 #. LANG_UR
 #: po/tmp/xap_String_Id.h.h:857
@@ -8386,9 +8350,9 @@ msgstr "Version:"
 
 #. DLG_ABOUT_Version
 #: po/tmp/xap_String_Id.h.h:870
-#, fuzzy, c-format
+#, c-format
 msgid "Version: %s"
-msgstr "Version:"
+msgstr "Version: %s"
 
 #. LANG_VI_VN
 #: po/tmp/xap_String_Id.h.h:872
@@ -8573,20 +8537,25 @@ msgstr "urelateret"
 
 #~ msgid "&Format Table"
 #~ msgstr "&Formattér tabel"
+
 #~ msgid "Allow Custom Toolbars"
 #~ msgstr "Tillad egne værktøjslinjer"
+
 #~ msgid "Display Help Index"
 #~ msgstr "Vis hjælpeindeks"
+
 #~ msgid "INS"
 #~ msgstr "INS"
+
 #~ msgid "OVR"
 #~ msgstr "OVR"
+
 #~ msgid "&From File"
 #~ msgstr "&Fra fil"
+
 #~ msgid "Insert a picture"
 #~ msgstr "Indsæt et billede"
 
 #, fuzzy
 #~ msgid "M&erge documents"
 #~ msgstr "Gem dokumentet"
-
