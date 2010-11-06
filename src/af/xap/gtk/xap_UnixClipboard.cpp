@@ -284,13 +284,13 @@ bool XAP_UnixClipboard::_getDataFromFakeClipboard(T_AllowGet tFrom, const char**
 }
 
 
-static void allTargets(GtkClipboard *clipboard,
+static void allTargets(GtkClipboard * /*clipboard*/,
                                                          GdkAtom *atoms,
                                                          gint n_atoms,
-                                                         gpointer data)
+                                                         gpointer /*data*/)
 {
   gint i= 0;
-  UT_DEBUGMSG(("Found %d target atoms \n"));
+  UT_DEBUGMSG(("Found %d target atoms \n", n_atoms));
   for(i=0;i<n_atoms;i++)
   {
       GdkAtom Atom = atoms[i];
