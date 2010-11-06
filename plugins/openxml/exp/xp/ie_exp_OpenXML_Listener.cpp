@@ -193,7 +193,8 @@ bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_Cha
 						
 						default:
 						{
-							OXML_Element_Field* element_field = new OXML_Element_Field(getNextId(), field->getFieldType(), field->getValue());
+							UT_UTF8String value = field->getValue(); // getValue() can return NULL
+							OXML_Element_Field* element_field = new OXML_Element_Field(getNextId(), field->getFieldType(), value.utf8_str());
 							OXML_SharedElement shared_element_field(static_cast<OXML_Element*>(element_field));
 
 							if(bHaveProp && pAP)
