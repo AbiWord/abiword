@@ -60,7 +60,7 @@
 
 // Stream class
 
-#include <libwpd/WPXStream.h>
+#include <libwpd-stream/libwpd-stream.h>
 
 #include <gsf/gsf-input.h>
 #include <gsf/gsf-infile.h>
@@ -70,12 +70,7 @@
 #include <libwps/libwps.h>
 #endif
 
-class AbiWordperfectInputStream :
-#ifdef HAVE_LIBWPS
-	public WPSInputStream
-#else
-    public WPXInputStream
-#endif
+class AbiWordperfectInputStream : public WPXInputStream
 {
 public:
 	AbiWordperfectInputStream(GsfInput *input);
@@ -86,7 +81,7 @@ public:
 
 	virtual WPXInputStream * getDocumentOLEStream(const char * name);
 
-	virtual const uint8_t *read(size_t numBytes, size_t &numBytesRead);
+	virtual const unsigned char *read(unsigned long numBytes, unsigned long &numBytesRead);
 	virtual int seek(long offset, WPX_SEEK_TYPE seekType);
 	virtual long tell();
 	virtual bool atEOS();
@@ -98,11 +93,7 @@ private:
 };
 
 AbiWordperfectInputStream::AbiWordperfectInputStream(GsfInput *input) :
-#ifdef HAVE_LIBWPS
-	WPSInputStream(),
-#else
-	WPXInputStream(true),
-#endif
+	WPXInputStream(),
 	m_input(input),
 	m_ole(NULL)
 {
@@ -117,9 +108,9 @@ AbiWordperfectInputStream::~AbiWordperfectInputStream()
 	g_object_unref(G_OBJECT(m_input));
 }
 
-const uint8_t * AbiWordperfectInputStream::read(size_t numBytes, size_t &numBytesRead)
+const unsigned char * AbiWordperfectInputStream::read(unsigned long numBytes, unsigned long &numBytesRead)
 {
-	const uint8_t *buf = gsf_input_read(m_input, numBytes, NULL);
+	const unsigned char *buf = gsf_input_read(m_input, numBytes, NULL);
 
 	if (buf == NULL)
 		numBytesRead = 0;
@@ -256,19 +247,12 @@ UT_Confidence_t IE_Imp_WordPerfect_Sniffer::recognizeContents (GsfInput * input)
 {
 	AbiWordperfectInputStream gsfInput(input);
 
-	WPDConfidence confidence = WPDocument::isFileFormatSupported(&gsfInput, true);
+	WPDConfidence confidence = WPDocument::isFileFormatSupported(&gsfInput);
 
 	switch (confidence)
 	{
 		case WPD_CONFIDENCE_NONE:
-		// libwpd > 0.7.1 reports POOR if the text file is plain text (that _could_ be a WP4x document)
-		// however, we'll let the text importer handle such cases
-		case WPD_CONFIDENCE_POOR: 
 			return UT_CONFIDENCE_ZILCH;
-		case WPD_CONFIDENCE_LIKELY:
-			return UT_CONFIDENCE_SOSO;
-		case WPD_CONFIDENCE_GOOD:
-			return UT_CONFIDENCE_GOOD;
 		case WPD_CONFIDENCE_EXCELLENT:
 			return UT_CONFIDENCE_PERFECT;
 		default:
@@ -328,7 +312,7 @@ IE_Imp_WordPerfect::~IE_Imp_WordPerfect()
 UT_Error IE_Imp_WordPerfect::_loadFile(GsfInput * input)
 {
 	AbiWordperfectInputStream gsfInput(input);
-	WPDResult error = WPDocument::parse(&gsfInput, static_cast<WPXHLListenerImpl *>(this));
+	WPDResult error = WPDocument::parse(&gsfInput, static_cast<WPXDocumentInterface *>(this), NULL);
 
 	if (error != WPD_OK)
 	{
@@ -381,9 +365,9 @@ void IE_Imp_WordPerfect::openPageSpan(const WPXPropertyList &propList)
 	float marginLeft = 1.0f, marginRight = 1.0f;
 
 	if (propList["fo:margin-left"])
-		marginLeft = propList["fo:margin-left"]->getFloat();
+		marginLeft = propList["fo:margin-left"]->getDouble();
 	if (propList["fo:margin-right"])
-		marginRight = propList["fo:margin-right"]->getFloat();
+		marginRight = propList["fo:margin-right"]->getDouble();
 
 	if (marginLeft != m_leftPageMargin || marginRight != m_rightPageMargin /* || */
 		/* marginTop != m_marginBottom || marginBottom != m_marginBottom */ )
@@ -456,15 +440,15 @@ void IE_Imp_WordPerfect::openParagraph(const WPXPropertyList &propList, const WP
 	float marginTop = 0.0f, marginBottom = 0.0f;
 	float marginLeft = 0.0f, marginRight = 0.0f, textIndent = 0.0f;
 	if (propList["fo:margin-top"])
-	    marginTop = propList["fo:margin-top"]->getFloat();
+	    marginTop = propList["fo:margin-top"]->getDouble();
 	if (propList["fo:margin-bottom"])
-	    marginBottom = propList["fo:margin-bottom"]->getFloat();
+	    marginBottom = propList["fo:margin-bottom"]->getDouble();
 	if (propList["fo:margin-left"])
-	    marginLeft = propList["fo:margin-left"]->getFloat();
+	    marginLeft = propList["fo:margin-left"]->getDouble();
 	if (propList["fo:margin-right"])
-	    marginRight = propList["fo:margin-right"]->getFloat();
+	    marginRight = propList["fo:margin-right"]->getDouble();
 	if (propList["fo:text-indent"])
-	    textIndent = propList["fo:text-indent"]->getFloat();
+	    textIndent = propList["fo:text-indent"]->getDouble();
 
 	m_topMargin = marginTop;
 	m_bottomMargin = marginBottom;
@@ -487,7 +471,7 @@ void IE_Imp_WordPerfect::openParagraph(const WPXPropertyList &propList, const WP
 
 	float lineSpacing = 1.0f;
 	if (propList["fo:line-height"])
-		lineSpacing = propList["fo:line-height"]->getFloat();
+		lineSpacing = propList["fo:line-height"]->getDouble();
 	
 	UT_String tmpBuffer;
 	UT_String_sprintf(tmpBuffer, "; margin-top:%.4fin; margin-bottom:%.4fin; margin-left:%.4fin; margin-right:%.4fin; text-indent:%.4fin; line-height:%.4f",
@@ -504,7 +488,7 @@ void IE_Imp_WordPerfect::openParagraph(const WPXPropertyList &propList, const WP
 			propBuffer += tmpBuffer;
 			if (i()["style:position"])
 			{
-				UT_String_sprintf(tmpBuffer, "%.4fin", i()["style:position"]->getFloat());
+				UT_String_sprintf(tmpBuffer, "%.4fin", i()["style:position"]->getDouble());
 				propBuffer += tmpBuffer;
 			}
 
@@ -640,9 +624,9 @@ void IE_Imp_WordPerfect::openSection(const WPXPropertyList &propList, const WPXP
 
 	// TODO: support spaceAfter
 	if (propList["fo:margin-left"])
-		marginLeft = propList["fo:margin-left"]->getFloat();
+		marginLeft = propList["fo:margin-left"]->getDouble();
 	if (propList["fo:margin-right"])
-		marginRight = propList["fo:margin-right"]->getFloat();
+		marginRight = propList["fo:margin-right"]->getDouble();
 
 	if (marginLeft != m_leftSectionMargin || marginRight != m_rightSectionMargin || m_sectionColumnsCount != columnsCount)
 		m_bSectionChanged = true;
@@ -709,9 +693,9 @@ void IE_Imp_WordPerfect::defineOrderedListLevel(const WPXPropertyList &propList)
 	if (propList["style:num-format"])
 		listType = propList["style:num-format"]->getStr().cstr()[0];
 	if (propList["text:space-before"])
-		listLeftOffset = propList["text:space-before"]->getFloat();
+		listLeftOffset = propList["text:space-before"]->getDouble();
 	if (propList["text:min-label-width"])
-		listMinLabelWidth = propList["text:min-label-width"]->getFloat();
+		listMinLabelWidth = propList["text:min-label-width"]->getDouble();
 
 	if (!m_pCurrentListDefinition || 
 		m_pCurrentListDefinition->getOutlineHash() != listID ||
@@ -749,9 +733,9 @@ void IE_Imp_WordPerfect::defineUnorderedListLevel(const WPXPropertyList &propLis
 	if (propList["libwpd:level"])
 		level = propList["libwpd:level"]->getInt();
 	if (propList["text:space-before"])
-		listLeftOffset = propList["text:space-before"]->getFloat();
+		listLeftOffset = propList["text:space-before"]->getDouble();
 	if (propList["text:min-label-width"])
-		listMinLabelWidth = propList["text:min-label-width"]->getFloat();
+		listMinLabelWidth = propList["text:min-label-width"]->getDouble();
 
 	if (!m_pCurrentListDefinition || m_pCurrentListDefinition->getOutlineHash() != listID)
 	{
@@ -871,10 +855,10 @@ void IE_Imp_WordPerfect::openListElement(const WPXPropertyList &propList, const 
 
 	UT_String_sprintf(tempBuffer, "margin-left:%.4fin; ", m_pCurrentListDefinition->getListLeftOffset(m_iCurrentListLevel)
 					+ m_pCurrentListDefinition->getListMinLabelWidth(m_iCurrentListLevel)
-					- (propList["fo:text-indent"] ? propList["fo:text-indent"]->getFloat() : 0.0f));
+					- (propList["fo:text-indent"] ? propList["fo:text-indent"]->getDouble() : 0.0f));
 	propBuffer += tempBuffer;
 	UT_String_sprintf(tempBuffer, "text-indent:%.4fin", - m_pCurrentListDefinition->getListMinLabelWidth(m_iCurrentListLevel)
-					+ (propList["fo:text-indent"] ? propList["fo:text-indent"]->getFloat() : 0.0f));
+					+ (propList["fo:text-indent"] ? propList["fo:text-indent"]->getDouble() : 0.0f));
 	propBuffer += tempBuffer;
 
 	listAttribs[attribsCount++] = PT_PROPS_ATTRIBUTE_NAME;
@@ -1263,7 +1247,7 @@ protected:
     virtual UT_Error _loadFile(GsfInput * input)
 	{
 		AbiWordperfectInputStream gsfInput(input);
-		WPSResult error = WPSDocument::parse(&gsfInput, static_cast<WPXHLListenerImpl *>(this));
+		WPSResult error = WPSDocument::parse(&gsfInput, static_cast<WPXDocumentInterface *>(this));
 
 		if (error != WPS_OK)
 			{
@@ -1302,18 +1286,12 @@ UT_Confidence_t IE_Imp_MSWorks_Sniffer::recognizeContents (GsfInput * input)
 {
 	AbiWordperfectInputStream gsfInput(input);
 
-	WPSConfidence confidence = WPSDocument::isFileFormatSupported(&gsfInput, true);
+	WPSConfidence confidence = WPSDocument::isFileFormatSupported(&gsfInput);
 
 	switch (confidence)
 	{
 		case WPS_CONFIDENCE_NONE:
 			return UT_CONFIDENCE_ZILCH;
-		case WPS_CONFIDENCE_POOR: 
-			return UT_CONFIDENCE_POOR;
-		case WPS_CONFIDENCE_LIKELY:
-			return UT_CONFIDENCE_SOSO;
-		case WPS_CONFIDENCE_GOOD:
-			return UT_CONFIDENCE_GOOD;
 		case WPS_CONFIDENCE_EXCELLENT:
 			return UT_CONFIDENCE_PERFECT;
 		default:

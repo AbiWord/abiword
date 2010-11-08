@@ -30,13 +30,7 @@
 #define IE_IMP_WP_H
 
 #include <stdio.h>
-#ifdef _WIN32
-#define POINT WPX_POINT
-#endif
 #include <libwpd/libwpd.h>
-#ifdef _WIN32
-#undef POINT
-#endif
 #include "ie_imp.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
@@ -98,7 +92,7 @@ public:
 					IE_Imp ** ppie);
 };
 
-class IE_Imp_WordPerfect : public IE_Imp, public WPXHLListenerImpl
+class IE_Imp_WordPerfect : public IE_Imp, public WPXDocumentInterface
 {
 public:
     IE_Imp_WordPerfect(PD_Document * pDocument);
@@ -153,6 +147,21 @@ public:
     virtual void closeTableCell() {}
     virtual void insertCoveredTableCell(const WPXPropertyList & /*propList*/) {}
     virtual void closeTable();
+
+    virtual void definePageStyle(const WPXPropertyList&) {}
+    virtual void defineParagraphStyle(const WPXPropertyList&, const WPXPropertyListVector&) {}
+    virtual void defineCharacterStyle(const WPXPropertyList&) {}
+    virtual void defineSectionStyle(const WPXPropertyList&, const WPXPropertyListVector&) {}
+    virtual void insertSpace() {}
+    virtual void insertField(const WPXString&, const WPXPropertyList&) {}
+    virtual void openComment(const WPXPropertyList&) {}
+    virtual void closeComment() {}
+    virtual void openTextBox(const WPXPropertyList&) {}
+    virtual void closeTextBox() {}
+    virtual void openFrame(const WPXPropertyList&) {}
+    virtual void closeFrame() {}
+    virtual void insertBinaryObject(const WPXPropertyList&, const WPXBinaryData&) {}
+    virtual void insertEquation(const WPXPropertyList&, const WPXString&) {}
 
     
 protected:

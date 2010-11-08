@@ -31,11 +31,10 @@
 #include <gsf/gsf-input-memory.h>
 #include <gsf/gsf-input-stdio.h>
 #include <gsf/gsf-infile-msole.h>
-#include <libwpd/WPXStream.h>
+#include <libwpd-stream/libwpd-stream.h>
 #include "xap_Module.h"
 
 using libwpg::WPGraphics;
-using libwpg::WPGString;
 
 ABI_PLUGIN_DECLARE("WPG")
 
@@ -48,7 +47,7 @@ public:
 	virtual bool isOLEStream();
 	virtual WPXInputStream * getDocumentOLEStream();
 	virtual WPXInputStream * getDocumentOLEStream(const char * name);
-	virtual const uint8_t *read(size_t numBytes, size_t &numBytesRead);
+	virtual const unsigned char *read(unsigned long numBytes, unsigned long &numBytesRead);
 	virtual int seek(long offset, WPX_SEEK_TYPE seekType);
 	virtual long tell();
 	virtual bool atEOS();
@@ -60,7 +59,7 @@ private:
 };
 
 AbiWordPerfectGraphicsInputStream::AbiWordPerfectGraphicsInputStream(GsfInput *input) :
-	WPXInputStream(true),
+	WPXInputStream(),
 	m_input(input),
 	m_ole(NULL)
 {
@@ -75,9 +74,9 @@ AbiWordPerfectGraphicsInputStream::~AbiWordPerfectGraphicsInputStream()
 	g_object_unref(G_OBJECT(m_input));
 }
 
-const uint8_t * AbiWordPerfectGraphicsInputStream::read(size_t numBytes, size_t &numBytesRead)
+const unsigned char * AbiWordPerfectGraphicsInputStream::read(unsigned long numBytes, unsigned long &numBytesRead)
 {
-	const uint8_t *buf = gsf_input_read(m_input, numBytes, NULL);
+	const unsigned char *buf = gsf_input_read(m_input, numBytes, NULL);
 
 	if (buf == NULL)
 		numBytesRead = 0;
@@ -245,10 +244,10 @@ UT_Error IE_Imp_WordPerfectGraphics_Sniffer::constructImporter(IE_ImpGraphic **p
 UT_Error IE_Imp_WordPerfectGraphics::importGraphic(GsfInput *input, FG_Graphic **ppfg)
 {
 	AbiWordPerfectGraphicsInputStream gsfInput(input);
-	WPGString svgOutput;
+	WPXString svgOutput;
 	if (WPGraphics::generateSVG(&gsfInput, svgOutput))
 	{
-		GsfInput * svgInput = gsf_input_memory_new((const guint8*)svgOutput.cstr(), svgOutput.length(), false);
+		GsfInput * svgInput = gsf_input_memory_new((const guint8*)svgOutput.cstr(), svgOutput.len(), false);
 		UT_Error result = IE_ImpGraphic::loadGraphic(svgInput, IE_ImpGraphic::fileTypeForSuffix(".svg"), ppfg);
 		g_object_unref(svgInput);
 		return result;
