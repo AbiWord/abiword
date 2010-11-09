@@ -504,10 +504,10 @@ void IE_Imp_WordPerfect::openParagraph(const WPXPropertyList &propList, const WP
 			else // Left aligned is default
 				propBuffer += "/L";
 
-			if (i()["style:leader-char"])
-				if (i()["style:leader-char"]->getStr() == "-")
+			if (i()["style:leader-text"])
+				if (i()["style:leader-text"]->getStr() == "-")
 					propBuffer += "2";
-				else if (i()["style:leader-char"]->getStr() == "_")
+				else if (i()["style:leader-text"]->getStr() == "_")
 					propBuffer += "3";
 				else // default to dot leader if the given leader is dot or is not supported by AbiWord
 					propBuffer += "1";
@@ -570,12 +570,12 @@ void IE_Imp_WordPerfect::openSpan(const WPXPropertyList &propList)
 			propBuffer += "subscript";
 	}
 
-	if (propList["style:text-underline"] || propList["style:text-crossing-out"])
+	if (propList["style:text-underline-type"] || propList["style:text-line-through-type"])
 	{
 		propBuffer += "; text-decoration:";
-		if (propList["style:text-underline"])
+		if (propList["style:text-underline-type"])
 			propBuffer += "underline ";
-		if (propList["style:text-crossing-out"])
+		if (propList["style:text-line-through-type"])
 			propBuffer += "line-through";
 
 	}
@@ -599,10 +599,10 @@ void IE_Imp_WordPerfect::openSpan(const WPXPropertyList &propList)
 		propBuffer += propList["fo:color"]->getStr().cstr();
 	}
 
-	if (propList["style:text-background-color"])
+	if (propList["fo:background-color"])
 	{
 		propBuffer += "; bgcolor:";
-		propBuffer += propList["style:text-background-color"]->getStr().cstr();
+		propBuffer += propList["fo:background-color"]->getStr().cstr();
 	}
 
 	UT_DEBUGMSG(("AbiWordPerfect: Appending span format: %s\n", propBuffer.c_str()));
@@ -623,10 +623,10 @@ void IE_Imp_WordPerfect::openSection(const WPXPropertyList &propList, const WPXP
 	int columnsCount = ((columns.count() == 0) ? 1 : columns.count());
 
 	// TODO: support spaceAfter
-	if (propList["fo:margin-left"])
-		marginLeft = propList["fo:margin-left"]->getDouble();
-	if (propList["fo:margin-right"])
-		marginRight = propList["fo:margin-right"]->getDouble();
+	if (propList["fo:start-indent"])
+		marginLeft = propList["fo:start-indent"]->getDouble();
+	if (propList["fo:end-indent"])
+		marginRight = propList["fo:end-indent"]->getDouble();
 
 	if (marginLeft != m_leftSectionMargin || marginRight != m_rightSectionMargin || m_sectionColumnsCount != columnsCount)
 		m_bSectionChanged = true;
