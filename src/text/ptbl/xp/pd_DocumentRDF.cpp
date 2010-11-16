@@ -51,7 +51,7 @@ static std::string readLengthPrefixedString( std::istream& iss )
     }
     
     char* p = new char[len+2];
-    bzero( p, len+2 );
+    memset( p, 0, len+2 );
     iss.read( p, len );
     std::string ret = p;
     delete [] p;
