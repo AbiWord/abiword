@@ -533,10 +533,10 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
 	// if we can get the current font, we will use it where appropriate
 	// the "NULL" string does not work too well on Windows in numbered lists
 	const gchar** props_in = NULL;
-	const gchar * font_family;
+	const gchar * font_family = NULL;
 	if (getView()->getCharFormat(&props_in))
 		font_family = UT_getAttribute("font-family", props_in);
-	else
+	if (!font_family)
 		font_family =(const gchar *) "NULL";
 
 	if(m_NewListType == NOT_A_LIST)
