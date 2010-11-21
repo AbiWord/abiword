@@ -452,14 +452,8 @@ void ODi_Table_ListenerState::_parseCellStart (const gchar** ppAtts,
                     props += *(pStyle->getBorderTop_color());
                 }
                 
-            }
+	    }
             else if (pStyle->hasTopBorder() == ODi_Style_Style::HAVE_BORDER_NO) {
-                //
-                // Work Around for AbiWord Drawing bug/feature
-                //
-                if(pStyle->hasBottomBorder() == ODi_Style_Style::HAVE_BORDER_YES)
-                    props += "; top-style:solid";
-                else
                     props += "; top-style:none";
             }
             
@@ -481,14 +475,8 @@ void ODi_Table_ListenerState::_parseCellStart (const gchar** ppAtts,
                 }
             
             } else if (pStyle->hasBottomBorder() == ODi_Style_Style::HAVE_BORDER_NO) {
-                //
-                // Work Around for AbiWord Drawing bug/feature
-                //
-                if(pStyle->hasTopBorder() == ODi_Style_Style::HAVE_BORDER_YES)
-                    props += "; bot-style:solid";
-                else
                     props += "; bot-style:none";
-                }
+	    }
             
             
             ////
