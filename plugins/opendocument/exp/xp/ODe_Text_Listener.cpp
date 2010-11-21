@@ -504,11 +504,12 @@ void ODe_Text_Listener::openTOC(const PP_AttrProp* pAP) {
     
     UT_UTF8String tocName;
     UT_UTF8String_sprintf(tocName, "Table of Contents %u", m_iCurrentTOC);
+    tocName.escapeXML();
     
     UT_UTF8String_sprintf(output,
         "%s<text:table-of-content text:protected=\"true\""
         " text:name=\"%s\">\n",
-        str.utf8_str(), tocName.escapeXML().utf8_str());
+        str.utf8_str(), tocName.utf8_str());
    
     ODe_writeUTF8String(m_pTextOutput, output);
     m_spacesOffset++;
@@ -635,7 +636,7 @@ void ODe_Text_Listener::openTOC(const PP_AttrProp* pAP) {
         if (hasHeading) {
             _printSpacesOffset(output);
             output += "<text:index-title text:name=\"";
-            output += tocName.escapeXML(); // the text:name field is required and should be unique
+            output += tocName; // the text:name field is required and should be unique
             output += "\">\n";
 
             m_spacesOffset++;
