@@ -277,6 +277,11 @@ void AbiCollab::setAcl(const std::vector<std::string> vAcl)
 	m_vAcl = vAcl;
 }
 
+void AbiCollab::appendAcl(const std::string& sBuddyDescriptor)
+{
+	m_vAcl.push_back(sBuddyDescriptor);
+}
+
 void AbiCollab::_setDocument(PD_Document* pDoc)
 {
 	UT_DEBUGMSG(("AbiCollab::setDocument()\n"));

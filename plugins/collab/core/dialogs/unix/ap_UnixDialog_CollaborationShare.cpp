@@ -246,7 +246,7 @@ void AP_UnixDialog_CollaborationShare::_populateBuddyModel(bool refresh)
 		BuddyPtrWrapper* pWrapper = new BuddyPtrWrapper(pBuddy);
 		gtk_list_store_append (m_pBuddyModel, &iter);
 		gtk_list_store_set (m_pBuddyModel, &iter, 
-				SHARE_COLUMN, _inAcl(m_vAcl, pBuddy),
+				SHARE_COLUMN, _populateShareState(pBuddy),
 				DESC_COLUMN, pBuddy->getDescription().utf8_str(), 
 				BUDDY_COLUMN, pWrapper, 
 				-1);

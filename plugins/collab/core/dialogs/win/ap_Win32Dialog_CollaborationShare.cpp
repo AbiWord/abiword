@@ -280,7 +280,7 @@ void AP_Win32Dialog_CollaborationShare::_populateBuddyModel(bool refresh)
 		BuddyPtrWrapper* pWrapper = new BuddyPtrWrapper(pBuddy);
 		lviBuddy.lParam = (LPARAM)pWrapper;
 		ListView_InsertItem(m_hBuddyList, &lviBuddy);
-		ListView_SetCheckState(m_hBuddyList, i, _inAcl(m_vAcl, pBuddy));
+		ListView_SetCheckState(m_hBuddyList, i, _populateShareState(pBuddy));
 	}
 }
 
