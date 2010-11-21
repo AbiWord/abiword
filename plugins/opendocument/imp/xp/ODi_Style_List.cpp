@@ -49,21 +49,33 @@ void ODi_Style_List::startElement (const gchar* pName, const gchar** ppAtts,
                                ODi_ListenerStateAction& rAction) 
 {
     const gchar* pVal = NULL;
+    ODi_ListLevelStyle* pLevelStyle = NULL;
+    if(m_bListStyle)
+    {
+      //
+      // We have a regular list element. We don;t need this default
+      //
+        pLevelStyle = m_levelStyles.back();
+	delete pLevelStyle;
+	m_levelStyles.pop_back();
+	m_bListStyle = false;
+    }
     if (!strcmp("text:list-style", pName)) {
         pVal = UT_getAttribute ("style:name", ppAtts);
         UT_ASSERT(pVal);
         m_name = pVal;
-
+	m_bListStyle = true;
+	//
+	// make a default list
+	//
+	pLevelStyle = new ODi_Numbered_ListLevelStyle(m_rElementStack);
+	m_levelStyles.push_back(pLevelStyle);
     } 
     else if (!strcmp("text:list-level-style-bullet", pName) ||
                !strcmp("text:list-level-style-image", pName)) {
-        ODi_ListLevelStyle* pLevelStyle = NULL;
-        
         pLevelStyle = new ODi_Bullet_ListLevelStyle(m_rElementStack);
         m_levelStyles.push_back(pLevelStyle);
-        
         rAction.pushState(pLevelStyle, false);
-        
     } 
     else if (!strcmp("text:list-level-style-number", pName)) {
         ODi_ListLevelStyle* pLevelStyle = NULL;
@@ -99,6 +111,7 @@ void ODi_Style_List::startElement (const gchar* pName, const gchar** ppAtts,
 void ODi_Style_List::endElement (const gchar* pName,
                          ODi_ListenerStateAction& rAction) {
                             
+    m_bListStyle = false;
     if (!strcmp("text:list-style", pName)) {
         // We're done.
         rAction.popState();
@@ -177,7 +190,7 @@ void ODi_Style_List::defineAbiList(PD_Document* pDocument)
     // level 3, level 3 has as parentid the id of the <l> from level 2 and so on.
     
     // Fill the id attribute of the <l> tags.
-    for(std::vector<ODi_ListLevelStyle*>::const_iterator iter = m_levelStyles.begin();
+     for(std::vector<ODi_ListLevelStyle*>::const_iterator iter = m_levelStyles.begin();
         iter != m_levelStyles.end(); ++iter) {
 
         (*iter)->setAbiListID(pDocument->getUID(UT_UniqueId::List));

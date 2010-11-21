@@ -231,7 +231,7 @@ void ODi_ListLevelStyle::getAbiProperties(UT_UTF8String& rProps,
     UT_UTF8String odTextIndent;
 
     // 1. The properties of the style denoted by the paragraph's style:list-style-name
-    if (!pStyle->getListStyleName().empty())
+    if (pStyle != NULL && !pStyle->getListStyleName().empty())
     {
         if (!m_marginLeft.empty())
             odMarginLeft = m_marginLeft;
@@ -492,7 +492,13 @@ ODi_Numbered_ListLevelStyle::ODi_Numbered_ListLevelStyle(ODi_ElementStack& rElem
         
     // It seens that OpenDocument aways uses a dot "." as level delimiter.
     m_abiListListDecimal = ".";
-}
+    //
+    // These are default values for OpenDocument lists
+    //
+    m_abiListListDelim += "%L";
+    m_abiListStartValue = "1";
+    UT_UTF8String_sprintf(m_abiListType, "%d", NUMBERED_LIST);
+ }
 
 
 

@@ -45,7 +45,8 @@ class ODi_Style_List
 public:
 
     ODi_Style_List(ODi_ElementStack& rElementStack) :
-		ODi_ListenerState("StyleList", rElementStack) 
+      m_bListStyle(false),
+	ODi_ListenerState("StyleList", rElementStack) 
         {
         }
                                      
@@ -89,6 +90,7 @@ private:
     bool m_bConsecutiveNumbering;
     
     std::vector<ODi_ListLevelStyle*> m_levelStyles;
+    bool m_bListStyle;
 };
 
 #endif //_ODI_STYLE_LIST_H_
