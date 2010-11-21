@@ -460,7 +460,7 @@ void GR_GOComponentManager::loadEmbedData(G_GNUC_UNUSED UT_sint32 uid)
 							&mime_type, NULL);
 		UT_return_if_fail(bFoundDataID);
 		UT_return_if_fail(pszDataID);
-		UT_DEBUGMSG(("GO Component string is... \n %s \n", (char*)pByteBuf));
+		UT_DEBUGMSG(("GO Component string is... \n %s \n", pByteBuf->getPointer(0)));
 		pGOComponentView->loadBuffer(pByteBuf, mime_type.c_str());
 	}
 }
@@ -588,10 +588,16 @@ void GOComponentView::render(UT_Rect & rec)
 	if (window != NULL)
 	{
 		y -= myHeight;
-		if (x != attributes.x || y != attributes.y)
+		if (x != attributes.x || y != attributes.y) {
 			gdk_window_move (window, x, y);
-		if (myWidth != attributes.width || myHeight != attributes.height)
+			attributes.x = x;
+			attributes.y = y;
+		}
+		if (myWidth != attributes.width || myHeight != attributes.height) {
 			gdk_window_resize (window, myWidth, myHeight);
+			attributes.width = myWidth;
+			attributes.height = myHeight;
+		}
 	}
 	else
 	{
@@ -830,11 +836,11 @@ UT_ByteBuf *GOComponentView::exportToPNG ()
 	int height = ascent + descent;
 	if (height == 0 || (int) width == 0)
 		return NULL;
+	int w = width * 300 / UT_LAYOUT_RESOLUTION, h = height * 300 * UT_LAYOUT_RESOLUTION;
 	UT_ByteBuf *pBuf = new UT_ByteBuf ();
-	cairo_surface_t *surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-										width, height);
+	cairo_surface_t *surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, w, h);
 	cairo_t *cr = cairo_create (surface);
-	go_component_render (component, cr, width, height);
+	go_component_render (component, cr, w, h);
 	cairo_destroy (cr);
 	cairo_surface_write_to_png_stream (surface,
 	    reinterpret_cast<cairo_write_func_t>(abi_CairoWrite), pBuf);
