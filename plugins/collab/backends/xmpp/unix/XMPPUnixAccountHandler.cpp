@@ -28,6 +28,7 @@ XMPPUnixAccountHandler::XMPPUnixAccountHandler()
 	password_entry(NULL),
 	server_entry(NULL),
 	port_entry(NULL),
+	starttls_button(NULL),
 	autoconnect_button(NULL)
 {
 }
@@ -41,7 +42,7 @@ void XMPPUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 {
 	UT_return_if_fail(pEmbeddingParent);
 
-	table = gtk_table_new(5, 2, FALSE);
+	table = gtk_table_new(6, 2, FALSE);
 	GtkVBox* parent = (GtkVBox*)pEmbeddingParent;
 	
 	// username	
@@ -77,10 +78,16 @@ void XMPPUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	gtk_table_attach_defaults(GTK_TABLE(table), port_entry, 1, 2, 3, 4);
 	gtk_entry_set_activates_default(GTK_ENTRY(port_entry), true);	
 	
+	// Encryption
+	starttls_button = gtk_check_button_new_with_label("Use StartTLS Encryption");
+	gtk_table_attach_defaults(GTK_TABLE(table), starttls_button, 0, 2, 4, 5);
+	if (!lm_ssl_is_supported())
+		gtk_widget_set_sensitive(starttls_button, FALSE);
+	
 	// autoconnect
 	autoconnect_button = gtk_check_button_new_with_label ("Connect on application startup");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(autoconnect_button), true);
-	gtk_table_attach_defaults(GTK_TABLE(table), autoconnect_button, 0, 2, 4, 5);
+	gtk_table_attach_defaults(GTK_TABLE(table), autoconnect_button, 0, 2, 5, 6);
 	
 	gtk_box_pack_start(GTK_BOX(parent), table, false, TRUE, 0);
 	gtk_widget_show_all(GTK_WIDGET(parent));
@@ -111,6 +118,9 @@ void XMPPUnixAccountHandler::storeProperties()
 		
 	if (port_entry && GTK_IS_ENTRY(server_entry))
 		addProperty("port", gtk_entry_get_text(GTK_ENTRY(port_entry)));	
+	
+	if (lm_ssl_is_supported() && starttls_button && GTK_IS_TOGGLE_BUTTON(starttls_button))
+		addProperty("encryption", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(starttls_button)) ? "true" : "false" );
 		
 	if (autoconnect_button && GTK_IS_TOGGLE_BUTTON(autoconnect_button))
 		addProperty("autoconnect", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(autoconnect_button)) ? "true" : "false" );
