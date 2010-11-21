@@ -6087,7 +6087,10 @@ void FV_View::_populateThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtrSrc, fl_HdrFtr
 {
 	PD_DocumentRange dr_source;
 	PT_DocPosition iPos1,iPos2;
+
+	UT_return_if_fail(pHdrFtrSrc->getFirstLayout());
 	iPos1 = m_pDoc->getStruxPosition(pHdrFtrSrc->getFirstLayout()->getStruxDocHandle());
+
 	fl_BlockLayout * pLast = static_cast<fl_BlockLayout *>(pHdrFtrSrc->getLastLayout());
 	iPos2 = pLast->getPosition(false);
 //
