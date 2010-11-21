@@ -102,6 +102,8 @@ public:
 	void SetGuru (GtkWidget *guru) {m_Guru = guru;}
 	UT_ByteBuf *exportToPNG ();
 	UT_ByteBuf *exportToSVG ();
+	UT_sint32 getWidth() {return width;}
+	UT_sint32 getHeight() {return height;}
 private:
 	GR_GOChartManager  * m_pGOMan;
 	GogGraph *m_Graph;

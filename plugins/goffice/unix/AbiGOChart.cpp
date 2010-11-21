@@ -594,23 +594,23 @@ void GR_GOChartManager::loadEmbedData(UT_sint32 uid)
 
 UT_sint32 GR_GOChartManager::getWidth(G_GNUC_UNUSED UT_sint32 uid)
 {
-    // FIXME write code this draws a square
-    return 5000;
+  GOChartView * pGOChartView = m_vecGOChartView.getNthItem(uid);
+  UT_return_val_if_fail (pGOChartView, 5000);
+  return pGOChartView->getWidth();
 }
 
 
 UT_sint32 GR_GOChartManager::getAscent(G_GNUC_UNUSED UT_sint32 uid)
 {
-  // FIXME write code this draws a square
-  return 5000;
+  GOChartView * pGOChartView = m_vecGOChartView.getNthItem(uid);
+  UT_return_val_if_fail (pGOChartView, 5000);
+  return pGOChartView->getHeight();
 }
 
 
 UT_sint32 GR_GOChartManager::getDescent(G_GNUC_UNUSED UT_sint32 uid)
 {
-  // FIXME write code
- return 0;
-
+  return 0;
 }
 
 void GR_GOChartManager::setColor(G_GNUC_UNUSED UT_sint32 uid, G_GNUC_UNUSED UT_RGBColor c)
@@ -697,7 +697,7 @@ GOChartView::GOChartView(GR_GOChartManager * pGOMan): m_pGOMan(pGOMan)
 	m_Image = NULL;
 	m_Renderer = GOG_RENDERER(g_object_new(GOG_TYPE_RENDERER, NULL));
 	pix_width = pix_height = 0;
-	width = height = 0;
+	width = height = 5000;
 	m_Guru = NULL;
 }
 
@@ -728,11 +728,11 @@ void GOChartView::render(UT_Rect & rec)
 	UT_sint32 zoom = pUGG->getZoomPercentage ();
 	UT_sint32 real_width = _width * 100 / zoom;
 	UT_sint32 real_height = _height * 100 / zoom;
-	if (real_width != width || real_height != height)
+	if (rec.width != width || rec.height != height)
 	{
-		width = real_width;
-		height = real_height;
-		gog_graph_set_size (m_Graph, width, height);
+		width = rec.width;
+		height = rec.height;
+		gog_graph_set_size (m_Graph, real_width, real_height);
 	}
 	cairo_save (cr);
 	cairo_translate (cr, x, y);
