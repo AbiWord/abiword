@@ -369,8 +369,11 @@ void ODi_Table_ListenerState::_parseColumnStart (const gchar** ppAtts,
                 }
                 if(!pStyle->getColumnRelWidth()->empty())
                 {
-                    m_columnRelWidths += *(pStyle->getColumnRelWidth());
-                    m_columnRelWidths += "/";
+                    for (i=0; i<nColsRepeated; i++) 
+                    {
+		        m_columnRelWidths += *(pStyle->getColumnRelWidth());
+                        m_columnRelWidths += "/";
+		    }
                 }
             }
         } 
