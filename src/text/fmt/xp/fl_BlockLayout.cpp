@@ -10067,11 +10067,11 @@ void	fl_BlockLayout::StopListInBlock(void)
 
 	if (id != 0)
 	{
-		UT_ASSERT(pPrev);	// TMN: Is an assert appropriate here?
+		UT_ASSERT_HARMLESS(pPrev);	// TMN: Is an assert appropriate here?
 
 		//First, look for block in list
 		bool bmatch = false;
-		bmatch = static_cast<bool>(pPrev->isListItem() && pPrev->getLevel() == level && pPrev->getAutoNum()->getID() == id);
+		bmatch = static_cast<bool>(pPrev && pPrev->isListItem() && pPrev->getLevel() == level && pPrev->getAutoNum()->getID() == id);
 		while (pPrev && !bmatch)
 		{
 			pPrev = pPrev->getPrevBlockInDocument();
