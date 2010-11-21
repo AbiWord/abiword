@@ -151,6 +151,13 @@ void ODe_Table_Listener::openTable(const PP_AttrProp* pAP,
 	    {
                 if (!buffer.empty()) 
 		{
+                    if (cnt >= vecStyles.size())
+                    {
+                        UT_DEBUGMSG(("table-rel-column-props and table-column-props "
+                                     "have mismatched column counts! ignoring "
+                                     "further values.\n"));
+                        break;
+                    }
                     pStyle = vecStyles.getNthItem(cnt);
 		    cnt++;
                     pStyle->setRelColumnWidth(buffer.c_str());
