@@ -26,9 +26,7 @@
 #include <dbus/dbus-glib.h>
 #include <dbus/dbus-glib-lowlevel.h>
 
-#include <libempathy/empathy-tube-handler.h>
-#include <telepathy-glib/handle.h>
-#include <telepathy-glib/channel.h>
+#include <telepathy-glib/telepathy-glib.h>
 
 #include <account/xp/AccountHandler.h>
 #include "DTubeBuddy.h"
@@ -107,7 +105,6 @@ private:
 	bool									_createAndOfferTube(PD_Document* pDoc, const std::vector<TelepathyBuddyPtr>& vBuddies, UT_UTF8String& sTubeAddress);
 	TelepathyBuddyPtr						_getBuddy(TpContact* pContact);
 
-	EmpathyTubeHandler*						tube_handler;
 	/* TpHandle -> buddyPath (UT_UTF8String) */
 	GHashTable*								handle_to_bus_name;
 	static DTubeAccountHandler* 			m_pHandler;

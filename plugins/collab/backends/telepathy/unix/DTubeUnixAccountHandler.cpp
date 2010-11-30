@@ -27,22 +27,8 @@
 #include <xap_Frame.h>
 #include <xap_UnixApp.h>
 
-extern "C"
-{
-#include <telepathy-glib/dbus.h>
-#include <telepathy-glib/connection.h>
-#include <telepathy-glib/util.h>
-#include <telepathy-glib/interfaces.h>
-#include <telepathy-glib/gtypes.h>
-#include <telepathy-glib/contact.h>
+#include <telepathy-glib/telepathy-glib.h>
 
-#include <libmissioncontrol/mission-control.h>
-	
-#include <libempathy/empathy-utils.h>
-#include <libempathy-gtk/empathy-account-chooser.h>
-#include <libempathy-gtk/empathy-ui-utils.h>
-}
-	
 #include "DTubeUnixAccountHandler.h"
 #include "DTubeBuddy.h"
 
@@ -78,15 +64,6 @@ is_usable_connection(TpConnection* conn)
 			g_value_set_static_boxed (&class_, g_ptr_array_index (classes, i));
 
 			dbus_g_type_struct_get (&class_, 0, &fixed_prop, G_MAXUINT);
-
-			/* we don't use stream tubes, so do not check for those
-			chan_type = (GValue *) g_hash_table_lookup (fixed_prop, TP_IFACE_CHANNEL ".ChannelType");
-			if (chan_type == NULL || tp_strdiff (g_value_get_string (chan_type),
-						"org.freedesktop.Telepathy.Channel.Type.StreamTube.DRAFT"))
-			{
-				continue;
-			}
-			 */
 
 			handle_type = (GValue *) g_hash_table_lookup (fixed_prop, TP_IFACE_CHANNEL ".TargetHandleType");
 			if (handle_type == NULL || g_value_get_uint (handle_type) != TP_HANDLE_TYPE_ROOM)
@@ -188,6 +165,10 @@ list_connection_names_cb (const gchar * const *bus_names,
 	if (error != NULL)
 		return;
 
+    UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+        return;
+
+/*
 	TpDBusDaemon* bus = tp_dbus_daemon_new (tp_get_bus ());
 	MissionControl* mc = empathy_mission_control_dup_singleton ();
 
@@ -207,6 +188,7 @@ list_connection_names_cb (const gchar * const *bus_names,
 
 	g_object_unref (mc);
 	g_object_unref (bus);
+*/
 }
 
 static void
@@ -253,13 +235,14 @@ tube_dbus_names_changed_cb (TpChannel * /*proxy*/,
 	}
 }
 
+/*
 static void
-initiator_ready_cb   (TpConnection * /*connection*/,
-                      guint /*n_contacts*/,
+initiator_ready_cb   (TpConnection * connection,
+                      guint n_contacts,
                       TpContact * const *contacts,
-                      guint /*n_failed*/,
-                      const TpHandle * /*failed*/,
-                      const GError * /*error*/,
+                      guint n_failed,
+                      const TpHandle * failed,
+                      const GError * error,
                       gpointer user_data,
                       GObject *weak_object)
 {
@@ -316,7 +299,7 @@ initiator_ready_cb   (TpConnection * /*connection*/,
 }
 
 static void
-new_tube_cb (EmpathyTubeHandler * /*thandler*/,
+new_tube_cb (EmpathyTubeHandler * thandler,
              TpChannel * tube,
              gpointer data)
 {
@@ -336,12 +319,13 @@ new_tube_cb (EmpathyTubeHandler * /*thandler*/,
 	conn = tp_channel_borrow_connection (chan);
 	tp_connection_run_until_ready (conn, FALSE, NULL, NULL);
 
-	/* get the TpContact of the initiator */
+	// get the TpContact of the initiator
 	tp_connection_get_contacts_by_handle (conn, 1, &initiator, 1, features,
 				initiator_ready_cb, obj, NULL, G_OBJECT (tube));
 
 	g_object_ref (tube);
 }
+*/
 
 DTubeAccountHandler::DTubeAccountHandler()
 	: AccountHandler(),
@@ -350,13 +334,13 @@ DTubeAccountHandler::DTubeAccountHandler()
 	UT_DEBUGMSG(("DTubeAccountHandler::DTubeAccountHandler()\n"));
 	m_pHandler = this;
 
-	empathy_gtk_init ();
-
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	pManager->registerEventListener(this);
-	tube_handler = empathy_tube_handler_new (TP_TUBE_TYPE_DBUS, "com.abisource.abiword.abicollab");
+
+/*	tube_handler = empathy_tube_handler_new (TP_TUBE_TYPE_DBUS, "com.abisource.abiword.abicollab");
 	g_signal_connect (tube_handler, "new-tube", G_CALLBACK (new_tube_cb), this);
 	handle_to_bus_name = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, NULL);
+*/
 }
 
 DTubeAccountHandler::~DTubeAccountHandler()
@@ -491,125 +475,7 @@ bool DTubeAccountHandler::startSession(PD_Document* pDoc, const std::vector<std:
 void DTubeAccountHandler::handleEvent(Session& /*pSession*/)
 {
 	// TODO: implement me
-}
-
-/*
-static void
-announce_olpc_activity (TpChannel *text_chan,
-                        const gchar *doc_title)
-{
-
-        GPtrArray *activities;
-        GValue activity = {0,};
-        GHashTable *olpc_activity_properties = g_hash_table_new (g_str_hash, g_str_equal);
-        GValue act_id = {0,}, type = {0,}, color = {0,}, priv = {0,}, name = {0,};
-        GError *err = NULL;
-        TpHandle handle = tp_channel_get_handle (text_chan, NULL);
-        TpConnection *conn = tp_channel_borrow_connection (text_chan);
-
-        // FIXME: this is horrible
-        #define ACTIVITY_ID "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-
-        // announce the actitiy
-        activities = g_ptr_array_new ();
-        g_value_init (&activity, ABI_STRUCT_TYPE_ACTIVITY);
-        g_value_take_boxed (&activity, dbus_g_type_specialized_construct (ABI_STRUCT_TYPE_ACTIVITY));
-        dbus_g_type_struct_set (&activity, 0, ACTIVITY_ID, 1, handle, G_MAXUINT);
-        g_ptr_array_add (activities, (void *) g_value_get_boxed (&activity));
-
-        abi_cli_olpc_buddy_info_call_set_activities (TP_PROXY (conn), -1, activities,
-            NULL, NULL, NULL, NULL);
-        g_ptr_array_free (activities, TRUE);
-
-        // set activity's properties
-        // id
-        g_value_init (&act_id, G_TYPE_STRING);
-        g_value_set_string (&act_id, ACTIVITY_ID);
-        g_hash_table_insert (olpc_activity_properties, (void *) "id", (void *) &act_id);
-        // type
-        g_value_init (&type, G_TYPE_STRING);
-        g_value_set_string (&type, "org.laptop.AbiWordActivity");
-        g_hash_table_insert (olpc_activity_properties, (void *) "type", (void *) &type);
-        // name (use the title)
-        g_value_init (&name, G_TYPE_STRING);
-        g_value_set_string (&name, doc_title);
-        g_hash_table_insert (olpc_activity_properties, (void *) "name", (void *) &name);
-        // color
-        g_value_init (&color, G_TYPE_STRING);
-        g_value_set_string (&color, "#FF8F00,#00588C");
-        g_hash_table_insert (olpc_activity_properties, (void *) "color", (void *) &color);
-        // private
-        g_value_init (&priv, G_TYPE_BOOLEAN);
-        g_value_set_boolean (&priv, FALSE);
-        g_hash_table_insert (olpc_activity_properties, (void *) "private", (void *) &priv);
-
-        abi_cli_olpc_activity_properties_call_set_properties (TP_PROXY (conn),
-            -1, handle, olpc_activity_properties, NULL, NULL, NULL, NULL);
-
-        g_hash_table_destroy (olpc_activity_properties);
-}
-*/
-
-static void
-set_muc_prop_cb (TpProxy * /*proxy*/,
-                 const GError * /*error*/,
-                 gpointer /*user_data*/,
-                 GObject * /*weak_object*/)
-{
-        //TpChannel *text_chan = TP_CHANNEL (proxy);
-        //const gchar *doc_title = (const gchar *) user_data;
-
-        //announce_olpc_activity (text_chan, doc_title);
-}
-
-static void
-list_properties_cb (TpProxy *proxy,
-                    const GPtrArray *available_props,
-                    const GError *error,
-                    gpointer user_data,
-                    GObject * /*weak_object*/)
-{
-	TpChannel *text_chan = TP_CHANNEL (proxy);
-	guint i;
-	//const gchar *doc_title = (const gchar *) user_data;
-
-	if (error != NULL)
-	{
-		//announce_olpc_activity (text_chan, doc_title);
-		return;
-	}
-
-	for (i = 0; i < available_props->len; i++)
-	{
-		GValue v = {0,};
-		guint prop_id;
-		gchar *name;
-
-		g_value_init (&v, TP_STRUCT_TYPE_PROPERTY_SPEC);
-		g_value_set_static_boxed (&v, g_ptr_array_index (available_props, i));
-		dbus_g_type_struct_get (&v, 0, &prop_id, 1, &name, G_MAXUINT);
-		if (!tp_strdiff (name, "anonymous"))
-		{
-			/* don't set the room anonyme */
-			GPtrArray *muc_props;
-			GValue anonyme = {0,}, prop = {0,};
-
-			muc_props = g_ptr_array_new ();
-
-			g_value_init (&anonyme, G_TYPE_BOOLEAN);
-			g_value_set_boolean (&anonyme, FALSE);
-
-			g_value_init (&prop, TP_STRUCT_TYPE_PROPERTY_VALUE);
-			g_value_take_boxed (&prop, dbus_g_type_specialized_construct (TP_STRUCT_TYPE_PROPERTY_VALUE));
-			dbus_g_type_struct_set (&prop, 0, prop_id, 1, &anonyme, G_MAXUINT);
-			g_ptr_array_add (muc_props, (void *) g_value_get_boxed (&prop));
-
-			tp_cli_properties_interface_call_set_properties (TP_PROXY (text_chan), -1,
-						muc_props, set_muc_prop_cb, user_data, NULL, NULL);
-			g_ptr_array_free (muc_props, TRUE);
-			return;
-		}
-	}
+    UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 }
 
 static GHashTable* 
@@ -629,49 +495,7 @@ s_generate_hash(const std::map<std::string, std::string>& props)
 void DTubeAccountHandler::signal(const Event& /*event*/, BuddyPtr /*pSource*/)
 {
 	UT_DEBUGMSG(("DTubeAccountHandler::signal()\n"));
-
-	// NOTE: do NOT let AccountHandler::signal() send broadcast packets!
-	// It will send them to all buddies, including the ones we created just
-	// to be able to list the available Telepathy contacts: TelepathyBuddies.
-	// They are just fake buddies however, and can't receive real packets. 
-	// Only DTubeBuddy's can be sent packets
-
-	/*
-	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	UT_return_if_fail(pManager);
-
-	// we just want to listen for when we get a document handle from the other side
-	// (this obviously only makes sense for a joining party, not an offering one;
-	// the offering party should never even receive such an event
-	if (event.getClassType() == PCT_AccountBuddyAddDocumentEvent)
-	{
-		UT_DEBUGMSG(("We received a document handle from an offering party; let's join it immediately!\n"));
-		AccountBuddyAddDocumentEvent& abade = (AccountBuddyAddDocumentEvent&)event;
-
-		if (!m_bLocallyControlled)
-		{
-			DocHandle* pDocHandle = abade.getDocHandle();
-			if (pDocHandle)
-			{
-				UT_DEBUGMSG(("Got dochandle, going to initiate a join on it!\n"));
-				// FIXME: remove const cast
-				pManager->joinSessionInitiate(pSource, pDocHandle);
-			}
-			else
-			{
-				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-			}
-		}
-		else
-		{
-			UT_ASSERT_HARMLESS(UT_NOT_REACHED);
-		}
-	}
-	else if (event.getClassType() == PCT_StartSessionEvent)
-	{
-		UT_DEBUGMSG(("Sharing document. Offer tube\n"));
-		DisplayShareDialog();
-	}*/
+    UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 }
 
 bool DTubeAccountHandler::send(const Packet* pPacket)
@@ -800,29 +624,8 @@ bool DTubeAccountHandler::joinBuddy(PD_Document* /*pDoc*/, TpHandle handle, cons
 	g_hash_table_insert (handle_to_bus_name, GUINT_TO_POINTER (handle), (void *) &buddyDBusAddress);
 
 	// TODO: implement me properly
+    UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 	return false;
-	
-/*	DTubeBuddyPtr pBuddy = boost::shared_ptr<DTubeBuddy>(new DTubeBuddy(this, buddyDBusAddress));
-	addBuddy(pBuddy);
-
-	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	UT_return_val_if_fail(pManager, false);
-
-	if (m_bLocallyControlled)
-	{
-		AbiCollab* pSession = pManager->getSession(pDoc);
-		UT_return_val_if_fail(pSession, false);
-		pSession->addCollaborator(pBuddy);
-		return true;
-	}
-	else
-	{
-		UT_DEBUGMSG(("Buddy joined, while we are NOT hosting a session; requesting sessions from buddy: %s\n", pBuddy->getDescriptor(false).utf8_str()));
-		getSessionsAsync(pBuddy);
-		return true;
-	}
-
-	return false;*/
 }
 
 bool DTubeAccountHandler::disjoinBuddy(FV_View* pView, const UT_UTF8String& buddyDBusAddress)
