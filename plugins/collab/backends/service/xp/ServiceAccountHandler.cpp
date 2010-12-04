@@ -264,7 +264,7 @@ bool ServiceAccountHandler::disconnect()
 	
 	m_bOnline = false;
 
-	// we are disconnected now, no need to send or receive messages (such as events) anymore
+	// we are disconnected now, no need to receive events anymore
 	pManager->unregisterEventListener(this);
 
 	removeExporter();

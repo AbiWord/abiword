@@ -189,6 +189,9 @@ bool TCPAccountHandler::disconnect()
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_val_if_fail(pManager, false);
 	
+	// we are disconnected now, no need to receive events anymore
+	pManager->unregisterEventListener(this);
+
 	_teardownAndDestroyHandler();
 	m_bConnected = false;
 
@@ -196,8 +199,7 @@ bool TCPAccountHandler::disconnect()
 	AccountOfflineEvent event;
 	// TODO: fill the event
 	AbiCollabSessionManager::getManager()->signal(event);
-	// we are disconnected now, no need to sent out messages (such as events) anymore
-	pManager->unregisterEventListener(this);	
+
 	return true;
 }
 
