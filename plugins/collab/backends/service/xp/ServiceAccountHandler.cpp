@@ -263,15 +263,17 @@ bool ServiceAccountHandler::disconnect()
 	UT_return_val_if_fail(pManager, false);	
 	
 	m_bOnline = false;
+
+	// we are disconnected now, no need to send or receive messages (such as events) anymore
+	pManager->unregisterEventListener(this);
+
+	removeExporter();
 	
 	// signal all listeners we are logged out
 	AccountOfflineEvent event;
 	// TODO: fill the event
 	AbiCollabSessionManager::getManager()->signal(event);
 	
-	// we are disconnected now, no need to sent out messages (such as events) anymore
-	pManager->unregisterEventListener(this);	
-	removeExporter();
 	return true;
 }
 
