@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef __DTUBEACCOUNTHANDLER__
-#define __DTUBEACCOUNTHANDLER__
+#ifndef __TELEPATHY_ACCOUNT_HANDLER__
+#define __TELEPATHY_ACCOUNT_HANDLERr__
 
 #include <map>
 
@@ -32,17 +32,17 @@
 #include "DTubeBuddy.h"
 #include "TelepathyBuddy.h"
 
-extern AccountHandlerConstructor DTubeAccountHandlerConstructor;
+extern AccountHandlerConstructor TelepathyAccountHandlerConstructor;
 
 class Session;
 class FV_View;
 
-class DTubeAccountHandler : public AccountHandler
+class TelepathyAccountHandler : public AccountHandler
 {
 public:
-	static DTubeAccountHandler*				getHandler();
-	DTubeAccountHandler(); // TODO: this constructor shouldn't be public
-	virtual ~DTubeAccountHandler();
+	static TelepathyAccountHandler*				getHandler();
+	TelepathyAccountHandler(); // TODO: this constructor shouldn't be public
+	virtual ~TelepathyAccountHandler();
 
 	// housekeeping
 	virtual UT_UTF8String					getDescription();
@@ -60,9 +60,7 @@ public:
 	virtual ConnectResult					connect();
 	virtual bool							disconnect();
 	virtual bool							isOnline();
-	bool									isLocallyControlled()
-		{ return m_bLocallyControlled; }
-	
+
 	// user management
 	virtual void							getBuddiesAsync();
 	void									getBuddiesAsync_cb(guint n_contacts, TpContact * const *contacts); // private, but should be callable from C code
@@ -99,10 +97,8 @@ private:
 	bool									_createAndOfferTube(PD_Document* pDoc, const std::vector<TelepathyBuddyPtr>& vBuddies, UT_UTF8String& sTubeAddress);
 	TelepathyBuddyPtr						_getBuddy(TpContact* pContact);
 
-	bool									m_bLocallyControlled;
-
 	// TpHandle -> buddyPath (UT_UTF8String)
 	GHashTable*								handle_to_bus_name;
 };
 
-#endif /* __DTUBEACCOUNTHANDLER__ */
+#endif /* __TELEPATHY_ACCOUNT_HANDLER__ */

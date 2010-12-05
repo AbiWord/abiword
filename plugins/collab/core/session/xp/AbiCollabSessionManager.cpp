@@ -258,8 +258,8 @@ bool AbiCollabSessionManager::registerAccountHandlers()
 	// d-bus tube account handler is a singleton, that should always
 	// be active if it is compiled in
 	UT_DEBUGMSG(("Registering the telepathy account handler!\n"));
-	AccountHandler* pDTubeHandler = new DTubeAccountHandler();
-	addAccount(pDTubeHandler);
+	AccountHandler* pTelepathyHandler = new TelepathyAccountHandler();
+	addAccount(pTelepathyHandler);
 #endif
 #ifdef ABICOLLAB_HANDLER_XMPP
 	m_regAccountHandlers[XMPPAccountHandler::getStaticStorageType()] = XMPPAccountHandlerConstructor;

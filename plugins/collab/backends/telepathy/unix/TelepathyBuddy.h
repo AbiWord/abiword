@@ -39,7 +39,7 @@ public:
 		g_object_ref(m_pContact);
 	}
 
-	~TelepathyBuddy()
+	virtual ~TelepathyBuddy()
 	{
 		g_object_unref(m_pContact);
 	}

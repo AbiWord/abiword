@@ -126,7 +126,7 @@ list_connection_names_cb (const gchar * const *bus_names,
                           GObject * /*unused*/)
 {
 	UT_DEBUGMSG(("list_connection_names_cb()\n"));
-	DTubeAccountHandler* pHandler = reinterpret_cast<DTubeAccountHandler*>(user_data);
+	TelepathyAccountHandler* pHandler = reinterpret_cast<TelepathyAccountHandler*>(user_data);
 	UT_return_if_fail(pHandler);
 	
 	if (error != NULL)
@@ -169,7 +169,7 @@ tube_dbus_names_changed_cb (TpChannel * /*proxy*/,
                             gpointer user_data,
                             GObject * /*weak_object*/)
 {
-	DTubeAccountHandler *obj = (DTubeAccountHandler *) user_data;
+	TelepathyAccountHandler *obj = (TelepathyAccountHandler *) user_data;
 	guint i;
 
 	UT_DEBUGMSG(("Tube D-Bus names changed\n"));
@@ -205,40 +205,39 @@ tube_dbus_names_changed_cb (TpChannel * /*proxy*/,
 	}
 }
 
-DTubeAccountHandler::DTubeAccountHandler()
-	: AccountHandler(),
-	m_bLocallyControlled(false)
+TelepathyAccountHandler::TelepathyAccountHandler()
+	: AccountHandler()
 {
-	UT_DEBUGMSG(("DTubeAccountHandler::DTubeAccountHandler()\n"));
+	UT_DEBUGMSG(("TelepathyAccountHandler::TelepathyAccountHandler()\n"));
 }
 
-DTubeAccountHandler::~DTubeAccountHandler()
+TelepathyAccountHandler::~TelepathyAccountHandler()
 {
 	disconnect();
 }
 
-UT_UTF8String DTubeAccountHandler::getDescription()
+UT_UTF8String TelepathyAccountHandler::getDescription()
 {
 	return "Telepathy";
 }
 
-UT_UTF8String DTubeAccountHandler::getDisplayType()
+UT_UTF8String TelepathyAccountHandler::getDisplayType()
 {
 	return "Telepathy";
 }
 
-UT_UTF8String DTubeAccountHandler::getStorageType()
+UT_UTF8String TelepathyAccountHandler::getStorageType()
 {
 	return "com.abisource.abiword.abicollab.backend.telepathy";
 }
 
-void DTubeAccountHandler::storeProperties()
+void TelepathyAccountHandler::storeProperties()
 {
 	// no need to implement this as we will be getting
 	// all our info always directly from sugar
 }
 
-ConnectResult DTubeAccountHandler::connect()
+ConnectResult TelepathyAccountHandler::connect()
 {
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	pManager->registerEventListener(this);
@@ -250,7 +249,7 @@ ConnectResult DTubeAccountHandler::connect()
 	return CONNECT_SUCCESS;
 }
 
-bool DTubeAccountHandler::disconnect()
+bool TelepathyAccountHandler::disconnect()
 {
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_val_if_fail(pManager, false);
@@ -266,14 +265,14 @@ bool DTubeAccountHandler::disconnect()
 	return true;
 }
 
-bool DTubeAccountHandler::isOnline()
+bool TelepathyAccountHandler::isOnline()
 {
 	return true;
 }
 
-void DTubeAccountHandler::getBuddiesAsync()
+void TelepathyAccountHandler::getBuddiesAsync()
 {
-	UT_DEBUGMSG(("DTubeAccountHandler::getBuddiesAsync()\n"));
+	UT_DEBUGMSG(("TelepathyAccountHandler::getBuddiesAsync()\n"));
 		
 	// ask telepathy for the connection names
 	TpDBusDaemon* dbus = tp_dbus_daemon_dup(NULL);
@@ -282,9 +281,9 @@ void DTubeAccountHandler::getBuddiesAsync()
 	g_object_unref(dbus);
 }
 
-void DTubeAccountHandler::getBuddiesAsync_cb(guint n_contacts, TpContact * const *contacts)
+void TelepathyAccountHandler::getBuddiesAsync_cb(guint n_contacts, TpContact * const *contacts)
 {
-	UT_DEBUGMSG(("DTubeAccountHandler::getBuddiesAsync_cb()\n"));
+	UT_DEBUGMSG(("TelepathyAccountHandler::getBuddiesAsync_cb()\n"));
 
 	UT_DEBUGMSG(("Got %d contacts\n", n_contacts));
 	for (UT_uint32 i = 0; i < n_contacts; i++)
@@ -302,35 +301,35 @@ void DTubeAccountHandler::getBuddiesAsync_cb(guint n_contacts, TpContact * const
 	}
 }
 
-BuddyPtr DTubeAccountHandler::constructBuddy(const PropertyMap& /*props*/)
+BuddyPtr TelepathyAccountHandler::constructBuddy(const PropertyMap& /*props*/)
 {
-	UT_DEBUGMSG(("DTubeAccountHandler::constructBuddy()\n"));
+	UT_DEBUGMSG(("TelepathyAccountHandler::constructBuddy()\n"));
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);	
 	return BuddyPtr();
 }
 
-BuddyPtr DTubeAccountHandler::constructBuddy(const std::string& /*descriptor*/, BuddyPtr /*pBuddy*/)
+BuddyPtr TelepathyAccountHandler::constructBuddy(const std::string& /*descriptor*/, BuddyPtr /*pBuddy*/)
 {
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 	return BuddyPtr();
 }
 
-bool DTubeAccountHandler::recognizeBuddyIdentifier(const std::string& /*identifier*/)
+bool TelepathyAccountHandler::recognizeBuddyIdentifier(const std::string& /*identifier*/)
 {
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 	return false;
 }
 
-void DTubeAccountHandler::forceDisconnectBuddy(BuddyPtr pBuddy)
+void TelepathyAccountHandler::forceDisconnectBuddy(BuddyPtr pBuddy)
 {
 	UT_return_if_fail(pBuddy);
 
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED)
 }
 
-bool DTubeAccountHandler::startSession(PD_Document* pDoc, const std::vector<std::string>& vAcl, AbiCollab** /*pSession*/)
+bool TelepathyAccountHandler::startSession(PD_Document* pDoc, const std::vector<std::string>& vAcl, AbiCollab** /*pSession*/)
 {
-	UT_DEBUGMSG(("DTubeAccountHandler::startSession()\n"));
+	UT_DEBUGMSG(("TelepathyAccountHandler::startSession()\n"));
 	UT_return_val_if_fail(pDoc, false);
 
 	std::vector<TelepathyBuddyPtr> acl_;
@@ -372,17 +371,17 @@ s_generate_hash(const std::map<std::string, std::string>& props)
 	return hash;
 }
 
-bool DTubeAccountHandler::send(const Packet* pPacket)
+bool TelepathyAccountHandler::send(const Packet* pPacket)
 {
-	UT_DEBUGMSG(("DTubeAccountHandler::send(const Packet* pPacket)\n"));
+	UT_DEBUGMSG(("TelepathyAccountHandler::send(const Packet* pPacket)\n"));
 	UT_return_val_if_fail(pPacket, false);
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 	return true;
 }
 
-bool DTubeAccountHandler::send(const Packet* pPacket, BuddyPtr pBuddy)
+bool TelepathyAccountHandler::send(const Packet* pPacket, BuddyPtr pBuddy)
 {
-	UT_DEBUGMSG(("DTubeAccountHandler::send(const Packet* pPacket, BuddyPtr pBuddy\n"));
+	UT_DEBUGMSG(("TelepathyAccountHandler::send(const Packet* pPacket, BuddyPtr pBuddy\n"));
 	UT_return_val_if_fail(pPacket, false);
 	UT_return_val_if_fail(pBuddy, false);
 	    
@@ -417,9 +416,9 @@ bool DTubeAccountHandler::send(const Packet* pPacket, BuddyPtr pBuddy)
 	return sent;
 }
 
-bool DTubeAccountHandler::_startSession(PD_Document* pDoc, const UT_UTF8String& tubeDBusAddress)
+bool TelepathyAccountHandler::_startSession(PD_Document* pDoc, const UT_UTF8String& tubeDBusAddress)
 {
-	UT_DEBUGMSG(("DTubeAccountHandler::_startSession() - tubeDBusAddress: %s", tubeDBusAddress.utf8_str()));
+	UT_DEBUGMSG(("TelepathyAccountHandler::_startSession() - tubeDBusAddress: %s", tubeDBusAddress.utf8_str()));
 	
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_val_if_fail(pManager, false);
@@ -442,8 +441,6 @@ bool DTubeAccountHandler::_startSession(PD_Document* pDoc, const UT_UTF8String& 
 		UT_DEBUGMSG(("Adding message filter\n"));
 		dbus_connection_add_filter(pTube, s_dbus_handle_message, this, NULL);
 
-		m_bLocallyControlled = true;
-
 		// we are "connected" now, time to start sending out, and listening to messages (such as events)
 		//pManager->registerEventListener(this);
 		// start hosting a session on the current document
@@ -457,9 +454,9 @@ bool DTubeAccountHandler::_startSession(PD_Document* pDoc, const UT_UTF8String& 
 	return false;
 }
 
-bool DTubeAccountHandler::joinTube(const UT_UTF8String& tubeDBusAddress)
+bool TelepathyAccountHandler::joinTube(const UT_UTF8String& tubeDBusAddress)
 {
-	UT_DEBUGMSG(("DTubeAccountHandler::joinTube()\n"));
+	UT_DEBUGMSG(("TelepathyAccountHandler::joinTube()\n"));
 
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_val_if_fail(pManager, false);
@@ -478,8 +475,6 @@ bool DTubeAccountHandler::joinTube(const UT_UTF8String& tubeDBusAddress)
 		UT_DEBUGMSG(("Adding message filter\n"));
 		dbus_connection_add_filter(pTube, s_dbus_handle_message, this, NULL);
 
-		m_bLocallyControlled = false;
-
 		// we are "connected" now, time to start sending out, and listening to messages (such as events)
 		//pManager->registerEventListener(this);
 	}
@@ -489,9 +484,9 @@ bool DTubeAccountHandler::joinTube(const UT_UTF8String& tubeDBusAddress)
 	return false;
 }
 
-bool DTubeAccountHandler::joinBuddy(PD_Document* /*pDoc*/, TpHandle handle, const UT_UTF8String& buddyDBusAddress)
+bool TelepathyAccountHandler::joinBuddy(PD_Document* /*pDoc*/, TpHandle handle, const UT_UTF8String& buddyDBusAddress)
 {
-	UT_DEBUGMSG(("DTubeAccountHandler::joinBuddy()\n"));
+	UT_DEBUGMSG(("TelepathyAccountHandler::joinBuddy()\n"));
 
 	if (g_hash_table_lookup (handle_to_bus_name, GUINT_TO_POINTER (handle)) != NULL)
 		return false;
@@ -502,9 +497,9 @@ bool DTubeAccountHandler::joinBuddy(PD_Document* /*pDoc*/, TpHandle handle, cons
 	return false;
 }
 
-bool DTubeAccountHandler::disjoinBuddy(FV_View* pView, const UT_UTF8String& buddyDBusAddress)
+bool TelepathyAccountHandler::disjoinBuddy(FV_View* pView, const UT_UTF8String& buddyDBusAddress)
 {
-	UT_DEBUGMSG(("DTubeAccountHandler::disjoinBuddy()\n"));
+	UT_DEBUGMSG(("TelepathyAccountHandler::disjoinBuddy()\n"));
 	UT_return_val_if_fail(pView, false);
 
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
@@ -513,6 +508,9 @@ bool DTubeAccountHandler::disjoinBuddy(FV_View* pView, const UT_UTF8String& budd
 	PD_Document * pDoc = pView->getDocument();
 	UT_return_val_if_fail(pDoc, false);
 
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+
+	/*
  	if (m_bLocallyControlled)
 	{
 		UT_DEBUGMSG(("Dropping buddy %s from the session!", buddyDBusAddress.utf8_str()));
@@ -531,11 +529,12 @@ bool DTubeAccountHandler::disjoinBuddy(FV_View* pView, const UT_UTF8String& budd
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return true;
 	}
+	*/
 
 	return false;
 }
 
-void DTubeAccountHandler::acceptTube(TpChannel *chan,
+void TelepathyAccountHandler::acceptTube(TpChannel *chan,
                                      guint id,
                                      TpHandle initiator)
 {
@@ -581,9 +580,9 @@ void DTubeAccountHandler::acceptTube(TpChannel *chan,
 	}
 }
 
-void DTubeAccountHandler::handleMessage(const char* senderDBusAddress, const char* packet_data, int packet_size)
+void TelepathyAccountHandler::handleMessage(const char* senderDBusAddress, const char* packet_data, int packet_size)
 {
-	UT_DEBUGMSG(("DTubeAccountHandler::handleMessage()\n"));
+	UT_DEBUGMSG(("TelepathyAccountHandler::handleMessage()\n"));
 
 	// get the buddy for this session
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
@@ -608,7 +607,7 @@ DBusHandlerResult s_dbus_handle_message(DBusConnection *connection, DBusMessage 
 	UT_return_val_if_fail(connection, DBUS_HANDLER_RESULT_NOT_YET_HANDLED);
 	UT_return_val_if_fail(message, DBUS_HANDLER_RESULT_NOT_YET_HANDLED);
 	UT_return_val_if_fail(user_data, DBUS_HANDLER_RESULT_NOT_YET_HANDLED);
-	DTubeAccountHandler* pHandler = reinterpret_cast<DTubeAccountHandler*>(user_data);
+	TelepathyAccountHandler* pHandler = reinterpret_cast<TelepathyAccountHandler*>(user_data);
 
 	if (dbus_message_is_method_call(message, INTERFACE, SEND_ONE_METHOD))
 	{
@@ -638,7 +637,7 @@ DBusHandlerResult s_dbus_handle_message(DBusConnection *connection, DBusMessage 
 }
 
 // TODO: cleanup after errors
-bool DTubeAccountHandler::_createAndOfferTube(PD_Document* pDoc, const std::vector<TelepathyBuddyPtr>& vBuddies, UT_UTF8String& sTubeAddress)
+bool TelepathyAccountHandler::_createAndOfferTube(PD_Document* pDoc, const std::vector<TelepathyBuddyPtr>& vBuddies, UT_UTF8String& sTubeAddress)
 {
 	GError* error = NULL;
 	GHashTable* params;
@@ -741,7 +740,7 @@ bool DTubeAccountHandler::_createAndOfferTube(PD_Document* pDoc, const std::vect
 }
 
 // FIXME: this can't be right
-TelepathyBuddyPtr DTubeAccountHandler::_getBuddy(TpContact* pContact)
+TelepathyBuddyPtr TelepathyAccountHandler::_getBuddy(TpContact* pContact)
 {
 	for (std::vector<BuddyPtr>::iterator it = getBuddies().begin(); it != getBuddies().end(); it++)
 	{
