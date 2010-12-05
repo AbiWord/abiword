@@ -86,12 +86,6 @@ public:
 	virtual bool							send(const Packet* pPacket, BuddyPtr buddy);
 	void									handleMessage(const char* senderDBusAddress, const char* packet_data, int packet_size);
 	
-	// event management
-	void									handleEvent(Session& pSession);
-
-	// signal management
-	virtual void							signal(const Event& event, BuddyPtr pSource);
-
 	// tube & buddy management
 	bool									joinTube(const UT_UTF8String& tubeDBusAddress);
 	bool									joinBuddy(PD_Document* pDoc, TpHandle handle, const UT_UTF8String& buddyDBusAddress);
@@ -105,10 +99,10 @@ private:
 	bool									_createAndOfferTube(PD_Document* pDoc, const std::vector<TelepathyBuddyPtr>& vBuddies, UT_UTF8String& sTubeAddress);
 	TelepathyBuddyPtr						_getBuddy(TpContact* pContact);
 
-	/* TpHandle -> buddyPath (UT_UTF8String) */
-	GHashTable*								handle_to_bus_name;
-	static DTubeAccountHandler* 			m_pHandler;
 	bool									m_bLocallyControlled;
+
+	// TpHandle -> buddyPath (UT_UTF8String)
+	GHashTable*								handle_to_bus_name;
 };
 
 #endif /* __DTUBEACCOUNTHANDLER__ */

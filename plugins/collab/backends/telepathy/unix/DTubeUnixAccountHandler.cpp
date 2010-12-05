@@ -34,161 +34,131 @@
 
 static DBusHandlerResult s_dbus_handle_message(DBusConnection *connection, DBusMessage *message, void *user_data);
 
-#define INTERFACE "com.abisource.abiword.abicollab.olpc"
-#define SEND_ALL_METHOD "SendAll"
+#define INTERFACE "com.abisource.abiword.abicollab.telepathy"
 #define SEND_ONE_METHOD "SendOne"
 
-DTubeAccountHandler* DTubeAccountHandler::m_pHandler = NULL;
-DTubeAccountHandler* DTubeAccountHandler::getHandler() { return m_pHandler; }
-
-static bool
-is_usable_connection(TpConnection* conn)
+static void
+list_contacts_for_connection_cb(TpConnection* /*connection*/,
+						guint n_contacts,
+						TpContact * const *contacts,
+						guint /*n_invalid*/,
+						const TpHandle* /*invalid*/,
+						const GError* error,
+						gpointer /*user_data*/,
+						GObject* /*weak_object*/)
 {
-	GValue *value;
-	
-	// check if muc tubes are implemented for this connection
-	// TODO: do we really need muc tubes? all our communication is 1-1 basically...
-	if (tp_cli_dbus_properties_run_get (conn, -1,
-				TP_IFACE_CONNECTION_INTERFACE_REQUESTS,
-				"RequestableChannelClasses", &value, NULL, NULL))
+	UT_DEBUGMSG(("list_contacts()\n"));
+	UT_return_if_fail(!error);
+
+	UT_DEBUGMSG(("Got %d contacts!\n", n_contacts));
+
+	for (UT_uint32 i = 0; i < n_contacts; i++)
 	{
-		GPtrArray *classes = (GPtrArray *) g_value_get_boxed (value);
-		for (guint i = 0; i < classes->len; i++)
-		{
-			GValue class_ = {0,};
-			//GValue * chan_type;
-			GValue * handle_type;			
-			GHashTable *fixed_prop;
+		TpContact* contact = contacts[i];
+		UT_continue_if_fail(contact);
 
-			g_value_init (&class_, TP_STRUCT_TYPE_REQUESTABLE_CHANNEL_CLASS);
-			g_value_set_static_boxed (&class_, g_ptr_array_index (classes, i));
-
-			dbus_g_type_struct_get (&class_, 0, &fixed_prop, G_MAXUINT);
-
-			handle_type = (GValue *) g_hash_table_lookup (fixed_prop, TP_IFACE_CHANNEL ".TargetHandleType");
-			if (handle_type == NULL || g_value_get_uint (handle_type) != TP_HANDLE_TYPE_ROOM)
-				 continue;
-
-			return true;
-		}
+		UT_DEBUGMSG(("\tAlias: '%s'\n", tp_contact_get_alias(contact)));
 	}
-
-	return false;
 }
 
 static void
-tp_connection_contacts_by_handle_cb(TpConnection * /*connection*/,
-			guint n_contacts,
-			TpContact * const *contacts,
-			guint /*n_failed*/,
-			const TpHandle * /*failed*/,
-			const GError * /*error*/,
-			gpointer user_data,
-			GObject * /*weak_object*/)
+list_contacts_for_connection(TpConnection* connection, gpointer user_data)
 {
-	UT_DEBUGMSG(("tp_connection_contacts_by_handle_cb()\n"));
-	DTubeAccountHandler* pHandler = reinterpret_cast<DTubeAccountHandler*>(user_data);
-	UT_return_if_fail(pHandler);
-	pHandler->getBuddiesAsync_cb(n_contacts, contacts);
+	UT_DEBUGMSG(("list_contacts_for_connection()\n"));
+	UT_return_if_fail(connection);
+
+	static TpContactFeature features[] = {
+		TP_CONTACT_FEATURE_ALIAS,
+		TP_CONTACT_FEATURE_PRESENCE
+	};
+
+	TpHandle self_handle = tp_connection_get_self_handle(connection);
+	tp_connection_get_contacts_by_handle (connection,
+			1, &self_handle,
+			G_N_ELEMENTS (features), features,
+			list_contacts_for_connection_cb,
+			user_data, NULL, NULL);
 }
 
 static void
-tp_connection_get_contacts(TpConnection* conn, DTubeAccountHandler* pHandler)
+validate_connection(TpConnection* connection, gpointer user_data)
 {
-	UT_DEBUGMSG(("tp_connection_get_contacts()\n"));
-	UT_return_if_fail(conn);
+	UT_DEBUGMSG(("validate_connection()\n"));
+	UT_return_if_fail(connection);
 
-	GPtrArray *channels;
-	// FIXME: tp_cli_connection_run_list_channels is deprecated
-	// FIXME: only use those channels where TargetHandleType is LIST and TargetID is "stored"
-	tp_cli_connection_run_list_channels (conn, -1, &channels, NULL, NULL);
-	printf("Number of connection channels: %d\n", channels->len);
-	for (guint i = 0; i < channels->len; i++)
+	// check if this connection supports MUC tubes
+	TpCapabilities* caps = tp_connection_get_capabilities(connection);
+	UT_return_if_fail(caps);
+
+	if (!tp_capabilities_supports_dbus_tubes(caps, TP_HANDLE_TYPE_ROOM, NULL))
 	{
-		GValueArray  *chan_struct;
-		const gchar  *object_path;
-		const gchar  *channel_type;
-		TpHandleType  handle_type;
-		guint         handle;
-		TpChannel *chan;
-
-		chan_struct = (GValueArray *) g_ptr_array_index (channels, i);
-		object_path = (const gchar *) g_value_get_boxed (g_value_array_get_nth (chan_struct, 0));
-		channel_type = g_value_get_string (g_value_array_get_nth (chan_struct, 1));
-		handle_type = (TpHandleType) g_value_get_uint (g_value_array_get_nth (chan_struct, 2));
-		handle = g_value_get_uint (g_value_array_get_nth (chan_struct, 3));
-
-		UT_DEBUGMSG(("Object path: %s\n", object_path));
-		UT_DEBUGMSG(("Channel type: %s\n", channel_type));
-
-		// FIXME: we're only interested in the 'stored' contact list, not in the publis or subscribe
-		// one... surely we can filter on it, but I don't know how - MARCM
-		
-		if (handle_type != TP_HANDLE_TYPE_LIST || tp_strdiff (channel_type, TP_IFACE_CHANNEL_TYPE_CONTACT_LIST))
-		{
-			UT_DEBUGMSG(("This channel is not a contact list, skipping...\n"));
-			continue;
-		}
-
-		// get the active member 'IDs' from the channel
-		chan = tp_channel_new (conn, object_path, channel_type, handle_type, handle, NULL);
-		tp_channel_run_until_ready (chan, NULL, NULL); // bad bad bad, should be _call_when_read (according to the TP people)
-		const TpIntSet * set = tp_channel_group_get_members (chan);
-
-		// convert the member ID set to a list of TpHandles
-		TpIntSetIter iter;
-		tp_intset_iter_init(&iter, set);
-		const int n_elem = tp_intset_size(set);
-		TpHandle handles[n_elem];
-		int k = 0;
-		while (tp_intset_iter_next (&iter))
-			handles[k++] = iter.element;
-		
-		// fetch the TpContacts belonging to the TpHandles
-		tp_connection_get_contacts_by_handle(conn, n_elem, handles, 0, NULL, tp_connection_contacts_by_handle_cb, pHandler, NULL, NULL);
+		UT_DEBUGMSG(("Connection does not support MUC text channels\n"));
+		return;
 	}
+	UT_DEBUGMSG(("Connection supports tube MUC rooms!\n"));
+
+	// update the list of contacts for this connection
+	list_contacts_for_connection(connection, user_data);
+}
+
+static void
+prepare_connection_cb(GObject* connection, GAsyncResult *res, gpointer user_data)
+{
+	UT_DEBUGMSG(("prepare_connection_cb()\n"));
+
+	if (!tp_proxy_prepare_finish(connection, res, NULL))
+	{
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		return;
+	}
+
+	// proceed checking if this connection is usable
+	validate_connection(reinterpret_cast<TpConnection*>(connection), user_data);
 }
 
 static void
 list_connection_names_cb (const gchar * const *bus_names,
                           gsize n,
-                          const gchar * const * /*cms*/,
-                          const gchar * const * /*protocols*/,
+                          const gchar * const * cms,
+                          const gchar * const * protocols,
                           const GError *error,
                           gpointer user_data,
                           GObject * /*unused*/)
 {
-	UT_DEBUGMSG(("list_connection_names_cb() n: %d\n", n));
+	UT_DEBUGMSG(("list_connection_names_cb()\n"));
 	DTubeAccountHandler* pHandler = reinterpret_cast<DTubeAccountHandler*>(user_data);
 	UT_return_if_fail(pHandler);
 	
 	if (error != NULL)
-		return;
-
-    UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-        return;
-
-/*
-	TpDBusDaemon* bus = tp_dbus_daemon_new (tp_get_bus ());
-	MissionControl* mc = empathy_mission_control_dup_singleton ();
-
-	// connection <-> account display name mapping
-	for (guint i = 0; i < n; i++)
 	{
-		UT_DEBUGMSG(("Constructing connection for bus name %s\n", bus_names[i]));
-		TpConnection* conn = tp_connection_new (bus, bus_names[i], NULL, NULL);
-		if (conn == NULL || !is_usable_connection(conn))
-			continue;
-		McAccount* account = mission_control_get_account_for_tpconnection (mc, conn, NULL);
-		UT_UTF8String sAccountName = mc_account_get_display_name (account);
-		UT_DEBUGMSG(("Found account that supports MUC: conn: %p, name: %s\n", conn, sAccountName.utf8_str()));
-
-		tp_connection_get_contacts(conn, pHandler);
+		UT_DEBUGMSG(("List connectiones failed: %s", error->message));
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN)
+		return;
 	}
 
-	g_object_unref (mc);
-	g_object_unref (bus);
-*/
+	TpDBusDaemon* dbus = tp_dbus_daemon_dup(NULL);
+	UT_return_if_fail(dbus);
+
+	UT_DEBUGMSG(("Got %d connections:\n", (int)n));
+
+	for (UT_uint32 i = 0; i < n; i++)
+	{
+		UT_DEBUGMSG(("%d: Bus name %s, connection manager %s, protocol %s\n", i+1, bus_names[i], cms[i], protocols[i]));
+		TpConnection* connection = tp_connection_new (dbus, bus_names[i], NULL, NULL);
+
+		TpCapabilities* caps = tp_connection_get_capabilities(reinterpret_cast<TpConnection*>(connection));
+		if (!caps)
+		{
+			GQuark features[] = { TP_CONNECTION_FEATURE_CAPABILITIES, 0 };
+			tp_proxy_prepare_async(connection, features, prepare_connection_cb, pHandler);
+		}
+		else
+		{
+			validate_connection(connection, pHandler);
+		}
+	}
+
+	g_object_unref(dbus);
 }
 
 static void
@@ -235,117 +205,16 @@ tube_dbus_names_changed_cb (TpChannel * /*proxy*/,
 	}
 }
 
-/*
-static void
-initiator_ready_cb   (TpConnection * connection,
-                      guint n_contacts,
-                      TpContact * const *contacts,
-                      guint n_failed,
-                      const TpHandle * failed,
-                      const GError * error,
-                      gpointer user_data,
-                      GObject *weak_object)
-{
-	DTubeAccountHandler *obj = (DTubeAccountHandler *) user_data;
-	TpChannel *tube = TP_CHANNEL (weak_object);
-	GtkWidget *dialog;
-	gint response;
-	guint id;
-	TpChannel *chan;
-	TpContact *initiator;
-	GHashTable *parameters;
-	GValue *title;
-
-	initiator = contacts[0];
-
-	g_object_get (tube,
-				"channel", &chan,
-				"id", &id,
-				"parameters", &parameters,
-				NULL);
-
-	dialog = gtk_message_dialog_new (NULL, GTK_DIALOG_MODAL,
-	GTK_MESSAGE_QUESTION, GTK_BUTTONS_NONE,
-	"%s offered you to join a collaboration session",
-	tp_contact_get_alias (initiator));
-
-	// get document title
-	title = (GValue *) g_hash_table_lookup (parameters, "title");
-	if (title != NULL)
-	{
-		gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
-		"Document: %s", g_value_get_string (title));
-	}
-
-	gtk_dialog_add_buttons (GTK_DIALOG (dialog),
-				GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-				GTK_STOCK_OK, GTK_RESPONSE_OK,
-				NULL);
-
-	response = gtk_dialog_run (GTK_DIALOG (dialog));
-	if (response == GTK_RESPONSE_OK)
-	{
-		UT_DEBUGMSG(("Tube accepted.\n"));
-		obj->acceptTube(chan, id, tp_contact_get_handle (initiator));
-	}
-	else
-	{
-		UT_DEBUGMSG(("Tube declined.\n"));
-		g_object_unref (tube);
-	}
-
-	gtk_widget_destroy (dialog);
-	g_hash_table_destroy (parameters);
-}
-
-static void
-new_tube_cb (EmpathyTubeHandler * thandler,
-             TpChannel * tube,
-             gpointer data)
-{
-	UT_DEBUGMSG(("new_tube_cb()\n"));
-	
-	TpChannel *chan;
-	DTubeAccountHandler *obj = (DTubeAccountHandler *) data;
-	TpHandle initiator;
-	TpContactFeature features[1] = {TP_CONTACT_FEATURE_ALIAS};
-	TpConnection *conn;
-
-	g_object_get (tube,
-				"channel", &chan,
-				"initiator", &initiator,
-				NULL);
-
-	conn = tp_channel_borrow_connection (chan);
-	tp_connection_run_until_ready (conn, FALSE, NULL, NULL);
-
-	// get the TpContact of the initiator
-	tp_connection_get_contacts_by_handle (conn, 1, &initiator, 1, features,
-				initiator_ready_cb, obj, NULL, G_OBJECT (tube));
-
-	g_object_ref (tube);
-}
-*/
-
 DTubeAccountHandler::DTubeAccountHandler()
 	: AccountHandler(),
 	m_bLocallyControlled(false)
 {
 	UT_DEBUGMSG(("DTubeAccountHandler::DTubeAccountHandler()\n"));
-	m_pHandler = this;
-
-	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	pManager->registerEventListener(this);
-
-/*	tube_handler = empathy_tube_handler_new (TP_TUBE_TYPE_DBUS, "com.abisource.abiword.abicollab");
-	g_signal_connect (tube_handler, "new-tube", G_CALLBACK (new_tube_cb), this);
-	handle_to_bus_name = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, NULL);
-*/
 }
 
 DTubeAccountHandler::~DTubeAccountHandler()
 {
-	m_pHandler = NULL;
+	disconnect();
 }
 
 UT_UTF8String DTubeAccountHandler::getDescription()
@@ -360,7 +229,7 @@ UT_UTF8String DTubeAccountHandler::getDisplayType()
 
 UT_UTF8String DTubeAccountHandler::getStorageType()
 {
-	return "com.abisource.abiword.abicollab.backend.dtube";
+	return "com.abisource.abiword.abicollab.backend.telepathy";
 }
 
 void DTubeAccountHandler::storeProperties()
@@ -371,13 +240,29 @@ void DTubeAccountHandler::storeProperties()
 
 ConnectResult DTubeAccountHandler::connect()
 {
-	UT_ASSERT_HARMLESS(UT_NOT_REACHED);
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	pManager->registerEventListener(this);
+
+	/*	tube_handler = empathy_tube_handler_new (TP_TUBE_TYPE_DBUS, "com.abisource.abiword.abicollab");
+		g_signal_connect (tube_handler, "new-tube", G_CALLBACK (new_tube_cb), this);
+		handle_to_bus_name = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, NULL)*/
+
 	return CONNECT_SUCCESS;
 }
 
 bool DTubeAccountHandler::disconnect()
 {
-	UT_ASSERT_HARMLESS(UT_NOT_REACHED);
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, false);
+
+	// we are disconnected now, no need to receive events anymore
+	pManager->unregisterEventListener(this);
+
+	// signal all listeners we are logged out
+	AccountOfflineEvent event;
+	// TODO: fill the event
+	AbiCollabSessionManager::getManager()->signal(event);
+
 	return true;
 }
 
@@ -391,9 +276,10 @@ void DTubeAccountHandler::getBuddiesAsync()
 	UT_DEBUGMSG(("DTubeAccountHandler::getBuddiesAsync()\n"));
 		
 	// ask telepathy for the connection names
-	TpDBusDaemon* bus = tp_dbus_daemon_new (tp_get_bus ());
-	tp_list_connection_names (bus, list_connection_names_cb, this, NULL, NULL);
-	g_object_unref (bus);
+	TpDBusDaemon* dbus = tp_dbus_daemon_dup(NULL);
+	UT_return_if_fail(dbus);
+	tp_list_connection_names(dbus, list_connection_names_cb, this, NULL, NULL);
+	g_object_unref(dbus);
 }
 
 void DTubeAccountHandler::getBuddiesAsync_cb(guint n_contacts, TpContact * const *contacts)
@@ -472,12 +358,6 @@ bool DTubeAccountHandler::startSession(PD_Document* pDoc, const std::vector<std:
 	return true;
 }
 
-void DTubeAccountHandler::handleEvent(Session& /*pSession*/)
-{
-	// TODO: implement me
-    UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-}
-
 static GHashTable* 
 s_generate_hash(const std::map<std::string, std::string>& props)
 {
@@ -490,12 +370,6 @@ s_generate_hash(const std::map<std::string, std::string>& props)
 		g_hash_table_insert (hash, g_strdup((*cit).first.c_str()), value);
 	}
 	return hash;
-}
-
-void DTubeAccountHandler::signal(const Event& /*event*/, BuddyPtr /*pSource*/)
-{
-	UT_DEBUGMSG(("DTubeAccountHandler::signal()\n"));
-    UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 }
 
 bool DTubeAccountHandler::send(const Packet* pPacket)
