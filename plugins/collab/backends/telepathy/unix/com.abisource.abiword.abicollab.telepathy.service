@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=com.abisource.abiword.abicollab.telepathy
+Exec=/home/uwog/local/bin/abiword

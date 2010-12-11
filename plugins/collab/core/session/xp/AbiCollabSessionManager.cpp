@@ -74,7 +74,7 @@
 
 // account handler includes
 #ifdef ABICOLLAB_HANDLER_TELEPATHY
-#include <backends/telepathy/unix/DTubeUnixAccountHandler.h>
+#include <backends/telepathy/unix/TelepathyUnixAccountHandler.h>
 #endif
 #ifdef ABICOLLAB_HANDLER_XMPP
 #include <backends/xmpp/xp/XMPPAccountHandler.h>

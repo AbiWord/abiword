@@ -29,7 +29,7 @@
 
 #include <telepathy-glib/telepathy-glib.h>
 
-#include "DTubeUnixAccountHandler.h"
+#include "TelepathyUnixAccountHandler.h"
 #include "DTubeBuddy.h"
 
 static DBusHandlerResult s_dbus_handle_message(DBusConnection *connection, DBusMessage *message, void *user_data);

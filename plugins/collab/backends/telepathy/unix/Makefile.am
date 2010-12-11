@@ -9,5 +9,5 @@ AM_CPPFLAGS = \
 
 libunix_la_SOURCES = \
 	DTubeBuddy.h \
-	DTubeUnixAccountHandler.cpp \
-	DTubeUnixAccountHandler.h
+	TelepathyUnixAccountHandler.cpp \
+	TelepathyUnixAccountHandler.h
