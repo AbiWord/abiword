@@ -63,7 +63,6 @@ public:
 
 	// user management
 	virtual void							getBuddiesAsync();
-	void									getBuddiesAsync_cb(guint n_contacts, TpContact * const *contacts); // private, but should be callable from C code
 	virtual BuddyPtr						constructBuddy(const PropertyMap& props);
 	virtual BuddyPtr						constructBuddy(const std::string& descriptor, BuddyPtr pBuddy);
 	virtual bool							recognizeBuddyIdentifier(const std::string& identifier);
@@ -72,6 +71,7 @@ public:
 	virtual void							forceDisconnectBuddy(BuddyPtr pBuddy);
 	virtual bool							hasPersistentAccessControl()
 		{ return true; }
+	void									addContact(TpContact* contact);
 
 
 	// session management
@@ -95,7 +95,7 @@ public:
 private:
 	bool									_startSession(PD_Document* pDoc, const UT_UTF8String& tubeDBusAddress);
 	bool									_createAndOfferTube(PD_Document* pDoc, const std::vector<TelepathyBuddyPtr>& vBuddies, UT_UTF8String& sTubeAddress);
-	TelepathyBuddyPtr						_getBuddy(TpContact* pContact);
+	TelepathyBuddyPtr						_getBuddy(TelepathyBuddyPtr pBuddy);
 
 	// TpHandle -> buddyPath (UT_UTF8String)
 	GHashTable*								handle_to_bus_name;

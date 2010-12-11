@@ -44,37 +44,60 @@ list_contacts_for_connection_cb(TpConnection* /*connection*/,
 						guint /*n_invalid*/,
 						const TpHandle* /*invalid*/,
 						const GError* error,
-						gpointer /*user_data*/,
+						gpointer user_data,
 						GObject* /*weak_object*/)
 {
-	UT_DEBUGMSG(("list_contacts()\n"));
+	UT_DEBUGMSG(("list_contacts_for_connection_cb()\n"));
 	UT_return_if_fail(!error);
 
-	UT_DEBUGMSG(("Got %d contacts!\n", n_contacts));
+	TelepathyAccountHandler* pHandler = reinterpret_cast<TelepathyAccountHandler*>(user_data);
+	UT_return_if_fail(pHandler);
 
+	UT_DEBUGMSG(("Got %d contacts!\n", n_contacts));
 	for (UT_uint32 i = 0; i < n_contacts; i++)
 	{
 		TpContact* contact = contacts[i];
 		UT_continue_if_fail(contact);
+		UT_DEBUGMSG(("Alias: '%s'\n", tp_contact_get_alias(contact)));
 
-		UT_DEBUGMSG(("\tAlias: '%s'\n", tp_contact_get_alias(contact)));
+		pHandler->addContact(contact);
 	}
 }
 
 static void
-list_contacts_for_connection(TpConnection* connection, gpointer user_data)
+tp_connection_get_contact_list_attributes_cb(TpConnection* connection,
+						GHashTable *out_Attributes,
+						const GError* error,
+						gpointer user_data,
+						GObject* /*weak_object*/)
 {
-	UT_DEBUGMSG(("list_contacts_for_connection()\n"));
-	UT_return_if_fail(connection);
+	UT_DEBUGMSG(("tp_connection_get_contact_list_attributes\n"));
+	if (error)
+		UT_DEBUGMSG(("%s\n", error->message));
+	UT_return_if_fail(!error);
 
+	std::vector<TpHandle> handles;
+
+	// get the list of contact handles
+	gpointer key;
+	GHashTableIter iter;
+	g_hash_table_iter_init(&iter, out_Attributes);
+	while (g_hash_table_iter_next(&iter, &key, NULL))
+	{
+		TpHandle contact_handle = GPOINTER_TO_UINT(key);
+		handles.push_back(contact_handle);
+	}
+
+	// fetch the contacts belonging to the handles
 	static TpContactFeature features[] = {
 		TP_CONTACT_FEATURE_ALIAS,
 		TP_CONTACT_FEATURE_PRESENCE
 	};
 
-	TpHandle self_handle = tp_connection_get_self_handle(connection);
+	// we could alternatively use tp_connection_dup_contact_if_possible(), but
+	// tp_connection_get_contacts_by_handle seems more generic
 	tp_connection_get_contacts_by_handle (connection,
-			1, &self_handle,
+			handles.size(), &handles[0],
 			G_N_ELEMENTS (features), features,
 			list_contacts_for_connection_cb,
 			user_data, NULL, NULL);
@@ -98,7 +121,14 @@ validate_connection(TpConnection* connection, gpointer user_data)
 	UT_DEBUGMSG(("Connection supports tube MUC rooms!\n"));
 
 	// update the list of contacts for this connection
-	list_contacts_for_connection(connection, user_data);
+	tp_connection_get_contact_list_attributes(connection,
+						-1,
+						NULL,
+						TRUE,
+						tp_connection_get_contact_list_attributes_cb,
+						user_data,
+						NULL,
+						NULL);
 }
 
 static void
@@ -145,6 +175,9 @@ list_connection_names_cb (const gchar * const *bus_names,
 	{
 		UT_DEBUGMSG(("%d: Bus name %s, connection manager %s, protocol %s\n", i+1, bus_names[i], cms[i], protocols[i]));
 		TpConnection* connection = tp_connection_new (dbus, bus_names[i], NULL, NULL);
+
+		// TODO: make this async
+		tp_connection_run_until_ready(connection, NULL, NULL, NULL);
 
 		TpCapabilities* caps = tp_connection_get_capabilities(reinterpret_cast<TpConnection*>(connection));
 		if (!caps)
@@ -281,26 +314,6 @@ void TelepathyAccountHandler::getBuddiesAsync()
 	g_object_unref(dbus);
 }
 
-void TelepathyAccountHandler::getBuddiesAsync_cb(guint n_contacts, TpContact * const *contacts)
-{
-	UT_DEBUGMSG(("TelepathyAccountHandler::getBuddiesAsync_cb()\n"));
-
-	UT_DEBUGMSG(("Got %d contacts\n", n_contacts));
-	for (UT_uint32 i = 0; i < n_contacts; i++)
-	{
-		TpContact* pContact = contacts[i];
-		UT_continue_if_fail(pContact);
-
-		TelepathyBuddyPtr pBuddy = _getBuddy(pContact);
-		if (!pBuddy)
-		{
-			UT_DEBUGMSG(("Detected new telepathy buddy with account name: %s\n", tp_contact_get_identifier (pContact)));
-			pBuddy = boost::shared_ptr<TelepathyBuddy>(new TelepathyBuddy(this, pContact));
-			addBuddy(pBuddy);
-		}
-	}
-}
-
 BuddyPtr TelepathyAccountHandler::constructBuddy(const PropertyMap& /*props*/)
 {
 	UT_DEBUGMSG(("TelepathyAccountHandler::constructBuddy()\n"));
@@ -325,6 +338,17 @@ void TelepathyAccountHandler::forceDisconnectBuddy(BuddyPtr pBuddy)
 	UT_return_if_fail(pBuddy);
 
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED)
+}
+
+void TelepathyAccountHandler::addContact(TpContact* contact)
+{
+	UT_DEBUGMSG(("TelepathyAccountHandler::addContact()\n"));
+	UT_return_if_fail(contact);
+
+	TelepathyBuddyPtr pBuddy = boost::shared_ptr<TelepathyBuddy>(new TelepathyBuddy(this, contact));
+	TelepathyBuddyPtr pExistingBuddy = _getBuddy(pBuddy);
+	if (!pExistingBuddy)
+		addBuddy(pBuddy);
 }
 
 bool TelepathyAccountHandler::startSession(PD_Document* pDoc, const std::vector<std::string>& vAcl, AbiCollab** /*pSession*/)
@@ -739,14 +763,14 @@ bool TelepathyAccountHandler::_createAndOfferTube(PD_Document* pDoc, const std::
 	return true;
 }
 
-// FIXME: this can't be right
-TelepathyBuddyPtr TelepathyAccountHandler::_getBuddy(TpContact* pContact)
+TelepathyBuddyPtr TelepathyAccountHandler::_getBuddy(TelepathyBuddyPtr pBuddy)
 {
+	UT_return_val_if_fail(pBuddy, TelepathyBuddyPtr());
 	for (std::vector<BuddyPtr>::iterator it = getBuddies().begin(); it != getBuddies().end(); it++)
 	{
 		TelepathyBuddyPtr pB = boost::static_pointer_cast<TelepathyBuddy>(*it);
 		UT_continue_if_fail(pB);
-		if (pB->equals(pContact))
+		if (pBuddy->equals(pB))
 			return pB;
 	}
 	return TelepathyBuddyPtr();

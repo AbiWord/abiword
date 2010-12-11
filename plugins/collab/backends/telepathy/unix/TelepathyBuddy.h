@@ -27,6 +27,9 @@
 #include <telepathy-glib/contact.h>
 
 class DocHandle;
+class TelepathyBuddy;
+
+typedef boost::shared_ptr<TelepathyBuddy> TelepathyBuddyPtr;
 
 class TelepathyBuddy : public Buddy
 {
@@ -66,16 +69,16 @@ public:
 		return m_pContact;
 	}
 
-	bool equals(TpContact* pContact)
+	bool equals(TelepathyBuddyPtr pBuddy)
 	{
-		return strcmp(tp_contact_get_identifier (pContact), tp_contact_get_identifier (m_pContact)) == 0;
+		UT_return_val_if_fail(pBuddy, false);
+		TpContact* pContact = pBuddy->getContact();
+		return strcmp(tp_contact_get_identifier(pContact), tp_contact_get_identifier (m_pContact)) == 0;
 	}
 	
 private:
 
 	TpContact*			m_pContact;
 };
-
-typedef boost::shared_ptr<TelepathyBuddy> TelepathyBuddyPtr;
 
 #endif /* __TELEPATHY_BUDDY_H__ */
