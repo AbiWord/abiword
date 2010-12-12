@@ -253,13 +253,11 @@ bool AbiCollabSessionManager::registerAccountHandlers()
 	UT_DEBUGMSG(("AbiCollabSessionManager::registerAccountHandlers()\n"));
 
 #ifdef ABICOLLAB_HANDLER_TELEPATHY
-	// we don't want to register a d-bus tube account handler here so
-	// swe can construct multiple sugar account handlers later: the 
-	// d-bus tube account handler is a singleton, that should always
-	// be active if it is compiled in
 	UT_DEBUGMSG(("Registering the telepathy account handler!\n"));
 	AccountHandler* pTelepathyHandler = new TelepathyAccountHandler();
 	addAccount(pTelepathyHandler);
+	// TODO: check if we really want to auto-connect this account
+	pTelepathyHandler->connect();
 #endif
 #ifdef ABICOLLAB_HANDLER_XMPP
 	m_regAccountHandlers[XMPPAccountHandler::getStaticStorageType()] = XMPPAccountHandlerConstructor;

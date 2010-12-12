@@ -1,5 +1,6 @@
 /* Copyright (C) 2007 One Laptop Per Child
  * Author: Marc Maurer <uwog@uwog.net>
+ * Copyright (C) 2010 AbiSource Corporation B.V.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -73,11 +74,13 @@ public:
 		{ return true; }
 	void									addContact(TpContact* contact);
 
-
 	// session management
 	virtual bool							startSession(PD_Document* pDoc, const std::vector<std::string>& acl, AbiCollab** pSession);
 	virtual bool							allowsSessionTakeover()
 		{ return false; /* not right now */ }
+
+	// signal management
+	virtual void							signal(const Event& event, BuddyPtr pSource);
 	
 	// packet management
 	virtual bool							send(const Packet* pPacket);
@@ -87,13 +90,11 @@ public:
 	// tube & buddy management
 	bool									joinTube(const UT_UTF8String& tubeDBusAddress);
 	bool									joinBuddy(PD_Document* pDoc, TpHandle handle, const UT_UTF8String& buddyDBusAddress);
-	bool									disjoinBuddy(FV_View* pView, const UT_UTF8String& buddyDBusAddress);
 
 	// FIXME: should be private but have to be callable from C
 	void									acceptTube(TpChannel *tubes_chan, guint id, TpHandle initiator);
 
 private:
-	bool									_startSession(PD_Document* pDoc, const UT_UTF8String& tubeDBusAddress);
 	bool									_createAndOfferTube(PD_Document* pDoc, const std::vector<TelepathyBuddyPtr>& vBuddies, UT_UTF8String& sTubeAddress);
 	TelepathyBuddyPtr						_getBuddy(TelepathyBuddyPtr pBuddy);
 
