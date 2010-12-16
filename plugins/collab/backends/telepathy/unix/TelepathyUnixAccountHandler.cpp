@@ -728,7 +728,7 @@ DBusHandlerResult s_dbus_handle_message(DBusConnection *connection, DBusMessage 
 		{
 			// sometimes we already receive messages from people before we
 			// leared about them from a "dbus names changes" signal... weird
-			DTubeBuddyPtr pBuddy = boost::shared_ptr<DTubeBuddy>(new DTubeBuddy(pHandler, pChatroom->ptr(), senderDBusAddress));
+			pBuddy = boost::shared_ptr<DTubeBuddy>(new DTubeBuddy(pHandler, pChatroom->ptr(), senderDBusAddress));
 			pChatroom->addBuddy(pBuddy);
 		}
 
