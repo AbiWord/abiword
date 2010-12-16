@@ -22,6 +22,7 @@
 #include <account/xp/AccountEvent.h>
 #include <session/xp/AbiCollabSessionManager.h>
 #include <session/xp/AbiCollab.h>
+#include <core/account/xp/SessionEvent.h>
 #include <ev_EditMethod.h>
 #include <xap_App.h>
 #include <fv_View.h>
@@ -32,6 +33,7 @@
 
 #include "TelepathyUnixAccountHandler.h"
 #include "DTubeBuddy.h"
+#include "TelepathyChatroom.h"
 
 static DBusHandlerResult s_dbus_handle_message(DBusConnection *connection, DBusMessage *message, void *user_data);
 
@@ -196,37 +198,36 @@ list_connection_names_cb (const gchar * const *bus_names,
 }
 
 static void
-tube_dbus_names_changed_cb (TpChannel * /*proxy*/,
-							guint /*id*/,
-							const GPtrArray *added,
-							const GArray *removed,
+tube_dbus_names_changed_cb(TpChannel *proxy,
+							GHashTable *arg_Added,
+							const GArray *arg_Removed,
 							gpointer user_data,
-							GObject * /*weak_object*/)
+							GObject *weak_object)
 {
-	TelepathyAccountHandler *obj = (TelepathyAccountHandler *) user_data;
-	guint i;
+	UT_DEBUGMSG(("tube_dbus_names_changed_cb()\n"));
 
-	UT_DEBUGMSG(("Tube D-Bus names changed\n"));
+	TelepathyChatroom* pChatroom = reinterpret_cast<TelepathyChatroom*>(user_data);
+	UT_return_if_fail(pChatroom);
 
-	for (i = 0; i < added->len; i++)
+	TelepathyAccountHandler* pHandler= pChatroom->getHandler();
+	UT_return_if_fail(pHandler);
+
+	gpointer key;
+	gpointer value;
+	GHashTableIter iter;
+	g_hash_table_iter_init(&iter, arg_Added);
+	while (g_hash_table_iter_next(&iter, &key, &value))
 	{
-		GValueArray *v;
-		TpHandle handle;
-		const gchar *name;
+		TpHandle handle = GPOINTER_TO_UINT(key);
+		const char* dbus_name = reinterpret_cast<const gchar*>(value);
 
-		v = (GValueArray *) g_ptr_array_index (added, i);
-
-		handle = g_value_get_uint (g_value_array_get_nth (v, 0));
-		name = g_value_get_string (g_value_array_get_nth (v, 1));
-
-		UT_DEBUGMSG(("... added %s (%d)\n", name, handle));
-
-		UT_UTF8String buddyPath(name, strlen(name));
-		PD_Document *pDoc = static_cast<PD_Document*>(XAP_App::getApp()->getLastFocussedFrame()->getCurrentDoc());
-
-		obj->joinBuddy(pDoc, handle, buddyPath);
+		UT_DEBUGMSG(("Adding a new buddy: %d - %s\n", handle, dbus_name));
+		DTubeBuddyPtr pBuddy = boost::shared_ptr<DTubeBuddy>(new DTubeBuddy(pHandler, pChatroom->ptr(), dbus_name));
+		pChatroom->addBuddy(pBuddy);
 	}
 
+	// TODO: implement this
+	/*
 	for (i = 0; i < removed->len; i++)
 	{
 		TpHandle handle;
@@ -235,8 +236,9 @@ tube_dbus_names_changed_cb (TpChannel * /*proxy*/,
 
 		UT_DEBUGMSG(("... removed %d\n", handle));
 
-		/* TODO: call buddyLeft */
+		// TODO: call buddyLeft
 	}
+	 */
 }
 
 static void
@@ -247,9 +249,12 @@ tube_accept_cb(TpChannel* channel,
 				GObject* weak_obj)
 {
 	UT_DEBUGMSG(("tube_accept_cb() - address: %s\n", address));
-
 	UT_return_if_fail(!error);
-	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+
+	TelepathyAccountHandler* pHandler = reinterpret_cast<TelepathyAccountHandler*>(user_data);
+	UT_return_if_fail(pHandler);
+
+	pHandler->acceptTube(channel, address);
 }
 
 static void
@@ -262,7 +267,7 @@ _handle_dbus_channel(TpSimpleHandler *handler,
 	TpHandleChannelsContext* context,
 	gpointer user_data)
 {
-	UT_DEBUGMSG(("_handle_dbus_channel\n"));
+	UT_DEBUGMSG(("_handle_dbus_channel()\n"));
 
 	TelepathyAccountHandler* pHandler = reinterpret_cast<TelepathyAccountHandler*>(user_data);
 	UT_return_if_fail(pHandler);
@@ -355,12 +360,10 @@ ConnectResult TelepathyAccountHandler::connect()
 					tp_asv_new (
 						TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING, TP_IFACE_CHANNEL_TYPE_DBUS_TUBE,
 						TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, G_TYPE_UINT, TP_HANDLE_TYPE_ROOM,
-						//TP_PROP_CHANNEL_TARGET_ID, G_TYPE_STRING, targetid,
 						TP_PROP_CHANNEL_TYPE_DBUS_TUBE_SERVICE_NAME, G_TYPE_STRING, INTERFACE,
 						NULL
 					)
 				);
-
 
 	if (!tp_base_client_register(handler, &error))
 	{
@@ -438,6 +441,16 @@ void TelepathyAccountHandler::forceDisconnectBuddy(BuddyPtr pBuddy)
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED)
 }
 
+bool TelepathyAccountHandler::hasAccess(const std::vector<std::string>& /*vAcl*/, BuddyPtr pBuddy)
+{
+	UT_DEBUGMSG(("TelepathyAccountHandler::hasAccess()\n"));
+	UT_return_val_if_fail(pBuddy, false);
+
+	// TODO: implement me
+
+	return TRUE;
+}
+
 void TelepathyAccountHandler::addContact(TpContact* contact)
 {
 	UT_DEBUGMSG(("TelepathyAccountHandler::addContact()\n"));
@@ -449,10 +462,13 @@ void TelepathyAccountHandler::addContact(TpContact* contact)
 		addBuddy(pBuddy);
 }
 
-bool TelepathyAccountHandler::startSession(PD_Document* pDoc, const std::vector<std::string>& vAcl, AbiCollab** /*pSession*/)
+bool TelepathyAccountHandler::startSession(PD_Document* pDoc, const std::vector<std::string>& vAcl, AbiCollab** pSession)
 {
 	UT_DEBUGMSG(("TelepathyAccountHandler::startSession()\n"));
 	UT_return_val_if_fail(pDoc, false);
+
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, false);
 
 	std::vector<TelepathyBuddyPtr> acl_;
 	// this n^2 behavior shouldn't be too bad in practice: the ACL will never contain hundreds of elements
@@ -470,19 +486,19 @@ bool TelepathyAccountHandler::startSession(PD_Document* pDoc, const std::vector<
 		}
 	}
 
-	UT_UTF8String sTubeAddress; 
-	if (!_createAndOfferTube(pDoc, acl_, sTubeAddress))
+	// generate a unique session id
+	UT_UTF8String sSessionId;
+	UT_UUID* pUUID = XAP_App::getApp()->getUUIDGenerator()->createUUID();
+	pUUID->toString(sSessionId);
+	DELETEP(pUUID);
+
+	if (!_createAndOfferTube(pDoc, acl_, sSessionId))
 		return false;
 
-	DBusConnection* pTube = dbus_connection_open(sTubeAddress.utf8_str(), NULL);
-	UT_return_val_if_fail(pTube, FALSE);
+	// start the session
+	// TODO: fill in the buddy descriptor for proper text coloring?
+	*pSession = pManager->startSession(pDoc, sSessionId, this, true, NULL, "");
 
-	UT_DEBUGMSG(("Adding dbus handlers to the main loop for tube %s\n", sTubeAddress.utf8_str()));
-	dbus_connection_setup_with_g_main(pTube, NULL);
-
-	UT_DEBUGMSG(("Adding message filter\n"));
-	dbus_connection_add_filter(pTube, s_dbus_handle_message, this, NULL);
-	
 	return true;
 }
 
@@ -512,7 +528,7 @@ bool TelepathyAccountHandler::send(const Packet* pPacket, BuddyPtr pBuddy)
 	UT_DEBUGMSG(("TelepathyAccountHandler::send(const Packet* pPacket, BuddyPtr pBuddy\n"));
 	UT_return_val_if_fail(pPacket, false);
 	UT_return_val_if_fail(pBuddy, false);
-	    
+
 	DTubeBuddyPtr pDTubeBuddy = boost::static_pointer_cast<DTubeBuddy>(pBuddy);
 	UT_DEBUGMSG(("Sending packet to d-tube buddy on dbus addess: %s\n", pDTubeBuddy->getDBusName().utf8_str()));
 
@@ -538,114 +554,155 @@ bool TelepathyAccountHandler::send(const Packet* pPacket, BuddyPtr pBuddy)
 					DBUS_TYPE_INVALID);
 	UT_DEBUGMSG(("Appended packet contents\n"));
 
-	bool sent = dbus_connection_send(pDTubeBuddy->getTube(), pMessage, NULL);
+	bool sent = dbus_connection_send(pDTubeBuddy->getChatRoom()->getTube(), pMessage, NULL);
 	UT_ASSERT_HARMLESS(sent);
 	if (sent)
-		dbus_connection_flush(pDTubeBuddy->getTube());
+		dbus_connection_flush(pDTubeBuddy->getChatRoom()->getTube());
 	dbus_message_unref(pMessage);
 	return sent;
-}
-
-bool TelepathyAccountHandler::joinTube(const UT_UTF8String& tubeDBusAddress)
-{
-	UT_DEBUGMSG(("TelepathyAccountHandler::joinTube()\n"));
-
-	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	UT_return_val_if_fail(pManager, false);
-
-	// TODO: check that we aren't already in a session; this backend can only join one session at a time (for now)
-
-	//DBusError error;
-	DBusConnection* pTube = dbus_connection_open(tubeDBusAddress.utf8_str(), NULL);
-	UT_return_val_if_fail(pTube, false);
-
-	UT_DEBUGMSG(("Adding dbus handlers to the main loop for tube %s\n", tubeDBusAddress.utf8_str()));
-	dbus_connection_setup_with_g_main(pTube, NULL);
-
-	UT_DEBUGMSG(("Adding message filter\n"));
-	dbus_connection_add_filter(pTube, s_dbus_handle_message, this, NULL);
-
-	return true;
 }
 
 bool TelepathyAccountHandler::joinBuddy(PD_Document* /*pDoc*/, TpHandle handle, const UT_UTF8String& buddyDBusAddress)
 {
 	UT_DEBUGMSG(("TelepathyAccountHandler::joinBuddy()\n"));
 
-	if (g_hash_table_lookup (handle_to_bus_name, GUINT_TO_POINTER (handle)) != NULL)
-		return false;
-	g_hash_table_insert (handle_to_bus_name, GUINT_TO_POINTER (handle), (void *) &buddyDBusAddress);
-
 	// TODO: implement me properly
-    UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 	return false;
 }
 
-void TelepathyAccountHandler::acceptTube(TpChannel *chan,
-                                     guint id,
-                                     TpHandle initiator)
+void TelepathyAccountHandler::acceptTube(TpChannel *chan, const char* address)
 {
-	gboolean result;
-	gchar *address;
-	GPtrArray *names;
-	guint i;
+	UT_DEBUGMSG(("TelepathyAccountHandler::acceptTube() - address: %s\n", address));
+	UT_return_if_fail(chan);
+	UT_return_if_fail(address);
 
-	result = tp_cli_channel_type_tubes_run_accept_d_bus_tube (chan, -1, id,
-				&address, NULL, NULL);
-	g_assert (result);
+	// TODO: check that we aren't already in a session; this backend can only join one session at a time (for now)
 
-	UT_UTF8String tubeDBusAddress(address, strlen (address));
-	joinTube(tubeDBusAddress);
+	//DBusError error;
+	DBusConnection* pTube = dbus_connection_open(address, NULL);
+	UT_return_if_fail(pTube);
 
-	tp_cli_channel_type_tubes_connect_to_d_bus_names_changed (chan,
-				tube_dbus_names_changed_cb, this, NULL, NULL, NULL);
+	// create a new room so we can store the buddies somewhere
+	TelepathyChatroomPtr pChatroom = boost::shared_ptr<TelepathyChatroom>(new TelepathyChatroom(this, pTube, ""));
+	m_chatrooms.push_back(pChatroom);
 
-	/* add initiator */
-	result = tp_cli_channel_type_tubes_run_get_d_bus_names (chan, -1,
-	id, &names, NULL, NULL);
+	UT_DEBUGMSG(("Adding dbus handlers to the main loop for tube %s\n", address));
+	dbus_connection_setup_with_g_main(pTube, NULL);
 
-	for (i = 0; i < names->len; i++)
+	UT_DEBUGMSG(("Adding message filter\n"));
+	dbus_connection_add_filter(pTube, s_dbus_handle_message, pChatroom.get(), NULL);
+
+	// start listening on the tube for people entering and leaving it
+	GError* error = NULL;
+	TpProxySignalConnection* signal = tp_cli_channel_type_dbus_tube_connect_to_dbus_names_changed(
+															chan, tube_dbus_names_changed_cb,
+															pChatroom.get(), NULL, NULL, &error);
+	if (!signal)
 	{
-		GValueArray *v;
-		TpHandle handle;
-		const gchar *name;
-
-		v = (GValueArray *) g_ptr_array_index (names, i);
-
-		handle = g_value_get_uint (g_value_array_get_nth (v, 0));
-		name = g_value_get_string (g_value_array_get_nth (v, 1));
-
-		if (handle != initiator)
-			continue;
-
-		UT_DEBUGMSG(("Found initiator %s (%d)\n", name, handle));
-		UT_UTF8String buddyPath(name, strlen(name));
-		PD_Document *pDoc = static_cast<PD_Document*>(XAP_App::getApp()->getLastFocussedFrame()->getCurrentDoc());
-
-		joinBuddy(pDoc, handle, buddyPath);
-		break;
+		UT_DEBUGMSG(("Error connecting to names_changes: %s\n", error ? error->message : "(null)"));
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		return;
 	}
+
+	// retrieve who created this room
+	TpHandle initiator_handle = tp_channel_get_initiator_handle(chan);
+	const char* initiator_ident = tp_channel_get_initiator_identifier(chan);
+	UT_DEBUGMSG(("Got initiator: %d - %s\n", initiator_handle, initiator_ident));
+	UT_DEBUGMSG(("Channel identifier: %s\n", tp_channel_get_identifier(chan)));
+
+	TpHandle self_handle = tp_channel_group_get_self_handle(chan);
+
+	// retrieve the TpHandle <-> dbus address mapping for the people in the room
+	GValue* prop = NULL;
+	if (!tp_cli_dbus_properties_run_get(chan, -1, TP_IFACE_CHANNEL_TYPE_DBUS_TUBE, "DBusNames", &prop, &error, NULL))
+	{
+		UT_DEBUGMSG(("Failed to get dbus members: %s\n", error ? error->message : "null"));
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		return;
+	}
+
+	UT_return_if_fail(G_VALUE_HOLDS(prop, TP_HASH_TYPE_DBUS_TUBE_PARTICIPANTS));
+	GHashTable* name_mapping = reinterpret_cast<GHashTable*>(g_value_get_boxed(prop));
+	gpointer key;
+	gpointer value;
+	GHashTableIter iter;
+	g_hash_table_iter_init(&iter, name_mapping);
+	while (g_hash_table_iter_next(&iter, &key, &value))
+	{
+		TpHandle contact_handle = GPOINTER_TO_UINT(key);
+		const char* contact_address = reinterpret_cast<const gchar*>(value);
+		UT_DEBUGMSG(("Got room member - handle: %d, address: %s\n", contact_handle, contact_address));
+
+		// skip ourselves
+		if (self_handle == contact_handle)
+		{
+			UT_DEBUGMSG(("Skipping self handle %d\n", contact_handle));
+			continue;
+		}
+
+		UT_DEBUGMSG(("Added room member - handle: %d, address: %s\n", contact_handle, contact_address));
+		DTubeBuddyPtr pBuddy = boost::shared_ptr<DTubeBuddy>(new DTubeBuddy(this, pChatroom, contact_address));
+		pChatroom->addBuddy(pBuddy);
+	}
+
+	// send a request for sessions; if everything is alright then we should
+	// receive exactly 1 session in all the responses combined
+	UT_DEBUGMSG(("Sending a GetSessionsEvent to every participant in the room\n"));
+	const std::vector<DTubeBuddyPtr> buddies = pChatroom->getBuddies();
+	for (UT_uint32 i = 0; i < buddies.size(); i++)
+		getSessionsAsync(buddies[i]);
 }
 
-void TelepathyAccountHandler::handleMessage(const char* senderDBusAddress, const char* packet_data, int packet_size)
+void TelepathyAccountHandler::handleMessage(DTubeBuddyPtr pBuddy, const char* packet_data, int packet_size)
 {
 	UT_DEBUGMSG(("TelepathyAccountHandler::handleMessage()\n"));
+	UT_return_if_fail(pBuddy);
 
-	// get the buddy for this session
-	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-	DTubeBuddyPtr pBuddy;// = _getBuddy(senderDBusAddress);
-	UT_return_if_fail(pBuddy); // TODO: shouldn't we just disconnect here?
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_if_fail(pManager);
+
+	TelepathyChatroomPtr pChatroom = pBuddy->getChatRoom();
+	UT_return_if_fail(pChatroom);
 
 	// construct the packet
 	// FIXME: inefficient copying of data
 	std::string packet_str(packet_size, ' ');
 	memcpy(&packet_str[0], packet_data, packet_size);
-	FREEP(packet_data);
 	Packet* pPacket = _createPacket(packet_str, pBuddy);
 	UT_return_if_fail(pPacket); // TODO: shouldn't we just disconnect here?
 
-	// handle!
-	AccountHandler::handleMessage(pPacket, pBuddy);
+	switch (pPacket->getClassType())
+	{
+		case PCT_GetSessionsEvent:
+		{
+			// return only the session that belongs to the chatroom that the buddy is in
+			GetSessionsResponseEvent gsre;
+			gsre.m_Sessions[pChatroom->getSessionId()] = "bar"; // TODO: add document name
+			send(&gsre, pBuddy);
+			break;
+		}
+		case PCT_GetSessionsResponseEvent:
+		{
+			// check if we received 1 (and only 1) session, and join it
+			// immediately if that is the case
+
+			GetSessionsResponseEvent* gsre = static_cast<GetSessionsResponseEvent*>( pPacket );
+			UT_return_if_fail(gsre->m_Sessions.size() == 1);
+			std::map<UT_UTF8String,UT_UTF8String>::iterator it=gsre->m_Sessions.begin();
+			DocHandle* pDocHandle = new DocHandle((*it).first, (*it).second);
+
+			// join the session
+			UT_DEBUGMSG(("Got a running session (%s - %s), let's join it immediately\n", pDocHandle->getSessionId().utf8_str(), pDocHandle->getName().utf8_str()));
+			pManager->joinSessionInitiate(pBuddy, pDocHandle);
+			DELETEP(pDocHandle);
+			break;
+		}
+		default:
+			// let the default handler handle it
+			AccountHandler::handleMessage(pPacket, pBuddy);
+			break;
+	}
 }
 
 DBusHandlerResult s_dbus_handle_message(DBusConnection *connection, DBusMessage *message, void *user_data)
@@ -654,13 +711,26 @@ DBusHandlerResult s_dbus_handle_message(DBusConnection *connection, DBusMessage 
 	UT_return_val_if_fail(connection, DBUS_HANDLER_RESULT_NOT_YET_HANDLED);
 	UT_return_val_if_fail(message, DBUS_HANDLER_RESULT_NOT_YET_HANDLED);
 	UT_return_val_if_fail(user_data, DBUS_HANDLER_RESULT_NOT_YET_HANDLED);
-	TelepathyAccountHandler* pHandler = reinterpret_cast<TelepathyAccountHandler*>(user_data);
+
+	TelepathyChatroom* pChatroom = reinterpret_cast<TelepathyChatroom*>(user_data);
+	UT_return_val_if_fail(pChatroom, DBUS_HANDLER_RESULT_NOT_YET_HANDLED);
+
+	TelepathyAccountHandler* pHandler = pChatroom->getHandler();
+	UT_return_val_if_fail(pHandler, DBUS_HANDLER_RESULT_NOT_YET_HANDLED);
 
 	if (dbus_message_is_method_call(message, INTERFACE, SEND_ONE_METHOD))
 	{
-		UT_DEBUGMSG(("%s message accepted!\n", SEND_ONE_METHOD));
-
 		const char* senderDBusAddress = dbus_message_get_sender(message);
+		UT_DEBUGMSG(("%s message accepted from %s!\n", SEND_ONE_METHOD, senderDBusAddress));
+
+		DTubeBuddyPtr pBuddy = pChatroom->getBuddy(senderDBusAddress);
+		if (!pBuddy)
+		{
+			// sometimes we already receive messages from people before we
+			// leared about them from a "dbus names changes" signal... weird
+			DTubeBuddyPtr pBuddy = boost::shared_ptr<DTubeBuddy>(new DTubeBuddy(pHandler, pChatroom->ptr(), senderDBusAddress));
+			pChatroom->addBuddy(pBuddy);
+		}
 
 		DBusError error;
 		dbus_error_init (&error);
@@ -671,7 +741,7 @@ DBusHandlerResult s_dbus_handle_message(DBusConnection *connection, DBusMessage 
 					DBUS_TYPE_INVALID))
 		{
 			UT_DEBUGMSG(("Received packet from %s\n", senderDBusAddress));
-			pHandler->handleMessage(senderDBusAddress, packet_data, packet_size);
+			pHandler->handleMessage(pBuddy, packet_data, packet_size);
 			//dbus_free(packet);
 			return DBUS_HANDLER_RESULT_HANDLED;
 		}
@@ -684,7 +754,7 @@ DBusHandlerResult s_dbus_handle_message(DBusConnection *connection, DBusMessage 
 }
 
 // TODO: cleanup after errors
-bool TelepathyAccountHandler::_createAndOfferTube(PD_Document* pDoc, const std::vector<TelepathyBuddyPtr>& vBuddies, UT_UTF8String& sTubeAddress)
+bool TelepathyAccountHandler::_createAndOfferTube(PD_Document* pDoc, const std::vector<TelepathyBuddyPtr>& vBuddies, const UT_UTF8String& sSessionId)
 {
 	GError* error = NULL;
 	gchar* object_path;
@@ -721,7 +791,7 @@ bool TelepathyAccountHandler::_createAndOfferTube(PD_Document* pDoc, const std::
 	GHashTable* props = tp_asv_new (
 			TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING, TP_IFACE_CHANNEL_TYPE_DBUS_TUBE,
 			TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, TP_TYPE_HANDLE, TP_HANDLE_TYPE_ROOM,
-			TP_PROP_CHANNEL_TARGET_ID, G_TYPE_STRING, target_id.utf8_str(),
+			TP_PROP_CHANNEL_TARGET_ID, G_TYPE_STRING, "abicollab2@conference.matthewwild.co.uk", /*target_id.utf8_str()*/
 			TP_PROP_CHANNEL_TYPE_DBUS_TUBE_SERVICE_NAME, G_TYPE_STRING, INTERFACE,
 			/*
 			 * Enable TP_PROP_CHANNEL_INTERFACE_CONFERENCE_INITIAL_INVITEE_IDS if you want to use
@@ -748,11 +818,10 @@ bool TelepathyAccountHandler::_createAndOfferTube(PD_Document* pDoc, const std::
 	UT_return_val_if_fail(chan, FALSE);
 	tp_channel_run_until_ready (chan, NULL, NULL);
 	// TODO: check for errors
-	UT_DEBUGMSG(("Channel created to the room\n"));
+	UT_DEBUGMSG(("Channel created to the room, identifier: %s\n", tp_channel_get_identifier(chan)));
 	
 	// add members to the room
 	GArray* members = g_array_new (FALSE, FALSE, sizeof(TpHandle));
-
 	for (UT_uint32 i = 0; i < vBuddies.size(); i++)
 	{
 		TelepathyBuddyPtr pBuddy = vBuddies[i];
@@ -784,11 +853,31 @@ bool TelepathyAccountHandler::_createAndOfferTube(PD_Document* pDoc, const std::
 	g_hash_table_destroy (params);
 
 	UT_DEBUGMSG(("Tube offered, address: %s\n", address));
-	sTubeAddress = address;
-	
-	// start listening on the tube for people entering and leaving it
-	tp_cli_channel_type_tubes_connect_to_d_bus_names_changed (chan, tube_dbus_names_changed_cb, this, NULL, NULL, NULL);
 
+	DBusConnection* pTube = dbus_connection_open(address, NULL);
+	UT_return_val_if_fail(pTube, FALSE);
+
+	// create a new room so we can store the buddies somewhere
+	TelepathyChatroomPtr pChatroom = boost::shared_ptr<TelepathyChatroom>(new TelepathyChatroom(this, pTube, sSessionId));
+	m_chatrooms.push_back(pChatroom);
+
+	UT_DEBUGMSG(("Adding dbus handlers to the main loop for tube %s\n", address));
+	dbus_connection_setup_with_g_main(pTube, NULL);
+
+	UT_DEBUGMSG(("Adding message filter\n"));
+	dbus_connection_add_filter(pTube, s_dbus_handle_message, pChatroom.get(), NULL);
+
+	// start listening on the tube for people entering and leaving it
+	TpProxySignalConnection* signal = tp_cli_channel_type_dbus_tube_connect_to_dbus_names_changed(
+															chan, tube_dbus_names_changed_cb,
+															pChatroom.get(), NULL, NULL, &error);
+	if (!signal)
+	{
+		UT_DEBUGMSG(("Error connecting to names_changes: %s\n", error ? error->message : "(null)"));
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		return false;
+	}
+	
 	return true;
 }
 

@@ -24,20 +24,19 @@
 #include <account/xp/Buddy.h>
 #include <account/xp/DocTreeItem.h>
 #include <account/xp/AccountHandler.h>
+#include "TelepathyChatroom.h"
 
 class DocHandle;
 
 class DTubeBuddy : public Buddy
 {
 public:
-	DTubeBuddy(AccountHandler* handler, DBusConnection* pTube, const UT_UTF8String dbusName)
+	DTubeBuddy(AccountHandler* handler, TelepathyChatroomPtr pChatRoom, const UT_UTF8String dbusName)
 		: Buddy(handler),
-		m_pTube(pTube),
+		m_pChatRoom(pChatRoom),
 		m_sDBusName(dbusName)
 	{
 		setVolatile(true);
-		// TODO: we should prolly ref the tube
-		// dbus_connection_unref(m_pTube);
 	}
 
 	virtual UT_UTF8String getDescriptor(bool /*include_session_info = false*/) const
@@ -57,9 +56,9 @@ public:
 		return NULL;
 	}
 
-	DBusConnection* getTube()
+	TelepathyChatroomPtr getChatRoom()
 	{
-		return m_pTube;
+		return m_pChatRoom;
 	}
 	
 	const UT_UTF8String& getDBusName()
@@ -68,8 +67,8 @@ public:
 	}
 
 private:
-	DBusConnection*		m_pTube;
-	UT_UTF8String		m_sDBusName;
+	TelepathyChatroomPtr	m_pChatRoom;
+	UT_UTF8String			m_sDBusName;
 };
 
 typedef boost::shared_ptr<DTubeBuddy> DTubeBuddyPtr;

@@ -21,7 +21,7 @@
 #ifndef __TELEPATHY_ACCOUNT_HANDLER__
 #define __TELEPATHY_ACCOUNT_HANDLERr__
 
-#include <map>
+#include <vector>
 
 #include <dbus/dbus.h>
 #include <dbus/dbus-glib.h>
@@ -70,6 +70,7 @@ public:
 	virtual bool							allowsManualBuddies()
 		{ return false; }
 	virtual void							forceDisconnectBuddy(BuddyPtr pBuddy);
+	virtual bool 							hasAccess(const std::vector<std::string>& /*vAcl*/, BuddyPtr pBuddy);
 	virtual bool							hasPersistentAccessControl()
 		{ return true; }
 	void									addContact(TpContact* contact);
@@ -85,21 +86,19 @@ public:
 	// packet management
 	virtual bool							send(const Packet* pPacket);
 	virtual bool							send(const Packet* pPacket, BuddyPtr buddy);
-	void									handleMessage(const char* senderDBusAddress, const char* packet_data, int packet_size);
+	void									handleMessage(DTubeBuddyPtr pBuddy, const char* packet_data, int packet_size);
 	
-	// tube & buddy management
-	bool									joinTube(const UT_UTF8String& tubeDBusAddress);
+	// buddy management
 	bool									joinBuddy(PD_Document* pDoc, TpHandle handle, const UT_UTF8String& buddyDBusAddress);
 
 	// FIXME: should be private but have to be callable from C
-	void									acceptTube(TpChannel *tubes_chan, guint id, TpHandle initiator);
+	void									acceptTube(TpChannel *tubes_chan, const char* address);
 
 private:
-	bool									_createAndOfferTube(PD_Document* pDoc, const std::vector<TelepathyBuddyPtr>& vBuddies, UT_UTF8String& sTubeAddress);
+	bool									_createAndOfferTube(PD_Document* pDoc, const std::vector<TelepathyBuddyPtr>& vBuddies, const UT_UTF8String& sSessionId);
 	TelepathyBuddyPtr						_getBuddy(TelepathyBuddyPtr pBuddy);
 
-	// TpHandle -> buddyPath (UT_UTF8String)
-	GHashTable*								handle_to_bus_name;
+	std::vector<TelepathyChatroomPtr>		m_chatrooms;
 };
 
 #endif /* __TELEPATHY_ACCOUNT_HANDLER__ */

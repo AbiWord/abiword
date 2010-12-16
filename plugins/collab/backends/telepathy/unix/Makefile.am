@@ -8,6 +8,8 @@ AM_CPPFLAGS = \
 	-I$(srcdir)/../../../core
 
 libunix_la_SOURCES = \
+	TelepathyChatroom.cpp \
+	TelepathyChatroom.h \
 	DTubeBuddy.h \
 	TelepathyUnixAccountHandler.cpp \
 	TelepathyUnixAccountHandler.h
