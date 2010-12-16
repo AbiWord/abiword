@@ -1,5 +1,5 @@
-/*             itex2MML 1.3.8
- *   itex2MML.y last modified 3/23/2009
+/*             itex2MML 1.4.5
+ *   itex2MML.y last modified 10/2/2010
  */
 
 %{
@@ -264,7 +264,7 @@
    {
 #define ENTITY_LENGTH 10
      char * entity = (char *) malloc(ENTITY_LENGTH);
-     sprintf(entity, "&#x%05x;", code);
+     sprintf(entity, "&#x%05lx;", code);
      return entity;
    }
 
@@ -277,7 +277,7 @@
 %}
 
 %left TEXOVER TEXATOP
-%token CHAR STARTMATH STARTDMATH ENDMATH MI MIB MN MO SUP SUB MROWOPEN MROWCLOSE LEFT RIGHT BIG BBIG BIGG BBIGG BIGL BBIGL BIGGL BBIGGL FRAC TFRAC MATHOP MOP MOL MOLL MOF PERIODDELIM OTHERDELIM LEFTDELIM RIGHTDELIM MOS MOB SQRT ROOT BINOM UNDER OVER OVERBRACE UNDERBRACE UNDEROVER TENSOR MULTI ARRAY COLSEP ROWSEP ARRAYOPTS COLLAYOUT COLALIGN ROWALIGN ALIGN EQROWS EQCOLS ROWLINES COLLINES FRAME PADDING ATTRLIST ITALICS BOLD SLASHED RM BB ST END BBLOWERCHAR BBUPPERCHAR BBDIGIT CALCHAR FRAKCHAR CAL FRAK ROWOPTS TEXTSIZE SCSIZE SCSCSIZE DISPLAY TEXTSTY TEXTBOX TEXTSTRING XMLSTRING CELLOPTS ROWSPAN COLSPAN THINSPACE MEDSPACE THICKSPACE QUAD QQUAD NEGSPACE PHANTOM HREF UNKNOWNCHAR EMPTYMROW STATLINE TOGGLE FGHIGHLIGHT BGHIGHLIGHT SPACE INTONE INTTWO INTTHREE BAR WIDEBAR VEC WIDEVEC HAT WIDEHAT CHECK WIDECHECK TILDE WIDETILDE DOT DDOT UNARYMINUS UNARYPLUS BEGINENV ENDENV MATRIX PMATRIX BMATRIX BBMATRIX VMATRIX VVMATRIX SVG ENDSVG SMALLMATRIX CASES ALIGNED GATHERED SUBSTACK PMOD RMCHAR COLOR BGCOLOR
+%token CHAR STARTMATH STARTDMATH ENDMATH MI MIB MN MO SUP SUB MROWOPEN MROWCLOSE LEFT RIGHT BIG BBIG BIGG BBIGG BIGL BBIGL BIGGL BBIGGL FRAC TFRAC OPERATORNAME MATHOP MATHBIN MATHREL MOP MOL MOLL MOF MOR PERIODDELIM OTHERDELIM LEFTDELIM RIGHTDELIM MOS MOB SQRT ROOT BINOM TBINOM UNDER OVER OVERBRACE UNDERLINE UNDERBRACE UNDEROVER TENSOR MULTI ARRAYALIGN COLUMNALIGN ARRAY COLSEP ROWSEP ARRAYOPTS COLLAYOUT COLALIGN ROWALIGN ALIGN EQROWS EQCOLS ROWLINES COLLINES FRAME PADDING ATTRLIST ITALICS BOLD BOXED SLASHED RM BB ST END BBLOWERCHAR BBUPPERCHAR BBDIGIT CALCHAR FRAKCHAR CAL FRAK CLAP LLAP RLAP ROWOPTS TEXTSIZE SCSIZE SCSCSIZE DISPLAY TEXTSTY TEXTBOX TEXTSTRING XMLSTRING CELLOPTS ROWSPAN COLSPAN THINSPACE MEDSPACE THICKSPACE QUAD QQUAD NEGSPACE PHANTOM HREF UNKNOWNCHAR EMPTYMROW STATLINE TOOLTIP TOGGLE FGHIGHLIGHT BGHIGHLIGHT SPACE INTONE INTTWO INTTHREE BAR WIDEBAR VEC WIDEVEC HAT WIDEHAT CHECK WIDECHECK TILDE WIDETILDE DOT DDOT DDDOT DDDDOT UNARYMINUS UNARYPLUS BEGINENV ENDENV MATRIX PMATRIX BMATRIX BBMATRIX VMATRIX VVMATRIX SVG ENDSVG SMALLMATRIX CASES ALIGNED GATHERED SUBSTACK PMOD RMCHAR COLOR BGCOLOR XARROW OPTARGOPEN OPTARGCLOSE
 
 %%
 
@@ -536,12 +536,18 @@ closedTerm: array
 | hat
 | dot
 | ddot
+| dddot
+| ddddot
 | check
 | tilde
 | moverbrace
 | munderbrace
+| munderline
 | munderover
 | emptymrow
+| mathclap
+| mathllap
+| mathrlap
 | displaystyle
 | textstyle
 | textsize
@@ -554,6 +560,7 @@ closedTerm: array
 | bbold
 | frak
 | slashed
+| boxed
 | cal
 | space
 | textstring
@@ -566,6 +573,7 @@ closedTerm: array
 | phantom
 | href
 | statusline
+| tooltip
 | toggle
 | fghighlight
 | bghighlight
@@ -791,14 +799,30 @@ mo: mob
   $$ = itex2MML_copy3("<mo lspace=\"0em\" rspace=\"thinmathspace\">", $1, "</mo>");
   itex2MML_free_string($1);
 }
-| MATHOP TEXTSTRING {
+| MOR {
+  itex2MML_rowposn = 2;
+  $$ = itex2MML_copy3("<mo lspace=\"verythinmathspace\">", $1, "</mo>");
+  itex2MML_free_string($1);
+}
+| OPERATORNAME TEXTSTRING {
   itex2MML_rowposn = 2;
   $$ = itex2MML_copy3("<mo lspace=\"0em\" rspace=\"thinmathspace\">", $2, "</mo>");
   itex2MML_free_string($2);
-};
-
-emptymrow: EMPTYMROW {
-  $$ = itex2MML_copy_string("<mrow></mrow>");
+}
+| MATHOP TEXTSTRING {
+  itex2MML_rowposn = 2;
+  $$ = itex2MML_copy3("<mo lspace=\"thinmathspace\" rspace=\"thinmathspace\">", $2, "</mo>");
+  itex2MML_free_string($2);
+}
+| MATHBIN TEXTSTRING {
+  itex2MML_rowposn = 2;
+  $$ = itex2MML_copy3("<mo lspace=\"mediummathspace\" rspace=\"mediummathspace\">", $2, "</mo>");
+  itex2MML_free_string($2);
+}
+| MATHREL TEXTSTRING {
+  itex2MML_rowposn = 2;
+  $$ = itex2MML_copy3("<mo lspace=\"thickmathspace\" rspace=\"thickmathspace\">", $2, "</mo>");
+  itex2MML_free_string($2);
 };
 
 space: SPACE ST INTONE END ST INTTWO END ST INTTHREE END {
@@ -814,6 +838,14 @@ space: SPACE ST INTONE END ST INTTWO END ST INTTHREE END {
 
 statusline: STATLINE TEXTSTRING closedTerm {
   char * s1 = itex2MML_copy3("<maction actiontype=\"statusline\">", $3, "<mtext>");
+  $$ = itex2MML_copy3(s1, $2, "</mtext></maction>");
+  itex2MML_free_string(s1);
+  itex2MML_free_string($2);
+  itex2MML_free_string($3);
+};
+
+tooltip: TOOLTIP TEXTSTRING closedTerm {
+  char * s1 = itex2MML_copy3("<maction actiontype=\"tooltip\">", $3, "<mtext>");
   $$ = itex2MML_copy3(s1, $2, "</mtext></maction>");
   itex2MML_free_string(s1);
   itex2MML_free_string($2);
@@ -859,6 +891,21 @@ color: COLOR ATTRLIST compoundTermList {
   itex2MML_free_string($3);
 };
 
+mathrlap: RLAP closedTerm {
+  $$ = itex2MML_copy3("<mpadded width=\"0\">", $2, "</mpadded>");
+  itex2MML_free_string($2);
+};
+
+mathllap: LLAP closedTerm {
+  $$ = itex2MML_copy3("<mpadded width=\"0\" lspace=\"-100%width\">", $2, "</mpadded>");
+  itex2MML_free_string($2);
+};
+
+mathclap: CLAP closedTerm {
+  $$ = itex2MML_copy3("<mpadded width=\"0\" lspace=\"-50%width\">", $2, "</mpadded>");
+  itex2MML_free_string($2);
+};
+
 textstring: TEXTBOX TEXTSTRING {
   $$ = itex2MML_copy3("<mtext>", $2, "</mtext>");
   itex2MML_free_string($2);
@@ -895,7 +942,12 @@ italics: ITALICS closedTerm {
 };
 
 slashed: SLASHED closedTerm {
-  $$ = itex2MML_copy3("<mrow><mpadded width=\"0.125em\"><mo>&#xff0f;</mo></mpadded>", $2, "</mrow>");
+  $$ = itex2MML_copy3("<menclose notation=\"updiagonalstrike\">", $2, "</menclose>");
+  itex2MML_free_string($2);
+};
+
+boxed: BOXED closedTerm {
+  $$ = itex2MML_copy3("<menclose notation=\"box\">", $2, "</menclose>");
   itex2MML_free_string($2);
 };
 
@@ -1165,10 +1217,22 @@ binom: BINOM closedTerm closedTerm {
   itex2MML_free_string(s1);
   itex2MML_free_string($2);
   itex2MML_free_string($3);
+}
+| TBINOM closedTerm closedTerm {
+  char * s1 = itex2MML_copy3("<mrow><mo>(</mo><mstyle displaystyle=\"false\"><mfrac linethickness=\"0\">", $2, $3);
+  $$ = itex2MML_copy2(s1, "</mfrac></mstyle><mo>)</mo></mrow>");
+  itex2MML_free_string(s1);
+  itex2MML_free_string($2);
+  itex2MML_free_string($3);
 };
 
 munderbrace: UNDERBRACE closedTerm {
   $$ = itex2MML_copy3("<munder>", $2, "<mo>&UnderBrace;</mo></munder>");
+  itex2MML_free_string($2);
+};
+
+munderline: UNDERLINE closedTerm {
+  $$ = itex2MML_copy3("<munder>", $2, "<mo>&#x00332;</mo></munder>");
   itex2MML_free_string($2);
 };
 
@@ -1178,11 +1242,11 @@ moverbrace: OVERBRACE closedTerm {
 };
 
 bar: BAR closedTerm {
-  $$ = itex2MML_copy3("<mover>", $2, "<mo stretchy=\"false\">&OverBar;</mo></mover>");
+  $$ = itex2MML_copy3("<mover>", $2, "<mo stretchy=\"false\">&#x000AF;</mo></mover>");
   itex2MML_free_string($2);
 }
 | WIDEBAR closedTerm {
-  $$ = itex2MML_copy3("<mover>", $2, "<mo>&OverBar;</mo></mover>");
+  $$ = itex2MML_copy3("<mover>", $2, "<mo>&#x000AF;</mo></mover>");
   itex2MML_free_string($2);
 };
 
@@ -1205,6 +1269,16 @@ ddot: DDOT closedTerm {
   itex2MML_free_string($2);
 };
 
+dddot: DDDOT closedTerm {
+  $$ = itex2MML_copy3("<mover>", $2, "<mo>&tdot;</mo></mover>");
+  itex2MML_free_string($2);
+};
+
+ddddot: DDDDOT closedTerm {
+  $$ = itex2MML_copy3("<mover>", $2, "<mo>&DotDot;</mo></mover>");
+  itex2MML_free_string($2);
+};
+
 tilde: TILDE closedTerm {
   $$ = itex2MML_copy3("<mover>", $2, "<mo stretchy=\"false\">&tilde;</mo></mover>");
   itex2MML_free_string($2);
@@ -1224,11 +1298,11 @@ check: CHECK closedTerm {
 };
 
 hat: HAT closedTerm {
-  $$ = itex2MML_copy3("<mover>", $2, "<mo stretchy=\"false\">&#x302;</mo></mover>");
+  $$ = itex2MML_copy3("<mover>", $2, "<mo stretchy=\"false\">&#x5E;</mo></mover>");
   itex2MML_free_string($2);
 }
 | WIDEHAT closedTerm {
-  $$ = itex2MML_copy3("<mover>", $2, "<mo>&#x302;</mo></mover>");
+  $$ = itex2MML_copy3("<mover>", $2, "<mo>&#x5E;</mo></mover>");
   itex2MML_free_string($2);
 };
 
@@ -1237,7 +1311,14 @@ msqrt: SQRT closedTerm {
   itex2MML_free_string($2);
 };
 
-mroot: ROOT closedTerm closedTerm {
+mroot: SQRT OPTARGOPEN compoundTermList OPTARGCLOSE closedTerm {
+  char * s1 = itex2MML_copy3("<mroot>", $5, $3);
+  $$ = itex2MML_copy2(s1, "</mroot>");
+  itex2MML_free_string(s1);
+  itex2MML_free_string($3);
+  itex2MML_free_string($5);
+}
+| ROOT closedTerm closedTerm {
   char * s1 = itex2MML_copy3("<mroot>", $3, $2);
   $$ = itex2MML_copy2(s1, "</mroot>");
   itex2MML_free_string(s1);
@@ -1245,7 +1326,14 @@ mroot: ROOT closedTerm closedTerm {
   itex2MML_free_string($3);
 };
 
-munder: UNDER closedTerm closedTerm {
+munder: XARROW OPTARGOPEN compoundTermList OPTARGCLOSE EMPTYMROW {
+  char * s1 = itex2MML_copy3("<munder><mo>", $1, "</mo><mrow>");
+  $$ = itex2MML_copy3(s1, $3, "</mrow></munder>");
+  itex2MML_free_string(s1);
+  itex2MML_free_string($1);
+  itex2MML_free_string($3);
+}
+| UNDER closedTerm closedTerm {
   char * s1 = itex2MML_copy3("<munder>", $3, $2);
   $$ = itex2MML_copy2(s1, "</munder>");
   itex2MML_free_string(s1);
@@ -1253,7 +1341,14 @@ munder: UNDER closedTerm closedTerm {
   itex2MML_free_string($3);
 };
 
-mover: OVER closedTerm closedTerm {
+mover: XARROW closedTerm {
+  char * s1 = itex2MML_copy3("<mover><mo>", $1, "</mo>");
+  $$ =  itex2MML_copy3(s1, $2, "</mover>");
+  itex2MML_free_string(s1);
+  itex2MML_free_string($1);
+  itex2MML_free_string($2);
+}
+| OVER closedTerm closedTerm {
   char * s1 = itex2MML_copy3("<mover>", $3, $2);
   $$ = itex2MML_copy2(s1, "</mover>");
   itex2MML_free_string(s1);
@@ -1261,13 +1356,27 @@ mover: OVER closedTerm closedTerm {
   itex2MML_free_string($3);
 };
 
-munderover: UNDEROVER closedTerm closedTerm closedTerm {
+munderover: XARROW OPTARGOPEN compoundTermList OPTARGCLOSE closedTerm {
+  char * s1 = itex2MML_copy3("<munderover><mo>", $1, "</mo><mrow>");
+  char * s2 = itex2MML_copy3(s1, $3, "</mrow>");
+  $$ = itex2MML_copy3(s2, $5, "</munderover>");
+  itex2MML_free_string(s1);
+  itex2MML_free_string(s2);
+  itex2MML_free_string($1);
+  itex2MML_free_string($3);
+  itex2MML_free_string($5);
+}
+| UNDEROVER closedTerm closedTerm closedTerm {
   char * s1 = itex2MML_copy3("<munderover>", $4, $2);
   $$ = itex2MML_copy3(s1, $3, "</munderover>");
   itex2MML_free_string(s1);
   itex2MML_free_string($2);
   itex2MML_free_string($3);
   itex2MML_free_string($4);
+};
+
+emptymrow: EMPTYMROW {
+  $$ = itex2MML_copy_string("<mrow></mrow>");
 };
 
 mathenv: BEGINENV MATRIX tableRowList ENDENV MATRIX {
@@ -1310,12 +1419,39 @@ mathenv: BEGINENV MATRIX tableRowList ENDENV MATRIX {
   $$ = itex2MML_copy3("<mrow><mtable columnalign=\"right left right left right left right left right left\" columnspacing=\"0em\">", $3, "</mtable></mrow>");
   itex2MML_free_string($3);
 }
+| BEGINENV ARRAY ARRAYALIGN ST columnAlignList END tableRowList ENDENV ARRAY {
+  char * s1 = itex2MML_copy3("<mtable rowspacing=\"0.5ex\" align=\"", $3, "\" columnalign=\"");
+  char * s2 = itex2MML_copy3(s1, $5, "\">");
+  $$ = itex2MML_copy3(s2, $7, "</mtable>");
+  itex2MML_free_string(s1);
+  itex2MML_free_string(s2);
+  itex2MML_free_string($3);
+  itex2MML_free_string($5);
+  itex2MML_free_string($7);
+}
+| BEGINENV ARRAY ST columnAlignList END tableRowList ENDENV ARRAY {
+  char * s1 = itex2MML_copy3("<mtable rowspacing=\"0.5ex\" columnalign=\"", $4, "\">");
+  $$ = itex2MML_copy3(s1, $6, "</mtable>");
+  itex2MML_free_string(s1);
+  itex2MML_free_string($4);
+  itex2MML_free_string($6);
+}
 | BEGINENV SVG XMLSTRING ENDSVG {
   $$ = itex2MML_copy3("<semantics><annotation-xml encoding=\"SVG1.1\">", $3, "</annotation-xml></semantics>");
   itex2MML_free_string($3);
 }
 | BEGINENV SVG ENDSVG {
   $$ = itex2MML_copy_string(" ");
+};
+
+columnAlignList: columnAlignList COLUMNALIGN {
+  $$ = itex2MML_copy3($1, " ", $2);
+  itex2MML_free_string($1);
+  itex2MML_free_string($2);
+}
+| COLUMNALIGN {
+  $$ = itex2MML_copy_string($1);
+  itex2MML_free_string($1);
 };
 
 substack: SUBSTACK MROWOPEN tableRowList MROWCLOSE {
@@ -1593,12 +1729,12 @@ static void itex2MML_keep_error (const char * msg)
 
 int itex2MML_html_filter (const char * buffer, unsigned long length)
 {
-  return itex2MML_do_html_filter (buffer, length, 0);
+  itex2MML_do_html_filter (buffer, length, 0);
 }
 
 int itex2MML_strict_html_filter (const char * buffer, unsigned long length)
 {
-  return itex2MML_do_html_filter (buffer, length, 1);
+  itex2MML_do_html_filter (buffer, length, 1);
 }
 
 int itex2MML_do_html_filter (const char * buffer, unsigned long length, const int forbid_markup)
@@ -1632,7 +1768,7 @@ int itex2MML_do_html_filter (const char * buffer, unsigned long length, const in
 	}
       ++ptr2;
     }
-  if (itex2MML_write)
+  if (itex2MML_write && ptr2 > ptr1)
     (*itex2MML_write) (ptr1, ptr2 - ptr1);
 
   if (ptr2 == end) goto _finish;
