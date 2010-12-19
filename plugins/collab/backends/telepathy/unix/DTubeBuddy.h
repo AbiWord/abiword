@@ -21,6 +21,7 @@
 #define __DTUBEBUDDY_H__
 
 #include <map>
+#include <telepathy-glib/telepathy-glib.h>
 #include <account/xp/Buddy.h>
 #include <account/xp/DocTreeItem.h>
 #include <account/xp/AccountHandler.h>
@@ -31,9 +32,10 @@ class DocHandle;
 class DTubeBuddy : public Buddy
 {
 public:
-	DTubeBuddy(AccountHandler* handler, TelepathyChatroomPtr pChatRoom, const UT_UTF8String dbusName)
+	DTubeBuddy(AccountHandler* handler, TelepathyChatroomPtr pChatRoom, TpHandle handle, const UT_UTF8String dbusName)
 		: Buddy(handler),
 		m_pChatRoom(pChatRoom),
+		m_handle(handle),
 		m_sDBusName(dbusName)
 	{
 		setVolatile(true);
@@ -61,6 +63,11 @@ public:
 		return m_pChatRoom;
 	}
 	
+	TpHandle getHandle()
+	{
+		return m_handle;
+	}
+
 	const UT_UTF8String& getDBusName()
 	{
 		return m_sDBusName;
@@ -68,6 +75,7 @@ public:
 
 private:
 	TelepathyChatroomPtr	m_pChatRoom;
+	TpHandle				m_handle;
 	UT_UTF8String			m_sDBusName;
 };
 

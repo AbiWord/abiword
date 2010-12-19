@@ -61,6 +61,7 @@ public:
 	virtual ConnectResult					connect();
 	virtual bool							disconnect();
 	virtual bool							isOnline();
+	void									acceptTube(TpChannel *tubes_chan, const char* address);
 
 	// user management
 	virtual void							getBuddiesAsync();
@@ -74,6 +75,7 @@ public:
 	virtual bool							hasPersistentAccessControl()
 		{ return true; }
 	void									addContact(TpContact* contact);
+	void									buddyDisconnected(TelepathyChatroomPtr pChatroom, TpHandle disconnected);
 
 	// session management
 	virtual bool							startSession(PD_Document* pDoc, const std::vector<std::string>& acl, AbiCollab** pSession);
@@ -86,14 +88,8 @@ public:
 	// packet management
 	virtual bool							send(const Packet* pPacket);
 	virtual bool							send(const Packet* pPacket, BuddyPtr buddy);
-	void									handleMessage(DTubeBuddyPtr pBuddy, const char* packet_data, int packet_size);
+	void									handleMessage(DTubeBuddyPtr pBuddy, const std::string& packet_str);
 	
-	// buddy management
-	bool									joinBuddy(PD_Document* pDoc, TpHandle handle, const UT_UTF8String& buddyDBusAddress);
-
-	// FIXME: should be private but have to be callable from C
-	void									acceptTube(TpChannel *tubes_chan, const char* address);
-
 private:
 	bool									_createAndOfferTube(PD_Document* pDoc, const std::vector<TelepathyBuddyPtr>& vBuddies, const UT_UTF8String& sSessionId);
 	TelepathyBuddyPtr						_getBuddy(TelepathyBuddyPtr pBuddy);

@@ -19,7 +19,9 @@
 #ifndef __TELEPATHY_CHATROOM_H__
 #define __TELEPATHY_CHATROOM_H__
 
+#include <map>
 #include <vector>
+#include <telepathy-glib/telepathy-glib.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <dbus/dbus.h>
@@ -54,7 +56,11 @@ public:
 	const std::vector<DTubeBuddyPtr>& getBuddies()
 		{ return m_buddies; }
 
+	DTubeBuddyPtr getBuddy(TpHandle handle);
+
 	DTubeBuddyPtr getBuddy(UT_UTF8String dbusName);
+
+	void removeBuddy(TpHandle handle);
 
 	DBusConnection* getTube()
 		{ return m_pTube; }
@@ -62,11 +68,15 @@ public:
 	const UT_UTF8String& getSessionId()
 		{ return m_sSessionId; }
 
+	void queue(const std::string& dbusName, const std::string& packet);
+
 private:
 	TelepathyAccountHandler*	m_pHandler;
 	DBusConnection*				m_pTube;
 	UT_UTF8String				m_sSessionId;
 	std::vector<DTubeBuddyPtr>	m_buddies;
+
+	std::map<std::string, std::vector<std::string> > m_packet_queue;
 };
 
 typedef boost::shared_ptr<TelepathyChatroom> TelepathyChatroomPtr;
