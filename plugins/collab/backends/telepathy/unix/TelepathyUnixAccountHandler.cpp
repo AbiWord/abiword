@@ -584,6 +584,7 @@ void TelepathyAccountHandler::acceptTube(TpChannel *chan, const char* address)
 	UT_return_if_fail(pTube);
 
 	// create a new room so we can store the buddies somewhere
+	// the session id will be set as soon as we join the document
 	TelepathyChatroomPtr pChatroom = boost::shared_ptr<TelepathyChatroom>(new TelepathyChatroom(this, pTube, ""));
 	m_chatrooms.push_back(pChatroom);
 
@@ -676,10 +677,25 @@ void TelepathyAccountHandler::handleMessage(DTubeBuddyPtr pBuddy, const char* pa
 	{
 		case PCT_GetSessionsEvent:
 		{
-			// return only the session that belongs to the chatroom that the buddy is in
-			GetSessionsResponseEvent gsre;
-			gsre.m_Sessions[pChatroom->getSessionId()] = "bar"; // TODO: add document name
-			send(&gsre, pBuddy);
+			if (pChatroom->getSessionId() != "")
+			{
+				AbiCollab* pSession = pManager->getSessionFromSessionId(pChatroom->getSessionId());
+				UT_return_if_fail(pSession);
+
+				if (pSession->isLocallyControlled())
+				{
+					// return only the session that belongs to the chatroom that the buddy is in
+					GetSessionsResponseEvent gsre;
+					gsre.m_Sessions[pChatroom->getSessionId()] = "bar"; // TODO: add document name
+					send(&gsre, pBuddy);
+				}
+				else
+					UT_DEBUGMSG(("Ignoring GetSessionsEvent, we are not controlling session %s\n", pChatroom->getSessionId().utf8_str()));
+			} else
+			{
+				UT_DEBUGMSG(("Ignoring GetSessionsEvent, we are not controlling session %s (we didn't even join yet)\n", pChatroom->getSessionId().utf8_str()));
+			}
+
 			break;
 		}
 		case PCT_GetSessionsResponseEvent:
@@ -736,7 +752,7 @@ DBusHandlerResult s_dbus_handle_message(DBusConnection *connection, DBusMessage 
 		dbus_error_init (&error);
 		const char* packet_data = 0;
 		int packet_size = 0;
-	    if (dbus_message_get_args(message, &error, 
+		if (dbus_message_get_args(message, &error,
 					DBUS_TYPE_ARRAY, DBUS_TYPE_BYTE, &packet_data, &packet_size,
 					DBUS_TYPE_INVALID))
 		{

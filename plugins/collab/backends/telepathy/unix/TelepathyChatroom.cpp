@@ -19,6 +19,24 @@
 #include "TelepathyChatroom.h"
 #include "DTubeBuddy.h"
 
+void TelepathyChatroom::addBuddy(DTubeBuddyPtr pBuddy)
+{
+	// make sure we don't add this buddy twice
+	UT_return_if_fail(pBuddy);
+	for (std::vector<DTubeBuddyPtr>::iterator it = m_buddies.begin(); it != m_buddies.end(); it++)
+	{
+		DTubeBuddyPtr pB = (*it);
+		UT_continue_if_fail(pB);
+		if (pBuddy->getDBusName() == pB->getDBusName())
+		{
+			UT_DEBUGMSG(("Notting adding buddy with dbus address %s twice\n", pBuddy->getDBusName().utf8_str()));
+			return;
+		}
+	}
+
+	m_buddies.push_back(pBuddy);
+}
+
 DTubeBuddyPtr TelepathyChatroom::getBuddy(UT_UTF8String dbusName)
 {
 	for (UT_uint32 i = 0; i < m_buddies.size(); i++)

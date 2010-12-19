@@ -44,36 +44,23 @@ public:
 	}
 
 	boost::shared_ptr<TelepathyChatroom> ptr()
-	{
-		return shared_from_this();
-	}
+		{ return shared_from_this(); }
 
 	TelepathyAccountHandler* getHandler()
-	{
-		return m_pHandler;
-	}
+		{ return m_pHandler; }
 
-	void addBuddy(DTubeBuddyPtr pBuddy)
-	{
-		m_buddies.push_back(pBuddy);
-	}
+	void addBuddy(DTubeBuddyPtr pBuddy);
 
 	const std::vector<DTubeBuddyPtr>& getBuddies()
-	{
-		return m_buddies;
-	}
+		{ return m_buddies; }
 
 	DTubeBuddyPtr getBuddy(UT_UTF8String dbusName);
 
 	DBusConnection* getTube()
-	{
-		return m_pTube;
-	}
+		{ return m_pTube; }
 	
 	const UT_UTF8String& getSessionId()
-	{
-		return m_sSessionId;
-	}
+		{ return m_sSessionId; }
 
 private:
 	TelepathyAccountHandler*	m_pHandler;
