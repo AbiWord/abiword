@@ -211,7 +211,7 @@ tube_dbus_names_changed_cb(TpChannel* /*proxy*/,
 	TelepathyChatroom* pChatroom = reinterpret_cast<TelepathyChatroom*>(user_data);
 	UT_return_if_fail(pChatroom);
 
-	TelepathyAccountHandler* pHandler= pChatroom->getHandler();
+	TelepathyAccountHandler* pHandler = pChatroom->getHandler();
 	UT_return_if_fail(pHandler);
 
 	gpointer key;
@@ -254,7 +254,7 @@ tube_accept_cb(TpChannel* channel,
 }
 
 static void
-_handle_dbus_channel(TpSimpleHandler* /*handler*/,
+handle_dbus_channel(TpSimpleHandler* /*handler*/,
 	TpAccount* /*account*/,
 	TpConnection* /*connection*/,
 	GList* channels,
@@ -263,7 +263,7 @@ _handle_dbus_channel(TpSimpleHandler* /*handler*/,
 	TpHandleChannelsContext* context,
 	gpointer user_data)
 {
-	UT_DEBUGMSG(("_handle_dbus_channel()\n"));
+	UT_DEBUGMSG(("handle_dbus_channel()\n"));
 
 	TelepathyAccountHandler* pHandler = reinterpret_cast<TelepathyAccountHandler*>(user_data);
 	UT_return_if_fail(pHandler);
@@ -286,6 +286,29 @@ _handle_dbus_channel(TpSimpleHandler* /*handler*/,
 	tp_handle_channels_context_accept(context);
 }
 
+void muc_channel_ready_cb(GObject* source_object, GAsyncResult* result, gpointer user_data)
+{
+	UT_DEBUGMSG(("muc_channel_ready_cb()\n"));
+
+	TelepathyChatroom* pChatroom = reinterpret_cast<TelepathyChatroom*>(user_data);
+	UT_return_if_fail(pChatroom);
+
+	TelepathyAccountHandler* pHandler = pChatroom->getHandler();
+	UT_return_if_fail(pHandler);
+
+	GError* error = NULL;
+	TpChannel * channel = tp_account_channel_request_create_and_handle_channel_finish(
+			TP_ACCOUNT_CHANNEL_REQUEST(source_object), result, NULL, &error);
+	if (!channel)
+	{
+		UT_DEBUGMSG(("Error creating MUC channel: %s\n", error->message));
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		return;
+	}
+
+	// offer the tube to the members we want to invite into the room
+	pHandler->offerTube(pChatroom->ptr(), channel, pChatroom->getSessionId());
+}
 
 TelepathyAccountHandler::TelepathyAccountHandler()
 	: AccountHandler()
@@ -335,7 +358,7 @@ ConnectResult TelepathyAccountHandler::connect()
 
 	TpBaseClient* handler = tp_simple_handler_new(dbus,
 					TRUE, FALSE, "AbiCollabHandler", TRUE,
-					_handle_dbus_channel, this, NULL);
+					handle_dbus_channel, this, NULL);
 
 	tp_base_client_take_handler_filter(handler,
 					tp_asv_new (
@@ -465,8 +488,23 @@ bool TelepathyAccountHandler::startSession(PD_Document* pDoc, const std::vector<
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_val_if_fail(pManager, false);
 
-	std::vector<TelepathyBuddyPtr> acl_;
-	// this n^2 behavior shouldn't be too bad in practice: the ACL will never contain hundreds of elements
+	// generate a unique session id to use
+	UT_UTF8String sSessionId;
+	UT_UUID* pUUID = XAP_App::getApp()->getUUIDGenerator()->createUUID();
+	pUUID->toString(sSessionId);
+	DELETEP(pUUID);
+
+	// start the session already, while we'll continue to setup a
+	// MUC asynchronously below
+	// TODO: fill in the buddy descriptor for proper text coloring?
+	*pSession = pManager->startSession(pDoc, sSessionId, this, true, NULL, "");
+
+	// create a chatroom to hold the session information
+	TelepathyChatroomPtr pChatroom = boost::shared_ptr<TelepathyChatroom>(new TelepathyChatroom(this, NULL, sSessionId));
+	m_chatrooms.push_back(pChatroom);
+
+	// add the buddies in the acl list to the room invitee list
+	// NOTE: this n^2 behavior shouldn't be too bad in practice: the ACL will never contain hundreds of elements
 	for (std::vector<std::string>::const_iterator cit = vAcl.begin(); cit != vAcl.end(); cit++)
 	{
 		for (std::vector<BuddyPtr>::iterator it = getBuddies().begin(); it != getBuddies().end(); it++)
@@ -475,24 +513,49 @@ bool TelepathyAccountHandler::startSession(PD_Document* pDoc, const std::vector<
 			UT_continue_if_fail(pBuddy);
 			if  (pBuddy->getDescriptor(false).utf8_str() == (*cit))
 			{
-				acl_.push_back(pBuddy);
+				pChatroom->invite(pBuddy);
 				break;
 			}
 		}
 	}
 
-	// generate a unique session id
-	UT_UTF8String sSessionId;
-	UT_UUID* pUUID = XAP_App::getApp()->getUUIDGenerator()->createUUID();
-	pUUID->toString(sSessionId);
-	DELETEP(pUUID);
+	// a quick hack to determine the account to offer the request on
+	TpAccountManager* manager = tp_account_manager_dup();
+	UT_return_val_if_fail(manager, false);
 
-	if (!_createAndOfferTube(pDoc, acl_, sSessionId))
-		return false;
+	GList* accounts = tp_account_manager_get_valid_accounts(manager);
+	UT_return_val_if_fail(accounts, false);
 
-	// start the session
-	// TODO: fill in the buddy descriptor for proper text coloring?
-	*pSession = pManager->startSession(pDoc, sSessionId, this, true, NULL, "");
+	// TODO: make sure the accounts are ready
+	TpAccount* selected_account = NULL;
+	for (GList* account = accounts; account; account = account->next)
+	{
+		selected_account = TP_ACCOUNT(account->data);
+		break;
+	}
+	UT_return_val_if_fail(selected_account, false);
+	g_list_free(accounts);
+
+	// create a MUC channel request
+	GHashTable* props = tp_asv_new (
+			TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING, TP_IFACE_CHANNEL_TYPE_DBUS_TUBE,
+			TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, TP_TYPE_HANDLE, TP_HANDLE_TYPE_ROOM,
+			TP_PROP_CHANNEL_TARGET_ID, G_TYPE_STRING, "abicollab4@conference.matthewwild.co.uk", /*target_id.utf8_str()*/
+			TP_PROP_CHANNEL_TYPE_DBUS_TUBE_SERVICE_NAME, G_TYPE_STRING, INTERFACE,
+			/*
+			 * Enable TP_PROP_CHANNEL_INTERFACE_CONFERENCE_INITIAL_INVITEE_IDS if you want to use
+			 * anonymous MUCs. We can't use it right now, because we run into bugs.
+			 * Remove the HANDLE_TYPE and TARGET_ID when you enable this.
+			 *
+			 * TP_PROP_CHANNEL_INTERFACE_CONFERENCE_INITIAL_INVITEE_IDS, G_TYPE_STRV, invitee_ids,
+			 */
+			NULL);
+
+	TpAccountChannelRequest * channel_request = tp_account_channel_request_new(selected_account, props, TP_USER_ACTION_TIME_NOT_USER_ACTION);
+	UT_return_val_if_fail(channel_request, false);
+	g_hash_table_destroy (props);
+
+	tp_account_channel_request_create_and_handle_channel_async(channel_request, NULL, muc_channel_ready_cb, pChatroom.get());
 
 	return true;
 }
@@ -762,73 +825,18 @@ DBusHandlerResult s_dbus_handle_message(DBusConnection *connection, DBusMessage 
 	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
 
-// TODO: cleanup after errors
-bool TelepathyAccountHandler::_createAndOfferTube(PD_Document* pDoc, const std::vector<TelepathyBuddyPtr>& vBuddies, const UT_UTF8String& sSessionId)
+bool TelepathyAccountHandler::offerTube(TelepathyChatroomPtr pChatroom, TpChannel* chan,
+		const UT_UTF8String& sSessionId)
 {
-	GError* error = NULL;
-	gchar* object_path;
+	UT_DEBUGMSG(("TelepathyAccountHandler::offerTube()\n - session id: %s\n", sSessionId.utf8_str()));
 
-	UT_return_val_if_fail(pDoc, false);
+	UT_return_val_if_fail(pChatroom, false);
+	UT_return_val_if_fail(chan, false);
+	UT_return_val_if_fail(sSessionId != "", false);
+
+	const std::vector<TelepathyBuddyPtr>& vBuddies = pChatroom->getInvitees();
 	UT_return_val_if_fail(vBuddies.size() > 0, false);
-	
-	// get some connection belonging to this contact
-	// TODO: we probably want to change this to some user selectable thingy
-	TpContact* pContact = vBuddies[0]->getContact();
-	TpConnection * conn = tp_contact_get_connection (pContact);
 
-	//
-	// create a room, so we can invite some members in it
-	//
-
-	// generate a unique room ID (no room ID would not be needed for MSN MUCs, we don't support those for now)
-	// we leave out the server address and let telepathy auto-discover it, so we don't have
-	// to bother our users with it
-	UT_UUID* uuid = XAP_App::getApp()->getUUIDGenerator()->createUUID();
-	UT_return_val_if_fail(uuid, FALSE);
-	UT_UTF8String target_id;
-	uuid->toString(target_id);
-	DELETEP(uuid);
-
-	/*
-	gchar** invitee_ids = reinterpret_cast<gchar**>(malloc(sizeof(gchar*) * vBuddies.size()+1));
-	for (UT_uint32 i = 0; i < vBuddies.size(); i++)
-		invitee_ids[i] = strdup(tp_contact_get_identifier(vBuddies[i]->getContact()));
-	invitee_ids[vBuddies.size()] = NULL;
-	*/
-
-	// setup the room properties
-	GHashTable* props = tp_asv_new (
-			TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING, TP_IFACE_CHANNEL_TYPE_DBUS_TUBE,
-			TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, TP_TYPE_HANDLE, TP_HANDLE_TYPE_ROOM,
-			TP_PROP_CHANNEL_TARGET_ID, G_TYPE_STRING, "abicollab2@conference.matthewwild.co.uk", /*target_id.utf8_str()*/
-			TP_PROP_CHANNEL_TYPE_DBUS_TUBE_SERVICE_NAME, G_TYPE_STRING, INTERFACE,
-			/*
-			 * Enable TP_PROP_CHANNEL_INTERFACE_CONFERENCE_INITIAL_INVITEE_IDS if you want to use
-			 * anonymous MUCs. We can't use it right now, because we run into bugs.
-			 * Remove the HANDLE_TYPE and TARGET_ID when you enable this.
-			 *
-			 * TP_PROP_CHANNEL_INTERFACE_CONFERENCE_INITIAL_INVITEE_IDS, G_TYPE_STRV, invitee_ids,
-			 */
-			NULL);
-
-	// ... then actually create the room
-	GHashTable* channel_properties = NULL;
-	if (!tp_cli_connection_interface_requests_run_create_channel (conn, -1, props, &object_path, &channel_properties, &error, NULL))
-	{
-		UT_DEBUGMSG(("Error creating room: %s\n", error ? error->message : "(null)"));
-		g_hash_table_destroy (props);
-		return false;
-	}
-	UT_DEBUGMSG(("Got a room, path: %s\n", object_path));
-	g_hash_table_destroy (props);
-	
-	// get a channel to the new room
-	TpChannel* chan = tp_channel_new_from_properties (conn, object_path, channel_properties, NULL);
-	UT_return_val_if_fail(chan, FALSE);
-	tp_channel_run_until_ready (chan, NULL, NULL);
-	// TODO: check for errors
-	UT_DEBUGMSG(("Channel created to the room, identifier: %s\n", tp_channel_get_identifier(chan)));
-	
 	// add members to the room
 	GArray* members = g_array_new (FALSE, FALSE, sizeof(TpHandle));
 	for (UT_uint32 i = 0; i < vBuddies.size(); i++)
@@ -841,6 +849,7 @@ bool TelepathyAccountHandler::_createAndOfferTube(PD_Document* pDoc, const std::
 	}
 
 	UT_DEBUGMSG(("Inviting members to the room...\n"));
+	GError* error = NULL;
 	if (!tp_cli_channel_interface_group_run_add_members(chan, -1,  members, "Hi there!", &error, NULL))
 	{
 		UT_DEBUGMSG(("Error inviting room members: %s\n", error ? error->message : "(null)"));
@@ -848,8 +857,11 @@ bool TelepathyAccountHandler::_createAndOfferTube(PD_Document* pDoc, const std::
 	}
 	UT_DEBUGMSG(("Members invited\n"));
 
+	// TODO: hide this explicit clear, it's not nice API wise
+	pChatroom->getInvitees().clear();
+
 	GHashTable* params = tp_asv_new (
-			"title", G_TYPE_STRING, pDoc->getFilename(),
+			"title", G_TYPE_STRING, /*pDoc->getFilename()*/ "TODO: get document title",
 			NULL);
 
 	// offer this tube to every participant in the room
@@ -863,12 +875,10 @@ bool TelepathyAccountHandler::_createAndOfferTube(PD_Document* pDoc, const std::
 
 	UT_DEBUGMSG(("Tube offered, address: %s\n", address));
 
+	// open and store the tube dbus connection
 	DBusConnection* pTube = dbus_connection_open(address, NULL);
 	UT_return_val_if_fail(pTube, FALSE);
-
-	// create a new room so we can store the buddies somewhere
-	TelepathyChatroomPtr pChatroom = boost::shared_ptr<TelepathyChatroom>(new TelepathyChatroom(this, pTube, sSessionId));
-	m_chatrooms.push_back(pChatroom);
+	pChatroom->setTube(pTube);
 
 	UT_DEBUGMSG(("Adding dbus handlers to the main loop for tube %s\n", address));
 	dbus_connection_setup_with_g_main(pTube, NULL);

@@ -21,13 +21,16 @@
 
 #include <map>
 #include <vector>
+
 #include <telepathy-glib/telepathy-glib.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <dbus/dbus.h>
 #include <dbus/dbus-glib.h>
 #include <dbus/dbus-glib-lowlevel.h>
+
 #include <ut_string_class.h>
+#include "TelepathyBuddy.h"
 
 class TelepathyAccountHandler;
 class DTubeBuddy;
@@ -64,17 +67,28 @@ public:
 
 	DBusConnection* getTube()
 		{ return m_pTube; }
+
+	void setTube(DBusConnection* pTube)
+		{ m_pTube = pTube; }
 	
 	const UT_UTF8String& getSessionId()
 		{ return m_sSessionId; }
 
 	void queue(const std::string& dbusName, const std::string& packet);
 
+	// TODO: hide the fact that you need to invite the people yourself
+	void invite(TelepathyBuddyPtr pBuddy)
+		{ m_invitees.push_back(pBuddy); }
+
+	std::vector<TelepathyBuddyPtr>& getInvitees()
+		{ return m_invitees; }
+
 private:
 	TelepathyAccountHandler*	m_pHandler;
 	DBusConnection*				m_pTube;
 	UT_UTF8String				m_sSessionId;
 	std::vector<DTubeBuddyPtr>	m_buddies;
+	std::vector<TelepathyBuddyPtr> m_invitees;
 
 	std::map<std::string, std::vector<std::string> > m_packet_queue;
 };

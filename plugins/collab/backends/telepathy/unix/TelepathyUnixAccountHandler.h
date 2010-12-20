@@ -62,6 +62,7 @@ public:
 	virtual bool							disconnect();
 	virtual bool							isOnline();
 	void									acceptTube(TpChannel *tubes_chan, const char* address);
+	bool									offerTube(TelepathyChatroomPtr pChatroom, TpChannel* chan, const UT_UTF8String& sSessionId);
 
 	// user management
 	virtual void							getBuddiesAsync();
@@ -91,7 +92,6 @@ public:
 	void									handleMessage(DTubeBuddyPtr pBuddy, const std::string& packet_str);
 	
 private:
-	bool									_createAndOfferTube(PD_Document* pDoc, const std::vector<TelepathyBuddyPtr>& vBuddies, const UT_UTF8String& sSessionId);
 	TelepathyBuddyPtr						_getBuddy(TelepathyBuddyPtr pBuddy);
 
 	std::vector<TelepathyChatroomPtr>		m_chatrooms;
