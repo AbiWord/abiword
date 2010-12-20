@@ -23,12 +23,13 @@
 #include "ap_Dialog_Styles.h"
 #include "xap_Win32DialogHelper.h"
 #include "xap_Win32PreviewWidget.h"
+#include "xap_Win32DialogBase.h"
 
 #define MAX_EBX_LENGTH 40
 #define MAX_NEWMODIFY_TOGGLE 4
 /*****************************************************************/
 
-class ABI_EXPORT AP_Win32Dialog_Styles: public AP_Dialog_Styles, XAP_Win32Dialog
+class ABI_EXPORT AP_Win32Dialog_Styles: public AP_Dialog_Styles, public XAP_Win32DialogBase, XAP_Win32Dialog
 {
 public:
 	typedef enum _StyleType 
