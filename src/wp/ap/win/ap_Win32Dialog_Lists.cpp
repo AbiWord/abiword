@@ -106,6 +106,9 @@ void AP_Win32Dialog_Lists::runModeless(XAP_Frame * pFrame)
 }
 
 
+#define _DS(c,s)       setDlgItemText(hWnd, AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)      setDlgItemText(hWnd, AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+
 BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	delete m_pPreviewWidget; m_pPreviewWidget = NULL;
@@ -145,47 +148,34 @@ BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 	centerDialog();			
 
 	const XAP_StringSet* pSS = m_pApp->getStringSet();
-    setDialogTitle(pSS->getValue(AP_STRING_ID_DLG_Lists_Title));
+	setDialogTitle(pSS->getValue(AP_STRING_ID_DLG_Lists_Title));
 	UT_return_val_if_fail (pSS,1);	// TODO: Would an error handler be more appropriate here?
 
 	// Set the locale specific strings
-	struct control_id_string_id {
-		UT_sint32		controlId;
-		XAP_String_Id	stringId;
-	} static const rgMapping[] =
-	{
-		{AP_RID_DIALOG_LIST_STATIC_TYPE			, AP_STRING_ID_DLG_Lists_Type},
-		{AP_RID_DIALOG_LIST_STATIC_STYLE			, AP_STRING_ID_DLG_Lists_Style},
-		{AP_RID_DIALOG_LIST_GROUP_CUSTOM			, AP_STRING_ID_DLG_Lists_Customize},
-		{AP_RID_DIALOG_LIST_BUTTON_DEFAULT		, AP_STRING_ID_DLG_Lists_SetDefault},
-		{AP_RID_DIALOG_LIST_STATIC_FORMAT		, AP_STRING_ID_DLG_Lists_Format},
-		{AP_RID_DIALOG_LIST_STATIC_FONT			, AP_STRING_ID_DLG_Lists_Font},
-		{AP_RID_DIALOG_LIST_BTN_FONT				, AP_STRING_ID_DLG_Lists_ButtonFont},
-		{AP_RID_DIALOG_LIST_STATIC_DECIMAL		, AP_STRING_ID_DLG_Lists_DelimiterString},
-		{AP_RID_DIALOG_LIST_STATIC_LEVEL			, AP_STRING_ID_DLG_Lists_Level},
-		{AP_RID_DIALOG_LIST_STATIC_START_AT		, AP_STRING_ID_DLG_Lists_Start},
-		{AP_RID_DIALOG_LIST_STATIC_LIST_ALIGN	, AP_STRING_ID_DLG_Lists_Align},
-		{AP_RID_DIALOG_LIST_STATIC_INDENT_ALIGN	, AP_STRING_ID_DLG_Lists_Indent},
-		{AP_RID_DIALOG_LIST_STATIC_PREVIEW		, AP_STRING_ID_DLG_Lists_Preview},
-		{AP_RID_DIALOG_LIST_RADIO_START_NEW_LIST	, AP_STRING_ID_DLG_Lists_Start_New},
-		{AP_RID_DIALOG_LIST_RADIO_APPLY_TO_CURRENT_LIST, AP_STRING_ID_DLG_Lists_Apply_Current},
-		{AP_RID_DIALOG_LIST_RADIO_RESUME_PREV_LIST, AP_STRING_ID_DLG_Lists_Resume},
-		{AP_RID_DIALOG_LIST_STATIC_FOLDING, AP_STRING_ID_DLG_Lists_FoldingLevelexp}
-	};
+	_DS(LIST_STATIC_TYPE, DLG_Lists_Type);
+	_DS(LIST_STATIC_STYLE, DLG_Lists_Style);
+	_DS(LIST_GROUP_CUSTOM, DLG_Lists_Customize);
+	_DS(LIST_BUTTON_DEFAULT, DLG_Lists_SetDefault);
+	_DS(LIST_STATIC_FORMAT, DLG_Lists_Format);
+	_DS(LIST_STATIC_FONT, DLG_Lists_Font);
+	_DS(LIST_BTN_FONT, DLG_Lists_ButtonFont);
+	_DS(LIST_STATIC_DECIMAL, DLG_Lists_DelimiterString);
+	_DS(LIST_STATIC_LEVEL, DLG_Lists_Level);
+	_DS(LIST_STATIC_START_AT, DLG_Lists_Start);
+	_DS(LIST_STATIC_LIST_ALIGN, DLG_Lists_Align);
+	_DS(LIST_STATIC_INDENT_ALIGN, DLG_Lists_Indent);
+	_DS(LIST_STATIC_PREVIEW, DLG_Lists_Preview);
+	_DS(LIST_RADIO_START_NEW_LIST, DLG_Lists_Start_New);
+	_DS(LIST_RADIO_APPLY_TO_CURRENT_LIST, DLG_Lists_Apply_Current);
+	_DS(LIST_RADIO_RESUME_PREV_LIST, DLG_Lists_Resume);
+	_DS(LIST_STATIC_FOLDING, DLG_Lists_FoldingLevelexp);
 
-	for (i = 0; i < G_N_ELEMENTS(rgMapping); ++i)
-	{
-		_win32Dialog.setControlText(rgMapping[i].controlId,
-									pSS->getValue(rgMapping[i].stringId));
-	}
-	_win32Dialog.setControlText(AP_RID_DIALOG_LIST_BTN_APPLY,
-				pSS->getValue(isModal() ?
-							XAP_STRING_ID_DLG_OK :
-							XAP_STRING_ID_DLG_Apply));
-	_win32Dialog.setControlText(AP_RID_DIALOG_LIST_BTN_CLOSE,
-				pSS->getValue(isModal() ?
-							XAP_STRING_ID_DLG_Cancel :
-							XAP_STRING_ID_DLG_Close));
+	pSS->getValue(isModal() ?
+				_DSX(LIST_BTN_APPLY, DLG_OK):
+							_DSX(LIST_BTN_APPLY, DLG_Apply));
+	pSS->getValue(isModal() ?
+				_DSX(LIST_BTN_CLOSE, DLG_Cancel):
+							_DSX(LIST_BTN_CLOSE, DLG_Close));
 
 	if (isModal())
 	{
