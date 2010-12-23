@@ -838,7 +838,7 @@ UT_ByteBuf *GOComponentView::exportToPNG ()
 	int height = ascent + descent;
 	if (height == 0 || (int) width == 0)
 		return NULL;
-	int w = width * 300 / UT_LAYOUT_RESOLUTION, h = height * 300 * UT_LAYOUT_RESOLUTION;
+	int w = width * 300 / UT_LAYOUT_RESOLUTION, h = height * 300 / UT_LAYOUT_RESOLUTION;
 	UT_ByteBuf *pBuf = new UT_ByteBuf ();
 	cairo_surface_t *surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, w, h);
 	cairo_t *cr = cairo_create (surface);

@@ -747,7 +747,7 @@ UT_ByteBuf *GOChartView::exportToPNG ()
 {
 	UT_return_val_if_fail (m_Graph, NULL);
 	UT_ByteBuf *pBuf = new UT_ByteBuf ();
-	int w = width * 300 / UT_LAYOUT_RESOLUTION, h = height * 300 * UT_LAYOUT_RESOLUTION;
+	int w = width * 300 / UT_LAYOUT_RESOLUTION, h = height * 300 / UT_LAYOUT_RESOLUTION;
 	cairo_surface_t *surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, w, h);
 	cairo_t *cr = cairo_create (surface);
 	gog_renderer_render_to_cairo (m_Renderer, cr, w, h);
@@ -763,7 +763,7 @@ UT_ByteBuf *GOChartView::exportToSVG ()
 	UT_return_val_if_fail (m_Graph, NULL);
 	UT_ByteBuf *pBuf = NULL; /*new UT_ByteBuf ();
 	cairo_surface_t *surface = cairo_svg_surface_create_for_stream (
-										reinterpret_cast<cairo_write_func_t>(UT_ByteBuf::CairoWrite),
+										reinterpret_cast<cairo_write_func_t>(abi_CairoWrite),
 										pBuf, width, height);
 	cairo_t *cr = cairo_create (surface);
 	cairo_surface_destroy (surface);
