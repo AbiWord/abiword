@@ -779,9 +779,7 @@ private:
 	bool HandleAbiEndCell(void);
 	bool HandleAbiLists(void);
 	bool HandleAbiMathml(void);
-	bool HandleAbiMathmlData(void);
-	bool CreateDataItemfromSteam(void);
-	bool HandleAbiLatexData(void);
+	bool CreateDataItemfromStream(void);
 	bool HandleAbiEmbed(void);
 	bool isPastedTableOpen(void);
 	bool markPasteBlock(void);

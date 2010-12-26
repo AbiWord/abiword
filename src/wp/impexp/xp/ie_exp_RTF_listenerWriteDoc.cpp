@@ -2428,7 +2428,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 				UT_DEBUGMSG(("RTF_Export: cannot get dataitem for math\n"));
 				return;
 			}
-		        m_pie->_rtf_open_brace();
+		    m_pie->_rtf_open_brace();
 			m_pie->_rtf_keyword("*");
 			m_pie->_rtf_keyword("abimathmldata ");
 			buf = pszDataId;
@@ -2480,6 +2480,20 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			m_pie->_rtf_close_brace();
 		 }
 		 //
+		 // Now export the snapshot associated with this
+		 //
+		 std::string sMime, sSnapshot = std::string("snapshot-svg-") + pszDataId;
+         bFoundDataItem = m_pDocument->getDataItemDataByName(sSnapshot.c_str(),
+                                                             &pbb, &sMime, NULL);
+		 if (!bFoundDataItem)
+		 {
+			 sSnapshot = std::string("snapshot-png-") + pszDataId;
+    		 bFoundDataItem = m_pDocument->getDataItemDataByName(sSnapshot.c_str(),
+	          	                                                 &pbb, &sMime, NULL);
+		 }
+		 if (bFoundDataItem)
+			_writeEmbedData (sSnapshot, pbb, sMime);
+		 //
 		 // Now export math codes into the RTF stream
 		 //
 		 m_pie->_rtf_open_brace();
@@ -2522,13 +2536,63 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 	 else if(strcmp(szPrefix,"embed") == 0)
 	 {
 		 const PP_AttrProp * pSpanAP = NULL;
-		 const gchar * pszDataId = NULL;
+		 const gchar * pszDataId = NULL, * pszOrigDataId = NULL;
 		 m_pDocument->getAttrProp(api, &pSpanAP);
 		 pSpanAP->getAttribute("dataid", pszDataId);
 		 UT_UTF8String sProps;
 		 if(pszDataId == NULL)
 		 {
 			 return;
+		 }
+		 //
+		 // Export the data associated with this
+		 //
+		 const UT_ByteBuf * pbb = NULL;
+		 bool bFoundDataItem = false;
+		 UT_String buf;
+		 UT_UTF8String sUID;
+		 std::string mime_type;
+		bFoundDataItem = m_pDocument->getDataItemDataByName(static_cast<const char*>(pszDataId),
+                                                            &pbb,
+                                                            &mime_type,
+                                                            NULL);
+		if (!bFoundDataItem)
+		{
+			UT_DEBUGMSG(("RTF_Export: cannot get dataitem for embedded object\n"));
+			return;
+		}
+		// we need unique IDs, old objects were created with simple IDs
+		pszOrigDataId = pszDataId;
+		if (strncmp(pszDataId, "obj-", 4))
+		{
+			UT_UTF8String s;
+			UT_UUID *uuid = m_pDocument->getNewUUID();
+			UT_return_if_fail(uuid != NULL);
+			sUID = "obj-";
+			uuid->toString(s);
+			sUID += s;
+			pszDataId = static_cast <const char *>(sUID.utf8_str());
+		}
+		_writeEmbedData (pszDataId, pbb, mime_type);
+
+		 //
+		 // Now export the snapshot associated with this
+		 //
+		 std::string sMime, sSnapshot = std::string("snapshot-svg-") + pszOrigDataId;
+         bFoundDataItem = m_pDocument->getDataItemDataByName(sSnapshot.c_str(),
+                                                             &pbb, &sMime, NULL);
+		 if (!bFoundDataItem)
+		 {
+			 sSnapshot = std::string("snapshot-png-") + pszOrigDataId;
+    		 bFoundDataItem = m_pDocument->getDataItemDataByName(sSnapshot.c_str(),
+	          	                                                 &pbb, &sMime, NULL);
+			 sSnapshot = std::string("snapshot-png-") + pszDataId;
+		 }
+		 else
+			 sSnapshot = std::string("snapshot-svg-") + pszDataId;
+		 if (bFoundDataItem)
+		 {
+			_writeEmbedData (sSnapshot, pbb, sMime);
 		 }
 		 m_pie->_rtf_open_brace();
 		 m_pie->_rtf_keyword("*");
@@ -2564,6 +2628,28 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 
 }
 
+void s_RTF_ListenerWriteDoc::_writeEmbedData (const std::string & Name, const UT_ByteBuf * pbb, const std::string & mime_type)
+{
+    m_pie->_rtf_open_brace();
+	m_pie->_rtf_keyword("*");
+	m_pie->_rtf_keyword("abiembeddata ");
+	UT_String buf = Name;
+	buf += " mime-type:";
+	buf += mime_type;
+	buf += " ";
+	m_pie->_rtf_chardata(buf.c_str(),buf.size());
+
+	UT_uint32 k, lenData = pbb->getLength();
+	const UT_Byte * pData = pbb->getPointer(0);
+	for (k=0; k<lenData; k++)
+	{
+		if (k%32==0)
+			m_pie->_rtf_nl();
+		UT_String_sprintf(buf,"%02x",pData[k]);
+		m_pie->_rtf_chardata(buf.c_str(),2);
+	}
+	m_pie->_rtf_close_brace();
+}
 
 /*!
  * This exports all the properties in a cell strux by extending rtf with

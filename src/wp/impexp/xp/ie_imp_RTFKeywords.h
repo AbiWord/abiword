@@ -11,6 +11,7 @@ _rtf_keyword rtfKeywords[] = {
 	{"abibotline", false, false, NO_CONTEXT, RTF_KW_abibotline }, 
 	{"abicellprops", false, false, NO_CONTEXT, RTF_KW_abicellprops }, 
 	{"abiembed", false, false, NO_CONTEXT, RTF_KW_abiembed }, 
+	{"abiembeddata", false, false, NO_CONTEXT, RTF_KW_abiembeddata }, 
 	{"abiendcell", false, false, NO_CONTEXT, RTF_KW_abiendcell }, 
 	{"abiendtable", false, false, NO_CONTEXT, RTF_KW_abiendtable }, 
 	{"abifieldD", false, false, NO_CONTEXT, RTF_KW_abifieldD }, 

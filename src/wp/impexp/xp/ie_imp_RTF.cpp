@@ -5835,13 +5835,16 @@ bool IE_Imp_RTF::HandleStarKeyword()
 					return HandleAbiMathml();
 					break;
 				case RTF_KW_abimathmldata:
-					return HandleAbiMathmlData();
+					return CreateDataItemfromStream();
 					break;
 				case RTF_KW_abilatexdata:
-					return HandleAbiLatexData();
+					return CreateDataItemfromStream();
 					break;
 				case RTF_KW_abiembed:
 					return HandleAbiEmbed();
+					break;
+				case RTF_KW_abiembeddata:
+					return CreateDataItemfromStream();
 					break;
 				case RTF_KW_shppict:
 					UT_DEBUGMSG (("handling shppict\n"));
@@ -9868,22 +9871,8 @@ bool IE_Imp_RTF::HandleAbiMathml(void)
 	}
 	return true;
 }
-//
-// Now import the MathML data object into the PT
-//
-bool IE_Imp_RTF::HandleAbiMathmlData(void)
-{
-	return CreateDataItemfromSteam();
-}
-//
-// Now import the Latex data object into the PT
-//
-bool IE_Imp_RTF::HandleAbiLatexData(void)
-{
-	return CreateDataItemfromSteam();
-}
 
-bool IE_Imp_RTF::CreateDataItemfromSteam(void)
+bool IE_Imp_RTF::CreateDataItemfromStream(void)
 {
 	UT_UTF8String sName;
 	unsigned char ch;
@@ -9910,6 +9899,38 @@ bool IE_Imp_RTF::CreateDataItemfromSteam(void)
 	{
 		if (!ReadCharFromFile(&ch))
 			return false;
+	}
+	//
+	// read the mime type if any
+	//
+	std::string mime;
+	if (ch == 'm')
+	{
+		while(ch != ' ' && ch != ':')
+		{
+			mime += ch;
+			if (!ReadCharFromFile(&ch))
+				return false;
+		}
+		if (mime != "mime-type")
+			return false;
+		if (!ReadCharFromFile(&ch))
+			return false;
+		mime = "";
+		while(ch != ' ')
+		{
+			mime += ch;
+			if (!ReadCharFromFile(&ch))
+				return false;
+		}
+		//
+		// skip trailing spaces
+		//
+		while(ch == ' ')
+		{
+			if (!ReadCharFromFile(&ch))
+				return false;
+		}
 	}
 	//
 	// We're at the start of the data item. 
@@ -9960,7 +9981,7 @@ bool IE_Imp_RTF::CreateDataItemfromSteam(void)
 	// Now create the data item from the RTF data stream
 	//
 	
-	retval = getDoc()->createDataItem(sName.utf8_str(),false,&BinData,"",NULL);
+	retval = getDoc()->createDataItem(sName.utf8_str(),false,&BinData,mime,NULL);
 	return retval;
 
 }
@@ -9994,34 +10015,54 @@ bool IE_Imp_RTF::HandleAbiEmbed(void)
 	UT_UTF8String_removeProperty(sProps,sPropName);
 	attrs[2]= "props";
 	attrs[3] = sProps.utf8_str();
-
-	getDoc()->getUID(UT_UniqueId::Image); // Increment the image uid counter
-	if(bUseInsertNotAppend())
+	bool ok = FlushStoredChars(true);
+	UT_return_val_if_fail (ok, false);
+	if (!bUseInsertNotAppend() || m_bAppendAnyway)
 	{
-		if(getDoc()->isFrameAtPos(m_dposPaste-1) || getDoc()->isTableAtPos(m_dposPaste-1) || getDoc()->isCellAtPos(m_dposPaste-1))
+		UT_DEBUGMSG(("SEVIOR: Appending Embedded Object m_bCellBlank %d m_bEndTableOpen %d \n",m_bCellBlank,m_bEndTableOpen));
+		if(m_bCellBlank || m_bEndTableOpen)
 		{
-			getDoc()->insertStrux(m_dposPaste,PTX_Block);
-			m_dposPaste++;
-			if(m_posSavedDocPosition > 0)
-				m_posSavedDocPosition++;
+			UT_DEBUGMSG(("Append block 5 \n"));
+			if(m_pDelayedFrag)
+			{
+				getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,NULL);
+			}
+			else
+			{
+				getDoc()->appendStrux(PTX_Block,NULL);
+			}
+			m_bCellBlank = false;
+			m_bEndTableOpen = false;
 		}
-
-		getDoc()->insertObject(m_dposPaste, PTO_Embed, attrs,NULL);
+		if(m_pDelayedFrag)
+	    {
+			getDoc()->insertObjectBeforeFrag(m_pDelayedFrag,PTO_Embed, attrs);
+		}
+		else
+		{
+			getDoc()->appendObject(PTO_Embed, attrs);
+		}
+	}
+	else
+	{
+		XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+		if(pFrame == NULL)
+		{
+			 m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+			 return true;
+		}
+		FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
+		if(pView == NULL)
+		{
+			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+			return true;
+		}
+		getDoc()->insertObject(m_dposPaste, PTO_Embed, attrs, NULL);
 		m_dposPaste++;
 		if(m_posSavedDocPosition > 0)
 			m_posSavedDocPosition++;
 	}
-	else
-	{
-			if(m_pDelayedFrag)
-			{
-				getDoc()->insertObjectBeforeFrag(m_pDelayedFrag,PTO_Embed,attrs);
-			}
-			else
-			{
-				getDoc()->appendObject(PTO_Embed,attrs);
-			}
-	}
+
 	return true;
 }
 
