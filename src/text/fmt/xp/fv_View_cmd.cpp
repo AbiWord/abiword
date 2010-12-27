@@ -5695,7 +5695,7 @@ bool FV_View::cmdInsertMathML(const char * szUID,PT_DocPosition pos)
  * eg for a GNOME-Office chart we'll have MIME-TYPE "application/chart+xml"
  * and sProps="embed-type: GOChart";
  */
-bool FV_View::cmdInsertEmbed(UT_ByteBuf * pBuf,PT_DocPosition pos,const char * szMime,const char * szProps)
+bool FV_View::cmdInsertEmbed(const UT_ByteBuf * pBuf,PT_DocPosition pos,const char * szMime,const char * szProps)
 {
 
 	const gchar * atts[7]={"dataid",NULL,"props",NULL,NULL,NULL,NULL};
@@ -5780,7 +5780,7 @@ bool FV_View::cmdInsertEmbed(UT_ByteBuf * pBuf,PT_DocPosition pos,const char * s
  * eg for a GNOME-Office chart we'll have MIME-TYPE "application/chart+xml"
  * and sProps="embed-type: GOChart";
  */
-bool FV_View::cmdUpdateEmbed(UT_ByteBuf * pBuf, const char * szMime, const char * szProps)
+bool FV_View::cmdUpdateEmbed(const UT_ByteBuf * pBuf, const char * szMime, const char * szProps)
 {
 	if (isSelectionEmpty())
 	{
@@ -5887,7 +5887,7 @@ bool FV_View::cmdUpdateEmbed(UT_ByteBuf * pBuf, const char * szMime, const char 
  * eg for a GNOME-Office chart we'll have MIME-TYPE "application/chart+xml"
  * and sProps="embed-type: GOChart";
  */
-bool FV_View::cmdUpdateEmbed(fp_Run * pRun, UT_ByteBuf * pBuf, const char * szMime, const char * szProps)
+bool FV_View::cmdUpdateEmbed(fp_Run * pRun, const UT_ByteBuf * pBuf, const char * szMime, const char * szProps)
 {
 	if(pRun == NULL || pRun->getType() != FPRUN_EMBED)
 	{
