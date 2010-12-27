@@ -50,11 +50,16 @@ public:
 	virtual UT_UTF8String					getDisplayType();
 	
 	// dialog management 
-	virtual void							storeProperties();
 	virtual void							embedDialogWidgets(void* /*pEmbeddingParent*/)
 		{ UT_ASSERT_HARMLESS(UT_NOT_REACHED); }
 	virtual void							removeDialogWidgets(void* /*pEmbeddingParent*/)
 		{ UT_ASSERT_HARMLESS(UT_NOT_REACHED); }
+	virtual bool							canDelete()
+		{ return false; }
+	virtual bool							canEditProperties()
+		{ return false; }
+	virtual void							loadProperties();
+	virtual void							storeProperties();
 
 	// connection management
 	virtual ConnectResult					connect();

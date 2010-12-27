@@ -31,6 +31,11 @@
 #include "pp_Author.h"
 #include <set>
 
+bool AccountHandler::hasProperty(const string& key)
+{
+	return m_properties.find(key) != m_properties.end();
+}
+
 const string AccountHandler::getProperty(const string& key)
 { 
 	PropertyMap::iterator pos = m_properties.find(key);

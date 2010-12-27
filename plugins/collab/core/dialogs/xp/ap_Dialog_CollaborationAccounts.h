@@ -40,6 +40,7 @@ public:
 
 	virtual void		runModal(XAP_Frame * pFrame) = 0;
 	void				createNewAccount();
+	void				createEditAccount(AccountHandler* pHandler);
 
 	typedef enum { a_CLOSE } tAnswer;
 

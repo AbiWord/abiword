@@ -48,6 +48,7 @@ private:
 	void				_populateWindowData(void);
 	GtkListStore*		_constructModel();
 	void				_setModel(GtkListStore* model);
+	AccountHandler*		_getSelectedAccountHandler();
 
 	GtkWidget*			m_wWindowMain;
 	GtkWidget*			m_wAdd;

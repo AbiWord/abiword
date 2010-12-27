@@ -64,6 +64,7 @@
 #include <dialogs/xp/ap_Dialog_CollaborationJoin.h>
 #include <dialogs/xp/ap_Dialog_CollaborationAccounts.h>
 #include <dialogs/xp/ap_Dialog_CollaborationAddAccount.h>
+#include <dialogs/xp/ap_Dialog_CollaborationEditAccount.h>
 #include <dialogs/xp/ap_Dialog_CollaborationAddBuddy.h>
 
 // packet includes
@@ -224,6 +225,7 @@ AbiCollabSessionManager::AbiCollabSessionManager(void)
 	m_iDialogJoin(0),
 	m_iDialogAccounts(0),
 	m_iDialogAddAccount(0),
+	m_iDialogEditAccount(0),
 	m_iDialogAddBuddy(0)
 {
 	m_pManager = this;
@@ -244,6 +246,7 @@ bool AbiCollabSessionManager::registerDialogs(void)
 	m_iDialogJoin = pFactory->registerDialog(ap_Dialog_CollaborationJoin_Constructor, XAP_DLGT_NON_PERSISTENT);
 	m_iDialogAccounts = pFactory->registerDialog(ap_Dialog_CollaborationAccounts_Constructor, XAP_DLGT_NON_PERSISTENT);
 	m_iDialogAddAccount = pFactory->registerDialog(ap_Dialog_CollaborationAddAccount_Constructor, XAP_DLGT_NON_PERSISTENT);
+	m_iDialogEditAccount = pFactory->registerDialog(ap_Dialog_CollaborationEditAccount_Constructor, XAP_DLGT_NON_PERSISTENT);
 	m_iDialogAddBuddy = pFactory->registerDialog(ap_Dialog_CollaborationAddBuddy_Constructor, XAP_DLGT_NON_PERSISTENT);	
 	return true;
 }
@@ -316,6 +319,7 @@ bool AbiCollabSessionManager::unregisterDialogs(void)
 	pFactory->unregisterDialog(m_iDialogJoin);
 	pFactory->unregisterDialog(m_iDialogAccounts);
 	pFactory->unregisterDialog(m_iDialogAddAccount);
+	pFactory->unregisterDialog(m_iDialogEditAccount);
 	pFactory->unregisterDialog(m_iDialogAddBuddy);	
 	return true;
 }

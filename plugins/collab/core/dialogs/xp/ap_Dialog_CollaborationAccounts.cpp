@@ -23,6 +23,7 @@
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
 #include "ap_Dialog_CollaborationAddAccount.h"
+#include "ap_Dialog_CollaborationEditAccount.h"
 #include <account/xp/AccountHandler.h>
 
 #include "ap_Dialog_CollaborationAccounts.h"
@@ -89,6 +90,35 @@ void AP_Dialog_CollaborationAccounts::createNewAccount()
 		else
 		{
 			UT_DEBUGMSG(("No account handler selected, ignoring...\n"));
+		}
+	}
+	pFactory->releaseDialog(pDialog);
+}
+
+void AP_Dialog_CollaborationAccounts::createEditAccount(AccountHandler* pHandler)
+{
+	UT_return_if_fail(pHandler);
+
+	// Get the current view that the user is in.
+	XAP_Frame* pFrame = XAP_App::getApp()->getLastFocussedFrame();
+	// Get an Accounts dialog instance
+	XAP_DialogFactory* pFactory = static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
+	UT_return_if_fail(pFactory);
+	AP_Dialog_CollaborationEditAccount* pDialog = static_cast<AP_Dialog_CollaborationEditAccount*>(
+				pFactory->requestDialog(AbiCollabSessionManager::getManager()->getDialogEditAccountId())
+			);
+
+	pDialog->setAccountHandler(pHandler);
+
+	// Run the dialog
+	pDialog->runModal(pFrame);
+	if (pDialog->getAnswer() == AP_Dialog_CollaborationEditAccount::a_OK)
+	{
+		// make the new properties go into effect if possible
+		if (pHandler->isOnline())
+		{
+			pHandler->disconnect();
+			pHandler->connect();
 		}
 	}
 	pFactory->releaseDialog(pDialog);

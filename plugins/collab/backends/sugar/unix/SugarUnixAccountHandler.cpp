@@ -74,6 +74,12 @@ UT_UTF8String SugarAccountHandler::getStaticStorageType()
 	return SUGAR_STATIC_STORAGE_TYPE;
 }
 
+void SugarAccountHandler::loadProperties()
+{
+	// no need to implement this as we will be getting
+	// all our info always directly from sugar
+}
+
 void SugarAccountHandler::storeProperties()
 {
 	// no need to implement this as we will be getting

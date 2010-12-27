@@ -16,6 +16,7 @@
  * 02111-1307, USA.
  */
 
+#include "boost/lexical_cast.hpp"
 #include "TCPUnixAccountHandler.h"
 
 AccountHandlerConstructor TCPAccountHandlerConstructor = &TCPUnixAccountHandler::static_constructor;
@@ -83,7 +84,6 @@ void TCPUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	gtk_misc_set_alignment(GTK_MISC(port_label), 0, 0.5);
 	gtk_box_pack_start(GTK_BOX(portHBox), port_label, false, false, 0);	
 	port_button = gtk_spin_button_new_with_range(1, 65536, 1);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(port_button), DEFAULT_TCP_PORT);
 	gtk_box_pack_start(GTK_BOX(portHBox), port_button, false, false, 0);
 	gtk_box_pack_start(GTK_BOX(vbox), portHBox, false, false, 0);
 	
@@ -93,7 +93,6 @@ void TCPUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	
 	// autoconnect
 	autoconnect_button = gtk_check_button_new_with_label("Connect on application startup");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(autoconnect_button), true);
 	gtk_box_pack_start(GTK_BOX(vbox), autoconnect_button, TRUE, TRUE, 0);
 	
 	gtk_box_pack_start(GTK_BOX(parent), vbox, FALSE, FALSE, 0);
@@ -117,23 +116,56 @@ void TCPUnixAccountHandler::removeDialogWidgets(void* pEmbeddingParent)
 		gtk_widget_destroy(vbox);
 }
 
+void TCPUnixAccountHandler::loadProperties()
+{
+	UT_DEBUGMSG(("TCPUnixAccountHandler::loadProperties()\n"));
+
+	bool serve = getProperty("server") == "";
+
+	if (server_button && GTK_IS_TOGGLE_BUTTON(server_button))
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(server_button), serve);
+
+	if (client_button && GTK_IS_TOGGLE_BUTTON(client_button))
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(client_button), !serve);
+
+	if (server_entry && GTK_IS_ENTRY(server_entry))
+		gtk_entry_set_text(GTK_ENTRY(server_entry), getProperty("server").c_str());
+
+	int port = DEFAULT_TCP_PORT;
+	try {
+		if (hasProperty("port"))
+			port = boost::lexical_cast<int>(getProperty("port"));
+	} catch (boost::bad_lexical_cast &) {
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+	}
+	if (port_button && GTK_IS_ENTRY(port_button))
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(port_button), port);
+
+	if (allow_all_button && GTK_IS_TOGGLE_BUTTON(allow_all_button))
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(allow_all_button), hasProperty("allow-all") ? getProperty("allow-all") == "true" : false);
+
+	bool autoconnect = hasProperty("autoconnect") ? getProperty("autoconnect") == "true" : true;
+	if (autoconnect_button && GTK_IS_TOGGLE_BUTTON(autoconnect_button))
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(autoconnect_button), autoconnect);
+}
+
 void TCPUnixAccountHandler::storeProperties()
 {
 	UT_DEBUGMSG(("TCPUnixAccountHandler::storeProperties()\n"));
 	
 	bool serve = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(server_button));
-	if (!serve)
+	if (server_entry && GTK_IS_ENTRY(server_entry))
 	{
-		if (server_entry && GTK_IS_ENTRY(server_entry))
-			addProperty("server", gtk_entry_get_text(GTK_ENTRY(server_entry)));
+		// simply clear the server field if we are are hosting this session
+		addProperty("server", serve ? "" : gtk_entry_get_text(GTK_ENTRY(server_entry)));
 	}
 	
 	if (port_button && GTK_IS_ENTRY(port_button))
-			addProperty("port", gtk_entry_get_text(GTK_ENTRY(port_button)));	
+		addProperty("port", gtk_entry_get_text(GTK_ENTRY(port_button)));
 		
 	if (allow_all_button && GTK_IS_TOGGLE_BUTTON(allow_all_button))
 		addProperty("allow-all", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(allow_all_button)) ? "true" : "false" );
-			
+
 	if (autoconnect_button && GTK_IS_TOGGLE_BUTTON(autoconnect_button))
 		addProperty("autoconnect", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(autoconnect_button)) ? "true" : "false" );
 }

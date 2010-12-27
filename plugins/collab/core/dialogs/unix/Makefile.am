@@ -16,6 +16,8 @@ libunix_la_SOURCES = \
 	ap_UnixDialog_CollaborationAddAccount.h \
 	ap_UnixDialog_CollaborationAddBuddy.cpp \
 	ap_UnixDialog_CollaborationAddBuddy.h \
+	ap_UnixDialog_CollaborationEditAccount.cpp \
+	ap_UnixDialog_CollaborationEditAccount.h \
 	ap_UnixDialog_CollaborationJoin.cpp \
 	ap_UnixDialog_CollaborationJoin.h \
 	ap_UnixDialog_CollaborationShare.cpp \
@@ -26,6 +28,7 @@ ui_DATA = \
 	ap_UnixDialog_CollaborationAccounts.xml \
 	ap_UnixDialog_CollaborationAddAccount.xml \
 	ap_UnixDialog_CollaborationAddBuddy.xml \
+	ap_UnixDialog_CollaborationEditAccount.xml \
 	ap_UnixDialog_CollaborationJoin.xml \
 	ap_UnixDialog_CollaborationShare.xml
 

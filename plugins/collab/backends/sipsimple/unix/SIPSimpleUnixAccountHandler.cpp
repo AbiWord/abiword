@@ -70,7 +70,6 @@ void SIPSimpleUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 
 	// autoconnect
 	autoconnect_button = gtk_check_button_new_with_label ("Connect on application startup");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(autoconnect_button), true);
 	gtk_table_attach_defaults(GTK_TABLE(table), autoconnect_button, 0, 2, 3, 4);
 	
 	gtk_box_pack_start(GTK_BOX(parent), table, false, TRUE, 0);
@@ -84,6 +83,22 @@ void SIPSimpleUnixAccountHandler::removeDialogWidgets(void* /*pEmbeddingParent*/
 	// this will conveniently destroy all contained widgets as well
 	if (table && GTK_IS_WIDGET(table))
 		gtk_widget_destroy(table);
+}
+
+void SIPSimpleUnixAccountHandler::loadProperties()
+{
+	if (address_entry && GTK_IS_ENTRY(address_entry))
+		gtk_entry_set_text(GTK_ENTRY(address_entry), getProperty("address").c_str());
+
+	if (password_entry && GTK_IS_ENTRY(password_entry))
+		gtk_entry_set_text(GTK_ENTRY(password_entry), getProperty("password").c_str());
+
+	if (proxy_entry && GTK_IS_ENTRY(proxy_entry))
+		gtk_entry_set_text(GTK_ENTRY(proxy_entry), getProperty("outbound-proxy").c_str());
+
+	bool autoconnect = hasProperty("autoconnect") ? getProperty("autoconnect") == "true" : true;
+	if (autoconnect_button && GTK_IS_TOGGLE_BUTTON(autoconnect_button))
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(autoconnect_button), autoconnect);
 }
 
 void SIPSimpleUnixAccountHandler::storeProperties()

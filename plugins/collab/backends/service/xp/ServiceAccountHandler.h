@@ -82,7 +82,6 @@ public:
 
 	// dialog management 
 	virtual UT_UTF8String					getShareHint(PD_Document* pDoc);
-	virtual void							storeProperties();
 	static XAP_Dialog_Id					getDialogGenericInputId();
 	static XAP_Dialog_Id					getDialogGenericProgressId();
 

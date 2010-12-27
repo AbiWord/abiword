@@ -203,11 +203,6 @@ UT_UTF8String ServiceAccountHandler::getShareHint(PD_Document* pDoc)
 	return UT_UTF8String_sprintf("Your document will automatically be uploaded\nto %s", server.c_str());
 }
 
-void ServiceAccountHandler::storeProperties()
-{
-	UT_DEBUGMSG(("ServiceAccountHandler::storeProperties() - TODO: implement me\n"));
-}
-
 XAP_Dialog_Id ServiceAccountHandler::getDialogGenericInputId()
 {
 	// register the generic input dialog if we haven't already done that

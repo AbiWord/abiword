@@ -256,6 +256,23 @@ void AP_UnixDialog_CollaborationAccounts::_setModel(GtkListStore* model)
 	eventSelectAccount();
 }
 
+AccountHandler* AP_UnixDialog_CollaborationAccounts::_getSelectedAccountHandler()
+{
+	GtkTreeIter iter;
+	GtkTreeSelection* selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(m_wAccountsTree));
+
+	bool hasSelection = gtk_tree_selection_get_selected (selection, 0, &iter);
+	if (!hasSelection)
+		return NULL;
+
+	gpointer* ptr_data;
+	gtk_tree_model_get(GTK_TREE_MODEL(m_wModel), &iter,
+						HANDLER_COLUMN, &ptr_data,
+						-1);
+
+	return reinterpret_cast<AccountHandler*>(ptr_data);
+}
+
 void AP_UnixDialog_CollaborationAccounts::eventAdd()
 {
 	createNewAccount();
@@ -266,70 +283,40 @@ void AP_UnixDialog_CollaborationAccounts::eventAdd()
 void AP_UnixDialog_CollaborationAccounts::eventProperties()
 {
 	UT_DEBUGMSG(("AP_UnixDialog_CollaborationAccounts::eventProperties()\n"));
+	AccountHandler* pHandler = _getSelectedAccountHandler();
+	UT_return_if_fail(pHandler);
+	createEditAccount(pHandler);
 
-	GtkTreeIter iter;
-	GtkTreeSelection* selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(m_wAccountsTree));
-	
-	bool hasSelection = gtk_tree_selection_get_selected (selection, 0, &iter);
-	if (hasSelection)
-	{
-		UT_DEBUGMSG(("An account handler is selected!\n"));
-	}
-	else
-	{
-		UT_DEBUGMSG(("No account handler selected!\n"));
-	}
+	// refresh the model, since the name of an account might have changed
+	_setModel(_constructModel());
 }
 
 void AP_UnixDialog_CollaborationAccounts::eventDelete()
 {
 	UT_DEBUGMSG(("AP_UnixDialog_CollaborationAccounts::eventDelete()\n"));
+	AccountHandler* pHandler = _getSelectedAccountHandler();
+	UT_return_if_fail(pHandler);
 
-	GtkTreeIter iter;
-	GtkTreeSelection* selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(m_wAccountsTree));
-	
-	bool hasSelection = gtk_tree_selection_get_selected (selection, 0, &iter);
-	if (hasSelection)
-	{
-//		gchar * str_desc_data;
-//		gchar * str_type_data;
-		gpointer* ptr_data;
-		AccountHandler* pHandler = 0;
+	// TODO: we should ask for confirmation, as this account handler
+	//		 could be in use by serveral AbiCollab Sessions
+	UT_DEBUGMSG(("Delete account: %s of type %s\n",
+			pHandler->getDescription().utf8_str(),
+			pHandler->getDisplayType().utf8_str()
+		));
 
-		gtk_tree_model_get (GTK_TREE_MODEL(m_wModel), &iter, 
-                          HANDLER_COLUMN, &ptr_data,
-                          -1);		
-		
-		pHandler = reinterpret_cast<AccountHandler*>(ptr_data);
-		if (pHandler)
-		{
-			// TODO: we should ask for confirmation, as this account handler
-			//		 could be in use by serveral AbiCollab Sessions
-			UT_DEBUGMSG(("Delete account: %s of type %s\n", 
-					pHandler->getDescription().utf8_str(), 
-					pHandler->getDisplayType().utf8_str()
-				));
-			
-			_deleteAccount(pHandler);
-			
-			// for now, recreate the whole model; but we should really just delete
-			// the iter we got above
-			_setModel(_constructModel());
-		}
-	}
-	else
-	{
-		UT_DEBUGMSG(("No account handler selected!\n"));
-	}
+	_deleteAccount(pHandler);
+
+	// for now, recreate the whole model; but we should really just delete
+	// the iter we got above
+	_setModel(_constructModel());
 }
 
 void AP_UnixDialog_CollaborationAccounts::eventSelectAccount()
 {
 	UT_DEBUGMSG(("AP_UnixDialog_CollaborationAccounts::eventSelectAccount()\n"));
-	GtkTreeSelection* selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(m_wAccountsTree));
-	bool hasSelection = gtk_tree_selection_get_selected (selection, 0, 0);
-	gtk_widget_set_sensitive(m_wProperties, /*hasSelection*/ false); // disable this button until we implement it
-	gtk_widget_set_sensitive(m_wDelete, hasSelection);
+	AccountHandler* pHandler = _getSelectedAccountHandler();
+	gtk_widget_set_sensitive(m_wProperties, pHandler != NULL && pHandler->canEditProperties());
+	gtk_widget_set_sensitive(m_wDelete, pHandler != NULL && pHandler->canDelete());
 }
 
 void AP_UnixDialog_CollaborationAccounts::eventOnline(AccountHandler* pHandler, bool online)

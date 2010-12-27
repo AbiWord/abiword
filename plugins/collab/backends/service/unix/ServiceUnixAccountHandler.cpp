@@ -68,7 +68,6 @@ void ServiceUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 
 	// autoconnect
 	autoconnect_button = gtk_check_button_new_with_label ("Connect on application startup");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(autoconnect_button), true);
 	gtk_table_attach_defaults(GTK_TABLE(table), autoconnect_button, 0, 2, 2, 3);
 
 	// register
@@ -81,17 +80,14 @@ void ServiceUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	gtk_misc_set_alignment(GTK_MISC(uri_label), 0, 0.5);
 	gtk_table_attach_defaults(GTK_TABLE(table), uri_label, 0, 1, 4, 5);
 	uri_entry = gtk_entry_new();
-	gtk_entry_set_text(GTK_ENTRY(uri_entry), "https://abicollab.net/soap/");
 	gtk_table_attach_defaults(GTK_TABLE(table), uri_entry, 1, 2, 4, 5);
 
 	// check webapp hostname
-	verify_webapp_host_button = gtk_check_button_new_with_label ("Verify WebApp hostname:");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(verify_webapp_host_button), true);
+	verify_webapp_host_button = gtk_check_button_new_with_label ("Verify WebApp hostname");
 	gtk_table_attach_defaults(GTK_TABLE(table), verify_webapp_host_button, 0, 2, 5, 6);
 
 	// check realm hostname
-	verify_realm_host_button = gtk_check_button_new_with_label ("Verify Realm hostname:");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(verify_realm_host_button), false);
+	verify_realm_host_button = gtk_check_button_new_with_label ("Verify Realm hostname");
 	gtk_table_attach_defaults(GTK_TABLE(table), verify_realm_host_button, 0, 2, 6, 7);
 #endif
 	
@@ -109,9 +105,38 @@ void ServiceUnixAccountHandler::removeDialogWidgets(void* pEmbeddingParent)
 		gtk_widget_destroy(table);
 }
 
+void ServiceUnixAccountHandler::loadProperties()
+{
+	UT_DEBUGMSG(("ServiceUnixAccountHandler::loadProperties()\n"));
+
+	if (username_entry && GTK_IS_ENTRY(username_entry))
+		gtk_entry_set_text(GTK_ENTRY(username_entry), getProperty("email").c_str());
+
+	if (password_entry && GTK_IS_ENTRY(password_entry))
+		gtk_entry_set_text(GTK_ENTRY(password_entry), getProperty("password").c_str());
+
+	bool autoconnect = hasProperty("autoconnect") ? getProperty("autoconnect") == "true" : true;
+	if (autoconnect_button && GTK_IS_TOGGLE_BUTTON(autoconnect_button))
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(autoconnect_button), autoconnect);
+
+#ifdef DEBUG
+	std::string uri = hasProperty("uri") ? getProperty("uri").c_str() : "https://abicollab.net/soap/";
+	if (uri_entry && GTK_IS_ENTRY(uri_entry))
+		gtk_entry_set_text(GTK_ENTRY(uri_entry), uri.c_str());
+
+	bool verify_webapp_host = hasProperty("verify-webapp-host") ? getProperty("verify-webapp-host") == "true" : true;
+	if (verify_webapp_host_button && GTK_IS_TOGGLE_BUTTON(verify_webapp_host_button))
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(verify_webapp_host_button), verify_webapp_host);
+
+	bool verify_realm_host = hasProperty("verify-realm-host") ? getProperty("verify-realm-host") == "true" : false;
+	if (verify_realm_host_button && GTK_IS_TOGGLE_BUTTON(verify_realm_host_button))
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(verify_realm_host_button), verify_realm_host);
+#endif
+}
+
 void ServiceUnixAccountHandler::storeProperties()
 {
-	UT_DEBUGMSG(("ServiceUnixAccountHandler::storeProperties()\n"));	
+	UT_DEBUGMSG(("ServiceUnixAccountHandler::storeProperties()\n"));
 
 	if (username_entry && GTK_IS_ENTRY(username_entry))
 		addProperty("email", gtk_entry_get_text(GTK_ENTRY(username_entry)));
@@ -120,7 +145,10 @@ void ServiceUnixAccountHandler::storeProperties()
 		addProperty("password", gtk_entry_get_text(GTK_ENTRY(password_entry)));
 	
 	if (autoconnect_button && GTK_IS_TOGGLE_BUTTON(autoconnect_button))
-		addProperty("autoconnect", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(autoconnect_button)) ? "true" : "false" );		
+	{
+		addProperty("autoconnect", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(autoconnect_button)) ? "true" : "false" );
+		printf(">>> AUTOCONNECT SET TO: %s\n", getProperty("autoconnect").c_str());
+	}
 
 #ifdef DEBUG
 	if (uri_entry && GTK_IS_ENTRY(uri_entry))
@@ -131,8 +159,6 @@ void ServiceUnixAccountHandler::storeProperties()
 
 	if (verify_realm_host_button && GTK_IS_TOGGLE_BUTTON(verify_realm_host_button))
 		addProperty("verify-realm-host", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(verify_realm_host_button)) ? "true" : "false" );
-
-	addProperty("verify-realm-host", "false");
 #else
 	addProperty("uri", "https://abicollab.net/soap/");
 	addProperty("verify-webapp-host", "true");

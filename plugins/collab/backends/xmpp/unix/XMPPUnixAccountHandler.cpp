@@ -86,7 +86,6 @@ void XMPPUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	
 	// autoconnect
 	autoconnect_button = gtk_check_button_new_with_label ("Connect on application startup");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(autoconnect_button), true);
 	gtk_table_attach_defaults(GTK_TABLE(table), autoconnect_button, 0, 2, 5, 6);
 	
 	gtk_box_pack_start(GTK_BOX(parent), table, false, TRUE, 0);
@@ -103,6 +102,29 @@ void XMPPUnixAccountHandler::removeDialogWidgets(void* /*pEmbeddingParent*/)
 	// this will conveniently destroy all contained widgets as well
 	if (table && GTK_IS_WIDGET(table))
 		gtk_widget_destroy(table);
+}
+
+void XMPPUnixAccountHandler::loadProperties()
+{
+	if (username_entry && GTK_IS_ENTRY(username_entry))
+		gtk_entry_set_text(GTK_ENTRY(username_entry), getProperty("username").c_str());
+
+	if (password_entry && GTK_IS_ENTRY(password_entry))
+		gtk_entry_set_text(GTK_ENTRY(password_entry), getProperty("password").c_str());
+
+	if (server_entry && GTK_IS_ENTRY(server_entry))
+		gtk_entry_set_text(GTK_ENTRY(server_entry), getProperty("server").c_str());
+
+	if (port_entry && GTK_IS_ENTRY(server_entry))
+		gtk_entry_set_text(GTK_ENTRY(port_entry), getProperty("port").c_str());
+
+	bool tls = hasProperty("encryption") ? getProperty("encryption") == "true" : false;
+	if (lm_ssl_is_supported() && starttls_button && GTK_IS_TOGGLE_BUTTON(starttls_button))
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(starttls_button), tls);
+
+	bool autoconnect = hasProperty("autoconnect") ? getProperty("autoconnect") == "true" : true;
+	if (autoconnect_button && GTK_IS_TOGGLE_BUTTON(autoconnect_button))
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(autoconnect_button), autoconnect);
 }
 
 void XMPPUnixAccountHandler::storeProperties()

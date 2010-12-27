@@ -311,14 +311,19 @@ void muc_channel_ready_cb(GObject* source_object, GAsyncResult* result, gpointer
 }
 
 TelepathyAccountHandler::TelepathyAccountHandler()
-	: AccountHandler()
+	: AccountHandler(),
+	table(NULL),
+	conference_entry(NULL),
+	autoconnect_button(NULL),
+	m_pTpClient(NULL)
 {
 	UT_DEBUGMSG(("TelepathyAccountHandler::TelepathyAccountHandler()\n"));
 }
 
 TelepathyAccountHandler::~TelepathyAccountHandler()
 {
-	disconnect();
+	if (isOnline())
+		disconnect();
 }
 
 UT_UTF8String TelepathyAccountHandler::getDescription()
@@ -336,10 +341,63 @@ UT_UTF8String TelepathyAccountHandler::getStorageType()
 	return "com.abisource.abiword.abicollab.backend.telepathy";
 }
 
+void TelepathyAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
+{
+	UT_DEBUGMSG(("TelepathyAccountHandler::embedDialogWidgets()\n"));
+	UT_return_if_fail(pEmbeddingParent);
+
+	table = gtk_table_new(2, 2, FALSE);
+	GtkVBox* parent = (GtkVBox*)pEmbeddingParent;
+
+	// Jabber conference server
+	GtkWidget* conference_label = gtk_label_new("Jabber conference server:");
+	gtk_misc_set_alignment(GTK_MISC(conference_label), 0, 0.5);
+	gtk_table_attach_defaults(GTK_TABLE(table), conference_label, 0, 1, 0, 1);
+	conference_entry = gtk_entry_new();
+	gtk_table_attach_defaults(GTK_TABLE(table), conference_entry, 1, 2, 0, 1);
+	gtk_entry_set_activates_default(GTK_ENTRY(conference_entry), true);
+
+	// autoconnect
+	autoconnect_button = gtk_check_button_new_with_label ("Connect on application startup");
+	gtk_table_attach_defaults(GTK_TABLE(table), autoconnect_button, 0, 2, 1, 2);
+
+	gtk_box_pack_start(GTK_BOX(parent), table, FALSE, TRUE, 0);
+	gtk_widget_show_all(GTK_WIDGET(parent));
+}
+
+void TelepathyAccountHandler::removeDialogWidgets(void* pEmbeddingParent)
+{
+	UT_DEBUGMSG(("TelepathyAccountHandler::removeDialogWidgets()\n"));
+	UT_return_if_fail(pEmbeddingParent);
+
+	// this will conveniently destroy all contained widgets as well
+	if (table && GTK_IS_WIDGET(table))
+		gtk_widget_destroy(table);
+}
+
+void TelepathyAccountHandler::loadProperties()
+{
+	UT_DEBUGMSG(("TelepathyAccountHandler::loadProperties()\n"));
+
+	// TODO: don't default to Matt's server
+	std::string conference_server = hasProperty("conference_server") ? getProperty("conference_server") : "conference.matthewwild.co.uk";
+	if (conference_entry && GTK_IS_ENTRY(conference_entry))
+		gtk_entry_set_text(GTK_ENTRY(conference_entry), conference_server.c_str());
+
+	bool autoconnect = hasProperty("autoconnect") ? getProperty("autoconnect") == "true" : true;
+	if (autoconnect_button && GTK_IS_TOGGLE_BUTTON(autoconnect_button))
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(autoconnect_button), autoconnect);
+}
+
 void TelepathyAccountHandler::storeProperties()
 {
-	// no need to implement this as we will be getting
-	// all our info always directly from sugar
+	UT_DEBUGMSG(("TelepathyAccountHandler::storeProperties()\n"));
+
+	if (conference_entry && GTK_IS_ENTRY(conference_entry))
+		addProperty("conference_server", gtk_entry_get_text(GTK_ENTRY(conference_entry)));
+
+	if (autoconnect_button && GTK_IS_TOGGLE_BUTTON(autoconnect_button))
+		addProperty("autoconnect", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(autoconnect_button)) ? "true" : "false" );
 }
 
 ConnectResult TelepathyAccountHandler::connect()
@@ -349,6 +407,8 @@ ConnectResult TelepathyAccountHandler::connect()
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_val_if_fail(pManager, CONNECT_FAILED);
 
+	UT_return_val_if_fail(m_pTpClient == NULL, CONNECT_INTERNAL_ERROR);
+
 	// inform telepathy that we can handle incoming tubes on the
 	// com.abisource.com.abiword.abicollab.telepathy service
 
@@ -356,11 +416,11 @@ ConnectResult TelepathyAccountHandler::connect()
 	TpDBusDaemon* dbus = tp_dbus_daemon_dup (&error);
 	UT_return_val_if_fail(dbus, CONNECT_FAILED);
 
-	TpBaseClient* handler = tp_simple_handler_new(dbus,
+	m_pTpClient = tp_simple_handler_new(dbus,
 					TRUE, FALSE, "AbiCollabHandler", TRUE,
 					handle_dbus_channel, this, NULL);
 
-	tp_base_client_take_handler_filter(handler,
+	tp_base_client_take_handler_filter(m_pTpClient,
 					tp_asv_new (
 						TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING, TP_IFACE_CHANNEL_TYPE_DBUS_TUBE,
 						TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, G_TYPE_UINT, TP_HANDLE_TYPE_ROOM,
@@ -369,7 +429,7 @@ ConnectResult TelepathyAccountHandler::connect()
 					)
 				);
 
-	if (!tp_base_client_register(handler, &error))
+	if (!tp_base_client_register(m_pTpClient, &error))
 	{
 		UT_DEBUGMSG(("Error registering tube handler: %s", error->message));
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
@@ -389,8 +449,18 @@ ConnectResult TelepathyAccountHandler::connect()
 
 bool TelepathyAccountHandler::disconnect()
 {
+	UT_DEBUGMSG(("TelepathyAccountHandler::disconnect()\n"));
+	UT_return_val_if_fail(m_pTpClient, false);
+
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_val_if_fail(pManager, false);
+
+	// unregister as a telepathy client
+	tp_base_client_unregister(m_pTpClient);
+	m_pTpClient = NULL;
+
+	// tear down all active rooms
+	// TODO: implement me
 
 	// we are disconnected now, no need to receive events anymore
 	pManager->unregisterEventListener(this);
@@ -405,7 +475,7 @@ bool TelepathyAccountHandler::disconnect()
 
 bool TelepathyAccountHandler::isOnline()
 {
-	return true;
+	return m_pTpClient != NULL;
 }
 
 void TelepathyAccountHandler::getBuddiesAsync()
@@ -536,11 +606,18 @@ bool TelepathyAccountHandler::startSession(PD_Document* pDoc, const std::vector<
 	UT_return_val_if_fail(selected_account, false);
 	g_list_free(accounts);
 
+	// determine the room target id
+	std::string target_id = "abicollab4";
+	std::string conference_server = getProperty("conference_server");
+	if (conference_server != "")
+		target_id += "@" + conference_server;
+	UT_DEBUGMSG(("Using room target ID: %s\n", target_id.c_str()));
+
 	// create a MUC channel request
 	GHashTable* props = tp_asv_new (
 			TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING, TP_IFACE_CHANNEL_TYPE_DBUS_TUBE,
 			TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, TP_TYPE_HANDLE, TP_HANDLE_TYPE_ROOM,
-			TP_PROP_CHANNEL_TARGET_ID, G_TYPE_STRING, "abicollab4@conference.matthewwild.co.uk", /*target_id.utf8_str()*/
+			TP_PROP_CHANNEL_TARGET_ID, G_TYPE_STRING, target_id.c_str(),
 			TP_PROP_CHANNEL_TYPE_DBUS_TUBE_SERVICE_NAME, G_TYPE_STRING, INTERFACE,
 			/*
 			 * Enable TP_PROP_CHANNEL_INTERFACE_CONFERENCE_INITIAL_INVITEE_IDS if you want to use

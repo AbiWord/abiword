@@ -88,6 +88,7 @@ public:
 	
 	void									addProperty(const string& key, const string& value)
 		{ m_properties[key] = value; }
+	bool									hasProperty(const string& key);
 	const string							getProperty(const string& key);
 	PropertyMap&							getProperties()
 		{ return m_properties; }
@@ -96,6 +97,11 @@ public:
 	virtual UT_UTF8String					getShareHint(PD_Document* /*pDoc*/) { return ""; }
 	virtual void							embedDialogWidgets(void* pEmbeddingParent) = 0;
 	virtual void							removeDialogWidgets(void* pEmbeddingParent) = 0;
+	virtual bool							canDelete()
+		{ return true; }
+	virtual bool							canEditProperties()
+		{ return true; }
+	virtual void							loadProperties() = 0;
 	virtual void							storeProperties() = 0;
 	
 	#ifdef WIN32

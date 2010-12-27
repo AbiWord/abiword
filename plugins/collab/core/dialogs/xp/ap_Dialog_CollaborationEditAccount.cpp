@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 Marc Maurer <uwog@uwog.net>
+/* Copyright (C) 2010 AbiSource Corporation B.V.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,29 +24,21 @@
 #include "xap_DialogFactory.h"
 #include <session/xp/AbiCollabSessionManager.h>
 
-#include "ap_Dialog_CollaborationAddAccount.h"
+#include "ap_Dialog_CollaborationEditAccount.h"
 
 
-AP_Dialog_CollaborationAddAccount::AP_Dialog_CollaborationAddAccount(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_NonPersistent(pDlgFactory, id, "interface/dialogcollaborationaddaccount"),
-	m_pHandler(0)
+AP_Dialog_CollaborationEditAccount::AP_Dialog_CollaborationEditAccount(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
+	: XAP_Dialog_NonPersistent(pDlgFactory, id, "interface/dialogcollaborationeditaccount"),
+	m_pHandler(NULL)
 {
 }
 
-AP_Dialog_CollaborationAddAccount::~AP_Dialog_CollaborationAddAccount(void)
+AP_Dialog_CollaborationEditAccount::~AP_Dialog_CollaborationEditAccount(void)
 {
 }
 
-void AP_Dialog_CollaborationAddAccount::_setAccountHandler(AccountHandler* pHandler)
+void AP_Dialog_CollaborationEditAccount::setAccountHandler(AccountHandler* pHandler)
 {
-	UT_DEBUGMSG(("AP_Dialog_CollaborationAddAccount::_setAccountHandler()\n"));
-	
-	void* embeddingParent = _getEmbeddingParent();
-	UT_return_if_fail(embeddingParent);
-		
-	if (m_pHandler)
-		m_pHandler->removeDialogWidgets(embeddingParent);
-	pHandler->embedDialogWidgets(embeddingParent);
-	pHandler->loadProperties();
+	UT_DEBUGMSG(("AP_Dialog_CollaborationEditAccount::setAccountHandler()\n"));
 	m_pHandler = pHandler;
 }

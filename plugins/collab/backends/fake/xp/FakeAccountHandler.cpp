@@ -72,6 +72,10 @@ UT_UTF8String FakeAccountHandler::getStaticStorageType()
 	return "com.abisource.abiword.abicollab.backend.fake";
 }
 
+void FakeAccountHandler::loadProperties()
+{
+}
+
 void FakeAccountHandler::storeProperties()
 {
 }

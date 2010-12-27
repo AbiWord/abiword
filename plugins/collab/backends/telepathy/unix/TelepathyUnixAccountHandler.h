@@ -51,11 +51,12 @@ public:
 	virtual UT_UTF8String					getStorageType();
 	
 	// dialog management 
+	virtual void							embedDialogWidgets(void* pEmbeddingParent);
+	virtual void							removeDialogWidgets(void* pEmbeddingParent);
+	virtual bool							canDelete()
+		{ return false; }
+	virtual void							loadProperties();
 	virtual void							storeProperties();
-	virtual void							embedDialogWidgets(void* /*pEmbeddingParent*/)
-		{ UT_ASSERT_HARMLESS(UT_NOT_REACHED); }
-	virtual void							removeDialogWidgets(void* /*pEmbeddingParent*/)
-		{ UT_ASSERT_HARMLESS(UT_NOT_REACHED); }
 
 	// connection management
 	virtual ConnectResult					connect();
@@ -94,6 +95,11 @@ public:
 private:
 	TelepathyBuddyPtr						_getBuddy(TelepathyBuddyPtr pBuddy);
 
+	GtkWidget*								table;
+	GtkWidget*								conference_entry;
+	GtkWidget*								autoconnect_button;
+
+	TpBaseClient*							m_pTpClient;
 	std::vector<TelepathyChatroomPtr>		m_chatrooms;
 };
 

@@ -65,6 +65,8 @@ public:
 		{ return m_iDialogAccounts; }
 	XAP_Dialog_Id								getDialogAddAccountId()
 		{ return m_iDialogAddAccount; }
+	XAP_Dialog_Id								getDialogEditAccountId()
+		{ return m_iDialogEditAccount; }
 	XAP_Dialog_Id								getDialogAddBuddyId()
 		{ return m_iDialogAddBuddy; }
 
@@ -160,6 +162,7 @@ private:
 	XAP_Dialog_Id								m_iDialogJoin;
 	XAP_Dialog_Id								m_iDialogAccounts;
 	XAP_Dialog_Id								m_iDialogAddAccount;
+	XAP_Dialog_Id								m_iDialogEditAccount;
 	XAP_Dialog_Id								m_iDialogAddBuddy;
 	
 	#ifdef WIN32
