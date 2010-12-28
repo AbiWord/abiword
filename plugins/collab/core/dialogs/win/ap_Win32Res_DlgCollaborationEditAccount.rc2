@@ -1,0 +1,43 @@
+// AbiWord
+// Copyright (C) 2010 AbiSource Corporation B.V.
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+
+
+#define AP_RID_DIALOG_COLLABORATIONEDITACCOUNT 						606
+#define AP_RID_DIALOG_COLLABORATIONEDITACCOUNT_OK_BUTTON				IDOK
+#define AP_RID_DIALOG_COLLABORATIONEDITACCOUNT_CANCEL_BUTTON			IDCANCEL
+#define AP_RID_DIALOG_COLLABORATIONEDITACCOUNT_DETAILS_BOX			1001
+
+#ifdef RC_INVOKED
+// NOTE -- these placeholder strings get overridden at runtime 
+// NOTE -- they're just here to make sizing easier
+
+AP_RID_DIALOG_COLLABORATIONEDITACCOUNT DIALOG DISCARDABLE 0, 0, 219, 198
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Edit Collaboration Account"
+FONT 8, "MS Sans Serif"
+BEGIN
+	//COMBOBOX		AP_RID_DIALOG_COLLABORATIONEDITACCOUNT_TYPECOMBO, 11, 12, 198, 80, WS_TABSTOP | CBS_DROPDOWNLIST | CBS_SORT
+	GROUPBOX		"Account Properties", AP_RID_DIALOG_COLLABORATIONEDITACCOUNT_DETAILS_BOX, 7, 3, 205, 139, WS_EX_CONTROLPARENT
+	DEFPUSHBUTTON	"OK",AP_RID_DIALOG_COLLABORATIONEDITACCOUNT_OK_BUTTON,104, 147, 50, 14, WS_TABSTOP
+	PUSHBUTTON		"Cancel",AP_RID_DIALOG_COLLABORATIONEDITACCOUNT_CANCEL_BUTTON,162, 147, 50, 14, WS_TABSTOP
+	//GROUPBOX		"Account Type", AP_RID_DIALOG_COLLABORATIONEDITACCOUNT_ACCTTYPEBOX, 7, 3, 205, 27 
+END
+
+#endif /* RC_INVOKED */

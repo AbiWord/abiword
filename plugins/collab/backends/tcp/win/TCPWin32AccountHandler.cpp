@@ -217,6 +217,13 @@ void TCPWin32AccountHandler::removeDialogWidgets(void* pEmbeddingParent)
 	RedrawWindow(GetParent(hBox), NULL, NULL, RDW_ERASE | RDW_INVALIDATE | RDW_UPDATENOW);
 }
 
+void TCPWin32AccountHandler::loadProperties()
+{
+	UT_DEBUGMSG(("TCPWin32AccountHandler::storeProperties()\n"));
+
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+}
+
 void TCPWin32AccountHandler::storeProperties()
 {
 	UT_DEBUGMSG(("TCPWin32AccountHandler::storeProperties()\n"));

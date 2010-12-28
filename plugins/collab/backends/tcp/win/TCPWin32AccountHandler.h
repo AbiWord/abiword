@@ -41,6 +41,7 @@ public:
 	// dialog management 
 	virtual void							embedDialogWidgets(void* pEmbeddingParent);
 	virtual void							removeDialogWidgets(void* pEmbeddingParent);
+	virtual void							loadProperties();
 	virtual void							storeProperties();
 	virtual BOOL							_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	virtual bool							shouldProcessFocus();

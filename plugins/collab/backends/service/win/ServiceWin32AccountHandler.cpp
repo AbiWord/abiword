@@ -115,6 +115,13 @@ void ServiceWin32AccountHandler::removeDialogWidgets(void* pEmbeddingParent)
 
 #define READ_STRING(E, S) std::string S(255*sizeof(TCHAR), ' '); S.resize(SendMessage(E, WM_GETTEXT, S.size()-1, (LPARAM)&S[0]));
 
+void ServiceWin32AccountHandler::loadProperties()
+{
+	UT_DEBUGMSG(("ServiceWin32AccountHandler::loadProperties()\n"));	
+
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+}
+
 void ServiceWin32AccountHandler::storeProperties()
 {
 	UT_DEBUGMSG(("ServiceWin32AccountHandler::storeProperties()\n"));	
