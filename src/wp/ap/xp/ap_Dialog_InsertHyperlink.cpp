@@ -83,7 +83,7 @@ void AP_Dialog_InsertHyperlink::setDoc(FV_View * pView)
 			pView->getSelectionText(pSelection);
 			UT_return_if_fail(pSelection);
 
-			m_pHyperlink = new gchar [UT_UCS4_strlen(pSelection)+1];
+			m_pHyperlink = new gchar [UT_UCS4_strlen_as_char(pSelection)+1];
 			UT_UCS4_strcpy_to_char(m_pHyperlink, pSelection);
 
 			FREEP(pSelection);

@@ -1193,6 +1193,24 @@ UT_uint32 UT_UCS4_strlen(const UT_UCS4Char * string)
 	return i;
 }
 
+UT_uint32 UT_UCS4_strlen_as_char(const UT_UCS4Char * string)
+{
+	UT_uint32 i = 0;
+
+	char d[4]; // assuming that any character can be coded with no more that 4 bytes.
+
+	UT_Wctomb w(XAP_EncodingManager::get_instance()->getNative8BitEncodingName());
+
+	while (*string != 0)
+	  {
+		int length;
+		w.wctomb_or_fallback(d,length,*string++);
+		i+=length;
+	  }
+
+	return i;
+}
+
 UT_UCS4Char * UT_UCS4_strcpy(UT_UCS4Char * dest, const UT_UCS4Char * src)
 {
 	UT_ASSERT(dest);
