@@ -5595,12 +5595,30 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		/* RTF is limited to +/-32K ints so we need to use negative numbers for large unicode values.
 		 * So, check for Unicode chars wrapped to negative values.
 		 */
+		static UT_UCS4Char buf = 0x10000;
+		bool bResult;
 		if (param < 0)
 		{
 			unsigned short tmp = (unsigned short) ((signed short) param);
 			param = (UT_sint32) tmp;
 		}
-		bool bResult = ParseChar(static_cast<UT_UCSChar>(param));
+		if ((unsigned) param >= 0xD800 && (unsigned) param <= 0xDBFF)
+		{
+			buf = (UT_UCS4Char) param - 0xD800;
+			buf <<= 10;
+			buf += 0x10000;
+			m_currentRTFState.m_unicodeInAlternate = m_currentRTFState.m_unicodeAlternateSkipCount;
+			return true;
+		}
+		if ((unsigned) param >= 0xDC00 && (unsigned) param <= 0xDFFF)
+		{
+			buf += (UT_UCS4Char) param;
+			buf -= 0xDC00;
+			bResult = ParseChar(static_cast<UT_UCSChar>(buf));
+			buf = 0x10000;
+		}
+		else
+			bResult = ParseChar(static_cast<UT_UCSChar>(param));
 		m_currentRTFState.m_unicodeInAlternate = m_currentRTFState.m_unicodeAlternateSkipCount;
 		return bResult;
 	}

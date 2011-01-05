@@ -1572,7 +1572,19 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 				}
 			} else if (!m_pie->m_atticFormat)
 			{
-				if (*pData > 0x00ff)		// emit unicode character
+				if (*pData > 0xffff) {
+					m_pie->_rtf_keyword("uc", 1);
+					UT_UCS4Char ch = *pData - 0x10000;
+					short si;
+					si = (ch >> 10 & 0x3ff) + 0xD800;
+					m_pie->_rtf_keyword("u",si);
+					m_pie->_rtf_nonascii_hex2('?');
+					si =  (ch & 0x3ff) + 0xDC00;
+					m_pie->_rtf_keyword("u",si);
+					m_pie->_rtf_nonascii_hex2('?');
+					pData++;
+				}
+				else if (*pData > 0x00ff)		// emit unicode character
 				{
 					FlushBuffer();
 
