@@ -349,6 +349,7 @@ void UT_UTF8Stringbuf::appendUCS2 (const UT_UCS2Char * sz, size_t n /* == 0 => n
 	size_t i;
 	for (i = 0; (i < n) || (n == 0); i++)
 	{
+		if (sz[i]==0 && n==0) break;
 		int seql = UT_Unicode::UTF8_ByteLength ((UT_UCS4Char)sz[i]);
 		if (seql < 0) 
 			continue; // not UCS-4 !!
@@ -356,10 +357,12 @@ void UT_UTF8Stringbuf::appendUCS2 (const UT_UCS2Char * sz, size_t n /* == 0 => n
 			break; // end-of-string?
 		bytelength += static_cast<size_t>(seql);
 	}
+
 	if (!grow (bytelength + 1)) return;
 
 	for (i = 0; (i < n) || (n == 0); i++)
 	{
+		if (sz[i]==0 && n==0) break;
 		int seql = UT_Unicode::UTF8_ByteLength ((UT_UCS4Char)sz[i]);
 		if (seql < 0) 
 			continue; // not UCS-4 !!
