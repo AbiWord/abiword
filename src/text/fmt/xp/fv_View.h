@@ -438,7 +438,7 @@ public:
 #ifdef ENABLE_SPELL
 	SpellChecker * getDictForSelection () const;
 #endif
-#ifdef ENABLE_GRAMMAR
+#if 0
 	GrammarChecker * getGrammarCheckerForSelection () const;
 #endif
 	void			extSelNextPrevLine(bool bNext);

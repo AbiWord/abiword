@@ -71,7 +71,7 @@
 #endif
 #endif
 
-#ifdef ENABLE_GRAMMAR
+#if 0
 // GABRIEL: added!
 #include "grammar_manager.h"
 #include <unicode/brkiter.h> // break iterator
@@ -182,7 +182,7 @@ fl_BlockLayout::_spellCheckWord(const UT_UCSChar * word,
 }
 #endif // WITHOUT_SPELL
 
-#ifdef ENABLE_GRAMMAR
+#if 0
 
 GrammarChecker *
 fl_BlockLayout::_getGrammarChecker (UT_uint32 blockPos)
@@ -12113,7 +12113,7 @@ static void s_border_properties (const char * border_color,
 }
 
 
-#ifdef ENABLE_GRAMMAR
+#if 0
 
 /*!
   Constructor for iterator

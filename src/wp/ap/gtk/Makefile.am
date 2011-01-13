@@ -191,10 +191,6 @@ libgtk_la_SOURCES += $(spell_src)
 ui_DATA += $(spell_ui)
 endif
 
-if ENABLE_GRAMMAR
-libgtk_la_SOURCES += $(grammar_src)
-ui_DATA += $(grammar_ui)
-endif
 
 if ENABLE_STATUSBAR
 libgtk_la_SOURCES += $(statusbar_src)

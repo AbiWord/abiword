@@ -242,7 +242,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TOOLS_SPELLPREFS, 0,1,0,0, "dlgSpellPrefs", NULL, NULL);
 	_s(AP_MENU_ID_TOOLS_AUTOSPELL,          0,0,1,0,  "toggleAutoSpell",      ap_GetState_Prefs, NULL);
 #endif
-#ifdef ENABLE_GRAMMAR
+#if 0 
 	_s(AP_MENU_ID_TOOLS_GRAMMAR,	        0,1,0,0,	"dlgGrammar",		/*FIXME ap_GetState_Spelling*/NULL,					NULL);
 #endif
 	

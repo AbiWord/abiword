@@ -75,7 +75,7 @@
 #include "ap_Dialog_Replace.h"
 #include "ap_Dialog_Goto.h"
 
-#ifdef ENABLE_GRAMMAR
+#if 0 
 #include "ap_Dialog_Grammar.h"
 #endif
 
@@ -504,7 +504,7 @@ public:
 	static EV_EditMethod_Fn dlgSpellPrefs;
 #endif
 	
-#ifdef ENABLE_GRAMMAR
+#if 0
 	static EV_EditMethod_Fn dlgGrammar;
 #endif
 
@@ -851,7 +851,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dlgFmtPosImage), 		0, ""),
 	EV_EditMethod(NF(dlgFont),				0,	""),
 	EV_EditMethod(NF(dlgFormatFrame),		0,	""),
-#ifdef ENABLE_GRAMMAR
+#if 0
 	EV_EditMethod(NF(dlgGrammar), 			0,	""),
 #endif
 	EV_EditMethod(NF(dlgHdrFtr),			0,	""),
@@ -1821,7 +1821,7 @@ static void s_TellSpellDone(XAP_Frame * pFrame, bool bIsSelection)
 }
 #endif
 
-#ifdef ENABLE_GRAMMAR
+#if 0
 static void s_TellGrammarDone(XAP_Frame * pFrame, bool bIsSelection)
 {
 	pFrame->showMessageBox(bIsSelection ? "Grammar checking complete" : "Grammar checking complete",
@@ -7467,7 +7467,7 @@ Defun1(dlgSpell)
 }
 #endif
 
-#ifdef ENABLE_GRAMMAR
+#if 0
 
 static bool s_doGrammarDlg(FV_View * pView, XAP_Dialog_Id id)
 {

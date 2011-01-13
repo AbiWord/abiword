@@ -29,11 +29,6 @@ spell_src = \
 	spell_manager.h
 endif
 
-if ENABLE_GRAMMAR
-grammar_src = \
-	grammar_manager.cpp \
-	grammar_manager.h  
-endif
 
 if ENABLE_STATUSBAR
 statusbar_src = xap_StatusBar.cpp

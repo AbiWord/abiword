@@ -453,7 +453,7 @@ protected:
 	SpellChecker * _getSpellChecker (UT_uint32 blockPos) const;
 #endif
 
-#ifdef ENABLE_GRAMMAR
+#if 0
 // GABRIEL: added!
 	bool					_grammarCheckSentence(const UT_UCSChar * sentence, UT_uint32 len, UT_uint32 blockPos);
 	GrammarChecker * _getGrammarChecker (UT_uint32 blockPos);
@@ -698,7 +698,7 @@ public:
 };
 #endif
 
-#ifdef ENABLE_GRAMMAR
+#if 0
 class ABI_EXPORT fl_BlockSentenceIterator
 {
 	friend class fl_BlockLayout;

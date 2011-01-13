@@ -79,7 +79,7 @@
 #ifdef ENABLE_SPELL
 #include "spell_manager.h"
 #endif
-#ifdef ENABLE_GRAMMAR
+#if 0
 #include "grammar_manager.h"
 #endif
 #include "ut_rand.h"
@@ -13751,7 +13751,7 @@ SpellChecker * FV_View::getDictForSelection () const
 }
 #endif
 
-#ifdef ENABLE_GRAMMAR
+#if 0
 GrammarChecker * FV_View::getGrammarCheckerForSelection () const
 {
 	GrammarChecker * checker = NULL;

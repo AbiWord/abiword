@@ -38,9 +38,6 @@ if ENABLE_SPELL
 spell_src = ap_Dialog_Spell.cpp
 endif
 
-if ENABLE_GRAMMAR
-grammar_src = ap_Dialog_Grammar.cpp
-endif
 
 if ENABLE_STATUSBAR
 statusbar_src = ap_StatusBar.cpp
