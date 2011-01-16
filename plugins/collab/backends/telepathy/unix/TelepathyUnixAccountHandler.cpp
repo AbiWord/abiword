@@ -37,7 +37,8 @@
 
 static DBusHandlerResult s_dbus_handle_message(DBusConnection *connection, DBusMessage *message, void *user_data);
 
-#define INTERFACE "com.abisource.abiword.abicollab.telepathy"
+#define DEFAULT_CONFERENCE_SERVER "conference.matthewwild.co.uk"
+#define INTERFACE "org.freedesktop.Telepathy.Client.AbiCollab"
 #define SEND_ONE_METHOD "SendOne"
 
 static void
@@ -318,6 +319,9 @@ TelepathyAccountHandler::TelepathyAccountHandler()
 	m_pTpClient(NULL)
 {
 	UT_DEBUGMSG(("TelepathyAccountHandler::TelepathyAccountHandler()\n"));
+
+	if (!hasProperty("conference_server"))
+		addProperty("conference_server", DEFAULT_CONFERENCE_SERVER);
 }
 
 TelepathyAccountHandler::~TelepathyAccountHandler()
@@ -380,7 +384,7 @@ void TelepathyAccountHandler::loadProperties()
 	UT_DEBUGMSG(("TelepathyAccountHandler::loadProperties()\n"));
 
 	// TODO: don't default to Matt's server
-	std::string conference_server = hasProperty("conference_server") ? getProperty("conference_server") : "conference.matthewwild.co.uk";
+	std::string conference_server = getProperty("conference_server");
 	if (conference_entry && GTK_IS_ENTRY(conference_entry))
 		gtk_entry_set_text(GTK_ENTRY(conference_entry), conference_server.c_str());
 
@@ -409,15 +413,14 @@ ConnectResult TelepathyAccountHandler::connect()
 
 	UT_return_val_if_fail(m_pTpClient == NULL, CONNECT_INTERNAL_ERROR);
 
-	// inform telepathy that we can handle incoming tubes on the
-	// com.abisource.com.abiword.abicollab.telepathy service
+	// inform telepathy that we can handle incoming AbiCollab tubes
 
 	GError *error = NULL;
 	TpDBusDaemon* dbus = tp_dbus_daemon_dup (&error);
 	UT_return_val_if_fail(dbus, CONNECT_FAILED);
 
 	m_pTpClient = tp_simple_handler_new(dbus,
-					TRUE, FALSE, "AbiCollabHandler", TRUE,
+					TRUE, FALSE, "AbiCollab", FALSE,
 					handle_dbus_channel, this, NULL);
 
 	tp_base_client_take_handler_filter(m_pTpClient,
@@ -607,7 +610,7 @@ bool TelepathyAccountHandler::startSession(PD_Document* pDoc, const std::vector<
 	g_list_free(accounts);
 
 	// determine the room target id
-	std::string target_id = "abicollab4";
+	std::string target_id = sSessionId.utf8_str();
 	std::string conference_server = getProperty("conference_server");
 	if (conference_server != "")
 		target_id += "@" + conference_server;
