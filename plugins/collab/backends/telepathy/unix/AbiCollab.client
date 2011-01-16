@@ -1,0 +1,7 @@
+[org.freedesktop.Telepathy.Client]
+Interfaces=org.freedesktop.Telepathy.Client.Handler;org.freedesktop.Telepathy.Client.Interface.Requests
+
+[org.freedesktop.Telepathy.Client.Handler.HandlerChannelFilter 0]
+org.freedesktop.Telepathy.Channel.ChannelType s=org.freedesktop.Telepathy.Channel.Type.DBusTube
+org.freedesktop.Telepathy.Channel.TargetHandleType u=2
+org.freedesktop.Telepathy.Channel.Type.DBusTube.ServiceName s=org.freedesktop.Telepathy.Client.AbiCollab
