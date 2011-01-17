@@ -515,7 +515,7 @@ void TelepathyAccountHandler::forceDisconnectBuddy(BuddyPtr pBuddy)
 {
 	UT_return_if_fail(pBuddy);
 
-	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED)
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 }
 
 bool TelepathyAccountHandler::hasAccess(const std::vector<std::string>& /*vAcl*/, BuddyPtr pBuddy)
