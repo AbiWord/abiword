@@ -166,7 +166,7 @@ list_connection_names_cb (const gchar * const *bus_names,
 	if (error != NULL)
 	{
 		UT_DEBUGMSG(("List connectiones failed: %s", error->message));
-		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN)
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return;
 	}
 
