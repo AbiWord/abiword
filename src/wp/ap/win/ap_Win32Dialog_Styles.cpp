@@ -70,6 +70,14 @@ AP_Win32Dialog_Styles::~AP_Win32Dialog_Styles(void)
 	DELETEP(m_pCharPreviewWidget);
 }
 
+BOOL AP_Win32Dialog_Styles::_onDlgMessage(HWND hWnd, UINT msg, WPARAM, LPARAM lParam)
+{
+	if (msg==WM_DRAWITEM) {
+		_onDrawButton((LPDRAWITEMSTRUCT)lParam,hWnd);
+		return TRUE;
+	}
+	return FALSE;
+}
 
 /*
 	Draws the Format button with an arrow
@@ -88,12 +96,10 @@ void AP_Win32Dialog_Styles::_onDrawButton(LPDRAWITEMSTRUCT lpDrawItemStruct, HWN
 	const char* 	pText;
 	HWND 			hParent;
 	LONG			lData;
+
+	UT_Win32LocaleString str;
 	
-	// Get parent object and get the App object from there
-	hParent = GetParent(hWnd);	
-	lData = GetWindowLongPtrW(hWnd,DWLP_USER);			
-	AP_Win32Dialog_Styles * pParent = (AP_Win32Dialog_Styles *)lData;
-	const XAP_StringSet * pSS = pParent->m_pApp->getStringSet();		
+	const XAP_StringSet * pSS = m_pApp->getStringSet();		
 	
 	pText=	pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyFormat);		
 	
@@ -127,7 +133,8 @@ void AP_Win32Dialog_Styles::_onDrawButton(LPDRAWITEMSTRUCT lpDrawItemStruct, HWN
 	   y++;
 	 }
 
-	ExtTextOut(hdc, (nWidth/6)*1, ((nHeight/4)), 0, NULL, pText,  strlen(pText), NULL);
+	str.fromUTF8(pText);
+	ExtTextOutW(hdc, (nWidth/6)*1, ((nHeight/4)), 0, NULL, str.c_str(), str.length(), NULL);
 		
     // Clean Up
     SelectObject(hdc, pOldPen);       
@@ -176,11 +183,13 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 	
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	char szTemp[20];
-	GetWindowText(hWnd, szTemp, 20 );	
+	WCHAR szTemp[20];
+	GetWindowTextW(hWnd, szTemp, 20 );	
 			
+	m_hDlg=hWnd;
+
 	// Regular dialog box
-	if( strncmp(szTemp, "Styles", 20) == 0 )
+	if( lstrcmpW(szTemp, L"Styles") == 0 )
 	{	
 		setDialogTitle (pSS->getValue(AP_STRING_ID_DLG_Styles_StylesTitle));
 
@@ -234,12 +243,12 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 	// This is either the new or Modify sub dialog of styles
 	else  
 	{
+		_win32DialogNewModify.setHandle(hWnd);
+
 		// Localize the controls Labels etc...
 		setWindowText(hWnd, pSS->getValue( (m_bisNewStyle) ? 
                                            AP_STRING_ID_DLG_Styles_NewTitle :
                                            AP_STRING_ID_DLG_Styles_ModifyTitle ));
-
-		_win32DialogNewModify.setHandle(hWnd);
 		
 		#define _DS(c,s)  setDlgItemText(hWnd, AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
 		#define _DSX(c,s) setDlgItemText(hWnd, AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
@@ -250,7 +259,7 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 		_DS(STYLES_NEWMODIFY_LBL_REMOVE,		DLG_Styles_RemoveLab);
 		_DS(STYLES_NEWMODIFY_GBX_PREVIEW,		DLG_Styles_ModifyPreview);
 		_DS(STYLES_NEWMODIFY_GBX_DESC,			DLG_Styles_ModifyDescription);
-		_DS(STYLES_NEWMODIFY_BTN_REMOVE,		DLG_Styles_RemoveButton);		
+		_DS(STYLES_NEWMODIFY_BTN_REMOVE,		DLG_Styles_RemoveButton);
 		_DS(STYLES_NEWMODIFY_BTN_SHORTCUT,		DLG_Styles_ModifyShortCut);
 		_DSX(STYLES_NEWMODIFY_BTN_OK,			DLG_OK);
 		_DSX(STYLES_NEWMODIFY_BTN_CANCEL,		DLG_Cancel);
@@ -270,8 +279,8 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 		const char * pLocalised = NULL;
 		const PD_Style * pcStyle = NULL;
 		int nIndex;
+		UT_Win32LocaleString str;	
 		UT_UTF8String utf8;
-		UT_String str;	
 
 		UT_GenericVector<PD_Style*> * pStyles = NULL;
 		getDoc()->enumStyles(pStyles);
@@ -285,8 +294,6 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 			
    			pt_PieceTable::s_getLocalisedStyleName(name, utf8);			
 			pLocalised = utf8.utf8_str();
-			str = AP_Win32App::s_fromUTF8ToWinLocale (pLocalised);
-			pLocalised = str.c_str();	
 			
 			nIndex = _win32DialogNewModify.addItemToCombo(AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, pLocalised);				
 			_win32DialogNewModify.setComboDataItem(AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, 
@@ -303,19 +310,15 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 		const char*	pDefCurrent = pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent);
 		const char*	pDefNone = pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone);
 		
-		str = AP_Win32App::s_fromUTF8ToWinLocale(pDefCurrent);
-		pDefCurrent = str.c_str();	
-		
-		_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, 
+		nIndex = _win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, 
                                               pDefCurrent );
+		_win32DialogNewModify.setComboDataItem(AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA,
+			nIndex, (DWORD)-1);
 
-
-		str = AP_Win32App::s_fromUTF8ToWinLocale(pDefNone);
-		pDefNone = str.c_str();							
-
-		_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, 
+		nIndex = _win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, 
                                               pDefNone);
-		
+		_win32DialogNewModify.setComboDataItem(AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON,
+			nIndex, (DWORD)-1);
 		
 		if( m_bisNewStyle )
 		{	
@@ -332,16 +335,19 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
                                                   
 			// Set the Default syltes: none, default current
 			UT_sint32 result;
-			result = SendDlgItemMessage(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, CB_FINDSTRING, -1,
-										(LPARAM) pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone));
+			str.fromUTF8(pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone));
+			result = SendDlgItemMessageW(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, CB_FINDSTRING, -1,
+										(LPARAM) str.c_str());
 			_win32DialogNewModify.selectComboItem( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, result );
 			
-			result = SendDlgItemMessage(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, CB_FINDSTRING, -1,
-										(LPARAM) pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent));
+			str.fromUTF8(pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent));
+			result = SendDlgItemMessageW(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, CB_FINDSTRING, -1,
+										(LPARAM) str.c_str());
 			_win32DialogNewModify.selectComboItem( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, result );
 			
-			result = SendDlgItemMessage(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_TYPE, CB_FINDSTRING, -1,
-										(LPARAM) pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph));
+			str.fromUTF8(pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph));
+			result = SendDlgItemMessageW(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_TYPE, CB_FINDSTRING, -1,
+										(LPARAM) str.c_str());
 			_win32DialogNewModify.selectComboItem( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_TYPE, result );
 
 			eventBasedOn();
@@ -358,16 +364,11 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 			PD_Style * pStyle = NULL;
 			PD_Style * pBasedOnStyle = NULL;
 			PD_Style * pFollowedByStyle = NULL;
-			UT_UTF8String utf8;
-			UT_String str;	
 			
 			szCurrentStyle = m_selectedStyle.c_str();
 			
 			pt_PieceTable::s_getLocalisedStyleName(szCurrentStyle, utf8);						
 			pLocalised = utf8.utf8_str();
-			str = AP_Win32App::s_fromUTF8ToWinLocale(pLocalised);
-			pLocalised = str.c_str();
-	
 		
 			_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_NAME,
                                                   pLocalised);
@@ -421,19 +422,18 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 				pt_PieceTable::s_getLocalisedStyleName(szBasedOn, utf8);
 				pLocalised = utf8.utf8_str();
 				str = AP_Win32App::s_fromUTF8ToWinLocale(pLocalised);
-				pLocalised = str.c_str();
-	
 				
-				UT_uint32 result = SendDlgItemMessage(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, CB_FINDSTRING, -1,
-										(LPARAM)pLocalised);
+				UT_uint32 result = SendDlgItemMessageW(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, CB_FINDSTRING, -1,
+										(LPARAM)str.c_str());
 										
 				_win32DialogNewModify.selectComboItem( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, result );
 			}
 			else
 			{
 				// Not a style name
-				UT_uint32 result = SendDlgItemMessage(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, CB_FINDSTRING, -1,
-										(LPARAM) pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone));
+				str.fromUTF8(pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone));
+				UT_uint32 result = SendDlgItemMessageW(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, CB_FINDSTRING, -1,
+										(LPARAM) str.c_str());
 										
 				_win32DialogNewModify.selectComboItem( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, result );
 			}
@@ -443,10 +443,9 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 				pt_PieceTable::s_getLocalisedStyleName(szFollowedBy, utf8);		
 				pLocalised = utf8.utf8_str();
 				str = AP_Win32App::s_fromUTF8ToWinLocale(pLocalised);
-				pLocalised = str.c_str();
 				
-				UT_uint32 result = SendDlgItemMessage(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, CB_FINDSTRING, -1,
-										(LPARAM)pLocalised);
+				UT_uint32 result = SendDlgItemMessageW(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, CB_FINDSTRING, -1,
+										(LPARAM)str.c_str());
 				_win32DialogNewModify.selectComboItem( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, result );
 			}
 			else
@@ -454,11 +453,9 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 				pt_PieceTable::s_getLocalisedStyleName(pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent), utf8);		
 				pLocalised = utf8.utf8_str();
 				str = AP_Win32App::s_fromUTF8ToWinLocale(pLocalised);
-				pLocalised = str.c_str();
-
 				
-				UT_uint32 result = SendDlgItemMessage(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, CB_FINDSTRING, -1,
-										(LPARAM) pLocalised);
+				UT_uint32 result = SendDlgItemMessageW(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, CB_FINDSTRING, -1,
+										(LPARAM) str.c_str());
 				_win32DialogNewModify.selectComboItem( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, result );
 			}
 			
@@ -529,11 +526,16 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	case IDOK:
 		{	
      		const XAP_StringSet * pSS = m_pApp->getStringSet ();
+			WCHAR stylename[MAX_EBX_LENGTH+1];
 			// Verfiy a name value for the style
 			// TODO - Verify unique name value
-			_win32DialogNewModify.getControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_NAME,
+			GetDlgItemTextW(hWnd,AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_NAME,stylename,MAX_EBX_LENGTH);
+			/*_win32DialogNewModify.getControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_NAME,
                                                   m_newStyleName,
-	                                              MAX_EBX_LENGTH );			
+	                                              MAX_EBX_LENGTH );*/
+			UT_UTF8String str;
+			str.appendUCS2((const UT_UCS2Char*)stylename,0);
+			strcpy(m_newStyleName,str.utf8_str());
 
 			if( !m_newStyleName || !strlen(m_newStyleName) )
 			{
@@ -544,7 +546,7 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			    return 1;
     		}
 
-			strcpy (m_newStyleName, (AP_Win32App::s_fromWinLocaleToUTF8(m_newStyleName)).utf8_str());
+			//strcpy (m_newStyleName, (AP_Win32App::s_fromWinLocaleToUTF8(m_newStyleName)).utf8_str());
 
 		}
 		m_answer = a_OK;
@@ -626,7 +628,8 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			m_bisNewStyle = true;
 			//_win32Dialog.showWindow(SW_HIDE);
 			XAP_Frame* pFrame = getFrame();
-			_win32DialogNewModify.runModal(pFrame, AP_DIALOG_ID_STYLES, AP_RID_DIALOG_STYLES_NEWMODIFY, this);
+			//_win32DialogNewModify.runModal(pFrame, AP_DIALOG_ID_STYLES, AP_RID_DIALOG_STYLES_NEWMODIFY, this);
+			createModal(pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_STYLES_NEWMODIFY));
 			if(m_answer == AP_Dialog_Styles::a_OK)
 			{
 				createNewStyle((gchar *) m_newStyleName);
@@ -662,8 +665,12 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(getApp());
 			
 				createModal (pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_STYLES_NEWMODIFY));				
+				/*LPCWSTR lpTemplate = MAKEINTRESOURCEW(AP_RID_DIALOG_STYLES_NEWMODIFY);				
+											
+				int result = DialogBoxParamW(pWin32App->getInstance(), lpTemplate,
+									static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
+									(DLGPROC)s_dlgProc, (LPARAM)this);*/
 				
-		
 				if(m_answer == AP_Dialog_Styles::a_OK)
 				{
 					applyModifiedStyleToDoc();
@@ -695,7 +702,15 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	    HMENU 	hMenu;
 	    int		x,y;	    	    
 	    HWND	hWndButton;
+		static int menu_items[]={AP_STRING_ID_DLG_Styles_ModifyParagraph,
+								AP_STRING_ID_DLG_Styles_ModifyFont,
+								AP_STRING_ID_DLG_Styles_ModifyTabs,
+								AP_STRING_ID_DLG_Styles_ModifyNumbering,
+								AP_STRING_ID_DLG_Styles_ModifyLanguage
+								};
 	    
+		UT_Win32LocaleString str;
+
 	    hWndButton = GetDlgItem(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEITEMS);
 	    XAP_Win32App * app = static_cast<XAP_Win32App *> (m_pApp);		
 		const XAP_StringSet * pSS = m_pApp->getStringSet();
@@ -707,12 +722,12 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	    // Menu creation
 	    hMenu =  CreatePopupMenu();
-	    AppendMenuW(hMenu, MF_ENABLED|MF_STRING, 1, (LPCWSTR)pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph));
-	    AppendMenuW(hMenu, MF_ENABLED|MF_STRING, 2, (LPCWSTR)pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyFont));
-	    AppendMenuW(hMenu, MF_ENABLED|MF_STRING, 3, (LPCWSTR)pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyTabs));
-	    AppendMenuW(hMenu, MF_ENABLED|MF_STRING, 4, (LPCWSTR)pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyNumbering));
-	    AppendMenuW(hMenu, MF_ENABLED|MF_STRING, 5, (LPCWSTR)pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyLanguage));
-	    
+		str;
+		for (int i=0; i<5; i++) {
+			str.fromUTF8(pSS->getValue(menu_items[i]));
+			AppendMenuW(hMenu, MF_ENABLED|MF_STRING, i+1, (LPCWSTR)str.c_str());
+		}
+	
 	    // show and track the menu
     	m_selectToggle = TrackPopupMenu(hMenu, TPM_LEFTALIGN|TPM_LEFTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,
     						x,y,0, hWndButton,  NULL);		    							    	        						 							    
@@ -825,8 +840,8 @@ void AP_Win32Dialog_Styles::_populateCList(void)
 
 			pt_PieceTable::s_getLocalisedStyleName(*data, utf8);
 			pLocalised = utf8.utf8_str();
-			str = AP_Win32App::s_fromUTF8ToWinLocale(pLocalised);
-			pLocalised = str.c_str();
+			/*str = AP_Win32App::s_fromUTF8ToWinLocale(pLocalised);
+			pLocalised = str.c_str();*/
 			
 			nIndex = _win32Dialog.addItemToList(AP_RID_DIALOG_STYLES_TOP_LIST_STYLES, pLocalised);						
 			_win32Dialog.setListDataItem(AP_RID_DIALOG_STYLES_TOP_LIST_STYLES, nIndex, i);							
@@ -885,11 +900,14 @@ void AP_Win32Dialog_Styles::eventBasedOn()
 	
 	nData= _win32DialogNewModify.getComboDataItem(AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, nSel);
 	
-	getDoc()->enumStyles((UT_uint32)nData,&pText, &pStyle);				
-	
-	strcpy (szTemp, (AP_Win32App::s_fromWinLocaleToUTF8(pText)).utf8_str());
-	addOrReplaceVecAttribs("basedon",pText);
-	fillVecWithProps(pText,false);
+	if (nData >= 0 ) {
+		getDoc()->enumStyles((UT_uint32)nData,&pText, &pStyle);				
+		addOrReplaceVecAttribs("basedon",pText);
+		fillVecWithProps(pText,false);
+	} else {
+		// "None" was selected
+		removeVecProp("basedon");
+	}
 	updateCurrentStyle();
 }
 
@@ -906,11 +924,13 @@ void AP_Win32Dialog_Styles::eventFollowedBy()
 	if (nSel==CB_ERR) return;				
 	
 	nData= _win32DialogNewModify.getComboDataItem(AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, nSel);
-					
-	getDoc()->enumStyles((UT_uint32)nData,&pText, &pStyle);			
-	
-	strcpy (szTemp, (AP_Win32App::s_fromWinLocaleToUTF8(pText)).utf8_str());
-	addOrReplaceVecAttribs("followedby",pText);
+
+	if (nData >= 0) {
+		getDoc()->enumStyles((UT_uint32)nData,&pText, &pStyle);
+		addOrReplaceVecAttribs("followedby",pText);
+	} else {
+		removeVecProp("followedby");
+	}
 }
 
 void AP_Win32Dialog_Styles::eventStyleType()

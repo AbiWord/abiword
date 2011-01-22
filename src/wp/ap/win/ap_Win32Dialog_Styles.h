@@ -63,7 +63,8 @@ protected:
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL					_onDeltaPos(NM_UPDOWN * pnmud){return 0;};
-	static BOOL CALLBACK 	s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
+	BOOL					_onDlgMessage(HWND,UINT,WPARAM,LPARAM);
+	//static BOOL CALLBACK 	s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
 	void					_onDrawButton(LPDRAWITEMSTRUCT lpDrawItemStruct, HWND hWnd);	
 	
 	
