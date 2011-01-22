@@ -110,59 +110,41 @@ BOOL AP_Win32Dialog_New::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	long findtag;
 	struct _finddata_t cfile;
 	UT_String templateName, searchDir;
-	templateName = XAP_App::getApp()->getUserPrivateDirectory(); 
-	searchDir = XAP_App::getApp()->getUserPrivateDirectory();
-	searchDir += "\\templates\\*.awt";
-	findtag = _findfirst( searchDir.c_str(), &cfile );
-	if( findtag != -1 )
-	{
-		do
-		{	
-			templateName = XAP_App::getApp()->getUserPrivateDirectory();
-			templateName += "\\templates\\";
-			templateName += cfile.name;
-			if(!strstr(templateName.c_str(), "normal.awt-")) // don't truncate localized template names
-				templateName = templateName.substr ( 0, templateName.size () - 4 ) ;
+	UT_String dirName[2];
 
-			UT_Win32LocaleString str;
-			str.fromASCII (templateName.c_str());
-			char *uri = UT_go_filename_to_uri(str.utf8_str().utf8_str());
-			UT_continue_if_fail(uri);
+	dirName[0] = XAP_App::getApp()->getUserPrivateDirectory();
+	dirName[1] = XAP_App::getApp()->getAbiSuiteLibDir();
 
-			UT_sint32 nIndex = SendMessageW( hControl, LB_ADDSTRING, 0, (LPARAM) UT_basename( uri ) );
-			SendMessageW( hControl, LB_SETITEMDATA, (WPARAM) nIndex, (LPARAM) 0 );
+	for (int i=0; i<2; i++) {
+		templateName = dirName[i]; 
+		searchDir = templateName;
+		searchDir += "\\templates\\*.awt";
+		findtag = _findfirst( searchDir.c_str(), &cfile );
+		if( findtag != -1 )
+		{
+			do
+			{	
+				templateName = dirName[i];
+				templateName += "\\templates\\";
+				templateName += cfile.name;
+				if(!strstr(templateName.c_str(), "normal.awt-")) // don't truncate localized template names
+					templateName = templateName.substr ( 0, templateName.size () - 4 ) ;
 
-			g_free(uri);
-		} while( _findnext( findtag, &cfile ) == 0 );
+				UT_Win32LocaleString str;
+				str.fromASCII (templateName.c_str());
+				char *uri = UT_go_filename_to_uri(str.utf8_str().utf8_str());
+				UT_continue_if_fail(uri);
+
+				str.fromUTF8(UT_basename( uri ));
+
+				UT_sint32 nIndex = SendMessageW( hControl, LB_ADDSTRING, 0, (LPARAM)str.c_str());
+				SendMessageW( hControl, LB_SETITEMDATA, (WPARAM) nIndex, (LPARAM) i );
+
+				g_free(uri);
+			} while( _findnext( findtag, &cfile ) == 0 );
+		}
+		_findclose( findtag );
 	}
-	_findclose( findtag );
-
-	templateName = XAP_App::getApp()->getAbiSuiteLibDir(); 
-	searchDir = XAP_App::getApp()->getAbiSuiteLibDir();
-	searchDir += "\\templates\\*.awt";
-	findtag = _findfirst( searchDir.c_str(), &cfile );
-	if( findtag != -1 )
-	{
-		do
-		{	
-			templateName = XAP_App::getApp()->getAbiSuiteLibDir();
-			templateName += "\\templates\\";
-			templateName += cfile.name;
-			if(!strstr(templateName.c_str(), "normal.awt-"))  // don't truncate localized template names
-				templateName = templateName.substr ( 0, templateName.size () - 4 ) ;
-
-            UT_Win32LocaleString str;
-			str.fromASCII (templateName.c_str());
-			char *uri = UT_go_filename_to_uri(str.utf8_str().utf8_str());
-			UT_continue_if_fail(uri);
-
-			UT_sint32 nIndex = SendMessageW( hControl, LB_ADDSTRING, 0, (LPARAM) UT_basename( uri ) );
-			SendMessageW( hControl, LB_SETITEMDATA, (WPARAM) nIndex, (LPARAM) 1 );
-
-			g_free(uri);
-		} while( _findnext( findtag, &cfile ) == 0 );
-	}
-	_findclose( findtag );
 
 	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
 	_updateControls();
@@ -289,8 +271,10 @@ void AP_Win32Dialog_New::_doChoose()
 		if (szResultPathname && *szResultPathname)
 		{
 			// update the entry box
+			char *pFilename = UT_go_filename_from_uri(szResultPathname);
 			_win32Dialog.setControlText( AP_RID_DIALOG_NEW_EBX_EXISTING, 
-			                             szResultPathname);
+			                             pFilename);
+			FREEP(pFilename);
 			setFileName (szResultPathname);
 		}
 	}
@@ -329,8 +313,11 @@ void AP_Win32Dialog_New::_setFileName( UT_sint32 nIndex )
 	HWND hControl = GetDlgItem(m_hThisDlg, AP_RID_DIALOG_NEW_LBX_TEMPLATE);
 	if( nIndex != LB_ERR )
 	{
-		char buf[PATH_MAX];
-		_win32Dialog.getListText( AP_RID_DIALOG_NEW_LBX_TEMPLATE, nIndex, buf );
+		WCHAR buf[PATH_MAX];
+		int l=SendMessageW(hControl,LB_GETTEXTLEN,nIndex,NULL);
+		UT_return_if_fail(l<PATH_MAX);
+
+		_win32Dialog.getListText( AP_RID_DIALOG_NEW_LBX_TEMPLATE, nIndex, (char*)buf );
 		UT_String templateName; 
 		switch ( SendMessageW( hControl, LB_GETITEMDATA, nIndex, 0 ) )
 		{
@@ -344,12 +331,18 @@ void AP_Win32Dialog_New::_setFileName( UT_sint32 nIndex )
 			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 			break;
 		}
+
+		UT_Win32LocaleString str;
+		UT_UTF8String u_str;
+		str.fromLocale(buf);
+		u_str=str.utf8_str();
+
 		templateName += "\\templates\\";
-		templateName += buf;
-		if(!strstr(buf, "normal.awt-")) // don't append awt to localized templates
+		templateName += u_str.utf8_str();
+		if(!strstr(u_str.utf8_str(), "normal.awt-")) // don't append awt to localized templates
 			templateName += ".awt";
 
-		char *uri = NULL;//UT_go_filename_to_uri(AP_Win32App::s_fromWinLocaleToUTF8(templateName.c_str()).utf8_str());
+		char *uri = UT_go_filename_to_uri(templateName.c_str());
 		UT_return_if_fail(uri);
 
 		setFileName(uri);
