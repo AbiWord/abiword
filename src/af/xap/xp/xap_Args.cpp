@@ -33,6 +33,32 @@ XAP_Args::XAP_Args(int argc, char ** argv)
 	m_szBuf = NULL;
 }
 
+#ifdef WIN32
+
+char *XX_encode(const char *str)
+{
+	int l=strlen(str)+1;
+	const char *c;
+	char *d;
+	char *result;
+	for (c=str;*c;c++) {
+		if (*c<0) l+=2;
+	}
+	result=(char*)g_malloc(l);
+	for (c=str,d=result; *c; c++) {
+		if (*c<0) {
+			sprintf(d,"%%%02X",(unsigned char)*c);
+			d+=3;
+		} else {
+			*d++=*c;
+		}
+	}
+	*d=0;
+	return result;
+}
+
+#endif
+
 XAP_Args::XAP_Args(const char * szCmdLine)
 {
 	// build an argc,argv for this command line
@@ -60,7 +86,12 @@ XAP_Args::XAP_Args(const char * szCmdLine)
 	//
 	//    WHITE ({T1|T2|T3}WHITE)* [WHITE]
 	
+#ifdef WIN32
+	// glib on Windows assumes that command line is in ANSI codepage
+	m_szBuf = XX_encode(szCmdLine);
+#else
 	m_szBuf = g_strdup(szCmdLine);
+#endif
 	UT_ASSERT(m_szBuf);
 
 	int count = 10;	// start with 10 and g_try_realloc if necessary

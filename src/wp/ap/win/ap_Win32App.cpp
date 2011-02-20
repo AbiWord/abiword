@@ -1098,14 +1098,14 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
   
 	
 // We put this in a block to force the destruction of Args in the stack
-{	
+{
+	UT_Win32LocaleString scnv;
+	UT_UTF8String sUTFCmdLine;
+
 	// Load the command line into an XAP_Args class
-#ifdef _MSC_VER	// when using MSVC use already split arguments
-	XAP_Args XArgs = XAP_Args(__argc, __argv);
-#else			// but for other compiles may not be available so use szCmdLine
-	UT_String szNewCmdLine = UT_String_sprintf ( "%s %s", "AbiWord.exe", szCmdLine ) ;
-	XAP_Args XArgs = XAP_Args(szNewCmdLine.c_str());
-#endif
+	scnv.fromLocale(GetCommandLineW());
+	sUTFCmdLine=scnv.utf8_str();
+	XAP_Args XArgs = XAP_Args(sUTFCmdLine.utf8_str());
 
 	// Step 1: Initialize our application.
 	pMyWin32App = new AP_Win32App(hInstance, szAppName);

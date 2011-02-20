@@ -100,9 +100,42 @@ void AP_Args::addOptions(GOptionGroup *options)
 	g_option_context_add_group (m_context, options);
 }
 
+#ifdef WIN32
+
+static inline char xdec(const char *s)
+{
+	int a=0;
+	for (int i=0; i<2; i++) {
+		if (s[i]>='0' && s[i]<='9') {
+			a=(a<<4)+s[i]-'0';
+		} else if (s[i]>='a' && s[i]<='f') {
+			a=(a<<4)+s[i]-'a'+10;
+		} else if (s[i]>='A' && s[i]<='F') {
+			a=(a<<4)+s[i]-'A'+10;
+		}
+	}
+	return a;
+}
+
+void XX_inplaceDecode(const char *s)
+{
+	char *d=(char*)s;
+	while (*s) {
+		if (*s=='%' && s[1] && s[2]) {
+			*d++=xdec(s+1);
+			s+=3;
+		} else {
+			*d++=*s++;
+		}
+	}
+	*d=0;
+}
+
+#endif
+
 /*! Processes all the command line options and puts them in AP_Args.
  *
- * Note that GNOME does this for us!
+ * Note that GNOME does this for us... but fails.
  */
 void AP_Args::parseOptions()
 {
@@ -114,7 +147,23 @@ void AP_Args::parseOptions()
 	if (err) {
 		fprintf (stderr, "%s\n", err->message);
 		g_error_free (err); err = NULL;
+		return;
 	}
+#ifdef WIN32
+	// otherwise, decode arguments
+	const char **arr;
+	arr=m_sFiles;
+	if (arr) while (*arr) {
+		XX_inplaceDecode(*arr);
+		arr++;
+	}
+	if (m_sMerge) XX_inplaceDecode(m_sMerge);
+	if (m_impProps) XX_inplaceDecode(m_impProps);
+	if (m_expProps) XX_inplaceDecode(m_expProps);
+	if (m_sName) XX_inplaceDecode(m_sName);
+	if (m_sFileExtension) XX_inplaceDecode(m_sFileExtension);
+	if (m_sUserProfile) XX_inplaceDecode(m_sUserProfile);
+#endif
 }
 
 UT_String * AP_Args::getPluginOptions() const
