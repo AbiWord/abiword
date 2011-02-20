@@ -736,8 +736,10 @@ bool Text_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				UT_return_val_if_fail(field, false);
 
 				m_pie->populateFields ();
-				if(field->getValue() != NULL)
-					m_pie->write(field->getValue());
+				if(field->getValue() != NULL) {
+					UT_UCS4String ws(field->getValue());
+					_outputData(ws.ucs4_str(),ws.length());
+				}
 
 				return true;
 			
