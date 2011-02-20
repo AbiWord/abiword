@@ -31,6 +31,7 @@
 #include "ap_Win32Clipboard.h"
 #include "ie_types.h"
 #include "ut_string_class.h"
+#include "ut_Win32LocaleString.h"
 
 /*
   The following turns on code that tries to place data on the
@@ -103,9 +104,9 @@ public:
 		win32 UI until we do a Unicode port. It's better to do all UI
 		conversions in a single point. You are looking to this point right now. Jordi,
 	*/
-	static UT_String 		s_fromUCS4ToWinLocale(const UT_UCS4Char * szIn);
+	static UT_Win32LocaleString 	s_fromUCS4ToWinLocale(const UT_UCS4Char * szIn);
 	static UT_UCS4String	s_fromWinLocaleToUCS4(const char* szIn);
-	static UT_String 		s_fromUTF8ToWinLocale(const char* szIn);
+	static UT_Win32LocaleString 	s_fromUTF8ToWinLocale(const char* szIn);
 	static UT_UTF8String	s_fromWinLocaleToUTF8(const char* szIn);
 
 	

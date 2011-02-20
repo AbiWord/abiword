@@ -1540,12 +1540,12 @@ bool	AP_Win32App::doesStringSetExist(const char* pLocale)
 
 
 /* From UCS4 To WinLocale */
-UT_String  	AP_Win32App::s_fromUCS4ToWinLocale(const UT_UCS4Char * szIn)
-{		
-	UT_String sRslt;
-    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+UT_Win32LocaleString	AP_Win32App::s_fromUCS4ToWinLocale(const UT_UCS4Char * szIn)
+{	
+	UT_Win32LocaleString sRslt;
+	sRslt.fromUCS4(szIn);
+	//UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return sRslt;
-
 }
 
 /* From WinLocale To UCS4*/
@@ -1560,7 +1560,7 @@ UT_UCS4String	AP_Win32App::s_fromWinLocaleToUCS4(const char* szIn)
 }
 
 /* From  UTF8 To WinLocale */
-UT_String 		AP_Win32App::s_fromUTF8ToWinLocale(const char* szInUTF8)
+UT_Win32LocaleString 	AP_Win32App::s_fromUTF8ToWinLocale(const char* szInUTF8)
 {
 	UT_UTF8String utf8(szInUTF8);	
 	UT_UCS4String sUCS4(utf8.ucs4_str());
