@@ -9,7 +9,7 @@ AC_INIT([abiword],[abi_version],[http://www.abisource.com/])
 AC_CANONICAL_HOST
 AC_CONFIG_HEADERS(config.h)
 
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([1.9 tar-ustar])
 
 dnl we use AM_MAINTAINER_MODE and enable it to allow to disable it.
 dnl very usefull to build in scratchbox where the maintainer mode is used for the PC
