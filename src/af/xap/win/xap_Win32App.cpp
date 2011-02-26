@@ -32,6 +32,7 @@
 #include "ut_debugmsg.h"
 #include "ut_path.h"
 #include "ut_Win32Uuid.h"
+#include "ut_win32localestring.h"
 #include "xap_Win32App.h"
 #include "xap_Win32Clipboard.h"
 #include "xap_Frame.h"
@@ -216,61 +217,152 @@ UT_uint32 XAP_Win32App::_getExeDir(char* pDirBuf, UT_uint32 iBufLen) // ansi onl
 	return iResult;
 }
 
-const char * XAP_Win32App::getUserPrivateDirectory(void) // ansi only dirs for now
+static bool isWriteable(LPWSTR lpPath)
+{
+	bool  result = false;
+	DWORD len = lstrlenW(lpPath);
+	DWORD rem = MAX_PATH - len - 1;
+	DWORD err;
+	if (rem < 13) return false;
+
+	lstrcpyW(&lpPath[len],L"/abiword.flg");
+	if (CreateDirectoryW(lpPath,NULL)) {
+		RemoveDirectoryW(lpPath);
+		err=GetLastError();
+		if (err != ERROR_ACCESS_DENIED) result=true;
+	} else {
+		err=GetLastError();
+	}
+	lpPath[len]=0;
+	return result;
+}
+
+#define NO_WIN32_UNICODE_SUPPORT_YET 1
+
+const char * XAP_Win32App::getUserPrivateDirectory(void)
 {
 	/* return a pointer to a static buffer */
 
-	const char * szAbiDir = "AbiSuite";
+	LPCWSTR szAbiDir = L"AbiSuite";
 
-	static char buf[PATH_MAX];
+	bool path_ok = false;
+
+	static WCHAR wbuf[PATH_MAX];
+	static char buf[PATH_MAX*6];
 	memset(buf,0,sizeof(buf));
 
 	DWORD len, len1, len2;
 
+	UT_Win32LocaleString str;
+	UT_UTF8String utf8;
+
 	// On NT, USERPROFILE seems to be set to the directory containing per-user
 	// information.  we'll try that first.
 
-	len = GetEnvironmentVariableA("USERPROFILE",buf,PATH_MAX); //!TODO Using ANSI function
+	len = GetEnvironmentVariableW(L"USERPROFILE",wbuf,PATH_MAX);
 	if (len)
 	{
-		UT_DEBUGMSG(("Getting preferences directory from USERPROFILE [%s].\n",buf));
+		if (isWriteable(wbuf)) path_ok=true;
+#ifdef DEBUG
+		str.fromLocale(wbuf);
+		utf8=str.utf8_str();
+		UT_DEBUGMSG(("Getting preferences directory from USERPROFILE [%s].\n",utf8.utf8_str()));
+#endif
 	}
-	else
+
+	if (!path_ok)
 	{
 		// If that doesn't work, look for HOMEDRIVE and HOMEPATH.  HOMEPATH
 		// is mentioned in the GetWindowsDirectory() documentation at least.
 		// These may be set if the SysAdmin did so in the Admin tool....
 
-		len1 = GetEnvironmentVariableA("HOMEDRIVE",buf,PATH_MAX); //!TODO Using ANSI function
-		len2 = GetEnvironmentVariableA("HOMEPATH",&buf[len1],PATH_MAX-len1); //!TODO Using ANSI function
+		len1 = GetEnvironmentVariableW(L"HOMEDRIVE",wbuf,PATH_MAX);
+		len2 = GetEnvironmentVariableW(L"HOMEPATH",&wbuf[len1],PATH_MAX-len1);
 		if (len1 && len2)
 		{
-			UT_DEBUGMSG(("Getting preferences directory from HOMEDRIVE and HOMEPATH [%s].\n",buf));
-		}
-		else
-		{
-			// If that doesn't work, let's just stick it in the WINDOWS directory.
-
-			len = GetWindowsDirectoryA(buf,PATH_MAX); //!TODO Using ANSI function
-			if (len)
-			{
-				UT_DEBUGMSG(("Getting preferences directory from GetWindowsDirectory() [%s].\n",buf));
-			}
-			else
-			{
-				// If that doesn't work, stick it in "C:\"...
-
-				strcpy(buf,"C:\\");
-			}
+			if (isWriteable(wbuf)) path_ok=true;
+#ifdef DEBUG
+			str.fromLocale(wbuf);
+			utf8=str.utf8_str();
+			UT_DEBUGMSG(("Getting preferences directory from HOMEDRIVE and HOMEPATH [%s].\n",utf8.utf8_str()));
+#endif
 		}
 	}
 
-	if (strlen(buf)+strlen(szAbiDir)+2 >= PATH_MAX)
+	if (!path_ok)
+	{
+		// If that doesn't work, let's just stick it in the WINDOWS directory.
+
+		len = GetWindowsDirectoryW(wbuf,PATH_MAX);
+		if (len)
+		{
+			if (isWriteable(wbuf)) path_ok=true;
+#ifdef DEBUG
+			str.fromLocale(wbuf);
+			utf8=str.utf8_str();
+			UT_DEBUGMSG(("Getting preferences directory from GetWindowsDirectory() [%s].\n",utf8.utf8_str()));
+#endif
+		}
+	}
+
+	if (!path_ok)
+	{
+		// If that doesn't work, stick it in "C:\"...
+
+		lstrcpyW(wbuf,L"C:\\");
+		if (isWriteable(wbuf)) path_ok=true;
+		UT_DEBUGMSG(("Getting preferences directory defaulted to C:\\.\n"));
+	}
+
+	if (!path_ok)
+	{
+		// As penultimate resort try to use temporary dir
+
+		len = GetTempPathW(MAX_PATH,wbuf);
+		if (len)
+		{
+			if (isWriteable(wbuf)) path_ok=true;
+#ifdef DEBUG
+			str.fromLocale(wbuf);
+			utf8=str.utf8_str();
+			UT_DEBUGMSG(("Getting preferences directory from GetTempPath() [%s].\n",utf8.utf8_str()));
+#endif
+		}
+	}
+
+	if (!path_ok)
+	{
+		// As last resort trying to use TMP dir
+
+		len = GetEnvironmentVariableW(L"TMP",wbuf,PATH_MAX);
+		if (len)
+		{
+			if (isWriteable(wbuf)) path_ok=true;
+#ifdef DEBUG
+			str.fromLocale(wbuf);
+			utf8=str.utf8_str();
+			UT_DEBUGMSG(("Getting preferences directory from TMP [%s].\n",utf8.utf8_str()));
+#endif
+		}
+	}
+
+	UT_ASSERT(path_ok=true)
+
+	if (lstrlenW(wbuf)+lstrlenW(szAbiDir)+2 >= PATH_MAX)
 		return NULL;
 
-	if (buf[strlen(buf)-1] != '\\')
-		strcat(buf,"\\");
-	strcat(buf,szAbiDir);
+	if (wbuf[lstrlenW(wbuf)-1] != L'\\')
+		lstrcatW(wbuf,L"\\");
+	lstrcatW(wbuf,szAbiDir);
+
+#ifdef NO_WIN32_UNICODE_SUPPORT_YET
+	WideCharToMultiByte(CP_ACP,0,wbuf,-1,buf,MAX_PATH,"_",NULL);
+#else
+	str.fromLocale(wbuf);
+	utf8=str.utf8_str();
+	strcpy(buf,utf8.utf8_str());
+#endif
+
 	return buf;
 }
 
