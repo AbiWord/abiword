@@ -172,7 +172,6 @@ void XAP_Win32Dialog_FileOpenSaveAs::_buildFilterList(UT_String& sFilter)
 
 	// all supported files filter
 	sFilter += m_id == XAP_DIALOG_ID_INSERT_PICTURE ? pSS->getValue(XAP_STRING_ID_DLG_FOSA_ALLIMAGES) : pSS->getValue(XAP_STRING_ID_DLG_FOSA_ALLDOCS);
-	sFilter += " (" + sAllSuffixes + ")";
 	sFilter += '\0';				// include the trailing 0
 	sFilter += sAllSuffixes;
 	sFilter += '\0';				// include the trailing 0
