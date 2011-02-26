@@ -1020,15 +1020,16 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 		{
 			HDROP hDrop = (HDROP) wParam; 
 			// How many files were dropped?
-			int count = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0);
-			char szFileName[PATH_MAX];
+			int count = DragQueryFileW(hDrop, 0xFFFFFFFF, NULL, 0);
+			WCHAR szFileName[PATH_MAX];
+			UT_Win32LocaleString str;
 			int i,pathlength;
 			for (i=0; i<count; i++)
 			{
-				pathlength = DragQueryFile(hDrop, i, NULL, 0);
+				pathlength = DragQueryFileW(hDrop, i, NULL, 0);
 				if (pathlength < PATH_MAX)
 				{
-					DragQueryFile(hDrop, i, szFileName, PATH_MAX);
+					DragQueryFileW(hDrop, i, szFileName, PATH_MAX);
 					XAP_App * pApp = XAP_App::getApp();
 					UT_return_val_if_fail(pApp, 0);
 					FV_View* pCurrentView = (FV_View *) f->getCurrentView();
@@ -1044,7 +1045,8 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 						in the document, if not we assume that it's a document 		
 					*/								
 					// If there is no import graphic, it's a document...
-					char * uri = UT_go_filename_to_uri(AP_Win32App::s_fromWinLocaleToUTF8(szFileName).utf8_str());
+					str.fromLocale(szFileName);
+					char * uri = UT_go_filename_to_uri(str.utf8_str().utf8_str());
 					if(uri)
 						errorCode = IE_ImpGraphic::constructImporter(uri, iegft, &pIEG);
 

@@ -38,14 +38,24 @@
 
 XAP_Win32DropTarget::XAP_Win32DropTarget()
 {
-	m_uCF_RTF = RegisterClipboardFormat(CF_RTF);	
+#define TEXT(z) L##z
+	m_uCF_RTF = RegisterClipboardFormatW(CF_RTF);	
+#undef  TEXT
 	m_nCount = 0;
 	
 }
 
-STDMETHODIMP XAP_Win32DropTarget::QueryInterface(REFIID /*riid*/, LPVOID FAR* /*ppvObj*/)
+STDMETHODIMP XAP_Win32DropTarget::QueryInterface(REFIID riid, LPVOID FAR* ppvObj)
 {
-        return S_OK;
+	if (!ppvObj) return E_POINTER;
+	if (riid==IID_IDropTarget) {
+		*ppvObj=(IDropTarget*)this;
+		return S_OK;
+	} else if (riid==IID_IUnknown) {
+		*ppvObj=(IUnknown*)this;
+		return S_OK;
+	}
+	return E_NOINTERFACE;
 }
 
 
@@ -125,7 +135,7 @@ STDMETHODIMP XAP_Win32DropTarget::Drop (LPDATAOBJECT pDataObj, DWORD /*grfKeySta
 	if (NOERROR == pDataObj->QueryGetData(&fmte))
 	{
 		if (pDataObj && SUCCEEDED (pDataObj->GetData (&fmte, &medium)))
-			count = DragQueryFile((HDROP)medium.hGlobal, 0xFFFFFFFF, NULL, 0);
+			count = DragQueryFileW((HDROP)medium.hGlobal, 0xFFFFFFFF, NULL, 0);
 		
 		// We send an event Message Window to the Win32Frame since historicaly
 		// the file loading was processed there
