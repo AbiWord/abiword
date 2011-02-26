@@ -30,6 +30,8 @@
 #include "xap_Win32App.h"
 #include "xap_Win32DialogHelper.h"
 
+#include "ut_win32LocaleString.h"
+
 
 static void _assertValidDlgHandle(HWND hDlg)
 {
@@ -138,7 +140,9 @@ void XAP_Win32DialogHelper::destroyWindow()
 void XAP_Win32DialogHelper::setDialogTitle(LPCTSTR p_str)
 {
 	_assertValidDlgHandle(m_hDlg);
-	SetWindowText(m_hDlg, p_str);
+	UT_Win32LocaleString str;
+	str.fromUTF8(p_str);
+	SetWindowTextW(m_hDlg, str.c_str());
 }
 
 int XAP_Win32DialogHelper::showWindow(int Mode )
@@ -168,7 +172,9 @@ int XAP_Win32DialogHelper::bringWindowToTop()
 int XAP_Win32DialogHelper::addItemToCombo(UT_sint32 controlId, LPCSTR p_str)
 {
 	_assertValidDlgHandle(m_hDlg);
-	return SendDlgItemMessageW(m_hDlg, controlId, CB_ADDSTRING, 0, (LPARAM)p_str);
+	UT_Win32LocaleString str;
+	str.fromUTF8(p_str);
+	return SendDlgItemMessageW(m_hDlg, controlId, CB_ADDSTRING, 0, (LPARAM)str.c_str());
 }
 
 int XAP_Win32DialogHelper::setComboDataItem(UT_sint32 controlId, int nIndex, DWORD dwData)
@@ -214,7 +220,9 @@ void XAP_Win32DialogHelper::resetContent(UT_sint32 controlId)
 int XAP_Win32DialogHelper::addItemToList(UT_sint32 controlId, LPCSTR p_str)
 {
 	_assertValidDlgHandle(m_hDlg);
-	return SendDlgItemMessageW(m_hDlg, controlId, LB_ADDSTRING, 0, (LPARAM)p_str);
+	UT_Win32LocaleString str;
+	str.fromUTF8(p_str);
+	return SendDlgItemMessageW(m_hDlg, controlId, LB_ADDSTRING, 0, (LPARAM)str.c_str());
 }
 
 int XAP_Win32DialogHelper::setListDataItem(UT_sint32 controlId, int nIndex, DWORD dwData)
@@ -253,7 +261,9 @@ void XAP_Win32DialogHelper::getListText(UT_sint32 controlId, int index, char *p_
 void XAP_Win32DialogHelper::setControlText(UT_sint32 controlId, LPCTSTR p_str)
 {
 	_assertValidDlgHandle(m_hDlg);
-	SetDlgItemText(m_hDlg, controlId, p_str);
+	UT_Win32LocaleString str;
+	str.fromUTF8(p_str);
+	SetDlgItemTextW(m_hDlg, controlId, str.c_str());
 }
 
 void XAP_Win32DialogHelper::setControlInt(UT_sint32 controlId, int value)

@@ -99,7 +99,7 @@ BOOL XAP_Win32Dialog_History::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM
 		setDlgItemText(k1 + i,getHeaderLabel(i));
 		
 		char * t = getHeaderValue(i);
-		SetDlgItemText(hWnd,k2 + i, t);
+		SetDlgItemText(hWnd,k2 + i, t); // !
 		FREEP(t);
 	}
 
@@ -116,7 +116,7 @@ BOOL XAP_Win32Dialog_History::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM
 		col.iSubItem = i;
 		col.cx = 120;
 		col.pszText = (wchar_t *)str.c_str();
-		ListView_InsertColumn(h,i,&col);
+		SendMessageW(h, LVM_INSERTCOLUMNW, i, (LPARAM)&col);
 	}
 
 	// fill the list
@@ -127,8 +127,8 @@ BOOL XAP_Win32Dialog_History::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM
 	item.stateMask = 0;
 	item.iImage = 0;
 
-	wchar_t buf[35];
-	item.pszText = buf;
+	//wchar_t buf[80];
+	//item.pszText = buf;
 	char * t;
 
 	for(i = 0; i < getListItemCount(); i++)
@@ -147,11 +147,11 @@ BOOL XAP_Win32Dialog_History::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM
 			{
 				item.lParam = getListItemId(i);
 				item.mask |= LVIF_PARAM;
-				ListView_InsertItem(h, &item);
+				SendMessageW(h, LVM_INSERTITEMW, 0, (LPARAM)&item);
 			}
 			else
 			{
-				ListView_SetItem(h, &item);
+				SendMessageW(h, LVM_SETITEMW, 0, (LPARAM)&item);
 			}
 			
 			FREEP(t);
@@ -190,7 +190,7 @@ BOOL XAP_Win32Dialog_History::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lPar
 					item.pszText = 0;
 					item.cchTextMax = 0;
 
-					ListView_GetItem(h,&item);
+					SendMessageW(h, LVM_GETITEMW, 0, (LPARAM)&item);
 
 					setSelectionId(item.lParam);
 				}

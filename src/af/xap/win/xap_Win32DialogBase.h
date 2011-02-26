@@ -118,8 +118,9 @@ protected:
 protected:
 HWND m_hDlg;
 	
-private:
+protected:
 	static BOOL CALLBACK s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
+private:
 	
 	// disallow copying and assignment
 	XAP_Win32DialogBase(const XAP_Win32DialogBase&);	// no impl.

@@ -99,57 +99,56 @@ BOOL AP_Win32Dialog_ListRevisions::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, L
     UT_Win32LocaleString str;
 	col.mask = LVCF_TEXT | LVCF_SUBITEM | LVCF_WIDTH;
 
-	col.iSubItem = 0;
-	col.cx = 80;
-    str.fromUTF8(getColumn1Label());
-    col.pszText = (wchar_t *) str.c_str();    
-	ListView_InsertColumn(h,0,&col);
+	int col_hdr[3]={AP_STRING_ID_DLG_ListRevisions_Column1Label,
+					AP_STRING_ID_DLG_ListRevisions_Column2Label,
+					AP_STRING_ID_DLG_ListRevisions_Column3Label};
+	int col_wid[3]={80,160,230};
 
-	col.iSubItem = 1;
-	col.cx = 160;
-    str.fromUTF8(getColumn2Label());
-	col.pszText = (wchar_t *) str.c_str();   
-	ListView_InsertColumn(h,1,&col);
+	for (int i=0; i<3; i++) {
+		col.iSubItem = i;
+		col.cx = col_wid[i];
+		str.fromUTF8(pSS->getValue(col_hdr[i]));
+		col.pszText = (LPWSTR) str.c_str();
+		SendMessageW(h, LVM_INSERTCOLUMNW, i, (LPARAM)&col);
+	}
 
-	col.iSubItem = 2;
-	col.cx = 230;
-    str.fromUTF8(getColumn3Label());
-	col.pszText = (wchar_t *) str.c_str();   
-	ListView_InsertColumn(h,2,&col);
-	
 	ListView_SetItemCount(h, getItemCount());
 
-    /*TODO : CHECK*/
-    LVITEM item;
+	LVITEMW item;
 	item.state = 0;
 	item.stateMask = 0;
 	item.iImage = 0;
 
-	char buf[35];
+	WCHAR buf[60];
+	const char *tmp;
 	item.pszText = buf;
-	char * t;
 
 	for(UT_uint32 i = 0; i < getItemCount(); i++)
 	{
-		sprintf(buf,"%d",getNthItemId(i));
+		wsprintfW(buf,L"%d",getNthItemId(i));
 		item.pszText = buf;
 		item.iItem = i;
 		item.iSubItem = 0;
 		item.lParam = getNthItemId(i);
 		item.mask = LVIF_TEXT | LVIF_PARAM;
-		ListView_InsertItem(h, &item);
+		SendMessageW(h, LVM_INSERTITEMW, 0, (LPARAM)&item);
 
 		item.iSubItem = 1;
-		item.pszText = const_cast<char *>(getNthItemTime(i));
+		tmp=getNthItemTime(i);
+		if (tmp) {
+			str.fromASCII(tmp,-1);
+			item.pszText = (LPWSTR) str.c_str();
+		} else {
+			item.pszText = L"";
+		}
 		item.mask = LVIF_TEXT;
-		ListView_SetItem(h, &item);
+		SendMessageW(h, LVM_SETITEMW, 0, (LPARAM)&item);
 		
 		item.iSubItem = 2;
-		t = getNthItemText(i);
-		item.pszText = t;
+		str.fromUTF8(getNthItemText(i));
+		item.pszText = (LPWSTR) str.c_str();
 		item.mask = LVIF_TEXT;
-		ListView_SetItem(h, &item);
-		FREEP(t);
+		SendMessageW(h, LVM_SETITEMW, 0, (LPARAM)&item);
 	}
    
 	SendMessageW(h, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);  								

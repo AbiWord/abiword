@@ -78,6 +78,7 @@ BOOL AP_Win32Dialog_HdrFtr::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /
 	UT_return_val_if_fail (app,0);
 
 	m_hThisDlg = hWnd;
+	setHandle(hWnd);
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	// localize dialog title

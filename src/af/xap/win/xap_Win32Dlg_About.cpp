@@ -189,7 +189,9 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 										   pWin32App->getInstance(),
 										   NULL);
 
-    str.fromASCII (XAP_App::s_szBuild_Version);
+	const char *versiontext=pSS->getValue(XAP_STRING_ID_DLG_ABOUT_Version);
+	UT_UTF8String version = UT_UTF8String_sprintf(versiontext,XAP_App::s_szBuild_Version);
+	str.fromUTF8(version.utf8_str());
    
 	HWND hwndStatic_Version = CreateWindowW(L"STATIC",
 										   str.c_str(),

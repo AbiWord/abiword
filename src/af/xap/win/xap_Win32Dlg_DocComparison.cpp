@@ -86,10 +86,12 @@ BOOL XAP_Win32Dialog_DocComparison::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, 
 
 	// fill frame 1
 	char * p = getPath1();
+	if (!p) p = g_strdup("FIXME: Invalid Path1");
     setDlgItemText(XAP_RID_DIALOG_DOCCOMPARISON_PATH1,p);
 	FREEP(p);
 
 	p = getPath2();
+	if (!p) p = g_strdup("FIXME: Invalid Path2");
 	setDlgItemText(XAP_RID_DIALOG_DOCCOMPARISON_PATH2,p);
 	FREEP(p);
 	

@@ -106,7 +106,7 @@ void  XAP_Win32Dialog_Language::_fillTreeview(HWND hTV)
 		//Loop over all the languages for which we have a spell checker
 		for (UT_uint32 iItem = nItems; iItem; --iItem)
 		{
-			const char* pText  = (const char*) pVec->getNthItem(iItem - 1);							
+			const char* pText  = (const char*) pVec->getNthItem(iItem - 1);
 			if (strcmp(pText,  m_ppLanguagesCode[i])==0)
 			{				
 				tvi.iImage = 1;    
@@ -117,10 +117,10 @@ void  XAP_Win32Dialog_Language::_fillTreeview(HWND hTV)
 		UT_Win32LocaleString str;
 		str.fromUTF8 (sLang);
 		tvi.pszText = (wchar_t *) str.c_str();
-		tvi.cchTextMax = str.length();		
+		tvi.cchTextMax = str.length();
 		tvi.lParam=i;
 		tvins.item = tvi;
-		hItem = TreeView_InsertItem(hTV, &tvins);
+		hItem = (HTREEITEM)SendMessageW(hTV, TVM_INSERTITEMW, 0, (LPARAM)&tvins);
 		
 		if (strcmp(m_pLanguage, sLang)==0)
 			hSel = hItem;	

@@ -116,7 +116,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 	if (!m_sFontFamily.empty())
     {
         family.fromUTF8 (m_sFontFamily.c_str());
-		wcscpy(lf.lfFaceName,family.c_str());
+		lstrcpynW(lf.lfFaceName,family.c_str(),LF_FACESIZE);
     }
 	else
 		cf.Flags |= CF_NOFACESEL;
@@ -163,7 +163,8 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 	// Convert the font name returned by the Windows Font Chooser
 	// to UTF-8.
 	family.fromLocale (lf.lfFaceName);
-	const char *szFontFamily = family.utf8_str().utf8_str();
+	UT_UTF8String family_utf = family.utf8_str();
+	const char *szFontFamily = family_utf.utf8_str();
 
 	if (m_answer == a_OK)
 	{
@@ -192,7 +193,8 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 		else
 			bufSize[0] = 0;
 
-		if (bIsSizeValid && bWasSizeValid && (g_ascii_strcasecmp(bufSize,m_sFontSize.c_str()) != 0))			
+		// why? let's see
+		if (bIsSizeValid /*&& bWasSizeValid*/ && (g_ascii_strcasecmp(bufSize,m_sFontSize.c_str()) != 0))			
 		{
 			m_bChangedFontSize = true;
 			m_sFontSize = bufSize;
@@ -336,6 +338,8 @@ BOOL XAP_Win32Dialog_FontChooser::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LP
 	_DS(FONT_CHK_HIDDEN,        DLG_UFS_HiddenCheck);
 	_DS(FONT_CHK_SUPERSCRIPT,	DLG_UFS_SuperScript);
 	_DS(FONT_CHK_SUBSCRIPT,		DLG_UFS_SubScript);
+	_DS(FONT_CHK_ALLCAPS,		DLG_UFS_Effects_UpperCase);
+	_DS(FONT_CHK_SMALLCAPS,		DLG_UFS_Effects_SmallCaps);
 
 	// set initial state
 	if( m_bWin32Overline )

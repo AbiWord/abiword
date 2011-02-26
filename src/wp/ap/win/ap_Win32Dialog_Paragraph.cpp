@@ -109,10 +109,25 @@ void AP_Win32Dialog_Paragraph::runModal(XAP_Frame * pFrame)
 
 	XAP_Win32LabelledSeparator_RegisterClass(pWin32App);	
 
-	createModal(pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_PARAGRAPH));
+//	createModal(pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_PARAGRAPH));
+
+	LPCWSTR lpTemplate = NULL;
+
+	UT_ASSERT(m_id == AP_DIALOG_ID_PARAGRAPH);
+
+	lpTemplate = MAKEINTRESOURCEW(AP_RID_DIALOG_PARAGRAPH);
+
+	XAP_Win32FrameImpl* pWin32FrameImpl = static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl());
+
+	HWND hFrameWnd = pWin32FrameImpl->getTopLevelWindow();
+
+	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
+								hFrameWnd,
+								(DLGPROC)s_dlgProc,(LPARAM)this);
+	UT_ASSERT((result != -1));
 }
 
-/*
+/**/ //was commented out from here
 BOOL CALLBACK AP_Win32Dialog_Paragraph::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
 {
 	// This is a static function.
@@ -124,6 +139,7 @@ BOOL CALLBACK AP_Win32Dialog_Paragraph::s_dlgProc(HWND hWnd,UINT msg,WPARAM wPar
 	case WM_INITDIALOG:
 		pThis = (AP_Win32Dialog_Paragraph *)lParam;
 		SWL(hWnd,lParam);
+		pThis->setHandle(hWnd);
 		return pThis->_onInitDialog(hWnd,wParam,lParam);
 
 	case WM_COMMAND:
@@ -163,7 +179,7 @@ BOOL CALLBACK AP_Win32Dialog_Paragraph::s_dlgProc(HWND hWnd,UINT msg,WPARAM wPar
 		return 0;
 	}
 }
-*/
+/**/ // and to here
 // this little struct gets passed into s_tabProc
 typedef struct _tabParam
 {
@@ -243,14 +259,18 @@ BOOL AP_Win32Dialog_Paragraph::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 
 		// add a tab for each of the child dialog boxes
 
+		UT_Win32LocaleString str;
+
 		tie.mask = TCIF_TEXT | TCIF_IMAGE | TCIF_PARAM;
 		tie.iImage = -1;
-		tie.pszText = (LPWSTR) _GV(DLG_Para_TabLabelIndentsAndSpacing);
+		str.fromUTF8(_GV(DLG_Para_TabLabelIndentsAndSpacing));
+		tie.pszText = (LPWSTR)str.c_str();
 		tie.lParam = AP_RID_DIALOG_PARA_TAB1;
-		TabCtrl_InsertItem(m_hwndTab, 0, &tie);
-		tie.pszText = (LPWSTR) _GV(DLG_Para_TabLabelLineAndPageBreaks);
+		SendMessageW(m_hwndTab, TCM_INSERTITEMW, 0, (LPARAM)&tie);
+		str.fromUTF8(_GV(DLG_Para_TabLabelLineAndPageBreaks));
+		tie.pszText = (LPWSTR)str.c_str();
 		tie.lParam = AP_RID_DIALOG_PARA_TAB2;
-		TabCtrl_InsertItem(m_hwndTab, 1, &tie);
+		SendMessageW(m_hwndTab, TCM_INSERTITEMW, 1, (LPARAM)&tie);
 
 		// finally, create the (modeless) child dialogs
 
@@ -280,20 +300,23 @@ BOOL AP_Win32Dialog_Paragraph::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 
 /*****************************************************************/
 
-#define _CAS(w,s)	SendMessageW(w, CB_ADDSTRING, 0, (LPARAM) _GV(s))
-#define _SST(c,i)	setDlgItemText(AP_RID_DIALOG_##c,_getSpinItemValue(i))
+#define _CAS(w,s)	str.fromUTF8(_GV(s));\
+	SendMessageW(w, CB_ADDSTRING, 0, (LPARAM)str.c_str())
+#define _SST(c,i)	setDlgItemText(hWnd,AP_RID_DIALOG_##c,_getSpinItemValue(i))
 #define _CDB(c,i)	CheckDlgButton(hWnd,AP_RID_DIALOG_##c,_getCheckItemValue(i))
 
 BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
+	UT_Win32LocaleString str;
+
 	// position ourselves w.r.t. containing tab
 
 	RECT r;
 	GetClientRect(m_hwndTab, &r);
 	TabCtrl_AdjustRect(m_hwndTab, FALSE, &r);
-    SetWindowPos(hWnd, HWND_TOP, r.left, r.top, 0, 0, SWP_NOSIZE);
+	SetWindowPos(hWnd, HWND_TOP, r.left, r.top, 0, 0, SWP_NOSIZE);
 
 	// remember which window is which tab
 
@@ -329,7 +352,7 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 			{
 				HWND hwndAlign = GetDlgItem(hWnd, AP_RID_DIALOG_PARA_COMBO_ALIGN);
 				// insert the empty value (for multi-para selections with different state)
-				SendMessageW(hwndAlign, CB_ADDSTRING, 0, (LPARAM) "");
+				SendMessageW(hwndAlign, CB_ADDSTRING, 0, (LPARAM) L"");
 				_CAS(hwndAlign, DLG_Para_AlignLeft);
 				_CAS(hwndAlign, DLG_Para_AlignCentered);
 				_CAS(hwndAlign, DLG_Para_AlignRight);
@@ -337,14 +360,14 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 				SendMessageW(hwndAlign, CB_SETCURSEL, (WPARAM) _getMenuItemValue(id_MENU_ALIGNMENT), 0);
 
 				HWND hwndHang = GetDlgItem(hWnd, AP_RID_DIALOG_PARA_COMBO_HANG);
-				SendMessageW(hwndHang, CB_ADDSTRING, 0, (LPARAM) "");
+				SendMessageW(hwndHang, CB_ADDSTRING, 0, (LPARAM) L"");
 				_CAS(hwndHang, DLG_Para_SpecialNone);
 				_CAS(hwndHang, DLG_Para_SpecialFirstLine);
 				_CAS(hwndHang, DLG_Para_SpecialHanging);
 				SendMessageW(hwndHang, CB_SETCURSEL, (WPARAM) _getMenuItemValue(id_MENU_SPECIAL_INDENT), 0);
 
 				HWND hwndLead = GetDlgItem(hWnd, AP_RID_DIALOG_PARA_COMBO_LEAD);
-				SendMessageW(hwndLead, CB_ADDSTRING, 0, (LPARAM) "");
+				SendMessageW(hwndLead, CB_ADDSTRING, 0, (LPARAM) L"");
 				_CAS(hwndLead, DLG_Para_SpacingSingle);
 				_CAS(hwndLead, DLG_Para_SpacingHalf);
 				_CAS(hwndLead, DLG_Para_SpacingDouble);

@@ -247,7 +247,7 @@ void XAP_Win32DialogBase::resetComboContent(UT_sint32 controlId)
 void XAP_Win32DialogBase::getComboTextItem(UT_sint32 controlId, int index, UT_Win32LocaleString& str)
 {
 	UT_return_if_fail(IsWindow(m_hDlg));
-	wchar_t szBuff[1024];	
+	wchar_t szBuff[1024];
 
 	if (SendDlgItemMessageW(m_hDlg, controlId, CB_GETLBTEXT, index, (LPARAM)szBuff) != CB_ERR)
 		str.fromLocale(szBuff);
@@ -267,7 +267,9 @@ void XAP_Win32DialogBase::resetContent(UT_sint32 controlId)
 int XAP_Win32DialogBase::addItemToList(UT_sint32 controlId, LPCSTR p_str)
 {
 	UT_return_val_if_fail(IsWindow(m_hDlg), LB_ERR);
-	return SendDlgItemMessageW(m_hDlg, controlId, LB_ADDSTRING, 0, (LPARAM)p_str);
+	UT_Win32LocaleString str;
+	str.fromUTF8(p_str);
+	return SendDlgItemMessageW(m_hDlg, controlId, LB_ADDSTRING, 0, (LPARAM)str.c_str());
 }
 
 int XAP_Win32DialogBase::setListDataItem(UT_sint32 controlId, int nIndex, DWORD dwData)
@@ -306,8 +308,10 @@ void XAP_Win32DialogBase::getListText(UT_sint32 controlId, int index, char *p_st
 void XAP_Win32DialogBase::setControlText(UT_sint32 controlId, LPCSTR p_str)
 {
 	UT_return_if_fail(IsWindow(m_hDlg));
-	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-	//  SetDlgItemTextW(m_hDlg, controlId, p_str);
+	//UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+	UT_Win32LocaleString str;
+	str.fromUTF8(p_str);
+	SetDlgItemTextW(m_hDlg, controlId, str.c_str());
 }
 
 bool XAP_Win32DialogBase::setDlgItemText(int nIDDlgItem,  const char* uft8_str)
@@ -368,7 +372,12 @@ void XAP_Win32DialogBase::getControlText(UT_sint32 controlId,
 											UT_sint32 Buffer_length) const
 {
 	UT_return_if_fail(IsWindow(m_hDlg));
-	GetDlgItemText(m_hDlg, controlId, p_buffer, Buffer_length);
+	UT_Win32LocaleString str;
+	LPWSTR wbuf = (LPWSTR) UT_calloc(Buffer_length+1,2);
+	GetDlgItemTextW(m_hDlg, controlId, wbuf, Buffer_length);
+	str.fromLocale(wbuf);
+	strncpy(p_buffer,str.utf8_str().utf8_str(),Buffer_length);
+	FREEP(wbuf);
 }
 
 bool XAP_Win32DialogBase::isControlVisible(UT_sint32 controlId) const
@@ -412,7 +421,6 @@ void XAP_Win32DialogBase::centerDialog()
 	pt.x -= nWidth / 2;
 	pt.y -= nHeight / 2;
 
-	// Move your arse...
 	MoveWindow (m_hDlg, pt.x, pt.y, nWidth, nHeight, TRUE);
 }
 

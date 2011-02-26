@@ -76,7 +76,8 @@ BOOL AP_Win32Dialog_Tab::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lP
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	  setDialogTitle (pSS->getValue(AP_STRING_ID_DLG_Tab_TabTitle));
+	setHandle(hWnd);
+	setDialogTitle (pSS->getValue(AP_STRING_ID_DLG_Tab_TabTitle));
 
 	// localize controls
 	_DSX(TABS_OK_BUTTON,				DLG_OK);

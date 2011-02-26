@@ -108,7 +108,7 @@ void AP_Win32Dialog_Goto::GoTo (const char *number)
 {
 	UT_UCSChar *ucsnumber = (UT_UCSChar *) g_try_malloc (sizeof (UT_UCSChar) * (strlen(number) + 1));
 	UT_return_if_fail(ucsnumber);
-	UT_UCS4_strcpy_char (ucsnumber, number);
+	UT_UCS4_strcpy_utf8_char(ucsnumber, number);
 	int target = this->getSelectedRow ();
 	this->getView()->gotoTarget ((AP_JumpTarget) target, ucsnumber);
 	g_free (ucsnumber);
@@ -134,6 +134,8 @@ BOOL AP_Win32Dialog_Goto::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*l
 	const char **ppszTargets;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
+	UT_Win32LocaleString str;
+
 	m_oldvalue.clear();
 
 	// Update the caption
@@ -145,11 +147,10 @@ BOOL AP_Win32Dialog_Goto::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*l
 
 	m_iRow = 0;
 	ppszTargets = getJumpTargets();
-    for ( iTarget = 0; ppszTargets[ iTarget ] != NULL; iTarget++ ) {
-		UT_Win32LocaleString str;
+	for ( iTarget = 0; ppszTargets[ iTarget ] != NULL; iTarget++ ) {
 		str.fromUTF8(ppszTargets[ iTarget ] );
 		SendMessageW( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_WHAT), LB_ADDSTRING, 0, (LPARAM)str.c_str());
-    }
+	}
 
 	SendMessageW(GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_WHAT), LB_SETCURSEL, m_iRow, 0);
 
@@ -165,11 +166,13 @@ BOOL AP_Win32Dialog_Goto::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*l
 	// Initial data
 
 	UT_uint32 count = getExistingBookmarksCount();
-	for( UT_uint32 i = 0; i < count; i++)
+	for( UT_uint32 i = 0; i < count; i++) {
+		str.fromUTF8(getNthExistingBookmark(i));
 		SendMessageW( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_BOOKMARKS),
 					 LB_ADDSTRING,
 					 0,
-					 (LPARAM)getNthExistingBookmark(i) );
+					(LPARAM)str.c_str());
+	}
 
 	ShowWindow(GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), FALSE);
 

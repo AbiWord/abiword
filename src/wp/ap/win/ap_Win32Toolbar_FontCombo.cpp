@@ -57,17 +57,28 @@ AP_Win32Toolbar_FontCombo::~AP_Win32Toolbar_FontCombo(void)
 
 /*****************************************************************/
 
+#include <set>
+static std::set<std::string> seenFonts;
+
 bool AP_Win32Toolbar_FontCombo::populate(void)
 {
 	// clear anything that's already there
 	m_vecContents.clear();
 	m_vecFontCharSet.clear();
 
+	seenFonts.clear();
+
 	// populate the vector
 	HWND hwnd = NULL;
     HDC hdc = GetDC(hwnd) ;
-    EnumFontFamiliesW(hdc, (LPWSTR) NULL, (FONTENUMPROCW) AP_Win32Toolbar_FontCombo::_EnumFontsProc, (LONG_PTR) this) ;
+	LOGFONTW lf;
+	lf.lfCharSet=DEFAULT_CHARSET;
+	*lf.lfFaceName=0;
+	lf.lfPitchAndFamily=0;
+    EnumFontFamiliesExW(hdc, &lf, (FONTENUMPROCW) AP_Win32Toolbar_FontCombo::_EnumFontsProc, (LONG_PTR) this, 0) ;
     ReleaseDC(hwnd, hdc) ;
+
+	seenFonts.clear();
 
 	return true;
 }
@@ -99,8 +110,14 @@ int CALLBACK AP_Win32Toolbar_FontCombo::_EnumFontsProc(LPLOGFONTW lplf,
 	UT_Win32LocaleString str;
 	str.fromLocale (lplf->lfFaceName);
 	char * p = g_strdup((str.utf8_str().utf8_str()));
+
+	if (seenFonts.find(p)!=seenFonts.end())
+		return 1;
+
 	ctl->m_vecContents.addItem(p);
 	ctl->m_vecFontCharSet.addItem((void*)lplf->lfCharSet);
+
+	seenFonts.insert(p);
 
 	return 1;
 }

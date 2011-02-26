@@ -51,7 +51,7 @@ void XAP_Win32Dialog_MessageBox::runModal(XAP_Frame * pFrame)
 	XAP_Win32App * pApp = static_cast<XAP_Win32App *>(XAP_App::getApp());
 	UT_return_if_fail(pApp);
 
-	UT_Win32LocaleString caption;
+	UT_Win32LocaleString caption, message;
 	caption.fromASCII (pApp->getApplicationTitleForTitleBar());
 
 	HWND hwnd = static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow();
@@ -87,8 +87,8 @@ void XAP_Win32Dialog_MessageBox::runModal(XAP_Frame * pFrame)
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	}
 
-	int res = MessageBoxW(hwnd, (wchar_t *) getApp()->getEncodingManager()->strToNative(m_szMessage,
-                                                                                                                          "UTF-8"), caption.c_str(), flags);
+	message.fromUTF8(m_szMessage);
+	int res = MessageBoxW(hwnd, message.c_str(), caption.c_str(), flags);
 
 	switch (res)
 	{

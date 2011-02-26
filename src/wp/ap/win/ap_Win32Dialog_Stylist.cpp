@@ -265,7 +265,7 @@ void AP_Win32Dialog_Stylist::_fillTree(void)
 	UT_sint32 row, col;
 	UT_UTF8String sTmp(""), str_loc;
     
-	UT_String str;		   		 
+	UT_Win32LocaleString str;
     // UT_Win32LocaleString str;
 	//int iter = 0; // Unique key for each item in the treeview
 	for(row= 0; row < pStyleTree->getNumRows(); row++)
@@ -277,7 +277,7 @@ void AP_Win32Dialog_Stylist::_fillTree(void)
 		}
 		
 		pt_PieceTable::s_getLocalisedStyleName (sTmp.utf8_str(), str_loc);
-        str = AP_Win32App::s_fromUTF8ToWinLocale (str_loc.utf8_str());
+		str = AP_Win32App::s_fromUTF8ToWinLocale (str_loc.utf8_str());
 		// str.fromUTF8 (str_loc);
 
 		xxx_UT_DEBUGMSG(("Adding Heading %s at row %d \n",sTmp.utf8_str(),row));
@@ -295,7 +295,7 @@ void AP_Win32Dialog_Stylist::_fillTree(void)
 		tvins.hParent = TVI_ROOT;
 		tvins.hInsertAfter = TVI_LAST;
 		
-		hParentItem = TreeView_InsertItem(hTree, &tvins);
+		hParentItem = (HTREEITEM)SendMessageW(hTree, TVM_INSERTITEMW, 0, (LPARAM)&tvins);
 
 		// Add any children (columns) this row contains to be added
 		if (pStyleTree->getNumCols(row) > 0)
@@ -323,7 +323,8 @@ void AP_Win32Dialog_Stylist::_fillTree(void)
 				tvins.hParent = hParentItem;
 				tvins.hInsertAfter = TVI_LAST;
 
-				TreeView_InsertItem(hTree, &tvins);
+				//TreeView_InsertItem(hTree, &tvins);
+				SendMessageW(hTree, TVM_INSERTITEMW, 0, (LPARAM)&tvins);
 			}
 		}
 	}
@@ -345,21 +346,23 @@ BOOL CALLBACK AP_Win32Dialog_Stylist::s_treeProc(HWND hWnd,UINT msg,WPARAM wPara
 	return CallWindowProcW(hTreeProc, hWnd, msg, wParam, lParam);
 }
 
+#define UNICODE
+
 BOOL AP_Win32Dialog_Stylist::_styleClicked(void)
 {
 
 	UT_sint32 row, col;
-	TVITEMW tvi;		
+	TVITEMW tvi;
 
 	HWND hTree = GetDlgItem(m_hDlg, AP_RID_DIALOG_STYLIST_TREE_STYLIST);
 
 	// Selected item
 	tvi.hItem =  TreeView_GetSelection(hTree);
-			
+	
 	if (!tvi.hItem)
 		return 0;
 
-	// Associated data		 
+	// Associated data
 	tvi.mask = TVIF_HANDLE | TVIF_CHILDREN;
 	TreeView_GetItem(hTree, &tvi);
 
@@ -367,7 +370,7 @@ BOOL AP_Win32Dialog_Stylist::_styleClicked(void)
 	// This maps back to the pStyleList's row&column identifiers
 	if (TreeView_GetParent(hTree, tvi.hItem) == NULL)
 	{
-		if (tvi.cChildren == 1)
+		if (tvi.cChildren >= 1)
 			return 0; // we've clicked on a style category, not a style
 
 		row = tvi.lParam;
@@ -391,3 +394,5 @@ BOOL AP_Win32Dialog_Stylist::_styleClicked(void)
 	setCurStyle(sStyle);
 	return 1;
 }
+
+#undef UNICODE

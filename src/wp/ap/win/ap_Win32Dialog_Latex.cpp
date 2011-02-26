@@ -53,7 +53,7 @@ void  AP_Win32Dialog_Latex::activate(void)
 	int iResult;	
 	
 	ConstructWindowName();
-	setDialogTitle((LPCSTR)(AP_Win32App::s_fromUTF8ToWinLocale(m_sWindowName.utf8_str())).c_str());
+	setDialogTitle(m_sWindowName.utf8_str());
 	
 	iResult = ShowWindow( m_hDlg, SW_SHOW );
 	iResult = BringWindowToTop( m_hDlg );
@@ -101,7 +101,7 @@ void AP_Win32Dialog_Latex::notifyActiveFrame(XAP_Frame *pFrame)
 	{
 		// Update the caption
 		ConstructWindowName();
-		setDialogTitle((LPCSTR)(AP_Win32App::s_fromUTF8ToWinLocale(m_sWindowName.utf8_str())).c_str());
+		setDialogTitle(m_sWindowName.utf8_str());
 
 		SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, (LONG_PTR)frameHWND);
 		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
@@ -133,7 +133,7 @@ void AP_Win32Dialog_Latex::setLatexInGUI(void)
 	UT_UTF8String sLatex;
 	getLatex(sLatex);
 
-	setControlText(AP_RID_DIALOG_LATEX_EDIT_LATEX, (LPCSTR)(AP_Win32App::s_fromUTF8ToWinLocale(sLatex.utf8_str())).c_str());
+	setControlText(AP_RID_DIALOG_LATEX_EDIT_LATEX, sLatex.utf8_str());
 }
 
 bool AP_Win32Dialog_Latex::getLatexFromGUI(void)
@@ -142,9 +142,10 @@ bool AP_Win32Dialog_Latex::getLatexFromGUI(void)
 	UT_UTF8String sLatex;
 
 	getControlText(AP_RID_DIALOG_LATEX_EDIT_LATEX, (LPSTR) buffer, 2048);
-	sLatex = AP_Win32App::s_fromWinLocaleToUTF8(buffer);
+	//sLatex = AP_Win32App::s_fromWinLocaleToUTF8(buffer);
 	
-	UT_DEBUGMSG(("LaTeX from widget is %s \n",sLatex.utf8_str()));
+	UT_DEBUGMSG(("LaTeX from widget is %s \n",buffer/*sLatex.utf8_str()*/));
+	sLatex.assign(buffer,0);
 	setLatex(sLatex);
 		
 	return true;
@@ -159,7 +160,7 @@ BOOL AP_Win32Dialog_Latex::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM /*lPar
 	
 	// Update the caption
 	ConstructWindowName();
-	setDialogTitle((LPCSTR)(AP_Win32App::s_fromUTF8ToWinLocale(m_sWindowName.utf8_str())).c_str());
+	setDialogTitle(m_sWindowName.utf8_str());
 
 	// localize controls
 	localizeControlText(AP_RID_DIALOG_LATEX_TEXT_EXAMPLE,AP_STRING_ID_DLG_Latex_Example);

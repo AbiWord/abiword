@@ -136,9 +136,9 @@ BOOL AP_Win32Dialog_InsertHyperlink::_onCommand(HWND hWnd, WPARAM wParam, LPARAM
 			UT_sint32 result = getListSelectedIndex( wId );
 			if( result != LB_ERR )
 			{
-				char buf[PATH_MAX];
-				getListText( wId, result, buf );
-				setControlText(AP_RID_DIALOG_INSERTHYPERLINK_EBX_LINK, buf);
+				WCHAR buf[PATH_MAX];
+				SendDlgItemMessageW(m_hDlg, wId, LB_GETTEXT, result, (LPARAM)buf);
+				SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_INSERTHYPERLINK_EBX_LINK, buf);
 			}
 		}
 		return 1;

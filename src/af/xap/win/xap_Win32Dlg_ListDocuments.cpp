@@ -83,7 +83,7 @@ BOOL XAP_Win32Dialog_ListDocuments::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, 
 	_DSXS(BTN_OK,    _getOKButtonText());
 	_DSX(BTN_CANCEL, DLG_Cancel);
 
-	//  setDlgItemText(XAP_RID_DIALOG_LIST_DOCUMENTS_HEADING,_getHeading());
+	setDlgItemText(XAP_RID_DIALOG_LIST_DOCUMENTS_HEADING,_getHeading());
     
 	// set the column headings
 	HWND h = GetDlgItem(hWnd, XAP_RID_DIALOG_LIST_DOCUMENTS_LIST);
@@ -100,7 +100,7 @@ BOOL XAP_Win32Dialog_ListDocuments::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, 
 	col.cx = r.right - r.left - 5;
 
 	//col.pszText = const_cast<char*>(getColumn1Label());
-	ListView_InsertColumn(h,0,&col);
+	ListView_InsertColumn(h,0,&col); // TODO: to Unicode, names instead of URLs
 
 	ListView_SetItemCount(h, _getDocumentCount());
 	LVITEM item;
