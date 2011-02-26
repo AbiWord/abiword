@@ -157,6 +157,11 @@ void AP_Args::parseOptions()
 		XX_inplaceDecode(*arr);
 		arr++;
 	}
+	arr=m_sPluginArgs;
+	if (arr) while (*arr) {
+		XX_inplaceDecode(*arr);
+		arr++;
+	}
 	if (m_sMerge) XX_inplaceDecode(m_sMerge);
 	if (m_impProps) XX_inplaceDecode(m_impProps);
 	if (m_expProps) XX_inplaceDecode(m_expProps);

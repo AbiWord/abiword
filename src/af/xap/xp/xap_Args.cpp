@@ -42,11 +42,11 @@ char *XX_encode(const char *str)
 	char *d;
 	char *result;
 	for (c=str;*c;c++) {
-		if (*c<0) l+=2;
+		if (*c<0 || *c=='%') l+=2;
 	}
 	result=(char*)g_malloc(l);
 	for (c=str,d=result; *c; c++) {
-		if (*c<0) {
+		if (*c<0 || *c=='%') {
 			sprintf(d,"%%%02X",(unsigned char)*c);
 			d+=3;
 		} else {

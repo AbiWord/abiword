@@ -73,17 +73,11 @@ bool AP_App::openCmdLineFiles(const AP_Args * args)
 
 	int i = 0;
 	while ((file = AP_Args::m_sFiles[i++]) != NULL) {
-		XAP_Frame * pFrame = newFrame();
-
 		char * uri = NULL;
 
-#if defined(TOOLKIT_WIN)
-        UT_Win32LocaleString str;	
-		str.fromASCII (file);	
-		uri = UT_go_shell_arg_to_uri (str.utf8_str().utf8_str());
-#else
 		uri = UT_go_shell_arg_to_uri (file);
-#endif
+
+		XAP_Frame * pFrame = newFrame();
 
 		UT_Error error = pFrame->loadDocument (uri, IEFT_Unknown, true);
 		g_free (uri);
