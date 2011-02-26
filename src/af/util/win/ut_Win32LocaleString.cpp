@@ -319,7 +319,7 @@ UT_UTF8String UT_Win32LocaleString::utf8_str() const
 UT_UCS4String UT_Win32LocaleString::ucs4_str() const
 {
 	UT_UCS4Char * pText = (UT_UCS4Char *) UT_convert ((const char *) c_str(),
-							  size () * sizeof (wchar_t),
+							  (size()+1) * sizeof (wchar_t),
 							  "UCS-2LE",
 							  "UCS-4LE",
 							  NULL, NULL);
@@ -334,11 +334,17 @@ void UT_Win32LocaleString::fromUCS2 (const UT_UCS2Char * szIn)
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 
+#ifdef DEBUG
+static UT_UCS4Char ds[]={'F','I','X','M','E','4',')',0};
+#endif
 
 void UT_Win32LocaleString::fromUCS4 (const UT_UCS4Char* usc4_in)
 {
+#ifdef DEBUG
+	if (!usc4_in) usc4_in=ds;
+#endif
 	UT_UCS2Char * pText = (UT_UCS2Char *) UT_convert ((const char*) usc4_in,
-							  UT_UCS4_strlen(usc4_in) * sizeof (UT_UCS2Char),
+							  (UT_UCS4_strlen(usc4_in)+1) * 4,
 							  "UCS-4LE",
 							  "UCS-2LE",
 							  NULL, NULL);
@@ -353,6 +359,9 @@ void UT_Win32LocaleString::fromUCS4 (const UT_UCS4Char* usc4_in)
 
 void UT_Win32LocaleString::fromUTF8 (const char* utf8_str)
 {
+#ifdef DEBUG
+	if (!utf8_str) utf8_str="FIXME: NULL passed to UT_Win32LocaleString::fromUTF8";
+#endif
 	UT_UCS2Char * pText = (UT_UCS2Char *) UT_convert (utf8_str,
 							  strlen(utf8_str)+1,
 							  "UTF-8",
@@ -370,6 +379,9 @@ void UT_Win32LocaleString::fromUTF8 (const char* utf8_str)
 
 void UT_Win32LocaleString::fromASCII (const char* szASCII, size_t size)
 {
+#ifdef DEBUG
+	if (!szASCII) szASCII="FIXME: NULL passed to UT_Win32LocaleString::fromASCII";
+#endif
 	size_t len = (size == -1) ? strlen(szASCII) : size;
 	UT_UCS2Char * src = new UT_UCS2Char [len + 1];
 	char *p_str = (char *)szASCII;
