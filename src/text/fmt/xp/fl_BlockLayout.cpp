@@ -12003,7 +12003,7 @@ fl_BlockSpellIterator::getPreWord(UT_sint32& iLength) const
 const UT_UCSChar*
 fl_BlockSpellIterator::getPostWord(UT_sint32& iLength) const
 {
-	iLength = m_iSentenceEnd - m_iStartIndex;
+	iLength = m_iSentenceEnd - m_iStartIndex + 1;
 
 	// If it ever becomes necessary to mutate the pre-word, allocate
 	// space to m_pMutatedString and return it. Caller will consume
