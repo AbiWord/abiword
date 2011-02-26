@@ -43,7 +43,7 @@
 AP_RID_DIALOG_NEW DIALOG DISCARDABLE  30, 10, 195, 170
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Choose a Template"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Shell Dlg 2"
 BEGIN
     CONTROL         "Create new document from Template",
                     AP_RID_DIALOG_NEW_RDO_TEMPLATE,

@@ -99,7 +99,7 @@
 
 AP_RID_DIALOG_OPT_SPELL DIALOG DISCARDABLE  0, 0, 251, 233
 STYLE WS_CHILD
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Shell Dlg 2"
 BEGIN
     CONTROL         "Check s&pelling as you type",
                     AP_RID_DIALOG_OPTIONS_CHK_SpellCheckAsType,"Button",
@@ -135,7 +135,7 @@ END
 
 AP_RID_DIALOG_OPT_GENERAL DIALOG DISCARDABLE  0, 0, 251, 233
 STYLE WS_CHILD
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Shell Dlg 2"
 BEGIN
 	LTEXT           "Units:",AP_RID_DIALOG_OPTIONS_LBL_UNITS,14,29,24,12,
                     SS_CENTERIMAGE | NOT WS_GROUP
@@ -165,7 +165,7 @@ END
 
 AP_RID_DIALOG_OPT_DOCUMENTS DIALOG DISCARDABLE  0, 0, 251, 233
 STYLE WS_CHILD
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Shell Dlg 2"
 BEGIN
     CONTROL         "Auto Save",AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,15,217,10
@@ -190,7 +190,7 @@ END
 
 AP_RID_DIALOG_OPT_SMARTQUOTES DIALOG DISCARDABLE  0, 0, 251, 233
 STYLE WS_CHILD
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Shell Dlg 2"
 BEGIN
     CONTROL         "Enable smart (curly) quotes",AP_RID_DIALOG_OPTIONS_CHK_SmartQuotes,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,15,217,10

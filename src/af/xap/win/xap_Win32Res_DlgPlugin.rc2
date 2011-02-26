@@ -56,7 +56,7 @@
 XAP_RID_DIALOG_PLUGIN_MANAGER DIALOG DISCARDABLE  0, 0, 303, 222
 STYLE DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Plugin Manager22" 
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Shell Dlg 2"
 BEGIN
     LTEXT   	      "Active Plugins",
      	              XAP_RID_DIALOG_PLUGIN_MANAGER_BTN_ACTIVE,7,6,114,14       	          	                

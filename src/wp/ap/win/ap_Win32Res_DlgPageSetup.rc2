@@ -85,7 +85,7 @@
 //AP_RID_DIALOG_PAGE_SETUP DIALOG DISCARDABLE  40, 40, 255, 225
 //STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 //CAPTION "Dialog"
-//FONT 8, "MS Sans Serif"
+//FONT 8, "MS Shell Dlg 2"
 //BEGIN
 //    CONTROL         "Tab1",
 //                    AP_RID_DIALOG_PAGE_SETUP_TAB,
@@ -102,7 +102,7 @@
 // The sub-dialog for the Page tab of the PageSetup dialog
 AP_RID_DIALOG_PAGE_SETUP_PAGE DIALOG DISCARDABLE  0, 0, 240, 180
 STYLE WS_CHILD
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Shell Dlg 2"
 BEGIN
     GROUPBOX        "Paper...",
 					AP_RID_DIALOG_PAGE_SETUP_GBX_PAPER,
@@ -179,7 +179,7 @@ END
 // The sub-dialog for the Margins tab of the PageSetup dialog
 AP_RID_DIALOG_PAGE_SETUP_MARGINS DIALOG DISCARDABLE  0, 0, 240, 180
 STYLE WS_CHILD
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Shell Dlg 2"
 BEGIN
 	RTEXT           "Units:",
 					AP_RID_DIALOG_PAGE_SETUP_LBL_UNITS,
