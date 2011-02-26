@@ -624,6 +624,7 @@ UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookInsertPicProc(HWND hDlg, UIN
 			SetDlgItemTextW( hDlg, XAP_RID_DIALOG_INSERT_PICTURE_TEXT_WIDTH, NULL );
 			return true;
 		case CDN_SELCHANGE:
+			UT_return_val_if_fail(pThis,false);
 			return pThis->_previewPicture(hDlg);
 		}
 		return false;
@@ -636,6 +637,7 @@ UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookInsertPicProc(HWND hDlg, UIN
 			switch ( LOWORD(wParam) ) 
 			{
 			case XAP_RID_DIALOG_INSERT_PICTURE_CHECK_ACTIVATE_PREVIEW: 
+				UT_return_val_if_fail(pThis,false);
 				if (bPreviewImage)
 				{
 					ShowWindow( GetDlgItem(hDlg,XAP_RID_DIALOG_INSERT_PICTURE_TEXT_HEIGHT),
@@ -659,7 +661,7 @@ UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookInsertPicProc(HWND hDlg, UIN
 
 	case WM_INITDIALOG:
 		pThis = (XAP_Win32Dialog_FileOpenSaveAs *)reinterpret_cast<OPENFILENAMEW*>(lParam)->lCustData;
-		SetWindowLongPtrW(hDlg, DWLP_USER, lParam);
+		SetWindowLongPtrW(hDlg, GWLP_USERDATA, (LONG) pThis);
 		return pThis->_initPreviewDlg(hDlg);
 
 	default:
