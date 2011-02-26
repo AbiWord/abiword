@@ -265,8 +265,7 @@ void AP_Win32Dialog_Stylist::_fillTree(void)
 	UT_sint32 row, col;
 	UT_UTF8String sTmp(""), str_loc;
     
-	UT_Win32LocaleString str;
-    // UT_Win32LocaleString str;
+    UT_Win32LocaleString str;
 	//int iter = 0; // Unique key for each item in the treeview
 	for(row= 0; row < pStyleTree->getNumRows(); row++)
 	{
@@ -277,8 +276,7 @@ void AP_Win32Dialog_Stylist::_fillTree(void)
 		}
 		
 		pt_PieceTable::s_getLocalisedStyleName (sTmp.utf8_str(), str_loc);
-		str = AP_Win32App::s_fromUTF8ToWinLocale (str_loc.utf8_str());
-		// str.fromUTF8 (str_loc);
+		str.fromUTF8(str_loc.utf8_str());
 
 		xxx_UT_DEBUGMSG(("Adding Heading %s at row %d \n",sTmp.utf8_str(),row));
 
@@ -310,8 +308,7 @@ void AP_Win32Dialog_Stylist::_fillTree(void)
 				xxx_UT_DEBUGMSG(("Adding style %s at row %d col %d \n",sTmp.utf8_str(),row,col+1));
 
 				pt_PieceTable::s_getLocalisedStyleName (sTmp.utf8_str(), str_loc);
-				str = AP_Win32App::s_fromUTF8ToWinLocale (str_loc.utf8_str());
-                // str.fromUTF8(str_loc);
+				str.fromUTF8(str_loc.utf8_str());
 
 				// Insert the item into the treeview
 				tvi.pszText = (LPWSTR)str.c_str();
@@ -358,7 +355,7 @@ BOOL AP_Win32Dialog_Stylist::_styleClicked(void)
 
 	// Selected item
 	tvi.hItem =  TreeView_GetSelection(hTree);
-	
+			
 	if (!tvi.hItem)
 		return 0;
 
