@@ -141,7 +141,7 @@ void AP_Win32Preview_Annotation::activate(void)
 	// stubbed out
 }
 
-void AP_Win32Preview_Annotation::draw(void)
+void AP_Win32Preview_Annotation::draw(const UT_Rect *clip)
 {
 	// stubbed out
 }
