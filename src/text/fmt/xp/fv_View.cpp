@@ -7312,9 +7312,10 @@ void FV_View::endDrag(UT_sint32 xPos, UT_sint32 yPos)
 // ---------------- start goto ---------------
 bool FV_View::gotoTarget(AP_JumpTarget type, const UT_UCSChar *data)
 {
-	char * numberString = static_cast<char *>(UT_calloc(UT_UCS4_strlen(data) + 1, sizeof(char)));
+	char * numberString = static_cast<char *>(UT_calloc(UT_UCS4_strlen(data)*6 + 1, sizeof(char)));
 	UT_return_val_if_fail(numberString, false);
-	UT_UCS4_strcpy_to_char(numberString, data);
+	UT_UCS4String s(data,0);
+	strcpy(numberString,s.utf8_str());
 	
 	bool result = gotoTarget(type, numberString);
 	FREEP(numberString);
@@ -7474,6 +7475,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, const char *numberString)
 			if(m_pDoc->isBookmarkUnique(static_cast<const gchar *>(numberString)))
 				goto book_mark_not_found; //bookmark does not exist
 
+			// TODO: Make this work inside tables
 			while(pSL)
 			{
 				pBL = pSL->getNextBlockInDocument();
