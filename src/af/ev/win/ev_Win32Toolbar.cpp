@@ -343,7 +343,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 				logfont.lfClipPrecision = CLIP_DEFAULT_PRECIS;
 				logfont.lfQuality = DEFAULT_QUALITY;
 				logfont.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
-                wcscpy (logfont.lfFaceName, str.c_str());			  
+				lstrcpynW(logfont.lfFaceName, str.c_str(), LF_FACESIZE);
 				hFont = CreateFontIndirectW (&logfont);			
 
 				if(dis->itemState & ODS_SELECTED) /* HighLight the selected text*/
@@ -415,7 +415,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 						UT_uint32 dataLength = SendMessageW(hWnd, CB_GETLBTEXT, iSelected, (LPARAM)buf);
                         str.fromLocale (buf);
 
-                        UT_UCS4_strncpy_char(ucs_buf, str.utf8_str().utf8_str(), COMBO_BUF_LEN-1);
+                        UT_UCS4_strcpy_utf8_char(ucs_buf, str.utf8_str().utf8_str());
 						UT_UCSChar * pData = (UT_UCSChar *) ucs_buf;	// HACK: should be void *
 
 						EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLongPtrW(hWnd, GWLP_USERDATA);
@@ -763,7 +763,7 @@ bool EV_Win32Toolbar::synthesize(void)
 							ti.hwnd = m_hwnd;		// TODO: should this be the frame?
 							ti.uId = (UINT_PTR)hwndCombo;
 							// Set up tooltips for the combo box.
-							SendMessageW(hwndTT, TTM_ADDTOOL, 0, (LPARAM)(LPTOOLINFOW)&ti);
+							SendMessageW(hwndTT, TTM_ADDTOOLW, 0, (LPARAM)(LPTOOLINFOW)&ti);
 						}
 						
 						// bind this separator to its control
@@ -1093,8 +1093,6 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 					break;
 				}					
 				
-				szState = XAP_EncodingManager::get_instance()->strToNative(szState, "UTF-8");
-				
 				// Find the proper non-localised text
                 UT_Win32LocaleString localised;
 				if (id==AP_TOOLBAR_ID_FMT_STYLE)
@@ -1105,7 +1103,7 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
                  else
     					localised.fromUTF8 (szState);
 					
-                int idx = SendMessageW(hwndCombo, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)localised.c_str());												
+                int idx = SendMessageW(hwndCombo, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)localised.c_str());
 				/*
 				 * If the string didn't exist within the combos list, we handle things differently for
 				 * different combos.
@@ -1205,6 +1203,7 @@ bool EV_Win32Toolbar::getToolTip(LPARAM lParam)
 	{
 		lpttt->lpszText[0] = '\0';
 	}
+	lpttt->hinst=NULL;
 
 	return true;
 }
