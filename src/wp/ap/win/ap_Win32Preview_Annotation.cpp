@@ -67,8 +67,8 @@ void AP_Win32Preview_Annotation::_createToolTip(HWND hwndParent)
 	HINSTANCE hinst = pWin32App->getInstance();
 
 	// Create a tooltip.
-    m_hToolTip = CreateWindowEx(WS_EX_TOPMOST,
-        TOOLTIPS_CLASS, NULL,
+    m_hToolTip = CreateWindowExW(WS_EX_TOPMOST,
+        TOOLTIPS_CLASSW, NULL,
         WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP | TTS_BALLOON,		
         CW_USEDEFAULT, CW_USEDEFAULT,
         CW_USEDEFAULT, CW_USEDEFAULT,
@@ -82,14 +82,18 @@ void AP_Win32Preview_Annotation::_createToolTip(HWND hwndParent)
 	// window as the "tool": if one moves the mouse outside the
 	// annotation, the tooltip will be destroyed and thus
 	// won't pop up on an area with no annotation in it.
-    TOOLINFO ti = { 0 };
-    ti.cbSize = sizeof(TOOLINFO);
+
+	UT_Win32LocaleString str;
+	str.fromUTF8(getDescription().c_str());
+
+    TOOLINFOW ti = { 0 };
+    ti.cbSize = sizeof(TOOLINFOW);
     ti.uFlags = TTF_SUBCLASS;
     ti.hwnd = hwndParent;
     ti.hinst = hinst;
-    ti.lpszText = (LPTSTR)getDescription().c_str();
+    ti.lpszText = (LPWSTR) str.c_str();
     GetClientRect (hwndParent, &ti.rect);
-    SendMessage(m_hToolTip, TTM_ADDTOOL, 0, (LPARAM) (LPTOOLINFO) &ti);
+    SendMessageW(m_hToolTip, TTM_ADDTOOLW, 0, (LPARAM) &ti);
 
 	if (!getTitle().empty() || !getAuthor().empty())
 	{
@@ -105,10 +109,25 @@ void AP_Win32Preview_Annotation::_createToolTip(HWND hwndParent)
 
 		// The title can't exceed 100 chars (including the terminating \0 character)
 		// according to http://msdn.microsoft.com/en-us/library/bb760414(VS.85).aspxs
-		if (title.size() > 99)
-			title = title.substr(0, 99);
+		{
+			const char *utf8 = title.c_str();
+			const char *cptr = utf8;
+			int clen = 0, cc = 0;
+			while (gunichar wch = g_utf8_get_char(cptr)) {
+				if (clen >= 98) break;
+				if (wch >= 0x10000) clen += 2;
+				else clen++;
+				cc++;
+				cptr = g_utf8_next_char(cptr);
+			}
 
-		SendMessage(m_hToolTip, TTM_SETTITLE, (WPARAM)TTI_NONE, (LPARAM)title.c_str());
+			if (*cptr)
+				title = title.substr(0, (cptr-utf8));
+		}
+
+		str.fromUTF8(title.c_str());
+
+		SendMessageW(m_hToolTip, TTM_SETTITLEW, (WPARAM)TTI_NONE, (LPARAM) str.c_str());
 	}
 
 	// We don't want to auto-hide the popup after is has been shown, but the maximum popup
