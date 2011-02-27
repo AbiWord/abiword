@@ -221,6 +221,37 @@ void XAP_Win32FrameImpl::_createTopLevelWindow(void)
 		iHeight = CW_USEDEFAULT;
 		iPosX = CW_USEDEFAULT;
 		iPosY = CW_USEDEFAULT;
+	} else {
+		// Ensure the window fits current desktop area
+		RECT rcDesktop, rcWindow;
+#if (_WIN32_WINNT >= 0x0500)
+		rcDesktop.left=rcDesktop.right=0;
+
+		if (GetSystemMetrics(SM_CMONITORS)>1) {
+			HMONITOR m;
+			MONITORINFO mif;
+			SetRect(&rcWindow,iPosX,iPosY,iPosX+iWidth,iPosY+iHeight);
+			if (m=MonitorFromRect(&rcWindow,MONITOR_DEFAULTTONEAREST)) {;
+				mif.cbSize=sizeof(MONITORINFO);
+				if (GetMonitorInfoW(m,&mif)) {
+					rcDesktop=mif.rcWork;
+				}
+			}
+		}
+
+		if (rcDesktop.left==rcDesktop.right)
+#endif
+			if (!SystemParametersInfoW(SPI_GETWORKAREA,0,&rcDesktop,0))
+				SetRect(&rcDesktop,0,0,GetSystemMetrics(SM_CXSCREEN),GetSystemMetrics(SM_CYSCREEN));
+
+		if (iWidth > (rcDesktop.right-rcDesktop.left)) iWidth=rcDesktop.right-rcDesktop.left;
+		if (iHeight > (rcDesktop.bottom-rcDesktop.top)) iHeight=rcDesktop.bottom-rcDesktop.top;
+
+		if (iPosX+iWidth > rcDesktop.right) iPosX=rcDesktop.right-iWidth;
+		if (iPosY+iHeight > rcDesktop.bottom) iPosY=rcDesktop.bottom-iHeight;
+
+		if (iPosX < rcDesktop.left) iPosX=rcDesktop.left;
+		if (iPosY < rcDesktop.top)  iPosY=rcDesktop.top;
 	}
 	/* let Windows(R) place the Window for all but 1st one, for stairstep effect */
 	if (!firstWindow)
