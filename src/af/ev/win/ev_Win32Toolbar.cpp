@@ -442,7 +442,9 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 
 								nData  = SendMessageW(hWnd, CB_GETITEMDATA, iSelected, 0);								
 
-								UT_UCS4_strncpy_char(ucs_buf, t->m_vecOrgStylesNames.getNthItem(nData)->utf8_str(), COMBO_BUF_LEN-1);	
+								UT_UTF8String *utf = t->m_vecOrgStylesNames.getNthItem(nData);
+								UT_ASSERT((utf && (utf->length() < (COMBO_BUF_LEN-1))));
+								UT_UCS4_strcpy_utf8_char(ucs_buf, utf->utf8_str());	
 								dataLength = UT_UCS4_strlen (ucs_buf);
 
 								DELETEP(pControl);
