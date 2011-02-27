@@ -347,7 +347,6 @@ void AP_Win32Dialog_FormatTOC_General::_fillGUI()
 
 	sVal = getContainer()->getTOCPropVal("toc-heading");
 	pt_PieceTable::s_getLocalisedStyleName (sVal.utf8_str(), str_loc);
-	//str = AP_Win32App::s_fromUTF8ToWinLocale (str_loc.utf8_str()); 
 
 	setWindowText (GetDlgItem (getHandle(),
 		AP_RID_DIALOG_FORMATTOC_GENERAL_EDIT_HEADINGTEXT), str_loc.utf8_str());	
@@ -525,14 +524,12 @@ void AP_Win32Dialog_FormatTOC_Layout::_fillGUI()
     /* Text Before */
 	sVal = getContainer()->getTOCPropVal("toc-label-before", getContainer()->getDetailsLevel());
 	pt_PieceTable::s_getLocalisedStyleName (sVal.utf8_str(), (UT_UTF8String&)str_loc);
-	//str = AP_Win32App::s_fromUTF8ToWinLocale (str_loc.utf8_str()); 
-	setWindowText (GetDlgItem (getHandle(),
+    setWindowText (GetDlgItem (getHandle(),
 		AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_EDIT_TEXTBEFORE), str_loc.utf8_str());	
 
 	/* Text After */	
 	sVal = getContainer()->getTOCPropVal("toc-label-after", getContainer()->getDetailsLevel());
 	pt_PieceTable::s_getLocalisedStyleName (sVal.utf8_str(), str_loc);
-	//str = AP_Win32App::s_fromUTF8ToWinLocale (str_loc.utf8_str()); 
 
 	setWindowText (GetDlgItem (getHandle(),
 		AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_EDIT_TEXTAFTER), str_loc.utf8_str());	
@@ -593,7 +590,7 @@ void AP_Win32Dialog_FormatTOC_Layout::_onInitDialog()
 	AP_STRING_ID_DLG_FormatTOC_Level3, AP_STRING_ID_DLG_FormatTOC_Level4};
 	for (i = 0; i < 4; i++)
 	{	
-		item=addItemToCombo(AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_COMBO_LEVEL, pSS->getValue(nID[i]));
+		item = addItemToCombo(AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_COMBO_LEVEL, pSS->getValue(nID[i]));
 		setComboDataItem(AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_COMBO_LEVEL, item, i+1);
 	}	 
 
@@ -717,18 +714,18 @@ void AP_Win32Dialog_FormatTOC_Layout::loadCtrlsValuesForDetailsLevel ()
 	/* Text Before */
 	sVal = getContainer()->getTOCPropVal("toc-label-before", getContainer()->getDetailsLevel());
 	pt_PieceTable::s_getLocalisedStyleName (sVal.utf8_str(), str_loc);
-	//str = AP_Win32App::s_fromUTF8ToWinLocale (str_loc.utf8_str()); 
+	str = AP_Win32App::s_fromUTF8ToWinLocale (str_loc.utf8_str()); 
 
-	SetWindowText (GetDlgItem (getHandle(),
-		AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_EDIT_TEXTBEFORE), str_loc.utf8_str());	
+	SetWindowTextW (GetDlgItem (getHandle(),
+		AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_EDIT_TEXTBEFORE), str.c_str());	
 
 	/* Text After */	
 	sVal = getContainer()->getTOCPropVal("toc-label-after", getContainer()->getDetailsLevel());
 	pt_PieceTable::s_getLocalisedStyleName (sVal.utf8_str(), str_loc);
-	//str = AP_Win32App::s_fromUTF8ToWinLocale (str_loc.utf8_str()); 
+	str = AP_Win32App::s_fromUTF8ToWinLocale (str_loc.utf8_str()); 
 
-	SetWindowText (GetDlgItem (getHandle(),
-		AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_EDIT_TEXTAFTER),str_loc.utf8_str());	
+	SetWindowTextW (GetDlgItem (getHandle(),
+		AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_EDIT_TEXTAFTER), str.c_str());	
 
 }
 
