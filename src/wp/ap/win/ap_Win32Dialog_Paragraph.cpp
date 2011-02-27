@@ -121,7 +121,7 @@ void AP_Win32Dialog_Paragraph::runModal(XAP_Frame * pFrame)
 
 	HWND hFrameWnd = pWin32FrameImpl->getTopLevelWindow();
 
-	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
+	int result = DialogBoxParamW(pWin32App->getInstance(),lpTemplate,
 								hFrameWnd,
 								(DLGPROC)s_dlgProc,(LPARAM)this);
 	UT_ASSERT((result != -1));
