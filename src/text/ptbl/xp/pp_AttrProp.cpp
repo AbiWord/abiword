@@ -285,7 +285,7 @@ bool	PP_AttrProp::setAttribute(const gchar * szName, const gchar * szValue)
 			}
 
 			// skip the whitespace before the property value
-			while (isspace(*q))
+			while ((*q > 0) && isspace(*q))
 				q++;
 
 			setProperty(p, q);
