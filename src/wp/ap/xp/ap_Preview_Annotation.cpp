@@ -42,6 +42,7 @@ AP_Preview_Annotation::AP_Preview_Annotation(XAP_DialogFactory * pDlgFactory,XAP
 	m_sAuthor("n/a"),
 	m_sDescription("n/a")
 {
+	m_gc = NULL;
 }
 
 AP_Preview_Annotation::~AP_Preview_Annotation()
@@ -119,7 +120,7 @@ void AP_Preview_Annotation::draw(const UT_Rect *clip)
 {
 	UT_UNUSED(clip);
 	m_drawString = m_sDescription;
-	
+	UT_return_if_fail(m_gc);
 	UT_RGBColor FGcolor(0,0,0);
 	UT_RGBColor BGcolor(m_clrBackground);
 	
