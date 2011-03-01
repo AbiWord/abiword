@@ -167,9 +167,10 @@ std::string UT_pathSuffix(std::string path)
 		slashpos++; // strip the leading / as well
 	}
 
-	size_t dotpos = path.find_first_of('.', slashpos);
+	size_t dotpos = path.find_last_of('.');
 	if (dotpos == std::string::npos)
 		return "";
+	if (dotpos <= slashpos) return "";
 
 	return std::string(path, dotpos, path.size() - dotpos);
 }
