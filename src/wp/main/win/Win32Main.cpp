@@ -27,8 +27,8 @@
 #include <windows.h>
 #include "ap_Win32App.h"
 
-int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
-                    PSTR szCmdLine, int iCmdShow)
+int WINAPI wWinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
+                    LPWSTR szCmdLine, int iCmdShow)
 {
 #ifdef _WIN32
 	if (fileno (stdout) != -1 &&
@@ -41,18 +41,19 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		typedef BOOL (WINAPI * AttachConsole_t) (DWORD);
 
 		AttachConsole_t p_AttachConsole =
-			(AttachConsole_t) GetProcAddress (GetModuleHandle ("kernel32.dll"), "AttachConsole");
+			(AttachConsole_t) GetProcAddress (GetModuleHandleW(L"kernel32.dll"), "AttachConsole");
 
 		if (p_AttachConsole != NULL && p_AttachConsole (ATTACH_PARENT_PROCESS))
 		{
-			freopen ("CONOUT$", "w", stdout);
+			_wfreopen (L"CONOUT$", L"w", stdout);
 			dup2 (fileno (stdout), 1);
-			freopen ("CONOUT$", "w", stderr);
+			_wfreopen (L"CONOUT$", L"w", stderr);
 			dup2 (fileno (stderr), 2);
 
 		}
 	}
 #endif
 
-	return AP_Win32App::WinMain("AbiWord", hInstance, hPrevInstance, szCmdLine, iCmdShow);
+	// Dummy ANSI command line
+	return AP_Win32App::WinMain("AbiWord", hInstance, hPrevInstance, "abiword.exe", iCmdShow);
 }
