@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "ut_go_file.h"
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
@@ -130,8 +131,13 @@ void XAP_Dialog_Print::setDocumentTitle(const char * szDocTitle)
 void XAP_Dialog_Print::setDocumentPathname(const char * szDocPath)
 {
 	FREEP(m_szDocumentPathname);
-	if (szDocPath && *szDocPath)
-		m_szDocumentPathname = g_strdup(szDocPath);
+	if (szDocPath && *szDocPath) {
+		if (UT_go_path_is_uri(szDocPath)) {
+			char *filename = UT_go_filename_from_uri(szDocPath);
+			m_szDocumentPathname = filename;
+		} else
+			m_szDocumentPathname = g_strdup(szDocPath);
+	}
 }
 
 void XAP_Dialog_Print::setEnablePageRangeButton(bool bEnable,
