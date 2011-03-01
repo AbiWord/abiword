@@ -131,11 +131,10 @@ ABI_EXPORT bool  UT_UCS4_isupper(UT_UCS4Char c);
 ABI_EXPORT bool  UT_UCS4_islower(UT_UCS4Char c);
 ABI_EXPORT bool  UT_UCS4_isalpha(UT_UCS4Char c);
 ABI_EXPORT bool	 UT_UCS4_isSentenceSeparator(UT_UCS4Char c);
+ABI_EXPORT bool  UT_UCS4_isdigit(UT_UCS4Char c);
 #define UT_UCS4_isalnum(x)	(UT_UCS4_isalpha(x) || UT_UCS4_isdigit(x)) // HACK: not UNICODE-safe
 ABI_EXPORT bool UT_UCS4_isspace(UT_UCS4Char c);
 #define UT_UCS4_ispunct(x)   ((!UT_UCS4_isspace(x)  &&  !UT_UCS4_isalnum(x)  &&  (x)>' '))  // HACK: not UNICODE safe
-
-#define UT_UCS4_isdigit(x)	(((x) >= '0') && ((x) <= '9'))  // TODO: make UNICODE-wise
 
 // the naming convention has deviated from the above.  it's kind
 // of a mutant libc/C++ naming convention.

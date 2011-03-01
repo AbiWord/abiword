@@ -896,6 +896,23 @@ bool UT_UCS4_isSentenceSeparator(UT_UCS4Char c)
 		return false;
 	}
 }
+
+bool UT_UCS4_isdigit(UT_UCS4Char c)
+{
+	if (c < 0x700) {
+		for (int i=0; i < G_N_ELEMENTS(digits_table); i++) {
+			if (c < digits_table[i].low) break;
+			if (c <= digits_table[i].high)
+				return true;
+		}
+	} else {
+		ucs_range * rng = static_cast<ucs_range *>(bsearch(&c, &digits_table, 
+			G_N_ELEMENTS(digits_table),sizeof(ucs_range),s_cmp_digits));
+		if (rng) return true;
+	}
+	return false;
+}
+
 /* copies exactly n-chars from src to dest; NB! does not check for 00 i src
 */
 UT_UCS4Char * UT_UCS4_strncpy(UT_UCS4Char * dest, const UT_UCS4Char * src, UT_uint32 n)

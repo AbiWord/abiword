@@ -1459,4 +1459,39 @@ ucs_range whitespace_table[] =
 	{0x202f, 0x202f},
 	{0x3000, 0x3000}
 };
+
+static int s_cmp_digits(const void * c1, const void * c2)
+{
+	const UT_UCSChar * C1 = (const UT_UCSChar *) c1;
+	const ucs_range * C2 = (const ucs_range *) c2;
+
+	if (*C1 > C2->high) return +1;
+	if (*C1 < C2->low)  return -1;
+
+	return 0;
+}
+
+// TODO: extend to some Unicode standard compliance
+
+ucs_range digits_table[] =
+{
+	// needs to be monotonic
+	{0x0030, 0x0039},
+	{0x0660, 0x0669}, // arabic common
+	{0x06F0, 0x06F9}, // arabic variants
+	{0x0966, 0x096F}, // devanagari
+	{0x09E6, 0x09EF}, // bengali
+	{0x0A66, 0x0A6F}, // gurmukhi
+	{0x0AE6, 0x0AEF}, // gujarati
+	{0x0B66, 0x0B6F}, // oriya
+	{0x0BE6, 0x0BEF}, // tamil
+	{0x0C66, 0x0C6F}, // telugu
+	{0x0CE6, 0x0CEF}, // kannada
+	{0x0D66, 0x0D6F}, // malayalam
+	{0x0E50, 0x0E59}, // thai
+	{0x0ED0, 0x096F}, // lao
+	{0x0F20, 0x0F33}, // tibetan
+	{0xFF10, 0xFF19}  // full-width
+};
+
 #endif
