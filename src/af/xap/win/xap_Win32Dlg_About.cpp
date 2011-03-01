@@ -104,7 +104,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 	const wchar_t * pClassName = L"AbiSource_About";
 	
 	ATOM a = UT_RegisterClassEx(CS_HREDRAW | CS_VREDRAW, (WNDPROC) s_dlgProc, pWin32App->getInstance(),
-								NULL, LoadCursor(NULL, IDC_ARROW), GetSysColorBrush(COLOR_BTNFACE), NULL,
+								NULL, LoadCursorW(NULL, (LPCWSTR)IDC_ARROW), GetSysColorBrush(COLOR_BTNFACE), NULL,
 								NULL, pClassName);
 	if (!a)
 	{
@@ -112,10 +112,30 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 		return;
 	}
 
-	const int iScreenWidth  = ::GetSystemMetrics(SM_CXFULLSCREEN);
-	const int iScreenHeight = ::GetSystemMetrics(SM_CYFULLSCREEN);
-
 	HWND hWndFrame = static_cast<XAP_Win32FrameImpl*>(m_pFrame->getFrameImpl())->getTopLevelWindow();
+
+	RECT rcScreen;
+	rcScreen.left=rcScreen.right=0;
+
+#if (_WIN32_WINNT >= 0x0500 )
+	if (GetSystemMetrics(SM_CMONITORS) > 1) {
+		HMONITOR m = MonitorFromWindow(hWndFrame,MONITOR_DEFAULTTONEAREST);
+		if (m) {
+			MONITORINFO mi;
+			mi.cbSize=sizeof(MONITORINFO);
+			if (GetMonitorInfoW(m,&mi))
+				rcScreen = mi.rcWork;
+		}
+	} else 
+#endif
+		SystemParametersInfoW(SPI_GETWORKAREA,0,&rcScreen,0);
+
+	if (rcScreen.left == rcScreen.top)
+		SetRect(&rcScreen,0,0,GetSystemMetrics(SM_CXFULLSCREEN),
+				GetSystemMetrics(SM_CYFULLSCREEN));
+
+	const int iScreenWidth  = rcScreen.right - rcScreen.left;
+	const int iScreenHeight = rcScreen.bottom - rcScreen.top;
 
 	BringWindowToTop(hWndFrame);
 	pWin32App->enableAllTopLevelWindows(FALSE);
@@ -129,8 +149,8 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 	HWND hwndAbout = UT_CreateWindowEx(	0L, pClassName,
 										buf,
 										WS_OVERLAPPED | WS_VISIBLE,
-										(iScreenWidth - ABOUT_WIDTH) / 2,
-										(iScreenHeight - ABOUT_HEIGHT) /2,
+										rcScreen.left + (iScreenWidth - ABOUT_WIDTH) / 2,
+										rcScreen.top + (iScreenHeight - ABOUT_HEIGHT) /2,
 										ABOUT_WIDTH,
 										ABOUT_HEIGHT,
 										hWndFrame,
@@ -299,7 +319,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 		{
 			if (GetMessageW(&msg, NULL, 0, 0))
 			{
-				if( hwndAbout && IsDialogMessage( hwndAbout, &msg ) )
+				if( hwndAbout && IsDialogMessageW( hwndAbout, &msg ) )
 					continue;
 
 				TranslateMessage(&msg);
