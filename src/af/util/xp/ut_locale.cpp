@@ -260,6 +260,10 @@ const char* UT_getFallBackStringSetLocale(const char* pLocale)
 	
 	if (g_ascii_strcasecmp(szLanguage,"nl")==0) 	
 		return "nl-NL";
-	
+
+	if (g_ascii_strcasecmp(szLanguage,"ru")==0) 
+		return "ru-RU";
+
+
 	return NULL;
 }
