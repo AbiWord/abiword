@@ -227,10 +227,13 @@ bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar, UT_UCSCha
 		case G_UNICODE_DECIMAL_NUMBER:
 		case G_UNICODE_LETTER_NUMBER:
 		case G_UNICODE_OTHER_NUMBER:
+			return false;
 		case G_UNICODE_CONNECT_PUNCTUATION:
- 			return false;
+			return (currentChar == '_'); // _ is a word separator!
 
 		case G_UNICODE_OTHER_PUNCTUATION:
+		case G_UNICODE_INITIAL_PUNCTUATION:
+		case G_UNICODE_FINAL_PUNCTUATION:
 			switch (currentChar)
 			{
 				// some punctuation can be internal in word
