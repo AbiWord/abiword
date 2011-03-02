@@ -64,6 +64,26 @@
 
 #define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
 
+static char *s_escapeMenuString(char *p_str)
+{
+#ifdef TOOLKIT_WIN
+	int l = strlen(p_str)+1;
+	char *c = p_str, *d, *r;
+	while (*c) if (*c++=='&') l++;
+	d=r=(char*)g_malloc(l);
+	c = p_str;
+	while (*c) {
+		if (*c=='&') *d++='&';
+		*d++=*c++;
+	}
+	*d=0;
+	
+	return r;
+#else
+	return g_strdup(p_str);
+#endif
+}
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -117,11 +137,13 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Recent)
         const char * szURI = pPrefs->getRecent(ndx);
         char *szRecent = g_filename_from_uri(szURI, NULL, NULL);
         char *szBasename = szRecent ? g_path_get_basename(szRecent) : NULL;
+		char *szMenuname = s_escapeMenuString(szBasename ? szBasename : "");
         g_free(szRecent);
+		g_free(szBasename);
 
         g_free(buf);
-        buf = g_strdup_printf(szFormat, szBasename ? szBasename : "");
-        g_free(szBasename);
+        buf = g_strdup_printf(szFormat, szMenuname);
+        g_free(szMenuname);
         return buf;
     }
 
