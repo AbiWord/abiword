@@ -316,12 +316,14 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
         UT_Win32LocaleString uri;
 		const char * szURI = g_filename_from_uri(m_szInitialPathname, NULL, NULL);
 		if(!szURI)
-			szURI = static_cast<const char *> (UT_calloc (1, sizeof (char)));
+			szURI = g_strdup(m_szInitialPathname);
 
         uri.fromUTF8 (szURI);
 
 		wcscpy(szDir,uri.c_str());
-		wchar_t * pLastSlash = wcsrchr(szDir, L'/');
+		wchar_t * pLastSlash = wcsrchr(szDir, L'\\');
+		if (!pLastSlash)
+			pLastSlash = wcsrchr(szDir, L'/');
 		if (pLastSlash)
 			pLastSlash[1] = 0;
 		ofn.lpstrInitialDir = szDir;
