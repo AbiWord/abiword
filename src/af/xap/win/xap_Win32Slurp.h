@@ -35,7 +35,7 @@ public:
 	void					processCommand(HDDEDATA hData);
 	void					stuffRegistry(const char * szSuffix,
 										  const char * szApplicationName,
-										  const char * szExePathname,
+										  LPCWSTR szExePathname,
 										  const char * szContentType);
 
 protected:

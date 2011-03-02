@@ -27,6 +27,8 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
+#include "ut_go_file.h"
+#include "UT_Win32LocaleString.h"
 #include "xap_Frame.h"
 #include "xap_Win32App.h"
 #include "xap_Win32Slurp.h"
@@ -53,7 +55,7 @@
 // to describe the document type.
 //////////////////////////////////////////////////////////////////
 
-#define MY_DDE_TOPICNAME				"System"
+#define MY_DDE_TOPICNAME				L"System"
 
 // DDE does not provide us with an instance handle in the callback
 // to get back to our class member data.  Therefore (and since we
@@ -134,7 +136,7 @@ bool XAP_Win32Slurp::connectSlurper(void)
 	// Register us with the DDE Management Library (DDEML).
 
 	m_idDdeServerInst = 0;
-	UINT nDdeRtnStatus = DdeInitialize(&m_idDdeServerInst,
+	UINT nDdeRtnStatus = DdeInitializeW(&m_idDdeServerInst,
 									   (PFNCALLBACK)&s_DdeServerCallback,
 									   (  APPCMD_FILTERINITS
 										| CBF_SKIP_CONNECT_CONFIRMS
@@ -154,8 +156,10 @@ bool XAP_Win32Slurp::connectSlurper(void)
 	// the "TopicName" must match the value in the key:
 	// HKEY_CLASSES_ROOT\<xxx>\shell\open\ddeexec\topic
 	
-	m_hszServerName = DdeCreateStringHandle(m_idDdeServerInst, const_cast<char *>(m_pApp->getApplicationName()), CP_WINANSI);
-	m_hszTopic = DdeCreateStringHandle(m_idDdeServerInst, MY_DDE_TOPICNAME, CP_WINANSI);
+	m_hszServerName = DdeCreateStringHandleW(m_idDdeServerInst, 
+		L"Abiword"/*const_cast<char *>(m_pApp->getApplicationName())*/, 
+		CP_WINUNICODE);
+	m_hszTopic = DdeCreateStringHandleW(m_idDdeServerInst, MY_DDE_TOPICNAME, CP_WINUNICODE);
 
 	// register the server Name
 	HDDEDATA bRegistered = DdeNameService(m_idDdeServerInst, m_hszServerName, NULL, DNS_REGISTER);
@@ -195,7 +199,11 @@ void XAP_Win32Slurp::processCommand(HDDEDATA hData)
 	}
 	
 	DdeGetData(hData,(LPBYTE)pBuf,bufSize+99,0);
-	UT_DEBUGMSG(("DDEML received command '%s'\n",pBuf));
+	UT_Win32LocaleString wstr;
+	UT_UTF8String astr;
+	wstr.fromLocale((LPCWSTR)pBuf);
+	astr=wstr.utf8_str();
+	UT_DEBUGMSG(("DDEML received command '%s'\n",astr.utf8_str()));
 	
 	// we expect something of the form:
 	//     [Open("<pathname>")]
@@ -205,7 +213,7 @@ void XAP_Win32Slurp::processCommand(HDDEDATA hData)
 	// TODO would be nice
 
 	// pointer to work through the incoming string
-	char * next = pBuf;
+	const char * next = astr.utf8_str();
 	
 	// pointer used to copy into command and pathname
 	char * dest = 0;
@@ -252,19 +260,30 @@ void XAP_Win32Slurp::processCommand(HDDEDATA hData)
 
 			// ask the application to load this document into a window....
 
+			// let's create uri for comparison with filenames from command line
+			// TODO: That method does not always work. Some proper method should
+			//       be designed.
+			char *uri = UT_go_filename_to_uri(pathname);
 			XAP_Win32App *p_app = (XAP_Win32App *)XAP_App::getApp();
-			UT_Error error = p_app->fileOpen(p_app->getLastFocussedFrame(), pathname);
-			
+			UT_sint32 ndx = p_app->findFrame(uri);
+			UT_Error error;
+			if ((ndx < 0) || p_app->getFrame(ndx)->isDirty()) {
+				error = p_app->fileOpen(p_app->getLastFocussedFrame(), uri);
+			}
+
 			if(error != UT_OK)
 			{
-				UT_DEBUGMSG(("Could not load document given in DDE Open command [%s].\n",pathname));
+				UT_DEBUGMSG(("Could not load document given in DDE Open command [%s].\n",uri));
 			}
+
+			FREEP(uri);
 
 			goto Finished;
 		}
 
 Finished:
 	FREEP(pBuf);
+	DdeFreeDataHandle(hData);
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -305,7 +324,7 @@ static XX_Status _fetchKey(HKEY k1, const char * szSubKey, HKEY * pkNew)
 
 void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 								   const char * szApplicationName,
-								   const char * szExePathname,
+								   LPCWSTR szExePathname,
 								   const char * szContentType)
 {
 	// load the system registry if there's no info
@@ -334,11 +353,12 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 #define CONTENT_TYPE_KEY			"Content Type"
 #define DOCUMENT_ICON_POSITION	2
 #define xx(s)					((LPBYTE)(s)),(strlen(s)+1)
+#define xxw(s)					((LPBYTE)(s)),((lstrlenW(s)+1)<<1)
 	
 	char buf[1024];
 	char bufOurFoo[1024];
-	char bufOurFooValue[1024];
-	char bufDefaultIconValue[1024];
+	WCHAR bufOurFooValue[1024];
+	WCHAR bufDefaultIconValue[1024];
 	DWORD dType;
 	LONG eResult;
 	ULONG len;
@@ -358,7 +378,13 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 	sprintf(bufOurFoo,"AbiSuite.%s",szApplicationName);
 	strtok(bufOurFoo," ");				// trim key at first whitespace
 
-	sprintf(bufOurFooValue,"%s Document",szApplicationName);
+	const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
+	const gchar *pStr = "%s Document";
+	UT_Win32LocaleString tmpl;
+	char tdbuf[512];
+	sprintf(tdbuf,pStr,szApplicationName);
+	tmpl.fromUTF8(tdbuf);
+	wcscpy(bufOurFooValue,tmpl.c_str());
 	
 	///////////////////////////////////////////////////////////////////
 	// See if someone has claimed this suffix.
@@ -370,7 +396,7 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 	case X_Error:
 		goto CleanupMess;
 
-	case X_CreatedKey:					// we are g_free to create what we want.
+	case X_CreatedKey:					// we are free to create what we want.
 		bCreateOrOverwrite = true;
 		break;
 		
@@ -465,8 +491,8 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 	case X_ExistingKey:
 		UT_ASSERT(hKeyFoo);
 		len = G_N_ELEMENTS(buf);
-		eResult = RegQueryValueEx(hKeyFoo,NULL,0,&dType,(LPBYTE)buf,&len);
-		if ((eResult==ERROR_SUCCESS) && (dType==REG_SZ) && (g_ascii_strcasecmp(buf,bufOurFooValue)==0))
+		eResult = RegQueryValueExW(hKeyFoo,NULL,0,&dType,(LPBYTE)buf,&len);
+		if ((eResult==ERROR_SUCCESS) && (dType==REG_SZ) && (lstrcmpiW((LPCWSTR)buf,bufOurFooValue)==0))
 			break;					// already has correct value, no need to overwrite.
 
 		/* otherwise, replace the value */
@@ -474,7 +500,7 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 
 	case X_CreatedKey:
 		UT_ASSERT(hKeyFoo);
-		eResult = RegSetValueEx(hKeyFoo,NULL,0,REG_SZ,xx(bufOurFooValue));
+		eResult = RegSetValueExW(hKeyFoo,NULL,0,REG_SZ,xxw(bufOurFooValue));
 		if (eResult != ERROR_SUCCESS)
 			goto CleanupMess;
 		break;
@@ -484,9 +510,9 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 	// Inspect the command path
 	// HKEY_CLASSES_ROOT\<foo>\shell\open\command = <exe_pathname>
 	///////////////////////////////////////////////////////////////////
-	char commandPathWithParam[1024];
-	strcpy ( commandPathWithParam, szExePathname );
-	strcat ( commandPathWithParam, " \"%1\"" );
+	WCHAR commandPathWithParam[1024];
+	wcscpy ( commandPathWithParam, szExePathname );
+	wcscat ( commandPathWithParam, L" \"%1\"" );
 
 	if (_fetchKey(hKeyFoo,"shell",&hKeyShell) == X_Error)
 		goto CleanupMess;
@@ -499,14 +525,14 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 
 	case X_ExistingKey:	
 		UT_ASSERT(hKeyCommand);
-		len = G_N_ELEMENTS(buf);
-		eResult = RegQueryValueEx(hKeyCommand,NULL,0,&dType,(LPBYTE)buf,&len);
+		len = G_N_ELEMENTS((LPWSTR)buf);
+		eResult = RegQueryValueExW(hKeyCommand,NULL,0,&dType,(LPBYTE)buf,&len);
 		if ((eResult==ERROR_SUCCESS) && (dType==REG_SZ))
 		{
-			if (g_ascii_strcasecmp(buf,commandPathWithParam) == 0)
+			if (lstrcmpiW((LPCWSTR)buf,commandPathWithParam) == 0)
 				break;					// already has correct value, no need to overwrite.
 			
-			if(memcmp(buf, commandPathWithParam, strlen(commandPathWithParam)) == 0)
+			if(memcmp(buf, commandPathWithParam, lstrlenW(commandPathWithParam)<<1) == 0)
 			{
 				// Path name is the same but has extra at the end.
 				// Probably "%1"
@@ -526,9 +552,9 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 		
 	case X_CreatedKey:
 		UT_ASSERT(hKeyCommand);
+		eResult = RegSetValueExW(hKeyCommand,NULL,0,REG_SZ,xxw(commandPathWithParam));
 		if (eResult != ERROR_SUCCESS)
-			eResult = RegSetValueEx(hKeyCommand,NULL,0,REG_SZ,xx(commandPathWithParam));
-		goto CleanupMess;
+			goto CleanupMess;
 		break;
 	}
 
@@ -600,9 +626,9 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 
 	case X_ExistingKey:	
 		UT_ASSERT(hKeyTopic);
-		len = G_N_ELEMENTS(buf);
-		eResult = RegQueryValueEx(hKeyTopic,NULL,0,&dType,(LPBYTE)buf,&len);
-		if ((eResult==ERROR_SUCCESS) && (dType==REG_SZ) && (g_ascii_strcasecmp(buf,MY_DDE_TOPICNAME)==0))
+		len = G_N_ELEMENTS((LPWSTR)buf);
+		eResult = RegQueryValueExW(hKeyTopic,NULL,0,&dType,(LPBYTE)buf,&len);
+		if ((eResult==ERROR_SUCCESS) && (dType==REG_SZ) && (wcsicmp((LPWSTR)buf,MY_DDE_TOPICNAME)==0))
 			break;						// already has correct value, no need to overwrite.
 
 		/* otherwise, replace the value */
@@ -610,7 +636,7 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 		
 	case X_CreatedKey:
 		UT_ASSERT(hKeyTopic);
-		eResult = RegSetValueEx(hKeyTopic,NULL,0,REG_SZ,xx(MY_DDE_TOPICNAME));
+		eResult = RegSetValueExW(hKeyTopic,NULL,0,REG_SZ,xxw(MY_DDE_TOPICNAME));
 		if (eResult != ERROR_SUCCESS)
 			goto CleanupMess;
 		break;
@@ -618,10 +644,10 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 
 	///////////////////////////////////////////////////////////////////
 	// Set the default icon for the suffix (this is for Explorer et al.
-	// HKEY_CLASSES_ROOT\<foo>\DefaultIcon = <exe_pathname,1>
+	// HKEY_CLASSES_ROOT\<foo>\DefaultIcon = <exe_pathname,2>
 	///////////////////////////////////////////////////////////////////
 
-	sprintf(bufDefaultIconValue,"%s,%d",szExePathname,DOCUMENT_ICON_POSITION);
+	wsprintfW(bufDefaultIconValue,L"%s,%d",szExePathname,DOCUMENT_ICON_POSITION);
 	switch ( _fetchKey(hKeyFoo,"DefaultIcon",&hKeyDefaultIcon) )
 	{
 	case X_Error:
@@ -629,9 +655,9 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 
 	case X_ExistingKey:	
 		UT_ASSERT(hKeyDefaultIcon);
-		len = G_N_ELEMENTS(buf);
-		eResult = RegQueryValueEx(hKeyDefaultIcon,NULL,0,&dType,(LPBYTE)buf,&len);
-		if ((eResult==ERROR_SUCCESS) && (dType==REG_SZ) && (g_ascii_strcasecmp(buf,bufDefaultIconValue)==0))
+		len = G_N_ELEMENTS((LPWSTR)buf);
+		eResult = RegQueryValueExW(hKeyDefaultIcon,NULL,0,&dType,(LPBYTE)buf,&len);
+		if ((eResult==ERROR_SUCCESS) && (dType==REG_SZ) && (lstrcmpiW((LPWSTR)buf,bufDefaultIconValue)==0))
 			break;						// already has correct value, no need to overwrite.
 
 		/* otherwise, replace the value */
@@ -639,7 +665,7 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 		
 	case X_CreatedKey:
 		UT_ASSERT(hKeyDefaultIcon);
-		eResult = RegSetValueEx(hKeyDefaultIcon,NULL,0,REG_SZ,xx(bufDefaultIconValue));
+		eResult = RegSetValueExW(hKeyDefaultIcon,NULL,0,REG_SZ,xxw(bufDefaultIconValue));
 		if (eResult != ERROR_SUCCESS)
 			goto CleanupMess;
 		break;
