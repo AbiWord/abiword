@@ -44,6 +44,8 @@ BeginLayout(ContextText,EV_EMC_TEXT)
 		MenuItem(AP_MENU_ID_TABLE_MERGE_CELLS)
 		MenuItem(AP_MENU_ID_TABLE_SPLIT_CELLS)
 		Separator()
+		// dzan
+		MenuItem(AP_MENU_ID_TABLE_MARKROWASHEADER)
 		MenuItem(AP_MENU_ID_TABLE_FORMAT)
 	EndSubMenu()
 // RIVERA

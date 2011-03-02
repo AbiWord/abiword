@@ -502,16 +502,18 @@ const XAP_StringSet * AP_UnixApp::getStringSet(void) const
 */
 void AP_UnixApp::copyToClipboard(PD_DocumentRange* pDocRange, bool bUseClipboard)
 {
-	UT_DEBUGMSG(("\n\nCOPYTOCLIPBOARD CALLED"));
 	std::vector<PD_DocumentRange> ranges;
 	ranges.push_back(*pDocRange);
 	copyToClipboard(ranges, bUseClipboard);
 	return;
 }
 
+/*
+     dzan - Made this work with a vector of ranges, all selections should be 'ported' to this behaviour. ( only text selections left to do )
+     
+*/
 void AP_UnixApp::copyToClipboard(std::vector<PD_DocumentRange> &ranges, bool bUseClipboard)
 {
-	UT_DEBUGMSG(("\nCOPYTOCLIPBOARD VECTOR CALLED"));
 
 	/*for(int i=0; i<pDocRange->getItemCount(); ++i)
 	UT_DEBUGMSG(("\nSelection ranges %d: %d  to  %d\n",i, pDocRange->getNthItem(i)->m_pos1, pDocRange->getNthItem(i)->m_pos2));*/
@@ -521,7 +523,7 @@ void AP_UnixApp::copyToClipboard(std::vector<PD_DocumentRange> &ranges, bool bUs
     UT_ByteBuf bufXHTML;
     UT_ByteBuf bufTEXT;
 
-	// Dzan - Assuming all ranges in same document ( which they should be )
+	// dzan - Assuming all ranges in same document ( which they should be )
 	PD_Document* pDoc = ranges[0].m_pDoc;
 	
     // create RTF buffer to put on the clipboard

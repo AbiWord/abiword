@@ -364,6 +364,7 @@ public:
 	static EV_EditMethod_Fn insertOgonekData;
 
 	static EV_EditMethod_Fn mergeCells;
+	static EV_EditMethod_Fn markRowAsHeader; //dzan
 	static EV_EditMethod_Fn splitCells;
 	static EV_EditMethod_Fn formatTable;
 	static EV_EditMethod_Fn autoFitTable;
@@ -1015,6 +1016,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 	// m
 	EV_EditMethod(NF(mailMerge), 0, ""),
+	EV_EditMethod(NF(markRowAsHeader), 0, ""),
 	EV_EditMethod(NF(mergeCells),			0,		""),
 	EV_EditMethod(NF(middleSpace),			0,		""),
 
@@ -5500,10 +5502,14 @@ Defun(selectMath)
 	return true;
 }
 
+// dzan
+Defun1(markRowAsHeader)
+{
+	UT_DEBUGMSG(("LOLIE BOLIE"));
+}
 
 Defun1(selectRow)
 {
-UT_DEBUGMSG(("LOLIE BOLIE"));
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, false);
@@ -5542,7 +5548,6 @@ UT_DEBUGMSG(("LOLIE BOLIE"));
 	posEndRow = pDoc->getStruxPosition(endRowSDH)+1;
 	pView->cmdSelect(posStartRow,posEndRow);
 	pView->setSelectionMode(FV_SelectionMode_TableRow);
-	UT_DEBUGMSG(("LOLIE BOLIE"));
 	return true;
 }
 
@@ -5588,7 +5593,6 @@ Defun1(selectColumn)
 
 Defun(selectColumnClick)
 {
-	UT_DEBUGMSG(("\n\nHEYAAAA1\n\n"));
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, false);
@@ -5605,7 +5609,6 @@ Defun(selectColumnClick)
 
 Defun(selectRowClick)
 {
-	UT_DEBUGMSG(("\n\nHEYAAAA2\n\n"));
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, false);

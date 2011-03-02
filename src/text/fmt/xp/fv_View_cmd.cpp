@@ -2301,8 +2301,8 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 /*!
  * This method will mark the row at the given position to be treated 
  * as a table header, repeating on each page. 
- * TODO: use a dialogue for this
  */
+ // author: dzan
 bool FV_View::cmdMarkRowAsHeader(PT_DocPosition pos){
 
  	//
@@ -2328,7 +2328,7 @@ bool FV_View::cmdMarkRowAsHeader(PT_DocPosition pos){
 	UT_return_val_if_fail(pTab, false);
 	
 	//
-	// marking the row
+	// get entire row docrange
 	//
 }
 
@@ -4575,7 +4575,7 @@ void FV_View::cmdCopy(bool bToClipboard)
 {
 	if (isSelectionEmpty()) return;
 
-	// Dzan - GSoC: This needs to change; the FV_Selection should treat all
+	// dzan  TODO This needs to change; the FV_Selection should treat all
 	// selections same way: vector of ranges. Will do that later
 
 	if( getSelectionMode() == FV_SelectionMode_InTable )

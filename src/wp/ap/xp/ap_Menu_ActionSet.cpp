@@ -313,6 +313,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TABLE_SPLIT_CELLS,0,1,0,0, "splitCells", ap_GetState_InTableMerged, NULL);
 	_s(AP_MENU_ID_TABLE_SPLIT_TABLE,0,0,0,0, NULL, ap_GetState_AlwaysDisabled, NULL);
 	_s(AP_MENU_ID_TABLE_FORMAT,0,1,0,0, "formatTable", ap_GetState_PointOrAnchorInTable, NULL);
+	_s(AP_MENU_ID_TABLE_MARKROWASHEADER,0,1,0,0, "markRowAsHeader", ap_GetState_PointOrAnchorInTable, NULL);  //dzan
 	_s(AP_MENU_ID_TABLE_AUTOFIT,0,0,0,0, "autoFitTable", ap_GetState_PointInTable, NULL);
 	_s(AP_MENU_ID_TABLE_TABLETOTEXT,0,0,0,0, NULL, ap_GetState_PointInTable, NULL);
 	_s(AP_MENU_ID_TABLE_HEADING_ROWS_REPEAT,0,0,0,0, NULL, ap_GetState_PointInTable, NULL);
