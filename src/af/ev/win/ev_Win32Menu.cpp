@@ -1004,9 +1004,7 @@ bool EV_Win32Menu::onMenuSelect(XAP_Frame * pFrame, AV_View * /*pView*/,
 	if (!szMsg || !*szMsg)
 		szMsg = "TODO This menu item doesn't have a StatusMessage defined.";
 	
-    UT_Win32LocaleString str;
-	str.fromUTF8(szMsg);
-	pFrame->setStatusMessage( (char *)str.c_str());
+	pFrame->setStatusMessage(szMsg);
 	return true;
 }
 
