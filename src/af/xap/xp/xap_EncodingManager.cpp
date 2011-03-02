@@ -1574,6 +1574,7 @@ const char** localeinfo_combinations(const char* prefix,const char* suffix,const
 
 		if(suffix && *suffix) // do not append nothing
 			buf[idx++] += suffix;
+		else idx++;
 	}
 
     UT_String lang (XAP_EncodingManager::get_instance()->getLanguageISOName());
@@ -1584,11 +1585,13 @@ const char** localeinfo_combinations(const char* prefix,const char* suffix,const
 	buf[idx] += lang;
 	if(suffix && *suffix)
 		buf[idx++] += suffix;
+	else idx++;
 	
 	buf[idx] += sep;
 	buf[idx] += enc;
 	if(suffix && *suffix)
 		buf[idx++] += suffix;
+	else idx++;
 
 	buf[idx] += sep;
 	buf[idx] += lang;
@@ -1596,6 +1599,7 @@ const char** localeinfo_combinations(const char* prefix,const char* suffix,const
 	buf[idx] += territory;
 	if(suffix && *suffix)
 		buf[idx++] += suffix;
+	else idx++;
 
 	buf[idx] += sep;
 	buf[idx] += lang;
