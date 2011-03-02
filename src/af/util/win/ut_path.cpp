@@ -25,6 +25,10 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifndef WIN32
+#error This is Win32 include file!
+#endif
+#include <windows.h>
 
 /*!	This function takes a char* representing a path to a file and returns
 	the pointer to the string which represents the base portion of the path.
@@ -48,7 +52,13 @@ bool UT_directoryExists(const char* dir)
 {
 	struct _stat buf;
 
+#ifdef WIN32
+	WCHAR wFilename[MAX_PATH];
+	MultiByteToWideChar(CP_UTF8,0,dir,-1,wFilename,MAX_PATH);
+	if( _wstat( wFilename , &buf ) != -1 ) 
+#else
 	if( _stat( dir , &buf ) != -1 ) 
+#endif
 	{
 		return ( buf.st_mode & _S_IFDIR ) != 0;
 	}
@@ -59,7 +69,13 @@ bool UT_isRegularFile(const char* filename)
 {
 	struct _stat buf;
 
+#ifdef WIN32
+	WCHAR wFilename[MAX_PATH];
+	MultiByteToWideChar(CP_UTF8,0,filename,-1,wFilename,MAX_PATH);
+	if( _wstat( wFilename , &buf ) != -1 ) 
+#else
 	if( _stat( filename , &buf ) != -1 ) 
+#endif
 	{
 		UT_DEBUGMSG(("UT_isRegularFile(%s) { _stat(...) succeeded, returning ( st_mode<%X> & _S_IFREG<%X> )!= 0  <%X>\n", filename, buf.st_mode, _S_IFREG, (( buf.st_mode & _S_IFREG ) != 0) ));
 		return ( buf.st_mode & _S_IFREG ) != 0;
@@ -71,6 +87,7 @@ bool UT_isRegularFile(const char* filename)
 size_t UT_fileSize(const char * filename)
 {
 	struct _stat buf;
+	UT_SHOULD_NOT_HAPPEN();
 
 	if( _stat( filename , &buf ) != -1 ) 
 	{
@@ -84,6 +101,7 @@ size_t UT_fileSize(const char * filename)
 time_t UT_mTime(const char* path)
 {
 	struct _stat buf;
+	UT_SHOULD_NOT_HAPPEN();
 
 	if( _stat( path , &buf ) != -1 ) 
 	{

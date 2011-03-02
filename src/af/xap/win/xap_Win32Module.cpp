@@ -51,7 +51,11 @@ public:
 			return false;
 		}
 
-		m_hMod = LoadLibraryA(name);
+		WCHAR szName[512];
+
+		MultiByteToWideChar(CP_UTF8,0,name,-1,szName,512);
+
+		m_hMod = LoadLibraryW(szName);
 		if (!m_hMod)
 		{
 			m_pszErr = szErrNoDllFound;

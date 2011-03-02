@@ -662,9 +662,9 @@ static void buildTemplateList(UT_String *template_list, const UT_String & base)
 	global_template_base += UT_String_sprintf("/templates/%s", base.c_str());
 #endif
 
-	template_list[0] = user_template_base; // always try to load user's normal.awt first
-	template_list[1] = UT_String_sprintf ("%s-%s_%s", user_template_base.c_str(), lang.utf8_str(), terr.utf8_str());
-	template_list[2] = UT_String_sprintf ("%s-%s", user_template_base.c_str(), lang.utf8_str());
+	template_list[0] = UT_String_sprintf ("%s-%s_%s", user_template_base.c_str(), lang.utf8_str(), terr.utf8_str());
+	template_list[1] = UT_String_sprintf ("%s-%s", user_template_base.c_str(), lang.utf8_str());
+	template_list[2] = user_template_base;
 
 	if (!XAP_App::getApp()->findAbiSuiteLibFile(template_list[5],base.c_str(),"templates"))
 		template_list[5] = global_template_base; // always try to load global normal.awt last

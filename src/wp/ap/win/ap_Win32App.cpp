@@ -127,8 +127,11 @@ AP_Win32App::~AP_Win32App(void)
 static bool s_createDirectoryIfNecessary(const char * szDir)
 {
 	struct _stat statbuf;
+	UT_Win32LocaleString str;
 	
-	if (_stat(szDir,&statbuf) == 0)								// if it exists
+	str.fromUTF8(szDir);
+
+	if (_wstat(str.c_str(),&statbuf) == 0)								// if it exists
 	{
 		if ( (statbuf.st_mode & _S_IFDIR) == _S_IFDIR )			// and is a directory
 			return true;
@@ -137,7 +140,7 @@ static bool s_createDirectoryIfNecessary(const char * szDir)
 		return false;
 	}
 
-	if (CreateDirectoryA(szDir,NULL))
+	if (CreateDirectoryW(str.c_str(),NULL))
 		return true;
 
 	UT_DEBUGMSG(("Could not create Directory [%s].\n",szDir));
@@ -218,7 +221,7 @@ bool AP_Win32App::initialize(void)
 			{
 				pDiskStringSet->setFallbackStringSet(m_pStringSet);
 				m_pStringSet = pDiskStringSet;
-                UT_Language_updateLanguageNames();
+				UT_Language_updateLanguageNames();
 				UT_DEBUGMSG(("Using StringSet [%s]\n",szPathname));
 			}
 			else
@@ -294,26 +297,6 @@ bool AP_Win32App::initialize(void)
 	// Check for necessary DLLs now that we can do localized error messages
 	//////////////////////////////////////////////////////////////////
 
-#if 0 /* re-enable once we use unicows again */
-	// Ensure that we have Unicows dll
-	if (!UT_IsWinNT())
-	{
-		HMODULE hModule = LoadLibrary("unicows.dll");
-		
-		if (!hModule)
-		{
-			UT_String sErr(UT_String_sprintf(m_pStringSet->getValue(AP_STRING_ID_WINDOWS_NEED_UNICOWS),
-											 "Unicows"));
-
-			MessageBox(NULL, sErr.c_str(), NULL, MB_OK);
-
-			bSuccess = false;
-		}
-		else
-			FreeLibrary(hModule);
-	}
-#endif
-
 	// Ensure that common control DLL is loaded
 	HINSTANCE hinstCC = LoadLibraryW(L"comctl32.dll");
 	UT_return_val_if_fail (hinstCC, false);
@@ -326,14 +309,14 @@ bool AP_Win32App::initialize(void)
 		icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
 		icex.dwICC = ICC_COOL_CLASSES | ICC_BAR_CLASSES 	// load the rebar and toolbar
 					| ICC_TAB_CLASSES | ICC_UPDOWN_CLASS	// and tab and spin controls
-					;
+					| ICC_STANDARD_CLASSES;
 		pInitCommonControlsEx(&icex);
 	}
 	else
 	{
 		InitCommonControls();
 
-	    UT_Win32LocaleString err;
+		UT_Win32LocaleString err;
 		err.fromUTF8 (m_pStringSet->getValue(AP_STRING_ID_WINDOWS_COMCTL_WARNING));		
 		MessageBoxW(NULL, err.c_str(), NULL, MB_OK);
 	}
@@ -351,48 +334,52 @@ bool AP_Win32App::initialize(void)
 
 	if(bLoadPlugins || !bFound)
 	{
-		char szPath[PATH_MAX];
-		char szPlugin[PATH_MAX];
+		WCHAR szPath[PATH_MAX];
+		WCHAR szPlugin[PATH_MAX];
 		_getExeDir( szPath, PATH_MAX);
 #ifdef _MSC_VER
-		strcat(szPath, "..\\plugins\\*.dll");
+		lstrcatW(szPath, L"..\\plugins\\*.dll");
 #else
-		strcat(szPath, "..\\lib\\" PACKAGE "-" ABIWORD_SERIES "\\plugins\\*.dll");
+#define L_PACKAGE L##PACKAGE
+#define L_SERIES  L##ABIWORD_SERIES
+		lstrcatW(szPath, L"..\\lib\\" L_PACKAGE L"-" L_ABIWORD_SERIES L"\\plugins\\*.dll");
 #endif
 
-	    struct _finddata_t cfile;
-		long findtag = _findfirst( szPath, &cfile );
-		if( findtag != -1 )
+		WIN32_FIND_DATAW cfile;
+		HANDLE findtag = FindFirstFileW( szPath, &cfile );
+		if( (int)findtag != -1 )
 		{
 			do
 			{	
 				_getExeDir( szPlugin, PATH_MAX );
 #ifdef _MSC_VER
-				strcat( szPlugin, "..\\plugins\\" );
+				lstrcatW( szPlugin, L"..\\plugins\\" );
 #else
-				strcat( szPlugin, "..\\lib\\" PACKAGE "-" ABIWORD_SERIES "\\plugins\\" );
+				lstrcatW( szPlugin, L"..\\lib\\" L_PACKAGE L"-" L_SERIES L"\\plugins\\" );
 #endif
-				strcat( szPlugin, cfile.name );
-				XAP_ModuleManager::instance().loadModule( szPlugin );
-			} while( _findnext( findtag, &cfile ) == 0 );
+				lstrcatW( szPlugin, cfile.cFileName );
+				XAP_ModuleManager::instance().loadModule( getUTF8String(szPlugin) );
+			} while( FindNextFileW ( findtag, &cfile ) );
+			FindClose( findtag );
 		}
-		_findclose( findtag );
 
 		UT_String pluginName( getUserPrivateDirectory() ); 
 		UT_String pluginDir( getUserPrivateDirectory() );
 		pluginDir += "\\AbiWord\\plugins\\*.dll";
-		findtag = _findfirst( pluginDir.c_str(), &cfile );
-		if( findtag != -1 )
+		UT_Win32LocaleString str;
+		str.fromUTF8(pluginDir.c_str());
+		findtag = FindFirstFileW( str.c_str(), &cfile );
+		if( (int)findtag != -1 )
 		{
 			do
 			{	
 				pluginName = getUserPrivateDirectory();
 				pluginName += "\\AbiWord\\plugins\\";
-				pluginName += cfile.name;
+				pluginName += getUTF8String(cfile.cFileName);
 				XAP_ModuleManager::instance().loadModule( pluginName.c_str() );
-			} while( _findnext( findtag, &cfile ) == 0 );
+			} while( FindNextFileW( findtag, &cfile ) );
+			FindClose( findtag );
 		}
-		_findclose( findtag );
 	}
 	return bSuccess;
 }
@@ -1337,9 +1324,11 @@ bool AP_Win32App::handleModelessDialogMessage( MSG * msg )
 void AP_Win32App::errorMsgBadArg(const char *msg)
 {
 	char *pszMessage;
+	UT_Win32LocaleString str;
 
 	pszMessage = g_strdup_printf ("%s\nRun with --help' to see a full list of available command line options.\n", msg);
-	MessageBox(NULL, pszMessage, "Command Line Option Error", MB_OK|MB_ICONERROR);
+	str.fromUTF8(pszMessage);
+	MessageBoxW(NULL, str.c_str(), L"Command Line Option Error", MB_OK|MB_ICONERROR);
 	g_free( pszMessage );
 }
 
@@ -1485,9 +1474,9 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 */	
 UT_Vector*	AP_Win32App::getInstalledUILanguages(void)
 {		
-	UT_Vector* pVec = new UT_Vector();
-	UT_Language lang;	
-					
+	UT_Vector* pVec = new UT_Vector(64,16);
+	UT_Language lang;
+
 	for (UT_uint32 i=0; i< lang.getCount(); i++)
 	{
 		const char *pLangCode = (const char*)lang.getNthLangCode(i);
@@ -1510,28 +1499,35 @@ UT_Vector*	AP_Win32App::getInstalledUILanguages(void)
 */
 bool	AP_Win32App::doesStringSetExist(const char* pLocale)
 {
-	FILE* in;
-	const char * szDirectory = NULL;	
+	HANDLE in;
+	const char * szDirectory = NULL;
 
 	UT_return_val_if_fail(pLocale, false);
 	
 	getPrefsValueDirectory(true,AP_PREF_KEY_StringSetDirectory,&szDirectory);
 	UT_return_val_if_fail(((szDirectory) && (*szDirectory)), false);
 
-	char * szPathname = (char *)UT_calloc(sizeof(char),strlen(szDirectory)+strlen(pLocale)+100);
+	char *szPathname = (char*) UT_calloc(sizeof(char),strlen(szDirectory)+strlen(pLocale)+100);
 	UT_return_val_if_fail(szPathname, false);
-				
-	sprintf(szPathname,"%s%s%s.strings",
-				szDirectory,
-				((szDirectory[strlen(szDirectory)-1]=='\\') ? "" : "\\"),
-				pLocale);				
 	
-	in =  fopen(szPathname, "r");	
+	char *szDest = szPathname;
+	strcpy(szDest, szDirectory);
+	szDest += strlen(szDest);
+	if ((szDest > szPathname) && (szDest[-1]!='\\'))
+		*szDest++='\\';
+	lstrcpy(szDest,pLocale);
+	lstrcat(szDest,".strings");
+
+	UT_Win32LocaleString wsFilename;
+	wsFilename.fromUTF8(szPathname);
+
+	in = CreateFileW(wsFilename.c_str(),0,FILE_SHARE_READ|FILE_SHARE_WRITE,NULL,
+		OPEN_EXISTING,0,NULL);
 	g_free (szPathname);
 	
-	if (in)
+	if (in!=INVALID_HANDLE_VALUE)
 	{
-		fclose(in);		
+		CloseHandle(in);
 		return true;
 	}			
 	

@@ -851,22 +851,13 @@ bool XAP_App::findAbiSuiteLibFile(UT_String & path, const char * filename, const
 
 	bool bFound = false;
 
-	const char * dir = getUserPrivateDirectory();
-	if (dir)
+	const char * dir[2] = {
+		getUserPrivateDirectory(),
+		getAbiSuiteLibDir()
+	};
+	for (int i=0; !bFound && i<2; i++)
 	{
-		path = dir;
-		if (subdir)
-		{
-			path += G_DIR_SEPARATOR;
-			path += subdir;
-		}
-		path += G_DIR_SEPARATOR;
-		path += filename;
-		bFound = UT_isRegularFile (path.c_str ());
-	}
-	if (!bFound && (dir = getAbiSuiteLibDir()))
-	{
-		path = dir;
+		path = dir[i];
 		if (subdir)
 		{
 			path += G_DIR_SEPARATOR;

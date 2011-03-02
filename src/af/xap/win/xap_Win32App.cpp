@@ -55,7 +55,7 @@
 #include <w32api.h>
 #endif
 
-char XAP_Win32App::m_buffer[MAX_CONVBUFFER] = "";
+char XAP_Win32App::m_buffer[MAX_CONVBUFFER*6] = "";
 WCHAR XAP_Win32App::m_wbuffer[MAX_CONVBUFFER] = L"";
 
 // do not want to include wv.h here, since it defines some types that
@@ -198,13 +198,13 @@ XAP_Toolbar_ControlFactory * XAP_Win32App::getControlFactory(void)
 	return &m_controlFactory;
 }
 
-UT_uint32 XAP_Win32App::_getExeDir(char* pDirBuf, UT_uint32 iBufLen) // ansi only dirs for now
+UT_uint32 XAP_Win32App::_getExeDir(LPWSTR pDirBuf, UT_uint32 iBufLen)
 {
-	UT_uint32 iResult = GetModuleFileNameA(NULL, pDirBuf, iBufLen); //!TODO Using ANSI function
+	UT_uint32 iResult = GetModuleFileNameW(NULL, pDirBuf, iBufLen);
 
 	if (iResult > 0)
 	{
-		char* p = pDirBuf + strlen(pDirBuf);
+		LPWSTR p = pDirBuf + wcslen(pDirBuf);
 		while (*p != '\\')
 		{
 			p--;
@@ -212,6 +212,7 @@ UT_uint32 XAP_Win32App::_getExeDir(char* pDirBuf, UT_uint32 iBufLen) // ansi onl
 		UT_ASSERT(p > pDirBuf);
 		p++;
 		*p = 0;
+		iResult = (p - pDirBuf);
 	}
 
 	return iResult;
@@ -236,8 +237,6 @@ static bool isWriteable(LPWSTR lpPath)
 	lpPath[len]=0;
 	return result;
 }
-
-#define NO_WIN32_UNICODE_SUPPORT_YET 1
 
 const char * XAP_Win32App::getUserPrivateDirectory(void)
 {
@@ -388,12 +387,14 @@ static void s_buildDirName(const UT_Vector& vDirComponents, UT_uint32 iComponent
 
 void XAP_Win32App::_setAbiSuiteLibDir(void)
 {
-	char buf[PATH_MAX];
+	char *utf8;
+	WCHAR buf[PATH_MAX];
 
 	// see if ABIWORD_DATADIR was set in the environment
-	if (GetEnvironmentVariableA("ABIWORD_DATADIR",buf,sizeof(buf)) > 0) //!TODO Using ANSI function
+	if (GetEnvironmentVariableW(L"ABIWORD_DATADIR",buf,sizeof(buf)) > 0)
 	{
-		char * p = buf;
+		utf8 = (char*) getUTF8String(buf);
+		char * p = utf8;
 		int len = strlen(p);
 		if ( (p[0]=='"') && (p[len-1]=='"') )
 		{
@@ -413,15 +414,19 @@ void XAP_Win32App::_setAbiSuiteLibDir(void)
 		char *base;
 		size_t len, baselen;
 
-		len = strlen(buf);
-		base = g_path_get_basename(buf);
+		utf8 = (char*) getUTF8String(buf);
+
+		len = strlen(utf8);
+		base = g_path_get_basename(utf8);
 		baselen = strlen(base);
 		g_free (base), base = NULL;
-		buf[len - baselen - 1] = '\0';
+		if (len+1 > baselen && utf8[len - baselen - 2] == '\\')
+			utf8[len - baselen - 2] = 0;
+		else utf8[len - baselen - 1] = '\0';
 #ifdef _MSC_VER
-		XAP_App::_setAbiSuiteLibDir(buf);
+		XAP_App::_setAbiSuiteLibDir(utf8);
 #else
-		gchar * dir = g_build_filename(buf, "share", PACKAGE "-" ABIWORD_SERIES, NULL);
+		gchar * dir = g_build_filename(utf8, "share", PACKAGE "-" ABIWORD_SERIES, NULL);
 		XAP_App::_setAbiSuiteLibDir(dir);
 		g_free (dir), dir = NULL;
 #endif
@@ -585,14 +590,14 @@ const char * XAP_Win32App::getUTF8String (const WCHAR * p_str)
 {
 	int len = WideCharToMultiByte(CP_UTF8, 0, p_str, -1, NULL, 0, NULL, NULL);
 	UT_ASSERT(len);
-	if (len && (len < MAX_CONVBUFFER)) {
-		len = WideCharToMultiByte(CP_UTF8, 0, p_str, -1, m_buffer, MAX_CONVBUFFER, NULL, NULL);
+	if (len && (len < MAX_CONVBUFFER*6)) {
+		len = WideCharToMultiByte(CP_UTF8, 0, p_str, -1, m_buffer, MAX_CONVBUFFER*6, NULL, NULL);
 		UT_ASSERT(len);
 		return m_buffer;
 	}
 	else 
 	{
-		UT_ASSERT(len < MAX_CONVBUFFER);
+		UT_ASSERT(len < MAX_CONVBUFFER*6);
 		UT_DEBUGMSG(("getUTF8String:converted string too long %d", len));
 		return NULL;
 	}

@@ -86,7 +86,7 @@ public:
 	void                                    setKbdLanguage(HKL hkl);
 
 protected:
-	UT_uint32								_getExeDir(char* pDirBuf, UT_uint32 iBufLen);
+	UT_uint32								_getExeDir(LPWSTR pDirBuf, UT_uint32 iBufLen);
 	void									_setAbiSuiteLibDir(void);
 	void									_setBidiOS(void);
 	virtual const char *                    _getKbdLanguage();
@@ -96,7 +96,7 @@ protected:
 	AP_Win32Toolbar_ControlFactory			m_controlFactory;
 
 	XAP_Win32Slurp *						m_pSlurp;
-	static char m_buffer[MAX_CONVBUFFER];
+	static char m_buffer[MAX_CONVBUFFER*6];
 	static WCHAR m_wbuffer[MAX_CONVBUFFER];
 
 private:

@@ -22,6 +22,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef WIN32
+#include <windows.h>
+#endif
 
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -43,8 +46,14 @@ DefaultReader::~DefaultReader ()
 
 bool DefaultReader::openFile (const char * szFilename)
 {
-  in = fopen (szFilename, "r");
-  return (in != NULL);
+#ifdef WIN32
+	WCHAR wFilename[MAX_PATH];
+	MultiByteToWideChar(CP_UTF8,0,szFilename,-1,wFilename,MAX_PATH);
+	in = _wfopen (wFilename, L"r");
+#else
+	in = fopen (szFilename, "r");
+#endif
+	return (in != NULL);
 }
 
 UT_uint32 DefaultReader::readBytes (char * buffer, UT_uint32 length)

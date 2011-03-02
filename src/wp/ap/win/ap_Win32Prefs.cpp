@@ -94,14 +94,14 @@ bool AP_Win32Prefs::loadBuiltinPrefs(void)
 
 const char * AP_Win32Prefs::_getPrefsPathname(void) const
 {
-	static char buf[PATH_MAX];
+	static char buf[PATH_MAX*6];
 	memset(buf,0,sizeof(buf));
 
 	/* return a pointer to a static buffer */
 	const char * szDirectory = XAP_App::getApp()->getUserPrivateDirectory();
 	char * szFile = "AbiWord.Profile";
 	
-	if (strlen(szDirectory) + strlen(szFile) + 2 >= PATH_MAX)
+	if (strlen(szDirectory) + strlen(szFile) + 2 >= PATH_MAX*6)
 		return NULL;
 
 	strcpy(buf,szDirectory);
