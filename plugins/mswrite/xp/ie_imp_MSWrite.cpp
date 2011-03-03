@@ -219,7 +219,7 @@ int IE_Imp_MSWrite::read_ffntb ()
     font_count = 0;
     wri_fonts = NULL;
 
-	std::set<char*> raw_fonts;
+	std::set<std::string> raw_fonts;
 	
     while (true) {
 		if (!gsf_input_read (mFile, 2, byt)) {
@@ -265,13 +265,13 @@ int IE_Imp_MSWrite::read_ffntb ()
 		wri_fonts[font_count].codepage=get_codepage(ffn,&trname);
 		if (wri_fonts[font_count].codepage) {
 			strcpy(ffn,trname);
-			raw_fonts.insert(strdup(trname));
+			raw_fonts.insert(trname);
 		}
 		wri_fonts[font_count].name = ffn;
 		font_count++;
     }
 	for (int i=0; i<font_count; i++) {
-		std::set<char*>::iterator pos;
+		std::set<std::string>::iterator pos;
 		if (!wri_fonts[i].codepage) {
 			pos = raw_fonts.find(wri_fonts[i].name);
 			if (pos != raw_fonts.end())
@@ -330,7 +330,7 @@ char *IE_Imp_MSWrite::get_codepage(char *facename, char **newname)
 	int l=strlen(facename);	
 	while (p->suffix) {
 		if (*p->suffix < l) {
-			if (!strcmpi(&p->suffix[1],&facename[l-*p->suffix])) {
+			if (!g_ascii_strcasecmp(&p->suffix[1],&facename[l-*p->suffix])) {
 				if (newname) {
 					strncpy(facebuf,facename,l-*p->suffix);
 					facebuf[l-*p->suffix]=0;
