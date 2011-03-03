@@ -43,7 +43,9 @@ void _UT_OutputMessage(const char *s, ...)
 	_vsnprintf(sBuf, sizeof(sBuf), s, marker);
 #endif
 
-	OutputDebugStringA(sBuf); //!TODO Using ANSI function
+	WCHAR wBuf[1024];
+	MultiByteToWideChar(CP_UTF8,0,sBuf,-1,wBuf,1024);
+	OutputDebugStringW(wBuf);
 #endif
 }
 

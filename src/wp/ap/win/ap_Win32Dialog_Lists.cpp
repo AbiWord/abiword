@@ -712,7 +712,7 @@ void AP_Win32Dialog_Lists::_fillStyleList(int iType)
 
 	if (nMaxWidth > 50 && nMaxWidth < 500 /* sanity check*/)
 	{
-		SendMessage(hComboStyle, CB_SETDROPPEDWIDTH,
+		SendMessageW(hComboStyle, CB_SETDROPPEDWIDTH,
 					(WPARAM)nMaxWidth + 8, 0);
 	}
 }
@@ -826,7 +826,7 @@ void AP_Win32Dialog_Lists::_enableCustomControls(bool bEnable)
 void AP_Win32Dialog_Lists::_updateCaption()
 {
 	ConstructWindowName();
-	_win32Dialog.setDialogTitle((LPCSTR)(AP_Win32App::s_fromUTF8ToWinLocale( getWindowName())).c_str());	
+	_win32Dialog.setDialogTitle(getWindowName());	
 }
 
 void AP_Win32Dialog_Lists::_previewExposed()
