@@ -194,7 +194,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 			bufSize[0] = 0;
 
 		// why? let's see
-		if (bIsSizeValid /*&& bWasSizeValid*/ && (g_ascii_strcasecmp(bufSize,m_sFontSize.c_str()) != 0))			
+		if (bIsSizeValid && (g_ascii_strcasecmp(bufSize,m_sFontSize.c_str()) != 0))			
 		{
 			m_bChangedFontSize = true;
 			m_sFontSize = bufSize;
