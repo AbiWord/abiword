@@ -1824,11 +1824,16 @@ static bool s_AskRevertFile(XAP_Frame * pFrame)
 {
 	// return true if we should revert the file (back to the saved copy).
 
-	return (pFrame->showMessageBox(AP_STRING_ID_MSG_RevertBuffer,
+	char *pFilename = UT_go_filename_from_uri(pFrame->getFilename());
+
+	bool b = (pFrame->showMessageBox(AP_STRING_ID_MSG_RevertBuffer,
 										XAP_Dialog_MessageBox::b_YN,
 										XAP_Dialog_MessageBox::a_YES,
-										pFrame->getFilename())
+										pFilename)
 						== XAP_Dialog_MessageBox::a_YES);
+
+	FREEP(pFilename);
+	return b;
 }
 
 #if XAP_DONT_CONFIRM_QUIT
