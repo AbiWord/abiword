@@ -361,7 +361,7 @@ GR_Font* GR_Win32Graphics::_findFont(const char* pszFontFamily,
 		// API funcion (CreateFontIndirect()).
     	UT_Win32LocaleString str;
 		str.fromUTF8 (pszFontFamily);
-		wcsncpy(lf.lfFaceName, 
+		lstrcpynW(lf.lfFaceName, 
 		        str.c_str(),
 		        LF_FACESIZE);
 	}
@@ -1471,7 +1471,7 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 	{
 		UT_Win32LocaleString str;
 		str.fromUTF8 (szFontName);
-			wcsncpy(lf.lfFaceName, 
+			lstrcpynW(lf.lfFaceName, 
 				    str.c_str(),
 			        LF_FACESIZE);
 	}
