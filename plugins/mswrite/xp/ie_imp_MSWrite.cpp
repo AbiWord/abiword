@@ -31,7 +31,7 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
+//#include <stdlib.h>
 #include <string.h>
 #include <set>
 #include "ut_locale.h"
@@ -296,31 +296,31 @@ static struct cst_data {
 
 void IE_Imp_MSWrite::translate_char (char ch, UT_UCS4String &buf)
 {
-  UT_UCS4Char uch=ch;
+	UT_UCS4Char uch=ch;
 
-  lf = false;
+	lf = false;
 
-  switch (ch)
-  {
-    case 9:
-      buf += UCS_TAB;
-      break;
+	switch (ch)
+	{
+	case 9:
+		buf += UCS_TAB;
+		break;
 
-    case 12:
-      buf += UCS_FF;
-      break;
+	case 12:
+		buf += UCS_FF;
+		break;
 
-    case 10: /* line feed */
-      lf = true;
-    case 13: /* carriage return */
-    case 31: /* soft hyphen */
-      break;
-    default:
+	case 10: /* line feed */
+		lf = true;
+	case 13: /* carriage return */
+	case 31: /* soft hyphen */
+		break;
+	default:
 		if (ch & 0x80) {
 			charconv.mbtowc(uch, ch);
-      }
+		}
 		buf += uch;
-  }
+	}
 }
 
 char *IE_Imp_MSWrite::get_codepage(char *facename, char **newname)
@@ -565,6 +565,8 @@ int IE_Imp_MSWrite::read_char (int fcFirst2, int fcLim2) {
 	UT_String propBuffer;
 	UT_String tempBuffer;
 	
+	const char *oldcp = "";
+
     fcMac = wri_struct_value (write_file_header, "fcMac");
     page = (fcMac + 127) / 128;
     fcFirst = 0x80;
@@ -618,7 +620,7 @@ int IE_Imp_MSWrite::read_char (int fcFirst2, int fcLim2) {
 				if (hps != 24) {
 					UT_String_sprintf(tempBuffer, "; font-size:%dpt", hps / 2);
 					propBuffer += tempBuffer;
-                                }
+				}
 				if (italic)  {
 					propBuffer += "; font-style:italic";
 				}
@@ -634,7 +636,12 @@ int IE_Imp_MSWrite::read_char (int fcFirst2, int fcLim2) {
 					UT_String_sprintf (tempBuffer, "; font-family:%s", wri_fonts[ftc].name);
 					propBuffer += tempBuffer;
 				}
-				set_codepage(wri_fonts[ftc].codepage);				
+				const char *needcp = wri_fonts[ftc].codepage ? 
+					wri_fonts[ftc].codepage : default_cp.c_str();
+				if (needcp != oldcp /*sic!*/) {
+					set_codepage((char*)needcp);
+					oldcp = needcp;
+				}
 				while (fcFirst2 >= fcFirst) {
 					if ((fcFirst2 >= fcLim) || (fcFirst2 > fcLim2) ||
 						(fcFirst2 - 0x80 >= static_cast<UT_sint32>(mTextBuf.getLength()))) {
@@ -645,13 +652,12 @@ int IE_Imp_MSWrite::read_char (int fcFirst2, int fcLim2) {
 				}
 				
 				const gchar* propsArray[3];
-				propsArray[0] = PT_PROPS_ATTRIBUTE_NAME;
-				propsArray[1] = propBuffer.c_str();
-				propsArray[2] = NULL;
-				
 				if (mCharBuf.size() > 0) {
+					propsArray[0] = PT_PROPS_ATTRIBUTE_NAME;
+					propsArray[1] = propBuffer.c_str();
+					propsArray[2] = NULL;
+
 					appendFmt (propsArray);
-					UT_DEBUGMSG (("Hub: About to append %zd chars of text\n", mCharBuf.size()));
 					appendSpan (reinterpret_cast<const UT_UCSChar *>(mCharBuf.ucs4_str()), mCharBuf.size());
 				}
 				else {
@@ -807,10 +813,10 @@ IE_Imp_MSWrite::~IE_Imp_MSWrite()
 
 IE_Imp_MSWrite::IE_Imp_MSWrite(PD_Document * pDocument)
   : IE_Imp(pDocument), mFile(0), wri_fonts_count(0),
-    wri_fonts(0), pic_nr(0), 
+    wri_fonts(0), pic_nr(0), default_cp("CP1252"),
 	lf(false)
 {
-	charconv.setInCharset("CP1252");
+	set_codepage((char*)default_cp.c_str());
 
 	write_file_header = static_cast<struct wri_struct*>(malloc (sizeof (WRITE_FILE_HEADER)));
 	memcpy (write_file_header, WRITE_FILE_HEADER, sizeof (WRITE_FILE_HEADER));

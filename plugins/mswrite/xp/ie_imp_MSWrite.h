@@ -95,6 +95,7 @@ private:
 	struct wri_struct *write_picture;
 	struct wri_struct *write_ole_picture;
 
+	std::string default_cp;
 	UT_UCS4Char *transtbl;		// table for decoding codepage-specific symbols
 	char *get_codepage(char *facename, char **newname=NULL); // gets cp id by font name;
 	void set_codepage(char *cp);	// sets the translation table to corresponding codeset
