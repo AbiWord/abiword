@@ -136,8 +136,8 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Recent)
         const char * szFormat = pLabel->getMenuLabel();
         const char * szURI = pPrefs->getRecent(ndx);
         char *szRecent = g_filename_from_uri(szURI, NULL, NULL);
-        char *szBasename = szRecent ? g_path_get_basename(szRecent) : NULL;
-		char *szMenuname = s_escapeMenuString(szBasename ? szBasename : "");
+        char *szBasename = szRecent ? g_path_get_basename(szRecent) : g_strdup ("");
+		char *szMenuname = s_escapeMenuString(szBasename);
         g_free(szRecent);
 		g_free(szBasename);
 
