@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <set>
 #include "ut_locale.h"
 
 #include "ut_types.h"
@@ -45,6 +46,8 @@
 #include "ut_growbuf.h"
 #include "ut_string_class.h"
 #include "xap_Module.h"
+#include "fg_Graphic.h"
+#include "ie_impGraphic.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_mswrite_register
@@ -215,6 +218,8 @@ int IE_Imp_MSWrite::read_ffntb ()
 	
     font_count = 0;
     wri_fonts = NULL;
+
+	std::set<char*> raw_fonts;
 	
     while (true) {
 		if (!gsf_input_read (mFile, 2, byt)) {
@@ -256,9 +261,23 @@ int IE_Imp_MSWrite::read_ffntb ()
 			perror ("wri_file");
 			return 1;
 		}
+		char *trname;
+		wri_fonts[font_count].codepage=get_codepage(ffn,&trname);
+		if (wri_fonts[font_count].codepage) {
+			strcpy(ffn,trname);
+			raw_fonts.insert(strdup(trname));
+		}
 		wri_fonts[font_count].name = ffn;
 		font_count++;
     }
+	for (int i=0; i<font_count; i++) {
+		std::set<char*>::iterator pos;
+		if (!wri_fonts[i].codepage) {
+			pos = raw_fonts.find(wri_fonts[i].name);
+			if (pos != raw_fonts.end())
+				wri_fonts[i].codepage="CP1252";
+		}
+	}
     if (static_cast<unsigned>(font_count) != wri_fonts_count) {
 		wri_fonts_count = font_count;
 		UT_DEBUGMSG(("write file lied about number of fonts\n"));
@@ -266,9 +285,18 @@ int IE_Imp_MSWrite::read_ffntb ()
     return 0;
 }
 
+static struct cst_data {
+	char *suffix;
+	char  *cpid;
+} cp_suf_tbl[]={
+	{"\x04 cyr","CP1251"},
+	{"\x03 ce","CP1250"},
+	{NULL,NULL}
+};
+
 void IE_Imp_MSWrite::translate_char (char ch, UT_UCS4String &buf)
 {
-  UT_UCS4Char wch;
+  UT_UCS4Char uch=ch;
 
   lf = false;
 
@@ -287,15 +315,38 @@ void IE_Imp_MSWrite::translate_char (char ch, UT_UCS4String &buf)
     case 13: /* carriage return */
     case 31: /* soft hyphen */
       break;
-
     default:
-      if (ch & 0x80)
-      {
-        charconv.mbtowc(wch, ch);
-        buf += wch;
+		if (ch & 0x80) {
+			charconv.mbtowc(uch, ch);
       }
-      else buf += ch;
+		buf += uch;
   }
+}
+
+char *IE_Imp_MSWrite::get_codepage(char *facename, char **newname)
+{
+	static char facebuf[40];
+	cst_data *p=cp_suf_tbl;	
+	int l=strlen(facename);	
+	while (p->suffix) {
+		if (*p->suffix < l) {
+			if (!strcmpi(&p->suffix[1],&facename[l-*p->suffix])) {
+				if (newname) {
+					strncpy(facebuf,facename,l-*p->suffix);
+					facebuf[l-*p->suffix]=0;
+					*newname=facebuf;
+				}
+				return p->cpid;
+			}
+		}
+		p++;
+	}
+	return 0;
+}
+
+void IE_Imp_MSWrite::set_codepage(char *charset)
+{
+	charconv.setInCharset(charset);
 }
 
 /* the section property */
@@ -491,9 +542,7 @@ int IE_Imp_MSWrite::read_pap ()
 				}
 				
 				if (fGraphics) {
-//					wri_pict_read (static_cast<unsigned char*>(wri_text) + fcFirst - 0x80, 
-//								   fcLim - fcFirst, fout);
-					UT_ASSERT (UT_NOT_IMPLEMENTED);
+					read_pic(fcFirst, fcLim - fcFirst);
 				} else {
 					read_char (fcFirst, fcLim - 1);
 				}
@@ -585,7 +634,7 @@ int IE_Imp_MSWrite::read_char (int fcFirst2, int fcLim2) {
 					UT_String_sprintf (tempBuffer, "; font-family:%s", wri_fonts[ftc].name);
 					propBuffer += tempBuffer;
 				}
-				
+				set_codepage(wri_fonts[ftc].codepage);				
 				while (fcFirst2 >= fcFirst) {
 					if ((fcFirst2 >= fcLim) || (fcFirst2 > fcLim2) ||
 						(fcFirst2 - 0x80 >= static_cast<UT_sint32>(mTextBuf.getLength()))) {
@@ -669,8 +718,10 @@ static const struct wri_struct WRITE_FILE_HEADER[] = {
 	{ 0,    NULL,   0,  CT_IGNORE, NULL }           /* EOF */
 };
 
+#define WRITE_PICTURE_HEADER 40   // common size of both header types
+
 static const struct wri_struct WRITE_PICTURE[] = {
-#if 0
+
 	/* value, data, size, type, name */		/* word no. */
 	/* METAFILEPICT structure */
 	{ 0,	NULL, 	2,  CT_VALUE, "mm" },		/* 0 */
@@ -696,31 +747,79 @@ static const struct wri_struct WRITE_PICTURE[] = {
 	{ 0,	NULL,	2,  CT_VALUE, "mx" },		/* 18 */
 	{ 0,	NULL,	2,  CT_VALUE, "my" },		/* 19 */
 	{ 0,    NULL,   0,  CT_IGNORE, NULL }           /* EOF */
-#endif
 };
+
+/* OLE stuff */
+static const struct wri_struct WRITE_OLE_PICTURE[] = {
+	/* value, data, size, type, name */		/* word no. */
+	{ 0,	NULL, 	2,  CT_VALUE, "mm" },		/* 0 */
+	{ 0, 	NULL,	4,  CT_IGNORE, "not_used" },	/* 1-2 */
+	{ 0,	NULL, 	2,  CT_VALUE, "objectType" },	/* 3 */
+	{ 0,	NULL,	2,  CT_VALUE, "dxaOffset" },	/* 4 */
+	{ 0,	NULL,	2,  CT_VALUE, "dxaSize" },	/* 5 */
+	{ 0,	NULL,	2,  CT_VALUE, "dyaSize" },	/* 6 */
+	{ 0,	NULL,	2,  CT_IGNORE, "not_used2" },	/* 7 */
+	{ 0,	NULL,	4,  CT_VALUE, "dwDataSize" },	/* 8-9 */
+	{ 0, 	NULL,	4,  CT_IGNORE, "not_used3" },	/* 10-11 */
+	{ 0, 	NULL,	4,  CT_VALUE, "dwObjNum" },	/* 12-13 */
+	{ 0,	NULL,	2,  CT_VALUE, "not_used4" },	/* 14 */
+	{ 0,	NULL,	2,  CT_VALUE, "cbHeader" },	/* 15 */
+	{ 0,	NULL,   4,  CT_IGNORE, "not_used5" },	/* 16-17 */
+	{ 0,	NULL,	2,  CT_VALUE, "mx" },		/* 18 */
+	{ 0,	NULL,	2,  CT_VALUE, "my" },		/* 19 */
+	{ 0,    NULL,   0,  CT_IGNORE, NULL }           /* EOF */
+};
+
+// OLE1.0 structure offsets
+#define OLE_Version         0
+#define OLE_FormatID        4
+#define OLE_ClassNameLength 8
+#define OLE_ClassNameString 12   // variable length
+// offsets relative to empty ClassNameString
+#define OLE_TopicNameLength 12
+#define OLE_TopicNameString 16
+// offsets relative to empty ClassNameString and TopicNameString
+#define OLE_ItemNameLength  16
+#define OLE_ItemNameString  20
+// offsets relative to empty ClassNameString and TopicNameString and ItemNameString
+#define OLE_ObjDataSize     20
+#define OLE_Object          24
+#define OLE_MF_Reserved     24
+#define OLE_MF_Object       32
+
+// Bitmap16 structure offsets
+#define BM16_Type       0
+#define BM16_Width      2
+#define BM16_Height     4
+#define BM16_WidthBytes 6
+#define BM16_Planes     8
+#define BM16_BitsPixel  9
+#define BM16_Bits       10
+
 
 IE_Imp_MSWrite::~IE_Imp_MSWrite()
 {
   free_wri_struct (write_file_header);
   free(write_file_header);
-#if 0
-  free_wri_struct (write_picture);
+  free(write_ole_picture);
   free(write_picture);
-#endif
 }
-
 
 IE_Imp_MSWrite::IE_Imp_MSWrite(PD_Document * pDocument)
   : IE_Imp(pDocument), mFile(0), wri_fonts_count(0),
-    wri_fonts(0), wri_images(0), wri_images_count(0),
-    charconv("WINDOWS-1252"), lf(false)
+    wri_fonts(0), pic_nr(0), 
+	lf(false)
 {
+	charconv.setInCharset("CP1252");
+
 	write_file_header = static_cast<struct wri_struct*>(malloc (sizeof (WRITE_FILE_HEADER)));
 	memcpy (write_file_header, WRITE_FILE_HEADER, sizeof (WRITE_FILE_HEADER));
-#if 0
+
+	write_ole_picture = static_cast<struct wri_struct*>(malloc (sizeof (WRITE_OLE_PICTURE)));
+	memcpy (write_ole_picture, WRITE_OLE_PICTURE, sizeof (WRITE_OLE_PICTURE));
+
 	write_picture = static_cast<struct wri_struct*>(malloc (sizeof (WRITE_PICTURE)));
 	memcpy (write_picture, WRITE_PICTURE, sizeof (WRITE_PICTURE));
-#endif
 }
 
 /*****************************************************************/
@@ -764,168 +863,601 @@ UT_Error IE_Imp_MSWrite::_parseFile()
     read_sep();
     read_pap ();
     free_ffntb ();
-#if 0
-    wri_pict_print_data ();
-#endif
 
     return UT_OK;
 }
 
-#if 0 // don't need that
-
-static void wri_png_write_data (png_structp png_ptr, png_bytep data,
-				png_size_t length, wri_image *img)
-{
-    unsigned char *p;
-
-    p = realloc (img->png_image, img->length + length);
-    if (!p) {
-		UT_DEBUGMSG(("Cannot malloc22!\n"));
-        return;
-    } else {
-		img->png_image = p;
-		memcpy (img->png_image + img->length, data, length);
-		img->length += length;
-    }
-}
-
-/*
- * Encode a blob of data in base64. This is stolen from Apache
- */
-
-static int base64encode_binary (char *encoded,
-				const unsigned char *string, int len)
-{
-    static const char basis_64[] =
-		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    int i, n;
-    char *p;
-	
-    p = encoded;
-    n = 0;
-    for (i = 0; i < len - 2; i += 3) {
-        *p++ = basis_64[(string[i] >> 2) & 0x3F];
-        *p++ = basis_64[((string[i] & 0x3) << 4) |
-					   (static_cast<int>(string[i + 1] & 0xF0) >> 4)];
-        *p++ = basis_64[((string[i + 1] & 0xF) << 2) |
-					   (static_cast<int>(string[i + 2] & 0xC0) >> 6)];
-        *p++ = basis_64[string[i + 2] & 0x3F];
-        if (!(++n % 16)) *p++ = '\n';
-    }
-    if (i < len) {
-        *p++ = basis_64[(string[i] >> 2) & 0x3F];
-        if (i == (len - 1)) {
-            *p++ = basis_64[((string[i] & 0x3) << 4)];
-            *p++ = '=';
-        }
-        else {
-            *p++ = basis_64[((string[i] & 0x3) << 4) |
-						   (static_cast<int>(string[i + 1] & 0xF0) >> 4)];
-            *p++ = basis_64[((string[i + 1] & 0xF) << 2)];
-        }
-        *p++ = '=';
-    }
-	
-    *p++ = '\0';
-    return p - encoded;
-}
+#ifdef _MSC_VER
+typedef unsigned __int32 uint32_t;
+typedef unsigned __int16 uint16_t;
 #endif
 
-#if 0
-int IE_Imp_MSWrite::wri_pict_read (unsigned char *data, int size) 
+ /*****************************************************************/
+ /*****************************************************************/
+ 
+int IE_Imp_MSWrite::read_pic (int from, int size)
 {
-    png_structp png_ptr;
-    png_infop info_ptr;
-    png_byte **rows;
-    int height, width, width_bytes, i;
-    struct wri_image *img, **imgs;
-    int mm;
-	
-    if (size < 40) {
-		UT_DEBUGMSG(("Paragraph too small for object\n"));
-        return 1;
+	unsigned char page[0x80];
+	int mm;
+	struct wri_struct *write_pic = NULL;
+	int cbHeader, cbSize, bitsppixel, colorPaletteLen = 0;
+	int bmw = 0, bmh = 0, chunk, filler, written;
+	IEGraphicFileType iegft = IEGFT_Unknown;
+	int objectType, ole_offset, formatID, objLen, bhSize, bppOff;
+	const char *msg = NULL, *className = "";
+	UT_ByteBuf pBB;
+	FG_Graphic *pfg = NULL;
+	int dxaOffset, dxaSize, dyaSize, mx, my;
+	UT_String propBuffer, dataID;
+
+	// structs without alignment
+#pragma pack(push)
+#pragma pack(1)
+	struct
+	{
+		char bfType[2];
+		uint32_t bfSize;
+		uint32_t bfReserved;
+		uint32_t bfOffBits;
+	} bmpheader;
+	struct
+	{
+		uint32_t header_sz;
+		uint32_t width;
+		uint32_t height;
+		uint16_t nplanes;
+		uint16_t bitspp;
+		uint32_t compress_type;
+		uint32_t bmp_bytesz;
+		uint32_t hres;
+		uint32_t vres;
+		uint32_t ncolors;
+		uint32_t nimpcolors;
+	} bmpinfo;
+#pragma pack(pop)
+
+	// 8 bit colormap (plus one extra color only in the 4 bit colormap)
+	const UT_Byte bgr_palette[257][4] =
+	{
+		{0x00, 0x00, 0x00, 0x00},
+		{0x40, 0x00, 0x00, 0x00},
+		{0x80, 0x00, 0x00, 0x00},
+		{0xff, 0x00, 0x00, 0x00},
+		{0x00, 0x20, 0x00, 0x00},
+		{0x40, 0x20, 0x00, 0x00},
+		{0x80, 0x20, 0x00, 0x00},
+		{0xff, 0x20, 0x00, 0x00},
+		{0x00, 0x40, 0x00, 0x00},
+		{0x40, 0x40, 0x00, 0x00},
+		{0x80, 0x40, 0x00, 0x00},
+		{0xff, 0x40, 0x00, 0x00},
+		{0x00, 0x60, 0x00, 0x00},
+		{0x40, 0x60, 0x00, 0x00},
+		{0x80, 0x60, 0x00, 0x00},
+		{0xff, 0x60, 0x00, 0x00},
+		{0x00, 0x80, 0x00, 0x00},
+		{0x40, 0x80, 0x00, 0x00},
+		{0x80, 0x80, 0x00, 0x00},
+		{0xff, 0x80, 0x00, 0x00},
+		{0x00, 0xa0, 0x00, 0x00},
+		{0x40, 0xa0, 0x00, 0x00},
+		{0x80, 0xa0, 0x00, 0x00},
+		{0xff, 0xa0, 0x00, 0x00},
+		{0x00, 0xc0, 0x00, 0x00},
+		{0x40, 0xc0, 0x00, 0x00},
+		{0x80, 0xc0, 0x00, 0x00},
+		{0xff, 0xc0, 0x00, 0x00},
+		{0x00, 0xff, 0x00, 0x00},
+		{0x40, 0xff, 0x00, 0x00},
+		{0x80, 0xff, 0x00, 0x00},
+		{0xff, 0xff, 0x00, 0x00},
+		{0x00, 0x00, 0x20, 0x00},
+		{0x40, 0x00, 0x20, 0x00},
+		{0x80, 0x00, 0x20, 0x00},
+		{0xff, 0x00, 0x20, 0x00},
+		{0x00, 0x20, 0x20, 0x00},
+		{0x40, 0x20, 0x20, 0x00},
+		{0x80, 0x20, 0x20, 0x00},
+		{0xff, 0x20, 0x20, 0x00},
+		{0x00, 0x40, 0x20, 0x00},
+		{0x40, 0x40, 0x20, 0x00},
+		{0x80, 0x40, 0x20, 0x00},
+		{0xff, 0x40, 0x20, 0x00},
+		{0x00, 0x60, 0x20, 0x00},
+		{0x40, 0x60, 0x20, 0x00},
+		{0x80, 0x60, 0x20, 0x00},
+		{0xff, 0x60, 0x20, 0x00},
+		{0x00, 0x80, 0x20, 0x00},
+		{0x40, 0x80, 0x20, 0x00},
+		{0x80, 0x80, 0x20, 0x00},
+		{0xff, 0x80, 0x20, 0x00},
+		{0x00, 0xa0, 0x20, 0x00},
+		{0x40, 0xa0, 0x20, 0x00},
+		{0x80, 0xa0, 0x20, 0x00},
+		{0xff, 0xa0, 0x20, 0x00},
+		{0x00, 0xc0, 0x20, 0x00},
+		{0x40, 0xc0, 0x20, 0x00},
+		{0x80, 0xc0, 0x20, 0x00},
+		{0xff, 0xc0, 0x20, 0x00},
+		{0x00, 0xff, 0x20, 0x00},
+		{0x40, 0xff, 0x20, 0x00},
+		{0x80, 0xff, 0x20, 0x00},
+		{0xff, 0xff, 0x20, 0x00},
+		{0x00, 0x00, 0x40, 0x00},
+		{0x40, 0x00, 0x40, 0x00},
+		{0x80, 0x00, 0x40, 0x00},
+		{0xff, 0x00, 0x40, 0x00},
+		{0x00, 0x20, 0x40, 0x00},
+		{0x40, 0x20, 0x40, 0x00},
+		{0x80, 0x20, 0x40, 0x00},
+		{0xff, 0x20, 0x40, 0x00},
+		{0x00, 0x40, 0x40, 0x00},
+		{0x40, 0x40, 0x40, 0x00},
+		{0x80, 0x40, 0x40, 0x00},
+		{0xff, 0x40, 0x40, 0x00},
+		{0x00, 0x60, 0x40, 0x00},
+		{0x40, 0x60, 0x40, 0x00},
+		{0x80, 0x60, 0x40, 0x00},
+		{0xff, 0x60, 0x40, 0x00},
+		{0x00, 0x80, 0x40, 0x00},
+		{0x40, 0x80, 0x40, 0x00},
+		{0x80, 0x80, 0x40, 0x00},
+		{0xff, 0x80, 0x40, 0x00},
+		{0x00, 0xa0, 0x40, 0x00},
+		{0x40, 0xa0, 0x40, 0x00},
+		{0x80, 0xa0, 0x40, 0x00},
+		{0xff, 0xa0, 0x40, 0x00},
+		{0x00, 0xc0, 0x40, 0x00},
+		{0x40, 0xc0, 0x40, 0x00},
+		{0x80, 0xc0, 0x40, 0x00},
+		{0xff, 0xc0, 0x40, 0x00},
+		{0x00, 0xff, 0x40, 0x00},
+		{0x40, 0xff, 0x40, 0x00},
+		{0x80, 0xff, 0x40, 0x00},
+		{0xff, 0xff, 0x40, 0x00},
+		{0x00, 0x00, 0x60, 0x00},
+		{0x40, 0x00, 0x60, 0x00},
+		{0x80, 0x00, 0x60, 0x00},
+		{0xff, 0x00, 0x60, 0x00},
+		{0x00, 0x20, 0x60, 0x00},
+		{0x40, 0x20, 0x60, 0x00},
+		{0x80, 0x20, 0x60, 0x00},
+		{0xff, 0x20, 0x60, 0x00},
+		{0x00, 0x40, 0x60, 0x00},
+		{0x40, 0x40, 0x60, 0x00},
+		{0x80, 0x40, 0x60, 0x00},
+		{0xff, 0x40, 0x60, 0x00},
+		{0x00, 0x60, 0x60, 0x00},
+		{0x40, 0x60, 0x60, 0x00},
+		{0x80, 0x60, 0x60, 0x00},
+		{0xff, 0x60, 0x60, 0x00},
+		{0x00, 0x80, 0x60, 0x00},
+		{0x40, 0x80, 0x60, 0x00},
+		{0x80, 0x80, 0x60, 0x00},
+		{0xff, 0x80, 0x60, 0x00},
+		{0x00, 0xa0, 0x60, 0x00},
+		{0x40, 0xa0, 0x60, 0x00},
+		{0x80, 0xa0, 0x60, 0x00},
+		{0xff, 0xa0, 0x60, 0x00},
+		{0x00, 0xc0, 0x60, 0x00},
+		{0x40, 0xc0, 0x60, 0x00},
+		{0x80, 0xc0, 0x60, 0x00},
+		{0xff, 0xc0, 0x60, 0x00},
+		{0x00, 0xff, 0x60, 0x00},
+		{0x40, 0xff, 0x60, 0x00},
+		{0x80, 0xff, 0x60, 0x00},
+		{0xff, 0xff, 0x60, 0x00},
+		{0x00, 0x00, 0x80, 0x00},
+		{0x40, 0x00, 0x80, 0x00},
+		{0x80, 0x00, 0x80, 0x00},
+		{0xff, 0x00, 0x80, 0x00},
+		{0x00, 0x20, 0x80, 0x00},
+		{0x40, 0x20, 0x80, 0x00},
+		{0x80, 0x20, 0x80, 0x00},
+		{0xff, 0x20, 0x80, 0x00},
+		{0x00, 0x40, 0x80, 0x00},
+		{0x40, 0x40, 0x80, 0x00},
+		{0x80, 0x40, 0x80, 0x00},
+		{0xff, 0x40, 0x80, 0x00},
+		{0x00, 0x60, 0x80, 0x00},
+		{0x40, 0x60, 0x80, 0x00},
+		{0x80, 0x60, 0x80, 0x00},
+		{0xff, 0x60, 0x80, 0x00},
+		{0x00, 0x80, 0x80, 0x00},
+		{0x40, 0x80, 0x80, 0x00},
+		{0x80, 0x80, 0x80, 0x00},
+		{0xff, 0x80, 0x80, 0x00},
+		{0x00, 0xa0, 0x80, 0x00},
+		{0x40, 0xa0, 0x80, 0x00},
+		{0x80, 0xa0, 0x80, 0x00},
+		{0xff, 0xa0, 0x80, 0x00},
+		{0x00, 0xc0, 0x80, 0x00},
+		{0x40, 0xc0, 0x80, 0x00},
+		{0x80, 0xc0, 0x80, 0x00},
+		{0xff, 0xc0, 0x80, 0x00},
+		{0x00, 0xff, 0x80, 0x00},
+		{0x40, 0xff, 0x80, 0x00},
+		{0x80, 0xff, 0x80, 0x00},
+		{0xff, 0xff, 0x80, 0x00},
+		{0x00, 0x00, 0xa0, 0x00},
+		{0x40, 0x00, 0xa0, 0x00},
+		{0x80, 0x00, 0xa0, 0x00},
+		{0xff, 0x00, 0xa0, 0x00},
+		{0x00, 0x20, 0xa0, 0x00},
+		{0x40, 0x20, 0xa0, 0x00},
+		{0x80, 0x20, 0xa0, 0x00},
+		{0xff, 0x20, 0xa0, 0x00},
+		{0x00, 0x40, 0xa0, 0x00},
+		{0x40, 0x40, 0xa0, 0x00},
+		{0x80, 0x40, 0xa0, 0x00},
+		{0xff, 0x40, 0xa0, 0x00},
+		{0x00, 0x60, 0xa0, 0x00},
+		{0x40, 0x60, 0xa0, 0x00},
+		{0x80, 0x60, 0xa0, 0x00},
+		{0xff, 0x60, 0xa0, 0x00},
+		{0x00, 0x80, 0xa0, 0x00},
+		{0x40, 0x80, 0xa0, 0x00},
+		{0x80, 0x80, 0xa0, 0x00},
+		{0xff, 0x80, 0xa0, 0x00},
+		{0x00, 0xa0, 0xa0, 0x00},
+		{0x40, 0xa0, 0xa0, 0x00},
+		{0x80, 0xa0, 0xa0, 0x00},
+		{0xff, 0xa0, 0xa0, 0x00},
+		{0x00, 0xc0, 0xa0, 0x00},
+		{0x40, 0xc0, 0xa0, 0x00},
+		{0x80, 0xc0, 0xa0, 0x00},
+		{0xff, 0xc0, 0xa0, 0x00},
+		{0x00, 0xff, 0xa0, 0x00},
+		{0x40, 0xff, 0xa0, 0x00},
+		{0x80, 0xff, 0xa0, 0x00},
+		{0xff, 0xff, 0xa0, 0x00},
+		{0x00, 0x00, 0xc0, 0x00},
+		{0x40, 0x00, 0xc0, 0x00},
+		{0x80, 0x00, 0xc0, 0x00},
+		{0xff, 0x00, 0xc0, 0x00},
+		{0x00, 0x20, 0xc0, 0x00},
+		{0x40, 0x20, 0xc0, 0x00},
+		{0x80, 0x20, 0xc0, 0x00},
+		{0xff, 0x20, 0xc0, 0x00},
+		{0x00, 0x40, 0xc0, 0x00},
+		{0x40, 0x40, 0xc0, 0x00},
+		{0x80, 0x40, 0xc0, 0x00},
+		{0xff, 0x40, 0xc0, 0x00},
+		{0x00, 0x60, 0xc0, 0x00},
+		{0x40, 0x60, 0xc0, 0x00},
+		{0x80, 0x60, 0xc0, 0x00},
+		{0xff, 0x60, 0xc0, 0x00},
+		{0x00, 0x80, 0xc0, 0x00},
+		{0x40, 0x80, 0xc0, 0x00},
+		{0x80, 0x80, 0xc0, 0x00},
+		{0xff, 0x80, 0xc0, 0x00},
+		{0x00, 0xa0, 0xc0, 0x00},
+		{0x40, 0xa0, 0xc0, 0x00},
+		{0x80, 0xa0, 0xc0, 0x00},
+		{0xff, 0xa0, 0xc0, 0x00},
+		{0x00, 0xc0, 0xc0, 0x00},
+		{0x40, 0xc0, 0xc0, 0x00},
+		{0x80, 0xc0, 0xc0, 0x00},
+		{0xff, 0xc0, 0xc0, 0x00},
+		{0x00, 0xff, 0xc0, 0x00},
+		{0x40, 0xff, 0xc0, 0x00},
+		{0x80, 0xff, 0xc0, 0x00},
+		{0xff, 0xff, 0xc0, 0x00},
+		{0x00, 0x00, 0xff, 0x00},
+		{0x40, 0x00, 0xff, 0x00},
+		{0x80, 0x00, 0xff, 0x00},
+		{0xff, 0x00, 0xff, 0x00},
+		{0x00, 0x20, 0xff, 0x00},
+		{0x40, 0x20, 0xff, 0x00},
+		{0x80, 0x20, 0xff, 0x00},
+		{0xff, 0x20, 0xff, 0x00},
+		{0x00, 0x40, 0xff, 0x00},
+		{0x40, 0x40, 0xff, 0x00},
+		{0x80, 0x40, 0xff, 0x00},
+		{0xff, 0x40, 0xff, 0x00},
+		{0x00, 0x60, 0xff, 0x00},
+		{0x40, 0x60, 0xff, 0x00},
+		{0x80, 0x60, 0xff, 0x00},
+		{0xff, 0x60, 0xff, 0x00},
+		{0x00, 0x80, 0xff, 0x00},
+		{0x40, 0x80, 0xff, 0x00},
+		{0x80, 0x80, 0xff, 0x00},
+		{0xff, 0x80, 0xff, 0x00},
+		{0x00, 0xa0, 0xff, 0x00},
+		{0x40, 0xa0, 0xff, 0x00},
+		{0x80, 0xa0, 0xff, 0x00},
+		{0xff, 0xa0, 0xff, 0x00},
+		{0x00, 0xc0, 0xff, 0x00},
+		{0x40, 0xc0, 0xff, 0x00},
+		{0x80, 0xc0, 0xff, 0x00},
+		{0xff, 0xc0, 0xff, 0x00},
+		{0x00, 0xff, 0xff, 0x00},
+		{0x40, 0xff, 0xff, 0x00},
+		{0x80, 0xff, 0xff, 0x00},
+		{0xff, 0xff, 0xff, 0x00},
+		{0xc0, 0xc0, 0xc0, 0x00}   // a color only in the 4 bit colormap
+	};
+	// indices for the 4 bit colormap
+	int c16idx[16] = {  0, 128, 16, 144, 2, 130, 18, 256,
+		146, 224, 28, 252, 3, 227, 31, 255 };
+
+
+	if (size < WRITE_PICTURE_HEADER + OLE_ClassNameString)
+	{
+		UT_DEBUGMSG(("Size error 1\n"));
+		return 1;
     }
-	
-    read_wri_struct_mem (write_picture, data);
-    /*dump_wri_struct (write_picture);*/
 
-    mm = wri_struct_value (write_picture, "mm");
+	// prepare bmp file header
+	memset(&bmpheader, 0, sizeof(bmpheader));
+	bmpheader.bfType[0] = 'B';
+	bmpheader.bfType[1] = 'M';
+	memset(&bmpinfo, 0, sizeof(bmpinfo));
 
-    if (mm == 0x88) { /* this is a wmf file */
+	gsf_input_seek(mFile, from, G_SEEK_SET);
+	gsf_input_read(mFile, sizeof(page), page);
 
-	/* note from (data + 40) to (size - 49) there is the 
-	   metafile; xExt and yExt contain the size in inch 
-	   (divide by 1440.)) */
-    } else if (mm == 0xe3) { /* this is a picture */
-		if (wri_struct_value (write_picture, "bmPlanes") != 1) {
-			UT_DEBUGMSG(("Only one bitplane supported, please send this "
-						 "write file to sean@mess.org\n"));
-			goto err;
-		}
-		height = wri_struct_value (write_picture, "bmHeight");
-		width = wri_struct_value (write_picture, "bmWidth");
-		width_bytes = wri_struct_value (write_picture, "bmWidthBytes");
-		if ((40 + width_bytes * height) < size) {
-			UT_DEBUGMSG(("Not enough paragraph information for bitmap!\n"));
-            goto err; 
-		}
-		img = malloc (sizeof (struct wri_image) );
-		if (!img) {
-			UT_DEBUGMSG(("Cannot malloc2!\n"));
-			goto err;
+	mm = READ_WORD(page);
+
+	switch (mm)
+	{
+	case 0x88:   /* wmf file */
+	case 0xe3:   /* bitmap */
+
+		write_pic = write_picture;
+		read_wri_struct_mem(write_pic, page);
+
+		cbHeader = wri_struct_value(write_pic, "cbHeader");
+		cbSize = wri_struct_value(write_pic, "cbSize");
+
+		if (size < cbHeader + cbSize)
+		{
+			msg = "Size error 2\n";
+			break;
+    }
+
+		if (mm == 0xe3)   // bitmap needs header
+		{
+			if ((bitsppixel = wri_struct_value(write_pic, "bmBitsPixel")) < 16)
+				colorPaletteLen = (1 << bitsppixel) << 2;
+
+			if (colorPaletteLen != 8)
+			{
+				msg = "Color palette error\n";
+				break;
         }
-		memset (img, 0, sizeof (struct wri_image) );
-		imgs = realloc (wri_images, 
-						sizeof (struct wri_image*) * (wri_images_count + 1) );
-		if (!imgs) {
-			UT_DEBUGMSG(("Cannot realloc wri_images!\n"));
-			free (img);
-			goto err;
-		}
-		wri_images[wri_images_count] = img;
-		
-		png_ptr = png_create_write_struct (PNG_LIBPNG_VER_STRING, NULL,
-										   NULL, NULL);
-		if (!png_ptr) goto err;
-		
-		info_ptr = png_create_info_struct (png_ptr);
-		if (!info_ptr) goto err;
-		
-		if (setjmp (png_ptr->jmpbuf) ) {
-			png_destroy_write_struct (&png_ptr, &info_ptr);
-			goto err;
-		}
-		
-		/* install our custom output functions */
-		png_set_write_fn (png_ptr, png_get_io_ptr (png_ptr), 
-						  wri_png_write_data, wri_images[wri_image_count]);
-		
-		png_set_IHDR (png_ptr, info_ptr, width, height, 
-					  wri_struct_value (write_picture, "bmBitsPixel"),
-					  PNG_COLOR_TYPE_GRAY, PNG_INTERLACE_NONE,
-					  PNG_FILTER_TYPE_BASE, PNG_COMPRESSION_TYPE_BASE);
-		
-		png_write_info (png_ptr, info_ptr);
-		
-		rows = malloc (height * sizeof (png_bytep) );
-		for (i=0;i<height;i++) rows[i] = data + 40 + width_bytes * i;
-		
-		png_write_image (png_ptr, rows);
-		
-		png_write_end (png_ptr, info_ptr);
-		png_destroy_write_struct (&png_ptr, &info_ptr);
-		
-		fprintf (fout, "<image dataid=\"image%d\"/>", wri_images_count);
-		wri_images_count++;
-		free (rows);
-    } else {
-		UT_DEBUGMSG(("OLE object not supported, skipping...\n"));
-		//wri_ole_read (data, size, mFile);
+
+			// make a bitmap file header
+
+			WRITE_DWORD(bmpheader.bfOffBits, sizeof(bmpheader) + sizeof(bmpinfo) + colorPaletteLen);
+			pBB.append(reinterpret_cast<UT_Byte *>(&bmpheader), sizeof(bmpheader));
+
+			bmw = wri_struct_value(write_pic, "bmWidth");
+			bmh = wri_struct_value(write_pic, "bmHeight");
+			if (bmh & 0x8000) bmh = -0x10000 + bmh;
+
+			WRITE_DWORD(bmpinfo.header_sz, sizeof(bmpinfo));
+			WRITE_DWORD(bmpinfo.width, bmw);
+			WRITE_DWORD(bmpinfo.height, -bmh);
+			WRITE_WORD(bmpinfo.nplanes, wri_struct_value(write_pic, "bmPlanes"));
+			WRITE_WORD(bmpinfo.bitspp, bitsppixel);
+			pBB.append(reinterpret_cast<UT_Byte *>(&bmpinfo), sizeof(bmpinfo));
+
+			// add monochrome colormap
+			pBB.append(bgr_palette[0], colorPaletteLen >> 1);
+			pBB.append(bgr_palette[255], colorPaletteLen >> 1);
+
+			chunk = wri_struct_value(write_pic, "bmWidthBytes");
+			filler = (4 - (chunk & 3)) & 3;
+        }
+		else
+		{
+			iegft = IEGFT_WMF;
+			chunk = cbSize;
+			filler = 0;
     }
-	
- //err:
-    free_wri_struct (write_picture);
-	
-    return 0;
+
+
+		written = 0;
+
+		while (written < cbSize)
+		{
+			// append data
+			pBB.append(mTextBuf.getPointer(from - 0x80 + cbHeader + written), chunk);
+			for (int i = 0; i < filler; i++) pBB.append(reinterpret_cast<const UT_Byte *>("\x00"), 1);
+			written += chunk;
+    }
+
+		break;
+
+	case 0xe4:   /* ole object */	
+		write_pic = write_ole_picture;
+		read_wri_struct_mem(write_pic, page);
+
+		objectType = wri_struct_value(write_pic, "objectType");
+		cbHeader = wri_struct_value(write_pic, "cbHeader");
+
+		if ((ole_offset = READ_DWORD(page + cbHeader + OLE_ClassNameLength)) > 0)
+			className = reinterpret_cast<const char *>(page + cbHeader + OLE_ClassNameString);
+
+		if ((formatID = READ_DWORD(page + cbHeader + OLE_FormatID)) == 1 ||
+			formatID == 2)
+		{
+			if (size < cbHeader + OLE_TopicNameString + ole_offset)
+			{
+				msg = "Size error 3\n";
+				break;
+		}
+
+			ole_offset += READ_DWORD(page + cbHeader + OLE_TopicNameLength + ole_offset);
+			if (size < cbHeader + OLE_ItemNameString + ole_offset)
+			{
+				msg = "Size error 4\n";
+				break;
+		}
+
+			ole_offset += READ_DWORD(page + cbHeader + OLE_ItemNameLength + ole_offset);
+        }
+		objLen = READ_DWORD(page + cbHeader + OLE_ObjDataSize + ole_offset);
+
+		if (strcmp(className, "METAFILEPICT") == 0)
+		{
+			iegft = IEGFT_WMF;
+			ole_offset += OLE_MF_Object - OLE_Object;
+			objLen -= OLE_MF_Object - OLE_Object;
+			objectType = 2;   // we can go embedded now
+		}
+		if (size <= cbHeader + OLE_Object + ole_offset ||
+			cbHeader + OLE_Object + ole_offset > 0x80 ||
+			size < cbHeader + OLE_Object + ole_offset + objLen)
+		{
+			msg = "Size error 5\n";
+			break;
+		}
+
+		// static
+		if (objectType == 1)
+		{
+			if (strcmp(className, "DIB") == 0)
+			{
+				bhSize = READ_DWORD(page + cbHeader + OLE_Object + ole_offset);
+				bppOff = (bhSize == 12 ? 10 : 14);   // different header info types
+
+				if ((bitsppixel = READ_WORD(page + cbHeader + OLE_Object + ole_offset + bppOff)) < 16)
+					colorPaletteLen = (1 << bitsppixel) << 2;
+
+				// make a bitmap file header
+				WRITE_DWORD(bmpheader.bfOffBits, sizeof(bmpheader) + bhSize + colorPaletteLen);
+				pBB.append(reinterpret_cast<UT_Byte *>(&bmpheader), sizeof(bmpheader));
+
+				objectType = 2;   // we can go embedded now
+    }
+
+			if (strcmp(className, "BITMAP") == 0)
+			{
+				if ((bitsppixel = *(page + cbHeader + OLE_Object + ole_offset + BM16_BitsPixel)) < 16)
+					colorPaletteLen = (1 << bitsppixel) << 2;
+
+				// make a bitmap file header
+
+				WRITE_DWORD(bmpheader.bfOffBits, sizeof(bmpheader) + sizeof(bmpinfo) + colorPaletteLen);
+				pBB.append(reinterpret_cast<UT_Byte *>(&bmpheader), sizeof(bmpheader));
+
+				bmh = READ_WORD(page + cbHeader + OLE_Object + ole_offset + BM16_Height);
+				if (bmh & 0x8000) bmh = -0x10000 + bmh;
+
+				WRITE_DWORD(bmpinfo.header_sz, sizeof(bmpinfo));
+				WRITE_DWORD(bmpinfo.width, READ_WORD(page + cbHeader + OLE_Object + ole_offset + BM16_Width));
+				WRITE_DWORD(bmpinfo.height, bmh);
+				WRITE_WORD(bmpinfo.nplanes, *(page + cbHeader + OLE_Object + ole_offset + BM16_Planes));
+				WRITE_WORD(bmpinfo.bitspp, bitsppixel);
+				pBB.append(reinterpret_cast<UT_Byte *>(&bmpinfo), sizeof(bmpinfo));
+
+				// add corresponding colormap
+				switch (bitsppixel)
+				{
+				case 1:
+					pBB.append(bgr_palette[0], colorPaletteLen >> 1);
+					pBB.append(bgr_palette[255], colorPaletteLen >> 1);
+					break;
+
+				case 4:
+					for (int i = 0; i < 16; i++)
+						pBB.append(bgr_palette[c16idx[i]], 4);
+					break;
+
+				case 8:
+					pBB.append(bgr_palette[0], colorPaletteLen);
+					break;
+				}
+
+				ole_offset += BM16_Bits;
+				objectType = 2;   // we can go embedded now
+			}
+		}
+
+		// embedded
+		if (objectType == 2)
+			pBB.append(mTextBuf.getPointer(from - 0x80 + cbHeader + OLE_Object + ole_offset), objLen);
+
+		break;
+	}
+
+	// let's see...
+	if (pBB.getLength())
+	{
+		// ...whether it's a picture
+		if ((IE_ImpGraphic::loadGraphic(pBB, iegft, &pfg) != UT_OK) || !pfg)
+		{
+			msg = "Picture load error or no picture\n";
+		}
+		else
+		{
+			const gchar* propsArray[5];
+
+			dxaOffset = wri_struct_value(write_pic, "dxaOffset");
+
+			if (dxaOffset & 0x8000) dxaOffset = -0x10000 + dxaOffset;
+
+			if (dxaOffset)
+			{
+				UT_String_sprintf(propBuffer, "margin-left:%.4fin",
+					static_cast<float>(dxaOffset) / 1440.0);
+
+				propsArray[0] = PT_PROPS_ATTRIBUTE_NAME;
+				propsArray[1] = propBuffer.c_str();
+				propsArray[2] = NULL;
+
+				appendStrux(PTX_Block, propsArray);
+			}
+
+			dxaSize = wri_struct_value(write_pic, "dxaSize");
+			if (dxaSize == 0) dxaSize = wri_struct_value(write_pic, "xExt");
+
+			dyaSize = wri_struct_value(write_pic, "dyaSize");
+			if (dyaSize == 0) dyaSize = wri_struct_value(write_pic, "yExt");
+
+			if (dxaSize & 0x8000) dxaSize = -0x10000 + dxaSize;
+			if (dyaSize & 0x8000) dyaSize = -0x10000 + dyaSize;
+
+			mx = wri_struct_value(write_pic, "mx");
+			my = wri_struct_value(write_pic, "my");
+
+			// 0xe3 picture sizes aren't reliable, so we recalculate them
+			// (1 pixel = 15 twips)
+			if (mm == 0xe3)
+			{
+				dxaSize = bmw * 15;
+				dyaSize = (bmh < 0 ? -bmh : bmh) * 15;
+			}
+
+			UT_String_sprintf(propBuffer, "width:%.4fin; height:%.4fin",
+				static_cast<float>(mx) / 1000.0 *
+				static_cast<float>(dxaSize) / 1440.0,
+				static_cast<float>(my) / 1000.0 *
+				static_cast<float>(dyaSize) / 1440.0);
+
+			UT_String_sprintf(dataID, "image%u", ++pic_nr);
+
+			propsArray[0] = PT_PROPS_ATTRIBUTE_NAME;
+			propsArray[1] = propBuffer.c_str();;
+			propsArray[2] = "dataid";
+			propsArray[3] = dataID.c_str();
+			propsArray[4] = NULL;
+
+			appendObject(PTO_Image, propsArray);
+			getDoc()->createDataItem(dataID.c_str(), false, pfg->getBuffer(), pfg->getMimeType(), NULL);
+		}
+	}
+
+	DELETEP(pfg);
+
+	if (write_pic) free_wri_struct(write_pic);
+
+	if (msg)
+	{
+		UT_DEBUGMSG((msg));
+	}
+
+	return (msg ? 1 : 0);
 }
-#endif

@@ -2,6 +2,7 @@
  * Copyright (C) 2001 Sean Young <sean@mess.org>
  * Copyright (C) 2001 Hubert Figuiere
  * Copyright (C) 2001 Dom Lachowicz
+ *               2010 Ingo Brueckl
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -57,8 +58,15 @@ int wri_struct_value (const struct wri_struct *cfg, const char *name);
 #define READ_DWORD(p)	((*(p)) + (((*((p)+1)) << 8)) + (((*((p)+2)) << 16)) + \
 			(((*((p)+3)) << 24)))
 
-// wri_ole.h
-int wri_ole_read (unsigned char *data, int size, GsfOutput *f);
+#define WRITE_WORD(d, s)	{ char *p = reinterpret_cast<char *>(&(d)); \
+				  p[0] = (s) & 0xff; \
+				  p[1] = ((s) & 0xff00) >> 8; }
+
+#define WRITE_DWORD(d, s)	{ char *p = reinterpret_cast<char *>(&(d)); \
+				  p[0] = (s) & 0xff; \
+				  p[1] = ((s) & 0xff00) >> 8; \
+				  p[2] = ((s) & 0xff0000) >> 16; \
+				  p[3] = ((s) & 0xff000000) >> 24; }
 
 #endif /* IE_IMPEXP_MSWRITE_H */
 

@@ -24,6 +24,8 @@
 #define IE_IMP_MSWRITE_H
 
 #include <stdio.h>
+#include <string>
+#include <map>
 
 #include "ut_bytebuf.h"
 #include "ut_string_class.h"
@@ -38,12 +40,8 @@ class PD_Document;
 typedef struct wri_font {
 	short	ffid;
 	char	*name;
+	char	*codepage;
 } wri_font;
-
-typedef struct wri_image {
-    unsigned char *png_image;
-    int length;
-} wri_image;
 
 // The importer/reader for MS Write Files.
 
@@ -85,24 +83,25 @@ private:
 	int read_sep();
 	int read_pap ();
 	int read_char (int fcFirst2, int fcLim2);
-#if 0
-	int wri_pict_read (unsigned char *data, int size);
-	int wri_pict_print_data ();
-#endif
+	int read_pic(int, int);
 	
 	GsfInput* mFile;
 	
 	UT_uint32 wri_fonts_count;
 	struct wri_font *wri_fonts;
-	struct wri_image **wri_images;
-	UT_uint32 wri_images_count;
+	UT_uint32 pic_nr;
 	
 	struct wri_struct *write_file_header;
 	struct wri_struct *write_picture;
+	struct wri_struct *write_ole_picture;
+
+	UT_UCS4Char *transtbl;		// table for decoding codepage-specific symbols
+	char *get_codepage(char *facename, char **newname=NULL); // gets cp id by font name;
+	void set_codepage(char *cp);	// sets the translation table to corresponding codeset
 	
 	UT_UCS4String mCharBuf;    // buffer for char runs.
 	UT_ByteBuf mTextBuf;       // complete text buffer as extracted out of the file.
-	UT_UCS4_mbtowc charconv;   // CP1252 to unicode conversion.
+	UT_UCS4_mbtowc charconv;   // unicode conversion.
 	bool lf;
 };
 
