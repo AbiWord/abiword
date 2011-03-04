@@ -403,7 +403,8 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 
 AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 					   const UT_UCSChar * text,
-					   AP_Dialog_Paragraph * dlg)
+					   AP_Dialog_Paragraph * dlg,
+					   const char * fontname)
 	: XAP_Preview(gc),m_dir(UT_BIDI_LTR)
 {
 	UT_ASSERT_HARMLESS(text && dlg);
@@ -418,7 +419,7 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 	m_clrGray = new UT_RGBColor(192,192,192);
 
 	// initialize font to start measuring with for following setText calls
-	_loadDrawFont();
+	_loadDrawFont(fontname);
 
 	{
 		// this block is a dummy block
@@ -537,10 +538,10 @@ void AP_Preview_Paragraph::draw(const UT_Rect *clip)
 	m_y = DEFAULT_TOP_MARGIN;
 }
 
-bool AP_Preview_Paragraph::_loadDrawFont(void)
+bool AP_Preview_Paragraph::_loadDrawFont(const char *name)
 {
 	// we draw at 7 points in this preview
-	GR_Font * font = m_gc->findFont("Times New Roman",
+	GR_Font * font = m_gc->findFont(name ? name : "Times New Roman",
 									"normal", "", "normal",
 									"", "7pt",
 									NULL); // might need to get the real lang

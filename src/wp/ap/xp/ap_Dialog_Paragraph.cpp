@@ -44,6 +44,7 @@
 #include "fl_BlockLayout.h"
 
 #include "fp_PageSize.h"
+#include "fp_Run.h"
 
 #include "ap_Preview_Paragraph.h"
 #include "ap_Dialog_Paragraph.h"
@@ -668,6 +669,18 @@ void AP_Dialog_Paragraph::_createPreviewFromGC(GR_Graphics * gc,
 	fl_BlockLayout * bl = dl->findBlockAtPosition((PT_DocPosition) view->getPoint());
 	UT_return_if_fail (bl);
 
+	const char *pfont = NULL;
+
+	fp_Run * run = bl->findRunAtOffset(view->getPoint()-bl->getPosition());
+	if (run) {
+		const PP_AttrProp *prop = run->getSpanAP();
+		if (prop) {
+			if (prop->getProperty("font-family",pfont)) {
+				UT_DEBUGMSG(("PREVIEW font=%s\n",pfont));
+			}
+		}
+	}
+
 	UT_GrowBuf gb;
 	bool hadMem = bl->getBlockBuf(&gb);
 
@@ -685,7 +698,7 @@ void AP_Dialog_Paragraph::_createPreviewFromGC(GR_Graphics * gc,
 		UT_UCS4_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewSampleFallback));
 	}
 
-	m_paragraphPreview = new AP_Preview_Paragraph(gc, tmp, this);
+	m_paragraphPreview = new AP_Preview_Paragraph(gc, tmp, this, pfont);
 
 	FREEP(tmp);
 
