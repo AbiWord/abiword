@@ -4165,20 +4165,9 @@ void FV_View::cmdHyperlinkJump(UT_sint32 xPos, UT_sint32 yPos)
 	if(*pTarget == '#')
 		pTarget++;
 
-	UT_uint32 iTargetLen = strlen(pTarget);
-	UT_UCSChar * pTargetU = new UT_UCSChar[iTargetLen+1];
+	UT_UCS4String pJump(pTarget);
 
-	UT_ASSERT(pTargetU);
-
-	UT_UCSChar * pJump = pTargetU;
-
-	for (UT_uint32 i = 0; i < iTargetLen; i++)
-		*pTargetU++ = (UT_UCSChar) *pTarget++;
-	*pTargetU = 0;
-
-	gotoTarget(AP_JUMPTARGET_BOOKMARK, pJump);
-
-	delete [] pJump;
+	gotoTarget(AP_JUMPTARGET_BOOKMARK, pJump.ucs4_str());
 }
 
 
@@ -4217,20 +4206,9 @@ void FV_View::cmdHyperlinkJump(PT_DocPosition pos)
 	if(*pTarget == '#')
 		pTarget++;
 
-	UT_uint32 iTargetLen = strlen(pTarget);
-	UT_UCSChar * pTargetU = new UT_UCSChar[iTargetLen+1];
+	UT_UCS4String pJump(pTarget);
 
-	UT_ASSERT(pTargetU);
-
-	UT_UCSChar * pJump = pTargetU;
-
-	for (UT_uint32 i = 0; i < iTargetLen; i++)
-		*pTargetU++ = (UT_UCSChar) *pTarget++;
-	*pTargetU = 0;
-
-	gotoTarget(AP_JUMPTARGET_BOOKMARK, pJump);
-
-	delete [] pJump;
+	gotoTarget(AP_JUMPTARGET_BOOKMARK, pJump.ucs4_str());
 }
 
 void FV_View::cmdHyperlinkCopyLocation(PT_DocPosition pos)

@@ -29,6 +29,8 @@
 #include "xap_App.h"
 #include "xap_Win32FrameImpl.h"
 
+#include "ut_win32localestring.h"
+
 bool XAP_Win32AppImpl::openURL(const char * szURL)
 {
 	// NOTE: could get finer control over browser window via DDE 
@@ -77,15 +79,19 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 	HKEY hKey;
 	unsigned long lType;
 	DWORD dwSize;
-	unsigned char* szValue = NULL;
+	LPWSTR szValue = NULL;
+	UT_Win32LocaleString str,str2;
+	UT_UTF8String utf8;
 
-	if (RegOpenKeyEx(HKEY_CLASSES_ROOT, "http\\shell\\open\\command", 0, KEY_READ, &hKey) == ERROR_SUCCESS)
+	if (RegOpenKeyExW(HKEY_CLASSES_ROOT, L"http\\shell\\open\\command", 0, KEY_READ, &hKey) == ERROR_SUCCESS)
 	{
-		if(RegQueryValueEx(hKey, NULL, NULL, &lType, NULL, &dwSize) == ERROR_SUCCESS)
+		if(RegQueryValueExW(hKey, NULL, NULL, &lType, NULL, &dwSize) == ERROR_SUCCESS)
 		{
-			szValue = new unsigned char[dwSize + 1];
-			RegQueryValueEx(hKey, NULL, NULL, &lType, szValue, &dwSize);
-			sBrowser = (char*) szValue;
+			szValue = new WCHAR[dwSize + 1];
+			RegQueryValueExW(hKey, NULL, NULL, &lType, (LPBYTE) szValue, &dwSize);
+			str.fromLocale(szValue);
+			utf8=str.utf8_str();
+			sBrowser = utf8.utf8_str();
 			DELETEP(szValue);
 		}
 		RegCloseKey(hKey);
@@ -124,19 +130,16 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 		sParams = sParams + " " + sURL;
 	}
 
-	// Win95 doesn't like the Browser command to be quoted, so strip em off.
-	if (sBrowser.substr(0, 1) == "\"")
-		sBrowser = sBrowser.substr(1, sBrowser.length() - 1);
-	if (sBrowser.substr(sBrowser.length()-1, 1) == "\"")
-		sBrowser = sBrowser.substr(0, sBrowser.length() - 1);
-
 	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	UT_return_val_if_fail(pFrame, false);
 	XAP_Win32FrameImpl *pFImp =  (XAP_Win32FrameImpl *) pFrame->getFrameImpl();
 	UT_return_val_if_fail(pFImp, false);
 
-	intptr_t res = (intptr_t) ShellExecuteA(pFImp->getTopLevelWindow() /*(HWND)*/,
-								 "open", sBrowser.c_str(), sParams.c_str(), NULL, SW_SHOW );
+	str.fromUTF8(sBrowser.c_str());
+	str2.fromUTF8(sParams.c_str());
+
+	intptr_t res = (intptr_t) ShellExecuteW(pFImp->getTopLevelWindow() /*(HWND)*/,
+								 L"open", str.c_str(), str2.c_str(), NULL, SW_SHOW );
 
 	// TODO: localized error messages
 	// added more specific error messages as documented in http://msdn.microsoft.com/library/default.asp?url=/library/en-us/debug/base/system_error_codes.asp
@@ -151,7 +154,6 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 					errMsg += UT_String_sprintf("%d", res);
 					errMsg += ") displaying URL: The system cannot find the file specified.\n";
 					errMsg += " [ ";  errMsg += sURL;  errMsg += " ] ";
-					MessageBoxA(pFImp->getTopLevelWindow(), errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
 				}
 				break;
 
@@ -161,7 +163,6 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 					errMsg += UT_String_sprintf("%d", res);
 					errMsg += ") displaying URL: The system cannot find the path specified.\n";
 					errMsg += " [ ";  errMsg += sURL;  errMsg += " ] ";
-					MessageBoxA(pFImp->getTopLevelWindow(), errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
 				}
 				break;
 
@@ -171,7 +172,6 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 					errMsg += UT_String_sprintf("%d", res);
 					errMsg += ") displaying URL: Access is denied.\n";
 					errMsg += " [ ";  errMsg += sURL;  errMsg += " ] ";
-					MessageBoxA(pFImp->getTopLevelWindow(), errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
 				}
 				break;
 
@@ -181,10 +181,14 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 					errMsg += UT_String_sprintf("%d", res);
 					errMsg += ") displaying URL: \n";
 					errMsg += " [ ";  errMsg += sURL;  errMsg += " ] ";
-					MessageBoxA(pFImp->getTopLevelWindow(), errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
 				}
 				break;
 		} /* switch (res) */
+		if (errMsg[0]) {
+			str.fromUTF8(errMsg.c_str());
+			MessageBoxW(pFImp->getTopLevelWindow(),str.c_str(), 
+				L"Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
+		}
 	} /* if (res <= 32) */
 
 	return (res>32);
