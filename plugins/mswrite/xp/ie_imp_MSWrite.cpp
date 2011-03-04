@@ -122,7 +122,7 @@ IE_Imp_MSWrite_Sniffer::IE_Imp_MSWrite_Sniffer () :
 }
 
 // supported suffixes
-static IE_SuffixConfidence IE_Imp_MSWrite_Sniffer__SuffixConfidence[] = {
+static IE_SuffixConfidence const IE_Imp_MSWrite_Sniffer__SuffixConfidence[] = {
 	{ "wri", 	UT_CONFIDENCE_PERFECT 	},
 	{ "", 	UT_CONFIDENCE_ZILCH 	}
 };
@@ -183,7 +183,7 @@ bool	IE_Imp_MSWrite_Sniffer::getDlgLabels(const char ** pszDesc,
 void IE_Imp_MSWrite::free_ffntb () 
 {
     for (UT_uint32 i=0; i < wri_fonts_count; i++) {
-      free(wri_fonts[i].name);
+      free((void*)wri_fonts[i].name);
       wri_fonts[i].name = NULL;
     }
     free(wri_fonts);
@@ -286,9 +286,9 @@ int IE_Imp_MSWrite::read_ffntb ()
 }
 
 static struct cst_data {
-	char *suffix;
-	char  *cpid;
-} cp_suf_tbl[]={
+	const char *suffix;
+	const char *cpid;
+} const cp_suf_tbl[]={
 	{"\x04 cyr","CP1251"},
 	{"\x03 ce","CP1250"},
 	{NULL,NULL}
@@ -323,10 +323,10 @@ void IE_Imp_MSWrite::translate_char (char ch, UT_UCS4String &buf)
 	}
 }
 
-char *IE_Imp_MSWrite::get_codepage(char *facename, char **newname)
+const char *IE_Imp_MSWrite::get_codepage(char *facename, char **newname) const
 {
 	static char facebuf[40];
-	cst_data *p=cp_suf_tbl;	
+	const cst_data *p=cp_suf_tbl;	
 	int l=strlen(facename);	
 	while (p->suffix) {
 		if (*p->suffix < l) {
@@ -344,7 +344,7 @@ char *IE_Imp_MSWrite::get_codepage(char *facename, char **newname)
 	return 0;
 }
 
-void IE_Imp_MSWrite::set_codepage(char *charset)
+void IE_Imp_MSWrite::set_codepage(const char *charset)
 {
 	charconv.setInCharset(charset);
 }
@@ -1184,7 +1184,7 @@ int IE_Imp_MSWrite::read_pic (int from, int size)
 		{0xc0, 0xc0, 0xc0, 0x00}   // a color only in the 4 bit colormap
 	};
 	// indices for the 4 bit colormap
-	int c16idx[16] = {  0, 128, 16, 144, 2, 130, 18, 256,
+	int const c16idx[16] = {  0, 128, 16, 144, 2, 130, 18, 256,
 		146, 224, 28, 252, 3, 227, 31, 255 };
 
 

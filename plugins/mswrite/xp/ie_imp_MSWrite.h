@@ -39,8 +39,8 @@ class PD_Document;
 /* the fonts */
 typedef struct wri_font {
 	short	ffid;
-	char	*name;
-	char	*codepage;
+	const char *name;
+	const char *codepage;
 } wri_font;
 
 // The importer/reader for MS Write Files.
@@ -96,9 +96,8 @@ private:
 	struct wri_struct *write_ole_picture;
 
 	std::string default_cp;
-	UT_UCS4Char *transtbl;		// table for decoding codepage-specific symbols
-	char *get_codepage(char *facename, char **newname=NULL); // gets cp id by font name;
-	void set_codepage(char *cp);	// sets the translation table to corresponding codeset
+	const char *get_codepage(char *facename, char **newname=NULL) const; // gets cp by font name;
+	void set_codepage(const char *cp);	// sets the translation table to corresponding codeset
 	
 	UT_UCS4String mCharBuf;    // buffer for char runs.
 	UT_ByteBuf mTextBuf;       // complete text buffer as extracted out of the file.
