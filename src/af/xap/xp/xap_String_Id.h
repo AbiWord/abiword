@@ -376,6 +376,7 @@ dcl(LANG_FR_CA, 							"French (Canada)")
 dcl(LANG_FR_FR, 							"French (France)")
 dcl(LANG_FR_CH, 							"French (Switzerland)")
 dcl(LANG_FY_NL,								"Frisian")	// Jordi 19/10/2002
+dcl(LANG_FF,								"Fulah")
 dcl(LANG_GL, 								"Galician (Galego)")
 dcl(LANG_KA_GE, 							"Georgian")
 dcl(LANG_DE_AT, 							"German (Austria)")
