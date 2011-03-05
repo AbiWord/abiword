@@ -182,24 +182,23 @@ void ODe_Frame_Listener::_openODTextbox(const PP_AttrProp& rAP,
 
     ok = rAP.getProperty("position-to", pValue);
 
-    if (pValue && !strcmp(pValue, "block-above-text")) {
-
+    if (ok && pValue && !strcmp(pValue, "block-above-text")) {
         ODe_writeAttribute(output, "text:anchor-type", "paragraph");
 
         ok = rAP.getProperty("xpos", pValue);
-        UT_ASSERT(ok && pValue != NULL);
-        ODe_writeAttribute(output, "svg:x", pValue);
+        if (ok && pValue)
+            ODe_writeAttribute(output, "svg:x", pValue);
 
         ok = rAP.getProperty("ypos", pValue);
-        UT_ASSERT(ok && pValue != NULL);
-        ODe_writeAttribute(output, "svg:y", pValue);
+        if (ok && pValue)
+            ODe_writeAttribute(output, "svg:y", pValue);
     } else {
         // Everything else (column and page) will be treated as page
         // anchored.
-        
+
         ODe_writeAttribute(output, "text:anchor-type", "page");
 
-	if(pValue && !strcmp(pValue, "column-above-text"))
+	if(ok && pValue && !strcmp(pValue, "column-above-text"))
 	{
 	  //
 	  // Get the most recent page style so we can do the arithmetic
@@ -231,12 +230,12 @@ void ODe_Frame_Listener::_openODTextbox(const PP_AttrProp& rAP,
 	else
 	{
 	    ok = rAP.getProperty("frame-page-xpos", pValue);
-	    UT_ASSERT(ok && pValue != NULL);
-	    ODe_writeAttribute(output, "svg:x", pValue);
+	    if (ok && pValue)
+	        ODe_writeAttribute(output, "svg:x", pValue);
         
 	    ok = rAP.getProperty("frame-page-ypos", pValue);
-	    UT_ASSERT(ok && pValue != NULL);
-	    ODe_writeAttribute(output, "svg:y", pValue);
+	    if (ok && pValue)
+	        ODe_writeAttribute(output, "svg:y", pValue);
 	}
     }
     

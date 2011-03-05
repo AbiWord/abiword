@@ -1078,23 +1078,23 @@ void ODe_Text_Listener::insertPositionedImage(const gchar* pImageName,
     }
     else if(ok && pValue && !strcmp(pValue, "page-above-text")) {
         output+="page\"";
-	ok = pAP->getProperty("frame-page-xpos", pValue);
-	UT_ASSERT(ok && pValue != NULL);
-        ODe_writeAttribute(output, "svg:x", pValue);
+        ok = pAP->getProperty("frame-page-xpos", pValue);
+        if (ok && pValue != NULL)
+            ODe_writeAttribute(output, "svg:x", pValue);
         
-	ok = pAP->getProperty("frame-page-ypos", pValue);
-	UT_ASSERT(ok && pValue != NULL);
-        ODe_writeAttribute(output, "svg:y", pValue);
+        ok = pAP->getProperty("frame-page-ypos", pValue);
+        if (ok && pValue != NULL)
+            ODe_writeAttribute(output, "svg:y", pValue);
     }
     else { //this handles the block-above-text case and any other unforeseen ones
         output+="paragraph\"";
-	ok = pAP->getProperty("xpos", pValue);
-	UT_ASSERT(ok && pValue != NULL);
-        ODe_writeAttribute(output, "svg:x", pValue);
+        ok = pAP->getProperty("xpos", pValue);
+        if (ok && pValue != NULL)
+            ODe_writeAttribute(output, "svg:x", pValue);
         
-	ok = pAP->getProperty("ypos", pValue);
-	UT_ASSERT(ok && pValue != NULL);
-        ODe_writeAttribute(output, "svg:y", pValue);
+        ok = pAP->getProperty("ypos", pValue);
+        if (ok && pValue != NULL)
+            ODe_writeAttribute(output, "svg:y", pValue);
     }
 
     UT_UTF8String_sprintf(str, "%u", m_zIndex);
