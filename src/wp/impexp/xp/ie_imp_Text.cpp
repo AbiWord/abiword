@@ -756,7 +756,13 @@ UT_Error IE_Imp_Text::_recognizeEncoding(const char *szBuf, UT_uint32 iNumbytes)
 		else if (eUcs2 == IE_Imp_Text_Sniffer::UE_LittleEnd)
 			_setEncoding(XAP_EncodingManager::get_instance()->getUCS2LEName());
 		else
-		  _setEncoding ("ISO-8859-1");
+			_setEncoding(
+#ifdef TOOLKIT_WIN
+				XAP_EncodingManager::get_instance()->getNative8BitEncodingName()
+#else
+				"ISO-8859-1"
+#endif
+			);
 	}
 
 	return UT_OK;
