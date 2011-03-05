@@ -9,6 +9,7 @@ strings_DATA = \
 	ast-ES.strings \
 	ayc-BO.strings \
 	aym-BO.strings \
+	be@latin.strings \
 	be-BY.strings \
 	bg-BG.strings \
 	br-FR.strings \
@@ -29,6 +30,7 @@ strings_DATA = \
 	et.strings \
 	eu-ES.strings \
 	fi-FI.strings \
+	ff.strings \
 	fr-FR.strings \
 	ga-IE.strings \
 	gl.strings \
