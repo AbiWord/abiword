@@ -289,7 +289,7 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	char * unixstr;
+	char * unixstr = NULL;
 
 	// get the path where our UI file is located
 	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Replace.xml";
@@ -320,33 +320,22 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	gtk_window_set_title(GTK_WINDOW(m_windowMain), m_WindowName);
 
 	UT_UTF8String s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_FR_MatchCase,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());	
+	CONVERT_TO_ACC_STRING(dummy,AP_STRING_ID_DLG_FR_MatchCase,unixstr);
 	gtk_button_set_label(GTK_BUTTON(m_checkbuttonMatchCase), unixstr); 
-	FREEP(unixstr);
 
-	pSS->getValueUTF8(AP_STRING_ID_DLG_FR_WholeWord,s);
-    UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
+	CONVERT_TO_ACC_STRING(dummy,AP_STRING_ID_DLG_FR_WholeWord,unixstr);
 	gtk_button_set_label(GTK_BUTTON(m_checkbuttonWholeWord), unixstr);
-    FREEP(unixstr);
 
-	pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReverseFind,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
+	CONVERT_TO_ACC_STRING(dummy,AP_STRING_ID_DLG_FR_ReverseFind,unixstr);
 	gtk_button_set_label(GTK_BUTTON(m_checkbuttonReverseFind), unixstr);
-	FREEP(unixstr);
 
-	pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReplaceWithLabel,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());	
+	CONVERT_TO_UNIX_STRING(dummy,AP_STRING_ID_DLG_FR_ReplaceWithLabel,unixstr);
 	gtk_label_set_text(GTK_LABEL(labelReplace), unixstr);
-	FREEP(unixstr);
 
-	pSS->getValueUTF8(AP_STRING_ID_DLG_FR_FindLabel,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
+	CONVERT_TO_UNIX_STRING(dummy,AP_STRING_ID_DLG_FR_FindLabel,unixstr);
 	gtk_label_set_text(GTK_LABEL(labelFind), unixstr);
-	FREEP(unixstr);
 
-	pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReplaceAllButton,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());	
+	CONVERT_TO_UNIX_STRING(dummy,AP_STRING_ID_DLG_FR_ReplaceAllButton,unixstr);
 	gtk_button_set_label(GTK_BUTTON(m_buttonReplaceAll), unixstr);
 	FREEP(unixstr);
 

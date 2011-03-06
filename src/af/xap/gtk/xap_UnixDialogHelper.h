@@ -45,8 +45,16 @@ class XAP_Dialog;
                                                     std::string _s;           \
                                                     pSS->getValueUTF8(id,_s); \
                                                     UT_XML_cloneNoAmpersands(newstr, _s.c_str()); \
-                                                    } while (0)
-												   
+							} while (0);
+         
+// This macro is for use in Unix dialogs where the accelerator characters
+// strings need to be converted to underscores.
+#define	CONVERT_TO_ACC_STRING(str, id, newstr)		do { \
+                                                    FREEP(newstr); \
+                                                    std::string _s;           \
+                                                    pSS->getValueUTF8(id,_s); \
+                                                    UT_XML_cloneConvAmpersands(newstr, _s.c_str()); \
+							} while (0);
 
 
 /** load a GtkBuilder for a dialog using the standard path.

@@ -72,6 +72,36 @@ bool UT_XML_cloneNoAmpersands(gchar *& rszDest, const gchar * szSource)
 	return true;
 }
 
+bool UT_XML_cloneConvAmpersands(gchar *& rszDest, const gchar * szSource)
+{
+	if (szSource == NULL)
+		return false;
+
+	UT_uint32 length = strlen(szSource) + 1;
+	rszDest = static_cast<gchar *>(UT_calloc(length, sizeof(gchar)));
+
+	if (!rszDest)
+		return false;
+
+	const gchar * o = szSource;
+	gchar * n = rszDest;
+	while (*o != 0)
+	{
+		if (*o != '&')
+		{
+			*n = *o;
+		} else {
+			if (o[1] == '&') {
+				*n++ = '&';
+			}
+			else *n = '_';
+		}
+		n++; o++;
+	}
+
+	return true;
+}
+
 /* This uses the clone no ampersands but dumps into a static buffer */
 const gchar *UT_XML_transNoAmpersands(const gchar * szSource)
 {
