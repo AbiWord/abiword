@@ -428,8 +428,10 @@ dcl(LANG_QUH_BO,                            "Quechua (3 vowels)")
 dcl(LANG_QUL_BO,                            "Quechua (5 vowels)")
 dcl(LANG_RO_RO, 							"Romanian")
 dcl(LANG_RU_RU, 							"Russian (Russia)")
+dcl(LANG_RU_PETR1708,						"Russian (pre-1918)")
 dcl(LANG_SC_IT,								"Sardinian")	// Jordi 19/10/2002
 dcl(LANG_SR,								"Serbian")		// Jordi 19/10/2002 Hipi: Why not sr-YU?
+dcl(LANG_SR_LATIN,							"Serbian, latin")
 dcl(LANG_SK_SK, 							"Slovak")				// or Slovakian?
 dcl(LANG_SL_SI, 							"Slovenian")
 dcl(LANG_ES_MX, 							"Spanish (Mexico)")
