@@ -111,9 +111,7 @@ void AP_UnixPrefs::overlayEnvironmentPrefs(void)
 
 		char* modifier = strrchr(lc_ctype,'@');
 		/*
-                  remove modifier field. It's a right thing since expat
-		  already converts data in stringset from ANY encoding to
-		  current one (if iconv knows this encoding).
+		  Temporarily remove modifier field to strip charset.
 		*/
 		if (modifier)
 		  *modifier = '\0'; 
@@ -126,6 +124,15 @@ void AP_UnixPrefs::overlayEnvironmentPrefs(void)
 		 */
 		if (dot)
 			*dot = '\0'; 
+
+		if (modifier) {
+			// put modifier (if present) back
+			// memmove for overlapping regions caveat
+			char * dest = &lc_ctype[strlen(lc_ctype)];
+			*modifier = '@';
+			memmove(dest,modifier,strlen(modifier)+1);
+		}
+		
 		szNewLang = lc_ctype;	
 	}
 

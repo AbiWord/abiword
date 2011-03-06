@@ -222,11 +222,55 @@ AP_UnixApp::loadStringsFromDisk(const char 			* szStringSet,
 			       static_cast<const gchar**>(&szDirectory));
 	UT_return_val_if_fail((szDirectory) && (*szDirectory), NULL);
 
+	UT_String szPathVariant[4];
+	char * p_strbuf = strdup("");
+	char * p_modifier = NULL;
+	int  cur_id = 0;
+	bool three_letters = false; // some have 3!
+
+	if (szStringSet) {
+		FREEP(p_strbuf);
+		p_strbuf = strdup(szStringSet);
+		p_modifier = strrchr(p_strbuf,'@');
+		
+		char t = szStringSet[2];
+		if (t && t!='-' && t!='@' && t!='_') three_letters = true;
+	}
+
+	if (p_modifier) {
+		// fo_BA@xxx.strings
+		szPathVariant[cur_id] = szDirectory;
+		if (szDirectory[strlen(szDirectory)-1]!='/')
+			szPathVariant[cur_id] += "/";
+		szPathVariant[cur_id] += p_strbuf;
+		szPathVariant[cur_id] += ".strings";
+
+		cur_id++;
+
+		// fo@xxx.strings
+		if (szStringSet && strlen(szStringSet) > 2) {
+			szPathVariant[cur_id] = szDirectory;
+			if (szDirectory[strlen(szDirectory)-1]!='/')
+				szPathVariant[cur_id] += "/";
+			szPathVariant[cur_id] += p_strbuf[0];
+			szPathVariant[cur_id] += p_strbuf[1];
+			if (three_letters)
+				szPathVariant[cur_id] += p_strbuf[2];
+			szPathVariant[cur_id] += p_modifier;
+			szPathVariant[cur_id] += ".strings";
+		}
+
+		cur_id++;
+
+		// trim modifier part
+		*p_modifier = 0;
+	}
+	
 	// fo_BA.strings
 	UT_String szPath = szDirectory;
 	if (szDirectory[szPath.size()-1]!='/')
 		szPath += "/";
-	szPath += szStringSet;
+	szPath += p_strbuf;
 	szPath += ".strings";
 
 	// fo.strings
@@ -235,12 +279,27 @@ AP_UnixApp::loadStringsFromDisk(const char 			* szStringSet,
 		szFallbackPath = szDirectory;
 		if (szDirectory[szFallbackPath.size()-1]!='/')
 			szFallbackPath += "/";
-		szFallbackPath += szStringSet[0];
-		szFallbackPath += szStringSet[1];
+		szFallbackPath += p_strbuf[0];
+		szFallbackPath += p_strbuf[1];
+		if (three_letters)
+			szFallbackPath += p_strbuf[2];
 		szFallbackPath += ".strings";
 	}
 
 	AP_DiskStringSet * pDiskStringSet = new AP_DiskStringSet(this);
+
+	FREEP(p_strbuf);
+
+	// trying to load specific strings first
+	for (int i=0; i<cur_id; i++) {
+		if (pDiskStringSet->loadStringsFromDisk(szPathVariant[i].c_str())) {
+			pDiskStringSet->setFallbackStringSet(pDefaultStringSet);
+			UT_DEBUGMSG(("Using [v] StringSet [%s]\n",szPathVariant[i].c_str()));
+			return pDiskStringSet;
+		}
+	}
+
+	// then generic ones
 	if (pDiskStringSet->loadStringsFromDisk(szPath.c_str()))
 	{
 		pDiskStringSet->setFallbackStringSet(pDefaultStringSet);
@@ -312,7 +371,8 @@ bool AP_UnixApp::initialize(bool has_display)
 		if (m_pStringSet == NULL) 
 		{
 			const char *szFallbackStringSet = UT_getFallBackStringSetLocale(szStringSet);
-			m_pStringSet = loadStringsFromDisk(szFallbackStringSet, pBuiltinStringSet);
+			if (szFallbackStringSet)
+				m_pStringSet = loadStringsFromDisk(szFallbackStringSet, pBuiltinStringSet);
 		}
 
 		// load the builtin string set
