@@ -66,6 +66,7 @@ strings_DATA = \
 	sl-SI.strings \
 	sq-AL.strings \
 	sr.strings \
+	sr@latin.strings \
 	sv-SE.strings \
 	ta-IN.strings \
 	tr-TR.strings \
