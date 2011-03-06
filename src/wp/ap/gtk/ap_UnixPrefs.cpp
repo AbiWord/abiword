@@ -83,16 +83,19 @@ void AP_UnixPrefs::overlayEnvironmentPrefs(void)
 	// LC_TIME - formatting date and time values
 	// LC_MESSAGES - language of messages and look of affirmative/negative answer
 
-	// now, which of the categories should we use?
-	// we used to use LC_CTYPE, but decided that LC_MESSAGES was a better idea
-	// (most likely, all of LC_* are the same)
-	
 	const char * szNewLang = "en-US"; // default to US English
 #if defined (LC_MESSAGES) && defined (UNDEF) // raphael
 // #if defined (LC_MESSAGES)
 	char * lc_ctype = g_strdup(setlocale(LC_MESSAGES, NULL));
 #else
-	char * lc_ctype = getenv("LANG");
+	char * lc_ctype = getenv("LC_ALL");
+	if (!lc_ctype || !*lc_ctype) {
+		// TODO: implement $LANGUAGE parsing here
+		lc_ctype = getenv("LC_MESSAGES");
+		if (!lc_ctype || !*lc_ctype) {
+			lc_ctype = getenv("LANG");
+		}
+	}
 	if (lc_ctype) lc_ctype = g_strdup(lc_ctype);
 	else lc_ctype = g_strdup("en_US");
 #endif

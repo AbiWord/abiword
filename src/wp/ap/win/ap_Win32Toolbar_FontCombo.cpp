@@ -111,8 +111,10 @@ int CALLBACK AP_Win32Toolbar_FontCombo::_EnumFontsProc(LPLOGFONTW lplf,
 	str.fromLocale (lplf->lfFaceName);
 	char * p = g_strdup((str.utf8_str().utf8_str()));
 
-	if (seenFonts.find(p)!=seenFonts.end())
+	if (seenFonts.find(p)!=seenFonts.end()) {
+		FREEP(p);
 		return 1;
+	}
 
 	ctl->m_vecContents.addItem(p);
 	ctl->m_vecFontCharSet.addItem((void*)lplf->lfCharSet);
