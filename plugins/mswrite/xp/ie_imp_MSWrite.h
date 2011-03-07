@@ -3,6 +3,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2000 Hubert Figuière
+ *               2010 Ingo Brueckl
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -39,7 +40,7 @@ class PD_Document;
 /* the fonts */
 typedef struct wri_font {
 	short	ffid;
-	const char *name;
+	std::string name;
 	const char *codepage;
 } wri_font;
 
@@ -71,6 +72,12 @@ class IE_Imp_MSWrite : public IE_Imp
 public:
 	IE_Imp_MSWrite(PD_Document * pDocument);
 	~IE_Imp_MSWrite();
+
+	struct doc_range
+	{
+		unsigned int start;
+		unsigned int end;
+	};
 	
 protected:
 	virtual UT_Error    _loadFile(GsfInput * input);
@@ -81,7 +88,7 @@ private:
 	int read_ffntb ();
 	void translate_char (char ch, UT_UCS4String & buf);
 	int read_sep();
-	int read_pap ();
+	int read_pap (int cStart, int cLimit);
 	int read_char (int fcFirst2, int fcLim2);
 	int read_pic(int, int);
 	
@@ -95,9 +102,15 @@ private:
 	struct wri_struct *write_picture;
 	struct wri_struct *write_ole_picture;
 
+	doc_range m_header, m_footer;
+
 	std::string default_cp;
 	const char *get_codepage(char *facename, char **newname=NULL) const; // gets cp by font name;
 	void set_codepage(const char *cp);	// sets the translation table to corresponding codeset
+	void add_subdoc(int type, unsigned int from, unsigned int to);
+	void _append_hdrftr(int type);
+
+	bool m_insubdoc;
 	
 	UT_UCS4String mCharBuf;    // buffer for char runs.
 	UT_ByteBuf mTextBuf;       // complete text buffer as extracted out of the file.
