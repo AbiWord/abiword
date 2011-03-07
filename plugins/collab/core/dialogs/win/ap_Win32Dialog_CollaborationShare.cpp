@@ -265,21 +265,21 @@ void AP_Win32Dialog_CollaborationShare::_populateBuddyModel(bool refresh)
 			continue;
 		}
 
-		UT_String sBuddyText = AP_Win32App::s_fromUTF8ToWinLocale(pBuddy->getDescription().utf8_str());
+		UT_Win32LocaleString sBuddyText = AP_Win32App::s_fromUTF8ToWinLocale(pBuddy->getDescription().utf8_str());
 
 		// insert a new item in the listview
-		LVITEM lviBuddy;
+		LVITEMW lviBuddy;
 		lviBuddy.mask = LVIF_TEXT | LVIF_STATE | LVIF_IMAGE | LVIF_PARAM;
 		lviBuddy.state = 0;
 		lviBuddy.iItem = i;
 		lviBuddy.iSubItem = 0;
-		lviBuddy.pszText = const_cast<char*>(sBuddyText.c_str());
+		lviBuddy.pszText = (LPWSTR) sBuddyText.c_str();
 		// crap, we can't store shared pointers in the list store; use a 
 		// hack to do it (which kinda defies the whole shared pointer thingy, 
 		// but alas...)
 		BuddyPtrWrapper* pWrapper = new BuddyPtrWrapper(pBuddy);
 		lviBuddy.lParam = (LPARAM)pWrapper;
-		ListView_InsertItem(m_hBuddyList, &lviBuddy);
+		SendMessage(m_hBuddyList, LVM_INSERTITEMW, 0, (LPARAM) &lviBuddy);
 		ListView_SetCheckState(m_hBuddyList, i, _populateShareState(pBuddy));
 	}
 }
@@ -316,11 +316,11 @@ void AP_Win32Dialog_CollaborationShare::_getSelectedBuddies(std::vector<std::str
 	int itemCount = ListView_GetItemCount(m_hBuddyList);
 	for (UT_sint32 i = 0; i < itemCount; i++)
 	{
-		LVITEM lviBuddy;
+		LVITEMW lviBuddy;
 		lviBuddy.mask = LVIF_PARAM;
 		lviBuddy.iItem = i;
 		lviBuddy.iSubItem = 0;
-		if (ListView_GetItem(m_hBuddyList, &lviBuddy))
+		if (SendMessageW(m_hBuddyList, LVM_GETITEMW, 0, (LPARAM) &lviBuddy))
 		{
 			bool share = ListView_GetCheckState(m_hBuddyList, i);
 			BuddyPtrWrapper* buddy_wrapper = reinterpret_cast<BuddyPtrWrapper*>(lviBuddy.lParam);
@@ -340,17 +340,17 @@ void AP_Win32Dialog_CollaborationShare::_freeBuddyList()
 	int itemCount = ListView_GetItemCount(m_hBuddyList);
 	for (UT_sint32 i = 0; i < itemCount; i++)
 	{
-		LVITEM lviBuddy;
+		LVITEMW lviBuddy;
 		lviBuddy.mask = LVIF_PARAM;
 		lviBuddy.iItem = i;
 		lviBuddy.iSubItem = 0;
-		UT_continue_if_fail(ListView_GetItem(m_hBuddyList, &lviBuddy));
+		UT_continue_if_fail(SendMessageW(m_hBuddyList, LVM_GETITEMW,0, (LPARAM) &lviBuddy));
 
 		BuddyPtrWrapper* buddy_wrapper = reinterpret_cast<BuddyPtrWrapper*>(lviBuddy.lParam);
 		DELETEP(buddy_wrapper);
 
 		lviBuddy.lParam = (LPARAM)NULL;
-		UT_continue_if_fail(ListView_SetItem(m_hBuddyList, &lviBuddy));
+		UT_continue_if_fail(SendMessageW(m_hBuddyList, LVM_SETITEMW, 0, (LPARAM) &lviBuddy));
 	}
 
 	ListView_DeleteAllItems(m_hBuddyList);

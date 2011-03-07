@@ -194,15 +194,15 @@ HTREEITEM AP_Win32Dialog_CollaborationJoin::_addBuddyToTree(BuddyPtr pBuddy)
 {
 	UT_UTF8String buddyDesc = pBuddy->getDescription();
 
-	UT_String sBuddyText = AP_Win32App::s_fromUTF8ToWinLocale(buddyDesc.utf8_str());
-	TV_INSERTSTRUCT tviBuddy;
+	UT_Win32LocaleString sBuddyText = AP_Win32App::s_fromUTF8ToWinLocale(buddyDesc.utf8_str());
+	TV_INSERTSTRUCTW tviBuddy;
 	tviBuddy.item.mask = TVIF_TEXT | TVIF_STATE | TVIF_PARAM;
 	tviBuddy.hInsertAfter = TVI_SORT;
 	tviBuddy.hParent = NULL; // top most level Item
 	tviBuddy.item.state = 0;
-	tviBuddy.item.pszText = const_cast<char*>(sBuddyText.c_str());
+	tviBuddy.item.pszText = (LPWSTR) sBuddyText.c_str();
 	tviBuddy.item.lParam = (LPARAM)new ShareListItem(pBuddy, NULL);
-	return (HTREEITEM)SendMessage(m_hDocumentTreeview, TVM_INSERTITEM,0,(LPARAM)&tviBuddy);
+	return (HTREEITEM)SendMessageW(m_hDocumentTreeview, TVM_INSERTITEMW,0,(LPARAM)&tviBuddy);
 }
 
 HTREEITEM AP_Win32Dialog_CollaborationJoin::_addDocumentToBuddy(HTREEITEM buddyItem, BuddyPtr pBuddy, DocHandle* pDocHandle)
@@ -212,15 +212,15 @@ HTREEITEM AP_Win32Dialog_CollaborationJoin::_addDocumentToBuddy(HTREEITEM buddyI
 	UT_return_val_if_fail(pDocHandle, NULL);
 
 	UT_UTF8String docDesc = pDocHandle->getName();
-	UT_String sDocText = AP_Win32App::s_fromUTF8ToWinLocale(docDesc.utf8_str());
-	TV_INSERTSTRUCT tviDocument;
+	UT_Win32LocaleString sDocText = AP_Win32App::s_fromUTF8ToWinLocale(docDesc.utf8_str());
+	TV_INSERTSTRUCTW tviDocument;
 	tviDocument.item.mask = TVIF_TEXT | TVIF_STATE | TVIF_PARAM;
 	tviDocument.hInsertAfter = TVI_SORT;
 	tviDocument.hParent = buddyItem;
-	tviDocument.item.pszText = const_cast<char*>(sDocText.c_str());
+	tviDocument.item.pszText = const_cast<LPWSTR>(sDocText.c_str());
 	tviDocument.item.state = 0;
 	tviDocument.item.lParam = (LPARAM)new ShareListItem(pBuddy, pDocHandle);
-	return (HTREEITEM)SendMessage(m_hDocumentTreeview, TVM_INSERTITEM, 0, (LPARAM)&tviDocument);
+	return (HTREEITEM)SendMessageW(m_hDocumentTreeview, TVM_INSERTITEMW, 0, (LPARAM)&tviDocument);
 }
 
 void AP_Win32Dialog_CollaborationJoin::_populateWindowData()
@@ -293,7 +293,8 @@ ShareListItem* AP_Win32Dialog_CollaborationJoin::_getSelectedItem()
 	TVITEM item;
 	item.mask = TVIF_PARAM;
 	item.hItem = hSelItem;
-	UT_return_val_if_fail(TreeView_GetItem(m_hDocumentTreeview, &item), NULL);
+	UT_return_val_if_fail(SendMessageW(m_hDocumentTreeview, LVM_GETITEM, 0, 
+		(LPARAM) &item), NULL);
 
 	return reinterpret_cast<ShareListItem*>(item.lParam); 
 }
@@ -337,10 +338,10 @@ void AP_Win32Dialog_CollaborationJoin::_addDocument(BuddyPtr pBuddy, DocHandle* 
 	HTREEITEM item = TreeView_GetRoot(m_hDocumentTreeview);
     while (item)
 	{
-		TVITEM buddyItem;
+		TVITEMW buddyItem;
 		buddyItem.mask = TVIF_PARAM;
 		buddyItem.hItem = item;
-		UT_return_if_fail(TreeView_GetItem(m_hDocumentTreeview, &buddyItem));		
+		UT_return_if_fail(SendMessageW(m_hDocumentTreeview, TVM_GETITEM, 0, (LPARAM) &buddyItem));		
 		UT_return_if_fail(buddyItem.lParam);
 
 		ShareListItem* sli = reinterpret_cast<ShareListItem*>(buddyItem.lParam);

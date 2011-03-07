@@ -63,7 +63,7 @@ private:
 };
 
 
-class UT_UCS2String
+class ABI_EXPORT UT_UCS2String
 {
 public:
 	UT_UCS2String();
@@ -91,7 +91,7 @@ protected:
 };
 
 
-class UT_Win32LocaleString : public UT_UCS2String
+class ABI_EXPORT UT_Win32LocaleString : public UT_UCS2String
 {
 public:
 

@@ -191,20 +191,24 @@ void AP_Win32Dialog_CollaborationAccounts::_populateWindowData()
 		AccountHandler* pAccount = pManager->getAccounts()[i];
 		UT_continue_if_fail(pAccount);
 
-		UT_String sAccountText = AP_Win32App::s_fromUTF8ToWinLocale(pAccount->getDescription().utf8_str());
-		UT_String sAccountTypeText = AP_Win32App::s_fromUTF8ToWinLocale(pAccount->getDisplayType().utf8_str());
+		UT_Win32LocaleString sAccountText = AP_Win32App::s_fromUTF8ToWinLocale(pAccount->getDescription().utf8_str());
+		UT_Win32LocaleString sAccountTypeText = AP_Win32App::s_fromUTF8ToWinLocale(pAccount->getDisplayType().utf8_str());
 
 		// insert a new account record
-		LVITEM lviAccount;
+		LVITEMW lviAccount;
 		lviAccount.mask = LVIF_STATE | LVIF_IMAGE | LVIF_PARAM;
 		lviAccount.state = 1;
 		lviAccount.iItem = i;
 		lviAccount.iSubItem = 0;
 		lviAccount.lParam = (LPARAM)pAccount;
-		ListView_InsertItem(m_hAccountList, &lviAccount);
+		SendMessageW(m_hAccountList, LVM_INSERTITEMW, 0, (LPARAM) &lviAccount);
 		ListView_SetCheckState(m_hAccountList, i, pAccount->isOnline());
-		ListView_SetItemText(m_hAccountList, i, 1, const_cast<char*>(sAccountText.c_str()));
-		ListView_SetItemText(m_hAccountList, i, 2, const_cast<char*>(sAccountTypeText.c_str()));
+		lviAccount.iSubItem=1;
+		lviAccount.pszText= const_cast<LPWSTR>(sAccountText.c_str());
+		SendMessageW(m_hAccountList, LVM_SETITEMTEXTW, i, (LPARAM) &lviAccount);
+		lviAccount.iSubItem=2;
+		lviAccount.pszText= const_cast<LPWSTR>(sAccountTypeText.c_str());
+		SendMessageW(m_hAccountList, LVM_SETITEMTEXTW, i, (LPARAM) &lviAccount);
 	}
 
 	_updateSelection();
