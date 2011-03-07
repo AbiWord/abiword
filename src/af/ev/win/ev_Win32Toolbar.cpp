@@ -1105,7 +1105,9 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
                  else
     					localised.fromUTF8 (szState);
 					
-                int idx = SendMessageW(hwndCombo, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)localised.c_str());
+                int idx = SendMessageW(hwndCombo, CB_FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)localised.c_str());
+				if (idx!=CB_ERR)
+					SendMessageW(hwndCombo, CB_SETCURSEL, idx, NULL);
 				/*
 				 * If the string didn't exist within the combos list, we handle things differently for
 				 * different combos.

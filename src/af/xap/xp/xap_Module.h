@@ -44,7 +44,7 @@
 #ifdef TOOLKIT_WIN
   #define WIN32_LEAN_AND_MEAN
   #include <windows.h>
-  #define ABI_PLUGIN_DECLARE(name) static HANDLE s_hModule = static_cast<HANDLE>(NULL); extern "C" {BOOL APIENTRY DllMain( HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved ) { s_hModule = hModule; return TRUE; } }
+  #define ABI_PLUGIN_DECLARE(name) static HANDLE s_hModule = static_cast<HANDLE>(NULL); extern "C" {BOOL APIENTRY DllMain( HANDLE hModule, DWORD /*ul_reason_for_call*/, LPVOID /*lpReserved*/ ) { s_hModule = hModule; return TRUE; } }
 #else
   #define ABI_PLUGIN_DECLARE(name)
 #endif
