@@ -405,7 +405,7 @@ UT_Error IE_ImpGraphic_Win32Native::_convertGraphic(UT_ByteBuf * pBB, std::strin
     
     /* Clean Up Memory Used */
 		
-    FREEP(m_pPNGInfo->palette);	
+    //FREEP(m_pPNGInfo->palette);
     png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
     
     return UT_OK;  	  	
@@ -501,7 +501,7 @@ UT_Error IE_ImpGraphic_Win32Native::Initialize_PNG()
      * the normal method of doing things with libpng).  REQUIRED unless you
      * set up your own error handlers in the png_create_read_struct() earlier.
      */
-    if (setjmp(m_pPNG->jmpbuf))
+    if (setjmp(png_jmpbuf(m_pPNG)))
 	{
 		/* Free all of the memory associated with the png_ptr and info_ptr */
 		png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
@@ -520,7 +520,7 @@ UT_Error IE_ImpGraphic_Win32Native::Initialize_PNG()
 UT_Error IE_ImpGraphic_Win32Native::Convert_BMP_Palette(UT_ByteBuf* pBB)
 {
     /* Reset error handling for libpng */
-    if (setjmp(m_pPNG->jmpbuf))
+    if (setjmp(png_jmpbuf(m_pPNG)))
 	{
 		png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
 		return UT_ERROR;
@@ -560,7 +560,7 @@ UT_Error IE_ImpGraphic_Win32Native::Convert_BMP_Palette(UT_ByteBuf* pBB)
 UT_Error IE_ImpGraphic_Win32Native::Convert_BMP(UT_ByteBuf* pBB)
 {
     /* Reset error handling for libpng */
-    if (setjmp(m_pPNG->jmpbuf))
+	if (setjmp(png_jmpbuf(m_pPNG)))
 	{
 		png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
 		return UT_ERROR;
