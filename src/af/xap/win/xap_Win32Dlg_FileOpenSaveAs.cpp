@@ -143,10 +143,11 @@ void XAP_Win32Dialog_FileOpenSaveAs::_buildFilterList(UT_String& sFilter)
 
 	for (UT_uint32 i = 0; i < end; i++)
 	{
+		// HACK for inconsistent UTF-8 api
 		sFilter += m_szDescriptions[i];
-		sFilter += '\0';				// include the trailing 0
+		sFilter += '\004';				// include the trailing 0
 		sFilter += m_szSuffixes[i];
-		sFilter += '\0';				// include the trailing 0
+		sFilter += '\004';				// include the trailing 0
 
 		// extract one suffix at a time
 		const char *s1 = m_szSuffixes[i];
@@ -172,17 +173,17 @@ void XAP_Win32Dialog_FileOpenSaveAs::_buildFilterList(UT_String& sFilter)
 
 	// all supported files filter
 	sFilter += m_id == XAP_DIALOG_ID_INSERT_PICTURE ? pSS->getValue(XAP_STRING_ID_DLG_FOSA_ALLIMAGES) : pSS->getValue(XAP_STRING_ID_DLG_FOSA_ALLDOCS);
-	sFilter += '\0';				// include the trailing 0
+	sFilter += '\004';				// include the trailing 0
 	sFilter += sAllSuffixes;
-	sFilter += '\0';				// include the trailing 0
+	sFilter += '\004';				// include the trailing 0
 
 	// all files filter
 	sFilter += pSS->getValue(XAP_STRING_ID_DLG_FOSA_ALL);
-	sFilter += '\0';				// include the trailing 0
+	sFilter += '\004';				// include the trailing 0
 	sFilter += "*.*";
-	sFilter += '\0';				// include the trailing 0
+	sFilter += '\004';				// include the trailing 0
 	
-	sFilter += '\0';				// double 0 at the end
+	sFilter += '\004';				// double 0 at the end
 }
 
 /*****************************************************************/
@@ -247,14 +248,20 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	wchar_t szDir[MAX_DLG_INS_PICT_STRING];	// buffer for directory
 	UT_String sFilter;
 	OPENFILENAME_WIN50 ofn;						// common dialog box structure
-    UT_Win32LocaleString filter;
+	UT_Win32LocaleString filter;
 
 	ZeroMemory(szFile,sizeof(szFile));
 	ZeroMemory(szDir,sizeof(szDir));
 	ZeroMemory(&ofn, sizeof(OPENFILENAME_WIN50));
 
 	_buildFilterList(sFilter);
-    filter.fromASCII (sFilter.c_str(), sFilter.size());
+	filter.fromUTF8(sFilter.c_str()/*, sFilter.size()*/);
+	LPWSTR f_cur=(LPWSTR)filter.c_str();
+	// \004 is a placeholder for \000 inside string
+	while (*f_cur) {
+		if (*f_cur == 4) *f_cur=0;
+		f_cur++;
+	}
 
 	ofn.lStructSize = sizeof(OPENFILENAMEW);		// Old size
 	ofn.hwndOwner = hFrame;
