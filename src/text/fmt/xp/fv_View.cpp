@@ -11112,6 +11112,10 @@ FV_View::countWords(void)
 
 			delim = UT_isWordDelimiter(pSpan[i], followChar, prevChar);
 
+			if (delim) { // debatable...
+				if (pSpan[i]=='-' || pSpan[i]=='_') delim = false;
+			}
+
 			// CJK-FIXME: this can work incorrectly under CJK locales
 			// since it can give 'true' for UCS with value >0xff (like
 			// quotes, etc).
