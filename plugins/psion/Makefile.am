@@ -18,20 +18,3 @@ psion_la_SOURCES =
 EXTRA_DIST = \
 	plugin.m4
 
-if TOOLKIT_WIN
-
-plugin_DATA = \
-	psion.dll
-
-CLEANFILES = \
-	psion.def \
-	psion.dll \
-	psion.dll.a
-
-.libs/psion.a: psion.la
-
-psion.dll: .libs/psion.a
-	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PSION_LIBS)
-
-endif # TOOLKIT_WIN
-
