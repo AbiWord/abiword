@@ -30,6 +30,10 @@
  *  - speed it up!
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
 //#include <stdlib.h>
 #include <string.h>
@@ -48,6 +52,18 @@
 #include "xap_Module.h"
 #include "fg_Graphic.h"
 #include "ie_impGraphic.h"
+
+#ifdef _MSC_VER
+typedef unsigned __int32 uint32_t;
+typedef unsigned __int16 uint16_t;
+#else
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
+#ifdef HAVE_INTTYPES_H
+#include <inttypes.h>
+#endif
+#endif
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_mswrite_register
@@ -927,11 +943,6 @@ UT_Error IE_Imp_MSWrite::_parseFile()
 
     return UT_OK;
 }
-
-#ifdef _MSC_VER
-typedef unsigned __int32 uint32_t;
-typedef unsigned __int16 uint16_t;
-#endif
 
  /*****************************************************************/
  /*****************************************************************/
