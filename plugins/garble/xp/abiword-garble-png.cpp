@@ -79,7 +79,7 @@ bool abiword_document::garble_png( void*& data, size_t& size ) {
 		png_set_strip_alpha( png_ptr );
 		png_set_interlace_handling( png_ptr );
 		png_set_bgr( png_ptr );
-		rowbytes = info_ptr->rowbytes;
+		rowbytes = png_get_rowbytes(png_ptr, info_ptr);
 		png_destroy_read_struct( &png_ptr, &info_ptr, NULL );
 	}
 
