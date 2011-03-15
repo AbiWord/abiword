@@ -24,7 +24,7 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-#include "ut_win32localestring.h"
+#include "ut_Win32LocaleString.h"
 
 #include "xap_App.h"
 #include "xap_Win32App.h"

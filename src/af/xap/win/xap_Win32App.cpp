@@ -32,7 +32,7 @@
 #include "ut_debugmsg.h"
 #include "ut_path.h"
 #include "ut_Win32Uuid.h"
-#include "ut_win32localestring.h"
+#include "ut_Win32LocaleString.h"
 #include "xap_Win32App.h"
 #include "xap_Win32Clipboard.h"
 #include "xap_Frame.h"

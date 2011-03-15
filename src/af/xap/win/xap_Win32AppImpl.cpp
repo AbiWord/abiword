@@ -29,7 +29,7 @@
 #include "xap_App.h"
 #include "xap_Win32FrameImpl.h"
 
-#include "ut_win32localestring.h"
+#include "ut_Win32LocaleString.h"
 
 bool XAP_Win32AppImpl::openURL(const char * szURL)
 {

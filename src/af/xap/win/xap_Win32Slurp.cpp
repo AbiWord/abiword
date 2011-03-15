@@ -28,7 +28,7 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_go_file.h"
-#include "UT_Win32LocaleString.h"
+#include "ut_Win32LocaleString.h"
 #include "xap_Frame.h"
 #include "xap_Win32App.h"
 #include "xap_Win32Slurp.h"

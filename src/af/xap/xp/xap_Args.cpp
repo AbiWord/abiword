@@ -19,6 +19,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "xap_Args.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"

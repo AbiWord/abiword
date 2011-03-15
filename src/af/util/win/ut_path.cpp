@@ -87,7 +87,7 @@ bool UT_isRegularFile(const char* filename)
 size_t UT_fileSize(const char * filename)
 {
 	struct _stat buf;
-	UT_SHOULD_NOT_HAPPEN();
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
 	if( _stat( filename , &buf ) != -1 ) 
 	{
@@ -101,7 +101,7 @@ size_t UT_fileSize(const char * filename)
 time_t UT_mTime(const char* path)
 {
 	struct _stat buf;
-	UT_SHOULD_NOT_HAPPEN();
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
 	if( _stat( path , &buf ) != -1 ) 
 	{

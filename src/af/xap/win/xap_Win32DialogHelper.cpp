@@ -30,7 +30,7 @@
 #include "xap_Win32App.h"
 #include "xap_Win32DialogHelper.h"
 
-#include "ut_win32LocaleString.h"
+#include "ut_Win32LocaleString.h"
 
 
 static void _assertValidDlgHandle(HWND hDlg)

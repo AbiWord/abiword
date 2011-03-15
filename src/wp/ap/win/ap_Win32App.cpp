@@ -340,8 +340,8 @@ bool AP_Win32App::initialize(void)
 #ifdef _MSC_VER
 		lstrcatW(szPath, L"..\\plugins\\*.dll");
 #else
-#define L_PACKAGE L##PACKAGE
-#define L_SERIES  L##ABIWORD_SERIES
+#define L_PACKAGE L"##PACKAGE" 
+#define L_ABIWORD_SERIES  L"##ABIWORD_SERIES" 
 		lstrcatW(szPath, L"..\\lib\\" L_PACKAGE L"-" L_ABIWORD_SERIES L"\\plugins\\*.dll");
 #endif
 
@@ -355,7 +355,7 @@ bool AP_Win32App::initialize(void)
 #ifdef _MSC_VER
 				lstrcatW( szPlugin, L"..\\plugins\\" );
 #else
-				lstrcatW( szPlugin, L"..\\lib\\" L_PACKAGE L"-" L_SERIES L"\\plugins\\" );
+				lstrcatW( szPlugin, L"..\\lib\\" L_PACKAGE L"-" L_ABIWORD_SERIES L"\\plugins\\" );
 #endif
 				lstrcatW( szPlugin, cfile.cFileName );
 				XAP_ModuleManager::instance().loadModule( getUTF8String(szPlugin) );
