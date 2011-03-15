@@ -28,7 +28,7 @@ endif
 if TOOLKIT_WIN
 main_cpp = $(top_srcdir)/src/wp/main/win/Win32Main.cpp
 opt_libs += Win32Resources.lo
-platform_ldflags += -mwindows -Wl,--gc-sections -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--out-implib,abiword.dll.a
+platform_ldflags += -mwindows -municode
 resources += Win32Resources.lo
 endif
 
@@ -36,7 +36,7 @@ if TOOLKIT_COCOA
 frameworks_LTLIBRARIES = libabiword-@ABIWORD_SERIES@.la
 else
 if TOOLKIT_WIN
-noinst_LTLIBRARIES = libabiword-@ABIWORD_SERIES@.la
+lib_LTLIBRARIES = libabiword-@ABIWORD_SERIES@.la
 else
 lib_LTLIBRARIES = libabiword-@ABIWORD_SERIES@.la
 endif
@@ -132,10 +132,7 @@ abiword_CPPFLAGS = \
 	$(libabiword_@ABIWORD_SERIES@_la_CPPFLAGS)
 
 abiword_LDFLAGS = \
-	$(platform_ldflags) \
-	-no-undefined      \
-	-avoid-version      \
-	-export-dynamic
+	$(platform_ldflags)
 
 abiword_LDADD = \
 	libabiword-@ABIWORD_SERIES@.la \
