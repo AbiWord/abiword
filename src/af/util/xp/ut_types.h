@@ -60,13 +60,9 @@ typedef gint32		    UT_sint32;
 typedef guint64 UT_uint64;
 typedef gint64 UT_sint64;
 
-#ifdef _WIN32
-// Note: we can just use the commented typedefs below 
-//       when we depend on glib >= 2.18 on Windows
-//typedef guintptr 	UT_uintptr;
-//typedef gintptr 	UT_sintptr;
-typedef unsigned long UT_uintptr;
-typedef signed long UT_sintptr;
+#ifdef _WIN64
+typedef guint64 	UT_uintptr;
+typedef gint64 	UT_sintptr;
 #else
 typedef unsigned long UT_uintptr;
 typedef long        UT_sintptr;

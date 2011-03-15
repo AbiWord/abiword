@@ -346,7 +346,7 @@ bool AP_Win32App::initialize(void)
 
 		WIN32_FIND_DATAW cfile;
 		HANDLE findtag = FindFirstFileW( szPath, &cfile );
-		if( (int)findtag != -1 )
+		if( findtag != INVALID_HANDLE_VALUE )
 		{
 			do
 			{	
@@ -368,7 +368,7 @@ bool AP_Win32App::initialize(void)
 		UT_Win32LocaleString str;
 		str.fromUTF8(pluginDir.c_str());
 		findtag = FindFirstFileW( str.c_str(), &cfile );
-		if( (int)findtag != -1 )
+		if( findtag != INVALID_HANDLE_VALUE )
 		{
 			do
 			{	
