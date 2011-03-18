@@ -2525,9 +2525,13 @@ HDC GR_Win32Graphics::createbestmetafilehdc()
   int bestres = 0;
   HDC besthdc = 0;
   
-  EnumPrintersW(PRINTER_ENUM_CONNECTIONS|PRINTER_ENUM_LOCAL, NULL, 5, NULL, 0,
-	       &neededsize, &noprinters);
-  printerinfo = (LPPRINTER_INFO_5W) malloc(neededsize);
+  if (EnumPrintersW(PRINTER_ENUM_CONNECTIONS|PRINTER_ENUM_LOCAL, NULL, 5, NULL, 0,
+		&neededsize, &noprinters)) 
+  {
+	printerinfo = (LPPRINTER_INFO_5W) malloc(neededsize);
+  } else {
+	return GetDC(NULL);
+  }
   
   if (EnumPrintersW(PRINTER_ENUM_CONNECTIONS|PRINTER_ENUM_LOCAL, NULL, 5,
 		   (LPBYTE)printerinfo, neededsize, &neededsize, &noprinters)) {
@@ -2554,8 +2558,8 @@ HDC GR_Win32Graphics::createbestmetafilehdc()
 	}
       }
     }
-  }
+  } else return GetDC(NULL);
   
-  free(printerinfo);
+  if (printerinfo) free(printerinfo);
   return besthdc;
 }
