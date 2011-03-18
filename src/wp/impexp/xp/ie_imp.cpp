@@ -797,6 +797,8 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 		UT_Confidence_t   best_confidence = UT_CONFIDENCE_ZILCH;
 		IE_ImpSniffer * best_sniffer = 0;
 
+		gchar *filename = g_ascii_strdown(gsf_input_name (input), -1);
+
 		for (UT_uint32 k=0; k < nrElements; k++)
 		  {
 		    IE_ImpSniffer * s = IE_IMP_Sniffers.getNthItem (k);
@@ -814,28 +816,30 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 				// we use g_str_has_suffix like this to make sure we properly autodetect the extensions
 				// of files that have dots in their names, like foo.bar.abw
 				std::string suffix = std::string(".") + sc->suffix;
-				if (g_str_has_suffix(gsf_input_name (input), suffix.c_str()) && 
+				if (g_str_has_suffix(filename, suffix.c_str()) && 
 					sc->confidence > suffix_confidence) {
 					suffix_confidence = sc->confidence;
 				}
 				sc++;
 			}
 
-		    UT_Confidence_t confidence = s_confidence_heuristic ( content_confidence, 
+			UT_Confidence_t confidence = s_confidence_heuristic ( content_confidence, 
 																  suffix_confidence ) ;
-		    
-		    if ( confidence > CONFIDENCE_THRESHOLD && confidence >= best_confidence )
-				{
-					best_sniffer = s;
-					best_confidence = confidence;
-					ieft = (IEFileType) (k+1);
 
-					// short-circuit when we have perfect confidence for both
-					if (suffix_confidence == UT_CONFIDENCE_PERFECT &&
-					    content_confidence == UT_CONFIDENCE_PERFECT)
-						break;
-				}
-		  }
+			if ( confidence > CONFIDENCE_THRESHOLD && confidence >= best_confidence ) {
+				best_sniffer = s;
+				best_confidence = confidence;
+				ieft = (IEFileType) (k+1);
+
+				// short-circuit when we have perfect confidence for both
+				if (suffix_confidence == UT_CONFIDENCE_PERFECT &&
+					content_confidence == UT_CONFIDENCE_PERFECT)
+					break;
+			}
+		}
+
+		FREEP(filename);
+		
 		if (best_sniffer)
 			{
 				if (pieft != NULL) *pieft = ieft;
