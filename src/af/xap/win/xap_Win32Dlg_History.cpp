@@ -99,7 +99,7 @@ BOOL XAP_Win32Dialog_History::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM
 		setDlgItemText(k1 + i,getHeaderLabel(i));
 		
 		char * t = getHeaderValue(i);
-		SetDlgItemText(hWnd,k2 + i, t); // !
+		setDlgItemText(hWnd,k2 + i, t); // !
 		FREEP(t);
 	}
 
