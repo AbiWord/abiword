@@ -1514,8 +1514,8 @@ bool	AP_Win32App::doesStringSetExist(const char* pLocale)
 	szDest += strlen(szDest);
 	if ((szDest > szPathname) && (szDest[-1]!='\\'))
 		*szDest++='\\';
-	lstrcpy(szDest,pLocale);
-	lstrcat(szDest,".strings");
+	lstrcpyA(szDest,pLocale);
+	lstrcatA(szDest,".strings");
 
 	UT_Win32LocaleString wsFilename;
 	wsFilename.fromUTF8(szPathname);
