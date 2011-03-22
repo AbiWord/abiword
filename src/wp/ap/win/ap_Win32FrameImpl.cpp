@@ -652,8 +652,8 @@ bool AP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
 
 	UT_return_val_if_fail(a, false);
 
-	if (!AP_Win32TopRuler::RegisterClass(app) ||
-		!AP_Win32LeftRuler::RegisterClass(app))
+	if (!AP_Win32TopRuler::registerClass(app) ||
+		!AP_Win32LeftRuler::registerClass(app))
 	{
 		return false;
 	}

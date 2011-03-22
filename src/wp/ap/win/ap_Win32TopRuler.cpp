@@ -80,7 +80,7 @@ void AP_Win32TopRuler::setView(AV_View * pView)
 
 /*****************************************************************/
 
-bool AP_Win32TopRuler::RegisterClass(XAP_Win32App * app)
+bool AP_Win32TopRuler::registerClass(XAP_Win32App * app)
 {
 	ATOM a;
 
