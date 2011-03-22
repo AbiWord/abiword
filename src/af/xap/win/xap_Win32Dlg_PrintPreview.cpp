@@ -206,7 +206,7 @@ gdip_init (void)
   static HINSTANCE gdipluslib = NULL;
 
   if (!gdipluslib)
-    gdipluslib = LoadLibrary ("gdiplus.dll");
+    gdipluslib = LoadLibraryW (L"gdiplus.dll");
   else
     return 0; /* gdip_init() is idempotent */
 
