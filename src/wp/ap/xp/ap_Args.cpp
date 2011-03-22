@@ -213,7 +213,8 @@ bool AP_Args::doWindowlessArgs(bool & bSuccessful)
  	{		
  		printf("%s\n", PACKAGE_VERSION);
 		#ifdef TOOLKIT_WIN
-			MessageBox(NULL, PACKAGE_VERSION, "Version", MB_OK|MB_ICONINFORMATION);
+		#define ABI_WIDE_STRING(t) L ## t
+			MessageBoxW(NULL, ABI_WIDE_STRING("" PACKAGE_VERSION ""), L"Version", MB_OK|MB_ICONINFORMATION);
 		#endif
 		exit(0);
  	}
