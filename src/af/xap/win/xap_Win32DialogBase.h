@@ -106,7 +106,7 @@ protected:
 	void selectControlText(UT_sint32 controlId, UT_sint32 start, UT_sint32 end);
 	
 	int  isChecked(UT_sint32 controlId) const;
-	void getControlText(UT_sint32 controlId, LPTSTR p_buffer, UT_sint32 Buffer_length) const;
+	void getControlText(UT_sint32 controlId, LPSTR p_buffer, UT_sint32 Buffer_length) const;
 
 	bool isControlVisible(UT_sint32	controlId) const;
 
