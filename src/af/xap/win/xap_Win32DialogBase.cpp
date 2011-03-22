@@ -368,7 +368,7 @@ bool XAP_Win32DialogBase::isDialogValid() const
 }
 
 void XAP_Win32DialogBase::getControlText(UT_sint32 controlId,
-											LPTSTR p_buffer,
+											LPSTR p_buffer,
 											UT_sint32 Buffer_length) const
 {
 	UT_return_if_fail(IsWindow(m_hDlg));
