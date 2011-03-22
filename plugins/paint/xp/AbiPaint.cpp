@@ -603,7 +603,7 @@ static void getDefaultApp(UT_String &imageApp, bool &bLeaveImageAsPNG)
 
 	char buffer[MAX_PATH];
 	// for WinNT mspaint is most likely in the system directory (eg C:\WINNT\SYSTEM32\MSPAINT.EXE)
-	if (GetSystemDirectory(buffer, MAX_PATH))
+	if (GetSystemDirectoryA(buffer, MAX_PATH))
 	{
 		imageApp = buffer;
 		imageApp += "\\MSPAINT.EXE";
@@ -618,12 +618,12 @@ static void getDefaultApp(UT_String &imageApp, bool &bLeaveImageAsPNG)
 		unsigned long lType;	
 		DWORD dwSize;
 		unsigned char* szValue = NULL;
-		if( ::RegOpenKeyEx( HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Windows\\CurrentVersion", 0, KEY_READ, &hKey) == ERROR_SUCCESS )
+		if( ::RegOpenKeyExA( HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Windows\\CurrentVersion", 0, KEY_READ, &hKey) == ERROR_SUCCESS )
 		{
-			if( ::RegQueryValueEx( hKey, "ProgramFilesDir", NULL, &lType, NULL, &dwSize) == ERROR_SUCCESS )
+			if( ::RegQueryValueExA( hKey, "ProgramFilesDir", NULL, &lType, NULL, &dwSize) == ERROR_SUCCESS )
 			{
 				szValue = new unsigned char[dwSize + 1];
-				::RegQueryValueEx( hKey, "ProgramFilesDir", NULL, &lType, szValue, &dwSize);
+				::RegQueryValueExA( hKey, "ProgramFilesDir", NULL, &lType, szValue, &dwSize);
 				imageApp = (char*) szValue;
 				delete[] szValue;
 				imageApp += "\\ACCESSORIES\\MSPAINT.EXE";
