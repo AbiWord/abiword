@@ -86,7 +86,7 @@ void AP_Win32Dialog_GenericInput::runModal(XAP_Frame * pFrame)
 
 	// create the dialog
 	HWND hWndParent = pFrame ? static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow() : NULL;
-	int result = DialogBoxParam( m_hInstance, AP_RID_DIALOG_GENERICINPUT, hWndParent,
+	int result = DialogBoxParamA( m_hInstance, AP_RID_DIALOG_GENERICINPUT, hWndParent,
 		(DLGPROC)s_dlgProc, (LPARAM)this );
 	switch (result)
 	{
@@ -119,8 +119,8 @@ BOOL AP_Win32Dialog_GenericInput::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM
 	m_pWin32Dialog->setDialogTitle(getTitle().utf8_str());
 
 	// set the question
-	SetDlgItemText(hWnd, AP_RID_DIALOG_GENERICINPUT_QUESTION, getQuestion().utf8_str());
-	SetDlgItemText(hWnd, AP_RID_DIALOG_GENERICINPUT_LABEL, getLabel().utf8_str());
+	SetDlgItemTextA(hWnd, AP_RID_DIALOG_GENERICINPUT_QUESTION, getQuestion().utf8_str());
+	SetDlgItemTextA(hWnd, AP_RID_DIALOG_GENERICINPUT_LABEL, getLabel().utf8_str());
 
 	// set the password char for the password field
 	if (isPassword())
@@ -131,7 +131,7 @@ BOOL AP_Win32Dialog_GenericInput::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM
 	}
 
 	// set the initial input
-	SetDlgItemText(hWnd, AP_RID_DIALOG_GENERICINPUT_PASSWORD_EDIT, getInput().utf8_str());
+	SetDlgItemTextA(hWnd, AP_RID_DIALOG_GENERICINPUT_PASSWORD_EDIT, getInput().utf8_str());
 
 	// force the initial sensitivy state of the buttons
 	_eventTextChanged(); 
@@ -174,7 +174,7 @@ UT_UTF8String AP_Win32Dialog_GenericInput::_getText(HWND hWnd, int nID)
 	const int buflen = 4096;
 	char szBuff[buflen];
 	*szBuff=0;
-	GetDlgItemText(hWnd, nID, szBuff, buflen);
+	GetDlgItemTextA(hWnd, nID, szBuff, buflen);
 	szBuff[buflen-1] = '\0';
 	return AP_Win32App::s_fromWinLocaleToUTF8(szBuff);
 }

@@ -41,7 +41,7 @@ static gboolean s_glib_mainloop_callback(GIOChannel * /*channel*/, GIOCondition 
 #define HWND_MESSAGE ((HWND)(-3))
 #endif
 
-#define SYNC_CLASSNAME "AbiCollabSynchronizer"
+#define SYNC_CLASSNAME L"AbiCollabSynchronizer"
 
 int Synchronizer::sm_iMessageWindows = 0;
 ATOM sm_iClass = 0;
@@ -120,7 +120,7 @@ void Synchronizer::_registerWndClass() // Win32-only
  	HINSTANCE hInstance = pSessionManager->getInstance();
  	UT_return_if_fail(hInstance);
   
- 	WNDCLASS wc;
+ 	WNDCLASSW wc;
  	wc.style = CS_HREDRAW | CS_VREDRAW;
  	wc.lpfnWndProc = Synchronizer::s_wndProc;
  	wc.cbClsExtra = 0;
@@ -132,7 +132,7 @@ void Synchronizer::_registerWndClass() // Win32-only
  	wc.lpszMenuName =  NULL;
  	wc.lpszClassName = SYNC_CLASSNAME;
   
- 	sm_iClass = RegisterClass(&wc);
+ 	sm_iClass = RegisterClassW(&wc);
  	UT_return_if_fail(sm_iClass);
  	
  	sm_iMessageWindows = 0;
@@ -156,7 +156,7 @@ void Synchronizer::_unregisterWndClass() // Win32-only
  	UT_return_if_fail(hInstance);
  
  	UT_DEBUGMSG(("Unregistrating message window class\n"));
- 	UT_return_if_fail(UnregisterClass(SYNC_CLASSNAME, hInstance));
+ 	UT_return_if_fail(UnregisterClassW(SYNC_CLASSNAME, hInstance));
  	sm_iClass = 0;
 }
 
@@ -186,8 +186,8 @@ Synchronizer::Synchronizer(boost::function<void ()>  signalhandler) // Win32 Imp
 	// HWND_MESSAGE as parent HWND is Win2k/xp/vista only - replaced with 0
 	// (also HWND_MESSAGE doesn't compile in MinGW, weird bug.  --RP 8 August 2007)
 	
-	m_hWnd = CreateWindow(SYNC_CLASSNAME,
-			"AbiCollab",
+	m_hWnd = CreateWindowW(SYNC_CLASSNAME,
+			L"AbiCollab",
 			0,
 			CW_USEDEFAULT,
 			SW_HIDE,

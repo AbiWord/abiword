@@ -58,35 +58,35 @@ void ServiceWin32AccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	
 	/* Non-Tabbable Labels */
 
-	m_hEmailLabel = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "STATIC", "E-mail address:", SS_LEFT | WS_CHILD | WS_VISIBLE,
+	m_hEmailLabel = CreateWindowExW(WS_EX_NOPARENTNOTIFY, L"STATIC", L"E-mail address:", SS_LEFT | WS_CHILD | WS_VISIBLE,
 			15, 20, 51, 15, hBox,  (HMENU) ABI_RID_DIALOG_COLLABSERVICE_EMAILLABEL,  m_hInstance, 0);
 	UT_return_if_fail(m_hEmailLabel);
 
-	m_hPasswordLabel = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "STATIC", "Password:", SS_LEFT | WS_CHILD | WS_VISIBLE,
+	m_hPasswordLabel = CreateWindowExW(WS_EX_NOPARENTNOTIFY, L"STATIC", L"Password:", SS_LEFT | WS_CHILD | WS_VISIBLE,
 			15, 40, 51, 15, hBox,  (HMENU) ABI_RID_DIALOG_COLLABSERVICE_PASSWORDLABEL,  m_hInstance, 0);
 	UT_return_if_fail(m_hPasswordLabel);
 	
 	/* Tabbable */
-	m_hEmailEntry = CreateWindowEx(WS_EX_NOPARENTNOTIFY | WS_EX_CLIENTEDGE, "EDIT", "", ES_AUTOHSCROLL | ES_LEFT | WS_CHILD | WS_BORDER | WS_VISIBLE | WS_TABSTOP,
+	m_hEmailEntry = CreateWindowExW(WS_EX_NOPARENTNOTIFY | WS_EX_CLIENTEDGE, L"EDIT", L"", ES_AUTOHSCROLL | ES_LEFT | WS_CHILD | WS_BORDER | WS_VISIBLE | WS_TABSTOP,
 			80, 20, 121, 20, hBox,  (HMENU) ABI_RID_DIALOG_COLLABSERVICE_EMAILENTRY,  m_hInstance, 0);
 	UT_return_if_fail(m_hEmailEntry);
 	SendMessage(m_hEmailEntry, EM_SETLIMITTEXT, 255*sizeof(TCHAR), 0);
 
-	m_hPasswordEntry = CreateWindowEx(WS_EX_NOPARENTNOTIFY | WS_EX_CLIENTEDGE, "EDIT", "", ES_AUTOHSCROLL | ES_LEFT | WS_CHILD | WS_BORDER | WS_VISIBLE | WS_TABSTOP,
+	m_hPasswordEntry = CreateWindowExW(WS_EX_NOPARENTNOTIFY | WS_EX_CLIENTEDGE, L"EDIT", L"", ES_AUTOHSCROLL | ES_LEFT | WS_CHILD | WS_BORDER | WS_VISIBLE | WS_TABSTOP,
 			80, 40, 121, 20, hBox,  (HMENU) ABI_RID_DIALOG_COLLABSERVICE_PASSWORDENTRY,  m_hInstance, 0);
 	UT_return_if_fail(m_hPasswordEntry);
 	SendMessage(m_hPasswordEntry, EM_SETPASSWORDCHAR, '*', 0);
 	SendMessage(m_hPasswordEntry, EM_SETLIMITTEXT, 255*sizeof(TCHAR), 0);
 
-	m_hUrlButton = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "BUTTON", "Get a free abicollab.net account", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 
+	m_hUrlButton = CreateWindowExW(WS_EX_NOPARENTNOTIFY, L"BUTTON", L"Get a free abicollab.net account", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 
 			15, 64, 186, 20, hBox, (HMENU) ABI_RID_DIALOG_COLLABSERVICE_URLBUTTON, m_hInstance, 0);
 
 	// Font setting code borrowed from XAP_Win32Dlg_About
-	LOGFONT lf = { 0 };
-	strcpy(lf.lfFaceName, "MS Sans Serif");
+	LOGFONTW lf = { 0 };
+	wcscpy(lf.lfFaceName, L"MS Sans Serif");
 	lf.lfHeight = 12;
 	lf.lfWeight = 0;
-	HFONT hfontPrimary = CreateFontIndirect(&lf);
+	HFONT hfontPrimary = CreateFontIndirectW(&lf);
 	HWND rgFontReceivers[] =
 		{ m_hEmailLabel, m_hEmailEntry, m_hPasswordLabel, m_hPasswordEntry, m_hUrlButton};
 	for (UT_uint32 iWnd = 0; iWnd < G_N_ELEMENTS(rgFontReceivers); iWnd++)

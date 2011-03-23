@@ -139,21 +139,21 @@ BOOL AP_Win32Dialog_CollaborationAccounts::_onInitDialog(HWND hWnd, WPARAM wPara
 	// setup our listview columns
 
 	// column 0
-	LVCOLUMN lvc;
+	LVCOLUMNW lvc;
 	lvc.mask = LVCF_WIDTH | LVCF_TEXT; 
-    lvc.pszText = "Online";	
+    lvc.pszText = L"Online";	
 	lvc.cx = 50;
 	ListView_InsertColumn(m_hAccountList, 0, &lvc);
 
 	// column 1
 	lvc.mask = LVCF_WIDTH | LVCF_TEXT; 
-    lvc.pszText = "Account";	
+    lvc.pszText = L"Account";	
 	lvc.cx = 180;
 	ListView_InsertColumn(m_hAccountList, 1, &lvc);
 
 	// column 2
 	lvc.mask = LVCF_WIDTH | LVCF_TEXT; 
-    lvc.pszText = "Type";
+    lvc.pszText = L"Type";
 	lvc.cx = 200;
 	ListView_InsertColumn(m_hAccountList, 2, &lvc);
 

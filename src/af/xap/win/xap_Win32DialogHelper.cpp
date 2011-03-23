@@ -137,7 +137,7 @@ void XAP_Win32DialogHelper::destroyWindow()
 	DestroyWindow(m_hDlg);
 }
 
-void XAP_Win32DialogHelper::setDialogTitle(LPCTSTR p_str)
+void XAP_Win32DialogHelper::setDialogTitle(LPCSTR p_str)
 {
 	_assertValidDlgHandle(m_hDlg);
 	UT_Win32LocaleString str;
@@ -258,7 +258,7 @@ void XAP_Win32DialogHelper::getListText(UT_sint32 controlId, int index, char *p_
 
 
 // Controls
-void XAP_Win32DialogHelper::setControlText(UT_sint32 controlId, LPCTSTR p_str)
+void XAP_Win32DialogHelper::setControlText(UT_sint32 controlId, LPCSTR p_str)
 {
 	_assertValidDlgHandle(m_hDlg);
 	UT_Win32LocaleString str;
@@ -291,7 +291,7 @@ int XAP_Win32DialogHelper::isChecked(UT_sint32 controlId) const
 }
 
 void XAP_Win32DialogHelper::getControlText(	UT_sint32 controlId,
-											LPTSTR p_buffer,
+											LPSTR p_buffer,
 											UT_sint32 Buffer_length) const
 {
 	_assertValidDlgHandle(m_hDlg);

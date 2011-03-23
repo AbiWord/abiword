@@ -135,52 +135,52 @@ void TCPWin32AccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	/* Non-Tabbable Labels */
 	
 	// "Address:"
-	m_hServerLabel = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "STATIC", "Address:", SS_LEFT | WS_CHILD | WS_VISIBLE,
+	m_hServerLabel = CreateWindowExW(WS_EX_NOPARENTNOTIFY, L"STATIC", L"Address:", SS_LEFT | WS_CHILD | WS_VISIBLE,
 	15, 57, 51, 15, hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_SERVERLABEL,  m_hInstance, 0);
 	UT_return_if_fail(m_hServerLabel);
 	
 	// "Port:"
-	m_hPortLabel = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "STATIC", "Port:", SS_LEFT | WS_CHILD | WS_VISIBLE, 
+	m_hPortLabel = CreateWindowExW(WS_EX_NOPARENTNOTIFY, L"STATIC", L"Port:", SS_LEFT | WS_CHILD | WS_VISIBLE, 
 	15, 87, 47, 15, hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_PORTLABEL,  m_hInstance, 0);
 	UT_return_if_fail(m_hPortLabel);
 	
 	/* Radio Button Group */
-	m_hServerRadio = CreateWindowEx(WS_EX_NOPARENTNOTIFY |  WS_EX_TRANSPARENT, "BUTTON", "Accept Incoming Connections", BS_NOTIFY | BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+	m_hServerRadio = CreateWindowExW(WS_EX_NOPARENTNOTIFY |  WS_EX_TRANSPARENT, L"BUTTON", L"Accept Incoming Connections", BS_NOTIFY | BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 	15, 15, 200, 15, hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_SERVERRADIO,  m_hInstance, 0);
 	UT_return_if_fail(m_hServerRadio);
 	
 	// Join a Server radio button
-	m_hJoinRadio = CreateWindowEx(WS_EX_NOPARENTNOTIFY |  WS_EX_TRANSPARENT, "BUTTON", "Connect to Another Computer", BS_NOTIFY  | BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+	m_hJoinRadio = CreateWindowExW(WS_EX_NOPARENTNOTIFY |  WS_EX_TRANSPARENT, L"BUTTON", L"Connect to Another Computer", BS_NOTIFY  | BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 	15, 35, 200, 15, hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_JOINRADIO,  m_hInstance, 0);
 	UT_return_if_fail(m_hJoinRadio);
 	
 	// Entry box for IP address of server
 	// should be disabled when in server mode, and OK should be disabled when this is empty in join mode
-	m_hServerEntry = CreateWindowEx(WS_EX_NOPARENTNOTIFY | WS_EX_CLIENTEDGE, "EDIT", "", ES_LEFT | ES_AUTOHSCROLL | WS_CHILD | WS_BORDER | WS_VISIBLE | WS_TABSTOP,
+	m_hServerEntry = CreateWindowExW(WS_EX_NOPARENTNOTIFY | WS_EX_CLIENTEDGE, L"EDIT", L"", ES_LEFT | ES_AUTOHSCROLL | WS_CHILD | WS_BORDER | WS_VISIBLE | WS_TABSTOP,
 	80, 55, 121, 20, hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_SERVERENTRY,  m_hInstance, 0);
 	UT_return_if_fail(m_hServerEntry);
 	
 	// Port entry box
-	m_hPortEntry = CreateWindowEx(WS_EX_NOPARENTNOTIFY | WS_EX_CLIENTEDGE, "EDIT", boost::lexical_cast<std::string>(DEFAULT_TCP_PORT).c_str(), ES_LEFT | WS_CHILD | WS_BORDER | WS_VISIBLE | WS_TABSTOP,
+	m_hPortEntry = CreateWindowExA(WS_EX_NOPARENTNOTIFY | WS_EX_CLIENTEDGE, "EDIT", boost::lexical_cast<std::string>(DEFAULT_TCP_PORT).c_str(), ES_LEFT | WS_CHILD | WS_BORDER | WS_VISIBLE | WS_TABSTOP,
 	80, 85, 60, 20, hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_PORTENTRY,  m_hInstance, 0);
 	UT_return_if_fail(m_hPortEntry);
 	
 	// Checkbox for "auto grant permission"
-	m_hAllowAllCheck = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "BUTTON", "Automatically grant buddies access to shared documents", BS_CHECKBOX | BS_AUTOCHECKBOX | WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+	m_hAllowAllCheck = CreateWindowExW(WS_EX_NOPARENTNOTIFY, L"BUTTON", L"Automatically grant buddies access to shared documents", BS_CHECKBOX | BS_AUTOCHECKBOX | WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 	14, 115, 290, 15, hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_ALLOWALLCHECK,  m_hInstance, 0);
 	UT_return_if_fail(m_hAllowAllCheck);
 
 	// Checkbox for Connect on Startup
-	m_hAutoconnectCheck = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "BUTTON", "Connect on Application Startup", BS_CHECKBOX | BS_AUTOCHECKBOX | WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+	m_hAutoconnectCheck = CreateWindowExW(WS_EX_NOPARENTNOTIFY, L"BUTTON", L"Connect on Application Startup", BS_CHECKBOX | BS_AUTOCHECKBOX | WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 	14, 135, 174, 15, hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_AUTOCONNECTCHECK,  m_hInstance, 0);
 	UT_return_if_fail(m_hAutoconnectCheck);
 	
 	// Font setting code borrowed from XAP_Win32Dlg_About
-	LOGFONT lf = { 0 };
-	strcpy(lf.lfFaceName, "MS Sans Serif");
+	LOGFONTW lf = { 0 };
+	wcscpy(lf.lfFaceName, L"MS Sans Serif");
 	lf.lfHeight = 12;
 	lf.lfWeight = 0;
-	HFONT hfontPrimary = CreateFontIndirect(&lf);
+	HFONT hfontPrimary = CreateFontIndirectW(&lf);
 	HWND rgFontReceivers[] =
 		{ m_hServerRadio, m_hJoinRadio, m_hServerLabel, m_hPortLabel, m_hServerEntry, m_hPortEntry, m_hAllowAllCheck, m_hAutoconnectCheck};
 	for (UT_uint32 iWnd = 0; iWnd < G_N_ELEMENTS(rgFontReceivers); iWnd++)

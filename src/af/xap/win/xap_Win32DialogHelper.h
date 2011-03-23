@@ -82,7 +82,7 @@ public:
 	void				checkButton(UT_sint32 controlId, bool bChecked = true);
 	void				enableControl(UT_sint32 controlId, bool bEnabled = true);
 	void				destroyWindow();
-	void				setDialogTitle(LPCTSTR p_str);
+	void				setDialogTitle(LPCSTR p_str);
 	int				showWindow( int Mode );
 	int				showControl(UT_sint32 controlId, int Mode);
 	int				bringWindowToTop();
@@ -107,7 +107,7 @@ public:
 	void				getListText(UT_sint32 controlId, int index, char *p_str) const;
 
 	// Controls
-	void				setControlText(UT_sint32 controlId, LPCTSTR p_str);
+	void				setControlText(UT_sint32 controlId, LPCSTR p_str);
 	void				setControlInt(UT_sint32 controlId, int value);
 	int				getControlInt(UT_sint32 controlId) const;
 	
@@ -117,7 +117,7 @@ public:
 	
 	int				isChecked(UT_sint32 controlId) const;
 	void				getControlText(	UT_sint32	controlId,
-										LPTSTR		p_buffer,
+										LPSTR		p_buffer,
 										UT_sint32	Buffer_length) const;
 
 	bool				isControlVisible(UT_sint32	controlId) const;

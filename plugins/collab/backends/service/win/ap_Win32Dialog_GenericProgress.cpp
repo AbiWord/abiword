@@ -86,7 +86,7 @@ void AP_Win32Dialog_GenericProgress::runModal(XAP_Frame * pFrame)
 	m_answer = AP_Dialog_GenericProgress::a_CANCEL;		
 
 	// create the dialog
-	int result = DialogBoxParam( m_hInstance, AP_RID_DIALOG_GENERICPROGRESS,
+	int result = DialogBoxParamA( m_hInstance, AP_RID_DIALOG_GENERICPROGRESS,
 		static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 		(DLGPROC)s_dlgProc, (LPARAM)this );
 	switch (result)
@@ -131,7 +131,7 @@ BOOL AP_Win32Dialog_GenericProgress::_onInitDialog(HWND hWnd, WPARAM wParam, LPA
 	m_pWin32Dialog->setDialogTitle(getTitle().utf8_str());
 
 	// set the informative label
-	SetDlgItemText(hWnd, AP_RID_DIALOG_GENERICINPUT_INFORMATION, getInformation().utf8_str());
+	SetDlgItemTextA(hWnd, AP_RID_DIALOG_GENERICINPUT_INFORMATION, getInformation().utf8_str());
 
 	// add the progress bar
 	RECT r;
@@ -140,7 +140,7 @@ BOOL AP_Win32Dialog_GenericProgress::_onInitDialog(HWND hWnd, WPARAM wParam, LPA
 	r.right = 8 + 184 - 1;
 	r.bottom = 16 + 14 - 1;
 	MapDialogRect(m_hWnd, &r);
-	m_hProgress = CreateWindowEx(WS_EX_NOPARENTNOTIFY, PROGRESS_CLASS, "Progress", WS_CHILD | WS_GROUP | WS_VISIBLE,
+	m_hProgress = CreateWindowExW(WS_EX_NOPARENTNOTIFY, PROGRESS_CLASS, L"Progress", WS_CHILD | WS_GROUP | WS_VISIBLE,
 	r.left, r.top, r.right - r.left + 1, r.bottom - r.top + 1, m_hWnd, (HMENU) AP_RID_DIALOG_GENERICPROGRESS_PROGRESS, m_hInstance, 0);
 	UT_return_val_if_fail(m_hProgress, false);
 

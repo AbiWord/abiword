@@ -71,7 +71,7 @@ static const char* AbiGimp_MenuTooltip = "Opens the selected image in the GIMP f
 #ifdef WIN32
 static BOOL CreateChildProcess(char * appName, char *cmdline,
 				PROCESS_INFORMATION *procInfo,
-				STARTUPINFO *startInfo);
+				STARTUPINFOA *startInfo);
 #endif
 
 //
@@ -302,7 +302,7 @@ AbiGimp_invoke(AV_View* /*v*/, EV_EditMethodCallData *d)
 	UT_String cmdline = "gimp \"" + szTmp + "\"";
 
 	PROCESS_INFORMATION procInfo;
-	STARTUPINFO startInfo;
+	STARTUPINFOA startInfo;
 	if (!CreateChildProcess(NULL, const_cast<char *>(cmdline.c_str()), &procInfo, &startInfo))
 	{
 		UT_String msg = "Unable to run program: ";  msg += cmdline;
@@ -472,15 +472,15 @@ AbiGimp_invoke(AV_View* /*v*/, EV_EditMethodCallData *d)
 // our equivalent of fork()
 static BOOL CreateChildProcess(char * appName, char *cmdline,
 				PROCESS_INFORMATION *procInfo,
-				STARTUPINFO *startInfo) 
+				STARTUPINFOA *startInfo) 
 {
 	//initialize structures used to return info
 	ZeroMemory( procInfo, sizeof(PROCESS_INFORMATION) ); 
-	ZeroMemory( startInfo, sizeof(STARTUPINFO) ); 
-	startInfo->cb = sizeof(STARTUPINFO); 
+	ZeroMemory( startInfo, sizeof(STARTUPINFOA) ); 
+	startInfo->cb = sizeof(STARTUPINFOA); 
 
 	// Create the child process. 
-	return CreateProcess(
+	return CreateProcessA(
 			appName,   // application module to execute
 			cmdline,   // command line 
 			NULL,      // process security attributes 
