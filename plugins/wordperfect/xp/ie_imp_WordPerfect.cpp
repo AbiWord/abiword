@@ -474,8 +474,8 @@ void IE_Imp_WordPerfect::openParagraph(const WPXPropertyList &propList, const WP
 		lineSpacing = propList["fo:line-height"]->getDouble();
 	
 	UT_String tmpBuffer;
-	UT_String_sprintf(tmpBuffer, "; margin-top:%.4fin; margin-bottom:%.4fin; margin-left:%.4fin; margin-right:%.4fin; text-indent:%.4fin; line-height:%.4f",
-		m_topMargin, m_bottomMargin, m_leftMarginOffset, m_rightMarginOffset, m_textIndent, lineSpacing);
+	UT_String_sprintf(tmpBuffer, "; margin-top:%dpt; margin-bottom:%dpt; margin-left:%.4fin; margin-right:%.4fin; text-indent:%.4fin; line-height:%.4f",
+		(int)(m_topMargin*72), (int)(m_bottomMargin*72), m_leftMarginOffset, m_rightMarginOffset, m_textIndent, lineSpacing);
 	propBuffer += tmpBuffer;
 	
 	if (tabStops.count() > 0) // Append the tabstop information
