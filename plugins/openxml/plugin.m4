@@ -6,19 +6,8 @@ if test "$enable_openxml" != ""; then
 
 PKG_CHECK_EXISTS([ $openxml_pkgs ], 
 [
-	AC_LANG_PUSH(C++)
-	AC_CHECK_HEADER([boost/shared_ptr.hpp], 
-	[
-	  openxml_deps="yes"
+	openxml_deps="yes"
 	], [
-		if test "$enable_openxml" = "auto"; then
-		  AC_MSG_WARN([openxml plugin: `boost/shared_ptr.hpp' not found, install boost or specify CPPFLAGS to include custom locations])
-		else
-		  AC_MSG_ERROR([openxml plugin: `boost/shared_ptr.hpp' not found, install boost or specify CPPFLAGS to include custom locations])
-		fi
-	])
-	AC_LANG_POP
-], [
 	test "$enable_openxml" = "auto" && AC_MSG_WARN([openxml plugin: dependencies not satisfied - $openxml_pkgs])
 ])
 

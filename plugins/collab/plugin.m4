@@ -142,12 +142,6 @@ if test "$enable_collab_builtin" = "yes"; then
 AC_MSG_ERROR([collab plugin: static linking not supported])
 fi
 
-# HACK, no way to detect, check only if explicitely enabled
-if test "$enable_collab" = "yes"; then
-# check for various boost libs, needs to be done before
-AX_BOOST_BASE([1.33.1])
-fi
-
 PKG_CHECK_MODULES(COLLAB,[ $collab_pkgs ])
 
 if test "$enable_collab_backend_fake" = "yes"; then
