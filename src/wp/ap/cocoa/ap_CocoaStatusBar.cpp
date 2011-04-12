@@ -134,30 +134,32 @@ XAP_CocoaNSStatusBar * AP_CocoaStatusBar::createWidget(void)
 	for (UT_sint32 k=0; k<getFields()->getItemCount(); k++) {
  		AP_StatusBarField * pf = (AP_StatusBarField *)m_vecFields.getNthItem(k);
 		UT_ASSERT(pf); // we should NOT have null elements
-		AP_StatusBarField_TextInfo *pf_TextInfo = static_cast<AP_StatusBarField_TextInfo*>(pf);
-		NSRect frame = NSMakeRect (currentX, 0, 100, height);
-		NSTextField *pStatusBarElementLabel = [[NSTextField alloc] initWithFrame:frame];
-		pf->setListener(static_cast<AP_StatusBarFieldListener *>(new ap_csb_TextListener
+		if (pf->getFillMethod() == REPRESENTATIVE_STRING || (pf->getFillMethod() == MAX_POSSIBLE)){
+		  AP_StatusBarField_TextInfo *pf_TextInfo = static_cast<AP_StatusBarField_TextInfo*>(pf);
+		  NSRect frame = NSMakeRect (currentX, 0, 100, height);
+		  NSTextField *pStatusBarElementLabel = [[NSTextField alloc] initWithFrame:frame];
+		  pf->setListener(static_cast<AP_StatusBarFieldListener *>(new ap_csb_TextListener
 				(pf_TextInfo, pStatusBarElementLabel)));
-		[pStatusBarElementLabel setFont:font];
-		[pStatusBarElementLabel setEditable:NO];
-		[pStatusBarElementLabel setBezeled:YES];
-		[pStatusBarElementLabel setSelectable:NO];
+		  [pStatusBarElementLabel setFont:font];
+		  [pStatusBarElementLabel setEditable:NO];
+		  [pStatusBarElementLabel setBezeled:YES];
+		  [pStatusBarElementLabel setSelectable:NO];
 		// align text
-		switch (pf_TextInfo->getAlignmentMethod()) {
-		case LEFT:
-			[pStatusBarElementLabel setAlignment:NSNaturalTextAlignment];
+		  switch (pf_TextInfo->getAlignmentMethod()) {
+		  case LEFT:
+		        [pStatusBarElementLabel setAlignment:NSNaturalTextAlignment];
 			break;
-		case CENTER:
+		  case CENTER:
 			[pStatusBarElementLabel setAlignment:NSCenterTextAlignment];
 			break;
-		default:
+		  default:
 			UT_ASSERT_NOT_REACHED();
-		}
+		  }
+		
 			
 		// size and place
-		switch (pf_TextInfo->getFillMethod()) {
-		case REPRESENTATIVE_STRING:
+		  switch (pf_TextInfo->getFillMethod()) {
+		  case REPRESENTATIVE_STRING:
 			str = [[NSString alloc] initWithUTF8String:pf_TextInfo->getRepresentativeString()];
 			[pStatusBarElementLabel setStringValue:str];
 			[str release];
@@ -169,19 +171,20 @@ XAP_CocoaNSStatusBar * AP_CocoaStatusBar::createWidget(void)
 			[pStatusBarElementLabel setTag:lrintf(frame.size.width)];
 			UT_DEBUGMSG(("New size is: w=%f h=%f\n", frame.size.width, frame.size.height));
 			break;
-		case MAX_POSSIBLE:
+		  case MAX_POSSIBLE:
 			[pStatusBarElementLabel setTag:-1];
 			m_numMaxWidth++;
 			break;
-		default:
+		  default:
 			UT_ASSERT_NOT_REACHED();
-		}
-		[m_wStatusBar addSubview:pStatusBarElementLabel];
-		UT_DEBUGMSG(("added status bar element. Frame = %f %f %f %f\n",
+		  }
+		  [m_wStatusBar addSubview:pStatusBarElementLabel];
+		  UT_DEBUGMSG(("added status bar element. Frame = %f %f %f %f\n",
 				frame.origin.x, frame.origin.y, frame.size.width, frame.size.height));
 
-		[pStatusBarElementLabel release];
-		currentX += frame.size.width + FIELD_SPACING;
+		  [pStatusBarElementLabel release];
+		  currentX += frame.size.width + FIELD_SPACING;
+		}
 	}
 	_repositionFields([m_wStatusBar subviews]);
 	
