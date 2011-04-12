@@ -1463,6 +1463,10 @@ bool XAP_EncodingManager::canBreakBetween(const UT_UCS4Char c[2]) const
 	if (c[0] == UCS_EM_DASH && c[1] == UCS_EM_DASH)
 		return false;
 
+	// Finnish special case: opening '' quote (#13037)
+	if (c[0] == UCS_RDBLQUOTE && categoriseUniChar(c[1]) == NONATOMIC)
+		return false;
+
 	// Find rule number based on character categories.
 	rule = categoriseUniChar(c[0]) * 5 + categoriseUniChar(c[1]);
 
