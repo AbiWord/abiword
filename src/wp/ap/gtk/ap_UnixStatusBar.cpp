@@ -63,6 +63,30 @@ void ap_usb_TextListener::notify()
 	}
 }
 
+
+class ap_usb_ProgressListener : public AP_StatusBarFieldListener
+{
+public:
+	ap_usb_ProgressListener(AP_StatusBarField *pStatusBarField, GtkWidget *wProgress) : AP_StatusBarFieldListener(pStatusBarField) 
+        { 
+	    m_wProgress = wProgress; 
+	}
+	virtual void notify(); 
+
+protected:
+	GtkWidget *m_wProgress;
+};
+
+void ap_usb_ProgressListener::notify()
+{
+	UT_ASSERT(m_wProgress);
+
+	AP_StatusBarField_ProgressBar * pProgress = ((AP_StatusBarField_ProgressBar *)m_pStatusBarField);
+	double fraction = pProgress->getFraction();
+	UT_DEBUGMSG(("Progress fraction %f \n",fraction));
+	gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(m_wProgress),fraction);
+}
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -70,6 +94,7 @@ AP_UnixStatusBar::AP_UnixStatusBar(XAP_Frame * pFrame)
 	: AP_StatusBar(pFrame)
 {
 	m_wStatusBar = NULL;
+	m_wProgressFrame = NULL;
 }
 
 AP_UnixStatusBar::~AP_UnixStatusBar(void)
@@ -80,6 +105,16 @@ void AP_UnixStatusBar::setView(AV_View * pView)
 {
 	// let the base class do it's thing	
 	AP_StatusBar::setView(pView);
+}
+
+void AP_UnixStatusBar::showProgressBar(void)
+{
+  gtk_widget_show(m_wProgressFrame);
+}
+
+void AP_UnixStatusBar::hideProgressBar(void)
+{
+  gtk_widget_hide(m_wProgressFrame);
 }
 
 // FIXME: we need more sanity checking here to make sure everything allocates correctly
@@ -99,8 +134,8 @@ GtkWidget * AP_UnixStatusBar::createWidget(void)
 		// set up a frame for status bar elements so they look like status bar elements, 
 		// and not just normal widgets
 		GtkWidget *pStatusBarElement = NULL;
-		
-		if (true){ //AP_StatusBarField_TextInfo *pf_TextInfo = dynamic_cast<AP_StatusBarField_TextInfo*>(pf))
+		UT_DEBUGMSG(("Fill method %d \n",pf->getFillMethod()));
+		if (pf->getFillMethod() == REPRESENTATIVE_STRING || (pf->getFillMethod() == MAX_POSSIBLE)){ //AP_StatusBarField_TextInfo *pf_TextInfo = dynamic_cast<AP_StatusBarField_TextInfo*>(pf))
 		  AP_StatusBarField_TextInfo *pf_TextInfo = static_cast<AP_StatusBarField_TextInfo*>(pf);
 			pStatusBarElement = gtk_frame_new(NULL);
 			gtk_frame_set_shadow_type(GTK_FRAME(pStatusBarElement), GTK_SHADOW_IN);
@@ -129,13 +164,32 @@ GtkWidget * AP_UnixStatusBar::createWidget(void)
 			gtk_label_set_label(GTK_LABEL(pStatusBarElementLabel), ""); 
 			gtk_widget_show(pStatusBarElementLabel);
 		}
-		else {
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN); // there are no other kinds of elements
+		else if(pf->getFillMethod() == 	PROGRESS_BAR)
+		{
+			pStatusBarElement = gtk_frame_new(NULL);
+			gtk_frame_set_shadow_type(GTK_FRAME(pStatusBarElement), GTK_SHADOW_IN);
+
+			gtk_box_pack_start(GTK_BOX(m_wStatusBar), pStatusBarElement, TRUE, TRUE, 0);
+			GtkWidget *  pProgress= gtk_progress_bar_new();
+			gtk_container_add(GTK_CONTAINER(pStatusBarElement),pProgress);
+			gtk_progress_bar_set_orientation(GTK_PROGRESS_BAR(pProgress),GTK_PROGRESS_LEFT_TO_RIGHT);
+
+
+			gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR(pProgress),0.0);
+			gtk_widget_show(pProgress);
+			pf->setListener((AP_StatusBarFieldListener *)(new ap_usb_ProgressListener(pf, pProgress)));
+			m_wProgressFrame = pStatusBarElement;
+			
+		}
+		else
+		{
+		        UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		}
 
 		gtk_widget_show(pStatusBarElement);
 	}
-			
+	gtk_widget_show_all(m_wStatusBar);
+	hideProgressBar();
 	return m_wStatusBar;
 }
 

@@ -63,6 +63,7 @@ enum _progress_flags {
 
 class AP_StatusBarField;
 
+class AP_StatusBarField_ProgressBar;
 
 class ABI_EXPORT AP_StatusBar : public AV_Listener
 {
@@ -79,8 +80,12 @@ public:
     void			setStatusProgressType(int start, int end, int flags);
     void 			setStatusProgressValue(int value);
 
-    virtual void		show(void) {} // It must be abstract, but I don't want to screw
-    virtual void		hide(void) {} // the platforms that don't implement show/hide
+	// These shoulld be abstract but we don't want to screw other platforms
+
+	virtual void        showProgressBar(void) {}
+	virtual void        hideProgressBar(void) {}
+    virtual void		show(void) {}
+    virtual void		hide(void) {}
 	
     /* used with AV_Listener */
     virtual bool		    notify(AV_View * pView, const AV_ChangeMask mask);
@@ -95,9 +100,7 @@ protected:
     bool			m_bInitFields;
     UT_GenericVector<AP_StatusBarField*> m_vecFields;			/* vector of 'ap_sb_Field *' */
     void *			m_pStatusMessageField;	/* actually 'AP_StatusBarField_StatusMessage *' */
-    void *			m_pStatusProgressField;	/* actually 'AP_StatusBarField_ProgressBar *' */
-
-    
+    AP_StatusBarField_ProgressBar * m_pStatusProgressField;	
     UT_UTF8String		m_sStatusMessage;
 };
 
@@ -119,6 +122,7 @@ protected:
 // alignment/fill properties for the upper level gui
 enum _statusbar_element_fill_method {
     REPRESENTATIVE_STRING,
+	PROGRESS_BAR,
     MAX_POSSIBLE
 };
 
@@ -174,6 +178,7 @@ public:
     virtual void		notify(AV_View * pView, const AV_ChangeMask mask);
     void setStatusProgressType(int start, int end, int flags);
     void setStatusProgressValue(int value);
+    double              getFraction(void);
 
 protected:
     UT_sint32			m_ProgressStart;

@@ -31,6 +31,8 @@ class PD_Document;
 class fl_SectionLayout;
 class UT_Stack;
 class fl_ContainerLayout;
+class AP_StatusBar;
+
 /*!
 	The fl_DocListener class handles notifications from a PD_Document 
 	to its associated FL_DocLayout. 
@@ -93,6 +95,8 @@ private:
 	bool                   m_bEndFootnoteProcessedInBlock;
 	AV_ChangeMask          m_chgMaskCached;
 	bool                   m_bCacheChanges;
+	AP_StatusBar *         m_pStatusBar;
+	UT_sint32              m_iFilled;
 };
 
 #endif /* FL_DOCLISTENER_H */

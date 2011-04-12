@@ -1642,7 +1642,7 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 		FL_DocLayout * pLayout = pView->getLayout();
 		if(pView->getPoint() > 0)
 		{
-		        pLayout->updateLayout();
+			pLayout->updateLayout();
 			iPageCount = pLayout->countPages();
 
 			if(!s_bFirstDrawDone && (iPageCount > 1))
@@ -1682,37 +1682,14 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 					else
 					{
 						xxx_UT_DEBUGMSG(("Incr. loader: draw not needed\n"));
+					}
 				}
 			}
-			
-			}
-
-			if(iPageCount > 1)
-			{
-				UT_String msg (pSS->getValue(XAP_STRING_ID_MSG_BuildingDoc));
-				UT_sint32 iFilled = pLayout->getPercentFilled();
-				UT_String sFilled;
-				UT_String_sprintf(sFilled," %d",iFilled);
-				msg += sFilled+"%";
-				pFrame->setStatusMessage ( static_cast<const gchar *>(msg.c_str()) );
-				
-			}
-			else
-			{
-				UT_String msg (pSS->getValue(XAP_STRING_ID_MSG_ImportingDoc));
-				pFrame->setStatusMessage ( static_cast<const gchar *>(msg.c_str()) );
-			}
-		}
-		else
-		{
-			UT_String msg (pSS->getValue(XAP_STRING_ID_MSG_ImportingDoc));
-			pFrame->setStatusMessage ( static_cast<const gchar *>(msg.c_str()) );
 		}
 	}
 	else
 	{
-		UT_String msg (pSS->getValue(XAP_STRING_ID_MSG_ImportingDoc));
-		pFrame->setStatusMessage ( static_cast<const gchar *>(msg.c_str()) );		s_bFirstDrawDone = false;
+		s_bFirstDrawDone = false;
 	}
 }
 
@@ -1742,6 +1719,9 @@ static void s_StartStopLoadingCursor( bool bStartStop, XAP_Frame * pFrame)
 			s_pToUpdateCursor = UT_Timer::static_constructor(s_LoadingCursorCallback,NULL);
 		}
 		s_bFirstDrawDone = false;
+		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+		UT_String msg (pSS->getValue(XAP_STRING_ID_MSG_ImportingDoc));
+		pFrame->setStatusMessage ( static_cast<const gchar *>(msg.c_str()) );
 		s_pToUpdateCursor->set(1000);
 		s_pToUpdateCursor->start();
 //		s_pLoadingFrame = XAP_App::getApp()->getLastFocussedFrame();
@@ -4386,7 +4366,6 @@ Defun1(warpInsPtPrevLine)
 // Finish handling current expose before doing the next movement
 //
 	UT_return_val_if_fail (pView, false);
-	GR_Graphics * pG = pView->getGraphics();
 	pView->warpInsPtNextPrevLine(false);
 	if(pView->getGraphics() && pView->getGraphics()->allCarets()->getBaseCaret())
 	{
@@ -4406,7 +4385,6 @@ Defun1(warpInsPtNextLine)
 // Finish handling current expose before doing the next movement
 //
 	UT_return_val_if_fail (pView, false);
-	GR_Graphics * pG = pView->getGraphics();
 	pView->warpInsPtNextPrevLine(true);
 	if(pView->getGraphics() && pView->getGraphics()->allCarets()->getBaseCaret())
 	{

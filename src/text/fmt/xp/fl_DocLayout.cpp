@@ -62,6 +62,8 @@
 #include "ut_misc.h"
 #include "pf_Frag_Strux.h"
 #include "ie_imp_RTF.h"
+#include "ap_StatusBar.h"
+#include "ap_FrameData.h"
 
 #ifdef ENABLE_SPELL
 #include "spell_manager.h"
@@ -578,11 +580,22 @@ void FL_DocLayout::fillLayouts(void)
 {
 	_lookupProperties();
 	setLayoutIsFilling(true);
+	AP_StatusBar * pStatusBar = NULL;
 	m_docViewPageSize = getDocument()->m_docPageSize;
 	if(m_pView)
 	{
 		m_pView->setPoint(0);
 		m_pView->setLayoutIsFilling(true);
+		if(m_pView->getParentData())
+		{
+		  AP_FrameData * pData =  static_cast<AP_FrameData *>(static_cast<XAP_Frame *>(m_pView->getParentData())->getFrameData());
+		  pStatusBar = static_cast<AP_StatusBar *>(pData->m_pStatusBar);
+		  if(pStatusBar)
+		  {
+		    pStatusBar->setStatusProgressType(0,100,PROGRESS_STARTBAR);
+		    pStatusBar->showProgressBar();
+		  }
+		}
 	}
 	m_pDoc->getBounds(true,m_iDocSize);
 //
@@ -719,6 +732,11 @@ void FL_DocLayout::fillLayouts(void)
 	    pAuto->markAsDirty();
 	}
 	getDocument()->updateDirtyLists();
+	if(pStatusBar)
+	{
+	  pStatusBar->setStatusProgressType(0,100,PROGRESS_STOPBAR);
+	  pStatusBar->hideProgressBar();
+	}
 }
 
 /*!

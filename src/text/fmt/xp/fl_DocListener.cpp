@@ -57,6 +57,8 @@
 #include "xap_Frame.h"
 #include "xap_Prefs.h"
 #include "fv_View.h"
+#include "ap_StatusBar.h"
+#include "ap_FrameData.h"
 
 #define UPDATE_LAYOUT_ON_SIGNAL
 
@@ -89,6 +91,19 @@ fl_DocListener::fl_DocListener(PD_Document* doc, FL_DocLayout *pLayout)
 	m_bEndFootnoteProcessedInBlock = false;
 	m_bCacheChanges = false;
 	m_chgMaskCached = AV_CHG_NONE;
+	m_pStatusBar = NULL;
+	if(m_pLayout)
+	{
+	  if(m_pLayout->getView())
+	  {
+	      if(m_pLayout->getView()->getParentData())
+	      {
+		  AP_FrameData * pData =  static_cast<AP_FrameData *>(static_cast<XAP_Frame *>(m_pLayout->getView()->getParentData())->getFrameData());
+		  m_pStatusBar = static_cast<AP_StatusBar *>(pData->m_pStatusBar);
+	      }
+	  }
+	}
+	m_iFilled = 0;
 }
 
 /*!
@@ -264,8 +279,23 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 				pFrame->nullUpdate();
 				PT_DocPosition pos = pcrx->getPosition();
 				UT_uint32 percentFilled = 100*pos/m_pLayout->getDocSize();
-				m_pLayout->setPercentFilled(percentFilled);
-				UT_DEBUGMSG(("Percent filled = %d \n",percentFilled));
+				if(percentFilled > m_iFilled)
+				{
+				  m_iFilled = percentFilled;
+				  m_pLayout->setPercentFilled(percentFilled);
+				  UT_DEBUGMSG(("Percent filled = %d \n",percentFilled));
+				  if(m_pStatusBar)
+				  {
+				    const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+				    UT_UTF8String msg (pSS->getValue(XAP_STRING_ID_MSG_BuildingDoc));
+				    m_pStatusBar->setStatusProgressValue(percentFilled);
+				    UT_UTF8String msg2;
+				    UT_UTF8String_sprintf(msg2," %d",percentFilled);
+				    msg += msg2;
+				    msg += "%";
+				    m_pStatusBar->setStatusMessage(static_cast<const gchar *>(msg.utf8_str()));
+				  }
+				}
 				if(countStrux > 60)
 				{
 					if(countStrux < 300)

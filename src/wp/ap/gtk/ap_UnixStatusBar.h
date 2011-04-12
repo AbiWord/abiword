@@ -44,9 +44,11 @@ public:
 
 	virtual void		show(void);
 	virtual void		hide(void);
-
+	virtual void        showProgressBar(void);
+	virtual void        hideProgressBar(void);
 protected:
 	GtkWidget *			m_wStatusBar;
+	GtkWidget *			m_wProgressFrame;
 };
 
 #endif /* AP_UNIXSTATUSBAR_H */

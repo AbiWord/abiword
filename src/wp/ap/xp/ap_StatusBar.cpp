@@ -45,7 +45,7 @@
 #define AP_STATUSBAR_INPUTMODE_REP_STRING "MMMMMMMM"
 #define AP_STATUSBAR_INSERTMODE_REP_STRING "MMMMMMM"
 
-#define AP_STATUSBAR_MAX_PAGES 999
+#define AP_STATUSBAR_MAX_PAGES 9999
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -312,6 +312,7 @@ AP_StatusBarField_ProgressBar::AP_StatusBarField_ProgressBar(AP_StatusBar * pSB)
     m_ProgressStartPoint = 0;
     m_ProgressFlags = 0;
     m_ProgressTimer = NULL;
+    m_fillMethod = PROGRESS_BAR;
 }
 
 AP_StatusBarField_ProgressBar::~AP_StatusBarField_ProgressBar(void)
@@ -332,7 +333,8 @@ static void updateProgress(UT_Worker * pWorker)
 
 void AP_StatusBarField_ProgressBar::notify(AV_View * /*pView*/, const AV_ChangeMask /*mask*/)
 {
-    // do nothing, we get our information from the status bar	
+  if(getListener())
+    getListener()->notify();
 }
 
 void AP_StatusBarField_ProgressBar::setStatusProgressType(int start, int end, int flags)
@@ -341,7 +343,7 @@ void AP_StatusBarField_ProgressBar::setStatusProgressType(int start, int end, in
     m_ProgressEnd = end;
     m_ProgressFlags = flags;
     m_ProgressStartPoint = 0;
-
+    /*
     DELETEP(m_ProgressTimer);
 
     if (m_ProgressStart == m_ProgressEnd &&
@@ -349,22 +351,37 @@ void AP_StatusBarField_ProgressBar::setStatusProgressType(int start, int end, in
 	m_ProgressTimer = UT_Timer::static_constructor(updateProgress, this);
 	m_ProgressTimer->stop();
 	m_ProgressTimer->set(50);	//Milliseconds
-    }	
+    }
+    */	
 }
 
 void AP_StatusBarField_ProgressBar::setStatusProgressValue(int value)
 {
+    UT_sint32 prev =  m_ProgressValue;
     m_ProgressValue = value;
+    if(getListener() && (prev < value))
+      getListener()->notify();
 }
 
+double AP_StatusBarField_ProgressBar::getFraction(void)
+{
+  double denom = static_cast<double>(m_ProgressEnd) - static_cast<double>(m_ProgressStart);
+  if(denom <= 0.0001)
+  {
+    return 0.0;
+  }
+  return static_cast<double>( m_ProgressValue)/denom;
+}
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
 AP_StatusBar::AP_StatusBar(XAP_Frame * pFrame)
     :       m_pFrame(pFrame),
-	    m_pView(0),
+	    m_pView(NULL),
 	    m_bInitFields(false),
-	    m_pStatusMessageField(0)
+	    m_pStatusMessageField(NULL),
+	    m_pStatusProgressField(NULL),
+	    m_sStatusMessage("")
 {
 
 #define DclField(type,var)								\
@@ -377,12 +394,13 @@ AP_StatusBar::AP_StatusBar(XAP_Frame * pFrame)
 
     m_pStatusMessageField = pf2;	// its in the vector, but we remember it explicitly
     // so that setStatusMessage() can do its thing.
+    DclField(AP_StatusBarField_ProgressBar,pf3);
+    m_pStatusProgressField = pf3;
 
     DclField(ap_sbf_InsertMode, pf4);
-    DclField(ap_sbf_InputMode, pf3);
+    DclField(ap_sbf_InputMode, pf5);
 		
-    DclField(ap_sbf_Language, pf5);
-
+    DclField(ap_sbf_Language, pf6);
     // TODO add other fields
 
 #undef DclField
@@ -506,23 +524,22 @@ const UT_UTF8String & AP_StatusBar::getStatusMessage(void) const
     return m_sStatusMessage;
 }
 
-void AP_StatusBar::setStatusProgressType(int /*start*/, int /*end*/, int /*flags*/) {
-// 	ap_sbf_StatusMessage * pf = static_cast<ap_sbf_StatusMessage *>(m_pStatusMessageField);
-// 	if(pf)
-// 	{
-// 		pf->setStatusProgressType(start, end, flags);
-// 		if (pf->getListener())
-// 			pf->getListener()->notify();
-// 	}
+void AP_StatusBar::setStatusProgressType(int start, int end, int flags) 
+{
+  if(!m_pStatusProgressField)
+  {
+      m_pStatusProgressField = new AP_StatusBarField_ProgressBar(this);
+  }
+  if(m_pStatusProgressField)
+  {
+      m_pStatusProgressField->setStatusProgressType(start, end, flags);
+  }
 }
 
-void AP_StatusBar::setStatusProgressValue(int /*value*/) {
-// 	ap_sbf_StatusMessage * pf = static_cast<ap_sbf_StatusMessage *>(m_pStatusMessageField);
-// 	if(pf)
-// 	{
-// 		pf->setStatusProgressValue(value);
-
-// 		if (pf->getListener())
-// 			pf->getListener()->notify();
-// 	}
+void AP_StatusBar::setStatusProgressValue(int value ) 
+{
+  if(m_pStatusProgressField)
+  {
+      m_pStatusProgressField->setStatusProgressValue(value);
+  }
 }

@@ -217,12 +217,13 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 	{
  		AP_StatusBarField * pf = (AP_StatusBarField *)m_vecFields.getNthItem(k);
 		UT_ASSERT_HARMLESS(pf); // we should NOT have null elements
-		
-		AP_StatusBarField_TextInfo *pf_TextInfo = static_cast<AP_StatusBarField_TextInfo*>(pf);
+		if (pf->getFillMethod() == REPRESENTATIVE_STRING || (pf->getFillMethod() == MAX_POSSIBLE))
+		{
+		  AP_StatusBarField_TextInfo *pf_TextInfo = static_cast<AP_StatusBarField_TextInfo*>(pf);
 
-		// Create a Text element	
-		if (pf_TextInfo) 
-		{	
+		  // Create a Text element	
+		  if (pf_TextInfo) 
+		  {	
 					
 			pf->setListener((AP_StatusBarFieldListener *)(new ap_usb_TextListener(pf_TextInfo, m_hwndStatusBar,
 																				  nID, this)));
@@ -230,10 +231,11 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 			// size and place
 			nWitdh+= (strlen(pf_TextInfo->getRepresentativeString())*10);			
 			*pCurWidth = nWitdh;											
-		}
-		else 
-		{
+		  }
+		  else 
+		  {
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN); // there are no other kinds of elements
+		  }
 		}
 				
 		pCurWidth++;
