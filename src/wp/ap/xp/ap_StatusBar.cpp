@@ -304,7 +304,7 @@ void ap_sbf_Language::notify(AV_View * pavView, const AV_ChangeMask /*mask*/)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-// PROGRESSBAR. CURRENTLY UNUSED. MAY BE BROKEN. NEEDS TESTING.
+// PROGRESSBAR. Implemented for GTK. Needs implementing for Win and OSX
 
 AP_StatusBarField_ProgressBar::AP_StatusBarField_ProgressBar(AP_StatusBar * pSB)
     : AP_StatusBarField(pSB)
@@ -371,6 +371,11 @@ double AP_StatusBarField_ProgressBar::getFraction(void)
     return 0.0;
   }
   return static_cast<double>( m_ProgressValue)/denom;
+}
+
+bool AP_StatusBarField_ProgressBar::isDefinate(void)
+{
+  return (m_ProgressFlags != PROGRESS_INDEFINATE);
 }
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////

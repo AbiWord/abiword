@@ -174,7 +174,7 @@ void pf_Fragments::insertFrag(pf_Frag * pfPlace, pf_Frag * pfNew)
 	UT_return_if_fail (pfNew);
 	UT_return_if_fail (pfPlace->_getNode());
 
-	UT_DEBUGMSG(("Inserting frag %x of type %d after frag %x of type %d at position %d \n",pfNew,pfNew->getType(),pfPlace,pfPlace->getType(),pfPlace->getPos()));
+	xxx_UT_DEBUGMSG(("Inserting frag %x of type %d after frag %x of type %d at position %d \n",pfNew,pfNew->getType(),pfPlace,pfPlace->getType(),pfPlace->getPos()));
 
 	Iterator it(this,pfPlace->_getNode());
 	insertRight(pfNew, it);
@@ -188,7 +188,7 @@ void pf_Fragments::insertFragBefore(pf_Frag * pfPlace, pf_Frag * pfNew)
 	UT_return_if_fail (pfNew);
 	UT_return_if_fail (pfPlace->_getNode());
 
-	UT_DEBUGMSG(("Inserting frag %x of type %d after frag %x of type %d\n",pfNew,pfNew->getType(),pfPlace,pfPlace->getType()));
+	xxx_UT_DEBUGMSG(("Inserting frag %x of type %d after frag %x of type %d\n",pfNew,pfNew->getType(),pfPlace,pfPlace->getType()));
 
 	Iterator it(this,pfPlace->_getNode());
 	insertLeft(pfNew, it);

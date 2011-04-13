@@ -276,11 +276,11 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			if(!m_bEndFootnoteProcessedInBlock)
 			{
 				xxx_UT_DEBUGMSG(("Null Update in Populate Strux \n"));
-				pFrame->nullUpdate();
 				PT_DocPosition pos = pcrx->getPosition();
 				UT_uint32 percentFilled = 100*pos/m_pLayout->getDocSize();
 				if(percentFilled > m_iFilled)
 				{
+				  pFrame->nullUpdate();
 				  m_iFilled = percentFilled;
 				  m_pLayout->setPercentFilled(percentFilled);
 				  UT_DEBUGMSG(("Percent filled = %d \n",percentFilled));

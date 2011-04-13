@@ -71,6 +71,8 @@
 #include "fl_DocListener.h"
 #include "fl_DocLayout.h"
 #include "fv_View.h"
+#include "ap_StatusBar.h"
+#include "ap_FrameData.h"
 
 #include "ut_go_file.h"
 
@@ -170,6 +172,7 @@ PD_Document::PD_Document()
 	  m_docPageSize("A4"),
 	  m_ballowListUpdates(false),
 	  m_pPieceTable(0),
+      m_hDocumentRDF( new PD_DocumentRDF( this )),
 	  m_hashDataItems(11),
 	  m_lastOpenedType(IEFT_Bogus), // used to be: IE_Imp::fileTypeForSuffix(".abw"))
 	  m_lastSavedAsType(IEFT_Bogus), // used to be: IE_Exp::fileTypeForSuffix(".abw")
@@ -196,7 +199,7 @@ PD_Document::PD_Document()
 	  m_bExportAuthorAtts(false), //should be false by default. Set true to test
 	  m_iMyAuthorInt(-1),
 	  m_iLastAuthorInt(-1),
-      m_hDocumentRDF( new PD_DocumentRDF( this ))
+	  m_iStruxCount(0)
 {
 	XAP_App::getApp()->getPrefs()->getPrefsValueBool(AP_PREF_KEY_LockStyles,&m_bLockedStyles);
 	UT_ASSERT(isOrigUUID());
@@ -722,6 +725,31 @@ UT_Error PD_Document::_importFile(const char * szFilename, int ieft,
 	return result;
 }
 
+void PD_Document::updateStatus(void)
+{
+	m_iStruxCount++;
+	UT_sint32 updateRate =200;
+	UT_sint32 iStruxDiv = m_iStruxCount/updateRate;
+	if(iStruxDiv*updateRate == m_iStruxCount)
+	{
+		xxx_UT_DEBUGMSG(("UpdateStatus StruxCount %d \n",m_iStruxCount));
+		XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+		if(pFrame)
+			pFrame->nullUpdate();
+		AP_StatusBar * pBar = getStatusBar();
+		if(pFrame && pBar)
+		{
+			const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+			UT_UTF8String msg (pSS->getValue(XAP_STRING_ID_MSG_ParagraphsImported));
+			UT_UTF8String msg2;
+			UT_UTF8String_sprintf(msg2," %d",m_iStruxCount);
+			msg += msg2;
+			pBar->setStatusMessage(static_cast<const gchar *>(msg.utf8_str()));
+			pBar->setStatusProgressValue(m_iStruxCount);
+		}
+	}
+}
+
 UT_Error PD_Document::_importFile(GsfInput * input, int ieft,
 								  bool markClean, bool bImportStylesFirst,
 								  bool bIsImportFile, const char* impProps)
@@ -733,6 +761,22 @@ UT_Error PD_Document::_importFile(GsfInput * input, int ieft,
 	}
 
 	const char * szFilename = gsf_input_name (input);
+	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+	if(pFrame)
+	{
+		pFrame->nullUpdate();
+	}
+    AP_StatusBar * pStatusBar = getStatusBar();
+	if(pFrame && pStatusBar)
+	{
+		//
+		// Show a pulsing status bar since we don't know how big the document
+		// is.
+		//
+		pStatusBar->setStatusProgressType(0,100,PROGRESS_INDEFINATE);
+		pStatusBar->showProgressBar();
+		pFrame->nullUpdate();
+	}	
 
 	m_pPieceTable = new pt_PieceTable(this);
 	if (!m_pPieceTable)
@@ -832,8 +876,6 @@ UT_Error PD_Document::_importFile(GsfInput * input, int ieft,
 
 	// show warning if document contains revisions and they are hidden
 	// from view ...
-	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
-
 	bool bHidden = (isMarkRevisions() && (getHighestRevisionId() <= getShowRevisionId()));
 	bHidden |= (!isMarkRevisions() && !isShowRevisions() && getRevisions().getItemCount());
 
@@ -848,8 +890,24 @@ UT_Error PD_Document::_importFile(GsfInput * input, int ieft,
 							   XAP_Dialog_MessageBox::a_OK);
 	}
 	UT_ASSERT(isOrigUUID());
+	if(pFrame && pStatusBar)
+	{
+		pStatusBar->hideProgressBar();
+		pFrame->nullUpdate();
+	}	
 
 	return errorCode;
+}
+
+AP_StatusBar *  PD_Document::getStatusBar(void)
+{
+	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+	if(pFrame)
+	{
+		AP_FrameData * pData =  static_cast<AP_FrameData *>(pFrame->getFrameData());	
+		if(pData)
+			return static_cast<AP_StatusBar *>(pData->m_pStatusBar);
+	}
 }
 
 UT_Error PD_Document::createRawDocument(void)
@@ -1508,9 +1566,6 @@ bool PD_Document::appendStrux(PTStruxType pts, const gchar ** attributes, pf_Fra
 //
 // Update frames during load.
 //
-	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
-	if(pFrame)
-		pFrame->nullUpdate();
 	if(pts == PTX_EndCell)
 	{
 		checkForSuspect();
@@ -1519,6 +1574,7 @@ bool PD_Document::appendStrux(PTStruxType pts, const gchar ** attributes, pf_Fra
 	{
 		checkForSuspect();
 	}
+	updateStatus();
 	return m_pPieceTable->appendStrux(pts,attributes,ppfs_ret);
 }
 
@@ -1529,7 +1585,7 @@ bool PD_Document::appendLastStruxFmt(PTStruxType pts, const gchar ** attributes,
 									 bool bSkipEmbededSections)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
-
+	updateStatus();
 	return m_pPieceTable->appendLastStruxFmt(pts,attributes,props,bSkipEmbededSections);
 }
 
@@ -1537,7 +1593,7 @@ bool PD_Document::appendLastStruxFmt(PTStruxType pts, const gchar ** attributes,
 									 bool bSkipEmbededSections)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
-
+	updateStatus();
 	return m_pPieceTable->appendLastStruxFmt(pts,attributes,props,bSkipEmbededSections);
 }
 
@@ -1562,7 +1618,7 @@ bool PD_Document::changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
 bool PD_Document::appendStruxFmt(pf_Frag_Strux * pfs, const gchar ** attributes)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
-
+	updateStatus();
 	return m_pPieceTable->appendStruxFmt(pfs,attributes);
 }
 
@@ -6525,14 +6581,7 @@ bool PD_Document::insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
 	UT_return_val_if_fail (m_pPieceTable, false);
 
 	// can only be used while loading the document
-	//
-	// Update frames during load.
-	//
-	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
-	if(pFrame)
-	{
-		pFrame->nullUpdate();
-	}
+
 	if(pts == PTX_EndCell)
 	{
 		pf_Frag * pPrevFrag = pF->getPrev();
@@ -6545,6 +6594,7 @@ bool PD_Document::insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
 			}
 		} 
 	}
+	updateStatus();
 	return m_pPieceTable->insertStruxBeforeFrag(pF,pts,attributes,ppfs_ret);
 }
 

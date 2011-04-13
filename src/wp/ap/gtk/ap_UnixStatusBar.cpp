@@ -82,9 +82,15 @@ void ap_usb_ProgressListener::notify()
 	UT_ASSERT(m_wProgress);
 
 	AP_StatusBarField_ProgressBar * pProgress = ((AP_StatusBarField_ProgressBar *)m_pStatusBarField);
-	double fraction = pProgress->getFraction();
-	UT_DEBUGMSG(("Progress fraction %f \n",fraction));
-	gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(m_wProgress),fraction);
+	if(pProgress->isDefinate())
+        {
+	    double fraction = pProgress->getFraction();
+	    gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(m_wProgress),fraction);
+	}
+	else
+	{
+	    gtk_progress_bar_pulse(GTK_PROGRESS_BAR(m_wProgress));
+	}
 }
 
 //////////////////////////////////////////////////////////////////
@@ -173,7 +179,7 @@ GtkWidget * AP_UnixStatusBar::createWidget(void)
 			GtkWidget *  pProgress= gtk_progress_bar_new();
 			gtk_container_add(GTK_CONTAINER(pStatusBarElement),pProgress);
 			gtk_progress_bar_set_orientation(GTK_PROGRESS_BAR(pProgress),GTK_PROGRESS_LEFT_TO_RIGHT);
-
+			gtk_progress_bar_set_pulse_step (GTK_PROGRESS_BAR(pProgress),0.01);
 
 			gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR(pProgress),0.0);
 			gtk_widget_show(pProgress);

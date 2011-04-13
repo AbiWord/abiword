@@ -51,7 +51,8 @@ enum _progress_flags {
     PROGRESS_RESERVED2	= 0x3,
     PROGRESS_SHOW_MSG	= 0x4,		/* Allow message to be displayed */
     PROGRESS_SHOW_RAW	= 0x8,		/* Allow raw value to be displayed */
-    PROGRESS_SHOW_PERCENT = 0x10	/* Allow calculation of percent value */
+    PROGRESS_SHOW_PERCENT = 0x10,	/* Allow calculation of percent value */
+	PROGRESS_INDEFINATE = 0x20      /* Don't know how long operation will take*/
 };
 
 #include "ut_timer.h"
@@ -168,7 +169,8 @@ protected:
     _statusbar_textelement_alignment_method m_alignmentMethod;
 };
 
-// PROGRESSBAR. CURRENTLY UNUSED. MAY BE BROKEN. NEEDS TESTING.
+// PROGRESSBAR. Now used for gtk builds. Should be implemented for Windows and OSX
+
 class ABI_EXPORT AP_StatusBarField_ProgressBar : public AP_StatusBarField
 {
 public:
@@ -179,7 +181,7 @@ public:
     void setStatusProgressType(int start, int end, int flags);
     void setStatusProgressValue(int value);
     double              getFraction(void);
-
+	bool                isDefinate(void);
 protected:
     UT_sint32			m_ProgressStart;
     UT_sint32			m_ProgressEnd;

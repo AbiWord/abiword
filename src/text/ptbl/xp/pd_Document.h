@@ -62,6 +62,8 @@ class fp_Run;
 class UT_UTF8String;
 class pp_Author;
 class PD_DocumentRDF;
+class AP_StatusBar;
+
 #include <boost/shared_ptr.hpp>
 typedef boost::shared_ptr<PD_DocumentRDF> PD_DocumentRDFHandle;
 
@@ -217,7 +219,8 @@ public:
 	UT_Error		importFile(GsfInput *input, int ieft, bool markClean = false, bool bImportStylesFirst = true,
 							   const char * impProps = NULL);
 	virtual UT_Error		importStyles(const char * szFilename, int ieft, bool bDocProps = false);
-
+	AP_StatusBar *          getStatusBar(void);
+	void                    updateStatus(void);
 	virtual UT_Error		newDocument(void);
 
 	UT_Error  		saveAs(GsfOutput * output, int ieft, bool cpy = false, const char * expProps = NULL);
@@ -847,6 +850,7 @@ private:
 	UT_sint32               m_iLastAuthorInt;
 	UT_GenericVector<ImagePage *> m_pPendingImagePage;
 	UT_GenericVector<TextboxPage *> m_pPendingTextboxPage;
+	UT_sint32               m_iStruxCount;
 };
 
 #endif /* PD_DOCUMENT_H */
