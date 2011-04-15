@@ -20,18 +20,18 @@
  * 02111-1307, USA.
  */
 
-#include <cstring>
+#include <string.h>
 #include <glib/gi18n.h>
-#include <cstdio>
-#include <cstdlib>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "ap_DocView.h"
 //#include "at_DocView.h"
 #include "ut_debugmsg.h"
-//#include <atk/atk.h>
-#include <gsf/gsf-impl-utils.h>
+#include <atk/atk.h>
 
 // our parent class
-// static GtkLayoutClass * parent_class = 0;
+static GtkDrawingAreaClass * parent_class = 0;
 
 /**************************************************************************/
 /**************************************************************************/
@@ -39,18 +39,27 @@
 #define GET_CLASS(instance) G_TYPE_INSTANCE_GET_CLASS (instance, AP_DOCVIEW_TYPE, ApDocViewClass)
 
 static void
-ap_DocView_class_init (GtkWidgetClass *widget_class)
-{
+ap_DocView_class_init (ApDocViewClass *dv_class)
+ {
+ 
+ #ifdef LOGFILE
+        fprintf(getlogfile(),"ap_DocView class init \n");
+ #endif
+ 
+       GObjectClass * gobject_class;
+       GtkObjectClass * object_class;
+       GtkWidgetClass * widget_class;
 
-#ifdef LOGFILE
-	fprintf(getlogfile(),"ap_DocView class init \n");
-#endif
+       gobject_class = (GObjectClass *)dv_class;
+       object_class = (GtkObjectClass *)dv_class;
+       widget_class = (GtkWidgetClass *)dv_class;
 
-	// set our parent class
-//	parent_class = (GtkLayoutClass *) g_type_class_peek_parent (widget_class);
-	
-	// Disable focus handlers because they emit superfluous expose
-	// events, causing flicker.
+        // set our parent class
+       parent_class = (GtkDrawingAreaClass *)
+               g_type_class_ref (gtk_drawing_area_get_type());
+        
+        // Disable focus handlers because they emit superfluous expose
+        // events, causing flicker.
 	widget_class->focus_in_event = NULL;
 	widget_class->focus_out_event = NULL;
 #if 0
@@ -62,9 +71,32 @@ ap_DocView_class_init (GtkWidgetClass *widget_class)
 #endif
 }
 
-GSF_CLASS (ApDocView, ap_DocView,
-           ap_DocView_class_init, NULL,
-           GTK_TYPE_LAYOUT)
+extern "C" GType
+ap_DocView_get_type (void)
+{
+       static GType abi_type = 0;
+
+       if (!abi_type){
+               GTypeInfo info = {
+                       sizeof (ApDocViewClass),
+                       NULL,
+                       NULL,
+                       (GClassInitFunc)ap_DocView_class_init,
+                       NULL,
+                       NULL,
+                       sizeof(ApDocView),
+                       0,
+                       NULL,
+                       NULL
+               };
+               
+               abi_type = g_type_register_static (gtk_drawing_area_get_type (), "ApDocView",
+                                                                                  &info, (GTypeFlags)0);
+       }
+       
+       return abi_type;
+}
+
 /**
  * ap_DocView_new
  *

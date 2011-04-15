@@ -32,16 +32,19 @@ G_BEGIN_DECLS
 	
   /* forward declarations */
   typedef struct _ApDocView      ApDocView;
-  typedef GtkLayoutClass ApDocViewClass;
+  typedef struct _ApDocViewClass ApDocViewClass;
   typedef struct _AbiPrivData    AbiPrivData;
   
   struct _ApDocView 
   {
-    GtkLayout base;
+    GtkBin bin;
     GtkWidget * child;
     /* private instance data */
     AbiPrivData * priv;
   };  
+  struct  _ApDocViewClass {
+    GtkBinClass parent_class;
+  };
 	
   /* the public API */
   GtkWidget * ap_DocView_new (void);
