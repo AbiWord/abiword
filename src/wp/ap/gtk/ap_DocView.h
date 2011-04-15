@@ -24,7 +24,7 @@
 
 G_BEGIN_DECLS
 	
-#define AT_TYPE_DOCVIEW      (ap_DocView_get_type ())
+#define AP_TYPE_DOCVIEW      (ap_DocView_get_type ())
 #define AP_DOCVIEW(obj)       (G_TYPE_CHECK_INSTANCE_CAST((obj), AT_TYPE_DOCVIEW, ApDocView))
 #define IS_AP_DOCVIEW(obj)     (G_TYPE_CHECK_INSTANCE_TYPE((obj), AT_TYPE_DOCVIEW))
 #define IS_AP_DOCVIEW_CLASS(k) (G_TYPE_CHECK_CLASS_TYPE ((k), AT_TYPE_DOCVIEW))
@@ -32,20 +32,16 @@ G_BEGIN_DECLS
 	
   /* forward declarations */
   typedef struct _ApDocView      ApDocView;
-  typedef struct _ApDocViewClass ApDocViewClass;
+  typedef GtkLayoutClass ApDocViewClass;
   typedef struct _AbiPrivData    AbiPrivData;
   
   struct _ApDocView 
   {
-    GtkBin bin;
+    GtkLayout base;
     GtkWidget * child;
     /* private instance data */
     AbiPrivData * priv;
   };  
-  
-  struct  _ApDocViewClass {
-    GtkBinClass parent_class;
-  };
 	
   /* the public API */
   GtkWidget * ap_DocView_new (void);
