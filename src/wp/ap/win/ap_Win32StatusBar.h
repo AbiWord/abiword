@@ -49,16 +49,18 @@ public:
 	void setPrevWidth (int n) { m_iPrevWidth = n; }
 
 	UINT                    getDir() const {return m_iDIR;}
-	
+	HWND getProgressBar() const {return m_hwndProgressBar;}
+	void        showProgressBar(void);
+	void        hideProgressBar(void);
 protected:
 	virtual void			show();
 	virtual void			hide();
 
 	HWND					m_hwndStatusBar;
+	HWND					m_hwndProgressBar;
 	WNDPROC			m_pOrgStatusbarWndProc; 
 	int						m_iPrevWidth;
 	UINT                    m_iDIR;
-
 };
 
 #endif /* AP_WIN32STATUSBAR_H */

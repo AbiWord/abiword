@@ -91,6 +91,7 @@ public:
     /* used with AV_Listener */
     virtual bool		    notify(AV_View * pView, const AV_ChangeMask mask);
     virtual AV_ListenerType getType(void) { return AV_LISTENER_STATUSBAR;}
+	
 
     UT_GenericVector<AP_StatusBarField*> *             getFields() { return &m_vecFields; }
 protected:
@@ -102,7 +103,7 @@ protected:
     UT_GenericVector<AP_StatusBarField*> m_vecFields;			/* vector of 'ap_sb_Field *' */
     void *			m_pStatusMessageField;	/* actually 'AP_StatusBarField_StatusMessage *' */
     AP_StatusBarField_ProgressBar * m_pStatusProgressField;	
-    UT_UTF8String		m_sStatusMessage;
+    UT_UTF8String		m_sStatusMessage;	
 };
 
 // abstract class which "listens" for changes in the status bar fields in the base classes
@@ -144,7 +145,7 @@ public:
     AP_StatusBarFieldListener * getListener() { return m_pStatusBarFieldListener; }
 
     _statusbar_element_fill_method getFillMethod() { return m_fillMethod; }
-
+	AP_StatusBar * getApStatusBar(){return m_pSB;}
 protected:
     AP_StatusBar *		m_pSB;
     AP_StatusBarFieldListener *m_pStatusBarFieldListener;

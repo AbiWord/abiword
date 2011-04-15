@@ -105,7 +105,8 @@ LRESULT APIENTRY StatusbarWndProc (HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 				}
 				
 			// update
-			SendMessageW(hwnd, SB_SETPARTS, nParts, (LPARAM)pArOffsets);
+			SendMessageW(hwnd, SB_SETPARTS, nParts, (LPARAM)pArOffsets);	
+			MoveWindow(pBar->getProgressBar(),*pArOffsets/2,2,*pArOffsets/2,20,true);
 
 			delete [] pArWidths;
 			delete [] pArOffsets;
@@ -123,7 +124,7 @@ LRESULT APIENTRY StatusbarWndProc (HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 class ABI_EXPORT ap_usb_TextListener : public AP_StatusBarFieldListener
 {
 public:
-	ap_usb_TextListener(AP_StatusBarField *pStatusBarField, HWND hWnd, UINT nID,
+	ap_usb_TextListener(AP_StatusBarField *pStatusBarField, HWND hWnd,UINT nID,
 						const AP_Win32StatusBar * pSB) :
 		AP_StatusBarFieldListener(pStatusBarField),
 		m_hWnd(hWnd),
@@ -141,13 +142,42 @@ private:
 
 void ap_usb_TextListener::notify()
 {
-
 	UT_return_if_fail (m_hWnd && m_pSB);	
 	AP_StatusBarField_TextInfo * textInfo = ((AP_StatusBarField_TextInfo *)m_pStatusBarField);
 	UT_Win32LocaleString str;	
 	str.fromUTF8 (textInfo->getBuf().utf8_str());	
+
 	SendMessageW(m_hWnd, SB_SETTEXTW, m_nID | m_pSB->getDir(), (LPARAM)  str.c_str());
 	
+}
+/*****************************************************************/
+class ap_usb_ProgressListener : public AP_StatusBarFieldListener
+{
+public:
+	ap_usb_ProgressListener(AP_StatusBarField *pStatusBarField, HWND wProgress) : AP_StatusBarFieldListener(pStatusBarField) 
+	{ 
+		m_ProgressWND = wProgress; 
+	}
+	virtual void notify(); 
+
+protected:
+	HWND m_ProgressWND;
+};
+
+void ap_usb_ProgressListener::notify()
+{
+	UT_return_if_fail (m_ProgressWND);
+
+	AP_StatusBarField_ProgressBar * pProgress = ((AP_StatusBarField_ProgressBar *)m_pStatusBarField);
+	if(pProgress->isDefinate())
+	{
+		double fraction = pProgress->getFraction();
+		SendMessage(m_ProgressWND,PBM_SETPOS,fraction*100,0);
+	}
+	else
+	{   //here pulse process bar
+		//gtk_progress_bar_pulse(GTK_PROGRESS_BAR(m_wProgress));
+	}
 }
 
 
@@ -202,6 +232,17 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 										WS_CHILD | WS_VISIBLE | SBS_SIZEGRIP,
 										0, 0, 0, 0,
 										hwndFrame, NULL, app->getInstance(),NULL);
+	// add progress bar and hide it 
+	//  set the color and range 
+	m_hwndProgressBar= UT_CreateWindowEx(0, PROGRESS_CLASSW, NULL,
+			WS_CHILD | WS_VISIBLE,
+			0, 0, 0, 0,
+			m_hwndStatusBar, NULL, app->getInstance(),NULL);	
+	SendMessage(m_hwndProgressBar,PBM_SETBARCOLOR,0,(long)RGB(255,255,0));
+	SendMessage(m_hwndProgressBar,PBM_SETBKCOLOR,0,(long)RGB(255,19,200));
+	SendMessage(m_hwndProgressBar,PBM_SETRANGE,0,MAKELONG(0,100));
+		
+	
 	UT_return_val_if_fail (m_hwndStatusBar,0);	
 
 	// route messages through our handler first (to size the status panels).
@@ -220,7 +261,6 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 		if (pf->getFillMethod() == REPRESENTATIVE_STRING || (pf->getFillMethod() == MAX_POSSIBLE))
 		{
 		  AP_StatusBarField_TextInfo *pf_TextInfo = static_cast<AP_StatusBarField_TextInfo*>(pf);
-
 		  // Create a Text element	
 		  if (pf_TextInfo) 
 		  {	
@@ -231,11 +271,15 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 			// size and place
 			nWitdh+= (strlen(pf_TextInfo->getRepresentativeString())*10);			
 			*pCurWidth = nWitdh;											
-		  }
-		  else 
-		  {
+		  }		  
+		}
+		else if(pf->getFillMethod() == PROGRESS_BAR)
+		{
+			pf->setListener((AP_StatusBarFieldListener *)(new ap_usb_ProgressListener(pf, m_hwndProgressBar)));
+		}
+		else 
+		{
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN); // there are no other kinds of elements
-		  }
 		}
 				
 		pCurWidth++;
@@ -273,3 +317,13 @@ void AP_Win32StatusBar::hide()
 		m_pFrame->queue_resize();
 }
 
+
+void   AP_Win32StatusBar::showProgressBar(void)
+{ 
+   ShowWindow(m_hwndProgressBar,SW_SHOW);
+}
+void   AP_Win32StatusBar::hideProgressBar(void) 
+{
+   ShowWindow(m_hwndProgressBar,SW_HIDE);
+   SendMessage(m_hwndProgressBar,PBM_SETPOS,0,0); //hide and set to zero
+}
