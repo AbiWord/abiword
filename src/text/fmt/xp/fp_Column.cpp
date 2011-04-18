@@ -1663,7 +1663,11 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 	{
 		for (i=ndx; i< countCons(); i++)
 		{
+			if(i >= countCons())
+			         continue;
 			fp_Container* pContainer = static_cast<fp_Container*>(getNthCon(i));
+			if(pContainer == NULL)
+			        continue;
 			pContainer->clearScreen();
 //
 // Experimental code: FIXME: Might remove after a while - check
@@ -1697,7 +1701,11 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 		for (i=countCons() - 1; i >= ndx; i--)
 		{
 			bTOC = false;
+			if(i >= countCons())
+			         continue;
 			fp_Container* pContainer = static_cast<fp_Container*>(getNthCon(i));
+			if(pContainer == NULL)
+			        continue;
 			xxx_UT_DEBUGMSG(("clearScreen on %x in bumpContainers \n",pContainer));
 			pContainer->clearScreen();
 //
