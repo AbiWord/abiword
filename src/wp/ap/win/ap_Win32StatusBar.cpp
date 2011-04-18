@@ -157,11 +157,13 @@ public:
 	ap_usb_ProgressListener(AP_StatusBarField *pStatusBarField, HWND wProgress) : AP_StatusBarFieldListener(pStatusBarField) 
 	{ 
 		m_ProgressWND = wProgress; 
+		m_isMARQUEEState=false;
 	}
 	virtual void notify(); 
 
 protected:
 	HWND m_ProgressWND;
+	bool m_isMARQUEEState;  //true isMARQUEE; false NoMARQUEE
 };
 
 void ap_usb_ProgressListener::notify()
@@ -171,12 +173,29 @@ void ap_usb_ProgressListener::notify()
 	AP_StatusBarField_ProgressBar * pProgress = ((AP_StatusBarField_ProgressBar *)m_pStatusBarField);
 	if(pProgress->isDefinate())
 	{
+		if(m_isMARQUEEState)
+		{
+			DWORD dwStyle;
+			dwStyle=GetWindowLong(m_ProgressWND, GWL_STYLE);
+			dwStyle&=~PBS_MARQUEE;
+			SetWindowLong(m_ProgressWND, GWL_STYLE, dwStyle );
+			m_isMARQUEEState=false;
+		}
 		double fraction = pProgress->getFraction();
 		SendMessage(m_ProgressWND,PBM_SETPOS,fraction*100,0);
 	}
 	else
 	{   //here pulse process bar
 		//gtk_progress_bar_pulse(GTK_PROGRESS_BAR(m_wProgress));
+		if(!m_isMARQUEEState)
+		{
+			DWORD dwStyle;
+			dwStyle=GetWindowLong(m_ProgressWND, GWL_STYLE);
+			dwStyle|=PBS_MARQUEE;
+			SetWindowLong(m_ProgressWND, GWL_STYLE, dwStyle );
+			SendMessage(m_ProgressWND,PBM_SETMARQUEE,1,100);
+			m_isMARQUEEState=true;
+		}				
 	}
 }
 
@@ -235,13 +254,12 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 	// add progress bar and hide it 
 	//  set the color and range 
 	m_hwndProgressBar= UT_CreateWindowEx(0, PROGRESS_CLASSW, NULL,
-			WS_CHILD | WS_VISIBLE,
+			WS_CHILD | WS_VISIBLE|PBS_MARQUEE,
 			0, 0, 0, 0,
 			m_hwndStatusBar, NULL, app->getInstance(),NULL);	
 	SendMessage(m_hwndProgressBar,PBM_SETBARCOLOR,0,(long)RGB(255,255,0));
 	SendMessage(m_hwndProgressBar,PBM_SETBKCOLOR,0,(long)RGB(255,19,200));
 	SendMessage(m_hwndProgressBar,PBM_SETRANGE,0,MAKELONG(0,100));
-		
 	
 	UT_return_val_if_fail (m_hwndStatusBar,0);	
 

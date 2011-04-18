@@ -728,7 +728,7 @@ UT_Error PD_Document::_importFile(const char * szFilename, int ieft,
 void PD_Document::updateStatus(void)
 {
 	m_iStruxCount++;
-	UT_sint32 updateRate =200;
+	UT_sint32 updateRate =100;
 	UT_sint32 iStruxDiv = m_iStruxCount/updateRate;
 	if(iStruxDiv*updateRate == m_iStruxCount)
 	{
