@@ -395,6 +395,122 @@ bool AP_Win32Toolbar_Icons::getBitmapForIcon(HWND /*hwnd*/,
 	return true;
 }
 
+// Returns PARGB32 DIB bitmap for use in Vista+ menus
+
+bool AP_Win32Toolbar_Icons::getAlphaBitmapForIcon(HWND /*hwnd*/,
+												UT_uint32 maxWidth,
+												UT_uint32 maxHeight,
+												const char * szIconName,
+												HBITMAP * pBitmap)
+{
+	*pBitmap = NULL;
+
+	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(XAP_App::getApp());
+	HINSTANCE hInst = pWin32App->getInstance();		
+	UT_uint32 range = G_N_ELEMENTS(s_nametoIdTable);
+	UT_sint32 middle, right = range - 1, left = 0, cmp;
+	HBITMAP dibBitmap = NULL;
+
+	// load in our image as a DIB
+
+	while (left <= right)
+	{
+		middle = (left + right) >> 1;
+		cmp = g_ascii_strcasecmp(szIconName, s_nametoIdTable[middle].name);
+
+		if (cmp == 0) {
+			dibBitmap = (HBITMAP) LoadImage (hInst, MAKEINTRESOURCE (s_nametoIdTable[middle].id),
+				IMAGE_BITMAP, maxWidth, maxHeight, LR_CREATEDIBSECTION);
+			break;
+		}
+
+		if (cmp > 0)
+			left = middle + 1;
+		else
+			right = middle - 1;
+	}
+	
+	// Search the toolbariconmap for ID to iconname
+	if (dibBitmap==NULL) 
+	{
+		//	Format: ICONNAME_LANGCODE where LANGCODE code can be _XX (_yi) or _XXXA (_caES)
+		char szBaseID[300];
+		strcpy(szBaseID, szIconName);
+		char *pLast = strrchr(szBaseID, '_');
+
+		if (pLast)
+			*pLast = '\0';
+			
+		right = range - 1;
+		left = 0;
+		
+		while (left <= right)
+		{
+			middle = (left + right) >> 1;
+			cmp = g_ascii_strcasecmp(szBaseID, s_nametoIdTable[middle].name);
+
+			if (cmp == 0) {
+				dibBitmap = (HBITMAP) LoadImage (hInst, MAKEINTRESOURCE (s_nametoIdTable[middle].id), 
+					IMAGE_BITMAP, maxWidth, maxHeight, LR_CREATEDIBSECTION | LR_LOADTRANSPARENT);
+				break;
+			}
+
+			if (cmp > 0)
+				left = middle + 1;
+			else
+				right = middle - 1;		
+		}
+	}	
+	
+	if (dibBitmap == NULL) 
+		return false;
+		
+	/* Applies transparency to the DIB */
+	
+	HDC        	hdc=NULL;
+	LPVOID     	pBuf=NULL;
+	BITMAPINFO 	bmpInfo;
+
+	hdc=GetDC(NULL);
+	ZeroMemory(&bmpInfo,sizeof(BITMAPINFO));
+	bmpInfo.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);
+
+	GetDIBits(hdc, dibBitmap, 0, 0, NULL, &bmpInfo, DIB_RGB_COLORS);
+	pBuf = malloc(bmpInfo.bmiHeader.biSizeImage);		
+	if (pBuf == NULL) 
+		return false;	
+	
+	bmpInfo.bmiHeader.biCompression=BI_RGB;
+	GetDIBits(hdc, dibBitmap, 0, bmpInfo.bmiHeader.biHeight, pBuf, &bmpInfo, DIB_RGB_COLORS);
+	DeleteObject(dibBitmap);
+
+	BYTE* buff = (BYTE *)pBuf;
+
+	UT_ASSERT((bmpInfo.bmiHeader.biSizeImage == bmpInfo.bmiHeader.biWidth *
+		bmpInfo.bmiHeader.biHeight * 4 ))
+
+	for (UT_uint32 pixel = 0; pixel < bmpInfo.bmiHeader.biSizeImage; pixel += 4)
+	{
+		if (!(buff[pixel] == TRANSPARENT_B && buff[pixel + 1] == TRANSPARENT_G && buff[pixel + 2] == TRANSPARENT_R))
+		{
+			buff[pixel + 3] = 255;
+			continue;
+		}
+
+		*(LPDWORD)&buff[pixel] = 0;
+	}
+
+	LPBYTE bmbits;
+	HBITMAP r = CreateDIBSection(hdc,&bmpInfo,DIB_RGB_COLORS,(void**)&bmbits,NULL,0);
+	if (r && bmbits) {
+		memcpy(bmbits,pBuf,bmpInfo.bmiHeader.biSizeImage);
+		GdiFlush();
+		*pBitmap = r;
+	}
+	free (pBuf);	
+	return false;
+}
+
 #if defined(EXPORT_XPM_TO_BMP)
 
 bool AP_Win32Toolbar_Icons::getBitmapForIconFromXPM(HWND hwnd,

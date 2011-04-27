@@ -52,6 +52,12 @@ public:
 									UT_RGBColor * pColor,
 									const char * szIconName,
 									HBITMAP * pBitmap);
+
+	static bool getAlphaBitmapForIcon(HWND hwnd,
+									UT_uint32 maxWidth,
+									UT_uint32 maxHeight,
+									const char * szIconName,
+									HBITMAP * pBitmap);
 };
 
 #endif /* XAP_WIN32TOOLBARICONS_H */

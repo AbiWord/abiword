@@ -676,9 +676,11 @@ HBITMAP EV_Win32Menu::_loadBitmap(XAP_Menu_Id id, int width, int height, UT_RGBC
 			break;	
 	}
 
-	if (!pBitmaps->id) return hBitmap;	
+	if (!pBitmaps->id) return hBitmap;
 
-	AP_Win32Toolbar_Icons::getBitmapForIcon(GetDesktopWindow(), width, height, &color, pBitmaps->szName,	&hBitmap);					
+	if (!color.isTransparent())
+		AP_Win32Toolbar_Icons::getBitmapForIcon(GetDesktopWindow(), width, height, &color, pBitmaps->szName, &hBitmap);
+	else AP_Win32Toolbar_Icons::getAlphaBitmapForIcon(GetDesktopWindow(), width, height, pBitmaps->szName, &hBitmap);
 	
 	return hBitmap; 
 }
@@ -686,8 +688,8 @@ HBITMAP EV_Win32Menu::_loadBitmap(XAP_Menu_Id id, int width, int height, UT_RGBC
 // Sets the Bitmap in Windows Vista
 void EV_Win32Menu::_setBitmapforID (HMENU hMenu, XAP_Menu_Id id, UINT cmd)
 {
-	DWORD dwColor = GetSysColor (COLOR_MENU);
-	UT_RGBColor Color(GetRValue(dwColor),GetGValue(dwColor),GetBValue(dwColor));
+	UT_RGBColor Color;
+	Color.m_bIsTransparent=true;
 	HBITMAP hBitmap =  EV_Win32Menu::_loadBitmap(id, BITMAP_WITDH, BITMAP_HEIGHT, Color);
 							
 	if (hBitmap != NULL) {
