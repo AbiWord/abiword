@@ -255,10 +255,10 @@ const char * XAP_Win32App::getUserPrivateDirectory(void)
 	UT_Win32LocaleString str;
 	UT_UTF8String utf8;
 
-	// On NT, USERPROFILE seems to be set to the directory containing per-user
-	// information.  we'll try that first.
+	// On W2K and later, APPDATA seems to be set to the directory containing per-user
+	// information.
 
-	len = GetEnvironmentVariableW(L"USERPROFILE",wbuf,PATH_MAX);
+	len = GetEnvironmentVariableW(L"APPDATA",wbuf,PATH_MAX);
 	if (len)
 	{
 		if (isWriteable(wbuf)) path_ok=true;
@@ -267,6 +267,22 @@ const char * XAP_Win32App::getUserPrivateDirectory(void)
 		utf8=str.utf8_str();
 		UT_DEBUGMSG(("Getting preferences directory from USERPROFILE [%s].\n",utf8.utf8_str()));
 #endif
+	}
+
+	if (!path_ok)
+	{
+		// On NT, USERPROFILE seems to be modern equivalent of $HOME
+
+		len = GetEnvironmentVariableW(L"USERPROFILE",wbuf,PATH_MAX);
+		if (len)
+		{
+			if (isWriteable(wbuf)) path_ok=true;
+#ifdef DEBUG
+			str.fromLocale(wbuf);
+			utf8=str.utf8_str();
+			UT_DEBUGMSG(("Getting preferences directory from USERPROFILE [%s].\n",utf8.utf8_str()));
+#endif
+		}
 	}
 
 	if (!path_ok)
