@@ -77,7 +77,7 @@ LRESULT APIENTRY StatusbarWndProc (HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 					width += *w;
 					}
 					
-				if (i == nParts - 1) {
+				else if (i == nParts - 1) {
 					*w = -1;
 					*o = -1;
 					}
@@ -86,7 +86,7 @@ LRESULT APIENTRY StatusbarWndProc (HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 				}
 			
 			// adjust and set width.
-			width = (rect.right - rect.left) - width;
+			width = (rect.right - rect.left - (rect.bottom - rect.top)) - width;
 			
 			if (width < 32) 
 				width = 32;
@@ -256,9 +256,7 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 	m_hwndProgressBar= UT_CreateWindowEx(0, PROGRESS_CLASSW, NULL,
 			WS_CHILD | WS_VISIBLE|PBS_MARQUEE,
 			0, 0, 0, 0,
-			m_hwndStatusBar, NULL, app->getInstance(),NULL);	
-	SendMessage(m_hwndProgressBar,PBM_SETBARCOLOR,0,(long)RGB(255,255,0));
-	SendMessage(m_hwndProgressBar,PBM_SETBKCOLOR,0,(long)RGB(255,19,200));
+			m_hwndStatusBar, NULL, app->getInstance(),NULL);
 	SendMessage(m_hwndProgressBar,PBM_SETRANGE,0,MAKELONG(0,100));
 	
 	UT_return_val_if_fail (m_hwndStatusBar,0);	
@@ -268,7 +266,7 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 		m_hwndStatusBar, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(StatusbarWndProc))
 		);
 	
-	// attach a pointer to the s:tatusbar window to <this> so we can get the 
+	// attach a pointer to the statusbar window to <this> so we can get the 
 	// original wndproc and previous window-width
 	SetWindowLongPtrW(m_hwndStatusBar, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
 
@@ -294,6 +292,7 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 		else if(pf->getFillMethod() == PROGRESS_BAR)
 		{
 			pf->setListener((AP_StatusBarFieldListener *)(new ap_usb_ProgressListener(pf, m_hwndProgressBar)));
+			*pCurWidth = nWitdh;
 		}
 		else 
 		{
