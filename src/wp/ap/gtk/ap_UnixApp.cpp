@@ -337,6 +337,12 @@ bool AP_UnixApp::initialize(bool has_display)
 		  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
       }
 
+    // COPYPASTA WARNING (ap_Win32App.cpp)
+    // create templates directory
+    UT_String sTemplates = szUserPrivateDirectory;
+    sTemplates += "/templates";
+    s_createDirectoryIfNecessary(sTemplates.c_str());
+
     // load the preferences.
     
     m_prefs = new AP_UnixPrefs();

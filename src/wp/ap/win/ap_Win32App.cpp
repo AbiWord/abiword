@@ -157,6 +157,11 @@ bool AP_Win32App::initialize(void)
 
 	UT_return_val_if_fail (bVerified, false);
 
+	// create templates directory
+	UT_String sTemplates = szUserPrivateDirectory;
+	sTemplates += "/templates";
+	s_createDirectoryIfNecessary(sTemplates.c_str());
+
 	// load the preferences.
 	
 	m_prefs = new AP_Win32Prefs();
