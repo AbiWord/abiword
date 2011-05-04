@@ -168,7 +168,8 @@ void AP_CocoaFrameImpl::_setVVisible(UT_sint32 value)
 
 void AP_CocoaFrameImpl::_setHScrollbarValues()
 {
-	float value, knob;
+	float value;
+	CGFloat knob;
 	if (m_HMaxScroll == 0) {
 		value = 0.0;
 	}
@@ -179,7 +180,7 @@ void AP_CocoaFrameImpl::_setHScrollbarValues()
 		knob = 1.0;
 	}
 	else {
-		knob = ((float)m_HVisible / (float)(m_HVisible + m_HMaxScroll));
+		knob = ((CGFloat)m_HVisible / (CGFloat)(m_HVisible + m_HMaxScroll));
 	}
 	xxx_UT_DEBUGMSG(("_setHScrollbarValues(), max = %d, current = %d, visible = %d\n", m_HMaxScroll, m_HCurrentScroll, m_HVisible));
 	xxx_UT_DEBUGMSG(("_setHScrollbarValues(), value = %f, knob = %f\n", value, knob));
@@ -188,7 +189,8 @@ void AP_CocoaFrameImpl::_setHScrollbarValues()
 	}
 	else {
 		[m_hScrollbar setEnabled:YES];
-		[m_hScrollbar setFloatValue:value knobProportion:knob];
+		[m_hScrollbar setKnobProportion:knob];
+		[m_hScrollbar setDoubleValue:value];
 	}
 	[m_hScrollbar setNeedsDisplay:YES];
 	[[(AP_CocoaFrameController*)_getController() getHRuler] setNeedsDisplay:YES];
@@ -197,7 +199,8 @@ void AP_CocoaFrameImpl::_setHScrollbarValues()
 
 void AP_CocoaFrameImpl::_setVScrollbarValues()
 {
-	float value, knob;
+	float value;
+	CGFloat knob;
 	if (m_VMaxScroll == 0) {
 		value = 0.0;
 	}
@@ -208,7 +211,7 @@ void AP_CocoaFrameImpl::_setVScrollbarValues()
 		knob = 1.0;
 	}
 	else {
-		knob = ((float)m_VVisible / (float)(m_VVisible + m_VMaxScroll));
+		knob = ((CGFloat)m_VVisible / (CGFloat)(m_VVisible + m_VMaxScroll));
 	}
 	xxx_UT_DEBUGMSG(("_setVScrollbarValues(), max = %d, current = %d, visible = %d\n", m_VMaxScroll, m_VCurrentScroll, m_VVisible));
 	xxx_UT_DEBUGMSG(("_setVScrollbarValues(), value = %f, knob = %f\n", value, knob));
@@ -217,7 +220,8 @@ void AP_CocoaFrameImpl::_setVScrollbarValues()
 	}
 	else {
 		[m_vScrollbar setEnabled:YES];
-		[m_vScrollbar setFloatValue:value knobProportion:knob];
+		[m_vScrollbar setKnobProportion:knob];
+		[m_vScrollbar setDoubleValue:value];
 	}
 	[m_vScrollbar setNeedsDisplay:YES];
 	// [[(_getController()) getVRuler] setNeedsDisplay:YES]; // ??
