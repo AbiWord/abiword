@@ -223,7 +223,7 @@ void AP_CocoaDialog_New::event_ToggleStartNew ()
 	NSEnumerator* iter = [templateDirs objectEnumerator];
 	NSString * obj;
 	while ((obj = [iter nextObject])) {
-		NSArray* files = [[NSFileManager defaultManager] directoryContentsAtPath:obj];
+		NSArray* files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:obj error:NULL];
 		if (files) {
 			NSEnumerator *iter2 = [files objectEnumerator];
 			NSString* obj2;
