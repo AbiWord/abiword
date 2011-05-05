@@ -113,7 +113,7 @@ void XAP_CocoaDialog_Print::runPrint(XAP_Frame * /*pFrame*/, FV_View * pPrintVie
 	
 	NSPrintOperation * op = [NSPrintOperation printOperationWithView:printingView];
 	if (m_bBypassActualDialog) {
-		[op setShowPanels:NO];
+		[op setShowsPrintPanel:NO];
 	}
 	[op runOperation];
 }
