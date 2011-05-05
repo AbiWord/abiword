@@ -782,7 +782,7 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 	}
 }
 
-- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem
 {
 	NSPanel * panel = (NSPanel *) [self window];
 
@@ -1119,7 +1119,7 @@ static XAP_CocoaToolPalette * s_instance = nil;
 	}
 }
 
-- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem
 {
 	[menuItem setState:([oPanel isVisible] ? NSOnState : NSOffState)];
 

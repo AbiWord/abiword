@@ -119,7 +119,7 @@ bool EV_CocoaMenuPopup::refreshMenu(AV_View * /*pView*/)
 	}
 }
 
-- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem
 {
 	XAP_Menu_Id menuid = static_cast<XAP_Menu_Id>([menuItem tag]);
 
@@ -315,7 +315,7 @@ bool EV_CocoaMenuPopup::refreshMenu(AV_View * /*pView*/)
 	}
 }
 
-- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem
 {
 	UT_UNUSED(menuItem);
 	return XAP_App::getApp()->getLastFocussedFrame() ? YES : NO;

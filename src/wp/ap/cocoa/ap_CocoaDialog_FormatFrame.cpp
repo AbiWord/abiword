@@ -690,7 +690,7 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 		}
 }
 
-- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem
 {
 	[menuItem setState:(([menuItem tag] == m_activeMenuTag) ? NSOnState : NSOffState)];
 

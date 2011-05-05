@@ -67,7 +67,7 @@
 - (id)initWithTool:(AP_CocoaTool *)tool toolbarID:(unsigned)tlbrid;
 - (void)dealloc;
 
-- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem;
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem;
 
 - (IBAction)click:(id)sender;
 

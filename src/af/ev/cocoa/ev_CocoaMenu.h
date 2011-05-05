@@ -54,7 +54,7 @@ class AP_CocoaFrame;
 }
 - (id)initWithMenu:(EV_CocoaMenu *)menu;
 - (void)menuSelected:(id)sender;
-- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem;
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem;
 @end
 
 @interface EV_CocoaFontTarget : NSObject
@@ -65,7 +65,7 @@ class AP_CocoaFrame;
 - (void)dealloc;
 - (NSMenuItem *)fontMenuItem:(NSString *)title;
 - (void)menuSelected:(id)sender;
-- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem;
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem;
 @end
 
 class EV_CocoaMenu : public EV_Menu

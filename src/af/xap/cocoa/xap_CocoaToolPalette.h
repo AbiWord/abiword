@@ -114,7 +114,7 @@ private:
 - (void)dealloc;
 - (void)windowDidLoad;
 - (void)toggleVisibility:(id)sender;
-- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem;
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem;
 - (void)setPreviewString:(NSString *)previewString;
 @end
 
@@ -193,7 +193,7 @@ private:
 - (void)windowWillClose:(NSNotification *)aNotification;
 
 - (void)toggleVisibility:(id)sender;
-- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem;
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem;
 
 + (void)setPreviewText:(id)previewText;
 - (void)setPreviewString:(NSString *)previewString;

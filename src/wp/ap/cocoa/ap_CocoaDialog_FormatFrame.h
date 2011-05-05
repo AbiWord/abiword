@@ -157,7 +157,7 @@ private:
 - (void)setBackgroundColor:(NSColor *)color;
 
 - (void)menuWillActivate:(NSMenu *)menu forButton:(XAP_CocoaToolbarButton *)button;
-- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem;
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem;
 
 - (void) setRightBorderState:(int)state borderColor:(NSColor *)color borderThickness:(NSString *)thickness stepperValue:(float)value;
 - (void)  setLeftBorderState:(int)state borderColor:(NSColor *)color borderThickness:(NSString *)thickness stepperValue:(float)value;

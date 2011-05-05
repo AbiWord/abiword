@@ -267,7 +267,7 @@ static NSImage * s_findImage (NSString * filename)
 	[super dealloc];
 }
 
-- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem
 {
 	UT_UNUSED(menuItem);
 	return NO; // TODO
