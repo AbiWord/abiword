@@ -86,7 +86,7 @@
 
 - (void)setSelected:(int)idx
 {
-	[m_listTable selectRow:idx byExtendingSelection:NO];
+	[m_listTable selectRowIndexes:[NSIndexSet indexSetWithIndex:idx] byExtendingSelection:NO];
 	[m_listTable scrollRowToVisible:(int)idx];
 }
 

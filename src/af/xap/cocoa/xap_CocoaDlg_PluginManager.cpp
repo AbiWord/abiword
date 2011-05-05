@@ -436,7 +436,7 @@ void XAP_CocoaDialog_PluginManager::runModal(XAP_Frame * pFrame)
 
 	if ([m_PluginRefs count])
 	{
-		[oPluginList selectRow:0 byExtendingSelection:NO];
+		[oPluginList selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
 		[self tableViewSelectionDidChange:nil];
 	}
 }

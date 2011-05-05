@@ -267,7 +267,7 @@ void AP_CocoaDialog_Tab::_setSelectTab( UT_sint32 v )
 		[w deselectAll:m_dlg];
 	}
 	else {
-		[w selectRow:v byExtendingSelection:NO];
+		[w selectRowIndexes:[NSIndexSet indexSetWithIndex:v] byExtendingSelection:NO];
 	}
 }
 

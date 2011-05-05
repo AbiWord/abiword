@@ -174,7 +174,7 @@ if (m_Selection)
 
 		if (current_index >= 0)
 		{
-			[_languageTable selectRow:current_index byExtendingSelection:NO];
+			[_languageTable selectRowIndexes:[NSIndexSet indexSetWithIndex:current_index] byExtendingSelection:NO];
 			[_languageTable scrollRowToVisible:current_index];
 		}
 	}

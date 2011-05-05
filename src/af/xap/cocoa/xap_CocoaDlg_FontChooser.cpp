@@ -582,7 +582,7 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 	if (value) {
 		int idx = [(XAP_StringListDataSource*)[_fontList dataSource] rowWithCString:value];
 		if (idx >= 0) {
-			[_fontList selectRow:idx byExtendingSelection:NO];
+			[_fontList selectRowIndexes:[NSIndexSet indexSetWithIndex:idx] byExtendingSelection:NO];
 			[_fontList scrollRowToVisible:idx];
 		}
 	}
@@ -617,7 +617,7 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 	snprintf(sizeString, 60, "%s", std_size_string(UT_convertToPoints(value)));
 	idx = [(XAP_StringListDataSource*)[_sizeList dataSource] rowWithCString:(char *)XAP_EncodingManager::fontsizes_mapping.lookupBySource(sizeString)];
 	if (idx >= 0) {
-		[_sizeList selectRow:idx byExtendingSelection:NO];
+		[_sizeList selectRowIndexes:[NSIndexSet indexSetWithIndex:idx] byExtendingSelection:NO];
 		[_sizeList scrollRowToVisible:idx];
 	}
 }
@@ -657,7 +657,7 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 	if (st != -1) {
-		[_styleList selectRow:st byExtendingSelection:NO];
+		[_styleList selectRowIndexes:[NSIndexSet indexSetWithIndex:st] byExtendingSelection:NO];
 		[_styleList scrollRowToVisible:st];
 	}
 }

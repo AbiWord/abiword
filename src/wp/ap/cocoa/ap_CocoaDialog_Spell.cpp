@@ -415,7 +415,7 @@ void AP_CocoaDialog_Spell::event_ReplacementChanged()
 
 - (void)selectSuggestion:(int)idx
 {
-	[_suggestionList selectRow:idx byExtendingSelection:NO];
+	[_suggestionList selectRowIndexes:[NSIndexSet indexSetWithIndex:idx] byExtendingSelection:NO];
 }
 
 - (void)reloadSuggestionList

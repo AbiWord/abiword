@@ -416,7 +416,7 @@ void  AP_CocoaDialog_Stylist::_populateWindowData(void)
 	int row = [_stylistList rowForItem:childNode];
 	if (row >= 0)
 	{
-		[_stylistList selectRow:row byExtendingSelection:NO];
+		[_stylistList selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
 	}
 	else
 	{
