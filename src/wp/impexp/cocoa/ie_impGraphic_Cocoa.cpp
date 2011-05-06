@@ -140,33 +140,11 @@ UT_Error IE_ImpGraphic_Cocoa::convertGraphic(UT_ByteBuf* pBB,
    	return UT_OK;
 }
 
-
-static NSBitmapImageRep* bitmapImageRep(NSImage* image) 
-{
-    // describe the device for which we want a good representation
-
-    NSDictionary* device = [NSDictionary dictionaryWithObjectsAndKeys:
-        [NSValue valueWithSize:NSMakeSize(1600.0, 1200.0)], NSDeviceSize,
-        [NSValue valueWithSize:NSMakeSize(75., 75.)], NSDeviceResolution,
-        NSCalibratedRGBColorSpace, NSDeviceColorSpaceName,
-        [NSNumber numberWithInt:32], NSDeviceBitsPerSample,
-        [NSNumber numberWithBool:NO], NSDeviceIsScreen,
-        [NSNumber numberWithBool:YES], NSDeviceIsPrinter,
-        nil];
-
-    // pick the best representation for the device
-    NSImageRep* best = [image bestRepresentationForDevice: device];
-    if ([best class] != [NSBitmapImageRep class]) {
-		best = [NSBitmapImageRep imageRepWithData: [image TIFFRepresentation]];
-	}
-    return (NSBitmapImageRep*)best;
-}
-
 static NSData* convertImageToPNG(NSImage* image)
 {
 	NSDictionary* props = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:NO], 
 							NSImageInterlaced, nil];
-	NSBitmapImageRep* rep = bitmapImageRep(image);
+	NSBitmapImageRep* rep = [NSBitmapImageRep imageRepWithData:[image TIFFRepresentation]];
 	return [rep representationUsingType:NSPNGFileType properties:props];
 }
 
