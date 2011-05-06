@@ -244,7 +244,7 @@ void AP_CocoaDialog_Options::_controlEnable( tControl cid, bool value )
     \
     void  AP_CocoaDialog_Options::_set##widget(const char *t) { \
         UT_ASSERT(ctrl->m_text##widget); \
-		[ctrl->m_text##widget setStringValue:[NSString stringWithCString:t]]; \
+		[ctrl->m_text##widget setStringValue:[NSString stringWithCString:t encoding:NSUTF8StringEncoding]]; \
     }
 
 #ifdef ENABLE_SPELL
@@ -309,7 +309,7 @@ void AP_CocoaDialog_Options::_gatherAutoSaveFileExt ( UT_String &stRetVal )
 void AP_CocoaDialog_Options::_setAutoSaveFileExt ( const UT_String &stExt )
 {
 	UT_ASSERT(ctrl->m_textAutoSaveFileExt);
-	[ctrl->m_textAutoSaveFileExt setStringValue:[NSString stringWithCString:stExt.c_str()]];
+	[ctrl->m_textAutoSaveFileExt setStringValue:[NSString stringWithCString:stExt.c_str() encoding:NSUTF8StringEncoding]];
 }
 
 void AP_CocoaDialog_Options::_gatherAutoSaveFilePeriod ( UT_String &stRetVal )
@@ -321,7 +321,7 @@ void AP_CocoaDialog_Options::_gatherAutoSaveFilePeriod ( UT_String &stRetVal )
 void AP_CocoaDialog_Options::_setAutoSaveFilePeriod ( const UT_String &stPeriod )
 {
 	UT_ASSERT(ctrl->m_textAutoSaveFilePeriod);
-	[ctrl->m_textAutoSaveFilePeriod setStringValue:[NSString stringWithCString:stPeriod.c_str()]];
+	[ctrl->m_textAutoSaveFilePeriod setStringValue:[NSString stringWithCString:stPeriod.c_str() encoding:NSUTF8StringEncoding]];
 }
 
 UT_Dimension AP_CocoaDialog_Options::_gatherViewRulerUnits ( void )
@@ -469,7 +469,7 @@ void AP_CocoaDialog_Options::_populateWindowData(void)
 	for(AP_Dialog_Options::UnitMenuContent::const_iterator iter = content.begin();
 		iter != content.end(); ++iter) {
 		
-		NSMenuItem * menuItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithCString:iter->first.c_str()] action:nil
+		NSMenuItem * menuItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithCString:iter->first.c_str() encoding:NSUTF8StringEncoding] action:nil
 			keyEquivalent:@""];
 		[menuItem setTag:iter->second];
 		[menu addItem:menuItem];
@@ -498,7 +498,7 @@ void AP_CocoaDialog_Options::_populateWindowData(void)
 
     std::string s;
     pSS->getValueUTF8(AP_STRING_ID_DLG_Options_OptionsTitle, s);
-	[[self window] setTitle:[NSString stringWithCString:s.c_str()]];
+	[[self window] setTitle:[NSString stringWithCString:s.c_str() encoding:NSUTF8StringEncoding]];
 }
 
 - (IBAction)revertClicked:(id)sender
