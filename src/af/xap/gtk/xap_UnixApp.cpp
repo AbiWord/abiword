@@ -234,18 +234,28 @@ const char * XAP_UnixApp::getUserPrivateDirectory()
 
     if (buf == NULL)
     {
-        const char * szHome = getenv("HOME");
-        if (!szHome || !*szHome)
-            szHome = "./";
+        const char * szAbiDir = "AbiSuite";
+		const char * szCfgDir = ".config";
 
-        const char * szAbiDir = ".AbiSuite";
+		const char * szXDG = getenv("XDG_CONFIG_HOME");
+		if (!szXDG || !*szXDG) {
+			const char * szHome = getenv("HOME");
+			if (!szHome || !*szHome)
+				szHome = "./";
 
-        buf = new char[strlen(szHome)+strlen(szAbiDir)+2];
+			buf = new char[strlen(szHome)+strlen(szCfgDir)+strlen(szAbiDir)+4];
 
-        strcpy(buf, szHome);
-        if (buf[strlen(buf)-1] != '/')
-            strcat(buf, "/");
-        strcat(buf, szAbiDir);
+			strcpy(buf, szHome);
+			if (buf[strlen(buf)-1] != '/')
+				strcat(buf, "/");
+			strcat(buf, szConfigDir);
+		} else {
+			buf = new char[strlen(szXDG)+strlen(szAbiDir)+4];
+			strcpy(buf, szXDG);
+		}
+
+		strcat(buf, "/");
+		strcat(buf, szAbiDir);
 
 #ifdef PATH_MAX
         if (strlen(buf) >= PATH_MAX)
