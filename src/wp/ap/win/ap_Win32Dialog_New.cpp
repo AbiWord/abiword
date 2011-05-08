@@ -107,8 +107,8 @@ BOOL AP_Win32Dialog_New::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	HWND hControl = GetDlgItem(hWnd, AP_RID_DIALOG_NEW_LBX_TEMPLATE);
 
-	long findtag;
-	struct _finddata_t cfile;
+	HANDLE findtag;
+	WIN32_FIND_DATAW cfile;
 	UT_String templateName, searchDir;
 	UT_String dirName[2];
 
@@ -119,31 +119,23 @@ BOOL AP_Win32Dialog_New::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		templateName = dirName[i]; 
 		searchDir = templateName;
 		searchDir += "\\templates\\*.awt";
-		findtag = _findfirst( searchDir.c_str(), &cfile );
-		if( findtag != -1 )
+		UT_Win32LocaleString str;
+		str.fromUTF8 (searchDir.c_str());
+		findtag = FindFirstFileW( str.c_str(), &cfile );
+		if( findtag != INVALID_HANDLE_VALUE )
 		{
 			do
 			{	
-				templateName = dirName[i];
-				templateName += "\\templates\\";
-				templateName += cfile.name;
-				if(!strstr(templateName.c_str(), "normal.awt-")) // don't truncate localized template names
-					templateName = templateName.substr ( 0, templateName.size () - 4 ) ;
-
-				UT_Win32LocaleString str;
-				str.fromASCII (templateName.c_str());
-				char *uri = UT_go_filename_to_uri(str.utf8_str().utf8_str());
-				UT_continue_if_fail(uri);
-
-				str.fromUTF8(UT_basename( uri ));
+				str.fromLocale(cfile.cFileName);
+				if(!wcsstr(str.c_str(), L"normal.awt-")) // don't truncate localized template names
+					str = str.substr ( 0, str.size () - 4 ) ;
 
 				UT_sint32 nIndex = SendMessageW( hControl, LB_ADDSTRING, 0, (LPARAM)str.c_str());
 				SendMessageW( hControl, LB_SETITEMDATA, (WPARAM) nIndex, (LPARAM) i );
 
-				g_free(uri);
-			} while( _findnext( findtag, &cfile ) == 0 );
+			} while( FindNextFileW( findtag, &cfile ) );
 		}
-		_findclose( findtag );
+		FindClose( findtag );
 	}
 
 	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
