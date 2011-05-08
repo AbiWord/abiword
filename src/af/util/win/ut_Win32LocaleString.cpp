@@ -434,7 +434,7 @@ UT_Win32LocaleString UT_Win32LocaleString::substr(size_t iStart, size_t nChars) 
 		nChars = nSize - iStart;
 	}
 
-	pimpl->append(p, nChars);
+	str.pimpl->append(p, nChars);
 	return str;
 }
 
