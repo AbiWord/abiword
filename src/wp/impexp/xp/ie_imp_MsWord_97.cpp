@@ -791,13 +791,13 @@ UT_Confidence_t IE_Imp_MsWord_97_Sniffer::recognizeContents (const char * szBuf,
 			return UT_CONFIDENCE_POOR;
 		}
 
+		/* WinWord 2 */
 		if (static_cast< unsigned char>(szBuf[0]) == static_cast<unsigned char>(0xdb)
 			&& static_cast< unsigned char>(szBuf[1]) == static_cast<unsigned char>(0xa5)
 			&& szBuf[2] == static_cast<char>(0x2d)
-			&& szBuf[3] == static_cast<char>(0)
-			&& szBuf[4] == static_cast<char>(0) && szBuf[5] == static_cast<char>(0))
+			&& szBuf[3] == static_cast<char>(0))
 		{
-			return UT_CONFIDENCE_POOR;
+			return UT_CONFIDENCE_PERFECT;
 		}
 	}
 	return UT_CONFIDENCE_ZILCH;
