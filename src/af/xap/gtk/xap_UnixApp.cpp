@@ -248,7 +248,7 @@ const char * XAP_UnixApp::getUserPrivateDirectory()
 			strcpy(buf, szHome);
 			if (buf[strlen(buf)-1] != '/')
 				strcat(buf, "/");
-			strcat(buf, szConfigDir);
+			strcat(buf, szCfgDir);
 		} else {
 			buf = new char[strlen(szXDG)+strlen(szAbiDir)+4];
 			strcpy(buf, szXDG);
