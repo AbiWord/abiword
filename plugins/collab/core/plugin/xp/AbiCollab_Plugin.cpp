@@ -63,6 +63,10 @@ static void s_abicollab_remove_menus();
 static void s_cleanup_old_sessions();
 #endif
 
+#if defined(DEBUG)
+//#define DEBUGRDF 1
+#endif
+
 // -----------------------------------------------------------------------
 //
 //      Abiword Plugin Interface 
@@ -431,27 +435,29 @@ void s_abicollab_add_menus()
 
 
 	// The Join Collaboration connect item
-	XAP_Menu_Id collabRdfId = pFact->addNewMenuAfter("Main", NULL, collabJoinId, EV_MLF_Normal);
-    pFact->addNewLabel(NULL, collabRdfId, szCollaborationRdf, szCollaborationRdfTip);
-	EV_Menu_Action* myActionRdf = new EV_Menu_Action (
-		collabRdfId,   		// id that the layout said we could use
-		0,                      // no, we don't have a sub menu.
-		1,                      // yes, we raise a dialog.
-		0,                      // no, we don't have a checkbox.
-		0,                      // no radio buttons for me, thank you
-		"s_abicollab_rdftest",     // name of callback function to call.
-		NULL,                   // Function for whether not label is enabled/disabled checked/unchecked
-		NULL                    // Function to compute Menu Label "Dynamic Label"
-	);
-	pActionSet->addAction(myActionRdf);
-	EV_EditMethod *myEditMethodRdf = new EV_EditMethod (
-		"s_abicollab_rdftest",     // name of callback function
-		s_abicollab_rdftest,       // callback function itself.
-		0,                      // no additional data required.
-		""                      // description -- allegedly never used for anything
-	);
-	pEMC->addEditMethod(myEditMethodRdf);
-    
+#if defined(DEBUGRDF)
+    {
+        XAP_Menu_Id collabRdfId = pFact->addNewMenuAfter("Main", NULL, collabJoinId, EV_MLF_Normal);
+        pFact->addNewLabel(NULL, collabRdfId, szCollaborationRdf, szCollaborationRdfTip);
+        EV_Menu_Action* myActionRdf = new EV_Menu_Action (
+            collabRdfId,   		// id that the layout said we could use
+            0,                      // no, we don't have a sub menu.
+            1,                      // yes, we raise a dialog.
+            0,                      // no, we don't have a checkbox.
+            0,                      // no radio buttons for me, thank you
+            "s_abicollab_rdftest",     // name of callback function to call.
+            NULL,                   // Function for whether not label is enabled/disabled checked/unchecked
+            NULL                    // Function to compute Menu Label "Dynamic Label"
+            );
+        pActionSet->addAction(myActionRdf);
+        EV_EditMethod *myEditMethodRdf = new EV_EditMethod (
+            "s_abicollab_rdftest",     // name of callback function
+            s_abicollab_rdftest,       // callback function itself.
+            0,                      // no additional data required.
+            ""                      // description -- allegedly never used for anything
+            );
+        pEMC->addEditMethod(myEditMethodRdf);
+    }
     {
         XAP_Menu_Id id = pFact->addNewMenuAfter("Main", NULL, collabJoinId, EV_MLF_Normal);
         pFact->addNewLabel(NULL, id, szCollaborationRdfDumpObjects, szCollaborationRdfTip);
@@ -496,7 +502,7 @@ void s_abicollab_add_menus()
             );
         pEMC->addEditMethod(method);
     }
-    
+#endif    
     
 	// The Show Authors item
 	XAP_Menu_Id ShowAuthorId = pFact->addNewMenuAfter("Main", NULL, collabAccountsId, EV_MLF_Normal);
