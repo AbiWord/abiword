@@ -4589,6 +4589,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	UT_sint32 curY = getPageViewTopMargin();
 	fp_Page* pPage = getCurrentPage(); // Ideally, should be optimized, but this is better than starting from the beginning
 	fp_Page* pCachedPage = pPage;
+	UT_ASSERT(pPage==pCachedPage);
 	fl_DocSectionLayout * pDSL = NULL;
 	
 	if (pPage)	// pPage can be NULL at this point
@@ -4665,7 +4666,9 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		else if(!bGoingForward) // Are we at the beginning of the doc?
 		{
 			bGoingForward = true;
-			pPage = pCachedPage->getNext();
+			UT_ASSERT(pCachedPage);
+			if (pCachedPage)
+				pPage = pCachedPage->getNext();
 		}
 		else if(bGoingForward) // Are we at the end of the doc?
 			bFindingPagesOnScreen = false;
