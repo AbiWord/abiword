@@ -1082,7 +1082,7 @@ struct SCatRange UniCharCats[] = {
 	{0x2010, 0x2010, PUNCNOSTART},   // Hyphen
 	{0x2013, 0x2014, PUNCFORCE},     // en-dash, em-dash
 	{0x2018, 0x2018, PUNCNOEND},     // Open single quote
-	{0x2019, 0x2019, PUNCNOSTART},   // Close single quote
+	{0x2019, 0x2019, NONATOMIC},     // Close single quote (usually used as ')
 	{0x201c, 0x201c, PUNCNOEND},     // Open double quote
 	{0x201d, 0x201d, PUNCNOSTART},   // Close double quote
 	{0x2020, 0x2021, PUNCNOSTART},   // Long cross, double dagger
