@@ -43,6 +43,7 @@ protected:
 private:
 
 	bool _requestDictionary (const char * szLang){return true;}	
+	UT_GenericVector<UT_UCSChar*> * __hyphenateWord (const UT_UCSChar * word, size_t len);
 	EnchantDict *m_dict;
 };
 

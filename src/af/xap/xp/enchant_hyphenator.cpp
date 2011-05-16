@@ -44,12 +44,73 @@ utf8_to_utf32(const char *word8)
 	return ucs4;
 }
 
-EnchantHypenator::EnchantHypenator()
-{
 
+static size_t s_enchant_broker_count = 0;
+static EnchantBroker * s_enchant_broker = 0;
+
+EnchantHypenator::EnchantHypenator()
+: m_dict(0)
+{
+	if (s_enchant_broker_count == 0)
+	{
+		s_enchant_broker = enchant_broker_init ();
+#ifdef _MSC_VER
+		// hack: the old dictionary installers download to the "dictionary" path...
+		gchar* ispell_path1 = g_build_filename (XAP_App::getApp()->getAbiSuiteLibDir(), "dictionary", NULL);
+		// ... while in the new situation we support multiple types of dictionaries
+		gchar* ispell_path2 = g_build_filename (XAP_App::getApp()->getAbiSuiteLibDir(), "dictionary", "ispell", NULL);
+		std::string ispell_path = std::string(ispell_path1) + ";" + std::string(ispell_path2);
+		enchant_broker_set_param(s_enchant_broker,  "enchant.ispell.dictionary.path", ispell_path.c_str());
+		g_free(ispell_path1);
+		g_free(ispell_path2);
+
+		gchar* myspell_path = g_build_filename (XAP_App::getApp()->getAbiSuiteLibDir(), "dictionary", "myspell", NULL);
+		enchant_broker_set_param(s_enchant_broker,  "enchant.myspell.dictionary.path", myspell_path);
+		g_free(myspell_path);
+#endif
+	}
+	s_enchant_broker_count++;
 }
 
 EnchantHypenator::~EnchantHypenator()
 {
+	UT_return_if_fail (s_enchant_broker);
 
+	if (m_dict)
+		enchant_broker_free_dict (s_enchant_broker, m_dict);
+
+	s_enchant_broker_count--;
+	if (s_enchant_broker_count == 0) {
+		enchant_broker_free (s_enchant_broker);
+		s_enchant_broker = 0;
+	}
 }
+
+UT_GenericVector<UT_UCSChar*> *
+EnchantHypenator::__hyphenateWord (const UT_UCSChar *ucszWord, size_t len)
+{
+	UT_return_val_if_fail (m_dict, 0);
+	UT_return_val_if_fail (ucszWord && len, 0);
+
+	UT_GenericVector<UT_UCSChar*> * pvSugg = new UT_GenericVector<UT_UCSChar*>();
+
+	UT_UTF8String utf8 (ucszWord, len);
+
+	char ** suggestions;
+	size_t n_suggestions;
+
+	suggestions = enchant_dict_suggest (m_dict, utf8.utf8_str(), utf8.byteLength(), &n_suggestions);
+
+	if (suggestions && n_suggestions) {
+		for (size_t i = 0; i < n_suggestions; i++) {
+			UT_UCSChar *ucszSugg = utf8_to_utf32(suggestions[i]);
+			if (ucszSugg)
+				pvSugg->addItem (ucszSugg);
+		}
+
+		enchant_dict_free_suggestions (m_dict, suggestions);
+	}
+
+	return pvSugg;
+}
+

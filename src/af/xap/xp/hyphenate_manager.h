@@ -50,22 +50,18 @@ class ABI_EXPORT Hyphenator
 public:
 	enum HyphenatorResult
 	{
-		Hyphenator_SUCCEEDED = 0, // looking up the word succeeded
-		Hyphenator_FAILED = 1,    // could not find the word
+		Hyphenator_SUCCEEDED = 0, // Hyphenator the word succeeded
+		Hyphenator_FAILED = 1,    // could not Hyphenator the word
 		Hyphenator_ERROR = 2      // internal error
 	};	
+	//hyphenate the word and get the hyphenation result vector(find a best result to match the line)
+	UT_GenericVector<UT_UCSChar*>* hyphenateWord(const UT_UCSChar* word, size_t len);
 
-protected:
-	Hyphenator();
+	// vector of DictionaryMapping*
+	virtual	UT_Vector & getMapping() {return m_vecEmpty;};
+	virtual bool doesDictionaryExist (const char * /*szLang*/) {return false;};
+	virtual bool addToCustomDict (const UT_UCSChar *word, size_t len);
 
-	virtual ~Hyphenator();
-
-    void setLanguage (const char * lang)
-    {
-		m_sLanguage = lang;
-    }
-
-	HyphenatorResult	checkWord(const UT_UCSChar* word, size_t len);
 	const UT_String& getLanguage () const
 	{
 		return m_sLanguage;
@@ -76,13 +72,20 @@ protected:
 	{ return m_bFoundDictionary;}
 	void setDictionaryFound(bool b)
 	{ m_bFoundDictionary = b;}
+protected:
+	Hyphenator();
 
+	virtual ~Hyphenator();
+
+    void setLanguage (const char * lang)
+    {
+		m_sLanguage = lang;
+    }
 
 	static void couldNotLoadDictionary ( const char * szLang );
 
 
     UT_String       	m_sLanguage;
-    BarbarismChecker	m_BarbarismChecker;
     UT_Vector			m_vecEmpty;
 
     bool				m_bIsBarbarism;
@@ -95,6 +98,8 @@ private:
 
 	virtual bool				_requestDictionary (const char * szLang) = 0;
 	virtual HyphenatorResult	__hyphenate(const UT_UCSChar* word, size_t len) = 0;
+	virtual UT_GenericVector<UT_UCSChar*>* __hyphenateWord(const UT_UCSChar* word, size_t len)=0;
+
 };
 
 class ABI_EXPORT HyphentorManager

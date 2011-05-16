@@ -30,10 +30,10 @@
 
 #ifdef WITH_ENCHANT
 #include "enchant_hyphenator.h"
-typedef EnchantHypenator SpellCheckerClass;
+typedef EnchantHypenator HyphenatorClass;
 #else
 #include "ispell_checker.h"
-typedef ISpellChecker SpellCheckerClass;
+typedef IHyphenator HyphenatorClass;
 #endif
 
 /*!
@@ -51,3 +51,25 @@ typedef ISpellChecker SpellCheckerClass;
 {
 	// not used, abstract base class
 }
+
+bool Hyphenator::requestDictionary (const char * szLang)
+{
+	bool bSuccess = _requestDictionary(szLang);
+
+	return bSuccess;
+}
+
+
+UT_GenericVector<UT_UCSChar*>* Hyphenator::hyphenateWord(const UT_UCSChar* word, size_t len)
+{
+	UT_GenericVector<UT_UCSChar*> *pvSugg = __hyphenateWord(word, len);
+
+	return pvSugg;
+}
+
+bool Hyphenator::addToCustomDict (const UT_UCSChar *word, size_t len)
+{
+	return XAP_App::getApp()->addWordToDict (word, len);
+}
+
+
