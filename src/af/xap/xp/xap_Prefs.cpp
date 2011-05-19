@@ -31,6 +31,9 @@
 #include "ut_growbuf.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
+#ifdef WIN32
+#include <ut_Win32LocaleString.h>
+#endif
 #include "ut_go_file.h"
 #include "xap_Prefs.h"
 #include "xap_App.h"
@@ -1256,6 +1259,9 @@ bool XAP_Prefs::savePrefsFile(void)
 	bool bResult = false;			// assume failure
 	const char * szFilename;
 	FILE * fp = NULL;
+#ifdef WIN32
+	UT_Win32LocaleString str;
+#endif
 
 	szFilename = getPrefsPathname();
 	if (!szFilename)
@@ -1264,7 +1270,13 @@ bool XAP_Prefs::savePrefsFile(void)
 		goto Cleanup;
 	}
 
+#ifdef WIN32
+	// TODO: something more elegant
+	str.fromUTF8(szFilename);
+	fp = _wfopen(str.c_str(), L"w");
+#else
 	fp = fopen(szFilename, "w");
+#endif
 	if (!fp)
 	{
 		UT_DEBUGMSG(("could not open preferences file [%s].\n",szFilename));
