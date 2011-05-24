@@ -43,3 +43,4 @@ echo ""
 ./abi-extract.pl -N mnk-SN
 ./abi-extract.pl -N kk-KZ
 ./abi-extract.pl -N ff
+./abi-extract.pl -N af-ZA
