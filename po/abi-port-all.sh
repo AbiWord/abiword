@@ -44,3 +44,5 @@ echo ""
 ./abi-extract.pl -N kk-KZ
 ./abi-extract.pl -N ff
 ./abi-extract.pl -N af-ZA
+./abi-extract.pl -N sr
+./abi-extract.pl -N "sr@latin"

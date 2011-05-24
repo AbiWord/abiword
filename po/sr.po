@@ -1,13 +1,18 @@
-# Serbian translation for abiword
-# Copyright (C) 2001. 2002 Free Software Foundation, Inc.
+# Serbian translation for Abiword
+# Copyright (C) 2005 AbiWord
+# This file is distributed under the same license as the AbiWord package.
+# Bogosavljević Ivica <ivica84@email.co.yu>, 2002.
+# Miloš Komarčević <kmilos@gmail.com>, 2009.
 #
-# Contributors/Prevodioci:
-# Bogosavljeviæ Ivica (ivica84@email.co.yu)
-
 msgid ""
 msgstr ""
+"Project-Id-Version: AbiWord\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-06 20:38+0600\n"
+"POT-Creation-Date: 2011-05-24 12:40+0700\n"
+"PO-Revision-Date: 2011-05-24 15:24+0600\n"
+"Last-Translator: Urmas D. <davian818@gmail.com>\n"
+"Language-Team: Serbian <fedora-trans-sr@redhat.com>\n"
+"MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
@@ -30,7 +35,7 @@ msgstr ""
 #. MENU_STATUSLINE_HELP
 #: po/tmp/ap_String_Id.h.h:25
 msgid " "
-msgstr ""
+msgstr " "
 
 #. DLG_Styles_ErrNotTitle2
 #: po/tmp/ap_String_Id.h.h:27
@@ -48,7 +53,6 @@ msgstr " Аутоматско освежавање"
 
 #. DLG_PageSetup_Percent
 #: po/tmp/ap_String_Id.h.h:31
-#, fuzzy, c-format
 msgid "% of normal size"
 msgstr "% нормалне величине"
 
@@ -64,7 +68,7 @@ msgstr "% нормалне величине"
 #: po/tmp/ap_String_Id.h.h:41
 #, c-format
 msgid "%s"
-msgstr ""
+msgstr "%s"
 
 #. MSG_DlgNotImp
 #: po/tmp/ap_String_Id.h.h:43
@@ -79,14 +83,14 @@ msgid ""
 "\n"
 "Otherwise, please be patient."
 msgstr ""
-"Могућност %s није још убачена.\n"
+"Могућност %s није још реализована.\n"
 "\n"
-"Ако сте програмер, слободно додајте код на %s, реду %d\n"
-"и пошаљите закрпу на:\n"
+"Ако сте програмер, слободно додајте код у %s, ред %d\n"
+"и пошаљите закрпе на:\n"
 "\n"
 "\tabiword-dev@abisource.com\n"
 "\n"
-"У супротном, будите стрпљиви док додамо ову могућност."
+"У супротном, будите стрпљиви."
 
 #. MENU_LABEL_FILE_RECENT_1
 #. MENU_LABEL_VIEW_TB_1
@@ -210,12 +214,12 @@ msgstr "&Све"
 #. MENU_LABEL_TOOLS_ANNOTATIONS
 #: po/tmp/ap_String_Id.h.h:97
 msgid "&Annotations"
-msgstr ""
+msgstr "&Белешке"
 
 #. DLG_ApplyButton
 #: po/tmp/ap_String_Id.h.h:99
 msgid "&Apply"
-msgstr ""
+msgstr "&Примени"
 
 #. DLG_Para_LabelAt
 #: po/tmp/ap_String_Id.h.h:101
@@ -235,7 +239,7 @@ msgstr "&Аутоматско уклапање табеле"
 #. DLG_Options_Label_PrefsAutoSave
 #: po/tmp/ap_String_Id.h.h:107
 msgid "&Automatically save this Scheme"
-msgstr "Аутомастски сачу&вај ова подешавања као шему"
+msgstr "Аутоматски сачу&вај ова подешавања као шему"
 
 #. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h.h:109
@@ -265,18 +269,13 @@ msgstr "&Прелом"
 #. MENU_LABEL_TABLE_SELECT_CELL
 #: po/tmp/ap_String_Id.h.h:119
 msgid "&Cell"
-msgstr "Изабери ће&лију"
+msgstr "Ће&лија"
 
 #. MENU_LABEL_TABLE_INSERT_CELLS
 #. MENU_LABEL_TABLE_DELETE_CELLS
 #: po/tmp/ap_String_Id.h.h:122
-#, fuzzy
 msgid "&Cells"
-msgstr ""
-"#-#-#-#-#  sr-tmp.po  #-#-#-#-#\n"
-"Обриши ће&лије\n"
-"#-#-#-#-#  sr-tmp.po  #-#-#-#-#\n"
-"Убаци ће&лије"
+msgstr "Ће&лије"
 
 #. MENU_LABEL_ALIGN_CENTER
 #: po/tmp/ap_String_Id.h.h:124
@@ -302,22 +301,22 @@ msgstr "&Затвори"
 #. MENU_LABEL_TABLE_DELETE_COLUMNS
 #: po/tmp/ap_String_Id.h.h:133
 msgid "&Column"
-msgstr "Обриши &колоне"
+msgstr "&Колона"
 
 #. DLG_Break_ColumnBreak
 #: po/tmp/ap_String_Id.h.h:135
 msgid "&Column break"
-msgstr "Прелом &стубаца"
+msgstr "Прелом &колона"
 
 #. MENU_LABEL_FMT_COLUMNS
 #: po/tmp/ap_String_Id.h.h:137
 msgid "&Columns"
-msgstr "&Стубци"
+msgstr "&Колоне"
 
 #. MENU_LABEL_TOOLS_REVISIONS_COMPARE_DOCUMENTS
 #: po/tmp/ap_String_Id.h.h:139
 msgid "&Compare documents"
-msgstr ""
+msgstr "&Упореди документе"
 
 #. MENU_LABEL_EDIT_COPY
 #: po/tmp/ap_String_Id.h.h:141
@@ -327,12 +326,12 @@ msgstr "&Копирај"
 #. MENU_LABEL_FMT_STYLE_DEFINE
 #: po/tmp/ap_String_Id.h.h:143
 msgid "&Create and Modify Styles"
-msgstr ""
+msgstr "&Направи и промени стилове"
 
 #. DLG_Options_Label_PrefsCurrentScheme
 #: po/tmp/ap_String_Id.h.h:145
 msgid "&Current Preferences Scheme"
-msgstr "Шема  по&дешавања"
+msgstr "&Текућа шема подешавања"
 
 #. MENU_LABEL_TABLE_DELETE
 #: po/tmp/ap_String_Id.h.h:147
@@ -342,7 +341,7 @@ msgstr "&Обриши"
 #. MENU_LABEL_DELETE_ANNOTATION
 #: po/tmp/ap_String_Id.h.h:149
 msgid "&Delete annotation"
-msgstr ""
+msgstr "Обриши бе&лешку"
 
 #. MENU_LABEL_INSERT_DELETE_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:151
@@ -357,7 +356,7 @@ msgstr "&Речник..."
 #. MENU_LABEL_INSERT_DIRECTIONMARKER
 #: po/tmp/ap_String_Id.h.h:155
 msgid "&Direction Marker"
-msgstr ""
+msgstr "Означивач &смера"
 
 #. MENU_LABEL_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h.h:157
@@ -367,17 +366,17 @@ msgstr "До&кумент"
 #. MENU_LABEL_TOOLS_HISTORY
 #: po/tmp/ap_String_Id.h.h:159
 msgid "&Document History"
-msgstr ""
+msgstr "Историја &документа"
 
 #. MENU_LABEL_WINDOW
 #: po/tmp/ap_String_Id.h.h:161
 msgid "&Documents"
-msgstr "&Прозори"
+msgstr "До&кументи"
 
 #. DLG_Para_PushNoHyphenate
 #: po/tmp/ap_String_Id.h.h:163
 msgid "&Don't hyphenate"
-msgstr "Не дели речи које су на крају реда &цртицом"
+msgstr "Не дели на &слогове"
 
 #. DLG_Options_Btn_IgnoreEdit
 #. MENU_LABEL_EDIT
@@ -393,7 +392,7 @@ msgstr ""
 #. MENU_LABEL_INSERT_EDIT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:170
 msgid "&Edit hyperlink"
-msgstr ""
+msgstr "Измени &хипер-везу"
 
 #. DLG_Options_Label_EnableOverwrite
 #: po/tmp/ap_String_Id.h.h:172
@@ -403,7 +402,7 @@ msgstr ""
 #. DLG_Options_Label_SmartQuotesEnable
 #: po/tmp/ap_String_Id.h.h:174
 msgid "&Enable smart quotes"
-msgstr "Паметни &наводници (&quot;&quot;)"
+msgstr "&Омогућивање паметних наводника"
 
 #. MENU_LABEL_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h.h:176
@@ -423,7 +422,7 @@ msgstr "&Поље"
 #. DLG_Field_Fields_No_Colon
 #: po/tmp/ap_String_Id.h.h:182
 msgid "&Fields"
-msgstr ""
+msgstr "&Поља"
 
 #. DLG_Field_Fields
 #: po/tmp/ap_String_Id.h.h:184
@@ -438,7 +437,7 @@ msgstr "&Документ"
 #. DLG_Options_Label_FileExtension
 #: po/tmp/ap_String_Id.h.h:188
 msgid "&File extension:"
-msgstr ""
+msgstr "Екстензија &датотеке:"
 
 #. MENU_LABEL_EDIT_FIND
 #: po/tmp/ap_String_Id.h.h:190
@@ -468,7 +467,7 @@ msgstr "Иди &на"
 #. DLG_FormatTOC_HasHeading
 #: po/tmp/ap_String_Id.h.h:200
 msgid "&Has Heading"
-msgstr ""
+msgstr "&Има наслов"
 
 #. MENU_LABEL_VIEW_HEADFOOT
 #: po/tmp/ap_String_Id.h.h:202
@@ -499,7 +498,7 @@ msgstr "&Скривени текст"
 #. DLG_Options_Label_SpellHighlightMisspelledWords
 #: po/tmp/ap_String_Id.h.h:213
 msgid "&Highlight misspelled words"
-msgstr ""
+msgstr "Ис&такни погрешно написане речи"
 
 #. MENU_LABEL_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:215
@@ -520,28 +519,29 @@ msgstr "И&гнориши све"
 #. MENU_LABEL_FMT_POSIMAGE
 #: po/tmp/ap_String_Id.h.h:222
 msgid "&Image"
-msgstr "Промени &величину слике"
+msgstr "Сл&ика"
 
 #. MENU_LABEL_FILE_IMPORTSTYLES
 #: po/tmp/ap_String_Id.h.h:224
 msgid "&Import Styles"
-msgstr ""
+msgstr "У&вези стилове"
 
 #. MENU_LABEL_WEB_WEBPREVIEW
 #: po/tmp/ap_String_Id.h.h:226
 msgid "&In web browser"
-msgstr "&Као Wеб страну"
+msgstr "&У веб читачу"
 
 #. DLG_FormatTOC_InheritLabel
 #: po/tmp/ap_String_Id.h.h:228
 msgid "&Inherit label"
-msgstr ""
+msgstr "&Наследи ознаку"
 
 #. DLG_InsertButton
 #. MENU_LABEL_INSERT
 #. MENU_LABEL_TABLE_INSERT
 #. DLG_Insert
-#: po/tmp/ap_String_Id.h.h:232 po/tmp/xap_String_Id.h.h:19
+#: po/tmp/ap_String_Id.h.h:232
+#: po/tmp/xap_String_Id.h.h:19
 msgid "&Insert"
 msgstr "&Убаци"
 
@@ -563,7 +563,7 @@ msgstr ""
 #. MENU_LABEL_INSERT_GOTO_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:240
 msgid "&Jump to hyperlink"
-msgstr ""
+msgstr "Скочи на &хипер-везу"
 
 #. MENU_LABEL_ALIGN_JUSTIFY
 #: po/tmp/ap_String_Id.h.h:242
@@ -609,7 +609,7 @@ msgstr "&лева:"
 #. MENU_LABEL_VIEW_LOCK_TB_LAYOUT
 #: po/tmp/ap_String_Id.h.h:259
 msgid "&Lock layout"
-msgstr ""
+msgstr "За&кључај изглед"
 
 #. MENU_LABEL_TOOLS_MAILMERGE
 #: po/tmp/ap_String_Id.h.h:261
@@ -644,7 +644,7 @@ msgstr "Спој ћ&елије"
 #. MENU_LABEL_WINDOW_MORE
 #: po/tmp/ap_String_Id.h.h:273
 msgid "&More Documents"
-msgstr "&Додатни прозори"
+msgstr "Још до&кумента"
 
 #. DLG_Goto_Label_Name
 #: po/tmp/ap_String_Id.h.h:275
@@ -664,7 +664,7 @@ msgstr "&Нов прозор"
 #. MENU_LABEL_FILE_NEW_USING_TEMPLATE
 #: po/tmp/ap_String_Id.h.h:281
 msgid "&New using Template"
-msgstr ""
+msgstr "&Нови користећи шаблон"
 
 #. DLG_Break_NextPage
 #: po/tmp/ap_String_Id.h.h:283
@@ -684,7 +684,7 @@ msgstr "&Број:"
 #. DLG_FormatTOC_NumberingType
 #: po/tmp/ap_String_Id.h.h:289
 msgid "&Numbering type:"
-msgstr ""
+msgstr "Тип &нумерисања:"
 
 #. DLG_Break_OddPage
 #: po/tmp/ap_String_Id.h.h:291
@@ -699,7 +699,7 @@ msgstr "&Отвори"
 #. DLG_MailMerge_OpenFile
 #: po/tmp/ap_String_Id.h.h:295
 msgid "&Open File"
-msgstr ""
+msgstr "&Отвори датотеку"
 
 #. MENU_LABEL_FMT_OVERLINE
 #: po/tmp/ap_String_Id.h.h:297
@@ -719,7 +719,7 @@ msgstr "Пре&лом стране"
 #. DLG_FormatTOC_PageNumbering
 #: po/tmp/ap_String_Id.h.h:303
 msgid "&Page numbering:"
-msgstr ""
+msgstr "Нумерисање &страна:"
 
 #. MENU_LABEL_FMT_PARAGRAPH
 #: po/tmp/ap_String_Id.h.h:305
@@ -734,7 +734,7 @@ msgstr "&Убаци"
 #. MENU_LABEL_INSERT_GRAPHIC
 #: po/tmp/ap_String_Id.h.h:309
 msgid "&Picture"
-msgstr "&Из датотеке"
+msgstr "&Слика"
 
 #. MENU_LABEL_TOOLS_PLUGINS
 #: po/tmp/ap_String_Id.h.h:311
@@ -764,7 +764,7 @@ msgstr ""
 #. MENU_LABEL_FILE_EXIT
 #: po/tmp/ap_String_Id.h.h:321
 msgid "&Quit"
-msgstr "&Изаз"
+msgstr "&Излаз"
 
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_RLM
 #: po/tmp/ap_String_Id.h.h:323
@@ -809,7 +809,7 @@ msgstr "&Десно"
 #. MENU_LABEL_FMT_DIRECTION_DO_RTL
 #: po/tmp/ap_String_Id.h.h:339
 msgid "&Right-to-left text"
-msgstr ""
+msgstr "Текст са &десна на лево"
 
 #. DLG_Para_LabelRight
 #. DLG_PageSetup_Right
@@ -820,13 +820,8 @@ msgstr "&Десна:"
 #. MENU_LABEL_TABLE_DELETE_ROWS
 #. MENU_LABEL_TABLE_SELECT_ROW
 #: po/tmp/ap_String_Id.h.h:345
-#, fuzzy
 msgid "&Row"
-msgstr ""
-"#-#-#-#-#  sr-tmp.po  #-#-#-#-#\n"
-"Обриши &редове\n"
-"#-#-#-#-#  sr-tmp.po  #-#-#-#-#\n"
-"Изабери &ред"
+msgstr "&Ред"
 
 #. DLG_Options_Label_ViewRuler
 #: po/tmp/ap_String_Id.h.h:347
@@ -846,7 +841,7 @@ msgstr "Сачувај слику под &именом"
 #. MENU_LABEL_WEB_SAVEASWEB
 #: po/tmp/ap_String_Id.h.h:353
 msgid "&Save web page"
-msgstr "Сачувај као W&еб страну"
+msgstr "Сачувај као в&еб страну"
 
 #. MENU_LABEL_HELP_SEARCH
 #: po/tmp/ap_String_Id.h.h:355
@@ -876,7 +871,7 @@ msgstr "Прикажи &статусну линију"
 #. MENU_LABEL_TOOLS_ANNOTATIONS_TOGGLE_DISPLAY
 #: po/tmp/ap_String_Id.h.h:365
 msgid "&Show annotations"
-msgstr ""
+msgstr "Прикажи &белешке"
 
 #. DLG_Para_LabelSpecial
 #: po/tmp/ap_String_Id.h.h:367
@@ -891,7 +886,7 @@ msgstr "&Провера правописа"
 #. DLG_FormatTOC_StartAt
 #: po/tmp/ap_String_Id.h.h:371
 msgid "&Start at:"
-msgstr ""
+msgstr "&Броји од:"
 
 #. DLG_Options_Label_ViewStatusBar
 #: po/tmp/ap_String_Id.h.h:373
@@ -901,34 +896,25 @@ msgstr "&Статусна линија"
 #. MENU_LABEL_FMT_SUBSCRIPT
 #: po/tmp/ap_String_Id.h.h:375
 msgid "&Subscript"
-msgstr "У &индкесу"
+msgstr "У &индексу"
 
 #. DLG_Para_PushSuppressLineNumbers
 #: po/tmp/ap_String_Id.h.h:377
 msgid "&Suppress line numbers"
-msgstr "Сакри &бројеве редова"
+msgstr "Сакриј &бројеве редова"
 
 #. DLG_FormatTOC_TabLeader
 #: po/tmp/ap_String_Id.h.h:379
 msgid "&Tab leader:"
-msgstr ""
+msgstr "Водиља &табулатора:"
 
 #. MENU_LABEL_TABLE_FORMAT
 #. MENU_LABEL_TABLE_INSERT_TABLE
 #. MENU_LABEL_TABLE_DELETE_TABLE
 #. MENU_LABEL_TABLE_SELECT_TABLE
 #: po/tmp/ap_String_Id.h.h:384
-#, fuzzy
 msgid "&Table"
-msgstr ""
-"#-#-#-#-#  sr-tmp.po  #-#-#-#-#\n"
-"Обриши &табелу\n"
-"#-#-#-#-#  sr-tmp.po  #-#-#-#-#\n"
-"Уређ&ивање табеле\n"
-"#-#-#-#-#  sr-tmp.po  #-#-#-#-#\n"
-"Убаци &табелу\n"
-"#-#-#-#-#  sr-tmp.po  #-#-#-#-#\n"
-"Изабери &табелу"
+msgstr "&Табела"
 
 #. MENU_LABEL_FMT_TABS
 #: po/tmp/ap_String_Id.h.h:386
@@ -958,12 +944,12 @@ msgstr "&При врху:"
 #. DLG_Field_Types_No_Colon
 #: po/tmp/ap_String_Id.h.h:396
 msgid "&Types"
-msgstr ""
+msgstr "&Типови"
 
 #. DLG_Field_Types
 #: po/tmp/ap_String_Id.h.h:398
 msgid "&Types:"
-msgstr "&Тип:"
+msgstr "&Типови:"
 
 #. MENU_LABEL_FMT_UNDERLINE
 #: po/tmp/ap_String_Id.h.h:400
@@ -983,14 +969,15 @@ msgstr "&Јединице мере:"
 
 #. MENU_LABEL_VIEW
 #. DLG_MW_ViewButton
-#: po/tmp/ap_String_Id.h.h:407 po/tmp/xap_String_Id.h.h:27
+#: po/tmp/ap_String_Id.h.h:407
+#: po/tmp/xap_String_Id.h.h:27
 msgid "&View"
 msgstr "Прика&зивање"
 
 #. MENU_LABEL_VIEW_WEB
 #: po/tmp/ap_String_Id.h.h:409
 msgid "&Web Layout"
-msgstr "Као W&еб страна"
+msgstr "Као в&еб страна"
 
 #. MENU_LABEL_VIEW_ZOOM_WHOLE
 #: po/tmp/ap_String_Id.h.h:411
@@ -1000,7 +987,7 @@ msgstr "&Цела страна"
 #. DLG_FR_WholeWord
 #: po/tmp/ap_String_Id.h.h:413
 msgid "&Whole word"
-msgstr ""
+msgstr "&Цела реч"
 
 #. DLG_Para_PushWidowOrphanControl
 #: po/tmp/ap_String_Id.h.h:415
@@ -1043,7 +1030,7 @@ msgstr "(без посебног)"
 #. TOOLBAR_TOOLTIP_1COLUMN
 #: po/tmp/ap_String_Id.h.h:432
 msgid "1 Column"
-msgstr "1 стубац"
+msgstr "1 колона"
 
 #. TOOLBAR_LABEL_MIDDLE_SPACE
 #: po/tmp/ap_String_Id.h.h:434
@@ -1071,14 +1058,14 @@ msgstr "12 пт пре пасуса"
 #. TOOLBAR_TOOLTIP_2COLUMN
 #: po/tmp/ap_String_Id.h.h:445
 msgid "2 Columns"
-msgstr "2 стубца"
+msgstr "2 колоне"
 
 #. TOOLBAR_LABEL_3COLUMN
 #. TOOLBAR_STATUSLINE_3COLUMN
 #. TOOLBAR_TOOLTIP_3COLUMN
 #: po/tmp/ap_String_Id.h.h:449
 msgid "3 Columns"
-msgstr "3 стубца"
+msgstr "3 колоне"
 
 #. DLG_Goto_Btn_Prev
 #: po/tmp/ap_String_Id.h.h:451
@@ -1106,18 +1093,17 @@ msgstr "преподне/поподне"
 #: po/tmp/ap_String_Id.h.h:459
 #, c-format
 msgid "AbiWord cannot open %s. It appears to be an invalid document"
-msgstr "AbiWord не може да отвори %s. Изгледа да то није AbiWordов документ."
+msgstr "AbiWord не може да отвори %s. Изгледа да је то неисправан документ."
 
 #. MSG_SpellSelectionDone
 #: po/tmp/ap_String_Id.h.h:461
 msgid "AbiWord finished checking the selection."
-msgstr ""
+msgstr "AbiWord је завршио проверу избора."
 
 #. DLG_FR_FinishedReplace
 #: po/tmp/ap_String_Id.h.h:463
 #, c-format
-msgid ""
-"AbiWord has finished its search of the document and has made %d replacements."
+msgid "AbiWord has finished its search of the document and has made %d replacements."
 msgstr "AbiWord је претражио документ и извршио %d замену(а)."
 
 #. DLG_FR_FinishedFind
@@ -1130,8 +1116,7 @@ msgstr "AbiWord је претражио документ."
 msgid ""
 "AbiWord is designed for a newer version of the system file COMCTL32.DLL\n"
 "than the one currently on your system. (COMCTL32.DLL version 4.72 or newer)\n"
-"A solution to this problem is explained in the FAQ on the AbiSource web "
-"site\n"
+"A solution to this problem is explained in the FAQ on the AbiSource web site\n"
 "\n"
 "\thttp://www.abisource.com\n"
 "\n"
@@ -1143,19 +1128,18 @@ msgstr ""
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
 msgstr ""
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h.h:471
 msgid "About G&NOME Office"
-msgstr "О Г&НОМЕ-Оффице пакету"
+msgstr "О G&NOME Office пакету"
 
 #. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h.h:473
 msgid "About the GNOME Office project"
-msgstr "О пројекту GNOME-Office"
+msgstr "О пројекту GNOME Office"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h.h:475
@@ -1182,7 +1166,7 @@ msgstr "Додаје оквир и сенчење изабраном делу т
 #. TOOLBAR_LABEL_ADD_COLUMN
 #: po/tmp/ap_String_Id.h.h:485
 msgid "Add column after"
-msgstr ""
+msgstr "Додаје колону након"
 
 #. MENU_STATUSLINE_FMT_BULLETS
 #: po/tmp/ap_String_Id.h.h:487
@@ -1192,7 +1176,7 @@ msgstr "Додаје или мења нумерисање и обележава�
 #. TOOLBAR_LABEL_ADD_ROW
 #: po/tmp/ap_String_Id.h.h:489
 msgid "Add row after"
-msgstr ""
+msgstr "Додаје ред након"
 
 #. MENU_STATUSLINE_SPELL_ADD
 #: po/tmp/ap_String_Id.h.h:491
@@ -1227,7 +1211,8 @@ msgstr "Поравнање:"
 
 #. DLG_Styles_LBL_All
 #. DLG_UP_All
-#: po/tmp/ap_String_Id.h.h:504 po/tmp/xap_String_Id.h.h:61
+#: po/tmp/ap_String_Id.h.h:504
+#: po/tmp/xap_String_Id.h.h:61
 msgid "All"
 msgstr "Све"
 
@@ -1249,11 +1234,12 @@ msgstr "Информације о програму"
 #. DLG_Options_Label_AppStartup
 #: po/tmp/ap_String_Id.h.h:512
 msgid "Application Startup"
-msgstr ""
+msgstr "Покретање програма"
 
 #. DLG_Options_Btn_Apply
 #. DLG_Apply
-#: po/tmp/ap_String_Id.h.h:514 po/tmp/xap_String_Id.h.h:73
+#: po/tmp/ap_String_Id.h.h:514
+#: po/tmp/xap_String_Id.h.h:73
 msgid "Apply"
 msgstr "Примени"
 
@@ -1271,7 +1257,7 @@ msgstr "Примени на тренутној листи"
 #. DLG_FormatTable_Apply_To
 #: po/tmp/ap_String_Id.h.h:521
 msgid "Apply to:"
-msgstr ""
+msgstr "Примени на:"
 
 #. DLG_Lists_Arabic_List
 #: po/tmp/ap_String_Id.h.h:523
@@ -1280,9 +1266,7 @@ msgstr "Арапске цифре"
 
 #. MSG_AutoRevisionOffWarning
 #: po/tmp/ap_String_Id.h.h:525
-msgid ""
-"Are you sure you do not want to maintain full history record? If you "
-"proceed, you will not be able to restore earlier versions of this document."
+msgid "Are you sure you do not want to maintain full history record? If you proceed, you will not be able to restore earlier versions of this document."
 msgstr ""
 
 #. DLG_Para_SpacingAtLeast
@@ -1298,19 +1282,15 @@ msgstr "Настави на претходну листу"
 #. DLG_MetaData_Author_LBL
 #. DLG_Annotation_Author_LBL
 #. DLG_PLUGIN_MANAGER_AUTHOR
-#: po/tmp/ap_String_Id.h.h:532 po/tmp/xap_String_Id.h.h:95
-#, fuzzy
+#: po/tmp/ap_String_Id.h.h:532
+#: po/tmp/xap_String_Id.h.h:95
 msgid "Author:"
-msgstr ""
-"#-#-#-#-#  sr-tmp.po  #-#-#-#-#\n"
-"Аутор:\n"
-"#-#-#-#-#  sr-tmp.po  #-#-#-#-#\n"
-"Аутор"
+msgstr "Аутор:"
 
 #. DLG_Options_Label_AutoSaveUnderline
 #: po/tmp/ap_String_Id.h.h:534
 msgid "Auto &Save"
-msgstr ""
+msgstr "Аутоматско чу&вање"
 
 #. DLG_Options_Label_AutoSaveCurrent
 #: po/tmp/ap_String_Id.h.h:536
@@ -1330,7 +1310,7 @@ msgstr "Аутоматски исправи погрешно написане р
 #. DLG_InsertTable_AutoFit_Capital
 #: po/tmp/ap_String_Id.h.h:542
 msgid "AutoFit Behavior"
-msgstr ""
+msgstr "Понашање аутоматског углављивања"
 
 #. DLG_InsertTable_AutoFit
 #: po/tmp/ap_String_Id.h.h:544
@@ -1375,12 +1355,12 @@ msgstr ""
 #. DLG_MailMerge_AvailableFields
 #: po/tmp/ap_String_Id.h.h:560
 msgid "Available Fields"
-msgstr ""
+msgstr "Доступна поља"
 
 #. DLG_DateTime_AvailableFormats_Capital
 #: po/tmp/ap_String_Id.h.h:562
 msgid "Available Formats"
-msgstr ""
+msgstr "Расположиви формати"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h.h:564
@@ -1396,13 +1376,13 @@ msgstr "&Од:"
 #. DLG_FormatTable_Background
 #: po/tmp/ap_String_Id.h.h:569
 msgid "Background"
-msgstr ""
+msgstr "Позадина"
 
 #. DLG_FormatFrame_Background_Color
 #. DLG_FormatTable_Background_Color
 #: po/tmp/ap_String_Id.h.h:572
 msgid "Background color:"
-msgstr ""
+msgstr "Боја позадине"
 
 #. DLG_Tab_Radio_Bar
 #: po/tmp/ap_String_Id.h.h:574
@@ -1428,7 +1408,8 @@ msgstr "Опције двосмерног писања"
 #. TOOLBAR_STATUSLINE_FMT_BOLD
 #. TOOLBAR_TOOLTIP_FMT_BOLD
 #. DLG_UFS_StyleBold
-#: po/tmp/ap_String_Id.h.h:584 po/tmp/xap_String_Id.h.h:129
+#: po/tmp/ap_String_Id.h.h:584
+#: po/tmp/xap_String_Id.h.h:129
 msgid "Bold"
 msgstr "Подебљано"
 
@@ -1446,19 +1427,19 @@ msgstr "Маркер"
 #: po/tmp/ap_String_Id.h.h:590
 #, c-format
 msgid "Bookmark \"%s\" was not found in this document."
-msgstr "Не могу да надјем маркер &quot;%s&quot; у овом документу."
+msgstr "Не могу да нађем маркер „%s“ у овом документу."
 
 #. DLG_FormatFrame_Border_Color
 #. DLG_FormatTable_Border_Color
 #: po/tmp/ap_String_Id.h.h:593
 msgid "Border color:"
-msgstr ""
+msgstr "Боја оквира:"
 
 #. DLG_FormatFrame_Borders
 #. DLG_FormatTable_Borders
 #: po/tmp/ap_String_Id.h.h:596
 msgid "Borders"
-msgstr ""
+msgstr "Оквири"
 
 #. MENU_LABEL_FMT_BORDERS
 #: po/tmp/ap_String_Id.h.h:598
@@ -1468,7 +1449,7 @@ msgstr "Оквири и сенчење"
 #. DLG_PageNumbers_Footer
 #: po/tmp/ap_String_Id.h.h:600
 msgid "Bottom"
-msgstr "Заглавље"
+msgstr "Доња"
 
 #. BottomMarginStatus
 #: po/tmp/ap_String_Id.h.h:602
@@ -1481,30 +1462,32 @@ msgstr "Доња маргина [%s]"
 #. TOOLBAR_STATUSLINE_FMT_BOTTOMLINE
 #. TOOLBAR_TOOLTIP_FMT_BOTTOMLINE
 #. DLG_UFS_BottomlineCheck
-#: po/tmp/ap_String_Id.h.h:607 po/tmp/xap_String_Id.h.h:133
+#: po/tmp/ap_String_Id.h.h:607
+#: po/tmp/xap_String_Id.h.h:133
 msgid "Bottomline"
-msgstr "линија испод"
+msgstr "Линија испод"
 
 #. DLG_Lists_Box_List
 #. STYLE_BOXLIST
-#: po/tmp/ap_String_Id.h.h:609 po/tmp/xap_String_Id.h.h:135
+#: po/tmp/ap_String_Id.h.h:609
+#: po/tmp/xap_String_Id.h.h:135
 msgid "Box List"
-msgstr "листа са коцкицама"
+msgstr "Листа са коцкицама"
 
 #. FIELD_Application_BuildId
 #: po/tmp/ap_String_Id.h.h:611
 msgid "Build Id."
-msgstr "Буилд број"
+msgstr "Иб издања"
 
 #. FIELD_Application_Options
 #: po/tmp/ap_String_Id.h.h:613
 msgid "Build Options"
-msgstr "Буилд опције"
+msgstr "Опције издања"
 
 #. FIELD_Application_Target
 #: po/tmp/ap_String_Id.h.h:615
 msgid "Build Target"
-msgstr "Платформа "
+msgstr "Платформа издања"
 
 #. DLG_Lists_Type_bullet
 #: po/tmp/ap_String_Id.h.h:617
@@ -1513,9 +1496,10 @@ msgstr "Означавање знаком"
 
 #. DLG_Lists_Bullet_List
 #. STYLE_BULLETLIST
-#: po/tmp/ap_String_Id.h.h:619 po/tmp/xap_String_Id.h.h:145
+#: po/tmp/ap_String_Id.h.h:619
+#: po/tmp/xap_String_Id.h.h:145
 msgid "Bullet List"
-msgstr "листа са кружићима"
+msgstr "Листа са кружићима"
 
 #. TOOLBAR_LABEL_LISTS_BULLETS
 #. TOOLBAR_STATUSLINE_LISTS_BULLETS
@@ -1644,7 +1628,7 @@ msgstr "Боја истакнутог текста"
 #. DLG_FormatTOC_ChangeStyle
 #: po/tmp/ap_String_Id.h.h:672
 msgid "Change Style"
-msgstr ""
+msgstr "Измени стил"
 
 #. DLG_Background_TitleFore
 #: po/tmp/ap_String_Id.h.h:674
@@ -1686,7 +1670,7 @@ msgstr "Мења језик којим је писан изабран текст
 #. MENU_STATUSLINE_FMT_COLUMNS
 #: po/tmp/ap_String_Id.h.h:690
 msgid "Change the number of columns"
-msgstr "Мења број стубаца"
+msgstr "Мења број колона"
 
 #. MENU_STATUSLINE_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h.h:692
@@ -1696,7 +1680,7 @@ msgstr "Мења опције које се користе при штампањ
 #. MENU_STATUSLINE_FMT_FRAME
 #: po/tmp/ap_String_Id.h.h:694
 msgid "Change the properties of the Text Box"
-msgstr ""
+msgstr "Мења особине поља затекст"
 
 #. MENU_STATUSLINE_SPELL_SUGGEST_1
 #. MENU_STATUSLINE_SPELL_SUGGEST_2
@@ -1714,17 +1698,17 @@ msgstr "Мења у предложену реч"
 #. MENU_STATUSLINE_FMT_BACKGROUND
 #: po/tmp/ap_String_Id.h.h:706
 msgid "Change your document's page background"
-msgstr "Мења боју позадине Вашег документа"
+msgstr "Мења позадину стране Вашег документа"
 
 #. MENU_STATUSLINE_FMT_BACKGROUND_PAGE_COLOR
 #: po/tmp/ap_String_Id.h.h:708
 msgid "Change your document's page color"
-msgstr ""
+msgstr "Мења боју стране Вашег документа"
 
 #. DLG_Styles_ModifyCharacter
 #: po/tmp/ap_String_Id.h.h:710
 msgid "Character"
-msgstr "Знаци"
+msgstr "Знак"
 
 #. FIELD_Numbers_CharCount
 #: po/tmp/ap_String_Id.h.h:712
@@ -1744,12 +1728,12 @@ msgstr "Пример изгледа  знакова"
 #. DLG_WordCount_Characters_No
 #: po/tmp/ap_String_Id.h.h:718
 msgid "Characters (no spaces):"
-msgstr "Знакова (без празних места)"
+msgstr "Знакова (без размака):"
 
 #. DLG_WordCount_Characters_Sp
 #: po/tmp/ap_String_Id.h.h:720
 msgid "Characters (with spaces):"
-msgstr "Знакова (са празним местима)"
+msgstr "Знакова (са размацима):"
 
 #. MENU_LABEL_TOOLS_SPELL
 #: po/tmp/ap_String_Id.h.h:722
@@ -1759,17 +1743,17 @@ msgstr "&Провери правопис"
 #. DLG_Options_Label_GrammarCheck
 #: po/tmp/ap_String_Id.h.h:724
 msgid "Check &grammar as you type"
-msgstr ""
+msgstr "Провера &граматике за време куцања"
 
 #. MENU_LABEL_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h.h:726
 msgid "Check for &Updates"
-msgstr "&Верзија програма"
+msgstr "Провера за &освежавања"
 
 #. MENU_STATUSLINE_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h.h:728
 msgid "Check online for newer versions of AbiWord"
-msgstr "Приказује верзију програма"
+msgstr ""
 
 #. DLG_Options_Label_SpellCheckAsType
 #: po/tmp/ap_String_Id.h.h:730
@@ -1794,7 +1778,7 @@ msgstr "Изаберите броју екрана"
 #. DLG_Options_Label_ColorChooserLabel
 #: po/tmp/ap_String_Id.h.h:738
 msgid "Choose screen color for AbiWord"
-msgstr "Изаберите боју екрана AbiWord-а"
+msgstr "Изаберите боју екрана за AbiWord"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SET_VIEW_LEVEL
 #: po/tmp/ap_String_Id.h.h:740
@@ -1805,16 +1789,10 @@ msgstr "Изаберите ревизију коју желите да види�
 #: po/tmp/ap_String_Id.h.h:742
 msgid ""
 "Choose your target in the left side.\n"
-"If you want to use the \"Go To\" button, just fill the Number Entry with the "
-"desired number.  You can use + and - to perform relative movement.\tI.e., if "
-"you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines "
-"below your current position."
+"If you want to use the \"Go To\" button, just fill the Number Entry with the desired number.  You can use + and - to perform relative movement.\tI.e., if you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines below your current position."
 msgstr ""
-"Изаберите тип одредиште на левој страни.\n"
-"Ако желите да користите дугме &quot;Иди на&quot;, унесите у поље Број "
-"жељениброј. Можете да користите + и - за релативно кретање,\t На пример,ако "
-"напишете &quot;+2&quot; и изаберете &quot;ред&quot;, дугме &quot;Иди "
-"на&quot; ће Вас одвести два реда наниже."
+"Изаберите одредиште на левој страни.\n"
+"Ако желите да користите дугме „Иди на“, унесите жељени број у поље Ставка броја.  Можете да користите + и - за релативно кретање,\tНа пример, ако напишете „+2“ и изаберете „Ред“, дугме „Иди на“ ће Вас одвести два реда наниже."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h.h:744
@@ -1859,19 +1837,20 @@ msgstr "Затвара документ"
 #. MENU_LABEL_TABLE_SELECT_COLUMN
 #: po/tmp/ap_String_Id.h.h:760
 msgid "Co&lumn"
-msgstr "Изабе&ри колону"
+msgstr "Ко&лона"
 
 #. DLG_FormatFrame_Color
 #. DLG_FormatTable_Color
 #. DLG_UFS_ColorLabel
-#: po/tmp/ap_String_Id.h.h:763 po/tmp/xap_String_Id.h.h:203
+#: po/tmp/ap_String_Id.h.h:763
+#: po/tmp/xap_String_Id.h.h:203
 msgid "Color:"
 msgstr "Боја:"
 
 #. DLG_FormatTable_Apply_To_Column
 #: po/tmp/ap_String_Id.h.h:765
 msgid "Column"
-msgstr ""
+msgstr "Колона"
 
 #. ColumnGapStatus
 #: po/tmp/ap_String_Id.h.h:767
@@ -1888,22 +1867,22 @@ msgstr "Колона [%d]"
 #. DLG_Column_ColumnTitle
 #: po/tmp/ap_String_Id.h.h:771
 msgid "Columns"
-msgstr "Стубци"
+msgstr "Колоне"
 
 #. MENU_LABEL_TABLE_INSERT_COLUMNS_BEFORE
 #: po/tmp/ap_String_Id.h.h:773
 msgid "Columns &Left"
-msgstr "Убаци ко&лоне пре"
+msgstr "Колоне &лево"
 
 #. MENU_LABEL_TABLE_INSERT_COLUMNS_AFTER
 #: po/tmp/ap_String_Id.h.h:775
 msgid "Columns &Right"
-msgstr "Убаци колоне по&сле"
+msgstr "Колоне &десно"
 
 #. DLG_ListRevisions_Column3Label
 #: po/tmp/ap_String_Id.h.h:777
 msgid "Comment"
-msgstr ""
+msgstr "Коментар"
 
 #. DLG_MarkRevisions_Comment2Label
 #: po/tmp/ap_String_Id.h.h:779
@@ -1913,7 +1892,7 @@ msgstr "Коментар повезан са ревизијом:"
 #. MENU_STATUSLINE_TOOLS_REVISIONS_COMPARE_DOCUMENTS
 #: po/tmp/ap_String_Id.h.h:781
 msgid "Compare active document to another document"
-msgstr ""
+msgstr "Пореди активни документ са другим документом"
 
 #. FIELD_Application_CompileDate
 #: po/tmp/ap_String_Id.h.h:783
@@ -1933,7 +1912,7 @@ msgstr "&Наставља  се даље"
 #. TOC_TocHeading
 #: po/tmp/ap_String_Id.h.h:789
 msgid "Contents"
-msgstr ""
+msgstr "Садржај"
 
 #. DLG_MarkRevisions_Check1Label
 #: po/tmp/ap_String_Id.h.h:791
@@ -1944,7 +1923,7 @@ msgstr "Настави претходну ревизију (број %d)"
 #. FIELD_Document_Contributor
 #: po/tmp/ap_String_Id.h.h:793
 msgid "Contributor"
-msgstr ""
+msgstr "Заслужни"
 
 #. DLG_MetaData_CoAuthor_LBL
 #: po/tmp/ap_String_Id.h.h:795
@@ -1954,29 +1933,29 @@ msgstr "Заслужни:"
 #. MENU_STATUSLINE_TABLE_TEXTTOTABLE
 #: po/tmp/ap_String_Id.h.h:797
 msgid "Convert Selected Text to a Table"
-msgstr ""
+msgstr "Пребаци изабрани текст у табелу"
 
 #. MENU_LABEL_TABLE_TABLETOTEXT
 #: po/tmp/ap_String_Id.h.h:799
 msgid "Convert Table to Text"
-msgstr ""
+msgstr "Пребаци табелу у текст"
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE
 #: po/tmp/ap_String_Id.h.h:801
 msgid "Convert Text to Table"
-msgstr ""
+msgstr "Пребаци текст у табелу"
 
 #. MENU_STATUSLINE_TABLE_TABLETOTEXT
 #: po/tmp/ap_String_Id.h.h:803
 msgid "Convert from a Table to Text"
-msgstr ""
+msgstr "Пребацивање из табеле у текст"
 
 #. TOOLBAR_LABEL_EDIT_COPY
 #. TOOLBAR_STATUSLINE_EDIT_COPY
 #. TOOLBAR_TOOLTIP_EDIT_COPY
 #: po/tmp/ap_String_Id.h.h:807
 msgid "Copy"
-msgstr "Копира текст у Спремиште (Clipboard)"
+msgstr "Копирање"
 
 #. MENU_STATUSLINE_EDIT_COPYEMBED
 #: po/tmp/ap_String_Id.h.h:809
@@ -2006,7 +1985,7 @@ msgstr ""
 #. MENU_STATUSLINE_EDIT_COPY_FRAME
 #: po/tmp/ap_String_Id.h.h:819
 msgid "Copy the Text Box to the clipboard"
-msgstr ""
+msgstr "Копира поље текста на спремиште (клипборд)"
 
 #. MENU_STATUSLINE_EDIT_CUT_FRAME
 #: po/tmp/ap_String_Id.h.h:821
@@ -2016,7 +1995,7 @@ msgstr ""
 #. MENU_STATUSLINE_EDIT_COPY
 #: po/tmp/ap_String_Id.h.h:823
 msgid "Copy the selection and put it on the Clipboard"
-msgstr "Копира изабрани садржај и смешта га на Спремиште (Clipboard)"
+msgstr "Копира изабрани садржај и смешта га на спремиште (клипборд)"
 
 #. MSG_IE_CouldNotOpen
 #: po/tmp/ap_String_Id.h.h:825
@@ -2028,7 +2007,7 @@ msgstr "Не могу да отворим датотеку %s за упис"
 #: po/tmp/ap_String_Id.h.h:827
 #, c-format
 msgid "Could not open file %s."
-msgstr "Не могу да отоворим датотеку %s."
+msgstr "Не могу да отворим датотеку %s."
 
 #. MSG_IE_CouldNotWrite
 #: po/tmp/ap_String_Id.h.h:829
@@ -2050,12 +2029,12 @@ msgstr "Броји речи у документу"
 #. FIELD_Document_Coverage
 #: po/tmp/ap_String_Id.h.h:835
 msgid "Coverage"
-msgstr ""
+msgstr "Покривање"
 
 #. DLG_MetaData_Coverage_LBL
 #: po/tmp/ap_String_Id.h.h:837
 msgid "Coverage:"
-msgstr "Покрив:"
+msgstr "Покривање:"
 
 #. DLG_NEW_Tab1_FAX1
 #: po/tmp/ap_String_Id.h.h:839
@@ -2082,22 +2061,22 @@ msgstr "Направи нов документ из шаблона"
 #. MENU_STATUSLINE_FILE_NEW_USING_TEMPLATE
 #: po/tmp/ap_String_Id.h.h:849
 msgid "Create a new document using a template"
-msgstr ""
+msgstr "Направи нов документ користећи шаблон"
 
 #. DLG_NEW_StartEmpty
 #: po/tmp/ap_String_Id.h.h:851
 msgid "Create an empty document"
-msgstr "Почни са празним документом"
+msgstr "Направи празан документ"
 
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h.h:853
 msgid "Create from &selection"
-msgstr ""
+msgstr "Направи из &избора"
 
 #. FIELD_Document_Creator
 #: po/tmp/ap_String_Id.h.h:855
 msgid "Creator"
-msgstr ""
+msgstr "Творац"
 
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h.h:857
@@ -2174,12 +2153,12 @@ msgstr ""
 #. MENU_LABEL_EDIT_CUTIMAGE
 #: po/tmp/ap_String_Id.h.h:887
 msgid "Cut Image"
-msgstr ""
+msgstr "Исеци слику"
 
 #. MENU_LABEL_EDIT_CUTEMBED
 #: po/tmp/ap_String_Id.h.h:889
 msgid "Cut Object"
-msgstr ""
+msgstr "Исеци објекат"
 
 #. MENU_LABEL_EDIT_CUT_FRAME
 #: po/tmp/ap_String_Id.h.h:891
@@ -2189,24 +2168,25 @@ msgstr ""
 #. MENU_STATUSLINE_EDIT_CUT
 #: po/tmp/ap_String_Id.h.h:893
 msgid "Cut the selection and put it on the Clipboard"
-msgstr "Исеца изабрани садржај и смешта га на Спремиште (Clipboard)"
+msgstr "Исеца изабрани садржај и смешта га на спремиште (клипборд)"
 
 #. MENU_LABEL_FMT_DIRECTION
 #: po/tmp/ap_String_Id.h.h:895
 msgid "D&irectional"
-msgstr ""
+msgstr "У&смерено"
 
 #. DLG_Lists_Dashed_List
 #. STYLE_DASHEDLIST
-#: po/tmp/ap_String_Id.h.h:897 po/tmp/xap_String_Id.h.h:253
+#: po/tmp/ap_String_Id.h.h:897
+#: po/tmp/xap_String_Id.h.h:253
 msgid "Dashed List"
-msgstr "листа са цртицама"
+msgstr "Листа са цртицама"
 
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
 #: po/tmp/ap_String_Id.h.h:900
 msgid "Date"
-msgstr "Коментар"
+msgstr "Датум"
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h.h:902
@@ -2263,7 +2243,7 @@ msgstr "Подразумевана величина стране"
 #. DLG_Tab_Label_DefaultTS
 #: po/tmp/ap_String_Id.h.h:924
 msgid "Default tab stops:"
-msgstr "Подразмевани размак између табулатора:"
+msgstr "Подразумевани размак између табулатора:"
 
 #. DLG_Options_Label_DirectionRtl
 #: po/tmp/ap_String_Id.h.h:926
@@ -2273,7 +2253,7 @@ msgstr "Подразумеван смер писања текста: са дес
 #. DLG_FormatTOC_LevelDefs
 #: po/tmp/ap_String_Id.h.h:928
 msgid "Define Main Properties"
-msgstr ""
+msgstr "Дефинише главна подешавања"
 
 #. MENU_STATUSLINE_FMT_STYLE
 #. MENU_STATUSLINE_FMT_STYLE_DEFINE
@@ -2284,9 +2264,10 @@ msgstr "Дефинише или примењује стил на изабран�
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
 #. DLG_Delete
-#: po/tmp/ap_String_Id.h.h:934 po/tmp/xap_String_Id.h.h:267
+#: po/tmp/ap_String_Id.h.h:934
+#: po/tmp/xap_String_Id.h.h:267
 msgid "Delete"
-msgstr "Брише табелу"
+msgstr "Обриши"
 
 #. MENU_STATUSLINE_TABLE_DELETE_CELLS
 #: po/tmp/ap_String_Id.h.h:936
@@ -2296,13 +2277,13 @@ msgstr "Брише ћелије"
 #. MENU_LABEL_TABLE_DELETECOLUMN
 #: po/tmp/ap_String_Id.h.h:938
 msgid "Delete Co&lumn"
-msgstr ""
+msgstr "Обриши ко&лону"
 
 #. MENU_STATUSLINE_TABLE_DELETE_COLUMNS
 #. MENU_STATUSLINE_TABLE_DELETECOLUMN
 #: po/tmp/ap_String_Id.h.h:941
 msgid "Delete Column"
-msgstr "Брише колоне"
+msgstr "Брише колону"
 
 #. MENU_STATUSLINE_EDIT_DELETEEMBED
 #: po/tmp/ap_String_Id.h.h:943
@@ -2312,28 +2293,28 @@ msgstr ""
 #. MENU_LABEL_EDIT_DELETEIMAGE
 #: po/tmp/ap_String_Id.h.h:945
 msgid "Delete Image"
-msgstr ""
+msgstr "Обриши слику"
 
 #. MENU_LABEL_EDIT_DELETEEMBED
 #: po/tmp/ap_String_Id.h.h:947
 msgid "Delete Object"
-msgstr ""
+msgstr "Обриши објекат"
 
 #. MENU_LABEL_TABLE_DELETEROW
 #: po/tmp/ap_String_Id.h.h:949
 msgid "Delete Ro&w"
-msgstr ""
+msgstr "Обриши &ред"
 
 #. MENU_STATUSLINE_TABLE_DELETE_ROWS
 #. MENU_STATUSLINE_TABLE_DELETEROW
 #: po/tmp/ap_String_Id.h.h:952
 msgid "Delete Row"
-msgstr "Брише редове"
+msgstr "Брише ред"
 
 #. MENU_LABEL_TABLE_DELETETABLE
 #: po/tmp/ap_String_Id.h.h:954
 msgid "Delete Tabl&e"
-msgstr ""
+msgstr "Обриши таб&елу"
 
 #. MENU_STATUSLINE_TABLE_DELETE_TABLE
 #. MENU_STATUSLINE_TABLE_DELETETABLE
@@ -2344,17 +2325,17 @@ msgstr "Брише табелу"
 #. MENU_LABEL_EDIT_DELETEFRAME
 #: po/tmp/ap_String_Id.h.h:959
 msgid "Delete Text Box"
-msgstr ""
+msgstr "Обриши поље за текст"
 
 #. MENU_STATUSLINE_DELETE_ANNOTATION
 #: po/tmp/ap_String_Id.h.h:961
 msgid "Delete annotation"
-msgstr ""
+msgstr "Брише белешку"
 
 #. TOOLBAR_LABEL_DELETE_COLUMN
 #: po/tmp/ap_String_Id.h.h:963
 msgid "Delete column"
-msgstr ""
+msgstr "Обриши колону"
 
 #. MENU_STATUSLINE_INSERT_DELETE_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:965
@@ -2364,7 +2345,7 @@ msgstr "Брише хипер-везу"
 #. TOOLBAR_LABEL_DELETE_ROW
 #: po/tmp/ap_String_Id.h.h:967
 msgid "Delete row"
-msgstr ""
+msgstr "Обриши ред"
 
 #. MENU_STATUSLINE_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h.h:969
@@ -2394,20 +2375,22 @@ msgstr "Опис"
 #. DLG_Annotation_Description_LBL
 #. DLG_PLUGIN_MANAGER_DESC
 #. DLG_Image_LblDescription
-#: po/tmp/ap_String_Id.h.h:982 po/tmp/xap_String_Id.h.h:270
+#: po/tmp/ap_String_Id.h.h:982
+#: po/tmp/xap_String_Id.h.h:270
 msgid "Description:"
 msgstr "Опис:"
 
 #. DLG_Lists_Diamond_List
 #. STYLE_DIAMONLIST
-#: po/tmp/ap_String_Id.h.h:984 po/tmp/xap_String_Id.h.h:272
+#: po/tmp/ap_String_Id.h.h:984
+#: po/tmp/xap_String_Id.h.h:272
 msgid "Diamond List"
-msgstr "листа са дијамантима"
+msgstr "Листа са дијамантима"
 
 #. DLG_Options_Label_SpellDictionaries
 #: po/tmp/ap_String_Id.h.h:986
 msgid "Dictionaries"
-msgstr ""
+msgstr "Речници"
 
 #. DLG_HdrFtr_FooterEven
 #: po/tmp/ap_String_Id.h.h:988
@@ -2442,7 +2425,7 @@ msgstr "Другачије надглавље на задњој страни"
 #. DLG_Styles_StylesLocked
 #: po/tmp/ap_String_Id.h.h:1000
 msgid "Disable all formatting commands, except styles"
-msgstr "Онемогући не-стилске команде за уређивање"
+msgstr "Онемогући све команде за обликовање, осим за стилове"
 
 #. MENU_STATUSLINE_HELP_CREDITS
 #: po/tmp/ap_String_Id.h.h:1002
@@ -2452,12 +2435,12 @@ msgstr "Приказује заслуге"
 #. MENU_STATUSLINE_HELP_CONTENTS
 #: po/tmp/ap_String_Id.h.h:1004
 msgid "Display Help Contents"
-msgstr "Приказује помоћ сортирана по садржају"
+msgstr "Приказује садржај помоћи"
 
 #. MENU_STATUSLINE_HELP_INTRO
 #: po/tmp/ap_String_Id.h.h:1006
 msgid "Display Help Introduction"
-msgstr ""
+msgstr "Прикажи увод помоћи"
 
 #. MENU_STATUSLINE_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h.h:1008
@@ -2472,24 +2455,22 @@ msgstr "Приказује информације о програму, верз�
 #. DLG_FormatTOC_DispStyle
 #: po/tmp/ap_String_Id.h.h:1012
 msgid "Display style:"
-msgstr ""
+msgstr "Стил приказа:"
 
 #. DLG_Options_Prompt_IgnoreResetAll
 #: po/tmp/ap_String_Id.h.h:1014
 msgid "Do you want to reset ignored words in all the documents?"
-msgstr ""
-"Да ли желите да поново подесите речи које сте игнорисали у свим документима?"
+msgstr "Да ли желите да поново подесите речи које сте игнорисали у свим документима?"
 
 #. DLG_Options_Prompt_IgnoreResetCurrent
 #: po/tmp/ap_String_Id.h.h:1016
 msgid "Do you want to reset ignored words in the current document?"
-msgstr ""
-"Да ли желите дапоново подесите речи које сте игнорисали у овом документу?"
+msgstr "Да ли желите да поново подесите речи које сте игнорисали у овом документу?"
 
 #. FIELD_Type_Document
 #: po/tmp/ap_String_Id.h.h:1018
 msgid "Document"
-msgstr ""
+msgstr "Документ"
 
 #. DLG_MetaData_Title
 #: po/tmp/ap_String_Id.h.h:1020
@@ -2499,12 +2480,12 @@ msgstr "Додатни подаци"
 #. DLG_Options_Label_Documents
 #: po/tmp/ap_String_Id.h.h:1022
 msgid "Documents"
-msgstr ""
+msgstr "Документи"
 
 #. DLG_FormatFootnotes_FootRestartNone
 #: po/tmp/ap_String_Id.h.h:1024
 msgid "Don't restart"
-msgstr ""
+msgstr "Не покрећи поново"
 
 #. DLG_Para_SpacingDouble
 #: po/tmp/ap_String_Id.h.h:1026
@@ -2525,12 +2506,12 @@ msgstr "Двоструки проред"
 #. DLG_Annotation_Title
 #: po/tmp/ap_String_Id.h.h:1033
 msgid "Edit Annotation"
-msgstr ""
+msgstr "Измена белешке"
 
 #. MENU_LABEL_EDIT_LATEXEQUATION
 #: po/tmp/ap_String_Id.h.h:1035
 msgid "Edit Equation"
-msgstr ""
+msgstr "Измени једначину"
 
 #. MENU_LABEL_EDIT_EDITFOOTER
 #. TOOLBAR_LABEL_EDIT_FOOTER
@@ -2551,22 +2532,22 @@ msgstr "Мења надглавље"
 #. MENU_STATUSLINE_EDIT_LATEXEQUATION
 #: po/tmp/ap_String_Id.h.h:1047
 msgid "Edit Latex Equation"
-msgstr ""
+msgstr "Мења Latex једначину"
 
 #. MENU_STATUSLINE_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h.h:1049
 msgid "Edit annotation"
-msgstr ""
+msgstr "Мења белешку"
 
 #. MENU_STATUSLINE_INSERT_EDIT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:1051
 msgid "Edit hyperlink"
-msgstr ""
+msgstr "Мења хипер-везу"
 
 #. MENU_STATUSLINE_VIEW_HEADFOOT
 #: po/tmp/ap_String_Id.h.h:1053
 msgid "Edit text at the top or bottom of every page"
-msgstr "Мења текст при врху или дну који се појављуе на свакој страни"
+msgstr "Мења текст при врху или дну који се појављује на свакој страни"
 
 #. MENU_STATUSLINE_EDIT_EDITFOOTER
 #: po/tmp/ap_String_Id.h.h:1055
@@ -2581,7 +2562,7 @@ msgstr "Мења надглавље на овој страни"
 #. TB_Embedded
 #: po/tmp/ap_String_Id.h.h:1059
 msgid "Embedded"
-msgstr ""
+msgstr "Уграђено"
 
 #. MENU_LABEL_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h.h:1061
@@ -2596,7 +2577,7 @@ msgstr ""
 #. DLG_Options_Label_SmartQuotes
 #: po/tmp/ap_String_Id.h.h:1065
 msgid "Enable smart (curly) quotes"
-msgstr ""
+msgstr "Омогући паметне (типографске) наводнике"
 
 #. FIELD_Numbers_EndnoteAnchor
 #: po/tmp/ap_String_Id.h.h:1067
@@ -2606,17 +2587,17 @@ msgstr ""
 #. FIELD_Numbers_EndnoteReference
 #: po/tmp/ap_String_Id.h.h:1069
 msgid "Endnote reference"
-msgstr "Референца на прибелешку"
+msgstr "Референца на крајњу белешку"
 
 #. DLG_FormatFootnotes_EndStyle
 #: po/tmp/ap_String_Id.h.h:1071
 msgid "Endnote style"
-msgstr ""
+msgstr "Стил крајње белешке"
 
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h.h:1073
 msgid "Equation"
-msgstr ""
+msgstr "Једначина"
 
 #. FIELD_Error
 #: po/tmp/ap_String_Id.h.h:1075
@@ -2639,18 +2620,18 @@ msgstr "Грешка при увожењу датотеке %s."
 #: po/tmp/ap_String_Id.h.h:1081
 #, c-format
 msgid "Error while attempting to save %s: could not construct exporter"
-msgstr "Грешка приликом снимања %s: Не могу да створим извозиоца"
+msgstr "Грешка приликом чувања %s: Не могу да створим извозника"
 
 #. MSG_SaveFailedName
 #: po/tmp/ap_String_Id.h.h:1083
 #, c-format
 msgid "Error while attempting to save %s: invalid name"
-msgstr "Не могу да снимим датотеку %s. Разлог: непрописно име"
+msgstr "Грешка приликом чувања %s. Непрописно име"
 
 #. TOOLBAR_LABEL_SCRIPT_PLAY
 #: po/tmp/ap_String_Id.h.h:1085
 msgid "Ex. script"
-msgstr "Изврши скрипт"
+msgstr "Изврши скрипту"
 
 #. DLG_Para_SpacingExactly
 #: po/tmp/ap_String_Id.h.h:1087
@@ -2660,7 +2641,7 @@ msgstr "Тачно"
 #. DLG_Latex_Example
 #: po/tmp/ap_String_Id.h.h:1089
 msgid "Example:"
-msgstr ""
+msgstr "Пример:"
 
 #. MENU_STATUSLINE_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h.h:1091
@@ -2681,12 +2662,12 @@ msgstr "Постојеће ревизије:"
 #. TB_Extra
 #: po/tmp/ap_String_Id.h.h:1098
 msgid "Extra"
-msgstr ""
+msgstr "Додатно"
 
 #. DLG_Field_Parameters_Capital
 #: po/tmp/ap_String_Id.h.h:1100
 msgid "Extra Parameters"
-msgstr ""
+msgstr "Додатни параметри:"
 
 #. DLG_Options_Label_ViewExtraTB
 #: po/tmp/ap_String_Id.h.h:1102
@@ -2701,12 +2682,12 @@ msgstr "Додатни параметри:"
 #. MENU_LABEL_INSERT_FILE
 #: po/tmp/ap_String_Id.h.h:1106
 msgid "F&ile"
-msgstr "&Убаци датотеку"
+msgstr "Да&тотека"
 
 #. MENU_LABEL_FORMAT
 #: po/tmp/ap_String_Id.h.h:1108
 msgid "F&ormat"
-msgstr "&Уређивање"
+msgstr "&Обликовање"
 
 #. MENU_LABEL_VIEW_FULLSCREEN
 #: po/tmp/ap_String_Id.h.h:1110
@@ -2716,17 +2697,17 @@ msgstr "Преко &целог екрана"
 #. DLG_FR_FindLabel
 #: po/tmp/ap_String_Id.h.h:1112
 msgid "Fi&nd what:"
-msgstr "Н&ађи:"
+msgstr "Шта н&аћи:"
 
 #. DLG_MailMerge_Insert_No_Colon
 #: po/tmp/ap_String_Id.h.h:1114
 msgid "Field Name"
-msgstr ""
+msgstr "Име поља"
 
 #. DLG_MailMerge_Insert
 #: po/tmp/ap_String_Id.h.h:1116
 msgid "Field Name:"
-msgstr ""
+msgstr "Име поља"
 
 #. MSG_IE_UnsupportedType
 #: po/tmp/ap_String_Id.h.h:1118
@@ -2770,22 +2751,22 @@ msgstr "Нађи"
 #. MENU_LABEL_TOOLS_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h.h:1132
 msgid "Find &next revision"
-msgstr ""
+msgstr "Нађи &следећу ревизију"
 
 #. MENU_LABEL_TOOLS_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h.h:1134
 msgid "Find &previous revision"
-msgstr ""
+msgstr "Нађи &претходну ревизију"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h.h:1136
 msgid "Find next visible revision in the document"
-msgstr ""
+msgstr "Налази следећу видљиву ревизију у документу"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h.h:1138
 msgid "Find previous visible revision in the document"
-msgstr ""
+msgstr "Налази претходну видљиву ревизију у документу"
 
 #. MENU_STATUSLINE_EDIT_FIND
 #: po/tmp/ap_String_Id.h.h:1140
@@ -2830,12 +2811,8 @@ msgstr ""
 
 #. DLG_Para_PreviewFollowParagraph
 #: po/tmp/ap_String_Id.h.h:1156
-msgid ""
-"Following Paragraph Following Paragraph Following Paragraph Following "
-"Paragraph Following Paragraph Following Paragraph Following Paragraph"
-msgstr ""
-"Следећи пасус Следећи пасус Следећи пасус Следећи пасус Следећи пасус "
-"Следећи пасус Следећи пасус Следећи пасус Следећи пасус Следећи пасус "
+msgid "Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph"
+msgstr "Следећи пасус Следећи пасус Следећи пасус Следећи пасус Следећи пасус Следећи пасус Следећи пасус Следећи пасус Следећи пасус Следећи пасус "
 
 #. DLG_Styles_ModifyFont
 #. TOOLBAR_LABEL_FMT_FONT
@@ -2843,19 +2820,15 @@ msgstr ""
 #. TOOLBAR_TOOLTIP_FMT_FONT
 #. DLG_UFS_FontTitle
 #. DLG_UFS_FontTab
-#: po/tmp/ap_String_Id.h.h:1161 po/tmp/xap_String_Id.h.h:349
-#, fuzzy
+#: po/tmp/ap_String_Id.h.h:1161
+#: po/tmp/xap_String_Id.h.h:349
 msgid "Font"
-msgstr ""
-"#-#-#-#-#  sr-tmp.po  #-#-#-#-#\n"
-"\tГарнитура слова   \n"
-"#-#-#-#-#  sr-tmp.po  #-#-#-#-#\n"
-"Гарнитура знакова"
+msgstr "Гарнитура знакова"
 
 #. TOOLBAR_STATUSLINE_FMT_CHOOSE
 #: po/tmp/ap_String_Id.h.h:1163
 msgid "Font Choose"
-msgstr ""
+msgstr "Избор гарнитуре знакова"
 
 #. TOOLBAR_LABEL_FMT_SIZE
 #. TOOLBAR_STATUSLINE_FMT_SIZE
@@ -2867,7 +2840,7 @@ msgstr "Величина знакова"
 #. TOOLBAR_LABEL_FMT_CHOOSE
 #: po/tmp/ap_String_Id.h.h:1169
 msgid "Font choose"
-msgstr ""
+msgstr "Избор знакова"
 
 #. TOOLBAR_LABEL_COLOR_FORE
 #. TOOLBAR_STATUSLINE_COLOR_FORE
@@ -2883,19 +2856,20 @@ msgstr "Знак..."
 
 #. DLG_Lists_Font
 #. DLG_UFS_FontLabel
-#: po/tmp/ap_String_Id.h.h:1177 po/tmp/xap_String_Id.h.h:351
+#: po/tmp/ap_String_Id.h.h:1177
+#: po/tmp/xap_String_Id.h.h:351
 msgid "Font:"
 msgstr "Гарнитура знакова:"
 
 #. MENU_LABEL_INSERT_FOOTNOTE
 #: po/tmp/ap_String_Id.h.h:1179
 msgid "Foot&note"
-msgstr ""
+msgstr "Фус&нота"
 
 #. MENU_LABEL_INSERT_FOOTER
 #: po/tmp/ap_String_Id.h.h:1181
 msgid "Footer"
-msgstr ""
+msgstr "Заглавље"
 
 #. DLG_HdrFtr_FooterFrame
 #: po/tmp/ap_String_Id.h.h:1183
@@ -2911,12 +2885,12 @@ msgstr "Заглавље [%s]"
 #. FIELD_Numbers_FootnoteAnchor
 #: po/tmp/ap_String_Id.h.h:1187
 msgid "Footnote anchor"
-msgstr ""
+msgstr "Сидро фусноте"
 
 #. FIELD_Numbers_FootnoteReference
 #: po/tmp/ap_String_Id.h.h:1189
 msgid "Footnote reference"
-msgstr ""
+msgstr "Референца на фусноту"
 
 #. DLG_FormatFootnotes_FootStyle
 #: po/tmp/ap_String_Id.h.h:1191
@@ -2926,7 +2900,7 @@ msgstr ""
 #. MENU_LABEL_FMT_FOOTNOTES
 #: po/tmp/ap_String_Id.h.h:1193
 msgid "Footnotes and Endnotes"
-msgstr ""
+msgstr "Фусноте и крајње белешке"
 
 #. TOOLBAR_STATUSLINE_FMT_DIR_OVERRIDE_LTR
 #. TOOLBAR_TOOLTIP_FMT_DIR_OVERRIDE_LTR
@@ -2943,12 +2917,12 @@ msgstr "Смер текста: са десна на лево"
 #. MENU_STATUSLINE_FMT_DIRECTION_DO_LTR
 #: po/tmp/ap_String_Id.h.h:1201
 msgid "Force left-to-right direction of text"
-msgstr ""
+msgstr "Приморај смер текста са лева на десно"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DO_RTL
 #: po/tmp/ap_String_Id.h.h:1203
 msgid "Force right-to-left direction of text"
-msgstr ""
+msgstr "Приморај смер текста са десна на лево"
 
 #. TOOLBAR_LABEL_FMT_DIR_OVERRIDE_LTR
 #: po/tmp/ap_String_Id.h.h:1205
@@ -2974,12 +2948,12 @@ msgstr ""
 #. DLG_FormatFootnotes_Endnotes
 #: po/tmp/ap_String_Id.h.h:1214
 msgid "Format Endnotes"
-msgstr ""
+msgstr "Обликовање крајњих белешки"
 
 #. DLG_FormatFootnotes_Footnotes
 #: po/tmp/ap_String_Id.h.h:1216
 msgid "Format Footnotes"
-msgstr ""
+msgstr "Обликовање фуснота"
 
 #. DLG_FormatFootnotes_Title
 #: po/tmp/ap_String_Id.h.h:1218
@@ -2989,12 +2963,12 @@ msgstr ""
 #. DLG_HdrFtr_Title
 #: po/tmp/ap_String_Id.h.h:1220
 msgid "Format Header/Footers"
-msgstr ""
+msgstr "Уређивање надглавља/заглавља"
 
 #. MENU_LABEL_FMT_EMBED
 #: po/tmp/ap_String_Id.h.h:1222
 msgid "Format Object"
-msgstr ""
+msgstr "Обликовање објекта"
 
 #. TOOLBAR_LABEL_FMTPAINTER
 #: po/tmp/ap_String_Id.h.h:1224
@@ -3010,12 +2984,12 @@ msgstr "Обликовања табеле (дебљина ивица, боја �
 #. DLG_FormatTOC_Title
 #: po/tmp/ap_String_Id.h.h:1229
 msgid "Format Table of Contents"
-msgstr ""
+msgstr "Обликовања садржаја"
 
 #. DLG_FormatFrameTitle
 #: po/tmp/ap_String_Id.h.h:1231
 msgid "Format Text Box"
-msgstr ""
+msgstr "Обликовање поља за текст"
 
 #. DLG_Options_Label_ViewFormatTB
 #: po/tmp/ap_String_Id.h.h:1233
@@ -3025,7 +2999,7 @@ msgstr "Палета са алатима за обликовање"
 #. MENU_STATUSLINE_FMT_POSIMAGE
 #: po/tmp/ap_String_Id.h.h:1235
 msgid "Format this image"
-msgstr ""
+msgstr "Обликовање ове слике"
 
 #. MENU_STATUSLINE_FMT_STYLIST
 #: po/tmp/ap_String_Id.h.h:1237
@@ -3034,26 +3008,27 @@ msgstr ""
 
 #. DLG_Lists_Format
 #. DLG_DocComparison_Fmt
-#: po/tmp/ap_String_Id.h.h:1239 po/tmp/xap_String_Id.h.h:361
+#: po/tmp/ap_String_Id.h.h:1239
+#: po/tmp/xap_String_Id.h.h:361
 msgid "Format:"
 msgstr "Формат:"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h.h:1241
 msgid "From File"
-msgstr ""
+msgstr "Из датотеке"
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h.h:1243
 msgid "From LaTeX"
-msgstr ""
+msgstr "Из LaTeX-а"
 
 #. TOOLBAR_LABEL_VIEW_FULL_SCREEN
 #. TOOLBAR_STATUSLINE_VIEW_FULL_SCREEN
 #. TOOLBAR_TOOLTIP_VIEW_FULL_SCREEN
 #: po/tmp/ap_String_Id.h.h:1247
 msgid "Full Screen"
-msgstr ""
+msgstr "Преко целог екрана"
 
 #. DLG_FormatTOC_General
 #. DLG_Options_Label_General
@@ -3080,18 +3055,19 @@ msgstr "Иди на..."
 #. DLG_FormatTOC_HasLabel
 #: po/tmp/ap_String_Id.h.h:1259
 msgid "H&as label"
-msgstr ""
+msgstr "И&ма ознаку"
 
 #. DLG_FormatTOC_HeadingText
 #: po/tmp/ap_String_Id.h.h:1261
 msgid "H&eading text:"
-msgstr ""
+msgstr "Текст н&аслова:"
 
 #. DLG_Lists_Hand_List
 #. STYLE_HANDLIST
-#: po/tmp/ap_String_Id.h.h:1263 po/tmp/xap_String_Id.h.h:403
+#: po/tmp/ap_String_Id.h.h:1263
+#: po/tmp/xap_String_Id.h.h:403
 msgid "Hand List"
-msgstr "листа са рукама"
+msgstr "Листа са рукама"
 
 #. DLG_Para_SpecialHanging
 #: po/tmp/ap_String_Id.h.h:1265
@@ -3101,7 +3077,7 @@ msgstr "Висеће"
 #. MENU_LABEL_INSERT_HEADER
 #: po/tmp/ap_String_Id.h.h:1267
 msgid "Header"
-msgstr ""
+msgstr "У надглављу"
 
 #. DLG_HdrFtr_HeaderFrame
 #: po/tmp/ap_String_Id.h.h:1269
@@ -3117,42 +3093,40 @@ msgstr "Надглавље [%s]"
 #. MENU_LABEL_FMT_HDRFTR
 #: po/tmp/ap_String_Id.h.h:1273
 msgid "Header/Footers"
-msgstr "Уређивање надглавља/заглавља"
+msgstr "Надглавља/заглавља"
 
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h.h:1275
 msgid ""
-"Headers and Footers can only be created and edited while in Print View "
-"Mode. \n"
+"Headers and Footers can only be created and edited while in Print View Mode. \n"
 " To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
-"Надглавља и заглавља могу да се убацују и мењају само док сте у погледу "
-"налик за штампање.\n"
-" Да би сте ушли у тај поглед изаберите мени Приказивање, опцију Штампан "
-"документ.\n"
-" Да ли би сте желели да пређете у овај начин погледа одмах?"
+"Надглавља и заглавља могу да се праве и мењају само док сте у погледу за штампање. \n"
+" Да бисте ушли у тај поглед изаберите мени Приказивање, опцију Штампан документ.\n"
+" Да ли бисте желели да пређете у овај начин погледа одмах?"
 
 #. DLG_Stylist_HeadingStyles
 #: po/tmp/ap_String_Id.h.h:1277
 msgid "Heading Styles"
-msgstr ""
+msgstr "Стилови наслова"
 
 #. DLG_FormatTOC_HeadingStyle
 #: po/tmp/ap_String_Id.h.h:1279
 msgid "Heading style:"
-msgstr ""
+msgstr "Стил наслова:"
 
 #. DLG_Lists_Heart_List
 #. STYLE_HEARTLIST
-#: po/tmp/ap_String_Id.h.h:1281 po/tmp/xap_String_Id.h.h:419
+#: po/tmp/ap_String_Id.h.h:1281
+#: po/tmp/xap_String_Id.h.h:419
 msgid "Heart List"
-msgstr "листа са срцима"
+msgstr "Листа са срцима"
 
 #. DLG_Lists_Hebrew_List
 #: po/tmp/ap_String_Id.h.h:1283
 msgid "Hebrew List"
-msgstr "Хебрејске цифре"
+msgstr "Хебрејска листа"
 
 #. TOOLBAR_LABEL_HELP
 #. TOOLBAR_STATUSLINE_HELP
@@ -3169,7 +3143,7 @@ msgstr "&Садржај"
 #. MENU_LABEL_HELP_INTRO
 #: po/tmp/ap_String_Id.h.h:1291
 msgid "Help &Introduction"
-msgstr ""
+msgstr "&Увод "
 
 #. DLG_Options_Label_Hide
 #: po/tmp/ap_String_Id.h.h:1293
@@ -3201,7 +3175,7 @@ msgstr "Игнориш&и све"
 #. DLG_FormatTOC_Indent
 #: po/tmp/ap_String_Id.h.h:1305
 msgid "I&ndent:"
-msgstr ""
+msgstr "Ув&лачење:"
 
 #. DLG_Options_Label_Icons
 #: po/tmp/ap_String_Id.h.h:1307
@@ -3216,7 +3190,7 @@ msgstr "Игнориши"
 #. DLG_Options_Label_SpellIgnoreWords
 #: po/tmp/ap_String_Id.h.h:1311
 msgid "Ignore Words"
-msgstr ""
+msgstr "Игнорисане речи"
 
 #. MENU_STATUSLINE_SPELL_IGNOREALL
 #: po/tmp/ap_String_Id.h.h:1313
@@ -3232,13 +3206,14 @@ msgstr "Игнорисане речи:"
 #. DLG_FormatTable_SetImageBackground
 #: po/tmp/ap_String_Id.h.h:1318
 msgid "Image For Background"
-msgstr ""
+msgstr "Слика за позадину"
 
 #. DLG_Lists_Implies_List
 #. STYLE_IMPLIES_LIST
-#: po/tmp/ap_String_Id.h.h:1320 po/tmp/xap_String_Id.h.h:453
+#: po/tmp/ap_String_Id.h.h:1320
+#: po/tmp/xap_String_Id.h.h:453
 msgid "Implies List"
-msgstr "листа са стрелицама"
+msgstr "Листа са стрелицама"
 
 #. MENU_STATUSLINE_FILE_IMPORTSTYLES
 #: po/tmp/ap_String_Id.h.h:1322
@@ -3270,12 +3245,12 @@ msgstr "Увлачење"
 #. DLG_Para_TabLabelIndentsAndSpacing
 #: po/tmp/ap_String_Id.h.h:1334
 msgid "Indents and Spacing"
-msgstr "&Увлачење и проред"
+msgstr "Увлачење и проред"
 
 #. DLG_ToggleCase_FirstUpperCase
 #: po/tmp/ap_String_Id.h.h:1336
 msgid "Initial Caps"
-msgstr "Свака Реч Великим Словом"
+msgstr "Почетно велико слово"
 
 #. DLG_FormatFootnotes_EndInitialVal
 #: po/tmp/ap_String_Id.h.h:1338
@@ -3296,29 +3271,25 @@ msgstr ""
 #. DLG_Break_Insert
 #. MENU_STATUSLINE_TABLE_INSERT
 #. DLG_IP_Button_Label
-#: po/tmp/ap_String_Id.h.h:1346 po/tmp/xap_String_Id.h.h:463
-#, fuzzy
+#: po/tmp/ap_String_Id.h.h:1346
+#: po/tmp/xap_String_Id.h.h:465
 msgid "Insert"
-msgstr ""
-"#-#-#-#-#  sr-tmp.po  #-#-#-#-#\n"
-"УБА\n"
-"#-#-#-#-#  sr-tmp.po  #-#-#-#-#\n"
-"Убацује табелу"
+msgstr "Убаци"
 
 #. MENU_LABEL_TABLE_INSERTCOLUMN
 #: po/tmp/ap_String_Id.h.h:1348
 msgid "Insert &Columns"
-msgstr ""
+msgstr "Убаци &колоне"
 
 #. MENU_LABEL_TABLE_INSERTROW
 #: po/tmp/ap_String_Id.h.h:1350
 msgid "Insert &Rows"
-msgstr ""
+msgstr "Убаци &редове"
 
 #. MENU_LABEL_TABLE_INSERTTABLE
 #: po/tmp/ap_String_Id.h.h:1352
 msgid "Insert &Table"
-msgstr ""
+msgstr "Убаци &табелу"
 
 #. DLG_InsertBookmark_Title
 #. TOOLBAR_LABEL_FMT_BOOKMARK
@@ -3329,7 +3300,7 @@ msgstr "Убацивање маркера"
 #. DLG_Break_BreakTitle_Capital
 #: po/tmp/ap_String_Id.h.h:1357
 msgid "Insert Break"
-msgstr ""
+msgstr "Убацивање прелома"
 
 #. MENU_STATUSLINE_TABLE_INSERT_CELLS
 #: po/tmp/ap_String_Id.h.h:1359
@@ -3339,17 +3310,17 @@ msgstr "Убацује ћелије у табелу"
 #. MENU_STATUSLINE_EDIT_PASTE
 #: po/tmp/ap_String_Id.h.h:1361
 msgid "Insert Clipboard contents"
-msgstr "Убацује садржај са Спремишта (Clipboardа)"
+msgstr "Убацује садржај са спремишта (клипборда)"
 
 #. DLG_DateTime_DateTimeTitle
 #: po/tmp/ap_String_Id.h.h:1363
 msgid "Insert Date and Time"
-msgstr ""
+msgstr "Убацивање датума и времена"
 
 #. MENU_LABEL_TOOLTIP_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h.h:1365
 msgid "Insert Equation"
-msgstr ""
+msgstr "Убаци једначину"
 
 #. MENU_LABEL_TOOLTIP_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h.h:1367
@@ -3359,7 +3330,7 @@ msgstr ""
 #. DLG_Field_FieldTitle_Capital
 #: po/tmp/ap_String_Id.h.h:1369
 msgid "Insert Field"
-msgstr ""
+msgstr "Убацивање поља"
 
 #. DLG_InsertHyperlink_Title
 #. TOOLBAR_LABEL_FMT_HYPERLINK
@@ -3374,13 +3345,14 @@ msgstr "Убаци слику"
 
 #. DLG_MailMerge_MailMergeTitle
 #: po/tmp/ap_String_Id.h.h:1376
+#, fuzzy
 msgid "Insert Mail Merge Field"
-msgstr ""
+msgstr "Убацује поље које се израчунава у лету"
 
 #. MENU_LABEL_TOOLTIP_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h.h:1378
 msgid "Insert MathML from a file"
-msgstr ""
+msgstr "Убацује MathML из датотеке"
 
 #. DLG_InsertTable_TableTitle
 #. MENU_STATUSLINE_TABLE_INSERT_TABLE
@@ -3392,17 +3364,17 @@ msgstr "Убацује нову табелу у документ"
 #. MENU_STATUSLINE_INSERT_DIRECTIONMARKER
 #: po/tmp/ap_String_Id.h.h:1384
 msgid "Insert Unicode direction marker into the document"
-msgstr ""
+msgstr "Убацује Уникод обележивач смера у документ"
 
 #. MENU_STATUSLINE_INSERT_FOOTER
 #: po/tmp/ap_String_Id.h.h:1386
 msgid "Insert a Footer"
-msgstr ""
+msgstr "Убацује заглавље"
 
 #. MENU_STATUSLINE_INSERT_HEADER
 #: po/tmp/ap_String_Id.h.h:1388
 msgid "Insert a Header"
-msgstr ""
+msgstr "Убацује надглавље"
 
 #. MENU_STATUSLINE_INSERT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h.h:1390
@@ -3412,7 +3384,7 @@ msgstr ""
 #. MENU_STATUSLINE_INSERT_TEXTBOX
 #: po/tmp/ap_String_Id.h.h:1392
 msgid "Insert a Text Box"
-msgstr ""
+msgstr "Убацује поље за текст"
 
 #. TOOLBAR_STATUSLINE_FMT_BOOKMARK
 #. TOOLBAR_TOOLTIP_FMT_BOOKMARK
@@ -3423,57 +3395,57 @@ msgstr "Убацује маркер у документ"
 #. MENU_STATUSLINE_INSERT_FIELD
 #: po/tmp/ap_String_Id.h.h:1397
 msgid "Insert a calculated field"
-msgstr "Убацује поље које се узрачунава у лету"
+msgstr "Убацује поље које се израчунава у лету"
 
 #. MENU_STATUSLINE_TABLE_INSERT_COLUMNS_BEFORE
 #: po/tmp/ap_String_Id.h.h:1399
 msgid "Insert a column to the left"
-msgstr "Убацује колону лево од оне у којој је показивач"
+msgstr "Убацује колону са леве стране"
 
 #. MENU_STATUSLINE_TABLE_INSERT_COLUMNS_AFTER
 #. MENU_STATUSLINE_TABLE_INSERTCOLUMN
 #: po/tmp/ap_String_Id.h.h:1402
 msgid "Insert a column to the right"
-msgstr "Убацује колону десно од оне у којој је показивач"
+msgstr "Убацује колону са десне стране"
 
 #. MENU_STATUSLINE_INSERT_FOOTNOTE
 #: po/tmp/ap_String_Id.h.h:1404
 msgid "Insert a footnote"
-msgstr ""
+msgstr "Убацује фусноту"
 
 #. TOOLBAR_STATUSLINE_FMT_HYPERLINK
 #. TOOLBAR_TOOLTIP_FMT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:1407
 msgid "Insert a hyperlink into the document"
-msgstr ""
-"Убацује хипер-везу, која показује на други део документа или други документ"
+msgstr "Убацује хипер-везу, која показује на други део документа или други документ"
 
 #. MENU_STATUSLINE_INSERT_MAILMERGE
 #: po/tmp/ap_String_Id.h.h:1409
+#, fuzzy
 msgid "Insert a mail merge field"
-msgstr ""
+msgstr "Убацује поље које се израчунава у лету"
 
 #. TOOLBAR_STATUSLINE_INSERT_TABLE
 #. TOOLBAR_TOOLTIP_INSERT_TABLE
 #: po/tmp/ap_String_Id.h.h:1412
 msgid "Insert a new table into your document"
-msgstr ""
+msgstr "Убацује нову табелу у документ"
 
 #. MENU_STATUSLINE_INSERT_BREAK
 #: po/tmp/ap_String_Id.h.h:1414
 msgid "Insert a page, column, or section break"
-msgstr "Убацује прелом стране, ступца или дела"
+msgstr "Убацује прелом стране, колоне или дела"
 
 #. MENU_STATUSLINE_TABLE_INSERT_ROWS_BEFORE
 #: po/tmp/ap_String_Id.h.h:1416
 msgid "Insert a row above"
-msgstr "Убацује ред испред реда у коме је показивач"
+msgstr "Убацује ред изнад"
 
 #. MENU_STATUSLINE_TABLE_INSERT_ROWS_AFTER
 #. MENU_STATUSLINE_TABLE_INSERTROW
 #: po/tmp/ap_String_Id.h.h:1419
 msgid "Insert a row below"
-msgstr "Убацује ред испод реда у коме је показивач"
+msgstr "Убацује ред испод"
 
 #. MENU_STATUSLINE_INSERT_SYMBOL
 #: po/tmp/ap_String_Id.h.h:1421
@@ -3483,7 +3455,7 @@ msgstr "Убацује симбол или неки други специфич�
 #. MENU_STATUSLINE_TOOLS_ANNOTATIONS_INSERT
 #: po/tmp/ap_String_Id.h.h:1423
 msgid "Insert an annotation"
-msgstr ""
+msgstr "Убацује белешку"
 
 #. MENU_STATUSLINE_INSERT_PAGENO
 #: po/tmp/ap_String_Id.h.h:1425
@@ -3514,7 +3486,7 @@ msgstr "Убацује маркер"
 #. DLG_Break_BreakTitle
 #: po/tmp/ap_String_Id.h.h:1436
 msgid "Insert break"
-msgstr "Преломи"
+msgstr "Убацивање прелома"
 
 #. MENU_STATUSLINE_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h.h:1438
@@ -3524,7 +3496,7 @@ msgstr "Убацује сличицу/звук/филм из библиотек�
 #. DLG_Field_FieldTitle
 #: po/tmp/ap_String_Id.h.h:1440
 msgid "Insert field"
-msgstr "Поља"
+msgstr "Убацивање поља"
 
 #. MENU_STATUSLINE_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:1442
@@ -3544,7 +3516,7 @@ msgstr ""
 #. MENU_STATUSLINE_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h.h:1448
 msgid "Insert selected text into a new annotation"
-msgstr ""
+msgstr "Убацује изабрани текст у нову белешку"
 
 #. TOOLBAR_STATUSLINE_INSERT_SYMBOL
 #. TOOLBAR_TOOLTIP_INSERT_SYMBOL
@@ -3555,17 +3527,17 @@ msgstr "Убацује симбол или посебан знак"
 #. TOOLBAR_LABEL_INSERT_TABLE
 #: po/tmp/ap_String_Id.h.h:1453
 msgid "Insert table"
-msgstr ""
+msgstr "Убаци табелу"
 
 #. MENU_STATUSLINE_TABLE_INSERT_SUMROWS
 #: po/tmp/ap_String_Id.h.h:1455
 msgid "Insert the Sum of a Table Column"
-msgstr ""
+msgstr "Убацује збир колоне табеле"
 
 #. MENU_STATUSLINE_TABLE_INSERT_SUMCOLS
 #: po/tmp/ap_String_Id.h.h:1457
 msgid "Insert the Sum of a Table Row"
-msgstr ""
+msgstr "Убацује збир реда табеле"
 
 #. MENU_STATUSLINE_INSERT_FILE
 #: po/tmp/ap_String_Id.h.h:1459
@@ -3580,8 +3552,7 @@ msgstr "Убацује датум и/или време"
 #. MENU_STATUSLINE_EDIT_PASTE_SPECIAL
 #: po/tmp/ap_String_Id.h.h:1463
 msgid "Insert unformatted clipboard contents"
-msgstr ""
-"Убацује само садржај (без обликовања) са Спремишта (Clipboardа) у документ"
+msgstr "Убацује само садржај (без обликовања) са Спремишта (Цлипобоарда) у документ"
 
 #. DLG_Options_Label_ViewUnprintable
 #: po/tmp/ap_String_Id.h.h:1465
@@ -3592,7 +3563,8 @@ msgstr "&Прикажи знаке уређивања"
 #. TOOLBAR_STATUSLINE_FMT_ITALIC
 #. TOOLBAR_TOOLTIP_FMT_ITALIC
 #. DLG_UFS_StyleItalic
-#: po/tmp/ap_String_Id.h.h:1469 po/tmp/xap_String_Id.h.h:493
+#: po/tmp/ap_String_Id.h.h:1469
+#: po/tmp/xap_String_Id.h.h:495
 msgid "Italic"
 msgstr "Коса слова"
 
@@ -3640,7 +3612,7 @@ msgstr "Кевинов тест"
 #. FIELD_Document_Keywords
 #: po/tmp/ap_String_Id.h.h:1488
 msgid "Keywords"
-msgstr ""
+msgstr "Кључне речи"
 
 #. DLG_MetaData_Keywords_LBL
 #: po/tmp/ap_String_Id.h.h:1490
@@ -3673,7 +3645,7 @@ msgstr "Језик"
 #. DLG_Options_Label_LangSettings
 #: po/tmp/ap_String_Id.h.h:1503
 msgid "Language settings"
-msgstr ""
+msgstr "Језичка подешавања"
 
 #. DLG_MetaData_Languages_LBL
 #: po/tmp/ap_String_Id.h.h:1505
@@ -3688,7 +3660,7 @@ msgstr "Изглед документа"
 #. DLG_FormatTOC_LayoutDetails
 #: po/tmp/ap_String_Id.h.h:1509
 msgid "Layout Details"
-msgstr ""
+msgstr "Детаљи о изгледу"
 
 #. DLG_Tab_Label_Leader
 #: po/tmp/ap_String_Id.h.h:1511
@@ -3735,32 +3707,32 @@ msgstr "Текст ће бити поравнат уз леву ивицу"
 #. MENU_STATUSLINE_ALIGN_LEFT
 #: po/tmp/ap_String_Id.h.h:1529
 msgid "Left-align the paragraph"
-msgstr "Пасус ће бити поравнат уз леву ивицу стране"
+msgstr "Поравнање пасуса уз леву ивицу"
 
 #. DLG_FormatTOC_Level1
 #: po/tmp/ap_String_Id.h.h:1531
 msgid "Level 1"
-msgstr ""
+msgstr "Ниво 1"
 
 #. DLG_FormatTOC_Level2
 #: po/tmp/ap_String_Id.h.h:1533
 msgid "Level 2"
-msgstr ""
+msgstr "Ниво 2"
 
 #. DLG_FormatTOC_Level3
 #: po/tmp/ap_String_Id.h.h:1535
 msgid "Level 3"
-msgstr ""
+msgstr "Ниво 3"
 
 #. DLG_FormatTOC_Level4
 #: po/tmp/ap_String_Id.h.h:1537
 msgid "Level 4"
-msgstr ""
+msgstr "Ниво 4"
 
 #. DLG_Lists_DelimiterString
 #: po/tmp/ap_String_Id.h.h:1539
 msgid "Level Delimiter:"
-msgstr "Ограничавач нивоа:"
+msgstr "Граничник нивоа:"
 
 #. DLG_Lists_Level
 #: po/tmp/ap_String_Id.h.h:1541
@@ -3790,7 +3762,7 @@ msgstr "линија изнад одабраног садржаја (укључ�
 #. DLG_Para_TabLabelLineAndPageBreaks
 #: po/tmp/ap_String_Id.h.h:1551
 msgid "Line and Page Breaks"
-msgstr "П&релом редова и страна"
+msgstr "Прелом редова и страна"
 
 #. MENU_STATUSLINE_FMT_BOTTOMLINE
 #: po/tmp/ap_String_Id.h.h:1553
@@ -3805,7 +3777,7 @@ msgstr "линија између"
 #. DLG_WordCount_Lines
 #: po/tmp/ap_String_Id.h.h:1557
 msgid "Lines:"
-msgstr "Редова"
+msgstr "Редова:"
 
 #. DLG_Styles_List
 #: po/tmp/ap_String_Id.h.h:1559
@@ -3820,34 +3792,36 @@ msgstr "Назив листе"
 #. DLG_Lists_PageProperties
 #: po/tmp/ap_String_Id.h.h:1563
 msgid "List Properties"
-msgstr ""
+msgstr "Особине листе"
 
 #. DLG_Stylist_ListStyles
 #: po/tmp/ap_String_Id.h.h:1565
 msgid "List Styles"
-msgstr ""
+msgstr "Стилови листе"
 
 #. DLG_Lists_Title
 #: po/tmp/ap_String_Id.h.h:1567
 msgid "Lists for "
-msgstr "листе"
+msgstr "Листе за"
 
 #. MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT
 #: po/tmp/ap_String_Id.h.h:1569
 msgid "Lock the layout of the current toolbars"
-msgstr ""
+msgstr "Закључава изглед тренутних палета са алаткама"
 
 #. DLG_Lists_Lower_Case_List
 #. STYLE_LOWERCASELIST
-#: po/tmp/ap_String_Id.h.h:1571 po/tmp/xap_String_Id.h.h:534
+#: po/tmp/ap_String_Id.h.h:1571
+#: po/tmp/xap_String_Id.h.h:536
 msgid "Lower Case List"
-msgstr "листа са малим словима"
+msgstr "Листа са малим словима"
 
 #. DLG_Lists_Lower_Roman_List
 #. STYLE_LOWERROMANLIST
-#: po/tmp/ap_String_Id.h.h:1573 po/tmp/xap_String_Id.h.h:536
+#: po/tmp/ap_String_Id.h.h:1573
+#: po/tmp/xap_String_Id.h.h:538
 msgid "Lower Roman List"
-msgstr "листа са малим римским бројевима"
+msgstr "Листа са малим римским бројевима"
 
 #. FIELD_Application_MailMerge
 #. MENU_STATUSLINE_TOOLS_MAILMERGE
@@ -3878,17 +3852,17 @@ msgstr "Текст у изложиоцу (ситнији текст изнад �
 #. MENU_STATUSLINE_TOOLS_ANNOTATIONS
 #: po/tmp/ap_String_Id.h.h:1586
 msgid "Manage annotations in document"
-msgstr ""
+msgstr "Управља белешкама у документу"
 
 #. MENU_STATUSLINE_TOOLS_PLUGINS
 #: po/tmp/ap_String_Id.h.h:1588
 msgid "Manage plugins"
-msgstr "Управља додацима (плугинс)"
+msgstr "Управља додацима"
 
 #. DLG_PageSetup_Margin
 #: po/tmp/ap_String_Id.h.h:1590
 msgid "Margin"
-msgstr "&Маргине"
+msgstr "Маргина"
 
 #. DLG_MarkRevisions_Title
 #: po/tmp/ap_String_Id.h.h:1592
@@ -3908,14 +3882,14 @@ msgstr "Мартинов тест"
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h.h:1598
 msgid "Max Column size"
-msgstr "Највећа ширина стубца"
+msgstr "Највећа ширина колоне"
 
 #. TOOLBAR_LABEL_MENU
 #. TOOLBAR_STATUSLINE_MENU
 #. TOOLBAR_TOOLTIP_MENU
 #: po/tmp/ap_String_Id.h.h:1602
 msgid "Menu"
-msgstr ""
+msgstr "Мени"
 
 #. DLG_MergeCells_Above
 #: po/tmp/ap_String_Id.h.h:1604
@@ -3947,7 +3921,7 @@ msgstr "Спој десно"
 #. TOOLBAR_LABEL_MERGEABOVE
 #: po/tmp/ap_String_Id.h.h:1616
 msgid "Merge above"
-msgstr ""
+msgstr "Спој одозго"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_MERGE_DOCUMENTS
 #: po/tmp/ap_String_Id.h.h:1618
@@ -3957,48 +3931,48 @@ msgstr ""
 #. TOOLBAR_LABEL_MERGEBELOW
 #: po/tmp/ap_String_Id.h.h:1620
 msgid "Merge below"
-msgstr ""
+msgstr "Спој одоздо"
 
 #. TOOLBAR_LABEL_MERGE_CELLS
 #. TOOLBAR_STATUSLINE_MERGE_CELLS
 #. TOOLBAR_TOOLTIP_MERGE_CELLS
 #: po/tmp/ap_String_Id.h.h:1624
 msgid "Merge cells"
-msgstr ""
+msgstr "Спаја ћелије"
 
 #. TOOLBAR_LABEL_MERGELEFT
 #: po/tmp/ap_String_Id.h.h:1626
 msgid "Merge left"
-msgstr ""
+msgstr "Спој лево"
 
 #. TOOLBAR_LABEL_MERGERIGHT
 #: po/tmp/ap_String_Id.h.h:1628
 msgid "Merge right"
-msgstr ""
+msgstr "Спој десно"
 
 #. TOOLBAR_STATUSLINE_MERGEABOVE
 #. TOOLBAR_TOOLTIP_MERGEABOVE
 #: po/tmp/ap_String_Id.h.h:1631
 msgid "Merge with cell above"
-msgstr ""
+msgstr "Спој са ћелијом изнад"
 
 #. TOOLBAR_STATUSLINE_MERGEBELOW
 #. TOOLBAR_TOOLTIP_MERGEBELOW
 #: po/tmp/ap_String_Id.h.h:1634
 msgid "Merge with cell below"
-msgstr ""
+msgstr "Спој са ћелијом испод"
 
 #. TOOLBAR_STATUSLINE_MERGELEFT
 #. TOOLBAR_TOOLTIP_MERGELEFT
 #: po/tmp/ap_String_Id.h.h:1637
 msgid "Merge with left cell"
-msgstr ""
+msgstr "Спој са левом ћелијом"
 
 #. TOOLBAR_STATUSLINE_MERGERIGHT
 #. TOOLBAR_TOOLTIP_MERGERIGHT
 #: po/tmp/ap_String_Id.h.h:1640
 msgid "Merge with right cell"
-msgstr ""
+msgstr "Спој са десном ћелијом"
 
 #. FIELD_DateTime_MilTime
 #: po/tmp/ap_String_Id.h.h:1642
@@ -4013,7 +3987,7 @@ msgstr "Остало"
 #. DLG_Stylist_MiscStyles
 #: po/tmp/ap_String_Id.h.h:1646
 msgid "Miscellaneous Styles"
-msgstr ""
+msgstr "Разни стилови"
 
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h.h:1648
@@ -4038,7 +4012,7 @@ msgstr "Премешта показивач на одређено место у 
 #. FIELD_DateTime_MthDayYear
 #: po/tmp/ap_String_Id.h.h:1656
 msgid "Mth. Day, Year"
-msgstr "Мес, дан, год"
+msgstr "Мес., дан, год."
 
 #. DLG_Para_SpacingMultiple
 #: po/tmp/ap_String_Id.h.h:1658
@@ -4053,17 +4027,17 @@ msgstr "Нов док."
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT
 #: po/tmp/ap_String_Id.h.h:1662
 msgid "New &annotation"
-msgstr ""
+msgstr "Нова &белешка"
 
 #. DLG_NEW_Title
 #: po/tmp/ap_String_Id.h.h:1664
 msgid "New Document"
-msgstr "Изаберите шаблон"
+msgstr "Нов документ"
 
 #. DLG_Lists_New_List_Label
 #: po/tmp/ap_String_Id.h.h:1666
 msgid "New List Label"
-msgstr "Нова наслов листе"
+msgstr "Нова ознака листе"
 
 #. DLG_Lists_New_List_Type
 #: po/tmp/ap_String_Id.h.h:1668
@@ -4096,7 +4070,7 @@ msgstr "Нов..."
 #. DLG_Goto_Btn_Next
 #: po/tmp/ap_String_Id.h.h:1676
 msgid "Next >>"
-msgstr "След >>"
+msgstr "Следећи >>"
 
 #. DLG_NEW_NoFile
 #: po/tmp/ap_String_Id.h.h:1678
@@ -4114,7 +4088,7 @@ msgid ""
 "No Style selected \n"
 " so it cannot be modified"
 msgstr ""
-"Ниједан стил није изабран\n"
+"Ниједан стил није изабран \n"
 " тако да не може бити мењан"
 
 #. SCRIPT_NOSCRIPTS
@@ -4133,7 +4107,7 @@ msgstr "Ниједан"
 #. TOOLBAR_LABEL_PARA_0BEFORE
 #: po/tmp/ap_String_Id.h.h:1691
 msgid "None before"
-msgstr ""
+msgstr "Ништа пре"
 
 #. MENU_STATUSLINE_VIEW_NORMAL
 #: po/tmp/ap_String_Id.h.h:1693
@@ -4148,12 +4122,12 @@ msgstr "Нема у &речнику:"
 #. DLG_Stylist_FootnoteStyles
 #: po/tmp/ap_String_Id.h.h:1697
 msgid "Note Styles"
-msgstr ""
+msgstr "Стилови фуснота"
 
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h.h:1699
 msgid "Number of Columns"
-msgstr "Број стубаца"
+msgstr "Број колона"
 
 #. FIELD_Numbers_PagesCount
 #: po/tmp/ap_String_Id.h.h:1701
@@ -4163,7 +4137,7 @@ msgstr "Број страна"
 #. DLG_Column_Number
 #: po/tmp/ap_String_Id.h.h:1703
 msgid "Number of columns"
-msgstr "Број стубаца"
+msgstr "Број колона"
 
 #. DLG_InsertTable_NumCols
 #: po/tmp/ap_String_Id.h.h:1705
@@ -4182,7 +4156,8 @@ msgstr "Нумерисана"
 
 #. DLG_Lists_Numbered_List
 #. STYLE_NUMBER_LIST
-#: po/tmp/ap_String_Id.h.h:1711 po/tmp/xap_String_Id.h.h:584
+#: po/tmp/ap_String_Id.h.h:1711
+#: po/tmp/xap_String_Id.h.h:586
 msgid "Numbered List"
 msgstr "Нумерисана листа"
 
@@ -4281,7 +4256,8 @@ msgstr ""
 #. TOOLBAR_STATUSLINE_FMT_OVERLINE
 #. TOOLBAR_TOOLTIP_FMT_OVERLINE
 #. DLG_UFS_OverlineCheck
-#: po/tmp/ap_String_Id.h.h:1760 po/tmp/xap_String_Id.h.h:598
+#: po/tmp/ap_String_Id.h.h:1760
+#: po/tmp/xap_String_Id.h.h:600
 msgid "Overline"
 msgstr "Црта изнад изабраног текста"
 
@@ -4293,7 +4269,7 @@ msgstr "Поставља/уклања црту изнад изабраног т�
 #. InsertModeFieldOVR
 #: po/tmp/ap_String_Id.h.h:1764
 msgid "Overwrite"
-msgstr "ПРЕП"
+msgstr "Пиши преко"
 
 #. MENU_LABEL_FILE_PROPERTIES
 #: po/tmp/ap_String_Id.h.h:1766
@@ -4303,7 +4279,7 @@ msgstr "&Додатне информације"
 #. MENU_LABEL_TOOLS_REVISIONS_PURGE
 #: po/tmp/ap_String_Id.h.h:1768
 msgid "P&urge revisions"
-msgstr ""
+msgstr "Пр&очисти ревизије"
 
 #. MENU_LABEL_EDIT_PASTE_SPECIAL
 #: po/tmp/ap_String_Id.h.h:1770
@@ -4324,17 +4300,17 @@ msgstr "Прелом стране &пре"
 #. MENU_LABEL_FMT_BACKGROUND
 #: po/tmp/ap_String_Id.h.h:1777
 msgid "Page Background"
-msgstr "&Позадина"
+msgstr "Позадина стране"
 
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_COLOR
 #: po/tmp/ap_String_Id.h.h:1779
 msgid "Page C&olor"
-msgstr ""
+msgstr "Б&оја стране"
 
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_IMAGE
 #: po/tmp/ap_String_Id.h.h:1781
 msgid "Page Image"
-msgstr ""
+msgstr "Слика стране"
 
 #. MENU_LABEL_INSERT_PAGENO
 #: po/tmp/ap_String_Id.h.h:1783
@@ -4349,7 +4325,7 @@ msgstr "Број стране"
 #. DLG_HdrFtr_PageNumberProperties
 #: po/tmp/ap_String_Id.h.h:1787
 msgid "Page Number Properties"
-msgstr ""
+msgstr "Особине броја стране"
 
 #. DLG_PageNumbers_Title
 #: po/tmp/ap_String_Id.h.h:1789
@@ -4380,12 +4356,12 @@ msgstr "Страна: %d/%d"
 #. DLG_WordCount_Pages
 #: po/tmp/ap_String_Id.h.h:1799
 msgid "Pages:"
-msgstr "Страна"
+msgstr "Стране:"
 
 #. DLG_Para_LabelPagination
 #: po/tmp/ap_String_Id.h.h:1801
 msgid "Pagination"
-msgstr "Нумерисање"
+msgstr "Нумерисање страна"
 
 #. DLG_PageSetup_Paper_Size
 #: po/tmp/ap_String_Id.h.h:1803
@@ -4421,7 +4397,7 @@ msgstr "Пример пасуса"
 #. DLG_WordCount_Paragraphs
 #: po/tmp/ap_String_Id.h.h:1816
 msgid "Paragraphs:"
-msgstr "Пасуса"
+msgstr "Пасуса:"
 
 #. WORD_PassRequired
 #: po/tmp/ap_String_Id.h.h:1818
@@ -4433,7 +4409,7 @@ msgstr "Потребна је лозинка, овај документ је з�
 #. TOOLBAR_TOOLTIP_EDIT_PASTE
 #: po/tmp/ap_String_Id.h.h:1822
 msgid "Paste"
-msgstr "Пребацује садржај Спремишта (Клипбоарда) у документ"
+msgstr "Пребацује садржај спремишта (клипборда) у документ"
 
 #. DLG_MetaData_TAB_Permission
 #: po/tmp/ap_String_Id.h.h:1824
@@ -4453,12 +4429,12 @@ msgstr ""
 #. DLG_FormatFootnotes_EndPlaceEndDoc
 #: po/tmp/ap_String_Id.h.h:1830
 msgid "Place at end of document"
-msgstr ""
+msgstr "Смештање на крају документа"
 
 #. DLG_FormatFootnotes_EndPlaceEndSec
 #: po/tmp/ap_String_Id.h.h:1832
 msgid "Place at end of section"
-msgstr ""
+msgstr "Смештање на крају дела"
 
 #. DLG_FormatFootnotes_EndPlacement
 #: po/tmp/ap_String_Id.h.h:1834
@@ -4469,12 +4445,12 @@ msgstr ""
 #. DLG_PageNumbers_Position_No_Colon
 #: po/tmp/ap_String_Id.h.h:1837
 msgid "Position"
-msgstr ""
+msgstr "Место"
 
 #. DLG_FormatFrame_PositionTo
 #: po/tmp/ap_String_Id.h.h:1839
 msgid "Position Text Box"
-msgstr ""
+msgstr "Место поља за текст"
 
 #. DLG_FormatFrame_SetToColumn
 #: po/tmp/ap_String_Id.h.h:1841
@@ -4484,12 +4460,12 @@ msgstr ""
 #. DLG_FormatFrame_SetToPage
 #: po/tmp/ap_String_Id.h.h:1843
 msgid "Position to Page"
-msgstr ""
+msgstr "Размештање ка страни"
 
 #. DLG_FormatFrame_SetToParagraph
 #: po/tmp/ap_String_Id.h.h:1845
 msgid "Position to Paragraph"
-msgstr ""
+msgstr "Размештање ка пасусу"
 
 #. DLG_PageNumbers_Position
 #: po/tmp/ap_String_Id.h.h:1847
@@ -4520,7 +4496,8 @@ msgstr "Подешавања"
 #. DLG_Lists_Preview
 #. DLG_PageNumbers_Preview
 #. DLG_Zoom_PreviewFrame
-#: po/tmp/ap_String_Id.h.h:1862 po/tmp/xap_String_Id.h.h:630
+#: po/tmp/ap_String_Id.h.h:1862
+#: po/tmp/xap_String_Id.h.h:632
 msgid "Preview"
 msgstr "Пример"
 
@@ -4528,7 +4505,7 @@ msgstr "Пример"
 #. MENU_STATUSLINE_WEB_SAVEASWEB
 #: po/tmp/ap_String_Id.h.h:1865
 msgid "Preview the document as a web page"
-msgstr "Приказује овај документ у Wеб претраживачу"
+msgstr "Приказује овај документ као веб страну"
 
 #. MENU_STATUSLINE_FILE_PRINT_PREVIEW
 #. TOOLBAR_STATUSLINE_FILE_PRINT_PREVIEW
@@ -4539,17 +4516,14 @@ msgstr "Изглед одштампаног документа"
 
 #. DLG_Para_PreviewPrevParagraph
 #: po/tmp/ap_String_Id.h.h:1871
-msgid ""
-"Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph "
-"Previous Paragraph Previous Paragraph Previous Paragraph"
-msgstr ""
-"Претходни пасус Претходни пасус Претходни пасус Претходни пасус Претходни "
-"пасус Претходни пасус Претходни пасус Претходни пасус Претходни пасус "
+msgid "Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph"
+msgstr "Претходни пасус Претходни пасус Претходни пасус Претходни пасус Претходни пасус Претходни пасус Претходни пасус Претходни пасус Претходни пасус "
 
 #. TOOLBAR_LABEL_FILE_PRINT
 #. DLG_UP_PrintTitle
 #. DLG_UP_PrintButton
-#: po/tmp/ap_String_Id.h.h:1873 po/tmp/xap_String_Id.h.h:635
+#: po/tmp/ap_String_Id.h.h:1873
+#: po/tmp/xap_String_Id.h.h:637
 msgid "Print"
 msgstr "Штампање"
 
@@ -4571,7 +4545,7 @@ msgstr "Прика&з пре штампања"
 #. TOOLBAR_LABEL_FILE_PRINT_PREVIEW
 #: po/tmp/ap_String_Id.h.h:1881
 msgid "Print Preview"
-msgstr ""
+msgstr "Приказује документ како би изгледао на папиру"
 
 #. MENU_STATUSLINE_FILE_PRINT
 #: po/tmp/ap_String_Id.h.h:1883
@@ -4603,7 +4577,7 @@ msgstr "Штампам стране од %d до %d"
 #. FIELD_Document_Publisher
 #: po/tmp/ap_String_Id.h.h:1894
 msgid "Publisher"
-msgstr ""
+msgstr "Издавач"
 
 #. DLG_MetaData_Publisher_LBL
 #: po/tmp/ap_String_Id.h.h:1896
@@ -4618,17 +4592,17 @@ msgstr "&Замени"
 #. MENU_LABEL_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h.h:1900
 msgid "RTL &Document"
-msgstr ""
+msgstr "ДНЛ до&кумент"
 
 #. MENU_LABEL_FMT_DIRECTION_DD_RTL
 #: po/tmp/ap_String_Id.h.h:1902
 msgid "RTL &Paragraph"
-msgstr ""
+msgstr "ДНЛ &пасус"
 
 #. MENU_LABEL_FMT_DIRECTION_SD_RTL
 #: po/tmp/ap_String_Id.h.h:1904
 msgid "RTL &Section"
-msgstr ""
+msgstr "ДНЛ &део"
 
 #. DLG_FR_ReplaceWithLabel
 #: po/tmp/ap_String_Id.h.h:1906
@@ -4638,7 +4612,7 @@ msgstr "За&мени са:"
 #. DLG_FR_ReverseFind
 #: po/tmp/ap_String_Id.h.h:1908
 msgid "Re&verse find"
-msgstr ""
+msgstr "По&вратно тражење"
 
 #. MENU_LABEL_FILE_REVERT
 #: po/tmp/ap_String_Id.h.h:1910
@@ -4706,22 +4680,22 @@ msgstr "Уклони особину из стила"
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h.h:1940
 msgid "Remove Row as Heading"
-msgstr ""
+msgstr "Уклони ред као наслов"
 
 #. MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h.h:1942
 msgid "Remove Row as the page Heading"
-msgstr ""
+msgstr "Уклања ред као наслов стране"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_PURGE
 #: po/tmp/ap_String_Id.h.h:1944
 msgid "Remove all revision information from the document"
-msgstr ""
+msgstr "Уклања све информације о ревизијама из овог документа"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY_PURGE
 #: po/tmp/ap_String_Id.h.h:1946
 msgid "Remove full document history from the document"
-msgstr ""
+msgstr "Уклања пуну историју документа из овог документа"
 
 #. MENU_STATUSLINE_EDIT_REMOVEFOOTER
 #: po/tmp/ap_String_Id.h.h:1948
@@ -4731,22 +4705,22 @@ msgstr "Уклања заглавље на овој страни из докум
 #. MENU_STATUSLINE_EDIT_REMOVEHEADER
 #: po/tmp/ap_String_Id.h.h:1950
 msgid "Remove the Header on this page from the Document"
-msgstr "Уклања надглавље на овој страни"
+msgstr "Уклања надглавље на овој страни из документа"
 
 #. MENU_STATUSLINE_EDIT_CUTIMAGE
 #: po/tmp/ap_String_Id.h.h:1952
 msgid "Remove the Image and save a copy on the clipboard"
-msgstr ""
+msgstr "Уклања слику и чува копију на спремиште (клипборд)"
 
 #. MENU_STATUSLINE_EDIT_DELETEIMAGE
 #: po/tmp/ap_String_Id.h.h:1954
 msgid "Remove the Image from the Document"
-msgstr ""
+msgstr "Уклања слику из документа"
 
 #. MENU_STATUSLINE_EDIT_DELETEFRAME
 #: po/tmp/ap_String_Id.h.h:1956
 msgid "Remove the Text Box from the Document"
-msgstr ""
+msgstr "Уклања поље за текст из документа"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_REJECT_REVISION
 #: po/tmp/ap_String_Id.h.h:1958
@@ -4756,12 +4730,12 @@ msgstr "Уклања предложену промену"
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT
 #: po/tmp/ap_String_Id.h.h:1960
 msgid "Repeat Row as Heading"
-msgstr ""
+msgstr "Понови ред као наслов"
 
 #. MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT
 #: po/tmp/ap_String_Id.h.h:1962
 msgid "Repeat Row as Heading on each new page"
-msgstr "Ред као наслов"
+msgstr "Понавља ред као наслов на свакој новој страни"
 
 #. DLG_FR_ReplaceTitle
 #. DLG_Annotation_Replace_LBL
@@ -4777,7 +4751,7 @@ msgstr "Замени &све"
 #. DLG_Annotation_Replace_tooltip
 #: po/tmp/ap_String_Id.h.h:1969
 msgid "Replace the annotated text with the annotation content"
-msgstr ""
+msgstr "Мења обележени текст садржајем белешке"
 
 #. MENU_STATUSLINE_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h.h:1971
@@ -4818,7 +4792,7 @@ msgstr ""
 #. DLG_FormatFootnotes_EndRestartSec
 #: po/tmp/ap_String_Id.h.h:1986
 msgid "Restart on each section"
-msgstr ""
+msgstr "Почиње поново у сваком делу"
 
 #. DLG_HdrFtr_RestartCheck
 #: po/tmp/ap_String_Id.h.h:1988
@@ -4838,7 +4812,7 @@ msgstr ""
 #. MSG_RevertFile
 #: po/tmp/ap_String_Id.h.h:1994
 msgid "Revert file to last saved state?"
-msgstr "Желите ли да вратите датотеку на задње несачувано стање?"
+msgstr "Вратити датотеку на задње сачувано стање?"
 
 #. MENU_STATUSLINE_FILE_REVERT
 #: po/tmp/ap_String_Id.h.h:1996
@@ -4890,17 +4864,17 @@ msgstr "Текст ће бити поравнат уз десну ивицу"
 #. MENU_STATUSLINE_ALIGN_RIGHT
 #: po/tmp/ap_String_Id.h.h:2016
 msgid "Right-align the paragraph"
-msgstr "Текст ће бити поравнат уз десну ивицу"
+msgstr "Поравнање пасуса уз десну ивицу"
 
 #. DLG_Para_DomDirection
 #: po/tmp/ap_String_Id.h.h:2018
 msgid "Right-to-left &dominant"
-msgstr "Подразумевома писање: са лева на &десно"
+msgstr "Подразумевано писање: са лева на &десно"
 
 #. FIELD_Document_Rights
 #: po/tmp/ap_String_Id.h.h:2020
 msgid "Rights"
-msgstr ""
+msgstr "Права"
 
 #. DLG_MetaData_Rights_LBL
 #: po/tmp/ap_String_Id.h.h:2022
@@ -4930,7 +4904,7 @@ msgstr "С&криптови"
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW
 #: po/tmp/ap_String_Id.h.h:2032
 msgid "S&how revisions"
-msgstr ""
+msgstr "При&кажи ревизије"
 
 #. MENU_LABEL_TABLE_SPLIT_CELLS
 #: po/tmp/ap_String_Id.h.h:2034
@@ -4945,7 +4919,7 @@ msgstr "Сач&увај"
 #. MENU_LABEL_FILE_EXPORT
 #: po/tmp/ap_String_Id.h.h:2038
 msgid "Sav&e Copy"
-msgstr "Сачувај &копију"
+msgstr "Сачув&ај копију"
 
 #. TOOLBAR_LABEL_FILE_SAVE
 #: po/tmp/ap_String_Id.h.h:2040
@@ -4976,7 +4950,7 @@ msgstr ""
 #: po/tmp/ap_String_Id.h.h:2050
 #, c-format
 msgid "Save changes to document %s before closing?"
-msgstr "Да ли да сачувам промене на датотеци %s?"
+msgstr "Сачувати промене на документу %s пре изласка?"
 
 #. MENU_STATUSLINE_FILE_SAVEEMBED
 #: po/tmp/ap_String_Id.h.h:2052
@@ -5015,7 +4989,7 @@ msgstr "Снима изабрану слику у посебну датотек�
 #. MENU_LABEL_FILE_SAVEEMBED
 #: po/tmp/ap_String_Id.h.h:2068
 msgid "Save to file"
-msgstr ""
+msgstr "Сачувај у датотеку"
 
 #. DLG_PageSetup_Scale
 #: po/tmp/ap_String_Id.h.h:2070
@@ -5040,7 +5014,7 @@ msgstr "Секунди од почетка бројања времена"
 #. DLG_Break_SectionBreaks_Capital
 #: po/tmp/ap_String_Id.h.h:2078
 msgid "Section Breaks"
-msgstr ""
+msgstr "Прелом делова"
 
 #. DLG_Break_SectionBreaks
 #: po/tmp/ap_String_Id.h.h:2080
@@ -5050,11 +5024,12 @@ msgstr "Прелом делова"
 #. MENU_STATUSLINE_TOOLS_HISTORY
 #: po/tmp/ap_String_Id.h.h:2082
 msgid "See history of the current document"
-msgstr ""
+msgstr "Преглед историје тренутног документа"
 
 #. MENU_STATUSLINE_TABLE_SELECT
 #. DLG_Select
-#: po/tmp/ap_String_Id.h.h:2084 po/tmp/xap_String_Id.h.h:695
+#: po/tmp/ap_String_Id.h.h:2084
+#: po/tmp/xap_String_Id.h.h:699
 msgid "Select"
 msgstr "Бира"
 
@@ -5076,7 +5051,7 @@ msgstr "Бира колону"
 #. TOOLBAR_TOOLTIP_FMT_CHOOSE
 #: po/tmp/ap_String_Id.h.h:2092
 msgid "Select Font"
-msgstr ""
+msgstr "Избор гарнитуре знакова"
 
 #. DLG_ListRevisions_Title
 #: po/tmp/ap_String_Id.h.h:2094
@@ -5086,17 +5061,17 @@ msgstr "Избор ревизије"
 #. MENU_STATUSLINE_TABLE_SELECT_ROW
 #: po/tmp/ap_String_Id.h.h:2096
 msgid "Select Row"
-msgstr "Изабира ред"
+msgstr "Бира ред"
 
 #. MENU_STATUSLINE_TABLE_SELECT_TABLE
 #: po/tmp/ap_String_Id.h.h:2098
 msgid "Select Table"
-msgstr "Изабира табелу"
+msgstr "Бира табелу"
 
 #. MENU_LABEL_EDIT_SELECT_FRAME
 #: po/tmp/ap_String_Id.h.h:2100
 msgid "Select Text Box"
-msgstr ""
+msgstr "Избор поља за текст"
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h.h:2102
@@ -5107,12 +5082,12 @@ msgstr "Изаберите маркер из листе."
 #. DLG_FormatTable_SelectImage
 #: po/tmp/ap_String_Id.h.h:2105
 msgid "Select image from File"
-msgstr ""
+msgstr "Бирање слике из датотека"
 
 #. MENU_STATUSLINE_EDIT_SELECT_FRAME
 #: po/tmp/ap_String_Id.h.h:2107
 msgid "Select the Text Box"
-msgstr ""
+msgstr "Бира поље за текст"
 
 #. MENU_STATUSLINE_EDIT_SELECTALL
 #: po/tmp/ap_String_Id.h.h:2109
@@ -5121,9 +5096,10 @@ msgstr "Бира цео документ"
 
 #. DLG_FormatTable_Apply_To_Selection
 #. DLG_UP_Selection
-#: po/tmp/ap_String_Id.h.h:2111 po/tmp/xap_String_Id.h.h:703
+#: po/tmp/ap_String_Id.h.h:2111
+#: po/tmp/xap_String_Id.h.h:707
 msgid "Selection"
-msgstr "Изабрани садржај"
+msgstr "Избор"
 
 #. DLG_ToggleCase_SentenceCase
 #: po/tmp/ap_String_Id.h.h:2113
@@ -5158,7 +5134,7 @@ msgstr ""
 #. MENU_LABEL_TABLE_TABLETOTEXTTABS
 #: po/tmp/ap_String_Id.h.h:2125
 msgid "Separate with tabs"
-msgstr ""
+msgstr "Раздвој табулаторима"
 
 #. DLG_Tab_Button_Set
 #: po/tmp/ap_String_Id.h.h:2127
@@ -5179,17 +5155,17 @@ msgstr "Подеси подразумеване вредности"
 #. DLG_FormatTable_SetImage
 #: po/tmp/ap_String_Id.h.h:2134
 msgid "Set Image"
-msgstr ""
+msgstr "Постављање слике"
 
 #. MENU_LABEL_FMT_SETPOSIMAGE
 #: po/tmp/ap_String_Id.h.h:2136
 msgid "Set Positioned Image"
-msgstr ""
+msgstr "Постави смештену слику"
 
 #. DLG_FormatFrame_SetTextWrapping
 #: po/tmp/ap_String_Id.h.h:2138
 msgid "Set Text Wrapping"
-msgstr ""
+msgstr "Постављање омотавања текста"
 
 #. MENU_STATUSLINE_FMT_BACKGROUND_PAGE_IMAGE
 #: po/tmp/ap_String_Id.h.h:2140
@@ -5199,17 +5175,17 @@ msgstr ""
 #. MENU_STATUSLINE_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h.h:2142
 msgid "Set dominant direction of document to RTL"
-msgstr ""
+msgstr "Поставља доминантан смер документа на ДНЛ"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DD_RTL
 #: po/tmp/ap_String_Id.h.h:2144
 msgid "Set dominant direction of paragraph to RTL"
-msgstr ""
+msgstr "Поставља доминантан смер пасуса на ДНЛ"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_SD_RTL
 #: po/tmp/ap_String_Id.h.h:2146
 msgid "Set dominant direction of section to RTL"
-msgstr ""
+msgstr "Поставља доминантан смер дела на ДНЛ"
 
 #. MENU_STATUSLINE_FILE_PROPERTIES
 #: po/tmp/ap_String_Id.h.h:2148
@@ -5219,13 +5195,13 @@ msgstr "Преглед и измене додатних информација �
 #. DLG_Tab_Label_New
 #: po/tmp/ap_String_Id.h.h:2150
 msgid "Set new Tab"
-msgstr ""
+msgstr "Постављање новог табулатора"
 
 #. DLG_FormatFrame_NoImageBackground
 #. DLG_FormatTable_NoImageBackground
 #: po/tmp/ap_String_Id.h.h:2153
 msgid "Set no image"
-msgstr ""
+msgstr "Постављање никакве слике"
 
 #. MENU_STATUSLINE_TOOLS_OPTIONS
 #: po/tmp/ap_String_Id.h.h:2155
@@ -5240,24 +5216,22 @@ msgstr "Подешава размак табулатора"
 #. MENU_STATUSLINE_FMT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h.h:2159
 msgid "Set the type and styles of the Table of Contents"
-msgstr ""
+msgstr "Постављање типа и стилова за садржај"
 
 #. MENU_STATUSLINE_FMT_FOOTNOTES
 #: po/tmp/ap_String_Id.h.h:2161
 msgid "Set the types of Footnotes and Endnotes"
-msgstr ""
+msgstr "Постављање типова за фусноте и крајње белешке"
 
 #. MENU_STATUSLINE_FMT_HDRFTR
 #: po/tmp/ap_String_Id.h.h:2163
 msgid "Set the types of Headers and Footers"
-msgstr ""
-"Подешавање надглавља и заглавља (текст који се појављује при врху или дну "
-"сваке стране)"
+msgstr "Подешавање надглавља и заглавља (текст који се појављује при врху или дну сваке стране)"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_THIS
 #: po/tmp/ap_String_Id.h.h:2165
 msgid "Set this Row as Heading"
-msgstr ""
+msgstr "Постави овај ред као наслов"
 
 #. MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT_THIS
 #: po/tmp/ap_String_Id.h.h:2167
@@ -5286,7 +5260,8 @@ msgstr "Тастатурна пречица"
 
 #. DLG_Options_Label_Show
 #. DLG_Show
-#: po/tmp/ap_String_Id.h.h:2177 po/tmp/xap_String_Id.h.h:715
+#: po/tmp/ap_String_Id.h.h:2177
+#: po/tmp/xap_String_Id.h.h:721
 msgid "Show"
 msgstr "Прикажи"
 
@@ -5308,7 +5283,7 @@ msgstr "&Ознаке уређивања"
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_BEFORE
 #: po/tmp/ap_String_Id.h.h:2185
 msgid "Show document &before revisions"
-msgstr ""
+msgstr "Прикажи документ документа &пре ревизија"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_AFTER
 #: po/tmp/ap_String_Id.h.h:2187
@@ -5323,12 +5298,12 @@ msgstr ""
 #. MENU_STATUSLINE_WINDOW_MORE
 #: po/tmp/ap_String_Id.h.h:2191
 msgid "Show full list of documents"
-msgstr "Приказује комплетну листу прозора"
+msgstr "Приказује комплетну листу докумената"
 
 #. MENU_STATUSLINE_VIEW_RULER
 #: po/tmp/ap_String_Id.h.h:2193
 msgid "Show or hide the rulers"
-msgstr "Прикзује/скрива лењире"
+msgstr "Приказује/скрива лењире"
 
 #. MENU_STATUSLINE_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h.h:2195
@@ -5341,7 +5316,7 @@ msgstr "Приказује/скрива статусну линију (инф. �
 #. MENU_STATUSLINE_VIEW_TB_4
 #: po/tmp/ap_String_Id.h.h:2200
 msgid "Show or hide the toolbar"
-msgstr ""
+msgstr "Приказује или скрива палету са алаткама"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW
 #: po/tmp/ap_String_Id.h.h:2202
@@ -5361,7 +5336,7 @@ msgstr ""
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_BEFORE
 #: po/tmp/ap_String_Id.h.h:2208
 msgid "Show what the document looks like before revisions"
-msgstr ""
+msgstr "Приказује како је документ изгледао пре ревизија"
 
 #. DLG_Options_Label_ViewShowHide
 #: po/tmp/ap_String_Id.h.h:2210
@@ -5371,7 +5346,7 @@ msgstr "Прикажи..."
 #. MENU_STATUSLINE_TOOLS_ANNOTATIONS_TOGGLE_DISPLAY
 #: po/tmp/ap_String_Id.h.h:2212
 msgid "Show/hide annotations"
-msgstr ""
+msgstr "Приказује/скрива белешке"
 
 #. TOOLBAR_STATUSLINE_VIEW_SHOWPARA
 #. TOOLBAR_TOOLTIP_VIEW_SHOWPARA
@@ -5382,12 +5357,12 @@ msgstr "Приказује/скрива додатне ознаке уређив
 #. TB_Simple
 #: po/tmp/ap_String_Id.h.h:2217
 msgid "Simple"
-msgstr ""
+msgstr "Једноставна"
 
 #. DLG_Options_Label_ViewSimpleTB
 #: po/tmp/ap_String_Id.h.h:2219
 msgid "Simple Toolbar"
-msgstr ""
+msgstr "Једноставна палета са алаткама"
 
 #. DLG_Para_SpacingSingle
 #: po/tmp/ap_String_Id.h.h:2221
@@ -5408,7 +5383,7 @@ msgstr "Једнострук размак између редова"
 #. DLG_Options_TabLabel_SmartQuotes
 #: po/tmp/ap_String_Id.h.h:2228
 msgid "Smart Quotes"
-msgstr ""
+msgstr "Паметни наводници"
 
 #. MENU_LABEL_TABLE_SORT
 #: po/tmp/ap_String_Id.h.h:2230
@@ -5463,7 +5438,7 @@ msgstr ""
 #. MENU_STATUSLINE_TABLE_SORT
 #: po/tmp/ap_String_Id.h.h:2250
 msgid "Sort Table"
-msgstr "Сортира вредности у табели у опадајући/растући поредак"
+msgstr "Сортира табелу"
 
 #. DLG_MetaData_Source_LBL
 #: po/tmp/ap_String_Id.h.h:2252
@@ -5473,13 +5448,13 @@ msgstr "Извор:"
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h.h:2254
 msgid "Space after Column"
-msgstr "Празно место после ступца"
+msgstr "Празно место после колоне"
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
 #. TOOLBAR_TOOLTIP_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h.h:2257
 msgid "Space before: 12 pt"
-msgstr "Празно место пре: 12 пт"
+msgstr "Празно место пре: 12 pt"
 
 #. TOOLBAR_STATUSLINE_PARA_0BEFORE
 #. TOOLBAR_TOOLTIP_PARA_0BEFORE
@@ -5495,7 +5470,7 @@ msgstr "Проред (пасуси)"
 #. DLG_Options_SpellCheckingTitle
 #: po/tmp/ap_String_Id.h.h:2264
 msgid "Spell Checking"
-msgstr ""
+msgstr "Провера правописа"
 
 #. TOOLBAR_LABEL_SPELLCHECK
 #: po/tmp/ap_String_Id.h.h:2266
@@ -5539,13 +5514,13 @@ msgstr "Раздваја табелу на две мање табеле"
 #. TOOLBAR_LABEL_SPLIT_CELLS
 #: po/tmp/ap_String_Id.h.h:2284
 msgid "Split cells"
-msgstr ""
+msgstr "Подели ћелије"
 
 #. DLG_SplitCells_HoriMid
 #. DLG_SplitCells_VertMid
 #: po/tmp/ap_String_Id.h.h:2287
 msgid "Split in Middle"
-msgstr ""
+msgstr "Подела по средини"
 
 #. DLG_SplitCells_Below
 #: po/tmp/ap_String_Id.h.h:2289
@@ -5591,13 +5566,14 @@ msgstr ""
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
 #: po/tmp/ap_String_Id.h.h:2306
 msgid "Split this cell"
-msgstr ""
+msgstr "Дели ову ћелију"
 
 #. DLG_Lists_Square_List
 #. STYLE_SQUARELIST
-#: po/tmp/ap_String_Id.h.h:2308 po/tmp/xap_String_Id.h.h:729
+#: po/tmp/ap_String_Id.h.h:2308
+#: po/tmp/xap_String_Id.h.h:735
 msgid "Square List"
-msgstr "листа са коцкицама"
+msgstr "Листа са коцкицама"
 
 #. MENU_LABEL_FMT_STYLE
 #: po/tmp/ap_String_Id.h.h:2310
@@ -5607,7 +5583,7 @@ msgstr "Ст&ил"
 #. TB_Standard
 #: po/tmp/ap_String_Id.h.h:2312
 msgid "Standard"
-msgstr ""
+msgstr "Стандардна"
 
 #. DLG_Options_Label_ViewStandardTB
 #: po/tmp/ap_String_Id.h.h:2314
@@ -5616,9 +5592,10 @@ msgstr "Стандардна палета"
 
 #. DLG_Lists_Star_List
 #. STYLE_STARLIST
-#: po/tmp/ap_String_Id.h.h:2316 po/tmp/xap_String_Id.h.h:733
+#: po/tmp/ap_String_Id.h.h:2316
+#: po/tmp/xap_String_Id.h.h:739
 msgid "Star List"
-msgstr "листа са звездицама"
+msgstr "Листа са звездицама"
 
 #. DLG_Lists_Start
 #: po/tmp/ap_String_Id.h.h:2318
@@ -5644,7 +5621,7 @@ msgstr "Започни нову ревизију"
 #. MENU_LABEL_TOOLS_REVISIONS_NEW_REVISION
 #: po/tmp/ap_String_Id.h.h:2327
 msgid "Start ne&w revision"
-msgstr ""
+msgstr "Започни но&ву ревизију"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_NEW_REVISION
 #: po/tmp/ap_String_Id.h.h:2329
@@ -5670,14 +5647,10 @@ msgstr "П&рецртано"
 #. TOOLBAR_STATUSLINE_FMT_STRIKE
 #. TOOLBAR_TOOLTIP_FMT_STRIKE
 #. DLG_UFS_StrikeoutCheck
-#: po/tmp/ap_String_Id.h.h:2339 po/tmp/xap_String_Id.h.h:735
-#, fuzzy
+#: po/tmp/ap_String_Id.h.h:2339
+#: po/tmp/xap_String_Id.h.h:741
 msgid "Strike"
-msgstr ""
-"#-#-#-#-#  sr-tmp.po  #-#-#-#-#\n"
-"Прецртан\n"
-"#-#-#-#-#  sr-tmp.po  #-#-#-#-#\n"
-"Прецртава текст"
+msgstr "Прецртан"
 
 #. MENU_STATUSLINE_FMT_STRIKE
 #: po/tmp/ap_String_Id.h.h:2341
@@ -5687,7 +5660,7 @@ msgstr "Прецртава означени текст (укљ/искљ)"
 #. MENU_LABEL_FMT_STYLIST
 #: po/tmp/ap_String_Id.h.h:2343
 msgid "Sty&list"
-msgstr ""
+msgstr "Сти&листа"
 
 #. TOOLBAR_LABEL_FMT_STYLE
 #. TOOLBAR_STATUSLINE_FMT_STYLE
@@ -5723,7 +5696,8 @@ msgstr "Стилу морате да дате име"
 
 #. DLG_Lists_Style
 #. DLG_UFS_StyleLabel
-#: po/tmp/ap_String_Id.h.h:2359 po/tmp/xap_String_Id.h.h:737
+#: po/tmp/ap_String_Id.h.h:2359
+#: po/tmp/xap_String_Id.h.h:743
 msgid "Style:"
 msgstr "Стил:"
 
@@ -5736,23 +5710,24 @@ msgstr "Стилови"
 #. DLG_Stylist_Title
 #: po/tmp/ap_String_Id.h.h:2364
 msgid "Stylist"
-msgstr ""
+msgstr "Стилиста"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h.h:2366
 msgid "Subject"
-msgstr ""
+msgstr "Тема"
 
 #. DLG_MetaData_Subject_LBL
 #: po/tmp/ap_String_Id.h.h:2368
 msgid "Subject:"
-msgstr ""
+msgstr "Тема:"
 
 #. TOOLBAR_LABEL_FMT_SUBSCRIPT
 #. TOOLBAR_STATUSLINE_FMT_SUBSCRIPT
 #. TOOLBAR_TOOLTIP_FMT_SUBSCRIPT
 #. DLG_UFS_SubScript
-#: po/tmp/ap_String_Id.h.h:2372 po/tmp/xap_String_Id.h.h:741
+#: po/tmp/ap_String_Id.h.h:2372
+#: po/tmp/xap_String_Id.h.h:747
 msgid "Subscript"
 msgstr "У индексу"
 
@@ -5769,22 +5744,22 @@ msgstr "Предлаж&и само оне речи које су у главно
 #. MENU_LABEL_TABLE_INSERT_SUMROWS
 #: po/tmp/ap_String_Id.h.h:2378
 msgid "Sum a Column"
-msgstr ""
+msgstr "Збир колоне"
 
 #. MENU_LABEL_TABLE_INSERT_SUMCOLS
 #: po/tmp/ap_String_Id.h.h:2380
 msgid "Sum a Row"
-msgstr ""
+msgstr "Збир реда"
 
 #. FIELD_Numbers_TableSumRows
 #: po/tmp/ap_String_Id.h.h:2382
 msgid "Sum a Table Column"
-msgstr ""
+msgstr "Сабирање колоне табеле"
 
 #. FIELD_Numbers_TableSumCols
 #: po/tmp/ap_String_Id.h.h:2384
 msgid "Sum a Table Row"
-msgstr ""
+msgstr "Сабирање реда табеле"
 
 #. DLG_MetaData_TAB_Summary
 #: po/tmp/ap_String_Id.h.h:2386
@@ -5800,7 +5775,8 @@ msgstr "У и&зложиоцу"
 #. TOOLBAR_STATUSLINE_FMT_SUPERSCRIPT
 #. TOOLBAR_TOOLTIP_FMT_SUPERSCRIPT
 #. DLG_UFS_SuperScript
-#: po/tmp/ap_String_Id.h.h:2392 po/tmp/xap_String_Id.h.h:743
+#: po/tmp/ap_String_Id.h.h:2392
+#: po/tmp/xap_String_Id.h.h:749
 msgid "Superscript"
 msgstr "У изложиоцу"
 
@@ -5838,30 +5814,31 @@ msgstr "Табулатори које желите да уклоните:"
 #. DLG_FormatTable_Apply_To_Table
 #. MENU_STATUSLINE_TABLE
 #. TB_Table
-#: po/tmp/ap_String_Id.h.h:2408 po/tmp/xap_String_Id.h.h:753
+#: po/tmp/ap_String_Id.h.h:2408
+#: po/tmp/xap_String_Id.h.h:759
 msgid "Table"
 msgstr "Опције за рад са табелама"
 
 #. DLG_InsertTable_TableSize_Capital
 #: po/tmp/ap_String_Id.h.h:2410
 msgid "Table Size"
-msgstr ""
+msgstr "Величина табеле"
 
 #. DLG_Options_Label_ViewTableTB
 #: po/tmp/ap_String_Id.h.h:2412
 msgid "Table Toolbar"
-msgstr ""
+msgstr "Палета са алаткама за табелу"
 
 #. MENU_LABEL_INSERT_TABLEOFCONTENTS
 #. MENU_LABEL_FMT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h.h:2415
 msgid "Table of Contents"
-msgstr ""
+msgstr "Садржај"
 
 #. FIELD_Numbers_TOCListLabel
 #: po/tmp/ap_String_Id.h.h:2417
 msgid "Table of Contents List Label"
-msgstr ""
+msgstr "Ознака у листи за садржај"
 
 #. FIELD_Numbers_TOCPageNumber
 #: po/tmp/ap_String_Id.h.h:2419
@@ -5882,7 +5859,7 @@ msgstr "Табулатори"
 #. DLG_FormatTOC_DetailsTabPage
 #: po/tmp/ap_String_Id.h.h:2426
 msgid "Tabs and Page Numbering"
-msgstr ""
+msgstr "Табулатори и нумерисање страна"
 
 #. MENU_LABEL_FMT
 #: po/tmp/ap_String_Id.h.h:2428
@@ -5913,17 +5890,17 @@ msgstr "Удаљеност текста:"
 #. MENU_LABEL_FMT_FRAME
 #: po/tmp/ap_String_Id.h.h:2439
 msgid "Text Box"
-msgstr ""
+msgstr "Поље за текст"
 
 #. DLG_Lists_PageFolding
 #: po/tmp/ap_String_Id.h.h:2441
 msgid "Text Folding"
-msgstr ""
+msgstr "Пресавијање текста"
 
 #. DLG_FormatFrame_TextWrapping
 #: po/tmp/ap_String_Id.h.h:2443
 msgid "Text Wrapping"
-msgstr ""
+msgstr "Омотавање текста"
 
 #. DLG_Options_Label_Both
 #: po/tmp/ap_String_Id.h.h:2445
@@ -5932,11 +5909,7 @@ msgstr "Текст и иконицу"
 
 #. COMMAND_LINE_PRINTING_DEPRECATED
 #: po/tmp/ap_String_Id.h.h:2447
-msgid ""
-"The '--print' option has been removed as of AbiWord 2.8. You can achieve the "
-"desired behavior using AbiWord's command-line conversion tools and then "
-"piping the output to a print spooler. Eg: 'abiword --to=ps --to-name=fd://1 "
-"myfile.txt | lpr'"
+msgid "The '--print' option has been removed as of AbiWord 2.8. You can achieve the desired behavior using AbiWord's command-line conversion tools and then piping the output to a print spooler. Eg: 'abiword --to=ps --to-name=fd://1 myfile.txt | lpr'"
 msgstr ""
 
 #. DLG_PageSetup_ErrBigMargins
@@ -5946,9 +5919,7 @@ msgstr "Изабране маргине су превелике да би ста
 
 #. DLG_Options_Prompt_YouMustRestart
 #: po/tmp/ap_String_Id.h.h:2451
-msgid ""
-"The new user interface language will take effect the next time that you "
-"start the application"
+msgid "The new user interface language will take effect the next time that you start the application"
 msgstr ""
 
 #. MSG_SpellDone
@@ -5958,9 +5929,7 @@ msgstr "Провера правописа је завршена."
 
 #. MSG_HyperlinkCrossesBoundaries
 #: po/tmp/ap_String_Id.h.h:2455
-msgid ""
-"The text to which the hyperlink is to be attached must be within a single "
-"paragraph."
+msgid "The text to which the hyperlink is to be attached must be within a single paragraph."
 msgstr "Текст, на који показује хипер-веза, мора бити у једном пасусу."
 
 #. FIELD_DateTime_Wkday
@@ -5975,37 +5944,23 @@ msgstr ""
 
 #. MSG_BookmarkAlreadyExists
 #: po/tmp/ap_String_Id.h.h:2461
-msgid ""
-"This bookmark already exists. Would you like to replace the existing "
-"bookmark with this new one?"
+msgid "This bookmark already exists. Would you like to replace the existing bookmark with this new one?"
 msgstr ""
 
 #. MSG_AfterRestartNew
 #: po/tmp/ap_String_Id.h.h:2463
-msgid ""
-"This change will only take effect when you restart AbiWord or create a new "
-"document."
-msgstr ""
-"Промене ће почети да се примењују када поново покренете AbiWord или "
-"направите нов документ."
+msgid "This change will only take effect when you restart AbiWord or create a new document."
+msgstr "Промене ће почети да се примењују када поново покренете AbiWord или направите нов документ."
 
 #. MSG_HiddenRevisions
 #: po/tmp/ap_String_Id.h.h:2465
-msgid ""
-"This document contains revisions which are currently hidden from view. "
-"Please see AbiWord documentation for information on working with revisions."
+msgid "This document contains revisions which are currently hidden from view. Please see AbiWord documentation for information on working with revisions."
 msgstr ""
 
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h.h:2467
-msgid ""
-"This paragraph represents words as they might appear in your document.  To "
-"see the text from your document used in this preview, position your cursor "
-"in a document paragraph with some text in it and open this dialog."
-msgstr ""
-"Овај пасус представља речи онако како би могле да се појаве у документу. Да "
-"би сте видели текст Вашег документана овом месту, обележите део текста који "
-"желите да видите и отворите поново овај прозор."
+msgid "This paragraph represents words as they might appear in your document.  To see the text from your document used in this preview, position your cursor in a document paragraph with some text in it and open this dialog."
+msgstr "Овај пасус представља речи онако како би могле да се појаве у документу.  Да бисте видели текст Вашег документа употребљеног у овом прегледу, поставите курсор у пасус са неким текстом и отворите овај прозор."
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h.h:2469
@@ -6013,7 +5968,7 @@ msgid ""
 "This style does not exist \n"
 " so it cannot be modified"
 msgstr ""
-"Стил не постоји\n"
+"Стил не постоји \n"
 " тако да не може бити мењан"
 
 #. DLG_Column_Three
@@ -6023,9 +5978,10 @@ msgstr "Три"
 
 #. DLG_Lists_Tick_List
 #. STYLE_TICKLIST
-#: po/tmp/ap_String_Id.h.h:2473 po/tmp/xap_String_Id.h.h:787
+#: po/tmp/ap_String_Id.h.h:2473
+#: po/tmp/xap_String_Id.h.h:793
 msgid "Tick List"
-msgstr "листа са штикловима"
+msgstr "Листа са штикловима"
 
 #. FIELD_DateTime_TimeZone
 #: po/tmp/ap_String_Id.h.h:2475
@@ -6035,18 +5991,20 @@ msgstr "Временска зона"
 #. FIELD_Document_Title
 #: po/tmp/ap_String_Id.h.h:2477
 msgid "Title"
-msgstr ""
+msgstr "Наслов"
 
 #. DLG_ToggleCase_TitleCase
 #. DLG_UFS_Effects_TitleCase
-#: po/tmp/ap_String_Id.h.h:2479 po/tmp/xap_String_Id.h.h:791
+#: po/tmp/ap_String_Id.h.h:2479
+#: po/tmp/xap_String_Id.h.h:797
 msgid "Title Case"
 msgstr "Велика Почетна Слова"
 
 #. DLG_MetaData_Title_LBL
 #. DLG_Annotation_Title_LBL
 #. DLG_Image_LblTitle
-#: po/tmp/ap_String_Id.h.h:2482 po/tmp/xap_String_Id.h.h:793
+#: po/tmp/ap_String_Id.h.h:2482
+#: po/tmp/xap_String_Id.h.h:799
 msgid "Title:"
 msgstr "Наслов:"
 
@@ -6058,7 +6016,7 @@ msgstr "Палете са алаткама"
 #. DLG_PageNumbers_Header
 #: po/tmp/ap_String_Id.h.h:2486
 msgid "Top"
-msgstr "У надглављу"
+msgstr "Горе"
 
 #. TopMarginStatus
 #: po/tmp/ap_String_Id.h.h:2488
@@ -6071,15 +6029,17 @@ msgstr "Горња маргина [%s]"
 #. TOOLBAR_STATUSLINE_FMT_TOPLINE
 #. TOOLBAR_TOOLTIP_FMT_TOPLINE
 #. DLG_UFS_ToplineCheck
-#: po/tmp/ap_String_Id.h.h:2493 po/tmp/xap_String_Id.h.h:799
+#: po/tmp/ap_String_Id.h.h:2493
+#: po/tmp/xap_String_Id.h.h:805
 msgid "Topline"
 msgstr "Поставља/уклања линију изнад текста"
 
 #. DLG_Lists_Triangle_List
 #. STYLE_TRIANGLELIST
-#: po/tmp/ap_String_Id.h.h:2495 po/tmp/xap_String_Id.h.h:801
+#: po/tmp/ap_String_Id.h.h:2495
+#: po/tmp/xap_String_Id.h.h:807
 msgid "Triangle List"
-msgstr "листа са троугловима"
+msgstr "Листа са троугловима"
 
 #. DLG_Column_Two
 #: po/tmp/ap_String_Id.h.h:2497
@@ -6089,12 +6049,12 @@ msgstr "Два"
 #. FIELD_Document_Type
 #: po/tmp/ap_String_Id.h.h:2499
 msgid "Type"
-msgstr ""
+msgstr "Тип"
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h.h:2501
 msgid "Type a name for the bookmark, or select an existing from the list."
-msgstr "Унесите име маркера, или изаберите већ постојећи из листе"
+msgstr "Унесите име маркера, или изаберите већ постојећи из листе."
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h.h:2503
@@ -6110,7 +6070,8 @@ msgstr "ВЕлИКА СлОВА"
 #. TOOLBAR_STATUSLINE_FMT_UNDERLINE
 #. TOOLBAR_TOOLTIP_FMT_UNDERLINE
 #. DLG_UFS_UnderlineCheck
-#: po/tmp/ap_String_Id.h.h:2509 po/tmp/xap_String_Id.h.h:821
+#: po/tmp/ap_String_Id.h.h:2509
+#: po/tmp/xap_String_Id.h.h:827
 msgid "Underline"
 msgstr "Подвучена слова"
 
@@ -6138,13 +6099,15 @@ msgstr ""
 
 #. DLG_Lists_Upper_Case_List
 #. STYLE_UPPERCASTELIST
-#: po/tmp/ap_String_Id.h.h:2521 po/tmp/xap_String_Id.h.h:855
+#: po/tmp/ap_String_Id.h.h:2521
+#: po/tmp/xap_String_Id.h.h:861
 msgid "Upper Case List"
 msgstr "Набрајање великим словима"
 
 #. DLG_Lists_Upper_Roman_List
 #. STYLE_UPPERROMANLIST
-#: po/tmp/ap_String_Id.h.h:2523 po/tmp/xap_String_Id.h.h:857
+#: po/tmp/ap_String_Id.h.h:2523
+#: po/tmp/xap_String_Id.h.h:863
 msgid "Upper Roman List"
 msgstr "Набрајање великим римским бројевима"
 
@@ -6171,17 +6134,17 @@ msgstr ""
 #. DLG_Options_Label_UILang
 #: po/tmp/ap_String_Id.h.h:2533
 msgid "User Interface Language"
-msgstr ""
+msgstr "Језик корисничког сучеља"
 
 #. DLG_Stylist_UserStyles
 #: po/tmp/ap_String_Id.h.h:2535
 msgid "User defined Styles"
-msgstr ""
+msgstr "Кориснички дефинисани стилови"
 
 #. DLG_Tab_Label_Existing
 #: po/tmp/ap_String_Id.h.h:2537
 msgid "User-defined Tabs"
-msgstr ""
+msgstr "Кориснички дефинисани табулатори"
 
 #. DLG_Styles_LBL_UserDefined
 #: po/tmp/ap_String_Id.h.h:2539
@@ -6190,7 +6153,8 @@ msgstr "Кориснички дефинисани стилови"
 
 #. FIELD_Application_Version
 #. DLG_History_Version_Version
-#: po/tmp/ap_String_Id.h.h:2541 po/tmp/xap_String_Id.h.h:867
+#: po/tmp/ap_String_Id.h.h:2541
+#: po/tmp/xap_String_Id.h.h:873
 msgid "Version"
 msgstr "Верзија"
 
@@ -6220,12 +6184,12 @@ msgstr "Прикажи документ преко целог екрана"
 #. MENU_STATUSLINE_WINDOW_9
 #: po/tmp/ap_String_Id.h.h:2557
 msgid "View this document"
-msgstr "Овај прозор ће постати активан"
+msgstr "Прегледање овог документа"
 
 #. DLG_Options_Label_ViewTooltips
 #: po/tmp/ap_String_Id.h.h:2559
 msgid "View tooltips"
-msgstr "Приказуј балончиће са помоћју"
+msgstr "Приказуј балончиће са помоћу"
 
 #. DLG_Options_Label_ViewViewFrame
 #: po/tmp/ap_String_Id.h.h:2561
@@ -6246,7 +6210,7 @@ msgstr "Упозорење: маркер %s који сте унели не по
 #. MENU_STATUSLINE_VIEW_WEB
 #: po/tmp/ap_String_Id.h.h:2567
 msgid "Web Layout"
-msgstr "Wеб-изглед"
+msgstr "Веб изглед"
 
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h.h:2569
@@ -6277,17 +6241,17 @@ msgstr ""
 #. DLG_Options_Label_SpellUppercase
 #: po/tmp/ap_String_Id.h.h:2580
 msgid "Words in &UPPERCASE"
-msgstr "Игнориши речи написане &ВЕлИКИМ СлОВИМА"
+msgstr "Речи написане &ВЕЛИКИМ СЛОВИМА"
 
 #. DLG_Options_Label_SpellNumbers
 #: po/tmp/ap_String_Id.h.h:2582
 msgid "Words with num&bers"
-msgstr "Игнориши речи са &бројевима"
+msgstr "Речи са &бројевима"
 
 #. DLG_WordCount_Words
 #: po/tmp/ap_String_Id.h.h:2584
 msgid "Words:"
-msgstr "Речи"
+msgstr "Речи:"
 
 #. MSG_SaveFailedWrite
 #: po/tmp/ap_String_Id.h.h:2586
@@ -6308,9 +6272,7 @@ msgstr "Променили сте смер писања."
 #. MSG_HyperlinkNoSelection
 #: po/tmp/ap_String_Id.h.h:2592
 msgid "You must select a portion of the document before inserting a hyperlink."
-msgstr ""
-"Морате да изаберете део документа пре него што убаците хипер-везу до тог "
-"дела."
+msgstr "Морате да изаберете део документа пре него што убаците хипер-везу до тог дела."
 
 #. DLG_Options_Label_InvalidRangeForAutoSave
 #: po/tmp/ap_String_Id.h.h:2594
@@ -6326,7 +6288,8 @@ msgstr ""
 #. TOOLBAR_STATUSLINE_ZOOM
 #. TOOLBAR_TOOLTIP_ZOOM
 #. DLG_Zoom_ZoomTitle
-#: po/tmp/ap_String_Id.h.h:2600 po/tmp/xap_String_Id.h.h:918
+#: po/tmp/ap_String_Id.h.h:2600
+#: po/tmp/xap_String_Id.h.h:924
 msgid "Zoom"
 msgstr "Увећава/умањује документ на екрану"
 
@@ -6383,7 +6346,7 @@ msgstr "Приказује документ, тако да стане цео у 
 #. DLG_Options_Label_CustomDict
 #: po/tmp/ap_String_Id.h.h:2622
 msgid "custom.dic"
-msgstr "цустом.диц"
+msgstr ""
 
 #. FIELD_DateTime_DDMMYY
 #: po/tmp/ap_String_Id.h.h:2624
@@ -6445,7 +6408,7 @@ msgstr "&75%"
 #. DLG_Image_DescTabLabel
 #: po/tmp/xap_String_Id.h.h:17
 msgid "&Description"
-msgstr ""
+msgstr "&Опис"
 
 #. DLG_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h.h:21
@@ -6455,12 +6418,12 @@ msgstr "Ши&рина стране"
 #. DLG_Image_PlacementTabLabel
 #: po/tmp/xap_String_Id.h.h:23
 msgid "&Placement"
-msgstr ""
+msgstr "&Размештај"
 
 #. DLG_ULANG_SetLangButton
 #: po/tmp/xap_String_Id.h.h:25
 msgid "&Set Language"
-msgstr ""
+msgstr "Подеси &језик"
 
 #. DLG_Zoom_WholePage
 #: po/tmp/xap_String_Id.h.h:29
@@ -6470,12 +6433,12 @@ msgstr "&Цела страна"
 #. DLG_Image_WrapTabLabel
 #: po/tmp/xap_String_Id.h.h:31
 msgid "&Wrapping"
-msgstr ""
+msgstr "&Омотавање"
 
 #. DLG_UFS_Effects_None
 #: po/tmp/xap_String_Id.h.h:33
 msgid "(None)"
-msgstr ""
+msgstr "(Ништа)"
 
 #. LANG_0
 #: po/tmp/xap_String_Id.h.h:35
@@ -6490,12 +6453,12 @@ msgstr ""
 #. DLG_NoSaveFile_DirNotExist
 #: po/tmp/xap_String_Id.h.h:39
 msgid "A directory in the given pathname does not exist."
-msgstr "Задати директоријум не постоји"
+msgstr "Директоријум у задатој путањи не постоји."
 
 #. DLG_PLUGIN_MANAGER_TITLE
 #: po/tmp/xap_String_Id.h.h:41
 msgid "AbiWord Plugin Manager"
-msgstr "Управљање додацима"
+msgstr "Управљање AbiWord додацима"
 
 #. SPELL_CANTLOAD_DLL
 #: po/tmp/xap_String_Id.h.h:43
@@ -6508,23 +6471,19 @@ msgstr ""
 #. MSG_HistoryPartRestore1
 #: po/tmp/xap_String_Id.h.h:45
 #, c-format
-msgid ""
-"AbiWord cannot fully restore version %d of the document because the version "
-"information is incomplete."
+msgid "AbiWord cannot fully restore version %d of the document because the version information is incomplete."
 msgstr ""
 
 #. MSG_HistoryNoRestore
 #: po/tmp/xap_String_Id.h.h:47
 #, c-format
-msgid ""
-"AbiWord cannot restore version %d of the document because the version "
-"information is missing."
+msgid "AbiWord cannot restore version %d of the document because the version information is missing."
 msgstr ""
 
 #. DLG_UP_PrintPreviewTitle
 #: po/tmp/xap_String_Id.h.h:49
 msgid "AbiWord: Print Preview"
-msgstr "Пред-преглед штампаног документа"
+msgstr "AbiWord: Преглед штампе"
 
 #. DLG_ABOUT_Title
 #: po/tmp/xap_String_Id.h.h:51
@@ -6540,17 +6499,17 @@ msgstr "Активни додаци"
 #. LANG_AF_ZA
 #: po/tmp/xap_String_Id.h.h:55
 msgid "Afrikaans"
-msgstr "Афрички"
+msgstr "Африканс"
 
 #. LANG_AK_GH
 #: po/tmp/xap_String_Id.h.h:57
 msgid "Akan"
-msgstr ""
+msgstr "Акан"
 
 #. LANG_SQ_AL
 #: po/tmp/xap_String_Id.h.h:59
 msgid "Albanian"
-msgstr ""
+msgstr "Албански"
 
 #. DLG_FOSA_ALL
 #: po/tmp/xap_String_Id.h.h:63
@@ -6580,32 +6539,32 @@ msgstr ""
 #. LANG_AR
 #: po/tmp/xap_String_Id.h.h:75
 msgid "Arabic"
-msgstr ""
+msgstr "Арапски"
 
 #. LANG_AR_EG
 #: po/tmp/xap_String_Id.h.h:77
 msgid "Arabic (Egypt)"
-msgstr "Арабски (Египат)"
+msgstr "Арапски (Египат)"
 
 #. LANG_AR_SA
 #: po/tmp/xap_String_Id.h.h:79
 msgid "Arabic (Saudi Arabia)"
-msgstr "Арабски (Саудијска Арабија)"
+msgstr "Арапски (Саудијска Арабија)"
 
 #. ENC_ARAB_ISO
 #: po/tmp/xap_String_Id.h.h:81
 msgid "Arabic, ISO-8859-6"
-msgstr "Арабски, ISO-8859-6"
+msgstr "Арапски, ISO-8859-6"
 
 #. ENC_ARAB_MAC
 #: po/tmp/xap_String_Id.h.h:83
 msgid "Arabic, Macintosh"
-msgstr "Арабски, Macintosh"
+msgstr "Арапски, Macintosh"
 
 #. ENC_ARAB_WIN
 #: po/tmp/xap_String_Id.h.h:85
 msgid "Arabic, Windows Code Page 1256"
-msgstr "Арабски, Windows кодна страна 1256"
+msgstr "Арапски, Windows кодна страна 1256"
 
 #. LANG_HY_AM
 #: po/tmp/xap_String_Id.h.h:87
@@ -6620,12 +6579,12 @@ msgstr "Јерменски, ARMSCII-8"
 #. LANG_AS_IN
 #: po/tmp/xap_String_Id.h.h:91
 msgid "Assamese"
-msgstr "Асамески"
+msgstr "Асамешки"
 
 #. LANG_AST_ES
 #: po/tmp/xap_String_Id.h.h:93
 msgid "Asturian (Spain)"
-msgstr ""
+msgstr "Астуријски (Шпанија)"
 
 #. DLG_Options_Label_DirMarkerAfterClosingParenthesis
 #: po/tmp/xap_String_Id.h.h:97
@@ -6635,7 +6594,7 @@ msgstr ""
 #. DLG_History_Version_AutoRevisioned
 #: po/tmp/xap_String_Id.h.h:99
 msgid "Auto-revision"
-msgstr ""
+msgstr "Аутоматска ревизија"
 
 #. DLG_FOSA_FileTypeAutoDetect
 #: po/tmp/xap_String_Id.h.h:101
@@ -6645,17 +6604,17 @@ msgstr "Аутоматски препознат"
 #. MSG_AutoRevision
 #: po/tmp/xap_String_Id.h.h:103
 msgid "Autorevision"
-msgstr ""
+msgstr "Аутоматска ревизија"
 
 #. DLG_MW_AvailableDocuments
 #: po/tmp/xap_String_Id.h.h:105
 msgid "Available Documents"
-msgstr ""
+msgstr "Расположиви документи"
 
 #. DLG_ULANG_AvailableLanguages
 #: po/tmp/xap_String_Id.h.h:107
 msgid "Available Languages"
-msgstr ""
+msgstr "Расположиви језици"
 
 #. LANG_AYM_BO
 #: po/tmp/xap_String_Id.h.h:109
@@ -6680,7 +6639,7 @@ msgstr "Балтички, Windows кодна страна 1257"
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h.h:117
 msgid "Basque"
-msgstr "Баски"
+msgstr "Баскијски"
 
 #. LANG_BE_BY
 #: po/tmp/xap_String_Id.h.h:119
@@ -6690,7 +6649,7 @@ msgstr "Белоруски"
 #. LANG_BE_LATIN
 #: po/tmp/xap_String_Id.h.h:121
 msgid "Belarusian, Latin"
-msgstr ""
+msgstr "Белоруски, латиницом"
 
 #. LANG_BN_IN
 #: po/tmp/xap_String_Id.h.h:123
@@ -6721,12 +6680,12 @@ msgstr ""
 #: po/tmp/xap_String_Id.h.h:139
 #, c-format
 msgid "Build options: %s"
-msgstr ""
+msgstr "Опције издања: %s"
 
 #. MSG_BuildingDoc
 #: po/tmp/xap_String_Id.h.h:141
 msgid "Building Document:"
-msgstr "Стварам документ..."
+msgstr "Стварам документ:"
 
 #. LANG_BG_BG
 #: po/tmp/xap_String_Id.h.h:143
@@ -6741,7 +6700,7 @@ msgstr "Поништи"
 #. LANG_CA_ES
 #: po/tmp/xap_String_Id.h.h:149
 msgid "Catalan"
-msgstr "Каталски"
+msgstr "Каталонски"
 
 #. LANG_AYR
 #: po/tmp/xap_String_Id.h.h:151
@@ -6781,7 +6740,7 @@ msgstr "Кинески (Хонг Конг)"
 #. LANG_ZH_CN
 #: po/tmp/xap_String_Id.h.h:165
 msgid "Chinese (PRC)"
-msgstr "Кинески (РПЦ)"
+msgstr "Кинески (НРК)"
 
 #. LANG_ZH_SG
 #: po/tmp/xap_String_Id.h.h:167
@@ -6796,7 +6755,7 @@ msgstr "Кинески (Тајван)"
 #. ENC_CHSI_EUC
 #: po/tmp/xap_String_Id.h.h:171
 msgid "Chinese Simplified, EUC-CN (GB2312)"
-msgstr "Поједностављени кинески, EUC-CN (ГБ2312)"
+msgstr "Поједностављени кинески, EUC-CN (GB2312)"
 
 #. ENC_CHSI_GB
 #: po/tmp/xap_String_Id.h.h:173
@@ -6826,7 +6785,7 @@ msgstr "Традиционални кинески, BIG5-HKSCS"
 #. ENC_CHTR_EUC
 #: po/tmp/xap_String_Id.h.h:183
 msgid "Chinese Traditional, EUC-TW"
-msgstr "Традиционални кинески, EUC-W"
+msgstr "Традиционални кинески, EUC-TW"
 
 #. ENC_CHTR_WIN
 #: po/tmp/xap_String_Id.h.h:185
@@ -6836,12 +6795,12 @@ msgstr "Традиционални кинески, Windows кодна стран
 #. DLG_LISTDOCS_Heading1
 #: po/tmp/xap_String_Id.h.h:187
 msgid "Choose document from the list:"
-msgstr ""
+msgstr "Изаберите документ из листе:"
 
 #. TB_ClearBackground
 #: po/tmp/xap_String_Id.h.h:189
 msgid "Clear Background"
-msgstr ""
+msgstr "Чиста позадина"
 
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h.h:191
@@ -6876,37 +6835,37 @@ msgstr "Боја"
 #. DLG_Compare
 #: po/tmp/xap_String_Id.h.h:205
 msgid "Compare"
-msgstr ""
+msgstr "Упореди"
 
 #. DLG_DocComparison_Content
 #: po/tmp/xap_String_Id.h.h:207
 msgid "Content:"
-msgstr ""
+msgstr "Садржај:"
 
 #. STYLE_TOCHEADING1
 #: po/tmp/xap_String_Id.h.h:209
 msgid "Contents 1"
-msgstr ""
+msgstr "Садржај 1"
 
 #. STYLE_TOCHEADING2
 #: po/tmp/xap_String_Id.h.h:211
 msgid "Contents 2"
-msgstr ""
+msgstr "Садржај 2"
 
 #. STYLE_TOCHEADING3
 #: po/tmp/xap_String_Id.h.h:213
 msgid "Contents 3"
-msgstr ""
+msgstr "Садржај 3"
 
 #. STYLE_TOCHEADING4
 #: po/tmp/xap_String_Id.h.h:215
 msgid "Contents 4"
-msgstr ""
+msgstr "Садржај 4"
 
 #. STYLE_TOCHEADING
 #: po/tmp/xap_String_Id.h.h:217
 msgid "Contents Header"
-msgstr ""
+msgstr "Надглавље садржаја"
 
 #. DLG_UP_Copies
 #: po/tmp/xap_String_Id.h.h:219
@@ -6916,17 +6875,17 @@ msgstr "Копије:"
 #. LANG_COP_EG
 #: po/tmp/xap_String_Id.h.h:221
 msgid "Coptic"
-msgstr ""
+msgstr "Коптички"
 
 #. LANG_KW_GB
 #: po/tmp/xap_String_Id.h.h:223
 msgid "Cornish"
-msgstr ""
+msgstr "Корнволски"
 
 #. LANG_CO_FR
 #: po/tmp/xap_String_Id.h.h:225
 msgid "Corsican"
-msgstr ""
+msgstr "Корзикански"
 
 #. DLG_PLUGIN_MANAGER_COULDNT_LOAD
 #: po/tmp/xap_String_Id.h.h:227
@@ -6942,22 +6901,22 @@ msgstr "Не могу да искључим додатак"
 #: po/tmp/xap_String_Id.h.h:231
 #, c-format
 msgid "Could not load the dictionary for the %s language"
-msgstr "Не могу да учитам речник за језик %s"
+msgstr "Не могу да учитам речник за %s језик"
 
 #. DLG_History_Version_Started
 #: po/tmp/xap_String_Id.h.h:233
 msgid "Created"
-msgstr ""
+msgstr "Направљено"
 
 #. DLG_History_Created
 #: po/tmp/xap_String_Id.h.h:235
 msgid "Created:"
-msgstr ""
+msgstr "Направљено:"
 
 #. LANG_HR_HR
 #: po/tmp/xap_String_Id.h.h:237
 msgid "Croatian"
-msgstr ""
+msgstr "Хрватски"
 
 #. ENC_CROA_MAC
 #: po/tmp/xap_String_Id.h.h:239
@@ -6972,7 +6931,7 @@ msgstr "Ћирилични, ISO-8859-5"
 #. ENC_CYRL_KOI
 #: po/tmp/xap_String_Id.h.h:243
 msgid "Cyrillic, KOI8-R"
-msgstr "Ћирилични, КОИ8-Р"
+msgstr "Ћирилични, KOI8-R"
 
 #. ENC_CYRL_MAC
 #: po/tmp/xap_String_Id.h.h:245
@@ -7012,7 +6971,7 @@ msgstr ""
 #. DLG_ULANG_DefaultLangLabel
 #: po/tmp/xap_String_Id.h.h:261
 msgid "Default language: "
-msgstr ""
+msgstr "Подразумевани језик: "
 
 #. DLG_Image_Placement
 #: po/tmp/xap_String_Id.h.h:263
@@ -7032,32 +6991,32 @@ msgstr "Желите ли да склоните ову икону са пале�
 #. DLG_DocComparison_WindowLabel
 #: po/tmp/xap_String_Id.h.h:276
 msgid "Document Comparison"
-msgstr ""
+msgstr "Поређење докумената"
 
 #. DLG_History_DocumentDetails
 #: po/tmp/xap_String_Id.h.h:278
 msgid "Document Details"
-msgstr ""
+msgstr "Детаљи о документу"
 
 #. DLG_History_WindowLabel
 #: po/tmp/xap_String_Id.h.h:280
 msgid "Document History"
-msgstr ""
+msgstr "Историја документа"
 
 #. DLG_History_Path
 #: po/tmp/xap_String_Id.h.h:282
 msgid "Document name:"
-msgstr ""
+msgstr "Име документа:"
 
 #. DLG_DocComparison_DocsCompared
 #: po/tmp/xap_String_Id.h.h:284
 msgid "Documents compared"
-msgstr ""
+msgstr "Упоређени документи"
 
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h.h:286
 msgid "Dutch (Netherlands)"
-msgstr "Холандски (Недерленд)"
+msgstr "Холандски (Холандија)"
 
 #. DLG_History_EditTime
 #: po/tmp/xap_String_Id.h.h:288
@@ -7077,7 +7036,7 @@ msgstr ""
 #. DLG_UP_EmbedFonts
 #: po/tmp/xap_String_Id.h.h:294
 msgid "Embed Fonts"
-msgstr "Уграђене гарнитуре слова"
+msgstr "Угради гарнитуре знакова"
 
 #. DLG_HTMLOPT_ExpEmbedImages
 #: po/tmp/xap_String_Id.h.h:296
@@ -7096,8 +7055,9 @@ msgstr "Кодирање:"
 
 #. STYLE_ENDNOTE
 #: po/tmp/xap_String_Id.h.h:302
+#, fuzzy
 msgid "Endnote"
-msgstr ""
+msgstr "&Белешка на крају"
 
 #. STYLE_ENDREFERENCE
 #: po/tmp/xap_String_Id.h.h:304
@@ -7107,7 +7067,7 @@ msgstr "Референца на крајњу белешку"
 #. STYLE_ENDTEXT
 #: po/tmp/xap_String_Id.h.h:306
 msgid "Endnote Text"
-msgstr "Текст крајње белешке "
+msgstr "Текст крајње белешке"
 
 #. LANG_EN_AU
 #: po/tmp/xap_String_Id.h.h:308
@@ -7157,7 +7117,7 @@ msgstr "Есперанто"
 #. LANG_ET
 #: po/tmp/xap_String_Id.h.h:326
 msgid "Estonian"
-msgstr ""
+msgstr "Естонски"
 
 #. DLG_FOSA_ExportTitle
 #: po/tmp/xap_String_Id.h.h:328
@@ -7177,7 +7137,7 @@ msgstr ""
 #. LANG_FA_IR
 #: po/tmp/xap_String_Id.h.h:334
 msgid "Farsi"
-msgstr "Фарски"
+msgstr "Фарси"
 
 #. DLG_UP_File
 #: po/tmp/xap_String_Id.h.h:336
@@ -7188,7 +7148,7 @@ msgstr "Датотека"
 #: po/tmp/xap_String_Id.h.h:338
 #, c-format
 msgid "File already exists.  Overwrite file '%s'?"
-msgstr "Датотека већ постоји. Да ли да препишем преко &quot;%s&quot;?"
+msgstr "Датотека већ постоји.  Да ли да препишем преко „%s“?"
 
 #. DLG_FOSA_RecordToFileLabel
 #: po/tmp/xap_String_Id.h.h:340
@@ -7208,22 +7168,23 @@ msgstr "Фински"
 #. LANG_NL_BE
 #: po/tmp/xap_String_Id.h.h:346
 msgid "Flemish (Belgium)"
-msgstr "Флемски (Белгија)"
+msgstr "Фламански (Белгија)"
 
 #. STYLE_FOOTNOTE
 #: po/tmp/xap_String_Id.h.h:353
+#, fuzzy
 msgid "Footnote"
-msgstr ""
+msgstr "Фус&нота"
 
 #. STYLE_FOOTREFERENCE
 #: po/tmp/xap_String_Id.h.h:355
 msgid "Footnote Reference"
-msgstr ""
+msgstr "Референца на фусноту"
 
 #. STYLE_FOOTTEXT
 #: po/tmp/xap_String_Id.h.h:357
 msgid "Footnote Text"
-msgstr ""
+msgstr "Текст фусноте"
 
 #. DLG_ABOUT_URL
 #: po/tmp/xap_String_Id.h.h:359
@@ -7253,7 +7214,7 @@ msgstr "Француски (Швајцарска)"
 #. LANG_FY_NL
 #: po/tmp/xap_String_Id.h.h:371
 msgid "Frisian"
-msgstr ""
+msgstr "Фризијски"
 
 #. DLG_UP_From
 #: po/tmp/xap_String_Id.h.h:373
@@ -7268,22 +7229,22 @@ msgstr ""
 #. LANG_GL
 #: po/tmp/xap_String_Id.h.h:377
 msgid "Galician (Galego)"
-msgstr ""
+msgstr "Галицијски (Галего)"
 
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h.h:379
 msgid "Georgian"
-msgstr "Џоршки"
+msgstr "Грузијски"
 
 #. ENC_GEOR_ACADEMY
 #: po/tmp/xap_String_Id.h.h:381
 msgid "Georgian, Academy"
-msgstr "Џоршки, академија"
+msgstr "Грузијски, академија"
 
 #. ENC_GEOR_PS
 #: po/tmp/xap_String_Id.h.h:383
 msgid "Georgian, PS"
-msgstr "Џоршки, ПС"
+msgstr "Грузијски, PS"
 
 #. LANG_DE_AT
 #: po/tmp/xap_String_Id.h.h:385
@@ -7343,7 +7304,7 @@ msgstr ""
 #. LANG_HAW_US
 #: po/tmp/xap_String_Id.h.h:409
 msgid "Hawaiian"
-msgstr ""
+msgstr "Хавајски"
 
 #. STYLE_HEADING1
 #: po/tmp/xap_String_Id.h.h:411
@@ -7363,7 +7324,7 @@ msgstr "Наслов 3"
 #. STYLE_HEADING4
 #: po/tmp/xap_String_Id.h.h:417
 msgid "Heading 4"
-msgstr ""
+msgstr "Наслов 4"
 
 #. LANG_HE_IL
 #: po/tmp/xap_String_Id.h.h:421
@@ -7450,1098 +7411,1109 @@ msgstr ""
 msgid "Import File"
 msgstr "Увези датотеку"
 
-#. MSG_ImportingDoc
+#. MSG_ParagraphsImported
 #: po/tmp/xap_String_Id.h.h:457
+#, fuzzy
+msgid "Imported Paragraph"
+msgstr "Пасус"
+
+#. MSG_ImportingDoc
+#: po/tmp/xap_String_Id.h.h:459
 msgid "Importing Document..."
 msgstr "Увозим документ..."
 
 #. LANG_ID_ID
-#: po/tmp/xap_String_Id.h.h:459
+#: po/tmp/xap_String_Id.h.h:461
 msgid "Indonesian"
-msgstr "Индонески"
+msgstr "Индонежански"
 
 #. XIM_Methods
-#: po/tmp/xap_String_Id.h.h:461
+#: po/tmp/xap_String_Id.h.h:463
 msgid "Input Methods"
 msgstr ""
 
 #. DLG_FOSA_InsertObject
-#: po/tmp/xap_String_Id.h.h:465
+#: po/tmp/xap_String_Id.h.h:467
 msgid "Insert Embeddable Object"
-msgstr ""
+msgstr "Убацује уградиве објекте"
 
 #. DLG_FOSA_FileInsertObject
-#: po/tmp/xap_String_Id.h.h:467
+#: po/tmp/xap_String_Id.h.h:469
 msgid "Insert Embeddable Object file:"
 msgstr ""
 
 #. DLG_FOSA_InsertTitle
-#: po/tmp/xap_String_Id.h.h:469
+#: po/tmp/xap_String_Id.h.h:471
 msgid "Insert File"
-msgstr "Убаци датотеку"
+msgstr "Убацивање датотеке"
 
 #. DLG_FOSA_InsertMath
-#: po/tmp/xap_String_Id.h.h:471
+#: po/tmp/xap_String_Id.h.h:473
 msgid "Insert Math File"
-msgstr ""
+msgstr "Убацује математичку датотеку"
 
 #. DLG_FOSA_FileInsertMath
-#: po/tmp/xap_String_Id.h.h:473
+#: po/tmp/xap_String_Id.h.h:475
 msgid "Insert MathML file:"
-msgstr ""
+msgstr "Убаци MathML датотеку:"
 
 #. TB_InsertNewTable
-#: po/tmp/xap_String_Id.h.h:475
+#: po/tmp/xap_String_Id.h.h:477
 msgid "Insert New Table"
-msgstr ""
+msgstr "Убацивање нове табеле"
 
 #. DLG_IP_Title
-#: po/tmp/xap_String_Id.h.h:477
+#: po/tmp/xap_String_Id.h.h:479
 msgid "Insert Picture"
 msgstr "Убацивање слике"
 
 #. DLG_Insert_SymbolTitle
-#: po/tmp/xap_String_Id.h.h:479
+#: po/tmp/xap_String_Id.h.h:481
 msgid "Insert Symbol"
 msgstr "Убацивање симбола и посебних знакова"
 
 #. DLG_PLUGIN_MANAGER_INSTALL
-#: po/tmp/xap_String_Id.h.h:481
+#: po/tmp/xap_String_Id.h.h:483
 msgid "Install new plugin"
 msgstr "Инсталирај нов додатак"
 
 #. LANG_IA
-#: po/tmp/xap_String_Id.h.h:483
+#: po/tmp/xap_String_Id.h.h:485
 msgid "Interlingua"
-msgstr "Интерлингуа"
+msgstr "Интерлингва"
 
 #. LANG_IU_CA
-#: po/tmp/xap_String_Id.h.h:485
+#: po/tmp/xap_String_Id.h.h:487
 msgid "Inuktitut"
 msgstr ""
 
 #. DLG_InvalidPathname
-#: po/tmp/xap_String_Id.h.h:487
+#: po/tmp/xap_String_Id.h.h:489
 msgid "Invalid pathname."
 msgstr "Непостојећа путања."
 
 #. LANG_GA_IE
-#: po/tmp/xap_String_Id.h.h:489
+#: po/tmp/xap_String_Id.h.h:491
 msgid "Irish"
 msgstr "Ирски"
 
 #. LANG_IT_IT
-#: po/tmp/xap_String_Id.h.h:491
+#: po/tmp/xap_String_Id.h.h:493
 msgid "Italian (Italy)"
 msgstr "Италијански (Италија)"
 
 #. LANG_JA_JP
-#: po/tmp/xap_String_Id.h.h:495
+#: po/tmp/xap_String_Id.h.h:497
 msgid "Japanese"
 msgstr "Јапански"
 
 #. ENC_JAPN_EUC
-#: po/tmp/xap_String_Id.h.h:497
+#: po/tmp/xap_String_Id.h.h:499
 msgid "Japanese, EUC-JP"
 msgstr "Јапански, EUC-JP"
 
 #. ENC_JAPN_ISO
-#: po/tmp/xap_String_Id.h.h:499
+#: po/tmp/xap_String_Id.h.h:501
 msgid "Japanese, ISO-2022-JP"
 msgstr "Јапански, ISO-2022-JP"
 
 #. ENC_JAPN_SJIS
-#: po/tmp/xap_String_Id.h.h:501
+#: po/tmp/xap_String_Id.h.h:503
 msgid "Japanese, Shift-JIS"
 msgstr "Јапански, Shift-JIS"
 
 #. ENC_JAPN_WIN
-#: po/tmp/xap_String_Id.h.h:503
+#: po/tmp/xap_String_Id.h.h:505
 msgid "Japanese, Windows Code Page 932"
 msgstr "Јапански, Windows кодна страна 932"
 
 #. LANG_KN_IN
-#: po/tmp/xap_String_Id.h.h:505
+#: po/tmp/xap_String_Id.h.h:507
 msgid "Kannada"
 msgstr ""
 
 #. LANG_KK_KZ
-#: po/tmp/xap_String_Id.h.h:507
+#: po/tmp/xap_String_Id.h.h:509
 msgid "Kazakh (Kazakhstan)"
 msgstr ""
 
 #. LANG_KO_KR
 #. LANG_KO
-#: po/tmp/xap_String_Id.h.h:510
+#: po/tmp/xap_String_Id.h.h:512
 msgid "Korean"
-msgstr "Корејански"
+msgstr "Корејски"
 
 #. ENC_KORE_EUC
-#: po/tmp/xap_String_Id.h.h:512
+#: po/tmp/xap_String_Id.h.h:514
 msgid "Korean, EUC-KR"
-msgstr "Корејански, EUC-KR"
+msgstr "Корејски, EUC-KR"
 
 #. ENC_KORE_JOHAB
-#: po/tmp/xap_String_Id.h.h:514
+#: po/tmp/xap_String_Id.h.h:516
 msgid "Korean, Johab"
-msgstr "Корејански, Johab"
+msgstr "Корејски, Јохаб"
 
 #. ENC_KORE_KSC
-#: po/tmp/xap_String_Id.h.h:516
+#: po/tmp/xap_String_Id.h.h:518
 msgid "Korean, KSC_5601"
-msgstr "Корејански, KSC_5601"
+msgstr "Корејски, KSC_5601"
 
 #. ENC_KORE_WIN
-#: po/tmp/xap_String_Id.h.h:518
+#: po/tmp/xap_String_Id.h.h:520
 msgid "Korean, Windows Code Page 949"
-msgstr "Корејански, Windows кодна страна 949"
+msgstr "Корејски, Windows кодна страна 949"
 
 #. LANG_KU
-#: po/tmp/xap_String_Id.h.h:520
+#: po/tmp/xap_String_Id.h.h:522
 msgid "Kurdish"
-msgstr ""
+msgstr "Курдски"
 
 #. LANG_LO_LA
-#: po/tmp/xap_String_Id.h.h:522
+#: po/tmp/xap_String_Id.h.h:524
 msgid "Lao"
-msgstr ""
+msgstr "Лао"
 
 #. DLG_History_LastSaved
-#: po/tmp/xap_String_Id.h.h:524
+#: po/tmp/xap_String_Id.h.h:526
 msgid "Last saved:"
 msgstr ""
 
 #. LANG_LA_IT
-#: po/tmp/xap_String_Id.h.h:526
+#: po/tmp/xap_String_Id.h.h:528
 msgid "Latin (Renaissance)"
-msgstr "латински (Ренесанса)"
+msgstr "Латински (ренесансни)"
 
 #. LANG_LV_LV
-#: po/tmp/xap_String_Id.h.h:528
+#: po/tmp/xap_String_Id.h.h:530
 msgid "Latvian"
-msgstr "летонски"
+msgstr "Летонски"
 
 #. LANG_LT_LT
-#: po/tmp/xap_String_Id.h.h:530
+#: po/tmp/xap_String_Id.h.h:532
 msgid "Lithuanian"
-msgstr "литвански"
+msgstr "Литвански"
 
 #. DLG_CLIPART_Loading
-#: po/tmp/xap_String_Id.h.h:532
+#: po/tmp/xap_String_Id.h.h:534
 msgid "Loading Clip Art"
-msgstr ""
+msgstr "Учитавам библиотеку сличица"
 
 #. DLG_UFS_Effects_LowerCase
-#: po/tmp/xap_String_Id.h.h:538
+#: po/tmp/xap_String_Id.h.h:540
 msgid "Lowercase"
-msgstr ""
+msgstr "Мала слова"
 
 #. LANG_MK
-#: po/tmp/xap_String_Id.h.h:540
+#: po/tmp/xap_String_Id.h.h:542
 msgid "Macedonian"
-msgstr ""
+msgstr "Македонски"
 
 #. DLG_ULANG_DefaultLangChkbox
-#: po/tmp/xap_String_Id.h.h:542
+#: po/tmp/xap_String_Id.h.h:544
 msgid "Make default for document"
-msgstr ""
+msgstr "Учини подразумеваним за документ"
 
 #. LANG_MS_MY
-#: po/tmp/xap_String_Id.h.h:544
+#: po/tmp/xap_String_Id.h.h:546
 msgid "Malay"
 msgstr ""
 
 #. LANG_MNK_SN
-#: po/tmp/xap_String_Id.h.h:546
+#: po/tmp/xap_String_Id.h.h:548
 msgid "Mandinka (Senegal)"
 msgstr ""
 
 #. LANG_MI_NZ
-#: po/tmp/xap_String_Id.h.h:548
+#: po/tmp/xap_String_Id.h.h:550
 msgid "Maori"
-msgstr ""
+msgstr "Маорски"
 
 #. LANG_MR_IN
-#: po/tmp/xap_String_Id.h.h:550
+#: po/tmp/xap_String_Id.h.h:552
 msgid "Marathi"
 msgstr ""
 
 #. LANG_MH_MH
-#: po/tmp/xap_String_Id.h.h:552
+#: po/tmp/xap_String_Id.h.h:554
 msgid "Marshallese (Marshall Islands)"
 msgstr "Маршалски (Маршалска острва)"
 
 #. LANG_MH_NR
-#: po/tmp/xap_String_Id.h.h:554
+#: po/tmp/xap_String_Id.h.h:556
 msgid "Marshallese (Nauru)"
 msgstr "Маршалски (Науру)"
 
 #. DLG_Merge
-#: po/tmp/xap_String_Id.h.h:556
+#: po/tmp/xap_String_Id.h.h:558
 msgid "Merge"
-msgstr ""
+msgstr "Спајање"
 
 #. LANG_MN_MN
-#: po/tmp/xap_String_Id.h.h:558
+#: po/tmp/xap_String_Id.h.h:560
 msgid "Mongolian"
 msgstr ""
 
 #. DLG_PLUGIN_MANAGER_NAME
-#: po/tmp/xap_String_Id.h.h:560
+#: po/tmp/xap_String_Id.h.h:562
 msgid "Name:"
-msgstr "Име"
+msgstr "Име:"
 
 #. LANG_NE_NP
-#: po/tmp/xap_String_Id.h.h:562
+#: po/tmp/xap_String_Id.h.h:564
 msgid "Nepali (Nepal)"
 msgstr ""
 
 #. DLG_MB_No
-#: po/tmp/xap_String_Id.h.h:564
+#: po/tmp/xap_String_Id.h.h:566
 msgid "No"
-msgstr ""
+msgstr "Не"
 
 #. DLG_IP_No_Picture_Label
-#: po/tmp/xap_String_Id.h.h:566
+#: po/tmp/xap_String_Id.h.h:568
 msgid "No Picture"
 msgstr "Слика није изабрана"
 
 #. DLG_PLUGIN_MANAGER_NONE_SELECTED
-#: po/tmp/xap_String_Id.h.h:568
+#: po/tmp/xap_String_Id.h.h:570
 msgid "No plugin selected"
 msgstr "Ниједан додатак није изабран"
 
 #. STYLE_NORMAL
-#: po/tmp/xap_String_Id.h.h:570
+#: po/tmp/xap_String_Id.h.h:572
 msgid "Normal"
 msgstr "Обичан"
 
 #. LANG_NB_NO
-#: po/tmp/xap_String_Id.h.h:572
+#: po/tmp/xap_String_Id.h.h:574
 msgid "Norwegian Bokmal"
-msgstr "Норвешки (Бокмал)"
+msgstr "Норвешки Букмол"
 
 #. LANG_NN_NO
-#: po/tmp/xap_String_Id.h.h:574
+#: po/tmp/xap_String_Id.h.h:576
 msgid "Norwegian Nynorsk"
-msgstr "Норвешки (Нyнорск)"
+msgstr "Норвешки Нијноршк"
 
 #. DLG_PLUGIN_MANAGER_NOT_AVAILABLE
-#: po/tmp/xap_String_Id.h.h:576
+#: po/tmp/xap_String_Id.h.h:578
 msgid "Not available"
-msgstr ""
+msgstr "Није доступан"
 
 #. STYLE_NUMHEAD1
-#: po/tmp/xap_String_Id.h.h:578
+#: po/tmp/xap_String_Id.h.h:580
 msgid "Numbered Heading 1"
 msgstr "Нумерисан наслов 1"
 
 #. STYLE_NUMHEAD2
-#: po/tmp/xap_String_Id.h.h:580
+#: po/tmp/xap_String_Id.h.h:582
 msgid "Numbered Heading 2"
 msgstr "Нумерисан наслов 2"
 
 #. STYLE_NUMHEAD3
-#: po/tmp/xap_String_Id.h.h:582
+#: po/tmp/xap_String_Id.h.h:584
 msgid "Numbered Heading 3"
 msgstr "Нумерисан наслов 3"
 
 #. DLG_OK
-#: po/tmp/xap_String_Id.h.h:586
+#: po/tmp/xap_String_Id.h.h:588
 msgid "OK"
 msgstr "У реду"
 
 #. LANG_OC_FR
-#: po/tmp/xap_String_Id.h.h:588
+#: po/tmp/xap_String_Id.h.h:590
 msgid "Occitan"
-msgstr ""
+msgstr "Окситан"
 
 #. DLG_FOSA_OpenTitle
-#: po/tmp/xap_String_Id.h.h:590
+#: po/tmp/xap_String_Id.h.h:592
 msgid "Open File"
 msgstr "Отвори датотеку"
 
 #. DLG_FOSA_FileOpenTypeLabel
-#: po/tmp/xap_String_Id.h.h:592
+#: po/tmp/xap_String_Id.h.h:594
 msgid "Open file as &type:"
-msgstr "Отвори датотеку као да је тип:"
+msgstr "Отвори датотеку као да је &тип:"
 
 #. DLG_LISTDOCS_Title
-#: po/tmp/xap_String_Id.h.h:594
+#: po/tmp/xap_String_Id.h.h:596
 msgid "Opened Documents"
-msgstr ""
+msgstr "Отворени документи"
 
 #. TB_Zoom_Percent
-#: po/tmp/xap_String_Id.h.h:596
+#: po/tmp/xap_String_Id.h.h:598
 msgid "Other..."
-msgstr ""
+msgstr "Друго..."
 
 #. DLG_Zoom_Percent
-#: po/tmp/xap_String_Id.h.h:600
+#: po/tmp/xap_String_Id.h.h:602
 msgid "P&ercent:"
 msgstr "П&роцената:"
 
 #. TB_Zoom_PageWidth
-#: po/tmp/xap_String_Id.h.h:602
+#: po/tmp/xap_String_Id.h.h:604
 msgid "Page Width"
 msgstr "Ширина стране"
 
 #. DLG_UP_PageRanges
-#: po/tmp/xap_String_Id.h.h:604
+#: po/tmp/xap_String_Id.h.h:606
 msgid "Page ranges:"
-msgstr "Од - до стране"
+msgstr "Опсег страна:"
 
 #. LANG_PS
-#: po/tmp/xap_String_Id.h.h:606
+#: po/tmp/xap_String_Id.h.h:608
 msgid "Pashto"
-msgstr ""
+msgstr "Пашту"
 
 #. DLG_Password_Password
-#: po/tmp/xap_String_Id.h.h:608
+#: po/tmp/xap_String_Id.h.h:610
 msgid "Password:"
-msgstr "лозинка:"
+msgstr "Лозинка:"
 
 #. STYLE_PLAIN_TEXT
-#: po/tmp/xap_String_Id.h.h:610
+#: po/tmp/xap_String_Id.h.h:612
 msgid "Plain Text"
 msgstr "Само текст"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
-#: po/tmp/xap_String_Id.h.h:612
+#: po/tmp/xap_String_Id.h.h:614
 msgid "Plugin Details:"
-msgstr "Детаљи о додатку"
+msgstr "Детаљи о додатку:"
 
 #. DLG_PLUGIN_MANAGER_LIST
-#: po/tmp/xap_String_Id.h.h:614
+#: po/tmp/xap_String_Id.h.h:616
 msgid "Plugin List"
-msgstr "листа додатака"
+msgstr "Листа додатака"
 
 #. LANG_PL_PL
-#: po/tmp/xap_String_Id.h.h:616
+#: po/tmp/xap_String_Id.h.h:618
 msgid "Polish"
 msgstr "Пољски"
 
 #. LANG_PT_BR
-#: po/tmp/xap_String_Id.h.h:618
+#: po/tmp/xap_String_Id.h.h:620
 msgid "Portuguese (Brazil)"
 msgstr "Португалски (Бразил)"
 
 #. LANG_PT_PT
-#: po/tmp/xap_String_Id.h.h:620
+#: po/tmp/xap_String_Id.h.h:622
 msgid "Portuguese (Portugal)"
 msgstr "Португалски (Португалија)"
 
 #. DLG_Image_PlaceColumn
-#: po/tmp/xap_String_Id.h.h:622
+#: po/tmp/xap_String_Id.h.h:624
 msgid "Position relative to its Column"
 msgstr ""
 
 #. DLG_Image_PlacePage
-#: po/tmp/xap_String_Id.h.h:624
+#: po/tmp/xap_String_Id.h.h:626
 msgid "Position relative to its Page"
 msgstr ""
 
 #. DLG_Image_PlaceParagraph
-#: po/tmp/xap_String_Id.h.h:626
+#: po/tmp/xap_String_Id.h.h:628
 msgid "Position relative to nearest paragraph"
 msgstr ""
 
 #. DLG_Image_Aspect
-#: po/tmp/xap_String_Id.h.h:628
+#: po/tmp/xap_String_Id.h.h:630
 msgid "Preserve aspect ratio"
-msgstr "Сачувај однос ширине/висине:"
+msgstr "Сачувај однос ширине/висине"
 
 #. DLG_IP_Activate_Label
-#: po/tmp/xap_String_Id.h.h:632
+#: po/tmp/xap_String_Id.h.h:634
 msgid "Preview Picture"
-msgstr "Пред-преглед слике"
+msgstr "Преглед слике"
 
 #. DLG_FOSA_PrintToFileTitle
-#: po/tmp/xap_String_Id.h.h:637
+#: po/tmp/xap_String_Id.h.h:639
 msgid "Print To File"
 msgstr "Штампај у датотеку"
 
 #. DLG_FOSA_FilePrintTypeLabel
-#: po/tmp/xap_String_Id.h.h:639
+#: po/tmp/xap_String_Id.h.h:641
 msgid "Print file as &type:"
-msgstr "Штампај датотеку као тип:"
+msgstr "Штампај датотеку као да је &тип:"
 
 #. DLG_UP_PrintIn
-#: po/tmp/xap_String_Id.h.h:641
+#: po/tmp/xap_String_Id.h.h:643
 msgid "Print in: "
 msgstr "Штампај у: "
 
 #. DLG_UP_PrintTo
-#: po/tmp/xap_String_Id.h.h:643
+#: po/tmp/xap_String_Id.h.h:645
 msgid "Print to: "
 msgstr "Штампај на: "
 
 #. DLG_UP_Printer
-#: po/tmp/xap_String_Id.h.h:645
+#: po/tmp/xap_String_Id.h.h:647
 msgid "Printer"
 msgstr "Штампач"
 
 #. DLG_UP_PrinterCommand
-#: po/tmp/xap_String_Id.h.h:647
+#: po/tmp/xap_String_Id.h.h:649
 msgid "Printer command: "
 msgstr "Команда за штампање: "
 
 #. LANG_PA_IN
-#: po/tmp/xap_String_Id.h.h:649
+#: po/tmp/xap_String_Id.h.h:651
 msgid "Punjabi (Gurmukhi)"
 msgstr ""
 
 #. LANG_PA_PK
-#: po/tmp/xap_String_Id.h.h:651
+#: po/tmp/xap_String_Id.h.h:653
 msgid "Punjabi (Shahmukhi)"
 msgstr ""
 
 #. LANG_QU_BO
-#: po/tmp/xap_String_Id.h.h:653
+#: po/tmp/xap_String_Id.h.h:655
 msgid "Quechua"
 msgstr ""
 
 #. LANG_QUH_BO
-#: po/tmp/xap_String_Id.h.h:655
+#: po/tmp/xap_String_Id.h.h:657
 msgid "Quechua (3 vowels)"
 msgstr ""
 
 #. LANG_QUL_BO
-#: po/tmp/xap_String_Id.h.h:657
+#: po/tmp/xap_String_Id.h.h:659
 msgid "Quechua (5 vowels)"
 msgstr ""
 
 #. ReadOnly
-#: po/tmp/xap_String_Id.h.h:659
+#: po/tmp/xap_String_Id.h.h:661
 msgid "Read-Only"
 msgstr ""
 
 #. DLG_FOSA_RecordToFileTitle
-#: po/tmp/xap_String_Id.h.h:661
+#: po/tmp/xap_String_Id.h.h:663
 msgid "Record Editing to File"
 msgstr ""
 
 #. DLG_UFS_StyleRegular
-#: po/tmp/xap_String_Id.h.h:663
+#: po/tmp/xap_String_Id.h.h:665
 msgid "Regular"
 msgstr "Обичан"
 
 #. DLG_DocComparison_Relationship
-#: po/tmp/xap_String_Id.h.h:665
+#: po/tmp/xap_String_Id.h.h:667
 msgid "Relationship:"
-msgstr ""
+msgstr "Веза:"
 
 #. DLG_FOSA_ReplayFromFileTitle
-#: po/tmp/xap_String_Id.h.h:667
+#: po/tmp/xap_String_Id.h.h:669
 msgid "Replay Editing from File"
-msgstr ""
+msgstr "Поново изводи уређивање из датотеке"
 
 #. DLG_Restore
-#: po/tmp/xap_String_Id.h.h:669
+#: po/tmp/xap_String_Id.h.h:671
 msgid "Restore"
-msgstr ""
+msgstr "Врати на старо"
 
 #. DLG_HTMLOPT_ExpRestore
-#: po/tmp/xap_String_Id.h.h:671
+#: po/tmp/xap_String_Id.h.h:673
 msgid "Restore Settings"
-msgstr ""
+msgstr "Враћање подешавања на старо"
 
 #. DLG_DocComparison_Results
-#: po/tmp/xap_String_Id.h.h:673
+#: po/tmp/xap_String_Id.h.h:675
 msgid "Results"
-msgstr ""
+msgstr "Резултати"
 
 #. LANG_RO_RO
-#: po/tmp/xap_String_Id.h.h:675
+#: po/tmp/xap_String_Id.h.h:677
 msgid "Romanian"
 msgstr "Румунски"
 
 #. ENC_ROMA_MAC
-#: po/tmp/xap_String_Id.h.h:677
+#: po/tmp/xap_String_Id.h.h:679
 msgid "Romanian, Macintosh"
 msgstr "Румунски, Macintosh"
 
 #. LANG_RU_RU
-#: po/tmp/xap_String_Id.h.h:679
+#: po/tmp/xap_String_Id.h.h:681
 msgid "Russian (Russia)"
 msgstr "Руски (Русија)"
 
+#. LANG_RU_PETR1708
+#: po/tmp/xap_String_Id.h.h:683
+msgid "Russian (pre-1918)"
+msgstr ""
+
 #. DLG_UFS_SampleFrameLabel
-#: po/tmp/xap_String_Id.h.h:681
+#: po/tmp/xap_String_Id.h.h:685
 msgid "Sample"
 msgstr "Примерак"
 
 #. LANG_SC_IT
-#: po/tmp/xap_String_Id.h.h:683
+#: po/tmp/xap_String_Id.h.h:687
 msgid "Sardinian"
-msgstr ""
+msgstr "Сардински"
 
 #. DLG_FOSA_SaveAsTitle
-#: po/tmp/xap_String_Id.h.h:685
+#: po/tmp/xap_String_Id.h.h:689
 msgid "Save File As"
 msgstr "Сачувај датотеку под именом"
 
 #. DLG_HTMLOPT_ExpSave
-#: po/tmp/xap_String_Id.h.h:687
+#: po/tmp/xap_String_Id.h.h:691
 msgid "Save Settings"
-msgstr ""
+msgstr "Чување подешавања"
 
 #. DLG_FOSA_FileSaveTypeLabel
-#: po/tmp/xap_String_Id.h.h:689
+#: po/tmp/xap_String_Id.h.h:693
 msgid "Save file as &type:"
-msgstr "Тип датотеке:"
+msgstr "Сачувај датотеку као да је &тип:"
 
 #. DLG_UFS_ScriptLabel
-#: po/tmp/xap_String_Id.h.h:691
+#: po/tmp/xap_String_Id.h.h:695
 msgid "Script:"
 msgstr "Скрипт:"
 
 #. STYLE_SECTHEADING
-#: po/tmp/xap_String_Id.h.h:693
+#: po/tmp/xap_String_Id.h.h:697
 msgid "Section Heading"
 msgstr "Наслов одељка"
 
 #. DLG_UENC_EncLabel
-#: po/tmp/xap_String_Id.h.h:697
+#: po/tmp/xap_String_Id.h.h:701
 msgid "Select Encoding:"
-msgstr "Изаберите језик:"
+msgstr "Изаберите кодирање:"
 
 #. DLG_HTMLOPT_ExpLabel
-#: po/tmp/xap_String_Id.h.h:699
+#: po/tmp/xap_String_Id.h.h:703
 msgid "Select HTML export options:"
 msgstr ""
 
 #. DLG_ULANG_LangLabel
-#: po/tmp/xap_String_Id.h.h:701
+#: po/tmp/xap_String_Id.h.h:705
 msgid "Select Language:"
 msgstr "Изаберите језик:"
 
 #. LANG_SR
-#: po/tmp/xap_String_Id.h.h:705
+#: po/tmp/xap_String_Id.h.h:709
 msgid "Serbian"
-msgstr ""
+msgstr "Српски"
+
+#. LANG_SR_LATIN
+#: po/tmp/xap_String_Id.h.h:711
+#, fuzzy
+msgid "Serbian, latin"
+msgstr "Белоруски, латиницом"
 
 #. DLG_Image_ImageDesc
-#: po/tmp/xap_String_Id.h.h:707
+#: po/tmp/xap_String_Id.h.h:713
 msgid "Set Image Name"
-msgstr ""
+msgstr "Постављање имена слике"
 
 #. DLG_Image_ImageSize
-#: po/tmp/xap_String_Id.h.h:709
+#: po/tmp/xap_String_Id.h.h:715
 msgid "Set Image Size"
-msgstr ""
+msgstr "Постављање величине слике"
 
 #. DLG_ULANG_LangTitle
-#: po/tmp/xap_String_Id.h.h:711
+#: po/tmp/xap_String_Id.h.h:717
 msgid "Set Language"
-msgstr ""
+msgstr "Постављање језика"
 
 #. DLG_UFS_TransparencyCheck
-#: po/tmp/xap_String_Id.h.h:713
+#: po/tmp/xap_String_Id.h.h:719
 msgid "Set no Highlight Color"
 msgstr "Искључи истицање текста"
 
 #. DLG_UFS_SizeLabel
-#: po/tmp/xap_String_Id.h.h:717
+#: po/tmp/xap_String_Id.h.h:723
 msgid "Size:"
 msgstr "Величина:"
 
 #. LANG_SK_SK
-#: po/tmp/xap_String_Id.h.h:719
+#: po/tmp/xap_String_Id.h.h:725
 msgid "Slovak"
 msgstr "Словачки"
 
 #. LANG_SL_SI
-#: po/tmp/xap_String_Id.h.h:721
+#: po/tmp/xap_String_Id.h.h:727
 msgid "Slovenian"
-msgstr "Словенски"
+msgstr "Словеначки"
 
 #. DLG_UFS_Effects_SmallCaps
-#: po/tmp/xap_String_Id.h.h:723
+#: po/tmp/xap_String_Id.h.h:729
 msgid "Small Capitals"
 msgstr ""
 
 #. LANG_ES_MX
-#: po/tmp/xap_String_Id.h.h:725
+#: po/tmp/xap_String_Id.h.h:731
 msgid "Spanish (Mexico)"
 msgstr "Шпански (Мексико)"
 
 #. LANG_ES_ES
-#: po/tmp/xap_String_Id.h.h:727
+#: po/tmp/xap_String_Id.h.h:733
 msgid "Spanish (Spain)"
 msgstr "Шпански (Шпанија)"
 
 #. DLG_Image_SquareWrap
-#: po/tmp/xap_String_Id.h.h:731
+#: po/tmp/xap_String_Id.h.h:737
 msgid "Square text wrapping"
 msgstr ""
 
 #. DLG_DocComparison_Styles
-#: po/tmp/xap_String_Id.h.h:739
+#: po/tmp/xap_String_Id.h.h:745
 msgid "Styles:"
-msgstr ""
+msgstr "Стилови:"
 
 #. LANG_SW
-#: po/tmp/xap_String_Id.h.h:745
+#: po/tmp/xap_String_Id.h.h:751
 msgid "Swahili"
 msgstr ""
 
 #. LANG_SV_SE
-#: po/tmp/xap_String_Id.h.h:747
+#: po/tmp/xap_String_Id.h.h:753
 msgid "Swedish"
 msgstr "Шведски"
 
 #. TB_Font_Symbol
-#: po/tmp/xap_String_Id.h.h:749
+#: po/tmp/xap_String_Id.h.h:755
 msgid "Symbols"
-msgstr ""
+msgstr "Симболи"
 
 #. LANG_SYR
-#: po/tmp/xap_String_Id.h.h:751
+#: po/tmp/xap_String_Id.h.h:757
 msgid "Syriac"
 msgstr ""
 
 #. LANG_TL_PH
-#: po/tmp/xap_String_Id.h.h:755
+#: po/tmp/xap_String_Id.h.h:761
 msgid "Tagalog"
 msgstr ""
 
 #. LANG_TA_IN
-#: po/tmp/xap_String_Id.h.h:757
+#: po/tmp/xap_String_Id.h.h:763
 msgid "Tamil"
-msgstr ""
+msgstr "Тамилски"
 
 #. LANG_TE_IN
-#: po/tmp/xap_String_Id.h.h:759
+#: po/tmp/xap_String_Id.h.h:765
 msgid "Telugu"
 msgstr ""
 
 #. DLG_UFS_ColorTab
-#: po/tmp/xap_String_Id.h.h:761
+#: po/tmp/xap_String_Id.h.h:767
 msgid "Text Color"
 msgstr "Боја текста"
 
 #. DLG_Image_WrappedBoth
-#: po/tmp/xap_String_Id.h.h:763
+#: po/tmp/xap_String_Id.h.h:769
 msgid "Text wrapped on both sides of the Image"
 msgstr ""
 
 #. DLG_Image_WrappedLeft
-#: po/tmp/xap_String_Id.h.h:765
+#: po/tmp/xap_String_Id.h.h:771
 msgid "Text wrapped to the Left of the Image"
 msgstr ""
 
 #. DLG_Image_WrappedRight
-#: po/tmp/xap_String_Id.h.h:767
+#: po/tmp/xap_String_Id.h.h:773
 msgid "Text wrapped to the Right of the Image"
 msgstr ""
 
 #. LANG_TH_TH
-#: po/tmp/xap_String_Id.h.h:769
+#: po/tmp/xap_String_Id.h.h:775
 msgid "Thai"
-msgstr "Тајвански"
+msgstr "Тајландски"
 
 #. ENC_THAI_MAC
-#: po/tmp/xap_String_Id.h.h:771
+#: po/tmp/xap_String_Id.h.h:777
 msgid "Thai, Macintosh"
-msgstr "Тајвански, Macintosh"
+msgstr "Тајландски, Macintosh"
 
 #. ENC_THAI_TIS
-#: po/tmp/xap_String_Id.h.h:773
+#: po/tmp/xap_String_Id.h.h:779
 msgid "Thai, TIS-620"
-msgstr "Тајвански, TIS-620"
+msgstr "Тајландски, TIS-620"
 
 #. ENC_THAI_WIN
-#: po/tmp/xap_String_Id.h.h:775
+#: po/tmp/xap_String_Id.h.h:781
 msgid "Thai, Windows Code Page 874"
-msgstr "Тајвански, Windows кодна страна 874"
+msgstr "Тајландски, Windows кодна страна 874"
 
 #. DLG_NoSaveFile_DirNotWriteable
-#: po/tmp/xap_String_Id.h.h:777
+#: po/tmp/xap_String_Id.h.h:783
 #, c-format
 msgid "The directory '%s' is write-protected."
-msgstr "Речник %s је заштићен од уписа."
+msgstr "Директоријум „%s“ је заштићен од уписа."
 
 #. DLG_FOSA_ExtensionDoesNotMatch
-#: po/tmp/xap_String_Id.h.h:779
-msgid ""
-"The given file extension does not match the chosen file type. Do you want to "
-"use this name anyway?"
+#: po/tmp/xap_String_Id.h.h:785
+msgid "The given file extension does not match the chosen file type. Do you want to use this name anyway?"
 msgstr ""
 
 #. MSG_HistoryPartRestore2
-#: po/tmp/xap_String_Id.h.h:781
+#: po/tmp/xap_String_Id.h.h:787
 #, c-format
-msgid ""
-"The nearest version that can be restored fully is %d. Would you like to "
-"restore this version instead? To partially restore version %d press No."
+msgid "The nearest version that can be restored fully is %d. Would you like to restore this version instead? To partially restore version %d press No."
 msgstr ""
 
 #. DLG_UP_InvalidPrintString
-#: po/tmp/xap_String_Id.h.h:783
+#: po/tmp/xap_String_Id.h.h:789
 msgid "The print command string is not valid."
-msgstr "Команда за штампање је неправилна задана."
+msgstr "Команда за штампање је неправилно задана."
 
 #. MSG_NoUndo
-#: po/tmp/xap_String_Id.h.h:785
+#: po/tmp/xap_String_Id.h.h:791
 msgid "This operation cannot be undone. Are you sure you want to proceed?"
 msgstr ""
 
 #. DLG_Image_TightWrap
-#: po/tmp/xap_String_Id.h.h:789
+#: po/tmp/xap_String_Id.h.h:795
 msgid "Tight text wrapping"
 msgstr ""
 
 #. MSG_HistoryPartRestore3
-#: po/tmp/xap_String_Id.h.h:795
+#: po/tmp/xap_String_Id.h.h:801
 msgid "To continue anyway, press OK."
 msgstr ""
 
 #. MSG_HistoryPartRestore4
-#: po/tmp/xap_String_Id.h.h:797
+#: po/tmp/xap_String_Id.h.h:803
 msgid "To quit the restoration attempt, press Cancel."
 msgstr ""
 
 #. LANG_TR_TR
-#: po/tmp/xap_String_Id.h.h:803
+#: po/tmp/xap_String_Id.h.h:809
 msgid "Turkish"
 msgstr "Турски"
 
 #. ENC_TURK_ISO
-#: po/tmp/xap_String_Id.h.h:805
+#: po/tmp/xap_String_Id.h.h:811
 msgid "Turkish, ISO-8859-9"
 msgstr "Турски, ISO-8859-9"
 
 #. ENC_TURK_MAC
-#: po/tmp/xap_String_Id.h.h:807
+#: po/tmp/xap_String_Id.h.h:813
 msgid "Turkish, Macintosh"
 msgstr "Турски, Macintosh"
 
 #. ENC_TURK_WIN
-#: po/tmp/xap_String_Id.h.h:809
+#: po/tmp/xap_String_Id.h.h:815
 msgid "Turkish, Windows Code Page 1254"
 msgstr "Турски, Windows кодна страна 1254"
 
 #. DLG_Image_WrapType
-#: po/tmp/xap_String_Id.h.h:811
+#: po/tmp/xap_String_Id.h.h:817
 msgid "Type of text wrapping"
 msgstr ""
 
 #. ENC_WEST_ASCII
-#: po/tmp/xap_String_Id.h.h:813
+#: po/tmp/xap_String_Id.h.h:819
 msgid "US-ASCII"
-msgstr "УС-АСЦИИ"
+msgstr "US-ASCII"
 
 #. LANG_UK_UA
-#: po/tmp/xap_String_Id.h.h:815
+#: po/tmp/xap_String_Id.h.h:821
 msgid "Ukrainian"
 msgstr "Украјински"
 
 #. ENC_UKRA_KOI
-#: po/tmp/xap_String_Id.h.h:817
+#: po/tmp/xap_String_Id.h.h:823
 msgid "Ukrainian, KOI8-U"
-msgstr "Украјински, КОИ8-У"
+msgstr "Украјински, KOI8-U"
 
 #. ENC_UKRA_MAC
-#: po/tmp/xap_String_Id.h.h:819
+#: po/tmp/xap_String_Id.h.h:825
 msgid "Ukrainian, Macintosh"
 msgstr "Украјински, Macintosh"
 
 #. ENC_UNIC_UCS2
-#: po/tmp/xap_String_Id.h.h:823
+#: po/tmp/xap_String_Id.h.h:829
 msgid "Unicode UCS-2"
-msgstr "Unicode UCS-2"
+msgstr "Уникод UCS-2"
 
 #. ENC_UNIC_UCS_2BE
-#: po/tmp/xap_String_Id.h.h:825
+#: po/tmp/xap_String_Id.h.h:831
 msgid "Unicode UCS-2 Big Endian"
-msgstr "Unicode UCS-2 Big Endian"
+msgstr "Уникод UCS-2 велике крајности"
 
 #. ENC_UNIC_UCS_2LE
-#: po/tmp/xap_String_Id.h.h:827
+#: po/tmp/xap_String_Id.h.h:833
 msgid "Unicode UCS-2 Little Endian"
-msgstr "Unicode UCS-2 Little Endian"
+msgstr "Уникод UCS-2 мале крајности"
 
 #. ENC_UNIC_UCS4
-#: po/tmp/xap_String_Id.h.h:829
+#: po/tmp/xap_String_Id.h.h:835
 msgid "Unicode UCS-4"
-msgstr "Unicode UCS-4"
+msgstr "Уникод UCS-4"
 
 #. ENC_UNIC_UCS_4BE
-#: po/tmp/xap_String_Id.h.h:831
+#: po/tmp/xap_String_Id.h.h:837
 msgid "Unicode UCS-4 Big Endian"
-msgstr "Unicode UCS-4 Big Endian"
+msgstr "Уникод UCS-4 велике крајности"
 
 #. ENC_UNIC_UCS_4LE
-#: po/tmp/xap_String_Id.h.h:833
+#: po/tmp/xap_String_Id.h.h:839
 msgid "Unicode UCS-4 Little Endian"
-msgstr "Unicode UCS-4 Little Endian"
+msgstr "Уникод UCS-4 мале крајности"
 
 #. ENC_UNIC_UTF_16
-#: po/tmp/xap_String_Id.h.h:835
+#: po/tmp/xap_String_Id.h.h:841
 msgid "Unicode UTF-16"
-msgstr "Unicode UTF-16"
+msgstr "Уникод UTF-16"
 
 #. ENC_UNIC_UTF_16BE
-#: po/tmp/xap_String_Id.h.h:837
+#: po/tmp/xap_String_Id.h.h:843
 msgid "Unicode UTF-16 Big Endian"
-msgstr "Unicode UTF-16 Big Endian"
+msgstr "Уникод UTF-16 велике крајности"
 
 #. ENC_UNIC_UTF_16LE
-#: po/tmp/xap_String_Id.h.h:839
+#: po/tmp/xap_String_Id.h.h:845
 msgid "Unicode UTF-16 Little Endian"
-msgstr "Unicode UTF-16 Little Endian"
+msgstr "Уникод UTF-16 мале крајности"
 
 #. ENC_UNIC_UTF_32
-#: po/tmp/xap_String_Id.h.h:841
+#: po/tmp/xap_String_Id.h.h:847
 msgid "Unicode UTF-32"
-msgstr "Unicode UTF-32"
+msgstr "Уникод UTF-32"
 
 #. ENC_UNIC_UTF_32BE
-#: po/tmp/xap_String_Id.h.h:843
+#: po/tmp/xap_String_Id.h.h:849
 msgid "Unicode UTF-32 Big Endian"
-msgstr "Unicode UTF-32 Big Endian"
+msgstr "Уникод UTF-32 велике крајности"
 
 #. ENC_UNIC_UTF_32LE
-#: po/tmp/xap_String_Id.h.h:845
+#: po/tmp/xap_String_Id.h.h:851
 msgid "Unicode UTF-32 Little Endian"
-msgstr "Unicode UTF-32 Little Endian"
+msgstr "Уникод UTF-32 мале крајности"
 
 #. ENC_UNIC_UTF_7
-#: po/tmp/xap_String_Id.h.h:847
+#: po/tmp/xap_String_Id.h.h:853
 msgid "Unicode UTF-7"
-msgstr "Unicode UTF-7"
+msgstr "Уникод UTF-7"
 
 #. ENC_UNIC_UTF_8
-#: po/tmp/xap_String_Id.h.h:849
+#: po/tmp/xap_String_Id.h.h:855
 msgid "Unicode UTF-8"
-msgstr "Unicode UTF-8"
+msgstr "Уникод UTF-8"
 
 #. UntitledDocument
-#: po/tmp/xap_String_Id.h.h:851
+#: po/tmp/xap_String_Id.h.h:857
 #, c-format
 msgid "Untitled%d"
 msgstr "Неименован%d"
 
 #. DLG_Update
-#: po/tmp/xap_String_Id.h.h:853
+#: po/tmp/xap_String_Id.h.h:859
 msgid "Update"
 msgstr "Освежи"
 
 #. DLG_UFS_Effects_UpperCase
-#: po/tmp/xap_String_Id.h.h:859
+#: po/tmp/xap_String_Id.h.h:865
 msgid "Uppercase"
-msgstr ""
+msgstr "Велика слова"
 
 #. LANG_UR
-#: po/tmp/xap_String_Id.h.h:861
+#: po/tmp/xap_String_Id.h.h:867
 msgid "Urdu"
-msgstr ""
+msgstr "Урду"
 
 #. LANG_UR_PK
-#: po/tmp/xap_String_Id.h.h:863
+#: po/tmp/xap_String_Id.h.h:869
 msgid "Urdu (Pakistan)"
-msgstr ""
+msgstr "Урду (Пакистан)"
 
 #. LANG_UZ_UZ
-#: po/tmp/xap_String_Id.h.h:865
+#: po/tmp/xap_String_Id.h.h:871
 msgid "Uzbek"
-msgstr ""
+msgstr "Узбечки"
 
 #. DLG_History_List_Title
-#: po/tmp/xap_String_Id.h.h:869
+#: po/tmp/xap_String_Id.h.h:875
 msgid "Version history"
-msgstr ""
+msgstr "Историја верзија"
 
 #. DLG_PLUGIN_MANAGER_VERSION
 #. DLG_History_Version
-#: po/tmp/xap_String_Id.h.h:872
+#: po/tmp/xap_String_Id.h.h:878
 msgid "Version:"
-msgstr ""
+msgstr "Верзија:"
 
 #. DLG_ABOUT_Version
-#: po/tmp/xap_String_Id.h.h:874
+#: po/tmp/xap_String_Id.h.h:880
 #, c-format
 msgid "Version: %s"
-msgstr ""
+msgstr "Верзија: %s"
 
 #. LANG_VI_VN
-#: po/tmp/xap_String_Id.h.h:876
+#: po/tmp/xap_String_Id.h.h:882
 msgid "Vietnamese"
 msgstr "Вијетнамски"
 
 #. ENC_VIET_TCVN
-#: po/tmp/xap_String_Id.h.h:878
+#: po/tmp/xap_String_Id.h.h:884
 msgid "Vietnamese, TCVN"
-msgstr "Вијетнамски, ТЦВН"
+msgstr "Вијетнамски, TCVN"
 
 #. ENC_VIET_VISCII
-#: po/tmp/xap_String_Id.h.h:880
+#: po/tmp/xap_String_Id.h.h:886
 msgid "Vietnamese, VISCII"
-msgstr "Вијетнамски, ВИСЦИИ"
+msgstr "Вијетнамски, VISCII"
 
 #. ENC_VIET_WIN
-#: po/tmp/xap_String_Id.h.h:882
+#: po/tmp/xap_String_Id.h.h:888
 msgid "Vietnamese, Windows Code Page 1258"
 msgstr "Вијетнамски, Windows кодна страна 1258"
 
 #. DLG_MW_MoreWindows
-#: po/tmp/xap_String_Id.h.h:884
+#: po/tmp/xap_String_Id.h.h:890
 msgid "View Document"
-msgstr "Активирај прозор"
+msgstr "Прегледање документа"
 
 #. DLG_MW_Activate
-#: po/tmp/xap_String_Id.h.h:886
+#: po/tmp/xap_String_Id.h.h:892
 msgid "View:"
-msgstr "Активирај:"
+msgstr "Преглед:"
 
 #. LANG_CY_GB
-#: po/tmp/xap_String_Id.h.h:888
+#: po/tmp/xap_String_Id.h.h:894
 msgid "Welsh"
 msgstr "Велшки"
 
 #. ENC_US_DOS
-#: po/tmp/xap_String_Id.h.h:890
+#: po/tmp/xap_String_Id.h.h:896
 msgid "Western European, DOS/Windows Code Page 437"
-msgstr ""
+msgstr "Западно европски, DOS/Windows кодна страна 437"
 
 #. ENC_MLNG_DOS
-#: po/tmp/xap_String_Id.h.h:892
+#: po/tmp/xap_String_Id.h.h:898
 msgid "Western European, DOS/Windows Code Page 850"
-msgstr ""
+msgstr "Западно европски, DOS/Windows кодна страна 850"
 
 #. ENC_WEST_HP
-#: po/tmp/xap_String_Id.h.h:894
+#: po/tmp/xap_String_Id.h.h:900
 msgid "Western European, HP"
 msgstr "Западно европски, HP"
 
 #. ENC_WEST_ISO
-#: po/tmp/xap_String_Id.h.h:896
+#: po/tmp/xap_String_Id.h.h:902
 msgid "Western European, ISO-8859-1"
 msgstr "Западно европски, ISO-8859-1"
 
 #. ENC_WEST_MAC
-#: po/tmp/xap_String_Id.h.h:898
+#: po/tmp/xap_String_Id.h.h:904
 msgid "Western European, Macintosh"
 msgstr "Западно европски, Macintosh"
 
 #. ENC_WEST_NXT
-#: po/tmp/xap_String_Id.h.h:900
+#: po/tmp/xap_String_Id.h.h:906
 msgid "Western European, NeXT"
 msgstr "Западно европски, NeXT"
 
 #. ENC_WEST_WIN
-#: po/tmp/xap_String_Id.h.h:902
+#: po/tmp/xap_String_Id.h.h:908
 msgid "Western European, Windows Code Page 1252"
 msgstr "Западно европски, Windows кодна страна 1252"
 
 #. TB_Zoom_WholePage
-#: po/tmp/xap_String_Id.h.h:904
+#: po/tmp/xap_String_Id.h.h:910
 msgid "Whole Page"
 msgstr "Цела страна"
 
 #. DLG_Image_Width
-#: po/tmp/xap_String_Id.h.h:906
+#: po/tmp/xap_String_Id.h.h:912
 msgid "Width:"
 msgstr "Ширина:"
 
 #. DLG_IP_Width_Label
-#: po/tmp/xap_String_Id.h.h:908
+#: po/tmp/xap_String_Id.h.h:914
 msgid "Width:  "
 msgstr "Ширина:  "
 
 #. LANG_WO_SN
-#: po/tmp/xap_String_Id.h.h:910
+#: po/tmp/xap_String_Id.h.h:916
 msgid "Wolof (Senegal)"
 msgstr ""
 
 #. DLG_MB_Yes
-#: po/tmp/xap_String_Id.h.h:912
+#: po/tmp/xap_String_Id.h.h:918
 msgid "Yes"
-msgstr ""
+msgstr "Да"
 
 #. LANG_YI
-#: po/tmp/xap_String_Id.h.h:914
+#: po/tmp/xap_String_Id.h.h:920
 msgid "Yiddish"
-msgstr "Јидишки"
+msgstr "Јидиш"
 
 #. MSG_HistoryConfirmSave
-#: po/tmp/xap_String_Id.h.h:916
+#: po/tmp/xap_String_Id.h.h:922
 #, c-format
 msgid "You have to save changes to document %s before proceeding. Save now?"
 msgstr ""
 
 #. DLG_Zoom_RadioFrameCaption
-#: po/tmp/xap_String_Id.h.h:920
+#: po/tmp/xap_String_Id.h.h:926
 msgid "Zoom to"
 msgstr "Увеличај на"
 
 #. DLG_UnixMB_No
-#: po/tmp/xap_String_Id.h.h:922
+#: po/tmp/xap_String_Id.h.h:928
 msgid "_No"
 msgstr "_Не"
 
 #. DLG_UnixMB_Yes
-#: po/tmp/xap_String_Id.h.h:924
+#: po/tmp/xap_String_Id.h.h:930
 msgid "_Yes"
 msgstr "_Да"
 
 #. DLG_Unit_cm
-#: po/tmp/xap_String_Id.h.h:926
+#: po/tmp/xap_String_Id.h.h:932
 msgid "cm"
 msgstr "цм"
 
 #. DLG_DocComparison_Different
-#: po/tmp/xap_String_Id.h.h:928
+#: po/tmp/xap_String_Id.h.h:934
 msgid "different"
 msgstr ""
 
 #. DLG_DocComparison_DivergingPos
-#: po/tmp/xap_String_Id.h.h:930
+#: po/tmp/xap_String_Id.h.h:936
 #, c-format
 msgid "diverging after document position %d"
 msgstr ""
 
 #. DLG_DocComparison_Diverging
-#: po/tmp/xap_String_Id.h.h:932
+#: po/tmp/xap_String_Id.h.h:938
 #, c-format
 msgid "diverging after version %d of %s"
 msgstr ""
 
 #. DLG_DocComparison_Identical
-#: po/tmp/xap_String_Id.h.h:934
+#: po/tmp/xap_String_Id.h.h:940
 msgid "identical"
 msgstr ""
 
 #. DLG_Unit_inch
-#: po/tmp/xap_String_Id.h.h:936
+#: po/tmp/xap_String_Id.h.h:942
 msgid "inch"
 msgstr "инч"
 
 #. DLG_Unit_mm
-#: po/tmp/xap_String_Id.h.h:938
+#: po/tmp/xap_String_Id.h.h:944
 msgid "mm"
 msgstr "мм"
 
 #. DLG_Unit_pica
-#: po/tmp/xap_String_Id.h.h:940
+#: po/tmp/xap_String_Id.h.h:946
 msgid "pica"
 msgstr ""
 
 #. DLG_Unit_points
-#: po/tmp/xap_String_Id.h.h:942
+#: po/tmp/xap_String_Id.h.h:948
 msgid "points"
-msgstr "тачака"
+msgstr "тачке"
 
 #. DLG_DocComparison_Siblings
-#: po/tmp/xap_String_Id.h.h:944
+#: po/tmp/xap_String_Id.h.h:950
 msgid "siblings"
 msgstr ""
 
 #. DLG_DocComparison_Unrelated
-#: po/tmp/xap_String_Id.h.h:946
+#: po/tmp/xap_String_Id.h.h:952
 msgid "unrelated"
 msgstr ""
 
-#~ msgid "??"
-#~ msgstr "Управља променама у документу"
