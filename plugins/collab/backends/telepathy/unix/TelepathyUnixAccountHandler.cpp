@@ -37,7 +37,7 @@
 
 static DBusHandlerResult s_dbus_handle_message(DBusConnection *connection, DBusMessage *message, void *user_data);
 
-#define DEFAULT_CONFERENCE_SERVER "conference.matthewwild.co.uk"
+#define DEFAULT_CONFERENCE_SERVER "conference.telepathy.im"
 #define INTERFACE "org.freedesktop.Telepathy.Client.AbiCollab"
 #define SEND_ONE_METHOD "SendOne"
 
@@ -383,7 +383,6 @@ void TelepathyAccountHandler::loadProperties()
 {
 	UT_DEBUGMSG(("TelepathyAccountHandler::loadProperties()\n"));
 
-	// TODO: don't default to Matt's server
 	std::string conference_server = getProperty("conference_server");
 	if (conference_entry && GTK_IS_ENTRY(conference_entry))
 		gtk_entry_set_text(GTK_ENTRY(conference_entry), conference_server.c_str());
@@ -444,7 +443,6 @@ ConnectResult TelepathyAccountHandler::connect()
 	pManager->registerEventListener(this);
 	// signal all listeners we are logged in
 	AccountOnlineEvent event;
-	// TODO: fill the event
 	pManager->signal(event);
 
 	return CONNECT_SUCCESS;
@@ -678,8 +676,7 @@ bool TelepathyAccountHandler::send(const Packet* pPacket, BuddyPtr pBuddy)
 	UT_DEBUGMSG(("Destination (%s) set on message\n", pDTubeBuddy->getDBusName().utf8_str()));
 
 	// we don't want replies, because they easily run into dbus timeout problems 
-	// when sending large packets
-	// TODO: this means we should probably use signals though
+	// when sending large packets; this means we should probably use signals though.
 	dbus_message_set_no_reply(pMessage, TRUE);
 	
 	// make to-be-send-stream once
