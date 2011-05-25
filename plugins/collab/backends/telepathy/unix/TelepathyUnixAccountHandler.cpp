@@ -99,7 +99,7 @@ tp_connection_get_contact_list_attributes_cb(TpConnection* connection,
 	};
 
 	// we could alternatively use tp_connection_dup_contact_if_possible(), but
-	// tp_connection_get_contacts_by_handle seems more generic
+	// that will not guarantee that we get nice aliasses
 	tp_connection_get_contacts_by_handle (connection,
 			handles.size(), &handles[0],
 			G_N_ELEMENTS (features), features,
@@ -565,13 +565,18 @@ bool TelepathyAccountHandler::startSession(PD_Document* pDoc, const std::vector<
 	pUUID->toString(sSessionId);
 	DELETEP(pUUID);
 
+	// determine the document name
+	UT_UTF8String docName = pDoc->getFilename();
+	if (docName == "")
+		docName = "Untitled"; // TODO: fetch the title from the frame somehow (which frame?) - MARCM
+
 	// start the session already, while we'll continue to setup a
 	// MUC asynchronously below
 	// TODO: fill in the buddy descriptor for proper text coloring?
 	*pSession = pManager->startSession(pDoc, sSessionId, this, true, NULL, "");
 
 	// create a chatroom to hold the session information
-	TelepathyChatroomPtr pChatroom = boost::shared_ptr<TelepathyChatroom>(new TelepathyChatroom(this, NULL, sSessionId));
+	TelepathyChatroomPtr pChatroom = boost::shared_ptr<TelepathyChatroom>(new TelepathyChatroom(this, NULL, sSessionId, docName));
 	m_chatrooms.push_back(pChatroom);
 
 	// add the buddies in the acl list to the room invitee list
@@ -579,7 +584,7 @@ bool TelepathyAccountHandler::startSession(PD_Document* pDoc, const std::vector<
 	// TODO: free invitee_ids
 	//gchar** invitee_ids = reinterpret_cast<gchar**>(malloc(sizeof(gchar*) * vAcl.size()+1));
 	//int i = 0;
-	for (std::vector<std::string>::const_iterator cit = vAcl.begin(); cit != vAcl.end(); cit++, i++)
+	for (std::vector<std::string>::const_iterator cit = vAcl.begin(); cit != vAcl.end(); cit++ /*, i++*/)
 	{
 		for (std::vector<BuddyPtr>::iterator it = getBuddies().begin(); it != getBuddies().end(); it++)
 		{
@@ -612,6 +617,13 @@ bool TelepathyAccountHandler::startSession(PD_Document* pDoc, const std::vector<
 	}
 	UT_return_val_if_fail(selected_account, false);
 	g_list_free(accounts);
+
+	// determine the room target id
+	std::string target_id = sSessionId.utf8_str();
+	std::string conference_server = getProperty("conference_server");
+	if (conference_server != "")
+		target_id += "@" + conference_server;
+	UT_DEBUGMSG(("Using room target ID: %s\n", target_id.c_str()));
 
 	// create a anonymous MUC channel request
 	GHashTable* props = tp_asv_new (
@@ -715,7 +727,7 @@ void TelepathyAccountHandler::acceptTube(TpChannel *chan, const char* address)
 
 	// create a new room so we can store the buddies somewhere
 	// the session id will be set as soon as we join the document
-	TelepathyChatroomPtr pChatroom = boost::shared_ptr<TelepathyChatroom>(new TelepathyChatroom(this, pTube, ""));
+	TelepathyChatroomPtr pChatroom = boost::shared_ptr<TelepathyChatroom>(new TelepathyChatroom(this, pTube, "", ""));
 	m_chatrooms.push_back(pChatroom);
 
 	UT_DEBUGMSG(("Adding dbus handlers to the main loop for tube %s\n", address));
@@ -924,9 +936,12 @@ bool TelepathyAccountHandler::offerTube(TelepathyChatroomPtr pChatroom, TpChanne
 		g_array_append_val(members, handle);
 	}
 
+	// create the welcome string
+	UT_UTF8String sWelcomeMsg = UT_UTF8String_sprintf("A document called '%s' has been shared with you", pChatroom->getDocName().utf8_str());
+
 	UT_DEBUGMSG(("Inviting members to the room...\n"));
 	GError* error = NULL;
-	if (!tp_cli_channel_interface_group_run_add_members(chan, -1,  members, "Hi there!", &error, NULL))
+	if (!tp_cli_channel_interface_group_run_add_members(chan, -1,  members, sWelcomeMsg.utf8_str(), &error, NULL))
 	{
 		UT_DEBUGMSG(("Error inviting room members: %s\n", error ? error->message : "(null)"));
 		return false;
