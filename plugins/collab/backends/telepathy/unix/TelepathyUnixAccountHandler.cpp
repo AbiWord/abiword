@@ -461,14 +461,19 @@ bool TelepathyAccountHandler::disconnect()
 	m_pTpClient = NULL;
 
 	// tear down all active rooms
-	// TODO: implement me
+	for (std::vector<TelepathyChatroomPtr>::iterator it = m_chatrooms.begin(); it != m_chatrooms.end(); it++)
+		(*it)->stop();
+	// We can't make sure that there are zero asynchronous telepathy calls out there. This could
+	// make the next call problematic, as those callbacks carry an unsafe (non-smart) reference
+	// to a chatroom pointer. If we properly check the error status every time when a
+	// callback returns, before we touch the chatroom pointer, we should be safe.
+	m_chatrooms.clear();
 
 	// we are disconnected now, no need to receive events anymore
 	pManager->unregisterEventListener(this);
 
 	// signal all listeners we are logged out
 	AccountOfflineEvent event;
-	// TODO: fill the event
 	AbiCollabSessionManager::getManager()->signal(event);
 
 	return true;
@@ -677,8 +682,8 @@ bool TelepathyAccountHandler::send(const Packet* pPacket, BuddyPtr pBuddy)
 	DBusMessage* pMessage = dbus_message_new_method_call (pDTubeBuddy->getDBusName().utf8_str(), "/org/laptop/DTube/Presence/Buddies", INTERFACE, SEND_ONE_METHOD);
 	UT_return_val_if_fail(pMessage, false);
 
-	// TODO: check dst
-	dbus_message_set_destination(pMessage, pDTubeBuddy->getDBusName().utf8_str());
+	bool dst = dbus_message_set_destination(pMessage, pDTubeBuddy->getDBusName().utf8_str());
+	UT_return_val_if_fail(dst, false);
 	UT_DEBUGMSG(("Destination (%s) set on message\n", pDTubeBuddy->getDBusName().utf8_str()));
 
 	// we don't want replies, because they easily run into dbus timeout problems 
@@ -805,7 +810,7 @@ void TelepathyAccountHandler::handleMessage(DTubeBuddyPtr pBuddy, const std::str
 
 	// construct the packet
 	Packet* pPacket = _createPacket(packet_str, pBuddy);
-	UT_return_if_fail(pPacket); // TODO: shouldn't we just disconnect here?
+	UT_return_if_fail(pPacket);
 
 	switch (pPacket->getClassType())
 	{
@@ -820,7 +825,7 @@ void TelepathyAccountHandler::handleMessage(DTubeBuddyPtr pBuddy, const std::str
 				{
 					// return only the session that belongs to the chatroom that the buddy is in
 					GetSessionsResponseEvent gsre;
-					gsre.m_Sessions[pChatroom->getSessionId()] = "bar"; // TODO: add document name
+					gsre.m_Sessions[pChatroom->getSessionId()] = pChatroom->getDocName();
 					send(&gsre, pBuddy);
 				}
 				else
@@ -998,5 +1003,3 @@ TelepathyBuddyPtr TelepathyAccountHandler::_getBuddy(TelepathyBuddyPtr pBuddy)
 	}
 	return TelepathyBuddyPtr();
 }
-
-

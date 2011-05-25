@@ -20,6 +20,12 @@
 #include "TelepathyChatroom.h"
 #include "DTubeBuddy.h"
 
+void TelepathyChatroom::stop()
+{
+	UT_DEBUGMSG(("TelepathyChatroom::stop()\n"));
+	dbus_connection_unref(m_pTube);
+}
+
 void TelepathyChatroom::addBuddy(DTubeBuddyPtr pBuddy)
 {
 	// make sure we don't add this buddy twice

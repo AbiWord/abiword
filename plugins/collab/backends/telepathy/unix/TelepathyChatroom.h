@@ -48,6 +48,8 @@ public:
 	{
 	}
 
+	void stop();
+
 	boost::shared_ptr<TelepathyChatroom> ptr()
 		{ return shared_from_this(); }
 
