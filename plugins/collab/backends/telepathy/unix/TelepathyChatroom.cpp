@@ -93,6 +93,15 @@ void TelepathyChatroom::removeBuddy(TpHandle handle)
 	UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 }
 
+UT_UTF8String TelepathyChatroom::getDocName()
+{
+	UT_return_val_if_fail(m_pDoc, "");
+	UT_UTF8String docName = m_pDoc->getFilename();
+	if (docName == "")
+		return "Untitled"; // TODO: fetch the title from the frame somehow (which frame?) - MARCM
+	return docName;
+}
+
 void TelepathyChatroom::queue(const std::string& dbusName, const std::string& packet)
 {
 	UT_DEBUGMSG(("Queueing packet for %s\n", dbusName.c_str()));

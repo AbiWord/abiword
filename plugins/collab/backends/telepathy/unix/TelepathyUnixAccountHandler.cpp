@@ -565,18 +565,13 @@ bool TelepathyAccountHandler::startSession(PD_Document* pDoc, const std::vector<
 	pUUID->toString(sSessionId);
 	DELETEP(pUUID);
 
-	// determine the document name
-	UT_UTF8String docName = pDoc->getFilename();
-	if (docName == "")
-		docName = "Untitled"; // TODO: fetch the title from the frame somehow (which frame?) - MARCM
-
 	// start the session already, while we'll continue to setup a
 	// MUC asynchronously below
 	// TODO: fill in the buddy descriptor for proper text coloring?
 	*pSession = pManager->startSession(pDoc, sSessionId, this, true, NULL, "");
 
 	// create a chatroom to hold the session information
-	TelepathyChatroomPtr pChatroom = boost::shared_ptr<TelepathyChatroom>(new TelepathyChatroom(this, NULL, sSessionId, docName));
+	TelepathyChatroomPtr pChatroom = boost::shared_ptr<TelepathyChatroom>(new TelepathyChatroom(this, pDoc, NULL, sSessionId));
 	m_chatrooms.push_back(pChatroom);
 
 	// add the buddies in the acl list to the room invitee list
@@ -727,7 +722,7 @@ void TelepathyAccountHandler::acceptTube(TpChannel *chan, const char* address)
 
 	// create a new room so we can store the buddies somewhere
 	// the session id will be set as soon as we join the document
-	TelepathyChatroomPtr pChatroom = boost::shared_ptr<TelepathyChatroom>(new TelepathyChatroom(this, pTube, "", ""));
+	TelepathyChatroomPtr pChatroom = boost::shared_ptr<TelepathyChatroom>(new TelepathyChatroom(this, NULL, pTube, ""));
 	m_chatrooms.push_back(pChatroom);
 
 	UT_DEBUGMSG(("Adding dbus handlers to the main loop for tube %s\n", address));

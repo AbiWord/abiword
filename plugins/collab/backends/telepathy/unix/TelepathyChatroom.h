@@ -39,15 +39,13 @@ typedef boost::shared_ptr<DTubeBuddy> DTubeBuddyPtr;
 class TelepathyChatroom : public boost::enable_shared_from_this<TelepathyChatroom>
 {
 public:
-	TelepathyChatroom(TelepathyAccountHandler* pHandler, DBusConnection* pTube,
-			const UT_UTF8String& sSessionId, const UT_UTF8String& sDocName)
+	TelepathyChatroom(TelepathyAccountHandler* pHandler, PD_Document* pDoc,
+			DBusConnection* pTube, const UT_UTF8String& sSessionId)
 		: m_pHandler(pHandler),
+		m_pDoc(pDoc),
 		m_pTube(pTube),
-		m_sSessionId(sSessionId),
-		m_sDocName(sDocName)
+		m_sSessionId(sSessionId)
 	{
-		// TODO: we should prolly ref the tube
-		// dbus_connection_unref(m_pTube);
 	}
 
 	boost::shared_ptr<TelepathyChatroom> ptr()
@@ -76,8 +74,7 @@ public:
 	const UT_UTF8String& getSessionId()
 		{ return m_sSessionId; }
 
-	const UT_UTF8String& getDocName()
-		{ return m_sDocName; }
+	UT_UTF8String getDocName();
 
 	void queue(const std::string& dbusName, const std::string& packet);
 
@@ -90,9 +87,9 @@ public:
 
 private:
 	TelepathyAccountHandler*	m_pHandler;
+	PD_Document* 				m_pDoc;
 	DBusConnection*				m_pTube;
 	UT_UTF8String				m_sSessionId;
-	UT_UTF8String				m_sDocName;
 	std::vector<DTubeBuddyPtr>	m_buddies;
 	std::vector<TelepathyBuddyPtr> m_invitees;
 
