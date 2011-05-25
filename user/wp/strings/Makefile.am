@@ -48,7 +48,6 @@ strings_DATA = \
 	lt-LT.strings \
 	lv-LV.strings \
 	mg-MG.strings \
-	mh-MH.strings \
 	mk-MK.strings \
 	ms-MY.strings \
 	nb-NO.strings \
@@ -72,7 +71,6 @@ strings_DATA = \
 	ta-IN.strings \
 	tr-TR.strings \
 	uk-UA.strings \
-	ur.strings \
 	vi-VN.strings \
 	wo-SN.strings \
 	yi.strings \
