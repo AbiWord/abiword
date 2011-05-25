@@ -33,7 +33,7 @@
 #include "barbarisms.h"
 
 // forward declaration
-class HyphentorManager;
+class HyphenationManager;
 
 //struct DictionaryMapping
 //{
@@ -44,15 +44,15 @@ class HyphentorManager;
 
 
 
-class ABI_EXPORT Hyphenator
+class ABI_EXPORT Hyphenation
 {
-	friend class HyphentorManager;
+	friend class HyphenationManager;
 public:
-	enum HyphenatorResult
+	enum HyphenationResult
 	{
-		Hyphenator_SUCCEEDED = 0, // Hyphenator the word succeeded
-		Hyphenator_FAILED = 1,    // could not Hyphenator the word
-		Hyphenator_ERROR = 2      // internal error
+		Hyphenation_SUCCEEDED = 0, // Hyphenation the word succeeded
+		Hyphenation_FAILED = 1,    // could not Hyphenation the word
+		Hyphenation_ERROR = 2      // internal error
 	};	
 	//hyphenate the word and get the hyphenation result vector(find a best result to match the line)
 	UT_GenericVector<UT_UCSChar*>* hyphenateWord(const UT_UCSChar* word, size_t len);
@@ -73,9 +73,9 @@ public:
 	void setDictionaryFound(bool b)
 	{ m_bFoundDictionary = b;}
 protected:
-	Hyphenator();
+	Hyphenation();
 
-	virtual ~Hyphenator();
+	virtual ~Hyphenation();
 
     void setLanguage (const char * lang)
     {
@@ -93,38 +93,38 @@ protected:
 	bool                m_bFoundDictionary;
 
 private:
-    Hyphenator(const Hyphenator&);		// no impl
-    void operator=(const Hyphenator&);	// no impl
+    Hyphenation(const Hyphenation&);		// no impl
+    void operator=(const Hyphenation&);	// no impl
 
 	virtual bool				_requestDictionary (const char * szLang) = 0;
-	virtual HyphenatorResult	__hyphenate(const UT_UCSChar* word, size_t len) = 0;
+	virtual HyphenationResult	__hyphenate(const UT_UCSChar* word, size_t len) = 0;
 	virtual UT_GenericVector<UT_UCSChar*>* __hyphenateWord(const UT_UCSChar* word, size_t len)=0;
 
 };
 
-class ABI_EXPORT HyphentorManager
+class ABI_EXPORT HyphenationManager
 {
 public:
-	static HyphentorManager & instance (void);
+	static HyphenationManager & instance (void);
 
-	virtual ~HyphentorManager ();
+	virtual ~HyphenationManager ();
 
 
-	virtual HyphentorManager * lastDictionary (void) const;
-	virtual HyphentorManager * requestDictionary (const char * szLang);
+	virtual HyphenationManager * lastDictionary (void) const;
+	virtual HyphenationManager * requestDictionary (const char * szLang);
 	UT_uint32 numLoadedDicts () const { return m_nLoadedDicts; }
 
-	Hyphenator *	getInstance() const;
+	Hyphenation *	getInstance() const;
 
 private:
-	HyphentorManager ();
-	HyphentorManager ( const HyphentorManager & other );
-	HyphentorManager & operator= ( const HyphentorManager & other );
+	HyphenationManager ();
+	HyphenationManager ( const HyphenationManager & other );
+	HyphenationManager & operator= ( const HyphenationManager & other );
 
 
 	UT_StringPtrMap m_map;
 	UT_String m_missingHashs;
-	Hyphenator * m_lastDict;
+	Hyphenation * m_lastDict;
 	UT_uint32 m_nLoadedDicts;
 };
 

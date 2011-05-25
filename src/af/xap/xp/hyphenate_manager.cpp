@@ -29,17 +29,17 @@
 #include "ut_Language.h"
 
 #ifdef WITH_ENCHANT
-#include "enchant_hyphenator.h"
-typedef EnchantHypenator HyphenatorClass;
+#include "enchant_Hyphenation.h"
+typedef EnchantHyphenation HyphenationClass;
 #else
 #include "ispell_checker.h"
-typedef IHyphenator HyphenatorClass;
+typedef IHyphenation HyphenationClass;
 #endif
 
 /*!
  * Abstract constructor
  */
-/* protected */ Hyphenator::Hyphenator ()
+/* protected */ Hyphenation::Hyphenation ()
 {
 	// not used, abstract base class
 }
@@ -47,12 +47,12 @@ typedef IHyphenator HyphenatorClass;
 /*!
  * Abstract destructor
  */
-/* protected */ Hyphenator::~Hyphenator ()
+/* protected */ Hyphenation::~Hyphenation ()
 {
 	// not used, abstract base class
 }
 
-bool Hyphenator::requestDictionary (const char * szLang)
+bool Hyphenation::requestDictionary (const char * szLang)
 {
 	bool bSuccess = _requestDictionary(szLang);
 
@@ -60,14 +60,14 @@ bool Hyphenator::requestDictionary (const char * szLang)
 }
 
 
-UT_GenericVector<UT_UCSChar*>* Hyphenator::hyphenateWord(const UT_UCSChar* word, size_t len)
+UT_GenericVector<UT_UCSChar*>* Hyphenation::hyphenateWord(const UT_UCSChar* word, size_t len)
 {
 	UT_GenericVector<UT_UCSChar*> *pvSugg = __hyphenateWord(word, len);
 
 	return pvSugg;
 }
 
-bool Hyphenator::addToCustomDict (const UT_UCSChar *word, size_t len)
+bool Hyphenation::addToCustomDict (const UT_UCSChar *word, size_t len)
 {
 	return XAP_App::getApp()->addWordToDict (word, len);
 }
