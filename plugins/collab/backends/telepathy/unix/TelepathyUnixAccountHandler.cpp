@@ -576,7 +576,10 @@ bool TelepathyAccountHandler::startSession(PD_Document* pDoc, const std::vector<
 
 	// add the buddies in the acl list to the room invitee list
 	// NOTE: this n^2 behavior shouldn't be too bad in practice: the ACL will never contain hundreds of elements
-	for (std::vector<std::string>::const_iterator cit = vAcl.begin(); cit != vAcl.end(); cit++)
+	// TODO: free invitee_ids
+	//gchar** invitee_ids = reinterpret_cast<gchar**>(malloc(sizeof(gchar*) * vAcl.size()+1));
+	//int i = 0;
+	for (std::vector<std::string>::const_iterator cit = vAcl.begin(); cit != vAcl.end(); cit++, i++)
 	{
 		for (std::vector<BuddyPtr>::iterator it = getBuddies().begin(); it != getBuddies().end(); it++)
 		{
@@ -584,11 +587,14 @@ bool TelepathyAccountHandler::startSession(PD_Document* pDoc, const std::vector<
 			UT_continue_if_fail(pBuddy);
 			if  (pBuddy->getDescriptor(false).utf8_str() == (*cit))
 			{
+				//invitee_ids[i] = strdup(tp_contact_get_identifier(pBuddy->getContact()));
+				//UT_DEBUGMSG(("Added %s to the invite list\n", invitee_ids[i]));
 				pChatroom->invite(pBuddy);
 				break;
 			}
 		}
 	}
+	//invitee_ids[vAcl.size()] = NULL;
 
 	// a quick hack to determine the account to offer the request on
 	TpAccountManager* manager = tp_account_manager_dup();
@@ -607,14 +613,7 @@ bool TelepathyAccountHandler::startSession(PD_Document* pDoc, const std::vector<
 	UT_return_val_if_fail(selected_account, false);
 	g_list_free(accounts);
 
-	// determine the room target id
-	std::string target_id = sSessionId.utf8_str();
-	std::string conference_server = getProperty("conference_server");
-	if (conference_server != "")
-		target_id += "@" + conference_server;
-	UT_DEBUGMSG(("Using room target ID: %s\n", target_id.c_str()));
-
-	// create a MUC channel request
+	// create a anonymous MUC channel request
 	GHashTable* props = tp_asv_new (
 			TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING, TP_IFACE_CHANNEL_TYPE_DBUS_TUBE,
 			TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, TP_TYPE_HANDLE, TP_HANDLE_TYPE_ROOM,
@@ -622,7 +621,7 @@ bool TelepathyAccountHandler::startSession(PD_Document* pDoc, const std::vector<
 			TP_PROP_CHANNEL_TYPE_DBUS_TUBE_SERVICE_NAME, G_TYPE_STRING, INTERFACE,
 			/*
 			 * Enable TP_PROP_CHANNEL_INTERFACE_CONFERENCE_INITIAL_INVITEE_IDS if you want to use
-			 * anonymous MUCs. We can't use it right now, because we run into bugs.
+			 * anonymous MUCs. We can't use it right now, anonymous DBUS_TUBE MUCs are not implemented yet.
 			 * Remove the HANDLE_TYPE and TARGET_ID when you enable this.
 			 *
 			 * TP_PROP_CHANNEL_INTERFACE_CONFERENCE_INITIAL_INVITEE_IDS, G_TYPE_STRV, invitee_ids,
