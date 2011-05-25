@@ -1099,7 +1099,7 @@ msgstr "VM/NM"
 #. MSG_IE_BogusDocument
 #: po/tmp/ap_String_Id.h.h:459
 #, c-format
-msgid "AbiWord cannot open %s. It appears to be an invalid document"
+msgid "AbiWord cannot open %s. It appears to be an invalid document."
 msgstr "AbiWord kan %s niet openen. Het lijkt een ongeldig document te zijn."
 
 #. MSG_SpellSelectionDone
@@ -2548,7 +2548,7 @@ msgstr "Koptekst bewerken"
 
 #. MENU_STATUSLINE_EDIT_LATEXEQUATION
 #: po/tmp/ap_String_Id.h.h:1047
-msgid "Edit Latex Equation"
+msgid "Edit LaTeX Equation"
 msgstr "LaTeX-vergelijking bewerken"
 
 #. MENU_STATUSLINE_EDIT_ANNOTATION
@@ -4580,7 +4580,7 @@ msgstr "Afdrukken met het interne PS-stuurprogramma"
 
 #. MSG_PrintingDoc
 #: po/tmp/ap_String_Id.h.h:1890
-msgid "Printing Document.."
+msgid "Printing Document..."
 msgstr "Bezig met afdrukken van het document..."
 
 #. MSG_PrintStatus

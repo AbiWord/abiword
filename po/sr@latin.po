@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: AbiWord\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-05-24 12:40+0700\n"
-"PO-Revision-Date: 2011-05-24 15:24+0600\n"
+"PO-Revision-Date: 2011-05-24 15:42+0600\n"
 "Last-Translator: Urmas D. <davian818@gmail.com>\n"
 "Language-Team: Serbian <fedora-trans-sr@redhat.com>\n"
 "MIME-Version: 1.0\n"
@@ -1092,7 +1092,7 @@ msgstr "prepodne/popodne"
 #. MSG_IE_BogusDocument
 #: po/tmp/ap_String_Id.h.h:459
 #, c-format
-msgid "AbiWord cannot open %s. It appears to be an invalid document"
+msgid "AbiWord cannot open %s. It appears to be an invalid document."
 msgstr "AbiWord ne može da otvori %s. Izgleda da je to neispravan dokument."
 
 #. MSG_SpellSelectionDone
@@ -2531,8 +2531,8 @@ msgstr "Menja nadglavlje"
 
 #. MENU_STATUSLINE_EDIT_LATEXEQUATION
 #: po/tmp/ap_String_Id.h.h:1047
-msgid "Edit Latex Equation"
-msgstr "Menja Latex jednačinu"
+msgid "Edit LaTeX Equation"
+msgstr "Menja LaTeX jednačinu"
 
 #. MENU_STATUSLINE_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h.h:1049
@@ -4565,7 +4565,7 @@ msgstr "Štampanje korišćenjem ugrađenog PS drajvera"
 
 #. MSG_PrintingDoc
 #: po/tmp/ap_String_Id.h.h:1890
-msgid "Printing Document.."
+msgid "Printing Document..."
 msgstr "Štampanje u toku..."
 
 #. MSG_PrintStatus
@@ -7995,9 +7995,8 @@ msgstr "Srpski"
 
 #. LANG_SR_LATIN
 #: po/tmp/xap_String_Id.h.h:711
-#, fuzzy
 msgid "Serbian, latin"
-msgstr "Beloruski, latinicom"
+msgstr "Srpski, latinicom"
 
 #. DLG_Image_ImageDesc
 #: po/tmp/xap_String_Id.h.h:713

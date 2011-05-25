@@ -7,7 +7,7 @@
 <!-- This file is covered by the GNU Public License (GPL).           -->
 <!-- ==============================================================  -->
 
-<AbiStrings ver="1.0" language="af">
+<AbiStrings ver="1.0" language="af-ZA">
 
 <Strings    class="XAP"
 DLG_ABOUT_Build="Boukeuses: %s"
@@ -40,7 +40,6 @@ DLG_DocComparison_Results="Resultate"
 DLG_DocComparison_Siblings=""
 DLG_DocComparison_Styles="Style:"
 DLG_DocComparison_TestSkipped="(toets oorgeslaan)"
-DLG_DocComparison_Unrelated="onverwant"
 DLG_DocComparison_WindowLabel="Dokumentvergelyking"
 DLG_Exit_CloseWithoutSaving="Sluit &amp;sonder om te stoor"
 DLG_FOSA_ALL="Almal (*.*)"
@@ -489,6 +488,7 @@ MSG_HistoryPartRestore3="Om in elk geval voort te gaan, druk Regso."
 MSG_HistoryPartRestore4="Om die herstelpoging te verlaat, druk Kanselleer."
 MSG_ImportingDoc="Voer tans dokument in..."
 MSG_NoUndo="Dié aksie kan nie ontdoen word nie. Wil u definitief voortgaan?"
+MSG_ParagraphsImported="Paragraaf"
 ReadOnly="Leesalleen"
 SPELL_CANTLOAD_DICT="Kon nie die woordeboek vir die taal %s laai nie"
 SPELL_CANTLOAD_DLL="AbiWord kan nie die spellêer %s.dll kry nie&#x000a;Laai Aspell af vanaf http://aspell.net/win32/ en installeer dit"

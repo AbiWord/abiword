@@ -14,14 +14,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Abiword\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-25 11:53+0100\n"
+"POT-Creation-Date: 2011-05-24 12:16+0700\n"
 "PO-Revision-Date: 2011-01-15 07:05+0100\n"
 "Last-Translator: Denis Arnaud <denisarnuad@yahoo.fr>\n"
 "Language-Team: Drouizig <drouizig@drouizig.org>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
 
 #. MENU_LABEL__BOGUS1__
 #. MENU_LABEL__BOGUS2__
@@ -1101,7 +1101,7 @@ msgstr "AM/PM"
 #. MSG_IE_BogusDocument
 #: po/tmp/ap_String_Id.h.h:459
 #, c-format
-msgid "AbiWord cannot open %s. It appears to be an invalid document"
+msgid "AbiWord cannot open %s. It appears to be an invalid document."
 msgstr "Ur restr fall eo %s."
 
 #. MSG_SpellSelectionDone
@@ -1818,8 +1818,8 @@ msgstr ""
 "Dibabit ho lec'hiad labour war an tu kleiz.\n"
 "Evit ober gant ar veudell « Mont da », leugnit ar vaezienn\n"
 "« Niverenn » gant un niverenn a-feson. Gallout a rit ivez implijout + ha - "
-"evit kemmoù keñverel. D.l.e., ma skrivit « +2 » ha ma diuzit « Linenn » ez "
-"aio ar veudell « Mont da » eus 2 linenn war lec'hiad red ar biz red."
+"evit kemmoù keñverel. D.l.e., ma skrivit « +2 » ha ma diuzit « Linenn » ez aio "
+"ar veudell « Mont da » eus 2 linenn war lec'hiad red ar biz red."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h.h:744
@@ -2556,7 +2556,7 @@ msgstr "Daskemmañ an talbenn"
 
 #. MENU_STATUSLINE_EDIT_LATEXEQUATION
 #: po/tmp/ap_String_Id.h.h:1047
-msgid "Edit Latex Equation"
+msgid "Edit LaTeX Equation"
 msgstr "Daskemmañ an atalad LaTeX"
 
 #. MENU_STATUSLINE_EDIT_ANNOTATION
@@ -3091,7 +3091,7 @@ msgstr "Testenn an &dalbenn :"
 
 #. DLG_Lists_Hand_List
 #. STYLE_HANDLIST
-#: po/tmp/ap_String_Id.h.h:1263 po/tmp/xap_String_Id.h.h:401
+#: po/tmp/ap_String_Id.h.h:1263 po/tmp/xap_String_Id.h.h:403
 msgid "Hand List"
 msgstr "Listenn gant dornioù"
 
@@ -3146,7 +3146,7 @@ msgstr "Stil an dalbenn :"
 
 #. DLG_Lists_Heart_List
 #. STYLE_HEARTLIST
-#: po/tmp/ap_String_Id.h.h:1281 po/tmp/xap_String_Id.h.h:417
+#: po/tmp/ap_String_Id.h.h:1281 po/tmp/xap_String_Id.h.h:419
 msgid "Heart List"
 msgstr "Listenn gant kalonoù"
 
@@ -3237,7 +3237,7 @@ msgstr "Skeudenn evit an drekleur"
 
 #. DLG_Lists_Implies_List
 #. STYLE_IMPLIES_LIST
-#: po/tmp/ap_String_Id.h.h:1320 po/tmp/xap_String_Id.h.h:451
+#: po/tmp/ap_String_Id.h.h:1320 po/tmp/xap_String_Id.h.h:453
 msgid "Implies List"
 msgstr "Listenn gant « implies »"
 
@@ -3297,7 +3297,7 @@ msgstr ""
 #. DLG_Break_Insert
 #. MENU_STATUSLINE_TABLE_INSERT
 #. DLG_IP_Button_Label
-#: po/tmp/ap_String_Id.h.h:1346 po/tmp/xap_String_Id.h.h:461
+#: po/tmp/ap_String_Id.h.h:1346 po/tmp/xap_String_Id.h.h:465
 msgid "Insert"
 msgstr "Enlakaat"
 
@@ -3586,7 +3586,7 @@ msgstr "Arouezennoù divoull"
 #. TOOLBAR_STATUSLINE_FMT_ITALIC
 #. TOOLBAR_TOOLTIP_FMT_ITALIC
 #. DLG_UFS_StyleItalic
-#: po/tmp/ap_String_Id.h.h:1469 po/tmp/xap_String_Id.h.h:491
+#: po/tmp/ap_String_Id.h.h:1469 po/tmp/xap_String_Id.h.h:495
 msgid "Italic"
 msgstr "Stouet"
 
@@ -3833,13 +3833,13 @@ msgstr "Morailhañ leur ar barrennoù ostilhoù red"
 
 #. DLG_Lists_Lower_Case_List
 #. STYLE_LOWERCASELIST
-#: po/tmp/ap_String_Id.h.h:1571 po/tmp/xap_String_Id.h.h:532
+#: po/tmp/ap_String_Id.h.h:1571 po/tmp/xap_String_Id.h.h:536
 msgid "Lower Case List"
 msgstr "Listenn gant lizherenn vunut"
 
 #. DLG_Lists_Lower_Roman_List
 #. STYLE_LOWERROMANLIST
-#: po/tmp/ap_String_Id.h.h:1573 po/tmp/xap_String_Id.h.h:534
+#: po/tmp/ap_String_Id.h.h:1573 po/tmp/xap_String_Id.h.h:538
 msgid "Lower Roman List"
 msgstr "Listenn gant lizherenn vunut Roman"
 
@@ -4178,7 +4178,7 @@ msgstr "Niverennet"
 
 #. DLG_Lists_Numbered_List
 #. STYLE_NUMBER_LIST
-#: po/tmp/ap_String_Id.h.h:1711 po/tmp/xap_String_Id.h.h:582
+#: po/tmp/ap_String_Id.h.h:1711 po/tmp/xap_String_Id.h.h:586
 msgid "Numbered List"
 msgstr "Listenn niverennet"
 
@@ -4277,7 +4277,7 @@ msgstr ""
 #. TOOLBAR_STATUSLINE_FMT_OVERLINE
 #. TOOLBAR_TOOLTIP_FMT_OVERLINE
 #. DLG_UFS_OverlineCheck
-#: po/tmp/ap_String_Id.h.h:1760 po/tmp/xap_String_Id.h.h:596
+#: po/tmp/ap_String_Id.h.h:1760 po/tmp/xap_String_Id.h.h:600
 msgid "Overline"
 msgstr "Barrennet a-us"
 
@@ -4516,7 +4516,7 @@ msgstr "Gwellvezioù"
 #. DLG_Lists_Preview
 #. DLG_PageNumbers_Preview
 #. DLG_Zoom_PreviewFrame
-#: po/tmp/ap_String_Id.h.h:1862 po/tmp/xap_String_Id.h.h:628
+#: po/tmp/ap_String_Id.h.h:1862 po/tmp/xap_String_Id.h.h:632
 msgid "Preview"
 msgstr "Alberz"
 
@@ -4545,7 +4545,7 @@ msgstr ""
 #. TOOLBAR_LABEL_FILE_PRINT
 #. DLG_UP_PrintTitle
 #. DLG_UP_PrintButton
-#: po/tmp/ap_String_Id.h.h:1873 po/tmp/xap_String_Id.h.h:633
+#: po/tmp/ap_String_Id.h.h:1873 po/tmp/xap_String_Id.h.h:637
 msgid "Print"
 msgstr "Moullañ"
 
@@ -4587,7 +4587,7 @@ msgstr "Moullañ dre an ardoer PostScript enporzhiet"
 
 #. MSG_PrintingDoc
 #: po/tmp/ap_String_Id.h.h:1890
-msgid "Printing Document.."
+msgid "Printing Document..."
 msgstr "Moulladur teul..."
 
 #. MSG_PrintStatus
@@ -5053,7 +5053,7 @@ msgstr "Gwelout istor an teuliad red"
 
 #. MENU_STATUSLINE_TABLE_SELECT
 #. DLG_Select
-#: po/tmp/ap_String_Id.h.h:2084 po/tmp/xap_String_Id.h.h:693
+#: po/tmp/ap_String_Id.h.h:2084 po/tmp/xap_String_Id.h.h:699
 msgid "Select"
 msgstr "Diuzañ "
 
@@ -5120,7 +5120,7 @@ msgstr "Diuzañ ar restr a-bezh"
 
 #. DLG_FormatTable_Apply_To_Selection
 #. DLG_UP_Selection
-#: po/tmp/ap_String_Id.h.h:2111 po/tmp/xap_String_Id.h.h:701
+#: po/tmp/ap_String_Id.h.h:2111 po/tmp/xap_String_Id.h.h:707
 msgid "Selection"
 msgstr "Diuzad"
 
@@ -5284,7 +5284,7 @@ msgstr "Berradenn"
 
 #. DLG_Options_Label_Show
 #. DLG_Show
-#: po/tmp/ap_String_Id.h.h:2177 po/tmp/xap_String_Id.h.h:713
+#: po/tmp/ap_String_Id.h.h:2177 po/tmp/xap_String_Id.h.h:721
 msgid "Show"
 msgstr "Diskouez"
 
@@ -5593,7 +5593,7 @@ msgstr "Rannañ al log-mañ"
 
 #. DLG_Lists_Square_List
 #. STYLE_SQUARELIST
-#: po/tmp/ap_String_Id.h.h:2308 po/tmp/xap_String_Id.h.h:727
+#: po/tmp/ap_String_Id.h.h:2308 po/tmp/xap_String_Id.h.h:735
 msgid "Square List"
 msgstr "Listenn gant karrezioù"
 
@@ -5614,7 +5614,7 @@ msgstr "Barrenn ostilhoù skoueriek"
 
 #. DLG_Lists_Star_List
 #. STYLE_STARLIST
-#: po/tmp/ap_String_Id.h.h:2316 po/tmp/xap_String_Id.h.h:731
+#: po/tmp/ap_String_Id.h.h:2316 po/tmp/xap_String_Id.h.h:739
 msgid "Star List"
 msgstr "Listenn gant steredennoù"
 
@@ -5668,7 +5668,7 @@ msgstr "Stan&ket"
 #. TOOLBAR_STATUSLINE_FMT_STRIKE
 #. TOOLBAR_TOOLTIP_FMT_STRIKE
 #. DLG_UFS_StrikeoutCheck
-#: po/tmp/ap_String_Id.h.h:2339 po/tmp/xap_String_Id.h.h:733
+#: po/tmp/ap_String_Id.h.h:2339 po/tmp/xap_String_Id.h.h:741
 msgid "Strike"
 msgstr "Barrennet"
 
@@ -5716,7 +5716,7 @@ msgstr "N'hall ket anv ar stil chom dianav"
 
 #. DLG_Lists_Style
 #. DLG_UFS_StyleLabel
-#: po/tmp/ap_String_Id.h.h:2359 po/tmp/xap_String_Id.h.h:735
+#: po/tmp/ap_String_Id.h.h:2359 po/tmp/xap_String_Id.h.h:743
 msgid "Style:"
 msgstr "Stil :"
 
@@ -5745,7 +5745,7 @@ msgstr "Danvez :"
 #. TOOLBAR_STATUSLINE_FMT_SUBSCRIPT
 #. TOOLBAR_TOOLTIP_FMT_SUBSCRIPT
 #. DLG_UFS_SubScript
-#: po/tmp/ap_String_Id.h.h:2372 po/tmp/xap_String_Id.h.h:739
+#: po/tmp/ap_String_Id.h.h:2372 po/tmp/xap_String_Id.h.h:747
 msgid "Subscript"
 msgstr "Feuriader"
 
@@ -5793,7 +5793,7 @@ msgstr "&Mac'her"
 #. TOOLBAR_STATUSLINE_FMT_SUPERSCRIPT
 #. TOOLBAR_TOOLTIP_FMT_SUPERSCRIPT
 #. DLG_UFS_SuperScript
-#: po/tmp/ap_String_Id.h.h:2392 po/tmp/xap_String_Id.h.h:741
+#: po/tmp/ap_String_Id.h.h:2392 po/tmp/xap_String_Id.h.h:749
 msgid "Superscript"
 msgstr "Mac'her"
 
@@ -5831,7 +5831,7 @@ msgstr "Taolennata da ziverkañ :"
 #. DLG_FormatTable_Apply_To_Table
 #. MENU_STATUSLINE_TABLE
 #. TB_Table
-#: po/tmp/ap_String_Id.h.h:2408 po/tmp/xap_String_Id.h.h:751
+#: po/tmp/ap_String_Id.h.h:2408 po/tmp/xap_String_Id.h.h:759
 msgid "Table"
 msgstr "Taolenn"
 
@@ -6023,7 +6023,7 @@ msgstr "Tri"
 
 #. DLG_Lists_Tick_List
 #. STYLE_TICKLIST
-#: po/tmp/ap_String_Id.h.h:2473 po/tmp/xap_String_Id.h.h:785
+#: po/tmp/ap_String_Id.h.h:2473 po/tmp/xap_String_Id.h.h:793
 msgid "Tick List"
 msgstr "Listenn gant tikoù"
 
@@ -6039,14 +6039,14 @@ msgstr "Titl"
 
 #. DLG_ToggleCase_TitleCase
 #. DLG_UFS_Effects_TitleCase
-#: po/tmp/ap_String_Id.h.h:2479 po/tmp/xap_String_Id.h.h:789
+#: po/tmp/ap_String_Id.h.h:2479 po/tmp/xap_String_Id.h.h:797
 msgid "Title Case"
 msgstr "Lizherenneg titl"
 
 #. DLG_MetaData_Title_LBL
 #. DLG_Annotation_Title_LBL
 #. DLG_Image_LblTitle
-#: po/tmp/ap_String_Id.h.h:2482 po/tmp/xap_String_Id.h.h:791
+#: po/tmp/ap_String_Id.h.h:2482 po/tmp/xap_String_Id.h.h:799
 msgid "Title:"
 msgstr "Titl :"
 
@@ -6071,13 +6071,13 @@ msgstr "Riblenn grec'h [%s]"
 #. TOOLBAR_STATUSLINE_FMT_TOPLINE
 #. TOOLBAR_TOOLTIP_FMT_TOPLINE
 #. DLG_UFS_ToplineCheck
-#: po/tmp/ap_String_Id.h.h:2493 po/tmp/xap_String_Id.h.h:797
+#: po/tmp/ap_String_Id.h.h:2493 po/tmp/xap_String_Id.h.h:805
 msgid "Topline"
 msgstr "Linenn a-&us"
 
 #. DLG_Lists_Triangle_List
 #. STYLE_TRIANGLELIST
-#: po/tmp/ap_String_Id.h.h:2495 po/tmp/xap_String_Id.h.h:799
+#: po/tmp/ap_String_Id.h.h:2495 po/tmp/xap_String_Id.h.h:807
 msgid "Triangle List"
 msgstr "Listenn gant tric'hornioù"
 
@@ -6110,7 +6110,7 @@ msgstr "PENNLIZHERENN"
 #. TOOLBAR_STATUSLINE_FMT_UNDERLINE
 #. TOOLBAR_TOOLTIP_FMT_UNDERLINE
 #. DLG_UFS_UnderlineCheck
-#: po/tmp/ap_String_Id.h.h:2509 po/tmp/xap_String_Id.h.h:819
+#: po/tmp/ap_String_Id.h.h:2509 po/tmp/xap_String_Id.h.h:827
 msgid "Underline"
 msgstr "Islinennet"
 
@@ -6138,13 +6138,13 @@ msgstr "Hizivaat an notenn"
 
 #. DLG_Lists_Upper_Case_List
 #. STYLE_UPPERCASTELIST
-#: po/tmp/ap_String_Id.h.h:2521 po/tmp/xap_String_Id.h.h:853
+#: po/tmp/ap_String_Id.h.h:2521 po/tmp/xap_String_Id.h.h:861
 msgid "Upper Case List"
 msgstr "Listenn gant pennlizherenn"
 
 #. DLG_Lists_Upper_Roman_List
 #. STYLE_UPPERROMANLIST
-#: po/tmp/ap_String_Id.h.h:2523 po/tmp/xap_String_Id.h.h:855
+#: po/tmp/ap_String_Id.h.h:2523 po/tmp/xap_String_Id.h.h:863
 msgid "Upper Roman List"
 msgstr "Listenn gant pennlizherenn Roman"
 
@@ -6190,7 +6190,7 @@ msgstr "Stiloù spisaet gant an implijour"
 
 #. FIELD_Application_Version
 #. DLG_History_Version_Version
-#: po/tmp/ap_String_Id.h.h:2541 po/tmp/xap_String_Id.h.h:865
+#: po/tmp/ap_String_Id.h.h:2541 po/tmp/xap_String_Id.h.h:873
 msgid "Version"
 msgstr "Handelv"
 
@@ -6326,7 +6326,7 @@ msgstr "Kollet e vo ho kemmoù, ma serrit hep Enrollañ."
 #. TOOLBAR_STATUSLINE_ZOOM
 #. TOOLBAR_TOOLTIP_ZOOM
 #. DLG_Zoom_ZoomTitle
-#: po/tmp/ap_String_Id.h.h:2600 po/tmp/xap_String_Id.h.h:916
+#: po/tmp/ap_String_Id.h.h:2600 po/tmp/xap_String_Id.h.h:924
 msgid "Zoom"
 msgstr "Brasaat"
 
@@ -7269,912 +7269,934 @@ msgstr "Friseg"
 msgid "From: "
 msgstr "Eus : "
 
-#. LANG_GL
+#. LANG_FF
 #: po/tmp/xap_String_Id.h.h:375
+msgid "Fulah"
+msgstr ""
+
+#. LANG_GL
+#: po/tmp/xap_String_Id.h.h:377
 msgid "Galician (Galego)"
 msgstr "Galisianeg (Galego)"
 
 #. LANG_KA_GE
-#: po/tmp/xap_String_Id.h.h:377
+#: po/tmp/xap_String_Id.h.h:379
 msgid "Georgian"
 msgstr "Jeorjieg"
 
 #. ENC_GEOR_ACADEMY
-#: po/tmp/xap_String_Id.h.h:379
+#: po/tmp/xap_String_Id.h.h:381
 msgid "Georgian, Academy"
 msgstr "Jeorjian, Akademiek"
 
 #. ENC_GEOR_PS
-#: po/tmp/xap_String_Id.h.h:381
+#: po/tmp/xap_String_Id.h.h:383
 msgid "Georgian, PS"
 msgstr "Jeorjian, PS"
 
 #. LANG_DE_AT
-#: po/tmp/xap_String_Id.h.h:383
+#: po/tmp/xap_String_Id.h.h:385
 msgid "German (Austria)"
 msgstr "Alamaneg (Aostria)"
 
 #. LANG_DE_DE
-#: po/tmp/xap_String_Id.h.h:385
+#: po/tmp/xap_String_Id.h.h:387
 msgid "German (Germany)"
 msgstr "Alamaneg (Alamagn)"
 
 #. LANG_DE_CH
-#: po/tmp/xap_String_Id.h.h:387
+#: po/tmp/xap_String_Id.h.h:389
 msgid "German (Switzerland)"
 msgstr "Alamaneg (Suis)"
 
 #. DLG_UP_Grayscale
-#: po/tmp/xap_String_Id.h.h:389
+#: po/tmp/xap_String_Id.h.h:391
 msgid "Grayscale"
 msgstr "Liveoù gris"
 
 #. LANG_EL_GR
-#: po/tmp/xap_String_Id.h.h:391
+#: po/tmp/xap_String_Id.h.h:393
 msgid "Greek"
 msgstr "Gresianeg"
 
 #. ENC_GREE_ISO
-#: po/tmp/xap_String_Id.h.h:393
+#: po/tmp/xap_String_Id.h.h:395
 msgid "Greek, ISO-8859-7"
 msgstr "Gresian, ISO-8859-7"
 
 #. ENC_GREE_MAC
-#: po/tmp/xap_String_Id.h.h:395
+#: po/tmp/xap_String_Id.h.h:397
 msgid "Greek, Macintosh"
 msgstr "Gresian, Macintosh"
 
 #. ENC_GREE_WIN
-#: po/tmp/xap_String_Id.h.h:397
+#: po/tmp/xap_String_Id.h.h:399
 msgid "Greek, Windows Code Page 1253"
 msgstr "Gresian, Pajenn enbonegañ Windows 1253"
 
 #. DLG_HTMLOPT_ExpTitle
-#: po/tmp/xap_String_Id.h.h:399
+#: po/tmp/xap_String_Id.h.h:401
 msgid "HTML Export Options"
 msgstr "Dibarzhioù an ezporzhiañ HTML"
 
 #. LANG_HA_NE
-#: po/tmp/xap_String_Id.h.h:403
+#: po/tmp/xap_String_Id.h.h:405
 msgid "Hausa (Niger)"
 msgstr "Haosaeg (Niger)"
 
 #. LANG_HA_NG
-#: po/tmp/xap_String_Id.h.h:405
+#: po/tmp/xap_String_Id.h.h:407
 msgid "Hausa (Nigeria)"
 msgstr "Haosaeg (Nigeria)"
 
 #. LANG_HAW_US
-#: po/tmp/xap_String_Id.h.h:407
+#: po/tmp/xap_String_Id.h.h:409
 msgid "Hawaiian"
 msgstr "Hawaiian"
 
 #. STYLE_HEADING1
-#: po/tmp/xap_String_Id.h.h:409
+#: po/tmp/xap_String_Id.h.h:411
 msgid "Heading 1"
 msgstr "Talbenn 1"
 
 #. STYLE_HEADING2
-#: po/tmp/xap_String_Id.h.h:411
+#: po/tmp/xap_String_Id.h.h:413
 msgid "Heading 2"
 msgstr "Talbenn 2"
 
 #. STYLE_HEADING3
-#: po/tmp/xap_String_Id.h.h:413
+#: po/tmp/xap_String_Id.h.h:415
 msgid "Heading 3"
 msgstr "Talbenn 3"
 
 #. STYLE_HEADING4
-#: po/tmp/xap_String_Id.h.h:415
+#: po/tmp/xap_String_Id.h.h:417
 msgid "Heading 4"
 msgstr "Talbenn 4"
 
 #. LANG_HE_IL
-#: po/tmp/xap_String_Id.h.h:419
+#: po/tmp/xap_String_Id.h.h:421
 msgid "Hebrew"
 msgstr "Hebraeg"
 
 #. ENC_HEBR_ISO
-#: po/tmp/xap_String_Id.h.h:421
+#: po/tmp/xap_String_Id.h.h:423
 msgid "Hebrew, ISO-8859-8"
 msgstr "Hebraek, ISO-8859-8"
 
 #. ENC_HEBR_MAC
-#: po/tmp/xap_String_Id.h.h:423
+#: po/tmp/xap_String_Id.h.h:425
 msgid "Hebrew, Macintosh"
 msgstr "Hebraek, Macintosh"
 
 #. ENC_HEBR_WIN
-#: po/tmp/xap_String_Id.h.h:425
+#: po/tmp/xap_String_Id.h.h:427
 msgid "Hebrew, Windows Code Page 1255"
 msgstr "Hebraek, Pajenn enbonegañ Windows 1255"
 
 #. DLG_Image_Height
-#: po/tmp/xap_String_Id.h.h:427
+#: po/tmp/xap_String_Id.h.h:429
 msgid "Height:"
 msgstr "&Uhelder :"
 
 #. DLG_IP_Height_Label
-#: po/tmp/xap_String_Id.h.h:429
+#: po/tmp/xap_String_Id.h.h:431
 msgid "Height: "
 msgstr "Uhelder : "
 
 #. DLG_UFS_HiddenCheck
-#: po/tmp/xap_String_Id.h.h:431
+#: po/tmp/xap_String_Id.h.h:433
 msgid "Hidden"
 msgstr "Kuzhet"
 
 #. DLG_UFS_BGColorTab
-#: po/tmp/xap_String_Id.h.h:433
+#: po/tmp/xap_String_Id.h.h:435
 msgid "HighLight Color"
 msgstr "Liv foñs"
 
 #. LANG_HI_IN
-#: po/tmp/xap_String_Id.h.h:435
+#: po/tmp/xap_String_Id.h.h:437
 msgid "Hindi"
 msgstr "Hindi"
 
 #. LANG_HU_HU
-#: po/tmp/xap_String_Id.h.h:437
+#: po/tmp/xap_String_Id.h.h:439
 msgid "Hungarian"
 msgstr "Hungareg"
 
 #. LANG_IS_IS
-#: po/tmp/xap_String_Id.h.h:439
+#: po/tmp/xap_String_Id.h.h:441
 msgid "Icelandic"
 msgstr "Islandeg"
 
 #. ENC_ICEL_MAC
-#: po/tmp/xap_String_Id.h.h:441
+#: po/tmp/xap_String_Id.h.h:443
 msgid "Icelandic, Macintosh"
 msgstr "Islandat, Macintosh"
 
 #. DLG_History_Id
-#: po/tmp/xap_String_Id.h.h:443
+#: po/tmp/xap_String_Id.h.h:445
 msgid "Identifier:"
 msgstr "Naouder :"
 
 #. DLG_Image_Title
-#: po/tmp/xap_String_Id.h.h:445
+#: po/tmp/xap_String_Id.h.h:447
 msgid "Image Properties"
 msgstr "Perzhioù skeudenn"
 
 #. DLG_Image_WrappedNone
-#: po/tmp/xap_String_Id.h.h:447
+#: po/tmp/xap_String_Id.h.h:449
 msgid "Image floats above text"
 msgstr "Skeudenn a-us an destenn"
 
 #. DLG_Image_InLine
-#: po/tmp/xap_String_Id.h.h:449
+#: po/tmp/xap_String_Id.h.h:451
 msgid "Image placed in-line (no text wrapping)"
 msgstr "Skeudenn lec'hiet en-linenn (troc'hañ linenn ebet)"
 
 #. DLG_FOSA_ImportTitle
-#: po/tmp/xap_String_Id.h.h:453
+#: po/tmp/xap_String_Id.h.h:455
 msgid "Import File"
 msgstr "Enporzhiañ un teul"
 
+#. MSG_ParagraphsImported
+#: po/tmp/xap_String_Id.h.h:457
+#, fuzzy
+msgid "Imported Paragraph"
+msgstr "Rannbennad"
+
 #. MSG_ImportingDoc
-#: po/tmp/xap_String_Id.h.h:455
+#: po/tmp/xap_String_Id.h.h:459
 msgid "Importing Document..."
 msgstr "Oc'h enporzhiañ un teul..."
 
 #. LANG_ID_ID
-#: po/tmp/xap_String_Id.h.h:457
+#: po/tmp/xap_String_Id.h.h:461
 msgid "Indonesian"
 msgstr "Indonezeg"
 
 #. XIM_Methods
-#: po/tmp/xap_String_Id.h.h:459
+#: po/tmp/xap_String_Id.h.h:463
 msgid "Input Methods"
 msgstr "Doareoù euvriñ"
 
 #. DLG_FOSA_InsertObject
-#: po/tmp/xap_String_Id.h.h:463
+#: po/tmp/xap_String_Id.h.h:467
 msgid "Insert Embeddable Object"
 msgstr "Enlakaat elfenn enkorfaus"
 
 #. DLG_FOSA_FileInsertObject
-#: po/tmp/xap_String_Id.h.h:465
+#: po/tmp/xap_String_Id.h.h:469
 msgid "Insert Embeddable Object file:"
 msgstr "Enlakaat restr un elfenn enkorfaus :"
 
 #. DLG_FOSA_InsertTitle
-#: po/tmp/xap_String_Id.h.h:467
+#: po/tmp/xap_String_Id.h.h:471
 msgid "Insert File"
 msgstr "Enlakaat ur restr"
 
 #. DLG_FOSA_InsertMath
-#: po/tmp/xap_String_Id.h.h:469
+#: po/tmp/xap_String_Id.h.h:473
 msgid "Insert Math File"
 msgstr "Enlakaat restr Math"
 
 #. DLG_FOSA_FileInsertMath
-#: po/tmp/xap_String_Id.h.h:471
+#: po/tmp/xap_String_Id.h.h:475
 msgid "Insert MathML file:"
 msgstr "Enlakaat restr MathML :"
 
 #. TB_InsertNewTable
-#: po/tmp/xap_String_Id.h.h:473
+#: po/tmp/xap_String_Id.h.h:477
 msgid "Insert New Table"
 msgstr "Enlakaat un daolenn"
 
 #. DLG_IP_Title
-#: po/tmp/xap_String_Id.h.h:475
+#: po/tmp/xap_String_Id.h.h:479
 msgid "Insert Picture"
 msgstr "Enlakaat ur skeudenn"
 
 #. DLG_Insert_SymbolTitle
-#: po/tmp/xap_String_Id.h.h:477
+#: po/tmp/xap_String_Id.h.h:481
 msgid "Insert Symbol"
 msgstr "Enlakaat un arouezenn arbennik"
 
 #. DLG_PLUGIN_MANAGER_INSTALL
-#: po/tmp/xap_String_Id.h.h:479
+#: po/tmp/xap_String_Id.h.h:483
 msgid "Install new plugin"
 msgstr "Staliañ ur mollad nevez"
 
 #. LANG_IA
-#: po/tmp/xap_String_Id.h.h:481
+#: po/tmp/xap_String_Id.h.h:485
 msgid "Interlingua"
 msgstr "Interlingua"
 
 #. LANG_IU_CA
-#: po/tmp/xap_String_Id.h.h:483
+#: po/tmp/xap_String_Id.h.h:487
 msgid "Inuktitut"
 msgstr "Inuktitut"
 
 #. DLG_InvalidPathname
-#: po/tmp/xap_String_Id.h.h:485
+#: po/tmp/xap_String_Id.h.h:489
 msgid "Invalid pathname."
 msgstr "Anv restr pe renkell direizh."
 
 #. LANG_GA_IE
-#: po/tmp/xap_String_Id.h.h:487
+#: po/tmp/xap_String_Id.h.h:491
 msgid "Irish"
 msgstr "Iwerzhoneg"
 
 #. LANG_IT_IT
-#: po/tmp/xap_String_Id.h.h:489
+#: po/tmp/xap_String_Id.h.h:493
 msgid "Italian (Italy)"
 msgstr "Italianeg (Italia)"
 
 #. LANG_JA_JP
-#: po/tmp/xap_String_Id.h.h:493
+#: po/tmp/xap_String_Id.h.h:497
 msgid "Japanese"
 msgstr "Japaneg"
 
 #. ENC_JAPN_EUC
-#: po/tmp/xap_String_Id.h.h:495
+#: po/tmp/xap_String_Id.h.h:499
 msgid "Japanese, EUC-JP"
 msgstr "Japanat, EUC-JP"
 
 #. ENC_JAPN_ISO
-#: po/tmp/xap_String_Id.h.h:497
+#: po/tmp/xap_String_Id.h.h:501
 msgid "Japanese, ISO-2022-JP"
 msgstr "Japanat, ISO-2022-JP"
 
 #. ENC_JAPN_SJIS
-#: po/tmp/xap_String_Id.h.h:499
+#: po/tmp/xap_String_Id.h.h:503
 msgid "Japanese, Shift-JIS"
 msgstr "Japanat, Shift-JIS"
 
 #. ENC_JAPN_WIN
-#: po/tmp/xap_String_Id.h.h:501
+#: po/tmp/xap_String_Id.h.h:505
 msgid "Japanese, Windows Code Page 932"
 msgstr "Japanat, Pajenn enbonegañ Windows 932"
 
 #. LANG_KN_IN
-#: po/tmp/xap_String_Id.h.h:503
+#: po/tmp/xap_String_Id.h.h:507
 msgid "Kannada"
 msgstr "Kannada"
 
 #. LANG_KK_KZ
-#: po/tmp/xap_String_Id.h.h:505
+#: po/tmp/xap_String_Id.h.h:509
 msgid "Kazakh (Kazakhstan)"
 msgstr "Kazakh (Kazakhstan)"
 
 #. LANG_KO_KR
 #. LANG_KO
-#: po/tmp/xap_String_Id.h.h:508
+#: po/tmp/xap_String_Id.h.h:512
 msgid "Korean"
 msgstr "Koreaneg"
 
 #. ENC_KORE_EUC
-#: po/tmp/xap_String_Id.h.h:510
+#: po/tmp/xap_String_Id.h.h:514
 msgid "Korean, EUC-KR"
 msgstr "Koreek, EUC-KR"
 
 #. ENC_KORE_JOHAB
-#: po/tmp/xap_String_Id.h.h:512
+#: po/tmp/xap_String_Id.h.h:516
 msgid "Korean, Johab"
 msgstr "Koreek, Johab"
 
 #. ENC_KORE_KSC
-#: po/tmp/xap_String_Id.h.h:514
+#: po/tmp/xap_String_Id.h.h:518
 msgid "Korean, KSC_5601"
 msgstr "Koreek, KSC_5601"
 
 #. ENC_KORE_WIN
-#: po/tmp/xap_String_Id.h.h:516
+#: po/tmp/xap_String_Id.h.h:520
 msgid "Korean, Windows Code Page 949"
 msgstr "Koreek, Pajenn enbonegañ Windows 949"
 
 #. LANG_KU
-#: po/tmp/xap_String_Id.h.h:518
+#: po/tmp/xap_String_Id.h.h:522
 msgid "Kurdish"
 msgstr "Kurdeg"
 
 #. LANG_LO_LA
-#: po/tmp/xap_String_Id.h.h:520
+#: po/tmp/xap_String_Id.h.h:524
 msgid "Lao"
 msgstr "Lao"
 
 #. DLG_History_LastSaved
-#: po/tmp/xap_String_Id.h.h:522
+#: po/tmp/xap_String_Id.h.h:526
 msgid "Last saved:"
 msgstr "Enrollañ diwezhañ :"
 
 #. LANG_LA_IT
-#: po/tmp/xap_String_Id.h.h:524
+#: po/tmp/xap_String_Id.h.h:528
 msgid "Latin (Renaissance)"
 msgstr "Latin (Azginivelezh)"
 
 #. LANG_LV_LV
-#: po/tmp/xap_String_Id.h.h:526
+#: po/tmp/xap_String_Id.h.h:530
 msgid "Latvian"
 msgstr "Latvieg"
 
 #. LANG_LT_LT
-#: po/tmp/xap_String_Id.h.h:528
+#: po/tmp/xap_String_Id.h.h:532
 msgid "Lithuanian"
 msgstr "Lituaneg"
 
 #. DLG_CLIPART_Loading
-#: po/tmp/xap_String_Id.h.h:530
+#: po/tmp/xap_String_Id.h.h:534
 msgid "Loading Clip Art"
 msgstr "O kargañ skeudennoù (Clip Art)"
 
 #. DLG_UFS_Effects_LowerCase
-#: po/tmp/xap_String_Id.h.h:536
+#: po/tmp/xap_String_Id.h.h:540
 msgid "Lowercase"
 msgstr "Lizherenn vunut"
 
 #. LANG_MK
-#: po/tmp/xap_String_Id.h.h:538
+#: po/tmp/xap_String_Id.h.h:542
 msgid "Macedonian"
 msgstr "Makedonieg"
 
 #. DLG_ULANG_DefaultLangChkbox
-#: po/tmp/xap_String_Id.h.h:540
+#: po/tmp/xap_String_Id.h.h:544
 msgid "Make default for document"
 msgstr "Sevel diouer evit an teul"
 
 #. LANG_MS_MY
-#: po/tmp/xap_String_Id.h.h:542
+#: po/tmp/xap_String_Id.h.h:546
 msgid "Malay"
 msgstr "Malezieg"
 
 #. LANG_MNK_SN
-#: po/tmp/xap_String_Id.h.h:544
+#: po/tmp/xap_String_Id.h.h:548
 msgid "Mandinka (Senegal)"
 msgstr "Mandinka (Senegal)"
 
 #. LANG_MI_NZ
-#: po/tmp/xap_String_Id.h.h:546
+#: po/tmp/xap_String_Id.h.h:550
 msgid "Maori"
 msgstr "Maori"
 
 #. LANG_MR_IN
-#: po/tmp/xap_String_Id.h.h:548
+#: po/tmp/xap_String_Id.h.h:552
 msgid "Marathi"
 msgstr "Marathi"
 
 #. LANG_MH_MH
-#: po/tmp/xap_String_Id.h.h:550
+#: po/tmp/xap_String_Id.h.h:554
 msgid "Marshallese (Marshall Islands)"
 msgstr "Marshall (Marshall, Inizi)"
 
 #. LANG_MH_NR
-#: po/tmp/xap_String_Id.h.h:552
+#: po/tmp/xap_String_Id.h.h:556
 msgid "Marshallese (Nauru)"
 msgstr "Marshall (Nauru)"
 
 #. DLG_Merge
-#: po/tmp/xap_String_Id.h.h:554
+#: po/tmp/xap_String_Id.h.h:558
 msgid "Merge"
 msgstr "Kendeuziñ"
 
 #. LANG_MN_MN
-#: po/tmp/xap_String_Id.h.h:556
+#: po/tmp/xap_String_Id.h.h:560
 msgid "Mongolian"
 msgstr "Mongolieg"
 
 #. DLG_PLUGIN_MANAGER_NAME
-#: po/tmp/xap_String_Id.h.h:558
+#: po/tmp/xap_String_Id.h.h:562
 msgid "Name:"
 msgstr "Anv :"
 
 #. LANG_NE_NP
-#: po/tmp/xap_String_Id.h.h:560
+#: po/tmp/xap_String_Id.h.h:564
 msgid "Nepali (Nepal)"
 msgstr "Nepali (Nepal)"
 
 #. DLG_MB_No
-#: po/tmp/xap_String_Id.h.h:562
+#: po/tmp/xap_String_Id.h.h:566
 msgid "No"
 msgstr "Ket"
 
 #. DLG_IP_No_Picture_Label
-#: po/tmp/xap_String_Id.h.h:564
+#: po/tmp/xap_String_Id.h.h:568
 msgid "No Picture"
 msgstr "Skeudenn ebet"
 
 #. DLG_PLUGIN_MANAGER_NONE_SELECTED
-#: po/tmp/xap_String_Id.h.h:566
+#: po/tmp/xap_String_Id.h.h:570
 msgid "No plugin selected"
 msgstr "N'eus ket bet diuzet mollad ebet"
 
 #. STYLE_NORMAL
-#: po/tmp/xap_String_Id.h.h:568
+#: po/tmp/xap_String_Id.h.h:572
 msgid "Normal"
 msgstr "Reizh"
 
 #. LANG_NB_NO
-#: po/tmp/xap_String_Id.h.h:570
+#: po/tmp/xap_String_Id.h.h:574
 msgid "Norwegian Bokmal"
 msgstr "Norvegeg Bokmål"
 
 #. LANG_NN_NO
-#: po/tmp/xap_String_Id.h.h:572
+#: po/tmp/xap_String_Id.h.h:576
 msgid "Norwegian Nynorsk"
 msgstr "Norvegeg Nynorsk"
 
 #. DLG_PLUGIN_MANAGER_NOT_AVAILABLE
-#: po/tmp/xap_String_Id.h.h:574
+#: po/tmp/xap_String_Id.h.h:578
 msgid "Not available"
 msgstr "Dihegerz"
 
 #. STYLE_NUMHEAD1
-#: po/tmp/xap_String_Id.h.h:576
+#: po/tmp/xap_String_Id.h.h:580
 msgid "Numbered Heading 1"
 msgstr "Talbenn niverennet 1"
 
 #. STYLE_NUMHEAD2
-#: po/tmp/xap_String_Id.h.h:578
+#: po/tmp/xap_String_Id.h.h:582
 msgid "Numbered Heading 2"
 msgstr "Talbenn niverennet 2"
 
 #. STYLE_NUMHEAD3
-#: po/tmp/xap_String_Id.h.h:580
+#: po/tmp/xap_String_Id.h.h:584
 msgid "Numbered Heading 3"
 msgstr "Talbenn niverennet 3"
 
 #. DLG_OK
-#: po/tmp/xap_String_Id.h.h:584
+#: po/tmp/xap_String_Id.h.h:588
 msgid "OK"
 msgstr "Mat eo"
 
 #. LANG_OC_FR
-#: po/tmp/xap_String_Id.h.h:586
+#: po/tmp/xap_String_Id.h.h:590
 msgid "Occitan"
 msgstr "Okitaneg"
 
 #. DLG_FOSA_OpenTitle
-#: po/tmp/xap_String_Id.h.h:588
+#: po/tmp/xap_String_Id.h.h:592
 msgid "Open File"
 msgstr "Digoradur"
 
 #. DLG_FOSA_FileOpenTypeLabel
-#: po/tmp/xap_String_Id.h.h:590
+#: po/tmp/xap_String_Id.h.h:594
 msgid "Open file as &type:"
 msgstr "Digeriñ ur restr eus rizh :"
 
 #. DLG_LISTDOCS_Title
-#: po/tmp/xap_String_Id.h.h:592
+#: po/tmp/xap_String_Id.h.h:596
 msgid "Opened Documents"
 msgstr "Teulioù digoret"
 
 #. TB_Zoom_Percent
-#: po/tmp/xap_String_Id.h.h:594
+#: po/tmp/xap_String_Id.h.h:598
 msgid "Other..."
 msgstr "All..."
 
 #. DLG_Zoom_Percent
-#: po/tmp/xap_String_Id.h.h:598
+#: po/tmp/xap_String_Id.h.h:602
 msgid "P&ercent:"
 msgstr "&Dregantad :"
 
 #. TB_Zoom_PageWidth
-#: po/tmp/xap_String_Id.h.h:600
+#: po/tmp/xap_String_Id.h.h:604
 msgid "Page Width"
 msgstr "Ledander"
 
 #. DLG_UP_PageRanges
-#: po/tmp/xap_String_Id.h.h:602
+#: po/tmp/xap_String_Id.h.h:606
 msgid "Page ranges:"
 msgstr "Meur a bajenn :"
 
 #. LANG_PS
-#: po/tmp/xap_String_Id.h.h:604
+#: po/tmp/xap_String_Id.h.h:608
 msgid "Pashto"
 msgstr "Pachtou"
 
 #. DLG_Password_Password
-#: po/tmp/xap_String_Id.h.h:606
+#: po/tmp/xap_String_Id.h.h:610
 msgid "Password:"
 msgstr "Ger-tremen :"
 
 #. STYLE_PLAIN_TEXT
-#: po/tmp/xap_String_Id.h.h:608
+#: po/tmp/xap_String_Id.h.h:612
 msgid "Plain Text"
 msgstr "Testenn ziazez"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
-#: po/tmp/xap_String_Id.h.h:610
+#: po/tmp/xap_String_Id.h.h:614
 msgid "Plugin Details:"
 msgstr "Munudoù ar mollad"
 
 #. DLG_PLUGIN_MANAGER_LIST
-#: po/tmp/xap_String_Id.h.h:612
+#: po/tmp/xap_String_Id.h.h:616
 msgid "Plugin List"
 msgstr "Listenn ar molladoù"
 
 #. LANG_PL_PL
-#: po/tmp/xap_String_Id.h.h:614
+#: po/tmp/xap_String_Id.h.h:618
 msgid "Polish"
 msgstr "Poloneg"
 
 #. LANG_PT_BR
-#: po/tmp/xap_String_Id.h.h:616
+#: po/tmp/xap_String_Id.h.h:620
 msgid "Portuguese (Brazil)"
 msgstr "Portugaleg (Brazil)"
 
 #. LANG_PT_PT
-#: po/tmp/xap_String_Id.h.h:618
+#: po/tmp/xap_String_Id.h.h:622
 msgid "Portuguese (Portugal)"
 msgstr "Portugaleg (Portugal)"
 
 #. DLG_Image_PlaceColumn
-#: po/tmp/xap_String_Id.h.h:620
+#: po/tmp/xap_String_Id.h.h:624
 msgid "Position relative to its Column"
 msgstr "Lec'hiadur e-keñver d'e vann"
 
 #. DLG_Image_PlacePage
-#: po/tmp/xap_String_Id.h.h:622
+#: po/tmp/xap_String_Id.h.h:626
 msgid "Position relative to its Page"
 msgstr "Lec'hiadur e-keñver d'e bajenn"
 
 #. DLG_Image_PlaceParagraph
-#: po/tmp/xap_String_Id.h.h:624
+#: po/tmp/xap_String_Id.h.h:628
 msgid "Position relative to nearest paragraph"
 msgstr "Lec'hiadur e-keñver ar rannpennad tostañ"
 
 #. DLG_Image_Aspect
-#: po/tmp/xap_String_Id.h.h:626
+#: po/tmp/xap_String_Id.h.h:630
 msgid "Preserve aspect ratio"
 msgstr "&Enrollañ ar c'henfeur uhelder/ledander"
 
 #. DLG_IP_Activate_Label
-#: po/tmp/xap_String_Id.h.h:630
+#: po/tmp/xap_String_Id.h.h:634
 msgid "Preview Picture"
 msgstr "Alberz skeudenn"
 
 #. DLG_FOSA_PrintToFileTitle
-#: po/tmp/xap_String_Id.h.h:635
+#: po/tmp/xap_String_Id.h.h:639
 msgid "Print To File"
 msgstr "Moullañ e-barzh ur restr"
 
 #. DLG_FOSA_FilePrintTypeLabel
-#: po/tmp/xap_String_Id.h.h:637
+#: po/tmp/xap_String_Id.h.h:641
 msgid "Print file as &type:"
 msgstr "Moullañ ur restr dindan ar &rizh :"
 
 #. DLG_UP_PrintIn
-#: po/tmp/xap_String_Id.h.h:639
+#: po/tmp/xap_String_Id.h.h:643
 msgid "Print in: "
 msgstr "Moullañ e-barzh : "
 
 #. DLG_UP_PrintTo
-#: po/tmp/xap_String_Id.h.h:641
+#: po/tmp/xap_String_Id.h.h:645
 msgid "Print to: "
 msgstr "Moullañ war-dro : "
 
 #. DLG_UP_Printer
-#: po/tmp/xap_String_Id.h.h:643
+#: po/tmp/xap_String_Id.h.h:647
 msgid "Printer"
 msgstr "Moullerezh"
 
 #. DLG_UP_PrinterCommand
-#: po/tmp/xap_String_Id.h.h:645
+#: po/tmp/xap_String_Id.h.h:649
 msgid "Printer command: "
 msgstr "Arc'had moullañ : "
 
 #. LANG_PA_IN
-#: po/tmp/xap_String_Id.h.h:647
+#: po/tmp/xap_String_Id.h.h:651
 msgid "Punjabi (Gurmukhi)"
 msgstr "Punjabi (Gurmukhi)"
 
 #. LANG_PA_PK
-#: po/tmp/xap_String_Id.h.h:649
+#: po/tmp/xap_String_Id.h.h:653
 msgid "Punjabi (Shahmukhi)"
 msgstr "Punjabi (Shahmukhi)"
 
 #. LANG_QU_BO
-#: po/tmp/xap_String_Id.h.h:651
+#: po/tmp/xap_String_Id.h.h:655
 msgid "Quechua"
 msgstr "Kechua"
 
 #. LANG_QUH_BO
-#: po/tmp/xap_String_Id.h.h:653
+#: po/tmp/xap_String_Id.h.h:657
 msgid "Quechua (3 vowels)"
 msgstr "Kechua (3 vogalenn)"
 
 #. LANG_QUL_BO
-#: po/tmp/xap_String_Id.h.h:655
+#: po/tmp/xap_String_Id.h.h:659
 msgid "Quechua (5 vowels)"
 msgstr "Kechua (5 vogalenn)"
 
 #. ReadOnly
-#: po/tmp/xap_String_Id.h.h:657
+#: po/tmp/xap_String_Id.h.h:661
 msgid "Read-Only"
 msgstr "Lenn-hepkenn"
 
 #. DLG_FOSA_RecordToFileTitle
-#: po/tmp/xap_String_Id.h.h:659
+#: po/tmp/xap_String_Id.h.h:663
 msgid "Record Editing to File"
 msgstr "Amzer aozañ :"
 
 #. DLG_UFS_StyleRegular
-#: po/tmp/xap_String_Id.h.h:661
+#: po/tmp/xap_String_Id.h.h:665
 msgid "Regular"
 msgstr "Reizh"
 
 #. DLG_DocComparison_Relationship
-#: po/tmp/xap_String_Id.h.h:663
+#: po/tmp/xap_String_Id.h.h:667
 msgid "Relationship:"
 msgstr "Kerentiezh :"
 
 #. DLG_FOSA_ReplayFromFileTitle
-#: po/tmp/xap_String_Id.h.h:665
+#: po/tmp/xap_String_Id.h.h:669
 msgid "Replay Editing from File"
 msgstr ""
 
 #. DLG_Restore
-#: po/tmp/xap_String_Id.h.h:667
+#: po/tmp/xap_String_Id.h.h:671
 msgid "Restore"
 msgstr "Adlakaat"
 
 #. DLG_HTMLOPT_ExpRestore
-#: po/tmp/xap_String_Id.h.h:669
+#: po/tmp/xap_String_Id.h.h:673
 msgid "Restore Settings"
 msgstr "Adlakaat"
 
 #. DLG_DocComparison_Results
-#: po/tmp/xap_String_Id.h.h:671
+#: po/tmp/xap_String_Id.h.h:675
 msgid "Results"
 msgstr "Disoc'hoù"
 
 #. LANG_RO_RO
-#: po/tmp/xap_String_Id.h.h:673
+#: po/tmp/xap_String_Id.h.h:677
 msgid "Romanian"
 msgstr "Romaneg"
 
 #. ENC_ROMA_MAC
-#: po/tmp/xap_String_Id.h.h:675
+#: po/tmp/xap_String_Id.h.h:679
 msgid "Romanian, Macintosh"
 msgstr "Romanian, Macintosh"
 
 #. LANG_RU_RU
-#: po/tmp/xap_String_Id.h.h:677
+#: po/tmp/xap_String_Id.h.h:681
 msgid "Russian (Russia)"
 msgstr "Ruseg (Rusia)"
 
+#. LANG_RU_PETR1708
+#: po/tmp/xap_String_Id.h.h:683
+msgid "Russian (pre-1918)"
+msgstr ""
+
 #. DLG_UFS_SampleFrameLabel
-#: po/tmp/xap_String_Id.h.h:679
+#: po/tmp/xap_String_Id.h.h:685
 msgid "Sample"
 msgstr "Standilhon"
 
 #. LANG_SC_IT
-#: po/tmp/xap_String_Id.h.h:681
+#: po/tmp/xap_String_Id.h.h:687
 msgid "Sardinian"
 msgstr "Sardeg"
 
 #. DLG_FOSA_SaveAsTitle
-#: po/tmp/xap_String_Id.h.h:683
+#: po/tmp/xap_String_Id.h.h:689
 msgid "Save File As"
 msgstr "Enrollañ dindan"
 
 #. DLG_HTMLOPT_ExpSave
-#: po/tmp/xap_String_Id.h.h:685
+#: po/tmp/xap_String_Id.h.h:691
 msgid "Save Settings"
 msgstr "Enrollañ"
 
 #. DLG_FOSA_FileSaveTypeLabel
-#: po/tmp/xap_String_Id.h.h:687
+#: po/tmp/xap_String_Id.h.h:693
 msgid "Save file as &type:"
 msgstr "Enrollañ ar restr dindan ar rizh :"
 
 #. DLG_UFS_ScriptLabel
-#: po/tmp/xap_String_Id.h.h:689
+#: po/tmp/xap_String_Id.h.h:695
 msgid "Script:"
 msgstr "Skript :"
 
 #. STYLE_SECTHEADING
-#: po/tmp/xap_String_Id.h.h:691
+#: po/tmp/xap_String_Id.h.h:697
 msgid "Section Heading"
 msgstr "Talbenn ar gevrenn"
 
 #. DLG_UENC_EncLabel
-#: po/tmp/xap_String_Id.h.h:695
+#: po/tmp/xap_String_Id.h.h:701
 msgid "Select Encoding:"
 msgstr "Diuzañ an enbonegañ :"
 
 #. DLG_HTMLOPT_ExpLabel
-#: po/tmp/xap_String_Id.h.h:697
+#: po/tmp/xap_String_Id.h.h:703
 msgid "Select HTML export options:"
 msgstr "Diuzañ dibarzhioù an ezporzhiañ HTML :"
 
 #. DLG_ULANG_LangLabel
-#: po/tmp/xap_String_Id.h.h:699
+#: po/tmp/xap_String_Id.h.h:705
 msgid "Select Language:"
 msgstr "Diuzañ ur yezh"
 
 #. LANG_SR
-#: po/tmp/xap_String_Id.h.h:703
+#: po/tmp/xap_String_Id.h.h:709
 msgid "Serbian"
 msgstr "Serbeg"
 
+#. LANG_SR_LATIN
+#: po/tmp/xap_String_Id.h.h:711
+#, fuzzy
+msgid "Serbian, latin"
+msgstr "Bieloruseg (latin)"
+
 #. DLG_Image_ImageDesc
-#: po/tmp/xap_String_Id.h.h:705
+#: po/tmp/xap_String_Id.h.h:713
 msgid "Set Image Name"
 msgstr "Aozañ anv ar skeudenn"
 
 #. DLG_Image_ImageSize
-#: po/tmp/xap_String_Id.h.h:707
+#: po/tmp/xap_String_Id.h.h:715
 msgid "Set Image Size"
 msgstr "Aozañ ment ar skeudenn"
 
 #. DLG_ULANG_LangTitle
-#: po/tmp/xap_String_Id.h.h:709
+#: po/tmp/xap_String_Id.h.h:717
 msgid "Set Language"
 msgstr "Yezh"
 
 #. DLG_UFS_TransparencyCheck
-#: po/tmp/xap_String_Id.h.h:711
+#: po/tmp/xap_String_Id.h.h:719
 msgid "Set no Highlight Color"
 msgstr "Liv treuzwel ebet"
 
 #. DLG_UFS_SizeLabel
-#: po/tmp/xap_String_Id.h.h:715
+#: po/tmp/xap_String_Id.h.h:723
 msgid "Size:"
 msgstr "Ment :"
 
 #. LANG_SK_SK
-#: po/tmp/xap_String_Id.h.h:717
+#: po/tmp/xap_String_Id.h.h:725
 msgid "Slovak"
 msgstr "Slovakeg"
 
 #. LANG_SL_SI
-#: po/tmp/xap_String_Id.h.h:719
+#: po/tmp/xap_String_Id.h.h:727
 msgid "Slovenian"
 msgstr "Sloveneg"
 
 #. DLG_UFS_Effects_SmallCaps
-#: po/tmp/xap_String_Id.h.h:721
+#: po/tmp/xap_String_Id.h.h:729
 msgid "Small Capitals"
 msgstr "Pennlizherennoù bihan"
 
 #. LANG_ES_MX
-#: po/tmp/xap_String_Id.h.h:723
+#: po/tmp/xap_String_Id.h.h:731
 msgid "Spanish (Mexico)"
 msgstr "Spagnoleg (Mec'hiko)"
 
 #. LANG_ES_ES
-#: po/tmp/xap_String_Id.h.h:725
+#: po/tmp/xap_String_Id.h.h:733
 msgid "Spanish (Spain)"
 msgstr "Spagnoleg (Spagn)"
 
 #. DLG_Image_SquareWrap
-#: po/tmp/xap_String_Id.h.h:729
+#: po/tmp/xap_String_Id.h.h:737
 msgid "Square text wrapping"
 msgstr "Troc'hañ testenn karrez"
 
 #. DLG_DocComparison_Styles
-#: po/tmp/xap_String_Id.h.h:737
+#: po/tmp/xap_String_Id.h.h:745
 msgid "Styles:"
 msgstr "Stiloù :"
 
 #. LANG_SW
-#: po/tmp/xap_String_Id.h.h:743
+#: po/tmp/xap_String_Id.h.h:751
 msgid "Swahili"
 msgstr "Swahili"
 
 #. LANG_SV_SE
-#: po/tmp/xap_String_Id.h.h:745
+#: po/tmp/xap_String_Id.h.h:753
 msgid "Swedish"
 msgstr "Svedeg"
 
 #. TB_Font_Symbol
-#: po/tmp/xap_String_Id.h.h:747
+#: po/tmp/xap_String_Id.h.h:755
 msgid "Symbols"
 msgstr "Simbolennoù"
 
 #. LANG_SYR
-#: po/tmp/xap_String_Id.h.h:749
+#: po/tmp/xap_String_Id.h.h:757
 msgid "Syriac"
 msgstr "Sirieg"
 
 #. LANG_TL_PH
-#: po/tmp/xap_String_Id.h.h:753
+#: po/tmp/xap_String_Id.h.h:761
 msgid "Tagalog"
 msgstr "Tagalog"
 
 #. LANG_TA_IN
-#: po/tmp/xap_String_Id.h.h:755
+#: po/tmp/xap_String_Id.h.h:763
 msgid "Tamil"
 msgstr "Tamil"
 
 #. LANG_TE_IN
-#: po/tmp/xap_String_Id.h.h:757
+#: po/tmp/xap_String_Id.h.h:765
 msgid "Telugu"
 msgstr "Telugu"
 
 #. DLG_UFS_ColorTab
-#: po/tmp/xap_String_Id.h.h:759
+#: po/tmp/xap_String_Id.h.h:767
 msgid "Text Color"
 msgstr "Liv"
 
 #. DLG_Image_WrappedBoth
-#: po/tmp/xap_String_Id.h.h:761
+#: po/tmp/xap_String_Id.h.h:769
 msgid "Text wrapped on both sides of the Image"
 msgstr "Testenn droc'het da bep tu ar skeudenn"
 
 #. DLG_Image_WrappedLeft
-#: po/tmp/xap_String_Id.h.h:763
+#: po/tmp/xap_String_Id.h.h:771
 msgid "Text wrapped to the Left of the Image"
 msgstr "Testenn droc'het a gleiz d'ar skeudenn"
 
 #. DLG_Image_WrappedRight
-#: po/tmp/xap_String_Id.h.h:765
+#: po/tmp/xap_String_Id.h.h:773
 msgid "Text wrapped to the Right of the Image"
 msgstr "Testenn droc'het a-zehou d'ar skeudenn"
 
 #. LANG_TH_TH
-#: po/tmp/xap_String_Id.h.h:767
+#: po/tmp/xap_String_Id.h.h:775
 msgid "Thai"
 msgstr "Tai"
 
 #. ENC_THAI_MAC
-#: po/tmp/xap_String_Id.h.h:769
+#: po/tmp/xap_String_Id.h.h:777
 msgid "Thai, Macintosh"
 msgstr "Tai, Macintosh"
 
 #. ENC_THAI_TIS
-#: po/tmp/xap_String_Id.h.h:771
+#: po/tmp/xap_String_Id.h.h:779
 msgid "Thai, TIS-620"
 msgstr "Tai, TIS-620"
 
 #. ENC_THAI_WIN
-#: po/tmp/xap_String_Id.h.h:773
+#: po/tmp/xap_String_Id.h.h:781
 msgid "Thai, Windows Code Page 874"
 msgstr "Tai, Pajenn enbonegañ Windows 874"
 
 #. DLG_NoSaveFile_DirNotWriteable
-#: po/tmp/xap_String_Id.h.h:775
+#: po/tmp/xap_String_Id.h.h:783
 #, c-format
 msgid "The directory '%s' is write-protected."
 msgstr "Gwarezet eo diouzh skrivañ ar renkell '%s'."
 
 #. DLG_FOSA_ExtensionDoesNotMatch
-#: po/tmp/xap_String_Id.h.h:777
+#: po/tmp/xap_String_Id.h.h:785
 msgid ""
 "The given file extension does not match the chosen file type. Do you want to "
 "use this name anyway?"
 msgstr ""
 
 #. MSG_HistoryPartRestore2
-#: po/tmp/xap_String_Id.h.h:779
+#: po/tmp/xap_String_Id.h.h:787
 #, c-format
 msgid ""
 "The nearest version that can be restored fully is %d. Would you like to "
@@ -8185,296 +8207,296 @@ msgstr ""
 "eus handelv %d, pouezit war Ket."
 
 #. DLG_UP_InvalidPrintString
-#: po/tmp/xap_String_Id.h.h:781
+#: po/tmp/xap_String_Id.h.h:789
 msgid "The print command string is not valid."
 msgstr "N'eo ket mat an arc'had moullañ."
 
 #. MSG_NoUndo
-#: po/tmp/xap_String_Id.h.h:783
+#: po/tmp/xap_String_Id.h.h:791
 msgid "This operation cannot be undone. Are you sure you want to proceed?"
 msgstr ""
 "N'haller ket dizober an oberiadenn-se. Ha fellout a ra deoc'h kenderc'hel ?"
 
 #. DLG_Image_TightWrap
-#: po/tmp/xap_String_Id.h.h:787
+#: po/tmp/xap_String_Id.h.h:795
 msgid "Tight text wrapping"
 msgstr "Troc'hañ testenn stardet"
 
 #. MSG_HistoryPartRestore3
-#: po/tmp/xap_String_Id.h.h:793
+#: po/tmp/xap_String_Id.h.h:801
 msgid "To continue anyway, press OK."
 msgstr "Evit kenderc'hel daoust da-se, pouezit war OK"
 
 #. MSG_HistoryPartRestore4
-#: po/tmp/xap_String_Id.h.h:795
+#: po/tmp/xap_String_Id.h.h:803
 msgid "To quit the restoration attempt, press Cancel."
 msgstr "Pouezit war Nullañ evit paouez gant an adlakaat."
 
 #. LANG_TR_TR
-#: po/tmp/xap_String_Id.h.h:801
+#: po/tmp/xap_String_Id.h.h:809
 msgid "Turkish"
 msgstr "Turkeg"
 
 #. ENC_TURK_ISO
-#: po/tmp/xap_String_Id.h.h:803
+#: po/tmp/xap_String_Id.h.h:811
 msgid "Turkish, ISO-8859-9"
 msgstr "Turk, ISO-8859-9"
 
 #. ENC_TURK_MAC
-#: po/tmp/xap_String_Id.h.h:805
+#: po/tmp/xap_String_Id.h.h:813
 msgid "Turkish, Macintosh"
 msgstr "Turk, Macintosh"
 
 #. ENC_TURK_WIN
-#: po/tmp/xap_String_Id.h.h:807
+#: po/tmp/xap_String_Id.h.h:815
 msgid "Turkish, Windows Code Page 1254"
 msgstr "Turk, Pajenn enbonegañ Windows 1254"
 
 #. DLG_Image_WrapType
-#: po/tmp/xap_String_Id.h.h:809
+#: po/tmp/xap_String_Id.h.h:817
 msgid "Type of text wrapping"
 msgstr "Doare troc'hañ testenn "
 
 #. ENC_WEST_ASCII
-#: po/tmp/xap_String_Id.h.h:811
+#: po/tmp/xap_String_Id.h.h:819
 msgid "US-ASCII"
 msgstr "US-ASCII"
 
 #. LANG_UK_UA
-#: po/tmp/xap_String_Id.h.h:813
+#: po/tmp/xap_String_Id.h.h:821
 msgid "Ukrainian"
 msgstr "Ukrenieg"
 
 #. ENC_UKRA_KOI
-#: po/tmp/xap_String_Id.h.h:815
+#: po/tmp/xap_String_Id.h.h:823
 msgid "Ukrainian, KOI8-U"
 msgstr "Ukrainian, KOI8-U"
 
 #. ENC_UKRA_MAC
-#: po/tmp/xap_String_Id.h.h:817
+#: po/tmp/xap_String_Id.h.h:825
 msgid "Ukrainian, Macintosh"
 msgstr "Ukrainian, Macintosh"
 
 #. ENC_UNIC_UCS2
-#: po/tmp/xap_String_Id.h.h:821
+#: po/tmp/xap_String_Id.h.h:829
 msgid "Unicode UCS-2"
 msgstr "Unicode UCS-2"
 
 #. ENC_UNIC_UCS_2BE
-#: po/tmp/xap_String_Id.h.h:823
+#: po/tmp/xap_String_Id.h.h:831
 msgid "Unicode UCS-2 Big Endian"
 msgstr "Unicode UCS-2 Big Endian"
 
 #. ENC_UNIC_UCS_2LE
-#: po/tmp/xap_String_Id.h.h:825
+#: po/tmp/xap_String_Id.h.h:833
 msgid "Unicode UCS-2 Little Endian"
 msgstr "Unicode UCS-2 Little Endian"
 
 #. ENC_UNIC_UCS4
-#: po/tmp/xap_String_Id.h.h:827
+#: po/tmp/xap_String_Id.h.h:835
 msgid "Unicode UCS-4"
 msgstr "Unicode UCS-4"
 
 #. ENC_UNIC_UCS_4BE
-#: po/tmp/xap_String_Id.h.h:829
+#: po/tmp/xap_String_Id.h.h:837
 msgid "Unicode UCS-4 Big Endian"
 msgstr "Unicode UCS-4 Big Endian"
 
 #. ENC_UNIC_UCS_4LE
-#: po/tmp/xap_String_Id.h.h:831
+#: po/tmp/xap_String_Id.h.h:839
 msgid "Unicode UCS-4 Little Endian"
 msgstr "Unicode UCS-4 Little Endian"
 
 #. ENC_UNIC_UTF_16
-#: po/tmp/xap_String_Id.h.h:833
+#: po/tmp/xap_String_Id.h.h:841
 msgid "Unicode UTF-16"
 msgstr "Unicode UTF-16"
 
 #. ENC_UNIC_UTF_16BE
-#: po/tmp/xap_String_Id.h.h:835
+#: po/tmp/xap_String_Id.h.h:843
 msgid "Unicode UTF-16 Big Endian"
 msgstr "Unicode UTF-16 Big Endian"
 
 #. ENC_UNIC_UTF_16LE
-#: po/tmp/xap_String_Id.h.h:837
+#: po/tmp/xap_String_Id.h.h:845
 msgid "Unicode UTF-16 Little Endian"
 msgstr "Unicode UTF-16 Little Endian"
 
 #. ENC_UNIC_UTF_32
-#: po/tmp/xap_String_Id.h.h:839
+#: po/tmp/xap_String_Id.h.h:847
 msgid "Unicode UTF-32"
 msgstr "Unicode UTF-32"
 
 #. ENC_UNIC_UTF_32BE
-#: po/tmp/xap_String_Id.h.h:841
+#: po/tmp/xap_String_Id.h.h:849
 msgid "Unicode UTF-32 Big Endian"
 msgstr "Unicode UTF-32 Big Endian"
 
 #. ENC_UNIC_UTF_32LE
-#: po/tmp/xap_String_Id.h.h:843
+#: po/tmp/xap_String_Id.h.h:851
 msgid "Unicode UTF-32 Little Endian"
 msgstr "Unicode UTF-32 Little Endian"
 
 #. ENC_UNIC_UTF_7
-#: po/tmp/xap_String_Id.h.h:845
+#: po/tmp/xap_String_Id.h.h:853
 msgid "Unicode UTF-7"
 msgstr "Unicode UTF-7"
 
 #. ENC_UNIC_UTF_8
-#: po/tmp/xap_String_Id.h.h:847
+#: po/tmp/xap_String_Id.h.h:855
 msgid "Unicode UTF-8"
 msgstr "Unicode UTF-8"
 
 #. UntitledDocument
-#: po/tmp/xap_String_Id.h.h:849
+#: po/tmp/xap_String_Id.h.h:857
 #, c-format
 msgid "Untitled%d"
 msgstr "Teul%d"
 
 #. DLG_Update
-#: po/tmp/xap_String_Id.h.h:851
+#: po/tmp/xap_String_Id.h.h:859
 msgid "Update"
 msgstr "Hizivaat"
 
 #. DLG_UFS_Effects_UpperCase
-#: po/tmp/xap_String_Id.h.h:857
+#: po/tmp/xap_String_Id.h.h:865
 msgid "Uppercase"
 msgstr "Pennlizherenn"
 
 #. LANG_UR
-#: po/tmp/xap_String_Id.h.h:859
+#: po/tmp/xap_String_Id.h.h:867
 msgid "Urdu"
 msgstr "Ourdou"
 
 #. LANG_UR_PK
-#: po/tmp/xap_String_Id.h.h:861
+#: po/tmp/xap_String_Id.h.h:869
 msgid "Urdu (Pakistan)"
 msgstr "Ourdou (Pakistan)"
 
 #. LANG_UZ_UZ
-#: po/tmp/xap_String_Id.h.h:863
+#: po/tmp/xap_String_Id.h.h:871
 msgid "Uzbek"
 msgstr "Ouzbeg"
 
 #. DLG_History_List_Title
-#: po/tmp/xap_String_Id.h.h:867
+#: po/tmp/xap_String_Id.h.h:875
 msgid "Version history"
 msgstr "Istor an handelv"
 
 #. DLG_PLUGIN_MANAGER_VERSION
 #. DLG_History_Version
-#: po/tmp/xap_String_Id.h.h:870
+#: po/tmp/xap_String_Id.h.h:878
 msgid "Version:"
 msgstr "Handelv :"
 
 #. DLG_ABOUT_Version
-#: po/tmp/xap_String_Id.h.h:872
+#: po/tmp/xap_String_Id.h.h:880
 #, c-format
 msgid "Version: %s"
 msgstr "Handelv : %s"
 
 #. LANG_VI_VN
-#: po/tmp/xap_String_Id.h.h:874
+#: po/tmp/xap_String_Id.h.h:882
 msgid "Vietnamese"
 msgstr "Vietnameg"
 
 #. ENC_VIET_TCVN
-#: po/tmp/xap_String_Id.h.h:876
+#: po/tmp/xap_String_Id.h.h:884
 msgid "Vietnamese, TCVN"
 msgstr "Vietnamat, TCVN"
 
 #. ENC_VIET_VISCII
-#: po/tmp/xap_String_Id.h.h:878
+#: po/tmp/xap_String_Id.h.h:886
 msgid "Vietnamese, VISCII"
 msgstr "Vietnamat, VISCII"
 
 #. ENC_VIET_WIN
-#: po/tmp/xap_String_Id.h.h:880
+#: po/tmp/xap_String_Id.h.h:888
 msgid "Vietnamese, Windows Code Page 1258"
 msgstr "Vietnamat, Pajenn enbonegañ Windows 1258"
 
 #. DLG_MW_MoreWindows
-#: po/tmp/xap_String_Id.h.h:882
+#: po/tmp/xap_String_Id.h.h:890
 msgid "View Document"
 msgstr "Gweredekaat ur prenestr"
 
 #. DLG_MW_Activate
-#: po/tmp/xap_String_Id.h.h:884
+#: po/tmp/xap_String_Id.h.h:892
 msgid "View:"
 msgstr "Gweredekaat :"
 
 #. LANG_CY_GB
-#: po/tmp/xap_String_Id.h.h:886
+#: po/tmp/xap_String_Id.h.h:894
 msgid "Welsh"
 msgstr "Kembraeg"
 
 #. ENC_US_DOS
-#: po/tmp/xap_String_Id.h.h:888
+#: po/tmp/xap_String_Id.h.h:896
 msgid "Western European, DOS/Windows Code Page 437"
 msgstr "Europeat Kornôg, DOS/Windows Pajenn enbonegañ 437"
 
 #. ENC_MLNG_DOS
-#: po/tmp/xap_String_Id.h.h:890
+#: po/tmp/xap_String_Id.h.h:898
 msgid "Western European, DOS/Windows Code Page 850"
 msgstr "Europeat Kornôg, DOS/Windows Pajenn enbonegañ 850"
 
 #. ENC_WEST_HP
-#: po/tmp/xap_String_Id.h.h:892
+#: po/tmp/xap_String_Id.h.h:900
 msgid "Western European, HP"
 msgstr "Europat kornôg, HP"
 
 #. ENC_WEST_ISO
-#: po/tmp/xap_String_Id.h.h:894
+#: po/tmp/xap_String_Id.h.h:902
 msgid "Western European, ISO-8859-1"
 msgstr "Europat kornôg, ISO-8859-1"
 
 #. ENC_WEST_MAC
-#: po/tmp/xap_String_Id.h.h:896
+#: po/tmp/xap_String_Id.h.h:904
 msgid "Western European, Macintosh"
 msgstr "Europat kornôg, Macintosh"
 
 #. ENC_WEST_NXT
-#: po/tmp/xap_String_Id.h.h:898
+#: po/tmp/xap_String_Id.h.h:906
 msgid "Western European, NeXT"
 msgstr "Europat kornôg, NeXT"
 
 #. ENC_WEST_WIN
-#: po/tmp/xap_String_Id.h.h:900
+#: po/tmp/xap_String_Id.h.h:908
 msgid "Western European, Windows Code Page 1252"
 msgstr "Europat kornôg, Pajenn enbonegañ Windows 1252"
 
 #. TB_Zoom_WholePage
-#: po/tmp/xap_String_Id.h.h:902
+#: po/tmp/xap_String_Id.h.h:910
 msgid "Whole Page"
 msgstr "Pajenn"
 
 #. DLG_Image_Width
-#: po/tmp/xap_String_Id.h.h:904
+#: po/tmp/xap_String_Id.h.h:912
 msgid "Width:"
 msgstr "&Ledander :"
 
 #. DLG_IP_Width_Label
-#: po/tmp/xap_String_Id.h.h:906
+#: po/tmp/xap_String_Id.h.h:914
 msgid "Width:  "
 msgstr "Ledander : "
 
 #. LANG_WO_SN
-#: po/tmp/xap_String_Id.h.h:908
+#: po/tmp/xap_String_Id.h.h:916
 msgid "Wolof (Senegal)"
 msgstr "Wolof (Senegal)"
 
 #. DLG_MB_Yes
-#: po/tmp/xap_String_Id.h.h:910
+#: po/tmp/xap_String_Id.h.h:918
 msgid "Yes"
 msgstr "Ya"
 
 #. LANG_YI
-#: po/tmp/xap_String_Id.h.h:912
+#: po/tmp/xap_String_Id.h.h:920
 msgid "Yiddish"
 msgstr "Yidich"
 
 #. MSG_HistoryConfirmSave
-#: po/tmp/xap_String_Id.h.h:914
+#: po/tmp/xap_String_Id.h.h:922
 #, c-format
 msgid "You have to save changes to document %s before proceeding. Save now?"
 msgstr ""
@@ -8482,74 +8504,74 @@ msgstr ""
 "diouzhtu ?"
 
 #. DLG_Zoom_RadioFrameCaption
-#: po/tmp/xap_String_Id.h.h:918
+#: po/tmp/xap_String_Id.h.h:926
 msgid "Zoom to"
 msgstr "Periad brasaat"
 
 #. DLG_UnixMB_No
-#: po/tmp/xap_String_Id.h.h:920
+#: po/tmp/xap_String_Id.h.h:928
 msgid "_No"
 msgstr "_Ket"
 
 #. DLG_UnixMB_Yes
-#: po/tmp/xap_String_Id.h.h:922
+#: po/tmp/xap_String_Id.h.h:930
 msgid "_Yes"
 msgstr "_Ya"
 
 #. DLG_Unit_cm
-#: po/tmp/xap_String_Id.h.h:924
+#: po/tmp/xap_String_Id.h.h:932
 msgid "cm"
 msgstr "cm"
 
 #. DLG_DocComparison_Different
-#: po/tmp/xap_String_Id.h.h:926
+#: po/tmp/xap_String_Id.h.h:934
 msgid "different"
 msgstr "disheñvel"
 
 #. DLG_DocComparison_DivergingPos
-#: po/tmp/xap_String_Id.h.h:928
+#: po/tmp/xap_String_Id.h.h:936
 #, c-format
 msgid "diverging after document position %d"
 msgstr "o tiforc'hiñ goude lec'hiadur %d eus an teuliad"
 
 #. DLG_DocComparison_Diverging
-#: po/tmp/xap_String_Id.h.h:930
+#: po/tmp/xap_String_Id.h.h:938
 #, c-format
 msgid "diverging after version %d of %s"
 msgstr "o tiforc'hiñ goude an handelv %d %s"
 
 #. DLG_DocComparison_Identical
-#: po/tmp/xap_String_Id.h.h:932
+#: po/tmp/xap_String_Id.h.h:940
 msgid "identical"
 msgstr "heñvel"
 
 #. DLG_Unit_inch
-#: po/tmp/xap_String_Id.h.h:934
+#: po/tmp/xap_String_Id.h.h:942
 msgid "inch"
 msgstr "meutad"
 
 #. DLG_Unit_mm
-#: po/tmp/xap_String_Id.h.h:936
+#: po/tmp/xap_String_Id.h.h:944
 msgid "mm"
 msgstr "mm"
 
 #. DLG_Unit_pica
-#: po/tmp/xap_String_Id.h.h:938
+#: po/tmp/xap_String_Id.h.h:946
 msgid "pica"
 msgstr "pika"
 
 #. DLG_Unit_points
-#: po/tmp/xap_String_Id.h.h:940
+#: po/tmp/xap_String_Id.h.h:948
 msgid "points"
 msgstr "poentoù"
 
 #. DLG_DocComparison_Siblings
-#: po/tmp/xap_String_Id.h.h:942
+#: po/tmp/xap_String_Id.h.h:950
 msgid "siblings"
 msgstr "eus memes live"
 
 #. DLG_DocComparison_Unrelated
-#: po/tmp/xap_String_Id.h.h:944
+#: po/tmp/xap_String_Id.h.h:952
 msgid "unrelated"
 msgstr "dizaveet"
 

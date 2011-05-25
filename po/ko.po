@@ -1075,7 +1075,7 @@ msgstr "오전/오후"
 #. MSG_IE_BogusDocument
 #: po/tmp/ap_String_Id.h.h:448
 #, c-format
-msgid "AbiWord cannot open %s. It appears to be an invalid document"
+msgid "AbiWord cannot open %s. It appears to be an invalid document."
 msgstr "AbiWord는 %s (을)를 열 수 없습니다. 올바르지 않은 문서로 보입니다."
 
 #. MSG_SpellSelectionDone
@@ -2485,7 +2485,7 @@ msgstr "머리글 편집"
 
 #. MENU_STATUSLINE_EDIT_LATEXEQUATION
 #: po/tmp/ap_String_Id.h.h:1026
-msgid "Edit Latex Equation"
+msgid "Edit LaTeX Equation"
 msgstr ""
 
 #. MENU_STATUSLINE_INSERT_EDIT_HYPERLINK
@@ -4466,8 +4466,8 @@ msgstr "내장 PS 드라이버를 사용하여 인쇄"
 
 #. MSG_PrintingDoc
 #: po/tmp/ap_String_Id.h.h:1854
-msgid "Printing Document.."
-msgstr "문서 인쇄 중.."
+msgid "Printing Document..."
+msgstr "문서 인쇄 중..."
 
 #. MSG_PrintStatus
 #: po/tmp/ap_String_Id.h.h:1856

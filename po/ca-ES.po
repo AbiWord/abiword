@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ca-ES\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-04-16 11:21+0200\n"
+"POT-Creation-Date: 2011-05-24 12:16+0700\n"
 "PO-Revision-Date: 2009-04-16 13:00+0200\n"
 "Last-Translator: Jordi Mas <jmas@softcatala.org>\n"
 "Language-Team:  <ca@li.org>\n"
@@ -425,73 +425,72 @@ msgstr "&Edita l'anotació"
 msgid "&Edit hyperlink"
 msgstr "&Edita l'hiperenllaç"
 
-#. DLG_Options_Label_SmartQuotesEnable
+#. DLG_Options_Label_EnableOverwrite
 #: po/tmp/ap_String_Id.h.h:172
+msgid "&Enable overwrite mode toggle"
+msgstr ""
+
+#. DLG_Options_Label_SmartQuotesEnable
+#: po/tmp/ap_String_Id.h.h:174
 msgid "&Enable smart quotes"
 msgstr "Habilita les &cometes intel·ligents"
 
 #. MENU_LABEL_INSERT_ENDNOTE
-#: po/tmp/ap_String_Id.h.h:174
+#: po/tmp/ap_String_Id.h.h:176
 msgid "&Endnote"
 msgstr "&Nota final"
 
 #. DLG_Break_EvenPage
-#: po/tmp/ap_String_Id.h.h:176
+#: po/tmp/ap_String_Id.h.h:178
 msgid "&Even page"
 msgstr "Pàgina pa&rell"
 
 #. MENU_LABEL_INSERT_FIELD
-#: po/tmp/ap_String_Id.h.h:178
+#: po/tmp/ap_String_Id.h.h:180
 msgid "&Field"
 msgstr "&Camp"
 
 #
 #. DLG_Field_Fields_No_Colon
-#: po/tmp/ap_String_Id.h.h:180
+#: po/tmp/ap_String_Id.h.h:182
 msgid "&Fields"
 msgstr "&Camps"
 
 #. DLG_Field_Fields
-#: po/tmp/ap_String_Id.h.h:182
+#: po/tmp/ap_String_Id.h.h:184
 msgid "&Fields:"
 msgstr "&Camps:"
 
 #. MENU_LABEL_FILE
-#: po/tmp/ap_String_Id.h.h:184
+#: po/tmp/ap_String_Id.h.h:186
 msgid "&File"
 msgstr "&Fitxer"
 
 #
 #. DLG_Options_Label_FileExtension
-#: po/tmp/ap_String_Id.h.h:186
+#: po/tmp/ap_String_Id.h.h:188
 msgid "&File extension:"
 msgstr "&Extensió del fitxer:"
 
 #. MENU_LABEL_EDIT_FIND
-#: po/tmp/ap_String_Id.h.h:188
+#: po/tmp/ap_String_Id.h.h:190
 msgid "&Find"
 msgstr "&Cerca"
 
 #. DLG_FR_FindNextButton
-#: po/tmp/ap_String_Id.h.h:190
+#: po/tmp/ap_String_Id.h.h:192
 msgid "&Find Next"
 msgstr "Cerca el &següent"
 
 #. MENU_LABEL_FMT_FONT
-#: po/tmp/ap_String_Id.h.h:192
+#: po/tmp/ap_String_Id.h.h:194
 msgid "&Font"
 msgstr "&Tipus de lletra"
 
 #. DLG_PageSetup_Footer
-#: po/tmp/ap_String_Id.h.h:194
+#: po/tmp/ap_String_Id.h.h:196
 msgid "&Footer:"
 msgstr "&Peu:"
-
-#
-#. MENU_LABEL_TABLE_FORMAT
-#: po/tmp/ap_String_Id.h.h:196
-msgid "&Format Table"
-msgstr "&Formata la taula"
 
 #. MENU_LABEL_EDIT_GOTO
 #: po/tmp/ap_String_Id.h.h:198
@@ -575,7 +574,7 @@ msgstr "&Hereta l'etiqueta"
 #. MENU_LABEL_INSERT
 #. MENU_LABEL_TABLE_INSERT
 #. DLG_Insert
-#: po/tmp/ap_String_Id.h.h:232 po/tmp/xap_String_Id.h.h:15
+#: po/tmp/ap_String_Id.h.h:232 po/tmp/xap_String_Id.h.h:19
 msgid "&Insert"
 msgstr "&Insereix"
 
@@ -965,174 +964,175 @@ msgid "&Tab leader:"
 msgstr "&Capçalera de tabulació:"
 
 #
+#. MENU_LABEL_TABLE_FORMAT
 #. MENU_LABEL_TABLE_INSERT_TABLE
 #. MENU_LABEL_TABLE_DELETE_TABLE
 #. MENU_LABEL_TABLE_SELECT_TABLE
-#: po/tmp/ap_String_Id.h.h:383
+#: po/tmp/ap_String_Id.h.h:384
 msgid "&Table"
 msgstr "&Taula"
 
 #. MENU_LABEL_FMT_TABS
-#: po/tmp/ap_String_Id.h.h:385
+#: po/tmp/ap_String_Id.h.h:386
 msgid "&Tabs"
 msgstr "&Tabulacions"
 
 #. DLG_Para_ButtonTabs
-#: po/tmp/ap_String_Id.h.h:387
+#: po/tmp/ap_String_Id.h.h:388
 msgid "&Tabs..."
 msgstr "&Tabulacions..."
 
 #. MENU_LABEL_VIEW_TOOLBARS
-#: po/tmp/ap_String_Id.h.h:389
+#: po/tmp/ap_String_Id.h.h:390
 msgid "&Toolbars"
 msgstr "&Barres d'eines"
 
 #. MENU_LABEL_TOOLS
-#: po/tmp/ap_String_Id.h.h:391
+#: po/tmp/ap_String_Id.h.h:392
 msgid "&Tools"
 msgstr "Eine&s"
 
 #. DLG_PageSetup_Top
-#: po/tmp/ap_String_Id.h.h:393
+#: po/tmp/ap_String_Id.h.h:394
 msgid "&Top:"
 msgstr "&Superior:"
 
 #
 #. DLG_Field_Types_No_Colon
-#: po/tmp/ap_String_Id.h.h:395
+#: po/tmp/ap_String_Id.h.h:396
 msgid "&Types"
 msgstr "&Tipus"
 
 #. DLG_Field_Types
-#: po/tmp/ap_String_Id.h.h:397
+#: po/tmp/ap_String_Id.h.h:398
 msgid "&Types:"
 msgstr "&Tipus:"
 
 #. MENU_LABEL_FMT_UNDERLINE
-#: po/tmp/ap_String_Id.h.h:399
+#: po/tmp/ap_String_Id.h.h:400
 msgid "&Underline"
 msgstr "S&ubratllat"
 
 #. MENU_LABEL_EDIT_UNDO
-#: po/tmp/ap_String_Id.h.h:401
+#: po/tmp/ap_String_Id.h.h:402
 msgid "&Undo"
 msgstr "&Desfés"
 
 #. DLG_Options_Label_ViewUnits
 #. DLG_PageSetup_Units
-#: po/tmp/ap_String_Id.h.h:404
+#: po/tmp/ap_String_Id.h.h:405
 msgid "&Units:"
 msgstr "&Unitats:"
 
 #. MENU_LABEL_VIEW
 #. DLG_MW_ViewButton
-#: po/tmp/ap_String_Id.h.h:406 po/tmp/xap_String_Id.h.h:21
+#: po/tmp/ap_String_Id.h.h:407 po/tmp/xap_String_Id.h.h:27
 msgid "&View"
 msgstr "&Visualitza"
 
 #. MENU_LABEL_VIEW_WEB
-#: po/tmp/ap_String_Id.h.h:408
+#: po/tmp/ap_String_Id.h.h:409
 msgid "&Web Layout"
 msgstr "Disposició de &web"
 
 #. MENU_LABEL_VIEW_ZOOM_WHOLE
-#: po/tmp/ap_String_Id.h.h:410
+#: po/tmp/ap_String_Id.h.h:411
 msgid "&Whole Page"
 msgstr "Tota la &pàgina"
 
 #
 #. DLG_FR_WholeWord
-#: po/tmp/ap_String_Id.h.h:412
+#: po/tmp/ap_String_Id.h.h:413
 msgid "&Whole word"
 msgstr "Tota la pa&raula"
 
 #. DLG_Para_PushWidowOrphanControl
-#: po/tmp/ap_String_Id.h.h:414
+#: po/tmp/ap_String_Id.h.h:415
 msgid "&Widow/Orphan control"
 msgstr "Control de línies vídues i &orfes"
 
 #. DLG_PageSetup_Width
-#: po/tmp/ap_String_Id.h.h:416
+#: po/tmp/ap_String_Id.h.h:417
 msgid "&Width:"
 msgstr "A&mplada:"
 
 #. MENU_LABEL_TOOLS_WORDCOUNT
-#: po/tmp/ap_String_Id.h.h:418
+#: po/tmp/ap_String_Id.h.h:419
 msgid "&Word Count"
 msgstr "Nombre de &paraules"
 
 #. MENU_LABEL_VIEW_ZOOM_MENU
 #. MENU_LABEL_VIEW_ZOOM
-#: po/tmp/ap_String_Id.h.h:421
+#: po/tmp/ap_String_Id.h.h:422
 msgid "&Zoom"
 msgstr "&Zoom"
 
 #
 #. DLG_ListRevisions_LevelZero
-#: po/tmp/ap_String_Id.h.h:423
+#: po/tmp/ap_String_Id.h.h:424
 msgid "(All revisions visible)"
 msgstr "(Totes les revisions visibles)"
 
 #. DLG_Spell_NoSuggestions
-#: po/tmp/ap_String_Id.h.h:425
+#: po/tmp/ap_String_Id.h.h:426
 msgid "(no spelling suggestions)"
 msgstr "(no hi ha suggeriments)"
 
 #. DLG_Para_SpecialNone
-#: po/tmp/ap_String_Id.h.h:427
+#: po/tmp/ap_String_Id.h.h:428
 msgid "(none)"
 msgstr "(cap)"
 
 #. TOOLBAR_LABEL_1COLUMN
 #. TOOLBAR_STATUSLINE_1COLUMN
 #. TOOLBAR_TOOLTIP_1COLUMN
-#: po/tmp/ap_String_Id.h.h:431
+#: po/tmp/ap_String_Id.h.h:432
 msgid "1 Column"
 msgstr "1 columna"
 
 #. TOOLBAR_LABEL_MIDDLE_SPACE
-#: po/tmp/ap_String_Id.h.h:433
+#: po/tmp/ap_String_Id.h.h:434
 msgid "1.5 Spacing"
 msgstr "Espaiat 1,5"
 
 #. DLG_Para_SpacingHalf
-#: po/tmp/ap_String_Id.h.h:435
+#: po/tmp/ap_String_Id.h.h:436
 msgid "1.5 lines"
 msgstr "1,5 línies"
 
 #. TOOLBAR_STATUSLINE_MIDDLE_SPACE
 #. TOOLBAR_TOOLTIP_MIDDLE_SPACE
-#: po/tmp/ap_String_Id.h.h:438
+#: po/tmp/ap_String_Id.h.h:439
 msgid "1.5 spacing"
 msgstr "Espaiat 1,5"
 
 #. TOOLBAR_LABEL_PARA_12BEFORE
-#: po/tmp/ap_String_Id.h.h:440
+#: po/tmp/ap_String_Id.h.h:441
 msgid "12 pt before"
 msgstr "12 pt abans"
 
 #. TOOLBAR_LABEL_2COLUMN
 #. TOOLBAR_STATUSLINE_2COLUMN
 #. TOOLBAR_TOOLTIP_2COLUMN
-#: po/tmp/ap_String_Id.h.h:444
+#: po/tmp/ap_String_Id.h.h:445
 msgid "2 Columns"
 msgstr "2 columnes"
 
 #. TOOLBAR_LABEL_3COLUMN
 #. TOOLBAR_STATUSLINE_3COLUMN
 #. TOOLBAR_TOOLTIP_3COLUMN
-#: po/tmp/ap_String_Id.h.h:448
+#: po/tmp/ap_String_Id.h.h:449
 msgid "3 Columns"
 msgstr "3 columnes"
 
 #. DLG_Goto_Btn_Prev
-#: po/tmp/ap_String_Id.h.h:450
+#: po/tmp/ap_String_Id.h.h:451
 msgid "<< Prev"
 msgstr "<< Anterior"
 
 #
 #. MSG_Exception
-#: po/tmp/ap_String_Id.h.h:452
+#: po/tmp/ap_String_Id.h.h:453
 msgid ""
 "A fatal error has just occurred. AbiWord is going to shutdown.\n"
 "The current document has been saved to disc with a \".saved\" extension."
@@ -1141,42 +1141,42 @@ msgstr ""
 "El document actual s'ha desat amb l'extensió \".saved\"."
 
 #. DLG_Options_Label_SpellSuggest
-#: po/tmp/ap_String_Id.h.h:454
+#: po/tmp/ap_String_Id.h.h:455
 msgid "A&lways suggest corrections"
 msgstr "Su&ggereix sempre correccions"
 
 #. FIELD_DateTime_AMPM
-#: po/tmp/ap_String_Id.h.h:456
+#: po/tmp/ap_String_Id.h.h:457
 msgid "AM/PM"
 msgstr "AM/PM"
 
 #. MSG_IE_BogusDocument
-#: po/tmp/ap_String_Id.h.h:458
+#: po/tmp/ap_String_Id.h.h:459
 #, c-format
-msgid "AbiWord cannot open %s. It appears to be an invalid document"
+msgid "AbiWord cannot open %s. It appears to be an invalid document."
 msgstr "L'AbiWord no pot obrir %s. Sembla que el document no és vàlid"
 
 #
 #. MSG_SpellSelectionDone
-#: po/tmp/ap_String_Id.h.h:460
+#: po/tmp/ap_String_Id.h.h:461
 msgid "AbiWord finished checking the selection."
 msgstr "L'AbiWord ha acabat la comprovació de la selecció."
 
 #. DLG_FR_FinishedReplace
-#: po/tmp/ap_String_Id.h.h:462
+#: po/tmp/ap_String_Id.h.h:463
 #, c-format
 msgid ""
 "AbiWord has finished its search of the document and has made %d replacements."
 msgstr "L'AbiWord ha acabat la cerca i ha realitzat %d reemplaçaments."
 
 #. DLG_FR_FinishedFind
-#: po/tmp/ap_String_Id.h.h:464
+#: po/tmp/ap_String_Id.h.h:465
 msgid "AbiWord has finished searching the document."
 msgstr "L'AbiWord ha acabat la cerca en el document."
 
 #
 #. WINDOWS_COMCTL_WARNING
-#: po/tmp/ap_String_Id.h.h:466
+#: po/tmp/ap_String_Id.h.h:467
 msgid ""
 "AbiWord is designed for a newer version of the system file COMCTL32.DLL\n"
 "than the one currently on your system. (COMCTL32.DLL version 4.72 or newer)\n"
@@ -1199,7 +1199,7 @@ msgstr ""
 
 #
 #. WINDOWS_NEED_UNICOWS
-#: po/tmp/ap_String_Id.h.h:468
+#: po/tmp/ap_String_Id.h.h:469
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
@@ -1211,151 +1211,151 @@ msgstr ""
 "platformsdk/sdkupdate/psdkredist.htm"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h.h:470
+#: po/tmp/ap_String_Id.h.h:471
 msgid "About G&NOME Office"
 msgstr "Quant al GNOME &Office"
 
 #. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h.h:472
+#: po/tmp/ap_String_Id.h.h:473
 msgid "About the GNOME Office project"
 msgstr "Quant al projecte GNOME Office"
 
 #
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
-#: po/tmp/ap_String_Id.h.h:474
+#: po/tmp/ap_String_Id.h.h:475
 msgid "Accept the suggested change"
 msgstr "Accepta el canvi suggerit"
 
 #
 #. TOOLBAR_STATUSLINE_ADD_COLUMN
 #. TOOLBAR_TOOLTIP_ADD_COLUMN
-#: po/tmp/ap_String_Id.h.h:477
+#: po/tmp/ap_String_Id.h.h:478
 msgid "Add a column to this table after the current column"
 msgstr "Afegeix una columna a aquesta taula després de la columna actual"
 
 #
 #. TOOLBAR_STATUSLINE_ADD_ROW
 #. TOOLBAR_TOOLTIP_ADD_ROW
-#: po/tmp/ap_String_Id.h.h:480
+#: po/tmp/ap_String_Id.h.h:481
 msgid "Add a row to this table after the current row"
 msgstr "Afegeix una fila a aquesta taula després de la fila actual"
 
 #. MENU_STATUSLINE_FMT_BORDERS
-#: po/tmp/ap_String_Id.h.h:482
+#: po/tmp/ap_String_Id.h.h:483
 msgid "Add borders and shading to the selection"
 msgstr "Afegeix contorns i ombrejat a la selecció"
 
 #
 #. TOOLBAR_LABEL_ADD_COLUMN
-#: po/tmp/ap_String_Id.h.h:484
+#: po/tmp/ap_String_Id.h.h:485
 msgid "Add column after"
 msgstr "Afegeix una columna després"
 
 #. MENU_STATUSLINE_FMT_BULLETS
-#: po/tmp/ap_String_Id.h.h:486
+#: po/tmp/ap_String_Id.h.h:487
 msgid "Add or modify bullets and numbering for selected paragraphs"
 msgstr ""
 "Afegeix o modifica les vinyetes i la numeració dels paràgrafs seleccionats"
 
 #
 #. TOOLBAR_LABEL_ADD_ROW
-#: po/tmp/ap_String_Id.h.h:488
+#: po/tmp/ap_String_Id.h.h:489
 msgid "Add row after"
 msgstr "Afegeix una fila després"
 
 #. MENU_STATUSLINE_SPELL_ADD
-#: po/tmp/ap_String_Id.h.h:490
+#: po/tmp/ap_String_Id.h.h:491
 msgid "Add this word to the custom dictionary"
 msgstr "Afegeix aquesta paraula al diccionari personalitzat"
 
 #. DLG_Styles_ModifyTemplate
-#: po/tmp/ap_String_Id.h.h:492
+#: po/tmp/ap_String_Id.h.h:493
 msgid "Add to template"
 msgstr "Afegeix a la plantilla"
 
 #. DLG_Para_LabelAfter
-#: po/tmp/ap_String_Id.h.h:494
+#: po/tmp/ap_String_Id.h.h:495
 msgid "Aft&er:"
 msgstr "&Després:"
 
 #. DLG_Para_LabelAlignment
-#: po/tmp/ap_String_Id.h.h:496
+#: po/tmp/ap_String_Id.h.h:497
 msgid "Ali&gnment:"
 msgstr "Ali&neació:"
 
 #. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment_No_Colon
-#: po/tmp/ap_String_Id.h.h:499
+#: po/tmp/ap_String_Id.h.h:500
 msgid "Alignment"
 msgstr "Alineació"
 
 #. DLG_PageNumbers_Alignment
-#: po/tmp/ap_String_Id.h.h:501
+#: po/tmp/ap_String_Id.h.h:502
 msgid "Alignment:"
 msgstr "Alineació:"
 
 #. DLG_Styles_LBL_All
 #. DLG_UP_All
-#: po/tmp/ap_String_Id.h.h:503 po/tmp/xap_String_Id.h.h:51
+#: po/tmp/ap_String_Id.h.h:504 po/tmp/xap_String_Id.h.h:61
 msgid "All"
 msgstr "Tot"
 
 #
 #. MENU_STATUSLINE_VIEW_LOCKSTYLES
-#: po/tmp/ap_String_Id.h.h:505
+#: po/tmp/ap_String_Id.h.h:506
 msgid "Allow formatting using styles only"
 msgstr "Permet la formatació només amb l'ús dels estils"
 
 #. DLG_Options_Label_CheckWhiteForTransparent
-#: po/tmp/ap_String_Id.h.h:507
+#: po/tmp/ap_String_Id.h.h:508
 msgid "Allow screen colors other than white"
 msgstr "Permet altres colors de pantalla que el blanc"
 
 #. FIELD_Application
-#: po/tmp/ap_String_Id.h.h:509
+#: po/tmp/ap_String_Id.h.h:510
 msgid "Application"
 msgstr "Aplicació"
 
 #
 #. DLG_Options_Label_AppStartup
-#: po/tmp/ap_String_Id.h.h:511
+#: po/tmp/ap_String_Id.h.h:512
 msgid "Application Startup"
 msgstr "Inici de l'aplicació"
 
 #. DLG_Options_Btn_Apply
 #. DLG_Apply
-#: po/tmp/ap_String_Id.h.h:513 po/tmp/xap_String_Id.h.h:63
+#: po/tmp/ap_String_Id.h.h:514 po/tmp/xap_String_Id.h.h:73
 msgid "Apply"
 msgstr "Aplica"
 
 #
 #. TOOLBAR_STATUSLINE_FMTPAINTER
 #. TOOLBAR_TOOLTIP_FMTPAINTER
-#: po/tmp/ap_String_Id.h.h:516
+#: po/tmp/ap_String_Id.h.h:517
 msgid "Apply the previously copied paragraph formatting onto the selected text"
 msgstr ""
 "Aplica al text seleccionat la formatació del paràgraf que s'ha copiat "
 "anteriorment"
 
 #. DLG_Lists_Apply_Current
-#: po/tmp/ap_String_Id.h.h:518
+#: po/tmp/ap_String_Id.h.h:519
 msgid "Apply to Current List"
 msgstr "Aplica a la llista actual"
 
 #
 #. DLG_FormatTable_Apply_To
-#: po/tmp/ap_String_Id.h.h:520
+#: po/tmp/ap_String_Id.h.h:521
 msgid "Apply to:"
 msgstr "Aplica a:"
 
 #. DLG_Lists_Arabic_List
-#: po/tmp/ap_String_Id.h.h:522
+#: po/tmp/ap_String_Id.h.h:523
 msgid "Arabic List"
 msgstr "Llista aràbiga"
 
 #
 #. MSG_AutoRevisionOffWarning
-#: po/tmp/ap_String_Id.h.h:524
+#: po/tmp/ap_String_Id.h.h:525
 msgid ""
 "Are you sure you do not want to maintain full history record? If you "
 "proceed, you will not be able to restore earlier versions of this document."
@@ -1364,12 +1364,12 @@ msgstr ""
 "seguiu endavant, no podreu recuperar versions anteriors d'aquest document."
 
 #. DLG_Para_SpacingAtLeast
-#: po/tmp/ap_String_Id.h.h:526
+#: po/tmp/ap_String_Id.h.h:527
 msgid "At least"
 msgstr "Com a mínim"
 
 #. DLG_Lists_Resume
-#: po/tmp/ap_String_Id.h.h:528
+#: po/tmp/ap_String_Id.h.h:529
 msgid "Attach to Previous List"
 msgstr "Adjunta a la llista anterior"
 
@@ -1377,135 +1377,135 @@ msgstr "Adjunta a la llista anterior"
 #. DLG_MetaData_Author_LBL
 #. DLG_Annotation_Author_LBL
 #. DLG_PLUGIN_MANAGER_AUTHOR
-#: po/tmp/ap_String_Id.h.h:531 po/tmp/xap_String_Id.h.h:85
+#: po/tmp/ap_String_Id.h.h:532 po/tmp/xap_String_Id.h.h:95
 msgid "Author:"
 msgstr "Autor:"
 
 #
 #. DLG_Options_Label_AutoSaveUnderline
-#: po/tmp/ap_String_Id.h.h:533
+#: po/tmp/ap_String_Id.h.h:534
 msgid "Auto &Save"
 msgstr "Desa a&utomàticament"
 
 #. DLG_Options_Label_AutoSaveCurrent
-#: po/tmp/ap_String_Id.h.h:535
+#: po/tmp/ap_String_Id.h.h:536
 msgid "Auto &save current file every"
 msgstr "Desa automàticament cada"
 
 #. DLG_Options_Label_AutoSave
-#: po/tmp/ap_String_Id.h.h:537
+#: po/tmp/ap_String_Id.h.h:538
 msgid "Auto Save"
 msgstr "Desa automàticament"
 
 #. DLG_Options_Label_SpellAutoReplace
-#: po/tmp/ap_String_Id.h.h:539
+#: po/tmp/ap_String_Id.h.h:540
 msgid "Auto replace misspelled words"
 msgstr "Reemplaça automàticament els mots amb errors"
 
 #
 #. DLG_InsertTable_AutoFit_Capital
-#: po/tmp/ap_String_Id.h.h:541
+#: po/tmp/ap_String_Id.h.h:542
 msgid "AutoFit Behavior"
 msgstr "Comportament de l'ajustament automàtic"
 
 #
 #. DLG_InsertTable_AutoFit
-#: po/tmp/ap_String_Id.h.h:543
+#: po/tmp/ap_String_Id.h.h:544
 msgid "AutoFit behavior"
 msgstr "Comportament de l'ajustament automàtic"
 
 #
 #. MENU_STATUSLINE_TABLE_AUTOFIT
-#: po/tmp/ap_String_Id.h.h:545
+#: po/tmp/ap_String_Id.h.h:546
 msgid "Autofit Table"
 msgstr "Ajusta la taula automàticament"
 
 #
 #. DLG_Options_Label_Grammar
-#: po/tmp/ap_String_Id.h.h:547
+#: po/tmp/ap_String_Id.h.h:548
 msgid "Automatic Grammar Checking"
 msgstr "Comprovació gramatical automàtica"
 
 #
 #. DLG_InsertTable_AutoColSize
-#: po/tmp/ap_String_Id.h.h:549
+#: po/tmp/ap_String_Id.h.h:550
 msgid "Automatic column size"
 msgstr "Mida de columna automàtica"
 
 #. DLG_Options_Label_CheckAutoLoadPlugins
-#: po/tmp/ap_String_Id.h.h:551
+#: po/tmp/ap_String_Id.h.h:552
 msgid "Automatically load all plugins found"
 msgstr "Carrega automàticament totes les extensions trobades"
 
 #. MENU_STATUSLINE_TOOLS_AUTOSPELL
-#: po/tmp/ap_String_Id.h.h:553
+#: po/tmp/ap_String_Id.h.h:554
 msgid "Automatically spell-check the document"
 msgstr "Comprova automàticament l'ortografia"
 
 #. DLG_Styles_ModifyAutomatic
-#: po/tmp/ap_String_Id.h.h:555
+#: po/tmp/ap_String_Id.h.h:556
 msgid "Automatically update"
 msgstr "Modifica automàticament"
 
 #
 #. MSG_AutoMerge
-#: po/tmp/ap_String_Id.h.h:557
+#: po/tmp/ap_String_Id.h.h:558
 msgid "Automerge"
 msgstr "Combinació automàtica"
 
 #
 #. DLG_MailMerge_AvailableFields
-#: po/tmp/ap_String_Id.h.h:559
+#: po/tmp/ap_String_Id.h.h:560
 msgid "Available Fields"
 msgstr "Camps disponibles"
 
 #
 #. DLG_DateTime_AvailableFormats_Capital
-#: po/tmp/ap_String_Id.h.h:561
+#: po/tmp/ap_String_Id.h.h:562
 msgid "Available Formats"
 msgstr "Formats disponibles"
 
 #. DLG_Styles_Available
-#: po/tmp/ap_String_Id.h.h:563
+#: po/tmp/ap_String_Id.h.h:564
 msgid "Available Styles"
 msgstr "Estils disponibles"
 
 #. DLG_Para_LabelBy
-#: po/tmp/ap_String_Id.h.h:565
+#: po/tmp/ap_String_Id.h.h:566
 msgid "B&y:"
 msgstr "D&e:"
 
 #
 #. DLG_FormatFrame_Background
 #. DLG_FormatTable_Background
-#: po/tmp/ap_String_Id.h.h:568
+#: po/tmp/ap_String_Id.h.h:569
 msgid "Background"
 msgstr "Fons"
 
 #
 #. DLG_FormatFrame_Background_Color
 #. DLG_FormatTable_Background_Color
-#: po/tmp/ap_String_Id.h.h:571
+#: po/tmp/ap_String_Id.h.h:572
 msgid "Background color:"
 msgstr "Color del fons:"
 
 #. DLG_Tab_Radio_Bar
-#: po/tmp/ap_String_Id.h.h:573
+#: po/tmp/ap_String_Id.h.h:574
 msgid "Bar"
 msgstr "Barra"
 
 #. TabToggleBarTab
-#: po/tmp/ap_String_Id.h.h:575
+#: po/tmp/ap_String_Id.h.h:576
 msgid "Bar Tab"
 msgstr "Tabulació en barra"
 
 #. DLG_Styles_ModifyBasedOn
-#: po/tmp/ap_String_Id.h.h:577
+#: po/tmp/ap_String_Id.h.h:578
 msgid "Based On:"
 msgstr "Basat en:"
 
 #. DLG_Options_Label_BiDiOptions
-#: po/tmp/ap_String_Id.h.h:579
+#: po/tmp/ap_String_Id.h.h:580
 msgid "Bi-Directional Options"
 msgstr "Opcions bidireccionals"
 
@@ -1513,22 +1513,22 @@ msgstr "Opcions bidireccionals"
 #. TOOLBAR_STATUSLINE_FMT_BOLD
 #. TOOLBAR_TOOLTIP_FMT_BOLD
 #. DLG_UFS_StyleBold
-#: po/tmp/ap_String_Id.h.h:583 po/tmp/xap_String_Id.h.h:119
+#: po/tmp/ap_String_Id.h.h:584 po/tmp/xap_String_Id.h.h:129
 msgid "Bold"
 msgstr "Negreta"
 
 #. MENU_LABEL_INSERT_BOOKMARK
-#: po/tmp/ap_String_Id.h.h:585
+#: po/tmp/ap_String_Id.h.h:586
 msgid "Boo&kmark"
 msgstr "&Marcador"
 
 #. DLG_Goto_Target_Bookmark
-#: po/tmp/ap_String_Id.h.h:587
+#: po/tmp/ap_String_Id.h.h:588
 msgid "Bookmark"
 msgstr "Marcador"
 
 #. MSG_BookmarkNotFound
-#: po/tmp/ap_String_Id.h.h:589
+#: po/tmp/ap_String_Id.h.h:590
 #, c-format
 msgid "Bookmark \"%s\" was not found in this document."
 msgstr "El marcador \"%s\" no s'ha trobat en aquest document."
@@ -1536,24 +1536,30 @@ msgstr "El marcador \"%s\" no s'ha trobat en aquest document."
 #
 #. DLG_FormatFrame_Border_Color
 #. DLG_FormatTable_Border_Color
-#: po/tmp/ap_String_Id.h.h:592
+#: po/tmp/ap_String_Id.h.h:593
 msgid "Border color:"
 msgstr "Color del contorn:"
 
 #
 #. DLG_FormatFrame_Borders
 #. DLG_FormatTable_Borders
-#: po/tmp/ap_String_Id.h.h:595
+#: po/tmp/ap_String_Id.h.h:596
 msgid "Borders"
 msgstr "Contorns"
 
 #. MENU_LABEL_FMT_BORDERS
-#: po/tmp/ap_String_Id.h.h:597
+#: po/tmp/ap_String_Id.h.h:598
 msgid "Borders and Shading"
 msgstr "Contorns i &ombrejat"
 
+#. DLG_PageNumbers_Footer
+#: po/tmp/ap_String_Id.h.h:600
+#, fuzzy
+msgid "Bottom"
+msgstr "&Inferior:"
+
 #. BottomMarginStatus
-#: po/tmp/ap_String_Id.h.h:599
+#: po/tmp/ap_String_Id.h.h:602
 #, c-format
 msgid "Bottom Margin [%s]"
 msgstr "Marge inferior [%s]"
@@ -1563,159 +1569,159 @@ msgstr "Marge inferior [%s]"
 #. TOOLBAR_STATUSLINE_FMT_BOTTOMLINE
 #. TOOLBAR_TOOLTIP_FMT_BOTTOMLINE
 #. DLG_UFS_BottomlineCheck
-#: po/tmp/ap_String_Id.h.h:604 po/tmp/xap_String_Id.h.h:123
+#: po/tmp/ap_String_Id.h.h:607 po/tmp/xap_String_Id.h.h:133
 msgid "Bottomline"
 msgstr "Línia inferior"
 
 #. DLG_Lists_Box_List
 #. STYLE_BOXLIST
-#: po/tmp/ap_String_Id.h.h:606 po/tmp/xap_String_Id.h.h:125
+#: po/tmp/ap_String_Id.h.h:609 po/tmp/xap_String_Id.h.h:135
 msgid "Box List"
 msgstr "Llista de caixes"
 
 #. FIELD_Application_BuildId
-#: po/tmp/ap_String_Id.h.h:608
+#: po/tmp/ap_String_Id.h.h:611
 msgid "Build Id."
 msgstr "Identificador del muntatge"
 
 #. FIELD_Application_Options
-#: po/tmp/ap_String_Id.h.h:610
+#: po/tmp/ap_String_Id.h.h:613
 msgid "Build Options"
 msgstr "Opcions del muntatge"
 
 #. FIELD_Application_Target
-#: po/tmp/ap_String_Id.h.h:612
+#: po/tmp/ap_String_Id.h.h:615
 msgid "Build Target"
 msgstr "Objectiu del muntatge"
 
 #. DLG_Lists_Type_bullet
-#: po/tmp/ap_String_Id.h.h:614
+#: po/tmp/ap_String_Id.h.h:617
 msgid "Bullet"
 msgstr "Vinyeta"
 
 #. DLG_Lists_Bullet_List
 #. STYLE_BULLETLIST
-#: po/tmp/ap_String_Id.h.h:616 po/tmp/xap_String_Id.h.h:133
+#: po/tmp/ap_String_Id.h.h:619 po/tmp/xap_String_Id.h.h:145
 msgid "Bullet List"
 msgstr "Llista de vinyetes"
 
 #. TOOLBAR_LABEL_LISTS_BULLETS
 #. TOOLBAR_STATUSLINE_LISTS_BULLETS
 #. TOOLBAR_TOOLTIP_LISTS_BULLETS
-#: po/tmp/ap_String_Id.h.h:620
+#: po/tmp/ap_String_Id.h.h:623
 msgid "Bullets"
 msgstr "Vinyetes"
 
 #. MENU_LABEL_FMT_BULLETS
-#: po/tmp/ap_String_Id.h.h:622
+#: po/tmp/ap_String_Id.h.h:625
 msgid "Bullets and &Numbering"
 msgstr "Vinyetes i &numeració"
 
 #. DLG_Options_Label_Look
-#: po/tmp/ap_String_Id.h.h:624
+#: po/tmp/ap_String_Id.h.h:627
 msgid "Button Style"
 msgstr "Estil del botó"
 
 #. MENU_LABEL_FMT_TOGGLECASE
-#: po/tmp/ap_String_Id.h.h:626
+#: po/tmp/ap_String_Id.h.h:629
 msgid "C&hange Case"
 msgstr "Canvia entre &majúscules i minúscules"
 
 #
 #. MENU_LABEL_EDIT_COPY_HYPERLINK_LOCATION
-#: po/tmp/ap_String_Id.h.h:628
+#: po/tmp/ap_String_Id.h.h:631
 msgid "C&opy hyperlink location"
 msgstr "C&opia la ubicació de l'hiperenllaç"
 
 #. MENU_LABEL_HELP_CREDITS
-#: po/tmp/ap_String_Id.h.h:630
+#: po/tmp/ap_String_Id.h.h:633
 msgid "C&redits"
 msgstr "C&rèdits"
 
 #
 #. MSG_NoBreakInsideTable
-#: po/tmp/ap_String_Id.h.h:632
+#: po/tmp/ap_String_Id.h.h:635
 msgid "Can not insert a Break inside a table"
 msgstr "No es pot inserir un salt dins d'una taula"
 
 #
 #. MSG_NoBreakInsideFrame
-#: po/tmp/ap_String_Id.h.h:634
+#: po/tmp/ap_String_Id.h.h:637
 msgid "Can not insert a Break inside a text box"
 msgstr "No es pot inserir un salt dins d'un quadre de text"
 
 #. DLG_Styles_ErrStyleCantDelete
-#: po/tmp/ap_String_Id.h.h:636
+#: po/tmp/ap_String_Id.h.h:639
 msgid "Cannot delete this style"
 msgstr "No es pot eliminar aquest estil"
 
 #. DLG_Styles_ErrStyleBuiltin
-#: po/tmp/ap_String_Id.h.h:638
+#: po/tmp/ap_String_Id.h.h:641
 msgid "Cannot modify a builtin style"
 msgstr "No es pot modificar un estil integrat"
 
 #
 #. PRINT_CANNOTSTARTPRINTJOB
-#: po/tmp/ap_String_Id.h.h:640
+#: po/tmp/ap_String_Id.h.h:643
 msgid "Cannot start print job"
 msgstr "No s'ha pogut iniciar el treball d'impressió."
 
 #
 #. DLG_MetaData_Category_LBL
-#: po/tmp/ap_String_Id.h.h:642
+#: po/tmp/ap_String_Id.h.h:645
 msgid "Category:"
 msgstr "Categoria:"
 
 #. DLG_Tab_Radio_Center
 #. DLG_PageNumbers_Center
 #. TOOLBAR_LABEL_ALIGN_CENTER
-#: po/tmp/ap_String_Id.h.h:646
+#: po/tmp/ap_String_Id.h.h:649
 msgid "Center"
 msgstr "Centre"
 
 #. TabToggleCenterTab
-#: po/tmp/ap_String_Id.h.h:648
+#: po/tmp/ap_String_Id.h.h:651
 msgid "Center Tab"
 msgstr "Tabulació al centre"
 
 #. TOOLBAR_STATUSLINE_ALIGN_CENTER
 #. TOOLBAR_TOOLTIP_ALIGN_CENTER
-#: po/tmp/ap_String_Id.h.h:651
+#: po/tmp/ap_String_Id.h.h:654
 msgid "Center alignment"
 msgstr "Alineació central"
 
 #. MENU_STATUSLINE_ALIGN_CENTER
-#: po/tmp/ap_String_Id.h.h:653
+#: po/tmp/ap_String_Id.h.h:656
 msgid "Center-align the paragraph"
 msgstr "Centra el paràgraf"
 
 #. DLG_Para_AlignCentered
-#: po/tmp/ap_String_Id.h.h:655
+#: po/tmp/ap_String_Id.h.h:658
 msgid "Centered"
 msgstr "Centrat"
 
 #. DLG_Spell_ChangeTo
-#: po/tmp/ap_String_Id.h.h:657
+#: po/tmp/ap_String_Id.h.h:660
 msgid "Change &to:"
 msgstr "Canvia-&ho a:"
 
 #. DLG_Spell_ChangeAll
-#: po/tmp/ap_String_Id.h.h:659
+#: po/tmp/ap_String_Id.h.h:662
 msgid "Change A&ll"
 msgstr "Canvia-ho t&ot"
 
 #. DLG_Background_Title
-#: po/tmp/ap_String_Id.h.h:661
+#: po/tmp/ap_String_Id.h.h:664
 msgid "Change Background Color"
 msgstr "Canvia el color de fons"
 
 #. DLG_ToggleCase_Title
-#: po/tmp/ap_String_Id.h.h:663
+#: po/tmp/ap_String_Id.h.h:666
 msgid "Change Case"
 msgstr "Canvia entre majúscules i minúscules"
 
 #. DLG_Lists_Cur_Change_Start
-#: po/tmp/ap_String_Id.h.h:665
+#: po/tmp/ap_String_Id.h.h:668
 msgid ""
 "Change Current \n"
 "List"
@@ -1724,67 +1730,67 @@ msgstr ""
 "actual"
 
 #. DLG_Background_TitleHighlight
-#: po/tmp/ap_String_Id.h.h:667
+#: po/tmp/ap_String_Id.h.h:670
 msgid "Change Highlight Color"
 msgstr "Canvia el color de ressaltament"
 
 #
 #. DLG_FormatTOC_ChangeStyle
-#: po/tmp/ap_String_Id.h.h:669
+#: po/tmp/ap_String_Id.h.h:672
 msgid "Change Style"
 msgstr "Canvia l'estil"
 
 #. DLG_Background_TitleFore
-#: po/tmp/ap_String_Id.h.h:671
+#: po/tmp/ap_String_Id.h.h:674
 msgid "Change Text Color"
 msgstr "Canvia el color del text"
 
 #
 #. MENU_STATUSLINE_FMT_DIRECTION
-#: po/tmp/ap_String_Id.h.h:673
+#: po/tmp/ap_String_Id.h.h:676
 msgid "Change directional properties of text"
 msgstr "Canvia les propietats de direcció del text"
 
 #. TOOLBAR_STATUSLINE_FMT_DOM_DIRECTION
 #. TOOLBAR_TOOLTIP_FMT_DOM_DIRECTION
-#: po/tmp/ap_String_Id.h.h:676
+#: po/tmp/ap_String_Id.h.h:679
 msgid "Change dominant direction of paragraph"
 msgstr "Canvia la direcció dominant del paràgraf"
 
 #. MENU_STATUSLINE_FMT_TOGGLECASE
-#: po/tmp/ap_String_Id.h.h:678
+#: po/tmp/ap_String_Id.h.h:681
 msgid "Change the case of the selected text"
 msgstr "Canvia el text seleccionat de minúscules a majúscules o a l'inrevés"
 
 #. MENU_STATUSLINE_FMT_FONT
-#: po/tmp/ap_String_Id.h.h:680
+#: po/tmp/ap_String_Id.h.h:683
 msgid "Change the font of the selected text"
 msgstr "Canvia el tipus de lletra del text seleccionat"
 
 #. MENU_STATUSLINE_FMT_PARAGRAPH
-#: po/tmp/ap_String_Id.h.h:682
+#: po/tmp/ap_String_Id.h.h:685
 msgid "Change the format of the selected paragraph"
 msgstr "Canvia el format del paràgraf seleccionat"
 
 #. MENU_STATUSLINE_FMT_LANGUAGE
 #. MENU_STATUSLINE_TOOLS_LANGUAGE
-#: po/tmp/ap_String_Id.h.h:685
+#: po/tmp/ap_String_Id.h.h:688
 msgid "Change the language of the selected text"
 msgstr "Canvia l'idioma del text seleccionat"
 
 #. MENU_STATUSLINE_FMT_COLUMNS
-#: po/tmp/ap_String_Id.h.h:687
+#: po/tmp/ap_String_Id.h.h:690
 msgid "Change the number of columns"
 msgstr "Canvia el nombre de columnes"
 
 #. MENU_STATUSLINE_FILE_PAGESETUP
-#: po/tmp/ap_String_Id.h.h:689
+#: po/tmp/ap_String_Id.h.h:692
 msgid "Change the printing options"
 msgstr "Canvia les opcions d'impressió"
 
 #
 #. MENU_STATUSLINE_FMT_FRAME
-#: po/tmp/ap_String_Id.h.h:691
+#: po/tmp/ap_String_Id.h.h:694
 msgid "Change the properties of the Text Box"
 msgstr "Canvia les propietats del quadre de text"
 
@@ -1797,107 +1803,107 @@ msgstr "Canvia les propietats del quadre de text"
 #. MENU_STATUSLINE_SPELL_SUGGEST_7
 #. MENU_STATUSLINE_SPELL_SUGGEST_8
 #. MENU_STATUSLINE_SPELL_SUGGEST_9
-#: po/tmp/ap_String_Id.h.h:701
+#: po/tmp/ap_String_Id.h.h:704
 msgid "Change to this suggested spelling"
 msgstr "Canvia a l'ortografia suggerida"
 
 #. MENU_STATUSLINE_FMT_BACKGROUND
-#: po/tmp/ap_String_Id.h.h:703
+#: po/tmp/ap_String_Id.h.h:706
 msgid "Change your document's page background"
 msgstr "Canvia el fons de la pàgina del document"
 
 #
 #. MENU_STATUSLINE_FMT_BACKGROUND_PAGE_COLOR
-#: po/tmp/ap_String_Id.h.h:705
+#: po/tmp/ap_String_Id.h.h:708
 msgid "Change your document's page color"
 msgstr "Canvia el color de la pàgina del document"
 
 #. DLG_Styles_ModifyCharacter
-#: po/tmp/ap_String_Id.h.h:707
+#: po/tmp/ap_String_Id.h.h:710
 msgid "Character"
 msgstr "Caràcter"
 
 #. FIELD_Numbers_CharCount
-#: po/tmp/ap_String_Id.h.h:709
+#: po/tmp/ap_String_Id.h.h:712
 msgid "Character Count"
 msgstr "Nombre de caràcters"
 
 #. FIELD_Numbers_NbspCount
-#: po/tmp/ap_String_Id.h.h:711
+#: po/tmp/ap_String_Id.h.h:714
 msgid "Character Count (w/o spaces)"
 msgstr "Nombre de caràcters (sense espais)"
 
 #. DLG_Styles_CharPrev
-#: po/tmp/ap_String_Id.h.h:713
+#: po/tmp/ap_String_Id.h.h:716
 msgid "Character Preview"
 msgstr "Previsualització del caràcter"
 
 #. DLG_WordCount_Characters_No
-#: po/tmp/ap_String_Id.h.h:715
+#: po/tmp/ap_String_Id.h.h:718
 msgid "Characters (no spaces):"
 msgstr "Caràcters (sense espais):"
 
 #. DLG_WordCount_Characters_Sp
-#: po/tmp/ap_String_Id.h.h:717
+#: po/tmp/ap_String_Id.h.h:720
 msgid "Characters (with spaces):"
 msgstr "Caràcters (amb espais):"
 
 #. MENU_LABEL_TOOLS_SPELL
-#: po/tmp/ap_String_Id.h.h:719
+#: po/tmp/ap_String_Id.h.h:722
 msgid "Check &Spelling"
 msgstr "Comprova l'or&tografia"
 
 #
 #. DLG_Options_Label_GrammarCheck
-#: po/tmp/ap_String_Id.h.h:721
+#: po/tmp/ap_String_Id.h.h:724
 msgid "Check &grammar as you type"
 msgstr "Comprova la &gramàtica mentre escric"
 
 #
 #. MENU_LABEL_HELP_CHECKVER
-#: po/tmp/ap_String_Id.h.h:723
+#: po/tmp/ap_String_Id.h.h:726
 msgid "Check for &Updates"
 msgstr "Comprova &si hi ha actualitzacions"
 
 #
 #. MENU_STATUSLINE_HELP_CHECKVER
-#: po/tmp/ap_String_Id.h.h:725
+#: po/tmp/ap_String_Id.h.h:728
 msgid "Check online for newer versions of AbiWord"
 msgstr "Comprova en línia si hi ha versions noves de l'Abiword"
 
 #. DLG_Options_Label_SpellCheckAsType
-#: po/tmp/ap_String_Id.h.h:727
+#: po/tmp/ap_String_Id.h.h:730
 msgid "Check s&pelling as you type"
 msgstr "Com&prova l'ortografia mentre escric"
 
 #. MENU_STATUSLINE_TOOLS_SPELL
-#: po/tmp/ap_String_Id.h.h:729
+#: po/tmp/ap_String_Id.h.h:732
 msgid "Check the document for incorrect spelling"
 msgstr "Comprova si el document té errades ortogràfiques"
 
 #. DLG_NEW_Choose
-#: po/tmp/ap_String_Id.h.h:731
+#: po/tmp/ap_String_Id.h.h:734
 msgid "Choose"
 msgstr "Trieu"
 
 #. DLG_Options_Label_ChooseForTransparent
-#: po/tmp/ap_String_Id.h.h:733
+#: po/tmp/ap_String_Id.h.h:736
 msgid "Choose Screen Color"
 msgstr "Escolliu el color de fons"
 
 #. DLG_Options_Label_ColorChooserLabel
-#: po/tmp/ap_String_Id.h.h:735
+#: po/tmp/ap_String_Id.h.h:738
 msgid "Choose screen color for AbiWord"
 msgstr "Escolliu el color de fons per a l'Abiword"
 
 #
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SET_VIEW_LEVEL
-#: po/tmp/ap_String_Id.h.h:737
+#: po/tmp/ap_String_Id.h.h:740
 msgid "Choose which revision you wish to view"
 msgstr "Escolliu la revisió que voleu visualitzar"
 
 #. DLG_Goto_Label_Help
-#: po/tmp/ap_String_Id.h.h:739
+#: po/tmp/ap_String_Id.h.h:742
 msgid ""
 "Choose your target in the left side.\n"
 "If you want to use the \"Go To\" button, just fill the Number Entry with the "
@@ -1912,48 +1918,48 @@ msgstr ""
 "dues línies més avall de la posició actual."
 
 #. MENU_LABEL_EDIT_CLEAR
-#: po/tmp/ap_String_Id.h.h:741
+#: po/tmp/ap_String_Id.h.h:744
 msgid "Cle&ar"
 msgstr "Elimin&a"
 
 #. DLG_Tab_Button_Clear
-#: po/tmp/ap_String_Id.h.h:743
+#: po/tmp/ap_String_Id.h.h:746
 msgid "Clear"
 msgstr "Elimina"
 
 #. DLG_Tab_Button_ClearAll
-#: po/tmp/ap_String_Id.h.h:745
+#: po/tmp/ap_String_Id.h.h:748
 msgid "Clear &All"
 msgstr "Elimina-ho &tot"
 
 #. DLG_Background_ClearClr
-#: po/tmp/ap_String_Id.h.h:747
+#: po/tmp/ap_String_Id.h.h:750
 msgid "Clear Background Color"
 msgstr "Suprimeix el color de fons"
 
 #. DLG_Background_ClearHighlight
-#: po/tmp/ap_String_Id.h.h:749
+#: po/tmp/ap_String_Id.h.h:752
 msgid "Clear Highlight Color"
 msgstr "Suprimeix el color del ressaltat"
 
 #. MSG_QueryExit
-#: po/tmp/ap_String_Id.h.h:751
+#: po/tmp/ap_String_Id.h.h:754
 msgid "Close all windows and exit?"
 msgstr "Voleu tancar totes les finestres i sortir?"
 
 #. MENU_STATUSLINE_FILE_EXIT
-#: po/tmp/ap_String_Id.h.h:753
+#: po/tmp/ap_String_Id.h.h:756
 msgid "Close all windows in the application and exit"
 msgstr "Tanca totes les finestres de l'aplicació i surt"
 
 #. MENU_STATUSLINE_FILE_CLOSE
-#: po/tmp/ap_String_Id.h.h:755
+#: po/tmp/ap_String_Id.h.h:758
 msgid "Close the document"
 msgstr "Tanca el document"
 
 #
 #. MENU_LABEL_TABLE_SELECT_COLUMN
-#: po/tmp/ap_String_Id.h.h:757
+#: po/tmp/ap_String_Id.h.h:760
 msgid "Co&lumn"
 msgstr "Co&lumna"
 
@@ -1961,580 +1967,580 @@ msgstr "Co&lumna"
 #. DLG_FormatFrame_Color
 #. DLG_FormatTable_Color
 #. DLG_UFS_ColorLabel
-#: po/tmp/ap_String_Id.h.h:760 po/tmp/xap_String_Id.h.h:191
+#: po/tmp/ap_String_Id.h.h:763 po/tmp/xap_String_Id.h.h:203
 msgid "Color:"
 msgstr "Color:"
 
 #
 #. DLG_FormatTable_Apply_To_Column
-#: po/tmp/ap_String_Id.h.h:762
+#: po/tmp/ap_String_Id.h.h:765
 msgid "Column"
 msgstr "Columna"
 
 #. ColumnGapStatus
-#: po/tmp/ap_String_Id.h.h:764
+#: po/tmp/ap_String_Id.h.h:767
 #, c-format
 msgid "Column Gap [%s]"
 msgstr "Espai entre columnes [%s]"
 
 #
 #. ColumnStatus
-#: po/tmp/ap_String_Id.h.h:766
+#: po/tmp/ap_String_Id.h.h:769
 #, c-format
 msgid "Column [%d]"
 msgstr "Columna [%d]"
 
 #. DLG_Column_ColumnTitle
-#: po/tmp/ap_String_Id.h.h:768
+#: po/tmp/ap_String_Id.h.h:771
 msgid "Columns"
 msgstr "Columnes"
 
 #
 #. MENU_LABEL_TABLE_INSERT_COLUMNS_BEFORE
-#: po/tmp/ap_String_Id.h.h:770
+#: po/tmp/ap_String_Id.h.h:773
 msgid "Columns &Left"
 msgstr "Columnes a l'&esquerra"
 
 #
 #. MENU_LABEL_TABLE_INSERT_COLUMNS_AFTER
-#: po/tmp/ap_String_Id.h.h:772
+#: po/tmp/ap_String_Id.h.h:775
 msgid "Columns &Right"
 msgstr "Columnes a la &dreta"
 
 #
 #. DLG_ListRevisions_Column3Label
-#: po/tmp/ap_String_Id.h.h:774
+#: po/tmp/ap_String_Id.h.h:777
 msgid "Comment"
 msgstr "Comentari"
 
 #
 #. DLG_MarkRevisions_Comment2Label
-#: po/tmp/ap_String_Id.h.h:776
+#: po/tmp/ap_String_Id.h.h:779
 msgid "Comment to be associated with the revision:"
 msgstr "Comentari per a associar amb la revisió:"
 
 #
 #. MENU_STATUSLINE_TOOLS_REVISIONS_COMPARE_DOCUMENTS
-#: po/tmp/ap_String_Id.h.h:778
+#: po/tmp/ap_String_Id.h.h:781
 msgid "Compare active document to another document"
 msgstr "Compara el document actiu amb un altre document"
 
 #. FIELD_Application_CompileDate
-#: po/tmp/ap_String_Id.h.h:780
+#: po/tmp/ap_String_Id.h.h:783
 msgid "Compile Date"
 msgstr "Data de compilació"
 
 #. FIELD_Application_CompileTime
-#: po/tmp/ap_String_Id.h.h:782
+#: po/tmp/ap_String_Id.h.h:785
 msgid "Compile Time"
 msgstr "Hora de compilació"
 
 #. DLG_Break_Continuous
-#: po/tmp/ap_String_Id.h.h:784
+#: po/tmp/ap_String_Id.h.h:787
 msgid "Con&tinuous"
 msgstr "Con&tinu"
 
 #
 #. TOC_TocHeading
-#: po/tmp/ap_String_Id.h.h:786
+#: po/tmp/ap_String_Id.h.h:789
 msgid "Contents"
 msgstr "Continguts"
 
 #
 #. DLG_MarkRevisions_Check1Label
-#: po/tmp/ap_String_Id.h.h:788
+#: po/tmp/ap_String_Id.h.h:791
 #, c-format
 msgid "Continue previous revision (number %d)"
 msgstr "Continua la revisió anterior (número %d)"
 
 #
 #. FIELD_Document_Contributor
-#: po/tmp/ap_String_Id.h.h:790
+#: po/tmp/ap_String_Id.h.h:793
 msgid "Contributor"
 msgstr "Col·laborador"
 
 #
 #. DLG_MetaData_CoAuthor_LBL
-#: po/tmp/ap_String_Id.h.h:792
+#: po/tmp/ap_String_Id.h.h:795
 msgid "Contributor(s):"
 msgstr "Col·laborador(s):"
 
 #
 #. MENU_STATUSLINE_TABLE_TEXTTOTABLE
-#: po/tmp/ap_String_Id.h.h:794
+#: po/tmp/ap_String_Id.h.h:797
 msgid "Convert Selected Text to a Table"
 msgstr "Converteix el text seleccionat en una taula"
 
 #
 #. MENU_LABEL_TABLE_TABLETOTEXT
-#: po/tmp/ap_String_Id.h.h:796
+#: po/tmp/ap_String_Id.h.h:799
 msgid "Convert Table to Text"
 msgstr "Converteix la taula en text"
 
 #
 #. MENU_LABEL_TABLE_TEXTTOTABLE
-#: po/tmp/ap_String_Id.h.h:798
+#: po/tmp/ap_String_Id.h.h:801
 msgid "Convert Text to Table"
 msgstr "Converteix el text en una taula"
 
 #
 #. MENU_STATUSLINE_TABLE_TABLETOTEXT
-#: po/tmp/ap_String_Id.h.h:800
+#: po/tmp/ap_String_Id.h.h:803
 msgid "Convert from a Table to Text"
 msgstr "Converteix de taula a text"
 
 #. TOOLBAR_LABEL_EDIT_COPY
 #. TOOLBAR_STATUSLINE_EDIT_COPY
 #. TOOLBAR_TOOLTIP_EDIT_COPY
-#: po/tmp/ap_String_Id.h.h:804
+#: po/tmp/ap_String_Id.h.h:807
 msgid "Copy"
 msgstr "Copia"
 
 #
 #. MENU_STATUSLINE_EDIT_COPYEMBED
-#: po/tmp/ap_String_Id.h.h:806
+#: po/tmp/ap_String_Id.h.h:809
 msgid "Copy Embedded Object"
 msgstr "Copia l'objecte incrustat"
 
 #
 #. MENU_LABEL_EDIT_COPYIMAGE
-#: po/tmp/ap_String_Id.h.h:808
+#: po/tmp/ap_String_Id.h.h:811
 msgid "Copy Image"
 msgstr "Copia la imatge"
 
 #
 #. MENU_LABEL_EDIT_COPYEMBED
-#: po/tmp/ap_String_Id.h.h:810
+#: po/tmp/ap_String_Id.h.h:813
 msgid "Copy Object"
 msgstr "Copia l'objecte"
 
 #
 #. MENU_LABEL_EDIT_COPY_FRAME
-#: po/tmp/ap_String_Id.h.h:812
+#: po/tmp/ap_String_Id.h.h:815
 msgid "Copy Text Box"
 msgstr "Copia el quadre de text"
 
 #
 #. MENU_STATUSLINE_EDIT_COPY_HYPERLINK_LOCATION
-#: po/tmp/ap_String_Id.h.h:814
+#: po/tmp/ap_String_Id.h.h:817
 msgid "Copy hyperlink location"
 msgstr "Copia la ubicació de l'hiperenllaç"
 
 #
 #. MENU_STATUSLINE_EDIT_COPY_FRAME
-#: po/tmp/ap_String_Id.h.h:816
+#: po/tmp/ap_String_Id.h.h:819
 msgid "Copy the Text Box to the clipboard"
 msgstr "Copia el quadre de text al porta-retalls"
 
 #
 #. MENU_STATUSLINE_EDIT_CUT_FRAME
-#: po/tmp/ap_String_Id.h.h:818
+#: po/tmp/ap_String_Id.h.h:821
 msgid "Copy the Text Box to the clipboard then remove it"
 msgstr "Copia el quadre de text al porta-retalls i elimina'l"
 
 #. MENU_STATUSLINE_EDIT_COPY
-#: po/tmp/ap_String_Id.h.h:820
+#: po/tmp/ap_String_Id.h.h:823
 msgid "Copy the selection and put it on the Clipboard"
 msgstr "Copia la selecció i posa-la al porta-retalls"
 
 #. MSG_IE_CouldNotOpen
-#: po/tmp/ap_String_Id.h.h:822
+#: po/tmp/ap_String_Id.h.h:825
 #, c-format
 msgid "Could not open file %s for writing"
 msgstr "No s'ha pogut obrir el fitxer %s per a escriure-hi"
 
 #. MSG_OpenFailed
-#: po/tmp/ap_String_Id.h.h:824
+#: po/tmp/ap_String_Id.h.h:827
 #, c-format
 msgid "Could not open file %s."
 msgstr "No s'ha pogut obrir el fitxer %s."
 
 #. MSG_IE_CouldNotWrite
-#: po/tmp/ap_String_Id.h.h:826
+#: po/tmp/ap_String_Id.h.h:829
 #, c-format
 msgid "Could not write to file %s"
 msgstr "No s'ha pogut escriure al fitxer %s"
 
 #. MSG_SaveFailed
-#: po/tmp/ap_String_Id.h.h:828
+#: po/tmp/ap_String_Id.h.h:831
 #, c-format
 msgid "Could not write to the file %s."
 msgstr "No s'ha pogut escriure al fitxer %s."
 
 #. MENU_STATUSLINE_TOOLS_WORDCOUNT
-#: po/tmp/ap_String_Id.h.h:830
+#: po/tmp/ap_String_Id.h.h:833
 msgid "Count the number of words in the document"
 msgstr "Compta les paraules que hi ha al document"
 
 #
 #. FIELD_Document_Coverage
-#: po/tmp/ap_String_Id.h.h:832
+#: po/tmp/ap_String_Id.h.h:835
 msgid "Coverage"
 msgstr "Cobertura"
 
 #
 #. DLG_MetaData_Coverage_LBL
-#: po/tmp/ap_String_Id.h.h:834
+#: po/tmp/ap_String_Id.h.h:837
 msgid "Coverage:"
 msgstr "Cobertura:"
 
 #. DLG_NEW_Tab1_FAX1
-#: po/tmp/ap_String_Id.h.h:836
+#: po/tmp/ap_String_Id.h.h:839
 msgid "Create a fax"
 msgstr "Crea un fax"
 
 #. DLG_NEW_Tab1_WP1
-#: po/tmp/ap_String_Id.h.h:838
+#: po/tmp/ap_String_Id.h.h:841
 msgid "Create a new blank document"
 msgstr "Crea un document nou en blanc"
 
 #. MENU_STATUSLINE_FILE_NEW
 #. TOOLBAR_STATUSLINE_FILE_NEW
 #. TOOLBAR_TOOLTIP_FILE_NEW
-#: po/tmp/ap_String_Id.h.h:842
+#: po/tmp/ap_String_Id.h.h:845
 msgid "Create a new document"
 msgstr "Crea un document nou"
 
 #. DLG_NEW_Create
-#: po/tmp/ap_String_Id.h.h:844
+#: po/tmp/ap_String_Id.h.h:847
 msgid "Create a new document from a template"
 msgstr "Crea un document nou a partir d'una plantilla"
 
 #
 #. MENU_STATUSLINE_FILE_NEW_USING_TEMPLATE
-#: po/tmp/ap_String_Id.h.h:846
+#: po/tmp/ap_String_Id.h.h:849
 msgid "Create a new document using a template"
 msgstr "Crea un document nou usant una plantilla"
 
 #. DLG_NEW_StartEmpty
-#: po/tmp/ap_String_Id.h.h:848
+#: po/tmp/ap_String_Id.h.h:851
 msgid "Create an empty document"
 msgstr "Crea un document buit"
 
 #
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL
-#: po/tmp/ap_String_Id.h.h:850
+#: po/tmp/ap_String_Id.h.h:853
 msgid "Create from &selection"
 msgstr "C&rea a partir de la selecció"
 
 #
 #. FIELD_Document_Creator
-#: po/tmp/ap_String_Id.h.h:852
+#: po/tmp/ap_String_Id.h.h:855
 msgid "Creator"
 msgstr "Creador"
 
 #. MENU_LABEL_EDIT_CUT
-#: po/tmp/ap_String_Id.h.h:854
+#: po/tmp/ap_String_Id.h.h:857
 msgid "Cu&t"
 msgstr "Re&talla"
 
 #. FIELD_Datetime_CurrentDate
-#: po/tmp/ap_String_Id.h.h:856
+#: po/tmp/ap_String_Id.h.h:859
 msgid "Current Date"
 msgstr "Data actual"
 
 #. DLG_Lists_Current_Font
-#: po/tmp/ap_String_Id.h.h:858
+#: po/tmp/ap_String_Id.h.h:861
 msgid "Current Font"
 msgstr "Tipus de lletra actual"
 
 #. DLG_Lists_Current_List_Label
-#: po/tmp/ap_String_Id.h.h:860
+#: po/tmp/ap_String_Id.h.h:863
 msgid "Current List Label"
 msgstr "Etiqueta de la llista actual"
 
 #. DLG_Lists_Current_List_Type
-#: po/tmp/ap_String_Id.h.h:862
+#: po/tmp/ap_String_Id.h.h:865
 msgid "Current List Type"
 msgstr "Tipus de llista actual"
 
 #. MSG_EmptySelection
-#: po/tmp/ap_String_Id.h.h:864
+#: po/tmp/ap_String_Id.h.h:867
 msgid "Current Selection is Empty"
 msgstr "La selecció actual és buida"
 
 #. DLG_Styles_DefCurrent
-#: po/tmp/ap_String_Id.h.h:866
+#: po/tmp/ap_String_Id.h.h:869
 msgid "Current Settings"
 msgstr "Configuració actual"
 
 #. FIELD_Datetime_CurrentTime
-#: po/tmp/ap_String_Id.h.h:868
+#: po/tmp/ap_String_Id.h.h:871
 msgid "Current Time"
 msgstr "Hora actual"
 
 #. DLG_Options_Label_ViewCursorBlink
-#: po/tmp/ap_String_Id.h.h:870
+#: po/tmp/ap_String_Id.h.h:873
 msgid "Cursor &blink"
 msgstr "&Cursor intermitent"
 
 #. DLG_Options_Label_SpellCustomDict
-#: po/tmp/ap_String_Id.h.h:872
+#: po/tmp/ap_String_Id.h.h:875
 msgid "Custom Dictionary:"
 msgstr "Diccionari personalitzat:"
 
 #
 #. FIELD_DateTime_Custom
-#: po/tmp/ap_String_Id.h.h:874
+#: po/tmp/ap_String_Id.h.h:877
 msgid "Customizable date/time"
 msgstr "Data/hora personalitzable"
 
 #. DLG_Lists_Customize
-#: po/tmp/ap_String_Id.h.h:876
+#: po/tmp/ap_String_Id.h.h:879
 msgid "Customized List"
 msgstr "Llista personalitzada"
 
 #. TOOLBAR_LABEL_EDIT_CUT
 #. TOOLBAR_STATUSLINE_EDIT_CUT
 #. TOOLBAR_TOOLTIP_EDIT_CUT
-#: po/tmp/ap_String_Id.h.h:880
+#: po/tmp/ap_String_Id.h.h:883
 msgid "Cut"
 msgstr "Retalla"
 
 #
 #. MENU_STATUSLINE_EDIT_CUTEMBED
-#: po/tmp/ap_String_Id.h.h:882
+#: po/tmp/ap_String_Id.h.h:885
 msgid "Cut Embedded Object"
 msgstr "Retalla l'objecte incrustat"
 
 #
 #. MENU_LABEL_EDIT_CUTIMAGE
-#: po/tmp/ap_String_Id.h.h:884
+#: po/tmp/ap_String_Id.h.h:887
 msgid "Cut Image"
 msgstr "Retalla la imatge"
 
 #
 #. MENU_LABEL_EDIT_CUTEMBED
-#: po/tmp/ap_String_Id.h.h:886
+#: po/tmp/ap_String_Id.h.h:889
 msgid "Cut Object"
 msgstr "Retalla l'objecte"
 
 #
 #. MENU_LABEL_EDIT_CUT_FRAME
-#: po/tmp/ap_String_Id.h.h:888
+#: po/tmp/ap_String_Id.h.h:891
 msgid "Cut Text Box"
 msgstr "Retalla el quadre de text"
 
 #. MENU_STATUSLINE_EDIT_CUT
-#: po/tmp/ap_String_Id.h.h:890
+#: po/tmp/ap_String_Id.h.h:893
 msgid "Cut the selection and put it on the Clipboard"
 msgstr "Retalla la selecció i posa-la al porta-retalls"
 
 #
 #. MENU_LABEL_FMT_DIRECTION
-#: po/tmp/ap_String_Id.h.h:892
+#: po/tmp/ap_String_Id.h.h:895
 msgid "D&irectional"
 msgstr "D&ireccional"
 
 #. DLG_Lists_Dashed_List
 #. STYLE_DASHEDLIST
-#: po/tmp/ap_String_Id.h.h:894 po/tmp/xap_String_Id.h.h:241
+#: po/tmp/ap_String_Id.h.h:897 po/tmp/xap_String_Id.h.h:253
 msgid "Dashed List"
 msgstr "Llista de punts"
 
 #
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
-#: po/tmp/ap_String_Id.h.h:897
+#: po/tmp/ap_String_Id.h.h:900
 msgid "Date"
 msgstr "Data"
 
 #. MENU_LABEL_INSERT_DATETIME
-#: po/tmp/ap_String_Id.h.h:899
+#: po/tmp/ap_String_Id.h.h:902
 msgid "Date and &Time"
 msgstr "Da&ta i hora"
 
 #. FIELD_Type_Datetime
-#: po/tmp/ap_String_Id.h.h:901
+#: po/tmp/ap_String_Id.h.h:904
 msgid "Date and Time"
 msgstr "Data i hora"
 
 #. FIELD_DateTime_DOY
-#: po/tmp/ap_String_Id.h.h:903
+#: po/tmp/ap_String_Id.h.h:906
 msgid "Day # in the year"
 msgstr "Número de dia de l'any"
 
 #. DLG_Options_Btn_Default
-#: po/tmp/ap_String_Id.h.h:905
+#: po/tmp/ap_String_Id.h.h:908
 msgid "De&faults"
 msgstr "&Predeterminats"
 
 #. DLG_Tab_Radio_Decimal
-#: po/tmp/ap_String_Id.h.h:907
+#: po/tmp/ap_String_Id.h.h:910
 msgid "Decimal"
 msgstr "Decimal"
 
 #. TabToggleDecimalTab
-#: po/tmp/ap_String_Id.h.h:909
+#: po/tmp/ap_String_Id.h.h:912
 msgid "Decimal Tab"
 msgstr "Tabulació decimal"
 
 #. TOOLBAR_LABEL_UNINDENT
 #. TOOLBAR_STATUSLINE_UNINDENT
 #. TOOLBAR_TOOLTIP_UNINDENT
-#: po/tmp/ap_String_Id.h.h:913
+#: po/tmp/ap_String_Id.h.h:916
 msgid "Decrease indent"
 msgstr "Redueix el sagnat"
 
 #. FIELD_DateTime_DefaultDateNoTime
-#: po/tmp/ap_String_Id.h.h:915
+#: po/tmp/ap_String_Id.h.h:918
 msgid "Default date (w/o time)"
 msgstr "Data per defecte (sense l'hora)"
 
 #. FIELD_DateTime_DefaultDate
-#: po/tmp/ap_String_Id.h.h:917
+#: po/tmp/ap_String_Id.h.h:920
 msgid "Default date representation"
 msgstr "Representació de la data per defecte"
 
 #. DLG_Options_Label_DefaultPageSize
-#: po/tmp/ap_String_Id.h.h:919
+#: po/tmp/ap_String_Id.h.h:922
 msgid "Default page size"
 msgstr "Mida per defecte de la pàgina:"
 
 #. DLG_Tab_Label_DefaultTS
-#: po/tmp/ap_String_Id.h.h:921
+#: po/tmp/ap_String_Id.h.h:924
 msgid "Default tab stops:"
 msgstr "Distància per defecte entre tabuladors:"
 
 #. DLG_Options_Label_DirectionRtl
-#: po/tmp/ap_String_Id.h.h:923
+#: po/tmp/ap_String_Id.h.h:926
 msgid "Default to right-to-left direction of text"
 msgstr "Direcció del text de dreta a esquerra (per defecte)"
 
 #
 #. DLG_FormatTOC_LevelDefs
-#: po/tmp/ap_String_Id.h.h:925
+#: po/tmp/ap_String_Id.h.h:928
 msgid "Define Main Properties"
 msgstr "Definiu les propietats principals"
 
 #. MENU_STATUSLINE_FMT_STYLE
 #. MENU_STATUSLINE_FMT_STYLE_DEFINE
-#: po/tmp/ap_String_Id.h.h:928
+#: po/tmp/ap_String_Id.h.h:931
 msgid "Define or apply style for the selection"
 msgstr "Defineix o aplica un estil a la selecció"
 
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
 #. DLG_Delete
-#: po/tmp/ap_String_Id.h.h:931 po/tmp/xap_String_Id.h.h:255
+#: po/tmp/ap_String_Id.h.h:934 po/tmp/xap_String_Id.h.h:267
 msgid "Delete"
 msgstr "Suprimeix"
 
 #
 #. MENU_STATUSLINE_TABLE_DELETE_CELLS
-#: po/tmp/ap_String_Id.h.h:933
+#: po/tmp/ap_String_Id.h.h:936
 msgid "Delete Cells"
 msgstr "Suprimeix les cel·les"
 
 #
 #. MENU_LABEL_TABLE_DELETECOLUMN
-#: po/tmp/ap_String_Id.h.h:935
+#: po/tmp/ap_String_Id.h.h:938
 msgid "Delete Co&lumn"
 msgstr "Suprimeix la co&lumna"
 
 #
 #. MENU_STATUSLINE_TABLE_DELETE_COLUMNS
 #. MENU_STATUSLINE_TABLE_DELETECOLUMN
-#: po/tmp/ap_String_Id.h.h:938
+#: po/tmp/ap_String_Id.h.h:941
 msgid "Delete Column"
 msgstr "Suprimeix la columna"
 
 #
 #. MENU_STATUSLINE_EDIT_DELETEEMBED
-#: po/tmp/ap_String_Id.h.h:940
+#: po/tmp/ap_String_Id.h.h:943
 msgid "Delete Embedded Object"
 msgstr "Suprimeix l'objecte incrustat"
 
 #
 #. MENU_LABEL_EDIT_DELETEIMAGE
-#: po/tmp/ap_String_Id.h.h:942
+#: po/tmp/ap_String_Id.h.h:945
 msgid "Delete Image"
 msgstr "Suprimeix la imatge"
 
 #
 #. MENU_LABEL_EDIT_DELETEEMBED
-#: po/tmp/ap_String_Id.h.h:944
+#: po/tmp/ap_String_Id.h.h:947
 msgid "Delete Object"
 msgstr "Suprimeix l'objecte"
 
 #
 #. MENU_LABEL_TABLE_DELETEROW
-#: po/tmp/ap_String_Id.h.h:946
+#: po/tmp/ap_String_Id.h.h:949
 msgid "Delete Ro&w"
 msgstr "Suprimei&x la fila"
 
 #
 #. MENU_STATUSLINE_TABLE_DELETE_ROWS
 #. MENU_STATUSLINE_TABLE_DELETEROW
-#: po/tmp/ap_String_Id.h.h:949
+#: po/tmp/ap_String_Id.h.h:952
 msgid "Delete Row"
 msgstr "Suprimeix la fila"
 
 #
 #. MENU_LABEL_TABLE_DELETETABLE
-#: po/tmp/ap_String_Id.h.h:951
+#: po/tmp/ap_String_Id.h.h:954
 msgid "Delete Tabl&e"
 msgstr "Suprimeix la taul&a"
 
 #
 #. MENU_STATUSLINE_TABLE_DELETE_TABLE
 #. MENU_STATUSLINE_TABLE_DELETETABLE
-#: po/tmp/ap_String_Id.h.h:954
+#: po/tmp/ap_String_Id.h.h:957
 msgid "Delete Table"
 msgstr "Suprimeix la taula"
 
 #
 #. MENU_LABEL_EDIT_DELETEFRAME
-#: po/tmp/ap_String_Id.h.h:956
+#: po/tmp/ap_String_Id.h.h:959
 msgid "Delete Text Box"
 msgstr "Suprimeix el quadre de text"
 
 #
 #. MENU_STATUSLINE_DELETE_ANNOTATION
-#: po/tmp/ap_String_Id.h.h:958
+#: po/tmp/ap_String_Id.h.h:961
 msgid "Delete annotation"
 msgstr "Suprimeix l'anotació"
 
 #
 #. TOOLBAR_LABEL_DELETE_COLUMN
-#: po/tmp/ap_String_Id.h.h:960
+#: po/tmp/ap_String_Id.h.h:963
 msgid "Delete column"
 msgstr "Suprimeix la columna"
 
 #. MENU_STATUSLINE_INSERT_DELETE_HYPERLINK
-#: po/tmp/ap_String_Id.h.h:962
+#: po/tmp/ap_String_Id.h.h:965
 msgid "Delete hyperlink"
 msgstr "Suprimeix l'hiperenllaç"
 
 #
 #. TOOLBAR_LABEL_DELETE_ROW
-#: po/tmp/ap_String_Id.h.h:964
+#: po/tmp/ap_String_Id.h.h:967
 msgid "Delete row"
 msgstr "Suprimeix la fila"
 
 #. MENU_STATUSLINE_EDIT_CLEAR
-#: po/tmp/ap_String_Id.h.h:966
+#: po/tmp/ap_String_Id.h.h:969
 msgid "Delete the selection"
 msgstr "Suprimeix la selecció"
 
 #
 #. TOOLBAR_STATUSLINE_DELETE_COLUMN
 #. TOOLBAR_TOOLTIP_DELETE_COLUMN
-#: po/tmp/ap_String_Id.h.h:969
+#: po/tmp/ap_String_Id.h.h:972
 msgid "Delete this column from its table"
 msgstr "Suprimeix aquesta columna de la seva taula"
 
 #
 #. TOOLBAR_STATUSLINE_DELETE_ROW
 #. TOOLBAR_TOOLTIP_DELETE_ROW
-#: po/tmp/ap_String_Id.h.h:972
+#: po/tmp/ap_String_Id.h.h:975
 msgid "Delete this row from its table"
 msgstr "Suprimeix aquesta fila de la seva taula"
 
 #. DLG_Styles_Description
 #. DLG_Styles_ModifyDescription
 #. FIELD_Document_Description
-#: po/tmp/ap_String_Id.h.h:976
+#: po/tmp/ap_String_Id.h.h:979
 msgid "Description"
 msgstr "Descripció"
 
@@ -2543,148 +2549,149 @@ msgstr "Descripció"
 #. DLG_Annotation_Description_LBL
 #. DLG_PLUGIN_MANAGER_DESC
 #. DLG_Image_LblDescription
-#: po/tmp/ap_String_Id.h.h:979 po/tmp/xap_String_Id.h.h:258
+#: po/tmp/ap_String_Id.h.h:982 po/tmp/xap_String_Id.h.h:270
 msgid "Description:"
 msgstr "Descripció:"
 
 #. DLG_Lists_Diamond_List
 #. STYLE_DIAMONLIST
-#: po/tmp/ap_String_Id.h.h:981 po/tmp/xap_String_Id.h.h:260
+#: po/tmp/ap_String_Id.h.h:984 po/tmp/xap_String_Id.h.h:272
 msgid "Diamond List"
 msgstr "Llista de diamants"
 
 #
 #. DLG_Options_Label_SpellDictionaries
-#: po/tmp/ap_String_Id.h.h:983
+#: po/tmp/ap_String_Id.h.h:986
 msgid "Dictionaries"
 msgstr "Diccionaris"
 
 #. DLG_HdrFtr_FooterEven
-#: po/tmp/ap_String_Id.h.h:985
+#: po/tmp/ap_String_Id.h.h:988
 msgid "Different footer on facing pages"
 msgstr "Peu de pàgina diferent en pàgines encarades"
 
 #. DLG_HdrFtr_FooterFirst
-#: po/tmp/ap_String_Id.h.h:987
+#: po/tmp/ap_String_Id.h.h:990
 msgid "Different footer on first page"
 msgstr "Peu de pàgina diferent a la primera pàgina"
 
 #. DLG_HdrFtr_FooterLast
-#: po/tmp/ap_String_Id.h.h:989
+#: po/tmp/ap_String_Id.h.h:992
 msgid "Different footer on last page"
 msgstr "Peu de pàgina diferent a l'última pàgina"
 
 #. DLG_HdrFtr_HeaderEven
-#: po/tmp/ap_String_Id.h.h:991
+#: po/tmp/ap_String_Id.h.h:994
 msgid "Different header on facing pages"
 msgstr "Capçalera diferent en pàgines encarades"
 
 #. DLG_HdrFtr_HeaderFirst
-#: po/tmp/ap_String_Id.h.h:993
+#: po/tmp/ap_String_Id.h.h:996
 msgid "Different header on first page"
 msgstr "Capçalera diferent a la primera pàgina"
 
 #. DLG_HdrFtr_HeaderLast
-#: po/tmp/ap_String_Id.h.h:995
+#: po/tmp/ap_String_Id.h.h:998
 msgid "Different header on last page"
 msgstr "Capçalera diferent a l'última pàgina"
 
 #. DLG_Styles_StylesLocked
-#: po/tmp/ap_String_Id.h.h:997
+#: po/tmp/ap_String_Id.h.h:1000
 msgid "Disable all formatting commands, except styles"
 msgstr "Inhabilita totes les ordres de formatació excepte els estils"
 
 #. MENU_STATUSLINE_HELP_CREDITS
-#: po/tmp/ap_String_Id.h.h:999
+#: po/tmp/ap_String_Id.h.h:1002
 msgid "Display Credits"
 msgstr "Mostra els crèdits"
 
 #. MENU_STATUSLINE_HELP_CONTENTS
-#: po/tmp/ap_String_Id.h.h:1001
+#: po/tmp/ap_String_Id.h.h:1004
 msgid "Display Help Contents"
 msgstr "Mostra el contingut de l'ajuda"
 
-#. MENU_STATUSLINE_HELP_INDEX
-#: po/tmp/ap_String_Id.h.h:1003
-msgid "Display Help Index"
-msgstr "Mostra l'índex de l'ajuda"
+#. MENU_STATUSLINE_HELP_INTRO
+#: po/tmp/ap_String_Id.h.h:1006
+#, fuzzy
+msgid "Display Help Introduction"
+msgstr "&Introducció a l'ajuda"
 
 #. MENU_STATUSLINE_VIEW_SHOWPARA
-#: po/tmp/ap_String_Id.h.h:1005
+#: po/tmp/ap_String_Id.h.h:1008
 msgid "Display non-printing characters"
 msgstr "Visualitza els caràcters no imprimibles"
 
 #. MENU_STATUSLINE_HELP_ABOUT
-#: po/tmp/ap_String_Id.h.h:1007
+#: po/tmp/ap_String_Id.h.h:1010
 msgid "Display program information, version number, and copyright"
 msgstr "Mostra informació del programa, versió i copyright"
 
 #
 #. DLG_FormatTOC_DispStyle
-#: po/tmp/ap_String_Id.h.h:1009
+#: po/tmp/ap_String_Id.h.h:1012
 msgid "Display style:"
 msgstr "Mostra l'estil:"
 
 #. DLG_Options_Prompt_IgnoreResetAll
-#: po/tmp/ap_String_Id.h.h:1011
+#: po/tmp/ap_String_Id.h.h:1014
 msgid "Do you want to reset ignored words in all the documents?"
 msgstr "Voleu reemplaçar les paraules ignorades de tots els documents?"
 
 #. DLG_Options_Prompt_IgnoreResetCurrent
-#: po/tmp/ap_String_Id.h.h:1013
+#: po/tmp/ap_String_Id.h.h:1016
 msgid "Do you want to reset ignored words in the current document?"
 msgstr "Voleu reemplaçar les paraules ignorades del document actual?"
 
 #
 #. FIELD_Type_Document
-#: po/tmp/ap_String_Id.h.h:1015
+#: po/tmp/ap_String_Id.h.h:1018
 msgid "Document"
 msgstr "Document"
 
 #
 #. DLG_MetaData_Title
-#: po/tmp/ap_String_Id.h.h:1017
+#: po/tmp/ap_String_Id.h.h:1020
 msgid "Document Properties"
 msgstr "Propietats del document"
 
 #
 #. DLG_Options_Label_Documents
-#: po/tmp/ap_String_Id.h.h:1019
+#: po/tmp/ap_String_Id.h.h:1022
 msgid "Documents"
 msgstr "Documents"
 
 #
 #. DLG_FormatFootnotes_FootRestartNone
-#: po/tmp/ap_String_Id.h.h:1021
+#: po/tmp/ap_String_Id.h.h:1024
 msgid "Don't restart"
 msgstr "No reiniciïs"
 
 #. DLG_Para_SpacingDouble
-#: po/tmp/ap_String_Id.h.h:1023
+#: po/tmp/ap_String_Id.h.h:1026
 msgid "Double"
 msgstr "Doble"
 
 #. TOOLBAR_LABEL_DOUBLE_SPACE
-#: po/tmp/ap_String_Id.h.h:1025
+#: po/tmp/ap_String_Id.h.h:1028
 msgid "Double Spacing"
 msgstr "Espaiat doble"
 
 #. TOOLBAR_STATUSLINE_DOUBLE_SPACE
 #. TOOLBAR_TOOLTIP_DOUBLE_SPACE
-#: po/tmp/ap_String_Id.h.h:1028
+#: po/tmp/ap_String_Id.h.h:1031
 msgid "Double spacing"
 msgstr "Espaiat doble"
 
 #
 #
 #. DLG_Annotation_Title
-#: po/tmp/ap_String_Id.h.h:1030
+#: po/tmp/ap_String_Id.h.h:1033
 msgid "Edit Annotation"
 msgstr "Edita l'anotació"
 
 #
 #. MENU_LABEL_EDIT_LATEXEQUATION
-#: po/tmp/ap_String_Id.h.h:1032
+#: po/tmp/ap_String_Id.h.h:1035
 msgid "Edit Equation"
 msgstr "Edita l'equació"
 
@@ -2692,7 +2699,7 @@ msgstr "Edita l'equació"
 #. TOOLBAR_LABEL_EDIT_FOOTER
 #. TOOLBAR_STATUSLINE_EDIT_FOOTER
 #. TOOLBAR_TOOLTIP_EDIT_FOOTER
-#: po/tmp/ap_String_Id.h.h:1037
+#: po/tmp/ap_String_Id.h.h:1040
 msgid "Edit Footer"
 msgstr "Edita el peu de pàgina"
 
@@ -2700,108 +2707,108 @@ msgstr "Edita el peu de pàgina"
 #. TOOLBAR_LABEL_EDIT_HEADER
 #. TOOLBAR_STATUSLINE_EDIT_HEADER
 #. TOOLBAR_TOOLTIP_EDIT_HEADER
-#: po/tmp/ap_String_Id.h.h:1042
+#: po/tmp/ap_String_Id.h.h:1045
 msgid "Edit Header"
 msgstr "Edita la capçalera"
 
 #
 #. MENU_STATUSLINE_EDIT_LATEXEQUATION
-#: po/tmp/ap_String_Id.h.h:1044
-msgid "Edit Latex Equation"
+#: po/tmp/ap_String_Id.h.h:1047
+msgid "Edit LaTeX Equation"
 msgstr "Edita l'equació Latex"
 
 #
 #
 #. MENU_STATUSLINE_EDIT_ANNOTATION
-#: po/tmp/ap_String_Id.h.h:1046
+#: po/tmp/ap_String_Id.h.h:1049
 msgid "Edit annotation"
 msgstr "Edita l'anotació"
 
 #
 #. MENU_STATUSLINE_INSERT_EDIT_HYPERLINK
-#: po/tmp/ap_String_Id.h.h:1048
+#: po/tmp/ap_String_Id.h.h:1051
 msgid "Edit hyperlink"
 msgstr "Edita l'hiperenllaç"
 
 #. MENU_STATUSLINE_VIEW_HEADFOOT
-#: po/tmp/ap_String_Id.h.h:1050
+#: po/tmp/ap_String_Id.h.h:1053
 msgid "Edit text at the top or bottom of every page"
 msgstr "Edita el text de la part superior o inferior de cada pàgina"
 
 #. MENU_STATUSLINE_EDIT_EDITFOOTER
-#: po/tmp/ap_String_Id.h.h:1052
+#: po/tmp/ap_String_Id.h.h:1055
 msgid "Edit the Footer on the current page"
 msgstr "Edita el peu de pàgina de la pàgina actual"
 
 #. MENU_STATUSLINE_EDIT_EDITHEADER
-#: po/tmp/ap_String_Id.h.h:1054
+#: po/tmp/ap_String_Id.h.h:1057
 msgid "Edit the Header on the current page"
 msgstr "Edita la capçalera de la pàgina actual"
 
 #
 #. TB_Embedded
-#: po/tmp/ap_String_Id.h.h:1056
+#: po/tmp/ap_String_Id.h.h:1059
 msgid "Embedded"
 msgstr "Incrustat"
 
 #
 #. MENU_LABEL_VIEW_LOCKSTYLES
-#: po/tmp/ap_String_Id.h.h:1058
+#: po/tmp/ap_String_Id.h.h:1061
 msgid "Enable F&ormatting Tools"
 msgstr "Habilita les eines de f&ormatatge"
 
 #
 #. DLG_Options_Label_CheckEnableSmoothScrolling
-#: po/tmp/ap_String_Id.h.h:1060
+#: po/tmp/ap_String_Id.h.h:1063
 msgid "Enable Smooth Scrolling"
 msgstr "Habilita el desplaçament suau"
 
 #. DLG_Options_Label_SmartQuotes
-#: po/tmp/ap_String_Id.h.h:1062
+#: po/tmp/ap_String_Id.h.h:1065
 msgid "Enable smart (curly) quotes"
 msgstr "Habilita les &cometes intel·ligents"
 
 #. FIELD_Numbers_EndnoteAnchor
-#: po/tmp/ap_String_Id.h.h:1064
+#: po/tmp/ap_String_Id.h.h:1067
 msgid "Endnote anchor"
 msgstr "Àncora de la nota final"
 
 #. FIELD_Numbers_EndnoteReference
-#: po/tmp/ap_String_Id.h.h:1066
+#: po/tmp/ap_String_Id.h.h:1069
 msgid "Endnote reference"
 msgstr "Referència de la nota final"
 
 #
 #. DLG_FormatFootnotes_EndStyle
-#: po/tmp/ap_String_Id.h.h:1068
+#: po/tmp/ap_String_Id.h.h:1071
 msgid "Endnote style"
 msgstr "Estil de la nota final"
 
 #
 #. MENU_LABEL_INSERT_EQUATION
-#: po/tmp/ap_String_Id.h.h:1070
+#: po/tmp/ap_String_Id.h.h:1073
 msgid "Equation"
 msgstr "Equació"
 
 #. FIELD_Error
-#: po/tmp/ap_String_Id.h.h:1072
+#: po/tmp/ap_String_Id.h.h:1075
 msgid "Error calculating value!"
 msgstr "S'ha produït un error en calcular el valor!"
 
 #. SCRIPT_CANTRUN
-#: po/tmp/ap_String_Id.h.h:1074
+#: po/tmp/ap_String_Id.h.h:1077
 #, c-format
 msgid "Error executing script %s"
 msgstr "S'ha produït un error en executar la seqüència %s"
 
 #. MSG_ImportError
-#: po/tmp/ap_String_Id.h.h:1076
+#: po/tmp/ap_String_Id.h.h:1079
 #, c-format
 msgid "Error importing file %s."
 msgstr "S'ha produït un error en importar el fitxer %s."
 
 #. MSG_SaveFailedExport
-#: po/tmp/ap_String_Id.h.h:1078
+#: po/tmp/ap_String_Id.h.h:1081
 #, c-format
 msgid "Error while attempting to save %s: could not construct exporter"
 msgstr ""
@@ -2809,210 +2816,210 @@ msgstr ""
 "l'exportador"
 
 #. MSG_SaveFailedName
-#: po/tmp/ap_String_Id.h.h:1080
+#: po/tmp/ap_String_Id.h.h:1083
 #, c-format
 msgid "Error while attempting to save %s: invalid name"
 msgstr "S'ha produït un error en intentar desar %s: el nom no és vàlid"
 
 #. TOOLBAR_LABEL_SCRIPT_PLAY
-#: po/tmp/ap_String_Id.h.h:1082
+#: po/tmp/ap_String_Id.h.h:1085
 msgid "Ex. script"
 msgstr "Executa una seqüència"
 
 #. DLG_Para_SpacingExactly
-#: po/tmp/ap_String_Id.h.h:1084
+#: po/tmp/ap_String_Id.h.h:1087
 msgid "Exactly"
 msgstr "Exactament"
 
 #
 #. DLG_Latex_Example
-#: po/tmp/ap_String_Id.h.h:1086
+#: po/tmp/ap_String_Id.h.h:1089
 msgid "Example:"
 msgstr "Exemple:"
 
 #. MENU_STATUSLINE_TOOLS_SCRIPTS
-#: po/tmp/ap_String_Id.h.h:1088
+#: po/tmp/ap_String_Id.h.h:1091
 msgid "Execute helper scripts"
 msgstr "Executa seqüències d'ajuda"
 
 #. TOOLBAR_STATUSLINE_SCRIPT_PLAY
 #. TOOLBAR_TOOLTIP_SCRIPT_PLAY
-#: po/tmp/ap_String_Id.h.h:1091
+#: po/tmp/ap_String_Id.h.h:1094
 msgid "Execute script"
 msgstr "Executa una seqüència"
 
 #
 #. DLG_ListRevisions_Label1
-#: po/tmp/ap_String_Id.h.h:1093
+#: po/tmp/ap_String_Id.h.h:1096
 msgid "Existing revisions:"
 msgstr "Revisions existents:"
 
 #
 #. TB_Extra
-#: po/tmp/ap_String_Id.h.h:1095
+#: po/tmp/ap_String_Id.h.h:1098
 msgid "Extra"
 msgstr "Extra"
 
 #
 #. DLG_Field_Parameters_Capital
-#: po/tmp/ap_String_Id.h.h:1097
+#: po/tmp/ap_String_Id.h.h:1100
 msgid "Extra Parameters"
 msgstr "Paràmetres extra"
 
 #. DLG_Options_Label_ViewExtraTB
-#: po/tmp/ap_String_Id.h.h:1099
+#: po/tmp/ap_String_Id.h.h:1102
 msgid "Extra Toolbar"
 msgstr "Barra d'eines extra"
 
 #. DLG_Field_Parameters
-#: po/tmp/ap_String_Id.h.h:1101
+#: po/tmp/ap_String_Id.h.h:1104
 msgid "Extra parameters:"
 msgstr "Paràmetres addicionals:"
 
 #. MENU_LABEL_INSERT_FILE
-#: po/tmp/ap_String_Id.h.h:1103
+#: po/tmp/ap_String_Id.h.h:1106
 msgid "F&ile"
 msgstr "&Fitxer"
 
 #. MENU_LABEL_FORMAT
-#: po/tmp/ap_String_Id.h.h:1105
+#: po/tmp/ap_String_Id.h.h:1108
 msgid "F&ormat"
 msgstr "F&ormat"
 
 #. MENU_LABEL_VIEW_FULLSCREEN
-#: po/tmp/ap_String_Id.h.h:1107
+#: po/tmp/ap_String_Id.h.h:1110
 msgid "F&ull Screen"
 msgstr "&Pantalla completa"
 
 #. DLG_FR_FindLabel
-#: po/tmp/ap_String_Id.h.h:1109
+#: po/tmp/ap_String_Id.h.h:1112
 msgid "Fi&nd what:"
 msgstr "C&erca:"
 
 #
 #. DLG_MailMerge_Insert_No_Colon
-#: po/tmp/ap_String_Id.h.h:1111
+#: po/tmp/ap_String_Id.h.h:1114
 msgid "Field Name"
 msgstr "Nom del camp"
 
 #
 #. DLG_MailMerge_Insert
-#: po/tmp/ap_String_Id.h.h:1113
+#: po/tmp/ap_String_Id.h.h:1116
 msgid "Field Name:"
 msgstr "Nom del camp:"
 
 #. MSG_IE_UnsupportedType
-#: po/tmp/ap_String_Id.h.h:1115
+#: po/tmp/ap_String_Id.h.h:1118
 #, c-format
 msgid "File %s is not of a currently supported file type"
 msgstr "El fitxer %s és d'un tipus no admès"
 
 #. MSG_IE_FakeType
-#: po/tmp/ap_String_Id.h.h:1117
+#: po/tmp/ap_String_Id.h.h:1120
 #, c-format
 msgid "File %s is not of the type it claims to be"
 msgstr "El fitxer %s no és del tipus que afirma ser"
 
 #. MSG_IE_UnknownType
-#: po/tmp/ap_String_Id.h.h:1119
+#: po/tmp/ap_String_Id.h.h:1122
 #, c-format
 msgid "File %s is of unknown type"
 msgstr "El fitxer %s és d'un tipus desconegut"
 
 #. MSG_IE_FileNotFound
-#: po/tmp/ap_String_Id.h.h:1121
+#: po/tmp/ap_String_Id.h.h:1124
 #, c-format
 msgid "File %s not found"
 msgstr "No es pot trobar el fitxer %s"
 
 #. FIELD_Application_Filename
-#: po/tmp/ap_String_Id.h.h:1123
+#: po/tmp/ap_String_Id.h.h:1126
 msgid "File Name"
 msgstr "Nom del fitxer"
 
 #
 #. DLG_FormatTOC_FillStyle
-#: po/tmp/ap_String_Id.h.h:1125
+#: po/tmp/ap_String_Id.h.h:1128
 msgid "Fill style:"
 msgstr "Omple l'estil:"
 
 #. DLG_FR_FindTitle
-#: po/tmp/ap_String_Id.h.h:1127
+#: po/tmp/ap_String_Id.h.h:1130
 msgid "Find"
 msgstr "Cerca"
 
 #
 #. MENU_LABEL_TOOLS_REVISIONS_FIND_NEXT
-#: po/tmp/ap_String_Id.h.h:1129
+#: po/tmp/ap_String_Id.h.h:1132
 msgid "Find &next revision"
 msgstr "Cerca la &revisió següent"
 
 #
 #. MENU_LABEL_TOOLS_REVISIONS_FIND_PREV
-#: po/tmp/ap_String_Id.h.h:1131
+#: po/tmp/ap_String_Id.h.h:1134
 msgid "Find &previous revision"
 msgstr "Cerca la r&evisió anterior"
 
 #
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_NEXT
-#: po/tmp/ap_String_Id.h.h:1133
+#: po/tmp/ap_String_Id.h.h:1136
 msgid "Find next visible revision in the document"
 msgstr "Cerca la següent revisió visible del document"
 
 #
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_PREV
-#: po/tmp/ap_String_Id.h.h:1135
+#: po/tmp/ap_String_Id.h.h:1138
 msgid "Find previous visible revision in the document"
 msgstr "Cerca l'anterior revisió visible del document"
 
 #. MENU_STATUSLINE_EDIT_FIND
-#: po/tmp/ap_String_Id.h.h:1137
+#: po/tmp/ap_String_Id.h.h:1140
 msgid "Find the specified text"
 msgstr "Cerca el text indicat"
 
 #. FirstLineIndentStatus
-#: po/tmp/ap_String_Id.h.h:1139
+#: po/tmp/ap_String_Id.h.h:1142
 #, c-format
 msgid "First Line Indent [%s]"
 msgstr "Sagnat de la primera línia [%s]"
 
 #. DLG_Para_SpecialFirstLine
-#: po/tmp/ap_String_Id.h.h:1141
+#: po/tmp/ap_String_Id.h.h:1144
 msgid "First line"
 msgstr "Primera línia"
 
 #
 #. DLG_InsertTable_FixedColSize
-#: po/tmp/ap_String_Id.h.h:1143
+#: po/tmp/ap_String_Id.h.h:1146
 msgid "Fixed column size:"
 msgstr "Mida de columna fixa:"
 
 #
 #. DLG_Lists_FoldingLevel1
-#: po/tmp/ap_String_Id.h.h:1145
+#: po/tmp/ap_String_Id.h.h:1148
 msgid "Fold below level 1"
 msgstr "Desplega sota del nivell 1"
 
 #
 #. DLG_Lists_FoldingLevel2
-#: po/tmp/ap_String_Id.h.h:1147
+#: po/tmp/ap_String_Id.h.h:1150
 msgid "Fold below level 2"
 msgstr "Desplega sota del nivell 2"
 
 #
 #. DLG_Lists_FoldingLevel3
-#: po/tmp/ap_String_Id.h.h:1149
+#: po/tmp/ap_String_Id.h.h:1152
 msgid "Fold below level 3"
 msgstr "Desplega sota del nivell 3"
 
 #
 #. DLG_Lists_FoldingLevel4
-#: po/tmp/ap_String_Id.h.h:1151
+#: po/tmp/ap_String_Id.h.h:1154
 msgid "Fold below level 4"
 msgstr "Desplega sota del nivell 4"
 
 #. DLG_Para_PreviewFollowParagraph
-#: po/tmp/ap_String_Id.h.h:1153
+#: po/tmp/ap_String_Id.h.h:1156
 msgid ""
 "Following Paragraph Following Paragraph Following Paragraph Following "
 "Paragraph Following Paragraph Following Paragraph Following Paragraph"
@@ -3026,226 +3033,225 @@ msgstr ""
 #. TOOLBAR_TOOLTIP_FMT_FONT
 #. DLG_UFS_FontTitle
 #. DLG_UFS_FontTab
-#: po/tmp/ap_String_Id.h.h:1158 po/tmp/xap_String_Id.h.h:335
+#: po/tmp/ap_String_Id.h.h:1161 po/tmp/xap_String_Id.h.h:349
 msgid "Font"
 msgstr "Tipus de lletra"
 
 #
 #. TOOLBAR_STATUSLINE_FMT_CHOOSE
-#: po/tmp/ap_String_Id.h.h:1160
+#: po/tmp/ap_String_Id.h.h:1163
 msgid "Font Choose"
 msgstr "Elecció del tipus de lletra"
 
 #. TOOLBAR_LABEL_FMT_SIZE
 #. TOOLBAR_STATUSLINE_FMT_SIZE
 #. TOOLBAR_TOOLTIP_FMT_SIZE
-#: po/tmp/ap_String_Id.h.h:1164
+#: po/tmp/ap_String_Id.h.h:1167
 msgid "Font Size"
 msgstr "Mida del tipus de lletra"
 
 #
 #. TOOLBAR_LABEL_FMT_CHOOSE
-#: po/tmp/ap_String_Id.h.h:1166
+#: po/tmp/ap_String_Id.h.h:1169
 msgid "Font choose"
 msgstr "Elecció del tipus de lletra"
 
 #. TOOLBAR_LABEL_COLOR_FORE
 #. TOOLBAR_STATUSLINE_COLOR_FORE
 #. TOOLBAR_TOOLTIP_COLOR_FORE
-#: po/tmp/ap_String_Id.h.h:1170
+#: po/tmp/ap_String_Id.h.h:1173
 msgid "Font color"
 msgstr "Color del tipus de lletra"
 
 #. DLG_Lists_ButtonFont
-#: po/tmp/ap_String_Id.h.h:1172
+#: po/tmp/ap_String_Id.h.h:1175
 msgid "Font..."
 msgstr "Tipus de lletra..."
 
 #. DLG_Lists_Font
 #. DLG_UFS_FontLabel
-#: po/tmp/ap_String_Id.h.h:1174 po/tmp/xap_String_Id.h.h:337
+#: po/tmp/ap_String_Id.h.h:1177 po/tmp/xap_String_Id.h.h:351
 msgid "Font:"
 msgstr "Tipus de lletra:"
 
 #
 #. MENU_LABEL_INSERT_FOOTNOTE
-#: po/tmp/ap_String_Id.h.h:1176
+#: po/tmp/ap_String_Id.h.h:1179
 msgid "Foot&note"
 msgstr "Not&a al peu"
 
-#. DLG_PageNumbers_Footer
 #. MENU_LABEL_INSERT_FOOTER
-#: po/tmp/ap_String_Id.h.h:1179
+#: po/tmp/ap_String_Id.h.h:1181
 msgid "Footer"
 msgstr "Peu de pàgina"
 
 #. DLG_HdrFtr_FooterFrame
-#: po/tmp/ap_String_Id.h.h:1181
+#: po/tmp/ap_String_Id.h.h:1183
 msgid "Footer Properties"
 msgstr "Propietats del peu de pàgina"
 
 #. FooterStatus
-#: po/tmp/ap_String_Id.h.h:1183
+#: po/tmp/ap_String_Id.h.h:1185
 #, c-format
 msgid "Footer [%s]"
 msgstr "Peu de pàgina [%s]"
 
 #
 #. FIELD_Numbers_FootnoteAnchor
-#: po/tmp/ap_String_Id.h.h:1185
+#: po/tmp/ap_String_Id.h.h:1187
 msgid "Footnote anchor"
 msgstr "Àncora de nota al peu"
 
 #
 #. FIELD_Numbers_FootnoteReference
-#: po/tmp/ap_String_Id.h.h:1187
+#: po/tmp/ap_String_Id.h.h:1189
 msgid "Footnote reference"
 msgstr "Referència de nota al peu"
 
 #
 #. DLG_FormatFootnotes_FootStyle
-#: po/tmp/ap_String_Id.h.h:1189
+#: po/tmp/ap_String_Id.h.h:1191
 msgid "Footnote style"
 msgstr "Estil de notes al peu"
 
 #
 #. MENU_LABEL_FMT_FOOTNOTES
-#: po/tmp/ap_String_Id.h.h:1191
+#: po/tmp/ap_String_Id.h.h:1193
 msgid "Footnotes and Endnotes"
 msgstr "Notes al peu i notes finals"
 
 #. TOOLBAR_STATUSLINE_FMT_DIR_OVERRIDE_LTR
 #. TOOLBAR_TOOLTIP_FMT_DIR_OVERRIDE_LTR
-#: po/tmp/ap_String_Id.h.h:1194
+#: po/tmp/ap_String_Id.h.h:1196
 msgid "Force LTR direction of text"
 msgstr "Imposa la direcció del text d'EAD"
 
 #. TOOLBAR_STATUSLINE_FMT_DIR_OVERRIDE_RTL
 #. TOOLBAR_TOOLTIP_FMT_DIR_OVERRIDE_RTL
-#: po/tmp/ap_String_Id.h.h:1197
+#: po/tmp/ap_String_Id.h.h:1199
 msgid "Force RTL direction of text"
 msgstr "Imposa la direcció del text de DAE"
 
 #
 #. MENU_STATUSLINE_FMT_DIRECTION_DO_LTR
-#: po/tmp/ap_String_Id.h.h:1199
+#: po/tmp/ap_String_Id.h.h:1201
 msgid "Force left-to-right direction of text"
 msgstr "Imposa la direcció del text d'esquerra a dreta"
 
 #
 #. MENU_STATUSLINE_FMT_DIRECTION_DO_RTL
-#: po/tmp/ap_String_Id.h.h:1201
+#: po/tmp/ap_String_Id.h.h:1203
 msgid "Force right-to-left direction of text"
 msgstr "Imposa direcció del text de dreta a esquerra"
 
 #. TOOLBAR_LABEL_FMT_DIR_OVERRIDE_LTR
-#: po/tmp/ap_String_Id.h.h:1203
+#: po/tmp/ap_String_Id.h.h:1205
 msgid "Force text LTR"
 msgstr "Imposa el text d'EAD"
 
 #. TOOLBAR_LABEL_FMT_DIR_OVERRIDE_RTL
-#: po/tmp/ap_String_Id.h.h:1205
+#: po/tmp/ap_String_Id.h.h:1207
 msgid "Force text RTL"
 msgstr "Imposa el text de DAE"
 
 #. DLG_Styles_ModifyFormat
 #. TB_Format
-#: po/tmp/ap_String_Id.h.h:1208
+#: po/tmp/ap_String_Id.h.h:1210
 msgid "Format"
 msgstr "Formatació"
 
 #
 #. MENU_STATUSLINE_FMT_EMBED
-#: po/tmp/ap_String_Id.h.h:1210
+#: po/tmp/ap_String_Id.h.h:1212
 msgid "Format Embedded Object"
 msgstr "Formata l'objecte incrustat"
 
 #
 #. DLG_FormatFootnotes_Endnotes
-#: po/tmp/ap_String_Id.h.h:1212
+#: po/tmp/ap_String_Id.h.h:1214
 msgid "Format Endnotes"
 msgstr "Formata les notes finals"
 
 #
 #. DLG_FormatFootnotes_Footnotes
-#: po/tmp/ap_String_Id.h.h:1214
+#: po/tmp/ap_String_Id.h.h:1216
 msgid "Format Footnotes"
 msgstr "Formata les notes al peu"
 
 #
 #. DLG_FormatFootnotes_Title
-#: po/tmp/ap_String_Id.h.h:1216
+#: po/tmp/ap_String_Id.h.h:1218
 msgid "Format Footnotes and Endnotes"
 msgstr "Formata les notes al peu i les notes finals"
 
 #. DLG_HdrFtr_Title
-#: po/tmp/ap_String_Id.h.h:1218
+#: po/tmp/ap_String_Id.h.h:1220
 msgid "Format Header/Footers"
 msgstr "Formata la capçalera/els peus de pàgina"
 
 #
 #. MENU_LABEL_FMT_EMBED
-#: po/tmp/ap_String_Id.h.h:1220
+#: po/tmp/ap_String_Id.h.h:1222
 msgid "Format Object"
 msgstr "Formata l'objecte"
 
 #
 #. TOOLBAR_LABEL_FMTPAINTER
-#: po/tmp/ap_String_Id.h.h:1222
+#: po/tmp/ap_String_Id.h.h:1224
 msgid "Format Painter"
 msgstr "Formata el Painter"
 
 #
 #. DLG_FormatTableTitle
 #. MENU_STATUSLINE_TABLE_FORMAT
-#: po/tmp/ap_String_Id.h.h:1225
+#: po/tmp/ap_String_Id.h.h:1227
 msgid "Format Table"
 msgstr "Formata la taula"
 
 #
 #. DLG_FormatTOC_Title
-#: po/tmp/ap_String_Id.h.h:1227
+#: po/tmp/ap_String_Id.h.h:1229
 msgid "Format Table of Contents"
 msgstr "Formata l'índex"
 
 #
 #. DLG_FormatFrameTitle
-#: po/tmp/ap_String_Id.h.h:1229
+#: po/tmp/ap_String_Id.h.h:1231
 msgid "Format Text Box"
 msgstr "Formata el quadre de text"
 
 #. DLG_Options_Label_ViewFormatTB
-#: po/tmp/ap_String_Id.h.h:1231
+#: po/tmp/ap_String_Id.h.h:1233
 msgid "Format Toolbar"
 msgstr "Barra d'eines de format"
 
 #
 #. MENU_STATUSLINE_FMT_POSIMAGE
-#: po/tmp/ap_String_Id.h.h:1233
+#: po/tmp/ap_String_Id.h.h:1235
 msgid "Format this image"
 msgstr "Formata aquesta imatge"
 
 #
 #. MENU_STATUSLINE_FMT_STYLIST
-#: po/tmp/ap_String_Id.h.h:1235
+#: po/tmp/ap_String_Id.h.h:1237
 msgid "Format your document using styles"
 msgstr "Formata el document usant els estils"
 
 #. DLG_Lists_Format
 #. DLG_DocComparison_Fmt
-#: po/tmp/ap_String_Id.h.h:1237 po/tmp/xap_String_Id.h.h:343
+#: po/tmp/ap_String_Id.h.h:1239 po/tmp/xap_String_Id.h.h:361
 msgid "Format:"
 msgstr "Format:"
 
 #
 #. MENU_LABEL_INSERT_EQUATION_FILE
-#: po/tmp/ap_String_Id.h.h:1239
+#: po/tmp/ap_String_Id.h.h:1241
 msgid "From File"
 msgstr "Des d'un fitxer"
 
 #
 #. MENU_LABEL_INSERT_EQUATION_LATEX
-#: po/tmp/ap_String_Id.h.h:1241
+#: po/tmp/ap_String_Id.h.h:1243
 msgid "From LaTeX"
 msgstr "Des del LaTeX"
 
@@ -3253,79 +3259,78 @@ msgstr "Des del LaTeX"
 #. TOOLBAR_LABEL_VIEW_FULL_SCREEN
 #. TOOLBAR_STATUSLINE_VIEW_FULL_SCREEN
 #. TOOLBAR_TOOLTIP_VIEW_FULL_SCREEN
-#: po/tmp/ap_String_Id.h.h:1245
+#: po/tmp/ap_String_Id.h.h:1247
 msgid "Full Screen"
 msgstr "Pantalla completa"
 
 #. DLG_FormatTOC_General
 #. DLG_Options_Label_General
 #. DLG_MetaData_TAB_General
-#: po/tmp/ap_String_Id.h.h:1249
+#: po/tmp/ap_String_Id.h.h:1251
 msgid "General"
 msgstr "General"
 
 #. DLG_Goto_Btn_Goto
-#: po/tmp/ap_String_Id.h.h:1251
+#: po/tmp/ap_String_Id.h.h:1253
 msgid "Go To"
 msgstr "Vés a"
 
 #. DLG_Goto_Label_What
-#: po/tmp/ap_String_Id.h.h:1253
+#: po/tmp/ap_String_Id.h.h:1255
 msgid "Go To &What:"
 msgstr "Vés &a:"
 
 #. DLG_Goto_Title
-#: po/tmp/ap_String_Id.h.h:1255
+#: po/tmp/ap_String_Id.h.h:1257
 msgid "Go to..."
 msgstr "Vés a..."
 
 #
 #. DLG_FormatTOC_HasLabel
-#: po/tmp/ap_String_Id.h.h:1257
+#: po/tmp/ap_String_Id.h.h:1259
 msgid "H&as label"
 msgstr "Té e&tiqueta"
 
 #
 #. DLG_FormatTOC_HeadingText
-#: po/tmp/ap_String_Id.h.h:1259
+#: po/tmp/ap_String_Id.h.h:1261
 msgid "H&eading text:"
 msgstr "T&ext d'encapçalament:"
 
 #. DLG_Lists_Hand_List
 #. STYLE_HANDLIST
-#: po/tmp/ap_String_Id.h.h:1261 po/tmp/xap_String_Id.h.h:383
+#: po/tmp/ap_String_Id.h.h:1263 po/tmp/xap_String_Id.h.h:403
 msgid "Hand List"
 msgstr "Llista de mans"
 
 #. DLG_Para_SpecialHanging
-#: po/tmp/ap_String_Id.h.h:1263
+#: po/tmp/ap_String_Id.h.h:1265
 msgid "Hanging"
 msgstr "Suspesa"
 
-#. DLG_PageNumbers_Header
 #. MENU_LABEL_INSERT_HEADER
-#: po/tmp/ap_String_Id.h.h:1266
+#: po/tmp/ap_String_Id.h.h:1267
 msgid "Header"
 msgstr "Capçalera"
 
 #. DLG_HdrFtr_HeaderFrame
-#: po/tmp/ap_String_Id.h.h:1268
+#: po/tmp/ap_String_Id.h.h:1269
 msgid "Header Properties"
 msgstr "Propietats de la capçalera"
 
 #. HeaderStatus
-#: po/tmp/ap_String_Id.h.h:1270
+#: po/tmp/ap_String_Id.h.h:1271
 #, c-format
 msgid "Header [%s]"
 msgstr "Capçalera [%s]"
 
 #. MENU_LABEL_FMT_HDRFTR
-#: po/tmp/ap_String_Id.h.h:1272
+#: po/tmp/ap_String_Id.h.h:1273
 msgid "Header/Footers"
 msgstr "Capçalera/Peus de pàgina"
 
 #. MSG_CHECK_PRINT_MODE
-#: po/tmp/ap_String_Id.h.h:1274
+#: po/tmp/ap_String_Id.h.h:1275
 msgid ""
 "Headers and Footers can only be created and edited while in Print View "
 "Mode. \n"
@@ -3340,181 +3345,177 @@ msgstr ""
 
 #
 #. DLG_Stylist_HeadingStyles
-#: po/tmp/ap_String_Id.h.h:1276
+#: po/tmp/ap_String_Id.h.h:1277
 msgid "Heading Styles"
 msgstr "Estils d'encapçalament"
 
 #
 #. DLG_FormatTOC_HeadingStyle
-#: po/tmp/ap_String_Id.h.h:1278
+#: po/tmp/ap_String_Id.h.h:1279
 msgid "Heading style:"
 msgstr "Estil d'encapçalament:"
 
 #. DLG_Lists_Heart_List
 #. STYLE_HEARTLIST
-#: po/tmp/ap_String_Id.h.h:1280 po/tmp/xap_String_Id.h.h:399
+#: po/tmp/ap_String_Id.h.h:1281 po/tmp/xap_String_Id.h.h:419
 msgid "Heart List"
 msgstr "Llista de cors"
 
 #. DLG_Lists_Hebrew_List
-#: po/tmp/ap_String_Id.h.h:1282
+#: po/tmp/ap_String_Id.h.h:1283
 msgid "Hebrew List"
 msgstr "Llista hebrea"
 
 #. TOOLBAR_LABEL_HELP
 #. TOOLBAR_STATUSLINE_HELP
 #. TOOLBAR_TOOLTIP_HELP
-#: po/tmp/ap_String_Id.h.h:1286
+#: po/tmp/ap_String_Id.h.h:1287
 msgid "Help"
 msgstr "Ajuda"
 
 #. MENU_LABEL_HELP_CONTENTS
-#: po/tmp/ap_String_Id.h.h:1288
+#: po/tmp/ap_String_Id.h.h:1289
 msgid "Help &Contents"
 msgstr "Con&tinguts de l'ajuda"
 
-#. MENU_LABEL_HELP_INDEX
-#: po/tmp/ap_String_Id.h.h:1290
+#. MENU_LABEL_HELP_INTRO
+#: po/tmp/ap_String_Id.h.h:1291
 msgid "Help &Introduction"
 msgstr "&Introducció a l'ajuda"
 
 #. DLG_Options_Label_Hide
-#: po/tmp/ap_String_Id.h.h:1292
+#: po/tmp/ap_String_Id.h.h:1293
 msgid "Hide"
 msgstr "Amaga"
 
 #. DLG_Options_Label_SpellHideErrors
-#: po/tmp/ap_String_Id.h.h:1294
+#: po/tmp/ap_String_Id.h.h:1295
 msgid "Hide &spelling errors in the document"
 msgstr "Amaga el&s errors d'ortografia"
 
 #
 #. DLG_Lists_FoldingLevelexp
-#: po/tmp/ap_String_Id.h.h:1296
+#: po/tmp/ap_String_Id.h.h:1297
 msgid "Hide text below List Levels"
 msgstr "Oculta sota els nivells de la llista"
 
 #. TOOLBAR_LABEL_COLOR_BACK
 #. TOOLBAR_STATUSLINE_COLOR_BACK
 #. TOOLBAR_TOOLTIP_COLOR_BACK
-#: po/tmp/ap_String_Id.h.h:1300
+#: po/tmp/ap_String_Id.h.h:1301
 msgid "Highlight"
 msgstr "Ressalta"
 
 #. DLG_Spell_IgnoreAll
-#: po/tmp/ap_String_Id.h.h:1302
+#: po/tmp/ap_String_Id.h.h:1303
 msgid "I&gnore All"
 msgstr "I&gnora-ho tot"
 
 #
 #. DLG_FormatTOC_Indent
-#: po/tmp/ap_String_Id.h.h:1304
+#: po/tmp/ap_String_Id.h.h:1305
 msgid "I&ndent:"
 msgstr "S&agnat:"
 
-#. InsertModeFieldINS
-#: po/tmp/ap_String_Id.h.h:1306
-msgid "INS"
-msgstr "INS"
-
 #. DLG_Options_Label_Icons
-#: po/tmp/ap_String_Id.h.h:1308
+#: po/tmp/ap_String_Id.h.h:1307
 msgid "Icons"
 msgstr "Icones"
 
 #. DLG_Options_Label_Ignore
-#: po/tmp/ap_String_Id.h.h:1310
+#: po/tmp/ap_String_Id.h.h:1309
 msgid "Ignore"
 msgstr "Ignora"
 
 #
 #. DLG_Options_Label_SpellIgnoreWords
-#: po/tmp/ap_String_Id.h.h:1312
+#: po/tmp/ap_String_Id.h.h:1311
 msgid "Ignore Words"
 msgstr "Ignora les paraules"
 
 #. MENU_STATUSLINE_SPELL_IGNOREALL
-#: po/tmp/ap_String_Id.h.h:1314
+#: po/tmp/ap_String_Id.h.h:1313
 msgid "Ignore all occurrences of this word in the document"
 msgstr "Ignora totes les aparicions d'aquesta paraula al document"
 
 #. DLG_Options_Label_SpellIgnoredWord
-#: po/tmp/ap_String_Id.h.h:1316
+#: po/tmp/ap_String_Id.h.h:1315
 msgid "Ignored words:"
 msgstr "Paraules ignorades:"
 
 #
 #. DLG_FormatFrame_SetImageBackground
 #. DLG_FormatTable_SetImageBackground
-#: po/tmp/ap_String_Id.h.h:1319
+#: po/tmp/ap_String_Id.h.h:1318
 msgid "Image For Background"
 msgstr "Imatge per al fons"
 
 #. DLG_Lists_Implies_List
 #. STYLE_IMPLIES_LIST
-#: po/tmp/ap_String_Id.h.h:1321 po/tmp/xap_String_Id.h.h:433
+#: po/tmp/ap_String_Id.h.h:1320 po/tmp/xap_String_Id.h.h:453
 msgid "Implies List"
 msgstr "Llista d'implicacions"
 
 #
 #. MENU_STATUSLINE_FILE_IMPORTSTYLES
-#: po/tmp/ap_String_Id.h.h:1323
+#: po/tmp/ap_String_Id.h.h:1322
 msgid "Import style definitions from a document"
 msgstr "Importa les definicions d'estil d'un document"
 
 #. DLG_Styles_LBL_InUse
-#: po/tmp/ap_String_Id.h.h:1325
+#: po/tmp/ap_String_Id.h.h:1324
 msgid "In Use"
 msgstr "En ús"
 
 #. WORD_PassInvalid
-#: po/tmp/ap_String_Id.h.h:1327
+#: po/tmp/ap_String_Id.h.h:1326
 msgid "Incorrect Password"
 msgstr "La contrasenya no és correcta"
 
 #. TOOLBAR_LABEL_INDENT
 #. TOOLBAR_STATUSLINE_INDENT
 #. TOOLBAR_TOOLTIP_INDENT
-#: po/tmp/ap_String_Id.h.h:1331
+#: po/tmp/ap_String_Id.h.h:1330
 msgid "Increase indent"
 msgstr "Augmenta el sagnat"
 
 #. DLG_Para_LabelIndentation
-#: po/tmp/ap_String_Id.h.h:1333
+#: po/tmp/ap_String_Id.h.h:1332
 msgid "Indentation"
 msgstr "Sagnat"
 
 #. DLG_Para_TabLabelIndentsAndSpacing
-#: po/tmp/ap_String_Id.h.h:1335
+#: po/tmp/ap_String_Id.h.h:1334
 msgid "Indents and Spacing"
 msgstr "Sagnat i espaiat"
 
 #. DLG_ToggleCase_FirstUpperCase
-#: po/tmp/ap_String_Id.h.h:1337
+#: po/tmp/ap_String_Id.h.h:1336
 msgid "Initial Caps"
 msgstr "Majúscules inicials"
 
 #
 #. DLG_FormatFootnotes_EndInitialVal
-#: po/tmp/ap_String_Id.h.h:1339
+#: po/tmp/ap_String_Id.h.h:1338
 msgid "Initial Endnote value"
 msgstr "Valor inicial de la nota final"
 
 #
 #. DLG_FormatFootnotes_FootInitialVal
-#: po/tmp/ap_String_Id.h.h:1341
+#: po/tmp/ap_String_Id.h.h:1340
 msgid "Initial Footnote value"
 msgstr "Valor inicial de la nota al peu"
 
 #. DLG_Options_Label_InnerQuoteStyle
-#: po/tmp/ap_String_Id.h.h:1343
+#: po/tmp/ap_String_Id.h.h:1342
 msgid "Inner (single) quote style"
 msgstr "Estil de cites interior (única)"
 
+#. InsertModeFieldINS
 #. DLG_Break_Insert
 #. MENU_STATUSLINE_TABLE_INSERT
 #. DLG_IP_Button_Label
-#: po/tmp/ap_String_Id.h.h:1346 po/tmp/xap_String_Id.h.h:443
+#: po/tmp/ap_String_Id.h.h:1346 po/tmp/xap_String_Id.h.h:465
 msgid "Insert"
 msgstr "Insereix"
 
@@ -3834,7 +3835,7 @@ msgstr "Marques de disposició invisib&les"
 #. TOOLBAR_STATUSLINE_FMT_ITALIC
 #. TOOLBAR_TOOLTIP_FMT_ITALIC
 #. DLG_UFS_StyleItalic
-#: po/tmp/ap_String_Id.h.h:1469 po/tmp/xap_String_Id.h.h:473
+#: po/tmp/ap_String_Id.h.h:1469 po/tmp/xap_String_Id.h.h:495
 msgid "Italic"
 msgstr "Cursiva"
 
@@ -4096,13 +4097,13 @@ msgstr "Bloca la disposició de les barres d'eines actuals"
 
 #. DLG_Lists_Lower_Case_List
 #. STYLE_LOWERCASELIST
-#: po/tmp/ap_String_Id.h.h:1571 po/tmp/xap_String_Id.h.h:512
+#: po/tmp/ap_String_Id.h.h:1571 po/tmp/xap_String_Id.h.h:536
 msgid "Lower Case List"
 msgstr "Llista en minúscules"
 
 #. DLG_Lists_Lower_Roman_List
 #. STYLE_LOWERROMANLIST
-#: po/tmp/ap_String_Id.h.h:1573 po/tmp/xap_String_Id.h.h:514
+#: po/tmp/ap_String_Id.h.h:1573 po/tmp/xap_String_Id.h.h:538
 msgid "Lower Roman List"
 msgstr "Llista romana en minúscules"
 
@@ -4466,7 +4467,7 @@ msgstr "Numerada"
 
 #. DLG_Lists_Numbered_List
 #. STYLE_NUMBER_LIST
-#: po/tmp/ap_String_Id.h.h:1711 po/tmp/xap_String_Id.h.h:558
+#: po/tmp/ap_String_Id.h.h:1711 po/tmp/xap_String_Id.h.h:586
 msgid "Numbered List"
 msgstr "Llista numerada"
 
@@ -4484,38 +4485,33 @@ msgstr "Numeració"
 msgid "Numbers"
 msgstr "Números"
 
-#. InsertModeFieldOVR
-#: po/tmp/ap_String_Id.h.h:1721
-msgid "OVR"
-msgstr "SOB"
-
 #. DLG_Column_One
-#: po/tmp/ap_String_Id.h.h:1723
+#: po/tmp/ap_String_Id.h.h:1721
 msgid "One"
 msgstr "Una"
 
 #. MENU_LABEL_FILE_IMPORT
-#: po/tmp/ap_String_Id.h.h:1725
+#: po/tmp/ap_String_Id.h.h:1723
 msgid "Op&en Copy"
 msgstr "Obr&e la còpia"
 
 #. TOOLBAR_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h.h:1727
+#: po/tmp/ap_String_Id.h.h:1725
 msgid "Open"
 msgstr "Obre"
 
 #. MENU_LABEL_OPEN_TEMPLATE
-#: po/tmp/ap_String_Id.h.h:1729
+#: po/tmp/ap_String_Id.h.h:1727
 msgid "Open Template"
 msgstr "Obre una plantilla"
 
 #. MENU_STATUSLINE_FILE_IMPORT
-#: po/tmp/ap_String_Id.h.h:1731
+#: po/tmp/ap_String_Id.h.h:1729
 msgid "Open a document by making a copy"
 msgstr "Obre un document fent-ne una còpia"
 
 #. MENU_STATUSLINE_FILE_RECENT
-#: po/tmp/ap_String_Id.h.h:1733
+#: po/tmp/ap_String_Id.h.h:1731
 msgid "Open a recently used document"
 msgstr "Obre un document usat recentment"
 
@@ -4523,12 +4519,12 @@ msgstr "Obre un document usat recentment"
 #. MENU_STATUSLINE_FILE_OPEN
 #. TOOLBAR_STATUSLINE_FILE_OPEN
 #. TOOLBAR_TOOLTIP_FILE_OPEN
-#: po/tmp/ap_String_Id.h.h:1738
+#: po/tmp/ap_String_Id.h.h:1736
 msgid "Open an existing document"
 msgstr "Obre un document existent"
 
 #. MENU_STATUSLINE_WINDOW_NEW
-#: po/tmp/ap_String_Id.h.h:1740
+#: po/tmp/ap_String_Id.h.h:1738
 msgid "Open another window for the document"
 msgstr "Obre una altra finestra per al document"
 
@@ -4541,28 +4537,28 @@ msgstr "Obre una altra finestra per al document"
 #. MENU_STATUSLINE_FILE_RECENT_7
 #. MENU_STATUSLINE_FILE_RECENT_8
 #. MENU_STATUSLINE_FILE_RECENT_9
-#: po/tmp/ap_String_Id.h.h:1750
+#: po/tmp/ap_String_Id.h.h:1748
 msgid "Open this document"
 msgstr "Obre aquest document"
 
 #. DLG_PageSetup_Orient
-#: po/tmp/ap_String_Id.h.h:1752
+#: po/tmp/ap_String_Id.h.h:1750
 msgid "Orientation..."
 msgstr "Orientació..."
 
 #. DLG_Options_TabLabel_Other
-#: po/tmp/ap_String_Id.h.h:1754
+#: po/tmp/ap_String_Id.h.h:1752
 msgid "Other"
 msgstr "Altres"
 
 #. MSG_IE_NoMemory
-#: po/tmp/ap_String_Id.h.h:1756
+#: po/tmp/ap_String_Id.h.h:1754
 #, c-format
 msgid "Out of memory attempting to open %s"
 msgstr "No hi ha prou memòria per a obrir %s"
 
 #. DLG_Options_Label_OuterQuoteStyle
-#: po/tmp/ap_String_Id.h.h:1758
+#: po/tmp/ap_String_Id.h.h:1756
 msgid "Outer (double) quote style"
 msgstr "Estil de cites exterior (doble)"
 
@@ -4570,14 +4566,20 @@ msgstr "Estil de cites exterior (doble)"
 #. TOOLBAR_STATUSLINE_FMT_OVERLINE
 #. TOOLBAR_TOOLTIP_FMT_OVERLINE
 #. DLG_UFS_OverlineCheck
-#: po/tmp/ap_String_Id.h.h:1762 po/tmp/xap_String_Id.h.h:572
+#: po/tmp/ap_String_Id.h.h:1760 po/tmp/xap_String_Id.h.h:600
 msgid "Overline"
 msgstr "Sobreratllat"
 
 #. MENU_STATUSLINE_FMT_OVERLINE
-#: po/tmp/ap_String_Id.h.h:1764
+#: po/tmp/ap_String_Id.h.h:1762
 msgid "Overline the selection (toggle)"
 msgstr "Sobreratlla la selecció (commuta)"
+
+#. InsertModeFieldOVR
+#: po/tmp/ap_String_Id.h.h:1764
+#, fuzzy
+msgid "Overwrite"
+msgstr "Sobreratllat"
 
 #
 #. MENU_LABEL_FILE_PROPERTIES
@@ -4818,7 +4820,7 @@ msgstr "Preferències"
 #. DLG_Lists_Preview
 #. DLG_PageNumbers_Preview
 #. DLG_Zoom_PreviewFrame
-#: po/tmp/ap_String_Id.h.h:1862 po/tmp/xap_String_Id.h.h:604
+#: po/tmp/ap_String_Id.h.h:1862 po/tmp/xap_String_Id.h.h:632
 msgid "Preview"
 msgstr "Previsualització"
 
@@ -4847,7 +4849,7 @@ msgstr ""
 #. TOOLBAR_LABEL_FILE_PRINT
 #. DLG_UP_PrintTitle
 #. DLG_UP_PrintButton
-#: po/tmp/ap_String_Id.h.h:1873 po/tmp/xap_String_Id.h.h:609
+#: po/tmp/ap_String_Id.h.h:1873 po/tmp/xap_String_Id.h.h:637
 msgid "Print"
 msgstr "Imprimeix"
 
@@ -4889,7 +4891,7 @@ msgstr "Imprimeix utilitzant el programa de control PS intern"
 
 #. MSG_PrintingDoc
 #: po/tmp/ap_String_Id.h.h:1890
-msgid "Printing Document.."
+msgid "Printing Document..."
 msgstr "S'està imprimint el document..."
 
 #. MSG_PrintStatus
@@ -5089,12 +5091,11 @@ msgstr "Reemplaça"
 msgid "Replace &All"
 msgstr "Reemplaça-ho to&t"
 
-#
-#
 #. DLG_Annotation_Replace_tooltip
 #: po/tmp/ap_String_Id.h.h:1969
-msgid "Replace selection with annotation"
-msgstr "Reemplaça el text seleccionat amb una anotació"
+#, fuzzy
+msgid "Replace the annotated text with the annotation content"
+msgstr "Reemplaça el text indicat per un altre"
 
 #. MENU_STATUSLINE_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h.h:1971
@@ -5392,7 +5393,7 @@ msgstr "Mostra l'historial del document actual"
 #
 #. MENU_STATUSLINE_TABLE_SELECT
 #. DLG_Select
-#: po/tmp/ap_String_Id.h.h:2084 po/tmp/xap_String_Id.h.h:669
+#: po/tmp/ap_String_Id.h.h:2084 po/tmp/xap_String_Id.h.h:699
 msgid "Select"
 msgstr "Selecciona"
 
@@ -5469,7 +5470,7 @@ msgstr "Selecciona tot el document"
 #
 #. DLG_FormatTable_Apply_To_Selection
 #. DLG_UP_Selection
-#: po/tmp/ap_String_Id.h.h:2111 po/tmp/xap_String_Id.h.h:677
+#: po/tmp/ap_String_Id.h.h:2111 po/tmp/xap_String_Id.h.h:707
 msgid "Selection"
 msgstr "Selecció"
 
@@ -5654,7 +5655,7 @@ msgstr "Tecla de drecera"
 
 #. DLG_Options_Label_Show
 #. DLG_Show
-#: po/tmp/ap_String_Id.h.h:2177 po/tmp/xap_String_Id.h.h:689
+#: po/tmp/ap_String_Id.h.h:2177 po/tmp/xap_String_Id.h.h:721
 msgid "Show"
 msgstr "Mostra"
 
@@ -5795,123 +5796,128 @@ msgstr "Cometes intel·ligents"
 msgid "So&rt Table"
 msgstr "O&rdena la taula"
 
+#. MSG_OpenRecovered
+#: po/tmp/ap_String_Id.h.h:2232
+msgid "Some errors were encountered during the import."
+msgstr ""
+
 #
 #. MENU_LABEL_TABLE_SORTCOLSASCEND
-#: po/tmp/ap_String_Id.h.h:2232
+#: po/tmp/ap_String_Id.h.h:2234
 msgid "Sort Columns in Ascending Order"
 msgstr "Ordena les columnes en ordre ascendent"
 
 #
 #. MENU_STATUSLINE_TABLE_SORTCOLSASCEND
-#: po/tmp/ap_String_Id.h.h:2234
+#: po/tmp/ap_String_Id.h.h:2236
 msgid "Sort Columns in Ascending Order based on Selected Row"
 msgstr ""
 "Ordena les columnes en ordre ascendent basant-se en la fila seleccionada"
 
 #
 #. MENU_LABEL_TABLE_SORTCOLSDESCEND
-#: po/tmp/ap_String_Id.h.h:2236
+#: po/tmp/ap_String_Id.h.h:2238
 msgid "Sort Columns in Descending Order"
 msgstr "Ordena les columnes en ordre descendent"
 
 #
 #. MENU_STATUSLINE_TABLE_SORTCOLSDESCEND
-#: po/tmp/ap_String_Id.h.h:2238
+#: po/tmp/ap_String_Id.h.h:2240
 msgid "Sort Columns in Descending Order based on Selected Row"
 msgstr ""
 "Ordena les columnes en ordre descendent basant-se en la fila seleccionada"
 
 #
 #. MENU_LABEL_TABLE_SORTROWSASCEND
-#: po/tmp/ap_String_Id.h.h:2240
+#: po/tmp/ap_String_Id.h.h:2242
 msgid "Sort Rows in Ascending Order"
 msgstr "Ordena les files en ordre ascendent"
 
 #
 #. MENU_STATUSLINE_TABLE_SORTROWSASCEND
-#: po/tmp/ap_String_Id.h.h:2242
+#: po/tmp/ap_String_Id.h.h:2244
 msgid "Sort Rows in Ascending Order based on selected Column"
 msgstr ""
 "Ordena les files en ordre ascendent basant-se en la columna seleccionada"
 
 #
 #. MENU_LABEL_TABLE_SORTROWSDESCEND
-#: po/tmp/ap_String_Id.h.h:2244
+#: po/tmp/ap_String_Id.h.h:2246
 msgid "Sort Rows in Descending Order"
 msgstr "Ordena les files en ordre descendent"
 
 #
 #. MENU_STATUSLINE_TABLE_SORTROWSDESCEND
-#: po/tmp/ap_String_Id.h.h:2246
+#: po/tmp/ap_String_Id.h.h:2248
 msgid "Sort Rows in Descending Order based on Selected Column"
 msgstr ""
 "Ordena les files en ordre descendent basant-se en la columna seleccionada"
 
 #
 #. MENU_STATUSLINE_TABLE_SORT
-#: po/tmp/ap_String_Id.h.h:2248
+#: po/tmp/ap_String_Id.h.h:2250
 msgid "Sort Table"
 msgstr "Ordena la taula"
 
 #
 #. DLG_MetaData_Source_LBL
-#: po/tmp/ap_String_Id.h.h:2250
+#: po/tmp/ap_String_Id.h.h:2252
 msgid "Source:"
 msgstr "Font:"
 
 #. DLG_Column_Space_After
-#: po/tmp/ap_String_Id.h.h:2252
+#: po/tmp/ap_String_Id.h.h:2254
 msgid "Space after Column"
 msgstr "Espai després de la columna"
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
 #. TOOLBAR_TOOLTIP_PARA_12BEFORE
-#: po/tmp/ap_String_Id.h.h:2255
+#: po/tmp/ap_String_Id.h.h:2257
 msgid "Space before: 12 pt"
 msgstr "Espai previ: 12 pt"
 
 #. TOOLBAR_STATUSLINE_PARA_0BEFORE
 #. TOOLBAR_TOOLTIP_PARA_0BEFORE
-#: po/tmp/ap_String_Id.h.h:2258
+#: po/tmp/ap_String_Id.h.h:2260
 msgid "Space before: None"
 msgstr "Espai previ: cap"
 
 #. DLG_Para_LabelSpacing
-#: po/tmp/ap_String_Id.h.h:2260
+#: po/tmp/ap_String_Id.h.h:2262
 msgid "Spacing"
 msgstr "Espaiat"
 
 #
 #. DLG_Options_SpellCheckingTitle
-#: po/tmp/ap_String_Id.h.h:2262
+#: po/tmp/ap_String_Id.h.h:2264
 msgid "Spell Checking"
 msgstr "Verificació de l'ortografia"
 
 #. TOOLBAR_LABEL_SPELLCHECK
-#: po/tmp/ap_String_Id.h.h:2264
+#: po/tmp/ap_String_Id.h.h:2266
 msgid "Spellcheck"
 msgstr "Ortografia"
 
 #. TOOLBAR_STATUSLINE_SPELLCHECK
 #. TOOLBAR_TOOLTIP_SPELLCHECK
-#: po/tmp/ap_String_Id.h.h:2267
+#: po/tmp/ap_String_Id.h.h:2269
 msgid "Spellcheck the document"
 msgstr "Comprova l'ortografia del document"
 
 #. DLG_Spell_SpellTitle
 #. DLG_Options_TabLabel_Spelling
-#: po/tmp/ap_String_Id.h.h:2270
+#: po/tmp/ap_String_Id.h.h:2272
 msgid "Spelling"
 msgstr "Ortografia"
 
 #. MENU_LABEL_TOOLS_SPELLPREFS
-#: po/tmp/ap_String_Id.h.h:2272
+#: po/tmp/ap_String_Id.h.h:2274
 msgid "Spelling &Options"
 msgstr "&Opcions del corrector"
 
 #
 #. MENU_LABEL_TABLE_SPLIT_TABLE
-#: po/tmp/ap_String_Id.h.h:2274
+#: po/tmp/ap_String_Id.h.h:2276
 msgid "Spli&t Table"
 msgstr "Dividei&x la taula"
 
@@ -5919,158 +5925,158 @@ msgstr "Dividei&x la taula"
 #. DLG_SplitCellsTitle
 #. DLG_SplitCells_Frame
 #. MENU_STATUSLINE_TABLE_SPLIT_CELLS
-#: po/tmp/ap_String_Id.h.h:2278
+#: po/tmp/ap_String_Id.h.h:2280
 msgid "Split Cells"
 msgstr "Divideix les cel·les"
 
 #
 #. MENU_STATUSLINE_TABLE_SPLIT_TABLE
-#: po/tmp/ap_String_Id.h.h:2280
+#: po/tmp/ap_String_Id.h.h:2282
 msgid "Split Table"
 msgstr "Divideix la taula"
 
 #
 #. TOOLBAR_LABEL_SPLIT_CELLS
-#: po/tmp/ap_String_Id.h.h:2282
+#: po/tmp/ap_String_Id.h.h:2284
 msgid "Split cells"
 msgstr "Divideix les cel·les"
 
 #
 #. DLG_SplitCells_HoriMid
 #. DLG_SplitCells_VertMid
-#: po/tmp/ap_String_Id.h.h:2285
+#: po/tmp/ap_String_Id.h.h:2287
 msgid "Split in Middle"
 msgstr "Divideix al mig"
 
 #
 #. DLG_SplitCells_Below
-#: po/tmp/ap_String_Id.h.h:2287
+#: po/tmp/ap_String_Id.h.h:2289
 msgid "Split on Bottom Side"
 msgstr "Divideix a la part inferior"
 
 #
 #. DLG_SplitCells_Left
-#: po/tmp/ap_String_Id.h.h:2289
+#: po/tmp/ap_String_Id.h.h:2291
 msgid "Split on Left Side"
 msgstr "Divideix a la banda esquerra"
 
 #
 #. DLG_SplitCells_Right
-#: po/tmp/ap_String_Id.h.h:2291
+#: po/tmp/ap_String_Id.h.h:2293
 msgid "Split on Right Side"
 msgstr "Divideix a la banda dreta"
 
 #
 #. DLG_SplitCells_Above
-#: po/tmp/ap_String_Id.h.h:2293
+#: po/tmp/ap_String_Id.h.h:2295
 msgid "Split on Top Side"
 msgstr "Divideix a la part superior"
 
 #
 #. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h.h:2295
+#: po/tmp/ap_String_Id.h.h:2297
 msgid "Split on all delimiters except spaces"
 msgstr "Divideix a tots els delimitadors excepte els espais"
 
 #
 #. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
-#: po/tmp/ap_String_Id.h.h:2297
+#: po/tmp/ap_String_Id.h.h:2299
 msgid "Split on all word delimiters including spaces"
 msgstr "Divideix a tots els delimitadors de paraula incloent els espais"
 
 #
 #. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h.h:2299
+#: po/tmp/ap_String_Id.h.h:2301
 msgid "Split text at commas or tabs"
 msgstr "Divideix el text a les comes o tabuladors"
 
 #
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
-#: po/tmp/ap_String_Id.h.h:2301
+#: po/tmp/ap_String_Id.h.h:2303
 msgid "Split text at spaces, commas, or tabs"
 msgstr "Divideix el text als espais, comes, o tabuladors"
 
 #
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
-#: po/tmp/ap_String_Id.h.h:2304
+#: po/tmp/ap_String_Id.h.h:2306
 msgid "Split this cell"
 msgstr "Divideix aquesta cel·la"
 
 #. DLG_Lists_Square_List
 #. STYLE_SQUARELIST
-#: po/tmp/ap_String_Id.h.h:2306 po/tmp/xap_String_Id.h.h:701
+#: po/tmp/ap_String_Id.h.h:2308 po/tmp/xap_String_Id.h.h:735
 msgid "Square List"
 msgstr "Llista de quadrats"
 
 #. MENU_LABEL_FMT_STYLE
-#: po/tmp/ap_String_Id.h.h:2308
+#: po/tmp/ap_String_Id.h.h:2310
 msgid "St&yle"
 msgstr "&Estil"
 
 #
 #. TB_Standard
-#: po/tmp/ap_String_Id.h.h:2310
+#: po/tmp/ap_String_Id.h.h:2312
 msgid "Standard"
 msgstr "Estàndard"
 
 #. DLG_Options_Label_ViewStandardTB
-#: po/tmp/ap_String_Id.h.h:2312
+#: po/tmp/ap_String_Id.h.h:2314
 msgid "Standard Toolbar"
 msgstr "Barra d'eines estàndard"
 
 #. DLG_Lists_Star_List
 #. STYLE_STARLIST
-#: po/tmp/ap_String_Id.h.h:2314 po/tmp/xap_String_Id.h.h:705
+#: po/tmp/ap_String_Id.h.h:2316 po/tmp/xap_String_Id.h.h:739
 msgid "Star List"
 msgstr "Llista d'estrelles"
 
 #. DLG_Lists_Start
-#: po/tmp/ap_String_Id.h.h:2316
+#: po/tmp/ap_String_Id.h.h:2318
 msgid "Start At:"
 msgstr "Inicia amb:"
 
 #. DLG_Lists_Start_New_List
 #. DLG_Lists_Start_New
-#: po/tmp/ap_String_Id.h.h:2319
+#: po/tmp/ap_String_Id.h.h:2321
 msgid "Start New List"
 msgstr "Inicia una llista nova"
 
 #. DLG_Lists_Start_Sub
-#: po/tmp/ap_String_Id.h.h:2321
+#: po/tmp/ap_String_Id.h.h:2323
 msgid "Start Sublist"
 msgstr "Inicia una subllista"
 
 #
 #. DLG_MarkRevisions_Check2Label
-#: po/tmp/ap_String_Id.h.h:2323
+#: po/tmp/ap_String_Id.h.h:2325
 msgid "Start a new revision"
 msgstr "Inicia una revisió nova"
 
 #
 #. MENU_LABEL_TOOLS_REVISIONS_NEW_REVISION
-#: po/tmp/ap_String_Id.h.h:2325
+#: po/tmp/ap_String_Id.h.h:2327
 msgid "Start ne&w revision"
 msgstr "Inicia una revisió no&va"
 
 #
 #. MENU_STATUSLINE_TOOLS_REVISIONS_NEW_REVISION
-#: po/tmp/ap_String_Id.h.h:2327
+#: po/tmp/ap_String_Id.h.h:2329
 msgid "Start revision distinct from the current one"
 msgstr "Inicia una revisió diferent de l'actual"
 
 #. DLG_WordCount_Statistics
-#: po/tmp/ap_String_Id.h.h:2329
+#: po/tmp/ap_String_Id.h.h:2331
 msgid "Statistics:"
 msgstr "Estadístiques:"
 
 #. DLG_Lists_Stop_Current_List
-#: po/tmp/ap_String_Id.h.h:2331
+#: po/tmp/ap_String_Id.h.h:2333
 msgid "Stop Current List"
 msgstr "Atura la llista actual"
 
 #. MENU_LABEL_FMT_STRIKE
-#: po/tmp/ap_String_Id.h.h:2333
+#: po/tmp/ap_String_Id.h.h:2335
 msgid "Stri&ke"
 msgstr "&Barrat"
 
@@ -6078,78 +6084,78 @@ msgstr "&Barrat"
 #. TOOLBAR_STATUSLINE_FMT_STRIKE
 #. TOOLBAR_TOOLTIP_FMT_STRIKE
 #. DLG_UFS_StrikeoutCheck
-#: po/tmp/ap_String_Id.h.h:2337 po/tmp/xap_String_Id.h.h:707
+#: po/tmp/ap_String_Id.h.h:2339 po/tmp/xap_String_Id.h.h:741
 msgid "Strike"
 msgstr "Barrat"
 
 #. MENU_STATUSLINE_FMT_STRIKE
-#: po/tmp/ap_String_Id.h.h:2339
+#: po/tmp/ap_String_Id.h.h:2341
 msgid "Strikeout the selection (toggle)"
 msgstr "Barra la selecció (commuta)"
 
 #
 #. MENU_LABEL_FMT_STYLIST
-#: po/tmp/ap_String_Id.h.h:2341
+#: po/tmp/ap_String_Id.h.h:2343
 msgid "Sty&list"
 msgstr "Es&tilista"
 
 #. TOOLBAR_LABEL_FMT_STYLE
 #. TOOLBAR_STATUSLINE_FMT_STYLE
 #. TOOLBAR_TOOLTIP_FMT_STYLE
-#: po/tmp/ap_String_Id.h.h:2345
+#: po/tmp/ap_String_Id.h.h:2347
 msgid "Style"
 msgstr "Estil"
 
 #. DLG_Styles_ErrNotTitle1
-#: po/tmp/ap_String_Id.h.h:2347
+#: po/tmp/ap_String_Id.h.h:2349
 msgid "Style Name - "
 msgstr "Nom de l'estil - "
 
 #. DLG_Styles_ModifyName
-#: po/tmp/ap_String_Id.h.h:2349
+#: po/tmp/ap_String_Id.h.h:2351
 msgid "Style Name:"
 msgstr "Nom de l'estil:"
 
 #. DLG_Styles_ModifyType
-#: po/tmp/ap_String_Id.h.h:2351
+#: po/tmp/ap_String_Id.h.h:2353
 msgid "Style Type"
 msgstr "Tipus d'estil"
 
 #. DLG_Styles_ModifyFollowing
-#: po/tmp/ap_String_Id.h.h:2353
+#: po/tmp/ap_String_Id.h.h:2355
 msgid "Style for following paragraph"
 msgstr "Estil per al paràgraf següent"
 
 #. DLG_Styles_ErrBlankName
-#: po/tmp/ap_String_Id.h.h:2355
+#: po/tmp/ap_String_Id.h.h:2357
 msgid "Style name cannot be left blank"
 msgstr "No es pot deixar el nom de l'estil en blanc"
 
 #. DLG_Lists_Style
 #. DLG_UFS_StyleLabel
-#: po/tmp/ap_String_Id.h.h:2357 po/tmp/xap_String_Id.h.h:709
+#: po/tmp/ap_String_Id.h.h:2359 po/tmp/xap_String_Id.h.h:743
 msgid "Style:"
 msgstr "Estil:"
 
 #. DLG_Styles_StylesTitle
 #. DLG_Stylist_Styles
-#: po/tmp/ap_String_Id.h.h:2360
+#: po/tmp/ap_String_Id.h.h:2362
 msgid "Styles"
 msgstr "Estils"
 
 #
 #. DLG_Stylist_Title
-#: po/tmp/ap_String_Id.h.h:2362
+#: po/tmp/ap_String_Id.h.h:2364
 msgid "Stylist"
 msgstr "Estilista"
 
 #. FIELD_Document_Subject
-#: po/tmp/ap_String_Id.h.h:2364
+#: po/tmp/ap_String_Id.h.h:2366
 msgid "Subject"
 msgstr "Assumpte"
 
 #. DLG_MetaData_Subject_LBL
-#: po/tmp/ap_String_Id.h.h:2366
+#: po/tmp/ap_String_Id.h.h:2368
 msgid "Subject:"
 msgstr "Assumpte:"
 
@@ -6157,52 +6163,52 @@ msgstr "Assumpte:"
 #. TOOLBAR_STATUSLINE_FMT_SUBSCRIPT
 #. TOOLBAR_TOOLTIP_FMT_SUBSCRIPT
 #. DLG_UFS_SubScript
-#: po/tmp/ap_String_Id.h.h:2370 po/tmp/xap_String_Id.h.h:713
+#: po/tmp/ap_String_Id.h.h:2372 po/tmp/xap_String_Id.h.h:747
 msgid "Subscript"
 msgstr "Subíndex"
 
 #. DLG_Spell_Suggestions
-#: po/tmp/ap_String_Id.h.h:2372
+#: po/tmp/ap_String_Id.h.h:2374
 msgid "Sugg&estions:"
 msgstr "Sugg&eriments:"
 
 #. DLG_Options_Label_SpellMainOnly
-#: po/tmp/ap_String_Id.h.h:2374
+#: po/tmp/ap_String_Id.h.h:2376
 msgid "Suggest from &main dictionary only"
 msgstr "Suggereix no&més del diccionari principal"
 
 #
 #. MENU_LABEL_TABLE_INSERT_SUMROWS
-#: po/tmp/ap_String_Id.h.h:2376
+#: po/tmp/ap_String_Id.h.h:2378
 msgid "Sum a Column"
 msgstr "Suma una columna"
 
 #
 #. MENU_LABEL_TABLE_INSERT_SUMCOLS
-#: po/tmp/ap_String_Id.h.h:2378
+#: po/tmp/ap_String_Id.h.h:2380
 msgid "Sum a Row"
 msgstr "Suma una fila"
 
 #
 #. FIELD_Numbers_TableSumRows
-#: po/tmp/ap_String_Id.h.h:2380
+#: po/tmp/ap_String_Id.h.h:2382
 msgid "Sum a Table Column"
 msgstr "Suma una columna de la taula"
 
 #
 #. FIELD_Numbers_TableSumCols
-#: po/tmp/ap_String_Id.h.h:2382
+#: po/tmp/ap_String_Id.h.h:2384
 msgid "Sum a Table Row"
 msgstr "Suma una fila de la taula"
 
 #
 #. DLG_MetaData_TAB_Summary
-#: po/tmp/ap_String_Id.h.h:2384
+#: po/tmp/ap_String_Id.h.h:2386
 msgid "Summary"
 msgstr "Resum"
 
 #. MENU_LABEL_FMT_SUPERSCRIPT
-#: po/tmp/ap_String_Id.h.h:2386
+#: po/tmp/ap_String_Id.h.h:2388
 msgid "Supe&rscript"
 msgstr "Supe&ríndex"
 
@@ -6210,39 +6216,39 @@ msgstr "Supe&ríndex"
 #. TOOLBAR_STATUSLINE_FMT_SUPERSCRIPT
 #. TOOLBAR_TOOLTIP_FMT_SUPERSCRIPT
 #. DLG_UFS_SuperScript
-#: po/tmp/ap_String_Id.h.h:2390 po/tmp/xap_String_Id.h.h:715
+#: po/tmp/ap_String_Id.h.h:2392 po/tmp/xap_String_Id.h.h:749
 msgid "Superscript"
 msgstr "Superíndex"
 
 #. MENU_LABEL_INSERT_SYMBOL
-#: po/tmp/ap_String_Id.h.h:2392
+#: po/tmp/ap_String_Id.h.h:2394
 msgid "Sy&mbol"
 msgstr "&Símbol"
 
 #. TOOLBAR_LABEL_INSERT_SYMBOL
-#: po/tmp/ap_String_Id.h.h:2394
+#: po/tmp/ap_String_Id.h.h:2396
 msgid "Symbol"
 msgstr "Símbol"
 
 #
 #. MENU_LABEL_TABLE
-#: po/tmp/ap_String_Id.h.h:2396
+#: po/tmp/ap_String_Id.h.h:2398
 msgid "T&able"
 msgstr "&Taula"
 
 #. TabStopStatus
-#: po/tmp/ap_String_Id.h.h:2398
+#: po/tmp/ap_String_Id.h.h:2400
 #, c-format
 msgid "Tab Stop [%s]"
 msgstr "Tabulació [%s]"
 
 #. DLG_Tab_Label_TabPosition
-#: po/tmp/ap_String_Id.h.h:2400
+#: po/tmp/ap_String_Id.h.h:2402
 msgid "Tab stop position:"
 msgstr "Posició de la tabulació:"
 
 #. DLG_Tab_Label_TabToClear
-#: po/tmp/ap_String_Id.h.h:2402
+#: po/tmp/ap_String_Id.h.h:2404
 msgid "Tab stops to be cleared:"
 msgstr "Tabulacions per a eliminar:"
 
@@ -6250,111 +6256,111 @@ msgstr "Tabulacions per a eliminar:"
 #. DLG_FormatTable_Apply_To_Table
 #. MENU_STATUSLINE_TABLE
 #. TB_Table
-#: po/tmp/ap_String_Id.h.h:2406 po/tmp/xap_String_Id.h.h:725
+#: po/tmp/ap_String_Id.h.h:2408 po/tmp/xap_String_Id.h.h:759
 msgid "Table"
 msgstr "Taula"
 
 #
 #. DLG_InsertTable_TableSize_Capital
-#: po/tmp/ap_String_Id.h.h:2408
+#: po/tmp/ap_String_Id.h.h:2410
 msgid "Table Size"
 msgstr "Mida de la taula"
 
 #
 #. DLG_Options_Label_ViewTableTB
-#: po/tmp/ap_String_Id.h.h:2410
+#: po/tmp/ap_String_Id.h.h:2412
 msgid "Table Toolbar"
 msgstr "Barra d'eines de taules"
 
 #. MENU_LABEL_INSERT_TABLEOFCONTENTS
 #. MENU_LABEL_FMT_TABLEOFCONTENTS
-#: po/tmp/ap_String_Id.h.h:2413
+#: po/tmp/ap_String_Id.h.h:2415
 msgid "Table of Contents"
 msgstr "Índex"
 
 #
 #. FIELD_Numbers_TOCListLabel
-#: po/tmp/ap_String_Id.h.h:2415
+#: po/tmp/ap_String_Id.h.h:2417
 msgid "Table of Contents List Label"
 msgstr "Etiqueta de llista de l'índex"
 
 #
 #. FIELD_Numbers_TOCPageNumber
-#: po/tmp/ap_String_Id.h.h:2417
+#: po/tmp/ap_String_Id.h.h:2419
 msgid "Table of Contents Page"
 msgstr "Pàgina de l'índex"
 
 #
 #. DLG_InsertTable_TableSize
-#: po/tmp/ap_String_Id.h.h:2419
+#: po/tmp/ap_String_Id.h.h:2421
 msgid "Table size"
 msgstr "Mida de la taula"
 
 #. DLG_Styles_ModifyTabs
 #. DLG_Tab_TabTitle
-#: po/tmp/ap_String_Id.h.h:2422
+#: po/tmp/ap_String_Id.h.h:2424
 msgid "Tabs"
 msgstr "Tabulacions"
 
 #
 #. DLG_FormatTOC_DetailsTabPage
-#: po/tmp/ap_String_Id.h.h:2424
+#: po/tmp/ap_String_Id.h.h:2426
 msgid "Tabs and Page Numbering"
 msgstr "Tabulacions i numeració de pàgines"
 
 #. MENU_LABEL_FMT
-#: po/tmp/ap_String_Id.h.h:2426
+#: po/tmp/ap_String_Id.h.h:2428
 msgid "Te&xt Formatting"
 msgstr "&Formatació del text"
 
 #. DLG_Options_Label_Text
-#: po/tmp/ap_String_Id.h.h:2428
+#: po/tmp/ap_String_Id.h.h:2430
 msgid "Text"
 msgstr "Text"
 
 #
 #. DLG_FormatTOC_TextAfter
-#: po/tmp/ap_String_Id.h.h:2430
+#: po/tmp/ap_String_Id.h.h:2432
 msgid "Text &after:"
 msgstr "Text &després:"
 
 #
 #. DLG_FormatTOC_TextBefore
-#: po/tmp/ap_String_Id.h.h:2432
+#: po/tmp/ap_String_Id.h.h:2434
 msgid "Text &before:"
 msgstr "Text &abans:"
 
 #. DLG_Lists_Align
-#: po/tmp/ap_String_Id.h.h:2434
+#: po/tmp/ap_String_Id.h.h:2436
 msgid "Text Align:"
 msgstr "Alineació de la llista:"
 
 #
 #. MENU_LABEL_INSERT_TEXTBOX
 #. MENU_LABEL_FMT_FRAME
-#: po/tmp/ap_String_Id.h.h:2437
+#: po/tmp/ap_String_Id.h.h:2439
 msgid "Text Box"
 msgstr "Quadre de text"
 
 #
 #. DLG_Lists_PageFolding
-#: po/tmp/ap_String_Id.h.h:2439
+#: po/tmp/ap_String_Id.h.h:2441
 msgid "Text Folding"
 msgstr "Desplegament del text"
 
 #
 #. DLG_FormatFrame_TextWrapping
-#: po/tmp/ap_String_Id.h.h:2441
+#: po/tmp/ap_String_Id.h.h:2443
 msgid "Text Wrapping"
 msgstr "Ajustament del text"
 
 #. DLG_Options_Label_Both
-#: po/tmp/ap_String_Id.h.h:2443
+#: po/tmp/ap_String_Id.h.h:2445
 msgid "Text and Icon"
 msgstr "Text i icones"
 
 #. COMMAND_LINE_PRINTING_DEPRECATED
-#: po/tmp/ap_String_Id.h.h:2445
+#: po/tmp/ap_String_Id.h.h:2447
 msgid ""
 "The '--print' option has been removed as of AbiWord 2.8. You can achieve the "
 "desired behavior using AbiWord's command-line conversion tools and then "
@@ -6363,43 +6369,50 @@ msgid ""
 msgstr ""
 
 #. DLG_PageSetup_ErrBigMargins
-#: po/tmp/ap_String_Id.h.h:2447
+#: po/tmp/ap_String_Id.h.h:2449
 msgid "The margins selected are too large to fit on the page."
 msgstr "Els marges que heu seleccionat són massa grans per a la pàgina."
 
 #
 #. DLG_Options_Prompt_YouMustRestart
-#: po/tmp/ap_String_Id.h.h:2449
+#: po/tmp/ap_String_Id.h.h:2451
 msgid ""
 "The new user interface language will take effect the next time that you "
 "start the application"
 msgstr "El nou idioma de la interfície serà efectiu quan reinicieu l'aplicació"
 
 #. MSG_SpellDone
-#: po/tmp/ap_String_Id.h.h:2451
+#: po/tmp/ap_String_Id.h.h:2453
 msgid "The spelling check is complete."
 msgstr "La revisió ortogràfica ha finalitzat."
 
 #. MSG_HyperlinkCrossesBoundaries
-#: po/tmp/ap_String_Id.h.h:2453
+#: po/tmp/ap_String_Id.h.h:2455
 msgid ""
 "The text to which the hyperlink is to be attached must be within a single "
 "paragraph."
 msgstr "El text al que apunta un hiperenllaç ha de ser en un sol paràgraf."
 
 #. FIELD_DateTime_Wkday
-#: po/tmp/ap_String_Id.h.h:2455
+#: po/tmp/ap_String_Id.h.h:2457
 msgid "The weekday"
 msgstr "El dia de la setmana"
 
 #
 #. DLG_FormatTable_Thickness
-#: po/tmp/ap_String_Id.h.h:2457
+#: po/tmp/ap_String_Id.h.h:2459
 msgid "Thickness:"
 msgstr "Gruix:"
 
+#. MSG_BookmarkAlreadyExists
+#: po/tmp/ap_String_Id.h.h:2461
+msgid ""
+"This bookmark already exists. Would you like to replace the existing "
+"bookmark with this new one?"
+msgstr ""
+
 #. MSG_AfterRestartNew
-#: po/tmp/ap_String_Id.h.h:2459
+#: po/tmp/ap_String_Id.h.h:2463
 msgid ""
 "This change will only take effect when you restart AbiWord or create a new "
 "document."
@@ -6409,7 +6422,7 @@ msgstr ""
 
 #
 #. MSG_HiddenRevisions
-#: po/tmp/ap_String_Id.h.h:2461
+#: po/tmp/ap_String_Id.h.h:2465
 msgid ""
 "This document contains revisions which are currently hidden from view. "
 "Please see AbiWord documentation for information on working with revisions."
@@ -6418,18 +6431,19 @@ msgstr ""
 "documentació de l'AbiWord per a saber com treballar amb les revisions."
 
 #. DLG_Para_PreviewSampleFallback
-#: po/tmp/ap_String_Id.h.h:2463
+#: po/tmp/ap_String_Id.h.h:2467
+#, fuzzy
 msgid ""
 "This paragraph represents words as they might appear in your document.  To "
-"see text from your document used in this preview, position your cursor in a "
-"document paragraph with some text in it and open this dialog."
+"see the text from your document used in this preview, position your cursor "
+"in a document paragraph with some text in it and open this dialog."
 msgstr ""
 "Aquest paràgraf representa les paraules tal i com apareixerien al document. "
 "Si voleu veure el text del document utilitzat en aquesta previsualització, "
 "situeu el cursor en un paràgraf amb text i obriu aquest quadre de diàleg."
 
 #. DLG_Styles_ErrStyleNot
-#: po/tmp/ap_String_Id.h.h:2465
+#: po/tmp/ap_String_Id.h.h:2469
 msgid ""
 "This style does not exist \n"
 " so it cannot be modified"
@@ -6438,29 +6452,30 @@ msgstr ""
 " i per tant no es pot modificar"
 
 #. DLG_Column_Three
-#: po/tmp/ap_String_Id.h.h:2467
+#: po/tmp/ap_String_Id.h.h:2471
 msgid "Three"
 msgstr "Tres"
 
 #. DLG_Lists_Tick_List
 #. STYLE_TICKLIST
-#: po/tmp/ap_String_Id.h.h:2469 po/tmp/xap_String_Id.h.h:759
+#: po/tmp/ap_String_Id.h.h:2473 po/tmp/xap_String_Id.h.h:793
 msgid "Tick List"
 msgstr "Llista de verificació"
 
 #. FIELD_DateTime_TimeZone
-#: po/tmp/ap_String_Id.h.h:2471
+#: po/tmp/ap_String_Id.h.h:2475
 msgid "Time Zone"
 msgstr "Fus horari"
 
 #
 #. FIELD_Document_Title
-#: po/tmp/ap_String_Id.h.h:2473
+#: po/tmp/ap_String_Id.h.h:2477
 msgid "Title"
 msgstr "Títol"
 
 #. DLG_ToggleCase_TitleCase
-#: po/tmp/ap_String_Id.h.h:2475
+#. DLG_UFS_Effects_TitleCase
+#: po/tmp/ap_String_Id.h.h:2479 po/tmp/xap_String_Id.h.h:797
 msgid "Title Case"
 msgstr "Majúscules/minúscules d'un títol"
 
@@ -6468,17 +6483,23 @@ msgstr "Majúscules/minúscules d'un títol"
 #. DLG_MetaData_Title_LBL
 #. DLG_Annotation_Title_LBL
 #. DLG_Image_LblTitle
-#: po/tmp/ap_String_Id.h.h:2478 po/tmp/xap_String_Id.h.h:763
+#: po/tmp/ap_String_Id.h.h:2482 po/tmp/xap_String_Id.h.h:799
 msgid "Title:"
 msgstr "Títol:"
 
 #. DLG_Options_Label_Toolbars
-#: po/tmp/ap_String_Id.h.h:2480
+#: po/tmp/ap_String_Id.h.h:2484
 msgid "Toolbars"
 msgstr "Barres d'eines"
 
+#. DLG_PageNumbers_Header
+#: po/tmp/ap_String_Id.h.h:2486
+#, fuzzy
+msgid "Top"
+msgstr "&Superior:"
+
 #. TopMarginStatus
-#: po/tmp/ap_String_Id.h.h:2482
+#: po/tmp/ap_String_Id.h.h:2488
 #, c-format
 msgid "Top Margin [%s]"
 msgstr "Marge superior [%s]"
@@ -6488,39 +6509,39 @@ msgstr "Marge superior [%s]"
 #. TOOLBAR_STATUSLINE_FMT_TOPLINE
 #. TOOLBAR_TOOLTIP_FMT_TOPLINE
 #. DLG_UFS_ToplineCheck
-#: po/tmp/ap_String_Id.h.h:2487 po/tmp/xap_String_Id.h.h:769
+#: po/tmp/ap_String_Id.h.h:2493 po/tmp/xap_String_Id.h.h:805
 msgid "Topline"
 msgstr "Línia superior"
 
 #. DLG_Lists_Triangle_List
 #. STYLE_TRIANGLELIST
-#: po/tmp/ap_String_Id.h.h:2489 po/tmp/xap_String_Id.h.h:771
+#: po/tmp/ap_String_Id.h.h:2495 po/tmp/xap_String_Id.h.h:807
 msgid "Triangle List"
 msgstr "Llista de triangles"
 
 #. DLG_Column_Two
-#: po/tmp/ap_String_Id.h.h:2491
+#: po/tmp/ap_String_Id.h.h:2497
 msgid "Two"
 msgstr "Dues"
 
 #
 #. FIELD_Document_Type
-#: po/tmp/ap_String_Id.h.h:2493
+#: po/tmp/ap_String_Id.h.h:2499
 msgid "Type"
 msgstr "Tipus"
 
 #. DLG_InsertBookmark_Msg
-#: po/tmp/ap_String_Id.h.h:2495
+#: po/tmp/ap_String_Id.h.h:2501
 msgid "Type a name for the bookmark, or select an existing from the list."
 msgstr "Inseriu un nom de marcador o seleccioneu-lo de la llista."
 
 #. DLG_Lists_Type
-#: po/tmp/ap_String_Id.h.h:2497
+#: po/tmp/ap_String_Id.h.h:2503
 msgid "Type:"
 msgstr "Tipus:"
 
 #. DLG_ToggleCase_UpperCase
-#: po/tmp/ap_String_Id.h.h:2499
+#: po/tmp/ap_String_Id.h.h:2505
 msgid "UPPERCASE"
 msgstr "MAJÚSCULES"
 
@@ -6528,108 +6549,108 @@ msgstr "MAJÚSCULES"
 #. TOOLBAR_STATUSLINE_FMT_UNDERLINE
 #. TOOLBAR_TOOLTIP_FMT_UNDERLINE
 #. DLG_UFS_UnderlineCheck
-#: po/tmp/ap_String_Id.h.h:2503 po/tmp/xap_String_Id.h.h:791
+#: po/tmp/ap_String_Id.h.h:2509 po/tmp/xap_String_Id.h.h:827
 msgid "Underline"
 msgstr "Subratllat"
 
 #. MENU_STATUSLINE_FMT_UNDERLINE
-#: po/tmp/ap_String_Id.h.h:2505
+#: po/tmp/ap_String_Id.h.h:2511
 msgid "Underline the selection (toggle)"
 msgstr "Subratlla la selecció (commuta)"
 
 #. TOOLBAR_LABEL_EDIT_UNDO
-#: po/tmp/ap_String_Id.h.h:2507
+#: po/tmp/ap_String_Id.h.h:2513
 msgid "Undo"
 msgstr "Desfés"
 
 #. MENU_STATUSLINE_EDIT_UNDO
 #. TOOLBAR_STATUSLINE_EDIT_UNDO
 #. TOOLBAR_TOOLTIP_EDIT_UNDO
-#: po/tmp/ap_String_Id.h.h:2511
+#: po/tmp/ap_String_Id.h.h:2517
 msgid "Undo editing"
 msgstr "Desfés l'edició"
 
 #
 #. DLG_Annotation_OK_tooltip
-#: po/tmp/ap_String_Id.h.h:2513
+#: po/tmp/ap_String_Id.h.h:2519
 msgid "Update the annotation"
 msgstr "Actualitza l'anotació"
 
 #. DLG_Lists_Upper_Case_List
 #. STYLE_UPPERCASTELIST
-#: po/tmp/ap_String_Id.h.h:2515 po/tmp/xap_String_Id.h.h:825
+#: po/tmp/ap_String_Id.h.h:2521 po/tmp/xap_String_Id.h.h:861
 msgid "Upper Case List"
 msgstr "Llista en majúscules"
 
 #. DLG_Lists_Upper_Roman_List
 #. STYLE_UPPERROMANLIST
-#: po/tmp/ap_String_Id.h.h:2517 po/tmp/xap_String_Id.h.h:827
+#: po/tmp/ap_String_Id.h.h:2523 po/tmp/xap_String_Id.h.h:863
 msgid "Upper Roman List"
 msgstr "Llista romana superior"
 
 #. DLG_Column_RtlOrder
-#: po/tmp/ap_String_Id.h.h:2519
+#: po/tmp/ap_String_Id.h.h:2525
 msgid "Use RTL Order"
 msgstr "Utilitza l'ordre DAE"
 
 #. DLG_Options_Label_CustomSmartQuotes
-#: po/tmp/ap_String_Id.h.h:2521
+#: po/tmp/ap_String_Id.h.h:2527
 msgid "Use custom smart quote style"
 msgstr "Utilitza l'estil personalitzat de cometes intel·ligent"
 
 #. DLG_Options_Label_HebrewContextGlyphs
-#: po/tmp/ap_String_Id.h.h:2523
+#: po/tmp/ap_String_Id.h.h:2529
 msgid "Use glyph shaping for Hebrew"
 msgstr "Utilitza les formes simbòliques per a l'hebreu"
 
 #
 #. DLG_Options_Label_UI
-#: po/tmp/ap_String_Id.h.h:2525
+#: po/tmp/ap_String_Id.h.h:2531
 msgid "User Interface"
 msgstr "Interfície d'usuari"
 
 #
 #. DLG_Options_Label_UILang
-#: po/tmp/ap_String_Id.h.h:2527
+#: po/tmp/ap_String_Id.h.h:2533
 msgid "User Interface Language"
 msgstr "Idioma de la interfície d'usuari"
 
 #
 #. DLG_Stylist_UserStyles
-#: po/tmp/ap_String_Id.h.h:2529
+#: po/tmp/ap_String_Id.h.h:2535
 msgid "User defined Styles"
 msgstr "Estils definits per l'usuari"
 
 #
 #. DLG_Tab_Label_Existing
-#: po/tmp/ap_String_Id.h.h:2531
+#: po/tmp/ap_String_Id.h.h:2537
 msgid "User-defined Tabs"
 msgstr "Tabuladors definits per l'usuari"
 
 #. DLG_Styles_LBL_UserDefined
-#: po/tmp/ap_String_Id.h.h:2533
+#: po/tmp/ap_String_Id.h.h:2539
 msgid "User-defined styles"
 msgstr "Estils definits per l'usuari"
 
 #. FIELD_Application_Version
 #. DLG_History_Version_Version
-#: po/tmp/ap_String_Id.h.h:2535 po/tmp/xap_String_Id.h.h:835
+#: po/tmp/ap_String_Id.h.h:2541 po/tmp/xap_String_Id.h.h:873
 msgid "Version"
 msgstr "Versió"
 
 #. DLG_Options_TabLabel_View
-#: po/tmp/ap_String_Id.h.h:2537
+#: po/tmp/ap_String_Id.h.h:2543
 msgid "View"
 msgstr "Visualització"
 
 #
 #. MENU_STATUSLINE_TOOLS_HISTORY_SHOW
-#: po/tmp/ap_String_Id.h.h:2539
+#: po/tmp/ap_String_Id.h.h:2545
 msgid "View document history"
 msgstr "Mostra l'historial del document"
 
 #. MENU_STATUSLINE_VIEW_FULLSCREEN
-#: po/tmp/ap_String_Id.h.h:2541
+#: po/tmp/ap_String_Id.h.h:2547
 msgid "View the document in full screen mode"
 msgstr "Visualitza el document en mode de pantalla completa"
 
@@ -6642,96 +6663,96 @@ msgstr "Visualitza el document en mode de pantalla completa"
 #. MENU_STATUSLINE_WINDOW_7
 #. MENU_STATUSLINE_WINDOW_8
 #. MENU_STATUSLINE_WINDOW_9
-#: po/tmp/ap_String_Id.h.h:2551
+#: po/tmp/ap_String_Id.h.h:2557
 msgid "View this document"
 msgstr "Visualitza aquest document"
 
 #. DLG_Options_Label_ViewTooltips
-#: po/tmp/ap_String_Id.h.h:2553
+#: po/tmp/ap_String_Id.h.h:2559
 msgid "View tooltips"
 msgstr "Mostra les etiquetes d'ajuda"
 
 #. DLG_Options_Label_ViewViewFrame
-#: po/tmp/ap_String_Id.h.h:2555
+#: po/tmp/ap_String_Id.h.h:2561
 msgid "View..."
 msgstr "Mostra..."
 
 #. DLG_Options_Label_Visible
-#: po/tmp/ap_String_Id.h.h:2557
+#: po/tmp/ap_String_Id.h.h:2563
 msgid "Visible"
 msgstr "Visible"
 
 #. MSG_HyperlinkNoBookmark
-#: po/tmp/ap_String_Id.h.h:2559
+#: po/tmp/ap_String_Id.h.h:2565
 #, c-format
 msgid "Warning: the bookmark you provided [%s] does not exist."
 msgstr "Avís: el marcador que heu indicat [%s] no existeix."
 
 #. MENU_STATUSLINE_VIEW_WEB
-#: po/tmp/ap_String_Id.h.h:2561
+#: po/tmp/ap_String_Id.h.h:2567
 msgid "Web Layout"
 msgstr "Disposició web"
 
 #. DLG_Styles_LBL_TxtMsg
-#: po/tmp/ap_String_Id.h.h:2563
+#: po/tmp/ap_String_Id.h.h:2569
 msgid "What Hath God Wrought"
 msgstr "Què ha forjat Déu"
 
 #. DLG_Options_Label_WithExtension
-#: po/tmp/ap_String_Id.h.h:2565
+#: po/tmp/ap_String_Id.h.h:2571
 msgid "With extension:"
 msgstr "Amb l'extensió:"
 
 #. DLG_WordCount_WordCountTitle
 #. FIELD_Numbers_WordCount
-#: po/tmp/ap_String_Id.h.h:2568
+#: po/tmp/ap_String_Id.h.h:2574
 msgid "Word Count"
 msgstr "Nombre de paraules"
 
 #. DLG_NEW_Tab1
-#: po/tmp/ap_String_Id.h.h:2570
+#: po/tmp/ap_String_Id.h.h:2576
 msgid "Wordprocessing"
 msgstr "Tractament de textos"
 
 #
 #. DLG_WordCount_Words_No_Notes
-#: po/tmp/ap_String_Id.h.h:2572
+#: po/tmp/ap_String_Id.h.h:2578
 msgid "Words (no footnotes/endnotes):"
 msgstr "Paraules (sense notes al peu ni finals):"
 
 #. DLG_Options_Label_SpellUppercase
-#: po/tmp/ap_String_Id.h.h:2574
+#: po/tmp/ap_String_Id.h.h:2580
 msgid "Words in &UPPERCASE"
 msgstr "Paraules en MAJ&ÚSCULES"
 
 #. DLG_Options_Label_SpellNumbers
-#: po/tmp/ap_String_Id.h.h:2576
+#: po/tmp/ap_String_Id.h.h:2582
 msgid "Words with num&bers"
 msgstr "Paraules amb nom&bres"
 
 #. DLG_WordCount_Words
-#: po/tmp/ap_String_Id.h.h:2578
+#: po/tmp/ap_String_Id.h.h:2584
 msgid "Words:"
 msgstr "Paraules:"
 
 #. MSG_SaveFailedWrite
-#: po/tmp/ap_String_Id.h.h:2580
+#: po/tmp/ap_String_Id.h.h:2586
 #, c-format
 msgid "Writing error when attempting to save %s"
 msgstr "S'ha produït un error d'escriptura en intentar desar %s"
 
 #. MSG_DefaultDirectionChg
-#: po/tmp/ap_String_Id.h.h:2582
+#: po/tmp/ap_String_Id.h.h:2588
 msgid "You have changed the default direction."
 msgstr "Heu canviat la direcció per defecte."
 
 #. MSG_DirectionModeChg
-#: po/tmp/ap_String_Id.h.h:2584
+#: po/tmp/ap_String_Id.h.h:2590
 msgid "You have changed the direction mode."
 msgstr "Heu canviat el mode de direcció."
 
 #. MSG_HyperlinkNoSelection
-#: po/tmp/ap_String_Id.h.h:2586
+#: po/tmp/ap_String_Id.h.h:2592
 msgid "You must select a portion of the document before inserting a hyperlink."
 msgstr ""
 "Heu de seleccionar un fragment del document abans d'inserir-hi un "
@@ -6739,7 +6760,7 @@ msgstr ""
 
 #
 #. DLG_Options_Label_InvalidRangeForAutoSave
-#: po/tmp/ap_String_Id.h.h:2588
+#: po/tmp/ap_String_Id.h.h:2594
 msgid "You should choose a range from 1 to 120 for the auto save frequency"
 msgstr ""
 "Heu d'escollir un nombre entre 1 i 120 per a la freqüència de desament "
@@ -6747,7 +6768,7 @@ msgstr ""
 
 #
 #. MSG_ConfirmSaveSecondary
-#: po/tmp/ap_String_Id.h.h:2590
+#: po/tmp/ap_String_Id.h.h:2596
 msgid "Your changes will be lost if you don't save them."
 msgstr "Els canvis es perdran si no els deseu."
 
@@ -6755,87 +6776,87 @@ msgstr "Els canvis es perdran si no els deseu."
 #. TOOLBAR_STATUSLINE_ZOOM
 #. TOOLBAR_TOOLTIP_ZOOM
 #. DLG_Zoom_ZoomTitle
-#: po/tmp/ap_String_Id.h.h:2594 po/tmp/xap_String_Id.h.h:884
+#: po/tmp/ap_String_Id.h.h:2600 po/tmp/xap_String_Id.h.h:924
 msgid "Zoom"
 msgstr "Zoom"
 
 #. MENU_LABEL_VIEW_ZOOM_100
-#: po/tmp/ap_String_Id.h.h:2596
+#: po/tmp/ap_String_Id.h.h:2602
 msgid "Zoom to &100%"
 msgstr "Zoom al &100%"
 
 #. MENU_LABEL_VIEW_ZOOM_200
-#: po/tmp/ap_String_Id.h.h:2598
+#: po/tmp/ap_String_Id.h.h:2604
 msgid "Zoom to &200%"
 msgstr "Zoom al &200%"
 
 #. MENU_LABEL_VIEW_ZOOM_50
-#: po/tmp/ap_String_Id.h.h:2600
+#: po/tmp/ap_String_Id.h.h:2606
 msgid "Zoom to &50%"
 msgstr "Zoom al &50%"
 
 #. MENU_LABEL_VIEW_ZOOM_75
-#: po/tmp/ap_String_Id.h.h:2602
+#: po/tmp/ap_String_Id.h.h:2608
 msgid "Zoom to &75%"
 msgstr "Zoom al &75%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_100
-#: po/tmp/ap_String_Id.h.h:2604
+#: po/tmp/ap_String_Id.h.h:2610
 msgid "Zoom to 100%"
 msgstr "Zoom al 100%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_200
-#: po/tmp/ap_String_Id.h.h:2606
+#: po/tmp/ap_String_Id.h.h:2612
 msgid "Zoom to 200%"
 msgstr "Zoom al 200%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_50
-#: po/tmp/ap_String_Id.h.h:2608
+#: po/tmp/ap_String_Id.h.h:2614
 msgid "Zoom to 50%"
 msgstr "Zoom al 50%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_75
-#: po/tmp/ap_String_Id.h.h:2610
+#: po/tmp/ap_String_Id.h.h:2616
 msgid "Zoom to 75%"
 msgstr "Zoom al 75%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_WIDTH
-#: po/tmp/ap_String_Id.h.h:2612
+#: po/tmp/ap_String_Id.h.h:2618
 msgid "Zoom to page width"
 msgstr "Zoom fins a l'amplada de pàgina"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_WHOLE
-#: po/tmp/ap_String_Id.h.h:2614
+#: po/tmp/ap_String_Id.h.h:2620
 msgid "Zoom to whole page"
 msgstr "Zoom fins a la pàgina sencera"
 
 #. DLG_Options_Label_CustomDict
-#: po/tmp/ap_String_Id.h.h:2616
+#: po/tmp/ap_String_Id.h.h:2622
 msgid "custom.dic"
 msgstr "custom.dic"
 
 #. FIELD_DateTime_DDMMYY
-#: po/tmp/ap_String_Id.h.h:2618
+#: po/tmp/ap_String_Id.h.h:2624
 msgid "dd/mm/yy"
 msgstr "dd/mm/aa"
 
 #. DLG_ToggleCase_LowerCase
-#: po/tmp/ap_String_Id.h.h:2620
+#: po/tmp/ap_String_Id.h.h:2626
 msgid "lowercase"
 msgstr "minúscules"
 
 #. DLG_Options_Label_Minutes
-#: po/tmp/ap_String_Id.h.h:2622
+#: po/tmp/ap_String_Id.h.h:2628
 msgid "minutes"
 msgstr "minuts"
 
 #. FIELD_DateTime_MMDDYY
-#: po/tmp/ap_String_Id.h.h:2624
+#: po/tmp/ap_String_Id.h.h:2630
 msgid "mm/dd/yy"
 msgstr "mm/dd/aa"
 
 #. DLG_ToggleCase_ToggleCase
-#: po/tmp/ap_String_Id.h.h:2626
+#: po/tmp/ap_String_Id.h.h:2632
 msgid "tOGGLE cASE"
 msgstr "cOMMUTA lES mAJ./mIN"
 
@@ -6848,59 +6869,93 @@ msgstr "cOMMUTA lES mAJ./mIN"
 msgid " to "
 msgstr " a "
 
-#. DLG_Zoom_100
+#. DLG_ABOUT_Description
 #: po/tmp/xap_String_Id.h.h:9
+#, c-format
+msgid ""
+"%s is an Open Source application licensed under the GNU GPL.\n"
+"You are free to redistribute this application."
+msgstr ""
+
+#. DLG_Zoom_100
+#: po/tmp/xap_String_Id.h.h:11
 msgid "&100%"
 msgstr "&100%"
 
 #. DLG_Zoom_200
-#: po/tmp/xap_String_Id.h.h:11
+#: po/tmp/xap_String_Id.h.h:13
 msgid "&200%"
 msgstr "&200%"
 
 #. DLG_Zoom_75
-#: po/tmp/xap_String_Id.h.h:13
+#: po/tmp/xap_String_Id.h.h:15
 msgid "&75%"
 msgstr "&75%"
 
-#. DLG_Zoom_PageWidth
+#. DLG_Image_DescTabLabel
 #: po/tmp/xap_String_Id.h.h:17
+#, fuzzy
+msgid "&Description"
+msgstr "Descripció"
+
+#. DLG_Zoom_PageWidth
+#: po/tmp/xap_String_Id.h.h:21
 msgid "&Page width"
 msgstr "Amplada de &pàgina"
 
+#
+#. DLG_Image_PlacementTabLabel
+#: po/tmp/xap_String_Id.h.h:23
+#, fuzzy
+msgid "&Placement"
+msgstr "Situació"
+
 #. DLG_ULANG_SetLangButton
-#: po/tmp/xap_String_Id.h.h:19
+#: po/tmp/xap_String_Id.h.h:25
 msgid "&Set Language"
 msgstr "&Definiu l'idioma"
 
 #. DLG_Zoom_WholePage
-#: po/tmp/xap_String_Id.h.h:23
+#: po/tmp/xap_String_Id.h.h:29
 msgid "&Whole page"
 msgstr "&Tota la pàgina"
 
+#
+#. DLG_Image_WrapTabLabel
+#: po/tmp/xap_String_Id.h.h:31
+#, fuzzy
+msgid "&Wrapping"
+msgstr "Ajustament del text"
+
+#. DLG_UFS_Effects_None
+#: po/tmp/xap_String_Id.h.h:33
+#, fuzzy
+msgid "(None)"
+msgstr "(cap)"
+
 #. LANG_0
-#: po/tmp/xap_String_Id.h.h:25
+#: po/tmp/xap_String_Id.h.h:35
 msgid "(no proofing)"
 msgstr "(sense comprovació)"
 
 #. DLG_DocComparison_TestSkipped
-#: po/tmp/xap_String_Id.h.h:27
+#: po/tmp/xap_String_Id.h.h:37
 msgid "(test skipped)"
 msgstr "(s'ha omès la prova)"
 
 #. DLG_NoSaveFile_DirNotExist
-#: po/tmp/xap_String_Id.h.h:29
+#: po/tmp/xap_String_Id.h.h:39
 msgid "A directory in the given pathname does not exist."
 msgstr "Al camí indicat no existeix cap directori."
 
 #. DLG_PLUGIN_MANAGER_TITLE
-#: po/tmp/xap_String_Id.h.h:31
+#: po/tmp/xap_String_Id.h.h:41
 msgid "AbiWord Plugin Manager"
 msgstr "Gestió d'extensions de l'AbiWord"
 
 #
 #. SPELL_CANTLOAD_DLL
-#: po/tmp/xap_String_Id.h.h:33
+#: po/tmp/xap_String_Id.h.h:43
 #, c-format
 msgid ""
 "AbiWord cannot find the spelling file %s.dll\n"
@@ -6912,7 +6967,7 @@ msgstr ""
 
 #
 #. MSG_HistoryPartRestore1
-#: po/tmp/xap_String_Id.h.h:35
+#: po/tmp/xap_String_Id.h.h:45
 #, c-format
 msgid ""
 "AbiWord cannot fully restore version %d of the document because the version "
@@ -6923,7 +6978,7 @@ msgstr ""
 
 #
 #. MSG_HistoryNoRestore
-#: po/tmp/xap_String_Id.h.h:37
+#: po/tmp/xap_String_Id.h.h:47
 #, c-format
 msgid ""
 "AbiWord cannot restore version %d of the document because the version "
@@ -6933,1659 +6988,1731 @@ msgstr ""
 "la versió no està disponible."
 
 #. DLG_UP_PrintPreviewTitle
-#: po/tmp/xap_String_Id.h.h:39
+#: po/tmp/xap_String_Id.h.h:49
 msgid "AbiWord: Print Preview"
 msgstr "AbiWord: preimpressió"
 
 #. DLG_ABOUT_Title
-#: po/tmp/xap_String_Id.h.h:41
+#: po/tmp/xap_String_Id.h.h:51
 #, c-format
 msgid "About %s"
 msgstr "Quant a l'%s"
 
 #. DLG_PLUGIN_MANAGER_ACTIVE
-#: po/tmp/xap_String_Id.h.h:43
+#: po/tmp/xap_String_Id.h.h:53
 msgid "Active Plugins"
 msgstr "Extensions actives"
 
 #. LANG_AF_ZA
-#: po/tmp/xap_String_Id.h.h:45
+#: po/tmp/xap_String_Id.h.h:55
 msgid "Afrikaans"
 msgstr "Afrikaans"
 
 #
 #. LANG_AK_GH
-#: po/tmp/xap_String_Id.h.h:47
+#: po/tmp/xap_String_Id.h.h:57
 msgid "Akan"
 msgstr "Akan"
 
 #. LANG_SQ_AL
-#: po/tmp/xap_String_Id.h.h:49
+#: po/tmp/xap_String_Id.h.h:59
 msgid "Albanian"
 msgstr "Albanès"
 
 #. DLG_FOSA_ALL
-#: po/tmp/xap_String_Id.h.h:53
+#: po/tmp/xap_String_Id.h.h:63
 msgid "All (*.*)"
 msgstr "Tots (*.*)"
 
 #. DLG_FOSA_ALLDOCS
-#: po/tmp/xap_String_Id.h.h:55
+#: po/tmp/xap_String_Id.h.h:65
 msgid "All Documents"
 msgstr "Tots els documents"
 
 #. DLG_FOSA_ALLIMAGES
-#: po/tmp/xap_String_Id.h.h:57
+#: po/tmp/xap_String_Id.h.h:67
 msgid "All Image Files"
 msgstr "Tots els fitxers d'imatge"
 
 #. DLG_HTMLOPT_ExpAllowAWML
-#: po/tmp/xap_String_Id.h.h:59
+#: po/tmp/xap_String_Id.h.h:69
 msgid "Allow extra markup in AWML namespace"
 msgstr "Permet l'etiquetatge extra en l'espai de noms AWML"
 
 #. LANG_AM_ET
-#: po/tmp/xap_String_Id.h.h:61
+#: po/tmp/xap_String_Id.h.h:71
 msgid "Amharic (Ethiopia)"
 msgstr "Amhàric (Etiòpia)"
 
 #
 #. LANG_AR
-#: po/tmp/xap_String_Id.h.h:65
+#: po/tmp/xap_String_Id.h.h:75
 msgid "Arabic"
 msgstr "Àrab"
 
 #. LANG_AR_EG
-#: po/tmp/xap_String_Id.h.h:67
+#: po/tmp/xap_String_Id.h.h:77
 msgid "Arabic (Egypt)"
 msgstr "Àrab (Egipte)"
 
 #. LANG_AR_SA
-#: po/tmp/xap_String_Id.h.h:69
+#: po/tmp/xap_String_Id.h.h:79
 msgid "Arabic (Saudi Arabia)"
 msgstr "Àrab (Aràbia Saudita)"
 
 #. ENC_ARAB_ISO
-#: po/tmp/xap_String_Id.h.h:71
+#: po/tmp/xap_String_Id.h.h:81
 msgid "Arabic, ISO-8859-6"
 msgstr "Àrab, ISO-8859-6"
 
 #. ENC_ARAB_MAC
-#: po/tmp/xap_String_Id.h.h:73
+#: po/tmp/xap_String_Id.h.h:83
 msgid "Arabic, Macintosh"
 msgstr "Àrab, Macintosh"
 
 #. ENC_ARAB_WIN
-#: po/tmp/xap_String_Id.h.h:75
+#: po/tmp/xap_String_Id.h.h:85
 msgid "Arabic, Windows Code Page 1256"
 msgstr "Àrab, Windows 1256"
 
 #. LANG_HY_AM
-#: po/tmp/xap_String_Id.h.h:77
+#: po/tmp/xap_String_Id.h.h:87
 msgid "Armenian"
 msgstr "Armeni"
 
 #. ENC_ARME_ARMSCII
-#: po/tmp/xap_String_Id.h.h:79
+#: po/tmp/xap_String_Id.h.h:89
 msgid "Armenian, ARMSCII-8"
 msgstr "Armeni, ARMSCII-8"
 
 #. LANG_AS_IN
-#: po/tmp/xap_String_Id.h.h:81
+#: po/tmp/xap_String_Id.h.h:91
 msgid "Assamese"
 msgstr "Assamès"
 
 #
 #. LANG_AST_ES
-#: po/tmp/xap_String_Id.h.h:83
+#: po/tmp/xap_String_Id.h.h:93
 msgid "Asturian (Spain)"
 msgstr "Asturià (Espanya)"
 
 #. DLG_Options_Label_DirMarkerAfterClosingParenthesis
-#: po/tmp/xap_String_Id.h.h:87
+#: po/tmp/xap_String_Id.h.h:97
 msgid "Auto-insert direction markers"
 msgstr "Insereix automàticament els marcadors de direcció"
 
 #. DLG_History_Version_AutoRevisioned
-#: po/tmp/xap_String_Id.h.h:89
+#: po/tmp/xap_String_Id.h.h:99
 msgid "Auto-revision"
 msgstr "Revisió automàtica"
 
 #. DLG_FOSA_FileTypeAutoDetect
-#: po/tmp/xap_String_Id.h.h:91
+#: po/tmp/xap_String_Id.h.h:101
 msgid "Automatically Detected"
 msgstr "Detectat automàticament"
 
 #
 #. MSG_AutoRevision
-#: po/tmp/xap_String_Id.h.h:93
+#: po/tmp/xap_String_Id.h.h:103
 msgid "Autorevision"
 msgstr "Revisió automàtica"
 
 #. DLG_MW_AvailableDocuments
-#: po/tmp/xap_String_Id.h.h:95
+#: po/tmp/xap_String_Id.h.h:105
 msgid "Available Documents"
 msgstr "Documents disponibles"
 
 #. DLG_ULANG_AvailableLanguages
-#: po/tmp/xap_String_Id.h.h:97
+#: po/tmp/xap_String_Id.h.h:107
 msgid "Available Languages"
 msgstr "Idiomes disponibles"
 
 #. LANG_AYM_BO
-#: po/tmp/xap_String_Id.h.h:99
+#: po/tmp/xap_String_Id.h.h:109
 msgid "Aymara (La Paz)"
 msgstr "Aimara (La Paz)"
 
 #. LANG_AYC_BO
-#: po/tmp/xap_String_Id.h.h:101
+#: po/tmp/xap_String_Id.h.h:111
 msgid "Aymara (Oruro)"
 msgstr "Aimara (Oruro)"
 
 #. ENC_BALT_ISO
-#: po/tmp/xap_String_Id.h.h:103
+#: po/tmp/xap_String_Id.h.h:113
 msgid "Baltic, ISO-8859-4"
 msgstr "Bàltic, ISO-8859-4"
 
 #. ENC_BALT_WIN
-#: po/tmp/xap_String_Id.h.h:105
+#: po/tmp/xap_String_Id.h.h:115
 msgid "Baltic, Windows Code Page 1257"
 msgstr "Bàltic, Windows 1257"
 
 #. LANG_EU_ES
-#: po/tmp/xap_String_Id.h.h:107
+#: po/tmp/xap_String_Id.h.h:117
 msgid "Basque"
 msgstr "Basc"
 
 #. LANG_BE_BY
-#: po/tmp/xap_String_Id.h.h:109
+#: po/tmp/xap_String_Id.h.h:119
 msgid "Belarusian"
 msgstr "Bielorús"
 
 #. LANG_BE_LATIN
-#: po/tmp/xap_String_Id.h.h:111
+#: po/tmp/xap_String_Id.h.h:121
 msgid "Belarusian, Latin"
 msgstr "Bielorús, llatí"
 
 #. LANG_BN_IN
-#: po/tmp/xap_String_Id.h.h:113
+#: po/tmp/xap_String_Id.h.h:123
 msgid "Bengali"
 msgstr "Bengalí"
 
 #. DLG_UP_BlackWhite
-#: po/tmp/xap_String_Id.h.h:115
+#: po/tmp/xap_String_Id.h.h:125
 msgid "Black & White"
 msgstr "Blanc i negre"
 
 #. STYLE_BLOCKTEXT
-#: po/tmp/xap_String_Id.h.h:117
+#: po/tmp/xap_String_Id.h.h:127
 msgid "Block Text"
 msgstr "Text en bloc"
 
 #. DLG_UFS_StyleBoldItalic
-#: po/tmp/xap_String_Id.h.h:121
+#: po/tmp/xap_String_Id.h.h:131
 msgid "Bold Italic"
 msgstr "Negreta cursiva"
 
 #. LANG_BR_FR
-#: po/tmp/xap_String_Id.h.h:127
+#: po/tmp/xap_String_Id.h.h:137
 msgid "Breton"
 msgstr "Bretó"
 
+#. DLG_ABOUT_Build
+#: po/tmp/xap_String_Id.h.h:139
+#, fuzzy, c-format
+msgid "Build options: %s"
+msgstr "Opcions del muntatge"
+
 #
 #. MSG_BuildingDoc
-#: po/tmp/xap_String_Id.h.h:129
+#: po/tmp/xap_String_Id.h.h:141
 msgid "Building Document:"
 msgstr "S'està construint el document:"
 
 #. LANG_BG_BG
-#: po/tmp/xap_String_Id.h.h:131
+#: po/tmp/xap_String_Id.h.h:143
 msgid "Bulgarian"
 msgstr "Búlgar"
 
 #. DLG_Cancel
-#: po/tmp/xap_String_Id.h.h:135
+#: po/tmp/xap_String_Id.h.h:147
 msgid "Cancel"
 msgstr "Cancel·la"
 
 #. LANG_CA_ES
-#: po/tmp/xap_String_Id.h.h:137
+#: po/tmp/xap_String_Id.h.h:149
 msgid "Catalan"
 msgstr "Català"
 
 #. LANG_AYR
-#: po/tmp/xap_String_Id.h.h:139
+#: po/tmp/xap_String_Id.h.h:151
 msgid "Central Aymara"
 msgstr "Aimara central"
 
 #. ENC_CENT_ISO
-#: po/tmp/xap_String_Id.h.h:141
+#: po/tmp/xap_String_Id.h.h:153
 msgid "Central European, ISO-8859-2"
 msgstr "Europeu central, ISO-8859-2"
 
 #. ENC_CENT_MAC
-#: po/tmp/xap_String_Id.h.h:143
+#: po/tmp/xap_String_Id.h.h:155
 msgid "Central European, Macintosh"
 msgstr "Europeu central, Macintosh"
 
 #. ENC_CENT_WIN
-#: po/tmp/xap_String_Id.h.h:145
+#: po/tmp/xap_String_Id.h.h:157
 msgid "Central European, Windows Code Page 1250"
 msgstr "Europeu central, Windows 1250"
 
 #. DLG_Options_Label_LangWithKeyboard
-#: po/tmp/xap_String_Id.h.h:147
+#: po/tmp/xap_String_Id.h.h:159
 msgid "Change Language when changing keyboard"
 msgstr "Canvia l'idioma en canviar el teclat"
 
 #. STYLE_CHAPHEADING
-#: po/tmp/xap_String_Id.h.h:149
+#: po/tmp/xap_String_Id.h.h:161
 msgid "Chapter Heading"
 msgstr "Encapçalament de capítol"
 
 #. LANG_ZH_HK
-#: po/tmp/xap_String_Id.h.h:151
+#: po/tmp/xap_String_Id.h.h:163
 msgid "Chinese (Hong Kong)"
 msgstr "Xinès (Hong Kong)"
 
 #. LANG_ZH_CN
-#: po/tmp/xap_String_Id.h.h:153
+#: po/tmp/xap_String_Id.h.h:165
 msgid "Chinese (PRC)"
 msgstr "Xinès (RPC)"
 
 #. LANG_ZH_SG
-#: po/tmp/xap_String_Id.h.h:155
+#: po/tmp/xap_String_Id.h.h:167
 msgid "Chinese (Singapore)"
 msgstr "Xinès (Singapur)"
 
 #. LANG_ZH_TW
-#: po/tmp/xap_String_Id.h.h:157
+#: po/tmp/xap_String_Id.h.h:169
 msgid "Chinese (Taiwan)"
 msgstr "Xinès (Taiwan)"
 
 #. ENC_CHSI_EUC
-#: po/tmp/xap_String_Id.h.h:159
+#: po/tmp/xap_String_Id.h.h:171
 msgid "Chinese Simplified, EUC-CN (GB2312)"
 msgstr "Xinès simplificat, EUC-CN (GB2312)"
 
 #. ENC_CHSI_GB
-#: po/tmp/xap_String_Id.h.h:161
+#: po/tmp/xap_String_Id.h.h:173
 msgid "Chinese Simplified, GB_2312-80"
 msgstr "Xinès simplificat, GB_2312-80"
 
 #. ENC_CHSI_HZ
-#: po/tmp/xap_String_Id.h.h:163
+#: po/tmp/xap_String_Id.h.h:175
 msgid "Chinese Simplified, HZ"
 msgstr "Xinès simplificat, HZ"
 
 #. ENC_CHSI_WIN
-#: po/tmp/xap_String_Id.h.h:165
+#: po/tmp/xap_String_Id.h.h:177
 msgid "Chinese Simplified, Windows Code Page 936"
 msgstr "Xinès simplificat, Windows 936"
 
 #. ENC_CHTR_BIG5
-#: po/tmp/xap_String_Id.h.h:167
+#: po/tmp/xap_String_Id.h.h:179
 msgid "Chinese Traditional, BIG5"
 msgstr "Xinès tradicional, BIG5"
 
 #. ENC_CHTR_BIG5HKSCS
-#: po/tmp/xap_String_Id.h.h:169
+#: po/tmp/xap_String_Id.h.h:181
 msgid "Chinese Traditional, BIG5-HKSCS"
 msgstr "Xinès tradicional, BIG5-HKSCS"
 
 #. ENC_CHTR_EUC
-#: po/tmp/xap_String_Id.h.h:171
+#: po/tmp/xap_String_Id.h.h:183
 msgid "Chinese Traditional, EUC-TW"
 msgstr "Xinès tradicional, EUC-TW"
 
 #. ENC_CHTR_WIN
-#: po/tmp/xap_String_Id.h.h:173
+#: po/tmp/xap_String_Id.h.h:185
 msgid "Chinese Traditional, Windows Code Page 950"
 msgstr "Xinès tradicional, Windows 950"
 
 #. DLG_LISTDOCS_Heading1
-#: po/tmp/xap_String_Id.h.h:175
+#: po/tmp/xap_String_Id.h.h:187
 msgid "Choose document from the list:"
 msgstr "Escolliu un document de la llista:"
 
 #
 #. TB_ClearBackground
-#: po/tmp/xap_String_Id.h.h:177
+#: po/tmp/xap_String_Id.h.h:189
 msgid "Clear Background"
 msgstr "Suprimeix el color de fons"
 
 #. DLG_CLIPART_Title
-#: po/tmp/xap_String_Id.h.h:179
+#: po/tmp/xap_String_Id.h.h:191
 msgid "Clip Art"
 msgstr "Fitxer d'imatges"
 
 #. DLG_CLIPART_Error
-#: po/tmp/xap_String_Id.h.h:181
+#: po/tmp/xap_String_Id.h.h:193
 msgid "Clip Art could not be loaded"
 msgstr "No s'ha pogut carregar el fitxer d'imatges"
 
 #. DLG_Close
-#: po/tmp/xap_String_Id.h.h:183
+#: po/tmp/xap_String_Id.h.h:195
 msgid "Close"
 msgstr "Tanca"
 
 #. DLG_Exit_CloseWithoutSaving
-#: po/tmp/xap_String_Id.h.h:185
+#: po/tmp/xap_String_Id.h.h:197
 msgid "Close &Without Saving"
 msgstr "Tanca &sense desar"
 
 #. DLG_UP_Collate
-#: po/tmp/xap_String_Id.h.h:187
+#: po/tmp/xap_String_Id.h.h:199
 msgid "Collate"
 msgstr "Compara"
 
 #. DLG_UP_Color
-#: po/tmp/xap_String_Id.h.h:189
+#: po/tmp/xap_String_Id.h.h:201
 msgid "Color"
 msgstr "Color"
 
 #. DLG_Compare
-#: po/tmp/xap_String_Id.h.h:193
+#: po/tmp/xap_String_Id.h.h:205
 msgid "Compare"
 msgstr "Compara"
 
 #. DLG_DocComparison_Content
-#: po/tmp/xap_String_Id.h.h:195
+#: po/tmp/xap_String_Id.h.h:207
 msgid "Content:"
 msgstr "Contingut:"
 
 #. STYLE_TOCHEADING1
-#: po/tmp/xap_String_Id.h.h:197
+#: po/tmp/xap_String_Id.h.h:209
 msgid "Contents 1"
 msgstr "Continguts 1"
 
 #. STYLE_TOCHEADING2
-#: po/tmp/xap_String_Id.h.h:199
+#: po/tmp/xap_String_Id.h.h:211
 msgid "Contents 2"
 msgstr "Continguts 2"
 
 #. STYLE_TOCHEADING3
-#: po/tmp/xap_String_Id.h.h:201
+#: po/tmp/xap_String_Id.h.h:213
 msgid "Contents 3"
 msgstr "Continguts 3"
 
 #. STYLE_TOCHEADING4
-#: po/tmp/xap_String_Id.h.h:203
+#: po/tmp/xap_String_Id.h.h:215
 msgid "Contents 4"
 msgstr "Continguts 4"
 
 #. STYLE_TOCHEADING
-#: po/tmp/xap_String_Id.h.h:205
+#: po/tmp/xap_String_Id.h.h:217
 msgid "Contents Header"
 msgstr "Capçalera de continguts"
 
 #. DLG_UP_Copies
-#: po/tmp/xap_String_Id.h.h:207
+#: po/tmp/xap_String_Id.h.h:219
 msgid "Copies: "
 msgstr "Còpies: "
 
 #
 #. LANG_COP_EG
-#: po/tmp/xap_String_Id.h.h:209
+#: po/tmp/xap_String_Id.h.h:221
 msgid "Coptic"
 msgstr "Copte"
 
 #
 #. LANG_KW_GB
-#: po/tmp/xap_String_Id.h.h:211
+#: po/tmp/xap_String_Id.h.h:223
 msgid "Cornish"
 msgstr "Còrnic"
 
 #. LANG_CO_FR
-#: po/tmp/xap_String_Id.h.h:213
+#: po/tmp/xap_String_Id.h.h:225
 msgid "Corsican"
 msgstr "Cors"
 
 #. DLG_PLUGIN_MANAGER_COULDNT_LOAD
-#: po/tmp/xap_String_Id.h.h:215
+#: po/tmp/xap_String_Id.h.h:227
 msgid "Could not activate/load plugin"
 msgstr "No s'ha pogut carregar/activar l'extensió"
 
 #. DLG_PLUGIN_MANAGER_COULDNT_UNLOAD
-#: po/tmp/xap_String_Id.h.h:217
+#: po/tmp/xap_String_Id.h.h:229
 msgid "Could not deactivate plugin"
 msgstr "No s'ha pogut desactivar l'extensió"
 
 #. SPELL_CANTLOAD_DICT
-#: po/tmp/xap_String_Id.h.h:219
+#: po/tmp/xap_String_Id.h.h:231
 #, c-format
 msgid "Could not load the dictionary for the %s language"
 msgstr "No s'ha pogut carregar el diccionari per a l'idioma %s"
 
 #. DLG_History_Version_Started
-#: po/tmp/xap_String_Id.h.h:221
+#: po/tmp/xap_String_Id.h.h:233
 msgid "Created"
 msgstr "Creat"
 
 #. DLG_History_Created
-#: po/tmp/xap_String_Id.h.h:223
+#: po/tmp/xap_String_Id.h.h:235
 msgid "Created:"
 msgstr "Creat:"
 
 #. LANG_HR_HR
-#: po/tmp/xap_String_Id.h.h:225
+#: po/tmp/xap_String_Id.h.h:237
 msgid "Croatian"
 msgstr "Croat"
 
 #. ENC_CROA_MAC
-#: po/tmp/xap_String_Id.h.h:227
+#: po/tmp/xap_String_Id.h.h:239
 msgid "Croatian, Macintosh"
 msgstr "Croat, Macintosh"
 
 #. ENC_CYRL_ISO
-#: po/tmp/xap_String_Id.h.h:229
+#: po/tmp/xap_String_Id.h.h:241
 msgid "Cyrillic, ISO-8859-5"
 msgstr "Ciríl·lic, ISO-8859-5"
 
 #. ENC_CYRL_KOI
-#: po/tmp/xap_String_Id.h.h:231
+#: po/tmp/xap_String_Id.h.h:243
 msgid "Cyrillic, KOI8-R"
 msgstr "Ciríl·lic, KOI8-R"
 
 #. ENC_CYRL_MAC
-#: po/tmp/xap_String_Id.h.h:233
+#: po/tmp/xap_String_Id.h.h:245
 msgid "Cyrillic, Macintosh"
 msgstr "Ciríl·lic, Macintosh"
 
 #. ENC_CYRL_WIN
-#: po/tmp/xap_String_Id.h.h:235
+#: po/tmp/xap_String_Id.h.h:247
 msgid "Cyrillic, Windows Code Page 1251"
 msgstr "Ciríl·lic, Windows 1251"
 
 #. LANG_CS_CZ
-#: po/tmp/xap_String_Id.h.h:237
+#: po/tmp/xap_String_Id.h.h:249
 msgid "Czech"
 msgstr "Txec"
 
 #. LANG_DA_DK
-#: po/tmp/xap_String_Id.h.h:239
+#: po/tmp/xap_String_Id.h.h:251
 msgid "Danish"
 msgstr "Danès"
 
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
-#: po/tmp/xap_String_Id.h.h:243
+#: po/tmp/xap_String_Id.h.h:255
 msgid "Deactivate all plugins"
 msgstr "Desactiva totes les extensions"
 
 #. DLG_PLUGIN_MANAGER_DEACTIVATE
-#: po/tmp/xap_String_Id.h.h:245
+#: po/tmp/xap_String_Id.h.h:257
 msgid "Deactivate plugin"
 msgstr "Desactiva una extensió"
 
 #. DLG_HTMLOPT_ExpDeclareXML
-#: po/tmp/xap_String_Id.h.h:247
+#: po/tmp/xap_String_Id.h.h:259
 msgid "Declare as XML (version 1.0)"
 msgstr "Declara com a XML (versió 1.0)"
 
 #. DLG_ULANG_DefaultLangLabel
-#: po/tmp/xap_String_Id.h.h:249
+#: po/tmp/xap_String_Id.h.h:261
 msgid "Default language: "
 msgstr "Idioma per defecte: "
 
 #. DLG_Image_Placement
-#: po/tmp/xap_String_Id.h.h:251
+#: po/tmp/xap_String_Id.h.h:263
 msgid "Define Image Placement"
 msgstr "Definiu la situació de la imatge"
 
 #. DLG_Image_TextWrapping
-#: po/tmp/xap_String_Id.h.h:253
+#: po/tmp/xap_String_Id.h.h:265
 msgid "Define Text Wrapping"
 msgstr "Definiu l'ajustament del text"
 
 #. DLG_Remove_Icon
-#: po/tmp/xap_String_Id.h.h:262
+#: po/tmp/xap_String_Id.h.h:274
 msgid "Do you want to remove this icon from the toolbar?"
 msgstr "Voleu eliminar aquesta icona de la barra d'eines?"
 
 #. DLG_DocComparison_WindowLabel
-#: po/tmp/xap_String_Id.h.h:264
+#: po/tmp/xap_String_Id.h.h:276
 msgid "Document Comparison"
 msgstr "Comparació de documents"
 
 #. DLG_History_DocumentDetails
-#: po/tmp/xap_String_Id.h.h:266
+#: po/tmp/xap_String_Id.h.h:278
 msgid "Document Details"
 msgstr "Detalls del document"
 
 #. DLG_History_WindowLabel
-#: po/tmp/xap_String_Id.h.h:268
+#: po/tmp/xap_String_Id.h.h:280
 msgid "Document History"
 msgstr "Historial del document"
 
 #. DLG_History_Path
-#: po/tmp/xap_String_Id.h.h:270
+#: po/tmp/xap_String_Id.h.h:282
 msgid "Document name:"
 msgstr "Nom del document:"
 
 #. DLG_DocComparison_DocsCompared
-#: po/tmp/xap_String_Id.h.h:272
+#: po/tmp/xap_String_Id.h.h:284
 msgid "Documents compared"
 msgstr "Documents comparats"
 
 #. LANG_NL_NL
-#: po/tmp/xap_String_Id.h.h:274
+#: po/tmp/xap_String_Id.h.h:286
 msgid "Dutch (Netherlands)"
 msgstr "Holandès (Països Baixos)"
 
 #. DLG_History_EditTime
-#: po/tmp/xap_String_Id.h.h:276
+#: po/tmp/xap_String_Id.h.h:288
 msgid "Editing time:"
 msgstr "Data d'edició:"
 
 #. DLG_UFS_EffectsFrameLabel
-#: po/tmp/xap_String_Id.h.h:278
+#: po/tmp/xap_String_Id.h.h:290
 msgid "Effects"
 msgstr "Efectes"
 
 #. DLG_HTMLOPT_ExpEmbedCSS
-#: po/tmp/xap_String_Id.h.h:280
+#: po/tmp/xap_String_Id.h.h:292
 msgid "Embed (CSS) style sheet"
 msgstr "Incrusta el full d'estil (CSS)"
 
 #. DLG_UP_EmbedFonts
-#: po/tmp/xap_String_Id.h.h:282
+#: po/tmp/xap_String_Id.h.h:294
 msgid "Embed Fonts"
 msgstr "Incrusta els tipus de lletra"
 
 #. DLG_HTMLOPT_ExpEmbedImages
-#: po/tmp/xap_String_Id.h.h:284
+#: po/tmp/xap_String_Id.h.h:296
 msgid "Embed images in URLs (Base64-encoded)"
 msgstr "Incrusta imatges en les URL (codificades en Base64)"
 
 #. DLG_UENC_EncTitle
-#: po/tmp/xap_String_Id.h.h:286
+#: po/tmp/xap_String_Id.h.h:298
 msgid "Encoding"
 msgstr "Codificació"
 
 #. DLG_UFS_EncodingLabel
-#: po/tmp/xap_String_Id.h.h:288
+#: po/tmp/xap_String_Id.h.h:300
 msgid "Encoding:"
 msgstr "Codificació:"
 
+#. STYLE_ENDNOTE
+#: po/tmp/xap_String_Id.h.h:302
+#, fuzzy
+msgid "Endnote"
+msgstr "&Nota final"
+
 #. STYLE_ENDREFERENCE
-#: po/tmp/xap_String_Id.h.h:290
+#: po/tmp/xap_String_Id.h.h:304
 msgid "Endnote Reference"
 msgstr "Referència de nota final"
 
 #. STYLE_ENDTEXT
-#: po/tmp/xap_String_Id.h.h:292
+#: po/tmp/xap_String_Id.h.h:306
 msgid "Endnote Text"
 msgstr "Text de nota final"
 
 #. LANG_EN_AU
-#: po/tmp/xap_String_Id.h.h:294
+#: po/tmp/xap_String_Id.h.h:308
 msgid "English (Australia)"
 msgstr "Anglès (Austràlia)"
 
 #. LANG_EN_CA
-#: po/tmp/xap_String_Id.h.h:296
+#: po/tmp/xap_String_Id.h.h:310
 msgid "English (Canada)"
 msgstr "Anglès (Canadà)"
 
 #. LANG_EN_IE
-#: po/tmp/xap_String_Id.h.h:298
+#: po/tmp/xap_String_Id.h.h:312
 msgid "English (Ireland)"
 msgstr "Anglès (Irlanda)"
 
 #. LANG_EN_NZ
-#: po/tmp/xap_String_Id.h.h:300
+#: po/tmp/xap_String_Id.h.h:314
 msgid "English (New Zealand)"
 msgstr "Anglès (Nova Zelanda)"
 
 #. LANG_EN_ZA
-#: po/tmp/xap_String_Id.h.h:302
+#: po/tmp/xap_String_Id.h.h:316
 msgid "English (South Africa)"
 msgstr "Anglès (Sud-àfrica)"
 
 #. LANG_EN_GB
-#: po/tmp/xap_String_Id.h.h:304
+#: po/tmp/xap_String_Id.h.h:318
 msgid "English (UK)"
 msgstr "Anglès (Regne Unit)"
 
 #. LANG_EN_US
-#: po/tmp/xap_String_Id.h.h:306
+#: po/tmp/xap_String_Id.h.h:320
 msgid "English (US)"
 msgstr "Anglès (Estats Units)"
 
 #. DLG_Password_Title
-#: po/tmp/xap_String_Id.h.h:308
+#: po/tmp/xap_String_Id.h.h:322
 msgid "Enter Password"
 msgstr "Introduïu la contrasenya"
 
 #. LANG_EO
-#: po/tmp/xap_String_Id.h.h:310
+#: po/tmp/xap_String_Id.h.h:324
 msgid "Esperanto"
 msgstr "Esperanto"
 
 #. LANG_ET
-#: po/tmp/xap_String_Id.h.h:312
+#: po/tmp/xap_String_Id.h.h:326
 msgid "Estonian"
 msgstr "Estonià"
 
 #. DLG_FOSA_ExportTitle
-#: po/tmp/xap_String_Id.h.h:314
+#: po/tmp/xap_String_Id.h.h:328
 msgid "Export File"
 msgstr "Exporta el fitxer"
 
 #. DLG_HTMLOPT_ExpIs4
-#: po/tmp/xap_String_Id.h.h:316
+#: po/tmp/xap_String_Id.h.h:330
 msgid "Export as HTML 4.01"
 msgstr "Exporta com a HTML 4.01"
 
 #. DLG_HTMLOPT_ExpAbiWebDoc
-#: po/tmp/xap_String_Id.h.h:318
+#: po/tmp/xap_String_Id.h.h:332
 msgid "Export with PHP instructions"
 msgstr "Exporta amb instruccions PHP"
 
 #. LANG_FA_IR
-#: po/tmp/xap_String_Id.h.h:320
+#: po/tmp/xap_String_Id.h.h:334
 msgid "Farsi"
 msgstr "Persa"
 
 #. DLG_UP_File
-#: po/tmp/xap_String_Id.h.h:322
+#: po/tmp/xap_String_Id.h.h:336
 msgid "File"
 msgstr "Fitxer"
 
 #. DLG_OverwriteFile
-#: po/tmp/xap_String_Id.h.h:324
+#: po/tmp/xap_String_Id.h.h:338
 #, c-format
 msgid "File already exists.  Overwrite file '%s'?"
 msgstr "El fitxer %s ja existeix. Voleu reemplaçar-lo?"
 
 #
 #. DLG_FOSA_RecordToFileLabel
-#: po/tmp/xap_String_Id.h.h:326
+#: po/tmp/xap_String_Id.h.h:340
 msgid "File to record editing:"
 msgstr "Fitxer per a enregistrar l'edició:"
 
 #
 #. DLG_FOSA_ReplayFromFileLabel
-#: po/tmp/xap_String_Id.h.h:328
+#: po/tmp/xap_String_Id.h.h:342
 msgid "File to replay editing:"
 msgstr "Fitxer per a reproduir l'edició:"
 
 #. LANG_FI_FI
-#: po/tmp/xap_String_Id.h.h:330
+#: po/tmp/xap_String_Id.h.h:344
 msgid "Finnish"
 msgstr "Finlandès"
 
 #. LANG_NL_BE
-#: po/tmp/xap_String_Id.h.h:332
+#: po/tmp/xap_String_Id.h.h:346
 msgid "Flemish (Belgium)"
 msgstr "Flamenc (Bèlgica)"
 
 #
+#. STYLE_FOOTNOTE
+#: po/tmp/xap_String_Id.h.h:353
+#, fuzzy
+msgid "Footnote"
+msgstr "Not&a al peu"
+
+#
 #. STYLE_FOOTREFERENCE
-#: po/tmp/xap_String_Id.h.h:339
+#: po/tmp/xap_String_Id.h.h:355
 msgid "Footnote Reference"
 msgstr "Referència de la nota al peu"
 
 #
 #. STYLE_FOOTTEXT
-#: po/tmp/xap_String_Id.h.h:341
+#: po/tmp/xap_String_Id.h.h:357
 msgid "Footnote Text"
 msgstr "Text de la nota la peu"
 
+#. DLG_ABOUT_URL
+#: po/tmp/xap_String_Id.h.h:359
+msgid "For more information: http://www.abisource.com/"
+msgstr ""
+
 #. LANG_FR_BE
-#: po/tmp/xap_String_Id.h.h:345
+#: po/tmp/xap_String_Id.h.h:363
 msgid "French (Belgium)"
 msgstr "Francès (Bèlgica)"
 
 #. LANG_FR_CA
-#: po/tmp/xap_String_Id.h.h:347
+#: po/tmp/xap_String_Id.h.h:365
 msgid "French (Canada)"
 msgstr "Francès (Canadà)"
 
 #. LANG_FR_FR
-#: po/tmp/xap_String_Id.h.h:349
+#: po/tmp/xap_String_Id.h.h:367
 msgid "French (France)"
 msgstr "Francès (França)"
 
 #. LANG_FR_CH
-#: po/tmp/xap_String_Id.h.h:351
+#: po/tmp/xap_String_Id.h.h:369
 msgid "French (Switzerland)"
 msgstr "Francès (Suïssa)"
 
 #. LANG_FY_NL
-#: po/tmp/xap_String_Id.h.h:353
+#: po/tmp/xap_String_Id.h.h:371
 msgid "Frisian"
 msgstr "Frisó"
 
 #. DLG_UP_From
-#: po/tmp/xap_String_Id.h.h:355
+#: po/tmp/xap_String_Id.h.h:373
 msgid "From: "
 msgstr "De: "
 
+#. LANG_FF
+#: po/tmp/xap_String_Id.h.h:375
+msgid "Fulah"
+msgstr ""
+
 #
 #. LANG_GL
-#: po/tmp/xap_String_Id.h.h:357
+#: po/tmp/xap_String_Id.h.h:377
 msgid "Galician (Galego)"
 msgstr "Gallec"
 
 #. LANG_KA_GE
-#: po/tmp/xap_String_Id.h.h:359
+#: po/tmp/xap_String_Id.h.h:379
 msgid "Georgian"
 msgstr "Georgià"
 
 #. ENC_GEOR_ACADEMY
-#: po/tmp/xap_String_Id.h.h:361
+#: po/tmp/xap_String_Id.h.h:381
 msgid "Georgian, Academy"
 msgstr "Georgià, acadèmic"
 
 #. ENC_GEOR_PS
-#: po/tmp/xap_String_Id.h.h:363
+#: po/tmp/xap_String_Id.h.h:383
 msgid "Georgian, PS"
 msgstr "Georgià, PS"
 
 #. LANG_DE_AT
-#: po/tmp/xap_String_Id.h.h:365
+#: po/tmp/xap_String_Id.h.h:385
 msgid "German (Austria)"
 msgstr "Alemany (Àustria)"
 
 #. LANG_DE_DE
-#: po/tmp/xap_String_Id.h.h:367
+#: po/tmp/xap_String_Id.h.h:387
 msgid "German (Germany)"
 msgstr "Alemany (Alemanya)"
 
 #. LANG_DE_CH
-#: po/tmp/xap_String_Id.h.h:369
+#: po/tmp/xap_String_Id.h.h:389
 msgid "German (Switzerland)"
 msgstr "Alemany (Suïssa)"
 
 #. DLG_UP_Grayscale
-#: po/tmp/xap_String_Id.h.h:371
+#: po/tmp/xap_String_Id.h.h:391
 msgid "Grayscale"
 msgstr "Escala de grisos"
 
 #. LANG_EL_GR
-#: po/tmp/xap_String_Id.h.h:373
+#: po/tmp/xap_String_Id.h.h:393
 msgid "Greek"
 msgstr "Grec"
 
 #. ENC_GREE_ISO
-#: po/tmp/xap_String_Id.h.h:375
+#: po/tmp/xap_String_Id.h.h:395
 msgid "Greek, ISO-8859-7"
 msgstr "Grec, ISO-8859-7"
 
 #. ENC_GREE_MAC
-#: po/tmp/xap_String_Id.h.h:377
+#: po/tmp/xap_String_Id.h.h:397
 msgid "Greek, Macintosh"
 msgstr "Grec, Macintosh"
 
 #. ENC_GREE_WIN
-#: po/tmp/xap_String_Id.h.h:379
+#: po/tmp/xap_String_Id.h.h:399
 msgid "Greek, Windows Code Page 1253"
 msgstr "Grec, Windows 1253"
 
 #. DLG_HTMLOPT_ExpTitle
-#: po/tmp/xap_String_Id.h.h:381
+#: po/tmp/xap_String_Id.h.h:401
 msgid "HTML Export Options"
 msgstr "Opcions d'exportació HTML"
 
 #. LANG_HA_NE
-#: po/tmp/xap_String_Id.h.h:385
+#: po/tmp/xap_String_Id.h.h:405
 msgid "Hausa (Niger)"
 msgstr "Haussa (Níger)"
 
 #. LANG_HA_NG
-#: po/tmp/xap_String_Id.h.h:387
+#: po/tmp/xap_String_Id.h.h:407
 msgid "Hausa (Nigeria)"
 msgstr "Haussa (Nigèria)"
 
 #
 #. LANG_HAW_US
-#: po/tmp/xap_String_Id.h.h:389
+#: po/tmp/xap_String_Id.h.h:409
 msgid "Hawaiian"
 msgstr "Hawaià"
 
 #. STYLE_HEADING1
-#: po/tmp/xap_String_Id.h.h:391
+#: po/tmp/xap_String_Id.h.h:411
 msgid "Heading 1"
 msgstr "Encapçalament 1"
 
 #. STYLE_HEADING2
-#: po/tmp/xap_String_Id.h.h:393
+#: po/tmp/xap_String_Id.h.h:413
 msgid "Heading 2"
 msgstr "Encapçalament 2"
 
 #. STYLE_HEADING3
-#: po/tmp/xap_String_Id.h.h:395
+#: po/tmp/xap_String_Id.h.h:415
 msgid "Heading 3"
 msgstr "Encapçalament 3"
 
 #. STYLE_HEADING4
-#: po/tmp/xap_String_Id.h.h:397
+#: po/tmp/xap_String_Id.h.h:417
 msgid "Heading 4"
 msgstr "Encapçalament 4"
 
 #. LANG_HE_IL
-#: po/tmp/xap_String_Id.h.h:401
+#: po/tmp/xap_String_Id.h.h:421
 msgid "Hebrew"
 msgstr "Hebreu"
 
 #. ENC_HEBR_ISO
-#: po/tmp/xap_String_Id.h.h:403
+#: po/tmp/xap_String_Id.h.h:423
 msgid "Hebrew, ISO-8859-8"
 msgstr "Hebreu, ISO-8859-8"
 
 #. ENC_HEBR_MAC
-#: po/tmp/xap_String_Id.h.h:405
+#: po/tmp/xap_String_Id.h.h:425
 msgid "Hebrew, Macintosh"
 msgstr "Hebreu, Macintosh"
 
 #. ENC_HEBR_WIN
-#: po/tmp/xap_String_Id.h.h:407
+#: po/tmp/xap_String_Id.h.h:427
 msgid "Hebrew, Windows Code Page 1255"
 msgstr "Hebreu, Windows 1255"
 
 #. DLG_Image_Height
-#: po/tmp/xap_String_Id.h.h:409
+#: po/tmp/xap_String_Id.h.h:429
 msgid "Height:"
 msgstr "Alçada:"
 
 #. DLG_IP_Height_Label
-#: po/tmp/xap_String_Id.h.h:411
+#: po/tmp/xap_String_Id.h.h:431
 msgid "Height: "
 msgstr "Alçada: "
 
 #. DLG_UFS_HiddenCheck
-#: po/tmp/xap_String_Id.h.h:413
+#: po/tmp/xap_String_Id.h.h:433
 msgid "Hidden"
 msgstr "Ocult"
 
 #. DLG_UFS_BGColorTab
-#: po/tmp/xap_String_Id.h.h:415
+#: po/tmp/xap_String_Id.h.h:435
 msgid "HighLight Color"
 msgstr "Color de ressaltament"
 
 #. LANG_HI_IN
-#: po/tmp/xap_String_Id.h.h:417
+#: po/tmp/xap_String_Id.h.h:437
 msgid "Hindi"
 msgstr "Hindi"
 
 #. LANG_HU_HU
-#: po/tmp/xap_String_Id.h.h:419
+#: po/tmp/xap_String_Id.h.h:439
 msgid "Hungarian"
 msgstr "Hongarès"
 
 #. LANG_IS_IS
-#: po/tmp/xap_String_Id.h.h:421
+#: po/tmp/xap_String_Id.h.h:441
 msgid "Icelandic"
 msgstr "Islandès"
 
 #. ENC_ICEL_MAC
-#: po/tmp/xap_String_Id.h.h:423
+#: po/tmp/xap_String_Id.h.h:443
 msgid "Icelandic, Macintosh"
 msgstr "Islandès, Macintosh"
 
 #. DLG_History_Id
-#: po/tmp/xap_String_Id.h.h:425
+#: po/tmp/xap_String_Id.h.h:445
 msgid "Identifier:"
 msgstr "Identificador:"
 
 #. DLG_Image_Title
-#: po/tmp/xap_String_Id.h.h:427
+#: po/tmp/xap_String_Id.h.h:447
 msgid "Image Properties"
 msgstr "Propietats de la imatge"
 
 #
 #. DLG_Image_WrappedNone
-#: po/tmp/xap_String_Id.h.h:429
+#: po/tmp/xap_String_Id.h.h:449
 msgid "Image floats above text"
 msgstr "La imatge sura sobre el text"
 
 #. DLG_Image_InLine
-#: po/tmp/xap_String_Id.h.h:431
+#: po/tmp/xap_String_Id.h.h:451
 msgid "Image placed in-line (no text wrapping)"
 msgstr "Imatge situada en línia (sense ajustament de text)"
 
 #. DLG_FOSA_ImportTitle
-#: po/tmp/xap_String_Id.h.h:435
+#: po/tmp/xap_String_Id.h.h:455
 msgid "Import File"
 msgstr "Importa el fitxer"
+
+#. MSG_ParagraphsImported
+#: po/tmp/xap_String_Id.h.h:457
+#, fuzzy
+msgid "Imported Paragraph"
+msgstr "Paràgraf"
 
 #
 #
 #. MSG_ImportingDoc
-#: po/tmp/xap_String_Id.h.h:437
+#: po/tmp/xap_String_Id.h.h:459
 msgid "Importing Document..."
 msgstr "S'està important el document..."
 
 #. LANG_ID_ID
-#: po/tmp/xap_String_Id.h.h:439
+#: po/tmp/xap_String_Id.h.h:461
 msgid "Indonesian"
 msgstr "Indonesi"
 
 #
 #. XIM_Methods
-#: po/tmp/xap_String_Id.h.h:441
+#: po/tmp/xap_String_Id.h.h:463
 msgid "Input Methods"
 msgstr "Mètodes d'entrada"
 
 #
 #. DLG_FOSA_InsertObject
-#: po/tmp/xap_String_Id.h.h:445
+#: po/tmp/xap_String_Id.h.h:467
 msgid "Insert Embeddable Object"
 msgstr "Insereix un objecte incrustable"
 
 #
 #. DLG_FOSA_FileInsertObject
-#: po/tmp/xap_String_Id.h.h:447
+#: po/tmp/xap_String_Id.h.h:469
 msgid "Insert Embeddable Object file:"
 msgstr "Fitxer de l'objecte incrustable a inserir:"
 
 #. DLG_FOSA_InsertTitle
-#: po/tmp/xap_String_Id.h.h:449
+#: po/tmp/xap_String_Id.h.h:471
 msgid "Insert File"
 msgstr "Insereix un fitxer"
 
 #
 #. DLG_FOSA_InsertMath
-#: po/tmp/xap_String_Id.h.h:451
+#: po/tmp/xap_String_Id.h.h:473
 msgid "Insert Math File"
 msgstr "Insereix un fitxer matemàtic"
 
 #
 #. DLG_FOSA_FileInsertMath
-#: po/tmp/xap_String_Id.h.h:453
+#: po/tmp/xap_String_Id.h.h:475
 msgid "Insert MathML file:"
 msgstr "Insereix un fitxer MathML:"
 
 #
 #. TB_InsertNewTable
-#: po/tmp/xap_String_Id.h.h:455
+#: po/tmp/xap_String_Id.h.h:477
 msgid "Insert New Table"
 msgstr "Insereix una taula nova"
 
 #. DLG_IP_Title
-#: po/tmp/xap_String_Id.h.h:457
+#: po/tmp/xap_String_Id.h.h:479
 msgid "Insert Picture"
 msgstr "Insereix un gràfic"
 
 #. DLG_Insert_SymbolTitle
-#: po/tmp/xap_String_Id.h.h:459
+#: po/tmp/xap_String_Id.h.h:481
 msgid "Insert Symbol"
 msgstr "Insereix un símbol"
 
 #. DLG_PLUGIN_MANAGER_INSTALL
-#: po/tmp/xap_String_Id.h.h:461
+#: po/tmp/xap_String_Id.h.h:483
 msgid "Install new plugin"
 msgstr "Instal·la una nova extensió"
 
 #. LANG_IA
-#: po/tmp/xap_String_Id.h.h:463
+#: po/tmp/xap_String_Id.h.h:485
 msgid "Interlingua"
 msgstr "Interlingua"
 
 #
 #. LANG_IU_CA
-#: po/tmp/xap_String_Id.h.h:465
+#: po/tmp/xap_String_Id.h.h:487
 msgid "Inuktitut"
 msgstr "Inuktitut"
 
 #. DLG_InvalidPathname
-#: po/tmp/xap_String_Id.h.h:467
+#: po/tmp/xap_String_Id.h.h:489
 msgid "Invalid pathname."
 msgstr "El nom del camí no és vàlid."
 
 #. LANG_GA_IE
-#: po/tmp/xap_String_Id.h.h:469
+#: po/tmp/xap_String_Id.h.h:491
 msgid "Irish"
 msgstr "Irlandès"
 
 #. LANG_IT_IT
-#: po/tmp/xap_String_Id.h.h:471
+#: po/tmp/xap_String_Id.h.h:493
 msgid "Italian (Italy)"
 msgstr "Italià (Itàlia)"
 
 #. LANG_JA_JP
-#: po/tmp/xap_String_Id.h.h:475
+#: po/tmp/xap_String_Id.h.h:497
 msgid "Japanese"
 msgstr "Japonès"
 
 #. ENC_JAPN_EUC
-#: po/tmp/xap_String_Id.h.h:477
+#: po/tmp/xap_String_Id.h.h:499
 msgid "Japanese, EUC-JP"
 msgstr "Japonès, EUC-JP"
 
 #. ENC_JAPN_ISO
-#: po/tmp/xap_String_Id.h.h:479
+#: po/tmp/xap_String_Id.h.h:501
 msgid "Japanese, ISO-2022-JP"
 msgstr "Japonès, ISO-2022-JP"
 
 #. ENC_JAPN_SJIS
-#: po/tmp/xap_String_Id.h.h:481
+#: po/tmp/xap_String_Id.h.h:503
 msgid "Japanese, Shift-JIS"
 msgstr "Japonès, Shift-JIS"
 
 #. ENC_JAPN_WIN
-#: po/tmp/xap_String_Id.h.h:483
+#: po/tmp/xap_String_Id.h.h:505
 msgid "Japanese, Windows Code Page 932"
 msgstr "Japonès, Windows 932"
 
 #
 #. LANG_KN_IN
-#: po/tmp/xap_String_Id.h.h:485
+#: po/tmp/xap_String_Id.h.h:507
 msgid "Kannada"
 msgstr "Kannarès"
 
+#. LANG_KK_KZ
+#: po/tmp/xap_String_Id.h.h:509
+msgid "Kazakh (Kazakhstan)"
+msgstr ""
+
 #. LANG_KO_KR
 #. LANG_KO
-#: po/tmp/xap_String_Id.h.h:488
+#: po/tmp/xap_String_Id.h.h:512
 msgid "Korean"
 msgstr "Coreà"
 
 #. ENC_KORE_EUC
-#: po/tmp/xap_String_Id.h.h:490
+#: po/tmp/xap_String_Id.h.h:514
 msgid "Korean, EUC-KR"
 msgstr "Coreà, EUC-KR"
 
 #. ENC_KORE_JOHAB
-#: po/tmp/xap_String_Id.h.h:492
+#: po/tmp/xap_String_Id.h.h:516
 msgid "Korean, Johab"
 msgstr "Coreà, Johab"
 
 #. ENC_KORE_KSC
-#: po/tmp/xap_String_Id.h.h:494
+#: po/tmp/xap_String_Id.h.h:518
 msgid "Korean, KSC_5601"
 msgstr "Coreà, KSC_5601"
 
 #. ENC_KORE_WIN
-#: po/tmp/xap_String_Id.h.h:496
+#: po/tmp/xap_String_Id.h.h:520
 msgid "Korean, Windows Code Page 949"
 msgstr "Coreà, Windows 949"
 
 #
 #. LANG_KU
-#: po/tmp/xap_String_Id.h.h:498
+#: po/tmp/xap_String_Id.h.h:522
 msgid "Kurdish"
 msgstr "Kurd"
 
 #
 #. LANG_LO_LA
-#: po/tmp/xap_String_Id.h.h:500
+#: po/tmp/xap_String_Id.h.h:524
 msgid "Lao"
 msgstr "Laosià"
 
 #. DLG_History_LastSaved
-#: po/tmp/xap_String_Id.h.h:502
+#: po/tmp/xap_String_Id.h.h:526
 msgid "Last saved:"
 msgstr "Desat per últim cop:"
 
 #. LANG_LA_IT
-#: po/tmp/xap_String_Id.h.h:504
+#: po/tmp/xap_String_Id.h.h:528
 msgid "Latin (Renaissance)"
 msgstr "Llatí (Renaixement)"
 
 #. LANG_LV_LV
-#: po/tmp/xap_String_Id.h.h:506
+#: po/tmp/xap_String_Id.h.h:530
 msgid "Latvian"
 msgstr "Letó"
 
 #. LANG_LT_LT
-#: po/tmp/xap_String_Id.h.h:508
+#: po/tmp/xap_String_Id.h.h:532
 msgid "Lithuanian"
 msgstr "Lituà"
 
 #
 #. DLG_CLIPART_Loading
-#: po/tmp/xap_String_Id.h.h:510
+#: po/tmp/xap_String_Id.h.h:534
 msgid "Loading Clip Art"
 msgstr "S'està carregant el fitxer d'imatges"
 
+#. DLG_UFS_Effects_LowerCase
+#: po/tmp/xap_String_Id.h.h:540
+#, fuzzy
+msgid "Lowercase"
+msgstr "minúscules"
+
 #
 #. LANG_MK
-#: po/tmp/xap_String_Id.h.h:516
+#: po/tmp/xap_String_Id.h.h:542
 msgid "Macedonian"
 msgstr "Macedònic"
 
 #. DLG_ULANG_DefaultLangChkbox
-#: po/tmp/xap_String_Id.h.h:518
+#: po/tmp/xap_String_Id.h.h:544
 msgid "Make default for document"
 msgstr "Converteix-lo en predeterminat per al document"
 
 #
 #. LANG_MS_MY
-#: po/tmp/xap_String_Id.h.h:520
+#: po/tmp/xap_String_Id.h.h:546
 msgid "Malay"
 msgstr "Malai"
 
+#. LANG_MNK_SN
+#: po/tmp/xap_String_Id.h.h:548
+#, fuzzy
+msgid "Mandinka (Senegal)"
+msgstr "Wòlof (Senegal)"
+
 #
 #. LANG_MI_NZ
-#: po/tmp/xap_String_Id.h.h:522
+#: po/tmp/xap_String_Id.h.h:550
 msgid "Maori"
 msgstr "Maori"
 
 #
 #. LANG_MR_IN
-#: po/tmp/xap_String_Id.h.h:524
+#: po/tmp/xap_String_Id.h.h:552
 msgid "Marathi"
 msgstr "Marathi"
 
 #
 #. LANG_MH_MH
-#: po/tmp/xap_String_Id.h.h:526
+#: po/tmp/xap_String_Id.h.h:554
 msgid "Marshallese (Marshall Islands)"
 msgstr "Marshallès (Illes Marshall)"
 
 #
 #. LANG_MH_NR
-#: po/tmp/xap_String_Id.h.h:528
+#: po/tmp/xap_String_Id.h.h:556
 msgid "Marshallese (Nauru)"
 msgstr "Marshallès (Nauru)"
 
 #. DLG_Merge
-#: po/tmp/xap_String_Id.h.h:530
+#: po/tmp/xap_String_Id.h.h:558
 msgid "Merge"
 msgstr "Combina"
 
 #
 #. LANG_MN_MN
-#: po/tmp/xap_String_Id.h.h:532
+#: po/tmp/xap_String_Id.h.h:560
 msgid "Mongolian"
 msgstr "Mongol"
 
 #. DLG_PLUGIN_MANAGER_NAME
-#: po/tmp/xap_String_Id.h.h:534
+#: po/tmp/xap_String_Id.h.h:562
 msgid "Name:"
 msgstr "Nom:"
 
 #. LANG_NE_NP
-#: po/tmp/xap_String_Id.h.h:536
+#: po/tmp/xap_String_Id.h.h:564
 msgid "Nepali (Nepal)"
 msgstr "Nepalès (Nepal)"
 
 #. DLG_MB_No
-#: po/tmp/xap_String_Id.h.h:538
+#: po/tmp/xap_String_Id.h.h:566
 msgid "No"
 msgstr "No"
 
 #. DLG_IP_No_Picture_Label
-#: po/tmp/xap_String_Id.h.h:540
+#: po/tmp/xap_String_Id.h.h:568
 msgid "No Picture"
 msgstr "Sense imatge"
 
 #. DLG_PLUGIN_MANAGER_NONE_SELECTED
-#: po/tmp/xap_String_Id.h.h:542
+#: po/tmp/xap_String_Id.h.h:570
 msgid "No plugin selected"
 msgstr "No s'ha seleccionat cap extensió"
 
 #. STYLE_NORMAL
-#: po/tmp/xap_String_Id.h.h:544
+#: po/tmp/xap_String_Id.h.h:572
 msgid "Normal"
 msgstr "Normal"
 
 #. LANG_NB_NO
-#: po/tmp/xap_String_Id.h.h:546
+#: po/tmp/xap_String_Id.h.h:574
 msgid "Norwegian Bokmal"
 msgstr "Noruec Bokmal"
 
 #. LANG_NN_NO
-#: po/tmp/xap_String_Id.h.h:548
+#: po/tmp/xap_String_Id.h.h:576
 msgid "Norwegian Nynorsk"
 msgstr "Noruec Nynorsk"
 
 #. DLG_PLUGIN_MANAGER_NOT_AVAILABLE
-#: po/tmp/xap_String_Id.h.h:550
+#: po/tmp/xap_String_Id.h.h:578
 msgid "Not available"
 msgstr "No disponible"
 
 #. STYLE_NUMHEAD1
-#: po/tmp/xap_String_Id.h.h:552
+#: po/tmp/xap_String_Id.h.h:580
 msgid "Numbered Heading 1"
 msgstr "Encapçalament numerat 1"
 
 #. STYLE_NUMHEAD2
-#: po/tmp/xap_String_Id.h.h:554
+#: po/tmp/xap_String_Id.h.h:582
 msgid "Numbered Heading 2"
 msgstr "Encapçalament numerat 2"
 
 #. STYLE_NUMHEAD3
-#: po/tmp/xap_String_Id.h.h:556
+#: po/tmp/xap_String_Id.h.h:584
 msgid "Numbered Heading 3"
 msgstr "Encapçalament numerat 3"
 
 #. DLG_OK
-#: po/tmp/xap_String_Id.h.h:560
+#: po/tmp/xap_String_Id.h.h:588
 msgid "OK"
 msgstr "D'acord"
 
 #. LANG_OC_FR
-#: po/tmp/xap_String_Id.h.h:562
+#: po/tmp/xap_String_Id.h.h:590
 msgid "Occitan"
 msgstr "Occità"
 
 #. DLG_FOSA_OpenTitle
-#: po/tmp/xap_String_Id.h.h:564
+#: po/tmp/xap_String_Id.h.h:592
 msgid "Open File"
 msgstr "Obre un fitxer"
 
 #. DLG_FOSA_FileOpenTypeLabel
-#: po/tmp/xap_String_Id.h.h:566
-msgid "Open file as type:"
+#: po/tmp/xap_String_Id.h.h:594
+#, fuzzy
+msgid "Open file as &type:"
 msgstr "Obre un fitxer del tipus:"
 
 #. DLG_LISTDOCS_Title
-#: po/tmp/xap_String_Id.h.h:568
+#: po/tmp/xap_String_Id.h.h:596
 msgid "Opened Documents"
 msgstr "Documents oberts"
 
 #. TB_Zoom_Percent
-#: po/tmp/xap_String_Id.h.h:570
+#: po/tmp/xap_String_Id.h.h:598
 msgid "Other..."
 msgstr "Altres..."
 
 #. DLG_Zoom_Percent
-#: po/tmp/xap_String_Id.h.h:574
+#: po/tmp/xap_String_Id.h.h:602
 msgid "P&ercent:"
 msgstr "&Percentatge:"
 
 #. TB_Zoom_PageWidth
-#: po/tmp/xap_String_Id.h.h:576
+#: po/tmp/xap_String_Id.h.h:604
 msgid "Page Width"
 msgstr "Amplada de la pàgina"
 
 #. DLG_UP_PageRanges
-#: po/tmp/xap_String_Id.h.h:578
+#: po/tmp/xap_String_Id.h.h:606
 msgid "Page ranges:"
 msgstr "Pàgines a imprimir:"
 
 #. LANG_PS
-#: po/tmp/xap_String_Id.h.h:580
+#: po/tmp/xap_String_Id.h.h:608
 msgid "Pashto"
 msgstr "Paixtu"
 
 #. DLG_Password_Password
-#: po/tmp/xap_String_Id.h.h:582
+#: po/tmp/xap_String_Id.h.h:610
 msgid "Password:"
 msgstr "Contrasenya:"
 
 #. STYLE_PLAIN_TEXT
-#: po/tmp/xap_String_Id.h.h:584
+#: po/tmp/xap_String_Id.h.h:612
 msgid "Plain Text"
 msgstr "Text"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
-#: po/tmp/xap_String_Id.h.h:586
+#: po/tmp/xap_String_Id.h.h:614
 msgid "Plugin Details:"
 msgstr "Detalls de l'extensió:"
 
 #. DLG_PLUGIN_MANAGER_LIST
-#: po/tmp/xap_String_Id.h.h:588
+#: po/tmp/xap_String_Id.h.h:616
 msgid "Plugin List"
 msgstr "Llista d'extensions"
 
 #. LANG_PL_PL
-#: po/tmp/xap_String_Id.h.h:590
+#: po/tmp/xap_String_Id.h.h:618
 msgid "Polish"
 msgstr "Polonès"
 
 #. LANG_PT_BR
-#: po/tmp/xap_String_Id.h.h:592
+#: po/tmp/xap_String_Id.h.h:620
 msgid "Portuguese (Brazil)"
 msgstr "Portuguès (Brasil)"
 
 #. LANG_PT_PT
-#: po/tmp/xap_String_Id.h.h:594
+#: po/tmp/xap_String_Id.h.h:622
 msgid "Portuguese (Portugal)"
 msgstr "Portuguès (Portugal)"
 
 #. DLG_Image_PlaceColumn
-#: po/tmp/xap_String_Id.h.h:596
+#: po/tmp/xap_String_Id.h.h:624
 msgid "Position relative to its Column"
 msgstr "Posició relativa a la seva columna"
 
 #. DLG_Image_PlacePage
-#: po/tmp/xap_String_Id.h.h:598
+#: po/tmp/xap_String_Id.h.h:626
 msgid "Position relative to its Page"
 msgstr "Posició relativa a la seva pàgina"
 
 #. DLG_Image_PlaceParagraph
-#: po/tmp/xap_String_Id.h.h:600
+#: po/tmp/xap_String_Id.h.h:628
 msgid "Position relative to nearest paragraph"
 msgstr "Posició relativa al paràgraf més proper"
 
 #. DLG_Image_Aspect
-#: po/tmp/xap_String_Id.h.h:602
+#: po/tmp/xap_String_Id.h.h:630
 msgid "Preserve aspect ratio"
 msgstr "Conserva la proporció"
 
 #. DLG_IP_Activate_Label
-#: po/tmp/xap_String_Id.h.h:606
+#: po/tmp/xap_String_Id.h.h:634
 msgid "Preview Picture"
 msgstr "Previsualitza la imatge"
 
 #. DLG_FOSA_PrintToFileTitle
-#: po/tmp/xap_String_Id.h.h:611
+#: po/tmp/xap_String_Id.h.h:639
 msgid "Print To File"
 msgstr "Imprimeix a un fitxer"
 
 #. DLG_FOSA_FilePrintTypeLabel
-#: po/tmp/xap_String_Id.h.h:613
-msgid "Print file as type:"
+#: po/tmp/xap_String_Id.h.h:641
+#, fuzzy
+msgid "Print file as &type:"
 msgstr "Imprimeix un fitxer del tipus:"
 
 #. DLG_UP_PrintIn
-#: po/tmp/xap_String_Id.h.h:615
+#: po/tmp/xap_String_Id.h.h:643
 msgid "Print in: "
 msgstr "Imprimeix a:"
 
 #. DLG_UP_PrintTo
-#: po/tmp/xap_String_Id.h.h:617
+#: po/tmp/xap_String_Id.h.h:645
 msgid "Print to: "
 msgstr "Imprimeix a: "
 
 #. DLG_UP_Printer
-#: po/tmp/xap_String_Id.h.h:619
+#: po/tmp/xap_String_Id.h.h:647
 msgid "Printer"
 msgstr "Impressora"
 
 #. DLG_UP_PrinterCommand
-#: po/tmp/xap_String_Id.h.h:621
+#: po/tmp/xap_String_Id.h.h:649
 msgid "Printer command: "
 msgstr "Ordre d'impressió: "
 
 #
 #. LANG_PA_IN
-#: po/tmp/xap_String_Id.h.h:623
+#: po/tmp/xap_String_Id.h.h:651
 msgid "Punjabi (Gurmukhi)"
 msgstr "Punjabi (Gurmukhi)"
 
 #
 #. LANG_PA_PK
-#: po/tmp/xap_String_Id.h.h:625
+#: po/tmp/xap_String_Id.h.h:653
 msgid "Punjabi (Shahmukhi)"
 msgstr "Punjabi (Shahmukhi)"
 
 #
 #. LANG_QU_BO
-#: po/tmp/xap_String_Id.h.h:627
+#: po/tmp/xap_String_Id.h.h:655
 msgid "Quechua"
 msgstr "Quítxua"
 
 #. LANG_QUH_BO
-#: po/tmp/xap_String_Id.h.h:629
+#: po/tmp/xap_String_Id.h.h:657
 msgid "Quechua (3 vowels)"
 msgstr "Quítxua (3 vocals)"
 
 #. LANG_QUL_BO
-#: po/tmp/xap_String_Id.h.h:631
+#: po/tmp/xap_String_Id.h.h:659
 msgid "Quechua (5 vowels)"
 msgstr "Quítxua (5 vocals)"
 
 #. ReadOnly
-#: po/tmp/xap_String_Id.h.h:633
+#: po/tmp/xap_String_Id.h.h:661
 msgid "Read-Only"
 msgstr "Només lectura"
 
 #
 #. DLG_FOSA_RecordToFileTitle
-#: po/tmp/xap_String_Id.h.h:635
+#: po/tmp/xap_String_Id.h.h:663
 msgid "Record Editing to File"
 msgstr "Enregistra l'edició a un fitxer"
 
 #. DLG_UFS_StyleRegular
-#: po/tmp/xap_String_Id.h.h:637
+#: po/tmp/xap_String_Id.h.h:665
 msgid "Regular"
 msgstr "Normal"
 
 #. DLG_DocComparison_Relationship
-#: po/tmp/xap_String_Id.h.h:639
+#: po/tmp/xap_String_Id.h.h:667
 msgid "Relationship:"
 msgstr "Relació:"
 
 #
 #. DLG_FOSA_ReplayFromFileTitle
-#: po/tmp/xap_String_Id.h.h:641
+#: po/tmp/xap_String_Id.h.h:669
 msgid "Replay Editing from File"
 msgstr "Reprodueix l'edició des del fitxer"
 
 #. DLG_Restore
-#: po/tmp/xap_String_Id.h.h:643
+#: po/tmp/xap_String_Id.h.h:671
 msgid "Restore"
 msgstr "Restaura"
 
 #. DLG_HTMLOPT_ExpRestore
-#: po/tmp/xap_String_Id.h.h:645
+#: po/tmp/xap_String_Id.h.h:673
 msgid "Restore Settings"
 msgstr "Restaura la configuració"
 
 #. DLG_DocComparison_Results
-#: po/tmp/xap_String_Id.h.h:647
+#: po/tmp/xap_String_Id.h.h:675
 msgid "Results"
 msgstr "Resultats"
 
 #. LANG_RO_RO
-#: po/tmp/xap_String_Id.h.h:649
+#: po/tmp/xap_String_Id.h.h:677
 msgid "Romanian"
 msgstr "Romanès"
 
 #. ENC_ROMA_MAC
-#: po/tmp/xap_String_Id.h.h:651
+#: po/tmp/xap_String_Id.h.h:679
 msgid "Romanian, Macintosh"
 msgstr "Romanès, Macintosh"
 
 #. LANG_RU_RU
-#: po/tmp/xap_String_Id.h.h:653
+#: po/tmp/xap_String_Id.h.h:681
 msgid "Russian (Russia)"
 msgstr "Rus (Rússia)"
 
+#. LANG_RU_PETR1708
+#: po/tmp/xap_String_Id.h.h:683
+msgid "Russian (pre-1918)"
+msgstr ""
+
 #. DLG_UFS_SampleFrameLabel
-#: po/tmp/xap_String_Id.h.h:655
+#: po/tmp/xap_String_Id.h.h:685
 msgid "Sample"
 msgstr "Mostra"
 
 #
 #. LANG_SC_IT
-#: po/tmp/xap_String_Id.h.h:657
+#: po/tmp/xap_String_Id.h.h:687
 msgid "Sardinian"
 msgstr "Sard"
 
 #. DLG_FOSA_SaveAsTitle
-#: po/tmp/xap_String_Id.h.h:659
+#: po/tmp/xap_String_Id.h.h:689
 msgid "Save File As"
 msgstr "Anomena i desa"
 
 #. DLG_HTMLOPT_ExpSave
-#: po/tmp/xap_String_Id.h.h:661
+#: po/tmp/xap_String_Id.h.h:691
 msgid "Save Settings"
 msgstr "Desa la configuració"
 
 #. DLG_FOSA_FileSaveTypeLabel
-#: po/tmp/xap_String_Id.h.h:663
-msgid "Save file as type:"
+#: po/tmp/xap_String_Id.h.h:693
+#, fuzzy
+msgid "Save file as &type:"
 msgstr "Desa un fitxer del tipus:"
 
 #. DLG_UFS_ScriptLabel
-#: po/tmp/xap_String_Id.h.h:665
+#: po/tmp/xap_String_Id.h.h:695
 msgid "Script:"
 msgstr "Seqüència:"
 
 #. STYLE_SECTHEADING
-#: po/tmp/xap_String_Id.h.h:667
+#: po/tmp/xap_String_Id.h.h:697
 msgid "Section Heading"
 msgstr "Encapçalament de secció"
 
 #. DLG_UENC_EncLabel
-#: po/tmp/xap_String_Id.h.h:671
+#: po/tmp/xap_String_Id.h.h:701
 msgid "Select Encoding:"
 msgstr "Codificació seleccionada:"
 
 #. DLG_HTMLOPT_ExpLabel
-#: po/tmp/xap_String_Id.h.h:673
+#: po/tmp/xap_String_Id.h.h:703
 msgid "Select HTML export options:"
 msgstr "Seleccioneu les opcions d'exportació HTML:"
 
 #. DLG_ULANG_LangLabel
-#: po/tmp/xap_String_Id.h.h:675
+#: po/tmp/xap_String_Id.h.h:705
 msgid "Select Language:"
 msgstr "Escolliu un idioma:"
 
 #. LANG_SR
-#: po/tmp/xap_String_Id.h.h:679
+#: po/tmp/xap_String_Id.h.h:709
 msgid "Serbian"
 msgstr "Serbi"
 
+#. LANG_SR_LATIN
+#: po/tmp/xap_String_Id.h.h:711
+#, fuzzy
+msgid "Serbian, latin"
+msgstr "Bielorús, llatí"
+
 #. DLG_Image_ImageDesc
-#: po/tmp/xap_String_Id.h.h:681
+#: po/tmp/xap_String_Id.h.h:713
 msgid "Set Image Name"
 msgstr "Definiu el nom de la imatge"
 
 #. DLG_Image_ImageSize
-#: po/tmp/xap_String_Id.h.h:683
+#: po/tmp/xap_String_Id.h.h:715
 msgid "Set Image Size"
 msgstr "Definiu la mida de la imatge"
 
 #. DLG_ULANG_LangTitle
-#: po/tmp/xap_String_Id.h.h:685
+#: po/tmp/xap_String_Id.h.h:717
 msgid "Set Language"
 msgstr "Defineix l'idioma"
 
 #. DLG_UFS_TransparencyCheck
-#: po/tmp/xap_String_Id.h.h:687
+#: po/tmp/xap_String_Id.h.h:719
 msgid "Set no Highlight Color"
 msgstr "No defineixis cap color de ressaltament"
 
 #. DLG_UFS_SizeLabel
-#: po/tmp/xap_String_Id.h.h:691
+#: po/tmp/xap_String_Id.h.h:723
 msgid "Size:"
 msgstr "Mida:"
 
 #. LANG_SK_SK
-#: po/tmp/xap_String_Id.h.h:693
+#: po/tmp/xap_String_Id.h.h:725
 msgid "Slovak"
 msgstr "Eslovac"
 
 #. LANG_SL_SI
-#: po/tmp/xap_String_Id.h.h:695
+#: po/tmp/xap_String_Id.h.h:727
 msgid "Slovenian"
 msgstr "Eslovè"
 
+#. DLG_UFS_Effects_SmallCaps
+#: po/tmp/xap_String_Id.h.h:729
+msgid "Small Capitals"
+msgstr ""
+
 #. LANG_ES_MX
-#: po/tmp/xap_String_Id.h.h:697
+#: po/tmp/xap_String_Id.h.h:731
 msgid "Spanish (Mexico)"
 msgstr "Espanyol (Mèxic)"
 
 #. LANG_ES_ES
-#: po/tmp/xap_String_Id.h.h:699
+#: po/tmp/xap_String_Id.h.h:733
 msgid "Spanish (Spain)"
 msgstr "Espanyol (Espanya)"
 
 #
 #. DLG_Image_SquareWrap
-#: po/tmp/xap_String_Id.h.h:703
+#: po/tmp/xap_String_Id.h.h:737
 msgid "Square text wrapping"
 msgstr "Ajustament de text quadrat"
 
 #. DLG_DocComparison_Styles
-#: po/tmp/xap_String_Id.h.h:711
+#: po/tmp/xap_String_Id.h.h:745
 msgid "Styles:"
 msgstr "Estils:"
 
 #
 #. LANG_SW
-#: po/tmp/xap_String_Id.h.h:717
+#: po/tmp/xap_String_Id.h.h:751
 msgid "Swahili"
 msgstr "Suahili"
 
 #. LANG_SV_SE
-#: po/tmp/xap_String_Id.h.h:719
+#: po/tmp/xap_String_Id.h.h:753
 msgid "Swedish"
 msgstr "Suec"
 
 #
 #. TB_Font_Symbol
-#: po/tmp/xap_String_Id.h.h:721
+#: po/tmp/xap_String_Id.h.h:755
 msgid "Symbols"
 msgstr "Símbols"
 
 #
 #. LANG_SYR
-#: po/tmp/xap_String_Id.h.h:723
+#: po/tmp/xap_String_Id.h.h:757
 msgid "Syriac"
 msgstr "Siri"
 
 #
 #. LANG_TL_PH
-#: po/tmp/xap_String_Id.h.h:727
+#: po/tmp/xap_String_Id.h.h:761
 msgid "Tagalog"
 msgstr "Tagal"
 
 #
 #. LANG_TA_IN
-#: po/tmp/xap_String_Id.h.h:729
+#: po/tmp/xap_String_Id.h.h:763
 msgid "Tamil"
 msgstr "Tàmil"
 
 #
 #. LANG_TE_IN
-#: po/tmp/xap_String_Id.h.h:731
+#: po/tmp/xap_String_Id.h.h:765
 msgid "Telugu"
 msgstr "Telugu"
 
 #. DLG_UFS_ColorTab
-#: po/tmp/xap_String_Id.h.h:733
+#: po/tmp/xap_String_Id.h.h:767
 msgid "Text Color"
 msgstr "Color del text"
 
 #. DLG_Image_WrappedBoth
-#: po/tmp/xap_String_Id.h.h:735
+#: po/tmp/xap_String_Id.h.h:769
 msgid "Text wrapped on both sides of the Image"
 msgstr "Text ajustat a banda i banda de la imatge"
 
 #. DLG_Image_WrappedLeft
-#: po/tmp/xap_String_Id.h.h:737
+#: po/tmp/xap_String_Id.h.h:771
 msgid "Text wrapped to the Left of the Image"
 msgstr "Text ajustat a l'esquerra de la imatge"
 
 #. DLG_Image_WrappedRight
-#: po/tmp/xap_String_Id.h.h:739
+#: po/tmp/xap_String_Id.h.h:773
 msgid "Text wrapped to the Right of the Image"
 msgstr "Text ajustat a la dreta de la imatge"
 
 #. LANG_TH_TH
-#: po/tmp/xap_String_Id.h.h:741
+#: po/tmp/xap_String_Id.h.h:775
 msgid "Thai"
 msgstr "Tai"
 
 #. ENC_THAI_MAC
-#: po/tmp/xap_String_Id.h.h:743
+#: po/tmp/xap_String_Id.h.h:777
 msgid "Thai, Macintosh"
 msgstr "Tai, Macintosh"
 
 #. ENC_THAI_TIS
-#: po/tmp/xap_String_Id.h.h:745
+#: po/tmp/xap_String_Id.h.h:779
 msgid "Thai, TIS-620"
 msgstr "Tai, TIS-620"
 
 #. ENC_THAI_WIN
-#: po/tmp/xap_String_Id.h.h:747
+#: po/tmp/xap_String_Id.h.h:781
 msgid "Thai, Windows Code Page 874"
 msgstr "Tai, Windows 874"
 
 #. DLG_NoSaveFile_DirNotWriteable
-#: po/tmp/xap_String_Id.h.h:749
+#: po/tmp/xap_String_Id.h.h:783
 #, c-format
 msgid "The directory '%s' is write-protected."
 msgstr "El directori '%s' està protegit contra escriptura."
 
 #. DLG_FOSA_ExtensionDoesNotMatch
-#: po/tmp/xap_String_Id.h.h:751
+#: po/tmp/xap_String_Id.h.h:785
 msgid ""
 "The given file extension does not match the chosen file type. Do you want to "
 "use this name anyway?"
 msgstr ""
-"L'extensió de fitxer indicada no coincideix amb el tipus de fitxer. Voleu usar aquest nom igualment?"
+"L'extensió de fitxer indicada no coincideix amb el tipus de fitxer. Voleu "
+"usar aquest nom igualment?"
 
 #
 #. MSG_HistoryPartRestore2
-#: po/tmp/xap_String_Id.h.h:753
+#: po/tmp/xap_String_Id.h.h:787
 #, c-format
 msgid ""
 "The nearest version that can be restored fully is %d. Would you like to "
@@ -8596,371 +8723,401 @@ msgstr ""
 "d, premeu No."
 
 #. DLG_UP_InvalidPrintString
-#: po/tmp/xap_String_Id.h.h:755
+#: po/tmp/xap_String_Id.h.h:789
 msgid "The print command string is not valid."
 msgstr "L'ordre d'impressió no és vàlida."
 
 #
 #. MSG_NoUndo
-#: po/tmp/xap_String_Id.h.h:757
+#: po/tmp/xap_String_Id.h.h:791
 msgid "This operation cannot be undone. Are you sure you want to proceed?"
 msgstr "Aquesta operació no es pot desfer. Esteu segur que voleu continuar?"
 
 #
 #. DLG_Image_TightWrap
-#: po/tmp/xap_String_Id.h.h:761
+#: po/tmp/xap_String_Id.h.h:795
 msgid "Tight text wrapping"
 msgstr "Ajustament fort de text"
 
 #
 #. MSG_HistoryPartRestore3
-#: po/tmp/xap_String_Id.h.h:765
+#: po/tmp/xap_String_Id.h.h:801
 msgid "To continue anyway, press OK."
 msgstr "Per a continuar igualment, premeu D'acord."
 
 #
 #. MSG_HistoryPartRestore4
-#: po/tmp/xap_String_Id.h.h:767
+#: po/tmp/xap_String_Id.h.h:803
 msgid "To quit the restoration attempt, press Cancel."
 msgstr "Per a abandonar l'intent de recuperació, premeu Cancel·la."
 
 #. LANG_TR_TR
-#: po/tmp/xap_String_Id.h.h:773
+#: po/tmp/xap_String_Id.h.h:809
 msgid "Turkish"
 msgstr "Turc"
 
 #. ENC_TURK_ISO
-#: po/tmp/xap_String_Id.h.h:775
+#: po/tmp/xap_String_Id.h.h:811
 msgid "Turkish, ISO-8859-9"
 msgstr "Turc, ISO-8859-9"
 
 #. ENC_TURK_MAC
-#: po/tmp/xap_String_Id.h.h:777
+#: po/tmp/xap_String_Id.h.h:813
 msgid "Turkish, Macintosh"
 msgstr "Turc, Macintosh"
 
 #. ENC_TURK_WIN
-#: po/tmp/xap_String_Id.h.h:779
+#: po/tmp/xap_String_Id.h.h:815
 msgid "Turkish, Windows Code Page 1254"
 msgstr "Turc, Windows 1254"
 
 #
 #. DLG_Image_WrapType
-#: po/tmp/xap_String_Id.h.h:781
+#: po/tmp/xap_String_Id.h.h:817
 msgid "Type of text wrapping"
 msgstr "Tipus d'ajustament de text"
 
 #. ENC_WEST_ASCII
-#: po/tmp/xap_String_Id.h.h:783
+#: po/tmp/xap_String_Id.h.h:819
 msgid "US-ASCII"
 msgstr "US-ASCII"
 
 #. LANG_UK_UA
-#: po/tmp/xap_String_Id.h.h:785
+#: po/tmp/xap_String_Id.h.h:821
 msgid "Ukrainian"
 msgstr "Ucraïnès"
 
 #. ENC_UKRA_KOI
-#: po/tmp/xap_String_Id.h.h:787
+#: po/tmp/xap_String_Id.h.h:823
 msgid "Ukrainian, KOI8-U"
 msgstr "Ucraïnès, KOI8-U"
 
 #. ENC_UKRA_MAC
-#: po/tmp/xap_String_Id.h.h:789
+#: po/tmp/xap_String_Id.h.h:825
 msgid "Ukrainian, Macintosh"
 msgstr "Ucraïnès, Macintosh"
 
 #. ENC_UNIC_UCS2
-#: po/tmp/xap_String_Id.h.h:793
+#: po/tmp/xap_String_Id.h.h:829
 msgid "Unicode UCS-2"
 msgstr "Unicode UCS-2"
 
 #. ENC_UNIC_UCS_2BE
-#: po/tmp/xap_String_Id.h.h:795
+#: po/tmp/xap_String_Id.h.h:831
 msgid "Unicode UCS-2 Big Endian"
 msgstr "Unicode UCS-2 Big Endian"
 
 #. ENC_UNIC_UCS_2LE
-#: po/tmp/xap_String_Id.h.h:797
+#: po/tmp/xap_String_Id.h.h:833
 msgid "Unicode UCS-2 Little Endian"
 msgstr "Unicode UCS-2 Little Endian"
 
 #. ENC_UNIC_UCS4
-#: po/tmp/xap_String_Id.h.h:799
+#: po/tmp/xap_String_Id.h.h:835
 msgid "Unicode UCS-4"
 msgstr "Unicode UCS-4"
 
 #. ENC_UNIC_UCS_4BE
-#: po/tmp/xap_String_Id.h.h:801
+#: po/tmp/xap_String_Id.h.h:837
 msgid "Unicode UCS-4 Big Endian"
 msgstr "Unicode UCS-4 Big Endian"
 
 #. ENC_UNIC_UCS_4LE
-#: po/tmp/xap_String_Id.h.h:803
+#: po/tmp/xap_String_Id.h.h:839
 msgid "Unicode UCS-4 Little Endian"
 msgstr "Unicode UCS-4 Little Endian"
 
 #. ENC_UNIC_UTF_16
-#: po/tmp/xap_String_Id.h.h:805
+#: po/tmp/xap_String_Id.h.h:841
 msgid "Unicode UTF-16"
 msgstr "Unicode UTF-16"
 
 #. ENC_UNIC_UTF_16BE
-#: po/tmp/xap_String_Id.h.h:807
+#: po/tmp/xap_String_Id.h.h:843
 msgid "Unicode UTF-16 Big Endian"
 msgstr "Unicode UTF-16 Big Endian"
 
 #. ENC_UNIC_UTF_16LE
-#: po/tmp/xap_String_Id.h.h:809
+#: po/tmp/xap_String_Id.h.h:845
 msgid "Unicode UTF-16 Little Endian"
 msgstr "Unicode UTF-16 Little Endian"
 
 #. ENC_UNIC_UTF_32
-#: po/tmp/xap_String_Id.h.h:811
+#: po/tmp/xap_String_Id.h.h:847
 msgid "Unicode UTF-32"
 msgstr "Unicode UTF-32"
 
 #. ENC_UNIC_UTF_32BE
-#: po/tmp/xap_String_Id.h.h:813
+#: po/tmp/xap_String_Id.h.h:849
 msgid "Unicode UTF-32 Big Endian"
 msgstr "Unicode UTF-32 Big Endian"
 
 #. ENC_UNIC_UTF_32LE
-#: po/tmp/xap_String_Id.h.h:815
+#: po/tmp/xap_String_Id.h.h:851
 msgid "Unicode UTF-32 Little Endian"
 msgstr "Unicode UTF-32 Little Endian"
 
 #. ENC_UNIC_UTF_7
-#: po/tmp/xap_String_Id.h.h:817
+#: po/tmp/xap_String_Id.h.h:853
 msgid "Unicode UTF-7"
 msgstr "Unicode UTF-7"
 
 #. ENC_UNIC_UTF_8
-#: po/tmp/xap_String_Id.h.h:819
+#: po/tmp/xap_String_Id.h.h:855
 msgid "Unicode UTF-8"
 msgstr "Unicode UTF-8"
 
 #. UntitledDocument
-#: po/tmp/xap_String_Id.h.h:821
+#: po/tmp/xap_String_Id.h.h:857
 #, c-format
 msgid "Untitled%d"
 msgstr "Sense títol%d"
 
 #. DLG_Update
-#: po/tmp/xap_String_Id.h.h:823
+#: po/tmp/xap_String_Id.h.h:859
 msgid "Update"
 msgstr "Actualitza"
 
+#. DLG_UFS_Effects_UpperCase
+#: po/tmp/xap_String_Id.h.h:865
+#, fuzzy
+msgid "Uppercase"
+msgstr "Llista en majúscules"
+
 #
 #. LANG_UR
-#: po/tmp/xap_String_Id.h.h:829
+#: po/tmp/xap_String_Id.h.h:867
 msgid "Urdu"
 msgstr "Urdú"
 
 #. LANG_UR_PK
-#: po/tmp/xap_String_Id.h.h:831
+#: po/tmp/xap_String_Id.h.h:869
 msgid "Urdu (Pakistan)"
 msgstr "Urdú (Pakistan)"
 
 #
 #. LANG_UZ_UZ
-#: po/tmp/xap_String_Id.h.h:833
+#: po/tmp/xap_String_Id.h.h:871
 msgid "Uzbek"
 msgstr "Uzbek"
 
 #. DLG_History_List_Title
-#: po/tmp/xap_String_Id.h.h:837
+#: po/tmp/xap_String_Id.h.h:875
 msgid "Version history"
 msgstr "Historial de versions"
 
 #. DLG_PLUGIN_MANAGER_VERSION
 #. DLG_History_Version
-#: po/tmp/xap_String_Id.h.h:840
+#: po/tmp/xap_String_Id.h.h:878
 msgid "Version:"
 msgstr "Versió:"
 
+#. DLG_ABOUT_Version
+#: po/tmp/xap_String_Id.h.h:880
+#, fuzzy, c-format
+msgid "Version: %s"
+msgstr "Versió:"
+
 #. LANG_VI_VN
-#: po/tmp/xap_String_Id.h.h:842
+#: po/tmp/xap_String_Id.h.h:882
 msgid "Vietnamese"
 msgstr "Vietnamita"
 
 #. ENC_VIET_TCVN
-#: po/tmp/xap_String_Id.h.h:844
+#: po/tmp/xap_String_Id.h.h:884
 msgid "Vietnamese, TCVN"
 msgstr "Vietnamita, TCVN"
 
 #. ENC_VIET_VISCII
-#: po/tmp/xap_String_Id.h.h:846
+#: po/tmp/xap_String_Id.h.h:886
 msgid "Vietnamese, VISCII"
 msgstr "Vietnamita, VISCII"
 
 #. ENC_VIET_WIN
-#: po/tmp/xap_String_Id.h.h:848
+#: po/tmp/xap_String_Id.h.h:888
 msgid "Vietnamese, Windows Code Page 1258"
 msgstr "Vietnamita, Windows 1258"
 
 #. DLG_MW_MoreWindows
-#: po/tmp/xap_String_Id.h.h:850
+#: po/tmp/xap_String_Id.h.h:890
 msgid "View Document"
 msgstr "Mostra el document"
 
 #. DLG_MW_Activate
-#: po/tmp/xap_String_Id.h.h:852
+#: po/tmp/xap_String_Id.h.h:892
 msgid "View:"
 msgstr "Mostra:"
 
 #. LANG_CY_GB
-#: po/tmp/xap_String_Id.h.h:854
+#: po/tmp/xap_String_Id.h.h:894
 msgid "Welsh"
 msgstr "Gal·lès"
 
 #
 #. ENC_US_DOS
-#: po/tmp/xap_String_Id.h.h:856
+#: po/tmp/xap_String_Id.h.h:896
 msgid "Western European, DOS/Windows Code Page 437"
 msgstr "Europeu occidental, DOS/Windows 437"
 
 #
 #. ENC_MLNG_DOS
-#: po/tmp/xap_String_Id.h.h:858
+#: po/tmp/xap_String_Id.h.h:898
 msgid "Western European, DOS/Windows Code Page 850"
 msgstr "Europeu occidental, DOS/Windows 850"
 
 #. ENC_WEST_HP
-#: po/tmp/xap_String_Id.h.h:860
+#: po/tmp/xap_String_Id.h.h:900
 msgid "Western European, HP"
 msgstr "Europeu occidental, HP"
 
 #. ENC_WEST_ISO
-#: po/tmp/xap_String_Id.h.h:862
+#: po/tmp/xap_String_Id.h.h:902
 msgid "Western European, ISO-8859-1"
 msgstr "Europeu occidental, ISO-8859-1"
 
 #. ENC_WEST_MAC
-#: po/tmp/xap_String_Id.h.h:864
+#: po/tmp/xap_String_Id.h.h:904
 msgid "Western European, Macintosh"
 msgstr "Europeu occidental, Macintosh"
 
 #. ENC_WEST_NXT
-#: po/tmp/xap_String_Id.h.h:866
+#: po/tmp/xap_String_Id.h.h:906
 msgid "Western European, NeXT"
 msgstr "Europeu occidental, NeXT"
 
 #. ENC_WEST_WIN
-#: po/tmp/xap_String_Id.h.h:868
+#: po/tmp/xap_String_Id.h.h:908
 msgid "Western European, Windows Code Page 1252"
 msgstr "Europeu occidental, Windows 1252"
 
 #. TB_Zoom_WholePage
-#: po/tmp/xap_String_Id.h.h:870
+#: po/tmp/xap_String_Id.h.h:910
 msgid "Whole Page"
 msgstr "Tota la pàgina"
 
 #. DLG_Image_Width
-#: po/tmp/xap_String_Id.h.h:872
+#: po/tmp/xap_String_Id.h.h:912
 msgid "Width:"
 msgstr "Amplada:"
 
 #. DLG_IP_Width_Label
-#: po/tmp/xap_String_Id.h.h:874
+#: po/tmp/xap_String_Id.h.h:914
 msgid "Width:  "
 msgstr "Amplada:  "
 
 #. LANG_WO_SN
-#: po/tmp/xap_String_Id.h.h:876
+#: po/tmp/xap_String_Id.h.h:916
 msgid "Wolof (Senegal)"
 msgstr "Wòlof (Senegal)"
 
 #. DLG_MB_Yes
-#: po/tmp/xap_String_Id.h.h:878
+#: po/tmp/xap_String_Id.h.h:918
 msgid "Yes"
 msgstr "Sí"
 
 #
 #. LANG_YI
-#: po/tmp/xap_String_Id.h.h:880
+#: po/tmp/xap_String_Id.h.h:920
 msgid "Yiddish"
 msgstr "Jiddisch"
 
 #
 #. MSG_HistoryConfirmSave
-#: po/tmp/xap_String_Id.h.h:882
+#: po/tmp/xap_String_Id.h.h:922
 #, c-format
 msgid "You have to save changes to document %s before proceeding. Save now?"
 msgstr ""
 "Heu de desar els canvis del document %s abans de continuar. Voleu fer-ho ara?"
 
 #. DLG_Zoom_RadioFrameCaption
-#: po/tmp/xap_String_Id.h.h:886
+#: po/tmp/xap_String_Id.h.h:926
 msgid "Zoom to"
 msgstr "Factor de zoom"
 
 #. DLG_UnixMB_No
-#: po/tmp/xap_String_Id.h.h:888
+#: po/tmp/xap_String_Id.h.h:928
 msgid "_No"
 msgstr "_No"
 
 #. DLG_UnixMB_Yes
-#: po/tmp/xap_String_Id.h.h:890
+#: po/tmp/xap_String_Id.h.h:930
 msgid "_Yes"
 msgstr "_Sí"
 
 #. DLG_Unit_cm
-#: po/tmp/xap_String_Id.h.h:892
+#: po/tmp/xap_String_Id.h.h:932
 msgid "cm"
 msgstr "cm"
 
 #. DLG_DocComparison_Different
-#: po/tmp/xap_String_Id.h.h:894
+#: po/tmp/xap_String_Id.h.h:934
 msgid "different"
 msgstr "diferent"
 
 #. DLG_DocComparison_DivergingPos
-#: po/tmp/xap_String_Id.h.h:896
+#: po/tmp/xap_String_Id.h.h:936
 #, c-format
 msgid "diverging after document position %d"
 msgstr "diferents després de la posició del document %d"
 
 #. DLG_DocComparison_Diverging
-#: po/tmp/xap_String_Id.h.h:898
+#: po/tmp/xap_String_Id.h.h:938
 #, c-format
 msgid "diverging after version %d of %s"
 msgstr "diferents després de la versió %d de %s"
 
 #. DLG_DocComparison_Identical
-#: po/tmp/xap_String_Id.h.h:900
+#: po/tmp/xap_String_Id.h.h:940
 msgid "identical"
 msgstr "idèntics"
 
 #. DLG_Unit_inch
-#: po/tmp/xap_String_Id.h.h:902
+#: po/tmp/xap_String_Id.h.h:942
 msgid "inch"
 msgstr "polzada"
 
 #. DLG_Unit_mm
-#: po/tmp/xap_String_Id.h.h:904
+#: po/tmp/xap_String_Id.h.h:944
 msgid "mm"
 msgstr "mm"
 
 #. DLG_Unit_pica
-#: po/tmp/xap_String_Id.h.h:906
+#: po/tmp/xap_String_Id.h.h:946
 msgid "pica"
 msgstr "pica"
 
 #. DLG_Unit_points
-#: po/tmp/xap_String_Id.h.h:908
+#: po/tmp/xap_String_Id.h.h:948
 msgid "points"
 msgstr "punts"
 
 #. DLG_DocComparison_Siblings
-#: po/tmp/xap_String_Id.h.h:910
+#: po/tmp/xap_String_Id.h.h:950
 msgid "siblings"
 msgstr "germans"
 
 #. DLG_DocComparison_Unrelated
-#: po/tmp/xap_String_Id.h.h:912
+#: po/tmp/xap_String_Id.h.h:952
 msgid "unrelated"
 msgstr "sense relació"
+
+#
+#~ msgid "&Format Table"
+#~ msgstr "&Formata la taula"
+
+#~ msgid "Display Help Index"
+#~ msgstr "Mostra l'índex de l'ajuda"
+
+#~ msgid "INS"
+#~ msgstr "INS"
+
+#~ msgid "OVR"
+#~ msgstr "SOB"
+
+#
+#
+#~ msgid "Replace selection with annotation"
+#~ msgstr "Reemplaça el text seleccionat amb una anotació"
 
 #~ msgid "Allow Custom Toolbars"
 #~ msgstr "Permet les barres d'eines personalitzades"
