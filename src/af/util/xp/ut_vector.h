@@ -201,7 +201,7 @@ void UT_GenericVector<T>::clear()
 {
 	if(m_iCount > m_iCutoffDouble)
 	{
-		UT_DEBUGMSG(("Vector contained %d entries, allocated %d slots\n", m_iCount, m_iSpace));
+		xxx_UT_DEBUGMSG(("Vector contained %d entries, allocated %d slots\n", m_iCount, m_iSpace));
 	}
 	
 	m_iCount = 0;
@@ -214,7 +214,7 @@ UT_GenericVector<T>::~UT_GenericVector()
 {
 	if(m_iCount >  m_iCutoffDouble)
 	{
-		UT_DEBUGMSG(("Vector contained %d entries, allocated %d slots\n", m_iCount, m_iSpace));
+		xxx_UT_DEBUGMSG(("Vector contained %d entries, allocated %d slots\n", m_iCount, m_iSpace));
 	}
 	
 	FREEP(m_pEntries);

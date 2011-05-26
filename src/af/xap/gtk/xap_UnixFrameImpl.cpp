@@ -1080,7 +1080,7 @@ gint XAP_UnixFrameImpl::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e
 
 gint XAP_UnixFrameImpl::_fe::scroll_notify_event(GtkWidget* w, GdkEventScroll* e)
 {
-	UT_DEBUGMSG(("Scroll event \n"));
+	xxx_UT_DEBUGMSG(("Scroll event \n"));
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
 	pUnixFrameImpl->setTimeOfLastEvent(e->time);
@@ -1787,7 +1787,7 @@ void XAP_UnixFrameImpl::_imCommit(GtkIMContext * /*imc*/, const gchar * text)
 	pUnixKeyboard->charDataEvent(pView, static_cast<EV_EditBits>(0),
 								 text, strlen(text));
 
-	UT_DEBUGMSG(("<<<<<<<<_imCommit: text %s, len %d\n", text, strlen(text)));
+	xxx_UT_DEBUGMSG(("<<<<<<<<_imCommit: text %s, len %d\n", text, strlen(text)));
 }
 
 GtkIMContext * XAP_UnixFrameImpl::getIMContext()

@@ -4639,7 +4639,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		    (iPageYOffset  <= getYScrollOffset() + getWindowHeight()) &&
 		    (iPageYOffset + iPageHeight >= getYScrollOffset()) )
 		{
-			UT_DEBUGMSG(("Adding page %d to pages on screen vector\n", pPage->getPageNumber()));
+			xxx_UT_DEBUGMSG(("Adding page %d to pages on screen vector\n", pPage->getPageNumber()));
 			vecPagesOnScreen.addItem(pPage);
 			if(bGoingForward == false)
 				pPage = pPage->getPrev();
@@ -4727,12 +4727,12 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			break;
 		}
 
-		UT_DEBUGMSG(("Drawing page adjustedTop = %i, Bottom = %i, Left = %i, Right = %i\n", adjustedTop, adjustedBottom, adjustedLeft, adjustedRight));
+		xxx_UT_DEBUGMSG(("Drawing page adjustedTop = %i, Bottom = %i, Left = %i, Right = %i\n", adjustedTop, adjustedBottom, adjustedLeft, adjustedRight));
 		xxx_UT_DEBUGMSG(("--Entered _draw loop:\n  iPageNumber = %i, vecitemcount = %i\n  iRow = %i, iCol = %i\n  iPageWidth = %i, iPageHeight = %i\n  getPageViewTopMargin() = %i, m_yScrollOffset = %i\n", iPageNumber, vecPagesOnScreen.getItemCount(), iRow, iCol, iPageWidth, iPageHeight, getPageViewTopMargin(), m_yScrollOffset));
-		UT_DEBUGMSG(("drawing page E: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d y=%d h=%d\n", iPageHeight,curY,m_yScrollOffset,getWindowHeight(),y,height));
+		xxx_UT_DEBUGMSG(("drawing page E: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d y=%d h=%d\n", iPageHeight,curY,m_yScrollOffset,getWindowHeight(),y,height));
 		da.bDirtyRunsOnly = bDirtyRunsOnly;
 		da.pG = m_pG;
-		UT_DEBUGMSG(("Drawing page da.xoff %d getPageViewLeftMargin() %d \n",da.xoff, getPageViewLeftMargin()));
+		xxx_UT_DEBUGMSG(("Drawing page da.xoff %d getPageViewLeftMargin() %d \n",da.xoff, getPageViewLeftMargin()));
 		da.yoff = adjustedTop;
 		da.xoff = adjustedLeft;
 		xxx_UT_DEBUGMSG(("Drawing page with da.yoff and da.xoff %i %i\n", da.yoff, da.xoff));
@@ -4745,7 +4745,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 				painter.fillRect(*pClr, adjustedRight, adjustedTop, getWindowWidth() - adjustedRight + m_pG->tlu(1), iPageHeight);
 			else
 				painter.fillRect(*pClr, adjustedLeft + m_pG->tlu(1), adjustedTop + m_pG->tlu(1), iPageWidth - m_pG->tlu(1), iPageHeight - m_pG->tlu(1));
-			UT_DEBUGMSG(("   ---PAINTING PAGE %i---\n", pPage->getPageNumber()));
+			xxx_UT_DEBUGMSG(("   ---PAINTING PAGE %i---\n", pPage->getPageNumber()));
 			//
 			// Since we're clearing everything we have to draw every run no matter
 			// what.

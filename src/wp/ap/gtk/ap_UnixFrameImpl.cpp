@@ -411,7 +411,7 @@ void AP_UnixFrameImpl::_setScrollRange(apufi_ScrollType scrollType, int iValue, 
 {
 	GtkAdjustment *pScrollAdjustment = (scrollType == apufi_scrollX) ? m_pHadj : m_pVadj;
 	GtkWidget *wScrollWidget = (scrollType == apufi_scrollX) ? m_hScroll : m_vScroll;
-	UT_DEBUGMSG(("Scroll Adjustment set to %d upper %f size %f\n",iValue, fUpperLimit, fSize));
+	xxx_UT_DEBUGMSG(("Scroll Adjustment set to %d upper %f size %f\n",iValue, fUpperLimit, fSize));
 	GR_Graphics * pGr = getFrame()->getCurrentView()->getGraphics ();
 	XAP_Frame::tZoomType tZoom = getFrame()->getZoomType();
 	if(pScrollAdjustment) //this isn't guaranteed in AbiCommand
