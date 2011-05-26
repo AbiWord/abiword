@@ -36,9 +36,17 @@ public:
 		: Buddy(handler),
 		m_pChatRoom(pChatRoom),
 		m_handle(handle),
-		m_sDBusName(dbusName)
+		m_sDBusName(dbusName),
+		m_pContact(NULL),
+		m_pGlobalContact(NULL)
 	{
 		setVolatile(true);
+	}
+
+	virtual ~DTubeBuddy()
+	{
+		if (m_pContact)
+			g_object_unref(m_pContact);
 	}
 
 	virtual UT_UTF8String getDescriptor(bool /*include_session_info = false*/) const
@@ -73,10 +81,36 @@ public:
 		return m_sDBusName;
 	}
 
+	void setContact(TpContact* pContact)
+	{
+
+		g_object_ref(pContact);
+		m_pContact = pContact;
+	}
+
+	TpContact* getContact()
+	{
+		return m_pContact;
+	}
+
+	void setGlobalContact(TpContact* pGlobalContact)
+	{
+
+		g_object_ref(pGlobalContact);
+		m_pGlobalContact = pGlobalContact;
+	}
+
+	TpContact* getGlobalContact()
+	{
+		return m_pGlobalContact;
+	}
+
 private:
 	TelepathyChatroomPtr	m_pChatRoom;
 	TpHandle				m_handle;
 	UT_UTF8String			m_sDBusName;
+	TpContact*				m_pContact;
+	TpContact*				m_pGlobalContact;
 };
 
 typedef boost::shared_ptr<DTubeBuddy> DTubeBuddyPtr;

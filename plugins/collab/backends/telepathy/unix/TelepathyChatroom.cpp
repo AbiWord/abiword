@@ -16,6 +16,9 @@
  * 02111-1307, USA.
  */
 
+#include <session/xp/AbiCollab.h>
+#include <session/xp/AbiCollabSessionManager.h>
+
 #include "TelepathyUnixAccountHandler.h"
 #include "TelepathyChatroom.h"
 #include "DTubeBuddy.h"
@@ -112,4 +115,18 @@ void TelepathyChatroom::queue(const std::string& dbusName, const std::string& pa
 {
 	UT_DEBUGMSG(("Queueing packet for %s\n", dbusName.c_str()));
 	m_packet_queue[dbusName].push_back(packet);
+}
+
+bool TelepathyChatroom::isLocallyControlled()
+{
+	if (m_sSessionId == "")
+		return FALSE;
+
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, false);
+
+	AbiCollab* pSession = pManager->getSessionFromSessionId(m_sSessionId);
+	UT_return_val_if_fail(pSession, false);
+
+	return pSession->isLocallyControlled();
 }

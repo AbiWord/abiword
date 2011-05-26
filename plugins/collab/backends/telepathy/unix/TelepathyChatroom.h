@@ -87,6 +87,8 @@ public:
 	std::vector<TelepathyBuddyPtr>& getInvitees()
 		{ return m_invitees; }
 
+	bool isLocallyControlled();
+
 private:
 	TelepathyAccountHandler*	m_pHandler;
 	PD_Document* 				m_pDoc;

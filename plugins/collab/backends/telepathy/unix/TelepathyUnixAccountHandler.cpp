@@ -98,8 +98,6 @@ tp_connection_get_contact_list_attributes_cb(TpConnection* connection,
 		TP_CONTACT_FEATURE_PRESENCE
 	};
 
-	// we could alternatively use tp_connection_dup_contact_if_possible(), but
-	// that will not guarantee that we get nice aliasses
 	tp_connection_get_contacts_by_handle (connection,
 			handles.size(), &handles[0],
 			G_N_ELEMENTS (features), features,
@@ -162,7 +160,7 @@ list_connection_names_cb (const gchar * const *bus_names,
 	UT_DEBUGMSG(("list_connection_names_cb()\n"));
 	TelepathyAccountHandler* pHandler = reinterpret_cast<TelepathyAccountHandler*>(user_data);
 	UT_return_if_fail(pHandler);
-	
+
 	if (error != NULL)
 	{
 		UT_DEBUGMSG(("List connectiones failed: %s", error->message));
@@ -181,7 +179,6 @@ list_connection_names_cb (const gchar * const *bus_names,
 		TpConnection* connection = tp_connection_new (dbus, bus_names[i], NULL, NULL);
 
 		// TODO: make this async
-		tp_connection_run_until_ready(connection, true, NULL, NULL);
 
 		TpCapabilities* caps = tp_connection_get_capabilities(reinterpret_cast<TpConnection*>(connection));
 		if (!caps)
@@ -199,7 +196,77 @@ list_connection_names_cb (const gchar * const *bus_names,
 }
 
 static void
-tube_dbus_names_changed_cb(TpChannel* /*proxy*/,
+get_contact_for_new_buddie_cb(TpConnection* /*connection*/,
+		guint n_contacts,
+		TpContact * const *contacts,
+		guint /*n_invalid*/,
+		const TpHandle* /*invalid*/,
+		const GError* error,
+		gpointer user_data,
+		GObject* /*weak_object*/)
+{
+	UT_DEBUGMSG(("get_contact_for_new_buddie_cb()\n"));
+	UT_return_if_fail(!error);
+	//UT_return_if_fail(n_contacts == 2);
+	UT_return_if_fail(n_contacts == 1);
+
+	DTubeBuddy* pBuddy = reinterpret_cast<DTubeBuddy*>(user_data);
+	UT_return_if_fail(pBuddy);
+
+	TelepathyChatroomPtr pChatroom = pBuddy->getChatRoom();
+	UT_return_if_fail(pChatroom);
+
+	DTubeBuddyPtr pDTubeBuddy = boost::shared_ptr<DTubeBuddy>(pBuddy);
+	pDTubeBuddy->setContact(contacts[0]);
+	//pDTubeBuddy->setGlobalContact(contacts[1]);
+	pChatroom->addBuddy(pDTubeBuddy);
+
+	if (!pChatroom->isLocallyControlled())
+	{
+		// send a request for sessions; if everything is alright then we should
+		// receive exactly 1 session in all the responses combined
+		UT_DEBUGMSG(("Sending a GetSessionsEvent to every participant in the room\n"));
+		const std::vector<DTubeBuddyPtr> buddies = pChatroom->getBuddies();
+		for (UT_uint32 i = 0; i < buddies.size(); i++)
+		{
+			DTubeBuddyPtr existing_buddy = buddies[i];
+			UT_continue_if_fail(existing_buddy);
+			existing_buddy->getHandler()->getSessionsAsync(existing_buddy);
+		}
+	}
+}
+
+static void
+add_buddy_to_room(TpConnection* connection, TpChannel* chan, TpHandle handle, DTubeBuddy* pBuddy)
+{
+	UT_DEBUGMSG(("add_buddy_to_room()\n"));
+	UT_return_if_fail(connection);
+	UT_return_if_fail(chan);
+	UT_return_if_fail(pBuddy);
+
+	static TpContactFeature features[] = {
+		TP_CONTACT_FEATURE_ALIAS,
+		TP_CONTACT_FEATURE_PRESENCE
+	};
+
+	// Unfortunately, MUC rooms on conference.telepathy.im don't expose the real JIDs
+	// at the moment. This means that without it, we can't do proper security in ::hasAccess()
+	// See https://bugs.freedesktop.org/show_bug.cgi?id=37631 for details.
+	//TpHandle global_handle = tp_channel_group_get_handle_owner(chan, handle);
+	//UT_return_if_fail(global_handle != 0);
+
+	std::vector<TpHandle> handles;
+	handles.push_back(handle);
+	//handles.push_back(global_handle);
+	tp_connection_get_contacts_by_handle (connection,
+			handles.size(), &handles[0],
+			G_N_ELEMENTS (features), features,
+			get_contact_for_new_buddie_cb,
+			pBuddy, NULL, NULL);
+}
+
+static void
+tube_dbus_names_changed_cb(TpChannel* chan,
 							GHashTable* arg_Added,
 							const GArray* arg_Removed,
 							gpointer user_data,
@@ -215,6 +282,9 @@ tube_dbus_names_changed_cb(TpChannel* /*proxy*/,
 	TelepathyAccountHandler* pHandler = pChatroom->getHandler();
 	UT_return_if_fail(pHandler);
 
+	TpConnection* pConnection = tp_channel_borrow_connection(chan);
+	UT_return_if_fail(pConnection);
+
 	gpointer key;
 	gpointer value;
 	GHashTableIter iter;
@@ -223,10 +293,8 @@ tube_dbus_names_changed_cb(TpChannel* /*proxy*/,
 	{
 		TpHandle handle = GPOINTER_TO_UINT(key);
 		const char* dbus_name = reinterpret_cast<const gchar*>(value);
-
 		UT_DEBUGMSG(("Adding a new buddy: %d - %s\n", handle, dbus_name));
-		DTubeBuddyPtr pBuddy = boost::shared_ptr<DTubeBuddy>(new DTubeBuddy(pHandler, pChatroom->ptr(), handle, dbus_name));
-		pChatroom->addBuddy(pBuddy);
+		add_buddy_to_room(pConnection, chan, handle, new DTubeBuddy(pHandler, pChatroom->ptr(), handle, dbus_name));
 	}
 
 	for (UT_uint32 i = 0; i < arg_Removed->len; i++)
@@ -487,7 +555,7 @@ bool TelepathyAccountHandler::isOnline()
 void TelepathyAccountHandler::getBuddiesAsync()
 {
 	UT_DEBUGMSG(("TelepathyAccountHandler::getBuddiesAsync()\n"));
-		
+
 	// ask telepathy for the connection names
 	TpDBusDaemon* dbus = tp_dbus_daemon_dup(NULL);
 	UT_return_if_fail(dbus);
@@ -498,7 +566,7 @@ void TelepathyAccountHandler::getBuddiesAsync()
 BuddyPtr TelepathyAccountHandler::constructBuddy(const PropertyMap& /*props*/)
 {
 	UT_DEBUGMSG(("TelepathyAccountHandler::constructBuddy()\n"));
-	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);	
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 	return BuddyPtr();
 }
 
@@ -521,14 +589,35 @@ void TelepathyAccountHandler::forceDisconnectBuddy(BuddyPtr pBuddy)
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 }
 
-bool TelepathyAccountHandler::hasAccess(const std::vector<std::string>& /*vAcl*/, BuddyPtr pBuddy)
+bool TelepathyAccountHandler::hasAccess(const std::vector<std::string>& vAcl, BuddyPtr pBuddy)
 {
 	UT_DEBUGMSG(("TelepathyAccountHandler::hasAccess()\n"));
 	UT_return_val_if_fail(pBuddy, false);
 
-	// TODO: implement me
+	// Unfortunately, MUC rooms on conference.telepathy.im don't expose the real JIDs
+	// at the moment. This means that without it, we can't do proper security in ::hasAccess()
+	// See https://bugs.freedesktop.org/show_bug.cgi?id=37631 for details.
+	// Enable the code below when the global contact is accessible; see add_buddy_to_room()
+	// for details.
 
-	return TRUE;
+	return true;
+
+	/*
+	DTubeBuddyPtr pDTubeBuddy = boost::static_pointer_cast<DTubeBuddy>(pBuddy);
+	TpContact* pGlobalContact = pDTubeBuddy->getGlobalContact();
+	UT_return_val_if_fail(pGlobalContact, false);
+
+	const gchar* global_ident = tp_contact_get_identifier(pGlobalContact);
+	UT_return_val_if_fail(global_ident, false);
+	for (std::vector<std::string>::const_iterator cit = vAcl.begin(); cit != vAcl.end(); cit++)
+	{
+		UT_DEBUGMSG(("%s vs %s\n", global_ident, (*cit).c_str()));
+		if (global_ident == (*cit))
+			return true;
+	}
+	*/
+
+	return false;
 }
 
 void TelepathyAccountHandler::addContact(TpContact* contact)
@@ -636,6 +725,8 @@ bool TelepathyAccountHandler::startSession(PD_Document* pDoc, const std::vector<
 			 * anonymous MUCs. We can't use it right now, anonymous DBUS_TUBE MUCs are not implemented yet.
 			 * Remove the HANDLE_TYPE and TARGET_ID when you enable this.
 			 *
+			 * See https://bugs.freedesktop.org/show_bug.cgi?id=37630 for details.
+			 *
 			 * TP_PROP_CHANNEL_INTERFACE_CONFERENCE_INITIAL_INVITEE_IDS, G_TYPE_STRV, invitee_ids,
 			 */
 			NULL);
@@ -686,10 +777,10 @@ bool TelepathyAccountHandler::send(const Packet* pPacket, BuddyPtr pBuddy)
 	UT_return_val_if_fail(dst, false);
 	UT_DEBUGMSG(("Destination (%s) set on message\n", pDTubeBuddy->getDBusName().utf8_str()));
 
-	// we don't want replies, because they easily run into dbus timeout problems 
+	// we don't want replies, because they easily run into dbus timeout problems
 	// when sending large packets; this means we should probably use signals though.
 	dbus_message_set_no_reply(pMessage, TRUE);
-	
+
 	// make to-be-send-stream once
 	std::string data;
 	_createPacketStream( data, pPacket );
@@ -713,6 +804,9 @@ void TelepathyAccountHandler::acceptTube(TpChannel *chan, const char* address)
 	UT_DEBUGMSG(("TelepathyAccountHandler::acceptTube() - address: %s\n", address));
 	UT_return_if_fail(chan);
 	UT_return_if_fail(address);
+
+	TpConnection* connection = tp_channel_borrow_connection(chan);
+	UT_return_if_fail(connection);
 
 	DBusError dbus_error;
 	dbus_error_init(&dbus_error);
@@ -785,16 +879,8 @@ void TelepathyAccountHandler::acceptTube(TpChannel *chan, const char* address)
 		}
 
 		UT_DEBUGMSG(("Added room member - handle: %d, address: %s\n", contact_handle, contact_address));
-		DTubeBuddyPtr pBuddy = boost::shared_ptr<DTubeBuddy>(new DTubeBuddy(this, pChatroom, contact_handle, contact_address));
-		pChatroom->addBuddy(pBuddy);
+		add_buddy_to_room(connection, chan, contact_handle, new DTubeBuddy(this, pChatroom, contact_handle, contact_address));
 	}
-
-	// send a request for sessions; if everything is alright then we should
-	// receive exactly 1 session in all the responses combined
-	UT_DEBUGMSG(("Sending a GetSessionsEvent to every participant in the room\n"));
-	const std::vector<DTubeBuddyPtr> buddies = pChatroom->getBuddies();
-	for (UT_uint32 i = 0; i < buddies.size(); i++)
-		getSessionsAsync(buddies[i]);
 }
 
 void TelepathyAccountHandler::handleMessage(DTubeBuddyPtr pBuddy, const std::string& packet_str)
@@ -816,24 +902,15 @@ void TelepathyAccountHandler::handleMessage(DTubeBuddyPtr pBuddy, const std::str
 	{
 		case PCT_GetSessionsEvent:
 		{
-			if (pChatroom->getSessionId() != "")
+			if (pChatroom->isLocallyControlled())
 			{
-				AbiCollab* pSession = pManager->getSessionFromSessionId(pChatroom->getSessionId());
-				UT_return_if_fail(pSession);
-
-				if (pSession->isLocallyControlled())
-				{
-					// return only the session that belongs to the chatroom that the buddy is in
-					GetSessionsResponseEvent gsre;
-					gsre.m_Sessions[pChatroom->getSessionId()] = pChatroom->getDocName();
-					send(&gsre, pBuddy);
-				}
-				else
-					UT_DEBUGMSG(("Ignoring GetSessionsEvent, we are not controlling session %s\n", pChatroom->getSessionId().utf8_str()));
-			} else
-			{
-				UT_DEBUGMSG(("Ignoring GetSessionsEvent, we are not controlling session %s (we didn't even join yet)\n", pChatroom->getSessionId().utf8_str()));
+				// return only the session that belongs to the chatroom that the buddy is in
+				GetSessionsResponseEvent gsre;
+				gsre.m_Sessions[pChatroom->getSessionId()] = pChatroom->getDocName();
+				send(&gsre, pBuddy);
 			}
+			else
+				UT_DEBUGMSG(("Ignoring GetSessionsEvent, we are not controlling session '%s'\n", pChatroom->getSessionId().utf8_str()));
 
 			break;
 		}
@@ -907,7 +984,7 @@ DBusHandlerResult s_dbus_handle_message(DBusConnection *connection, DBusMessage 
 		}
 		else
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-	}	
+	}
 
 	UT_DEBUGMSG(("Unhandled message\n"));
 	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
@@ -987,7 +1064,7 @@ bool TelepathyAccountHandler::offerTube(TelepathyChatroomPtr pChatroom, TpChanne
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
-	
+
 	return true;
 }
 
