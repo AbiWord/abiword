@@ -1029,7 +1029,7 @@ bool TelepathyAccountHandler::offerTube(TelepathyChatroomPtr pChatroom, TpChanne
 	pChatroom->getInvitees().clear();
 
 	GHashTable* params = tp_asv_new (
-			"title", G_TYPE_STRING, /*pDoc->getFilename()*/ "TODO: get document title",
+			"title", G_TYPE_STRING, pChatroom->getDocName().utf8_str(),
 			NULL);
 
 	// offer this tube to every participant in the room
