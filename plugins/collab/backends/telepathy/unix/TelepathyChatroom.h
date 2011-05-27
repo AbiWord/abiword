@@ -39,16 +39,14 @@ typedef boost::shared_ptr<DTubeBuddy> DTubeBuddyPtr;
 class TelepathyChatroom : public boost::enable_shared_from_this<TelepathyChatroom>
 {
 public:
-	TelepathyChatroom(TelepathyAccountHandler* pHandler, PD_Document* pDoc,
-			DBusConnection* pTube, const UT_UTF8String& sSessionId)
-		: m_pHandler(pHandler),
-		m_pDoc(pDoc),
-		m_pTube(pTube),
-		m_sSessionId(sSessionId)
-	{
-	}
+	TelepathyChatroom(TelepathyAccountHandler* pHandler, TpChannel* pChannel, PD_Document* pDoc,
+			DBusConnection* pTube, const UT_UTF8String& sSessionId);
 
 	void stop();
+
+	void finalize();
+
+	void setChannel(TpChannel* pChannel);
 
 	boost::shared_ptr<TelepathyChatroom> ptr()
 		{ return shared_from_this(); }
@@ -76,6 +74,9 @@ public:
 	const UT_UTF8String& getSessionId()
 		{ return m_sSessionId; }
 
+	void setSessionId(const UT_UTF8String& sSessionId)
+		{ m_sSessionId = sSessionId; }
+
 	UT_UTF8String getDocName();
 
 	void queue(const std::string& dbusName, const std::string& packet);
@@ -87,17 +88,20 @@ public:
 	std::vector<TelepathyBuddyPtr>& getInvitees()
 		{ return m_invitees; }
 
+	bool isController(DTubeBuddyPtr pBuddy);
+
 	bool isLocallyControlled();
 
 private:
 	TelepathyAccountHandler*	m_pHandler;
+	TpChannel*					m_pChannel;
 	PD_Document* 				m_pDoc;
 	DBusConnection*				m_pTube;
 	UT_UTF8String				m_sSessionId;
 	std::vector<DTubeBuddyPtr>	m_buddies;
 	std::vector<TelepathyBuddyPtr> m_invitees;
-
 	std::map<std::string, std::vector<std::string> > m_packet_queue;
+	bool						m_bShuttingDown;
 };
 
 typedef boost::shared_ptr<TelepathyChatroom> TelepathyChatroomPtr;

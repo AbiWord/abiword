@@ -375,6 +375,9 @@ void muc_channel_ready_cb(GObject* source_object, GAsyncResult* result, gpointer
 		return;
 	}
 
+	// store the channel for safe-keeping
+	pChatroom->setChannel(channel);
+
 	// offer the tube to the members we want to invite into the room
 	pHandler->offerTube(pChatroom->ptr(), channel, pChatroom->getSessionId());
 }
@@ -531,11 +534,6 @@ bool TelepathyAccountHandler::disconnect()
 	// tear down all active rooms
 	for (std::vector<TelepathyChatroomPtr>::iterator it = m_chatrooms.begin(); it != m_chatrooms.end(); it++)
 		(*it)->stop();
-	// We can't make sure that there are zero asynchronous telepathy calls out there. This could
-	// make the next call problematic, as those callbacks carry an unsafe (non-smart) reference
-	// to a chatroom pointer. If we properly check the error status every time when a
-	// callback returns, before we touch the chatroom pointer, we should be safe.
-	m_chatrooms.clear();
 
 	// we are disconnected now, no need to receive events anymore
 	pManager->unregisterEventListener(this);
@@ -589,7 +587,7 @@ void TelepathyAccountHandler::forceDisconnectBuddy(BuddyPtr pBuddy)
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 }
 
-bool TelepathyAccountHandler::hasAccess(const std::vector<std::string>& vAcl, BuddyPtr pBuddy)
+bool TelepathyAccountHandler::hasAccess(const std::vector<std::string>& /*vAcl*/, BuddyPtr pBuddy)
 {
 	UT_DEBUGMSG(("TelepathyAccountHandler::hasAccess()\n"));
 	UT_return_val_if_fail(pBuddy, false);
@@ -640,9 +638,15 @@ void TelepathyAccountHandler::buddyDisconnected(TelepathyChatroomPtr pChatroom, 
 	UT_return_if_fail(pManager);
 
 	DTubeBuddyPtr pBuddy = pChatroom->getBuddy(disconnected);
+	bool isController = pChatroom->isController(pBuddy);
 
 	pManager->removeBuddy(pBuddy, false);
 	pChatroom->removeBuddy(disconnected);
+	if (isController)
+	{
+		UT_DEBUGMSG(("The master buddy left; stopping the chatroom!\n"));
+		pChatroom->stop();
+	}
 }
 
 bool TelepathyAccountHandler::startSession(PD_Document* pDoc, const std::vector<std::string>& vAcl, AbiCollab** pSession)
@@ -665,7 +669,7 @@ bool TelepathyAccountHandler::startSession(PD_Document* pDoc, const std::vector<
 	*pSession = pManager->startSession(pDoc, sSessionId, this, true, NULL, "");
 
 	// create a chatroom to hold the session information
-	TelepathyChatroomPtr pChatroom = boost::shared_ptr<TelepathyChatroom>(new TelepathyChatroom(this, pDoc, NULL, sSessionId));
+	TelepathyChatroomPtr pChatroom = boost::shared_ptr<TelepathyChatroom>(new TelepathyChatroom(this, NULL, pDoc, NULL, sSessionId));
 	m_chatrooms.push_back(pChatroom);
 
 	// add the buddies in the acl list to the room invitee list
@@ -740,7 +744,15 @@ bool TelepathyAccountHandler::startSession(PD_Document* pDoc, const std::vector<
 	return true;
 }
 
-void TelepathyAccountHandler::signal(const Event& /*event*/, BuddyPtr /*pSource*/)
+void TelepathyAccountHandler::unregisterChatroom(TelepathyChatroomPtr pChatroom)
+{
+	UT_DEBUGMSG(("TelepathyAccountHandler::unregisterChatroom()\n"));
+	std::vector<TelepathyChatroomPtr>::iterator pos = std::find(m_chatrooms.begin(), m_chatrooms.end(), pChatroom);
+	UT_return_if_fail(pos != m_chatrooms.end());
+	m_chatrooms.erase(pos);
+}
+
+void TelepathyAccountHandler::signal(const Event& event, BuddyPtr pSource)
 {
 	UT_DEBUGMSG(("TelepathyAccountHandler::signal\n"));
 
@@ -750,7 +762,58 @@ void TelepathyAccountHandler::signal(const Event& /*event*/, BuddyPtr /*pSource*
 	// buddies however, and can't receive real packets. Only DTubeBuddy's
 	// can be sent packets
 
-	// TODO: handle the other events?
+	// Note: there is no real need to pass the PCT_CloseSessionEvent and
+	// PCT_DisjoinSessionEvent signals to the AccountHandler::signal()
+	// function: that one will send all buddies the 'session is closed'
+	// signal. However, on this backend, Telepathy will handle that for us
+
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_if_fail(pManager);
+
+	switch (event.getClassType())
+	{
+		case PCT_CloseSessionEvent:
+			{
+				UT_DEBUGMSG(("Got a PCT_CloseSessionEvent\n"));
+				const CloseSessionEvent cse = static_cast<const CloseSessionEvent&>(event);
+				// check if this event came from this account in the first place
+				if (pSource && pSource->getHandler() != this)
+				{
+					// nope, a session was closed on some other account; ignore this...
+					return;
+				}
+				UT_return_if_fail(!pSource); // we shouldn't receive these events over the wire on this backend
+
+				UT_DEBUGMSG(("Disconnecting the tube for room with session id %s\n", cse.getSessionId().utf8_str()));
+				TelepathyChatroomPtr pChatroom = _getChatroom(cse.getSessionId());
+				UT_return_if_fail(pChatroom);
+
+				pChatroom->stop();
+			}
+			break;
+		case PCT_DisjoinSessionEvent:
+			{
+				UT_DEBUGMSG(("Got a PCT_DisjoinSessionEvent\n"));
+				const DisjoinSessionEvent dse = static_cast<const DisjoinSessionEvent&>(event);
+				// check if this event came from this account in the first place
+				if (pSource && pSource->getHandler() != this)
+				{
+					// nope, a session was closed on some other account; ignore this...
+					return;
+				}
+				UT_return_if_fail(!pSource); // we shouldn't receive these events over the wire on this backend
+
+				UT_DEBUGMSG(("Disconnecting the tube for room with session id %s\n", dse.getSessionId().utf8_str()));
+				TelepathyChatroomPtr pChatroom = _getChatroom(dse.getSessionId());
+				UT_return_if_fail(pChatroom);
+
+				pChatroom->stop();
+			}
+			break;
+		default:
+			// TODO: implement me
+			break;
+	}
 }
 
 bool TelepathyAccountHandler::send(const Packet* pPacket)
@@ -810,7 +873,7 @@ void TelepathyAccountHandler::acceptTube(TpChannel *chan, const char* address)
 
 	DBusError dbus_error;
 	dbus_error_init(&dbus_error);
-	DBusConnection* pTube = dbus_connection_open(address, &dbus_error);
+	DBusConnection* pTube = dbus_connection_open_private(address, &dbus_error);
 	if (!pTube)
 	{
 		UT_DEBUGMSG(("Error opening dbus connection to address %s: %s\n", address, dbus_error.message));
@@ -821,7 +884,7 @@ void TelepathyAccountHandler::acceptTube(TpChannel *chan, const char* address)
 
 	// create a new room so we can store the buddies somewhere
 	// the session id will be set as soon as we join the document
-	TelepathyChatroomPtr pChatroom = boost::shared_ptr<TelepathyChatroom>(new TelepathyChatroom(this, NULL, pTube, ""));
+	TelepathyChatroomPtr pChatroom = boost::shared_ptr<TelepathyChatroom>(new TelepathyChatroom(this, chan, NULL, pTube, ""));
 	m_chatrooms.push_back(pChatroom);
 
 	UT_DEBUGMSG(("Adding dbus handlers to the main loop for tube %s\n", address));
@@ -923,6 +986,9 @@ void TelepathyAccountHandler::handleMessage(DTubeBuddyPtr pBuddy, const std::str
 			UT_return_if_fail(gsre->m_Sessions.size() == 1);
 			std::map<UT_UTF8String,UT_UTF8String>::iterator it=gsre->m_Sessions.begin();
 			DocHandle* pDocHandle = new DocHandle((*it).first, (*it).second);
+
+			// store the session id
+			pChatroom->setSessionId(pDocHandle->getSessionId());
 
 			// join the session
 			UT_DEBUGMSG(("Got a running session (%s - %s), let's join it immediately\n", pDocHandle->getSessionId().utf8_str(), pDocHandle->getName().utf8_str()));
@@ -1044,7 +1110,7 @@ bool TelepathyAccountHandler::offerTube(TelepathyChatroomPtr pChatroom, TpChanne
 	UT_DEBUGMSG(("Tube offered, address: %s\n", address));
 
 	// open and store the tube dbus connection
-	DBusConnection* pTube = dbus_connection_open(address, NULL);
+	DBusConnection* pTube = dbus_connection_open_private(address, NULL);
 	UT_return_val_if_fail(pTube, FALSE);
 	pChatroom->setTube(pTube);
 
@@ -1079,4 +1145,18 @@ TelepathyBuddyPtr TelepathyAccountHandler::_getBuddy(TelepathyBuddyPtr pBuddy)
 			return pB;
 	}
 	return TelepathyBuddyPtr();
+}
+
+TelepathyChatroomPtr TelepathyAccountHandler::_getChatroom(const UT_UTF8String& sSessionId)
+{
+	for (std::vector<TelepathyChatroomPtr>::iterator it = m_chatrooms.begin(); it != m_chatrooms.end(); it++)
+	{
+		TelepathyChatroomPtr pChatroom = *it;
+		UT_continue_if_fail(pChatroom);
+
+		if (pChatroom->getSessionId() == sSessionId)
+			return pChatroom;
+	}
+
+	return TelepathyChatroomPtr();
 }

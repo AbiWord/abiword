@@ -170,7 +170,7 @@ void SugarAccountHandler::signal(const Event& event, BuddyPtr pSource)
 				const CloseSessionEvent cse = static_cast<const CloseSessionEvent&>(event);
 				UT_return_if_fail(!pSource); // we shouldn't receive these events over the wire on this backend
 
-				// If the session that is close was started by us, then disconnect from
+				// If the session that is closed was started by us, then disconnect from
 				// the tube. Otherwise, just drop the event on the floor....
 
 				if (cse.getSessionId() == m_sSessionId)

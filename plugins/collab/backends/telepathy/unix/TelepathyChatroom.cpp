@@ -23,10 +23,85 @@
 #include "TelepathyChatroom.h"
 #include "DTubeBuddy.h"
 
+static void
+tp_channel_close_cb(TpChannel* /*proxy*/,
+		const GError *error,
+		gpointer user_data,
+		GObject* /*weak_object*/)
+{
+	TelepathyChatroom* pChatroom = reinterpret_cast<TelepathyChatroom*>(user_data);
+	UT_return_if_fail(pChatroom);
+
+	if (error)
+	{
+		UT_DEBUGMSG(("Failed to close channel %s\n", error->message));
+		pChatroom->finalize();
+		return;
+	}
+
+	pChatroom->finalize();
+}
+
+TelepathyChatroom::TelepathyChatroom(TelepathyAccountHandler* pHandler, TpChannel* pChannel, PD_Document* pDoc,
+		DBusConnection* pTube, const UT_UTF8String& sSessionId)
+	: m_pHandler(pHandler),
+	m_pChannel(pChannel),
+	m_pDoc(pDoc),
+	m_pTube(pTube),
+	m_sSessionId(sSessionId),
+	m_bShuttingDown(false)
+{
+	if (m_pChannel)
+		g_object_ref(m_pChannel);
+
+	// prevent the TelepathyAccountHandler from being deleted while
+	// there are (possible) outstanding asynchronous operations
+	// for this room
+	AbiCollabSessionManager::getManager()->beginAsyncOperation(m_pHandler);
+}
+
 void TelepathyChatroom::stop()
 {
 	UT_DEBUGMSG(("TelepathyChatroom::stop()\n"));
-	dbus_connection_unref(m_pTube);
+
+	if (m_pChannel)
+		tp_cli_channel_call_close(m_pChannel, 5000, tp_channel_close_cb, this, NULL, NULL);
+	else
+		finalize();
+}
+
+void TelepathyChatroom::finalize()
+{
+	UT_DEBUGMSG(("TelepathyChatroom::finalize()\n"));
+
+	if (m_pChannel)
+	{
+		g_object_ref(m_pChannel);
+		m_pChannel = NULL;
+	}
+
+	if (m_pTube)
+	{
+		dbus_connection_close(m_pTube);
+		m_pTube = NULL;
+	}
+
+	// keep a shared pointer to ourselves: the unregisterChatroom() call
+	// on the next line will make use self-destruct without it, because it
+	// removes the last reference to this room. Every call after that call
+	// would then result in a stack corruption.
+	TelepathyChatroomPtr self = ptr();
+
+	// unregister ourselves from the TelepathyAccountHandler
+	m_pHandler->unregisterChatroom(self);
+
+	AbiCollabSessionManager::getManager()->endAsyncOperation(m_pHandler);
+}
+
+void TelepathyChatroom::setChannel(TpChannel* pChannel)
+{
+	m_pChannel = pChannel;
+	g_object_ref(m_pChannel);
 }
 
 void TelepathyChatroom::addBuddy(DTubeBuddyPtr pBuddy)
@@ -115,6 +190,19 @@ void TelepathyChatroom::queue(const std::string& dbusName, const std::string& pa
 {
 	UT_DEBUGMSG(("Queueing packet for %s\n", dbusName.c_str()));
 	m_packet_queue[dbusName].push_back(packet);
+}
+
+bool TelepathyChatroom::isController(DTubeBuddyPtr pBuddy)
+{
+	UT_return_val_if_fail(m_sSessionId != "", FALSE);
+
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, false);
+
+	AbiCollab* pSession = pManager->getSessionFromSessionId(m_sSessionId);
+	UT_return_val_if_fail(pSession, false);
+
+	return pSession->isController(pBuddy);
 }
 
 bool TelepathyChatroom::isLocallyControlled()

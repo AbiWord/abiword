@@ -83,6 +83,7 @@ public:
 	virtual bool							startSession(PD_Document* pDoc, const std::vector<std::string>& acl, AbiCollab** pSession);
 	virtual bool							allowsSessionTakeover()
 		{ return false; /* not right now */ }
+	void									unregisterChatroom(TelepathyChatroomPtr pChatroom);
 
 	// signal management
 	virtual void							signal(const Event& event, BuddyPtr pSource);
@@ -94,6 +95,7 @@ public:
 	
 private:
 	TelepathyBuddyPtr						_getBuddy(TelepathyBuddyPtr pBuddy);
+	TelepathyChatroomPtr					_getChatroom(const UT_UTF8String& sSessionId);
 
 	GtkWidget*								table;
 	GtkWidget*								conference_entry;
