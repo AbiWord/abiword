@@ -4,6 +4,7 @@ EXTRA_DIST = \
 
 stringsdir = $(ABIWORD_DATADIR)/strings
 strings_DATA = \
+	af-ZA.strings \
 	am-ET.strings \
 	ar.strings \
 	ast-ES.strings \
@@ -29,6 +30,7 @@ strings_DATA = \
 	et.strings \
 	eu-ES.strings \
 	fi-FI.strings \
+	ff.strings \
 	fr-FR.strings \
 	ga-IE.strings \
 	gl.strings \
@@ -63,6 +65,7 @@ strings_DATA = \
 	sl-SI.strings \
 	sq-AL.strings \
 	sr.strings \
+	sr@latin.strings \
 	sv-SE.strings \
 	ta-IN.strings \
 	tr-TR.strings \

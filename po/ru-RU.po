@@ -8,16 +8,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: abiword\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-07-28 05:17+0200\n"
-"PO-Revision-Date: 2009-08-30 18:36+0600\n"
-"Last-Translator: Alex <st@sandy.localdomain>\n"
+"POT-Creation-Date: 2011-05-28 04:36+0700\n"
+"PO-Revision-Date: 2011-05-29 06:42+0600\n"
+"Last-Translator: Urmas D. <davian818@gmail.com>\n"
 "Language-Team: Russian <gnome-cyr@gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 # Some notes to translators:
-#
 # We had discussed translation with Sergey Panov <sipan@mit.edu> and came to
 # those decisions about terminology:
 # Plugin - Дополнение (like in gedit)
@@ -35,8 +34,6 @@ msgstr ""
 # "Column" is "Колонка" when we are talking about page
 # layout, but "Столбец" is more appropriate when we are talking about an
 # element of the table.
-#
-#
 #. MENU_LABEL__BOGUS1__
 #. MENU_LABEL__BOGUS2__
 #. MENU_STATUSLINE__BOGUS1__
@@ -110,7 +107,7 @@ msgstr ""
 "Если вы программист, вы можете свободно добавить код в файл «%s», строка %d\n"
 "и послать патчи по адресу:\n"
 "abiword-dev@abisource.com\n"
-"Если же вы не программист - будте терпеливы :)."
+"Если же вы не программист - будьте терпеливы :)."
 
 #. MENU_LABEL_FILE_RECENT_1
 #. MENU_LABEL_VIEW_TB_1
@@ -1116,7 +1113,7 @@ msgstr "AM/PM"
 #: po/tmp/ap_String_Id.h.h:459
 #, c-format
 msgid "AbiWord cannot open %s. It appears to be an invalid document"
-msgstr "AbiWord не может открыть %s. Скорее всего это документ неправильного формата"
+msgstr "AbiWord не может открыть %s. Скорее всего это документ неправильного формата."
 
 #. MSG_SpellSelectionDone
 #: po/tmp/ap_String_Id.h.h:461
@@ -3306,7 +3303,7 @@ msgstr "Стиль внутренних (одинарных) кавычек"
 #: po/tmp/ap_String_Id.h.h:1346
 #: po/tmp/xap_String_Id.h.h:457
 msgid "Insert"
-msgstr "Начать"
+msgstr "Вставка"
 
 #. MENU_LABEL_TABLE_INSERTCOLUMN
 #: po/tmp/ap_String_Id.h.h:1348
@@ -4027,7 +4024,7 @@ msgstr "Изменить стили"
 #. DLG_Styles_Modify
 #: po/tmp/ap_String_Id.h.h:1650
 msgid "Modify..."
-msgstr "Изменить.."
+msgstr "Изменить..."
 
 #. FIELD_DateTime_MonthDayYear
 #: po/tmp/ap_String_Id.h.h:1652
@@ -4183,7 +4180,7 @@ msgstr "Нумерованный"
 #. DLG_Lists_Numbered_List
 #. STYLE_NUMBER_LIST
 #: po/tmp/ap_String_Id.h.h:1711
-#: po/tmp/xap_String_Id.h.h:574
+#: po/tmp/xap_String_Id.h.h:576
 msgid "Numbered List"
 msgstr "Нумерованный (цифры)"
 
@@ -4283,7 +4280,7 @@ msgstr "Стиль внешних (двойных) кавычек:"
 #. TOOLBAR_TOOLTIP_FMT_OVERLINE
 #. DLG_UFS_OverlineCheck
 #: po/tmp/ap_String_Id.h.h:1760
-#: po/tmp/xap_String_Id.h.h:588
+#: po/tmp/xap_String_Id.h.h:590
 msgid "Overline"
 msgstr "Надчёркивание"
 
@@ -4523,7 +4520,7 @@ msgstr "Параметры"
 #. DLG_PageNumbers_Preview
 #. DLG_Zoom_PreviewFrame
 #: po/tmp/ap_String_Id.h.h:1862
-#: po/tmp/xap_String_Id.h.h:620
+#: po/tmp/xap_String_Id.h.h:622
 msgid "Preview"
 msgstr "Предварительный просмотр"
 
@@ -4549,7 +4546,7 @@ msgstr "Предыдущий абзац Предыдущий абзац Пред
 #. DLG_UP_PrintTitle
 #. DLG_UP_PrintButton
 #: po/tmp/ap_String_Id.h.h:1873
-#: po/tmp/xap_String_Id.h.h:625
+#: po/tmp/xap_String_Id.h.h:627
 msgid "Print"
 msgstr "Печатать"
 
@@ -4828,7 +4825,7 @@ msgstr "Начинать номера страниц с новой секции"
 #. DLG_Lists_Resume_Previous_List
 #: po/tmp/ap_String_Id.h.h:1990
 msgid "Resume Previous List"
-msgstr "Возобновить список"
+msgstr "Продолжить список"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_AUTO
 #: po/tmp/ap_String_Id.h.h:1992
@@ -5055,7 +5052,7 @@ msgstr "Просмотреть историю изменений докумен�
 #. MENU_STATUSLINE_TABLE_SELECT
 #. DLG_Select
 #: po/tmp/ap_String_Id.h.h:2084
-#: po/tmp/xap_String_Id.h.h:685
+#: po/tmp/xap_String_Id.h.h:687
 msgid "Select"
 msgstr "Выделить"
 
@@ -5123,7 +5120,7 @@ msgstr "Выделить весь документ"
 #. DLG_FormatTable_Apply_To_Selection
 #. DLG_UP_Selection
 #: po/tmp/ap_String_Id.h.h:2111
-#: po/tmp/xap_String_Id.h.h:693
+#: po/tmp/xap_String_Id.h.h:695
 msgid "Selection"
 msgstr "Выделение"
 
@@ -5287,7 +5284,7 @@ msgstr "Быстрая клавиша"
 #. DLG_Options_Label_Show
 #. DLG_Show
 #: po/tmp/ap_String_Id.h.h:2177
-#: po/tmp/xap_String_Id.h.h:705
+#: po/tmp/xap_String_Id.h.h:707
 msgid "Show"
 msgstr "Показать"
 
@@ -5480,7 +5477,7 @@ msgstr "Пробел после колонки"
 #. TOOLBAR_TOOLTIP_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h.h:2257
 msgid "Space before: 12 pt"
-msgstr "Пробел перед: 12 pt"
+msgstr "Пробел перед: 12 пт"
 
 #. TOOLBAR_STATUSLINE_PARA_0BEFORE
 #. TOOLBAR_TOOLTIP_PARA_0BEFORE
@@ -5597,7 +5594,7 @@ msgstr "Разделить эту ячейку"
 #. DLG_Lists_Square_List
 #. STYLE_SQUARELIST
 #: po/tmp/ap_String_Id.h.h:2308
-#: po/tmp/xap_String_Id.h.h:719
+#: po/tmp/xap_String_Id.h.h:721
 msgid "Square List"
 msgstr "Сплошные квадраты"
 
@@ -5619,7 +5616,7 @@ msgstr "Стандартная"
 #. DLG_Lists_Star_List
 #. STYLE_STARLIST
 #: po/tmp/ap_String_Id.h.h:2316
-#: po/tmp/xap_String_Id.h.h:723
+#: po/tmp/xap_String_Id.h.h:725
 msgid "Star List"
 msgstr "Звездочки"
 
@@ -5674,7 +5671,7 @@ msgstr "За&черкивание"
 #. TOOLBAR_TOOLTIP_FMT_STRIKE
 #. DLG_UFS_StrikeoutCheck
 #: po/tmp/ap_String_Id.h.h:2339
-#: po/tmp/xap_String_Id.h.h:725
+#: po/tmp/xap_String_Id.h.h:727
 msgid "Strike"
 msgstr "Зачеркивание"
 
@@ -5723,7 +5720,7 @@ msgstr "Имя стиля не может быть пустым"
 #. DLG_Lists_Style
 #. DLG_UFS_StyleLabel
 #: po/tmp/ap_String_Id.h.h:2359
-#: po/tmp/xap_String_Id.h.h:727
+#: po/tmp/xap_String_Id.h.h:729
 msgid "Style:"
 msgstr "Стиль:"
 
@@ -5753,7 +5750,7 @@ msgstr "Тема:"
 #. TOOLBAR_TOOLTIP_FMT_SUBSCRIPT
 #. DLG_UFS_SubScript
 #: po/tmp/ap_String_Id.h.h:2372
-#: po/tmp/xap_String_Id.h.h:731
+#: po/tmp/xap_String_Id.h.h:733
 msgid "Subscript"
 msgstr "Нижний индекс"
 
@@ -5802,7 +5799,7 @@ msgstr "&Верний индекс"
 #. TOOLBAR_TOOLTIP_FMT_SUPERSCRIPT
 #. DLG_UFS_SuperScript
 #: po/tmp/ap_String_Id.h.h:2392
-#: po/tmp/xap_String_Id.h.h:733
+#: po/tmp/xap_String_Id.h.h:735
 msgid "Superscript"
 msgstr "Верхний индекс"
 
@@ -5841,7 +5838,7 @@ msgstr "Будут удалены:"
 #. MENU_STATUSLINE_TABLE
 #. TB_Table
 #: po/tmp/ap_String_Id.h.h:2408
-#: po/tmp/xap_String_Id.h.h:743
+#: po/tmp/xap_String_Id.h.h:745
 msgid "Table"
 msgstr "Таблица"
 
@@ -5885,7 +5882,7 @@ msgstr "Табуляция"
 #. DLG_FormatTOC_DetailsTabPage
 #: po/tmp/ap_String_Id.h.h:2426
 msgid "Tabs and Page Numbering"
-msgstr "Табуляция и нумерация страниц"
+msgstr "Табуляция и нумерация"
 
 #. MENU_LABEL_FMT
 #: po/tmp/ap_String_Id.h.h:2428
@@ -5931,12 +5928,12 @@ msgstr "Перенос текста"
 #. DLG_Options_Label_Both
 #: po/tmp/ap_String_Id.h.h:2445
 msgid "Text and Icon"
-msgstr "Текст и пиктограмма"
+msgstr "Текст и значки"
 
 #. COMMAND_LINE_PRINTING_DEPRECATED
 #: po/tmp/ap_String_Id.h.h:2447
 msgid "The '--print' option has been removed as of AbiWord 2.8. You can achieve the desired behavior using AbiWord's command-line conversion tools and then piping the output to a print spooler. Eg: 'abiword --to=ps --to-name=fd://1 myfile.txt | lpr'"
-msgstr "Параметр '--print' был удален в AbiWord 2.8. Вы можете добиться результата, используя команды преобразования форматов и перенаправляя результат в диспетчер печати. Напр.: 'abiword --to=ps --to-name=fd://1 myfile.txt | lpr'"
+msgstr "Параметр '--print' был удален в AbiWord 2.8. Следует использовать команды преобразования форматов и перенаправить результат в диспетчер печати. Напр.: 'abiword --to=ps --to-name=fd://1 myfile.txt | lpr'"
 
 #. DLG_PageSetup_ErrBigMargins
 #: po/tmp/ap_String_Id.h.h:2449
@@ -6005,7 +6002,7 @@ msgstr "Три"
 #. DLG_Lists_Tick_List
 #. STYLE_TICKLIST
 #: po/tmp/ap_String_Id.h.h:2473
-#: po/tmp/xap_String_Id.h.h:777
+#: po/tmp/xap_String_Id.h.h:779
 msgid "Tick List"
 msgstr "Галочки"
 
@@ -6022,7 +6019,7 @@ msgstr "Заголовок"
 #. DLG_ToggleCase_TitleCase
 #. DLG_UFS_Effects_TitleCase
 #: po/tmp/ap_String_Id.h.h:2479
-#: po/tmp/xap_String_Id.h.h:781
+#: po/tmp/xap_String_Id.h.h:783
 msgid "Title Case"
 msgstr "Как в заголовках"
 
@@ -6030,7 +6027,7 @@ msgstr "Как в заголовках"
 #. DLG_Annotation_Title_LBL
 #. DLG_Image_LblTitle
 #: po/tmp/ap_String_Id.h.h:2482
-#: po/tmp/xap_String_Id.h.h:783
+#: po/tmp/xap_String_Id.h.h:785
 msgid "Title:"
 msgstr "Заголовок:"
 
@@ -6056,14 +6053,14 @@ msgstr "Верхний отступ [%s]"
 #. TOOLBAR_TOOLTIP_FMT_TOPLINE
 #. DLG_UFS_ToplineCheck
 #: po/tmp/ap_String_Id.h.h:2493
-#: po/tmp/xap_String_Id.h.h:789
+#: po/tmp/xap_String_Id.h.h:791
 msgid "Topline"
 msgstr "Верхняя линия"
 
 #. DLG_Lists_Triangle_List
 #. STYLE_TRIANGLELIST
 #: po/tmp/ap_String_Id.h.h:2495
-#: po/tmp/xap_String_Id.h.h:791
+#: po/tmp/xap_String_Id.h.h:793
 msgid "Triangle List"
 msgstr "Треугольники"
 
@@ -6097,7 +6094,7 @@ msgstr "ПРОПИСНЫМИ"
 #. TOOLBAR_TOOLTIP_FMT_UNDERLINE
 #. DLG_UFS_UnderlineCheck
 #: po/tmp/ap_String_Id.h.h:2509
-#: po/tmp/xap_String_Id.h.h:811
+#: po/tmp/xap_String_Id.h.h:813
 msgid "Underline"
 msgstr "Подчёркнутый"
 
@@ -6126,14 +6123,14 @@ msgstr "Обновить примечание"
 #. DLG_Lists_Upper_Case_List
 #. STYLE_UPPERCASTELIST
 #: po/tmp/ap_String_Id.h.h:2521
-#: po/tmp/xap_String_Id.h.h:845
+#: po/tmp/xap_String_Id.h.h:847
 msgid "Upper Case List"
 msgstr "Нумерованный (прописные буквы)"
 
 #. DLG_Lists_Upper_Roman_List
 #. STYLE_UPPERROMANLIST
 #: po/tmp/ap_String_Id.h.h:2523
-#: po/tmp/xap_String_Id.h.h:847
+#: po/tmp/xap_String_Id.h.h:849
 msgid "Upper Roman List"
 msgstr "Прописные римские"
 
@@ -6180,7 +6177,7 @@ msgstr "Стили пользователя"
 #. FIELD_Application_Version
 #. DLG_History_Version_Version
 #: po/tmp/ap_String_Id.h.h:2541
-#: po/tmp/xap_String_Id.h.h:857
+#: po/tmp/xap_String_Id.h.h:859
 msgid "Version"
 msgstr "Версия"
 
@@ -6315,7 +6312,7 @@ msgstr "Ваши изменения будет потеряны, если вы �
 #. TOOLBAR_TOOLTIP_ZOOM
 #. DLG_Zoom_ZoomTitle
 #: po/tmp/ap_String_Id.h.h:2600
-#: po/tmp/xap_String_Id.h.h:908
+#: po/tmp/xap_String_Id.h.h:910
 msgid "Zoom"
 msgstr "Масштаб"
 
@@ -6529,7 +6526,7 @@ msgstr "Активные дополнения"
 #. LANG_AF_ZA
 #: po/tmp/xap_String_Id.h.h:55
 msgid "Afrikaans"
-msgstr "Африканские"
+msgstr "Африкаанс"
 
 #. LANG_AK_GH
 #: po/tmp/xap_String_Id.h.h:57
@@ -6584,7 +6581,7 @@ msgstr "Арабский (Саудовская Аравия)"
 #. ENC_ARAB_ISO
 #: po/tmp/xap_String_Id.h.h:81
 msgid "Arabic, ISO-8859-6"
-msgstr "Арабский, ISO-8859-6"
+msgstr "Арабская, ISO–8859–6"
 
 #. ENC_ARAB_MAC
 #: po/tmp/xap_String_Id.h.h:83
@@ -6594,7 +6591,7 @@ msgstr "Арабский, Macintosh"
 #. ENC_ARAB_WIN
 #: po/tmp/xap_String_Id.h.h:85
 msgid "Arabic, Windows Code Page 1256"
-msgstr "Арабский, Windows Code Page 1256"
+msgstr "Арабская, Windows–1256"
 
 #. LANG_HY_AM
 #: po/tmp/xap_String_Id.h.h:87
@@ -6604,7 +6601,7 @@ msgstr "Армянский"
 #. ENC_ARME_ARMSCII
 #: po/tmp/xap_String_Id.h.h:89
 msgid "Armenian, ARMSCII-8"
-msgstr "Армянский, ARMSCII-8"
+msgstr "Армянская, ARMSCII–8"
 
 #. LANG_AS_IN
 #: po/tmp/xap_String_Id.h.h:91
@@ -6674,12 +6671,12 @@ msgstr "Баскский"
 #. LANG_BE_BY
 #: po/tmp/xap_String_Id.h.h:119
 msgid "Belarusian"
-msgstr "Беларусский"
+msgstr "Белорусский"
 
 #. LANG_BE_LATIN
 #: po/tmp/xap_String_Id.h.h:121
 msgid "Belarusian, Latin"
-msgstr "Беларусский (латинница)"
+msgstr "Белорусский (латинница)"
 
 #. LANG_BN_IN
 #: po/tmp/xap_String_Id.h.h:123
@@ -6699,7 +6696,7 @@ msgstr "Цитата"
 #. DLG_UFS_StyleBoldItalic
 #: po/tmp/xap_String_Id.h.h:131
 msgid "Bold Italic"
-msgstr "Жирный курсивный"
+msgstr "Жирный курсив"
 
 #. LANG_BR_FR
 #: po/tmp/xap_String_Id.h.h:137
@@ -6790,12 +6787,12 @@ msgstr "Упрощенный Китайский, EUC-CN (GB2312)"
 #. ENC_CHSI_GB
 #: po/tmp/xap_String_Id.h.h:173
 msgid "Chinese Simplified, GB_2312-80"
-msgstr "Упрощенный Китайский, GB_2312-80"
+msgstr "Упрощенная китайская, GB_2312-80"
 
 #. ENC_CHSI_HZ
 #: po/tmp/xap_String_Id.h.h:175
 msgid "Chinese Simplified, HZ"
-msgstr "Упрощенный Китайкий, HZ"
+msgstr "Упрощенная Китайская, HZ"
 
 #. ENC_CHSI_WIN
 #: po/tmp/xap_String_Id.h.h:177
@@ -6820,7 +6817,7 @@ msgstr "Традиционный Китайский, EUC-TW"
 #. ENC_CHTR_WIN
 #: po/tmp/xap_String_Id.h.h:185
 msgid "Chinese Traditional, Windows Code Page 950"
-msgstr "Традиционный Китайский, Windows Code Page 950"
+msgstr "Традиционная китайская, Windows Code Page 950"
 
 #. DLG_LISTDOCS_Heading1
 #: po/tmp/xap_String_Id.h.h:187
@@ -7061,7 +7058,7 @@ msgstr "Эффекты"
 #. DLG_HTMLOPT_ExpEmbedCSS
 #: po/tmp/xap_String_Id.h.h:292
 msgid "Embed (CSS) style sheet"
-msgstr "Включить (CSS) стиль"
+msgstr "Включить CSS-стили"
 
 #. DLG_UP_EmbedFonts
 #: po/tmp/xap_String_Id.h.h:294
@@ -7397,7 +7394,7 @@ msgstr "Исландский"
 #. ENC_ICEL_MAC
 #: po/tmp/xap_String_Id.h.h:437
 msgid "Icelandic, Macintosh"
-msgstr "Исландский, Macintosh"
+msgstr "Исландская, Macintosh"
 
 #. DLG_History_Id
 #: po/tmp/xap_String_Id.h.h:439
@@ -7620,899 +7617,929 @@ msgstr "Сделать значением по умолчанию"
 msgid "Malay"
 msgstr "Малазийский"
 
-#. LANG_MI_NZ
+#. LANG_MNK_SN
 #: po/tmp/xap_String_Id.h.h:538
+msgid "Mandinka (Senegal)"
+msgstr "Мандинка (Сенегал)"
+
+#. LANG_MI_NZ
+#: po/tmp/xap_String_Id.h.h:540
 msgid "Maori"
 msgstr "Маори"
 
 #. LANG_MR_IN
-#: po/tmp/xap_String_Id.h.h:540
+#: po/tmp/xap_String_Id.h.h:542
 msgid "Marathi"
 msgstr "Маратхи"
 
 #. LANG_MH_MH
-#: po/tmp/xap_String_Id.h.h:542
+#: po/tmp/xap_String_Id.h.h:544
 msgid "Marshallese (Marshall Islands)"
 msgstr "Язык Маршалловых Островов"
 
 #. LANG_MH_NR
-#: po/tmp/xap_String_Id.h.h:544
+#: po/tmp/xap_String_Id.h.h:546
 msgid "Marshallese (Nauru)"
 msgstr "Язык Маршалловых Островов (Науру)"
 
 #. DLG_Merge
-#: po/tmp/xap_String_Id.h.h:546
+#: po/tmp/xap_String_Id.h.h:548
 msgid "Merge"
 msgstr "Включить"
 
 #. LANG_MN_MN
-#: po/tmp/xap_String_Id.h.h:548
+#: po/tmp/xap_String_Id.h.h:550
 msgid "Mongolian"
 msgstr "Монгольский"
 
 #. DLG_PLUGIN_MANAGER_NAME
-#: po/tmp/xap_String_Id.h.h:550
+#: po/tmp/xap_String_Id.h.h:552
 msgid "Name:"
 msgstr "Название:"
 
 #. LANG_NE_NP
-#: po/tmp/xap_String_Id.h.h:552
+#: po/tmp/xap_String_Id.h.h:554
 msgid "Nepali (Nepal)"
 msgstr "Непальский (Непал)"
 
 #. DLG_MB_No
-#: po/tmp/xap_String_Id.h.h:554
+#: po/tmp/xap_String_Id.h.h:556
 msgid "No"
 msgstr "Нет"
 
 #. DLG_IP_No_Picture_Label
-#: po/tmp/xap_String_Id.h.h:556
+#: po/tmp/xap_String_Id.h.h:558
 msgid "No Picture"
 msgstr "Нет рисунка"
 
 #. DLG_PLUGIN_MANAGER_NONE_SELECTED
-#: po/tmp/xap_String_Id.h.h:558
+#: po/tmp/xap_String_Id.h.h:560
 msgid "No plugin selected"
 msgstr "Дополнение не выбрано"
 
 #. STYLE_NORMAL
-#: po/tmp/xap_String_Id.h.h:560
+#: po/tmp/xap_String_Id.h.h:562
 msgid "Normal"
 msgstr "Обычный"
 
 #. LANG_NB_NO
-#: po/tmp/xap_String_Id.h.h:562
+#: po/tmp/xap_String_Id.h.h:564
 msgid "Norwegian Bokmal"
 msgstr "Норвежский Букмол"
 
 #. LANG_NN_NO
-#: po/tmp/xap_String_Id.h.h:564
+#: po/tmp/xap_String_Id.h.h:566
 msgid "Norwegian Nynorsk"
 msgstr "Норвежский Нюнорск"
 
 #. DLG_PLUGIN_MANAGER_NOT_AVAILABLE
-#: po/tmp/xap_String_Id.h.h:566
+#: po/tmp/xap_String_Id.h.h:568
 msgid "Not available"
 msgstr "Не доступен"
 
 #. STYLE_NUMHEAD1
-#: po/tmp/xap_String_Id.h.h:568
+#: po/tmp/xap_String_Id.h.h:570
 msgid "Numbered Heading 1"
 msgstr "Нумерованный заголовок 1"
 
 #. STYLE_NUMHEAD2
-#: po/tmp/xap_String_Id.h.h:570
+#: po/tmp/xap_String_Id.h.h:572
 msgid "Numbered Heading 2"
 msgstr "Нумерованный заголовок 2"
 
 #. STYLE_NUMHEAD3
-#: po/tmp/xap_String_Id.h.h:572
+#: po/tmp/xap_String_Id.h.h:574
 msgid "Numbered Heading 3"
 msgstr "Нумерованный заголовок 3"
 
 #. DLG_OK
-#: po/tmp/xap_String_Id.h.h:576
+#: po/tmp/xap_String_Id.h.h:578
 msgid "OK"
 msgstr "Да"
 
 #. LANG_OC_FR
-#: po/tmp/xap_String_Id.h.h:578
+#: po/tmp/xap_String_Id.h.h:580
 msgid "Occitan"
 msgstr "Оцитан"
 
 #. DLG_FOSA_OpenTitle
-#: po/tmp/xap_String_Id.h.h:580
+#: po/tmp/xap_String_Id.h.h:582
 msgid "Open File"
 msgstr "Открыть файл"
 
 #. DLG_FOSA_FileOpenTypeLabel
-#: po/tmp/xap_String_Id.h.h:582
+#: po/tmp/xap_String_Id.h.h:584
 msgid "Open file as &type:"
 msgstr "Открыть &как:"
 
 #. DLG_LISTDOCS_Title
-#: po/tmp/xap_String_Id.h.h:584
+#: po/tmp/xap_String_Id.h.h:586
 msgid "Opened Documents"
 msgstr "Открытый документ"
 
 #. TB_Zoom_Percent
-#: po/tmp/xap_String_Id.h.h:586
+#: po/tmp/xap_String_Id.h.h:588
 msgid "Other..."
 msgstr "Другой..."
 
 #. DLG_Zoom_Percent
-#: po/tmp/xap_String_Id.h.h:590
+#: po/tmp/xap_String_Id.h.h:592
 msgid "P&ercent:"
 msgstr "П&роцент:"
 
 #. TB_Zoom_PageWidth
-#: po/tmp/xap_String_Id.h.h:592
+#: po/tmp/xap_String_Id.h.h:594
 msgid "Page Width"
 msgstr "По ширине"
 
 #. DLG_UP_PageRanges
-#: po/tmp/xap_String_Id.h.h:594
+#: po/tmp/xap_String_Id.h.h:596
 msgid "Page ranges:"
 msgstr "Диапазон страниц:"
 
 #. LANG_PS
-#: po/tmp/xap_String_Id.h.h:596
+#: po/tmp/xap_String_Id.h.h:598
 msgid "Pashto"
 msgstr "Пушту"
 
 #. DLG_Password_Password
-#: po/tmp/xap_String_Id.h.h:598
+#: po/tmp/xap_String_Id.h.h:600
 msgid "Password:"
 msgstr "Пароль:"
 
 #. STYLE_PLAIN_TEXT
-#: po/tmp/xap_String_Id.h.h:600
+#: po/tmp/xap_String_Id.h.h:602
 msgid "Plain Text"
 msgstr "Просто текст"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
-#: po/tmp/xap_String_Id.h.h:602
+#: po/tmp/xap_String_Id.h.h:604
 msgid "Plugin Details:"
 msgstr "Детали дополнения:"
 
 #. DLG_PLUGIN_MANAGER_LIST
-#: po/tmp/xap_String_Id.h.h:604
+#: po/tmp/xap_String_Id.h.h:606
 msgid "Plugin List"
 msgstr "Список дополнений"
 
 #. LANG_PL_PL
-#: po/tmp/xap_String_Id.h.h:606
+#: po/tmp/xap_String_Id.h.h:608
 msgid "Polish"
 msgstr "Польский"
 
 #. LANG_PT_BR
-#: po/tmp/xap_String_Id.h.h:608
+#: po/tmp/xap_String_Id.h.h:610
 msgid "Portuguese (Brazil)"
 msgstr "Португальский (Бразилия)"
 
 #. LANG_PT_PT
-#: po/tmp/xap_String_Id.h.h:610
+#: po/tmp/xap_String_Id.h.h:612
 msgid "Portuguese (Portugal)"
 msgstr "Португальский (Португалия)"
 
 #. DLG_Image_PlaceColumn
-#: po/tmp/xap_String_Id.h.h:612
+#: po/tmp/xap_String_Id.h.h:614
 msgid "Position relative to its Column"
 msgstr "Относительно столбца"
 
 #. DLG_Image_PlacePage
-#: po/tmp/xap_String_Id.h.h:614
+#: po/tmp/xap_String_Id.h.h:616
 msgid "Position relative to its Page"
 msgstr "Относительно страницы"
 
 #. DLG_Image_PlaceParagraph
-#: po/tmp/xap_String_Id.h.h:616
+#: po/tmp/xap_String_Id.h.h:618
 msgid "Position relative to nearest paragraph"
 msgstr "Относительно ближайшего абзаца"
 
 #. DLG_Image_Aspect
-#: po/tmp/xap_String_Id.h.h:618
+#: po/tmp/xap_String_Id.h.h:620
 msgid "Preserve aspect ratio"
 msgstr "Сохранять отношение сторон"
 
 #. DLG_IP_Activate_Label
-#: po/tmp/xap_String_Id.h.h:622
+#: po/tmp/xap_String_Id.h.h:624
 msgid "Preview Picture"
 msgstr "Просмотр рисунка"
 
 #. DLG_FOSA_PrintToFileTitle
-#: po/tmp/xap_String_Id.h.h:627
+#: po/tmp/xap_String_Id.h.h:629
 msgid "Print To File"
 msgstr "Печатать в файл"
 
 #. DLG_FOSA_FilePrintTypeLabel
-#: po/tmp/xap_String_Id.h.h:629
+#: po/tmp/xap_String_Id.h.h:631
 msgid "Print file as &type:"
 msgstr "Печатать файл &как:"
 
 #. DLG_UP_PrintIn
-#: po/tmp/xap_String_Id.h.h:631
+#: po/tmp/xap_String_Id.h.h:633
 msgid "Print in: "
 msgstr "Печатать: "
 
 #. DLG_UP_PrintTo
-#: po/tmp/xap_String_Id.h.h:633
+#: po/tmp/xap_String_Id.h.h:635
 msgid "Print to: "
 msgstr "Печатать: "
 
 #. DLG_UP_Printer
-#: po/tmp/xap_String_Id.h.h:635
+#: po/tmp/xap_String_Id.h.h:637
 msgid "Printer"
 msgstr "На принтере"
 
 #. DLG_UP_PrinterCommand
-#: po/tmp/xap_String_Id.h.h:637
+#: po/tmp/xap_String_Id.h.h:639
 msgid "Printer command: "
 msgstr "Команда печати: "
 
 #. LANG_PA_IN
-#: po/tmp/xap_String_Id.h.h:639
+#: po/tmp/xap_String_Id.h.h:641
 msgid "Punjabi (Gurmukhi)"
 msgstr "Пенджабский (Гурмухи)"
 
 #. LANG_PA_PK
-#: po/tmp/xap_String_Id.h.h:641
+#: po/tmp/xap_String_Id.h.h:643
 msgid "Punjabi (Shahmukhi)"
 msgstr "Пенджабский (Шахмухи)"
 
 #. LANG_QU_BO
-#: po/tmp/xap_String_Id.h.h:643
+#: po/tmp/xap_String_Id.h.h:645
 msgid "Quechua"
 msgstr "Кечуа"
 
 #. LANG_QUH_BO
-#: po/tmp/xap_String_Id.h.h:645
+#: po/tmp/xap_String_Id.h.h:647
 msgid "Quechua (3 vowels)"
 msgstr "Кечуа (3 гласных)"
 
 #. LANG_QUL_BO
-#: po/tmp/xap_String_Id.h.h:647
+#: po/tmp/xap_String_Id.h.h:649
 msgid "Quechua (5 vowels)"
 msgstr "Кечуа (5 гласных)"
 
 #. ReadOnly
-#: po/tmp/xap_String_Id.h.h:649
+#: po/tmp/xap_String_Id.h.h:651
 msgid "Read-Only"
 msgstr "Только чтение"
 
 #. DLG_FOSA_RecordToFileTitle
-#: po/tmp/xap_String_Id.h.h:651
+#: po/tmp/xap_String_Id.h.h:653
 msgid "Record Editing to File"
 msgstr "Записать процесс правки в файл"
 
 #. DLG_UFS_StyleRegular
-#: po/tmp/xap_String_Id.h.h:653
+#: po/tmp/xap_String_Id.h.h:655
 msgid "Regular"
 msgstr "Обычное"
 
 #. DLG_DocComparison_Relationship
-#: po/tmp/xap_String_Id.h.h:655
+#: po/tmp/xap_String_Id.h.h:657
 msgid "Relationship:"
 msgstr "Отношение:"
 
 #. DLG_FOSA_ReplayFromFileTitle
-#: po/tmp/xap_String_Id.h.h:657
+#: po/tmp/xap_String_Id.h.h:659
 msgid "Replay Editing from File"
 msgstr "Воспроизвести процесс правки из файла"
 
 #. DLG_Restore
-#: po/tmp/xap_String_Id.h.h:659
+#: po/tmp/xap_String_Id.h.h:661
 msgid "Restore"
 msgstr "Восстановить"
 
 #. DLG_HTMLOPT_ExpRestore
-#: po/tmp/xap_String_Id.h.h:661
+#: po/tmp/xap_String_Id.h.h:663
 msgid "Restore Settings"
 msgstr "Восстановить параметры"
 
 #. DLG_DocComparison_Results
-#: po/tmp/xap_String_Id.h.h:663
+#: po/tmp/xap_String_Id.h.h:665
 msgid "Results"
 msgstr "Результаты"
 
 #. LANG_RO_RO
-#: po/tmp/xap_String_Id.h.h:665
+#: po/tmp/xap_String_Id.h.h:667
 msgid "Romanian"
-msgstr "Румынский"
+msgstr "Румынская"
 
 #. ENC_ROMA_MAC
-#: po/tmp/xap_String_Id.h.h:667
+#: po/tmp/xap_String_Id.h.h:669
 msgid "Romanian, Macintosh"
-msgstr "Румынский, Macintosh"
+msgstr "Румынская, Macintosh"
 
 #. LANG_RU_RU
-#: po/tmp/xap_String_Id.h.h:669
+#: po/tmp/xap_String_Id.h.h:671
 msgid "Russian (Russia)"
 msgstr "Русский (Россия)"
 
 #. DLG_UFS_SampleFrameLabel
-#: po/tmp/xap_String_Id.h.h:671
+#: po/tmp/xap_String_Id.h.h:673
 msgid "Sample"
 msgstr "Образец"
 
 #. LANG_SC_IT
-#: po/tmp/xap_String_Id.h.h:673
+#: po/tmp/xap_String_Id.h.h:675
 msgid "Sardinian"
 msgstr "Сардинский"
 
 #. DLG_FOSA_SaveAsTitle
-#: po/tmp/xap_String_Id.h.h:675
+#: po/tmp/xap_String_Id.h.h:677
 msgid "Save File As"
 msgstr "Сохранить как"
 
 #. DLG_HTMLOPT_ExpSave
-#: po/tmp/xap_String_Id.h.h:677
+#: po/tmp/xap_String_Id.h.h:679
 msgid "Save Settings"
 msgstr "Сохранить настройки"
 
 #. DLG_FOSA_FileSaveTypeLabel
-#: po/tmp/xap_String_Id.h.h:679
+#: po/tmp/xap_String_Id.h.h:681
 msgid "Save file as &type:"
 msgstr "Сохранить &как:"
 
 #. DLG_UFS_ScriptLabel
-#: po/tmp/xap_String_Id.h.h:681
+#: po/tmp/xap_String_Id.h.h:683
 msgid "Script:"
 msgstr "Сценарий:"
 
 #. STYLE_SECTHEADING
-#: po/tmp/xap_String_Id.h.h:683
+#: po/tmp/xap_String_Id.h.h:685
 msgid "Section Heading"
 msgstr "Заголовок раздела"
 
 #. DLG_UENC_EncLabel
-#: po/tmp/xap_String_Id.h.h:687
+#: po/tmp/xap_String_Id.h.h:689
 msgid "Select Encoding:"
 msgstr "Выберите кодировку:"
 
 #. DLG_HTMLOPT_ExpLabel
-#: po/tmp/xap_String_Id.h.h:689
+#: po/tmp/xap_String_Id.h.h:691
 msgid "Select HTML export options:"
 msgstr "Выберите параметры экспортирования в HTML:"
 
 #. DLG_ULANG_LangLabel
-#: po/tmp/xap_String_Id.h.h:691
+#: po/tmp/xap_String_Id.h.h:693
 msgid "Select Language:"
 msgstr "Выберите язык:"
 
 #. LANG_SR
-#: po/tmp/xap_String_Id.h.h:695
+#: po/tmp/xap_String_Id.h.h:697
 msgid "Serbian"
 msgstr "Сербский"
 
 #. DLG_Image_ImageDesc
-#: po/tmp/xap_String_Id.h.h:697
+#: po/tmp/xap_String_Id.h.h:699
 msgid "Set Image Name"
 msgstr "Установить имя изображения"
 
 #. DLG_Image_ImageSize
-#: po/tmp/xap_String_Id.h.h:699
+#: po/tmp/xap_String_Id.h.h:701
 msgid "Set Image Size"
 msgstr "Установить размер изображение"
 
 #. DLG_ULANG_LangTitle
-#: po/tmp/xap_String_Id.h.h:701
+#: po/tmp/xap_String_Id.h.h:703
 msgid "Set Language"
 msgstr "Выбрать язык:"
 
 #. DLG_UFS_TransparencyCheck
-#: po/tmp/xap_String_Id.h.h:703
+#: po/tmp/xap_String_Id.h.h:705
 msgid "Set no Highlight Color"
 msgstr "Отстутствие подсветки"
 
 #. DLG_UFS_SizeLabel
-#: po/tmp/xap_String_Id.h.h:707
+#: po/tmp/xap_String_Id.h.h:709
 msgid "Size:"
 msgstr "Размер:"
 
 #. LANG_SK_SK
-#: po/tmp/xap_String_Id.h.h:709
+#: po/tmp/xap_String_Id.h.h:711
 msgid "Slovak"
 msgstr "Словацкий"
 
 #. LANG_SL_SI
-#: po/tmp/xap_String_Id.h.h:711
+#: po/tmp/xap_String_Id.h.h:713
 msgid "Slovenian"
 msgstr "Словенский"
 
 #. DLG_UFS_Effects_SmallCaps
-#: po/tmp/xap_String_Id.h.h:713
+#: po/tmp/xap_String_Id.h.h:715
 msgid "Small Capitals"
 msgstr "Малые прописные"
 
 #. LANG_ES_MX
-#: po/tmp/xap_String_Id.h.h:715
+#: po/tmp/xap_String_Id.h.h:717
 msgid "Spanish (Mexico)"
 msgstr "Испанский (Мексика)"
 
 #. LANG_ES_ES
-#: po/tmp/xap_String_Id.h.h:717
+#: po/tmp/xap_String_Id.h.h:719
 msgid "Spanish (Spain)"
 msgstr "Испанский (Испания)"
 
 #. DLG_Image_SquareWrap
-#: po/tmp/xap_String_Id.h.h:721
+#: po/tmp/xap_String_Id.h.h:723
 msgid "Square text wrapping"
 msgstr "Квадратное обтекание текста"
 
 #. DLG_DocComparison_Styles
-#: po/tmp/xap_String_Id.h.h:729
+#: po/tmp/xap_String_Id.h.h:731
 msgid "Styles:"
 msgstr "Стили:"
 
 #. LANG_SW
-#: po/tmp/xap_String_Id.h.h:735
+#: po/tmp/xap_String_Id.h.h:737
 msgid "Swahili"
 msgstr "Суахили"
 
 #. LANG_SV_SE
-#: po/tmp/xap_String_Id.h.h:737
+#: po/tmp/xap_String_Id.h.h:739
 msgid "Swedish"
 msgstr "Шведский"
 
 #. TB_Font_Symbol
-#: po/tmp/xap_String_Id.h.h:739
+#: po/tmp/xap_String_Id.h.h:741
 msgid "Symbols"
 msgstr "Символы"
 
 #. LANG_SYR
-#: po/tmp/xap_String_Id.h.h:741
+#: po/tmp/xap_String_Id.h.h:743
 msgid "Syriac"
 msgstr "Сирийский"
 
 #. LANG_TL_PH
-#: po/tmp/xap_String_Id.h.h:745
+#: po/tmp/xap_String_Id.h.h:747
 msgid "Tagalog"
 msgstr "Тагалогский"
 
 #. LANG_TA_IN
-#: po/tmp/xap_String_Id.h.h:747
+#: po/tmp/xap_String_Id.h.h:749
 msgid "Tamil"
 msgstr "Тамильский"
 
 #. LANG_TE_IN
-#: po/tmp/xap_String_Id.h.h:749
+#: po/tmp/xap_String_Id.h.h:751
 msgid "Telugu"
 msgstr "Телугу"
 
 #. DLG_UFS_ColorTab
-#: po/tmp/xap_String_Id.h.h:751
+#: po/tmp/xap_String_Id.h.h:753
 msgid "Text Color"
 msgstr "Цвет текста"
 
 #. DLG_Image_WrappedBoth
-#: po/tmp/xap_String_Id.h.h:753
+#: po/tmp/xap_String_Id.h.h:755
 msgid "Text wrapped on both sides of the Image"
 msgstr "Обтекание с двух сторон"
 
 #. DLG_Image_WrappedLeft
-#: po/tmp/xap_String_Id.h.h:755
+#: po/tmp/xap_String_Id.h.h:757
 msgid "Text wrapped to the Left of the Image"
 msgstr "Обтекание слева"
 
 #. DLG_Image_WrappedRight
-#: po/tmp/xap_String_Id.h.h:757
+#: po/tmp/xap_String_Id.h.h:759
 msgid "Text wrapped to the Right of the Image"
 msgstr "Обтекание справа"
 
 #. LANG_TH_TH
-#: po/tmp/xap_String_Id.h.h:759
+#: po/tmp/xap_String_Id.h.h:761
 msgid "Thai"
 msgstr "Тайский"
 
 #. ENC_THAI_MAC
-#: po/tmp/xap_String_Id.h.h:761
+#: po/tmp/xap_String_Id.h.h:763
 msgid "Thai, Macintosh"
 msgstr "Тайский, Machintosh"
 
 #. ENC_THAI_TIS
-#: po/tmp/xap_String_Id.h.h:763
+#: po/tmp/xap_String_Id.h.h:765
 msgid "Thai, TIS-620"
 msgstr "Тайский, TIS-620"
 
 #. ENC_THAI_WIN
-#: po/tmp/xap_String_Id.h.h:765
+#: po/tmp/xap_String_Id.h.h:767
 msgid "Thai, Windows Code Page 874"
 msgstr "Тайский, Windows Code Page 874"
 
 #. DLG_NoSaveFile_DirNotWriteable
-#: po/tmp/xap_String_Id.h.h:767
+#: po/tmp/xap_String_Id.h.h:769
 #, c-format
 msgid "The directory '%s' is write-protected."
 msgstr "Каталог «%s» только для чтения."
 
 #. DLG_FOSA_ExtensionDoesNotMatch
-#: po/tmp/xap_String_Id.h.h:769
+#: po/tmp/xap_String_Id.h.h:771
 msgid "The given file extension does not match the chosen file type. Do you want to use this name anyway?"
 msgstr "Указанное расширение не соответствует выбранному типу файлов. Вы все равно хотите его использовать?"
 
 #. MSG_HistoryPartRestore2
-#: po/tmp/xap_String_Id.h.h:771
+#: po/tmp/xap_String_Id.h.h:773
 #, c-format
 msgid "The nearest version that can be restored fully is %d. Would you like to restore this version instead? To partially restore version %d press No."
 msgstr "%d - последняя версия, которая может быть полностью восстановлена. Восстановить эту версию? Для того, чтобы частично восстановить версию %d нажмите \"Отмена\""
 
 #. DLG_UP_InvalidPrintString
-#: po/tmp/xap_String_Id.h.h:773
+#: po/tmp/xap_String_Id.h.h:775
 msgid "The print command string is not valid."
 msgstr "Команда печати некорректна."
 
 #. MSG_NoUndo
-#: po/tmp/xap_String_Id.h.h:775
+#: po/tmp/xap_String_Id.h.h:777
 msgid "This operation cannot be undone. Are you sure you want to proceed?"
 msgstr "Эта операция не может быть отменена. Продолжить в любом случае?"
 
 #. DLG_Image_TightWrap
-#: po/tmp/xap_String_Id.h.h:779
+#: po/tmp/xap_String_Id.h.h:781
 msgid "Tight text wrapping"
 msgstr "Аккуратный перенос текста"
 
 #. MSG_HistoryPartRestore3
-#: po/tmp/xap_String_Id.h.h:785
+#: po/tmp/xap_String_Id.h.h:787
 msgid "To continue anyway, press OK."
 msgstr "Для продолжения нажмите \"Да\""
 
 #. MSG_HistoryPartRestore4
-#: po/tmp/xap_String_Id.h.h:787
+#: po/tmp/xap_String_Id.h.h:789
 msgid "To quit the restoration attempt, press Cancel."
 msgstr "Для того, чтобы закончить попытку восстановления, нажмите \"Отмена\""
 
 #. LANG_TR_TR
-#: po/tmp/xap_String_Id.h.h:793
+#: po/tmp/xap_String_Id.h.h:795
 msgid "Turkish"
 msgstr "Турецкий"
 
 #. ENC_TURK_ISO
-#: po/tmp/xap_String_Id.h.h:795
+#: po/tmp/xap_String_Id.h.h:797
 msgid "Turkish, ISO-8859-9"
 msgstr "Турецкий, ISO-8859-9"
 
 #. ENC_TURK_MAC
-#: po/tmp/xap_String_Id.h.h:797
+#: po/tmp/xap_String_Id.h.h:799
 msgid "Turkish, Macintosh"
 msgstr "Турецкий, Macintosh"
 
 #. ENC_TURK_WIN
-#: po/tmp/xap_String_Id.h.h:799
+#: po/tmp/xap_String_Id.h.h:801
 msgid "Turkish, Windows Code Page 1254"
 msgstr "Турецкий, Windows Code Page 1254"
 
 #. DLG_Image_WrapType
-#: po/tmp/xap_String_Id.h.h:801
+#: po/tmp/xap_String_Id.h.h:803
 msgid "Type of text wrapping"
 msgstr "Тип переноса текста"
 
 #. ENC_WEST_ASCII
-#: po/tmp/xap_String_Id.h.h:803
+#: po/tmp/xap_String_Id.h.h:805
 msgid "US-ASCII"
 msgstr "US-ASCII"
 
 #. LANG_UK_UA
-#: po/tmp/xap_String_Id.h.h:805
+#: po/tmp/xap_String_Id.h.h:807
 msgid "Ukrainian"
-msgstr "Украинский"
+msgstr "Украинская"
 
 #. ENC_UKRA_KOI
-#: po/tmp/xap_String_Id.h.h:807
+#: po/tmp/xap_String_Id.h.h:809
 msgid "Ukrainian, KOI8-U"
-msgstr "Украинский, KOI8-U"
+msgstr "Украинская, KOI8-U"
 
 #. ENC_UKRA_MAC
-#: po/tmp/xap_String_Id.h.h:809
+#: po/tmp/xap_String_Id.h.h:811
 msgid "Ukrainian, Macintosh"
 msgstr "Украинский, Macintosh"
 
 #. ENC_UNIC_UCS2
-#: po/tmp/xap_String_Id.h.h:813
+#: po/tmp/xap_String_Id.h.h:815
 msgid "Unicode UCS-2"
 msgstr "Юникод UCS-2"
 
 #. ENC_UNIC_UCS_2BE
-#: po/tmp/xap_String_Id.h.h:815
+#: po/tmp/xap_String_Id.h.h:817
 msgid "Unicode UCS-2 Big Endian"
 msgstr "Юникод UCS-2 Big Endian"
 
 #. ENC_UNIC_UCS_2LE
-#: po/tmp/xap_String_Id.h.h:817
+#: po/tmp/xap_String_Id.h.h:819
 msgid "Unicode UCS-2 Little Endian"
 msgstr "Юникод UCS-2 Little Endian"
 
 #. ENC_UNIC_UCS4
-#: po/tmp/xap_String_Id.h.h:819
+#: po/tmp/xap_String_Id.h.h:821
 msgid "Unicode UCS-4"
 msgstr "Юникод UCS-4"
 
 #. ENC_UNIC_UCS_4BE
-#: po/tmp/xap_String_Id.h.h:821
+#: po/tmp/xap_String_Id.h.h:823
 msgid "Unicode UCS-4 Big Endian"
 msgstr "Юникод UCS-4 Big Endian"
 
 #. ENC_UNIC_UCS_4LE
-#: po/tmp/xap_String_Id.h.h:823
+#: po/tmp/xap_String_Id.h.h:825
 msgid "Unicode UCS-4 Little Endian"
 msgstr "Юникод UCS-4 Little Endian"
 
 #. ENC_UNIC_UTF_16
-#: po/tmp/xap_String_Id.h.h:825
+#: po/tmp/xap_String_Id.h.h:827
 msgid "Unicode UTF-16"
 msgstr "Юникод UTF-16"
 
 #. ENC_UNIC_UTF_16BE
-#: po/tmp/xap_String_Id.h.h:827
+#: po/tmp/xap_String_Id.h.h:829
 msgid "Unicode UTF-16 Big Endian"
 msgstr "Юникод UTF-16 Big Endian"
 
 #. ENC_UNIC_UTF_16LE
-#: po/tmp/xap_String_Id.h.h:829
+#: po/tmp/xap_String_Id.h.h:831
 msgid "Unicode UTF-16 Little Endian"
 msgstr "Юникод UTF-16 Little Endian"
 
 #. ENC_UNIC_UTF_32
-#: po/tmp/xap_String_Id.h.h:831
+#: po/tmp/xap_String_Id.h.h:833
 msgid "Unicode UTF-32"
 msgstr "Юникод UTF-32"
 
 #. ENC_UNIC_UTF_32BE
-#: po/tmp/xap_String_Id.h.h:833
+#: po/tmp/xap_String_Id.h.h:835
 msgid "Unicode UTF-32 Big Endian"
 msgstr "Юникод UTF-32 Big Endian"
 
 #. ENC_UNIC_UTF_32LE
-#: po/tmp/xap_String_Id.h.h:835
+#: po/tmp/xap_String_Id.h.h:837
 msgid "Unicode UTF-32 Little Endian"
 msgstr "Юникод UTF-32 Little Endian"
 
 #. ENC_UNIC_UTF_7
-#: po/tmp/xap_String_Id.h.h:837
+#: po/tmp/xap_String_Id.h.h:839
 msgid "Unicode UTF-7"
 msgstr "Юникод UTF-7"
 
 #. ENC_UNIC_UTF_8
-#: po/tmp/xap_String_Id.h.h:839
+#: po/tmp/xap_String_Id.h.h:841
 msgid "Unicode UTF-8"
 msgstr "Юникод UTF-8"
 
 #. UntitledDocument
-#: po/tmp/xap_String_Id.h.h:841
+#: po/tmp/xap_String_Id.h.h:843
 #, c-format
 msgid "Untitled%d"
 msgstr "Безимени%d"
 
 #. DLG_Update
-#: po/tmp/xap_String_Id.h.h:843
+#: po/tmp/xap_String_Id.h.h:845
 msgid "Update"
 msgstr "Обновить"
 
 #. DLG_UFS_Effects_UpperCase
-#: po/tmp/xap_String_Id.h.h:849
+#: po/tmp/xap_String_Id.h.h:851
 msgid "Uppercase"
 msgstr "Прописные"
 
 #. LANG_UR
-#: po/tmp/xap_String_Id.h.h:851
+#: po/tmp/xap_String_Id.h.h:853
 msgid "Urdu"
 msgstr "Урду"
 
 #. LANG_UR_PK
-#: po/tmp/xap_String_Id.h.h:853
+#: po/tmp/xap_String_Id.h.h:855
 msgid "Urdu (Pakistan)"
 msgstr "Курдский (Пакистан)"
 
 #. LANG_UZ_UZ
-#: po/tmp/xap_String_Id.h.h:855
+#: po/tmp/xap_String_Id.h.h:857
 msgid "Uzbek"
 msgstr "Узбекский"
 
 #. DLG_History_List_Title
-#: po/tmp/xap_String_Id.h.h:859
+#: po/tmp/xap_String_Id.h.h:861
 msgid "Version history"
 msgstr "История изменений"
 
 #. DLG_PLUGIN_MANAGER_VERSION
 #. DLG_History_Version
-#: po/tmp/xap_String_Id.h.h:862
+#: po/tmp/xap_String_Id.h.h:864
 msgid "Version:"
 msgstr "Версия:"
 
 #. DLG_ABOUT_Version
-#: po/tmp/xap_String_Id.h.h:864
+#: po/tmp/xap_String_Id.h.h:866
 #, c-format
 msgid "Version: %s"
 msgstr "Версия: %s"
 
 #. LANG_VI_VN
-#: po/tmp/xap_String_Id.h.h:866
+#: po/tmp/xap_String_Id.h.h:868
 msgid "Vietnamese"
 msgstr "Вьетнамский"
 
 #. ENC_VIET_TCVN
-#: po/tmp/xap_String_Id.h.h:868
+#: po/tmp/xap_String_Id.h.h:870
 msgid "Vietnamese, TCVN"
 msgstr "Вьетнамский, TCVN"
 
 #. ENC_VIET_VISCII
-#: po/tmp/xap_String_Id.h.h:870
+#: po/tmp/xap_String_Id.h.h:872
 msgid "Vietnamese, VISCII"
 msgstr "Вьетнамский, VISCII"
 
 #. ENC_VIET_WIN
-#: po/tmp/xap_String_Id.h.h:872
+#: po/tmp/xap_String_Id.h.h:874
 msgid "Vietnamese, Windows Code Page 1258"
 msgstr "Вьетнамский, Windows Code Page 1258"
 
 #. DLG_MW_MoreWindows
-#: po/tmp/xap_String_Id.h.h:874
+#: po/tmp/xap_String_Id.h.h:876
 msgid "View Document"
 msgstr "Просмотр документа"
 
 #. DLG_MW_Activate
-#: po/tmp/xap_String_Id.h.h:876
+#: po/tmp/xap_String_Id.h.h:878
 msgid "View:"
 msgstr "Вид:"
 
 #. LANG_CY_GB
-#: po/tmp/xap_String_Id.h.h:878
+#: po/tmp/xap_String_Id.h.h:880
 msgid "Welsh"
 msgstr "Уэльский"
 
 #. ENC_US_DOS
-#: po/tmp/xap_String_Id.h.h:880
+#: po/tmp/xap_String_Id.h.h:882
 msgid "Western European, DOS/Windows Code Page 437"
 msgstr "Западно-европейский, DOS/Windows Code Page 437"
 
 #. ENC_MLNG_DOS
-#: po/tmp/xap_String_Id.h.h:882
+#: po/tmp/xap_String_Id.h.h:884
 msgid "Western European, DOS/Windows Code Page 850"
 msgstr "Западно-европейский, DOS/Windows Code Page 850"
 
 #. ENC_WEST_HP
-#: po/tmp/xap_String_Id.h.h:884
+#: po/tmp/xap_String_Id.h.h:886
 msgid "Western European, HP"
 msgstr "Западно-европейский, HP"
 
 #. ENC_WEST_ISO
-#: po/tmp/xap_String_Id.h.h:886
+#: po/tmp/xap_String_Id.h.h:888
 msgid "Western European, ISO-8859-1"
 msgstr "Западно-европейский, ISO-8859-1"
 
 #. ENC_WEST_MAC
-#: po/tmp/xap_String_Id.h.h:888
+#: po/tmp/xap_String_Id.h.h:890
 msgid "Western European, Macintosh"
 msgstr "Западно-европейский, Macintosh"
 
 #. ENC_WEST_NXT
-#: po/tmp/xap_String_Id.h.h:890
+#: po/tmp/xap_String_Id.h.h:892
 msgid "Western European, NeXT"
 msgstr "Западно-европейский, NeXT"
 
 #. ENC_WEST_WIN
-#: po/tmp/xap_String_Id.h.h:892
+#: po/tmp/xap_String_Id.h.h:894
 msgid "Western European, Windows Code Page 1252"
 msgstr "Западно-европейский, Windows Code Page 1252"
 
 #. TB_Zoom_WholePage
-#: po/tmp/xap_String_Id.h.h:894
+#: po/tmp/xap_String_Id.h.h:896
 msgid "Whole Page"
 msgstr "Страница целиком"
 
 #. DLG_Image_Width
-#: po/tmp/xap_String_Id.h.h:896
+#: po/tmp/xap_String_Id.h.h:898
 msgid "Width:"
 msgstr "Ширина:"
 
 #. DLG_IP_Width_Label
-#: po/tmp/xap_String_Id.h.h:898
+#: po/tmp/xap_String_Id.h.h:900
 msgid "Width:  "
 msgstr "Ширина: "
 
 #. LANG_WO_SN
-#: po/tmp/xap_String_Id.h.h:900
+#: po/tmp/xap_String_Id.h.h:902
 msgid "Wolof (Senegal)"
 msgstr "Волоф (Сенегал)"
 
 #. DLG_MB_Yes
-#: po/tmp/xap_String_Id.h.h:902
+#: po/tmp/xap_String_Id.h.h:904
 msgid "Yes"
 msgstr "Да"
 
 #. LANG_YI
-#: po/tmp/xap_String_Id.h.h:904
+#: po/tmp/xap_String_Id.h.h:906
 msgid "Yiddish"
 msgstr "Идиш"
 
 #. MSG_HistoryConfirmSave
-#: po/tmp/xap_String_Id.h.h:906
+#: po/tmp/xap_String_Id.h.h:908
 #, c-format
 msgid "You have to save changes to document %s before proceeding. Save now?"
 msgstr "Необходимо сохранить изменения документа %s перед обработкой. Сохранить сейчас?"
 
 #. DLG_Zoom_RadioFrameCaption
-#: po/tmp/xap_String_Id.h.h:910
+#: po/tmp/xap_String_Id.h.h:912
 msgid "Zoom to"
 msgstr "Масштаб"
 
 #. DLG_UnixMB_No
-#: po/tmp/xap_String_Id.h.h:912
+#: po/tmp/xap_String_Id.h.h:914
 msgid "_No"
 msgstr "_Нет"
 
 #. DLG_UnixMB_Yes
-#: po/tmp/xap_String_Id.h.h:914
+#: po/tmp/xap_String_Id.h.h:916
 msgid "_Yes"
 msgstr "_Да"
 
 #. DLG_Unit_cm
-#: po/tmp/xap_String_Id.h.h:916
+#: po/tmp/xap_String_Id.h.h:918
 msgid "cm"
 msgstr "см"
 
 #. DLG_DocComparison_Different
-#: po/tmp/xap_String_Id.h.h:918
+#: po/tmp/xap_String_Id.h.h:920
 msgid "different"
 msgstr "различные"
 
 #. DLG_DocComparison_DivergingPos
-#: po/tmp/xap_String_Id.h.h:920
+#: po/tmp/xap_String_Id.h.h:922
 #, c-format
 msgid "diverging after document position %d"
 msgstr "Расходимость после позиции %d"
 
 #. DLG_DocComparison_Diverging
-#: po/tmp/xap_String_Id.h.h:922
+#: po/tmp/xap_String_Id.h.h:924
 #, c-format
 msgid "diverging after version %d of %s"
 msgstr "Расходимость после версии %d документа %s"
 
 #. DLG_DocComparison_Identical
-#: po/tmp/xap_String_Id.h.h:924
+#: po/tmp/xap_String_Id.h.h:926
 msgid "identical"
 msgstr "Идентичные"
 
 #. DLG_Unit_inch
-#: po/tmp/xap_String_Id.h.h:926
+#: po/tmp/xap_String_Id.h.h:928
 msgid "inch"
 msgstr "дюйм"
 
 #. DLG_Unit_mm
-#: po/tmp/xap_String_Id.h.h:928
+#: po/tmp/xap_String_Id.h.h:930
 msgid "mm"
 msgstr "мм"
 
 #. DLG_Unit_pica
-#: po/tmp/xap_String_Id.h.h:930
+#: po/tmp/xap_String_Id.h.h:932
 msgid "pica"
 msgstr "пики"
 
 #. DLG_Unit_points
-#: po/tmp/xap_String_Id.h.h:932
+#: po/tmp/xap_String_Id.h.h:934
 msgid "points"
 msgstr "пункты"
 
 #. DLG_DocComparison_Siblings
-#: po/tmp/xap_String_Id.h.h:934
+#: po/tmp/xap_String_Id.h.h:936
 msgid "siblings"
 msgstr "потомки"
 
 #. DLG_DocComparison_Unrelated
-#: po/tmp/xap_String_Id.h.h:936
+#: po/tmp/xap_String_Id.h.h:938
 msgid "unrelated"
 msgstr "несвязанные"
 
+#~ msgid "Endnote"
+#~ msgstr "Ссылка"
+
+#~ msgid "Footnote"
+#~ msgstr "Сноска"
+
+#~ msgid "Fulah"
+#~ msgstr "Фула"
+
+#~ msgid "Imported Paragraph"
+#~ msgstr "Импортировано абзацев:"
+
+#~ msgid "Kazakh (Kazakhstan)"
+#~ msgstr "Казахский (Казахстан)"
+
+#~ msgid "Russian (pre-1918)"
+#~ msgstr "Русский (до 1918)"
+
+#~ msgid "Serbian, latin"
+#~ msgstr "Сербский (латинница)"
+
 #~ msgid "&Format Table"
 #~ msgstr "&Форматировать таблицу:"
+
 #~ msgid "Display Help Index"
 #~ msgstr "Вызвать оглавление помощи"
+
 #~ msgid "INS"
 #~ msgstr "ВСТ"
+
 #~ msgid "OVR"
 #~ msgstr "ЗАМ"
+
 #~ msgid "Replace selection with annotation"
 #~ msgstr "Заменить выделенный текст примечанием"
+
 #~ msgid "Allow Custom Toolbars"
 #~ msgstr "Позволить настраивать панели инструментов"
-
