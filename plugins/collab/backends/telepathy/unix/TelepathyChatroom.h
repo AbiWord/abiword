@@ -46,6 +46,9 @@ public:
 
 	void finalize();
 
+	TpChannel* getChannel()
+		{ return m_pChannel; }
+
 	void setChannel(TpChannel* pChannel);
 
 	boost::shared_ptr<TelepathyChatroom> ptr()

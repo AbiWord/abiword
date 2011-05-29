@@ -64,6 +64,7 @@ public:
 	virtual bool							isOnline();
 	void									acceptTube(TpChannel *tubes_chan, const char* address);
 	bool									offerTube(TelepathyChatroomPtr pChatroom, TpChannel* chan, const UT_UTF8String& sSessionId);
+	void									finalizeOfferTube(TelepathyChatroomPtr pChatroom);
 
 	// user management
 	virtual void							getBuddiesAsync();

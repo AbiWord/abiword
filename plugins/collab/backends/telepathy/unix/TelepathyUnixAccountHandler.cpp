@@ -177,10 +177,9 @@ list_connection_names_cb (const gchar * const *bus_names,
 	{
 		UT_DEBUGMSG(("%d: Bus name %s, connection manager %s, protocol %s\n", i+1, bus_names[i], cms[i], protocols[i]));
 		TpConnection* connection = tp_connection_new (dbus, bus_names[i], NULL, NULL);
+		UT_continue_if_fail(connection);
 
-		// TODO: make this async
-
-		TpCapabilities* caps = tp_connection_get_capabilities(reinterpret_cast<TpConnection*>(connection));
+		TpCapabilities* caps = tp_connection_get_capabilities(connection);
 		if (!caps)
 		{
 			GQuark features[] = { TP_CONNECTION_FEATURE_CAPABILITIES, 0 };
@@ -380,6 +379,128 @@ void muc_channel_ready_cb(GObject* source_object, GAsyncResult* result, gpointer
 
 	// offer the tube to the members we want to invite into the room
 	pHandler->offerTube(pChatroom->ptr(), channel, pChatroom->getSessionId());
+}
+
+static void
+tube_call_offer_cb(TpChannel* /*proxy*/,
+		const gchar* out_address,
+		const GError *error,
+		gpointer user_data,
+		GObject* /*weak_object*/)
+{
+	UT_DEBUGMSG(("tube_call_offer_cb()\n"));
+	if (error)
+	{
+		UT_DEBUGMSG(("Error offering tube to room members: %s\n", error->message));
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		return;
+	}
+
+	TelepathyChatroom* pChatroom = reinterpret_cast<TelepathyChatroom*>(user_data);
+	UT_return_if_fail(pChatroom);
+
+	TelepathyAccountHandler* pHandler = pChatroom->getHandler();
+	UT_return_if_fail(pHandler);
+
+	// open and store the tube dbus connection
+	UT_DEBUGMSG(("Tube offered, address: %s\n", out_address));
+	DBusConnection* pTube = dbus_connection_open_private(out_address, NULL);
+	UT_return_if_fail(pTube);
+	pChatroom->setTube(pTube);
+
+	pHandler->finalizeOfferTube(pChatroom->ptr());
+}
+
+
+static void
+group_call_add_members_cb(TpChannel* chan,
+		const GError *error,
+		gpointer user_data,
+		GObject* /*weak_object*/)
+{
+	UT_DEBUGMSG(("group_call_add_members_cb()\n"));
+	if (error)
+	{
+		UT_DEBUGMSG(("Error inviting room members: %s\n", error->message));
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		return;
+	}
+
+	TelepathyChatroom* pChatroom = reinterpret_cast<TelepathyChatroom*>(user_data);
+	UT_return_if_fail(pChatroom);
+
+	TelepathyAccountHandler* pHandler = pChatroom->getHandler();
+	UT_return_if_fail(pHandler);
+
+	// TODO: drop this call when we can use the
+	// TP_PROP_CHANNEL_INTERFACE_CONFERENCE_INITIAL_INVITEE_IDS mechanism to
+	// invite members; see https://bugs.freedesktop.org/show_bug.cgi?id=37630
+	// for details
+	UT_DEBUGMSG(("Members invited into the room\n"));
+	pChatroom->getInvitees().clear();
+
+	GHashTable* params = tp_asv_new (
+			"title", G_TYPE_STRING, pChatroom->getDocName().utf8_str(),
+			NULL);
+
+	// offer this tube to every participant in the room
+	tp_cli_channel_type_dbus_tube_call_offer(
+			chan, -1, params, TP_SOCKET_ACCESS_CONTROL_LOCALHOST,
+			tube_call_offer_cb,
+			pChatroom, NULL, NULL);
+
+	g_hash_table_destroy (params);
+}
+
+static void
+retrieve_buddy_dbus_mappings_cb(TpProxy* proxy,
+		const GValue *out_Value,
+		const GError *error,
+		gpointer user_data,
+		GObject* /*weak_object*/)
+{
+	UT_DEBUGMSG(("retrieve_buddy_dbus_mappings_cb()\n"));
+	if (error)
+	{
+		UT_DEBUGMSG(("Error retrieving buddy dbus addresses: %s\n", error->message));
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		return;
+	}
+
+	UT_return_if_fail(G_VALUE_HOLDS(out_Value, TP_HASH_TYPE_DBUS_TUBE_PARTICIPANTS));
+
+	TelepathyChatroom* pChatroom = reinterpret_cast<TelepathyChatroom*>(user_data);
+	UT_return_if_fail(pChatroom);
+
+	TpChannel* chan = TP_CHANNEL(proxy);
+	UT_return_if_fail(chan);
+
+	TpConnection* connection = tp_channel_borrow_connection(chan);
+	UT_return_if_fail(connection);
+
+	TpHandle self_handle = tp_channel_group_get_self_handle(chan);
+
+	GHashTable* name_mapping = reinterpret_cast<GHashTable*>(g_value_get_boxed(out_Value));
+	gpointer key;
+	gpointer value;
+	GHashTableIter iter;
+	g_hash_table_iter_init(&iter, name_mapping);
+	while (g_hash_table_iter_next(&iter, &key, &value))
+	{
+		TpHandle contact_handle = GPOINTER_TO_UINT(key);
+		const char* contact_address = reinterpret_cast<const gchar*>(value);
+		UT_DEBUGMSG(("Got room member - handle: %d, address: %s\n", contact_handle, contact_address));
+
+		// skip ourselves
+		if (self_handle == contact_handle)
+		{
+			UT_DEBUGMSG(("Skipping self handle %d\n", contact_handle));
+			continue;
+		}
+
+		UT_DEBUGMSG(("Added room member - handle: %d, address: %s\n", contact_handle, contact_address));
+		add_buddy_to_room(connection, chan, contact_handle, new DTubeBuddy(pChatroom->getHandler(), pChatroom->ptr(), contact_handle, contact_address));
+	}
 }
 
 TelepathyAccountHandler::TelepathyAccountHandler()
@@ -665,7 +786,11 @@ bool TelepathyAccountHandler::startSession(PD_Document* pDoc, const std::vector<
 
 	// start the session already, while we'll continue to setup a
 	// MUC asynchronously below
-	// TODO: fill in the buddy descriptor for proper text coloring?
+	// TODO: we should fill in the in the master buddy descriptor so we can do
+	// proper author coloring and session takeover; we can't do that however, since
+	// the following bugs needs to be fixed first:
+	//
+	//   https://bugs.freedesktop.org/show_bug.cgi?id=37631
 	*pSession = pManager->startSession(pDoc, sSessionId, this, true, NULL, "");
 
 	// create a chatroom to hold the session information
@@ -811,7 +936,8 @@ void TelepathyAccountHandler::signal(const Event& event, BuddyPtr pSource)
 			}
 			break;
 		default:
-			// TODO: implement me
+			// I think we can ignore all other signals on this backend, at
+			// least for now
 			break;
 	}
 }
@@ -895,55 +1021,22 @@ void TelepathyAccountHandler::acceptTube(TpChannel *chan, const char* address)
 
 	// start listening on the tube for people entering and leaving it
 	GError* error = NULL;
-	TpProxySignalConnection* signal = tp_cli_channel_type_dbus_tube_connect_to_dbus_names_changed(
+	TpProxySignalConnection* proxy_signal = tp_cli_channel_type_dbus_tube_connect_to_dbus_names_changed(
 															chan, tube_dbus_names_changed_cb,
 															pChatroom.get(), NULL, NULL, &error);
-	if (!signal)
+	if (!proxy_signal)
 	{
 		UT_DEBUGMSG(("Error connecting to names_changes: %s\n", error ? error->message : "(null)"));
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return;
 	}
 
-	// retrieve who created this room
-	TpHandle initiator_handle = tp_channel_get_initiator_handle(chan);
-	const char* initiator_ident = tp_channel_get_initiator_identifier(chan);
-	UT_DEBUGMSG(("Got initiator: %d - %s\n", initiator_handle, initiator_ident));
-	UT_DEBUGMSG(("Channel identifier: %s\n", tp_channel_get_identifier(chan)));
-
-	TpHandle self_handle = tp_channel_group_get_self_handle(chan);
-
 	// retrieve the TpHandle <-> dbus address mapping for the people in the room
-	GValue* prop = NULL;
-	if (!tp_cli_dbus_properties_run_get(chan, -1, TP_IFACE_CHANNEL_TYPE_DBUS_TUBE, "DBusNames", &prop, &error, NULL))
-	{
-		UT_DEBUGMSG(("Failed to get dbus members: %s\n", error ? error->message : "null"));
-		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-		return;
-	}
-
-	UT_return_if_fail(G_VALUE_HOLDS(prop, TP_HASH_TYPE_DBUS_TUBE_PARTICIPANTS));
-	GHashTable* name_mapping = reinterpret_cast<GHashTable*>(g_value_get_boxed(prop));
-	gpointer key;
-	gpointer value;
-	GHashTableIter iter;
-	g_hash_table_iter_init(&iter, name_mapping);
-	while (g_hash_table_iter_next(&iter, &key, &value))
-	{
-		TpHandle contact_handle = GPOINTER_TO_UINT(key);
-		const char* contact_address = reinterpret_cast<const gchar*>(value);
-		UT_DEBUGMSG(("Got room member - handle: %d, address: %s\n", contact_handle, contact_address));
-
-		// skip ourselves
-		if (self_handle == contact_handle)
-		{
-			UT_DEBUGMSG(("Skipping self handle %d\n", contact_handle));
-			continue;
-		}
-
-		UT_DEBUGMSG(("Added room member - handle: %d, address: %s\n", contact_handle, contact_address));
-		add_buddy_to_room(connection, chan, contact_handle, new DTubeBuddy(this, pChatroom, contact_handle, contact_address));
-	}
+	// so we can add them as buddies to our chatroom
+	tp_cli_dbus_properties_call_get(
+			chan, -1, TP_IFACE_CHANNEL_TYPE_DBUS_TUBE, "DBusNames",
+			retrieve_buddy_dbus_mappings_cb,
+			pChatroom.get(), NULL, NULL);
 }
 
 void TelepathyAccountHandler::handleMessage(DTubeBuddyPtr pBuddy, const std::string& packet_str)
@@ -1083,55 +1176,42 @@ bool TelepathyAccountHandler::offerTube(TelepathyChatroomPtr pChatroom, TpChanne
 	UT_UTF8String sWelcomeMsg = UT_UTF8String_sprintf("A document called '%s' has been shared with you", pChatroom->getDocName().utf8_str());
 
 	UT_DEBUGMSG(("Inviting members to the room...\n"));
-	GError* error = NULL;
-	if (!tp_cli_channel_interface_group_run_add_members(chan, -1,  members, sWelcomeMsg.utf8_str(), &error, NULL))
-	{
-		UT_DEBUGMSG(("Error inviting room members: %s\n", error ? error->message : "(null)"));
-		return false;
-	}
-	UT_DEBUGMSG(("Members invited\n"));
+	tp_cli_channel_interface_group_call_add_members(
+			chan, -1,  members, sWelcomeMsg.utf8_str(),
+			group_call_add_members_cb,
+			pChatroom.get(), NULL, NULL);
 
-	// TODO: hide this explicit clear, it's not nice API wise
-	pChatroom->getInvitees().clear();
+	return true;
+}
 
-	GHashTable* params = tp_asv_new (
-			"title", G_TYPE_STRING, pChatroom->getDocName().utf8_str(),
-			NULL);
+void TelepathyAccountHandler::finalizeOfferTube(TelepathyChatroomPtr pChatroom)
+{
+	UT_DEBUGMSG(("TelepathyAccountHandler::finalizeOfferTube()\n"));
+	UT_return_if_fail(pChatroom);
 
-	// offer this tube to every participant in the room
-	gchar* address = NULL;
-	if (!tp_cli_channel_type_dbus_tube_run_offer(chan, -1, params, TP_SOCKET_ACCESS_CONTROL_LOCALHOST, &address, &error, NULL))
-	{
-		UT_DEBUGMSG(("Error offering tube to room participants: %s\n", error ? error->message : "(null)"));
-		return false;
-	}
-	g_hash_table_destroy (params);
+	TpChannel* chan = pChatroom->getChannel();
+	UT_return_if_fail(chan);
 
-	UT_DEBUGMSG(("Tube offered, address: %s\n", address));
+	DBusConnection* pTube = pChatroom->getTube();
+	UT_return_if_fail(pTube);
 
-	// open and store the tube dbus connection
-	DBusConnection* pTube = dbus_connection_open_private(address, NULL);
-	UT_return_val_if_fail(pTube, FALSE);
-	pChatroom->setTube(pTube);
-
-	UT_DEBUGMSG(("Adding dbus handlers to the main loop for tube %s\n", address));
+	UT_DEBUGMSG(("Adding tube dbus handlers to the main loop\n"));
 	dbus_connection_setup_with_g_main(pTube, NULL);
 
 	UT_DEBUGMSG(("Adding message filter\n"));
 	dbus_connection_add_filter(pTube, s_dbus_handle_message, pChatroom.get(), NULL);
 
 	// start listening on the tube for people entering and leaving it
-	TpProxySignalConnection* signal = tp_cli_channel_type_dbus_tube_connect_to_dbus_names_changed(
+	GError* error;
+	TpProxySignalConnection* proxy_signal = tp_cli_channel_type_dbus_tube_connect_to_dbus_names_changed(
 															chan, tube_dbus_names_changed_cb,
 															pChatroom.get(), NULL, NULL, &error);
-	if (!signal)
+	if (!proxy_signal)
 	{
 		UT_DEBUGMSG(("Error connecting to names_changes: %s\n", error ? error->message : "(null)"));
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-		return false;
+		return;
 	}
-
-	return true;
 }
 
 TelepathyBuddyPtr TelepathyAccountHandler::_getBuddy(TelepathyBuddyPtr pBuddy)
