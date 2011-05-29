@@ -629,6 +629,9 @@ bool TelepathyAccountHandler::setAcl(AbiCollab* pSession, const std::vector<std:
 {
 	UT_DEBUGMSG(("TelepathyAccountHandler::setAcl()\n"));
 
+	// NOTE: having more than 2 persons in a room won't work yet
+	// due to this bug: https://bugs.freedesktop.org/show_bug.cgi?id=37729
+
 	TelepathyChatroomPtr pChatroom = _getChatroom(pSession->getSessionId());
 	UT_return_val_if_fail(pChatroom, false);
 
