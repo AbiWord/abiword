@@ -39,15 +39,12 @@ typedef boost::shared_ptr<DTubeBuddy> DTubeBuddyPtr;
 class TelepathyChatroom : public boost::enable_shared_from_this<TelepathyChatroom>
 {
 public:
-	TelepathyChatroom(TelepathyAccountHandler* pHandler, TpChannel* pChannel, PD_Document* pDoc,
-			DBusConnection* pTube, const UT_UTF8String& sSessionId);
+	TelepathyChatroom(TelepathyAccountHandler* pHandler, TpChannel* pChannel,
+			PD_Document* pDoc, const UT_UTF8String& sSessionId);
 
 	void stop();
 
 	void finalize();
-
-	TpChannel* getChannel()
-		{ return m_pChannel; }
 
 	void setChannel(TpChannel* pChannel);
 
@@ -70,9 +67,6 @@ public:
 
 	DBusConnection* getTube()
 		{ return m_pTube; }
-
-	void setTube(DBusConnection* pTube)
-		{ m_pTube = pTube; }
 	
 	const UT_UTF8String& getSessionId()
 		{ return m_sSessionId; }
@@ -84,12 +78,13 @@ public:
 
 	void queue(const std::string& dbusName, const std::string& packet);
 
-	// TODO: hide the fact that you need to invite the people yourself
-	void invite(TelepathyBuddyPtr pBuddy)
-		{ m_invitees.push_back(pBuddy); }
+	void acceptTube(const char* address);
 
-	std::vector<TelepathyBuddyPtr>& getInvitees()
-		{ return m_invitees; }
+	void queueInvite(TelepathyBuddyPtr pBuddy);
+
+	bool offerTube();
+
+	void finalizeOfferTube(DBusConnection* pTube);
 
 	bool isController(DTubeBuddyPtr pBuddy);
 
@@ -102,9 +97,11 @@ private:
 	DBusConnection*				m_pTube;
 	UT_UTF8String				m_sSessionId;
 	std::vector<DTubeBuddyPtr>	m_buddies;
-	std::vector<TelepathyBuddyPtr> m_invitees;
+	std::vector<TelepathyBuddyPtr> m_pending_invitees;
 	std::map<std::string, std::vector<std::string> > m_packet_queue;
 	bool						m_bShuttingDown;
+
+	std::vector<const std::string> m_vAcl; // list of TelepathyBuddy descriptors
 };
 
 typedef boost::shared_ptr<TelepathyChatroom> TelepathyChatroomPtr;

@@ -33,6 +33,10 @@
 #include "DTubeBuddy.h"
 #include "TelepathyBuddy.h"
 
+#define DEFAULT_CONFERENCE_SERVER "conference.telepathy.im"
+#define INTERFACE "org.freedesktop.Telepathy.Client.AbiCollab"
+#define SEND_ONE_METHOD "SendOne"
+
 extern AccountHandlerConstructor TelepathyAccountHandlerConstructor;
 
 class Session;
@@ -63,7 +67,6 @@ public:
 	virtual bool							disconnect();
 	virtual bool							isOnline();
 	void									acceptTube(TpChannel *tubes_chan, const char* address);
-	bool									offerTube(TelepathyChatroomPtr pChatroom, TpChannel* chan, const UT_UTF8String& sSessionId);
 	void									finalizeOfferTube(TelepathyChatroomPtr pChatroom);
 
 	// user management
@@ -82,6 +85,7 @@ public:
 
 	// session management
 	virtual bool							startSession(PD_Document* pDoc, const std::vector<std::string>& acl, AbiCollab** pSession);
+	virtual bool							setAcl(AbiCollab* /*pSession*/, const std::vector<std::string>& /*vAcl*/);
 	virtual bool							allowsSessionTakeover()
 		{ return false; /* not right now */ }
 	void									unregisterChatroom(TelepathyChatroomPtr pChatroom);
