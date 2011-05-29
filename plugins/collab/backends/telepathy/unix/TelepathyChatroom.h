@@ -42,6 +42,12 @@ public:
 	TelepathyChatroom(TelepathyAccountHandler* pHandler, TpChannel* pChannel,
 			PD_Document* pDoc, const UT_UTF8String& sSessionId);
 
+	bool running()
+		{ return m_pChannel != NULL; }
+
+	bool tubeOffered()
+		{ return m_pTube != NULL; }
+
 	void stop();
 
 	void finalize();
@@ -101,7 +107,7 @@ private:
 	std::map<std::string, std::vector<std::string> > m_packet_queue;
 	bool						m_bShuttingDown;
 
-	std::vector<const std::string> m_vAcl; // list of TelepathyBuddy descriptors
+	std::vector<std::string> m_offered_tubes; // list of TelepathyBuddy descriptors
 };
 
 typedef boost::shared_ptr<TelepathyChatroom> TelepathyChatroomPtr;

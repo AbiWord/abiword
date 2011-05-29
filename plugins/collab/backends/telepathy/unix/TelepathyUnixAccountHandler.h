@@ -99,6 +99,8 @@ public:
 	void									handleMessage(DTubeBuddyPtr pBuddy, const std::string& packet_str);
 	
 private:
+	void									_inviteBuddies(TelepathyChatroomPtr pChatroom, const std::vector<std::string>& /*vAcl*/);
+	std::vector<TelepathyBuddyPtr>			_getBuddies(const std::vector<std::string>& vAcl);
 	TelepathyBuddyPtr						_getBuddy(TelepathyBuddyPtr pBuddy);
 	TelepathyChatroomPtr					_getChatroom(const UT_UTF8String& sSessionId);
 

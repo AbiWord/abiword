@@ -69,20 +69,27 @@ group_call_add_members_cb(TpChannel* chan,
 	TelepathyChatroom* pChatroom = reinterpret_cast<TelepathyChatroom*>(user_data);
 	UT_return_if_fail(pChatroom);
 
-	TelepathyAccountHandler* pHandler = pChatroom->getHandler();
-	UT_return_if_fail(pHandler);
+	if (!pChatroom->tubeOffered())
+	{
+		UT_DEBUGMSG(("Offering tube to room members...\n"));
 
-	GHashTable* params = tp_asv_new (
-			"title", G_TYPE_STRING, pChatroom->getDocName().utf8_str(),
-			NULL);
+		TelepathyAccountHandler* pHandler = pChatroom->getHandler();
+		UT_return_if_fail(pHandler);
 
-	// offer this tube to every participant in the room
-	tp_cli_channel_type_dbus_tube_call_offer(
-			chan, -1, params, TP_SOCKET_ACCESS_CONTROL_LOCALHOST,
-			tube_call_offer_cb,
-			pChatroom, NULL, NULL);
+		GHashTable* params = tp_asv_new (
+				"title", G_TYPE_STRING, pChatroom->getDocName().utf8_str(),
+				NULL);
 
-	g_hash_table_destroy (params);
+		// offer this tube to every participant in the room
+		tp_cli_channel_type_dbus_tube_call_offer(
+				chan, -1, params, TP_SOCKET_ACCESS_CONTROL_LOCALHOST,
+				tube_call_offer_cb,
+				pChatroom, NULL, NULL);
+
+		g_hash_table_destroy (params);
+	}
+	else
+		UT_DEBUGMSG(("Tube was already offered to this room, skipping\n"));
 }
 
 static void
@@ -447,6 +454,8 @@ void TelepathyChatroom::removeBuddy(TpHandle handle)
 		UT_continue_if_fail(pB);
 		if (pB->getHandle() == handle)
 		{
+			// TODO: when we know the global JID of a DTubeBuddy, then
+			// remove it from the m_pending_invitees list as well
 			m_buddies.erase(it);
 			return;
 		}
@@ -518,10 +527,19 @@ void TelepathyChatroom::acceptTube(const char* address)
 
 void TelepathyChatroom::queueInvite(TelepathyBuddyPtr pBuddy)
 {
-	UT_DEBUGMSG(("TelepathyChatroom::queueInvite()\n"));
+	UT_DEBUGMSG(("TelepathyChatroom::queueInvite() - %s\n", pBuddy->getDescriptor(false).utf8_str()));
+	UT_return_if_fail(pBuddy);
+
+	for (std::vector<std::string>::iterator it = m_offered_tubes.begin(); it != m_offered_tubes.end(); it++)
+	{
+		if ((*it) == pBuddy->getDescriptor(false).utf8_str())
+		{
+			UT_DEBUGMSG(("Tube already offered to %s, skipping\n", pBuddy->getDescriptor(false).utf8_str()));
+			return;
+		}
+	}
 
 	m_pending_invitees.push_back(pBuddy);
-	m_vAcl.push_back(pBuddy->getDescriptor(false).utf8_str());
 }
 
 
@@ -529,6 +547,13 @@ bool TelepathyChatroom::offerTube()
 {
 	UT_DEBUGMSG(("TelepathyChatroom::offerTube()\n - session id: %s\n", m_sSessionId.utf8_str()));
 	UT_return_val_if_fail(m_sSessionId != "", false);
+	UT_return_val_if_fail(m_pChannel, false);
+
+	if (m_pending_invitees.size() == 0)
+	{
+		UT_DEBUGMSG(("0 pending invitees, skipping tube offering\n"));
+		return TRUE;
+	}
 
 	// add members to the room
 	GArray* members = g_array_new (FALSE, FALSE, sizeof(TpHandle));
@@ -539,6 +564,7 @@ bool TelepathyChatroom::offerTube()
 		TpHandle handle = tp_contact_get_handle(pBuddy->getContact());
 		UT_DEBUGMSG(("Adding %s to the invite list\n", tp_contact_get_identifier(pBuddy->getContact())));
 		g_array_append_val(members, handle);
+		m_offered_tubes.push_back(pBuddy->getDescriptor(false).utf8_str());
 	}
 	m_pending_invitees.clear();
 

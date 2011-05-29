@@ -261,6 +261,7 @@ void muc_channel_ready_cb(GObject* source_object, GAsyncResult* result, gpointer
 	pChatroom->setChannel(channel);
 
 	// offer the tube to the members we want to invite into the room
+	// TODO: drop this call when TP_PROP_CHANNEL_INTERFACE_CONFERENCE_INITIAL_INVITEE_IDS is usable
 	pChatroom->offerTube();
 }
 
@@ -559,26 +560,19 @@ bool TelepathyAccountHandler::startSession(PD_Document* pDoc, const std::vector<
 	m_chatrooms.push_back(pChatroom);
 
 	// add the buddies in the acl list to the room invitee list
-	// NOTE: this n^2 behavior shouldn't be too bad in practice: the ACL will never contain hundreds of elements
-	// TODO: free invitee_ids
-	//gchar** invitee_ids = reinterpret_cast<gchar**>(malloc(sizeof(gchar*) * vAcl.size()+1));
-	//int i = 0;
-	for (std::vector<std::string>::const_iterator cit = vAcl.begin(); cit != vAcl.end(); cit++ /*, i++*/)
+	/*
+	std::vector<TelepathyBuddyPtr> buddies = _getBuddies(vAcl);
+	gchar** invitee_ids = reinterpret_cast<gchar**>(malloc(sizeof(gchar*) * vAcl.size()+1));
+	int i = 0;
+	for (std::vector<TelepathyBuddyPtr>::iterator it = buddies.begin(); it != buddies.end(); it++)
 	{
-		for (std::vector<BuddyPtr>::iterator it = getBuddies().begin(); it != getBuddies().end(); it++)
-		{
-			TelepathyBuddyPtr pBuddy = boost::static_pointer_cast<TelepathyBuddy>(*it);
-			UT_continue_if_fail(pBuddy);
-			if  (pBuddy->getDescriptor(false).utf8_str() == (*cit))
-			{
-				//invitee_ids[i] = strdup(tp_contact_get_identifier(pBuddy->getContact()));
-				//UT_DEBUGMSG(("Added %s to the invite list\n", invitee_ids[i]));
-				pChatroom->queueInvite(pBuddy);
-				break;
-			}
-		}
+		UT_continue_if_fail(*it);
+		invitee_ids[i] = strdup(tp_contact_get_identifier((*it)->getContact()));
+		UT_DEBUGMSG(("Added %s to the invite list\n", invitee_ids[i]));
 	}
-	//invitee_ids[vAcl.size()] = NULL;
+	invitee_ids[vAcl.size()] = NULL;
+	*/
+	_inviteBuddies(pChatroom, vAcl); // use the above code when TP_PROP_CHANNEL_INTERFACE_CONFERENCE_INITIAL_INVITEE_IDS is usable
 
 	// a quick hack to determine the account to offer the request on
 	TpAccountManager* manager = tp_account_manager_dup();
@@ -624,20 +618,27 @@ bool TelepathyAccountHandler::startSession(PD_Document* pDoc, const std::vector<
 	TpAccountChannelRequest * channel_request = tp_account_channel_request_new(selected_account, props, TP_USER_ACTION_TIME_NOT_USER_ACTION);
 	UT_return_val_if_fail(channel_request, false);
 	g_hash_table_destroy (props);
+	// TODO: free invitee_ids
 
 	tp_account_channel_request_create_and_handle_channel_async(channel_request, NULL, muc_channel_ready_cb, pChatroom.get());
 
 	return true;
 }
 
-bool TelepathyAccountHandler::setAcl(AbiCollab* pSession, const std::vector<std::string>& /*vAcl*/)
+bool TelepathyAccountHandler::setAcl(AbiCollab* pSession, const std::vector<std::string>& vAcl)
 {
 	UT_DEBUGMSG(("TelepathyAccountHandler::setAcl()\n"));
 
 	TelepathyChatroomPtr pChatroom = _getChatroom(pSession->getSessionId());
 	UT_return_val_if_fail(pChatroom, false);
 
-	// TODO: implement me
+	// we can invite all buddies on the acl; the chatroom
+	// will make sure people are not invited twice
+	_inviteBuddies(pChatroom, vAcl);
+
+	// offer a tube to the newly added buddies
+	if (pChatroom->running())
+		pChatroom->offerTube();
 
 	return true;
 }
@@ -828,6 +829,40 @@ void TelepathyAccountHandler::handleMessage(DTubeBuddyPtr pBuddy, const std::str
 			// let the default handler handle it
 			AccountHandler::handleMessage(pPacket, pBuddy);
 			break;
+	}
+}
+
+std::vector<TelepathyBuddyPtr> TelepathyAccountHandler::_getBuddies(const std::vector<std::string>& vAcl)
+{
+	std::vector<TelepathyBuddyPtr> result;
+	for (std::vector<std::string>::const_iterator cit = vAcl.begin(); cit != vAcl.end(); cit++ /*, i++*/)
+	{
+		for (std::vector<BuddyPtr>::iterator it = getBuddies().begin(); it != getBuddies().end(); it++)
+		{
+			TelepathyBuddyPtr pBuddy = boost::static_pointer_cast<TelepathyBuddy>(*it);
+			UT_continue_if_fail(pBuddy);
+			if  (pBuddy->getDescriptor(false).utf8_str() == (*cit))
+			{
+				result.push_back(pBuddy);
+				break;
+			}
+		}
+	}
+
+	return result;
+}
+
+void TelepathyAccountHandler::_inviteBuddies(TelepathyChatroomPtr pChatroom, const std::vector<std::string>& vAcl)
+{
+	UT_return_if_fail(pChatroom);
+
+	std::vector<TelepathyBuddyPtr> buddies = _getBuddies(vAcl);
+
+	// add the buddies in the acl list to the room invitee list
+	for (std::vector<TelepathyBuddyPtr>::iterator it = buddies.begin(); it != buddies.end(); it++)
+	{
+		UT_continue_if_fail(*it);
+		pChatroom->queueInvite(*it);
 	}
 }
 
