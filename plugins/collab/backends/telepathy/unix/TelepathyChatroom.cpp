@@ -121,15 +121,12 @@ get_contact_for_new_buddie_cb(TpConnection* /*connection*/,
 	if (!pChatroom->isLocallyControlled())
 	{
 		// send a request for sessions; if everything is alright then we should
-		// receive exactly 1 session in all the responses combined
-		UT_DEBUGMSG(("Sending a GetSessionsEvent to every participant in the room\n"));
-		const std::vector<DTubeBuddyPtr> buddies = pChatroom->getBuddies();
-		for (UT_uint32 i = 0; i < buddies.size(); i++)
-		{
-			DTubeBuddyPtr existing_buddy = buddies[i];
-			UT_continue_if_fail(existing_buddy);
-			existing_buddy->getHandler()->getSessionsAsync(existing_buddy);
-		}
+		// receive exactly 1 session from 1 of the buddies that will be added to the room;
+		// maybe it would be a better idea to send it only to the session master, but
+		// we don't know who it is (is the current master always the channel initiator?)
+		// TODO: we should not send this event when we already have a master in this room
+		UT_DEBUGMSG(("Sending a GetSessionsEvent to the new buddy %s\n", pDTubeBuddy->getDescriptor(false).utf8_str()));
+		pChatroom->getHandler()->getSessionsAsync(pDTubeBuddy);
 	}
 }
 
@@ -530,11 +527,23 @@ void TelepathyChatroom::queueInvite(TelepathyBuddyPtr pBuddy)
 	UT_DEBUGMSG(("TelepathyChatroom::queueInvite() - %s\n", pBuddy->getDescriptor(false).utf8_str()));
 	UT_return_if_fail(pBuddy);
 
+	// check if we have already offered a tube to this buddy
 	for (std::vector<std::string>::iterator it = m_offered_tubes.begin(); it != m_offered_tubes.end(); it++)
 	{
 		if ((*it) == pBuddy->getDescriptor(false).utf8_str())
 		{
 			UT_DEBUGMSG(("Tube already offered to %s, skipping\n", pBuddy->getDescriptor(false).utf8_str()));
+			return;
+		}
+	}
+
+	// check if this buddy is already on the invite list
+	for (std::vector<TelepathyBuddyPtr>::iterator it = m_pending_invitees.begin(); it != m_pending_invitees.end(); it++)
+	{
+		UT_continue_if_fail(*it);
+		if ((*it)->getDescriptor(false) == pBuddy->getDescriptor(false))
+		{
+			UT_DEBUGMSG(("%s already queued for an invitation, skipping\n", pBuddy->getDescriptor(false).utf8_str()));
 			return;
 		}
 	}
