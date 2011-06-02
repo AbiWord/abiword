@@ -29,6 +29,7 @@ pf_Frag::pf_Frag(pt_PieceTable * pPT, PFType type, UT_uint32 length):
 	m_pPieceTable(pPT),
 	m_indexAP(0),
 	m_length(length),
+	m_leftTreeLength(0),
 	m_iXID(0),
 	m_pMyNode(NULL)
 {

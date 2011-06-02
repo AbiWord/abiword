@@ -200,9 +200,11 @@ void pf_Fragments::unlinkFrag(pf_Frag * pf)
 	// NOTE:  it is the caller's responsibility to delete pf if appropriate.
         UT_DEBUGMSG(("Unlinking frag %p \n",pf));
 	UT_return_if_fail (pf->getType() != pf_Frag::PFT_EndOfDoc);
-	//	verifyDoc();
+	// verifyDoc();
 	Iterator it(this,pf->_getNode());
 	erase(it);
+        xxx_UT_DEBUGMSG(("frag %p unlinked verifying doc again \n",pf));
+	//	verifyDoc();
 }
 
 
@@ -619,7 +621,7 @@ pf_Fragments::fixSize(Iterator it)
 	{
 		pn = pn->parent;
 		delta = - (int) pn->item->getLeftTreeLength();
-		pn->item->getLeftTreeLength();
+		pn->item->setLeftTreeLength(0);
 	}
 
 	if (delta == 0)

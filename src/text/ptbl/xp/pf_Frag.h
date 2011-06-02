@@ -126,14 +126,14 @@ protected:
 	pt_PieceTable *			m_pPieceTable;
 	PT_AttrPropIndex		m_indexAP;
 
-	/* In PT_DocPosition space - specifies size of left subtree */
-	UT_sint32                               m_leftTreeLength;   
 	/* in PT_DocPosition-space - gives length of this fragment */ 
 	UT_uint32				m_length;	
 
 private:
         void                    _setNode(pf_Fragments::Node * pNode);
 	pf_Fragments::Node *    _getNode(void) const;
+	/* In PT_DocPosition space - specifies size of left subtree */
+	UT_sint32               m_leftTreeLength;   
 	UT_uint32               m_iXID;
 	pf_Fragments::Node *    m_pMyNode;
 };
