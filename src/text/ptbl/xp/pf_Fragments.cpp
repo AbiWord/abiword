@@ -204,7 +204,7 @@ void pf_Fragments::unlinkFrag(pf_Frag * pf)
 	Iterator it(this,pf->_getNode());
 	erase(it);
         xxx_UT_DEBUGMSG(("frag %p unlinked verifying doc again \n",pf));
-	//	verifyDoc();
+	// verifyDoc();
 }
 
 
@@ -793,7 +793,7 @@ void pf_Fragments::verifyDoc(void) const
 
 /**
  * This method calculates the cumulated size of all the
- * nodes that are in the left subtree that has "x" as head.
+ * nodes that are in the left subtree that has  pf_Frag * pf as head.
  *
  * Hopefully we *NEVER* need to call this method since
  * this number should be stored in the pf_Frag. We've discovered that this number
