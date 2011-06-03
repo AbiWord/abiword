@@ -166,8 +166,8 @@ private:
 	void _eraseFixup(Node* pn);
 	void _leftRotate(Node* x);
 	void _rightRotate(Node* x);
-	PT_DocPosition _calculateSize(Node* x);
-	
+	PT_DocPosition _calculateSize(Node* x) const;
+	PT_DocPosition _calculateLeftSize(pf_Frag * pf) const;
 #ifdef DEBUG
 	int _countBlackNodes(const Iterator it) const;
 #endif

@@ -606,7 +606,7 @@ pf_Fragments::fixSize(Iterator it)
 {
 	UT_ASSERT(it.is_valid());
 	Node* pn = it.getNode();
-	pf_Frag* item;
+	pf_Frag* item = NULL;
 	int delta = 0;
    
 	if (pn == m_pRoot)
@@ -757,6 +757,14 @@ pf_Fragments::find(PT_DocPosition orig_pos) const
 	return Iterator(this, 0);
 }
 
+/*
+ * This method scans through the document and verifies that all the fragments are in
+ * the locations they should be. It also repairs the PT for those cases where the 
+ * frags are in the correct linked list order and have the correct individual length
+ * but the cached size of the left tree stored in each fragment is incorrect.
+ *
+ * This method is only called on known PT failures or for debugging purposes.
+ */
 void pf_Fragments::verifyDoc(void) const
 {
   PT_DocPosition pos = 0;
@@ -764,7 +772,14 @@ void pf_Fragments::verifyDoc(void) const
   UT_sint32 count = 0;
   while(pf && (pf->getType() !=  pf_Frag::PFT_EndOfDoc))
   {
-    
+    PT_DocPosition iCalcLeft = _calculateLeftSize(pf);
+    if(iCalcLeft != pf->getLeftTreeLength())
+    {
+      UT_DEBUGMSG(("PT error!!!! Calculated Left Tree size Different from stored size \n"));
+      UT_ASSERT(iCalcLeft == pf->getLeftTreeLength());
+      UT_DEBUGMSG(("Correcting Error. New LeftTreeLength set to %d \n",iCalcLeft));
+      pf->setLeftTreeLength(iCalcLeft);
+    }
     UT_DEBUGMSG(("frag %d pointer %p pos %d leftLength %d length %d PT Pos %d \n",count,pf,pos,pf->getLeftTreeLength(),pf->getLength(),pf->getPos()));
     UT_ASSERT(pos == pf->getPos());
     count++;
@@ -775,6 +790,34 @@ void pf_Fragments::verifyDoc(void) const
   UT_ASSERT(pf && (pf->getNext() == NULL));
   UT_DEBUGMSG(("Last Frag is %p Type is %d pos is %d \n",getLast(),getLast()->getType(),getLast()->getPos()));
 }
+
+/**
+ * This method calculates the cumulated size of all the
+ * nodes that are in the left subtree that has "x" as head.
+ *
+ * Hopefully we *NEVER* need to call this method since
+ * this number should be stored in the pf_Frag. We've discovered that this number
+ * has been corrupted by some operations. This method will be used to recover 
+ * from these bugs.
+ *
+ * This operation is performed in O(log(n)), where n is
+ * the number of nodes in the subtree.
+ *
+ * @params x is the head of the subtree
+ */
+PT_DocPosition pf_Fragments::_calculateLeftSize( pf_Frag * pf) const
+{
+  Node* x = pf->_getNode();
+  UT_ASSERT(x != NULL);
+
+  if (x == m_pLeaf)
+    return 0;
+
+  if(x->left)
+    return _calculateSize(x->left);
+  return 0;
+}
+
 
 PT_DocPosition
 pf_Fragments::documentPosition(const Iterator it) const
@@ -1039,7 +1082,7 @@ pf_Fragments::_rightRotate(Node* x)
  * @params x is the head of the subtree
  */
 PT_DocPosition
-pf_Fragments::_calculateSize(Node* x)
+pf_Fragments::_calculateSize(Node* x) const
 {
 	UT_ASSERT(x != NULL);
 

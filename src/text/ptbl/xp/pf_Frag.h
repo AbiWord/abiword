@@ -64,7 +64,7 @@ public:
 	PT_DocPosition          getPos(void) const;
 	void                    lengthChanged(UT_sint32 delta);
 	PT_DocPosition          getLeftTreeLength(void) const   { return m_leftTreeLength; }
-	void                    setLeftTreeLength(PT_DocPosition length) { m_leftTreeLength = length;}
+	void                    setLeftTreeLength(PT_DocPosition length) const { m_leftTreeLength = length;}
 
 	/* We need the following function to accumulate left tree length */
 	void                    accLeftTreeLength(PT_DocPosition length);
@@ -133,7 +133,7 @@ private:
         void                    _setNode(pf_Fragments::Node * pNode);
 	pf_Fragments::Node *    _getNode(void) const;
 	/* In PT_DocPosition space - specifies size of left subtree */
-	UT_sint32               m_leftTreeLength;   
+	mutable UT_sint32       m_leftTreeLength;   
 	UT_uint32               m_iXID;
 	pf_Fragments::Node *    m_pMyNode;
 };
