@@ -796,14 +796,16 @@ void pf_Fragments::verifyDoc(void) const
  * nodes that are in the left subtree that has  pf_Frag * pf as head.
  *
  * Hopefully we *NEVER* need to call this method since
- * this number should be stored in the pf_Frag. We've discovered that this number
- * has been corrupted by some operations. This method will be used to recover 
- * from these bugs.
+ * this number should be stored in the pf_Frag.  
+ * In the past this number has been corrupted by some bugs, fixed now. 
+ * This function is here in case we need to recover from a new bug in the 
+ * PieceTable.
  *
  * This operation is performed in O(log(n)), where n is
  * the number of nodes in the subtree.
  *
- * @params x is the head of the subtree
+ * @params pf_Frag * is a pointer to Fragment for which we wish to calculate
+ * the size of the left side of it's location within the tree.
  */
 PT_DocPosition pf_Fragments::_calculateLeftSize( pf_Frag * pf) const
 {
