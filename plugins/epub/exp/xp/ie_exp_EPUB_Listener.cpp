@@ -17,40 +17,5 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
-#ifndef IE_EXP_EPUB_H_
-#define IE_EXP_EPUB_H_
 
-#include <string>
-// External includes
-#include <gsf/gsf-output-stdio.h>
-#include <gsf/gsf-outfile.h>
-#include <gsf/gsf-output.h>
-#include <gsf/gsf-outfile-zip.h>
-#include <gsf/gsf-libxml.h>
-
-// Abiword includes
-#include <ie_exp.h>
-#include <ie_exp_HTML.h>
-#include <pd_Document.h>
-#include <ut_go_file.h>
-
-#define EPUB_MIMETYPE "application/epub+zip"
-
-
-class IE_Exp_EPUB : public IE_Exp {
-
-public:
-	IE_Exp_EPUB(PD_Document * pDocument);
-	virtual ~IE_Exp_EPUB();
-
-protected:
-	virtual UT_Error _writeDocument();
-
-private:
-    GsfOutfile *m_outputFile;
-
-};
-
-
-
-#endif /* IE_EXP_EPUB_H_ */
+#include "ie_exp_EPUB_Listener.h"
