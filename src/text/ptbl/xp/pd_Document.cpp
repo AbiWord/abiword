@@ -952,6 +952,7 @@ UT_Error PD_Document::createRawDocument(void)
 
 void PD_Document::finishRawCreation(void)
 {
+	repairDoc();
 	m_pPieceTable->setPieceTableState(PTS_Editing);
 	updateFields();
 	_setClean();							// mark the document as not-dirty
