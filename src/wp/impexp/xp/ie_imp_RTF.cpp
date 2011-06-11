@@ -8254,6 +8254,8 @@ bool IE_Imp_RTF::ReadListTable()
 			nesting--;
 		}
 	}
+	// Reclaim group }
+	if (ch=='}') SkipBackChar(ch);
 	xxx_UT_DEBUGMSG(("Return from List Table \n"));
 	return true;
 }
@@ -8765,6 +8767,7 @@ bool IE_Imp_RTF::ReadListOverrideTable(void)
 		{
 			if (!ReadCharFromFile(&ch))
 				return false;
+
 			if(!ReadKeyword(keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN))
 			{
 				return false;
@@ -8782,6 +8785,7 @@ bool IE_Imp_RTF::ReadListOverrideTable(void)
 			nesting--;
 		}
 	}
+	if (ch=='}') SkipBackChar(ch);
 	return true;
 }
 
