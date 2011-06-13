@@ -72,10 +72,8 @@ enum _AP_Dialog_Id
 #if 0
 	AP_DIALOG_ID_DOWNLOAD_FILE,			/* threaded download of a file, with a cancel-button */	
 #endif
-	/* ... add others here ... */
-
-	//	Maleesh 6/8/2010 - 
 	AP_DIALOG_ID_BORDER_SHADING,
+	/* ... add others here ... */
 
 	AP_DIALOG_ID__LAST__				/* must be last */
 

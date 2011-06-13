@@ -128,8 +128,8 @@ HWND AP_Win32Dialog_Border_Shading::_createComboboxEx(
 														const RECT& rc,const int id)
 {
 	dwStyle|=WS_CHILD|WS_VISIBLE;
-	return CreateWindowEx(0,
-						WC_COMBOBOXEX,
+	return CreateWindowExW(0,
+						WC_COMBOBOXEXW,
 						0,    
 						dwStyle, 
 						rc.left,
@@ -153,15 +153,15 @@ int AP_Win32Dialog_Border_Shading::_insertItemToComboboxEx(
 															INT_PTR index = -1,
 															UINT mask = CBX_ITEM_MASK)
 {
-	COMBOBOXEXITEM cbei={0};
+	COMBOBOXEXITEMW cbei={0};
 
 	cbei.mask			= mask;
 	cbei.iItem			= index;
-	cbei.pszText		= (LPSTR)txt;
+	cbei.pszText		= (LPWSTR)txt;
 	cbei.iImage			= imgIndex;
 	cbei.iSelectedImage	= selectedImgIndex;
 
-	return static_cast<int>(SendMessage(hCbx, CBEM_INSERTITEM, 0, reinterpret_cast<LPARAM>(&cbei)));
+	return static_cast<int>(SendMessageW(hCbx, CBEM_INSERTITEMW, 0, reinterpret_cast<LPARAM>(&cbei)));
 }
 
 HBITMAP AP_Win32Dialog_Border_Shading::_loadBitmap(HWND hWnd, UINT nId, char* pName, int width, int height, UT_RGBColor color)
@@ -193,9 +193,11 @@ BOOL AP_Win32Dialog_Border_Shading::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 	_DS(BORDERSHADING_TEXT_SHADING_COLOR, 		DLG_BorderShading_Color);
 	_DS(BORDERSHADING_TEXT_PREVIEW,				DLG_BorderShading_Preview);
 	_DS(BORDERSHADING_TEXT_BORDER,				DLG_BorderShading_Borders);
- 	_DS(BORDERSHADING_TEXT_SHADING, 			DLG_BorderShading_Shading);
+	_DS(BORDERSHADING_TEXT_SHADING, 			DLG_BorderShading_Shading);
+	_DS(BORDERSHADING_BTN_SHADING_ENABLE, 		DLG_BorderShading_Use_Shading);
+	_DS(BORDERSHADING_TEXT_BORDER_STYLE,		DLG_BorderShading_Border_Style);
 	_DS(BORDERSHADING_TEXT_BORDER_THICKNESS,	DLG_BorderShading_Thickness);
- 	_DS(BORDERSHADING_TEXT_SHADING_OFFSET,		DLG_BorderShading_Offset);
+	_DS(BORDERSHADING_TEXT_SHADING_OFFSET,		DLG_BorderShading_Offset);
 	
 	setDialogTitle(pSS->getValue(AP_STRING_ID_DLG_BorderShading_Title));
 	
