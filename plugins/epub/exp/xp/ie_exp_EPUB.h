@@ -21,6 +21,7 @@
 #define IE_EXP_EPUB_H_
 
 #include <string>
+#include <vector>
 // External includes
 #include <gsf/gsf-output-stdio.h>
 #include <gsf/gsf-outfile.h>
@@ -33,8 +34,13 @@
 #include <ie_exp_HTML.h>
 #include <pd_Document.h>
 #include <ut_go_file.h>
+#include <ut_vector.h>
 
 #define EPUB_MIMETYPE "application/epub+zip"
+#define OPF_MIMETYPE "application/oebps-package+xml"
+#define OCF201_NAMESPACE "urn:oasis:names:tc:opendocument:xmlns:container"
+#define OPF201_NAMESPACE "http://www.idpf.org/2007/opf"
+#define DC_NAMESPACE "http://purl.org/dc/elements/1.1/"
 
 
 class IE_Exp_EPUB : public IE_Exp {
@@ -47,8 +53,12 @@ protected:
 	virtual UT_Error _writeDocument();
 
 private:
-    GsfOutfile *m_outputFile;
-
+	UT_UTF8String m_baseTempDir;
+	UT_UTF8String m_oebpsDir;
+	void writeStructure();
+	void writeContainer();
+	void package();
+	static std::vector<UT_UTF8String> getFileList(const UT_UTF8String &directory);
 };
 
 
