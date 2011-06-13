@@ -179,6 +179,9 @@ AP_RID_ICON_APPLICATION_32           ICON    DISCARDABLE     "abiword_app_32.ico
 AP_RID_ICON_APPLICATION_16           ICON    DISCARDABLE     "abiword_app_16.ico"
 AP_RID_ICON_DOCUMENT             ICON    DISCARDABLE     "abiword_doc.ico"
 
-
+AP_RID_TI_BORDER_STYLE_DASHED BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/border_dashed.bmp"
+AP_RID_TI_BORDER_STYLE_DOTTED BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/border_dotted.bmp"
+AP_RID_TI_BORDER_STYLE_NONE BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/border_none.bmp"
+AP_RID_TI_BORDER_STYLE_SOLID BITMAP DISCARDABLE "../../../wp/ap/win/ToolbarIcons/border_solid.bmp"
 
 #endif /* RC_INVOKED */

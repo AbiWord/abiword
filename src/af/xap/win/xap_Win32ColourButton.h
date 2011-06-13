@@ -32,6 +32,7 @@ public:
 	XAP_Win32ColourButton()
 	{		
 		m_hBrush = NULL;
+		m_bBtnEnabled = true;
 	}
 	
 	~XAP_Win32ColourButton()
@@ -44,6 +45,11 @@ public:
 		if (m_hBrush) DeleteObject (m_hBrush);	
 		m_hBrush = CreateSolidBrush(color);	
 	}	
+
+	void setEnable(bool enable)
+	{
+		m_bBtnEnabled = enable;
+	}
 	
 	void draw(DRAWITEMSTRUCT* dis)
 	{				
@@ -58,9 +64,9 @@ public:
 		colourArea.right = colourArea.left+COLOUR_SMPLENGTH;
 		
 		if (m_hBrush)			
-			FillRect(dis->hDC, &colourArea, m_hBrush);							
+			FillRect(dis->hDC, &colourArea, (m_bBtnEnabled ? m_hBrush : GetSysColorBrush(COLOR_BTNSHADOW)));							
 		else
-			FillRect(dis->hDC, &colourArea, GetSysColorBrush(COLOR_BTNFACE));											
+			FillRect(dis->hDC, &colourArea, GetSysColorBrush(m_bBtnEnabled ? COLOR_BTNFACE : COLOR_BTNSHADOW));											
 
 		if ((dis->itemState &  ODS_SELECTED) == ODS_SELECTED)
 			DrawEdge(dis->hDC, &dis->rcItem, EDGE_RAISED, BF_RECT |BF_FLAT);		
@@ -69,6 +75,7 @@ public:
 private:
 
 	HBRUSH m_hBrush;
+	bool	m_bBtnEnabled;
 };
 
 

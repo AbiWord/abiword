@@ -1022,7 +1022,7 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 
 		if(pBlockAP && pBlockAP->getProperty ("left-style",pszBorderStyle) && pszBorderStyle)
 		{
-			s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, pszBorderSpacing,m_lineLeft);
+ 			s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, pszBorderSpacing,m_lineLeft);
 			m_bHasBorders |= (m_lineLeft.m_t_linestyle > 1);  
 		}
 		pszBorderColor = NULL;

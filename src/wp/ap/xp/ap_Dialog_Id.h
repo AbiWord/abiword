@@ -74,6 +74,9 @@ enum _AP_Dialog_Id
 #endif
 	/* ... add others here ... */
 
+	//	Maleesh 6/8/2010 - 
+	AP_DIALOG_ID_BORDER_SHADING,
+
 	AP_DIALOG_ID__LAST__				/* must be last */
 
 };

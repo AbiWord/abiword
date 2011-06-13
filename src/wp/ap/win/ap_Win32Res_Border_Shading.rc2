@@ -1,0 +1,120 @@
+// AbiWord
+// Copyright (C) 2003 Jordi Mas i Hernàndez
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+
+
+#define AP_RID_DIALOG_BORDERSHADING_STATIC_PREVIEW		1000
+#define AP_RID_DIALOG_BORDERSHADING_BMP_BOTTOM			1001
+#define AP_RID_DIALOG_BORDERSHADING_BMP_TOP				1002
+#define AP_RID_DIALOG_BORDERSHADING_BMP_RIGHT			1003
+#define AP_RID_DIALOG_BORDERSHADING_BMP_LEFT			1004
+#define AP_RID_DIALOG_BORDERSHADING_TEXT_PREVIEW		1005
+#define AP_RID_DIALOG_BORDERSHADING_TEXT_BORDER			1006
+#define AP_RID_DIALOG_BORDERSHADING_TEXT_BORDER_COLOR		1007
+#define AP_RID_DIALOG_BORDERSHADING_TEXT_BORDER_THICKNESS	1008
+#define AP_RID_DIALOG_BORDERSHADING_BTN_BORDER_COLOR		1009
+#define AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_THICKNESS	1010
+#define AP_RID_DIALOG_BORDERSHADING_TEXT_SHADING			1011
+#define AP_RID_DIALOG_BORDERSHADING_TEXT_SHADING_COLOR		1012
+#define AP_RID_DIALOG_BORDERSHADING_TEXT_SHADING_OFFSET		1013
+#define AP_RID_DIALOG_BORDERSHADING_BTN_SHADING_COLOR		1014
+#define AP_RID_DIALOG_BORDERSHADING_COMBO_SHADING_OFFSET	1015
+#define AP_RID_DIALOG_BORDERSHADING_TEXT_BORDER_STYLE		1016
+#define AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_STYLE		1017
+#define AP_RID_DIALOG_BORDERSHADING_BTN_SHADING_ENABLE			1018
+
+#define AP_RID_DIALOG_BORDERSHADING_BTN_APPLY			1019
+#define AP_RID_DIALOG_BORDERSHADING_BTN_CANCEL		IDCANCEL
+
+#define IDC_STATIC -1
+#define IDC_COMBO1 1200
+
+#ifdef RC_INVOKED
+// NOTE -- these placeholder strings get overridden at runtime 
+// NOTE -- they're just here to make sizing easier
+
+AP_RID_DIALOG_BORDER_SHADING DIALOG 0, 0, 360, 220
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Border and Shading"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "Preview",AP_RID_DIALOG_BORDERSHADING_TEXT_PREVIEW,186,8,
+                    162,136
+    CONTROL         "",AP_RID_DIALOG_BORDERSHADING_BMP_BOTTOM,"Button",
+                    BS_AUTOCHECKBOX | BS_BITMAP | BS_PUSHLIKE | WS_TABSTOP,
+                    254,122,21,14
+    CONTROL         "",AP_RID_DIALOG_BORDERSHADING_BMP_TOP,"Button",
+                    BS_AUTOCHECKBOX | BS_BITMAP | BS_PUSHLIKE | WS_TABSTOP,
+                    254,20,21,14
+    CONTROL         "",AP_RID_DIALOG_BORDERSHADING_BMP_RIGHT,"Button",
+                    BS_AUTOCHECKBOX | BS_BITMAP | BS_PUSHLIKE | WS_TABSTOP,
+                    317,68,21,14
+    CONTROL         "",AP_RID_DIALOG_BORDERSHADING_BMP_LEFT,"Button",
+                    BS_AUTOCHECKBOX | BS_BITMAP | BS_PUSHLIKE | WS_TABSTOP,
+                    192,68,21,14				
+    CONTROL         "",AP_RID_DIALOG_BORDERSHADING_STATIC_PREVIEW,"Static",
+                    SS_BLACKFRAME,226,40,86,76,WS_EX_CLIENTEDGE
+					
+	LTEXT           "Borders",AP_RID_DIALOG_BORDERSHADING_TEXT_BORDER,9,9,35,
+                    8
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,47,13,121,1
+    LTEXT           "Color",AP_RID_DIALOG_BORDERSHADING_TEXT_BORDER_COLOR,16,
+                    26,69,8// NOTE --DONE
+    CONTROL         "",AP_RID_DIALOG_BORDERSHADING_BTN_BORDER_COLOR,"Button",
+                    BS_OWNERDRAW | WS_TABSTOP,100,25,22,14
+    LTEXT           "Thickness:",AP_RID_DIALOG_BORDERSHADING_TEXT_BORDER_THICKNESS,16,
+                    49,57,8
+    COMBOBOX        AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_THICKNESS,100,46,62,50,CBS_DROPDOWN | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP					
+	LTEXT			"Style:",AP_RID_DIALOG_BORDERSHADING_TEXT_BORDER_STYLE,16,70,57,8
+
+// 	COMBOBOXEX      AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_STYLE,100,106,62,50,CBS_DROPDOWN | CBS_SORT | 
+//                  WS_VSCROLL | WS_TABSTOP
+	
+    LTEXT           "Shading",
+					AP_RID_DIALOG_BORDERSHADING_TEXT_SHADING,9,113,46,8
+	CONTROL         "",
+					IDC_STATIC,"Static",SS_ETCHEDHORZ,64,116,107,1
+    CONTROL         "Enable Shading",AP_RID_DIALOG_BORDERSHADING_BTN_SHADING_ENABLE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,18,132,140,10
+    LTEXT           "Color",  
+					AP_RID_DIALOG_BORDERSHADING_TEXT_SHADING_COLOR,18,155,77,8		
+    CONTROL         "",
+					AP_RID_DIALOG_BORDERSHADING_BTN_SHADING_COLOR,"Button",BS_OWNERDRAW | WS_TABSTOP,100,152,22,14
+	LTEXT           "Offset:",
+					AP_RID_DIALOG_BORDERSHADING_TEXT_SHADING_OFFSET,18,176,57,8
+    COMBOBOX        AP_RID_DIALOG_BORDERSHADING_COMBO_SHADING_OFFSET,100,176,62,50,CBS_DROPDOWN | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+
+					
+    DEFPUSHBUTTON   "Apply",AP_RID_DIALOG_BORDERSHADING_BTN_APPLY,297,195,50,14
+    PUSHBUTTON      "Cancel",AP_RID_DIALOG_BORDERSHADING_BTN_CANCEL,236,195,50,14
+					
+END
+
+#endif /* RC_INVOKED */

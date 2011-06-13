@@ -96,6 +96,7 @@
 #   include "ap_UnixDialog_FormatTOC.h"
 #   include "ap_UnixDialog_MailMerge.h"
 #   include "ap_UnixDialog_Latex.h"
+#	include "ap_UnixDialog_Border_Shading.h"
 #   ifdef ENABLE_PRINT
 #       include "xap_UnixDlg_Print.h"
 #       include "xap_UnixDlg_PrintPreview.h"
@@ -193,5 +194,5 @@
 	DeclareDialog(AP_DIALOG_ID_MAILMERGE,		AP_UnixDialog_MailMerge, 			FALSE)
 	DeclareDialog(AP_DIALOG_ID_LATEX,		    AP_UnixDialog_Latex, 				FALSE)
 	DeclareDialog(AP_DIALOG_ID_ANNOTATION_PREVIEW,	AP_UnixPreview_Annotation, 				FALSE)
-
+	DeclareDialog(AP_DIALOG_ID_BORDER_SHADING,	AP_UnixDialog_Border_Shading, 				FALSE)
 #endif /* AP_UNIXDIALOG_ALL_H */

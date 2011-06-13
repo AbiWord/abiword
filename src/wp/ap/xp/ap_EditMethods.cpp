@@ -106,6 +106,8 @@
 #include "ap_Dialog_MergeCells.h"
 #include "ap_Dialog_SplitCells.h"
 #include "ap_Dialog_FormatTable.h"
+//	Maleesh 6/8/2010 - 
+#include "ap_Dialog_Border_Shading.h"
 #include "ap_Dialog_FormatFrame.h"
 #include "ap_Dialog_FormatFootnotes.h"
 #include "ap_Dialog_FormatTOC.h"
@@ -6482,6 +6484,8 @@ static bool s_doFormatTableDlg(FV_View * pView)
 	XAP_DialogFactory * pDialogFactory
 		= static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
 
+	//	Maleesh 6/8/2010 - TEMP
+
 	AP_Dialog_FormatTable * pDialog
 		= static_cast<AP_Dialog_FormatTable *>(pDialogFactory->requestDialog(AP_DIALOG_ID_FORMAT_TABLE));
 	UT_return_val_if_fail(pDialog, false);
@@ -10765,14 +10769,55 @@ Defun1(dlgBullets)
 #endif
 }
 
+/***********************************************************************************/
+
+static bool s_doBorderShadingDlg(FV_View * pView)
+{
+	UT_return_val_if_fail(pView, false);
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+	UT_return_val_if_fail(pFrame, false);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
+
+	AP_Dialog_Border_Shading * pDialog
+		= static_cast<AP_Dialog_Border_Shading *>(pDialogFactory->requestDialog(AP_DIALOG_ID_BORDER_SHADING));
+	UT_return_val_if_fail(pDialog, false);
+	if(!pView->isInTable(pView->getPoint()))
+	{
+		pView->setPoint(pView->getSelectionAnchor());
+	}
+	if(pDialog->isRunning() == true)
+	{
+		pDialog->activate();
+	}
+	else
+	{
+		pDialog->runModeless(pFrame);
+	}
+	return true;
+}
+
 Defun1(dlgBorders)
 {
 	CHECK_FRAME;
-	UT_return_val_if_fail(pAV_View, false);
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
-	UT_return_val_if_fail(pFrame, false);
+	ABIWORD_VIEW;
 
-	s_TellNotImplemented(pFrame, "Border and shading dialog", __LINE__);
+	//	Maleesh 6/10/2010 - 
+	s_doBorderShadingDlg(pView);
+
+	const gchar * zShading[] = { "shading-pattern", "1", "shading-foreground-color", "#FF0000", 0};
+
+	const char * szBorders[] = {
+	"left-style","1","left-thickness","2.0mm","left-space","3.0mm",
+	"right-style","1","right-thickness","2.0mm","right-space","3.0mm",
+	"top-style","1","top-thickness","2.0mm","top-space","3.0mm",
+	"bot-style","1","bot-thockness","2.0mm","bot-space","3.0mm",NULL };
+
+//		pView->setBlockFormat(szBorders);
+
 	return true;
 }
 

@@ -167,9 +167,10 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_FMT_BULLETS)
 		MenuItem(AP_MENU_ID_FMT_FRAME)
     MenuItem(AP_MENU_ID_FMT_IMAGE)
-#if 0 // someone code and turn this back on
+// #if 1 // someone code and turn this back on
+	//	Maleesh 6/10/2010 -  
 		MenuItem(AP_MENU_ID_FMT_BORDERS)
-#endif
+// #endif
 		Separator()
 		MenuItem(AP_MENU_ID_FMT_COLUMNS)
 #if 0
