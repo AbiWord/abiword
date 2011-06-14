@@ -75,6 +75,10 @@ public:
 	
 	GR_Image * genImageFromRectangle(const UT_Rect & r);
 
+	// These just call the functions with the same name in GR_Graphics.
+	bool beginDoubleBuffering();
+	void endDoubleBuffering(bool token);
+
 private:
 
 	GR_Painter ();

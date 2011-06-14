@@ -161,3 +161,14 @@ GR_Image * GR_Painter::genImageFromRectangle(const UT_Rect & r)
 {
 	return m_pGr->genImageFromRectangle(r);
 }
+
+bool GR_Painter::beginDoubleBuffering()
+{
+	return m_pGr -> beginDoubleBuffering();
+}
+
+void GR_Painter::endDoubleBuffering(bool token)
+{
+	m_pGr -> endDoubleBuffering(token);
+}
+
