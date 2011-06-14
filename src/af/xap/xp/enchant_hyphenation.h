@@ -25,6 +25,13 @@
 typedef long ssize_t;
 #endif
 #include <enchant.h>
+//add two methods in enchant.h and implemented in dll
+//ENCHANT_MODULE_EXPORT (int)
+//enchant_dict_hyphenation (EnchantDict * dict, const char *const word, ssize_t len);
+//ENCHANT_MODULE_EXPORT (char **)
+//enchant_dict_hyphenationSuggest (EnchantDict * dict, const char *const word,
+//								 ssize_t len, size_t * out_n_suggs);
+
 
 class ABI_EXPORT EnchantHyphenation : public Hyphenation
 {
