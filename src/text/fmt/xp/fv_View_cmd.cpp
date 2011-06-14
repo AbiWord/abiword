@@ -61,6 +61,7 @@
 #include "pp_Property.h"
 #include "pp_AttrProp.h"
 #include "gr_Graphics.h"
+#include "gr_Painter.h"
 #include "gr_DrawArgs.h"
 #include "ie_types.h"
 #include "xap_App.h"
@@ -4520,6 +4521,10 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 //
 // Look to see if should paste a table column or row
 //
+	
+	GR_Painter painter(m_pG);
+	bool dblBufferingToken = painter.beginDoubleBuffering();
+
 	if((m_Selection.getPrevSelectionMode() == FV_SelectionMode_TableColumn)
 	   || (m_Selection.getPrevSelectionMode() == 	FV_SelectionMode_TableRow))
 	{
@@ -4529,6 +4534,7 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 			if(pTab && pTab == m_Selection.getTableLayout())
 			{
 				m_Selection.pasteRowOrCol();
+				painter.endDoubleBuffering(dblBufferingToken);
 				return;
 			}
 		}
@@ -4573,6 +4579,8 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
 	notifyListeners(AV_CHG_ALL);
+	
+	painter.endDoubleBuffering(dblBufferingToken);
 }
 
 void FV_View::cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos)
