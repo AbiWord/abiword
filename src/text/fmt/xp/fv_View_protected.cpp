@@ -4549,6 +4549,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	 **************************/
 
 	GR_Painter painter(m_pG);
+
 	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 
 	// CHECK_WINDOW_SIZE
@@ -4677,6 +4678,8 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	/**********************
 	 * STEP 2: Draw pages *
 	 **********************/
+
+	bool dblBufferingToken = painter.beginDoubleBuffering();
 
 	UT_RGBColor clrMargin;
 	if (!m_pG->getColor3D(GR_Graphics::CLR3D_BevelDown, clrMargin))
@@ -4832,7 +4835,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	}
 	
 	xxx_UT_DEBUGMSG(("End _draw\n"));
-	
+	painter.endDoubleBuffering(dblBufferingToken);
 }
 
 
