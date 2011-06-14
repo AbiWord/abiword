@@ -309,6 +309,8 @@ bool GR_Graphics::beginDoubleBuffering()
 		_DeviceContext_SwitchToBuffer();
 		m_DCState = SET_TO_BUFFER;
 
+		UT_DEBUGMSG(("ASFRENT: SWITCHED TO BUFFER\n"));
+
 		// register and return a token for exclusive access to
 		// "endDoubleBuffering"
 		return true;
@@ -335,6 +337,7 @@ void GR_Graphics::endDoubleBuffering(bool token)
 			_DeviceContext_SwitchToScreen();
 			m_DCState = SET_TO_SCREEN;
 			_DeviceContext_DrawBufferToScreen();
+			UT_DEBUGMSG(("ASFRENT: SWITCHED TO SCREEN\n"));
 		}
 	}
 }
