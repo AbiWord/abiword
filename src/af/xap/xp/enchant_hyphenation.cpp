@@ -86,6 +86,26 @@ EnchantHyphenation::~EnchantHyphenation()
 	}
 }
 
+Hyphenation::HyphenationResult
+EnchantHyphenation::_hyphenation (const UT_UCSChar * ucszWord, size_t len)
+{
+	UT_return_val_if_fail (m_dict, Hyphenation::Hyphenation_ERROR);
+	UT_return_val_if_fail (ucszWord, Hyphenation::Hyphenation_ERROR);
+	UT_return_val_if_fail (len, Hyphenation::Hyphenation_ERROR);
+
+	UT_UTF8String utf8 (ucszWord, len);
+
+	switch (enchant_dict_hyphenation (m_dict, utf8.utf8_str(), utf8.byteLength())) 
+	{
+	case -1:
+		return Hyphenation::Hyphenation_ERROR;
+	case 0:
+		return Hyphenation::Hyphenation_ERROR;
+	default:
+		return Hyphenation::Hyphenation_ERROR;
+	}
+}
+
 UT_GenericVector<UT_UCSChar*> *
 EnchantHyphenation::__hyphenateWord (const UT_UCSChar *ucszWord, size_t len)
 {
@@ -99,7 +119,7 @@ EnchantHyphenation::__hyphenateWord (const UT_UCSChar *ucszWord, size_t len)
 	char ** suggestions;
 	size_t n_suggestions;
 
-	suggestions = enchant_dict_suggest (m_dict, utf8.utf8_str(), utf8.byteLength(), &n_suggestions);
+	suggestions = enchant_dict_hyphenationSuggest (m_dict, utf8.utf8_str(), utf8.byteLength(), &n_suggestions);
 
 	if (suggestions && n_suggestions) {
 		for (size_t i = 0; i < n_suggestions; i++) {
@@ -114,3 +134,20 @@ EnchantHyphenation::__hyphenateWord (const UT_UCSChar *ucszWord, size_t len)
 	return pvSugg;
 }
 
+bool
+EnchantHyphenation::_requestDictionary (const char * szLang)
+{
+	UT_return_val_if_fail (szLang, false);
+	UT_return_val_if_fail (s_enchant_broker, false);
+
+	// Convert the language tag from en-US to en_US form
+	char * lang = g_strdup (szLang);
+	char * hyphen = strchr (lang, '-');
+	if (hyphen)
+		*hyphen = '_';
+
+	m_dict = enchant_broker_request_dict(s_enchant_broker, lang);
+	FREEP(lang);
+
+	return (m_dict != NULL);
+}

@@ -63,12 +63,15 @@
 
 #ifdef ENABLE_SPELL
 #include "spell_manager.h"
-
 #if 1
 // todo: work around to remove the INPUTWORDLEN restriction for pspell
 #include "ispell_def.h"
 #endif
 #endif
+
+
+#include "hyphenate_manager.h"
+
 
 #include "px_CR_FmtMark.h"
 #include "px_CR_FmtMarkChange.h"
@@ -107,6 +110,14 @@ static void s_border_properties (const char * border_color,
 								 const char * spacing, PP_PropertyMap::Line & line);
 
 
+
+#ifdef ENABLE_HYPHENATION
+bool
+fl_BlockLayout::hyphenationWord(void)
+{
+	return true;
+}
+#endif
 
 #ifdef ENABLE_SPELL
 SpellChecker *
@@ -6553,6 +6564,13 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 	xxx_UT_DEBUGMSG(("Set pending block for grammar - insertSpan \n"));
 	m_pLayout->setPendingBlockForGrammar(this);
 #endif
+
+#ifdef ENABLE_HYPHENATION
+    //deal with hyphenation
+	xxx_UT_DEBUGMSG(("Set pending block for Hyphenation - insertSpan \n"));
+	m_pLayout->setPendingBlockForGrammar(this);
+#endif
+
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
 	{
@@ -7009,6 +7027,12 @@ bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs)
 	xxx_UT_DEBUGMSG(("Set pending block for grammar - deleteSpan \n"));
 	m_pLayout->setPendingBlockForGrammar(this);
 #endif
+
+#ifdef ENABLE_HYPHENATION
+    //deal with hyphenation  
+ 	xxx_UT_DEBUGMSG(("Set pending block for hyphenation - deleteSpan \n"));
+	m_pLayout->setPendingBlockForGrammar(this);
+#endif
 	
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
@@ -7178,6 +7202,14 @@ bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange * p
 	{
 		m_pSpellSquiggles->textRevised(blockOffset, 0);
 		m_pGrammarSquiggles->textRevised(blockOffset, 0);
+	}
+#endif
+
+#ifdef ENABLE_HYPHENATION
+	// deal with hyphenation
+	if(pcrsc->isRevisionDelete())
+	{
+		
 	}
 #endif
 	
@@ -7468,6 +7500,11 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 		// if necessary
 		m_pSpellSquiggles->join(offset, pPrevBL);
 		m_pGrammarSquiggles->join(offset, pPrevBL);
+#endif
+
+#ifdef ENABLE_HYPHENATION
+		// deal with hyphenation
+		// if necessary
 #endif
 		pPrevBL->setNeedsReformat(pPrevBL);
 		//
@@ -7866,6 +7903,10 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 	m_pSpellSquiggles->split(blockOffset, pNewBL);
 	m_pGrammarSquiggles->split(blockOffset, pNewBL);
 	m_pLayout->setPendingBlockForGrammar(pNewBL);
+#endif
+
+#ifdef ENABLE_HYPHENATION
+	// deal with hyphenation
 #endif
 	
 	FV_View* pView = getView();
@@ -8874,6 +8915,9 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 	m_pGrammarSquiggles->textInserted(blockOffset, 1);
 #endif
 	
+#ifdef ENABLE_HYPHENATION
+	// deal with hyphenation
+#endif
 	_assertRunListIntegrity();
 	//
 	// OK Now do the insertSpan for any TOC's that shadow this block.
@@ -8993,6 +9037,10 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 		m_pGrammarSquiggles->textDeleted(blockOffset, 1);
 #endif
 	
+#ifdef ENABLE_HYPHENATION
+	// deal with hyphenation
+#endif
+
 	_assertRunListIntegrity();
 	//
 	// OK Now do the deleteObject for any TOC's that shadow this block.

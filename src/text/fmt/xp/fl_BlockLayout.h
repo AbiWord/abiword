@@ -26,6 +26,7 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+#define  ENABLE_HYPHENATION
 
 #ifdef FMT_TEST
 #include <stdio.h>
@@ -48,6 +49,7 @@
 #include "ut_string_class.h"
 #include "ut_misc.h"
 #include "pp_PropertyMap.h"
+#include "hyphenate_manager.h"
 
 // number of DocPositions occupied by the block strux
 #define fl_BLOCK_STRUX_OFFSET	1
@@ -277,6 +279,11 @@ public:
 #ifdef ENABLE_SPELL
 	bool checkSpelling(void);
 #endif
+
+	
+	bool hyphenationWord(void);
+
+
 	void debugFlashing(void);
 	bool	findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX,
 							UT_sint32& iPosition, eTabType& iType,

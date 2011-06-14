@@ -52,6 +52,7 @@
 #endif
 
 #define AUTO_SCROLL_MSECS	100
+#define ENABLE_HYPHENATION
 
 class FL_DocLayout;
 class FV_Caret_Listener;
@@ -915,6 +916,10 @@ protected:
 
 #ifdef ENABLE_SPELL
 	void				_checkPendingWordForSpell(void);
+#endif
+
+#ifdef ENABLE_SPELL
+	void				_checkPendingWordForHyphenation(void);
 #endif
 	
 	bool				_isSpaceBefore(PT_DocPosition pos) const;

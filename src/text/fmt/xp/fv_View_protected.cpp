@@ -4532,6 +4532,9 @@ void FV_View::_fixInsertionPointCoords(bool bIgnoreAll)
 		m_pLayout->triggerPendingBlock(pBlock);
 	}
 #endif
+  #ifdef ENABLE_HYPHENATION
+#endif
+
 }
 
 // Finds what pages are on screen and draws them
@@ -4884,6 +4887,10 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 #ifdef ENABLE_SPELL
 		_checkPendingWordForSpell();
 #endif
+
+#ifdef ENABLE_HYPHENATION
+		_checkPendingWordForHyphenation();
+#endif
 	// So, if there is a selection now, we should disable the cursor; conversely,
 	// if there is no longer a selection, we should enable the cursor.
 		if (isSelectionEmpty())
@@ -4927,6 +4934,44 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
  */
 void
 FV_View::_checkPendingWordForSpell(void)
+{
+	if (!m_pLayout->isPendingWordForSpell()) return;
+
+	// Find block at IP
+	fl_BlockLayout* pBL = _findBlockAtPosition(m_iInsPoint);
+	if (pBL)
+	{
+		UT_uint32 iOffset = m_iInsPoint - pBL->getPosition();
+
+		// If it doesn't touch the pending word, spell-check it
+		if (!m_pLayout->touchesPendingWordForSpell(pBL, iOffset, 0))
+		{
+			// no longer there, so check it
+			if (m_pLayout->checkPendingWordForSpell())
+			{
+				// FIXME:jskov Without this updateScreen call, the
+				// just squiggled word remains deleted. It's overkill
+				// (surely we should have a requestUpdateScreen() that
+				// does so after all operations have completed), but
+				// works. Unfortunately it causes a small screen
+				// artifact when pressing undo, since some runs may be
+				// redrawn before they have their correct location
+				// recalculated. In other words, make the world a
+				// better place by adding requestUpdateScreen or
+				// similar.
+				updateScreen();
+			}
+		}
+	}
+}
+#endif
+
+#ifdef ENABLE_HYPHENATION
+/*!
+ Hyphenation-check pending word
+ */
+void
+FV_View::_checkPendingWordForHyphenation(void)
 {
 	if (!m_pLayout->isPendingWordForSpell()) return;
 

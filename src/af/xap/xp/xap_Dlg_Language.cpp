@@ -173,6 +173,9 @@ UT_Vector* XAP_Dialog_Language::getAvailableDictionaries()
 		if (checker->doesDictionaryExist(mapping->lang.c_str()))
 			vecRslt->addItem( g_strdup(mapping->lang.c_str()));
 	}
+    #ifdef ENABLE_HYPHENATION
+	     
+    #endif
 
 	return vecRslt;
 #else
