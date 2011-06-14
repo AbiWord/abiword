@@ -245,7 +245,8 @@ GR_Graphics::GR_Graphics()
 	  m_iPrevXOffset(0),
 	  m_hashFontCache(19),
 	  m_AllCarets(this,&m_pCaret,&m_vecCarets),
-	  m_bAntiAliasAlways(false)
+	  m_bAntiAliasAlways(false),
+	  m_DCState(SET_TO_SCREEN)
 {
 }
 
@@ -297,6 +298,44 @@ GR_Graphics::~GR_Graphics()
 	{
 		GR_Caret * pCaret = m_vecCarets.getNthItem(i);
 		DELETEP(pCaret);
+	}
+}
+
+bool GR_Graphics::beginDoubleBuffering()
+{
+	if(m_DCState == SET_TO_SCREEN)
+	{
+		// this is a "first call", redirect drawing to  buffer
+		_DeviceContext_SwitchToBuffer();
+		m_DCState = SET_TO_BUFFER;
+
+		// register and return a token for exclusive access to
+		// "endDoubleBuffering"
+		return true;
+	}
+	else
+	{
+		// the drawing is redirected to a buffer, return a bad token
+		return false;
+	}
+}
+
+void GR_Graphics::endDoubleBuffering(bool token)
+{
+	if(m_DCState == SET_TO_SCREEN)
+	{
+		// this is bad: calling END before START
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+	else // SET_TO_BUFFER
+	{
+		// take action only if the caller has the good token
+		if(token == true)
+		{
+			_DeviceContext_SwitchToScreen();
+			m_DCState = SET_TO_SCREEN;
+			_DeviceContext_DrawBufferToScreen();
+		}
 	}
 }
 

@@ -830,6 +830,31 @@ class ABI_EXPORT GR_Graphics
 
 	UT_uint32 m_paintCount;
 
+	// Double buffering infrastructure.
+
+	// The default implementation here leads to no double buffering,
+	// as they perform no action at all. Should be overriden in derived
+	// classes
+	virtual void _DeviceContext_SwitchToBuffer() { };
+	virtual void _DeviceContext_SwitchToScreen() { };
+	virtual void _DeviceContext_DrawBufferToScreen() { };
+
+	// TODO: better token control? (ie. in this case, endDoubleBuffering(true) always switches)
+
+	// returns the token for the current call
+	bool beginDoubleBuffering();
+
+	// does the actual buffer-to-screen switch only when it gets
+	// the correct token
+	void endDoubleBuffering(bool token);
+
+	// device context state (BUFFER / SCREEN)
+	typedef enum {
+		SET_TO_SCREEN = 0,
+		SET_TO_BUFFER
+	} DeviceContextState;
+	DeviceContextState m_DCState;
+
  private:
 	GR_Caret *		 m_pCaret;
     bool             _PtInPolygon(UT_Point * pts,UT_uint32 nPoints,UT_sint32 x,UT_sint32 y);
