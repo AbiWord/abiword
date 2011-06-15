@@ -167,6 +167,7 @@ struct XAP_Exp_HTMLOptions
 	/* other options, not set/saved/restore by options dialog
 	 */
 	bool	bMultipart;
+	bool 	bAddIdentifiers;
 };
 
 #endif /* HTML_DIALOG_OPTIONS */
@@ -188,11 +189,10 @@ public:
 	static bool 		SupportsFileType (IEFileType ft);
 
 	inline void			suppressDialog (bool disable = true) { m_bSuppressDialog = disable; }
-
 	inline void			set_HTML4 (bool enable = true) { m_exp_opt.bIs4 = enable; }
 	inline void			set_PHTML (bool enable = true) { m_exp_opt.bIsAbiWebDoc = enable; }
 	inline void			set_MHTML (bool enable = true) { m_exp_opt.bMultipart = enable; }
-
+	inline void			set_AddIdentifiers(bool enable = true) { m_exp_opt.bAddIdentifiers = enable; }
 	static void printStyleTree(PD_Document *pDocument, UT_ByteBuf& tree);
 
 private:
@@ -204,7 +204,7 @@ public:
 	virtual UT_Error	_writeDocument (bool bClipBoard, bool bTemplateBody);
 private:
 	s_StyleTree *		m_style_tree;
-	bool				m_bSuppressDialog;
+	bool			m_bSuppressDialog;
 	XAP_Exp_HTMLOptions	m_exp_opt;
 	UT_UTF8String       m_sLinkCSS;
 	UT_UTF8String       m_sTitle;

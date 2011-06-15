@@ -616,6 +616,7 @@ private:
 	inline bool		get_Embed_Images () const { return m_exp_opt->bEmbedImages; }
 	inline bool		get_Multipart ()    const { return m_exp_opt->bMultipart; }
 	inline bool     get_Class_Only()    const { return m_exp_opt->bClassOnly; }
+	inline bool	get_AddIdentifiers()  const {return m_exp_opt->bAddIdentifiers; }
 
 	bool			m_bInSection;
 	bool			m_bInFrame;
@@ -2319,7 +2320,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle /*sdh*/)
 			tagPending = true;
 			bClassAsTag = true;
 
-			if (m_toc->docHasTOC()) {
+			if (m_toc->docHasTOC() || get_AddIdentifiers()) {
 				m_utf8_1 = UT_UTF8String_sprintf("h1 id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			}
@@ -2337,7 +2338,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle /*sdh*/)
 			tagPending = true;
 			bClassAsTag = true;
 
-			if (m_toc->docHasTOC()) {
+			if (m_toc->docHasTOC() || get_AddIdentifiers()) {
 				m_utf8_1 = UT_UTF8String_sprintf("h2 id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			}
@@ -2355,7 +2356,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle /*sdh*/)
 			tagPending = true;
 			bClassAsTag = true;
 
-			if (m_toc->docHasTOC()) {
+			if (m_toc->docHasTOC() || get_AddIdentifiers()) {
 				m_utf8_1 = UT_UTF8String_sprintf("h3 id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			}
@@ -2416,7 +2417,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle /*sdh*/)
 			tagPending = true;
 			bClassAsTag = true;
 
-			if (m_toc->docHasTOC()) {
+			if (m_toc->docHasTOC() || get_AddIdentifiers()) {
 				m_utf8_1 = UT_UTF8String_sprintf("h1 id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			} else {
@@ -2430,7 +2431,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle /*sdh*/)
 			tagPending = true;
 			bClassAsTag = true;
 
-			if (m_toc->docHasTOC()) {
+			if (m_toc->docHasTOC() || get_AddIdentifiers()) {
 				m_utf8_1 = UT_UTF8String_sprintf("h2 id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			} else {
@@ -2444,7 +2445,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle /*sdh*/)
 			tagPending = true;
 			bClassAsTag = true;
 
-			if (m_toc->docHasTOC()) {
+			if (m_toc->docHasTOC() || get_AddIdentifiers()) {
 				m_utf8_1 = UT_UTF8String_sprintf("h3 id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			} else {
@@ -6910,17 +6911,18 @@ IE_Exp_HTML::IE_Exp_HTML (PD_Document * pDocument)
 	  m_style_tree(new s_StyleTree(pDocument)),
 	  m_bSuppressDialog(false)
 {
-	m_exp_opt.bIs4         = false;
-	m_exp_opt.bIsAbiWebDoc = false;
-	m_exp_opt.bDeclareXML  = true;
-	m_exp_opt.bAllowAWML   = true;
-	m_exp_opt.bEmbedCSS    = true;
-	m_exp_opt.bLinkCSS     = false;
-	m_exp_opt.bEmbedImages = false;
-	m_exp_opt.bMultipart   = false;
-	m_exp_opt.bClassOnly   = false;
-	m_exp_opt.bAbsUnits    = false;
-	m_exp_opt.iCompact     = 0;
+	m_exp_opt.bIs4            = false;
+	m_exp_opt.bIsAbiWebDoc    = false;
+	m_exp_opt.bDeclareXML     = true;
+	m_exp_opt.bAllowAWML      = true;
+	m_exp_opt.bEmbedCSS       = true;
+	m_exp_opt.bLinkCSS        = false;
+	m_exp_opt.bEmbedImages    = false;
+	m_exp_opt.bMultipart   	  = false;
+	m_exp_opt.bClassOnly      = false;
+	m_exp_opt.bAbsUnits    	  = false;
+	m_exp_opt.bAddIdentifiers = false;
+	m_exp_opt.iCompact        = 0;
 
 	m_error = UT_OK;
 

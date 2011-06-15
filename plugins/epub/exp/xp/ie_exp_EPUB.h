@@ -41,6 +41,7 @@
 #define OCF201_NAMESPACE "urn:oasis:names:tc:opendocument:xmlns:container"
 #define OPF201_NAMESPACE "http://www.idpf.org/2007/opf"
 #define DC_NAMESPACE "http://purl.org/dc/elements/1.1/"
+#define NCX_NAMESPACE "http://www.daisy.org/z3986/2005/ncx/"
 
 
 class IE_Exp_EPUB : public IE_Exp {
@@ -56,9 +57,12 @@ private:
 	UT_UTF8String m_baseTempDir;
 	UT_UTF8String m_oebpsDir;
 	void writeStructure();
+        void writeNavigation();
 	void writeContainer();
 	void package();
 	static std::vector<UT_UTF8String> getFileList(const UT_UTF8String &directory);
+	static UT_Error compress(const UT_UTF8String &directory, GsfOutput* output);
+        static void closeNTags(GsfXMLOut* xml, int n);
 };
 
 

@@ -51,6 +51,7 @@ struct XAP_Exp_HTMLOptions
 	/* other options, not set/saved/restore by options dialog
 	 */
 	bool	bMultipart;
+	bool	bAddIdentifiers;
 };
 
 class ABI_EXPORT XAP_Dialog_HTMLOptions : public XAP_Dialog_NonPersistent
