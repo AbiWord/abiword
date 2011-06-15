@@ -4534,6 +4534,8 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 			if(pTab && pTab == m_Selection.getTableLayout())
 			{
 				m_Selection.pasteRowOrCol();
+				// FIXME does this section get affected
+				// by scrolling too?
 				painter.endDoubleBuffering(dblBufferingToken);
 				return;
 			}
@@ -4576,11 +4578,14 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 // Do a complete update coz who knows what happened in the paste!
 //
 
+	// update the screen before leaving the current view
+	// FIXME: I should check if the above code may move the view
+	painter.endDoubleBuffering(dblBufferingToken);
+
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
 	notifyListeners(AV_CHG_ALL);
 	
-	painter.endDoubleBuffering(dblBufferingToken);
 }
 
 void FV_View::cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos)
