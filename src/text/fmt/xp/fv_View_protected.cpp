@@ -4615,7 +4615,6 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	
 	bool bFindingPagesOnScreen = true;
 	bool bGoingForward = false;
-	UT_sint32 iVecCount = 0;
 	UT_GenericVector<fp_Page *> vecPagesOnScreen;
 	xxx_UT_DEBUGMSG(("Starting at page %x \n",pPage));
 
@@ -4678,6 +4677,28 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	/**********************
 	 * STEP 2: Draw pages *
 	 **********************/
+	
+	//
+	// ASFRENT: temporary refactoring code
+	//
+	
+	fp_Page *pFirstVisiblePage = NULL;
+	int iPageCount = vecPagesOnScreen.getItemCount();
+
+	if(iPageCount > 0)
+	{
+		// find the first visible page
+		pFirstVisiblePage = vecPagesOnScreen.getFirstItem();
+		for(int i = 1; i < iPageCount; ++i)
+		{
+			fp_Page *pCurrentPage = vecPagesOnScreen.getNthItem(i);
+			if(pCurrentPage->getPageNumber() < pFirstVisiblePage->getPageNumber())
+				pFirstVisiblePage = pCurrentPage;
+		}
+	}
+	// else firstPageToDraw is NULL
+	
+	UT_DEBUGMSG(("ASFRENT: the first visible page is %d\n", pFirstVisiblePage->getPageNumber()));
 
 	bool dblBufferingToken = painter.beginDoubleBuffering();
 
@@ -4691,7 +4712,10 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		pPage = vecPagesOnScreen.getFirstItem();
 	else
 		pPage = NULL;
-	
+
+	// start from the first visible page
+	pPage = pFirstVisiblePage;
+
 	while(pPage)
 	{
 		UT_sint32 adjustedTop; // Top line of the page that defines the page's top margin,
@@ -4819,14 +4843,28 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			painter.drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom);
 		}
 
-		// Move to next page waiting to be drawn
-		iVecCount++;
-		if( (vecPagesOnScreen.getItemCount() > 0) && (vecPagesOnScreen.getItemCount() >= iVecCount + 1) )
+		// advance to the next page
+		pPage = pPage -> getNext();
+
+		// check whether this page is visible and set it to NULL if it is not
+		if(pPage) // if we did not meet the end of the document
 		{
-			pPage = vecPagesOnScreen.getNthItem(iVecCount);
+			UT_sint32 iPageYOffset, iPageXOffset;
+			UT_sint32 iPageHeight;
+			
+			getPageYOffset(pPage, iPageYOffset);
+			iPageXOffset = getWidthPrevPagesInRow(pPage->getPageNumber());
+			iPageHeight = pPage->getHeight();
+			if(getViewMode() == VIEW_NORMAL || getViewMode() == VIEW_WEB)
+				iPageHeight = iPageHeight - pDSL->getTopMargin() - pDSL->getBottomMargin();
+			
+			// is the page visible?
+			if(!((iPageXOffset <= getXScrollOffset() + getWindowWidth()) &&
+		    	    (iPageXOffset + pPage->getWidth() >= getXScrollOffset()) &&
+			    (iPageYOffset  <= getYScrollOffset() + getWindowHeight()) &&
+			    (iPageYOffset + iPageHeight >= getYScrollOffset())))
+				pPage = NULL;
 		}
-		else
-			pPage = NULL;
 	}
 
 	if (bClip)
