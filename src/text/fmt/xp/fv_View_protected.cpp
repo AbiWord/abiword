@@ -4597,7 +4597,9 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	// who would attempt to change those assumptions: they are very deeply
 	// embedded throughout AbiWord.
 	
-	// since all pages have the same height, set it here
+	// since all pages have the same width / height, set them here
+	
+	UT_sint32 iPageWidth = getLayout() -> getFirstPage() -> getWidth();
 	UT_sint32 iPageHeight = getLayout() -> getFirstPage() -> getHeight();
 	if(getViewMode() == VIEW_NORMAL || getViewMode() == VIEW_WEB)
 		iPageHeight = iPageHeight - pDSL -> getTopMargin() - pDSL -> getBottomMargin();
@@ -4629,13 +4631,20 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		UT_sint32 adjustedBottom;
 		UT_sint32 adjustedLeft;
 		UT_sint32 adjustedRight;
-		UT_sint32 iPageWidth = pPage->getWidth();
+
 		UT_sint32 iPageXOffset;
 		UT_sint32 iPageYOffset;
+
 		dg_DrawArgs da;
 
+		// get X / Y page offsets
 		getPageYOffset(pPage, iPageYOffset);
 		iPageXOffset = getWidthPrevPagesInRow(pPage->getPageNumber());
+
+		// if this page is not visible, then stop
+		if(!((iPageYOffset  <= getYScrollOffset() + getWindowHeight()) &&
+		    (iPageYOffset + iPageHeight >= getYScrollOffset())))
+			break;
 
 		// Adjust page's boundaries
 		switch(getViewMode())
@@ -4643,19 +4652,19 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			case VIEW_NORMAL:
 			case VIEW_WEB:
 			adjustedTop = iPageYOffset - getYScrollOffset() + ( pPage->getPageNumber() * (m_pG->tlu(1) - getPageViewSep()) );
-			adjustedBottom = adjustedTop + iPageHeight;
 			adjustedLeft = 0;
-			adjustedRight = adjustedLeft + iPageWidth;
 			break;
 
 			case VIEW_PRINT:
 			case VIEW_PREVIEW:
 			adjustedTop = iPageYOffset - getYScrollOffset();
-			adjustedBottom = adjustedTop + iPageHeight;
 			adjustedLeft = iPageXOffset - getXScrollOffset()  + getPageViewLeftMargin();
-			adjustedRight = adjustedLeft + iPageWidth;
 			break;
 		}
+
+		// view independant boundaries
+		adjustedBottom = adjustedTop + iPageHeight;
+		adjustedRight = adjustedLeft + iPageWidth;
 
 		xxx_UT_DEBUGMSG(("Drawing page adjustedTop = %i, Bottom = %i, Left = %i, Right = %i\n", adjustedTop, adjustedBottom, adjustedLeft, adjustedRight));
 		xxx_UT_DEBUGMSG(("--Entered _draw loop:\n  iPageNumber = %i, vecitemcount = %i\n  iRow = %i, iCol = %i\n  iPageWidth = %i, iPageHeight = %i\n  getPageViewTopMargin() = %i, m_yScrollOffset = %i\n", iPageNumber, vecPagesOnScreen.getItemCount(), iRow, iCol, iPageWidth, iPageHeight, getPageViewTopMargin(), m_yScrollOffset));
@@ -4676,6 +4685,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			else
 				painter.fillRect(*pClr, adjustedLeft + m_pG->tlu(1), adjustedTop + m_pG->tlu(1), iPageWidth - m_pG->tlu(1), iPageHeight - m_pG->tlu(1));
 			xxx_UT_DEBUGMSG(("   ---PAINTING PAGE %i---\n", pPage->getPageNumber()));
+
 			//
 			// Since we're clearing everything we have to draw every run no matter
 			// what.
@@ -4748,22 +4758,6 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 		// advance to the next page
 		pPage = pPage -> getNext();
-
-		// check whether this page is visible and set it to NULL if it is not
-		if(pPage) // if we did not meet the end of the document
-		{
-			UT_sint32 iPageYOffset, iPageXOffset;
-			
-			getPageYOffset(pPage, iPageYOffset);
-			iPageXOffset = getWidthPrevPagesInRow(pPage->getPageNumber());
-			
-			// is the page visible?
-			if(!((iPageXOffset <= getXScrollOffset() + getWindowWidth()) &&
-		    	    (iPageXOffset + pPage->getWidth() >= getXScrollOffset()) &&
-			    (iPageYOffset  <= getYScrollOffset() + getWindowHeight()) &&
-			    (iPageYOffset + iPageHeight >= getYScrollOffset())))
-				pPage = NULL;
-		}
 	}
 
 	if (bClip)
