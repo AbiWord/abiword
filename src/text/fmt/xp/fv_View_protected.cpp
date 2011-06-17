@@ -4585,7 +4585,6 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	// HYP:  cache calc results at scroll/size time
 	calculateNumHorizPages();
 
-	fl_DocSectionLayout * pDSL = getLayout() -> getFirstPage() -> getOwningSection();
 	
 	/******************************************************************
 	 * STEP 1: Find the first page so we can start drawing from there *
@@ -4597,22 +4596,33 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	// who would attempt to change those assumptions: they are very deeply
 	// embedded throughout AbiWord.
 	
-	// since all pages have the same width / height, set them here
+	UT_sint32 iPageWidth, iPageHeight;
+	UT_sint32 iFirstVisiblePageNumber = -1;
+	fl_DocSectionLayout *pDSL = NULL;
+
+	// we should have at least the first page
+	if(getLayout() -> getFirstPage())
+	{
+		// layout ref
+		pDSL = getLayout() -> getFirstPage() -> getOwningSection();
 	
-	UT_sint32 iPageWidth = getLayout() -> getFirstPage() -> getWidth();
-	UT_sint32 iPageHeight = getLayout() -> getFirstPage() -> getHeight();
-	if(getViewMode() == VIEW_NORMAL || getViewMode() == VIEW_WEB)
-		iPageHeight = iPageHeight - pDSL -> getTopMargin() - pDSL -> getBottomMargin();
-	
-	// now guess the first visible page number
-	UT_sint32 iFirstVisiblePageNumber = 
-		((getYScrollOffset() - getPageViewTopMargin() + getPageViewSep()) /
-		(iPageHeight + getPageViewSep())) * getNumHorizPages();
-	
+		// since all pages have the same width / height, set them here
+		iPageWidth = getLayout() -> getFirstPage() -> getWidth();
+		iPageHeight = getLayout() -> getFirstPage() -> getHeight();
+		if(getViewMode() == VIEW_NORMAL || getViewMode() == VIEW_WEB)
+			iPageHeight = iPageHeight - pDSL -> getTopMargin() - pDSL -> getBottomMargin();
+		
+		// now guess the first visible page number
+		iFirstVisiblePageNumber = 
+			((getYScrollOffset() - getPageViewTopMargin() + getPageViewSep()) /
+			(iPageHeight + getPageViewSep())) * getNumHorizPages();
+	}	
+
 	/**********************
 	 * STEP 2: Draw pages *
 	 **********************/
 	
+	// enter a double-buffered section 
 	bool dblBufferingToken = painter.beginDoubleBuffering();
 
 	UT_RGBColor clrMargin;
@@ -4622,7 +4632,9 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		painter.fillRect(clrMargin, 0, 0, getWindowWidth(), getWindowHeight());
 	
 	// start from the first visible page
-	fp_Page *pPage = getLayout() -> getNthPage(iFirstVisiblePageNumber);
+	fp_Page *pPage = NULL;
+	if(iFirstVisiblePageNumber >= 0)
+		pPage = getLayout() -> getNthPage(iFirstVisiblePageNumber);
 
 	while(pPage)
 	{
@@ -4669,11 +4681,12 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		xxx_UT_DEBUGMSG(("Drawing page adjustedTop = %i, Bottom = %i, Left = %i, Right = %i\n", adjustedTop, adjustedBottom, adjustedLeft, adjustedRight));
 		xxx_UT_DEBUGMSG(("--Entered _draw loop:\n  iPageNumber = %i, vecitemcount = %i\n  iRow = %i, iCol = %i\n  iPageWidth = %i, iPageHeight = %i\n  getPageViewTopMargin() = %i, m_yScrollOffset = %i\n", iPageNumber, vecPagesOnScreen.getItemCount(), iRow, iCol, iPageWidth, iPageHeight, getPageViewTopMargin(), m_yScrollOffset));
 		xxx_UT_DEBUGMSG(("drawing page E: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d y=%d h=%d\n", iPageHeight,curY,m_yScrollOffset,getWindowHeight(),y,height));
-		da.bDirtyRunsOnly = bDirtyRunsOnly;
+
+		// set drawing args
 		da.pG = m_pG;
-		xxx_UT_DEBUGMSG(("Drawing page da.xoff %d getPageViewLeftMargin() %d \n",da.xoff, getPageViewLeftMargin()));
 		da.yoff = adjustedTop;
 		da.xoff = adjustedLeft;
+
 		xxx_UT_DEBUGMSG(("Drawing page with da.yoff and da.xoff %i %i\n", da.yoff, da.xoff));
 
 		// Redraw the page background, if necessary
@@ -4766,6 +4779,8 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	}
 	
 	xxx_UT_DEBUGMSG(("End _draw\n"));
+
+	// leave the double-buffered section
 	painter.endDoubleBuffering(dblBufferingToken);
 }
 
