@@ -772,7 +772,7 @@ void AP_CocoaApp::setSelectionStatus(AV_View * pView)
 //		m_pClipboard->clearClipboard();
     }
 	
-    xxx_UT_DEBUGMSG(("here we go whooooo\n"));
+    UT_DEBUGMSG(("here we go whooooo\n"));
     setViewSelection(pView);
     m_pFrameSelection = (XAP_Frame *)pView->getParentData();
 

@@ -82,7 +82,7 @@ void AP_CocoaFrameImpl::_setHScrollValue(UT_sint32 value)
 		if (m_HCurrentScroll > m_HMaxScroll) {
 			m_HCurrentScroll = m_HMaxScroll;
 		}
-		xxx_UT_DEBUGMSG(("_setHScrollValue : %d\n", value));
+		UT_DEBUGMSG(("_setHScrollValue : %d\n", value));
 		_setHScrollbarValues();
 	}
 }
@@ -94,7 +94,7 @@ void AP_CocoaFrameImpl::_setHScrollMin(UT_sint32 value)
 		if (m_HCurrentScroll < m_HMinScroll) {
 			m_HCurrentScroll = m_HMinScroll;
 		}
-		xxx_UT_DEBUGMSG(("_setHScrollMin : %d\n", value));
+		UT_DEBUGMSG(("_setHScrollMin : %d\n", value));
 		_setHScrollbarValues();
 	}
 }
@@ -106,7 +106,7 @@ void AP_CocoaFrameImpl::_setHScrollMax(UT_sint32 value)
 		if (m_HCurrentScroll > m_HMaxScroll) {
 			m_HCurrentScroll = m_HMaxScroll;
 		}
-		xxx_UT_DEBUGMSG(("_setHScrollMax : %d\n", value));
+		UT_DEBUGMSG(("_setHScrollMax : %d\n", value));
 		_setHScrollbarValues();
 	}
 }
@@ -129,7 +129,7 @@ void AP_CocoaFrameImpl::_setVScrollValue(UT_sint32 value)
 		if (m_VCurrentScroll > m_VMaxScroll) {
 			m_VCurrentScroll = m_VMaxScroll;
 		}
-		xxx_UT_DEBUGMSG(("_setVScrollValue : %d\n", value));
+		UT_DEBUGMSG(("_setVScrollValue : %d\n", value));
 		_setVScrollbarValues();
 	}
 }
@@ -141,7 +141,7 @@ void AP_CocoaFrameImpl::_setVScrollMin(UT_sint32 value)
 		if (m_VCurrentScroll < m_VMinScroll) {
 			m_VCurrentScroll = m_VMinScroll;
 		}
-		xxx_UT_DEBUGMSG(("_setVScrollMin : %d\n", value));
+		UT_DEBUGMSG(("_setVScrollMin : %d\n", value));
 		_setVScrollbarValues();
 	}
 }
@@ -153,7 +153,7 @@ void AP_CocoaFrameImpl::_setVScrollMax(UT_sint32 value)
 		if (m_VCurrentScroll > m_VMaxScroll) {
 			m_VCurrentScroll = m_VMaxScroll;
 		}
-		xxx_UT_DEBUGMSG(("_setVScrollMax : %d\n", value));
+		UT_DEBUGMSG(("_setVScrollMax : %d\n", value));
 		_setVScrollbarValues();
 	}
 }
@@ -182,8 +182,8 @@ void AP_CocoaFrameImpl::_setHScrollbarValues()
 	else {
 		knob = ((CGFloat)m_HVisible / (CGFloat)(m_HVisible + m_HMaxScroll));
 	}
-	xxx_UT_DEBUGMSG(("_setHScrollbarValues(), max = %d, current = %d, visible = %d\n", m_HMaxScroll, m_HCurrentScroll, m_HVisible));
-	xxx_UT_DEBUGMSG(("_setHScrollbarValues(), value = %f, knob = %f\n", value, knob));
+	UT_DEBUGMSG(("_setHScrollbarValues(), max = %d, current = %d, visible = %d\n", m_HMaxScroll, m_HCurrentScroll, m_HVisible));
+	UT_DEBUGMSG(("_setHScrollbarValues(), value = %f, knob = %f\n", value, knob));
 	if (knob >= 1.0) {
 		[m_hScrollbar setEnabled:NO];
 	}
@@ -213,8 +213,8 @@ void AP_CocoaFrameImpl::_setVScrollbarValues()
 	else {
 		knob = ((CGFloat)m_VVisible / (CGFloat)(m_VVisible + m_VMaxScroll));
 	}
-	xxx_UT_DEBUGMSG(("_setVScrollbarValues(), max = %d, current = %d, visible = %d\n", m_VMaxScroll, m_VCurrentScroll, m_VVisible));
-	xxx_UT_DEBUGMSG(("_setVScrollbarValues(), value = %f, knob = %f\n", value, knob));
+	UT_DEBUGMSG(("_setVScrollbarValues(), max = %d, current = %d, visible = %d\n", m_VMaxScroll, m_VCurrentScroll, m_VVisible));
+	UT_DEBUGMSG(("_setVScrollbarValues(), value = %f, knob = %f\n", value, knob));
 	if (knob >= 1.0) {
 		[m_vScrollbar setEnabled:NO];
 	}
@@ -235,14 +235,14 @@ void AP_CocoaFrameImpl::_scrollAction(id sender)
 	AV_View * pView = getFrame()->getCurrentView();
 	GR_Graphics * pGr = pView->getGraphics();
 
-	xxx_UT_DEBUGMSG(("newValue = %f\n", newValue));
+	UT_DEBUGMSG(("newValue = %f\n", newValue));
 	switch (part) {
 	case NSScrollerNoPart:
-		xxx_UT_DEBUGMSG(("No Scroll\n"));
+		UT_DEBUGMSG(("No Scroll\n"));
 		return;
 		break;
     case NSScrollerDecrementPage:
-		xxx_UT_DEBUGMSG(("NSScrollerDecrementPage\n"));
+		UT_DEBUGMSG(("NSScrollerDecrementPage\n"));
 		if (sender == m_vScrollbar) {
 			_setVScrollValue(m_VCurrentScroll - m_VVisible);
 		}
@@ -251,7 +251,7 @@ void AP_CocoaFrameImpl::_scrollAction(id sender)
 		}
 		break;
     case NSScrollerIncrementPage:
-		xxx_UT_DEBUGMSG(("NSScrollerIncrementPage\n"));
+		UT_DEBUGMSG(("NSScrollerIncrementPage\n"));
 		if (sender == m_vScrollbar) {
 			_setVScrollValue(m_VCurrentScroll + m_VVisible);
 		}
@@ -260,7 +260,7 @@ void AP_CocoaFrameImpl::_scrollAction(id sender)
 		}
 		break;
     case NSScrollerDecrementLine:
-		xxx_UT_DEBUGMSG(("NSScrollerDecrementLine\n"));
+		UT_DEBUGMSG(("NSScrollerDecrementLine\n"));
 		if (sender == m_vScrollbar) {
 			_setVScrollValue(m_VCurrentScroll - pGr->tlu(20));
 		}
@@ -269,7 +269,7 @@ void AP_CocoaFrameImpl::_scrollAction(id sender)
 		}
 		break;
     case NSScrollerIncrementLine:
-		xxx_UT_DEBUGMSG(("NSScrollerIncrementLine\n"));
+		UT_DEBUGMSG(("NSScrollerIncrementLine\n"));
 		if (sender == m_vScrollbar) {
 			_setVScrollValue(m_VCurrentScroll + pGr->tlu(20));
 		}
@@ -279,7 +279,7 @@ void AP_CocoaFrameImpl::_scrollAction(id sender)
 		break;
     case NSScrollerKnob	:
     case NSScrollerKnobSlot	:
-		xxx_UT_DEBUGMSG(("NSScrollerKnob\n"));
+		UT_DEBUGMSG(("NSScrollerKnob\n"));
 		if (sender == m_vScrollbar) {
 			m_VCurrentScroll = lrintf(newValue * m_VMaxScroll);
 			_setVScrollbarValues();
@@ -633,7 +633,7 @@ bool AP_CocoaFrameImpl::_graphicsUpdateCB(NSRect * aRect, GR_CocoaCairoGraphics 
 		rClip.top = (UT_sint32)rint(pG->tluD(aRect->origin.y));
 		rClip.width = (UT_sint32)rint(pG->tluD(aRect->size.width));
 		rClip.height = (UT_sint32)rint(pG->tluD(aRect->size.height));
-		xxx_UT_DEBUGMSG(("Cocoa in frame expose painting area:  left=%d, top=%d, width=%d, height=%d\n", rClip.left, rClip.top, rClip.width, rClip.height));
+		UT_DEBUGMSG(("Cocoa in frame expose painting area:  left=%d, top=%d, width=%d, height=%d\n", rClip.left, rClip.top, rClip.width, rClip.height));
 		pView->draw(&rClip);
 	}
 	else

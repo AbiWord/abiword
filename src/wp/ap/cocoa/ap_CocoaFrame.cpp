@@ -54,7 +54,7 @@ void AP_CocoaFrame::setXScrollRange(void)
 	NSRect rect = [pFrameImpl->m_docAreaGRView frame];
 	UT_sint32 visibleWidth = pGr->tlu(lrintf(rect.size.width));
 	pFrameImpl->_setHVisible(visibleWidth);
-	xxx_UT_DEBUGMSG(("visibleWidth: %d, doc width:%d\n", visibleWidth, width));
+	UT_DEBUGMSG(("visibleWidth: %d, doc width:%d\n", visibleWidth, width));
 	if (m_pView == NULL) {
 		UT_DEBUGMSG(("m_pView is NULL\n"));
 	}
@@ -65,7 +65,7 @@ void AP_CocoaFrame::setXScrollRange(void)
 		newmax = 0;
 	else if (newvalue > newmax)
 		newvalue = newmax;
-	xxx_UT_DEBUGMSG (("newmax = %d, newvalue = %d\n", newmax, newvalue));
+	UT_DEBUGMSG (("newmax = %d, newvalue = %d\n", newmax, newvalue));
 	pFrameImpl->_setHScrollMax(newmax);
 	pFrameImpl->_setHScrollValue(newvalue);
 
@@ -80,7 +80,7 @@ void AP_CocoaFrame::setYScrollRange(void)
 	NSRect rect = [pFrameImpl->m_docAreaGRView frame];
 	UT_sint32 visibleHeight = pGr->tlu(lrintf(rect.size.height));
 	pFrameImpl->_setVVisible(visibleHeight);
-	xxx_UT_DEBUGMSG(("visibleHeight: %d, doc height:%d\n", visibleHeight, height));
+	UT_DEBUGMSG(("visibleHeight: %d, doc height:%d\n", visibleHeight, height));
 	if (m_pView == NULL) {
 		UT_DEBUGMSG(("m_pView is NULL\n"));
 	}
@@ -91,7 +91,7 @@ void AP_CocoaFrame::setYScrollRange(void)
 		newmax = 0;
 	else if (newvalue > newmax)
 		newvalue = newmax;
-	xxx_UT_DEBUGMSG (("newmax = %d, newvalue = %d\n", newmax, newvalue));
+	UT_DEBUGMSG (("newmax = %d, newvalue = %d\n", newmax, newvalue));
 	pFrameImpl->_setVScrollMax(newmax);
 	pFrameImpl->_setVScrollValue(newvalue);
 
