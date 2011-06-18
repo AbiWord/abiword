@@ -25,10 +25,11 @@
 // External includes
 #include <gsf/gsf-output-stdio.h>
 #include <gsf/gsf-outfile.h>
-#include <gsf/gsf-output.h>
 #include <gsf/gsf-outfile-zip.h>
+#include <gsf/gsf-output.h>
 #include <gsf/gsf-libxml.h>
-
+#include <gsf/gsf-infile-stdio.h>
+#include <gsf/gsf-infile.h>
 // Abiword includes
 #include <ie_exp.h>
 #include <ie_exp_HTML.h>
@@ -56,13 +57,16 @@ protected:
 private:
 	UT_UTF8String m_baseTempDir;
 	UT_UTF8String m_oebpsDir;
+        GsfOutfile* m_root;
+        GsfOutput* m_oebps;
 	void writeStructure();
         void writeNavigation();
 	void writeContainer();
 	void package();
+        UT_Error compress();
 	static std::vector<UT_UTF8String> getFileList(const UT_UTF8String &directory);
-	static UT_Error compress(const UT_UTF8String &directory, GsfOutput* output);
         static void closeNTags(GsfXMLOut* xml, int n);
+        static UT_UTF8String escapeForId(const UT_UTF8String & src);
 };
 
 

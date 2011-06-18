@@ -37,68 +37,90 @@ IE_Exp_EPUB::~IE_Exp_EPUB()
 
 UT_Error IE_Exp_EPUB::_writeDocument()
 {
+    
+    m_root = gsf_outfile_zip_new(getFp(), NULL);
 
-	// We need to create temporary directory to which
-	// HTML plugin will export our document
-	m_baseTempDir = "file://";
-	m_baseTempDir += g_get_tmp_dir();
-	m_baseTempDir += "/";
+    if (m_root == NULL) 
+    {
+        UT_DEBUGMSG(("RUDYJ: ZIP output is null\n"));
+        return UT_ERROR;
+    }
+    
+    m_oebps = gsf_outfile_new_child(m_root, "OEBPS", TRUE);
+    if (m_oebps == NULL)
+    {
+        UT_DEBUGMSG(("RUDYJ: Can`t create oebps output object\n"));
+        return UT_ERROR;
+    }
+    
+    // mimetype must a first file in archive
+    GsfOutput *mimetype = gsf_outfile_new_child(m_root, "mimetype", FALSE);
+    gsf_output_write(mimetype, strlen(EPUB_MIMETYPE), (const guint8*) EPUB_MIMETYPE);
+    gsf_output_close(mimetype);
 
-	// To generate unique directory name we`ll use document UUID
-	m_baseTempDir += getDoc()->getDocUUIDString();
-	UT_go_directory_create (m_baseTempDir.utf8_str (), 0644, NULL);
-	
-	writeContainer();
-	writeStructure();
-        writeNavigation();
-	package();
-	return UT_OK;
+    // We need to create temporary directory to which
+    // HTML plugin will export our document
+    m_baseTempDir = "file://";
+    m_baseTempDir += g_get_tmp_dir();
+    m_baseTempDir += "/";
+
+    // To generate unique directory name we`ll use document UUID
+    m_baseTempDir += getDoc()->getDocUUIDString();
+    UT_go_directory_create(m_baseTempDir.utf8_str(), 0644, NULL);
+
+    writeContainer();
+    writeStructure();
+    writeNavigation();
+    package();
+    
+    gsf_output_close(m_oebps);
+    gsf_output_close(GSF_OUTPUT(m_root));
+    return UT_OK;
 }
 
 void IE_Exp_EPUB::writeContainer()
 {
-	UT_UTF8String metaInfPath = m_baseTempDir + "/META-INF";
-	UT_go_directory_create(metaInfPath.utf8_str (), 0644, NULL);
-	UT_UTF8String containerPath = metaInfPath + "/container.xml"; 
- 
-	GsfOutput* containerFile = UT_go_file_create (containerPath.utf8_str (), NULL);
-	GsfXMLOut * containerXml = gsf_xml_out_new (containerFile);
-	gsf_xml_out_start_element (containerXml, "container");
-	gsf_xml_out_add_cstr (containerXml, "version", "1.0");
-	gsf_xml_out_add_cstr(containerXml, "xmlns", OCF201_NAMESPACE);
-	gsf_xml_out_start_element (containerXml, "rootfiles");
-	gsf_xml_out_start_element (containerXml, "rootfile");
-	gsf_xml_out_add_cstr (containerXml, "full-path", "OEBPS/book.opf");
-	gsf_xml_out_add_cstr(containerXml, "media-type", OPF_MIMETYPE);
-	gsf_xml_out_end_element(containerXml);
-	gsf_xml_out_end_element (containerXml);
-	gsf_xml_out_end_element (containerXml);
-	gsf_output_close (containerFile);
+    GsfOutput* metaInf = gsf_outfile_new_child(m_root, "META-INF", TRUE);
+    GsfOutput* container = gsf_outfile_new_child(GSF_OUTFILE(metaInf), "container.xml", FALSE);
+    GsfXMLOut * containerXml = gsf_xml_out_new(container);
+   
+    gsf_xml_out_start_element(containerXml, "container");
+    gsf_xml_out_add_cstr(containerXml, "version", "1.0");
+    gsf_xml_out_add_cstr(containerXml, "xmlns", OCF201_NAMESPACE);
+    gsf_xml_out_start_element(containerXml, "rootfiles");
+    gsf_xml_out_start_element(containerXml, "rootfile");
+    gsf_xml_out_add_cstr(containerXml, "full-path", "OEBPS/book.opf");
+    gsf_xml_out_add_cstr(containerXml, "media-type", OPF_MIMETYPE);
+    gsf_xml_out_end_element(containerXml);
+    gsf_xml_out_end_element(containerXml);
+    gsf_xml_out_end_element(containerXml);
+    
+    gsf_output_close(container);
+    gsf_output_close(metaInf);
 }
 
 void IE_Exp_EPUB::writeStructure()
 {
-	m_oebpsDir = m_baseTempDir + "/OEBPS";
-	UT_go_directory_create (m_oebpsDir.utf8_str (), 0644, NULL);
-	UT_UTF8String indexPath = m_oebpsDir + "/index.xhtml";
+    m_oebpsDir = m_baseTempDir + "/OEBPS";
+    UT_go_directory_create(m_oebpsDir.utf8_str(), 0644, NULL);
+    UT_UTF8String indexPath = m_oebpsDir + "/index.xhtml";
 
-	// Exporting document to XHTML using HTML export plugin 
-	char *szIndexPath = (char*)g_malloc(strlen(indexPath.utf8_str()) + 1);
-	strcpy(szIndexPath, indexPath.utf8_str());
-	IE_Exp_HTML *pExpHtml = new IE_Exp_HTML(getDoc());
-	pExpHtml->suppressDialog(true);     
-	pExpHtml->setProps("embed-css:no;html4:no;");
-        // Though there is no table of contents at begining of the document, 
-        // we still need to generate id`s for headings because of NCX
-	pExpHtml->set_AddIdentifiers(true);
-	pExpHtml->writeFile(szIndexPath);
-	g_free(szIndexPath);
+    // Exporting document to XHTML using HTML export plugin 
+    char *szIndexPath = (char*) g_malloc(strlen(indexPath.utf8_str()) + 1);
+    strcpy(szIndexPath, indexPath.utf8_str());
+    IE_Exp_HTML *pExpHtml = new IE_Exp_HTML(getDoc());
+    pExpHtml->suppressDialog(true);
+    pExpHtml->setProps("embed-css:no;html4:no;");
+    // Though there is no table of contents at begining of the document, 
+    // we still need to generate id`s for headings because of NCX
+    pExpHtml->set_AddIdentifiers(true);
+    pExpHtml->writeFile(szIndexPath);
+    g_free(szIndexPath);
 }
 
 void IE_Exp_EPUB::writeNavigation()
 {
-    UT_UTF8String ncxPath = m_oebpsDir + "/toc.ncx";
-    GsfOutput* ncx = UT_go_file_create(ncxPath.utf8_str(), NULL);
+    GsfOutput* ncx = gsf_outfile_new_child(GSF_OUTFILE(m_oebps), "toc.ncx", FALSE);
     GsfXMLOut* ncxXml = gsf_xml_out_new(ncx);
     
     gsf_xml_out_start_element(ncxXml, "ncx");
@@ -176,129 +198,140 @@ void IE_Exp_EPUB::writeNavigation()
 
 void IE_Exp_EPUB::package()
 {
-	UT_UTF8String mimeTypePath = m_baseTempDir + "/mimetype";
-	GsfOutput *mimetype = UT_go_file_create (mimeTypePath.utf8_str (), NULL);
-	gsf_output_write(mimetype, strlen(EPUB_MIMETYPE), (const guint8*)EPUB_MIMETYPE);
-	gsf_output_close (mimetype);
 
-	
-	
-	UT_UTF8String opfPath = m_oebpsDir + "/book.opf";
-	GsfOutput* opf = UT_go_file_create(opfPath.utf8_str(), NULL);
-	GsfXMLOut* opfXml = gsf_xml_out_new(opf);
-	gsf_xml_out_start_element (opfXml, "package");
-	gsf_xml_out_add_cstr(opfXml, "version", "2.0");
-	gsf_xml_out_add_cstr(opfXml, "xmlns", OPF201_NAMESPACE);
-	gsf_xml_out_add_cstr(opfXml, "unique-identifier", "BookId");
-	
-	gsf_xml_out_start_element(opfXml, "metadata");
-	gsf_xml_out_add_cstr(opfXml, "xmlns:dc", DC_NAMESPACE);
-	gsf_xml_out_add_cstr(opfXml,"xmlns:opf", OPF201_NAMESPACE);
-	
-	// Generation if required Dublin Core metadata
-	gsf_xml_out_start_element(opfXml, "dc:title");
-	// Add title here
-	gsf_xml_out_end_element(opfXml);
-	gsf_xml_out_start_element(opfXml, "dc:identifier");
-	gsf_xml_out_add_cstr(opfXml, "id", "BookId");
-	gsf_xml_out_add_cstr(opfXml, NULL, getDoc()->getDocUUIDString());
-	gsf_xml_out_end_element(opfXml);
-	gsf_xml_out_start_element(opfXml, "dc:language");
-	//
-	gsf_xml_out_end_element(opfXml);
-	
-	gsf_xml_out_end_element(opfXml);
+    GsfOutput* opf = gsf_outfile_new_child(GSF_OUTFILE(m_oebps), "book.opf", FALSE);
+    GsfXMLOut* opfXml = gsf_xml_out_new(opf);
+    gsf_xml_out_start_element(opfXml, "package");
+    gsf_xml_out_add_cstr(opfXml, "version", "2.0");
+    gsf_xml_out_add_cstr(opfXml, "xmlns", OPF201_NAMESPACE);
+    gsf_xml_out_add_cstr(opfXml, "unique-identifier", "BookId");
 
-	gsf_xml_out_start_element(opfXml, "manifest");
-	std::vector<UT_UTF8String> listing = getFileList(m_oebpsDir.substr(7, m_oebpsDir.length() -7));
+    gsf_xml_out_start_element(opfXml, "metadata");
+    gsf_xml_out_add_cstr(opfXml, "xmlns:dc", DC_NAMESPACE);
+    gsf_xml_out_add_cstr(opfXml, "xmlns:opf", OPF201_NAMESPACE);
 
-	for(std::vector<UT_UTF8String>::iterator i = listing.begin(); i != listing.end(); i++)
-	{
-		UT_UTF8String fullItemPath = m_oebpsDir + "/" + *i;
-		gsf_xml_out_start_element(opfXml, "item");
-		gsf_xml_out_add_cstr(opfXml, "id", "");
-		gsf_xml_out_add_cstr(opfXml, "href", (*i).utf8_str());
-		gsf_xml_out_add_cstr(opfXml, "media-type", UT_go_get_mime_type(fullItemPath.utf8_str()));
-		gsf_xml_out_end_element(opfXml);
-	}
-	gsf_xml_out_end_element(opfXml);
+    // Generation if required Dublin Core metadata
+    gsf_xml_out_start_element(opfXml, "dc:title");
+    // Add title here
+    gsf_xml_out_end_element(opfXml);
+    gsf_xml_out_start_element(opfXml, "dc:identifier");
+    gsf_xml_out_add_cstr(opfXml, "id", "BookId");
+    gsf_xml_out_add_cstr(opfXml, NULL, getDoc()->getDocUUIDString());
+    gsf_xml_out_end_element(opfXml);
+    gsf_xml_out_start_element(opfXml, "dc:language");
+    //
+    gsf_xml_out_end_element(opfXml);
 
-	gsf_xml_out_start_element(opfXml, "spine");
+    gsf_xml_out_end_element(opfXml);
 
-	gsf_xml_out_end_element(opfXml);
+    gsf_xml_out_start_element(opfXml, "manifest");
+    std::vector<UT_UTF8String> listing = getFileList(m_oebpsDir.substr(7, m_oebpsDir.length() - 7));
 
-	gsf_xml_out_end_element(opfXml);
-	gsf_output_close(opf);
+    for (std::vector<UT_UTF8String>::iterator i = listing.begin(); i != listing.end(); i++) 
+    {
+        UT_UTF8String fullItemPath = m_oebpsDir + "/" + *i;
+        gsf_xml_out_start_element(opfXml, "item");
+        gsf_xml_out_add_cstr(opfXml, "id", escapeForId(*i).utf8_str());
+        gsf_xml_out_add_cstr(opfXml, "href", (*i).utf8_str());
+        gsf_xml_out_add_cstr(opfXml, "media-type", UT_go_get_mime_type(fullItemPath.utf8_str()));
+        gsf_xml_out_end_element(opfXml);
+    }
+
+    // We`ll add .ncx file manually
+    gsf_xml_out_start_element(opfXml, "item");
+    gsf_xml_out_add_cstr(opfXml, "id", "ncx");
+    gsf_xml_out_add_cstr(opfXml, "href", "OEBPS/toc.ncx");
+    gsf_xml_out_add_cstr(opfXml, "media-type", "application/x-dtbncx+xml");
+    gsf_xml_out_end_element(opfXml);
+
+    gsf_xml_out_end_element(opfXml);
+
+    gsf_xml_out_start_element(opfXml, "spine");
+    gsf_xml_out_add_cstr(opfXml, "toc", "ncx");
+    gsf_xml_out_start_element(opfXml, "itemref");
+    gsf_xml_out_add_cstr(opfXml, "idref", "indexxhtml");
+    gsf_xml_out_end_element(opfXml);
+
+    gsf_xml_out_end_element(opfXml);
+
+    gsf_xml_out_end_element(opfXml);
+    gsf_output_close(opf);
+
+    compress();
 }
 
 std::vector<UT_UTF8String> IE_Exp_EPUB::getFileList(const UT_UTF8String &directory)
 {
 	std::vector<UT_UTF8String> result;
-	std::vector<UT_UTF8String> dirs;
+    std::vector<UT_UTF8String> dirs;
 
-	dirs.push_back(directory);
+    dirs.push_back(directory);
 
-	while (dirs.size() > 0)
-	{
-		UT_UTF8String currentDir = dirs.back();
-		dirs.pop_back();
-		GDir* baseDir = g_dir_open(currentDir.utf8_str(), 0, NULL);
-		
-		gchar const *entryName = NULL;
-		while ((entryName = g_dir_read_name(baseDir)) != NULL)
-		{
-			if (entryName[0] == '.')
-			{
-				// Files starting with dot should be skipped - it can be temporary files 
-				// created by gsf
-				continue;
-			}
-			UT_UTF8String entryFullPath = currentDir + "/";
-			entryFullPath += entryName;
+    while (dirs.size() > 0) 
+    {
+        UT_UTF8String currentDir = dirs.back();
+        dirs.pop_back();
+        GDir* baseDir = g_dir_open(currentDir.utf8_str(), 0, NULL);
 
-			if (g_file_test(entryFullPath.utf8_str(), G_FILE_TEST_IS_DIR))
-			{
-				dirs.push_back(entryFullPath);
-			} else
-			{
-				result.push_back(entryFullPath.substr(directory.length() + 1, entryFullPath.length() - directory.length()));
-			}
-		}
+        gchar const *entryName = NULL;
+        while ((entryName = g_dir_read_name(baseDir)) != NULL) 
+        {
+            if (entryName[0] == '.') 
+            {
+                // Files starting with dot should be skipped - it can be temporary files 
+                // created by gsf
+                continue;
+            }
+            UT_UTF8String entryFullPath = currentDir + "/";
+            entryFullPath += entryName;
 
-		g_dir_close(baseDir);
+            if (g_file_test(entryFullPath.utf8_str(), G_FILE_TEST_IS_DIR)) 
+            {
+                dirs.push_back(entryFullPath);
+            } 
+            else 
+            {
+                result.push_back(entryFullPath.substr(directory.length() + 1, entryFullPath.length() - directory.length()));
+            }
+        }
 
-	}
+        g_dir_close(baseDir);
 
-	return result;
+    }
+
+    return result;
 }
 
-UT_Error IE_Exp_EPUB::compress( const UT_UTF8String &directory, GsfOutput *output)
+UT_Error IE_Exp_EPUB::compress() 
 {
-	GsfOutfile* zip = gsf_outfile_zip_new(output, NULL);
-
-	if (zip == NULL)
-	{
-		UT_DEBUGMSG(("RUDYJ: Can`t create zip outfile\n"));
-		return UT_ERROR;
-	}
-
-	std::vector<UT_UTF8String> listing = getFileList(directory);
-	for(std::vector<UT_UTF8String>::iterator i = listing.begin(); i != listing.end(); i++)
-	{
-		GsfOutput* item = gsf_outfile_new_child(zip, (*i).utf8_str(), FALSE);
-		UT_UTF8String fullPath = directory + "/" + *i;
-		GsfInput* file = UT_go_file_open(fullPath.utf8_str(), NULL);
-
-		if (file == NULL)
-		{
-			UT_DEBUGMSG(("RUDYJ: Can`t open file\n"));
-			return UT_ERROR;
-		}
 
 
+    GsfInfile* oebpsDir = gsf_infile_stdio_new(UT_go_filename_from_uri(m_oebpsDir.utf8_str()), NULL);
 
-		gsf_output_close(item);
-	}
+
+    if (oebpsDir == NULL) {
+        UT_DEBUGMSG(("RUDYJ: Can`t open directory\n"));
+        return UT_ERROR;
+    }
+
+    int childCount = gsf_infile_num_children(oebpsDir);  
+    std::vector<UT_UTF8String> listing = getFileList(UT_go_filename_from_uri(m_oebpsDir.utf8_str()));
+    for (std::vector<UT_UTF8String>::iterator i = listing.begin(); i != listing.end(); i++) {
+        GsfOutput* item = gsf_outfile_new_child(GSF_OUTFILE(m_oebps), (*i).utf8_str(), FALSE);
+        UT_UTF8String fullPath = m_oebpsDir + "/" + *i;
+        GsfInput* file = UT_go_file_open(fullPath.utf8_str(), NULL);
+
+        if (file == NULL) {
+            UT_DEBUGMSG(("RUDYJ: Can`t open file\n"));
+            return UT_ERROR;
+        }
+
+        gsf_output_seek(item, 0, G_SEEK_SET);
+        gsf_input_seek(file, 0, G_SEEK_SET);
+        gsf_input_copy(file, item);
+        gsf_output_close(item);
+    }
+        
 	return UT_OK;
 }
 
@@ -309,4 +342,34 @@ void IE_Exp_EPUB::closeNTags(GsfXMLOut* xml, int n)
         gsf_xml_out_end_element(xml);
     }
 
+}
+
+UT_UTF8String IE_Exp_EPUB::escapeForId(const UT_UTF8String& src)
+{
+    
+    UT_UTF8String result = "";
+    
+    UT_UTF8Stringbuf::UTF8Iterator i = src.getIterator();
+    i = i.start();
+    
+
+    if (i.current())
+    {
+        while (true)
+        {
+            const char *pCurrent = i.current();
+            
+            if (*pCurrent == 0)
+            {
+                break;
+            }
+
+            if (isalnum(*pCurrent)){
+                result += *pCurrent;
+            }
+
+            i.advance();
+        }
+    }
+    return result;
 }
