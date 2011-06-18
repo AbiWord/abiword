@@ -6367,13 +6367,13 @@ void FV_View::delTo(FV_DocPos dp)
 	PT_DocPosition iPos = _getDocPos(dp);
 	PT_DocPosition iPoint = getPoint();
 
-	// Signal PieceTable Change
-	_saveAndNotifyPieceTableChange();
-
 	if (iPos == iPoint)
 	{
 		return;
 	}
+ 
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
 
 	_extSelToPos(iPos);
 
