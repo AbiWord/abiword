@@ -140,7 +140,7 @@ BOOL AP_Win32Dialog_GenericProgress::_onInitDialog(HWND hWnd, WPARAM wParam, LPA
 	r.right = 8 + 184 - 1;
 	r.bottom = 16 + 14 - 1;
 	MapDialogRect(m_hWnd, &r);
-	m_hProgress = CreateWindowExW(WS_EX_NOPARENTNOTIFY, PROGRESS_CLASS, L"Progress", WS_CHILD | WS_GROUP | WS_VISIBLE,
+	m_hProgress = CreateWindowExW(WS_EX_NOPARENTNOTIFY, PROGRESS_CLASSW, L"Progress", WS_CHILD | WS_GROUP | WS_VISIBLE,
 	r.left, r.top, r.right - r.left + 1, r.bottom - r.top + 1, m_hWnd, (HMENU) AP_RID_DIALOG_GENERICPROGRESS_PROGRESS, m_hInstance, 0);
 	UT_return_val_if_fail(m_hProgress, false);
 
