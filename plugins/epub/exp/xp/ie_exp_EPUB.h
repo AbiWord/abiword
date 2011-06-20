@@ -36,6 +36,8 @@
 #include <pd_Document.h>
 #include <ut_go_file.h>
 #include <ut_vector.h>
+#include <ut_path.h>
+#include <ie_TOC.h>
 
 #define EPUB_MIMETYPE "application/epub+zip"
 #define OPF_MIMETYPE "application/oebps-package+xml"
@@ -59,14 +61,18 @@ private:
 	UT_UTF8String m_oebpsDir;
         GsfOutfile* m_root;
         GsfOutput* m_oebps;
-	void writeStructure();
-        void writeNavigation();
-	void writeContainer();
-	void package();
+	UT_Error writeStructure();
+        UT_Error writeNavigation();
+	UT_Error writeContainer();
+	UT_Error package();
         UT_Error compress();
+        UT_UTF8String getAuthor() const;
+        UT_UTF8String getTitle() const;
+        UT_UTF8String getLanguage() const;
 	static std::vector<UT_UTF8String> getFileList(const UT_UTF8String &directory);
         static void closeNTags(GsfXMLOut* xml, int n);
         static UT_UTF8String escapeForId(const UT_UTF8String & src);
+        static UT_UTF8String getMimeType(const UT_UTF8String &uri);
 };
 
 

@@ -19,8 +19,6 @@
  */
 
 #include "ie_exp_EPUB.h"
-#include "ut_path.h"
-#include "ie_TOC.h"
 
 /*****************************************************************************/
 /*****************************************************************************/
@@ -42,19 +40,20 @@ UT_Error IE_Exp_EPUB::_writeDocument()
 
     if (m_root == NULL) 
     {
-        UT_DEBUGMSG(("RUDYJ: ZIP output is null\n"));
+        UT_DEBUGMSG(("ZIP output is null\n"));
         return UT_ERROR;
     }
     
     m_oebps = gsf_outfile_new_child(m_root, "OEBPS", TRUE);
     if (m_oebps == NULL)
     {
-        UT_DEBUGMSG(("RUDYJ: Can`t create oebps output object\n"));
+        UT_DEBUGMSG(("Can`t create oebps output object\n"));
         return UT_ERROR;
     }
     
     // mimetype must a first file in archive
-    GsfOutput *mimetype = gsf_outfile_new_child(m_root, "mimetype", FALSE);
+    GsfOutput *mimetype = gsf_outfile_new_child_full(m_root, "mimetype", FALSE,
+        "compression-level", 0, NULL);
     gsf_output_write(mimetype, strlen(EPUB_MIMETYPE), (const guint8*) EPUB_MIMETYPE);
     gsf_output_close(mimetype);
 
@@ -68,41 +67,78 @@ UT_Error IE_Exp_EPUB::_writeDocument()
     m_baseTempDir += getDoc()->getDocUUIDString();
     UT_go_directory_create(m_baseTempDir.utf8_str(), 0644, NULL);
 
-    writeContainer();
-    writeStructure();
-    writeNavigation();
-    package();
+    if (writeContainer() != UT_OK)
+    {
+        UT_DEBUGMSG(("Failed to write container\n"));
+        return UT_ERROR;
+    }
+    if (writeStructure() != UT_OK)
+    {
+        UT_DEBUGMSG(("Failed to write document structure\n"));
+        return UT_ERROR;
+    }
+    if (writeNavigation() != UT_OK)
+    {
+        UT_DEBUGMSG(("Failed to write navigation\n"));
+        return UT_ERROR;
+    }
+    if (package() != UT_OK)
+    {
+        UT_DEBUGMSG(("Failed to package document\n"));
+        return UT_ERROR;
+    }
     
     gsf_output_close(m_oebps);
     gsf_output_close(GSF_OUTPUT(m_root));
     return UT_OK;
 }
 
-void IE_Exp_EPUB::writeContainer()
+ UT_Error IE_Exp_EPUB::writeContainer()
 {
     GsfOutput* metaInf = gsf_outfile_new_child(m_root, "META-INF", TRUE);
+    
+    if (metaInf == NULL)
+    {
+        UT_DEBUGMSG(("Can`t create META-INF dir\n"));
+        return UT_ERROR;
+    }
     GsfOutput* container = gsf_outfile_new_child(GSF_OUTFILE(metaInf), "container.xml", FALSE);
+    if (container == NULL)
+    {
+        UT_DEBUGMSG(("Can`t create container.xml\n"));
+        gsf_output_close(metaInf);
+        return UT_ERROR;
+    }
     GsfXMLOut * containerXml = gsf_xml_out_new(container);
    
+    // <container>
     gsf_xml_out_start_element(containerXml, "container");
     gsf_xml_out_add_cstr(containerXml, "version", "1.0");
     gsf_xml_out_add_cstr(containerXml, "xmlns", OCF201_NAMESPACE);
+    // <rootfiles>
     gsf_xml_out_start_element(containerXml, "rootfiles");
+    // <rootfile>
     gsf_xml_out_start_element(containerXml, "rootfile");
     gsf_xml_out_add_cstr(containerXml, "full-path", "OEBPS/book.opf");
     gsf_xml_out_add_cstr(containerXml, "media-type", OPF_MIMETYPE);
+    // </rootfile>
     gsf_xml_out_end_element(containerXml);
+    // </rootfiles>
     gsf_xml_out_end_element(containerXml);
+    // </container>
     gsf_xml_out_end_element(containerXml);
     
     gsf_output_close(container);
     gsf_output_close(metaInf);
+    return UT_OK;
 }
 
-void IE_Exp_EPUB::writeStructure()
+UT_Error IE_Exp_EPUB::writeStructure()
 {
     m_oebpsDir = m_baseTempDir + "/OEBPS";
+    
     UT_go_directory_create(m_oebpsDir.utf8_str(), 0644, NULL);
+
     UT_UTF8String indexPath = m_oebpsDir + "/index.xhtml";
 
     // Exporting document to XHTML using HTML export plugin 
@@ -110,44 +146,86 @@ void IE_Exp_EPUB::writeStructure()
     strcpy(szIndexPath, indexPath.utf8_str());
     IE_Exp_HTML *pExpHtml = new IE_Exp_HTML(getDoc());
     pExpHtml->suppressDialog(true);
-    pExpHtml->setProps("embed-css:no;html4:no;");
+    pExpHtml->setProps("embed-css:no;html4:no;use-awml:no;declare-xml:yes;");
     // Though there is no table of contents at begining of the document, 
     // we still need to generate id`s for headings because of NCX
     pExpHtml->set_AddIdentifiers(true);
     pExpHtml->writeFile(szIndexPath);
     g_free(szIndexPath);
+    delete pExpHtml;
+    
+    return UT_OK;
 }
 
-void IE_Exp_EPUB::writeNavigation()
+UT_Error IE_Exp_EPUB::writeNavigation()
 {
     GsfOutput* ncx = gsf_outfile_new_child(GSF_OUTFILE(m_oebps), "toc.ncx", FALSE);
+    if (ncx == NULL)
+    {
+        UT_DEBUGMSG(("Can`t create toc.ncx file\n"));
+        return UT_ERROR;
+    }
     GsfXMLOut* ncxXml = gsf_xml_out_new(ncx);
-    
+   
+    // <ncx>
     gsf_xml_out_start_element(ncxXml, "ncx");
     gsf_xml_out_add_cstr(ncxXml, "xmlns", NCX_NAMESPACE);
     gsf_xml_out_add_cstr(ncxXml, "version", "2005-1");
     gsf_xml_out_add_cstr(ncxXml, "xml:lang", NULL); // TODO: add language
-    
+    // <head>
     gsf_xml_out_start_element(ncxXml, "head");
+    // <meta name="dtb:uid" content=... >
     gsf_xml_out_start_element(ncxXml, "meta");
-    gsf_xml_out_add_cstr(ncxXml, "content", getDoc()->getDocUUIDString());
     gsf_xml_out_add_cstr(ncxXml, "name", "dtb:uid");
+    gsf_xml_out_add_cstr(ncxXml, "content", getDoc()->getDocUUIDString());
+    // </meta>
     gsf_xml_out_end_element(ncxXml);
+    // <meta name="epub-creator" content=... >
+    gsf_xml_out_start_element(ncxXml, "meta");
+    gsf_xml_out_add_cstr(ncxXml, "name", "epub-creator");
+    gsf_xml_out_add_cstr(ncxXml, "content", "AbiWord (http://www.abisource.com/)");
+    // </meta>
+    gsf_xml_out_end_element(ncxXml);
+    // <meta name="dtb:depth" content=... >
+    gsf_xml_out_start_element(ncxXml, "meta");
+    gsf_xml_out_add_cstr(ncxXml, "name", "dtb:depth");
+    gsf_xml_out_add_cstr(ncxXml, "content", "1");
+    // </meta>
+    gsf_xml_out_end_element(ncxXml);
+    // <meta name="dtb:totalPageCount" content=... >
+    gsf_xml_out_start_element(ncxXml, "meta");
+    gsf_xml_out_add_cstr(ncxXml, "name", "dtb:totalPageCount");
+    gsf_xml_out_add_cstr(ncxXml, "content", "0");
+    // </meta>
+    gsf_xml_out_end_element(ncxXml);
+    // <meta name="dtb:totalPageCount" content=... >
+    gsf_xml_out_start_element(ncxXml, "meta");
+    gsf_xml_out_add_cstr(ncxXml, "name", "dtb:maxPageCount");
+    gsf_xml_out_add_cstr(ncxXml, "content", "0");
+    // </meta>
+    gsf_xml_out_end_element(ncxXml);
+    // </head>
     gsf_xml_out_end_element(ncxXml);
     
+    // <docTitle>
     gsf_xml_out_start_element(ncxXml, "docTitle");
     gsf_xml_out_start_element(ncxXml, "text");
-    gsf_xml_out_add_cstr(ncxXml, NULL, "title"); // TODO: Add title here
+    gsf_xml_out_add_cstr(ncxXml, NULL, getTitle().utf8_str());
     gsf_xml_out_end_element(ncxXml);
+    // </docTitle>
     gsf_xml_out_end_element(ncxXml);
     
+    
+    // <docAuthor>
     gsf_xml_out_start_element(ncxXml, "docAuthor");
     gsf_xml_out_start_element(ncxXml, "text");
-    gsf_xml_out_add_cstr(ncxXml, NULL, "author"); // TODO: Add title here
+    gsf_xml_out_add_cstr(ncxXml, NULL, getAuthor().utf8_str()); // TODO: Add title here
     gsf_xml_out_end_element(ncxXml);
+    // </docAuthor>
     gsf_xml_out_end_element(ncxXml);
     
     IE_TOCHelper* toc = new IE_TOCHelper(getDoc());
+    // <navMap>
     gsf_xml_out_start_element(ncxXml, "navMap");
     if (toc->hasTOC()){
         int lastLevel = 0;
@@ -169,6 +247,7 @@ void IE_Exp_EPUB::writeNavigation()
             UT_UTF8String navId = UT_UTF8String_sprintf("AbiTOC%d__", currentItem);
             UT_UTF8String navSrc = "index.xhtml#" + navId;
             gsf_xml_out_start_element(ncxXml, "navPoint");
+            gsf_xml_out_add_cstr(ncxXml, "playOrder", UT_UTF8String_sprintf ("%d", currentItem + 1).utf8_str ());
             gsf_xml_out_add_cstr(ncxXml, "class", navClass.utf8_str());
             gsf_xml_out_add_cstr(ncxXml, "id", navId.utf8_str());
             
@@ -188,42 +267,68 @@ void IE_Exp_EPUB::writeNavigation()
     }
     else
     {
-        // Fallback: need to add dummy toc to be compatible with epub
+        gsf_xml_out_start_element(ncxXml, "navPoint");
+        gsf_xml_out_add_cstr(ncxXml, "playOrder", "1");
+        gsf_xml_out_add_cstr(ncxXml, "class", "h1");
+        gsf_xml_out_add_cstr(ncxXml, "id", "index");
+
+        gsf_xml_out_start_element(ncxXml, "navLabel");
+        gsf_xml_out_start_element(ncxXml, "text");
+        gsf_xml_out_add_cstr(ncxXml, NULL, getTitle().utf8_str());
+        gsf_xml_out_end_element(ncxXml);
+        gsf_xml_out_end_element(ncxXml);
+
+        gsf_xml_out_start_element(ncxXml, "content");
+        gsf_xml_out_add_cstr(ncxXml, "src", "index.xhtml");
+        gsf_xml_out_end_element(ncxXml);
+        gsf_xml_out_end_element(ncxXml);
     }
+    // </navMap>
     gsf_xml_out_end_element(ncxXml);
     
+    // </ncx>
     gsf_xml_out_end_element(ncxXml);
     gsf_output_close(ncx);
+    delete toc;
+    
+    return UT_OK;
 }
 
-void IE_Exp_EPUB::package()
+UT_Error IE_Exp_EPUB::package()
 {
 
     GsfOutput* opf = gsf_outfile_new_child(GSF_OUTFILE(m_oebps), "book.opf", FALSE);
+    if (opf == NULL)
+    {
+        UT_DEBUGMSG(("Can`t create book.opf\n"));
+        return UT_ERROR;
+    }
     GsfXMLOut* opfXml = gsf_xml_out_new(opf);
+    // <package>
     gsf_xml_out_start_element(opfXml, "package");
     gsf_xml_out_add_cstr(opfXml, "version", "2.0");
     gsf_xml_out_add_cstr(opfXml, "xmlns", OPF201_NAMESPACE);
     gsf_xml_out_add_cstr(opfXml, "unique-identifier", "BookId");
 
+    // <metadata>
     gsf_xml_out_start_element(opfXml, "metadata");
     gsf_xml_out_add_cstr(opfXml, "xmlns:dc", DC_NAMESPACE);
     gsf_xml_out_add_cstr(opfXml, "xmlns:opf", OPF201_NAMESPACE);
-
-    // Generation if required Dublin Core metadata
+    // Generation of required Dublin Core metadata
     gsf_xml_out_start_element(opfXml, "dc:title");
-    // Add title here
+    gsf_xml_out_add_cstr(opfXml, NULL, getTitle().utf8_str());
     gsf_xml_out_end_element(opfXml);
     gsf_xml_out_start_element(opfXml, "dc:identifier");
     gsf_xml_out_add_cstr(opfXml, "id", "BookId");
     gsf_xml_out_add_cstr(opfXml, NULL, getDoc()->getDocUUIDString());
     gsf_xml_out_end_element(opfXml);
     gsf_xml_out_start_element(opfXml, "dc:language");
-    //
+    gsf_xml_out_add_cstr(opfXml, NULL, getLanguage().utf8_str());
+    gsf_xml_out_end_element(opfXml);
+    // </metadata> 
     gsf_xml_out_end_element(opfXml);
 
-    gsf_xml_out_end_element(opfXml);
-
+    // <manifest>
     gsf_xml_out_start_element(opfXml, "manifest");
     std::vector<UT_UTF8String> listing = getFileList(m_oebpsDir.substr(7, m_oebpsDir.length() - 7));
 
@@ -233,31 +338,33 @@ void IE_Exp_EPUB::package()
         gsf_xml_out_start_element(opfXml, "item");
         gsf_xml_out_add_cstr(opfXml, "id", escapeForId(*i).utf8_str());
         gsf_xml_out_add_cstr(opfXml, "href", (*i).utf8_str());
-        gsf_xml_out_add_cstr(opfXml, "media-type", UT_go_get_mime_type(fullItemPath.utf8_str()));
-        gsf_xml_out_end_element(opfXml);
+        gsf_xml_out_add_cstr(opfXml, "media-type", getMimeType(fullItemPath).utf8_str());
+        gsf_xml_out_end_element(opfXml);       
     }
 
     // We`ll add .ncx file manually
     gsf_xml_out_start_element(opfXml, "item");
     gsf_xml_out_add_cstr(opfXml, "id", "ncx");
-    gsf_xml_out_add_cstr(opfXml, "href", "OEBPS/toc.ncx");
+    gsf_xml_out_add_cstr(opfXml, "href", "toc.ncx");
     gsf_xml_out_add_cstr(opfXml, "media-type", "application/x-dtbncx+xml");
     gsf_xml_out_end_element(opfXml);
-
+    // </manifest>
     gsf_xml_out_end_element(opfXml);
-
+    
+    // <spine>
     gsf_xml_out_start_element(opfXml, "spine");
     gsf_xml_out_add_cstr(opfXml, "toc", "ncx");
     gsf_xml_out_start_element(opfXml, "itemref");
     gsf_xml_out_add_cstr(opfXml, "idref", "indexxhtml");
     gsf_xml_out_end_element(opfXml);
-
+    // </spine>
     gsf_xml_out_end_element(opfXml);
 
+    // </package>
     gsf_xml_out_end_element(opfXml);
     gsf_output_close(opf);
 
-    compress();
+    return compress();
 }
 
 std::vector<UT_UTF8String> IE_Exp_EPUB::getFileList(const UT_UTF8String &directory)
@@ -310,7 +417,7 @@ UT_Error IE_Exp_EPUB::compress()
 
 
     if (oebpsDir == NULL) {
-        UT_DEBUGMSG(("RUDYJ: Can`t open directory\n"));
+        UT_DEBUGMSG(("RUDYJ: Can`t open temporary OEBPS directory\n"));
         return UT_ERROR;
     }
 
@@ -372,4 +479,62 @@ UT_UTF8String IE_Exp_EPUB::escapeForId(const UT_UTF8String& src)
         }
     }
     return result;
+}
+
+UT_UTF8String IE_Exp_EPUB::getMimeType (const UT_UTF8String &uri)
+{
+    const gchar *extension = strchr(uri.utf8_str(), '.');
+  
+    if (extension == NULL)
+    {
+        return UT_go_get_mime_type (uri.utf8_str());
+    } else  
+    {
+        if (!UT_go_utf8_collate_casefold(extension + 1, "xhtml"))
+        {
+            return "application/xhtml+xml";
+        } else
+        {
+            return UT_go_get_mime_type(uri.utf8_str());
+        }
+    }
+}
+
+UT_UTF8String IE_Exp_EPUB::getAuthor() const
+{
+    UT_UTF8String property("");
+    
+    if (getDoc()->getMetaDataProp (PD_META_KEY_CREATOR, property) && property.size())
+    {
+        return property;
+    } else
+    {
+        return "Converted by AbiWord(http://www.abisource.com/)";
+    }
+}
+
+UT_UTF8String IE_Exp_EPUB::getTitle() const
+{
+    UT_UTF8String property("");
+    
+    if (getDoc()->getMetaDataProp (PD_META_KEY_TITLE, property) && property.size())
+    {
+        return property;
+    } else
+    {
+        return "Untitled";
+    }    
+}
+
+UT_UTF8String IE_Exp_EPUB::getLanguage() const
+{
+    UT_UTF8String property("");
+    
+    if (getDoc()->getMetaDataProp (PD_META_KEY_LANGUAGE, property) && property.size())
+    {
+        return property;
+    } else
+    {
+        return "en_US";
+    }    
 }
