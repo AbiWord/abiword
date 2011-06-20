@@ -26,7 +26,8 @@
 
 GR_Painter::GR_Painter (GR_Graphics * pGr, bool bDisableCarets)
 	: m_pGr (pGr),
-	m_bCaretsDisabled(bDisableCarets)
+	m_bCaretsDisabled(bDisableCarets),
+	m_bDoubleBufferingToken(false)
 {
 	UT_ASSERT (m_pGr);
 
@@ -38,6 +39,8 @@ GR_Painter::GR_Painter (GR_Graphics * pGr, bool bDisableCarets)
 
 GR_Painter::~GR_Painter ()
 {
+	endDoubleBuffering();
+
 	m_pGr->endPaint ();
 
 	if (m_bCaretsDisabled)
@@ -162,13 +165,14 @@ GR_Image * GR_Painter::genImageFromRectangle(const UT_Rect & r)
 	return m_pGr->genImageFromRectangle(r);
 }
 
-bool GR_Painter::beginDoubleBuffering()
+void GR_Painter::beginDoubleBuffering()
 {
-	return m_pGr -> beginDoubleBuffering();
+	m_bDoubleBufferingToken = m_pGr -> beginDoubleBuffering();
 }
 
-void GR_Painter::endDoubleBuffering(bool token)
+void GR_Painter::endDoubleBuffering()
 {
-	m_pGr -> endDoubleBuffering(token);
+	m_pGr -> endDoubleBuffering(m_bDoubleBufferingToken);
+	m_bDoubleBufferingToken = false;
 }
 

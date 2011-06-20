@@ -4623,7 +4623,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	 **********************/
 	
 	// enter a double-buffered section 
-	bool dblBufferingToken = painter.beginDoubleBuffering();
+	painter.beginDoubleBuffering();
 
 	UT_RGBColor clrMargin;
 	if (!m_pG->getColor3D(GR_Graphics::CLR3D_BevelDown, clrMargin))
@@ -4779,9 +4779,6 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	}
 	
 	xxx_UT_DEBUGMSG(("End _draw\n"));
-
-	// leave the double-buffered section
-	painter.endDoubleBuffering(dblBufferingToken);
 }
 
 

@@ -324,21 +324,13 @@ bool GR_Graphics::beginDoubleBuffering()
 
 void GR_Graphics::endDoubleBuffering(bool token)
 {
-	if(m_DCState == SET_TO_SCREEN)
-	{
-		// this is bad: calling END before START
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	}
-	else // SET_TO_BUFFER
+	if(token == true && m_DCState == SET_TO_BUFFER)
 	{
 		// take action only if the caller has the good token
-		if(token == true)
-		{
-			_DeviceContext_SwitchToScreen();
-			m_DCState = SET_TO_SCREEN;
-			_DeviceContext_DrawBufferToScreen();
-			UT_DEBUGMSG(("ASFRENT: SWITCHED TO SCREEN\n"));
-		}
+		_DeviceContext_SwitchToScreen();
+		m_DCState = SET_TO_SCREEN;
+		_DeviceContext_DrawBufferToScreen();
+		UT_DEBUGMSG(("ASFRENT: SWITCHED TO SCREEN\n"));
 	}
 }
 
