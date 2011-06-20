@@ -1601,7 +1601,7 @@ bool s_HTML_Listener::_openStyleSheet (UT_UTF8String & css_relative_path)
 	char * base_name = UT_go_basename_from_uri (m_pie->getFileName ());
 	if (base_name)
 		css_relative_path = base_name;
-	css_relative_path += "/styles.css";
+	css_relative_path += "_files/style.css";
 	g_free(base_name);
 
 	return true;
@@ -2474,7 +2474,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle /*sdh*/)
 			tagID = TT_P;
 			tagPending = true;
 
-			if (m_toc->docHasTOC() && m_toc->isTOCStyle(szValue)) {
+			if ((m_toc->docHasTOC() || get_AddIdentifiers ()) && m_toc->isTOCStyle(szValue)) {
 				m_utf8_1 = UT_UTF8String_sprintf("p id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			} else {
@@ -2487,7 +2487,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle /*sdh*/)
 			tagID = TT_P;
 			tagPending = true;
 
-			if (m_toc->docHasTOC() && m_toc->isTOCStyle(szValue)) {
+			if ((m_toc->docHasTOC() || get_AddIdentifiers () )&& m_toc->isTOCStyle(szValue)) {
 				m_utf8_1 = UT_UTF8String_sprintf("p id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			} else {
