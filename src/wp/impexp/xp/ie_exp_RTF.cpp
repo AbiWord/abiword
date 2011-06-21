@@ -542,8 +542,6 @@ void IE_Exp_RTF::_rtf_semi(void)
 
 void IE_Exp_RTF::_rtf_fontname(const char * szFontName)
 {
-	write(" ");
-
 	/*  map "Helvetic" to "Helvetica", since on Windows
 	    font "Helvetic" contains only Latin1 chars, while
 	    "Helvetica" contains all needed chars.
@@ -641,7 +639,11 @@ void IE_Exp_RTF::_rtf_pcdata(UT_UTF8String &sPCData, bool bSupplyUC, UT_uint32 i
 	// If escaping was necessary and we've been asked to do it, supply
 	// the appropriate \uc command.
 	if (bEscaped && bSupplyUC)
-		_rtf_keyword("uc", iAltChars);  
+		_rtf_keyword("uc", iAltChars); 
+	if (m_bLastWasKeyword) {
+		write(" ");
+		m_bLastWasKeyword = false;
+	}
 	// Write the string to the file.
 	write(sEscapedData.utf8_str());
 }

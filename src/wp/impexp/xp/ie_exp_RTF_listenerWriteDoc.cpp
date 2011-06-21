@@ -4739,7 +4739,6 @@ void s_RTF_ListenerWriteDoc::_rtf_info(void)
 			{
 				m_pie->_rtf_open_brace () ; 
 				m_pie->_rtf_keyword(rtfkeys[i]);
-				m_pie->write(" ");
 				m_pie->_rtf_pcdata(propVal, iNumAltChars); 
 				m_pie->_rtf_close_brace();
 			}
