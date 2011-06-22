@@ -272,6 +272,9 @@ UT_sint32 FV_FrameEdit::haveDragged(void) const
 
 void FV_FrameEdit::_mouseDrag(UT_sint32 x, UT_sint32 y)
 {
+	GR_Painter painter(getGraphics());
+	painter.beginDoubleBuffering();
+
 	UT_sint32 dx = 0;
 	UT_sint32 dy = 0;
 	UT_Rect expX(0,m_recCurFrame.top,0,m_recCurFrame.height);
