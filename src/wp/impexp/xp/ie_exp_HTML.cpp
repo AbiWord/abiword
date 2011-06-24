@@ -4272,22 +4272,22 @@ void s_HTML_Listener::_outputData (const UT_UCSChar * data, UT_uint32 length)
 				break;
 
 			case UCS_LQUOTE:
-				m_utf8_1 += "&#145;";
+				m_utf8_1 += "&lsquo;"; // 8216
 				m_bCellHasData = true;
 				break;
 
 			case UCS_RQUOTE:
-				m_utf8_1 += "&#146;";
+				m_utf8_1 += "&rsquo;"; // 8217
 				m_bCellHasData = true;
 				break;
 
 			case UCS_EN_DASH:
-				m_utf8_1 += "&#150;";
+				m_utf8_1 += "&ndash;"; // 8211
 				m_bCellHasData = true;
 				break;
 
 			case UCS_EM_DASH:
-				m_utf8_1 += "&#151;";
+				m_utf8_1 += "&mdash;"; // 8212
 				m_bCellHasData = true;
 				break;
 
