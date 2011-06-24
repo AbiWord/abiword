@@ -59,9 +59,8 @@ UT_Error IE_Exp_EPUB::_writeDocument()
 
     // We need to create temporary directory to which
     // HTML plugin will export our document
-    m_baseTempDir = "file://";
-    m_baseTempDir += g_get_tmp_dir();
-    m_baseTempDir += "/";
+    m_baseTempDir = UT_go_filename_to_uri(g_get_tmp_dir());
+    m_baseTempDir += G_DIR_SEPARATOR_S;
 
     // To generate unique directory name we`ll use document UUID
     m_baseTempDir += getDoc()->getDocUUIDString();
@@ -135,11 +134,13 @@ UT_Error IE_Exp_EPUB::_writeDocument()
 
 UT_Error IE_Exp_EPUB::writeStructure()
 {
-    m_oebpsDir = m_baseTempDir + "/OEBPS";
+    m_oebpsDir = m_baseTempDir + G_DIR_SEPARATOR_S;
+    m_oebpsDir += "OEBPS";
     
     UT_go_directory_create(m_oebpsDir.utf8_str(), 0644, NULL);
 
-    UT_UTF8String indexPath = m_oebpsDir + "/index.xhtml";
+    UT_UTF8String indexPath = m_oebpsDir + G_DIR_SEPARATOR_S;
+    indexPath += "index.xhtml";
 
     // Exporting document to XHTML using HTML export plugin 
     char *szIndexPath = (char*) g_malloc(strlen(indexPath.utf8_str()) + 1);
@@ -334,7 +335,7 @@ UT_Error IE_Exp_EPUB::package()
 
     for (std::vector<UT_UTF8String>::iterator i = listing.begin(); i != listing.end(); i++) 
     {
-        UT_UTF8String fullItemPath = m_oebpsDir + "/" + *i;
+        UT_UTF8String fullItemPath = m_oebpsDir + G_DIR_SEPARATOR_S + *i;
         gsf_xml_out_start_element(opfXml, "item");
         gsf_xml_out_add_cstr(opfXml, "id", escapeForId(*i).utf8_str());
         gsf_xml_out_add_cstr(opfXml, "href", (*i).utf8_str());
@@ -389,7 +390,7 @@ std::vector<UT_UTF8String> IE_Exp_EPUB::getFileList(const UT_UTF8String &directo
                 // created by gsf
                 continue;
             }
-            UT_UTF8String entryFullPath = currentDir + "/";
+            UT_UTF8String entryFullPath = currentDir + G_DIR_SEPARATOR_S;
             entryFullPath += entryName;
 
             if (g_file_test(entryFullPath.utf8_str(), G_FILE_TEST_IS_DIR)) 
@@ -425,7 +426,7 @@ UT_Error IE_Exp_EPUB::compress()
     std::vector<UT_UTF8String> listing = getFileList(UT_go_filename_from_uri(m_oebpsDir.utf8_str()));
     for (std::vector<UT_UTF8String>::iterator i = listing.begin(); i != listing.end(); i++) {
         GsfOutput* item = gsf_outfile_new_child(GSF_OUTFILE(m_oebps), (*i).utf8_str(), FALSE);
-        UT_UTF8String fullPath = m_oebpsDir + "/" + *i;
+        UT_UTF8String fullPath = m_oebpsDir + G_DIR_SEPARATOR_S + *i;
         GsfInput* file = UT_go_file_open(fullPath.utf8_str(), NULL);
 
         if (file == NULL) {
