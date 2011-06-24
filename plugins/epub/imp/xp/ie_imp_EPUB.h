@@ -20,7 +20,29 @@
 
 #ifndef IE_IMP_EPUB_H_
 #define IE_IMP_EPUB_H_
+
 #include "ie_imp.h"
+
+#define EPUB_MIMETYPE "application/epub+zip"
+
+
+/**
+ * Class used to import EPUB files
+ */
+class IE_Imp_EPUB : public IE_Imp
+{
+public:
+
+    IE_Imp_EPUB (PD_Document * pDocument);
+    virtual ~IE_Imp_EPUB ();
+   virtual bool   pasteFromBuffer(PD_DocumentRange * pDocRange,
+				const unsigned char * pData, 
+				UT_uint32 lenData, 
+				const char * szEncoding = 0);
+
+ protected:
+    virtual UT_Error _loadFile(GsfInput * input);
+};
 
 #endif
 

@@ -20,3 +20,23 @@
 
 #include "ie_imp_EPUB.h"
 
+IE_Imp_EPUB::IE_Imp_EPUB(PD_Document* pDocument) : IE_Imp(pDocument)
+{
+    
+}
+
+IE_Imp_EPUB::~IE_Imp_EPUB()
+{
+    
+}
+
+bool IE_Imp_EPUB::pasteFromBuffer(PD_DocumentRange* pDocRange, const unsigned char* pData, UT_uint32 lenData, const char* szEncoding)
+{
+    
+}
+
+UT_Error IE_Imp_EPUB::_loadFile(GsfInput* input)
+{
+    
+}
+
