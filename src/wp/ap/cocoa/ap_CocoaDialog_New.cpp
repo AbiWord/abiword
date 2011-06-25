@@ -220,23 +220,20 @@ void AP_CocoaDialog_New::event_ToggleStartNew ()
 	[templateDirs addObject:[NSString stringWithFormat:@"%s/templates/", XAP_App::getApp()->getAbiSuiteLibDir()]];
 	[templateDirs addObject:[NSString stringWithFormat:@"%s/templates/", [[[NSBundle mainBundle] resourcePath] UTF8String]]];
 
-	NSEnumerator* iter = [templateDirs objectEnumerator];
-	NSString * obj;
-	while ((obj = [iter nextObject])) {
-		NSArray* files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:obj error:NULL];
-		if (files) {
-			NSEnumerator *iter2 = [files objectEnumerator];
-			NSString* obj2;
-			while ((obj2 = [iter2 nextObject])) {
-				NSRange range = [obj2 rangeOfString:@".awt" options:NSLiteralSearch];
-				if (range.location != NSNotFound) {
-					[_dataSource addString:obj2];
-					[m_templates addObject:[NSString stringWithFormat:@"%@%@", obj, obj2]];
-				}
-			}
-		}
-	}
-	
+    for (NSString *obj in [templateDirs copy])
+    {
+        NSArray* files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:obj error:NULL];
+        for (NSString *obj2 in [files copy])
+        {
+            NSRange range = [obj2 rangeOfString:@".awt" options:NSLiteralSearch];
+            if (range.location != NSNotFound)
+            {
+                [_dataSource addString:obj2];
+                [m_templates addObject:[NSString stringWithFormat:@"%@%@", obj, obj2]];
+            }
+        }
+    }
+
 	[templateDirs release];
 	
 	[_templateList setDataSource:_dataSource];

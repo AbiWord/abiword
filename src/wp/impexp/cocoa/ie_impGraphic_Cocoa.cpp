@@ -32,29 +32,23 @@
 
 const IE_SuffixConfidence *IE_ImpGraphicCocoa_Sniffer::getSuffixConfidence()
 {
-	static IE_SuffixConfidence *suffixConfidence = NULL;
-	
-	if (suffixConfidence == NULL) {
-		NSArray *fileTypes = [NSImage imageFileTypes];
-		int count = [fileTypes count];		
-		suffixConfidence = new IE_SuffixConfidence[count + 1];
-		
-		NSEnumerator* suffixIter = [fileTypes objectEnumerator];
-		
-		NSString *aType;
-		int idx = 0;
-		
-		while((aType = [suffixIter nextObject]) != nil) {
-			suffixConfidence[idx].suffix = [aType UTF8String];
-			suffixConfidence[idx].confidence = UT_CONFIDENCE_PERFECT;
-			idx++;
-		}
-		
-		// NULL-terminator
-		suffixConfidence[idx].confidence = UT_CONFIDENCE_ZILCH;
-	}
+    static IE_SuffixConfidence *suffixConfidence = NULL;
+    int idx = 0;
+    NSArray *fileTypes = [NSImage imageFileTypes];
 
-	return suffixConfidence;
+    suffixConfidence = new IE_SuffixConfidence[[fileTypes count] + 1];
+
+    for (NSString *aType in [fileTypes copy])
+    {
+        suffixConfidence[idx].suffix = [aType UTF8String];
+        suffixConfidence[idx].confidence = UT_CONFIDENCE_PERFECT;
+        idx++;
+    }
+
+    // NULL-terminator
+    suffixConfidence[idx].confidence = UT_CONFIDENCE_ZILCH;
+
+    return suffixConfidence;
 }
 
 const IE_MimeConfidence * IE_ImpGraphicCocoa_Sniffer::getMimeConfidence()

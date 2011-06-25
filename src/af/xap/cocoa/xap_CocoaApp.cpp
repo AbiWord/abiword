@@ -353,21 +353,21 @@ void XAP_CocoaApp::setTimeOfLastEvent(NSTimeInterval timestamp)
 
 XAP_Frame * XAP_CocoaApp::_getFrontFrame(void)
 {
-	XAP_Frame* myFrame = NULL;
-	NSArray* array = [NSApp orderedWindows];
-	NSEnumerator* iter = [array objectEnumerator];
-	NSWindow* win;
-	
-	while ((win = [iter nextObject]) != nil) {
-		id ctrl = [win delegate];
-		if ([ctrl isKindOfClass:[XAP_CocoaFrameController class]]) {
-			myFrame = [(XAP_CocoaFrameController*)ctrl frameImpl]->getFrame();
-			UT_ASSERT(myFrame);
-			return myFrame;
-		}
-	}
-	UT_DEBUGMSG(("Could not find Frame\n"));
-	return myFrame;
+    XAP_Frame* myFrame = NULL;
+    NSArray* array = [NSApp orderedWindows];
+
+    for (NSWindow *win in [array copy])
+    {
+        id ctrl = [win delegate];
+        if ([ctrl isKindOfClass:[XAP_CocoaFrameController class]])
+        {
+            myFrame = [(XAP_CocoaFrameController*)ctrl frameImpl]->getFrame();
+            UT_ASSERT(myFrame);
+            return myFrame;
+        }
+    }
+    UT_DEBUGMSG(("Could not find Frame\n"));
+    return myFrame;
 }
 
 const char*         XAP_CocoaApp::_findNearestFont(const char* pszFontFamily,

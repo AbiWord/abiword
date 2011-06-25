@@ -408,29 +408,26 @@ static const char * s_GetMenuItemComputedLabel_Fn (const EV_Menu_Label * pLabel,
 
 + (NSString *)optionsPropertyString:(NSDictionary *)options
 {
-	NSString * props = @"";
+    NSString * props = @"";
 
-	if (options) {
-		NSEnumerator * enumerator = [options keyEnumerator];
+    bool first = true;
 
-		NSString * key   = nil;
-		NSString * value = nil;
+    for (NSString *key in [options copy])
+    {
+        NSString *value = (NSString *) [options objectForKey:key];
+        if (value)
+        {
+            if (first)
+            {
+                first = false;
+                props = [NSString stringWithFormat:@"%@: %@", key, value];
+                continue;
+            }
 
-		bool first = true;
-
-		while ((key = (NSString *) [enumerator nextObject])) {
-			value = (NSString *) [options objectForKey:key];
-			if (value) {
-				if (first)
-					props = [NSString stringWithFormat:@"%@: %@", key, value];
-				else
-					props = [NSString stringWithFormat:@"%@; %@: %@", props, key, value];
-
-				first = false;
-			}
-		}
-	}
-	return props;
+            props = [NSString stringWithFormat:@"%@; %@: %@", props, key, value];
+        }
+    }
+    return props;
 }
 
 + (AP_CocoaPlugin_FramelessDocument *)documentFromFile:(NSString *)path importOptions:(NSDictionary *)options

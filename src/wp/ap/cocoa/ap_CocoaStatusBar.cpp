@@ -195,21 +195,21 @@ void AP_CocoaStatusBar::_repositionFields(NSArray *fields)
 {
 	float maxWidth = [m_wStatusBar bounds].size.width;
 	float freeWidth = maxWidth - m_requestedWidth;
-	NSEnumerator* iter = [fields objectEnumerator];
-	NSTextField* obj;
 	float prevX = 0;
-	while ((obj = [iter nextObject])) {
-		int tag = [obj tag];
-		NSRect frame = [obj frame];
-		frame.origin.x = prevX;
-		if (tag == -1) {
-			frame.size.width = (freeWidth / (float)m_numMaxWidth) - FIELD_SPACING;
-		}
-		prevX += frame.size.width + FIELD_SPACING;
-		[obj setFrame:frame];
-		UT_DEBUGMSG(("resized status bar element. Frame = %f %f %f %f\n",
-				frame.origin.x, frame.origin.y, frame.size.width, frame.size.height));
-	}
+
+    for (NSTextField *obj in [fields copy])
+    {
+        int tag = [obj tag];
+        NSRect frame = [obj frame];
+        frame.origin.x = prevX;
+
+        if (tag == -1)
+            frame.size.width = (freeWidth / (float)m_numMaxWidth) - FIELD_SPACING;
+        prevX += frame.size.width + FIELD_SPACING;
+        [obj setFrame:frame];
+        UT_DEBUGMSG(("resized status bar element. Frame = %f %f %f %f\n",
+                    frame.origin.x, frame.origin.y, frame.size.width, frame.size.height));
+    }
 }
 
 

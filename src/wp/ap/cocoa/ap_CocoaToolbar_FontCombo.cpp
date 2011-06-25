@@ -67,22 +67,21 @@ static  int compareStrings(const void * ppS1, const void * ppS2)
 
 bool AP_CocoaToolbar_FontCombo::populate(void)
 {
-	UT_ASSERT(m_pToolbar);
-	NSString* item;
-	
-	// Things are relatively easy with the font manager.  Just
-	// request all fonts and ask them their names.
-	NSArray * list = [[NSFontManager sharedFontManager] availableFontFamilies];
-	
-	NSEnumerator*	enumerator = [list objectEnumerator];
-	m_vecContents.clear();
+    UT_ASSERT(m_pToolbar);
 
-	while ((item = [enumerator nextObject])) {
-		const char * fName = g_strdup([item UTF8String]);
-		UT_ASSERT (fName);
-		m_vecContents.addItem(fName);
-	}
-	m_vecContents.qsort(compareStrings);
-	
-	return true;
+    // Things are relatively easy with the font manager.  Just
+    // request all fonts and ask them their names.
+    NSArray *list = [[NSFontManager sharedFontManager] availableFontFamilies];
+
+    m_vecContents.clear();
+
+    for (NSString *item in [list copy])
+    {
+        const char *fName = g_strdup([item UTF8String]);
+        UT_ASSERT (fName);
+        m_vecContents.addItem(fName);
+    }
+    m_vecContents.qsort(compareStrings);
+
+    return true;
 }
