@@ -2563,3 +2563,49 @@ HDC GR_Win32Graphics::createbestmetafilehdc()
   if (printerinfo) free(printerinfo);
   return besthdc;
 }
+
+void GR_Win32Graphics::_DeviceContext_SwitchToBuffer()
+{
+	// get the client rectangle
+	RECT clientRect;
+	GetClientRect(m_hwnd, &clientRect);
+	
+	// compute width, height
+	int width = clientRect.right - clientRect.left;
+	int height = clientRect.top - clientRect.bottom;
+
+	// set up the buffer
+	m_bufferHdc = CreateCompatibleDC(m_hdc);
+	m_bufferBitmap = CreateCompatibleBitmap(m_hdc, width, height);
+	m_hOld = SelectObject(m_bufferHdc, m_bufferBitmap);
+
+	// save the current hdc
+	m_originalScreenHdc = m_hdc;
+
+	// do the actual switch
+	m_hdc = m_bufferHdc;
+}
+
+void GR_Win32Graphics::_DeviceContext_SwitchToScreen()
+{
+	m_hdc = m_originalScreenHdc;
+}
+
+void GR_Win32Graphics::_DeviceContext_DrawBufferToScreen()
+{
+	// get the client rectangle
+	RECT clientRect;
+	GetClientRect(m_hwnd, &clientRect);
+	
+	// compute width, height
+	int width = clientRect.right - clientRect.left;
+	int height = clientRect.top - clientRect.bottom;
+
+	// copy any modifications
+	BitBlt(m_hdc, 0, 0, width, height, m_bufferHdc, clientRect.left, clientRect.bottom, SRCCOPY);
+	
+	// free used resources
+	SelectObject(m_bufferHdc, m_hOld);
+	DeleteObject(m_bufferBitmap);
+	DeleteDC(m_bufferHdc);
+}

@@ -301,7 +301,16 @@ protected:
 	virtual UT_uint32 	getDeviceResolution(void) const;
 	void					_setColor(DWORD clrRef);
 
-  private:
+	HDC m_originalScreenHdc;
+	HDC m_bufferHdc;
+	HBITMAP m_bufferBitmap;
+	HANDLE m_hOld;
+
+	void _DeviceContext_SwitchToBuffer();
+	void _DeviceContext_SwitchToScreen();
+	void _DeviceContext_DrawBufferToScreen();
+
+private:
 	virtual GR_Win32Font * _newFont(LOGFONTW & lf, double fPointSize, HDC hdc, HDC printDC);
 
   protected:
