@@ -306,6 +306,7 @@ protected:
 	HBITMAP m_bufferBitmap;
 	HANDLE m_hOld;
 
+	void getWidthAndHeightFromHWND(HWND h, int &width, int &height);
 	void _DeviceContext_SwitchToBuffer();
 	void _DeviceContext_SwitchToScreen();
 	void _DeviceContext_DrawBufferToScreen();

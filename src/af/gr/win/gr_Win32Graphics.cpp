@@ -2564,15 +2564,20 @@ HDC GR_Win32Graphics::createbestmetafilehdc()
   return besthdc;
 }
 
+void GR_Win32Graphics::getWidthAndHeightFromHWND(HWND h, int &width, int &height)
+{
+	RECT clientRect;
+	GetClientRect(h, &clientRect);
+	
+	width = clientRect.right - clientRect.left;
+	height = clientRect.bottom - clientRect.top;
+}
+
 void GR_Win32Graphics::_DeviceContext_SwitchToBuffer()
 {
-	// get the client rectangle
-	RECT clientRect;
-	GetClientRect(m_hwnd, &clientRect);
-	
-	// compute width, height
-	int width = clientRect.right - clientRect.left;
-	int height = clientRect.bottom - clientRect.top;
+	// get client area size
+	int height(0), width(0);
+	getWidthAndHeightFromHWND(m_hwnd, width, height);
 
 	// set up the buffer
 	m_bufferHdc = CreateCompatibleDC(m_hdc);
@@ -2580,7 +2585,7 @@ void GR_Win32Graphics::_DeviceContext_SwitchToBuffer()
 	m_hOld = SelectObject(m_bufferHdc, m_bufferBitmap);
 
 	// copy the screen to the buffer
-	BitBlt(m_bufferHdc, 0, 0, width, height, m_hdc, clientRect.left, clientRect.top, SRCCOPY);
+	BitBlt(m_bufferHdc, 0, 0, width, height, m_hdc, 0, 0, SRCCOPY);
 
 	// save the current hdc
 	m_originalScreenHdc = m_hdc;
@@ -2596,16 +2601,12 @@ void GR_Win32Graphics::_DeviceContext_SwitchToScreen()
 
 void GR_Win32Graphics::_DeviceContext_DrawBufferToScreen()
 {
-	// get the client rectangle
-	RECT clientRect;
-	GetClientRect(m_hwnd, &clientRect);
-	
-	// compute width, height
-	int width = clientRect.right - clientRect.left;
-	int height = clientRect.bottom - clientRect.top;
+	// get client area size
+	int height(0), width(0);
+	getWidthAndHeightFromHWND(m_hwnd, width, height);
 	
 	// copy any modifications back to the screen
-	BitBlt(m_hdc, clientRect.left, clientRect.top, width, height, m_bufferHdc, 0, 0, SRCCOPY);
+	BitBlt(m_hdc, 0, 0, width, height, m_bufferHdc, 0, 0, SRCCOPY);
 	
 	// free used resources
 	SelectObject(m_bufferHdc, m_hOld);
