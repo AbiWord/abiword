@@ -2571,6 +2571,8 @@ void GR_Win32Graphics::getWidthAndHeightFromHWND(HWND h, int &width, int &height
 	
 	width = clientRect.right - clientRect.left;
 	height = clientRect.bottom - clientRect.top;
+
+	UT_ASSERT(clientRect.left == 0 && clientRect.top == 0);
 }
 
 void GR_Win32Graphics::_DeviceContext_SwitchToBuffer()
@@ -2584,9 +2586,21 @@ void GR_Win32Graphics::_DeviceContext_SwitchToBuffer()
 	m_bufferBitmap = CreateCompatibleBitmap(m_hdc, width, height);
 	m_hOld = SelectObject(m_bufferHdc, m_bufferBitmap);
 
+	LARGE_INTEGER t1, t2, freq;
+	
+	QueryPerformanceCounter(&t1);
+	
 	// copy the screen to the buffer
 	BitBlt(m_bufferHdc, 0, 0, width, height, m_hdc, 0, 0, SRCCOPY);
+	
+	QueryPerformanceCounter(&t2);
+	
+	QueryPerformanceFrequency(&freq);
+	double blitSpeed = ((double)(t2.QuadPart - t1.QuadPart)) / ((double)freq.QuadPart);
 
+	UT_DEBUGMSG(("ASFRENT: measured BitBlt speed: %lfs [client rectangle W = %d, H = %d]\n", 
+			blitSpeed, width, height));
+	
 	// save the current hdc
 	m_originalScreenHdc = m_hdc;
 
