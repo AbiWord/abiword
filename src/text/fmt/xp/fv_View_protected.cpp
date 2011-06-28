@@ -4566,6 +4566,8 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		UT_DEBUGMSG(("fv_View::draw() called with zero width or height expose.\n"));
 		return;
 	}
+	
+	painter.beginDoubleBuffering();
 
 	// TMN: Leave this rect at function scope!
 	// gr_Graphics only stores a _pointer_ to it!
@@ -4578,6 +4580,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		rClip.height = height;
 		m_pG->setClipRect(&rClip);
 	}
+
 //	UT_ASSERT(m_yScrollOffset == m_pG->getPrevYOffset());
 	
 	// figure out where pages go, based on current window dimensions
@@ -4623,8 +4626,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	 **********************/
 	
 	// enter a double-buffered section 
-	painter.beginDoubleBuffering();
-
+	
 	UT_RGBColor clrMargin;
 	if (!m_pG->getColor3D(GR_Graphics::CLR3D_BevelDown, clrMargin))
 		clrMargin = getColorMargin();
