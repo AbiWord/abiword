@@ -2586,13 +2586,16 @@ void GR_Win32Graphics::_DeviceContext_SwitchToBuffer()
 	m_bufferBitmap = CreateCompatibleBitmap(m_hdc, width, height);
 	m_hOld = SelectObject(m_bufferHdc, m_bufferBitmap);
 
+#if DEBUG
 	LARGE_INTEGER t1, t2, freq;
 	
 	QueryPerformanceCounter(&t1);
-	
+#endif
+
 	// copy the screen to the buffer
 	BitBlt(m_bufferHdc, 0, 0, width, height, m_hdc, 0, 0, SRCCOPY);
-	
+
+#if DEBUG
 	QueryPerformanceCounter(&t2);
 	
 	QueryPerformanceFrequency(&freq);
@@ -2600,7 +2603,8 @@ void GR_Win32Graphics::_DeviceContext_SwitchToBuffer()
 
 	UT_DEBUGMSG(("ASFRENT: measured BitBlt speed: %lfs [client rectangle W = %d, H = %d]\n", 
 			blitSpeed, width, height));
-	
+#endif
+
 	// save the current hdc
 	m_originalScreenHdc = m_hdc;
 
