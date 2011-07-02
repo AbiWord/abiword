@@ -298,7 +298,7 @@ class ABI_EXPORT PD_DocumentRDFMutation
 
 
 
-class RDFAnchor
+class ABI_EXPORT RDFAnchor
 {
     bool m_isEnd;
     std::string m_xmlid;
