@@ -326,6 +326,10 @@ UT_Error IE_Exp_EPUB::package()
     gsf_xml_out_start_element(opfXml, "dc:language");
     gsf_xml_out_add_cstr(opfXml, NULL, getLanguage().utf8_str());
     gsf_xml_out_end_element(opfXml);
+    gsf_xml_out_start_element(opfXml, "dc:creator");
+    gsf_xml_out_add_cstr(opfXml, "opf:role", "aut");
+    gsf_xml_out_add_cstr(opfXml, NULL, getAuthor().utf8_str());
+    gsf_xml_out_end_element(opfXml);
     // </metadata> 
     gsf_xml_out_end_element(opfXml);
 
