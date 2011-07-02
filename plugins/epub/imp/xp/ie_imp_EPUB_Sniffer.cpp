@@ -39,7 +39,7 @@ static IE_MimeConfidence IE_Imp_EPUB_Sniffer_MimeConfidence[] =
 IE_Imp_EPUB_Sniffer::IE_Imp_EPUB_Sniffer() :
 	IE_ImpSniffer("EPUB::EPUB") 
 {
-
+    UT_DEBUGMSG(("Constructing sniffer\n"));
 }
 
 IE_Imp_EPUB_Sniffer::~IE_Imp_EPUB_Sniffer() 
@@ -49,16 +49,19 @@ IE_Imp_EPUB_Sniffer::~IE_Imp_EPUB_Sniffer()
 
 const IE_SuffixConfidence * IE_Imp_EPUB_Sniffer::getSuffixConfidence() 
 {
+    UT_DEBUGMSG(("Recognizing suffixes\n"));
     return IE_Imp_EPUB_Sniffer_SuffixConfidence;
 }
 
 const IE_MimeConfidence * IE_Imp_EPUB_Sniffer::getMimeConfidence() 
 {
-	return IE_Imp_EPUB_Sniffer_MimeConfidence;
+    UT_DEBUGMSG(("Recognizing mime type\n"));
+    return IE_Imp_EPUB_Sniffer_MimeConfidence;
 }
 
 UT_Confidence_t IE_Imp_EPUB_Sniffer::recognizeContents(GsfInput * input) 
 {
+    UT_DEBUGMSG(("Recognizing contents\n"));
     GsfInfile* zip = gsf_infile_zip_new(input, NULL);
     UT_Confidence_t confidence = UT_CONFIDENCE_ZILCH;
     if (zip != NULL)
@@ -67,19 +70,27 @@ UT_Confidence_t IE_Imp_EPUB_Sniffer::recognizeContents(GsfInput * input)
         
         if (mimetype != NULL)
         {
-            gsf_off_t size = gsf_input_size(mimetype);
+            UT_DEBUGMSG(("Opened 'mimetype' file\n"));
+            size_t size = gsf_input_size(mimetype);
             
             if (size > 0)
             {
-                gchar* mime = (gchar*)gsf_input_read(mimetype, size, NULL);
+                UT_DEBUGMSG(("Reading 'mimetype' file contents\n"));
+                gchar* pMime = (gchar*)gsf_input_read(mimetype, size, NULL);
+                UT_UTF8String mimeStr;
+                mimeStr.append(pMime, size);
 
-                if (!strcmp(mime, EPUB_MIMETYPE))
+                if (!strcmp(mimeStr.utf8_str(), EPUB_MIMETYPE))
                 {
+                    UT_DEBUGMSG(("RUDYJ: Found EPUB\n"));
                     confidence = UT_CONFIDENCE_PERFECT;
-                }
-                g_free(mime);
+                } 
             }
-        }        
+            
+            g_object_unref(G_OBJECT(mimetype));
+        } 
+        
+        g_object_unref(G_OBJECT(zip));
     }
     
     return confidence;
@@ -88,7 +99,9 @@ UT_Confidence_t IE_Imp_EPUB_Sniffer::recognizeContents(GsfInput * input)
 UT_Error IE_Imp_EPUB_Sniffer::constructImporter(PD_Document * pDocument,
 		IE_Imp ** ppie) 
 {
-    *ppie = new IE_Imp_EPUB(pDocument);
+    UT_DEBUGMSG(("Constructing importer\n"));
+    IE_Imp_EPUB* importer = new IE_Imp_EPUB(pDocument);
+    *ppie = importer;
     
     return UT_OK;
 }
