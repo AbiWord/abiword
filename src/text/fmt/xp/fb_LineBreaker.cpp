@@ -618,6 +618,9 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 		if (!pNextLine)
 		{
 			fp_Line* pNewLine = NULL;
+			//mark: add an newline to support the work
+			// we can calculate the width and get the hyphenation result here or in Run?
+			// chen xiajian
 			if(pPage == NULL)
 			{
 				pNewLine  = static_cast<fp_Line *>(pBlock->getNewContainer());
