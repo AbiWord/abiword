@@ -446,7 +446,7 @@ UT_go_filename_simplify (const char *filename, UT_GODotDot dotdot,
 					isdir = TRUE;
 					break;
 				case UT_GO_DOTDOT_TEST: {
-					struct stat statbuf;
+					GStatBuf statbuf;
 					char savec = *q;
 					/*
 					 * Terminate the path so far so we can
@@ -1390,7 +1390,7 @@ UT_go_file_exists (char const *uri)
 
 	return FALSE;
 #else
-	struct stat file_stat;
+	GStatBuf file_stat;
 	char *filename = UT_go_filename_from_uri (uri);
 	int result = filename ? g_stat (filename, &file_stat) : -1;
 
@@ -1597,7 +1597,7 @@ UT_go_file_get_date (char const *uri, UT_GOFileDateType type)
 
 	gnome_vfs_file_info_unref (file_info);
 #else
-	struct stat file_stat;
+	GStatBuf file_stat;
 	char *filename = UT_go_filename_from_uri (uri);
 	int result = filename ? g_stat (filename, &file_stat) : -1;
 
