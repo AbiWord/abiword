@@ -111,13 +111,6 @@ static void s_border_properties (const char * border_color,
 
 
 
-#ifdef ENABLE_HYPHENATION
-bool
-fl_BlockLayout::hyphenationWord(void)
-{
-	return true;
-}
-#endif
 
 #ifdef ENABLE_SPELL
 SpellChecker *

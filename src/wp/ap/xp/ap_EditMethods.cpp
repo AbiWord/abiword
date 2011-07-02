@@ -1144,7 +1144,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 #ifdef ENABLE_SPELL
 	EV_EditMethod(NF(toggleAutoSpell),      0,  ""),
 #endif
-    EV_EditMethod(NF(hyphenationWord),      0,  ""),
+   
 	
 	EV_EditMethod(NF(toggleBold),			0,	""),
 	EV_EditMethod(NF(toggleBottomline), 	0,	""),
@@ -1427,13 +1427,6 @@ static void _sFrequentRepeat(UT_Worker * pWorker)
 	bRunning = false;
 }
 
-#ifdef ENABLE_HYPHENATION
-Defun1(hyphenationWord)
-{
-	CHECK_FRAME;
-	UT_return_val_if_fail (pAV_View, false);
-}
-#endif
 
 #ifdef ENABLE_SPELL
 Defun1(toggleAutoSpell)

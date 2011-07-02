@@ -279,11 +279,7 @@ public:
 #ifdef ENABLE_SPELL
 	bool checkSpelling(void);
 #endif
-
 	
-	bool hyphenationWord(void);
-
-
 	void debugFlashing(void);
 	bool	findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX,
 							UT_sint32& iPosition, eTabType& iType,
