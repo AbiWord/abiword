@@ -25,6 +25,7 @@
 #include <gsf/gsf-infile.h>
 #include <gsf/gsf-libxml.h>
 #include <ut_go_file.h>
+#include <stdexcept>
 #include <vector>
 #include <map>
 

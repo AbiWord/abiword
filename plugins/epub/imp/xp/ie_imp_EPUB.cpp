@@ -18,9 +18,9 @@
  * 02111-1307, USA.
  */
 
-#include <X11/X.h>
+
 #include <stdexcept>
-#include <zlib.h>
+
 
 #include "ie_imp_EPUB.h"
 
