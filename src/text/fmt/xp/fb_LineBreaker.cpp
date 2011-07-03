@@ -594,7 +594,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 			UT_return_if_fail(pOtherLine);
 
 			pOtherLine->removeRun(pCurrentRun, true);
-			pLine->addRun(pCurrentRun);
+			pLine->addRun(pCurrentRun);  //called when delete & merge
 		}
 		if (pCurrentRun == m_pLastRunToKeep)
 		{
@@ -623,7 +623,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 			// chen xiajian
 			if(pPage == NULL)
 			{
-				pNewLine  = static_cast<fp_Line *>(pBlock->getNewContainer());
+				pNewLine  = static_cast<fp_Line *>(pBlock->getNewContainer());  // create newline
 			}
 			else
 			{
@@ -644,7 +644,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 			xxx_UT_DEBUGMSG(("fb_LineBreaker::_breakThe ... pLine 0x%x, pNextLine 0x%x, blocks last 0x%x\n",
 			pLine, pNextLine, pBlock->getLastContainer()));
 			if(pBlock->getLastContainer() == static_cast<fp_Container *>(pLine))
-				pBlock->setLastContainer(pNextLine);
+				pBlock->setLastContainer(pNextLine);     // not need to create newline
 		}
 
 		fp_Run* pRunToBump = pLine->getLastRun();
@@ -673,7 +673,15 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 				fp_Run * pNuke = pLine->getLastRun();
 				pLine->removeRun(pNuke);
 			}
-			pNextLine->insertRun(pRunToBump);
+
+			fp_TextRun * insertRun=static_cast<fp_TextRun *>(pRunToBump);
+			PD_StruxIterator text(insertRun->getBlock()->getStruxDocHandle(),insertRun->getBlockOffset()+ fl_BLOCK_STRUX_OFFSET);
+		    //get char, we can replace the chars with the hyphenation result
+			const pf_Frag_Text * pft = static_cast<const pf_Frag_Text*>(text.m_frag);
+			//how can change text??? wait
+
+
+			pNextLine->insertRun(pRunToBump);  //called when create new line
 
 			pRunToBump = pRunToBump->getPrevRun();
 			xxx_UT_DEBUGMSG(("Next runToBump %x \n",pRunToBump));

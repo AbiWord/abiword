@@ -147,11 +147,13 @@ class ABI_EXPORT PD_StruxIterator : public UT_TextIterator
 	UT_uint32         m_frag_offset;
 	PL_StruxDocHandle m_sdh;
 	
-	const pf_Frag * m_frag;
+
 
 	UTIterStatus    m_status;
 	UT_uint32       m_max_offset;
 	UT_uint32       m_strux_len;
+public:
+		const pf_Frag * m_frag;
 };
 
 #endif //PD_ITERATOR_H

@@ -1762,7 +1762,8 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	// the construction is not very expensive but once that shaper is
 	// deprecated, we might be able to get rid of it
 	PD_StruxIterator text(getBlock()->getStruxDocHandle(),
-						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
+						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET); //get char, we can replace the chars with the hyphenation result
+
 
 	UT_sint32 iIterPos = text.getPosition(); // need to remember for drawing selections
 	
