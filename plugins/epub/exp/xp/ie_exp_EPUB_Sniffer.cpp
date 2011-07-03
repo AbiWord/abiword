@@ -30,7 +30,7 @@ IE_Exp_EPUB_Sniffer::~IE_Exp_EPUB_Sniffer() {
 }
 
 bool IE_Exp_EPUB_Sniffer::recognizeSuffix(const char * szSuffix) {
-
+    return (!g_ascii_strcasecmp(szSuffix,".epub"));
 }
 
 UT_Error IE_Exp_EPUB_Sniffer::constructExporter(PD_Document * pDocument,

@@ -217,41 +217,48 @@ UT_Error IE_Imp_EPUB::readStructure()
 {
     getDoc()->createRawDocument();
     getDoc()->finishRawCreation();
-            
-    for(std::vector<UT_UTF8String>::iterator i = m_spine.begin(); i != m_spine.end(); i++)
+
+    for (std::vector<UT_UTF8String>::iterator i = m_spine.begin(); i != m_spine.end(); i++) 
     {
-            UT_UTF8String itemPath = m_tmpDir + G_DIR_SEPARATOR_S + m_manifestItems[*i];
-            PT_DocPosition posEnd = 0;
-            getDoc()->getBounds(true, posEnd);
-            
-            GsfInput* itemInput = UT_go_file_open(itemPath.utf8_str(), NULL);
-            if (itemInput == NULL)
-            {
-                UT_DEBUGMSG(("Can`t open item for reading\n"));
-                return UT_ERROR;
-            }
-            size_t inputSize = gsf_input_size(itemInput);
-            gchar* inputData = (gchar*)gsf_input_read(itemInput, inputSize, NULL);
-            
-            PD_Document *currentDoc = new PD_Document();
-            currentDoc->createRawDocument();
-            const char *suffix = strchr(itemPath.utf8_str(), '.');
-            
-            if (currentDoc->importFile(itemPath.utf8_str(), 
-                        IE_Imp::fileTypeForSuffix(suffix), 
-                                       true, false, NULL) != UT_OK)
-            {
-                UT_DEBUGMSG(("Failed to import file %s\n", itemPath.utf8_str()));
-                return UT_ERROR;
-            }
-            currentDoc->finishRawCreation();
-   
-            IE_Imp_PasteListener * pPasteListener = new  IE_Imp_PasteListener(getDoc(),posEnd, currentDoc);
-            currentDoc->tellListener(static_cast<PL_Listener *>(pPasteListener));
-            
-            DELETEP(pPasteListener);
-            UNREFP(currentDoc);
-            g_object_unref(G_OBJECT(itemInput));
+        std::map<UT_UTF8String, UT_UTF8String>::iterator iter = m_manifestItems.find(*i);
+        
+        if (iter == m_manifestItems.end())
+        {
+            UT_DEBUGMSG(("Manifest item with id %s not found\n", (*i).utf8_str()));
+            return UT_ERROR;
+        }
+        UT_UTF8String itemPath = m_tmpDir + G_DIR_SEPARATOR_S + (iter->second);
+        PT_DocPosition posEnd = 0;
+        getDoc()->getBounds(true, posEnd);
+
+        GsfInput* itemInput = UT_go_file_open(itemPath.utf8_str(), NULL);
+        if (itemInput == NULL) 
+        {
+            UT_DEBUGMSG(("Can`t open item for reading\n"));
+            return UT_ERROR;
+        }
+        size_t inputSize = gsf_input_size(itemInput);
+        gchar* inputData = (gchar*) gsf_input_read(itemInput, inputSize, NULL);
+
+        PD_Document *currentDoc = new PD_Document();
+        currentDoc->createRawDocument();
+        const char *suffix = strchr(itemPath.utf8_str(), '.');
+
+        if (currentDoc->importFile(itemPath.utf8_str(),
+                                   IE_Imp::fileTypeForSuffix(suffix),
+                                   true, false, NULL) != UT_OK) 
+        {
+            UT_DEBUGMSG(("Failed to import file %s\n", itemPath.utf8_str()));
+            return UT_ERROR;
+        }
+        currentDoc->finishRawCreation();
+
+        IE_Imp_PasteListener * pPasteListener = new IE_Imp_PasteListener(getDoc(), posEnd, currentDoc);
+        currentDoc->tellListener(static_cast<PL_Listener *> (pPasteListener));
+
+        DELETEP(pPasteListener);
+        UNREFP(currentDoc);
+        g_object_unref(G_OBJECT(itemInput));
     }
         
         return UT_OK;
@@ -260,7 +267,7 @@ UT_Error IE_Imp_EPUB::readStructure()
 GsfOutput* IE_Imp_EPUB::createFileByPath(const char* path)
 {
     gchar** components = g_strsplit(path, G_DIR_SEPARATOR_S, 0);
-    UT_UTF8String curPath = UT_UTF8String(components[0]);
+    UT_UTF8String curPath = "";
     
     int current = 0;
     GsfOutput* output = NULL;
