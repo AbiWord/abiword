@@ -18,10 +18,6 @@
  * 02111-1307, USA.
  */
 
-
-
-
-
 #include "ie_imp_EPUB.h"
 
 IE_Imp_EPUB::IE_Imp_EPUB(PD_Document* pDocument) : IE_Imp(pDocument)
@@ -224,22 +220,30 @@ UT_Error IE_Imp_EPUB::readStructure()
             
     for(std::vector<UT_UTF8String>::iterator i = m_spine.begin(); i != m_spine.end(); i++)
     {
-        try
-        {
-
-            UT_UTF8String itemPath = m_tmpDir + G_DIR_SEPARATOR_S + m_manifestItems.at(*i);
+            UT_UTF8String itemPath = m_tmpDir + G_DIR_SEPARATOR_S + m_manifestItems[*i];
             PT_DocPosition posEnd = 0;
             getDoc()->getBounds(true, posEnd);
             
             GsfInput* itemInput = UT_go_file_open(itemPath.utf8_str(), NULL);
+            if (itemInput == NULL)
+            {
+                UT_DEBUGMSG(("Can`t open item for reading\n"));
+                return UT_ERROR;
+            }
             size_t inputSize = gsf_input_size(itemInput);
             gchar* inputData = (gchar*)gsf_input_read(itemInput, inputSize, NULL);
             
             PD_Document *currentDoc = new PD_Document();
             currentDoc->createRawDocument();
             const char *suffix = strchr(itemPath.utf8_str(), '.');
-            currentDoc->importFile(itemPath.utf8_str(), 
-                                   IE_Imp::fileTypeForSuffix(suffix), true, false, NULL);
+            
+            if (currentDoc->importFile(itemPath.utf8_str(), 
+                        IE_Imp::fileTypeForSuffix(suffix), 
+                                       true, false, NULL) != UT_OK)
+            {
+                UT_DEBUGMSG(("Failed to import file %s\n", itemPath.utf8_str()));
+                return UT_ERROR;
+            }
             currentDoc->finishRawCreation();
    
             IE_Imp_PasteListener * pPasteListener = new  IE_Imp_PasteListener(getDoc(),posEnd, currentDoc);
@@ -248,11 +252,6 @@ UT_Error IE_Imp_EPUB::readStructure()
             DELETEP(pPasteListener);
             UNREFP(currentDoc);
             g_object_unref(G_OBJECT(itemInput));
-            
-        } catch (std::out_of_range e)
-        {
-            return UT_ERROR;
-        }
     }
         
         return UT_OK;
