@@ -24,6 +24,7 @@
 #include <gsf/gsf-infile-zip.h>
 #include <gsf/gsf-infile.h>
 #include <gsf/gsf-libxml.h>
+#include <gsf/gsf-input-memory.h>
 #include <ut_go_file.h>
 #include <stdexcept>
 #include <vector>

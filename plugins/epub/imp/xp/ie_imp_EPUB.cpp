@@ -32,7 +32,29 @@ IE_Imp_EPUB::~IE_Imp_EPUB()
 
 bool IE_Imp_EPUB::pasteFromBuffer(PD_DocumentRange* pDocRange, const unsigned char* pData, UT_uint32 lenData, const char* szEncoding)
 {
-    
+    UT_return_val_if_fail(getDoc() == pDocRange->m_pDoc,false);
+    UT_return_val_if_fail(pDocRange->m_pos1 == pDocRange->m_pos2,false);
+	
+    PD_Document * newDoc = new PD_Document();
+    newDoc->createRawDocument();
+    IE_Imp_EPUB * pEPUBImp = new IE_Imp_EPUB(newDoc);
+    //
+    // Turn pData into something that can be imported by the open documenb
+    // importer.
+    //
+    GsfInput * pInStream =  gsf_input_memory_new((const guint8 *) pData, 
+						 (gsf_off_t) lenData,
+						 FALSE);
+    pEPUBImp->loadFile(newDoc, pInStream);
+
+    newDoc->finishRawCreation();
+
+    IE_Imp_PasteListener * pPasteListen = new  IE_Imp_PasteListener(getDoc(),pDocRange->m_pos1,newDoc);
+    newDoc->tellListener(static_cast<PL_Listener *>(pPasteListen));
+    delete pPasteListen;
+    delete pEPUBImp;
+    UNREFP( newDoc);
+    return true;
 }
 
 UT_Error IE_Imp_EPUB::_loadFile(GsfInput* input)

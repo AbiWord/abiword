@@ -21,15 +21,18 @@
 #include "ie_exp_EPUB_Sniffer.h"
 
 IE_Exp_EPUB_Sniffer::IE_Exp_EPUB_Sniffer() :
-	IE_ExpSniffer("EPUB201::EPUB") {
+	IE_ExpSniffer("EPUB201::EPUB") 
+{
 
 }
 
-IE_Exp_EPUB_Sniffer::~IE_Exp_EPUB_Sniffer() {
+IE_Exp_EPUB_Sniffer::~IE_Exp_EPUB_Sniffer() 
+{
 
 }
 
-bool IE_Exp_EPUB_Sniffer::recognizeSuffix(const char * szSuffix) {
+bool IE_Exp_EPUB_Sniffer::recognizeSuffix(const char * szSuffix) 
+{
     return (!g_ascii_strcasecmp(szSuffix,".epub"));
 }
 
@@ -42,7 +45,8 @@ UT_Error IE_Exp_EPUB_Sniffer::constructExporter(PD_Document * pDocument,
 }
 
 bool IE_Exp_EPUB_Sniffer::getDlgLabels(const char ** pszDesc,
-		const char ** pszSuffixList, IEFileType * ft) {
+		const char ** pszSuffixList, IEFileType * ft) 
+{
 	*pszDesc = "EPUB (.epub)";
 	*pszSuffixList = "*.epub";
 	*ft = getFileType();
