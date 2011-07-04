@@ -42,7 +42,7 @@ public:
 	virtual ~EnchantHyphenation();
 	virtual bool addToCustomDict (const UT_UCSChar *word, size_t len){return true;}
 	Hyphenation::HyphenationResult _hyphenation (const UT_UCSChar * ucszWord, size_t len);
-	UT_GenericVector<UT_UCSChar*> * __hyphenateWord (const UT_UCSChar *ucszWord, size_t len);
+	UT_UCSChar* __hyphenateWord (const UT_UCSChar *ucszWord, size_t len);
 
 protected:
 

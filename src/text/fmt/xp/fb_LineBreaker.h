@@ -23,6 +23,7 @@
 #define FB_LINEBREAKER_H
 
 #include "ut_types.h"
+#include "enchant_Hyphenation.h"
 
 class fl_BlockLayout;
 class fp_Line;

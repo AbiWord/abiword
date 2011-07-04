@@ -651,42 +651,63 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 		UT_ASSERT(pRunToBump);
 		xxx_UT_DEBUGMSG(("!!!RunToBump %x Type %d Offset %d Length %d \n",pRunToBump,pRunToBump->getType(),pRunToBump->getBlockOffset(),pRunToBump->getLength()));
 
+		UT_UTF8String hyphenation_word;
+		unsigned int splitPosition=-1;
 		while (pRunToBump && pLine->getNumRunsInLine() && (pLine->getLastRun() != m_pLastRunToKeep))
 		{
 			UT_ASSERT(pRunToBump->getLine() == pLine);
 			xxx_UT_DEBUGMSG(("RunToBump %x Type %d Offset %d Length %d \n",pRunToBump,pRunToBump->getType(),pRunToBump->getBlockOffset(),pRunToBump->getLength()));
-			if(!pLine->removeRun(pRunToBump))
-			{
-//
-// More repair code I think...
-// run is not on the Line! It's totally lost...
-//
-				pRunToBump->setLine(NULL);
-			}
-			
+						
 			UT_ASSERT(pLine->getLastRun()->getType() != FPRUN_ENDOFPARAGRAPH);
 //
 // Some repair code
 //
-			if(pLine->getLastRun()->getType() == FPRUN_ENDOFPARAGRAPH)
+
+			pRunToBump->printText();  //trace out debug message & run two time			
+			//get the text for hyphenation
+			PD_StruxIterator text(pRunToBump->getBlock()->getStruxDocHandle(),
+				pRunToBump->getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
+
+			text.setUpperLimit(text.getPosition() + pRunToBump->getLength() - 1);
+
+			UT_ASSERT_HARMLESS( text.getStatus() == UTIter_OK );
+			UT_UTF8String sTmp;
+			while(text.getStatus() == UTIter_OK)
 			{
-				fp_Run * pNuke = pLine->getLastRun();
-				pLine->removeRun(pNuke);
+				UT_UCS4Char c = text.getChar();
+				xxx_UT_DEBUGMSG(("| %d |",c));
+				if(c >= ' ' && c <128)
+					sTmp +=  static_cast<char>(c);
+				++text;
 			}
-
-			fp_TextRun * insertRun=static_cast<fp_TextRun *>(pRunToBump);
-			PD_StruxIterator text(insertRun->getBlock()->getStruxDocHandle(),insertRun->getBlockOffset()+ fl_BLOCK_STRUX_OFFSET);
-		    //get char, we can replace the chars with the hyphenation result
-			const pf_Frag_Text * pft = static_cast<const pf_Frag_Text*>(text.m_frag);
-			//how can change text??? wait
-
-
-			pNextLine->insertRun(pRunToBump);  //called when create new line
+            hyphenation_word+=sTmp;
 
 			pRunToBump = pRunToBump->getPrevRun();
 			xxx_UT_DEBUGMSG(("Next runToBump %x \n",pRunToBump));
 		}
+		//to hyphenation: new to code as enchant
+		Hyphenation* hyphenator=new Hyphenation();
+		UT_UCSChar* result=hyphenator->hyphenateWord(hyphenation_word.ucs4_str(),-1);
+		splitPosition=result->find("-");
 	}
+    //ReAssign the run to display the hyphenation result
+	// some problem need to be fix
+	fp_Run* pRunToBumpTotal; 
+	fp_Run* pRunToBump = pLine->getLastRun();
+	while (pRunToBump && pLine->getNumRunsInLine() && (pLine->getLastRun() != m_pLastRunToKeep))
+	{
+		UT_ASSERT(pRunToBump->getLine() == pLine);
+		xxx_UT_DEBUGMSG(("RunToBump %x Type %d Offset %d Length %d \n",pRunToBump,pRunToBump->getType(),pRunToBump->getBlockOffset(),pRunToBump->getLength()));
+
+		UT_ASSERT(pLine->getLastRun()->getType() != FPRUN_ENDOFPARAGRAPH);
+		
+		pRunToBumpTotal=pRunToBumpTotal->merge(pRunToBump);
+		pRunToBump = pRunToBump->getPrevRun();
+		xxx_UT_DEBUGMSG(("Next runToBump %x \n",pRunToBump));
+
+	}
+	pRunToBumpTotal->split(splitPosition);	
+    
 
 	UT_ASSERT((!m_pLastRunToKeep) || (pLine->getLastRun() == m_pLastRunToKeep));
 #if DEBUG

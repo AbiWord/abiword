@@ -107,30 +107,13 @@ EnchantHyphenation::_hyphenation (const UT_UCSChar * ucszWord, size_t len)
 	return Hyphenation::Hyphenation_ERROR;
 }
 
-UT_GenericVector<UT_UCSChar*> *
+UT_UCSChar*
 EnchantHyphenation::__hyphenateWord (const UT_UCSChar *ucszWord, size_t len)
 {
 	UT_return_val_if_fail (m_dict, 0);
 	UT_return_val_if_fail (ucszWord && len, 0);
 
-	UT_GenericVector<UT_UCSChar*> * pvSugg = new UT_GenericVector<UT_UCSChar*>();
-
-	UT_UTF8String utf8 (ucszWord, len);
-
-	char ** suggestions;
-	size_t n_suggestions;
-
-// 	suggestions = enchant_dict_hyphenationSuggest (m_dict, utf8.utf8_str(), utf8.byteLength(), &n_suggestions);
-// 
-// 	if (suggestions && n_suggestions) {
-// 		for (size_t i = 0; i < n_suggestions; i++) {
-// 			UT_UCSChar *ucszSugg = utf8_to_utf32(suggestions[i]);
-// 			if (ucszSugg)
-// 				pvSugg->addItem (ucszSugg);
-// 		}
-// 
-// 		enchant_dict_free_suggestions (m_dict, suggestions);
-// 	}
-
+    char* result=enchant_dict_hyphenation(m_dict,ucszWord,-1);
+	UT_UCSChar* pvSugg = new UT_UCSChar(result);
 	return pvSugg;
 }

@@ -55,7 +55,7 @@ public:
 		Hyphenation_ERROR = 2      // internal error
 	};	
 	//hyphenate the word and get the hyphenation result vector(find a best result to match the line)
-	UT_GenericVector<UT_UCSChar*>* hyphenateWord(const UT_UCSChar* word, size_t len);
+	UT_UCSChar* hyphenateWord(const UT_UCSChar* word, size_t len);
 
 	// vector of DictionaryMapping*
 	virtual	UT_Vector & getMapping() {return m_vecEmpty;};
@@ -98,7 +98,7 @@ private:
 
 	virtual bool				_requestDictionary (const char * szLang) = 0;
 	virtual HyphenationResult	__hyphenate(const UT_UCSChar* word, size_t len) = 0;
-	virtual UT_GenericVector<UT_UCSChar*>* __hyphenateWord(const UT_UCSChar* word, size_t len)=0;
+	virtual UT_UCSChar* __hyphenateWord(const UT_UCSChar* word, size_t len)=0;
 
 };
 
