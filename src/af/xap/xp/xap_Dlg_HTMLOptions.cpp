@@ -27,8 +27,6 @@
 #include "xap_App.h"
 #include "xap_Prefs.h"
 #include "xap_Dlg_HTMLOptions.h"
-#include "xap_UnixDialogHelper.h"
-#include "ut_Encoding.h"
 
 /*****************************************************************/
 
