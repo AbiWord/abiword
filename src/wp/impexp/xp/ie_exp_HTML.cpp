@@ -571,7 +571,7 @@ private:
 
 	void	_writeImageBase64 (const UT_ByteBuf * pByteBuf);
 	void	_handleImage (PT_AttrPropIndex api);
-	void	_handleImage (const PP_AttrProp * pAP, const char * szDataID, bool isPositioned);
+	void	_handleImage (const PP_AttrProp * pAP, const char * szDataID, bool isPositioned, bool bIgnoreSize);
 	void	_handlePendingImages ();
 	void	_handleField (const PX_ChangeRecord_Object * pcro, PT_AttrPropIndex api);
 	void	_handleHyperlink (PT_AttrPropIndex api);
@@ -612,11 +612,12 @@ private:
 	inline bool		get_Link_CSS ()     const { return m_exp_opt->bLinkCSS; }
 	inline bool		get_Abs_Units ()    const { return m_exp_opt->bAbsUnits; }
 	inline bool		get_Scale_Units ()  const { return m_exp_opt->bScaleUnits; }
-	inline UT_uint32 get_Compact ()     const { return m_exp_opt->iCompact; }
+	inline UT_uint32        get_Compact ()     const { return m_exp_opt->iCompact; }
 	inline bool		get_Embed_Images () const { return m_exp_opt->bEmbedImages; }
 	inline bool		get_Multipart ()    const { return m_exp_opt->bMultipart; }
-	inline bool     get_Class_Only()    const { return m_exp_opt->bClassOnly; }
-	inline bool	get_AddIdentifiers()  const {return m_exp_opt->bAddIdentifiers; }
+	inline bool             get_Class_Only()    const { return m_exp_opt->bClassOnly; }
+	inline bool             get_AddIdentifiers()  const {return m_exp_opt->bAddIdentifiers; }
+        inline bool             get_MathML_Render_PNG() const {return m_exp_opt->bMathMLRenderPNG; }
 
 	bool			m_bInSection;
 	bool			m_bInFrame;
@@ -1453,7 +1454,7 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 	//
 	// Export the script to enable mathml and SVG in HTML4
 	//
-	if(m_pDocument->hasMath())
+	if(m_pDocument->hasMath() && !get_MathML_Render_PNG())
 	{
 		m_pie->write(sMathSVGScript.utf8_str(),sMathSVGScript.size());
 	}
@@ -4118,7 +4119,7 @@ void s_HTML_Listener::_openPosImage (PT_AttrPropIndex api)
 
 	const gchar * pszDataID = NULL;
 	if(pAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const gchar *&)pszDataID) && pszDataID)
-		_handleImage(pAP,pszDataID,true);
+		_handleImage(pAP,pszDataID,true, false);
 
 }
 
@@ -4689,7 +4690,7 @@ void s_HTML_Listener::_handleEmbedded (const PP_AttrProp * pAP, const gchar * sz
 		// embed an <img> version of the object, as a rendering fallback
 		UT_UTF8String imgDataID("snapshot-png-");
 		imgDataID += szDataID;
-		_handleImage (pAP, imgDataID.utf8_str(), false);
+		_handleImage (pAP, imgDataID.utf8_str(), false, false);
 	}
 
 	m_utf8_1 = "object";
@@ -4709,10 +4710,10 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 	if (szDataID == 0)
 		return;
 
-	_handleImage (pAP, szDataID,false);
+	_handleImage (pAP, szDataID,false, false);
 }
 
-void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szDataID, bool bIsPositioned)
+void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szDataID, bool bIsPositioned, bool bIgnoreSize)
 {
 	UT_LocaleTransactor t(LC_NUMERIC, "C");
 
@@ -4822,6 +4823,7 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 	 * filename is the name of the file to which we'll write the image
 	 * url      is the URL which we'll use
 	 */
+        
 	if (!get_Embed_Images () && !get_Multipart ())
 	{
 		IE_Exp::writeBufferToFile(pByteBuf, imagedir, filename.utf8_str());
@@ -4853,13 +4855,19 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 		}
 	}
 
+        
 	const gchar * szWidth = 0;
 	const gchar * szHeight = 0;
 	double widthPercentage = 0;
-	if (!_getPropertySize(pAP, !bIsPositioned ? "width" : "frame-width", "height", &szWidth, widthPercentage, &szHeight))
-		return;
-	UT_DEBUGMSG(("Size of Image: %sx%s\n", szWidth ? szWidth : "(null)", szHeight ? szHeight : "(null)"));
-	m_utf8_1 += " " + _getStyleSizeString(szWidth, widthPercentage, DIM_MM, szHeight, DIM_MM);	
+        
+        if (!bIgnoreSize)
+        {
+            if (!_getPropertySize(pAP, !bIsPositioned ? "width" : "frame-width", "height", &szWidth, widthPercentage, &szHeight))
+                    return;
+            UT_DEBUGMSG(("Size of Image: %sx%s\n", szWidth ? szWidth : "(null)", szHeight ? szHeight : "(null)"));
+
+            m_utf8_1 += " " + _getStyleSizeString(szWidth, widthPercentage, DIM_MM, szHeight, DIM_MM);	
+        }
 
 	const gchar * szTitle  = 0;
 	UT_UTF8String escape;
@@ -5192,39 +5200,47 @@ void s_HTML_Listener::_handleBookmark (PT_AttrPropIndex api)
 
 void s_HTML_Listener::_handleMath (PT_AttrPropIndex api)
 {
+    const PP_AttrProp * pAP = 0;
+    bool bHaveProp = (api ? (m_pDocument->getAttrProp(api, &pAP)) : false);
 
-	m_utf8_1 = "a";
-	if (tagTop () == TT_A)
-	{
-		tagClose (TT_A, m_utf8_1, ws_None);
-	}
-	m_utf8_1 = "";
-	const PP_AttrProp * pAP = 0;
-	bool bHaveProp = (api ? (m_pDocument->getAttrProp (api, &pAP)) : false);
+    if (!bHaveProp || (pAP == 0)) return;
 
-	if (!bHaveProp || (pAP == 0)) return;
+    const gchar * szDataID = 0;
+    bool bFound = pAP->getAttribute("dataid", szDataID);
 
-	const gchar * szDataID = 0;
-	bool bFound = pAP->getAttribute ("dataid", szDataID);
-
-	if (szDataID == 0) return; // ??
-	UT_UTF8String sMathML;
-	//
-	// OK shovel the mathml into the HTML stream
-	//
-	if (bFound && szDataID)
-	{
-		const UT_ByteBuf * pByteBuf = NULL;
-		bFound = m_pDocument->getDataItemDataByName(szDataID, 
-													 &pByteBuf,
-													 NULL, NULL);
-		if(bFound)
-		{
-			UT_UCS4_mbtowc myWC;
-			sMathML.appendBuf( *pByteBuf, myWC);
-			tagRaw(sMathML);
-		}
-	}
+    if (szDataID == 0) return; // ??
+    
+    if (get_MathML_Render_PNG())
+    {
+        UT_UTF8String imgDataID = "snapshot-png-";
+        imgDataID += szDataID;
+        _handleImage(pAP, imgDataID.utf8_str(), false, true);
+    } else
+    {
+        m_utf8_1 = "a";
+        if (tagTop() == TT_A) 
+        {
+            tagClose(TT_A, m_utf8_1, ws_None);
+        }
+        m_utf8_1 = "";
+        UT_UTF8String sMathML;
+        //
+        // OK shovel the mathml into the HTML stream
+        //
+        if (bFound && szDataID) 
+        {
+            const UT_ByteBuf * pByteBuf = NULL;
+            bFound = m_pDocument->getDataItemDataByName(szDataID,
+                                                        &pByteBuf,
+                                                        NULL, NULL);
+            if (bFound) 
+            {
+                UT_UCS4_mbtowc myWC;
+                sMathML.appendBuf(*pByteBuf, myWC);
+                tagRaw(sMathML);
+            }
+        }
+    }
 }
 
 #ifdef HTML_META_SUPPORTED
@@ -7092,6 +7108,10 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 	if (!prop.empty())
 		m_exp_opt.bEmbedCSS = UT_parseBool (prop.c_str (), m_exp_opt.bEmbedCSS);
 
+        prop = getProperty ("mathml-render-png");
+	if (!prop.empty())
+		m_exp_opt.bMathMLRenderPNG = UT_parseBool (prop.c_str (), m_exp_opt.bMathMLRenderPNG);
+                            
 	prop = getProperty ("abs-units");
 	if (!prop.empty())
 		m_exp_opt.bAbsUnits = UT_parseBool (prop.c_str (), m_exp_opt.bAbsUnits);

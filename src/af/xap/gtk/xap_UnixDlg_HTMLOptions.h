@@ -48,6 +48,7 @@ public:
 	void			toggle_AllowAWML ();
 	void			toggle_EmbedCSS ();
 	void			toggle_EmbedImages ();
+        void			toggle_MathMLRenderPNG ();
 
 	void			refreshStates ();
 
@@ -67,6 +68,7 @@ public:
 	GtkWidget *		m_wAllowAWML;
 	GtkWidget *		m_wEmbedCSS;
 	GtkWidget *		m_wEmbedImages;
+        GtkWidget *		m_wMathMLRenderPNG;
 };
 
 #endif /* XAP_UNIXDIALOG_HTMLOPTIONS_H */

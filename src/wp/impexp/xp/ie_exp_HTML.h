@@ -163,11 +163,14 @@ struct XAP_Exp_HTMLOptions
 	bool    bClassOnly;
 	bool    bAbsUnits;
 	bool	bScaleUnits;
+        bool    bMathMLRenderPNG;
+        
 	UT_uint32 iCompact;
 	/* other options, not set/saved/restore by options dialog
 	 */
 	bool	bMultipart;
 	bool 	bAddIdentifiers;
+         
 };
 
 #endif /* HTML_DIALOG_OPTIONS */

@@ -147,7 +147,7 @@ UT_Error IE_Exp_EPUB::writeStructure()
     strcpy(szIndexPath, indexPath.utf8_str());
     IE_Exp_HTML *pExpHtml = new IE_Exp_HTML(getDoc());
     pExpHtml->suppressDialog(true);
-    pExpHtml->setProps("embed-css:no;html4:no;use-awml:no;declare-xml:yes;");
+    pExpHtml->setProps("embed-css:no;html4:no;use-awml:no;declare-xml:yes;mathml-render-png:yes;");
     // Though there is no table of contents at begining of the document, 
     // we still need to generate id`s for headings because of NCX
     pExpHtml->set_AddIdentifiers(true);

@@ -38,7 +38,8 @@ XAP_UnixDialog_HTMLOptions::XAP_UnixDialog_HTMLOptions (XAP_DialogFactory * pDlg
 	  m_wDeclareXML(NULL),
 	  m_wAllowAWML(NULL),
 	  m_wEmbedCSS(NULL),
-	  m_wEmbedImages(NULL)
+	  m_wEmbedImages(NULL),
+          m_wMathMLRenderPNG(NULL)
 {
 	// 
 }
@@ -131,6 +132,14 @@ void XAP_UnixDialog_HTMLOptions::toggle_EmbedImages ()
 	refreshStates ();
 }
 
+
+void XAP_UnixDialog_HTMLOptions::toggle_MathMLRenderPNG ()
+{
+	bool on = (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (m_wMathMLRenderPNG)) == TRUE);
+	set_MathML_Render_PNG (on);
+	refreshStates ();
+}
+
 void XAP_UnixDialog_HTMLOptions::refreshStates ()
 {
 	gboolean on;
@@ -164,6 +173,14 @@ void XAP_UnixDialog_HTMLOptions::refreshStates ()
 
 	on = can_set_Embed_Images () ? TRUE : FALSE;
 	gtk_widget_set_sensitive (m_wEmbedImages, on);
+                
+        on = get_MathML_Render_PNG () ? TRUE : FALSE;
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_wMathMLRenderPNG), on);
+
+	on = can_set_MathML_Render_PNG () ? TRUE : FALSE;
+	gtk_widget_set_sensitive (m_wMathMLRenderPNG, on);
+        
+        
 }
 
 void XAP_UnixDialog_HTMLOptions::event_OK ()
@@ -218,6 +235,11 @@ static void s_EmbedImages (GtkWidget * /* w */, XAP_UnixDialog_HTMLOptions * dlg
 	dlg->toggle_EmbedImages ();
 }
 
+static void s_MathMLRenderPNG (GtkWidget * /* w */, XAP_UnixDialog_HTMLOptions * dlg)
+{
+	dlg->toggle_MathMLRenderPNG();
+}
+
 GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
@@ -233,6 +255,8 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 	const char * AllowAWML   = static_cast<const char *>(pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpAllowAWML));
 	const char * EmbedCSS    = static_cast<const char *>(pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpEmbedCSS));
 	const char * EmbedImages = static_cast<const char *>(pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpEmbedImages));
+        
+        const char * MathMLRenderPNG = static_cast<const char *>(pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpMathMLRenderPNG));
 
 	/* This is the top level GTK widget, the window.
 	 * It's created with a "dialog" style.
@@ -310,6 +334,16 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 			gtk_box_pack_start (GTK_BOX (vboxMain), m_wEmbedImages, TRUE, TRUE, 0);
 			g_signal_connect (G_OBJECT (m_wEmbedImages), "toggled",
 							  G_CALLBACK (s_EmbedImages), static_cast<gpointer>(this));
+		}
+        
+        m_wMathMLRenderPNG = gtk_check_button_new_with_label (MathMLRenderPNG);
+        if (m_wMathMLRenderPNG)
+		{
+			gtk_container_set_border_width (GTK_CONTAINER (m_wMathMLRenderPNG), 5);
+			gtk_widget_show (m_wMathMLRenderPNG);
+			gtk_box_pack_start (GTK_BOX (vboxMain), m_wMathMLRenderPNG, TRUE, TRUE, 0);
+			g_signal_connect (G_OBJECT (m_wMathMLRenderPNG), "toggled",
+							  G_CALLBACK (s_MathMLRenderPNG), static_cast<gpointer>(this));
 		}
 
 	refreshStates ();

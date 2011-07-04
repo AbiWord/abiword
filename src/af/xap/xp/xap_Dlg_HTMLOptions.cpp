@@ -27,6 +27,8 @@
 #include "xap_App.h"
 #include "xap_Prefs.h"
 #include "xap_Dlg_HTMLOptions.h"
+#include "xap_UnixDialogHelper.h"
+#include "ut_Encoding.h"
 
 /*****************************************************************/
 
@@ -124,6 +126,15 @@ void XAP_Dialog_HTMLOptions::set_Embed_Images (bool enable)
 	m_exp_opt->bEmbedImages = enable;
 }
 
+
+void XAP_Dialog_HTMLOptions::set_MathML_Render_PNG(bool enable)
+{
+    if (can_set_MathML_Render_PNG())
+    {
+        m_exp_opt->bMathMLRenderPNG = enable;
+    }
+}
+
 void XAP_Dialog_HTMLOptions::saveDefaults ()
 {
 	UT_ASSERT(m_app);
@@ -172,6 +183,11 @@ void XAP_Dialog_HTMLOptions::saveDefaults ()
 		if (pref.byteLength ()) pref += ",";
 		pref += "+ScaleUnits";
 	}
+        if (m_exp_opt->bMathMLRenderPNG)
+	{
+		if (pref.byteLength ()) pref += ",";
+		pref += "+MathMLPNG";
+	}
 	if (m_exp_opt->iCompact)
 	{
 		if (pref.byteLength ()) pref += ",";
@@ -193,6 +209,11 @@ void XAP_Dialog_HTMLOptions::saveDefaults ()
 		if (pref.byteLength ()) pref += ",";
 		pref += "data:base64";
 	}
+        if (m_exp_opt->bEmbedImages)
+	{
+		if (pref.byteLength ()) pref += ",";
+		pref += "data:base64";
+	}
 	const gchar * szValue = (const gchar *) pref.utf8_str ();
 
 	pPScheme->setValue (XAP_PREF_KEY_HTMLExportOptions, szValue);
@@ -210,19 +231,20 @@ void XAP_Dialog_HTMLOptions::getHTMLDefaults (XAP_Exp_HTMLOptions * exp_opt, XAP
 
 	if (exp_opt == NULL) return;
 
-	exp_opt->bIs4         = false;
-	exp_opt->bIsAbiWebDoc = false;
-	exp_opt->bDeclareXML  = true;
-	exp_opt->bAllowAWML   = true;
-	exp_opt->bEmbedCSS    = true;
-	exp_opt->bAbsUnits    = false;
-	exp_opt->bScaleUnits    = false;
-	exp_opt->iCompact     = 0;
-	exp_opt->bEmbedImages = false;
+	exp_opt->bIs4             = false;
+	exp_opt->bIsAbiWebDoc     = false;
+	exp_opt->bDeclareXML      = true;
+	exp_opt->bAllowAWML       = true;
+	exp_opt->bEmbedCSS        = true;
+	exp_opt->bAbsUnits        = false;
+	exp_opt->bScaleUnits      = false;
+	exp_opt->iCompact         = 0;
+	exp_opt->bEmbedImages     = false;
+        exp_opt->bMathMLRenderPNG = false;
 
 	if (app == NULL) return;
 
-    const XAP_Prefs * pPrefs = app->getPrefs ();
+        const XAP_Prefs * pPrefs = app->getPrefs ();
 
 	if (pPrefs == NULL) return;
 
@@ -248,9 +270,10 @@ void XAP_Dialog_HTMLOptions::getHTMLDefaults (XAP_Exp_HTMLOptions * exp_opt, XAP
 				exp_opt->iCompact = atoi(p);
 			}
 			
-			exp_opt->bLinkCSS     = (strstr (pref, "LinkCSS")     == NULL) ? false : true;
-			exp_opt->bClassOnly   = (strstr (pref, "ClassOnly")   == NULL) ? false : true;
-			exp_opt->bEmbedImages = (strstr (pref, "data:base64") == NULL) ? false : true;
+			exp_opt->bLinkCSS           = (strstr (pref, "LinkCSS")     == NULL) ? false : true;
+			exp_opt->bClassOnly         = (strstr (pref, "ClassOnly")   == NULL) ? false : true;
+			exp_opt->bEmbedImages       = (strstr (pref, "data:base64") == NULL) ? false : true;
+                        exp_opt->bMathMLRenderPNG   = (strstr (pref, "+MathMLPNG")   == NULL) ? false : true;
 
 			if (exp_opt->bIs4) exp_opt->bIsAbiWebDoc = false;
 		}
