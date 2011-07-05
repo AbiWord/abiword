@@ -4566,8 +4566,12 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		UT_DEBUGMSG(("fv_View::draw() called with zero width or height expose.\n"));
 		return;
 	}
-	
-	painter.beginDoubleBuffering();
+
+	// no double buffering for minor changes for the moment
+	if(!bDirtyRunsOnly)
+	{
+		painter.beginDoubleBuffering();
+	}
 
 	// TMN: Leave this rect at function scope!
 	// gr_Graphics only stores a _pointer_ to it!
