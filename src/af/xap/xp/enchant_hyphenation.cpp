@@ -113,7 +113,9 @@ EnchantHyphenation::__hyphenateWord (const UT_UCSChar *ucszWord, size_t len)
 	UT_return_val_if_fail (m_dict, 0);
 	UT_return_val_if_fail (ucszWord && len, 0);
 
-    char* result=enchant_dict_hyphenation(m_dict,ucszWord,-1);
-	UT_UCSChar* pvSugg = new UT_UCSChar(result);
-	return pvSugg;
+	UT_UTF8String utf8 (ucszWord, len);
+
+    char* result=enchant_dict_hyphenation(m_dict,utf8.utf8_str(), utf8.byteLength());
+	UT_UCSChar *ucszSugg = utf8_to_utf32(result);
+	return ucszSugg;
 }

@@ -63,7 +63,6 @@ bool Hyphenation::requestDictionary (const char * szLang)
 UT_UCSChar* Hyphenation::hyphenateWord(const UT_UCSChar* word, size_t len)
 {
 	UT_UCSChar* pvSugg = __hyphenateWord(word, len);
-
 	return pvSugg;
 }
 
