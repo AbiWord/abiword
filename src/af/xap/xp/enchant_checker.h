@@ -49,6 +49,7 @@ private:
 
 	bool _requestDictionary (const char * szLang);
 	SpellChecker::SpellCheckResult _checkWord (const UT_UCSChar * word, size_t len);
+	UT_UCSChar*	_hyphenateWord (const UT_UCSChar *ucszWord, size_t len);
 	UT_GenericVector<UT_UCSChar*> * _suggestWord (const UT_UCSChar * word, size_t len);
 
 	EnchantDict *m_dict;

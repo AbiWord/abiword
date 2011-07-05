@@ -178,7 +178,18 @@ fl_BlockLayout::_spellCheckWord(const UT_UCSChar * word,
 }
 #endif // ENABLE_SPELL
 
+UT_UCSChar* 
+fl_BlockLayout::_hyphenateWord(const UT_UCSChar * word, UT_uint32 len, UT_uint32 blockPos) const
+{
+	SpellChecker * checker = _getSpellChecker (blockPos);
+	if (!checker)
+	{
+		// no checker found, don't mark as wrong
+		return NULL; //not hyphenation
+	}
 
+	return checker->hyphenateWord(word,len);
+}
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -4803,6 +4814,7 @@ fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg) const
 			// there is one or more words between iFirst
 			// and iLast we want to check.
 			_checkMultiWord(iFirst, iLast, false);
+			_hyphenateMultiWord(iFirst, iLast, false);
 		}
 
 		// We still have the word at the end pending though.
@@ -4913,6 +4925,7 @@ bool fl_BlockLayout::checkSpelling(void)
 
 	// Now start checking
 	bUpdateScreen |= _checkMultiWord(0, -1, bIsCursorInBlock);
+	bUpdateScreen |= _hyphenateMultiWord(0, -1, bIsCursorInBlock);
 	if( bUpdateScreen && pView)
 	{
 		markAllRunsDirty();
@@ -4974,7 +4987,68 @@ fl_BlockLayout::_checkMultiWord(UT_sint32 iStart,
 		if (pPOB)
 		{
 			bool bwrong = false;
-			bwrong = _doCheckWord(pPOB, pWord, iLength, true, bToggleIP);
+			bwrong = _doCheckWord(pPOB, pWord, iLength);
+#if 0
+			if(bwrong)
+			{
+				UT_DEBUGMSG(("Found misspelt word in block %x \n",this));
+			}
+#endif
+			bScreenUpdated |= bwrong;
+		}
+	}
+
+	return bScreenUpdated;
+}
+
+// Need to calculate the position where needs hyphenation chenxiajian wait
+bool
+fl_BlockLayout::_hyphenateMultiWord(UT_sint32 iStart,
+								UT_sint32 eor,
+								bool bToggleIP) const
+{
+	xxx_UT_DEBUGMSG(("fl_BlockLayout::_checkMultiWord\n"));
+
+	bool bScreenUpdated = false;
+
+	fl_BlockSpellIterator wordIterator(this, iStart);
+
+	const UT_UCSChar* pWord;
+	UT_sint32 iLength, iBlockPos, iPTLength;
+
+	while (wordIterator.nextWordForSpellChecking(pWord, iLength, iBlockPos, iPTLength))
+	{
+		// When past the provided end position, break out
+		if (eor > 0 && iBlockPos > eor) break;
+
+		fl_PartOfBlock* pPOB = new fl_PartOfBlock(iBlockPos, iPTLength);
+		UT_ASSERT(pPOB);
+
+#if 0 // TODO: turn this code on someday
+		FV_View* pView = getView();
+		XAP_App * pApp = XAP_App::getApp();
+		XAP_Prefs *pPrefs = pApp->getPrefs();
+		UT_ASSERT(pPrefs);
+
+		bool b;
+
+		// possibly auto-replace the squiggled word with a suggestion
+		if (pPrefs->getPrefsValueBool(static_cast<gchar*>(AP_PREF_KEY_SpellAutoReplace), &b))
+		{
+			if (b && !bIsIgnored)
+			{
+				// todo: better cursor movement
+				pView->cmdContextSuggest(1, this, pPOB);
+				pView->moveInsPtTo(FV_DOCPOS_EOW_MOVE);
+				DELETEP(pPOB);
+			}
+		}
+#endif
+
+		if (pPOB)
+		{
+			bool bwrong = false;
+			bwrong = _doCheckWord(pPOB, pWord, iLength);
 #if 0
 			if(bwrong)
 			{
@@ -5043,6 +5117,16 @@ fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
 	return false;
 }
 
+UT_UCSChar*
+fl_BlockLayout::_doHyphenateWord(fl_PartOfBlock* pPOB,
+							 const UT_UCSChar* pWord,
+							 UT_sint32 iLength) const
+{
+	UT_sint32 iBlockPos = pPOB->getOffset();
+	UT_UCSChar* result=_hyphenateWord(pWord, iLength, iBlockPos);
+	delete pPOB;
+	return result;
+}
 
 /*!
  Spell-check word in the block region

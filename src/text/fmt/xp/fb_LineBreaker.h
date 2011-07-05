@@ -52,6 +52,7 @@ protected:
 private:
 	fp_Run* 	m_pFirstRunToKeep;
 	fp_Run* 	m_pLastRunToKeep;
+	fl_BlockLayout* m_blockLayout;
 	
 	UT_sint32	m_iMaxLineWidth;
 	UT_sint32	m_iWorkingLineWidth;

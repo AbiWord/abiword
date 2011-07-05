@@ -60,6 +60,10 @@ bool SpellChecker::requestDictionary (const char * szLang)
 
 	return bSuccess;
 }
+UT_UCSChar* SpellChecker::hyphenateWord(const UT_UCSChar* word, size_t len)
+{
+	return _hyphenateWord (word, len);
+}
 
 SpellChecker::SpellCheckResult SpellChecker::checkWord(const UT_UCSChar* word, size_t len)
 {

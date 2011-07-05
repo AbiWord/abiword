@@ -56,6 +56,7 @@ public:
 	};
 
 	SpellCheckResult	checkWord(const UT_UCSChar* word, size_t len);
+	UT_UCSChar* hyphenateWord(const UT_UCSChar* word, size_t len);
 	UT_GenericVector<UT_UCSChar*>* suggestWord(const UT_UCSChar* word, size_t len);
 
 	// vector of DictionaryMapping*
@@ -108,6 +109,7 @@ private:
 
 	virtual bool				_requestDictionary (const char * szLang) = 0;
 	virtual SpellCheckResult	_checkWord(const UT_UCSChar* word, size_t len) = 0;
+	virtual UT_UCSChar*	_hyphenateWord (const UT_UCSChar *ucszWord, size_t len)=0;
 	virtual UT_GenericVector<UT_UCSChar*> *_suggestWord(const UT_UCSChar* word, size_t len) = 0;
 };
 

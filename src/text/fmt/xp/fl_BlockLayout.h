@@ -446,9 +446,17 @@ protected:
 										 bool bAddSquiggle = true,
 										 bool bClearScreen = true) const;
 
+	UT_UCSChar*			_doHyphenateWord(fl_PartOfBlock* pPOB,
+		const UT_UCSChar* pBlockText,
+		UT_sint32 iLength) const;
+
+	
+	UT_UCSChar* _hyphenateWord(const UT_UCSChar * word, UT_uint32 len, UT_uint32 blockPos) const;
+
 #ifdef ENABLE_SPELL
-	bool					_spellCheckWord(const UT_UCSChar * word, UT_uint32 len, UT_uint32 blockPos) const;
+	bool		 _spellCheckWord(const UT_UCSChar * word, UT_uint32 len, UT_uint32 blockPos) const;
 	SpellChecker * _getSpellChecker (UT_uint32 blockPos) const;
+
 #endif
 	
 	bool					_truncateLayout(fp_Run* pTruncRun);
@@ -495,6 +503,10 @@ protected:
 	bool					_checkMultiWord(UT_sint32 iStart,
 											UT_sint32 eor,
 											bool bToggleIP) const;
+	bool					_hyphenateMultiWord(UT_sint32 iStart,
+		UT_sint32 eor,
+		bool bToggleIP) const;
+	
 
 	UT_uint32				_getLastChar();
 	void					_stuffAllRunsOnALine(void);

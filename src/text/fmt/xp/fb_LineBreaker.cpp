@@ -38,7 +38,8 @@ fb_LineBreaker::fb_LineBreaker()
 	m_pFirstRunToKeep(NULL),
 	m_pLastRunToKeep(NULL),
 	m_iMaxLineWidth(0),
-	m_iWorkingLineWidth(0)
+	m_iWorkingLineWidth(0),
+	m_blockLayout(NULL)
 {
 	xxx_UT_DEBUGMSG(("fb_LineBreaker %x created \n",this));
 }
@@ -71,6 +72,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock,
 	//	 o If the block bounding box or layout properties change, it
 	//	   should force a full layout.
 	//	 o Also see fix me at end of loop
+	m_blockLayout=pBlock;
 	fp_Line* pLine = static_cast<fp_Line *>(pBlock->getFirstContainer());
 	UT_ASSERT(pLine);
 	xxx_UT_DEBUGMSG(("In LineBreaker max line width is %d pLineToStart %x \n",m_iMaxLineWidth,pLineToStartAt));
@@ -698,6 +700,10 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 			xxx_UT_DEBUGMSG(("Next runToBump %x \n",pRunToBump));
 		}
 	}
+
+
+	//modify src/text/fmt/xp/fb_LineBreaker.cpp to place hypernation points
+
 
 	UT_ASSERT((!m_pLastRunToKeep) || (pLine->getLastRun() == m_pLastRunToKeep));
 #if DEBUG
