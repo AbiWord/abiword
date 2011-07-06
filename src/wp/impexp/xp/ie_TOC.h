@@ -3,6 +3,7 @@
 
 #include "ut_string_class.h"
 #include "ut_vector.h"
+#include "pt_Types.h"
 
 class PD_Document;
 
@@ -24,13 +25,14 @@ class ABI_EXPORT IE_TOCHelper
   int getNumTOCEntries() const;
   
   UT_UTF8String getNthTOCEntry(int nth, int * out_level = NULL) const;
+  bool getNthTOCEntryPos(int nth, PT_DocPosition &pos);
 
  private:
 
   bool _tocNameLevelHelper(const UT_UTF8String & styleName,
 			   const char * sLStyle) const;
 
-  void _defineTOC(const UT_UTF8String & toc_text, int level);
+  void _defineTOC(const UT_UTF8String & toc_text, int level, PT_DocPosition pos);
 
   // undefined
   IE_TOCHelper();
@@ -40,6 +42,9 @@ class ABI_EXPORT IE_TOCHelper
   // storage
   UT_GenericVector<UT_UTF8String *> mTOCStrings;
   UT_GenericVector<int> mTOCLevels;
+  // By adding this vector we making it possible to get ranges of every
+  // section of a document by using TOCHelper
+  UT_GenericVector<PT_DocPosition> mTOCPositions;
 
   bool mHasTOC;
   bool mDocHasTOC;

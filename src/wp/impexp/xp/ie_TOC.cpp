@@ -72,6 +72,7 @@ private:
   bool mInHeading;
   UT_UTF8String mHeadingText;
   int mHeadingLevel;
+  PT_DocPosition mHeadingPos;
 
   PD_Document * mDocument;
   IE_TOCHelper * mTOC;
@@ -95,18 +96,19 @@ void TOC_Listener::_saveTOCData(const UT_UCSChar * data, UT_uint32 length)
 void TOC_Listener::_commitTOCData()
 {
   if (mInHeading) {
-    mTOC->_defineTOC(mHeadingText, mHeadingLevel);
+    mTOC->_defineTOC(mHeadingText, mHeadingLevel, mHeadingPos);
   }
 
   mInHeading = false;
   mHeadingText.clear();
   mHeadingLevel = 0;
+  mHeadingPos = 0;
 }
 
 TOC_Listener::TOC_Listener(PD_Document * pDocument,
 			   IE_TOCHelper * toc)
   : mInHeading(0), mHeadingText(""), mHeadingLevel(0),
-    mDocument(pDocument), mTOC(toc)
+    mDocument(pDocument), mTOC(toc), mHeadingPos(0)
 {
 }
   
@@ -166,6 +168,7 @@ bool TOC_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	  if (bHaveStyle) {
 	    if (mTOC->isTOCStyle (szValue, &mHeadingLevel)) {
 	      mInHeading = true;
+	      mHeadingPos = pcr->getPosition();
 	    }
 	  }
 	}
@@ -294,12 +297,21 @@ UT_UTF8String IE_TOCHelper::getNthTOCEntry(int nth, int * out_level) const
   return *mTOCStrings.getNthItem(nth);
 }
 
-void IE_TOCHelper::_defineTOC(const UT_UTF8String & toc_text, int level)
+bool IE_TOCHelper::getNthTOCEntryPos(int nth, PT_DocPosition &pos)
+{
+	UT_return_val_if_fail(nth < getNumTOCEntries(), false);
+
+	pos = mTOCPositions[nth];
+	return true;
+}
+
+void IE_TOCHelper::_defineTOC(const UT_UTF8String & toc_text, int level, PT_DocPosition pos)
 {
   if(toc_text.length() > 0) {
     mHasTOC = true;
     
     mTOCStrings.push_back(new UT_UTF8String(toc_text));
     mTOCLevels.push_back(level);
+    mTOCPositions.push_back(pos);
   }
 }
