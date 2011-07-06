@@ -426,7 +426,6 @@ UT_Error IE_Exp_EPUB::compress()
         return UT_ERROR;
     }
 
-    int childCount = gsf_infile_num_children(oebpsDir);  
     std::vector<UT_UTF8String> listing = getFileList(UT_go_filename_from_uri(m_oebpsDir.utf8_str()));
     for (std::vector<UT_UTF8String>::iterator i = listing.begin(); i != listing.end(); i++) {
         GsfOutput* item = gsf_outfile_new_child(GSF_OUTFILE(m_oebps), (*i).utf8_str(), FALSE);
