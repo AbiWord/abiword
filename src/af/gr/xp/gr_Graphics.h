@@ -862,6 +862,9 @@ class ABI_EXPORT GR_Graphics
 	virtual void _DeviceContext_SuspendDrawing() { };
 	virtual void _DeviceContext_ResumeDrawing() { };
 
+	// this *does not* ensure proper nesting of suspend - resume calls
+	UT_sint32 m_iTimesDrawingSuspended;
+public:
 	void suspendDrawing();
 	void resumeDrawing();
 

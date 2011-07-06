@@ -246,7 +246,8 @@ GR_Graphics::GR_Graphics()
 	  m_hashFontCache(19),
 	  m_AllCarets(this,&m_pCaret,&m_vecCarets),
 	  m_bAntiAliasAlways(false),
-	  m_DCState(SET_TO_SCREEN)
+	  m_DCState(SET_TO_SCREEN),
+	  m_iTimesDrawingSuspended(0)
 {
 }
 
@@ -303,22 +304,26 @@ GR_Graphics::~GR_Graphics()
 
 bool GR_Graphics::beginDoubleBuffering()
 {
-	if(m_DCState == SET_TO_SCREEN)
+	switch(m_DCState)
 	{
-		// this is a "first call", redirect drawing to  buffer
-		_DeviceContext_SwitchToBuffer();
-		m_DCState = SET_TO_BUFFER;
+		case SET_TO_SCREEN:
+			// this is a "first call", redirect drawing to  buffer
+			_DeviceContext_SwitchToBuffer();
+			m_DCState = SET_TO_BUFFER;
 
-		UT_DEBUGMSG(("ASFRENT: SWITCHED TO BUFFER\n"));
+			UT_DEBUGMSG(("ASFRENT: SWITCHED TO BUFFER\n"));
 
-		// register and return a token for exclusive access to
-		// "endDoubleBuffering"
-		return true;
-	}
-	else
-	{
-		// the drawing is redirected to a buffer, return a bad token
-		return false;
+			// register and return a token for exclusive access to
+			// "endDoubleBuffering"
+			return true;
+
+		case SET_TO_BUFFER:
+			// the drawing is redirected to a buffer, return a bad token
+			return false;
+
+		case SUSPENDED:
+			// why bother to double buffer when drawing is suspended?
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 }
 
@@ -336,12 +341,44 @@ void GR_Graphics::endDoubleBuffering(bool token)
 
 void GR_Graphics::suspendDrawing()
 {
-	// TODO
+	switch(m_DCState)
+	{
+		case SET_TO_SCREEN:
+			m_iTimesDrawingSuspended = 1;
+			_DeviceContext_SuspendDrawing();
+			break;
+
+		case SET_TO_BUFFER:
+			// current implementation does not allow suspend while SET_TO_BUFFER
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			break;
+
+		case SUSPENDED:
+			// another one!
+			m_iTimesDrawingSuspended++;
+			break;
+	}
 }
 
 void GR_Graphics::resumeDrawing()
 {
-	// TODO
+	switch(m_DCState)
+	{
+		case SET_TO_SCREEN:
+		case SET_TO_BUFFER:
+			// nasty nesting error!
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			break;
+
+		case SUSPENDED:
+			m_iTimesDrawingSuspended--;
+			UT_ASSERT(m_iTimesDrawingSuspended >= 0);
+			if(m_iTimesDrawingSuspended == 0)
+			{
+				_DeviceContext_ResumeDrawing();
+			}
+			break;
+	}
 }
 
 void GR_Graphics::_destroyFonts ()
