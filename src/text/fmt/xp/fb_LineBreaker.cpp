@@ -655,7 +655,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 		xxx_UT_DEBUGMSG(("!!!RunToBump %x Type %d Offset %d Length %d \n",pRunToBump,pRunToBump->getType(),pRunToBump->getBlockOffset(),pRunToBump->getLength()));
 
 		//to place hyphenation points
-		while (pRunToBump && pLine->getNumRunsInLine() && pLine->getLastRun() &&(pLine->getLastRun() != m_pLastRunToKeep))
+		while (pRunToBump && pLine->getNumRunsInLine() && pRunToBump->getPrevRun()!=m_pLastRunToKeep)
 		{
            pRunToBump = pRunToBump->getPrevRun();
 		}
@@ -674,7 +674,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 				sTmp +=  static_cast<char>(c);
 			++text;
 		}
-        pRunToBump = pRunToBump->getPrevRun();
+        pRunToBump = m_pLastRunToKeep;
 		UT_ASSERT(pRunToBump->getLine() == pLine);
 		xxx_UT_DEBUGMSG(("RunToBump %x Type %d Offset %d Length %d \n",pRunToBump,pRunToBump->getType(),pRunToBump->getBlockOffset(),pRunToBump->getLength()));
 		if(!pLine->removeRun(pRunToBump))
