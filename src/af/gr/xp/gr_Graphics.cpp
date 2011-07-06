@@ -334,6 +334,16 @@ void GR_Graphics::endDoubleBuffering(bool token)
 	}
 }
 
+void GR_Graphics::suspendDrawing()
+{
+	// TODO
+}
+
+void GR_Graphics::resumeDrawing()
+{
+	// TODO
+}
+
 void GR_Graphics::_destroyFonts ()
 {
 	m_hashFontCache.purgeData();

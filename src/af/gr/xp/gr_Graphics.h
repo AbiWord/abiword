@@ -839,8 +839,6 @@ class ABI_EXPORT GR_Graphics
 	virtual void _DeviceContext_SwitchToScreen() { };
 	virtual void _DeviceContext_DrawBufferToScreen() { };
 
-	// TODO: better token control? (ie. in this case, endDoubleBuffering(true) always switches)
-
 	// returns the token for the current call
 	bool beginDoubleBuffering();
 
@@ -851,9 +849,21 @@ class ABI_EXPORT GR_Graphics
 	// device context state (BUFFER / SCREEN)
 	typedef enum {
 		SET_TO_SCREEN = 0,
-		SET_TO_BUFFER
+		SET_TO_BUFFER,
+		SUSPENDED
 	} DeviceContextState;
 	DeviceContextState m_DCState;
+
+	// SUSPEND / RESUME drawings infrastructure
+	// Drawing code (through gr_Graphics) will have no effect between SUSPEND - RESUME.
+	// The default implementation does not suspend anything
+	// (ie. changes are still taking effect)
+
+	virtual void _DeviceContext_SuspendDrawing() { };
+	virtual void _DeviceContext_ResumeDrawing() { };
+
+	void suspendDrawing();
+	void resumeDrawing();
 
  private:
 	GR_Caret *		 m_pCaret;
