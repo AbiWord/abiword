@@ -2582,9 +2582,7 @@ void GR_Win32Graphics::_DeviceContext_SwitchToBuffer()
 	getWidthAndHeightFromHWND(m_hwnd, width, height);
 
 	// set up the buffer
-	m_bufferHdc = CreateCompatibleDC(m_hdc);
-	m_bufferBitmap = CreateCompatibleBitmap(m_hdc, width, height);
-	m_hOld = SelectObject(m_bufferHdc, m_bufferBitmap);
+	m_bufferHdc = _DoubleBuffering_CreateBuffer(m_hdc, width, height);
 
 #if DEBUG
 	LARGE_INTEGER t1, t2, freq;
@@ -2627,7 +2625,14 @@ void GR_Win32Graphics::_DeviceContext_DrawBufferToScreen()
 	BitBlt(m_hdc, 0, 0, width, height, m_bufferHdc, 0, 0, SRCCOPY);
 	
 	// free used resources
-	SelectObject(m_bufferHdc, m_hOld);
-	DeleteObject(m_bufferBitmap);
 	DeleteDC(m_bufferHdc);
+}
+
+HDC GR_Win32Graphics::_DoubleBuffering_CreateBuffer(HDC compatibletWith, int width, int height)
+{
+	HDC resultingHDC = CreateCompatibleDC(compatibletWith);
+	HBITMAP bufferBitmap = CreateCompatibleBitmap(compatibletWith, width, height);
+	HANDLE hOriginalBitmap = SelectObject(resultingHDC, bufferBitmap);
+	DeleteObject(hOriginalBitmap);
+	return resultingHDC;
 }

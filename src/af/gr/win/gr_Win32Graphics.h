@@ -303,13 +303,12 @@ protected:
 
 	HDC m_originalScreenHdc;
 	HDC m_bufferHdc;
-	HBITMAP m_bufferBitmap;
-	HANDLE m_hOld;
 
 	void getWidthAndHeightFromHWND(HWND h, int &width, int &height);
 	void _DeviceContext_SwitchToBuffer();
 	void _DeviceContext_SwitchToScreen();
 	void _DeviceContext_DrawBufferToScreen();
+	HDC _DoubleBuffering_CreateBuffer(HDC compatibletWith, int width, int height);
 
 private:
 	virtual GR_Win32Font * _newFont(LOGFONTW & lf, double fPointSize, HDC hdc, HDC printDC);
