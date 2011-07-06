@@ -94,7 +94,7 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 		lookupProperties();
 	}
 
-	markDrawBufferDirty();
+ 	markDrawBufferDirty();
 
 	if(!s_iClassInstanceCount)
 	{
@@ -1145,6 +1145,7 @@ void fp_TextRun::mergeWithNext(void)
 	_setDirty(isDirty() || pNext->isDirty());
 
 	setNextRun(pNext->getNextRun(), false);
+	
 	if (getNextRun())
 	{
 		// do not mark anything dirty
@@ -1156,6 +1157,8 @@ void fp_TextRun::mergeWithNext(void)
 	setMustClearScreen();
 	markDrawBufferDirty();
 
+	printText();  //test Run
+	pNext->printText();
 	delete pNext;
 
 }

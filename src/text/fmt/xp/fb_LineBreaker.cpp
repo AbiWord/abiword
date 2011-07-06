@@ -654,51 +654,97 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 		UT_ASSERT(pRunToBump);
 		xxx_UT_DEBUGMSG(("!!!RunToBump %x Type %d Offset %d Length %d \n",pRunToBump,pRunToBump->getType(),pRunToBump->getBlockOffset(),pRunToBump->getLength()));
 
-		while (pRunToBump && pLine->getNumRunsInLine() && (pLine->getLastRun() != m_pLastRunToKeep))
+		//to place hyphenation points
+		while (pRunToBump && pLine->getNumRunsInLine() && pLine->getLastRun() &&(pLine->getLastRun() != m_pLastRunToKeep))
 		{
-			UT_ASSERT(pRunToBump->getLine() == pLine);
-			xxx_UT_DEBUGMSG(("RunToBump %x Type %d Offset %d Length %d \n",pRunToBump,pRunToBump->getType(),pRunToBump->getBlockOffset(),pRunToBump->getLength()));
-			if(!pLine->removeRun(pRunToBump))
-			{
-//
-// More repair code I think...
-// run is not on the Line! It's totally lost...
-//
-				pRunToBump->setLine(NULL);
-			}
-			
-			UT_ASSERT(pLine->getLastRun()->getType() != FPRUN_ENDOFPARAGRAPH);
-//
-// Some repair code
-//
-			if(pLine->getLastRun()->getType() == FPRUN_ENDOFPARAGRAPH)
-			{
-				fp_Run * pNuke = pLine->getLastRun();
-				pLine->removeRun(pNuke);
-			}
-
-			pRunToBump->printText();  //trace out debug message & run two time
-			pNextLine->insertRun(pRunToBump);  //called when create new line
-
-			PD_StruxIterator text(pRunToBump->getBlock()->getStruxDocHandle(),
-				pRunToBump->getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
-
-			text.setUpperLimit(text.getPosition() + pRunToBump->getLength() - 1);
-
-			UT_ASSERT_HARMLESS( text.getStatus() == UTIter_OK );
-			UT_UTF8String sTmp;
-			while(text.getStatus() == UTIter_OK)
-			{
-				UT_UCS4Char c = text.getChar();
-				xxx_UT_DEBUGMSG(("| %d |",c));
-				if(c >= ' ' && c <128)
-					sTmp +=  static_cast<char>(c);
-				++text;
-			}
-
-			pRunToBump = pRunToBump->getPrevRun();
-			xxx_UT_DEBUGMSG(("Next runToBump %x \n",pRunToBump));
+           pRunToBump = pRunToBump->getPrevRun();
 		}
+		PD_StruxIterator text(pRunToBump->getBlock()->getStruxDocHandle(),
+			pRunToBump->getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
+
+		text.setUpperLimit(text.getPosition() + pRunToBump->getLength() - 1);
+
+		UT_ASSERT_HARMLESS( text.getStatus() == UTIter_OK );
+		UT_UTF8String sTmp;
+		while(text.getStatus() == UTIter_OK)
+		{
+			UT_UCS4Char c = text.getChar();
+			xxx_UT_DEBUGMSG(("| %d |",c));
+			if(c >= ' ' && c <128)
+				sTmp +=  static_cast<char>(c);
+			++text;
+		}
+        pRunToBump = pRunToBump->getPrevRun();
+		UT_ASSERT(pRunToBump->getLine() == pLine);
+		xxx_UT_DEBUGMSG(("RunToBump %x Type %d Offset %d Length %d \n",pRunToBump,pRunToBump->getType(),pRunToBump->getBlockOffset(),pRunToBump->getLength()));
+		if(!pLine->removeRun(pRunToBump))
+		{
+			//
+			// More repair code I think...
+			// run is not on the Line! It's totally lost...
+			//
+			pRunToBump->setLine(NULL);
+		}
+
+		UT_ASSERT(pLine->getLastRun()->getType() != FPRUN_ENDOFPARAGRAPH);
+		//
+		// Some repair code
+		//
+		if(pLine->getLastRun()->getType() == FPRUN_ENDOFPARAGRAPH)
+		{
+			fp_Run * pNuke = pLine->getLastRun();
+			pLine->removeRun(pNuke);
+		}
+
+		pRunToBump->printText();  //trace out debug message & run two time
+		pNextLine->insertRun(pRunToBump);  //called when create new line
+
+
+//		while (pRunToBump && pLine->getNumRunsInLine() && (pLine->getLastRun() != m_pLastRunToKeep))
+//		{
+//			UT_ASSERT(pRunToBump->getLine() == pLine);
+//			xxx_UT_DEBUGMSG(("RunToBump %x Type %d Offset %d Length %d \n",pRunToBump,pRunToBump->getType(),pRunToBump->getBlockOffset(),pRunToBump->getLength()));
+//			if(!pLine->removeRun(pRunToBump))
+//			{
+////
+//// More repair code I think...
+//// run is not on the Line! It's totally lost...
+////
+//				pRunToBump->setLine(NULL);
+//			}
+//			
+//			UT_ASSERT(pLine->getLastRun()->getType() != FPRUN_ENDOFPARAGRAPH);
+////
+//// Some repair code
+////
+//			if(pLine->getLastRun()->getType() == FPRUN_ENDOFPARAGRAPH)
+//			{
+//				fp_Run * pNuke = pLine->getLastRun();
+//				pLine->removeRun(pNuke);
+//			}
+//
+//			pRunToBump->printText();  //trace out debug message & run two time
+//			pNextLine->insertRun(pRunToBump);  //called when create new line
+//
+//			PD_StruxIterator text(pRunToBump->getBlock()->getStruxDocHandle(),
+//				pRunToBump->getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
+//
+//			text.setUpperLimit(text.getPosition() + pRunToBump->getLength() - 1);
+//
+//			UT_ASSERT_HARMLESS( text.getStatus() == UTIter_OK );
+//			UT_UTF8String sTmp;
+//			while(text.getStatus() == UTIter_OK)
+//			{
+//				UT_UCS4Char c = text.getChar();
+//				xxx_UT_DEBUGMSG(("| %d |",c));
+//				if(c >= ' ' && c <128)
+//					sTmp +=  static_cast<char>(c);
+//				++text;
+//			}
+//
+//			pRunToBump = pRunToBump->getPrevRun();
+//			xxx_UT_DEBUGMSG(("Next runToBump %x \n",pRunToBump));
+//		}
 	}
 
 
