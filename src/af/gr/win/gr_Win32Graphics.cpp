@@ -2636,3 +2636,22 @@ HDC GR_Win32Graphics::_DoubleBuffering_CreateBuffer(HDC compatibletWith, int wid
 	DeleteObject(hOriginalBitmap);
 	return resultingHDC;
 }
+
+void GR_Win32Graphics::_DeviceContext_SuspendDrawing()
+{
+	// create a dummy HDC (TODO: should be created only once, since height = width = 0)
+	m_dummyHdc = _DoubleBuffering_CreateBuffer(m_hdc, 0, 0);
+
+	// save the current hdc & switch them!
+	m_originalScreenHdc = m_hdc;
+	m_hdc = m_dummyHdc;
+}
+
+void GR_Win32Graphics::_DeviceContext_ResumeDrawing()
+{
+	// switch back
+	m_hdc = m_originalScreenHdc;
+
+	// free resources
+	DeleteDC(m_dummyHdc);
+}
