@@ -3553,6 +3553,7 @@ void FV_View::_generalUpdate(void)
 {
 	if(!shouldScreenUpdateOnGeneralUpdate())
 		return;
+
 	m_pDoc->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
 
 //
@@ -4567,12 +4568,8 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		return;
 	}
 
-	// no double buffering for minor changes for the moment
-	if(!bDirtyRunsOnly)
-	{
-		painter.beginDoubleBuffering();
-	}
-
+	painter.beginDoubleBuffering();
+	
 	// TMN: Leave this rect at function scope!
 	// gr_Graphics only stores a _pointer_ to it!
 	UT_Rect rClip;
@@ -6112,6 +6109,7 @@ bool FV_View::_makePointLegal(void)
 
 bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 {
+	
 	// see if prefs specify we should set language based on kbd layout
 	UT_return_val_if_fail(m_pApp, false);
 	bool bSetLang = false;
@@ -6130,6 +6128,7 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 	// do.  The right thing to do is to either delay calculation, or to
 	// not make the wrong number come up; disabling the caret is wrong. -PL
 	GR_Painter caretDisablerPainter(m_pG); // not an elegant way to disable all carets, but it works beautifully - MARCM
+	m_pG->suspendDrawing();
 
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
@@ -6271,9 +6270,6 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 
-	_generalUpdate();
-
-
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
@@ -6285,6 +6281,11 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 	{
 	  notifyListeners(AV_CHG_ALL);
 	}
+
+	m_pG->resumeDrawing();
+
+	_generalUpdate();
+
 	return bResult;
 }
 

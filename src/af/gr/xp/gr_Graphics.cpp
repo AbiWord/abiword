@@ -322,8 +322,9 @@ bool GR_Graphics::beginDoubleBuffering()
 			return false;
 
 		case SUSPENDED:
-			// why bother to double buffer when drawing is suspended?
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			// double buffering will have no effect in this case,
+			// so return a bad token
+			return false;
 	}
 }
 
@@ -346,6 +347,7 @@ void GR_Graphics::suspendDrawing()
 		case SET_TO_SCREEN:
 			m_iTimesDrawingSuspended = 1;
 			_DeviceContext_SuspendDrawing();
+			m_DCState = SUSPENDED;
 			break;
 
 		case SET_TO_BUFFER:
@@ -376,6 +378,7 @@ void GR_Graphics::resumeDrawing()
 			if(m_iTimesDrawingSuspended == 0)
 			{
 				_DeviceContext_ResumeDrawing();
+				m_DCState = SET_TO_SCREEN;
 			}
 			break;
 	}
