@@ -7465,7 +7465,7 @@ UT_Error IE_Exp_HTML::_writeDocument (bool bClipBoard, bool bTemplateBody)
 	 * We must check if user wants to split the document into several parts.
 	 * File will be splitted using level 1 toc elements, e.g. 'Heading 1' style
 	 */
-	if (m_exp_opt.bSplitDocument && m_toc->hasTOC())
+	if (m_exp_opt.bSplitDocument && m_toc->hasTOC() && !m_exp_opt.bMultipart)
 	{
 		m_minTOCLevel = 10; // Hope this will be enough, see impl. of TOC_Helper
 

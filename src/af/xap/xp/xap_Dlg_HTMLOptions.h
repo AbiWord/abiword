@@ -98,7 +98,7 @@ protected:
 	inline bool		can_set_Scale_Units ()      const { return true; }
 	inline bool		can_set_Embed_Images ()     const { return m_exp_opt->bMultipart ? false : true; }
         inline bool             can_set_MathML_Render_PNG() const { return true; }
-        inline bool		can_set_Split_Document()    const { return true; }
+        inline bool		can_set_Split_Document()    const { return m_exp_opt->bMultipart ? false : true; }
 
 	void			set_HTML4 (bool enable);
 	void			set_PHTML (bool enable);
