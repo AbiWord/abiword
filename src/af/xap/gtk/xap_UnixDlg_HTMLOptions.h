@@ -49,7 +49,7 @@ public:
 	void			toggle_EmbedCSS ();
 	void			toggle_EmbedImages ();
         void			toggle_MathMLRenderPNG ();
-
+	void 			toggle_SplitDocument();
 	void			refreshStates ();
 
  private:
@@ -69,6 +69,7 @@ public:
 	GtkWidget *		m_wEmbedCSS;
 	GtkWidget *		m_wEmbedImages;
         GtkWidget *		m_wMathMLRenderPNG;
+	GtkWidget *		m_wSplitDocument;
 };
 
 #endif /* XAP_UNIXDIALOG_HTMLOPTIONS_H */

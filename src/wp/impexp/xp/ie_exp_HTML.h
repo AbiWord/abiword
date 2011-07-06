@@ -24,6 +24,8 @@
 #define IE_EXP_HTML_H
 
 #include "ie_exp.h"
+#include "pt_Types.h"
+
 
 /* NOTE: I'm trying to keep the code similar across versions,
  *       and therefore features are enabled/disabled here:
@@ -61,6 +63,7 @@
 
 
 class PD_Document;
+class IE_TOCHelper;
 
 // The exporter/writer for HTML
 
@@ -164,7 +167,7 @@ struct XAP_Exp_HTMLOptions
 	bool    bAbsUnits;
 	bool	bScaleUnits;
         bool    bMathMLRenderPNG;
-        
+        bool	bSplitDocument;
 	UT_uint32 iCompact;
 	/* other options, not set/saved/restore by options dialog
 	 */
@@ -196,13 +199,23 @@ public:
 	inline void			set_PHTML (bool enable = true) { m_exp_opt.bIsAbiWebDoc = enable; }
 	inline void			set_MHTML (bool enable = true) { m_exp_opt.bMultipart = enable; }
 	inline void			set_AddIdentifiers(bool enable = true) { m_exp_opt.bAddIdentifiers = enable; }
+	inline void			set_MathMLRenderPNG ( bool enable = true) { m_exp_opt.bMathMLRenderPNG = enable; }
+	inline void			set_SplitDocument ( bool enable = true) { m_exp_opt.bSplitDocument = enable; }
+
 	static void printStyleTree(PD_Document *pDocument, UT_ByteBuf& tree);
+	// Returns alpha-numeric contents of string
+	static UT_UTF8String ConvertToClean(const UT_UTF8String &str);
+
+	UT_UTF8String		getBookmarkFilename(const UT_UTF8String &id);
+	UT_UTF8String		getFilenameByPosition(PT_DocPosition position);
 
 private:
 	UT_Error            _doOptions ();
 	void				_buildStyleTree ();
+
 protected:
 	virtual UT_Error	_writeDocument ();
+	void				_createChapter(PD_DocumentRange *range, UT_UTF8String &title, bool isIndex);
 public:
 	virtual UT_Error	_writeDocument (bool bClipBoard, bool bTemplateBody);
 private:
@@ -211,6 +224,10 @@ private:
 	XAP_Exp_HTMLOptions	m_exp_opt;
 	UT_UTF8String       m_sLinkCSS;
 	UT_UTF8String       m_sTitle;
+	std::map<UT_UTF8String, UT_UTF8String> m_bookmarks;
+	IE_TOCHelper *m_toc;
+	int	m_minTOCLevel;
+	int m_minTOCIndex;
 };
 
 #endif /* IE_EXP_HTML_H */

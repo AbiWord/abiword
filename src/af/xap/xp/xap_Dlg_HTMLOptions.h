@@ -48,6 +48,7 @@ struct XAP_Exp_HTMLOptions
 	bool    bAbsUnits;
 	bool	bScaleUnits;
         bool    bMathMLRenderPNG;
+	bool	bSplitDocument;
     UT_uint32 iCompact;
 	/* other options, not set/saved/restore by options dialog
 	 */
@@ -82,7 +83,8 @@ protected:
 	inline bool		get_Abs_Units ()        const { return m_exp_opt->bAbsUnits; }
 	inline bool		get_Scale_Units ()      const { return m_exp_opt->bScaleUnits; }
         inline bool             get_MathML_Render_PNG() const { return m_exp_opt->bMathMLRenderPNG; }
-        inline UT_uint32        get_Compact ()          const { return m_exp_opt->iCompact; }
+        inline bool		get_Split_Document()	const { return m_exp_opt->bSplitDocument; }
+	inline UT_uint32        get_Compact ()          const { return m_exp_opt->iCompact; }
         
 
 	UT_UTF8String &         get_Link_CSS_File() const { return *m_pLinkCSS; }
@@ -96,7 +98,8 @@ protected:
 	inline bool		can_set_Scale_Units ()      const { return true; }
 	inline bool		can_set_Embed_Images ()     const { return m_exp_opt->bMultipart ? false : true; }
         inline bool             can_set_MathML_Render_PNG() const { return true; }
-        
+        inline bool		can_set_Split_Document()    const { return true; }
+
 	void			set_HTML4 (bool enable);
 	void			set_PHTML (bool enable);
 	void			set_Declare_XML (bool enable);
@@ -106,6 +109,7 @@ protected:
 	void			set_Class_Only (bool enable);
 	void			set_Embed_Images (bool enable);
         void                    set_MathML_Render_PNG (bool enable);
+	void			set_Split_Document(bool enable);
 
 	void                    set_Link_CSS_File (const char * file);
 	void                    set_Abs_Units (bool enable);

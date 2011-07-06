@@ -133,6 +133,18 @@ void XAP_Dialog_HTMLOptions::set_MathML_Render_PNG(bool enable)
     }
 }
 
+void XAP_Dialog_HTMLOptions::set_Split_Document(bool enable)
+{
+    if (can_set_Split_Document())
+    {
+        m_exp_opt->bSplitDocument = enable;
+    }
+}
+
+
+
+
+
 void XAP_Dialog_HTMLOptions::saveDefaults ()
 {
 	UT_ASSERT(m_app);
@@ -185,6 +197,11 @@ void XAP_Dialog_HTMLOptions::saveDefaults ()
 	{
 		if (pref.byteLength ()) pref += ",";
 		pref += "+MathMLPNG";
+	}
+	 if (m_exp_opt->bSplitDocument)
+	{
+		if (pref.byteLength ()) pref += ",";
+		pref += "+SplitDoc";
 	}
 	if (m_exp_opt->iCompact)
 	{
@@ -239,7 +256,7 @@ void XAP_Dialog_HTMLOptions::getHTMLDefaults (XAP_Exp_HTMLOptions * exp_opt, XAP
 	exp_opt->iCompact         = 0;
 	exp_opt->bEmbedImages     = false;
         exp_opt->bMathMLRenderPNG = false;
-
+	exp_opt->bSplitDocument   = false;
 	if (app == NULL) return;
 
         const XAP_Prefs * pPrefs = app->getPrefs ();
@@ -271,7 +288,9 @@ void XAP_Dialog_HTMLOptions::getHTMLDefaults (XAP_Exp_HTMLOptions * exp_opt, XAP
 			exp_opt->bLinkCSS           = (strstr (pref, "LinkCSS")     == NULL) ? false : true;
 			exp_opt->bClassOnly         = (strstr (pref, "ClassOnly")   == NULL) ? false : true;
 			exp_opt->bEmbedImages       = (strstr (pref, "data:base64") == NULL) ? false : true;
-                        exp_opt->bMathMLRenderPNG   = (strstr (pref, "+MathMLPNG")   == NULL) ? false : true;
+                        exp_opt->bMathMLRenderPNG   = (strstr (pref, "+MathMLPNG")  == NULL) ? false : true;
+			exp_opt->bSplitDocument     = (strstr (pref, "+SplitDoc")   == NULL) ? false : true;
+
 
 			if (exp_opt->bIs4) exp_opt->bIsAbiWebDoc = false;
 		}

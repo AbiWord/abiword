@@ -29,6 +29,8 @@
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
+#include <gsf/gsf-output.h>
+#include <map>
 
 #include "ut_locale.h"
 #include "ut_debugmsg.h"
@@ -411,6 +413,7 @@ static char * s_removeWhiteSpace (const char * text, UT_UTF8String & utf8str,
 
 class s_HTML_Listener;
 class s_HTML_HdrFtr_Listener;
+class s_HTML_Bookmark_Listener;
 
 bool m_bSecondPass = false;
 bool m_bInAFENote = false;
@@ -507,7 +510,8 @@ public:
 					 bool bTemplateBody, const XAP_Exp_HTMLOptions * exp_opt,
 					 s_StyleTree * style_tree,
 					 UT_UTF8String & linkCSS,
-					 UT_UTF8String & title);
+					 UT_UTF8String & title,
+					 bool bIndexFile = true);
 
 	~s_HTML_Listener ();
 
@@ -618,7 +622,8 @@ private:
 	inline bool             get_Class_Only()    const { return m_exp_opt->bClassOnly; }
 	inline bool             get_AddIdentifiers()  const {return m_exp_opt->bAddIdentifiers; }
         inline bool             get_MathML_Render_PNG() const {return m_exp_opt->bMathMLRenderPNG; }
-
+	inline bool             get_Split_Document() const {return m_exp_opt->bSplitDocument; }
+	
 	bool			m_bInSection;
 	bool			m_bInFrame;
 	bool			m_bInTextBox; // Necessary?  Possibly not.  Convenient and safe?  Yes.
@@ -712,6 +717,7 @@ private:
 	UT_uint32           getNumFootnotes(void);
 	UT_uint32           getNumEndnotes(void);
 	UT_uint32           getNumAnnotations(void);
+	void _write(const char* data, UT_uint32 size);
 	
 	/* temporary strings; use with extreme caution
 	 */
@@ -734,6 +740,8 @@ private:
 	UT_uint32		m_styleIndent;
 
 	GsfOutput *		m_fdCSS;
+
+
 
 	UT_GenericStringMap<UT_UTF8String*>	m_SavedURLs;
 
@@ -759,6 +767,9 @@ private:
 
 	IE_TOCHelper *  m_toc;
 	int m_heading_count;
+	GsfOutput *	m_outputFile;
+	bool m_bIndexFile;
+	UT_UTF8String m_filename;
 };
 
 class ABI_EXPORT s_HTML_HdrFtr_Listener : public PL_Listener
@@ -800,6 +811,37 @@ private:
 			PL_Listener 	 *	m_pHTML_Listener;
 };
 
+class ABI_EXPORT s_HTML_Bookmark_Listener : public PL_Listener
+{
+public:
+	s_HTML_Bookmark_Listener(PD_Document* pDoc, IE_Exp_HTML * pie);
+	bool	populate (PL_StruxFmtHandle sfh,
+					  const PX_ChangeRecord * pcr);
+	// Not used
+	bool	populateStrux (PL_StruxDocHandle /*sdh*/,
+						   const PX_ChangeRecord * /*pcr*/,
+						   PL_StruxFmtHandle * /*psfh*/) { return true; }
+	// Not used
+	bool	change (PL_StruxFmtHandle /*sfh*/,
+					const PX_ChangeRecord * /*pcr*/) { return true; }
+	// Not used
+	bool	insertStrux (PL_StruxFmtHandle /*sfh*/,
+						 const PX_ChangeRecord * /*pcr*/,
+						 PL_StruxDocHandle /*sdh*/,
+						 PL_ListenerId /*lid*/,
+						 void (*/*pfnBindHandles*/) (PL_StruxDocHandle sdhNew,
+												 PL_ListenerId lid,
+												 PL_StruxFmtHandle sfhNew)) { return true; }
+	// Not used
+	bool	signal (UT_uint32 /*iSignal*/) { return true; }
+	inline std::map<UT_UTF8String, UT_UTF8String> getBookmarks() const { return m_bookmarks; }
+private:
+	std::map<UT_UTF8String, UT_UTF8String> m_bookmarks;
+	PD_Document * m_pDoc;
+	IE_Exp_HTML * m_pie;
+
+};
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -830,7 +872,7 @@ void s_HTML_Listener::tagRaw (UT_UTF8String & content)
 	if (m_bQuotedPrintable) content.escapeMIME ();
 #endif
 	// fputs (content.utf8_str (), stdout);
-	m_pie->write (content.utf8_str (), content.byteLength ());
+	_write (content.utf8_str (), content.byteLength ());
 	m_iOutputLen += content.byteLength();
 }
 
@@ -883,7 +925,7 @@ void s_HTML_Listener::tagOpenClose (const UT_UTF8String & content, bool suppress
 	{
 		if(m_iOutputLen + m_utf8_0.byteLength() > get_Compact())
 		{
-			m_pie->write(MYEOL, strlen(MYEOL));
+			_write(MYEOL, strlen(MYEOL));
 			m_iOutputLen = 0;
 		}
 	}
@@ -930,7 +972,7 @@ void s_HTML_Listener::tagClose (UT_uint32 tagID, const UT_UTF8String & content,
 	{
 		if(m_iOutputLen + m_utf8_0.byteLength() > get_Compact())
 		{
-			m_pie->write(MYEOL, strlen(MYEOL));
+			_write(MYEOL, strlen(MYEOL));
 			m_iOutputLen = 0;
 		}
 	}
@@ -986,7 +1028,7 @@ void s_HTML_Listener::tagCloseBroken (const UT_UTF8String & content, bool suppre
 	{
 		if(m_iOutputLen + m_utf8_0.byteLength() > get_Compact())
 		{
-			m_pie->write(MYEOL, strlen(MYEOL));
+			_write(MYEOL, strlen(MYEOL));
 			m_iOutputLen = 0;
 		}
 	}
@@ -1329,7 +1371,7 @@ void s_HTML_Listener::multiBoundary (bool end)
 	else
 		m_utf8_0 += MYEOL;
 	// fputs (m_utf8_0.utf8_str (), stdout);
-	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+	_write(m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 	m_iOutputLen += m_utf8_0.byteLength();
 }
 
@@ -1341,7 +1383,7 @@ void s_HTML_Listener::multiField (const char * name, const UT_UTF8String & value
 	if(!get_Compact())
 		m_utf8_0 += MYEOL;
 	// fputs (m_utf8_0.utf8_str (), stdout);
-	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+	_write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 	m_iOutputLen += m_utf8_0.byteLength();
 	
 }
@@ -1350,7 +1392,7 @@ void s_HTML_Listener::multiBreak ()
 {
 	m_utf8_0 = MYEOL;
 	// fputs (m_utf8_0.utf8_str (), stdout);
-	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+	_write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 	m_iOutputLen += m_utf8_0.byteLength();
 }
 
@@ -1456,7 +1498,7 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 	//
 	if(m_pDocument->hasMath() && !get_MathML_Render_PNG())
 	{
-		m_pie->write(sMathSVGScript.utf8_str(),sMathSVGScript.size());
+		_write(sMathSVGScript.utf8_str(),sMathSVGScript.size());
 	}
 	
 	/* we add a meta tag describing the document's charset as UTF-8
@@ -4347,7 +4389,8 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 								  bool bTemplateBody, const XAP_Exp_HTMLOptions * exp_opt,
 								  s_StyleTree * style_tree,
 								  UT_UTF8String & linkCSS,
-								  UT_UTF8String & title) :
+								  UT_UTF8String & title,
+								  bool bIndexFile) :
 	m_pDocument (pDocument),
 		m_apiLastSpan(0),
 		m_pie(pie),
@@ -4391,10 +4434,28 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 		m_iOutputLen(0),
 		m_bCellHasData(true),  // we are not in cell to start with, set to true
 		m_toc(0),
-		m_heading_count(0)
+		m_heading_count(0),
+		m_outputFile(NULL),
+		m_bIndexFile(bIndexFile),
+		m_filename("")
 {
 	m_toc = new IE_TOCHelper (m_pDocument);
 	m_StyleTreeBody = m_style_tree->find ("Normal");
+
+	if (m_exp_opt->bSplitDocument)
+	{
+		if (!m_bIndexFile)
+		{
+			UT_UTF8String chapterFileName = UT_go_dirname_from_uri(m_pie->getFileName(), false);
+			chapterFileName += G_DIR_SEPARATOR_S;
+			m_filename = IE_Exp_HTML::ConvertToClean(title) + ".html";
+			chapterFileName += m_filename;
+			m_outputFile = UT_go_file_create(chapterFileName.utf8_str(), NULL);
+		} else
+		{
+			m_filename = UT_go_basename(m_pie->getFileName());
+		}
+	}
 }
 
 s_HTML_Listener::~s_HTML_Listener()
@@ -4410,6 +4471,11 @@ s_HTML_Listener::~s_HTML_Listener()
 	
 	UT_VECTOR_PURGEALL(double *,m_vecDWidths);
 	DELETEP(m_toc);
+
+	if (!m_bIndexFile)
+	{
+		gsf_output_close(m_outputFile);
+	}
 }
 
 
@@ -5117,6 +5183,23 @@ void s_HTML_Listener::_handleHyperlink (PT_AttrPropIndex api)
 		UT_UTF8String url = szHRef;
 		url.escapeURL();
 		
+		if (m_exp_opt->bSplitDocument)
+		{
+			const char *szUrl = url.utf8_str();
+			if (szUrl[0] == '#')
+			{
+				UT_DEBUGMSG(("Internal referrence found\n"));
+
+				UT_UTF8String filename = m_pie->getBookmarkFilename(szUrl+1);
+
+				if (filename != m_filename)
+				{
+					url = filename + url;
+					UT_DEBUGMSG(("Internal referrence is reference accross chapters to file %s\n", filename.utf8_str()));
+				}
+			}
+		}
+
 		m_utf8_1 += " href=\"";
 		m_utf8_1 += url;
 		m_utf8_1 += "\"";
@@ -5745,13 +5828,23 @@ void s_HTML_Listener::_emitTOC (PT_AttrPropIndex api) {
 				tocLevelText = UT_UTF8String_sprintf("[%d.%d.%d.%d] ", level1_depth, level2_depth, level3_depth, level4_depth).ucs4_str();
 			}
 			
-			UT_UTF8String tocLink(UT_UTF8String_sprintf("<a href=\"#AbiTOC%d__\">", i));
+			UT_UTF8String tocLink;
+			if (m_exp_opt->bSplitDocument)
+			{
+				PT_DocPosition tocPos;
+				m_toc->getNthTOCEntryPos(i, tocPos);
+				UT_UTF8String tocFilename = m_pie->getFilenameByPosition(tocPos);
+				tocLink = UT_UTF8String_sprintf("<a href=\"%s#AbiTOC%d__\">",tocFilename.utf8_str(), i);
+			} else
+			{
+				tocLink = UT_UTF8String_sprintf("<a href=\"#AbiTOC%d__\">", i);
+			}
 			tagOpen (TT_P, m_utf8_1);
 			m_bInBlock = true;
-			m_pie->write(tocLink.utf8_str(), tocLink.byteLength());
+			_write(tocLink.utf8_str(), tocLink.byteLength());
 			_outputData (tocLevelText.ucs4_str(), tocLevelText.length());
 			_outputData (tocText.ucs4_str(), tocText.length());
-			m_pie->write("</a>", 4);
+			_write("</a>", 4);
 			m_bInBlock = false;
 			tagClose (TT_P, "p");
 		}
@@ -5830,7 +5923,7 @@ void s_HTML_Listener::_doAnnotations () {
 		else
 			sAnnTag += "></a>";
 
-		m_pie->write(sAnnTag.utf8_str(),sAnnTag.byteLength());
+		_write(sAnnTag.utf8_str(),sAnnTag.byteLength());
 		m_pDocument->tellListenerSubset(this,pDocRange);
 		m_bInAFENote = false;
 		m_bInAnnotation = false;
@@ -6925,7 +7018,10 @@ void s_TemplateHandler::Default (const gchar * /*buffer*/, int /*length*/)
 IE_Exp_HTML::IE_Exp_HTML (PD_Document * pDocument)
 	: IE_Exp(pDocument),
 	  m_style_tree(new s_StyleTree(pDocument)),
-	  m_bSuppressDialog(false)
+	  m_bSuppressDialog(false),
+	  m_toc(new IE_TOCHelper(pDocument)),
+	  m_minTOCLevel(0),
+	  m_minTOCIndex(0)
 {
 	m_exp_opt.bIs4            = false;
 	m_exp_opt.bIsAbiWebDoc    = false;
@@ -6950,6 +7046,7 @@ IE_Exp_HTML::IE_Exp_HTML (PD_Document * pDocument)
 IE_Exp_HTML::~IE_Exp_HTML ()
 {
 	DELETEP(m_style_tree);
+	DELETEP(m_toc);
 }
 
 void IE_Exp_HTML::_buildStyleTree ()
@@ -7111,6 +7208,10 @@ UT_Error IE_Exp_HTML::_writeDocument ()
         prop = getProperty ("mathml-render-png");
 	if (!prop.empty())
 		m_exp_opt.bMathMLRenderPNG = UT_parseBool (prop.c_str (), m_exp_opt.bMathMLRenderPNG);
+        
+	prop = getProperty ("split-document");
+	if (!prop.empty())
+		m_exp_opt.bSplitDocument = UT_parseBool (prop.c_str (), m_exp_opt.bSplitDocument);
                             
 	prop = getProperty ("abs-units");
 	if (!prop.empty())
@@ -7330,44 +7431,246 @@ void IE_Exp_HTML::printStyleTree(PD_Document *pDocument, UT_ByteBuf& sink)
 	html.m_style_tree->print(&listener);
 }
 
-UT_Error IE_Exp_HTML::_writeDocument (bool bClipBoard, bool bTemplateBody)
+UT_UTF8String IE_Exp_HTML::ConvertToClean(const UT_UTF8String &str)
 {
-	s_HTML_Listener * pListener = new s_HTML_Listener(getDoc(),this,bClipBoard,bTemplateBody,
-													  &m_exp_opt,m_style_tree,
-													  m_sLinkCSS, m_sTitle);
-	if (pListener == 0) return UT_IE_NOMEMORY;
+    UT_UTF8String result = "";
 
-	PL_Listener * pL = static_cast<PL_Listener *>(pListener);
+    UT_UTF8Stringbuf::UTF8Iterator i = str.getIterator();
+    i = i.start();
 
-	bool okay = true;
 
- 	s_HTML_HdrFtr_Listener * pHdrFtrListener = new s_HTML_HdrFtr_Listener(getDoc(),this, pL);
- 	if (pHdrFtrListener == 0) return UT_IE_NOMEMORY;
- 	PL_Listener * pHFL = static_cast<PL_Listener *>(pHdrFtrListener);
+    if (i.current())
+    {
+        while (true)
+        {
+            const char *pCurrent = i.current();
 
- 	if(!bClipBoard)
- 	{
- 		okay = getDoc()->tellListener (pHFL);
- 		pHdrFtrListener->doHdrFtr(1);
- 	}
- 	
-	if (bClipBoard)
+            if (*pCurrent == 0)
+            {
+                break;
+            }
+
+            if (isalnum(*pCurrent) || (*pCurrent == '-') || (*pCurrent == '_') ){
+                result += *pCurrent;
+            }
+
+            i.advance();
+        }
+    }
+    return result;
+}
+
+UT_Error IE_Exp_HTML::_writeDocument (bool bClipBoard, bool bTemplateBody)
+{	/**
+	 * We must check if user wants to split the document into several parts.
+	 * File will be splitted using level 1 toc elements, e.g. 'Heading 1' style
+	 */
+	if (m_exp_opt.bSplitDocument && m_toc->hasTOC())
 	{
-		okay = getDoc()->tellListenerSubset (pL, getDocRange ());
+		m_minTOCLevel = 10; // Hope this will be enough, see impl. of TOC_Helper
+
+		for (int i = 0; i < m_toc->getNumTOCEntries(); i++)
+		{
+			int currentLevel = 10;
+			m_toc->getNthTOCEntry(i, &currentLevel);
+			if (currentLevel < m_minTOCLevel)
+			{
+				m_minTOCLevel = currentLevel;
+				m_minTOCIndex = i;
+			}
+		}
+
+		UT_DEBUGMSG(("Minimal TOC level is %d\n", m_minTOCLevel));
+
+		s_HTML_Bookmark_Listener * bookmarkListener = new s_HTML_Bookmark_Listener(getDoc(), this);
+		getDoc()->tellListener(bookmarkListener);
+		m_bookmarks = bookmarkListener->getBookmarks();
+		DELETEP(bookmarkListener);
+
+
+
+
+		PT_DocPosition posBegin;
+		PT_DocPosition posEnd; // End of the chapter
+		PT_DocPosition posCurrent;
+		PT_DocPosition docBegin;
+		UT_UTF8String chapterTitle;
+		UT_UTF8String currentTitle;
+		int currentLevel = 0;
+		bool firstChapter = true;
+
+		getDoc()->getBounds(false, posEnd);
+		docBegin = posEnd;
+		posEnd = 0;
+		currentTitle = m_toc->getNthTOCEntry(0, NULL);
+		bool isIndex = true;
+		for(int i = m_minTOCIndex; i < m_toc->getNumTOCEntries(); i++)
+		{
+
+			m_toc->getNthTOCEntry(i, &currentLevel);
+
+			if (currentLevel == m_minTOCLevel)
+			{
+				chapterTitle = m_toc->getNthTOCEntry(i, NULL);
+				m_toc->getNthTOCEntryPos(i, posCurrent);
+				posBegin = posEnd;
+
+				if (firstChapter)
+				{
+
+					 UT_DEBUGMSG(("POS: %d %d\n", posBegin, posCurrent));
+					 if (posCurrent <= docBegin)
+					 {
+						 UT_DEBUGMSG(("Document is starting from a heading\n"));
+						 isIndex = true;
+						 continue;
+
+					 }
+					 firstChapter = false;
+
+				}
+
+				posEnd = posCurrent;
+				PD_DocumentRange *range = new PD_DocumentRange(getDoc(), posBegin, posEnd);
+				UT_DEBUGMSG(("POS: BEGIN %d END %d\n", posBegin, posEnd));
+				UT_DEBUGMSG(("Now will create chapter of the document with title %s\n", currentTitle.utf8_str()));
+
+				_createChapter(range, currentTitle, isIndex);
+				if (isIndex)
+				{
+					isIndex = false;
+				}
+				currentTitle = chapterTitle;
+			}
+		}
+
+		posBegin = posEnd;
+		getDoc()->getBounds(true, posEnd);
+
+		if (posBegin != posEnd)
+		{
+			PD_DocumentRange *range = new PD_DocumentRange(getDoc(), posBegin, posEnd);
+			_createChapter(range, chapterTitle, isIndex);
+		}
+		return UT_OK;
 	}
-	else if (okay) {
-		okay = getDoc()->tellListener (pL);
-		if(okay) okay = pListener->endOfDocument();
-	}
+	else
+	{
+		s_HTML_Listener * pListener = new s_HTML_Listener(getDoc(),this,bClipBoard,bTemplateBody,
+														  &m_exp_opt,m_style_tree,
+														  m_sLinkCSS, m_sTitle);
+		if (pListener == 0) return UT_IE_NOMEMORY;
+
+		PL_Listener * pL = static_cast<PL_Listener *>(pListener);
+
+		bool okay = true;
 	
-	if(!bClipBoard)
- 		pHdrFtrListener->doHdrFtr(0); // Emit footer
- 	
+		s_HTML_HdrFtr_Listener * pHdrFtrListener = new s_HTML_HdrFtr_Listener(getDoc(),this, pL);
+		if (pHdrFtrListener == 0) return UT_IE_NOMEMORY;
+		PL_Listener * pHFL = static_cast<PL_Listener *>(pHdrFtrListener);
+	
+		if(!bClipBoard)
+		{
+			okay = getDoc()->tellListener (pHFL);
+			pHdrFtrListener->doHdrFtr(1);
+		}
+
+		if (bClipBoard)
+		{
+			okay = getDoc()->tellListenerSubset (pL, getDocRange ());
+		}
+		else if (okay) {
+			okay = getDoc()->tellListener (pL);
+			if(okay) okay = pListener->endOfDocument();
+		}
+
+		if(!bClipBoard)
+			pHdrFtrListener->doHdrFtr(0); // Emit footer
+
+		DELETEP(pListener);
+		DELETEP(pHdrFtrListener);
+
+		if ((m_error == UT_OK) && (okay == true)) return UT_OK;
+		return UT_IE_COULDNOTWRITE;
+	}
+}
+
+void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, UT_UTF8String &title, bool isIndex)
+{
+	s_HTML_Listener* pListener = NULL;
+	pListener = new s_HTML_Listener(getDoc(), this, false,
+			false, &m_exp_opt, m_style_tree, m_sLinkCSS, title,
+			isIndex);
+
+	PL_Listener * pL = static_cast<PL_Listener *> (pListener);
+	/*s_HTML_HdrFtr_Listener * pHdrFtrListener = new s_HTML_HdrFtr_Listener(
+			getDoc(), this, pL);
+	PL_Listener * pHFL = static_cast<PL_Listener *> (pHdrFtrListener);
+	*/
+	bool ok;
+	// getDoc()->tellListener(pHFL);
+	// pHdrFtrListener->doHdrFtr(1);
+
+	ok = getDoc()->tellListenerSubset(pListener, range);
+
+	if (ok)
+	{
+		pListener->endOfDocument();
+		// pHdrFtrListener->doHdrFtr(0);
+	}
+	else
+	{
+		UT_DEBUGMSG(("RUDYJ: Listener returned error!\n"));
+	}
+	DELETEP(range);
+	// DELETEP(pHdrFtrListener);
 	DELETEP(pListener);
-	DELETEP(pHdrFtrListener);
-	
-	if ((m_error == UT_OK) && (okay == true)) return UT_OK;
-	return UT_IE_COULDNOTWRITE;
+
+}
+
+
+
+UT_UTF8String IE_Exp_HTML::getBookmarkFilename(const UT_UTF8String &id)
+{
+	std::map<UT_UTF8String, UT_UTF8String>::iterator bookmarkIter = m_bookmarks.find(id);
+	if (bookmarkIter != m_bookmarks.end())
+	{
+		UT_DEBUGMSG(("Found bookmark %s at file %s", id.utf8_str(), m_bookmarks[id].utf8_str()));
+		return m_bookmarks[id];
+	} else
+	{
+		return UT_UTF8String();
+	}
+}
+
+UT_UTF8String IE_Exp_HTML::getFilenameByPosition(PT_DocPosition position)
+{
+	PT_DocPosition posCurrent;
+	UT_UTF8String chapterFile = UT_go_basename(getFileName());
+
+	if (m_toc->hasTOC())
+	{
+		for(int i = m_toc->getNumTOCEntries() - 1; i >= m_minTOCIndex ; i--)
+		{
+			int currentLevel;
+			m_toc->getNthTOCEntry(i, &currentLevel);
+			m_toc->getNthTOCEntryPos(i, posCurrent);
+
+			if (currentLevel == m_minTOCLevel)
+			{
+				if ((i!= m_minTOCIndex) && (posCurrent <= position))
+				{
+					chapterFile = IE_Exp_HTML::ConvertToClean(m_toc->getNthTOCEntry(i, NULL)) + ".html";
+					break;
+				} else if ( (i == m_minTOCIndex) && (posCurrent >= position))
+				{
+					break;
+				}
+			}
+		}
+	}
+
+	return (chapterFile);
 }
 
 void s_HTML_Listener::addFootnote(PD_DocumentRange * pDocRange)
@@ -7409,4 +7712,78 @@ void s_HTML_Listener::setHaveHeader()
 void s_HTML_Listener::setHaveFooter()
 {
 	m_bHaveFooter = true;
+}
+
+void s_HTML_Listener::_write(const char *data, UT_uint32 size)
+{
+	if (m_bIndexFile)
+	{
+		m_pie->write(data, size);
+	} else
+	{
+		gsf_output_write(m_outputFile, size, reinterpret_cast<const guint8*>(data));
+	}
+}
+
+/**
+ *
+ */
+
+s_HTML_Bookmark_Listener::s_HTML_Bookmark_Listener(PD_Document *pDoc, IE_Exp_HTML * pie):
+		m_pDoc(pDoc),
+		m_pie(pie)
+
+{
+
+}
+
+bool s_HTML_Bookmark_Listener::populate(PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord* pcr)
+{
+	switch (pcr->getType ())
+	{
+	case PX_ChangeRecord::PXT_InsertObject:
+	{
+			const PX_ChangeRecord_Object * pcro = 0;
+			pcro = static_cast<const PX_ChangeRecord_Object *> (pcr);
+			PT_AttrPropIndex api = pcr->getIndexAP();
+
+			switch (pcro->getObjectType())
+			{
+			case PTO_Bookmark:
+			{
+				const PP_AttrProp * pAP = 0;
+				bool bHaveProp = (api ? (m_pDoc->getAttrProp (api, &pAP)) : false);
+
+				if (!bHaveProp || (pAP == 0))
+					return true;
+
+				const gchar * szType = 0;
+				pAP->getAttribute ("type", szType);
+
+				if (szType == 0)
+					return true; // ??
+
+				if (g_ascii_strcasecmp (szType, "start") == 0)
+				{
+					const gchar * szName = 0;
+					pAP->getAttribute ("name", szName);
+
+					if (szName)
+					{
+						UT_UTF8String escape = szName;
+						escape.escapeURL();
+						m_bookmarks[escape] = m_pie->getFilenameByPosition(pcr->getPosition());
+						UT_DEBUGMSG(("Added bookmark\n File: %s Id: %s\n",m_bookmarks[escape].utf8_str(), escape.utf8_str()));
+					}
+				}
+				return true;
+			}
+
+			default:
+				return true;
+			}
+	}
+	default:
+		return true;
+	}
 }

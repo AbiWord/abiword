@@ -573,6 +573,7 @@ dcl(DLG_HTMLOPT_ExpAllowAWML,			"Allow extra markup in AWML namespace")
 dcl(DLG_HTMLOPT_ExpEmbedCSS,			"Embed (CSS) style sheet")
 dcl(DLG_HTMLOPT_ExpEmbedImages,			"Embed images in URLs (Base64-encoded)")
 dcl(DLG_HTMLOPT_ExpMathMLRenderPNG,		"Render MathML to PNG images (JavaScript will be used if option is not checked)")
+dcl(DLG_HTMLOPT_ExpSplitDocument,		"Split document")
 dcl(DLG_Exit_CloseWithoutSaving,				"Close &Without Saving")
 
 	/* X11 input methods */
