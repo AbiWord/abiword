@@ -3825,6 +3825,10 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 	fp_CellContainer * pCell = NULL;
 	fl_BlockLayout* pBlockEnd = pRun2->getBlock();
 	PT_DocPosition posEnd = pBlockEnd->getPosition() + pRun2->getBlockOffset();
+
+	GR_Painter painter(getGraphics());
+	painter.beginDoubleBuffering();
+
 	while ((!bDone || bIsDirty) && pCurRun)
 	{
 
