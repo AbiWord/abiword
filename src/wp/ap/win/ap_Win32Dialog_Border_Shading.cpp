@@ -355,7 +355,8 @@ BOOL AP_Win32Dialog_Border_Shading::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 				{
 					UT_Win32LocaleString thickness;
 					getComboTextItem(AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_THICKNESS, nSelected, thickness);
-					setBorderThickness(thickness.utf8_str ());     
+					UT_UTF8String thicknessUTF8 = thickness.utf8_str ();
+					setBorderThickness(thicknessUTF8);     
 
 					/*Force redraw*/
 					InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_BORDERSHADING_BTN_BORDER_COLOR), NULL, FALSE);
@@ -375,8 +376,8 @@ BOOL AP_Win32Dialog_Border_Shading::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 				{
 					// 8/7/2010 Maleesh - Kill the focus of the combobox. Because selected 
 					// images of a combobox-ex doesn't look clear/good. 
-					UT_UTF8String thickness_utf8 = sBorderStyle_Border_Shading[nSelected];
-					setBorderStyle(thickness_utf8);                                        
+					UT_UTF8String thicknesUTF8 = sBorderStyle_Border_Shading[nSelected];
+					setBorderStyle(thicknesUTF8);                                        
 
 					SetFocus(m_hDlg); 
 					event_previewExposed();	
@@ -431,7 +432,8 @@ BOOL AP_Win32Dialog_Border_Shading::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 				{
 					UT_Win32LocaleString offset;
 					getComboTextItem(AP_RID_DIALOG_BORDERSHADING_COMBO_SHADING_OFFSET, nSelected, offset);
-					setShadingOffset(offset.utf8_str ());					                                     
+					UT_UTF8String tempOffset(offset.utf8_str ());
+					setShadingOffset(tempOffset);					                                     
 
 					/*Force redraw*/
 					InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_BORDERSHADING_BTN_SHADING_COLOR), NULL, FALSE);

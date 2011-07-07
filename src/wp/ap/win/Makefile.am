@@ -17,6 +17,8 @@ libwin_la_SOURCES = \
 	ap_Win32Dialog_Annotation.h \
 	ap_Win32Dialog_Background.cpp \
 	ap_Win32Dialog_Background.h \
+	ap_Win32Dialog_Border_Shading.cpp \
+	ap_Win32Dialog_Border_Shading.h \
 	ap_Win32Dialog_Break.cpp \
 	ap_Win32Dialog_Break.h \
 	ap_Win32Dialog_Columns.cpp \
@@ -74,6 +76,8 @@ libwin_la_SOURCES = \
 	ap_Win32Dialog_Spell.h \
 	ap_Win32Dialog_SplitCells.cpp \
 	ap_Win32Dialog_SplitCells.h \
+	ap_Win32Dialog_Stub.cpp \
+	ap_Win32Dialog_Stub.h \
 	ap_Win32Dialog_Styles.cpp \
 	ap_Win32Dialog_Styles.h \
 	ap_Win32Dialog_Stylist.cpp \
@@ -92,11 +96,11 @@ libwin_la_SOURCES = \
 	ap_Win32LeftRuler.h \
 	ap_Win32Prefs.cpp \
 	ap_Win32Prefs.h \
+	ap_Win32Preview_Annotation.cpp \
+	ap_Win32Preview_Annotation.h \
 	ap_Win32StatusBar.cpp \
 	ap_Win32StatusBar.h \
 	ap_Win32_TB_CFactory.cpp \
-	ap_Win32Preview_Annotation.cpp \
-	ap_Win32Preview_Annotation.h \
 	ap_Win32Toolbar_Control_All.h \
 	ap_Win32Toolbar_FontCombo.cpp \
 	ap_Win32Toolbar_FontCombo.h \
