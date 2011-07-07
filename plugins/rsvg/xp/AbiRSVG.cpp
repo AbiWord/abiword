@@ -145,7 +145,7 @@ private:
 				return error;
 			}
 		
-		if (setjmp(m_pPNG->jmpbuf))
+		if (setjmp(png_jmpbuf(m_pPNG)))
 			{
 				g_object_unref(G_OBJECT(pixbuf));
 				png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
@@ -234,7 +234,7 @@ private:
 		 * the normal method of doing things with libpng).  REQUIRED unless you
 		 * set up your own error handlers in the png_create_read_struct() earlier.
 		 */
-		if (setjmp(m_pPNG->jmpbuf))
+		if (setjmp(png_jmpbuf(m_pPNG)))
 			{
 				/* Free all of the memory associated with the png_ptr and info_ptr */
 				png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
