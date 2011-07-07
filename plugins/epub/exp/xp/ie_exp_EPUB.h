@@ -22,6 +22,7 @@
 
 #include <string>
 #include <vector>
+#include <algorithm>
 // External includes
 #include <gsf/gsf-output-stdio.h>
 #include <gsf/gsf-outfile.h>
@@ -76,6 +77,9 @@ private:
     UT_UTF8String m_oebpsDir;
     GsfOutfile* m_root;
     GsfOutput* m_oebps;
+    IE_Exp_HTML *m_pie;
+    // Array with file id`s in linear reading order
+    std::vector<UT_UTF8String> m_opsId;
 };
 
 #endif /* IE_EXP_EPUB_H_ */

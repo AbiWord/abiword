@@ -23,13 +23,14 @@
 /*****************************************************************************/
 /*****************************************************************************/
 IE_Exp_EPUB::IE_Exp_EPUB(PD_Document * pDocument) :
-    IE_Exp(pDocument)
+    IE_Exp(pDocument),
+    m_pie(NULL)
 {
 
 }
 IE_Exp_EPUB::~IE_Exp_EPUB()
 {
-
+    DELETEP(m_pie);
 }
 
 UT_Error IE_Exp_EPUB::_writeDocument()
@@ -60,6 +61,9 @@ UT_Error IE_Exp_EPUB::_writeDocument()
     // We need to create temporary directory to which
     // HTML plugin will export our document
     m_baseTempDir = UT_go_filename_to_uri(g_get_tmp_dir());
+    // We should delete any previous temporary data for this document to prevent
+    // odd files appearing in the container
+    UT_go_file_remove(m_baseTempDir.utf8_str(), NULL);
     m_baseTempDir += G_DIR_SEPARATOR_S;
 
     // To generate unique directory name we`ll use document UUID
@@ -146,16 +150,15 @@ UT_Error IE_Exp_EPUB::writeStructure()
     // Exporting document to XHTML using HTML export plugin 
     char *szIndexPath = (char*) g_malloc(strlen(indexPath.utf8_str()) + 1);
     strcpy(szIndexPath, indexPath.utf8_str());
-    IE_Exp_HTML *pExpHtml = new IE_Exp_HTML(getDoc());
-    pExpHtml->suppressDialog(true);
-    pExpHtml->setProps(
-            "embed-css:no;html4:no;use-awml:no;declare-xml:yes;mathml-render-png:yes;");
+    m_pie = new IE_Exp_HTML(getDoc());
+    m_pie->suppressDialog(true);
+    m_pie->setProps(
+            "embed-css:no;html4:no;use-awml:no;declare-xml:yes;mathml-render-png:yes;split-document:yes");
     // Though there is no table of contents at begining of the document, 
     // we still need to generate id`s for headings because of NCX
-    pExpHtml->set_AddIdentifiers(true);
-    pExpHtml->writeFile(szIndexPath);
+    m_pie->set_AddIdentifiers(true);
+    m_pie->writeFile(szIndexPath);
     g_free(szIndexPath);
-    delete pExpHtml;
 
     return UT_OK;
 }
@@ -233,42 +236,61 @@ UT_Error IE_Exp_EPUB::writeNavigation()
     gsf_xml_out_start_element(ncxXml, "navMap");
     if (toc->hasTOC())
     {
-        int lastLevel = 0;
-        int curLevel = 0;
+        int lastItemLevel;
+        int curItemLevel;
+        std::vector<int> tagLevels;
+        int tocNum = 0;
         for (int currentItem = 0; currentItem < toc->getNumTOCEntries(); currentItem++)
         {
-            lastLevel = curLevel;
-            UT_UTF8String itemStr = toc->getNthTOCEntry(currentItem, &curLevel);
+            lastItemLevel = curItemLevel;
+            UT_UTF8String itemStr = toc->getNthTOCEntry(currentItem, &curItemLevel);
+            PT_DocPosition itemPos;
+            toc->getNthTOCEntryPos(currentItem, itemPos);
+            UT_UTF8String itemFilename = m_pie->getFilenameByPosition(itemPos);
 
-            if ((lastLevel >= curLevel) && (currentItem != 0))
+            if (std::find(m_opsId.begin(), m_opsId.end(), escapeForId(itemFilename)) == m_opsId.end())
             {
-                closeNTags(ncxXml, lastLevel - curLevel + 1);
-                UT_DEBUGMSG(("RUDYJ: Closing  %d tags\n", lastLevel - curLevel + 1));
-            }UT_DEBUGMSG(("RUDYJ: Current level is %d\n", curLevel));
+                m_opsId.push_back(escapeForId(itemFilename));
+                tocNum = 0;
+            }
 
-            UT_UTF8String navClass = UT_UTF8String_sprintf("h%d", curLevel);
+            UT_DEBUGMSG(("Item filename %s at pos %d\n", itemFilename.utf8_str(),itemPos));
+
+            if ((lastItemLevel >= curItemLevel) && (currentItem != 0))
+            {
+                while ((tagLevels.size() > 0) && (tagLevels.back() >= curItemLevel))
+                {
+                    UT_DEBUGMSG(("POPPING OUT\n"));
+                    gsf_xml_out_end_element(ncxXml);
+                    tagLevels.pop_back();
+                }
+
+            }
+
+            UT_UTF8String navClass = UT_UTF8String_sprintf("h%d", curItemLevel);
             UT_UTF8String navId = UT_UTF8String_sprintf("AbiTOC%d__",
-                    currentItem);
-            UT_UTF8String navSrc = "index.xhtml#" + navId;
+                    tocNum);
+            UT_UTF8String navSrc = itemFilename + "#" + navId;
             gsf_xml_out_start_element(ncxXml, "navPoint");
             gsf_xml_out_add_cstr(ncxXml, "playOrder",
                     UT_UTF8String_sprintf("%d", currentItem + 1).utf8_str());
             gsf_xml_out_add_cstr(ncxXml, "class", navClass.utf8_str());
             gsf_xml_out_add_cstr(ncxXml, "id", navId.utf8_str());
-
             gsf_xml_out_start_element(ncxXml, "navLabel");
             gsf_xml_out_start_element(ncxXml, "text");
             gsf_xml_out_add_cstr(ncxXml, NULL, itemStr.utf8_str());
             gsf_xml_out_end_element(ncxXml);
             gsf_xml_out_end_element(ncxXml);
-
             gsf_xml_out_start_element(ncxXml, "content");
             gsf_xml_out_add_cstr(ncxXml, "src", navSrc.utf8_str());
             gsf_xml_out_end_element(ncxXml);
 
+            tagLevels.push_back(curItemLevel);
+            tocNum++;
+
         }
 
-        closeNTags(ncxXml, curLevel);
+        closeNTags(ncxXml, tagLevels.size());
     }
     else
     {
@@ -343,18 +365,20 @@ UT_Error IE_Exp_EPUB::package()
     std::vector<UT_UTF8String> listing = getFileList(
             m_oebpsDir.substr(7, m_oebpsDir.length() - 7));
 
+    UT_DEBUGMSG(("RUDYJ R1\n"));
     for (std::vector<UT_UTF8String>::iterator i = listing.begin(); i
             != listing.end(); i++)
     {
+        UT_UTF8String idStr = escapeForId(*i);
         UT_UTF8String fullItemPath = m_oebpsDir + G_DIR_SEPARATOR_S + *i;
         gsf_xml_out_start_element(opfXml, "item");
-        gsf_xml_out_add_cstr(opfXml, "id", escapeForId(*i).utf8_str());
+        gsf_xml_out_add_cstr(opfXml, "id", idStr.utf8_str());
         gsf_xml_out_add_cstr(opfXml, "href", (*i).utf8_str());
         gsf_xml_out_add_cstr(opfXml, "media-type",
                 getMimeType(fullItemPath).utf8_str());
         gsf_xml_out_end_element(opfXml);
     }
-
+    UT_DEBUGMSG(("RUDYJ R2\n"));
     // We`ll add .ncx file manually
     gsf_xml_out_start_element(opfXml, "item");
     gsf_xml_out_add_cstr(opfXml, "id", "ncx");
@@ -367,16 +391,19 @@ UT_Error IE_Exp_EPUB::package()
     // <spine>
     gsf_xml_out_start_element(opfXml, "spine");
     gsf_xml_out_add_cstr(opfXml, "toc", "ncx");
-    gsf_xml_out_start_element(opfXml, "itemref");
-    gsf_xml_out_add_cstr(opfXml, "idref", "indexxhtml");
-    gsf_xml_out_end_element(opfXml);
+    for(std::vector<UT_UTF8String>::iterator i = m_opsId.begin(); i != m_opsId.end(); i++)
+    {
+        gsf_xml_out_start_element(opfXml, "itemref");
+        gsf_xml_out_add_cstr(opfXml, "idref", (*i).utf8_str());
+        gsf_xml_out_end_element(opfXml);
+    }
     // </spine>
     gsf_xml_out_end_element(opfXml);
 
     // </package>
     gsf_xml_out_end_element(opfXml);
     gsf_output_close(opf);
-
+    UT_DEBUGMSG(("RUDYJ R3\n"));
     return compress();
 }
 
