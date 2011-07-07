@@ -12,12 +12,18 @@ public:
 	GR_ViewDoubleBuffering(FV_View *pView, bool suspendDirectDrawing, bool callDrawOnlyAtTheEnd);
 	~GR_ViewDoubleBuffering();
 
+	void beginDoubleBuffering();
+	void endDoubleBuffering();
+	bool getCallDrawOnlyAtTheEnd();
+
 private:
 	GR_Painter *m_pPainter; // used for accessing double buffering code in GR_Graphics
 	FV_View *m_pView; // used to handle calls to _draw
 
 	bool m_bCallDrawOnlyAtTheEnd;
 	bool m_bSuspendDirectDrawing;
+
+	void callUnifiedDraw();
 };
 
 #endif

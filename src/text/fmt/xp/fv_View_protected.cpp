@@ -70,6 +70,7 @@
 #include "ap_Prefs.h"
 #include "ap_Strings.h"
 #include "fd_Field.h"
+#include "gr_ViewDoubleBuffering.h"
 
 #ifdef ENABLE_SPELL
 #include "spell_manager.h"
@@ -3826,8 +3827,8 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 	fl_BlockLayout* pBlockEnd = pRun2->getBlock();
 	PT_DocPosition posEnd = pBlockEnd->getPosition() + pRun2->getBlockOffset();
 
-	GR_Painter painter(getGraphics());
-	painter.beginDoubleBuffering();
+	GR_ViewDoubleBuffering dblBuffObject(this, true, true);
+	dblBuffObject.beginDoubleBuffering();
 
 	while ((!bDone || bIsDirty) && pCurRun)
 	{
@@ -4549,12 +4550,15 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 					 x,y,width,height,bClip,
 					 m_yScrollOffset,getWindowHeight(),bDirtyRunsOnly));
 	
+	if(m_pViewDoubleBufferingObject != NULL && m_pViewDoubleBufferingObject->getCallDrawOnlyAtTheEnd())
+			return;
+
 	/**************************
 	 * STEP 0: Initialization *
 	 **************************/
 
 	GR_Painter painter(m_pG);
-
+	
 	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 
 	// CHECK_WINDOW_SIZE
@@ -4573,7 +4577,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	}
 
 	painter.beginDoubleBuffering();
-	
+
 	// TMN: Leave this rect at function scope!
 	// gr_Graphics only stores a _pointer_ to it!
 	UT_Rect rClip;
@@ -6133,6 +6137,9 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 	// not make the wrong number come up; disabling the caret is wrong. -PL
 	GR_Painter caretDisablerPainter(m_pG); // not an elegant way to disable all carets, but it works beautifully - MARCM
 	
+	GR_ViewDoubleBuffering dblBuffObj(this, true, true);
+	dblBuffObj.beginDoubleBuffering();
+
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
 	bool doInsert = true;

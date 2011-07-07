@@ -74,6 +74,7 @@
 #include "fd_Field.h"
 #include "pf_Frag_Strux.h"
 #include "fp_FootnoteContainer.h"
+#include "gr_ViewDoubleBuffering.h"
 
 #ifdef ENABLE_SPELL
 #include "spell_manager.h"
@@ -4522,8 +4523,8 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 // Look to see if should paste a table column or row
 //
 	
-	GR_Painter painter(m_pG);
-	painter.beginDoubleBuffering();
+	GR_ViewDoubleBuffering dblBuffObj(this, true, true);
+	dblBuffObj.beginDoubleBuffering();
 
 	if((m_Selection.getPrevSelectionMode() == FV_SelectionMode_TableColumn)
 	   || (m_Selection.getPrevSelectionMode() == 	FV_SelectionMode_TableRow))
@@ -4580,7 +4581,6 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 //
 	
 	// force update the screen before leaving the current view
-	painter.endDoubleBuffering();
 
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
