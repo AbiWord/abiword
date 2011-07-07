@@ -225,15 +225,15 @@ void XAP_CocoaModule::loadAllPlugins ()
 	std::string support_dir[3];
 
 	/* Load from:
-	 *  a. "/Library/Application Support/AbiSuite/Plug-ins"
-	 *  b. "/Library/Application Support/AbiSuite/Plug-ins"
-	 *  c. "$HOME/Library/Application Support/AbiSuite/Plug-ins"
+	 *  a. "/Library/Application Support/AbiSuite/PlugIns"
+	 *  b. "/Library/Application Support/AbiSuite/PlugIns"
+	 *  c. "$HOME/Library/Application Support/AbiSuite/PlugIns"
 	 */
 
 	NSString * app_path = [[NSBundle mainBundle] bundlePath];
 	if (app_path) 
 	{
-		NSString * plugin_path = [app_path stringByAppendingString:@"/Contents/Plug-ins"];
+		NSString * plugin_path = [app_path stringByAppendingString:@"/Contents/PlugIns"];
 		if (plugin_path)
 		{
 			support_dir[support_dir_count] = [plugin_path UTF8String];
@@ -256,10 +256,10 @@ void XAP_CocoaModule::loadAllPlugins ()
 		&& s_createDirectoryIfNecessary("/Library/Application Support", true)
 		&& s_createDirectoryIfNecessary("/Library/Application Support/AbiSuite", true)) 
 	{
-		s_createDirectoryIfNecessary ("/Library/Application Support/AbiSuite/Plug-ins", true);
+		s_createDirectoryIfNecessary ("/Library/Application Support/AbiSuite/PlugIns", true);
 	}
 
-	support_dir[support_dir_count] = "/Library/Application Support/AbiSuite/Plug-ins";
+	support_dir[support_dir_count] = "/Library/Application Support/AbiSuite/PlugIns";
 
 	if (!s_dir_exists (support_dir[support_dir_count].c_str()))
 	{
