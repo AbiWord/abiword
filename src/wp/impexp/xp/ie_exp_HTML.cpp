@@ -4448,7 +4448,7 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 		{
 			UT_UTF8String chapterFileName = UT_go_dirname_from_uri(m_pie->getFileName(), false);
 			chapterFileName += G_DIR_SEPARATOR_S;
-			m_filename = IE_Exp_HTML::ConvertToClean(title) + ".html";
+			m_filename = IE_Exp_HTML::ConvertToClean(title) + m_pie->getSuffix();
 			chapterFileName += m_filename;
 			m_outputFile = UT_go_file_create(chapterFileName.utf8_str(), NULL);
 		} else
@@ -7021,7 +7021,8 @@ IE_Exp_HTML::IE_Exp_HTML (PD_Document * pDocument)
 	  m_bSuppressDialog(false),
 	  m_toc(new IE_TOCHelper(pDocument)),
 	  m_minTOCLevel(0),
-	  m_minTOCIndex(0)
+	  m_minTOCIndex(0),
+	  m_suffix("")
 {
 	m_exp_opt.bIs4            = false;
 	m_exp_opt.bIsAbiWebDoc    = false;
@@ -7461,7 +7462,19 @@ UT_UTF8String IE_Exp_HTML::ConvertToClean(const UT_UTF8String &str)
 }
 
 UT_Error IE_Exp_HTML::_writeDocument (bool bClipBoard, bool bTemplateBody)
-{	/**
+{
+	UT_UTF8String basename = UT_go_basename(getFileName());
+	const char* szSuffix = strchr(basename.utf8_str(), '.');
+
+	if (szSuffix == NULL)
+	{
+	    // If user wants, but this is a strange idea
+	    m_suffix = "";
+	} else
+	{
+	    m_suffix = szSuffix;
+	}
+	/**
 	 * We must check if user wants to split the document into several parts.
 	 * File will be splitted using level 1 toc elements, e.g. 'Heading 1' style
 	 */
@@ -7660,7 +7673,7 @@ UT_UTF8String IE_Exp_HTML::getFilenameByPosition(PT_DocPosition position)
 			{
 				if ((i!= m_minTOCIndex) && (posCurrent <= position))
 				{
-					chapterFile = IE_Exp_HTML::ConvertToClean(m_toc->getNthTOCEntry(i, NULL)) + ".html";
+					chapterFile = IE_Exp_HTML::ConvertToClean(m_toc->getNthTOCEntry(i, NULL)) + m_suffix;
 					break;
 				} else if ( (i == m_minTOCIndex) && (posCurrent >= position))
 				{
@@ -7671,6 +7684,11 @@ UT_UTF8String IE_Exp_HTML::getFilenameByPosition(PT_DocPosition position)
 	}
 
 	return (chapterFile);
+}
+
+UT_UTF8String IE_Exp_HTML::getSuffix() const
+{
+	return m_suffix;
 }
 
 void s_HTML_Listener::addFootnote(PD_DocumentRange * pDocRange)

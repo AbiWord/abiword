@@ -208,6 +208,7 @@ public:
 
 	UT_UTF8String		getBookmarkFilename(const UT_UTF8String &id);
 	UT_UTF8String		getFilenameByPosition(PT_DocPosition position);
+	UT_UTF8String		getSuffix() const;
 
 private:
 	UT_Error            _doOptions ();
@@ -228,6 +229,8 @@ private:
 	IE_TOCHelper *m_toc;
 	int	m_minTOCLevel;
 	int m_minTOCIndex;
+	// We need to know file suffix to create chapters with the same suffix as the main file
+	UT_UTF8String m_suffix;
 };
 
 #endif /* IE_EXP_HTML_H */
