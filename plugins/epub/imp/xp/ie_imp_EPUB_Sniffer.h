@@ -28,26 +28,23 @@
 #include "ie_imp.h"
 #include "ie_imp_EPUB.h"
 
-
-class IE_Imp_EPUB_Sniffer : public IE_ImpSniffer
+class IE_Imp_EPUB_Sniffer: public IE_ImpSniffer
 {
 public:
-  IE_Imp_EPUB_Sniffer () ;
+    IE_Imp_EPUB_Sniffer();
 
-  virtual ~IE_Imp_EPUB_Sniffer ();
+    virtual ~IE_Imp_EPUB_Sniffer();
 
-  virtual const IE_SuffixConfidence * getSuffixConfidence ();
+    virtual const IE_SuffixConfidence * getSuffixConfidence();
 
-  virtual const IE_MimeConfidence * getMimeConfidence ();
+    virtual const IE_MimeConfidence * getMimeConfidence();
 
-	virtual UT_Confidence_t recognizeContents (GsfInput * input);
+    virtual UT_Confidence_t recognizeContents(GsfInput * input);
 
-  virtual UT_Error constructImporter (PD_Document * pDocument,
-				      IE_Imp ** ppie) ;
+    virtual UT_Error constructImporter(PD_Document * pDocument, IE_Imp ** ppie);
 
-  virtual bool getDlgLabels (const char ** szDesc,
-			     const char ** szSuffixList,
-			     IEFileType * ft) ;
+    virtual bool getDlgLabels(const char ** szDesc, const char ** szSuffixList,
+            IEFileType * ft);
 };
 
 #endif /* IE_IMP_EPUB_SNIFFER_H_ */

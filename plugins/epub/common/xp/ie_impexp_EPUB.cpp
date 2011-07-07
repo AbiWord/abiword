@@ -36,54 +36,53 @@ ABI_PLUGIN_DECLARE("EPUB")
 /*****************************************************************************/
 /*****************************************************************************/
 
-
 static IE_Imp_EPUB_Sniffer * m_imp_sniffer = 0;
 static IE_Exp_EPUB_Sniffer * m_exp_sniffer = 0;
 
 ABI_BUILTIN_FAR_CALL
-int abi_plugin_register (XAP_ModuleInfo * mi)
+int abi_plugin_register(XAP_ModuleInfo * mi)
 {
-  if (!m_imp_sniffer)
-      m_imp_sniffer = new IE_Imp_EPUB_Sniffer ();
-  IE_Imp::registerImporter (m_imp_sniffer);
+    if (!m_imp_sniffer)
+        m_imp_sniffer = new IE_Imp_EPUB_Sniffer();
+    IE_Imp::registerImporter(m_imp_sniffer);
 
-  if (!m_exp_sniffer)
-      m_exp_sniffer = new IE_Exp_EPUB_Sniffer ();
-  IE_Exp::registerExporter (m_exp_sniffer);
+    if (!m_exp_sniffer)
+        m_exp_sniffer = new IE_Exp_EPUB_Sniffer();
+    IE_Exp::registerExporter(m_exp_sniffer);
 
-  mi->name    = "EPUB Filter";
-  mi->desc    = "Import/Export EPUB documents";
-  mi->version = ABI_VERSION_STRING;
-  mi->author  = "Volodymyr Rudyj <vladimir.rudoy@gmail.com>";
-  mi->usage   = "No Usage";
+    mi->name = "EPUB Filter";
+    mi->desc = "Import/Export EPUB documents";
+    mi->version = ABI_VERSION_STRING;
+    mi->author = "Volodymyr Rudyj <vladimir.rudoy@gmail.com>";
+    mi->usage = "No Usage";
 
-  return 1;
+    return 1;
 }
 
 ABI_BUILTIN_FAR_CALL
-int abi_plugin_unregister (XAP_ModuleInfo * mi)
+int abi_plugin_unregister(XAP_ModuleInfo * mi)
 {
-  mi->name    = 0;
-  mi->desc    = 0;
-  mi->version = 0;
-  mi->author  = 0;
-  mi->usage   = 0;
+    mi->name = 0;
+    mi->desc = 0;
+    mi->version = 0;
+    mi->author = 0;
+    mi->usage = 0;
 
-  IE_Imp::unregisterImporter (m_imp_sniffer);
-  delete m_imp_sniffer;
-  m_imp_sniffer = 0;
+    IE_Imp::unregisterImporter(m_imp_sniffer);
+    delete m_imp_sniffer;
+    m_imp_sniffer = 0;
 
-  IE_Exp::unregisterExporter (m_exp_sniffer);
-  delete m_exp_sniffer;
-  m_exp_sniffer = 0;
+    IE_Exp::unregisterExporter(m_exp_sniffer);
+    delete m_exp_sniffer;
+    m_exp_sniffer = 0;
 
-  return 1;
+    return 1;
 }
 
 ABI_BUILTIN_FAR_CALL
-int abi_plugin_supports_version (UT_uint32 /*major*/, UT_uint32 /*minor*/,
-				 UT_uint32 /*release*/)
+int abi_plugin_supports_version(UT_uint32 /*major*/, UT_uint32 /*minor*/,
+        UT_uint32 /*release*/)
 {
-  return 1;
+    return 1;
 }
 

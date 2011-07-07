@@ -24,19 +24,19 @@
 #include  <ie_exp.h>
 #include "ie_exp_EPUB.h"
 
-class IE_Exp_EPUB_Sniffer: public IE_ExpSniffer {
+class IE_Exp_EPUB_Sniffer: public IE_ExpSniffer
+{
 public:
-	IE_Exp_EPUB_Sniffer();
+    IE_Exp_EPUB_Sniffer();
 
-	virtual ~IE_Exp_EPUB_Sniffer();
+    virtual ~IE_Exp_EPUB_Sniffer();
 
-	virtual bool recognizeSuffix(const char * szSuffix);
+    virtual bool recognizeSuffix(const char * szSuffix);
 
-	virtual UT_Error constructExporter(PD_Document * pDocument,
-			IE_Exp ** ppie);
+    virtual UT_Error constructExporter(PD_Document * pDocument, IE_Exp ** ppie);
 
-	virtual bool getDlgLabels(const char ** pszDesc,
-			const char ** pszSuffixList, IEFileType * ft);
+    virtual bool getDlgLabels(const char ** pszDesc,
+            const char ** pszSuffixList, IEFileType * ft);
 };
 
 #endif /* IE_EXP_EPUB_SNIFFER_H_ */

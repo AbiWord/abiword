@@ -18,7 +18,6 @@
  * 02111-1307, USA.
  */
 
-
 #ifndef IE_EXP_EPUB
 #define IE_EXP_EPUB
 
@@ -26,6 +25,5 @@
 #include "ie_exp_EPUB.h"
 #include "ie_exp_EPUB_Sniffer.h"
 #include "ie_imp_EPUB_Sniffer.h"
-
 
 #endif /* IE_EXP_EPUB */

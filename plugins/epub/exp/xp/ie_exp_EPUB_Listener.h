@@ -20,7 +20,5 @@
 #ifndef IE_EXP_EPUB_LISTENER_H
 #define	IE_EXP_EPUB_LISTENER_H
 
-
-
 #endif	/* IE_EXP_EPUB_LISTENER_H */
 
