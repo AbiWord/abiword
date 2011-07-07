@@ -68,9 +68,9 @@
 #ifdef ENABLE_SPELL
 #include "spell_manager.h"
 #endif
-#ifdef ENABLE_HYPHENATION
-#include "hyphenate_manager.h"
-#endif
+//#ifdef ENABLE_HYPHENATION
+//#include "hyphenate_manager.h"
+//#endif
 
 #include "gr_EmbedManager.h"
 

@@ -49,7 +49,7 @@
 #include "ut_string_class.h"
 #include "ut_misc.h"
 #include "pp_PropertyMap.h"
-#include "hyphenate_manager.h"
+//#include "hyphenate_manager.h"
 
 // number of DocPositions occupied by the block strux
 #define fl_BLOCK_STRUX_OFFSET	1

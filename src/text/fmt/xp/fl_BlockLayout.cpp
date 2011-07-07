@@ -70,7 +70,7 @@
 #endif
 
 
-#include "hyphenate_manager.h"
+//#include "hyphenate_manager.h"
 
 
 #include "px_CR_FmtMark.h"
