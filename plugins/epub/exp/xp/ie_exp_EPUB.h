@@ -45,36 +45,37 @@
 #define OPF201_NAMESPACE "http://www.idpf.org/2007/opf"
 #define DC_NAMESPACE "http://purl.org/dc/elements/1.1/"
 #define NCX_NAMESPACE "http://www.daisy.org/z3986/2005/ncx/"
-
-
-class IE_Exp_EPUB : public IE_Exp {
+class IE_Exp_EPUB: public IE_Exp
+{
 
 public:
-	IE_Exp_EPUB(PD_Document * pDocument);
-	virtual ~IE_Exp_EPUB();
+    IE_Exp_EPUB(PD_Document * pDocument);
+    virtual ~IE_Exp_EPUB();
 
 protected:
-	virtual UT_Error _writeDocument();
+    virtual UT_Error _writeDocument();
 
 private:
-	UT_UTF8String m_baseTempDir;
-	UT_UTF8String m_oebpsDir;
-        GsfOutfile* m_root;
-        GsfOutput* m_oebps;
-	UT_Error writeStructure();
-        UT_Error writeNavigation();
-	UT_Error writeContainer();
-	UT_Error package();
-        UT_Error compress();
-        UT_UTF8String getAuthor() const;
-        UT_UTF8String getTitle() const;
-        UT_UTF8String getLanguage() const;
-	static std::vector<UT_UTF8String> getFileList(const UT_UTF8String &directory);
-        static void closeNTags(GsfXMLOut* xml, int n);
-        static UT_UTF8String escapeForId(const UT_UTF8String & src);
-        static UT_UTF8String getMimeType(const UT_UTF8String &uri);
+    UT_Error writeStructure();
+    UT_Error writeNavigation();
+    UT_Error writeContainer();
+    UT_Error package();
+    UT_Error compress();
+
+    UT_UTF8String getAuthor() const;
+    UT_UTF8String getTitle() const;
+    UT_UTF8String getLanguage() const;
+
+    static std::vector<UT_UTF8String> getFileList(
+            const UT_UTF8String &directory);
+    static void closeNTags(GsfXMLOut* xml, int n);
+    static UT_UTF8String escapeForId(const UT_UTF8String & src);
+    static UT_UTF8String getMimeType(const UT_UTF8String &uri);
+
+    UT_UTF8String m_baseTempDir;
+    UT_UTF8String m_oebpsDir;
+    GsfOutfile* m_root;
+    GsfOutput* m_oebps;
 };
-
-
 
 #endif /* IE_EXP_EPUB_H_ */
