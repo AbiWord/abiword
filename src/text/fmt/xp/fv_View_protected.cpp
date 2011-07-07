@@ -6128,8 +6128,7 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 	// do.  The right thing to do is to either delay calculation, or to
 	// not make the wrong number come up; disabling the caret is wrong. -PL
 	GR_Painter caretDisablerPainter(m_pG); // not an elegant way to disable all carets, but it works beautifully - MARCM
-	m_pG->suspendDrawing();
-
+	
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
 	bool doInsert = true;
@@ -6281,8 +6280,6 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 	{
 	  notifyListeners(AV_CHG_ALL);
 	}
-
-	m_pG->resumeDrawing();
 
 	_generalUpdate();
 
