@@ -157,6 +157,8 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 	m_pArPens = new GR_Win32Graphics::CACHE_PEN [_MAX_CACHE_PENS];
 	memset (m_pArPens, 0, _MAX_CACHE_PENS*sizeof(CACHE_PEN));
 	m_nArPenPos = 0;
+
+	_DoubleBuffering_SetUpDummyBuffer();
 }
 
 GR_Win32Graphics::GR_Win32Graphics(HDC hdc, HWND hwnd)
@@ -240,6 +242,8 @@ GR_Win32Graphics::~GR_Win32Graphics()
 
 	DELETEP(m_pFontGUI);
 	
+	_DoubleBuffering_ReleaseDummyBuffer();
+
 	if(m_printHDC && m_printHDC != m_defPrintHDC)
 		DeleteDC(m_printHDC);
 	
@@ -2582,7 +2586,9 @@ void GR_Win32Graphics::_DeviceContext_SwitchToBuffer()
 	getWidthAndHeightFromHWND(m_hwnd, width, height);
 
 	// set up the buffer
-	m_bufferHdc = _DoubleBuffering_CreateBuffer(m_hdc, width, height);
+	m_bufferHdc = CreateCompatibleDC(m_hdc);
+	m_bufferBitmap = CreateCompatibleBitmap(m_hdc, width, height);
+	m_hBufferOld = SelectObject(m_bufferHdc, m_bufferBitmap);
 
 #if DEBUG
 	LARGE_INTEGER t1, t2, freq;
@@ -2625,23 +2631,12 @@ void GR_Win32Graphics::_DeviceContext_DrawBufferToScreen()
 	BitBlt(m_hdc, 0, 0, width, height, m_bufferHdc, 0, 0, SRCCOPY);
 	
 	// free used resources
+	SelectObject(m_bufferHdc, m_hBufferOld);
+	DeleteObject(m_bufferBitmap);
 	DeleteDC(m_bufferHdc);
 }
-
-HDC GR_Win32Graphics::_DoubleBuffering_CreateBuffer(HDC compatibletWith, int width, int height)
-{
-	HDC resultingHDC = CreateCompatibleDC(compatibletWith);
-	HBITMAP bufferBitmap = CreateCompatibleBitmap(compatibletWith, width, height);
-	HANDLE hOriginalBitmap = SelectObject(resultingHDC, bufferBitmap);
-	DeleteObject(hOriginalBitmap);
-	return resultingHDC;
-}
-
 void GR_Win32Graphics::_DeviceContext_SuspendDrawing()
 {
-	// create a dummy HDC (TODO: should be created only once, since height = width = 0)
-	m_dummyHdc = _DoubleBuffering_CreateBuffer(m_hdc, 0, 0);
-
 	// save the current hdc & switch them!
 	m_originalScreenHdc = m_hdc;
 	m_hdc = m_dummyHdc;
@@ -2651,7 +2646,18 @@ void GR_Win32Graphics::_DeviceContext_ResumeDrawing()
 {
 	// switch back
 	m_hdc = m_originalScreenHdc;
+}
 
-	// free resources
+void GR_Win32Graphics::_DoubleBuffering_SetUpDummyBuffer()
+{
+	m_dummyHdc = CreateCompatibleDC(m_hdc);
+	m_dummyBitmap = CreateCompatibleBitmap(m_hdc, 1, 1);
+	m_hDummyOld = SelectObject(m_dummyHdc, m_dummyBitmap);
+}
+
+void GR_Win32Graphics::_DoubleBuffering_ReleaseDummyBuffer()
+{
+	SelectObject(m_dummyHdc, m_hDummyOld);
+	DeleteObject(m_dummyBitmap);
 	DeleteDC(m_dummyHdc);
 }

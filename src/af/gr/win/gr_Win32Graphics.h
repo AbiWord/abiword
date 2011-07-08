@@ -302,8 +302,14 @@ protected:
 	void					_setColor(DWORD clrRef);
 
 	HDC m_originalScreenHdc;
+	
 	HDC m_bufferHdc;
+	HBITMAP m_bufferBitmap;
+	HANDLE m_hBufferOld;
+
 	HDC m_dummyHdc;
+	HBITMAP m_dummyBitmap;
+	HANDLE m_hDummyOld;
 
 	void getWidthAndHeightFromHWND(HWND h, int &width, int &height);
 	void _DeviceContext_SwitchToBuffer();
@@ -313,9 +319,9 @@ protected:
 	void _DeviceContext_SuspendDrawing();
 	void _DeviceContext_ResumeDrawing();
 
-	HDC _DoubleBuffering_CreateBuffer(HDC compatibletWith, int width, int height);
-	
-	
+	void _DoubleBuffering_SetUpDummyBuffer();
+	void _DoubleBuffering_ReleaseDummyBuffer();
+
 private:
 	virtual GR_Win32Font * _newFont(LOGFONTW & lf, double fPointSize, HDC hdc, HDC printDC);
 
