@@ -302,15 +302,10 @@ protected:
 	void					_setColor(DWORD clrRef);
 
 	HDC m_originalScreenHdc;
-	
 	HDC m_bufferHdc;
-	HBITMAP m_bufferBitmap;
-	HANDLE m_hBufferOld;
-
 	HDC m_dummyHdc;
-	HBITMAP m_dummyBitmap;
-	HANDLE m_hDummyOld;
 
+	void _DeviceContext_MeasureBitBltCopySpeed(HDC source, HDC dest, int width, int height);
 	void getWidthAndHeightFromHWND(HWND h, int &width, int &height);
 	void _DeviceContext_SwitchToBuffer();
 	void _DeviceContext_SwitchToScreen();
@@ -321,6 +316,9 @@ protected:
 
 	void _DoubleBuffering_SetUpDummyBuffer();
 	void _DoubleBuffering_ReleaseDummyBuffer();
+
+	HDC _DoubleBuffering_CreateBuffer(HDC, int, int);
+	void _DoubleBuffering_ReleaseBuffer(HDC);
 
 private:
 	virtual GR_Win32Font * _newFont(LOGFONTW & lf, double fPointSize, HDC hdc, HDC printDC);
