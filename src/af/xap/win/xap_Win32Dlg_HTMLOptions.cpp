@@ -74,6 +74,8 @@ BOOL XAP_Win32Dialog_HTMLOptions::_onInitDialog(HWND /*hWnd*/, WPARAM /*wParam*/
 	localizeControlText(XAP_RID_DIALOG_HTMLOPTIONS_CHK_AWML,	XAP_STRING_ID_DLG_HTMLOPT_ExpAllowAWML);
 	localizeControlText(XAP_RID_DIALOG_HTMLOPTIONS_CHK_EMBEDCSS,XAP_STRING_ID_DLG_HTMLOPT_ExpEmbedCSS);
 	localizeControlText(XAP_RID_DIALOG_HTMLOPTIONS_CHK_URLIMAGE,XAP_STRING_ID_DLG_HTMLOPT_ExpEmbedImages);
+	localizeControlText(XAP_RID_DIALOG_HTMLOPTIONS_CHK_PNGMATHML,XAP_STRING_ID_DLG_HTMLOPT_ExpMathMLRenderPNG);
+	localizeControlText(XAP_RID_DIALOG_HTMLOPTIONS_CHK_SPLITFILE,XAP_STRING_ID_DLG_HTMLOPT_ExpSplitDocument);
 	localizeControlText(XAP_RID_DIALOG_HTMLOPTIONS_BTN_SAVE,	XAP_STRING_ID_DLG_HTMLOPT_ExpSave);
 	localizeControlText(XAP_RID_DIALOG_HTMLOPTIONS_BTN_RESTORE,	XAP_STRING_ID_DLG_HTMLOPT_ExpRestore);
 	localizeControlText(XAP_RID_DIALOG_HTMLOPTIONS_BTN_OK,		XAP_STRING_ID_DLG_OK);
@@ -116,6 +118,15 @@ BOOL XAP_Win32Dialog_HTMLOptions::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*
 		set_Embed_Images( (isChecked(wId)!=0) ? true : false );
 		return 1;
 
+	case XAP_RID_DIALOG_HTMLOPTIONS_CHK_PNGMATHML:
+		set_MathML_Render_PNG( (isChecked(wId)!=0) ? true : false );
+		return 1;
+
+	case XAP_RID_DIALOG_HTMLOPTIONS_CHK_SPLITFILE:
+		if (can_set_Split_Document())
+			set_Split_Document( (isChecked(wId)!=0) ? true : false );
+		return 1;
+
 	case XAP_RID_DIALOG_HTMLOPTIONS_BTN_SAVE:
 		saveDefaults();
 		return 1;
@@ -153,6 +164,7 @@ void XAP_Win32Dialog_HTMLOptions::refreshStates()
 	enableControl(XAP_RID_DIALOG_HTMLOPTIONS_CHK_AWML),can_set_Allow_AWML();
 	enableControl(XAP_RID_DIALOG_HTMLOPTIONS_CHK_EMBEDCSS),can_set_Embed_CSS();
 	enableControl(XAP_RID_DIALOG_HTMLOPTIONS_CHK_URLIMAGE),can_set_Embed_Images();
+	enableControl(XAP_RID_DIALOG_HTMLOPTIONS_CHK_SPLITFILE),can_set_Split_Document();
 
 	// set initial state
 	checkButton(XAP_RID_DIALOG_HTMLOPTIONS_CHK_HTML4,get_HTML4());
@@ -161,4 +173,6 @@ void XAP_Win32Dialog_HTMLOptions::refreshStates()
 	checkButton(XAP_RID_DIALOG_HTMLOPTIONS_CHK_AWML,get_Allow_AWML());
 	checkButton(XAP_RID_DIALOG_HTMLOPTIONS_CHK_EMBEDCSS,get_Embed_CSS());
 	checkButton(XAP_RID_DIALOG_HTMLOPTIONS_CHK_URLIMAGE,get_Embed_Images());
+	checkButton(XAP_RID_DIALOG_HTMLOPTIONS_CHK_PNGMATHML,get_MathML_Render_PNG());
+	checkButton(XAP_RID_DIALOG_HTMLOPTIONS_CHK_SPLITFILE,get_Split_Document());
 }
