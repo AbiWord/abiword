@@ -4551,7 +4551,11 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 					 m_yScrollOffset,getWindowHeight(),bDirtyRunsOnly));
 	
 	if(m_pViewDoubleBufferingObject != NULL && m_pViewDoubleBufferingObject->getCallDrawOnlyAtTheEnd())
-			return;
+	{
+		// record this call's arguments and return
+		m_pViewDoubleBufferingObject->recordViewDrawCall(x, y, width, height, bDirtyRunsOnly, bClip);
+		return;
+	}
 
 	/**************************
 	 * STEP 0: Initialization *
