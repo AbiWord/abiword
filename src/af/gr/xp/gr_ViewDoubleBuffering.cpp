@@ -93,10 +93,9 @@ void GR_ViewDoubleBuffering::redrawEntireScreen()
 		0, 0,
 		m_pView->getWindowWidth(), m_pView->getWindowHeight(),
 		false, false);
-
 }
 
-void GR_ViewDoubleBuffering::initMostExtArgs()
+void GR_ViewDoubleBuffering::initMostExtArgs() 
 {
 	mostExtArgs.callCount = 0;
 }
@@ -123,8 +122,8 @@ void GR_ViewDoubleBuffering::extendDrawArgsIfNeccessary(
 		// 1. dirty runs: false means more
 		if(bDirtyRunsOnly == false) mostExtArgs.bDirtyRunsOnly = false;
 
-		// 2. not sure what to do with bClip :(
-		// TODO
+		// 2. clipping region: false means entire view  [I hope so]
+		if(bClip == false) mostExtArgs.bClip = false;
 
 		// 3. rectangle
 		mostExtArgs.x1 = UT_MIN(mostExtArgs.x1, x);
