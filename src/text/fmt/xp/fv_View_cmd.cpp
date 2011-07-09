@@ -3520,6 +3520,8 @@ bool FV_View::cmdStopList(void)
 
 void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 	const gchar * properties[] = { "font-family", NULL, 0};
 	const gchar ** props_in = NULL;
 	const gchar * currentfont;
@@ -3938,8 +3940,10 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 }
 
 
+
 void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 {
+
 #define HACK_LINE_HEIGHT				20 // TODO Fix this!!
 
 	UT_sint32 lineHeight = iPos;
@@ -4523,8 +4527,7 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 // Look to see if should paste a table column or row
 //
 	
-	GR_ViewDoubleBuffering dblBuffObj(this, true, true);
-	dblBuffObj.beginDoubleBuffering();
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
 
 	if((m_Selection.getPrevSelectionMode() == FV_SelectionMode_TableColumn)
 	   || (m_Selection.getPrevSelectionMode() == 	FV_SelectionMode_TableRow))

@@ -3827,8 +3827,7 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 	fl_BlockLayout* pBlockEnd = pRun2->getBlock();
 	PT_DocPosition posEnd = pBlockEnd->getPosition() + pRun2->getBlockOffset();
 
-	GR_ViewDoubleBuffering dblBuffObject(this, true, true);
-	dblBuffObject.beginDoubleBuffering();
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
 
 	while ((!bDone || bIsDirty) && pCurRun)
 	{
@@ -6141,8 +6140,7 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 	// not make the wrong number come up; disabling the caret is wrong. -PL
 	GR_Painter caretDisablerPainter(m_pG); // not an elegant way to disable all carets, but it works beautifully - MARCM
 	
-	GR_ViewDoubleBuffering dblBuffObj(this, true, true);
-	dblBuffObj.beginDoubleBuffering();
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
 
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();

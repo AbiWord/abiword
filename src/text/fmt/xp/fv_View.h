@@ -52,6 +52,7 @@
 #endif
 
 #define AUTO_SCROLL_MSECS	100
+#define STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION GR_ViewDoubleBuffering dblBuffObj(this, true, true);	dblBuffObj.beginDoubleBuffering();
 
 class FL_DocLayout;
 class FV_Caret_Listener;
