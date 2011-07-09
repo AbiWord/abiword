@@ -19,10 +19,13 @@ DLG_Annotation_Author_LBL="المؤلف:"
 DLG_Annotation_Description_LBL="الوصف:"
 DLG_Annotation_Title_LBL="العنوان:"
 DLG_Apply="طبّق"
+DLG_BorderShading_Border_Style="الطراز:"
+DLG_BorderShading_Color="اللون:"
+DLG_BorderShading_Preview="معاينة"
 DLG_Break_Insert="أدرِج"
 DLG_CLIPART_Error="تعذّر تحميل القصاصات الفنية"
 DLG_CLIPART_Loading="يحمّل القصاصات الفنية"
-DLG_CLIPART_Title="قصاصات فنية"
+DLG_CLIPART_Title="القصاصات الفنية"
 DLG_Cancel="ألغِ"
 DLG_Close="أغلق"
 DLG_Column_Preview="معاينة"
@@ -30,8 +33,8 @@ DLG_Compare="قارن"
 DLG_Delete="احذف"
 DLG_DocComparison_Content="محتوى:"
 DLG_DocComparison_Different="مختلف"
-DLG_DocComparison_Diverging="تباعد بعد النسخة %Id من %s"
-DLG_DocComparison_DivergingPos="تباعد بعد موضع المستند %Id"
+DLG_DocComparison_Diverging="تباعد بعد النسخة %d من %s"
+DLG_DocComparison_DivergingPos="تباعد بعد موضع المستند %d"
 DLG_DocComparison_DocsCompared="تمت مقارنة المستندات"
 DLG_DocComparison_Fmt="التنسيق:"
 DLG_DocComparison_Identical="متطابقة"
@@ -48,18 +51,18 @@ DLG_FOSA_ALLDOCS="كل المستندات"
 DLG_FOSA_ALLIMAGES="كل ملفات الصور"
 DLG_FOSA_ExportTitle="صدّر ملف"
 DLG_FOSA_ExtensionDoesNotMatch="امتداد الملف المعطى لا يطابق نوع الملف المختار. أتريد استخدام هذا الاسم على أي حال؟"
-DLG_FOSA_FileInsertMath="أدرِج ملف MathML"
+DLG_FOSA_FileInsertMath="أدرِج ملف MathML:"
 DLG_FOSA_FileInsertObject="أدرِج ملف كائن مضمن:"
-DLG_FOSA_FileOpenTypeLabel="افتح ملفا من نوع:"
-DLG_FOSA_FilePrintTypeLabel="اطبع الملف كنوع:"
-DLG_FOSA_FileSaveTypeLabel="احفظ الملف بنوع:"
+DLG_FOSA_FileOpenTypeLabel="افتح الملف على أنه:"
+DLG_FOSA_FilePrintTypeLabel="اطبع الملف على أنه:"
+DLG_FOSA_FileSaveTypeLabel="احفظ الملف على أنه:"
 DLG_FOSA_FileTypeAutoDetect="مكتشف آليا"
 DLG_FOSA_ImportTitle="استورد ملفا"
 DLG_FOSA_InsertMath="أدرِج ملفا رياضياتيا"
 DLG_FOSA_InsertObject="أدرِج كائنا مضمنا"
 DLG_FOSA_InsertTitle="أدرِج ملفا"
 DLG_FOSA_OpenTitle="افتح ملفا"
-DLG_FOSA_PrintToFileTitle="اطبع في ملف"
+DLG_FOSA_PrintToFileTitle="اطبع إلى ملف"
 DLG_FOSA_RecordToFileLabel="الملفات التي سيُسجل تحريرها:"
 DLG_FOSA_RecordToFileTitle="سجّل التحرير في ملف"
 DLG_FOSA_ReplayFromFileLabel="الملفات التي سيُعاد عرض تحريرها:"
@@ -78,10 +81,12 @@ DLG_HTMLOPT_ExpEmbedCSS="اغرس صفحة الطرز (CSS)"
 DLG_HTMLOPT_ExpEmbedImages="اغرس الصور في العناوين (بترميز Base64)"
 DLG_HTMLOPT_ExpIs4="صدّر كـ HTML 4.01"
 DLG_HTMLOPT_ExpLabel="اختر خيارات تصدير HTML:"
+DLG_HTMLOPT_ExpMathMLRenderPNG=""
 DLG_HTMLOPT_ExpRestore="استرجع الإعدادات"
 DLG_HTMLOPT_ExpSave="احفظ الإعدادت"
+DLG_HTMLOPT_ExpSplitDocument=""
 DLG_HTMLOPT_ExpTitle="خيارات تصدير HTML"
-DLG_History_Created="أُنشئ"
+DLG_History_Created="أُنشئَ:"
 DLG_History_DocumentDetails="تفاصيل المستند"
 DLG_History_EditTime="وقت التحرير:"
 DLG_History_Id="معرِّف:"
@@ -99,7 +104,7 @@ DLG_IP_Height_Label="الارتفاع: "
 DLG_IP_No_Picture_Label="لا صورة"
 DLG_IP_Title="أدرِج صورة"
 DLG_IP_Width_Label="العرض:  "
-DLG_Image_Aspect="حافظ على نسبة الهيئة:"
+DLG_Image_Aspect="حافظ على نسبة الهيئة"
 DLG_Image_DescTabLabel="الو&amp;صف"
 DLG_Image_Height="الارتفاع:"
 DLG_Image_ImageDesc="حدد اسم الصورة"
@@ -126,8 +131,8 @@ DLG_Image_WrappedRight="نص ملتف على يمين الصورة"
 DLG_Insert="أ&amp;درِج"
 DLG_InsertButton="أ&amp;درِج"
 DLG_Insert_SymbolTitle="أدرِج رمزا"
-DLG_InvalidPathname="اسم مسار غير صحيح"
-DLG_LISTDOCS_Heading1="اختر مستندا من القائمة"
+DLG_InvalidPathname="اسم مسار غير صحيح."
+DLG_LISTDOCS_Heading1="اختر مستندا من القائمة:"
 DLG_LISTDOCS_Title="المستندات المفتوحة"
 DLG_Lists_Box_List="قائمة المربعات"
 DLG_Lists_Bullet_List="قائمة منقوطة"
@@ -229,7 +234,7 @@ DLG_UFS_TransparencyCheck="ألغ لون الإبراز"
 DLG_UFS_UnderlineCheck="سطر تحتي"
 DLG_ULANG_AvailableLanguages="اللغات المتاحة"
 DLG_ULANG_DefaultLangChkbox="اجعله افتراضيا للمستند"
-DLG_ULANG_DefaultLangLabel="اللغة الافتراضية"
+DLG_ULANG_DefaultLangLabel="اللغة المبدئية:"
 DLG_ULANG_LangLabel="اختر اللغة:"
 DLG_ULANG_LangTitle="حدد اللغة"
 DLG_ULANG_SetLangButton="&amp;حدد اللغة"
@@ -352,19 +357,19 @@ LANG_AM_ET="الأمهرية (إثيوبيا)"
 LANG_AR="العربية"
 LANG_AR_EG="العربية (مصر)"
 LANG_AR_SA="العربية (السعودية)"
-LANG_AST_ES="الأسطورية (إسبانيا)"
-LANG_AS_IN="الأسامية"
-LANG_AYC_BO="الأمارية (أرورو)"
-LANG_AYM_BO="الأمارية (لا باز)"
-LANG_AYR="الأمارية المركزية"
+LANG_AST_ES="الأسترية (إسبانيا)"
+LANG_AS_IN="الأسّامية"
+LANG_AYC_BO="الأيمارية (أرورو)"
+LANG_AYM_BO="الأيمارية (لا باز)"
+LANG_AYR="الأيمارية المركزية"
 LANG_BE_BY="البلاروسية"
-LANG_BE_LATIN="البلاروسية، لاتيني"
+LANG_BE_LATIN="بلاروسية، لاتيني"
 LANG_BG_BG="البلغارية"
 LANG_BN_IN="البنغالية"
 LANG_BR_FR="البريتونية"
 LANG_CA_ES="الكاتالونية"
 LANG_COP_EG="القبطية"
-LANG_CO_FR="الكورسيكية"
+LANG_CO_FR="الكورسية"
 LANG_CS_CZ="التشيكية"
 LANG_CY_GB="الولزيّة"
 LANG_DA_DK="الدنماركية"
@@ -385,13 +390,13 @@ LANG_ES_MX="الإسبانية (المكسيك)"
 LANG_ET="الإستونية"
 LANG_EU_ES="الباسكية"
 LANG_FA_IR="الفارسية"
-LANG_FF=""
+LANG_FF="الفولانية"
 LANG_FI_FI="الفنلندية"
 LANG_FR_BE="الفرنسية (بلجيكا)"
 LANG_FR_CA="الفرنسية (كندا)"
 LANG_FR_CH="الفرنسية (سويسرا)"
 LANG_FR_FR="الفرنسية (فرنسا)"
-LANG_FY_NL="الفريزية (شمال ألمانيا)"
+LANG_FY_NL="الفريسية"
 LANG_GA_IE="الأيرلندية"
 LANG_GL="الجاليشية (جليكو)"
 LANG_HAW_US="الهاوايية"
@@ -409,12 +414,12 @@ LANG_IT_IT="الإيطالية (إيطاليا)"
 LANG_IU_CA="الإنوكتيتوتية"
 LANG_JA_JP="اليابانية"
 LANG_KA_GE="الجورجية"
-LANG_KK_KZ=""
+LANG_KK_KZ="الكازاخستانية (كازاخستان)"
 LANG_KN_IN="الكنّادية"
 LANG_KO="الكورية"
 LANG_KO_KR="الكورية"
 LANG_KU="الكردية"
-LANG_KW_GB="الكورنشية"
+LANG_KW_GB="الكورنية"
 LANG_LA_IT="اللاتينية (النهضة)"
 LANG_LO_LA="اللاوية"
 LANG_LT_LT="اللتوانية"
@@ -423,7 +428,7 @@ LANG_MH_MH="المارشليز (جزر المريشال)"
 LANG_MH_NR="المارشليز (ناورو)"
 LANG_MI_NZ="الماورية"
 LANG_MK="المقدونية"
-LANG_MNK_SN="الوُلوفية (السنغال)"
+LANG_MNK_SN="ماندينكا (السنغال)"
 LANG_MN_MN="المنغولية"
 LANG_MR_IN="الماراثية"
 LANG_MS_MY="المالاوية"
@@ -443,14 +448,14 @@ LANG_QUH_BO="الكشوائية (3 حروف علة)"
 LANG_QUL_BO="الكشوائية (5 حروف علة)"
 LANG_QU_BO="الكشوائية"
 LANG_RO_RO="الرومانية"
-LANG_RU_PETR1708=""
+LANG_RU_PETR1708="الروسية (ما قبل 1918)"
 LANG_RU_RU="الروسية (روسيا)"
 LANG_SC_IT="السردينية"
 LANG_SK_SK="السلوفاكية"
 LANG_SL_SI="السلوفينية"
 LANG_SQ_AL="الألبانية"
 LANG_SR="الصربية"
-LANG_SR_LATIN="البلاروسية، لاتيني"
+LANG_SR_LATIN="الصربية، لاتيني"
 LANG_SV_SE="السويدية"
 LANG_SW="السواحلية"
 LANG_SYR="السريانية"
@@ -470,8 +475,6 @@ LANG_ZH_CN="الصينية (جمهورية الصين الشعبية)"
 LANG_ZH_HK="الصينية (هونغ كونغ)"
 LANG_ZH_SG="الصينية (سنغافورة)"
 LANG_ZH_TW="الصينية (تايوان)"
-MENU_LABEL_FMT_BOTTOMLINE="السطر السفلي"
-MENU_LABEL_FMT_TOPLINE="السطر الأعلى"
 MENU_LABEL_INSERT="أ&amp;درِج"
 MENU_LABEL_TABLE_INSERT="أ&amp;درِج"
 MENU_LABEL_VIEW="ا&amp;عرض"
@@ -482,14 +485,14 @@ MENU_STATUSLINE_TABLE_SELECT="اختر"
 MSG_AutoRevision="مراجعة آلية"
 MSG_BuildingDoc="بناء المستند:"
 MSG_HistoryConfirmSave="عليك حفظ التغييرات الطارئة على المستند %s قبل المتابعة. هل أحفظ الآن؟"
-MSG_HistoryNoRestore="لم يتمكن آبي‌ورد من استعادة النسخة %Id من المستند لأن معلومات النسخة ناقصة."
-MSG_HistoryPartRestore1="لم يتمكن آبي‌ورد من استعادة النسخة %Id من المستند كاملة لأن معلومات النسخة ناقصة."
-MSG_HistoryPartRestore2="أقرب نسخة للاستعادة هي %Id. هل تريد استعادة هذه النسخة؟ لاستعادة %Id جزئيا، اضغط لا."
+MSG_HistoryNoRestore="لم يتمكن آبي‌ورد من استعادة النسخة %d من المستند لأن معلومات النسخة ناقصة."
+MSG_HistoryPartRestore1="لم يتمكن آبي‌ورد من استعادة النسخة %d من المستند كاملة لأن معلومات النسخة ناقصة."
+MSG_HistoryPartRestore2="أقرب نسخة للاستعادة هي %d. هل تريد استعادة هذه النسخة؟ لاستعادة %d جزئيا، اضغط لا."
 MSG_HistoryPartRestore3="للمتابعة، اضغط موافق."
 MSG_HistoryPartRestore4="لإلغاء محاولة الاستعادة، اضغط ألغِ."
 MSG_ImportingDoc="يستورد المستند..."
 MSG_NoUndo="لا يمكن التراجع عن هذه العملية. أمتأكد من رغبتك في المتابعة؟"
-MSG_ParagraphsImported="فقرة"
+MSG_ParagraphsImported="فقرة مستوردة"
 ReadOnly="للقراءة فقط"
 SPELL_CANTLOAD_DICT="تعذّر تحميل قاموس اللغة %s"
 SPELL_CANTLOAD_DLL="لم يعثر آبي‌ورد على ملف الإملاء %s.dll&#x000a;من فضلك نزّل وثبّت آسبل Aspell من http://aspell.net/win32/"
@@ -499,10 +502,10 @@ STYLE_BULLETLIST="قائمة منقوطة"
 STYLE_CHAPHEADING="رأس الفصل"
 STYLE_DASHEDLIST="قائمة معلمة"
 STYLE_DIAMONLIST="قائمة مُعيّنات"
-STYLE_ENDNOTE="&amp;حاشية ختامية"
+STYLE_ENDNOTE="حاشية ختامية"
 STYLE_ENDREFERENCE="مرجع الحاشية"
 STYLE_ENDTEXT="نص الحاشية"
-STYLE_FOOTNOTE="حا&amp;شية"
+STYLE_FOOTNOTE="حاشية"
 STYLE_FOOTREFERENCE="مرجعية الحاشية"
 STYLE_FOOTTEXT="نص الحاشية"
 STYLE_HANDLIST="قائمة الأيادي"
@@ -573,7 +576,7 @@ TOOLBAR_TOOLTIP_FMT_SUPERSCRIPT="حرف فوقي"
 TOOLBAR_TOOLTIP_FMT_TOPLINE="السطر الأعلى"
 TOOLBAR_TOOLTIP_FMT_UNDERLINE="سطر تحتي"
 TOOLBAR_TOOLTIP_ZOOM="قرّب"
-UntitledDocument="بدون عنوان%Id"
+UntitledDocument="بدون عنوان%d"
 XIM_Methods="طرق الإدخال"
 />
 
@@ -581,10 +584,10 @@ XIM_Methods="طرق الإدخال"
 BottomMarginStatus="الهامش السفلي [%s]"
 COMMAND_LINE_PRINTING_DEPRECATED="أزيل خيار ‪'--print'‬ من آبي‌ورد 2.8. يمكنك أداء نفس المهمة باستخدام أدوات آبي‌ورد للتحويل في سطر الأوامر ثم تمرير الخرْج إلى الطابعة، مثلا:&#x000a;'abiword --to=ps --to-name=fd://1 myfile.txt | lpr'"
 ColumnGapStatus="فجوة العمود [%s]"
-ColumnStatus="العمود [%Id]"
+ColumnStatus="العمود [%d]"
 DLG_Annotation_OK_tooltip="حدّث التعليقات"
 DLG_Annotation_Replace_LBL="استبدل"
-DLG_Annotation_Replace_tooltip="استبدل النص المحدد بنص آخر"
+DLG_Annotation_Replace_tooltip="استبدل النص المعلّم بمحتويات التعليم"
 DLG_Annotation_Title="حرِّر التعليق"
 DLG_ApplyButton="&amp;طبِّق"
 DLG_Background_ClearClr="امسح لون الخلفية"
@@ -592,6 +595,14 @@ DLG_Background_ClearHighlight="امسح لون الإبراز"
 DLG_Background_Title="غيِّر لون الخلفية"
 DLG_Background_TitleFore="غيِّر لون النص"
 DLG_Background_TitleHighlight="غيِّر لون الإبراز"
+DLG_BorderShading_Border_Color="لون الحد:"
+DLG_BorderShading_Borders="حدود"
+DLG_BorderShading_Offset="الإزاحة:"
+DLG_BorderShading_Shading="التظليل"
+DLG_BorderShading_Shading_Color="لون التظليل:"
+DLG_BorderShading_Thickness="السُّمك:"
+DLG_BorderShading_Title="حدود وظلال"
+DLG_BorderShading_Use_Shading="فعّل التظليل"
 DLG_Break_BreakTitle="أدرِج فاصلا"
 DLG_Break_BreakTitle_Capital="أدرِج فاصلا"
 DLG_Break_ColumnBreak="&amp;فاصلا بين الأعمدة"
@@ -614,13 +625,13 @@ DLG_Column_Space_After="المسافة بعد العمود"
 DLG_Column_Three="ثلاثة"
 DLG_Column_Two="اثنان"
 DLG_DateTime_AvailableFormats="الأ&amp;نساق المتوفرة:"
-DLG_DateTime_AvailableFormats_Capital="الأ&amp;نساق المتوفرة:"
+DLG_DateTime_AvailableFormats_Capital="الأنساق المتوفرة"
 DLG_DateTime_DateTimeTitle="أدرِج التاريخ والساعة"
 DLG_FR_FindLabel="ا&amp;بحث عن:"
 DLG_FR_FindNextButton="&amp;ابحث عن التالي"
 DLG_FR_FindTitle="ابحث"
 DLG_FR_FinishedFind="انتهى آبي‌ورد من البحث في المستند."
-DLG_FR_FinishedReplace="انتهى آبي‌ورد من البحث في المستند وقد قام ب‍ %Id تبديلات."
+DLG_FR_FinishedReplace="انتهى آبي‌ورد من البحث في المستند وأدّى %d تبديلات."
 DLG_FR_MatchCase="&amp;طابق الحالة"
 DLG_FR_ReplaceAllButton="استبدل ال&amp;كل"
 DLG_FR_ReplaceButton="ا&amp;ستبدل"
@@ -633,9 +644,9 @@ DLG_Field_FieldTitle_Capital="أدرِج حقلا"
 DLG_Field_Fields="&amp;حقول:"
 DLG_Field_Fields_No_Colon="&amp;حقول"
 DLG_Field_Parameters="معاملات إضافية:"
-DLG_Field_Parameters_Capital="معاملات إضافية:"
-DLG_Field_Types="أ&amp;نواع:"
-DLG_Field_Types_No_Colon="أ&amp;نواع:"
+DLG_Field_Parameters_Capital="معاملات إضافية"
+DLG_Field_Types="الأ&amp;نواع:"
+DLG_Field_Types_No_Colon="الأ&amp;نواع"
 DLG_FormatFootnotes_EndInitialVal="القيمة الأولية للحاشية الختامية"
 DLG_FormatFootnotes_EndPlaceEndDoc="ضع في نهاية المستند"
 DLG_FormatFootnotes_EndPlaceEndSec="ضع في نهاية القسم"
@@ -674,7 +685,7 @@ DLG_FormatTOC_FillStyle="طراز التعبئة:"
 DLG_FormatTOC_General="عام"
 DLG_FormatTOC_HasHeading="&amp;له رأس"
 DLG_FormatTOC_HasLabel="ل&amp;ه تسمية"
-DLG_FormatTOC_HeadingStyle="منط العنوان"
+DLG_FormatTOC_HeadingStyle="طراز العنوان:"
 DLG_FormatTOC_HeadingText="نص العنوان:"
 DLG_FormatTOC_Indent="الإ&amp;زاحة:"
 DLG_FormatTOC_InheritLabel="أ&amp;درِج تسمية"
@@ -737,7 +748,7 @@ DLG_InsertHyperlink_Title="أدرِج وصلة"
 DLG_InsertTable_AutoColSize="الحجم الآلي للعمود"
 DLG_InsertTable_AutoFit="سلوك الملائمة الآلية"
 DLG_InsertTable_AutoFit_Capital="سلوك الملائمة الآلية"
-DLG_InsertTable_FixedColSize="الحجم الثابت للعمود"
+DLG_InsertTable_FixedColSize="حجم العمود ثابت:"
 DLG_InsertTable_NumCols="عدد الأعمدة:"
 DLG_InsertTable_NumRows="عدد الصفوف:"
 DLG_InsertTable_TableSize="حجم الجدول"
@@ -790,11 +801,11 @@ DLG_Lists_Type_bullet="نقطة"
 DLG_Lists_Type_none="لا شيء"
 DLG_Lists_Type_numbered="مرقم"
 DLG_MailMerge_AvailableFields="الحقول المتوفرة"
-DLG_MailMerge_Insert="اسم الحقل"
+DLG_MailMerge_Insert="اسم الحقل:"
 DLG_MailMerge_Insert_No_Colon="اسم الحقل"
 DLG_MailMerge_MailMergeTitle="أدرِج حقل دمج بريد"
 DLG_MailMerge_OpenFile="ا&amp;فتح ملفا"
-DLG_MarkRevisions_Check1Label="تابع المراجعة الأخيرة (الرقم %Id)"
+DLG_MarkRevisions_Check1Label="تابع المراجعة الأخيرة (الرقم %d)"
 DLG_MarkRevisions_Check2Label="ابدأ مراجعة جديدة"
 DLG_MarkRevisions_Comment2Label="تعليق لضمه مع المراجعة:"
 DLG_MarkRevisions_Title="علّم المراجعات"
@@ -849,7 +860,7 @@ DLG_Options_Label_CustomSmartQuotes="استخدم طراز علامات تنصص
 DLG_Options_Label_DefaultPageSize="حجم الصفحة الافتراضي"
 DLG_Options_Label_DirectionRtl="اجعل اتجاه النص من اليمين إلى اليسار افتراضا"
 DLG_Options_Label_Documents="مستندات"
-DLG_Options_Label_EnableOverwrite=""
+DLG_Options_Label_EnableOverwrite="فعّل &amp;زر تبديل طور الطمس"
 DLG_Options_Label_FileExtension="ا&amp;متداد الملف:"
 DLG_Options_Label_General="عام"
 DLG_Options_Label_Grammar="تدقيق نحوي آلي"
@@ -869,7 +880,7 @@ DLG_Options_Label_OuterQuoteStyle="طراز علامة التنصيص الخار
 DLG_Options_Label_PrefsAutoSave="ا&amp;حفظ هذا المخطط آليا"
 DLG_Options_Label_PrefsCurrentScheme="&amp;مخطط الإعدادت الحالي"
 DLG_Options_Label_Schemes="مخططات التفضيلات"
-DLG_Options_Label_SmartQuotes="فعِّل علامات التنصيص الذكية"
+DLG_Options_Label_SmartQuotes="فعِّل علامات التنصيص الذكية (المقوسة)"
 DLG_Options_Label_SmartQuotesEnable="&amp;فعِّل علامات التنصيص الذكية"
 DLG_Options_Label_SpellAutoReplace="صحح الأخطاء الإملائية آليا"
 DLG_Options_Label_SpellCheckAsType="دقق ال&amp;إملاء أثناء الكتابة"
@@ -899,7 +910,7 @@ DLG_Options_Label_ViewStandardTB="شريط الأدوات القياسي"
 DLG_Options_Label_ViewStatusBar="&amp;شريط الحالة"
 DLG_Options_Label_ViewTableTB="شريط أدوات الجدول"
 DLG_Options_Label_ViewTooltips="اعرض تلميحات الأدوات"
-DLG_Options_Label_ViewUnits="&amp;وحدات:"
+DLG_Options_Label_ViewUnits="ال&amp;وحدات:"
 DLG_Options_Label_ViewUnprintable="علامات ت&amp;خطيط مخفية"
 DLG_Options_Label_ViewViewFrame="اعرض..."
 DLG_Options_Label_Visible="مرئي"
@@ -907,7 +918,7 @@ DLG_Options_Label_WithExtension="بالامتداد:"
 DLG_Options_OptionsTitle="التفضيلات"
 DLG_Options_Prompt_IgnoreResetAll="هل تريد تصفير الكلمات المتجاهلة في جميع المستندات؟"
 DLG_Options_Prompt_IgnoreResetCurrent="هل تريد تصفير الكلمات المتجاهلة في المستند الحالي؟"
-DLG_Options_Prompt_YouMustRestart="ستطبّق لغة واجهة المستخدم الجديدة مباشرة بعد بدء التطبيق المرّة التالية."
+DLG_Options_Prompt_YouMustRestart="ستطبّق لغة واجهة المستخدم الجديدة مباشرة بعد بدء التطبيق المرّة التالية"
 DLG_Options_SpellCheckingTitle="تدقيق الإملاء"
 DLG_Options_TabLabel_Misc="متفرقّات."
 DLG_Options_TabLabel_Other="أخرى"
@@ -918,7 +929,7 @@ DLG_Options_TabLabel_View="عرض"
 DLG_PageNumbers_Alignment="المحاذاة:"
 DLG_PageNumbers_Alignment_No_Colon="المحاذاة"
 DLG_PageNumbers_Center="وسّط"
-DLG_PageNumbers_Footer="الأسفل:"
+DLG_PageNumbers_Footer="الأسفل"
 DLG_PageNumbers_Header="فوق"
 DLG_PageNumbers_Left="اليسار"
 DLG_PageNumbers_Position="الموضع:"
@@ -944,7 +955,7 @@ DLG_PageSetup_Right="ال&amp;يمين:"
 DLG_PageSetup_Scale="حجّم..."
 DLG_PageSetup_Title="إعداد الصفحة"
 DLG_PageSetup_Top="الأ&amp;على:"
-DLG_PageSetup_Units="&amp;وحدات:"
+DLG_PageSetup_Units="ال&amp;وحدات:"
 DLG_PageSetup_Width="ال&amp;عرض:"
 DLG_Para_AlignCentered="موسط"
 DLG_Para_AlignJustified="مساوَى"
@@ -967,7 +978,7 @@ DLG_Para_LabelSpecial="&amp;خاص:"
 DLG_Para_ParaTitle="فقرة"
 DLG_Para_PreviewFollowParagraph="الفقرة التالية الفقرة التالية الفقرة التالية الفقرة التالية الفقرة التالية الفقرة التالية الفقرة التالية الفقرة التالية"
 DLG_Para_PreviewPrevParagraph="الفقرة السابقة الفقرة السابقة الفقرة السابقة الفقرة السابقة الفقرة السابقة الفقرة السابقة الفقرة السابقة الفقرة السابقة"
-DLG_Para_PreviewSampleFallback="تمثل هذه الفقرة الكلمات كما قد تظهر في المستند.  لرؤية نص من مستندك مستخدم في هذه المعاينة، ضع المؤشر في فقرة تحتوي نصا وافتح هذا الحوار."
+DLG_Para_PreviewSampleFallback="تمثل هذه الفقرة الكلمات كما قد تظهر في المستند.  لرؤية نص من مستندك في هذه المعاينة، ضع المؤشر في فقرة تحتوي نصا وافتح هذا الحوار."
 DLG_Para_PushKeepLinesTogether="ا&amp;حتفظ بالسطور مجمعة"
 DLG_Para_PushKeepWithNext="اترك مع ال&amp;تالي"
 DLG_Para_PushNoHyphenate="&amp;لا تقطع النص"
@@ -1011,7 +1022,7 @@ DLG_Styles_Description="الوصف"
 DLG_Styles_ErrBlankName="لا يمكن ترك اسم الطراز فارغا"
 DLG_Styles_ErrNoStyle="لم تختر أي طراز &#x000a;لتغييره"
 DLG_Styles_ErrNotTitle1="اسم الطراز - "
-DLG_Styles_ErrNotTitle2=" - محجوز.&#x000a; لا يمكنك استخدام هذا الاسم، اختر اسما آخر &#x000a;"
+DLG_Styles_ErrNotTitle2=" - محجوز. &#x000a; لا يمكنك استخدام هذا الاسم. اختر اسما آخر &#x000a;"
 DLG_Styles_ErrStyleBuiltin="لا يمكن تعديل طراز مدمج"
 DLG_Styles_ErrStyleCantDelete="لا يمكن حذف هذا الطراز"
 DLG_Styles_ErrStyleNot="الطراز غير موجود &#x000a;لذلك لا يمكن تغييره"
@@ -1040,7 +1051,7 @@ DLG_Styles_NewTitle="طراز جديد"
 DLG_Styles_ParaPrev="معاينة الفقرة"
 DLG_Styles_RemoveButton="أزِل"
 DLG_Styles_RemoveLab="أزِل الخاصية من الطراز"
-DLG_Styles_StylesLocked="عطّل كل أوامر التنسيق، إلا الطرز."
+DLG_Styles_StylesLocked="عطّل كل أوامر التنسيق، إلا الطرز"
 DLG_Styles_StylesTitle="الطُرز"
 DLG_Stylist_FootnoteStyles="طُرز الحواشي"
 DLG_Stylist_HeadingStyles="طُرز العناوين"
@@ -1087,9 +1098,9 @@ DLG_WordCount_Statistics="إحصاءات:"
 DLG_WordCount_Update_Rate="الثواني بين التحديثات"
 DLG_WordCount_WordCountTitle="عدد الكلمات"
 DLG_WordCount_Words="كلمات:"
-DLG_WordCount_Words_No_Notes="كلمات (بلا حواشي)"
+DLG_WordCount_Words_No_Notes="كلمات (بلا حواشي):"
 FIELD_Application="تطبيق"
-FIELD_Application_BuildId="معرف البناء"
+FIELD_Application_BuildId="معرف البناء."
 FIELD_Application_CompileDate="تاريخ التصريف"
 FIELD_Application_CompileTime="وقت التصريف"
 FIELD_Application_Filename="اسم الملف"
@@ -1150,7 +1161,7 @@ FIELD_Type_PieceTable="جدول جزئي"
 FirstLineIndentStatus="إزاحة السطر الأول [%s]"
 FooterStatus="التذييل [%s]"
 HeaderStatus="الترويسة [%s]"
-InsertModeFieldOVR="سطر فوقي"
+InsertModeFieldOVR="اطمس"
 LeftIndentStatus="الإزاحة اليسرى [%s]"
 LeftIndentTextIndentStatus="الإزاحة اليسرى [%s] إزاحة السطر الأول [%s]"
 LeftMarginStatus="الهامش الأيسر [%s]"
@@ -1201,7 +1212,7 @@ MENU_LABEL_FILE_OPEN="ا&amp;فتح"
 MENU_LABEL_FILE_PAGESETUP="إ&amp;عداد الصفحة"
 MENU_LABEL_FILE_PRINT="ا&amp;طبع"
 MENU_LABEL_FILE_PRINT_DIRECTLY="اطبع &amp;مباشرة"
-MENU_LABEL_FILE_PRINT_PREVIEW="&amp;معاينة الطبع"
+MENU_LABEL_FILE_PRINT_PREVIEW="&amp;معاينة الطباعة"
 MENU_LABEL_FILE_PROPERTIES="الخ&amp;صائص"
 MENU_LABEL_FILE_RECENT="الملفات ال&amp;حديثة"
 MENU_LABEL_FILE_RECENT_1="&amp;1 %s"
@@ -1224,7 +1235,8 @@ MENU_LABEL_FMT_BACKGROUND="خلفية الصفحة"
 MENU_LABEL_FMT_BACKGROUND_PAGE_COLOR="لو&amp;ن الصفحة"
 MENU_LABEL_FMT_BACKGROUND_PAGE_IMAGE="صورة الصفحة"
 MENU_LABEL_FMT_BOLD="&amp;عريض"
-MENU_LABEL_FMT_BORDERS="حدود وظلال"
+MENU_LABEL_FMT_BORDERS="ال&amp;حدود والظلال"
+MENU_LABEL_FMT_BOTTOMLINE="ال&amp;سطر السفلي"
 MENU_LABEL_FMT_BULLETS="نقاط و&amp;ترقيم"
 MENU_LABEL_FMT_COLUMNS="&amp;أعمدة"
 MENU_LABEL_FMT_DIRECTION="اتجاهي"
@@ -1234,11 +1246,11 @@ MENU_LABEL_FMT_DIRECTION_DO_LTR="نص من الي&amp;سار إلى اليمين
 MENU_LABEL_FMT_DIRECTION_DO_RTL="نص من ال&amp;يمين إلى اليسار"
 MENU_LABEL_FMT_DIRECTION_SD_RTL="المُ&amp;حدّد من اليمين لليسار"
 MENU_LABEL_FMT_DOCUMENT="&amp;مستند"
-MENU_LABEL_FMT_EMBED="نسّق الكائن"
+MENU_LABEL_FMT_EMBED="نسّق ال&amp;كائن"
 MENU_LABEL_FMT_FONT="&amp;خط"
-MENU_LABEL_FMT_FOOTNOTES="الحواشي والحواشي الختامية"
+MENU_LABEL_FMT_FOOTNOTES="ال&amp;حواشي والحواشي الختامية"
 MENU_LABEL_FMT_FRAME="مربع نص"
-MENU_LABEL_FMT_HDRFTR="الترويسة/التذييل"
+MENU_LABEL_FMT_HDRFTR="ال&amp;ترويسة/التذييل"
 MENU_LABEL_FMT_IMAGE="&amp;صورة"
 MENU_LABEL_FMT_ITALIC="&amp;مائل"
 MENU_LABEL_FMT_LANGUAGE="حدد الل&amp;غة"
@@ -1255,6 +1267,7 @@ MENU_LABEL_FMT_SUPERSCRIPT="حرف ف&amp;وقي"
 MENU_LABEL_FMT_TABLEOFCONTENTS="فهرس"
 MENU_LABEL_FMT_TABS="أ&amp;لسنة"
 MENU_LABEL_FMT_TOGGLECASE="&amp;غيّر حالة الحرف"
+MENU_LABEL_FMT_TOPLINE="السطر الأ&amp;على"
 MENU_LABEL_FMT_UNDERLINE="سطر &amp;تحتي"
 MENU_LABEL_FORMAT="الت&amp;نسيق"
 MENU_LABEL_GOTO_ANNOTATION="اذ&amp;هب إلى التعليقات"
@@ -1392,7 +1405,7 @@ MENU_LABEL_VIEW_HEADFOOT="ال&amp;ترويسة والتذييل"
 MENU_LABEL_VIEW_LOCKSTYLES="فعّل أدوات الت&amp;نسيق"
 MENU_LABEL_VIEW_LOCK_TB_LAYOUT="أو&amp;صد التخطيط"
 MENU_LABEL_VIEW_NORMAL="تخطيط &amp;عادي"
-MENU_LABEL_VIEW_PRINT="&amp;تخطيط الطبع"
+MENU_LABEL_VIEW_PRINT="&amp;منظور الطباعة"
 MENU_LABEL_VIEW_RULER="أظهر ال&amp;مسطرة"
 MENU_LABEL_VIEW_SHOWPARA="أظهر &amp;علامات التنسيق"
 MENU_LABEL_VIEW_STATUSBAR="أ&amp;ظهر شريط الحالة"
@@ -1403,7 +1416,7 @@ MENU_LABEL_VIEW_TB_4="&amp;4 %s"
 MENU_LABEL_VIEW_TOOLBARS="أ&amp;شرطة الأدوات"
 MENU_LABEL_VIEW_WEB="تخطيط ال&amp;وِب"
 MENU_LABEL_VIEW_ZOOM="&amp;تقريب"
-MENU_LABEL_VIEW_ZOOM_100="الحجم الأصلي"
+MENU_LABEL_VIEW_ZOOM_100="الحجم الأ&amp;صلي"
 MENU_LABEL_VIEW_ZOOM_200="قرّب إلى &amp;200%"
 MENU_LABEL_VIEW_ZOOM_50="بعّد إلى &amp;50%"
 MENU_LABEL_VIEW_ZOOM_75="بعّد إلى &amp;75%"
@@ -1473,7 +1486,7 @@ MENU_STATUSLINE_FILE_OPEN="افتح مستندا موجودا"
 MENU_STATUSLINE_FILE_PAGESETUP="غيِّر خيارات الطباعة"
 MENU_STATUSLINE_FILE_PRINT="اطبع جميع أجزاء المستند"
 MENU_STATUSLINE_FILE_PRINT_DIRECTLY="اطبع باستخدام مُشغّل بوست‌سكربت الداخلي"
-MENU_STATUSLINE_FILE_PRINT_PREVIEW="معاينة المستند قبل الطبع"
+MENU_STATUSLINE_FILE_PRINT_PREVIEW="معاينة المستند قبل الطباعة"
 MENU_STATUSLINE_FILE_PROPERTIES="اضبط خصائص البيانات الفوقية"
 MENU_STATUSLINE_FILE_RECENT="افتح مستندا استخدم حديثا"
 MENU_STATUSLINE_FILE_RECENT_1="افتح هذا المستند"
@@ -1538,7 +1551,7 @@ MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE="عن مشروع مكتب جنوم"
 MENU_STATUSLINE_HELP_CHECKVER="التمس نسخ أحدث من لآبي‌ورد عبر الخط"
 MENU_STATUSLINE_HELP_CONTENTS="اعرض محتويات المساعدة"
 MENU_STATUSLINE_HELP_CREDITS="اعرض الإشادات"
-MENU_STATUSLINE_HELP_INTRO="م&amp;قدمة المساعدة"
+MENU_STATUSLINE_HELP_INTRO="اعرض مقدمة المساعدة"
 MENU_STATUSLINE_HELP_REPORT_BUG="أبلغ عن علّة للمساعدة في جعل آبي‌ورد منتجا أفضل"
 MENU_STATUSLINE_HELP_SEARCH="ابحث عن مساعدة..."
 MENU_STATUSLINE_INSERT=" "
@@ -1548,8 +1561,8 @@ MENU_STATUSLINE_INSERT_CLIPART="أدرِج قصاصة فنية"
 MENU_STATUSLINE_INSERT_DATETIME="أدرِج التاريخ و/أو الوقت"
 MENU_STATUSLINE_INSERT_DELETE_HYPERLINK="احذف الوصلة"
 MENU_STATUSLINE_INSERT_DIRECTIONMARKER="أدرِج علامة اتجاه يونكود في الملف"
-MENU_STATUSLINE_INSERT_DIRECTIONMARKER_LRM="أدرِج علامة اتجاه يسار إلى يمين"
-MENU_STATUSLINE_INSERT_DIRECTIONMARKER_RLM="أدرِج علامة اتجاه يمين إلى يسار"
+MENU_STATUSLINE_INSERT_DIRECTIONMARKER_LRM="أدرِج علامة اتجاه يسار إلى يمين (LRM)"
+MENU_STATUSLINE_INSERT_DIRECTIONMARKER_RLM="أدرِج علامة اتجاه يمين إلى يسار (RLM)"
 MENU_STATUSLINE_INSERT_EDIT_HYPERLINK="حرِّر الوصلة"
 MENU_STATUSLINE_INSERT_ENDNOTE="أدرِج حاشية ختامية"
 MENU_STATUSLINE_INSERT_FIELD="أدرِج حقلا محسوبا"
@@ -1638,7 +1651,7 @@ MENU_STATUSLINE_TOOLS_REVISIONS_COMPARE_DOCUMENTS="قارن المستند ال�
 MENU_STATUSLINE_TOOLS_REVISIONS_FIND_NEXT="ابحث عن المراجعة الظاهرة التالية في المستند"
 MENU_STATUSLINE_TOOLS_REVISIONS_FIND_PREV="ابحث عن المراجعة الظاهرة السابقة في المستند"
 MENU_STATUSLINE_TOOLS_REVISIONS_MARK="علّم التغييرات أثناء الكتابة"
-MENU_STATUSLINE_TOOLS_REVISIONS_MERGE_DOCUMENTS="ادمج  مستند آخر في المستند الحالي باستعمال علامات المراجعة"
+MENU_STATUSLINE_TOOLS_REVISIONS_MERGE_DOCUMENTS="ادمج مستند آخر في المستند الحالي باستعمال علامات المراجعة"
 MENU_STATUSLINE_TOOLS_REVISIONS_NEW_REVISION="ابدأ مراجعة منفصلة عن الحالية"
 MENU_STATUSLINE_TOOLS_REVISIONS_PURGE="أزِل كل معلومات المراجعة من المستند"
 MENU_STATUSLINE_TOOLS_REVISIONS_REJECT_REVISION="أزِل التغيير المقترح"
@@ -1659,7 +1672,7 @@ MENU_STATUSLINE_VIEW_HEADFOOT="حرِّر النص أعلى وأسفل كل صف
 MENU_STATUSLINE_VIEW_LOCKSTYLES="اسمح بالتنسيق باستخدام الطرز فقط"
 MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT="أوصد تخطيط شريط الأدوات الحالي"
 MENU_STATUSLINE_VIEW_NORMAL="المنظور العادي"
-MENU_STATUSLINE_VIEW_PRINT="تخطيط الطبع"
+MENU_STATUSLINE_VIEW_PRINT="منظور الطباعة"
 MENU_STATUSLINE_VIEW_RULER="أظهر أو أخفِ المسطرة"
 MENU_STATUSLINE_VIEW_SHOWPARA="اعرض المحارف التي لا تُطبع"
 MENU_STATUSLINE_VIEW_STATUSBAR="أظهر أو أخفِ شريط الحالة"
@@ -1670,7 +1683,7 @@ MENU_STATUSLINE_VIEW_TB_4="أظهر أو أخفِ شريط أدوات الجدو
 MENU_STATUSLINE_VIEW_TOOLBARS=" "
 MENU_STATUSLINE_VIEW_WEB="تخطيط الوب"
 MENU_STATUSLINE_VIEW_ZOOM="قلّص أو وسّع معرض المستند"
-MENU_STATUSLINE_VIEW_ZOOM_100="الحجم الأصلي"
+MENU_STATUSLINE_VIEW_ZOOM_100="الحجم الأ&amp;صلي"
 MENU_STATUSLINE_VIEW_ZOOM_200="قرّب إلى 200%"
 MENU_STATUSLINE_VIEW_ZOOM_50="بعّد إلى 50%"
 MENU_STATUSLINE_VIEW_ZOOM_75="بعّد إلى 75%"
@@ -1696,21 +1709,21 @@ MENU_STATUSLINE__BOGUS2__=" "
 MSG_AfterRestartNew="لن يطرأ التغيير إلا بعد إعادة بدء آبي‌ورد أو إنشاء مستند جديد."
 MSG_AutoMerge="ادمج آليًا"
 MSG_AutoRevisionOffWarning="أمتأكد أنك لا ترغب بحفظ سجل التأريخ كاملا؟ إذا تابعت، لن يمكنك استعادة النسخ السابقة لهذا المستند."
-MSG_BookmarkAlreadyExists=""
+MSG_BookmarkAlreadyExists="هذه العلامة موجودة من قبل. أتريد استبدال الجديدة بدل العلامة الموجودة؟"
 MSG_BookmarkNotFound="لم يُعثر على العلامة &quot;%s&quot; في هذا المستند."
-MSG_CHECK_PRINT_MODE="لا يمكن إنشاء وتحرير الترويسات والتذييلات إلا في طور منظور الطبع. &#x000a; للدخول إلى هذا الطور اختر عرض ثم تخطيط الطبع من القوائم. &#x000a;·هل تريد الدخول إلى حوار نسق تصميم الطبع الآن؟"
+MSG_CHECK_PRINT_MODE="لا يمكن إنشاء وتحرير الترويسات والتذييلات إلا في منظور الطباعة. &#x000a; للدخول إلى هذا الطور اختر عرض ثم تخطيط الطباعة من القوائم. &#x000a; هل تريد التحول إلى منظور الطباعة الآن؟"
 MSG_ConfirmSave="أأحفط التغييرات في المستند %s قبل الغلق؟"
 MSG_ConfirmSaveSecondary="ستضيع تغييراتك إن لم تحفظها."
 MSG_DefaultDirectionChg="لقد غيرت الاتجاه الافتراضي."
 MSG_DirectionModeChg="لقد غيرت طور الاتجاه."
-MSG_DlgNotImp="%s لم يُدرج بعد.&#x000a;&#x000a;إذا كنت مبرمجا فلا تتردد في إضافة كود إلى %s، سطر %Id وأرسل الرقع إلى:&#x000a;&#x000a;\tabiword-dev@abisource.com&#x000a;&#x000a;وإلا فكن صبورا."
+MSG_DlgNotImp="%s لم يُدرج بعد.&#x000a;&#x000a;إذا كنت مبرمجا فلا تتردد في إضافة كود إلى %s، سطر %d&#x000a;وأرسل الرقع إلى:&#x000a;&#x000a;\tabiword-dev@abisource.com&#x000a;&#x000a;وإلا فكن صبورا."
 MSG_EmptySelection="التحديد الحالي فارغ"
 MSG_Exception="حدث خطأ خطير. سيُغلق آبي‌ورد.&#x000a;حُفِظ المستند الحالي في القرص بامتداد &quot;‪.saved‬&quot;."
 MSG_HiddenRevisions="يحتوي هذا المستند على مراجعات مخفاة حاليا. طالع وثائق آبي‌ورد لمعلومات حول العمل بالمراجعات."
 MSG_HyperlinkCrossesBoundaries="يجب أن يكون النص الذي ستربط به الوصلة ضمن فقرة واحدة."
 MSG_HyperlinkNoBookmark="تحذير: العلامة التي طلبتها [%s] غير موجودة."
 MSG_HyperlinkNoSelection="يجب أن تحدد جزءا من المستند قبل إدراج وصلة."
-MSG_IE_BogusDocument="لم يتمكن آبي‌ورد من فتح %s. يبدو أن المستند غير سليم"
+MSG_IE_BogusDocument="لم يتمكن آبي‌ورد من فتح %s. يبدو أن المستند غير سليم."
 MSG_IE_CouldNotOpen="تعذّر فتح الملف %s للكتابة"
 MSG_IE_CouldNotWrite="تعذّرت الكتابة في الملف %s"
 MSG_IE_FakeType="الملف %s ليس من النوع الذي يزعم أن يكون"
@@ -1722,8 +1735,8 @@ MSG_ImportError="خطأ أثناء استيراد الملف %s."
 MSG_NoBreakInsideFrame="لا يمكن إدراج نهاية صفحة داخل مربع النص"
 MSG_NoBreakInsideTable="لا يمكن إدراج نهاية صفحة داخل جدول"
 MSG_OpenFailed="تعذّر فتح الملف %s."
-MSG_OpenRecovered=""
-MSG_PrintStatus="يطبع الصفحة %Id من %Id"
+MSG_OpenRecovered="حدثت بعض الأعطال أثناء الاستيراد."
+MSG_PrintStatus="يطبع الصفحة %d من %d"
 MSG_PrintingDoc="يطبع المستند..."
 MSG_QueryExit="أأغلق جميع النوافذ ثم أخرج؟"
 MSG_RevertBuffer="أأرجع للنسخة المحفوظة من %s؟"
@@ -1734,8 +1747,8 @@ MSG_SaveFailedName="خطأ أثناء محاولة حفظ %s: اسم غير سل
 MSG_SaveFailedWrite="خطأ كتابة عند محاولة حفظ %s"
 MSG_SpellDone="تم تدقيق الإملاء."
 MSG_SpellSelectionDone="انتهى آبي‌ورد من تدقيق التحديد."
-PRINT_CANNOTSTARTPRINTJOB="تعذّر بدء مهمة الطبع"
-PageInfoField="الصفحة: %Id/%Id"
+PRINT_CANNOTSTARTPRINTJOB="تعذّر بدء مهمة الطباعة"
+PageInfoField="صفحة: %d‏\\%d"
 RightIndentStatus="الإزاحة اليمنى [%s]"
 RightMarginStatus="الهامش الأيمن [%s]"
 SCRIPT_CANTRUN="خطأ أثناء تنفيذ السكربت %s"
@@ -1771,7 +1784,7 @@ TOOLBAR_LABEL_EDIT_REMOVEHEADER="أزِل الترويسة"
 TOOLBAR_LABEL_EDIT_UNDO="تراجع"
 TOOLBAR_LABEL_FILE_NEW="جديد"
 TOOLBAR_LABEL_FILE_OPEN="افتح"
-TOOLBAR_LABEL_FILE_PRINT_PREVIEW="معاينة الطبع"
+TOOLBAR_LABEL_FILE_PRINT_PREVIEW="معاينة الطباعة"
 TOOLBAR_LABEL_FILE_SAVE="احفظ"
 TOOLBAR_LABEL_FILE_SAVEAS="احفظ ك‍"
 TOOLBAR_LABEL_FMTPAINTER="نسّق الداهن"
@@ -1832,7 +1845,7 @@ TOOLBAR_STATUSLINE_EDIT_UNDO="تراجع عن التحرير"
 TOOLBAR_STATUSLINE_FILE_NEW="أنشئ مستندا جديدا"
 TOOLBAR_STATUSLINE_FILE_OPEN="افتح مستندا موجودا"
 TOOLBAR_STATUSLINE_FILE_PRINT="اطبع المستند"
-TOOLBAR_STATUSLINE_FILE_PRINT_PREVIEW="معاينة المستند قبل الطبع"
+TOOLBAR_STATUSLINE_FILE_PRINT_PREVIEW="معاينة المستند قبل الطباعة"
 TOOLBAR_STATUSLINE_FILE_SAVE="احفظ المستند"
 TOOLBAR_STATUSLINE_FILE_SAVEAS="احفظ المستند باسم آخر"
 TOOLBAR_STATUSLINE_FMTPAINTER="طبّق تنسيق الفقرة المنسوخة آنفا على النص المحددة"
@@ -1893,7 +1906,7 @@ TOOLBAR_TOOLTIP_EDIT_UNDO="تراجع عن التحرير"
 TOOLBAR_TOOLTIP_FILE_NEW="أنشئ مستندا جديدا"
 TOOLBAR_TOOLTIP_FILE_OPEN="افتح مستندا موجودا"
 TOOLBAR_TOOLTIP_FILE_PRINT="اطبع المستند"
-TOOLBAR_TOOLTIP_FILE_PRINT_PREVIEW="معاينة المستند قبل الطبع"
+TOOLBAR_TOOLTIP_FILE_PRINT_PREVIEW="معاينة المستند قبل الطباعة"
 TOOLBAR_TOOLTIP_FILE_SAVE="احفظ المستند"
 TOOLBAR_TOOLTIP_FILE_SAVEAS="احفظ المستند باسم آخر"
 TOOLBAR_TOOLTIP_FMTPAINTER="طبّق تنسيق الفقرة المنسوخة آنفا على النص المحددة"
