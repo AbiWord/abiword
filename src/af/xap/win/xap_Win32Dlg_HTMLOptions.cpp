@@ -160,11 +160,11 @@ BOOL XAP_Win32Dialog_HTMLOptions::_onDeltaPos(NM_UPDOWN * /*pnmud*/)
 void XAP_Win32Dialog_HTMLOptions::refreshStates()
 {
 	// determine which controls are available.
-	enableControl(XAP_RID_DIALOG_HTMLOPTIONS_CHK_XML),can_set_Declare_XML();
-	enableControl(XAP_RID_DIALOG_HTMLOPTIONS_CHK_AWML),can_set_Allow_AWML();
-	enableControl(XAP_RID_DIALOG_HTMLOPTIONS_CHK_EMBEDCSS),can_set_Embed_CSS();
-	enableControl(XAP_RID_DIALOG_HTMLOPTIONS_CHK_URLIMAGE),can_set_Embed_Images();
-	enableControl(XAP_RID_DIALOG_HTMLOPTIONS_CHK_SPLITFILE),can_set_Split_Document();
+	enableControl(XAP_RID_DIALOG_HTMLOPTIONS_CHK_XML,can_set_Declare_XML());
+	enableControl(XAP_RID_DIALOG_HTMLOPTIONS_CHK_AWML,can_set_Allow_AWML());
+	enableControl(XAP_RID_DIALOG_HTMLOPTIONS_CHK_EMBEDCSS,can_set_Embed_CSS());
+	enableControl(XAP_RID_DIALOG_HTMLOPTIONS_CHK_URLIMAGE,can_set_Embed_Images());
+	enableControl(XAP_RID_DIALOG_HTMLOPTIONS_CHK_SPLITFILE,can_set_Split_Document());
 
 	// set initial state
 	checkButton(XAP_RID_DIALOG_HTMLOPTIONS_CHK_HTML4,get_HTML4());
