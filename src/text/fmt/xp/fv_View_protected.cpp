@@ -70,7 +70,7 @@
 #include "ap_Prefs.h"
 #include "ap_Strings.h"
 #include "fd_Field.h"
-#include "gr_ViewDoubleBuffering.h"
+#include "fv_ViewDoubleBuffering.h"
 
 #ifdef ENABLE_SPELL
 #include "spell_manager.h"

@@ -74,7 +74,7 @@
 #include "fd_Field.h"
 #include "pf_Frag_Strux.h"
 #include "fp_FootnoteContainer.h"
-#include "gr_ViewDoubleBuffering.h"
+#include "fv_ViewDoubleBuffering.h"
 
 #ifdef ENABLE_SPELL
 #include "spell_manager.h"

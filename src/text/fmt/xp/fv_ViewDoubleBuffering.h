@@ -44,7 +44,7 @@ private:
 
 	ViewDrawFunctionArguments mostExtArgs;
 	void initMostExtArgs();
-	void GR_ViewDoubleBuffering::extendDrawArgsIfNeccessary(
+	void extendDrawArgsIfNeccessary(
 		UT_sint32 x, UT_sint32 y, 
 		UT_sint32 width, UT_sint32 height, 
 		bool bDirtyRunsOnly, bool bClip);
