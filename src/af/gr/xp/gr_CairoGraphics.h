@@ -421,6 +421,10 @@ public:
 	void _DeviceContext_SwitchToScreen();
 	void _DeviceContext_DrawBufferToScreen();
 
+	// Suspend / resume drawing
+	void _DeviceContext_SuspendDrawing();
+	void _DeviceContext_ResumeDrawing();
+
 private:
 	static UT_uint32 s_iInstanceCount;
 	static UT_VersionInfo s_Version;

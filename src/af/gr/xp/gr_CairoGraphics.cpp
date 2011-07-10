@@ -3304,6 +3304,16 @@ void GR_CairoGraphics::_DeviceContext_DrawBufferToScreen()
 	cairo_paint(m_cr);
 }
 
+void GR_CairoGraphics::_DeviceContext_SuspendDrawing()
+{
+	cairo_push_group(m_cr);
+}
+
+void GR_CairoGraphics::_DeviceContext_ResumeDrawing()
+{
+	cairo_pop_group(m_cr);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // GR_UnixPangFont implementation
