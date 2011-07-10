@@ -1,17 +1,17 @@
-#ifndef GR_VIEW_DOUBLE_BUFFERING_H
-#define GR_VIEW_DOUBLE_BUFFERING_H
+#ifndef FV_VIEW_DOUBLE_BUFFERING_H
+#define FV_VIEW_DOUBLE_BUFFERING_H
 
 #include "gr_Graphics.h"
 #include "gr_Painter.h"
 #include "fv_View.h"
 #include "ut_types.h"
 
-class GR_ViewDoubleBuffering
+class FV_ViewDoubleBuffering
 {
 
 public:
-	GR_ViewDoubleBuffering(FV_View *pView, bool suspendDirectDrawing, bool callDrawOnlyAtTheEnd);
-	~GR_ViewDoubleBuffering();
+	FV_ViewDoubleBuffering(FV_View *pView, bool suspendDirectDrawing, bool callDrawOnlyAtTheEnd);
+	~FV_ViewDoubleBuffering();
 
 	void beginDoubleBuffering();
 	void endDoubleBuffering();

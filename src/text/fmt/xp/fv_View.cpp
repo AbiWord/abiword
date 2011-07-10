@@ -667,7 +667,7 @@ void FV_View::setGraphics(GR_Graphics * pG)
 	}
 }
 
-bool FV_View::registerDoubleBufferingObject(GR_ViewDoubleBuffering *obj)
+bool FV_View::registerDoubleBufferingObject(FV_ViewDoubleBuffering *obj)
 {
 	if(m_pViewDoubleBufferingObject == NULL)
 	{
@@ -678,7 +678,7 @@ bool FV_View::registerDoubleBufferingObject(GR_ViewDoubleBuffering *obj)
 	else return false;
 }
 
-bool FV_View::unregisterDoubleBufferingObject(GR_ViewDoubleBuffering *obj)
+bool FV_View::unregisterDoubleBufferingObject(FV_ViewDoubleBuffering *obj)
 {
 	if((void*)m_pViewDoubleBufferingObject == (void*)obj)
 	{

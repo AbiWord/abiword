@@ -1,4 +1,4 @@
-#include "gr_ViewDoubleBuffering.h"
+#include "fv_ViewDoubleBuffering.h"
 
 #include "gr_Graphics.h"
 #include "gr_Painter.h"
@@ -7,7 +7,7 @@
 #include "ut_misc.h"
 #include "ut_debugmsg.h"
 
-GR_ViewDoubleBuffering::GR_ViewDoubleBuffering(FV_View *pView, bool suspendDirectDrawing, bool callDrawOnlyAtTheEnd)
+FV_ViewDoubleBuffering::FV_ViewDoubleBuffering(FV_View *pView, bool suspendDirectDrawing, bool callDrawOnlyAtTheEnd)
 	: m_pView(pView),
 	  m_bSuspendDirectDrawing(suspendDirectDrawing),
 	  m_bCallDrawOnlyAtTheEnd(callDrawOnlyAtTheEnd)
@@ -15,12 +15,12 @@ GR_ViewDoubleBuffering::GR_ViewDoubleBuffering(FV_View *pView, bool suspendDirec
 	this->initMostExtArgs();
 }
 
-GR_ViewDoubleBuffering::~GR_ViewDoubleBuffering()
+FV_ViewDoubleBuffering::~FV_ViewDoubleBuffering()
 {
 	this->endDoubleBuffering();
 }
 
-void GR_ViewDoubleBuffering::beginDoubleBuffering()
+void FV_ViewDoubleBuffering::beginDoubleBuffering()
 {
 	// We will need to direct calls through a painter since it may initialize
 	// the device context on some platforms
@@ -43,7 +43,7 @@ void GR_ViewDoubleBuffering::beginDoubleBuffering()
 	m_pPainter->beginDoubleBuffering();
 }
 
-void GR_ViewDoubleBuffering::endDoubleBuffering()
+void FV_ViewDoubleBuffering::endDoubleBuffering()
 {
 	if(!m_pView->unregisterDoubleBufferingObject(this))
 		return;
@@ -59,7 +59,7 @@ void GR_ViewDoubleBuffering::endDoubleBuffering()
 	delete m_pPainter;
 }
 
-void GR_ViewDoubleBuffering::recordViewDrawCall(
+void FV_ViewDoubleBuffering::recordViewDrawCall(
 		UT_sint32 x, UT_sint32 y, 
 		UT_sint32 width, UT_sint32 height, 
 		bool bDirtyRunsOnly, bool bClip)
@@ -67,12 +67,12 @@ void GR_ViewDoubleBuffering::recordViewDrawCall(
 	this->extendDrawArgsIfNeccessary(x, y, width, height, bDirtyRunsOnly, bClip);
 }
 
-bool GR_ViewDoubleBuffering::getCallDrawOnlyAtTheEnd()
+bool FV_ViewDoubleBuffering::getCallDrawOnlyAtTheEnd()
 {
 	return m_bCallDrawOnlyAtTheEnd;
 }
 
-void GR_ViewDoubleBuffering::callUnifiedDraw()
+void FV_ViewDoubleBuffering::callUnifiedDraw()
 {
 	UT_sint32 width = mostExtArgs.x2 - mostExtArgs.x1;
 	UT_sint32 height = mostExtArgs.y2 - mostExtArgs.y1;
@@ -87,7 +87,7 @@ void GR_ViewDoubleBuffering::callUnifiedDraw()
 	UT_DEBUGMSG(("ASFRENT: unified _draw call for a total of %d previous calls.\n",  mostExtArgs.callCount));
 }
 
-void GR_ViewDoubleBuffering::redrawEntireScreen()
+void FV_ViewDoubleBuffering::redrawEntireScreen()
 {
 	this->m_pView->_draw(
 		0, 0,
@@ -95,12 +95,12 @@ void GR_ViewDoubleBuffering::redrawEntireScreen()
 		false, false);
 }
 
-void GR_ViewDoubleBuffering::initMostExtArgs() 
+void FV_ViewDoubleBuffering::initMostExtArgs() 
 {
 	mostExtArgs.callCount = 0;
 }
 
-void GR_ViewDoubleBuffering::extendDrawArgsIfNeccessary(
+void FV_ViewDoubleBuffering::extendDrawArgsIfNeccessary(
 	UT_sint32 x, UT_sint32 y, 
 	UT_sint32 width, UT_sint32 height, 
 	bool bDirtyRunsOnly, bool bClip)
@@ -134,3 +134,4 @@ void GR_ViewDoubleBuffering::extendDrawArgsIfNeccessary(
 	
 	mostExtArgs.callCount++;
 }
+

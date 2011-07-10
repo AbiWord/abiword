@@ -52,7 +52,7 @@
 #endif
 
 #define AUTO_SCROLL_MSECS	100
-#define STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION GR_ViewDoubleBuffering dblBuffObj(this, true, true);	dblBuffObj.beginDoubleBuffering();
+#define STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION FV_ViewDoubleBuffering dblBuffObj(this, true, true); dblBuffObj.beginDoubleBuffering();
 
 class FL_DocLayout;
 class FV_Caret_Listener;
@@ -78,7 +78,7 @@ class PP_AttrProp;
 class PP_RevisionAttr;
 
 class GR_Graphics;
-class GR_ViewDoubleBuffering;
+class FV_ViewDoubleBuffering;
 struct dg_DrawArgs;
 
 class UT_Worker;
@@ -203,7 +203,7 @@ class ABI_EXPORT FV_View : public AV_View
 	friend class FV_VisualInlineImage;
 	friend class FV_Selection;
 	friend class CellLine;
-	friend class GR_ViewDoubleBuffering;
+	friend class FV_ViewDoubleBuffering;
 
 public:
 	FV_View(XAP_App*, void*, FL_DocLayout*);
@@ -1095,10 +1095,10 @@ private:
 														// This allows temporarily disabling smart quotes to allow inserting ANSI quote.
 
 public:
-	bool registerDoubleBufferingObject(GR_ViewDoubleBuffering *obj);
-	bool unregisterDoubleBufferingObject(GR_ViewDoubleBuffering *obj);
+	bool registerDoubleBufferingObject(FV_ViewDoubleBuffering *obj);
+	bool unregisterDoubleBufferingObject(FV_ViewDoubleBuffering *obj);
 private:
-	GR_ViewDoubleBuffering *m_pViewDoubleBufferingObject;
+	FV_ViewDoubleBuffering *m_pViewDoubleBufferingObject;
 
 };
 

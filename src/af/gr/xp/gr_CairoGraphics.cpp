@@ -3291,19 +3291,16 @@ cairo_t *GR_CairoGraphics::getCairo()
 
 void GR_CairoGraphics::_DeviceContext_SwitchToBuffer()
 {
-	UT_DEBUGMSG(("ASFRENT: cairo_push_group(m_cr)\n"));
 	cairo_push_group(m_cr);
 }
 
 void GR_CairoGraphics::_DeviceContext_SwitchToScreen()
 {
-	UT_DEBUGMSG(("ASFRENT: cairo_pop_group_to_source(m_cr)\n"));
 	cairo_pop_group_to_source(m_cr);
 }
 
 void GR_CairoGraphics::_DeviceContext_DrawBufferToScreen()
 {
-	UT_DEBUGMSG(("ASFRENT: cairo_paint(m_cr)\n"));
 	cairo_paint(m_cr);
 }
 
