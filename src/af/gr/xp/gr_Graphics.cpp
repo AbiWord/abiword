@@ -309,7 +309,7 @@ bool GR_Graphics::beginDoubleBuffering()
 	m_DCSwitchManagementStack.push((int)SWITCHED_TO_BUFFER);
 	_DeviceContext_SwitchToBuffer();
 	m_bDoubleBufferingActive = true;
-	UT_DEBUGMSG(("ASFRENT: SWITCHED TO SCREEN\n"));
+	UT_DEBUGMSG(("ASFRENT: SWITCHED TO BUFFER\n"));
 	return true;
 }
 

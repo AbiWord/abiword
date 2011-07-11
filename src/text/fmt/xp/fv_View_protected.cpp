@@ -3827,7 +3827,8 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 	fl_BlockLayout* pBlockEnd = pRun2->getBlock();
 	PT_DocPosition posEnd = pBlockEnd->getPosition() + pRun2->getBlockOffset();
 
-	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+	FV_ViewDoubleBuffering dblBufferingObj(this, false, true);
+	dblBufferingObj.beginDoubleBuffering();
 
 	while ((!bDone || bIsDirty) && pCurRun)
 	{

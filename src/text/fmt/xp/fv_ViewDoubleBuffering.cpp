@@ -77,12 +77,13 @@ void FV_ViewDoubleBuffering::callUnifiedDraw()
 	UT_sint32 width = mostExtArgs.x2 - mostExtArgs.x1;
 	UT_sint32 height = mostExtArgs.y2 - mostExtArgs.y1;
 
-//	this->m_pView->_draw(
-//		mostExtArgs.x1, mostExtArgs.y1,
-//		width, height,
-//		mostExtArgs.bDirtyRunsOnly, mostExtArgs.bClip);
-
-	this->redrawEntireScreen();
+	if(mostExtArgs.callCount > 0)
+	{
+		this->m_pView->_draw(
+			mostExtArgs.x1, mostExtArgs.y1,
+			width, height,
+			mostExtArgs.bDirtyRunsOnly, mostExtArgs.bClip);
+	}
 
 	UT_DEBUGMSG(("ASFRENT: unified _draw call for a total of %d previous calls.\n",  mostExtArgs.callCount));
 }
