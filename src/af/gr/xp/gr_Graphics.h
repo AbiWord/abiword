@@ -34,6 +34,7 @@
 #include "gr_CharWidthsCache.h"
 #include "ut_hash.h"
 #include "ut_vector.h"
+#include "ut_stack.h"
 #include "ut_TextIterator.h"
 
 #ifdef ABI_GRAPHICS_PLUGIN
@@ -837,7 +838,6 @@ class ABI_EXPORT GR_Graphics
 	// classes
 	virtual void _DeviceContext_SwitchToBuffer() { };
 	virtual void _DeviceContext_SwitchToScreen() { };
-	virtual void _DeviceContext_DrawBufferToScreen() { };
 
 	// returns the token for the current call
 	bool beginDoubleBuffering();
@@ -846,14 +846,6 @@ class ABI_EXPORT GR_Graphics
 	// the correct token
 	void endDoubleBuffering(bool token);
 
-	// device context state (BUFFER / SCREEN)
-	typedef enum {
-		SET_TO_SCREEN = 0,
-		SET_TO_BUFFER,
-		SUSPENDED
-	} DeviceContextState;
-	DeviceContextState m_DCState;
-
 	// SUSPEND / RESUME drawings infrastructure
 	// Drawing code (through gr_Graphics) will have no effect between SUSPEND - RESUME.
 	// The default implementation does not suspend anything
@@ -861,12 +853,20 @@ class ABI_EXPORT GR_Graphics
 
 	virtual void _DeviceContext_SuspendDrawing() { };
 	virtual void _DeviceContext_ResumeDrawing() { };
+	
+	bool suspendDrawing();
+	void resumeDrawing(bool token);
 
-	// this *does not* ensure proper nesting of suspend - resume calls
-	UT_sint32 m_iTimesDrawingSuspended;
-public:
-	void suspendDrawing();
-	void resumeDrawing();
+	// Device context switch management
+	bool m_bDoubleBufferingActive;
+	bool m_bDrawingSuspended;
+
+	typedef enum {
+		SWITCHED_TO_BUFFER = 0,
+		DRAWING_SUSPENDED
+	} DeviceContextSwitchType;
+
+	UT_NumberStack m_DCSwitchManagementStack;
 
  private:
 	GR_Caret *		 m_pCaret;

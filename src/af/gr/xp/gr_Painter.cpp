@@ -27,7 +27,8 @@
 GR_Painter::GR_Painter (GR_Graphics * pGr, bool bDisableCarets)
 	: m_pGr (pGr),
 	m_bCaretsDisabled(bDisableCarets),
-	m_bDoubleBufferingToken(false)
+	m_bDoubleBufferingToken(false),
+	m_bSuspendDrawingToken(false)
 {
 	UT_ASSERT (m_pGr);
 
@@ -174,5 +175,16 @@ void GR_Painter::endDoubleBuffering()
 {
 	m_pGr -> endDoubleBuffering(m_bDoubleBufferingToken);
 	m_bDoubleBufferingToken = false;
+}
+
+void GR_Painter::suspendDrawing()
+{
+	m_bSuspendDrawingToken = m_pGr->suspendDrawing();
+}
+
+void GR_Painter::resumeDrawing()
+{
+	m_pGr->resumeDrawing(m_bSuspendDrawingToken);
+	m_bSuspendDrawingToken = false;
 }
 

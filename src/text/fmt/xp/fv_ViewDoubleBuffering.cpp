@@ -37,10 +37,10 @@ void FV_ViewDoubleBuffering::beginDoubleBuffering()
 	if(!m_pView->registerDoubleBufferingObject(this))
 		return;
 
-	if(m_bSuspendDirectDrawing)
-		m_pView->getGraphics()->suspendDrawing();
-	
 	m_pPainter->beginDoubleBuffering();
+
+	if(m_bSuspendDirectDrawing)
+		m_pPainter->suspendDrawing();
 }
 
 void FV_ViewDoubleBuffering::endDoubleBuffering()
@@ -49,7 +49,7 @@ void FV_ViewDoubleBuffering::endDoubleBuffering()
 		return;
 
 	if(m_bSuspendDirectDrawing)
-		m_pView->getGraphics()->resumeDrawing();
+		m_pPainter->resumeDrawing();
 
 	if(m_bCallDrawOnlyAtTheEnd)
 		this->callUnifiedDraw();

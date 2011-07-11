@@ -2607,17 +2607,14 @@ void GR_Win32Graphics::_DeviceContext_SwitchToBuffer()
 	BitBlt(m_bufferHdc, 0, 0, width, height, m_hdc, 0, 0, SRCCOPY);
 
 	// save the current hdc & switch
-	m_originalScreenHdc = m_hdc;
+	_HDCSwitchStack.push(new _HDCSwitchRecord(m_hdc));
 	m_hdc = m_bufferHdc;
 }
 
 void GR_Win32Graphics::_DeviceContext_SwitchToScreen()
 {
-	m_hdc = m_originalScreenHdc;
-}
+	_DeviceContext_RestorePrevHDCFromStack();
 
-void GR_Win32Graphics::_DeviceContext_DrawBufferToScreen()
-{
 	// get client area size
 	int height(0), width(0);
 	getWidthAndHeightFromHWND(m_hwnd, width, height);
@@ -2628,17 +2625,25 @@ void GR_Win32Graphics::_DeviceContext_DrawBufferToScreen()
 	// free used resources
 	_DoubleBuffering_ReleaseBuffer(m_bufferHdc);
 }
+
+void GR_Win32Graphics::_DeviceContext_RestorePrevHDCFromStack()
+{
+	_HDCSwitchRecord *switchRecord;
+	_HDCSwitchStack.pop((void**)&switchRecord);
+	m_hdc = switchRecord->oldHdc;
+	delete switchRecord;
+}
+
 void GR_Win32Graphics::_DeviceContext_SuspendDrawing()
 {
 	// save the current hdc & switch them!
-	m_originalScreenHdc = m_hdc;
+	_HDCSwitchStack.push(new _HDCSwitchRecord(m_hdc));
 	m_hdc = m_dummyHdc;
 }
 
 void GR_Win32Graphics::_DeviceContext_ResumeDrawing()
 {
-	// switch back
-	m_hdc = m_originalScreenHdc;
+	_DeviceContext_RestorePrevHDCFromStack();
 }
 
 void GR_Win32Graphics::_DoubleBuffering_SetUpDummyBuffer()

@@ -79,6 +79,9 @@ public:
 	void beginDoubleBuffering();
 	void endDoubleBuffering();
 
+	void suspendDrawing();
+	void resumeDrawing();
+
 private:
 
 	GR_Painter ();
@@ -89,6 +92,7 @@ private:
 	bool m_bCaretsDisabled;
 
 	bool m_bDoubleBufferingToken;
+	bool m_bSuspendDrawingToken;
 };
 
 #endif // GR_PAINTER_H

@@ -36,6 +36,7 @@
 #include "ut_string.h"
 #include "ut_units.h"
 #include "ut_sleep.h"
+#include "ut_stack.h"
 #include "ut_growbuf.h"
 #include "ut_debugmsg.h"
 #include "ut_OverstrikingChars.h"
@@ -246,8 +247,8 @@ GR_Graphics::GR_Graphics()
 	  m_hashFontCache(19),
 	  m_AllCarets(this,&m_pCaret,&m_vecCarets),
 	  m_bAntiAliasAlways(false),
-	  m_DCState(SET_TO_SCREEN),
-	  m_iTimesDrawingSuspended(0)
+	  m_bDrawingSuspended(false),
+	  m_bDoubleBufferingActive(false)
 {
 }
 
@@ -304,84 +305,57 @@ GR_Graphics::~GR_Graphics()
 
 bool GR_Graphics::beginDoubleBuffering()
 {
-	switch(m_DCState)
-	{
-		case SET_TO_SCREEN:
-			// this is a "first call", redirect drawing to  buffer
-			_DeviceContext_SwitchToBuffer();
-			m_DCState = SET_TO_BUFFER;
-
-			UT_DEBUGMSG(("ASFRENT: SWITCHED TO BUFFER\n"));
-
-			// register and return a token for exclusive access to
-			// "endDoubleBuffering"
-			return true;
-
-		case SET_TO_BUFFER:
-			// the drawing is redirected to a buffer, return a bad token
-			return false;
-
-		case SUSPENDED:
-			// double buffering will have no effect in this case,
-			// so return a bad token
-			return false;
-	}
+	if(m_bDoubleBufferingActive) return false;
+	m_DCSwitchManagementStack.push((int)SWITCHED_TO_BUFFER);
+	_DeviceContext_SwitchToBuffer();
+	m_bDoubleBufferingActive = true;
+	UT_DEBUGMSG(("ASFRENT: SWITCHED TO SCREEN\n"));
+	return true;
 }
 
 void GR_Graphics::endDoubleBuffering(bool token)
 {
-	if(token == true && m_DCState == SET_TO_BUFFER)
-	{
-		// take action only if the caller has the good token
-		_DeviceContext_SwitchToScreen();
-		m_DCState = SET_TO_SCREEN;
-		_DeviceContext_DrawBufferToScreen();
-		UT_DEBUGMSG(("ASFRENT: SWITCHED TO SCREEN\n"));
-	}
+	// check prerequisites
+	if(token == false) return;
+
+	UT_ASSERT(m_DCSwitchManagementStack.getDepth() > 0);
+	
+	UT_sint32 topMostSwitch;
+	m_DCSwitchManagementStack.viewTop(topMostSwitch);
+	UT_ASSERT(topMostSwitch == (UT_sint32)SWITCHED_TO_BUFFER);
+
+	_DeviceContext_SwitchToScreen();
+	m_DCSwitchManagementStack.pop();
+	m_bDoubleBufferingActive = false;
+	UT_DEBUGMSG(("ASFRENT: SWITCHED TO SCREEN\n"));
 }
 
-void GR_Graphics::suspendDrawing()
+bool GR_Graphics::suspendDrawing()
 {
-	switch(m_DCState)
-	{
-		case SET_TO_SCREEN:
-			m_iTimesDrawingSuspended = 1;
-			_DeviceContext_SuspendDrawing();
-			m_DCState = SUSPENDED;
-			break;
-
-		case SET_TO_BUFFER:
-			// current implementation does not allow suspend while SET_TO_BUFFER
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			break;
-
-		case SUSPENDED:
-			// another one!
-			m_iTimesDrawingSuspended++;
-			break;
-	}
+	if(m_bDrawingSuspended) return false;
+	m_DCSwitchManagementStack.push((int)DRAWING_SUSPENDED);
+	_DeviceContext_SuspendDrawing();
+	m_bDrawingSuspended = true;
+	UT_DEBUGMSG(("ASFRENT: DRAWING SUSPENDED\n"));
+	return true;
 }
 
-void GR_Graphics::resumeDrawing()
+void GR_Graphics::resumeDrawing(bool token)
 {
-	switch(m_DCState)
-	{
-		case SET_TO_SCREEN:
-		case SET_TO_BUFFER:
-			// nasty nesting error!
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			break;
+	// check prerequisites
+	if(token == false) return;
 
-		case SUSPENDED:
-			m_iTimesDrawingSuspended--;
-			UT_ASSERT(m_iTimesDrawingSuspended >= 0);
-			if(m_iTimesDrawingSuspended == 0)
-			{
-				_DeviceContext_ResumeDrawing();
-				m_DCState = SET_TO_SCREEN;
-			}
-			break;
-	}
+	UT_ASSERT(m_DCSwitchManagementStack.getDepth() > 0);
+	
+	UT_sint32 topMostSwitch;
+	m_DCSwitchManagementStack.viewTop(topMostSwitch);
+	UT_ASSERT(topMostSwitch == (UT_sint32)DRAWING_SUSPENDED);
+
+	// take action only if the caller has the good token
+	_DeviceContext_ResumeDrawing();
+	m_DCSwitchManagementStack.pop();
+	m_bDrawingSuspended = false;
+	UT_DEBUGMSG(("ASFRENT: DRAWING RESUMED\n"));
 }
 
 void GR_Graphics::_destroyFonts ()
