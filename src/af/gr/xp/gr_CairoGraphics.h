@@ -419,7 +419,6 @@ public:
 	// Double buffering implementation
 	void _DeviceContext_SwitchToBuffer();
 	void _DeviceContext_SwitchToScreen();
-	void _DeviceContext_DrawBufferToScreen();
 
 	// Suspend / resume drawing
 	void _DeviceContext_SuspendDrawing();
