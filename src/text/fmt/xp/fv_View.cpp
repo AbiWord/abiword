@@ -91,6 +91,7 @@
 #include "xap_DialogFactory.h"
 #include "ap_Preview_Annotation.h"
 #include "ap_Dialog_Id.h"
+#include "fv_ViewDoubleBuffering.h"
 
 #include "pp_Revision.h"
 
@@ -3644,6 +3645,8 @@ void FV_View::getBlocksInSelection( UT_GenericVector<fl_BlockLayout*>* vBlock) c
 
 void FV_View::insertParagraphBreak(void)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 	bool bDidGlob = false;
 	bool bBefore = false;
 	bool bStopList = false;

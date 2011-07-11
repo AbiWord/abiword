@@ -3375,6 +3375,8 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const gch
 
 bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 	//
 	// Look if we should insert a pargraph before the table
 	//
