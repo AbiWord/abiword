@@ -69,6 +69,7 @@ fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 		m_pParentItem(0)
 {
 	_setParent(pParent);
+	UT_ASSERT(m_pDoc);
 	memset(m_pszDelim, 0, 80);
 	memset(m_pszDecimal, 0, 80);
 	strncpy( m_pszDelim, lDelim, 80);
@@ -106,7 +107,7 @@ fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 	// Set in Block???
 	memset(m_pszDelim, 0, 80);
 	memset(m_pszDecimal, 0, 80);
-
+	UT_ASSERT(m_pDoc);
 	if (lDelim)
 		strncpy( m_pszDelim, lDelim, 80);
 
@@ -746,7 +747,8 @@ void fl_AutoNum::insertItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pPrev, bo
 		{
 			pAuto->setParentItem(pItem);
 			pAuto->m_bDirty = true;
-			pAuto->_updateItems(0,NULL);
+			if(!pAuto->_updateItems(0,NULL))
+				return;
 		}
 	}
 
@@ -786,7 +788,8 @@ void fl_AutoNum::prependItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pNext, b
 			{
 				pAuto->setParentItem(pItem);
 				pAuto->m_bDirty = true;
-				pAuto->_updateItems(0,NULL);
+				if(	pAuto->_updateItems(0,NULL))
+					return;
 			}
 		}
 	}
@@ -843,7 +846,8 @@ void fl_AutoNum::removeItem(PL_StruxDocHandle pItem)
 				pAuto->setParentItem(getParentItem());
 			}
 			if(m_pDoc->areListUpdatesAllowed() == true)
-				pAuto->_updateItems(0,NULL);
+				if(!pAuto->_updateItems(0,NULL))
+					return;
 		}
 	}
 	_updateItems(ndx,NULL);
@@ -1120,7 +1124,8 @@ void fl_AutoNum::update(UT_uint32 start)
 	if (isUpdating())
 		return;
 	//_calculateLabelStr(0);
-	_updateItems(start, NULL);
+	if(!_updateItems(start, NULL))
+		return;
 	void * sdh = const_cast<void *>( getFirstItem());
 	if (m_pParent && !m_pParent->isUpdating())
 	{
@@ -1129,10 +1134,11 @@ void fl_AutoNum::update(UT_uint32 start)
 	}
 }
 
-void fl_AutoNum::_updateItems(UT_sint32 start, PL_StruxDocHandle notMe)
+bool fl_AutoNum::_updateItems(UT_sint32 start, PL_StruxDocHandle notMe)
 {
 	//	UT_DEBUGMSG(("Entering _updateItems\n"));
 	UT_sint32 j;
+	UT_return_val_if_fail(m_pDoc,false);
 	if(m_pDoc->areListUpdatesAllowed() == true)
 	{
 		//if(start == 0)
@@ -1158,13 +1164,15 @@ void fl_AutoNum::_updateItems(UT_sint32 start, PL_StruxDocHandle notMe)
 				UT_ASSERT_HARMLESS(pAuto);
 				if( pAuto && (pItem == pAuto->getParentItem()) && (pItem != notMe))
 				{
-					pAuto->_updateItems(0,pItem);
+					if(!pAuto->_updateItems(0,pItem))
+						return false;
 				}
 			}
 		}
 		m_bUpdatingItems = false;
 		m_bDirty = false;
 	}
+	return true;
 }
 
 ///

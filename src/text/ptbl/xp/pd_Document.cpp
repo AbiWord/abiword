@@ -5980,7 +5980,7 @@ void PD_Document::updateDirtyLists(void)
 	for(i=0; i< iNumLists; i++)
 	{
 		pAutoNum = m_vecLists.getNthItem(i);
-		if(pAutoNum->isEmpty())
+		if(pAutoNum->isEmpty() || (pAutoNum->getDoc() != this))
 		{
 			delete pAutoNum;
 			m_vecLists.deleteNthItem(i);

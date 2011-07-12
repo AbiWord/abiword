@@ -138,7 +138,8 @@ public:
 	static void					dec2hebrew(UT_UCSChar labelStr[], UT_uint32 * insPoint, UT_sint32 value);
 	void                        getAttributes(std::vector<UT_UTF8String>&v,
 											  bool bEscapeXML);
-	
+	PD_Document *               getDoc(void)
+	{return m_pDoc;}
 	PL_StruxDocHandle           getLastItemInHeiracy(void);
 protected:
 	void                        _setParent(fl_AutoNum * pParent);
@@ -148,7 +149,7 @@ protected:
 												UT_uint32 * insPoint,
 												UT_uint32 depth,
 												PL_StruxDocHandle pLayout) const;
-	void						_updateItems(UT_sint32 start, PL_StruxDocHandle notMe );
+	bool						_updateItems(UT_sint32 start, PL_StruxDocHandle notMe );
 	UT_uint32					_getLevelValue(fl_AutoNum * pAutoNum);
 
 	fl_AutoNum *				m_pParent;

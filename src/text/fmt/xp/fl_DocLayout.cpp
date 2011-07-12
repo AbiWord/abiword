@@ -1150,8 +1150,7 @@ void FL_DocLayout::setView(FV_View* pView)
  */
 void FL_DocLayout::getStringFromFootnoteVal(UT_String & sVal, UT_sint32 iVal, FootnoteType iFootType)
 {
-	fl_AutoNum autoCalc(0,0,NUMBERED_LIST,0,NULL,NULL,NULL,NULL);
-
+        fl_AutoNum autoCalc(0,0,NUMBERED_LIST,0,NULL,NULL,getDocument(),getView());
 	switch (iFootType)
 	{
 	case FOOTNOTE_TYPE_NUMERIC:
