@@ -1,10 +1,7 @@
 #ifndef GO_GLIB_EXTRAS_H
 #define GO_GLIB_EXTRAS_H
 
-#include <goffice/utils/goffice-utils.h>
-#include <glib.h>
-#include <sys/types.h>
-#include <glib-object.h>
+#include <goffice/goffice.h>
 
 G_BEGIN_DECLS
 
@@ -76,14 +73,19 @@ char	   *go_utf8_strcapital		(char const *p, gssize len);
 void	    go_strescape		(GString *target, char const *str);
 char const *go_strunescape		(GString *target, char const *str);
 void	    go_string_append_gstring	(GString *target, const GString *src);
-char const *go_guess_encoding		(char const *raw, size_t len,
+void        go_string_append_c_n        (GString *target, char c, gsize n);
+void        go_string_replace           (GString *target,
+					 gsize pos, gssize oldlen,
+					 const char *txt, gssize newlen);
+
+char const *go_guess_encoding		(char const *raw, gsize len,
 					 char const *user_guess,
 					 char **utf8_str);
 
 char const *go_get_real_name		(void);
 void	    go_destroy_password	(char *passwd);
 
-GOMemChunk  *go_mem_chunk_new		(char const *name, size_t user_atom_size, size_t chunk_size);
+GOMemChunk  *go_mem_chunk_new		(char const *name, gsize user_atom_size, gsize chunk_size);
 void	     go_mem_chunk_destroy	(GOMemChunk *chunk, gboolean expect_leaks);
 gpointer     go_mem_chunk_alloc		(GOMemChunk *chunk);
 gpointer     go_mem_chunk_alloc0	(GOMemChunk *chunk);
@@ -92,11 +94,25 @@ void         go_mem_chunk_foreach_leak	(GOMemChunk *chunk, GFunc cb, gpointer us
 
 void	go_object_toggle             (gpointer object,
 				      const gchar *property_name);
+gboolean go_object_set_property (GObject *obj, const char *property_name,
+				 const char *user_prop_name, const char *value,
+				 GError **err,
+				 const char *error_template);
 GSList *go_object_properties_collect (GObject *obj);
 void    go_object_properties_apply   (GObject *obj,
 				      GSList *props,
 				      gboolean changed_only);
 void    go_object_properties_free    (GSList *props);
+
+typedef gboolean (*GOParseKeyValueFunc) (const char *name,
+		  const char *value,
+		  GError **err,
+		  gpointer user);
+
+gboolean go_parse_key_value (const char *options,
+			     GError **err,
+			     GOParseKeyValueFunc handler,
+			     gpointer user);
 
 G_END_DECLS
 

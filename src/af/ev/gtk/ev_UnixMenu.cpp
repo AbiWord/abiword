@@ -63,7 +63,6 @@
 
 #define ACTIVATE_ACCEL "activate"
 #define ACCEL_FLAGS (GtkAccelFlags)(GTK_ACCEL_LOCKED)
-
 /*****************************************************************/
 
 class _wd								// a private little class to help
@@ -352,7 +351,7 @@ static guint _ev_get_underlined_char(const char * szString)
 			return gdk_unicode_to_keyval(str[i]);
 	}
 
-	return GDK_VoidSymbol;
+	return GDK_KEY_VoidSymbol;
 }
 #endif
 
@@ -525,7 +524,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 				// version of the underlined char, since all the menus ignore upper
 				// case (SHIFT-MOD1-[char]) invokations of accelerators.
 
-				if (keyCode != GDK_VoidSymbol && bAltOnMod1)
+				if (keyCode != GDK_KEY_VoidSymbol && bAltOnMod1)
 				{
 					EV_EditEventMapper * pEEM = XAP_App::getApp()->getEditEventMapper();
 					UT_ASSERT(pEEM);
@@ -557,7 +556,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 				}
 
 #ifndef ENABLE_MENUBUTTON
-				if ((keyCode != GDK_VoidSymbol) && !isPopup)
+				if ((keyCode != GDK_KEY_VoidSymbol) && !isPopup)
 				  {
 					  // bind to top level if parent is top level
  					  if (wParent == wMenuRoot)
@@ -746,8 +745,8 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 					UT_ASSERT(wParent);
 
 					// bury in parent
-					gtk_menu_shell_insert(GTK_MENU_SHELL(GTK_MENU_ITEM(wParent)->submenu), 
-										  w, (nPositionInThisMenu+1));
+					/*gtk_menu_shell_insert(GTK_MENU_SHELL(GTK_MENU_ITEM(wParent)->submenu), 
+										  w, (nPositionInThisMenu+1));*/
 					
 					// we do NOT add a new item, we point the existing index at our new widget
 					// (update the pointers)
@@ -789,7 +788,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 				  // must use this line instead of calling
 				  // gtk_check_menu_item_set_active(...) because it
 				  // generates an "activate" signal	-- shack / sterwill
-				  GTK_CHECK_MENU_ITEM(item)->active = bCheck;
+				//GTK_CHECK_MENU_ITEM(item)->active = bCheck;
 
 				// all get the gray treatment
 				gtk_widget_set_sensitive(GTK_WIDGET(item), bEnable);
@@ -848,7 +847,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 
 				  // finally, enable/disable and/or check/uncheck it.
 				  if (GTK_IS_CHECK_MENU_ITEM(item))
-					GTK_CHECK_MENU_ITEM(item)->active = bCheck;
+					//GTK_CHECK_MENU_ITEM(item)->active = bCheck;
 				gtk_widget_set_sensitive(static_cast<GtkWidget *>(item), bEnable);
 			  }
 			

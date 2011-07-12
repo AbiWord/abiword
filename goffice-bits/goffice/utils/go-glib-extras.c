@@ -10,6 +10,8 @@
  */
 #include <goffice/goffice-config.h>
 #include "go-glib-extras.h"
+#include "go-locale.h"
+#include <goffice/app/go-cmd-context.h>
 
 #include <glib/gi18n-lib.h>
 #include <gsf/gsf-impl-utils.h>
@@ -39,7 +41,7 @@ cb_hash_collect_keys (gpointer key, gpointer value, GSList **accum)
  *
  * Collects an unordered list of the keys in @hash.
  *
- * Returns a list which the caller needs to free.
+ * Returns: a list which the caller needs to free.
  * 	The content has not additional references added
  **/
 GSList *
@@ -63,7 +65,7 @@ cb_hash_collect_values (gpointer key, gpointer value, GSList **accum)
  *
  * Collects an unordered list of the values in @hash.
  *
- * Returns a list which the caller needs to free.
+ * Returns: a list which the caller needs to free.
  * 	The content has not additional references added
  **/
 GSList *
@@ -95,11 +97,12 @@ go_ptr_array_insert (GPtrArray *array, gpointer value, int index)
 
 /**
  * go_slist_create:
- * @item1: First item.
+ * @item1: itionally %NULL
+ * @Varargs : %NULL terminated list of additional items
  *
  * Creates a GList from NULL-terminated list of arguments.
  *
- * Return value: created list.
+ * Returns: created list.
  **/
 GSList *
 go_slist_create (gpointer item1, ...)
@@ -317,6 +320,50 @@ void
 go_string_append_gstring (GString *target, const GString *source)
 {
 	g_string_append_len (target, source->str, source->len);
+}
+
+void
+go_string_append_c_n (GString *target, char c, gsize n)
+{
+	gsize len = target->len;
+	g_string_set_size (target, len + n);
+	memset (target->str + len, c, n);
+}
+
+void
+go_string_replace (GString *target,
+		   gsize pos, gssize oldlen,
+		   const char *txt, gssize newlen)
+{
+	gsize cplen;
+
+	g_return_if_fail (target != NULL);
+	g_return_if_fail (pos >= 0);
+	g_return_if_fail (pos <= target->len);
+
+	if (oldlen < 0)
+		oldlen = target->len - pos;
+	if (newlen < 0)
+		newlen = strlen (txt);
+
+	cplen = MIN (oldlen, newlen);
+	memcpy (target->str + pos, txt, cplen);
+
+	pos += cplen;
+	oldlen -= cplen;
+	txt += cplen;
+	newlen -= cplen;
+
+	/*
+	 * At least one of oldlen and newlen is zero now.  We could call
+	 * both erase and insert unconditionally, but erase does not appear
+	 * to handle zero length efficiently.
+	 */
+
+	if (oldlen > 0)
+		g_string_erase (target, pos, oldlen);
+	else if (newlen > 0)
+		g_string_insert_len (target, pos, txt, newlen);
 }
 
 /* ------------------------------------------------------------------------- */
@@ -636,12 +683,11 @@ go_mem_chunk_foreach_leak (GOMemChunk *chunk, GFunc cb, gpointer user)
 int
 go_str_compare (void const *x, void const *y)
 {
-	if (x == NULL || y == NULL) {
-		if (x == y)
-			return 0;
-		else
-			return x ? -1 : 1;
-	}
+	if (x == y)
+		return 0;
+
+	if (x == NULL || y == NULL)
+		return x ? -1 : 1;
 
 	return strcmp (x, y);
 }
@@ -657,7 +703,7 @@ go_guess_encoding (const char *raw, size_t len, const char *user_guess,
 	g_return_val_if_fail (raw != NULL, NULL);
 
 	for (try = 1; 1; try++) {
-		const char *guess;
+		char const *guess = NULL;
 		GError *error = NULL;
 		char *utf8_data;
 
@@ -699,6 +745,12 @@ go_guess_encoding (const char *raw, size_t len, const char *user_guess,
 		utf8_data = g_convert (raw, len, "UTF-8", guess,
 				       NULL, NULL, &error);
 		if (!error) {
+			/*
+			 * We can actually fail this test when gues is UTF-8,
+			 * see #401588.
+			 */
+			if (!g_utf8_validate (utf8_data, -1, NULL))
+				continue;
 			if (debug)
 				g_print ("Guessed %s as encoding.\n", guess);
 			if (utf8_str)
@@ -715,8 +767,8 @@ go_guess_encoding (const char *raw, size_t len, const char *user_guess,
 /**
  * go_get_real_name :
  *
- * Return a utf8 encoded string with the current user name.
- * Caller should _NOT_ free the result.
+ * Returns: a utf8 encoded string with the current user name.
+ * 	Caller should _NOT_ free the result.
  **/
 char const *
 go_get_real_name (void)
@@ -741,6 +793,7 @@ go_get_real_name (void)
 
 /**
  * go_destroy_password :
+ * @passwd : The buffer to clear
  *
  * Overwrite a string holding a password.  This is a separate routine to
  * ensure that the compiler does not try to outsmart us.
@@ -755,8 +808,11 @@ go_destroy_password (char *passwd)
 
 
 /**
- * go_object_toggle: toggle a boolean object property.
+ * go_object_toggle:
+ * @object : #GObject
+ * @property_name : name
  *
+ * Toggle a boolean object property.
  **/
 void
 go_object_toggle (gpointer object, const gchar *property_name)
@@ -783,6 +839,79 @@ go_object_toggle (gpointer object, const gchar *property_name)
 	g_object_get (object, property_name, &value, NULL);
 	g_object_set (object, property_name, !value, NULL);
 }
+
+
+gboolean
+go_object_set_property (GObject *obj, const char *property_name,
+			const char *user_prop_name, const char *value,
+			GError **err,
+			const char *error_template)
+{
+	GParamSpec *pspec;
+
+	if (err) *err = NULL;
+
+	g_return_val_if_fail (G_IS_OBJECT (obj), TRUE);
+	g_return_val_if_fail (property_name != NULL, TRUE);
+	g_return_val_if_fail (user_prop_name != NULL, TRUE);
+	g_return_val_if_fail (value != NULL, TRUE);
+
+	pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (obj),
+					      property_name);
+	g_return_val_if_fail (pspec != NULL, TRUE);
+
+	if (G_IS_PARAM_SPEC_STRING (pspec)) {
+		g_object_set (obj, property_name, value, NULL);
+		return FALSE;
+	}
+
+	if (G_IS_PARAM_SPEC_BOOLEAN (pspec)) {
+		gboolean b;
+
+		if (go_utf8_collate_casefold (value, go_locale_boolean_name (TRUE)) == 0 ||
+		    go_utf8_collate_casefold (value, _("yes")) == 0 ||
+		    g_ascii_strcasecmp (value, "TRUE") == 0 ||
+		    g_ascii_strcasecmp (value, "yes") == 0 ||
+		    strcmp (value, "1") == 0)
+			b = TRUE;
+		else if (go_utf8_collate_casefold (value, go_locale_boolean_name (FALSE)) == 0 ||
+		    go_utf8_collate_casefold (value, _("no")) == 0 ||
+		    g_ascii_strcasecmp (value, "FALSE") == 0 ||
+		    g_ascii_strcasecmp (value, "no") == 0 ||
+		    strcmp (value, "0") == 0)
+			b = FALSE;
+		else
+			goto error;
+
+		g_object_set (obj, property_name, b, NULL);
+		return FALSE;
+	}
+
+	if (G_IS_PARAM_SPEC_ENUM (pspec)) {
+		GEnumClass *eclass = ((GParamSpecEnum *)pspec)->enum_class;
+		GEnumValue *ev;
+
+		ev = g_enum_get_value_by_name (eclass, value);
+		if (!ev) ev = g_enum_get_value_by_nick (eclass, value);
+
+		if (!ev)
+			goto error;
+
+		g_object_set (obj, property_name, ev->value, NULL);
+		return FALSE;
+	}
+
+	error:
+		if (err)
+			*err = g_error_new (go_error_invalid (), 0,
+					    error_template,
+					    user_prop_name,
+					    value);
+		return TRUE;
+}
+
+
+
 
 /*
  * Collect all rw properties and their values.
@@ -854,4 +983,100 @@ go_object_properties_free (GSList *props)
 	}
 
 	g_slist_free (props);
+}
+
+
+/**
+ * go_parse_key_value:
+ * @options: Options string.
+ * @err: Reference to store GError if parsing fails.
+ * @handler: Handler to call for each key-value pair.
+ * @user: user pointer.
+ */
+gboolean
+go_parse_key_value (const char *options,
+		    GError **err,
+		    gboolean (*handler) (const char *name,
+					 const char *value,
+					 GError **err,
+					 gpointer user),
+		    gpointer user)
+{
+	GString *sname = g_string_new (NULL);
+	GString *svalue = g_string_new (NULL);
+	gboolean res = FALSE;
+
+	if (err) *err = NULL;
+
+	while (1) {
+		const char *p;
+
+		g_string_truncate (sname, 0);
+		g_string_truncate (svalue, 0);
+
+		while (g_unichar_isspace (g_utf8_get_char (options)))
+			options = g_utf8_next_char (options);
+
+		if (*options == 0)
+			break;
+
+		if (*options == '"' || *options == '\'') {
+			options = go_strunescape (sname, options);
+			if (!options)
+				goto open_string;
+		} else {
+			p = options;
+			while (strchr ("-!_.,:;|/$%#@~", *options) ||
+			       g_unichar_isalnum (g_utf8_get_char (options)))
+				options = g_utf8_next_char (options);
+			g_string_append_len (sname, p, options - p);
+			if (p == options)
+				goto syntax;
+		}
+
+		while (g_unichar_isspace (g_utf8_get_char (options)))
+			options = g_utf8_next_char (options);
+		if (*options != '=')
+			goto syntax;
+		options++;
+		while (g_unichar_isspace (g_utf8_get_char (options)))
+			options = g_utf8_next_char (options);
+
+		if (*options == '"' || *options == '\'') {
+			options = go_strunescape (svalue, options);
+			if (!options)
+				goto open_string;
+		} else {
+			p = options;
+			while (*options && !
+			       g_unichar_isspace (g_utf8_get_char (options)))
+				options = g_utf8_next_char (options);
+			g_string_append_len (svalue, p, options - p);
+		}
+
+		if (handler (sname->str, svalue->str, err, user)) {
+			res = TRUE;
+			break;
+		}
+	}
+
+done:
+	g_string_free (sname, TRUE);
+	g_string_free (svalue, TRUE);
+
+	return res;
+
+open_string:
+	if (err)
+		*err = g_error_new (go_error_invalid (), 0,
+				    _("Quoted string not terminated"));
+	res = TRUE;
+	goto done;
+
+syntax:
+	if (err)
+		*err = g_error_new (go_error_invalid (), 0,
+				    _("Syntax error"));
+	res = TRUE;
+	goto done;
 }

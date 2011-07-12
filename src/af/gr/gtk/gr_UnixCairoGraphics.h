@@ -34,8 +34,8 @@ public:
 		m_win(win)
 		{}
 	GR_UnixCairoAllocInfo(GtkWidget *widget)
-		: GR_CairoAllocInfo(false, false, GTK_WIDGET_DOUBLE_BUFFERED(widget)),
-		  m_win(GTK_WIDGET(widget)->window)
+		: GR_CairoAllocInfo(false, false, gtk_widget_get_double_buffered(widget)), //replaced GTK_WIDGET_DOUBLE_BUFFERED_
+		  m_win(gtk_widget_get_window(widget))           //replaced GTK_WIDGET(widget)->window
 	{}
 	
 	GR_UnixCairoAllocInfo(bool bPreview)
@@ -80,8 +80,8 @@ public:
 	virtual GR_Font * getGUIFont(void);
 	
 	virtual void		setCursor(GR_Graphics::Cursor c);
-	void                createPixmapFromXPM(char ** pXPM,GdkPixmap *source,
-											GdkBitmap * mask);
+	void                createPixmapFromXPM(char ** pXPM,cairo_surface_t *source, // removed GdkPixmap & GdkBitmap
+											cairo_surface_t * mask);
 	virtual void		scroll(UT_sint32, UT_sint32);
 	virtual void		scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						   UT_sint32 x_src, UT_sint32 y_src,
@@ -98,9 +98,9 @@ protected:
 	static void		widget_size_allocate (GtkWidget        *widget,
 									  GtkAllocation    *allocation,
 									  GR_UnixCairoGraphics *me);
-	GR_UnixCairoGraphics(GdkDrawable * win = NULL, bool double_buffered=false);
-	virtual GdkDrawable * _getDrawable(void)
-	{  return static_cast<GdkDrawable *>(m_pWin);}
+	GR_UnixCairoGraphics(GdkWindow * win = NULL, bool double_buffered=false);
+	virtual GdkWindow * _getDrawable(void)
+	{  return static_cast<GdkWindow *>(m_pWin);}
 
 	UT_GenericVector<UT_Rect*>     m_vSaveRect;
 	UT_GenericVector<GdkPixbuf *>  m_vSaveRectBuf;

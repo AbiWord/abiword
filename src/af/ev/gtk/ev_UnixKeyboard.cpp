@@ -1,3 +1,4 @@
+
 /* AbiSource Program Utilities
  * Copyright (C) 1998-2000 AbiSource, Inc.
  *
@@ -17,7 +18,7 @@
  * 02111-1307, USA.
  */
 
-
+#include <gtk/gtk.h>
 #include <stdio.h>
 #include <string.h>
 #include <gdk/gdk.h>
@@ -34,6 +35,11 @@
 #include "ev_UnixKeyboard.h"
 #include "ut_mbtowc.h"
 #include "ut_string_class.h"
+
+
+
+typedef struct _GdkDisplay GdkDisplay;
+
 
 
 //////////////////////////////////////////////////////////////////
@@ -69,7 +75,7 @@ ev_UnixKeyboard::~ev_UnixKeyboard(void)
 {
 }
 
-bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
+bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)  // using  gdk_display_get_default() TODO Maintain a mask map,one for each display   
 {
 	EV_EditBits state = 0;
 	EV_EditEventMapperResult result;
@@ -85,7 +91,7 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 
 		// Gdk does us the favour of working out a translated keyvalue for us,
 		// but with the Ctrl keys, we do not want that -- see bug 9545
-		Display * display = GDK_DISPLAY();
+        Display * display = GDK_DISPLAY_XDISPLAY(gdk_display_get_default());
 		KeySym sym = XKeycodeToKeysym(display,
 									  e->hardware_keycode,
 									  e->state & GDK_SHIFT_MASK ? 1 : 0);
@@ -436,7 +442,7 @@ static bool s_isVirtualKeyCode(guint keyval)
 		return false; // was true before CJK patch
 
 	// Causes immediate on keypress segfault??
-	if (keyval >= GDK_KP_0 && keyval <= GDK_KP_9 && keyval != GDK_KP_Enter) // number pad keys
+	if (keyval >= GDK_KEY_KP_0 && keyval <= GDK_KEY_KP_9 && keyval != GDK_KEY_KP_Enter) // number pad keys
 		return false;
 
 	if (keyval > 0xFE00)				// see the above table
@@ -487,7 +493,7 @@ static GdkModifierType s_getAltMask(void)
 
 	int alt_mask = 0;
 
-	Display * display = GDK_DISPLAY();
+	Display * display = GDK_DISPLAY_XDISPLAY(gdk_display_get_default());
 
 	KeyCode kcAltL = XKeysymToKeycode(display,XK_Alt_L);
 	KeyCode kcAltR = XKeysymToKeycode(display,XK_Alt_R);
@@ -549,3 +555,4 @@ static GdkModifierType s_getAltMask(void)
 
 	return static_cast<GdkModifierType>(alt_mask);
 }
+

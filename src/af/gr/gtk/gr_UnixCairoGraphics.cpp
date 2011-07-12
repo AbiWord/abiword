@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
-
+#include <gdk/gdk.h>
 #include "ut_bytebuf.h"
 
 #include "gr_UnixCairoGraphics.h"
@@ -91,7 +91,7 @@ GR_UnixCairoGraphicsBase::GR_UnixCairoGraphicsBase(cairo_t *cr, UT_uint32 iDevic
 {
 }
 
-GR_UnixCairoGraphics::GR_UnixCairoGraphics(GdkDrawable * win, bool double_buffered)
+GR_UnixCairoGraphics::GR_UnixCairoGraphics(GdkWindow * win, bool double_buffered)
 	: GR_UnixCairoGraphicsBase(),
 	  m_pWin(win),
 	  m_double_buffered(double_buffered)
@@ -381,18 +381,20 @@ void GR_UnixCairoGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						  UT_sint32 x_src, UT_sint32 y_src,
 						  UT_sint32 width, UT_sint32 height)
 {
-	GdkGC *gc;
+	cairo_t *cr;   //replaced GdkGC
 
 	disableAllCarets();
-	gc = gdk_gc_new(_getDrawable());
-   	gdk_draw_drawable(_getDrawable(), gc, _getDrawable(), tdu(x_src), tdu(y_src),
+	cr = gdk_cairo_create(_getDrawable()); //replaced by the cairo functions
+   	cairo_set_source_surface(_getDrawable(), cr, _getDrawable(), tdu(x_src), tdu(y_src),
 					  tdu(x_dest), tdu(y_dest), tdu(width), tdu(height));
-	g_object_unref(G_OBJECT(gc)), gc = NULL;
+    cairo_paint (cr);
+    cairo_destroy (cr);
+	g_object_unref(G_OBJECT(cr)), cr = NULL;
 	enableAllCarets();
 }
 
-void GR_UnixCairoGraphics::createPixmapFromXPM( char ** pXPM,GdkPixmap *source,
-										   GdkBitmap * mask)
+void GR_UnixCairoGraphics::createPixmapFromXPM( char ** pXPM,cairo_surface_t *source,
+										   cairo_surface_t * mask)
 {
 	source
 		= gdk_pixmap_colormap_create_from_xpm_d(_getDrawable(),NULL,
@@ -429,7 +431,7 @@ void GR_UnixCairoGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 	UT_sint32 idh = _tduR(r.height);
 	cairo_surface_flush ( cairo_get_target(m_cr));
 
-	GdkPixbuf * pix = gdk_pixbuf_get_from_drawable(NULL,
+	GdkPixbuf * pix = gdk_pixbuf_get_from_window(NULL,
 												   _getDrawable(),
 												   NULL,
 												   idx, idy, 0, 0,
@@ -459,7 +461,7 @@ void GR_UnixCairoGraphics::restoreRectangle(UT_uint32 iIndx)
 }
 
 /*!
- * Take a screenshot of the graphics and convert it to an image.
+ * Take a screenshot of the graphics and convert it to an image.                // REQUIRES ATTENTION
  */
 GR_Image * GR_UnixCairoGraphics::genImageFromRectangle(const UT_Rect &rec)
 {
@@ -469,11 +471,11 @@ GR_Image * GR_UnixCairoGraphics::genImageFromRectangle(const UT_Rect &rec)
 	UT_sint32 idh = _tduR(rec.height);
 	UT_return_val_if_fail (idw > 0 && idh > 0 && idx >= 0, NULL);
 	cairo_surface_flush ( cairo_get_target(m_cr));
-	GdkColormap* cmp = gdk_colormap_get_system();
-	GdkPixbuf * pix = gdk_pixbuf_get_from_drawable(NULL,
+	//GdkVisual * cmp = gdk_visual_get_system();
+	GdkPixbuf * pix = gdk_pixbuf_get_from_window(
 												   _getDrawable(),
-												   cmp,
-												   idx, idy, 0, 0,
+												   
+												   idx, idy,
 												   idw, idh);
 	
 	UT_return_val_if_fail(pix, NULL);
@@ -511,7 +513,7 @@ void GR_UnixCairoGraphics::_beginPaint()
 	}
 #endif
 
-	m_cr = gdk_cairo_create(GDK_DRAWABLE(m_pWin));
+	m_cr = gdk_cairo_create(m_pWin); // removed GDK_DRAWABLE
 	UT_ASSERT(m_cr);
 	_initCairo();
 }
@@ -529,7 +531,7 @@ void GR_UnixCairoGraphics::_endPaint()
 cairo_t *GR_UnixCairoAllocInfo::createCairo()
 {
 	if(m_win) {
-		return gdk_cairo_create (GDK_DRAWABLE (m_win));
+		return gdk_cairo_create (m_win); //removed GDK_DRAWABLE
 	}
 	return NULL;
 }

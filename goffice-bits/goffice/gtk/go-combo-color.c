@@ -38,10 +38,7 @@
 #include "go-color-palette.h"
 
 #include <gsf/gsf-impl-utils.h>
-#include <gtk/gtktogglebutton.h>
-#include <gtk/gtkimage.h>
-#include <gtk/gtkwindow.h>
-#include <gdk/gdkcolor.h>
+#include <gdk/gdk.h>
 
 struct _GOComboColor {
 	GOComboBox     combo_box;
@@ -100,8 +97,8 @@ go_combo_color_set_color_internal (GOComboColor *cc, GOColor color, gboolean is_
 				       width, color_height);
 
 	/* mostly transparent things should have an outline */
-	add_an_outline = (UINT_RGBA_A (color) < 0x80);
-	gdk_pixbuf_fill (color_pixbuf, add_an_outline ? RGBA_GREY (0x33) : color);
+	add_an_outline = (GO_COLOR_UINT_A (color) < 0x80);
+	gdk_pixbuf_fill (color_pixbuf, add_an_outline ? GO_COLOR_GREY (0x33) : color);
 	gdk_pixbuf_copy_area (color_pixbuf, 0, 0, width, color_height,
 		pixbuf, 0, color_y);
 	if (add_an_outline) {
@@ -176,7 +173,7 @@ go_combo_color_set_title (GOComboBox *combo, char const *title)
 static void
 go_combo_color_class_init (GObjectClass *gobject_class)
 {
-	go_combo_color_parent_class = g_type_class_ref (GO_COMBO_BOX_TYPE);
+	go_combo_color_parent_class = g_type_class_ref (GO_TYPE_COMBO_BOX);
 
 	GO_COMBO_BOX_CLASS (gobject_class)->set_title = go_combo_color_set_title;
 
@@ -201,7 +198,7 @@ go_combo_color_class_init (GObjectClass *gobject_class)
 
 GSF_CLASS (GOComboColor, go_combo_color,
 	   go_combo_color_class_init, go_combo_color_init,
-	   GO_COMBO_BOX_TYPE)
+	   GO_TYPE_COMBO_BOX)
 
 static void
 cb_palette_color_changed (GOColorPalette *P, GOColor color,
@@ -226,7 +223,7 @@ color_table_setup (GOComboColor *cc,
 {
 	g_return_if_fail (cc != NULL);
 
-	/* Tell the palette that we will be changing it's custom colors */
+	/* Tell the palette that we will be changing its custom colors */
 	cc->palette = (GOColorPalette *)go_color_palette_new (no_color_label,
 		cc->default_color, color_group);
 	g_signal_connect (cc->palette,
@@ -239,13 +236,15 @@ color_table_setup (GOComboColor *cc,
 }
 
 /* go_combo_color_get_color:
+ * @cc:  #GOComboColor
+ * @is_default : non-NULL storage for whether the current colour is the default.
  *
- * Return current color
+ * Returns: current GOColor
  */
 GOColor
 go_combo_color_get_color (GOComboColor *cc, gboolean *is_default)
 {
-	g_return_val_if_fail (IS_GO_COMBO_COLOR (cc), RGBA_BLACK);
+	g_return_val_if_fail (GO_IS_COMBO_COLOR (cc), GO_COLOR_BLACK);
 	return go_color_palette_get_current_color (cc->palette, is_default, NULL);
 }
 
@@ -258,23 +257,22 @@ go_combo_color_get_color (GOComboColor *cc, gboolean *is_default)
  * signal to be emitted.
  */
 void
-go_combo_color_set_color_gdk (GOComboColor *cc, GdkColor *color)
+go_combo_color_set_color_gdk (GOComboColor *cc, GdkRGBA *color)
 {
 /* FIXME FIXME FIXME convert to GOColor */
-	g_return_if_fail (IS_GO_COMBO_COLOR (cc));
+	g_return_if_fail (GO_IS_COMBO_COLOR (cc));
 
 	if (color != NULL)
-		go_color_palette_set_current_color (cc->palette, GDK_TO_UINT (*color));
+		go_color_palette_set_current_color (cc->palette, GO_COLOR_FROM_GDK_RGBA (*color));
 	else
 		go_color_palette_set_color_to_default (cc->palette);
 }
 
 /**
  * go_combo_color_set_color :
- * @cc: a #GOComboColor
+ * @cc:  #GOComboColor
  * @color: a #GOColor
  **/
-
 void
 go_combo_color_set_color (GOComboColor *cc, GOColor c)
 {
@@ -283,7 +281,7 @@ go_combo_color_set_color (GOComboColor *cc, GOColor c)
 
 /**
  * go_combo_color_set_instant_apply :
- * @cc:     The combo
+ * @cc:  #GOComboColor
  * @active: Whether instant apply should be active or not
  *
  * Turn instant apply behaviour on or off. Instant apply means that pressing
@@ -293,7 +291,7 @@ go_combo_color_set_color (GOComboColor *cc, GOColor c)
 void
 go_combo_color_set_instant_apply (GOComboColor *cc, gboolean active)
 {
-	g_return_if_fail (IS_GO_COMBO_COLOR (cc));
+	g_return_if_fail (GO_IS_COMBO_COLOR (cc));
 
 	cc->instant_apply = active;
 }
@@ -301,7 +299,7 @@ go_combo_color_set_instant_apply (GOComboColor *cc, gboolean active)
 /**
  * go_combo_color_set_allow_alpha :
  * @cc : #GOComboColor
- * @allow_alpha : 
+ * @allow_alpha : Support alpha layer
  *
  * Should the custom colour selector allow the use of opacity.
  **/
@@ -313,7 +311,7 @@ go_combo_color_set_allow_alpha (GOComboColor *cc, gboolean allow_alpha)
 
 /**
  * go_combo_color_set_color_to_default :
- * @cc:  The combo
+ * @cc:  #GOComboColor
  *
  * Set the color of the combo to the default color. Causes the color_changed
  * signal to be emitted.
@@ -321,7 +319,7 @@ go_combo_color_set_allow_alpha (GOComboColor *cc, gboolean allow_alpha)
 void
 go_combo_color_set_color_to_default (GOComboColor *cc)
 {
-	g_return_if_fail (IS_GO_COMBO_COLOR (cc));
+	g_return_if_fail (GO_IS_COMBO_COLOR (cc));
 
 	go_color_palette_set_color_to_default (cc->palette);
 }
@@ -330,10 +328,14 @@ go_combo_color_set_color_to_default (GOComboColor *cc)
  * go_combo_color_new :
  * @icon: optionally NULL.
  * @no_color_label: FIXME
+ * @default_color : The colour to use a the default
+ * @color_group : #GOColorGroup
  *
  * Default constructor. Pass an optional icon and an optional label for the
  * no/auto color button.
- */
+ *
+ * Returns: The newly constructed combo.
+ **/
 GtkWidget *
 go_combo_color_new (GdkPixbuf *icon, char const *no_color_label,
 		    GOColor default_color,
@@ -342,16 +344,16 @@ go_combo_color_new (GdkPixbuf *icon, char const *no_color_label,
 	GOColor     color;
 	gboolean    is_default;
 	GdkPixbuf  *pixbuf = NULL;
-	GOComboColor *cc = g_object_new (GO_COMBO_COLOR_TYPE, NULL);
+	GOComboColor *cc = g_object_new (GO_TYPE_COMBO_COLOR, NULL);
 
         cc->default_color = default_color;
 	if (icon != NULL &&
-	    gdk_pixbuf_get_width (icon) > 4 && 
+	    gdk_pixbuf_get_width (icon) > 4 &&
 	    gdk_pixbuf_get_height (icon) > 4) {
 		cc->preview_is_icon = TRUE;
 		pixbuf = gdk_pixbuf_copy (icon);
 	} else
-		pixbuf = gdk_pixbuf_new (GDK_COLORSPACE_RGB, TRUE, 8, 
+		pixbuf = gdk_pixbuf_new (GDK_COLORSPACE_RGB, TRUE, 8,
 					 PREVIEW_SIZE, PREVIEW_SIZE);
 
 	cc->preview_image = gtk_image_new_from_pixbuf (pixbuf);
