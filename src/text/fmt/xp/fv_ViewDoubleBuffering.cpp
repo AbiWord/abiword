@@ -7,6 +7,8 @@
 #include "ut_misc.h"
 #include "ut_debugmsg.h"
 
+// #define DEACTIVATE_FV_VIEW_DOUBLE_BUFFERING
+
 FV_ViewDoubleBuffering::FV_ViewDoubleBuffering(FV_View *pView, bool suspendDirectDrawing, bool callDrawOnlyAtTheEnd)
 	: m_pView(pView),
 	  m_bSuspendDirectDrawing(suspendDirectDrawing),
@@ -22,6 +24,11 @@ FV_ViewDoubleBuffering::~FV_ViewDoubleBuffering()
 
 void FV_ViewDoubleBuffering::beginDoubleBuffering()
 {
+
+#ifdef DEACTIVATE_FV_VIEW_DOUBLE_BUFFERING
+	return;
+#endif
+
 	// We will need to direct calls through a painter since it may initialize
 	// the device context on some platforms
 	m_pPainter = new GR_Painter(m_pView->getGraphics());
@@ -45,6 +52,11 @@ void FV_ViewDoubleBuffering::beginDoubleBuffering()
 
 void FV_ViewDoubleBuffering::endDoubleBuffering()
 {
+
+#ifdef DEACTIVATE_FV_VIEW_DOUBLE_BUFFERING
+	return;
+#endif
+
 	if(!m_pView->unregisterDoubleBufferingObject(this))
 		return;
 

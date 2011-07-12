@@ -1822,6 +1822,8 @@ bool FV_View::cmdAutoFitTable(void)
  */
 bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 	PL_StruxDocHandle cellSDH,tableSDH,endTableSDH,endCellSDH,prevCellSDH;
 	PT_DocPosition posTable,posCell,posEndCell,posPrevCell,posFirstInsert;
 	UT_sint32 numColsForInsertion = getNumColumnsInSelection();
@@ -2282,6 +2284,8 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
  */
 bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 	PL_StruxDocHandle cellSDH,tableSDH,endTableSDH,endCellSDH;
 	PT_DocPosition posTable,posCell,posEndCell;
 	UT_sint32 numRowsForInsertion = getNumRowsInSelection();
@@ -2577,6 +2581,8 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
  */
 bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 	PL_StruxDocHandle cellSDH,tableSDH,endTableSDH,endCellSDH;
 	PT_DocPosition posTable,posCell2;
 	UT_sint32 iLeft,iRight,iTop,iBot;
@@ -2788,6 +2794,8 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
  */
 bool FV_View::cmdDeleteTable(PT_DocPosition posTable, bool bDontNotify)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 	PL_StruxDocHandle tableSDH,endTableSDH;
 	PT_DocPosition posStartTable,posEndTable;
 	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posTable,PTX_SectionTable,&tableSDH);
@@ -2854,6 +2862,8 @@ bool FV_View::cmdDeleteTable(PT_DocPosition posTable, bool bDontNotify)
  */
 bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 	PL_StruxDocHandle cellSDH,tableSDH,endTableSDH,endCellSDH;
 	PT_DocPosition posTable,posCell2;
 	UT_sint32 iLeft,iRight,iTop,iBot;
@@ -3148,6 +3158,8 @@ bool FV_View::cmdDeleteCell(PT_DocPosition /*cellPos*/ )
  */
 UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const gchar * pPropsArray[])
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 	// TODO -- why does this function return UT_Error? If bool is
 	// sufficient, it should return bool, and if not, than the
 	// UT_Error & bool operations below are probably not safe
