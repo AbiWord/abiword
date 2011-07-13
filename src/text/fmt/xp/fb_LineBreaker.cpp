@@ -698,7 +698,28 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 
 		pRunToBump->printText();  //trace out debug message & run two time
 		pNextLine->insertRun(pRunToBump);  //called when create new line
-
+				while (pRunToBump && pLine->getNumRunsInLine() && (pLine->getLastRun() != m_pLastRunToKeep))
+				{
+						if(!pLine->removeRun(pRunToBump))
+				                pRunToBump->setLine(NULL);
+					   pRunToBump->printText();  //trace out debug message & run two time
+					pNextLine->insertRun(pRunToBump);  //called when create new line
+					PD_StruxIterator text(pRunToBump->getBlock()->getStruxDocHandle(),
+								pRunToBump->getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
+										  //
+										 text.setUpperLimit(text.getPosition() + pRunToBump->getLength() - 1);
+													while(text.getStatus() == UTIter_OK)
+										  			{
+										 				UT_UCS4Char c = text.getChar();
+										  				if(c >= ' ' && c <128)
+										 					sTmp +=  static_cast<char>(c);
+										  				++text;
+										  			}
+										  
+										  			pRunToBump = pRunToBump->getPrevRun();
+											}
+										  }
+				
 
 //		while (pRunToBump && pLine->getNumRunsInLine() && (pLine->getLastRun() != m_pLastRunToKeep))
 //		{
@@ -745,7 +766,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 //			pRunToBump = pRunToBump->getPrevRun();
 //			xxx_UT_DEBUGMSG(("Next runToBump %x \n",pRunToBump));
 //		}
-	}
+//	}
 
 
 	//modify src/text/fmt/xp/fb_LineBreaker.cpp to place hypernation points
