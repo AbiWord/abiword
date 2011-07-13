@@ -27,10 +27,12 @@ opendocument_la_SOURCES =
 # needed to call the C++ ld driver
 nodist_EXTRA_opendocument_la_SOURCES = dummy.cpp
 
-#install-exec-hook:
-#	install_name_tool -change $(prefix)/lib/libabiword-@ABIWORD_SERIES@.dylib \
-#		@executable_path/../Frameworks/libabiword-@ABIWORD_SERIES@.dylib \
-#		$(DESTDIR)/$(plugindir)/opendocument.so
+if TOOLKIT_COCOA
+install-data-hook:
+	install_name_tool -change $(ABIWORD_LIBDIR)/libabiword-@ABIWORD_SERIES@.dylib \
+		@executable_path/../Frameworks/libabiword-@ABIWORD_SERIES@.dylib \
+		$(DESTDIR)/$(plugindir)/opendocument.so
+endif # TOOLKIT_COCOA
 
 EXTRA_DIST = \
 	plugin.m4
