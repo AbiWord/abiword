@@ -199,6 +199,8 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
   */
 bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 	PL_StruxDocHandle cellSDH,tableSDH,curSDH,endTableSDH;
 	PL_StruxDocHandle prevCellSDH1,prevCellSDH2;
 	PT_DocPosition posTable,posCell,posFirstInsert,posEndTable;
@@ -925,6 +927,8 @@ bool FV_View::cmdTableToText(PT_DocPosition posSource,UT_sint32 iSepType)
  */
 bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestination)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 	UT_sint32 sLeft,sRight,sTop,sBot;
 	UT_sint32 dLeft,dRight,dTop,dBot;
 	UT_sint32 Left,Right,Top,Bot; // need these for working variables.
