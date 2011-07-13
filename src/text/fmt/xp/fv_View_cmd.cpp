@@ -1470,6 +1470,8 @@ bool FV_View::cmdAdvanceNextPrevCell(bool bGoNext)
 
 bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 	if(isSelectionEmpty())
 	{
 		return false;
@@ -1697,6 +1699,8 @@ bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
  */
 bool FV_View::cmdAutoSizeCols(void)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 //
 // Got all we need, now set things up to do the delete nicely
 //
@@ -1736,6 +1740,8 @@ bool FV_View::cmdAutoSizeCols(void)
  */
 bool FV_View::cmdAutoSizeRows(void)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 //
 // Got all we need, now set things up to do the delete nicely
 //
@@ -1776,6 +1782,8 @@ bool FV_View::cmdAutoSizeRows(void)
  */
 bool FV_View::cmdAutoFitTable(void)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 //
 // Got all we need, now set things up to do the delete nicely
 //
