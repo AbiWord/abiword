@@ -76,7 +76,10 @@ void FV_ViewDoubleBuffering::recordViewDrawCall(
 		UT_sint32 width, UT_sint32 height, 
 		bool bDirtyRunsOnly, bool bClip)
 {
-	this->extendDrawArgsIfNeccessary(x, y, width, height, bDirtyRunsOnly, bClip);
+	UT_Rect thisCallRect(x, y, width, height);
+	const UT_Rect *clipRectFromGraphics = m_pView->getGraphics()->getClipRect();
+	// record actual _draw arguments
+	this->extendDrawArgsIfNeccessary(&thisCallRect, clipRectFromGraphics, bDirtyRunsOnly);
 }
 
 bool FV_ViewDoubleBuffering::getCallDrawOnlyAtTheEnd()
@@ -86,18 +89,21 @@ bool FV_ViewDoubleBuffering::getCallDrawOnlyAtTheEnd()
 
 void FV_ViewDoubleBuffering::callUnifiedDraw()
 {
-	UT_sint32 width = mostExtArgs.x2 - mostExtArgs.x1;
-	UT_sint32 height = mostExtArgs.y2 - mostExtArgs.y1;
+	if(noRecordedDrawCalls()) return;
 
-	if(mostExtArgs.callCount > 0)
-	{
-		this->m_pView->_draw(
-			mostExtArgs.x1, mostExtArgs.y1,
-			width, height,
-			mostExtArgs.bDirtyRunsOnly, mostExtArgs.bClip);
-	}
+	m_pView->getGraphics()->setClipRect(&mostExtArgs.clipRect);
+	m_pView->_draw(
+		mostExtArgs.fullRect.left, mostExtArgs.fullRect.top,
+		mostExtArgs.fullRect.width, mostExtArgs.fullRect.height,
+		mostExtArgs.bDirtyRunsOnly, false);
+	m_pView->getGraphics()->setClipRect(NULL);
 
 	UT_DEBUGMSG(("ASFRENT: unified _draw call for a total of %d previous calls.\n",  mostExtArgs.callCount));
+}
+
+bool FV_ViewDoubleBuffering::noRecordedDrawCalls()
+{
+	return mostExtArgs.callCount == 0;
 }
 
 void FV_ViewDoubleBuffering::redrawEntireScreen()
@@ -114,19 +120,19 @@ void FV_ViewDoubleBuffering::initMostExtArgs()
 }
 
 void FV_ViewDoubleBuffering::extendDrawArgsIfNeccessary(
-	UT_sint32 x, UT_sint32 y, 
-	UT_sint32 width, UT_sint32 height, 
-	bool bDirtyRunsOnly, bool bClip)
+	UT_Rect *thisCallRect,
+	const UT_Rect *clipRectFromGraphics,
+	bool bDirtyRunsOnly)
 {
+	if(clipRectFromGraphics == NULL)
+		clipRectFromGraphics = thisCallRect;
+
 	if(mostExtArgs.callCount == 0)
 	{
 		// then this is a first call, just record parameters
-		mostExtArgs.x1 = x;
-		mostExtArgs.y1 = y;
-		mostExtArgs.x2 = x + width;
-		mostExtArgs.y2 = y + height;
 		mostExtArgs.bDirtyRunsOnly = bDirtyRunsOnly;
-		mostExtArgs.bClip = bClip;
+		mostExtArgs.fullRect = *thisCallRect;
+		mostExtArgs.clipRect = *clipRectFromGraphics;
 	}
 	else
 	{
@@ -134,17 +140,14 @@ void FV_ViewDoubleBuffering::extendDrawArgsIfNeccessary(
 		
 		// 1. dirty runs: false means more
 		if(bDirtyRunsOnly == false) mostExtArgs.bDirtyRunsOnly = false;
+		
+		// 2. full rectangle
+		mostExtArgs.fullRect.unionRect(thisCallRect);
 
-		// 2. clipping region: false means entire view  [I hope so]
-		if(bClip == false) mostExtArgs.bClip = false;
-
-		// 3. rectangle
-		mostExtArgs.x1 = UT_MIN(mostExtArgs.x1, x);
-		mostExtArgs.y1 = UT_MIN(mostExtArgs.y1, y);
-		mostExtArgs.x2 = UT_MAX(mostExtArgs.x2, x + width);
-		mostExtArgs.y2 = UT_MAX(mostExtArgs.y2, y + height);
+		// 3. clip rectangle
+		mostExtArgs.clipRect.unionRect(clipRectFromGraphics);
 	}
-	
+
 	mostExtArgs.callCount++;
 }
 

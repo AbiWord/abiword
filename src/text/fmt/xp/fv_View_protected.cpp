@@ -3827,7 +3827,7 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 	fl_BlockLayout* pBlockEnd = pRun2->getBlock();
 	PT_DocPosition posEnd = pBlockEnd->getPosition() + pRun2->getBlockOffset();
 
-	FV_ViewDoubleBuffering dblBufferingObj(this, false, true);
+	FV_ViewDoubleBuffering dblBufferingObj(this, false, false);
 	dblBufferingObj.beginDoubleBuffering();
 
 	while ((!bDone || bIsDirty) && pCurRun)
@@ -4553,7 +4553,10 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	if(m_pViewDoubleBufferingObject != NULL && m_pViewDoubleBufferingObject->getCallDrawOnlyAtTheEnd())
 	{
 		// record this call's arguments and return
+		if(bClip)
+			m_pG->setClipRect(&(UT_Rect(x, y, width, height)));
 		m_pViewDoubleBufferingObject->recordViewDrawCall(x, y, width, height, bDirtyRunsOnly, bClip);
+		m_pG->setClipRect(NULL);
 		return;
 	}
 

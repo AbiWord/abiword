@@ -33,21 +33,20 @@ private:
 
 	struct ViewDrawFunctionArguments
 	{
-		UT_sint32 x1;
-		UT_sint32 y1;
-		UT_sint32 x2;
-		UT_sint32 y2;
+		UT_Rect clipRect;
+		UT_Rect fullRect;
 		bool bDirtyRunsOnly;
 		bool bClip;
 		UT_sint32 callCount;
 	};
 
 	ViewDrawFunctionArguments mostExtArgs;
+	bool noRecordedDrawCalls();
 	void initMostExtArgs();
 	void extendDrawArgsIfNeccessary(
-		UT_sint32 x, UT_sint32 y, 
-		UT_sint32 width, UT_sint32 height, 
-		bool bDirtyRunsOnly, bool bClip);
+		UT_Rect *thisCallRect,
+		const UT_Rect *clipRectFromGraphics,
+		bool bDirtyRunsOnly);
 };
 
 #endif

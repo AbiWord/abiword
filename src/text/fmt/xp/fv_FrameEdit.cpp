@@ -34,6 +34,7 @@
 #include "xap_Frame.h"
 #include "gr_Painter.h"
 #include "xap_App.h"
+#include "fv_ViewDoubleBuffering.h"
 
 FV_FrameEdit::FV_FrameEdit (FV_View * pView)
 	: FV_Base (pView), 
@@ -272,6 +273,9 @@ UT_sint32 FV_FrameEdit::haveDragged(void) const
 
 void FV_FrameEdit::_mouseDrag(UT_sint32 x, UT_sint32 y)
 {
+	FV_ViewDoubleBuffering dblBuffObj(m_pView, false, false);
+	dblBuffObj.beginDoubleBuffering();
+	
 	UT_sint32 dx = 0;
 	UT_sint32 dy = 0;
 	UT_Rect expX(0,m_recCurFrame.top,0,m_recCurFrame.height);
@@ -395,6 +399,19 @@ void FV_FrameEdit::_mouseDrag(UT_sint32 x, UT_sint32 y)
 	}
 	else 
 	{
+		if (FV_FrameEdit_RESIZE_EXISTING == m_iFrameEditMode)
+		{
+			UT_sint32 iW = m_recCurFrame.width;
+			UT_sint32 iH = m_recCurFrame.height;
+			m_pFrameLayout->localCollapse();
+			m_pFrameLayout->setFrameWidth(iW);
+			m_pFrameLayout->setFrameHeight(iH);
+			m_pFrameContainer->_setWidth(iW);
+			m_pFrameContainer->_setHeight(iH);
+			m_pFrameLayout->miniFormat();
+			m_pFrameLayout->getDocSectionLayout()->setNeedsSectionBreak(false,NULL);
+		}
+
 		if (FV_FrameEdit_RESIZE_EXISTING == m_iFrameEditMode || FV_FrameEdit_DRAG_EXISTING == m_iFrameEditMode)
 		{
 			UT_sint32 newX = m_pFrameContainer->getFullX();
@@ -414,20 +431,8 @@ void FV_FrameEdit::_mouseDrag(UT_sint32 x, UT_sint32 y)
 				m_pView->updateScreen(false);
 			}
 			getGraphics()->setClipRect(NULL);
+			
 			drawFrame(true);
-		}
-		
-		if (FV_FrameEdit_RESIZE_EXISTING == m_iFrameEditMode)
-		{
-			UT_sint32 iW = m_recCurFrame.width;
-			UT_sint32 iH = m_recCurFrame.height;
-			m_pFrameLayout->localCollapse();
-			m_pFrameLayout->setFrameWidth(iW);
-			m_pFrameLayout->setFrameHeight(iH);
-			m_pFrameContainer->_setWidth(iW);
-			m_pFrameContainer->_setHeight(iH);
-			m_pFrameLayout->miniFormat();
-			m_pFrameLayout->getDocSectionLayout()->setNeedsSectionBreak(false,NULL);
 		}
 	}
 	m_iLastX = x;
