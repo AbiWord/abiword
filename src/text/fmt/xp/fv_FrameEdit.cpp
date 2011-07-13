@@ -272,9 +272,6 @@ UT_sint32 FV_FrameEdit::haveDragged(void) const
 
 void FV_FrameEdit::_mouseDrag(UT_sint32 x, UT_sint32 y)
 {
-	GR_Painter painter(getGraphics());
-	painter.beginDoubleBuffering();
-
 	UT_sint32 dx = 0;
 	UT_sint32 dy = 0;
 	UT_Rect expX(0,m_recCurFrame.top,0,m_recCurFrame.height);
@@ -396,60 +393,42 @@ void FV_FrameEdit::_mouseDrag(UT_sint32 x, UT_sint32 y)
 	{
 		xxx_UT_DEBUGMSG(("width after drag %d \n",m_recCurFrame.width));
 	}
-	else if (FV_FrameEdit_RESIZE_EXISTING == m_iFrameEditMode)
+	else 
 	{
-		UT_sint32 iW = m_recCurFrame.width;
-		UT_sint32 iH = m_recCurFrame.height;
-		UT_sint32 newX = m_pFrameContainer->getFullX();
-		UT_sint32 newY = m_pFrameContainer->getFullY();
-		m_pFrameLayout->localCollapse();
-		m_pFrameLayout->setFrameWidth(iW);
-		m_pFrameLayout->setFrameHeight(iH);
-		m_pFrameContainer->_setWidth(iW);
-		m_pFrameContainer->_setHeight(iH);
-		m_pFrameLayout->miniFormat();
-		m_pFrameLayout->getDocSectionLayout()->setNeedsSectionBreak(false,NULL);
-		newX += dx;
-		newY += dy;
-		m_pFrameContainer->_setX(newX);
-		m_pFrameContainer->_setY(newY);
-		if(expX.width > 0)
+		if (FV_FrameEdit_RESIZE_EXISTING == m_iFrameEditMode || FV_FrameEdit_DRAG_EXISTING == m_iFrameEditMode)
 		{
-			getGraphics()->setClipRect(&expX);
-			m_pView->updateScreen(false);
+			UT_sint32 newX = m_pFrameContainer->getFullX();
+			UT_sint32 newY = m_pFrameContainer->getFullY();
+			newX += dx;
+			newY += dy;
+			m_pFrameContainer->_setX(newX);
+			m_pFrameContainer->_setY(newY);
+			if(expX.width > 0)
+			{
+				getGraphics()->setClipRect(&expX);
+				m_pView->updateScreen(false);
+			}
+			if(expY.height > 0)
+			{
+				getGraphics()->setClipRect(&expY);
+				m_pView->updateScreen(false);
+			}
+			getGraphics()->setClipRect(NULL);
+			drawFrame(true);
 		}
-		if(expY.height > 0)
+		
+		if (FV_FrameEdit_RESIZE_EXISTING == m_iFrameEditMode)
 		{
-			getGraphics()->setClipRect(&expY);
-			xxx_UT_DEBUGMSG(("expY.top %d expY.height %d \n",expY.top,expY.height));
-			m_pView->updateScreen(false);
+			UT_sint32 iW = m_recCurFrame.width;
+			UT_sint32 iH = m_recCurFrame.height;
+			m_pFrameLayout->localCollapse();
+			m_pFrameLayout->setFrameWidth(iW);
+			m_pFrameLayout->setFrameHeight(iH);
+			m_pFrameContainer->_setWidth(iW);
+			m_pFrameContainer->_setHeight(iH);
+			m_pFrameLayout->miniFormat();
+			m_pFrameLayout->getDocSectionLayout()->setNeedsSectionBreak(false,NULL);
 		}
-		getGraphics()->setClipRect(NULL);
-
-		drawFrame(true);
-		xxx_UT_DEBUGMSG(("Draw frame finished \n"));
-	}
-	else if (FV_FrameEdit_DRAG_EXISTING == m_iFrameEditMode)
-	{
-		UT_sint32 newX = m_pFrameContainer->getFullX();
-		UT_sint32 newY = m_pFrameContainer->getFullY();
-		newX += dx;
-		newY += dy;
-		m_pFrameContainer->_setX(newX);
-		m_pFrameContainer->_setY(newY);
-		xxx_UT_DEBUGMSG(("Doing dragging existing frame left %d top %d \n",m_recCurFrame.left, m_recCurFrame.top));
-		if(expX.width > 0)
-		{
-			getGraphics()->setClipRect(&expX);
-			m_pView->updateScreen(false);
-		}
-		if(expY.height > 0)
-		{
-			getGraphics()->setClipRect(&expY);
-			m_pView->updateScreen(false);
-		}
-		getGraphics()->setClipRect(NULL);
-		drawFrame(true);
 	}
 	m_iLastX = x;
 	m_iLastY = y;
