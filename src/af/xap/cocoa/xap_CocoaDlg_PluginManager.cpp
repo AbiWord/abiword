@@ -75,7 +75,7 @@ void XAP_CocoaDialog_PluginManager::event_Load ()
 		return;
 	
 	std::string plugin_path = [[[NSBundle mainBundle] bundlePath] UTF8String];
-	plugin_path += "/Contents/PlugIns/AbiHack.dylib";
+	plugin_path += "/Contents/PlugIns/AbiHack.dylib"
 
 	pDialog->setCurrentPathname(plugin_path.c_str ());
 	pDialog->setSuggestFilename(false);
@@ -84,8 +84,8 @@ void XAP_CocoaDialog_PluginManager::event_Load ()
 	const char * szSuffixList[2];
 	IEFileType   nTypeList[2];
 
-	szDescList[0]   = "AbiWord Plugin (.dylib)";
-	szSuffixList[0] = "*.dylib";
+	szDescList[0]   = "AbiWord Plugin (.so)";
+	szSuffixList[0] = "*.so";
 	nTypeList[0]    = (IEFileType) 1;
 
 	szDescList[1]   = 0;

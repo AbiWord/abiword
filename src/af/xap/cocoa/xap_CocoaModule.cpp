@@ -113,7 +113,7 @@ bool XAP_CocoaModule::getErrorMsg (char **dest) const
 }
 
 /**
- * return > 0 for directory entries ending in ".dylib"
+ * return > 0 for directory entries ending in ".so"
  */
 static int s_Abi_only (struct dirent *d)
 {
@@ -270,10 +270,10 @@ bool XAP_CocoaModule::loadPlugin (const std::string &path)
 
 bool XAP_CocoaModule::hasPluginExtension (const std::string &path)
 {
-    if (path.length() <= 6)
+    if (path.length() <= 3)
         return false;
 
-    if (strcmp(path.c_str() + path.length() - 6, ".dylib") != 0)
+    if (strcmp(path.c_str() + path.length() - 3, ".so") != 0)
         return false;
 
     return true;
