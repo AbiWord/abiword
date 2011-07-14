@@ -53,7 +53,7 @@ typedef struct _AbiTable
 	GtkLabel* window_label;
 	GSList* handlers;
 	
-	cairo_t* selected_gc;
+	GdkGC* selected_gc;
 	
 	guint selected_rows;
 	guint selected_cols;

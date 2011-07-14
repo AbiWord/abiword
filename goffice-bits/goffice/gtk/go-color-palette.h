@@ -30,25 +30,26 @@
 #ifndef _GO_COLOR_PALETTE_H_
 #define _GO_COLOR_PALETTE_H_
 
-#include <goffice/goffice.h>
+#include <goffice/gtk/go-color-group.h>
+#include <gtk/gtkwidget.h>
 
 G_BEGIN_DECLS
 
 typedef struct _GOColorPalette  GOColorPalette;
 
-#define GO_TYPE_COLOR_PALETTE     (go_color_palette_get_type ())
-#define GO_COLOR_PALETTE(obj)     (G_TYPE_CHECK_INSTANCE_CAST((obj), GO_TYPE_COLOR_PALETTE, GOColorPalette))
-#define GO_COLOR_PALETTE_CLASS(k) (G_TYPE_CHECK_CLASS_CAST(k), GO_TYPE_COLOR_PALETTE)
-#define GO_IS_COLOR_PALETTE(obj)  (G_TYPE_CHECK_INSTANCE_TYPE((obj), GO_TYPE_COLOR_PALETTE))
+#define GO_COLOR_PALETTE_TYPE     (go_color_palette_get_type ())
+#define GO_COLOR_PALETTE(obj)     (G_TYPE_CHECK_INSTANCE_CAST((obj), GO_COLOR_PALETTE_TYPE, GOColorPalette))
+#define GO_COLOR_PALETTE_CLASS(k) (G_TYPE_CHECK_CLASS_CAST(k), GO_COLOR_PALETTE_TYPE)
+#define IS_GO_COLOR_PALETTE(obj)  (G_TYPE_CHECK_INSTANCE_TYPE((obj), GO_COLOR_PALETTE_TYPE))
 
 GType      go_color_palette_get_type (void);
 
 GtkWidget *go_color_palette_new	      (char const *no_color_label,
 				       GOColor default_color,
-				       GOColorGroup *cg);
+				       GOColorGroup *color_group);
 GtkWidget *go_color_palette_make_menu (char const *no_color_label,
 				       GOColor default_color,
-				       GOColorGroup *cg,
+				       GOColorGroup *color_group,
 				       char const *custom_dialog_title,
 				       GOColor current_color);
 

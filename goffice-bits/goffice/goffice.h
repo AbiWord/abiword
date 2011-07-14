@@ -39,10 +39,7 @@ void libgoffice_shutdown (void);
 #    define GO_VAR_DECL extern
 #  endif
 #endif /* GO_VAR_DECL */
-G_END_DECLS
 
-#include <goffice/app/goffice-app.h>
-#include <goffice/utils/goffice-utils.h>
-#include <goffice/gtk/goffice-gtk.h>
+G_END_DECLS
 
 #endif /* GOFFICE_H */

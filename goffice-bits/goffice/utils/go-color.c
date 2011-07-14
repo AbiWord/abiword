@@ -28,9 +28,9 @@
  * go_color_from_str :
  * @str :
  * @res :
- *
- * Returns: TRUE if @str can be parsed as a color of the form R:G:B:A and the
- * 	result is stored in @res.
+ * 
+ * Returns TRUE if @str can be parsed as a color of the form R:G:B:A and the
+ * result is stored in @res.
  **/
 gboolean
 go_color_from_str (gchar const *str, GOColor *res)
@@ -38,18 +38,9 @@ go_color_from_str (gchar const *str, GOColor *res)
 	unsigned r, g, b, a;
 
 	if (sscanf (str, "%X:%X:%X:%X", &r, &g, &b, &a) == 4) {
-		*res = GO_COLOR_FROM_RGBA (r, g, b, a);
+		*res = RGBA_TO_UINT (r, g, b, a);
 		return TRUE;
 	}
-#ifdef GOFFICE_WITH_GTK
-	 else {
-		GdkRGBA color;
-		if (gdk_rgba_parse (&color, str)) {
-			*res = GO_COLOR_FROM_GDK_RGBA (color);
-			return TRUE;
-		}
-	}
-#endif
 	return FALSE;
 }
 
@@ -58,7 +49,7 @@ go_color_as_str (GOColor color)
 {
 	unsigned r, g, b, a;
 
-	GO_COLOR_TO_RGBA (color, &r, &g, &b, &a);
+	UINT_TO_RGBA (color, &r, &g, &b, &a);
 	return g_strdup_printf ("%X:%X:%X:%X", r, g, b, a);
 }
 
@@ -66,11 +57,11 @@ PangoAttribute *
 go_color_to_pango (GOColor color, gboolean is_fore)
 {
 	guint16 r, g, b;
-	r  = GO_COLOR_UINT_R (color);
+	r  = UINT_RGBA_R (color);
 	r |= (r << 8);
-	g  = GO_COLOR_UINT_G (color);
+	g  = UINT_RGBA_G (color);
 	g |= (g << 8);
-	b  = GO_COLOR_UINT_B (color);
+	b  = UINT_RGBA_B (color);
 	b |= (b << 8);
 
 	if (is_fore)
@@ -80,15 +71,17 @@ go_color_to_pango (GOColor color, gboolean is_fore)
 }
 
 #ifdef GOFFICE_WITH_GTK
-#include <gdk/gdk.h>
+#include <gdk/gdkcolor.h>
 
-GdkRGBA *
-go_color_to_gdk_rgba (GOColor color, GdkRGBA *res)
+GdkColor *
+go_color_to_gdk	(GOColor color, GdkColor *res)
 {
-	res->red    = GO_COLOR_DOUBLE_R (color);
-	res->green  = GO_COLOR_DOUBLE_G (color);
-	res->blue   = GO_COLOR_DOUBLE_B (color);
-	res->alpha  = GO_COLOR_DOUBLE_A (color);
+	res->red    = UINT_RGBA_R (color);
+	res->red   |= (res->red << 8);
+	res->green  = UINT_RGBA_G (color);
+	res->green |= (res->green << 8);
+	res->blue   = UINT_RGBA_B (color);
+	res->blue  |= (res->blue << 8);
 
 	return res;
 }

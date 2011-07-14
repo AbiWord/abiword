@@ -53,14 +53,14 @@
  * buffer.
  */
 
-GR_UnixPangoPixmapGraphics::GR_UnixPangoPixmapGraphics(GdkWindow * pix): 
-	GR_UnixCairoGraphics((pix)),
+GR_UnixPangoPixmapGraphics::GR_UnixPangoPixmapGraphics(GdkPixmap * pix): 
+	GR_UnixCairoGraphics(GDK_DRAWABLE (pix)),
 	m_pPixmap(pix)
 {}			
 
 GR_UnixPangoPixmapGraphics::~GR_UnixPangoPixmapGraphics(void)
 {
-	g_object_unref (m_pPixmap);	
+	gdk_pixmap_unref (m_pPixmap);	
 }
 
 GR_Graphics *   GR_UnixPangoPixmapGraphics::graphicsAllocator(GR_AllocInfo& info)

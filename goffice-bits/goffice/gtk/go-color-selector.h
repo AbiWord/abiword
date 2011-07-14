@@ -22,16 +22,17 @@
 #ifndef GO_COLOR_SELECTOR_H
 #define GO_COLOR_SELECTOR_H
 
-#include <goffice/goffice.h>
+#include <goffice/utils/go-color.h>
+#include <goffice/gtk/go-selector.h>
+#include <gtk/gtkwidget.h>
 
 G_BEGIN_DECLS
 
-GtkWidget *go_color_selector_new	(GOColor initial_color,
-					 GOColor default_color,
-					 char const *color_group);
+GtkWidget *go_color_selector_new	(GOColor initial_color, 
+					 GOColor default_color, 
+					 char const *group);
 GOColor    go_color_selector_get_color 	(GOSelector *selector, gboolean *is_auto);
 gboolean   go_color_selector_set_color  (GOSelector *selector, GOColor color);
-void       go_color_selector_set_allow_alpha   (GOSelector *selector, gboolean allow_alpha);
 
 G_END_DECLS
 

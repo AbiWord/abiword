@@ -27,8 +27,7 @@
  */
 
 #include <goffice/goffice-config.h>
-#include <goffice/goffice.h>
-
+#include "go-color-group.h"
 #include <gsf/gsf-impl-utils.h>
 #include <string.h>
 
@@ -73,7 +72,7 @@ go_color_group_class_init (GOColorGroupClass *klass)
 	go_color_group_parent_class = g_type_class_peek (G_TYPE_OBJECT);
 	go_color_group_signals [HISTORY_CHANGED] =
 		g_signal_new ("history-changed",
-			GO_TYPE_COLOR_GROUP,
+			GO_COLOR_GROUP_TYPE,
 			G_SIGNAL_RUN_LAST,
 			G_STRUCT_OFFSET (GOColorGroupClass, history_changed),
 			NULL, NULL,
@@ -89,7 +88,7 @@ go_color_group_init (GOColorGroup *cg)
 	cg->name = NULL;
 	cg->context = NULL;
 	for (i = 0 ; i < GO_COLOR_GROUP_HISTORY_SIZE ; i++)
-		cg->history[i] = GO_COLOR_BLACK;
+		cg->history[i] = RGBA_BLACK;
 }
 
 GSF_CLASS (GOColorGroup, go_color_group,
@@ -98,13 +97,12 @@ GSF_CLASS (GOColorGroup, go_color_group,
 
 /**
  * go_color_group_find :
- * @name : target name
- * @context : an arbitrary id to identify what context to search in
+ * @name :
+ * @context :
  *
+ * Look up the name/context specific color-group.  Return NULL if it is not found.
  * No reference is added if it is found.
- * Returns: Look up the name/context specific color-group.
- * 		%NULL if it is not found.
- **/
+ */
 GOColorGroup *
 go_color_group_find (char const *name, gpointer context)
 {
@@ -138,8 +136,8 @@ cg_equal (GOColorGroup const *a, GOColorGroup const *b)
 
 /**
  * go_color_group_fetch :
- * @name : target name
- * @context : identifying context
+ * @name :
+ * @context :
  *
  * if name is NULL or a name not currently in use by another group
  * then a new group is created and returned. If name was NULL
@@ -147,11 +145,9 @@ cg_equal (GOColorGroup const *a, GOColorGroup const *b)
  * (thereby insuring namespace separation).
  * If name was already used by a group then the reference count is
  * incremented and a pointer to the group is returned.
- *
- * Returns: A #GOColorGroup
- **/
+ */
 GOColorGroup *
-go_color_group_fetch (char const *name, gpointer context)
+go_color_group_fetch (const gchar *name, gpointer context)
 {
 	GOColorGroup *cg;
 	gchar *new_name;
@@ -204,7 +200,7 @@ void
 go_color_group_add_color (GOColorGroup *cg, GOColor c)
 {
 	unsigned i;
-	g_return_if_fail (GO_IS_COLOR_GROUP (cg));
+	g_return_if_fail (IS_GO_COLOR_GROUP (cg));
 
 	for (i = GO_COLOR_GROUP_HISTORY_SIZE - 1 ; i > 0; i--)
 		if (cg->history[i] == c)
