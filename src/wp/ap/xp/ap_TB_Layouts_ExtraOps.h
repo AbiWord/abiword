@@ -40,10 +40,8 @@ BeginLayout(ExtraOps, AP_STRING_ID_TB_Extra, AP_PREF_KEY_ExtraBarVisible)
 	ToolbarItem(AP_TOOLBAR_ID_FMT_SUBSCRIPT)
 	ToolbarItem(AP_TOOLBAR_ID_INSERT_SYMBOL)
 
-#ifndef TOOLKIT_WIN
-	Spacer()
-	ToolbarItem(AP_TOOLBAR_ID_SCRIPT_PLAY)
-#endif
+	//Spacer()
+	//ToolbarItem(AP_TOOLBAR_ID_SCRIPT_PLAY)
 
 	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_PARA_0BEFORE)
@@ -63,6 +61,7 @@ BeginLayout(ExtraOps, AP_STRING_ID_TB_Extra, AP_PREF_KEY_ExtraBarVisible)
 	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_HEADER)
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_FOOTER)
+
 	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_REMOVEHEADER)
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_REMOVEFOOTER)

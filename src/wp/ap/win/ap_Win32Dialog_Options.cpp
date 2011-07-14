@@ -432,6 +432,7 @@ void AP_Win32Dialog_Options::_setUILanguage(const UT_String &stExt)
 {
 	UT_Language	lang;
 	int id = lang.getIndxFromCode(stExt.c_str());
+	bool bCustom = true;
 	HWND hCtrlDocLang = GetDlgItem((HWND)getPage(PG_GENERAL), AP_RID_DIALOG_OPTIONS_COMBO_UILANG);
 
 	int nCount = SendMessageW(hCtrlDocLang, CB_GETCOUNT, 0, 0);		
@@ -440,10 +441,14 @@ void AP_Win32Dialog_Options::_setUILanguage(const UT_String &stExt)
 	{
 		if (SendMessageW(hCtrlDocLang,  CB_GETITEMDATA , i,0)==id)
 		{
-			SendMessageW(hCtrlDocLang, CB_SETCURSEL, i, 0);				
+			SendMessageW(hCtrlDocLang, CB_SETCURSEL, i, 0);
+			bCustom = false;
 			break;
 		}
-	}		
+	}
+
+	if (!bCustom && (nCount < 2))
+		EnableWindow(hCtrlDocLang,FALSE);
 
 	if (!m_curLang.size())
 		m_curLang = stExt;

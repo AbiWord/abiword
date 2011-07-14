@@ -49,10 +49,12 @@ BeginLayout(FileEditOps, AP_STRING_ID_TB_Standard, AP_PREF_KEY_StandardBarVisibl
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_CUT)
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_COPY)
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_PASTE)
+	ToolbarItem(AP_TOOLBAR_ID_FMTPAINTER)
 
 	Spacer()
 #ifdef ENABLE_SPELL
 	ToolbarItem(AP_TOOLBAR_ID_SPELLCHECK)
+	Spacer()
 #endif
 	ToolbarItem(AP_TOOLBAR_ID_ZOOM)
 EndLayout()

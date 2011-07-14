@@ -50,15 +50,7 @@ BeginLayout(FormatOps, AP_STRING_ID_TB_Format, AP_PREF_KEY_FormatBarVisible)
 	ToolbarItem(AP_TOOLBAR_ID_LISTS_BULLETS)
 
 	Spacer()
-
-	ToolbarItem(AP_TOOLBAR_ID_UNINDENT)
-	ToolbarItem(AP_TOOLBAR_ID_INDENT)
-
-	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_COLOR_BACK)
 	ToolbarItem(AP_TOOLBAR_ID_COLOR_FORE)
-
-	Spacer()
-	ToolbarItem(AP_TOOLBAR_ID_FMTPAINTER)
 
 EndLayout()
