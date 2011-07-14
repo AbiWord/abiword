@@ -75,7 +75,7 @@ void XAP_CocoaDialog_PluginManager::event_Load ()
 		return;
 	
 	std::string plugin_path = [[[NSBundle mainBundle] bundlePath] UTF8String];
-	plugin_path += "/Contents/PlugIns/AbiHack.dylib";
+//	plugin_path += "/Contents/PlugIns/AbiHack.dylib";
 
 	pDialog->setCurrentPathname(plugin_path.c_str ());
 	pDialog->setSuggestFilename(false);
@@ -106,22 +106,22 @@ void XAP_CocoaDialog_PluginManager::event_Load ()
 
 		if (szResultPathname && *szResultPathname)
 		{
-			bool bIsBundle = false;
+//			bool bIsBundle = false;
 
-			int length = strlen(szResultPathname);
-			if (length > 4)
-				if (strcmp(szResultPathname + length - 4, ".Abi") == 0)
-					bIsBundle = true;
+//			int length = strlen(szResultPathname);
+//			if (length > 4)
+//				if (strcmp(szResultPathname + length - 4, ".Abi") == 0)
+//					bIsBundle = true;
 
-			bool bActivated;
-			if (bIsBundle)
-			{
-				XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
-				XAP_CocoaPlugin * plugin = [pController loadPlugin:[NSString stringWithUTF8String:szResultPathname]];
-				[[plugin delegate] pluginActivate];
-				bActivated =  true; // we don't really know if activation succeeded....
-			}
-			else bActivated = activatePlugin(szResultPathname);
+			bool bActivated = activatePlugin(szResultPathname);
+//			if (bIsBundle)
+//			{
+//				XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+//				XAP_CocoaPlugin * plugin = [pController loadPlugin:[NSString stringWithUTF8String:szResultPathname]];
+//				[[plugin delegate] pluginActivate];
+//				bActivated =  true; // we don't really know if activation succeeded....
+//			}
+//			else bActivated = activatePlugin(szResultPathname);
 
 			if (!bActivated)
 			{
