@@ -4554,7 +4554,10 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	{
 		// record this call's arguments and return
 		if(bClip)
-			m_pG->setClipRect(&(UT_Rect(x, y, width, height)));
+		{
+			UT_Rect r(x, y, width, height);
+			m_pG->setClipRect(&r);
+		}
 		m_pViewDoubleBufferingObject->recordViewDrawCall(x, y, width, height, bDirtyRunsOnly, bClip);
 		m_pG->setClipRect(NULL);
 		return;
