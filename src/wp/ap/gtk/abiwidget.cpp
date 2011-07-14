@@ -1441,7 +1441,7 @@ abi_widget_render_page_to_image(AbiWidget *abi, int iPage)
 	// Create an offscreen Graphics to draw into
 	//
 	xxx_UT_DEBUGMSG(("rederpagetoimage Width %d Height %d zoom %d \n",iWidth,iHeight,iZoom));
-	GdkPixmap*  pPixmap = gdk_pixmap_new(pVG->getWindow(),iWidth,iHeight,-1);
+	cairo_surface_t*  pPixmap = gdk_window_create_similar_surface(pVG->getWindow(),CAIRO_CONTENT_COLOR_ALPHA,iWidth,iHeight); //removed GdkPixmap and gdk_pixmap_new
 
 	GR_UnixPixmapAllocInfo ai(pPixmap);
 
@@ -1980,7 +1980,7 @@ abiwidget_add(GtkContainer *container,
 	if (GTK_CONTAINER_CLASS (parent_class)->add)
 		GTK_CONTAINER_CLASS (parent_class)->add (container, widget);
 
-	ABI_WIDGET(container)->child = GTK_BIN (container)->child;
+	ABI_WIDGET(container)->child = gtk_bin_get_child(GTK_BIN (container));   //Removed GTK_BIN (container)->child
 }
 
 //
@@ -1996,7 +1996,7 @@ abiwidget_remove (GtkContainer *container,
 	if (GTK_CONTAINER_CLASS (parent_class)->remove)
 		GTK_CONTAINER_CLASS (parent_class)->remove (container, widget);
 
-	ABI_WIDGET(container)->child = GTK_BIN (container)->child;
+	ABI_WIDGET(container)->child = gtk_bin_get_child(GTK_BIN (container)); //Removed GTK_BIN (container)->child
 }
 
 //
@@ -2005,7 +2005,7 @@ abiwidget_remove (GtkContainer *container,
 static GType
 abiwidget_child_type (GtkContainer *container)
 {
-	if (!GTK_BIN (container)->child)
+	if (!gtk_bin_get_child(GTK_BIN (container)))  //Removed GTK_BIN (container)->child
 		return GTK_TYPE_WIDGET;
 
 	return G_TYPE_NONE;
@@ -2020,8 +2020,8 @@ abi_widget_init (AbiWidget * abi)
 	// guaranteed to be created with g_new0 and we just
 	// want everything to be 0/NULL/FALSE anyway right now
 	// but i'm keeping it around anyway just in case that changes
-	GTK_WIDGET_SET_FLAGS (abi, GTK_CAN_FOCUS | GTK_RECEIVES_DEFAULT |GTK_CAN_DEFAULT );
-	GTK_WIDGET_UNSET_FLAGS (abi, GTK_NO_WINDOW);
+	//GTK_WIDGET_SET_FLAGS (abi, GTK_CAN_FOCUS | GTK_RECEIVES_DEFAULT |GTK_CAN_DEFAULT );   //not needed ->Review
+	//GTK_WIDGET_UNSET_FLAGS (abi, GTK_NO_WINDOW);
 }
 
 static void
@@ -2029,18 +2029,27 @@ abi_widget_size_allocate (GtkWidget     *widget,
 						  GtkAllocation *allocation)
 {
 	AbiWidget *abi;
+    int x, y;
+    GtkStyleContext *context;
+    GtkStateFlags    state;
+    GtkBorder padding;
 	
 	UT_return_if_fail (widget != NULL);
 	UT_return_if_fail (IS_ABI_WIDGET (widget));
 	UT_return_if_fail (allocation != NULL);
 
 	GtkAllocation child_allocation;
-	widget->allocation = *allocation;
-
-	gint border_width = GTK_CONTAINER (widget)->border_width;
-	gint xthickness = GTK_WIDGET (widget)->style->xthickness;
-	gint ythickness = GTK_WIDGET (widget)->style->ythickness;
- 	if (GTK_WIDGET_REALIZED (widget))
+    GtkAllocation n_allocation;
+	gtk_widget_get_allocation (widget, &n_allocation);     //Removed widget->allocation = *allocation;
+    x = n_allocation.x;
+    y = n_allocation.y;
+    state = gtk_widget_get_state_flags (GTK_WIDGET (widget));
+    context = gtk_widget_get_style_context(GTK_WIDGET (widget));
+    gtk_style_context_get_padding (context, state, &padding);
+	gint border_width = gtk_container_get_border_width(GTK_CONTAINER (widget));  //Replaced GTK_CONTAINER (widget)->border_width
+	//gint xthickness = gtk_widget_style_get_property(GTK_WIDGET (widget))->padding.left; //Review
+	//gint ythickness = gtk_widget_get_style_context(GTK_WIDGET (widget))->padding.top; //Review
+ 	/*if (GTK_WIDGET_REALIZED (widget))
     {
 		// only allocate on realized widgets
 
@@ -2062,7 +2071,32 @@ abi_widget_size_allocate (GtkWidget     *widget,
 											(gint)widget->allocation.height - child_allocation.y * 2 - border_width * 2);
 			 gtk_widget_size_allocate (ABI_WIDGET (widget)->child, &child_allocation);
 		}
-    }
+    } */
+    GtkAllocation tmp_allocation;
+    gtk_widget_get_allocation(widget, &tmp_allocation);
+    if (gtk_widget_get_realized(widget))
+    {
+		// only allocate on realized widgets 
+       
+        abi = ABI_WIDGET(widget);
+		gdk_window_move_resize(gtk_widget_get_window(widget),
+							   tmp_allocation.x + border_width,
+							   tmp_allocation.y + border_width,
+                               tmp_allocation.width - border_width*2,
+							   tmp_allocation.height - border_width*2);
+/*
+        if (abi ->child)
+		{
+			child_allocation.x = xthickness;
+			child_allocation.y = ythickness;
+			
+			child_allocation.width = MAX (1,
+										  (gint)gtk_widget_get_allocated_width(widget) - child_allocation.x * 2 - border_width * 2);
+			child_allocation.height = MAX (1, 
+										  (gint)gtk_widget_get_allocated_height(widget) - child_allocation.y * 2 - border_width * 2);
+			gtk_widget_size_allocate (ABI_WIDGET ((widget)->child), &child_allocation); // should be a child -> review
+			} */
+}
 }
 
 static void
@@ -2091,11 +2125,12 @@ abi_widget_realize (GtkWidget * widget)
 	UT_return_if_fail (widget != NULL);
 	UT_return_if_fail (IS_ABI_WIDGET(widget));
 
-	GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
+	TEST: gtk_widget_set_can_focus(widget, TRUE);
 	abi = ABI_WIDGET(widget);
-
-	attributes.x = widget->allocation.x;
-	attributes.y = widget->allocation.y;
+    GtkAllocation allocation;
+    gtk_widget_get_allocation (widget, &allocation);
+	attributes.x = allocation.x;
+	attributes.y = allocation.y;
 	attributes.width = ABI_DEFAULT_WIDTH;
 	attributes.height = ABI_DEFAULT_HEIGHT;
 	attributes.wclass = GDK_INPUT_OUTPUT;
@@ -2108,16 +2143,16 @@ abi_widget_realize (GtkWidget * widget)
 						GDK_FOCUS_CHANGE_MASK |
 						GDK_STRUCTURE_MASK;
 	attributes.visual = gtk_widget_get_visual (widget);
-	attributes.colormap = gtk_widget_get_colormap (widget);
+	//attributes.colormap = gtk_widget_get_visual (widget); // not needed -> review
 	
-	attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
+	attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL /*| GDK_WA_COLORMAP*/;
 
-	widget->window = gdk_window_new (gtk_widget_get_parent_window (widget), &attributes, attributes_mask);
-	gdk_window_set_user_data (widget->window, abi);
+	//gtk_widget_get_window(widget) = gdk_window_new (gtk_widget_get_parent_window (widget), &attributes, attributes_mask);
+	gdk_window_set_user_data (gtk_widget_get_window(widget), abi);
 
-	widget->style = gtk_style_attach (widget->style, widget->window);
-	gtk_style_set_background (widget->style, widget->window, GTK_STATE_NORMAL);
-
+	gtk_widget_style_attach(widget);
+	//gtk_style_set_background (widget->style, widget->window, GTK_STATE_NORMAL); //used the below one
+    gtk_style_context_set_background (gtk_widget_get_style_context (widget), gtk_widget_get_window(widget));
 	//
 	// connect a signal handler to load files after abiword is in a stable
 	// state.
@@ -2128,7 +2163,7 @@ abi_widget_realize (GtkWidget * widget)
 }
 
 static void
-abi_widget_destroy_gtk (GtkObject *object)
+abi_widget_destroy_gtk (GtkWidget *object)
 {
 	AbiWidget * abi;
 	
@@ -2181,13 +2216,13 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 #endif
 
 	GObjectClass * gobject_class;
-	GtkObjectClass * object_class;
+	GtkWidgetClass * object_class;
 	GtkWidgetClass * widget_class;
 	GtkContainerClass *container_class;
 	container_class = (GtkContainerClass*) abi_class;
 
 	gobject_class = (GObjectClass *)abi_class;
-	object_class = (GtkObjectClass *)abi_class;
+	object_class = (GtkWidgetClass *)abi_class;
 	widget_class = (GtkWidgetClass *)abi_class;
 
 	// set our parent class
@@ -2201,7 +2236,7 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 
 	// set our custom class methods
 	widget_class->realize       = abi_widget_realize;
-	widget_class->size_request  = abi_widget_size_request;
+	//widget_class->size_request  = abi_widget_size_request;   to be implemented via requizition
    	widget_class->size_allocate = abi_widget_size_allocate; 
 	widget_class->grab_focus    = abi_widget_grab_focus;
 

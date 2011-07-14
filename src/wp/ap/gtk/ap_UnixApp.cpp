@@ -1161,7 +1161,7 @@ bool AP_UnixApp::getCurrentSelection(const char** formatList,
 
 bool AP_UnixApp:: makePngPreview(const char * pszInFile, const char * pszPNGFile, UT_sint32 iWidth, UT_sint32 iHeight)
 {
-	GdkPixmap*  pPixmap = gdk_pixmap_new(NULL,iWidth,iHeight,24);
+	cairo_surface_t*  pPixmap = gdk_window_create_similar_surface(NULL,CAIRO_CONTENT_COLOR_ALPHA,iWidth,iHeight/*24*/);
 
 	GR_UnixPixmapAllocInfo ai(pPixmap);
 
@@ -1242,7 +1242,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 #endif
 		// Step 1: Initialize GTK and create the APP.
 		// hack needed to intialize gtk before ::initialize
-		gtk_set_locale();
+		setlocale(LC_ALL,"");    //removed gtk_set_locale
 		gboolean have_display = gtk_init_check(&argc, &argv);
 #ifdef LOGFILE
 		fprintf(logfile,"Got display %d \n",have_display);

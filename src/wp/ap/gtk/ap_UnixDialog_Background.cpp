@@ -130,7 +130,7 @@ GtkWidget * AP_UnixDialog_Background::_constructWindow (void)
 	abiAddStockButton ( GTK_DIALOG(dlg), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
 	abiAddStockButton ( GTK_DIALOG(dlg), GTK_STOCK_OK, BUTTON_OK ) ;
   
-	_constructWindowContents (GTK_DIALOG(dlg)->vbox);
+	_constructWindowContents (gtk_dialog_get_content_area(GTK_DIALOG(dlg)));          //removed GTK_DIALOG
 	
 	return dlg;
 }

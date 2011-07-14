@@ -103,7 +103,7 @@ static bool findIconDataByName(const char * szName, const char *** pIconData, UT
 	return false;
 }
 
-static inline bool label_button_with_abi_pixmap( GtkWidget * button, const char * szIconName)
+/*static inline bool label_button_with_abi_pixmap( GtkWidget * button, const char * szIconName)
 {
         const char ** pIconData = NULL;
 	UT_uint32 sizeofIconData = 0;		// number of cells in the array
@@ -115,7 +115,7 @@ static inline bool label_button_with_abi_pixmap( GtkWidget * button, const char 
 	}
 	UT_DEBUGMSG(("SEVIOR: found icon name %s \n",szIconName));
 	GdkBitmap * mask;
-	GdkColormap * colormap =  gtk_widget_get_colormap (button);
+	GdkVisual * colormap =  gtk_widget_get_visual (button);
 	GdkPixmap * pixmap
 		= gdk_pixmap_colormap_create_from_xpm_d(button->window,colormap,
 							&mask, NULL,
@@ -130,6 +130,7 @@ static inline bool label_button_with_abi_pixmap( GtkWidget * button, const char 
 	gtk_container_add (GTK_CONTAINER (button), wpixmap);
 	return true;
 }
+*/
 //----------------------------------------------------------------
 
 class XAP_UnixFrame;
@@ -194,12 +195,12 @@ protected:
 	guint m_iSpaceAfterID;
 	GtkWidget * m_wSpaceAfterSpin;
 	GtkWidget * m_wSpaceAfterEntry;
-	GtkObject * m_oSpaceAfter_adj;
+	GtkWidget * m_oSpaceAfter_adj; //changed GtkObject
 	UT_sint32 m_iMaxColumnHeight;
 	guint m_iMaxColumnHeightID;
 	GtkWidget * m_wMaxColumnHeightSpin;
 	GtkWidget * m_wMaxColumnHeightEntry;
-	GtkObject * m_oSpinSize_adj;
+	GtkWidget * m_oSpinSize_adj;  //changed GtkObject
 	UT_sint32 m_iSizeHeight;
     GtkWidget * m_checkOrder;
 };

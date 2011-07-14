@@ -18,7 +18,7 @@
  * 02111-1307, USA.
  */
 
-
+/*
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -46,7 +46,7 @@
 #include "gr_UnixCairoGraphics.h"
 
 /*****************************************************************/
-
+/*
 XAP_Dialog * AP_UnixDialog_Columns::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id)
 {
 	return new AP_UnixDialog_Columns(pFactory,id);
@@ -87,7 +87,7 @@ AP_UnixDialog_Columns::~AP_UnixDialog_Columns(void)
 }
 
 /*****************************************************************/
-
+/*
 #if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 static void s_one_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
 {
@@ -152,28 +152,28 @@ static void s_line_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
 
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
-static gboolean s_preview_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Columns * dlg)
-{
-	UT_return_val_if_fail(widget && dlg, FALSE);
-	dlg->event_previewExposed();
-	return FALSE;
-}
-#endif
+static gboolean s_preview_exposed(GtkWidget * widget, gpointer /* data */ /*, AP_UnixDialog_Columns * dlg) // ap-unix not /*
+//{
+//	UT_return_val_if_fail(widget && dlg, FALSE);
+//	dlg->event_previewExposed();
+//	return FALSE;
+//}
+//#endif
 
-static gboolean s_window_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Columns * dlg)
-{
-	UT_return_val_if_fail(widget && dlg, FALSE);
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#else
-	dlg->event_previewExposed();
-#endif
-	return FALSE;
-}
+//static gboolean s_window_exposed(GtkWidget * widget, gpointer /* data *//*, AP_UnixDialog_Columns * dlg) //ap_unix not
+//{
+//	UT_return_val_if_fail(widget && dlg, FALSE);
+//#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+//#else
+//	dlg->event_previewExposed();
+//#endif
+//	return FALSE;
+//}
 
 
 
 /*****************************************************************/
-
+/*
 void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 {
 	UT_return_if_fail(pFrame);
@@ -429,7 +429,7 @@ void AP_UnixDialog_Columns::event_previewExposed(void)
 }
 #endif
 /*****************************************************************/
-
+/*
 GtkWidget * AP_UnixDialog_Columns::_constructWindow(void)
 {
 
@@ -584,7 +584,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 //////////////////////////////////////////////////////
 // Line Between
 /////////////////////////////////////////////////////
-	
+/*	
 	GtkWidget * table = gtk_table_new (6, 3, FALSE);
 	gtk_widget_show (table);
 	gtk_box_pack_start (GTK_BOX (windowColumns), table, FALSE, FALSE, 0);
@@ -773,9 +773,9 @@ void AP_UnixDialog_Columns::_storeWindowData(void)
 {
 }
 
-void AP_UnixDialog_Columns::enableLineBetweenControl(bool /*bState*/)
-{
-}
+void AP_UnixDialog_Columns::enableLineBetweenControl(bool /*bState*//*)*/
+//{
+//}
 
 
 
