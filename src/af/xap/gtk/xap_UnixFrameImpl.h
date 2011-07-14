@@ -26,10 +26,10 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-
-#include <gtk/gtkwidget.h>
-#include <gtk/gtkadjustment.h>
-#include <gdk/gdktypes.h>
+#include <gdk/gdk.h>
+//#include <gtk/gtkwidget.h>
+//#include <gtk/gtkadjustment.h>
+//#include <gdk/gdktypes.h>
 #include <gtk/gtk.h>
 #include "xap_FrameImpl.h"
 #include "ut_vector.h"

@@ -1,6 +1,6 @@
 /* vim: set sw=8: -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * go-color-group.h - Utility to keep a shered memory of custom colors
+ * go-color-group.h - Utility to keep a shared memory of custom colors
  * between arbitrary widgets.
  * Copyright 2000, Michael Levy
  * Copyright 2001, Almer S. Tigelaar
@@ -30,8 +30,7 @@
 #ifndef _GO_COLOR_GROUP_H_
 #define _GO_COLOR_GROUP_H_
 
-#include <glib-object.h>
-#include <goffice/utils/go-color.h>
+#include <goffice/goffice.h>
 
 G_BEGIN_DECLS
 
@@ -46,9 +45,9 @@ typedef struct {
         GOColor	history[GO_COLOR_GROUP_HISTORY_SIZE];
 } GOColorGroup;
 
-#define GO_COLOR_GROUP_TYPE     (go_color_group_get_type ())
-#define GO_COLOR_GROUP(obj)     (G_TYPE_CHECK_INSTANCE_CAST ((obj), GO_COLOR_GROUP_TYPE, GOColorGroup))
-#define IS_GO_COLOR_GROUP(obj)  (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GO_COLOR_GROUP_TYPE))
+#define GO_TYPE_COLOR_GROUP     (go_color_group_get_type ())
+#define GO_COLOR_GROUP(obj)     (G_TYPE_CHECK_INSTANCE_CAST ((obj), GO_TYPE_COLOR_GROUP, GOColorGroup))
+#define GO_IS_COLOR_GROUP(obj)  (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GO_TYPE_COLOR_GROUP))
 
 GType         go_color_group_get_type  (void);
 GOColorGroup *go_color_group_find      (char const *name, gpointer context);

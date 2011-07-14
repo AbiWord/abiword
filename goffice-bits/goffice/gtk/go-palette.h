@@ -22,14 +22,17 @@
 #ifndef GO_PALETTE_H
 #define GO_PALETTE_H
 
-#include <gtk/gtkmenu.h>
+#include <gtk/gtk.h>
+#include <cairo.h>
 
 G_BEGIN_DECLS
 
-typedef void (*GOPaletteSwatchRenderCallback)	(cairo_t *cr,
-						 GdkRectangle const *area,
-						 int index,
-						 gpointer data);
+typedef void (*GOPaletteSwatchRenderCallback)		(cairo_t *cr,
+							 GdkRectangle const *area,
+							 int index,
+							 gpointer data);
+typedef const char * (*GOPaletteSwatchTooltipCallback)	(int index,
+							 gpointer data);
 
 #define GO_TYPE_PALETTE			(go_palette_get_type ())
 #define GO_PALETTE(obj)			(G_TYPE_CHECK_INSTANCE_CAST ((obj), GO_TYPE_PALETTE, GOPalette))
@@ -51,7 +54,7 @@ struct _GOPalette
 
 struct _GOPaletteClass
 {
-	GtkMenuClass parent_class;	
+	GtkMenuClass parent_class;
 
 	/* signals */
 	void (*activate)		(GtkWidget *palette, int index);
@@ -62,8 +65,9 @@ struct _GOPaletteClass
 GType            go_palette_get_type 		(void) G_GNUC_CONST;
 GtkWidget 	*go_palette_new 		(int n_swatches,
 						 double swatch_width,
-						 int n_colmuns,
+						 int n_columns,
 						 GOPaletteSwatchRenderCallback swatch_render,
+						 GOPaletteSwatchTooltipCallback get_tooltip,
 						 gpointer data,
 						 GDestroyNotify destroy);
 void 		 go_palette_show_automatic 	(GOPalette *palette, int index, char const *label);

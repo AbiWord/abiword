@@ -27,12 +27,12 @@
 class ABI_EXPORT GR_UnixPixmapAllocInfo : public GR_AllocInfo
 {
 public:
- 	GR_UnixPixmapAllocInfo(GdkPixmap * pix)
+ 	GR_UnixPixmapAllocInfo(GdkWindow * pix)
 		: m_pix(pix){}
 	virtual GR_GraphicsId getType() const {return GRID_UNIX_PANGO_PIXMAP;}
 	virtual bool isPrinterGraphics() const {return false;}
 
-	GdkPixmap     * m_pix;
+	GdkWindow     * m_pix;
 };
 
 //
@@ -60,10 +60,10 @@ public:
 	virtual bool		queryProperties(GR_Graphics::Properties gp) const;
 
 protected:
-	GR_UnixPangoPixmapGraphics(GdkPixmap * pix);
-	virtual GdkDrawable * _getDrawable(void)
-	{  return static_cast<GdkDrawable *>(m_pPixmap);}
-	GdkPixmap *       m_pPixmap;
+	GR_UnixPangoPixmapGraphics(GdkWindow * pix);
+	virtual GdkWindow * _getDrawable(void)
+	{  return static_cast<GdkWindow *>(m_pPixmap);}
+	GdkWindow *       m_pPixmap;   //used GdkWindow instead of cairo_surface_t -> Reviewing
 };
 
 #endif

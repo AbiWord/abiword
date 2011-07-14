@@ -37,6 +37,7 @@ typedef struct _GOPluginLoader	GOPluginLoader;
 
 /* temporary */
 typedef struct _ErrorInfo		ErrorInfo;
+typedef struct _GOErrorInfo		GOErrorInfo;
 typedef struct _GOFileSaver 		GOFileSaver;
 typedef struct _GOFileOpener		GOFileOpener;
 typedef struct _IOContext		IOContext;
@@ -56,6 +57,9 @@ typedef enum {
 	FILE_PROBE_CONTENT,	/* Read the whole file if it's necessary */
 	FILE_PROBE_LAST
 } FileProbeLevel;
+
+#include <goffice/app/go-cmd-context.h>
+#include <goffice/app/error-info.h>
 
 G_END_DECLS
 
