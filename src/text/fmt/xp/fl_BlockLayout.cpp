@@ -3536,6 +3536,8 @@ void fl_BlockLayout::formatAll(void)
 /*!
   Format paragraph: split the content into lines which
   will fit in the container.  */
+
+//  care about to rejoin hyphernated words as they get moved via the users editing.
 void fl_BlockLayout::format()
 {
 	if((isHidden() >= FP_HIDDEN_FOLDED) || (m_pSectionLayout->isHidden() >= FP_HIDDEN_FOLDED))

@@ -668,6 +668,8 @@ fl_Squiggles::textRevised(UT_sint32 iOffset, UT_sint32 iLength)
  the word (if any) at the end of the line is checked, while the word
  at the start of the new line (if any) is made pending.
 */
+
+// to modifiy fl_Squiggles so that misspelt words are correctly handled after hypernation.
 void
 fl_Squiggles::split(UT_sint32 iOffset, fl_BlockLayout* pNewBL)
 {

@@ -1107,6 +1107,8 @@ bool fp_TextRun::canMergeWithNext(void)
 	return true;
 }
 
+
+// mergeWithNext and split should be care.  maybe we dont need to mergeWithNext when passing the line but using hyphenation instead
 void fp_TextRun::mergeWithNext(void)
 {
 	UT_ASSERT(getNextRun() && (getNextRun()->getType() == FPRUN_TEXT));
