@@ -1,10 +1,10 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+﻿/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 
 /* AbiWord
  * Copyright (C) 2001 Sean Young <sean@mess.org>
  * Copyright (C) 2001 Hubert Figuiere
  * Copyright (C) 2001 Dom Lachowicz 
- *               2010 Ingo Brueckl
+ * Copyright (C) 2010-2011 Ingo Brueckl
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,11 +23,6 @@
  *
  * Documentation at http://www.msxnet.org/word2rtf/formats/write
  *
- * TODO: 
- *  - pictures: clean up / polish off code, add wmf
- *  - OLE: no support yet
- *  - headers/footers need proper positioning implemented
- *  - speed it up!
  */
 
 #ifdef HAVE_CONFIG_H
@@ -50,6 +45,8 @@
 #include "ut_growbuf.h"
 #include "ut_string_class.h"
 #include "xap_Module.h"
+#include "xap_App.h"
+#include "xap_EncodingManager.h"
 #include "fg_Graphic.h"
 #include "ie_impGraphic.h"
 
@@ -96,7 +93,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 	mi->name = "MSWrite Importer";
 	mi->desc = "Import MSWrite Documents";
 	mi->version = ABI_VERSION_STRING;
-	mi->author = "Abi the Ant";
+	mi->author = "Sean Young, Ingo Brückl";
 	mi->usage = "No Usage";
 
 	IE_Imp::registerImporter (m_sniffer);
@@ -229,14 +226,13 @@ int IE_Imp_MSWrite::read_ffntb ()
 		perror ("wri_file");
 		return 1;
     }
-    wri_fonts_count = byt[0] + 256 * byt[1];
+	wri_fonts_count = byt[0] + 256 * byt[1];
 	
-    font_count = 0;
-    wri_fonts = NULL;
-
+	font_count = 0;
+	wri_fonts = NULL;
 	std::set<std::string> raw_fonts;
 	
-    while (true) {
+	while (true) {
 		if (!gsf_input_read (mFile, 2, byt)) {
 			perror ("wri_file");
 			return 1;
@@ -246,7 +242,7 @@ int IE_Imp_MSWrite::read_ffntb ()
 			break;
 		}
 		if (cbFfn == 0xffff) {
-    	    if (gsf_input_seek (mFile, page++ * 0x80, G_SEEK_SET)) {
+			if (gsf_input_seek (mFile, page++ * 0x80, G_SEEK_SET)) {
 				perror ("wri_file");
 				return 1;
 			}
@@ -287,7 +283,7 @@ int IE_Imp_MSWrite::read_ffntb ()
 		font_count++;
 
 		free(ffn);
-    }
+	}
 	for (int i=0; i<font_count; i++) {
 		std::set<std::string>::iterator pos;
 		if (!wri_fonts[i].codepage) {
@@ -296,11 +292,16 @@ int IE_Imp_MSWrite::read_ffntb ()
 				wri_fonts[i].codepage="CP1252";
 		}
 	}
-    if (static_cast<unsigned>(font_count) != wri_fonts_count) {
+	for (int i=0; i<font_count; i++) {
+		const char *defcp = default_cp.c_str();
+		if (!wri_fonts[i].codepage)
+			wri_fonts[i].codepage = defcp;
+	}
+	if (static_cast<unsigned>(font_count) != wri_fonts_count) {
 		wri_fonts_count = font_count;
 		UT_DEBUGMSG(("write file lied about number of fonts\n"));
-    }
-    return 0;
+	}
+	return 0;
 }
 
 static struct cst_data {
@@ -312,7 +313,7 @@ static struct cst_data {
 	{NULL,NULL}
 };
 
-void inline IE_Imp_MSWrite::translate_char (char ch, UT_UCS4String &buf)
+inline void IE_Imp_MSWrite::translate_char (char ch, UT_UCS4String &buf)
 {
 	UT_UCS4Char uch=ch;
 
@@ -333,15 +334,14 @@ void inline IE_Imp_MSWrite::translate_char (char ch, UT_UCS4String &buf)
 	case 13: /* carriage return */
 	case 31: /* soft hyphen */
 		break;
+
 	default:
-		if (ch & 0x80) {
-			charconv.mbtowc(uch, ch);
-		}
+		if (ch & 0x80) charconv.mbtowc(uch, ch);
 		buf += uch;
 	}
 }
 
-const char *IE_Imp_MSWrite::get_codepage(char *facename, char **newname) const
+const char *IE_Imp_MSWrite::get_codepage (char *facename, char **newname) const
 {
 	static char facebuf[40];
 	const cst_data *p=cp_suf_tbl;	
@@ -359,10 +359,10 @@ const char *IE_Imp_MSWrite::get_codepage(char *facename, char **newname) const
 		}
 		p++;
 	}
-	return 0;
+	return NULL;
 }
 
-void IE_Imp_MSWrite::set_codepage(const char *charset)
+inline void IE_Imp_MSWrite::set_codepage (const char *charset)
 {
 	charconv.setInCharset(charset);
 }
@@ -371,7 +371,8 @@ void IE_Imp_MSWrite::set_codepage(const char *charset)
 int IE_Imp_MSWrite::read_sep ()
 {
   int page, pnSetb, cch;
-  int yaMac, yaTop, dyaText, yaBot, xaMac, xaLeft, dxaText, xaRight;
+  int yaMac, yaTop, dyaText, yaBot, xaMac, dxaText;
+  int rStartPage, yaHeader, yaFooter;
   unsigned char sep_page[0x80];
   UT_String propBuffer;
 
@@ -387,7 +388,9 @@ int IE_Imp_MSWrite::read_sep ()
   xaLeft = 1800;
   dxaText = 8640;
 
-  int firstpage = -1;
+  rStartPage = 0xFFFF;
+  yaHeader = 1080;
+  yaFooter = 15760;
 
   if (page != pnSetb)
   {
@@ -397,37 +400,52 @@ int IE_Imp_MSWrite::read_sep ()
 
     if (cch >= 4) yaMac = READ_WORD(sep_page + 3);
     if (cch >= 6) xaMac = READ_WORD(sep_page + 5);
-    if (cch >= 8) firstpage = READ_WORD(sep_page + 7);
+    if (cch >= 8) rStartPage = READ_WORD(sep_page + 7);
     if (cch >= 10) yaTop = READ_WORD(sep_page + 9);
     if (cch >= 12) dyaText = READ_WORD(sep_page + 11);
     if (cch >= 14) xaLeft = READ_WORD(sep_page + 13);
     if (cch >= 16) dxaText = READ_WORD(sep_page + 15);
+    if (cch >= 20) yaHeader = READ_WORD(sep_page + 19);
+    if (cch >= 22) yaFooter = READ_WORD(sep_page + 21);
   }
 
   yaBot = yaMac - yaTop - dyaText;
   xaRight = xaMac - xaLeft - dxaText;
 
   UT_LocaleTransactor lt(LC_NUMERIC, "C");
-  UT_String_sprintf(propBuffer, "page-margin-right:%.4fin; "
+  UT_String_sprintf(propBuffer, "page-margin-header:%.4fin; "
+                                "page-margin-right:%.4fin; "
                                 "page-margin-left:%.4fin; "
                                 "page-margin-top:%.4fin; "
-                                "page-margin-bottom:%.4fin",
+                                "page-margin-bottom:%.4fin; "
+                                "page-margin-footer:%.4fin",
+                                static_cast<float>(yaHeader) / 1440.0,
                                 static_cast<float>(xaRight) / 1440.0,
                                 static_cast<float>(xaLeft) / 1440.0,
                                 static_cast<float>(yaTop) / 1440.0,
-                                static_cast<float>(yaBot) / 1440.0);
+                                static_cast<float>(yaBot) / 1440.0,
+                                static_cast<float>(yaMac - yaFooter) / 1440.0);
 
-  // We assume each document has header and footer for
-  // the sake of simplicity
+  if (rStartPage & 0x8000) rStartPage = -0x10000 + rStartPage;
 
-  const gchar *propsArray[7];
+  if (rStartPage >= 0) {
+      UT_String tmp;
+      UT_String_sprintf(tmp, "; section-restart:1; section-restart-value:%d", rStartPage);
+      propBuffer += tmp;
+  }
+
+  const gchar *propsArray[11];
   propsArray[0] = PT_PROPS_ATTRIBUTE_NAME;
   propsArray[1] = propBuffer.c_str();
-  propsArray[2] = PT_HEADER_ATTRIBUTE_NAME;
+  propsArray[2] = PT_HEADERFIRST_ATTRIBUTE_NAME;
   propsArray[3] = "0";
-  propsArray[4] = PT_FOOTER_ATTRIBUTE_NAME;
+  propsArray[4] = PT_HEADER_ATTRIBUTE_NAME;
   propsArray[5] = "1";
-  propsArray[6] = NULL;
+  propsArray[6] = PT_FOOTERFIRST_ATTRIBUTE_NAME;
+  propsArray[7] = "2";
+  propsArray[8] = PT_FOOTER_ATTRIBUTE_NAME;
+  propsArray[9] = "3";
+  propsArray[10] = NULL;
 
   appendStrux(PTX_Section, propsArray);
 
@@ -435,7 +453,7 @@ int IE_Imp_MSWrite::read_sep ()
 }
 
 /* the paragraph information */
-int IE_Imp_MSWrite::read_pap (int cStart, int cLimit) 
+int IE_Imp_MSWrite::read_pap (pap_t process)
 {
     int page, cfod, fod;
     int fcFirst, fcLim, fcMac, n;
@@ -460,136 +478,148 @@ int IE_Imp_MSWrite::read_pap (int cStart, int cLimit)
 			UT_DEBUGMSG(("fcFirst wrong, trying to continue...\n"));
 		}
 		for (fod=0;fod<cfod;fod++) {
-			int jc, fGraphics, dyaLine, bfProp, cch, header, rhcPage;
+			int jc, fGraphics, dyaLine, bfProp, cch, rhcPage, rHeaderFooter, rhcFirst;
 			int tab_count, tabs[14], jcTab[14], dxaRight, dxaLeft, dxaLeft1;
 			
             /* read FOD */	
 			fcLim = READ_DWORD (pap_page + 4 + fod * 6);
 			bfProp = READ_WORD (pap_page + 8 + fod * 6);
 			
-			if (cStart < fcLim) {	// do not set format if we're skipping this fod
-				/* default values */
-				jc = 0;
-				dyaLine = 240;
-				fGraphics = 0;
-				header = rhcPage = 0;
-				tab_count = 0;
-				dxaLeft = dxaRight = dxaLeft1 = 0;
-				
-				if ((bfProp != 0xffff) && (bfProp + (cch = pap_page[bfProp + 4]) < 0x80)) {
-					if (cch >= 2) {
-						jc = pap_page[bfProp + 6]  & 3;
-					}
-					if (cch >= 12) {
-						dyaLine = pap_page[bfProp + 15] + 
-							pap_page[bfProp + 16] * 256;
-					}
-					if (dyaLine < 240) dyaLine = 240;
-					if (cch >= 17) {
-						fGraphics = pap_page[bfProp + 21] & 0x10;
-						header = pap_page[bfProp + 21] & 6;
-						rhcPage = pap_page[bfProp + 21] & 1;
-					}
-					if (cch >= 6) {
-						dxaRight = pap_page[bfProp + 9] + 
-							pap_page[bfProp + 10] * 256;
-						if (dxaRight & 0x8000) 
-							dxaRight = -0x10000 + dxaRight;
-					}
-					if (cch >= 8) {
-						dxaLeft = pap_page[bfProp + 11] + 
-							pap_page[bfProp + 12] * 256;
-						if (dxaLeft & 0x8000) 
-							dxaLeft = -0x10000 + dxaLeft;
-					}
-					if (cch >= 10) {
-						dxaLeft1 = pap_page[bfProp + 13] + 
-							pap_page[bfProp + 14] * 256;
-						if (dxaLeft1 & 0x8000) 
-							dxaLeft1 = -0x10000 + dxaLeft1;
-					}
-
-					// TODO: dyaBefore, dyaAfter are used for header/footer
-					
-					for (n=0;n<14;n++) {
-						if (cch >= (4 * (n + 1) + 26) ) {
-							tabs[tab_count] = pap_page[bfProp + n * 4 + 27] +
-								256 * pap_page[bfProp + n * 4 + 28];
-							jcTab[tab_count] = (pap_page[bfProp + n * 4 + 29] & 3);
-							tab_count++;
+			/* default values */
+			jc = 0;
+			dyaLine = 240;
+			fGraphics = 0;
+			rhcPage = rHeaderFooter = rhcFirst = 0;
+			tab_count = 0;
+			dxaLeft = dxaRight = dxaLeft1 = 0;
+			
+			if ((bfProp != 0xffff) && (bfProp + (cch = pap_page[bfProp + 4]) < 0x80)) {
+				if (cch >= 2) {
+					jc = pap_page[bfProp + 6]  & 3;
+				}
+				if (cch >= 12) {
+					dyaLine = pap_page[bfProp + 15] + 
+						pap_page[bfProp + 16] * 256;
+				}
+				if (dyaLine < 240) dyaLine = 240;
+				if (cch >= 17) {
+					rhcPage = pap_page[bfProp + 21] & 1;
+					rHeaderFooter = pap_page[bfProp + 21] & 6;
+					rhcFirst = pap_page[bfProp + 21] & 8;
+					fGraphics = pap_page[bfProp + 21] & 0x10;
+				}
+				if (process == All) {
+					if (rHeaderFooter) {
+						if (rhcPage) {
+								if (!hasFooter) {
+								hasFooter = true;
+								page1Footer = rhcFirst;
+								}
 						}
+						else {
+							if (!hasHeader) {
+								hasHeader = true;
+								page1Header = rhcFirst;
+								}
+						}
+					}
+				}
+				if (cch >= 6) {
+					dxaRight = pap_page[bfProp + 9] + 
+						pap_page[bfProp + 10] * 256;
+					if (dxaRight & 0x8000) 
+						dxaRight = -0x10000 + dxaRight;
+				}
+				if (cch >= 8) {
+					dxaLeft = pap_page[bfProp + 11] + 
+						pap_page[bfProp + 12] * 256;
+					if (dxaLeft & 0x8000) 
+						dxaLeft = -0x10000 + dxaLeft;
+				}
+				if (cch >= 10) {
+					dxaLeft1 = pap_page[bfProp + 13] + 
+						pap_page[bfProp + 14] * 256;
+					if (dxaLeft1 & 0x8000) 
+						dxaLeft1 = -0x10000 + dxaLeft1;
+				}
+				
+				for (n=0;n<14;n++) {
+					if (cch >= (4 * (n + 1) + 26) ) {
+						tabs[tab_count] = pap_page[bfProp + n * 4 + 27] +
+							256 * pap_page[bfProp + n * 4 + 28];
+						jcTab[tab_count] = (pap_page[bfProp + n * 4 + 29] & 3);
+						tab_count++;
 					}
 				}
 			}
-
-			if (fcFirst >= cLimit) return 0;
 			
-			if (fcFirst >= cStart) {
-				if (!m_insubdoc && header) {
-					add_subdoc((rhcPage)? 1 : 0,
-						fcFirst,fcLim);
-				} else {
-					UT_LocaleTransactor lt (LC_NUMERIC, "C");
-					UT_String_sprintf (propBuffer, "text-align:%s; line-height:%.1f",
-							   text_align[jc], static_cast<float>(dyaLine) / 240.0);
+			if ((process == All && !rHeaderFooter) || (rHeaderFooter && ((process == Header && !rhcPage) || (process == Footer && rhcPage)))) {
+				UT_LocaleTransactor lt (LC_NUMERIC, "C");
+				UT_String_sprintf (propBuffer, "text-align:%s; line-height:%.1f",
+						   text_align[jc], static_cast<float>(dyaLine) / 240.0);
 
-					/* tabs */
-					if (tab_count) {
-						propBuffer += "; tabstops:";
-						for (n=0; n < tab_count; n++) {
-						  UT_String_sprintf (tempBuffer, "%.4fin/%c0", static_cast<float>(tabs[n]) / 1440.0,
-									 jcTab[n] ? 'D' : 'L');
-							propBuffer += tempBuffer;
-							if (n != (tab_count - 1)) {
-								propBuffer += ",";
-							}
+				/* tabs */
+				if (tab_count) {
+					propBuffer += "; tabstops:";
+					for (n=0; n < tab_count; n++) {
+					  UT_String_sprintf (tempBuffer, "%.4fin/%c0", static_cast<float>(tabs[n]) / 1440.0,
+							     jcTab[n] ? 'D' : 'L');
+						propBuffer += tempBuffer;
+						if (n != (tab_count - 1)) {
+							propBuffer += ",";
 						}
 					}
-					
-					/* indentation */
-					if (dxaLeft1) {
-						UT_String_sprintf (tempBuffer, "; text-indent:%.4fin", 
-								 static_cast<float>(dxaLeft1) / 1440.0);
-						propBuffer += tempBuffer;
-					}
-					if (dxaLeft) {
-						UT_String_sprintf (tempBuffer, "; margin-left:%.4fin", 
-								   static_cast<float>(dxaLeft) / 1440.0);
-						propBuffer += tempBuffer;
-					}
-					if (dxaRight) {
-						UT_String_sprintf (tempBuffer, "; margin-right:%.4fin", 
-								 static_cast<float>(dxaRight) / 1440.0);
-						propBuffer += tempBuffer;
-					}
-
-					// end of formatting
-
-					if (lf || (strcmp(propBuffer.c_str(), lastProp.c_str()) != 0)) {
-					// only if fod has changed or last char was line feed
-						const gchar* propsArray[3];
-						propsArray[0] = PT_PROPS_ATTRIBUTE_NAME;
-						propsArray[1] = propBuffer.c_str();
-						propsArray[2] = NULL;
-					
-						appendStrux (PTX_Block, propsArray);
-						lastProp = propBuffer;
-					}
-					
-					if (fGraphics) {
-						read_pic(fcFirst, fcLim - fcFirst);
-					} else {
-						read_char (fcFirst, fcLim - 1);
-					}
-
 				}
+				
+				/* indentation */
+				if (process == Header || process == Footer) {
+				// for reasons unknown, the left and right margins from the paper
+				// are included in the indents of the headers and footers
+				dxaLeft -= xaLeft;
+				dxaRight -= xaRight;
+				}
+				if (dxaLeft1) {
+					UT_String_sprintf (tempBuffer, "; text-indent:%.4fin", 
+							 static_cast<float>(dxaLeft1) / 1440.0);
+					propBuffer += tempBuffer;
+				}
+				if (dxaLeft) {
+					UT_String_sprintf (tempBuffer, "; margin-left:%.4fin", 
+							   static_cast<float>(dxaLeft) / 1440.0);
+					propBuffer += tempBuffer;
+				}
+				if (dxaRight) {
+					UT_String_sprintf (tempBuffer, "; margin-right:%.4fin", 
+							 static_cast<float>(dxaRight) / 1440.0);
+					propBuffer += tempBuffer;
+				}
+
+				// end of formatting
+
+				if (lf || (strcmp(propBuffer.c_str(), lastProp.c_str()) != 0)) {
+				// only if fod has changed or last char was line feed
+					const gchar* propsArray[3];
+					propsArray[0] = PT_PROPS_ATTRIBUTE_NAME;
+					propsArray[1] = propBuffer.c_str();
+					propsArray[2] = NULL;
+				
+					appendStrux (PTX_Block, propsArray);
+					lastProp = propBuffer;
+				}
+				
+				if (fGraphics) {
+					read_pic(fcFirst, fcLim - fcFirst);
+				} else {
+					read_char (fcFirst, fcLim - 1);
+				}
+
 			}
 			
 			fcFirst = fcLim;
 			if (fcLim >= fcMac) 
 				return 0;
 		}
-    }
+	}
 }
 
 /* the character information stuff */
@@ -601,13 +631,13 @@ int IE_Imp_MSWrite::read_char (int fcFirst2, int fcLim2) {
 	UT_String propBuffer;
 	UT_String tempBuffer;
 	
-	const char *oldcp = "";
+	static const char *oldcp = "";
 
     fcMac = wri_struct_value (write_file_header, "fcMac");
     page = (fcMac + 127) / 128;
     fcFirst = 0x80;
 	
-    while (true) {
+	while (true) {
 		gsf_input_seek (mFile, page++ * 0x80, G_SEEK_SET);
 		gsf_input_read (mFile, 0x80, char_page);
 		cfod = char_page[0x7f];
@@ -669,52 +699,59 @@ int IE_Imp_MSWrite::read_char (int fcFirst2, int fcLim2) {
 					propBuffer += tempBuffer;
 				}
 				if (wri_fonts_count) {
-					UT_String_sprintf (tempBuffer, "; font-family:%s", wri_fonts[ftc].name.c_str());
+					UT_String_sprintf (tempBuffer, "; font-family:%s", 
+						wri_fonts[ftc].name.c_str());
 					propBuffer += tempBuffer;
 				}
-				const char *needcp = wri_fonts[ftc].codepage ? 
-					wri_fonts[ftc].codepage : default_cp.c_str();
+				const char *needcp = wri_fonts[ftc].codepage;
 				if (needcp != oldcp /*sic!*/) {
 					set_codepage((char*)needcp);
 					oldcp = needcp;
 				}
 
-				const gchar* propsArray[3];
-
-				const char *pText = (const char*) mTextBuf.getPointer(0) - 0x80;
-				//const char *pLimit = pText + mTextBuf.getLength();
-				UT_uint32   nLimit = 0x80 + mTextBuf.getLength();
-
 				while (fcFirst2 >= fcFirst) {
 					if ((fcFirst2 >= fcLim) || (fcFirst2 > fcLim2) ||
-						(fcFirst2 >= nLimit)) {
+						(fcFirst2 - 0x80 >= static_cast<UT_sint32>(mTextBuf.getLength()))) {
 						break;
 					}
-					if (pText[fcFirst2] == 0x1) {
-						propsArray[0] = PT_PROPS_ATTRIBUTE_NAME;
-						propsArray[1] = propBuffer.c_str();
-						propsArray[2] = NULL;
-						appendFmt (propsArray);
-						if (mCharBuf.size() > 0) {
-							appendSpan (reinterpret_cast<const UT_UCSChar *>(mCharBuf.ucs4_str()), mCharBuf.size());
-						}
-						const gchar *atts[3] = {"type","page_number",NULL};
-						appendObject(PTO_Field,atts,propsArray);
-						mCharBuf.clear();
-					} else
-						translate_char (pText[fcFirst2], mCharBuf);
+					translate_char (*(mTextBuf.getPointer(fcFirst2 - 0x80)), mCharBuf);
 					fcFirst2++;
 				}
 				
 				if (mCharBuf.size() > 0) {
+					const gchar* propsArray[5];
+					const UT_UCS4Char *p, *charBuf = mCharBuf.ucs4_str();
+					size_t bufLen;
+					
 					propsArray[0] = PT_PROPS_ATTRIBUTE_NAME;
 					propsArray[1] = propBuffer.c_str();
 					propsArray[2] = NULL;
-
+					
 					appendFmt (propsArray);
-					appendSpan (reinterpret_cast<const UT_UCSChar *>(mCharBuf.ucs4_str()), mCharBuf.size());
+					
+					// check for page number (should only be in header or footer)
+					p = charBuf;
+					while (*p && *p != (UT_UCS4Char)0x01) p++;
+					if (*p) {
+						if (p - charBuf) 
+							appendSpan(reinterpret_cast<const UT_UCSChar *>(charBuf), p - charBuf);
+						
+						propsArray[2] = PT_TYPE_ATTRIBUTE_NAME;
+						propsArray[3] = "page_number";
+						propsArray[4] = NULL;
+						appendObject(PTO_Field, propsArray);
+						
+						bufLen = mCharBuf.size() - (p - charBuf) - 1;
+						p++;
+					}
+					else {
+						bufLen = mCharBuf.size();
+						p = charBuf;
+					}
+					
+					if (bufLen) appendSpan(reinterpret_cast<const UT_UCSChar *>(p), bufLen);
 				}
-				/*else { // can occur on empty paragraphs
+				/*else {
 					UT_DEBUGMSG (("Hub: Ignoring 0 length span\n"));
 				}*/
 			}
@@ -781,7 +818,6 @@ static const struct wri_struct WRITE_FILE_HEADER[] = {
 #define WRITE_PICTURE_HEADER 40   // common size of both header types
 
 static const struct wri_struct WRITE_PICTURE[] = {
-
 	/* value, data, size, type, name */		/* word no. */
 	/* METAFILEPICT structure */
 	{ 0,	NULL, 	2,  CT_VALUE, "mm" },		/* 0 */
@@ -856,24 +892,23 @@ static const struct wri_struct WRITE_OLE_PICTURE[] = {
 #define BM16_BitsPixel  9
 #define BM16_Bits       10
 
-
 IE_Imp_MSWrite::~IE_Imp_MSWrite()
 {
-  free_wri_struct (write_file_header);
+  free_wri_struct(write_file_header);
   free(write_file_header);
   free(write_ole_picture);
   free(write_picture);
 }
 
+
 IE_Imp_MSWrite::IE_Imp_MSWrite(PD_Document * pDocument)
   : IE_Imp(pDocument), mFile(0), wri_fonts_count(0),
-    wri_fonts(0), pic_nr(0), default_cp("CP1252"),
-	lf(false)
+    wri_fonts(0), pic_nr(0),
+    lf(false), xaLeft(0), xaRight(0),
+    hasHeader(false), hasFooter(false), page1Header(false), page1Footer(false)
 {
+	default_cp = XAP_App::getApp()->getEncodingManager()->getNative8BitEncodingName();
 	set_codepage((char*)default_cp.c_str());
-
-	static const doc_range s_docrange_0 = {0,0};
-	m_header = m_footer = s_docrange_0;
 
 	write_file_header = static_cast<struct wri_struct*>(malloc (sizeof (WRITE_FILE_HEADER)));
 	memcpy (write_file_header, WRITE_FILE_HEADER, sizeof (WRITE_FILE_HEADER));
@@ -924,29 +959,30 @@ UT_Error IE_Imp_MSWrite::_parseFile()
     mTextBuf.append(thetext, size);
     free(thetext);
     read_sep();
-	m_insubdoc = false;
-    read_pap (0x80, 0x80 + size); // ugly...
-	
-	UT_ASSERT(getDoc());
+    read_pap(All);
 
-	m_insubdoc = true;
-	_append_hdrftr(0);
-	if (m_header.start > 0) {
-		read_pap (m_header.start, m_header.end);
-	}
-	_append_hdrftr(1);
-	if (m_footer.start > 0) {
-		read_pap (m_footer.start, m_footer.end);
-	}
+    if (hasHeader) {
+        _append_hdrftr(header);
+        read_pap(Header);
+
+        if (!page1Header) _append_hdrftr(headerfirst);   // an empty one
+    }
+
+    if (hasFooter) {
+        _append_hdrftr(footer);
+        read_pap(Footer);
+
+        if (!page1Footer) _append_hdrftr(footerfirst);   // an empty one
+    }
 
     free_ffntb ();
 
     return UT_OK;
 }
 
- /*****************************************************************/
- /*****************************************************************/
- 
+/*****************************************************************/
+/*****************************************************************/
+
 int IE_Imp_MSWrite::read_pic (int from, int size)
 {
 	unsigned char page[0x80];
@@ -1249,8 +1285,9 @@ int IE_Imp_MSWrite::read_pic (int from, int size)
 		{0xff, 0xff, 0xff, 0x00},
 		{0xc0, 0xc0, 0xc0, 0x00}   // a color only in the 4 bit colormap
 	};
+
 	// indices for the 4 bit colormap
-	int const c16idx[16] = {  0, 128, 16, 144, 2, 130, 18, 256,
+	const int c16idx[16] = {  0, 128, 16, 144, 2, 130, 18, 256,
 		146, 224, 28, 252, 3, 227, 31, 255 };
 
 
@@ -1258,7 +1295,7 @@ int IE_Imp_MSWrite::read_pic (int from, int size)
 	{
 		UT_DEBUGMSG(("Size error 1\n"));
 		return 1;
-    }
+	}
 
 	// prepare bmp file header
 	memset(&bmpheader, 0, sizeof(bmpheader));
@@ -1286,7 +1323,7 @@ int IE_Imp_MSWrite::read_pic (int from, int size)
 		{
 			msg = "Size error 2\n";
 			break;
-    }
+		}
 
 		if (mm == 0xe3)   // bitmap needs header
 		{
@@ -1297,7 +1334,7 @@ int IE_Imp_MSWrite::read_pic (int from, int size)
 			{
 				msg = "Color palette error\n";
 				break;
-        }
+			}
 
 			// make a bitmap file header
 
@@ -1321,14 +1358,13 @@ int IE_Imp_MSWrite::read_pic (int from, int size)
 
 			chunk = wri_struct_value(write_pic, "bmWidthBytes");
 			filler = (4 - (chunk & 3)) & 3;
-        }
+		}
 		else
 		{
 			iegft = IEGFT_WMF;
 			chunk = cbSize;
 			filler = 0;
-    }
-
+		}
 
 		written = 0;
 
@@ -1338,11 +1374,12 @@ int IE_Imp_MSWrite::read_pic (int from, int size)
 			pBB.append(mTextBuf.getPointer(from - 0x80 + cbHeader + written), chunk);
 			for (int i = 0; i < filler; i++) pBB.append(reinterpret_cast<const UT_Byte *>("\x00"), 1);
 			written += chunk;
-    }
+		}
 
 		break;
 
-	case 0xe4:   /* ole object */	
+	case 0xe4:   /* ole object */
+
 		write_pic = write_ole_picture;
 		read_wri_struct_mem(write_pic, page);
 
@@ -1362,14 +1399,16 @@ int IE_Imp_MSWrite::read_pic (int from, int size)
 		}
 
 			ole_offset += READ_DWORD(page + cbHeader + OLE_TopicNameLength + ole_offset);
+
 			if (size < cbHeader + OLE_ItemNameString + ole_offset)
 			{
 				msg = "Size error 4\n";
 				break;
-		}
+			}
 
 			ole_offset += READ_DWORD(page + cbHeader + OLE_ItemNameLength + ole_offset);
-        }
+		}
+
 		objLen = READ_DWORD(page + cbHeader + OLE_ObjDataSize + ole_offset);
 
 		if (strcmp(className, "METAFILEPICT") == 0)
@@ -1379,6 +1418,7 @@ int IE_Imp_MSWrite::read_pic (int from, int size)
 			objLen -= OLE_MF_Object - OLE_Object;
 			objectType = 2;   // we can go embedded now
 		}
+
 		if (size <= cbHeader + OLE_Object + ole_offset ||
 			cbHeader + OLE_Object + ole_offset > 0x80 ||
 			size < cbHeader + OLE_Object + ole_offset + objLen)
@@ -1403,8 +1443,10 @@ int IE_Imp_MSWrite::read_pic (int from, int size)
 				pBB.append(reinterpret_cast<UT_Byte *>(&bmpheader), sizeof(bmpheader));
 
 				objectType = 2;   // we can go embedded now
+			}
 
-			} else if (strcmp(className, "BITMAP") == 0) {
+			if (strcmp(className, "BITMAP") == 0)
+			{
 				if ((bitsppixel = *(page + cbHeader + OLE_Object + ole_offset + BM16_BitsPixel)) < 16)
 					colorPaletteLen = (1 << bitsppixel) << 2;
 
@@ -1532,31 +1574,36 @@ int IE_Imp_MSWrite::read_pic (int from, int size)
 	return (msg ? 1 : 0);
 }
 
-void IE_Imp_MSWrite::add_subdoc(int type, unsigned int from, unsigned int to)
+void IE_Imp_MSWrite::_append_hdrftr (hdrftr_t which)
 {
-	doc_range *r;
-	if (type == 0) r=&m_header;
-	else if (type == 1) r=&m_footer;
-	else return;
+	const gchar *attribs[5];
 
-	if (r->end == r->start) {
-		r->start = from;
-		r->end = to;
-	} else if (r->end == from) {
-		r->end = to;
-	} else 
-		UT_DEBUGMSG(("Not contigious range [%d;%d), was [%d;%d)\n",from,to,r->start,r->end));
-}
+	attribs[0] = PT_ID_ATTRIBUTE_NAME;
+	attribs[2] = PT_TYPE_ATTRIBUTE_NAME;
+	attribs[4] = NULL;
 
-void IE_Imp_MSWrite::_append_hdrftr(int type)
-{
-	const gchar *attribs[8];
+	switch (which)
+	{
+	case headerfirst:
+		attribs[1] = "0";
+		attribs[3] = "header-first";
+		break;
 
-	attribs[0]= PT_ID_ATTRIBUTE_NAME;
-	attribs[1]= type ? "1" : "0";
-	attribs[2]= PT_TYPE_ATTRIBUTE_NAME;
-	attribs[3]= type ? "footer" : "header";
-	attribs[4]=NULL;
+	case header:
+		attribs[1] = "1";
+		attribs[3] = "header";
+		break;
+
+	case footerfirst:
+		attribs[1] = "2";
+		attribs[3] = "footer-first";
+		break;
+
+	case footer:
+		attribs[1] = "3";
+		attribs[3] = "footer";
+		break;
+	}
 
 	appendStrux(PTX_Section,attribs);
 }
