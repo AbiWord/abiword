@@ -396,7 +396,7 @@ UT_sint32 fb_LineBreaker::_moveBackToFindHyphenationPoint(fp_Run *pCurrentRun, f
 	
 	do
 	{
-		if(!pCurrentRun->doesContainNonBlankData()&&ispellChecker->hyphenate(pCurrentRun->getText()))
+		if(!pCurrentRun->doesContainNonBlankData()&&pCurrentRun->getType() == FPRUN_TEXT&&ispellChecker->hyphenate(pCurrentRun->getText()))
 		{
 			iTrailingBlank += pCurrentRun->getWidth();
 		}
