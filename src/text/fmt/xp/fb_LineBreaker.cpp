@@ -145,7 +145,8 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock,
 					UT_sint32 iTrailingSpace = 0;
 					fp_Run * pArun = (pPreviousRun ? pPreviousRun : pCurrentRun);
 //					fp_Run * pArun = pCurrentRun;
-					iTrailingSpace = _moveBackToFirstNonBlankData(pArun,
+					// we may dont need to search back
+					iTrailingSpace = _moveBackToFindHyphenationPoint(pArun,
 											  &pOffendingRun);
 					m_iWorkingLineWidth -= iTrailingSpace;
 					if (m_iWorkingLineWidth > m_iMaxLineWidth)
@@ -381,6 +382,36 @@ UT_sint32 fb_LineBreaker::_moveBackToFirstNonBlankData(fp_Run *pCurrentRun, fp_R
 
 	*pOffendingRun = pCurrentRun;
 	xxx_UT_DEBUGMSG(("_moveBackToFirstNonBlankData distance %d \n",iTrailingBlank));
+	return iTrailingBlank;
+}
+
+// find the split point
+// function: _moveBackToFindHyphenationPoint
+UT_sint32 fb_LineBreaker::_moveBackToFindHyphenationPoint(fp_Run *pCurrentRun, fp_Run **pOffendingRun)
+{
+	// need to move back untill we find the first non blank character and
+	// return the distance back to this character.
+	
+	UT_sint32 iTrailingBlank = 0;
+	
+	do
+	{
+		if(!pCurrentRun->doesContainNonBlankData()&&ispellChecker->hyphenate(pCurrentRun->getText()))
+		{
+			iTrailingBlank += pCurrentRun->getWidth();
+		}
+		else
+		{
+			iTrailingBlank += pCurrentRun->findTrailingSpaceDistance();
+			break;
+		}
+		
+		pCurrentRun = pCurrentRun->getPrevRun();
+	}
+	while(pCurrentRun);
+	
+	*pOffendingRun = pCurrentRun;
+	xxx_UT_DEBUGMSG(("_moveBackToFindHyphenationPoint distance %d \n",iTrailingBlank));
 	return iTrailingBlank;
 }
 
