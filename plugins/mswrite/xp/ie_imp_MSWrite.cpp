@@ -336,7 +336,9 @@ inline void IE_Imp_MSWrite::translate_char (char ch, UT_UCS4String &buf)
 		break;
 
 	default:
-		if (ch & 0x80) charconv.mbtowc(uch, ch);
+		if (ch & 0x80) 
+			if (!charconv.mbtowc(uch, ch))
+				uch = 0xfffd; // "Replacement character"
 		buf += uch;
 	}
 }
@@ -927,6 +929,12 @@ UT_Error IE_Imp_MSWrite::_parseFile()
 {
     int x, size;
     UT_Byte *thetext;
+
+	std::string enc = getProperty("encoding");
+	if (!enc.empty()) {
+		default_cp = enc;
+		set_codepage((char*)default_cp.c_str());
+	}
 	
     if (read_wri_struct (write_file_header, mFile) ) {
 		return UT_ERROR;
