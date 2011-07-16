@@ -203,7 +203,7 @@ int UT_UCS4_mbtowc::mbtowc (UT_UCS4Char & wc, char mb)
 
 	FREEP(out);
 
-	if (bytes_written != 4 || (out == NULL && !error))
+	if (bytes_written != 4 && (out == NULL && !error))
 	{
 		// reset iconv, pointer might be messed up; need more chars...
 		initialize (false);
