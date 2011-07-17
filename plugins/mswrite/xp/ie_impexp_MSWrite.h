@@ -2,7 +2,7 @@
  * Copyright (C) 2001 Sean Young <sean@mess.org>
  * Copyright (C) 2001 Hubert Figuiere
  * Copyright (C) 2001 Dom Lachowicz
- *               2010 Ingo Brueckl
+ * Copyright (C) 2010-2011 Ingo Brueckl
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -69,11 +69,3 @@ int wri_struct_value (const struct wri_struct *cfg, const char *name);
 				  p[3] = ((s) & 0xff000000) >> 24; }
 
 #endif /* IE_IMPEXP_MSWRITE_H */
-
-
-
-
-
-
-
-

@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 2001 Sean Young <sean@mess.org>
+ * Copyright (C) 2010-2011 Ingo Brueckl
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -129,4 +130,3 @@ int wri_struct_value (const struct wri_struct *cfg, const char *name) {
     exit (1);
     return 0;
 }
-
