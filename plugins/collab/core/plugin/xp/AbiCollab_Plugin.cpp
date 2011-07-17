@@ -40,7 +40,6 @@
 #include "xap_Menu_Layouts.h"
 #include "fv_View.h"
 #include "pd_Document.h"
-#include "pd_DocumentRDF.h"
 #include "ut_vector.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_FileOpenSaveAs.h"
@@ -57,16 +56,12 @@
 #include "AbiCollab_Plugin.h"
 
 // forward declarations
-static void s_abicollab_add_rdf_menus();
 static void s_abicollab_add_menus();
 static void s_abicollab_remove_menus();
 #if defined(ABICOLLAB_RECORD_ALWAYS) && defined(DEBUG)
 static void s_cleanup_old_sessions();
 #endif
 
-#if defined(DEBUG)
-#define DEBUGRDF 1
-#endif
 
 // -----------------------------------------------------------------------
 //
@@ -183,20 +178,6 @@ static const char * szCollaborationViewRecordTip = "Load a recorded session from
 
 static const char * szEndCollaboration = "EndCollaboration";
 
-
-
-static const char * szRDF    = "&RDF";
-static const char * szRDFTip = "Interact with RDF";
-static const char * szEndRDF = "EndRDF";
-
-static const char * szRDFTest = "RDF Test";
-static const char * szRDFTestTip = "Some RDF functions which might be handy";
-static const char * szRDFDumpObjects = "RDF Dump Objects";
-static const char * szRDFDumpObjectsTip = "Dump out information about RDF Objects";
-static const char * szRDFDumpRdfForPoint = "Dump RDF for Point";
-static const char * szRDFDumpRdfForPointTip = "Show the RDF which is associated with the cursor location";
-
-
 // some function prototypes
 static bool s_abicollab_offer(AV_View* v, EV_EditMethodCallData *d);
 static bool s_abicollab_join(AV_View* v, EV_EditMethodCallData *d);
@@ -205,9 +186,6 @@ static bool s_abicollab_authors(AV_View* v, EV_EditMethodCallData *d);
 static bool s_abicollab_record(AV_View* v, EV_EditMethodCallData *d);
 static bool s_abicollab_viewrecord(AV_View* v, EV_EditMethodCallData *d);
 static bool s_abicollab_command_invoke(AV_View* v, EV_EditMethodCallData *d);
-static bool s_abicollab_rdftest(AV_View* v, EV_EditMethodCallData *d);
-static bool s_abicollab_rdfdumpobjects(AV_View* v, EV_EditMethodCallData *d);
-static bool s_abicollab_dumprdfforpoint(AV_View* v, EV_EditMethodCallData *d);
 #define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
 
 /*!
@@ -346,143 +324,12 @@ Defun_EV_GetMenuItemState_Fn(collab_GetState_CanShare)
 }
 
 
-//
-// MIQ: Note that addNewMenuAfter() expects the previous menu_id to be
-// passed in as arg3 you can see that the same "id" is used for two
-// purposes, it contains the previous menu_id for the method call and
-// gets assigned the new id from addNewMenuAfter(). Also actions just
-// reuse the same "a" variable. It is a trap to forget the
-// EV_MLF_EndSubMenu call, nasty things like mouse pointer grabs which
-// make it difficult to interact with XWindow will ensue. Again, the "id"
-// being the last valid submenu id makes the closing clause a bit simpler
-//
-void s_abicollab_add_rdf_menus()
-{
-    XAP_App *pApp = XAP_App::getApp();
-    EV_EditMethodContainer* pEMC = pApp->getEditMethodContainer();
-    int frameCount = pApp->getFrameCount();
-    XAP_Menu_Factory * pFact = pApp->getMenuFactory();    
-    EV_Menu_ActionSet* pActionSet = pApp->getMenuActionSet();
-
-	// The Collaboration menu item
-	XAP_Menu_Id menuId = pFact->addNewMenuBefore("Main", NULL, AP_MENU_ID_WINDOW, EV_MLF_BeginSubMenu);
-    pFact->addNewLabel(NULL, menuId, szRDF, szRDFTip);
-    EV_Menu_Action* action = new EV_Menu_Action (
-		menuId,                 // id that the layout said we could use
-		1,                      // yes, we have a sub menu.
-		0,                      // no, we don't raise a dialog.
-		0,                      // no, we don't have a checkbox.
-		0,                      // no radio buttons for me, thank you
-		NULL,                   // no callback function to call.
-		NULL,                   // Function for whether not label is enabled/disabled checked/unchecked
-		NULL                    // Function to compute Menu Label "Dynamic Label"
-	);
-	pActionSet->addAction(action);
-
-    XAP_Menu_Id id = menuId;
-    EV_Menu_Action* a;
-    
-
-    id = pFact->addNewMenuAfter("Main", NULL, id, EV_MLF_Normal);
-    pFact->addNewLabel(NULL, id, szRDFTest, szRDFTestTip);
-    a = new EV_Menu_Action (
-        id,   		// id that the layout said we could use
-        0,                      // no, we don't have a sub menu.
-        1,                      // yes, we raise a dialog.
-        0,                      // no, we don't have a checkbox.
-        0,                      // no radio buttons for me, thank you
-        "s_abicollab_rdftest",     // name of callback function to call.
-        NULL,                   // Function for whether not label is enabled/disabled checked/unchecked
-        NULL                    // Function to compute Menu Label "Dynamic Label"
-        );
-    pActionSet->addAction(a);
-    pEMC->addEditMethod(
-        new EV_EditMethod (
-            "s_abicollab_rdftest",     // name of callback function
-            s_abicollab_rdftest,       // callback function itself.
-            0,                         // no additional data required.
-            ""                         // description -- allegedly never used for anything
-            ));
-
-    /////
-    /////
-    
-    id = pFact->addNewMenuAfter("Main", NULL, id, EV_MLF_Normal);
-    pFact->addNewLabel(NULL, id, szRDFDumpObjects, szRDFDumpObjectsTip);
-    a = new EV_Menu_Action (
-            id,   		// id that the layout said we could use
-            0,                      // no, we don't have a sub menu.
-            1,                      // yes, we raise a dialog.
-            0,                      // no, we don't have a checkbox.
-            0,                      // no radio buttons for me, thank you
-            "s_abicollab_rdfdumpobjects",     // name of callback function to call.
-            NULL,                   // Function for whether not label is enabled/disabled checked/unchecked
-            NULL                    // Function to compute Menu Label "Dynamic Label"
-            );
-    pActionSet->addAction(a);
-    pEMC->addEditMethod(
-        new EV_EditMethod (
-            "s_abicollab_rdfdumpobjects",     // name of callback function
-            s_abicollab_rdfdumpobjects,       // callback function itself.
-            0,                      // no additional data required.
-            ""                      // description -- allegedly never used for anything
-            ));
-    
-    /////
-    /////
-
-    id = pFact->addNewMenuAfter("Main", NULL, id, EV_MLF_Normal);
-    pFact->addNewLabel(NULL, id, szRDFDumpRdfForPoint, szRDFDumpRdfForPointTip);
-    a = new EV_Menu_Action (
-        id,   		// id that the layout said we could use
-        0,                      // no, we don't have a sub menu.
-        1,                      // yes, we raise a dialog.
-        0,                      // no, we don't have a checkbox.
-        0,                      // no radio buttons for me, thank you
-        "s_abicollab_dumprdfforpoint",     // name of callback function to call.
-        NULL,                   // Function for whether not label is enabled/disabled checked/unchecked
-        NULL                    // Function to compute Menu Label "Dynamic Label"
-        );
-    pActionSet->addAction(a);
-    
-    pEMC->addEditMethod(
-        new EV_EditMethod (
-            "s_abicollab_dumprdfforpoint",     // name of callback function
-            s_abicollab_dumprdfforpoint,       // callback function itself.
-            0,                      // no additional data required.
-            ""                      // description -- allegedly never used for anything
-            ));
-    
-    /////
-    /////
-        
-	// End of the menu
-	id = pFact->addNewMenuAfter("Main", NULL, id, EV_MLF_EndSubMenu);
-	pFact->addNewLabel(NULL, id, szEndRDF, NULL);
-	a = new EV_Menu_Action (
-		id,                     // id that the layout said we could use
-		0,                      // no, we don't have a sub menu.
-		0,                      // no, we raise a dialog.
-		0,                      // no, we don't have a checkbox.
-		0,                      // no radio buttons for me, thank you
-		NULL,                   // name of callback function to call.
-		NULL,                   // Function for whether not label is enabled/disabled checked/unchecked
-		NULL                    // Function to compute Menu Label "Dynamic Label"
-	);
-    pActionSet->addAction(a);
-    
-}
-
 
 /*!
  * This implements the "Collaborate" main submenu.
  */
 void s_abicollab_add_menus()
 {
-#if defined(DEBUGRDF)
-    s_abicollab_add_rdf_menus();
-#endif    
-    
     // First we need to get a pointer to the application itself.
     XAP_App *pApp = XAP_App::getApp();
     EV_EditMethodContainer* pEMC = pApp->getEditMethodContainer();
@@ -873,54 +720,6 @@ bool s_abicollab_accounts(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 	pFactory->releaseDialog(pDialog);
 	return true;
 }
-
-bool s_abicollab_rdftest(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
-{
-	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
-	UT_return_val_if_fail(pFrame, false);
-	PD_Document* pDoc = static_cast<PD_Document *>(pFrame->getCurrentDoc());
-	UT_return_val_if_fail(pDoc, false);
-
-    UT_DEBUGMSG(("s_abicollab_rdftest... running ml2 test\n"));
-    pDoc->getDocumentRDF()->runMilestone2Test();
-    return true;
-}
-
-bool s_abicollab_rdfdumpobjects(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
-{
-	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
-	UT_return_val_if_fail(pFrame, false);
-	PD_Document* pDoc = static_cast<PD_Document *>(pFrame->getCurrentDoc());
-	UT_return_val_if_fail(pDoc, false);
-
-    UT_DEBUGMSG(("s_abicollab_rdfdumpobjects...\n"));
-    pDoc->getDocumentRDF()->dumpObjectMarkersFromDocument();
-    return true;
-}
-
-bool s_abicollab_dumprdfforpoint(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
-{
-	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
-	UT_return_val_if_fail(pFrame, false);
-	PD_Document* pDoc = static_cast<PD_Document *>(pFrame->getCurrentDoc());
-	UT_return_val_if_fail(pDoc, false);
-
-    UT_DEBUGMSG(("s_abicollab_dumprdfforpoint...\n"));
-
-	AV_View* view = pFrame->getCurrentView();
-    if( view )
-    {
-        PT_DocPosition curr = view->getPoint();
-        UT_DEBUGMSG(("s_abicollab_dumprdfforpoint...curr:%d\n", curr));
-        PD_RDFModelHandle h = pDoc->getDocumentRDF()->getRDFAtPosition( curr );
-    }
-    
-    return true;
-}
-
 
 bool s_abicollab_record(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 {

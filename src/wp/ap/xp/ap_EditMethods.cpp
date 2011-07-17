@@ -157,6 +157,8 @@
 #include "ap_Dialog_Annotation.h"
 #include "ap_Preview_Annotation.h"
 
+#include "pd_DocumentRDF.h"
+
 
 /*****************************************************************/
 /*****************************************************************/
@@ -706,6 +708,10 @@ public:
 	
 	static EV_EditMethod_Fn insertTable;
 
+	static EV_EditMethod_Fn dumpRDFForPoint;
+	static EV_EditMethod_Fn dumpRDFObjects;
+	static EV_EditMethod_Fn rdfTest;
+	
 
 	static EV_EditMethod_Fn noop;
 
@@ -872,8 +878,10 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dragToXYword), 		0,	""),
 	EV_EditMethod(NF(dragVisualText),       0, ""),
 	EV_EditMethod(NF(dragVline), 			0,	""),
+	EV_EditMethod(NF(dumpRDFForPoint),		0,	""),
+	EV_EditMethod(NF(dumpRDFObjects),		0,	""),
 
-
+	
 	// e
 
 	EV_EditMethod(NF(editAnnotation),		0,	""),
@@ -1059,6 +1067,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(querySaveAndExit), 	_A_,	""),
 
 	// r
+	EV_EditMethod(NF(rdfTest), 				0,	""),
 	EV_EditMethod(NF(redo), 				0,	""),
 	EV_EditMethod(NF(releaseFrame), 		0,	""),
 	EV_EditMethod(NF(releaseInlineImage), 		0,	""),
@@ -15130,4 +15139,50 @@ Defun1(doEscape)
 	    return true;
 	}
 	return true;
+}
+
+Defun1(dumpRDFForPoint)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+	PD_Document * pDoc = pView->getDocument();
+	UT_return_val_if_fail(pDoc, false);
+
+    UT_DEBUGMSG(("dumpRDFForPoint...\n"));
+    if( pView )
+    {
+        PT_DocPosition curr = pView->getPoint();
+        UT_DEBUGMSG(("dumpRDFForPoint...current position:%d\n", curr));
+        PD_RDFModelHandle h = pDoc->getDocumentRDF()->getRDFAtPosition( curr );
+		
+    }
+    
+    return true;
+}
+
+Defun1(dumpRDFObjects)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+	PD_Document * pDoc = pView->getDocument();
+	UT_return_val_if_fail(pDoc, false);
+
+    UT_DEBUGMSG(("dumpRDFObjects...\n"));
+    pDoc->getDocumentRDF()->dumpObjectMarkersFromDocument();
+    return true;
+}
+
+Defun1(rdfTest)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+	PD_Document * pDoc = pView->getDocument();
+	UT_return_val_if_fail(pDoc, false);
+
+    UT_DEBUGMSG(("RDFTest... running ml2 test\n"));
+    pDoc->getDocumentRDF()->runMilestone2Test();
+    return true;
 }

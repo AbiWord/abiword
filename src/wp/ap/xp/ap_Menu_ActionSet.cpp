@@ -28,6 +28,7 @@
 #include "ap_Menu_Functions.h"
 #include "ap_Menu_Id.h"
 
+
 EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 {
 	// This should only be called once by the application.
@@ -322,6 +323,13 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TABLE_TEXTTOTABLE,0,0,0,0, NULL, ap_GetState_TextToTableOK, NULL);
 
 
+	_s(AP_MENU_ID_RDF,1,0,0,0,NULL,NULL,NULL);
+	_s(AP_MENU_ID_RDF_ADV,1,0,0,0,NULL,NULL,NULL);
+	_s(AP_MENU_ID_RDF_ADV_DUMP_FOR_POINT,0,0,0,0,"dumpRDFForPoint",NULL,NULL);
+	_s(AP_MENU_ID_RDF_ADV_DUMP_OBJECTS  ,0,0,0,0,"dumpRDFObjects",NULL,NULL);
+	_s(AP_MENU_ID_RDF_ADV_TEST          ,0,0,0,0,"rdfTest",NULL,NULL);
+
+    
 	_s(AP_MENU_ID_CONTEXT_REVISIONS_ACCEPT_REVISION, 0,0,0,0, "revisionAccept", ap_GetState_RevisionPresent,NULL);
 	_s(AP_MENU_ID_CONTEXT_REVISIONS_REJECT_REVISION, 0,0,0,0, "revisionReject", ap_GetState_RevisionPresent, NULL);
 	_s(AP_MENU_ID_CONTEXT_REVISIONS_FIND_NEXT, 0,0,0,0, "revisionFindNext", ap_GetState_HasRevisions,NULL);

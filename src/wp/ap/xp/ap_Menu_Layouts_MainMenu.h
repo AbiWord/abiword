@@ -403,6 +403,21 @@ BeginLayout(Main,0)
 #endif
 	EndSubMenu()
 
+	BeginSubMenu(AP_MENU_ID_RDF)
+
+			BeginSubMenu(AP_MENU_ID_RDF_ADV)
+
+			         MenuItem(AP_MENU_ID_RDF_ADV_DUMP_FOR_POINT)
+#if 1
+                     Separator()
+			         MenuItem(AP_MENU_ID_RDF_ADV_DUMP_OBJECTS)
+			         MenuItem(AP_MENU_ID_RDF_ADV_TEST)
+#endif
+            EndSubMenu()
+
+	EndSubMenu()
+
+
 #if !XAP_SIMPLE_MENU 
 	BeginSubMenu(AP_MENU_ID_WINDOW)
 		MenuItem(AP_MENU_ID_WINDOW_NEW)

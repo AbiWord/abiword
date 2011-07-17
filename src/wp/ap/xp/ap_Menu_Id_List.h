@@ -306,6 +306,12 @@ menuitem(WINDOW_MORE)
 menuitem(WEB_WEBPREVIEW)
 menuitem(WEB_SAVEASWEB)
 
+menuitem(RDF)
+menuitem(RDF_ADV)
+menuitem(RDF_ADV_TEST)
+menuitem(RDF_ADV_DUMP_OBJECTS)
+menuitem(RDF_ADV_DUMP_FOR_POINT)
+
 menuitem(HELP)
 menuitem(HELP_CREDITS)
 menuitem(HELP_CONTENTS)
