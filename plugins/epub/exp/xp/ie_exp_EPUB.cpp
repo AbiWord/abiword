@@ -488,7 +488,7 @@ UT_Error IE_Exp_EPUB::compress()
         UT_go_file_remove(fullPath.utf8_str(), NULL);
     }
 
-    UT_go_file_remove((m_oebpsDir + G_DIR_SEPARATOR_S + "index_xhtml_files").utf8_str(), NULL);
+    UT_go_file_remove((m_oebpsDir + G_DIR_SEPARATOR_S + "index.xhtml_files").utf8_str(), NULL);
     UT_go_file_remove(m_oebpsDir.utf8_str(), NULL);
     return UT_OK;
 }
