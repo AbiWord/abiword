@@ -61,13 +61,13 @@ UT_Error IE_Exp_EPUB::_writeDocument()
     // We need to create temporary directory to which
     // HTML plugin will export our document
     m_baseTempDir = UT_go_filename_to_uri(g_get_tmp_dir());
-    // We should delete any previous temporary data for this document to prevent
-    // odd files appearing in the container
-    UT_go_file_remove(m_baseTempDir.utf8_str(), NULL);
     m_baseTempDir += G_DIR_SEPARATOR_S;
 
     // To generate unique directory name we`ll use document UUID
     m_baseTempDir += getDoc()->getDocUUIDString();
+    // We should delete any previous temporary data for this document to prevent
+    // odd files appearing in the container
+    UT_go_file_remove(m_baseTempDir.utf8_str(), NULL);
     UT_go_directory_create(m_baseTempDir.utf8_str(), 0644, NULL);
 
     if (writeContainer() != UT_OK)
@@ -93,6 +93,9 @@ UT_Error IE_Exp_EPUB::_writeDocument()
 
     gsf_output_close(m_oebps);
     gsf_output_close(GSF_OUTPUT(m_root));
+    
+    // After doing all job we should delete temporary files
+    UT_go_file_remove(m_baseTempDir.utf8_str(), NULL);
     return UT_OK;
 }
 
@@ -481,8 +484,12 @@ UT_Error IE_Exp_EPUB::compress()
         gsf_input_seek(file, 0, G_SEEK_SET);
         gsf_input_copy(file, item);
         gsf_output_close(item);
+        // Time to delete temporary file
+        UT_go_file_remove(fullPath.utf8_str(), NULL);
     }
 
+    UT_go_file_remove((m_oebpsDir + G_DIR_SEPARATOR_S + "index_xhtml_files").utf8_str(), NULL);
+    UT_go_file_remove(m_oebpsDir.utf8_str(), NULL);
     return UT_OK;
 }
 
