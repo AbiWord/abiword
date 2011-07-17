@@ -147,36 +147,9 @@ public:
 
 #endif /* HTML_ENABLE_MHTML */
 
-#ifdef HTML_DIALOG_OPTIONS
+
 #include "xap_Dlg_HTMLOptions.h"
-#else
 
-/* This struct is defined in xap_Dlg_HTMLOptions.h, but that file does not
- * exist in AbiWord-1.0.x so a definition is provided here for the moment.
- */
-struct XAP_Exp_HTMLOptions
-{
-	bool	bIs4;
-	bool	bIsAbiWebDoc;
-	bool	bDeclareXML;
-	bool	bAllowAWML;
-	bool	bEmbedCSS;
-	bool	bLinkCSS;
-	bool	bEmbedImages;
-	bool    bClassOnly;
-	bool    bAbsUnits;
-	bool	bScaleUnits;
-        bool    bMathMLRenderPNG;
-        bool	bSplitDocument;
-	UT_uint32 iCompact;
-	/* other options, not set/saved/restore by options dialog
-	 */
-	bool	bMultipart;
-	bool 	bAddIdentifiers;
-         
-};
-
-#endif /* HTML_DIALOG_OPTIONS */
 
 class s_StyleTree;
 
