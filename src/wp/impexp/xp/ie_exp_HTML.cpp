@@ -7217,6 +7217,10 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 	prop = getProperty ("abs-units");
 	if (!prop.empty())
 		m_exp_opt.bAbsUnits = UT_parseBool (prop.c_str (), m_exp_opt.bAbsUnits);
+        
+        prop = getProperty ("add-identifiers");
+	if (!prop.empty())
+		m_exp_opt.bAddIdentifiers = UT_parseBool (prop.c_str (), m_exp_opt.bAddIdentifiers);
 
 	prop = getProperty ("compact");
 	if (!prop.empty())

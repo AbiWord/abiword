@@ -153,10 +153,7 @@ UT_Error IE_Exp_EPUB::writeStructure()
     m_pie = new IE_Exp_HTML(getDoc());
     m_pie->suppressDialog(true);
     m_pie->setProps(
-            "embed-css:no;html4:no;use-awml:no;declare-xml:yes;mathml-render-png:yes;split-document:yes");
-    // Though there is no table of contents at begining of the document, 
-    // we still need to generate id`s for headings because of NCX
-    m_pie->set_AddIdentifiers(true);
+            "embed-css:no;html4:no;use-awml:no;declare-xml:yes;mathml-render-png:yes;split-document:yes;add-identifiers:yes;");
     m_pie->writeFile(szIndexPath);
     g_free(szIndexPath);
 
