@@ -162,7 +162,10 @@ void XAP_Dialog_Image::setHeight(const char * szHeight)
 */
 void XAP_Dialog_Image::setHeight(double  dHeight, bool checkaspect)
 {
-	double orig_height = m_height;
+  if(checkaspect && m_bAspect && m_height!=0.0)
+    setWidthAndHeight(dHeight, false);
+  else
+    {
 	m_height = dHeight*72.0;
 	if(m_height < 0.0)
 	{
@@ -174,13 +177,9 @@ void XAP_Dialog_Image::setHeight(double  dHeight, bool checkaspect)
 		m_height = m_maxHeight;
 		dHeight = (m_maxHeight - 1)/72.0;
 	}
-	m_HeightString = UT_convertInchesToDimensionString(getPreferedUnits(),dHeight);
 
-	// Update For Aspect Ratio
-	if( checkaspect && m_bAspect && orig_height!=0.0 )
-	{
-		setWidth(m_width*m_height/orig_height/72.0, false);
-	}
+	m_HeightString = UT_convertInchesToDimensionString(getPreferedUnits(),dHeight);
+    }
 }
 
 /*!
@@ -206,7 +205,10 @@ void XAP_Dialog_Image::setWidth(const char * szWidth)
 */
 void XAP_Dialog_Image::setWidth(double  dWidth, bool checkaspect)
 {
-	double orig_width = m_width;
+  if(checkaspect && m_bAspect && m_width!=0.0)
+    setWidthAndHeight(dWidth, true);
+  else
+    {
 	m_width = dWidth*72.0;
 	if(m_width < 0.0)
 	{
@@ -220,12 +222,50 @@ void XAP_Dialog_Image::setWidth(double  dWidth, bool checkaspect)
 	}
 	m_WidthString = UT_convertInchesToDimensionString(getPreferedUnits(),dWidth);
 
-	// Update For Aspect Ratio
-	if( checkaspect && m_bAspect && orig_width!=0.0 )
-	{
-		setHeight(m_height*m_width/orig_width/72.0, false);
-	}
+    }
 }
+
+
+void XAP_Dialog_Image::setWidthAndHeight(double wh, bool iswidth)
+{
+  double orig_width,orig_height;
+ 
+  orig_width = m_width;
+  orig_height = m_height;
+
+  if (wh < 0.1) wh=0.1;
+  if (orig_width < 1.) orig_width = 1.;
+  if (orig_height < 1.) orig_height = 1.;
+
+  if (iswidth)
+    {
+      m_width = wh*72.0;   
+      m_height = m_width*orig_height/orig_width;
+    }
+  else
+    {
+      m_height = wh*72.0;
+      m_width = m_height*orig_width/orig_height;
+    }
+
+  if (m_width > m_maxWidth)
+    {
+      m_width = m_maxWidth;
+      m_height = m_width*orig_height/orig_width;
+    }
+
+  if (m_height > m_maxHeight)
+    {
+      m_height = m_maxHeight;
+      m_width = m_height*orig_width/orig_height;
+    }
+
+
+  m_WidthString = UT_convertInchesToDimensionString(getPreferedUnits(),m_width/72.0);
+  m_HeightString = UT_convertInchesToDimensionString(getPreferedUnits(),m_height/72.0);
+
+}
+
 
 /*!
  * Set the member string variable m_WidthString from the pixel value of 

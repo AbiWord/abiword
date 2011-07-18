@@ -3516,8 +3516,8 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	{
 		p = pDSL->getDocLayout()->getNthPage(0);
 	}
-	UT_sint32 maxW = static_cast<UT_sint32>(static_cast<double>(pDSL->getActualColumnWidth())*0.95);
-	UT_sint32 maxH = static_cast<UT_sint32>(static_cast<double>(pDSL->getActualColumnHeight())*0.95);
+	UT_sint32 maxW = static_cast<UT_sint32>(static_cast<double>(pDSL->getActualColumnWidth()));
+	UT_sint32 maxH = static_cast<UT_sint32>(static_cast<double>(pDSL->getActualColumnHeight()));
 	fl_ContainerLayout * pCL = getBlock()->myContainingLayout();
 	if(pCL && pCL->getContainerType() == FL_CONTAINER_FRAME)
 	{
@@ -3536,8 +3536,8 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		// This is a compromize that makes tables sane for insanely large
 		// images. The user will have to adjust images size manually
 		//
-		maxW = static_cast<UT_sint32>(static_cast<double>(maxW)*0.95);
-		maxH = static_cast<UT_sint32>(static_cast<double>(maxH)*0.95);
+		maxW = static_cast<UT_sint32>(static_cast<double>(maxW));
+		maxH = static_cast<UT_sint32>(static_cast<double>(maxH));
 	}
 	if(pG->tdu(maxW) < 3)
 	{
@@ -3570,7 +3570,7 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 			UT_DEBUGMSG(("Change Image Height to %d \n",maxH));
 		}
 		m_pImage = m_pFGraphic->generateImage(pG, pSpanAP, maxW, maxH);
-		if(bNoSize && m_pImage)
+		if(m_pImage)
 		{
 			iW = pG->tlu(m_pImage->getDisplayWidth());
 			iH = pG->tlu(m_pImage->getDisplayHeight());

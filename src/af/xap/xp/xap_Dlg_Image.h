@@ -147,6 +147,7 @@ public:
 
 	void setWidth (double w, bool checkaspect);
 	void setHeight (double h, bool checkaspect);
+	void setWidthAndHeight (double wh, bool iswidth);
 
 	WRAPPING_TYPE m_iWrappingType;
 	POSITION_TO m_iPositionTo;

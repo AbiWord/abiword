@@ -11025,8 +11025,8 @@ Defun1(dlgFmtPosImage)
 	fl_DocSectionLayout * pDSL = pBL->getDocSectionLayout();
 	UT_sint32 iColWidth = pDSL->getActualColumnWidth();
 	UT_sint32 iColHeight = pDSL->getActualColumnHeight();
-	double max_width  = 0.95*iColWidth*72.0/UT_LAYOUT_RESOLUTION; // units are 1/72 of an inch
-	double max_height = 0.95*iColHeight*72.0/UT_LAYOUT_RESOLUTION;
+	double max_width  = iColWidth*72.0/UT_LAYOUT_RESOLUTION; // units are 1/72 of an inch
+	double max_height = iColHeight*72.0/UT_LAYOUT_RESOLUTION;
 
 	pDialog->setMaxWidth (max_width);
 	pDialog->setMaxHeight (max_height);
@@ -11051,12 +11051,13 @@ Defun1(dlgFmtPosImage)
 	{
 	  pszWidth = "1.0in";
 	}
-	pDialog->setWidth(pszWidth);
 	if(!pAP || !pAP->getProperty("frame-height",pszHeight))
 	{
 	  pszHeight = "1.0in";
 	}
-	pDialog->setHeight(pszHeight);
+	pDialog->setWidth( UT_reformatDimensionString(dim,pszWidth));
+	pDialog->setHeight( UT_reformatDimensionString(dim,pszHeight));
+
 	UT_DEBUGMSG(("Width %s Height %s \n",pszWidth,pszHeight));
 	WRAPPING_TYPE iWrap = WRAP_NONE;
 	if(pPosObj->getFrameWrapMode() == FL_FRAME_WRAPPED_TO_LEFT  )
@@ -11105,15 +11106,32 @@ Defun1(dlgFmtPosImage)
 	{
 	  return true;
 	}
+
+
+	UT_String sWidth;
+	UT_String sHeight;
+
+	sWidth = pDialog->getWidthString();
+	sHeight = pDialog->getHeightString();
+	UT_DEBUGMSG(("Width %s Height %s \n",sWidth.c_str(),sHeight.c_str()));
+	const gchar * attribs[] = {"title", NULL, "alt", NULL, 0};
+	attribs[1] = pDialog->getTitle().utf8_str();
+	attribs[3] = pDialog->getDescription().utf8_str();
+
+
 	if(pDialog->getWrapping() == WRAP_INLINE)
 	{
-	  pView->convertPositionedToInLine(pPosObj);
-	  return true;
+		const gchar * properties[] = {"width", NULL, "height", NULL, 0};
+		properties[1] = sWidth.c_str();
+		properties[3] = sHeight.c_str();
+		
+		pView->convertPositionedToInLine(pPosObj);
+		pView->setCharFormat(properties, attribs);
+		pView->updateScreen();
+		return true;
 	}
 	else
 	{
-	  UT_String sWidth;
-	  UT_String sHeight;
 	  POSITION_TO newFormatMode = pDialog->getPositionTo(); 
 	  WRAPPING_TYPE newWrapMode = pDialog->getWrapping();
 	  const gchar * properties[] = {"frame-width", NULL, 
@@ -11122,9 +11140,6 @@ Defun1(dlgFmtPosImage)
 					   "position-to",NULL,
 					   "tight-wrap",NULL,NULL};
 
-	  sWidth = pDialog->getWidthString();
-	  sHeight = pDialog->getHeightString();
-	  UT_DEBUGMSG(("Width %s Height %s \n",sWidth.c_str(),sHeight.c_str()));
 	  properties[1] = sWidth.c_str();
 	  properties[3] = sHeight.c_str();
 	  if(newWrapMode == WRAP_TEXTRIGHT)
@@ -11158,16 +11173,13 @@ Defun1(dlgFmtPosImage)
 	  }
 	  if(pDialog->isTightWrap())
 	  {
-	    properties[9] = "1";
+        properties[9] = "1";
 	  }
 	  else
 	  {
 	    properties[9] = "0";
 	  }
 
-	  const gchar * attribs[] = {"title", NULL, "alt", NULL, 0};
-	  attribs[1] = pDialog->getTitle().utf8_str();
-	  attribs[3] = pDialog->getDescription().utf8_str();
 	  //
 	  // Change the frame!
 	  //
@@ -11206,7 +11218,7 @@ Defun(dlgFmtImage)
 
 	XAP_Dialog_Image * pDialog
 		= static_cast<XAP_Dialog_Image *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_IMAGE));
-UT_return_val_if_fail(pDialog, false);
+	UT_return_val_if_fail(pDialog, false);
 	double max_width = 0., max_height = 0.;
 	UT_sint32 x1,x2,y1,y2,iHeight,iWidth;
 	bool bEOL = false;
@@ -11228,11 +11240,11 @@ UT_return_val_if_fail(pDialog, false);
 	fl_DocSectionLayout * pDSL = pBL->getDocSectionLayout();
 	UT_sint32 iColWidth = pDSL->getActualColumnWidth();
 	UT_sint32 iColHeight = pDSL->getActualColumnHeight();
-	max_width  = 0.95*iColWidth/UT_LAYOUT_RESOLUTION;
-	max_height = 0.95*iColHeight/UT_LAYOUT_RESOLUTION;
+	max_width  = iColWidth*72.0/UT_LAYOUT_RESOLUTION;
+	max_height = iColHeight*72.0/UT_LAYOUT_RESOLUTION;
 
-	pDialog->setMaxWidth (max_width*72.0);
-	pDialog->setMaxHeight (max_height*72.0); // units are 1/72 of an inch
+	pDialog->setMaxWidth (max_width);
+	pDialog->setMaxHeight (max_height); // units are 1/72 of an inch
 	UT_DEBUGMSG(("formatting  image: %d\n", pCallData->m_xPos));
 	PT_DocPosition pos = pView->getDocPositionFromLastXY();
 
@@ -11604,10 +11616,14 @@ UT_return_val_if_fail(pDialog, false);
 //
 // Now define the Frame attributes strux
 //
-			  const gchar * attributes[5] = {PT_STRUX_IMAGE_DATAID,
-												NULL,"props",NULL,NULL};
+			  const gchar * attributes[9] = {PT_STRUX_IMAGE_DATAID,
+											 NULL,"props",NULL,"title",NULL,"alt",NULL,NULL};
+
 			  attributes[1] = dataID;
 			  attributes[3] = sFrameProps.c_str();
+			  attributes[5] = pDialog->getTitle().utf8_str();
+			  attributes[7] = pDialog->getDescription().utf8_str();
+
 //
 // This deletes the inline image and places a positioned image in it's place
 // It deals with the undo/general update issues.

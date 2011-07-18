@@ -56,6 +56,28 @@ void XAP_UnixDialog_Image::s_HeightEntry_changed(GtkWidget * widget, XAP_UnixDia
 	dlg->doHeightEntry();
 }
 
+gboolean XAP_UnixDialog_Image::s_HeightEntry_FocusOut(GtkWidget * widget, GdkEvent  *event, XAP_UnixDialog_Image *dlg)
+{
+  if(!(widget && dlg))
+    {
+      UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+      return(TRUE);
+    }
+  dlg->doHeightEntry();
+  return(FALSE);
+}
+
+gboolean XAP_UnixDialog_Image::s_WidthEntry_FocusOut(GtkWidget * widget, GdkEvent  *event, XAP_UnixDialog_Image *dlg)
+{
+  if(!(widget && dlg))
+    {
+      UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+      return(TRUE);
+    }
+  dlg->doWidthEntry();
+  return(FALSE);
+}
+
 void XAP_UnixDialog_Image::s_WidthEntry_changed(GtkWidget * widget, XAP_UnixDialog_Image *dlg)
 {
 	UT_return_if_fail(widget && dlg);
@@ -202,6 +224,10 @@ void XAP_UnixDialog_Image::doHeightEntry(void)
 		gtk_editable_set_position(GTK_EDITABLE(m_wHeightEntry), pos);
 		g_signal_handler_unblock(G_OBJECT(m_wHeightEntry), m_iHeightID);
 	}
+	else
+	  {
+	    gtk_entry_set_text( GTK_ENTRY(m_wHeightEntry),getHeightString() ); 
+	  }
 	adjustWidthForAspect();
 }
 
@@ -236,6 +262,10 @@ void XAP_UnixDialog_Image::doWidthEntry(void)
 		gtk_editable_set_position(GTK_EDITABLE(m_wWidthEntry), pos);
 		g_signal_handler_unblock(G_OBJECT(m_wWidthEntry), m_iWidthID);
 	}
+	else
+	  {
+	    gtk_entry_set_text( GTK_ENTRY(m_wWidthEntry),getWidthString() );
+	  }
 	adjustHeightForAspect();
 }
 
@@ -393,9 +423,21 @@ void XAP_UnixDialog_Image::_connectSignals (void)
 				   static_cast<gpointer>(this));
   
   m_iHeightID = g_signal_connect(G_OBJECT(m_wHeightEntry),
-								 "changed",
+								 "activate",
 								 G_CALLBACK(s_HeightEntry_changed),
 								 static_cast<gpointer>(this));
+
+  g_signal_connect_after(G_OBJECT(m_wHeightEntry),
+		   "focus_out_event",
+		   G_CALLBACK(s_HeightEntry_FocusOut),
+		   static_cast<gpointer>(this));
+
+  g_signal_connect_after(G_OBJECT(m_wWidthEntry),
+		   "focus_out_event",
+		   G_CALLBACK(s_WidthEntry_FocusOut),
+		   static_cast<gpointer>(this));
+
+
 
   g_signal_connect(G_OBJECT(m_wWidthSpin),
 				   "changed",
@@ -442,10 +484,10 @@ void XAP_UnixDialog_Image::_connectSignals (void)
 				   static_cast<gpointer>(this));
   
   m_iWidthID = g_signal_connect(G_OBJECT(m_wWidthEntry),
-								"changed",
-								G_CALLBACK(s_WidthEntry_changed),
-								static_cast<gpointer>(this));
-  
+  								"activate",
+  								G_CALLBACK(s_WidthEntry_changed),
+  								static_cast<gpointer>(this));
+
   g_signal_connect(G_OBJECT(m_wAspectCheck),
 				   "clicked",
 				   G_CALLBACK(s_aspect_clicked),

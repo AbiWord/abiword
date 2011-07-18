@@ -147,6 +147,7 @@ Patrick Lam <plam@mit.edu>				tab leaders, left ruler
 							grippies
 Birger Langkjer <birger.langkjer@image.dk>		GNOME icon/menu
 							integration
+Simon Larochelle <larochelle.simon.1@gmail.com>         Image Dialog fixes
 James Lefavour <James@albany.net>			Win98/VC6
 Aaron Lehmann <aaronl@vitelus.com>			Ruler placement patch
 Jerry LeVan <levan@eagle.eku.edu>			LinuxPPC
@@ -191,7 +192,7 @@ Gilles Saint-Denis <stdenisg@cedep.net> 		fixes for bugs 787, 282,
 Pierre Sarrazin <ps@cam.org>
 David Schmitter <dls@globalinitiative.org>		Online Help
 Dan Schreiber <dan@abisource.com>
-Martin Sevior <msevior@physics.unimelb.edu.au>		Symbol dialog, Overline,							cursor motion fixes,
+Martin Sevior <msevior@gmail.com>			Symbol dialog, Overline,							cursor motion fixes,
 							Tables,Footnotes, lots
 							of other stuff
 Jeremy Sheeley <jeremy@sourcegear.com>
