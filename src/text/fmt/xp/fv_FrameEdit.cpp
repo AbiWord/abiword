@@ -1019,6 +1019,10 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 //
 void FV_FrameEdit::abortDrag(void)
 {
+  FV_ViewDoubleBuffering dblBuffObj(m_pView, true, true);
+  dblBuffObj.beginDoubleBuffering();
+
+
   UT_DEBUGMSG(("Doing Abort Drag \n"));
   m_xLastMouse = m_iFirstEverX;
   m_yLastMouse = m_iFirstEverY;
@@ -1031,6 +1035,10 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 //
 // If we've just selected the frame, ignore this event.
 //
+
+	FV_ViewDoubleBuffering dblBuffObj(m_pView, true, true);
+	dblBuffObj.beginDoubleBuffering();
+
 	UT_DEBUGMSG(("Doing mouse release now! Mode %d \n", getFrameEditMode()));
 	if(FV_FrameEdit_EXISTING_SELECTED == m_iFrameEditMode)
 	{
@@ -1784,6 +1792,10 @@ void FV_FrameEdit::deleteFrame(fl_FrameLayout * pFL)
 		  return;
 		}
 	}
+
+	FV_ViewDoubleBuffering dblBuffObj(m_pView, true, true);
+	dblBuffObj.beginDoubleBuffering();
+
 	PP_AttrProp * p_AttrProp_Before = NULL;
 
 	// Signal PieceTable Change
