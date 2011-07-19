@@ -1233,8 +1233,7 @@ void ODi_TextContent_ListenerState::charData (
         }
         m_charData += s;
 
-        printf(">>> content written!\n");
-        UT_DEBUGMSG(("charData() s:%s\n", s.utf8_str() ));
+        UT_DEBUGMSG(("charData() content written s:%s\n", s.utf8_str() ));
     } 
     else if (m_bPendingAnnotationAuthor) 
     {
