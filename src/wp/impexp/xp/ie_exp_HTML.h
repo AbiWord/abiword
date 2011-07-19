@@ -26,7 +26,19 @@
 #include "ie_exp.h"
 #include "pt_Types.h"
 
+#include "ie_exp_HTML_MainListener.h"
+#include "ie_exp_HTML_StyleTree.h"
+#include "ie_exp_HTML_util.h"
 
+#include "xap_Dialog_Id.h"
+#include "xap_DialogFactory.h"
+#include "xap_Dlg_HTMLOptions.h"
+
+#define DTD_XHTML "!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\""
+#define DTD_XHTML_AWML "!DOCTYPE html PUBLIC \"-//ABISOURCE//DTD XHTML plus AWML 2.2//EN\" \"http://www.abisource.com/2004/xhtml-awml/xhtml-awml.mod\""
+#define DTD_HTMl4 "!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\""
+
+class s_TemplateHandler;
 /* NOTE: I'm trying to keep the code similar across versions,
  *       and therefore features are enabled/disabled here:
  */
@@ -64,7 +76,7 @@
 
 class PD_Document;
 class IE_TOCHelper;
-
+class IE_Exp_HTML_StyleTree;
 // The exporter/writer for HTML
 
 class ABI_EXPORT IE_Exp_HTML_Sniffer : public IE_ExpSniffer
@@ -147,12 +159,6 @@ public:
 
 #endif /* HTML_ENABLE_MHTML */
 
-
-#include "xap_Dlg_HTMLOptions.h"
-
-
-class s_StyleTree;
-
 class ABI_EXPORT IE_Exp_HTML : public IE_Exp
 {
 public:
@@ -193,7 +199,8 @@ protected:
 public:
 	virtual UT_Error	_writeDocument (bool bClipBoard, bool bTemplateBody);
 private:
-	s_StyleTree *		m_style_tree;
+	IE_Exp_HTML_StyleTree *		m_style_tree;
+        IE_Exp_HTML_StyleListener*  m_styleListener;
 	bool			m_bSuppressDialog;
 	XAP_Exp_HTMLOptions	m_exp_opt;
 	UT_UTF8String       m_sLinkCSS;

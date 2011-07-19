@@ -14,6 +14,12 @@ libxp_la_SOURCES = \
 	ie_exp.h \
 	ie_exp_HTML.cpp \
 	ie_exp_HTML.h \
+	ie_exp_HTML_MainListener.cpp \
+	ie_exp_HTML_MainListener.h \
+	ie_exp_HTML_StyleTree.cpp \
+	ie_exp_HTML_StyleTree.h \
+	ie_exp_HTML_util.cpp \
+	ie_exp_HTML_util.h \
 	ie_exp_RTF_AttrProp.cpp \
 	ie_exp_RTF_AttrProp.h \
 	ie_exp_RTF.cpp \
