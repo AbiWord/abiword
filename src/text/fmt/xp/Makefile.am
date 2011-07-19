@@ -58,6 +58,7 @@ libxp_la_SOURCES = \
 	fl_TOCLayout.cpp \
 	fl_TOCLayout.h \
 	fp_AnnotationRun.cpp \
+	fp_RDFAnchorRun.cpp \
 	fp_Column.cpp \
 	fp_Column.h \
 	fp_ContainerObject.cpp \

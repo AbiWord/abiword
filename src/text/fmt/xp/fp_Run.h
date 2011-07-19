@@ -51,6 +51,7 @@ class fl_CharWidths;
 class fd_Field;
 class fp_HyperlinkRun;
 class fp_AnnotationRun;
+class fp_RDFAnchorRun;
 
 struct fp_RunSplitInfo
 {
@@ -122,6 +123,7 @@ enum FPRUN_CLEAR_SCREEN
 		fp_BookmarkRun
 		fp_HyperlinkRun
 		fp_AnnotationRun
+		fp_RDFAnchorRun
 		fp_DummyRun
 
 	As far as the formatter's concerned, each subclass behaves somewhat
@@ -789,6 +791,42 @@ class ABI_EXPORT fp_AnnotationRun : public fp_HyperlinkRun
 public:
 	fp_AnnotationRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 	virtual ~fp_AnnotationRun();
+	virtual FP_HYPERLINK_TYPE    getHyperlinkType(void)
+	{
+		return HYPERLINK_ANNOTATION;
+	}
+	UT_uint32 getPID(void) { return m_iPID;}
+	const char * getValue(void);
+    void         recalcValue(void);
+	virtual bool canBreakAfter(void) const;
+	virtual bool canBreakBefore(void) const;
+	UT_sint32    getRealWidth(void) const {return m_iRealWidth;}
+    void         cleanDraw(dg_DrawArgs*);
+	UT_sint32    calcWidth(void);
+
+ protected:
+	virtual void			_draw(dg_DrawArgs*);
+	virtual void			_clearScreen(bool bFullLineHeightRect);
+	virtual bool			_recalcWidth(void);
+	bool                    _setValue(void);
+	virtual void            _setWidth(UT_sint32 iWidth);
+	virtual bool _letPointPass(void) const;
+	virtual bool _canContainPoint(void) const;
+    virtual void _lookupProperties(const PP_AttrProp * pSpanAP,
+									const PP_AttrProp * pBlockAP,
+									const PP_AttrProp * pSectionAP,
+								   GR_Graphics * pG);
+ private:
+	UT_uint32               m_iPID;
+	UT_UTF8String           m_sValue;
+	UT_sint32               m_iRealWidth;
+};
+
+class ABI_EXPORT fp_RDFAnchorRun : public fp_HyperlinkRun
+{
+public:
+	fp_RDFAnchorRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	virtual ~fp_RDFAnchorRun();
 	virtual FP_HYPERLINK_TYPE    getHyperlinkType(void)
 	{
 		return HYPERLINK_ANNOTATION;

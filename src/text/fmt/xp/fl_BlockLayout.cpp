@@ -5555,56 +5555,56 @@ bool	fl_BlockLayout::_doInsertRDFAnchorRun(PT_BlockOffset blockOffset)
 {
 	bool bResult = false;
 	
-	// if(!isContainedByTOC())
-	// {
-	// 	fp_RDFAnchorRun * pNewRun =  new fp_RDFAnchorRun(this, blockOffset, 1);
-	// 	UT_ASSERT(pNewRun);
-	// 	bResult = _doInsertRun(pNewRun);
+	if(!isContainedByTOC())
+	{
+		fp_RDFAnchorRun * pNewRun =  new fp_RDFAnchorRun(this, blockOffset, 1);
+		UT_ASSERT(pNewRun);
+		bResult = _doInsertRun(pNewRun);
 
-	// 	if (bResult)
-	// 	{
-	// 		// if this is the start of the Annotation, we need to mark all the runs
-	// 		// till the end of it
-	// 		// if this is because of an insert operation, the end run is already
-	// 		// in place, because we insert them in that order; if it is because of
-	// 		// append, ther is no end run, but then this is the last run; the other
-	// 		// runs will get marked as they get appended (inside fp_Run::insertRun...)
-	// 		// any Annotation run will not get its m_pHyperlink set, so that
-	// 		// runs that follow it would not be marked
+		if (bResult)
+		{
+			// if this is the start of the Annotation, we need to mark all the runs
+			// till the end of it
+			// if this is because of an insert operation, the end run is already
+			// in place, because we insert them in that order; if it is because of
+			// append, ther is no end run, but then this is the last run; the other
+			// runs will get marked as they get appended (inside fp_Run::insertRun...)
+			// any Annotation run will not get its m_pHyperlink set, so that
+			// runs that follow it would not be marked
 
-	// 		if(pNewRun->isStartOfHyperlink())
-	// 		{
-	// 			fp_Run * pRun = pNewRun->getNextRun();
-	// 			UT_ASSERT(pRun);
-	// 			// when loading a document the opening hyperlink run is initially followed
-	// 			// by ENDOFPARAGRAPH run; we do not want to set this one
-	// 			while(pRun && pRun->getType() != FPRUN_HYPERLINK && pRun->getType() != FPRUN_ENDOFPARAGRAPH)
-	// 			{
-	// 				pRun->setHyperlink(pNewRun);
-	// 				pRun = pRun->getNextRun();
-	// 			}
-	// 		}
-	// 		else
-	// 		{
-	// 			//
-	// 			// clear out any hyperlinks
-	// 			//
-	// 			fp_Run * pRun = pNewRun->getNextRun();
-	// 			while(pRun && (pRun->getType() != FPRUN_HYPERLINK && pRun->getType() != FPRUN_ENDOFPARAGRAPH))
-	// 			{
-	// 				pRun->setHyperlink(NULL);
-	// 				pRun = pRun->getNextRun();
-	// 			}
-	// 		}
-	// 		//_breakLineAfterRun(pNewRun);
-	// 	}
-	// }
-	// else
-	// {
-	// 	fp_Run * pNewRun = new fp_DummyRun(this,blockOffset);
-	// 	UT_ASSERT(pNewRun);
-	// 	bResult = _doInsertRun(pNewRun);
-	// }
+			if(pNewRun->isStartOfHyperlink())
+			{
+				fp_Run * pRun = pNewRun->getNextRun();
+				UT_ASSERT(pRun);
+				// when loading a document the opening hyperlink run is initially followed
+				// by ENDOFPARAGRAPH run; we do not want to set this one
+				while(pRun && pRun->getType() != FPRUN_HYPERLINK && pRun->getType() != FPRUN_ENDOFPARAGRAPH)
+				{
+					pRun->setHyperlink(pNewRun);
+					pRun = pRun->getNextRun();
+				}
+			}
+			else
+			{
+				//
+				// clear out any hyperlinks
+				//
+				fp_Run * pRun = pNewRun->getNextRun();
+				while(pRun && (pRun->getType() != FPRUN_HYPERLINK && pRun->getType() != FPRUN_ENDOFPARAGRAPH))
+				{
+					pRun->setHyperlink(NULL);
+					pRun = pRun->getNextRun();
+				}
+			}
+			//_breakLineAfterRun(pNewRun);
+		}
+	}
+	else
+	{
+		fp_Run * pNewRun = new fp_DummyRun(this,blockOffset);
+		UT_ASSERT(pNewRun);
+		bResult = _doInsertRun(pNewRun);
+	}
 	
 
 	return bResult;
