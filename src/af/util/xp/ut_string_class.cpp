@@ -1434,14 +1434,14 @@ const char* UT_UCS4String::utf8_str()
 	return pimpl->size() ? pimpl->utf8_data() : pszEmpty;
 }
 
-UT_UCS4Char* UT_UCS4String::begin() const
+const UT_UCS4Char* UT_UCS4String::begin() const
 {
 	return pimpl->size() ? pimpl->data() : 0;
 }
 
-UT_UCS4Char* UT_UCS4String::end() const
+const UT_UCS4Char* UT_UCS4String::end() const
 {
-    UT_UCS4Char* b = begin();
+    const UT_UCS4Char* b = begin();
     if( !b )
         return b;
     

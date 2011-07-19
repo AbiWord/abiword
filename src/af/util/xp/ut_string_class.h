@@ -369,8 +369,8 @@ public:
 	const UT_UCS4Char* ucs4_str() const;
 
     // The same valid constraints as ucs4_str() applies to begin and end
-    UT_UCS4Char* begin() const;
-    UT_UCS4Char* end()   const;
+    const UT_UCS4Char* begin() const;
+    const UT_UCS4Char* end()   const;
     
 	const char * utf8_str ();
 
