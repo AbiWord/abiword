@@ -347,6 +347,8 @@ public:
 	void        clear() const;
 
 	UT_UCS4String	substr(size_t iStart, size_t nChars) const;
+	UT_UCS4String	substr(size_t iStart) const;
+	UT_UCS4String	substr( const UT_UCS4Char* iter ) const;
 
 	UT_UCS4String&	operator=(const UT_UCS4String&  rhs);
 	UT_UCS4String&	operator=(const UT_UCS4Char *   rhs);
@@ -366,6 +368,10 @@ public:
 	// even if to an empty (0) string.
 	const UT_UCS4Char* ucs4_str() const;
 
+    // The same valid constraints as ucs4_str() applies to begin and end
+    UT_UCS4Char* begin() const;
+    UT_UCS4Char* end()   const;
+    
 	const char * utf8_str ();
 
 private:

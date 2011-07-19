@@ -339,7 +339,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
     } else if (!strcmp(pName, "text:meta")) {
         
         _flush ();
-
+        
         UT_UTF8String generatedID;
         const gchar* xmlid = UT_getAttribute("xml:id", ppAtts);
         if( !xmlid )
@@ -1102,6 +1102,108 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
     m_elementParsingLevel--;
 }
 
+/**
+ * 6.1.2 of the ODF spec "What space Characters" lists these as
+ * characters to normalize to a SPACE char in certain cases.
+ * 
+ * HORIZONTAL TABULATION (U+0009)
+ * CARRIAGE RETURN (U+000D)
+ * LINE FEED (U+000A)
+ * SPACE (U+0020)
+ *
+ * UT_UCS4_isspace() uses whitespace_table which itself does not consider
+ * U+000A as whitespace.
+ */
+static bool ODi_UCS4_whitespace( UT_UCS4Char c )
+{
+    return c == 0x000A || UT_UCS4_isspace(c);
+}
+
+/**
+ * It seems from "6.1.2 White Space Characters" of the spec [2], in
+ * particular page 120 of [3], that internal whitespace is to be
+ * folded into space characters.
+ *
+ * Prior to folding anything in 
+ *   Z = { U+0009, U+000D, U+000A )
+ * Is first replaced with 
+ *   SPACE = U+0020.
+ */
+static UT_UCS4String ODi_textp_fold_whitespace( const gchar* pBuffer, int length )
+{
+    bool strip_whitespace = false;
+	UT_UCS4String ret( pBuffer, length, strip_whitespace );
+    int len = ret.length();
+
+    for( int i = 0; i < len; i++ )
+    {
+        UT_UCS4Char c = ret[i];
+        if( c < 0x000E )
+        {
+            if( c == 0x000A || c == 0x0009 || c == 0x000D )
+            {
+                ret[i] = UCS_SPACE;
+            }
+        }
+    }
+    
+    return ret;
+}
+
+/**
+ * A stream of 2+ SPACE to be replaced with a single SPACE.
+ */
+static UT_UCS4String ODi_textp_compact_two_or_more_spaces( const UT_UCS4String& s )
+{
+    int len = s.length();
+    UT_UCS4String ret;
+    ret.reserve( len+1 );
+
+    bool lastWasSpace = false;
+    for( int i = 0; i < len; i++ )
+    {
+        UT_UCS4Char c = s[i];
+        if( c != UCS_SPACE )
+        {
+            ret += c;
+            lastWasSpace = false;
+            continue;
+        }
+        
+        if( lastWasSpace )
+            continue;
+
+        ret += c;
+        lastWasSpace = true;
+    }
+
+    return ret;
+}
+
+
+/**
+ * Trim leading whitespace completely
+ */
+static UT_UCS4String ODi_textp_trim_whitespace_leading( const UT_UCS4String& s )
+{
+    // UT_UCS4Char ucs = s[0];
+    // UT_uint32 i = 0;
+    // while(ucs != 0 && UT_UCS4_isspace(ucs) && (i<sUCS.size()))
+    // {
+    //     i++;
+    //     ucs = s[i];
+    // }
+
+    const UT_UCS4Char* iter = std::find_if(
+        s.begin(), s.end(),
+        std::bind2nd( std::not_equal_to<UT_UCS4Char>(),
+                      UCS_SPACE ));
+
+    UT_UCS4String ret = s.substr( iter );
+    return ret;
+}
+
+
 
 /**
  * 
@@ -1114,40 +1216,25 @@ void ODi_TextContent_ListenerState::charData (
 
     if (m_bAcceptingText) 
     {
+#ifdef DEBUG
+        {
+            UT_DEBUGMSG(("charData() cw:%d length:%d\n", m_bContentWritten, length ));
+            UT_UCS4String t;
+            t += UT_UCS4String (pBuffer, length, false);
+            UT_DEBUGMSG(("charData() pBuffer:%s\n", t.utf8_str() ));
+        }
+#endif
+
+        UT_UCS4String s = ODi_textp_fold_whitespace( pBuffer, length );
+        s = ODi_textp_compact_two_or_more_spaces( s );
         if(!m_bContentWritten)
         {
-            // Strip all leading space if immediately after a paragragh
-            // column or page break
-            UT_UCS4String sUCS = UT_UCS4String (pBuffer, length, false);
-            UT_UCS4Char ucs = sUCS[0];
-            UT_uint32 i = 0;
-            while(ucs != 0 && UT_UCS4_isspace(ucs) && (i<sUCS.size()))
-            {
-                i++;
-                ucs = sUCS[i];
-            }
-            //
-            // Leave a single trailing space if one or more exists
-            //
-            UT_uint32 j = sUCS.size()-1;
-            ucs = sUCS[j];
-            while(UT_UCS4_isspace(ucs) && (j>i))
-            {
-                j--;
-                ucs = sUCS[j];
-            }
-            for(i=i; i<=j ; i++)
-            {
-                m_charData += sUCS[i];
-            }
-            if(j<sUCS.size()-1)
-               m_charData += UCS_SPACE;
+            s = ODi_textp_trim_whitespace_leading( s );
         }
-        else
-        {
-            printf(">>> content written!\n");
-            m_charData += UT_UCS4String (pBuffer, length, true);
-        }
+        m_charData += s;
+
+        printf(">>> content written!\n");
+        UT_DEBUGMSG(("charData() s:%s\n", s.utf8_str() ));
     } 
     else if (m_bPendingAnnotationAuthor) 
     {
@@ -1190,10 +1277,11 @@ void ODi_TextContent_ListenerState::_insertBookmark (const gchar* pName,
  */
 void ODi_TextContent_ListenerState::_flush ()
 {
-    if (m_charData.size () > 0 && m_bAcceptingText) {
+    if (m_charData.size () > 0 && m_bAcceptingText)
+    {
         m_pAbiDocument->appendSpan (m_charData.ucs4_str(), m_charData.size ());
         m_charData.clear ();
-	m_bContentWritten = true;
+        m_bContentWritten = true;
     } 
 }
 

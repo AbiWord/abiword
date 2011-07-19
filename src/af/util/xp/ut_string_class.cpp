@@ -1382,6 +1382,32 @@ void UT_UCS4String::clear() const
 	pimpl->clear();
 }
 
+UT_UCS4String UT_UCS4String::substr( const UT_UCS4Char* iter ) const
+{
+	const size_t nSize = pimpl->size();
+    const UT_UCS4Char* b = ucs4_str();
+    int i = 0;
+    for( ; i<nSize && b != iter ; )
+    {
+        ++b;
+        ++i;
+    }
+    return substr( i );
+}
+
+
+UT_UCS4String UT_UCS4String::substr(size_t iStart) const
+{
+	const size_t nSize = pimpl->size();
+    if( iStart >= nSize )
+    {
+        return UT_UCS4String();
+	}
+    size_t nChars = nSize - iStart;
+    return substr( iStart, nChars );
+}
+
+
 UT_UCS4String UT_UCS4String::substr(size_t iStart, size_t nChars) const
 {
 	const size_t nSize = pimpl->size();
@@ -1407,6 +1433,23 @@ const char* UT_UCS4String::utf8_str()
 {
 	return pimpl->size() ? pimpl->utf8_data() : pszEmpty;
 }
+
+UT_UCS4Char* UT_UCS4String::begin() const
+{
+	return pimpl->size() ? pimpl->data() : 0;
+}
+
+UT_UCS4Char* UT_UCS4String::end() const
+{
+    UT_UCS4Char* b = begin();
+    if( !b )
+        return b;
+    
+    std::advance( b, length() );
+    return b;
+}
+
+
 
 //////////////////////////////////////////////////////////////////
 // mutators
