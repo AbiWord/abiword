@@ -1409,6 +1409,7 @@ dcl(MENU_STATUSLINE_FMT_POSIMAGE, "Format this image")
 dcl(MENU_STATUSLINE_FMT_SETPOSIMAGE, "Set this image to be positioned")
 
 dcl(MENU_LABEL_RDF,        "RDF")
+dcl(MENU_LABEL_RDF_HIGHLIGHT,       "Highlight RDF")
 dcl(MENU_LABEL_RDF_ADV,             "Advanced")
 dcl(MENU_LABEL_RDF_ADV_TEST,            "Test RDF subsystem")
 dcl(MENU_LABEL_RDF_ADV_DUMP_OBJECTS,    "Dump RDF Objects")
@@ -1416,7 +1417,8 @@ dcl(MENU_LABEL_RDF_ADV_DUMP_FOR_POINT,  "Dump RDF related to Cursor Position")
     
 
 
-dcl(MENU_STATUSLINE_RDF,        "Interact with RDF")
+dcl(MENU_STATUSLINE_RDF,             "Interact with RDF")
+dcl(MENU_STATUSLINE_RDF_HIGHLIGHT,       "Highlight areas of the document with RDF associated")
 dcl(MENU_STATUSLINE_RDF_ADV,             "Advanced RDF")
 dcl(MENU_STATUSLINE_RDF_ADV_TEST,            "Run some RDF tests and show results on console")
 dcl(MENU_STATUSLINE_RDF_ADV_DUMP_OBJECTS,    "Dump out information about RDF Objects")

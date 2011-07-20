@@ -321,6 +321,19 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	m_colorAnnotations[7] = UT_RGBColor(4,133,195);
 	m_colorAnnotations[8] = UT_RGBColor(7,18,195);
 	m_colorAnnotations[9] = UT_RGBColor(255,0,0);	// catch-all
+
+	//
+	m_colorRDFAnchors[0] = UT_RGBColor(171,4,254);
+	m_colorRDFAnchors[1] = UT_RGBColor(171,20,119);
+	m_colorRDFAnchors[2] = UT_RGBColor(255,151,8);
+	m_colorRDFAnchors[3] = UT_RGBColor(158,179,69);
+	m_colorRDFAnchors[4] = UT_RGBColor(15,179,5);
+	m_colorRDFAnchors[5] = UT_RGBColor(8,179,248);
+	m_colorRDFAnchors[6] = UT_RGBColor(4,206,195);
+	m_colorRDFAnchors[7] = UT_RGBColor(4,133,195);
+	m_colorRDFAnchors[8] = UT_RGBColor(7,18,195);
+	m_colorRDFAnchors[9] = UT_RGBColor(255,0,0);	// catch-all
+
 	
 	// initialize prefs cache
 	pApp->getPrefsValueBool(AP_PREF_KEY_CursorBlink, &m_bCursorBlink);
@@ -445,6 +458,54 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		UT_parseColor(pszTmpColor, m_colorAnnotations[9]);
 	}
 
+	///////////////////
+	///////////////////
+	
+	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForRDFAnchor1), &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorRDFAnchors[0]);
+	}
+	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForRDFAnchor2), &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorRDFAnchors[1]);
+	}
+	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForRDFAnchor3), &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorRDFAnchors[2]);
+	}
+	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForRDFAnchor4), &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorRDFAnchors[3]);
+	}
+	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForRDFAnchor5), &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorRDFAnchors[4]);
+	}
+	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForRDFAnchor6), &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorRDFAnchors[5]);
+	}
+	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForRDFAnchor7), &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorRDFAnchors[6]);
+	}
+	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForRDFAnchor8), &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorRDFAnchors[7]);
+	}
+	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForRDFAnchor9), &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorRDFAnchors[8]);
+	}
+	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForRDFAnchor10), &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorRDFAnchors[9]);
+	}
+
+	///////////////////
+	///////////////////
+
+	
 	// initialize prefs listener
 	pApp->getPrefs()->addListener( _prefsListener, this );
 
@@ -800,6 +861,7 @@ UT_RGBColor	FV_View::getColorAnnotation(const fp_Run * pRun) const
 			return pRun->_getColorFG();
 	}
 	fp_Page * pPage = pARun->getLine()->getPage();
+	UT_DEBUGMSG(("getColorAnnotation() page:%p\n", pPage ));
 	if(!pPage)
 			return pRun->_getColorFG();
 	UT_uint32 pos = pPage->getAnnotationPos(pARun->getPID());
@@ -817,6 +879,33 @@ UT_RGBColor	FV_View::getColorAnnotation(fp_Page * pPage,UT_uint32 pid) const
 		pos = 9;
 	return m_colorAnnotations[pos];
 }
+
+
+UT_RGBColor	FV_View::getColorRDFAnchor(const fp_Run * pRun) const
+{
+	fp_Page* pPage = pRun->getLine()->getPage();
+	UT_DEBUGMSG(("getColorRDFAnchor() page:%p\n", pPage ));
+	if(!pPage)
+		return pRun->_getColorFG();
+
+	fp_HyperlinkRun * pHRun = pRun->getHyperlink();
+	fp_RDFAnchorRun * pARun = NULL;
+	if(pHRun && pHRun->getHyperlinkType() == HYPERLINK_RDFANCHOR)
+	{
+		pARun = static_cast<fp_RDFAnchorRun*>(pHRun);
+	}
+	else
+	{
+		return pRun->_getColorFG();
+	}
+//	UT_uint32 pos = pPage->getRDFAnchorPos(pARun->getPID());
+	UT_uint32 pos = 1;
+	if(pos > 9)
+		pos = 9;
+	return m_colorRDFAnchors[pos];
+}
+
+
 
 void FV_View::replaceGraphics(GR_Graphics * pG)
 {

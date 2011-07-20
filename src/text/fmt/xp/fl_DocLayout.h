@@ -285,6 +285,12 @@ public:
 	bool                displayAnnotations(void);
 	void                setDisplayAnnotations(bool bDisplayAnnotations);
 	bool                collapseAnnotations(void);
+
+// --------------------------------------------------------------------
+// RDF Anchor Methods
+	bool                displayRDFAnchors(void);
+	void                setDisplayRDFAnchors(bool v);
+    
 // ---------------------------------------------------
 // Table of contents
 //----------------------------------------------------
@@ -451,6 +457,7 @@ private:
 	GR_Graphics *       m_pQuickPrintGraphics;
 	bool                m_bIsQuickPrint;
 	bool                m_bDisplayAnnotations;
+	bool                m_bDisplayRDFAnchors;
         fp_Container *      m_pSavedContainer;
 	fl_BlockLayout *    m_pRebuiltBlockLayout;
 };

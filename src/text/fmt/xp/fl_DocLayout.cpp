@@ -142,6 +142,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
     m_pQuickPrintGraphics(NULL),
     m_bIsQuickPrint(false),
     m_bDisplayAnnotations(false),
+    m_bDisplayRDFAnchors(false),
     m_pSavedContainer(NULL),
     m_pRebuiltBlockLayout(NULL)
 {
@@ -3100,6 +3101,17 @@ bool FL_DocLayout::displayAnnotations(void)
   return m_bDisplayAnnotations;
 }
 
+bool FL_DocLayout::displayRDFAnchors(void)
+{
+    return m_bDisplayRDFAnchors;
+}
+
+void FL_DocLayout::setDisplayRDFAnchors(bool v)
+{
+    m_bDisplayRDFAnchors = v;
+}
+
+
 
 #ifdef ENABLE_SPELL
 /*!
@@ -3947,6 +3959,21 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 		    pDocLayout->getView()->updateScreen(false);
 		}
 	}
+
+	// Display RDF Anchors
+
+	pPrefs->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_DisplayRDFAnchors), &b );
+	changed = changed || (b != pDocLayout->m_bDisplayRDFAnchors);
+	if(b != pDocLayout->m_bDisplayRDFAnchors || (pDocLayout->m_iGraphicTick < 2))
+	{
+		pDocLayout->m_bDisplayRDFAnchors = b;
+		pDocLayout->formatAll();
+		if(pDocLayout->getView())
+		{
+		    pDocLayout->getView()->updateScreen(false);
+		}
+	}
+
 }
 
 #ifdef ENABLE_SPELL

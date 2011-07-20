@@ -75,6 +75,7 @@ class PX_ChangeRecord_Strux;
 class PX_ChangeRecord_StruxChange;
 class fl_AutoNum;
 class fp_VerticalContainer;
+class fp_HyperlinkRun;
 
 // Tab types and leaders
 typedef enum {
@@ -467,6 +468,7 @@ protected:
 	bool					_doInsertHyperlinkRun(PT_BlockOffset blockOffset);
 	bool					_doInsertAnnotationRun(PT_BlockOffset blockOffset);
 	bool					_doInsertRDFAnchorRun(PT_BlockOffset blockOffset);
+    void                    _finishInsertHyperlinkedNewRun( PT_BlockOffset blockOffset, fp_HyperlinkRun* pNewRun );
 	bool					_doInsertMathRun(PT_BlockOffset blockOffset,PT_AttrPropIndex indexAP,PL_ObjectHandle oh);
 	bool					_doInsertEmbedRun(PT_BlockOffset blockOffset,PT_AttrPropIndex indexAP,PL_ObjectHandle oh);
 //	bool					_deleteBookmarkRun(PT_BlockOffset blockOffset);

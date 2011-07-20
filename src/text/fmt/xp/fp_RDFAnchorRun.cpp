@@ -31,12 +31,17 @@
 #include "gr_Painter.h"
 #include "gr_DrawArgs.h"
 
+#include "pd_DocumentRDF.h"
+
 #include <string.h>
 
-fp_RDFAnchorRun::fp_RDFAnchorRun(fl_BlockLayout* pBL,
-				   UT_uint32 iOffsetFirst, 
-				   UT_uint32 /*iLen*/ ) : 
-  fp_HyperlinkRun(pBL,iOffsetFirst,1),m_iPID(0),m_sValue(""),m_iRealWidth(0)
+fp_RDFAnchorRun::fp_RDFAnchorRun( fl_BlockLayout* pBL,
+                                  UT_uint32 iOffsetFirst, 
+                                  UT_uint32 /*iLen*/ )
+    : fp_HyperlinkRun(pBL,iOffsetFirst,1)
+    , m_iPID(0)
+    , m_sValue("")
+    , m_iRealWidth(0)
 {
     UT_ASSERT(pBL);
 	_setLength(1);
@@ -47,47 +52,33 @@ fp_RDFAnchorRun::fp_RDFAnchorRun(fl_BlockLayout* pBL,
 	UT_ASSERT((pBL));
 	_setDirection(UT_BIDI_WS);
 
+    _setTargetFromAPAttribute( "AnnotationX" );
+    if( m_pTarget )
+    {
+//        m_iPID = atoi(m_pTarget);
+    }
+
+    // _setTarget( "fake target" );
+    // m_bIsStart = true;
+    
 	const PP_AttrProp * pAP = NULL;
-
 	getSpanAP(pAP);
-	
-	const gchar * pTarget;
-	const gchar * pName;
-	bool bFound = false;
-	UT_uint32 k = 0;
 
-	while(pAP->getNthAttribute(k++, pName, pTarget))
-	{
-		bFound = (0 == g_ascii_strncasecmp(pName,"Annotation",10));
-		if(bFound)
-			break;
-	}
+    RDFAnchor a( pAP );
+    _setTarget( a.getID().c_str() );
+    m_bIsStart = !a.isEnd();
+    if( m_bIsStart )
+    {
+        _setHyperlink(this);
+    }
+    
+    
 
-	// we have got to keep a local copy, since the pointer we get
-	// is to a potentially volatile location
-	if(bFound)
-	{
-	        DELETEPV(m_pTarget);
-		UT_uint32 iTargetLen = strlen(pTarget);
-		m_pTarget = new gchar [iTargetLen + 1];
-		strncpy(m_pTarget, pTarget, iTargetLen + 1);
-		m_bIsStart = true;
-		//if this is a start of the Annotation, we set m_pHyperlink to this,
-		//so that when a run gets inserted after this one, its m_pHyperlink is
-		//set correctly
-		_setHyperlink(this);
-		m_iPID = atoi(m_pTarget);
-	}
-	else
-	{
-		m_bIsStart = false;
-		m_pTarget = NULL;
-		_setHyperlink(NULL);
-		m_iPID =0;
-	}
 	lookupProperties();
 
 }
+
+
 
 
 fp_RDFAnchorRun::~fp_RDFAnchorRun()
@@ -98,10 +89,12 @@ fp_RDFAnchorRun::~fp_RDFAnchorRun()
 
 void fp_RDFAnchorRun::_draw(dg_DrawArgs* pDA)
 {
-        if(!displayAnnotations())
-	  return;
+    UT_DEBUGMSG(("_draw() showan:%d isStart:%d\n", displayAnnotations(), m_bIsStart ));
+    
+    if(!displayAnnotations())
+        return;
 	if(!m_bIsStart)
-	  return;
+        return;
 
 	GR_Graphics * pG = pDA->pG;
 
@@ -115,10 +108,6 @@ void fp_RDFAnchorRun::_draw(dg_DrawArgs* pDA)
 	UT_sint32 iYdraw =  pDA->yoff - getAscent()-1;
 
 	UT_uint32 iRunBase = getBlock()->getPosition() + getBlockOffset();
-
-//
-// Sevior was here
-//		UT_sint32 iFillTop = iYdraw;
 	UT_sint32 iFillTop = iYdraw+1;
 	UT_sint32 iFillHeight = getAscent() + getDescent();
 
@@ -161,10 +150,10 @@ void fp_RDFAnchorRun::_draw(dg_DrawArgs* pDA)
 
 }
 
-void fp_RDFAnchorRun::_lookupProperties(const PP_AttrProp * pSpanAP,
-									const PP_AttrProp * pBlockAP,
-									const PP_AttrProp * pSectionAP,
-									GR_Graphics * pG)
+void fp_RDFAnchorRun::_lookupProperties( const PP_AttrProp * pSpanAP,
+                                         const PP_AttrProp * pBlockAP,
+                                         const PP_AttrProp * pSectionAP,
+                                         GR_Graphics * pG )
 {
 
 	FL_DocLayout * pLayout = getBlock()->getDocLayout();
@@ -188,9 +177,8 @@ void fp_RDFAnchorRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 void fp_RDFAnchorRun::_clearScreen(bool /*bFullLineHeightRect*/)
 {
-        if(getWidth() == 0)
-	  return;
-	//	UT_ASSERT(!isDirty());
+    if(getWidth() == 0)
+        return;
 
 	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 	UT_sint32 xoff = 0, yoff = 0;
@@ -268,12 +256,12 @@ UT_sint32 fp_RDFAnchorRun::calcWidth(void)
     getGraphics()->setFont(_getFont());
     if(m_sValue.size() > 0)
     {
-	iNewWidth = getGraphics()->measureString(m_sValue.ucs4_str().ucs4_str(),
-						 0,
-						 m_sValue.ucs4_str().size(),
-						 NULL);
+        iNewWidth = getGraphics()->measureString(m_sValue.ucs4_str().ucs4_str(),
+                                                 0,
+                                                 m_sValue.ucs4_str().size(),
+                                                 NULL);
     }
-    UT_ASSERT(iNewWidth > 0);
+//    UT_ASSERT(iNewWidth > 0);
     return iNewWidth;
 }
 
@@ -306,8 +294,25 @@ bool fp_RDFAnchorRun::_canContainPoint(void) const
 bool fp_RDFAnchorRun::_setValue(void)
 {
   UT_uint32 pos = getBlock()->getDocLayout()->getAnnotationVal(getPID()) + 1;
+
+  const PP_AttrProp * pAP = NULL;
+  getSpanAP(pAP);
+  RDFAnchor a( pAP );
+  
   UT_String tmp;
-  UT_String_sprintf(tmp,"(%d)",pos);
+//  if(getBlock()->getDocLayout()->displayRDFAnchors())
+//      UT_String_sprintf( tmp, "x%s (%d)", a.getID().c_str(), pos );
+//  else
+  UT_String_sprintf( tmp, "" );
   m_sValue = tmp.c_str();
   return true;
 }
+
+std::string fp_RDFAnchorRun::getXMLID()
+{
+    const PP_AttrProp * pAP = NULL;
+    getSpanAP(pAP);
+    RDFAnchor a( pAP );
+    return a.getID();
+}
+

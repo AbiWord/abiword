@@ -307,6 +307,7 @@ menuitem(WEB_WEBPREVIEW)
 menuitem(WEB_SAVEASWEB)
 
 menuitem(RDF)
+menuitem(RDF_HIGHLIGHT)
 menuitem(RDF_ADV)
 menuitem(RDF_ADV_TEST)
 menuitem(RDF_ADV_DUMP_OBJECTS)

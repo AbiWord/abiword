@@ -3729,6 +3729,10 @@ void fl_BlockLayout::format()
 				{
 					setUpdatableField(true);
 				}
+				if(pHRun->getHyperlinkType() == HYPERLINK_RDFANCHOR)
+				{
+					setUpdatableField(true);
+				}
 			}
 			if(pRun == pRunToStartAt)
 				bDoit = true;
@@ -5429,6 +5433,45 @@ bool	fl_BlockLayout::_doInsertBookmarkRun(PT_BlockOffset blockOffset)
 
 }
 
+void    fl_BlockLayout::_finishInsertHyperlinkedNewRun( PT_BlockOffset blockOffset,
+														fp_HyperlinkRun* pNewRun )
+{
+	// if this is the start of the hyperlink, we need to mark all the runs
+	// till the end of it
+	// if this is because of an insert operation, the end run is already
+	// in place, because we insert them in that order; if it is because of
+	// append, there is no end run, but then this is the last run; the other
+	// runs will get marked as they get appended (inside fp_Run::insertRun...)
+	// any hyperlink run will not get its m_pHyperlink set, so that
+	// runs that follow it would not be marked
+
+	if(pNewRun->isStartOfHyperlink())
+	{
+		fp_Run * pRun = pNewRun->getNextRun();
+		UT_ASSERT(pRun);
+		// when loading a document the opening hyperlink run is initially followed
+		// by ENDOFPARAGRAPH run; we do not want to set this one
+		while(pRun && pRun->getType() != FPRUN_HYPERLINK && pRun->getType() != FPRUN_ENDOFPARAGRAPH)
+		{
+			pRun->setHyperlink(pNewRun);
+			pRun = pRun->getNextRun();
+		}
+	}
+	else
+	{
+		//
+		// clear out any hyperlinks
+		//
+		fp_Run * pRun = pNewRun->getNextRun();
+		while(pRun && (pRun->getType() != FPRUN_HYPERLINK && pRun->getType() != FPRUN_ENDOFPARAGRAPH))
+		{
+			pRun->setHyperlink(NULL);
+			pRun = pRun->getNextRun();
+		}
+	}
+	//_breakLineAfterRun(pNewRun);
+}
+
 bool	fl_BlockLayout::_doInsertHyperlinkRun(PT_BlockOffset blockOffset)
 {
 	bool bResult = false;
@@ -5441,40 +5484,7 @@ bool	fl_BlockLayout::_doInsertHyperlinkRun(PT_BlockOffset blockOffset)
 
 		if (bResult)
 		{
-			// if this is the start of the hyperlink, we need to mark all the runs
-			// till the end of it
-			// if this is because of an insert operation, the end run is already
-			// in place, because we insert them in that order; if it is because of
-			// append, ther is no end run, but then this is the last run; the other
-			// runs will get marked as they get appended (inside fp_Run::insertRun...)
-			// any hyperlink run will not get its m_pHyperlink set, so that
-			// runs that follow it would not be marked
-
-			if(pNewRun->isStartOfHyperlink())
-			{
-				fp_Run * pRun = pNewRun->getNextRun();
-				UT_ASSERT(pRun);
-				// when loading a document the opening hyperlink run is initially followed
-				// by ENDOFPARAGRAPH run; we do not want to set this one
-				while(pRun && pRun->getType() != FPRUN_HYPERLINK && pRun->getType() != FPRUN_ENDOFPARAGRAPH)
-				{
-					pRun->setHyperlink(pNewRun);
-					pRun = pRun->getNextRun();
-				}
-			}
-			else
-			{
-				//
-				// clear out any hyperlinks
-				//
-				fp_Run * pRun = pNewRun->getNextRun();
-				while(pRun && (pRun->getType() != FPRUN_HYPERLINK && pRun->getType() != FPRUN_ENDOFPARAGRAPH))
-				{
-					pRun->setHyperlink(NULL);
-					pRun = pRun->getNextRun();
-				}
-			}
-			//_breakLineAfterRun(pNewRun);
+			_finishInsertHyperlinkedNewRun( blockOffset, pNewRun );
 		}
 	}
 	else
@@ -5502,40 +5512,7 @@ bool	fl_BlockLayout::_doInsertAnnotationRun(PT_BlockOffset blockOffset)
 
 		if (bResult)
 		{
-			// if this is the start of the Annotation, we need to mark all the runs
-			// till the end of it
-			// if this is because of an insert operation, the end run is already
-			// in place, because we insert them in that order; if it is because of
-			// append, ther is no end run, but then this is the last run; the other
-			// runs will get marked as they get appended (inside fp_Run::insertRun...)
-			// any Annotation run will not get its m_pHyperlink set, so that
-			// runs that follow it would not be marked
-
-			if(pNewRun->isStartOfHyperlink())
-			{
-				fp_Run * pRun = pNewRun->getNextRun();
-				UT_ASSERT(pRun);
-				// when loading a document the opening hyperlink run is initially followed
-				// by ENDOFPARAGRAPH run; we do not want to set this one
-				while(pRun && pRun->getType() != FPRUN_HYPERLINK && pRun->getType() != FPRUN_ENDOFPARAGRAPH)
-				{
-					pRun->setHyperlink(pNewRun);
-					pRun = pRun->getNextRun();
-				}
-			}
-			else
-			{
-				//
-				// clear out any hyperlinks
-				//
-				fp_Run * pRun = pNewRun->getNextRun();
-				while(pRun && (pRun->getType() != FPRUN_HYPERLINK && pRun->getType() != FPRUN_ENDOFPARAGRAPH))
-				{
-					pRun->setHyperlink(NULL);
-					pRun = pRun->getNextRun();
-				}
-			}
-			//_breakLineAfterRun(pNewRun);
+			_finishInsertHyperlinkedNewRun( blockOffset, pNewRun );
 		}
 	}
 	else
@@ -5551,62 +5528,33 @@ bool	fl_BlockLayout::_doInsertAnnotationRun(PT_BlockOffset blockOffset)
 }
 
 
-bool	fl_BlockLayout::_doInsertRDFAnchorRun(PT_BlockOffset blockOffset)
+/**
+ * Note that _doInsertHyperlinkRun(), _doInsertAnnotationRun,
+ * and _doInsertRDFAnchorRun() all work on contained information.
+ * Each of these methods use setHyperlink() on the runs.
+ */
+bool fl_BlockLayout::_doInsertRDFAnchorRun(PT_BlockOffset blockOffset)
 {
 	bool bResult = false;
 	
-	if(!isContainedByTOC())
-	{
-		fp_RDFAnchorRun * pNewRun =  new fp_RDFAnchorRun(this, blockOffset, 1);
-		UT_ASSERT(pNewRun);
-		bResult = _doInsertRun(pNewRun);
-
-		if (bResult)
-		{
-			// if this is the start of the Annotation, we need to mark all the runs
-			// till the end of it
-			// if this is because of an insert operation, the end run is already
-			// in place, because we insert them in that order; if it is because of
-			// append, ther is no end run, but then this is the last run; the other
-			// runs will get marked as they get appended (inside fp_Run::insertRun...)
-			// any Annotation run will not get its m_pHyperlink set, so that
-			// runs that follow it would not be marked
-
-			if(pNewRun->isStartOfHyperlink())
-			{
-				fp_Run * pRun = pNewRun->getNextRun();
-				UT_ASSERT(pRun);
-				// when loading a document the opening hyperlink run is initially followed
-				// by ENDOFPARAGRAPH run; we do not want to set this one
-				while(pRun && pRun->getType() != FPRUN_HYPERLINK && pRun->getType() != FPRUN_ENDOFPARAGRAPH)
-				{
-					pRun->setHyperlink(pNewRun);
-					pRun = pRun->getNextRun();
-				}
-			}
-			else
-			{
-				//
-				// clear out any hyperlinks
-				//
-				fp_Run * pRun = pNewRun->getNextRun();
-				while(pRun && (pRun->getType() != FPRUN_HYPERLINK && pRun->getType() != FPRUN_ENDOFPARAGRAPH))
-				{
-					pRun->setHyperlink(NULL);
-					pRun = pRun->getNextRun();
-				}
-			}
-			//_breakLineAfterRun(pNewRun);
-		}
-	}
-	else
+	if( isContainedByTOC() )
 	{
 		fp_Run * pNewRun = new fp_DummyRun(this,blockOffset);
 		UT_ASSERT(pNewRun);
 		bResult = _doInsertRun(pNewRun);
 	}
-	
+	else
+	{
+		fp_RDFAnchorRun * pNewRun = new fp_RDFAnchorRun(this, blockOffset, 1);
+		UT_ASSERT(pNewRun);
+		bResult = _doInsertRun(pNewRun);
 
+		if (bResult)
+		{
+			_finishInsertHyperlinkedNewRun( blockOffset, pNewRun );
+		}
+	}
+	
 	return bResult;
 
 }
@@ -9235,21 +9183,30 @@ bool fl_BlockLayout::recalculateFields(UT_uint32 iUpdateCount)
 			}
 		}
 		//
-		// See if Annotation has changed
+		// See if Annotation or RDF has changed
 		//
 		if (pRun->getType() == FPRUN_HYPERLINK)
 		{
 				fp_HyperlinkRun * pHRun = pRun->getHyperlink();
-				fp_AnnotationRun * pARun = NULL;
 				if(pHRun && pHRun->getHyperlinkType() == HYPERLINK_ANNOTATION)
 				{
-						pARun = static_cast<fp_AnnotationRun *>(pHRun);
-						UT_sint32 iWidth = pARun->getWidth();
-						pARun->recalcWidth();
-						if(iWidth != pARun->getWidth())
-						{
-								bResult |= true;
-						}
+					fp_AnnotationRun * pARun = static_cast<fp_AnnotationRun *>(pHRun);
+					UT_sint32 iWidth = pARun->getWidth();
+					pARun->recalcWidth();
+					if(iWidth != pARun->getWidth())
+					{
+						bResult |= true;
+					}
+				}				
+				if(pHRun && pHRun->getHyperlinkType() == HYPERLINK_RDFANCHOR)
+				{
+					fp_RDFAnchorRun* pARun = static_cast<fp_RDFAnchorRun*>(pHRun);
+					UT_sint32 iWidth = pARun->getWidth();
+					pARun->recalcWidth();
+					if(iWidth != pARun->getWidth())
+					{
+						bResult |= true;
+					}
 				}				
 		}
 

@@ -58,6 +58,9 @@
 #define AP_PREF_KEY_DisplayAnnotations		    "DisplayAnnotations"			/* enable display of annotations (0,1) */
 #define AP_PREF_DEFAULT_DisplayAnnotations  		"0"
 
+#define AP_PREF_KEY_DisplayRDFAnchors		    "DisplayRDFAnchors"			/* enable display of RDF anchors (0,1) */
+#define AP_PREF_DEFAULT_DisplayRDFAnchors  		"0"
+
 #define AP_PREF_KEY_SpellCheckCaps					"SpellCheckCaps"			/* enable checking CAPITALIZED words {0,1} */
 #define AP_PREF_DEFAULT_SpellCheckCaps				"1"
 
@@ -192,6 +195,27 @@
 #define AP_PREF_DEFAULT_ColorForAnnotation9			"0712c3"
 #define AP_PREF_KEY_ColorForAnnotation10				"ColorAnnotation10"
 #define AP_PREF_DEFAULT_ColorForAnnotation10			"ff0000"
+
+#define AP_PREF_KEY_ColorForRDFAnchor1				"ColorRDFAnchor1"
+#define AP_PREF_DEFAULT_ColorForRDFAnchor1			"ab04fe"
+#define AP_PREF_KEY_ColorForRDFAnchor2				"ColorRDFAnchor2"
+#define AP_PREF_DEFAULT_ColorForRDFAnchor2			"ab1477"
+#define AP_PREF_KEY_ColorForRDFAnchor3				"ColorRDFAnchor3"
+#define AP_PREF_DEFAULT_ColorForRDFAnchor3			"ff9708"
+#define AP_PREF_KEY_ColorForRDFAnchor4				"ColorRDFAnchor4"
+#define AP_PREF_DEFAULT_ColorForRDFAnchor4			"9eb345"
+#define AP_PREF_KEY_ColorForRDFAnchor5				"ColorRDFAnchor5"
+#define AP_PREF_DEFAULT_ColorForRDFAnchor5			"0fb305"
+#define AP_PREF_KEY_ColorForRDFAnchor6				"ColorRDFAnchor6"
+#define AP_PREF_DEFAULT_ColorForRDFAnchor6			"08b3f8"
+#define AP_PREF_KEY_ColorForRDFAnchor7				"ColorRDFAnchor7"
+#define AP_PREF_DEFAULT_ColorForRDFAnchor7			"04cec3"
+#define AP_PREF_KEY_ColorForRDFAnchor8				"ColorRDFAnchor8"
+#define AP_PREF_DEFAULT_ColorForRDFAnchor8			"0485c3"
+#define AP_PREF_KEY_ColorForRDFAnchor9				"ColorRDFAnchor9"
+#define AP_PREF_DEFAULT_ColorForRDFAnchor9			"0712c3"
+#define AP_PREF_KEY_ColorForRDFAnchor10				"ColorRDFAnchor10"
+#define AP_PREF_DEFAULT_ColorForRDFAnchor10			"ff0000"
 
 #else /* AP_PREFS_SCHEMEIDS_H */
 #ifdef dcl

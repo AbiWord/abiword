@@ -95,7 +95,8 @@ enum FP_RUN_TYPE
 enum FP_HYPERLINK_TYPE
 {
     HYPERLINK_NORMAL =1,
-    HYPERLINK_ANNOTATION = 2
+    HYPERLINK_ANNOTATION = 2,
+    HYPERLINK_RDFANCHOR = 3
 };
 
 // specifies how setX should handle screen clearing
@@ -343,6 +344,7 @@ public:
 	bool        deleteFollowingIfAtInsPoint() const;
 
 	bool        displayAnnotations(void);
+    bool        displayRDFAnchors(void);
 	// Methods for selection drawing
 	void                 setSelectionMode(PT_DocPosition posLow, PT_DocPosition posHigh);
     void                 clearSelectionMode(void);
@@ -738,9 +740,7 @@ class ABI_EXPORT fp_HyperlinkRun : public fp_Run
 public:
 	fp_HyperlinkRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 	virtual ~fp_HyperlinkRun();
-	virtual FP_HYPERLINK_TYPE    getHyperlinkType(void)
-	{ return HYPERLINK_NORMAL;}
-
+	virtual FP_HYPERLINK_TYPE getHyperlinkType(void) const { return HYPERLINK_NORMAL;}
 	bool 				isStartOfHyperlink() const {return m_bIsStart;};
 	const gchar * 	getTarget() const {return static_cast<const gchar *>(m_pTarget);};
 
@@ -779,7 +779,9 @@ protected:
 	virtual bool _letPointPass(void) const;
 	virtual bool _canContainPoint(void) const;
 	virtual bool _deleteFollowingIfAtInsPoint() const;
-	
+    void _setTarget( const gchar * pTarget );
+	void _setTargetFromAPAttribute( const gchar* pAttrName );
+
 	bool m_bIsStart;
 	gchar *	  	m_pTarget;
 };
@@ -791,10 +793,7 @@ class ABI_EXPORT fp_AnnotationRun : public fp_HyperlinkRun
 public:
 	fp_AnnotationRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 	virtual ~fp_AnnotationRun();
-	virtual FP_HYPERLINK_TYPE    getHyperlinkType(void)
-	{
-		return HYPERLINK_ANNOTATION;
-	}
+	virtual FP_HYPERLINK_TYPE getHyperlinkType(void) const { return HYPERLINK_ANNOTATION; }
 	UT_uint32 getPID(void) { return m_iPID;}
 	const char * getValue(void);
     void         recalcValue(void);
@@ -827,10 +826,7 @@ class ABI_EXPORT fp_RDFAnchorRun : public fp_HyperlinkRun
 public:
 	fp_RDFAnchorRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 	virtual ~fp_RDFAnchorRun();
-	virtual FP_HYPERLINK_TYPE    getHyperlinkType(void)
-	{
-		return HYPERLINK_ANNOTATION;
-	}
+	virtual FP_HYPERLINK_TYPE getHyperlinkType(void) const { return HYPERLINK_RDFANCHOR; }
 	UT_uint32 getPID(void) { return m_iPID;}
 	const char * getValue(void);
     void         recalcValue(void);
@@ -839,6 +835,8 @@ public:
 	UT_sint32    getRealWidth(void) const {return m_iRealWidth;}
     void         cleanDraw(dg_DrawArgs*);
 	UT_sint32    calcWidth(void);
+
+    std::string  getXMLID();
 
  protected:
 	virtual void			_draw(dg_DrawArgs*);

@@ -159,6 +159,7 @@
 
 #include "pd_DocumentRDF.h"
 
+#include <sstream>
 
 /*****************************************************************/
 /*****************************************************************/
@@ -551,6 +552,7 @@ public:
 	static EV_EditMethod_Fn toggleDomDirection;
 	static EV_EditMethod_Fn toggleDomDirectionSect;
 	static EV_EditMethod_Fn toggleDomDirectionDoc;
+	static EV_EditMethod_Fn toggleRDFAnchorHighlight;
 
 	static EV_EditMethod_Fn doBullets;
 	static EV_EditMethod_Fn doNumbers;
@@ -1170,6 +1172,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(toggleMarkRevisions),  0,  ""),
 	EV_EditMethod(NF(toggleOline),			0,  ""),
 	EV_EditMethod(NF(togglePlain),			0,	""),
+	EV_EditMethod(NF(toggleRDFAnchorHighlight), 0,	""),
 	EV_EditMethod(NF(toggleShowRevisions),  0,  ""),
 	EV_EditMethod(NF(toggleShowRevisionsAfter),  0,  ""),
 	EV_EditMethod(NF(toggleShowRevisionsAfterPrevious),  0,  ""),
@@ -10718,6 +10721,28 @@ Defun1(insEndnote)
 	return true;
 }
 
+Defun1(toggleRDFAnchorHighlight)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+	
+	//
+	// Set the preference to enable annotations display
+	//
+	XAP_Prefs * pPrefs = XAP_App::getApp()->getPrefs();
+	UT_return_val_if_fail(pPrefs, false);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
+	UT_return_val_if_fail(pScheme, false);
+	bool b = false;
+	pScheme->getValueBool(static_cast<const gchar *>(AP_PREF_KEY_DisplayRDFAnchors), &b );
+	b = !b;
+	UT_DEBUGMSG(("toggleRDFAnchorHighlight: Changing annotation display to %s\n",(b ? "true" : "false")));
+	gchar szBuffer[2] = {0,0};
+	szBuffer[0] = ((b)==true ? '1' : '0');
+	pScheme->setValue(static_cast<const gchar *>(AP_PREF_KEY_DisplayRDFAnchors),szBuffer);
+	return true ;
+}
 
 /*****************************************************************/
 /*****************************************************************/
@@ -13890,18 +13915,45 @@ Defun(hyperlinkStatusBar)
 	fp_HyperlinkRun * pHRun = static_cast<fp_HyperlinkRun *>(pView->getHyperLinkRun(pos));
 	if(!pHRun)
 		return false;
-	if(pHRun->getHyperlinkType() ==  HYPERLINK_NORMAL)
+	UT_DEBUGMSG(("hyperlinkStatusBar() pHRun:%p\n", pHRun ));
+	UT_DEBUGMSG(("hyperlinkStatusBar()  type:%p\n", pHRun->getHyperlinkType() ));
+	if(pHRun->getHyperlinkType() == HYPERLINK_NORMAL)
 	{
 			pView->cmdHyperlinkStatusBar(xpos, ypos);
 			return true;
 	}
-	
-	fp_AnnotationRun * pAnn = static_cast<fp_AnnotationRun *>(pHRun);
 
+	UT_uint32 pid = 0;
+	std::string sText;
+	if( fp_AnnotationRun * pAnn = dynamic_cast<fp_AnnotationRun *>(pHRun) )
+	{
+		UT_DEBUGMSG(("hyperlinkStatusBar() have annotation...\n" ));
+		pid = pAnn->getPID();
+		bool b = pView->getAnnotationText( pid, sText );
+	}
+	else if( fp_RDFAnchorRun * pAnn = dynamic_cast<fp_RDFAnchorRun *>(pHRun) )
+	{
+		UT_DEBUGMSG(("hyperlinkStatusBar() have RDF anchor!\n" ));
+		pid = pAnn->getPID();
+		std::string xmlid = pAnn->getXMLID();
+		std::stringstream ss;
+		ss << "xmlid:" << xmlid;
+		if( PD_Document * pDoc = pView->getDocument() )
+		{
+			if( PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF() )
+			{
+				PD_RDFModelHandle m = rdf->getRDFForID( xmlid );
+				ss << " triple count:" << m->getTripleCount();
+			}
+		}
+		ss << " ";
+		sText = ss.str();
+	}
+	
 	// avoid unneeded redrawings
 	// check BOTH if we are already previewing an annotation, and that it is indeed the annotation we want
 	if((pView->isAnnotationPreviewActive()) &&
-	   (pView->getActivePreviewAnnotationID() == pAnn->getPID()))
+	   (pView->getActivePreviewAnnotationID() == pid ))
 	{
 		xxx_UT_DEBUGMSG(("hyperlinkStatusBar: nothing to draw, annotation already previewed\n"));
 		return true; // should be false? think not
@@ -13914,16 +13966,17 @@ Defun(hyperlinkStatusBar)
 		pView->killAnnotationPreview();
 	}
 	
-	std::string sText;
 	std::string sTitle;
 	std::string sAuthor;
-	bool b = pView->getAnnotationText(pAnn->getPID(),sText);
-	if(!b)
+	if(pHRun->getHyperlinkType() == HYPERLINK_ANNOTATION && sText.empty() )
+	{
+		UT_DEBUGMSG(("hyperlinkStatusBar: exiting because we have no annotation text for pid:%d\n", pid));
 		return false;
+	}
 	
 	// Optional fields
-	pView->getAnnotationTitle(pAnn->getPID(),sTitle);
-	pView->getAnnotationAuthor(pAnn->getPID(),sAuthor);
+	pView->getAnnotationTitle( pid, sTitle );
+	pView->getAnnotationAuthor( pid, sAuthor );
 	
 	// preview annotation
 
@@ -13948,16 +14001,18 @@ Defun(hyperlinkStatusBar)
 	
 	// flags
 	pView->setAnnotationPreviewActive(true);
-	pView->setActivePreviewAnnotationID(pAnn->getPID()); // this one is also needed to decide when to redraw the preview
+	// this call is also needed to decide when to redraw the preview
+	pView->setActivePreviewAnnotationID( pid ); 
 	
 	// Fields
 	pAnnPview->setDescription(sText);
 	
 	// Optional fields
-	pAnnPview->setTitle(sTitle);	// if those fields ar to be hidden it should be at the GUI level (inside AP_Preview_Annotation)
+	// if those fields are to be hidden it should be at the GUI level (inside AP_Preview_Annotation)
+	pAnnPview->setTitle(sTitle);	
 	pAnnPview->setAuthor(sAuthor);
 	
-	fp_Line * pLine = pAnn->getLine();
+	fp_Line * pLine = pHRun->getLine();
 	if(pLine)
 	{
 		UT_Rect * pRect = pLine->getScreenRect();

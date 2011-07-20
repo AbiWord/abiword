@@ -148,6 +148,7 @@ class ABI_EXPORT PD_RDFModel
     virtual POCol      getArcsOut( const PD_URI& s ) = 0;
     virtual bool       contains( const PD_URI& s, const PD_URI& p, const PD_Object& o ) = 0;
     virtual bool       contains( const PD_URI& s, const PD_URI& p ) = 0;
+    virtual long       getTripleCount() = 0;
 };
 
 /**
@@ -180,7 +181,7 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
     virtual POCol      getArcsOut( const PD_URI& s );
     virtual bool       contains( const PD_URI& s, const PD_URI& p, const PD_Object& o );
     virtual bool       contains( const PD_URI& s, const PD_URI& p );
-    long getTripleCount();
+    virtual long       getTripleCount();
     
 
     PD_DocumentRDFMutationHandle createMutation();

@@ -34,8 +34,11 @@
 
 fp_AnnotationRun::fp_AnnotationRun(fl_BlockLayout* pBL,
 				   UT_uint32 iOffsetFirst, 
-				   UT_uint32 /*iLen*/ ) : 
-  fp_HyperlinkRun(pBL,iOffsetFirst,1),m_iPID(0),m_sValue(""),m_iRealWidth(0)
+				   UT_uint32 /*iLen*/ )
+    : fp_HyperlinkRun(pBL,iOffsetFirst,1)
+    , m_iPID(0)
+    , m_sValue("")
+    , m_iRealWidth(0)
 {
     UT_ASSERT(pBL);
 	_setLength(1);
@@ -46,44 +49,12 @@ fp_AnnotationRun::fp_AnnotationRun(fl_BlockLayout* pBL,
 	UT_ASSERT((pBL));
 	_setDirection(UT_BIDI_WS);
 
-	const PP_AttrProp * pAP = NULL;
+	_setTargetFromAPAttribute( "Annotation" );
 
-	getSpanAP(pAP);
-	
-	const gchar * pTarget;
-	const gchar * pName;
-	bool bFound = false;
-	UT_uint32 k = 0;
-
-	while(pAP->getNthAttribute(k++, pName, pTarget))
-	{
-		bFound = (0 == g_ascii_strncasecmp(pName,"Annotation",10));
-		if(bFound)
-			break;
-	}
-
-	// we have got to keep a local copy, since the pointer we get
-	// is to a potentially volatile location
-	if(bFound)
-	{
-	        DELETEPV(m_pTarget);
-		UT_uint32 iTargetLen = strlen(pTarget);
-		m_pTarget = new gchar [iTargetLen + 1];
-		strncpy(m_pTarget, pTarget, iTargetLen + 1);
-		m_bIsStart = true;
-		//if this is a start of the Annotation, we set m_pHyperlink to this,
-		//so that when a run gets inserted after this one, its m_pHyperlink is
-		//set correctly
-		_setHyperlink(this);
-		m_iPID = atoi(m_pTarget);
-	}
-	else
-	{
-		m_bIsStart = false;
-		m_pTarget = NULL;
-		_setHyperlink(NULL);
-		m_iPID =0;
-	}
+    if( m_pTarget )
+    {
+        m_iPID = atoi(m_pTarget);
+    }
 	lookupProperties();
 
 }

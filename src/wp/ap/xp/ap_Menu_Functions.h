@@ -85,6 +85,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Lists);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_MailMerge);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InsTextBox);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_AnnotationJumpOK);
+Defun_EV_GetMenuItemState_Fn(ap_GetState_ToggleRDFAnchorHighlight);
 
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Toolbar);
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Recent);

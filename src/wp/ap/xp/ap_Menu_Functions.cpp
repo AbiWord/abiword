@@ -1748,6 +1748,22 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ToggleAnnotations)
 	return (b ? EV_MIS_Toggled : EV_MIS_ZERO);
 }
 
+Defun_EV_GetMenuItemState_Fn(ap_GetState_ToggleRDFAnchorHighlight)
+{
+	UT_UNUSED(id);
+	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
+	XAP_App *pApp = XAP_App::getApp();
+	UT_return_val_if_fail (pApp, EV_MIS_Gray);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_return_val_if_fail (pPrefs, EV_MIS_Gray);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
+	UT_return_val_if_fail(pScheme, EV_MIS_Gray);
+	bool b = false;
+	pScheme->getValueBool(static_cast<const gchar *>(AP_PREF_KEY_DisplayRDFAnchors), &b );
+	return (b ? EV_MIS_Toggled : EV_MIS_ZERO);
+}
+
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InImage)
 {
 	UT_UNUSED(id);

@@ -548,6 +548,15 @@ bool fp_Run::displayAnnotations(void)
 	return getBlock()->getDocLayout()->displayAnnotations();
 }
 
+bool fp_Run::displayRDFAnchors(void)
+{
+	if(!getBlock())
+		return false;
+	if(!getBlock()->getDocLayout())
+		return false;
+	return getBlock()->getDocLayout()->displayRDFAnchors();
+}
+
 /*!
   Inherit attribute properties from previous Run
 
@@ -1182,6 +1191,15 @@ const UT_RGBColor fp_Run::getFGColor(void) const
 		else
 			return _getColorFG();
 	}
+	else if(m_pHyperlink && (m_pHyperlink->getHyperlinkType() == HYPERLINK_RDFANCHOR))
+	{
+		if( getBlock()->getDocLayout()->displayRDFAnchors())
+		{
+			s_fgColor =	_getView()->getColorRDFAnchor(this);
+		}
+		else
+			return _getColorFG();
+	}
 	//
 	// FIXME make priniting author colours a preference.
 	//
@@ -1407,10 +1425,30 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		}
 		else
 		{
-			if(displayAnnotations() || pG->queryProperties(GR_Graphics::DGP_SCREEN))
+            bool display = false;
+            GR_Painter painter(pG);
+            switch(m_pHyperlink->getHyperlinkType())
+            {
+                case HYPERLINK_NORMAL:
+                    break;
+                case HYPERLINK_RDFANCHOR:
+                    if( displayRDFAnchors() )
+                    {
+                        display = true;
+                        pG->setColor(_getView()->getColorRDFAnchor(this));
+                    }
+                    break;
+                case HYPERLINK_ANNOTATION:
+                    if(displayAnnotations() || pG->queryProperties(GR_Graphics::DGP_SCREEN))
+                    {
+                        display = true;
+                        pG->setColor(_getView()->getColorAnnotation(this));
+                    }
+                    break;
+            }
+            
+			if( display )
 			{
-					GR_Painter painter(pG);
-					pG->setColor(_getView()->getColorAnnotation(this));
 					pG->setLineProperties(pG->tluD(1.0),
 										  GR_Graphics::JOIN_MITER,
 										  GR_Graphics::CAP_PROJECTING,
@@ -3023,9 +3061,9 @@ void fp_BookmarkRun::_draw(dg_DrawArgs* pDA)
 fp_HyperlinkRun::fp_HyperlinkRun( fl_BlockLayout* pBL,
 								  UT_uint32 iOffsetFirst,
 								UT_uint32 /*iLen*/)
-	: fp_Run(pBL, iOffsetFirst, 1, FPRUN_HYPERLINK),
-  m_bIsStart(false),
-  m_pTarget(NULL)
+	: fp_Run(pBL, iOffsetFirst, 1, FPRUN_HYPERLINK)
+    , m_bIsStart(false)
+    , m_pTarget(NULL)
 {
 	_setLength(1);
 	_setDirty(false);
@@ -3035,42 +3073,7 @@ fp_HyperlinkRun::fp_HyperlinkRun( fl_BlockLayout* pBL,
 	UT_ASSERT((pBL));
 	_setDirection(UT_BIDI_WS);
 
-	const PP_AttrProp * pAP = NULL;
-
-	getSpanAP(pAP);
-	
-	const gchar * pTarget;
-	const gchar * pName;
-	bool bFound = false;
-	UT_uint32 k = 0;
-
-	while(pAP->getNthAttribute(k++, pName, pTarget))
-	{
-		bFound = (0 == g_ascii_strncasecmp(pName,"xlink:href",10));
-		if(bFound)
-			break;
-	}
-
-	// we have got to keep a local copy, since the pointer we get
-	// is to a potentially volatile location
-	if(bFound)
-	{
-		UT_uint32 iTargetLen = strlen(pTarget);
-		m_pTarget = new gchar [iTargetLen + 1];
-		strncpy(m_pTarget, pTarget, iTargetLen + 1);
-		m_bIsStart = true;
-		//if this is a start of the hyperlink, we set m_pHyperlink to this,
-		//so that when a run gets inserted after this one, its m_pHyperlink is
-		//set correctly
-		_setHyperlink(this);
-	}
-	else
-	{
-		m_bIsStart = false;
-		m_pTarget = NULL;
-		_setHyperlink(NULL);
-	}
-
+	_setTargetFromAPAttribute( "xlink:href" );
 }
 
 
@@ -3132,6 +3135,52 @@ void fp_HyperlinkRun::_clearScreen(bool /* bFullLineHeightRect */)
 
 void fp_HyperlinkRun::_draw(dg_DrawArgs* /*pDA*/)
 {
+}
+
+void fp_HyperlinkRun::_setTargetFromAPAttribute( const gchar* pAttrName )
+{
+	const PP_AttrProp * pAP = NULL;
+
+	getSpanAP(pAP);
+	
+	const gchar * pTarget;
+	const gchar * pName;
+	bool bFound = false;
+	UT_uint32 k = 0;
+
+	while(pAP->getNthAttribute(k++, pName, pTarget))
+	{
+		bFound = (0 == g_ascii_strncasecmp(pName,pAttrName,strlen(pAttrName)));
+		if(bFound)
+			break;
+	}
+
+	// we have got to keep a local copy, since the pointer we get
+	// is to a potentially volatile location
+	if(bFound)
+	{
+        _setTarget( pTarget );
+		m_bIsStart = true;
+		//if this is a start of the hyperlink, we set m_pHyperlink to this,
+		//so that when a run gets inserted after this one, its m_pHyperlink is
+		//set correctly
+		_setHyperlink(this);
+	}
+	else
+	{
+		m_bIsStart = false;
+		m_pTarget = NULL;
+		_setHyperlink(NULL);
+	}
+}
+
+
+void fp_HyperlinkRun::_setTarget( const gchar * pTarget )
+{
+    DELETEPV(m_pTarget);
+    UT_uint32 iTargetLen = strlen(pTarget);
+    m_pTarget = new gchar [iTargetLen + 1];
+    strncpy(m_pTarget, pTarget, iTargetLen + 1);
 }
 
 
