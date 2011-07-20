@@ -1,18 +1,18 @@
 #include "ie_exp_HTML_StyleTree.h"
-#include "ie_exp_HTML.h"
 
-extern const char * s_prop_list[];
+
+
 IE_Exp_HTML_StyleTree::IE_Exp_HTML_StyleTree(IE_Exp_HTML_StyleTree * parent, const char * _style_name, PD_Style * style) :
-    m_pDocument(0),
-    m_parent(parent),
-    m_list(0),
-    m_count(0),
-    m_max(0),
-    m_bInUse(false),
-    m_style_name(_style_name),
-    m_class_name(_style_name),
-    m_class_list(_style_name),
-    m_style(style)
+        m_pDocument(0),
+        m_parent(parent),
+        m_list(0),
+        m_count(0),
+        m_max(0),
+        m_bInUse(false),
+        m_style_name(_style_name),
+        m_class_name(_style_name),
+        m_class_list(_style_name),
+        m_style(style)
 {
     UT_LocaleTransactor t(LC_NUMERIC, "C");
 
@@ -118,16 +118,16 @@ IE_Exp_HTML_StyleTree::IE_Exp_HTML_StyleTree(IE_Exp_HTML_StyleTree * parent, con
 }
 
 IE_Exp_HTML_StyleTree::IE_Exp_HTML_StyleTree(PD_Document * pDocument) :
-m_pDocument(pDocument),
-m_parent(0),
-m_list(0),
-m_count(0),
-m_max(0),
-m_bInUse(false),
-m_style_name("None"),
-m_class_name(""),
-m_class_list(""),
-m_style(0)
+        m_pDocument(pDocument),
+        m_parent(0),
+        m_list(0),
+        m_count(0),
+        m_max(0),
+        m_bInUse(false),
+        m_style_name("None"),
+        m_class_name(""),
+        m_class_list(""),
+        m_style(0)
 {
     const char ** ptr = s_prop_list;
     while (*ptr)
@@ -296,6 +296,8 @@ bool IE_Exp_HTML_StyleTree::descends(const char * _style_name) const
     return m_parent->descends(_style_name);
 }
 
+
+
 const std::string & IE_Exp_HTML_StyleTree::lookup(const std::string & prop_name) const
 {
     static std::string empty;
@@ -315,10 +317,16 @@ const std::string & IE_Exp_HTML_StyleTree::lookup(const std::string & prop_name)
     return (*prop_iter).second;
 }
 
+IE_Exp_HTML_StyleListener::IE_Exp_HTML_StyleListener(IE_Exp_HTML_StyleTree* styleTree):
+        m_pStyleTree(styleTree)
+{
+    
+}
+
 void IE_Exp_HTML_StyleListener::styleCheck(PT_AttrPropIndex api)
 {
     const PP_AttrProp * pAP = 0;
-    bool bHaveProp = (api ? (m_styleTree->getDocument()->getAttrProp(api, &pAP)) : false);
+    bool bHaveProp = (api ? (m_pStyleTree->getDocument()->getAttrProp(api, &pAP)) : false);
 
     if (bHaveProp && pAP)
     {
@@ -327,15 +335,9 @@ void IE_Exp_HTML_StyleListener::styleCheck(PT_AttrPropIndex api)
 
         if (have_style && szStyle)
         {
-            m_styleTree->findAndUse(szStyle);
+            m_pStyleTree->findAndUse(szStyle);
         }
     }
-}
-
-IE_Exp_HTML_StyleListener::IE_Exp_HTML_StyleListener(IE_Exp_HTML_StyleTree *styleTree)
-        :m_styleTree(styleTree)
-{
-    
 }
 
 bool IE_Exp_HTML_StyleListener::populate(PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord * pcr)
@@ -355,8 +357,8 @@ bool IE_Exp_HTML_StyleListener::populate(PL_StruxFmtHandle /*sfh*/, const PX_Cha
 }
 
 bool IE_Exp_HTML_StyleListener::populateStrux(PL_StruxDocHandle /*sdh*/,
-                                          const PX_ChangeRecord * pcr,
-                                          PL_StruxFmtHandle * psfh)
+                                const PX_ChangeRecord * pcr,
+                                PL_StruxFmtHandle * psfh)
 {
     UT_return_val_if_fail(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux, false);
 
@@ -382,19 +384,19 @@ bool IE_Exp_HTML_StyleListener::populateStrux(PL_StruxDocHandle /*sdh*/,
 }
 
 bool IE_Exp_HTML_StyleListener::change(PL_StruxFmtHandle /*sfh*/,
-                                   const PX_ChangeRecord * /*pcr*/)
+                         const PX_ChangeRecord * /*pcr*/)
 {
     UT_ASSERT_HARMLESS(0); // this function is not used.
     return false;
 }
 
 bool IE_Exp_HTML_StyleListener::insertStrux(PL_StruxFmtHandle /*sfh*/,
-                                        const PX_ChangeRecord * /*pcr*/,
-                                        PL_StruxDocHandle /*sdh*/,
-                                        PL_ListenerId /* lid */,
-                                        void (* /*pfnBindHandles*/)(PL_StruxDocHandle /* sdhNew */,
-                                        PL_ListenerId /* lid */,
-                                        PL_StruxFmtHandle /* sfhNew */))
+                              const PX_ChangeRecord * /*pcr*/,
+                              PL_StruxDocHandle /*sdh*/,
+                              PL_ListenerId /* lid */,
+                              void (* /*pfnBindHandles*/)(PL_StruxDocHandle /* sdhNew */,
+                              PL_ListenerId /* lid */,
+                              PL_StruxFmtHandle /* sfhNew */))
 {
     UT_ASSERT_HARMLESS(0); // this function is not used.
     return false;
@@ -405,4 +407,3 @@ bool IE_Exp_HTML_StyleListener::signal(UT_uint32 /* iSignal */)
     UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
     return false;
 }
-

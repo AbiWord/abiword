@@ -1,22 +1,33 @@
 #ifndef IE_EXP_HTML_STYLETREE_H
-#define	IE_EXP_HTML_STYLETREE_H
-
+#define IE_EXP_HTML_STYLETREE_H
 
 #include "ie_exp_HTML_util.h"
+#include "ut_locale.h"
+#include "ut_debugmsg.h"
+#include "ut_assert.h"
+#include "ut_string_class.h"
+#include "pt_Types.h"
+#include "pl_Listener.h"
+#include "pd_Document.h"
+#include "pd_Style.h"
+#include "pp_AttrProp.h"
+#include "pp_Property.h"
+#include "pp_PropertyMap.h"
+#include "px_ChangeRecord.h"
+#include "px_CR_Object.h"
+#include "px_CR_Span.h"
+#include "px_CR_Strux.h"
 
-#include <ut_types.h>
-#include <ut_locale.h>
-#include <pd_Document.h>
-#include <pd_Style.h>
-#include <pl_Listener.h>
-#include <pp_AttrProp.h>
-#include <pp_Property.h>
-#include <pp_PropertyMap.h>
-#include <px_ChangeRecord.h>
-#include <px_CR_Object.h>
-#include <px_CR_Span.h>
-#include <px_CR_Strux.h>
-#include <pt_Types.h>
+#define IS_TRANSPARENT_COLOR(c) (!strcmp(c, "transparent"))
+
+#define BT_NORMAL		1
+#define BT_HEADING1		2
+#define BT_HEADING2		3
+#define BT_HEADING3		4
+#define BT_BLOCKTEXT	5
+#define BT_PLAINTEXT	6
+#define BT_NUMBEREDLIST	7
+#define BT_BULLETLIST	8
 
 class ABI_EXPORT IE_Exp_HTML_StyleTree{
 private:
@@ -43,8 +54,6 @@ private:
 public:
     IE_Exp_HTML_StyleTree(PD_Document * pDocument);
     ~IE_Exp_HTML_StyleTree();
-    
-    PD_Document *getDocument() const { return m_pDocument; }
 
 private:
     bool add(const char * style_name, PD_Style * style);
@@ -83,10 +92,42 @@ public:
     const UT_UTF8String & class_list() const {
         return m_class_list;
     }
+    
+    PD_Document* getDocument() const{
+        return m_pDocument;
+    }
 
     const std::string & lookup(const std::string & prop_name) const;
+
+};
+
+class ABI_EXPORT IE_Exp_HTML_StyleListener : public PL_Listener {
+public:
+    IE_Exp_HTML_StyleListener(IE_Exp_HTML_StyleTree *styleTree);
     
+    bool populate(PL_StruxFmtHandle sfh,
+            const PX_ChangeRecord * pcr);
+
+    bool populateStrux(PL_StruxDocHandle sdh,
+            const PX_ChangeRecord * pcr,
+            PL_StruxFmtHandle * psfh);
+
+    bool change(PL_StruxFmtHandle sfh,
+            const PX_ChangeRecord * pcr);
+
+    bool insertStrux(PL_StruxFmtHandle sfh,
+            const PX_ChangeRecord * pcr,
+            PL_StruxDocHandle sdh,
+            PL_ListenerId lid,
+            void (*pfnBindHandles) (PL_StruxDocHandle sdhNew,
+            PL_ListenerId lid,
+            PL_StruxFmtHandle sfhNew));
+
+    bool signal(UT_uint32 iSignal);
+private:
+    void styleCheck(PT_AttrPropIndex api);
     
+    IE_Exp_HTML_StyleTree *m_pStyleTree;
 };
 
 template<typename StyleListener>
@@ -125,36 +166,75 @@ void IE_Exp_HTML_StyleTree::print(StyleListener * listener) const {
     }
 }
 
-class ABI_EXPORT IE_Exp_HTML_StyleListener : public PL_Listener {
-public:
-    
-    IE_Exp_HTML_StyleListener(IE_Exp_HTML_StyleTree *styleTree);
+struct StyleListener {
+    UT_ByteBuf& m_sink;
+    UT_UTF8String m_utf8_0;
+    UT_uint32 m_styleIndent;
 
-    bool populate(PL_StruxFmtHandle sfh,
-            const PX_ChangeRecord * pcr);
+    StyleListener(UT_ByteBuf & sink)
+    : m_sink(sink), m_styleIndent(0) {
+    }
 
-    bool populateStrux(PL_StruxDocHandle sdh,
-            const PX_ChangeRecord * pcr,
-            PL_StruxFmtHandle * psfh);
+    bool get_Compact() {
+        return false;
+    }
 
-    bool change(PL_StruxFmtHandle sfh,
-            const PX_ChangeRecord * pcr);
+    void tagRaw(UT_UTF8String & content) {
+        m_sink.append((const UT_Byte*) content.utf8_str(), content.byteLength());
+    }
 
-    bool insertStrux(PL_StruxFmtHandle sfh,
-            const PX_ChangeRecord * pcr,
-            PL_StruxDocHandle sdh,
-            PL_ListenerId lid,
-            void (*pfnBindHandles) (PL_StruxDocHandle sdhNew,
-            PL_ListenerId lid,
-            PL_StruxFmtHandle sfhNew));
+    void styleIndent() {
+        m_utf8_0 = "";
 
-    bool signal(UT_uint32 iSignal);
-    
-private:
-    void styleCheck(PT_AttrPropIndex api);
-    IE_Exp_HTML_StyleTree *m_styleTree;
+        for (UT_uint32 i = 0; i < m_styleIndent; i++) m_utf8_0 += "\t";
+    }
 
+    void styleOpen(const UT_UTF8String & rule) {
+        styleIndent();
+
+        m_utf8_0 += rule;
+        m_utf8_0 += " {";
+        if (!get_Compact())
+            m_utf8_0 += MYEOL;
+
+        tagRaw(m_utf8_0);
+
+        m_styleIndent++;
+    }
+
+    void styleClose() {
+        if (m_styleIndent == 0) {
+            UT_DEBUGMSG(("WARNING: CSS style group over-closing!\n"));
+            return;
+        }
+        m_styleIndent--;
+
+        styleIndent();
+
+        m_utf8_0 += "}";
+        if (!get_Compact())
+            m_utf8_0 += MYEOL;
+
+        tagRaw(m_utf8_0);
+    }
+
+    void styleNameValue(const char * name, const UT_UTF8String & value) {
+        styleIndent();
+
+        m_utf8_0 += name;
+        m_utf8_0 += ":";
+        m_utf8_0 += value;
+        m_utf8_0 += ";";
+        if (!get_Compact())
+            m_utf8_0 += MYEOL;
+
+        tagRaw(m_utf8_0);
+    }
+
+    void styleText(const UT_UTF8String & content) {
+        m_utf8_0 = content;
+        tagRaw(m_utf8_0);
+    }
 };
 
-#endif	/* IE_EXP_HTML_STYLETREE_H */
-
+#endif
