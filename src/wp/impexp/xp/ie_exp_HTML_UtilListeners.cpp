@@ -30,7 +30,7 @@
 
 /*****************************************************************/
 
-s_HTML_HdrFtr_Listener::s_HTML_HdrFtr_Listener(PD_Document * pDocument, IE_Exp_HTML * /*pie*/, PL_Listener * pHTML_Listener) :
+IE_Exp_HTML_HeaderFooterListener::IE_Exp_HTML_HeaderFooterListener(PD_Document * pDocument, IE_Exp_HTML * /*pie*/, PL_Listener * pHTML_Listener) :
         m_pHdrDocRange(NULL),
         m_pFtrDocRange(NULL),
         m_pDocument(pDocument),
@@ -38,11 +38,11 @@ s_HTML_HdrFtr_Listener::s_HTML_HdrFtr_Listener(PD_Document * pDocument, IE_Exp_H
 {
 }
 
-s_HTML_HdrFtr_Listener::~s_HTML_HdrFtr_Listener()
+IE_Exp_HTML_HeaderFooterListener::~IE_Exp_HTML_HeaderFooterListener()
 {
 }
 
-void s_HTML_HdrFtr_Listener::doHdrFtr(bool bHeader)
+void IE_Exp_HTML_HeaderFooterListener::doHdrFtr(bool bHeader)
 {
     IE_Exp_HTML_MainListener * pHL = (IE_Exp_HTML_MainListener *) m_pHTML_Listener;
     if (bHeader && pHL->m_bHaveHeader)
@@ -67,7 +67,7 @@ void s_HTML_HdrFtr_Listener::doHdrFtr(bool bHeader)
         DELETEP(m_pFtrDocRange);
 }
 
-bool s_HTML_HdrFtr_Listener::populateStrux(PL_StruxDocHandle sdh,
+bool IE_Exp_HTML_HeaderFooterListener::populateStrux(PL_StruxDocHandle sdh,
                                            const PX_ChangeRecord * pcr,
                                            PL_StruxFmtHandle * psfh)
 {
@@ -121,19 +121,19 @@ bool s_HTML_HdrFtr_Listener::populateStrux(PL_StruxDocHandle sdh,
     }
 }
 
-bool s_HTML_HdrFtr_Listener::populate(PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord * /*pcr*/)
+bool IE_Exp_HTML_HeaderFooterListener::populate(PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord * /*pcr*/)
 {
     return true;
 }
 
-bool s_HTML_HdrFtr_Listener::change(PL_StruxFmtHandle /*sfh*/,
+bool IE_Exp_HTML_HeaderFooterListener::change(PL_StruxFmtHandle /*sfh*/,
                                     const PX_ChangeRecord * /*pcr*/)
 {
     UT_ASSERT_HARMLESS(0); // this function is not used.
     return false;
 }
 
-bool s_HTML_HdrFtr_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
+bool IE_Exp_HTML_HeaderFooterListener::insertStrux(PL_StruxFmtHandle /*sfh*/,
                                          const PX_ChangeRecord * /*pcr*/,
                                          PL_StruxDocHandle /*sdh*/,
                                          PL_ListenerId /* lid */,
@@ -145,7 +145,7 @@ bool s_HTML_HdrFtr_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
     return false;
 }
 
-bool s_HTML_HdrFtr_Listener::signal(UT_uint32 /* iSignal */)
+bool IE_Exp_HTML_HeaderFooterListener::signal(UT_uint32 /* iSignal */)
 {
     UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
     return false;
@@ -156,7 +156,7 @@ bool s_HTML_HdrFtr_Listener::signal(UT_uint32 /* iSignal */)
 
 
 
-s_TemplateHandler::s_TemplateHandler(PD_Document * pDocument, IE_Exp_HTML * pie) :
+IE_Exp_HTML_TemplateHandler::IE_Exp_HTML_TemplateHandler(PD_Document * pDocument, IE_Exp_HTML * pie) :
         m_pDocument(pDocument),
         m_pie(pie),
         m_cdata(false),
@@ -167,12 +167,12 @@ s_TemplateHandler::s_TemplateHandler(PD_Document * pDocument, IE_Exp_HTML * pie)
         m_root = prop;
 }
 
-s_TemplateHandler::~s_TemplateHandler()
+IE_Exp_HTML_TemplateHandler::~IE_Exp_HTML_TemplateHandler()
 {
     // 
 }
 
-void s_TemplateHandler::StartElement(const gchar * name, const gchar ** atts)
+void IE_Exp_HTML_TemplateHandler::StartElement(const gchar * name, const gchar ** atts)
 {
     if (!echo()) return;
 
@@ -220,7 +220,7 @@ void s_TemplateHandler::StartElement(const gchar * name, const gchar ** atts)
     m_empty = true;
 }
 
-void s_TemplateHandler::EndElement(const gchar * name)
+void IE_Exp_HTML_TemplateHandler::EndElement(const gchar * name)
 {
     if (!echo()) return;
 
@@ -238,7 +238,7 @@ void s_TemplateHandler::EndElement(const gchar * name)
     }
 }
 
-void s_TemplateHandler::CharData(const gchar * buffer, int length)
+void IE_Exp_HTML_TemplateHandler::CharData(const gchar * buffer, int length)
 {
     if (!echo()) return;
 
@@ -257,7 +257,7 @@ void s_TemplateHandler::CharData(const gchar * buffer, int length)
     m_pie->write(m_utf8.utf8_str(), m_utf8.byteLength());
 }
 
-void s_TemplateHandler::ProcessingInstruction(const gchar * target, const gchar * data)
+void IE_Exp_HTML_TemplateHandler::ProcessingInstruction(const gchar * target, const gchar * data)
 {
     bool bAbiXHTML = (strncmp(target, "abi-xhtml-", 10) == 0);
 
@@ -474,7 +474,7 @@ void s_TemplateHandler::ProcessingInstruction(const gchar * target, const gchar 
 
 #ifdef HTML_META_SUPPORTED
 
-void s_TemplateHandler::_handleMetaTag(const char * key, UT_UTF8String & value)
+void IE_Exp_HTML_TemplateHandler::_handleMetaTag(const char * key, UT_UTF8String & value)
 {
     m_utf8 = "<meta name=\"";
     m_utf8 += key;
@@ -485,7 +485,7 @@ void s_TemplateHandler::_handleMetaTag(const char * key, UT_UTF8String & value)
     m_pie->write(m_utf8.utf8_str(), m_utf8.byteLength());
 }
 
-void s_TemplateHandler::_handleMeta()
+void IE_Exp_HTML_TemplateHandler::_handleMeta()
 {
     UT_UTF8String metaProp = "<meta http-equiv=\"content-type\" content=\"text/html;charset=UTF-8\" />" MYEOL;
 
@@ -507,7 +507,7 @@ void s_TemplateHandler::_handleMeta()
 
 #endif /* HTML_META_SUPPORTED */
 
-bool s_TemplateHandler::echo() const
+bool IE_Exp_HTML_TemplateHandler::echo() const
 {
     if (!m_mode.getDepth())
         return true;
@@ -518,7 +518,7 @@ bool s_TemplateHandler::echo() const
     return (mode == 0);
 }
 
-bool s_TemplateHandler::condition(const gchar * data) const
+bool IE_Exp_HTML_TemplateHandler::condition(const gchar * data) const
 {
     const char * eq = strstr(data, "==");
     const char * ne = strstr(data, "!=");
@@ -555,7 +555,7 @@ bool s_TemplateHandler::condition(const gchar * data) const
     return (eq ? match : !match);
 }
 
-void s_TemplateHandler::Comment(const gchar * data)
+void IE_Exp_HTML_TemplateHandler::Comment(const gchar * data)
 {
     if (!echo()) return;
 
@@ -569,7 +569,7 @@ void s_TemplateHandler::Comment(const gchar * data)
     m_pie->write("-->", 3);
 }
 
-void s_TemplateHandler::StartCdataSection()
+void IE_Exp_HTML_TemplateHandler::StartCdataSection()
 {
     if (!echo()) return;
 
@@ -582,7 +582,7 @@ void s_TemplateHandler::StartCdataSection()
     m_cdata = true;
 }
 
-void s_TemplateHandler::EndCdataSection()
+void IE_Exp_HTML_TemplateHandler::EndCdataSection()
 {
     if (!echo()) return;
 
@@ -595,7 +595,7 @@ void s_TemplateHandler::EndCdataSection()
     m_cdata = false;
 }
 
-void s_TemplateHandler::Default(const gchar * /*buffer*/, int /*length*/)
+void IE_Exp_HTML_TemplateHandler::Default(const gchar * /*buffer*/, int /*length*/)
 {
     // do nothing
 }

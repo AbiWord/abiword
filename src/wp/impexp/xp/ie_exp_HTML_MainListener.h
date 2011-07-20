@@ -90,7 +90,7 @@
 #endif
 
 class ABI_EXPORT IE_Exp_HTML_MainListener : public PL_Listener {
-    friend class s_HTML_HdrFtr_Listener;
+    friend class IE_Exp_HTML_HeaderFooterListener;
 public:
     IE_Exp_HTML_MainListener(PD_Document * pDocument, IE_Exp_HTML * pie, bool bClipBoard,
             bool bTemplateBody, const XAP_Exp_HTMLOptions * exp_opt,

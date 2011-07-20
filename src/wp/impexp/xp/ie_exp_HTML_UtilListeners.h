@@ -15,12 +15,12 @@
 #include "ie_exp_HTML.h"
 #include "ie_exp_HTML_MainListener.h"
 
-class ABI_EXPORT s_TemplateHandler : public UT_XML::ExpertListener
+class ABI_EXPORT IE_Exp_HTML_TemplateHandler : public UT_XML::ExpertListener
 {
 public:
-    s_TemplateHandler(PD_Document * pDocument, IE_Exp_HTML * pie);
+    IE_Exp_HTML_TemplateHandler(PD_Document * pDocument, IE_Exp_HTML * pie);
 
-    ~s_TemplateHandler();
+    ~IE_Exp_HTML_TemplateHandler();
 
     /* Implementation of ExpertListener
      */
@@ -53,13 +53,13 @@ private:
     UT_NumberStack m_mode;
 };
 
-class ABI_EXPORT s_HTML_HdrFtr_Listener : public PL_Listener
+class ABI_EXPORT IE_Exp_HTML_HeaderFooterListener : public PL_Listener
 {
 friend class IE_Exp_HTML_MainListener;
 public:
-s_HTML_HdrFtr_Listener(PD_Document * pDocument, IE_Exp_HTML * pie, PL_Listener * pHTML_Listener);
+IE_Exp_HTML_HeaderFooterListener(PD_Document * pDocument, IE_Exp_HTML * pie, PL_Listener * pHTML_Listener);
 
-~s_HTML_HdrFtr_Listener();
+~IE_Exp_HTML_HeaderFooterListener();
 
 bool populate(PL_StruxFmtHandle sfh,
               const PX_ChangeRecord * pcr);
@@ -92,10 +92,10 @@ PD_Document * m_pDocument;
 PL_Listener * m_pHTML_Listener;
 };
 
-class ABI_EXPORT s_HTML_Bookmark_Listener : public PL_Listener
+class ABI_EXPORT IE_Exp_HTML_BookmarkListener : public PL_Listener
 {
 public:
-s_HTML_Bookmark_Listener(PD_Document* pDoc, IE_Exp_HTML * pie);
+IE_Exp_HTML_BookmarkListener(PD_Document* pDoc, IE_Exp_HTML * pie);
 bool populate(PL_StruxFmtHandle sfh,
               const PX_ChangeRecord * pcr);
 // Not used

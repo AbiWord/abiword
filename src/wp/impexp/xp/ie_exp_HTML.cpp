@@ -263,8 +263,8 @@ return true;
 #include "ie_exp_HTML_UtilListeners.h"
 
 class IE_Exp_HTML_MainListener;
-class s_HTML_HdrFtr_Listener;
-class s_HTML_Bookmark_Listener;
+class IE_Exp_HTML_HeaderFooterListener;
+class IE_Exp_HTML_BookmarkListener;
 
 
 
@@ -599,7 +599,7 @@ UT_Error IE_Exp_HTML::_writeDocument()
 
     write(declaration.utf8_str(), declaration.byteLength());
 
-    s_TemplateHandler TH(getDoc(), this);
+    IE_Exp_HTML_TemplateHandler TH(getDoc(), this);
 
     UT_XML parser;
     parser.setExpertListener(&TH);
@@ -683,7 +683,7 @@ UT_Error IE_Exp_HTML::_writeDocument(bool bClipBoard, bool bTemplateBody)
 
         UT_DEBUGMSG(("Minimal TOC level is %d\n", m_minTOCLevel));
 
-        s_HTML_Bookmark_Listener * bookmarkListener = new s_HTML_Bookmark_Listener(getDoc(), this);
+        IE_Exp_HTML_BookmarkListener * bookmarkListener = new IE_Exp_HTML_BookmarkListener(getDoc(), this);
         getDoc()->tellListener(bookmarkListener);
         m_bookmarks = bookmarkListener->getBookmarks();
         DELETEP(bookmarkListener);
@@ -766,7 +766,7 @@ UT_Error IE_Exp_HTML::_writeDocument(bool bClipBoard, bool bTemplateBody)
 
         bool okay = true;
 
-        s_HTML_HdrFtr_Listener * pHdrFtrListener = new s_HTML_HdrFtr_Listener(getDoc(), this, pL);
+        IE_Exp_HTML_HeaderFooterListener * pHdrFtrListener = new IE_Exp_HTML_HeaderFooterListener(getDoc(), this, pL);
         if (pHdrFtrListener == 0) return UT_IE_NOMEMORY;
         PL_Listener * pHFL = static_cast<PL_Listener *> (pHdrFtrListener);
 
@@ -805,7 +805,7 @@ void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, UT_UTF8String &title, 
                                     isIndex);
 
     PL_Listener * pL = static_cast<PL_Listener *> (pListener);
-    /*s_HTML_HdrFtr_Listener * pHdrFtrListener = new s_HTML_HdrFtr_Listener(
+    /*IE_Exp_HTML_HeaderFooterListener * pHdrFtrListener = new IE_Exp_HTML_HeaderFooterListener(
                     getDoc(), this, pL);
     PL_Listener * pHFL = static_cast<PL_Listener *> (pHdrFtrListener);
      */
@@ -936,7 +936,7 @@ void IE_Exp_HTML_MainListener::_write(const char *data, UT_uint32 size)
  *
  */
 
-s_HTML_Bookmark_Listener::s_HTML_Bookmark_Listener(PD_Document *pDoc, IE_Exp_HTML * pie) :
+IE_Exp_HTML_BookmarkListener::IE_Exp_HTML_BookmarkListener(PD_Document *pDoc, IE_Exp_HTML * pie) :
         m_pDoc(pDoc),
         m_pie(pie)
 
@@ -944,7 +944,7 @@ s_HTML_Bookmark_Listener::s_HTML_Bookmark_Listener(PD_Document *pDoc, IE_Exp_HTM
 
 }
 
-bool s_HTML_Bookmark_Listener::populate(PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord * pcr)
+bool IE_Exp_HTML_BookmarkListener::populate(PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord * pcr)
 {
     switch (pcr->getType())
     {
