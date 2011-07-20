@@ -22,104 +22,43 @@
 * 02111-1307, USA.
 */
 
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <time.h>
-#include <gsf/gsf-output.h>
-#include <map>
-
-#include "ut_locale.h"
-#include "ut_debugmsg.h"
-#include "ut_assert.h"
-#include "ut_string.h"
-#include "ut_bytebuf.h"
-#include "ut_base64.h"
-#include "ut_hash.h"
-#include "ut_units.h"
-#include "ut_wctomb.h"
-#include "ut_path.h"
-#include "ut_math.h"
-#include "ut_misc.h"
-#include "ut_string_class.h"
-#include "ut_png.h"
-
-#include "xap_App.h"
-#include "xap_EncodingManager.h"
-
-#include "pt_Types.h"
-#include "pl_Listener.h"
-#include "pd_Document.h"
-#include "pd_Style.h"
-#include "pp_AttrProp.h"
-#include "pp_Property.h"
-#include "pp_PropertyMap.h"
-#include "px_ChangeRecord.h"
-#include "px_CR_Object.h"
-#include "px_CR_Span.h"
-#include "px_CR_Strux.h"
-#include "ut_mbtowc.h"
-#include "xap_Frame.h"
-#include "xav_View.h"
-#include "gr_Graphics.h"
-
-#include "fd_Field.h"
-
-#include "fl_AutoNum.h"
-
-#include "ie_types.h"
-#include "ie_TOC.h"
-#include "ie_impexp_HTML.h"
 #include "ie_exp_HTML.h"
-#include "ap_Strings.h"
-
-#ifdef HTML_DIALOG_OPTIONS
-#include "xap_Dialog_Id.h"
-#include "xap_DialogFactory.h"
-#endif
-
-#ifdef HTML_TABLES_SUPPORTED
-#include "ie_Table.h"
-#endif
 
 #define MYEOL "\n"
 #define MAX_LINE_LEN 200
 
 
 IE_Exp_HTML_Sniffer::IE_Exp_HTML_Sniffer()
-#ifdef HTML_NAMED_CONSTRUCTORS
-: IE_ExpSniffer(IE_IMPEXPNAME_XHTML, true)
-#endif
+        : IE_ExpSniffer(IE_IMPEXPNAME_HTML, true)
 {
-// 
+
 }
 
 bool IE_Exp_HTML_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-return (!g_ascii_strcasecmp(szSuffix, ".xhtml") ||
+return (!(g_ascii_strcasecmp(szSuffix, ".xhtml")) ||
         !(g_ascii_strcasecmp(szSuffix, ".html")) ||
-        !(g_ascii_strcasecmp(szSuffix, ".htm")));
+        !(g_ascii_strcasecmp(szSuffix, ".htm")) ||
+        !(g_ascii_strcasecmp(szSuffix, ".mht")) ||
+        !(g_ascii_strcasecmp(szSuffix, ".phtml")));
 }
 
 UT_Error IE_Exp_HTML_Sniffer::constructExporter(PD_Document * pDocument,
                                             IE_Exp ** ppie)
 {
-IE_Exp_HTML * p = new IE_Exp_HTML(pDocument);
-*ppie = p;
-return UT_OK;
+    IE_Exp_HTML * p = new IE_Exp_HTML(pDocument);
+    *ppie = p;
+    return UT_OK;
 }
 
 bool IE_Exp_HTML_Sniffer::getDlgLabels(const char ** pszDesc,
                                    const char ** pszSuffixList,
                                    IEFileType * ft)
 {
-*pszDesc = "HTML/XHTML (.html)";
-*pszSuffixList = "*.html";
-*ft = getFileType();
-return true;
+    *pszDesc = "HTML/XHTML/PHTML/MHT (.html, .xhtml, .phtml, .mht)";
+    *pszSuffixList = "*.html;*.xhtml;*.phtml;*.mht";
+    *ft = getFileType();
+    return true;
 }
 
 UT_Confidence_t IE_Exp_HTML_Sniffer::supportsMIME(const char * szMimeType)
@@ -131,148 +70,16 @@ if (!strcmp(szMimeType, IE_MIMETYPE_XHTML) ||
 return UT_CONFIDENCE_ZILCH;
 }
 
-#ifdef HTML_ENABLE_HTML4
-
-// HTML 4
-
-IE_Exp_HTML4_Sniffer::IE_Exp_HTML4_Sniffer()
-#ifdef HTML_NAMED_CONSTRUCTORS
-: IE_ExpSniffer(IE_IMPEXPNAME_HTML, true)
-#endif
-{
-// 
-}
-
-bool IE_Exp_HTML4_Sniffer::recognizeSuffix(const char * szSuffix)
-{
-return (!(g_ascii_strcasecmp(szSuffix, ".html")) || !(g_ascii_strcasecmp(szSuffix, ".htm")));
-}
-
-UT_Error IE_Exp_HTML4_Sniffer::constructExporter(PD_Document * pDocument,
-                                             IE_Exp ** ppie)
-{
-IE_Exp_HTML * p = new IE_Exp_HTML(pDocument);
-if (p) p->set_HTML4();
-*ppie = p;
-return UT_OK;
-}
-
-bool IE_Exp_HTML4_Sniffer::getDlgLabels(const char ** pszDesc,
-                                    const char ** pszSuffixList,
-                                    IEFileType * ft)
-{
-*pszDesc = "HTML 4.0 (.html, .htm)";
-*pszSuffixList = "*.html; *.htm";
-*ft = getFileType();
-return true;
-}
-
-UT_Confidence_t IE_Exp_HTML4_Sniffer::supportsMIME(const char * szMimeType)
-{
-if (!strcmp(szMimeType, "text/html"))
-    return UT_CONFIDENCE_PERFECT;
-return UT_CONFIDENCE_ZILCH;
-}
-
-#endif /* HTML_ENABLE_HTML4 */
-
-#ifdef HTML_ENABLE_PHTML
-
-// XHTML w/ PHP instructions for AbiWord Web Docs
-
-IE_Exp_PHTML_Sniffer::IE_Exp_PHTML_Sniffer()
-#ifdef HTML_NAMED_CONSTRUCTORS
-: IE_ExpSniffer(IE_IMPEXPNAME_PHTML, false)
-#endif
-{
-// 
-}
-
-bool IE_Exp_PHTML_Sniffer::recognizeSuffix(const char * szSuffix)
-{
-return (!(g_ascii_strcasecmp(szSuffix, ".phtml")));
-}
-
-UT_Error IE_Exp_PHTML_Sniffer::constructExporter(PD_Document * pDocument,
-                                             IE_Exp ** ppie)
-{
-IE_Exp_HTML * p = new IE_Exp_HTML(pDocument);
-if (p) p->set_PHTML();
-*ppie = p;
-return UT_OK;
-}
-
-bool IE_Exp_PHTML_Sniffer::getDlgLabels(const char ** pszDesc,
-                                    const char ** pszSuffixList,
-                                    IEFileType * ft)
-{
-*pszDesc = "XHTML+PHP (.phtml)";
-*pszSuffixList = "*.phtml";
-*ft = getFileType();
-return true;
-}
-
-#endif /* HTML_ENABLE_PHTML */
-
-#ifdef HTML_ENABLE_MHTML
-
-// Multipart HTML: http://www.rfc-editor.org/rfc/rfc2557.txt
-
-IE_Exp_MHTML_Sniffer::IE_Exp_MHTML_Sniffer()
-#ifdef HTML_NAMED_CONSTRUCTORS
-: IE_ExpSniffer(IE_IMPEXPNAME_MHTML, true)
-#endif
-{
-// 
-}
-
-bool IE_Exp_MHTML_Sniffer::recognizeSuffix(const char * szSuffix)
-{
-return (!(g_ascii_strcasecmp(szSuffix, ".mht")));
-}
-
-UT_Error IE_Exp_MHTML_Sniffer::constructExporter(PD_Document * pDocument,
-                                             IE_Exp ** ppie)
-{
-IE_Exp_HTML * p = new IE_Exp_HTML(pDocument);
-if (p) p->set_MHTML();
-*ppie = p;
-return UT_OK;
-}
-
-bool IE_Exp_MHTML_Sniffer::getDlgLabels(const char ** pszDesc,
-                                    const char ** pszSuffixList,
-                                    IEFileType * ft)
-{
-*pszDesc = "Multipart HTML (.mht)";
-*pszSuffixList = "*.mht";
-*ft = getFileType();
-return true;
-}
-
-#endif /* HTML_ENABLE_MHTML */
 
 /*****************************************************************/
 /*****************************************************************/
 
-/* TODO: is there a better way to do this?
-*/
-#include "ie_exp_HTML_util.h"
-#include "ie_exp_HTML_StyleTree.h"
-#include "ie_exp_HTML_MainListener.h"
-#include "ie_exp_HTML_UtilListeners.h"
 
 class IE_Exp_HTML_MainListener;
 class IE_Exp_HTML_HeaderFooterListener;
 class IE_Exp_HTML_BookmarkListener;
 
 
-
-
-
-/*****************************************************************/
-
-/*****************************************************************/
 
 IE_Exp_HTML::IE_Exp_HTML(PD_Document * pDocument)
         : IE_Exp(pDocument),
@@ -284,6 +91,7 @@ IE_Exp_HTML::IE_Exp_HTML(PD_Document * pDocument)
         m_minTOCIndex(0),
         m_suffix("")
 {
+    
     m_exp_opt.bIs4 = false;
     m_exp_opt.bIsAbiWebDoc = false;
     m_exp_opt.bDeclareXML = true;
@@ -299,9 +107,7 @@ IE_Exp_HTML::IE_Exp_HTML(PD_Document * pDocument)
 
     m_error = UT_OK;
 
-#ifdef HTML_DIALOG_OPTIONS
     XAP_Dialog_HTMLOptions::getHTMLDefaults(&m_exp_opt, XAP_App::getApp());
-#endif
 }
 
 IE_Exp_HTML::~IE_Exp_HTML()
@@ -350,7 +156,6 @@ void IE_Exp_HTML::_buildStyleTree()
 
 UT_Error IE_Exp_HTML::_doOptions()
 {
-#ifdef HTML_DIALOG_OPTIONS
     XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
 
     if (m_bSuppressDialog || !pFrame || isCopying()) return UT_OK;
@@ -393,12 +198,27 @@ UT_Error IE_Exp_HTML::_doOptions()
     {
         return UT_SAVE_CANCELLED;
     }
-#endif
     return UT_OK;
 }
 
 UT_Error IE_Exp_HTML::_writeDocument()
 {
+    UT_UTF8String basename = UT_go_basename(getFileName());
+    m_suffix = strchr(basename.utf8_str(), '.');
+    UT_DEBUGMSG(("Determined suffix: %s", m_suffix.utf8_str()));
+    
+    if (!UT_go_utf8_collate_casefold(m_suffix.utf8_str(), ".html")||
+        !UT_go_utf8_collate_casefold(m_suffix.utf8_str(), ".htm"))
+    {
+        set_HTML4();
+    } else if (!UT_go_utf8_collate_casefold(m_suffix.utf8_str(), ".phtml"))
+    {
+        set_PHTML();
+    } else if (!UT_go_utf8_collate_casefold(m_suffix.utf8_str(), ".mht"))
+    {
+        set_MHTML();
+    }
+    
     UT_Error errOptions = _doOptions();
 
     if (errOptions == UT_SAVE_CANCELLED) //see Bug 10840
@@ -650,18 +470,6 @@ UT_UTF8String IE_Exp_HTML::ConvertToClean(const UT_UTF8String & str)
 
 UT_Error IE_Exp_HTML::_writeDocument(bool bClipBoard, bool bTemplateBody)
 {
-    UT_UTF8String basename = UT_go_basename(getFileName());
-    const char* szSuffix = strchr(basename.utf8_str(), '.');
-
-    if (szSuffix == NULL)
-    {
-        // If user wants, but this is a strange idea
-        m_suffix = "";
-    }
-    else
-    {
-        m_suffix = szSuffix;
-    }
     /**
      * We must check if user wants to split the document into several parts.
      * File will be splitted using level 1 toc elements, e.g. 'Heading 1' style

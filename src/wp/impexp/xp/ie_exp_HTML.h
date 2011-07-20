@@ -19,54 +19,39 @@
  * 02111-1307, USA.
  */
 
-
 #ifndef IE_EXP_HTML_H
 #define IE_EXP_HTML_H
 
-#include "ie_exp.h"
-#include "pt_Types.h"
+class IE_Exp_HTML;
 
+// HTML exporter includes
+#include "ie_impexp_HTML.h"
+#include "ie_exp_HTML_util.h"
+#include "ie_exp_HTML_StyleTree.h"
+#include "ie_exp_HTML_MainListener.h"
+#include "ie_exp_HTML_UtilListeners.h"
+#include "xap_Dlg_HTMLOptions.h"
 
-/* NOTE: I'm trying to keep the code similar across versions,
- *       and therefore features are enabled/disabled here:
- */
+// Abiword includes
+#include <ut_debugmsg.h>
+#include <ut_assert.h>
+#include <ut_string_class.h>
+#include <ut_go_file.h>
+#include <xap_App.h>
+#include <ie_types.h>
+#include <ie_TOC.h>
+#include <ap_Strings.h>
+#include <xap_Dialog_Id.h>
+#include <xap_DialogFactory.h>
+#include <ie_exp.h>
+#include <pt_Types.h>
 
 /* Define if the base unicode char is UCS-4
  */
 #define HTML_UCS4
 
-/* Define if the sniffers need to pass export name to parent
- */
-#define HTML_NAMED_CONSTRUCTORS
-
-/* Define if the [P/X]HTML export options dialog is implemented
- */
-#define HTML_DIALOG_OPTIONS
-
-/* Define if the tables are supported
- */
-#define HTML_TABLES_SUPPORTED
-
-/* Define if meta information is supported
- */
-#define HTML_META_SUPPORTED
-
-/* TODO: Rather than having separate sniffers to differentiate
- *       the exporter's behaviour, should have a dialog box
- *       with options.
- */
-#ifndef HTML_DIALOG_OPTIONS
-#define HTML_ENABLE_HTML4 
-#define HTML_ENABLE_PHTML
-#endif
-#define HTML_ENABLE_MHTML
-
-
-class PD_Document;
-class IE_TOCHelper;
 
 // The exporter/writer for HTML
-
 class ABI_EXPORT IE_Exp_HTML_Sniffer : public IE_ExpSniffer
 {
 	friend class IE_Exp;
@@ -84,75 +69,6 @@ public:
 
 	virtual UT_Confidence_t supportsMIME (const char * szMimeType);
 };
-
-#ifdef HTML_ENABLE_HTML4
-
-class ABI_EXPORT IE_Exp_HTML4_Sniffer : public IE_ExpSniffer
-{
-	friend class IE_Exp;
-
-public:
-	IE_Exp_HTML4_Sniffer ();
-	virtual ~IE_Exp_HTML4_Sniffer () {}
-
-	virtual bool recognizeSuffix (const char * szSuffix);
-	virtual bool getDlgLabels (const char ** szDesc,
-							   const char ** szSuffixList,
-							   IEFileType * ft);
-	virtual UT_Error constructExporter (PD_Document * pDocument,
-										IE_Exp ** ppie);
-
-	virtual UT_Confidence_t supportsMIME (const char * szMimeType);
-};
-
-#endif /* HTML_ENABLE_HTML4 */
-
-#ifdef HTML_ENABLE_PHTML
-
-class ABI_EXPORT IE_Exp_PHTML_Sniffer : public IE_ExpSniffer
-{
-	friend class IE_Exp;
-
-public:
-	IE_Exp_PHTML_Sniffer ();
-	virtual ~IE_Exp_PHTML_Sniffer () {}
-
-	virtual bool recognizeSuffix (const char * szSuffix);
-	virtual bool getDlgLabels (const char ** szDesc,
-							   const char ** szSuffixList,
-							   IEFileType * ft);
-	virtual UT_Error constructExporter (PD_Document * pDocument,
-										IE_Exp ** ppie);
-};
-
-#endif /* HTML_ENABLE_PHTML */
-
-#ifdef HTML_ENABLE_MHTML
-
-class ABI_EXPORT IE_Exp_MHTML_Sniffer : public IE_ExpSniffer
-{
-	friend class IE_Exp;
-
-public:
-	IE_Exp_MHTML_Sniffer ();
-	virtual ~IE_Exp_MHTML_Sniffer () {}
-
-	virtual bool recognizeSuffix (const char * szSuffix);
-	virtual bool getDlgLabels (const char ** szDesc,
-							   const char ** szSuffixList,
-							   IEFileType * ft);
-	virtual UT_Error constructExporter (PD_Document * pDocument,
-										IE_Exp ** ppie);
-};
-
-#endif /* HTML_ENABLE_MHTML */
-
-
-#include "xap_Dlg_HTMLOptions.h"
-
-
-class IE_Exp_HTML_StyleTree;
-class IE_Exp_HTML_StyleListener;
 
 class ABI_EXPORT IE_Exp_HTML : public IE_Exp
 {

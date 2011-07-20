@@ -22,10 +22,13 @@
 #ifndef IE_EXP_HTML_MAINLISTENER_H
 #define IE_EXP_HTML_MAINLISTENER_H
 
+// HTML exporter includes
 #include "ie_exp_HTML.h"
 #include "ie_exp_HTML_util.h"
 #include "ie_exp_HTML_StyleTree.h"
+#include "xap_Dlg_HTMLOptions.h"
 
+// External includes
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
@@ -36,58 +39,49 @@
 #include <gsf/gsf-output.h>
 #include <map>
 
-#include "ut_locale.h"
-#include "ut_debugmsg.h"
-#include "ut_assert.h"
-#include "ut_string.h"
-#include "ut_bytebuf.h"
-#include "ut_base64.h"
-#include "ut_hash.h"
-#include "ut_units.h"
-#include "ut_wctomb.h"
-#include "ut_path.h"
-#include "ut_math.h"
-#include "ut_misc.h"
-#include "ut_string_class.h"
-#include "ut_png.h"
+// Abiword includes
+#include <ie_types.h>
+#include <ie_TOC.h>
+#include <ie_Table.h>
+#include <ut_locale.h>
+#include <ut_debugmsg.h>
+#include <ut_assert.h>
+#include <ut_string.h>
+#include <ut_bytebuf.h>
+#include <ut_base64.h>
+#include <ut_hash.h>
+#include <ut_units.h>
+#include <ut_wctomb.h>
+#include <ut_path.h>
+#include <ut_math.h>
+#include <ut_misc.h>
+#include <ut_string_class.h>
+#include <ut_png.h>
+#include <xap_App.h>
+#include <xap_EncodingManager.h>
+#include <xap_Dialog_Id.h>
+#include <xap_DialogFactory.h>
+#include <xap_Frame.h>
+#include <xav_View.h>
+#include <pt_Types.h>
+#include <pl_Listener.h>
+#include <pd_Document.h>
+#include <pd_Style.h>
+#include <pp_AttrProp.h>
+#include <pp_Property.h>
+#include <pp_PropertyMap.h>
+#include <px_ChangeRecord.h>
+#include <px_CR_Object.h>
+#include <px_CR_Span.h>
+#include <px_CR_Strux.h>
+#include <ut_mbtowc.h>
+#include <gr_Graphics.h>
+#include <fd_Field.h>
+#include <fl_AutoNum.h>
+#include <ap_Strings.h>
 
-#include "xap_App.h"
-#include "xap_EncodingManager.h"
 
-#include "pt_Types.h"
-#include "pl_Listener.h"
-#include "pd_Document.h"
-#include "pd_Style.h"
-#include "pp_AttrProp.h"
-#include "pp_Property.h"
-#include "pp_PropertyMap.h"
-#include "px_ChangeRecord.h"
-#include "px_CR_Object.h"
-#include "px_CR_Span.h"
-#include "px_CR_Strux.h"
-#include "ut_mbtowc.h"
-#include "xap_Frame.h"
-#include "xav_View.h"
-#include "gr_Graphics.h"
 
-#include "fd_Field.h"
-
-#include "fl_AutoNum.h"
-
-#include "ie_types.h"
-#include "ie_TOC.h"
-#include "ie_impexp_HTML.h"
-#include "ie_exp_HTML.h"
-#include "ap_Strings.h"
-
-#ifdef HTML_DIALOG_OPTIONS
-#include "xap_Dialog_Id.h"
-#include "xap_DialogFactory.h"
-#endif
-
-#ifdef HTML_TABLES_SUPPORTED
-#include "ie_Table.h"
-#endif
 
 class ABI_EXPORT IE_Exp_HTML_MainListener : public PL_Listener {
     friend class IE_Exp_HTML_HeaderFooterListener;
@@ -108,7 +102,6 @@ public:
             const PX_ChangeRecord * pcr,
             PL_StruxFmtHandle * psfh);
 
-    //bool 	startOfDocument ();  // Unused
     bool endOfDocument();
 
     bool change(PL_StruxFmtHandle sfh,
@@ -267,9 +260,7 @@ private:
     bool m_bHaveHeader;
     bool m_bHaveFooter;
 
-#ifdef HTML_TABLES_SUPPORTED
     ie_Table m_TableHelper;
-#endif
 
     // Need to look up proper type, and place to stick #defines...
 
