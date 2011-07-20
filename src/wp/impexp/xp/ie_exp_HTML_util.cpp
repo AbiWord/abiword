@@ -1,6 +1,27 @@
 
 #include "ie_exp_HTML_util.h"
 
+const char * s_DTD_XHTML_AWML = "!DOCTYPE html PUBLIC \"-//ABISOURCE//DTD XHTML plus AWML 2.2//EN\" \"http://www.abisource.com/2004/xhtml-awml/xhtml-awml.mod\"";
+
+const char * s_DTD_XHTML = "!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\"";
+
+const char * s_DTD_HTML4 = "!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"";
+
+const char * s_Delimiter =
+    "=======================================================";
+
+const char * s_Header[2] = {
+"Created by AbiWord, a free, Open Source wordprocessor. ",
+"For more information visit http://www.abisource.com.   "
+};
+
+const char * s_HeaderCompact = "Created by Abiword, www.abisource.com";
+
+bool m_bSecondPass = false;
+bool m_bInAFENote = false;
+bool m_bInAnnotation = false;
+#include "MathSVGScript.h"
+
 UT_UTF8String s_string_to_url (const UT_String & str)
 {
 	UT_UTF8String url;
