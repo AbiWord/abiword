@@ -30,11 +30,12 @@
 
 /*****************************************************************/
 
-IE_Exp_HTML_HeaderFooterListener::IE_Exp_HTML_HeaderFooterListener(PD_Document * pDocument, IE_Exp_HTML * /*pie*/, PL_Listener * pHTML_Listener) :
+IE_Exp_HTML_HeaderFooterListener::IE_Exp_HTML_HeaderFooterListener(PD_Document * pDocument, IE_Exp_HTML * /*pie*/, IE_Exp_HTML_Writer* pWriter, IE_Exp_HTML_MainListener *pMainListener) :
         m_pHdrDocRange(NULL),
         m_pFtrDocRange(NULL),
         m_pDocument(pDocument),
-        m_pHTML_Listener(pHTML_Listener)
+        m_pWriter(pWriter),
+        m_pMainListener(pMainListener)
 {
 }
 
@@ -44,22 +45,21 @@ IE_Exp_HTML_HeaderFooterListener::~IE_Exp_HTML_HeaderFooterListener()
 
 void IE_Exp_HTML_HeaderFooterListener::doHdrFtr(bool bHeader)
 {
-    IE_Exp_HTML_MainListener * pHL = (IE_Exp_HTML_MainListener *) m_pHTML_Listener;
-    if (bHeader && pHL->m_bHaveHeader)
+    if (bHeader && m_pWriter->is_HaveHeader())
     {
-        pHL->_openSection(0, 1);
-        m_pDocument->tellListenerSubset(m_pHTML_Listener, m_pHdrDocRange);
-        pHL->_closeSection();
+        m_pWriter->openSection(0, 1);
+        m_pDocument->tellListenerSubset(m_pMainListener, m_pHdrDocRange);
+        m_pWriter->closeSection();
     }
-    if (!bHeader && pHL->m_bHaveFooter)
+    if (!bHeader && m_pWriter->is_HaveFooter())
     {
-        pHL->_openSection(0, 2);
-        m_pDocument->tellListenerSubset(m_pHTML_Listener, m_pFtrDocRange);
-        pHL->_closeSection();
+        m_pWriter->openSection(0, 2);
+        m_pDocument->tellListenerSubset(m_pMainListener, m_pFtrDocRange);
+        m_pWriter->closeSection();
     }
-    if (bHeader && pHL->m_bHaveHeader)
+    if (bHeader && m_pWriter->is_HaveHeader())
     {
-        pHL->_openSection(0, 3);
+        m_pWriter->openSection(0, 3);
     }
     if (bHeader)
         DELETEP(m_pHdrDocRange);
@@ -105,14 +105,12 @@ bool IE_Exp_HTML_HeaderFooterListener::populateStrux(PL_StruxDocHandle sdh,
         if (!strcmp(szType, "header"))
         {
             m_pHdrDocRange = pDocRange;
-            IE_Exp_HTML_MainListener * pHL = (IE_Exp_HTML_MainListener *) m_pHTML_Listener;
-            pHL->setHaveHeader();
+            m_pWriter->setHaveHeader();
         }
         else
         {
             m_pFtrDocRange = pDocRange;
-            IE_Exp_HTML_MainListener * pHL = (IE_Exp_HTML_MainListener *) m_pHTML_Listener;
-            pHL->setHaveFooter();
+            m_pWriter->setHaveFooter();
         }
         return true;
     }

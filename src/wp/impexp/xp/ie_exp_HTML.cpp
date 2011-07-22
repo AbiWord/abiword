@@ -565,16 +565,17 @@ UT_Error IE_Exp_HTML::_writeDocument(bool bClipBoard, bool bTemplateBody)
     }
     else
     {
-        IE_Exp_HTML_MainListener * pListener = new IE_Exp_HTML_MainListener(getDoc(), this, bClipBoard, bTemplateBody,
+        IE_Exp_HTML_Writer * pWriter = new IE_Exp_HTML_Writer(getDoc(), this, bClipBoard, bTemplateBody,
                                                           &m_exp_opt, m_style_tree,
                                                           m_sLinkCSS, m_sTitle);
+        IE_Exp_HTML_MainListener * pListener = new IE_Exp_HTML_MainListener(pWriter);
         if (pListener == 0) return UT_IE_NOMEMORY;
 
         PL_Listener * pL = static_cast<PL_Listener *> (pListener);
 
         bool okay = true;
 
-        IE_Exp_HTML_HeaderFooterListener * pHdrFtrListener = new IE_Exp_HTML_HeaderFooterListener(getDoc(), this, pL);
+        IE_Exp_HTML_HeaderFooterListener * pHdrFtrListener = new IE_Exp_HTML_HeaderFooterListener(getDoc(), this, pWriter, pListener);
         if (pHdrFtrListener == 0) return UT_IE_NOMEMORY;
         PL_Listener * pHFL = static_cast<PL_Listener *> (pHdrFtrListener);
 
@@ -599,7 +600,7 @@ UT_Error IE_Exp_HTML::_writeDocument(bool bClipBoard, bool bTemplateBody)
 
         DELETEP(pListener);
         DELETEP(pHdrFtrListener);
-
+        DELETEP(pWriter);
         if ((m_error == UT_OK) && (okay == true)) return UT_OK;
         return UT_IE_COULDNOTWRITE;
     }
@@ -608,9 +609,10 @@ UT_Error IE_Exp_HTML::_writeDocument(bool bClipBoard, bool bTemplateBody)
 void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, UT_UTF8String &title, bool isIndex)
 {
     IE_Exp_HTML_MainListener* pListener = NULL;
-    pListener = new IE_Exp_HTML_MainListener(getDoc(), this, false,
+    IE_Exp_HTML_Writer *pWriter = new IE_Exp_HTML_Writer(getDoc(), this, false,
                                     false, &m_exp_opt, m_style_tree, m_sLinkCSS, title,
                                     isIndex);
+    pListener = new IE_Exp_HTML_MainListener(pWriter);
 
     PL_Listener * pL = static_cast<PL_Listener *> (pListener);
     /*IE_Exp_HTML_HeaderFooterListener * pHdrFtrListener = new IE_Exp_HTML_HeaderFooterListener(
@@ -621,7 +623,7 @@ void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, UT_UTF8String &title, 
     // getDoc()->tellListener(pHFL);
     // pHdrFtrListener->doHdrFtr(1);
 
-    ok = getDoc()->tellListenerSubset(pListener, range);
+    ok = getDoc()->tellListenerSubset(pL, range);
 
     if (ok)
     {
@@ -635,6 +637,7 @@ void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, UT_UTF8String &title, 
     DELETEP(range);
     // DELETEP(pHdrFtrListener);
     DELETEP(pListener);
+    DELETEP(pWriter);
 
 }
 
@@ -688,57 +691,7 @@ UT_UTF8String IE_Exp_HTML::getSuffix() const
     return m_suffix;
 }
 
-void IE_Exp_HTML_MainListener::addFootnote(PD_DocumentRange * pDocRange)
-{
-    m_vecFootnotes.addItem(pDocRange);
-}
 
-void IE_Exp_HTML_MainListener::addEndnote(PD_DocumentRange * pDocRange)
-{
-    m_vecEndnotes.addItem(pDocRange);
-}
-
-void IE_Exp_HTML_MainListener::addAnnotation(PD_DocumentRange * pDocRange)
-{
-    m_vecAnnotations.addItem(pDocRange);
-}
-
-UT_uint32 IE_Exp_HTML_MainListener::getNumAnnotations(void)
-{
-    return m_vecAnnotations.getItemCount();
-}
-
-UT_uint32 IE_Exp_HTML_MainListener::getNumFootnotes(void)
-{
-    return m_vecFootnotes.getItemCount();
-}
-
-UT_uint32 IE_Exp_HTML_MainListener::getNumEndnotes(void)
-{
-    return m_vecEndnotes.getItemCount();
-}
-
-void IE_Exp_HTML_MainListener::setHaveHeader()
-{
-    m_bHaveHeader = true;
-}
-
-void IE_Exp_HTML_MainListener::setHaveFooter()
-{
-    m_bHaveFooter = true;
-}
-
-void IE_Exp_HTML_MainListener::_write(const char *data, UT_uint32 size)
-{
-    if (m_bIndexFile)
-    {
-        m_pie->write(data, size);
-    }
-    else
-    {
-        gsf_output_write(m_outputFile, size, reinterpret_cast<const guint8*> (data));
-    }
-}
 
 /**
  *

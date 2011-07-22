@@ -14,6 +14,9 @@
 
 #include "ie_exp_HTML.h"
 #include "ie_exp_HTML_MainListener.h"
+#include "ie_exp_HTML_Writer.h"
+
+class IE_Exp_HTML_MainListener;
 
 class ABI_EXPORT IE_Exp_HTML_TemplateHandler : public UT_XML::ExpertListener
 {
@@ -55,9 +58,8 @@ private:
 
 class ABI_EXPORT IE_Exp_HTML_HeaderFooterListener : public PL_Listener
 {
-friend class IE_Exp_HTML_MainListener;
 public:
-IE_Exp_HTML_HeaderFooterListener(PD_Document * pDocument, IE_Exp_HTML * pie, PL_Listener * pHTML_Listener);
+IE_Exp_HTML_HeaderFooterListener(PD_Document * pDocument, IE_Exp_HTML * pie, IE_Exp_HTML_Writer *pWriter, IE_Exp_HTML_MainListener *pMainListener);
 
 ~IE_Exp_HTML_HeaderFooterListener();
 
@@ -89,7 +91,8 @@ private:
 PD_DocumentRange * m_pHdrDocRange;
 PD_DocumentRange * m_pFtrDocRange;
 PD_Document * m_pDocument;
-PL_Listener * m_pHTML_Listener;
+IE_Exp_HTML_Writer *m_pWriter;
+IE_Exp_HTML_MainListener *m_pMainListener;
 };
 
 class ABI_EXPORT IE_Exp_HTML_BookmarkListener : public PL_Listener

@@ -22,6 +22,8 @@ libxp_la_SOURCES = \
 	ie_exp_HTML_util.h \
 	ie_exp_HTML_UtilListeners.cpp \
 	ie_exp_HTML_UtilListeners.h \
+	ie_exp_HTML_Writer.cpp \
+	ie_exp_HTML_Writer.h \
 	ie_exp_RTF_AttrProp.cpp \
 	ie_exp_RTF_AttrProp.h \
 	ie_exp_RTF.cpp \
