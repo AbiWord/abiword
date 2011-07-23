@@ -8,17 +8,17 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: ar\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-07 17:30+0700\n"
-"PO-Revision-Date: 2011-07-09 12:25+0600\n"
+"Report-Msgid-Bugs-To: http://bugzilla.abisource.com/enter_bug.cgi?product=AbiWord\n"
+"POT-Creation-Date: 2011-06-13 17:31+0700\n"
+"PO-Revision-Date: 2011-07-23 13:37+0600\n"
 "Last-Translator: Urmas D. <davian818@gmail.com>\n"
 "Language-Team: Arabic <doc@arabeyes.org>\n"
+"Language: ar\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: ar\n"
-"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Virtaal 0.7.0\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+"X-Generator: Pootle 2.0.1\n"
 
 #. MENU_LABEL__BOGUS1__
 #. MENU_LABEL__BOGUS2__
@@ -7953,7 +7953,7 @@ msgstr "العلاقة:"
 #. DLG_HTMLOPT_ExpMathMLRenderPNG
 #: po/tmp/xap_String_Id.h.h:669
 msgid "Render MathML to PNG images (JavaScript will be used if option is not checked)"
-msgstr ""
+msgstr "حول MathML إلى صور PNG (ستُستخدم جافا سكربت إذا لم يُفعّل هذا الخيار)"
 
 #. DLG_FOSA_ReplayFromFileTitle
 #: po/tmp/xap_String_Id.h.h:671
@@ -8108,7 +8108,7 @@ msgstr "الإسبانية (إسبانيا)"
 #. DLG_HTMLOPT_ExpSplitDocument
 #: po/tmp/xap_String_Id.h.h:737
 msgid "Split document"
-msgstr ""
+msgstr "اقسم المستند"
 
 #. DLG_Image_SquareWrap
 #: po/tmp/xap_String_Id.h.h:741

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- ==============================================================  -->
 <!-- This file contains AbiWord Strings.  AbiWord is an Open Source  -->
 <!-- word processor developed by AbiSource, Inc.  Information about  -->
@@ -81,8 +81,10 @@ DLG_HTMLOPT_ExpEmbedCSS="Indlæg (CSS) style sheet"
 DLG_HTMLOPT_ExpEmbedImages="Indlæg billeder i URL'er (Base64-kodet)"
 DLG_HTMLOPT_ExpIs4="Eksportér som HTML 4.01"
 DLG_HTMLOPT_ExpLabel="Vælg HTML-eksportmuligheder:"
+DLG_HTMLOPT_ExpMathMLRenderPNG=""
 DLG_HTMLOPT_ExpRestore="Gendan indstillinger"
 DLG_HTMLOPT_ExpSave="Gem indstillinger"
+DLG_HTMLOPT_ExpSplitDocument="Gem dokumentet"
 DLG_HTMLOPT_ExpTitle="HTML-eksportmuligheder"
 DLG_History_Created="Oprettet:"
 DLG_History_DocumentDetails="Detaljer for dokument"
