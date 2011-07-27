@@ -400,9 +400,9 @@ AC_ARG_WITH([darwinports],
 	[AS_HELP_STRING([--with-darwinports], [(Mac OSX only) add `/opt/local' prefix to CPP/LDFLAGS])], 
 [
         if test "x$withval" != "xno"; then
-                CPPFLAGS="$CPPFLAGS -I/opt/local/include"
-                LDFLAGS="$LDFLAGS -L/opt/local/lib"
-		CC=$CXX
+            CPPFLAGS="$CPPFLAGS -I/opt/local/include"
+            LDFLAGS="$LDFLAGS -headerpad_max_install_names -L/opt/local/lib"
+            CC=$CXX
         fi
 ])
 
