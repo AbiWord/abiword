@@ -25,6 +25,8 @@ AC_ARG_ENABLE([collab-backend-telepathy],
 	PKG_CHECK_EXISTS([ $collab_telepathy_req ],
 	[
 	    enable_collab_backend_telepathy="yes"
+	], [
+	    enable_collab_backend_telepathy="no"
 	])
 ])
 test "$enable_collab_backend_telepathy" = "yes" && collab_pkgs="$collab_pkgs $collab_telepathy_req"
@@ -40,6 +42,8 @@ AC_ARG_ENABLE([collab-backend-xmpp],
 	PKG_CHECK_EXISTS([ $collab_xmpp_req ],
 	[
 		enable_collab_backend_xmpp="yes"
+	], [
+		enable_collab_backend_xmpp="no"
 	])
 ])
 test "$enable_collab_backend_xmpp" = "yes" && collab_pkgs="$collab_pkgs $collab_xmpp_req"
@@ -77,6 +81,8 @@ AC_ARG_ENABLE([collab-backend-sugar],
 	PKG_CHECK_EXISTS([ $collab_sugar_req ],
 	[
 		enable_collab_backend_sugar="yes"
+	], [
+		enable_collab_backend_sugar="no"
 	])
 ])
 test "$enable_collab_backend_sugar" = "yes" && collab_pkgs="$collab_pkgs $collab_sugar_req"
