@@ -25,7 +25,7 @@
 
 
 
-IE_Exp_HTML_StyleTree::IE_Exp_HTML_StyleTree(IE_Exp_HTML_StyleTree * parent, const char * _style_name, PD_Style * style) :
+IE_Exp_HTML_StyleTree::IE_Exp_HTML_StyleTree(IE_Exp_HTML_StyleTree * parent, const gchar * _style_name, PD_Style * style) :
         m_pDocument(0),
         m_parent(parent),
         m_list(0),
@@ -152,7 +152,7 @@ IE_Exp_HTML_StyleTree::IE_Exp_HTML_StyleTree(PD_Document * pDocument) :
         m_class_list(""),
         m_style(0)
 {
-    const char ** ptr = s_prop_list;
+    const gchar ** ptr = s_prop_list;
     while (*ptr)
     {
         m_map.insert(map_type::value_type(*ptr, *(ptr + 1)));
@@ -169,7 +169,7 @@ IE_Exp_HTML_StyleTree::~IE_Exp_HTML_StyleTree()
     FREEP(m_list);
 }
 
-bool IE_Exp_HTML_StyleTree::add(const char * _style_name, PD_Style * style)
+bool IE_Exp_HTML_StyleTree::add(const gchar * _style_name, PD_Style * style)
 {
     if (m_list == 0)
     {
@@ -204,7 +204,7 @@ bool IE_Exp_HTML_StyleTree::add(const char * _style_name, PD_Style * style)
     return true;
 }
 
-bool IE_Exp_HTML_StyleTree::add(const char * _style_name, PD_Document * pDoc)
+bool IE_Exp_HTML_StyleTree::add(const gchar * _style_name, PD_Document * pDoc)
 {
     if ((pDoc == 0) || (_style_name == 0) || (*_style_name == 0))
         return false;
@@ -269,7 +269,7 @@ void IE_Exp_HTML_StyleTree::inUse()
         m_parent->inUse();
 }
 
-const IE_Exp_HTML_StyleTree * IE_Exp_HTML_StyleTree::findAndUse(const char * _style_name)
+const IE_Exp_HTML_StyleTree * IE_Exp_HTML_StyleTree::findAndUse(const gchar * _style_name)
 {
     const IE_Exp_HTML_StyleTree * style_tree = find(_style_name);
 
@@ -281,7 +281,7 @@ const IE_Exp_HTML_StyleTree * IE_Exp_HTML_StyleTree::findAndUse(const char * _st
     return style_tree;
 }
 
-const IE_Exp_HTML_StyleTree * IE_Exp_HTML_StyleTree::find(const char * _style_name) const
+const IE_Exp_HTML_StyleTree * IE_Exp_HTML_StyleTree::find(const gchar * _style_name) const
 {
     if (m_style_name == _style_name)
         return this;
@@ -307,7 +307,7 @@ const IE_Exp_HTML_StyleTree * IE_Exp_HTML_StyleTree::find(PD_Style * style) cons
     return find(_style_name);
 }
 
-bool IE_Exp_HTML_StyleTree::descends(const char * _style_name) const
+bool IE_Exp_HTML_StyleTree::descends(const gchar * _style_name) const
 {
     if (m_parent == 0)
         return false;

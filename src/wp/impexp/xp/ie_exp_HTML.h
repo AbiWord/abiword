@@ -22,13 +22,18 @@
 #ifndef IE_EXP_HTML_H
 #define IE_EXP_HTML_H
 
+// External includes
+#include <gsf/gsf-output.h>
+
 class IE_Exp_HTML;
 
 // HTML exporter includes
 #include "ie_impexp_HTML.h"
 #include "ie_exp_HTML_util.h"
 #include "ie_exp_HTML_StyleTree.h"
-#include "ie_exp_HTML_MainListener.h"
+#include "ie_exp_HTML_TagWriter.h"
+#include "ie_exp_HTML_DocumentWriter.h"
+#include "ie_exp_HTML_Listener.h"
 #include "ie_exp_HTML_UtilListeners.h"
 #include "xap_Dlg_HTMLOptions.h"
 
@@ -43,8 +48,11 @@ class IE_Exp_HTML;
 #include <ap_Strings.h>
 #include <xap_Dialog_Id.h>
 #include <xap_DialogFactory.h>
+#include <xap_Frame.h>
+#include <xav_View.h>
 #include <ie_exp.h>
 #include <pt_Types.h>
+#include <ut_path.h>
 
 /* Define if the base unicode char is UCS-4
  */
@@ -60,14 +68,14 @@ public:
 	IE_Exp_HTML_Sniffer ();
 	virtual ~IE_Exp_HTML_Sniffer () {}
 
-	virtual bool recognizeSuffix (const char * szSuffix);
-	virtual bool getDlgLabels (const char ** szDesc,
-							   const char ** szSuffixList,
+	virtual bool recognizeSuffix (const gchar * szSuffix);
+	virtual bool getDlgLabels (const gchar ** szDesc,
+							   const gchar ** szSuffixList,
 							   IEFileType * ft);
 	virtual UT_Error constructExporter (PD_Document * pDocument,
 										IE_Exp ** ppie);
 
-	virtual UT_Confidence_t supportsMIME (const char * szMimeType);
+	virtual UT_Confidence_t supportsMIME (const gchar * szMimeType);
 };
 
 class ABI_EXPORT IE_Exp_HTML : public IE_Exp
@@ -76,11 +84,11 @@ public:
 	IE_Exp_HTML (PD_Document * pDocument);
 	virtual ~IE_Exp_HTML ();
 
-	static bool			RecognizeSuffix (const char * szSuffix);
+	static bool			RecognizeSuffix (const gchar * szSuffix);
 	static UT_Error		StaticConstructor (PD_Document * pDocument,
 										   IE_Exp ** ppie);
-	static bool			GetDlgLabels (const char ** pszDesc,
-									  const char ** pszSuffixList,
+	static bool			GetDlgLabels (const gchar ** pszDesc,
+									  const gchar ** pszSuffixList,
 									  IEFileType * ft);
 	static bool 		SupportsFileType (IEFileType ft);
 

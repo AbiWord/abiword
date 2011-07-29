@@ -71,25 +71,25 @@ private:
     typedef std::map<std::string, std::string> map_type;
     map_type m_map;
 
-    IE_Exp_HTML_StyleTree(IE_Exp_HTML_StyleTree * parent, const char * name, PD_Style * style);
+    IE_Exp_HTML_StyleTree(IE_Exp_HTML_StyleTree * parent, const gchar * name, PD_Style * style);
 public:
     IE_Exp_HTML_StyleTree(PD_Document * pDocument);
     ~IE_Exp_HTML_StyleTree();
 
 private:
-    bool add(const char * style_name, PD_Style * style);
+    bool add(const gchar * style_name, PD_Style * style);
 public:
-    bool add(const char * style_name, PD_Document * pDoc);
+    bool add(const gchar * style_name, PD_Document * pDoc);
 
 private:
     void inUse();
 public:
-    const IE_Exp_HTML_StyleTree * findAndUse(const char * style_name);
+    const IE_Exp_HTML_StyleTree * findAndUse(const gchar * style_name);
 
-    const IE_Exp_HTML_StyleTree * find(const char * style_name) const;
+    const IE_Exp_HTML_StyleTree * find(const gchar * style_name) const;
     const IE_Exp_HTML_StyleTree * find(PD_Style * style) const;
 
-    bool descends(const char * style_name) const;
+    bool descends(const gchar * style_name) const;
 
     template<typename StyleListener>
     void print(StyleListener * listener) const;
@@ -239,7 +239,7 @@ struct StyleListener {
         tagRaw(m_utf8_0);
     }
 
-    void styleNameValue(const char * name, const UT_UTF8String & value) {
+    void styleNameValue(const gchar * name, const UT_UTF8String & value) {
         styleIndent();
 
         m_utf8_0 += name;

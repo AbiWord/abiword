@@ -34,7 +34,7 @@ IE_Exp_HTML_Sniffer::IE_Exp_HTML_Sniffer()
 
 }
 
-bool IE_Exp_HTML_Sniffer::recognizeSuffix(const char * szSuffix)
+bool IE_Exp_HTML_Sniffer::recognizeSuffix(const gchar * szSuffix)
 {
 return (!(g_ascii_strcasecmp(szSuffix, ".xhtml")) ||
         !(g_ascii_strcasecmp(szSuffix, ".html")) ||
@@ -51,8 +51,8 @@ UT_Error IE_Exp_HTML_Sniffer::constructExporter(PD_Document * pDocument,
     return UT_OK;
 }
 
-bool IE_Exp_HTML_Sniffer::getDlgLabels(const char ** pszDesc,
-                                   const char ** pszSuffixList,
+bool IE_Exp_HTML_Sniffer::getDlgLabels(const gchar ** pszDesc,
+                                   const gchar ** pszSuffixList,
                                    IEFileType * ft)
 {
     *pszDesc = "HTML/XHTML/PHTML/MHT (.html, .xhtml, .phtml, .mht)";
@@ -61,7 +61,7 @@ bool IE_Exp_HTML_Sniffer::getDlgLabels(const char ** pszDesc,
     return true;
 }
 
-UT_Confidence_t IE_Exp_HTML_Sniffer::supportsMIME(const char * szMimeType)
+UT_Confidence_t IE_Exp_HTML_Sniffer::supportsMIME(const gchar * szMimeType)
 {
 if (!strcmp(szMimeType, IE_MIMETYPE_XHTML) ||
     !strcmp(szMimeType, "application/xhtml") ||
@@ -75,7 +75,7 @@ return UT_CONFIDENCE_ZILCH;
 /*****************************************************************/
 
 
-class IE_Exp_HTML_MainListener;
+class IE_Exp_HTML_DocumentWriter;
 class IE_Exp_HTML_HeaderFooterListener;
 class IE_Exp_HTML_BookmarkListener;
 
@@ -347,13 +347,13 @@ UT_Error IE_Exp_HTML::_writeDocument()
         {
             if (bToken)
             {
-                const char * fname = getDoc()->getFilename();
+                const gchar * fname = getDoc()->getFilename();
                 if (fname)
                 {
-                    const char * base = UT_basename(fname);
+                    const gchar * base = UT_basename(fname);
                     UT_uint32 iNameLen = strlen(base);
 
-                    const char * dot = strrchr(base, '.');
+                    const gchar * dot = strrchr(base, '.');
                     if (dot)
                     {
                         iNameLen = dot - base;
@@ -419,14 +419,14 @@ UT_Error IE_Exp_HTML::_writeDocument()
 
     write(declaration.utf8_str(), declaration.byteLength());
 
-    IE_Exp_HTML_TemplateHandler TH(getDoc(), this);
+//    IE_Exp_HTML_TemplateHandler TH(getDoc(), this);
 
-    UT_XML parser;
-    parser.setExpertListener(&TH);
+    //UT_XML parser;
+    //parser.setExpertListener(&TH);
 
-    UT_Error err = parser.parse(prop.c_str());
+   // UT_Error err = parser.parse(prop.c_str());
 
-    return err;
+    return UT_OK;
 }
 
 void IE_Exp_HTML::printStyleTree(PD_Document *pDocument, UT_ByteBuf & sink)
@@ -450,7 +450,7 @@ UT_UTF8String IE_Exp_HTML::ConvertToClean(const UT_UTF8String & str)
     {
         while (true)
         {
-            const char *pCurrent = i.current();
+            const gchar *pCurrent = i.current();
 
             if (*pCurrent == 0)
             {
@@ -470,151 +470,32 @@ UT_UTF8String IE_Exp_HTML::ConvertToClean(const UT_UTF8String & str)
 
 UT_Error IE_Exp_HTML::_writeDocument(bool bClipBoard, bool bTemplateBody)
 {
-    /**
-     * We must check if user wants to split the document into several parts.
-     * File will be splitted using level 1 toc elements, e.g. 'Heading 1' style
-     */
-    if (m_exp_opt.bSplitDocument && m_toc->hasTOC() && !m_exp_opt.bMultipart)
-    {
-        m_minTOCLevel = 10; // Hope this will be enough, see impl. of TOC_Helper
-
-        for (int i = 0; i < m_toc->getNumTOCEntries(); i++)
-        {
-            int currentLevel = 10;
-            m_toc->getNthTOCEntry(i, &currentLevel);
-            if (currentLevel < m_minTOCLevel)
-            {
-                m_minTOCLevel = currentLevel;
-                m_minTOCIndex = i;
-            }
-        }
-
-        UT_DEBUGMSG(("Minimal TOC level is %d\n", m_minTOCLevel));
-
-        IE_Exp_HTML_BookmarkListener * bookmarkListener = new IE_Exp_HTML_BookmarkListener(getDoc(), this);
-        getDoc()->tellListener(bookmarkListener);
-        m_bookmarks = bookmarkListener->getBookmarks();
-        DELETEP(bookmarkListener);
-
-
-
-
-        PT_DocPosition posBegin;
-        PT_DocPosition posEnd; // End of the chapter
-        PT_DocPosition posCurrent;
-        PT_DocPosition docBegin;
-        UT_UTF8String chapterTitle;
-        UT_UTF8String currentTitle;
-        int currentLevel = 0;
-        bool firstChapter = true;
-
-        getDoc()->getBounds(false, posEnd);
-        docBegin = posEnd;
-        posEnd = 0;
-        currentTitle = m_toc->getNthTOCEntry(0, NULL);
-        bool isIndex = true;
-        for (int i = m_minTOCIndex; i < m_toc->getNumTOCEntries(); i++)
-        {
-
-            m_toc->getNthTOCEntry(i, &currentLevel);
-
-            if (currentLevel == m_minTOCLevel)
-            {
-                chapterTitle = m_toc->getNthTOCEntry(i, NULL);
-                m_toc->getNthTOCEntryPos(i, posCurrent);
-                posBegin = posEnd;
-
-                if (firstChapter)
-                {
-
-                    UT_DEBUGMSG(("POS: %d %d\n", posBegin, posCurrent));
-                    if (posCurrent <= docBegin)
-                    {
-                        UT_DEBUGMSG(("Document is starting from a heading\n"));
-                        isIndex = true;
-                        continue;
-
-                    }
-                    firstChapter = false;
-
-                }
-
-                posEnd = posCurrent;
-                PD_DocumentRange *range = new PD_DocumentRange(getDoc(), posBegin, posEnd);
-                UT_DEBUGMSG(("POS: BEGIN %d END %d\n", posBegin, posEnd));
-                UT_DEBUGMSG(("Now will create chapter of the document with title %s\n", currentTitle.utf8_str()));
-
-                _createChapter(range, currentTitle, isIndex);
-                if (isIndex)
-                {
-                    isIndex = false;
-                }
-                currentTitle = chapterTitle;
-            }
-        }
-
-        posBegin = posEnd;
-        getDoc()->getBounds(true, posEnd);
-
-        if (posBegin != posEnd)
-        {
-            PD_DocumentRange *range = new PD_DocumentRange(getDoc(), posBegin, posEnd);
-            _createChapter(range, chapterTitle, isIndex);
-        }
-        return UT_OK;
-    }
-    else
-    {
-        IE_Exp_HTML_Writer * pWriter = new IE_Exp_HTML_Writer(getDoc(), this, bClipBoard, bTemplateBody,
-                                                          &m_exp_opt, m_style_tree,
-                                                          m_sLinkCSS, m_sTitle);
-        IE_Exp_HTML_MainListener * pListener = new IE_Exp_HTML_MainListener(pWriter);
-        if (pListener == 0) return UT_IE_NOMEMORY;
-
-        PL_Listener * pL = static_cast<PL_Listener *> (pListener);
-
-        bool okay = true;
-
-        IE_Exp_HTML_HeaderFooterListener * pHdrFtrListener = new IE_Exp_HTML_HeaderFooterListener(getDoc(), this, pWriter, pListener);
-        if (pHdrFtrListener == 0) return UT_IE_NOMEMORY;
-        PL_Listener * pHFL = static_cast<PL_Listener *> (pHdrFtrListener);
-
-        if (!bClipBoard)
-        {
-            okay = getDoc()->tellListener(pHFL);
-            pHdrFtrListener->doHdrFtr(1);
-        }
-
-        if (bClipBoard)
-        {
-            okay = getDoc()->tellListenerSubset(pL, getDocRange());
-        }
-        else if (okay)
-        {
-            okay = getDoc()->tellListener(pL);
-            if (okay) okay = pListener->endOfDocument();
-        }
-
-        if (!bClipBoard)
-            pHdrFtrListener->doHdrFtr(0); // Emit footer
-
-        DELETEP(pListener);
-        DELETEP(pHdrFtrListener);
-        DELETEP(pWriter);
-        if ((m_error == UT_OK) && (okay == true)) return UT_OK;
-        return UT_IE_COULDNOTWRITE;
-    }
+    IE_Exp_HTML_OutputWriter *pOutputWriter = new IE_Exp_HTML_OutputWriter(getFp());
+    IE_Exp_HTML_DocumentWriter* pMainListener = new IE_Exp_HTML_DocumentWriter(pOutputWriter);
+    IE_Exp_HTML_Listener *pListener = new IE_Exp_HTML_Listener(getDoc(), pMainListener);
+    
+    pListener->beginOfDocument();
+    getDoc()->tellListener(pListener);
+    pListener->endOfDocument();
+    
+    DELETEP(pListener);
+    DELETEP(pMainListener);
+    DELETEP(pOutputWriter);
+    
+    return UT_OK;
 }
+
+
 
 void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, UT_UTF8String &title, bool isIndex)
 {
-    IE_Exp_HTML_MainListener* pListener = NULL;
+  /*  IE_Exp_HTML_DocumentWriter* pListener = NULL;
     IE_Exp_HTML_Writer *pWriter = new IE_Exp_HTML_Writer(getDoc(), this, false,
                                     false, &m_exp_opt, m_style_tree, m_sLinkCSS, title,
                                     isIndex);
-    pListener = new IE_Exp_HTML_MainListener(pWriter);
+    pListener = new IE_Exp_HTML_DocumentWriter(pWriter);
 
-    PL_Listener * pL = static_cast<PL_Listener *> (pListener);
+    PL_Listener * pL = static_cast<PL_Listener *> (pListener);*/
     /*IE_Exp_HTML_HeaderFooterListener * pHdrFtrListener = new IE_Exp_HTML_HeaderFooterListener(
                     getDoc(), this, pL);
     PL_Listener * pHFL = static_cast<PL_Listener *> (pHdrFtrListener);
@@ -622,7 +503,7 @@ void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, UT_UTF8String &title, 
     bool ok;
     // getDoc()->tellListener(pHFL);
     // pHdrFtrListener->doHdrFtr(1);
-
+/*
     ok = getDoc()->tellListenerSubset(pL, range);
 
     if (ok)
@@ -637,7 +518,7 @@ void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, UT_UTF8String &title, 
     DELETEP(range);
     // DELETEP(pHdrFtrListener);
     DELETEP(pListener);
-    DELETEP(pWriter);
+    DELETEP(pWriter);*/
 
 }
 
@@ -697,61 +578,3 @@ UT_UTF8String IE_Exp_HTML::getSuffix() const
  *
  */
 
-IE_Exp_HTML_BookmarkListener::IE_Exp_HTML_BookmarkListener(PD_Document *pDoc, IE_Exp_HTML * pie) :
-        m_pDoc(pDoc),
-        m_pie(pie)
-
-{
-
-}
-
-bool IE_Exp_HTML_BookmarkListener::populate(PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord * pcr)
-{
-    switch (pcr->getType())
-    {
-    case PX_ChangeRecord::PXT_InsertObject:
-    {
-        const PX_ChangeRecord_Object * pcro = 0;
-        pcro = static_cast<const PX_ChangeRecord_Object *> (pcr);
-        PT_AttrPropIndex api = pcr->getIndexAP();
-
-        switch (pcro->getObjectType())
-        {
-        case PTO_Bookmark:
-        {
-            const PP_AttrProp * pAP = 0;
-            bool bHaveProp = (api ? (m_pDoc->getAttrProp(api, &pAP)) : false);
-
-            if (!bHaveProp || (pAP == 0))
-                return true;
-
-            const gchar * szType = 0;
-            pAP->getAttribute("type", szType);
-
-            if (szType == 0)
-                return true; // ??
-
-            if (g_ascii_strcasecmp(szType, "start") == 0)
-            {
-                const gchar * szName = 0;
-                pAP->getAttribute("name", szName);
-
-                if (szName)
-                {
-                    UT_UTF8String escape = szName;
-                    escape.escapeURL();
-                    m_bookmarks[escape] = m_pie->getFilenameByPosition(pcr->getPosition());
-                    UT_DEBUGMSG(("Added bookmark\n File: %s Id: %s\n", m_bookmarks[escape].utf8_str(), escape.utf8_str()));
-                }
-            }
-            return true;
-        }
-
-        default:
-            return true;
-        }
-    }
-    default:
-        return true;
-    }
-}
