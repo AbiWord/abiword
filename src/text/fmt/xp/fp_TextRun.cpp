@@ -385,7 +385,7 @@ void fp_TextRun::printText(void)
 	while(text.getStatus() == UTIter_OK)
 	{
 		UT_UCS4Char c = text.getChar();
-		xxx_UT_DEBUGMSG(("| %d |",c));
+		UT_DEBUGMSG(("| %d |",c));
 		if(c >= ' ' && c <128)
 			sTmp +=  static_cast<char>(c);
 		++text;
