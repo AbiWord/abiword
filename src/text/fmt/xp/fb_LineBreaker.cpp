@@ -33,6 +33,14 @@
 #include "ut_string.h"
 #include "pd_Iterator.h"
 
+#ifdef ENABLE_SPELL
+#include "spell_manager.h"
+#if 1
+// todo: work around to remove the INPUTWORDLEN restriction for pspell
+#include "ispell_def.h"
+#endif
+#endif
+
 fb_LineBreaker::fb_LineBreaker()
 :
 	m_pFirstRunToKeep(NULL),
@@ -145,10 +153,13 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock,
 					UT_sint32 iTrailingSpace = 0;
 					fp_Run * pArun = (pPreviousRun ? pPreviousRun : pCurrentRun);
 //					fp_Run * pArun = pCurrentRun;
-					// we may dont need to search back
-					iTrailingSpace = _moveBackToFindHyphenationPoint(pArun,
+					iTrailingSpace = _moveBackToFirstNonBlankData(pArun,
 											  &pOffendingRun);
 					m_iWorkingLineWidth -= iTrailingSpace;
+					if(pArun==pOffendingRun)
+					{
+						pArun=pOffendingRun;
+					}
 					if (m_iWorkingLineWidth > m_iMaxLineWidth)
 					{
 						fp_Run * pRun = pArun;
@@ -385,36 +396,6 @@ UT_sint32 fb_LineBreaker::_moveBackToFirstNonBlankData(fp_Run *pCurrentRun, fp_R
 	return iTrailingBlank;
 }
 
-// find the split point
-// function: _moveBackToFindHyphenationPoint
-UT_sint32 fb_LineBreaker::_moveBackToFindHyphenationPoint(fp_Run *pCurrentRun, fp_Run **pOffendingRun)
-{
-	// need to move back untill we find the first non blank character and
-	// return the distance back to this character.
-	
-	UT_sint32 iTrailingBlank = 0;
-	
-	do
-	{
-		if(!pCurrentRun->doesContainNonBlankData()&&pCurrentRun->getType() == FPRUN_TEXT&&ispellChecker->hyphenate(pCurrentRun->getText()))
-		{
-			iTrailingBlank += pCurrentRun->getWidth();
-		}
-		else
-		{
-			iTrailingBlank += pCurrentRun->findTrailingSpaceDistance();
-			break;
-		}
-		
-		pCurrentRun = pCurrentRun->getPrevRun();
-	}
-	while(pCurrentRun);
-	
-	*pOffendingRun = pCurrentRun;
-	xxx_UT_DEBUGMSG(("_moveBackToFindHyphenationPoint distance %d \n",iTrailingBlank));
-	return iTrailingBlank;
-}
-
 
 bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun, UT_sint32 iTrailSpace)
 {
@@ -642,11 +623,18 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 	}
 
 	fp_Line* pNextLine = NULL;
+	UT_UTF8String wordToSplit;
+	UT_UCSChar* wordHyphenationResult=NULL;
+	int breakPoint=0;
 	xxx_UT_DEBUGMSG(("fb_LineBreaker::_breakThe ... \n"));
 	if ( m_pLastRunToKeep != NULL
 		&& (pLine->getLastRun() != m_pLastRunToKeep)
 		)
 	{
+		UT_DEBUGMSG(("m_pLastRunToKeep ... \n"));
+		m_pLastRunToKeep->printText();
+		UT_DEBUGMSG(("m_pFirstRunToKeep ... \n"));
+		m_pFirstRunToKeep->printText();
 		// make sure there is a next line
 		pNextLine = static_cast<fp_Line *>(pLine->getNext());
 		if (!pNextLine)
@@ -670,12 +658,12 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 			UT_ASSERT(pNewLine);	// TODO check for outofmem
 			pNextLine = pNewLine;
 			m_iMaxLineWidth = pNextLine->getMaxWidth();
-			xxx_UT_DEBUGMSG(("!!!! Generated a new Line \n"));
+			UT_DEBUGMSG(("!!!! Generated a new Line \n"));
 		}
 		else
 		{
 			UT_ASSERT(pNextLine->getContainerType() == FP_CONTAINER_LINE);
-			xxx_UT_DEBUGMSG(("fb_LineBreaker::_breakThe ... pLine 0x%x, pNextLine 0x%x, blocks last 0x%x\n",
+			UT_DEBUGMSG(("fb_LineBreaker::_breakThe ... pLine 0x%x, pNextLine 0x%x, blocks last 0x%x\n",
 			pLine, pNextLine, pBlock->getLastContainer()));
 			if(pBlock->getLastContainer() == static_cast<fp_Container *>(pLine))
 				pBlock->setLastContainer(pNextLine);     // not need to create newline
@@ -683,125 +671,81 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 
 		fp_Run* pRunToBump = pLine->getLastRun();
 		UT_ASSERT(pRunToBump);
-		xxx_UT_DEBUGMSG(("!!!RunToBump %x Type %d Offset %d Length %d \n",pRunToBump,pRunToBump->getType(),pRunToBump->getBlockOffset(),pRunToBump->getLength()));
-
-		//to place hyphenation points
-		while (pRunToBump && pLine->getNumRunsInLine() && pRunToBump->getPrevRun()!=m_pLastRunToKeep)
+		UT_DEBUGMSG(("!!!RunToBump %x Type %d Offset %d Length %d \n",pRunToBump,pRunToBump->getType(),pRunToBump->getBlockOffset(),pRunToBump->getLength()));
+      
+		while (pRunToBump && pLine->getNumRunsInLine() && (pLine->getLastRun() != m_pLastRunToKeep))
 		{
-           pRunToBump = pRunToBump->getPrevRun();
-		}
-		PD_StruxIterator text(pRunToBump->getBlock()->getStruxDocHandle(),
-			pRunToBump->getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
+			UT_ASSERT(pRunToBump->getLine() == pLine);
+			UT_DEBUGMSG(("RunToBump %x Type %d Offset %d Length %d \n",pRunToBump,pRunToBump->getType(),pRunToBump->getBlockOffset(),pRunToBump->getLength()));
+			if(!pLine->removeRun(pRunToBump))
+			{
+//
+// More repair code I think...
+// run is not on the Line! It's totally lost...
+//
+				pRunToBump->setLine(NULL);
+			}
+			
+			UT_ASSERT(pLine->getLastRun()->getType() != FPRUN_ENDOFPARAGRAPH);
+//
+// Some repair code
+//
+			if(pLine->getLastRun()->getType() == FPRUN_ENDOFPARAGRAPH)
+			{
+				fp_Run * pNuke = pLine->getLastRun();
+				pLine->removeRun(pNuke);
+			}
 
-		text.setUpperLimit(text.getPosition() + pRunToBump->getLength() - 1);
+			pRunToBump->printText();  //trace out debug message & run two time
+			pNextLine->insertRun(pRunToBump);  //called when create new line
 
-		UT_ASSERT_HARMLESS( text.getStatus() == UTIter_OK );
-		UT_UTF8String sTmp;
-		while(text.getStatus() == UTIter_OK)
-		{
-			UT_UCS4Char c = text.getChar();
-			xxx_UT_DEBUGMSG(("| %d |",c));
-			if(c >= ' ' && c <128)
-				sTmp +=  static_cast<char>(c);
-			++text;
-		}
-        pRunToBump = m_pLastRunToKeep;
-		UT_ASSERT(pRunToBump->getLine() == pLine);
-		xxx_UT_DEBUGMSG(("RunToBump %x Type %d Offset %d Length %d \n",pRunToBump,pRunToBump->getType(),pRunToBump->getBlockOffset(),pRunToBump->getLength()));
-		if(!pLine->removeRun(pRunToBump))
-		{
-			//
-			// More repair code I think...
-			// run is not on the Line! It's totally lost...
-			//
-			pRunToBump->setLine(NULL);
-		}
+			// to get the split word			
+			if (!(pRunToBump->getPrevRun() && pLine->getNumRunsInLine() && (pLine->getLastRun() != m_pLastRunToKeep)))
+			{
+				PD_StruxIterator text(pRunToBump->getBlock()->getStruxDocHandle(),
+					pRunToBump->getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 
-		UT_ASSERT(pLine->getLastRun()->getType() != FPRUN_ENDOFPARAGRAPH);
-		//
-		// Some repair code
-		//
-		if(pLine->getLastRun()->getType() == FPRUN_ENDOFPARAGRAPH)
-		{
-			fp_Run * pNuke = pLine->getLastRun();
-			pLine->removeRun(pNuke);
-		}
-
-		pRunToBump->printText();  //trace out debug message & run two time
-		pNextLine->insertRun(pRunToBump);  //called when create new line
-				while (pRunToBump && pLine->getNumRunsInLine() && (pLine->getLastRun() != m_pLastRunToKeep))
+				text.setUpperLimit(text.getPosition() + pRunToBump->getLength() - 1);
+				UT_ASSERT_HARMLESS( text.getStatus() == UTIter_OK );
+				UT_UTF8String sTmp;
+				while(text.getStatus() == UTIter_OK)
 				{
-						if(!pLine->removeRun(pRunToBump))
-				                pRunToBump->setLine(NULL);
-					   pRunToBump->printText();  //trace out debug message & run two time
-					pNextLine->insertRun(pRunToBump);  //called when create new line
-					PD_StruxIterator text(pRunToBump->getBlock()->getStruxDocHandle(),
-								pRunToBump->getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
-										  //
-										 text.setUpperLimit(text.getPosition() + pRunToBump->getLength() - 1);
-													while(text.getStatus() == UTIter_OK)
-										  			{
-										 				UT_UCS4Char c = text.getChar();
-										  				if(c >= ' ' && c <128)
-										 					sTmp +=  static_cast<char>(c);
-										  				++text;
-										  			}
-										  
-										  			pRunToBump = pRunToBump->getPrevRun();
-											}
-										  }
-				
+					UT_UCS4Char c = text.getChar();
+					UT_DEBUGMSG(("| %d |",c));
+					if(c >= ' ' && c <128)
+						sTmp +=  static_cast<char>(c);
+					++text;
+				}
+				UT_DEBUGMSG(("The Split Text |%s| \n",sTmp.utf8_str()));
+				if(sTmp.utf8_str()!=0) 
+				{
+                    wordToSplit=sTmp;					
+					UT_DEBUGMSG(("wordToSplit |%s| \n",wordToSplit.utf8_str()));
+				}				
+			}			
 
-//		while (pRunToBump && pLine->getNumRunsInLine() && (pLine->getLastRun() != m_pLastRunToKeep))
-//		{
-//			UT_ASSERT(pRunToBump->getLine() == pLine);
-//			xxx_UT_DEBUGMSG(("RunToBump %x Type %d Offset %d Length %d \n",pRunToBump,pRunToBump->getType(),pRunToBump->getBlockOffset(),pRunToBump->getLength()));
-//			if(!pLine->removeRun(pRunToBump))
-//			{
-////
-//// More repair code I think...
-//// run is not on the Line! It's totally lost...
-////
-//				pRunToBump->setLine(NULL);
-//			}
-//			
-//			UT_ASSERT(pLine->getLastRun()->getType() != FPRUN_ENDOFPARAGRAPH);
-////
-//// Some repair code
-////
-//			if(pLine->getLastRun()->getType() == FPRUN_ENDOFPARAGRAPH)
-//			{
-//				fp_Run * pNuke = pLine->getLastRun();
-//				pLine->removeRun(pNuke);
-//			}
-//
-//			pRunToBump->printText();  //trace out debug message & run two time
-//			pNextLine->insertRun(pRunToBump);  //called when create new line
-//
-//			PD_StruxIterator text(pRunToBump->getBlock()->getStruxDocHandle(),
-//				pRunToBump->getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
-//
-//			text.setUpperLimit(text.getPosition() + pRunToBump->getLength() - 1);
-//
-//			UT_ASSERT_HARMLESS( text.getStatus() == UTIter_OK );
-//			UT_UTF8String sTmp;
-//			while(text.getStatus() == UTIter_OK)
-//			{
-//				UT_UCS4Char c = text.getChar();
-//				xxx_UT_DEBUGMSG(("| %d |",c));
-//				if(c >= ' ' && c <128)
-//					sTmp +=  static_cast<char>(c);
-//				++text;
-//			}
-//
-//			pRunToBump = pRunToBump->getPrevRun();
-//			xxx_UT_DEBUGMSG(("Next runToBump %x \n",pRunToBump));
-//		}
-//	}
+			pRunToBump = pRunToBump->getPrevRun();
+			UT_DEBUGMSG(("Next runToBump %x \n",pRunToBump));
+		}
+	}
 
 
 	//modify src/text/fmt/xp/fb_LineBreaker.cpp to place hypernation points
-
+	//spit the word
+	if(wordToSplit.length()!=NULL)
+	{
+	    SpellChecker * checker = pBlock->_getSpellChecker (0);
+		wordHyphenationResult=checker->hyphenateWord(wordToSplit.ucs4_str().ucs4_str(),0);
+		UT_DEBUGMSG(("wordToSplit |%s| \n",wordHyphenationResult));
+		int tickLeft=pLine->getAvailableWidth();
+		for(int index=strlen(wordHyphenationResult);index>=0;--index)
+		{
+              if(wordHyphenationResult[index]=='-'&&index<tickLeft)
+			  {
+                 breakPoint=index;
+			  }
+		}
+	}
 
 	UT_ASSERT((!m_pLastRunToKeep) || (pLine->getLastRun() == m_pLastRunToKeep));
 #if DEBUG
