@@ -625,6 +625,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 	fp_Line* pNextLine = NULL;
 	UT_UTF8String pWordToSplit;
 	UT_UCSChar* pWordHyphenationResult=NULL;
+	fp_Run* pRunToSplit=NULL;
 	int pBreakPoint=-1;
 	xxx_UT_DEBUGMSG(("fb_LineBreaker::_breakThe ... \n"));
 	if ( m_pLastRunToKeep != NULL
@@ -702,6 +703,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 			// to get the split word			
 			if (!(pRunToBump->getPrevRun() && pLine->getNumRunsInLine() && (pLine->getLastRun() != m_pLastRunToKeep)))
 			{
+				pRunToSplit=pRunToBump;
 				PD_StruxIterator text(pRunToBump->getBlock()->getStruxDocHandle(),
 					pRunToBump->getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 
@@ -744,6 +746,8 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 				if(pWordHyphenationResult[index]=='-'&&index<tickLeft)
 				{
 					pBreakPoint=index;
+					fp_TextRun* textout=static_cast<fp_TextRun*>(pRunToSplit);
+					textout->split(pBreakPoint);
 				}
 			}
 		}
