@@ -623,9 +623,9 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 	}
 
 	fp_Line* pNextLine = NULL;
-	UT_UTF8String wordToSplit;
-	UT_UCSChar* wordHyphenationResult=NULL;
-	int breakPoint=0;
+	UT_UTF8String pWordToSplit;
+	UT_UCSChar* pWordHyphenationResult=NULL;
+	int pBreakPoint=-1;
 	xxx_UT_DEBUGMSG(("fb_LineBreaker::_breakThe ... \n"));
 	if ( m_pLastRunToKeep != NULL
 		&& (pLine->getLastRun() != m_pLastRunToKeep)
@@ -719,8 +719,8 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 				UT_DEBUGMSG(("The Split Text |%s| \n",sTmp.utf8_str()));
 				if(sTmp.utf8_str()!=0) 
 				{
-                    wordToSplit=sTmp;					
-					UT_DEBUGMSG(("wordToSplit |%s| \n",wordToSplit.utf8_str()));
+                    pWordToSplit=sTmp;					
+					UT_DEBUGMSG(("wordToSplit |%s| \n",pWordToSplit.utf8_str()));
 				}				
 			}			
 
@@ -732,18 +732,20 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 
 	//modify src/text/fmt/xp/fb_LineBreaker.cpp to place hypernation points
 	//spit the word
-	if(wordToSplit.length()!=NULL)
+	if(pWordToSplit.length()!=NULL)
 	{
-	    SpellChecker * checker = pBlock->_getSpellChecker (0);
-		wordHyphenationResult=checker->hyphenateWord(wordToSplit.ucs4_str().ucs4_str(),0);
-		UT_DEBUGMSG(("wordToSplit |%s| \n",wordHyphenationResult));
+		pWordHyphenationResult=pBlock->_hyphenateWord(pWordToSplit.ucs4_str().ucs4_str(),0,0);
+		UT_DEBUGMSG(("wordToSplit |%s| \n",pWordHyphenationResult));
 		int tickLeft=pLine->getAvailableWidth();
-		for(int index=strlen(wordHyphenationResult);index>=0;--index)
-		{
-              if(wordHyphenationResult[index]=='-'&&index<tickLeft)
-			  {
-                 breakPoint=index;
-			  }
+		if (pWordHyphenationResult && *pWordHyphenationResult){
+			gchar *c = g_ucs4_to_utf8(pWordHyphenationResult, -1, NULL, NULL, NULL);
+			for(int index=g_utf8_strlen(c,NULL);index>=0;--index)
+			{
+				if(pWordHyphenationResult[index]=='-'&&index<tickLeft)
+				{
+					pBreakPoint=index;
+				}
+			}
 		}
 	}
 
