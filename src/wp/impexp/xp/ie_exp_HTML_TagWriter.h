@@ -1,5 +1,0 @@
-#ifndef IE_EXP_HTML_TAGWRITER_H
-#define	IE_EXP_HTML_TAGWRITER_H
-
-#endif	/* IE_EXP_HTML_TAGWRITER_H */
-
