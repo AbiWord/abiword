@@ -19,6 +19,9 @@ opml_la_LDFLAGS = \
 	-avoid-version \
 	-module \
 	-no-undefined
+if TOOLKIT_COCOA
+opml_la_LDFLAGS += -headerpad_max_install_names
+endif # TOOLKIT_COCOA
 
 opml_la_SOURCES = 
 nodist_EXTRA_opml_la_SOURCES = dummy.cpp

@@ -21,6 +21,9 @@ opendocument_la_LDFLAGS = \
 	-avoid-version \
 	-module \
 	-no-undefined
+if TOOLKIT_COCOA
+opendocument_la_LDFLAGS += -headerpad_max_install_names
+endif # TOOLKIT_COCOA
 
 opendocument_la_SOURCES = 
 
