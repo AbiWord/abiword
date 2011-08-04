@@ -476,7 +476,7 @@ UT_Error IE_Exp_HTML::_writeDocument(bool bClipBoard, bool bTemplateBody)
         new IE_Exp_HTML_DocumentWriter(pOutputWriter);
     
     IE_Exp_HTML_Listener *pListener = new IE_Exp_HTML_Listener(getDoc(), 
-        pDataExporter, m_style_tree, pMainListener);
+        pDataExporter, m_style_tree, m_bookmarks, pMainListener);
     
     pListener->beginOfDocument();
     getDoc()->tellListener(pListener);
