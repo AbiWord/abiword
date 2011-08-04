@@ -1664,6 +1664,7 @@ bool PD_Document::repairDoc(void)
 	for(i=0; i< m_vecSuspectFrags.getItemCount(); i++)
 	{
 		pf = m_vecSuspectFrags.getNthItem(i);
+		UT_DEBUGMSG(("Suspect frag %d pointer %p \n",i,pf));
 		if(pf->getType() == pf_Frag::PFT_Strux)
 		{
 			pfs = static_cast<pf_Frag_Strux *>(pf);

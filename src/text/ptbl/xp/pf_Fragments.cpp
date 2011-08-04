@@ -852,18 +852,18 @@ pf_Fragments::_prev(const Node* pn) const
 {
 	UT_ASSERT(pn != NULL);
 
-	if (pn != m_pLeaf)
+	if (pn && pn != m_pLeaf)
 	{
-		if (pn->left != m_pLeaf)
+		if (pn && pn->left != m_pLeaf)
 		{
 			pn = pn->left;
 
-			while(pn->right != m_pLeaf)
+			while(pn && pn->right != m_pLeaf)
 				pn = pn->right;
 		}
 		else
 		{
-			while(pn->parent)
+			while(pn && pn->parent)
 			{
 				if (pn->parent->right == pn)
 					return pn->parent;
@@ -888,24 +888,35 @@ const pf_Fragments::Node*
 pf_Fragments::_next(const Node* pn) const
 {
 	UT_ASSERT(pn != NULL);
-	
-	if (pn != m_pLeaf)
+	if(pn == 0)
+	  return 0;
+	if (pn && pn != m_pLeaf)
 	{
-		if (pn->right != m_pLeaf)
+		if (pn && pn->right != m_pLeaf)
 		{
 			pn = pn->right;
 
-			while(pn->left != m_pLeaf)
+			while(pn && pn->left != m_pLeaf)
+			{
 				pn = pn->left;
+			}
 		}
 		else
 		{
-			while(pn->parent)
+			while(pn && pn->parent)
 			{
-				if (pn->parent->left == pn)
+				if (pn && pn->parent->left == pn)
+				{
 					return pn->parent;
-				else
+				}
+				else if(pn)
+				{
 					pn = pn->parent;
+				}
+				else
+				{
+				       return 0;
+				}
 			}
 
 			return 0;
