@@ -24,11 +24,12 @@
 
 // HTML exporter includes
 #include "ie_exp_HTML.h"
+#include "ie_exp_HTML_Listener.h"
 #include "ie_exp_HTML_util.h"
 #include "ie_exp_HTML_StyleTree.h"
-#include "ie_exp_HTML_Listener.h"
 #include "xap_Dlg_HTMLOptions.h"
 
+class IE_Exp_HTML_ListenerImpl;
 class IE_Exp_HTML_DocumentWriter : public IE_Exp_HTML_ListenerImpl
 {
 public:

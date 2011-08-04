@@ -28,6 +28,7 @@
 #include <gsf/gsf-output.h>
 
 // Abiword includes
+#include <ie_TOC.h>
 #include <pd_Document.h>
 #include <ut_go_file.h>
 #include <ut_string_class.h>
@@ -58,6 +59,8 @@ UT_UTF8String s_string_to_url (const UT_UTF8String & str);
 bool is_CSS (const char * prop_name, const char ** prop_default = 0);
 char * s_removeWhiteSpace (const char * text, UT_UTF8String & utf8str,
 								  bool bLowerCase = true);
+// Returns alpha-numeric contents of string
+UT_UTF8String ConvertToClean(const UT_UTF8String &str);
 
 /*
  * This class allows to control creation of files (like CSS, JS and images) 

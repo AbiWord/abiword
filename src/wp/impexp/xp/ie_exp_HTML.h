@@ -31,10 +31,10 @@ class IE_Exp_HTML;
 #include "ie_impexp_HTML.h"
 #include "ie_exp_HTML_util.h"
 #include "ie_exp_HTML_UtilListeners.h"
+#include "ie_exp_HTML_NavigationHelper.h"
 #include "ie_exp_HTML_StyleTree.h"
 #include "ie_exp_HTML_DocumentWriter.h"
 #include "ie_exp_HTML_Listener.h"
-#include "ie_exp_HTML_UtilListeners.h"
 #include "xap_Dlg_HTMLOptions.h"
 
 // Abiword includes
@@ -78,6 +78,8 @@ public:
 	virtual UT_Confidence_t supportsMIME (const gchar * szMimeType);
 };
 
+class IE_Exp_HTML_NavigationHelper;
+
 class ABI_EXPORT IE_Exp_HTML : public IE_Exp
 {
 public:
@@ -100,11 +102,6 @@ public:
 	inline void			set_MathMLRenderPNG ( bool enable = true) { m_exp_opt.bMathMLRenderPNG = enable; }
 	inline void			set_SplitDocument ( bool enable = true) { m_exp_opt.bSplitDocument = enable; }
         
-	// Returns alpha-numeric contents of string
-	static UT_UTF8String ConvertToClean(const UT_UTF8String &str);
-
-	UT_UTF8String		getBookmarkFilename(const UT_UTF8String &id);
-	UT_UTF8String		getFilenameByPosition(PT_DocPosition position);
 	UT_UTF8String		getSuffix() const;
 
 private:
@@ -123,12 +120,9 @@ private:
 	XAP_Exp_HTMLOptions	m_exp_opt;
 	UT_UTF8String       m_sLinkCSS;
 	UT_UTF8String       m_sTitle;
-	std::map<UT_UTF8String, UT_UTF8String> m_bookmarks;
-	IE_TOCHelper *m_toc;
-	int	m_minTOCLevel;
-	int m_minTOCIndex;
 	// We need to know file suffix to create chapters with the same suffix as the main file
 	UT_UTF8String m_suffix;
+        IE_Exp_HTML_NavigationHelper *m_pNavigationHelper;
 };
 
 #endif /* IE_EXP_HTML_H */

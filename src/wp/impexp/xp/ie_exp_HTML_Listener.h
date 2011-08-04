@@ -2,6 +2,7 @@
 #define	IE_EXP_HTML_LISTENER_H
 
 #include "ie_exp_HTML_util.h"
+#include "ie_exp_HTML_NavigationHelper.h"
 #include "ie_exp_HTML_StyleTree.h"
 
 // External includes
@@ -126,7 +127,7 @@ public:
     IE_Exp_HTML_Listener(PD_Document *pDocument, 
             IE_Exp_HTML_DataExporter *pDataExporter,
             IE_Exp_HTML_StyleTree    *pStyleTree,
-            std::map<UT_UTF8String, UT_UTF8String> &bookmarks,
+            IE_Exp_HTML_NavigationHelper *pNavigationHelper,
             IE_Exp_HTML_ListenerImpl *pListenerImpl);
 
     virtual bool populate(PL_StruxFmtHandle sfh,
@@ -230,9 +231,6 @@ private:
     void _handleAnnotationData(PT_AttrPropIndex api);
     void _makeStylesheet();
     
-    UT_UTF8String _getBookmarkFilename(const UT_UTF8String &id);
-    
-
     bool m_bInSpan;
     bool m_bInBlock;
     bool m_bInBookmark;
@@ -264,7 +262,6 @@ private:
     std::vector<UT_UTF8String> m_annotationTitles;
     std::vector<UT_UTF8String> m_annotationAuthors;
     std::vector<UT_UTF8String> m_annotationContents;
-    std::map<UT_UTF8String, UT_UTF8String> &m_bookmarks;
     
     IE_Exp_HTML_DataExporter *m_pDataExporter;
     
@@ -276,6 +273,7 @@ private:
     UT_UTF8String m_filename;
     
     IE_Exp_HTML_StyleTree *m_pStyleTree;
+    IE_Exp_HTML_NavigationHelper *m_pNavigationHelper;
     UT_UTF8String m_stylesheet;
 };
 

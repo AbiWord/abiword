@@ -86,10 +86,8 @@ IE_Exp_HTML::IE_Exp_HTML(PD_Document * pDocument)
         m_style_tree(new IE_Exp_HTML_StyleTree(pDocument)),
         m_styleListener(new IE_Exp_HTML_StyleListener(m_style_tree)),
         m_bSuppressDialog(false),
-        m_toc(new IE_TOCHelper(pDocument)),
-        m_minTOCLevel(0),
-        m_minTOCIndex(0),
-        m_suffix("")
+        m_suffix(""),
+    m_pNavigationHelper(NULL)
 {
     
     m_exp_opt.bIs4 = false;
@@ -113,7 +111,6 @@ IE_Exp_HTML::IE_Exp_HTML(PD_Document * pDocument)
 IE_Exp_HTML::~IE_Exp_HTML()
 {
     DELETEP(m_style_tree);
-    DELETEP(m_toc);
 }
 
 void IE_Exp_HTML::_buildStyleTree()
@@ -231,10 +228,7 @@ UT_Error IE_Exp_HTML::_writeDocument()
     }
 
     _buildStyleTree();
-    IE_Exp_HTML_BookmarkListener * bookmarkListener = new IE_Exp_HTML_BookmarkListener(getDoc(), this);
-    getDoc()->tellListener(bookmarkListener);
-    m_bookmarks = bookmarkListener->getBookmarks();
-    DELETEP(bookmarkListener);
+    m_pNavigationHelper = new IE_Exp_HTML_NavigationHelper(getDoc(), getFileName());
 
     if (isCopying()) // ClipBoard
     {
@@ -433,35 +427,7 @@ UT_Error IE_Exp_HTML::_writeDocument()
     return UT_OK;
 }
 
-UT_UTF8String IE_Exp_HTML::ConvertToClean(const UT_UTF8String & str)
-{
-    UT_UTF8String result = "";
 
-    UT_UTF8Stringbuf::UTF8Iterator i = str.getIterator();
-    i = i.start();
-
-
-    if (i.current())
-    {
-        while (true)
-        {
-            const gchar *pCurrent = i.current();
-
-            if (*pCurrent == 0)
-            {
-                break;
-            }
-
-            if (isalnum(*pCurrent) || (*pCurrent == '-') || (*pCurrent == '_'))
-            {
-                result += *pCurrent;
-            }
-
-            i.advance();
-        }
-    }
-    return result;
-}
 
 UT_Error IE_Exp_HTML::_writeDocument(bool bClipBoard, bool bTemplateBody)
 {
@@ -476,7 +442,7 @@ UT_Error IE_Exp_HTML::_writeDocument(bool bClipBoard, bool bTemplateBody)
         new IE_Exp_HTML_DocumentWriter(pOutputWriter);
     
     IE_Exp_HTML_Listener *pListener = new IE_Exp_HTML_Listener(getDoc(), 
-        pDataExporter, m_style_tree, m_bookmarks, pMainListener);
+        pDataExporter, m_style_tree, m_pNavigationHelper, pMainListener);
     
     IE_Exp_HTML_HeaderFooterListener *pHeaderFooterListener = new 
         IE_Exp_HTML_HeaderFooterListener(getDoc(), pMainListener,
@@ -534,54 +500,6 @@ void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, UT_UTF8String &title,
     DELETEP(pListener);
     DELETEP(pWriter);*/
 
-}
-
-UT_UTF8String IE_Exp_HTML::getBookmarkFilename(const UT_UTF8String & id)
-{
-    std::map<UT_UTF8String, UT_UTF8String>::iterator bookmarkIter = 
-        m_bookmarks.find(id);
-    if (bookmarkIter != m_bookmarks.end())
-    {
-        UT_DEBUGMSG(("Found bookmark %s at file %s", id.utf8_str(), 
-            m_bookmarks[id].utf8_str()));
-        return m_bookmarks[id];
-    }
-    else
-    {
-        return UT_UTF8String();
-    }
-}
-
-UT_UTF8String IE_Exp_HTML::getFilenameByPosition(PT_DocPosition position)
-{
-    PT_DocPosition posCurrent;
-    UT_UTF8String chapterFile = UT_go_basename(getFileName());
-
-    if (m_toc->hasTOC())
-    {
-        for (int i = m_toc->getNumTOCEntries() - 1; i >= m_minTOCIndex; i--)
-        {
-            int currentLevel;
-            m_toc->getNthTOCEntry(i, &currentLevel);
-            m_toc->getNthTOCEntryPos(i, posCurrent);
-
-            if (currentLevel == m_minTOCLevel)
-            {
-                if ((i != m_minTOCIndex) && (posCurrent <= position))
-                {
-                    chapterFile = IE_Exp_HTML::ConvertToClean(
-                        m_toc->getNthTOCEntry(i, NULL)) + m_suffix;
-                    break;
-                }
-                else if ((i == m_minTOCIndex) && (posCurrent >= position))
-                {
-                    break;
-                }
-            }
-        }
-    }
-
-    return (chapterFile);
 }
 
 UT_UTF8String IE_Exp_HTML::getSuffix() const

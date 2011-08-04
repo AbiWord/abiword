@@ -3,8 +3,9 @@
 
 // HTML exporter includes
 #include "ie_exp_HTML.h"
-#include "ie_exp_HTML_DocumentWriter.h"
 #include "ie_exp_HTML_Listener.h"
+#include "ie_exp_HTML_DocumentWriter.h"
+
 
 // Abiword includes
 #include <pd_Document.h>
@@ -99,55 +100,5 @@ private:
     bool m_bHaveFooter;
 };
 
-class ABI_EXPORT IE_Exp_HTML_BookmarkListener : public PL_Listener
-{
-public:
-IE_Exp_HTML_BookmarkListener(PD_Document* pDoc, IE_Exp_HTML * pie);
-bool populate(PL_StruxFmtHandle sfh,
-              const PX_ChangeRecord * pcr);
-// Not used
-
-bool populateStrux(PL_StruxDocHandle /*sdh*/,
-                   const PX_ChangeRecord * /*pcr*/,
-                   PL_StruxFmtHandle * /*psfh*/)
-{
-    return true;
-}
-// Not used
-
-bool change(PL_StruxFmtHandle /*sfh*/,
-            const PX_ChangeRecord * /*pcr*/)
-{
-    return true;
-}
-// Not used
-
-bool insertStrux(PL_StruxFmtHandle /*sfh*/,
-                 const PX_ChangeRecord * /*pcr*/,
-                 PL_StruxDocHandle /*sdh*/,
-                 PL_ListenerId /*lid*/,
-                 void (*/*pfnBindHandles*/) (PL_StruxDocHandle sdhNew,
-                 PL_ListenerId lid,
-                 PL_StruxFmtHandle sfhNew))
-{
-    return true;
-}
-// Not used
-
-bool signal(UT_uint32 /*iSignal*/)
-{
-    return true;
-}
-
-inline std::map<UT_UTF8String, UT_UTF8String> getBookmarks() const
-{
-    return m_bookmarks;
-}
-private:
-std::map<UT_UTF8String, UT_UTF8String> m_bookmarks;
-PD_Document * m_pDoc;
-IE_Exp_HTML * m_pie;
-
-};
 #endif	/* IE_EXP_HTML_UTILLISTENERS_H */
 

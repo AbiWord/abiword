@@ -5,7 +5,7 @@
 IE_Exp_HTML_Listener::IE_Exp_HTML_Listener(PD_Document *pDocument, 
                                            IE_Exp_HTML_DataExporter* pDataExporter,
                                            IE_Exp_HTML_StyleTree    *pStyleTree,
-                                           std::map<UT_UTF8String, UT_UTF8String> &bookmarks,
+                                           IE_Exp_HTML_NavigationHelper *pNavigationHelper,
                                            IE_Exp_HTML_ListenerImpl* pListenerImpl) :
 m_bInSpan(false),
 m_bInBlock(false),
@@ -29,12 +29,12 @@ m_bFirstRow(true),
 m_pDocument(pDocument),
 m_pCurrentImpl(pListenerImpl),
 m_tableHelper(pDocument),
- m_bookmarks(bookmarks),
 m_pDataExporter(pDataExporter),
 m_bEmbedCss(false),
 m_bEmbedImages(false),
 m_bRenderMathToPng(true),   
-m_pStyleTree(pStyleTree)
+m_pStyleTree(pStyleTree),
+m_pNavigationHelper(pNavigationHelper)
 {
 
 }
@@ -1494,7 +1494,7 @@ void IE_Exp_HTML_Listener::_openHyperlink(PT_AttrPropIndex api)
         {
             if (m_bSplitDocument)
             {
-                UT_UTF8String filename = _getBookmarkFilename(szUrl+1);
+                UT_UTF8String filename = m_pNavigationHelper->getBookmarkFilename(szUrl+1);
                 
                 if (filename != m_filename)
 				{
@@ -1828,17 +1828,4 @@ void IE_Exp_HTML_Listener::_makeStylesheet()
     
     m_stylesheet = sStyleSheet;
     m_stylesheet += reinterpret_cast<const char*>(buffer.getPointer(0));
-}
-
-UT_UTF8String IE_Exp_HTML_Listener::_getBookmarkFilename(const UT_UTF8String& id)
-{
-    std::map<UT_UTF8String, UT_UTF8String>::iterator bookmarkIter = m_bookmarks.find(id);
-	if (bookmarkIter != m_bookmarks.end())
-	{
-		UT_DEBUGMSG(("Found bookmark %s at file %s", id.utf8_str(), m_bookmarks[id].utf8_str()));
-		return m_bookmarks[id];
-	} else
-	{
-		return UT_UTF8String();
-	}
 }

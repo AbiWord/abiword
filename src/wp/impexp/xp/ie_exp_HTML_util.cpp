@@ -217,6 +217,37 @@ char * s_removeWhiteSpace (const char * text, UT_UTF8String & utf8str,
 	return 0;
 }
 
+UT_UTF8String ConvertToClean(const UT_UTF8String & str)
+{
+    UT_UTF8String result = "";
+
+    UT_UTF8Stringbuf::UTF8Iterator i = str.getIterator();
+    i = i.start();
+
+
+    if (i.current())
+    {
+        while (true)
+        {
+            const gchar *pCurrent = i.current();
+
+            if (*pCurrent == 0)
+            {
+                break;
+            }
+
+            if (isalnum(*pCurrent) || (*pCurrent == '-') || (*pCurrent == '_'))
+            {
+                result += *pCurrent;
+            }
+
+            i.advance();
+        }
+    }
+    return result;
+}
+
+
 IE_Exp_HTML_DataExporter::IE_Exp_HTML_DataExporter(PD_Document* pDocument, 
     const UT_UTF8String& baseName):
     m_pDocument(pDocument),
