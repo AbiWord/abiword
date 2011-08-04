@@ -31,7 +31,6 @@ class IE_Exp_HTML;
 #include "ie_impexp_HTML.h"
 #include "ie_exp_HTML_util.h"
 #include "ie_exp_HTML_StyleTree.h"
-#include "ie_exp_HTML_TagWriter.h"
 #include "ie_exp_HTML_DocumentWriter.h"
 #include "ie_exp_HTML_Listener.h"
 #include "ie_exp_HTML_UtilListeners.h"
@@ -99,8 +98,7 @@ public:
 	inline void			set_AddIdentifiers(bool enable = true) { m_exp_opt.bAddIdentifiers = enable; }
 	inline void			set_MathMLRenderPNG ( bool enable = true) { m_exp_opt.bMathMLRenderPNG = enable; }
 	inline void			set_SplitDocument ( bool enable = true) { m_exp_opt.bSplitDocument = enable; }
-
-	static void printStyleTree(PD_Document *pDocument, UT_ByteBuf& tree);
+        
 	// Returns alpha-numeric contents of string
 	static UT_UTF8String ConvertToClean(const UT_UTF8String &str);
 
@@ -110,7 +108,7 @@ public:
 
 private:
 	UT_Error            _doOptions ();
-	void				_buildStyleTree ();
+        void _buildStyleTree();
 
 protected:
 	virtual UT_Error	_writeDocument ();

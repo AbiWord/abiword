@@ -45,6 +45,45 @@ bool m_bInAFENote = false;
 bool m_bInAnnotation = false;
 #include "MathSVGScript.h"
 
+UT_UTF8String sStyleSheet = "#toc,\n"
+".toc,\n"
+".mw-warning {\n"
+"	border: 1px solid #aaa;\n"
+"	background-color: #f9f9f9;\n"
+"	padding: 5px;\n"
+"	font-size: 95%;\n"
+"}\n"
+"#toc h2,\n"
+".toc h2 {\n"
+"	display: inline;\n"
+"	border: none;\n"
+"	padding: 0;\n"
+"	font-size: 100%;\n"
+"	font-weight: bold;\n"
+"}\n"
+"#toc #toctitle,\n"
+".toc #toctitle,\n"
+"#toc .toctitle,\n"
+".toc .toctitle {\n"
+"	text-align: center;\n"
+"}\n"
+"#toc ul,\n"
+".toc ul {\n"
+"	list-style-type: none;\n"
+"	list-style-image: none;\n"
+"	margin-left: 0;\n"
+"	padding-left: 0;\n"
+"	text-align: left;\n"
+"}\n"
+"#toc ul ul,\n"
+".toc ul ul {\n"
+"	margin: 0 0 0 2em;\n"
+"}\n"
+"#toc .toctoggle,\n"
+".toc .toctoggle {\n"
+"	font-size: 94%;\n"
+"}";
+
 UT_UTF8String s_string_to_url (const UT_String & str)
 {
 	UT_UTF8String url;
@@ -178,6 +217,106 @@ char * s_removeWhiteSpace (const char * text, UT_UTF8String & utf8str,
 	return 0;
 }
 
+IE_Exp_HTML_DataExporter::IE_Exp_HTML_DataExporter(PD_Document* pDocument, 
+    const UT_UTF8String& baseName):
+    m_pDocument(pDocument),
+    m_fileDirectory(UT_go_basename_from_uri(baseName.utf8_str()) 
+        + UT_UTF8String(FILES_DIR_NAME)),
+    m_baseDirectory(UT_go_dirname_from_uri(baseName.utf8_str(), false))
+{
+    
+}
+void IE_Exp_HTML_DataExporter::_init()
+{
+    if (!m_bInitialized)
+    {
+        UT_go_directory_create((m_baseDirectory + G_DIR_SEPARATOR_S +  m_fileDirectory).utf8_str(), 
+                               0644, NULL);
+        
+        m_bInitialized = true;
+    }
+}
+
+UT_UTF8String IE_Exp_HTML_DataExporter::saveData(const gchar *szDataId, 
+                                                 const gchar* extension)
+{
+    _init();
+    UT_UTF8String filename = szDataId;
+    
+    if (extension != NULL)
+    {
+        filename += ".";
+        filename += extension;
+    }
+    
+    const UT_ByteBuf * pByteBuf = 0;
+    if (!m_pDocument->getDataItemDataByName(szDataId, &pByteBuf, 
+                                            NULL, NULL))
+    {
+        UT_ASSERT("No data item with specified dataid found\n");
+        return "";
+    }
+    
+    pByteBuf->writeToURI((m_baseDirectory + G_DIR_SEPARATOR_S + m_fileDirectory 
+        + G_DIR_SEPARATOR_S + filename).utf8_str());
+    
+    return m_fileDirectory + G_DIR_SEPARATOR_S + filename;
+}
+
+GsfOutput* IE_Exp_HTML_DataExporter::createFile(const UT_UTF8String& name,
+                                                UT_UTF8String &filename)
+{
+    _init();
+    filename = m_fileDirectory 
+        + G_DIR_SEPARATOR_S  + name;
+    
+    return UT_go_file_create((m_baseDirectory + G_DIR_SEPARATOR_S  + 
+        m_fileDirectory + G_DIR_SEPARATOR_S + name).utf8_str(), 
+                             NULL);
+}
+
+void IE_Exp_HTML_DataExporter::encodeDataBase64(const gchar* szDataId, 
+                                                UT_UTF8String& result)
+{
+    std::string mimeType;
+    const UT_ByteBuf * pByteBuf = 0;
+    if (!m_pDocument->getDataItemDataByName(szDataId, &pByteBuf, 
+                                            &mimeType, NULL))
+    {
+        UT_ASSERT("No data item with specified dataid found\n");
+        return;
+    }
+    
+    
+    
+    char buffer[75];
+	char * bufptr = 0;
+	size_t buflen;
+	size_t imglen = pByteBuf->getLength ();
+	const char * imgptr = reinterpret_cast<const char *>(pByteBuf->getPointer (0));
+
+	buffer[0] = '\r';
+	buffer[1] = '\n';
+    result.clear();
+    result += "data:";
+    result += mimeType.c_str();
+    result += ";base64,";
+	while (imglen)
+	{
+		buflen = 72;
+		bufptr = buffer + 2;
+
+		UT_UTF8_Base64Encode (bufptr, buflen, imgptr, imglen);
+
+		*bufptr = 0;
+
+		result += buffer;
+	}
+}
+
+/*
+ * 
+ */ 
 IE_Exp_HTML_OutputWriter::IE_Exp_HTML_OutputWriter(GsfOutput* output):
 m_output(output)
 {
@@ -292,8 +431,8 @@ void IE_Exp_HTML_TagWriter::writeData(const std::string& data)
     {
         _closeAttributes();
     }
-    m_buffer += data;
     m_bDataWritten = true;
+    m_buffer += data;
 }
 
 void IE_Exp_HTML_TagWriter::closeTag()
@@ -350,6 +489,7 @@ void IE_Exp_HTML_TagWriter::openComment()
         UT_ASSERT("Trying to create nested comment\n");
         return;
     }
+    _closeAttributes();
     m_bInComment = true;
     m_buffer += "<!-- ";
 }

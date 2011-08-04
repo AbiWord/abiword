@@ -26,7 +26,6 @@
 #include "ie_exp_HTML.h"
 #include "ie_exp_HTML_util.h"
 #include "ie_exp_HTML_StyleTree.h"
-#include "ie_exp_HTML_TagWriter.h"
 #include "ie_exp_HTML_Listener.h"
 #include "xap_Dlg_HTMLOptions.h"
 
@@ -74,7 +73,7 @@ public:
     void openBookmark(const gchar* szBookmarkName);
     void closeBookmark();
     
-    void openList(bool ordered);
+    void openList(bool ordered, const gchar *szStyleName);
     void closeList();
     
     void openListItem();
@@ -90,7 +89,10 @@ public:
     void insertMeta(const UT_UTF8String &name, const UT_UTF8String &content);
     void insertText(const UT_UTF8String &text);
     void insertImage(const UT_UTF8String &url, const UT_UTF8String &width, 
-        const UT_UTF8String &height);
+        const UT_UTF8String &height, const UT_UTF8String &top, 
+        const UT_UTF8String &left,
+        const UT_UTF8String &title,
+        const UT_UTF8String &alt);
     void insertTOC(const gchar *title, const std::vector<UT_UTF8String> &items,
         const std::vector<UT_UTF8String> &itemUriList);
     void insertEndnotes(const std::vector<UT_UTF8String> &endnotes);
@@ -98,6 +100,7 @@ public:
     void insertAnnotations(const std::vector<UT_UTF8String> &titles,
        const std::vector<UT_UTF8String> &authors,
        const std::vector<UT_UTF8String> &annotations);
+    void insertStyle(const UT_UTF8String &style);
 private:
     
     void inline _handleStyleAndId(const gchar *szStyleName, const gchar *szId);

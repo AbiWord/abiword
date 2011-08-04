@@ -1,6 +1,9 @@
 #ifndef IE_EXP_HTML_LISTENER_H
 #define	IE_EXP_HTML_LISTENER_H
 
+#include "ie_exp_HTML_util.h"
+#include "ie_exp_HTML_StyleTree.h"
+
 // External includes
 #include <vector>
 
@@ -62,7 +65,7 @@ public:
         const gchar */*szStyleName*/, const gchar */*szId*/) {}
     virtual void closeHyperlink() {}
 
-    virtual void openList(bool /*ordered*/) {}
+    virtual void openList(bool /*ordered*/, const gchar */*szStyleName*/) {}
     virtual void closeList() {}
 
     virtual void openListItem() {}
@@ -86,12 +89,9 @@ public:
 
     virtual void insertImage(const UT_UTF8String &/*url*/, 
         const UT_UTF8String &/*width*/, const UT_UTF8String &/*height*/,
-        const UT_UTF8String &/*top*/, const UT_UTF8String &/*left*/) {}
-    
-    virtual void insertInlineImage(const UT_UTF8String &/*data*/, 
-        const UT_UTF8String &/*width*/, const UT_UTF8String &/*height*/,
-        const UT_UTF8String &/*top*/, const UT_UTF8String &/*left*/) {}
-    
+        const UT_UTF8String &/*top*/, const UT_UTF8String &/*left*/,
+        const UT_UTF8String &/*title*/, const UT_UTF8String &/*alt*/) {}
+        
     virtual void insertText(const UT_UTF8String &/*text*/) {}
     
     virtual void insertTOC(const gchar */*title*/, 
@@ -105,7 +105,7 @@ public:
         const std::vector<UT_UTF8String> &/*annotations*/) {}
     
     virtual void insertStyle(const UT_UTF8String &style) {}
-    virtual void insertJavaScript(const gchar *src, const gchar* script) {}
+    virtual void insertJavaScript(const gchar */*src*/, const gchar* /*script*/) {}
 
 };
 
@@ -124,6 +124,8 @@ struct ListInfo
 class IE_Exp_HTML_Listener : public PL_Listener {
 public:
     IE_Exp_HTML_Listener(PD_Document *pDocument, 
+            IE_Exp_HTML_DataExporter *pDataExporter,
+            IE_Exp_HTML_StyleTree    *pStyleTree,
             IE_Exp_HTML_ListenerImpl *pListenerImpl);
 
     virtual bool populate(PL_StruxFmtHandle sfh,
@@ -222,8 +224,10 @@ private:
     void _insertEndnotes();
     void _insertFootnotes();
     void _insertAnnotations();
-    
+    void _insertStyle();
+    void _insertLinkToStyle();
     void _handleAnnotationData(PT_AttrPropIndex api);
+    void _makeStylesheet();
     
 
     bool m_bInSpan;
@@ -236,7 +240,6 @@ private:
     bool m_bInEndnote;
     bool m_bInFootnote;
     bool m_bInHeading;
-
 
     fd_Field* m_pCurrentField;
     UT_UTF8String m_currentFieldType;
@@ -258,6 +261,14 @@ private:
     std::vector<UT_UTF8String> m_annotationTitles;
     std::vector<UT_UTF8String> m_annotationAuthors;
     std::vector<UT_UTF8String> m_annotationContents;
+    
+    IE_Exp_HTML_DataExporter *m_pDataExporter;
+    
+    bool m_bEmbedCss;
+    bool m_bEmbedImages;
+    
+    IE_Exp_HTML_StyleTree *m_pStyleTree;
+    UT_UTF8String m_stylesheet;
 };
 
 

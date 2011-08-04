@@ -139,7 +139,7 @@ void IE_Exp_HTML_DocumentWriter::closeBookmark()
     m_pTagWriter->closeTag();
 }
 
-void IE_Exp_HTML_DocumentWriter::openList(bool ordered)
+void IE_Exp_HTML_DocumentWriter::openList(bool ordered, const gchar *szStyleName)
 {
     if (ordered)
     {
@@ -149,6 +149,7 @@ void IE_Exp_HTML_DocumentWriter::openList(bool ordered)
     {
         m_pTagWriter->openTag("ul");
     }
+    _handleStyleAndId(szStyleName, NULL);
 }
 
 void IE_Exp_HTML_DocumentWriter::closeList()
@@ -261,13 +262,16 @@ void IE_Exp_HTML_DocumentWriter::insertText(const UT_UTF8String &text)
 }
 
 void IE_Exp_HTML_DocumentWriter::insertImage(const UT_UTF8String& url, 
-    const UT_UTF8String& width, const UT_UTF8String& height)
+    const UT_UTF8String& width, const UT_UTF8String& height,
+    const UT_UTF8String& top, const UT_UTF8String& left,
+    const UT_UTF8String &title, const UT_UTF8String &alt)
 {
     m_pTagWriter->openTag("img", true, true);
     m_pTagWriter->addAttribute("src", url.utf8_str());
     m_pTagWriter->addAttribute("width", width.utf8_str());
     m_pTagWriter->addAttribute("height", height.utf8_str());
-
+    m_pTagWriter->addAttribute("title", title.utf8_str());
+    m_pTagWriter->addAttribute("alt", alt.utf8_str());
     m_pTagWriter->closeTag();
 
 }
@@ -389,5 +393,15 @@ void IE_Exp_HTML_DocumentWriter::insertAnnotations(
         m_pTagWriter->closeTag();        
     }
     
+    m_pTagWriter->closeTag();
+}
+
+void IE_Exp_HTML_DocumentWriter::insertStyle(const UT_UTF8String &style)
+{
+    m_pTagWriter->openTag("style", false, false);
+    m_pTagWriter->addAttribute("type", "text/css");
+    m_pTagWriter->openComment();
+    m_pTagWriter->writeData(style.utf8_str());
+    m_pTagWriter->closeComment();
     m_pTagWriter->closeTag();
 }

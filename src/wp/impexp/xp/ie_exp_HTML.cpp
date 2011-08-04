@@ -429,15 +429,6 @@ UT_Error IE_Exp_HTML::_writeDocument()
     return UT_OK;
 }
 
-void IE_Exp_HTML::printStyleTree(PD_Document *pDocument, UT_ByteBuf & sink)
-{
-    IE_Exp_HTML html(pDocument);
-    html._buildStyleTree();
-
-    StyleListener listener(sink);
-    html.m_style_tree->print(&listener);
-}
-
 UT_UTF8String IE_Exp_HTML::ConvertToClean(const UT_UTF8String & str)
 {
     UT_UTF8String result = "";
@@ -470,9 +461,18 @@ UT_UTF8String IE_Exp_HTML::ConvertToClean(const UT_UTF8String & str)
 
 UT_Error IE_Exp_HTML::_writeDocument(bool bClipBoard, bool bTemplateBody)
 {
-    IE_Exp_HTML_OutputWriter *pOutputWriter = new IE_Exp_HTML_OutputWriter(getFp());
-    IE_Exp_HTML_DocumentWriter* pMainListener = new IE_Exp_HTML_DocumentWriter(pOutputWriter);
-    IE_Exp_HTML_Listener *pListener = new IE_Exp_HTML_Listener(getDoc(), pMainListener);
+    IE_Exp_HTML_OutputWriter *pOutputWriter = 
+        new IE_Exp_HTML_OutputWriter(getFp());
+    
+    IE_Exp_HTML_DataExporter* pDataExporter = 
+        new IE_Exp_HTML_DataExporter(getDoc(), 
+            getFileName());
+    
+    IE_Exp_HTML_DocumentWriter* pMainListener = 
+        new IE_Exp_HTML_DocumentWriter(pOutputWriter);
+    
+    IE_Exp_HTML_Listener *pListener = new IE_Exp_HTML_Listener(getDoc(), 
+        pDataExporter, m_style_tree, pMainListener);
     
     pListener->beginOfDocument();
     getDoc()->tellListener(pListener);
@@ -480,6 +480,7 @@ UT_Error IE_Exp_HTML::_writeDocument(bool bClipBoard, bool bTemplateBody)
     
     DELETEP(pListener);
     DELETEP(pMainListener);
+    DELETEP(pDataExporter);
     DELETEP(pOutputWriter);
     
     return UT_OK;
@@ -487,7 +488,8 @@ UT_Error IE_Exp_HTML::_writeDocument(bool bClipBoard, bool bTemplateBody)
 
 
 
-void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, UT_UTF8String &title, bool isIndex)
+void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, UT_UTF8String &title, 
+    bool isIndex)
 {
   /*  IE_Exp_HTML_DocumentWriter* pListener = NULL;
     IE_Exp_HTML_Writer *pWriter = new IE_Exp_HTML_Writer(getDoc(), this, false,
@@ -524,10 +526,12 @@ void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, UT_UTF8String &title, 
 
 UT_UTF8String IE_Exp_HTML::getBookmarkFilename(const UT_UTF8String & id)
 {
-    std::map<UT_UTF8String, UT_UTF8String>::iterator bookmarkIter = m_bookmarks.find(id);
+    std::map<UT_UTF8String, UT_UTF8String>::iterator bookmarkIter = 
+        m_bookmarks.find(id);
     if (bookmarkIter != m_bookmarks.end())
     {
-        UT_DEBUGMSG(("Found bookmark %s at file %s", id.utf8_str(), m_bookmarks[id].utf8_str()));
+        UT_DEBUGMSG(("Found bookmark %s at file %s", id.utf8_str(), 
+            m_bookmarks[id].utf8_str()));
         return m_bookmarks[id];
     }
     else
@@ -553,7 +557,8 @@ UT_UTF8String IE_Exp_HTML::getFilenameByPosition(PT_DocPosition position)
             {
                 if ((i != m_minTOCIndex) && (posCurrent <= position))
                 {
-                    chapterFile = IE_Exp_HTML::ConvertToClean(m_toc->getNthTOCEntry(i, NULL)) + m_suffix;
+                    chapterFile = IE_Exp_HTML::ConvertToClean(
+                        m_toc->getNthTOCEntry(i, NULL)) + m_suffix;
                     break;
                 }
                 else if ((i == m_minTOCIndex) && (posCurrent >= position))

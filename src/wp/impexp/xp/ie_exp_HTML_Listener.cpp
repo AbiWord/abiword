@@ -2,7 +2,10 @@
 #include "ie_exp_HTML_util.h"
 #include "ie_exp_HTML.h"
 
-IE_Exp_HTML_Listener::IE_Exp_HTML_Listener(PD_Document *pDocument, IE_Exp_HTML_ListenerImpl* pListenerImpl) :
+IE_Exp_HTML_Listener::IE_Exp_HTML_Listener(PD_Document *pDocument, 
+                                           IE_Exp_HTML_DataExporter* pDataExporter,
+                                           IE_Exp_HTML_StyleTree    *pStyleTree,
+                                           IE_Exp_HTML_ListenerImpl* pListenerImpl) :
 m_bInSpan(false),
 m_bInBlock(false),
 m_bInBookmark(false),
@@ -23,7 +26,11 @@ m_iInCell(0),
 m_bFirstRow(true),
 m_pDocument(pDocument),
 m_pCurrentImpl(pListenerImpl),
-m_tableHelper(pDocument)
+m_tableHelper(pDocument),
+m_pDataExporter(pDataExporter),
+m_bEmbedCss(false),
+m_bEmbedImages(true),
+m_pStyleTree(pStyleTree)
 {
 
 }
@@ -589,6 +596,14 @@ bool IE_Exp_HTML_Listener::beginOfDocument()
     _openHead();
     _insertTitle();
     _insertMeta();
+    _makeStylesheet();
+    if (m_bEmbedCss)
+    {
+        _insertStyle();
+    } else
+    {
+        _insertLinkToStyle();
+    }
     _insertLinks();
     _closeHead();
     _openBody();
@@ -719,8 +734,13 @@ void IE_Exp_HTML_Listener::_openSpan(PT_AttrPropIndex api)
     }
 
     const gchar *szStyleName = _getObjectKey(api, PT_STYLE_ATTRIBUTE_NAME);
-    UT_DEBUGMSG(("OPENED SPAN\n"));
-    m_pCurrentImpl->openSpan(szStyleName);
+    const IE_Exp_HTML_StyleTree *tree = m_pStyleTree->find(szStyleName);
+    const gchar *styleName = NULL;
+    if (tree != NULL)
+    {
+        styleName = tree->class_name().utf8_str();
+    }
+    m_pCurrentImpl->openSpan(styleName);
     return;
 }
 
@@ -755,8 +775,13 @@ void IE_Exp_HTML_Listener::_openBlock(PT_AttrPropIndex api)
     }
 
     const gchar *szStyleName = _getObjectKey(api, PT_STYLE_ATTRIBUTE_NAME);
-    UT_DEBUGMSG(("OPENED BLOCK\n"));
-    m_pCurrentImpl->openBlock(szStyleName);
+    const IE_Exp_HTML_StyleTree *tree = m_pStyleTree->find(szStyleName);
+    const gchar *styleName = NULL;
+    if (tree != NULL)
+    {
+        styleName = tree->class_name().utf8_str();
+    }
+    m_pCurrentImpl->openBlock(styleName);
     
     
 }
@@ -769,7 +794,6 @@ void IE_Exp_HTML_Listener::_closeBlock()
     if (m_bInBlock)
     {
         m_bInBlock = false;
-        UT_DEBUGMSG(("CLOSED BLOCK\n"));
         m_pCurrentImpl->closeBlock();
     }
     
@@ -778,7 +802,6 @@ void IE_Exp_HTML_Listener::_closeBlock()
 
 void IE_Exp_HTML_Listener::_openHeading(size_t level, const gchar* szStyleName)
 {
-    UT_DEBUGMSG(("OPENED HEADING\n"));
     m_bInHeading = true;
     m_pCurrentImpl->openHeading(level, szStyleName, NULL);
 }
@@ -790,7 +813,6 @@ void IE_Exp_HTML_Listener::_closeHeading()
 {
     if (m_bInHeading)
     {
-        UT_DEBUGMSG(("CLOSED HEADING\n"));
         m_pCurrentImpl->closeHeading();
         m_bInHeading = false;
     }
@@ -1171,7 +1193,13 @@ void IE_Exp_HTML_Listener::_openList(PT_AttrPropIndex api, bool recursiveCall)
         info.iItemCount = 0;
         m_listInfoStack.push_back(info);
         UT_DEBUGMSG(("OPENED LIST\n"));
-        m_pCurrentImpl->openList(isOrdered);
+        const IE_Exp_HTML_StyleTree *tree = m_pStyleTree->find(szListStyle);
+        const gchar *styleName = NULL;
+        if (tree != NULL)
+        {
+            styleName = tree->class_name().utf8_str();
+        }
+        m_pCurrentImpl->openList(isOrdered, styleName);
         _openListItem();
     }
       
@@ -1491,7 +1519,7 @@ const gchar* IE_Exp_HTML_Listener::_getObjectKey(const PT_AttrPropIndex& api,
  */
 void IE_Exp_HTML_Listener::_insertImage(PT_AttrPropIndex api)
 {
-    const gchar* pImageName;
+    const gchar* szDataId;
     const PP_AttrProp* pAP;
     bool ok;
 
@@ -1501,10 +1529,66 @@ void IE_Exp_HTML_Listener::_insertImage(PT_AttrPropIndex api)
         pAP = NULL;
     }
 
-    pImageName =
+    szDataId =
             _getObjectKey(api, static_cast<const gchar*> ("dataid"));
+    
+    if ( szDataId == NULL)
+    {
+        return;
+    }
+    
+    std::string mimeType;
+    
+    if (!m_pDocument->getDataItemDataByName(szDataId, NULL, 
+        &mimeType, NULL))
+		return;
+    
+    if (mimeType == "image/svg+xml")
+	{
+		_insertEmbeddedImage(api);
+		return;
+	}
+	
+	if ((mimeType != "image/png") && (mimeType != "image/jpeg"))
+	{
+		UT_DEBUGMSG(("Image not of a suppored MIME type - ignoring...\n"));
+		return;
+	}
+    
+      
+    std::string extension;
+    if(!m_pDocument->getDataItemFileExtension(szDataId, extension, true))
+	{
+         extension = ".png";
+    }
+    
+    const gchar * szTitle  = 0;
+	UT_UTF8String title;
+	pAP->getAttribute ("title",  szTitle);
+	if (szTitle) {
+        title = szTitle;
+        title.escapeXML();
+	}
 
-    m_pCurrentImpl->insertImage(pImageName, "", "", "", "");
+	const gchar * szAlt  = 0;
+    UT_UTF8String alt;
+	pAP->getAttribute ("alt",  szAlt);
+	if (szAlt) {
+        alt = szAlt;
+        alt.escapeXML();
+	}
+    
+    UT_UTF8String imageName;
+    
+    if (m_bEmbedImages)
+    {
+        m_pDataExporter->encodeDataBase64(szDataId, imageName);
+    } else
+    {
+        imageName = m_pDataExporter->saveData(szDataId, extension.c_str());
+    }
+        
+    m_pCurrentImpl->insertImage(imageName, "", "", "", "", title, alt);
 }
 
 /**
@@ -1513,7 +1597,7 @@ void IE_Exp_HTML_Listener::_insertImage(PT_AttrPropIndex api)
 void IE_Exp_HTML_Listener::_insertEmbeddedImage(PT_AttrPropIndex api)
 {
     UT_UTF8String snapshot = "snapshot-png-";
-    const gchar* pImageName = NULL;
+    const gchar* szDataId = NULL;
     const PP_AttrProp* pAP;
     bool ok;
 
@@ -1523,14 +1607,35 @@ void IE_Exp_HTML_Listener::_insertEmbeddedImage(PT_AttrPropIndex api)
         pAP = NULL;
     }
 
-    pImageName =
+    szDataId =
             _getObjectKey(api, static_cast<const gchar*> ("dataid"));
 
-    if (pImageName)
+    if (szDataId)
     {
-        snapshot += pImageName;
+        snapshot += szDataId;
         // m_pCurrentImpl->insertImage(snapshot.utf8_str(), pAP);
     }
+    
+    UT_UTF8String imageData;
+    m_pDataExporter->encodeDataBase64(snapshot.utf8_str(), imageData);
+    
+    const gchar * szTitle  = 0;
+	UT_UTF8String title;
+	pAP->getAttribute ("title",  szTitle);
+	if (szTitle) {
+        title = szTitle;
+        title.escapeXML();
+	}
+
+	const gchar * szAlt  = 0;
+    UT_UTF8String alt;
+	pAP->getAttribute ("alt",  szAlt);
+	if (szAlt) {
+        alt = szAlt;
+        alt.escapeXML();
+	}
+    
+    m_pCurrentImpl->insertImage(imageData, "", "", "", "", title, alt);
 }
 
 /**
@@ -1633,6 +1738,23 @@ void IE_Exp_HTML_Listener::_insertAnnotations()
     }
 }
 
+void IE_Exp_HTML_Listener::_insertStyle()
+{
+    m_pCurrentImpl->insertStyle(m_stylesheet);
+}
+
+void IE_Exp_HTML_Listener::_insertLinkToStyle()
+{
+    UT_UTF8String filename;
+    GsfOutput *css = m_pDataExporter->createFile("style.css", filename);
+    IE_Exp_HTML_OutputWriter* pWriter = new IE_Exp_HTML_OutputWriter(css);
+    pWriter->write(m_stylesheet.utf8_str(), m_stylesheet.length());
+    m_pCurrentImpl->insertLink("stylesheet", "text/css", filename);
+    
+    DELETEP(pWriter);
+    gsf_output_close(css);
+}
+
 
 void IE_Exp_HTML_Listener::_handleAnnotationData(PT_AttrPropIndex api)
 {
@@ -1655,4 +1777,14 @@ void IE_Exp_HTML_Listener::_handleAnnotationData(PT_AttrPropIndex api)
     
     m_annotationTitles.push_back(szTitle);
     m_annotationAuthors.push_back(szAuthor);
+}
+
+void IE_Exp_HTML_Listener::_makeStylesheet()
+{
+    UT_ByteBuf buffer;
+    StyleListener styleListener(buffer);
+    m_pStyleTree->print(&styleListener);
+    
+    m_stylesheet = sStyleSheet;
+    m_stylesheet += reinterpret_cast<const char*>(buffer.getPointer(0));
 }
