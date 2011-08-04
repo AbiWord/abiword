@@ -243,7 +243,7 @@ private:
     bool m_bInEndnote;
     bool m_bInFootnote;
     bool m_bInHeading;
-
+    bool m_bSkipSection;
     fd_Field* m_pCurrentField;
     UT_UTF8String m_currentFieldType;
     UT_UTF8String m_bookmarkName;

@@ -3,6 +3,8 @@
 
 // HTML exporter includes
 #include "ie_exp_HTML.h"
+#include "ie_exp_HTML_DocumentWriter.h"
+#include "ie_exp_HTML_Listener.h"
 
 // Abiword includes
 #include <pd_Document.h>
@@ -51,45 +53,52 @@
 //    UT_NumberStack m_mode;
 //};
 //
-//class ABI_EXPORT IE_Exp_HTML_HeaderFooterListener : public PL_Listener
-//{
-//public:
-//IE_Exp_HTML_HeaderFooterListener(PD_Document * pDocument, IE_Exp_HTML * pie, IE_Exp_HTML_Writer *pWriter, IE_Exp_HTML_DocumentWriter *pMainListener);
-//
-//~IE_Exp_HTML_HeaderFooterListener();
-//
-//bool populate(PL_StruxFmtHandle sfh,
-//              const PX_ChangeRecord * pcr);
-//
-//bool populateStrux(PL_StruxDocHandle sdh,
-//                   const PX_ChangeRecord * pcr,
-//                   PL_StruxFmtHandle * psfh);
-//
-////See note in _writeDocument
-////bool 	startOfDocument ();
-//bool endOfDocument();
-//
-//bool change(PL_StruxFmtHandle sfh,
-//            const PX_ChangeRecord * pcr);
-//
-//bool insertStrux(PL_StruxFmtHandle sfh,
-//                 const PX_ChangeRecord * pcr,
-//                 PL_StruxDocHandle sdh,
-//                 PL_ListenerId lid,
-//                 void (*pfnBindHandles) (PL_StruxDocHandle sdhNew,
-//                 PL_ListenerId lid,
-//                 PL_StruxFmtHandle sfhNew));
-//
-//bool signal(UT_uint32 iSignal);
-//void doHdrFtr(bool bHeader);
-//private:
-//PD_DocumentRange * m_pHdrDocRange;
-//PD_DocumentRange * m_pFtrDocRange;
-//PD_Document * m_pDocument;
-//IE_Exp_HTML_Writer *m_pWriter;
-//IE_Exp_HTML_DocumentWriter *m_pMainListener;
-//};
-//
+
+class IE_Exp_HTML_DocumentWriter;
+class IE_Exp_HTML_Listener;
+class ABI_EXPORT IE_Exp_HTML_HeaderFooterListener : public PL_Listener {
+public:
+    IE_Exp_HTML_HeaderFooterListener(PD_Document * pDocument,
+            IE_Exp_HTML_DocumentWriter *pDocumentWriter,
+            IE_Exp_HTML_Listener *pListener);
+
+    ~IE_Exp_HTML_HeaderFooterListener();
+
+    bool populate(PL_StruxFmtHandle sfh,
+            const PX_ChangeRecord * pcr);
+
+    bool populateStrux(PL_StruxDocHandle sdh,
+            const PX_ChangeRecord * pcr,
+            PL_StruxFmtHandle * psfh);
+
+    //See note in _writeDocument
+    //bool 	startOfDocument ();
+    bool endOfDocument();
+
+    bool change(PL_StruxFmtHandle sfh,
+            const PX_ChangeRecord * pcr);
+
+    bool insertStrux(PL_StruxFmtHandle sfh,
+            const PX_ChangeRecord * pcr,
+            PL_StruxDocHandle sdh,
+            PL_ListenerId lid,
+            void (*pfnBindHandles) (PL_StruxDocHandle sdhNew,
+            PL_ListenerId lid,
+            PL_StruxFmtHandle sfhNew));
+
+    bool signal(UT_uint32 iSignal);
+    void doHdrFtr(bool bHeader);
+private:
+    PD_DocumentRange * m_pHdrDocRange;
+    PD_DocumentRange * m_pFtrDocRange;
+    PD_Document * m_pDocument;
+    IE_Exp_HTML_DocumentWriter *m_pDocumentWriter;
+    IE_Exp_HTML_Listener *m_pListener;
+    
+    bool m_bHaveHeader;
+    bool m_bHaveFooter;
+};
+
 class ABI_EXPORT IE_Exp_HTML_BookmarkListener : public PL_Listener
 {
 public:

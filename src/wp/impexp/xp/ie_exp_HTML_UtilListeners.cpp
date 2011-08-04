@@ -1,154 +1,157 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiWord
-* Copyright (C) 2007, 2009 Hubert Figuiere
-* Copyright (C) 2003-2005 Mark Gilbert <mg_abimail@yahoo.com>
-* Copyright (C) 2002, 2004 Francis James Franklin <fjf@alinameridon.com>
-* Copyright (C) 2001-2002 AbiSource, Inc.
-* 
-* This program is free software; you can redistribute it and/or
-* modify it under the terms of the GNU General Public License
-* as published by the Free Software Foundation; either version 2
-* of the License, or (at your option) any later version.
-* 
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-* 
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
-* 02111-1307, USA.
-*/
+ * Copyright (C) 2007, 2009 Hubert Figuiere
+ * Copyright (C) 2003-2005 Mark Gilbert <mg_abimail@yahoo.com>
+ * Copyright (C) 2002, 2004 Francis James Franklin <fjf@alinameridon.com>
+ * Copyright (C) 2001-2002 AbiSource, Inc.
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * 02111-1307, USA.
+ */
 
 #include "ie_exp_HTML_UtilListeners.h"
-//
-//
-//
-///*****************************************************************/
-//
-///*****************************************************************/
-//
-//IE_Exp_HTML_HeaderFooterListener::IE_Exp_HTML_HeaderFooterListener(PD_Document * pDocument, IE_Exp_HTML * /*pie*/, IE_Exp_HTML_Writer* pWriter, IE_Exp_HTML_DocumentWriter *pMainListener) :
-//        m_pHdrDocRange(NULL),
-//        m_pFtrDocRange(NULL),
-//        m_pDocument(pDocument),
-//        m_pWriter(pWriter),
-//        m_pMainListener(pMainListener)
-//{
-//}
-//
-//IE_Exp_HTML_HeaderFooterListener::~IE_Exp_HTML_HeaderFooterListener()
-//{
-//}
-//
-//void IE_Exp_HTML_HeaderFooterListener::doHdrFtr(bool bHeader)
-//{
-//    if (bHeader && m_pWriter->is_HaveHeader())
-//    {
-//        m_pWriter->openSection(0, 1);
-//        m_pDocument->tellListenerSubset(m_pMainListener, m_pHdrDocRange);
-//        m_pWriter->closeSection();
-//    }
-//    if (!bHeader && m_pWriter->is_HaveFooter())
-//    {
-//        m_pWriter->openSection(0, 2);
-//        m_pDocument->tellListenerSubset(m_pMainListener, m_pFtrDocRange);
-//        m_pWriter->closeSection();
-//    }
-//    if (bHeader && m_pWriter->is_HaveHeader())
-//    {
-//        m_pWriter->openSection(0, 3);
-//    }
-//    if (bHeader)
-//        DELETEP(m_pHdrDocRange);
-//    else
-//        DELETEP(m_pFtrDocRange);
-//}
-//
-//bool IE_Exp_HTML_HeaderFooterListener::populateStrux(PL_StruxDocHandle sdh,
-//                                           const PX_ChangeRecord * pcr,
-//                                           PL_StruxFmtHandle * psfh)
-//{
-//    /* Housekeeping and prep */
-//    UT_return_val_if_fail(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux, false);
-//    *psfh = 0; // we don't need it.
-//    const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
-//    PT_AttrPropIndex api = pcr->getIndexAP();
-//    switch (pcrx->getStruxType())
-//    {
-//    case PTX_SectionHdrFtr:
-//    {
-//        const PP_AttrProp * pAP = 0;
-//        bool bHaveProp = m_pDocument->getAttrProp(api, &pAP);
-//
-//        if (!bHaveProp || (pAP == 0)) return true;
-//
-//        const gchar * szType = 0;
-//        pAP->getAttribute("type", szType);
-//        /* // */
-//
-//        PT_DocPosition m_iHdrFtrStartPos = m_pDocument->getStruxPosition(sdh) + 1;
-//        PT_DocPosition m_iHdrFtrStopPos = 0;
-//        PL_StruxDocHandle * nextSDH = NULL;
-//        bool bHaveNextSection = m_pDocument->getNextStruxOfType(sdh, PTX_Section, nextSDH);
-//        if (bHaveNextSection)
-//        {
-//            m_iHdrFtrStopPos = m_pDocument->getStruxPosition(nextSDH);
-//        }
-//        else
-//        {
-//            m_pDocument->getBounds(true, m_iHdrFtrStopPos);
-//        }
-//        PD_DocumentRange * pDocRange = new PD_DocumentRange(m_pDocument, m_iHdrFtrStartPos, m_iHdrFtrStopPos);
-//        if (!strcmp(szType, "header"))
-//        {
-//            m_pHdrDocRange = pDocRange;
-//            m_pWriter->setHaveHeader();
-//        }
-//        else
-//        {
-//            m_pFtrDocRange = pDocRange;
-//            m_pWriter->setHaveFooter();
-//        }
-//        return true;
-//    }
-//    default:
-//        return true;
-//    }
-//}
-//
-//bool IE_Exp_HTML_HeaderFooterListener::populate(PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord * /*pcr*/)
-//{
-//    return true;
-//}
-//
-//bool IE_Exp_HTML_HeaderFooterListener::change(PL_StruxFmtHandle /*sfh*/,
-//                                    const PX_ChangeRecord * /*pcr*/)
-//{
-//    UT_ASSERT_HARMLESS(0); // this function is not used.
-//    return false;
-//}
-//
-//bool IE_Exp_HTML_HeaderFooterListener::insertStrux(PL_StruxFmtHandle /*sfh*/,
-//                                         const PX_ChangeRecord * /*pcr*/,
-//                                         PL_StruxDocHandle /*sdh*/,
-//                                         PL_ListenerId /* lid */,
-//                                         void (* /*pfnBindHandles*/)(PL_StruxDocHandle /* sdhNew */,
-//                                         PL_ListenerId /* lid */,
-//                                         PL_StruxFmtHandle /* sfhNew */))
-//{
-//    UT_ASSERT_HARMLESS(0); // this function is not used.
-//    return false;
-//}
-//
-//bool IE_Exp_HTML_HeaderFooterListener::signal(UT_uint32 /* iSignal */)
-//{
-//    UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-//    return false;
-//}
-//
+
+
+
+/*****************************************************************/
+
+/*****************************************************************/
+
+IE_Exp_HTML_HeaderFooterListener::IE_Exp_HTML_HeaderFooterListener(
+    PD_Document * pDocument, IE_Exp_HTML_DocumentWriter* pDocumentWriter,
+    IE_Exp_HTML_Listener *pListener) :
+m_pHdrDocRange(NULL),
+m_pFtrDocRange(NULL),
+m_pDocument(pDocument),
+m_pDocumentWriter(pDocumentWriter),
+m_pListener(pListener),
+m_bHaveHeader(false),
+m_bHaveFooter(false)
+{
+}
+
+IE_Exp_HTML_HeaderFooterListener::~IE_Exp_HTML_HeaderFooterListener()
+{
+}
+
+void IE_Exp_HTML_HeaderFooterListener::doHdrFtr(bool bHeader)
+{
+    if (bHeader && m_bHaveHeader)
+    {
+        m_pDocumentWriter->openSection("header");
+        m_pDocument->tellListenerSubset(m_pListener, m_pHdrDocRange);
+        m_pDocumentWriter->closeSection();
+    }
+
+    if (!bHeader && m_bHaveFooter)
+    {
+        m_pDocumentWriter->openSection("footer");
+        ;
+        m_pDocument->tellListenerSubset(m_pListener, m_pFtrDocRange);
+        m_pDocumentWriter->closeSection();
+    }
+
+    if (bHeader)
+        DELETEP(m_pHdrDocRange);
+    else
+        DELETEP(m_pFtrDocRange);
+}
+
+bool IE_Exp_HTML_HeaderFooterListener::populateStrux(PL_StruxDocHandle sdh,
+                                                     const PX_ChangeRecord * pcr,
+                                                     PL_StruxFmtHandle * psfh)
+{
+    /* Housekeeping and prep */
+    UT_return_val_if_fail(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux, false);
+    *psfh = 0; // we don't need it.
+    const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
+    PT_AttrPropIndex api = pcr->getIndexAP();
+    switch (pcrx->getStruxType())
+    {
+    case PTX_SectionHdrFtr:
+    {
+        const PP_AttrProp * pAP = 0;
+        bool bHaveProp = m_pDocument->getAttrProp(api, &pAP);
+
+        if (!bHaveProp || (pAP == 0)) return true;
+
+        const gchar * szType = 0;
+        pAP->getAttribute("type", szType);
+        /* // */
+
+        PT_DocPosition m_iHdrFtrStartPos = m_pDocument->getStruxPosition(sdh) + 1;
+        PT_DocPosition m_iHdrFtrStopPos = 0;
+        PL_StruxDocHandle * nextSDH = NULL;
+        bool bHaveNextSection = m_pDocument->getNextStruxOfType(sdh, PTX_Section, nextSDH);
+        if (bHaveNextSection)
+        {
+            m_iHdrFtrStopPos = m_pDocument->getStruxPosition(nextSDH);
+        }
+        else
+        {
+            m_pDocument->getBounds(true, m_iHdrFtrStopPos);
+        }
+        PD_DocumentRange * pDocRange = new PD_DocumentRange(m_pDocument, m_iHdrFtrStartPos, m_iHdrFtrStopPos);
+        if (!strcmp(szType, "header"))
+        {
+            m_pHdrDocRange = pDocRange;
+            m_bHaveHeader = true;
+        }
+        else
+        {
+            m_pFtrDocRange = pDocRange;
+            m_bHaveFooter = true;
+        }
+        return true;
+    }
+    default:
+        return true;
+    }
+}
+
+bool IE_Exp_HTML_HeaderFooterListener::populate(PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord * /*pcr*/)
+{
+    return true;
+}
+
+bool IE_Exp_HTML_HeaderFooterListener::change(PL_StruxFmtHandle /*sfh*/,
+                                              const PX_ChangeRecord * /*pcr*/)
+{
+    UT_ASSERT_HARMLESS(0); // this function is not used.
+    return false;
+}
+
+bool IE_Exp_HTML_HeaderFooterListener::insertStrux(PL_StruxFmtHandle /*sfh*/,
+                                                   const PX_ChangeRecord * /*pcr*/,
+                                                   PL_StruxDocHandle /*sdh*/,
+                                                   PL_ListenerId /* lid */,
+                                                   void (* /*pfnBindHandles*/)(PL_StruxDocHandle /* sdhNew */,
+                                                   PL_ListenerId /* lid */,
+                                                   PL_StruxFmtHandle /* sfhNew */))
+{
+    UT_ASSERT_HARMLESS(0); // this function is not used.
+    return false;
+}
+
+bool IE_Exp_HTML_HeaderFooterListener::signal(UT_uint32 /* iSignal */)
+{
+    UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+    return false;
+}
+
 ///*****************************************************************/
 ///*****************************************************************/
 //
@@ -598,10 +601,9 @@
 //    // do nothing
 //}
 
-
 IE_Exp_HTML_BookmarkListener::IE_Exp_HTML_BookmarkListener(PD_Document *pDoc, IE_Exp_HTML * pie) :
-        m_pDoc(pDoc),
-        m_pie(pie)
+m_pDoc(pDoc),
+m_pie(pie)
 
 {
 

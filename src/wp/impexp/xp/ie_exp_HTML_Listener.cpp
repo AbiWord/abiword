@@ -17,6 +17,7 @@ m_bInAnnotationSection(false),
 m_bInEndnote(false),
 m_bInFootnote(false),
 m_bInHeading(false),
+m_bSkipSection(false),
 m_pCurrentField(0),
 m_currentFieldType(""),
 m_bookmarkName(""),
@@ -40,6 +41,9 @@ m_pStyleTree(pStyleTree)
 
 bool IE_Exp_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord* pcr)
 {
+    if (m_bSkipSection)
+        return true;
+    
     switch (pcr->getType())
     {
 
@@ -179,11 +183,9 @@ bool IE_Exp_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/, const PX_ChangeRe
             
             if (m_bInAnnotation)
             {
-                UT_DEBUGMSG(("RUDYJ: Left anotation\n"));
                 _closeAnnotation();
             } else
             {
-                UT_DEBUGMSG(("RUDYJ: Entered annotation\n"));
                 _openAnnotation(api);
             }
             
@@ -266,9 +268,12 @@ bool IE_Exp_HTML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_ChangeR
 
     switch (pcrx->getStruxType())
     {
-    case PTX_Section:
     case PTX_SectionHdrFtr:
+        m_bSkipSection = true;
+        break;
+    case PTX_Section:
     {
+        m_bSkipSection = false;
         _closeSpan();
         _closeField();
         _closeBookmark();
@@ -283,6 +288,7 @@ bool IE_Exp_HTML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_ChangeR
 
     case PTX_SectionTable:
     {
+        m_bSkipSection = false;
         _closeSpan();
         _closeField();
         _closeBookmark();
@@ -299,6 +305,7 @@ bool IE_Exp_HTML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_ChangeR
 
     case PTX_SectionCell:
     {
+        m_bSkipSection = false;
         _closeSpan();
         _closeField();
         _closeBookmark();
@@ -327,6 +334,7 @@ bool IE_Exp_HTML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_ChangeR
 
     case PTX_SectionFootnote:
     {
+        m_bSkipSection = false;
         _closeSpan();
         _closeField();
         _closeBookmark();
@@ -337,6 +345,7 @@ bool IE_Exp_HTML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_ChangeR
 
     case PTX_SectionEndnote:
     {
+        m_bSkipSection = false;
         _closeSpan();
         _closeField();
         _closeBookmark();
@@ -347,6 +356,7 @@ bool IE_Exp_HTML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_ChangeR
 
     case PTX_SectionAnnotation:
     {
+        m_bSkipSection = false;        
         _closeSpan();
         _closeField();
         _closeBookmark();
@@ -359,6 +369,7 @@ bool IE_Exp_HTML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_ChangeR
 
     case PTX_SectionTOC:
     {
+        m_bSkipSection = false;
         _closeSpan();
         _closeField();
         _closeBookmark();
@@ -372,6 +383,7 @@ bool IE_Exp_HTML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_ChangeR
 
     case PTX_SectionMarginnote:
     {
+        m_bSkipSection = false;
         _closeSpan();
         _closeField();
         _closeBookmark();
@@ -385,6 +397,7 @@ bool IE_Exp_HTML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_ChangeR
 
     case PTX_SectionFrame:
     {
+        m_bSkipSection = false;
         _closeSpan();
         _closeField();
         _closeBookmark();

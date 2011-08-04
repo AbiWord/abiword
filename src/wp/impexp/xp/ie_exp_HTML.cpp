@@ -478,10 +478,18 @@ UT_Error IE_Exp_HTML::_writeDocument(bool bClipBoard, bool bTemplateBody)
     IE_Exp_HTML_Listener *pListener = new IE_Exp_HTML_Listener(getDoc(), 
         pDataExporter, m_style_tree, m_bookmarks, pMainListener);
     
+    IE_Exp_HTML_HeaderFooterListener *pHeaderFooterListener = new 
+        IE_Exp_HTML_HeaderFooterListener(getDoc(), pMainListener,
+        pListener);
+    getDoc()->tellListener(pHeaderFooterListener);
+    
     pListener->beginOfDocument();
+    pHeaderFooterListener->doHdrFtr(true);
     getDoc()->tellListener(pListener);
+    pHeaderFooterListener->doHdrFtr(false);
     pListener->endOfDocument();
     
+    DELETEP(pHeaderFooterListener);
     DELETEP(pListener);
     DELETEP(pMainListener);
     DELETEP(pDataExporter);
