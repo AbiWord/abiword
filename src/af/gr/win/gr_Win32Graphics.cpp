@@ -1697,7 +1697,7 @@ void GR_Win32Font::_updateFontYMetrics(HDC hdc, HDC printHDC)
 	}
 
 	// we have to remeasure if (a) the printer changed, or (b) the primary device changed
-	if(printHDC != m_yhdc || hdc != m_hdc)
+	if(printHDC != m_yhdc)
 	{
 		GetTextMetricsW(printHDC,&m_tm);
 
@@ -1724,7 +1724,6 @@ void GR_Win32Font::_updateFontYMetrics(HDC hdc, HDC printHDC)
 
 		// now remember what HDC these values are for
 		m_yhdc = printHDC;
-		m_hdc = hdc;
 	}
 }
 
@@ -1833,15 +1832,6 @@ bool GR_Win32Font::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 
 	if(printDC == pWin32Gr->getPrimaryDC())
 		pWin32Gr->setDCFontAllocNo(getAllocNumber());
-	
-	if (printDC != m_hdc)
-	{
-		// invalidate cached info when we change hdc's.
-		// this is probably unnecessary except when
-		// sharing a font with screen and printer.
-		_clearAnyCachedInfo();
-		m_hdc = printDC;
-	}
 	
 	DWORD iRet = GDI_ERROR;
 	
@@ -1992,19 +1982,6 @@ void GR_Win32Font::selectFontIntoDC(GR_Graphics * pGr, HDC hdc)
 
 	// hate having to do the cast, here
 	UT_ASSERT_HARMLESS( hRet != (void*)GDI_ERROR);
-	
-	if (hdc != m_hdc)
-	{
-		// invalidate cached info when we change hdc's.
-		// this is probably unnecessary except when
-		// sharing a font with screen and printer.
-		// TODO consider changing our invalidate test
-		// TODO to not invalidate if old and new are
-		// TODO both on screen.
-
-		_clearAnyCachedInfo();
-		m_hdc = hdc;
-	}
 }
 
 void GR_Win32Graphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
