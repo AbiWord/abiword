@@ -1,18 +1,13 @@
-//#ifndef IE_EXP_HTML_UTILLISTENERS_H
-//#define	IE_EXP_HTML_UTILLISTENERS_H
-//
-//
-//#ifdef TH_SKIP_REST
-//#undef TH_SKIP_REST
-//#endif
-//#define TH_SKIP_REST  1
-//
-//#ifdef TH_SKIP_THIS
-//#undef TH_SKIP_THIS
-//#endif
-//#define TH_SKIP_THIS  2
-//
-//#include "ie_exp_HTML.h"
+#ifndef IE_EXP_HTML_UTILLISTENERS_H
+#define	IE_EXP_HTML_UTILLISTENERS_H
+
+// HTML exporter includes
+#include "ie_exp_HTML.h"
+
+// Abiword includes
+#include <pd_Document.h>
+#include <pl_Listener.h>
+
 //#include "ie_exp_HTML_MainListener.h"
 //#include "ie_exp_HTML_Writer.h"
 //
@@ -95,55 +90,55 @@
 //IE_Exp_HTML_DocumentWriter *m_pMainListener;
 //};
 //
-//class ABI_EXPORT IE_Exp_HTML_BookmarkListener : public PL_Listener
-//{
-//public:
-//IE_Exp_HTML_BookmarkListener(PD_Document* pDoc, IE_Exp_HTML * pie);
-//bool populate(PL_StruxFmtHandle sfh,
-//              const PX_ChangeRecord * pcr);
-//// Not used
-//
-//bool populateStrux(PL_StruxDocHandle /*sdh*/,
-//                   const PX_ChangeRecord * /*pcr*/,
-//                   PL_StruxFmtHandle * /*psfh*/)
-//{
-//    return true;
-//}
-//// Not used
-//
-//bool change(PL_StruxFmtHandle /*sfh*/,
-//            const PX_ChangeRecord * /*pcr*/)
-//{
-//    return true;
-//}
-//// Not used
-//
-//bool insertStrux(PL_StruxFmtHandle /*sfh*/,
-//                 const PX_ChangeRecord * /*pcr*/,
-//                 PL_StruxDocHandle /*sdh*/,
-//                 PL_ListenerId /*lid*/,
-//                 void (*/*pfnBindHandles*/) (PL_StruxDocHandle sdhNew,
-//                 PL_ListenerId lid,
-//                 PL_StruxFmtHandle sfhNew))
-//{
-//    return true;
-//}
-//// Not used
-//
-//bool signal(UT_uint32 /*iSignal*/)
-//{
-//    return true;
-//}
-//
-//inline std::map<UT_UTF8String, UT_UTF8String> getBookmarks() const
-//{
-//    return m_bookmarks;
-//}
-//private:
-//std::map<UT_UTF8String, UT_UTF8String> m_bookmarks;
-//PD_Document * m_pDoc;
-//IE_Exp_HTML * m_pie;
-//
-//};
-//#endif	/* IE_EXP_HTML_UTILLISTENERS_H */
-//
+class ABI_EXPORT IE_Exp_HTML_BookmarkListener : public PL_Listener
+{
+public:
+IE_Exp_HTML_BookmarkListener(PD_Document* pDoc, IE_Exp_HTML * pie);
+bool populate(PL_StruxFmtHandle sfh,
+              const PX_ChangeRecord * pcr);
+// Not used
+
+bool populateStrux(PL_StruxDocHandle /*sdh*/,
+                   const PX_ChangeRecord * /*pcr*/,
+                   PL_StruxFmtHandle * /*psfh*/)
+{
+    return true;
+}
+// Not used
+
+bool change(PL_StruxFmtHandle /*sfh*/,
+            const PX_ChangeRecord * /*pcr*/)
+{
+    return true;
+}
+// Not used
+
+bool insertStrux(PL_StruxFmtHandle /*sfh*/,
+                 const PX_ChangeRecord * /*pcr*/,
+                 PL_StruxDocHandle /*sdh*/,
+                 PL_ListenerId /*lid*/,
+                 void (*/*pfnBindHandles*/) (PL_StruxDocHandle sdhNew,
+                 PL_ListenerId lid,
+                 PL_StruxFmtHandle sfhNew))
+{
+    return true;
+}
+// Not used
+
+bool signal(UT_uint32 /*iSignal*/)
+{
+    return true;
+}
+
+inline std::map<UT_UTF8String, UT_UTF8String> getBookmarks() const
+{
+    return m_bookmarks;
+}
+private:
+std::map<UT_UTF8String, UT_UTF8String> m_bookmarks;
+PD_Document * m_pDoc;
+IE_Exp_HTML * m_pie;
+
+};
+#endif	/* IE_EXP_HTML_UTILLISTENERS_H */
+

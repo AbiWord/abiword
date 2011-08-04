@@ -30,6 +30,7 @@ class IE_Exp_HTML;
 // HTML exporter includes
 #include "ie_impexp_HTML.h"
 #include "ie_exp_HTML_util.h"
+#include "ie_exp_HTML_UtilListeners.h"
 #include "ie_exp_HTML_StyleTree.h"
 #include "ie_exp_HTML_DocumentWriter.h"
 #include "ie_exp_HTML_Listener.h"

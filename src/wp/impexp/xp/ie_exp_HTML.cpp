@@ -231,6 +231,10 @@ UT_Error IE_Exp_HTML::_writeDocument()
     }
 
     _buildStyleTree();
+    IE_Exp_HTML_BookmarkListener * bookmarkListener = new IE_Exp_HTML_BookmarkListener(getDoc(), this);
+    getDoc()->tellListener(bookmarkListener);
+    m_bookmarks = bookmarkListener->getBookmarks();
+    DELETEP(bookmarkListener);
 
     if (isCopying()) // ClipBoard
     {

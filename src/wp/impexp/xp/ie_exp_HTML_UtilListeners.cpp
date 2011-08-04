@@ -1,28 +1,28 @@
-///* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
-//
-///* AbiWord
-//* Copyright (C) 2007, 2009 Hubert Figuiere
-//* Copyright (C) 2003-2005 Mark Gilbert <mg_abimail@yahoo.com>
-//* Copyright (C) 2002, 2004 Francis James Franklin <fjf@alinameridon.com>
-//* Copyright (C) 2001-2002 AbiSource, Inc.
-//* 
-//* This program is free software; you can redistribute it and/or
-//* modify it under the terms of the GNU General Public License
-//* as published by the Free Software Foundation; either version 2
-//* of the License, or (at your option) any later version.
-//* 
-//* This program is distributed in the hope that it will be useful,
-//* but WITHOUT ANY WARRANTY; without even the implied warranty of
-//* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//* GNU General Public License for more details.
-//* 
-//* You should have received a copy of the GNU General Public License
-//* along with this program; if not, write to the Free Software
-//* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
-//* 02111-1307, USA.
-//*/
-//
-//#include "ie_exp_HTML_UtilListeners.h"
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
+
+/* AbiWord
+* Copyright (C) 2007, 2009 Hubert Figuiere
+* Copyright (C) 2003-2005 Mark Gilbert <mg_abimail@yahoo.com>
+* Copyright (C) 2002, 2004 Francis James Franklin <fjf@alinameridon.com>
+* Copyright (C) 2001-2002 AbiSource, Inc.
+* 
+* This program is free software; you can redistribute it and/or
+* modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version 2
+* of the License, or (at your option) any later version.
+* 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+* 02111-1307, USA.
+*/
+
+#include "ie_exp_HTML_UtilListeners.h"
 //
 //
 //
@@ -599,61 +599,61 @@
 //}
 
 
-//IE_Exp_HTML_BookmarkListener::IE_Exp_HTML_BookmarkListener(PD_Document *pDoc, IE_Exp_HTML * pie) :
-//        m_pDoc(pDoc),
-//        m_pie(pie)
-//
-//{
-//
-//}
-//
-//bool IE_Exp_HTML_BookmarkListener::populate(PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord * pcr)
-//{
-//    switch (pcr->getType())
-//    {
-//    case PX_ChangeRecord::PXT_InsertObject:
-//    {
-//        const PX_ChangeRecord_Object * pcro = 0;
-//        pcro = static_cast<const PX_ChangeRecord_Object *> (pcr);
-//        PT_AttrPropIndex api = pcr->getIndexAP();
-//
-//        switch (pcro->getObjectType())
-//        {
-//        case PTO_Bookmark:
-//        {
-//            const PP_AttrProp * pAP = 0;
-//            bool bHaveProp = (api ? (m_pDoc->getAttrProp(api, &pAP)) : false);
-//
-//            if (!bHaveProp || (pAP == 0))
-//                return true;
-//
-//            const gchar * szType = 0;
-//            pAP->getAttribute("type", szType);
-//
-//            if (szType == 0)
-//                return true; // ??
-//
-//            if (g_ascii_strcasecmp(szType, "start") == 0)
-//            {
-//                const gchar * szName = 0;
-//                pAP->getAttribute("name", szName);
-//
-//                if (szName)
-//                {
-//                    UT_UTF8String escape = szName;
-//                    escape.escapeURL();
-//                    m_bookmarks[escape] = m_pie->getFilenameByPosition(pcr->getPosition());
-//                    UT_DEBUGMSG(("Added bookmark\n File: %s Id: %s\n", m_bookmarks[escape].utf8_str(), escape.utf8_str()));
-//                }
-//            }
-//            return true;
-//        }
-//
-//        default:
-//            return true;
-//        }
-//    }
-//    default:
-//        return true;
-//    }
-//}
+IE_Exp_HTML_BookmarkListener::IE_Exp_HTML_BookmarkListener(PD_Document *pDoc, IE_Exp_HTML * pie) :
+        m_pDoc(pDoc),
+        m_pie(pie)
+
+{
+
+}
+
+bool IE_Exp_HTML_BookmarkListener::populate(PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord * pcr)
+{
+    switch (pcr->getType())
+    {
+    case PX_ChangeRecord::PXT_InsertObject:
+    {
+        const PX_ChangeRecord_Object * pcro = 0;
+        pcro = static_cast<const PX_ChangeRecord_Object *> (pcr);
+        PT_AttrPropIndex api = pcr->getIndexAP();
+
+        switch (pcro->getObjectType())
+        {
+        case PTO_Bookmark:
+        {
+            const PP_AttrProp * pAP = 0;
+            bool bHaveProp = (api ? (m_pDoc->getAttrProp(api, &pAP)) : false);
+
+            if (!bHaveProp || (pAP == 0))
+                return true;
+
+            const gchar * szType = 0;
+            pAP->getAttribute("type", szType);
+
+            if (szType == 0)
+                return true; // ??
+
+            if (g_ascii_strcasecmp(szType, "start") == 0)
+            {
+                const gchar * szName = 0;
+                pAP->getAttribute("name", szName);
+
+                if (szName)
+                {
+                    UT_UTF8String escape = szName;
+                    escape.escapeURL();
+                    m_bookmarks[escape] = m_pie->getFilenameByPosition(pcr->getPosition());
+                    UT_DEBUGMSG(("Added bookmark\n File: %s Id: %s\n", m_bookmarks[escape].utf8_str(), escape.utf8_str()));
+                }
+            }
+            return true;
+        }
+
+        default:
+            return true;
+        }
+    }
+    default:
+        return true;
+    }
+}
