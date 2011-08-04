@@ -29,7 +29,8 @@ m_pCurrentImpl(pListenerImpl),
 m_tableHelper(pDocument),
 m_pDataExporter(pDataExporter),
 m_bEmbedCss(false),
-m_bEmbedImages(true),
+m_bEmbedImages(false),
+m_bRenderMathToPng(true),   
 m_pStyleTree(pStyleTree)
 {
 
@@ -108,7 +109,13 @@ bool IE_Exp_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/, const PX_ChangeRe
         {
             _closeSpan();
             _closeField();
-            _insertMath(api);
+            if (m_bRenderMathToPng)
+            {
+                _insertEmbeddedImage(api);
+            } else
+            {
+                _insertMath(api);
+            }
             return true;
         }
 
@@ -1616,8 +1623,6 @@ void IE_Exp_HTML_Listener::_insertEmbeddedImage(PT_AttrPropIndex api)
         // m_pCurrentImpl->insertImage(snapshot.utf8_str(), pAP);
     }
     
-    UT_UTF8String imageData;
-    m_pDataExporter->encodeDataBase64(snapshot.utf8_str(), imageData);
     
     const gchar * szTitle  = 0;
 	UT_UTF8String title;
@@ -1635,7 +1640,18 @@ void IE_Exp_HTML_Listener::_insertEmbeddedImage(PT_AttrPropIndex api)
         alt.escapeXML();
 	}
     
-    m_pCurrentImpl->insertImage(imageData, "", "", "", "", title, alt);
+    UT_UTF8String imageName;
+    
+    if (m_bEmbedImages)
+    {
+        m_pDataExporter->encodeDataBase64(snapshot.utf8_str(), imageName);
+    } else
+    {
+        imageName = m_pDataExporter->saveData(snapshot.utf8_str(),".png");
+    }
+        
+    m_pCurrentImpl->insertImage(imageName, "", "", "", "", title, alt);
+
 }
 
 /**

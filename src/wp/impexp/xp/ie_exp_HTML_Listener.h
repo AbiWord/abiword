@@ -266,6 +266,7 @@ private:
     
     bool m_bEmbedCss;
     bool m_bEmbedImages;
+    bool m_bRenderMathToPng;
     
     IE_Exp_HTML_StyleTree *m_pStyleTree;
     UT_UTF8String m_stylesheet;
