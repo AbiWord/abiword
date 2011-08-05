@@ -128,7 +128,8 @@ public:
             IE_Exp_HTML_DataExporter *pDataExporter,
             IE_Exp_HTML_StyleTree    *pStyleTree,
             IE_Exp_HTML_NavigationHelper *pNavigationHelper,
-            IE_Exp_HTML_ListenerImpl *pListenerImpl);
+            IE_Exp_HTML_ListenerImpl *pListenerImpl,
+            const UT_UTF8String &filename);
 
     virtual bool populate(PL_StruxFmtHandle sfh,
             const PX_ChangeRecord * pcr);

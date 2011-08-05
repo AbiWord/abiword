@@ -513,14 +513,17 @@ UT_Error IE_Exp_HTML::_writeDocument(bool bClipBoard, bool bTemplateBody)
 void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, const UT_UTF8String &title, 
     bool isIndex)
 {
+    UT_UTF8String filename;
     GsfOutput *output;
     if (isIndex)
     {
         output = getFp();
+        filename = UT_go_basename_from_uri(getFileName());
     } else
     {
+        filename = ConvertToClean(title) + m_suffix;
         UT_UTF8String outputUri = UT_go_dirname_from_uri(getFileName(), false);
-        outputUri += G_DIR_SEPARATOR_S + ConvertToClean(title) + m_suffix;
+        outputUri += G_DIR_SEPARATOR_S + filename;
         output = UT_go_file_create(outputUri.utf8_str(), NULL);
     }
     IE_Exp_HTML_OutputWriter *pOutputWriter = 
@@ -534,7 +537,8 @@ void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, const UT_UTF8String &t
         new IE_Exp_HTML_DocumentWriter(pOutputWriter);
     
     IE_Exp_HTML_Listener *pListener = new IE_Exp_HTML_Listener(getDoc(), 
-        pDataExporter, m_style_tree, m_pNavigationHelper, pMainListener);
+        pDataExporter, m_style_tree, m_pNavigationHelper, pMainListener,
+        filename);
     // Time to send some settings to listener
     pListener->set_SplitDocument(m_exp_opt.bSplitDocument);
     pListener->set_EmbedCSS(m_exp_opt.bEmbedCSS);

@@ -34,6 +34,7 @@ public:
     inline std::map<UT_UTF8String, UT_UTF8String> & getBookmarks() 
         { return m_bookmarks; }
 private:
+    UT_UTF8String m_suffix;
     int m_minTOCLevel;
     int m_minTOCIndex;
     std::map<UT_UTF8String, UT_UTF8String> m_bookmarks;

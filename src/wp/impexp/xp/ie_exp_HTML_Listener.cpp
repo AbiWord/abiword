@@ -6,7 +6,8 @@ IE_Exp_HTML_Listener::IE_Exp_HTML_Listener(PD_Document *pDocument,
                                            IE_Exp_HTML_DataExporter* pDataExporter,
                                            IE_Exp_HTML_StyleTree    *pStyleTree,
                                            IE_Exp_HTML_NavigationHelper *pNavigationHelper,
-                                           IE_Exp_HTML_ListenerImpl* pListenerImpl) :
+                                           IE_Exp_HTML_ListenerImpl* pListenerImpl,
+                                           const UT_UTF8String &filename) :
 m_bInSpan(false),
 m_bInBlock(false),
 m_bInBookmark(false),
@@ -33,6 +34,7 @@ m_pDataExporter(pDataExporter),
 m_bEmbedCss(false),
 m_bEmbedImages(false),
 m_bRenderMathToPng(true),   
+m_filename(filename),
 m_pStyleTree(pStyleTree),
 m_pNavigationHelper(pNavigationHelper)
 {
@@ -1489,27 +1491,28 @@ void IE_Exp_HTML_Listener::_openHyperlink(PT_AttrPropIndex api)
 
         const gchar *szEscapedUrl = NULL;
         const gchar *szUrl = _getObjectKey(api, "xlink:href");
+        UT_UTF8String url = szUrl;
         if (szUrl != NULL)
         {
-            UT_UTF8String url = szUrl;
-            url.escapeXML();
-            szEscapedUrl = url.utf8_str();
+            
         
             if (m_bSplitDocument)
             {
-                if (szEscapedUrl[0] == '#')
+                if (szUrl[0] == '#')
                 {
-                    UT_UTF8String filename = m_pNavigationHelper->getBookmarkFilename(szEscapedUrl + 1);
+                    UT_DEBUGMSG(("Internal reference found\n"));
+                    UT_UTF8String filename = m_pNavigationHelper->getBookmarkFilename(szUrl + 1);
 
                     if (filename != m_filename)
                     {
-                        url = filename.escapeXML() + url;
+                        url = filename + url;
                         UT_DEBUGMSG(("Internal referrence is reference accross chapters to file %s\n", filename.utf8_str()));
                     }
                 }
             }
             
-            szEscapedUrl = url.utf8_str();
+            szEscapedUrl = url.escapeXML().utf8_str();
+            UT_DEBUGMSG(("Escaped URL %s\n", szEscapedUrl));
         }
 
         UT_DEBUGMSG(("Opened Hyperlink\n"));

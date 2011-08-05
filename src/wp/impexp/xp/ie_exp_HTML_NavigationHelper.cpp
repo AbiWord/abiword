@@ -68,8 +68,10 @@ IE_Exp_HTML_NavigationHelper::IE_Exp_HTML_NavigationHelper(
 IE_TOCHelper(pDocument),
 m_minTOCLevel(0),
 m_minTOCIndex(0),
-m_baseName(UT_go_basename_from_uri(baseName.utf8_str()))
+m_baseName(UT_go_basename_from_uri(baseName.utf8_str())),
+m_suffix("")
 {
+    m_suffix = strchr(m_baseName.utf8_str(), '.');
     m_minTOCLevel = 10;
     for (int i = 0; i < getNumTOCEntries(); i++)
     {
@@ -120,7 +122,7 @@ UT_UTF8String IE_Exp_HTML_NavigationHelper::getFilenameByPosition(
             {
                 if ((i != m_minTOCIndex) && (posCurrent <= position))
                 {
-                    chapterFile = ConvertToClean(getNthTOCEntry(i, NULL)) /*+ m_suffix*/;
+                    chapterFile = ConvertToClean(getNthTOCEntry(i, NULL)) + m_suffix;
                     break;
                 }
                 else if ((i == m_minTOCIndex) && (posCurrent >= position))
@@ -131,5 +133,6 @@ UT_UTF8String IE_Exp_HTML_NavigationHelper::getFilenameByPosition(
         }
     }
 
+    UT_DEBUGMSG(("Got filename by position: %s\n", chapterFile.utf8_str()));
     return (chapterFile);
 }
