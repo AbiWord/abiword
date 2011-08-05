@@ -283,7 +283,7 @@ void IE_Exp_HTML_DocumentWriter::insertTOC(const gchar* title,
     m_pTagWriter->openTag("ul");
     m_pTagWriter->addAttribute("class", "table-of-contents");
     
-    for (int i = 0; i < items.size(); i++)
+    for (size_t i = 0; i < items.size(); i++)
     {
         m_pTagWriter->openTag("li");
         m_pTagWriter->openTag("a");
@@ -300,7 +300,7 @@ void IE_Exp_HTML_DocumentWriter::insertFootnotes(
     const std::vector<UT_UTF8String>& footnotes)
 {
     m_pTagWriter->openTag("ol");
-    for (int i = 0; i < footnotes.size(); i++)
+    for (size_t i = 0; i < footnotes.size(); i++)
     {
         m_pTagWriter->openTag("li");
         m_pTagWriter->addAttribute("class", "footnote_anchor");
@@ -317,7 +317,7 @@ void IE_Exp_HTML_DocumentWriter::insertEndnotes(
 const std::vector<UT_UTF8String>& endnotes)
 {
     m_pTagWriter->openTag("ol");
-    for (int i = 0; i < endnotes.size(); i++)
+    for (size_t i = 0; i < endnotes.size(); i++)
     {
         m_pTagWriter->openTag("li");
         m_pTagWriter->addAttribute("class", "endnote_anchor");
@@ -352,7 +352,7 @@ void IE_Exp_HTML_DocumentWriter::insertAnnotations(
     m_pTagWriter->openTag("div");
     m_pTagWriter->addAttribute("class", "annotation-section");
     
-    for(int i = 0; i < annotations.size(); i++)
+    for(size_t i = 0; i < annotations.size(); i++)
     {
         UT_UTF8String title = titles.at(i);
         UT_UTF8String author = authors.at(i);

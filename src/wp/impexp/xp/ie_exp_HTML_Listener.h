@@ -105,7 +105,7 @@ public:
         const std::vector<UT_UTF8String> &/*authors*/,
         const std::vector<UT_UTF8String> &/*annotations*/) {}
     
-    virtual void insertStyle(const UT_UTF8String &style) {}
+    virtual void insertStyle(const UT_UTF8String &/*style*/) {}
     virtual void insertJavaScript(const gchar */*src*/, const gchar* /*script*/) {}
 
 };
