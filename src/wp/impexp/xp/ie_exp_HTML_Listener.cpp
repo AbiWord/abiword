@@ -36,7 +36,8 @@ m_bEmbedImages(false),
 m_bRenderMathToPng(true),   
 m_filename(filename),
 m_pStyleTree(pStyleTree),
-m_pNavigationHelper(pNavigationHelper)
+m_pNavigationHelper(pNavigationHelper),
+m_iHeadingCount(0)
 {
 
 }
@@ -827,7 +828,9 @@ void IE_Exp_HTML_Listener::_closeBlock()
 void IE_Exp_HTML_Listener::_openHeading(size_t level, const gchar* szStyleName)
 {
     m_bInHeading = true;
-    m_pCurrentImpl->openHeading(level, szStyleName, NULL);
+    UT_UTF8String id = UT_UTF8String_sprintf("AbiTOC%d", m_iHeadingCount);
+    m_pCurrentImpl->openHeading(level, szStyleName, id.utf8_str());
+    m_iHeadingCount++;
 }
 
 /**
@@ -1423,16 +1426,41 @@ void IE_Exp_HTML_Listener::_insertTOC(PT_AttrPropIndex api)
     
     std::vector<UT_UTF8String> tocItems;
     std::vector<UT_UTF8String> tocItemsUri;
-    IE_TOCHelper *pTOCHelper  = new IE_TOCHelper(m_pDocument);
-    for (int i = 0; i < pTOCHelper->getNumTOCEntries(); i++)
+    UT_uint32 tocNum = 0;
+    UT_UTF8String prevName;
+    PT_DocPosition pos;
+    m_pNavigationHelper->getNthTOCEntryPos(0,pos);
+    prevName =  m_pNavigationHelper->getFilenameByPosition(pos);
+    for (int i = 0; i < m_pNavigationHelper->getNumTOCEntries(); i++)
     {
-        UT_UTF8String tocItem = pTOCHelper->getNthTOCEntry(i, NULL);
-        UT_UTF8String tocItemUri = tocItem;
+        
+        UT_UTF8String tocItem = m_pNavigationHelper->getNthTOCEntry(i, NULL);
+        UT_UTF8String tocItemUri;
+        if (m_bSplitDocument)
+        {
+            PT_DocPosition tocPos;
+            m_pNavigationHelper->getNthTOCEntryPos(i, tocPos);
+            UT_UTF8String tocItemFile = m_pNavigationHelper->
+                getFilenameByPosition(tocPos);
+            
+            if (tocItemFile != prevName)
+            {
+                tocNum = 0;
+                prevName = tocItemFile;
+            }
+            tocItemUri = UT_UTF8String_sprintf("%s#AbiTOC%d", 
+                                               tocItemFile.utf8_str(), tocNum);
+            tocNum++;
+        } else
+        {
+            tocItemUri = UT_UTF8String_sprintf("#AbiTOC%d", i);
+        }
+        
+        
         
         tocItems.push_back(tocItem);
         tocItemsUri.push_back(tocItemUri);
     }
-    DELETEP(pTOCHelper);
     
     m_pCurrentImpl->insertTOC(szTOCHeading, tocItems, tocItemsUri);
 }

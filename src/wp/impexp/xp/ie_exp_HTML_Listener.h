@@ -281,6 +281,7 @@ private:
     IE_Exp_HTML_StyleTree *m_pStyleTree;
     IE_Exp_HTML_NavigationHelper *m_pNavigationHelper;
     UT_UTF8String m_stylesheet;
+    UT_uint32 m_iHeadingCount;
 };
 
 
