@@ -1489,20 +1489,26 @@ void IE_Exp_HTML_Listener::_openHyperlink(PT_AttrPropIndex api)
 
         const gchar *szEscapedUrl = NULL;
         const gchar *szUrl = _getObjectKey(api, "xlink:href");
-        UT_UTF8String url = szUrl;
         if (szUrl != NULL)
         {
+            UT_UTF8String url = szUrl;
+            url.escapeXML();
+            szEscapedUrl = url.utf8_str();
+        
             if (m_bSplitDocument)
             {
-                UT_UTF8String filename = m_pNavigationHelper->getBookmarkFilename(szUrl+1);
-                
-                if (filename != m_filename)
-				{
-					url = filename + url;
-					UT_DEBUGMSG(("Internal referrence is reference accross chapters to file %s\n", filename.utf8_str()));
-				}
+                if (szEscapedUrl[0] == '#')
+                {
+                    UT_UTF8String filename = m_pNavigationHelper->getBookmarkFilename(szEscapedUrl + 1);
+
+                    if (filename != m_filename)
+                    {
+                        url = filename.escapeXML() + url;
+                        UT_DEBUGMSG(("Internal referrence is reference accross chapters to file %s\n", filename.utf8_str()));
+                    }
+                }
             }
-            url.escapeURL();
+            
             szEscapedUrl = url.utf8_str();
         }
 
