@@ -38,7 +38,13 @@ m_bRenderMathToPng(true),
 m_filename(filename),
 m_pStyleTree(pStyleTree),
 m_pNavigationHelper(pNavigationHelper),
-m_iHeadingCount(0)
+m_iHeadingCount(0),
+m_dPageWidthInches(0.0),
+m_dSecLeftMarginInches(0.0),
+m_dSecRightMarginInches(0.0),
+m_dSecTopMarginInches(0.0),
+m_dSecBottomMarginInches(0.0),
+m_dCellWidthInches(0.0)
 {
 
 }
@@ -148,7 +154,8 @@ bool IE_Exp_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/, const PX_ChangeRe
             m_pDocument->getAttrProp(api, &pAP);
             const gchar* pValue = NULL;
 
-            if (pAP && pAP->getAttribute("type", pValue) && pValue && (strcmp(pValue, "start") == 0))
+            if (pAP && pAP->getAttribute("type", pValue) && pValue 
+				&& (strcmp(pValue, "start") == 0))
             {
                 _openBookmark(api);
             }
@@ -224,9 +231,11 @@ bool IE_Exp_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/, const PX_ChangeRe
     return true;
 }
 
-bool IE_Exp_HTML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_ChangeRecord* pcr, PL_StruxFmtHandle* psfh)
+bool IE_Exp_HTML_Listener::populateStrux(PL_StruxDocHandle sdh, 
+	const PX_ChangeRecord* pcr, PL_StruxFmtHandle* psfh)
 {
-    UT_return_val_if_fail(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux, false);
+    UT_return_val_if_fail(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux, 
+						  false);
     bool returnVal = true;
 
     const PX_ChangeRecord_Strux * pcrx =
@@ -558,26 +567,37 @@ bool IE_Exp_HTML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_ChangeR
 
         if (szBlockStyle != NULL)
         {                
-            if ((g_ascii_strcasecmp(static_cast<const gchar *> (szBlockStyle), "Heading 1") == 0) ||
-                (g_ascii_strcasecmp(static_cast<const gchar *> (szBlockStyle), "Numbered Heading 1") == 0))
+            if ((g_ascii_strcasecmp(static_cast<const gchar *> 
+									(szBlockStyle), "Heading 1") == 0) ||
+                (g_ascii_strcasecmp(static_cast<const gchar *> 
+									(szBlockStyle), "Numbered Heading 1") == 0))
             {
                 _openHeading(1);
             }
             else
-                if ((g_ascii_strcasecmp(static_cast<const gchar *> (szBlockStyle), "Heading 2") == 0) ||
-                    (g_ascii_strcasecmp(static_cast<const gchar *> (szBlockStyle), "Numbered Heading 2") == 0))
+                if ((g_ascii_strcasecmp(static_cast<const gchar *> 
+										(szBlockStyle), "Heading 2") == 0) ||
+                    (g_ascii_strcasecmp(static_cast<const gchar *> 
+										(szBlockStyle), 
+										"Numbered Heading 2") == 0))
             {
                 _openHeading(2);
             }
             else
-                if ((g_ascii_strcasecmp(static_cast<const gchar *> (szBlockStyle), "Heading 3") == 0) ||
-                    (g_ascii_strcasecmp(static_cast<const gchar *> (szBlockStyle), "Numbered Heading 3") == 0))
+                if ((g_ascii_strcasecmp(static_cast<const gchar *> 
+										(szBlockStyle), "Heading 3") == 0) ||
+                    (g_ascii_strcasecmp(static_cast<const gchar *> 
+										(szBlockStyle), 
+										"Numbered Heading 3") == 0))
             {
                 _openHeading(3);
             }
             else
-                if ((g_ascii_strcasecmp(static_cast<const gchar *> (szBlockStyle), "Heading 4") == 0) ||
-                    (g_ascii_strcasecmp(static_cast<const gchar *> (szBlockStyle), "Numbered Heading 4") == 0))
+                if ((g_ascii_strcasecmp(static_cast<const gchar *> 
+										(szBlockStyle), "Heading 4") == 0) ||
+                    (g_ascii_strcasecmp(static_cast<const gchar *> 
+										(szBlockStyle), 
+										"Numbered Heading 4") == 0))
             {
                 _openHeading(4);
             }
@@ -600,14 +620,16 @@ bool IE_Exp_HTML_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
                                        const PX_ChangeRecord * /*pcr*/,
                                        PL_StruxDocHandle /*sdh*/,
                                        PL_ListenerId /*lid*/,
-                                       void (*/*pfnBindHandles*/) (PL_StruxDocHandle sdhNew,
+                                       void (*/*pfnBindHandles*/) 
+									   (PL_StruxDocHandle sdhNew,
                                        PL_ListenerId lid,
                                        PL_StruxFmtHandle sfhNew))
 {
     return true;
 }
 
-bool IE_Exp_HTML_Listener::change(PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord* /*pcr*/)
+bool IE_Exp_HTML_Listener::change(PL_StruxFmtHandle /*sfh*/, 
+								  const PX_ChangeRecord* /*pcr*/)
 {
     return true;
 }
@@ -661,7 +683,8 @@ bool IE_Exp_HTML_Listener::endOfDocument()
     return true;
 }
 
-void IE_Exp_HTML_Listener::_outputData(const UT_UCSChar* pData, UT_uint32 length)
+void IE_Exp_HTML_Listener::_outputData(const UT_UCSChar* pData, 
+									   UT_uint32 length)
 {
     UT_UTF8String sBuf;
     const UT_UCSChar* p;
@@ -1105,6 +1128,52 @@ void IE_Exp_HTML_Listener::_openSection(PT_AttrPropIndex api, bool recursiveCall
     }
     
     const gchar *szStyleName = _getObjectKey(api, PT_STYLE_ATTRIBUTE_NAME);
+	m_dPageWidthInches = m_pDocument->m_docPageSize.Width(DIM_IN);
+
+	const char* pszLeftMargin = NULL;
+	const char* pszRightMargin = NULL;
+	const char* pszTopMargin = NULL;
+	const char* pszBottomMargin = NULL;
+	pAP->getProperty("page-margin-left", (const gchar *&)pszLeftMargin);
+	pAP->getProperty("page-margin-right", (const gchar *&)pszRightMargin);
+	pAP->getProperty("page-margin-top", (const gchar *&)pszTopMargin);
+	pAP->getProperty("page-margin-bottom", (const gchar *&)pszBottomMargin);
+	
+	if(pszLeftMargin && pszLeftMargin[0])
+	{
+		m_dSecLeftMarginInches = UT_convertToInches(pszLeftMargin);
+	}
+	else
+	{
+		m_dSecLeftMarginInches = 1.0;
+	}
+
+	if(pszRightMargin && pszRightMargin[0])
+	{
+		m_dSecRightMarginInches = UT_convertToInches(pszRightMargin);
+	}
+	else
+	{
+		m_dSecRightMarginInches = 1.0;
+	}
+	
+	if(pszTopMargin && pszTopMargin[0])
+	{
+		m_dSecTopMarginInches = UT_convertToInches(pszTopMargin);
+	}
+	else
+	{
+		m_dSecTopMarginInches = 1.0;
+	}
+
+	if(pszBottomMargin && pszBottomMargin[0])
+	{
+		m_dSecBottomMarginInches = UT_convertToInches(pszBottomMargin);
+	}
+	else
+	{
+		m_dSecBottomMarginInches = 1.0;
+	}
     m_pCurrentImpl->openSection(szStyleName);
     m_endnotes.clear();
 }
@@ -1294,7 +1363,7 @@ void IE_Exp_HTML_Listener::_openTable(PT_AttrPropIndex api, bool recursiveCall)
     {
         pAP = NULL;
     }
-
+	_fillColWidthsVector();
     m_pCurrentImpl->openTable(pAP);
 
 }
@@ -1368,7 +1437,7 @@ void IE_Exp_HTML_Listener::_openCell(PT_AttrPropIndex api, bool recursiveCall)
         pAP = NULL;
     }
 
-
+	_setCellWidthInches();
     m_pCurrentImpl->openCell(pAP);
 }
 
@@ -1421,7 +1490,8 @@ void IE_Exp_HTML_Listener::_openList(PT_AttrPropIndex api, bool recursiveCall)
     
     if (!recursiveCall)
     {
-        if ((m_listInfoStack.size() > 0) && (g_ascii_strcasecmp(szListId, m_listInfoStack.back().szId) == 0))
+        if ((m_listInfoStack.size() > 0) && (g_ascii_strcasecmp(szListId, 
+				m_listInfoStack.back().szId) == 0))
         {
 
             _openListItem();
@@ -1429,13 +1499,15 @@ void IE_Exp_HTML_Listener::_openList(PT_AttrPropIndex api, bool recursiveCall)
         else
         {
             UT_DEBUGMSG(("LEVEL: Current %d\n", iCurrentLevel));
-            if ((m_listInfoStack.size() == 0) || (iCurrentLevel > m_listInfoStack.back().iLevel))
+            if ((m_listInfoStack.size() == 0) 
+				 || (iCurrentLevel > m_listInfoStack.back().iLevel))
             {
                 _openList(api, true);
             } else
 
             {
-                while((m_listInfoStack.size() > 0) && (iCurrentLevel < m_listInfoStack.back().iLevel))
+                while((m_listInfoStack.size() > 0) 
+					   && (iCurrentLevel < m_listInfoStack.back().iLevel))
                 {
                     _closeList();
                 }
@@ -1521,7 +1593,8 @@ void IE_Exp_HTML_Listener::_closeListItem(bool recursiveCall)
 
     if (!recursiveCall)
     {
-        if ((m_listInfoStack.size() == 0)||(m_listInfoStack.back().iItemCount == 0))
+        if ((m_listInfoStack.size() == 0)
+			 ||(m_listInfoStack.back().iItemCount == 0))
             return;
 
         ListInfo info = m_listInfoStack.back();
@@ -1608,16 +1681,20 @@ void IE_Exp_HTML_Listener::_insertMeta()
 {
     UT_UTF8String metaProp;
 
-    if (m_pDocument->getMetaDataProp(PD_META_KEY_TITLE, metaProp) && metaProp.size())
+    if (m_pDocument->getMetaDataProp(PD_META_KEY_TITLE, metaProp) 
+									 && metaProp.size())
         m_pCurrentImpl->insertMeta("title", metaProp);
 
-    if (m_pDocument->getMetaDataProp(PD_META_KEY_CREATOR, metaProp) && metaProp.size())
+    if (m_pDocument->getMetaDataProp(PD_META_KEY_CREATOR, metaProp) 
+									 && metaProp.size())
         m_pCurrentImpl->insertMeta("author", metaProp);
 
-    if (m_pDocument->getMetaDataProp(PD_META_KEY_KEYWORDS, metaProp) && metaProp.size())
+    if (m_pDocument->getMetaDataProp(PD_META_KEY_KEYWORDS, metaProp) 
+									 && metaProp.size())
         m_pCurrentImpl->insertMeta("keywords", metaProp);
 
-    if (m_pDocument->getMetaDataProp(PD_META_KEY_SUBJECT, metaProp) && metaProp.size())
+    if (m_pDocument->getMetaDataProp(PD_META_KEY_SUBJECT, metaProp) 
+									 && metaProp.size())
         m_pCurrentImpl->insertMeta("subject", metaProp);
 }
     
@@ -1767,7 +1844,8 @@ void IE_Exp_HTML_Listener::_openHyperlink(PT_AttrPropIndex api)
                 if (szUrl[0] == '#')
                 {
                     UT_DEBUGMSG(("Internal reference found\n"));
-                    UT_UTF8String filename = m_pNavigationHelper->getBookmarkFilename(szUrl + 1);
+                    UT_UTF8String filename = m_pNavigationHelper->
+						getBookmarkFilename(szUrl + 1);
 
                     if (filename != m_filename)
                     {
@@ -1877,25 +1955,61 @@ void IE_Exp_HTML_Listener::_insertImage(PT_AttrPropIndex api)
         title.escapeXML();
 	}
 
-	const gchar * szAlt  = 0;
-    UT_UTF8String alt;
-	pAP->getAttribute ("alt",  szAlt);
+	const gchar * szAlt = 0;
+	UT_UTF8String alt;
+	pAP->getAttribute("alt", szAlt);
 	if (szAlt) {
-        alt = szAlt;
-        alt.escapeXML();
+		alt = szAlt;
+		alt.escapeXML();
 	}
-    
-    UT_UTF8String imageName;
-    
-    if (m_bEmbedImages)
-    {
-        m_pDataExporter->encodeDataBase64(szDataId, imageName);
-    } else
-    {
-        imageName = m_pDataExporter->saveData(szDataId, extension.c_str());
-    }
-        
-    m_pCurrentImpl->insertImage(imageName, "", "", "", "", title, alt);
+
+	UT_UTF8String imageName;
+
+	if (m_bEmbedImages) {
+		m_pDataExporter->encodeDataBase64(szDataId, imageName);
+	}
+	else {
+		imageName = m_pDataExporter->saveData(szDataId, extension.c_str());
+	}
+	UT_UTF8String align = "";
+	bool bIsPositioned = true;
+	if (bIsPositioned) {
+		const gchar * szXPos = NULL;
+		UT_sint32 ixPos = 0;
+		if (pAP->getProperty("xpos", szXPos)) {
+			ixPos = UT_convertToLogicalUnits(szXPos);
+		}
+		else if (pAP->getProperty("frame-col-xpos", szXPos)) {
+			ixPos = UT_convertToLogicalUnits(szXPos);
+		}
+		else if (pAP->getProperty("frame-page-xpos", szXPos)) {
+			ixPos = UT_convertToLogicalUnits(szXPos);
+		}
+		if (ixPos > UT_convertToLogicalUnits("1.0in")) {
+			align = "right";
+		}
+		else {
+			align = "left";
+		}
+	}
+
+
+	const gchar * szWidth = 0;
+	const gchar * szHeight = 0;
+	double widthPercentage = 0;
+	UT_UTF8String style = "";
+	if (!getPropertySize(pAP, !bIsPositioned ? "width" : "frame-width", 
+			"height", &szWidth, widthPercentage, &szHeight,
+			m_dPageWidthInches,m_dSecLeftMarginInches, m_dSecRightMarginInches,
+			m_dCellWidthInches, m_tableHelper))
+		return;
+	UT_DEBUGMSG(("Size of Image: %sx%s\n", szWidth ? szWidth : "(null)", 
+		szHeight ? szHeight : "(null)"));
+
+	style = getStyleSizeString(szWidth, widthPercentage, DIM_MM, szHeight, 
+							 DIM_MM, false);
+
+	m_pCurrentImpl->insertImage(imageName,align, style, title, alt);
 }
 
 /**
@@ -1949,8 +2063,46 @@ void IE_Exp_HTML_Listener::_insertEmbeddedImage(PT_AttrPropIndex api)
     {
         imageName = m_pDataExporter->saveData(snapshot.utf8_str(),".png");
     }
+	
+		UT_UTF8String align = "";
+	bool bIsPositioned = true;
+	if (bIsPositioned) {
+		const gchar * szXPos = NULL;
+		UT_sint32 ixPos = 0;
+		if (pAP->getProperty("xpos", szXPos)) {
+			ixPos = UT_convertToLogicalUnits(szXPos);
+		}
+		else if (pAP->getProperty("frame-col-xpos", szXPos)) {
+			ixPos = UT_convertToLogicalUnits(szXPos);
+		}
+		else if (pAP->getProperty("frame-page-xpos", szXPos)) {
+			ixPos = UT_convertToLogicalUnits(szXPos);
+		}
+		if (ixPos > UT_convertToLogicalUnits("1.0in")) {
+			align = "right";
+		}
+		else {
+			align = "left";
+		}
+	}
+
+
+	const gchar * szWidth = 0;
+	const gchar * szHeight = 0;
+	double widthPercentage = 0;
+	UT_UTF8String style = "";
+	if (!getPropertySize(pAP, !bIsPositioned ? "width" : "frame-width", 
+			"height", &szWidth, widthPercentage, &szHeight,
+			m_dPageWidthInches,m_dSecLeftMarginInches, m_dSecRightMarginInches,
+			m_dCellWidthInches, m_tableHelper))
+		return;
+	UT_DEBUGMSG(("Size of Image: %sx%s\n", szWidth ? szWidth : "(null)", 
+		szHeight ? szHeight : "(null)"));
+
+	style = getStyleSizeString(szWidth, widthPercentage, DIM_MM, szHeight, 
+				DIM_MM, false);
         
-    m_pCurrentImpl->insertImage(imageName, "", "", "", "", title, alt);
+    m_pCurrentImpl->insertImage(imageName, align, style, title, alt);
 
 }
 
@@ -2124,8 +2276,10 @@ void IE_Exp_HTML_Listener::_makeStylesheet(PT_AttrPropIndex api)
 		"page-margin-right", "padding-right",
 		NULL, NULL};
 	for (unsigned short int propIdx = 0; propIdx < 8; propIdx += 2) {
-		szValue = PP_evalProperty(marginProps[propIdx], 0, 0, pAP, m_pDocument, true);
-		bodyStyle += UT_UTF8String_sprintf("%s : %s;\n", marginProps[propIdx + 1], szValue);
+		szValue = PP_evalProperty(marginProps[propIdx], 0, 0, pAP, 
+								 m_pDocument, true);
+		bodyStyle += UT_UTF8String_sprintf("%s : %s;\n", 
+										 marginProps[propIdx + 1], szValue);
 	}
 
 	
@@ -2175,4 +2329,100 @@ void IE_Exp_HTML_Listener::_makeStylesheet(PT_AttrPropIndex api)
 	
 	bodyStyle += "}";
 	m_stylesheet += bodyStyle;
+}
+
+void IE_Exp_HTML_Listener::_setCellWidthInches()
+{
+
+	UT_sint32 left = m_tableHelper.getLeft();
+	UT_sint32 right = m_tableHelper.getRight();
+	double tot = 0;
+	UT_sint32 i = 0;
+
+	UT_ASSERT_HARMLESS((UT_sint32) m_vecDWidths.size() >= (right - 1));
+
+	for (i = left; i < right; i++) {
+		// probably covering up some sort of issue
+		// but we assert above, so we'll notice it again
+		if (i < (UT_sint32) m_vecDWidths.size())
+			tot += *(m_vecDWidths.getNthItem(i));
+	}
+	m_dCellWidthInches = tot;
+
+}
+
+void IE_Exp_HTML_Listener::_fillColWidthsVector()
+{
+	// make sure any unit conversions are correct
+	UT_LocaleTransactor t(LC_NUMERIC, "C");
+
+	//
+	// Positioned columns controls
+	//
+	const char * pszColumnProps = m_tableHelper.getTableProp("table-column-props");
+	UT_DEBUGMSG(("Number columns in table %d \n",m_tableHelper.getNumCols ()));
+	if(m_vecDWidths.getItemCount() > 0)
+	{
+		UT_VECTOR_PURGEALL(double *,m_vecDWidths);
+		m_vecDWidths.clear();
+	}
+	if(pszColumnProps && *pszColumnProps)
+	{
+		/*
+		  These will be properties applied to all columns. To start with, just the 
+		  widths of each column are specifed. These are translated to layout units.
+ 
+		  The format of the string of properties is:
+
+		  table-column-props:1.2in/3.0in/1.3in/;
+
+		  So we read back in pszColumnProps
+		  1.2in/3.0in/1.3in/
+
+		  The "/" characters will be used to delineate different column entries.
+		  As new properties for each column are defined these will be delineated with "_"
+		  characters. But we'll cross that bridge later.
+		*/
+		UT_DEBUGMSG(("table-column-props:%s \n",pszColumnProps));
+		UT_String sProps = pszColumnProps;
+		UT_sint32 sizes = sProps.size();
+		UT_sint32 i =0;
+		UT_sint32 j =0;
+		while(i < sizes)
+		{
+			for (j=i; (j<sizes) && (sProps[j] != '/') ; j++) {}
+			if(sProps[j] == 0)
+			{
+				// reached the end of the props string without finding
+				// any further sizes
+				break;
+			}
+			
+			if((j+1)>i && sProps[j] == '/')
+			{
+				UT_String sSub = sProps.substr(i,(j-i));
+				i = j + 1;
+				double * pDWidth = new double;
+				*pDWidth = UT_convertToInches(sSub.c_str());
+				m_vecDWidths.addItem(pDWidth);
+			}
+		}
+	}
+	//
+	// automatic column widths set to total width divided by nCols
+	//
+	else
+	{
+		// double total = m_dPageWidthInches - m_dSecLeftMarginInches - m_dSecRightMarginInches;
+		UT_sint32 nCols = m_tableHelper.getNumCols ();
+		double totWidth = m_dPageWidthInches - m_dSecLeftMarginInches - m_dSecRightMarginInches;
+		double colWidth = totWidth/nCols;
+		UT_sint32 i = 0;
+		for(i =0; i< nCols; i++)
+		{
+			double * pDWidth = new double;
+			*pDWidth = colWidth;
+			m_vecDWidths.addItem(pDWidth);
+		}
+	}
 }

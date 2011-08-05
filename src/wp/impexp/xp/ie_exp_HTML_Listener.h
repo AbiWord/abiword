@@ -90,8 +90,7 @@ public:
         const UT_UTF8String &/*content*/) {}
 
     virtual void insertImage(const UT_UTF8String &/*url*/, 
-        const UT_UTF8String &/*width*/, const UT_UTF8String &/*height*/,
-        const UT_UTF8String &/*top*/, const UT_UTF8String &/*left*/,
+        const UT_UTF8String &/*align*/, const UT_UTF8String& /*style*/,
         const UT_UTF8String &/*title*/, const UT_UTF8String &/*alt*/) {}
         
     virtual void insertText(const UT_UTF8String &/*text*/) {}
@@ -236,6 +235,8 @@ private:
     void _insertLinkToStyle();
     void _handleAnnotationData(PT_AttrPropIndex api);
     void _makeStylesheet(PT_AttrPropIndex api);
+    void _setCellWidthInches();
+    void _fillColWidthsVector();
     
     bool m_bFirstWrite;
     bool m_bInSpan;
@@ -283,6 +284,14 @@ private:
     IE_Exp_HTML_NavigationHelper *m_pNavigationHelper;
     UT_UTF8String m_stylesheet;
     UT_uint32 m_iHeadingCount;
+    
+    double m_dPageWidthInches;
+    double m_dSecLeftMarginInches;
+    double m_dSecRightMarginInches;
+    double m_dSecTopMarginInches;
+    double m_dSecBottomMarginInches;
+    double m_dCellWidthInches;
+    UT_GenericVector<double*> m_vecDWidths;
 };
 
 

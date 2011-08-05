@@ -247,6 +247,84 @@ UT_UTF8String ConvertToClean(const UT_UTF8String & str)
     return result;
 }
 
+bool getPropertySize(const PP_AttrProp * pAP, const gchar* szWidthProp, 
+	const gchar* szHeightProp, const gchar** szWidth, double& widthPercentage, 
+	const gchar** szHeight, double dPageWidthInches, double dSecLeftMarginInches, 
+	double dSecRightMarginInches, double dCellWidthInches,
+	ie_Table &tableHelper)
+{
+	UT_return_val_if_fail(pAP, false);
+	UT_return_val_if_fail(szWidth, false)
+	UT_return_val_if_fail(szHeight, false)
+
+	// get the object width as displayed in AbiWord
+	*szWidth = NULL;
+	pAP->getProperty (szWidthProp, *szWidth);
+	
+	// get the object height as displayed in AbiWord
+	*szHeight = NULL;
+	pAP->getProperty (szHeightProp, *szHeight);
+	
+	// determine the total width of this object, so we can calculate the object's
+	// width as a percentage of that
+	widthPercentage = 100;
+	if (*szWidth)
+	{
+		double total = 0;
+		if(tableHelper.getNestDepth() > 0)
+		{
+			total = dCellWidthInches;
+		}
+		else
+		{
+			total =  dPageWidthInches - dSecLeftMarginInches - dSecRightMarginInches;
+		}
+
+		double dWidth = UT_convertToInches(*szWidth);
+		widthPercentage = 100.0 * dWidth / total;
+		if (widthPercentage > 100.)
+			widthPercentage = 100.0;
+	}
+		
+	return true;
+}
+
+UT_UTF8String getStyleSizeString(const gchar * szWidth, double widthPercentage, 
+	UT_Dimension widthDim, const gchar * szHeight, 
+	UT_Dimension heightDim, bool bUseScale)
+{
+	UT_UTF8String props;
+	
+	if (szWidth)
+	{
+		props += "width:";
+		if (bUseScale)
+		{
+			UT_sint32 iPercent = (UT_sint32)(widthPercentage + 0.5);
+			props += UT_UTF8String_sprintf("%d%%", iPercent);
+		}
+		else
+		{
+			double d = UT_convertToDimension(szWidth, widthDim);
+			props += UT_formatDimensionString(widthDim, d);
+		}
+	}
+
+	if (szHeight)
+	{
+		if (props.size() > 0)
+			props += "; ";
+		props += "height:";
+		double d = UT_convertToDimension(szHeight, heightDim);
+		props += UT_formatDimensionString(heightDim , d);
+	}	
+
+	if (props.size() > 0)
+		return props;
+
+	return "";
+}
+
 
 IE_Exp_HTML_DataExporter::IE_Exp_HTML_DataExporter(PD_Document* pDocument, 
     const UT_UTF8String& baseName):

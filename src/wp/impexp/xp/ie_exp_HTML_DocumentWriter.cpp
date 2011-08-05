@@ -270,16 +270,15 @@ void IE_Exp_HTML_DocumentWriter::insertText(const UT_UTF8String &text)
 }
 
 void IE_Exp_HTML_DocumentWriter::insertImage(const UT_UTF8String& url, 
-    const UT_UTF8String& width, const UT_UTF8String& height,
-    const UT_UTF8String& top, const UT_UTF8String& left,
+	const UT_UTF8String& align, const UT_UTF8String& style,
     const UT_UTF8String &title, const UT_UTF8String &alt)
 {
     m_pTagWriter->openTag("img", true, true);
+	_handleStyleAndId(NULL, NULL, style.utf8_str());
     m_pTagWriter->addAttribute("src", url.utf8_str());
-    m_pTagWriter->addAttribute("width", width.utf8_str());
-    m_pTagWriter->addAttribute("height", height.utf8_str());
     m_pTagWriter->addAttribute("title", title.utf8_str());
     m_pTagWriter->addAttribute("alt", alt.utf8_str());
+	m_pTagWriter->addAttribute("align", align.utf8_str());
     m_pTagWriter->closeTag();
 
 }

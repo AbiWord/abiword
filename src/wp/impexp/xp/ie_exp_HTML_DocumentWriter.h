@@ -90,9 +90,7 @@ public:
     void insertMeta(const UT_UTF8String &name, const UT_UTF8String &content);
     void insertText(const UT_UTF8String &text);
     void insertImage(const UT_UTF8String &url, const UT_UTF8String &width, 
-        const UT_UTF8String &height, const UT_UTF8String &top, 
-        const UT_UTF8String &left,
-        const UT_UTF8String &title,
+        const UT_UTF8String &align, const UT_UTF8String &style,
         const UT_UTF8String &alt);
     void insertTOC(const gchar *title, const std::vector<UT_UTF8String> &items,
         const std::vector<UT_UTF8String> &itemUriList);
