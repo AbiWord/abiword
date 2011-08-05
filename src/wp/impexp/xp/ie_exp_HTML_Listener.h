@@ -153,10 +153,10 @@ public:
 
     virtual bool signal(UT_uint32 iSignal);
     
-    inline set_EmbedCSS(bool bEmbed = true) { m_bEmbedCss = bEmbed; }
-    inline set_EmbedImages(bool bEmbed = true) { m_bEmbedImages = bEmbed; }
-    inline set_SplitDocument(bool bSplit = true) { m_bSplitDocument = bSplit; }
-    inline set_RenderMathMLToPng (bool bRender = true) { bool m_bRenderMathToPng = bRender; }
+    inline void set_EmbedCSS(bool bEmbed = true) { m_bEmbedCss = bEmbed; }
+    inline void set_EmbedImages(bool bEmbed = true) { m_bEmbedImages = bEmbed; }
+    inline void set_SplitDocument(bool bSplit = true) { m_bSplitDocument = bSplit; }
+    inline void set_RenderMathMLToPng (bool bRender = true) { bool m_bRenderMathToPng = bRender; }
 private:
     const gchar* _getObjectKey(const PT_AttrPropIndex& api,
             const gchar* key);
