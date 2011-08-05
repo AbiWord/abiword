@@ -32,6 +32,8 @@ public:
     inline IE_TOCHelper* getTOCHelper() const {return m_pTocHelper; } 
     inline int getMinTOCLevel() const { return m_minTOCLevel; }
     inline int getMinTOCIndex() const { return m_minTOCIndex; }
+    inline std::map<UT_UTF8String, UT_UTF8String> & getBookmarks() 
+        { return m_bookmarks; }
 private:
     int m_minTOCLevel;
     int m_minTOCIndex;
@@ -43,7 +45,8 @@ private:
 class ABI_EXPORT IE_Exp_HTML_BookmarkListener : public PL_Listener
 {
 public:
-IE_Exp_HTML_BookmarkListener(PD_Document* pDoc);
+IE_Exp_HTML_BookmarkListener(PD_Document* pDoc,
+        IE_Exp_HTML_NavigationHelper *pNavigationHelper);
 bool populate(PL_StruxFmtHandle sfh,
               const PX_ChangeRecord * pcr);
 // Not used
@@ -80,13 +83,9 @@ bool signal(UT_uint32 /*iSignal*/)
     return true;
 }
 
-inline std::map<UT_UTF8String, UT_UTF8String> getBookmarks() const
-{
-    return m_bookmarks;
-}
 private:
-std::map<UT_UTF8String, UT_UTF8String> m_bookmarks;
 PD_Document * m_pDoc;
+IE_Exp_HTML_NavigationHelper *m_pNavigationHelper;
 
 };
 

@@ -1,13 +1,17 @@
 #include "ie_exp_HTML_NavigationHelper.h"
 
-IE_Exp_HTML_BookmarkListener::IE_Exp_HTML_BookmarkListener(PD_Document *pDoc) :
-m_pDoc(pDoc)
+IE_Exp_HTML_BookmarkListener::IE_Exp_HTML_BookmarkListener(PD_Document *pDoc,
+IE_Exp_HTML_NavigationHelper *pNavigationHelper) :
+m_pDoc(pDoc),
+m_pNavigationHelper(pNavigationHelper)
+
 
 {
 
 }
 
-bool IE_Exp_HTML_BookmarkListener::populate(PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord * pcr)
+bool IE_Exp_HTML_BookmarkListener::populate(PL_StruxFmtHandle /*sfh*/, 
+                                            const PX_ChangeRecord * pcr)
 {
     switch (pcr->getType())
     {
@@ -42,8 +46,9 @@ bool IE_Exp_HTML_BookmarkListener::populate(PL_StruxFmtHandle /*sfh*/, const PX_
                 {
                     UT_UTF8String escape = szName;
                     escape.escapeURL();
-                    // m_bookmarks[escape] = m_pie->getFilenameByPosition(pcr->getPosition());
-                    UT_DEBUGMSG(("Added bookmark\n File: %s Id: %s\n", m_bookmarks[escape].utf8_str(), escape.utf8_str()));
+                    m_pNavigationHelper->getBookmarks()[escape] = 
+                        m_pNavigationHelper->getFilenameByPosition(
+                        pcr->getPosition());
                 }
             }
             return true;
@@ -64,9 +69,9 @@ IE_Exp_HTML_NavigationHelper::IE_Exp_HTML_NavigationHelper(
                 m_pTocHelper(new IE_TOCHelper(pDocument)),
     m_baseName(UT_go_basename_from_uri(baseName.utf8_str()))
 {
-    IE_Exp_HTML_BookmarkListener * bookmarkListener = new IE_Exp_HTML_BookmarkListener(pDocument);
+    IE_Exp_HTML_BookmarkListener * bookmarkListener = 
+        new IE_Exp_HTML_BookmarkListener(pDocument, this);
     pDocument->tellListener(bookmarkListener);
-    m_bookmarks = bookmarkListener->getBookmarks();
     DELETEP(bookmarkListener);
 }
 
