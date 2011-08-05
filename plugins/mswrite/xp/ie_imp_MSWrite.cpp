@@ -46,6 +46,7 @@
 #include "xap_Module.h"
 #include "fg_Graphic.h"
 #include "ie_impGraphic.h"
+#include "ap_Args.h"
 
 #ifdef _MSC_VER
 typedef unsigned __int32 uint32_t;
@@ -293,7 +294,7 @@ static struct cst_data {
 	{"\x09 (Hebrew)", "CP1255"},
 	{"\x09 (Arabic)", "CP1256"},
 	{"\x07 Baltic", "CP1257"},
-	{NULL, "CP1252"}             // default codepage
+	{NULL, NULL}
 };
 
 inline void IE_Imp_MSWrite::translate_char (char ch, UT_UCS4String &buf)
@@ -338,7 +339,7 @@ const char *IE_Imp_MSWrite::get_codepage (const char *facename, int *facelen)
 		p++;
 	}
 	*facelen = l;
-	return p->cpid;
+	return default_codepage;
 }
 
 inline void IE_Imp_MSWrite::set_codepage (const char *charset)
@@ -881,9 +882,14 @@ IE_Imp_MSWrite::~IE_Imp_MSWrite()
 IE_Imp_MSWrite::IE_Imp_MSWrite(PD_Document * pDocument)
   : IE_Imp(pDocument), mFile(0), wri_fonts_count(0),
     wri_fonts(0), pic_nr(0),
-    lf(false), xaLeft(0), xaRight(0),
+    default_codepage("CP1252"), lf(false), xaLeft(0), xaRight(0),
     hasHeader(false), hasFooter(false), page1Header(false), page1Footer(false)
 {
+	setProps(AP_Args::m_impProps);
+	const std::string propCP = getProperty("mswrite-codepage");
+
+	if (!propCP.empty()) default_codepage = propCP.c_str();
+
 	write_file_header = static_cast<struct wri_struct*>(malloc (sizeof (WRITE_FILE_HEADER)));
 	memcpy (write_file_header, WRITE_FILE_HEADER, sizeof (WRITE_FILE_HEADER));
 

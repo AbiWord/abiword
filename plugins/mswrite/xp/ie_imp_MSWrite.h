@@ -105,6 +105,7 @@ private:
 	UT_UCS4String mCharBuf;    // buffer for char runs.
 	UT_ByteBuf mTextBuf;       // complete text buffer as extracted out of the file.
 	UT_UCS4_mbtowc charconv;   // Windows codepage to unicode conversion
+	const char *default_codepage;
 	bool lf;
 	int xaLeft, xaRight;
 	bool hasHeader, hasFooter, page1Header, page1Footer;
