@@ -535,6 +535,11 @@ void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, const UT_UTF8String &t
     
     IE_Exp_HTML_Listener *pListener = new IE_Exp_HTML_Listener(getDoc(), 
         pDataExporter, m_style_tree, m_pNavigationHelper, pMainListener);
+    // Time to send some settings to listener
+    pListener->set_SplitDocument(m_exp_opt.bSplitDocument);
+    pListener->set_EmbedCSS(m_exp_opt.bEmbedCSS);
+    pListener->set_RenderMathMLToPng(m_exp_opt.bMathMLRenderPNG);
+    pListener->set_EmbedImages(m_exp_opt.bEmbedImages);
     
     IE_Exp_HTML_HeaderFooterListener *pHeaderFooterListener = new 
         IE_Exp_HTML_HeaderFooterListener(getDoc(), pMainListener,
