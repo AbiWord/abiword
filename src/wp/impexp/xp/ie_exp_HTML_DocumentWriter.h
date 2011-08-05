@@ -62,13 +62,15 @@ public:
     void openBody();
     void closeBody();
         
-    void openTable(const PP_AttrProp* properties);
+    void openTable(const UT_UTF8String &style,
+        const UT_UTF8String &cellPadding, const UT_UTF8String &border);
     void closeTable();
     
     void openRow();
     void closeRow();
     
-    void openCell(const PP_AttrProp* properties);
+    void openCell(const UT_UTF8String &style,
+        const UT_UTF8String &rowspan, const UT_UTF8String &colspan);
     void closeCell();
     
     void openBookmark(const gchar* szBookmarkName);

@@ -100,9 +100,13 @@ void IE_Exp_HTML_DocumentWriter::closeHyperlink()
     m_pTagWriter->closeTag();
 }
 
-void IE_Exp_HTML_DocumentWriter::openTable(const PP_AttrProp* properties)
+void IE_Exp_HTML_DocumentWriter::openTable(const UT_UTF8String &style,
+    const UT_UTF8String &cellPadding, const UT_UTF8String &border)
 {
     m_pTagWriter->openTag("table");
+	m_pTagWriter->addAttribute("border", border.utf8_str());
+	m_pTagWriter->addAttribute("cellpadding", cellPadding.utf8_str());
+	_handleStyleAndId(NULL, NULL, style.utf8_str());
 }
 
 void IE_Exp_HTML_DocumentWriter::closeTable()
@@ -120,9 +124,13 @@ void IE_Exp_HTML_DocumentWriter::closeRow()
     m_pTagWriter->closeTag();
 }
 
-void IE_Exp_HTML_DocumentWriter::openCell(const PP_AttrProp* properties)
+void IE_Exp_HTML_DocumentWriter::openCell(const UT_UTF8String &style,
+    const UT_UTF8String &rowspan, const UT_UTF8String &colspan)
 {
-    m_pTagWriter->openTag("td");
+	m_pTagWriter->openTag("td");
+	m_pTagWriter->addAttribute("rowspan", rowspan.utf8_str());
+	m_pTagWriter->addAttribute("colspan", colspan.utf8_str());
+	_handleStyleAndId(NULL, NULL, style.utf8_str());
 }
 
 void IE_Exp_HTML_DocumentWriter::closeCell()

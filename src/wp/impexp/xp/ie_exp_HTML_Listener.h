@@ -45,13 +45,15 @@ public:
         const UT_UTF8String& /*fieldValue*/) {}
     virtual void closeField(const UT_UTF8String& /*fieldType*/) {}
     
-    virtual void openTable(const PP_AttrProp* /*pAP*/) {}
+    virtual void openTable(const UT_UTF8String &/*style*/,
+    const UT_UTF8String &/*cellPadding*/, const UT_UTF8String &/*border*/) {}
     virtual void closeTable() {}
 
     virtual void openRow() {}
     virtual void closeRow() {}
 
-    virtual void openCell(const PP_AttrProp* /*pAP*/) {}
+    virtual void openCell(const UT_UTF8String &/*style*/,
+    const UT_UTF8String &/*rowSpan*/, const UT_UTF8String &/*colSpan*/) {}
     virtual void closeCell() {}
 
     virtual void openAnnotation() {}
@@ -277,7 +279,8 @@ private:
     bool m_bEmbedImages;
     bool m_bRenderMathToPng;
     bool m_bSplitDocument;
-    
+    bool m_bScaleUnits;
+    bool m_bAbsUnits;
     UT_UTF8String m_filename;
     
     IE_Exp_HTML_StyleTree *m_pStyleTree;
