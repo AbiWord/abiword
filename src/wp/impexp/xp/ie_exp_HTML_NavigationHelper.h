@@ -22,14 +22,13 @@
 #include <ut_go_file.h>
 
 
-class IE_Exp_HTML_NavigationHelper : IE_TOCHelper {
+class IE_Exp_HTML_NavigationHelper : public IE_TOCHelper {
 public:
     IE_Exp_HTML_NavigationHelper(PD_Document *pDocument, 
             const UT_UTF8String &baseName);
     
     UT_UTF8String getBookmarkFilename(const UT_UTF8String &id);
     UT_UTF8String getFilenameByPosition(PT_DocPosition position);
-    inline IE_TOCHelper* getTOCHelper() const {return m_pTocHelper; } 
     inline int getMinTOCLevel() const { return m_minTOCLevel; }
     inline int getMinTOCIndex() const { return m_minTOCIndex; }
     inline std::map<UT_UTF8String, UT_UTF8String> & getBookmarks() 
@@ -38,7 +37,6 @@ private:
     int m_minTOCLevel;
     int m_minTOCIndex;
     std::map<UT_UTF8String, UT_UTF8String> m_bookmarks;
-    IE_TOCHelper *m_pTocHelper;
     UT_UTF8String m_baseName;
 };
 

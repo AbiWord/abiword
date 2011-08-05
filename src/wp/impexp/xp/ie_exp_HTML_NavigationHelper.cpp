@@ -64,12 +64,25 @@ bool IE_Exp_HTML_BookmarkListener::populate(PL_StruxFmtHandle /*sfh*/,
 }
 
 IE_Exp_HTML_NavigationHelper::IE_Exp_HTML_NavigationHelper(
-    PD_Document* pDocument, const UT_UTF8String &baseName):
-        IE_TOCHelper(pDocument),
-                m_pTocHelper(new IE_TOCHelper(pDocument)),
-    m_baseName(UT_go_basename_from_uri(baseName.utf8_str()))
+    PD_Document* pDocument, const UT_UTF8String &baseName) :
+IE_TOCHelper(pDocument),
+m_minTOCLevel(0),
+m_minTOCIndex(0),
+m_baseName(UT_go_basename_from_uri(baseName.utf8_str()))
 {
-    IE_Exp_HTML_BookmarkListener * bookmarkListener = 
+    m_minTOCLevel = 10;
+    for (int i = 0; i < getNumTOCEntries(); i++)
+    {
+        int currentLevel = 10;
+        getNthTOCEntry(i, &currentLevel);
+        if (currentLevel < m_minTOCLevel)
+        {
+            m_minTOCLevel = currentLevel;
+            m_minTOCIndex = i;
+        }
+    }
+            
+    IE_Exp_HTML_BookmarkListener * bookmarkListener =
         new IE_Exp_HTML_BookmarkListener(pDocument, this);
     pDocument->tellListener(bookmarkListener);
     DELETEP(bookmarkListener);
@@ -95,19 +108,19 @@ UT_UTF8String IE_Exp_HTML_NavigationHelper::getFilenameByPosition(
     PT_DocPosition posCurrent;
     UT_UTF8String chapterFile = UT_go_basename_from_uri(m_baseName.utf8_str());
 
-    if (m_pTocHelper->hasTOC())
+    if (hasTOC())
     {
-        for (int i = m_pTocHelper->getNumTOCEntries() - 1; i >= m_minTOCIndex; i--)
+        for (int i = getNumTOCEntries() - 1; i >= m_minTOCIndex; i--)
         {
             int currentLevel;
-            m_pTocHelper->getNthTOCEntry(i, &currentLevel);
-            m_pTocHelper->getNthTOCEntryPos(i, posCurrent);
+            getNthTOCEntry(i, &currentLevel);
+            getNthTOCEntryPos(i, posCurrent);
 
             if (currentLevel == m_minTOCLevel)
             {
                 if ((i != m_minTOCIndex) && (posCurrent <= position))
                 {
-                    chapterFile = ConvertToClean(m_pTocHelper->getNthTOCEntry(i, NULL)) /*+ m_suffix*/;
+                    chapterFile = ConvertToClean(getNthTOCEntry(i, NULL)) /*+ m_suffix*/;
                     break;
                 }
                 else if ((i == m_minTOCIndex) && (posCurrent >= position))

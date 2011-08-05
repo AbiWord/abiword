@@ -427,12 +427,104 @@ UT_Error IE_Exp_HTML::_writeDocument()
     return UT_OK;
 }
 
-
-
 UT_Error IE_Exp_HTML::_writeDocument(bool bClipBoard, bool bTemplateBody)
 {
+    if (m_exp_opt.bSplitDocument && m_pNavigationHelper->hasTOC()
+        && !m_exp_opt.bMultipart)
+    {
+        UT_DEBUGMSG(("Creating multiple file HTML document\n"));
+        PT_DocPosition posBegin;
+        PT_DocPosition posEnd; // End of the chapter
+        PT_DocPosition posCurrent;
+        PT_DocPosition docBegin;
+        UT_UTF8String chapterTitle;
+        UT_UTF8String currentTitle;
+        int currentLevel = 0;
+        bool firstChapter = true;
+
+        getDoc()->getBounds(false, posEnd);
+        docBegin = posEnd;
+        posEnd = 0;
+        currentTitle = m_pNavigationHelper->getNthTOCEntry(0, NULL);
+        bool isIndex = true;
+        for (int i = m_pNavigationHelper->getMinTOCIndex();
+            i < m_pNavigationHelper->getNumTOCEntries(); i++)
+        {
+            UT_DEBUGMSG(("MIN TOC LEVEL: %d", m_pNavigationHelper->getMinTOCLevel()));
+
+            m_pNavigationHelper->getNthTOCEntry(i, &currentLevel);
+
+            if (currentLevel == m_pNavigationHelper->getMinTOCLevel())
+            {
+                chapterTitle = m_pNavigationHelper->getNthTOCEntry(i, NULL);
+                m_pNavigationHelper->getNthTOCEntryPos(i, posCurrent);
+                posBegin = posEnd;
+
+                if (firstChapter)
+                {
+
+                    UT_DEBUGMSG(("POS: %d %d\n", posBegin, posCurrent));
+                    if (posCurrent <= docBegin)
+                    {
+                        UT_DEBUGMSG(("Document is starting from a heading\n"));
+                        isIndex = true;
+                        continue;
+
+                    }
+                    firstChapter = false;
+
+                }
+
+                posEnd = posCurrent;
+                PD_DocumentRange *range = new PD_DocumentRange(getDoc(), posBegin, posEnd);
+                UT_DEBUGMSG(("POS: BEGIN %d END %d\n", posBegin, posEnd));
+                UT_DEBUGMSG(("Now will create chapter of the document with title %s\n", currentTitle.utf8_str()));
+
+                _createChapter(range, currentTitle, isIndex);
+                if (isIndex)
+                {
+                    isIndex = false;
+                }
+                currentTitle = chapterTitle;
+            }
+        }
+
+        posBegin = posEnd;
+        getDoc()->getBounds(true, posEnd);
+
+        if (posBegin != posEnd)
+        {
+            PD_DocumentRange *range = new PD_DocumentRange(getDoc(), posBegin, posEnd);
+            _createChapter(range, chapterTitle, isIndex);
+        }
+        return UT_OK;
+    }
+    else
+    {
+        UT_DEBUGMSG(("Creating single-file HTML document\n"));
+        _createChapter(NULL, "", true);
+    }
+
+    return UT_OK;
+}
+
+
+
+void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, const UT_UTF8String &title, 
+    bool isIndex)
+{
+    GsfOutput *output;
+    if (isIndex)
+    {
+        output = getFp();
+    } else
+    {
+        UT_UTF8String outputUri = UT_go_dirname_from_uri(getFileName(), false);
+        outputUri += G_DIR_SEPARATOR_S + ConvertToClean(title) + m_suffix;
+        output = UT_go_file_create(outputUri.utf8_str(), NULL);
+    }
     IE_Exp_HTML_OutputWriter *pOutputWriter = 
-        new IE_Exp_HTML_OutputWriter(getFp());
+        new IE_Exp_HTML_OutputWriter(output);
     
     IE_Exp_HTML_DataExporter* pDataExporter = 
         new IE_Exp_HTML_DataExporter(getDoc(), 
@@ -451,7 +543,14 @@ UT_Error IE_Exp_HTML::_writeDocument(bool bClipBoard, bool bTemplateBody)
     
     pListener->beginOfDocument();
     pHeaderFooterListener->doHdrFtr(true);
-    getDoc()->tellListener(pListener);
+    
+    if (range!= NULL)
+    {
+        getDoc()->tellListenerSubset(pListener, range);
+    } else
+    {
+        getDoc()->tellListener(pListener);
+    }
     pHeaderFooterListener->doHdrFtr(false);
     pListener->endOfDocument();
     
@@ -461,45 +560,10 @@ UT_Error IE_Exp_HTML::_writeDocument(bool bClipBoard, bool bTemplateBody)
     DELETEP(pDataExporter);
     DELETEP(pOutputWriter);
     
-    return UT_OK;
-}
-
-
-
-void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, UT_UTF8String &title, 
-    bool isIndex)
-{
-  /*  IE_Exp_HTML_DocumentWriter* pListener = NULL;
-    IE_Exp_HTML_Writer *pWriter = new IE_Exp_HTML_Writer(getDoc(), this, false,
-                                    false, &m_exp_opt, m_style_tree, m_sLinkCSS, title,
-                                    isIndex);
-    pListener = new IE_Exp_HTML_DocumentWriter(pWriter);
-
-    PL_Listener * pL = static_cast<PL_Listener *> (pListener);*/
-    /*IE_Exp_HTML_HeaderFooterListener * pHdrFtrListener = new IE_Exp_HTML_HeaderFooterListener(
-                    getDoc(), this, pL);
-    PL_Listener * pHFL = static_cast<PL_Listener *> (pHdrFtrListener);
-     */
-    bool ok;
-    // getDoc()->tellListener(pHFL);
-    // pHdrFtrListener->doHdrFtr(1);
-/*
-    ok = getDoc()->tellListenerSubset(pL, range);
-
-    if (ok)
+    if (!isIndex)
     {
-        pListener->endOfDocument();
-        // pHdrFtrListener->doHdrFtr(0);
+        gsf_output_close(output);
     }
-    else
-    {
-        UT_DEBUGMSG(("RUDYJ: Listener returned error!\n"));
-    }
-    DELETEP(range);
-    // DELETEP(pHdrFtrListener);
-    DELETEP(pListener);
-    DELETEP(pWriter);*/
-
 }
 
 UT_UTF8String IE_Exp_HTML::getSuffix() const
