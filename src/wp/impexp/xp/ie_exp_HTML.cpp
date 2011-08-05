@@ -550,7 +550,6 @@ void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, const UT_UTF8String &t
         pListener);
     getDoc()->tellListener(pHeaderFooterListener);
     
-    pListener->beginOfDocument();
     pHeaderFooterListener->doHdrFtr(true);
     
     if (range!= NULL)

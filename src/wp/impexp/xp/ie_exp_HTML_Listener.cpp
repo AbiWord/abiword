@@ -8,6 +8,7 @@ IE_Exp_HTML_Listener::IE_Exp_HTML_Listener(PD_Document *pDocument,
                                            IE_Exp_HTML_NavigationHelper *pNavigationHelper,
                                            IE_Exp_HTML_ListenerImpl* pListenerImpl,
                                            const UT_UTF8String &filename) :
+m_bFirstWrite(true),										   
 m_bInSpan(false),
 m_bInBlock(false),
 m_bInBookmark(false),
@@ -276,6 +277,8 @@ bool IE_Exp_HTML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_ChangeR
         break;
     case PTX_Section:
     {
+		if (m_bFirstWrite)
+			_beginOfDocument(api);
         m_bSkipSection = false;
         _closeSpan();
         _closeField();
@@ -614,14 +617,15 @@ bool IE_Exp_HTML_Listener::signal(UT_uint32 /*iSignal*/)
     return true;
 }
 
-bool IE_Exp_HTML_Listener::beginOfDocument()
+bool IE_Exp_HTML_Listener::_beginOfDocument(const PT_AttrPropIndex& api)
 {
+	m_bFirstWrite = false;
     _insertDTD();
     _openDocument();
     _openHead();
     _insertTitle();
     _insertMeta();
-    _makeStylesheet();
+    _makeStylesheet(api);
     if (m_bEmbedCss)
     {
         _insertStyle();
@@ -664,9 +668,20 @@ void IE_Exp_HTML_Listener::_outputData(const UT_UCSChar* pData, UT_uint32 length
 
     UT_ASSERT(sizeof (UT_Byte) == sizeof (char));
     sBuf.reserve(length);
-
+	UT_uint32 spaceCount = 0;
+	
     for (p = pData; (p < pData + length); /**/)
     {
+		if ((*p != ' ') && (spaceCount > 0))
+		{
+			sBuf += ' ';
+			spaceCount--;
+			while (spaceCount > 0)
+			{
+				sBuf += "&nbsp;";
+				spaceCount--;
+			}
+		}
         switch (*p)
         {
         case '<':
@@ -685,7 +700,7 @@ void IE_Exp_HTML_Listener::_outputData(const UT_UCSChar* pData, UT_uint32 length
             break;
 
         case ' ':
-            sBuf += "&nbsp;";
+			spaceCount++;
             p++;
             break;
 
@@ -2080,12 +2095,84 @@ void IE_Exp_HTML_Listener::_handleAnnotationData(PT_AttrPropIndex api)
     m_annotationAuthors.push_back(szAuthor);
 }
 
-void IE_Exp_HTML_Listener::_makeStylesheet()
+void IE_Exp_HTML_Listener::_makeStylesheet(PT_AttrPropIndex api)
 {
+	const PP_AttrProp* pAP;
+    bool ok;
+
+    ok = m_pDocument->getAttrProp(api, &pAP);
+    if (!ok)
+    {
+        pAP = NULL;
+    }
+	
     UT_ByteBuf buffer;
     StyleListener styleListener(buffer);
     m_pStyleTree->print(&styleListener);
     
-    m_stylesheet = sStyleSheet;
+    m_stylesheet = sStyleSheet; // Stylesheet for TOC`s and so on
     m_stylesheet += reinterpret_cast<const char*>(buffer.getPointer(0));
+
+	UT_UTF8String bodyStyle = "body{\n";
+	const gchar* szName = NULL;
+	const gchar* szValue = NULL;
+	// Set margins for paged media to match those set in AbiWord
+	// TODO: consolidate all places of awml-css21 matching into one UT/PP function
+	const gchar * marginProps [10] = {"page-margin-top", "padding-top",
+		"page-margin-bottom", "padding-bottom",
+		"page-margin-left", "padding-left",
+		"page-margin-right", "padding-right",
+		NULL, NULL};
+	for (unsigned short int propIdx = 0; propIdx < 8; propIdx += 2) {
+		szValue = PP_evalProperty(marginProps[propIdx], 0, 0, pAP, m_pDocument, true);
+		bodyStyle += UT_UTF8String_sprintf("%s : %s;\n", marginProps[propIdx + 1], szValue);
+	}
+
+	
+
+	PD_Style * pStyle = 0;
+	m_pDocument->getStyle("Normal", &pStyle);
+	UT_UTF8String value;
+	for (UT_uint32 i = 0; i < pStyle->getPropertyCount(); i++) {
+		pStyle->getNthProperty(i, szName, szValue);
+
+		if ((szName == 0) || (szValue == 0)) continue; // paranoid? moi?
+		if ((*szName == 0) || (*szValue == 0)) continue;
+
+		if (strstr(szName, "margin")) continue;
+		if (!is_CSS(reinterpret_cast<const char *> (szName))) continue;
+
+		if (strcmp(szName, "font-family") == 0) {
+			if ((strcmp(szValue, "serif") == 0) ||
+				(strcmp(szValue, "sans-serif") == 0) ||
+				(strcmp(szValue, "cursive") == 0) ||
+				(strcmp(szValue, "fantasy") == 0) ||
+				(strcmp(szValue, "monospace") == 0)) {
+				value = static_cast<const char *> (szValue);
+			}
+			else {
+				value = "'";
+				value += static_cast<const char *> (szValue);
+				value += "'";
+			}
+		}
+		else if (strcmp(szName, "color") == 0) {
+			if (IS_TRANSPARENT_COLOR(szValue)) continue;
+
+			value = UT_colorToHex(szValue, true);
+		}
+		else value = static_cast<const char *> (szValue);
+
+		bodyStyle += UT_UTF8String_sprintf("%s:%s;\n", szName, value.utf8_str());
+	}
+	szValue = PP_evalProperty("background-color", 0, 0, pAP, m_pDocument, true);
+	if (szValue && *szValue && !IS_TRANSPARENT_COLOR(szValue)) {
+		value= UT_colorToHex(szValue, true);
+
+		bodyStyle += UT_UTF8String_sprintf("background-color:%s;\n", 
+										 szName, value.utf8_str());
+	}
+	
+	bodyStyle += "}";
+	m_stylesheet += bodyStyle;
 }

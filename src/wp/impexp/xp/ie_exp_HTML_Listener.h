@@ -139,7 +139,6 @@ public:
             const PX_ChangeRecord * pcr,
             PL_StruxFmtHandle * psfh);
 
-    virtual bool beginOfDocument();
     virtual bool endOfDocument();
 
     virtual bool change(PL_StruxFmtHandle sfh,
@@ -162,7 +161,7 @@ public:
 private:
     const gchar* _getObjectKey(const PT_AttrPropIndex& api,
             const gchar* key);
-
+    virtual bool _beginOfDocument(const PT_AttrPropIndex& api);
     void _outputData(const UT_UCSChar* pData, UT_uint32 length);
     void _openSpan(PT_AttrPropIndex api);
     void _closeSpan();
@@ -236,8 +235,9 @@ private:
     void _insertStyle();
     void _insertLinkToStyle();
     void _handleAnnotationData(PT_AttrPropIndex api);
-    void _makeStylesheet();
+    void _makeStylesheet(PT_AttrPropIndex api);
     
+    bool m_bFirstWrite;
     bool m_bInSpan;
     bool m_bInBlock;
     bool m_bInBookmark;
