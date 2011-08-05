@@ -27,14 +27,15 @@
 class IE_Exp_HTML_ListenerImpl {
 public:
 
-    virtual void openSpan(const gchar */*szStyleName*/) {}
+    virtual void openSpan(const gchar */*szStyleName*/, const UT_UTF8String& /*style*/) {}
     virtual void closeSpan() {}
     
     virtual void openHeading(size_t /*level*/, const gchar * /*id*/, 
         const gchar */*szStyleName*/) {}
     virtual void closeHeading() {}
     
-    virtual void openBlock(const gchar */*szStyleName*/) {}
+    virtual void openBlock(const gchar */*szStyleName*/, 
+        const UT_UTF8String & /*style*/) {}
     virtual void closeBlock() {}
     
     virtual void openSection(const gchar */*szStyleName*/) {}

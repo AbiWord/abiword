@@ -17,10 +17,11 @@ IE_Exp_HTML_DocumentWriter::~IE_Exp_HTML_DocumentWriter()
     DELETEP(m_pTagWriter);
 }
 
-void IE_Exp_HTML_DocumentWriter::openSpan(const gchar *szStyleName)
+void IE_Exp_HTML_DocumentWriter::openSpan(const gchar *szStyleName,
+	const UT_UTF8String& style)
 {
     m_pTagWriter->openTag("span", true);
-    _handleStyleAndId(szStyleName, NULL);
+    _handleStyleAndId(szStyleName, NULL, style.utf8_str());
 }
 
 void IE_Exp_HTML_DocumentWriter::closeSpan()
@@ -28,10 +29,11 @@ void IE_Exp_HTML_DocumentWriter::closeSpan()
     m_pTagWriter->closeTag();
 }
 
-void IE_Exp_HTML_DocumentWriter::openBlock(const gchar* szStyleName)
+void IE_Exp_HTML_DocumentWriter::openBlock(const gchar* szStyleName,
+	const UT_UTF8String& style)
 {
     m_pTagWriter->openTag("p");
-    _handleStyleAndId(szStyleName, NULL);
+    _handleStyleAndId(szStyleName, NULL, style.utf8_str());
 }
 
 void IE_Exp_HTML_DocumentWriter::closeBlock()
@@ -62,7 +64,7 @@ void IE_Exp_HTML_DocumentWriter::openHeading(size_t level,
     }
     
     
-    _handleStyleAndId(szStyleName, szId);
+    _handleStyleAndId(szStyleName, szId, NULL);
 }
 
 void IE_Exp_HTML_DocumentWriter::closeHeading()
@@ -73,7 +75,7 @@ void IE_Exp_HTML_DocumentWriter::closeHeading()
 void IE_Exp_HTML_DocumentWriter::openSection(const gchar* szStyleName)
 {
     m_pTagWriter->openTag("div");
-    _handleStyleAndId(szStyleName, NULL);
+    _handleStyleAndId(szStyleName, NULL, NULL);
 }
 
 void IE_Exp_HTML_DocumentWriter::closeSection()
@@ -85,7 +87,7 @@ void IE_Exp_HTML_DocumentWriter::openHyperlink(const gchar *szUri,
     const gchar *szStyleName, const gchar *szId)
 {
     m_pTagWriter->openTag("a", true);
-    _handleStyleAndId(szStyleName, szId);
+    _handleStyleAndId(szStyleName, szId, NULL);
 
     if (szUri != NULL)
     {
@@ -149,7 +151,7 @@ void IE_Exp_HTML_DocumentWriter::openList(bool ordered, const gchar *szStyleName
     {
         m_pTagWriter->openTag("ul");
     }
-    _handleStyleAndId(szStyleName, NULL);
+    _handleStyleAndId(szStyleName, NULL, NULL);
 }
 
 void IE_Exp_HTML_DocumentWriter::closeList()
@@ -243,7 +245,7 @@ void IE_Exp_HTML_DocumentWriter::closeBody()
     m_pTagWriter->closeTag();
 }
 void IE_Exp_HTML_DocumentWriter::_handleStyleAndId(const gchar* szStyleName, 
-    const gchar* szId)
+    const gchar* szId, const gchar* szStyle)
 {
     if (szStyleName != NULL)
     {
@@ -254,6 +256,12 @@ void IE_Exp_HTML_DocumentWriter::_handleStyleAndId(const gchar* szStyleName,
     {
         m_pTagWriter->addAttribute("id", szId);
     }
+	
+	if (szStyle != NULL)
+	{
+		m_pTagWriter->addAttribute("style", szStyle);
+	}
+	
 }
 
 void IE_Exp_HTML_DocumentWriter::insertText(const UT_UTF8String &text)

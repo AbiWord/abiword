@@ -765,7 +765,169 @@ void IE_Exp_HTML_Listener::_openSpan(PT_AttrPropIndex api)
     {
         styleName = tree->class_name().utf8_str();
     }
-    m_pCurrentImpl->openSpan(styleName);
+
+	const gchar * szP_FontWeight = 0;
+	const gchar * szP_FontStyle = 0;
+	const gchar * szP_FontSize = 0;
+	const gchar * szP_FontFamily = 0;
+	const gchar * szP_TextDecoration = 0;
+	const gchar * szP_TextPosition = 0;
+	const gchar * szP_TextTransform = 0;
+	const gchar * szP_Color = 0;
+	const gchar * szP_BgColor = 0;
+	const gchar * szP_Display = 0;
+
+	pAP->getProperty("font-weight", szP_FontWeight);
+	pAP->getProperty("font-style", szP_FontStyle);
+	pAP->getProperty("font-size", szP_FontSize);
+	pAP->getProperty("font-family", szP_FontFamily);
+	pAP->getProperty("text-decoration", szP_TextDecoration);
+	pAP->getProperty("text-position", szP_TextPosition);
+	pAP->getProperty("text-transform", szP_TextTransform);
+	pAP->getProperty("color", szP_Color);
+	pAP->getProperty("bgcolor", szP_BgColor);
+	pAP->getProperty("display", szP_Display);
+
+	UT_UTF8String style;
+	UT_UTF8String tmp;
+	bool first = true;
+	/* TODO: this bold/italic check needs re-thought
+	 */
+	if (szP_FontWeight)
+	{
+		if (strcmp(szP_FontWeight, "bold") == 0)
+			//if (!compareStyle("font-weight", "bold")) {
+				if (!first) style += ";";
+				style += "font-weight:bold";
+				first = false;
+			// }
+	}
+	if (szP_FontStyle)
+	{
+		if (strcmp(szP_FontStyle, "italic") == 0)
+		{
+			//if (!compareStyle("font-style", "italic")) {
+				if (!first) style += ";";
+				style += "font-style:italic";
+				first = false;
+			//}
+		}
+	}
+
+	if (szP_FontSize) {
+		char buf[16];
+
+		{
+			sprintf(buf, "%g", UT_convertToPoints(szP_FontSize));
+		}
+
+		tmp = buf;
+		tmp += "pt";
+
+		//if (!compareStyle("font-size", style.utf8_str())) {
+			if (!first) style += ";";
+			style += "font-size:";
+			style += tmp;
+			first = false;
+		//}
+	}
+
+	if (szP_FontFamily) {
+		if ((strcmp(szP_FontFamily, "serif") == 0) ||
+			(strcmp(szP_FontFamily, "sans-serif") == 0) ||
+			(strcmp(szP_FontFamily, "cursive") == 0) ||
+			(strcmp(szP_FontFamily, "fantasy") == 0) ||
+			(strcmp(szP_FontFamily, "monospace") == 0)) {
+			tmp = static_cast<const char *> (szP_FontFamily);
+		}
+		else {
+			tmp = "'";
+			tmp += static_cast<const char *> (szP_FontFamily);
+			tmp += "'";
+		}
+		//if (!compareStyle("font-family", style.utf8_str())) {
+			if (!first) style += ";";
+			style += "font-family:";
+			style += tmp;
+			first = false;
+		//}
+	}
+	if (szP_TextDecoration) {
+		bool bUnderline = (strstr(szP_TextDecoration, "underline") != NULL);
+		bool bLineThrough = (strstr(szP_TextDecoration, "line-through") != NULL);
+		bool bOverline = (strstr(szP_TextDecoration, "overline") != NULL);
+
+		if (bUnderline || bLineThrough || bOverline) {
+			tmp  = "";
+			if (bUnderline) tmp += "underline";
+			if (bLineThrough) {
+				if (bUnderline) tmp += ", ";
+				tmp += "line-through";
+			}
+			if (bOverline) {
+				if (bUnderline || bLineThrough) style += ", ";
+				tmp += "overline";
+			}
+			//if (!compareStyle("text-decoration", style.utf8_str())) {
+				if (!first) style += ";";
+				style += "text-decoration:";
+				style += tmp;
+				first = false;
+			//}
+		}
+	}
+	if (szP_TextTransform) {
+		//if (!compareStyle("text-transform", szP_TextTransform)) {
+			if (!first) style += ";";
+			style += "text-transform:";
+			style += szP_TextTransform;
+			first = false;
+		//}
+	}
+
+	if (szP_TextPosition) {
+		if (strcmp(szP_TextPosition, "superscript") == 0) {
+			//if (!compareStyle("vertical-align", "super")) {
+				if (!first) style += ";";
+				style += "vertical-align:super";
+				first = false;
+			//}
+		}
+		else if (strcmp(szP_TextPosition, "subscript") == 0) {
+			//if (!compareStyle("vertical-align", "sub")) {
+				if (!first) style += ";";
+				style += "vertical-align:sub";
+				first = false;
+			//}
+		}
+	}
+	if (szP_Color && *szP_Color)
+		if (!IS_TRANSPARENT_COLOR(szP_Color)) {
+			//if (!compareStyle("color", style.utf8_str())) {
+				if (!first) style += ";";
+				style += "color:";
+				style += UT_colorToHex(szP_Color, true);
+				first = false;
+			//}
+		}
+	if (szP_BgColor && *szP_BgColor)
+		if (!IS_TRANSPARENT_COLOR(szP_BgColor)) {
+			//if (!compareStyle("background", style.utf8_str())) {
+				if (!first) style += ";";
+				style += "background:";
+				style += UT_colorToHex(szP_BgColor, true);;
+				first = false;
+			//}
+		}
+
+	if (szP_Display) {
+		if (strcmp(szP_Display, "none") == 0) {
+			if (!first) style += ";";
+			style += "display:none";
+			first = false;
+		}
+	}
+    m_pCurrentImpl->openSpan(styleName, style);
     return;
 }
 
@@ -806,7 +968,68 @@ void IE_Exp_HTML_Listener::_openBlock(PT_AttrPropIndex api)
     {
         styleName = tree->class_name().utf8_str();
     }
-    m_pCurrentImpl->openBlock(styleName);
+
+	const gchar * szP_TextAlign = 0;
+	const gchar * szP_MarginBottom = 0;
+	const gchar * szP_MarginTop = 0;
+	const gchar * szP_MarginLeft = 0;
+	const gchar * szP_MarginRight = 0;
+	const gchar * szP_TextIndent = 0;
+
+	pAP->getProperty("text-align", szP_TextAlign);
+	pAP->getProperty("margin-bottom", szP_MarginBottom);
+	pAP->getProperty("margin-top", szP_MarginTop);
+	pAP->getProperty("margin-right", szP_MarginRight);
+
+	if (pAP->getProperty("margin-left", szP_MarginLeft))
+		if (strstr(szP_MarginLeft, "0.0000"))
+			szP_MarginLeft = 0;
+
+	if (pAP->getProperty("text-indent", szP_TextIndent))
+		if (strstr(szP_TextIndent, "0.0000"))
+			szP_TextIndent = 0;
+
+	UT_UTF8String style;
+	bool first = true;
+
+	if (szP_TextAlign) {
+		if (!first) style += ";";
+		style += "text-align:";
+		style += szP_TextAlign;
+		first = false;
+	}
+	if (szP_MarginBottom) {
+		if (!first) style += ";";
+		style += "margin-bottom:";
+		style += szP_MarginBottom;
+		first = false;
+	}
+	if (szP_MarginTop) {
+		if (!first) style += ";";
+		style += "margin-top:";
+		style += szP_MarginTop;
+		first = false;
+	}
+	if (szP_MarginRight) {
+		if (!first) style += ";";
+		style += "margin-right:";
+		style += szP_MarginRight;
+		first = false;
+	}
+	if (szP_MarginLeft) {
+		if (!first) style += ";";
+		style += "margin-left:";
+		style += szP_MarginLeft;
+		first = false;
+	}
+	if (szP_TextIndent) {
+		if (!first) style += ";";
+		style += "text-indent:";
+		style += szP_TextIndent;
+		first = false;
+	}
+	
+    m_pCurrentImpl->openBlock(styleName, style);
     
     
 }

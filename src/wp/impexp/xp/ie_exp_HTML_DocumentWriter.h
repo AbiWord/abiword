@@ -37,10 +37,10 @@ public:
     
     ~IE_Exp_HTML_DocumentWriter();
 
-    void openSpan(const gchar *szStyleNames);
+    void openSpan(const gchar *szStyleNames, const UT_UTF8String& style);
     void closeSpan();
     
-    void openBlock(const gchar* szStyleName);
+    void openBlock(const gchar* szStyleName, const UT_UTF8String& style);
     void closeBlock();
     
     void openHeading(size_t level, const gchar* szStyleName, const gchar *szId);
@@ -104,7 +104,8 @@ public:
     void insertStyle(const UT_UTF8String &style);
 private:
     
-    void inline _handleStyleAndId(const gchar *szStyleName, const gchar *szId);
+    void inline _handleStyleAndId(const gchar *szStyleName, const gchar *szId,
+            const gchar *szStyle);
     
     IE_Exp_HTML_OutputWriter *m_pOutputWriter;
     IE_Exp_HTML_TagWriter *m_pTagWriter;
