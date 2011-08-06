@@ -7,7 +7,8 @@ m_pTagWriter(new IE_Exp_HTML_TagWriter(m_pOutputWriter)),
 m_iEndnoteCount(0),
 m_iEndnoteAnchorCount(0),
 m_iFootnoteCount(0),
-m_iAnnotationCount(0)
+m_iAnnotationCount(0),
+m_bInsertPhp(false)
 {
 
 }
@@ -240,16 +241,37 @@ void IE_Exp_HTML_DocumentWriter::openHead()
 
 void IE_Exp_HTML_DocumentWriter::closeHead()
 {
+	if (m_bInsertPhp)
+	{
+		UT_UTF8String phpFragment = "<?php";
+		phpFragment += "  include($_SERVER['DOCUMENT_ROOT'].'/x-header.php');" MYEOL " ";
+		phpFragment += "?>";
+		m_pTagWriter->writeData(phpFragment.utf8_str());
+	}	
+	
     m_pTagWriter->closeTag();
 }
 
 void IE_Exp_HTML_DocumentWriter::openBody()
 {
     m_pTagWriter->openTag("body", true);
+	if (m_bInsertPhp) {
+		UT_UTF8String phpFragment = "<?php";
+		phpFragment += MYEOL "  include($_SERVER['DOCUMENT_ROOT'].'/x-page-begin.php');" MYEOL " ";
+		phpFragment += "?>";
+		m_pTagWriter->writeData(phpFragment.utf8_str());
+	}	
+	
 }
 
 void IE_Exp_HTML_DocumentWriter::closeBody()
 {
+	if (m_bInsertPhp) {
+		UT_UTF8String phpFragment = "<?php";
+		phpFragment += MYEOL "  include($_SERVER['DOCUMENT_ROOT'].'/x-page-end.php');" MYEOL " ";
+		phpFragment += "?>";
+		m_pTagWriter->writeData(phpFragment.utf8_str());
+	}	
     m_pTagWriter->closeTag();
 }
 void IE_Exp_HTML_DocumentWriter::_handleStyleAndId(const gchar* szStyleName, 

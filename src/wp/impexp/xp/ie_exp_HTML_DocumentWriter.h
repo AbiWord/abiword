@@ -109,6 +109,8 @@ public:
        const std::vector<UT_UTF8String> &annotations);
     void insertStyle(const UT_UTF8String &style);
     void insertTitle(const UT_UTF8String &title);
+    
+    inline void enablePHP (bool bEnable = true) { m_bInsertPhp = bEnable; }
 protected:
     IE_Exp_HTML_DocumentWriter(){}
     void inline _handleStyleAndId(const gchar *szStyleName, const gchar *szId,
@@ -120,6 +122,8 @@ protected:
     UT_uint32 m_iEndnoteAnchorCount;
     UT_uint32 m_iFootnoteCount;
     UT_uint32 m_iAnnotationCount;
+    
+    bool m_bInsertPhp;
 };
 
 /*

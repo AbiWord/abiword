@@ -582,12 +582,16 @@ UT_UTF8String IE_Exp_HTML::getSuffix() const
 IE_Exp_HTML_DocumentWriter *IE_Exp_HTML::_getDocumentWriter(
 IE_Exp_HTML_OutputWriter *pOutputWriter)
 {
+	IE_Exp_HTML_DocumentWriter *pWriter = NULL;
 	if (m_exp_opt.bIs4){
-		return new IE_Exp_HTML_HTML4Writer(pOutputWriter);
+		pWriter = new IE_Exp_HTML_HTML4Writer(pOutputWriter);
 	} else
 	{
-		return new IE_Exp_HTML_XHTMLWriter(pOutputWriter);
+		pWriter = new IE_Exp_HTML_XHTMLWriter(pOutputWriter);
 	}
+	
+	pWriter->enablePHP(m_exp_opt.bIsAbiWebDoc);
+	return pWriter;
 }
 
 /**
