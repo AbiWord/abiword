@@ -534,7 +534,7 @@ void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, const UT_UTF8String &t
             getFileName());
     
     IE_Exp_HTML_DocumentWriter* pMainListener = 
-        new IE_Exp_HTML_DocumentWriter(pOutputWriter);
+        _getDocumentWriter(pOutputWriter);
     
     IE_Exp_HTML_Listener *pListener = new IE_Exp_HTML_Listener(getDoc(), 
         pDataExporter, m_style_tree, m_pNavigationHelper, pMainListener,
@@ -579,7 +579,16 @@ UT_UTF8String IE_Exp_HTML::getSuffix() const
     return m_suffix;
 }
 
-
+IE_Exp_HTML_DocumentWriter *IE_Exp_HTML::_getDocumentWriter(
+IE_Exp_HTML_OutputWriter *pOutputWriter)
+{
+	if (m_exp_opt.bIs4){
+		return new IE_Exp_HTML_HTML4Writer(pOutputWriter);
+	} else
+	{
+		return new IE_Exp_HTML_XHTMLWriter(pOutputWriter);
+	}
+}
 
 /**
  *

@@ -517,7 +517,7 @@ void IE_Exp_HTML_TagWriter::_closeAttributes()
         
     if (!m_bAttributesWritten)
     {
-        if (m_bXmlModeEnabled)
+        if (m_bXmlModeEnabled && m_bCurrentTagIsSingle)
         {
                 m_buffer += " />";
         } else

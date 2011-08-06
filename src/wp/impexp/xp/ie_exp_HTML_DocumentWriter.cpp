@@ -225,7 +225,7 @@ void IE_Exp_HTML_DocumentWriter::closeAnnotation()
 
 void IE_Exp_HTML_DocumentWriter::openDocument()
 {
-    m_pTagWriter->openTag("html", true);   
+    m_pTagWriter->openTag("html");   
 }
 
 void IE_Exp_HTML_DocumentWriter::closeDocument()
@@ -235,7 +235,7 @@ void IE_Exp_HTML_DocumentWriter::closeDocument()
 
 void IE_Exp_HTML_DocumentWriter::openHead()
 {
-    m_pTagWriter->openTag("head", true);
+    m_pTagWriter->openTag("head");
 }
 
 void IE_Exp_HTML_DocumentWriter::closeHead()
@@ -314,6 +314,7 @@ void IE_Exp_HTML_DocumentWriter::insertTOC(const gchar* title,
 void IE_Exp_HTML_DocumentWriter::insertFootnotes(
     const std::vector<UT_UTF8String>& footnotes)
 {
+	if (footnotes.size() == 0) return;
     m_pTagWriter->openTag("ol");
     for (size_t i = 0; i < footnotes.size(); i++)
     {
@@ -324,13 +325,13 @@ void IE_Exp_HTML_DocumentWriter::insertFootnotes(
         m_pTagWriter->writeData(footnotes.at(i).utf8_str());
         m_pTagWriter->closeTag();
     }
-    
     m_pTagWriter->closeTag();
 }
 
 void IE_Exp_HTML_DocumentWriter::insertEndnotes(
 const std::vector<UT_UTF8String>& endnotes)
 {
+	if (endnotes.size() == 0) return;
     m_pTagWriter->openTag("ol");
     for (size_t i = 0; i < endnotes.size(); i++)
     {
@@ -419,4 +420,48 @@ void IE_Exp_HTML_DocumentWriter::insertStyle(const UT_UTF8String &style)
     m_pTagWriter->writeData(style.utf8_str());
     m_pTagWriter->closeComment();
     m_pTagWriter->closeTag();
+}
+
+void IE_Exp_HTML_DocumentWriter::insertTitle(const UT_UTF8String& title)
+{
+	m_pTagWriter->openTag("title", false, false);
+	m_pTagWriter->writeData(title.utf8_str());
+	m_pTagWriter->closeTag();
+}
+/*
+ * 
+ */
+
+IE_Exp_HTML_XHTMLWriter::IE_Exp_HTML_XHTMLWriter(
+	IE_Exp_HTML_OutputWriter* pOutputWriter) :
+		IE_Exp_HTML_DocumentWriter(pOutputWriter)
+{
+	m_pTagWriter->enableXmlMode();
+}
+
+void IE_Exp_HTML_XHTMLWriter::insertDTD()
+{
+	m_pOutputWriter->write(XHTML_DTD, strlen(XHTML_DTD));
+}
+
+void IE_Exp_HTML_XHTMLWriter::openDocument()
+{
+	m_pTagWriter->openTag("html");
+	m_pTagWriter->addAttribute("xmlns", XHTML_NS);
+}
+
+/*
+ * 
+ */
+
+IE_Exp_HTML_HTML4Writer::IE_Exp_HTML_HTML4Writer(
+IE_Exp_HTML_OutputWriter* pOutputWriter):
+		IE_Exp_HTML_DocumentWriter(pOutputWriter)
+{
+	m_pTagWriter->enableXmlMode(false);
+}
+
+void IE_Exp_HTML_HTML4Writer::insertDTD()
+{
+	m_pOutputWriter->write(HTML4_DTD, strlen(HTML4_DTD));
 }

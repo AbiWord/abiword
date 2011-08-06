@@ -2359,6 +2359,16 @@ void IE_Exp_HTML_Listener::_insertLinks()
 
 void IE_Exp_HTML_Listener::_insertTitle()
 {
+	UT_UTF8String metaProp;
+
+    if (m_pDocument->getMetaDataProp(PD_META_KEY_TITLE, metaProp) 
+									 && metaProp.size())
+	{
+        m_pCurrentImpl->insertTitle(metaProp);
+	} else
+	{
+		m_pCurrentImpl->insertTitle("Abiword HTML Document");
+	}
 }
 
 void IE_Exp_HTML_Listener::_insertMeta()

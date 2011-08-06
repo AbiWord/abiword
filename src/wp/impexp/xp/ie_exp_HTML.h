@@ -114,6 +114,8 @@ protected:
 public:
 	virtual UT_Error	_writeDocument (bool bClipBoard, bool bTemplateBody);
 private:
+    // Returns document writer depending on settings
+    IE_Exp_HTML_DocumentWriter *_getDocumentWriter(IE_Exp_HTML_OutputWriter *pOutputWriter);
 	IE_Exp_HTML_StyleTree *		m_style_tree;
         IE_Exp_HTML_StyleListener *m_styleListener;
 	bool			m_bSuppressDialog;

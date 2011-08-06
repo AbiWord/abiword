@@ -29,6 +29,12 @@
 #include "ie_exp_HTML_StyleTree.h"
 #include "xap_Dlg_HTMLOptions.h"
 
+#define XHTML_DTD "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \
+\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">"
+#define XHTML_NS "http://www.w3.org/1999/xhtml"
+#define HTML4_DTD "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \
+\"http://www.w3.org/TR/html4/strict.dtd\">"
+
 class IE_Exp_HTML_ListenerImpl;
 class IE_Exp_HTML_DocumentWriter : public IE_Exp_HTML_ListenerImpl
 {
@@ -102,8 +108,9 @@ public:
        const std::vector<UT_UTF8String> &authors,
        const std::vector<UT_UTF8String> &annotations);
     void insertStyle(const UT_UTF8String &style);
-private:
-    
+    void insertTitle(const UT_UTF8String &title);
+protected:
+    IE_Exp_HTML_DocumentWriter(){}
     void inline _handleStyleAndId(const gchar *szStyleName, const gchar *szId,
             const gchar *szStyle);
     
@@ -113,5 +120,24 @@ private:
     UT_uint32 m_iEndnoteAnchorCount;
     UT_uint32 m_iFootnoteCount;
     UT_uint32 m_iAnnotationCount;
+};
+
+/*
+ * Writer class for XHTML document creation
+ */
+class IE_Exp_HTML_XHTMLWriter : public IE_Exp_HTML_DocumentWriter
+{
+public:
+    IE_Exp_HTML_XHTMLWriter(IE_Exp_HTML_OutputWriter* pOutputWriter);
+    void insertDTD();
+    void openDocument();
+    
+};
+
+class IE_Exp_HTML_HTML4Writer : public IE_Exp_HTML_DocumentWriter
+{
+public:
+    IE_Exp_HTML_HTML4Writer(IE_Exp_HTML_OutputWriter* pOutputWriter);
+    void insertDTD();  
 };
 #endif

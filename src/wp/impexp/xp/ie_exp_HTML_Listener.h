@@ -87,7 +87,6 @@ public:
     virtual void insertDTD() {}
     virtual void insertLink(const UT_UTF8String &/*rel*/, 
         const UT_UTF8String &/*type*/, const UT_UTF8String &/*uri*/) {}
-    virtual void insertTitle(const UT_UTF8String &/*title*/) {}
     virtual void insertMeta(const UT_UTF8String &/*name*/, 
         const UT_UTF8String &/*content*/) {}
 
@@ -109,7 +108,8 @@ public:
     
     virtual void insertStyle(const UT_UTF8String &/*style*/) {}
     virtual void insertJavaScript(const gchar */*src*/, const gchar* /*script*/) {}
-
+    virtual void insertTitle(const UT_UTF8String &/*title*/) {};
+    virtual ~IE_Exp_HTML_ListenerImpl() {}
 };
 
 
