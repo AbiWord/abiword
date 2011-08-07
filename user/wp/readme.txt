@@ -41,7 +41,7 @@ The AbiWord port to Mac OS prior to OS X (Carbon) has been removed due to the ex
 
 Legalese
 
-Copyright 1998-2009 Dom Lachowicz and other contributors
+Copyright 1998-2011 Dom Lachowicz and other contributors
 
 All Rights Reserved
 

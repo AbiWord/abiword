@@ -41,7 +41,7 @@
 <p style="Normal" xid="75" props="text-align:left; dom-dir:ltr">AbiWord is a multi-platform application, meaning that it was designed to work well on multiple types of computers and operating systems. At the present time, AbiWord is supported on Windows NT (Windows XP, Vista, ...), Mac OS (see note below), Linux, a variety of other UNIX-like systems (including everything from Solaris to *BSD to RTEMS).  The BeOS port has been removed from the source tree as of July 8th 2005, the QNX port as of April 2008. If you can help us with any of these ports or provide and maintain a new one, you are more than welcome to. Other operating systems will likely be supported in the future.</p>
 <p style="Normal" xid="88">The AbiWord port to Mac OS prior to OS X (Carbon) has been removed due to the extensive and unmet developer resource requirements.  However, the Mac OS X (Cocoa) port is still under development and according to its maintainer, has reached a quite usable state, though it is not quite on par with the Unix port yet.</p>
 <p style="Heading 2" xid="94">Legalese</p>
-<p style="Normal" xid="97" props="text-align:left; dom-dir:ltr">Copyright 1998-2009 Dom Lachowicz and other contributors</p>
+<p style="Normal" xid="97" props="text-align:left; dom-dir:ltr">Copyright 1998-2011 Dom Lachowicz and other contributors</p>
 <p style="Normal" xid="98" props="text-align:left; dom-dir:ltr">All Rights Reserved</p>
 <p style="Normal" xid="99"></p>
 <p style="Normal" xid="100" props="text-align:left; dom-dir:ltr">This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.</p>
