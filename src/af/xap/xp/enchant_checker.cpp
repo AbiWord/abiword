@@ -64,7 +64,7 @@ EnchantChecker::EnchantChecker()
 		std::string ispell_hyphenation_path = std::string(ispell_hyphenation_path1) + ";" + std::string(ispell_hyphenation_path2);
 
 		enchant_broker_set_param(s_enchant_broker,  "enchant.ispell.dictionary.path", ispell_path.c_str());
-		enchant_broker_set_param(s_enchant_broker,  "enchant.ispell.hyphenation.dictionary.path", ispell_path.c_str());
+		//enchant_broker_set_param(s_enchant_broker,  "enchant.ispell.hyphenation.dictionary.path", ispell_path.c_str());
 
 		g_free(ispell_path1);
 		g_free(ispell_path2);
@@ -73,7 +73,7 @@ EnchantChecker::EnchantChecker()
 
 		gchar* myspell_path = g_build_filename (XAP_App::getApp()->getAbiSuiteLibDir(), "dictionary", "myspell", NULL);
 		enchant_broker_set_param(s_enchant_broker,  "enchant.myspell.dictionary.path", myspell_path);
-		enchant_broker_set_param(s_enchant_broker,  "enchant.myspell.hyphenation.dictionary.path", myspell_path);
+		//enchant_broker_set_param(s_enchant_broker,  "enchant.myspell.hyphenation.dictionary.path", myspell_path);
 		g_free(myspell_path);
 #endif
 	}
