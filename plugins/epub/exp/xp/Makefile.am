@@ -13,3 +13,5 @@ libxp_la_SOURCES = \
 	ie_exp_EPUB_Sniffer.h\
 	ie_exp_EPUB_Listener.cpp\
 	ie_exp_EPUB_Listener.h
+	ie_exp_EPUB_EPUB3Writer.cpp\
+	ie_exp_EPUB_EPUB3Writer.h
