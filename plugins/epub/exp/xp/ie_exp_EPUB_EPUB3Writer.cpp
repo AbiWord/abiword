@@ -145,3 +145,9 @@ void IE_Exp_EPUB_EPUB3Writer::insertAnnotations(
     
     m_pTagWriter->closeTag();
 }
+
+IE_Exp_HTML_DocumentWriter *IE_Exp_EPUB_EPUB3WriterFactory::
+constructDocumentWriter(IE_Exp_HTML_OutputWriter* pOutputWriter)
+{
+	return new IE_Exp_EPUB_EPUB3Writer(pOutputWriter);
+}

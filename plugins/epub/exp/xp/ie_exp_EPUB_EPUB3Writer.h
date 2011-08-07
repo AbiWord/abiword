@@ -39,7 +39,12 @@ public:
             const std::vector<UT_UTF8String> &annotations);
 };
 
-
+class IE_Exp_EPUB_EPUB3WriterFactory : public IE_Exp_HTML_WriterFactory
+{
+public:
+    IE_Exp_HTML_DocumentWriter *constructDocumentWriter(
+        IE_Exp_HTML_OutputWriter* pOutputWriter);
+};
 
 #endif	/* IE_EXP_EPUB_EPUB3WRITER_H */
 
