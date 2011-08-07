@@ -119,11 +119,13 @@ class IE_Exp_HTML_OutputWriter
 {
 public:
     IE_Exp_HTML_OutputWriter(GsfOutput *output);
-    void write(const gchar * data, size_t size);
-    void write(const std::string &str);
-    
+    void write(const UT_UTF8String &str, bool bIgnoreQuotedPrintable = false);
+    inline void enableQuotedPrintable(bool bEnable = true) { m_bQuotedPrintable = bEnable; }
+    void _write(const gchar* data, size_t size);
 private:
     GsfOutput *m_output;
+    bool m_bQuotedPrintable;
+    
 };
 
 /**

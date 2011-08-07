@@ -427,19 +427,26 @@ void IE_Exp_HTML_DataExporter::encodeDataBase64(const gchar* szDataId,
  * 
  */ 
 IE_Exp_HTML_OutputWriter::IE_Exp_HTML_OutputWriter(GsfOutput* output):
-m_output(output)
+m_output(output),
+m_bQuotedPrintable(false)
 {
    
 }
 
-void IE_Exp_HTML_OutputWriter::write(const gchar* data, size_t size)
+void IE_Exp_HTML_OutputWriter::_write(const gchar* data, size_t size)
 {
     gsf_output_write(m_output, size, (const guint8*)data);
 }
 
-void IE_Exp_HTML_OutputWriter::write(const std::string& str)
+void IE_Exp_HTML_OutputWriter::write(const UT_UTF8String& str, bool bIgnoreQuotedPrintable)
 {
-    write(str.c_str(), strlen(str.c_str()));
+	if (m_bQuotedPrintable &&  !bIgnoreQuotedPrintable)
+	{
+		UT_UTF8String encoded = str;
+		encoded.escapeMIME();
+		_write(encoded.utf8_str(), encoded.length());
+	} else
+    _write(str.utf8_str(), str.length());
 }
 
 IE_Exp_HTML_TagWriter::IE_Exp_HTML_TagWriter(IE_Exp_HTML_OutputWriter* pOutputWriter):
@@ -618,7 +625,7 @@ void IE_Exp_HTML_TagWriter::flush()
 {
     if (m_buffer.length() > 0)
     {
-        m_pOutputWriter->write(m_buffer);
+        m_pOutputWriter->write(m_buffer.c_str());
         m_buffer = "";
     }
 }
