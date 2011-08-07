@@ -246,7 +246,7 @@ UT_Error IE_Exp_EPUB::writeNavigation()
             UT_UTF8String itemStr = toc->getNthTOCEntry(currentItem, &curItemLevel);
             PT_DocPosition itemPos;
             toc->getNthTOCEntryPos(currentItem, itemPos);
-            UT_UTF8String itemFilename = m_pie->getFilenameByPosition(itemPos);
+            UT_UTF8String itemFilename /*= m_pie->getFilenameByPosition(itemPos)*/;
 
             if (std::find(m_opsId.begin(), m_opsId.end(), escapeForId(itemFilename)) == m_opsId.end())
             {
