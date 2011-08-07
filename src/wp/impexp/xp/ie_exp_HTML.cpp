@@ -528,6 +528,7 @@ void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, const UT_UTF8String &t
     }
     IE_Exp_HTML_OutputWriter *pOutputWriter = 
         new IE_Exp_HTML_OutputWriter(output);
+	pOutputWriter->enableQuotedPrintable(m_exp_opt.bMultipart);
     
     IE_Exp_HTML_DataExporter* pDataExporter = 
         new IE_Exp_HTML_DataExporter(getDoc(), 
