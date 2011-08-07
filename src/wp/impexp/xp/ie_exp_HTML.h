@@ -79,6 +79,7 @@ public:
 };
 
 class IE_Exp_HTML_NavigationHelper;
+class IE_Exp_HTML_WriterFactory;
 
 class ABI_EXPORT IE_Exp_HTML : public IE_Exp
 {
@@ -103,6 +104,7 @@ public:
 	inline void			set_SplitDocument ( bool enable = true) { m_exp_opt.bSplitDocument = enable; }
         
 	UT_UTF8String		getSuffix() const;
+        void setWriterFactory(IE_Exp_HTML_WriterFactory *pWriterFactory);
 
 private:
 	UT_Error            _doOptions ();
@@ -115,7 +117,6 @@ public:
 	virtual UT_Error	_writeDocument (bool bClipBoard, bool bTemplateBody);
 private:
     // Returns document writer depending on settings
-    IE_Exp_HTML_DocumentWriter *_getDocumentWriter(IE_Exp_HTML_OutputWriter *pOutputWriter);
 	IE_Exp_HTML_StyleTree *		m_style_tree;
         IE_Exp_HTML_StyleListener *m_styleListener;
 	bool			m_bSuppressDialog;
@@ -125,6 +126,7 @@ private:
 	// We need to know file suffix to create chapters with the same suffix as the main file
 	UT_UTF8String m_suffix;
         IE_Exp_HTML_NavigationHelper *m_pNavigationHelper;
+        IE_Exp_HTML_WriterFactory *m_pWriterFactory;
 };
 
 #endif /* IE_EXP_HTML_H */

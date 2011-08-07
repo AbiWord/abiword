@@ -87,7 +87,8 @@ IE_Exp_HTML::IE_Exp_HTML(PD_Document * pDocument)
         m_styleListener(new IE_Exp_HTML_StyleListener(m_style_tree)),
         m_bSuppressDialog(false),
         m_suffix(""),
-    m_pNavigationHelper(NULL)
+    m_pNavigationHelper(NULL),
+	m_pWriterFactory(new IE_Exp_HTML_DefaultWriterFactory(this->m_exp_opt))
 {
     
     m_exp_opt.bIs4 = false;
@@ -111,6 +112,7 @@ IE_Exp_HTML::IE_Exp_HTML(PD_Document * pDocument)
 IE_Exp_HTML::~IE_Exp_HTML()
 {
     DELETEP(m_style_tree);
+	DELETEP(m_pWriterFactory);
 }
 
 void IE_Exp_HTML::_buildStyleTree()
@@ -535,7 +537,7 @@ void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, const UT_UTF8String &t
             getFileName());
     
     IE_Exp_HTML_DocumentWriter* pMainListener = 
-        _getDocumentWriter(pOutputWriter);
+		m_pWriterFactory->constructDocumentWriter(pOutputWriter);
     
     IE_Exp_HTML_Listener *pListener = new IE_Exp_HTML_Listener(getDoc(), 
         pDataExporter, m_style_tree, m_pNavigationHelper, pMainListener,
@@ -580,22 +582,17 @@ UT_UTF8String IE_Exp_HTML::getSuffix() const
     return m_suffix;
 }
 
-IE_Exp_HTML_DocumentWriter *IE_Exp_HTML::_getDocumentWriter(
-IE_Exp_HTML_OutputWriter *pOutputWriter)
+void IE_Exp_HTML::setWriterFactory(IE_Exp_HTML_WriterFactory* pWriterFactory)
 {
-	IE_Exp_HTML_DocumentWriter *pWriter = NULL;
-	if (m_exp_opt.bIs4){
-		pWriter = new IE_Exp_HTML_HTML4Writer(pOutputWriter);
-	} else
+	if (m_pWriterFactory != NULL)
 	{
-		pWriter = new IE_Exp_HTML_XHTMLWriter(pOutputWriter);
+		DELETEP(m_pWriterFactory);
 	}
 	
-	pWriter->enablePHP(m_exp_opt.bIsAbiWebDoc);
-	return pWriter;
+	if (pWriterFactory == NULL)
+	{
+		m_pWriterFactory = new IE_Exp_HTML_DefaultWriterFactory(this->m_exp_opt);
+	}
+	
+	m_pWriterFactory = pWriterFactory;
 }
-
-/**
- *
- */
-

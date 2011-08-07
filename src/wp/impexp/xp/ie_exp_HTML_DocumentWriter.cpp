@@ -487,3 +487,25 @@ void IE_Exp_HTML_HTML4Writer::insertDTD()
 {
 	m_pOutputWriter->write(HTML4_DTD);
 }
+
+IE_Exp_HTML_DefaultWriterFactory::IE_Exp_HTML_DefaultWriterFactory(
+XAP_Exp_HTMLOptions& exp_opt):
+		m_exp_opt(exp_opt)
+{
+	
+}
+
+IE_Exp_HTML_DocumentWriter *IE_Exp_HTML_DefaultWriterFactory::constructDocumentWriter(
+    IE_Exp_HTML_OutputWriter *pOutputWriter)
+{
+	IE_Exp_HTML_DocumentWriter *pWriter = NULL;
+	if (m_exp_opt.bIs4) {
+		pWriter = new IE_Exp_HTML_HTML4Writer(pOutputWriter);
+	}
+	else {
+		pWriter = new IE_Exp_HTML_XHTMLWriter(pOutputWriter);
+	}
+
+	pWriter->enablePHP(m_exp_opt.bIsAbiWebDoc);
+	return pWriter;
+}

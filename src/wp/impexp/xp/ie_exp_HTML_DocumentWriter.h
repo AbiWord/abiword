@@ -144,4 +144,27 @@ public:
     IE_Exp_HTML_HTML4Writer(IE_Exp_HTML_OutputWriter* pOutputWriter);
     void insertDTD();  
 };
+
+/*
+ * This factory class gives ability to customize HTML exporter using 
+ * different content generators
+ */
+class IE_Exp_HTML_WriterFactory
+{
+public:
+    virtual IE_Exp_HTML_DocumentWriter *constructDocumentWriter(
+        IE_Exp_HTML_OutputWriter *pOutputWriter) = 0;
+    
+};
+
+
+class IE_Exp_HTML_DefaultWriterFactory : public IE_Exp_HTML_WriterFactory
+{
+public:
+    IE_Exp_HTML_DefaultWriterFactory(XAP_Exp_HTMLOptions &exp_opt);
+    IE_Exp_HTML_DocumentWriter *constructDocumentWriter(
+    IE_Exp_HTML_OutputWriter *pOutputWriter);
+private:
+    XAP_Exp_HTMLOptions &m_exp_opt;
+};
 #endif
