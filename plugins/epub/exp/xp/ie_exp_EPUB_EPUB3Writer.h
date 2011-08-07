@@ -25,7 +25,7 @@
 
 class IE_Exp_EPUB_EPUB3Writer : public IE_Exp_HTML_DocumentWriter {
 public:
-    IE_EXP_EPUB_EPUB3Writer(IE_Exp_HTML_OutputWriter* pOutputWriter);
+    IE_Exp_EPUB_EPUB3Writer(IE_Exp_HTML_OutputWriter* pOutputWriter);
     void openAnnotation();
     void closeAnnotation();
 

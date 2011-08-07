@@ -19,7 +19,7 @@
  */
 #include "ie_exp_EPUB_EPUB3Writer.h"
 
-IE_Exp_EPUB_EPUB3Writer::IE_EXP_EPUB_EPUB3Writer(IE_Exp_HTML_OutputWriter* 
+IE_Exp_EPUB_EPUB3Writer::IE_Exp_EPUB_EPUB3Writer(IE_Exp_HTML_OutputWriter* 
 	pOutputWriter):
 IE_Exp_HTML_DocumentWriter(pOutputWriter)
 {
@@ -117,15 +117,12 @@ void IE_Exp_EPUB_EPUB3Writer::insertAnnotations(
             i + 1).utf8_str());
         if (title.length())
         {
-            m_pTagWriter->openTag("span");
-            m_pTagWriter->addAttribute("class", "annotation-title");
+            m_pTagWriter->openTag("h4");
             m_pTagWriter->writeData(title.utf8_str());
-            m_pTagWriter->closeTag();
-            m_pTagWriter->openTag("br", false, true);
             m_pTagWriter->closeTag();
         }
         
-        if (author.length())
+        /*if (author.length())
         {
             m_pTagWriter->openTag("span");
             m_pTagWriter->addAttribute("class", "annotation-author");
@@ -133,12 +130,12 @@ void IE_Exp_EPUB_EPUB3Writer::insertAnnotations(
             m_pTagWriter->closeTag();
             m_pTagWriter->openTag("br", false, true);
             m_pTagWriter->closeTag();
-        }
+        }*/
         
         if (annotation.length())
         {
             m_pTagWriter->openTag("blockquote");
-            m_pTagWriter->addAttribute("class", "annotation-content");
+            // m_pTagWriter->addAttribute("class", "annotation-content");
             m_pTagWriter->writeData(annotation.utf8_str());
             m_pTagWriter->closeTag();
         }
