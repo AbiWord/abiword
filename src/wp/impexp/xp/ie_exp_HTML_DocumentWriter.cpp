@@ -463,7 +463,7 @@ IE_Exp_HTML_XHTMLWriter::IE_Exp_HTML_XHTMLWriter(
 
 void IE_Exp_HTML_XHTMLWriter::insertDTD()
 {
-	m_pOutputWriter->write(XHTML_DTD, strlen(XHTML_DTD));
+	m_pOutputWriter->write(XHTML_DTD);
 }
 
 void IE_Exp_HTML_XHTMLWriter::openDocument()
@@ -485,5 +485,5 @@ IE_Exp_HTML_OutputWriter* pOutputWriter):
 
 void IE_Exp_HTML_HTML4Writer::insertDTD()
 {
-	m_pOutputWriter->write(HTML4_DTD, strlen(HTML4_DTD));
+	m_pOutputWriter->write(HTML4_DTD);
 }

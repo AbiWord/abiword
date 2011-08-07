@@ -2910,7 +2910,7 @@ void IE_Exp_HTML_Listener::_insertLinkToStyle()
     UT_UTF8String filename;
     GsfOutput *css = m_pDataExporter->createFile("style.css", filename);
     IE_Exp_HTML_OutputWriter* pWriter = new IE_Exp_HTML_OutputWriter(css);
-    pWriter->write(m_stylesheet.utf8_str(), m_stylesheet.length());
+    pWriter->write(m_stylesheet);
     m_pCurrentImpl->insertLink("stylesheet", "text/css", filename);
     
     DELETEP(pWriter);
