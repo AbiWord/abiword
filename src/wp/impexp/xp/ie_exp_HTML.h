@@ -103,7 +103,8 @@ public:
 	inline void			set_MathMLRenderPNG ( bool enable = true) { m_exp_opt.bMathMLRenderPNG = enable; }
 	inline void			set_SplitDocument ( bool enable = true) { m_exp_opt.bSplitDocument = enable; }
         
-	UT_UTF8String		getSuffix() const;
+	inline UT_UTF8String		getSuffix() const { return m_suffix; }
+        inline const IE_Exp_HTML_NavigationHelper *getNavigationHelper() const { return m_pNavigationHelper; }
         void setWriterFactory(IE_Exp_HTML_WriterFactory *pWriterFactory);
 
 private:

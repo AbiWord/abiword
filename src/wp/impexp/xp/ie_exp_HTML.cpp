@@ -643,11 +643,6 @@ void IE_Exp_HTML::_createMultipart()
     DELETEP(pOutputWriter);
 }
 
-UT_UTF8String IE_Exp_HTML::getSuffix() const
-{
-    return m_suffix;
-}
-
 void IE_Exp_HTML::setWriterFactory(IE_Exp_HTML_WriterFactory* pWriterFactory)
 {
 	if (m_pWriterFactory != NULL)
