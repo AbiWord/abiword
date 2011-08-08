@@ -26,6 +26,14 @@ IE_Exp_HTML_DocumentWriter(pOutputWriter)
 
 }
 
+void IE_Exp_EPUB_EPUB3Writer::openDocument()
+{
+    m_pTagWriter->openTag("html", false, false);
+    m_pTagWriter->addAttribute("xmlns", "http://www.w3.org/1999/xhtml");
+    m_pTagWriter->addAttribute("profile", EPUB3_CONTENT_PROFILE);
+}
+
+
 void IE_Exp_EPUB_EPUB3Writer::openAnnotation()
 {
 	m_pTagWriter->openTag("a", true);
@@ -44,7 +52,7 @@ void IE_Exp_EPUB_EPUB3Writer::closeAnnotation()
 
 void IE_Exp_EPUB_EPUB3Writer::insertDTD()
 {
-	
+    m_pOutputWriter->write("<?xml version=\"1.0\"?>\n<!DOCTYPE html>\n");	
 }
 
 void IE_Exp_EPUB_EPUB3Writer::insertTOC(const gchar *title, 

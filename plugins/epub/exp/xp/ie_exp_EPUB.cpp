@@ -576,12 +576,22 @@ UT_Error IE_Exp_EPUB::package()
         gsf_xml_out_end_element(opfXml);
     }
 
-    // We`ll add .ncx file manually
-    gsf_xml_out_start_element(opfXml, "item");
-    gsf_xml_out_add_cstr(opfXml, "id", "ncx");
-    gsf_xml_out_add_cstr(opfXml, "href", "toc.ncx");
-    gsf_xml_out_add_cstr(opfXml, "media-type", "application/x-dtbncx+xml");
-    gsf_xml_out_end_element(opfXml);
+    // We`ll add navigation files manually
+    if (m_bIsEpub2)
+    {
+        gsf_xml_out_start_element(opfXml, "item");
+        gsf_xml_out_add_cstr(opfXml, "id", "ncx");
+        gsf_xml_out_add_cstr(opfXml, "href", "toc.ncx");
+        gsf_xml_out_add_cstr(opfXml, "media-type", "application/x-dtbncx+xml");
+        gsf_xml_out_end_element(opfXml);
+    } else
+    {
+        gsf_xml_out_start_element(opfXml, "item");
+        gsf_xml_out_add_cstr(opfXml, "id", "nav");
+        gsf_xml_out_add_cstr(opfXml, "href", "toc.html");
+        gsf_xml_out_add_cstr(opfXml, "media-type", "application/xhtml+xml");
+        gsf_xml_out_end_element(opfXml);  
+    }
     // </manifest>
     gsf_xml_out_end_element(opfXml);
 

@@ -22,6 +22,7 @@
 
 // Abiword includes
 #include <ie_exp_HTML_DocumentWriter.h>
+#define EPUB3_CONTENT_PROFILE "http://www.idpf.org/epub/30/profile/content/"
 
 class IE_Exp_EPUB_EPUB3Writer : public IE_Exp_HTML_DocumentWriter {
 public:
@@ -29,6 +30,7 @@ public:
     void openAnnotation();
     void closeAnnotation();
 
+    void openDocument();
     void insertDTD();
     void insertTOC(const gchar *title, const std::vector<UT_UTF8String> &items,
             const std::vector<UT_UTF8String> &itemUriList);

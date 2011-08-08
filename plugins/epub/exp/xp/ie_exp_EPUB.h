@@ -47,7 +47,6 @@
 #define OCF201_NAMESPACE "urn:oasis:names:tc:opendocument:xmlns:container"
 #define OPF201_NAMESPACE "http://www.idpf.org/2007/opf"
 #define OPS201_NAMESPACE "http://www.idpf.org/2007/ops"
-#define EPUB3_CONTENT_PROFILE "http://www.idpf.org/epub/30/profile/content/"
 #define EPUB3_PACKAGE_PROFILE "http://www.idpf.org/epub/30/profile/package/"
 #define DC_NAMESPACE "http://purl.org/dc/elements/1.1/"
 #define NCX_NAMESPACE "http://www.daisy.org/z3986/2005/ncx/"
