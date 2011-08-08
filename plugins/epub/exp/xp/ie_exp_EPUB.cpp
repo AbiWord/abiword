@@ -24,7 +24,8 @@
 /*****************************************************************************/
 IE_Exp_EPUB::IE_Exp_EPUB(PD_Document * pDocument) :
     IE_Exp(pDocument),
-    m_pie(NULL)
+    m_pie(NULL),
+    m_bIsEpub2(false)
 {
 
 }
@@ -99,6 +100,7 @@ UT_Error IE_Exp_EPUB::_writeDocument()
     return UT_OK;
 }
 
+
 UT_Error IE_Exp_EPUB::writeContainer()
 {
     GsfOutput* metaInf = gsf_outfile_new_child(m_root, "META-INF", TRUE);
@@ -140,7 +142,29 @@ UT_Error IE_Exp_EPUB::writeContainer()
     return UT_OK;
 }
 
+UT_Error IE_Exp_EPUB::writeNavigation()
+{
+    if (m_bIsEpub2)
+    {
+        return EPUB2_writeNavigation();
+    } else
+    {
+        return EPUB3_writeNavigation();
+    }
+}
+
 UT_Error IE_Exp_EPUB::writeStructure()
+{
+    if (m_bIsEpub2)
+    {
+        return EPUB2_writeStructure();
+    } else
+    {
+        return EPUB3_writeStructure();
+    }
+}
+
+UT_Error IE_Exp_EPUB::EPUB2_writeStructure()
 {
     m_oebpsDir = m_baseTempDir + G_DIR_SEPARATOR_S;
     m_oebpsDir += "OEBPS";
@@ -163,7 +187,7 @@ UT_Error IE_Exp_EPUB::writeStructure()
     return UT_OK;
 }
 
-UT_Error IE_Exp_EPUB::writeNavigation()
+UT_Error IE_Exp_EPUB::EPUB2_writeNavigation()
 {
     GsfOutput* ncx = gsf_outfile_new_child(GSF_OUTFILE(m_oebps), "toc.ncx",
             FALSE);
@@ -319,6 +343,16 @@ UT_Error IE_Exp_EPUB::writeNavigation()
     delete toc;
 
     return UT_OK;
+}
+
+UT_Error IE_Exp_EPUB::EPUB3_writeNavigation()
+{
+    return UT_ERROR;
+}
+
+UT_Error IE_Exp_EPUB::EPUB3_writeStructure()
+{
+    return UT_ERROR;
 }
 
 UT_Error IE_Exp_EPUB::package()

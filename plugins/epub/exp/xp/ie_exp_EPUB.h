@@ -62,7 +62,16 @@ private:
     UT_Error writeContainer();
     UT_Error package();
     UT_Error compress();
-
+    
+    // Methods for EPUB 2.0.1 document generation
+    UT_Error EPUB2_writeStructure();
+    UT_Error EPUB2_writeNavigation();
+    
+    // Methods for EPUB 3 document generation
+    UT_Error EPUB3_writeStructure();
+    UT_Error EPUB3_writeNavigation();
+    
+    
     UT_UTF8String getAuthor() const;
     UT_UTF8String getTitle() const;
     UT_UTF8String getLanguage() const;
@@ -80,6 +89,8 @@ private:
     IE_Exp_HTML *m_pie;
     // Array with file id`s in linear reading order
     std::vector<UT_UTF8String> m_opsId;
+    
+    bool m_bIsEpub2;
 };
 
 #endif /* IE_EXP_EPUB_H_ */
