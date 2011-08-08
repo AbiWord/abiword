@@ -236,6 +236,7 @@ bool IE_Exp_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/, const PX_ChangeRe
 bool IE_Exp_HTML_Listener::populateStrux(PL_StruxDocHandle sdh, 
 	const PX_ChangeRecord* pcr, PL_StruxFmtHandle* psfh)
 {
+    
     UT_return_val_if_fail(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux, 
 						  false);
     bool returnVal = true;
@@ -281,6 +282,8 @@ bool IE_Exp_HTML_Listener::populateStrux(PL_StruxDocHandle sdh,
     //    _getObjectKey(api, static_cast<const gchar*>(PT_STRUX_IMAGE_DATAID));
 
 
+    if (m_bFirstWrite)
+        _beginOfDocument(api);
     switch (pcrx->getStruxType())
     {
     case PTX_SectionHdrFtr:
@@ -288,8 +291,6 @@ bool IE_Exp_HTML_Listener::populateStrux(PL_StruxDocHandle sdh,
         break;
     case PTX_Section:
     {
-		if (m_bFirstWrite)
-			_beginOfDocument(api);
         m_bSkipSection = false;
         _closeSpan();
         _closeField();

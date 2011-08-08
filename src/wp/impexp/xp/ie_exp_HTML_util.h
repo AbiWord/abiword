@@ -25,6 +25,8 @@
 // External includes
 #include <vector>
 #include <string>
+#include <map>
+#include <algorithm>
 #include <gsf/gsf-output.h>
 
 // Abiword includes
@@ -120,6 +122,7 @@ public:
 private:
     void _init();
     bool m_bInitialized;
+    std::map<UT_UTF8String, UT_UTF8String> m_saved;
 };
 
 

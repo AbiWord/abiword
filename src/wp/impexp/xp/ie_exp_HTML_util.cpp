@@ -385,6 +385,14 @@ UT_UTF8String IE_Exp_HTML_FileExporter::saveData(const UT_UTF8String &name,
     const UT_UTF8String &data)
 {
     _init();
+    
+    std::map<UT_UTF8String, UT_UTF8String>::iterator i = 
+        m_saved.find(name);
+    
+    if (i != m_saved.end())
+    {
+        return i->second;
+    }
     UT_UTF8String filePath = m_fileDirectory 
         + G_DIR_SEPARATOR_S  + name;
     
@@ -395,6 +403,7 @@ UT_UTF8String IE_Exp_HTML_FileExporter::saveData(const UT_UTF8String &name,
     
     gsf_output_write(output, data.byteLength(), reinterpret_cast<const guint8*>(data.utf8_str()));
     gsf_output_close(output);
+    m_saved[name] = filePath;
     return filePath;
 }
 
