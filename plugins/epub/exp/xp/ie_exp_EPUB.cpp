@@ -383,6 +383,7 @@ UT_Error IE_Exp_EPUB::EPUB3_writeNavigation()
     gsf_xml_out_end_element(navXHTML);
     gsf_xml_out_start_element(navXHTML, "nav");
     gsf_xml_out_add_cstr(navXHTML, "epub:type", "toc");
+    gsf_xml_out_add_cstr(navXHTML, "id", "toc");
     if (m_pie->getNavigationHelper()->hasTOC())
     {
         int lastItemLevel;
@@ -519,9 +520,21 @@ UT_Error IE_Exp_EPUB::package()
     GsfXMLOut* opfXml = gsf_xml_out_new(opf);
     // <package>
     gsf_xml_out_start_element(opfXml, "package");
+    if (m_bIsEpub2)
+    {
     gsf_xml_out_add_cstr(opfXml, "version", "2.0");
+    } else
+    {
+       gsf_xml_out_add_cstr(opfXml, "version", "3.0"); 
+    }
     gsf_xml_out_add_cstr(opfXml, "xmlns", OPF201_NAMESPACE);
     gsf_xml_out_add_cstr(opfXml, "unique-identifier", "BookId");
+    
+    if (!m_bIsEpub2)
+    {
+       gsf_xml_out_add_cstr(opfXml, "profile", EPUB3_PACKAGE_PROFILE);
+       gsf_xml_out_add_cstr(opfXml, "xml:lang", getLanguage().utf8_str());
+    }
 
     // <metadata>
     gsf_xml_out_start_element(opfXml, "metadata");
