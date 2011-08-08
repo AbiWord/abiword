@@ -503,8 +503,15 @@ UT_Error IE_Exp_HTML::_writeDocument(bool bClipBoard, bool bTemplateBody)
     }
     else
     {
-        UT_DEBUGMSG(("Creating single-file HTML document\n"));
-        _createChapter(NULL, "", true);
+        if (m_exp_opt.bMultipart)
+        {
+            UT_DEBUGMSG(("Creating MHT document\n"));
+            _createMultipart();
+        } else
+        {
+            UT_DEBUGMSG(("Creating single-file HTML document\n"));
+            _createChapter(NULL, "", true);
+        }
     }
 
     return UT_OK;
@@ -529,11 +536,11 @@ void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, const UT_UTF8String &t
         output = UT_go_file_create(outputUri.utf8_str(), NULL);
     }
     IE_Exp_HTML_OutputWriter *pOutputWriter = 
-        new IE_Exp_HTML_OutputWriter(output);
-	pOutputWriter->enableQuotedPrintable(m_exp_opt.bMultipart);
+        new IE_Exp_HTML_FileWriter(output);
+//	pOutputWriter->enableQuotedPrintable(m_exp_opt.bMultipart);
     
     IE_Exp_HTML_DataExporter* pDataExporter = 
-        new IE_Exp_HTML_DataExporter(getDoc(), 
+        new IE_Exp_HTML_FileExporter(getDoc(), 
             getFileName());
     
     IE_Exp_HTML_DocumentWriter* pMainListener = 
@@ -575,6 +582,65 @@ void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, const UT_UTF8String &t
     {
         gsf_output_close(output);
     }
+}
+
+void IE_Exp_HTML::_createMultipart()
+{
+    
+    UT_UTF8String buffer;
+    UT_UTF8String title;
+   
+    IE_Exp_HTML_StringWriter *pOutputWriter = new IE_Exp_HTML_StringWriter();
+    
+      IE_Exp_HTML_MultipartExporter* pDataExporter = 
+        new IE_Exp_HTML_MultipartExporter(getDoc(), 
+            getFileName(), buffer, title);
+    
+    IE_Exp_HTML_DocumentWriter* pMainListener = 
+		m_pWriterFactory->constructDocumentWriter(pOutputWriter);
+    
+    IE_Exp_HTML_Listener *pListener = new IE_Exp_HTML_Listener(getDoc(), 
+        pDataExporter, m_style_tree, m_pNavigationHelper, pMainListener,
+        getFileName());
+    
+    // Time to send some settings to listener
+    pListener->set_EmbedCSS(m_exp_opt.bEmbedCSS);
+    pListener->set_RenderMathMLToPng(m_exp_opt.bMathMLRenderPNG);
+    
+    IE_Exp_HTML_HeaderFooterListener *pHeaderFooterListener = new 
+        IE_Exp_HTML_HeaderFooterListener(getDoc(), pMainListener,
+        pListener);
+    getDoc()->tellListener(pHeaderFooterListener);
+    
+    pHeaderFooterListener->doHdrFtr(true);
+    
+
+    getDoc()->tellListener(pListener);
+ 
+    pHeaderFooterListener->doHdrFtr(false);
+    pListener->endOfDocument();
+    
+    UT_UTF8String mime;
+    if (m_exp_opt.bIs4)
+    {
+        mime = IE_MIMETYPE_HTML;
+    } else
+    {
+        mime = IE_MIMETYPE_XHTML;
+    }
+     UT_UTF8String index = pOutputWriter->getString();
+     UT_UTF8String header = pDataExporter->generateHeader(index, mime);
+    
+   
+    write(header.utf8_str(), header.byteLength());
+    buffer +="--";
+    write(buffer.utf8_str(), buffer.byteLength());
+    
+    DELETEP(pHeaderFooterListener);
+    DELETEP(pListener);
+    DELETEP(pMainListener);
+    DELETEP(pDataExporter);
+    DELETEP(pOutputWriter);
 }
 
 UT_UTF8String IE_Exp_HTML::getSuffix() const

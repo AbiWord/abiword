@@ -2907,14 +2907,9 @@ void IE_Exp_HTML_Listener::_insertStyle()
 
 void IE_Exp_HTML_Listener::_insertLinkToStyle()
 {
-    UT_UTF8String filename;
-    GsfOutput *css = m_pDataExporter->createFile("style.css", filename);
-    IE_Exp_HTML_OutputWriter* pWriter = new IE_Exp_HTML_OutputWriter(css);
-    pWriter->write(m_stylesheet);
+    UT_UTF8String filename = m_pDataExporter->saveData(
+        "style.css", m_stylesheet);
     m_pCurrentImpl->insertLink("stylesheet", "text/css", filename);
-    
-    DELETEP(pWriter);
-    gsf_output_close(css);
 }
 
 

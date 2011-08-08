@@ -325,17 +325,26 @@ UT_UTF8String getStyleSizeString(const gchar * szWidth, double widthPercentage,
 	return "";
 }
 
-
-IE_Exp_HTML_DataExporter::IE_Exp_HTML_DataExporter(PD_Document* pDocument, 
-    const UT_UTF8String& baseName):
+IE_Exp_HTML_DataExporter::IE_Exp_HTML_DataExporter(PD_Document* pDocument,
+            const UT_UTF8String &baseName):
     m_pDocument(pDocument),
     m_fileDirectory(UT_go_basename_from_uri(baseName.utf8_str()) 
         + UT_UTF8String(FILES_DIR_NAME)),
     m_baseDirectory(UT_go_dirname_from_uri(baseName.utf8_str(), false))
+    
 {
     
 }
-void IE_Exp_HTML_DataExporter::_init()
+
+IE_Exp_HTML_FileExporter::IE_Exp_HTML_FileExporter(PD_Document* pDocument, 
+    const UT_UTF8String& baseName):
+    IE_Exp_HTML_DataExporter(pDocument, baseName)
+{
+    
+}
+
+
+void IE_Exp_HTML_FileExporter::_init()
 {
     if (!m_bInitialized)
     {
@@ -346,7 +355,7 @@ void IE_Exp_HTML_DataExporter::_init()
     }
 }
 
-UT_UTF8String IE_Exp_HTML_DataExporter::saveData(const gchar *szDataId, 
+UT_UTF8String IE_Exp_HTML_FileExporter::saveData(const gchar *szDataId, 
                                                  const gchar* extension)
 {
     _init();
@@ -372,20 +381,137 @@ UT_UTF8String IE_Exp_HTML_DataExporter::saveData(const gchar *szDataId,
     return m_fileDirectory + G_DIR_SEPARATOR_S + filename;
 }
 
-GsfOutput* IE_Exp_HTML_DataExporter::createFile(const UT_UTF8String& name,
-                                                UT_UTF8String &filename)
+UT_UTF8String IE_Exp_HTML_FileExporter::saveData(const UT_UTF8String &name,
+    const UT_UTF8String &data)
 {
     _init();
-    filename = m_fileDirectory 
+    UT_UTF8String filePath = m_fileDirectory 
         + G_DIR_SEPARATOR_S  + name;
     
-    return UT_go_file_create((m_baseDirectory + G_DIR_SEPARATOR_S  + 
+    GsfOutput* output =  
+        UT_go_file_create((m_baseDirectory + G_DIR_SEPARATOR_S  + 
         m_fileDirectory + G_DIR_SEPARATOR_S + name).utf8_str(), 
                              NULL);
+    
+    gsf_output_write(output, data.byteLength(), reinterpret_cast<const guint8*>(data.utf8_str()));
+    gsf_output_close(output);
+    return filePath;
+}
+
+IE_Exp_HTML_MultipartExporter::IE_Exp_HTML_MultipartExporter(
+    PD_Document* pDocument,
+    const UT_UTF8String &baseName, UT_UTF8String &buffer,
+    const UT_UTF8String &title):
+    IE_Exp_HTML_DataExporter(pDocument, baseName),
+    m_buffer(buffer),
+    m_title(title)
+{
+
+}
+
+UT_UTF8String IE_Exp_HTML_MultipartExporter::saveData(const gchar *szDataId, 
+    const gchar* extension)
+{
+    UT_UTF8String filename = szDataId;
+    
+    if (extension != NULL)
+    {
+        filename += extension;
+    }
+        
+    std::string mime;
+    m_pDocument->getDataItemDataByName(szDataId, NULL, &mime, NULL);
+    m_buffer += MULTIPART_FIELD("Content-Type",
+                              (mime).c_str());
+    m_buffer += MULTIPART_FIELD("Content-Transfer-Encoding", "base64");
+    m_buffer += MULTIPART_FIELD("Content-Location", (m_fileDirectory + G_DIR_SEPARATOR_S + filename).utf8_str());
+    
+    UT_UTF8String contents;
+    encodeDataBase64(szDataId, contents, false);
+    UT_DEBUGMSG(("%d", contents.length()));
+    m_buffer += contents;
+    m_buffer += MYEOL;
+    m_buffer += MYEOL;
+    m_buffer += "--";
+    m_buffer += MULTIPART_BOUNDARY;
+    
+    return m_fileDirectory + G_DIR_SEPARATOR_S + filename;
+}
+
+UT_UTF8String IE_Exp_HTML_MultipartExporter::saveData(const UT_UTF8String &name,
+    const UT_UTF8String &data)
+{
+    const gchar *szSuffix = strchr(name.utf8_str(), '.');
+    UT_UTF8String mime;
+    
+    if (!g_ascii_strcasecmp(szSuffix, ".css"))
+    {
+        mime = "text/css";
+    } else
+    {
+        mime = "text/plain";
+    }
+    
+    UT_UTF8String filePath = m_fileDirectory
+        + G_DIR_SEPARATOR_S + name;
+    
+    m_buffer += MULTIPART_FIELD("Content-Type",
+                              (mime).utf8_str());
+    m_buffer += MULTIPART_FIELD("Content-Transfer-Encoding", "quoted-printable");
+    m_buffer += MULTIPART_FIELD("Content-Location", filePath.utf8_str());
+    m_buffer += MYEOL;
+    
+    UT_UTF8String contents = data;
+    contents.escapeMIME();
+    m_buffer += contents;
+    m_buffer += MYEOL;
+    m_buffer += MULTIPART_BOUNDARY;
+
+    return filePath;
+}
+
+UT_UTF8String IE_Exp_HTML_MultipartExporter::generateHeader(const UT_UTF8String &index,
+    const UT_UTF8String &mimetype)
+{
+    UT_UTF8String header;
+    header = MULTIPART_FIELD("From", "<Saved by AbiWord>");;
+    header += MULTIPART_FIELD("Subject", m_title.utf8_str());
+    
+    time_t tim = time (NULL);
+	struct tm * pTime = localtime (&tim);
+	char timestr[64];
+	strftime (timestr, 63, "%a, %d %b %Y %H:%M:%S +0100", pTime); // hmm, hard-code time zone
+	timestr[63] = 0;
+    header += MULTIPART_FIELD("Date", timestr);
+    header += MULTIPART_FIELD("MIME-Version", "1.0");
+    
+    UT_UTF8String contentType = "multipart/related;\n\tboundary=\"";
+    contentType += MULTIPART_BOUNDARY;
+    contentType += "\";\n\ttype=\"";
+    contentType += mimetype + "\"";
+    header += MULTIPART_FIELD("Content-Type", 
+                              contentType.utf8_str());
+    header += MYEOL;
+    header += "--";
+    header += MULTIPART_BOUNDARY;
+    header += MYEOL;
+    header += MULTIPART_FIELD("Content-Type", 
+                              (mimetype + ";charset=\"UTF-8\"").utf8_str());
+    header += MULTIPART_FIELD("Content-Transfer-Encoding", "quoted-printable");
+    header += MYEOL;
+    UT_UTF8String contents = index;
+    contents.escapeMIME();
+    header += contents;
+    header += MYEOL;
+    header += "--";
+    header += MULTIPART_BOUNDARY;
+    header += MYEOL;
+    return header;
 }
 
 void IE_Exp_HTML_DataExporter::encodeDataBase64(const gchar* szDataId, 
-                                                UT_UTF8String& result)
+                                                UT_UTF8String& result,
+                                                bool bAddInfo)
 {
     std::string mimeType;
     const UT_ByteBuf * pByteBuf = 0;
@@ -407,9 +533,12 @@ void IE_Exp_HTML_DataExporter::encodeDataBase64(const gchar* szDataId,
 	buffer[0] = '\r';
 	buffer[1] = '\n';
     result.clear();
-    result += "data:";
-    result += mimeType.c_str();
-    result += ";base64,";
+    if (bAddInfo)
+    {
+        result += "data:";
+        result += mimeType.c_str();
+        result += ";base64,";
+    }
 	while (imglen)
 	{
 		buflen = 72;
@@ -426,27 +555,25 @@ void IE_Exp_HTML_DataExporter::encodeDataBase64(const gchar* szDataId,
 /*
  * 
  */ 
-IE_Exp_HTML_OutputWriter::IE_Exp_HTML_OutputWriter(GsfOutput* output):
-m_output(output),
-m_bQuotedPrintable(false)
+IE_Exp_HTML_FileWriter::IE_Exp_HTML_FileWriter(GsfOutput* output):
+m_output(output)
 {
-   
+
 }
 
-void IE_Exp_HTML_OutputWriter::_write(const gchar* data, size_t size)
+void IE_Exp_HTML_FileWriter::write(const UT_UTF8String& str)
 {
-    gsf_output_write(m_output, size, (const guint8*)data);
+    gsf_output_write(m_output, str.byteLength(),
+                     reinterpret_cast<const guint8*>(str.utf8_str()));
 }
 
-void IE_Exp_HTML_OutputWriter::write(const UT_UTF8String& str, bool bIgnoreQuotedPrintable)
+IE_Exp_HTML_StringWriter::IE_Exp_HTML_StringWriter()
 {
-	if (m_bQuotedPrintable &&  !bIgnoreQuotedPrintable)
-	{
-		UT_UTF8String encoded = str;
-		encoded.escapeMIME();
-		_write(encoded.utf8_str(), encoded.length());
-	} else
-    _write(str.utf8_str(), str.length());
+    
+}
+void IE_Exp_HTML_StringWriter::write(const UT_UTF8String& str)
+{
+    m_buffer += str;
 }
 
 IE_Exp_HTML_TagWriter::IE_Exp_HTML_TagWriter(IE_Exp_HTML_OutputWriter* pOutputWriter):
@@ -460,6 +587,7 @@ m_pOutputWriter(pOutputWriter),
 {
     
 }
+
 
 void IE_Exp_HTML_TagWriter::openTag(const std::string& tagName, bool isInline, bool isSingle)
 {

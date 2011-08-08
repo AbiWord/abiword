@@ -39,6 +39,8 @@
 
 #define MYEOL "\n"
 #define FILES_DIR_NAME "_files"
+#define MULTIPART_BOUNDARY "AbiWord_multipart_boundary____________"
+#define MULTIPART_FIELD(key, value) UT_UTF8String_sprintf("%s : %s\n", key, value)
 
 extern const char * s_prop_list[];
 extern const UT_uint32 s_PropListLen;
@@ -73,6 +75,8 @@ bool getPropertySize(const PP_AttrProp * pAP, const gchar* szWidthProp,
 	const gchar** szHeight, double dPageWidthInches, double dSecLeftMarginInches, 
 	double dSecRightMarginInches, double dCellWidthInches,
 	ie_Table &tableHelper);
+
+class IE_Exp_HTML_OutputWriter;
 /*
  * This class allows to control creation of files (like CSS, JS and images) 
  * while exporting to {X,P}HTML 
@@ -81,36 +85,63 @@ class IE_Exp_HTML_DataExporter{
 public:
     IE_Exp_HTML_DataExporter(PD_Document* pDocument, 
             const UT_UTF8String &baseName);
+    virtual ~IE_Exp_HTML_DataExporter(){}
     /*
      * Saves object with specified dataid to disk and returns relative to index
      * document path it
      */
-    UT_UTF8String saveData(const gchar *szDataId, const gchar* extension);
-    
+    virtual UT_UTF8String saveData(
+        const gchar *szDataId, const gchar* extension) = 0;
+    virtual UT_UTF8String saveData(const UT_UTF8String &name,
+    const UT_UTF8String &data) = 0;
+        
     /*
      * Encodes data with specified dataid using Base64 and places string
      * containing result in buffer
      */ 
-    void encodeDataBase64(const gchar *szDataId, UT_UTF8String &result);
-    
-    /*
-     * Creates file in place where all document files are stored (e.g.
-     * <document_name>_files and returns pointer to GsfOutput for
-     * specified file. GsfOutput object must be destroyed by the calling
-     * routine.
-     */ 
-    GsfOutput* createFile(const UT_UTF8String &name, UT_UTF8String &filename);
-    
-private:
-    void _init();
-    IE_Exp_HTML_DataExporter(){}
+    void encodeDataBase64(const gchar *szDataId, UT_UTF8String &result,
+        bool bAddInfo = true);
+   
+protected:
     PD_Document *m_pDocument;
     UT_UTF8String m_fileDirectory;  
     UT_UTF8String m_baseDirectory;
-    bool m_bInitialized;
-
 };
 
+class IE_Exp_HTML_FileExporter : public IE_Exp_HTML_DataExporter
+{
+public:
+    IE_Exp_HTML_FileExporter(PD_Document* pDocument, 
+            const UT_UTF8String &baseName);
+
+    UT_UTF8String saveData(const gchar *szDataId, const gchar* extension);
+    UT_UTF8String saveData(const UT_UTF8String &name,
+    const UT_UTF8String &data);
+private:
+    void _init();
+    bool m_bInitialized;
+};
+
+
+
+class IE_Exp_HTML_MultipartExporter : public IE_Exp_HTML_DataExporter
+{
+public:
+    IE_Exp_HTML_MultipartExporter(PD_Document* pDocument,
+            const UT_UTF8String &baseName,
+            UT_UTF8String &buffer,
+            const UT_UTF8String &title);
+
+    UT_UTF8String saveData(const gchar *szDataId, const gchar* extension);
+    UT_UTF8String saveData(const UT_UTF8String &name,
+        const UT_UTF8String &data);
+    
+    UT_UTF8String generateHeader(const UT_UTF8String &index,
+        const UT_UTF8String &mimetype);
+private:
+    UT_UTF8String &m_buffer; 
+    UT_UTF8String m_title;
+};
 
 /**
  * Utility class that allows write character data or UTF8 strings
@@ -118,14 +149,27 @@ private:
 class IE_Exp_HTML_OutputWriter
 {
 public:
-    IE_Exp_HTML_OutputWriter(GsfOutput *output);
-    void write(const UT_UTF8String &str, bool bIgnoreQuotedPrintable = false);
-    inline void enableQuotedPrintable(bool bEnable = true) { m_bQuotedPrintable = bEnable; }
-    void _write(const gchar* data, size_t size);
+    virtual ~IE_Exp_HTML_OutputWriter() {}
+    virtual void write(const UT_UTF8String &str) = 0;
+ };
+
+class IE_Exp_HTML_FileWriter : public IE_Exp_HTML_OutputWriter
+{
+public:
+    IE_Exp_HTML_FileWriter(GsfOutput *output);
+    void write(const UT_UTF8String &str);
 private:
     GsfOutput *m_output;
-    bool m_bQuotedPrintable;
-    
+};
+
+class IE_Exp_HTML_StringWriter: public IE_Exp_HTML_OutputWriter
+{
+public:
+    IE_Exp_HTML_StringWriter();
+    void write(const UT_UTF8String &str);
+    UT_UTF8String getString() const { return m_buffer; }
+private:
+    UT_UTF8String m_buffer;
 };
 
 /**
