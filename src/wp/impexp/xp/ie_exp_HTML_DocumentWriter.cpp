@@ -450,6 +450,16 @@ void IE_Exp_HTML_DocumentWriter::insertTitle(const UT_UTF8String& title)
 	m_pTagWriter->writeData(title.utf8_str());
 	m_pTagWriter->closeTag();
 }
+
+void IE_Exp_HTML_DocumentWriter::insertLink(const UT_UTF8String &rel,
+            const UT_UTF8String &type, const UT_UTF8String &uri)
+{
+    m_pTagWriter->openTag("link", false, false);
+    m_pTagWriter->addAttribute("rel", rel.utf8_str());
+    m_pTagWriter->addAttribute("type", type.utf8_str());
+    m_pTagWriter->addAttribute("href", uri.utf8_str());
+    m_pTagWriter->closeTag();
+}
 /*
  * 
  */

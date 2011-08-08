@@ -109,7 +109,8 @@ public:
        const std::vector<UT_UTF8String> &annotations);
     void insertStyle(const UT_UTF8String &style);
     void insertTitle(const UT_UTF8String &title);
-    
+    void insertLink(const UT_UTF8String &rel,
+            const UT_UTF8String &type, const UT_UTF8String &uri);
     inline void enablePHP (bool bEnable = true) { m_bInsertPhp = bEnable; }
 protected:
     IE_Exp_HTML_DocumentWriter(){}
