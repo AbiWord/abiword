@@ -25,7 +25,7 @@
 IE_Exp_EPUB::IE_Exp_EPUB(PD_Document * pDocument) :
     IE_Exp(pDocument),
     m_pie(NULL),
-    m_bIsEpub2(false)
+    m_bIsEpub2(true)
 {
 
 }
@@ -270,7 +270,7 @@ UT_Error IE_Exp_EPUB::EPUB2_writeNavigation()
             UT_UTF8String itemStr = toc->getNthTOCEntry(currentItem, &curItemLevel);
             PT_DocPosition itemPos;
             toc->getNthTOCEntryPos(currentItem, itemPos);
-            UT_UTF8String itemFilename /*= m_pie->getFilenameByPosition(itemPos)*/;
+            UT_UTF8String itemFilename = m_pie->getNavigationHelper()->getFilenameByPosition(itemPos);
 
             if (std::find(m_opsId.begin(), m_opsId.end(), escapeForId(itemFilename)) == m_opsId.end())
             {
@@ -399,7 +399,6 @@ UT_Error IE_Exp_EPUB::package()
     std::vector<UT_UTF8String> listing = getFileList(
             m_oebpsDir.substr(7, m_oebpsDir.length() - 7));
 
-    UT_DEBUGMSG(("RUDYJ R1\n"));
     for (std::vector<UT_UTF8String>::iterator i = listing.begin(); i
             != listing.end(); i++)
     {
@@ -412,7 +411,7 @@ UT_Error IE_Exp_EPUB::package()
                 getMimeType(fullItemPath).utf8_str());
         gsf_xml_out_end_element(opfXml);
     }
-    UT_DEBUGMSG(("RUDYJ R2\n"));
+
     // We`ll add .ncx file manually
     gsf_xml_out_start_element(opfXml, "item");
     gsf_xml_out_add_cstr(opfXml, "id", "ncx");
@@ -437,7 +436,6 @@ UT_Error IE_Exp_EPUB::package()
     // </package>
     gsf_xml_out_end_element(opfXml);
     gsf_output_close(opf);
-    UT_DEBUGMSG(("RUDYJ R3\n"));
     return compress();
 }
 
