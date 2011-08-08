@@ -1,22 +1,22 @@
 /* AbiWord
- * Copyright (C) 1998,1999 AbiSource, Inc.
- * BIDI Copyright (c) 2001,2002 Tomas Frydrych
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
- */
+* Copyright (C) 1998,1999 AbiSource, Inc.
+* BIDI Copyright (c) 2001,2002 Tomas Frydrych
+*
+* This program is free software; you can redistribute it and/or
+* modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version 2
+* of the License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+* 02111-1307, USA.
+*/
 
 #include <stdlib.h>
 
@@ -43,11 +43,11 @@
 
 fb_LineBreaker::fb_LineBreaker()
 :
-	m_pFirstRunToKeep(NULL),
-	m_pLastRunToKeep(NULL),
-	m_iMaxLineWidth(0),
-	m_iWorkingLineWidth(0),
-	m_blockLayout(NULL)
+m_pFirstRunToKeep(NULL),
+m_pLastRunToKeep(NULL),
+m_iMaxLineWidth(0),
+m_iWorkingLineWidth(0),
+m_blockLayout(NULL)
 {
 	xxx_UT_DEBUGMSG(("fb_LineBreaker %x created \n",this));
 }
@@ -59,13 +59,13 @@ fb_LineBreaker::~fb_LineBreaker(void)
 
 
 /*!
-  Break paragraph of text into lines
-  \param pBlock Paragraph (block) of text
-  \return 0
+Break paragraph of text into lines
+\param pBlock Paragraph (block) of text
+\return 0
 
-  LineBreaker shouldn't break a line until it finds a non-blank
-  item past the end of the line.
-  All trailing spaces should remain on the end of the line.
+LineBreaker shouldn't break a line until it finds a non-blank
+item past the end of the line.
+All trailing spaces should remain on the end of the line.
 */
 UT_sint32
 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, 
@@ -88,7 +88,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock,
 	// if the block is justified, the alignment has already been reset
 	// prior to entering this function -- do not do it again
 	bool bJustified  = (pBlock->getAlignment() && pBlock->getAlignment()->getType() == FB_ALIGNMENT_JUSTIFY);
-	
+
 	while(!bJustified && pLine)
 	{
 		pLine->resetJustification(true); // permanent reset
@@ -105,7 +105,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock,
 	while (pLine)
 	{
 #if DEBUG
-//		pLine->assertLineListIntegrity();
+		//		pLine->assertLineListIntegrity();
 		xxx_UT_DEBUGMSG(("Initial width of line %x is  %d \n",pLine,pLine->getFilledWidth()));
 #endif
 		UT_uint32 iIndx = 0;
@@ -117,16 +117,16 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock,
 
 			m_pFirstRunToKeep = pLine->getFirstRun();
 			m_pLastRunToKeep = NULL;
-			
+
 			m_iMaxLineWidth = pLine->getAvailableWidth();
 
 			m_iWorkingLineWidth = pLine->getLeftThick();
 
-//			bool bFoundBreakAfter = false;
-//			bool bFoundSplit = false;
+			//			bool bFoundBreakAfter = false;
+			//			bool bFoundSplit = false;
 
-//			fp_TextRun* pRunToSplit = NULL;
-//			fp_TextRun* pOtherHalfOfSplitRun = NULL;
+			//			fp_TextRun* pRunToSplit = NULL;
+			//			fp_TextRun* pOtherHalfOfSplitRun = NULL;
 
 			fp_Run* pOffendingRun = NULL;
 
@@ -152,9 +152,9 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock,
 
 					UT_sint32 iTrailingSpace = 0;
 					fp_Run * pArun = (pPreviousRun ? pPreviousRun : pCurrentRun);
-//					fp_Run * pArun = pCurrentRun;
+					//					fp_Run * pArun = pCurrentRun;
 					iTrailingSpace = _moveBackToFirstNonBlankData(pArun,
-											  &pOffendingRun);
+						&pOffendingRun);
 					m_iWorkingLineWidth -= iTrailingSpace;
 					if(pArun==pOffendingRun)
 					{
@@ -187,7 +187,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock,
 				}
 				if(!pCurrentRun)
 					break;
-				
+
 				m_iWorkingLineWidth += pCurrentRun->getWidth();
 
 				unsigned char iCurRunType = pCurrentRun->getType();
@@ -195,88 +195,88 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock,
 				switch (iCurRunType)
 				{
 				case FPRUN_FORCEDCOLUMNBREAK:
-				{
-				        if(pCurrentRun->getNextRun() && pCurrentRun->getNextRun()->getType() == FPRUN_ENDOFPARAGRAPH)
 					{
-				               pCurrentRun = pCurrentRun->getNextRun();
+						if(pCurrentRun->getNextRun() && pCurrentRun->getNextRun()->getType() == FPRUN_ENDOFPARAGRAPH)
+						{
+							pCurrentRun = pCurrentRun->getNextRun();
+						}
+						m_pLastRunToKeep = pCurrentRun;
+						goto done_with_run_loop;
 					}
-					m_pLastRunToKeep = pCurrentRun;
-					goto done_with_run_loop;
-				}
 				case FPRUN_FORCEDPAGEBREAK:
-				{
-				        if(pCurrentRun->getNextRun() && pCurrentRun->getNextRun()->getType() == FPRUN_ENDOFPARAGRAPH)
 					{
-				               pCurrentRun = pCurrentRun->getNextRun();
+						if(pCurrentRun->getNextRun() && pCurrentRun->getNextRun()->getType() == FPRUN_ENDOFPARAGRAPH)
+						{
+							pCurrentRun = pCurrentRun->getNextRun();
+						}
+						m_pLastRunToKeep = pCurrentRun;
+						goto done_with_run_loop;
 					}
-					m_pLastRunToKeep = pCurrentRun;
-					goto done_with_run_loop;
-				}
 				case FPRUN_FORCEDLINEBREAK:
-				{
-					m_pLastRunToKeep = pCurrentRun;
-					goto done_with_run_loop;
-				}
+					{
+						m_pLastRunToKeep = pCurrentRun;
+						goto done_with_run_loop;
+					}
 				case FPRUN_ENDOFPARAGRAPH:
-				{
-					m_pLastRunToKeep = pCurrentRun;
-					goto done_with_run_loop;
-				}
+					{
+						m_pLastRunToKeep = pCurrentRun;
+						goto done_with_run_loop;
+					}
 
 				case FPRUN_TAB:
-				{
-					/*
+					{
+						/*
 						if this run is not on the current line, we have a problem
 						because the width of the run is dependent on its position
 						on the line and the  postion can only be determined after
 						the run has been added to the line. So we have to take
 						care of this and we also have to add any runs between the
 						last run on the line and this one
-					*/
+						*/
 
-					fp_Line * pRunsLine = pCurrentRun->getLine();
-					UT_ASSERT(pRunsLine);
+						fp_Line * pRunsLine = pCurrentRun->getLine();
+						UT_ASSERT(pRunsLine);
 
-					if(pRunsLine != pLine)
-					{
-						xxx_UT_DEBUGMSG(("fb_LineBreaker::breakLine: Tab run (0x%x) belonging to different line\n"
-									 "		 pLine 0x%x, pRunsLine 0x%x\n"
-									 ,pCurrentRun, pLine, pRunsLine));
-
-						if(pOriginalLastOnLine)
+						if(pRunsLine != pLine)
 						{
-							// if there are some runs between this tab ran and the last run that the line knows
-							// belongs to it; we have to add these as well
-							fp_Run * pRun = pOriginalLastOnLine->getNextRun();
-							while(pRun)
+							xxx_UT_DEBUGMSG(("fb_LineBreaker::breakLine: Tab run (0x%x) belonging to different line\n"
+								"		 pLine 0x%x, pRunsLine 0x%x\n"
+								,pCurrentRun, pLine, pRunsLine));
+
+							if(pOriginalLastOnLine)
 							{
-								fp_Line * pL = pRun->getLine();
-								if(pL)
+								// if there are some runs between this tab ran and the last run that the line knows
+								// belongs to it; we have to add these as well
+								fp_Run * pRun = pOriginalLastOnLine->getNextRun();
+								while(pRun)
 								{
-									pL->removeRun(pRun,true);
-									pLine->addRun(pRun);
+									fp_Line * pL = pRun->getLine();
+									if(pL)
+									{
+										pL->removeRun(pRun,true);
+										pLine->addRun(pRun);
+									}
+									if(pRun == pCurrentRun)
+										break;
+
+									pRun = pRun->getNextRun();
 								}
-								if(pRun == pCurrentRun)
-									break;
-
-								pRun = pRun->getNextRun();
-							}
 #if DEBUG
-							pLine->assertLineListIntegrity();
-							xxx_UT_DEBUGMSG(("Initial width of line %x is  %d \n",pLine,pLine->getFilledWidth()));
+								pLine->assertLineListIntegrity();
+								xxx_UT_DEBUGMSG(("Initial width of line %x is  %d \n",pLine,pLine->getFilledWidth()));
 #endif
+							}
 						}
+
+						FL_WORKING_DIRECTION eWorkingDirection;
+						FL_WHICH_TABSTOP eUseTabStop;
+
+						m_iWorkingLineWidth -= pCurrentRun->getWidth();
+
+						pLine->getWorkingDirectionAndTabstops(eWorkingDirection, eUseTabStop);
+						pLine->calculateWidthOfRun(m_iWorkingLineWidth,iIndx,eWorkingDirection,eUseTabStop);
+						break;
 					}
-
-					FL_WORKING_DIRECTION eWorkingDirection;
-					FL_WHICH_TABSTOP eUseTabStop;
-					
-					m_iWorkingLineWidth -= pCurrentRun->getWidth();
-
-					pLine->getWorkingDirectionAndTabstops(eWorkingDirection, eUseTabStop);
-					pLine->calculateWidthOfRun(m_iWorkingLineWidth,iIndx,eWorkingDirection,eUseTabStop);
-					break;
-				}
 				case FPRUN_FMTMARK:
 				case FPRUN_DUMMY:
 					break;
@@ -291,15 +291,15 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock,
 				case FPRUN_DIRECTIONMARKER:
 				case FPRUN_MATH:
 				case FPRUN_EMBED:
-				{
+					{
 
-					break;
-				}
+						break;
+					}
 				default:
-				{
-					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-					break;
-				}
+					{
+						UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+						break;
+					}
 				} // switch
 
 				pPreviousRun = pCurrentRun;
@@ -309,23 +309,23 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock,
 
 			} // the run loop
 
-		done_with_run_loop:
+done_with_run_loop:
 			/*
-			  OK, we've gone through the run loop.	If a run was to
-			  be split, it has already been split.	m_pLastRunToKeep
-			  should now be set to the last run which should be on
-			  this line.  We need to make sure that all runs from
-			  the first one on the line up until m_pLastRunToKeep are
-			  actually on this line.  Furthermore, we need to make
-			  sure that no other runs are on this line.
+			OK, we've gone through the run loop.	If a run was to
+			be split, it has already been split.	m_pLastRunToKeep
+			should now be set to the last run which should be on
+			this line.  We need to make sure that all runs from
+			the first one on the line up until m_pLastRunToKeep are
+			actually on this line.  Furthermore, we need to make
+			sure that no other runs are on this line.
 			*/
 
 			_breakTheLineAtLastRunToKeep(pLine, pBlock,pPage);
 
 			/*
-			  Now we know all the runs which belong on this line.
-			  However, those runs are not properly positioned.	We
-			  call the line to do the actual layout.
+			Now we know all the runs which belong on this line.
+			However, those runs are not properly positioned.	We
+			call the line to do the actual layout.
 			*/
 
 			// First clear the line if it has been modified.
@@ -405,7 +405,7 @@ bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun, UT_sint32 iTra
 	// Reminder: m_iWorkingLineWidth = Length including this run.
 
 	// Set m_iWorkingLineWidth to length minus this run since this run 
-// extends beyond the maximum width of the line 
+	// extends beyond the maximum width of the line 
 
 	m_iWorkingLineWidth -= pCurrentRun->getWidth();
 	m_iWorkingLineWidth += iTrailSpace;
@@ -419,7 +419,7 @@ bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun, UT_sint32 iTra
 
 	bool bFoundBreakAfter = false;
 	xxx_UT_DEBUGMSG(("Offending run is... \n"));
-//	pOffendingRun->printText();
+	//	pOffendingRun->printText();
 	xxx_UT_DEBUGMSG((" trailing space %d working width %d max is %d \n",iTrailSpace,m_iWorkingLineWidth,m_iMaxLineWidth));
 	xxx_UT_DEBUGMSG((" findMaxLeftFitSplitPoint space given %d \n",m_iMaxLineWidth - m_iWorkingLineWidth));
 	bool bFoundSplit = pOffendingRun->findMaxLeftFitSplitPoint(m_iMaxLineWidth - m_iWorkingLineWidth, splitInfo);
@@ -434,12 +434,12 @@ bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun, UT_sint32 iTra
 		xxx_UT_DEBUGMSG(("Did not Find split !\n"));
 
 		/*
-		  The run we wanted to split (the one which pushes
-		  this line over the limit) cannot be split.  We need
-		  to work backwards along the line to find a split
-		  point.  As we stop at each run along the way, we'll
-		  first check to see if we can break the line after
-		  that run.  If not, we'll try to split that run.
+		The run we wanted to split (the one which pushes
+		this line over the limit) cannot be split.  We need
+		to work backwards along the line to find a split
+		point.  As we stop at each run along the way, we'll
+		first check to see if we can break the line after
+		that run.  If not, we'll try to split that run.
 		*/
 
 		fp_Run* pRunLookingBackwards = pCurrentRun;
@@ -448,17 +448,17 @@ bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun, UT_sint32 iTra
 			pRunLookingBackwards = pRunLookingBackwards->getPrevRun();
 
 			if ( !pRunLookingBackwards )
-			  {
+			{
 				bFoundBreakAfter = false;
 				m_pLastRunToKeep = pCurrentRun;
 				break;
-			  }
+			}
 			else if (pRunLookingBackwards->canBreakAfter())
 			{
 				/*
-				  OK, we can break after this
-				  run.	Move all the runs after this one
-				  onto the next line.
+				OK, we can break after this
+				run.	Move all the runs after this one
+				onto the next line.
 				*/
 
 				bFoundBreakAfter = true;
@@ -469,9 +469,9 @@ bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun, UT_sint32 iTra
 			else
 			{
 				/*
-				  Can't break after this run.  Let's
-				  see if we can split this run to get
-				  something which will fit.
+				Can't break after this run.  Let's
+				see if we can split this run to get
+				something which will fit.
 				*/
 				bFoundSplit = pRunLookingBackwards->findMaxLeftFitSplitPoint(pRunLookingBackwards->getWidth(), splitInfo);
 
@@ -491,10 +491,10 @@ bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun, UT_sint32 iTra
 	if (!(bFoundSplit || bFoundBreakAfter))
 	{
 		/*
-		  OK.  There are no valid break points on this line,
-		  anywhere.  We can't break after any of the runs, nor
-		  can we split any of the runs.  We're going to need
-		  to force a split of the Offending Run.
+		OK.  There are no valid break points on this line,
+		anywhere.  We can't break after any of the runs, nor
+		can we split any of the runs.  We're going to need
+		to force a split of the Offending Run.
 		*/
 		bFoundSplit = pOffendingRun->findMaxLeftFitSplitPoint(m_iMaxLineWidth - m_iWorkingLineWidth, splitInfo, true);
 
@@ -506,17 +506,17 @@ bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun, UT_sint32 iTra
 		else
 		{
 			/*
-			  Wow!	This is a very resilient run.  It is the
-			  run which no longer fits, and yet it cannot be
-			  split.  It might be a single-character run.
-			  Perhaps it's an image.  Anyway, we still have to
-			  try as hard as we can to find a line break.
+			Wow!	This is a very resilient run.  It is the
+			run which no longer fits, and yet it cannot be
+			split.  It might be a single-character run.
+			Perhaps it's an image.  Anyway, we still have to
+			try as hard as we can to find a line break.
 			*/
 
 			if (pOffendingRun != m_pFirstRunToKeep)
 			{
 				/*
-				  Force a break right before the offending run.
+				Force a break right before the offending run.
 				*/
 				m_pLastRunToKeep = pOffendingRun->getPrevRun();
 
@@ -592,9 +592,9 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 {
 
 	/*
-	  If m_pLastRunToKeep is NULL here, that means that
-	  all remaining runs in this block will fit on this
-	  line.
+	If m_pLastRunToKeep is NULL here, that means that
+	all remaining runs in this block will fit on this
+	line.
 	*/
 
 	fp_Run *pCurrentRun = m_pFirstRunToKeep;
@@ -665,7 +665,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 		{
 			UT_ASSERT(pNextLine->getContainerType() == FP_CONTAINER_LINE);
 			UT_DEBUGMSG(("fb_LineBreaker::_breakThe ... pLine 0x%x, pNextLine 0x%x, blocks last 0x%x\n",
-			pLine, pNextLine, pBlock->getLastContainer()));
+				pLine, pNextLine, pBlock->getLastContainer()));
 			if(pBlock->getLastContainer() == static_cast<fp_Container *>(pLine))
 				pBlock->setLastContainer(pNextLine);     // not need to create newline
 		}
@@ -673,24 +673,24 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 		fp_Run* pRunToBump = pLine->getLastRun();
 		UT_ASSERT(pRunToBump);
 		UT_DEBUGMSG(("!!!RunToBump %x Type %d Offset %d Length %d \n",pRunToBump,pRunToBump->getType(),pRunToBump->getBlockOffset(),pRunToBump->getLength()));
-      
+
 		while (pRunToBump && pLine->getNumRunsInLine() && (pLine->getLastRun() != m_pLastRunToKeep))
 		{
 			UT_ASSERT(pRunToBump->getLine() == pLine);
 			UT_DEBUGMSG(("RunToBump %x Type %d Offset %d Length %d \n",pRunToBump,pRunToBump->getType(),pRunToBump->getBlockOffset(),pRunToBump->getLength()));
 			if(!pLine->removeRun(pRunToBump))
 			{
-//
-// More repair code I think...
-// run is not on the Line! It's totally lost...
-//
+				//
+				// More repair code I think...
+				// run is not on the Line! It's totally lost...
+				//
 				pRunToBump->setLine(NULL);
 			}
-			
+
 			UT_ASSERT(pLine->getLastRun()->getType() != FPRUN_ENDOFPARAGRAPH);
-//
-// Some repair code
-//
+			//
+			// Some repair code
+			//
 			if(pLine->getLastRun()->getType() == FPRUN_ENDOFPARAGRAPH)
 			{
 				fp_Run * pNuke = pLine->getLastRun();
@@ -721,7 +721,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 				UT_DEBUGMSG(("The Split Text |%s| \n",sTmp.utf8_str()));
 				if(sTmp.utf8_str()!=0) 
 				{
-                    pWordToSplit=sTmp;					
+					pWordToSplit=sTmp;					
 					UT_DEBUGMSG(("wordToSplit |%s| \n",pWordToSplit.utf8_str()));
 				}				
 			}			

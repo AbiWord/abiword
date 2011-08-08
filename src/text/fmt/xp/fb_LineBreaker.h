@@ -23,7 +23,6 @@
 #define FB_LINEBREAKER_H
 
 #include "ut_types.h"
-//#include "enchant_Hyphenation.h"
 
 class fl_BlockLayout;
 class fp_Line;
@@ -48,7 +47,6 @@ protected:
 	bool		_splitAtOrBeforeThisRun(fp_Run *pCurrentRun, UT_sint32 iTrailSpace);
 	bool		_splitAtNextNonBlank(fp_Run *pCurrentRun);
 	void		_splitRunAt(fp_Run *pCurrentRun, fp_RunSplitInfo &splitInfo);
-	UT_sint32 _moveBackToFindHyphenationPoint(fp_Run *pCurrentRun, fp_Run **pOffendingRun);
 
 private:
 	fp_Run* 	m_pFirstRunToKeep;
