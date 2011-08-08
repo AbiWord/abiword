@@ -1,6 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiWord
+* Copyright (C) 2011 Volodymyr Rudyj <vladimir.rudoy@gmail.com>
 * Copyright (C) 2007, 2009 Hubert Figuiere
 * Copyright (C) 2003-2005 Mark Gilbert <mg_abimail@yahoo.com>
 * Copyright (C) 2002, 2004 Francis James Franklin <fjf@alinameridon.com>

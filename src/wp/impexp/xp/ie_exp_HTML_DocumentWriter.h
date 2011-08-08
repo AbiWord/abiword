@@ -1,7 +1,8 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 
-/* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+/* AbiSource
+ * 
+ * Copyright (C) 2011 Volodymyr Rudyj <vladimir.rudoy@gmail.com>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,7 +19,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
-
 #ifndef IE_EXP_HTML_MAINLISTENER_H
 #define IE_EXP_HTML_MAINLISTENER_H
 
