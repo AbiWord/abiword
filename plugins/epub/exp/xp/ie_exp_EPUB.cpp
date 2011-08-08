@@ -456,23 +456,18 @@ UT_Error IE_Exp_EPUB::EPUB3_writeNavigation()
         closeNTags(navXHTML, tagLevels.size()*2);
     }
     else
-    {/*
+    {
         m_opsId.push_back(escapeForId("index.xhtml"));
-        gsf_xml_out_start_element(navXHTML, "navPoint");
-        gsf_xml_out_add_cstr(navXHTML, "playOrder", "1");
+        gsf_xml_out_start_element(navXHTML, "ol");
+        gsf_xml_out_start_element(navXHTML, "li");
         gsf_xml_out_add_cstr(navXHTML, "class", "h1");
         gsf_xml_out_add_cstr(navXHTML, "id", "index");
-
-        gsf_xml_out_start_element(navXHTML, "navLabel");
-        gsf_xml_out_start_element(navXHTML, "text");
+        gsf_xml_out_start_element(navXHTML, "a");
+        gsf_xml_out_add_cstr(navXHTML, "href", "index.xhtml");
         gsf_xml_out_add_cstr(navXHTML, NULL, getTitle().utf8_str());
         gsf_xml_out_end_element(navXHTML);
-        gsf_xml_out_end_element(navXHTML);
-
-        gsf_xml_out_start_element(navXHTML, "content");
-        gsf_xml_out_add_cstr(navXHTML, "src", "index.xhtml");
-        gsf_xml_out_end_element(navXHTML);
-        gsf_xml_out_end_element(navXHTML); */
+        gsf_xml_out_end_element(navXHTML); 
+        gsf_xml_out_end_element(navXHTML); 
     }
    
     gsf_xml_out_end_element(navXHTML);
