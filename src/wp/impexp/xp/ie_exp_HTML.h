@@ -113,6 +113,7 @@ private:
 protected:
 	virtual UT_Error	_writeDocument ();
 	void				_createChapter(PD_DocumentRange *range, const UT_UTF8String &title, bool isIndex);
+        void _createMultipart();
 public:
 	virtual UT_Error	_writeDocument (bool bClipBoard, bool bTemplateBody);
 private:
