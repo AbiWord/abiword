@@ -309,7 +309,6 @@ bool GR_Graphics::beginDoubleBuffering()
 	m_DCSwitchManagementStack.push((int)SWITCHED_TO_BUFFER);
 	_DeviceContext_SwitchToBuffer();
 	m_bDoubleBufferingActive = true;
-	UT_DEBUGMSG(("ASFRENT: SWITCHED TO BUFFER\n"));
 	return true;
 }
 
@@ -327,7 +326,6 @@ void GR_Graphics::endDoubleBuffering(bool token)
 	_DeviceContext_SwitchToScreen();
 	m_DCSwitchManagementStack.pop();
 	m_bDoubleBufferingActive = false;
-	UT_DEBUGMSG(("ASFRENT: SWITCHED TO SCREEN\n"));
 }
 
 bool GR_Graphics::suspendDrawing()
@@ -336,7 +334,6 @@ bool GR_Graphics::suspendDrawing()
 	m_DCSwitchManagementStack.push((int)DRAWING_SUSPENDED);
 	_DeviceContext_SuspendDrawing();
 	m_bDrawingSuspended = true;
-	UT_DEBUGMSG(("ASFRENT: DRAWING SUSPENDED\n"));
 	return true;
 }
 
@@ -355,7 +352,6 @@ void GR_Graphics::resumeDrawing(bool token)
 	_DeviceContext_ResumeDrawing();
 	m_DCSwitchManagementStack.pop();
 	m_bDrawingSuspended = false;
-	UT_DEBUGMSG(("ASFRENT: DRAWING RESUMED\n"));
 }
 
 void GR_Graphics::_destroyFonts ()
