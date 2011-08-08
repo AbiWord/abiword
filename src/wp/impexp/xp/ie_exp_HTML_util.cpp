@@ -338,7 +338,8 @@ IE_Exp_HTML_DataExporter::IE_Exp_HTML_DataExporter(PD_Document* pDocument,
 
 IE_Exp_HTML_FileExporter::IE_Exp_HTML_FileExporter(PD_Document* pDocument, 
     const UT_UTF8String& baseName):
-    IE_Exp_HTML_DataExporter(pDocument, baseName)
+    IE_Exp_HTML_DataExporter(pDocument, baseName),
+    m_bInitialized(false)
 {
     
 }
@@ -350,7 +351,7 @@ void IE_Exp_HTML_FileExporter::_init()
     {
         UT_go_directory_create((m_baseDirectory + G_DIR_SEPARATOR_S +  m_fileDirectory).utf8_str(), 
                                0644, NULL);
-        
+        UT_DEBUGMSG(("\n\nCREATED DIR: %s\n\n",(m_baseDirectory + G_DIR_SEPARATOR_S +  m_fileDirectory).utf8_str()));
         m_bInitialized = true;
     }
 }
@@ -363,7 +364,6 @@ UT_UTF8String IE_Exp_HTML_FileExporter::saveData(const gchar *szDataId,
     
     if (extension != NULL)
     {
-        filename += ".";
         filename += extension;
     }
     

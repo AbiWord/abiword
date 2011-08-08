@@ -104,7 +104,7 @@ public:
 	inline void			set_SplitDocument ( bool enable = true) { m_exp_opt.bSplitDocument = enable; }
         
 	inline UT_UTF8String		getSuffix() const { return m_suffix; }
-        inline const IE_Exp_HTML_NavigationHelper *getNavigationHelper() const { return m_pNavigationHelper; }
+        inline IE_Exp_HTML_NavigationHelper *getNavigationHelper() { return m_pNavigationHelper; }
         void setWriterFactory(IE_Exp_HTML_WriterFactory *pWriterFactory);
 
 private:
