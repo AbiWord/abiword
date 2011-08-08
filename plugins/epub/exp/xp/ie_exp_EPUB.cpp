@@ -149,8 +149,13 @@ UT_Error IE_Exp_EPUB::writeNavigation()
         return EPUB2_writeNavigation();
     } else
     {
-        return EPUB3_writeNavigation();
+        if (EPUB2_writeNavigation() == UT_ERROR)
+            return UT_ERROR;
+        if ( EPUB3_writeNavigation() == UT_ERROR)
+            return UT_ERROR;
     }
+    
+    return UT_OK;
 }
 
 UT_Error IE_Exp_EPUB::writeStructure()
@@ -275,6 +280,14 @@ UT_Error IE_Exp_EPUB::EPUB2_writeNavigation()
             m_pie->getNavigationHelper()->getNthTOCEntryPos(currentItem, itemPos);
             UT_UTF8String itemFilename = m_pie->getNavigationHelper()
                 ->getFilenameByPosition(itemPos);
+            
+            if ((itemFilename == ".xhtml") || itemFilename.length() == 0)
+            {
+                itemFilename = "index.xhtml";
+            } else
+            {
+                itemFilename +=   + ".xhtml";
+            }
 
             if (std::find(m_opsId.begin(), m_opsId.end(), 
                           escapeForId(itemFilename)) == m_opsId.end())
@@ -298,7 +311,7 @@ UT_Error IE_Exp_EPUB::EPUB2_writeNavigation()
             }
 
             UT_UTF8String navClass = UT_UTF8String_sprintf("h%d", curItemLevel);
-            UT_UTF8String navId = UT_UTF8String_sprintf("AbiTOC%d__",
+            UT_UTF8String navId = UT_UTF8String_sprintf("AbiTOC%d",
                     tocNum);
             UT_UTF8String navSrc = itemFilename + "#" + navId;
             gsf_xml_out_start_element(ncxXml, "navPoint");
@@ -376,6 +389,7 @@ UT_Error IE_Exp_EPUB::EPUB3_writeNavigation()
     
     gsf_xml_out_start_element(navXHTML, "body");
     gsf_xml_out_start_element(navXHTML, "section");
+    gsf_xml_out_add_cstr(navXHTML, "class", "frontmatter TableOfContents");
     gsf_xml_out_start_element(navXHTML, "header");
     gsf_xml_out_start_element(navXHTML, "h1");
     gsf_xml_out_add_cstr(navXHTML, NULL, "Contents");
@@ -402,6 +416,14 @@ UT_Error IE_Exp_EPUB::EPUB3_writeNavigation()
             m_pie->getNavigationHelper()->getNthTOCEntryPos(currentItem, itemPos);
             UT_UTF8String itemFilename = m_pie->getNavigationHelper()
                 ->getFilenameByPosition(itemPos);
+            
+            if ((itemFilename == "") || itemFilename.length() == 0)
+            {
+                itemFilename = "index.xhtml";
+            } else
+            {
+                itemFilename +=  ".xhtml";
+            }
 
             if (std::find(m_opsId.begin(), m_opsId.end(), 
                           escapeForId(itemFilename)) == m_opsId.end())
@@ -437,7 +459,7 @@ UT_Error IE_Exp_EPUB::EPUB3_writeNavigation()
             }
 
             UT_UTF8String navClass = UT_UTF8String_sprintf("h%d", curItemLevel);
-            UT_UTF8String navId = UT_UTF8String_sprintf("AbiTOC%d__",
+            UT_UTF8String navId = UT_UTF8String_sprintf("AbiTOC%d",
                     tocNum);
             UT_UTF8String navSrc = itemFilename + "#" + navId;
             gsf_xml_out_start_element(navXHTML, "li");
@@ -509,7 +531,6 @@ UT_Error IE_Exp_EPUB::EPUB3_writeStructure()
 
 UT_Error IE_Exp_EPUB::package()
 {
-
     GsfOutput* opf = gsf_outfile_new_child(GSF_OUTFILE(m_oebps), "book.opf",
             FALSE);
     if (opf == NULL)
@@ -577,18 +598,16 @@ UT_Error IE_Exp_EPUB::package()
     }
 
     // We`ll add navigation files manually
-    if (m_bIsEpub2)
-    {
-        gsf_xml_out_start_element(opfXml, "item");
-        gsf_xml_out_add_cstr(opfXml, "id", "ncx");
-        gsf_xml_out_add_cstr(opfXml, "href", "toc.ncx");
-        gsf_xml_out_add_cstr(opfXml, "media-type", "application/x-dtbncx+xml");
-        gsf_xml_out_end_element(opfXml);
-    } else
+    gsf_xml_out_start_element(opfXml, "item");
+    gsf_xml_out_add_cstr(opfXml, "id", "ncx");
+    gsf_xml_out_add_cstr(opfXml, "href", "toc.ncx");
+    gsf_xml_out_add_cstr(opfXml, "media-type", "application/x-dtbncx+xml");
+    gsf_xml_out_end_element(opfXml);
+    if (!m_bIsEpub2)
     {
         gsf_xml_out_start_element(opfXml, "item");
         gsf_xml_out_add_cstr(opfXml, "id", "nav");
-        gsf_xml_out_add_cstr(opfXml, "href", "toc.html");
+        gsf_xml_out_add_cstr(opfXml, "href", "toc.xhtml");
         gsf_xml_out_add_cstr(opfXml, "media-type", "application/xhtml+xml");
         gsf_xml_out_end_element(opfXml);  
     }
@@ -604,6 +623,10 @@ UT_Error IE_Exp_EPUB::package()
         gsf_xml_out_add_cstr(opfXml, "idref", (*i).utf8_str());
         gsf_xml_out_end_element(opfXml);
     }
+
+    gsf_xml_out_start_element(opfXml, "itemref");
+    gsf_xml_out_add_cstr(opfXml, "idref","toc");
+    gsf_xml_out_end_element(opfXml);
     // </spine>
     gsf_xml_out_end_element(opfXml);
 

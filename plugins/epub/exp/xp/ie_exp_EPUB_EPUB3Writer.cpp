@@ -52,7 +52,7 @@ void IE_Exp_EPUB_EPUB3Writer::closeAnnotation()
 
 void IE_Exp_EPUB_EPUB3Writer::insertDTD()
 {
-    m_pOutputWriter->write("<?xml version=\"1.0\"?>\n<!DOCTYPE html>\n");	
+    m_pOutputWriter->write("<?xml version=\"1.0\"?>\n");	
 }
 
 void IE_Exp_EPUB_EPUB3Writer::insertTOC(const gchar *title, 
