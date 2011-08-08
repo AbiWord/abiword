@@ -258,31 +258,38 @@ UT_Error IE_Exp_EPUB::EPUB2_writeNavigation()
     IE_TOCHelper* toc = new IE_TOCHelper(getDoc());
     // <navMap>
     gsf_xml_out_start_element(ncxXml, "navMap");
-    if (toc->hasTOC())
+    if (m_pie->getNavigationHelper()->hasTOC())
     {
         int lastItemLevel;
         int curItemLevel;
         std::vector<int> tagLevels;
         int tocNum = 0;
-        for (int currentItem = 0; currentItem < toc->getNumTOCEntries(); currentItem++)
+        for (int currentItem = 0; 
+            currentItem < m_pie->getNavigationHelper()->getNumTOCEntries(); 
+            currentItem++)
         {
             lastItemLevel = curItemLevel;
-            UT_UTF8String itemStr = toc->getNthTOCEntry(currentItem, &curItemLevel);
+            UT_UTF8String itemStr = m_pie->getNavigationHelper()
+                ->getNthTOCEntry(currentItem, &curItemLevel);
             PT_DocPosition itemPos;
-            toc->getNthTOCEntryPos(currentItem, itemPos);
-            UT_UTF8String itemFilename = m_pie->getNavigationHelper()->getFilenameByPosition(itemPos);
+            m_pie->getNavigationHelper()->getNthTOCEntryPos(currentItem, itemPos);
+            UT_UTF8String itemFilename = m_pie->getNavigationHelper()
+                ->getFilenameByPosition(itemPos);
 
-            if (std::find(m_opsId.begin(), m_opsId.end(), escapeForId(itemFilename)) == m_opsId.end())
+            if (std::find(m_opsId.begin(), m_opsId.end(), 
+                          escapeForId(itemFilename)) == m_opsId.end())
             {
                 m_opsId.push_back(escapeForId(itemFilename));
                 tocNum = 0;
             }
 
-            UT_DEBUGMSG(("Item filename %s at pos %d\n", itemFilename.utf8_str(),itemPos));
+            UT_DEBUGMSG(("Item filename %s at pos %d\n", 
+                itemFilename.utf8_str(),itemPos));
 
             if ((lastItemLevel >= curItemLevel) && (currentItem != 0))
             {
-                while ((tagLevels.size() > 0) && (tagLevels.back() >= curItemLevel))
+                while ((tagLevels.size() > 0) 
+                        && (tagLevels.back() >= curItemLevel))
                 {
                     UT_DEBUGMSG(("POPPING OUT\n"));
                     gsf_xml_out_end_element(ncxXml);
@@ -318,6 +325,7 @@ UT_Error IE_Exp_EPUB::EPUB2_writeNavigation()
     }
     else
     {
+        m_opsId.push_back(escapeForId("index.xhtml"));
         gsf_xml_out_start_element(ncxXml, "navPoint");
         gsf_xml_out_add_cstr(ncxXml, "playOrder", "1");
         gsf_xml_out_add_cstr(ncxXml, "class", "h1");
