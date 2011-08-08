@@ -1940,7 +1940,6 @@ UT_sint32 fp_Run::getToplineThickness(void)
 */
 void fp_Run::_drawTextLine(UT_sint32 xoff,UT_sint32 yoff,UT_uint32 iWidth,UT_uint32 iHeight,UT_UCSChar *pText)
 {
-	// maybe we can trace where call  this after merge
     GR_Font *pFont = getGraphics()->getGUIFont();
 
 	GR_Painter painter(getGraphics());
@@ -1962,8 +1961,6 @@ void fp_Run::_drawTextLine(UT_sint32 xoff,UT_sint32 yoff,UT_uint32 iWidth,UT_uin
     }
 }
 
-
-// Different Run should be seperated in different file, or this file is too long to read
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 

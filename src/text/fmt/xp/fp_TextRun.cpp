@@ -385,7 +385,7 @@ void fp_TextRun::printText(void)
 	while(text.getStatus() == UTIter_OK)
 	{
 		UT_UCS4Char c = text.getChar();
-		UT_DEBUGMSG(("| %d |",c));
+		xxx_UT_DEBUGMSG(("| %d |",c));
 		if(c >= ' ' && c <128)
 			sTmp +=  static_cast<char>(c);
 		++text;
@@ -1107,8 +1107,6 @@ bool fp_TextRun::canMergeWithNext(void)
 	return true;
 }
 
-
-// mergeWithNext and split should be care.  maybe we dont need to mergeWithNext when passing the line but using hyphenation instead
 void fp_TextRun::mergeWithNext(void)
 {
 	UT_ASSERT(getNextRun() && (getNextRun()->getType() == FPRUN_TEXT));
