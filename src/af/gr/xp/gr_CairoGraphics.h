@@ -415,6 +415,15 @@ public:
 	UT_sint32               m_iXORCount;
 	/** init the cairo context once created */
 	void _initCairo();
+
+	// Double buffering implementation
+	void _DeviceContext_SwitchToBuffer();
+	void _DeviceContext_SwitchToScreen();
+
+	// Suspend / resume drawing
+	void _DeviceContext_SuspendDrawing();
+	void _DeviceContext_ResumeDrawing();
+
 private:
 	static UT_uint32 s_iInstanceCount;
 	static UT_VersionInfo s_Version;

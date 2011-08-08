@@ -31,6 +31,7 @@
 #include "fv_View.h"
 #include "gr_Painter.h"
 #include "xap_Frame.h"
+#include "fv_ViewDoubleBuffering.h"
 
 #define MIN_DRAG_PIXELS 8
 
@@ -984,6 +985,9 @@ void FV_VisualDragText::mouseCut(UT_sint32 x, UT_sint32 y)
 	// (in revisions mode the PT needs to be able to make a distinction between normal
 	// cut/delete and the mouse cut)
 	m_pView->getDocument()->setVDNDinProgress(true);
+
+	FV_ViewDoubleBuffering dblBuffObj(m_pView, true, true);
+	dblBuffObj.beginDoubleBuffering();
 	
 	if(bPasteTableCol)
 	{
@@ -1013,6 +1017,9 @@ void FV_VisualDragText::mouseCut(UT_sint32 x, UT_sint32 y)
 	m_pView->getDocument()->setVDNDinProgress(false);
 	
 	m_pView->updateScreen(false);
+
+	dblBuffObj.endDoubleBuffering();
+
 	drawImage();
 }
 
@@ -1115,6 +1122,10 @@ void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 		m_pView->warpInsPtToXY(x, y,true);
 		return;
 	}
+	
+	FV_ViewDoubleBuffering dblBuffObj(m_pView, true, true);
+	dblBuffObj.beginDoubleBuffering();
+
 	PT_DocPosition posAtXY = getPosFromXY(x,y);
 	m_pView->setPoint(posAtXY);
 	fl_BlockLayout * pCurB = m_pView->getCurrentBlock();
@@ -1149,6 +1160,8 @@ void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 	  {
 	    m_pView->cmdPaste();
 	  }
+
+	dblBuffObj.endDoubleBuffering();
 	
 	m_bSelectedRow = false;
 	PT_DocPosition newPoint = m_pView->getPoint();
@@ -1167,6 +1180,7 @@ void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 	  {
 	    bDoSelect = false;
 	  }
+
 	if(bDoSelect)
 	  {
 	    if(!bPasteTableCol)

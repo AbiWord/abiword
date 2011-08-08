@@ -157,6 +157,8 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 	m_pArPens = new GR_Win32Graphics::CACHE_PEN [_MAX_CACHE_PENS];
 	memset (m_pArPens, 0, _MAX_CACHE_PENS*sizeof(CACHE_PEN));
 	m_nArPenPos = 0;
+
+	_DoubleBuffering_SetUpDummyBuffer();
 }
 
 GR_Win32Graphics::GR_Win32Graphics(HDC hdc, HWND hwnd)
@@ -240,6 +242,8 @@ GR_Win32Graphics::~GR_Win32Graphics()
 
 	DELETEP(m_pFontGUI);
 	
+	_DoubleBuffering_ReleaseDummyBuffer();
+
 	if(m_printHDC && m_printHDC != m_defPrintHDC)
 		DeleteDC(m_printHDC);
 	
@@ -1693,7 +1697,7 @@ void GR_Win32Font::_updateFontYMetrics(HDC hdc, HDC printHDC)
 	}
 
 	// we have to remeasure if (a) the printer changed, or (b) the primary device changed
-	if(printHDC != m_yhdc || hdc != m_hdc)
+	if(printHDC != m_yhdc)
 	{
 		GetTextMetricsW(printHDC,&m_tm);
 
@@ -1720,7 +1724,6 @@ void GR_Win32Font::_updateFontYMetrics(HDC hdc, HDC printHDC)
 
 		// now remember what HDC these values are for
 		m_yhdc = printHDC;
-		m_hdc = hdc;
 	}
 }
 
@@ -1829,15 +1832,6 @@ bool GR_Win32Font::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 
 	if(printDC == pWin32Gr->getPrimaryDC())
 		pWin32Gr->setDCFontAllocNo(getAllocNumber());
-	
-	if (printDC != m_hdc)
-	{
-		// invalidate cached info when we change hdc's.
-		// this is probably unnecessary except when
-		// sharing a font with screen and printer.
-		_clearAnyCachedInfo();
-		m_hdc = printDC;
-	}
 	
 	DWORD iRet = GDI_ERROR;
 	
@@ -1988,19 +1982,6 @@ void GR_Win32Font::selectFontIntoDC(GR_Graphics * pGr, HDC hdc)
 
 	// hate having to do the cast, here
 	UT_ASSERT_HARMLESS( hRet != (void*)GDI_ERROR);
-	
-	if (hdc != m_hdc)
-	{
-		// invalidate cached info when we change hdc's.
-		// this is probably unnecessary except when
-		// sharing a font with screen and printer.
-		// TODO consider changing our invalidate test
-		// TODO to not invalidate if old and new are
-		// TODO both on screen.
-
-		_clearAnyCachedInfo();
-		m_hdc = hdc;
-	}
 }
 
 void GR_Win32Graphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
@@ -2562,4 +2543,106 @@ HDC GR_Win32Graphics::createbestmetafilehdc()
   
   if (printerinfo) free(printerinfo);
   return besthdc;
+}
+
+void GR_Win32Graphics::getWidthAndHeightFromHWND(HWND h, int &width, int &height)
+{
+	RECT clientRect;
+	GetClientRect(h, &clientRect);
+	
+	width = clientRect.right - clientRect.left;
+	height = clientRect.bottom - clientRect.top;
+
+	UT_ASSERT(clientRect.left == 0 && clientRect.top == 0);
+}
+
+void GR_Win32Graphics::_DeviceContext_MeasureBitBltCopySpeed(HDC sourceHdc, HDC destHdc, int width, int height)
+{
+	LARGE_INTEGER t1, t2, freq;
+	
+	QueryPerformanceCounter(&t1);
+	BitBlt(destHdc, 0, 0, width, height, sourceHdc, 0, 0, SRCCOPY);
+	QueryPerformanceCounter(&t2);
+	
+	QueryPerformanceFrequency(&freq);
+	double blitSpeed = ((double)(t2.QuadPart - t1.QuadPart)) / ((double)freq.QuadPart);
+
+	UT_DEBUGMSG(("ASFRENT: measured BitBlt speed: %lfs [client rectangle W = %d, H = %d]\n", 
+			blitSpeed, width, height));
+}
+
+void GR_Win32Graphics::_DeviceContext_SwitchToBuffer()
+{
+	// get client area size
+	int height(0), width(0);
+	getWidthAndHeightFromHWND(m_hwnd, width, height);
+
+	// set up the buffer
+	m_bufferHdc = _DoubleBuffering_CreateBuffer(m_hdc, width, height);
+
+	// copy the screen to the buffer
+	BitBlt(m_bufferHdc, 0, 0, width, height, m_hdc, 0, 0, SRCCOPY);
+
+	// save the current hdc & switch
+	_HDCSwitchStack.push(new _HDCSwitchRecord(m_hdc));
+	m_hdc = m_bufferHdc;
+}
+
+void GR_Win32Graphics::_DeviceContext_SwitchToScreen()
+{
+	_DeviceContext_RestorePrevHDCFromStack();
+
+	// get client area size
+	int height(0), width(0);
+	getWidthAndHeightFromHWND(m_hwnd, width, height);
+	
+	// copy any modifications back to the screen
+	BitBlt(m_hdc, 0, 0, width, height, m_bufferHdc, 0, 0, SRCCOPY);
+	
+	// free used resources
+	_DoubleBuffering_ReleaseBuffer(m_bufferHdc);
+}
+
+void GR_Win32Graphics::_DeviceContext_RestorePrevHDCFromStack()
+{
+	_HDCSwitchRecord *switchRecord;
+	_HDCSwitchStack.pop((void**)&switchRecord);
+	m_hdc = switchRecord->oldHdc;
+	delete switchRecord;
+}
+
+void GR_Win32Graphics::_DeviceContext_SuspendDrawing()
+{
+	// save the current hdc & switch them!
+	_HDCSwitchStack.push(new _HDCSwitchRecord(m_hdc));
+	m_hdc = m_dummyHdc;
+}
+
+void GR_Win32Graphics::_DeviceContext_ResumeDrawing()
+{
+	_DeviceContext_RestorePrevHDCFromStack();
+}
+
+void GR_Win32Graphics::_DoubleBuffering_SetUpDummyBuffer()
+{
+	m_dummyHdc = _DoubleBuffering_CreateBuffer(m_hdc, 0, 0);
+}
+
+void GR_Win32Graphics::_DoubleBuffering_ReleaseDummyBuffer()
+{
+	_DoubleBuffering_ReleaseBuffer(m_dummyHdc);
+}
+
+HDC GR_Win32Graphics::_DoubleBuffering_CreateBuffer(HDC compatibleWith, int width, int height)
+{
+	HDC resultingHdc = CreateCompatibleDC(compatibleWith);
+	HBITMAP bufferBitmap = CreateCompatibleBitmap(compatibleWith, width, height);
+	SelectObject(resultingHdc, bufferBitmap);
+	return resultingHdc;
+}
+
+void GR_Win32Graphics::_DoubleBuffering_ReleaseBuffer(HDC hdc)
+{
+	DeleteObject(GetCurrentObject(hdc, OBJ_BITMAP));
+	DeleteDC(hdc);
 }

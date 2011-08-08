@@ -70,6 +70,7 @@
 #include "ap_Prefs.h"
 #include "ap_Strings.h"
 #include "fd_Field.h"
+#include "fv_ViewDoubleBuffering.h"
 
 #ifdef ENABLE_SPELL
 #include "spell_manager.h"
@@ -3553,6 +3554,7 @@ void FV_View::_generalUpdate(void)
 {
 	if(!shouldScreenUpdateOnGeneralUpdate())
 		return;
+
 	m_pDoc->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
 
 //
@@ -3824,6 +3826,10 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 	fp_CellContainer * pCell = NULL;
 	fl_BlockLayout* pBlockEnd = pRun2->getBlock();
 	PT_DocPosition posEnd = pBlockEnd->getPosition() + pRun2->getBlockOffset();
+
+	FV_ViewDoubleBuffering dblBufferingObj(this, false, false);
+	dblBufferingObj.beginDoubleBuffering();
+
 	while ((!bDone || bIsDirty) && pCurRun)
 	{
 
@@ -4544,11 +4550,25 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 					 x,y,width,height,bClip,
 					 m_yScrollOffset,getWindowHeight(),bDirtyRunsOnly));
 	
+	if(m_pViewDoubleBufferingObject != NULL && m_pViewDoubleBufferingObject->getCallDrawOnlyAtTheEnd())
+	{
+		// record this call's arguments and return
+		if(bClip)
+		{
+			UT_Rect r(x, y, width, height);
+			m_pG->setClipRect(&r);
+		}
+		m_pViewDoubleBufferingObject->recordViewDrawCall(x, y, width, height, bDirtyRunsOnly, bClip);
+		m_pG->setClipRect(NULL);
+		return;
+	}
+
 	/**************************
 	 * STEP 0: Initialization *
 	 **************************/
 
 	GR_Painter painter(m_pG);
+	
 	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 
 	// CHECK_WINDOW_SIZE
@@ -4566,6 +4586,8 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		return;
 	}
 
+	painter.beginDoubleBuffering();
+
 	// TMN: Leave this rect at function scope!
 	// gr_Graphics only stores a _pointer_ to it!
 	UT_Rect rClip;
@@ -4577,6 +4599,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		rClip.height = height;
 		m_pG->setClipRect(&rClip);
 	}
+
 //	UT_ASSERT(m_yScrollOffset == m_pG->getPrevYOffset());
 	
 	// figure out where pages go, based on current window dimensions
@@ -4584,111 +4607,56 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	// HYP:  cache calc results at scroll/size time
 	calculateNumHorizPages();
 
-	// Select an page as a starting point
-	// from which to start searching for pages on screen.
-	UT_sint32 curY = getPageViewTopMargin();
-	fp_Page* pPage = getCurrentPage(); // Ideally, should be optimized, but this is better than starting from the beginning
-	fp_Page* pCachedPage = pPage;
-	UT_ASSERT(pPage==pCachedPage);
-	fl_DocSectionLayout * pDSL = NULL;
 	
-	if (pPage)	// pPage can be NULL at this point
-		pDSL = pPage->getOwningSection();
-
-	/***********************************************
-	 * STEP 1: Find pages on screen, add to vector *
-	 ***********************************************/
+	/******************************************************************
+	 * STEP 1: Find the first page so we can start drawing from there *
+	 ******************************************************************/
 	
-	// EYA: The old approach was to start at the beginning of the doc
-	// and iterate through each page checking whether it was on screen: this
-	// was very costly.  Now, we assign an optimized starting page (pPage)
-	// and traverse first up (!bGoingForward) then down (bGoingForward) the
-	// doc relative from pPage, each time checking if we've moved past the
-	// viewport so that we don't have to check every page.
-
 	// EYA: In case you were wondering, everything assumes that all pages have
 	// the same dimensions and are ordered in rows and columns as in print view
 	// (normal view is just print view with one column).  Abandon hope, all ye
 	// who would attempt to change those assumptions: they are very deeply
 	// embedded throughout AbiWord.
 	
-	bool bFindingPagesOnScreen = true;
-	bool bGoingForward = false;
-	UT_sint32 iVecCount = 0;
-	UT_GenericVector<fp_Page *> vecPagesOnScreen;
-	xxx_UT_DEBUGMSG(("Starting at page %x \n",pPage));
+	UT_sint32 iPageWidth, iPageHeight;
+	UT_sint32 iFirstVisiblePageNumber = -1;
+	fl_DocSectionLayout *pDSL = NULL;
 
-	while(bFindingPagesOnScreen)
+	// we should have at least the first page
+	if(getLayout() -> getFirstPage())
 	{
-		UT_sint32 iPageYOffset;
-		UT_sint32 iPageXOffset;
-		UT_sint32 iPageHeight;
+		// layout ref
+		pDSL = getLayout() -> getFirstPage() -> getOwningSection();
+	
+		// since all pages have the same width / height, set them here
+		iPageWidth = getLayout() -> getFirstPage() -> getWidth();
+		iPageHeight = getLayout() -> getFirstPage() -> getHeight();
+		if(getViewMode() == VIEW_NORMAL || getViewMode() == VIEW_WEB)
+			iPageHeight = iPageHeight - pDSL -> getTopMargin() - pDSL -> getBottomMargin();
 		
-	  	if(pPage)
-		{
-			getPageYOffset(pPage, iPageYOffset);
-			iPageXOffset = getWidthPrevPagesInRow(pPage->getPageNumber());
-			iPageHeight = pPage->getHeight();
-			if(getViewMode() == (VIEW_NORMAL || VIEW_WEB))
-				iPageHeight = iPageHeight - pDSL->getTopMargin() - pDSL->getBottomMargin();
-		}
-		// Is the page on screen?
-		if( pPage &&
-		    (iPageXOffset <= getXScrollOffset() + getWindowWidth()) &&
-		    (iPageXOffset + pPage->getWidth() >= getXScrollOffset()) &&
-		    (iPageYOffset  <= getYScrollOffset() + getWindowHeight()) &&
-		    (iPageYOffset + iPageHeight >= getYScrollOffset()) )
-		{
-			xxx_UT_DEBUGMSG(("Adding page %d to pages on screen vector\n", pPage->getPageNumber()));
-			vecPagesOnScreen.addItem(pPage);
-			if(bGoingForward == false)
-				pPage = pPage->getPrev();
-			else
-				pPage = pPage->getNext();
-		}
-		else if(pPage && !bGoingForward && pPage->getPrev())
-		{
-			if(iPageYOffset + iPageHeight <= getYScrollOffset()) // Have we arrived at the viewport yet (going up)?
-			{
-				bGoingForward = true;
-				pPage = pCachedPage->getNext();
-			}
-			else // Or have we passed it?
-				pPage = pPage->getPrev();
-		}
-		else if(pPage && bGoingForward && pPage->getNext())
-		{
-			if(iPageYOffset > getYScrollOffset() + getWindowHeight()) // Ditto (going down)
-				bFindingPagesOnScreen = false;
-			else // Ditto
-				pPage = pPage->getNext();
-		}
-		else if(!bGoingForward) // Are we at the beginning of the doc?
-		{
-			bGoingForward = true;
-			UT_ASSERT(pCachedPage);
-			if (pCachedPage)
-				pPage = pCachedPage->getNext();
-		}
-		else if(bGoingForward) // Are we at the end of the doc?
-			bFindingPagesOnScreen = false;
-	}
+		// now guess the first visible page number
+		iFirstVisiblePageNumber = 
+			((getYScrollOffset() - getPageViewTopMargin() + getPageViewSep()) /
+			(iPageHeight + getPageViewSep())) * getNumHorizPages();
+	}	
 
 	/**********************
 	 * STEP 2: Draw pages *
 	 **********************/
-
+	
+	// enter a double-buffered section 
+	
 	UT_RGBColor clrMargin;
 	if (!m_pG->getColor3D(GR_Graphics::CLR3D_BevelDown, clrMargin))
 		clrMargin = getColorMargin();
 	if( !bDirtyRunsOnly && (getViewMode() == VIEW_PRINT) )
 		painter.fillRect(clrMargin, 0, 0, getWindowWidth(), getWindowHeight());
 	
-	if(vecPagesOnScreen.getItemCount() > 0)
-		pPage = vecPagesOnScreen.getFirstItem();
-	else
-		pPage = NULL;
-	
+	// start from the first visible page
+	fp_Page *pPage = NULL;
+	if(iFirstVisiblePageNumber >= 0)
+		pPage = getLayout() -> getNthPage(iFirstVisiblePageNumber);
+
 	while(pPage)
 	{
 		UT_sint32 adjustedTop; // Top line of the page that defines the page's top margin,
@@ -4696,45 +4664,52 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		UT_sint32 adjustedBottom;
 		UT_sint32 adjustedLeft;
 		UT_sint32 adjustedRight;
-		UT_sint32 iPageHeight;
-		UT_sint32 iPageWidth = pPage->getWidth();
+
 		UT_sint32 iPageXOffset;
 		UT_sint32 iPageYOffset;
+
 		dg_DrawArgs da;
 
+		// get X / Y page offsets
 		getPageYOffset(pPage, iPageYOffset);
 		iPageXOffset = getWidthPrevPagesInRow(pPage->getPageNumber());
+
+		// if this page is not visible, then stop
+		if(!((iPageYOffset  <= getYScrollOffset() + getWindowHeight()) &&
+		    (iPageYOffset + iPageHeight >= getYScrollOffset())))
+			break;
 
 		// Adjust page's boundaries
 		switch(getViewMode())
 		{
 			case VIEW_NORMAL:
 			case VIEW_WEB:
-			iPageHeight = pPage->getHeight() - pDSL->getTopMargin() - pDSL->getBottomMargin();
 			adjustedTop = iPageYOffset - getYScrollOffset() + ( pPage->getPageNumber() * (m_pG->tlu(1) - getPageViewSep()) );
-			adjustedBottom = adjustedTop + iPageHeight;
 			adjustedLeft = 0;
-			adjustedRight = adjustedLeft + iPageWidth;
 			break;
 
 			case VIEW_PRINT:
 			case VIEW_PREVIEW:
-			iPageHeight = pPage->getHeight();
 			adjustedTop = iPageYOffset - getYScrollOffset();
-			adjustedBottom = adjustedTop + iPageHeight;
 			adjustedLeft = iPageXOffset - getXScrollOffset()  + getPageViewLeftMargin();
-			adjustedRight = adjustedLeft + iPageWidth;
 			break;
 		}
 
+		// view independant boundaries
+		adjustedBottom = adjustedTop + iPageHeight;
+		adjustedRight = adjustedLeft + iPageWidth;
+
 		xxx_UT_DEBUGMSG(("Drawing page adjustedTop = %i, Bottom = %i, Left = %i, Right = %i\n", adjustedTop, adjustedBottom, adjustedLeft, adjustedRight));
 		xxx_UT_DEBUGMSG(("--Entered _draw loop:\n  iPageNumber = %i, vecitemcount = %i\n  iRow = %i, iCol = %i\n  iPageWidth = %i, iPageHeight = %i\n  getPageViewTopMargin() = %i, m_yScrollOffset = %i\n", iPageNumber, vecPagesOnScreen.getItemCount(), iRow, iCol, iPageWidth, iPageHeight, getPageViewTopMargin(), m_yScrollOffset));
+
 		xxx_UT_DEBUGMSG(("drawing page E: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d y=%d h=%d\n", iPageHeight,curY,m_yScrollOffset,getWindowHeight(),y,height));
+
+		// set drawing args
 		da.bDirtyRunsOnly = bDirtyRunsOnly;
 		da.pG = m_pG;
-		xxx_UT_DEBUGMSG(("Drawing page da.xoff %d getPageViewLeftMargin() %d \n",da.xoff, getPageViewLeftMargin()));
 		da.yoff = adjustedTop;
 		da.xoff = adjustedLeft;
+
 		xxx_UT_DEBUGMSG(("Drawing page with da.yoff and da.xoff %i %i\n", da.yoff, da.xoff));
 
 		// Redraw the page background, if necessary
@@ -4746,6 +4721,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			else
 				painter.fillRect(*pClr, adjustedLeft + m_pG->tlu(1), adjustedTop + m_pG->tlu(1), iPageWidth - m_pG->tlu(1), iPageHeight - m_pG->tlu(1));
 			xxx_UT_DEBUGMSG(("   ---PAINTING PAGE %i---\n", pPage->getPageNumber()));
+
 			//
 			// Since we're clearing everything we have to draw every run no matter
 			// what.
@@ -4816,14 +4792,8 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			painter.drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom);
 		}
 
-		// Move to next page waiting to be drawn
-		iVecCount++;
-		if( (vecPagesOnScreen.getItemCount() > 0) && (vecPagesOnScreen.getItemCount() >= iVecCount + 1) )
-		{
-			pPage = vecPagesOnScreen.getNthItem(iVecCount);
-		}
-		else
-			pPage = NULL;
+		// advance to the next page
+		pPage = pPage -> getNext();
 	}
 
 	if (bClip)
@@ -4832,7 +4802,6 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	}
 	
 	xxx_UT_DEBUGMSG(("End _draw\n"));
-	
 }
 
 
@@ -6160,6 +6129,7 @@ bool FV_View::_makePointLegal(void)
 
 bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 {
+	
 	// see if prefs specify we should set language based on kbd layout
 	UT_return_val_if_fail(m_pApp, false);
 	bool bSetLang = false;
@@ -6178,6 +6148,8 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 	// do.  The right thing to do is to either delay calculation, or to
 	// not make the wrong number come up; disabling the caret is wrong. -PL
 	GR_Painter caretDisablerPainter(m_pG); // not an elegant way to disable all carets, but it works beautifully - MARCM
+	
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
 
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
@@ -6319,9 +6291,6 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 
-	_generalUpdate();
-
-
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
@@ -6333,6 +6302,9 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 	{
 	  notifyListeners(AV_CHG_ALL);
 	}
+
+	_generalUpdate();
+
 	return bResult;
 }
 

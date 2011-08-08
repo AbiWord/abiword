@@ -110,7 +110,9 @@ libxp_la_SOURCES = \
 	fv_View_protected.cpp \
 	fv_View_TestRoutines.cpp \
 	fv_VisualDragText.cpp \
-	fv_VisualDragText.h
+	fv_VisualDragText.h \
+	fv_ViewDoubleBuffering.cpp \
+	fv_ViewDoubleBuffering.h
 
 EXTRA_DIST = \
 	$(conditional_src)

@@ -91,6 +91,7 @@
 #include "xap_DialogFactory.h"
 #include "ap_Preview_Annotation.h"
 #include "ap_Dialog_Id.h"
+#include "fv_ViewDoubleBuffering.h"
 
 #include "pp_Revision.h"
 
@@ -295,7 +296,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_bInsertAtTablePending(false),
 		m_iPosAtTable(0),
 		m_bAnnotationPreviewActive(false),
-		m_bAllowSmartQuoteReplacement(true)
+		m_bAllowSmartQuoteReplacement(true),
+		m_pViewDoubleBufferingObject(NULL)
 {
 	if(m_pDoc)
 		m_sDocUUID = m_pDoc->getMyUUIDString();
@@ -725,6 +727,28 @@ void FV_View::setGraphics(GR_Graphics * pG)
 	{
 		m_caretListener = NULL;
 	}
+}
+
+bool FV_View::registerDoubleBufferingObject(FV_ViewDoubleBuffering *obj)
+{
+	if(m_pViewDoubleBufferingObject == NULL)
+	{
+		// ok, you're the top most one, I will register you
+		m_pViewDoubleBufferingObject = obj;
+		return true;
+	}
+	else return false;
+}
+
+bool FV_View::unregisterDoubleBufferingObject(FV_ViewDoubleBuffering *obj)
+{
+	if((void*)m_pViewDoubleBufferingObject == (void*)obj)
+	{
+		// you're the top most caller, I will unregister you
+		m_pViewDoubleBufferingObject = NULL;
+		return true;
+	}
+	else return false;
 }
 
 void FV_View:: fixInsertionPointCoords(void)
@@ -3710,6 +3734,8 @@ void FV_View::getBlocksInSelection( UT_GenericVector<fl_BlockLayout*>* vBlock) c
 
 void FV_View::insertParagraphBreak(void)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 	bool bDidGlob = false;
 	bool bBefore = false;
 	bool bStopList = false;

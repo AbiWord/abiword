@@ -25,6 +25,7 @@
 #include "gr_Graphics.h"
 #include "gr_Win32CharWidths.h"
 #include "ut_vector.h"
+#include "ut_stack.h"
 #include <wchar.h>
 #include <winuser.h>
 
@@ -301,7 +302,35 @@ protected:
 	virtual UT_uint32 	getDeviceResolution(void) const;
 	void					_setColor(DWORD clrRef);
 
-  private:
+	HDC m_bufferHdc;
+	HDC m_dummyHdc;
+
+	void _DeviceContext_MeasureBitBltCopySpeed(HDC source, HDC dest, int width, int height);
+	void getWidthAndHeightFromHWND(HWND h, int &width, int &height);
+	void _DeviceContext_SwitchToBuffer();
+	void _DeviceContext_SwitchToScreen();
+	void _DeviceContext_DrawBufferToScreen();
+	
+	void _DeviceContext_SuspendDrawing();
+	void _DeviceContext_ResumeDrawing();
+
+	void _DoubleBuffering_SetUpDummyBuffer();
+	void _DoubleBuffering_ReleaseDummyBuffer();
+
+	HDC _DoubleBuffering_CreateBuffer(HDC, int, int);
+	void _DoubleBuffering_ReleaseBuffer(HDC);
+
+	struct _HDCSwitchRecord
+	{
+		HDC oldHdc;
+		_HDCSwitchRecord(HDC h) : oldHdc(h) { }
+	};
+
+	UT_Stack _HDCSwitchStack;  
+
+	void _DeviceContext_RestorePrevHDCFromStack();
+
+private:
 	virtual GR_Win32Font * _newFont(LOGFONTW & lf, double fPointSize, HDC hdc, HDC printDC);
 
   protected:

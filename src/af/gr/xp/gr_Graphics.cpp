@@ -36,6 +36,7 @@
 #include "ut_string.h"
 #include "ut_units.h"
 #include "ut_sleep.h"
+#include "ut_stack.h"
 #include "ut_growbuf.h"
 #include "ut_debugmsg.h"
 #include "ut_OverstrikingChars.h"
@@ -245,7 +246,9 @@ GR_Graphics::GR_Graphics()
 	  m_iPrevXOffset(0),
 	  m_hashFontCache(19),
 	  m_AllCarets(this,&m_pCaret,&m_vecCarets),
-	  m_bAntiAliasAlways(false)
+	  m_bAntiAliasAlways(false),
+	  m_bDrawingSuspended(false),
+	  m_bDoubleBufferingActive(false)
 {
 }
 
@@ -298,6 +301,61 @@ GR_Graphics::~GR_Graphics()
 		GR_Caret * pCaret = m_vecCarets.getNthItem(i);
 		DELETEP(pCaret);
 	}
+}
+
+bool GR_Graphics::beginDoubleBuffering()
+{
+	if(m_bDoubleBufferingActive) return false;
+	m_DCSwitchManagementStack.push((int)SWITCHED_TO_BUFFER);
+	_DeviceContext_SwitchToBuffer();
+	m_bDoubleBufferingActive = true;
+	UT_DEBUGMSG(("ASFRENT: SWITCHED TO BUFFER\n"));
+	return true;
+}
+
+void GR_Graphics::endDoubleBuffering(bool token)
+{
+	// check prerequisites
+	if(token == false) return;
+
+	UT_ASSERT(m_DCSwitchManagementStack.getDepth() > 0);
+	
+	UT_sint32 topMostSwitch;
+	m_DCSwitchManagementStack.viewTop(topMostSwitch);
+	UT_ASSERT(topMostSwitch == (UT_sint32)SWITCHED_TO_BUFFER);
+
+	_DeviceContext_SwitchToScreen();
+	m_DCSwitchManagementStack.pop();
+	m_bDoubleBufferingActive = false;
+	UT_DEBUGMSG(("ASFRENT: SWITCHED TO SCREEN\n"));
+}
+
+bool GR_Graphics::suspendDrawing()
+{
+	if(m_bDrawingSuspended) return false;
+	m_DCSwitchManagementStack.push((int)DRAWING_SUSPENDED);
+	_DeviceContext_SuspendDrawing();
+	m_bDrawingSuspended = true;
+	UT_DEBUGMSG(("ASFRENT: DRAWING SUSPENDED\n"));
+	return true;
+}
+
+void GR_Graphics::resumeDrawing(bool token)
+{
+	// check prerequisites
+	if(token == false) return;
+
+	UT_ASSERT(m_DCSwitchManagementStack.getDepth() > 0);
+	
+	UT_sint32 topMostSwitch;
+	m_DCSwitchManagementStack.viewTop(topMostSwitch);
+	UT_ASSERT(topMostSwitch == (UT_sint32)DRAWING_SUSPENDED);
+
+	// take action only if the caller has the good token
+	_DeviceContext_ResumeDrawing();
+	m_DCSwitchManagementStack.pop();
+	m_bDrawingSuspended = false;
+	UT_DEBUGMSG(("ASFRENT: DRAWING RESUMED\n"));
 }
 
 void GR_Graphics::_destroyFonts ()

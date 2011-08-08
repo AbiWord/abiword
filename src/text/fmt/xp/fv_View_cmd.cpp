@@ -61,6 +61,7 @@
 #include "pp_Property.h"
 #include "pp_AttrProp.h"
 #include "gr_Graphics.h"
+#include "gr_Painter.h"
 #include "gr_DrawArgs.h"
 #include "ie_types.h"
 #include "xap_App.h"
@@ -73,6 +74,7 @@
 #include "fd_Field.h"
 #include "pf_Frag_Strux.h"
 #include "fp_FootnoteContainer.h"
+#include "fv_ViewDoubleBuffering.h"
 
 #ifdef ENABLE_SPELL
 #include "spell_manager.h"
@@ -197,6 +199,8 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
   */
 bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 	PL_StruxDocHandle cellSDH,tableSDH,curSDH,endTableSDH;
 	PL_StruxDocHandle prevCellSDH1,prevCellSDH2;
 	PT_DocPosition posTable,posCell,posFirstInsert,posEndTable;
@@ -923,6 +927,8 @@ bool FV_View::cmdTableToText(PT_DocPosition posSource,UT_sint32 iSepType)
  */
 bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestination)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 	UT_sint32 sLeft,sRight,sTop,sBot;
 	UT_sint32 dLeft,dRight,dTop,dBot;
 	UT_sint32 Left,Right,Top,Bot; // need these for working variables.
@@ -1464,6 +1470,8 @@ bool FV_View::cmdAdvanceNextPrevCell(bool bGoNext)
 
 bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 	if(isSelectionEmpty())
 	{
 		return false;
@@ -1691,6 +1699,8 @@ bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
  */
 bool FV_View::cmdAutoSizeCols(void)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 //
 // Got all we need, now set things up to do the delete nicely
 //
@@ -1730,6 +1740,8 @@ bool FV_View::cmdAutoSizeCols(void)
  */
 bool FV_View::cmdAutoSizeRows(void)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 //
 // Got all we need, now set things up to do the delete nicely
 //
@@ -1770,6 +1782,8 @@ bool FV_View::cmdAutoSizeRows(void)
  */
 bool FV_View::cmdAutoFitTable(void)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 //
 // Got all we need, now set things up to do the delete nicely
 //
@@ -1820,6 +1834,8 @@ bool FV_View::cmdAutoFitTable(void)
  */
 bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 	PL_StruxDocHandle cellSDH,tableSDH,endTableSDH,endCellSDH,prevCellSDH;
 	PT_DocPosition posTable,posCell,posEndCell,posPrevCell,posFirstInsert;
 	UT_sint32 numColsForInsertion = getNumColumnsInSelection();
@@ -2280,6 +2296,8 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
  */
 bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 	PL_StruxDocHandle cellSDH,tableSDH,endTableSDH,endCellSDH;
 	PT_DocPosition posTable,posCell,posEndCell;
 	UT_sint32 numRowsForInsertion = getNumRowsInSelection();
@@ -2575,6 +2593,8 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
  */
 bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 	PL_StruxDocHandle cellSDH,tableSDH,endTableSDH,endCellSDH;
 	PT_DocPosition posTable,posCell2;
 	UT_sint32 iLeft,iRight,iTop,iBot;
@@ -2786,6 +2806,8 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
  */
 bool FV_View::cmdDeleteTable(PT_DocPosition posTable, bool bDontNotify)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 	PL_StruxDocHandle tableSDH,endTableSDH;
 	PT_DocPosition posStartTable,posEndTable;
 	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posTable,PTX_SectionTable,&tableSDH);
@@ -2852,6 +2874,8 @@ bool FV_View::cmdDeleteTable(PT_DocPosition posTable, bool bDontNotify)
  */
 bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 	PL_StruxDocHandle cellSDH,tableSDH,endTableSDH,endCellSDH;
 	PT_DocPosition posTable,posCell2;
 	UT_sint32 iLeft,iRight,iTop,iBot;
@@ -3146,6 +3170,8 @@ bool FV_View::cmdDeleteCell(PT_DocPosition /*cellPos*/ )
  */
 UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const gchar * pPropsArray[])
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 	// TODO -- why does this function return UT_Error? If bool is
 	// sufficient, it should return bool, and if not, than the
 	// UT_Error & bool operations below are probably not safe
@@ -3373,6 +3399,8 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const gch
 
 bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 	//
 	// Look if we should insert a pargraph before the table
 	//
@@ -3518,6 +3546,8 @@ bool FV_View::cmdStopList(void)
 
 void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 	const gchar * properties[] = { "font-family", NULL, 0};
 	const gchar ** props_in = NULL;
 	const gchar * currentfont;
@@ -3936,8 +3966,10 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 }
 
 
+
 void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 {
+
 #define HACK_LINE_HEIGHT				20 // TODO Fix this!!
 
 	UT_sint32 lineHeight = iPos;
@@ -4233,6 +4265,8 @@ void FV_View::cmdHyperlinkCopyLocation(PT_DocPosition pos)
 
 void FV_View::cmdUndo(UT_uint32 count)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 	if (!isSelectionEmpty())
 		_clearSelection();
 
@@ -4311,6 +4345,8 @@ void FV_View::cmdUndo(UT_uint32 count)
 
 void FV_View::cmdRedo(UT_uint32 count)
 {
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+	
 	if (!isSelectionEmpty())
 		_clearSelection();
 
@@ -4520,6 +4556,9 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 //
 // Look to see if should paste a table column or row
 //
+	
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
 	if((m_Selection.getPrevSelectionMode() == FV_SelectionMode_TableColumn)
 	   || (m_Selection.getPrevSelectionMode() == 	FV_SelectionMode_TableRow))
 	{
@@ -4529,6 +4568,10 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 			if(pTab && pTab == m_Selection.getTableLayout())
 			{
 				m_Selection.pasteRowOrCol();
+
+				// FIXME does this section get affected
+				// by scrolling too?
+
 				return;
 			}
 		}
@@ -4569,10 +4612,13 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 //
 // Do a complete update coz who knows what happened in the paste!
 //
+	
+	// force update the screen before leaving the current view
 
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
 	notifyListeners(AV_CHG_ALL);
+	
 }
 
 void FV_View::cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos)

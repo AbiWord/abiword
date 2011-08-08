@@ -34,6 +34,7 @@
 #include "gr_CharWidthsCache.h"
 #include "ut_hash.h"
 #include "ut_vector.h"
+#include "ut_stack.h"
 #include "ut_TextIterator.h"
 
 #ifdef ABI_GRAPHICS_PLUGIN
@@ -829,6 +830,43 @@ class ABI_EXPORT GR_Graphics
 	bool m_bHave3DColors;
 
 	UT_uint32 m_paintCount;
+
+	// Double buffering infrastructure.
+
+	// The default implementation here leads to no double buffering,
+	// as they perform no action at all. Should be overriden in derived
+	// classes
+	virtual void _DeviceContext_SwitchToBuffer() { };
+	virtual void _DeviceContext_SwitchToScreen() { };
+
+	// returns the token for the current call
+	bool beginDoubleBuffering();
+
+	// does the actual buffer-to-screen switch only when it gets
+	// the correct token
+	void endDoubleBuffering(bool token);
+
+	// SUSPEND / RESUME drawings infrastructure
+	// Drawing code (through gr_Graphics) will have no effect between SUSPEND - RESUME.
+	// The default implementation does not suspend anything
+	// (ie. changes are still taking effect)
+
+	virtual void _DeviceContext_SuspendDrawing() { };
+	virtual void _DeviceContext_ResumeDrawing() { };
+	
+	bool suspendDrawing();
+	void resumeDrawing(bool token);
+
+	// Device context switch management
+	bool m_bDoubleBufferingActive;
+	bool m_bDrawingSuspended;
+
+	typedef enum {
+		SWITCHED_TO_BUFFER = 0,
+		DRAWING_SUSPENDED
+	} DeviceContextSwitchType;
+
+	UT_NumberStack m_DCSwitchManagementStack;
 
  private:
 	GR_Caret *		 m_pCaret;
