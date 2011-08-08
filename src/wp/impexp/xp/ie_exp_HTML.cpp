@@ -87,7 +87,7 @@ IE_Exp_HTML::IE_Exp_HTML(PD_Document * pDocument)
         m_styleListener(new IE_Exp_HTML_StyleListener(m_style_tree)),
         m_bSuppressDialog(false),
         m_suffix(""),
-    m_pNavigationHelper(NULL),
+    m_pNavigationHelper(new IE_Exp_HTML_NavigationHelper(getDoc(), getFileName())),
 	m_pWriterFactory(new IE_Exp_HTML_DefaultWriterFactory(this->m_exp_opt))
 {
     
@@ -230,8 +230,7 @@ UT_Error IE_Exp_HTML::_writeDocument()
     }
 
     _buildStyleTree();
-    m_pNavigationHelper = new IE_Exp_HTML_NavigationHelper(getDoc(), getFileName());
-
+    
     if (isCopying()) // ClipBoard
     {
         m_exp_opt.bEmbedImages = true;
