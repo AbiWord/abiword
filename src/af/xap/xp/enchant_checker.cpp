@@ -58,13 +58,13 @@ EnchantChecker::EnchantChecker()
 		gchar* ispell_path1 = g_build_filename (XAP_App::getApp()->getAbiSuiteLibDir(), "dictionary", NULL);
 		gchar* ispell_hyphenation_path1 = g_build_filename (XAP_App::getApp()->getAbiSuiteLibDir(), "dictionary", NULL);
 		// ... while in the new situation we support multiple types of dictionaries
-		gchar* ispell_path2 = g_build_filename (XAP_App::getApp()->getAbiSuiteLibDir(), "dictionary", "ispell", NULL);
+		gchar* ispell_path2 = g_build_filename (XAP_App::getApp()->getAbiSuiteLibDir(), "language", "ispell", NULL);
 		gchar* ispell_hyphenation_path2 = g_build_filename (XAP_App::getApp()->getAbiSuiteLibDir(), "dictionary", "ispell", NULL);
 		std::string ispell_path = std::string(ispell_path1) + ";" + std::string(ispell_path2);
-		std::string ispell_hyphenation_path = std::string(ispell_hyphenation_path1) + ";" + std::string(ispell_hyphenation_path2);
+		//std::string ispell_hyphenation_path = std::string(ispell_hyphenation_path1) + ";" + std::string(ispell_hyphenation_path2);
 
 		enchant_broker_set_param(s_enchant_broker,  "enchant.ispell.dictionary.path", ispell_path.c_str());
-		//enchant_broker_set_param(s_enchant_broker,  "enchant.ispell.hyphenation.dictionary.path", ispell_path.c_str());
+		enchant_broker_set_param(s_enchant_broker,  "enchant.ispell.hyphenation.dictionary.path", ispell_path.c_str());
 
 		g_free(ispell_path1);
 		g_free(ispell_path2);
