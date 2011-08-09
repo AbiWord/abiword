@@ -4705,7 +4705,6 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		xxx_UT_DEBUGMSG(("drawing page E: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d y=%d h=%d\n", iPageHeight,curY,m_yScrollOffset,getWindowHeight(),y,height));
 
 		// set drawing args
-		da.bDirtyRunsOnly = bDirtyRunsOnly;
 		da.pG = m_pG;
 		da.yoff = adjustedTop;
 		da.xoff = adjustedLeft;
