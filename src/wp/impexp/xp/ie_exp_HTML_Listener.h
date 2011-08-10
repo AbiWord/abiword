@@ -39,6 +39,7 @@
 #include <fl_TOCLayout.h>
 #include <ie_Table.h>
 #include <ie_TOC.h>
+#include <ut_mbtowc.h>
 
 /**
  * Listener for the {X,P}HTML and MHT document generators. Contains all methods
@@ -109,6 +110,8 @@ public:
         const UT_UTF8String &/*type*/, const UT_UTF8String &/*uri*/) {}
     virtual void insertMeta(const UT_UTF8String &/*name*/, 
         const UT_UTF8String &/*content*/) {}
+    virtual void insertMath(const UT_UTF8String &/*mathml*/,
+        const UT_UTF8String &/*width*/, const UT_UTF8String &/*height*/){}
 
     virtual void insertImage(const UT_UTF8String &/*url*/, 
         const UT_UTF8String &/*align*/, const UT_UTF8String& /*style*/,

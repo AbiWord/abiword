@@ -2831,7 +2831,7 @@ void IE_Exp_HTML_Listener::_insertEmbeddedImage(PT_AttrPropIndex api)
  */
 void IE_Exp_HTML_Listener::_insertMath(PT_AttrPropIndex api)
 {
-    /*
+    
         const gchar* szMath = NULL;
         szMath = _getObjectKey(api, static_cast<const gchar*>("dataid"));
 
@@ -2848,60 +2848,34 @@ void IE_Exp_HTML_Listener::_insertMath(PT_AttrPropIndex api)
 
         UT_return_if_fail(!sMathML.empty());
 
-        UT_UCS4String buf = sMathML.utf8_str();
-        UT_UTF8String output = "";
-
         const PP_AttrProp * pAP = NULL;
         bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
         UT_LocaleTransactor t(LC_NUMERIC, "C");
-        UT_UTF8String dimension;
-        double dInch;
+        double dWidth;
+        double dHeight;
 
         UT_return_if_fail(bHaveProp && pAP);
 
-        _openSpan(api);
-
         if(pAP->getProperty("width", szMath)) {
-            dInch = static_cast<double>(atoi(szMath))/UT_LAYOUT_RESOLUTION;
-            UT_UTF8String_sprintf(dimension,"%fin",dInch);
-            output += "<draw:frame svg:width=\"";
-            output += dimension;
-            output += "\" svg:height=\"";
+            dWidth = static_cast<double>(atoi(szMath))/UT_LAYOUT_RESOLUTION;
         } else {
             UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-            _closeSpan();
             return;
         }
 
         if(pAP->getProperty("height", szMath)) {
-            dInch = static_cast<double>(atoi(szMath))/UT_LAYOUT_RESOLUTION;
-            dimension.clear();
-            UT_UTF8String_sprintf(dimension,"%fin",dInch);
-            output += dimension;
-            output += "\"><draw:object>";
+            dHeight = static_cast<double>(atoi(szMath))/UT_LAYOUT_RESOLUTION;
         } else {
             UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-            _closeSpan();
             return;
         }
+        
+        UT_UTF8String width = UT_UTF8String_sprintf("%fin", dWidth);
+        UT_UTF8String height = UT_UTF8String_sprintf("%fin", dHeight);
+        
+        m_pCurrentImpl->insertMath(sMathML, width, height);      
+        
 
-        for (UT_uint32 i = 0; i < buf.length(); i++) {
-            if (buf[i] == '<') {
-                if (((i + 1) < buf.length()) && (buf[i+1] == '/')) {
-                    output += "</math:";
-                    i++; // skip the '/'
-                } else if ((i + 1) < buf.length()) {
-                    output += "<math:";
-                } else {
-                    UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-                }
-            } else {
-                output += buf[i];
-            }
-        }
-        output += "</draw:object></draw:frame>";
-        m_pCurrentImpl->insertText(output);
-        _closeSpan();*/
 }
 
 void IE_Exp_HTML_Listener::_insertEndnotes()
