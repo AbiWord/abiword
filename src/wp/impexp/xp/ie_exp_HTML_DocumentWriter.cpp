@@ -29,7 +29,8 @@ m_iEndnoteCount(0),
 m_iEndnoteAnchorCount(0),
 m_iFootnoteCount(0),
 m_iAnnotationCount(0),
-m_bInsertPhp(false)
+m_bInsertPhp(false),
+m_bInsertSvgScript(false)
 {
 
 }
@@ -90,7 +91,7 @@ void IE_Exp_HTML_DocumentWriter::openHeading(size_t level,
 }
 
 void IE_Exp_HTML_DocumentWriter::closeHeading()
-{
+{   
     m_pTagWriter->closeTag();
 }
 
@@ -270,6 +271,15 @@ void IE_Exp_HTML_DocumentWriter::closeHead()
 		m_pTagWriter->writeData(phpFragment.utf8_str());
 	}	
 	
+    if (m_bInsertSvgScript)
+    {
+        m_pTagWriter->openTag("script", false, false);
+        m_pTagWriter->addAttribute("type", "text/javascript");
+        m_pTagWriter->openComment();
+        m_pTagWriter->writeData(sMathSVGScript.utf8_str());
+        m_pTagWriter->closeComment();
+        m_pTagWriter->closeTag();
+    }
     m_pTagWriter->closeTag();
 }
 
@@ -481,6 +491,12 @@ void IE_Exp_HTML_DocumentWriter::insertLink(const UT_UTF8String &rel,
     m_pTagWriter->addAttribute("href", uri.utf8_str());
     m_pTagWriter->closeTag();
 }
+
+void IE_Exp_HTML_DocumentWriter::insertMath(const UT_UTF8String& mathml, 
+    const UT_UTF8String& width, const UT_UTF8String& height)
+{
+    m_pTagWriter->writeData(mathml.utf8_str());    
+}
 /*
  * 
  */
@@ -520,8 +536,10 @@ void IE_Exp_HTML_HTML4Writer::insertDTD()
 }
 
 IE_Exp_HTML_DefaultWriterFactory::IE_Exp_HTML_DefaultWriterFactory(
+PD_Document *pDocument,
 XAP_Exp_HTMLOptions& exp_opt):
-		m_exp_opt(exp_opt)
+		m_exp_opt(exp_opt),
+    m_pDocument(pDocument)
 {
 	
 }
@@ -538,5 +556,7 @@ IE_Exp_HTML_DocumentWriter *IE_Exp_HTML_DefaultWriterFactory::constructDocumentW
 	}
 
 	pWriter->enablePHP(m_exp_opt.bIsAbiWebDoc);
+    pWriter->enableSVGScript((!m_exp_opt.bMathMLRenderPNG) 
+        && m_pDocument->hasMath());
 	return pWriter;
 }

@@ -111,7 +111,10 @@ public:
     void insertTitle(const UT_UTF8String &title);
     void insertLink(const UT_UTF8String &rel,
             const UT_UTF8String &type, const UT_UTF8String &uri);
+    void insertMath(const UT_UTF8String &mathml,
+    const UT_UTF8String &width, const UT_UTF8String &height);
     inline void enablePHP (bool bEnable = true) { m_bInsertPhp = bEnable; }
+    inline void enableSVGScript (bool bEnable = true) { m_bInsertSvgScript = bEnable; }
 protected:
     IE_Exp_HTML_DocumentWriter(){}
     void inline _handleStyleAndId(const gchar *szStyleName, const gchar *szId,
@@ -125,6 +128,7 @@ protected:
     UT_uint32 m_iAnnotationCount;
     
     bool m_bInsertPhp;
+    bool m_bInsertSvgScript;
 };
 
 /*
@@ -162,10 +166,12 @@ public:
 class IE_Exp_HTML_DefaultWriterFactory : public IE_Exp_HTML_WriterFactory
 {
 public:
-    IE_Exp_HTML_DefaultWriterFactory(XAP_Exp_HTMLOptions &exp_opt);
+    IE_Exp_HTML_DefaultWriterFactory(PD_Document *pDocument,
+            XAP_Exp_HTMLOptions &exp_opt);
     IE_Exp_HTML_DocumentWriter *constructDocumentWriter(
     IE_Exp_HTML_OutputWriter *pOutputWriter);
 private:
     XAP_Exp_HTMLOptions &m_exp_opt;
+    PD_Document *m_pDocument;
 };
 #endif

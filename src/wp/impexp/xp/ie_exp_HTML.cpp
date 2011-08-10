@@ -89,7 +89,8 @@ IE_Exp_HTML::IE_Exp_HTML(PD_Document * pDocument)
         m_bSuppressDialog(false),
         m_suffix(""),
     m_pNavigationHelper(new IE_Exp_HTML_NavigationHelper(getDoc(), getFileName())),
-	m_pWriterFactory(new IE_Exp_HTML_DefaultWriterFactory(this->m_exp_opt))
+	m_pWriterFactory( 
+                     new IE_Exp_HTML_DefaultWriterFactory(pDocument,this->m_exp_opt))
 {
     
     m_exp_opt.bIs4 = false;
@@ -652,8 +653,11 @@ void IE_Exp_HTML::setWriterFactory(IE_Exp_HTML_WriterFactory* pWriterFactory)
 	
 	if (pWriterFactory == NULL)
 	{
-		m_pWriterFactory = new IE_Exp_HTML_DefaultWriterFactory(this->m_exp_opt);
-	}
-	
-	m_pWriterFactory = pWriterFactory;
+		m_pWriterFactory = 
+            new IE_Exp_HTML_DefaultWriterFactory(getDoc(),
+                                                             this->m_exp_opt);
+	} else
+    {
+        m_pWriterFactory = pWriterFactory;
+    }
 }
