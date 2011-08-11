@@ -1,114 +1,98 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2000 Hubert Figuière
+ * Copyright (C) 2000 Hubert Figuiere
  * Copyright (C) 2010-2011 Ingo Brueckl
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
 #ifndef IE_IMP_MSWRITE_H
 #define IE_IMP_MSWRITE_H
 
-#include <stdio.h>
-
+#include "ie_impexp_MSWrite.h"
+#include "ie_imp.h"
 #include "ut_bytebuf.h"
+#include "ut_mbtowc.h"
 #include "ut_string_class.h"
 
-#include "ie_imp.h"
-#include "ie_impexp_MSWrite.h"
-#include "ut_mbtowc.h"
-
-class PD_Document;
-
-/* the fonts */
-typedef struct wri_font {
-	short	ffid;
+typedef struct
+{
+	short ffid;             // unused
 	const char *name;
 	const char *codepage;
 } wri_font;
 
-// The importer/reader for MS Write Files.
-
 class IE_Imp_MSWrite_Sniffer : public IE_ImpSniffer
 {
-	friend class IE_Imp;
-
 public:
 	IE_Imp_MSWrite_Sniffer();
 	virtual ~IE_Imp_MSWrite_Sniffer() {}
+	virtual bool getDlgLabels(const char **szDesc, const char **szSuffixList, IEFileType *ft);
+	virtual const IE_SuffixConfidence *getSuffixConfidence();
+	virtual const IE_MimeConfidence *getMimeConfidence() { return 0; }
+	virtual UT_Confidence_t recognizeContents(const char *szBuf, UT_uint32 iNumbytes);
+	virtual UT_Error constructImporter(PD_Document *pDocument, IE_Imp **ppie);
 
-	virtual const IE_SuffixConfidence * getSuffixConfidence ();
-	virtual UT_Confidence_t recognizeContents (const char * szBuf, 
-									UT_uint32 iNumbytes);
-	virtual const IE_MimeConfidence * getMimeConfidence () { return NULL; }
-	virtual bool getDlgLabels (const char ** szDesc,
-							   const char ** szSuffixList,
-							   IEFileType * ft);
-	virtual UT_Error constructImporter (PD_Document * pDocument,
-										IE_Imp ** ppie);
-
+private:
+	friend class IE_Imp;
 };
-
 
 class IE_Imp_MSWrite : public IE_Imp
 {
 public:
-	IE_Imp_MSWrite(PD_Document * pDocument);
+	IE_Imp_MSWrite(PD_Document *pDocument);
 	~IE_Imp_MSWrite();
-	
+
 protected:
-	virtual UT_Error    _loadFile(GsfInput * input);
-	UT_Error			_parseFile();
-	
+	virtual UT_Error _loadFile(GsfInput *input);
+
 private:
 	enum pap_t {All, Header, Footer};
 	enum hdrftr_t {headerfirst, header, footerfirst, footer};
-	
-	void free_ffntb ();
-	int read_ffntb ();
-	void translate_char (char ch, UT_UCS4String & buf);
-	int read_sep();
-	int read_pap(pap_t process);
-	int read_char (int fcFirst2, int fcLim2);
-	int read_pic(int, int);
-	
-	GsfInput* mFile;
-	
-	UT_uint32 wri_fonts_count;
-	struct wri_font *wri_fonts;
-	UT_uint32 pic_nr;
-	
-	struct wri_struct *write_file_header;
-	struct wri_struct *write_picture;
-	struct wri_struct *write_ole_picture;
-	
-	const char *get_codepage(const char *facename, int *facelen);   // gets codepage from font name
-	void set_codepage(const char *charset);                         // sets the input character set for conversion
-	
-	void _append_hdrftr(hdrftr_t which);
-	
-	UT_UCS4String mCharBuf;    // buffer for char runs.
-	UT_ByteBuf mTextBuf;       // complete text buffer as extracted out of the file.
+
+	GsfInput *mFile;
+	UT_ByteBuf mData;      // complete data buffer as extracted out of the file
+	UT_UCS4String mText;   // text buffer
+
+	wri_struct *wri_file_header;
+	wri_struct *wri_picture_header;
+	wri_struct *wri_ole_header;
+
 	UT_UCS4_mbtowc charconv;   // Windows codepage to unicode conversion
+
 	const char *default_codepage;
-	bool lf;
 	int xaLeft, xaRight;
 	bool hasHeader, hasFooter, page1Header, page1Footer;
+	wri_font *wri_fonts;
+	int wri_fonts_count;
+	unsigned int pic_nr;
+	bool lf;
+
+	UT_Error parse_file();
+	bool read_ffntb();
+	bool read_sep();
+	bool read_pap(pap_t process);
+	bool read_txt(int from, int to);
+	bool read_pic(int from, int size);
+	void _append_hdrftr(hdrftr_t which);
+
+	void free_ffntb();
+	const char *get_codepage(const char *facename, int *facelen);
+	void set_codepage(const char *charset);
+	void translate_char(const UT_Byte ch, UT_UCS4String &buf);
 };
 
-#endif /* IE_IMP_MSWRITE_H */
+#endif

@@ -1,132 +1,151 @@
 /* AbiWord
  * Copyright (C) 2001 Sean Young <sean@mess.org>
  * Copyright (C) 2010-2011 Ingo Brueckl
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <memory.h>
-/*#include <png.h>*/
+
 #include <gsf/gsf-input.h>
-#include <gsf/gsf-output.h>
+
 #include "ie_impexp_MSWrite.h"
-
 #include "ut_debugmsg.h"
-#include "ut_assert.h"
+#include "ut_types.h"
 
-/***************************************************************************/
-/* wri_struct.c */
-/***************************************************************************/
+bool read_wri_struct (wri_struct *w, GsfInput *f)
+{
+	int i, size;
+	unsigned char *blob;
+	bool result;
 
-int read_wri_struct_mem (struct wri_struct *cfg, unsigned char *blob) {
-    int i, n;
+	// first we need to calculate the size
+	i = size = 0;
 
-    for (i=0;cfg[i].name;i++) {
-	switch (cfg[i].type) {
-	case CT_VALUE:
-	    n = cfg[i].size;
-	    cfg[i].value = 0;
-	    while (n--) 
-		cfg[i].value = (cfg[i].value * 256) + blob[n];
-	    break;
-	case CT_BLOB:
-	    cfg[i].data = static_cast<char*>(malloc (cfg[i].size));
-	    if (!cfg[i].data) {
-		fprintf (stderr, "Out of memory!\n");
-		return 1;
-	    }
-	    memcpy (cfg[i].data, blob, cfg[i].size);
-	    break;
-	case CT_IGNORE:
-	    break;
+	while (w[i].name) size += w[i++].size;
+
+	// got the size, read the blob
+	blob = static_cast<unsigned char *>(malloc(size));
+
+	if (!blob)
+	{
+		fprintf(stderr, "read_wri_struct: Out of memory!\n");
+		return false;
 	}
-	blob += cfg[i].size;
-    }
-    return 0;
+
+	if (!gsf_input_read(f, size, blob))
+	{
+		perror("read_wri_struct: File not big enough!");
+		return false;
+	}
+
+	result = read_wri_struct_mem(w, blob);
+	free(blob);
+
+	return result;
 }
 
-int read_wri_struct (struct wri_struct *cfg, GsfInput *f) {
-    int size, i;
-    unsigned char *blob;
+bool read_wri_struct_mem (wri_struct *w, unsigned char *blob)
+{
+	int n;
 
-    /* first we need to calculate the size */
-    i = size = 0;
-    while (cfg[i].name) size += cfg[i++].size;
+	for (int i = 0; w[i].name; i++)
+	{
+		switch (w[i].type)
+		{
+			case CT_VALUE:
+				n = w[i].size;
+				w[i].value = 0;
 
-    /* got the size, read the blob */
-    blob = static_cast<unsigned char*>(malloc (size));
-    if (!blob) {
-	fprintf (stderr, "Out of memory!\n");
-	return 1;
-    }
-    if (!gsf_input_read(f, size, blob)) {
-	fprintf (stderr, "File not big enough!\n");
-	return 1;
-    }
-    
-    size = read_wri_struct_mem (cfg, blob);
-    free (blob);
+				while (n--) w[i].value = (w[i].value * 256) + blob[n];
 
-    return size;
+				break;
+
+			case CT_BLOB:
+				w[i].data = static_cast<char *>(malloc(w[i].size));
+
+				if (!w[i].data)
+				{
+					fprintf(stderr, "read_wri_struct_mem: Out of memory!\n");
+					return false;
+				}
+
+				memcpy(w[i].data, blob, w[i].size);
+				break;
+
+			case CT_IGNORE:
+				break;
+		}
+
+		blob += w[i].size;
+	}
+
+	return true;
 }
 
-void dump_wri_struct (struct wri_struct *cfg) {
-#if 0
-    int i = 0;
+int wri_struct_value (const wri_struct *w, const char *name)
+{
+	for (int i = 0; w[i].name; i++)
+		if (strcmp(w[i].name, name) == 0) return w[i].value;
 
-    while (cfg[i].name) {
-	switch (cfg[i].type) {
-	case CT_VALUE:
-	    printf ("%s:\t%x\n", cfg[i].name, cfg[i].value);
-	    break;
-	case CT_IGNORE:
-	    printf ("%s:\tignored\n", cfg[i].name);
-	    break;
-	case CT_BLOB:
-	    printf ("%s:\tblob (%d)\n", cfg[i].name, cfg[i].size);
-	    break;
+	/* This should never happen! */
+	fprintf(stderr, "Internal error: '%s' not found!\n", name);
+	exit(1);
+	return 0;
+}
+
+void free_wri_struct (wri_struct *w)
+{
+	for (int i = 0; w[i].name; i++)
+	{
+		w[i].value = 0;
+
+		if (w[i].data)
+		{
+			free(w[i].data);
+			w[i].data = NULL;
+		}
 	}
-	i++;
-    }
+}
+
+void debug_wri_struct (wri_struct *w)
+{
+#ifdef DEBUG
+	for (int i = 0; w[i].name; i++)
+	{
+		switch (w[i].type)
+		{
+			case CT_VALUE:
+				UT_DEBUGMSG(("%s:\t0x%04x\n", w[i].name, w[i].value));
+				break;
+
+			case CT_BLOB:
+				UT_DEBUGMSG(("%s:\tblob (%d)\n", w[i].name, w[i].size));
+				break;
+
+			case CT_IGNORE:
+				UT_DEBUGMSG(("%s:\tignored\n", w[i].name));
+				break;
+		}
+	}
+
+	UT_DEBUGMSG(("\n"));
 #else
-	(void) cfg;
+	UT_UNUSED(w);
 #endif
-}
-
-void free_wri_struct (struct wri_struct *cfg) {
-    int i = 0;
-    while (cfg[i].name) {
-	if (cfg[i].data) {
-		free (cfg[i].data);
-		cfg[i].data = NULL;
-	}
-	i++;
-    }
-}
-   
-int wri_struct_value (const struct wri_struct *cfg, const char *name) {
-    int  i = 0;
-    while (cfg[i].name) {
-	if (!strcmp (cfg[i].name, name) ) return cfg[i].value;
-	i++;
-    }
-    /* this shouldn't happen! */
-    printf ("%s not found, internal error.\n", name);
-    exit (1);
-    return 0;
 }
