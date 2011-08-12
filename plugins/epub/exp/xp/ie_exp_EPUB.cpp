@@ -480,7 +480,6 @@ UT_Error IE_Exp_EPUB::EPUB3_writeNavigation()
     }
     else
     {
-        m_opsId.push_back(escapeForId("index.xhtml"));
         gsf_xml_out_start_element(navXHTML, "ol");
         gsf_xml_out_start_element(navXHTML, "li");
         gsf_xml_out_add_cstr(navXHTML, "class", "h1");
@@ -610,7 +609,7 @@ UT_Error IE_Exp_EPUB::package()
     if (!m_bIsEpub2)
     {
         gsf_xml_out_start_element(opfXml, "item");
-        gsf_xml_out_add_cstr(opfXml, "id", "nav");
+        gsf_xml_out_add_cstr(opfXml, "id", "toc");
         gsf_xml_out_add_cstr(opfXml, "href", "toc.xhtml");
         gsf_xml_out_add_cstr(opfXml, "media-type", "application/xhtml+xml");
         gsf_xml_out_end_element(opfXml);  
@@ -621,6 +620,15 @@ UT_Error IE_Exp_EPUB::package()
     // <spine>
     gsf_xml_out_start_element(opfXml, "spine");
     gsf_xml_out_add_cstr(opfXml, "toc", "ncx");
+    
+    
+    if (!m_bIsEpub2)
+    {
+        gsf_xml_out_start_element(opfXml, "itemref");
+        gsf_xml_out_add_cstr(opfXml, "idref","toc");
+        gsf_xml_out_end_element(opfXml);
+    }
+    
     for(std::vector<UT_UTF8String>::iterator i = m_opsId.begin(); i != m_opsId.end(); i++)
     {
         gsf_xml_out_start_element(opfXml, "itemref");
@@ -628,9 +636,8 @@ UT_Error IE_Exp_EPUB::package()
         gsf_xml_out_end_element(opfXml);
     }
 
-    gsf_xml_out_start_element(opfXml, "itemref");
-    gsf_xml_out_add_cstr(opfXml, "idref","toc");
-    gsf_xml_out_end_element(opfXml);
+
+    
     // </spine>
     gsf_xml_out_end_element(opfXml);
 
