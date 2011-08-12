@@ -573,6 +573,8 @@ void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, const UT_UTF8String &t
     pHeaderFooterListener->doHdrFtr(false);
     pListener->endOfDocument();
     
+    m_mathmlFlags[filename] = pListener->get_HasMathML();
+    
     DELETEP(pHeaderFooterListener);
     DELETEP(pListener);
     DELETEP(pMainListener);
@@ -659,5 +661,16 @@ void IE_Exp_HTML::setWriterFactory(IE_Exp_HTML_WriterFactory* pWriterFactory)
 	} else
     {
         m_pWriterFactory = pWriterFactory;
+    }
+}
+
+bool IE_Exp_HTML::hasMathML(const UT_UTF8String& file)
+{
+    if (m_mathmlFlags.find(file) != m_mathmlFlags.end())
+    {
+        return m_mathmlFlags[file];
+    } else
+    {
+        return false;
     }
 }

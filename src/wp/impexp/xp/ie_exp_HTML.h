@@ -117,6 +117,7 @@ protected:
         void _createMultipart();
 public:
 	virtual UT_Error	_writeDocument (bool bClipBoard, bool bTemplateBody);
+        bool hasMathML(const UT_UTF8String &file);
 private:
     // Returns document writer depending on settings
 	IE_Exp_HTML_StyleTree *		m_style_tree;
@@ -129,6 +130,7 @@ private:
 	UT_UTF8String m_suffix;
         IE_Exp_HTML_NavigationHelper *m_pNavigationHelper;
         IE_Exp_HTML_WriterFactory *m_pWriterFactory;
+        std::map<UT_UTF8String, bool> m_mathmlFlags;
 };
 
 #endif /* IE_EXP_HTML_H */

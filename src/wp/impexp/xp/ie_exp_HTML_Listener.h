@@ -182,6 +182,7 @@ public:
     inline void set_EmbedImages(bool bEmbed = true) { m_bEmbedImages = bEmbed; }
     inline void set_SplitDocument(bool bSplit = true) { m_bSplitDocument = bSplit; }
     inline void set_RenderMathMLToPng (bool bRender = true) { m_bRenderMathToPng = bRender; }
+    inline bool get_HasMathML() const { return m_bHasMathMl; }
 private:
     const gchar* _getObjectKey(const PT_AttrPropIndex& api,
             const gchar* key);
@@ -318,6 +319,7 @@ private:
     double m_dSecBottomMarginInches;
     double m_dCellWidthInches;
     UT_GenericVector<double*> m_vecDWidths;
+    bool m_bHasMathMl;
 };
 
 

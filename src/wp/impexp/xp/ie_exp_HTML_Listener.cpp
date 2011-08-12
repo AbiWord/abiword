@@ -71,7 +71,8 @@ m_dSecLeftMarginInches(0.0),
 m_dSecRightMarginInches(0.0),
 m_dSecTopMarginInches(0.0),
 m_dSecBottomMarginInches(0.0),
-m_dCellWidthInches(0.0)
+m_dCellWidthInches(0.0),
+m_bHasMathMl(false)
 {
 
 }
@@ -2873,7 +2874,8 @@ void IE_Exp_HTML_Listener::_insertMath(PT_AttrPropIndex api)
         UT_UTF8String width = UT_UTF8String_sprintf("%fin", dWidth);
         UT_UTF8String height = UT_UTF8String_sprintf("%fin", dHeight);
         
-        m_pCurrentImpl->insertMath(sMathML, width, height);      
+        m_pCurrentImpl->insertMath(sMathML, width, height);
+        m_bHasMathMl = true;
         
 
 }
