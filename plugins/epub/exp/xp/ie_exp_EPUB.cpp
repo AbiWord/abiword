@@ -522,7 +522,7 @@ UT_Error IE_Exp_EPUB::EPUB3_writeStructure()
     m_pie->setWriterFactory(pWriterFactory);
     m_pie->suppressDialog(true);
     m_pie->setProps(
-                    "embed-css:no;html4:no;use-awml:no;declare-xml:yes;mathml-render-png:yes;split-document:yes;add-identifiers:yes;");
+                    "embed-css:no;html4:no;use-awml:no;declare-xml:yes;mathml-render-png:no;split-document:yes;add-identifiers:yes;");
     m_pie->writeFile(szIndexPath);
     g_free(szIndexPath);
     DELETEP(pWriterFactory);
@@ -590,6 +590,10 @@ UT_Error IE_Exp_EPUB::package()
         UT_UTF8String idStr = escapeForId(*i);
         UT_UTF8String fullItemPath = m_oebpsDir + G_DIR_SEPARATOR_S + *i;
         gsf_xml_out_start_element(opfXml, "item");
+        if (m_pie->hasMathML((*i)))
+        {
+            gsf_xml_out_add_cstr(opfXml, "mathml", "true");
+        }
         gsf_xml_out_add_cstr(opfXml, "id", idStr.utf8_str());
         gsf_xml_out_add_cstr(opfXml, "href", (*i).utf8_str());
         gsf_xml_out_add_cstr(opfXml, "media-type",
