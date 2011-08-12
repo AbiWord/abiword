@@ -23,7 +23,7 @@ IE_Exp_EPUB_EPUB3Writer::IE_Exp_EPUB_EPUB3Writer(IE_Exp_HTML_OutputWriter*
 	pOutputWriter):
 IE_Exp_HTML_DocumentWriter(pOutputWriter)
 {
-
+    m_pTagWriter->enableXmlMode(true);
 }
 
 void IE_Exp_EPUB_EPUB3Writer::openDocument()
