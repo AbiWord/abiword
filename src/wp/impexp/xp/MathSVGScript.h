@@ -1,4 +1,4 @@
-UT_UTF8String sMathSVGScript = "<script> \r\n \
+UT_UTF8String sMathSVGScript = " \
 /* \r\n \
 MIT License\r\n \
 Copyright (c) 2006 Sam Ruby \r\n \
@@ -146,6 +146,5 @@ window.onload = function() {\r\n \
       } \r\n \
     } \r\n \
   } \r\n \
-} \r\n \
-</script> \r\n";
+} \r\n";
 
