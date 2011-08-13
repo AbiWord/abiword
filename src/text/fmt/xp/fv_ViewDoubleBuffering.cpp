@@ -7,7 +7,10 @@
 #include "ut_misc.h"
 #include "ut_debugmsg.h"
 
-// #define DEACTIVATE_FV_VIEW_DOUBLE_BUFFERING
+#if defined(TOOLKIT_COCOA)
+#define DEACTIVATE_FV_VIEW_DOUBLE_BUFFERING
+#endif /* TOOLKIT_COCOA */
+
 
 FV_ViewDoubleBuffering::FV_ViewDoubleBuffering(FV_View *pView, bool suspendDirectDrawing, bool callDrawOnlyAtTheEnd)
 	: m_pView(pView),
