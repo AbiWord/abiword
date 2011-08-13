@@ -753,6 +753,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 		}
 	}
 
+	m_pLastRunToKeep->printText();
 	UT_ASSERT((!m_pLastRunToKeep) || (pLine->getLastRun() == m_pLastRunToKeep));
 #if DEBUG
 	pLine->assertLineListIntegrity();
