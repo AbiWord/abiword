@@ -748,9 +748,36 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 					pBreakPoint=index;
 					fp_TextRun* textout=static_cast<fp_TextRun*>(pRunToSplit);
 					textout->split(pBreakPoint);
+					break;
 				}
 			}
 		}
+		//deal with some issue:
+		//1. the word we can't split
+		//2. the language dictionary is not found
+		else if(pBlock->_getSpellChecker()!=NULL)   // 1. the word we can't split
+		{
+			gchar *c = g_ucs4_to_utf8(pWordToSplit, -1, NULL, NULL, NULL);
+			for(int index=g_utf8_strlen(c,NULL);index>=0;--index)
+			{
+				gchar* tmp=NULL;
+				g_utf8_strncpy(tmp,c,index);
+				if(pBlock->_getSpellChecker()->checkWord(tmp,-1)==1&&index<tickLeft)
+				{
+					pBreakPoint=index;
+					fp_TextRun* textout=static_cast<fp_TextRun*>(pRunToSplit);
+					textout->split(pBreakPoint);
+					break;
+				}
+			} 
+		}
+		else  //2. the language dictionary is not found
+		{
+
+			fp_TextRun* textout=static_cast<fp_TextRun*>(pRunToSplit);
+			textout->split(tickLeft-1); 
+		}
+
 	}
 
 	m_pLastRunToKeep->printText();
