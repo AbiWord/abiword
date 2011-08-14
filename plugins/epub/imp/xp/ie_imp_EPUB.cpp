@@ -261,6 +261,13 @@ UT_Error IE_Imp_EPUB::readStructure()
         UT_UTF8String itemPath = m_tmpDir + G_DIR_SEPARATOR_S + (iter->second);
         PT_DocPosition posEnd = 0;
         getDoc()->getBounds(true, posEnd);
+        
+        if (i != m_spine.begin())
+        {
+            getDoc()->insertStrux(posEnd, PTX_Section, NULL, NULL);
+            getDoc()->insertStrux(posEnd+1, PTX_Block, NULL, NULL);
+            posEnd+=2;
+        }
 
         GsfInput* itemInput = UT_go_file_open(itemPath.utf8_str(), NULL);
         if (itemInput == NULL)
@@ -274,18 +281,29 @@ UT_Error IE_Imp_EPUB::readStructure()
         PD_Document *currentDoc = new PD_Document();
         currentDoc->createRawDocument();
         const char *suffix = strchr(itemPath.utf8_str(), '.');
-
+        XAP_App::getApp()->getPrefs()->setIgnoreNextRecent();
         if (currentDoc->importFile(itemPath.utf8_str(),
                 IE_Imp::fileTypeForSuffix(suffix), true, false, NULL) != UT_OK)
         {
             UT_DEBUGMSG(("Failed to import file %s\n", itemPath.utf8_str()));
             return UT_ERROR;
         }
+        
         currentDoc->finishRawCreation();
+        const gchar * attributes[3] = {
+            "listid",
+            "0",
+            0
+        };
+
+//        PT_DocPosition pos;
+//        currentDoc->getBounds(true, pos);
+//        currentDoc->insertStrux(pos, PTX_Block, attributes, NULL, NULL);
 
         IE_Imp_PasteListener * pPasteListener = new IE_Imp_PasteListener(
                 getDoc(), posEnd, currentDoc);
         currentDoc->tellListener(static_cast<PL_Listener *> (pPasteListener));
+       
 
         DELETEP(pPasteListener);
         UNREFP(currentDoc);

@@ -1,4 +1,4 @@
-SUBDIRS = common imp exp
+SUBDIRS = common imp exp dialogs
 
 if EPUB_BUILTIN
 noinst_LTLIBRARIES = epub.la
@@ -11,9 +11,10 @@ plugin_LTLIBRARIES = epub.la
 endif
 
 epub_la_LIBADD = \
+	dialogs/libdialogs.la\
 	common/libcommon.la \
 	imp/libimp.la \
-	exp/libexp.la
+	exp/libexp.la 
 
 epub_la_LDFLAGS = \
 	$(EPUB_LIBS) \

@@ -35,6 +35,10 @@
 #include <ie_imp_XHTML.h>
 #include <ut_xml.h>
 #include <ie_imp_PasteListener.h>
+#include <xap_Prefs.h>
+#include <xap_App.h>
+
+
 
 #define EPUB_MIMETYPE "application/epub+zip"
 
