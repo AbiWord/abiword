@@ -94,6 +94,9 @@ public:
     void openAnnotation();
     void closeAnnotation();
     
+    void openTextbox(const UT_UTF8String &style);
+    void closeTextbox();
+    
     void insertDTD();
     void insertMeta(const UT_UTF8String &name, const UT_UTF8String &content);
     void insertText(const UT_UTF8String &text);

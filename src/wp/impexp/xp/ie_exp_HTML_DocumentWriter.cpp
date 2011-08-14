@@ -305,6 +305,17 @@ void IE_Exp_HTML_DocumentWriter::closeBody()
 	}	
     m_pTagWriter->closeTag();
 }
+
+void IE_Exp_HTML_DocumentWriter::openTextbox(const UT_UTF8String& style)
+{
+    m_pTagWriter->openTag("div", false, false);
+    _handleStyleAndId(NULL, NULL, style.utf8_str());
+}
+
+void IE_Exp_HTML_DocumentWriter::closeTextbox()
+{
+    m_pTagWriter->closeTag();
+}
 void IE_Exp_HTML_DocumentWriter::_handleStyleAndId(const gchar* szStyleName, 
     const gchar* szId, const gchar* szStyle)
 {

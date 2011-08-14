@@ -80,8 +80,8 @@ public:
     virtual void openAnnotation() {}
     virtual void closeAnnotation() {}
 
-    virtual void openFrame(const PP_AttrProp* /*pAP*/) {}
-    virtual void closeFrame() {}
+    virtual void openTextbox(const UT_UTF8String &style) {}
+    virtual void closeTextbox() {}
 
     virtual void openBookmark(const gchar */*szBookmarkName*/) {}
     virtual void closeBookmark() {}
@@ -228,7 +228,7 @@ private:
     void _openAnnotation(PT_AttrPropIndex api);
     void _closeAnnotation();
 
-    void _openFrame(PT_AttrPropIndex api);
+    void _openFrame(PT_AttrPropIndex api, const PX_ChangeRecord* pcr);
     void _closeFrame();
 
     void _openBookmark(PT_AttrPropIndex api);
@@ -246,6 +246,10 @@ private:
     void _openBody();
     void _closeBody();
     
+    void _openTextbox(PT_AttrPropIndex api);
+    void _closeTextbox();
+    
+    void _insertPosImage (PT_AttrPropIndex api);
     void _insertDTD();
     void _insertLinks();
     void _insertTitle();
@@ -260,6 +264,7 @@ private:
     void _insertStyle();
     void _insertLinkToStyle();
     void _handleAnnotationData(PT_AttrPropIndex api);
+    void _handleImage(PT_AttrPropIndex api, const gchar *szDataId, bool bIsPositioned);
     void _makeStylesheet(PT_AttrPropIndex api);
     void _setCellWidthInches();
     void _fillColWidthsVector();
@@ -275,6 +280,7 @@ private:
     bool m_bInEndnote;
     bool m_bInFootnote;
     bool m_bInHeading;
+    bool m_bInTextbox;
     bool m_bSkipSection;
     fd_Field* m_pCurrentField;
     UT_UTF8String m_currentFieldType;

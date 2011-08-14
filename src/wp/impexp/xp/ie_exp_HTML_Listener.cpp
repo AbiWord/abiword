@@ -44,6 +44,7 @@ m_bInAnnotationSection(false),
 m_bInEndnote(false),
 m_bInFootnote(false),
 m_bInHeading(false),
+ m_bInTextbox(false),
 m_bSkipSection(false),
 m_pCurrentField(0),
 m_currentFieldType(""),
@@ -448,7 +449,7 @@ bool IE_Exp_HTML_Listener::populateStrux(PL_StruxDocHandle sdh,
         _closeBlock();
         _closeHeading();
         _closeLists();
-        _openFrame(api);
+        _openFrame(api, pcr);
     }
         break;
 
@@ -2318,7 +2319,7 @@ void IE_Exp_HTML_Listener::_closeListItem(bool recursiveCall)
 /**
  * 
  */
-void IE_Exp_HTML_Listener::_openFrame(PT_AttrPropIndex api)
+void IE_Exp_HTML_Listener::_openFrame(PT_AttrPropIndex api, const PX_ChangeRecord* pcr)
 {
     const PP_AttrProp* pAP;
     bool ok;
@@ -2328,17 +2329,38 @@ void IE_Exp_HTML_Listener::_openFrame(PT_AttrPropIndex api)
     {
         pAP = NULL;
     }
+    
+    const gchar *szType;
+    if (pAP->getProperty("frame-type", szType))
+    {
+        if (!strcmp(szType, "textbox"))
+        {
+            _openTextbox(pcr->getIndexAP());
+        } else if (!strcmp(szType, "image"))
+        {
+          _insertPosImage(pcr->getIndexAP());
+        }
+    }
 
-    m_pCurrentImpl->openFrame(pAP);
 
 }
 
+void IE_Exp_HTML_Listener::_insertPosImage(PT_AttrPropIndex api)
+{
+    const PP_AttrProp * pAP = NULL;
+    bool bHaveProp = m_pDocument->getAttrProp(api, &pAP);
+    if (!bHaveProp || (pAP == 0)) return;
+
+    const gchar * pszDataID = NULL;
+    if (pAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const gchar *&) pszDataID) && pszDataID)
+        _handleImage(api, pszDataID, true);
+}
 /**
  * 
  */
 void IE_Exp_HTML_Listener::_closeFrame()
 {
-    m_pCurrentImpl->closeFrame();
+   _closeTextbox();
 }
 
 
@@ -2599,6 +2621,85 @@ void IE_Exp_HTML_Listener::_closeHyperlink()
     m_pCurrentImpl->closeHyperlink();
 }
 
+void IE_Exp_HTML_Listener::_openTextbox(PT_AttrPropIndex api)
+{
+    const PP_AttrProp* pAP = NULL;
+    bool ok;
+
+    ok = m_pDocument->getAttrProp(api, &pAP);
+    if (ok && pAP) 
+{
+        // TODO: Enum frame properties (and in any case where props equal their css counterparts) separately
+        // TODO: so here (and places like here) you can just iterate through it getting the prop and setting it.
+        // TODO: Actually, you wouldn't have to limit it to where the props were identical, just have
+        // TODO: { abiprop, cssprop }.  It would still require that the units used for both specs be compatible.
+        //
+        //	TODO: Take care of padding as well.
+        const gchar * propNames[20] = {"bot-thickness", "border-bottom-width",
+            "top-thickness", "border-top-width",
+            "right-thickness", "border-right-width",
+            "left-thickness", "border-left-width",
+            "bot-color", "border-bottom-color",
+            "top-color", "border-top-color",
+            "right-color", "border-right-color",
+            "left-color", "border-left-color",
+            "background-color", "background-color",
+            NULL, NULL}; // [AbiWord property name, CSS21 property name]
+        const gchar * tempProp = 0;
+        UT_UTF8String style;
+
+        for (unsigned short int propIdx = 0; propIdx < 18; propIdx += 2) 
+        {
+            if (pAP->getProperty(propNames[propIdx], tempProp)) // If we successfully retrieve a value (IOW, it's defined)
+            {
+                style += propNames[propIdx + 1]; // Add the property name of the CSS equivalent
+                style += ": "; // Don't ask (:
+                if (strstr(propNames[propIdx + 1], "color")) style += "#"; // AbiWord tends to store colors as hex, which must be prefixed by # in CSS
+                style += tempProp; // Add the value
+                style += "; "; // Terminate the property
+            }
+        }
+
+
+        //pAP->getProperty("bot-style", tempProp); // Get the bottom border style
+        //<...>
+        // We don't do this right now because we don't support multiple styles right now.
+        // See bug 7935.  Until we support multiple styles, it is sufficient to set all solid.
+        style += " border: solid;";
+
+        // This might need to be updated for textbox (and wrapped-image?) changes that
+        // occured in 2.3. 
+
+        // Get the wrap mode
+        if (!pAP->getProperty("wrap-mode", tempProp) || !tempProp || !*tempProp)
+            tempProp = "wrapped-both"; // this seems like a sane default
+
+        if (!strcmp(tempProp, "wrapped-both"))
+            style += " clear: none;";
+        else if (!strcmp(tempProp, "wrapped-left"))
+            style += " clear: right;";
+        else if (!strcmp(tempProp, "wrapped-right"))
+            style += " clear: left;";
+        else if (!strcmp(tempProp, "above-text"))
+            style += " clear: none; z-index: 999;";    
+
+        m_pCurrentImpl->openTextbox(style);
+        m_bInTextbox = true;
+    }
+
+
+    
+}
+
+void IE_Exp_HTML_Listener::_closeTextbox()
+{
+    if (m_bInTextbox)
+    {
+        m_pCurrentImpl->closeTextbox();
+        m_bInTextbox = false;
+    }
+}
+
 /**
  * 
  */
@@ -2634,100 +2735,7 @@ void IE_Exp_HTML_Listener::_insertImage(PT_AttrPropIndex api)
 
     szDataId =
             _getObjectKey(api, static_cast<const gchar*> ("dataid"));
-    
-    if ( szDataId == NULL)
-    {
-        return;
-    }
-    
-    std::string mimeType;
-    
-    if (!m_pDocument->getDataItemDataByName(szDataId, NULL, 
-        &mimeType, NULL))
-		return;
-    
-    if (mimeType == "image/svg+xml")
-	{
-		_insertEmbeddedImage(api);
-		return;
-	}
-	
-	if ((mimeType != "image/png") && (mimeType != "image/jpeg"))
-	{
-		UT_DEBUGMSG(("Image not of a suppored MIME type - ignoring...\n"));
-		return;
-	}
-    
-      
-    std::string extension;
-    if(!m_pDocument->getDataItemFileExtension(szDataId, extension, true))
-	{
-         extension = ".png";
-    }
-    
-    const gchar * szTitle  = 0;
-	UT_UTF8String title;
-	pAP->getAttribute ("title",  szTitle);
-	if (szTitle) {
-        title = szTitle;
-        title.escapeXML();
-	}
-
-	const gchar * szAlt = 0;
-	UT_UTF8String alt;
-	pAP->getAttribute("alt", szAlt);
-	if (szAlt) {
-		alt = szAlt;
-		alt.escapeXML();
-	}
-
-	UT_UTF8String imageName;
-
-	if (m_bEmbedImages) {
-		m_pDataExporter->encodeDataBase64(szDataId, imageName);
-	}
-	else {
-		imageName = m_pDataExporter->saveData(szDataId, extension.c_str());
-	}
-	UT_UTF8String align = "";
-	bool bIsPositioned = true;
-	if (bIsPositioned) {
-		const gchar * szXPos = NULL;
-		UT_sint32 ixPos = 0;
-		if (pAP->getProperty("xpos", szXPos)) {
-			ixPos = UT_convertToLogicalUnits(szXPos);
-		}
-		else if (pAP->getProperty("frame-col-xpos", szXPos)) {
-			ixPos = UT_convertToLogicalUnits(szXPos);
-		}
-		else if (pAP->getProperty("frame-page-xpos", szXPos)) {
-			ixPos = UT_convertToLogicalUnits(szXPos);
-		}
-		if (ixPos > UT_convertToLogicalUnits("1.0in")) {
-			align = "right";
-		}
-		else {
-			align = "left";
-		}
-	}
-
-
-	const gchar * szWidth = 0;
-	const gchar * szHeight = 0;
-	double widthPercentage = 0;
-	UT_UTF8String style = "";
-	if (!getPropertySize(pAP, !bIsPositioned ? "width" : "frame-width", 
-			"height", &szWidth, widthPercentage, &szHeight,
-			m_dPageWidthInches,m_dSecLeftMarginInches, m_dSecRightMarginInches,
-			m_dCellWidthInches, m_tableHelper))
-		return;
-	UT_DEBUGMSG(("Size of Image: %sx%s\n", szWidth ? szWidth : "(null)", 
-		szHeight ? szHeight : "(null)"));
-
-	style = getStyleSizeString(szWidth, widthPercentage, DIM_MM, szHeight, 
-							 DIM_MM, false);
-
-	m_pCurrentImpl->insertImage(imageName,align, style, title, alt);
+    _handleImage(api, szDataId, false);
 }
 
 /**
@@ -2752,76 +2760,110 @@ void IE_Exp_HTML_Listener::_insertEmbeddedImage(PT_AttrPropIndex api)
     if (szDataId)
     {
         snapshot += szDataId;
-        // m_pCurrentImpl->insertImage(snapshot.utf8_str(), pAP);
+        _handleImage(api, snapshot.utf8_str(), false);
+    }
+}
+
+void IE_Exp_HTML_Listener::_handleImage(PT_AttrPropIndex api, 
+    const gchar* szDataId, bool bIsPositioned)
+{
+    const PP_AttrProp* pAP;
+    bool ok;
+
+    ok = m_pDocument->getAttrProp(api, &pAP);
+    if (!ok) {
+        pAP = NULL;
     }
     
+    if (szDataId == NULL) {
+        return;
+    }
+
+    std::string mimeType;
+
+    if (!m_pDocument->getDataItemDataByName(szDataId, NULL,
+                                            &mimeType, NULL))
+        return;
+
+    if (mimeType == "image/svg")
+    {
+        _insertEmbeddedImage(api);
+        return;
+    }
     
-    const gchar * szTitle  = 0;
-	UT_UTF8String title;
-	pAP->getAttribute ("title",  szTitle);
-	if (szTitle) {
+    if ((mimeType != "image/png") && (mimeType != "image/jpeg")) {
+        UT_DEBUGMSG(("Image not of a suppored MIME type - ignoring...\n"));
+        return;
+    }
+
+
+    std::string extension;
+    if (!m_pDocument->getDataItemFileExtension(szDataId, extension, true)) {
+        extension = ".png";
+    }
+
+    const gchar * szTitle = 0;
+    UT_UTF8String title;
+    pAP->getAttribute("title", szTitle);
+    if (szTitle) {
         title = szTitle;
         title.escapeXML();
-	}
+    }
 
-	const gchar * szAlt  = 0;
+    const gchar * szAlt = 0;
     UT_UTF8String alt;
-	pAP->getAttribute ("alt",  szAlt);
-	if (szAlt) {
+    pAP->getAttribute("alt", szAlt);
+    if (szAlt) {
         alt = szAlt;
         alt.escapeXML();
-	}
-    
-    UT_UTF8String imageName;
-    
-    if (m_bEmbedImages)
-    {
-        m_pDataExporter->encodeDataBase64(snapshot.utf8_str(), imageName);
-    } else
-    {
-        imageName = m_pDataExporter->saveData(snapshot.utf8_str(),".png");
     }
-	
-		UT_UTF8String align = "";
-	bool bIsPositioned = true;
-	if (bIsPositioned) {
-		const gchar * szXPos = NULL;
-		UT_sint32 ixPos = 0;
-		if (pAP->getProperty("xpos", szXPos)) {
-			ixPos = UT_convertToLogicalUnits(szXPos);
-		}
-		else if (pAP->getProperty("frame-col-xpos", szXPos)) {
-			ixPos = UT_convertToLogicalUnits(szXPos);
-		}
-		else if (pAP->getProperty("frame-page-xpos", szXPos)) {
-			ixPos = UT_convertToLogicalUnits(szXPos);
-		}
-		if (ixPos > UT_convertToLogicalUnits("1.0in")) {
-			align = "right";
-		}
-		else {
-			align = "left";
-		}
-	}
+
+    UT_UTF8String imageName;
+
+    if (m_bEmbedImages) {
+        m_pDataExporter->encodeDataBase64(szDataId, imageName);
+    }
+    else {
+        imageName = m_pDataExporter->saveData(szDataId, extension.c_str());
+    }
+    UT_UTF8String align = "";
+    if (bIsPositioned) {
+        const gchar * szXPos = NULL;
+        UT_sint32 ixPos = 0;
+        if (pAP->getProperty("xpos", szXPos)) {
+            ixPos = UT_convertToLogicalUnits(szXPos);
+        }
+        else if (pAP->getProperty("frame-col-xpos", szXPos)) {
+            ixPos = UT_convertToLogicalUnits(szXPos);
+        }
+        else if (pAP->getProperty("frame-page-xpos", szXPos)) {
+            ixPos = UT_convertToLogicalUnits(szXPos);
+        }
+        if (ixPos > UT_convertToLogicalUnits("1.0in")) {
+            align = "right";
+        }
+        else {
+            align = "left";
+        }
+    }
 
 
-	const gchar * szWidth = 0;
-	const gchar * szHeight = 0;
-	double widthPercentage = 0;
-	UT_UTF8String style = "";
-	if (!getPropertySize(pAP, !bIsPositioned ? "width" : "frame-width", 
-			"height", &szWidth, widthPercentage, &szHeight,
-			m_dPageWidthInches,m_dSecLeftMarginInches, m_dSecRightMarginInches,
-			m_dCellWidthInches, m_tableHelper))
-		return;
-	UT_DEBUGMSG(("Size of Image: %sx%s\n", szWidth ? szWidth : "(null)", 
-		szHeight ? szHeight : "(null)"));
+    const gchar * szWidth = 0;
+    const gchar * szHeight = 0;
+    double widthPercentage = 0;
+    UT_UTF8String style = "";
+    if (!getPropertySize(pAP, !bIsPositioned ? "width" : "frame-width",
+                         "height", &szWidth, widthPercentage, &szHeight,
+                         m_dPageWidthInches, m_dSecLeftMarginInches, m_dSecRightMarginInches,
+                         m_dCellWidthInches, m_tableHelper))
+        return;
+    UT_DEBUGMSG(("Size of Image: %sx%s\n", szWidth ? szWidth : "(null)",
+                szHeight ? szHeight : "(null)"));
 
-	style = getStyleSizeString(szWidth, widthPercentage, DIM_MM, szHeight, 
-				DIM_MM, false);
-        
+    style = getStyleSizeString(szWidth, widthPercentage, DIM_MM, szHeight,
+                               DIM_MM, false);
+
     m_pCurrentImpl->insertImage(imageName, align, style, title, alt);
-
 }
 
 /**
