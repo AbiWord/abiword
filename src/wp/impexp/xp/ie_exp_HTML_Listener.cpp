@@ -1855,9 +1855,6 @@ void IE_Exp_HTML_Listener::_openCell(PT_AttrPropIndex api, bool recursiveCall)
 	UT_sint32 rowspan = m_tableHelper.getBot() - m_tableHelper.getTop();
 	UT_sint32 colspan = m_tableHelper.getRight() - m_tableHelper.getLeft();
 
-	if (m_tableHelper.isNewRow()) // beginning of a new row
-		_openRow(api);
-
 	const char * pszBgColor = m_tableHelper.getCellProp("bgcolor");
 	if (pszBgColor == NULL)
 		pszBgColor = m_tableHelper.getCellProp("background-color");
