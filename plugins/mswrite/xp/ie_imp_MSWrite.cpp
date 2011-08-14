@@ -51,6 +51,7 @@ typedef unsigned __int32 uint32_t;
 #include "fg_Graphic.h"
 #include "ie_impGraphic.h"
 #include "ut_assert.h"
+#include "ut_debugmsg.h"
 #include "ut_locale.h"
 #include "ut_types.h"
 #include "xap_Module.h"
@@ -295,6 +296,8 @@ IE_Imp_MSWrite::IE_Imp_MSWrite (PD_Document *pDocument)
 
 	if (!propCP.empty()) default_codepage = propCP.c_str();
 
+	UT_DEBUGMSG(("Codepage: %s\n", default_codepage));
+
 	wri_file_header = static_cast<wri_struct*>(malloc(sizeof(WRI_FILE_HEADER)));
 	memcpy(wri_file_header, WRI_FILE_HEADER, sizeof(WRI_FILE_HEADER));
 
@@ -338,6 +341,9 @@ UT_Error IE_Imp_MSWrite::parse_file ()
 	UT_Byte *thetext;
 
 	if (!read_wri_struct(wri_file_header, mFile)) return UT_ERROR;
+
+	UT_DEBUGMSG(("File Header:\n"));
+	DEBUG_WRI_STRUCT(wri_file_header);
 
 	id = wri_struct_value(wri_file_header, "wIdent");
 
@@ -387,6 +393,8 @@ UT_Error IE_Imp_MSWrite::parse_file ()
 	read_sep();
 	read_pap(All);
 
+	UT_DEBUGMSG(("Header: %d, on first page: %d\n", hasHeader, page1Header));
+
 	if (hasHeader)
 	{
 		_append_hdrftr(header);
@@ -395,6 +403,8 @@ UT_Error IE_Imp_MSWrite::parse_file ()
 		if (!page1Header) _append_hdrftr(headerfirst);   // an empty one
 
 	}
+
+	UT_DEBUGMSG(("Footer: %d, on first page: %d\n", hasFooter, page1Footer));
 
 	if (hasFooter)
 	{
@@ -421,11 +431,17 @@ bool IE_Imp_MSWrite::read_ffntb ()
 	wri_font *fonts;
 	char *ffn;
 
+	UT_DEBUGMSG(("Fonts:\n"));
+
 	pnFfntb = wri_struct_value(wri_file_header, "pnFfntb");
 	pnMac = wri_struct_value(wri_file_header, "pnMac");
 
 	// if pnFfntb is the same as pnMac, there are no fonts
-	if (pnFfntb == pnMac) return true;
+	if (pnFfntb == pnMac)
+	{
+		UT_DEBUGMSG((" (none)\n"));
+		return true;
+	}
 
 	if (gsf_input_seek(mFile, pnFfntb++ * 0x80, G_SEEK_SET))
 	{
@@ -441,6 +457,7 @@ bool IE_Imp_MSWrite::read_ffntb ()
 	}
 
 	wri_fonts_count = READ_WORD(buf);
+	UT_DEBUGMSG((" reported: %d\n", wri_fonts_count));
 
 	while (true)
 	{
@@ -520,6 +537,7 @@ bool IE_Imp_MSWrite::read_ffntb ()
 		ffn[fflen] = 0;
 		wri_fonts[fonts_count].name = ffn;
 
+		UT_DEBUGMSG(("  #%02d: %s (%s)\n", fonts_count + 1, wri_fonts[fonts_count].name, wri_fonts[fonts_count].codepage));
 		fonts_count++;
 	}
 
@@ -555,6 +573,8 @@ bool IE_Imp_MSWrite::read_sep ()
 	int cch, yaBot;
 	unsigned char sep[0x80];
 
+	UT_DEBUGMSG(("SEP:\n"));
+
 	pnSep = wri_struct_value(wri_file_header, "pnSep");
 	pnSetb = wri_struct_value(wri_file_header, "pnSetb");
 
@@ -576,6 +596,7 @@ bool IE_Imp_MSWrite::read_sep ()
 		gsf_input_read(mFile, 0x80, sep);
 
 		cch = *sep;
+		UT_DEBUGMSG((" cch = %d\n", cch));
 
 		if (cch >= 4) yaMac = READ_WORD(sep + 3);
 		if (cch >= 6) xaMac = READ_WORD(sep + 5);
@@ -587,6 +608,18 @@ bool IE_Imp_MSWrite::read_sep ()
 		if (cch >= 20) yaHeader = READ_WORD(sep + 19);
 		if (cch >= 22) yaFooter = READ_WORD(sep + 21);
 	}
+
+	if (rStartPage & 0x8000) rStartPage = -0x10000 + rStartPage;
+
+	UT_DEBUGMSG((" yaMac      = %d\n", yaMac));
+	UT_DEBUGMSG((" xaMac      = %d\n", xaMac));
+	UT_DEBUGMSG((" rStartPage = %d\n", rStartPage));
+	UT_DEBUGMSG((" yaTop      = %d\n", yaTop));
+	UT_DEBUGMSG((" dyaText    = %d\n", dyaText));
+	UT_DEBUGMSG((" xaLeft     = %d\n", xaLeft));
+	UT_DEBUGMSG((" dxaText    = %d\n", dxaText));
+	UT_DEBUGMSG((" yaHeader   = %d\n", yaHeader));
+	UT_DEBUGMSG((" yaFooter   = %d\n", yaFooter));
 
 	yaBot = yaMac - yaTop - dyaText;
 	xaRight = xaMac - xaLeft - dxaText;
@@ -605,8 +638,6 @@ bool IE_Imp_MSWrite::read_sep ()
 	                              static_cast<float>(yaTop) / 1440.0,
 	                              static_cast<float>(yaBot) / 1440.0,
 	                              static_cast<float>(yaMac - yaFooter) / 1440.0);
-
-	if (rStartPage & 0x8000) rStartPage = -0x10000 + rStartPage;
 
 	if (rStartPage >= 0)
 	{
@@ -646,6 +677,8 @@ bool IE_Imp_MSWrite::read_pap (pap_t process)
 	unsigned char page[0x80];
 	UT_String properties, tmp, lastprops;
 
+	if (process == All) UT_DEBUGMSG(("PAP:\n"));
+
 	fcMac = wri_struct_value(wri_file_header, "fcMac");
 	pnPara = wri_struct_value(wri_file_header, "pnPara");
 
@@ -656,9 +689,14 @@ bool IE_Imp_MSWrite::read_pap (pap_t process)
 		gsf_input_seek(mFile, pnPara++ * 0x80, G_SEEK_SET);
 		gsf_input_read(mFile, 0x80, page);
 
+		fc = READ_DWORD(page);
 		cfod = page[0x7f];
 
-		fc = READ_DWORD(page);
+		if (process == All)
+		{
+			UT_DEBUGMSG((" fcFirst = %d\n", fc));
+			UT_DEBUGMSG((" cfod    = %d\n", cfod));
+		}
 
 		if (fc != fcFirst) fprintf(stderr, "read_pap: fcFirst wrong.\n");
 
@@ -670,21 +708,31 @@ bool IE_Imp_MSWrite::read_pap (pap_t process)
 			int rhcPage, rHeaderFooter, rhcFirst;
 			int tabs, dxaTab[14], jcTab[14];
 
+			if (process == All) UT_DEBUGMSG(("  PAP-FOD #%02d:\n", fod + 1));
+
 			// read a FOD (format descriptor)
 			fcLim = READ_DWORD(page + 4 + fod * 6);
 			bfprop = READ_WORD(page + 8 + fod * 6);
+
+			if (process == All)
+			{
+				UT_DEBUGMSG(("   fcLim  = %d\n", fcLim));
+				UT_DEBUGMSG((bfprop == 0xffff ? "   bfprop = 0x%04X\n" : "   bfprop = %d\n", bfprop));
+			}
 
 			// default PAP values
 			jc = 0;
 			dxaRight = dxaLeft = dxaLeft1 = 0;
 			dyaLine = 240;
-			fGraphics = 0;
 			rhcPage = rHeaderFooter = rhcFirst = 0;
+			fGraphics = 0;
 			tabs = 0;
 
 			// if the PAP FPROPs (formatting properties) differ from the defaults, get them
 			if (bfprop != 0xffff && bfprop + (cch = page[bfprop + 4]) < 0x80)
 			{
+				if (process == All) UT_DEBUGMSG(("    cch = %d\n", cch));
+
 				if (cch >= 2) jc = page[bfprop + 6] & 3;
 				if (cch >= 6) dxaRight = READ_WORD(page + bfprop + 9);
 				if (cch >= 8) dxaLeft = READ_WORD(page + bfprop + 11);
@@ -739,6 +787,16 @@ bool IE_Imp_MSWrite::read_pap (pap_t process)
 			    (rHeaderFooter && ((process == Header && !rhcPage) ||
 			                       (process == Footer && rhcPage))))
 			{
+				UT_DEBUGMSG(("    jc            = %d\n", jc));
+				UT_DEBUGMSG(("    dxaRight      = %d\n", dxaRight));
+				UT_DEBUGMSG(("    dxaLeft       = %d\n", dxaLeft));
+				UT_DEBUGMSG(("    dxaLeft1      = %d\n", dxaLeft1));
+				UT_DEBUGMSG(("    dyaLine       = %d\n", dyaLine));
+				UT_DEBUGMSG(("    rhcPage       = %d\n", rhcPage));
+				UT_DEBUGMSG(("    rHeaderFooter = %d\n", rHeaderFooter));
+				UT_DEBUGMSG(("    rhcFirst      = %d\n", rhcFirst));
+				UT_DEBUGMSG(("    fGraphics     = %d\n", fGraphics));
+
 				UT_LocaleTransactor lt(LC_NUMERIC, "C");
 				UT_String_sprintf(properties, "text-align:%s; line-height:%.1f",
 				                              text_align[jc],
@@ -747,6 +805,7 @@ bool IE_Imp_MSWrite::read_pap (pap_t process)
 				if (tabs)
 				{
 					properties += "; tabstops:";
+					UT_DEBUGMSG(("    Tabs:\n"));
 
 					for (int n = 0; n < tabs; n++)
 					{
@@ -754,6 +813,7 @@ bool IE_Imp_MSWrite::read_pap (pap_t process)
 						                       static_cast<float>(dxaTab[n]) / 1440.0,
 						                       jcTab[n] ? 'D' : 'L');
 						properties += tmp;
+						UT_DEBUGMSG(("     #%02d dxa = %d, jcTab = %d\n", n + 1, dxaTab[n], jcTab[n]));
 
 						if (n != tabs - 1) properties += ",";
 					}
@@ -808,7 +868,11 @@ bool IE_Imp_MSWrite::read_pap (pap_t process)
 
 			fcFirst = fcLim;
 
-			if (fcLim >= fcMac) return true;
+			if (fcLim >= fcMac)
+			{
+				UT_DEBUGMSG(("  PAP-FODs end, fcLim (%d) >= fcMac (%d)\n", fcLim, fcMac));
+				return true;
+			}
 		}
 	}
 }
@@ -825,6 +889,10 @@ bool IE_Imp_MSWrite::read_txt (int from, int to)
 	UT_String properties, tmp;
 	int dataLen = static_cast<UT_sint32>(mData.getLength());
 
+	UT_DEBUGMSG(("    TXT:\n"));
+	UT_DEBUGMSG(("     from = %d\n", from));
+	UT_DEBUGMSG(("     to   = %d\n", to));
+
 	fcMac = wri_struct_value(wri_file_header, "fcMac");
 	pnChar = (fcMac + 127) / 128;
 
@@ -835,9 +903,11 @@ bool IE_Imp_MSWrite::read_txt (int from, int to)
 		gsf_input_seek(mFile, pnChar++ * 0x80, G_SEEK_SET);
 		gsf_input_read(mFile, 0x80, page);
 
+		fc = READ_DWORD(page);
 		cfod = page[0x7f];
 
-		fc = READ_DWORD(page);
+		UT_DEBUGMSG(("      fcFirst = %d\n", fc));
+		UT_DEBUGMSG(("      cfod    = %d\n", cfod));
 
 		if (fc != fcFirst) fprintf(stderr, "read_txt: fcFirst wrong.\n");
 
@@ -846,9 +916,14 @@ bool IE_Imp_MSWrite::read_txt (int from, int to)
 		{
 			int bfprop, cch, ftc, hps, fBold, fItalic, fUline, hpsPos;
 
+			UT_DEBUGMSG(("       CHP-FOD #%02d:\n", fod + 1));
+
 			// read a FOD (format descriptor)
 			fcLim = READ_DWORD(page + 4 + fod * 6);
 			bfprop = READ_WORD(page + 8 + fod * 6);
+
+			UT_DEBUGMSG(("        fcLim  = %d\n", fcLim));
+			UT_DEBUGMSG((bfprop == 0xffff ? "        bfprop = 0x%04X\n" : "        bfprop = %d\n", bfprop));
 
 			// default CHP values
 			ftc = 0;
@@ -858,6 +933,8 @@ bool IE_Imp_MSWrite::read_txt (int from, int to)
 			// if the CHP FPROPs (formatting properties) differ from the defaults, get them
 			if (bfprop != 0xffff && bfprop + (cch = page[bfprop + 4]) < 0x80)
 			{
+				UT_DEBUGMSG(("         cch = %d\n", cch));
+
 				if (cch >= 2) ftc = page[bfprop + 6] >> 2;
 				if (cch >= 5) ftc |= (page[bfprop + 9] & 3) << 6;
 				if (cch >= 3) hps = page[bfprop + 7];
@@ -866,6 +943,13 @@ bool IE_Imp_MSWrite::read_txt (int from, int to)
 				if (cch >= 4) fUline = page[bfprop + 8] & 1;
 				if (cch >= 6) hpsPos = page[bfprop + 10];
 			}
+
+			UT_DEBUGMSG(("         ftc           = %d\n", ftc));
+			UT_DEBUGMSG(("         hps           = %d\n", hps));
+			UT_DEBUGMSG(("         fBold         = %d\n", fBold));
+			UT_DEBUGMSG(("         fItalic       = %d\n", fItalic));
+			UT_DEBUGMSG(("         fUline        = %d\n", fUline));
+			UT_DEBUGMSG(("         hpsPos        = %d\n", hpsPos));
 
 			if (ftc >= wri_fonts_count)
 			{
@@ -908,9 +992,12 @@ bool IE_Imp_MSWrite::read_txt (int from, int to)
 				}
 
 				mText.clear();
+				UT_DEBUGMSG(("         Text: "));
 
 				while (fcFirst <= from && from < fcLim && from <= to && from - 0x80 < dataLen)
 					translate_char(*mData.getPointer(from++ - 0x80), mText);
+
+				UT_DEBUGMSG(("\n"));
 
 				// new attributes, only if there was text
 				if (mText.size() > 0)
@@ -918,6 +1005,8 @@ bool IE_Imp_MSWrite::read_txt (int from, int to)
 					const gchar *attributes[5];
 					const UT_UCS4Char *text = mText.ucs4_str(), *p = text;
 					size_t txtLen;
+
+					UT_DEBUGMSG(("         Conv: %s\n", mText.utf8_str()));
 
 					attributes[0] = PT_PROPS_ATTRIBUTE_NAME;
 					attributes[1] = properties.c_str();
@@ -953,7 +1042,11 @@ bool IE_Imp_MSWrite::read_txt (int from, int to)
 
 			fcFirst = fcLim;
 
-			if (fcLim >= fcMac || fcFirst > to) return true;
+			if (fcLim >= fcMac || fcFirst > to)
+			{
+				UT_DEBUGMSG(("       CHP-FODs end, fcLim (%d) >= fcMac (%d) or fcFirst (%d) > to (%d)\n", fcLim, fcMac, fcFirst, to));
+				return true;
+			}
 		}
 	}
 }
@@ -1035,6 +1128,8 @@ inline void IE_Imp_MSWrite::translate_char (const UT_Byte ch, UT_UCS4String &buf
 			buf += uch;
 			break;
 	}
+
+	UT_DEBUGMSG((ch < ' ' ? "\\x%x" : "%c", ch));
 }
 
 /**********************************************************************
@@ -1371,6 +1466,9 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 			write_pic = wri_picture_header;
 			read_wri_struct_mem(write_pic, page);
 
+			UT_DEBUGMSG(("    PIC (wmf/bmp) Header:\n"));
+			DEBUG_WRI_STRUCT(write_pic, 5);
+
 			cbHeader = wri_struct_value(write_pic, "cbHeader");
 			cbSize = wri_struct_value(write_pic, "cbSize");
 
@@ -1443,6 +1541,9 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 
 			write_pic = wri_ole_header;
 			read_wri_struct_mem(write_pic, page);
+
+			UT_DEBUGMSG(("    PIC (OLE) Header:\n"));
+			DEBUG_WRI_STRUCT(write_pic, 5);
 
 			objectType = wri_struct_value(write_pic, "objectType");
 			cbHeader = wri_struct_value(write_pic, "cbHeader");
@@ -1615,6 +1716,7 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 			                              static_cast<float>(dyaSize) / 1440.0);
 
 			UT_String_sprintf(id, "image%u", ++pic_nr);
+			UT_DEBUGMSG(("    Image #%02d\n", pic_nr));
 
 			attributes[0] = PT_PROPS_ATTRIBUTE_NAME;
 			attributes[1] = properties.c_str();

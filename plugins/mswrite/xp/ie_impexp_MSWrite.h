@@ -43,7 +43,7 @@ bool read_wri_struct(wri_struct *w, GsfInput *f);
 bool read_wri_struct_mem(wri_struct *w, unsigned char *blob);
 int wri_struct_value(const wri_struct *w, const char *name);
 void free_wri_struct(wri_struct *w);
-void debug_wri_struct(wri_struct *w);
+void DEBUG_WRI_STRUCT(wri_struct *w, int spaces = 1);
 
 // endian neutral helper macros
 

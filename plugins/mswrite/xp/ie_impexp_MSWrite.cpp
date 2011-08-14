@@ -123,28 +123,34 @@ void free_wri_struct (wri_struct *w)
 	}
 }
 
-void debug_wri_struct (wri_struct *w)
+void DEBUG_WRI_STRUCT (wri_struct *w, int spaces)
 {
 #ifdef DEBUG
+	char sp[16], format[48], x[8];
+
+	sprintf(sp, "%%-%d.%ds", spaces, spaces);
+
 	for (int i = 0; w[i].name; i++)
 	{
 		switch (w[i].type)
 		{
 			case CT_VALUE:
-				UT_DEBUGMSG(("%s:\t0x%04x\n", w[i].name, w[i].value));
+				sprintf(x, "%%0%dX", w[i].size << 1);
+				sprintf(format, "%s%%-13.13s= 0x%s (%%d)\n", sp, x);
+				UT_DEBUGMSG((format, " ", w[i].name, w[i].value, w[i].value));
 				break;
 
 			case CT_BLOB:
-				UT_DEBUGMSG(("%s:\tblob (%d)\n", w[i].name, w[i].size));
+				sprintf(format, "%s%%-13.13s: tblob (%%d)\n", sp);
+				UT_DEBUGMSG((format, " ", w[i].name, w[i].size));
 				break;
 
 			case CT_IGNORE:
-				UT_DEBUGMSG(("%s:\tignored\n", w[i].name));
+				sprintf(format, "%s%%-13.13s  ignored\n", sp);
+				UT_DEBUGMSG((format, " ", w[i].name));
 				break;
 		}
 	}
-
-	UT_DEBUGMSG(("\n"));
 #else
 	UT_UNUSED(w);
 #endif
