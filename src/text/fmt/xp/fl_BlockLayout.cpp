@@ -112,7 +112,7 @@ static void s_border_properties (const char * border_color,
 
 #ifdef ENABLE_SPELL
 SpellChecker *
-fl_BlockLayout::_getSpellChecker (UT_uint32 blockPos) const
+fl_BlockLayout::_getSpellChecker (UT_uint32 blockPos,CheckOperationType checkOperationType) const
 {
 	// the idea behind the static's here is to cache the dictionary, so
 	// we do not have to do dictionary lookup all the time; rather, we
@@ -131,6 +131,7 @@ fl_BlockLayout::_getSpellChecker (UT_uint32 blockPos) const
 
 	static SpellChecker * checker = NULL;
 	static char szPrevLang[8] = {0};
+	static char szPrevLangHyphenation[8] = {0};
 
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
@@ -139,6 +140,21 @@ fl_BlockLayout::_getSpellChecker (UT_uint32 blockPos) const
 	getAP(pBlockAP);
 
 	const char * pszLang = static_cast<const char *>(PP_evalProperty("lang",pSpanAP,pBlockAP,NULL,m_pDoc,true));
+	// return the hyphenation checker
+	if(checkOperationType==Hyphenation)
+	{// we don't need to add last dic in map because we call the dic everytime we need to hyphenate
+		if(!pszLang || !*pszLang)
+		{
+			// we just (dumbly) default to the last dictionary
+			return SpellManager::instanceHyphenation();
+		}
+		if(!szPrevLang[0] || strcmp(pszLang,szPrevLang))
+		{
+			return SpellManager::instanceHyphenation();
+		} 
+        return NULL;
+	}
+
 	if(!pszLang || !*pszLang)
 	{
 		// we just (dumbly) default to the last dictionary
@@ -179,7 +195,7 @@ fl_BlockLayout::_spellCheckWord(const UT_UCSChar * word,
 UT_UCSChar* 
 fl_BlockLayout::_hyphenateWord(const UT_UCSChar * word, UT_uint32 len, UT_uint32 blockPos) const
 {
-	SpellChecker * checker = _getSpellChecker (blockPos);
+	SpellChecker * checker = _getSpellChecker (blockPos, Hyphenation);
 	if (!checker)
 	{
 		// no checker found, don't mark as wrong
