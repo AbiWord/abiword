@@ -32,9 +32,15 @@
 #define XHTML_DTD "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \
 \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n"
 #define XHTML_NS "http://www.w3.org/1999/xhtml"
+
+#define XHTML_AWML_DTD "!DOCTYPE html PUBLIC \"-//ABISOURCE//DTD XHTML plus \
+AWML 2.2//EN\" \"http://www.abisource.com/2004/xhtml-awml/xhtml-awml.mod\""
 #define AWML_NS "http://www.abisource.com/2004/xhtml-awml/"
+
 #define HTML4_DTD "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \
 \"http://www.w3.org/TR/html4/strict.dtd\">\n"
+
+
 
 #define XML_DECLARATION "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"
 

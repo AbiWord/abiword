@@ -527,7 +527,14 @@ void IE_Exp_HTML_XHTMLWriter::insertDTD()
     {
         m_pOutputWriter->write(XML_DECLARATION);
     }
-	m_pOutputWriter->write(XHTML_DTD);
+    
+    if (m_bUseAwml)
+    {
+        m_pOutputWriter->write(XHTML_AWML_DTD);
+    } else
+    {
+        m_pOutputWriter->write(XHTML_DTD);
+    }
 }
 
 void IE_Exp_HTML_XHTMLWriter::openDocument()
