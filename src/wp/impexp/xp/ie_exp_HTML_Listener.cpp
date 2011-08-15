@@ -601,7 +601,7 @@ bool IE_Exp_HTML_Listener::populateStrux(PL_StruxDocHandle sdh,
                 (g_ascii_strcasecmp(static_cast<const gchar *> 
 									(szBlockStyle), "Numbered Heading 1") == 0))
             {
-                _openHeading(1);
+                _openHeading(api, 1);
             }
             else
                 if ((g_ascii_strcasecmp(static_cast<const gchar *> 
@@ -610,7 +610,7 @@ bool IE_Exp_HTML_Listener::populateStrux(PL_StruxDocHandle sdh,
 										(szBlockStyle), 
 										"Numbered Heading 2") == 0))
             {
-                _openHeading(2);
+                _openHeading(api, 2);
             }
             else
                 if ((g_ascii_strcasecmp(static_cast<const gchar *> 
@@ -619,7 +619,7 @@ bool IE_Exp_HTML_Listener::populateStrux(PL_StruxDocHandle sdh,
 										(szBlockStyle), 
 										"Numbered Heading 3") == 0))
             {
-                _openHeading(3);
+                _openHeading(api, 3);
             }
             else
                 if ((g_ascii_strcasecmp(static_cast<const gchar *> 
@@ -628,7 +628,7 @@ bool IE_Exp_HTML_Listener::populateStrux(PL_StruxDocHandle sdh,
 										(szBlockStyle), 
 										"Numbered Heading 4") == 0))
             {
-                _openHeading(4);
+                _openHeading(api, 4);
             }
              else _openBlock(api);
         } else _openBlock(api);
@@ -1096,7 +1096,7 @@ void IE_Exp_HTML_Listener::_openBlock(PT_AttrPropIndex api)
 		first = false;
 	}
 	
-    m_pCurrentImpl->openBlock(styleName, style);
+    m_pCurrentImpl->openBlock(styleName, style, pAP);
     
     
 }
@@ -1115,11 +1115,23 @@ void IE_Exp_HTML_Listener::_closeBlock()
     
 }
 
-void IE_Exp_HTML_Listener::_openHeading(size_t level, const gchar* szStyleName)
+void IE_Exp_HTML_Listener::_openHeading(PT_AttrPropIndex api, size_t level, 
+                                        const gchar* szStyleName)
 {
+    const PP_AttrProp* pAP;
+    bool ok;
+
+    m_bInBlock = true;
+
+    ok = m_pDocument->getAttrProp(api, &pAP);
+    if (!ok) 
+    {
+        pAP = NULL;
+    }
+    
     m_bInHeading = true;
     UT_UTF8String id = UT_UTF8String_sprintf("AbiTOC%d", m_iHeadingCount);
-    m_pCurrentImpl->openHeading(level, szStyleName, id.utf8_str());
+    m_pCurrentImpl->openHeading(level, szStyleName, id.utf8_str(), pAP);
     m_iHeadingCount++;
 }
 
@@ -2245,7 +2257,7 @@ void IE_Exp_HTML_Listener::_openList(PT_AttrPropIndex api, bool recursiveCall)
         {
             styleName = tree->class_name().utf8_str();
         }
-        m_pCurrentImpl->openList(isOrdered, styleName);
+        m_pCurrentImpl->openList(isOrdered, styleName, pAP);
         _openListItem();
     }
       

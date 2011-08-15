@@ -53,7 +53,7 @@ void IE_Exp_HTML_DocumentWriter::closeSpan()
 }
 
 void IE_Exp_HTML_DocumentWriter::openBlock(const gchar* szStyleName,
-	const UT_UTF8String& style)
+	const UT_UTF8String& style, const PP_AttrProp *pAP)
 {
     m_pTagWriter->openTag("p");
     _handleStyleAndId(szStyleName, NULL, style.utf8_str());
@@ -65,7 +65,8 @@ void IE_Exp_HTML_DocumentWriter::closeBlock()
 }
 
 void IE_Exp_HTML_DocumentWriter::openHeading(size_t level, 
-    const gchar* szStyleName, const gchar *szId)
+    const gchar* szStyleName, const gchar *szId,
+    const PP_AttrProp *pAP)
 {
     switch (level)
     {
@@ -172,7 +173,8 @@ void IE_Exp_HTML_DocumentWriter::closeBookmark()
     m_pTagWriter->closeTag();
 }
 
-void IE_Exp_HTML_DocumentWriter::openList(bool ordered, const gchar *szStyleName)
+void IE_Exp_HTML_DocumentWriter::openList(bool ordered, const gchar *szStyleName,
+    const PP_AttrProp *pAP)
 {
     if (ordered)
     {
@@ -548,6 +550,47 @@ void IE_Exp_HTML_XHTMLWriter::openDocument()
     }
 }
 
+void IE_Exp_HTML_XHTMLWriter::openList(bool ordered, 
+    const gchar *szStyleName, const PP_AttrProp *pAP)
+{
+    IE_Exp_HTML_DocumentWriter::openList(ordered, szStyleName, pAP);
+    _handleAwmlStyle(pAP);
+}
+
+void IE_Exp_HTML_XHTMLWriter::openHeading(size_t level, 
+    const gchar* szStyleName, const gchar *szId,
+    const PP_AttrProp *pAP)
+{
+    IE_Exp_HTML_DocumentWriter::openHeading(level, szStyleName, szId, pAP);
+    _handleAwmlStyle(pAP);
+}
+
+void IE_Exp_HTML_XHTMLWriter::openBlock(const gchar* szStyleName, 
+    const UT_UTF8String& style, const PP_AttrProp *pAP)
+{
+    IE_Exp_HTML_DocumentWriter::openBlock(szStyleName,      style, 
+        pAP);
+    _handleAwmlStyle(pAP);
+}
+
+
+void IE_Exp_HTML_XHTMLWriter::_handleAwmlStyle(const PP_AttrProp *pAP)
+{
+    if (!m_bUseAwml || (pAP == NULL))
+    {
+        return;
+    }
+
+    const gchar *szStyleName = NULL;
+    pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szStyleName);
+    
+    if (szStyleName != NULL)
+    {
+        m_pTagWriter->addAttribute("awml:style", szStyleName);
+    }
+
+}
+    
 /*
  * 
  */

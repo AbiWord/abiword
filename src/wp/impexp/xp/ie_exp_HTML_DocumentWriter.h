@@ -29,12 +29,14 @@
 #include "ie_exp_HTML_StyleTree.h"
 #include "xap_Dlg_HTMLOptions.h"
 
+#include <pp_AttrProp.h>
+
 #define XHTML_DTD "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \
 \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n"
 #define XHTML_NS "http://www.w3.org/1999/xhtml"
 
-#define XHTML_AWML_DTD "!DOCTYPE html PUBLIC \"-//ABISOURCE//DTD XHTML plus \
-AWML 2.2//EN\" \"http://www.abisource.com/2004/xhtml-awml/xhtml-awml.mod\""
+#define XHTML_AWML_DTD "<!DOCTYPE html PUBLIC \"-//ABISOURCE//DTD XHTML plus \
+AWML 2.2//EN\" \"http://www.abisource.com/2004/xhtml-awml/xhtml-awml.mod\">"
 #define AWML_NS "http://www.abisource.com/2004/xhtml-awml/"
 
 #define HTML4_DTD "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \
@@ -55,10 +57,12 @@ public:
     void openSpan(const gchar *szStyleNames, const UT_UTF8String& style);
     void closeSpan();
     
-    void openBlock(const gchar* szStyleName, const UT_UTF8String& style);
+    void openBlock(const gchar* szStyleName, const UT_UTF8String& style,
+        const PP_AttrProp *pAP);
     void closeBlock();
     
-    void openHeading(size_t level, const gchar* szStyleName, const gchar *szId);
+    void openHeading(size_t level, const gchar* szStyleName, 
+        const gchar *szId, const PP_AttrProp *pAP);
     void closeHeading();
     
     void openSection(const gchar* szStyleName);
@@ -91,7 +95,8 @@ public:
     void openBookmark(const gchar* szBookmarkName);
     void closeBookmark();
     
-    void openList(bool ordered, const gchar *szStyleName);
+    void openList(bool ordered, const gchar *szStyleName, 
+        const PP_AttrProp *pAP);
     void closeList();
     
     void openListItem();
@@ -152,10 +157,15 @@ public:
     IE_Exp_HTML_XHTMLWriter(IE_Exp_HTML_OutputWriter* pOutputWriter);
     void insertDTD();
     void openDocument();
-    
+    void openList(bool ordered, const gchar *szStyleName, const PP_AttrProp *pAP);
+    void openHeading(size_t level, const gchar* szStyleName, const gchar *szId,
+        const PP_AttrProp *pAP);
+    void openBlock(const gchar* szStyleName, const UT_UTF8String& style,
+        const PP_AttrProp *pAP);
     inline void enableXmlDeclaration(bool bEnable) { m_bEnableXmlDeclaration = bEnable; }
     inline void enableAwmlNamespace(bool bEnable) { m_bUseAwml = bEnable; }
 private:
+    void _handleAwmlStyle(const PP_AttrProp *pAP);
     bool m_bEnableXmlDeclaration;
     bool m_bUseAwml;
     

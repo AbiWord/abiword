@@ -52,11 +52,11 @@ public:
     virtual void closeSpan() {}
     
     virtual void openHeading(size_t /*level*/, const gchar * /*id*/, 
-        const gchar */*szStyleName*/) {}
+        const gchar */*szStyleName*/, const PP_AttrProp* /*pAP*/) {}
     virtual void closeHeading() {}
     
     virtual void openBlock(const gchar */*szStyleName*/, 
-        const UT_UTF8String & /*style*/) {}
+        const UT_UTF8String & /*style*/, const PP_AttrProp* /*pAP*/) {}
     virtual void closeBlock() {}
     
     virtual void openSection(const gchar */*szStyleName*/) {}
@@ -90,7 +90,8 @@ public:
         const gchar */*szStyleName*/, const gchar */*szId*/) {}
     virtual void closeHyperlink() {}
 
-    virtual void openList(bool /*ordered*/, const gchar */*szStyleName*/) {}
+    virtual void openList(bool /*ordered*/, const gchar */*szStyleName*/,
+        const PP_AttrProp* /*pAP*/) {}
     virtual void closeList() {}
 
     virtual void openListItem() {}
@@ -191,7 +192,8 @@ private:
     void _openSpan(PT_AttrPropIndex api);
     void _closeSpan();
 
-    void _openHeading(size_t level, const gchar *szStyleName = NULL);
+    void _openHeading(PT_AttrPropIndex api, size_t level, 
+        const gchar *szStyleName = NULL);
     void _closeHeading();
 
     void _openBlock(PT_AttrPropIndex api);
