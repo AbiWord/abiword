@@ -136,6 +136,12 @@ public:
 		spacing_ATLEAST
 	} eSpacingPolicy;
 
+	typedef enum _CheckOperationType
+	{
+		SpellChecking,
+		Hyphenation
+	} CheckOperationType;
+
     void                formatAll(void);
 	virtual void        format(void);
 	void                formatWrappedFromHere(fp_Line * pLine,fp_Page * pPage);
@@ -454,8 +460,8 @@ protected:
 
 #ifdef ENABLE_SPELL
 	bool		 _spellCheckWord(const UT_UCSChar * word, UT_uint32 len, UT_uint32 blockPos) const;
-	SpellChecker * _getSpellChecker (UT_uint32 blockPos) const;
-
+	// add type for different from spelling-check and hyphenate
+	SpellChecker * _getSpellChecker (UT_uint32 blockPos, CheckOperationType checkOperationType=SpellChecking) const;
 #endif
 	
 	bool					_truncateLayout(fp_Run* pTruncRun);
