@@ -30,10 +30,13 @@
 #include "xap_Dlg_HTMLOptions.h"
 
 #define XHTML_DTD "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \
-\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">"
+\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n"
 #define XHTML_NS "http://www.w3.org/1999/xhtml"
+#define AWML_NS "http://www.abisource.com/2004/xhtml-awml/"
 #define HTML4_DTD "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \
-\"http://www.w3.org/TR/html4/strict.dtd\">"
+\"http://www.w3.org/TR/html4/strict.dtd\">\n"
+
+#define XML_DECLARATION "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"
 
 class IE_Exp_HTML_ListenerImpl;
 class IE_Exp_HTML_DocumentWriter : public IE_Exp_HTML_ListenerImpl
@@ -143,6 +146,12 @@ public:
     IE_Exp_HTML_XHTMLWriter(IE_Exp_HTML_OutputWriter* pOutputWriter);
     void insertDTD();
     void openDocument();
+    
+    inline void enableXmlDeclaration(bool bEnable) { m_bEnableXmlDeclaration = bEnable; }
+    inline void enableAwmlNamespace(bool bEnable) { m_bUseAwml = bEnable; }
+private:
+    bool m_bEnableXmlDeclaration;
+    bool m_bUseAwml;
     
 };
 

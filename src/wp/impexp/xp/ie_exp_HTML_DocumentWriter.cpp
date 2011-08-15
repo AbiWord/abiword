@@ -514,13 +514,19 @@ void IE_Exp_HTML_DocumentWriter::insertMath(const UT_UTF8String& mathml,
 
 IE_Exp_HTML_XHTMLWriter::IE_Exp_HTML_XHTMLWriter(
 	IE_Exp_HTML_OutputWriter* pOutputWriter) :
-		IE_Exp_HTML_DocumentWriter(pOutputWriter)
+		IE_Exp_HTML_DocumentWriter(pOutputWriter),
+    m_bEnableXmlDeclaration(false),
+    m_bUseAwml(false)
 {
 	m_pTagWriter->enableXmlMode();
 }
 
 void IE_Exp_HTML_XHTMLWriter::insertDTD()
 {
+    if (m_bEnableXmlDeclaration)
+    {
+        m_pOutputWriter->write(XML_DECLARATION);
+    }
 	m_pOutputWriter->write(XHTML_DTD);
 }
 
@@ -528,6 +534,11 @@ void IE_Exp_HTML_XHTMLWriter::openDocument()
 {
 	m_pTagWriter->openTag("html");
 	m_pTagWriter->addAttribute("xmlns", XHTML_NS);
+    
+    if (m_bUseAwml)
+    {
+       m_pTagWriter->addAttribute("xmlns:awml", AWML_NS); 
+    }
 }
 
 /*
@@ -563,7 +574,12 @@ IE_Exp_HTML_DocumentWriter *IE_Exp_HTML_DefaultWriterFactory::constructDocumentW
 		pWriter = new IE_Exp_HTML_HTML4Writer(pOutputWriter);
 	}
 	else {
-		pWriter = new IE_Exp_HTML_XHTMLWriter(pOutputWriter);
+		IE_Exp_HTML_XHTMLWriter *pXhtmlWriter = 
+            new IE_Exp_HTML_XHTMLWriter(pOutputWriter);
+        pXhtmlWriter->enableAwmlNamespace(m_exp_opt.bAllowAWML);
+        pXhtmlWriter->enableXmlDeclaration(m_exp_opt.bDeclareXML);
+        pWriter = pXhtmlWriter;
+        
 	}
 
 	pWriter->enablePHP(m_exp_opt.bIsAbiWebDoc);
