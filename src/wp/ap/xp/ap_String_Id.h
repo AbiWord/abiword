@@ -365,6 +365,7 @@ dcl(DLG_Options_Btn_Apply,				"Apply")
 dcl(DLG_Options_Btn_Default,			"De&faults")
 
 dcl(DLG_Options_SpellCheckingTitle,		"Spell Checking")
+dcl(DLG_Options_Label_Hyphenation,	"H&ypheation Words")
 
 dcl(DLG_Options_Label_SpellCheckAsType, "Check s&pelling as you type")
 dcl(DLG_Options_Label_SpellHideErrors,	"Hide &spelling errors in the document")
