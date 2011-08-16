@@ -24,10 +24,11 @@
 /*****************************************************************************/
 IE_Exp_EPUB::IE_Exp_EPUB(PD_Document * pDocument) :
     IE_Exp(pDocument),
-    m_pie(NULL),
-    m_bIsEpub2(false)
+    m_pie(NULL)
 {
-
+    registerDialogs();
+    AP_Dialog_EpubExportOptions::getEpubExportDefaults(
+    &m_exp_opt, XAP_App::getApp());
 }
 IE_Exp_EPUB::~IE_Exp_EPUB()
 {
@@ -36,6 +37,15 @@ IE_Exp_EPUB::~IE_Exp_EPUB()
 
 UT_Error IE_Exp_EPUB::_writeDocument()
 {
+    UT_Error errOptions = doOptions();
+
+    if (errOptions == UT_SAVE_CANCELLED) //see Bug 10840
+    {
+        return UT_SAVE_CANCELLED;
+    }
+    else if (errOptions != UT_OK) {
+        return UT_ERROR;
+    }
 
     m_root = gsf_outfile_zip_new(getFp(), NULL);
 
@@ -144,7 +154,7 @@ UT_Error IE_Exp_EPUB::writeContainer()
 
 UT_Error IE_Exp_EPUB::writeNavigation()
 {
-    if (m_bIsEpub2)
+    if (m_exp_opt.bEpub2)
     {
         return EPUB2_writeNavigation();
     } else
@@ -160,7 +170,7 @@ UT_Error IE_Exp_EPUB::writeNavigation()
 
 UT_Error IE_Exp_EPUB::writeStructure()
 {
-    if (m_bIsEpub2)
+    if (m_exp_opt.bEpub2)
     {
         return EPUB2_writeStructure();
     } else
@@ -521,7 +531,10 @@ UT_Error IE_Exp_EPUB::EPUB3_writeStructure()
     m_pie->setWriterFactory(pWriterFactory);
     m_pie->suppressDialog(true);
     m_pie->setProps(
-                    "embed-css:no;html4:no;use-awml:no;declare-xml:yes;mathml-render-png:no;split-document:yes;add-identifiers:yes;");
+        "embed-css:no;html4:no;use-awml:no;declare-xml:yes;add-identifiers:yes;");
+    
+    m_pie->set_SplitDocument(m_exp_opt.bSplitDocument);
+    m_pie->set_MathMLRenderPNG(m_exp_opt.bRenderMathMLToPNG);
     m_pie->writeFile(szIndexPath);
     g_free(szIndexPath);
     DELETEP(pWriterFactory);
@@ -540,7 +553,7 @@ UT_Error IE_Exp_EPUB::package()
     GsfXMLOut* opfXml = gsf_xml_out_new(opf);
     // <package>
     gsf_xml_out_start_element(opfXml, "package");
-    if (m_bIsEpub2)
+    if (m_exp_opt.bEpub2)
     {
     gsf_xml_out_add_cstr(opfXml, "version", "2.0");
     } else
@@ -550,7 +563,7 @@ UT_Error IE_Exp_EPUB::package()
     gsf_xml_out_add_cstr(opfXml, "xmlns", OPF201_NAMESPACE);
     gsf_xml_out_add_cstr(opfXml, "unique-identifier", "BookId");
     
-    if (!m_bIsEpub2)
+    if (!m_exp_opt.bEpub2)
     {
        gsf_xml_out_add_cstr(opfXml, "profile", EPUB3_PACKAGE_PROFILE);
        gsf_xml_out_add_cstr(opfXml, "xml:lang", getLanguage().utf8_str());
@@ -606,7 +619,7 @@ UT_Error IE_Exp_EPUB::package()
     gsf_xml_out_add_cstr(opfXml, "href", "toc.ncx");
     gsf_xml_out_add_cstr(opfXml, "media-type", "application/x-dtbncx+xml");
     gsf_xml_out_end_element(opfXml);
-    if (!m_bIsEpub2)
+    if (!m_exp_opt.bEpub2)
     {
         gsf_xml_out_start_element(opfXml, "item");
         gsf_xml_out_add_cstr(opfXml, "id", "toc");
@@ -622,7 +635,7 @@ UT_Error IE_Exp_EPUB::package()
     gsf_xml_out_add_cstr(opfXml, "toc", "ncx");
     
     
-    if (!m_bIsEpub2)
+    if (!m_exp_opt.bEpub2)
     {
         gsf_xml_out_start_element(opfXml, "itemref");
         gsf_xml_out_add_cstr(opfXml, "idref","toc");
@@ -836,4 +849,58 @@ UT_UTF8String IE_Exp_EPUB::getLanguage() const
     {
         return "en_US";
     }
+}
+
+UT_Error IE_Exp_EPUB::doOptions()
+{    
+    XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+
+    if (!pFrame || isCopying()) return UT_OK;
+    if (pFrame)
+    {
+        AV_View * pView = pFrame->getCurrentView();
+        if (pView)
+        {
+            GR_Graphics * pG = pView->getGraphics();
+            if (pG && pG->queryProperties(GR_Graphics::DGP_PAPER))
+            {
+                return UT_OK;
+            }
+        }
+    }
+    /* run the dialog
+     */
+
+    XAP_Dialog_Id id = m_iDialogExport;
+
+    XAP_DialogFactory * pDialogFactory
+            = static_cast<XAP_DialogFactory *> (XAP_App::getApp()->getDialogFactory());
+
+    AP_Dialog_EpubExportOptions* pDialog
+            = static_cast<AP_Dialog_EpubExportOptions*> (pDialogFactory->requestDialog(id));
+
+    UT_return_val_if_fail(pDialog, false);
+
+    pDialog->setEpubExportOptions(&m_exp_opt, XAP_App::getApp());
+
+    pDialog->runModal(pFrame);
+
+    /* extract what they did
+     */
+    bool bSave = pDialog->shouldSave();
+
+    pDialogFactory->releaseDialog(pDialog);
+
+    if (!bSave)
+    {
+        return UT_SAVE_CANCELLED;
+    }
+    return UT_OK;
+    
+}
+
+void IE_Exp_EPUB::registerDialogs()
+{
+    XAP_DialogFactory * pFactory = static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
+	m_iDialogExport = pFactory->registerDialog(ap_Dialog_EpubExportOptions_Constructor, XAP_DLGT_NON_PERSISTENT);
 }

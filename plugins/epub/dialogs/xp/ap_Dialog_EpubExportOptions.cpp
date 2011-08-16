@@ -29,6 +29,11 @@ AP_Dialog_EpubExportOptions::AP_Dialog_EpubExportOptions(
     
 }
 
+AP_Dialog_EpubExportOptions::~AP_Dialog_EpubExportOptions()
+{
+    
+}
+
 void AP_Dialog_EpubExportOptions::setEpubExportOptions(
     XAP_Exp_EpubExportOptions* exp_opt, XAP_App* app)
 {
@@ -47,7 +52,7 @@ void AP_Dialog_EpubExportOptions::getEpubExportDefaults(
 
     exp_opt->bEpub2 = true;
     exp_opt->bRenderMathMLToPNG = true;
-    exp_opt->bSplitDocument = false;
+    exp_opt->bSplitDocument = true;
     if (app == NULL) return;
 
     const XAP_Prefs * pPrefs = app->getPrefs();

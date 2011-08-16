@@ -21,6 +21,7 @@
 #define IE_EXP_EPUB_H_
 
 #include "ie_exp_EPUB_EPUB3Writer.h"
+#include "ap_Dialog_EpubExportOptions.h"
 
 #include <string>
 #include <vector>
@@ -79,6 +80,9 @@ private:
     UT_UTF8String getAuthor() const;
     UT_UTF8String getTitle() const;
     UT_UTF8String getLanguage() const;
+    
+    UT_Error doOptions();
+    void registerDialogs();
 
     static std::vector<UT_UTF8String> getFileList(
             const UT_UTF8String &directory);
@@ -94,7 +98,8 @@ private:
     // Array with file id`s in linear reading order
     std::vector<UT_UTF8String> m_opsId;
     
-    bool m_bIsEpub2;
+    XAP_Dialog_Id m_iDialogExport;
+    XAP_Exp_EpubExportOptions m_exp_opt;
 };
 
 #endif /* IE_EXP_EPUB_H_ */

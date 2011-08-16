@@ -25,6 +25,8 @@
 #include "xap_Prefs.h"
 
 #define EPUB_EXPORT_SCHEME_NAME "EpubExporterOptions"
+
+extern pt2Constructor ap_Dialog_EpubExportOptions_Constructor;
 struct XAP_Exp_EpubExportOptions
 {
     bool bSplitDocument;
