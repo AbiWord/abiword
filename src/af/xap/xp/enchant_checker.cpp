@@ -118,7 +118,13 @@ EnchantChecker::_checkWord (const UT_UCSChar * ucszWord, size_t len)
 UT_UCSChar*	EnchantChecker::_hyphenateWord (const UT_UCSChar *ucszWord, size_t len)
 {
    UT_UTF8String utf8 (ucszWord, len);
-   char* result=enchant_dict_hyphenate (m_dict, utf8.utf8_str(), utf8.byteLength());
+   char* result=NULL;
+   if(m_dict!=NULL)
+      result=enchant_dict_hyphenate (m_dict, utf8.utf8_str(), utf8.byteLength());
+   else
+   {
+	  result=enchant_dict_hyphenateWithoutDic (&m_dictGlobal,utf8.utf8_str(), utf8.byteLength()); //without dic we can also m_dict
+   }
    return utf8_to_utf32(result);
 }
 

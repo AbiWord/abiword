@@ -53,6 +53,7 @@ private:
 	UT_GenericVector<UT_UCSChar*> * _suggestWord (const UT_UCSChar * word, size_t len);
 
 	EnchantDict *m_dict;
+	static EnchantDict m_dictGlobal;  // for enchant common 
 };
 
 #endif
