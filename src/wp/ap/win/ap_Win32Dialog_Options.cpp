@@ -242,6 +242,10 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 			EnableWindow(GetDlgItem((HWND)getPage(PG_SPELL),AP_RID_DIALOG_OPTIONS_CHK_SpellHideErrors),value);
 			return;
 
+		case id_HYPHENATION:
+			EnableWindow(GetDlgItem((HWND)getPage(PG_HYPHENATION),AP_RID_DIALOG_HYPHENATION),value);
+			return;
+
 		case id_CHECK_SPELL_SUGGEST:
 			EnableWindow(GetDlgItem((HWND)getPage(PG_SPELL),AP_RID_DIALOG_OPTIONS_CHK_SpellSuggest),value);
 			return;
@@ -606,6 +610,7 @@ void AP_Win32Dialog_Options_Spelling::_onInitDialog()
 	_DS2(OPTIONS_FRM_SpellGeneral,			DLG_Options_Label_General);
 	_DS2(OPTIONS_CHK_SpellCheckAsType,		DLG_Options_Label_SpellCheckAsType);
 	_DS2(OPTIONS_CHK_SpellHideErrors,		DLG_Options_Label_SpellHideErrors);
+	_DS2(OPTIONS_HYP_HYPHENATION,		    DLG_Options_Label_Hyphenation);
 	_DS2(OPTIONS_CHK_SpellSuggest,			DLG_Options_Label_SpellSuggest);
 	_DS2(OPTIONS_CHK_SpellMainOnly,			DLG_Options_Label_SpellMainOnly);
 	_DS2(OPTIONS_FRM_SpellIgnore,			DLG_Options_Label_Ignore);
