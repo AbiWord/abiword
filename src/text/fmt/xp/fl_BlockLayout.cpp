@@ -146,11 +146,11 @@ fl_BlockLayout::_getSpellChecker (UT_uint32 blockPos,CheckOperationType checkOpe
 		if(!pszLang || !*pszLang)
 		{
 			// we just (dumbly) default to the last dictionary
-			return SpellManager::instanceHyphenation();
+			return SpellManager::instanceHyphenation().lastDictionaryHyphenation();
 		}
 		if(!szPrevLang[0] || strcmp(pszLang,szPrevLang))
 		{
-			return SpellManager::instanceHyphenation();
+			return SpellManager::instanceHyphenation().lastDictionaryHyphenation();
 		} 
         return NULL;
 	}
