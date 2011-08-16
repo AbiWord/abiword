@@ -879,7 +879,10 @@ UT_Error IE_Exp_EPUB::doOptions()
     AP_Dialog_EpubExportOptions* pDialog
             = static_cast<AP_Dialog_EpubExportOptions*> (pDialogFactory->requestDialog(id));
 
-    UT_return_val_if_fail(pDialog, false);
+    if (pDialog == NULL)
+    {
+        return UT_OK;
+    }
 
     pDialog->setEpubExportOptions(&m_exp_opt, XAP_App::getApp());
 
@@ -901,6 +904,12 @@ UT_Error IE_Exp_EPUB::doOptions()
 
 void IE_Exp_EPUB::registerDialogs()
 {
+    // Because there is no implementation of export options dialog 
+    // for WIN32 and Mac OS we just use defaults for that platforms
+#ifdef WIN32
+#elif defined COCOA
+#else
     XAP_DialogFactory * pFactory = static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
 	m_iDialogExport = pFactory->registerDialog(ap_Dialog_EpubExportOptions_Constructor, XAP_DLGT_NON_PERSISTENT);
+#endif
 }
