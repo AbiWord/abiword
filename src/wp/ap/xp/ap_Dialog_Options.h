@@ -56,7 +56,7 @@ class ABI_EXPORT AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 
 	// control ids
 	typedef enum { id_CHECK_SPELL_CHECK_AS_TYPE = 0, id_CHECK_SPELL_HIDE_ERRORS,
-				   id_CHECK_SPELL_SUGGEST, id_CHECK_SPELL_MAIN_ONLY,
+				   id_CHECK_SPELL_SUGGEST, id_HYPHENATION, id_CHECK_SPELL_MAIN_ONLY,
 				   id_CHECK_SPELL_UPPERCASE, id_CHECK_SPELL_NUMBERS,
 				   id_BUTTON_SPELL_AUTOREPLACE,
 				   id_CHECK_GRAMMAR_CHECK,

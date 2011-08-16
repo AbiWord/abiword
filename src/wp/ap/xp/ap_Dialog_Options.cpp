@@ -647,10 +647,12 @@ void AP_Dialog_Options::_getUnitMenuContent(const XAP_StringSet *pSS, UnitMenuCo
 void AP_Dialog_Options::_initEnableControls()
 {
 	// spelling
-	_controlEnable( id_CHECK_SPELL_SUGGEST, 		false );
+	_controlEnable( id_CHECK_SPELL_SUGGEST, 		false );	
 	_controlEnable( id_CHECK_SPELL_HIDE_ERRORS, 	false );
 	_controlEnable( id_CHECK_SPELL_MAIN_ONLY,		false );
 
+    //hyphenation
+    _controlEnable( id_HYPHENATION, 	false );
 	// prefs
 	_controlEnable( id_COMBO_PREFS_SCHEME,			false );
 
