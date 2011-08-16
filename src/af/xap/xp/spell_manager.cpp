@@ -188,7 +188,7 @@ void SpellChecker::correctWord (const UT_UCSChar * /*toCorrect*/, size_t /*toCor
  * and destroying instances of the ISpellChecker class
  */
 /* private */ SpellManager::SpellManager ()
-  : m_map (NBUCKETS), m_lastDict(0), m_nLoadedDicts(0)
+  : m_map (NBUCKETS), m_lastDict(0), m_lastDictHyphenation(0),m_nLoadedDicts(0)
 {
 	m_missingHashs += "-none-";
 }
@@ -202,6 +202,7 @@ SpellManager::~SpellManager ()
 	UT_ASSERT(pVec);
 	UT_VECTOR_PURGEALL (SpellCheckerClass *, (*pVec));
 	DELETEP(pVec);
+	m_lastDictGlobal=new SpellCheckerClass();
 }
 
 /*!
@@ -215,6 +216,14 @@ SpellManager::instance ()
 	// Singleton implementation
 	static SpellManager s_instance;
 	return s_instance;
+}
+
+/* static */ SpellManager &
+SpellManager::instanceHyphenation ()
+{
+	// Singleton implementation
+	static SpellManager s_instanceHyphenation;
+	return s_instanceHyphenation;
 }
 
 /*!
@@ -271,7 +280,11 @@ SpellManager::lastDictionary () const
 {
 	return m_lastDict;
 }
-
+SpellChecker *
+SpellManager::lastDictionaryHyphenation () const
+{
+	return m_lastDictHyphenation;
+}
 SpellChecker *	SpellManager::getInstance() const
 {
 	return new SpellCheckerClass ();

@@ -117,11 +117,12 @@ class ABI_EXPORT SpellManager
 {
 public:
 	static SpellManager & instance (void);
-
+    static SpellManager & instanceHyphenation (void);
 	virtual ~SpellManager ();
 
 
 	virtual SpellChecker * lastDictionary (void) const;
+	virtual SpellChecker * lastDictionaryHyphenation (void) const;
 	virtual SpellChecker * requestDictionary (const char * szLang);
 	UT_uint32 numLoadedDicts () const { return m_nLoadedDicts; }
 
@@ -136,6 +137,8 @@ private:
 	UT_StringPtrMap m_map;
 	UT_String m_missingHashs;
 	SpellChecker * m_lastDict;
+	SpellChecker * m_lastDictHyphenation;
+	static SpellChecker *m_lastDictGlobal;
 	UT_uint32 m_nLoadedDicts;
 };
 
