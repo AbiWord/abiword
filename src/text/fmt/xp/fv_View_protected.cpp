@@ -311,6 +311,7 @@ void FV_View::_drawSelection()
 		m_iLowDrawPoint = 0;
 		m_iHighDrawPoint = 0;
 	}
+
 }
 
 // Note that isClearSelection() might change its tune in one of two ways.

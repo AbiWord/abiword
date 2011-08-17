@@ -830,9 +830,6 @@ UT_Error PD_Document::_importFile(GsfInput * input, int ieft,
 			if (!getFilename())
 				_setFilename(g_strdup(szFilename));
 		}
-	repairDoc();
-	
-	m_bLoading = false;
 
 	if (!UT_IS_IE_SUCCESS(errorCode))
 	{
@@ -840,6 +837,9 @@ UT_Error PD_Document::_importFile(GsfInput * input, int ieft,
 		DELETEP(m_pPieceTable);
 		return errorCode;
 	}
+	repairDoc();
+	
+	m_bLoading = false;
 
 	setLastOpenedTime(time(NULL));
 	
