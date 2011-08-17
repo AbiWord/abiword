@@ -1402,7 +1402,7 @@ void s_LaTeX_Listener::_outputBabelPackage(void)
 	    UT_uint32 indx = lang.getIndxFromCode(szLangCode);
 	    if (indx > 0)
 	    {
-		char *strLangName = g_strdup(lang.getNthLangName(indx)); // language name
+		char *strLangName = g_strdup(lang.getNthLangCode(indx)); // language name
 		if (strLangName)
 		{
 		    m_pie->write("%% Please revise the following command, if your babel\n");
@@ -1412,18 +1412,18 @@ void s_LaTeX_Listener::_outputBabelPackage(void)
 		    
 		    *strLangName = tolower(*strLangName);
 		    
-		    const char *q = strtok(strLangName, " ("); // retrieve the "significant" part
-		    if (strcmp(q, "french") == 0)
+		    const char *q = strtok(strLangName, "-@"); // retrieve the "significant" part
+		    if (strcmp(q, "fr") == 0)
 			q="frenchb"; // frenchb.ldf
-		    else if (strcmp(q, "german") == 0)
+		    else if (strcmp(q, "de") == 0)
 			q="germanb"; // germanb.ldf
-		    else if (strcmp(q, "portuguese") == 0)
+		    else if (strcmp(q, "pt") == 0)
 			q="portuges"; // portuges.ldf
-		    else if (strcmp(q, "russian") == 0)
+		    else if (strcmp(q, "ru") == 0)
 			q="russianb"; // russianb.ldf
-		    else if (strcmp(q, "slovenian") == 0)
+		    else if (strcmp(q, "sl") == 0)
 			q="slovene"; // slovene.ldf
-		    else if (strcmp(q, "ukrainian") == 0)
+		    else if (strcmp(q, "uk") == 0)
 			q="ukraineb"; // ukraineb.ldf
 		    
 		    m_pie->write("\\usepackage[");
@@ -2828,22 +2828,22 @@ static int wvConvertUnicodeToLaTeX(U16 char16,const char*& out)
 			return(1);
 
 		case 0x01FA:
-			printf("\\'{\\AA}");  /* ? with acute */
+			printf("\\'{\\AA}");  /* A-ring with acute */
 			return(1);
 		case 0x01FB:
-			printf("\\'{\\aa}");  /* ? with acute */
+			printf("\\'{\\aa}");  /* a-ring with acute */
 			return(1);
 		case 0x01FC:
-			printf("\\'{\\AE}");  /* ? with acute */
+			printf("\\'{\\AE}");  /* AE with acute */
 			return(1);
 		case 0x01FD:
-			printf("\\'{\\ae}");  /* ? with acute */
+			printf("\\'{\\ae}");  /* AE with acute */
 			return(1);
 		case 0x01FE:
-			printf("\\'{\\O}");  /* ? with acute */
+			printf("\\'{\\O}");  /* O-stroke with acute */
 			return(1);
 		case 0x01FF:
-			printf("\\'{\\o}");  /* ? with acute */
+			printf("\\'{\\o}");  /* O-stroke with acute */
 			return(1);
 
 		case 0x2010:
@@ -2856,22 +2856,7 @@ static int wvConvertUnicodeToLaTeX(U16 char16,const char*& out)
 			printf("--"); /* figure dash (similar to en-dash) */
 			return(1);
 		case 0x2013:
-			/* 
-			soft-hyphen? Or en-dash? I find that making 
-			this a soft-hyphen works very well, but makes
-			the occasional "hard" word-connection hyphen 
-			(like the "-" in roller-coaster) disappear.
-			(Are these actually en-dashes? Dunno.)
-			How does MS Word distinguish between the 0x2013's
-			that signify soft hyphens and those that signify
-			word-connection hyphens? wvware should be able
-			to as well. -- MV 8.7.2000
-	
-			U+2013 is the en-dash character and not a soft
-			hyphen. Soft hyphen is U+00AD. Changing to
-			"--". -- 2000-08-11 huftis@bigfoot.com
-			*/
-			printf("--"); 
+			printf("--"); /* EN dash */
 			return(1);
 
 		case 0x016B:
@@ -2929,111 +2914,153 @@ static int wvConvertUnicodeToLaTeX(U16 char16,const char*& out)
 		case 0x017E:
 			printf("\\v{z}");  /* z with caron */
 			return(1);
-	/* German and Spanish characters as well as some specials */
-                case 0x00EB:
-                        printf("\\\"{e}");
-                        return(1);
-                case 0x00CB:
-                        printf("\\\"{E}");
-                        return(1);
-                case 0x00F6:
-                        printf("\\\"{o}");
-                        return(1);
-                case 0x00E4:
-                        printf("\\\"{a}");
-                        return(1);
-                case 0x00FC:
-                        printf("\\\"{u}");
-                        return(1);
-                case 0x00C4:
-                        printf("\\\"{A}");
-                        return(1);
-                case 0x00D6:
-                        printf("\\\"{O}");
-                        return(1);
+	/* Some Latin-1 characters as well as some specials */
+		case 0x00EB:
+				printf("\\\"{e}");
+				return(1);
+		case 0x00CB:
+				printf("\\\"{E}");
+				return(1);
+		case 0x00F6:
+				printf("\\\"{o}");
+				return(1);
+		case 0x00E4:
+				printf("\\\"{a}");
+				return(1);
+		case 0x00FC:
+				printf("\\\"{u}");
+				return(1);
+		case 0x00C4:
+				printf("\\\"{A}");
+				return(1);
+		case 0x00D6:
+				printf("\\\"{O}");
+				return(1);
 #if 0
-                case 0x00DC:
-                        printf("\\\"{U}");
-                        return(1);
+		case 0x00DC:
+				printf("\\\"{U}");
+				return(1);
 #endif
-                case 0x00DF:
-                        printf("\\ss{}");
-                        return(1);
-                case 0x00E9: /* e with acute */
-                        printf("\\\'{e}");
-                        return(1);
-                case 0x00C9: /* E with acute */
-                        printf("\\\'{E}");
-                        return(1);
-                case 0x00E8: /* e with grave */
-                        printf("\\`{e}");
-                        return(1);
-                case 0x00C8: /* E with grave */
-                        printf("\\`{E}");
-                        return(1);
-                case 0x00FD: /* y with acute */
-                        printf("\\\'{y}");
-                        return(1);
-                case 0x00DD: /* Y with acute */
-                        printf("\\\'{Y}");
-                        return(1);
-                case 0x00F8: /* o with stroke */
-                        printf("{\\o}");
-                        return(1);
-                case 0x00D8: /* O with stroke */
-                        printf("{\\O}");
-                        return(1);
-                case 0x00E0: /* a with grave */
-                        printf("\\`{a}");
-                        return(1);
-                case 0x00C0: /* A with grave */
-                        printf("\\`{A}");
-                        return(1);
-                case 0x00E1: /* a with acute */
-                        printf("\\\'{a}");
-                        return(1);
-                case 0x00ED: /* i with acute */
-                        printf("\\\'{i}");
-                        return(1);
-                case 0x00FA: /* u with acute */
-                        printf("\\\'{u}");
-                        return(1);
-                case 0x00F2: /* o with grave */
-                        printf("\\`{o}");
-                        return(1);
-                case 0x00F3: /* o with acute */
-                        printf("\\\'{o}");
-                        return(1);
-                case 0x00F1: /* n with tilde */
-                        printf("\\~{n}");
-                        return(1);
-                case 0x00C1: /* A with acute */
-                        printf("\\\'{A}");
-                        return(1);
-                case 0x00CD: /* I with acute */
-                        printf("\\\'{I}");
-                        return(1);
-                case 0x00DA: /* U with acute */
-                        printf("\\\'{U}");
-                        return(1);
-                case 0x00D3: /* O with acute */
-                        printf("\\\'{O}");
-                        return(1);
-                case 0x00E7: /* c with cedilla */
-                        printf("\\c{c}");
-                        return(1);
-                case 0x00C7: /* C with cedilla */
-                        printf("\\c{C}");
-                        return(1);
-                case 0x00D1: /* N with tilde */
-                        printf("\\~{N}");
-                        return(1);
-                case 0x00A1: /* inverted exclamation mark */
-                        printf("!`");
-                        return(1);
-                case 0x00BF: /* inverted question mark */
-                        printf("?`");
-                        return(1);
+		case 0x00DF:
+				printf("\\ss{}");
+				return(1);
+		case 0x00E9: /* e with acute */
+				printf("\\\'{e}");
+				return(1);
+		case 0x00C9: /* E with acute */
+				printf("\\\'{E}");
+				return(1);
+		case 0x00E8: /* e with grave */
+				printf("\\`{e}");
+				return(1);
+		case 0x00C8: /* E with grave */
+				printf("\\`{E}");
+				return(1);
+		case 0x00FD: /* y with acute */
+				printf("\\\'{y}");
+				return(1);
+		case 0x00DD: /* Y with acute */
+				printf("\\\'{Y}");
+				return(1);
+		case 0x00F8: /* o with stroke */
+				printf("{\\o}");
+				return(1);
+		case 0x00D8: /* O with stroke */
+				printf("{\\O}");
+				return(1);
+		case 0x00E0: /* a with grave */
+				printf("\\`{a}");
+				return(1);
+		case 0x00C0: /* A with grave */
+				printf("\\`{A}");
+				return(1);
+		case 0x00E1: /* a with acute */
+				printf("\\\'{a}");
+				return(1);
+		case 0x00ED: /* i with acute */
+				printf("\\\'{i}");
+				return(1);
+		case 0x00FA: /* u with acute */
+				printf("\\\'{u}");
+				return(1);
+		case 0x00F2: /* o with grave */
+				printf("\\`{o}");
+				return(1);
+		case 0x00F3: /* o with acute */
+				printf("\\\'{o}");
+				return(1);
+		case 0x00F1: /* n with tilde */
+				printf("\\~{n}");
+				return(1);
+		case 0x00C1: /* A with acute */
+				printf("\\\'{A}");
+				return(1);
+		case 0x00CD: /* I with acute */
+				printf("\\\'{I}");
+				return(1);
+		case 0x00DA: /* U with acute */
+				printf("\\\'{U}");
+				return(1);
+		case 0x00D3: /* O with acute */
+				printf("\\\'{O}");
+				return(1);
+		case 0x00E7: /* c with cedilla */
+				printf("\\c{c}");
+				return(1);
+		case 0x00C7: /* C with cedilla */
+				printf("\\c{C}");
+				return(1);
+		case 0x00D1: /* N with tilde */
+				printf("\\~{N}");
+				return(1);
+		case 0x00E2: /* a with circumflex */
+			printf("\\^{a}");
+			return (1);
+		case 0x00C2: /* A with circumflex */
+			printf("\\^{A}");
+			return (1);
+		case 0x00EA: /* e with circumflex */
+			printf("\\^{e}");
+			return (1);
+		case 0x00CA: /* E with circumflex */
+			printf("\\^{E}");
+			return (1);
+		case 0x00EE: /* i with circumflex */
+			printf("\\^{i}");
+			return (1);
+		case 0x00CE: /* I with circumflex */
+			printf("\\^{I}");
+			return (1);
+		case 0x00F4: /* o with circumflex */
+			printf("\\^{o}");
+			return (1);
+		case 0x00D4: /* O with circumflex */
+			printf("\\^{O}");
+			return (1);
+		case 0x00FB: /* u with circumflex */
+			printf("\\^{u}");
+			return (1);
+		case 0x00DB: /* U with circumflex */
+			printf("\\^{U}");
+			return (1);
+		case 0x00E3: /* a with tilde */
+			printf("\\~{a}");
+			return (1);
+		case 0x00C3: /* A with tilde */
+			printf("\\~{A}");
+			return (1);
+		case 0x00F5: /* o with tilde */
+			printf("\\~{o}");
+			return (1);
+		case 0x00D5: /* O with tilde */
+			printf("\\~{O}");
+			return (1);
+		case 0x00A1: /* inverted exclamation mark */
+				printf("!`");
+				return(1);
+		case 0x00BF: /* inverted question mark */
+				printf("?`");
+				return(1);
 
 
 	/* Windows specials (MV 4.7.2000). More could be added. 
