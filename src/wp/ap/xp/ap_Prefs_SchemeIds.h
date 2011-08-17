@@ -111,7 +111,7 @@
 
 #define AP_PREF_KEY_ParaVisible                     "ParaVisible"               /* are the paragraphs/spaces/tats/etc. visible? {0,1} */
 #define AP_PREF_DEFAULT_ParaVisible                 "0"
-
+#define AP_PREF_HYPHENATION_ENABLE                     "HyphenationEnable"  
 
 #define AP_PREF_KEY_StringSet						"StringSet"					/* name of dialog/msgbox strings */
 #define AP_PREF_DEFAULT_StringSet					"en-US"
