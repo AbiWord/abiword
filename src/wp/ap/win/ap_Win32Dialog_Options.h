@@ -195,6 +195,7 @@ public:
 	SET_GATHER			(SpellCheckAsType,	bool );
 	SET_GATHER			(SpellHideErrors,	bool );
 	SET_GATHER			(SpellSuggest,		bool );
+	SET_GATHER			(HyphenationSuggest,bool );
 	SET_GATHER			(SpellMainOnly, 	bool );
 	SET_GATHER			(SpellUppercase,	bool );
 	SET_GATHER			(SpellNumbers,		bool );

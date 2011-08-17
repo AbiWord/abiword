@@ -243,7 +243,7 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 			return;
 
 		case id_HYPHENATION:
-			EnableWindow(GetDlgItem((HWND)getPage(PG_HYPHENATION),AP_RID_DIALOG_HYPHENATION),value);
+			EnableWindow(GetDlgItem((HWND)getPage(PG_HYPHENATION),AP_RID_DIALOG_OPTIONS_HYP_HYPHENATION),value);
 			return;
 
 		case id_CHECK_SPELL_SUGGEST:
@@ -339,6 +339,11 @@ DEFINE_GET_SET_BOOL_DUMMY (ViewUnprintable)
 bool AP_Win32Dialog_Options::_gatherAutoSaveFile(void)
 {
 	return (IsDlgButtonChecked((HWND)getPage(PG_DOCUMENT),AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile) == BST_CHECKED);
+}
+
+bool AP_Win32Dialog_Options::_gatherEnableHyphenation(void)
+{
+	return (IsDlgButtonChecked((HWND)getPage(PG_HYPHENATION),AP_RID_DIALOG_OPTIONS_HYP_HYPHENATION) == BST_CHECKED);
 }
 
 void AP_Win32Dialog_Options::_setAutoSaveFile(const bool b)
