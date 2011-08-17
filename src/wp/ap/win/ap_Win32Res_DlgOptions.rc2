@@ -39,7 +39,7 @@
 #define AP_RID_DIALOG_OPTIONS_CHK_SpellCheckAsType		1201
 #define AP_RID_DIALOG_OPTIONS_CHK_SpellHideErrors		1202
 #define AP_RID_DIALOG_OPTIONS_CHK_SpellSuggest			1203
-#define AP_RID_DIALOG_HYPHENATION			1700  //temp number
+#define AP_RID_DIALOG_OPTIONS_HYP_HYPHENATION			1700  //temp number
 #define AP_RID_DIALOG_OPTIONS_CHK_SpellMainOnly 		1204
 #define AP_RID_DIALOG_OPTIONS_FRM_SpellIgnore			1205
 #define AP_RID_DIALOG_OPTIONS_CHK_SpellUppercase		1206
@@ -112,8 +112,8 @@ BEGIN
                     AP_RID_DIALOG_OPTIONS_CHK_SpellSuggest,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,138,210,10
 	CONTROL         "H&yphenation Words",
-                    AP_RID_DIALOG_HYPHENATION,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,14,138,210,10
+                    AP_RID_DIALOG_OPTIONS_HYP_HYPHENATION,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,14,150,210,10
     CONTROL         "Suggest from &main only",
                     AP_RID_DIALOG_OPTIONS_CHK_SpellMainOnly,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,155,210,10
