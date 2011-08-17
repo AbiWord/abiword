@@ -148,6 +148,8 @@ void AP_Dialog_Options::_storeWindowData(void)
 	
 	// JOAQUIN - fix this: Dom
 	UT_DEBUGMSG(("Saving Auto Save File [%i]\n", _gatherAutoSaveFile()));
+	Save_Pref_Bool( AP_PREF_HYPHENATION_ENABLE,, _gatherEnableHyphenation() );
+	UT_DEBUGMSG(("Saving Auto Save File [%i]\n", _gatherEnableHyphenation));
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_AutoSaveFile, _gatherAutoSaveFile() );
 
 	UT_String stVal;
@@ -390,6 +392,9 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 			Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_ParaVisible,
 					_gatherViewUnprintable());
 			break;
+        case id_HYPHENATION:
+			Save_Pref_Bool( AP_PREF_HYPHENATION_ENABLE,, _gatherEnableHyphenation() );
+			break;
 
 		case id_CHECK_ENABLE_SMOOTH_SCROLLING:
 #if defined(TOOLKIT_GTK)
@@ -410,6 +415,8 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 			Save_Pref_Bool (pPrefsScheme, XAP_PREF_KEY_ChangeLanguageWithKeyboard,
 					_gatherLanguageWithKeyboard() );
 			break;
+
+
 
 		case id_CHECK_DIR_MARKER_AFTER_CLOSING_PARENTHESIS:
 			Save_Pref_Bool (pPrefsScheme, XAP_PREF_KEY_DirMarkerAfterClosingParenthesis,
