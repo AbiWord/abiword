@@ -1875,6 +1875,7 @@ WINDOWS_COMCTL_WARNING=""
 WINDOWS_NEED_UNICOWS=""
 WORD_PassInvalid="密碼不正確"
 WORD_PassRequired="這是一份加密文件，需要密碼才能存取"
+DLG_Options_Label_Hyphenation="自动分词(&amp;H)"
 />
 
 </AbiStrings>

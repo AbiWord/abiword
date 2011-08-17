@@ -1252,6 +1252,7 @@ TOOLBAR_TOOLTIP_SCRIPT_PLAY="執行命令稿"
 TOOLBAR_TOOLTIP_FMT_DIR_OVERRIDE_LTR="強制文字從左至右排列"
 TOOLBAR_TOOLTIP_FMT_DIR_OVERRIDE_RTL="強制文字從右至左排列"
 TOOLBAR_TOOLTIP_FMT_DOM_DIRECTION="變更段落文字的主要方向"
+DLG_Options_Label_Hyphenation="自动分词(&amp;H)"
 />
 
 </AbiStrings>
