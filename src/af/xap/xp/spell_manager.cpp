@@ -39,6 +39,7 @@ typedef ISpellChecker SpellCheckerClass;
 /*!
  * Abstract constructor
  */
+SpellChecker *SpellManager::m_lastDictGlobal=NULL;
 /* protected */ SpellChecker::SpellChecker ()
 {
 	// not used, abstract base class

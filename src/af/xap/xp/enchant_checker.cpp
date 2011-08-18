@@ -46,7 +46,7 @@ utf8_to_utf32(const char *word8)
 
 static size_t s_enchant_broker_count = 0;
 static EnchantBroker * s_enchant_broker = 0;
-
+EnchantDict* EnchantChecker::m_dictGlobal=NULL;
 EnchantChecker::EnchantChecker()
 	: m_dict(0)
 {
@@ -123,7 +123,7 @@ UT_UCSChar*	EnchantChecker::_hyphenateWord (const UT_UCSChar *ucszWord, size_t l
       result=enchant_dict_hyphenate (m_dict, utf8.utf8_str(), utf8.byteLength());
    else
    {
-	  result=enchant_dict_hyphenateWithoutDic (&m_dictGlobal,utf8.utf8_str(), utf8.byteLength()); //without dic we can also m_dict
+	  result=enchant_dict_hyphenateWithoutDic (m_dictGlobal,utf8.utf8_str(), utf8.byteLength()); //without dic we can also m_dict
    }
    return utf8_to_utf32(result);
 }
