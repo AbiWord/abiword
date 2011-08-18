@@ -82,6 +82,7 @@ public:
 		// AutoSave
 
 		SET_GATHER (AutoSaveFile,	      bool);
+		SET_GATHER	(Hyphenation,bool );
 			virtual void _gatherAutoSaveFilePeriod (      UT_String &stRetVal);
 			virtual void _setAutoSaveFilePeriod    (const UT_String &stPeriod);
 			virtual void _gatherAutoSaveFileExt    (      UT_String &stRetVal);
@@ -168,7 +169,7 @@ public:
 	// Documents
 
 		// General
-
+        GtkWidget *m_checkbuttonHyphenation;
 		GtkWidget *m_checkbuttonAutoSaveFile;
 			GtkWidget *m_tableAutoSaveFile;
 				GtkWidget *m_textAutoSaveFilePeriod;
