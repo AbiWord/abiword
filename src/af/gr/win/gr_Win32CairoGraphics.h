@@ -28,18 +28,20 @@ class ABI_EXPORT GR_Win32CairoGraphicsBase
 	: public GR_CairoGraphics
 {
 public:
-	~GR_Win32CairoGraphicsBase();
-
 	virtual GR_Image* createNewImage(const char* pszName,
 									 const UT_ByteBuf* pBB,
 	                                 const std::string & mimeType,
 									 UT_sint32 iDisplayWidth,
 									 UT_sint32 iDisplayHeight,
 									 GR_Image::GRType = GR_Image::GRT_Raster);
- protected:
-	GR_Win32CairoGraphicsBase();
-	GR_Win32CairoGraphicsBase(cairo_t *cr, UT_uint32 iDeviceResolution);
+protected:
+	GR_Win32CairoGraphicsBase() 
+		: GR_CairoGraphics()
+	{ }
 
+	GR_Win32CairoGraphicsBase(cairo_t *cr, UT_uint32 iDeviceResolution)
+		: GR_CairoGraphics(cr, iDeviceResolution)
+	{ }
 };
 
 class ABI_EXPORT GR_Win32CairoGraphics 
