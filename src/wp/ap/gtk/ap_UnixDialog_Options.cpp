@@ -346,6 +346,11 @@ void AP_UnixDialog_Options::_constructWindowContents ( GtkBuilder * builder )
     localizeButtonMarkup ( m_checkbuttonAutoSaveFile, pSS,
                            AP_STRING_ID_DLG_Options_Label_AutoSaveUnderline );
 
+	m_checkbuttonHyphenation = WID ( "chkHyphenation" );
+	localizeButtonMarkup ( m_checkbuttonHyphenation, pSS,
+		AP_STRING_ID_DLG_Options_Label_Hyphenation );
+
+
     m_tableAutoSaveFile = WID ( "tblAutoSave" );
 
     tmp = WID ( "lblInterval" );
@@ -490,8 +495,13 @@ void AP_UnixDialog_Options::_constructWindowContents ( GtkBuilder * builder )
                        G_CALLBACK ( s_auto_save_toggled ),
                        static_cast<gpointer> ( this ) );
 
-    // set inital state
-    g_signal_emit_by_name ( G_OBJECT ( m_checkbuttonAutoSaveFile ), "toggled" );
+	g_signal_connect ( G_OBJECT ( m_checkbuttonHyphenation ),
+		"toggled",
+		G_CALLBACK ( s_checkbutton_toggle ),
+		static_cast<gpointer> ( this ) );
+	// set inital state
+	g_signal_emit_by_name ( G_OBJECT ( m_checkbuttonHyphenation ), "toggled" );
+
 
 
     // to choose another color for the screen
@@ -621,6 +631,9 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 
         case id_CHECK_AUTO_SAVE_FILE:
             return m_checkbuttonAutoSaveFile;
+
+		case id_CHECK_HYPHENATION: //save id name with windows
+			return m_checkbuttonHyphenation;
 
         case id_TEXT_AUTO_SAVE_FILE_EXT:
             return m_textAutoSaveFileExt;
