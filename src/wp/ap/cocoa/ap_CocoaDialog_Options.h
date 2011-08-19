@@ -42,6 +42,7 @@ class AP_CocoaDialog_Options;
 
 @public
 	IBOutlet NSBox *            m_boxAutoSave;
+    IBOutlet NSBox *            m_boxHyphenation;
 	IBOutlet NSBox *            m_appStartup;
 	IBOutlet NSBox *			oBox_BiDiOptions;
 	IBOutlet NSBox *			oBox_General;
@@ -83,6 +84,7 @@ class AP_CocoaDialog_Options;
 	IBOutlet NSButton *         m_checkbuttonSmartQuotes;
 	IBOutlet NSButton *         m_checkbuttonCustomSmartQuotes;
 	IBOutlet NSButton *         m_checkbuttonAutoSaveFile;
+	IBOutlet NSButton *         m_checkbuttonHyphenation;
 	IBOutlet NSButton *         m_checkbuttonEnableOverwrite;
 	
 	IBOutlet NSTabView *		oTabView;
@@ -96,6 +98,7 @@ class AP_CocoaDialog_Options;
 - (IBAction)revertClicked:(id)sender;
 - (IBAction)checkboxClicked:(id)sender;
 - (IBAction)autoSaveClicked:(id)sender;
+- (IBAction)HyphenationClicked:(id)sender;
 
 - (IBAction)controlChanged:(id)sender;
 
@@ -164,6 +167,7 @@ protected:
 	// AutoSave
 
 	SET_GATHER (AutoSaveFile,	      bool);
+	SET_GATHER (Hyphenation,	      bool);
 	virtual void _gatherAutoSaveFilePeriod (      UT_String &stRetVal);
 	virtual void _setAutoSaveFilePeriod    (const UT_String &stPeriod);
 	virtual void _gatherAutoSaveFileExt    (      UT_String &stRetVal);
@@ -204,6 +208,7 @@ protected:
 	// unimplemented UI-wise. We need dummy implementations to satisfy the XP framework, though
 
 	SET_GATHER			(PrefsAutoSave,			bool);
+	SET_GATHER			(PrefsHyphenaiton,			bool);
 	SET_GATHER			(ViewShowRuler,			bool);
 	SET_GATHER			(ViewShowStatusBar,		bool);
 	SET_GATHER			(ViewAll,			bool);
@@ -225,6 +230,7 @@ private:
 	//
 	bool m_boolEnableSmoothScrolling;
 	bool m_boolPrefsAutoSave;
+	bool m_boolPrefsHyphenation;
 	bool m_boolViewAll;
 	bool m_boolViewHiddenText;
 	bool m_boolViewShowRuler;
