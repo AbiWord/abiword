@@ -212,6 +212,7 @@ public:
     		// Dummy
 		bool m_boolEnableSmoothScrolling;
 		bool m_boolPrefsAutoSave;
+		bool m_boolPrefsHyphenation;
 		bool m_boolViewAll;
 		bool m_boolViewHiddenText;
 		bool m_boolViewShowRuler;
@@ -226,6 +227,7 @@ private:
     static void s_real_color_changed(GdkColor & gdkcolor, AP_UnixDialog_Options * dlg);
 	static void s_color_changed	     (GtkColorSelection *, gpointer);
 	static void s_auto_save_toggled	     (GtkToggleButton *,   gpointer);
+	static void s_hyphenation_toggled	 (GtkToggleButton *,   gpointer);
 	static void s_checkbutton_toggle     (GtkWidget *,	   gpointer);
 	static gint s_menu_item_activate     (GtkWidget *,	   gpointer);
 	void	    _setupSmartQuotesCombos( GtkWidget *optionmenu );

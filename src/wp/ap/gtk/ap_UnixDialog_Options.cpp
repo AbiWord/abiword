@@ -497,7 +497,7 @@ void AP_UnixDialog_Options::_constructWindowContents ( GtkBuilder * builder )
 
 	g_signal_connect ( G_OBJECT ( m_checkbuttonHyphenation ),
 		"toggled",
-		G_CALLBACK ( s_checkbutton_toggle ),
+		G_CALLBACK ( s_hyphenation_toggled ),
 		static_cast<gpointer> ( this ) );
 	// set inital state
 	g_signal_emit_by_name ( G_OBJECT ( m_checkbuttonHyphenation ), "toggled" );
@@ -632,7 +632,7 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
         case id_CHECK_AUTO_SAVE_FILE:
             return m_checkbuttonAutoSaveFile;
 
-		case id_CHECK_HYPHENATION: //save id name with windows
+		case id_HYPHENATION: //save id name with windows
 			return m_checkbuttonHyphenation;
 
         case id_TEXT_AUTO_SAVE_FILE_EXT:
@@ -769,6 +769,7 @@ DEFINE_GET_SET_BOOL ( EnableOverwrite )
 
 DEFINE_GET_SET_BOOL_DUMMY ( EnableSmoothScrolling )
 DEFINE_GET_SET_BOOL_DUMMY ( PrefsAutoSave )
+DEFINE_GET_SET_BOOL_DUMMY ( PrefsAutoHyphenation )
 DEFINE_GET_SET_BOOL_DUMMY ( ViewAll )
 DEFINE_GET_SET_BOOL_DUMMY ( ViewHiddenText )
 DEFINE_GET_SET_BOOL_DUMMY ( ViewShowRuler )
