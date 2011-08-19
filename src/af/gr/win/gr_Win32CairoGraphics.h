@@ -70,8 +70,11 @@ public:
 	virtual void _beginPaint();
 	virtual void _endPaint();
 
+	static cairo_t* _createCairo(HWND win);
+
 protected:
-	GR_Win32CairoGraphics(HWND win = 0, bool double_buffered = false);
+	GR_Win32CairoGraphics(HWND win = 0, bool bDoubleBuffered = false);
+	BITMAPINFO *ConvertDDBToDIB(HBITMAP bitmap, HPALETTE hPal, DWORD dwCompression, HDC m_hdc);
 
 private:
 	HWND m_hwnd;
