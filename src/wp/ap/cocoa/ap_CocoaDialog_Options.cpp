@@ -53,6 +53,7 @@ AP_CocoaDialog_Options::AP_CocoaDialog_Options(XAP_DialogFactory * pDlgFactory, 
 	, ctrl(nil)
 	, m_reinit(false)
 	, m_boolEnableSmoothScrolling(false)
+	, m_boolPrefsHyphenation(false)
 	, m_boolPrefsAutoSave(false)
 	, m_boolViewAll(false)
 	, m_boolViewHiddenText(false)
@@ -164,6 +165,9 @@ id AP_CocoaDialog_Options::_lookupWidget( tControl cid )
         case id_CHECK_AUTO_SAVE_FILE:
             return ctrl->m_checkbuttonAutoSaveFile;
 
+		case id_CHECK_Hyphenation:
+			return ctrl->m_checkbuttonHyphenation;
+
         case id_TEXT_AUTO_SAVE_FILE_EXT:
             return ctrl->m_textAutoSaveFileExt;
 
@@ -265,6 +269,9 @@ DEFINE_GET_SET_BOOL_D ( SpellNumbers )
 #ifndef _DISABLE_GRAMMAR
 DEFINE_GET_SET_BOOL ( GrammarCheck )
 #else
+
+DEFINE_GET_SET_BOOL ( Hyphenation )
+
 // TODO FIX this hack I do this to avoid the assert.
 bool     AP_CocoaDialog_Options::_gatherGrammarCheck(void) 
 {
@@ -280,6 +287,7 @@ DEFINE_GET_SET_BOOL ( CustomSmartQuotes )
 DEFINE_GET_SET_BOOL ( OtherDirectionRtl )
 
 DEFINE_GET_SET_BOOL ( AutoSaveFile )
+DEFINE_GET_SET_BOOL ( Hyphenation )
 
 DEFINE_GET_SET_BOOL ( EnableOverwrite )
 
@@ -294,6 +302,7 @@ DEFINE_GET_SET_BOOL ( EnableOverwrite )
 
 DEFINE_GET_SET_BOOL_DUMMY ( EnableSmoothScrolling )
 DEFINE_GET_SET_BOOL_DUMMY ( PrefsAutoSave )
+DEFINE_GET_SET_BOOL_DUMMY ( PrefsHyphenaiton )
 DEFINE_GET_SET_BOOL_DUMMY ( ViewAll )
 DEFINE_GET_SET_BOOL_DUMMY ( ViewHiddenText )
 DEFINE_GET_SET_BOOL_DUMMY ( ViewShowRuler )
@@ -534,6 +543,18 @@ void AP_CocoaDialog_Options::_populateWindowData(void)
 	}
 }
 
+- (IBAction)HyphenationClicked:(id)sender
+{
+	BOOL enable = (([sender state] == NSOnState) ? YES : NO);
+	[oLabel_WithExtension setEnabled:enable];
+	[oLabel_Minutes setEnabled:enable];
+	[m_boolPrefsHyphenation setEnabled:enable];
+	[oStepper_Minutes setEnabled:enable];
+
+	if(!m_xap->getReinit()) {
+		[self controlChanged:sender];
+	}
+}
 
 - (IBAction)controlChanged:(id)sender
 {
