@@ -182,7 +182,11 @@ HWND	AP_Win32Dialog_Options::getPage(PSH_PAGES page)
 	{			
 		case PG_SPELL:
 			hWnd = m_spelling.getHandle();
-			break;				
+			break;	
+
+		case PG_HYPHENATION:
+			hWnd = m_spelling.getHandle();
+			break;	
 		
 		case PG_GENERAL:
 			hWnd = m_general.getHandle();
@@ -327,6 +331,7 @@ DEFINE_GET_SET_BOOL(PG_SMARTQUOTES,CustomSmartQuotes)
 DEFINE_GET_SET_BOOL_DUMMY (ViewCursorBlink)
 DEFINE_GET_SET_BOOL_DUMMY (EnableSmoothScrolling)
 DEFINE_GET_SET_BOOL_DUMMY (PrefsAutoSave)
+DEFINE_GET_SET_BOOL_DUMMY (PrefsHyphenation)
 DEFINE_GET_SET_BOOL_DUMMY (ViewAll)
 DEFINE_GET_SET_BOOL_DUMMY (ViewHiddenText)
 DEFINE_GET_SET_BOOL_DUMMY (ViewShowRuler)
