@@ -74,17 +74,11 @@ void GR_Win32CairoGraphics::_endPaint()
 	GR_CairoGraphics::_endPaint(); // needed?
 }
 
-/*
-
-// leaving it commented for now, we need to implement all virtual methods before this,
-// otherwise GR_Win32CairoGraphics becomes abstract and cannot be instantiated
-
 GR_Graphics *GR_Win32CairoGraphics::graphicsAllocator(GR_AllocInfo& info)
 {
 	GR_Win32CairoAllocInfo & allocator = static_cast<GR_Win32CairoAllocInfo&>(info);
 	return new GR_Win32CairoGraphics(allocator.m_win, allocator.m_double_buffered);
 }
-*/
 
 GR_Image * GR_Win32CairoGraphics::genImageFromRectangle(const UT_Rect & r)
 {
@@ -280,4 +274,24 @@ void GR_Win32CairoGraphics::restoreRectangle(UT_uint32 iIndex)
 	// actuall restore
 	cairo_set_source_surface(m_cr, cachedSurface, cachedRectangle.x, cachedRectangle.y);
 	cairo_paint(m_cr);
+}
+
+void GR_Win32CairoGraphics::setCursor(GR_Graphics::Cursor c)
+{
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+}
+
+void GR_Win32CairoGraphics::scroll(UT_sint32, UT_sint32)
+{
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+}
+
+void GR_Win32CairoGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest, UT_sint32 x_src, UT_sint32 y_src, UT_sint32 width, UT_sint32 height)
+{
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+}
+
+GR_Font* GR_Win32CairoGraphics::getGUIFont(void)
+{
+	UT_ASSERT(UT_NOT_IMPLEMENTED);	
 }

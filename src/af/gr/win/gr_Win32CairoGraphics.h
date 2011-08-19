@@ -68,11 +68,13 @@ public:
 	virtual void		   restoreRectangle(UT_uint32 iIndx);
 	virtual GR_Image *	   genImageFromRectangle(const UT_Rect & r);
 
+	virtual GR_Font * getGUIFont(void);
+	
 	virtual void _beginPaint();
 	virtual void _endPaint();
 
 	static cairo_t* _createCairo(HWND win);
-
+	
 protected:
 	GR_Win32CairoGraphics(HWND win = 0, bool bDoubleBuffered = false);
 	BITMAPINFO *ConvertDDBToDIB(HBITMAP bitmap, HPALETTE hPal, DWORD dwCompression, HDC m_hdc);
