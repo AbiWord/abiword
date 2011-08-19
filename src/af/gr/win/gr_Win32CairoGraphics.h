@@ -4,6 +4,7 @@
 #include <windows.h>
 
 #include "gr_CairoGraphics.h"
+#include "ut_Vector.h"
 
 class ABI_EXPORT GR_Win32CairoAllocInfo 
 	: public GR_CairoAllocInfo
@@ -79,7 +80,8 @@ protected:
 private:
 	HWND m_hwnd;
 	bool m_bDoubleBuffered;
-
+	std::vector<cairo_rectangle_t> m_rectangleCache;
+	UT_GenericVector<cairo_surface_t*> m_surfaceCache;
 };
 
 #endif

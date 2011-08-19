@@ -248,3 +248,36 @@ BITMAPINFO * GR_Win32CairoGraphics::ConvertDDBToDIB(HBITMAP bitmap, HPALETTE hPa
 
 	return (BITMAPINFO*)hDIB;
 }
+
+void GR_Win32CairoGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndex)
+{
+	// set up the rectangle
+	cairo_rectangle_t cachedRectangle;
+	cachedRectangle.x = static_cast<float>(_tduX(r.left));
+	cachedRectangle.y = static_cast<float>(_tduY(r.top ));
+	cachedRectangle.width  = static_cast<float>(_tduR(r.width ));
+	cachedRectangle.height = static_cast<float>(_tduR(r.height));
+
+	// set the new surface and free the old one
+	// TODO: should check things before blindly destroying the old surface
+	cairo_surface_t *oldCachedSurface = NULL;
+	cairo_surface_t *cachedSurface = _getCairoSurfaceFromContext(m_cr, cachedRectangle);
+	m_surfaceCache.setNthItem(iIndex, cachedSurface, &oldCachedSurface);
+	cairo_surface_destroy(oldCachedSurface);
+
+	// do the same for the rectangle
+	if(m_rectangleCache.size() <= iIndex)
+		m_rectangleCache.resize(iIndex);
+	m_rectangleCache[iIndex] = cachedRectangle;
+}
+
+void GR_Win32CairoGraphics::restoreRectangle(UT_uint32 iIndex)
+{
+	// retrieve rectangle & surface from cache
+	cairo_rectangle_t& cachedRectangle = m_rectangleCache[iIndex];
+	cairo_surface_t* cachedSurface = m_surfaceCache.getNthItem(iIndex);
+
+	// actuall restore
+	cairo_set_source_surface(m_cr, cachedSurface, cachedRectangle.x, cachedRectangle.y);
+	cairo_paint(m_cr);
+}
