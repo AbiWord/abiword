@@ -1078,14 +1078,8 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 			return 0;
 
 		case WM_SETCURSOR:
-		{
-			FV_View * pFV = static_cast<FV_View *>(pView);
-			GR_Graphics * pG = pFV->getGraphics();
-			GR_Win32Graphics * pGWin32 = static_cast<GR_Win32Graphics *>(pG);
-			pGWin32->handleSetCursorMessage();
 			return 1;
-		}
-
+		
 		case WM_LBUTTONDOWN:
 			if(GetFocus() != hwnd)
 			{

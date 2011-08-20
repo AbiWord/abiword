@@ -154,7 +154,7 @@ LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM
 	if (!pRuler)
 		return UT_DefWindowProc(hwnd, iMsg, wParam, lParam);
 
-	GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
+	GR_Graphics * pG = pRuler->m_pG;
 		
 	switch (iMsg)
 	{
@@ -162,26 +162,16 @@ LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM
 		SetCapture(hwnd);
 		
 		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON1,pG->tlu(LOWORD(lParam)),pG->tlu(HIWORD(lParam)));
-		{				
-			pG->handleSetCursorMessage();
-		}
 		return 0;
 		
 	case WM_MBUTTONDOWN:
 		SetCapture(hwnd);		
 		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON2,pG->tlu(LOWORD(lParam)),pG->tlu(HIWORD(lParam)));
-		{				
-			pG->handleSetCursorMessage();
-		}
 		return 0;
 		
 	case WM_RBUTTONDOWN:		
 		SetCapture(hwnd);
-		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON3,
-			pG->tlu(LOWORD(lParam)),pG->tlu(HIWORD(lParam)));
-		{			
-			pG->handleSetCursorMessage();
-		}
+		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON3,pG->tlu(LOWORD(lParam)),pG->tlu(HIWORD(lParam)));
 		return 0;
 		
 	case WM_MOUSEMOVE:
@@ -236,13 +226,17 @@ LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM
 
 	case WM_SYSCOLORCHANGE:
 		{
-			pG->init3dColors();
+			// ASFRENT: should go to hell, no references to GR_Win32Graphics here!
+			// Maybe add init3dColors to GR_Graphics as a virtual method since Win32Graphics,
+			// CocoaCairoGraphics and UnixCairoGraphics already provide implementations
+			
+			GR_Win32Graphics *pwin32G = static_cast<GR_Win32Graphics*>(pG);
+			pwin32G->init3dColors();
 			return 0;
 		}
 
 	case WM_SETCURSOR:
 		{
-			pG->handleSetCursorMessage();
 			return 0;
 		}
 

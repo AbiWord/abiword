@@ -249,8 +249,7 @@ public:
 
 	virtual void			setCursor(GR_Graphics::Cursor c);
 	virtual GR_Graphics::Cursor			getCursor(void) const;
-	virtual void			handleSetCursorMessage(void);
-
+	
 	virtual void			setColor3D(GR_Color3D c);
 	void					init3dColors(void);
 	virtual void			fillRect(GR_Color3D c,

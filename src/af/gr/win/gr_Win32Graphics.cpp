@@ -1273,15 +1273,7 @@ void GR_Win32Graphics::setCursor(GR_Graphics::Cursor c)
 	// set the cursor type, but wait for a WM_SETCURSOR
 	// to do anything about it.
 	m_cursor = c;
-}
 
-GR_Graphics::Cursor GR_Win32Graphics::getCursor(void) const
-{
-	return m_cursor;
-}
-
-void GR_Win32Graphics::handleSetCursorMessage(void)
-{
 	// deal with WM_SETCURSOR message.
 
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(XAP_App::getApp());
@@ -1391,6 +1383,11 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 	HCURSOR hCursor = LoadCursor(hinst,cursor_name); //TODO: Leaking resource
 	if (hCursor != NULL)
 		SetCursor(hCursor);
+}
+
+GR_Graphics::Cursor GR_Win32Graphics::getCursor(void) const
+{
+	return m_cursor;
 }
 
 void GR_Win32Graphics::setColor3D(GR_Color3D c)
