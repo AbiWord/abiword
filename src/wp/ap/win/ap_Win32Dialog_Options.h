@@ -216,6 +216,7 @@ public:
 
 	SET_GATHER			(ViewCursorBlink,		bool);
 	SET_GATHER			(PrefsAutoSave,			bool);
+	SET_GATHER			(PrefsHyphenation,			bool);
 	SET_GATHER			(ViewShowRuler,			bool);
 	SET_GATHER			(ViewShowStatusBar,		bool);
 	SET_GATHER			(ViewAll,				bool);
@@ -240,6 +241,7 @@ public:
 	// Dummy
 	bool			m_boolEnableSmoothScrolling;
 	bool			m_boolPrefsAutoSave;
+	bool			m_boolPrefsHyphenation;
 	bool			m_boolViewAll;
 	bool			m_boolViewHiddenText;
 	bool			m_boolViewShowRuler;
