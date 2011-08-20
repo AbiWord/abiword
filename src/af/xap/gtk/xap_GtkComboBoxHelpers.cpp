@@ -115,6 +115,16 @@ int  XAP_comboBoxGetActiveInt(GtkComboBox * combo)
 	return value;
 }
 
+std::string XAP_comboBoxGetActiveText(GtkComboBox * combo)
+{
+    char* value = 0;
+	GtkTreeIter iter;
+	gtk_combo_box_get_active_iter(combo, &iter);
+	GtkTreeModel *store = gtk_combo_box_get_model(combo);
+	gtk_tree_model_get(store, &iter, 0, &value, -1);
+	return value;
+}
+
 bool XAP_comboBoxSetActiveFromIntCol(GtkComboBox * combo, 
 									 int col, int value)
 {

@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Updates by Ben Martin in 2011.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -166,3 +167,52 @@ pf_Frag* pf_Frag::getPrev(void) const
 	it--;
 	return it.value();
 }
+
+#include "pf_Frag_Object.h"
+#include "pf_Frag_Strux.h"
+#include "pd_DocumentRDF.h"
+
+std::string
+pf_Frag::getXMLID() const
+{
+    std::string ret = "";
+
+    const PP_AttrProp* pAP = NULL;
+    m_pPieceTable->getAttrProp( getIndexAP() ,&pAP );
+    if( !pAP )
+        return ret;
+    const char* v = 0;
+    
+    if(getType() == pf_Frag::PFT_Object)
+    {
+        const pf_Frag_Object* pOb = static_cast<const pf_Frag_Object*>(this);
+
+        if(pOb->getObjectType() == PTO_Bookmark)
+        {
+            if( pAP->getAttribute(PT_XMLID, v) && v)
+            {
+                ret = v;
+            }
+        }
+        if(pOb->getObjectType() == PTO_RDFAnchor)
+        {
+            RDFAnchor a(pAP);
+            ret = a.getID();
+        }
+    }
+    if(getType() == pf_Frag::PFT_Strux)
+    {
+        const pf_Frag_Strux* pfs = static_cast<const pf_Frag_Strux*>(this);
+        PTStruxType st = pfs->getStruxType();
+        if( st == PTX_Block || st == PTX_SectionCell )
+        {
+            if(pAP->getAttribute("xml:id", v))
+            {
+                ret = v;
+            }
+        }
+    }
+
+    return ret;
+}
+

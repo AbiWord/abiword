@@ -28,6 +28,7 @@ class CairoNull_Graphics;
 class FL_DocLayout;
 class XAP_App;
 class UT_UTF8String;
+class PD_DocumentRDF;
 
 class AbiCommand
 {
@@ -68,6 +69,13 @@ private:
 	bool                     m_bRunAsAbiCollab;
 	UT_UTF8String            m_sErrorFile;
 
+    PD_RDFModelHandle        m_rdf_context_model;
+    PD_DocumentRDFMutationHandle m_rdf_mutation;
+    std::list< std::string > m_rdf_xmlids;
+
+    PD_RDFModelHandle        getRDFModel() const;
+    PD_DocumentRDFHandle     getRDF() const;
+    FV_View*                 getView() const;
 };
 
 #endif /* PLUGIN_ABICOMMAND_H */

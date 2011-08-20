@@ -446,6 +446,17 @@ protected:
 	bool					_deleteFormatting(PT_DocPosition dpos1,
 											  PT_DocPosition dpos2);
 
+    bool                     _deleteComplexSpanHAR( pf_Frag_Object *pO,
+                                                    PT_DocPosition dpos1,
+                                                    PT_DocPosition dpos2,
+                                                    UT_uint32& length,
+                                                    PT_BlockOffset& fragOffset_First,
+                                                    UT_uint32& lengthThisStep,
+                                                    pf_Frag_Strux*& pfsContainer,
+                                                    pf_Frag*& pfNewEnd,
+                                                    UT_uint32& fragOffsetNewEnd,
+                                                    const char* startAttrCSTR );
+
 	bool					_deleteComplexSpan(PT_DocPosition & dpos1,
 											   PT_DocPosition & dpos2,
 											   UT_Stack *stDelayStruxDelete);

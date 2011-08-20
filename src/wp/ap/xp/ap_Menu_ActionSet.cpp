@@ -165,6 +165,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_INSERT,			1,0,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_BREAK,		0,1,0,0,	"insBreak",			ap_GetState_BreakOK,					NULL);
 	_s(AP_MENU_ID_INSERT_BOOKMARK,  0,1,0,0,	"insertBookmark",	ap_GetState_BookmarkOK,					NULL);
+	_s(AP_MENU_ID_INSERT_XMLID,     0,1,0,0,	"insertXMLID"  ,	ap_GetState_xmlidOK,					NULL);
 	_s(AP_MENU_ID_INSERT_HYPERLINK, 0,1,0,0,	"insertHyperlink",	ap_GetState_HyperlinkOK,					NULL);
 	_s(AP_MENU_ID_INSERT_GOTO_HYPERLINK, 0,1,0,0,	"hyperlinkJumpPos",	ap_GetState_HyperlinkOK,					NULL);
 	_s(AP_MENU_ID_INSERT_EDIT_HYPERLINK, 0,1,0,0,	"insertHyperlink",	ap_GetState_HyperlinkOK,					NULL);
@@ -274,7 +275,12 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_GOTO_ANNOTATION,					0,0,0,0,	"hyperlinkJumpPos",			ap_GetState_AnnotationJumpOK,			NULL);
 	_s(AP_MENU_ID_EDIT_ANNOTATION,					0,1,0,0,	"editAnnotation",			ap_GetState_HyperlinkOK,			NULL);
 	_s(AP_MENU_ID_DELETE_ANNOTATION,				0,0,0,0,	"deleteHyperlink",			NULL,								NULL);
-	
+
+	_s(AP_MENU_ID_RDFANCHOR_SHOW_TRIPLES,   0,0,0,0, "rdfAnchorShowTriples", ap_GetState_RDFAnchorOK, NULL);
+	_s(AP_MENU_ID_RDFANCHOR_SPARQL,         0,0,0,0, "rdfAnchorSPARQL", ap_GetState_RDFAnchorOK, NULL);
+    
+
+    
 	_s(AP_MENU_ID_TABLE,1,0,0,0,NULL,NULL,NULL);
 	_s(AP_MENU_ID_TABLE_INSERT,1,0,0,0, NULL, NULL, NULL);
 	_s(AP_MENU_ID_TABLE_INSERT_TABLE,0,1,0,0, "insertTable",ap_GetState_TableOK, NULL);
@@ -325,10 +331,14 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 
 	_s(AP_MENU_ID_RDF,1,0,0,0,NULL,NULL,NULL);
 	_s(AP_MENU_ID_RDF_HIGHLIGHT, 0,0,1,0, "toggleRDFAnchorHighlight",	ap_GetState_ToggleRDFAnchorHighlight,		NULL);
+	_s(AP_MENU_ID_RDF_QUERY, 0,0,0,0, "rdfQuery", NULL, NULL);    
+	_s(AP_MENU_ID_RDF_EDITOR, 0,0,0,0, "rdfEditor", NULL, NULL);    
+	_s(AP_MENU_ID_RDF_QUERY_XMLIDS, 0,0,0,0, "rdfQueryXMLIDs", NULL, NULL);    
 	_s(AP_MENU_ID_RDF_ADV,1,0,0,0,NULL,NULL,NULL);
 	_s(AP_MENU_ID_RDF_ADV_DUMP_FOR_POINT,0,0,0,0,"dumpRDFForPoint",NULL,NULL);
 	_s(AP_MENU_ID_RDF_ADV_DUMP_OBJECTS  ,0,0,0,0,"dumpRDFObjects",NULL,NULL);
 	_s(AP_MENU_ID_RDF_ADV_TEST          ,0,0,0,0,"rdfTest",NULL,NULL);
+	_s(AP_MENU_ID_RDF_ADV_PLAY          ,0,0,0,0,"rdfPlay",NULL,NULL);
 
     
 	_s(AP_MENU_ID_CONTEXT_REVISIONS_ACCEPT_REVISION, 0,0,0,0, "revisionAccept", ap_GetState_RevisionPresent,NULL);

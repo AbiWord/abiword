@@ -43,6 +43,8 @@ conditional_ui = \
 
 
 libgtk_la_SOURCES = \
+	GTKCommon.h \
+	GTKCommon.cpp \
 	abiwidget.cpp \
 	abiwidget.h \
 	ap_DocView.cpp \
@@ -58,7 +60,7 @@ libgtk_la_SOURCES = \
 	ap_UnixDialog_Annotation.h \
 	ap_UnixDialog_Background.cpp \
 	ap_UnixDialog_Background.h \
-	ap_UnixDialog_Border_Shading.cpp \ 
+	ap_UnixDialog_Border_Shading.cpp \
 	ap_UnixDialog_Border_Shading.h \
 	ap_UnixDialog_Break.cpp \
 	ap_UnixDialog_Break.h \
@@ -81,6 +83,8 @@ libgtk_la_SOURCES = \
 	ap_UnixDialog_HdrFtr.h \
 	ap_UnixDialog_InsertBookmark.cpp \
 	ap_UnixDialog_InsertBookmark.h \
+	ap_UnixDialog_InsertXMLID.cpp \
+	ap_UnixDialog_InsertXMLID.h \
 	ap_UnixDialog_Insert_DateTime.cpp \
 	ap_UnixDialog_Insert_DateTime.h \
 	ap_UnixDialog_InsertHyperlink.cpp \
@@ -126,6 +130,10 @@ libgtk_la_SOURCES = \
 	ap_UnixDialog_ToggleCase.h \
 	ap_UnixDialog_WordCount.cpp \
 	ap_UnixDialog_WordCount.h \
+	ap_UnixDialog_RDFQuery.cpp \
+	ap_UnixDialog_RDFQuery.h \
+	ap_UnixDialog_RDFEditor.cpp \
+	ap_UnixDialog_RDFEditor.h \
 	ap_UnixFrame.cpp \
 	ap_UnixFrame.h \
 	ap_UnixFrameImpl.cpp \
@@ -181,6 +189,8 @@ ui_DATA = \
 	ap_UnixDialog_Tab.xml	\
 	ap_UnixDialog_WordCount.xml \
 	ap_UnixDialog_Latex.xml \
+	ap_UnixDialog_RDFQuery.xml \
+	ap_UnixDialog_RDFEditor.xml \
 	$(NULL)
 
 

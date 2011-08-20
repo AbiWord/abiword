@@ -296,18 +296,22 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 						// if the file doesn't have a suffix already, and the file type
 						// is normal (special types are negative, like auto detect),
 						// and the user wants extensions, slap a suffix on it.						
-						// add suffix based on selected file type       
-						UT_UTF8String suffix (IE_Exp::preferredSuffixForFileType(m_nTypeList[nIndex]));
-						UT_uint32 length = strlen(szDialogFilename) + suffix.size() + 1;
+						// add suffix based on selected file type
+                        // UT_UTF8String suffix (IE_Exp::preferredSuffixForFileType(m_nTypeList[nIndex]));
+						// UT_uint32 length = strlen(szDialogFilename) + suffix.size() + 1;
 						
-						szFinalPathname = static_cast<char *>(UT_calloc(length,sizeof(char)));
+						// szFinalPathname = static_cast<char *>(UT_calloc(length,sizeof(char)));
 						
-						if (szFinalPathname)                            						
-						{                                               
-							char * p = szFinalPathname;             
-							strcpy(p,szDialogFilename);             
-							strcat(p,suffix.utf8_str());                     
-						}                                               
+						// if (szFinalPathname)                            						
+						// {                                               
+						// 	char * p = szFinalPathname;             
+						// 	strcpy(p,szDialogFilename);             
+						// 	strcat(p,suffix.utf8_str());                     
+						// }                                               
+
+                        std::string n = m_appendDefaultSuffixFunctor( szDialogFilename,
+                                                                      m_nTypeList[nIndex] );
+                        szFinalPathname = g_strdup( n.c_str() );
 					}
 					else
 						szFinalPathname = g_strdup(szDialogFilename);
@@ -700,7 +704,10 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	m_wFileTypes_PullDown = filetypes_pulldown;
 	// dialog; open dialog always does auto-detect
 	// TODO: should this also apply to the open dialog?
-	if (m_id == XAP_DIALOG_ID_FILE_SAVEAS || m_id == XAP_DIALOG_ID_FILE_SAVE_IMAGE)
+	if (m_id == XAP_DIALOG_ID_FILE_SAVEAS
+        || m_id == XAP_DIALOG_ID_FILE_SAVE_IMAGE
+        || ( m_id == XAP_DIALOG_ID_FILE_EXPORT && activeItemIndex >= 0 )
+        )
 	{
 		gtk_combo_box_set_active(combo, activeItemIndex + 1);
 	}

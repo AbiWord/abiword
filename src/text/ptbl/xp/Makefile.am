@@ -7,6 +7,10 @@ noinst_LTLIBRARIES = libxp.la
 AM_CPPFLAGS = \
 	$(WP_CPPFLAGS)
 
+if HAVE_REDLAND
+REDLANDSOURCES = pd_RDFQuery.h pd_RDFQuery.cpp pd_RDFSupportRed.h
+endif
+
 libxp_la_SOURCES = \
 	fd_Field.cpp \
 	fd_Field.h \
@@ -15,6 +19,9 @@ libxp_la_SOURCES = \
 	pd_Document_TestRoutines.cpp \
 	pd_DocumentRDF.h \
 	pd_DocumentRDF.cpp \
+	$(REDLANDSOURCES) \
+	pd_RDFSupport.h \
+	pd_RDFSupport.cpp \
 	pd_Iterator.cpp \
 	pd_Iterator.h \
 	pd_Style.cpp \

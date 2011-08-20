@@ -25,6 +25,7 @@
 
 #include "xap_Dialog.h"
 #include "fv_View.h"
+#include "pd_DocumentRDF.h"
 
 class XAP_Frame;
 
@@ -50,7 +51,8 @@ public:
   	FV_View * 					getView() const;
 	void						setActiveFrame(XAP_Frame *pFrame);
 	static const char **        getJumpTargets();
-	
+	PD_DocumentRDFHandle        getRDF();
+
 	UT_sint32					getExistingBookmarksCount() const;
 	const gchar *			getNthExistingBookmark(UT_sint32 n) const;
 	/** Perform the Goto with a page #, line # or bookmark name

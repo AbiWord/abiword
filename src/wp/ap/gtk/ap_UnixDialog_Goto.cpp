@@ -39,6 +39,8 @@
 #include "ap_Dialog_Goto.h"
 #include "ap_UnixDialog_Goto.h"
 
+#include "GTKCommon.h"
+
 
 /*!
 * Event dispatcher for spinbutton "page".
@@ -90,6 +92,20 @@ AP_UnixDialog_Goto__onFocusBookmarks (GtkWidget 	   * /*widget*/,
 	/* propagate further */
 	return FALSE;
 }
+gboolean 
+AP_UnixDialog_Goto__onFocusXMLIDs (GtkWidget 	   * /*widget*/,
+									  GdkEventFocus    *event,
+									  gpointer 		   data) 
+{
+	UT_DEBUGMSG (("MIQ: _onFocusXMLIDs () '%d', '%d'\n", event->type, event->in));
+	if (event->type == GDK_FOCUS_CHANGE && event->in)
+    {
+		AP_UnixDialog_Goto *dlg = static_cast <AP_UnixDialog_Goto *>(data);
+		dlg->updateCache (AP_JUMPTARGET_XMLID);
+	}
+	/* propagate further */
+	return FALSE;
+}
 
 /*!
 * Event dispatcher for spinbutton "page".
@@ -124,6 +140,15 @@ AP_UnixDialog_Goto__onBookmarkDblClicked (GtkTreeView       * /*tree*/,
 {
 	AP_UnixDialog_Goto *dlg = static_cast <AP_UnixDialog_Goto *>(data);
 	dlg->onBookmarkDblClicked ();
+}
+void
+AP_UnixDialog_Goto__onXMLIDDblClicked (GtkTreeView       * /*tree*/,
+                                       GtkTreePath       * /*path*/,
+                                       GtkTreeViewColumn * /*col*/,
+                                       gpointer		    data)
+{
+	AP_UnixDialog_Goto *dlg = static_cast <AP_UnixDialog_Goto *>(data);
+	dlg->onXMLIDDblClicked ();
 }
 
 /*!
@@ -217,6 +242,7 @@ AP_UnixDialog_Goto::AP_UnixDialog_Goto(XAP_DialogFactory *pDlgFactory,
 	  m_btJump		   (NULL),
 	  m_btPrev		   (NULL),
 	  m_btNext		   (NULL),
+      m_lvXMLIDs       (0),
 	  m_btClose 	   (NULL), 
 	  m_JumpTarget	   (AP_JUMPTARGET_BOOKMARK)
 {
@@ -271,6 +297,12 @@ AP_UnixDialog_Goto::onBookmarkDblClicked ()
 	m_JumpTarget = AP_JUMPTARGET_BOOKMARK;
 	onJumpClicked();
 }
+void
+AP_UnixDialog_Goto::onXMLIDDblClicked ()
+{
+	m_JumpTarget = AP_JUMPTARGET_XMLID;
+	onJumpClicked();
+}
 
 /*!
 * Event handler for button "jump".
@@ -278,34 +310,31 @@ AP_UnixDialog_Goto::onBookmarkDblClicked ()
 void 
 AP_UnixDialog_Goto::onJumpClicked () 
 {
-	const gchar *text = NULL;
-	bool freeText = FALSE;
+    std::string text = "";
 
 	switch (m_JumpTarget) {
 		case AP_JUMPTARGET_PAGE:
-			text = gtk_entry_get_text (GTK_ENTRY (m_sbPage));
+			text = tostr(GTK_ENTRY (m_sbPage));
 			break;
 		case AP_JUMPTARGET_LINE:
-			text = gtk_entry_get_text (GTK_ENTRY (m_sbLine));
+			text = tostr(GTK_ENTRY (m_sbLine));
 			break;
 		case AP_JUMPTARGET_BOOKMARK:
 			text = _getSelectedBookmarkLabel ();
-			freeText = TRUE;
+			break;
+		case AP_JUMPTARGET_XMLID:
+			text = _getSelectedXMLIDLabel();
 			break;
 		default:
-			UT_DEBUGMSG (("ROB: AP_UnixDialog_Goto::onJumpClicked () no jump target\n"));
+			UT_DEBUGMSG (("AP_UnixDialog_Goto::onJumpClicked () no jump target\n"));
 			return;
 			// UT_ASSERT_NOT_REACHED ();
 	}
 
-	if (!text)
+	if (text.empty())
 		return;		
 
-	performGoto(m_JumpTarget, text);
-	
-	if (freeText && text) {
-		g_free ((gchar *)text);
-	}
+	performGoto(m_JumpTarget, text.c_str());
 }
 
 /*!
@@ -336,6 +365,9 @@ AP_UnixDialog_Goto::onPrevClicked ()
 			break;
 		case AP_JUMPTARGET_BOOKMARK:
 			_selectPrevBookmark ();
+			break;
+		case AP_JUMPTARGET_XMLID:
+            selectPrev(GTK_TREE_VIEW (m_lvXMLIDs));
 			break;
 		default:
 			UT_DEBUGMSG (("ROB: AP_UnixDialog_Goto::onPrevClicked () no jump target\n"));
@@ -369,6 +401,9 @@ AP_UnixDialog_Goto::onNextClicked ()
 		case AP_JUMPTARGET_BOOKMARK:
 			_selectNextBookmark ();
 			break;
+		case AP_JUMPTARGET_XMLID:
+            selectNext(GTK_TREE_VIEW (m_lvXMLIDs));
+			break;
 		default:
 			UT_DEBUGMSG (("ROB: AP_UnixDialog_Goto::onNextClicked () no jump target\n"));
 			return;
@@ -399,6 +434,31 @@ AP_UnixDialog_Goto::updateDocCount ()
 	UT_DEBUGMSG (("ROB: updateCache () page='%d' line='%d'\n", m_DocCount.page, m_DocCount.line));
 }
 
+void
+AP_UnixDialog_Goto::setupXMLIDList( GtkWidget* w )
+{
+	// Liststore and -view
+	GtkListStore *store = gtk_list_store_new ( NUM_COLUMNS, G_TYPE_STRING );
+	gtk_tree_view_set_model (GTK_TREE_VIEW (w), GTK_TREE_MODEL (store));
+	g_object_unref (G_OBJECT (store));
+
+	// Column Bookmark
+	GtkCellRenderer *renderer = NULL;
+	renderer = gtk_cell_renderer_text_new ();
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (w),
+												-1, "Name", renderer,
+												"text", COLUMN_NAME,
+												NULL);
+	GtkTreeViewColumn *column = gtk_tree_view_get_column (GTK_TREE_VIEW (w), 0);
+	gtk_tree_view_column_set_sort_column_id (column, COLUMN_NAME);
+
+	g_signal_connect (GTK_TREE_VIEW (w), "focus-in-event", 
+					  G_CALLBACK (AP_UnixDialog_Goto__onFocusXMLIDs), static_cast <gpointer>(this)); 
+	g_signal_connect (GTK_TREE_VIEW (w), "row-activated", 
+					  G_CALLBACK (AP_UnixDialog_Goto__onXMLIDDblClicked), static_cast <gpointer>(this));
+}
+
+
 /*!
 * Build dialog.
 */
@@ -425,6 +485,7 @@ AP_UnixDialog_Goto::constuctWindow (XAP_Frame * /*pFrame*/)
 	m_btJump = GTK_WIDGET(gtk_builder_get_object(builder, "btJump"));
 	m_btPrev = GTK_WIDGET(gtk_builder_get_object(builder, "btPrev"));
 	m_btNext = GTK_WIDGET(gtk_builder_get_object(builder, "btNext"));
+	m_lvXMLIDs = GTK_WIDGET(gtk_builder_get_object(builder, "lvXMLIDs"));
 	m_btClose = GTK_WIDGET(gtk_builder_get_object(builder, "btClose"));
 
 
@@ -441,6 +502,8 @@ AP_UnixDialog_Goto::constuctWindow (XAP_Frame * /*pFrame*/)
 		gtk_label_set_text (GTK_LABEL (m_lbBookmarks), text);
 
 
+    setupXMLIDList( m_lvXMLIDs );
+    
 	// Liststore and -view
 	GtkListStore *store = gtk_list_store_new (NUM_COLUMNS, G_TYPE_STRING);
 	gtk_tree_view_set_model (GTK_TREE_VIEW (m_lvBookmarks), GTK_TREE_MODEL (store));
@@ -528,8 +591,44 @@ AP_UnixDialog_Goto::updateWindow ()
 	gtk_tree_view_set_model (GTK_TREE_VIEW (m_lvBookmarks), model);
 	g_object_unref (G_OBJECT (model));
 
+    updateXMLIDList( m_lvXMLIDs );
 	updateDocCount ();
 }
+
+
+void
+AP_UnixDialog_Goto::updateXMLIDList( GtkWidget* w )
+{
+	// detaching model for faster updates
+	GtkTreeModel *model = gtk_tree_view_get_model (GTK_TREE_VIEW (w));
+	g_object_ref (G_OBJECT (model));
+	gtk_tree_view_set_model (GTK_TREE_VIEW (w), NULL);
+	gtk_list_store_clear (GTK_LIST_STORE (model));
+
+    if( PD_DocumentRDFHandle rdf = getRDF() )
+    {
+        GtkTreeIter iter;
+        std::set< std::string > xmlids;
+        rdf->getAllIDs( xmlids );
+        UT_DEBUGMSG (("MIQ: xmlids.sz:%d\n", xmlids.size() ));
+
+        for( std::set< std::string >::iterator xiter = xmlids.begin();
+             xiter != xmlids.end(); ++xiter )
+        {
+            gtk_list_store_append (GTK_LIST_STORE (model), &iter);
+            std::string name = *xiter;
+            UT_DEBUGMSG (("    MIQ: '%s'\n", name.c_str()));
+            gtk_list_store_set (GTK_LIST_STORE (model), &iter, 
+                                COLUMN_NAME, name.c_str(), -1);
+        }
+    }
+    
+	gtk_tree_view_set_model (GTK_TREE_VIEW (w), model);
+	g_object_unref (G_OBJECT (model));
+    
+}
+
+
 
 void 
 AP_UnixDialog_Goto::runModeless (XAP_Frame * pFrame)
@@ -583,33 +682,7 @@ void
 AP_UnixDialog_Goto::_selectPrevBookmark () 
 {
 	UT_DEBUGMSG (("ROB: AP_UnixDialog_Goto::_selectPrevBookmark ()\n"));
-	GtkTreeModel *model = gtk_tree_view_get_model (GTK_TREE_VIEW (m_lvBookmarks));
-	UT_return_if_fail (model != NULL);
-
-	GtkTreeSelection *selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (m_lvBookmarks));
-	GtkTreeIter iter;
-
-	// try to select prev
-	gboolean haveSelected = gtk_tree_selection_get_selected (selection, &model, &iter);
-	if (haveSelected) {
-		GtkTreePath *path = gtk_tree_model_get_path (model, &iter);
-		gtk_tree_path_prev (path);
-		gboolean havePrev = gtk_tree_model_get_iter (model, &iter, path);
-		if (havePrev) {
-			gtk_tree_selection_select_path (selection, path);
-			gtk_tree_path_free (path);
-			return;
-		}
-		gtk_tree_path_free (path);
-	}
-
-	// select last
-	UT_uint32 idx = getExistingBookmarksCount () - 1;
-	GtkTreePath *path = gtk_tree_path_new_from_indices (idx);
-	gtk_tree_selection_select_path (selection, path);
-	UT_DEBUGMSG (("ROB: AP_UnixDialog_Goto::_selectPrevBookmark () select last '%d'\n", 
-					gtk_tree_model_get_iter (model, &iter, path)));
-	gtk_tree_path_free (path);
+    selectPrev(GTK_TREE_VIEW (m_lvBookmarks));
 }
 
 /**
@@ -621,52 +694,26 @@ void
 AP_UnixDialog_Goto::_selectNextBookmark () 
 {
 	UT_DEBUGMSG (("ROB: AP_UnixDialog_Goto::_selectNextBookmark ()\n"));
-	GtkTreeModel *model = gtk_tree_view_get_model (GTK_TREE_VIEW (m_lvBookmarks));
-	UT_return_if_fail (model != NULL);
-
-	GtkTreeSelection *selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (m_lvBookmarks));
-	GtkTreeIter iter;
-
-	// try to select next
-	gboolean haveSelected = gtk_tree_selection_get_selected (selection, &model, &iter);
-	if (haveSelected) {
-		GtkTreePath *path = gtk_tree_model_get_path (model, &iter);
-		gtk_tree_path_next (path);
-		gboolean haveNext = gtk_tree_model_get_iter (model, &iter, path);
-		if (haveNext) {
-			gtk_tree_selection_select_path (selection, path);
-			gtk_tree_path_free (path);
-			return;
-		}
-		gtk_tree_path_free (path);
-	}
-
-	// select first
-	GtkTreePath *path = gtk_tree_path_new_first ();
-	gtk_tree_selection_select_path (selection, path);
-	UT_DEBUGMSG (("ROB: AP_UnixDialog_Goto::_selectNextBookmark () select first '%d'\n", 
-					gtk_tree_model_get_iter (model, &iter, path)));
-	gtk_tree_path_free (path);
+    selectNext(GTK_TREE_VIEW (m_lvBookmarks));
 }
+
 
 /*!
 * Get the label of the currently selected bookmark in the list.
-* The returned string has to bee freed. Can return NULL.
 */
-gchar * 
+std::string
 AP_UnixDialog_Goto::_getSelectedBookmarkLabel () 
 {
 	UT_DEBUGMSG (("ROB: AP_UnixDialog_Goto::_getSelectedBookmarkLabel ()\n"));
-	GtkTreeModel *model = gtk_tree_view_get_model (GTK_TREE_VIEW (m_lvBookmarks));
-	UT_return_val_if_fail (model != NULL, NULL);
-
-	GtkTreeSelection *selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (m_lvBookmarks));
-	GtkTreeIter iter;
-	gboolean haveSelected = gtk_tree_selection_get_selected (selection, &model, &iter);
-	if (!haveSelected)
-		return NULL;
-
-	gchar *label = NULL;
-	gtk_tree_model_get (model, &iter, COLUMN_NAME, &label, -1);
-	return label;
+    std::string ret = getSelectedText( GTK_TREE_VIEW (m_lvBookmarks), COLUMN_NAME );
+	return ret;
 }
+
+std::string
+AP_UnixDialog_Goto::_getSelectedXMLIDLabel()
+{
+	UT_DEBUGMSG (("MIQ: AP_UnixDialog_Goto::_getSelectedXMLIDLabel ()\n"));
+    std::string ret = getSelectedText( GTK_TREE_VIEW (m_lvXMLIDs), COLUMN_NAME );
+	return ret;
+}
+

@@ -425,7 +425,12 @@ gint abiRunModalDialog(GtkDialog * me, XAP_Frame *pFrame, XAP_Dialog * pDlg,
 					   gint defaultResponse, bool destroyDialog, AtkRole role)
 {
   abiSetupModalDialog(me, pFrame, pDlg, defaultResponse);
-  return abiRunModalDialog(me, destroyDialog, role);
+  gint ret = abiRunModalDialog(me, destroyDialog, role);
+  if( pDlg )
+  {
+      pDlg->maybeReallowPopupPreviewBubbles();
+  }
+  return ret;
 }
 
 /*!
@@ -470,7 +475,9 @@ void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDl
 	gtk_window_set_modal ( GTK_WINDOW(me), FALSE ) ;
 	// FIXME: shouldn't we pass role here?
 	atk_object_set_role (gtk_widget_get_accessible (GTK_WIDGET (me)), ATK_ROLE_ALERT);
-	
+
+    pDlg->maybeClosePopupPreviewBubbles();
+        
 	// show the window
 	gtk_widget_show ( GTK_WIDGET(me) ) ;
 }

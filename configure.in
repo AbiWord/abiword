@@ -432,6 +432,33 @@ AC_ARG_WITH([abisdk],
 ])
 
 
+redland_req='redland >= 1.0.10 rasqal >= 0.9.17'
+AC_ARG_WITH([redland], 
+	[AS_HELP_STRING([--with-redland], [use redland and raptor libraries])], 
+[
+	abi_cv_redland="$withval"
+],[
+	# use redland if detected
+	PKG_CHECK_EXISTS([ $redland_req ],
+	[
+		abi_cv_redland="yes"
+	], [
+		abi_cv_redland="no"
+	])
+])
+
+if test "$abi_cv_redland" = "yes"; then
+	opt_pkgs="$opt_pkgs $redland_req"
+	AC_DEFINE([WITH_REDLAND], [1], [Using redland])
+	WITH_REDLAND=1
+fi
+
+AC_SUBST([REDLAND_CFLAGS])
+AC_SUBST([REDLAND_LIBS])
+AM_CONDITIONAL([WITH_REDLAND], test "$WITH_REDLAND" = "1")
+AM_CONDITIONAL([HAVE_REDLAND], test "$WITH_REDLAND" = "1")
+
+
 #
 # Compiler settings (from gnumeric's configure.in)
 #
@@ -933,6 +960,7 @@ Optional dependencies:
   gio			${abi_cv_gio}
   gsf-gio               ${abi_cv_gsf_gio}
   goffice               ${abi_cv_goffice}
+  redland               ${abi_cv_redland}
 
 Builtin plugins         ${BUILTIN_PLUGINS}
 Plugins                 ${PLUGINS}

@@ -20,21 +20,20 @@
 #ifndef AP_DIALOG_INSERTBOOKMARK_H
 #define AP_DIALOG_INSERTBOOKMARK_H
 
-#include "xap_Dialog.h"
-#include "ut_xml.h"
-#include "fv_View.h"
+#include "ap_Dialog_Modal.h"
 #include "pd_Document.h"
+#include "ut_xml.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
 
 #define BOOKMARK_SIZE_LIMIT 30
 class XAP_Frame;
 
-class ABI_EXPORT AP_Dialog_InsertBookmark : public XAP_Dialog_NonPersistent
+class ABI_EXPORT AP_Dialog_InsertBookmark : public AP_Dialog_Modal
 {
 public:
-	AP_Dialog_InsertBookmark(XAP_DialogFactory * pDlgFactory,
-				 XAP_Dialog_Id id);
+	AP_Dialog_InsertBookmark( XAP_DialogFactory * pDlgFactory,
+                              XAP_Dialog_Id id );
 	virtual ~AP_Dialog_InsertBookmark(void);
 
 	virtual void		 runModal(XAP_Frame * pFrame) = 0;

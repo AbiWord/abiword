@@ -25,6 +25,7 @@
 #include <string>
 #include <list>
 #include <map>
+#include <set>
 #include "ut_types.h"
 #include "pt_Types.h"
 
@@ -33,6 +34,17 @@
 class PD_Document;
 class pt_PieceTable;
 class PP_AttrProp;
+class RDFModel_SPARQLLimited;
+class pf_Frag;
+
+
+class   PD_DocumentRDFMutation;
+typedef boost::shared_ptr<PD_DocumentRDFMutation> PD_DocumentRDFMutationHandle;
+class   PD_RDFModel;
+typedef boost::shared_ptr<PD_RDFModel> PD_RDFModelHandle;
+class   PD_DocumentRDF;
+typedef boost::shared_ptr<PD_DocumentRDF> PD_DocumentRDFHandle;
+
 
 /**
  * An RDF URI. This can be thought of as a std::string
@@ -49,14 +61,25 @@ class ABI_EXPORT PD_URI
   public:
     PD_URI( const std::string& v = "" );
     virtual std::string toString() const;
+    int  length() const;
     bool isValid() const;
-    int length() const;
     bool operator==(const PD_URI& b) const;
     bool operator==(const std::string& b) const;
 
     virtual bool read( std::istream& ss );
     virtual bool write( std::ostream& ss ) const;
+
+    PD_URI prefixedToURI( PD_RDFModelHandle model ) const;
 };
+
+template <class ostream>
+ostream& operator<<( ostream& ss, PD_URI& uri )
+{
+    ss << uri.toString();
+    return ss;
+}
+
+
 
 /**
  * An RDF Object is either a URI, a bnode, or a Literal value. While inheritance
@@ -90,7 +113,7 @@ class ABI_EXPORT PD_Object : public PD_URI
 
     std::string getXSDType() const;
     bool hasXSDType() const;
-    int getObjectType() const;
+    int  getObjectType() const;
     bool isLiteral() const;
     bool isURI() const;
     bool isBNode() const;
@@ -115,18 +138,93 @@ class ABI_EXPORT PD_Literal : public PD_Object
     PD_Literal( const std::string& v = "", const std::string& xsdtype = "" );
 };
 
-
 typedef std::list< PD_URI > PD_URIList;
 // REQUIRES: ordered, same key can -> many different values
 typedef std::multimap< PD_URI, PD_Object > POCol;
 
 
-class PD_DocumentRDFMutation;
-typedef boost::shared_ptr<PD_DocumentRDFMutation> PD_DocumentRDFMutationHandle;
-class PD_RDFModel;
-typedef boost::shared_ptr<PD_RDFModel> PD_RDFModelHandle;
-class PD_DocumentRDF;
-typedef boost::shared_ptr<PD_DocumentRDF> PD_DocumentRDFHandle;
+/**
+ * When iterating over the RDF triples it is nice to have a single
+ * C++ object which represents the while triple.
+ */
+class ABI_EXPORT PD_RDFStatement
+{
+    PD_URI    m_subject;
+    PD_URI    m_predicate;
+    PD_Object m_object;
+    bool      m_isValid;
+  public:
+    PD_RDFStatement();
+    PD_RDFStatement( PD_RDFModelHandle model, const PD_URI& s, const PD_URI& p, const PD_Object& o );
+    PD_RDFStatement( const PD_URI& s, const PD_URI& p, const PD_Object& o );
+    PD_RDFStatement( const std::string& s, const std::string& p, const PD_Object& o );
+    PD_RDFStatement( const std::string& s, const std::string& p, const PD_Literal& o );
+    const PD_URI&    getSubject() const;
+    const PD_URI&    getPredicate() const;
+    const PD_Object& getObject() const;
+    bool             isValid() const;
+    std::string      toString() const;
+
+    PD_RDFStatement uriToPrefixed( PD_RDFModelHandle model ) const;
+    PD_RDFStatement prefixedToURI( PD_RDFModelHandle model ) const;
+
+    bool operator==(const PD_RDFStatement& b) const;
+    
+};
+
+template <class ostream>
+ostream& operator<<( ostream& ss, const PD_RDFStatement& st )
+{
+    ss << st.toString();
+    return ss;
+}
+
+
+
+
+class ABI_EXPORT PD_RDFModelIterator
+    :
+    public std::iterator< std::forward_iterator_tag, PD_RDFStatement >
+{
+    PD_RDFModelHandle   m_model;
+    const PP_AttrProp*  m_AP;
+    bool                m_end;
+    size_t              m_apPropertyNumber;
+    std::string         m_subject;
+    POCol               m_pocol;
+    POCol::iterator     m_pocoliter;
+    PD_RDFStatement     m_current;
+
+    void setup_pocol();
+    
+  public:
+    typedef PD_RDFModelIterator& self_reference;
+    typedef PD_RDFModelIterator  self_type;
+    
+    PD_RDFModelIterator();
+    ~PD_RDFModelIterator();
+    PD_RDFModelIterator( PD_RDFModelHandle model, const PP_AttrProp* AP );
+    
+    self_reference operator++();
+    bool operator==( const self_reference other );
+    PD_RDFModelIterator& operator=( const PD_RDFModelIterator& other );
+
+    self_type operator++(int)
+    {
+        self_type result( *this );
+        ++( *this );
+        return result;
+    }
+    bool operator!=( const self_reference other )
+    {
+        return !operator==(other);
+    }
+    reference operator*()
+    {
+        return m_current;
+    }
+};
+
 
 /**
  * An RDF Model is an abstract immutable collection of RDF triples.
@@ -136,20 +234,63 @@ typedef boost::shared_ptr<PD_DocumentRDF> PD_DocumentRDFHandle;
  * Having the RDF Model abstract like this allows slices of the whole
  * RDF to be returned in various places. For example, to get all the
  * RDF that is explicitly "related" to a location in the document.
+ *
+ * To make implementing custom models simpler many methods have
+ * defaults which rely on other methods. For example, the getObject()
+ * method simply returns the first object from the getObjects()
+ * method. Many of the default implementations rely on begin() and
+ * end() and simply loop over all the RDF to find the result. Compare
+ * the linear performance of the default to the contant time
+ * performance which might be possible for contains(s,p,o) if the
+ * model uses more knowledge.
+ * 
+ * The uriToPrefixed() and prefixedToURI() rely on getUriToPrefix()
+ * returning a suitable prefix map.
+ *
+ * Methods with default implementations remain virtual because a
+ * subclass might have a more efficient method of finding the result
+ * than the default implementation.
  */
 class ABI_EXPORT PD_RDFModel
 {
+  protected:
+    long m_version;
+    PD_URI front( const PD_URIList& l ) const;
+    PD_RDFModel();
+    void incremenetVersion();
+    
   public:    
-    virtual PD_URIList getObjects( const PD_URI& s, const PD_URI& p ) = 0;
-    virtual PD_URI     getObject( const PD_URI& s, const PD_URI& p ) = 0;
-    virtual PD_URIList getSubjects( const PD_URI& p, const PD_Object& o ) = 0;
-    virtual PD_URI     getSubject( const PD_URI& p, const PD_Object& o ) = 0;
-    virtual PD_URIList getAllSubjects() = 0;
-    virtual POCol      getArcsOut( const PD_URI& s ) = 0;
-    virtual bool       contains( const PD_URI& s, const PD_URI& p, const PD_Object& o ) = 0;
-    virtual bool       contains( const PD_URI& s, const PD_URI& p ) = 0;
-    virtual long       getTripleCount() = 0;
+    virtual PD_URIList getObjects( const PD_URI& s, const PD_URI& p );
+    virtual PD_URI     getObject( const PD_URI& s, const PD_URI& p );
+    virtual PD_URIList getSubjects( const PD_URI& p, const PD_Object& o );
+    virtual PD_URI     getSubject( const PD_URI& p, const PD_Object& o );
+    virtual PD_URIList getAllSubjects();
+    virtual POCol      getArcsOut( const PD_URI& s );
+    virtual bool       contains( const PD_URI& s, const PD_URI& p, const PD_Object& o );
+    virtual bool       contains( const PD_URI& s, const PD_URI& p );
+    virtual bool       contains( const PD_RDFStatement& st );
+    virtual long       getTripleCount();
+
+    virtual PD_RDFModelIterator begin() = 0;
+    virtual PD_RDFModelIterator end() = 0;
+
+    typedef std::map< std::string, std::string > stringmap_t;
+    typedef stringmap_t uriToPrefix_t;
+    virtual uriToPrefix_t& getUriToPrefix();
+
+    
+    virtual void dumpModel( const std::string& headerMsg = "dumpModel()" );
+
+    virtual PD_DocumentRDFMutationHandle createMutation() = 0;
+    virtual std::string uriToPrefixed( const std::string& uri );
+    virtual std::string prefixedToURI( const std::string& prefixed );
+    
+    inline long size() { return getTripleCount(); }
+
+    long getVersion() const { return m_version; }
+    
 };
+
 
 /**
  * The RDF associated with a document.
@@ -165,6 +306,8 @@ class ABI_EXPORT PD_RDFModel
 class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
 {
     friend class PD_DocumentRDFMutation;
+    friend class RDFModel_SPARQLLimited;
+    friend class PD_RDFMutation_XMLIDLimited;
     
   public:
     explicit PD_DocumentRDF( PD_Document* doc );
@@ -172,54 +315,67 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
 
     UT_Error setupWithPieceTable();
     
-
+    // PD_RDFModel methods...
     virtual PD_URIList getObjects( const PD_URI& s, const PD_URI& p );
-    virtual PD_URI     getObject( const PD_URI& s, const PD_URI& p );
     virtual PD_URIList getSubjects( const PD_URI& p, const PD_Object& o );
-    virtual PD_URI     getSubject( const PD_URI& p, const PD_Object& o );
     virtual PD_URIList getAllSubjects();
     virtual POCol      getArcsOut( const PD_URI& s );
     virtual bool       contains( const PD_URI& s, const PD_URI& p, const PD_Object& o );
-    virtual bool       contains( const PD_URI& s, const PD_URI& p );
+    virtual bool       contains( const PD_RDFStatement& st );
     virtual long       getTripleCount();
-    
+    virtual PD_RDFModelIterator begin();
+    virtual PD_RDFModelIterator end();
+    virtual void dumpModel( const std::string& headerMsg = "dumpModel()" );
+    virtual PD_DocumentRDFMutationHandle createMutation();
 
-    PD_DocumentRDFMutationHandle createMutation();
+    
     void handleCollabEvent( gchar** szAtts, gchar** szProps );
          
     PD_RDFModelHandle getRDFAtPosition( PT_DocPosition pos );
     PD_RDFModelHandle getRDFForID( const std::string& xmlid );
 
+    void addRDFForID( const std::string& xmlid, PD_DocumentRDFMutationHandle& m );
+    std::list< std::string >& addRelevantIDsForPosition( std::list< std::string >& ret,
+                                                         PT_DocPosition pos );
+    std::set< std::string >& getAllIDs( std::set< std::string >& ret );
+    std::pair< PT_DocPosition, PT_DocPosition > getIDRange( const std::string& xmlid );
+
+
+    PD_RDFModelHandle createRestrictedModelForXMLIDs( const std::string& writeID,
+                                                      const std::list< std::string >& xmlids );
+
+    virtual void maybeSetDocumentDirty();
+    
+    // testing methods...
     void runMilestone2Test();
     void runMilestone2Test2();
     void dumpObjectMarkersFromDocument();
+    void runPlay();
+
+    static std::string getSPARQL_LimitedToXMLIDList( const std::list< std::string >& xmlids,
+                                                     const std::string& extraPreds = "" );
     
-    void dumpModel( const std::string& headerMsg = "dumpModel()" );
-    
-  private:
+  protected:
     PD_Document* m_doc;
+  private:
 	PT_AttrPropIndex m_indexAP;
 
     PD_Document*   getDocument(void) const;
     pt_PieceTable* getPieceTable(void) const;
-    PD_URI front( const PD_URIList& l ) const;
     void setIndexAP( PT_AttrPropIndex idx );
     PT_AttrPropIndex getIndexAP(void) const;
-    virtual const PP_AttrProp* getAP(void) const;
+    virtual const PP_AttrProp* getAP(void);
     virtual UT_Error setAP( PP_AttrProp* newAP );
     virtual bool isStandAlone() const;
     
-    std::string combinePO(const PD_URI& p, const PD_Object& o );
-    std::pair< PD_URI, PD_Object > splitPO( const std::string& po );
-    POCol decodePOCol( const std::string& data );
-    std::string encodePOCol( const POCol& l );
-
-    void dumpModelFromAP( const PP_AttrProp* AP, const std::string& headerMsg );
-
-    bool apContains( const PP_AttrProp* AP, const PD_URI& s, const PD_URI& p, const PD_Object& o );
-    void addRDFForID( const std::string& xmlid, PD_DocumentRDFMutationHandle& m );
-    std::list< std::string >& addRelevantIDsForPosition( std::list< std::string >& ret,
-                                                         PT_DocPosition pos );
+  protected:
+    PD_URIList& apGetObjects(     const PP_AttrProp* AP, PD_URIList& ret, const PD_URI& s, const PD_URI& p );
+    PD_URIList& apGetSubjects(    const PP_AttrProp* AP, PD_URIList& ret, const PD_URI& p, const PD_Object& o );
+    PD_URIList& apGetAllSubjects( const PP_AttrProp* AP, PD_URIList& ret );
+    POCol&      apGetArcsOut(     const PP_AttrProp* AP, POCol& ret, const PD_URI& s );
+    bool        apContains(       const PP_AttrProp* AP, const PD_URI& s, const PD_URI& p, const PD_Object& o );
+    void        apDumpModel(      const PP_AttrProp* AP, const std::string& headerMsg );
+    
 };
 
 
@@ -267,6 +423,9 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
 class ABI_EXPORT PD_DocumentRDFMutation
 {
     friend class PD_DocumentRDF;
+    friend class RDFModel_XMLIDLimited;
+
+  protected:
     PD_DocumentRDF* m_rdf; ///< DocumentRDF we are changing
     bool m_rolledback;     ///< Should we rollback
     bool m_committed;      ///< Only commit() once.
@@ -275,26 +434,30 @@ class ABI_EXPORT PD_DocumentRDFMutation
     PP_AttrProp* m_crRemoveAP; ///< Triples to remove during commit()
     PP_AttrProp* m_crAddAP;    ///< Triples to add during commit()
     
-    PD_DocumentRDFMutation( PD_DocumentRDF* rdf );
 
 
     bool apAdd( PP_AttrProp* AP, const PD_URI& s, const PD_URI& p, const PD_Object& o );
     void apRemove( PP_AttrProp*& AP, const PD_URI& s, const PD_URI& p, const PD_Object& o );
     UT_Error handleAddAndRemove( PP_AttrProp* add, PP_AttrProp* remove );
+
+    PD_DocumentRDFMutation( PD_DocumentRDF* rdf );
     
   public:
 
-    ~PD_DocumentRDFMutation();
-    void handleCollabEvent( gchar** szAtts, gchar** szProps );
+    virtual ~PD_DocumentRDFMutation();
+    virtual void handleCollabEvent( gchar** szAtts, gchar** szProps );
 
     /**
      * @return false of the triple could not be added.
      */
-    bool add( const PD_URI& s, const PD_URI& p, const PD_Object& o );
-    void remove( const PD_URI& s, const PD_URI& p, const PD_Object& o );
+    virtual bool add( const PD_URI& s, const PD_URI& p, const PD_Object& o );
+    virtual void remove( const PD_URI& s, const PD_URI& p, const PD_Object& o );
+    void remove( const PD_URI& s, const PD_URI& p, const PD_URI& o );
+    bool add( const PD_RDFStatement& st );
+    void remove( const PD_RDFStatement& st );
     
-    UT_Error commit();
-    void rollback();
+    virtual UT_Error commit();
+    virtual void rollback();
 };
 
 
@@ -303,8 +466,12 @@ class ABI_EXPORT RDFAnchor
 {
     bool m_isEnd;
     std::string m_xmlid;
+
+    void setup( const PP_AttrProp* pAP );
+    
 public:
     RDFAnchor( const PP_AttrProp* pAP );
+    RDFAnchor( PD_Document* doc, pf_Frag* pf );
     bool isEnd();
     std::string getID();
 };

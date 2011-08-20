@@ -165,6 +165,17 @@ std::string AP_Dialog_Goto::performGotoPrev(AP_JumpTarget target, UT_sint32 idx)
 }
 
 
+
+PD_DocumentRDFHandle
+AP_Dialog_Goto::getRDF()
+{
+    FV_View* view = getView();
+    PD_Document* doc = view->getDocument();
+    PD_DocumentRDFHandle rdf = doc->getDocumentRDF();
+    return rdf;
+}
+ 
+
 // --------------------------- Setup Functions -----------------------------
 bool AP_Dialog_Goto::setView(FV_View * /*view*/)
 {

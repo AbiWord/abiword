@@ -76,6 +76,18 @@ void XAP_Dialog::setWidgetLabel(xap_widget_id wid, const UT_UTF8String &val)
 	delete w;
 }
 
+void
+XAP_Dialog::maybeClosePopupPreviewBubbles()
+{    
+}
+
+void
+XAP_Dialog::maybeReallowPopupPreviewBubbles()
+{
+}
+
+
+
 /*****************************************************************/
 
 XAP_Dialog_NonPersistent::XAP_Dialog_NonPersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl )
@@ -86,6 +98,8 @@ XAP_Dialog_NonPersistent::XAP_Dialog_NonPersistent(XAP_DialogFactory * pDlgFacto
 XAP_Dialog_NonPersistent::~XAP_Dialog_NonPersistent(void)
 {
 }
+
+
 
 /*****************************************************************/
 
@@ -199,6 +213,7 @@ void XAP_Dialog_Modeless::modeless_cleanup(void)
 	UT_sint32 sid = (UT_sint32) getDialogId();
 	m_pApp->forgetModelessId( (UT_sint32) sid);
 	m_pDlgFactory->releaseDialog(m_pDialog);
+    maybeReallowPopupPreviewBubbles();
 }
 
 bool XAP_Dialog_Modeless::isRunning(void) const
@@ -227,7 +242,20 @@ void XAP_Dialog_Modeless::setActiveFrame(XAP_Frame *pFrame)
 }
 
 
-void XAP_Dialog_Modeless::BuildWindowName(char * pWindowName, const char * pDialogName, UT_uint32 width) const
+std::string
+XAP_Dialog_Modeless::BuildWindowName( const char * pDialogName ) const
+{
+    const UT_uint32 width = 100;
+ 	char pWindowName[width];
+    
+    BuildWindowName( pWindowName, pDialogName, width );
+    std::string ret = pWindowName;
+    return ret;
+}
+
+
+void
+XAP_Dialog_Modeless::BuildWindowName(char * pWindowName, const char * pDialogName, UT_uint32 width ) const
 {
 // This function constructs and returns the window name of a modeless dialog by
 // concatenating the active frame with the dialog name

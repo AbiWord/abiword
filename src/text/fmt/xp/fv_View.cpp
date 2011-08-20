@@ -61,6 +61,7 @@
 #include "fg_Graphic.h"
 #include "fg_GraphicRaster.h"
 #include "pd_Document.h"
+#include "pd_DocumentRDF.h"
 #include "pd_Style.h"
 #include "pp_Property.h"
 #include "pp_AttrProp.h"
@@ -297,6 +298,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_iPosAtTable(0),
 		m_bAnnotationPreviewActive(false),
 		m_bAllowSmartQuoteReplacement(true),
+		m_bubbleBlockerCount(0),
 		m_pViewDoubleBufferingObject(NULL)
 {
 	if(m_pDoc)
@@ -7462,7 +7464,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, const char *numberString)
 	}
 
 	UT_uint32 number = 0;
-	if(type != AP_JUMPTARGET_BOOKMARK)
+	if(type != AP_JUMPTARGET_BOOKMARK && type != AP_JUMPTARGET_XMLID)
 		number = atol(numberString);
 
 	if (dec || inc)
@@ -7571,6 +7573,19 @@ bool FV_View::gotoTarget(AP_JumpTarget type, const char *numberString)
 	case AP_JUMPTARGET_PICTURE:
 		// TODO
 		break;
+    case AP_JUMPTARGET_XMLID:
+	{
+		std::string xmlid = numberString;
+		PD_Document* doc = getDocument();
+		if( PD_DocumentRDFHandle rdf = doc->getDocumentRDF() )
+		{
+			std::pair< PT_DocPosition, PT_DocPosition > range = rdf->getIDRange( xmlid );
+			UT_DEBUGMSG(("jump xmlid:%s gives range:%d to %d\n",
+						 xmlid.c_str(), range.first, range.second ));
+			selectRange( range.first, range.second );
+		}
+		break;
+	}
 	case AP_JUMPTARGET_BOOKMARK:
 		{
 			fl_SectionLayout * pSL = m_pLayout->getFirstSection();
@@ -7638,11 +7653,13 @@ bool FV_View::gotoTarget(AP_JumpTarget type, const char *numberString)
 					moveInsPtTo (dp2);
 				else
 				{
+					selectRange( dp2, dp1 );
+					
 					//make a selection
-					_setPoint(dp2);
-					_setSelectionAnchor();
-					setPoint(dp1);
-					_drawSelection();
+					// _setPoint(dp2);
+					// _setSelectionAnchor();
+					// setPoint(dp1);
+					// _drawSelection();
 				}
 
 			}
@@ -12914,6 +12931,71 @@ void FV_View::killAnnotationPreview()
 	setAnnotationPreviewActive(false);
 }
 
+FV_View_BubbleBlocker
+FV_View::getBubbleBlocker()
+{
+	if(isAnnotationPreviewActive())
+		killAnnotationPreview();
+
+	UT_DEBUGMSG(("FV_View::getBubbleBlocker()\n"));
+	
+	FV_View_BubbleBlocker ret( this );
+	return ret;
+}
+
+bool
+FV_View::bubblesAreBlocked() const
+{
+	UT_DEBUGMSG(("bubblesAreBlocked() v:%d\n", m_bubbleBlockerCount ));
+	return m_bubbleBlockerCount > 0;
+}
+
+
+
+void
+FV_View::incremenetBubbleBlockerCount()
+{
+	m_bubbleBlockerCount++;
+	UT_DEBUGMSG(("FV_View::inrremenetBubbleBlockerCount() %d\n",m_bubbleBlockerCount));
+}
+void
+FV_View::decremenetBubbleBlockerCount()
+{
+	m_bubbleBlockerCount--;
+	UT_DEBUGMSG(("FV_View::decremenetBubbleBlockerCount() %d\n",m_bubbleBlockerCount));
+}
+
+FV_View_BubbleBlocker::FV_View_BubbleBlocker( FV_View* pView )
+	:
+	m_pView( pView )
+{
+	if( m_pView )
+		m_pView->incremenetBubbleBlockerCount();
+}
+FV_View_BubbleBlocker::~FV_View_BubbleBlocker()
+{
+	if( m_pView )
+		m_pView->decremenetBubbleBlockerCount();
+}
+    
+FV_View_BubbleBlocker&
+FV_View_BubbleBlocker::operator=( const FV_View_BubbleBlocker& r )
+{
+    if( this != &r )
+    {
+		if( m_pView )
+			m_pView->decremenetBubbleBlockerCount();
+		
+		m_pView = r.m_pView;
+		
+		if( m_pView )
+			m_pView->incremenetBubbleBlockerCount();
+	}
+}
+
+
+
+
 bool FV_View::insertFootnote(bool bFootnote)
 {
 	// can only insert Footnote into an FL_SECTION_DOC or a Table
@@ -14285,3 +14367,13 @@ bool FV_View::rtlPages() const
 	
 	return FALSE;
 }
+
+void
+FV_View::selectRange( PT_DocPosition start, PT_DocPosition end )
+{
+	_setPoint(start);
+	_setSelectionAnchor();
+	setPoint(end);
+	_drawSelection();
+}
+

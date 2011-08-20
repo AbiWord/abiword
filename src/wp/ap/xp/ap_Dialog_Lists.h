@@ -24,6 +24,7 @@
 
 #include "xap_Frame.h"
 #include "xap_Dialog.h"
+#include "ap_Dialog_Modeless.h"
 #include "xav_View.h"
 #include "fl_BlockLayout.h"
 #include "fl_AutoNum.h"
@@ -66,8 +67,10 @@ protected:
 	bool				m_bFirst;
 };
 		
-class ABI_EXPORT AP_Dialog_Lists : public XAP_Dialog_Modeless
+class ABI_EXPORT AP_Dialog_Lists : public AP_Dialog_Modeless
 {
+  protected:
+    virtual XAP_String_Id getWindowTitleStringId();
 
 public:
 	AP_Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -83,7 +86,6 @@ public:
 
 	AP_Dialog_Lists::tAnswer	getAnswer(void) const;
 	void                        setAnswer(AP_Dialog_Lists::tAnswer ans ) {m_Answer = ans;}
-	void						ConstructWindowName(void);
 	void						StartList(void);
 	void						StopList(void);
 	void						Apply(void);
@@ -108,10 +110,7 @@ public:
 	void						setDirty(void) {m_bDirty = true;}
 	void						clearDirty(void) {m_bDirty = false;}
 
-	bool						setView(FV_View * view);
-	FV_View *					getView(void) const;
 	AV_View *					getAvView(void);
-	void						setActiveFrame(XAP_Frame *pFrame);
 	void						generateFakeLabels(void);
 	UT_UCSChar *				getListLabel(UT_sint32 itemNo);
 	virtual void 				event_PreviewAreaExposed();
@@ -171,8 +170,8 @@ protected:
     { 
         return m_pszFont;
     }
-    void copyCharToWindowName(const char* pszName) { sprintf(m_WindowName,"%s",pszName);}
-    const char * getWindowName( void) { return static_cast<const char *>(m_WindowName);}  
+    void copyCharToWindowName(const char* pszName);
+    const char * getWindowName() const;
 	AP_Lists_preview* getListsPreview() { return m_pListsPreview; }
 	void              setCurrentFold(UT_sint32 iLevel)
 		{ m_iCurrentLevel = iLevel;}
@@ -195,7 +194,6 @@ private:
 	// new dialog
 
 	tAnswer					m_Answer;
-	char					m_WindowName[100];
 	bool					m_isListAtPoint;
 	bool					m_previousListExistsAtPoint;
 	UT_UCSChar				m_curListLabel[100];

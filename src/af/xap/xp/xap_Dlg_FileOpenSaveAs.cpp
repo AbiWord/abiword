@@ -27,6 +27,9 @@
 #include "xap_Prefs.h"
 #include "xap_Dlg_FileOpenSaveAs.h"
 
+
+
+
 /*****************************************************************
 ** The file-open and file-save-as dialogs have
 ** app-persistence, but the persistence is
@@ -64,7 +67,9 @@ XAP_Dialog_FileOpenSaveAs::XAP_Dialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFac
 	  m_nFileType(XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO),
 	  m_nDefaultFileType(XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO),
 	  m_bSuggestName(false),
-	  m_answer(a_VOID)
+	  m_answer(a_VOID),
+      m_appendDefaultSuffixFunctor( getAppendDefaultSuffixFunctorUsing_IE_Exp_preferredSuffixForFileType() )
+
 {
   const gchar * savedir = 0;
   if (getApp()->getPrefsValue(XAP_PREF_KEY_DefaultSaveDirectory, &savedir) && strlen(savedir))
@@ -153,4 +158,29 @@ void XAP_Dialog_FileOpenSaveAs::setDefaultFileType(UT_sint32 nType)
 UT_sint32 XAP_Dialog_FileOpenSaveAs::getFileType(void) const
 {
 	return m_nFileType;
+}
+
+void
+XAP_Dialog_FileOpenSaveAs::setAppendDefaultSuffixFunctor( m_appendDefaultSuffixFunctor_t f )
+{
+    m_appendDefaultSuffixFunctor = f;
+}
+
+#include "../../../wp/impexp/xp/ie_types.h"
+#include "../../../wp/impexp/xp/ie_exp.h"
+#include <sstream>
+
+std::string
+AppendDefaultSuffixFunctorUsing_IE_Exp_preferredSuffixForFileType( std::string dialogFilename, UT_sint32 n )
+{
+    UT_UTF8String suffix( IE_Exp::preferredSuffixForFileType( n ));
+    std::stringstream ss;
+    ss << dialogFilename << suffix.utf8_str();
+    return ss.str();
+}
+
+XAP_Dialog_FileOpenSaveAs::m_appendDefaultSuffixFunctor_t
+getAppendDefaultSuffixFunctorUsing_IE_Exp_preferredSuffixForFileType()
+{
+    return AppendDefaultSuffixFunctorUsing_IE_Exp_preferredSuffixForFileType;
 }

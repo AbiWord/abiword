@@ -111,7 +111,7 @@ BeginLayout(ContextAnnotationM,EV_EMC_ANNOTATIONMISSPELLED)
 
 EndLayout()
 
-BeginLayout(ContextAnnotationT,EV_EMC_ANNOTATIONTEXT)
+BeginLayout(ContextRDFAnchorT,EV_EMC_ANNOTATIONTEXT)
 
 	BeginPopupMenu()
 		MenuItem(AP_MENU_ID_GOTO_ANNOTATION)
@@ -144,3 +144,37 @@ BeginLayout(ContextAnnotationT,EV_EMC_ANNOTATIONTEXT)
 
 EndLayout()
 
+
+BeginLayout(ContextAnnotationT,EV_EMC_RDFANCHORTEXT)
+
+	BeginPopupMenu()
+		MenuItem(AP_MENU_ID_RDFANCHOR_SHOW_TRIPLES)
+		MenuItem(AP_MENU_ID_RDFANCHOR_SPARQL)
+		Separator()
+		MenuItem(AP_MENU_ID_EDIT_CUT)
+		MenuItem(AP_MENU_ID_EDIT_COPY)
+		MenuItem(AP_MENU_ID_EDIT_PASTE)
+	    MenuItem(AP_MENU_ID_EDIT_PASTE_SPECIAL)
+		Separator()
+     BeginSubMenu(AP_MENU_ID_TABLE)
+		MenuItem(AP_MENU_ID_TABLE_INSERTTABLE)
+		MenuItem(AP_MENU_ID_TABLE_DELETETABLE)
+		Separator()
+		MenuItem(AP_MENU_ID_TABLE_INSERTROW)		
+		MenuItem(AP_MENU_ID_TABLE_INSERTCOLUMN)
+		MenuItem(AP_MENU_ID_TABLE_DELETEROW)
+		MenuItem(AP_MENU_ID_TABLE_DELETECOLUMN)
+		MenuItem(AP_MENU_ID_TABLE_MERGE_CELLS)
+		Separator()
+		MenuItem(AP_MENU_ID_TABLE_FORMAT)
+     EndSubMenu()
+		Separator()
+		MenuItem(AP_MENU_ID_FMT_FONT)
+	    MenuItem(AP_MENU_ID_FMT_LANGUAGE)
+		MenuItem(AP_MENU_ID_FMT_PARAGRAPH)
+	    MenuItem(AP_MENU_ID_FMT_BULLETS)
+	EndPopupMenu()
+
+EndLayout()
+
+    

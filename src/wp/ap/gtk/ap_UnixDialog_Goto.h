@@ -45,6 +45,7 @@ public:
 	void onPageChanged 		  (void); 
 	void onLineChanged 		  (void);
 	void onBookmarkDblClicked (void);
+	void onXMLIDDblClicked (void);
 	void onJumpClicked 		  (void);
 	void onPrevClicked 		  (void);
 	void onNextClicked 		  (void);
@@ -70,7 +71,8 @@ private:
 
 	void  _selectPrevBookmark 		 (void);
 	void  _selectNextBookmark 		 (void);
-	gchar *_getSelectedBookmarkLabel (void);	
+    std::string _getSelectedBookmarkLabel();	
+	std::string _getSelectedXMLIDLabel();	
 	
 	GtkWidget *m_wDialog;
 	GtkWidget *m_lbPage;
@@ -82,10 +84,14 @@ private:
 	GtkWidget *m_btJump;
 	GtkWidget *m_btPrev;
 	GtkWidget *m_btNext;
+    GtkWidget *m_lvXMLIDs;
 	GtkWidget *m_btClose;
-
+    
 	AP_JumpTarget m_JumpTarget;
 	FV_DocCount   m_DocCount;
+
+    void setupXMLIDList( GtkWidget* w );
+    void updateXMLIDList( GtkWidget* w );
 };
 
 #endif /* AP_UNIXDIALOG_GOTO_H */

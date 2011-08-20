@@ -108,6 +108,9 @@
 #if BENCHLAYOUT
 #include <time.h>
 #endif
+
+#include "pd_DocumentRDF.h"
+
 /****************************************************************/
 
 void FV_View::cmdUnselectSelection(void)
@@ -4107,6 +4110,19 @@ void FV_View::cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd)
 	}
 }
 
+void FV_View::cmdSelect( const std::pair< PT_DocPosition, PT_DocPosition >& range )
+{
+	if( range.first == 0 && range.second == 0 )
+	{
+		cmdUnselectSelection();
+		return;
+	}
+
+	cmdSelect( range.first, range.second );
+}
+
+
+
 #define IS_SELECTALL(a, b) ((a) == FV_DOCPOS_BOD && (b) == FV_DOCPOS_EOD)
 
 void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocPos dpEnd)
@@ -5017,15 +5033,15 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 }
 
 /******************************************************************/
-UT_Error FV_View::cmdInsertBookmark(const char * szName)
+
+void FV_View::getCmdInsertRangeVariables( PT_DocPosition& posStart,
+										  PT_DocPosition& posEnd,
+										  fl_BlockLayout*& pBL1,
+										  fl_BlockLayout*& pBL2 )
 {
-	// Signal PieceTable Change
-	_saveAndNotifyPieceTableChange();
-	bool bRet;
-
-	PT_DocPosition posStart = getPoint();
-	PT_DocPosition posEnd = posStart;
-
+	posStart = getPoint();
+	posEnd = posStart;
+	
 	if (!isSelectionEmpty())
 	{
 		if (m_Selection.getSelectionAnchor() < posStart)
@@ -5047,11 +5063,12 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 	
 	posEnd++;
 
-	fl_BlockLayout * pBL1 =_findBlockAtPosition(posStart);
-	fl_BlockLayout * pBL2 =_findBlockAtPosition(posEnd);
-//
-// Handle corner case of selection from outside the left column
-//
+	pBL1 =_findBlockAtPosition(posStart);
+	pBL2 =_findBlockAtPosition(posEnd);
+	
+	//
+	// Handle corner case of selection from outside the left column
+	//
 	if((pBL1!= NULL) && isInFootnote(posStart) && (pBL1->getPosition(true) == posStart))
 	{
 		if(posEnd > posStart+1)
@@ -5066,19 +5083,33 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 			posStart++;
 		}
 	}
+}
+
+										  
+UT_Error FV_View::cmdInsertBookmark(const char * szName)
+{
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+	bool bRet;
+
+	PT_DocPosition posStart = 0, posEnd = 0;
+	fl_BlockLayout* pBL1 = 0;
+	fl_BlockLayout* pBL2 = 0;
+	getCmdInsertRangeVariables( posStart, posEnd, pBL1, pBL2 );
+	
 	if(pBL1 != pBL2)
 	{
-//
-// Fixme put message boxes here
-//
+		//
+		// Fixme put message boxes here
+		//
 		_restorePieceTableState();
 		return false;
 	}
 	if(isTOCSelected())
 	{
-//
-// Fixme put message boxes here
-//
+		//
+		// Fixme put message boxes here
+		//
 		_restorePieceTableState();
 		return false;
 	}
@@ -5141,6 +5172,102 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 
 	return bRet;
 
+}
+
+UT_Error
+FV_View::cmdInsertXMLID( const std::string& xmlid )
+{
+	UT_DEBUGMSG(("fv_View::cmdInsertXMLID: xmlid:%s\n", xmlid.c_str()));
+
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+	UT_Error ret;
+
+	PT_DocPosition posStart = 0, posEnd = 0;
+	fl_BlockLayout* pBL1 = 0;
+	fl_BlockLayout* pBL2 = 0;
+	getCmdInsertRangeVariables( posStart, posEnd, pBL1, pBL2 );
+	UT_DEBUGMSG(("fv_View::cmdInsertXMLID: posStart:%d posEnd:%d\n", posStart, posEnd ));
+
+	if(pBL1 != pBL2)
+	{
+		//
+		// Fixme put message boxes here
+		//
+		UT_DEBUGMSG(("fv_View::cmdInsertXMLID: range contains different blocks! xmlid \"%s\"\n", xmlid.c_str()));
+		_restorePieceTableState();
+		return UT_ERROR;
+	}
+	if(isTOCSelected())
+	{
+		//
+		// Fixme put message boxes here
+		//
+		UT_DEBUGMSG(("fv_View::cmdInsertXMLID: can't insert xmlid in TOC! xmlid \"%s\"\n", xmlid.c_str()));
+		_restorePieceTableState();
+		return UT_ERROR;
+	}
+
+	PD_DocumentRDFHandle rdf = m_pDoc->getDocumentRDF();
+    std::set< std::string > allIDs;
+	rdf->getAllIDs( allIDs );
+	if( allIDs.count( xmlid ))
+	{
+		UT_DEBUGMSG(("fv_View::cmdInsertXMLID: xmlid already in use... %s\n", xmlid.c_str()));
+		XAP_Frame * pFrame = static_cast<XAP_Frame *>(getParentData());
+		XAP_Dialog_MessageBox::tAnswer ans = XAP_Dialog_MessageBox::a_NO;
+
+		if(pFrame)
+			ans = pFrame->showMessageBox(AP_STRING_ID_MSG_XMLIDAlreadyExists,
+										 XAP_Dialog_MessageBox::b_YN, XAP_Dialog_MessageBox::a_NO);
+
+		if(ans == XAP_Dialog_MessageBox::a_YES)
+		{
+			// already exists -- remove it and then reinsert
+			UT_DEBUGMSG(("fv_View::cmdInsertXMLID: xmlid:%s exists - removing\n", xmlid.c_str()));
+			_deleteXMLID( xmlid, false, posStart, posEnd );
+		}
+		else
+		{
+			xxx_UT_DEBUGMSG(("User canceled xmlid replacement\n"));
+			return UT_OK;
+		}
+	}
+
+	const gchar* pa[10] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+	pa[0] = PT_XMLID;
+	pa[1] = xmlid.c_str();
+	// sanity check
+	pa[2] = "this-is-an-rdf-anchor";
+	pa[3] = "yes";
+
+	UT_DEBUGMSG(("fv_View::cmdInsertXMLID: inserting xmlid:%s at posStart:%d posEnd:%d\n",
+				 xmlid.c_str(), posStart, posEnd ));
+	
+	const gchar ** pAttrs = const_cast<const gchar **>(pa);
+	const gchar ** pProps = 0;
+	bool bRet = m_pDoc->insertObject(posStart, PTO_RDFAnchor, pAttrs, pProps);
+	if(bRet)
+	{
+        pa[4] = PT_RDF_END;
+        pa[5] = "yes";
+		bRet = m_pDoc->insertObject(posEnd, PTO_RDFAnchor, pAttrs, pProps);
+	}
+	
+	if( bRet )  ret = UT_OK;
+	else   		ret = UT_ERROR;
+
+	// Signal piceTable is stable again
+	_restorePieceTableState();
+	_generalUpdate();
+
+	return ret;
+}
+
+UT_Error
+FV_View::cmdDeleteXMLID( const std::string& xmlid )
+{
+	return _deleteXMLID( xmlid, true);
 }
 
 

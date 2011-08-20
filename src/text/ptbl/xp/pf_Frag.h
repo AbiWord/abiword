@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Updates by Ben Martin in 2011.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,6 +26,7 @@
 #include "ut_types.h"
 #include "pt_Types.h"
 #include "pf_Fragments.h"
+#include <string>
 
 class pt_PieceTable;
 class PX_ChangeRecord;
@@ -90,7 +92,9 @@ public:
 	
 	// compare contents and format of two fragments
 	bool operator == (const pf_Frag & f2) const;
-	
+
+    std::string getXMLID() const;
+    
 #ifdef PT_TEST
 	virtual void			__dump(FILE * fp) const;
 #endif	

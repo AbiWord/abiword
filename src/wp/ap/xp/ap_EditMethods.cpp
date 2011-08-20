@@ -81,6 +81,8 @@
 #include "ap_Dialog_PageSetup.h"
 #include "ap_Dialog_Lists.h"
 #include "ap_Dialog_Options.h"
+#include "ap_Dialog_RDFQuery.h"
+#include "ap_Dialog_RDFEditor.h"
 
 #ifdef ENABLE_SPELL
 #include "ap_Dialog_Spell.h"
@@ -100,6 +102,7 @@
 #include "ap_Dialog_HdrFtr.h"
 #include "ap_Dialog_InsertBookmark.h"
 #include "ap_Dialog_InsertHyperlink.h"
+#include "ap_Dialog_InsertXMLID.h"
 #include "ap_Dialog_MetaData.h"
 #include "ap_Dialog_MarkRevisions.h"
 #include "ap_Dialog_ListRevisions.h"
@@ -318,6 +321,7 @@ public:
 	static EV_EditMethod_Fn delBOD;
 	static EV_EditMethod_Fn delEOD;
 	static EV_EditMethod_Fn deleteBookmark;
+	static EV_EditMethod_Fn deleteXMLID;
 	static EV_EditMethod_Fn deleteColumns;
 	static EV_EditMethod_Fn deleteCell;
 	static EV_EditMethod_Fn deleteHyperlink;
@@ -327,6 +331,7 @@ public:
 
 
 	static EV_EditMethod_Fn insertBookmark;
+	static EV_EditMethod_Fn insertXMLID;
 	static EV_EditMethod_Fn insertHyperlink;
 	static EV_EditMethod_Fn insertColsAfter;
 	static EV_EditMethod_Fn insertColsBefore;
@@ -678,6 +683,8 @@ public:
 	static EV_EditMethod_Fn hyperlinkJump;
 	static EV_EditMethod_Fn hyperlinkJumpPos;
 	static EV_EditMethod_Fn hyperlinkStatusBar;
+	static EV_EditMethod_Fn rdfAnchorShowTriples;
+	static EV_EditMethod_Fn rdfAnchorSPARQL;
 
 	static EV_EditMethod_Fn textToTable;
 	static EV_EditMethod_Fn textToTableNoSpaces;
@@ -713,7 +720,10 @@ public:
 	static EV_EditMethod_Fn dumpRDFForPoint;
 	static EV_EditMethod_Fn dumpRDFObjects;
 	static EV_EditMethod_Fn rdfTest;
-	
+	static EV_EditMethod_Fn rdfPlay;
+	static EV_EditMethod_Fn rdfQuery;
+	static EV_EditMethod_Fn rdfEditor;
+	static EV_EditMethod_Fn rdfQueryXMLIDs;
 
 	static EV_EditMethod_Fn noop;
 
@@ -841,6 +851,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(deleteHyperlink),		0,	""),
 	EV_EditMethod(NF(deleteRows),   		0,	""),
 	EV_EditMethod(NF(deleteTable),   		0,	""),
+	EV_EditMethod(NF(deleteXMLID),  		0,	""),
 	EV_EditMethod(NF(dlgAbout), 			_A_, ""),
 	EV_EditMethod(NF(dlgBackground),		0,	""),
 	EV_EditMethod(NF(dlgBorders),			0,	""),
@@ -1014,6 +1025,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insertTabShift),			0,	""),
 	EV_EditMethod(NF(insertTable),          0,  ""),
 	EV_EditMethod(NF(insertTildeData),		_D_,	""),
+	EV_EditMethod(NF(insertXMLID),    		0,	""),
 	EV_EditMethod(NF(insertZWJoiner),		0,	""),
 
 	// j
@@ -1069,6 +1081,12 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(querySaveAndExit), 	_A_,	""),
 
 	// r
+	EV_EditMethod(NF(rdfAnchorSPARQL) ,     0,  ""),
+	EV_EditMethod(NF(rdfAnchorShowTriples), 0,  ""),
+	EV_EditMethod(NF(rdfEditor),            0,	""),
+	EV_EditMethod(NF(rdfPlay), 				0,	""),
+	EV_EditMethod(NF(rdfQuery),             0,	""),
+	EV_EditMethod(NF(rdfQueryXMLIDs),       0,	""),
 	EV_EditMethod(NF(rdfTest), 				0,	""),
 	EV_EditMethod(NF(redo), 				0,	""),
 	EV_EditMethod(NF(releaseFrame), 		0,	""),
@@ -4972,6 +4990,13 @@ Defun(contextHyperlink)
 #endif
 			return s_doContextMenu_no_move(EV_EMC_ANNOTATIONTEXT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
 	}
+
+
+	if(pHRun && pHRun->getHyperlinkType() == HYPERLINK_RDFANCHOR)
+	{
+		UT_DEBUGMSG(("open rdf context menu\n"));
+		return s_doContextMenu_no_move(EV_EMC_RDFANCHORTEXT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+	}
 	return false; // to avoid compilation warnings (should never be reached)
 }
 
@@ -6021,6 +6046,57 @@ Defun1(deleteBookmark)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	s_doBookmarkDlg(pView, false);
+	return true;
+}
+
+
+static bool s_xmlidDlg(FV_View * pView, bool /*bInsert*/)
+{
+	UT_return_val_if_fail(pView, false);
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+	UT_return_val_if_fail(pFrame, false);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+
+	AP_Dialog_InsertXMLID * pDialog
+		= static_cast<AP_Dialog_InsertXMLID *>(pDialogFactory->requestDialog(AP_DIALOG_ID_INSERTXMLID));
+	UT_return_val_if_fail(pDialog, false);
+
+	pDialog->setDoc(pView);
+	pDialog->runModal(pFrame);
+
+	AP_Dialog_GetStringCommon::tAnswer ans = pDialog->getAnswer();
+
+	if (ans == AP_Dialog_GetStringCommon::a_OK)
+	{
+			pView->cmdInsertXMLID(pDialog->getString());
+	}
+	else if(ans == AP_Dialog_GetStringCommon::a_DELETE)
+	{
+			pView->cmdDeleteXMLID(pDialog->getString());
+	}
+	pDialogFactory->releaseDialog(pDialog);
+
+	return (ans == AP_Dialog_GetStringCommon::a_DELETE || ans == AP_Dialog_GetStringCommon::a_OK);
+}
+
+Defun1(insertXMLID)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_DEBUGMSG(("insertXMLID()\n"));
+	s_xmlidDlg(pView, true);
+	return true;
+}
+
+Defun1(deleteXMLID)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	s_xmlidDlg(pView, false);
 	return true;
 }
 
@@ -10744,6 +10820,125 @@ Defun1(toggleRDFAnchorHighlight)
 	return true ;
 }
 
+
+static bool s_doRDFQueryDlg( FV_View * pView, XAP_Dialog_Id id, AP_Dialog_RDFQuery*& dialogret )
+{
+	UT_return_val_if_fail(pView, false);
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+	UT_return_val_if_fail(pFrame, false);
+
+	// kill the annotation preview popup if needed
+	if(pView->isAnnotationPreviewActive())
+		pView->killAnnotationPreview();
+	
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
+
+	AP_Dialog_RDFQuery * pDialog
+		= static_cast<AP_Dialog_RDFQuery *>(pDialogFactory->requestDialog(id));
+	UT_return_val_if_fail(pDialog, false);
+	dialogret = pDialog;
+
+	if(pDialog->isRunning() == true)
+	{
+		pDialog->activate();
+	}
+	else
+	{
+		pDialog->setView(pView);
+		pDialog->runModeless(pFrame);
+	}
+	return true;
+}
+
+Defun1(rdfQuery)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	XAP_Dialog_Id id = AP_DIALOG_ID_RDF_QUERY;
+	AP_Dialog_RDFQuery* dialog = 0;
+	return s_doRDFQueryDlg( pView, id, dialog );
+}
+
+
+static bool s_doRDFEditorDlg( FV_View * pView, XAP_Dialog_Id id, AP_Dialog_RDFEditor*& dialogret, bool restrict )
+{
+	UT_return_val_if_fail(pView, false);
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+	UT_return_val_if_fail(pFrame, false);
+
+	// kill the annotation preview popup if needed
+	if(pView->isAnnotationPreviewActive())
+		pView->killAnnotationPreview();
+	
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
+
+	AP_Dialog_RDFEditor * pDialog
+		= static_cast<AP_Dialog_RDFEditor *>(pDialogFactory->requestDialog(id));
+	UT_return_val_if_fail(pDialog, false);
+	dialogret = pDialog;
+
+	pDialog->hideRestrictionXMLID( !restrict );
+	
+	
+	if(pDialog->isRunning() == true)
+	{
+		pDialog->activate();
+	}
+	else
+	{
+		pDialog->setView(pView);
+		pDialog->runModeless(pFrame);
+	}
+	return true;
+}
+
+
+Defun1(rdfEditor)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	XAP_Dialog_Id id = AP_DIALOG_ID_RDF_EDITOR;
+	AP_Dialog_RDFEditor* dialog = 0;
+	return s_doRDFEditorDlg( pView, id, dialog, false );
+}
+
+Defun1(rdfQueryXMLIDs)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	AP_Dialog_RDFQuery* dialog = 0;
+	XAP_Dialog_Id id = AP_DIALOG_ID_RDF_QUERY;
+
+	bool rc = s_doRDFQueryDlg( pView, id, dialog );
+	if( dialog )
+	{
+		std::string sparql;
+		PT_DocPosition point = pView->getPoint();
+		UT_DEBUGMSG(("point is at:%d\n", point ));
+
+		if( PD_Document * pDoc = pView->getDocument() )
+		{
+			if( PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF() )
+			{
+				std::list< std::string > xmlids;
+				rdf->addRelevantIDsForPosition( xmlids, point );
+				UT_DEBUGMSG(("xmlids.sz:%d\n", xmlids.size() ));
+
+				sparql = PD_DocumentRDF::getSPARQL_LimitedToXMLIDList( xmlids );
+			}
+		}
+		
+		dialog->executeQuery( sparql );
+	}
+	return rc;
+}
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -13889,6 +14084,22 @@ Defun1(hyperlinkJumpPos)
 	return true;
 }
 
+Defun1(rdfAnchorShowTriples)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	XAP_Dialog_Id id = AP_DIALOG_ID_RDF_EDITOR;
+	AP_Dialog_RDFEditor* dialog = 0;
+	return s_doRDFEditorDlg( pView, id, dialog, true );
+}
+Defun1(rdfAnchorSPARQL)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
+	return rdfQueryXMLIDs( pView, 0 );
+}
+
 Defun1(deleteHyperlink)
 {
 	CHECK_FRAME;
@@ -13905,6 +14116,12 @@ Defun(hyperlinkStatusBar)
 
 	UT_return_val_if_fail(pView,false);
 
+	if( pView->bubblesAreBlocked() )
+	{
+		UT_DEBUGMSG(("hyperlinkStatusBar() bubbles are blocked, not opening one right now\n" ));
+		return true;	
+	}
+	
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
 		pG->setCursor(GR_Graphics::GR_CURSOR_LINK);
@@ -13944,6 +14161,10 @@ Defun(hyperlinkStatusBar)
 			{
 				PD_RDFModelHandle m = rdf->getRDFForID( xmlid );
 				ss << " triple count:" << m->getTripleCount();
+#if DEBUG
+				std::pair< PT_DocPosition, PT_DocPosition > range = rdf->getIDRange( xmlid );
+				ss << " start:" << range.first << " end:" << range.second;
+#endif
 			}
 		}
 		ss << " ";
@@ -15255,5 +15476,18 @@ Defun1(rdfTest)
 
     UT_DEBUGMSG(("RDFTest... running ml2 test\n"));
     pDoc->getDocumentRDF()->runMilestone2Test();
+    return true;
+}
+
+Defun1(rdfPlay)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+	PD_Document * pDoc = pView->getDocument();
+	UT_return_val_if_fail(pDoc, false);
+
+    UT_DEBUGMSG(("RDFTest... running RDF play\n"));
+    pDoc->getDocumentRDF()->runPlay();
     return true;
 }

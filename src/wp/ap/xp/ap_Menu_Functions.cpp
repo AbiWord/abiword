@@ -396,6 +396,38 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BookmarkOK)
 }
 
 
+Defun_EV_GetMenuItemState_Fn(ap_GetState_xmlidOK)
+{
+	UT_UNUSED(id);
+  ABIWORD_VIEW ;
+  UT_return_val_if_fail (pView, EV_MIS_Gray);
+
+	EV_Menu_ItemState s = EV_MIS_ZERO ;
+
+	if(pView->isTOCSelected())
+	{
+	    s = EV_MIS_Gray ;
+		return s;
+	}
+	PT_DocPosition posStart = pView->getPoint();
+	PT_DocPosition posEnd = pView->getSelectionAnchor();
+	fl_BlockLayout * pBL1 = pView->getBlockAtPosition(posStart);
+	fl_BlockLayout * pBL2 = pView->getBlockAtPosition(posEnd);
+	if((pBL1 == NULL) || (pBL2 == NULL)) // make sure we get valid blocks from selection beginning and end
+	{
+		s = EV_MIS_Gray;
+		return s;
+	}
+	if(pBL1 != pBL2) // don't allow Insert xml:id if selection spans multiple blocks
+	{
+	    s = EV_MIS_Gray ;
+		return s;
+	}
+
+	return s ;
+}
+
+
 Defun_EV_GetMenuItemState_Fn(ap_GetState_TOCOK)
 {
   UT_UNUSED(id);
@@ -593,6 +625,21 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_HyperlinkOK)
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 	return HyperLinkOK(pView);
 }
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_RDFAnchorOK)
+{
+	UT_UNUSED(id);
+	ABIWORD_VIEW ;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
+
+	EV_Menu_ItemState s = EV_MIS_ZERO ;
+	if(false)
+	{
+		return EV_MIS_Gray;
+	}
+	return s;
+}
+
 
 #ifdef ENABLE_SPELL
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Suggest)

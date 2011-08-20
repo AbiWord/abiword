@@ -169,6 +169,10 @@
 #if 0
 	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_CocoaDialog_Download_File)
 #endif
- 	// ... also add new dialogs here ...
+
+	DeclareDialog(AP_DIALOG_ID_RDF_QUERY,			AP_CocoaDialog_RDFQuery)
+	DeclareDialog(AP_DIALOG_ID_RDF_EDITOR,			AP_CocoaDialog_RDFEditor)
+
+    // ... also add new dialogs here ...
 
 #endif

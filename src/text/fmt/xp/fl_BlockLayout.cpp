@@ -8914,6 +8914,14 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 			break;
 		}
 
+		case PTO_RDFAnchor:
+		{
+			UT_DEBUGMSG(("Edit:DeleteObject:RDFAnchor:\n"));
+			blockOffset = pcro->getBlockOffset();
+			_delete(blockOffset,1);
+			break;
+		}
+		
 		default:
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return false;

@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * BIDI Copyright (c) 2001,2002 Tomas Frydrych
@@ -589,13 +590,16 @@ void FL_DocLayout::fillLayouts(void)
 		m_pView->setLayoutIsFilling(true);
 		if(m_pView->getParentData())
 		{
-		  AP_FrameData * pData =  static_cast<AP_FrameData *>(static_cast<XAP_Frame *>(m_pView->getParentData())->getFrameData());
-		  pStatusBar = static_cast<AP_StatusBar *>(pData->m_pStatusBar);
-		  if(pStatusBar)
-		  {
-		    pStatusBar->setStatusProgressType(0,100,PROGRESS_STARTBAR);
-		    pStatusBar->showProgressBar();
-		  }
+            if(AP_FrameData * pData =  static_cast<AP_FrameData *>(static_cast<XAP_Frame *>(m_pView->getParentData())->getFrameData()))
+            {
+				pStatusBar = static_cast<AP_StatusBar *>(pData->m_pStatusBar);
+				if(pStatusBar)
+				{
+					pStatusBar->setStatusProgressType(0,100,PROGRESS_STARTBAR);
+					pStatusBar->showProgressBar();
+				}
+            }
+            
 		}
 	}
 	m_pDoc->getBounds(true,m_iDocSize);

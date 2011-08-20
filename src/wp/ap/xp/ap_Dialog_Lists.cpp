@@ -46,9 +46,15 @@
 #include "gr_Painter.h"
 #include "pf_Frag_Strux_Block.h"
 
+XAP_String_Id
+AP_Dialog_Lists::getWindowTitleStringId()
+{
+    return AP_STRING_ID_DLG_Lists_Title;
+}
+
 
 AP_Dialog_Lists::AP_Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-:	XAP_Dialog_Modeless(pDlgFactory, id, "interface/dialoglists"),
+:	AP_Dialog_Modeless(pDlgFactory, id, "interface/dialoglists"),
 	m_pView(0),
 	m_Answer(a_CLOSE),
 	m_isListAtPoint(false),
@@ -121,6 +127,18 @@ AP_Dialog_Lists::tAnswer AP_Dialog_Lists::getAnswer(void) const
 }
 
 /************************************************************************/
+
+void
+AP_Dialog_Lists::copyCharToWindowName(const char* pszName)
+{
+    m_WindowName += pszName;
+}
+
+const char *
+AP_Dialog_Lists::getWindowName() const
+{
+    return m_WindowName.c_str();
+}
 
 /*!
  * Create the preview from the Graphics Context provided by the platform code.
@@ -1087,45 +1105,8 @@ bool AP_Dialog_Lists::isLastOnLevel(void)
 // --------------------------- Generic Functions -----------------------------
 
 
-void AP_Dialog_Lists::ConstructWindowName(void)
-{
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	gchar * tmp = NULL;
-	UT_uint32 title_width = 33;
 
-	UT_UTF8String s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Title,s);
-	
-	UT_XML_cloneNoAmpersands(tmp, s.utf8_str());
-	BuildWindowName((char *) m_WindowName,(char*)tmp,title_width);
-	FREEP(tmp);
-}
 
-void AP_Dialog_Lists::setActiveFrame(XAP_Frame * /*pFrame*/)
-{
-	setView(getView());
-	notifyActiveFrame(getActiveFrame());
-}
-
-bool AP_Dialog_Lists::setView(FV_View * /*view*/)
-{
-	if (getActiveFrame())
-		m_pView = (FV_View *) getActiveFrame()->getCurrentView();
-	else
-		m_pView = NULL;
-
-	return true;
-}
-
-FV_View * AP_Dialog_Lists::getView(void) const
-{
-	XAP_Frame * pFrame = getActiveFrame();
-
-	if (pFrame)
-		return (FV_View *) pFrame->getCurrentView();
-	else
-		return NULL;
-}
 
 AV_View * AP_Dialog_Lists::getAvView(void)
 {

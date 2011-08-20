@@ -56,6 +56,7 @@
 #include "fg_Graphic.h"
 #include "fg_GraphicRaster.h"
 #include "pd_Document.h"
+#include "pd_DocumentRDF.h"
 #include "pd_Style.h"
 #include "pp_Property.h"
 #include "pp_AttrProp.h"
@@ -5529,6 +5530,7 @@ UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPositi
 }
 
 
+
 /*! Returns the hyperlink around position pos, if any; assumes
  * posStart, posEnd in same block. */
 fp_HyperlinkRun * FV_View::_getHyperlinkInRange(PT_DocPosition &posStart,
@@ -5599,8 +5601,8 @@ UT_Error FV_View::_deleteHyperlink(PT_DocPosition &pos1, bool bSignal)
 	if(bSignal)
 		_saveAndNotifyPieceTableChange();
 
-	UT_DEBUGMSG(("fv_View::cmdDeleteHyperlink: position [%d]\n",
-				pos1));
+	UT_DEBUGMSG(("fv_View::cmdDeleteHyperlink() position:%d len:%d\n",
+				 pos1, iRunLen ));
 
 	UT_uint32 iRealDeleteCount;
 	m_pDoc->beginUserAtomicGlob();
@@ -5617,6 +5619,74 @@ UT_Error FV_View::_deleteHyperlink(PT_DocPosition &pos1, bool bSignal)
 	}
 	return true;
 }
+
+
+UT_Error FV_View::_deleteXMLID( const std::string& xmlid, bool bSignal, PT_DocPosition& extPosStart, PT_DocPosition& extPosEnd )
+{
+    PD_DocumentRDFHandle rdf = m_pDoc->getDocumentRDF();
+    std::pair< PT_DocPosition, PT_DocPosition > range = rdf->getIDRange( xmlid );
+
+	UT_DEBUGMSG(("_deleteXMLID() xmlid:%s point:%d\n", xmlid.c_str(), getPoint() ));
+	UT_DEBUGMSG(("_deleteXMLID() xmlid:%s start:%d end:%d\n", xmlid.c_str(), range.first, range.second ));
+
+	if( range.first == range.second )
+ 	{
+		return UT_ERROR;
+	}
+	
+	fp_HyperlinkRun* r = _getHyperlinkInRange( range.first, range.first );
+	UT_DEBUGMSG(("_deleteXMLID() xmlid:%s r:%p\n", xmlid.c_str(), r ));
+	if( !r )
+ 	{
+		return UT_ERROR;
+	}
+		
+	UT_DEBUGMSG(("_deleteXMLID() xmlid:%s type:%d\n", xmlid.c_str(), r->getHyperlinkType() ));
+	if( r->getHyperlinkType() ==  HYPERLINK_RDFANCHOR )
+	{
+		fp_RDFAnchorRun* prr = static_cast<fp_RDFAnchorRun *>(r);
+		UT_DEBUGMSG(("_deleteXMLID() xmlid:%s len:%d\n", xmlid.c_str(), r->getLength() ));
+	}
+
+	if (!isSelectionEmpty())
+		_clearSelection();
+	
+	PT_DocPosition pos1 = r->getBlock()->getPosition(false) + r->getBlockOffset();
+	int iRunLen = 1;
+	UT_DEBUGMSG(("_deleteXMLID() xmlid:%s pos1:%d\n", xmlid.c_str(), pos1 ));
+	
+	// Signal PieceTable Change
+	if(bSignal)
+		_saveAndNotifyPieceTableChange();
+
+	UT_uint32 iRealDeleteCount;
+	m_pDoc->beginUserAtomicGlob();
+	m_pDoc->deleteSpan(pos1,pos1 + iRunLen,NULL, iRealDeleteCount);
+	if( extPosStart > pos1 )
+		extPosStart -= 2;
+	if( extPosEnd > pos1 )
+		extPosEnd   -= 2;
+	
+	// TODO -- add proper revision handling using iRealDeleteCount
+
+	// Signal PieceTable Changes have finished
+	m_pDoc->endUserAtomicGlob();
+	if(bSignal)
+	{
+		_restorePieceTableState();
+		_generalUpdate();
+	}
+
+	return UT_OK;
+}
+	
+
+UT_Error FV_View::_deleteXMLID( const std::string& xmlid, bool bSignal )
+{
+	PT_DocPosition s,e;
+	return _deleteXMLID( xmlid, bSignal, s, e );
+}
+
 
 
 UT_Error FV_View::_insertGraphic(FG_Graphic* pFG, const char* szName)

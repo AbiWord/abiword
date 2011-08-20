@@ -54,6 +54,7 @@ enum _AP_Dialog_Id
 	AP_DIALOG_ID_HDRFTR, /* change the doc's bg color */
 	AP_DIALOG_ID_INSERTBOOKMARK,
 	AP_DIALOG_ID_INSERTHYPERLINK,
+	AP_DIALOG_ID_INSERTXMLID,
 	// RIVERA
 	AP_DIALOG_ID_ANNOTATION,
 	AP_DIALOG_ID_METADATA,
@@ -73,6 +74,9 @@ enum _AP_Dialog_Id
 	AP_DIALOG_ID_DOWNLOAD_FILE,			/* threaded download of a file, with a cancel-button */	
 #endif
 	AP_DIALOG_ID_BORDER_SHADING,
+	AP_DIALOG_ID_RDF_QUERY,
+	AP_DIALOG_ID_RDF_EDITOR,
+    
 	/* ... add others here ... */
 
 	AP_DIALOG_ID__LAST__				/* must be last */

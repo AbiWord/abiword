@@ -58,8 +58,25 @@
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_Print.h"
 #include "ap_Dialog_Id.h"
+#include "ut_std_string.h"
+
+#include "pd_DocumentRDF.h"
+#include "pd_RDFSupport.h"
+#include "pd_RDFQuery.h"
 
 #include "AbiCommand.h"
+
+#include <sstream>
+#include <fstream>
+#include <iostream>
+#include <iterator>
+using std::cerr;
+using std::cout;
+using std::endl;
+using std::ofstream;
+using std::ios_base;
+using std::ostream_iterator;
+using std::string;
 
 ABI_PLUGIN_DECLARE (AbiCommand)
 
@@ -256,6 +273,37 @@ AbiCommand::doCommands (void)
 		if (!pCom)
 			break;
 
+        // allow a quoted string to extend yonder the end of a line
+        // This lets a sparql query be expressed like
+        // rdf-execute-sparql "starting...
+        //   more
+        //   rest"
+        // and it is all picked up into a single argument.
+        {
+            std::string s = pCom;
+            if( (std::count( s.begin(), s.end(), '"' ) % 2) == 1 )
+            {
+                std::stringstream ss;
+                ss << s << endl;
+                char *p = 0;
+                while( p = readline ("AbiWord:> ") )
+                {
+                    s = p;
+                    ss << s << endl;
+                    // This odd quoting ends the show
+                    if( (std::count( s.begin(), s.end(), '"' ) % 2) == 1 )
+                    {
+                        break;
+                    }
+                }
+                if( !p )
+                    break;
+
+                cerr << "whole query :::" << ss.str() << ":::" << endl;
+                pCom = g_strdup( ss.str().c_str() );
+            }
+        }
+
 		//
 		// break it into tokens
 		//
@@ -310,6 +358,29 @@ AbiCommand::tokenizeString (UT_GenericVector<const UT_UTF8String*> & tok, char *
 	int _argc = 0;
 	char **_argv = NULL;
 
+    if( pStr && *pStr )
+    {
+        std::string line = pStr;
+        int pos = line.find_first_not_of(' ');
+        line = line.substr( pos );
+        if( starts_with( line, "rdf-context-contains" )
+            || starts_with( line, "rdf-context-show-" ))
+        {
+            std::stringstream ss;
+            ss << line;
+            std::string z;
+            while( std::getline( ss, z, ' ' ) )
+            {
+//                cerr << "z:" << z << endl;
+                if( z.empty() )
+                    continue;
+                const UT_UTF8String *pTok = new UT_UTF8String ( z );
+                tok.addItem (pTok);
+            }
+            return true;
+        }
+    }
+    
 	if (g_shell_parse_argv (pStr, &_argc, &_argv, NULL))
 	{
 		for (int i = 0; i < _argc; i++)
@@ -343,6 +414,43 @@ AbiCommand::clearTokenVector (UT_GenericVector<const UT_UTF8String*> & vecToks)
 	vecToks.clear ();
 }
 
+FV_View*
+AbiCommand::getView() const
+{
+    return static_cast< FV_View* >(m_pCurView);
+}
+
+PD_RDFModelHandle
+AbiCommand::getRDFModel() const
+{
+    if( m_rdf_context_model )
+        return m_rdf_context_model;
+    return getRDF();
+}
+
+
+PD_DocumentRDFHandle
+AbiCommand::getRDF() const
+{
+    if( m_pCurDoc )
+        return m_pCurDoc->getDocumentRDF();
+
+    PD_DocumentRDFHandle nothing;
+    return nothing;
+}
+
+std::string
+streamToString( std::istream& iss )
+{
+    std::stringstream ss;
+    iss.clear();
+    std::copy( std::istreambuf_iterator<char>(iss),
+               std::istreambuf_iterator<char>(),
+               std::ostreambuf_iterator<char>(ss));
+    return ss.str();
+}
+
+
 //
 // parse the UT_UTF8String * tokens within the vector pToks.
 // returns 0 on success; -1 otherwise
@@ -357,7 +465,20 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
 		return -1;
 
 	const UT_UTF8String *pCom0 = pToks->getNthItem (0);
-
+    std::string cmd = "";
+    if( pCom0->utf8_str() )
+        cmd = pCom0->utf8_str();
+    PD_DocumentRDFHandle rdf = getRDF();
+    PD_RDFModelHandle    model = getRDFModel();
+    if( starts_with( cmd, "rdf-" ) )
+    {
+        if( !rdf )
+        {
+            return -1;
+        }
+    }
+    
+    
 	//
 	// New document
 	//
@@ -472,6 +593,16 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
 		if (count > 1)
 			return RES_TO_STATUS (movePoint (pToks));
 	}
+	else if (strcmp (pCom0->utf8_str (), "showpt") == 0)
+	{
+		if (m_pCurView)
+		{
+			PT_DocPosition pos = m_pCurView->getPoint ();
+            cout << pos << endl;
+            return 0;
+        }
+        return -1;
+	}
 
 	//
 	// Open a graphical window on the document
@@ -537,6 +668,408 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
 			return -1;
 	}
 
+    //
+	// Import RDF
+	//
+	else if (cmd == "rdf-import")
+    {
+        cerr << "rdf-import command...rdf:" << getRDF()
+             << " itemCount:" << pToks->getItemCount()
+             << endl;
+
+        if( pToks->getItemCount () > 1 )
+		{
+            const UT_UTF8String *pCom1 = pToks->getNthItem (1);
+            if( pCom1 )
+            {
+                std::string fn = pCom1->utf8_str();
+                cerr << "input file:" << fn << endl;
+                std::ifstream iss( fn.c_str(), ios_base::binary | ios_base::in );
+                std::string rdfxml = streamToString( iss );
+
+                PD_DocumentRDFMutationHandle m = rdf->createMutation();
+                UT_Error e = loadRDFXML( m, rdfxml );
+                cerr << "commit(1) sz:" << rdf->getTripleCount() << endl;
+                m->commit();
+                cerr << "commit(2) sz:" << rdf->getTripleCount() << endl;
+                return 0;
+            }
+        }
+        return -1;
+    }
+        
+    
+    
+    //
+	// Export RDF
+	//
+	else if (cmd == "rdf-export")
+    {
+        cerr << "rdf-export command...rdf:" << getRDF()
+             << " itemCount:" << pToks->getItemCount()
+             << endl;
+        
+        if( model && pToks->getItemCount () > 1)
+        {
+            const UT_UTF8String *pCom1 = pToks->getNthItem (1);
+            if( pCom1 )
+            {
+                std::string fn = pCom1->utf8_str();
+                cerr << "output file:" << fn << endl;
+                std::string rdfxml = toRDFXML( model );
+                std::ofstream oss( fn.c_str(), ios_base::binary
+                                   | ios_base::out | ios_base::trunc );
+                oss << rdfxml;
+                oss.close();
+                return 0;
+            }
+        }
+        return -1;
+    }
+
+    //
+	// Clear the context model
+	//
+	else if (cmd == "rdf-clear-context-model")
+    {
+        PD_RDFModelHandle t;
+        m_rdf_context_model = t;
+        return 0;
+    }
+
+    //
+	// Set the context model
+	//
+	else if (cmd == "rdf-set-context-model-pos")
+    {
+        if( pToks->getItemCount () > 1)
+        {
+            const UT_UTF8String *pCom1 = pToks->getNthItem (1);
+            UT_sint32 pos = atoi (pCom1->utf8_str ());
+            m_rdf_context_model = rdf->getRDFAtPosition( pos );
+            return 0;
+        }
+        return -1;
+    }
+
+    //
+	// Set the context model
+	//
+	else if (cmd == "rdf-set-context-model-xmlid")
+    {
+        if( pToks->getItemCount () > 1)
+        {
+            std::string xmlid = pToks->getNthItem (1)->utf8_str();
+            std::list< std::string > xmlids;
+
+            if( pToks->getItemCount () > 2 )
+            {
+                std::string readlist = pToks->getNthItem (2)->utf8_str();
+                std::string s;
+                std::stringstream ss;
+                ss << readlist;
+                while( getline( ss, s, ',' ) )
+                {
+                    xmlids.push_back(s);
+                }
+            }
+
+            m_rdf_context_model = rdf->createRestrictedModelForXMLIDs( xmlid, xmlids );
+            return 0;
+        }
+        return -1;
+    }
+
+    //
+	// Model access
+	//
+	else if (cmd == "rdf-context-show-objects")
+    {
+        if( pToks->getItemCount () > 2)
+        {
+            std::string subj = pToks->getNthItem (1)->utf8_str();
+            std::string pred = pToks->getNthItem (2)->utf8_str();
+            subj = rdf->prefixedToURI( subj );
+            pred = rdf->prefixedToURI( pred );
+            
+            PD_URIList ul = model->getObjects( subj, pred );
+            for( PD_URIList::iterator iter = ul.begin(); iter!=ul.end(); ++iter )
+                cout << *iter << endl;
+            return 0;
+        }
+        return -1;
+    }
+	else if (cmd == "rdf-context-show-subjects")
+    {
+        if( pToks->getItemCount () > 2)
+        {
+            std::string pred = pToks->getNthItem (1)->utf8_str();
+            std::string  obj = pToks->getNthItem (2)->utf8_str();
+            pred = rdf->prefixedToURI( pred );
+            obj  = rdf->prefixedToURI( obj  );
+            
+            PD_URIList ul = model->getSubjects( pred, obj );
+            for( PD_URIList::iterator iter = ul.begin(); iter!=ul.end(); ++iter )
+                cout << *iter << endl;
+            return 0;
+        }
+        return -1;
+    }
+	else if (cmd == "rdf-context-contains")
+    {
+        if( pToks->getItemCount() > 3)
+        {
+            std::string subj = pToks->getNthItem (1)->utf8_str();
+            std::string pred = pToks->getNthItem (2)->utf8_str();
+            std::string  obj = pToks->getNthItem (3)->utf8_str();
+            cerr << "obj1:" << obj << endl;
+            subj = rdf->prefixedToURI( subj );
+            pred = rdf->prefixedToURI( pred );
+            obj  = rdf->prefixedToURI( obj  );
+            cerr << "subj:" << subj << endl;
+            cerr << "pred:" << pred << endl;
+            cerr << "obj:" << obj << endl;
+            cerr << "pToks->getItemCount():" << pToks->getItemCount() << endl;
+            cout << model->contains( subj, pred, obj ) << endl;
+            return 0;
+        }
+        return -1;
+    }
+	else if (cmd == "rdf-context-show-arcs-out")
+    {
+        if( pToks->getItemCount () > 1)
+        {
+            std::string subj = pToks->getNthItem (1)->utf8_str();
+            subj = rdf->prefixedToURI( subj );
+            
+            POCol pocol = model->getArcsOut( subj );
+            for( POCol::iterator iter = pocol.begin(); iter != pocol.end(); ++iter )
+            {
+                PD_URI    p = iter->first;
+                PD_Object o = iter->second;
+
+                cout << p << " " << o << endl;
+            }
+            cout << endl;
+            return 0;
+        }
+        return -1;
+    }
+    
+    
+    //
+	// RDF XMLIDs at a scope
+	//
+	else if (cmd == "rdf-get-xmlids")
+    {
+        m_rdf_xmlids.clear();
+
+        if( m_pCurView )
+        {
+            PT_DocPosition pos = m_pCurView->getPoint();
+            rdf->addRelevantIDsForPosition( m_rdf_xmlids, pos );
+            std::copy( m_rdf_xmlids.begin(), m_rdf_xmlids.end(),
+                       ostream_iterator<string>(cout,","));
+            cout << endl;
+            return 0;
+        }
+        return -1;
+    }
+	else if (cmd == "rdf-get-all-xmlids")
+    {
+        std::set< std::string > all;
+        rdf->getAllIDs( all );
+        std::copy( all.begin(), all.end(),
+                   ostream_iterator<string>(cout,","));
+        cout << endl;
+        return 0;
+    }
+    
+
+    //
+	// Document position range for given xmlid
+	//
+	else if (cmd == "rdf-get-xmlid-range")
+    {
+        const UT_UTF8String *pCom1 = pToks->getNthItem (1);
+        std::string xmlid = pCom1->utf8_str();
+        std::pair< PT_DocPosition, PT_DocPosition > range = rdf->getIDRange( xmlid );
+        cout << range.first << " " << range.second << endl;
+        return 0;
+    }
+
+    //
+	// Move the cursor to the start of the xml:id range
+	//
+	else if (cmd == "rdf-movept-xmlid-start")
+    {
+        const UT_UTF8String *pCom1 = pToks->getNthItem (1);
+        std::string xmlid = pCom1->utf8_str();
+        std::pair< PT_DocPosition, PT_DocPosition > range = rdf->getIDRange( xmlid );
+        static_cast < FV_View * >(m_pCurView)->moveInsPtTo (range.first);
+        return 0;
+    }
+	else if (cmd == "rdf-movept-xmlid-end")
+    {
+        const UT_UTF8String *pCom1 = pToks->getNthItem (1);
+        std::string xmlid = pCom1->utf8_str();
+        std::pair< PT_DocPosition, PT_DocPosition > range = rdf->getIDRange( xmlid );
+        static_cast < FV_View * >(m_pCurView)->moveInsPtTo (range.second);
+        return 0;
+    }
+	else if (cmd == "rdf-uri-to-prefixed")
+    {
+        if (pToks->getItemCount () > 1)
+        {
+            const UT_UTF8String *pCom1 = pToks->getNthItem (1);
+            std::string s = pCom1->utf8_str();
+            cout << rdf->uriToPrefixed( s ) << endl;
+            return 0;
+        }
+        return -1;
+    }
+	else if (cmd == "rdf-prefixed-to-uri")
+    {
+        if (pToks->getItemCount () > 1)
+        {
+            const UT_UTF8String *pCom1 = pToks->getNthItem (1);
+            std::string s = pCom1->utf8_str();
+            cout << rdf->prefixedToURI( s ) << endl;
+            return 0;
+        }
+        return -1;
+    }
+	else if (cmd == "rdf-size")
+    {
+        if( model )
+        {
+            cout << model->size() << endl;
+            return 0;
+        }
+        return -1;
+    }
+ 	else if (cmd == "rdf-mutation-create")
+    {
+        m_rdf_mutation = model->createMutation();
+        return 0;
+    }
+ 	else if (cmd == "rdf-mutation-commit")
+    {
+        if( m_rdf_mutation )
+        {
+            UT_Error e = m_rdf_mutation->commit();
+            PD_DocumentRDFMutationHandle t;
+            m_rdf_mutation = t;
+            if( e == UT_OK )
+                return 0;
+            return -1;
+        }
+        return -1;
+    }
+ 	else if (cmd == "rdf-mutation-rollback")
+    {
+        if( m_rdf_mutation )
+        {
+            m_rdf_mutation->rollback();
+            PD_DocumentRDFMutationHandle t;
+            m_rdf_mutation = t;
+            return 0;
+        }
+        return -1;
+    }
+ 	else if ( cmd == "rdf-mutation-add")
+    {
+        if( m_rdf_mutation && pToks->getItemCount () > 3)
+        {
+            const UT_UTF8String *pComS = pToks->getNthItem (1);
+            const UT_UTF8String *pComP = pToks->getNthItem (2);
+            const UT_UTF8String *pComO = pToks->getNthItem (3);
+            
+            bool v = m_rdf_mutation->add(
+                PD_URI(pComS->utf8_str()),
+                PD_URI(pComP->utf8_str()),
+                PD_Object(pComO->utf8_str()));
+            return !v;
+        }
+        return -1;
+    }
+ 	else if ( cmd == "rdf-mutation-remove")
+    {
+        if( m_rdf_mutation && pToks->getItemCount () > 3)
+        {
+            const UT_UTF8String *pComS = pToks->getNthItem (1);
+            const UT_UTF8String *pComP = pToks->getNthItem (2);
+            const UT_UTF8String *pComO = pToks->getNthItem (3);
+            
+            m_rdf_mutation->remove(
+                PD_URI(pComS->utf8_str()),
+                PD_URI(pComP->utf8_str()),
+                PD_Object(pComO->utf8_str()));
+            return 0;
+        }
+        return -1;
+    }
+ 	else if ( cmd == "rdf-execute-sparql")
+    {
+        cerr << "rdf-execute-sparql itemcount:" << pToks->getItemCount() << endl;
+        
+        if( pToks->getItemCount () > 1)
+        {
+            const UT_UTF8String *pQuery = pToks->getNthItem (1);
+            std::string sparql = pQuery->utf8_str();
+            cerr << "sparql:" << sparql << endl;
+            
+            PD_RDFQueryHandle q( new PD_RDFQuery( rdf, model ) );
+            PD_ResultBindings_t bindings = q->executeQuery( sparql );
+            cout << bindings.size() << endl;
+            cout << "#-----------------" << endl;
+            PD_ResultBindings_t::iterator end = bindings.end();
+            for( PD_ResultBindings_t::iterator iter = bindings.begin();
+                 iter != bindings.end(); ++iter )
+            {
+                typedef std::map< std::string, std::string > mss_t;
+                const mss_t& m = *iter;
+                mss_t::const_iterator mend  = m.end();
+                mss_t::const_iterator miter = m.begin();
+                for( ; miter != mend; ++miter )
+                {
+                    cout << miter->first << "=" << miter->second << endl;
+                }
+                cout << "#-----------------" << endl;
+            }
+            
+            return 0;
+        }
+        return -1;
+    }
+#define RETURN_UT_ERROR_OK(e) return !(e == UT_OK);
+
+    else if ( cmd == "rdf-xmlid-insert")
+    {
+        if( getView() && pToks->getItemCount () > 1)
+        {
+            std::string xmlid = pToks->getNthItem (1)->utf8_str();
+            UT_Error e = getView()->cmdInsertXMLID( xmlid );
+            cerr << "e:" << e << endl;
+            RETURN_UT_ERROR_OK( e );
+        }
+        return -1;
+    }
+    else if ( cmd == "rdf-xmlid-delete")
+    {
+        if( getView() && pToks->getItemCount () > 1)
+        {
+            std::string xmlid = pToks->getNthItem (1)->utf8_str();
+            UT_Error e = getView()->cmdDeleteXMLID( xmlid );
+            cerr << "e:" << e << endl;
+            RETURN_UT_ERROR_OK( e );
+        }
+        return -1;
+    }
+
+
+
+    
 	//
 	// Save
 	//
@@ -719,6 +1252,7 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
 		printf ("                              the current document.\n");
 		printf ("                              Options for arg are: BOD,EOD,BOP,EOP,BOS,EOS,\n");
 		printf ("                              BOL,EOL,BOW,+num,-num,num\n");
+		printf ("showpt                      - Show current point location\n");
 		printf ("selectstart                 - Start a selection at the current point\n");
 		printf ("selectclear                 - Clear the current selection.\n");
 		printf ("findnext <target>           - Find the next occurrence of target and select it.\n");
@@ -741,7 +1275,51 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
 		printf ("visualedit                  - Popup a visual window and edit the file or just\n");
 		printf ("                              preview what you've done.\n");
 		printf ("                              Close the window when finished.\n");
+		printf ("                              \n");
+		printf ("...RDF subsystem...           \n");
+		printf ("  Where a function reads RDF, it will try to use the RDF context model if it is set\n");
+		printf ("  Otherwise the entire RDF for the document is used.\n");
+		printf ("  An RDF context is obtained using rdf-set-context* \n");
+		printf ("  and cleared with rdf-clear-context-model\n");
+		printf ("                              \n");
+		printf ("rdf-import <src>               - load all RDF from an RDF/XML file at <src> into the document\n");
+		printf ("rdf-export <dst>               - save all document RDF to an RDF/XML file at <dst>\n");
+		printf ("rdf-clear-context-model        - RDF can at times use a context model which is a subset of\n");
+		printf ("                                 all the RDF associated with the document.\n");
+		printf ("                                 This command clears that and uses all the RDF again.\n");
+		printf ("rdf-set-context-model-pos <pos>       - Use a context model with the subset of RDF \n");
+		printf ("                                        associated with the given document position\n");
+		printf ("rdf-set-context-model-xmlid <xmlid> [readxmlid1,readxmlid2] \n");
+		printf ("                                      - Use a context model with the subset of RDF \n");
+		printf ("                                        associated with the given document xml:id value\n");
+		printf ("rdf-context-show-objects  <s> <p>     - Show the object  list for the given subject,predicate pair\n");
+		printf ("rdf-context-show-subjects <p> <o>     - Show the subject list for the given predicate,object  pair\n");
+		printf ("rdf-context-contains      <s> <p> <o> - True if the triple is there.\n");
+		printf ("rdf-context-show-arcs-out <s>         - Show the predicate objects associated \n");
+        printf ("                                        with the given subject\n");
+		printf ("rdf-get-xmlids                 - Get a comma separated list of the xml:ids assocaited \n");
+		printf ("                                 with the current cursor location\n");
+		printf ("rdf-get-all-xmlids             - Get a comma separated list of all the xml:ids \n");
+		printf ("rdf-get-xmlid-range <xmlid>    - Show the start and end document position associated \n");
+		printf ("                                 with the given <xmlid>\n");
+		printf ("rdf-movept-xmlid-start <xmlid> - Move the cursor location to the start of the range \n");
+		printf ("                                 for the given xml:id value\n");
+		printf ("rdf-movept-xmlid-end <xmlid>   - Move the cursor location to the end of the range \n");
+		printf ("                                 for the given xml:id value\n");
+		printf ("rdf-uri-to-prefixed <uri>      - Convert full uri to prefix:rest\n");
+		printf ("rdf-prefixed-to-uri <uri>      - Convert prefix:rest to full uri\n");
+		printf ("rdf-size                       - Number of RDF triples for context\n");
+		printf ("rdf-mutation-create            - Start a RDF mutation for the document\n");
+		printf ("rdf-mutation-add    <s> <p> <o>- Add the given triple to the current mutation\n");
+		printf ("rdf-mutation-remove <s> <p> <o>- Remove the given triple in the current mutation\n");
+		printf ("rdf-mutation-commit            - Commit current RDF mutation to the document\n");
+		printf ("rdf-mutation-rollback          - Throw away changes in current RDF mutation\n");
+		printf ("rdf-execute-sparql             - Execute SPARQL query against RDF context\n");
+		printf ("rdf-xmlid-insert <xmlid>       - Insert xml:id for current selection\n");
+		printf ("rdf-xmlid-delete <xmlid>       - Delete the xml:id from the document\n");
 
+
+        
 		return 0;
 	}
 

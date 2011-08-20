@@ -115,7 +115,8 @@ typedef enum _AP_JumpTarget
 	AP_JUMPTARGET_PAGE, 			// beginning of page
 	AP_JUMPTARGET_LINE,
 	AP_JUMPTARGET_BOOKMARK,
-	AP_JUMPTARGET_PICTURE // TODO
+	AP_JUMPTARGET_PICTURE, // TODO
+    AP_JUMPTARGET_XMLID
 } AP_JumpTarget;
 
 struct fv_ChangeState
@@ -189,7 +190,35 @@ public:
 	UT_sint32			m_iAuthorId;
 	std::string			m_sCaretID;
 };
-								
+
+/**
+ * A RAII class for blocking popup bubbles that are used by
+ * annotations, RDF and maybe other parts of the system. To get a real
+ * one of these use FV_View::getBubbleBlocker() when this object is
+ * destroyed the counter is decremented for you. To explicitly
+ * decrement, simply assign your FV_View_BubbleBlocker to
+ * FV_View_BubbleBlocker().
+ *
+ * While any real FV_View_BubbleBlocker objects are held, popup
+ * bubbles are suspended and not created. This is useful for making
+ * dialog windows where you might want to avoid the popup bubbles from
+ * overlapping the dialog window.
+ *
+ * Both AP_Dialog_Modeless and AP_Dialog_Modal obtain and release
+ * these BubbleBlocker objects for you automatically, so dialog
+ * subclasses of those do not have to worry about this at all.
+ */
+class ABI_EXPORT FV_View_BubbleBlocker
+{
+    friend class FV_View;
+    FV_View* m_pView;
+  public:
+    FV_View_BubbleBlocker( FV_View* pView = 0 );
+    ~FV_View_BubbleBlocker();
+    FV_View_BubbleBlocker& operator=( const FV_View_BubbleBlocker& r );
+    
+};
+
 class ABI_EXPORT FV_View : public AV_View
 {
 	friend class fl_DocListener;
@@ -203,8 +232,8 @@ class ABI_EXPORT FV_View : public AV_View
 	friend class FV_VisualInlineImage;
 	friend class FV_Selection;
 	friend class CellLine;
+    friend class FV_View_BubbleBlocker;
 	friend class FV_ViewDoubleBuffering;
-
 public:
 	FV_View(XAP_App*, void*, FL_DocLayout*);
 	virtual ~FV_View();
@@ -236,7 +265,12 @@ public:
 	virtual void 	drawSelectionBox(UT_Rect & box, bool drawHandles);
 private: 
 	inline void 	_drawResizeHandle(UT_Rect & box);
-	
+    void getCmdInsertRangeVariables( PT_DocPosition& posStart,
+                                     PT_DocPosition& posEnd,
+                                     fl_BlockLayout*& pBL1,
+                                     fl_BlockLayout*& pBL2 );
+    
+    
 public:
 	const PP_AttrProp * getAttrPropForPoint() const;
 
@@ -254,6 +288,9 @@ public:
 	UT_Error		cmdInsertBookmark(const char* szName);
 	UT_Error		cmdDeleteBookmark(const char* szName);
 	UT_Error		cmdInsertHyperlink(const char* szName);
+	UT_Error		cmdInsertXMLID(const std::string& name);
+	UT_Error		cmdDeleteXMLID(const std::string& name);
+    
 	fp_Run *        getHyperLinkRun(PT_DocPosition pos);
 	UT_Error		cmdDeleteHyperlink();
 	bool                    cmdInsertMathML(const char * szFileName,
@@ -413,6 +450,7 @@ public:
 
 	// ----------------------
 	bool			isLeftMargin(UT_sint32 xPos, UT_sint32 yPos) const;
+    void            selectRange( PT_DocPosition start, PT_DocPosition end );
 	void			cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocPos dpEnd);
 	void			cmdSelectTOC(UT_sint32 xPos, UT_sint32 yPos);
 	bool            isTOCSelected(void) const;
@@ -420,6 +458,7 @@ public:
 
 	bool			cmdSelectNoNotify(PT_DocPosition dpBeg, PT_DocPosition dpEnd);
 	void			cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd);
+	void			cmdSelect( const std::pair< PT_DocPosition, PT_DocPosition >& range );
 	void			cmdCharMotion(bool bForward, UT_uint32 count);
 	bool			cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce = false);
 	void			cmdCharDelete(bool bForward, UT_uint32 count);
@@ -596,6 +635,9 @@ public:
 	bool				cmdEditAnnotationWithDialog(UT_uint32 aID);
 	fl_AnnotationLayout * getAnnotationLayout(UT_uint32 iAnnotation) const;
 	bool                selectAnnotation(fl_AnnotationLayout * pAL);
+
+    FV_View_BubbleBlocker getBubbleBlocker();
+    bool                  bubblesAreBlocked() const;
 // ----------------------
 
 	bool		gotoTarget(AP_JumpTarget type, const UT_UCSChar * data);
@@ -928,12 +970,19 @@ protected:
 
 	UT_Error			_deleteBookmark(const char* szName, bool bSignal, PT_DocPosition * pos1 = NULL, PT_DocPosition * pos2 = NULL);
 	UT_Error			_deleteHyperlink(PT_DocPosition &i, bool bSignal);
+    
+	UT_Error			_deleteXMLID( const std::string& xmlid, bool bSignal, PT_DocPosition& posStart, PT_DocPosition& posEnd );
+	UT_Error			_deleteXMLID( const std::string& xmlid, bool bSignal );
 	fp_HyperlinkRun *   _getHyperlinkInRange(PT_DocPosition &posStart,
 											 PT_DocPosition &posEnd);
 	bool			    _charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce = false);
 
 	void                _adjustDeletePosition(UT_uint32 &iDocPos, UT_uint32 &iCount);
-	
+
+
+    void                incremenetBubbleBlockerCount();
+    void                decremenetBubbleBlockerCount();
+    
 private:
 
 	UT_uint32			m_iNumHorizPages; /////////////////////////////////////////////////
@@ -1095,13 +1144,13 @@ private:
 	UT_uint32			m_iAnnPviewID;
 	bool                m_bAllowSmartQuoteReplacement;  // Enable/disable replacing of quote with smart quote
 														// This allows temporarily disabling smart quotes to allow inserting ANSI quote.
+    int                 m_bubbleBlockerCount;
 
 public:
 	bool registerDoubleBufferingObject(FV_ViewDoubleBuffering *obj);
 	bool unregisterDoubleBufferingObject(FV_ViewDoubleBuffering *obj);
 private:
 	FV_ViewDoubleBuffering *m_pViewDoubleBufferingObject;
-
 };
 
 #endif /* FV_VIEW_H */

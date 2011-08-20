@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -98,9 +99,11 @@ fl_DocListener::fl_DocListener(PD_Document* doc, FL_DocLayout *pLayout)
 	  {
 	      if(m_pLayout->getView()->getParentData())
 	      {
-		  AP_FrameData * pData =  static_cast<AP_FrameData *>(static_cast<XAP_Frame *>(m_pLayout->getView()->getParentData())->getFrameData());
-		  m_pStatusBar = static_cast<AP_StatusBar *>(pData->m_pStatusBar);
-	      }
+			  if( AP_FrameData * pData =  static_cast<AP_FrameData *>(static_cast<XAP_Frame *>(m_pLayout->getView()->getParentData())->getFrameData()))
+			  {
+				  m_pStatusBar = static_cast<AP_StatusBar *>(pData->m_pStatusBar);
+			  }
+		  }
 	  }
 	}
 	m_iFilled = 0;

@@ -49,6 +49,7 @@
 #include <boost/shared_array.hpp>
 
 // RDF support
+#include "pd_RDFSupportRed.h"
 #include <redland.h>
 #include <rasqal.h>
 #define DEBUG_RDF_IO 1
@@ -381,82 +382,6 @@ UT_Error IE_Imp_OpenDocument::_handleContentStream ()
     return _handleStream (m_pGsfInfile, "content.xml", *m_pStreamListener);
 }
 
-/**
- * A class purely to pass redland objects like world, parsers and
- * models and other redland stuff to other methods without exposing
- * their types in the header file.
- *
- * Instead of passing in these things to
- * the constructor, I moved to a design where the objects are owned
- * by this class, so if you declaure a RDFArguments on the stack, RAII
- * will deallocate the world, parser, and model for you. Less to possibly leak.
- */
-class RDFArguments
-{
-public:
-    librdf_world*   world;
-    librdf_storage* storage;
-    librdf_model*   model;
-    librdf_parser*  parser;
-    
-    RDFArguments()
-        :
-        world(0), storage(0), model(0), parser(0)
-    {
-        world = librdf_new_world();
-        librdf_world_open( world );
-        storage = librdf_new_storage( world, "memory", "/", 0 );    
-        model   = librdf_new_model(   world, storage, 0 );
-        parser  = librdf_new_parser(  world, 0, 0, 0 );
-    }
-
-    ~RDFArguments()
-    {
-        librdf_free_parser( parser );
-        librdf_free_model( model );
-        librdf_free_storage( storage );
-        librdf_free_world( world );
-    }
-private:
-    // NoCopying!
-    RDFArguments&  operator=(const RDFArguments& other);
-    RDFArguments(const RDFArguments& other);
-};
-
-static std::string toString( librdf_uri *node )
-{
-    unsigned char* z = librdf_uri_as_string( node );
-    std::string ret = (const char*)z;
-    // For this redland as_string() function, we do not free z.
-    return ret;
-}
-
-
-static std::string toString( librdf_node *node )
-{
-    unsigned char* z = 0;
-    std::string s;
-    librdf_node_type t = librdf_node_get_type( node );
-    switch( t )
-    {
-        case LIBRDF_NODE_TYPE_BLANK:
-            z = librdf_node_get_blank_identifier( node );
-            s = (const char*)z;
-            return s;
-        case  LIBRDF_NODE_TYPE_LITERAL:
-            z = librdf_node_get_literal_value( node );
-            s = (const char*)z;
-            return s;
-        case LIBRDF_NODE_TYPE_RESOURCE:
-            return toString( librdf_node_get_uri(node) );
-    }
-
-    // fallback
-    z = librdf_node_to_string( node );
-    std::string ret = (const char*)z;
-    free(z);
-    return ret;
-}
 
 
 UT_Error IE_Imp_OpenDocument::_loadRDFFromFile ( GsfInput* pInput,

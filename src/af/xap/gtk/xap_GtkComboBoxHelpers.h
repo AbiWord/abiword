@@ -26,6 +26,7 @@
 #include <gtk/gtk.h>
 
 #include "ut_vector.h"
+#include <string>
 
 void XAP_makeGtkComboBoxText(GtkComboBox * combo, GType secondaryType);
 void XAP_makeGtkComboBoxText2(GtkComboBox * combo, GType secondaryType,
@@ -44,6 +45,9 @@ void XAP_appendComboBoxTextAndIntString(GtkComboBox * combo,
 										   int value1, 
 										   const char * value2);
 int  XAP_comboBoxGetActiveInt(GtkComboBox * combo);
+std::string XAP_comboBoxGetActiveText(GtkComboBox * combo);
+
+
 
 /** set the active item based on a column value
  * @param combo the combobox

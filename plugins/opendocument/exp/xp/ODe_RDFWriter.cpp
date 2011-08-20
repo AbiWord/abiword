@@ -35,77 +35,11 @@
 #include "ODe_Common.h"
 
 // RDF support
-#include <redland.h>
-#include <rasqal.h>
+#include "pd_RDFSupportRed.h"
 #define DEBUG_RDF_IO 1
  
 
-/**
- * A class purely to pass redland objects like world, parsers and
- * models and other redland stuff to other methods without exposing
- * their types in the header file.
- *
- * Instead of passing in these things to
- * the constructor, I moved to a design where the objects are owned
- * by this class, so if you declaure a RDFArguments on the stack, RAII
- * will deallocate the world, parser, and model for you. Less to possibly leak.
- */
-class RDFArguments
-{
-public:
-    librdf_world*   world;
-    librdf_storage* storage;
-    librdf_model*   model;
-    librdf_parser*  parser;
-    
-    RDFArguments()
-        : world(0), storage(0), model(0), parser(0)
-    {
-        world = librdf_new_world();
-        librdf_world_open( world );
-        storage = librdf_new_storage( world, "memory", "/", 0 );    
-        model   = librdf_new_model(   world, storage, 0 );
-        parser  = librdf_new_parser(  world, 0, 0, 0 );
-    }
 
-    ~RDFArguments()
-    {
-        librdf_free_parser( parser );
-        librdf_free_model( model );
-        librdf_free_storage( storage );
-        librdf_free_world( world );
-    }
-private:
-    // NoCopying!
-    RDFArguments&  operator=(const RDFArguments& other);
-    RDFArguments(const RDFArguments& other);
-};
-
-
-static void dumpModelToTest( RDFArguments& args )
-{
-    librdf_world* world = args.world;
-    librdf_model* model = args.model;
-    
-    // Convert redland model to RDF/XML
-    librdf_serializer* serializer = librdf_new_serializer(
-        args.world, "rdfxml", 0, 0 );
-    librdf_uri* base_uri = 0;
-    size_t data_sz = 0;
-    // It seems from reading the redland source that "data" is allocated using
-    // malloc() and handed back to us to take care of.
-    unsigned char* data = librdf_serializer_serialize_model_to_counted_string
-        ( serializer, base_uri, model, &data_sz  );
-    UT_DEBUGMSG(("writeRDF() serializer:%p data_sz:%d\n",
-                 serializer, (int)data_sz ));
-    
-    if( !data )
-    {
-        // failed
-        UT_DEBUGMSG(("writeRDF() failed to serialize model using serializer:%p\n", serializer ));
-        librdf_free_serializer(serializer);
-    }
-}
 
  
 /**
@@ -124,8 +58,13 @@ bool ODe_RDFWriter::writeRDF(PD_Document* pDoc, GsfOutfile* pODT)
     //
     // Convert the native RDF model into a redland one
     //
-    UT_DEBUGMSG(("writeRDF() creating a native redland model for document RDF\n"));
     PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
+    std::string rdfxml = toRDFXML( rdf );
+    ODe_gsf_output_write (oss, rdfxml.size(), (const guint8*)rdfxml.data() );
+    ODe_gsf_output_close(oss);
+    
+#if 0    
+    UT_DEBUGMSG(("writeRDF() creating a native redland model for document RDF\n"));
     PD_URIList subjects = rdf->getAllSubjects();
     PD_URIList::iterator subjend = subjects.end();
     for( PD_URIList::iterator subjiter = subjects.begin();
@@ -224,7 +163,8 @@ bool ODe_RDFWriter::writeRDF(PD_Document* pDoc, GsfOutfile* pODT)
     free(data);
     librdf_free_serializer(serializer);
     ODe_gsf_output_close(oss);
-
+#endif
+    
     //
     // add an entry that the manifest writing code will pick up
     //

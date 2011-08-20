@@ -1,6 +1,7 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * Copyright (C) 2009 Hubert Figuiere
+ * Copyright (C) 2011 Ben Martin
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -41,6 +42,15 @@ ABI_EXPORT std::string& UT_std_string_vprintf (std::string & inStr,
  
 ABI_EXPORT std::string UT_std_string_sprintf(const char * inFormat, ...)
     ABI_PRINTF_FORMAT(1,2);
+
+/**
+ * true if fullstring starts with exactly prefix.
+ */
+ABI_EXPORT bool starts_with( const std::string& fullstring, const std::string& prefix );
+ABI_EXPORT bool ends_with(   const std::string& fullstring, const std::string& ending );
+
+ABI_EXPORT std::string UT_XML_cloneNoAmpersands( const std::string& szSource );
+
 
 
 

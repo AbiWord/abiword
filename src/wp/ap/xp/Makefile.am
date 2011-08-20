@@ -79,10 +79,14 @@ libxp_la_SOURCES = \
 	ap_Clipboard.h \
 	ap_Convert.cpp \
 	ap_Convert.h \
+	ap_Dialog_Modeless.h \
+	ap_Dialog_Modeless.cpp \
+	ap_Dialog_Modal.h \
+	ap_Dialog_Modal.cpp \
 	ap_Dialog_Annotation.h \
 	ap_Dialog_Background.cpp \
 	ap_Dialog_Background.h \
-	ap_Dialog_Border_Shading.cpp \ 
+	ap_Dialog_Border_Shading.cpp \
 	ap_Dialog_Border_Shading.h \
 	ap_Dialog_Break.cpp \
 	ap_Dialog_Break.h \
@@ -103,8 +107,12 @@ libxp_la_SOURCES = \
 	ap_Dialog_HdrFtr.cpp \
 	ap_Dialog_HdrFtr.h \
 	ap_Dialog_Id.h \
+	ap_Dialog_GetStringCommon.cpp \
+	ap_Dialog_GetStringCommon.h \
 	ap_Dialog_InsertBookmark.cpp \
 	ap_Dialog_InsertBookmark.h \
+	ap_Dialog_InsertXMLID.cpp \
+	ap_Dialog_InsertXMLID.h \
 	ap_Dialog_Insert_DateTime.cpp \
 	ap_Dialog_Insert_DateTime.h \
 	ap_Dialog_InsertHyperlink.cpp \
@@ -149,6 +157,10 @@ libxp_la_SOURCES = \
 	ap_Dialog_ToggleCase.h \
 	ap_Dialog_WordCount.cpp \
 	ap_Dialog_WordCount.h \
+	ap_Dialog_RDFQuery.cpp \
+	ap_Dialog_RDFQuery.h \
+	ap_Dialog_RDFEditor.cpp \
+	ap_Dialog_RDFEditor.h \
 	ap_EditMethods.cpp \
 	ap_EditMethods.h \
 	ap_EmbeddedFeatures.h \

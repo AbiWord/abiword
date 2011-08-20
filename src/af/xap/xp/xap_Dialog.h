@@ -116,6 +116,9 @@ public:
 	/** set the data to the widgets in the dialog. Dialog specific, XP*/
 	virtual void updateDialogData(void) {UT_ASSERT(UT_NOT_IMPLEMENTED);} //FIXME = 0
 
+    virtual void maybeClosePopupPreviewBubbles();
+    virtual void maybeReallowPopupPreviewBubbles();
+    
 protected:
 	/** localize the widgets in the dialog. Dialog specific, XP */
 	virtual void localizeDialog(void) {UT_ASSERT(UT_NOT_IMPLEMENTED);} //FIXME = 0
@@ -234,9 +237,10 @@ public:
 	virtual void				destroy(void) = 0;
 	virtual void				activate(void) = 0;
 	XAP_Frame *					getActiveFrame() const;
-	void						modeless_cleanup(void);
+	virtual void                modeless_cleanup(void);
 	bool						isRunning(void) const;
-	void						BuildWindowName(char * pWindowName, const char * pDialogName, UT_uint32 width) const;
+    std::string                 BuildWindowName( const char * pDialogName ) const;
+	void						BuildWindowName(char * pWindowName, const char * pDialogName, UT_uint32 width ) const;
 	static XAP_Dialog_Type		s_getPersistence(void) { return XAP_DLGT_APP_PERSISTENT; };
 	
 	// ugly hack necessary for Win32

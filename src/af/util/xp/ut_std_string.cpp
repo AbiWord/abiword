@@ -22,6 +22,7 @@
 #include <string.h>
 
 #include "ut_std_string.h"
+#include "ut_string.h"
 
 #if 0
 std::string & UT_escapeXML(std::string &s)
@@ -100,5 +101,38 @@ std::string UT_std_string_sprintf(const char * inFormat, ...)
     va_end (args);
 
     return outStr;
+}
+
+
+bool ends_with( const std::string& s, const std::string& ending )
+{
+    if( ending.length() > s.length() )
+        return false;
+    
+    return s.rfind(ending) == (s.length() - ending.length());
+}
+
+bool starts_with( const std::string& s, const std::string& starting )
+{
+    int starting_len = starting.length();
+    int s_len = s.length();
+
+    if( s_len < starting_len )
+        return false;
+    
+    return !s.compare( 0, starting_len, starting );
+}
+
+std::string UT_XML_cloneNoAmpersands( const std::string& src )
+{
+    gchar* rszDest = 0;
+    
+    bool rc = UT_XML_cloneNoAmpersands( rszDest, src.c_str() );
+    if( !rc )
+        return src;
+
+    std::string ret = rszDest;
+    FREEP(rszDest);
+    return ret;
 }
 

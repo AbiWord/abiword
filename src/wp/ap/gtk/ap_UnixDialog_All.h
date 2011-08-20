@@ -83,6 +83,7 @@
 #   include "ap_UnixDialog_HdrFtr.h"
 #	include "ap_UnixDialog_InsertBookmark.h"
 #	include "ap_UnixDialog_InsertHyperlink.h"
+#	include "ap_UnixDialog_InsertXMLID.h"
 #   include "ap_UnixDialog_MetaData.h"
 #   include "ap_UnixDialog_MarkRevisions.h"
 #   include "ap_UnixDialog_ListRevisions.h"
@@ -104,6 +105,10 @@
 #if 0
 #	include "ap_UnixDialog_Download_File.h"
 #endif
+
+#include "ap_UnixDialog_RDFQuery.h"
+#include "ap_UnixDialog_RDFEditor.h"
+
 
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #   include "hildon/xap_UnixHildonDlg_FontChooser.h"
@@ -179,6 +184,7 @@
 	DeclareDialog(AP_DIALOG_ID_FILE_NEW,        AP_UnixDialog_New, 					FALSE)
 	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_UnixDialog_InsertBookmark, 		FALSE)
 	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_UnixDialog_InsertHyperlink, 		FALSE)
+	DeclareDialog(AP_DIALOG_ID_INSERTXMLID,     AP_UnixDialog_InsertXMLID,   		FALSE)
 	DeclareDialog(XAP_DIALOG_ID_IMAGE, 			XAP_UnixDialog_Image, 				FALSE)
 	DeclareDialog(AP_DIALOG_ID_METADATA,		AP_UnixDialog_MetaData, 			FALSE)
 	DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,	AP_UnixDialog_MarkRevisions, 		FALSE)
@@ -195,4 +201,7 @@
 	DeclareDialog(AP_DIALOG_ID_LATEX,		    AP_UnixDialog_Latex, 				FALSE)
 	DeclareDialog(AP_DIALOG_ID_ANNOTATION_PREVIEW,	AP_UnixPreview_Annotation, 				FALSE)
 	DeclareDialog(AP_DIALOG_ID_BORDER_SHADING,	AP_UnixDialog_Border_Shading, 				FALSE)
+
+    DeclareDialog(AP_DIALOG_ID_RDF_QUERY,			AP_UnixDialog_RDFQuery, 				FALSE)
+    DeclareDialog(AP_DIALOG_ID_RDF_EDITOR,			AP_UnixDialog_RDFEditor, 				FALSE)
 #endif /* AP_UNIXDIALOG_ALL_H */
