@@ -584,7 +584,8 @@ class ABI_EXPORT GR_Graphics
 		                   GR_CURSOR_DRAGTEXT,
 		                   GR_CURSOR_COPYTEXT
 	} Cursor;
-
+	
+	virtual void      init3dColors() { }
 	virtual void      setCursor(GR_Graphics::Cursor c) = 0;
 	virtual GR_Graphics::Cursor getCursor(void) const = 0;
 

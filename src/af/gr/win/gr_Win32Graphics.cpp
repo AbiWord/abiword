@@ -1396,7 +1396,7 @@ void GR_Win32Graphics::setColor3D(GR_Color3D c)
 	_setColor(m_3dColors[c]);
 }
 
-void GR_Win32Graphics::init3dColors(void)
+void GR_Win32Graphics::init3dColors()
 {
 	m_3dColors[CLR3D_Foreground] = GetSysColor(COLOR_BTNTEXT);
 	m_3dColors[CLR3D_Background] = GetSysColor(COLOR_3DFACE);

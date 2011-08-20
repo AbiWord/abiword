@@ -596,7 +596,7 @@ void XAP_Win32FrameImpl::_nullUpdate (void) const
 
 void XAP_Win32FrameImpl::_setCursor(GR_Graphics::Cursor /*cursor*/)
 {
-	// ASFRENT: empty.
+	// ASFRENT: empty, clean it!
 }
 
 UT_RGBColor XAP_Win32FrameImpl::getColorSelBackground () const

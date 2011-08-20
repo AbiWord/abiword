@@ -203,12 +203,7 @@ LRESULT CALLBACK AP_Win32LeftRuler::_LeftRulerWndProc(HWND hwnd, UINT iMsg, WPAR
 
 	case WM_SYSCOLORCHANGE:
 		{
-			// ASFRENT: should go to hell, no references to GR_Win32Graphics here!
-			// Maybe add init3dColors to GR_Graphics as a virtual method since Win32Graphics,
-			// CocoaCairoGraphics and UnixCairoGraphics already provide implementations
-			
-			GR_Win32Graphics *pwin32G = static_cast<GR_Win32Graphics*>(pG);
-			pwin32G->init3dColors();
+			pG->init3dColors();
 			return 0;
 		}
 

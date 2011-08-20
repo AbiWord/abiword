@@ -251,7 +251,7 @@ public:
 	virtual GR_Graphics::Cursor			getCursor(void) const;
 	
 	virtual void			setColor3D(GR_Color3D c);
-	void					init3dColors(void);
+	virtual void			init3dColors();
 	virtual void			fillRect(GR_Color3D c,
 									 UT_sint32 x, UT_sint32 y,
 									 UT_sint32 w, UT_sint32 h);

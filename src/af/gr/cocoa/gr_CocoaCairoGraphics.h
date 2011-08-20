@@ -107,7 +107,7 @@ public:
 
 // Cocoa specific
 	static cairo_t *	_createCairo(NSView * view);
-	void			init3dColors();
+	virtual void		init3dColors();
 	void setIsPrinting(bool);
 	void			setGrabCursor(GR_Graphics::Cursor c) { m_GrabCursor = c; }
 
