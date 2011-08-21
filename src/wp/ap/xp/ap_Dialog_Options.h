@@ -148,10 +148,14 @@ class ABI_EXPORT AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 	SET_GATHER			(GrammarCheck,		bool);
 	SET_GATHER			(CustomSmartQuotes,		bool);
 	SET_GATHER			(SmartQuotes,		bool);
+#ifdef ENABLE_HYPHENATION
 	SET_GATHER			(PrefsHyphenation, 	bool);
+#endif
 	SET_GATHER			(PrefsAutoSave, 	bool);
     SET_GATHER          (EnableOverwrite,   bool);
+#ifdef ENABLE_HYPHENATION
 	SET_GATHER          (HYPHENATION,   bool);
+#endif
 
 #if !defined (TOOLKIT_GTK) && !defined(TOOLKIT_COCOA)
 	SET_GATHER			(ViewShowRuler, 	bool);

@@ -195,7 +195,9 @@ public:
 	SET_GATHER			(SpellCheckAsType,	bool );
 	SET_GATHER			(SpellHideErrors,	bool );
 	SET_GATHER			(SpellSuggest,		bool );
+#ifdef ENABLE_HYPHENATION
 	SET_GATHER			(HYPHENATION,bool );
+#endif
 	SET_GATHER			(SpellMainOnly, 	bool );
 	SET_GATHER			(SpellUppercase,	bool );
 	SET_GATHER			(SpellNumbers,		bool );
@@ -216,7 +218,9 @@ public:
 
 	SET_GATHER			(ViewCursorBlink,		bool);
 	SET_GATHER			(PrefsAutoSave,			bool);
+#ifdef ENABLE_HYPHENATION
 	SET_GATHER			(PrefsHyphenation,			bool);
+#endif
 	SET_GATHER			(ViewShowRuler,			bool);
 	SET_GATHER			(ViewShowStatusBar,		bool);
 	SET_GATHER			(ViewAll,				bool);
