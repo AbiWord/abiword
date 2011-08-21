@@ -52,7 +52,6 @@
 #endif
 
 #define AUTO_SCROLL_MSECS	100
-#define ENABLE_HYPHENATION
 
 class FL_DocLayout;
 class FV_Caret_Listener;

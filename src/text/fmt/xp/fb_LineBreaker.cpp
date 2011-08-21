@@ -33,13 +33,14 @@
 #include "ut_string.h"
 #include "pd_Iterator.h"
 
-#ifdef ENABLE_SPELL
+#ifdef ENABLE_SPELL || #ifdef ENABLE_HYPHENATION
 #include "spell_manager.h"
 #if 1
 // todo: work around to remove the INPUTWORDLEN restriction for pspell
 #include "ispell_def.h"
 #endif
 #endif
+
 
 fb_LineBreaker::fb_LineBreaker()
 :
@@ -732,6 +733,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 	}
 
 
+#ifdef ENABLE_HYPHENATION
 	//modify src/text/fmt/xp/fb_LineBreaker.cpp to place hypernation points
 	//spit the word
 	if(pWordToSplit.length()!=NULL)
@@ -761,7 +763,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 		}
 
 	}
-
+#endif
 	m_pLastRunToKeep->printText();
 	UT_ASSERT((!m_pLastRunToKeep) || (pLine->getLastRun() == m_pLastRunToKeep));
 #if DEBUG

@@ -61,7 +61,7 @@
 #include "pt_Types.h"
 #include "gr_Graphics.h"
 
-#ifdef ENABLE_SPELL
+#ifdef ENABLE_SPELL  || #ifdef ENABLE_HYPHENATION
 #include "spell_manager.h"
 #if 1
 // todo: work around to remove the INPUTWORDLEN restriction for pspell
@@ -110,7 +110,7 @@ static void s_border_properties (const char * border_color,
 
 
 
-#ifdef ENABLE_SPELL
+#ifdef ENABLE_SPELL || #ifdef ENABLE_HYPHENATION
 SpellChecker *
 fl_BlockLayout::_getSpellChecker (UT_uint32 blockPos,CheckOperationType checkOperationType) const
 {
@@ -140,6 +140,7 @@ fl_BlockLayout::_getSpellChecker (UT_uint32 blockPos,CheckOperationType checkOpe
 	getAP(pBlockAP);
 
 	const char * pszLang = static_cast<const char *>(PP_evalProperty("lang",pSpanAP,pBlockAP,NULL,m_pDoc,true));
+#ifdef ENABLE_HYPHENATION
 	// return the hyphenation checker
 	if(checkOperationType==Hyphenation)
 	{// we don't need to add last dic in map because we call the dic everytime we need to hyphenate
@@ -154,7 +155,7 @@ fl_BlockLayout::_getSpellChecker (UT_uint32 blockPos,CheckOperationType checkOpe
 		} 
         return NULL;
 	}
-
+#endif
 	if(!pszLang || !*pszLang)
 	{
 		// we just (dumbly) default to the last dictionary
@@ -190,8 +191,9 @@ fl_BlockLayout::_spellCheckWord(const UT_UCSChar * word,
 		return true;
 	return false;
 }
-#endif // ENABLE_SPELL
+#endif // ENABLE_SPELL  ENABLE_HYPHENATION
 
+#ifdef ENABLE_HYPHENATION
 UT_UCSChar* 
 fl_BlockLayout::_hyphenateWord(const UT_UCSChar * word, UT_uint32 len, UT_uint32 blockPos) const
 {
@@ -204,6 +206,7 @@ fl_BlockLayout::_hyphenateWord(const UT_UCSChar * word, UT_uint32 len, UT_uint32
 
 	return checker->hyphenateWord(word,len);
 }
+#endif
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -5014,7 +5017,7 @@ fl_BlockLayout::_checkMultiWord(UT_sint32 iStart,
 
 	return bScreenUpdated;
 }
-
+#ifdef ENABLE_HYPHENATION
 // Need to calculate the position where needs hyphenation chenxiajian wait
 bool
 fl_BlockLayout::_hyphenateMultiWord(UT_sint32 iStart,
@@ -5075,7 +5078,7 @@ fl_BlockLayout::_hyphenateMultiWord(UT_sint32 iStart,
 
 	return bScreenUpdated;
 }
-
+#endif
 /*!
  Validate a word and spell-check it
  \param pPOB Block region to squiggle if appropriate
@@ -5130,7 +5133,7 @@ fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
 	
 	return false;
 }
-
+#ifdef ENABLE_HYPHENATION
 UT_UCSChar*
 fl_BlockLayout::_doHyphenateWord(fl_PartOfBlock* pPOB,
 							 const UT_UCSChar* pWord,
@@ -5141,7 +5144,7 @@ fl_BlockLayout::_doHyphenateWord(fl_PartOfBlock* pPOB,
 	delete pPOB;
 	return result;
 }
-
+#endif
 /*!
  Spell-check word in the block region
  \param pPOB Block region bounding the word

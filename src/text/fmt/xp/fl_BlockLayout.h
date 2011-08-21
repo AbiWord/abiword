@@ -26,7 +26,6 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-#define  ENABLE_HYPHENATION
 
 #ifdef FMT_TEST
 #include <stdio.h>
@@ -455,8 +454,9 @@ protected:
 		const UT_UCSChar* pBlockText,
 		UT_sint32 iLength) const;
 
-	
+#ifdef ENABLE_HYPHENATION	
 	UT_UCSChar* _hyphenateWord(const UT_UCSChar * word, UT_uint32 len, UT_uint32 blockPos) const;
+#endif
 
 #ifdef ENABLE_SPELL
 	bool		 _spellCheckWord(const UT_UCSChar * word, UT_uint32 len, UT_uint32 blockPos) const;
