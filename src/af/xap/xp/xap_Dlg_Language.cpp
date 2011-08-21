@@ -158,7 +158,7 @@ bool XAP_Dialog_Language::getChangedLangProperty(const gchar ** pszLangProp) con
 */
 UT_Vector* XAP_Dialog_Language::getAvailableDictionaries()
 {
-#ifdef ENABLE_SPELL
+#ifdef ENABLE_SPELL ||  #ifdef ENABLE_HYPHENATION
 	SpellChecker * checker = SpellManager::instance().getInstance();
 	UT_Vector& vec= checker->getMapping();
 	DictionaryMapping * mapping;
@@ -173,10 +173,6 @@ UT_Vector* XAP_Dialog_Language::getAvailableDictionaries()
 		if (checker->doesDictionaryExist(mapping->lang.c_str()))
 			vecRslt->addItem( g_strdup(mapping->lang.c_str()));
 	}
-    #ifdef ENABLE_HYPHENATION
-	     
-    #endif
-
 	return vecRslt;
 #else
 	return NULL;
