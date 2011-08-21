@@ -170,8 +170,9 @@
 	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_CocoaDialog_Download_File)
 #endif
 
-	DeclareDialog(AP_DIALOG_ID_RDF_QUERY,			AP_CocoaDialog_RDFQuery)
-	DeclareDialog(AP_DIALOG_ID_RDF_EDITOR,			AP_CocoaDialog_RDFEditor)
+//FIXME: TO BE IMPLEMENTED
+//	DeclareDialog(AP_DIALOG_ID_RDF_QUERY,			AP_CocoaDialog_RDFQuery)
+//	DeclareDialog(AP_DIALOG_ID_RDF_EDITOR,			AP_CocoaDialog_RDFEditor)
 
     // ... also add new dialogs here ...
 
