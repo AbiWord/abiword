@@ -51,7 +51,7 @@ using std::endl;
 /*****************************************************************/
 
 #define BUTTON_INSERT 1
-
+#include <gdk/gdkkeysyms.h>
 static gboolean __onKeyPressed( GtkWidget*   widget,
                                 GdkEventKey* event,
                                 gpointer     user_data )
@@ -68,6 +68,13 @@ static gboolean __onKeyPressed( GtkWidget*   widget,
         return false;
     }
     if( uc >= '0' && uc <= '9' )
+    {
+        return false;
+    }
+    if( event->keyval == GDK_KEY_Delete
+        || event->keyval == GDK_KEY_BackSpace
+        || event->keyval == GDK_KEY_Left
+        || event->keyval == GDK_KEY_Right )
     {
         return false;
     }
