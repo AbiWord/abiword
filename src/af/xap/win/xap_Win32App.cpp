@@ -45,6 +45,8 @@
 #include "gr_Win32Graphics.h"
 #include "gr_Win32USPGraphics.h"
 
+#include "gr_Win32CairoGraphics.h"
+
 #include <locale.h>
 
 #ifdef _MSC_VER
@@ -101,9 +103,24 @@ XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, const char * szAppName)
 
 	if(pGF)
 	{
+#ifdef USE_WIN32CAIRO_GRAPHICS
+			
+		bool bSuccess = pGF->registerClass(GR_Win32CairoGraphics::graphicsAllocator,
+			GR_Win32CairoGraphics::graphicsDescriptor,
+			GR_Win32CairoGraphics::s_getClassId());
+
+		// we are in deep trouble if this did not succeed
+		UT_return_if_fail( bSuccess );
+
+		// this is our fall back ...
+		pGF->registerAsDefault(GR_Win32CairoGraphics::s_getClassId(), true);
+		pGF->registerAsDefault(GR_Win32CairoGraphics::s_getClassId(), false);
+
+#else
+
 		bool bSuccess = pGF->registerClass(GR_Win32Graphics::graphicsAllocator,
-										   GR_Win32Graphics::graphicsDescriptor,
-										   GR_Win32Graphics::s_getClassId());
+		   GR_Win32Graphics::graphicsDescriptor,
+		   GR_Win32Graphics::s_getClassId());
 
 		// we are in deep trouble if this did not succeed
 		UT_return_if_fail( bSuccess );
@@ -111,7 +128,7 @@ XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, const char * szAppName)
 		// this is our fall back ...
 		pGF->registerAsDefault(GR_Win32Graphics::s_getClassId(), true);
 		pGF->registerAsDefault(GR_Win32Graphics::s_getClassId(), false);
-		
+
 		// try to load Uniscribe; if we succeed we will make USP
 		// graphics the default
 
@@ -144,6 +161,9 @@ XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, const char * szAppName)
 		{
 			UT_DEBUGMSG(("XAP_Win32App: could not load Uniscribe library"));
 		}
+
+#endif
+		
 	}
 }
 
