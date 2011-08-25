@@ -26,6 +26,7 @@
 #include "ut_Win32OS.h"
 #include "ap_Win32TopRuler.h"
 #include "gr_Win32Graphics.h"
+#include "gr_Win32CairoGraphics.h"
 #include "xap_Win32App.h"
 #include "ap_Win32FrameImpl.h"
 #include "ut_Win32LocaleString.h"
@@ -67,8 +68,14 @@ void AP_Win32TopRuler::setView(AV_View * pView)
 	AP_TopRuler::setView(pView);
 
 	DELETEP(m_pG);
+
+#ifdef USE_WIN32CAIRO_GRAPHICS
+	GR_Win32CairoAllocInfo ai(m_hwndTopRuler, false);
+#else
 	GR_Win32AllocInfo ai(GetDC(m_hwndTopRuler), m_hwndTopRuler);
-	GR_Win32Graphics * pG = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
+#endif
+
+	GR_Graphics * pG = XAP_App::getApp()->newGraphics(ai);
 
 	m_pG = pG;
 	UT_return_if_fail (m_pG);		
@@ -117,8 +124,15 @@ HWND AP_Win32TopRuler::createWindow(HWND hwndContainer,
 
 	
 	DELETEP(m_pG);
+
+#ifdef USE_WIN32CAIRO_GRAPHICS
+	GR_Win32CairoAllocInfo ai(m_hwndTopRuler, false);
+#else
 	GR_Win32AllocInfo ai(GetDC(m_hwndTopRuler), m_hwndTopRuler);
-	GR_Win32Graphics * pG = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
+#endif	
+	
+	GR_Graphics * pG = XAP_App::getApp()->newGraphics(ai);
+
 	m_pG = pG;
 	UT_return_val_if_fail (m_pG, 0);
 	pG->init3dColors();

@@ -40,7 +40,7 @@ class ABI_EXPORT AP_Win32FrameImpl : public XAP_Win32FrameImpl
 
 	HWND						getHwndDocument(void)  {  return m_hwndDocument;  }
 	
-	GR_Win32Graphics *			createDocWndGraphics(void);
+	GR_Graphics *				createDocWndGraphics(void);
 	
  protected:
 	friend class AP_Win32Frame;

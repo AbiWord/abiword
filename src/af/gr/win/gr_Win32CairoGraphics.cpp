@@ -459,3 +459,22 @@ GR_Font* GR_Win32CairoGraphics::getGUIFont(void)
 	return NULL;
 }
 
+UT_RGBColor GR_Win32CairoGraphics::translateWinColor(DWORD c)
+{
+	BYTE R = GetRValue(c);
+	BYTE G = GetGValue(c);
+	BYTE B = GetBValue(c);
+	return UT_RGBColor(
+		(unsigned char)R, 
+		(unsigned char)G, 
+		(unsigned char)B);
+}
+
+void GR_Win32CairoGraphics::init3dColors()
+{
+	m_3dColors[CLR3D_Foreground] = translateWinColor(GetSysColor(COLOR_BTNTEXT));
+	m_3dColors[CLR3D_Background] = translateWinColor(GetSysColor(COLOR_3DFACE));
+	m_3dColors[CLR3D_BevelUp]    = translateWinColor(GetSysColor(COLOR_3DHIGHLIGHT));
+	m_3dColors[CLR3D_BevelDown]  = translateWinColor(GetSysColor(COLOR_3DSHADOW));
+	m_3dColors[CLR3D_Highlight]  = translateWinColor(GetSysColor(COLOR_WINDOW));	
+}
