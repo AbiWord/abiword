@@ -261,7 +261,7 @@ void GR_Win32CairoGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndex)
 
 	// do the same for the rectangle
 	if(m_rectangleCache.size() <= iIndex)
-		m_rectangleCache.resize(iIndex);
+		m_rectangleCache.resize(iIndex + 1);
 	m_rectangleCache[iIndex] = cachedRectangle;
 }
 
@@ -293,5 +293,5 @@ void GR_Win32CairoGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest, UT_sint32
 
 GR_Font* GR_Win32CairoGraphics::getGUIFont(void)
 {
-	UT_ASSERT(UT_NOT_IMPLEMENTED);	
+	return NULL;
 }
