@@ -3,6 +3,10 @@
 #include <cairo.h>
 #include <cairo-win32.h>
 
+#include <xap_Win32App.h>
+#include <xap_Win32Res_Cursors.rc2>
+#include "ut_Win32OS.h"
+
 #include "gr_CairoGraphics.h"
 #include "gr_Win32Image.h"
 
@@ -278,7 +282,116 @@ void GR_Win32CairoGraphics::restoreRectangle(UT_uint32 iIndex)
 
 void GR_Win32CairoGraphics::setCursor(GR_Graphics::Cursor c)
 {
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	m_cursor = c;
+
+	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(XAP_App::getApp());
+	HINSTANCE hinst = pWin32App->getInstance();
+	LPCTSTR cursor_name;                //TODO : CHECK
+
+	switch (m_cursor)
+	{
+	case GR_CURSOR_CROSSHAIR:	
+		cursor_name = IDC_CROSS;
+		hinst = NULL;
+		break;
+
+		/*FALLTHRU*/
+	case GR_CURSOR_DEFAULT:
+		cursor_name = IDC_ARROW;		// top-left arrow
+		hinst = NULL;
+		break;
+
+	case GR_CURSOR_LINK:
+	case GR_CURSOR_GRAB:
+#ifndef IDC_HAND
+		cursor_name = MAKEINTRESOURCE(IDC_ABIHAND);
+#else
+		if (UT_IsWin95())
+			cursor_name = MAKEINTRESOURCE(IDC_ABIHAND);
+		else
+		{
+			cursor_name = IDC_HAND;
+			hinst = NULL;
+		}
+#endif
+		break;
+
+	case GR_CURSOR_EXCHANGE:
+		cursor_name = MAKEINTRESOURCE(IDC_EXCHANGE);
+		break;
+
+	case GR_CURSOR_IBEAM:
+		cursor_name = IDC_IBEAM;
+		hinst = NULL;
+		break;	
+
+	case GR_CURSOR_RIGHTARROW:
+		cursor_name = MAKEINTRESOURCE(IDC_ABIRIGHTARROW);
+		break;
+
+	case GR_CURSOR_LEFTARROW:
+		cursor_name = IDC_ARROW;
+		hinst = NULL;
+		break;
+
+	case GR_CURSOR_DOWNARROW:
+		cursor_name = MAKEINTRESOURCE(IDC_ABIDOWNARROW);
+		break;
+
+	case GR_CURSOR_IMAGE:
+		cursor_name = IDC_SIZEALL;
+		hinst = NULL;
+		break;
+
+	case GR_CURSOR_IMAGESIZE_NW:
+	case GR_CURSOR_IMAGESIZE_SE:
+		cursor_name = IDC_SIZENWSE;
+		hinst = NULL;
+		break;
+
+	case GR_CURSOR_HLINE_DRAG:
+	case GR_CURSOR_UPDOWN:
+	case GR_CURSOR_IMAGESIZE_N:
+	case GR_CURSOR_IMAGESIZE_S:
+		cursor_name = IDC_SIZENS;
+		hinst = NULL;
+		break;
+
+	case GR_CURSOR_IMAGESIZE_NE:
+	case GR_CURSOR_IMAGESIZE_SW:
+		cursor_name = IDC_SIZENESW;
+		hinst = NULL;
+		break;
+
+	case GR_CURSOR_VLINE_DRAG:
+	case GR_CURSOR_LEFTRIGHT:
+	case GR_CURSOR_IMAGESIZE_E:
+	case GR_CURSOR_IMAGESIZE_W:
+		cursor_name = IDC_SIZEWE;
+		hinst = NULL;
+		break;
+
+	case GR_CURSOR_WAIT:
+		cursor_name = IDC_WAIT;
+		hinst = NULL;
+		break;
+	
+	default:
+		{
+			// this assert makes debugging virtuall impossible !!!
+			static bool bDoneThisAlready = false;
+			if(!bDoneThisAlready)
+			{
+				bDoneThisAlready = true;
+				UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+			}
+			
+		}
+	}
+
+	HCURSOR hCursor = LoadCursor(hinst,cursor_name); //TODO: Leaking resource
+	if (hCursor != NULL)
+		SetCursor(hCursor);
 }
 
 void GR_Win32CairoGraphics::scroll(UT_sint32, UT_sint32)
