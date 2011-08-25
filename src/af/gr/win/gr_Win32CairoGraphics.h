@@ -58,6 +58,7 @@ public:
 
 	HWND getWindow () { return m_hwnd; }
 
+	void compute_fXYRatio();
 	virtual void           setCursor(GR_Graphics::Cursor c);
 
 	virtual void		   scroll(UT_sint32, UT_sint32);
@@ -81,6 +82,7 @@ protected:
 
 private:
 	HWND m_hwnd;
+	double m_fXYRatio;
 	bool m_bDoubleBuffered;
 	std::vector<cairo_rectangle_t> m_rectangleCache;
 	UT_GenericVector<cairo_surface_t*> m_surfaceCache;

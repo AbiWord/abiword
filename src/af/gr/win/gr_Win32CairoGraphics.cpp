@@ -9,6 +9,7 @@
 
 #include "gr_CairoGraphics.h"
 #include "gr_Win32Image.h"
+#include "gr_Painter.h"
 
 GR_Image* GR_Win32CairoGraphicsBase::createNewImage(const char* pszName,
 													const UT_ByteBuf* pBB,
@@ -36,6 +37,9 @@ GR_Win32CairoGraphics::GR_Win32CairoGraphics(HWND win, bool bDoubleBuffered)
       m_bDoubleBuffered(bDoubleBuffered)
 {
 	m_cr = NULL;
+	
+	compute_fXYRatio();
+
 	setCursor(GR_CURSOR_DEFAULT);	
 }
 
@@ -394,9 +398,41 @@ void GR_Win32CairoGraphics::setCursor(GR_Graphics::Cursor c)
 		SetCursor(hCursor);
 }
 
-void GR_Win32CairoGraphics::scroll(UT_sint32, UT_sint32)
+void GR_Win32CairoGraphics::compute_fXYRatio()
 {
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	HDC hdc = GetDC(m_hwnd);
+	
+	int nLogPixelsX = GetDeviceCaps(hdc, LOGPIXELSX);
+	int nLogPixelsY = GetDeviceCaps(hdc, LOGPIXELSY);
+	
+	if(nLogPixelsY)
+	{
+		m_fXYRatio = (double)nLogPixelsX  / (double)nLogPixelsY;
+	}
+	else
+	{
+		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+		m_fXYRatio = 1;
+	}
+}
+
+void GR_Win32CairoGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
+{
+	UT_sint32 oldDY = tdu(getPrevYOffset());
+	UT_sint32 oldDX = (UT_sint32)((double)tdu(getPrevXOffset()) * m_fXYRatio);
+	UT_sint32 newY = getPrevYOffset() + dy;
+	UT_sint32 newX = getPrevXOffset() + dx;
+	UT_sint32 ddx = -(UT_sint32)((double)(tdu(newX) - oldDX) * m_fXYRatio);
+	UT_sint32 ddy = -(tdu(newY) - oldDY);
+	setPrevYOffset(newY);
+	setPrevXOffset(newX);
+	if(ddx == 0 && ddy == 0)
+	{
+		return;
+	}
+	GR_Painter caretDisablerPainter(this); // not an elegant way to disable all carets, but it works beautifully - MARCM
+
+	ScrollWindowEx(m_hwnd, ddx, ddy, NULL, NULL, NULL, 0, SW_INVALIDATE);
 }
 
 void GR_Win32CairoGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest, UT_sint32 x_src, UT_sint32 y_src, UT_sint32 width, UT_sint32 height)
