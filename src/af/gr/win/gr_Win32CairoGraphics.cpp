@@ -437,10 +437,25 @@ void GR_Win32CairoGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 
 void GR_Win32CairoGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest, UT_sint32 x_src, UT_sint32 y_src, UT_sint32 width, UT_sint32 height)
 {
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	x_dest = (UT_sint32)((double)tdu(x_dest) * m_fXYRatio);
+	y_dest = tdu(y_dest);
+	x_src = (UT_sint32)((double)tdu(x_src) * m_fXYRatio);
+	y_src = tdu(y_src);
+	width = (UT_sint32)((double)tdu(width) * m_fXYRatio);
+	height = tdu(height);
+	RECT r;
+	r.left = x_src;
+	r.top = y_src;
+	r.right = r.left + width;
+	r.bottom = r.top + height;
+
+	GR_Painter caretDisablerPainter(this); // not an elegant way to disable all carets, but it works beautifully - MARCM
+
+	ScrollWindowEx(m_hwnd, (x_dest - x_src), (y_dest - y_src), &r, NULL, NULL, NULL, SW_ERASE);
 }
 
 GR_Font* GR_Win32CairoGraphics::getGUIFont(void)
 {
 	return NULL;
 }
+
