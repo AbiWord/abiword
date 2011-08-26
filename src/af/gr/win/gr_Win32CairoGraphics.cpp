@@ -253,6 +253,10 @@ BITMAPINFO * GR_Win32CairoGraphics::ConvertDDBToDIB(HBITMAP bitmap, HPALETTE hPa
 
 void GR_Win32CairoGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndex)
 {
+	// save the current state and reset clip
+	cairo_save(m_cr);
+	cairo_reset_clip(m_cr);
+
 	// set up the rectangle
 	cairo_rectangle_t cachedRectangle;
 	cachedRectangle.x = static_cast<float>(_tduX(r.left));
@@ -271,6 +275,9 @@ void GR_Win32CairoGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndex)
 	if(m_rectangleCache.size() <= iIndex)
 		m_rectangleCache.resize(iIndex + 1);
 	m_rectangleCache[iIndex] = cachedRectangle;
+
+	// restore the current state
+	cairo_restore(m_cr);
 }
 
 void GR_Win32CairoGraphics::restoreRectangle(UT_uint32 iIndex)
@@ -279,9 +286,14 @@ void GR_Win32CairoGraphics::restoreRectangle(UT_uint32 iIndex)
 	cairo_rectangle_t& cachedRectangle = m_rectangleCache[iIndex];
 	cairo_surface_t* cachedSurface = m_surfaceCache.getNthItem(iIndex);
 
+	cairo_save(m_cr);
+	cairo_reset_clip(m_cr);
+
 	// actuall restore
 	cairo_set_source_surface(m_cr, cachedSurface, cachedRectangle.x, cachedRectangle.y);
 	cairo_paint(m_cr);
+
+	cairo_restore(m_cr);
 }
 
 void GR_Win32CairoGraphics::setCursor(GR_Graphics::Cursor c)
