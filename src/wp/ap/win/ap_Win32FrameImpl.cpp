@@ -1084,6 +1084,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 			return 0;
 
 		case WM_SETCURSOR:
+			pView->getGraphics()->setCursor();
 			return 1;
 		
 		case WM_LBUTTONDOWN:

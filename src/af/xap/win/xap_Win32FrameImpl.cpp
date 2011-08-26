@@ -596,7 +596,16 @@ void XAP_Win32FrameImpl::_nullUpdate (void) const
 
 void XAP_Win32FrameImpl::_setCursor(GR_Graphics::Cursor /*cursor*/)
 {
-	// ASFRENT: empty, clean it!
+	FV_View* pView = (FV_View *) getFrame()->getCurrentView();
+
+	// this is legitimate, when we first load, the frame has no view
+	if(!pView)
+		return;
+	
+	GR_Graphics * pG = pView->getGraphics();
+	UT_return_if_fail( pG );
+
+	pG->setCursor();
 }
 
 UT_RGBColor XAP_Win32FrameImpl::getColorSelBackground () const

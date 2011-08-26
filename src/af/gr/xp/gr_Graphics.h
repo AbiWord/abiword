@@ -587,6 +587,10 @@ class ABI_EXPORT GR_Graphics
 	
 	virtual void      init3dColors() { }
 	virtual void      setCursor(GR_Graphics::Cursor c) = 0;
+	void setCursor()
+	{
+		setCursor(getCursor());
+	}
 	virtual GR_Graphics::Cursor getCursor(void) const = 0;
 
 	virtual void      setZoomPercentage(UT_uint32 iZoom);

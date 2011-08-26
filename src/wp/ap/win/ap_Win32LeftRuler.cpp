@@ -162,16 +162,19 @@ LRESULT CALLBACK AP_Win32LeftRuler::_LeftRulerWndProc(HWND hwnd, UINT iMsg, WPAR
 	case WM_LBUTTONDOWN:
 		SetCapture(hwnd);
 		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON1,pG->tlu(LOWORD(lParam)), pG->tlu(HIWORD(lParam)));
+		pG->setCursor();
 		return 0;
 		
 	case WM_MBUTTONDOWN:
 		SetCapture(hwnd);
 		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON2,pG->tlu(LOWORD(lParam)),pG->tlu(HIWORD(lParam)));
+		pG->setCursor();
 		return 0;
 		
 	case WM_RBUTTONDOWN:
 		SetCapture(hwnd);
 		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON3,pG->tlu(LOWORD(lParam)),pG->tlu(HIWORD(lParam)));
+		pG->setCursor();
 		return 0;
 		
 	case WM_MOUSEMOVE:
@@ -218,7 +221,10 @@ LRESULT CALLBACK AP_Win32LeftRuler::_LeftRulerWndProc(HWND hwnd, UINT iMsg, WPAR
 		}
 
 	case WM_SETCURSOR:
-		return 0;
+		{
+			pG->setCursor();
+			return 0;
+		}
 	default:
 		break;
 	}
