@@ -78,16 +78,7 @@ void IE_ImpExp_RegisterXP ()
 	// HACK - export RTF and claim it's DOC
 	IE_Exp::registerExporter(new IE_Exp_MsWord_Hack_Sniffer ());
 
-#ifdef HTML_ENABLE_HTML4
-	IE_Exp::registerExporter(new IE_Exp_HTML4_Sniffer ());
-#endif
 	IE_Exp::registerExporter(new IE_Exp_HTML_Sniffer ());
-#ifdef HTML_ENABLE_PHTML
-	IE_Exp::registerExporter(new IE_Exp_PHTML_Sniffer ());
-#endif
-#ifdef HTML_ENABLE_MHTML
-	IE_Exp::registerExporter(new IE_Exp_MHTML_Sniffer ());
-#endif
 	IE_Exp::registerExporter(new IE_Exp_RTF_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_RTF_attic_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_Text_Sniffer ());

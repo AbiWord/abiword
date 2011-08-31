@@ -26,7 +26,9 @@ IE_Exp_EPUB::IE_Exp_EPUB(PD_Document * pDocument) :
     IE_Exp(pDocument),
     m_pie(NULL)
 {
-
+    registerDialogs();
+    AP_Dialog_EpubExportOptions::getEpubExportDefaults(
+    &m_exp_opt, XAP_App::getApp());
 }
 IE_Exp_EPUB::~IE_Exp_EPUB()
 {
@@ -35,6 +37,15 @@ IE_Exp_EPUB::~IE_Exp_EPUB()
 
 UT_Error IE_Exp_EPUB::_writeDocument()
 {
+    UT_Error errOptions = doOptions();
+
+    if (errOptions == UT_SAVE_CANCELLED) //see Bug 10840
+    {
+        return UT_SAVE_CANCELLED;
+    }
+    else if (errOptions != UT_OK) {
+        return UT_ERROR;
+    }
 
     m_root = gsf_outfile_zip_new(getFp(), NULL);
 
@@ -99,6 +110,7 @@ UT_Error IE_Exp_EPUB::_writeDocument()
     return UT_OK;
 }
 
+
 UT_Error IE_Exp_EPUB::writeContainer()
 {
     GsfOutput* metaInf = gsf_outfile_new_child(m_root, "META-INF", TRUE);
@@ -140,7 +152,34 @@ UT_Error IE_Exp_EPUB::writeContainer()
     return UT_OK;
 }
 
+UT_Error IE_Exp_EPUB::writeNavigation()
+{
+    if (m_exp_opt.bEpub2)
+    {
+        return EPUB2_writeNavigation();
+    } else
+    {
+        if (EPUB2_writeNavigation() == UT_ERROR)
+            return UT_ERROR;
+        if ( EPUB3_writeNavigation() == UT_ERROR)
+            return UT_ERROR;
+    }
+    
+    return UT_OK;
+}
+
 UT_Error IE_Exp_EPUB::writeStructure()
+{
+    if (m_exp_opt.bEpub2)
+    {
+        return EPUB2_writeStructure();
+    } else
+    {
+        return EPUB3_writeStructure();
+    }
+}
+
+UT_Error IE_Exp_EPUB::EPUB2_writeStructure()
 {
     m_oebpsDir = m_baseTempDir + G_DIR_SEPARATOR_S;
     m_oebpsDir += "OEBPS";
@@ -163,7 +202,7 @@ UT_Error IE_Exp_EPUB::writeStructure()
     return UT_OK;
 }
 
-UT_Error IE_Exp_EPUB::writeNavigation()
+UT_Error IE_Exp_EPUB::EPUB2_writeNavigation()
 {
     GsfOutput* ncx = gsf_outfile_new_child(GSF_OUTFILE(m_oebps), "toc.ncx",
             FALSE);
@@ -231,36 +270,50 @@ UT_Error IE_Exp_EPUB::writeNavigation()
     // </docAuthor>
     gsf_xml_out_end_element(ncxXml);
 
-    IE_TOCHelper* toc = new IE_TOCHelper(getDoc());
+
     // <navMap>
     gsf_xml_out_start_element(ncxXml, "navMap");
-    if (toc->hasTOC())
+    if (m_pie->getNavigationHelper()->hasTOC())
     {
         int lastItemLevel;
         int curItemLevel;
         std::vector<int> tagLevels;
         int tocNum = 0;
-        for (int currentItem = 0; currentItem < toc->getNumTOCEntries(); currentItem++)
+        for (int currentItem = 0; 
+            currentItem < m_pie->getNavigationHelper()->getNumTOCEntries(); 
+            currentItem++)
         {
             lastItemLevel = curItemLevel;
-            UT_UTF8String itemStr = toc->getNthTOCEntry(currentItem, &curItemLevel);
+            UT_UTF8String itemStr = m_pie->getNavigationHelper()
+                ->getNthTOCEntry(currentItem, &curItemLevel);
             PT_DocPosition itemPos;
-            toc->getNthTOCEntryPos(currentItem, itemPos);
-            UT_UTF8String itemFilename = m_pie->getFilenameByPosition(itemPos);
+            m_pie->getNavigationHelper()->getNthTOCEntryPos(currentItem, itemPos);
+            UT_UTF8String itemFilename = m_pie->getNavigationHelper()
+                ->getFilenameByPosition(itemPos);
+            
+            if ((itemFilename == ".xhtml") || itemFilename.length() == 0)
+            {
+                itemFilename = "index.xhtml";
+            } else
+            {
+                itemFilename +=   + ".xhtml";
+            }
 
-            if (std::find(m_opsId.begin(), m_opsId.end(), escapeForId(itemFilename)) == m_opsId.end())
+            if (std::find(m_opsId.begin(), m_opsId.end(), 
+                          escapeForId(itemFilename)) == m_opsId.end())
             {
                 m_opsId.push_back(escapeForId(itemFilename));
                 tocNum = 0;
             }
 
-            UT_DEBUGMSG(("Item filename %s at pos %d\n", itemFilename.utf8_str(),itemPos));
+            UT_DEBUGMSG(("Item filename %s at pos %d\n", 
+                itemFilename.utf8_str(),itemPos));
 
             if ((lastItemLevel >= curItemLevel) && (currentItem != 0))
             {
-                while ((tagLevels.size() > 0) && (tagLevels.back() >= curItemLevel))
+                while ((tagLevels.size() > 0) 
+                        && (tagLevels.back() >= curItemLevel))
                 {
-                    UT_DEBUGMSG(("POPPING OUT\n"));
                     gsf_xml_out_end_element(ncxXml);
                     tagLevels.pop_back();
                 }
@@ -268,7 +321,7 @@ UT_Error IE_Exp_EPUB::writeNavigation()
             }
 
             UT_UTF8String navClass = UT_UTF8String_sprintf("h%d", curItemLevel);
-            UT_UTF8String navId = UT_UTF8String_sprintf("AbiTOC%d__",
+            UT_UTF8String navId = UT_UTF8String_sprintf("AbiTOC%d",
                     tocNum);
             UT_UTF8String navSrc = itemFilename + "#" + navId;
             gsf_xml_out_start_element(ncxXml, "navPoint");
@@ -294,6 +347,7 @@ UT_Error IE_Exp_EPUB::writeNavigation()
     }
     else
     {
+        m_opsId.push_back(escapeForId("index.xhtml"));
         gsf_xml_out_start_element(ncxXml, "navPoint");
         gsf_xml_out_add_cstr(ncxXml, "playOrder", "1");
         gsf_xml_out_add_cstr(ncxXml, "class", "h1");
@@ -316,14 +370,179 @@ UT_Error IE_Exp_EPUB::writeNavigation()
     // </ncx>
     gsf_xml_out_end_element(ncxXml);
     gsf_output_close(ncx);
-    delete toc;
 
+    return UT_OK;
+}
+
+UT_Error IE_Exp_EPUB::EPUB3_writeNavigation()
+{
+    GsfOutput* nav = gsf_outfile_new_child(GSF_OUTFILE(m_oebps), "toc.xhtml",
+            FALSE);
+    if (nav == NULL)
+    {
+        UT_DEBUGMSG(("Can`t create toc.xhtml file\n"));
+        return UT_ERROR;
+    }
+    GsfXMLOut* navXHTML = gsf_xml_out_new(nav);
+
+     gsf_xml_out_start_element(navXHTML, "html");
+    gsf_xml_out_add_cstr(navXHTML, "xmlns", XHTML_NS);
+    gsf_xml_out_add_cstr(navXHTML, "xmlns:epub", OPS201_NAMESPACE);
+    gsf_xml_out_add_cstr(navXHTML, "profile", EPUB3_CONTENT_PROFILE);
+    
+    
+    gsf_xml_out_start_element(navXHTML, "head");
+    gsf_xml_out_start_element(navXHTML, "title");
+    gsf_xml_out_add_cstr(navXHTML, NULL, "Table of Contents");
+    gsf_xml_out_end_element(navXHTML);
+    gsf_xml_out_end_element(navXHTML);
+    
+    gsf_xml_out_start_element(navXHTML, "body");
+    gsf_xml_out_start_element(navXHTML, "section");
+    gsf_xml_out_add_cstr(navXHTML, "class", "frontmatter TableOfContents");
+    gsf_xml_out_start_element(navXHTML, "header");
+    gsf_xml_out_start_element(navXHTML, "h1");
+    gsf_xml_out_add_cstr(navXHTML, NULL, "Contents");
+    gsf_xml_out_end_element(navXHTML);
+    gsf_xml_out_end_element(navXHTML);
+    gsf_xml_out_start_element(navXHTML, "nav");
+    gsf_xml_out_add_cstr(navXHTML, "epub:type", "toc");
+    gsf_xml_out_add_cstr(navXHTML, "id", "toc");
+    if (m_pie->getNavigationHelper()->hasTOC())
+    {
+        int lastItemLevel;
+        int curItemLevel;
+        std::vector<int> tagLevels;
+        int tocNum = 0;
+        bool newList = true;
+        for (int currentItem = 0; 
+            currentItem < m_pie->getNavigationHelper()->getNumTOCEntries(); 
+            currentItem++)
+        {
+            lastItemLevel = curItemLevel;
+            UT_UTF8String itemStr = m_pie->getNavigationHelper()
+                ->getNthTOCEntry(currentItem, &curItemLevel);
+            PT_DocPosition itemPos;
+            m_pie->getNavigationHelper()->getNthTOCEntryPos(currentItem, itemPos);
+            UT_UTF8String itemFilename = m_pie->getNavigationHelper()
+                ->getFilenameByPosition(itemPos);
+            
+            if ((itemFilename == "") || itemFilename.length() == 0)
+            {
+                itemFilename = "index.xhtml";
+            } else
+            {
+                itemFilename +=  ".xhtml";
+            }
+
+            if (std::find(m_opsId.begin(), m_opsId.end(), 
+                          escapeForId(itemFilename)) == m_opsId.end())
+            {
+                m_opsId.push_back(escapeForId(itemFilename));
+                tocNum = 0;
+            }
+
+            UT_DEBUGMSG(("Item filename %s at pos %d\n", 
+                itemFilename.utf8_str(),itemPos));
+
+            if ((lastItemLevel >= curItemLevel) && (currentItem != 0))
+            {
+                while ((tagLevels.size() > 0) 
+                        && (tagLevels.back() >= curItemLevel))
+                {
+                    if (tagLevels.back() == curItemLevel)
+                    {
+                        gsf_xml_out_end_element(navXHTML);
+                    } else
+                    {
+                        closeNTags(navXHTML, 2);
+                    }
+                    tagLevels.pop_back();
+                }
+
+            } else
+            if ((lastItemLevel < curItemLevel) || newList) 
+            {
+                gsf_xml_out_start_element(navXHTML, "ol");
+                newList = false;
+
+            }
+
+            UT_UTF8String navClass = UT_UTF8String_sprintf("h%d", curItemLevel);
+            UT_UTF8String navId = UT_UTF8String_sprintf("AbiTOC%d",
+                    tocNum);
+            UT_UTF8String navSrc = itemFilename + "#" + navId;
+            gsf_xml_out_start_element(navXHTML, "li");
+            gsf_xml_out_add_cstr(navXHTML, "class", navClass.utf8_str());
+            gsf_xml_out_add_cstr(navXHTML, "id", navId.utf8_str());
+            gsf_xml_out_start_element(navXHTML, "a");
+            gsf_xml_out_add_cstr(navXHTML, "href", navSrc.utf8_str());
+            gsf_xml_out_add_cstr(navXHTML, NULL, itemStr.utf8_str());
+            gsf_xml_out_end_element(navXHTML);
+            // gsf_xml_out_end_element(navXHTML);
+
+            tagLevels.push_back(curItemLevel);
+            tocNum++;
+
+        }
+
+        closeNTags(navXHTML, tagLevels.size()*2);
+    }
+    else
+    {
+        gsf_xml_out_start_element(navXHTML, "ol");
+        gsf_xml_out_start_element(navXHTML, "li");
+        gsf_xml_out_add_cstr(navXHTML, "class", "h1");
+        gsf_xml_out_add_cstr(navXHTML, "id", "index");
+        gsf_xml_out_start_element(navXHTML, "a");
+        gsf_xml_out_add_cstr(navXHTML, "href", "index.xhtml");
+        gsf_xml_out_add_cstr(navXHTML, NULL, getTitle().utf8_str());
+        gsf_xml_out_end_element(navXHTML);
+        gsf_xml_out_end_element(navXHTML); 
+        gsf_xml_out_end_element(navXHTML); 
+    }
+   
+    gsf_xml_out_end_element(navXHTML);
+    // </section>
+    gsf_xml_out_end_element(navXHTML);
+    gsf_xml_out_end_element(navXHTML);
+    
+    
+    gsf_xml_out_end_element(navXHTML);
+    gsf_output_close(nav);
+    return UT_OK;
+}
+
+UT_Error IE_Exp_EPUB::EPUB3_writeStructure()
+{
+    m_oebpsDir = m_baseTempDir + G_DIR_SEPARATOR_S;
+    m_oebpsDir += "OEBPS";
+
+    UT_go_directory_create(m_oebpsDir.utf8_str(), 0644, NULL);
+
+    UT_UTF8String indexPath = m_oebpsDir + G_DIR_SEPARATOR_S;
+    indexPath += "index.xhtml";
+
+    // Exporting document to XHTML using HTML export plugin 
+    char *szIndexPath = (char*) g_malloc(strlen(indexPath.utf8_str()) + 1);
+    strcpy(szIndexPath, indexPath.utf8_str());
+    IE_Exp_HTML_WriterFactory *pWriterFactory = new IE_Exp_EPUB_EPUB3WriterFactory();
+    m_pie = new IE_Exp_HTML(getDoc());
+    m_pie->setWriterFactory(pWriterFactory);
+    m_pie->suppressDialog(true);
+    m_pie->setProps(
+        "embed-css:no;html4:no;use-awml:no;declare-xml:yes;add-identifiers:yes;");
+    
+    m_pie->set_SplitDocument(m_exp_opt.bSplitDocument);
+    m_pie->set_MathMLRenderPNG(m_exp_opt.bRenderMathMLToPNG);
+    m_pie->writeFile(szIndexPath);
+    g_free(szIndexPath);
+    DELETEP(pWriterFactory);
     return UT_OK;
 }
 
 UT_Error IE_Exp_EPUB::package()
 {
-
     GsfOutput* opf = gsf_outfile_new_child(GSF_OUTFILE(m_oebps), "book.opf",
             FALSE);
     if (opf == NULL)
@@ -334,9 +553,21 @@ UT_Error IE_Exp_EPUB::package()
     GsfXMLOut* opfXml = gsf_xml_out_new(opf);
     // <package>
     gsf_xml_out_start_element(opfXml, "package");
+    if (m_exp_opt.bEpub2)
+    {
     gsf_xml_out_add_cstr(opfXml, "version", "2.0");
+    } else
+    {
+       gsf_xml_out_add_cstr(opfXml, "version", "3.0"); 
+    }
     gsf_xml_out_add_cstr(opfXml, "xmlns", OPF201_NAMESPACE);
     gsf_xml_out_add_cstr(opfXml, "unique-identifier", "BookId");
+    
+    if (!m_exp_opt.bEpub2)
+    {
+       gsf_xml_out_add_cstr(opfXml, "profile", EPUB3_PACKAGE_PROFILE);
+       gsf_xml_out_add_cstr(opfXml, "xml:lang", getLanguage().utf8_str());
+    }
 
     // <metadata>
     gsf_xml_out_start_element(opfXml, "metadata");
@@ -365,45 +596,67 @@ UT_Error IE_Exp_EPUB::package()
     std::vector<UT_UTF8String> listing = getFileList(
             m_oebpsDir.substr(7, m_oebpsDir.length() - 7));
 
-    UT_DEBUGMSG(("RUDYJ R1\n"));
     for (std::vector<UT_UTF8String>::iterator i = listing.begin(); i
             != listing.end(); i++)
     {
         UT_UTF8String idStr = escapeForId(*i);
         UT_UTF8String fullItemPath = m_oebpsDir + G_DIR_SEPARATOR_S + *i;
         gsf_xml_out_start_element(opfXml, "item");
+        if (m_pie->hasMathML((*i)))
+        {
+            gsf_xml_out_add_cstr(opfXml, "mathml", "true");
+        }
         gsf_xml_out_add_cstr(opfXml, "id", idStr.utf8_str());
         gsf_xml_out_add_cstr(opfXml, "href", (*i).utf8_str());
         gsf_xml_out_add_cstr(opfXml, "media-type",
                 getMimeType(fullItemPath).utf8_str());
         gsf_xml_out_end_element(opfXml);
     }
-    UT_DEBUGMSG(("RUDYJ R2\n"));
-    // We`ll add .ncx file manually
+
+    // We`ll add navigation files manually
     gsf_xml_out_start_element(opfXml, "item");
     gsf_xml_out_add_cstr(opfXml, "id", "ncx");
     gsf_xml_out_add_cstr(opfXml, "href", "toc.ncx");
     gsf_xml_out_add_cstr(opfXml, "media-type", "application/x-dtbncx+xml");
     gsf_xml_out_end_element(opfXml);
+    if (!m_exp_opt.bEpub2)
+    {
+        gsf_xml_out_start_element(opfXml, "item");
+        gsf_xml_out_add_cstr(opfXml, "id", "toc");
+        gsf_xml_out_add_cstr(opfXml, "href", "toc.xhtml");
+        gsf_xml_out_add_cstr(opfXml, "media-type", "application/xhtml+xml");
+        gsf_xml_out_end_element(opfXml);  
+    }
     // </manifest>
     gsf_xml_out_end_element(opfXml);
 
     // <spine>
     gsf_xml_out_start_element(opfXml, "spine");
     gsf_xml_out_add_cstr(opfXml, "toc", "ncx");
+    
+    
+    if (!m_exp_opt.bEpub2)
+    {
+        gsf_xml_out_start_element(opfXml, "itemref");
+        gsf_xml_out_add_cstr(opfXml, "idref","toc");
+        gsf_xml_out_end_element(opfXml);
+    }
+    
     for(std::vector<UT_UTF8String>::iterator i = m_opsId.begin(); i != m_opsId.end(); i++)
     {
         gsf_xml_out_start_element(opfXml, "itemref");
         gsf_xml_out_add_cstr(opfXml, "idref", (*i).utf8_str());
         gsf_xml_out_end_element(opfXml);
     }
+
+
+    
     // </spine>
     gsf_xml_out_end_element(opfXml);
 
     // </package>
     gsf_xml_out_end_element(opfXml);
     gsf_output_close(opf);
-    UT_DEBUGMSG(("RUDYJ R3\n"));
     return compress();
 }
 
@@ -596,4 +849,67 @@ UT_UTF8String IE_Exp_EPUB::getLanguage() const
     {
         return "en_US";
     }
+}
+
+UT_Error IE_Exp_EPUB::doOptions()
+{    
+    XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+
+    if (!pFrame || isCopying()) return UT_OK;
+    if (pFrame)
+    {
+        AV_View * pView = pFrame->getCurrentView();
+        if (pView)
+        {
+            GR_Graphics * pG = pView->getGraphics();
+            if (pG && pG->queryProperties(GR_Graphics::DGP_PAPER))
+            {
+                return UT_OK;
+            }
+        }
+    }
+    /* run the dialog
+     */
+
+    XAP_Dialog_Id id = m_iDialogExport;
+
+    XAP_DialogFactory * pDialogFactory
+            = static_cast<XAP_DialogFactory *> (XAP_App::getApp()->getDialogFactory());
+
+    AP_Dialog_EpubExportOptions* pDialog
+            = static_cast<AP_Dialog_EpubExportOptions*> (pDialogFactory->requestDialog(id));
+
+    if (pDialog == NULL)
+    {
+        return UT_OK;
+    }
+
+    pDialog->setEpubExportOptions(&m_exp_opt, XAP_App::getApp());
+
+    pDialog->runModal(pFrame);
+
+    /* extract what they did
+     */
+    bool bSave = pDialog->shouldSave();
+
+    pDialogFactory->releaseDialog(pDialog);
+
+    if (!bSave)
+    {
+        return UT_SAVE_CANCELLED;
+    }
+    return UT_OK;
+    
+}
+
+void IE_Exp_EPUB::registerDialogs()
+{
+    // Because there is no implementation of export options dialog 
+    // for WIN32 and Mac OS we just use defaults for that platforms
+#ifdef WIN32
+#elif defined TOOLKIT_COCOA
+#else
+    XAP_DialogFactory * pFactory = static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
+	m_iDialogExport = pFactory->registerDialog(ap_Dialog_EpubExportOptions_Constructor, XAP_DLGT_NON_PERSISTENT);
+#endif
 }

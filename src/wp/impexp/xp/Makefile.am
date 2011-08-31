@@ -14,6 +14,18 @@ libxp_la_SOURCES = \
 	ie_exp.h \
 	ie_exp_HTML.cpp \
 	ie_exp_HTML.h \
+	ie_exp_HTML_DocumentWriter.cpp \
+	ie_exp_HTML_DocumentWriter.h \
+	ie_exp_HTML_StyleTree.cpp \
+	ie_exp_HTML_StyleTree.h \
+	ie_exp_HTML_util.cpp \
+	ie_exp_HTML_util.h \
+	ie_exp_HTML_UtilListeners.cpp \
+	ie_exp_HTML_UtilListeners.h \
+	ie_exp_HTML_Listener.cpp \
+	ie_exp_HTML_Listener.h \
+	ie_exp_HTML_NavigationHelper.cpp \
+	ie_exp_HTML_NavigationHelper.h \
 	ie_exp_RTF_AttrProp.cpp \
 	ie_exp_RTF_AttrProp.h \
 	ie_exp_RTF.cpp \

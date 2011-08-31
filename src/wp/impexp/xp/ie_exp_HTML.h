@@ -19,54 +19,47 @@
  * 02111-1307, USA.
  */
 
-
 #ifndef IE_EXP_HTML_H
 #define IE_EXP_HTML_H
 
-#include "ie_exp.h"
-#include "pt_Types.h"
+// External includes
+#include <gsf/gsf-output.h>
 
+class IE_Exp_HTML;
 
-/* NOTE: I'm trying to keep the code similar across versions,
- *       and therefore features are enabled/disabled here:
- */
+// HTML exporter includes
+#include "ie_impexp_HTML.h"
+#include "ie_exp_HTML_util.h"
+#include "ie_exp_HTML_UtilListeners.h"
+#include "ie_exp_HTML_NavigationHelper.h"
+#include "ie_exp_HTML_StyleTree.h"
+#include "ie_exp_HTML_DocumentWriter.h"
+#include "ie_exp_HTML_Listener.h"
+#include "xap_Dlg_HTMLOptions.h"
+
+// Abiword includes
+#include <ut_debugmsg.h>
+#include <ut_assert.h>
+#include <ut_string_class.h>
+#include <ut_go_file.h>
+#include <xap_App.h>
+#include <ie_types.h>
+#include <ie_TOC.h>
+#include <ap_Strings.h>
+#include <xap_Dialog_Id.h>
+#include <xap_DialogFactory.h>
+#include <xap_Frame.h>
+#include <xav_View.h>
+#include <ie_exp.h>
+#include <pt_Types.h>
+#include <ut_path.h>
 
 /* Define if the base unicode char is UCS-4
  */
 #define HTML_UCS4
 
-/* Define if the sniffers need to pass export name to parent
- */
-#define HTML_NAMED_CONSTRUCTORS
-
-/* Define if the [P/X]HTML export options dialog is implemented
- */
-#define HTML_DIALOG_OPTIONS
-
-/* Define if the tables are supported
- */
-#define HTML_TABLES_SUPPORTED
-
-/* Define if meta information is supported
- */
-#define HTML_META_SUPPORTED
-
-/* TODO: Rather than having separate sniffers to differentiate
- *       the exporter's behaviour, should have a dialog box
- *       with options.
- */
-#ifndef HTML_DIALOG_OPTIONS
-#define HTML_ENABLE_HTML4 
-#define HTML_ENABLE_PHTML
-#endif
-#define HTML_ENABLE_MHTML
-
-
-class PD_Document;
-class IE_TOCHelper;
 
 // The exporter/writer for HTML
-
 class ABI_EXPORT IE_Exp_HTML_Sniffer : public IE_ExpSniffer
 {
 	friend class IE_Exp;
@@ -75,83 +68,18 @@ public:
 	IE_Exp_HTML_Sniffer ();
 	virtual ~IE_Exp_HTML_Sniffer () {}
 
-	virtual bool recognizeSuffix (const char * szSuffix);
-	virtual bool getDlgLabels (const char ** szDesc,
-							   const char ** szSuffixList,
+	virtual bool recognizeSuffix (const gchar * szSuffix);
+	virtual bool getDlgLabels (const gchar ** szDesc,
+							   const gchar ** szSuffixList,
 							   IEFileType * ft);
 	virtual UT_Error constructExporter (PD_Document * pDocument,
 										IE_Exp ** ppie);
 
-	virtual UT_Confidence_t supportsMIME (const char * szMimeType);
+	virtual UT_Confidence_t supportsMIME (const gchar * szMimeType);
 };
 
-#ifdef HTML_ENABLE_HTML4
-
-class ABI_EXPORT IE_Exp_HTML4_Sniffer : public IE_ExpSniffer
-{
-	friend class IE_Exp;
-
-public:
-	IE_Exp_HTML4_Sniffer ();
-	virtual ~IE_Exp_HTML4_Sniffer () {}
-
-	virtual bool recognizeSuffix (const char * szSuffix);
-	virtual bool getDlgLabels (const char ** szDesc,
-							   const char ** szSuffixList,
-							   IEFileType * ft);
-	virtual UT_Error constructExporter (PD_Document * pDocument,
-										IE_Exp ** ppie);
-
-	virtual UT_Confidence_t supportsMIME (const char * szMimeType);
-};
-
-#endif /* HTML_ENABLE_HTML4 */
-
-#ifdef HTML_ENABLE_PHTML
-
-class ABI_EXPORT IE_Exp_PHTML_Sniffer : public IE_ExpSniffer
-{
-	friend class IE_Exp;
-
-public:
-	IE_Exp_PHTML_Sniffer ();
-	virtual ~IE_Exp_PHTML_Sniffer () {}
-
-	virtual bool recognizeSuffix (const char * szSuffix);
-	virtual bool getDlgLabels (const char ** szDesc,
-							   const char ** szSuffixList,
-							   IEFileType * ft);
-	virtual UT_Error constructExporter (PD_Document * pDocument,
-										IE_Exp ** ppie);
-};
-
-#endif /* HTML_ENABLE_PHTML */
-
-#ifdef HTML_ENABLE_MHTML
-
-class ABI_EXPORT IE_Exp_MHTML_Sniffer : public IE_ExpSniffer
-{
-	friend class IE_Exp;
-
-public:
-	IE_Exp_MHTML_Sniffer ();
-	virtual ~IE_Exp_MHTML_Sniffer () {}
-
-	virtual bool recognizeSuffix (const char * szSuffix);
-	virtual bool getDlgLabels (const char ** szDesc,
-							   const char ** szSuffixList,
-							   IEFileType * ft);
-	virtual UT_Error constructExporter (PD_Document * pDocument,
-										IE_Exp ** ppie);
-};
-
-#endif /* HTML_ENABLE_MHTML */
-
-
-#include "xap_Dlg_HTMLOptions.h"
-
-
-class s_StyleTree;
+class IE_Exp_HTML_NavigationHelper;
+class IE_Exp_HTML_WriterFactory;
 
 class ABI_EXPORT IE_Exp_HTML : public IE_Exp
 {
@@ -159,11 +87,11 @@ public:
 	IE_Exp_HTML (PD_Document * pDocument);
 	virtual ~IE_Exp_HTML ();
 
-	static bool			RecognizeSuffix (const char * szSuffix);
+	static bool			RecognizeSuffix (const gchar * szSuffix);
 	static UT_Error		StaticConstructor (PD_Document * pDocument,
 										   IE_Exp ** ppie);
-	static bool			GetDlgLabels (const char ** pszDesc,
-									  const char ** pszSuffixList,
+	static bool			GetDlgLabels (const gchar ** pszDesc,
+									  const gchar ** pszSuffixList,
 									  IEFileType * ft);
 	static bool 		SupportsFileType (IEFileType ft);
 
@@ -174,36 +102,35 @@ public:
 	inline void			set_AddIdentifiers(bool enable = true) { m_exp_opt.bAddIdentifiers = enable; }
 	inline void			set_MathMLRenderPNG ( bool enable = true) { m_exp_opt.bMathMLRenderPNG = enable; }
 	inline void			set_SplitDocument ( bool enable = true) { m_exp_opt.bSplitDocument = enable; }
-
-	static void printStyleTree(PD_Document *pDocument, UT_ByteBuf& tree);
-	// Returns alpha-numeric contents of string
-	static UT_UTF8String ConvertToClean(const UT_UTF8String &str);
-
-	UT_UTF8String		getBookmarkFilename(const UT_UTF8String &id);
-	UT_UTF8String		getFilenameByPosition(PT_DocPosition position);
-	UT_UTF8String		getSuffix() const;
+        
+	inline UT_UTF8String		getSuffix() const { return m_suffix; }
+        inline IE_Exp_HTML_NavigationHelper *getNavigationHelper() { return m_pNavigationHelper; }
+        void setWriterFactory(IE_Exp_HTML_WriterFactory *pWriterFactory);
 
 private:
 	UT_Error            _doOptions ();
-	void				_buildStyleTree ();
+        void _buildStyleTree();
 
 protected:
 	virtual UT_Error	_writeDocument ();
-	void				_createChapter(PD_DocumentRange *range, UT_UTF8String &title, bool isIndex);
+	void				_createChapter(PD_DocumentRange *range, const UT_UTF8String &title, bool isIndex);
+        void _createMultipart();
 public:
 	virtual UT_Error	_writeDocument (bool bClipBoard, bool bTemplateBody);
+        bool hasMathML(const UT_UTF8String &file);
 private:
-	s_StyleTree *		m_style_tree;
+    // Returns document writer depending on settings
+	IE_Exp_HTML_StyleTree *		m_style_tree;
+        IE_Exp_HTML_StyleListener *m_styleListener;
 	bool			m_bSuppressDialog;
 	XAP_Exp_HTMLOptions	m_exp_opt;
 	UT_UTF8String       m_sLinkCSS;
 	UT_UTF8String       m_sTitle;
-	std::map<UT_UTF8String, UT_UTF8String> m_bookmarks;
-	IE_TOCHelper *m_toc;
-	int	m_minTOCLevel;
-	int m_minTOCIndex;
 	// We need to know file suffix to create chapters with the same suffix as the main file
 	UT_UTF8String m_suffix;
+        IE_Exp_HTML_NavigationHelper *m_pNavigationHelper;
+        IE_Exp_HTML_WriterFactory *m_pWriterFactory;
+        std::map<UT_UTF8String, bool> m_mathmlFlags;
 };
 
 #endif /* IE_EXP_HTML_H */

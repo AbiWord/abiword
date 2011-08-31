@@ -20,6 +20,9 @@
 #ifndef IE_EXP_EPUB_H_
 #define IE_EXP_EPUB_H_
 
+#include "ie_exp_EPUB_EPUB3Writer.h"
+#include "ap_Dialog_EpubExportOptions.h"
+
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -44,6 +47,8 @@
 #define OPF_MIMETYPE "application/oebps-package+xml"
 #define OCF201_NAMESPACE "urn:oasis:names:tc:opendocument:xmlns:container"
 #define OPF201_NAMESPACE "http://www.idpf.org/2007/opf"
+#define OPS201_NAMESPACE "http://www.idpf.org/2007/ops"
+#define EPUB3_PACKAGE_PROFILE "http://www.idpf.org/epub/30/profile/package/"
 #define DC_NAMESPACE "http://purl.org/dc/elements/1.1/"
 #define NCX_NAMESPACE "http://www.daisy.org/z3986/2005/ncx/"
 class IE_Exp_EPUB: public IE_Exp
@@ -62,10 +67,22 @@ private:
     UT_Error writeContainer();
     UT_Error package();
     UT_Error compress();
-
+    
+    // Methods for EPUB 2.0.1 document generation
+    UT_Error EPUB2_writeStructure();
+    UT_Error EPUB2_writeNavigation();
+    
+    // Methods for EPUB 3 document generation
+    UT_Error EPUB3_writeStructure();
+    UT_Error EPUB3_writeNavigation();
+    
+    
     UT_UTF8String getAuthor() const;
     UT_UTF8String getTitle() const;
     UT_UTF8String getLanguage() const;
+    
+    UT_Error doOptions();
+    void registerDialogs();
 
     static std::vector<UT_UTF8String> getFileList(
             const UT_UTF8String &directory);
@@ -80,6 +97,9 @@ private:
     IE_Exp_HTML *m_pie;
     // Array with file id`s in linear reading order
     std::vector<UT_UTF8String> m_opsId;
+    
+    XAP_Dialog_Id m_iDialogExport;
+    XAP_Exp_EpubExportOptions m_exp_opt;
 };
 
 #endif /* IE_EXP_EPUB_H_ */

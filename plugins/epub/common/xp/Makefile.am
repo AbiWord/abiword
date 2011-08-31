@@ -4,6 +4,7 @@ AM_CPPFLAGS = \
 	$(EPUB_CFLAGS) \
 	-I$(srcdir)/../../imp/xp \
 	-I$(srcdir)/../../exp/xp \
+	-I$(srcdir)/../../dialogs/xp \
 	-DABI_BUILD_VERSION=\"$(VERSION)\"
 
 libxp_la_SOURCES = \
