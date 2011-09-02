@@ -461,6 +461,7 @@ public:
 	void			cmdSelect( const std::pair< PT_DocPosition, PT_DocPosition >& range );
 	void			cmdCharMotion(bool bForward, UT_uint32 count);
 	bool			cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce = false);
+	bool			cmdCharInsert(const std::string& s, bool bForce = false);
 	void			cmdCharDelete(bool bForward, UT_uint32 count);
 	void			delTo(FV_DocPos dp);
 	void            getSelectionText(UT_UCS4Char *& text) const;

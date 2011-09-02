@@ -71,6 +71,8 @@ libxp_la_SOURCES = \
 	ie_imp_RTFParse.h \
 	ie_imp_Text.cpp \
 	ie_imp_Text.h \
+	ie_imp_RDF.cpp \
+	ie_imp_RDF.h \
 	ie_imp_XHTML.cpp \
 	ie_imp_XHTML.h \
 	ie_imp_XML.cpp \

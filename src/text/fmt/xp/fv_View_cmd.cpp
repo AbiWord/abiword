@@ -3400,6 +3400,14 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const gch
 	return e;
 }
 
+bool
+FV_View::cmdCharInsert(const std::string& s, bool bForce)
+{
+	UT_UCS4String t( s );
+	return cmdCharInsert( t.ucs4_str(), t.length(), bForce );
+}
+
+
 bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 {
 	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION

@@ -459,6 +459,60 @@ AM_CONDITIONAL([WITH_REDLAND], test "$WITH_REDLAND" = "1")
 AM_CONDITIONAL([HAVE_REDLAND], test "$WITH_REDLAND" = "1")
 
 
+evolution_data_server_req='libebook-1.2 libecal-1.2'
+AC_ARG_WITH([evolution_data_server], 
+	[AS_HELP_STRING([--with-evolution-data-server], [Use Evolution Data Server to get at contact and calendar information])], 
+[
+	abi_cv_evolution_data_server="$withval"
+],[
+	# use evolution_data_server if detected
+	PKG_CHECK_EXISTS([ $evolution_data_server_req ],
+	[
+		abi_cv_evolution_data_server="yes"
+	], [
+		abi_cv_evolution_data_server="no"
+	])
+])
+
+if test "$abi_cv_evolution_data_server" = "yes"; then
+	opt_pkgs="$opt_pkgs $evolution_data_server_req"
+	AC_DEFINE([WITH_EVOLUTION_DATA_SERVER], [1], [Using evolution_data_server])
+	WITH_EVOLUTION_DATA_SERVER=1
+fi
+
+AC_SUBST([EVOLUTION_DATA_SERVER_CFLAGS])
+AC_SUBST([EVOLUTION_DATA_SERVER_LIBS])
+AM_CONDITIONAL([WITH_EVOLUTION_DATA_SERVER], test "$WITH_EVOLUTION_DATA_SERVER" = "1")
+AM_CONDITIONAL([HAVE_EVOLUTION_DATA_SERVER], test "$WITH_EVOLUTION_DATA_SERVER" = "1")
+
+
+libical_req=' libical >= 0.46 '
+AC_ARG_WITH([libical], 
+	[AS_HELP_STRING([--with-libical], [use libical and raptor libraries])], 
+[
+	abi_cv_libical="$withval"
+],[
+	# use libical if detected
+	PKG_CHECK_EXISTS([ $libical_req ],
+	[
+		abi_cv_libical="yes"
+	], [
+		abi_cv_libical="no"
+	])
+])
+
+if test "$abi_cv_libical" = "yes"; then
+	opt_pkgs="$opt_pkgs $libical_req"
+	AC_DEFINE([WITH_LIBICAL], [1], [Using libical])
+	WITH_LIBICAL=1
+fi
+
+AC_SUBST([LIBICAL_CFLAGS])
+AC_SUBST([LIBICAL_LIBS])
+AM_CONDITIONAL([WITH_LIBICAL], test "$WITH_LIBICAL" = "1")
+AM_CONDITIONAL([HAVE_LIBICAL], test "$WITH_LIBICAL" = "1")
+
+
 #
 # Compiler settings (from gnumeric's configure.in)
 #
@@ -961,6 +1015,8 @@ Optional dependencies:
   gsf-gio               ${abi_cv_gsf_gio}
   goffice               ${abi_cv_goffice}
   redland               ${abi_cv_redland}
+  evolution_data_server ${abi_cv_evolution_data_server}
+  libical               ${abi_cv_libical}
 
 Builtin plugins         ${BUILTIN_PLUGINS}
 Plugins                 ${PLUGINS}

@@ -354,6 +354,8 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
 
     static std::string getSPARQL_LimitedToXMLIDList( const std::list< std::string >& xmlids,
                                                      const std::string& extraPreds = "" );
+
+    std::string makeLegalXMLID( const std::string& s );
     
   protected:
     PD_Document* m_doc;

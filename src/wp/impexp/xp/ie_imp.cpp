@@ -127,6 +127,13 @@ bool IE_Imp::appendStruxFmt(pf_Frag_Strux * pfs, const gchar ** attributes)
 	}
 }
 
+bool IE_Imp::appendSpan ( const std::string& s )
+{
+	UT_UCS4String t( s );
+	return appendSpan( t.ucs4_str(), t.length() );
+}
+
+
 bool IE_Imp::appendSpan (const UT_UCSChar * p, UT_uint32 length)
 {
 	if (!m_isPaste)

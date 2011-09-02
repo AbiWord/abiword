@@ -306,6 +306,8 @@ PD_RDFModel::getUriToPrefix()
         m.insert( std::make_pair( "rdfs",  "http://www.w3.org/2000/01/rdf-schema#" ));
         m.insert( std::make_pair( "dc",    "http://purl.org/dc/elements/1.1/"  ));
         m.insert( std::make_pair( "cal",   "http://www.w3.org/2002/12/cal/icaltzd#"  ));
+
+        m.insert( std::make_pair( "abifoaf",  "http://abicollab.net/rdf/foaf#" ));
     }
     
     return m;   
@@ -539,16 +541,15 @@ bool operator<( PD_URI a, std::pair< PD_URI, PD_URI > b )
 /****************************************/
 
 PD_Object::PD_Object( const std::string& v )
-    :
-    PD_URI(v)
+    : PD_URI(v)
+    , m_objectType( OBJECT_TYPE_URI )
 {
 }
 
 PD_Object::PD_Object( const std::string& v, int objectType, const std::string& type )
-    :
-    PD_URI(v),
-    m_xsdType(type),
-    m_objectType(objectType)
+    : PD_URI(v)
+    , m_xsdType(type)
+    , m_objectType(objectType)
 {
 }
 
@@ -1254,6 +1255,27 @@ PD_DocumentRDF::~PD_DocumentRDF()
 {
     UT_DEBUGMSG(("~PD_DocumentRDF() this:%p\n", this));
 }
+
+std::string
+PD_DocumentRDF::makeLegalXMLID( const std::string& s )
+{
+    std::string ret;
+    for( string::const_iterator iter = s.begin(); iter != s.end(); ++iter )
+    {
+        char ch = *iter;
+        if( ch >= 'a' && ch <= 'z' )
+            ret += ch;
+        else if( ch >= 'A' && ch <= 'Z' )
+            ret += ch;
+        else if( ch >= '0' && ch <= '9' )
+            ret += ch;
+        else
+            ret += '_';
+    }
+
+    return ret;
+}
+
 
 std::string
 PD_DocumentRDF::getSPARQL_LimitedToXMLIDList( const std::list< std::string >& xmlids,

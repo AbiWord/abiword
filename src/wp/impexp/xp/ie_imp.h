@@ -207,6 +207,7 @@ public:
 	virtual bool appendStrux (PTStruxType pts, const gchar ** attributes);
 	virtual bool appendStruxFmt(pf_Frag_Strux * pfs, const gchar ** attributes);
 	virtual bool appendSpan (const UT_UCSChar * p, UT_uint32 length);
+	virtual bool appendSpan ( const std::string& s );
 	virtual bool appendObject (PTObjectType pto, const gchar ** attribs,
 					   const gchar ** props = NULL);
 	virtual bool appendFmt(const gchar ** attributes);

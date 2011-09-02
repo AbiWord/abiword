@@ -35,6 +35,7 @@
 #include "ie_imp_Text.h"
 #include "ie_imp_XHTML.h"
 #include "ie_imp_GraphicAsDocument.h"
+#include "ie_imp_RDF.h"
 
 /* graphics */
 #include "ie_impGraphic.h"
@@ -71,8 +72,13 @@ void IE_ImpExp_RegisterXP ()
 	IE_Imp::registerImporter(new IE_Imp_Text_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_EncodedText_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_XHTML_Sniffer ());
-	
-	IE_Exp::registerExporter(new IE_Exp_AbiWord_1_Sniffer ());
+#ifdef WITH_EVOLUTION_DATA_SERVER
+	IE_Imp::registerImporter(new IE_Imp_RDF_VCard_Sniffer ());
+#endif
+#ifdef WITH_LIBICAL
+	IE_Imp::registerImporter(new IE_Imp_RDF_Calendar_Sniffer ());
+#endif
+    IE_Exp::registerExporter(new IE_Exp_AbiWord_1_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_AWT_Sniffer());
 
 	// HACK - export RTF and claim it's DOC

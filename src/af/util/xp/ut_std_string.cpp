@@ -123,6 +123,17 @@ bool starts_with( const std::string& s, const std::string& starting )
     return !s.compare( 0, starting_len, starting );
 }
 
+std::string replace_all( const std::string& s, char oldc, char newc )
+{
+    std::string ret;
+    for( std::string::const_iterator iter = s.begin(); iter != s.end(); ++iter )
+    {
+        if( *iter == oldc ) ret += newc;
+        else                ret += *iter;
+    }
+    return ret;
+}
+
 std::string UT_XML_cloneNoAmpersands( const std::string& src )
 {
     gchar* rszDest = 0;

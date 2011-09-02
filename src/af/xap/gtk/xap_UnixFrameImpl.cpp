@@ -100,8 +100,11 @@ static const GtkTargetEntry XAP_UnixFrameImpl__knownDragTypes[] = {
 	{(gchar *)"image/tiff", 	0, TARGET_IMAGE},
 	{(gchar *)"image/vnd", 	0, TARGET_IMAGE},
 	{(gchar *)"image/bmp", 	0, TARGET_IMAGE},
-	{(gchar *)"image/x-xpixmap", 	0, TARGET_IMAGE}}
-;
+	{(gchar *)"image/x-xpixmap", 	0, TARGET_IMAGE},
+
+    // RDF types
+    {(gchar *)"text/x-vcard", 0, TARGET_DOCUMENT}
+};
 
 struct DragInfo {
 	GtkTargetEntry * entries;
@@ -532,8 +535,18 @@ s_dndDropEvent(GtkWidget        *widget,
 	}
 	else if (info == TARGET_DOCUMENT)
 	{
-		UT_DEBUGMSG(("JK: Document target as data buffer\n"));
-		s_pasteText (pFrame, targetName, selection_data->data, selection_data->length);
+        if( !strcmp( targetName, "text/x-vcard" ))
+        {
+            UT_DEBUGMSG(("MIQ: Document target is a vcard/contact\n"));
+            
+//            pView->cmdCharInsert( "fred" );
+            s_pasteText (pFrame, targetName, selection_data->data, selection_data->length);
+        }
+        else
+        {
+            UT_DEBUGMSG(("JK: Document target as data buffer\n"));
+            s_pasteText (pFrame, targetName, selection_data->data, selection_data->length);
+        }
 	}
 	else if (info == TARGET_IMAGE)
 	{
