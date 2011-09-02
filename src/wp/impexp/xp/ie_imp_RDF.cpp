@@ -121,10 +121,11 @@ bool IE_Imp_RDF_VCard_Sniffer::getDlgLabels( const char ** pszDesc,
                                              const char ** pszSuffixList,
                                              IEFileType * ft )
 {
-	*pszDesc = "VCard (.vcf, .vcard)";
-	*pszSuffixList = "*.vcf; *.vcard";
-	*ft = getFileType();
-	return true;
+    return false;
+	// *pszDesc = "VCard (.vcf, .vcard)";
+	// *pszSuffixList = "*.vcf; *.vcard";
+	// *ft = getFileType();
+	// return true;
 }
 
 
@@ -145,8 +146,8 @@ IE_Imp_RDF_Calendar_Sniffer::~IE_Imp_RDF_Calendar_Sniffer()
 const IE_SuffixConfidence * IE_Imp_RDF_Calendar_Sniffer::getSuffixConfidence ()
 {
     static IE_SuffixConfidence ret[] = {
-        { "ical",  	    UT_CONFIDENCE_PERFECT 	},
-        { "ics",    	UT_CONFIDENCE_PERFECT 	},
+//        { "ical",  	    UT_CONFIDENCE_PERFECT 	},
+//        { "ics",    	UT_CONFIDENCE_PERFECT 	},
         { "", 	UT_CONFIDENCE_ZILCH 	}
     };
     return ret;
@@ -174,10 +175,11 @@ bool IE_Imp_RDF_Calendar_Sniffer::getDlgLabels( const char ** pszDesc,
                                              const char ** pszSuffixList,
                                              IEFileType * ft )
 {
-	*pszDesc = "Calendar (.ical, .ics)";
-	*pszSuffixList = "*.ical; *.ics";
-	*ft = getFileType();
-	return true;
+    return false;
+	// *pszDesc = "Calendar (.ical, .ics)";
+	// *pszSuffixList = "*.ical; *.ics";
+	// *ft = getFileType();
+	// return true;
 }
 
 
