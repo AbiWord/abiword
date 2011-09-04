@@ -674,3 +674,12 @@ bool IE_Exp_HTML::hasMathML(const UT_UTF8String& file)
         return false;
     }
 }
+
+void IE_Exp_HTML::printStyleTree(PD_Document* pDocument, UT_ByteBuf& sink)
+{
+    IE_Exp_HTML html(pDocument);
+	html._buildStyleTree ();
+
+	StyleListener listener(sink);
+	html.m_style_tree->print(&listener);
+}
