@@ -1,4 +1,5 @@
 #include "fv_ViewDoubleBuffering.h"
+#include "xap_App.h"
 
 #include "gr_Graphics.h"
 #include "gr_Painter.h"
@@ -25,13 +26,18 @@ FV_ViewDoubleBuffering::~FV_ViewDoubleBuffering()
 	this->endDoubleBuffering();
 }
 
+
 void FV_ViewDoubleBuffering::beginDoubleBuffering()
 {
-
 #ifdef DEACTIVATE_FV_VIEW_DOUBLE_BUFFERING
 	return;
 #endif
 
+    // MIQ: in abicommand the gui is likely not shown anyway
+    //      I also noticed some segvs when no-gui && dbuffer
+    if( XAP_App::getApp()->getDisableDoubleBuffering() ) 
+        return;
+    
 	// We will need to direct calls through a painter since it may initialize
 	// the device context on some platforms
 	m_pPainter = new GR_Painter(m_pView->getGraphics());
@@ -59,6 +65,9 @@ void FV_ViewDoubleBuffering::endDoubleBuffering()
 #ifdef DEACTIVATE_FV_VIEW_DOUBLE_BUFFERING
 	return;
 #endif
+
+    if( XAP_App::getApp()->getDisableDoubleBuffering() ) 
+        return;
 
 	if(!m_pView->unregisterDoubleBufferingObject(this))
 		return;

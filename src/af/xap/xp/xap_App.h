@@ -269,7 +269,12 @@ public:
 	bool                        saveState(bool bQuit);
 	bool                        retrieveState();
 	virtual void                clearStateInfo(){};
-	
+
+	bool                        getDisableDoubleBuffering() const;
+	void                        setDisableDoubleBuffering( bool v );
+	bool                        getNoGUI() const;
+	void                        setNoGUI( bool v );
+    
 protected:
 	void						_setAbiSuiteLibDir(const char * sz);
 	virtual const char *				_getKbdLanguage() {return NULL;}
@@ -306,7 +311,8 @@ protected:
 	bool						m_bDebugBool;
 	bool						m_bBonoboRunning;
 	bool						m_bEnableSmoothScrolling;
-
+	bool						m_bDisableDoubleBuffering;
+	bool						m_bNoGUI;
 private:
 	const UT_LangRecord *				m_pKbdLang;
 	UT_UUIDGenerator *				m_pUUIDGenerator;

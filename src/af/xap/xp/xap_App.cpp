@@ -104,7 +104,9 @@ XAP_App::XAP_App(const char * szAppName)
 	  m_iDefaultGraphicsId(0),
 	  m_pInputModes(NULL),
 	  m_pImpl(NULL),
-	  m_pScriptLibrary(NULL)
+	  m_pScriptLibrary(NULL),
+      m_bDisableDoubleBuffering(false),
+      m_bNoGUI(false)
 {
 #ifdef DEBUG
 	_fundamentalAsserts(); // see the comments in the function itself
@@ -1661,3 +1663,29 @@ void XAP_App::_fundamentalAsserts() const
 	UT_ASSERT(sizeof(gchar) == sizeof(char));
 }
 #endif
+
+bool
+XAP_App::getDisableDoubleBuffering() const
+{
+    return m_bDisableDoubleBuffering;
+}
+
+void
+XAP_App::setDisableDoubleBuffering( bool v )
+{
+    m_bDisableDoubleBuffering = v;
+}
+
+bool
+XAP_App::getNoGUI() const
+{
+    return m_bNoGUI;
+}
+
+void
+XAP_App::setNoGUI( bool v )
+{
+    setDisableDoubleBuffering(true);
+    m_bNoGUI = v;
+}
+

@@ -204,6 +204,8 @@ AbiCommand::AbiCommand (void) :
 {
 	m_pApp = XAP_App::getApp ();
 	m_pApp->getGraphicsFactory()->registerAsDefault(GRID_CAIRO_NULL,true);
+    m_pApp->setNoGUI(true); 
+
 }
 
 
@@ -222,6 +224,7 @@ AbiCommand::AbiCommand (bool bAbiCollab) :
 {
 	m_pApp = XAP_App::getApp ();
 	m_pApp->getGraphicsFactory()->registerAsDefault(GRID_CAIRO_NULL,true);
+    m_pApp->setDisableDoubleBuffering(true); 
 }
 
 AbiCommand::~AbiCommand (void)
@@ -364,7 +367,11 @@ AbiCommand::tokenizeString (UT_GenericVector<const UT_UTF8String*> & tok, char *
         int pos = line.find_first_not_of(' ');
         line = line.substr( pos );
         if( starts_with( line, "rdf-context-contains" )
-            || starts_with( line, "rdf-context-show-" ))
+            || starts_with( line, "rdf-mutation-remove" )
+            || starts_with( line, "rdf-context-show-" )
+            || starts_with( line, "rdf-uri-to-prefixed" )
+            || starts_with( line, "rdf-prefixed-to-uri" )
+            )
         {
             std::stringstream ss;
             ss << line;
@@ -449,6 +456,7 @@ streamToString( std::istream& iss )
                std::ostreambuf_iterator<char>(ss));
     return ss.str();
 }
+
 
 
 //
@@ -727,6 +735,24 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
         return -1;
     }
 
+	else if (cmd == "rdf-dump")
+    {
+//        model->dumpModel( "rdf-dump" );
+        int count = 0;
+        PD_RDFModelIterator iter = model->begin();
+        PD_RDFModelIterator    e = model->end();
+        for( ; iter != e; ++iter )
+        {
+            const PD_RDFStatement& st = *iter;
+            cout << "st:" << st.toString().c_str() << endl;
+            ++count;
+        }
+        cout << "size:" << count << endl;
+        
+        return 0;
+    }
+    
+
     //
 	// Clear the context model
 	//
@@ -746,6 +772,7 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
         {
             const UT_UTF8String *pCom1 = pToks->getNthItem (1);
             UT_sint32 pos = atoi (pCom1->utf8_str ());
+            cerr << "pos:" << pos << endl;
             m_rdf_context_model = rdf->getRDFAtPosition( pos );
             return 0;
         }
@@ -793,6 +820,9 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
             pred = rdf->prefixedToURI( pred );
             
             PD_URIList ul = model->getObjects( subj, pred );
+            // always return result in same order for test suite
+            ul.sort(PD_URIListCompare());
+
             for( PD_URIList::iterator iter = ul.begin(); iter!=ul.end(); ++iter )
                 cout << *iter << endl;
             return 0;
@@ -809,6 +839,9 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
             obj  = rdf->prefixedToURI( obj  );
             
             PD_URIList ul = model->getSubjects( pred, obj );
+            // always return result in same order for test suite
+            ul.sort(PD_URIListCompare());
+            
             for( PD_URIList::iterator iter = ul.begin(); iter!=ul.end(); ++iter )
                 cout << *iter << endl;
             return 0;
@@ -830,7 +863,8 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
             cerr << "pred:" << pred << endl;
             cerr << "obj:" << obj << endl;
             cerr << "pToks->getItemCount():" << pToks->getItemCount() << endl;
-            cout << model->contains( subj, pred, obj ) << endl;
+            int rc = model->contains( subj, pred, obj );
+            cout << rc << endl;
             return 0;
         }
         return -1;
@@ -995,6 +1029,8 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
     }
  	else if ( cmd == "rdf-mutation-remove")
     {
+        cerr << "toks:" << pToks->getItemCount() << endl;
+        
         if( m_rdf_mutation && pToks->getItemCount () > 3)
         {
             const UT_UTF8String *pComS = pToks->getNthItem (1);
@@ -1284,6 +1320,7 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
 		printf ("                              \n");
 		printf ("rdf-import <src>               - load all RDF from an RDF/XML file at <src> into the document\n");
 		printf ("rdf-export <dst>               - save all document RDF to an RDF/XML file at <dst>\n");
+		printf ("rdf-dump                       - show RDF from current context on console\n");
 		printf ("rdf-clear-context-model        - RDF can at times use a context model which is a subset of\n");
 		printf ("                                 all the RDF associated with the document.\n");
 		printf ("                                 This command clears that and uses all the RDF again.\n");

@@ -1231,6 +1231,9 @@ PangoFont *  GR_CairoGraphics::_adjustedLayoutPangoFont (GR_PangoFont * pFont, P
 */
 void GR_CairoGraphics::renderChars(GR_RenderInfo & ri)
 {
+    if( XAP_App::getApp()->getNoGUI() ) 
+		return;
+	
 	UT_return_if_fail(ri.getType() == GRRI_CAIRO_PANGO);
 	UT_ASSERT(m_cr);
 	GR_PangoRenderInfo & RI = (GR_PangoRenderInfo &)ri;

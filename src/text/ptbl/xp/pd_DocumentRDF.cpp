@@ -2569,8 +2569,10 @@ class ABI_EXPORT PD_RDFMutation_XMLIDLimited
         PD_RDFStatement rdflink( s,
                                  PD_URI("http://docs.oasis-open.org/opendocument/meta/package/common#idref"),
                                  PD_Literal(m_writeID) );
+        UT_DEBUGMSG(("XMLIDLimited::add() testing document for existing rdflink\n" ));
         if( !m_rdf->contains( rdflink ))
         {
+            UT_DEBUGMSG(("XMLIDLimited::add() document does not contain the rdflink\n" ));
             rc &= m_delegate->add( rdflink );
         }
         
@@ -2795,10 +2797,18 @@ void PD_DocumentRDFMutation::apRemove( PP_AttrProp*& AP, const PD_URI& s, const 
 
 bool PD_DocumentRDFMutation::add( const PD_URI& s, const PD_URI& p, const PD_Object& o )
 {
+    UT_DEBUGMSG(("PD_DocumentRDFMutation::add(1) s:%s o:%s\n", s.toString().c_str(), o.toString().c_str() ));
     // If it already exists and was not removed
     // then you can't add it again
     if( m_rdf->contains( s, p, o ) && !m_rdf->apContains( m_crRemoveAP, s, p, o ))
-        return false;
+        return true;
+
+    // If this mutation has added it but not already committed that addition
+    // to the document then do not add it again either
+    if( m_rdf->apContains( m_crAddAP, s, p, o ) && !m_rdf->apContains( m_crRemoveAP, s, p, o ))
+        return true;
+
+    UT_DEBUGMSG(("PD_DocumentRDFMutation::add(2) s:%s o:%s\n", s.toString().c_str(), o.toString().c_str() ));
     
     apAdd( m_pAP, s, p, o );
     apAdd( m_crAddAP, s, p, o );
