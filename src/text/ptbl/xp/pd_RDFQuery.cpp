@@ -580,11 +580,20 @@ static librdf_model* getRedlandModel( PD_RDFModelHandle abimodel )
     return model;
 }
 
-
+/**
+ * Perpare to execute a SPARQL query on the submodel 'm' of the whole
+ * document RDF 'rdf'. If you want to execute the query against all
+ * the RDF for a document omit the submodel PD_RDFModelHandle
+ * parameter 'm'.
+ */
 PD_RDFQuery::PD_RDFQuery( PD_DocumentRDFHandle rdf, PD_RDFModelHandle m )
     : m_rdf(rdf)
     , m_model(m)
 {
+    if( !m_model )
+    {
+        m_model = m_rdf;
+    }
 }
 
 PD_RDFQuery::~PD_RDFQuery()

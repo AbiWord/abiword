@@ -45,7 +45,7 @@ class ABI_EXPORT PD_RDFQuery
     PD_DocumentRDFHandle m_rdf;
     PD_RDFModelHandle    m_model;
   public:
-    PD_RDFQuery( PD_DocumentRDFHandle rdf, PD_RDFModelHandle m );
+    PD_RDFQuery( PD_DocumentRDFHandle rdf, PD_RDFModelHandle m = PD_RDFModelHandle() );
     ~PD_RDFQuery();
 
     PD_ResultBindings_t executeQuery( const std::string& sparql );
