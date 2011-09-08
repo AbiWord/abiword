@@ -294,8 +294,18 @@ void XAP_Win32DialogHelper::getControlText(	UT_sint32 controlId,
 											LPSTR p_buffer,
 											UT_sint32 Buffer_length) const
 {
+	LPWSTR buf;
+	UINT   len;
+	UT_Win32LocaleString str;
+
 	_assertValidDlgHandle(m_hDlg);
-	GetDlgItemText(m_hDlg, controlId, p_buffer, Buffer_length);
+	len=GetWindowTextLengthW(GetDlgItem(m_hDlg, controlId));
+	buf=g_new(WCHAR,len+1);
+	GetDlgItemTextW(m_hDlg, controlId, buf, len+1);
+	str.fromLocale(buf);
+	FREEP(buf);
+	// FIXME: validation
+	strncpy(p_buffer,str.utf8_str().utf8_str(),Buffer_length);
 }
 
 bool XAP_Win32DialogHelper::isControlVisible(UT_sint32 controlId) const
