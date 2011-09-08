@@ -279,13 +279,13 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 	LOGFONTW lf;
 	memset(&lf, 0, sizeof(lf));
 
-	wcscpy(lf.lfFaceName, L"MS Sans Serif");
+	wcscpy(lf.lfFaceName, L"MS Shell Dlg 2");
 	
-	lf.lfHeight = 12;
+	lf.lfHeight = 13;
 	lf.lfWeight = 0;
 	HFONT hfontPrimary = CreateFontIndirectW(&lf);
 
-	lf.lfHeight = 6;
+	lf.lfHeight = 12;
 	lf.lfWeight = 0;
 	HFONT hfontSmall = CreateFontIndirectW(&lf);
 
