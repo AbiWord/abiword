@@ -449,7 +449,7 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 	}
 
 	UT_sint32 place = getPositionInList(pLayout,depth);
-	if(place == -1)
+	if (place == -1)
 	{
 		//	       UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		labelStr[0] = 0;
@@ -462,9 +462,14 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 	if(IS_NUMBERED_LIST_TYPE(m_List_Type))
 	{
 		psz = strlen(leftDelim);
-		for (i = 0; i < psz; i++)
+		char *pSrc = leftDelim;
+		char *pLim = leftDelim + psz;
+		while (pSrc < pLim)
 		{
-			labelStr[(*insPoint)++] = CONV_TO_UCS leftDelim[i];
+			UT_UCS4Char ch = g_utf8_get_char_validated(pSrc,psz-i);
+			if (((signed)ch) < 0) ch=UCS_REPLACECHAR;
+			labelStr[(*insPoint)++] = ch;
+			pSrc = g_utf8_next_char(pSrc);
 		}
 	}
 	switch( m_List_Type)
@@ -596,9 +601,14 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 	    (g_ascii_strncasecmp(m_pszDecimal,rightDelim,4) != 0 || depth == 0) )
 	{
 		psz = strlen(rightDelim);
-		for (i = 0; i < psz; i++)
+		char *pSrc = rightDelim;
+		char *pLim = rightDelim + psz;
+		while (pSrc < pLim)
 		{
-			labelStr[(*insPoint)++] =  CONV_TO_UCS rightDelim[i];
+			UT_UCS4Char ch = g_utf8_get_char_validated(pSrc,psz-i);
+			if (((signed)ch) < 0) ch=UCS_REPLACECHAR;
+			labelStr[(*insPoint)++] = ch;
+			pSrc = g_utf8_next_char(pSrc);
 		}
 	}
 	labelStr[(*insPoint)] = 0;
@@ -1127,6 +1137,7 @@ void fl_AutoNum::update(UT_uint32 start)
 	if(!_updateItems(start, NULL))
 		return;
 	void * sdh = const_cast<void *>( getFirstItem());
+	UT_return_if_fail(sdh);
 	if (m_pParent && !m_pParent->isUpdating())
 	{
 		UT_uint32 ndx = m_pParent->m_pItems.findItem(sdh);
