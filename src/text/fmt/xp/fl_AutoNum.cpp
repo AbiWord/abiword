@@ -466,7 +466,7 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 		char *pLim = leftDelim + psz;
 		while (pSrc < pLim)
 		{
-			UT_UCS4Char ch = g_utf8_get_char_validated(pSrc,psz-i);
+			UT_UCS4Char ch = g_utf8_get_char_validated(pSrc,pLim-pSrc);
 			if (((signed)ch) < 0) ch=UCS_REPLACECHAR;
 			labelStr[(*insPoint)++] = ch;
 			pSrc = g_utf8_next_char(pSrc);
@@ -605,7 +605,7 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 		char *pLim = rightDelim + psz;
 		while (pSrc < pLim)
 		{
-			UT_UCS4Char ch = g_utf8_get_char_validated(pSrc,psz-i);
+			UT_UCS4Char ch = g_utf8_get_char_validated(pSrc,pLim-pSrc);
 			if (((signed)ch) < 0) ch=UCS_REPLACECHAR;
 			labelStr[(*insPoint)++] = ch;
 			pSrc = g_utf8_next_char(pSrc);
