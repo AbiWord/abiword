@@ -4,6 +4,7 @@
 #include <cairo-win32.h>
 
 #include <xap_Win32App.h>
+#include "xap_EncodingManager.h"
 #include <xap_Win32Res_Cursors.rc2>
 #include "ut_Win32OS.h"
 
@@ -90,6 +91,7 @@ GR_Graphics *GR_Win32CairoGraphics::graphicsAllocator(GR_AllocInfo& info)
 
 GR_Image * GR_Win32CairoGraphics::genImageFromRectangle(const UT_Rect & r)
 {
+	return NULL;
 	// TODO: adapted from Win32Graphics, should get more cairo into this
 
 	// set up the rectangle
@@ -253,47 +255,12 @@ BITMAPINFO * GR_Win32CairoGraphics::ConvertDDBToDIB(HBITMAP bitmap, HPALETTE hPa
 
 void GR_Win32CairoGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndex)
 {
-	// save the current state and reset clip
-	cairo_save(m_cr);
-	cairo_reset_clip(m_cr);
-
-	// set up the rectangle
-	cairo_rectangle_t cachedRectangle;
-	cachedRectangle.x = static_cast<float>(_tduX(r.left));
-	cachedRectangle.y = static_cast<float>(_tduY(r.top ));
-	cachedRectangle.width  = static_cast<float>(_tduR(r.width ));
-	cachedRectangle.height = static_cast<float>(_tduR(r.height));
-
-	// set the new surface and free the old one
-	// TODO: should check things before blindly destroying the old surface
-	cairo_surface_t *oldCachedSurface = NULL;
-	cairo_surface_t *cachedSurface = _getCairoSurfaceFromContext(m_cr, cachedRectangle);
-	m_surfaceCache.setNthItem(iIndex, cachedSurface, &oldCachedSurface);
-	cairo_surface_destroy(oldCachedSurface);
-
-	// do the same for the rectangle
-	if(m_rectangleCache.size() <= iIndex)
-		m_rectangleCache.resize(iIndex + 1);
-	m_rectangleCache[iIndex] = cachedRectangle;
-
-	// restore the current state
-	cairo_restore(m_cr);
+	
 }
 
 void GR_Win32CairoGraphics::restoreRectangle(UT_uint32 iIndex)
 {
-	// retrieve rectangle & surface from cache
-	cairo_rectangle_t& cachedRectangle = m_rectangleCache[iIndex];
-	cairo_surface_t* cachedSurface = m_surfaceCache.getNthItem(iIndex);
-
-	cairo_save(m_cr);
-	cairo_reset_clip(m_cr);
-
-	// actuall restore
-	cairo_set_source_surface(m_cr, cachedSurface, cachedRectangle.x, cachedRectangle.y);
-	cairo_paint(m_cr);
-
-	cairo_restore(m_cr);
+	
 }
 
 void GR_Win32CairoGraphics::setCursor(GR_Graphics::Cursor c)
@@ -469,6 +436,25 @@ void GR_Win32CairoGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest, UT_sint32
 GR_Font* GR_Win32CairoGraphics::getGUIFont(void)
 {
 	return NULL;
+
+	if(!m_pPFontGUI)
+	{
+		HFONT f = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
+		LOGFONTW lf;
+		GetObjectW(f, sizeof(LOGFONTW), &lf);
+		
+		UT_UTF8String langStr = XAP_EncodingManager::get_instance()->getLanguageISOName();
+		const char * pCountry = XAP_EncodingManager::get_instance()->getLanguageISOTerritory();
+		if(pCountry)
+		{
+			langStr += "-";
+			langStr += pCountry;
+		}
+		
+//		m_pPFontGUI = new GR_PangoFont((char*)lf.lfFaceName, 11.0, this, langStr.utf8_str(), true);
+		m_pPFontGUI = new GR_PangoFont("Times New Roman,    ", 12.0, this, langStr.utf8_str(), true);
+	}
+	return m_pPFontGUI;
 }
 
 UT_RGBColor GR_Win32CairoGraphics::translateWinColor(DWORD c)
