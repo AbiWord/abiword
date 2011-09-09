@@ -127,3 +127,8 @@ void AP_Dialog_EpubExportOptions::set_RenderMathMlToPng(bool enable)
 {
     m_exp_opt->bRenderMathMLToPNG = enable;
 }
+
+bool AP_Dialog_EpubExportOptions::shouldSave() const
+{
+	return m_bShouldSave;
+}

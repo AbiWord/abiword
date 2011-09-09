@@ -34,7 +34,7 @@ struct XAP_Exp_EpubExportOptions
     bool bEpub2;
 };
 
-class ABI_EXPORT AP_Dialog_EpubExportOptions : public XAP_Dialog_NonPersistent
+class AP_Dialog_EpubExportOptions : public XAP_Dialog_NonPersistent
 {
 public:
     AP_Dialog_EpubExportOptions(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -43,7 +43,7 @@ public:
 
     virtual void runModal(XAP_Frame * pFrame) = 0;
 
-    bool shouldSave() const { return m_bShouldSave; }
+    bool shouldSave() const;
 
     void setEpubExportOptions(XAP_Exp_EpubExportOptions * exp_opt, XAP_App * app);
     static void getEpubExportDefaults(XAP_Exp_EpubExportOptions * exp_opt, XAP_App * app);
