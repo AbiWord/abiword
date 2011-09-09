@@ -64,7 +64,7 @@ UT_Error IE_Exp_EPUB::_writeDocument()
 
     // mimetype must a first file in archive
     GsfOutput *mimetype = gsf_outfile_new_child_full(m_root, "mimetype", FALSE,
-            "compression-level", 0, NULL);
+        "compression-level", 0, NULL);
     gsf_output_write(mimetype, strlen(EPUB_MIMETYPE),
             (const guint8*) EPUB_MIMETYPE);
     gsf_output_close(mimetype);
@@ -593,8 +593,11 @@ UT_Error IE_Exp_EPUB::package()
 
     // <manifest>
     gsf_xml_out_start_element(opfXml, "manifest");
-    std::vector<UT_UTF8String> listing = getFileList(
-            m_oebpsDir.substr(7, m_oebpsDir.length() - 7));
+	gchar *basedir = g_filename_from_uri(m_oebpsDir.utf8_str(),NULL,NULL);
+	UT_ASSERT(basedir);
+	UT_UTF8String _baseDir = basedir;
+    std::vector<UT_UTF8String> listing = getFileList(_baseDir);
+	FREEP(basedir);
 
     for (std::vector<UT_UTF8String>::iterator i = listing.begin(); i
             != listing.end(); i++)
@@ -663,7 +666,7 @@ UT_Error IE_Exp_EPUB::package()
 std::vector<UT_UTF8String> IE_Exp_EPUB::getFileList(
         const UT_UTF8String &directory)
 {
-    std::vector<UT_UTF8String> result;
+	std::vector<UT_UTF8String> result;
     std::vector<UT_UTF8String> dirs;
 
     dirs.push_back(directory);
@@ -743,7 +746,7 @@ UT_Error IE_Exp_EPUB::compress()
 
     UT_go_file_remove((m_oebpsDir + G_DIR_SEPARATOR_S + "index.xhtml_files").utf8_str(), NULL);
     UT_go_file_remove(m_oebpsDir.utf8_str(), NULL);
-    return UT_OK;
+	return UT_OK;
 }
 
 void IE_Exp_EPUB::closeNTags(GsfXMLOut* xml, int n)
@@ -905,8 +908,10 @@ UT_Error IE_Exp_EPUB::doOptions()
 void IE_Exp_EPUB::registerDialogs()
 {
     // Because there is no implementation of export options dialog 
-    // for WIN32 and Mac OS we just use defaults for that platforms
+    // for Mac OS we just use defaults for that platform
 #ifdef WIN32
+    XAP_DialogFactory * pFactory = static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
+	m_iDialogExport = pFactory->registerDialog(ap_Dialog_EpubExportOptions_Constructor, XAP_DLGT_NON_PERSISTENT);
 #elif defined TOOLKIT_COCOA
 #else
     XAP_DialogFactory * pFactory = static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
