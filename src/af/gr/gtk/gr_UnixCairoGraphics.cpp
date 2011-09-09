@@ -412,52 +412,6 @@ void GR_UnixCairoGraphics::_resetClip(void)
 #endif
 }
 
-void GR_UnixCairoGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
-{
-	UT_Rect* oldR = NULL;	
-	cairo_save(m_cr);
-	cairo_reset_clip(m_cr);
-	m_vSaveRect.setNthItem(iIndx, new UT_Rect(r),&oldR);
-	if(oldR) {
-		delete oldR;
-	}
-
-	GdkPixbuf * oldC = NULL;
-	UT_sint32 idx = _tduX(r.left);
-	UT_sint32 idy = _tduY(r.top);
-	UT_sint32 idw = _tduR(r.width);
-	UT_sint32 idh = _tduR(r.height);
-	cairo_surface_flush ( cairo_get_target(m_cr));
-
-	GdkPixbuf * pix = gdk_pixbuf_get_from_drawable(NULL,
-												   _getDrawable(),
-												   NULL,
-												   idx, idy, 0, 0,
-												   idw, idh);
-	m_vSaveRectBuf.setNthItem(iIndx, pix, &oldC);
-
-	if(oldC)
-		g_object_unref (G_OBJECT (oldC));
-	cairo_restore(m_cr);
-}	
-
-void GR_UnixCairoGraphics::restoreRectangle(UT_uint32 iIndx)
-{
-	cairo_save(m_cr);
-	cairo_reset_clip(m_cr);
-	UT_Rect * r = m_vSaveRect.getNthItem(iIndx);
-	GdkPixbuf *p = m_vSaveRectBuf.getNthItem(iIndx);
-	UT_sint32 idx = _tduX(r->left);
-	UT_sint32 idy = _tduY(r->top);
-	cairo_surface_flush ( cairo_get_target(m_cr));
-
-	if (p && r)
-		gdk_draw_pixbuf (_getDrawable(), NULL, p, 0, 0,
-						 idx, idy,
-						 -1, -1, GDK_RGB_DITHER_NONE, 0, 0);
-	cairo_restore(m_cr);
-}
-
 /*!
  * Take a screenshot of the graphics and convert it to an image.
  */
