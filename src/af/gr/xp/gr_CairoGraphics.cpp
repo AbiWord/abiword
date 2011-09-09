@@ -3755,8 +3755,43 @@ UT_uint32 adobeDingbatsToUnicode(UT_uint32 c)
 		return c;
 }
 
-// already defined in win32graphics
-#if 0
+void GR_CairoGraphics::saveRectangle(UT_Rect &r, UT_uint32 iIndex)
+{
+	UT_Rect * oldR = NULL;
+	cairo_save(m_cr);
+	cairo_reset_clip(m_cr);
+	m_vSaveRect.setNthItem(iIndex, new UT_Rect(r), &oldR);
+	if(oldR) delete oldR;
+	cairo_rectangle_t cacheRect;
+	cacheRect.x = -static_cast<double>(_tduX(r.left));
+	cacheRect.y = -static_cast<double>(_tduY(r.top ));
+	cacheRect.width  = static_cast<double>(_tduR(r.width ));
+	cacheRect.height = static_cast<double>(_tduR(r.height));
+	cairo_surface_flush(cairo_get_target(m_cr));
+	cairo_surface_t* oldC = NULL;
+	cairo_surface_t* newC = _getCairoSurfaceFromContext(m_cr, cacheRect);
+	m_vSaveRectBuf.setNthItem(iIndex, newC, &oldC);
+	cairo_surface_destroy(oldC);
+	cairo_restore(m_cr);
+}
+
+void GR_CairoGraphics::restoreRectangle(UT_uint32 iIndex)
+{
+	cairo_save(m_cr);
+	cairo_reset_clip(m_cr);
+	UT_Rect *r = m_vSaveRect.getNthItem(iIndex);
+	cairo_surface_t *s = m_vSaveRectBuf.getNthItem(iIndex);
+	double idx = static_cast<double>(_tduX(r->left)) - 0.5;
+	double idy = static_cast<double>(_tduY(r->top)) - 0.5;
+	cairo_surface_flush(cairo_get_target(m_cr));
+	if(s && r)
+	{
+		cairo_set_source_surface(m_cr, s, idx, idy);
+		cairo_paint(m_cr);
+	}
+	cairo_restore(m_cr);
+}
+
 void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 										 FontFamilyEnum * pff,
 										 FontPitchEnum * pfp,
@@ -3775,4 +3810,3 @@ void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 	*pfp = FP_Unknown;
 	*pbTrueType = true;
 }
-#endif

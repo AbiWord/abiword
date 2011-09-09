@@ -320,8 +320,8 @@ public:
 	//						   UT_sint32 x_src, UT_sint32 y_src,
 	//						   UT_sint32 width, UT_sint32 height);
 
-	// virtual void	    saveRectangle(UT_Rect & r, UT_uint32 iIndx);
-	// virtual void	    restoreRectangle(UT_uint32 iIndx);
+	virtual void	    saveRectangle(UT_Rect & r, UT_uint32 iIndx);
+	virtual void	    restoreRectangle(UT_uint32 iIndx);
 	// virtual GR_Image *  genImageFromRectangle(const UT_Rect & r);
 
 	virtual void setLineProperties(double inWidth, 
@@ -430,6 +430,9 @@ private:
 	static int s_iMaxScript;
 	/** common private init for pango called from the constructor */
 	void _initPango();
+	
+	UT_GenericVector<UT_Rect*> m_vSaveRect;
+	UT_GenericVector<cairo_surface_t*> m_vSaveRectBuf;
 };
 
 
