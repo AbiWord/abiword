@@ -868,37 +868,6 @@ GR_Image * GR_CocoaCairoGraphics::genImageFromRectangle(const UT_Rect & r)
 	return img;
 }
 
-
-void GR_CocoaCairoGraphics::saveRectangle(UT_Rect & rect,  UT_uint32 iIndx)
-{
-	cairo_rectangle_t cacheRect;
-	cacheRect.x = static_cast<float>(_tduX(rect.left)) - 1.0f;
-	cacheRect.y = static_cast<float>(_tduY(rect.top )) - 1.0f;
-	cacheRect.width  = static_cast<float>(_tduR(rect.width )) + 2.0f;
-	cacheRect.height = static_cast<float>(_tduR(rect.height)) + 2.0f;
-
-	NSRect bounds = [m_pWin bounds];
-	if (cacheRect.height > bounds.size.height - cacheRect.y) {
-		cacheRect.height = bounds.size.height - cacheRect.y;
-	}
-	cairo_surface_t * cache;
-	cache = _getCairoSurfaceFromContext(m_cr, cacheRect);
-	cairo_surface_t * old = m_cacheArray[iIndx];
-	m_cacheArray[iIndx] = cache;
-	cairo_surface_destroy(old);
-	m_cacheRectArray[iIndx] = cacheRect;
-}
-
-
-void GR_CocoaCairoGraphics::restoreRectangle(UT_uint32 iIndx)
-{
-	const cairo_rectangle_t & cacheRect = m_cacheRectArray[iIndx];
-	cairo_surface_t * cache = m_cacheArray[iIndx];
-	cairo_set_source_surface(m_cr, cache, cacheRect.x, cacheRect.y);
-	cairo_paint(m_cr);
-}
-
-
 float	GR_CocoaCairoGraphics::_getScreenResolution(void)
 {
 	static float fResolution = 0.0;

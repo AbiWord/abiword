@@ -90,8 +90,6 @@ public:
 	virtual void		scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						   UT_sint32 x_src, UT_sint32 y_src,
 						   UT_sint32 width, UT_sint32 height);
-	virtual void	    saveRectangle(UT_Rect & r, UT_uint32 iIndx);
-	virtual void	    restoreRectangle(UT_uint32 iIndx);
 	virtual GR_Image *  genImageFromRectangle(const UT_Rect & r);
 
 	virtual void _beginPaint ();
