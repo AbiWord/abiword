@@ -1440,6 +1440,7 @@ void GR_Win32Graphics::fillRect(GR_Color3D c, UT_Rect &r)
 // in platform code.
 //////////////////////////////////////////////////////////////////
 
+#ifndef WITH_CAIRO
 void GR_Font::s_getGenericFontProperties(const char * szFontName,
 										 FontFamilyEnum * pff,
 										 FontPitchEnum * pfp,
@@ -1512,6 +1513,7 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 
 	return;
 }
+#endif
 
 /*!
     hdc - the primary hdc on which we are expected to draw

@@ -253,16 +253,6 @@ BITMAPINFO * GR_Win32CairoGraphics::ConvertDDBToDIB(HBITMAP bitmap, HPALETTE hPa
 	return (BITMAPINFO*)hDIB;
 }
 
-void GR_Win32CairoGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndex)
-{
-	
-}
-
-void GR_Win32CairoGraphics::restoreRectangle(UT_uint32 iIndex)
-{
-	
-}
-
 void GR_Win32CairoGraphics::setCursor(GR_Graphics::Cursor c)
 {
 	m_cursor = c;

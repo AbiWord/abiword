@@ -65,8 +65,6 @@ public:
 	virtual void		   scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						   UT_sint32 x_src, UT_sint32 y_src,
 						   UT_sint32 width, UT_sint32 height);
-	virtual void		   saveRectangle(UT_Rect & r, UT_uint32 iIndx);
-	virtual void		   restoreRectangle(UT_uint32 iIndx);
 	virtual GR_Image *	   genImageFromRectangle(const UT_Rect & r);
 	
 	virtual void		   init3dColors();
@@ -86,8 +84,6 @@ private:
 	HWND m_hwnd;
 	double m_fXYRatio;
 	bool m_bDoubleBuffered;
-	std::vector<cairo_rectangle_t> m_rectangleCache;
-	UT_GenericVector<cairo_surface_t*> m_surfaceCache;
 };
 
 #endif
