@@ -27,8 +27,11 @@ IE_Exp_EPUB::IE_Exp_EPUB(PD_Document * pDocument) :
     m_pie(NULL)
 {
     registerDialogs();
+//FIXME:FIDENCIO: Remove this clause when Cocoa's dialog is implemented
+#ifndef TOOLKIT_COCOA
     AP_Dialog_EpubExportOptions::getEpubExportDefaults(
     &m_exp_opt, XAP_App::getApp());
+#endif
 }
 IE_Exp_EPUB::~IE_Exp_EPUB()
 {
@@ -871,6 +874,11 @@ UT_Error IE_Exp_EPUB::doOptions()
             }
         }
     }
+
+//FIXME:FIDENCIO: Remove this clause when Cocoa's dialog is implemented
+#ifdef TOOLKIT_COCOA
+    return UT_OK;
+#else
     /* run the dialog
      */
 
@@ -902,7 +910,7 @@ UT_Error IE_Exp_EPUB::doOptions()
         return UT_SAVE_CANCELLED;
     }
     return UT_OK;
-    
+#endif
 }
 
 void IE_Exp_EPUB::registerDialogs()

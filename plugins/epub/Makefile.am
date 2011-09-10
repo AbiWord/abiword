@@ -1,4 +1,9 @@
-SUBDIRS = common imp exp dialogs
+SUBDIRS = common imp exp
+
+#FIXME:FIDENCIO: Remove this clause when Cocoa's dialog is implemented
+if !TOOLKIT_COCOA
+SUBDIRS += dialogs
+endif
 
 if EPUB_BUILTIN
 noinst_LTLIBRARIES = epub.la
@@ -11,10 +16,13 @@ plugin_LTLIBRARIES = epub.la
 endif
 
 epub_la_LIBADD = \
-	dialogs/libdialogs.la\
 	common/libcommon.la \
 	imp/libimp.la \
 	exp/libexp.la 
+#FIXME:FIDENCIO: Remove this clause when Cocoa's dialog is implemented
+if !TOOLKIT_COCOA
+epub_la_LIBADD += dialogs/libdialogs.la
+endif
 
 epub_la_LDFLAGS = \
 	$(EPUB_LIBS) \
