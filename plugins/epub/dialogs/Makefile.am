@@ -1,4 +1,4 @@
-SUBDIRS = @PLATFORM@ xp 
+SUBDIRS = @TOOLKIT@ xp 
 
 noinst_LTLIBRARIES = libdialogs.la
 
