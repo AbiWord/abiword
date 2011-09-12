@@ -908,6 +908,7 @@ AP_StatusBar *  PD_Document::getStatusBar(void)
 		if(pData)
 			return static_cast<AP_StatusBar *>(pData->m_pStatusBar);
 	}
+	return NULL;
 }
 
 UT_Error PD_Document::createRawDocument(void)

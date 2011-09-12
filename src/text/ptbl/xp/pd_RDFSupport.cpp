@@ -22,7 +22,9 @@
  */
 
 #include "pd_RDFSupport.h"
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
 #include "ut_debugmsg.h"
 
 #include <sstream>
@@ -104,6 +106,7 @@ convertRedlandToNativeModel( PD_DocumentRDFMutationHandle m,
         
     librdf_free_stream( stream );
     librdf_free_statement( statement );
+	return UT_OK;
 }
    
 

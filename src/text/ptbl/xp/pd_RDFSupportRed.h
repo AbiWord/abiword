@@ -30,8 +30,8 @@
 librdf_world* getWorld();
 std::string tostr( librdf_node* n );
 librdf_statement* toRedland( const PD_RDFStatement& st );
-std::string toString( librdf_uri *node );
-std::string toString( librdf_node *node );
+ABI_EXPORT std::string toString( librdf_uri *node );
+ABI_EXPORT std::string toString( librdf_node *node );
 
 struct RedStatementHolder
 {
@@ -59,7 +59,7 @@ public:
  * by this class, so if you declaure a RDFArguments on the stack, RAII
  * will deallocate the world, parser, and model for you. Less to possibly leak.
  */
-class RDFArguments
+class ABI_EXPORT RDFArguments
 {
 public:
     librdf_world*   world;
