@@ -22,7 +22,7 @@
 #define _XAP_GTKOBJECTHOLDER_H_
 
 
-/** A simple class to hold a scoped ref on a GtkObject */
+/** A simple class to hold a scoped ref on a GObject */
 template <class T>
 class XAP_GtkObjectHolder
 {

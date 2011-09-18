@@ -85,7 +85,7 @@ void  AP_UnixDialog_Latex::activate(void)
 	
 	ConstructWindowName();
 
-	gdk_window_raise (m_windowMain->window);
+	gdk_window_raise (gtk_widget_get_window(m_windowMain));
 }
 
 void AP_UnixDialog_Latex::runModeless(XAP_Frame * pFrame)

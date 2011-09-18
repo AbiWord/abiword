@@ -229,7 +229,7 @@ void AP_UnixDialog_FormatTOC::destroy(void)
 void AP_UnixDialog_FormatTOC::activate(void)
 {
 	UT_ASSERT (m_windowMain);
-	gdk_window_raise (m_windowMain->window);
+	gdk_window_raise (gtk_widget_get_window(m_windowMain));
 }
 
 

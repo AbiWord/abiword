@@ -556,7 +556,7 @@ AP_UnixDialog_Goto::constuctWindow (XAP_Frame * /*pFrame*/)
 void 
 AP_UnixDialog_Goto::updateWindow ()
 {
-	UT_DEBUGMSG (("ROB: updateWindow () #bookmarks='%d', mapped='%d'\n", getExistingBookmarksCount(), GTK_WIDGET_MAPPED(m_wDialog)));
+	UT_DEBUGMSG (("ROB: updateWindow () #bookmarks='%d', mapped='%d'\n", getExistingBookmarksCount(), gtk_widget_get_mapped(m_wDialog)));
 
 	ConstructWindowName ();
 	gtk_window_set_title (GTK_WINDOW (m_wDialog), m_WindowName);

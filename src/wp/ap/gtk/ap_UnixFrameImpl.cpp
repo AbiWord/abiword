@@ -190,14 +190,14 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 	m_iVScrollSignal = g_signal_connect(G_OBJECT(m_pVadj), "value_changed", G_CALLBACK(XAP_UnixFrameImpl::_fe::vScrollChanged), NULL);
 
 	// we don't want either scrollbar grabbing events from us
-	GTK_WIDGET_UNSET_FLAGS(m_hScroll, GTK_CAN_FOCUS);
-	GTK_WIDGET_UNSET_FLAGS(m_vScroll, GTK_CAN_FOCUS);
+	gtk_widget_set_can_focus(m_hScroll, false);
+	gtk_widget_set_can_focus(m_vScroll, false);
 
 	// create a drawing area in the for our document window.
 	m_dArea = ap_DocView_new();
 	g_object_set_data(G_OBJECT(m_dArea), "user_data", this);
 	UT_DEBUGMSG(("!!! drawing area m_dArea created! %p for %p \n",m_dArea,this));
-	GTK_WIDGET_SET_FLAGS (m_dArea, GTK_CAN_FOCUS);	// allow it to be focussed
+	gtk_widget_set_can_focus(m_dArea, true);	// allow it to be focussed
 
 	gtk_widget_set_events(GTK_WIDGET(m_dArea), (GDK_EXPOSURE_MASK |
 						    GDK_BUTTON_PRESS_MASK |
@@ -209,8 +209,8 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 						    GDK_FOCUS_CHANGE_MASK |
 						    GDK_LEAVE_NOTIFY_MASK));
 	gtk_widget_set_double_buffered(GTK_WIDGET(m_dArea), FALSE);
-	g_signal_connect(G_OBJECT(m_dArea), "expose_event",
-					   G_CALLBACK(XAP_UnixFrameImpl::_fe::expose), NULL);
+	g_signal_connect(G_OBJECT(m_dArea), "draw",
+					   G_CALLBACK(XAP_UnixFrameImpl::_fe::draw), NULL);
 
 	g_signal_connect(G_OBJECT(m_dArea), "key_press_event",
 					   G_CALLBACK(XAP_UnixFrameImpl::_fe::key_press_event), NULL);
@@ -452,23 +452,27 @@ UT_RGBColor AP_UnixFrameImpl::getColorSelBackground () const
 
     UT_return_val_if_fail(m_dArea, UT_RGBColor(0,0,0));
     // owen says that any widget should be ok, not just text widgets
-    GdkColor clr = m_dArea->style->base[GTK_STATE_SELECTED];
-    return UT_RGBColor (clr.red >> 8, clr.green >> 8, clr.blue >> 8);
+	GtkStyleContext *pCtxt = gtk_widget_get_style_context(m_dArea);
+	GdkRGBA rgba;
+	gtk_style_context_get_background_color(pCtxt, GTK_STATE_FLAG_SELECTED, &rgba);
+    return UT_RGBColor (rgba.red * 255, rgba.green * 255, rgba.blue * 255);
 }
 
 UT_RGBColor AP_UnixFrameImpl::getColorSelForeground () const
 {
-  UT_return_val_if_fail(m_dArea, UT_RGBColor(0,0,0));
+	UT_return_val_if_fail(m_dArea, UT_RGBColor(0,0,0));
 
-  // owen says that any widget should be ok, not just text widgets
-  gint state;
-  
-  // our text widget has focus
-  if (GTK_WIDGET_HAS_FOCUS(m_dArea))
-    state = GTK_STATE_SELECTED;
-  else
-    state = GTK_STATE_ACTIVE;
-  
-  GdkColor clr = m_dArea->style->text[state];
-  return UT_RGBColor (clr.red >> 8, clr.green >> 8, clr.blue >> 8);
+	// owen says that any widget should be ok, not just text widgets
+	GtkStateFlags state;
+
+	// our text widget has focus
+	if (gtk_widget_has_focus(m_dArea))
+		state = GTK_STATE_FLAG_SELECTED;
+	else
+		state = GTK_STATE_FLAG_ACTIVE;
+
+	GtkStyleContext *pCtxt = gtk_widget_get_style_context(m_dArea);
+	GdkRGBA rgba;
+	gtk_style_context_get_background_color(pCtxt, state, &rgba);
+    return UT_RGBColor (rgba.red * 255, rgba.green * 255, rgba.blue * 255);
 }

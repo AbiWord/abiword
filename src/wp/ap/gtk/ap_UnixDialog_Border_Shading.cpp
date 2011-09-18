@@ -107,6 +107,7 @@ static gboolean s_on_shading_enable_clicked(GtkWidget 		*button,
 	AP_UnixDialog_Border_Shading *dlg = static_cast<AP_UnixDialog_Border_Shading *>(data);
 	UT_return_val_if_fail (button && dlg, FALSE);
 	dlg->event_shadingPatternChange();
+	return FALSE;
 }
 
 /*!
@@ -127,7 +128,7 @@ static gboolean s_on_border_color_clicked (GtkWidget 		*button,
 
 	GtkWidget *colordlg = gtk_color_selection_dialog_new  ("");
 	gtk_window_set_transient_for (GTK_WINDOW (colordlg), GTK_WINDOW (dlg->getWindow ()));
-	GtkColorSelection *colorsel = GTK_COLOR_SELECTION ((GTK_COLOR_SELECTION_DIALOG (colordlg))->colorsel);
+	GtkColorSelection *colorsel = GTK_COLOR_SELECTION (gtk_color_selection_dialog_get_color_selection(GTK_COLOR_SELECTION_DIALOG (colordlg)));
 	gtk_color_selection_set_has_palette (colorsel, TRUE);
 	
 	gint result = gtk_dialog_run (GTK_DIALOG (colordlg));
@@ -183,7 +184,7 @@ static gboolean s_on_shading_color_clicked (GtkWidget 		*button,
 
 	GtkWidget *colordlg = gtk_color_selection_dialog_new  ("");
 	gtk_window_set_transient_for (GTK_WINDOW (colordlg), GTK_WINDOW (dlg->getWindow ()));
-	GtkColorSelection *colorsel = GTK_COLOR_SELECTION ((GTK_COLOR_SELECTION_DIALOG (colordlg))->colorsel);
+	GtkColorSelection *colorsel = GTK_COLOR_SELECTION (gtk_color_selection_dialog_get_color_selection(GTK_COLOR_SELECTION_DIALOG (colordlg)));
 	gtk_color_selection_set_has_palette (colorsel, TRUE);
 	
 	gint result = gtk_dialog_run (GTK_DIALOG (colordlg));
@@ -274,7 +275,7 @@ void AP_UnixDialog_Border_Shading::runModeless(XAP_Frame * pFrame)
 	
 	// *** this is how we add the gc for Column Preview ***
 	// attach a new graphics context to the drawing area
-	UT_return_if_fail(m_wPreviewArea && m_wPreviewArea->window);
+	UT_return_if_fail(m_wPreviewArea && gtk_widget_get_window(m_wPreviewArea));
 
 	// make a new Unix GC
 	DELETEP (m_pPreviewWidget);
@@ -285,13 +286,15 @@ void AP_UnixDialog_Border_Shading::runModeless(XAP_Frame * pFrame)
 	// Todo: we need a good widget to query with a probable
 	// Todo: non-white (i.e. gray, or a similar bgcolor as our parent widget)
 	// Todo: background. This should be fine
-	m_pPreviewWidget->init3dColors(m_wPreviewArea->style);
+	m_pPreviewWidget->init3dColors(gtk_widget_get_style_context(m_wPreviewArea));
 
 	// let the widget materialize
 
+	GtkAllocation alloc;
+	gtk_widget_get_allocation(m_wPreviewArea, &alloc);
 	_createPreviewFromGC(m_pPreviewWidget,
-						 static_cast<UT_uint32>(m_wPreviewArea->allocation.width),
-						 static_cast<UT_uint32>(m_wPreviewArea->allocation.height));	
+						 static_cast<UT_uint32>(alloc.width),
+						 static_cast<UT_uint32>(alloc.height));	
 	
 	m_pBorderShadingPreview->draw();
 
@@ -473,7 +476,7 @@ void AP_UnixDialog_Border_Shading::activate(void)
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
 	setAllSensitivities();
-	gdk_window_raise (m_windowMain->window);
+	gdk_window_raise (gtk_widget_get_window(m_windowMain));
 }
 
 void AP_UnixDialog_Border_Shading::notifyActiveFrame(XAP_Frame */*pFrame*/)
@@ -555,45 +558,42 @@ GtkWidget * AP_UnixDialog_Border_Shading::_constructWindow(void)
 // Border Thickness Option menu
 // 
 	m_wBorderThickness = GTK_WIDGET(gtk_builder_get_object(builder, "omBorderThickness"));
-	GtkComboBox *combo = GTK_COMBO_BOX(m_wBorderThickness);
-	XAP_makeGtkComboBoxText(combo, G_TYPE_NONE);
-	gtk_combo_box_append_text(combo, "1/2 pt");
-	gtk_combo_box_append_text(combo, "3/4 pt");
-	gtk_combo_box_append_text(combo, "1 pt");
-	gtk_combo_box_append_text(combo, "1 1/2 pt");
-	gtk_combo_box_append_text(combo, "2 1/4 pt");
-	gtk_combo_box_append_text(combo, "3 pt");
-	gtk_combo_box_append_text(combo, "4 1/2 pt");
-	gtk_combo_box_append_text(combo, "6 pt");
-	gtk_combo_box_set_active(combo, 0);
+	GtkComboBoxText *combo = GTK_COMBO_BOX_TEXT(m_wBorderThickness);
+	gtk_combo_box_text_append_text(combo, "1/2 pt");
+	gtk_combo_box_text_append_text(combo, "3/4 pt");
+	gtk_combo_box_text_append_text(combo, "1 pt");
+	gtk_combo_box_text_append_text(combo, "1 1/2 pt");
+	gtk_combo_box_text_append_text(combo, "2 1/4 pt");
+	gtk_combo_box_text_append_text(combo, "3 pt");
+	gtk_combo_box_text_append_text(combo, "4 1/2 pt");
+	gtk_combo_box_text_append_text(combo, "6 pt");
+	gtk_combo_box_set_active(GTK_COMBO_BOX(combo), 0);
 
 //
 // Border Style Option menu
 //
 	m_wBorderStyle = GTK_WIDGET(gtk_builder_get_object(builder, "cmbBorderStyle"));
-	GtkComboBox *combo_style = GTK_COMBO_BOX(m_wBorderStyle);
-	XAP_makeGtkComboBoxText(combo_style, G_TYPE_NONE);
-	gtk_combo_box_append_text(combo_style, "None");
-	gtk_combo_box_append_text(combo_style, "Solid line");
-	gtk_combo_box_append_text(combo_style, "Dashed line");
-	gtk_combo_box_append_text(combo_style, "Dotted line");
-	gtk_combo_box_set_active(combo, 0);
+	GtkComboBoxText *combo_style = GTK_COMBO_BOX_TEXT(m_wBorderStyle);
+	gtk_combo_box_text_append_text(combo_style, "None");
+	gtk_combo_box_text_append_text(combo_style, "Solid line");
+	gtk_combo_box_text_append_text(combo_style, "Dashed line");
+	gtk_combo_box_text_append_text(combo_style, "Dotted line");
+	gtk_combo_box_set_active(GTK_COMBO_BOX(combo), 0);
 
 //
 // Shading offset Option menu
 //
 	m_wShadingOffset = GTK_WIDGET(gtk_builder_get_object(builder, "cmbShadingOffset"));
-	GtkComboBox *combo_offset = GTK_COMBO_BOX(m_wShadingOffset);
-	XAP_makeGtkComboBoxText(combo_offset, G_TYPE_NONE);
-	gtk_combo_box_append_text(combo_offset, "1/2 pt");
-	gtk_combo_box_append_text(combo_offset, "3/4 pt");
-	gtk_combo_box_append_text(combo_offset, "1 pt");
-	gtk_combo_box_append_text(combo_offset, "1 1/2 pt");
-	gtk_combo_box_append_text(combo_offset, "2 1/4 pt");
-	gtk_combo_box_append_text(combo_offset, "3 pt");
-	gtk_combo_box_append_text(combo_offset, "4 1/2 pt");
-	gtk_combo_box_append_text(combo_offset, "6 pt");
-	gtk_combo_box_set_active(combo_offset, 0);
+	GtkComboBoxText *combo_offset = GTK_COMBO_BOX_TEXT(m_wShadingOffset);
+	gtk_combo_box_text_append_text(combo_offset, "1/2 pt");
+	gtk_combo_box_text_append_text(combo_offset, "3/4 pt");
+	gtk_combo_box_text_append_text(combo_offset, "1 pt");
+	gtk_combo_box_text_append_text(combo_offset, "1 1/2 pt");
+	gtk_combo_box_text_append_text(combo_offset, "2 1/4 pt");
+	gtk_combo_box_text_append_text(combo_offset, "3 pt");
+	gtk_combo_box_text_append_text(combo_offset, "4 1/2 pt");
+	gtk_combo_box_text_append_text(combo_offset, "6 pt");
+	gtk_combo_box_set_active(GTK_COMBO_BOX(combo), 0);
 
 	// add the apply and ok buttons to the dialog
 	m_wCloseButton = GTK_WIDGET(gtk_builder_get_object(builder, "btClose"));
@@ -620,11 +620,11 @@ static void s_delete_clicked(GtkWidget * widget,
 
 void AP_UnixDialog_Border_Shading::_connectSignals(void)
 {
-	g_signal_connect(GTK_OBJECT(m_windowMain),
+	g_signal_connect(G_OBJECT(m_windowMain),
 							"destroy",
 							G_CALLBACK(s_destroy_clicked),
 							reinterpret_cast<gpointer>(this));
-	g_signal_connect(GTK_OBJECT(m_windowMain),
+	g_signal_connect(G_OBJECT(m_windowMain),
 							"delete_event",
 							G_CALLBACK(s_delete_clicked),
 							reinterpret_cast<gpointer>(this));

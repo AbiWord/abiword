@@ -115,7 +115,6 @@
 #include "ap_Preview_Abi.h"
 #include "xap_UnixDialogHelper.h"
 #include "gr_UnixCairoGraphics.h"
-#include "gr_UnixPangoPixmapGraphics.h"
 #include "ie_exp_DocRangeListener.h"
 
 #ifdef GTK_WIN_POS_CENTER_ALWAYS
@@ -1161,6 +1160,8 @@ bool AP_UnixApp::getCurrentSelection(const char** formatList,
 
 bool AP_UnixApp:: makePngPreview(const char * pszInFile, const char * pszPNGFile, UT_sint32 iWidth, UT_sint32 iHeight)
 {
+#warning "Reimplement"
+#if 0
 	GdkPixmap*  pPixmap = gdk_pixmap_new(NULL,iWidth,iHeight,24);
 
 	GR_UnixPixmapAllocInfo ai(pPixmap);
@@ -1193,6 +1194,7 @@ bool AP_UnixApp:: makePngPreview(const char * pszInFile, const char * pszPNGFile
 	DELETEP(pImage);
 	DELETEP(pG);
 	DELETEP(pPrevAbi); // This deletes pNewDoc
+#endif
 	return true;
 }
 
@@ -1242,7 +1244,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 #endif
 		// Step 1: Initialize GTK and create the APP.
 		// hack needed to intialize gtk before ::initialize
-		gtk_set_locale();
+		setlocale(LC_ALL, "");
 		gboolean have_display = gtk_init_check(&argc, &argv);
 #ifdef LOGFILE
 		fprintf(logfile,"Got display %d \n",have_display);

@@ -20,8 +20,7 @@
  */
 #include <goffice/goffice-config.h>
 #include "goffice-gtk.h"
-
-#include <goffice/app/go-cmd-context.h>
+//#include <goffice/app/go-cmd-context.h>
 #include <goffice/utils/go-file.h>
 #include <goffice/goffice-priv.h>
 #include <gtk/gtk.h>
@@ -81,7 +80,7 @@ go_gtk_button_new_with_stock (char const *text, char const* stock_id)
  * return : newly created button
  **/
 GtkWidget*
-go_gtk_dialog_add_button (GtkDialog *dialog, const gchar* text, const gchar* stock_id,
+go_gtk_dialog_add_button (GtkDialog *dialog, char const* text, char const* stock_id,
 			  gint response_id)
 {
 	GtkWidget *button;
@@ -93,14 +92,15 @@ go_gtk_dialog_add_button (GtkDialog *dialog, const gchar* text, const gchar* sto
 	button = go_gtk_button_new_with_stock (text, stock_id);
 	g_return_val_if_fail (button != NULL, NULL);
 
-	GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
+	gtk_widget_set_can_default (button, TRUE);
 
 	gtk_widget_show (button);
 
-	gtk_dialog_add_action_widget (dialog, button, response_id);	
+	gtk_dialog_add_action_widget (dialog, button, response_id);
 
 	return button;
 }
+
 
 #if 0 /* dropped, since abiword doesn't depend on libglade */
 
@@ -138,7 +138,13 @@ go_libglade_new (char const *gladefile, char const *root,
 }
 
 #endif
-
+static void
+cb_activate_default (GtkWindow *window)
+{
+	GtkWidget *w = gtk_window_get_default_widget (window);
+	if (w && gtk_widget_is_sensitive (w))
+		gtk_widget_activate (w);
+}
 /**
  * go_gtk_editable_enters:
  * @window:
@@ -150,13 +156,14 @@ go_libglade_new (char const *gladefile, char const *root,
  * type something in and then press enter to close the dialog. This
  * function enables that behavior.
  **/
+
 void
 go_gtk_editable_enters (GtkWindow *window, GtkWidget *w)
 {
 	g_return_if_fail (GTK_IS_WINDOW (window));
 	g_signal_connect_swapped (G_OBJECT (w),
 		"activate",
-		G_CALLBACK (gtk_window_activate_default), window);
+		G_CALLBACK (cb_activate_default), window);
 }
 
 GdkPixbuf *
@@ -189,11 +196,11 @@ go_gtk_widget_disable_focus (GtkWidget *w)
 	if (GTK_IS_CONTAINER (w))
 		gtk_container_foreach (GTK_CONTAINER (w),
 			(GtkCallback) go_gtk_widget_disable_focus, NULL);
-	GTK_WIDGET_UNSET_FLAGS (w, GTK_CAN_FOCUS);
+	gtk_widget_set_can_focus (w, FALSE);
 }
 
 int
-go_pango_measure_string (PangoContext *context, const PangoFontDescription *font_desc, const char *str)
+go_pango_measure_string (PangoContext *context, PangoFontDescription const *font_desc, char const *str)
 {
 	PangoLayout *layout = pango_layout_new (context);
 	int width;
@@ -206,11 +213,10 @@ go_pango_measure_string (PangoContext *context, const PangoFontDescription *font
 
 	return width;
 }
-
 static void
 cb_parent_mapped (GtkWidget *parent, GtkWindow *window)
 {
-	if (GTK_WIDGET_MAPPED (window)) {
+	if (gtk_widget_get_mapped (GTK_WIDGET (window))) {
 		gtk_window_present (window);
 		g_signal_handlers_disconnect_by_func (G_OBJECT (parent),
 			G_CALLBACK (cb_parent_mapped), window);
@@ -230,35 +236,37 @@ cb_parent_mapped (GtkWidget *parent, GtkWindow *window)
 void
 go_gtk_window_set_transient (GtkWindow *toplevel, GtkWindow *window)
 {
-/* FIXME:                                                                     */
-/* 	GtkWindowPosition position = gnome_preferences_get_dialog_position(); */
+#if 0
+	GtkWindowPosition position = gnome_preferences_get_dialog_position(); */
+	if (position == GTK_WIN_POS_NONE)
+		position = GTK_WIN_POS_CENTER_ON_PARENT;
+#else
 	GtkWindowPosition position = GTK_WIN_POS_CENTER_ON_PARENT;
+#endif
 
 	g_return_if_fail (GTK_IS_WINDOW (toplevel));
 	g_return_if_fail (GTK_IS_WINDOW (window));
 
 	gtk_window_set_transient_for (window, toplevel);
 
-	if (position == GTK_WIN_POS_NONE)
-		position = GTK_WIN_POS_CENTER_ON_PARENT;
 	gtk_window_set_position (window, position);
 
-	if (!GTK_WIDGET_MAPPED (toplevel))
+	if (!gtk_widget_get_mapped (GTK_WIDGET (toplevel)))
 		g_signal_connect_after (G_OBJECT (toplevel),
 			"map",
 			G_CALLBACK (cb_parent_mapped), window);
 }
-
 static gint
 cb_non_modal_dialog_keypress (GtkWidget *w, GdkEventKey *e)
 {
-	if(e->keyval == GDK_Escape) {
+	if(e->keyval == GDK_KEY_Escape) {
 		gtk_widget_destroy (w);
 		return TRUE;
 	}
 
 	return FALSE;
 }
+
 
 void
 go_gtk_nonmodal_dialog (GtkWindow *toplevel, GtkWindow *dialog)
@@ -271,7 +279,7 @@ go_gtk_nonmodal_dialog (GtkWindow *toplevel, GtkWindow *dialog)
 
 static void
 fsel_response_cb (GtkFileChooser *dialog,
-		  gint response_id,
+		 G_GNUC_UNUSED gint response_id,
 		  gboolean *result)
 {
 	if (response_id == GTK_RESPONSE_OK) {
@@ -286,14 +294,16 @@ fsel_response_cb (GtkFileChooser *dialog,
 	gtk_main_quit ();
 }
 
+
 static gint
 gu_delete_handler (GtkDialog *dialog,
-		   GdkEventAny *event,
-		   gpointer data)
+		  G_GNUC_UNUSED GdkEventAny *event,
+		   G_GNUC_UNUSED gpointer data)
 {
 	gtk_dialog_response (dialog, GTK_RESPONSE_CANCEL);
 	return TRUE; /* Do not destroy */
 }
+
 
 gboolean
 go_gtk_file_sel_dialog (GtkWindow *toplevel, GtkWidget *w)
@@ -311,7 +321,7 @@ go_gtk_file_sel_dialog (GtkWindow *toplevel, GtkWidget *w)
 	delete_handler = g_signal_connect (w, "delete_event",
 		G_CALLBACK (gu_delete_handler), NULL);
 
-	gtk_widget_show_all (w);
+	gtk_widget_show (w);
 	gtk_grab_add (w);
 	gtk_main ();
 
@@ -320,23 +330,24 @@ go_gtk_file_sel_dialog (GtkWindow *toplevel, GtkWidget *w)
 	return result;
 }
 
+
 static gboolean have_pixbufexts = FALSE;
 static GSList *pixbufexts = NULL;  /* FIXME: we leak this.  */
 
 static gboolean
-filter_images (const GtkFileFilterInfo *filter_info, gpointer data)
+filter_images (const GtkFileFilterInfo *filter_info, G_GNUC_UNUSED gpointer data)
 {
 	if (filter_info->mime_type)
 		return strncmp (filter_info->mime_type, "image/", 6) == 0;
 
 	if (filter_info->display_name) {
 		GSList *l;
-		const char *ext = strrchr (filter_info->display_name, '.');
+		char const *ext = strrchr (filter_info->display_name, '.');
 		if (!ext) return FALSE;
 		ext++;
 
 		if (!have_pixbufexts) {
-			GSList *l, *pixbuf_fmts = gdk_pixbuf_get_formats ();
+			GSList *pixbuf_fmts = gdk_pixbuf_get_formats ();
 
 			for (l = pixbuf_fmts; l != NULL; l = l->next) {
 				GdkPixbufFormat *fmt = l->data;
@@ -364,6 +375,7 @@ filter_images (const GtkFileFilterInfo *filter_info, gpointer data)
 
 	return FALSE;
 }
+
 
 static void
 update_preview_cb (GtkFileChooser *chooser)
@@ -474,10 +486,11 @@ gui_image_chooser_new (gboolean is_save)
 	return fsel;
 }
 
+
 char *
-go_gtk_select_image (GtkWindow *toplevel, const char *initial)
+go_gtk_select_image (GtkWindow *toplevel, char const *initial)
 {
-	const char *key = "go_gtk_select_image";
+	char const *key = "go_gtk_select_image";
 	char *uri = NULL;
 	GtkFileChooser *fsel;
 
@@ -502,6 +515,7 @@ go_gtk_select_image (GtkWindow *toplevel, const char *initial)
 	return uri;
 }
 
+
 /**
  * gui_get_image_save_info:
  * @toplevel: a #GtkWindow
@@ -516,7 +530,7 @@ go_gtk_select_image (GtkWindow *toplevel, const char *initial)
  * export resolution in @resolution.
  **/
 
-typedef struct {
+/*typedef struct {
 	char *uri;
 	double resolution;
 	gboolean is_expanded;
@@ -524,7 +538,7 @@ typedef struct {
 } SaveInfoState;
 
 static void
-save_info_state_free (SaveInfoState *state) 
+save_info_state_free (SaveInfoState *state)
 {
 	g_free (state->uri);
 	g_free (state);
@@ -536,11 +550,11 @@ cb_format_combo_changed (GtkComboBox *combo, GtkWidget *expander)
 	GOImageFormatInfo const *format_info;
 
 	format_info = go_image_get_format_info (gtk_combo_box_get_active (combo));
-	gtk_widget_set_sensitive (expander, 
-				  format_info != NULL && 
+	gtk_widget_set_sensitive (expander,
+				  format_info != NULL &&
 				  format_info->is_dpi_useful);
 }
-
+*/
 #if 0 /* dropped, since abiword doesn't depend on libglade */
 
 char *
@@ -688,7 +702,6 @@ add_atk_relation (GtkWidget *w0, GtkWidget *w1, AtkRelationType type)
 	g_object_unref (relation_set);
 	g_object_unref (relation);
 }
-
 /**
  * go_atk_setup_label :
  * @label : #GtkWidget
@@ -703,6 +716,7 @@ go_atk_setup_label (GtkWidget *label, GtkWidget *target)
 	 add_atk_relation (label, target, ATK_RELATION_LABEL_FOR);
 	 add_atk_relation (target, label, ATK_RELATION_LABELLED_BY);
 }
+
 
 typedef struct {
 	char const *data_dir;
@@ -787,7 +801,7 @@ cb_help (CBHelpPaths const *paths)
 }
 
 void
-go_gtk_help_button_init (GtkWidget *w, char const *data_dir, char const *app, char const *link)
+go_gtk_help_button_init (GtkWidget *w, char const *data_dir, char const *app, char const *linkk)
 {
 	CBHelpPaths *paths = g_new (CBHelpPaths, 1);
 	GtkWidget *parent = gtk_widget_get_parent (w);
@@ -798,11 +812,12 @@ go_gtk_help_button_init (GtkWidget *w, char const *data_dir, char const *app, ch
 
 	paths->data_dir = data_dir;
 	paths->app	= app;
-	paths->link	= link;
+	paths->link	= linkk;
 	g_signal_connect_data (G_OBJECT (w), "clicked",
 		G_CALLBACK (cb_help), (gpointer) paths,
 		(GClosureNotify)g_free, G_CONNECT_SWAPPED);
 }
+
 
 /**
  * go_gtk_url_is_writeable:
@@ -845,27 +860,25 @@ go_gtk_url_is_writeable (GtkWindow *parent, char const *uri,
 	} else if (g_file_test (filename, G_FILE_TEST_EXISTS)) {
 		char *dirname = go_dirname_from_uri (uri, TRUE);
 		char *basename = go_basename_from_uri (uri);
-		char *msg = g_markup_printf_escaped (
-			_("A file called <i>%s</i> already exists in %s.\n\n"
-			  "Do you want to save over it?"),
-			basename, dirname);
 		GtkWidget *dialog = gtk_message_dialog_new_with_markup (parent,
 			 GTK_DIALOG_DESTROY_WITH_PARENT,
 			 GTK_MESSAGE_WARNING,
 			 GTK_BUTTONS_OK_CANCEL,
-			 msg);
+			 _("A file called <i>%s</i> already exists in %s.\n\n"
+			   "Do you want to save over it?"),
+			 basename, dirname);
 		gtk_dialog_set_default_response (GTK_DIALOG (dialog),
 			overwrite_by_default ? GTK_RESPONSE_OK : GTK_RESPONSE_CANCEL);
 		result = GTK_RESPONSE_OK ==
 			go_gtk_dialog_run (GTK_DIALOG (dialog), parent);
 		g_free (dirname);
 		g_free (basename);
-		g_free (msg);
 	}
 
 	g_free (filename);
 	return result;
 }
+
 
 /**
  * go_gtk_dialog_run
@@ -908,23 +921,23 @@ go_gtk_dialog_run (GtkDialog *dialog, GtkWindow *parent)
  */
 void
 go_gtk_notice_dialog (GtkWindow *parent, GtkMessageType type,
-		      const gchar *format, ...)
+		      char const *format, ...)
 {
 	va_list args;
 	gchar *msg;
 	GtkWidget *dialog;
 
 	VPRINTF_MESSAGE (format, args, msg);
-	dialog = gtk_message_dialog_new (parent,
+	dialog = gtk_message_dialog_new_with_markup (parent,
 		GTK_DIALOG_DESTROY_WITH_PARENT, type, GTK_BUTTONS_OK, "%s", msg);
 	g_free (msg);
-	gtk_label_set_use_markup (GTK_LABEL (GTK_MESSAGE_DIALOG (dialog)->label), TRUE);
 	go_gtk_dialog_run (GTK_DIALOG (dialog), parent);
 }
 
+
 void
 go_gtk_notice_nonmodal_dialog (GtkWindow *parent, GtkWidget **ref,
-			       GtkMessageType type, const gchar *format, ...)
+			       GtkMessageType type, char const *format, ...)
 {
 	va_list args;
 	gchar *msg;
@@ -950,7 +963,7 @@ go_gtk_notice_nonmodal_dialog (GtkWindow *parent, GtkWidget **ref,
 
 gboolean
 go_gtk_query_yes_no (GtkWindow *parent, gboolean default_answer,
-		     const gchar *format, ...)
+		     char const *format, ...)
 {
 	va_list args;
 	gchar *msg;
@@ -969,6 +982,7 @@ go_gtk_query_yes_no (GtkWindow *parent, gboolean default_answer,
 	return GTK_RESPONSE_YES ==
 		go_gtk_dialog_run (GTK_DIALOG (dialog), parent);
 }
+
 
 /**
  * go_pixbuf_new_from_file :
@@ -992,9 +1006,9 @@ go_pixbuf_new_from_file (char const *filename)
 static gint
 gtk_dialog_get_response_for_widget (GtkDialog *dialog, GtkWidget *widget)
 {
-	const struct {
+	struct {
 		gint response_id;
-	} *rd = g_object_get_data (G_OBJECT (widget),
+	} const *rd = g_object_get_data (G_OBJECT (widget),
 				   "gtk-dialog-response-data");
 	if (!rd)
 		return GTK_RESPONSE_NONE;
@@ -1014,7 +1028,7 @@ gtk_dialog_get_response_for_widget (GtkDialog *dialog, GtkWidget *widget)
 void
 go_dialog_guess_alternative_button_order (GtkDialog *dialog)
 {
-	GList *children, *tmp;
+	GList *children, *ptr; //*tmp changed to *ptr
 	int i, nchildren;
 	int *new_order;
 	int i_yes = -1, i_no = -1, i_ok = -1, i_cancel = -1, i_apply = -1;
@@ -1022,15 +1036,15 @@ go_dialog_guess_alternative_button_order (GtkDialog *dialog)
 	gboolean any = FALSE;
 	int loops = 0;
 
-	children = gtk_container_get_children (GTK_CONTAINER (dialog->action_area));
+	children = gtk_container_get_children (GTK_CONTAINER (gtk_dialog_get_action_area (dialog)));
 	if (!children)
 		return;
 
 	nchildren = g_list_length (children);
 	new_order = g_new (int, nchildren);
 
-	for (tmp = children, i = 0; tmp; tmp = tmp->next, i++) {
-		GtkWidget *child = tmp->data;
+	for (ptr = children, i = 0; ptr; ptr = ptr->next, i++) {
+		GtkWidget *child = ptr->data;
 		int res = gtk_dialog_get_response_for_widget (dialog, child);
 		new_order[i] = res;
 		switch (res) {

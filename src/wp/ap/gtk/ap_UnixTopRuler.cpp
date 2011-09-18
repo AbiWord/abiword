@@ -91,8 +91,8 @@ GtkWidget * AP_UnixTopRuler::createWidget(void)
 													GDK_KEY_PRESS_MASK |
 													GDK_KEY_RELEASE_MASK));
 
-	g_signal_connect_swapped(G_OBJECT(m_wTopRuler), "expose_event",
-					   G_CALLBACK(XAP_UnixCustomWidget::_fe::expose), static_cast<XAP_UnixCustomWidget *>(this));
+	g_signal_connect_swapped(G_OBJECT(m_wTopRuler), "draw",
+					   G_CALLBACK(XAP_UnixCustomWidget::_fe::draw), static_cast<XAP_UnixCustomWidget *>(this));
 
 	g_signal_connect_swapped(G_OBJECT(m_wTopRuler), "realize",
 					   G_CALLBACK(_fe::realize), this);
@@ -119,19 +119,19 @@ void AP_UnixTopRuler::setView(AV_View * pView)
 {
 	AP_TopRuler::setView(pView);
 
-	UT_ASSERT(GTK_WIDGET_REALIZED(m_wTopRuler));
+	UT_ASSERT(gtk_widget_get_realized(m_wTopRuler));
 
 	m_pG->setZoomPercentage(pView->getGraphics()->getZoomPercentage());
-	GtkWidget * ruler = gtk_hruler_new ();
-	((GR_UnixCairoGraphics*)m_pG)->init3dColors(get_ensured_style(ruler));
-	//abiDestroyWidget (ruler);
+	GtkWidget * w = gtk_label_new("");
+	((GR_UnixCairoGraphics*)m_pG)->init3dColors(gtk_widget_get_style_context(w));
+	gtk_widget_destroy(w);
 }
 
 void AP_UnixTopRuler::getWidgetPosition(gint * x, gint * y)
 {
 	UT_ASSERT(x && y);
 	
-	gdk_window_get_position(m_wTopRuler->window, x, y);
+	gdk_window_get_position(gtk_widget_get_window(m_wTopRuler), x, y);
 }
 
 GdkWindow * AP_UnixTopRuler::getRootWindow(void)

@@ -37,7 +37,7 @@ void XAP_UnixWidget::setState(bool enabled)
 /** set the widget enabled/disabled state */
 bool XAP_UnixWidget::getState(void)
 {
-	return GTK_WIDGET_SENSITIVE(m_widget);
+	return gtk_widget_get_sensitive(m_widget);
 }
 
 /** set the widget visible state */
@@ -53,7 +53,7 @@ void XAP_UnixWidget::setVisible(bool visible)
 /** get the widget visible state */
 bool XAP_UnixWidget::getVisible(void)
 {
-	return GTK_WIDGET_VISIBLE(m_widget);
+	return gtk_widget_get_visible(m_widget);
 }
 
 /** set the widget int value */

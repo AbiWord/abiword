@@ -3292,6 +3292,11 @@ cairo_t *GR_CairoGraphics::getCairo()
 	return m_cr;
 }
 
+void GR_CairoGraphics::setCairo(cairo_t *cr)
+{
+	m_cr = cr;
+}
+
 void GR_CairoGraphics::_DeviceContext_SwitchToBuffer()
 {
 	cairo_push_group(m_cr);

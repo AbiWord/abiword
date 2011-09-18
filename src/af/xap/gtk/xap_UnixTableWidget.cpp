@@ -27,10 +27,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <gtk/gtkbutton.h>
-#include <gtk/gtkwindow.h>
-#include <gtk/gtksignal.h>
-#include <gtk/gtktoolbar.h>
+#include <gtk/gtk.h>
 #include "xap_UnixTableWidget.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -82,7 +79,7 @@ enum
 
 static gint abi_table_signals [LAST_SIGNAL] = { 0 };
 
-static GtkObjectClass *abi_table_parent_class;
+static GtkWidgetClass *abi_table_parent_class;
 
 /* ------------------- now the guts of AbiTable ---------------------- */
 
@@ -199,7 +196,7 @@ abi_table_get_max_size (const AbiTable* abi_table, guint* rows, guint* cols)
 }
 
 static gboolean
-on_drawing_area_event (GtkWidget *area, GdkEventExpose *, gpointer user_data)
+on_drawing_area_event (GtkWidget *area, cairo_t *cr, gpointer user_data)
 {
 	AbiTable* table = static_cast<AbiTable*>(user_data);
 	guint i;
@@ -210,7 +207,8 @@ on_drawing_area_event (GtkWidget *area, GdkEventExpose *, gpointer user_data)
 	guint y;
 	
 	// TODO: use gtk_paint_box, gtk_paint_line
-
+#warning "Reimplement!!!"
+#if 0
 	gdk_draw_rectangle (area->window,
 						area->style->bg_gc[GTK_STATE_NORMAL],
 						TRUE,
@@ -269,7 +267,7 @@ on_drawing_area_event (GtkWidget *area, GdkEventExpose *, gpointer user_data)
 	gdk_draw_line (area->window,
 				   area->style->light_gc[GTK_STATE_NORMAL],
 				   0, 0, 0, area->allocation.height - 2);
-
+#endif
 	return TRUE;
 }
 
@@ -338,7 +336,7 @@ emit_selected (AbiTable *table)
 		gtk_main_iteration();
 
 	if (table->selected_rows > 0 && table->selected_cols > 0)
-		g_signal_emit (GTK_OBJECT (table),
+		g_signal_emit (G_OBJECT (table),
 			       abi_table_signals [SELECTED], 0,
 			       table->selected_rows, table->selected_cols);
 
@@ -375,7 +373,7 @@ on_leave_event (GtkWidget *area,
 {
 	AbiTable* table = static_cast<AbiTable*>(user_data);
 
-	if (GTK_WIDGET_VISIBLE(GTK_WIDGET(table->window)) && (event->x < 0 || event->y < 0))
+	if (gtk_widget_get_visible(GTK_WIDGET(table->window)) && (event->x < 0 || event->y < 0))
 	{
 		table->selected_rows = 0;
 		table->selected_cols = 0;
@@ -418,20 +416,21 @@ on_pressed(GtkButton* button, gpointer user_data)
 	AbiTable* table = static_cast<AbiTable*>(user_data);
 	int left, top;
 	GdkColor selected_color;
+	GtkAllocation alloc;
 
 	/* Temporarily grab pointer and keyboard on a window we know exists; we
 	 * do this so that the grab (with owner events == TRUE) affects
 	 * events generated when the window is mapped, such as enter
 	 * notify events on subwidgets. If the grab fails, bail out.
 	 */
-	if (!popup_grab_on_window (GTK_WIDGET(button)->window,
+	if (!popup_grab_on_window (gtk_widget_get_window(GTK_WIDGET(button)),
 							   gtk_get_current_event_time ()))
 		return;
 
-	gdk_window_get_origin (GTK_WIDGET(table)->window, &left, &top);
+	gdk_window_get_origin (gtk_widget_get_window(GTK_WIDGET(table)), &left, &top);
+	gtk_widget_get_allocation(GTK_WIDGET(table), &alloc);
 	gtk_window_move(table->window,
-					left + GTK_WIDGET(table)->allocation.x,
-					top + GTK_WIDGET(table)->allocation.y + GTK_WIDGET(table)->allocation.height);
+	                left + alloc.x,	top + alloc.y + alloc.height);
 	abi_table_resize(table);
 
 	gtk_widget_show(GTK_WIDGET(table->window));
@@ -440,14 +439,17 @@ on_pressed(GtkButton* button, gpointer user_data)
 	/* Now transfer our grabs to the popup window; this
 	 * should always succeed.
 	 */
-	popup_grab_on_window (GTK_WIDGET(table->area)->window,
+	popup_grab_on_window (gtk_widget_get_window(GTK_WIDGET(table->area)),
 			      gtk_get_current_event_time ());
 
+#warning Reimplement if needed
+#if 0
 	selected_color = (GTK_WIDGET (button))->style->base[GTK_STATE_SELECTED];
 
 	/* leak */
 	table->selected_gc = gdk_gc_new(GTK_WIDGET(button)->window);
 	gdk_gc_set_rgb_fg_color(table->selected_gc, &selected_color);
+#endif
 }
 
 gboolean
@@ -458,35 +460,35 @@ on_key_event(GtkWidget *widget, GdkEventKey *event, gpointer user_data)
 
 	switch (event->keyval)
 	{
-	case GDK_Up:
-	case GDK_KP_Up:
+	case GDK_KEY_Up:
+	case GDK_KEY_KP_Up:
 		if (table->selected_rows > 0)
 			--table->selected_rows;
 		break;
-	case GDK_Down:
-	case GDK_KP_Down:
+	case GDK_KEY_Down:
+	case GDK_KEY_KP_Down:
 		grew = TRUE;
 		++table->selected_rows;
 		break;
-	case GDK_Left:
-	case GDK_KP_Left:
+	case GDK_KEY_Left:
+	case GDK_KEY_KP_Left:
 		if (table->selected_cols > 0)
 			--table->selected_cols;
 		break;
-	case GDK_Right:
-	case GDK_KP_Right:
+	case GDK_KEY_Right:
+	case GDK_KEY_KP_Right:
 		grew = TRUE;
 		++table->selected_cols;
 		break;
-	case GDK_Escape:
+	case GDK_KEY_Escape:
 		restart_widget(table);
 		return TRUE;
-	case GDK_KP_Space:
-	case GDK_KP_Enter:
-	case GDK_space:
-	case GDK_3270_Enter:
-	case GDK_ISO_Enter:
-	case GDK_Return:
+	case GDK_KEY_KP_Space:
+	case GDK_KEY_KP_Enter:
+	case GDK_KEY_space:
+	case GDK_KEY_3270_Enter:
+	case GDK_KEY_ISO_Enter:
+	case GDK_KEY_Return:
 		emit_selected(table);
 		return TRUE;
 	}
@@ -626,9 +628,9 @@ void abi_table_set_icon(AbiTable* abi_table,GtkWidget * gtkImageIcon)
 static void
 abi_table_class_init (AbiTableClass *klass)
 {
-	GtkObjectClass *object_class = reinterpret_cast<GtkObjectClass*>(klass);
+	GtkWidgetClass *object_class = reinterpret_cast<GtkWidgetClass*>(klass);
 
-	abi_table_parent_class = static_cast<GtkObjectClass *>(g_type_class_peek (GTK_TYPE_BUTTON));
+	abi_table_parent_class = static_cast<GtkWidgetClass *>(g_type_class_peek (GTK_TYPE_BUTTON));
 	abi_table_signals [SELECTED] =
 		g_signal_new ("selected",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -700,7 +702,7 @@ abi_table_init (AbiTable* table)
 
 	g_signal_connect(G_OBJECT(table), "pressed",
 			 G_CALLBACK(on_pressed), static_cast<gpointer>(table));
-	g_signal_connect(G_OBJECT(table->area), "expose_event",
+	g_signal_connect(G_OBJECT(table->area), "draw",
 			 G_CALLBACK(on_drawing_area_event), static_cast<gpointer>(table));
 	g_signal_connect(G_OBJECT(table->area), "motion_notify_event",
 			 G_CALLBACK(on_motion_notify_event), static_cast<gpointer>(table));

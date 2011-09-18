@@ -269,7 +269,7 @@ AP_UnixDialog_Tab::_constructWindow ()
 
 	GtkWidget *tblNew = GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "tblNew"));
 
-	m_cobAlignment = gtk_combo_box_new_text ();
+	m_cobAlignment = gtk_combo_box_text_new ();
 	gtk_widget_show (m_cobAlignment);
 	gtk_table_attach (GTK_TABLE (tblNew), m_cobAlignment, 
 					  1, 2, 1, 2,
@@ -287,31 +287,31 @@ AP_UnixDialog_Tab::_constructWindow ()
 
 	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_Left, s);
 	UT_XML_cloneNoAmpersands(trans, s.utf8_str ());
-	gtk_combo_box_append_text (GTK_COMBO_BOX (m_cobAlignment), trans);
+	gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (m_cobAlignment), trans);
 	m_AlignmentMapping[FL_TAB_LEFT] = trans;
 
 	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_Center, s);
 	UT_XML_cloneNoAmpersands(trans, s.utf8_str ());
-	gtk_combo_box_append_text (GTK_COMBO_BOX (m_cobAlignment), trans);
+	gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (m_cobAlignment), trans);
 	m_AlignmentMapping[FL_TAB_CENTER] = trans;
 
 	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_Right, s);
 	UT_XML_cloneNoAmpersands(trans, s.utf8_str ());
-	gtk_combo_box_append_text (GTK_COMBO_BOX (m_cobAlignment), trans);
+	gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (m_cobAlignment), trans);
 	m_AlignmentMapping[FL_TAB_RIGHT] = trans;
 
 	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_Decimal, s);
 	UT_XML_cloneNoAmpersands(trans, s.utf8_str ());
-	gtk_combo_box_append_text (GTK_COMBO_BOX (m_cobAlignment), trans);
+	gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (m_cobAlignment), trans);
 	m_AlignmentMapping[FL_TAB_DECIMAL] = trans;
 
 	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_Bar, s);
 	UT_XML_cloneNoAmpersands(trans, s.utf8_str ());
-	gtk_combo_box_append_text (GTK_COMBO_BOX (m_cobAlignment), trans);
+	gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (m_cobAlignment), trans);
 	m_AlignmentMapping[FL_TAB_BAR] = trans;
 
 
-	m_cobLeader = gtk_combo_box_new_text ();
+	m_cobLeader = gtk_combo_box_text_new ();
 	gtk_widget_show (m_cobLeader);
 	gtk_table_attach (GTK_TABLE (tblNew), m_cobLeader, 
 					  1, 2, 2, 3,
@@ -320,22 +320,22 @@ AP_UnixDialog_Tab::_constructWindow ()
 
 	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_None, s);
 	UT_XML_cloneNoAmpersands(trans, s.utf8_str ());
-	gtk_combo_box_append_text (GTK_COMBO_BOX (m_cobLeader), trans);
+	gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (m_cobLeader), trans);
 	m_LeaderMapping[FL_LEADER_NONE] = trans;
 
 	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_Dot, s);
 	UT_XML_cloneNoAmpersands(trans, s.utf8_str ());
-	gtk_combo_box_append_text (GTK_COMBO_BOX (m_cobLeader), trans);
+	gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (m_cobLeader), trans);
 	m_LeaderMapping[FL_LEADER_DOT] = trans;
 
 	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_Dash, s);
 	UT_XML_cloneNoAmpersands(trans, s.utf8_str ());
-	gtk_combo_box_append_text (GTK_COMBO_BOX (m_cobLeader), trans);
+	gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (m_cobLeader), trans);
 	m_LeaderMapping[FL_LEADER_HYPHEN] = trans;
 
 	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_Underline, s);
 	UT_XML_cloneNoAmpersands(trans, s.utf8_str ());
-	gtk_combo_box_append_text (GTK_COMBO_BOX (m_cobLeader), trans);
+	gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (m_cobLeader), trans);
 	m_LeaderMapping[FL_LEADER_UNDERLINE] = trans;
 	
 
@@ -636,7 +636,7 @@ AP_UnixDialog_Tab::_getSelectedIndex ()
 eTabType 
 AP_UnixDialog_Tab::_gatherAlignment ()
 {
-	const gchar *text =  gtk_combo_box_get_active_text (GTK_COMBO_BOX (m_cobAlignment));
+	const gchar *text =  gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT (m_cobAlignment));
 	for (guint i = 0; i < __FL_TAB_MAX; i++) {
 		if (strcmp (text, m_AlignmentMapping[i]) == 0)
 			return (eTabType)i;
@@ -664,7 +664,7 @@ AP_UnixDialog_Tab::_setAlignment (eTabType a)
 eTabLeader 
 AP_UnixDialog_Tab::_gatherLeader ()
 {
-	const gchar *text =  gtk_combo_box_get_active_text (GTK_COMBO_BOX (m_cobLeader));
+	const gchar *text =  gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT (m_cobLeader));
 	for (guint i = 0; i < __FL_LEADER_MAX; i++) {
 		
 		if (m_LeaderMapping[i] == NULL)

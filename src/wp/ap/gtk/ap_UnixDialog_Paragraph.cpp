@@ -161,7 +161,7 @@ void AP_UnixDialog_Paragraph::runModal(XAP_Frame * pFrame)
 	// *** this is how we add the gc ***
 	{
 		// attach a new graphics context to the drawing area
-		UT_ASSERT(m_drawingareaPreview && m_drawingareaPreview->window);
+		UT_ASSERT(m_drawingareaPreview && gtk_widget_get_window(m_drawingareaPreview));
 
 		// make a new Unix GC
 		GR_UnixCairoAllocInfo ai(m_drawingareaPreview);
@@ -169,9 +169,11 @@ void AP_UnixDialog_Paragraph::runModal(XAP_Frame * pFrame)
 		    (GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 		// let the widget materialize
+		GtkAllocation allocation;
+		gtk_widget_get_allocation(m_drawingareaPreview, &allocation);
 		_createPreviewFromGC(m_unixGraphics,
-							 (UT_uint32) m_drawingareaPreview->allocation.width,
-							 (UT_uint32) m_drawingareaPreview->allocation.height);
+							 (UT_uint32) allocation.width,
+							 (UT_uint32) allocation.height);
 	}
 
 	// sync all controls once to get started
@@ -335,7 +337,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	windowParagraph = abiDialogNew("paragraph dialog", TRUE, unixstr);
 	FREEP(unixstr);
 
-	vboxMain = GTK_DIALOG(windowParagraph)->vbox;
+	vboxMain = gtk_dialog_get_content_area(GTK_DIALOG(windowParagraph));
 	gtk_container_set_border_width (GTK_CONTAINER(vboxMain), 10);
 
 	windowContents = _constructWindowContents(windowParagraph);

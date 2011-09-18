@@ -33,7 +33,7 @@ public:
 	virtual ~AP_UnixDialog_MailMerge(void);
 
 	virtual void			runModeless(XAP_Frame * pFrame);
-	virtual void activate(void) {gdk_window_raise (m_windowMain->window);}
+	virtual void activate(void) {gdk_window_raise (gtk_widget_get_window(m_windowMain));}
 	virtual void destroy(void) {modeless_cleanup();}
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);

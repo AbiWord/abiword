@@ -172,7 +172,7 @@ void AP_UnixDialog_Stylist::destroy(void)
 void AP_UnixDialog_Stylist::activate(void)
 {
 	UT_ASSERT (m_windowMain);
-	gdk_window_raise (m_windowMain->window);
+	gdk_window_raise (gtk_widget_get_window(m_windowMain));
 }
 
 void AP_UnixDialog_Stylist::notifyActiveFrame(XAP_Frame * /*pFrame*/)

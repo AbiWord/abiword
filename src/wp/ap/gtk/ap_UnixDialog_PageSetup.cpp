@@ -46,20 +46,12 @@
 // static helper functions
 
 static GtkWidget *
-create_pixmap (GtkWidget *w, const char **data)
+create_pixmap (G_GNUC_UNUSED GtkWidget *w, const char **data)
 {
 	GtkWidget *pixmap;
-	GdkColormap *colormap;
-	GdkPixmap *gdkpixmap;
-	GdkBitmap *mask;
-
-	colormap = gtk_widget_get_colormap (w);
-	gdkpixmap = gdk_pixmap_colormap_create_from_xpm_d (NULL, colormap, &mask,
-							 NULL, const_cast<gchar **>(data));
-
-	pixmap = gtk_image_new_from_pixmap (gdkpixmap, mask);
-	gdk_pixmap_unref (gdkpixmap);
-	gdk_bitmap_unref (mask);
+	GdkPixbuf *pixbuf = gdk_pixbuf_new_from_xpm_data(data);
+	pixmap = gtk_image_new_from_pixbuf(pixbuf);
+	g_object_unref (pixbuf);
 	return pixmap;
 }
 

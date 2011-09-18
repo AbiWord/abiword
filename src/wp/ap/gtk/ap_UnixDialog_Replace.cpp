@@ -157,7 +157,7 @@ void AP_UnixDialog_Replace::activate(void)
 	UT_ASSERT(m_windowMain);
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
-	gdk_window_raise(m_windowMain->window);
+	gdk_window_raise(gtk_widget_get_window(m_windowMain));
 }
 
 void AP_UnixDialog_Replace::notifyActiveFrame(XAP_Frame * /*pFrame*/)
@@ -185,12 +185,16 @@ void AP_UnixDialog_Replace::runModeless(XAP_Frame * pFrame)
 static UT_UCS4String
 get_combobox_text(GtkWidget* combo)
 {
-  UT_UCS4String ucs;
-  char *str = gtk_combo_box_get_active_text(GTK_COMBO_BOX(combo));
-  ucs = str;
-  g_free(str);
+	UT_UCS4String ucs;
+	GtkTreeIter iter;
+	gtk_combo_box_get_active_iter(GTK_COMBO_BOX(combo), &iter);
+	char *str;
+	gtk_tree_model_get(gtk_combo_box_get_model(GTK_COMBO_BOX(combo)),
+	                   &iter, 0, &str, -1);
+	ucs = str;
+	g_free(str);
 
-  return ucs;
+	return ucs;
 }
 
 void AP_UnixDialog_Replace::event_Find(void)

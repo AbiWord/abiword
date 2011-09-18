@@ -24,15 +24,14 @@
 #ifndef _GO_COMBO_BOX_H_
 #define _GO_COMBO_BOX_H_
 
-#include <gtk/gtkhbox.h>
-#include <gtk/gtktooltips.h>
+#include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 
-#define GO_COMBO_BOX_TYPE	(go_combo_box_get_type())
-#define GO_COMBO_BOX(o)		G_TYPE_CHECK_INSTANCE_CAST ((o), GO_COMBO_BOX_TYPE, GOComboBox)
-#define IS_GO_COMBO_BOX(o)	G_TYPE_CHECK_INSTANCE_TYPE ((o), GO_COMBO_BOX_TYPE)
-#define GO_COMBO_BOX_CLASS(k)	G_TYPE_CHECK_CLASS_CAST ((k), GO_COMBO_BOX_TYPE, GOComboBoxClass)
+#define GO_TYPE_COMBO_BOX	(go_combo_box_get_type())
+#define GO_COMBO_BOX(o)		G_TYPE_CHECK_INSTANCE_CAST ((o), GO_TYPE_COMBO_BOX, GOComboBox)
+#define GO_IS_COMBO_BOX(o)	G_TYPE_CHECK_INSTANCE_TYPE ((o), GO_TYPE_COMBO_BOX)
+#define GO_COMBO_BOX_CLASS(k)	G_TYPE_CHECK_CLASS_CAST ((k), GO_TYPE_COMBO_BOX, GOComboBoxClass)
 
 typedef struct _GOComboBox	  GOComboBox;
 typedef struct _GOComboBoxPrivate GOComboBoxPrivate;
@@ -56,7 +55,8 @@ struct _GOComboBoxClass {
 
 /* public */
 GType	    go_combo_box_get_type     (void);
-void	    go_combo_box_set_tooltip_text  (GOComboBox *combo, char const *text);
+void	    go_combo_box_set_tooltip  (GOComboBox *combo, void *tips,
+				       char const *text, char const *priv_text);
 void	    go_combo_box_set_relief   (GOComboBox *combo, GtkReliefStyle relief);
 void	    go_combo_box_set_title    (GOComboBox *combo, char const *title);
 char const *go_combo_box_get_title    (GOComboBox *combo);

@@ -37,10 +37,6 @@ void FV_ViewDoubleBuffering::beginDoubleBuffering()
     //      I also noticed some segvs when no-gui && dbuffer
     if( XAP_App::getApp()->getDisableDoubleBuffering() ) 
         return;
-    
-	// We will need to direct calls through a painter since it may initialize
-	// the device context on some platforms
-	m_pPainter = new GR_Painter(m_pView->getGraphics());
 
 	if(m_bSuspendDirectDrawing == true && m_bCallDrawOnlyAtTheEnd == false)
 	{
@@ -52,6 +48,10 @@ void FV_ViewDoubleBuffering::beginDoubleBuffering()
 	
 	if(!m_pView->registerDoubleBufferingObject(this))
 		return;
+    
+	// We will need to direct calls through a painter since it may initialize
+	// the device context on some platforms
+	m_pPainter = new GR_Painter(m_pView->getGraphics());
 
 	m_pPainter->beginDoubleBuffering();
 

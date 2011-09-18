@@ -116,7 +116,7 @@ void AP_UnixDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
 	
 	UT_return_if_fail(unixapp);
-	UT_return_if_fail(m_previewArea && m_previewArea->window);
+	UT_return_if_fail(m_previewArea && gtk_widget_get_window(m_previewArea));
 	DELETEP (m_unixGraphics);
 	
 	// make a new Unix GC
@@ -126,14 +126,16 @@ void AP_UnixDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 	
 	
 	// let the widget materialize
+	GtkAllocation allocation;
+	gtk_widget_get_allocation(m_previewArea, &allocation);
 	_createPreviewFromGC(m_unixGraphics,
-		   static_cast<UT_uint32>(m_previewArea->allocation.width),
-		   static_cast<UT_uint32>(m_previewArea->allocation.height));
+		   static_cast<UT_uint32>(allocation.width),
+		   static_cast<UT_uint32>(allocation.height));
 		   
 	// Todo: we need a good widget to query with a probable
 	// Todo: non-white (i.e. gray, or a similar bgcolor as our parent widget)
 	// Todo: background. This should be fine
-	m_unixGraphics->init3dColors(m_previewArea->style);
+	m_unixGraphics->init3dColors(gtk_widget_get_style_context(m_previewArea));
 
 	// hack in a quick draw here
 	_updatePreview(m_recentAlign, m_recentControl);

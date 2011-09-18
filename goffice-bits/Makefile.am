@@ -14,6 +14,8 @@ libgoffice_la_SOURCES = \
 	goffice/app/go-cmd-context.h \
 	goffice/app/go-cmd-context.c \
 	goffice/app/go-cmd-context-impl.h \
+    goffice/app/error-info.c \
+    goffice/app/error-info.h \
 	goffice/gtk/goffice-gtk.h \
 	goffice/gtk/goffice-gtk.c \
 	goffice/gtk/go-color-palette.h \
@@ -34,6 +36,10 @@ libgoffice_la_SOURCES = \
 	goffice/utils/go-marshalers.c \
 	goffice/utils/go-file.h \
 	goffice/utils/go-file.c \
+    goffice/utils/go-locale.c \
+    goffice/utils/go-locale.h \
+    goffice/utils/go-cairo.c \
+    goffice/utils/go-cairo.h \
 	goffice/utils/go-color.h \
 	goffice/utils/go-color.c
 

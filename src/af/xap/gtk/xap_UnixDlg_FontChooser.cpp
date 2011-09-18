@@ -491,7 +491,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindow(void)
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_FontTitle,s);
 	windowFontSelection = abiDialogNew ( "font dialog", TRUE, s.utf8_str() ) ;
 
-	vboxOuter = GTK_DIALOG(windowFontSelection)->vbox;
+	vboxOuter = gtk_dialog_get_content_area(GTK_DIALOG(windowFontSelection));
 
 	vboxMain = constructWindowContents(vboxOuter);
 	gtk_box_pack_start (GTK_BOX (vboxOuter), vboxMain, TRUE, TRUE, 0);
@@ -909,9 +909,9 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 			 G_CALLBACK(s_bgcolor_update),
 			 static_cast<gpointer>(this));
 
-	GTK_WIDGET_SET_FLAGS(listFonts, GTK_CAN_FOCUS);
-	GTK_WIDGET_SET_FLAGS(listStyles, GTK_CAN_FOCUS);
-	GTK_WIDGET_SET_FLAGS(listSizes, GTK_CAN_FOCUS);
+	gtk_widget_set_can_focus(listFonts, true);
+	gtk_widget_set_can_focus(listStyles, true);
+	gtk_widget_set_can_focus(listSizes, true);
 
 	// Make the tab focus list more sensible
 	// font -> syle -> size -> other options ...
@@ -1132,8 +1132,10 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	
 	GR_UnixCairoAllocInfo ai(m_preview);
 	m_gc = (GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
+	GtkAllocation alloc;
 
-	_createFontPreviewFromGC(m_gc,m_preview->allocation.width,m_preview->allocation.height);
+	gtk_widget_get_allocation(m_preview, &alloc);
+	_createFontPreviewFromGC(m_gc,alloc.width,alloc.height);
 //
 // This enables callbacks on the preview area with a widget pointer to
 // access this dialog.

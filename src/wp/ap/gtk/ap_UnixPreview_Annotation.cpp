@@ -61,8 +61,10 @@ void AP_UnixPreview_Annotation::runModeless(XAP_Frame * pFrame)
 	XAP_App *pApp = XAP_App::getApp();
 	GR_UnixCairoAllocInfo ai(GTK_WIDGET(m_pDrawingArea));
 	m_gc = (GR_CairoGraphics*) pApp->newGraphics(ai);
-	
-	_createAnnotationPreviewFromGC(m_gc, m_pPreviewWindow->allocation.width, m_pPreviewWindow->allocation.height);
+
+	GtkAllocation allocation;
+	gtk_widget_get_allocation(m_pPreviewWindow, &allocation);
+	_createAnnotationPreviewFromGC(m_gc, allocation.width, allocation.height);
 	m_gc->setZoomPercentage(100);
 	gtk_widget_show(m_pDrawingArea);
 }
@@ -70,7 +72,7 @@ void AP_UnixPreview_Annotation::runModeless(XAP_Frame * pFrame)
 void AP_UnixPreview_Annotation::activate(void)
 {
 	UT_return_if_fail(m_pPreviewWindow);
-	gdk_window_raise(m_pPreviewWindow->window);
+	gdk_window_raise(gtk_widget_get_window(m_pPreviewWindow));
 }
 
 XAP_Dialog * AP_UnixPreview_Annotation::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id)

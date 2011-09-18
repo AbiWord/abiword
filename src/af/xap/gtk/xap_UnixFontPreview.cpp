@@ -34,7 +34,9 @@ XAP_UnixFontPreview::XAP_UnixFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_
 	gtk_widget_set_size_request(m_pPreviewWindow, m_width, m_height);
 	
 	m_pDrawingArea = createDrawingArea ();
-	gtk_widget_set_size_request(m_pDrawingArea, m_pPreviewWindow->allocation.width, m_pPreviewWindow->allocation.height);
+	GtkAllocation alloc;
+	gtk_widget_get_allocation(m_pPreviewWindow, &alloc);
+	gtk_widget_set_size_request(m_pDrawingArea, alloc.width, alloc.height);
 	gtk_container_add(GTK_CONTAINER(m_pPreviewWindow), m_pDrawingArea);
 
 	gtk_widget_show_all(m_pPreviewWindow);
@@ -45,7 +47,7 @@ XAP_UnixFontPreview::XAP_UnixFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_
 	GR_UnixCairoAllocInfo ai(GTK_WIDGET(m_pDrawingArea));
 	m_gc = (GR_CairoGraphics*) pApp->newGraphics(ai);
 
-	_createFontPreviewFromGC(m_gc, m_pPreviewWindow->allocation.width, m_pPreviewWindow->allocation.height);
+	_createFontPreviewFromGC(m_gc, alloc.width, alloc.height);
 }
 
 XAP_UnixFontPreview::~XAP_UnixFontPreview(void)

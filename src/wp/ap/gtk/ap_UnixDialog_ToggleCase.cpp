@@ -87,7 +87,7 @@ GtkWidget * AP_UnixDialog_ToggleCase::_constructWindow (void)
   pSS->getValueUTF8(AP_STRING_ID_DLG_ToggleCase_Title,s);
   GtkWidget * windowMain = abiDialogNew("toggle case dialog", TRUE, s.utf8_str());
 
-  _constructWindowContents (GTK_DIALOG(windowMain)->vbox);
+  _constructWindowContents (gtk_dialog_get_content_area(GTK_DIALOG(windowMain)));
 
   abiAddStockButton(GTK_DIALOG(windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL);
   abiAddStockButton(GTK_DIALOG(windowMain), GTK_STOCK_OK, BUTTON_OK);

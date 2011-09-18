@@ -309,24 +309,24 @@ void  AP_UnixDialog_FormatFootnotes::refreshVals(void)
 
 	if(getRestartFootnoteOnSection())
 	{
-		gtk_combo_box_set_active(m_wFootnoteNumberingMenu,1);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(m_wFootnoteNumberingMenu),1);
 	}
 	else if(getRestartFootnoteOnPage())
 	{
-		gtk_combo_box_set_active(m_wFootnoteNumberingMenu,2);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(m_wFootnoteNumberingMenu),2);
 	}
 	else
 	{
-		gtk_combo_box_set_active(m_wFootnoteNumberingMenu,0);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(m_wFootnoteNumberingMenu),0);
 	}
 
 	if(getPlaceAtDocEnd())
 	{
-		gtk_combo_box_set_active(m_wEndnotesPlaceMenu,1);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(m_wEndnotesPlaceMenu),1);
 	}
 	else if(getPlaceAtSecEnd())
 	{
-		gtk_combo_box_set_active(m_wEndnotesPlaceMenu,0);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(m_wEndnotesPlaceMenu),0);
 	}
 
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wEndnotesRestartOnSection), static_cast<gboolean>(getRestartEndnoteOnSection()));
@@ -417,29 +417,27 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 //
 // Footnotes number menu
 //
-	m_wFootnoteNumberingMenu = GTK_COMBO_BOX(gtk_builder_get_object(builder, "omNumbering"));
+	m_wFootnoteNumberingMenu = GTK_COMBO_BOX_TEXT(gtk_builder_get_object(builder, "omNumbering"));
 	UT_ASSERT(m_wFootnoteNumberingMenu );
-	XAP_makeGtkComboBoxText(m_wFootnoteNumberingMenu, G_TYPE_NONE);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootRestartNone,s);
-	gtk_combo_box_append_text(m_wFootnoteNumberingMenu, s.c_str());
+	gtk_combo_box_text_append_text(m_wFootnoteNumberingMenu, s.c_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootRestartSec,s);
-	gtk_combo_box_append_text(m_wFootnoteNumberingMenu, s.c_str());
+	gtk_combo_box_text_append_text(m_wFootnoteNumberingMenu, s.c_str());
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootRestartPage,s);
-	gtk_combo_box_append_text(m_wFootnoteNumberingMenu, s.c_str());
+	gtk_combo_box_text_append_text(m_wFootnoteNumberingMenu, s.c_str());
 //	m_wFootnotesRestartOnPage = gtk_menu_item_new_with_label (s.utf8_str());
 
 
 //
 // Endnotes placement menu
 //
-	m_wEndnotesPlaceMenu = GTK_COMBO_BOX(gtk_builder_get_object(builder, "omEndnotePlacement"));
+	m_wEndnotesPlaceMenu = GTK_COMBO_BOX_TEXT(gtk_builder_get_object(builder, "omEndnotePlacement"));
 	UT_ASSERT(m_wEndnotesPlaceMenu );
-	XAP_makeGtkComboBoxText(m_wEndnotesPlaceMenu, G_TYPE_NONE);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndSec,s);
-	gtk_combo_box_append_text(m_wEndnotesPlaceMenu, s.c_str());
+	gtk_combo_box_text_append_text(m_wEndnotesPlaceMenu, s.c_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndDoc,s);
-	gtk_combo_box_append_text(m_wEndnotesPlaceMenu, s.c_str());
+	gtk_combo_box_text_append_text(m_wEndnotesPlaceMenu, s.c_str());
 
 //
 // Now grab widgets for the remaining controls.
@@ -451,13 +449,13 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 	m_wEndnotesInitialValText = GTK_WIDGET(gtk_builder_get_object(builder, "endSpinValueText"));
 	UT_ASSERT(m_wEndnotesInitialValText );
 	m_wEndnoteSpin = GTK_WIDGET(gtk_builder_get_object(builder, "endnoteSpin"));
-	m_oEndnoteSpinAdj = GTK_OBJECT(gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(m_wEndnoteSpin)));
+	m_oEndnoteSpinAdj = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(m_wEndnoteSpin));
 
 // Footnote Initial Value Control
 
 	m_wFootnoteSpin = GTK_WIDGET(gtk_builder_get_object(builder, "footnoteSpin"));
 	UT_ASSERT(m_wFootnoteSpin );
-	m_oFootnoteSpinAdj = GTK_OBJECT(gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(m_wFootnoteSpin)));
+	m_oFootnoteSpinAdj = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(m_wFootnoteSpin));
 	m_wFootnotesInitialValText = GTK_WIDGET(gtk_builder_get_object(builder, "footSpinValueText"));
 	UT_ASSERT(m_wFootnotesInitialValText );
 	_connectSignals();

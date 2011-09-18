@@ -38,13 +38,15 @@ void XAP_UnixCustomWidget::queueDraw(const UT_Rect *clip)
 	}
 }
 
-void XAP_UnixCustomWidget::_fe::expose(XAP_UnixCustomWidget *self, GdkEventExpose *ev)
+void XAP_UnixCustomWidget::_fe::draw(XAP_UnixCustomWidget *self, cairo_t *cr)
 {
+	GdkEventExpose *ev = reinterpret_cast<GdkEventExpose *>(gtk_get_current_event());
 	UT_Rect r(
 			ev->area.x,
 			ev->area.y,
 			ev->area.width,
 			ev->area.height
 		);
+	self->m_cr = cr;
 	self->draw(&r);
 }

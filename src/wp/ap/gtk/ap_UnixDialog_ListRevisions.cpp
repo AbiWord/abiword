@@ -138,11 +138,11 @@ GtkWidget * AP_UnixDialog_ListRevisions::constructWindow ()
   gtk_window_set_modal (GTK_WINDOW (ap_UnixDialog_ListRevisions), TRUE);
   gtk_window_set_default_size ( GTK_WINDOW(ap_UnixDialog_ListRevisions), 250, 250 ) ;
 
-  vbDialog = GTK_DIALOG (ap_UnixDialog_ListRevisions)->vbox;
+  vbDialog = gtk_dialog_get_content_area(GTK_DIALOG(ap_UnixDialog_ListRevisions));
   gtk_widget_show (vbDialog);
   gtk_container_set_border_width (GTK_CONTAINER (vbDialog), 5);
 
-  aaDialog = GTK_DIALOG (ap_UnixDialog_ListRevisions)->action_area;
+  aaDialog = gtk_dialog_get_action_area(GTK_DIALOG(ap_UnixDialog_ListRevisions));
   gtk_widget_show (aaDialog);
 
   constructWindowContents ( vbDialog ) ;
