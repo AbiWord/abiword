@@ -29,10 +29,6 @@ void FV_ViewDoubleBuffering::beginDoubleBuffering()
 	return;
 #endif
 
-	// We will need to direct calls through a painter since it may initialize
-	// the device context on some platforms
-	m_pPainter = new GR_Painter(m_pView->getGraphics());
-
 	if(m_bSuspendDirectDrawing == true && m_bCallDrawOnlyAtTheEnd == false)
 	{
 		// You put me in a curious sitution: you want me to disable drawing between
@@ -43,6 +39,10 @@ void FV_ViewDoubleBuffering::beginDoubleBuffering()
 	
 	if(!m_pView->registerDoubleBufferingObject(this))
 		return;
+
+	// We will need to direct calls through a painter since it may initialize
+	// the device context on some platforms
+	m_pPainter = new GR_Painter(m_pView->getGraphics());
 
 	m_pPainter->beginDoubleBuffering();
 
