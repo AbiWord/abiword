@@ -25,6 +25,9 @@
 #include "ie_Table.h"
 #include "pp_PropertyMap.h"
 
+#include <list>
+#include <string>
+
 class ie_Table;
 class PX_ChangeRecord_Object;
 
@@ -159,6 +162,8 @@ protected:
 	UT_UTF8String       m_sAnnTitle;
 	UT_UTF8String       m_sAnnAuthor;
 	UT_UTF8String       m_sAnnDate;
+
+    std::list< std::string > m_rdfAnchorStack;
 };
 
 #endif /* IE_EXP_RTF_LISTENERWRITEDOC */

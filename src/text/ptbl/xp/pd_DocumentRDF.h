@@ -341,12 +341,18 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
     void addRDFForID( const std::string& xmlid, PD_DocumentRDFMutationHandle& m );
     std::list< std::string >& addRelevantIDsForPosition( std::list< std::string >& ret,
                                                          PT_DocPosition pos );
+    std::list< std::string >& addRelevantIDsForRange( std::list< std::string >& ret,
+                                                      PD_DocumentRange* range );
+    std::list< std::string >& addRelevantIDsForRange( std::list< std::string >& ret,
+                                                      std::pair< PT_DocPosition, PT_DocPosition > range );
+    
     std::set< std::string >& getAllIDs( std::set< std::string >& ret );
     std::pair< PT_DocPosition, PT_DocPosition > getIDRange( const std::string& xmlid );
 
 
     PD_RDFModelHandle createRestrictedModelForXMLIDs( const std::string& writeID,
                                                       const std::list< std::string >& xmlids );
+    PD_RDFModelHandle createRestrictedModelForXMLIDs( const std::list< std::string >& xmlids );
 
     virtual void maybeSetDocumentDirty();
     
@@ -360,7 +366,8 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
                                                      const std::string& extraPreds = "" );
 
     std::string makeLegalXMLID( const std::string& s );
-    
+    void relinkRDFToNewXMLID( const std::string& oldxmlid, const std::string& newxmlid, bool deepCopyRDF = false );
+
   protected:
     PD_Document* m_doc;
   private:
@@ -461,7 +468,8 @@ class ABI_EXPORT PD_DocumentRDFMutation
     void remove( const PD_URI& s, const PD_URI& p, const PD_URI& o );
     bool add( const PD_RDFStatement& st );
     void remove( const PD_RDFStatement& st );
-    
+    int add( PD_RDFModelHandle model );
+        
     virtual UT_Error commit();
     virtual void rollback();
 };

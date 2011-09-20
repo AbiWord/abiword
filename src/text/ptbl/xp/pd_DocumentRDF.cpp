@@ -1276,6 +1276,51 @@ PD_DocumentRDF::makeLegalXMLID( const std::string& s )
     return ret;
 }
 
+void
+PD_DocumentRDF::relinkRDFToNewXMLID( const std::string& oldxmlid,
+                                     const std::string& newxmlid,
+                                     bool deepCopyRDF )
+{
+    if( deepCopyRDF )
+    {
+        // FIXME: todo
+        UT_DEBUGMSG(("relinkRDFToNewXMLID DEEP COPY FIXME oldid:%s newid:%s subj:%s\n",
+                     oldxmlid.c_str(), newxmlid.c_str() ));
+    }
+    
+    UT_DEBUGMSG(("relinkRDFToNewXMLID oldid:%s newid:%s subj:%s\n",
+                 oldxmlid.c_str(), newxmlid.c_str() ));
+    
+    PD_DocumentRDFMutationHandle m = createMutation();
+    PD_URI idref("http://docs.oasis-open.org/opendocument/meta/package/common#idref");
+    
+    std::list< std::string > oldlist;
+    oldlist.push_back( oldxmlid );
+    std::string sparql = getSPARQL_LimitedToXMLIDList( oldlist );
+    UT_DEBUGMSG(("relinkRDFToNewXMLID sparql:%s\n", sparql.c_str() ));
+
+    PD_DocumentRDFHandle rdf = getDocument()->getDocumentRDF();
+    PD_RDFQuery q( rdf, rdf );
+    PD_ResultBindings_t bindings = q.executeQuery( sparql );
+
+    for( PD_ResultBindings_t::iterator iter = bindings.begin(); iter != bindings.end(); ++iter )
+    {
+        std::map< std::string, std::string > d = *iter;
+        
+        PD_URI    s( d["s"] );
+        PD_URI    p( d["p"] );
+        PD_Object o( d["o"] );
+
+        UT_DEBUGMSG(("relinkRDFToNewXMLID oldid:%s newid:%s subj:%s\n",
+                     oldxmlid.c_str(), newxmlid.c_str(), s.toString().c_str() ));
+        
+        m->add( s, idref, PD_Literal( newxmlid ));
+    }
+
+    m->commit();
+}
+
+
 
 std::string
 PD_DocumentRDF::getSPARQL_LimitedToXMLIDList( const std::list< std::string >& xmlids,
@@ -1809,10 +1854,30 @@ PD_DocumentRDF::getIDRange( const std::string& xmlid )
 }
 
 
+std::list< std::string >&
+PD_DocumentRDF::addRelevantIDsForRange( std::list< std::string >& ret,
+                                        PD_DocumentRange* range )
+{
+    addRelevantIDsForRange( ret, make_pair( range->m_pos1, range->m_pos2 ));
+    return ret;
+}
+
+std::list< std::string >&
+PD_DocumentRDF::addRelevantIDsForRange( std::list< std::string >& ret,
+                                        std::pair< PT_DocPosition, PT_DocPosition > range )
+{
+    for( PT_DocPosition pos = range.first; pos <= range.second; ++pos )
+    {
+        addRelevantIDsForPosition( ret, pos );
+    }
+    return ret;
+}
+
+
 
 std::list< std::string >&
 PD_DocumentRDF::addRelevantIDsForPosition( std::list< std::string >& ret,
-                                                                     PT_DocPosition pos )
+                                           PT_DocPosition pos )
 {
     PD_Document*    doc = getDocument();
     pt_PieceTable*   pt = getPieceTable();
@@ -2689,6 +2754,16 @@ PD_DocumentRDF::createRestrictedModelForXMLIDs( const std::string& writeID,
     return ret;
 }
 
+PD_RDFModelHandle
+PD_DocumentRDF::createRestrictedModelForXMLIDs( const std::list< std::string >& xmlids )
+{
+    std::string writeID = "";
+    if( !xmlids.empty() )
+        writeID = xmlids.front();
+    return createRestrictedModelForXMLIDs( writeID, xmlids );
+}
+
+
 
 
 /****************************************/
@@ -2843,6 +2918,23 @@ PD_DocumentRDFMutation::remove( const PD_RDFStatement& st )
     remove( st.getSubject(), st.getPredicate(), st.getObject() );
 }
 
+int
+PD_DocumentRDFMutation::add( PD_RDFModelHandle model )
+{
+    int count = 0;
+    PD_RDFModelIterator iter = model->begin();
+    PD_RDFModelIterator    e = model->end();
+    for( ; iter != e; ++iter )
+    {
+        const PD_RDFStatement& st = *iter;
+        if( add( st ) )
+            ++count;
+    }
+    
+    return count;
+}
+
+
 void
 PD_DocumentRDFMutation::handleCollabEvent( gchar** szAtts, gchar** szProps )
 {
@@ -2996,6 +3088,8 @@ UT_Error PD_DocumentRDFMutation::commit()
         UT_DEBUGMSG(("PD_DocumentRDF::commit(top3) add count:%d\n",
                      (int)m_crAddAP->getPropertyCount()));
     }
+    m_rdf->apDumpModel( m_crAddAP, "xx add to model" );
+    
     
     if(m_rolledback)
         return UT_OK;

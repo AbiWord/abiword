@@ -1536,6 +1536,8 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_mbtowc.setInCharset(XAP_EncodingManager::get_instance()->getNativeEncodingName());
 	m_hyperlinkBase.clear();
 	m_pasteTableStack.push(NULL);
+
+	m_XMLIDCreatorHandle = getDoc()->makeXMLIDCreator();
 }
 
 
@@ -3976,6 +3978,12 @@ gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & _buf, gchar *xmlField, bool 
 		{
 			std::string xmlid = "";
 			const gchar* ppAtts[10] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+
+			UT_DEBUGMSG (("RTF: RDF opening text meta with original xmlid:%s\n", xmlid.c_str() ));
+			PD_XMLIDCreatorHandle xidc = m_XMLIDCreatorHandle;
+			xmlid = xidc->createUniqueXMLID( xmlid );
+			UT_DEBUGMSG (("RTF: RDF opening text meta with updated  xmlid:%s\n", xmlid.c_str() ));
+
 			ppAtts[0] = PT_XMLID;
 			ppAtts[1] = xmlid.c_str();
 			// sanity check
@@ -3986,6 +3994,8 @@ gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & _buf, gchar *xmlField, bool 
 
 			getDoc()->appendObject(PTO_RDFAnchor, ppAtts);
 			m_iRDFAnchorOpen++;
+
+			
 		}
 		if (strcmp (instr, "TIME") == 0)
 		{
@@ -11232,14 +11242,29 @@ bool IE_Imp_RTF::HandleBookmark (RTFBookmarkType type)
 
 bool IE_Imp_RTF::HandleRDFAnchor (RTFBookmarkType type)
 {
-	UT_DEBUGMSG(("HandleRDFAnchor() of type %duse-app:%d\n",
-				 type, !bUseInsertNotAppend()  ));
+	UT_DEBUGMSG(("HandleRDFAnchor() of type %d is-start:%d is-end:%d use-app:%d\n",
+				 type,
+				 type == RBT_START, type == RBT_END,
+				 !bUseInsertNotAppend()  ));
 
 	std::string xmlid;
 	HandlePCData(xmlid);
 
-	UT_DEBUGMSG(("HandleRDFAnchor() of type %d xmlid:%s\n",
-				 type, xmlid.c_str()));
+	UT_DEBUGMSG(("HandleRDFAnchor() of type %d original xmlid:%s\n", type, xmlid.c_str()));
+	if( type == RBT_START )
+	{
+		PD_XMLIDCreatorHandle xidc = m_XMLIDCreatorHandle;
+		std::string updatedxmlid = xidc->createUniqueXMLID( xmlid );
+		m_rdfAnchorCloseXMLIDs.insert( make_pair( xmlid, updatedxmlid ) );
+		xmlid = updatedxmlid;
+	}
+	else
+	{
+		xmlid = m_rdfAnchorCloseXMLIDs[ xmlid ];
+		m_rdfAnchorCloseXMLIDs.erase( xmlid );
+	}
+	UT_DEBUGMSG(("HandleRDFAnchor() of type %d updated  xmlid:%s\n", type, xmlid.c_str()));
+	
 	const gchar* ppAtts[10] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 	int ppIdx = 0;
 	ppAtts[ppIdx++] = PT_XMLID;

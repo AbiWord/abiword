@@ -102,6 +102,16 @@ bool IE_Imp_OpenDocument::pasteFromBuffer(PD_DocumentRange * pDocRange,
     pODImp->loadFile(newDoc, pInStream);
     // pInStream deleted after load.
     newDoc->finishRawCreation();
+
+    // Handle RDF for the newdoc
+    {
+        PD_DocumentRDFHandle rdf = newDoc->getDocumentRDF();
+        rdf->dumpModel("about to broadcast...");
+        PD_DocumentRDFMutationHandle m = getDoc()->getDocumentRDF()->createMutation();
+        m->add( rdf );
+        m->commit();
+    }
+    
     //
     // OK Broadcast from the just filled source document into our current
     // doc via the paste listener
@@ -439,6 +449,19 @@ UT_Error IE_Imp_OpenDocument::_handleRDFStreams ()
 
     UT_DEBUGMSG(("IE_Imp_OpenDocument::_handleRDFStreams()\n"));
 
+    // DEBUG.
+    {
+        PD_DocumentRDFHandle rdf = getDoc()->getDocumentRDF();
+        PD_DocumentRDFMutationHandle m = rdf->createMutation();
+        m->add( PD_URI("http://www.example.com/foo#bar" ),
+                PD_URI("http://www.example.com/foo#bar" ),
+                PD_Object("http://www.example.com/foo#bar" ) );
+        m->commit();
+        rdf->dumpModel("added foo");
+    }
+    
+
+    
     RDFArguments args;
     librdf_model* model = args.model;
 
@@ -446,6 +469,7 @@ UT_Error IE_Imp_OpenDocument::_handleRDFStreams ()
     GsfInput* pRdfManifest = gsf_infile_child_by_name(m_pGsfInfile, "manifest.rdf");
     if (pRdfManifest)
     {
+        UT_DEBUGMSG(("IE_Imp_OpenDocument::_handleRDFStreams() have manifest.rdf\n"));
         error = _loadRDFFromFile( pRdfManifest, "manifest.rdf", &args );
         g_object_unref (G_OBJECT (pRdfManifest));
         if (error != UT_OK)
@@ -518,7 +542,6 @@ UT_Error IE_Imp_OpenDocument::_handleRDFStreams ()
     {
         PD_DocumentRDFHandle rdf = getDoc()->getDocumentRDF();
         PD_DocumentRDFMutationHandle m = rdf->createMutation();
-
         librdf_statement* statement = librdf_new_statement( args.world );
         librdf_stream* stream = librdf_model_find_statements( model, statement );
 
@@ -555,18 +578,25 @@ UT_Error IE_Imp_OpenDocument::_handleRDFStreams ()
                                 ));
             }
             
-            
             m->add( PD_URI( toString( librdf_statement_get_subject( current ))),
                     PD_URI( toString( librdf_statement_get_predicate( current ))),
-                    PD_Object( toString( librdf_statement_get_object( current )),
-                               objectType,
-                               xsdType ));
+                    PD_Object( toString( librdf_statement_get_object( current ))));
+
+            // m->add( PD_URI( toString( librdf_statement_get_subject( current ))),
+            //         PD_URI( toString( librdf_statement_get_predicate( current ))),
+            //         PD_Object( toString( librdf_statement_get_object( current )),
+            //                    objectType,
+            //                    xsdType ));
 
             librdf_stream_next(stream);
         }
         
         librdf_free_stream( stream );
         librdf_free_statement( statement );
+        m->add( PD_URI("http://www.example.com/foo#bar" ),
+                PD_URI("http://www.example.com/foo#bar" ),
+                PD_Object("http://www.example.com/foo#bar" ) );
+        m->commit();
     }
 
     if( DEBUG_RDF_IO )

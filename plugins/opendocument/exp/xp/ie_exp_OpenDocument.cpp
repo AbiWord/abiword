@@ -43,6 +43,7 @@
 #include <ut_assert.h>
 #include <ut_locale.h>
 #include <pd_Document.h>
+#include <pd_DocumentRDF.h>
 #include "ie_exp_DocRangeListener.h"
 
 // External includes
@@ -120,6 +121,30 @@ UT_Error IE_Exp_OpenDocument::copyToBuffer(PD_DocumentRange * pDocRange,UT_ByteB
     IE_Exp_DocRangeListener * pRangeListener = new IE_Exp_DocRangeListener(pDocRange,outDoc);
     UT_DEBUGMSG(("DocumentRange low %d High %d \n",pDocRange->m_pos1,pDocRange->m_pos2));
     pDocRange->m_pDoc->tellListenerSubset(pRangeListener,pDocRange);
+
+    //
+    // Grab the RDF triples while we are copying...
+    //
+    if( PD_DocumentRDFHandle outrdf = outDoc->getDocumentRDF() )
+    {
+
+        std::list< std::string > xmlids;
+        PD_DocumentRDFHandle inrdf = pDocRange->m_pDoc->getDocumentRDF();
+        inrdf->addRelevantIDsForRange( xmlids, pDocRange );
+        if( !xmlids.empty() )
+        {
+            PD_RDFModelHandle subm = inrdf->createRestrictedModelForXMLIDs( xmlids );
+            PD_DocumentRDFMutationHandle m = outrdf->createMutation();
+            m->add( subm );
+            m->commit();
+        }
+        
+        PD_DocumentRDFMutationHandle m = outrdf->createMutation();
+        m->add( PD_URI("http://www.example.com/foo"),
+                PD_URI("http://www.example.com/bar"),
+                PD_Literal("copyToBuffer path") );
+        m->commit();
+    }
     outDoc->finishRawCreation();
     //
     // OK now we have a complete and valid document containing our selected 

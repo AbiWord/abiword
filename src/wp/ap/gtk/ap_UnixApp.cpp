@@ -26,6 +26,12 @@
 
 #define ABIWORD_INTERNAL
 
+//#define DUMP_CLIPBOARD_PASTE 1
+//#define DUMP_CLIPBOARD_COPY  1
+
+#ifdef DUMP_CLIPBOARD_PASTE
+#include <fstream>
+#endif
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -630,6 +636,13 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboar
 			//
 			err = pODT->copyToBuffer(pDocRange, &bufODT);
 			bExpODT = (err == UT_OK);
+            UT_DEBUGMSG(("Putting ODF on the clipboard...e:%d bExpODT:%d\n", err, bExpODT ));
+
+#ifdef DUMP_CLIPBOARD_COPY
+            std::ofstream oss("/tmp/clip.zip");
+            oss.write( (const char*)bufODT.getPointer (0), bufODT.getLength () );
+            oss.close();
+#endif
 		}
 	}
 
@@ -719,6 +732,15 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
       bFoundOne = m_pClipboard->getSupportedData(tFrom,reinterpret_cast<const void **>(&pData),&iLen,&szFormatFound);
     else
       bFoundOne = m_pClipboard->getTextData(tFrom,reinterpret_cast<const void **>(&pData),&iLen, &szFormatFound);
+
+#ifdef DUMP_CLIPBOARD_PASTE
+    if (bFoundOne)
+    {
+        std::ofstream oss("/tmp/clips");
+        oss.write( (const char*)pData, iLen );
+        oss.close();
+    }
+#endif
 
     if (!bFoundOne)
     {

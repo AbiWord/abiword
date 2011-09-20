@@ -8255,8 +8255,131 @@ UT_uint32 PD_Document::getFragXIDforVersion(const pf_Frag * pf, UT_uint32 iVersi
 	return 0;
 }
 
+#include <sstream>
+
 PD_DocumentRDFHandle PD_Document::getDocumentRDF(void) const
 {
     return m_hDocumentRDF;
 }
+
+PD_XMLIDCreatorHandle
+PD_Document::makeXMLIDCreator()
+{
+    PD_XMLIDCreatorHandle ret( new PD_XMLIDCreator( this ));
+    return ret;
+}
+
+
+class PD_XMLIDCreatorPrivate
+{
+public:
+    std::set< std::string > m_cache;
+    bool m_cacheIsVirgin;
+};
+
+
+
+PD_XMLIDCreator::PD_XMLIDCreator( PD_Document* doc )
+    : m_doc( doc )
+    , m_impl( new PD_XMLIDCreatorPrivate() )
+{
+    //
+    // delay calling rebuildCache() for the first time until
+    // the caller actually needs to use our methods.
+    // No use = No cost.
+    //
+    m_impl->m_cacheIsVirgin = true;
+}
+
+PD_XMLIDCreator::~PD_XMLIDCreator()
+{
+    delete m_impl;
+}
+
+    
+
+void
+PD_XMLIDCreator::rebuildCache()
+{
+    m_impl->m_cacheIsVirgin = false;
+    std::set< std::string >& m_cache = m_impl->m_cache;
+    
+    m_cache.clear();
+
+    //
+    // walk the document and grab all the xmlid values
+    //
+    if( m_doc )
+    {
+        pt_PieceTable* m_pPieceTable = m_doc->getPieceTable();
+        
+        pf_Frag * pf = NULL;
+        pf_Frag_Strux * pfs = NULL;
+        pf = m_pPieceTable->getFragments().getFirst();
+        while(pf)
+        {
+            PT_AttrPropIndex api = pf->getIndexAP();
+            const PP_AttrProp* pAP = 0;
+            const gchar * v = 0;
+            
+            if( m_doc->getAttrProp( api, &pAP ))
+            {
+                if( pAP->getAttribute(PT_XMLID, v) && v)
+                {
+                    m_cache.insert( v );
+                }
+            }
+            
+            
+            pf = pf->getNext();
+        }
+    }
+
+	UT_DEBUGMSG(("PD_XMLIDCreator::rebuildCache() cache.sz:%d \n", m_cache.size() ));
+    
+}
+
+template <class STREAM>
+STREAM& operator<<( STREAM& oss, UT_UTF8String s )
+{
+    oss << s.utf8_str();
+    return oss;
+}
+
+    
+std::string
+PD_XMLIDCreator::createUniqueXMLID( const std::string& desiredID, bool deepCopyRDF )
+{
+    if( m_impl->m_cacheIsVirgin )
+        rebuildCache();
+    
+    std::set< std::string >& m_cache = m_impl->m_cache;
+    UT_DEBUGMSG(("createUniqueXMLID() desired:%s\n", desiredID.c_str() ));
+    
+    // It is not in use already, let them have their choice.
+    if( !m_cache.count( desiredID ) )
+    {
+        UT_DEBUGMSG(("createUniqueXMLID() xmlid is not in use, returning desired:%s\n", desiredID.c_str() ));
+        m_cache.insert( desiredID );
+        return desiredID;
+    }
+
+    UT_DEBUGMSG(("createUniqueXMLID() xmlid is in use! desired:%s\n", desiredID.c_str() ));
+	UT_UUID* uuido = XAP_App::getApp()->getUUIDGenerator()->createUUID();
+    UT_UTF8String uuid;
+	uuido->toString(uuid);
+    delete uuido;
+    
+    std::stringstream ss;
+    ss << "x-" << desiredID << "-" << uuid;
+    std::string xmlid = ss.str();
+    m_cache.insert( xmlid );
+    UT_DEBUGMSG(("createUniqueXMLID() xmlid is in use! updated:%s\n", xmlid.c_str() ));
+
+    // link RDF from the desired xml:id to the new xml:id
+    m_doc->getDocumentRDF()->relinkRDFToNewXMLID( desiredID, xmlid, deepCopyRDF );
+    
+    return xmlid;
+}
+
 

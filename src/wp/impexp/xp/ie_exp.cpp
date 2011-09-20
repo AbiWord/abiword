@@ -19,6 +19,8 @@
  * 02111-1307, USA.
  */
 
+#define DUMP_COPY_TEXT  1
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -350,7 +352,7 @@ UT_Error IE_Exp::copyToBuffer(PD_DocumentRange * pDocRange, UT_ByteBuf * pBuf)
   	// write trailing zero to byte buffer (not required for file)
   	write("",1);
 
-#if (DEBUG && 0)
+#if (DEBUG && DUMP_COPY_TEXT)
 	printf("Text from copy is... \n");
 	printf("%s",reinterpret_cast<const char *>(m_pByteBuf->getPointer(0)));
 	printf("\n");

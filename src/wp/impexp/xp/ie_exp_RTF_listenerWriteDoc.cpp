@@ -1747,7 +1747,23 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 
 s_RTF_ListenerWriteDoc::~s_RTF_ListenerWriteDoc()
 {
+	UT_DEBUGMSG(("~s_RTF_ListenerWriteDoc() rdfstack.sz:%d \n" , m_rdfAnchorStack.size() ));
+
 	_closeSpan();
+
+	for( std::list< std::string >::iterator iter = m_rdfAnchorStack.begin();
+		 iter != m_rdfAnchorStack.end(); ++iter )
+	{
+		std::string xmlid = *iter;
+
+		m_pie->_rtf_open_brace();
+		m_pie->_rtf_keyword("*");
+		UT_DEBUGMSG(("_writeRDFAnchor(dtor) end... id:%s\n", xmlid.c_str() ));
+		m_pie->_rtf_keyword("rdfanchorend");
+		m_pie->_rtf_chardata( xmlid.c_str(), xmlid.length());
+		m_pie->_rtf_close_brace();
+	}
+	
 	_closeBlock();
 	_closeSection();
 }
@@ -1845,6 +1861,7 @@ bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 				return true;
 			case PTO_Hyperlink:
 			{
+				UT_DEBUGMSG(("PTO_Hyperlink pcro:%p\n", pcro ));
 				_closeSpan ();
 				const PP_AttrProp * pAP = NULL;
 				m_pDocument->getAttrProp(api,&pAP);
@@ -5070,6 +5087,8 @@ void s_RTF_ListenerWriteDoc::_writeBookmark(const PX_ChangeRecord_Object * pcro)
 
 void s_RTF_ListenerWriteDoc::_writeRDFAnchor(const PX_ChangeRecord_Object * pcro)
 {
+	UT_DEBUGMSG(("_writeRDFAnchor() pcro:%p\n", pcro ));
+	
 	PT_AttrPropIndex api = pcro->getIndexAP();
 	const PP_AttrProp * pAP = NULL;
 	m_pDocument->getAttrProp(api,&pAP);
@@ -5078,20 +5097,40 @@ void s_RTF_ListenerWriteDoc::_writeRDFAnchor(const PX_ChangeRecord_Object * pcro
 	m_pie->_rtf_open_brace();
 	{
 		m_pie->_rtf_keyword("*");
+		std::string xmlid = a.getID();
 		if( a.isEnd() )
 		{
+			UT_DEBUGMSG(("_writeRDFAnchor() end... id:%s\n", xmlid.c_str() ));
 			m_bRDFAnchorOpen = false;
 			m_pie->_rtf_keyword("rdfanchorend");
+
+			//
+			// Allow outer xmlid tag to close before inner one.
+			//
+			std::list< std::string >::iterator iter = find( m_rdfAnchorStack.begin(),
+															m_rdfAnchorStack.end(),
+															xmlid );
+			if( iter == m_rdfAnchorStack.end() )
+			{
+				UT_DEBUGMSG(("_writeRDFAnchor() XXX closing an RDF Anchor which is not open!... id:%s\n",
+							 xmlid.c_str() ));
+			}
+			else
+			{
+				m_rdfAnchorStack.erase( iter );
+			}
+//			m_rdfAnchorStack.pop_back();
 		}
 		else
 		{
+			UT_DEBUGMSG(("_writeRDFAnchor() start... id:%s\n", xmlid.c_str() ));
 			m_bRDFAnchorOpen = true;
 			m_pie->_rtf_keyword("rdfanchorstart");
+			m_rdfAnchorStack.push_back( xmlid );
 		}
-		std::string xmlid = a.getID();
 		m_pie->_rtf_chardata( xmlid.c_str(), xmlid.length());
-		m_pie->_rtf_close_brace();
 	}
+	m_pie->_rtf_close_brace();
 }
 
 //////////////////////////////////////////////////////////////////
@@ -5123,24 +5162,6 @@ void s_RTF_ListenerWriteDoc::_writeHyperlink(const PX_ChangeRecord_Object * pcro
 }
 
 
-// void s_RTF_ListenerWriteDoc::_writeRDFAnchorStart(const PX_ChangeRecord_Object * pcro)
-// {
-// 	PT_AttrPropIndex api = pcro->getIndexAP();
-// 	const PP_AttrProp * pHyperlinkAP = NULL;
-// 	m_pDocument->getAttrProp(api,&pHyperlinkAP);
-
-// 	_writeFieldPreamble(pHyperlinkAP);
-// 	m_pie->write("TEXTMETA ");
-// 	m_pie->write("\"");
-// //	m_pie->write(szHyper);
-// 	m_pie->write("\"");
-// 	m_bRDFAnchorOpen = true;
-// 	m_pie->_rtf_close_brace();
-// 	m_pie->_rtf_close_brace();
-// 	m_pie->_rtf_open_brace();
-// 	m_pie->_rtf_keyword("*");
-// 	m_pie->_rtf_keyword("fldrslt");
-// }
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////

@@ -987,6 +987,10 @@ private:
 	bool                  m_bFrameTextBox;
 	bool                  m_bParaActive;
 	bool                  m_bCellActive;
+
+	PD_XMLIDCreatorHandle  m_XMLIDCreatorHandle;
+	std::map< std::string, std::string > m_rdfAnchorCloseXMLIDs;
+	
 };
 
 #endif /* IE_IMP_RTF_H */

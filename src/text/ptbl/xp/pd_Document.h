@@ -200,6 +200,27 @@ private:
 	UT_ByteBuf m_sContent;
 };
 
+class PD_XMLIDCreatorPrivate;
+
+class ABI_EXPORT PD_XMLIDCreator
+{
+    friend class PD_Document;
+    PD_Document* m_doc;
+    PD_XMLIDCreatorPrivate* m_impl;
+    
+  protected:
+
+    PD_XMLIDCreator( PD_Document* doc );
+    void rebuildCache();
+    
+  public:
+    
+    ~PD_XMLIDCreator();
+    std::string createUniqueXMLID( const std::string& desiredID, bool deepCopyRDF = false );
+};
+typedef boost::shared_ptr<PD_XMLIDCreator> PD_XMLIDCreatorHandle;
+
+
 
 /*!
  PD_Document is the representation for a document.
@@ -618,6 +639,8 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	pt_PieceTable *			getPieceTable(void) const
 		{ return m_pPieceTable; }
     PD_DocumentRDFHandle    getDocumentRDF(void) const;
+    PD_XMLIDCreatorHandle   makeXMLIDCreator();
+    
 #ifdef PT_TEST
 	void					__dump(FILE * fp) const;
 	//! Pointer to last instatiated PD_Document. Used for debugging.

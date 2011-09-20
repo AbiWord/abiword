@@ -1077,7 +1077,18 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 	{
 		_rtf_keyword("revisions");
 	}
-	
+
+    //
+    // export the RDF too
+    //
+    {
+        // m_pie->_rtf_open_brace();
+		// m_pie->_rtf_keyword("*");
+		// m_pie->_rtf_keyword("rdffixme");
+		// m_pie->_rtf_chardata( xmlid.c_str(), xmlid.length());
+		// m_pie->_rtf_close_brace();
+    }
+    
 	return (m_error == 0);
 }
 
