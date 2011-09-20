@@ -802,11 +802,11 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 				UT_ASSERT(item);
 
 				// check boxes 
-				if (GTK_IS_CHECK_MENU_ITEM(item))
-				  // must use this line instead of calling
-				  // gtk_check_menu_item_set_active(...) because it
-				  // generates an "activate" signal	-- shack / sterwill
+				if (GTK_IS_CHECK_MENU_ITEM(item)) {
+				  g_signal_handlers_block_by_func(item, reinterpret_cast<void *>(_wd::s_onActivate), g_object_get_data(G_OBJECT(item), "wd"));
 				  gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(item), bCheck);
+				  g_signal_handlers_unblock_by_func(item, reinterpret_cast<void *>(_wd::s_onActivate), g_object_get_data(G_OBJECT(item), "wd"));
+				}
 
 				// all get the gray treatment
 				gtk_widget_set_sensitive(GTK_WIDGET(item), bEnable);
@@ -864,8 +864,11 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 				  // bind to parent item's accel group
 
 				  // finally, enable/disable and/or check/uncheck it.
-				  if (GTK_IS_CHECK_MENU_ITEM(item))
+				  if (GTK_IS_CHECK_MENU_ITEM(item)) {
+					g_signal_handlers_block_by_func(item, reinterpret_cast<void *>(_wd::s_onActivate), g_object_get_data(G_OBJECT(item), "wd"));
 					gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(item), bCheck);
+					g_signal_handlers_unblock_by_func(item, reinterpret_cast<void *>(_wd::s_onActivate), g_object_get_data(G_OBJECT(item), "wd"));
+				  }
 				gtk_widget_set_sensitive(static_cast<GtkWidget *>(item), bEnable);
 			  }
 			
@@ -1148,6 +1151,7 @@ GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int 		id,
 	m_vecCallbacks.addItem(static_cast<void *>(wd));
 	// connect callbacks
 	g_signal_connect(G_OBJECT(w), "activate", G_CALLBACK(_wd::s_onActivate), wd);
+	g_object_set_data(G_OBJECT(w), "wd", wd);
 	g_signal_connect(G_OBJECT(w), "select", G_CALLBACK(_wd::s_onMenuItemSelect), wd);
 	g_signal_connect(G_OBJECT(w), "deselect", G_CALLBACK(_wd::s_onMenuItemDeselect), wd);				
 
