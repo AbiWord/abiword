@@ -111,7 +111,7 @@ AbiWord_CPPFLAGS = \
 
 AbiWord_LDFLAGS = \
 	$(DEPS_LIBS) \
-	-Wl,-no-undefined \
+	-no-undefined \
 	-avoid-version \
 	-export-dynamic \
 	-headerpad_max_install_names 
