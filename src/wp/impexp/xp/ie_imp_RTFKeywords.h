@@ -991,6 +991,7 @@ _rtf_keyword rtfKeywords[] = {
 	{"rawclbghoriz", false, false, NO_CONTEXT, RTF_KW_rawclbghoriz }, /* 2002 */ 
 	{"rawclbgvert", false, false, NO_CONTEXT, RTF_KW_rawclbgvert }, /* 2002 */ 
 	{"rdblquote", false, false, NO_CONTEXT, RTF_KW_rdblquote }, 
+	{"rdf", false, false, NO_CONTEXT, RTF_KW_rdf }, 
 	{"rdfanchorstart", false, false, NO_CONTEXT, RTF_KW_rdfanchorstart }, 
 	{"rdfanchorend", false, false, NO_CONTEXT, RTF_KW_rdfanchorend }, 
 	{"red", false, false, NO_CONTEXT, RTF_KW_red }, 

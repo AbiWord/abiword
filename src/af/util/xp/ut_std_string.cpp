@@ -134,6 +134,24 @@ std::string replace_all( const std::string& s, char oldc, char newc )
     return ret;
 }
 
+std::string replace_all( const std::string& s,
+                         const std::string& olds,
+                         const std::string& news )
+{
+    std::string ret = s;
+    int olds_length = olds.length();
+    int news_length = news.length();
+            
+    int start = ret.find( olds );
+    while( start != std::string::npos )
+    {
+        ret.replace( start, olds_length, news );
+        start = ret.find( olds, start + news_length );
+    }
+    return ret;
+}
+
+
 std::string UT_XML_cloneNoAmpersands( const std::string& src )
 {
     gchar* rszDest = 0;

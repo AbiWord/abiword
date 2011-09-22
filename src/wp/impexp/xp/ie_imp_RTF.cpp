@@ -50,6 +50,8 @@
 #include "ie_impexp_RTF.h"
 #include "ie_imp_RTF.h"
 #include "pd_Document.h"
+#include "pd_DocumentRDF.h"
+#include "pd_RDFSupport.h"
 #include "xap_EncodingManager.h"
 #include "ie_impGraphic.h"
 #include "fg_Graphic.h"
@@ -66,8 +68,11 @@
 #include "xap_Frame.h"
 #include "fp_Run.h"
 #include "wv.h" // for wvLIDToLangConverter
+#include "ut_std_string.h"
 
 #include "ie_imp_RTFParse.h"
+
+#include <sstream>
 
 class fl_AutoNum;
 
@@ -5982,6 +5987,9 @@ bool IE_Imp_RTF::HandleStarKeyword()
 				}
 				case RTF_KW_revtbl:
 					return ReadRevisionTable();
+				case RTF_KW_rdf:
+					return ReadRDFTriples();
+						
 				case RTF_KW_atnauthor:
 				{
 					//
@@ -8900,6 +8908,49 @@ bool IE_Imp_RTF::HandleTableListOverride(void)
 	}
 	return true;
 }
+
+/**
+ * Reads back data that was written with IE_Exp_RTF::s_escapeXMLString()
+ */
+std::string
+IE_Imp_RTF::s_unEscapeXMLString()
+{
+	std::stringstream ss;
+	unsigned char ch = 0;
+	while(ReadCharFromFile(&ch) && ch != '}')
+	{
+		ss << ch;
+	}
+
+	std::string s = ss.str();
+
+	// We want &7d;&7d; -> &7d;
+	// And         &7d; -> }
+	// as we know there are no occurances of }} in the string
+	// we use that as a temporary state to hold the case of two 7d in a row.
+	s = replace_all( s, "&7d;&7d;", "}}" );
+	s = replace_all( s, "&7d;", "}" );
+	s = replace_all( s, "}}", "&7d;" );
+	
+	return s;
+}
+
+
+// rdf triples are an rdf/xml file
+// {\*\rdf RDF/XML}
+bool IE_Imp_RTF::ReadRDFTriples()
+{
+	std::string rdfxml = s_unEscapeXMLString();
+	PD_DocumentRDFHandle rdf = getDoc()->getDocumentRDF();
+	UT_DEBUGMSG(("rdf triples before read of rdf tag size:%d\n", rdf->size() ));
+
+	PD_DocumentRDFMutationHandle m = rdf->createMutation();
+	UT_Error e = loadRDFXML( m, rdfxml );
+	m->commit();
+	UT_DEBUGMSG(("rdf triples after read of rdf tag size:%d\n", rdf->size() ));
+	return true;
+}
+
 
 // the revision table looks
 // \*\revtb{{Author1;}{Author2;} ... }

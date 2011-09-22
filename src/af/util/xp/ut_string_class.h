@@ -242,6 +242,9 @@ public:
 	 * 	xmlstr.replace ("&lt;", "<");
 	 * 	xmlstr.replace ("&gt;", ">");
 	 * 	xmlstr.replace ("&amp;","&");
+	 *
+	 * 	MIQ: Note that for these replace methods, one might use ut_std_string/replace_all()
+	 *
 	 * 
 	 * getIterator:
 	 * returns a home-made iterator associated with the UTF-8 string, e.g.:

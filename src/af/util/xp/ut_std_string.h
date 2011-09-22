@@ -49,6 +49,9 @@ ABI_EXPORT std::string UT_std_string_sprintf(const char * inFormat, ...)
 ABI_EXPORT bool starts_with( const std::string& fullstring, const std::string& prefix );
 ABI_EXPORT bool ends_with(   const std::string& fullstring, const std::string& ending );
 ABI_EXPORT std::string replace_all( const std::string& s, char oldc, char newc );
+ABI_EXPORT std::string replace_all( const std::string& s,
+                                    const std::string& olds,
+                                    const std::string& news );
 
 ABI_EXPORT std::string UT_XML_cloneNoAmpersands( const std::string& szSource );
 

@@ -382,6 +382,10 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
     virtual const PP_AttrProp* getAP(void);
     virtual UT_Error setAP( PP_AttrProp* newAP );
     virtual bool isStandAlone() const;
+
+    std::list< std::string >& priv_addRelevantIDsForPosition( std::list< std::string >& ret,
+                                                              PT_DocPosition pos,
+                                                              PT_DocPosition searchBackThisFar = 0 );
     
   protected:
     PD_ObjectList& apGetObjects(     const PP_AttrProp* AP, PD_ObjectList& ret, const PD_URI& s, const PD_URI& p );

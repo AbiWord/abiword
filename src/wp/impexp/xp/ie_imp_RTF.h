@@ -653,6 +653,7 @@ private:
 	bool ReadCharFromFileWithCRLF(unsigned char* pCh);
 	bool ReadCharFromFile(unsigned char* pCh);
 	bool ReadContentFromFile(UT_UTF8String & str);
+	std::string s_unEscapeXMLString();
 	UT_UCS4Char ReadHexChar(void);
 	bool SkipBackChar(unsigned char ch);
 	bool ReadKeyword(unsigned char* pKeyword, UT_sint32* pParam, 
@@ -685,6 +686,7 @@ private:
 	bool PostProcessAndValidatePanose(UT_UTF8String &Panose);
 	bool ReadRevisionTable();
 	void setEncoding();  
+	bool ReadRDFTriples();
 public:
 	bool HandlePicture();
 	void clearImageName(void)

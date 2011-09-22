@@ -997,6 +997,7 @@ typedef enum {
 	RTF_KW_rawclbghoriz,
 	RTF_KW_rawclbgvert,
 	RTF_KW_rdblquote,
+    RTF_KW_rdf,
     RTF_KW_rdfanchorstart,
     RTF_KW_rdfanchorend,
     RTF_KW_red,

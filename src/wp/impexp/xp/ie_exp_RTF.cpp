@@ -31,6 +31,8 @@
 #include "ie_impexp_RTF.h"
 #include "ie_exp_RTF.h"
 #include "pd_Document.h"
+#include "pd_DocumentRDF.h"
+#include "pd_RDFSupport.h"
 #include "pp_AttrProp.h"
 #include "pp_Property.h"
 #include "pp_Revision.h"
@@ -41,10 +43,13 @@
 #include "pd_Style.h"
 #include "gr_Graphics.h"
 #include "ut_rand.h"
+#include "ut_std_string.h"
 
 #include "wv.h" //for wvLIDToCodePageConverter
 #include "xap_EncodingManager.h"
 #include "ut_debugmsg.h"
+
+#include <sstream>
 
 /*****************************************************************/
 /*****************************************************************/
@@ -557,6 +562,12 @@ void IE_Exp_RTF::_rtf_fontname(const char * szFontName)
 
 	_rtf_semi();
 	return;
+}
+
+
+void IE_Exp_RTF::_rtf_chardata(const std::string& buf)
+{
+    _rtf_chardata( buf.c_str(), buf.length() );
 }
 
 /*
@@ -1082,11 +1093,41 @@ bool IE_Exp_RTF::_write_rtf_header(void)
     // export the RDF too
     //
     {
-        // m_pie->_rtf_open_brace();
-		// m_pie->_rtf_keyword("*");
-		// m_pie->_rtf_keyword("rdffixme");
-		// m_pie->_rtf_chardata( xmlid.c_str(), xmlid.length());
-		// m_pie->_rtf_close_brace();
+        _rtf_open_brace();
+		_rtf_keyword("*");
+		_rtf_keyword("rdf");
+        if( getDocRange() )
+        {
+            PD_DocumentRDFHandle rdf = getDoc()->getDocumentRDF();
+            std::list< std::string > xmlids;
+            rdf->addRelevantIDsForRange( xmlids, getDocRange() );
+            PD_RDFModelHandle subm = rdf->createRestrictedModelForXMLIDs( xmlids );
+            std::string rdfxml = toRDFXML( subm );
+            _rtf_chardata( s_escapeXMLString(rdfxml) );
+
+            
+            // std::stringstream countss;
+            // countss << subm->size();
+            // _rtf_chardata( countss.str() );
+            
+            // PD_RDFModelIterator iter = subm->begin();
+            // PD_RDFModelIterator    e = subm->end();
+            // for( ; iter != e; ++iter )
+            // {
+            //     const PD_RDFStatement& st = *iter;
+            //     _rtf_open_brace();
+            //     _rtf_keyword("*");
+            //     _rtf_keyword("triple");
+            //     std::stringstream ss;
+            //     st.getSubject().write( ss );
+            //     st.getPredicate().write( ss );
+            //     st.getObject().write( ss );
+            //     _rtf_chardata( ss.str() );
+            //     _rtf_close_brace();
+            // }
+            
+        }
+		_rtf_close_brace();
     }
     
 	return (m_error == 0);
@@ -3270,6 +3311,36 @@ bool IE_Exp_RTF::s_escapeString(UT_UTF8String &sOutStr,
 	UT_UCS4String sUCS4InStr(szInStr, iSize);
 	return IE_Exp_RTF::s_escapeString(sOutStr, sUCS4InStr, iAltChars);
 }
+
+bool IE_Exp_RTF::s_escapeString( std::string& outStr, const std::string& inStr, 
+                                 UT_uint32 iAltChars )
+{
+    UT_UTF8String sOutStr;
+    bool ret = s_escapeString( sOutStr, inStr.c_str(), inStr.length(), iAltChars );
+    outStr = sOutStr.utf8_str();
+    return ret;
+}
+
+std::string IE_Exp_RTF::s_escapeString( const std::string& inStr, UT_uint32 iAltChars )
+{
+    UT_UTF8String sOutStr;
+    bool ret = s_escapeString( sOutStr, inStr.c_str(), inStr.length(), iAltChars );
+    return (std::string)sOutStr.utf8_str();
+}
+
+
+std::string IE_Exp_RTF::s_escapeXMLString( const std::string& inStr )
+{
+    //
+    // &7d; is }
+    //
+    std::string s = inStr;
+    s = replace_all( s, "&7d;",  "&7d;&7d;" );
+    s = replace_all( s, "}",  "&7d;" );
+//    s = s_escapeString( s );
+    return s;
+}
+
 
 
 _rtf_font_info::_rtf_font_info()

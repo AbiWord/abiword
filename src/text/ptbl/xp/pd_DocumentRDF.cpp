@@ -1875,18 +1875,40 @@ std::list< std::string >&
 PD_DocumentRDF::addRelevantIDsForRange( std::list< std::string >& ret,
                                         std::pair< PT_DocPosition, PT_DocPosition > range )
 {
-    for( PT_DocPosition pos = range.first; pos <= range.second; ++pos )
+    //
+    // A sneaky optimization, for the first position we might have to
+    // search backward to the start of the document to see opening
+    // blocks and text:meta elements which might have RDF attached.
+    // However, for startpos+1 to the end position we only have to
+    // consider the range itself because we have already added any IDs
+    // which might have opened before the range with the first
+    // backward search.
+    //
+    PT_DocPosition pos = range.first;
+    priv_addRelevantIDsForPosition( ret, pos, 0 );
+
+    PT_DocPosition searchBackThisFar = pos;
+    ++pos;
+    
+    for( ; pos <= range.second; ++pos )
     {
-        addRelevantIDsForPosition( ret, pos );
+        priv_addRelevantIDsForPosition( ret, pos, searchBackThisFar );
     }
     return ret;
 }
 
-
-
 std::list< std::string >&
 PD_DocumentRDF::addRelevantIDsForPosition( std::list< std::string >& ret,
                                            PT_DocPosition pos )
+{
+    priv_addRelevantIDsForPosition( ret, pos );
+    return ret;
+}
+
+std::list< std::string >&
+PD_DocumentRDF::priv_addRelevantIDsForPosition( std::list< std::string >& ret,
+                                                PT_DocPosition pos,
+                                                PT_DocPosition searchBackThisFar )
 {
     PD_Document*    doc = getDocument();
     pt_PieceTable*   pt = getPieceTable();
@@ -1912,7 +1934,7 @@ PD_DocumentRDF::addRelevantIDsForPosition( std::list< std::string >& ret,
     // FIXME: Some form of index would be nice, rather than walking back the entire
     // document to find the RDF Anchors.
     //
-    for( ; curr > 0; --curr )
+    for( ; curr > searchBackThisFar; --curr )
     {
         pf_Frag* pf = 0;
         PT_BlockOffset boffset;
@@ -2024,6 +2046,9 @@ PD_DocumentRDF::addRelevantIDsForPosition( std::list< std::string >& ret,
     
     return ret;
 }
+
+
+
 
 
 PD_RDFModelHandle PD_DocumentRDF::getRDFAtPosition( PT_DocPosition pos )
