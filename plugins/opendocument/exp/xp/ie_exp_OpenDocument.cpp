@@ -137,13 +137,15 @@ UT_Error IE_Exp_OpenDocument::copyToBuffer(PD_DocumentRange * pDocRange,UT_ByteB
             PD_DocumentRDFMutationHandle m = outrdf->createMutation();
             m->add( subm );
             m->commit();
+            subm->dumpModel("copied rdf triples subm");
+            outrdf->dumpModel("copied rdf triples result");
         }
         
-        PD_DocumentRDFMutationHandle m = outrdf->createMutation();
-        m->add( PD_URI("http://www.example.com/foo"),
-                PD_URI("http://www.example.com/bar"),
-                PD_Literal("copyToBuffer path") );
-        m->commit();
+        // PD_DocumentRDFMutationHandle m = outrdf->createMutation();
+        // m->add( PD_URI("http://www.example.com/foo"),
+        //         PD_URI("http://www.example.com/bar"),
+        //         PD_Literal("copyToBuffer path") );
+        // m->commit();
     }
     outDoc->finishRawCreation();
     //

@@ -819,11 +819,11 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
             subj = rdf->prefixedToURI( subj );
             pred = rdf->prefixedToURI( pred );
             
-            PD_URIList ul = model->getObjects( subj, pred );
+            PD_ObjectList ul = model->getObjects( subj, pred );
             // always return result in same order for test suite
             ul.sort(PD_URIListCompare());
 
-            for( PD_URIList::iterator iter = ul.begin(); iter!=ul.end(); ++iter )
+            for( PD_ObjectList::iterator iter = ul.begin(); iter!=ul.end(); ++iter )
                 cout << *iter << endl;
             return 0;
         }

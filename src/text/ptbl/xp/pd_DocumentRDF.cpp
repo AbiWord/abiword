@@ -75,6 +75,15 @@ PD_RDFModel::front( const PD_URIList& l ) const
     }
     return l.front();
 }
+PD_Object
+PD_RDFModel::front( const PD_ObjectList& l ) const
+{
+    if(l.empty())
+    {
+        return PD_Object();
+    }
+    return l.front();
+}
 
 
 /**
@@ -83,10 +92,10 @@ PD_RDFModel::front( const PD_URIList& l ) const
  * So you should only use this method when the RDF only allows a
  * single matching triple.
  */
-PD_URI
+PD_Object
 PD_RDFModel::getObject( const PD_URI& s, const PD_URI& p )
 {
-    PD_URIList l = getObjects(s,p);
+    PD_ObjectList l = getObjects(s,p);
     return front(l);
 }
 
@@ -102,10 +111,10 @@ PD_RDFModel::getSubject( const PD_URI& p, const PD_Object& o )
     return front(l);
 }
 
-PD_URIList
+PD_ObjectList
 PD_RDFModel::getObjects( const PD_URI& s, const PD_URI& p )
 {
-    PD_URIList ret;
+    PD_ObjectList ret;
     PD_RDFModelIterator iter = begin();
     PD_RDFModelIterator    e = end();
     for( ; iter != e; ++iter )
@@ -726,7 +735,7 @@ PD_RDFStatement::toString() const
     std::stringstream ss;
     ss << " s:" << m_subject.toString()
        << " p:" << m_predicate.toString()
-       << " o:" << m_object.toString() << " ";
+       << " ot:" << m_object.getObjectType() << " o:" << m_object.toString() << " ";
     return ss.str();
 }
 
@@ -922,8 +931,8 @@ public:
                 m_pocoliter = m_pocol.begin();
 
                 std::string pred = m_pocoliter->first.toString();
-                std::string obj  = m_pocoliter->second.toString();
-                m_current = PD_RDFStatement( m_subject, pred, PD_Object(obj) );
+                PD_Object   obj  = m_pocoliter->second;
+                m_current = PD_RDFStatement( m_subject, pred, obj );
             }
         }
         
@@ -970,8 +979,8 @@ public:
             }
             
             std::string pred = m_pocoliter->first.toString();
-            std::string obj  = m_pocoliter->second.toString();
-            m_current = PD_RDFStatement( m_subject, pred, PD_Object(obj) );
+            PD_Object   obj  = m_pocoliter->second;
+            m_current = PD_RDFStatement( m_subject, pred, obj );
             ++m_pocoliter;
             if( m_pocoliter == m_pocol.end() )
             {
@@ -1025,17 +1034,17 @@ public:
     ////////////////
     // PD_RDFModel methods...
 
-    virtual PD_URIList getObjects( const PD_URI& s, const PD_URI& p )
+    virtual PD_ObjectList getObjects( const PD_URI& s, const PD_URI& p )
     {
-        PD_URIList ret;
+        PD_ObjectList ret;
         for( m_APList_t::iterator iter = apBegin(); iter != apEnd(); ++iter )
             apGetObjects( *iter, ret, s, p );
         return ret;
     }
     
-    virtual PD_URI getObject( const PD_URI& s, const PD_URI& p )
+    virtual PD_Object getObject( const PD_URI& s, const PD_URI& p )
     {
-        PD_URIList l = getObjects(s,p);
+        PD_ObjectList l = getObjects(s,p);
         return front(l);
     }
     
@@ -1138,8 +1147,8 @@ PD_RDFModelIterator::setup_pocol()
         m_pocoliter = m_pocol.begin();
 
         std::string pred = m_pocoliter->first.toString();
-        std::string obj  = m_pocoliter->second.toString();
-        m_current = PD_RDFStatement( m_subject, pred, PD_Object(obj) );
+        PD_Object   obj  = m_pocoliter->second;
+        m_current = PD_RDFStatement( m_subject, pred, obj );
     }
 }
     
@@ -1176,8 +1185,8 @@ PD_RDFModelIterator::operator++()
     }
             
     std::string pred = m_pocoliter->first.toString();
-    std::string obj  = m_pocoliter->second.toString();
-    m_current = PD_RDFStatement( m_subject, pred, PD_Object(obj) );
+    PD_Object   obj  = m_pocoliter->second;
+    m_current = PD_RDFStatement( m_subject, pred, obj );
     ++m_pocoliter;
     if( m_pocoliter == m_pocol.end() )
     {
@@ -1461,9 +1470,9 @@ PD_DocumentRDF::getDocument(void) const
  * emu has eyes
  * would give { legs, eyes }
  */
-PD_URIList PD_DocumentRDF::getObjects( const PD_URI& s, const PD_URI& p )
+PD_ObjectList PD_DocumentRDF::getObjects( const PD_URI& s, const PD_URI& p )
 {
-    PD_URIList ret;
+    PD_ObjectList ret;
     apGetObjects( getAP(), ret, s, p );
     return ret;
 }
@@ -1559,8 +1568,8 @@ PD_DocumentRDF::apGetArcsOut( const PP_AttrProp* AP, POCol& ret, const PD_URI& s
  * emu has eyes
  * would give { legs, eyes }
  */
-PD_URIList&
-PD_DocumentRDF::apGetObjects( const PP_AttrProp* AP, PD_URIList& ret, const PD_URI& s, const PD_URI& p )
+PD_ObjectList&
+PD_DocumentRDF::apGetObjects( const PP_AttrProp* AP, PD_ObjectList& ret, const PD_URI& s, const PD_URI& p )
 {
     const gchar* szValue = 0;
 	if( AP->getProperty( s.toString().c_str(), szValue) )
@@ -2413,11 +2422,11 @@ PD_DocumentRDF::apDumpModel( const PP_AttrProp* AP, const std::string& headerMsg
         const gchar * szValue = 0;
         if( AP->getNthProperty( i, szName, szValue) )
         {
-            UT_DEBUGMSG(("PD_DocumentRDF::dumpModel() szName :%s\n", szName ));
-            UT_DEBUGMSG(("PD_DocumentRDF::dumpModel() szValue:%s\n", szValue ));
+//            UT_DEBUGMSG(("PD_DocumentRDF::dumpModel() szName :%s\n", szName ));
+//            UT_DEBUGMSG(("PD_DocumentRDF::dumpModel() szValue:%s\n", szValue ));
             
             POCol l = decodePOCol( szValue );
-            UT_DEBUGMSG(("PD_DocumentRDF::dumpModel() po list size:%d\n", (int)l.size() ));
+//            UT_DEBUGMSG(("PD_DocumentRDF::dumpModel() po list size:%d\n", (int)l.size() ));
             std::string subj = szName;
             for( POCol::iterator iter = l.begin(); iter!=l.end(); ++iter )
             {
@@ -2427,8 +2436,8 @@ PD_DocumentRDF::apDumpModel( const PP_AttrProp* AP, const std::string& headerMsg
                              subj.c_str()));
                 UT_DEBUGMSG(("PD_DocumentRDF::dumpModel()     p:%s\n",
                              pred.c_str()));
-                UT_DEBUGMSG(("PD_DocumentRDF::dumpModel()     o:%s\n",
-                             obj.c_str()));
+                UT_DEBUGMSG(("PD_DocumentRDF::dumpModel()     ot:%d o:%s\n",
+                             iter->second.getObjectType(), obj.c_str()));
                 if( iter->second.hasXSDType() )
                 {
                     UT_DEBUGMSG(("PD_DocumentRDF::dumpModel()  type:%s\n",
@@ -2531,7 +2540,18 @@ RDFModel_SPARQLLimited::update()
         
         PD_URI    s( d["s"] );
         PD_URI    p( d["p"] );
-        PD_Object o( d["o"] );
+
+        int objectType = PD_Object::OBJECT_TYPE_URI;
+        PD_Object dobj = m_delegate->getObject( s, p );
+        UT_DEBUGMSG(("RDFModel_SPARQLLimited::update() dobj.valid:%d dobj.type:%d dobj.str:%s \n",
+                     dobj.isValid(),
+                     dobj.getObjectType(),
+                     dobj.toString().c_str() ));
+        if( dobj.isValid() )
+            objectType = dobj.getObjectType();
+        
+        PD_Object o( d["o"], objectType );
+        
 
         POCol l;
         const gchar* szName = s.toString().c_str();
@@ -2551,6 +2571,8 @@ RDFModel_SPARQLLimited::update()
     delete m_AP;
     m_AP = AP;
     m_version = m_delegate->getVersion();
+
+//    dumpModel("after sparql query...");
 }
 
 /****************************************/
@@ -2703,9 +2725,9 @@ class ABI_EXPORT PD_RDFMutation_XMLIDLimited
                 PD_URI idref("http://docs.oasis-open.org/opendocument/meta/package/common#idref");
                 UT_DEBUGMSG(("XMLIDLimited::commit() can remove links for subj:%s\n", subj.c_str() ));
 
-                PD_URIList ul = rdf->getObjects( subj, idref );
+                PD_ObjectList ul = rdf->getObjects( subj, idref );
                 PD_DocumentRDFMutationHandle m = rdf->createMutation();
-                for( PD_URIList::iterator iter = ul.begin(); iter != ul.end(); ++iter )
+                for( PD_ObjectList::iterator iter = ul.begin(); iter != ul.end(); ++iter )
                 {
                     m->remove( s, idref, *iter );
                 }
@@ -2872,7 +2894,8 @@ void PD_DocumentRDFMutation::apRemove( PP_AttrProp*& AP, const PD_URI& s, const 
 
 bool PD_DocumentRDFMutation::add( const PD_URI& s, const PD_URI& p, const PD_Object& o )
 {
-    UT_DEBUGMSG(("PD_DocumentRDFMutation::add(1) s:%s o:%s\n", s.toString().c_str(), o.toString().c_str() ));
+    UT_DEBUGMSG(("PD_DocumentRDFMutation::add(1) s:%s o:%s ot:%d\n",
+                 s.toString().c_str(), o.toString().c_str(), o.getObjectType() ));
     // If it already exists and was not removed
     // then you can't add it again
     if( m_rdf->contains( s, p, o ) && !m_rdf->apContains( m_crRemoveAP, s, p, o ))
@@ -2927,6 +2950,10 @@ PD_DocumentRDFMutation::add( PD_RDFModelHandle model )
     for( ; iter != e; ++iter )
     {
         const PD_RDFStatement& st = *iter;
+
+        UT_DEBUGMSG(("PD_DocumentRDFMutation::add(submodel) ot:%d o:%s\n",
+                     st.getObject().getObjectType(), st.getObject().toString().c_str()  ));
+        
         if( add( st ) )
             ++count;
     }

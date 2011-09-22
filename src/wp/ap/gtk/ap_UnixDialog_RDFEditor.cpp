@@ -747,8 +747,8 @@ AP_UnixDialog_RDFEditor::onCursorChanged()
              siter != sl.end(); ++siter )
         {
             cerr << " subj:" << siter->getSubject().toString() << endl;
-            PD_URIList ul = model->getObjects( siter->getSubject(), pkg_idref );
-            for( PD_URIList::iterator uiter = ul.begin(); uiter != ul.end(); ++uiter )
+            PD_ObjectList ul = model->getObjects( siter->getSubject(), pkg_idref );
+            for( PD_ObjectList::iterator uiter = ul.begin(); uiter != ul.end(); ++uiter )
             {
                 std::string xmlid = uiter->toString();
                 

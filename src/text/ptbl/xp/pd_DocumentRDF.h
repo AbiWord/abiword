@@ -141,6 +141,7 @@ class ABI_EXPORT PD_Literal : public PD_Object
 typedef std::list< PD_URI > PD_URIList;
 // REQUIRES: ordered, same key can -> many different values
 typedef std::multimap< PD_URI, PD_Object > POCol;
+typedef std::list< PD_Object > PD_ObjectList;
 
 struct PD_URIListCompare : public std::binary_function<PD_URI, PD_URI, bool> {
 	bool operator()(PD_URI x, PD_URI y) { return x.toString() < y.toString(); }
@@ -259,13 +260,14 @@ class ABI_EXPORT PD_RDFModel
 {
   protected:
     long m_version;
-    PD_URI front( const PD_URIList& l ) const;
+    PD_URI    front( const PD_URIList& l    ) const;
+    PD_Object front( const PD_ObjectList& l ) const;
     PD_RDFModel();
     void incremenetVersion();
     
   public:    
-    virtual PD_URIList getObjects( const PD_URI& s, const PD_URI& p );
-    virtual PD_URI     getObject( const PD_URI& s, const PD_URI& p );
+    virtual PD_ObjectList getObjects( const PD_URI& s, const PD_URI& p );
+    virtual PD_Object     getObject( const PD_URI& s, const PD_URI& p );
     virtual PD_URIList getSubjects( const PD_URI& p, const PD_Object& o );
     virtual PD_URI     getSubject( const PD_URI& p, const PD_Object& o );
     virtual PD_URIList getAllSubjects();
@@ -320,7 +322,7 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
     UT_Error setupWithPieceTable();
     
     // PD_RDFModel methods...
-    virtual PD_URIList getObjects( const PD_URI& s, const PD_URI& p );
+    virtual PD_ObjectList getObjects( const PD_URI& s, const PD_URI& p );
     virtual PD_URIList getSubjects( const PD_URI& p, const PD_Object& o );
     virtual PD_URIList getAllSubjects();
     virtual POCol      getArcsOut( const PD_URI& s );
@@ -382,12 +384,12 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
     virtual bool isStandAlone() const;
     
   protected:
-    PD_URIList& apGetObjects(     const PP_AttrProp* AP, PD_URIList& ret, const PD_URI& s, const PD_URI& p );
-    PD_URIList& apGetSubjects(    const PP_AttrProp* AP, PD_URIList& ret, const PD_URI& p, const PD_Object& o );
-    PD_URIList& apGetAllSubjects( const PP_AttrProp* AP, PD_URIList& ret );
-    POCol&      apGetArcsOut(     const PP_AttrProp* AP, POCol& ret, const PD_URI& s );
-    bool        apContains(       const PP_AttrProp* AP, const PD_URI& s, const PD_URI& p, const PD_Object& o );
-    void        apDumpModel(      const PP_AttrProp* AP, const std::string& headerMsg );
+    PD_ObjectList& apGetObjects(     const PP_AttrProp* AP, PD_ObjectList& ret, const PD_URI& s, const PD_URI& p );
+    PD_URIList&    apGetSubjects(    const PP_AttrProp* AP, PD_URIList& ret,    const PD_URI& p, const PD_Object& o );
+    PD_URIList&    apGetAllSubjects( const PP_AttrProp* AP, PD_URIList& ret );
+    POCol&         apGetArcsOut(     const PP_AttrProp* AP, POCol& ret, const PD_URI& s );
+    bool           apContains(       const PP_AttrProp* AP, const PD_URI& s, const PD_URI& p, const PD_Object& o );
+    void           apDumpModel(      const PP_AttrProp* AP, const std::string& headerMsg );
     
 };
 

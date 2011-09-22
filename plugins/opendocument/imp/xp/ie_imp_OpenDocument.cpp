@@ -449,16 +449,16 @@ UT_Error IE_Imp_OpenDocument::_handleRDFStreams ()
 
     UT_DEBUGMSG(("IE_Imp_OpenDocument::_handleRDFStreams()\n"));
 
-    // DEBUG.
-    {
-        PD_DocumentRDFHandle rdf = getDoc()->getDocumentRDF();
-        PD_DocumentRDFMutationHandle m = rdf->createMutation();
-        m->add( PD_URI("http://www.example.com/foo#bar" ),
-                PD_URI("http://www.example.com/foo#bar" ),
-                PD_Object("http://www.example.com/foo#bar" ) );
-        m->commit();
-        rdf->dumpModel("added foo");
-    }
+    // // DEBUG.
+    // {
+    //     PD_DocumentRDFHandle rdf = getDoc()->getDocumentRDF();
+    //     PD_DocumentRDFMutationHandle m = rdf->createMutation();
+    //     m->add( PD_URI("http://www.example.com/foo#bar" ),
+    //             PD_URI("http://www.example.com/foo#bar" ),
+    //             PD_Object("http://www.example.com/foo#bar" ) );
+    //     m->commit();
+    //     rdf->dumpModel("added foo");
+    // }
     
 
     
@@ -580,7 +580,7 @@ UT_Error IE_Imp_OpenDocument::_handleRDFStreams ()
             
             m->add( PD_URI( toString( librdf_statement_get_subject( current ))),
                     PD_URI( toString( librdf_statement_get_predicate( current ))),
-                    PD_Object( toString( librdf_statement_get_object( current ))));
+                    PD_Object( toString( librdf_statement_get_object( current )), objectType, xsdType ));
 
             // m->add( PD_URI( toString( librdf_statement_get_subject( current ))),
             //         PD_URI( toString( librdf_statement_get_predicate( current ))),
@@ -593,9 +593,9 @@ UT_Error IE_Imp_OpenDocument::_handleRDFStreams ()
         
         librdf_free_stream( stream );
         librdf_free_statement( statement );
-        m->add( PD_URI("http://www.example.com/foo#bar" ),
-                PD_URI("http://www.example.com/foo#bar" ),
-                PD_Object("http://www.example.com/foo#bar" ) );
+        // m->add( PD_URI("http://www.example.com/foo#bar" ),
+        //         PD_URI("http://www.example.com/foo#bar" ),
+        //         PD_Object("http://www.example.com/foo#bar" ) );
         m->commit();
     }
 

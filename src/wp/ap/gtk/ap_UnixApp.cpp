@@ -639,7 +639,7 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboar
             UT_DEBUGMSG(("Putting ODF on the clipboard...e:%d bExpODT:%d\n", err, bExpODT ));
 
 #ifdef DUMP_CLIPBOARD_COPY
-            std::ofstream oss("/tmp/clip.zip");
+            std::ofstream oss("/tmp/abiword-clipboard-copy.odt");
             oss.write( (const char*)bufODT.getPointer (0), bufODT.getLength () );
             oss.close();
 #endif

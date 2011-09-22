@@ -134,6 +134,16 @@ convertNativeToRedlandModel(
             // the ones with "r" prefix are redland native.
             PD_URI    predicate = poiter->first;
             PD_Object object = poiter->second;
+
+            if( predicate.toString() == "http://docs.oasis-open.org/opendocument/meta/package/common#idref" )
+            {
+                UT_DEBUGMSG(("idref to %s of type %d islit:%d\n",
+                             object.toString().c_str(),
+                             object.getObjectType(),
+                             object.isLiteral()
+                                ));
+            }
+            
             
             librdf_node* rsubject =  librdf_new_node_from_uri_string(
                 world, (unsigned char *)subject.toString().c_str() );
@@ -143,21 +153,27 @@ convertNativeToRedlandModel(
             if( object.isLiteral() )
             {
                 librdf_uri* datatype_uri = 0;
+                UT_DEBUGMSG(("literal hasxsdt:%d dt:%s\n",
+                             object.hasXSDType(), object.getXSDType().c_str() ));
                 if( object.hasXSDType() )
                 {
                     datatype_uri = librdf_new_uri(
                         world,
                         (const unsigned char*)object.getXSDType().c_str() );
                 }
-                
+
                 const char *xml_language = 0;
                 robject =  librdf_new_node_from_typed_literal(
                     world,
                     (unsigned char *)object.toString().c_str(),
                     xml_language, datatype_uri );
-
+                
                 if(datatype_uri)
                     librdf_free_uri(datatype_uri);
+                
+                UT_DEBUGMSG(("literal idref to %s of type %d robject.type:%d\n",
+                             object.toString().c_str(), object.getObjectType(),
+                             librdf_node_get_type(robject) ));
             }
             else
             {
@@ -165,10 +181,12 @@ convertNativeToRedlandModel(
                     world, (unsigned char *)object.toString().c_str() );
             }
 
-            UT_DEBUGMSG(("writeRDF() st:%d pt:%d ot:%d s:%s p:%s o:%s\n",
+            UT_DEBUGMSG(("writeRDF() st:%d pt:%d ot:%d isuri:%d islit:%d s:%s p:%s o:%s\n",
                          librdf_node_get_type(rsubject),
                          librdf_node_get_type(rpredicate),
                          librdf_node_get_type(robject),
+                         librdf_node_get_type(robject) == LIBRDF_NODE_TYPE_RESOURCE,
+                         librdf_node_get_type(robject) == LIBRDF_NODE_TYPE_LITERAL,
                          subject.toString().c_str(),
                          predicate.toString().c_str(),
                          object.toString().c_str()
