@@ -110,18 +110,14 @@ toolbar_append_item (GtkToolbar *toolbar,
 
 	if (GTK_IS_TOOL_ITEM (widget)) {
 		tool_item = GTK_TOOL_ITEM (widget);
-#if GTK_CHECK_VERSION(2,12,0)
 		gtk_tool_item_set_tooltip_text(tool_item, text);
-#endif
 	}
 	else {
 		tool_item = gtk_tool_item_new ();
 		GtkWidget *box = gtk_event_box_new ();
 		gtk_container_add (GTK_CONTAINER (tool_item), box);
 		gtk_container_add (GTK_CONTAINER (box), widget);
-#if GTK_CHECK_VERSION(2,12,0)
 		gtk_tool_item_set_tooltip_text(tool_item, text);
-#endif
 		if (action_name && data) {
 			GtkAction	*proxy_action;
 			GtkWidget 	*menu_item;

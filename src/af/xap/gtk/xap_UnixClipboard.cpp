@@ -191,9 +191,7 @@ void XAP_UnixClipboard::finishedAddingData(void)
 			       s_clipboard_clear_func,
 			       this);
 
-#if GTK_CHECK_VERSION(2,6,0)
   gtk_clipboard_set_can_store (gtkClipboardForTarget(TAG_ClipboardOnly), m_Targets, m_nTargets);
-#endif
 }
 
 void XAP_UnixClipboard::clearData(bool bClipboard, bool bPrimary)

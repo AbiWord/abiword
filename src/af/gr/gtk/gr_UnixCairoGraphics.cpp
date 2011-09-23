@@ -363,13 +363,9 @@ void GR_UnixCairoGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 
 void GR_UnixCairoGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						  UT_sint32 x_src, UT_sint32 y_src,
-						  UT_sint32 width, UT_sint32 height)
+						  G_GNUC_UNUSED UT_sint32 width, G_GNUC_UNUSED UT_sint32 height)
 {
-	disableAllCarets();
-	gdk_cairo_set_source_window(m_cr,m_pWin, tdu(x_src), tdu(y_src));
-	cairo_rectangle(m_cr, tdu(x_dest), tdu(y_dest), tdu(width), tdu(height));
-	cairo_fill(m_cr);
-	enableAllCarets();
+	scroll(x_src - x_dest, y_src - y_dest);
 }
 
 void GR_UnixCairoGraphics::_resetClip(void)

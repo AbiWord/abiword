@@ -139,8 +139,8 @@ void AP_UnixFrame::setYScrollRange(void)
 	if(pFrameImpl->m_pVadj) //this isn't guaranteed in AbiCommand
 	{
 		bDifferentPosition = (newvalue != static_cast<UT_sint32>(gtk_adjustment_get_value(pFrameImpl->m_pVadj) +0.5));
-		diff = static_cast<UT_sint32>(gtk_adjustment_get_upper(pFrameImpl->m_pHadj)-
-		                              gtk_adjustment_get_page_size(pFrameImpl->m_pHadj) +0.5);
+		diff = static_cast<UT_sint32>(gtk_adjustment_get_upper(pFrameImpl->m_pVadj)-
+		                              gtk_adjustment_get_page_size(pFrameImpl->m_pVadj) +0.5);
 	}
 
 
@@ -160,8 +160,8 @@ void AP_UnixFrame::setYScrollRange(void)
 		pFrameImpl->_setScrollRange(apufi_scrollY, newvalue, static_cast<gfloat>(height), static_cast<gfloat>(windowHeight));
 		m_pView->sendVerticalScrollEvent(newvalue, 
 										 static_cast<UT_sint32>
-											   (gtk_adjustment_get_upper(pFrameImpl->m_pHadj) -
-												gtk_adjustment_get_page_size(pFrameImpl->m_pHadj)));
+											   (gtk_adjustment_get_upper(pFrameImpl->m_pVadj) -
+												gtk_adjustment_get_page_size(pFrameImpl->m_pVadj)));
 	}
 }
 
@@ -272,7 +272,7 @@ void AP_UnixFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange
 	
 	gfloat yoffNew = yoff;
 	gfloat yoffMax = gtk_adjustment_get_upper(pFrameImpl->m_pVadj) - 
-		gtk_adjustment_get_page_size(pFrameImpl->m_pHadj);
+		gtk_adjustment_get_page_size(pFrameImpl->m_pVadj);
 	if (yoffMax <= 0)
 		yoffNew = 0;
 	else if (yoffNew > yoffMax)
