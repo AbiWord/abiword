@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <!-- interface-requires gtk+ 2.12 -->
+  <!-- interface-requires gtk+ 3.0 -->
   <object class="GtkDialog" id="ap_UnixDialog_FormatFrame">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -11,6 +11,7 @@
       <object class="GtkBox" id="vbDialog">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox" id="aaDialog">

@@ -152,7 +152,7 @@ static void s_line_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
 
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
-static gboolean s_preview_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Columns * dlg)
+static gboolean s_preview_draw(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Columns * dlg)
 {
 	UT_return_val_if_fail(widget && dlg, FALSE);
 	dlg->event_previewExposed();
@@ -160,7 +160,7 @@ static gboolean s_preview_exposed(GtkWidget * widget, gpointer /* data */, AP_Un
 }
 #endif
 
-static gboolean s_window_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Columns * dlg)
+static gboolean s_window_draw(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Columns * dlg)
 {
 	UT_return_val_if_fail(widget && dlg, FALSE);
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
@@ -754,14 +754,14 @@ void AP_UnixDialog_Columns::_connectsignals(void)
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 	             g_signal_connect(G_OBJECT(m_wpreviewArea),
-					   "expose_event",
-					   G_CALLBACK(s_preview_exposed),
+					   "draw",
+					   G_CALLBACK(s_preview_draw),
 					   reinterpret_cast<gpointer>(this));
 #endif
 
 		     g_signal_connect_after(G_OBJECT(m_windowMain),
-		     					 "expose_event",
-		     				 G_CALLBACK(s_window_exposed),
+		     					 "draw",
+		     				 G_CALLBACK(s_window_draw),
 		    					 reinterpret_cast<gpointer>(this));
 }
 

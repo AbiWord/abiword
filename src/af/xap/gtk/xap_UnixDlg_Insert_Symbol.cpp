@@ -324,7 +324,7 @@ static void  s_scroll_event(GtkWidget * /*widget*/, GdkEventScroll * event, XAP_
 	dlg->Scroll_Event (static_cast <int> (event->direction));
 }
 
-static gboolean s_sym_SymbolMap_exposed(GtkWidget * /*widget*/, GdkEvent * /*e*/, XAP_UnixDialog_Insert_Symbol * dlg)
+static gboolean s_sym_SymbolMap_draw(GtkWidget * /*widget*/, cairo_t * /*cr*/, XAP_UnixDialog_Insert_Symbol * dlg)
 {
 	dlg->SymbolMap_exposed();
 	return FALSE;
@@ -337,7 +337,7 @@ static gboolean s_size_request(GtkWidget *, GtkAllocation* req, XAP_UnixDialog_I
 }
 
 
-static gboolean s_Symbolarea_exposed(GtkWidget * , GdkEvent * , XAP_UnixDialog_Insert_Symbol * dlg)
+static gboolean s_Symbolarea_draw(GtkWidget * , GdkEvent * , XAP_UnixDialog_Insert_Symbol * dlg)
 {
 	dlg->Symbolarea_exposed();
 	return FALSE;
@@ -741,13 +741,13 @@ void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
 	
 	// the expose event of the m_SymbolMap
 	g_signal_connect(G_OBJECT(m_SymbolMap),
-					 "expose_event",
-					 G_CALLBACK(s_sym_SymbolMap_exposed),
+					 "draw",
+					 G_CALLBACK(s_sym_SymbolMap_draw),
 					 static_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_areaCurrentSym),
-					   "expose_event",
-					   G_CALLBACK(s_Symbolarea_exposed),
+					   "draw",
+					   G_CALLBACK(s_Symbolarea_draw),
 					   static_cast<gpointer>(this));
         // VScrollbar events
 	g_signal_connect(G_OBJECT(m_vadjust),

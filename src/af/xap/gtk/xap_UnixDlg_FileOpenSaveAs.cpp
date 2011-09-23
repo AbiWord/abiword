@@ -142,8 +142,8 @@ static void s_delete_clicked(GtkWidget 	* /*widget*/,
 	gtk_main_quit();
 }
 
-static gint s_preview_exposed(GtkWidget * /* widget */,
-			      GdkEventExpose * /* pExposeEvent */,
+static gint s_preview_draw(GtkWidget * /* widget */,
+			      cairo_t * /* cr */,
 			      gpointer ptr)
 {
         XAP_UnixDialog_FileOpenSaveAs * dlg = static_cast<XAP_UnixDialog_FileOpenSaveAs *> (ptr);
@@ -181,7 +181,7 @@ static void s_file_activated(GtkWidget * w, XAP_Dialog_FileOpenSaveAs::tAnswer *
 }
 
 static void file_selection_changed  (GtkTreeSelection  * /*selection*/,
-				     gpointer           ptr)
+                                    gpointer           ptr)
 {
   XAP_UnixDialog_FileOpenSaveAs * dlg = static_cast<XAP_UnixDialog_FileOpenSaveAs *> (ptr);
 
@@ -638,8 +638,8 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		g_signal_connect (m_FC, "update_preview",
 								G_CALLBACK (file_selection_changed), static_cast<gpointer>(this));
 		
-		g_signal_connect (preview, "expose_event",
-								G_CALLBACK (s_preview_exposed), static_cast<gpointer>(this));
+		g_signal_connect (preview, "draw",
+								G_CALLBACK (s_preview_draw), static_cast<gpointer>(this));
 	}
 
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
@@ -959,7 +959,8 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	//
 	// OK load the data into a GdkPixbuf
 	//
-	bool bLoadFailed = false;
+	// Jean: comented out next line (and an other one below), we don't use it
+	// bool bLoadFailed = false;
 	//
 	GdkPixbuf * pixbuf = pixbufForByteBuf ( pBB);
 	delete pBB;
@@ -969,7 +970,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 		// Try a fallback loader here.
 		//
 		painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(alloc.height / 2)) - pGr->getFontHeight(fnt)/2);
-		bLoadFailed = true;
+		// bLoadFailed = true;
 	    goto Cleanup;
 	}
 

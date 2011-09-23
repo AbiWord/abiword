@@ -96,7 +96,7 @@ static void s_border_thickness(GtkWidget *widget, gpointer data )
 	dlg->event_BorderThicknessChanged();
 }
 
-static gboolean s_preview_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_FormatTable * dlg)
+static gboolean s_preview_draw(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_FormatTable * dlg)
 {
 	UT_return_val_if_fail(widget && dlg, FALSE);
 	dlg->event_previewExposed();
@@ -591,8 +591,8 @@ void AP_UnixDialog_FormatTable::_connectSignals(void)
 							reinterpret_cast<gpointer>(this));
 						   
 	g_signal_connect(G_OBJECT(m_wPreviewArea),
-							"expose_event",
-							G_CALLBACK(s_preview_exposed),
+							"draw",
+							G_CALLBACK(s_preview_draw),
 							reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wApplyToMenu),

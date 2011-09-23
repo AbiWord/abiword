@@ -115,23 +115,12 @@ static void s_check_toggled(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
 }
 
 #if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
-static gboolean do_update(gpointer p)
-{
-//
-// FIXME!!! Could get nasty crash if the dlg is destroyed while 
-// a redraw is pending....
-//
-	AP_UnixDialog_Paragraph * dlg = (AP_UnixDialog_Paragraph *) p;
-	dlg->event_PreviewAreaExposed();
-	return FALSE;
-}
-
-static gint s_preview_exposed(GtkWidget * /* widget */,
-							  GdkEventExpose * /* pExposeEvent */,
+static gint s_preview_draw(GtkWidget * /* widget */,
+							  cairo_t * /* cr */,
 							  AP_UnixDialog_Paragraph * dlg)
 {
 	UT_ASSERT(dlg);
-	g_idle_add((GSourceFunc) do_update,(gpointer) dlg);
+	dlg->event_PreviewAreaExposed();
 	return TRUE;
 }
 #endif
@@ -981,8 +970,8 @@ void AP_UnixDialog_Paragraph::_connectCallbackSignals(void)
 #if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 	// the expose event off the preview
 	g_signal_connect(G_OBJECT(m_drawingareaPreview),
-					   "expose_event",
-					   G_CALLBACK(s_preview_exposed),
+					   "draw",
+					   G_CALLBACK(s_preview_draw),
 					   (gpointer) this);
 #endif
 }

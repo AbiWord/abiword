@@ -94,7 +94,7 @@ static void s_line_bottom(GtkWidget *widget, gpointer data )
 	dlg->event_previewExposed();
 }
 
-static gboolean s_preview_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Border_Shading * dlg)
+static gboolean s_preview_draw(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Border_Shading * dlg)
 {
 	UT_return_val_if_fail(widget && dlg, FALSE);
 	dlg->event_previewExposed();
@@ -270,7 +270,7 @@ void AP_UnixDialog_Border_Shading::runModeless(XAP_Frame * pFrame)
 
 	// Populate the window's data items
 	_populateWindowData();
-	_connectSignals();
+//	_connectSignals(); // last call runs setSensitivity which calls _connectSignals
 	abiSetupModelessDialog(GTK_DIALOG(m_windowMain), pFrame, this, BUTTON_CLOSE);
 	
 	// *** this is how we add the gc for Column Preview ***
@@ -302,10 +302,13 @@ void AP_UnixDialog_Border_Shading::runModeless(XAP_Frame * pFrame)
 	UT_DEBUGMSG(("========================= End the unModeless \n"));
 }
 
-void AP_UnixDialog_Border_Shading::setSensitivity(bool bSens)
+void AP_UnixDialog_Border_Shading::setSensitivity(bool /* bSens */)
 {
 //	UT_DEBUGMSG(("========================= Set the sensitivity \n"));
 
+	if (m_iLineLeftConnect == 0)
+		_connectSignals();// avoids some criticals
+		
 	XAP_GtkSignalBlocker b1(G_OBJECT(m_wLineLeft), m_iLineLeftConnect);
 	gtk_toggle_button_set_active((GtkToggleButton*)m_wLineLeft, getLeftToggled() ? TRUE: FALSE);
 
@@ -356,7 +359,7 @@ void AP_UnixDialog_Border_Shading::setBorderStyleInGUI(UT_UTF8String & sStyle)
 	UT_DEBUGMSG(("Maleesh =============== Setup the border style in the GUI: %s \n", sStyle.utf8_str()));
 
 	PP_PropertyMap::TypeLineStyle style = PP_PropertyMap::linestyle_type(sStyle.utf8_str());
-	guint index = (guint)style - 1;
+	gint index = style - 1;
 
 	if (index >= 0)
 	{
@@ -516,12 +519,6 @@ GtkWidget * AP_UnixDialog_Border_Shading::_constructWindow(void)
 	m_wLineRight 	= GTK_WIDGET(gtk_builder_get_object(builder, "tbBorderRight"));
 	m_wLineBottom 	= GTK_WIDGET(gtk_builder_get_object(builder, "tbBorderBottom"));
 	
-	// the toggle buttons created by GtkBuilder already contain a label, remove that, so we can add a pixmap as a child
-	gtk_container_remove(GTK_CONTAINER(m_wLineTop), gtk_bin_get_child(GTK_BIN(m_wLineTop)));
-	gtk_container_remove(GTK_CONTAINER(m_wLineLeft), gtk_bin_get_child(GTK_BIN(m_wLineLeft)));
-	gtk_container_remove(GTK_CONTAINER(m_wLineRight), gtk_bin_get_child(GTK_BIN(m_wLineRight)));
-	gtk_container_remove(GTK_CONTAINER(m_wLineBottom), gtk_bin_get_child(GTK_BIN(m_wLineBottom)));
-	
 	// place some nice pixmaps on our border toggle buttons
 	label_button_with_abi_pixmap(m_wLineTop, "tb_LineTop_xpm");
 	label_button_with_abi_pixmap(m_wLineLeft, "tb_LineLeft_xpm");
@@ -578,7 +575,7 @@ GtkWidget * AP_UnixDialog_Border_Shading::_constructWindow(void)
 	gtk_combo_box_text_append_text(combo_style, "Solid line");
 	gtk_combo_box_text_append_text(combo_style, "Dashed line");
 	gtk_combo_box_text_append_text(combo_style, "Dotted line");
-	gtk_combo_box_set_active(GTK_COMBO_BOX(combo), 0);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(combo_style), 0);
 
 //
 // Shading offset Option menu
@@ -593,7 +590,7 @@ GtkWidget * AP_UnixDialog_Border_Shading::_constructWindow(void)
 	gtk_combo_box_text_append_text(combo_offset, "3 pt");
 	gtk_combo_box_text_append_text(combo_offset, "4 1/2 pt");
 	gtk_combo_box_text_append_text(combo_offset, "6 pt");
-	gtk_combo_box_set_active(GTK_COMBO_BOX(combo), 0);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(combo_offset), 0);
 
 	// add the apply and ok buttons to the dialog
 	m_wCloseButton = GTK_WIDGET(gtk_builder_get_object(builder, "btClose"));
@@ -670,8 +667,8 @@ void AP_UnixDialog_Border_Shading::_connectSignals(void)
 							reinterpret_cast<gpointer>(this));
 						   
 	g_signal_connect(G_OBJECT(m_wPreviewArea),
-							"expose_event",
-							G_CALLBACK(s_preview_exposed),
+							"draw",
+							G_CALLBACK(s_preview_draw),
 							reinterpret_cast<gpointer>(this));
 
 	m_iShadingOffsetConnect = g_signal_connect(G_OBJECT(m_wShadingOffset),

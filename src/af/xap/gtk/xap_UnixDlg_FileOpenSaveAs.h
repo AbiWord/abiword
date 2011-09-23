@@ -40,7 +40,7 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	gint previewPicture (void);
+	gint previewPicture ();
 
 	void fileTypeChanged(GtkWidget * w);
 	void onDeleteCancel (void);

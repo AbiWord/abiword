@@ -207,8 +207,8 @@ static void s_select_row_size(GtkTreeSelection * /* widget */, XAP_UnixDialog_Fo
 	dlg->sizeRowChanged();
 }
 
-static gboolean s_drawing_area_expose(GtkWidget * w,
-								  GdkEventExpose * /* pExposeEvent */)
+static gboolean s_drawing_area_draw(GtkWidget * w,
+								  cairo_t * /* pExposeEvent */)
 {
 	XAP_UnixDialog_FontChooser * dlg = 
 		(XAP_UnixDialog_FontChooser *)g_object_get_data(G_OBJECT(w), "user-data");
@@ -817,8 +817,8 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 
 	entryArea = createDrawingArea ();
 	gtk_widget_set_events(entryArea, GDK_EXPOSURE_MASK);
-	g_signal_connect(G_OBJECT(entryArea), "expose_event",
-					   G_CALLBACK(s_drawing_area_expose), NULL);
+	g_signal_connect(G_OBJECT(entryArea), "draw",
+					   G_CALLBACK(s_drawing_area_draw), NULL);
 	gtk_widget_set_size_request (entryArea, -1, PREVIEW_BOX_HEIGHT_PIXELS);
 	gtk_widget_show (entryArea);
 	gtk_container_add (GTK_CONTAINER (frame4), entryArea);

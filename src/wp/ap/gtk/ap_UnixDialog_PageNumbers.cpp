@@ -44,8 +44,8 @@
 
 /*****************************************************************/
 
-static gint s_preview_exposed(GtkWidget * /*w*/,
-			      GdkEventExpose * /*e*/,
+static gint s_preview_draw(GtkWidget * /*w*/,
+			      cairo_t * /*cr*/,
 			      AP_UnixDialog_PageNumbers * dlg)
 {
 	UT_ASSERT(dlg);
@@ -223,7 +223,7 @@ GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
 	g_signal_connect(G_OBJECT(radioRight),  "clicked", G_CALLBACK(s_alignment_changed), static_cast<gpointer>(this));
 
 	// the expose event off the preview
-	g_signal_connect(G_OBJECT(m_previewArea), "expose_event", G_CALLBACK(s_preview_exposed), static_cast<gpointer>(this));	
+	g_signal_connect(G_OBJECT(m_previewArea), "draw", G_CALLBACK(s_preview_draw), static_cast<gpointer>(this));	
 
 	g_object_unref(G_OBJECT(builder));
 

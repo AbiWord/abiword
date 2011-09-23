@@ -195,7 +195,7 @@ static void s_styletype(GtkWidget * widget, AP_UnixDialog_Styles * me)
 	me->event_styleType();
 }
 
-static gboolean s_paraPreview_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Styles * me)
+static gboolean s_paraPreview_draw(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Styles * me)
 {
 	UT_UNUSED(widget);
 	UT_ASSERT(widget && me);
@@ -204,7 +204,7 @@ static gboolean s_paraPreview_exposed(GtkWidget * widget, gpointer /* data */, A
 }
 
 
-static gboolean s_charPreview_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Styles * me)
+static gboolean s_charPreview_draw(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Styles * me)
 {
 	UT_UNUSED(widget);
 	UT_ASSERT(widget && me);
@@ -213,7 +213,7 @@ static gboolean s_charPreview_exposed(GtkWidget * widget, gpointer /* data */, A
 }
 
 
-static gboolean s_modifyPreview_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Styles * me)
+static gboolean s_modifyPreview_draw(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Styles * me)
 {
 	UT_UNUSED(widget);
 	UT_ASSERT(widget && me);
@@ -317,13 +317,13 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 
 	// the expose event of the preview
 	g_signal_connect(G_OBJECT(m_wParaPreviewArea),
-					   "expose_event",
-					   G_CALLBACK(s_paraPreview_exposed),
+					   "draw",
+					   G_CALLBACK(s_paraPreview_draw),
 					   reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wCharPreviewArea),
-					   "expose_event",
-					   G_CALLBACK(s_charPreview_exposed),
+					   "draw",
+					   G_CALLBACK(s_charPreview_draw),
 					   reinterpret_cast<gpointer>(this));
 	
 	// connect the select_row signal to the clist
@@ -1013,8 +1013,8 @@ void AP_UnixDialog_Styles::_connectModifySignals(void)
 					   reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wModifyDrawingArea),
-					   "expose_event",
-					   G_CALLBACK(s_modifyPreview_exposed),
+					   "draw",
+					   G_CALLBACK(s_modifyPreview_draw),
 					   reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wDeletePropButton),

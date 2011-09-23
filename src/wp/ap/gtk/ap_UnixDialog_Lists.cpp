@@ -151,7 +151,7 @@ static void s_closeClicked (GtkWidget * /*widget*/, AP_UnixDialog_Lists * me)
 	me->closeClicked();
 }
 
-static gboolean s_preview_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Lists * me)
+static gboolean s_preview_draw(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Lists * me)
 {
 	UT_ASSERT(widget && me);
 	me->previewExposed();
@@ -1239,8 +1239,8 @@ void AP_UnixDialog_Lists::_connectSignals(void)
 					    this);
 	// the expose event of the preview
 	g_signal_connect(G_OBJECT(m_wPreviewArea),
-					   "expose_event",
-					   G_CALLBACK(s_preview_exposed),
+					   "draw",
+					   G_CALLBACK(s_preview_draw),
 					   static_cast<gpointer>(this));
 	g_signal_connect(G_OBJECT(m_wMainWindow),
 					 "destroy",
