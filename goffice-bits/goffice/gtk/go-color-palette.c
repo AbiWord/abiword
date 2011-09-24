@@ -319,6 +319,18 @@ cb_swatch_key_press (GtkBin *button, GdkEventKey *event, GOColorPalette *pal)
 		return FALSE;
 }
 
+static gboolean
+draw_color_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
+{
+	GtkAllocation allocation;
+	GOColor color = GPOINTER_TO_UINT (data);
+	gtk_widget_get_allocation (widget, &allocation);
+	cairo_set_source_rgba (cr, GO_COLOR_TO_CAIRO (color));
+	cairo_rectangle (cr, 0, 0, allocation.width, allocation.height);
+	cairo_fill (cr);
+	return TRUE;
+}
+
 /*
  * Create the individual color buttons
  *
@@ -333,8 +345,10 @@ go_color_palette_button_new (GOColorPalette *pal, GtkTable* table,
 	GdkRGBA   gdk;
 
 	swatch = gtk_drawing_area_new ();
+	g_signal_connect (G_OBJECT (swatch), "draw", G_CALLBACK (draw_color_cb), 
+	                  GUINT_TO_POINTER (color_name->color));
 	gtk_widget_override_background_color (swatch, GTK_STATE_NORMAL,
-		go_color_to_gdk_rgba (color_name->color, &gdk));
+	        go_color_to_gdk_rgba (color_name->color, &gdk));
 	gtk_widget_set_size_request (swatch, COLOR_PREVIEW_WIDTH, COLOR_PREVIEW_HEIGHT);
 
 	/* Wrap inside a vbox with a border so that we can see the focus indicator */
