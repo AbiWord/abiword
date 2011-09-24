@@ -310,12 +310,9 @@ AP_UnixDialog_Spell::_constructWindow (void)
 
 
 	// highlight our misspelled word in red
-	GdkColormap * cm = gdk_colormap_get_system();
 	m_highlight.red = 0xffff;
 	m_highlight.green = 0x0000;
 	m_highlight.blue = 0x0000;
-	gdk_colormap_alloc_color(cm, &m_highlight, FALSE, TRUE);
-
 
 	// Liststore and -view
 	GtkListStore *store = gtk_list_store_new (NUM_COLUMNS, G_TYPE_STRING, G_TYPE_UINT);

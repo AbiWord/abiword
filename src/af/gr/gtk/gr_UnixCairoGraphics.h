@@ -90,6 +90,7 @@ public:
 
 	void				init3dColors(GtkStyleContext * pCtxt);
 	void				initWidget(GtkWidget *widget);
+	virtual bool		queryProperties(GR_Graphics::Properties gp) const;
 
 protected:
 	virtual void		_resetClip(void);

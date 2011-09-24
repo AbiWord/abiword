@@ -110,7 +110,7 @@ GR_Graphics *   GR_UnixCairoGraphics::graphicsAllocator(GR_AllocInfo& info)
 	UT_return_val_if_fail(info.getType() == GRID_UNIX, NULL);
 	xxx_UT_DEBUGMSG(("GR_CairoGraphics::graphicsAllocator\n"));
 
-	UT_return_val_if_fail(!info.isPrinterGraphics(), NULL);
+//	UT_return_val_if_fail(!info.isPrinterGraphics(), NULL);
 	GR_UnixCairoAllocInfo &AI = (GR_UnixCairoAllocInfo&)info;
 
 	return new GR_UnixCairoGraphics(AI.m_win, AI.m_double_buffered);
@@ -492,5 +492,20 @@ void GR_UnixCairoGraphics::_endPaint()
 	m_CairoCreated = false;
 
 	GR_CairoGraphics::_endPaint();
+}
+
+bool GR_UnixCairoGraphics::queryProperties(GR_Graphics::Properties gp) const
+{
+	switch (gp)
+	{
+		case DGP_SCREEN:
+		case DGP_OPAQUEOVERLAY:
+			return m_pWin != NULL;
+		case DGP_PAPER:
+			return false;
+		default:
+			UT_ASSERT(0);
+			return false;
+	}
 }
 
