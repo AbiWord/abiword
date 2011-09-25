@@ -1009,6 +1009,11 @@ gint XAP_UnixFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 	AV_View * pView = pFrame->getCurrentView();
 	if (pView)
 	{
+		if (pUnixFrameImpl->m_iNewWidth == e->width &&
+		    pUnixFrameImpl->m_iNewHeight == e->height &&
+		    pUnixFrameImpl->m_iNewY == e->y &&
+		    pUnixFrameImpl->m_iNewX == e->x)
+			return 1;
 		pUnixFrameImpl->m_iNewWidth = e->width;
 		pUnixFrameImpl->m_iNewHeight = e->height;
 		pUnixFrameImpl->m_iNewY = e->y;

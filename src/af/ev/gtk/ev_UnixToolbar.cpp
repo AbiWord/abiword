@@ -76,12 +76,6 @@
 
 #define PROP_HANDLER_ID "handler-id"
 
-#ifndef UINT_RGBA_R
-#	define UINT_RGBA_R GO_COLOR_UINT_R
-#	define UINT_RGBA_G GO_COLOR_UINT_G
-#	define UINT_RGBA_B GO_COLOR_UINT_B
-#endif
-
 class _wd;
 
 static void s_proxy_activated(GtkAction * action, _wd * wd);
@@ -604,9 +598,9 @@ s_fore_color_changed (GOComboColor 	* /*cc*/,
 	UT_return_if_fail (wd);
 
 	str = UT_UTF8String_sprintf ("%02x%02x%02x", 
-								 UINT_RGBA_R (color),
-								 UINT_RGBA_G (color),
-								 UINT_RGBA_B (color));
+								 GO_COLOR_UINT_R (color),
+								 GO_COLOR_UINT_G (color),
+								 GO_COLOR_UINT_B (color));
 	wd->m_pUnixToolbar->toolbarEvent(wd, str.ucs4_str().ucs4_str(), str.size());
 }
 
@@ -626,9 +620,9 @@ s_back_color_changed (GOComboColor 	* /*cc*/,
 		str = "transparent";
 	} else {
 		str = UT_UTF8String_sprintf ("%02x%02x%02x", 
-									 UINT_RGBA_R (color),
-									 UINT_RGBA_G (color),
-									 UINT_RGBA_B (color));
+								 GO_COLOR_UINT_R (color),
+								 GO_COLOR_UINT_G (color),
+								 GO_COLOR_UINT_B (color));
 	}
 
 	wd->m_pUnixToolbar->toolbarEvent(wd, str.ucs4_str().ucs4_str(), str.size());
