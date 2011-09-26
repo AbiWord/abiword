@@ -25,18 +25,43 @@
 
 #include "sha1.h"
 #include "gc-pbkdf2-sha1.h"
-#include "blowfish/blowfish.h"
 
 #include "ut_assert.h"
+#include "ut_debugmsg.h"
 #include "ODc_Crypto.h"
+
+#include "config.h"
+#ifdef HAVE_GCRYPT
+#include "gcrypt.h"
+#endif
 
 #define PASSWORD_HASH_LEN 20
 #define PBKDF2_KEYLEN 16
 
-UT_Error ODc_Crypto::performDecrypt(GsfInput* pStream, 
-	unsigned char* salt, UT_uint32 salt_length, UT_uint32 iter_count,
-	unsigned char* ivec, const std::string& password, UT_uint32 decrypted_size,
-	GsfInput** pDecryptedInput)
+#define HANDLEGERR(e)                           \
+    {                                           \
+    gcry_err_code_t code = gcry_err_code(e);    \
+    if( code != GPG_ERR_NO_ERROR )              \
+    {                                           \
+        switch(code)                            \
+        {                                       \
+            case GPG_ERR_ENOMEM:                \
+               return UT_OUTOFMEM;             \
+            case GPG_ERR_DECRYPT_FAILED:        \
+                return UT_IE_PROTECTED;         \
+            default:                            \
+                return UT_ERROR;                \
+        }                                       \
+    }                                           \
+    }
+
+
+
+UT_Error ODc_Crypto::performDecrypt( GsfInput* pStream, 
+                                     unsigned char* salt, UT_uint32 salt_length, UT_uint32 iter_count,
+                                     unsigned char* ivec, gsize ivec_length,
+                                     const std::string& password, UT_uint32 decrypted_size,
+                                     GsfInput** pDecryptedInput)
 {
 	unsigned char sha1_password[PASSWORD_HASH_LEN];
 	char key[PBKDF2_KEYLEN];
@@ -49,20 +74,41 @@ UT_Error ODc_Crypto::performDecrypt(GsfInput* pStream,
 	if (k != 0)
 		return UT_ERROR;
 
-	// create the decryption key
-	BF_KEY bf_key;
-	BF_set_key(&bf_key, PBKDF2_KEYLEN, (const unsigned char*)key);
-
-	// perform the actual decryption
+    // Get the encrypted content ready
 	UT_sint32 content_size = gsf_input_size(pStream); 
 	if (content_size == -1)
 		return UT_ERROR;
 	const unsigned char* content = gsf_input_read(pStream, content_size, NULL);
 	if (!content)
 		return UT_ERROR;
-	int num = 0;
-	unsigned char* content_decrypted = (unsigned char*)g_malloc(content_size);
-	BF_cfb64_encrypt(content, content_decrypted, content_size, &bf_key, ivec, &num, BF_DECRYPT);
+
+    unsigned char* content_decrypted = (unsigned char*)g_malloc(content_size);
+
+#ifdef HAVE_GCRYPT
+
+    UT_DEBUGMSG(("ODc_Crypto::performDecrypt() using gcrypt\n" ));
+ 
+    gcry_cipher_hd_t h;
+    HANDLEGERR( gcry_cipher_open( &h,
+                                  GCRY_CIPHER_BLOWFISH,
+                                  GCRY_CIPHER_MODE_CFB,
+                                  0 ));
+    HANDLEGERR( gcry_cipher_setkey( h, key, PBKDF2_KEYLEN ));
+    HANDLEGERR( gcry_cipher_setiv ( h, ivec, ivec_length ));
+    HANDLEGERR( gcry_cipher_decrypt( h,
+                                     content_decrypted,
+                                     content_size,
+                                     content,
+                                     content_size ));
+    gcry_cipher_close( h );
+    
+    
+#else
+
+    // removed old blowfish code
+    
+#endif
+    
 
 	// deflate the decrypted content
 	z_stream zs;
@@ -120,7 +166,7 @@ UT_Error ODc_Crypto::decrypt(GsfInput* pStream, const ODc_CryptoInfo& cryptInfo,
 
 	// decrypt the content
 	UT_Error result = performDecrypt(pStream, salt, salt_length, cryptInfo.m_iterCount,  
-			ivec, password, cryptInfo.m_decryptedSize, pDecryptedInput);
+                                     ivec, ivec_length, password, cryptInfo.m_decryptedSize, pDecryptedInput);
 
 	// cleanup
 	FREEP(salt);

@@ -46,7 +46,7 @@ public:
 
 private:
 	static UT_Error performDecrypt(GsfInput* pStream,	unsigned char* salt, UT_uint32 salt_length, UT_uint32 iter_count,
-							unsigned char* ivec, const std::string& password, UT_uint32 decrypted_size, GsfInput** pDecryptedInput);
+							unsigned char* ivec, gsize ivec_length, const std::string& password, UT_uint32 decrypted_size, GsfInput** pDecryptedInput);
 };
 
 #endif /* __ODC_CRYPTO__ */

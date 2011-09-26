@@ -18,6 +18,7 @@ opendocument_la_LIBADD = \
 
 opendocument_la_LDFLAGS = \
 	$(OPENDOCUMENT_LIBS) \
+	$(LIBGCRYPT_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

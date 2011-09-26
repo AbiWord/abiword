@@ -43,6 +43,7 @@
 #include <gsf/gsf-infile.h>
 #include <gsf/gsf-infile-zip.h>
 
+#include "config.h"
 
 /**
  * Constructor
@@ -346,7 +347,12 @@ UT_Error IE_Imp_OpenDocument::_handleStream ( GsfInfile* pGsfInfile,
     if (pos != m_cryptoInfo.end())
 	{
         UT_DEBUGMSG(("Running decrypt on stream %s\n", pStream));
-		
+
+#ifndef HAVE_GCRYPT
+        UT_DEBUGMSG(("Can not decrypt files because of how abiword is compiled!\n"));
+        return UT_ERROR;
+#endif
+        
         GsfInput* pDecryptedInput = NULL;
         UT_Error err = ODc_Crypto::decrypt(pInput, (*pos).second, m_sPassword.utf8_str(), &pDecryptedInput);
         g_object_unref (G_OBJECT (pInput));

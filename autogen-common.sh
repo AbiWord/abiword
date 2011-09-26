@@ -4,7 +4,7 @@
 find plugins -name Makefile.am | sed  's|.am$||g' > plugin-makefiles.m4
 
 # create plugin list
-(cd plugins && find . -maxdepth 1 -type d | grep -v '^\.$' | grep -v '\./\.' | sed 's|\./||g' | xargs echo) > plugin-list.m4
+(cd ./plugins && find . -maxdepth 1 -type d | grep -v '^\.$' | grep -v '\./\.' | sed 's|\./||g' | xargs echo) > plugin-list.m4
 
 # create conditionals for builtin plugins
 (for plugin in `cat plugin-list.m4`; do
