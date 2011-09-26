@@ -25,7 +25,6 @@
 
 #include "sha1.h"
 #include "gc-pbkdf2-sha1.h"
-#include "blowfish/blowfish.h"
 
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -106,13 +105,8 @@ UT_Error ODc_Crypto::performDecrypt(GsfInput* pStream,
     
 #else
 
-	// create the decryption key
-	BF_KEY bf_key;
-	BF_set_key(&bf_key, PBKDF2_KEYLEN, (const unsigned char*)key);
+    // removed old blowfish code
     
-    int num = 0;
-	BF_cfb64_encrypt(content, content_decrypted, content_size, &bf_key, ivec, &num, BF_DECRYPT);
-
 #endif
     
 	// deflate the decrypted content
