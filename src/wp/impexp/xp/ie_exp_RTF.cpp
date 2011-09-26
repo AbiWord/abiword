@@ -44,6 +44,7 @@
 #include "gr_Graphics.h"
 #include "ut_rand.h"
 #include "ut_std_string.h"
+#include "pl_ListenerCoupleCloser.h"
 
 #include "wv.h" //for wvLIDToCodePageConverter
 #include "xap_EncodingManager.h"
@@ -254,10 +255,12 @@ UT_Error IE_Exp_RTF::_writeDocumentLocal(bool bSkipHeader)
 	m_pListenerWriteDoc = new s_RTF_ListenerWriteDoc(getDoc(),this, (getDocRange()!=NULL), hasBlock);
 	if (!m_pListenerWriteDoc)
 		return UT_IE_NOMEMORY;
+    PL_ListenerCoupleCloser* pCloser = new PL_ListenerCoupleCloser();
 	if (getDocRange())
-		getDoc()->tellListenerSubset(m_pListenerWriteDoc,getDocRange());
+		getDoc()->tellListenerSubset(m_pListenerWriteDoc,getDocRange(),pCloser);
 	else
 		getDoc()->tellListener(m_pListenerWriteDoc);
+    DELETEP(pCloser);
 	DELETEP(m_pListenerWriteDoc);
 
 	// write any rtf trailer matter

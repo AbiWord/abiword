@@ -252,12 +252,20 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 	return true;
 }
 
-bool pt_PieceTable::tellListenerSubset(PL_Listener * pListener,
-										  PD_DocumentRange * pDocRange)
+#include "pl_ListenerCoupleCloser.h"
+
+bool pt_PieceTable::tellListenerSubset( PL_Listener * pListener,
+                                        PD_DocumentRange * pDocRange,
+                                        PL_ListenerCoupleCloser* closer )
 {
 	// walk the subset of the document in the given range
 	// and send notifications.
 
+    if( closer )
+    {
+        closer->setDocument( getDocument() );
+    }
+    
 	PL_StruxFmtHandle sfh = 0;
 	UT_uint32 blockOffset = 0;
 
@@ -269,8 +277,9 @@ bool pt_PieceTable::tellListenerSubset(PL_Listener * pListener,
 		return true;
 
 	PT_DocPosition sum = pDocRange->m_pos1 - fragOffset1;
-	
-	for (pf_Frag * pf = pf1; (pf); pf=pf->getNext())
+
+    pf_Frag * pf = pf1;
+	for ( ; (pf); pf=pf->getNext())
 	{
 		switch (pf->getType())
 		{
@@ -303,6 +312,8 @@ bool pt_PieceTable::tellListenerSubset(PL_Listener * pListener,
 				bool bStatus1 = pfs->createSpecialChangeRecord(&pcr,sum);
 				UT_return_val_if_fail (bStatus1,false);
 				bool bStatus2 = pListener->populateStrux(sdh,pcr,&sfh);
+                if( closer )
+                    closer->populateStrux(sdh,pcr,&sfh);
 				if (pcr)
 					delete pcr;
 				if (!bStatus2)
@@ -318,6 +329,8 @@ bool pt_PieceTable::tellListenerSubset(PL_Listener * pListener,
 				bool bStatus1 = pfo->createSpecialChangeRecord(&pcr,sum,blockOffset);
 				UT_return_val_if_fail (bStatus1,false);
 				bool bStatus2 = pListener->populate(sfh,pcr);
+                if( closer )
+                    closer->populate(sfh,pcr);
 				if (pcr)
 					delete pcr;
 				if (!bStatus2)
@@ -354,5 +367,54 @@ bool pt_PieceTable::tellListenerSubset(PL_Listener * pListener,
 			break;
 	}
 
+    // MIQ:2011
+    // The closer might want to inspect elements after the selected
+    // range to find end tags to emit as well. This allows things with
+    // a separate start and end element to have the end sent to the
+    // pListener although that end might not itself be in the range.
+    // Without this, we might have a bookmark-start but no matching
+    // bookmark-end, which will make a generated document invalid.
+    //
+    if( closer )
+    {
+        closer->setDelegate( pListener );
+        for ( ; (pf); pf=pf->getNext())
+        {
+            switch (pf->getType())
+            {
+                case pf_Frag::PFT_Strux:
+                {
+                    pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf);
+                    PL_StruxDocHandle sdh = (PL_StruxDocHandle)pf;
+                    sfh = 0;
+                    PX_ChangeRecord * pcr = NULL;
+                    bool bStatus1 = pfs->createSpecialChangeRecord(&pcr,sum);
+                    UT_return_val_if_fail (bStatus1,false);
+                    closer->populateStruxClose(sdh,pcr,&sfh);
+                    if (pcr)
+                        delete pcr;
+                    blockOffset = 0;
+                }
+                break;
+
+                case pf_Frag::PFT_Object:
+                {
+                    pf_Frag_Object * pfo = static_cast<pf_Frag_Object *> (pf);
+                    PX_ChangeRecord * pcr = NULL;
+                    bool bStatus1 = pfo->createSpecialChangeRecord(&pcr,sum,blockOffset);
+                    UT_return_val_if_fail (bStatus1,false);
+                    closer->populateClose(sfh,pcr);
+                    if (pcr)
+                        delete pcr;
+                    blockOffset += pf->getLength();
+                }
+                break;
+            }
+            
+            if( closer->isFinished() )
+                break;
+        }
+    }
+    
 	return true;
 }

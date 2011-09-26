@@ -118,4 +118,6 @@ public:
  virtual void    removeDocument(void) = 0;
 };
 
+
+
 #endif /* PL_LISTENER_H */

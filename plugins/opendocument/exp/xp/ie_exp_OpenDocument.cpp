@@ -45,6 +45,7 @@
 #include <pd_Document.h>
 #include <pd_DocumentRDF.h>
 #include "ie_exp_DocRangeListener.h"
+#include "pl_ListenerCoupleCloser.h"
 
 // External includes
 #include <gsf/gsf-outfile.h>
@@ -120,8 +121,11 @@ UT_Error IE_Exp_OpenDocument::copyToBuffer(PD_DocumentRange * pDocRange,UT_ByteB
     outDoc->createRawDocument();
     IE_Exp_DocRangeListener * pRangeListener = new IE_Exp_DocRangeListener(pDocRange,outDoc);
     UT_DEBUGMSG(("DocumentRange low %d High %d \n",pDocRange->m_pos1,pDocRange->m_pos2));
-    pDocRange->m_pDoc->tellListenerSubset(pRangeListener,pDocRange);
-
+    PL_ListenerCoupleCloser* pCloser = new PL_ListenerCoupleCloser();
+    pDocRange->m_pDoc->tellListenerSubset(pRangeListener,pDocRange,pCloser);
+    if( pCloser)
+        delete pCloser;
+    
     //
     // Grab the RDF triples while we are copying...
     //

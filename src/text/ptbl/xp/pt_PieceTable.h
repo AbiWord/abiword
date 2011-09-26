@@ -42,6 +42,7 @@ class pf_Frag_Strux_Block;
 class pf_Frag_Strux_Section;
 class PX_ChangeRecord_Span;
 class PD_Style;
+class PL_ListenerCoupleCloser;
 
 #ifdef PT_TEST
 #include "ut_test.h"
@@ -282,8 +283,9 @@ public:
 	size_t					getStyleCount(void) const;
 
 	bool					tellListener(PL_Listener * pListener);
-	bool					tellListenerSubset(PL_Listener * pListener,
-											   PD_DocumentRange * pDocRange);
+	bool					tellListenerSubset( PL_Listener * pListener,
+											    PD_DocumentRange * pDocRange,
+                                                PL_ListenerCoupleCloser* closer = 0 );
 
 	bool					addListener(PL_Listener * pListener,
 										PL_ListenerId listenerId);

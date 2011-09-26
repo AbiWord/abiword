@@ -1751,18 +1751,18 @@ s_RTF_ListenerWriteDoc::~s_RTF_ListenerWriteDoc()
 
 	_closeSpan();
 
-	for( std::list< std::string >::iterator iter = m_rdfAnchorStack.begin();
-		 iter != m_rdfAnchorStack.end(); ++iter )
-	{
-		std::string xmlid = *iter;
+	// for( std::list< std::string >::iterator iter = m_rdfAnchorStack.begin();
+	// 	 iter != m_rdfAnchorStack.end(); ++iter )
+	// {
+	// 	std::string xmlid = *iter;
 
-		m_pie->_rtf_open_brace();
-		m_pie->_rtf_keyword("*");
-		UT_DEBUGMSG(("_writeRDFAnchor(dtor) end... id:%s\n", xmlid.c_str() ));
-		m_pie->_rtf_keyword("rdfanchorend");
-		m_pie->_rtf_chardata( xmlid.c_str(), xmlid.length());
-		m_pie->_rtf_close_brace();
-	}
+	// 	m_pie->_rtf_open_brace();
+	// 	m_pie->_rtf_keyword("*");
+	// 	UT_DEBUGMSG(("_writeRDFAnchor(dtor) end... id:%s\n", xmlid.c_str() ));
+	// 	m_pie->_rtf_keyword("rdfanchorend");
+	// 	m_pie->_rtf_chardata( xmlid.c_str(), xmlid.length());
+	// 	m_pie->_rtf_close_brace();
+	// }
 	
 	_closeBlock();
 	_closeSection();

@@ -3871,13 +3871,15 @@ bool PD_Document::tellListener(PL_Listener* pListener)
 	return m_pPieceTable->tellListener(pListener);
 }
 
-bool PD_Document::tellListenerSubset(PL_Listener* pListener, PD_DocumentRange * pDocRange)
+bool PD_Document::tellListenerSubset( PL_Listener* pListener,
+                                      PD_DocumentRange * pDocRange,
+                                      PL_ListenerCoupleCloser* closer )
 {
 	UT_return_val_if_fail (pListener, false);
 	UT_return_val_if_fail (m_pPieceTable, false);
 	UT_return_val_if_fail (pDocRange && pDocRange->m_pDoc==this, false);
 
-	return m_pPieceTable->tellListenerSubset(pListener,pDocRange);
+	return m_pPieceTable->tellListenerSubset(pListener,pDocRange,closer);
 }
 
 bool PD_Document::addListener(PL_Listener * pListener,

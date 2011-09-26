@@ -45,6 +45,8 @@ libxp_la_SOURCES = \
 	pf_Frag_Text.cpp \
 	pf_Frag_Text.h \
 	pl_Listener.h \
+	pl_ListenerCoupleCloser.h \
+	pl_ListenerCoupleCloser.cpp \
 	po_Bookmark.cpp \
 	po_Bookmark.h \
 	pp_AttrProp.cpp \

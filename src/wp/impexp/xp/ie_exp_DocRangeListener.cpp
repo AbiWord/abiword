@@ -205,7 +205,10 @@ bool  IE_Exp_DocRangeListener::populate(PL_StruxFmtHandle /* sfh */,
 	const char * szKey = NULL;
 	const char * szVal = NULL;
 	bool bAppendFmt = (m_iLastAP != indexAP);
-	m_iLastAP = indexAP; 
+	m_iLastAP = indexAP;
+    
+	UT_DEBUGMSG(("MIQ: Doing Populate in PasteListener indexAP %d pcr.type:%d \n",
+                 indexAP, pcr->getType() ));
 	switch (pcr->getType())
 	{
 	case PX_ChangeRecord::PXT_InsertSpan:
