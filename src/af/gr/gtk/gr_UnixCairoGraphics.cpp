@@ -406,6 +406,7 @@ void GR_UnixCairoGraphics::restoreRectangle(UT_uint32 iIndx)
 {
 	cairo_save(m_cr);
 	cairo_reset_clip(m_cr);
+	cairo_identity_matrix(m_cr);
 	UT_Rect * r = m_vSaveRect.getNthItem(iIndx);
 	GdkPixbuf *p = m_vSaveRectBuf.getNthItem(iIndx);
 	UT_sint32 idx = _tduX(r->left);
@@ -415,7 +416,7 @@ void GR_UnixCairoGraphics::restoreRectangle(UT_uint32 iIndx)
 	cairo_surface_flush ( cairo_get_target(m_cr));
 
 	if (p && r) {
-		gdk_cairo_set_source_pixbuf(m_cr, p, 0., 0.);
+		gdk_cairo_set_source_pixbuf(m_cr, p, idx, idy);
 		cairo_rectangle(m_cr, idx, idy, idw, idh);
 		cairo_fill(m_cr);
 	}
