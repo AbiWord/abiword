@@ -28,35 +28,183 @@ class PX_ChangeRecord;
 #include <list>
 #include <string>
 
+/**
+ * A subclass of Listener which includes default implementations of
+ * some methods we dont care about and an isFinished() method to tell
+ * the caller that it doesn't need to keep walking the document
+ * anymore.
+ */
+struct PL_FinishingListener : public PL_Listener
+{
+    virtual bool isFinished() = 0;
+        
+    virtual bool		change(PL_StruxFmtHandle /*sfh*/,
+                               const PX_ChangeRecord * /*pcr*/)
+    {return true;}
+    virtual bool		insertStrux(PL_StruxFmtHandle /*sfh*/,
+                                    const PX_ChangeRecord * /*pcr*/,
+                                    PL_StruxDocHandle /*sdhNew*/,
+                                    PL_ListenerId /*lid*/,
+                                    void (* /*pfnBindHandles*/)(PL_StruxDocHandle sdhNew,
+                                                                PL_ListenerId lid,
+                                                                PL_StruxFmtHandle sfhNew))
+    { return true;}
+    virtual bool		signal(UT_uint32 /*iSignal*/)
+    { return true;}    
+};
 
+
+/**
+ * When copying a selection from a document, one might have the case
+ * where there are matched pairs of markers in the document. When only
+ * one of the pair of markers is in the selection to copy, a simple
+ * copy using a listener on just that range will likely output an
+ * invalid document.
+ *
+ * Consider the document below with the selection highlighted below
+ * it. If one attaches a pl_listener and calls
+ * PD_Document::tellListenerSubset() they will only see the bm-start
+ * tag. To generate a valid document, a listener would have to
+ * remember which pair tags are still open and close them in an
+ * appropriate order.
+ *
+ * This is some text <bm-start>I can jump here<bm-end>
+ *             ^-------------------------^
+ *
+ * The closer class maintains a reference to the document and a
+ * delegate listener. The delegate listener will see all the
+ * populate() calls for the given document range, and then the closer
+ * will call populate() on the delegate for tags which are open in the
+ * range but not closed in the range. And the converse, where a tag is
+ * closed in the range but opened before the start of the range.
+ *
+ * For the above document fragment, the delegate will the following
+ * because they are in the selected document range:
+ * " text "
+ * <bm-start>
+ * "I can jump"
+ *
+ * From there the closer will find the matching <bm-end> and call
+ * delegate->populate(). So the delegate will see something like the
+ * following as the selection and have matched start and end bookmark
+ * tags.
+ * 
+ * text <bm-start>I can jump<bm-end>
+ *
+ * Having this functionality in a separate closer class allows for
+ * extension by inheritance, and allows tellListenerSubset() to handle
+ * cases that one might not consider right off the bat, such as the
+ * following where the missing matching tag is actually before the
+ * selected range. In this case the closer will emit the required
+ * matching populate(bm-start) before the selected document content.
+ * Handling open tags before the range is a bit tricky because the call
+ * to delegate->populate() must be in document order and not the reverse
+ * order that might be used to step backwards from the desired range.
+ * This scenario is handled for you with the PL_ListenerCoupleCloser
+ * and pt_PieceTable::tellListenerSubset(): The delegate listener
+ * only ever sees items once, and in document ordering.
+ * 
+ * Some text <bm-start>I can jump here<bm-end> and then more waffle
+ *                          ^-------------------------^
+ *
+ * While all range cases might not be covered right now, this class is
+ * a good foundation for adding new cases as they are found such that
+ * all listeners can benefit from proper closed ranges.
+ * 
+ * This class can be passed as the "closer" parameter to
+ * PD_Document::tellListenerSubset() and maintains the open/closed
+ * state of matched tags. Once the document range has been visited
+ * PD_Document::tellListenerSubset() calls methods like
+ * populateClose() in the closer which in turn might call populate()
+ * on the delegate listener.
+ * 
+ */
 class ABI_EXPORT PL_ListenerCoupleCloser : public PL_Listener
 {
   protected:
     PD_Document* m_pDocument;
     PL_Listener* m_delegate;
     typedef std::list< std::string > stringlist_t;
-    stringlist_t m_rdfAnchorStack;
+    stringlist_t m_rdfUnclosedAnchorStack;
+    stringlist_t m_rdfUnopenedAnchorStack;
+
+    struct AfterContentListener : public PL_FinishingListener
+    {
+        PL_ListenerCoupleCloser* m_self;
+        AfterContentListener( PL_ListenerCoupleCloser* self )
+            : m_self(self)
+        {}
+        
+        virtual bool isFinished();
+        virtual bool populate( PL_StruxFmtHandle sfh,
+                               const PX_ChangeRecord * pcr );
+        virtual bool populateStrux( PL_StruxDocHandle sdh,
+                                    const PX_ChangeRecord * pcr,
+                                    PL_StruxFmtHandle * psfh);
+    };
+    AfterContentListener m_AfterContentListener;
+
+    struct BeforeContentListener : public PL_FinishingListener
+    {
+        PL_ListenerCoupleCloser* m_self;
+        BeforeContentListener( PL_ListenerCoupleCloser* self )
+            : m_self(self)
+        {}
+        
+        virtual bool isFinished();
+        virtual bool populate( PL_StruxFmtHandle sfh,
+                               const PX_ChangeRecord * pcr );
+        virtual bool populateStrux( PL_StruxDocHandle sdh,
+                                    const PX_ChangeRecord * pcr,
+                                    PL_StruxFmtHandle * psfh);
+    };
+    BeforeContentListener m_BeforeContentListener;
+
+    struct NullContentListener : public PL_FinishingListener
+    {
+        PL_ListenerCoupleCloser* m_self;
+        NullContentListener( PL_ListenerCoupleCloser* self )
+            : m_self(self)
+        {}
+        
+        virtual bool isFinished() 
+        {
+            return true;
+        }
+        virtual bool populate( PL_StruxFmtHandle sfh,
+                               const PX_ChangeRecord * pcr )
+        {
+            return false;
+        }
+        virtual bool populateStrux( PL_StruxDocHandle sdh,
+                                    const PX_ChangeRecord * pcr,
+                                    PL_StruxFmtHandle * psfh)
+        {
+            return false;
+        }            
+    };
+    NullContentListener m_NullContentListener;
+
     
   public:
     PL_ListenerCoupleCloser();
     virtual ~PL_ListenerCoupleCloser();
     void setDelegate( PL_Listener* delegate );
-    virtual bool isFinished();
 	PD_Document*  getDocument(void);
 	void          setDocument(PD_Document * pDoc);
+    void          reset();
 
     virtual bool populate( PL_StruxFmtHandle sfh,
                            const PX_ChangeRecord * pcr );
     virtual bool populateStrux( PL_StruxDocHandle sdh,
                                 const PX_ChangeRecord * pcr,
                                 PL_StruxFmtHandle * psfh);
-    
-    virtual bool populateClose( PL_StruxFmtHandle sfh,
-                                const PX_ChangeRecord * pcr );
-    virtual bool populateStruxClose( PL_StruxDocHandle sdh,
-                                     const PX_ChangeRecord * pcr,
-                                     PL_StruxFmtHandle * psfh);
 
+    PL_FinishingListener* getAfterContentListener();
+    PL_FinishingListener* getBeforeContentListener();
+    PL_FinishingListener* getNullContentListener();
+    
+    
     virtual bool		change(PL_StruxFmtHandle /*sfh*/,
                                const PX_ChangeRecord * /*pcr*/)
     {return true;}
@@ -71,7 +219,25 @@ class ABI_EXPORT PL_ListenerCoupleCloser : public PL_Listener
     { return true;}
     
 	virtual bool		signal(UT_uint32 /*iSignal*/)
-    { return true;}    
+    { return true;}
+
+  private:
+
+    virtual bool populateAfter( PL_StruxFmtHandle sfh,
+                                const PX_ChangeRecord * pcr );
+    virtual bool populateStruxAfter( PL_StruxDocHandle sdh,
+                                     const PX_ChangeRecord * pcr,
+                                     PL_StruxFmtHandle * psfh);
+
+
+    virtual bool populateBefore( PL_StruxFmtHandle sfh,
+                                 const PX_ChangeRecord * pcr );
+    virtual bool populateStruxBefore( PL_StruxDocHandle sdh,
+                                      const PX_ChangeRecord * pcr,
+                                      PL_StruxFmtHandle * psfh);
+    
+
+    
 };
 
 #endif

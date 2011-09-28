@@ -147,6 +147,8 @@ protected:
 	
     bool                    _realChangeSectionAttsNoUpdate(pf_Frag_Strux * pfStrux, const char * attr, const char * attvalue);
 
+
+    
 	/******************************************************************
 	    these are the new revisions aware methods
 	*/

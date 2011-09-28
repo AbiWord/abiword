@@ -253,6 +253,200 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 }
 
 #include "pl_ListenerCoupleCloser.h"
+#include <set>
+#include <boost/bind.hpp>
+#include <boost/function.hpp>
+typedef boost::function< bool (PT_DocPosition, PT_DocPosition, PT_DocPosition, PL_Listener*)> f_WalkRangeFinished_t;
+
+static bool finishedFunctorEndOfRage( PT_DocPosition rangeStartPos,
+                                      PT_DocPosition rangeEndPos,
+                                      PT_DocPosition curPos,
+                                      PL_Listener* pListener )
+{
+    if( curPos >= rangeEndPos )
+        return true;
+    return false;
+}
+
+static bool finishedFunctorFinishingListener( PT_DocPosition rangeStartPos,
+                                              PT_DocPosition rangeEndPos,
+                                              PT_DocPosition curPos,
+                                              PL_Listener* pListener,
+                                              PL_FinishingListener* fl )
+{
+    if( fl->isFinished() )
+        return true;
+    return false;
+}
+
+
+typedef std::set< pf_Frag::PFType > m_fragtypecol_t;
+static m_fragtypecol_t& _getTellListenerSubsetWalkRangeVisitAllFragments()
+{
+    static m_fragtypecol_t col;
+    if( col.empty() )
+    {
+        col.insert( pf_Frag::PFT_Text );
+        col.insert( pf_Frag::PFT_Object );
+        col.insert( pf_Frag::PFT_Strux );
+        col.insert( pf_Frag::PFT_EndOfDoc );
+        col.insert( pf_Frag::PFT_FmtMark );
+    }
+    return col;
+}
+
+
+/**
+ * This is a static function instead of a member so that
+ * boost::functors can be passed in to this function but boost headers
+ * are not needed in pt_PieceTable.h
+ * 
+ */
+static PT_DocPosition _tellListenerSubsetWalkRange(
+    pt_PieceTable* pt,
+    PL_Listener* pListener,
+    PD_DocumentRange* pDocRange,
+    PT_DocPosition rangeStartPos,
+    PT_DocPosition rangeEndPos,
+    f_WalkRangeFinished_t finishedFunctor = finishedFunctorEndOfRage,
+    m_fragtypecol_t& fragmentTypesToVisit = _getTellListenerSubsetWalkRangeVisitAllFragments(),
+    bool walkForwards = true )
+{
+    UT_DEBUGMSG(("_tellListenerSubsetWalkRange(top) listener %p startpos %d endpos %d\n",
+                 pListener, rangeStartPos, rangeEndPos ));
+	PL_StruxFmtHandle sfh = 0;
+	UT_uint32 blockOffset = 0;
+
+	pf_Frag * pf1 = NULL;
+	PT_BlockOffset fragOffset1 = 0;
+	PT_BlockOffset endOffset = 0;
+    PT_DocPosition pfPos = rangeStartPos;
+    if( !walkForwards )
+        pfPos = rangeEndPos;
+    
+    if (!pt->getFragFromPosition( pfPos, &pf1, &fragOffset1 ))
+    {
+        UT_DEBUGMSG(("_tellListenerSubsetWalkRange(no frag!) listener %p startpos %d endpos %d\n",
+                     pListener, rangeStartPos, rangeEndPos ));
+        return true;
+    }
+    
+	PT_DocPosition sum = rangeStartPos - fragOffset1;
+
+    pf_Frag * pf = pf1;
+	for ( ; (pf); )
+	{
+        if( fragmentTypesToVisit.count(pf->getType()))
+        {
+            switch (pf->getType())
+            {
+                case pf_Frag::PFT_Text:
+                {
+                    pf_Frag_Text * pft = static_cast<pf_Frag_Text *> (pf);
+                    PX_ChangeRecord * pcr = NULL;
+                    if( rangeEndPos < sum+pf->getLength() )
+                        endOffset = (rangeEndPos - sum);
+                    else
+                        endOffset = pf->getLength();
+                    bool bStatus1 = pft->createSpecialChangeRecord(&pcr,sum,blockOffset,fragOffset1,endOffset);
+                    if(!bStatus1)
+                        UT_DEBUGMSG(("_tellListenerSubsetWalkRange(st1) a\n" ));
+                    UT_return_val_if_fail (bStatus1,false);
+                    bool bStatus2 = pListener->populate(sfh,pcr);
+                    if (pcr)
+                        delete pcr;
+                    if (!bStatus2)
+                        return false;
+                    blockOffset += pf->getLength();
+                    fragOffset1 = 0;
+                }
+                break;
+			
+                case pf_Frag::PFT_Strux:
+                {
+                    pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf);
+                    PL_StruxDocHandle sdh = (PL_StruxDocHandle)pf;
+                    sfh = 0;
+                    PX_ChangeRecord * pcr = NULL;
+                    bool bStatus1 = pfs->createSpecialChangeRecord(&pcr,sum);
+                    if(!bStatus1)
+                        UT_DEBUGMSG(("_tellListenerSubsetWalkRange(st1) b\n" ));
+                    UT_return_val_if_fail (bStatus1,false);
+                    bool bStatus2 = pListener->populateStrux(sdh,pcr,&sfh);
+                    if (pcr)
+                        delete pcr;
+                    if (!bStatus2)
+                        return false;
+                    blockOffset = 0;
+                }
+                break;
+
+                case pf_Frag::PFT_Object:
+                {
+                    pf_Frag_Object * pfo = static_cast<pf_Frag_Object *> (pf);
+                    PX_ChangeRecord * pcr = NULL;
+                    bool bStatus1 = pfo->createSpecialChangeRecord(&pcr,sum,blockOffset);
+                    if(!bStatus1)
+                        UT_DEBUGMSG(("_tellListenerSubsetWalkRange(st1) c\n" ));
+                    UT_return_val_if_fail (bStatus1,false);
+                    bool bStatus2 = pListener->populate(sfh,pcr);
+                    if (pcr)
+                        delete pcr;
+                    if (!bStatus2)
+                        return false;
+                    blockOffset += pf->getLength();
+                }
+                break;
+
+                case pf_Frag::PFT_FmtMark:
+                {
+                    pf_Frag_FmtMark * pffm = static_cast<pf_Frag_FmtMark *> (pf);
+                    PX_ChangeRecord * pcr = NULL;
+                    bool bStatus1 = pffm->createSpecialChangeRecord(&pcr,sum,blockOffset);
+                    if(!bStatus1)
+                        UT_DEBUGMSG(("_tellListenerSubsetWalkRange(st1) d\n" ));
+                    UT_return_val_if_fail (bStatus1,false);
+                    bool bStatus2 = pListener->populate(sfh,pcr);
+                    DELETEP(pcr);
+                    if (!bStatus2)
+                        return false;
+                    blockOffset += pf->getLength();
+                }
+                break;
+			
+                case pf_Frag::PFT_EndOfDoc:
+                    // they don't get to know about this.
+                    break;
+			
+                default:
+                    UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+                    return false;
+            }
+        }
+        
+        UT_DEBUGMSG(("_tellListenerSubsetWalkRange(loop) listener %p sum %d startpos %d endpos %d\n",
+                     pListener, sum, rangeStartPos, rangeEndPos ));
+        
+		sum += pf->getLength();
+        if( finishedFunctor( rangeStartPos, rangeEndPos, sum, pListener ) )
+			break;
+
+        if( walkForwards )
+        {
+            pf=pf->getNext();
+        }
+        else
+        {
+            pf=pf->getPrev();
+        }
+	}
+
+    UT_DEBUGMSG(("_tellListenerSubsetWalkRange(done) listener %p startpos %d endpos %d\n",
+                 pListener, rangeStartPos, rangeEndPos ));
+    return sum;
+}
+
+
 
 bool pt_PieceTable::tellListenerSubset( PL_Listener * pListener,
                                         PD_DocumentRange * pDocRange,
@@ -264,7 +458,90 @@ bool pt_PieceTable::tellListenerSubset( PL_Listener * pListener,
     if( closer )
     {
         closer->setDocument( getDocument() );
+        closer->setDelegate( pListener );
     }
+    m_fragtypecol_t closerFragmentTypesToVisit;
+    closerFragmentTypesToVisit.insert( pf_Frag::PFT_Object );
+    closerFragmentTypesToVisit.insert( pf_Frag::PFT_Strux );
+    
+
+    bool rc = 0;
+
+    if( closer )
+    {
+        rc = _tellListenerSubsetWalkRange( this,
+                                           closer,
+                                           pDocRange,
+                                           pDocRange->m_pos1,
+                                           pDocRange->m_pos2 );
+
+        /**
+         * Emit the start tag for things that are closed in the
+         * selected range but are not opened in that range.
+         *
+         * Note that we walk backwards from the start of the range in
+         * order to find the matching open tags as quickly as possible
+         * even if the selection is at the end of a really large
+         * document.
+         *
+         * A null delegate is used while we are walking backwards. If
+         * we allowed the closer to emit to the real delegate then the
+         * calls to populate() on the delegate would happen in reverse
+         * document order. So we walk backwards to find the real
+         * startPos that the closer needs and then refresh the closer
+         * by walking the range again (in case it uses stacks which
+         * were erased during the reverse walk), and then use the real
+         * delegate and walk forwards from the correct startPos that
+         * we just found. This is admittedly a bit tricky, but for a
+         * 1000 page document we really really don't want to walk all
+         * the way from the start, so walking the range twice is
+         * likely to be a small trade off in performance.
+         */
+        if( PL_FinishingListener* cl = closer->getBeforeContentListener() )
+        {
+            bool walkForwards = false;
+            f_WalkRangeFinished_t f = boost::bind( finishedFunctorFinishingListener, _1, _2, _3, _4, cl );
+
+            PL_FinishingListener* nullListener = closer->getNullContentListener();
+            closer->setDelegate( nullListener );
+            PT_DocPosition startPos = _tellListenerSubsetWalkRange( this, cl,
+                                                                    pDocRange, 0, pDocRange->m_pos1,
+                                                                    f, closerFragmentTypesToVisit, walkForwards );
+
+            closer->setDelegate( pListener );
+            closer->reset();
+            rc = _tellListenerSubsetWalkRange( this,
+                                               closer,
+                                               pDocRange,
+                                               pDocRange->m_pos1,
+                                               pDocRange->m_pos2 );
+            
+            rc = _tellListenerSubsetWalkRange( this, cl,
+                                               pDocRange, startPos, pDocRange->m_pos1,
+                                               f, closerFragmentTypesToVisit, walkForwards );
+            
+        }
+    }
+    
+    rc = _tellListenerSubsetWalkRange( this, pListener,
+                                       pDocRange, pDocRange->m_pos1, pDocRange->m_pos2 );
+    
+    if( closer )
+    {
+        /**
+         * emit the close tag for things that were left open in the range.
+         */
+        if( PL_FinishingListener* cl = closer->getAfterContentListener() )
+        {
+            f_WalkRangeFinished_t f = boost::bind( finishedFunctorFinishingListener, _1, _2, _3, _4, cl );
+            rc = _tellListenerSubsetWalkRange( this, cl,
+                                               pDocRange, pDocRange->m_pos2, 0,
+                                               f, closerFragmentTypesToVisit );
+        }
+    }
+
+    
+#if 0    
     
 	PL_StruxFmtHandle sfh = 0;
 	UT_uint32 blockOffset = 0;
@@ -415,6 +692,7 @@ bool pt_PieceTable::tellListenerSubset( PL_Listener * pListener,
                 break;
         }
     }
+#endif
     
 	return true;
 }

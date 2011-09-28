@@ -36,6 +36,9 @@
 PL_ListenerCoupleCloser::PL_ListenerCoupleCloser()
     : m_pDocument(0)
     , m_delegate(0)
+    , m_AfterContentListener(this)
+    , m_BeforeContentListener(this)
+    , m_NullContentListener(this)
 {
 }
 
@@ -56,6 +59,32 @@ PL_ListenerCoupleCloser::setDocument(PD_Document * pDoc)
 }
 
 
+void
+PL_ListenerCoupleCloser::setDelegate( PL_Listener* delegate )
+{
+    m_delegate = delegate;
+}
+
+void
+PL_ListenerCoupleCloser::reset()
+{
+    m_rdfUnclosedAnchorStack.clear();
+    m_rdfUnopenedAnchorStack.clear();
+}
+
+
+
+/****************************************/
+/****************************************/
+/****************************************/
+
+bool
+PL_ListenerCoupleCloser::populateStrux( PL_StruxDocHandle /*sdh*/,
+                                        const PX_ChangeRecord * pcr,
+                                        PL_StruxFmtHandle * /* psfh */ )
+{
+    return true;
+}
 
 bool
 PL_ListenerCoupleCloser::populate(PL_StruxFmtHandle /* sfh */,
@@ -83,7 +112,28 @@ PL_ListenerCoupleCloser::populate(PL_StruxFmtHandle /* sfh */,
                     const PP_AttrProp * pAP = NULL;
                     getDocument()->getAttrProp(api,&pAP);
                     RDFAnchor a(pAP);
-                    m_rdfAnchorStack.push_back(a.getID());
+                    std::string xmlid = a.getID();
+                    
+                    if( a.isEnd() )
+                    {
+                        stringlist_t::iterator iter = find( m_rdfUnclosedAnchorStack.begin(),
+                                                            m_rdfUnclosedAnchorStack.end(),
+                                                            xmlid );
+                        if( iter == m_rdfUnclosedAnchorStack.end() )
+                        {
+                            // closing an rdf anchor which was not opened in range.
+                            m_rdfUnopenedAnchorStack.push_back( xmlid );
+                        }
+                        else
+                        {
+                            m_rdfUnclosedAnchorStack.erase( iter );
+                        }
+                    }
+                    else
+                    {
+                        m_rdfUnclosedAnchorStack.push_back( xmlid );
+                    }
+                    
                     break;
                 }
             }
@@ -96,12 +146,31 @@ PL_ListenerCoupleCloser::populate(PL_StruxFmtHandle /* sfh */,
 	return true;
 }
 
+
+/****************************************/
+/****************************************/
+/****************************************/
+/****************************************/
+/****************************************/
+/****************************************/
+
 bool
-PL_ListenerCoupleCloser::populateClose( PL_StruxFmtHandle sfh,
+PL_ListenerCoupleCloser::populateStruxAfter( PL_StruxDocHandle /*sdh*/,
+                                             const PX_ChangeRecord * pcr,
+                                             PL_StruxFmtHandle * /* psfh */ )
+{
+    PT_AttrPropIndex indexAP = pcr->getIndexAP();
+	UT_DEBUGMSG(("MIQ: PL_ListenerCoupleCloser::PopulateStruxAfter() indexAP %d pcr.type:%d \n",
+                 indexAP, pcr->getType() ));
+    return true;
+}
+
+bool
+PL_ListenerCoupleCloser::populateAfter( PL_StruxFmtHandle sfh,
                                         const PX_ChangeRecord * pcr )
 {
     PT_AttrPropIndex indexAP = pcr->getIndexAP();
-	UT_DEBUGMSG(("MIQ: PL_ListenerCoupleCloser::PopulateClose() indexAP %d pcr.type:%d \n",
+	UT_DEBUGMSG(("MIQ: PL_ListenerCoupleCloser::PopulateAfter() indexAP %d pcr.type:%d \n",
                  indexAP, pcr->getType() ));
 	switch (pcr->getType())
 	{
@@ -118,19 +187,104 @@ PL_ListenerCoupleCloser::populateClose( PL_StruxFmtHandle sfh,
 			switch (pcro->getObjectType())
             {
                 case PTO_RDFAnchor:
-                    if( !m_rdfAnchorStack.empty() )
+                    if( !m_rdfUnclosedAnchorStack.empty() )
                     {
                         const PP_AttrProp * pAP = NULL;
                         getDocument()->getAttrProp(api,&pAP);
                         RDFAnchor a(pAP);
-                        UT_DEBUGMSG(("MIQ: PL_ListenerCoupleCloser::PopulateClose() rdfid:%s \n",
+                        UT_DEBUGMSG(("MIQ: PL_ListenerCoupleCloser::PopulateAfter() rdfid:%s \n",
                                      a.getID().c_str() ));
-                        stringlist_t::iterator iter = find( m_rdfAnchorStack.begin(),
-                                                            m_rdfAnchorStack.end(),
+                        stringlist_t::iterator iter = find( m_rdfUnclosedAnchorStack.begin(),
+                                                            m_rdfUnclosedAnchorStack.end(),
                                                             a.getID() );
-                        if( iter != m_rdfAnchorStack.end() )
+                        if( iter != m_rdfUnclosedAnchorStack.end() )
                         {
-                            m_rdfAnchorStack.erase( iter );
+                            m_rdfUnclosedAnchorStack.erase( iter );
+                            return m_delegate->populate( sfh, pcr );
+                        }
+                        break;
+                    }
+            }
+            
+            return true;
+        }
+        default:
+            return true;
+    }
+    return true;
+}
+
+bool PL_ListenerCoupleCloser::AfterContentListener::populate( PL_StruxFmtHandle sfh,
+                                                              const PX_ChangeRecord * pcr )
+{
+    return m_self->populateAfter( sfh, pcr );
+}
+
+bool
+PL_ListenerCoupleCloser::AfterContentListener::populateStrux( PL_StruxDocHandle sdh,
+                                                              const PX_ChangeRecord * pcr,
+                                                              PL_StruxFmtHandle * psfh )
+{
+    return m_self->populateStruxAfter( sdh, pcr, psfh );
+}
+
+bool PL_ListenerCoupleCloser::AfterContentListener::isFinished()
+{
+    return m_self->m_rdfUnclosedAnchorStack.empty();
+}
+
+/****************************************/
+/****************************************/
+/****************************************/
+
+bool
+PL_ListenerCoupleCloser::populateStruxBefore( PL_StruxDocHandle /*sdh*/,
+                                             const PX_ChangeRecord * pcr,
+                                             PL_StruxFmtHandle * /* psfh */ )
+{
+    PT_AttrPropIndex indexAP = pcr->getIndexAP();
+	UT_DEBUGMSG(("MIQ: PL_ListenerCoupleCloser::PopulateStruxBefore() indexAP %d pcr.type:%d \n",
+                 indexAP, pcr->getType() ));
+
+    
+    return true;
+}
+
+bool
+PL_ListenerCoupleCloser::populateBefore( PL_StruxFmtHandle sfh,
+                                        const PX_ChangeRecord * pcr )
+{
+    PT_AttrPropIndex indexAP = pcr->getIndexAP();
+	UT_DEBUGMSG(("MIQ: PL_ListenerCoupleCloser::PopulateBefore() indexAP %d pcr.type:%d \n",
+                 indexAP, pcr->getType() ));
+	switch (pcr->getType())
+	{
+        case PX_ChangeRecord::PXT_InsertSpan:
+        {
+            const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *>(pcr);
+            UT_uint32 len = pcrs->getLength();
+            return true;
+        }
+        case PX_ChangeRecord::PXT_InsertObject:
+        {
+            const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *>(pcr);
+			PT_AttrPropIndex api = pcr->getIndexAP();
+			switch (pcro->getObjectType())
+            {
+                case PTO_RDFAnchor:
+                    if( !m_rdfUnopenedAnchorStack.empty() )
+                    {
+                        const PP_AttrProp * pAP = NULL;
+                        getDocument()->getAttrProp(api,&pAP);
+                        RDFAnchor a(pAP);
+                        UT_DEBUGMSG(("MIQ: PL_ListenerCoupleCloser::PopulateBefore() rdfid:%s \n",
+                                     a.getID().c_str() ));
+                        stringlist_t::iterator iter = find( m_rdfUnopenedAnchorStack.begin(),
+                                                            m_rdfUnopenedAnchorStack.end(),
+                                                            a.getID() );
+                        if( iter != m_rdfUnopenedAnchorStack.end() )
+                        {
+                            m_rdfUnopenedAnchorStack.erase( iter );
                             return m_delegate->populate( sfh, pcr );
                         }
                         break;
@@ -146,33 +300,47 @@ PL_ListenerCoupleCloser::populateClose( PL_StruxFmtHandle sfh,
 }
 
 
-bool
-PL_ListenerCoupleCloser::populateStrux( PL_StruxDocHandle /*sdh*/,
-                                        const PX_ChangeRecord * pcr,
-                                        PL_StruxFmtHandle * /* psfh */ )
+bool PL_ListenerCoupleCloser::BeforeContentListener::populate( PL_StruxFmtHandle sfh,
+                                                              const PX_ChangeRecord * pcr )
 {
-    return true;
+    return m_self->populateBefore( sfh, pcr );
 }
 
 bool
-PL_ListenerCoupleCloser::populateStruxClose( PL_StruxDocHandle /*sdh*/,
-                                             const PX_ChangeRecord * pcr,
-                                             PL_StruxFmtHandle * /* psfh */ )
+PL_ListenerCoupleCloser::BeforeContentListener::populateStrux( PL_StruxDocHandle sdh,
+                                                              const PX_ChangeRecord * pcr,
+                                                              PL_StruxFmtHandle * psfh )
 {
-    return true;
+    return m_self->populateStruxBefore( sdh, pcr, psfh );
+}
+
+bool PL_ListenerCoupleCloser::BeforeContentListener::isFinished()
+{
+    return m_self->m_rdfUnopenedAnchorStack.empty();
 }
 
 
+/****************************************/
+/****************************************/
+/****************************************/
 
-void
-PL_ListenerCoupleCloser::setDelegate( PL_Listener* delegate )
+
+PL_FinishingListener*
+PL_ListenerCoupleCloser::getAfterContentListener()
 {
-    m_delegate = delegate;
+    return &m_AfterContentListener;
 }
 
-bool
-PL_ListenerCoupleCloser::isFinished()
+PL_FinishingListener*
+PL_ListenerCoupleCloser::getBeforeContentListener()
 {
-    return m_rdfAnchorStack.empty();
+    return &m_BeforeContentListener;
+}
+
+
+PL_FinishingListener*
+PL_ListenerCoupleCloser::getNullContentListener()
+{
+    return &m_NullContentListener;
 }
 
