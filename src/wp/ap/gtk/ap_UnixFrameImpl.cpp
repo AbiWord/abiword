@@ -463,6 +463,6 @@ UT_RGBColor AP_UnixFrameImpl::getColorSelForeground () const
 
 	GtkStyleContext *pCtxt = gtk_widget_get_style_context(m_dArea);
 	GdkRGBA rgba;
-	gtk_style_context_get_background_color(pCtxt, state, &rgba);
+	gtk_style_context_get_color(pCtxt, state, &rgba);
     return UT_RGBColor (rgba.red * 255, rgba.green * 255, rgba.blue * 255);
 }
