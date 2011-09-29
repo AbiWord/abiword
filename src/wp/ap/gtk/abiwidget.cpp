@@ -1441,13 +1441,13 @@ abi_widget_render_page_to_image(AbiWidget *abi, int iPage)
 	//
 	xxx_UT_DEBUGMSG(("rederpagetoimage Width %d Height %d zoom %d \n",iWidth,iHeight,iZoom));
 	cairo_surface_t *surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, iWidth, iHeight);
-#warning Reimplement
-#if 0
-	GdkPixmap*  pPixmap = gdk_pixmap_new(pVG->getWindow(),iWidth,iHeight,-1);
+	cairo_t *cr = cairo_create(surface);
 
-	GR_UnixPixmapAllocInfo ai(pPixmap);
+	GR_UnixCairoAllocInfo ai(NULL, false);
 
-	GR_UnixPangoPixmapGraphics * pG = (GR_UnixPangoPixmapGraphics*)GR_UnixPangoPixmapGraphics::graphicsAllocator(ai);
+	GR_CairoGraphics * pG = static_cast<GR_CairoGraphics*>(GR_UnixCairoGraphics::graphicsAllocator(ai));
+	pG->setCairo(cr);
+	pG->beginPaint(); // needed to avoid cairo reference loss
 	pG->setZoomPercentage(iZoom);
 	GR_Painter * pPaint = new GR_Painter(pG);
 	pPaint->clearArea(0,0,pView->getWindowWidth(),pView->getWindowHeight());
@@ -1467,20 +1467,12 @@ abi_widget_render_page_to_image(AbiWidget *abi, int iPage)
 	}
 	pView->getLayout()->setQuickPrint(pG);
 	pView->draw(iPage, &da);
-	UT_Rect r;
-	r.left = 0;
-	r.top = 0;
-	r.width = pG->tlu(iWidth);
-	r.height = pG->tlu(iHeight);
-	GR_Image * pImage = pPaint->genImageFromRectangle(r);
 	pView->getLayout()->setQuickPrint(NULL);
 	pView->getLayout()->incrementGraphicTick();
+	pG->endPaint();
+	cairo_destroy(cr);
 	DELETEP(pPaint);
 	DELETEP(pG);
-	GR_UnixImage * pUnixImage = static_cast<GR_UnixImage *>(pImage);
-	GdkPixbuf* pData =  gdk_pixbuf_copy(pUnixImage->getData());
-	DELETEP(pUnixImage);
-#endif
 	GdkPixbuf *pixbuf = gdk_pixbuf_get_from_surface(surface, 0, 0, iWidth, iHeight);
 	cairo_surface_destroy(surface);
 	return pixbuf;
@@ -2047,11 +2039,9 @@ abi_widget_size_allocate (GtkWidget     *widget,
 	gtk_widget_set_allocation(widget, allocation);
 
 	gint border_width = gtk_container_get_border_width(GTK_CONTAINER (widget));
-#warning "Reimplement if needed"
-#if 0
-	gint xthickness = GTK_WIDGET (widget)->style->xthickness;
-	gint ythickness = GTK_WIDGET (widget)->style->ythickness;
-#endif
+	GtkStyleContext *ctxt = gtk_widget_get_style_context(widget);
+	GtkBorder border;
+	gtk_style_context_get_padding(ctxt, gtk_widget_get_state_flags(widget), &border);
  	if (gtk_widget_get_realized(widget))
     {
 		// only allocate on realized widgets
@@ -2065,13 +2055,13 @@ abi_widget_size_allocate (GtkWidget     *widget,
 		
 		if (abi->child)
 		{
-		     child_allocation.x = 0;//xthickness;
-			 child_allocation.y = 0;//ythickness;
+		     child_allocation.x = border.left;
+			 child_allocation.y = border.top;
 
 			 child_allocation.width = MAX (1, 
-										   (gint)allocation->width - child_allocation.x * 2 - border_width * 2);
+										   (gint)allocation->width - border.left - border.right - border_width * 2);
 			 child_allocation.height = MAX (1, 
-											(gint)allocation->height - child_allocation.y * 2 - border_width * 2);
+											(gint)allocation->height - border.top - border.bottom - border_width * 2);
 			 gtk_widget_size_allocate (ABI_WIDGET (widget)->child, &child_allocation);
 		}
     }
@@ -2129,12 +2119,6 @@ abi_widget_realize (GtkWidget * widget)
 	                      gdk_window_new (gtk_widget_get_parent_window (widget),
 	                                      &attributes, attributes_mask));
 	gdk_window_set_user_data (gtk_widget_get_window(widget), abi);
-
-#warning "Reimplement if nedded"
-#if 0
-	widget->style = gtk_style_attach (widget->style, widget->window);
-	gtk_style_set_background (widget->style, widget->window, GTK_STATE_NORMAL);
-#endif
 
 	//
 	// connect a signal handler to load files after abiword is in a stable
