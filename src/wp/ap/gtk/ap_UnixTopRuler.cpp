@@ -38,11 +38,10 @@
 /*****************************************************************/
 
 static void
-ruler_style_changed (GtkWidget 			* /*w*/, 
-					 GtkStyle 			* /*previous_style*/,
+ruler_style_context_changed (GtkWidget 			* /*w*/, 
 					 AP_UnixTopRuler 	*ruler)
 {
-	ruler->_ruler_style_changed();
+	ruler->_ruler_style_context_changed();
 }
 
 AP_UnixTopRuler::AP_UnixTopRuler(XAP_Frame * pFrame)
@@ -55,8 +54,8 @@ AP_UnixTopRuler::AP_UnixTopRuler(XAP_Frame * pFrame)
 	// change ruler color on theme change
 	GtkWidget * toplevel = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl())->getTopLevelWindow();
 	m_iStyleID = g_signal_connect_after (G_OBJECT(toplevel),
-							  "style-set",
-							  G_CALLBACK(ruler_style_changed),
+							  "style-updated",
+							  G_CALLBACK(ruler_style_context_changed),
 							  static_cast<gpointer>(this));
 }
 
@@ -69,7 +68,7 @@ AP_UnixTopRuler::~AP_UnixTopRuler(void)
 	DELETEP(m_pG);
 }
 
-void AP_UnixTopRuler::_ruler_style_changed (void)
+void AP_UnixTopRuler::_ruler_style_context_changed (void)
 {
 	_refreshView();
 }

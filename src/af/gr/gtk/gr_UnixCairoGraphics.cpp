@@ -163,8 +163,12 @@ GR_Font * GR_UnixCairoGraphics::getGUIFont(void)
 	if (!m_pPFontGUI)
 	{
 		// get the font resource
-		GtkStyle *tempStyle = gtk_style_new();
-		const char *guiFontName = pango_font_description_get_family(tempStyle->font_desc);
+		GtkStyleContext *tempCtxt = gtk_style_context_new();
+		GtkWidgetPath *path = gtk_widget_path_new();
+		gtk_widget_path_append_type (path, GTK_TYPE_WINDOW);
+		gtk_style_context_set_path(tempCtxt, path);
+		gtk_widget_path_free(path);
+		const char *guiFontName = pango_font_description_get_family(gtk_style_context_get_font(tempCtxt, GTK_STATE_FLAG_NORMAL));
 		if (!guiFontName)
 			guiFontName = "'Times New Roman'";
 
@@ -181,7 +185,7 @@ GR_Font * GR_UnixCairoGraphics::getGUIFont(void)
 		
 		m_pPFontGUI = new GR_PangoFont(guiFontName, 11.0, this, s.utf8_str(), true);
 
-		g_object_unref(G_OBJECT(tempStyle));
+		g_object_unref(G_OBJECT(tempCtxt));
 		
 		UT_ASSERT(m_pPFontGUI);
 	}

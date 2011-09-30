@@ -49,7 +49,7 @@ public:
 	GtkWidget * 		getWidget(void) { return m_wTopRuler; };
 	GdkWindow * 	getRootWindow(void);
 
-	void _ruler_style_changed (void);
+	void _ruler_style_context_changed (void);
 	
 protected:
 	GtkWidget *			m_wTopRuler;

@@ -36,11 +36,10 @@
 /*****************************************************************/
 
 static void
-ruler_style_changed (GtkWidget 			* /*w*/, 
-					 GtkStyle 			* /*previous_style*/,
+ruler_style_context_changed (GtkWidget 			* /*w*/, 
 					 AP_UnixLeftRuler 	*ruler)
 {
-	ruler->_ruler_style_changed();
+	ruler->_ruler_style_context_changed();
 }
 
 AP_UnixLeftRuler::AP_UnixLeftRuler(XAP_Frame * pFrame)
@@ -53,8 +52,8 @@ AP_UnixLeftRuler::AP_UnixLeftRuler(XAP_Frame * pFrame)
     // change ruler color on theme change
 	GtkWidget * toplevel = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl())->getTopLevelWindow();
 	m_iBackgroundRedrawID = g_signal_connect_after (G_OBJECT(toplevel),
-							  "style-set",
-							  G_CALLBACK(ruler_style_changed),
+							  "style-updated",
+							  G_CALLBACK(ruler_style_context_changed),
 							  static_cast<gpointer>(this));
 }
 
@@ -67,7 +66,7 @@ AP_UnixLeftRuler::~AP_UnixLeftRuler(void)
 	DELETEP(m_pG);
 }
 
-void AP_UnixLeftRuler::_ruler_style_changed (void)
+void AP_UnixLeftRuler::_ruler_style_context_changed (void)
 {
 	_refreshView();
 }
