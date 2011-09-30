@@ -96,17 +96,22 @@ abi_cell_renderer_font_render (GtkCellRenderer      *cell,
 		if (!gtk_widget_is_ancestor (widget, self->parent_widget)) {
 
 			if (!self->is_popped_up) {
-				//gint x, y;
+				gint x, y;
+				GtkAllocation allocation;
+				cairo_rectangle_int_t area;
 
 				/* open_popup (self->parent_widget); */
 				self->is_popped_up = TRUE;
 
-				//gdk_widget_get_origin(widget->window, &x, &y);
-				//background_area->x += x + widget->allocation.width;
-				//background_area->y += y;
+				gdk_window_get_origin(gtk_widget_get_window(widget), &x, &y);
+				gtk_widget_get_allocation(widget, &allocation);
+				area.x = background_area->x + x + allocation.width;
+				area.y = background_area->y + y;
+				area.width = background_area->width;
+				area.height = background_area->height;
 				g_signal_emit (G_OBJECT (cell), 
 					       cell_renderer_font_signals[RENDERER_POPUP_OPENED],
-					       0, background_area);
+					       0, &area);
 			}
 
 			g_object_get (G_OBJECT (cell), 
