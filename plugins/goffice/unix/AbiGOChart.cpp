@@ -129,7 +129,7 @@ cb_graph_dim_editor_update (GtkEntry *gee,
 	/* Ignore changes while we are insensitive. useful for displaying
 	 * values, without storing then as Data.  Also ignore updates if the
 	 * dataset has been cleared via the weakref handler  */
-	if (!GTK_WIDGET_SENSITIVE (gee) || editor->dataset == NULL)
+	if (!gtk_widget_get_sensitive (GTK_WIDGET(gee)) || editor->dataset == NULL)
 		return;
 
 	GOData *data = NULL;
