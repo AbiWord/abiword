@@ -216,7 +216,7 @@ GtkWidget*  AP_UnixDialog_InsertHyperlink::_constructWindow(void)
   gtk_container_set_border_width (GTK_CONTAINER (frame1), 4);
   gtk_frame_set_shadow_type(GTK_FRAME(frame1), GTK_SHADOW_NONE);
 
-  vbox2 = gtk_vbox_new (FALSE, 6);
+  vbox2 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
   gtk_widget_show (vbox2);
   gtk_container_add (GTK_CONTAINER (frame1), vbox2);
   gtk_container_set_border_width (GTK_CONTAINER (vbox2), 5);

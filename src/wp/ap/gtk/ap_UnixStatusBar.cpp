@@ -129,7 +129,7 @@ GtkWidget * AP_UnixStatusBar::createWidget(void)
 	UT_ASSERT(!m_wStatusBar);
 	
 	// probably should make this into an event box (if we want the user to be able to interact with the status bar)
-	m_wStatusBar = gtk_hbox_new(FALSE, 0);
+	m_wStatusBar = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
 
 	gtk_widget_show(m_wStatusBar);
 

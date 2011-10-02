@@ -228,7 +228,7 @@ AP_UnixDialog_InsertXMLID::_constructWindow(void)
     m_window = abiDialogNew("insert RDF link dialog", TRUE, s.utf8_str());
 
   
-    vbox = gtk_vbox_new (FALSE, 6);
+    vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
     gtk_widget_show (vbox);
     gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area(GTK_DIALOG (m_window))), vbox);
     gtk_container_set_border_width (GTK_CONTAINER (vbox), 5);

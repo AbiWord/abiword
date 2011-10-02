@@ -74,7 +74,8 @@
           </packing>
         </child>
         <child>
-          <object class="GtkVBox" id="vbxContent">
+          <object class="GtkBox" id="vbxContent">
+            <property name="orientation">vertical</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="border_width">5</property>
@@ -169,7 +170,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkHBox" id="hbxFootnoteSpin">
+                      <object class="GtkBox" id="hbxFootnoteSpin">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="spacing">2</property>
@@ -346,7 +347,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkHBox" id="hbxEndnoteSpin">
+                      <object class="GtkBox" id="hbxEndnoteSpin">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="spacing">2</property>

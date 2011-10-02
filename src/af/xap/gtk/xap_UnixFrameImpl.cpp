@@ -1205,10 +1205,12 @@ gint XAP_UnixFrameImpl::_fe::draw(GtkWidget * w, cairo_t * cr)
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
 	FV_View * pView = static_cast<FV_View *>(pUnixFrameImpl->getFrame()->getCurrentView());
 	GdkEventExpose *pExposeEvent = reinterpret_cast<GdkEventExpose *>(gtk_get_current_event());
-	if((pUnixFrameImpl->m_bDoZoomUpdate) || (pUnixFrameImpl->m_iZoomUpdateID != 0))
-	{
-		return TRUE;
-	}
+/* Jean: commenting out next lines since the zoom update code does draw only
+ * part of what needs to be updated. */
+//	if((pUnixFrameImpl->m_bDoZoomUpdate) || (pUnixFrameImpl->m_iZoomUpdateID != 0))
+//	{
+//		return TRUE;
+//	}
 	if(pView)
 	{
 		GR_Graphics * pGr = pView->getGraphics ();
@@ -1566,7 +1568,7 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 
 	// create a VBox inside it.
 
-	m_wVBox = gtk_vbox_new(FALSE,0);
+	m_wVBox = gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
 	g_object_set_data(G_OBJECT(m_wTopLevelWindow), "vbox", m_wVBox);
 	g_object_set_data(G_OBJECT(m_wVBox),"user_data", this);
 	gtk_container_add(GTK_CONTAINER(m_wTopLevelWindow), m_wVBox);

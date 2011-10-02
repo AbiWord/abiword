@@ -760,7 +760,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	dialog_vbox1 = container;
 	gtk_widget_show (dialog_vbox1);
 
-	OverallVbox = gtk_vbox_new (FALSE, 0);
+	OverallVbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_widget_show (OverallVbox);
 	gtk_box_pack_start (GTK_BOX (dialog_vbox1), OverallVbox, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (OverallVbox), 5);
@@ -891,7 +891,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 //
 // Code to choose properties to be removed from the current style.
 //
-	GtkWidget * deleteRow = gtk_hbox_new(FALSE,2);
+	GtkWidget * deleteRow = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,2);
 	gtk_widget_show (deleteRow);
 	gtk_box_pack_start (GTK_BOX (OverallVbox), deleteRow, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (deleteRow), 2);
@@ -916,7 +916,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	gtk_box_pack_start (GTK_BOX (deleteRow), deletePropButton, TRUE, TRUE, 0);
 		
 
-	checkBoxRow = gtk_hbox_new (FALSE, 3);
+	checkBoxRow = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 3);
 	gtk_box_pack_start (GTK_BOX (OverallVbox), checkBoxRow, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (checkBoxRow), 2);
 

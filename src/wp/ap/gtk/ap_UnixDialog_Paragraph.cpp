@@ -398,7 +398,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 
 	gchar * unixstr = NULL;
 
-	vboxContents = gtk_vbox_new (FALSE, 0);
+	vboxContents = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_widget_show (vboxContents);
 
 	tabMain = gtk_notebook_new ();
@@ -437,7 +437,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_label_set_justify (GTK_LABEL (labelAlignment), GTK_JUSTIFY_RIGHT);
 	gtk_misc_set_alignment (GTK_MISC (labelAlignment), 1, 0.5);
 
-	hboxAlignment = gtk_hbox_new (FALSE, 5);
+	hboxAlignment = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
 	gtk_widget_show (hboxAlignment);
 	listAlignment = GTK_COMBO_BOX(gtk_combo_box_new ());
 	XAP_makeGtkComboBoxText(listAlignment, G_TYPE_INT);
@@ -470,7 +470,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0 );
 
-	hboxIndentation = gtk_hbox_new (FALSE, 5);
+	hboxIndentation = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
 	gtk_widget_show (hboxIndentation);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelIndentation,s);
@@ -482,7 +482,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_label_set_justify (GTK_LABEL (labelIndentation), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_alignment (GTK_MISC (labelIndentation), 0, 0.5);
 
-	hseparator3 = gtk_hseparator_new ();
+	hseparator3 = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
 	gtk_widget_show (hseparator3);
 	gtk_box_pack_start (GTK_BOX (hboxIndentation), hseparator3, TRUE, TRUE, 0);
 	gtk_table_attach ( GTK_TABLE(boxSpacing), hboxIndentation, 0,4, 1,2,
@@ -605,7 +605,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
 
 
-	hboxSpacing = gtk_hbox_new (FALSE, 5);
+	hboxSpacing = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
 	gtk_widget_show (hboxSpacing);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelSpacing,s);
@@ -616,7 +616,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_label_set_justify (GTK_LABEL (labelSpacing), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_alignment (GTK_MISC (labelSpacing), 0, 0.5);
 
-	hseparator1 = gtk_hseparator_new ();
+	hseparator1 = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
 	gtk_box_pack_start (GTK_BOX (hboxSpacing), hseparator1, TRUE, TRUE, 0);
 	gtk_table_attach ( GTK_TABLE(boxSpacing), hboxSpacing, 0,4, 4,5,
                     (GtkAttachOptions) (GTK_FILL|GTK_EXPAND),
@@ -740,7 +740,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 
 
 	// Pagination headline
-	hboxPagination = gtk_hbox_new (FALSE, 5);
+	hboxPagination = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
 	gtk_widget_show (hboxPagination);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelPagination,s);
@@ -750,7 +750,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_widget_show (labelPagination);
 	gtk_box_pack_start (GTK_BOX (hboxPagination), labelPagination, FALSE, FALSE, 0);
 
-	hseparator5 = gtk_hseparator_new ();
+	hseparator5 = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
 	gtk_widget_show (hseparator5);
 	gtk_box_pack_start (GTK_BOX (hboxPagination), hseparator5, TRUE, TRUE, 0);
 
@@ -801,7 +801,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
                     (GtkAttachOptions) (GTK_FILL), 0, 0 );
 
 
-	hseparator6 = gtk_hseparator_new ();
+	hseparator6 = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
 	gtk_widget_show (hseparator6);
 	gtk_table_attach ( GTK_TABLE(boxBreaks), hseparator6, 0,2, 3,4,
                     (GtkAttachOptions) (GTK_FILL),
@@ -837,7 +837,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 
 	GtkWidget * hseparator4;
 
-	hboxPreview = gtk_hbox_new (FALSE, 5);
+	hboxPreview = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
 	gtk_widget_show (hboxPreview);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelPreview,s);
@@ -849,13 +849,13 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_label_set_justify (GTK_LABEL (labelPreview), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_alignment (GTK_MISC (labelPreview), 0, 0.5);
 
-	hseparator4 = gtk_hseparator_new ();
+	hseparator4 = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
 	gtk_widget_show (hseparator4);
 	gtk_box_pack_start (GTK_BOX (hboxPreview), hseparator4, TRUE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (vboxContents), hboxPreview, TRUE, TRUE, 0);
 
 
-	hboxPreviewFrame = gtk_hbox_new (FALSE, 5);
+	hboxPreviewFrame = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
 	gtk_widget_show (hboxPreviewFrame);
 
 	framePreview = gtk_frame_new (NULL);

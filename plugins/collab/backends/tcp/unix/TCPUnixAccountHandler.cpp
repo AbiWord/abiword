@@ -48,7 +48,7 @@ void TCPUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	UT_DEBUGMSG(("TCPUnixAccountHandler::embedDialogWidgets()\n"));
 	UT_return_if_fail(pEmbeddingParent);
 
-	vbox = gtk_vbox_new(FALSE, 5);
+	vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
 	GtkVBox* parent = (GtkVBox*)pEmbeddingParent;
 	
 	// host a session (we should really use a GtkAction for this)
@@ -79,7 +79,7 @@ void TCPUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	gtk_box_pack_start(GTK_BOX(vbox), table, TRUE, TRUE, 0);
 	
 	// port
-	GtkWidget* portHBox = gtk_hbox_new(FALSE, 6);
+	GtkWidget* portHBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
 	GtkWidget* port_label = gtk_label_new("Port:");
 	gtk_misc_set_alignment(GTK_MISC(port_label), 0, 0.5);
 	gtk_box_pack_start(GTK_BOX(portHBox), port_label, false, false, 0);	

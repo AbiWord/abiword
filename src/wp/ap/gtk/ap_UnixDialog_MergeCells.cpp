@@ -192,7 +192,7 @@ GtkWidget * AP_UnixDialog_MergeCells::_constructWindowContents(void)
 {
 	GtkWidget *wContents;
 
-	wContents = gtk_vbox_new (FALSE, 0);
+	wContents = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
     gtk_widget_show (wContents);
 	GtkWidget *frame1;
 	GtkWidget *table1;

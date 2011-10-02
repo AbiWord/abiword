@@ -66,7 +66,8 @@
           </packing>
         </child>
         <child>
-          <object class="GtkVBox" id="vbContent">
+          <object class="GtkBox" id="vbContent">
+            <property name="orientation">vertical</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="border_width">5</property>
@@ -314,7 +315,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkHBox" id="hbRestartNumbering">
+                  <object class="GtkBox" id="hbRestartNumbering">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="spacing">12</property>

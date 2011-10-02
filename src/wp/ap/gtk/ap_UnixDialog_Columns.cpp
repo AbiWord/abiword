@@ -492,7 +492,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_table_attach (GTK_TABLE (tableTop), wColumnFrame, 0, 1, 0, 1,
 				  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
 
-	hboxColumns = gtk_hbox_new (FALSE, 0);
+	hboxColumns = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
 	gtk_widget_show(hboxColumns);
 	gtk_container_set_border_width(GTK_CONTAINER (hboxColumns), 6);
 	gtk_container_add (GTK_CONTAINER (wColumnFrame), hboxColumns);
@@ -609,7 +609,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 // Spin Button for Columns
 /////////////////////////////////////////////////////////
 
-	hseparator = gtk_hseparator_new ();
+	hseparator = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
 	gtk_widget_show(hseparator);
 	gtk_table_attach (GTK_TABLE (table), hseparator, 0, 3, 2, 3,
 				  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 6);

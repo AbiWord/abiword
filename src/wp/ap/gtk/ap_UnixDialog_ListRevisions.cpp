@@ -160,7 +160,7 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * vbDialog
   GtkWidget *swExistingRevisions;
   GtkWidget *clExistingRevisions;
 
-  vbContent = gtk_vbox_new (FALSE, 6);
+  vbContent = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
   gtk_widget_show (vbContent);
   gtk_container_add (GTK_CONTAINER (vbDialog), vbContent);
   gtk_container_set_border_width (GTK_CONTAINER (vbContent), 5);

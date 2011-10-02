@@ -139,7 +139,7 @@ void AP_UnixDialog_Background::_constructWindowContents (GtkWidget * parent)
 {
 	GtkWidget *colorsel;
 
-	GtkWidget * vbox = gtk_vbox_new (false, 6);
+	GtkWidget * vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
 	gtk_widget_show (vbox);
 	gtk_container_set_border_width (GTK_CONTAINER (vbox), 5);
 	gtk_container_add (GTK_CONTAINER(parent), vbox);

@@ -56,7 +56,8 @@
           </packing>
         </child>
         <child>
-          <object class="GtkVBox" id="vbox23">
+          <object class="GtkBox" id="vbox23">
+            <property name="orientation">vertical</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="border_width">5</property>
@@ -141,7 +142,8 @@
               </packing>
             </child>
             <child>
-              <object class="GtkVBox" id="vbox25">
+              <object class="GtkBox" id="vbox25">
+                <property name="orientation">vertical</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="spacing">2</property>
@@ -179,7 +181,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkHButtonBox" id="hbuttonbox4">
+              <object class="GtkButtonBox" id="hbuttonbox4">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="spacing">12</property>
@@ -341,14 +343,16 @@
           </packing>
         </child>
         <child>
-          <object class="GtkVBox" id="vbox1">
+          <object class="GtkBox" id="vbox1">
+            <property name="orientation">vertical</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
               <placeholder/>
             </child>
             <child>
-              <object class="GtkVPaned" id="vpaned1">
+              <object class="GtkPaned" id="vpaned1">
+                <property name="orientation">vertical</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <child>
@@ -401,7 +405,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkHBox" id="hbox1">
+              <object class="GtkBox" id="hbox1">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>

@@ -587,7 +587,7 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	// and OK -Selected Symbol- Cancel
 	tmp = gtk_dialog_get_content_area(GTK_DIALOG(m_windowMain));
 
-	GtkWidget * hbox = gtk_hbox_new (FALSE, 4);
+	GtkWidget * hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 4);
 	gtk_widget_show (hbox);
 	gtk_box_pack_start(GTK_BOX(tmp), hbox, FALSE, FALSE, 0);
 
@@ -600,7 +600,7 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	// Now the Symbol Map. 
 	// TODO: 32 * x (19) = 608, 7 * y (21) = 147  FIXME!
 	//
-	GtkWidget * hbox1 = gtk_hbox_new (FALSE, 4);
+	GtkWidget * hbox1 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 4);
 	gtk_widget_show (hbox1);
 	gtk_box_pack_start(GTK_BOX(tmp), hbox1, TRUE, TRUE, 0);
 
@@ -610,7 +610,7 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	gtk_box_pack_start (GTK_BOX (hbox1), m_SymbolMap, TRUE, TRUE, 0);
 
 	m_vadjust = GTK_ADJUSTMENT (gtk_adjustment_new (0, 0, 7, 0, 0, 7));
-	GtkWidget *vscroll = gtk_vscrollbar_new (m_vadjust);
+	GtkWidget *vscroll = gtk_scrollbar_new (GTK_ORIENTATION_VERTICAL, m_vadjust);
 	gtk_widget_show (vscroll);
 	gtk_box_pack_start (GTK_BOX (hbox1), vscroll, FALSE, FALSE, 0);
 

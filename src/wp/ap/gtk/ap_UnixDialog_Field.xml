@@ -61,7 +61,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkHBox" id="hbxContent">
+          <object class="GtkBox" id="hbxContent">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="border_width">5</property>
@@ -134,7 +134,8 @@
               </packing>
             </child>
             <child>
-              <object class="GtkVBox" id="vbxContent_Right">
+              <object class="GtkBox" id="vbxContent_Right">
+                <property name="orientation">vertical</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="spacing">18</property>

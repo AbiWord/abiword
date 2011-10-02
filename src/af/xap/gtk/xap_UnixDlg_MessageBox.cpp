@@ -151,7 +151,7 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 			
 			gtk_label_set_markup(GTK_LABEL(label), labelText.c_str());
 
-            GtkWidget * hbox = gtk_hbox_new(FALSE, 12);
+            GtkWidget * hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
   
 			gtk_box_pack_start (GTK_BOX (hbox), 
 					    gtk_image_new_from_stock(GTK_STOCK_DIALOG_WARNING, 

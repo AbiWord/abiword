@@ -48,7 +48,7 @@ private:
 	GtkWidget*					m_wWindowMain;
 	GtkWidget*					m_wAccountType;
 	GtkTreeModel*				m_model;
-	GtkVBox*					m_wEmbeddingParent;
+	GtkBox*					m_wEmbeddingParent;
 	GtkWidget*					m_wOk;
 };
 

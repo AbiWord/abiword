@@ -691,7 +691,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	UT_UTF8String s;
 	GtkWidget * wNoteBook = NULL;
 
-	vbox2 = gtk_vbox_new (FALSE, 0);
+	vbox2 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_widget_show (vbox2);
 	if(!isModal())
 	{
@@ -812,11 +812,11 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 // List Page
 	gtk_container_set_border_width (GTK_CONTAINER (vbox2), 8);
 
-	hbox2 = gtk_hbox_new (FALSE, 8);
+	hbox2 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 8);
 	gtk_widget_show (hbox2);
 	gtk_box_pack_start (GTK_BOX (vbox2), hbox2, TRUE, TRUE, 0);
 
-	vbox4 = gtk_vbox_new (FALSE, 4);
+	vbox4 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 4);
 	gtk_widget_show (vbox4);
 	gtk_box_pack_start (GTK_BOX (hbox2), vbox4, FALSE, TRUE, 0);
 
@@ -993,7 +993,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment (GTK_MISC (label_align_lb), 0.0, 0.5);
 
-	vbox3 = gtk_vbox_new (FALSE, 0);
+	vbox3 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_widget_show (vbox3);
 	gtk_box_pack_start (GTK_BOX (hbox2), vbox3, TRUE, TRUE, 0);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Preview,s);
@@ -1013,7 +1013,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	gtk_widget_show (preview_area);
 	gtk_container_add (GTK_CONTAINER (preview_frame), preview_area);
 
-	hbox1 = gtk_hbox_new (FALSE, 0);
+	hbox1 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
 	if(!isModal())
 		gtk_widget_show (hbox1);
 	gtk_box_pack_start (GTK_BOX (vbox2), hbox1, FALSE, FALSE, 0);

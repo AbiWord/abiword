@@ -34,7 +34,7 @@
                     <property name="xscale">0</property>
                     <property name="yscale">0</property>
                     <child>
-                      <object class="GtkHBox" id="hbOpenFile">
+                      <object class="GtkBox" id="hbOpenFile">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="spacing">2</property>
@@ -116,7 +116,8 @@
           </packing>
         </child>
         <child>
-          <object class="GtkVBox" id="vbContent">
+          <object class="GtkBox" id="vbContent">
+            <property name="orientation">vertical</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="border_width">5</property>

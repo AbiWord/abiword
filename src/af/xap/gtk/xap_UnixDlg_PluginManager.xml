@@ -44,7 +44,8 @@
           </packing>
         </child>
         <child>
-          <object class="GtkVBox" id="vbContent">
+          <object class="GtkBox" id="vbContent">
+            <property name="orientation">vertical</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="border_width">5</property>
@@ -84,7 +85,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkHBox" id="hbPluginsContent">
+                  <object class="GtkBox" id="hbPluginsContent">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="spacing">6</property>
@@ -113,7 +114,8 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkVButtonBox" id="bbPlugins">
+                      <object class="GtkButtonBox" id="bbPlugins">
+                        <property name="orientation">vertical</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="spacing">6</property>

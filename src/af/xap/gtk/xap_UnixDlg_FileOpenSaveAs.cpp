@@ -626,7 +626,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		gtk_widget_set_size_request (preview, PREVIEW_WIDTH, PREVIEW_HEIGHT);
 		
 		// place the preview area inside a container to get a nice border
-		GtkWidget * preview_hbox = gtk_hbox_new(FALSE, 0);
+		GtkWidget * preview_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
 		gtk_container_set_border_width  (GTK_CONTAINER(preview_hbox), 4);
 		gtk_box_pack_start(GTK_BOX(preview_hbox), preview, TRUE, TRUE, 0);
 		
@@ -648,7 +648,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	GtkWidget * pulldown_hbox = filetypes_pulldown;
 #else
 	// hbox for our pulldown menu (GTK does its pulldown this way */
-	GtkWidget * pulldown_hbox = gtk_hbox_new(FALSE, 15);
+	GtkWidget * pulldown_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 15);
 	gtk_widget_show(pulldown_hbox);
 
 	// pulldown label

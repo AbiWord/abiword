@@ -600,10 +600,10 @@ abi_table_init (AbiTable* table)
 
 	register_stock_icon();
 	
-	table->button_box = gtk_vbox_new(FALSE, 0);
+	table->button_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
 	table->window = GTK_WINDOW(gtk_window_new(GTK_WINDOW_POPUP));
-	table->window_vbox = GTK_VBOX(gtk_vbox_new(FALSE, 0));
+	table->window_vbox = GTK_BOX(gtk_box_new(GTK_ORIENTATION_VERTICAL, 0));
 
 	table->area = GTK_DRAWING_AREA(gtk_drawing_area_new());
 
