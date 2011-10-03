@@ -540,7 +540,9 @@ bool pt_PieceTable::tellListenerSubset( PL_Listener * pListener,
         }
     }
 
-    
+
+    // MIQ:2011, old code...
+    // move to using the above walker to allow mulitpass processing....
 #if 0    
     
 	PL_StruxFmtHandle sfh = 0;

@@ -127,7 +127,15 @@ class ABI_EXPORT PL_ListenerCoupleCloser : public PL_Listener
     typedef std::list< std::string > stringlist_t;
     stringlist_t m_rdfUnclosedAnchorStack;
     stringlist_t m_rdfUnopenedAnchorStack;
+    stringlist_t m_bookmarkUnclosedStack;
+    stringlist_t m_bookmarkUnopenedStack;
 
+    bool shouldClose( const std::string& id, bool isEnd, stringlist_t& sl );
+    bool shouldOpen( const std::string& id,  bool isEnd, stringlist_t& sl );
+    bool trackOpenClose( const std::string& id, bool isEnd,
+                         stringlist_t& unclosed, stringlist_t& unopened );
+    
+    
     struct AfterContentListener : public PL_FinishingListener
     {
         PL_ListenerCoupleCloser* m_self;

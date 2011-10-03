@@ -1759,6 +1759,16 @@ RDFAnchor::setup( const PP_AttrProp* pAP )
     }
 }
 
+RDFAnchor::RDFAnchor( PD_Document* pDoc, PT_AttrPropIndex api )
+    :
+    m_isEnd( false )
+{
+    const PP_AttrProp * pAP = NULL;
+    pDoc->getAttrProp( api, &pAP );
+    setup( pAP );    
+}
+
+
 RDFAnchor::RDFAnchor( PD_Document* doc, pf_Frag* pf )
     :
     m_isEnd( false )

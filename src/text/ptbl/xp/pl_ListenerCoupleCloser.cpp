@@ -32,6 +32,68 @@
 #include <pd_DocumentRDF.h>
 
 
+class PD_Bookmark
+{
+    const PP_AttrProp* m_pAP;
+    bool m_isEnd;
+    std::string m_id;
+public:
+    PD_Bookmark( PD_Document* pDoc, PT_AttrPropIndex api );
+    bool isEnd();
+    std::string getID();
+};
+
+PD_Bookmark::PD_Bookmark( PD_Document* pDoc, PT_AttrPropIndex api )
+    : m_pAP( 0 )
+    , m_isEnd( true )
+{
+    pDoc->getAttrProp(api,&m_pAP);
+    
+    const gchar* pValue = NULL;
+    if(m_pAP
+       && m_pAP->getAttribute("type",pValue)
+       && pValue
+       && (strcmp(pValue, "start") == 0))
+    {
+        m_isEnd = false;
+    }
+
+    if(m_pAP->getAttribute("name",pValue) && pValue)
+    {
+        m_id = pValue;
+    }
+}
+
+bool PD_Bookmark::isEnd()
+{
+    return m_isEnd;
+}
+
+std::string PD_Bookmark::getID()
+{
+    return m_id;
+}
+
+bool
+PL_ListenerCoupleCloser::shouldClose( const std::string& id,
+                                      bool isEnd,
+                                      stringlist_t& sl )
+{
+    stringlist_t::iterator iter = find( sl.begin(), sl.end(), id );
+    if( iter != sl.end() )
+    {
+        sl.erase( iter );
+        return true;
+    }
+    return false;
+}
+
+/********************************************************************************/
+/********************************************************************************/
+/********************************************************************************/
+/********************************************************************************/
+/********************************************************************************/
+
 
 PL_ListenerCoupleCloser::PL_ListenerCoupleCloser()
     : m_pDocument(0)
@@ -70,6 +132,8 @@ PL_ListenerCoupleCloser::reset()
 {
     m_rdfUnclosedAnchorStack.clear();
     m_rdfUnopenedAnchorStack.clear();
+    m_bookmarkUnclosedStack.clear();
+    m_bookmarkUnopenedStack.clear();
 }
 
 
@@ -85,6 +149,34 @@ PL_ListenerCoupleCloser::populateStrux( PL_StruxDocHandle /*sdh*/,
 {
     return true;
 }
+
+bool
+PL_ListenerCoupleCloser::trackOpenClose( const std::string& id,
+                                         bool isEnd,
+                                         stringlist_t& unclosed,
+                                         stringlist_t& unopened )
+{
+    if( isEnd )
+    {
+        stringlist_t::iterator iter = find( unclosed.begin(),
+                                            unclosed.end(),
+                                            id );
+        if( iter == unclosed.end() )
+        {
+            // closing an object which was not opened in range.
+            unopened.push_back( id );
+        }
+        else
+        {
+            unclosed.erase( iter );
+        }
+    }
+    else
+    {
+        unclosed.push_back( id );
+    }
+}
+
 
 bool
 PL_ListenerCoupleCloser::populate(PL_StruxFmtHandle /* sfh */,
@@ -107,32 +199,43 @@ PL_ListenerCoupleCloser::populate(PL_StruxFmtHandle /* sfh */,
 			PT_AttrPropIndex api = pcr->getIndexAP();
 			switch (pcro->getObjectType())
             {
+                case PTO_Bookmark:
+                {
+                    PD_Bookmark a( getDocument(), api );
+                    trackOpenClose( a.getID(), a.isEnd(),
+                                    m_bookmarkUnclosedStack,
+                                    m_bookmarkUnopenedStack );
+                    break;
+                }
+                
                 case PTO_RDFAnchor:
                 {
-                    const PP_AttrProp * pAP = NULL;
-                    getDocument()->getAttrProp(api,&pAP);
-                    RDFAnchor a(pAP);
-                    std::string xmlid = a.getID();
+                    RDFAnchor a( getDocument(), api );
+                    trackOpenClose( a.getID(), a.isEnd(),
+                                    m_rdfUnclosedAnchorStack,
+                                    m_rdfUnopenedAnchorStack );
                     
-                    if( a.isEnd() )
-                    {
-                        stringlist_t::iterator iter = find( m_rdfUnclosedAnchorStack.begin(),
-                                                            m_rdfUnclosedAnchorStack.end(),
-                                                            xmlid );
-                        if( iter == m_rdfUnclosedAnchorStack.end() )
-                        {
-                            // closing an rdf anchor which was not opened in range.
-                            m_rdfUnopenedAnchorStack.push_back( xmlid );
-                        }
-                        else
-                        {
-                            m_rdfUnclosedAnchorStack.erase( iter );
-                        }
-                    }
-                    else
-                    {
-                        m_rdfUnclosedAnchorStack.push_back( xmlid );
-                    }
+                    // std::string xmlid = a.getID();
+                    
+                    // if( a.isEnd() )
+                    // {
+                    //     stringlist_t::iterator iter = find( m_rdfUnclosedAnchorStack.begin(),
+                    //                                         m_rdfUnclosedAnchorStack.end(),
+                    //                                         xmlid );
+                    //     if( iter == m_rdfUnclosedAnchorStack.end() )
+                    //     {
+                    //         // closing an rdf anchor which was not opened in range.
+                    //         m_rdfUnopenedAnchorStack.push_back( xmlid );
+                    //     }
+                    //     else
+                    //     {
+                    //         m_rdfUnclosedAnchorStack.erase( iter );
+                    //     }
+                    // }
+                    // else
+                    // {
+                    //     m_rdfUnclosedAnchorStack.push_back( xmlid );
+                    // }
                     
                     break;
                 }
@@ -165,6 +268,9 @@ PL_ListenerCoupleCloser::populateStruxAfter( PL_StruxDocHandle /*sdh*/,
     return true;
 }
 
+
+
+
 bool
 PL_ListenerCoupleCloser::populateAfter( PL_StruxFmtHandle sfh,
                                         const PX_ChangeRecord * pcr )
@@ -186,20 +292,24 @@ PL_ListenerCoupleCloser::populateAfter( PL_StruxFmtHandle sfh,
 			PT_AttrPropIndex api = pcr->getIndexAP();
 			switch (pcro->getObjectType())
             {
+                case PTO_Bookmark:
+                    if( !m_bookmarkUnclosedStack.empty() )
+                    {
+                        PD_Bookmark a( getDocument(), api );
+                        if( shouldClose( a.getID(), a.isEnd(), m_bookmarkUnclosedStack ) )
+                        {
+                            return m_delegate->populate( sfh, pcr );
+                        }
+                        break;
+                    }
                 case PTO_RDFAnchor:
                     if( !m_rdfUnclosedAnchorStack.empty() )
                     {
-                        const PP_AttrProp * pAP = NULL;
-                        getDocument()->getAttrProp(api,&pAP);
-                        RDFAnchor a(pAP);
+                        RDFAnchor a( getDocument(), api );
                         UT_DEBUGMSG(("MIQ: PL_ListenerCoupleCloser::PopulateAfter() rdfid:%s \n",
                                      a.getID().c_str() ));
-                        stringlist_t::iterator iter = find( m_rdfUnclosedAnchorStack.begin(),
-                                                            m_rdfUnclosedAnchorStack.end(),
-                                                            a.getID() );
-                        if( iter != m_rdfUnclosedAnchorStack.end() )
+                        if( shouldClose( a.getID(), a.isEnd(), m_rdfUnclosedAnchorStack ) )
                         {
-                            m_rdfUnclosedAnchorStack.erase( iter );
                             return m_delegate->populate( sfh, pcr );
                         }
                         break;
@@ -230,7 +340,8 @@ PL_ListenerCoupleCloser::AfterContentListener::populateStrux( PL_StruxDocHandle 
 
 bool PL_ListenerCoupleCloser::AfterContentListener::isFinished()
 {
-    return m_self->m_rdfUnclosedAnchorStack.empty();
+    return m_self->m_rdfUnclosedAnchorStack.empty()
+        && m_self->m_bookmarkUnclosedStack.empty();
 }
 
 /****************************************/
@@ -248,6 +359,20 @@ PL_ListenerCoupleCloser::populateStruxBefore( PL_StruxDocHandle /*sdh*/,
 
     
     return true;
+}
+
+bool
+PL_ListenerCoupleCloser::shouldOpen( const std::string& id,
+                                     bool isEnd,
+                                     stringlist_t& sl )
+{
+    stringlist_t::iterator iter = find( sl.begin(), sl.end(), id );
+    if( iter != sl.end() )
+    {
+        sl.erase( iter );
+        return true;
+    }
+    return false;
 }
 
 bool
@@ -271,22 +396,31 @@ PL_ListenerCoupleCloser::populateBefore( PL_StruxFmtHandle sfh,
 			PT_AttrPropIndex api = pcr->getIndexAP();
 			switch (pcro->getObjectType())
             {
+                case PTO_Bookmark:
+                    if( !m_bookmarkUnopenedStack.empty() )
+                    {
+                        PD_Bookmark a( getDocument(), api );
+                        if( shouldOpen( a.getID(), a.isEnd(), m_bookmarkUnopenedStack ))
+                            return m_delegate->populate( sfh, pcr );
+                        break;
+                    }
                 case PTO_RDFAnchor:
                     if( !m_rdfUnopenedAnchorStack.empty() )
                     {
-                        const PP_AttrProp * pAP = NULL;
-                        getDocument()->getAttrProp(api,&pAP);
-                        RDFAnchor a(pAP);
+                        RDFAnchor a( getDocument(), api );
                         UT_DEBUGMSG(("MIQ: PL_ListenerCoupleCloser::PopulateBefore() rdfid:%s \n",
                                      a.getID().c_str() ));
-                        stringlist_t::iterator iter = find( m_rdfUnopenedAnchorStack.begin(),
-                                                            m_rdfUnopenedAnchorStack.end(),
-                                                            a.getID() );
-                        if( iter != m_rdfUnopenedAnchorStack.end() )
-                        {
-                            m_rdfUnopenedAnchorStack.erase( iter );
+                        if( shouldOpen( a.getID(), a.isEnd(), m_rdfUnopenedAnchorStack ))
                             return m_delegate->populate( sfh, pcr );
-                        }
+                        
+                        // stringlist_t::iterator iter = find( m_rdfUnopenedAnchorStack.begin(),
+                        //                                     m_rdfUnopenedAnchorStack.end(),
+                        //                                     a.getID() );
+                        // if( iter != m_rdfUnopenedAnchorStack.end() )
+                        // {
+                        //     m_rdfUnopenedAnchorStack.erase( iter );
+                        //     return m_delegate->populate( sfh, pcr );
+                        // }
                         break;
                     }
             }
@@ -316,7 +450,8 @@ PL_ListenerCoupleCloser::BeforeContentListener::populateStrux( PL_StruxDocHandle
 
 bool PL_ListenerCoupleCloser::BeforeContentListener::isFinished()
 {
-    return m_self->m_rdfUnopenedAnchorStack.empty();
+    return m_self->m_rdfUnopenedAnchorStack.empty()
+        && m_self->m_bookmarkUnopenedStack.empty();
 }
 
 

@@ -491,6 +491,7 @@ class ABI_EXPORT RDFAnchor
     
 public:
     RDFAnchor( const PP_AttrProp* pAP );
+    RDFAnchor( PD_Document* pDoc, PT_AttrPropIndex api );
     RDFAnchor( PD_Document* doc, pf_Frag* pf );
     bool isEnd();
     std::string getID();
