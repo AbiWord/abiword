@@ -183,6 +183,14 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	_s(AP_TOOLBAR_ID_MERGEABOVE, EV_TBIT_PushButton, "mergeCells", AV_CHG_ALL, ap_ToolbarGetState_Table); // FIXME
 	_s(AP_TOOLBAR_ID_MERGEBELOW, EV_TBIT_PushButton, "mergeCells", AV_CHG_ALL, ap_ToolbarGetState_Table); // FIXME
 
+	_s(AP_TOOLBAR_ID_REVISIONS_NEW,        EV_TBIT_PushButton,		"revisionNew",    AV_CHG_NONE, NULL );
+	_s(AP_TOOLBAR_ID_REVISIONS_SELECT,     EV_TBIT_PushButton,		"revisionSelect", AV_CHG_ALL, ap_ToolbarGetState_HasRevisions );
+	_s(AP_TOOLBAR_ID_REVISIONS_SHOW_FINAL, EV_TBIT_PushButton,		"toggleShowRevisionsAfter", AV_CHG_ALL, ap_ToolbarGetState_HasRevisions );
+	_s(AP_TOOLBAR_ID_REVISIONS_FIND_PREV,  EV_TBIT_PushButton,		"revisionFindPrev", AV_CHG_ALL, ap_ToolbarGetState_HasRevisions );
+	_s(AP_TOOLBAR_ID_REVISIONS_FIND_NEXT,  EV_TBIT_PushButton,		"revisionFindNext", AV_CHG_ALL, ap_ToolbarGetState_HasRevisions );
+    
+    
+
 #ifdef ENABLE_MENUBUTTON
 	_s(AP_TOOLBAR_ID_MENU, EV_TBIT_MenuButton, NULL, AV_CHG_NONE, NULL);
 #endif

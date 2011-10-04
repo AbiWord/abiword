@@ -303,6 +303,7 @@ _rtf_keyword rtfKeywords[] = {
 	{"deftab", false, false, NO_CONTEXT, RTF_KW_deftab }, 
 	{"deleted", false, false, NO_CONTEXT, RTF_KW_deleted }, 
 	{"delrsid", true, false, NO_CONTEXT, RTF_KW_delrsid }, /* 2002 */ 
+	{"deltamoveid", false, false, NO_CONTEXT, RTF_KW_deltamoveid }, 
 	{"dfrauth", true, false, NO_CONTEXT, RTF_KW_dfrauth }, /* 97 */ 
 	{"dfrdate", true, false, NO_CONTEXT, RTF_KW_dfrdate }, /* 97 */ 
 	{"dfrmtxtx", false, false, NO_CONTEXT, RTF_KW_dfrmtxtx }, 

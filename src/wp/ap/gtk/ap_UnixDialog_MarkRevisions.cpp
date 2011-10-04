@@ -48,8 +48,12 @@ XAP_Dialog * AP_UnixDialog_MarkRevisions::static_constructor(XAP_DialogFactory *
 AP_UnixDialog_MarkRevisions::AP_UnixDialog_MarkRevisions(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
 	: AP_Dialog_MarkRevisions(pDlgFactory,id)
+    , mRadio1(0)
+    , mRadio2(0)
+    , mEntryLbl(0)
+    , mComment(0)
+    , mButtonOK(0)
 {
-	mRadio1  = mRadio2 = mComment = mEntryLbl = NULL ;
 }
 
 AP_UnixDialog_MarkRevisions::~AP_UnixDialog_MarkRevisions(void)
@@ -64,8 +68,11 @@ void AP_UnixDialog_MarkRevisions::runModal(XAP_Frame * pFrame)
 	// toggle what should be grayed and what shouldn't be
 	event_FocusToggled () ;
    
-	switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow),
-								 pFrame, this, BUTTON_CANCEL, false ) )
+    gint rc = abiRunModalDialog ( GTK_DIALOG(mainWindow),
+                                  pFrame, this, BUTTON_CANCEL, false );
+    UT_DEBUGMSG(("AP_UnixDialog_MarkRevisions::runModal() rc:%d\n", rc ));
+    
+	switch ( rc )
 	{
 		case BUTTON_OK:
 			event_OK () ; break ;
@@ -82,6 +89,7 @@ GtkWidget * AP_UnixDialog_MarkRevisions::constructWindow ()
 {
   const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
+  GtkWidget* w = 0;
   GtkWidget *dialog1;
   GtkWidget *dialog_vbox1;
   GtkWidget *dialog_action_area1;
@@ -99,8 +107,12 @@ GtkWidget * AP_UnixDialog_MarkRevisions::constructWindow ()
 
   constructWindowContents ( dialog_vbox1 ) ;
 
+  
   abiAddStockButton ( GTK_DIALOG(dialog1), GTK_STOCK_CANCEL, BUTTON_CANCEL );
-  abiAddStockButton ( GTK_DIALOG(dialog1), GTK_STOCK_OK, BUTTON_OK );
+  w = abiAddStockButton ( GTK_DIALOG(dialog1),
+                          GTK_STOCK_OK, BUTTON_OK );
+  mButtonOK = w;
+  abiSetActivateOnWidgetToActivateButton( mComment, mButtonOK );
 	
   return dialog1;
 }

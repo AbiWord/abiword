@@ -126,6 +126,13 @@
 #       include "tb_stock_font.xpm"
 #	include "tb_view_full_screen.xpm"
 
+#	include "tb_revision_new.xpm"
+#	include "tb_revision_select.xpm"
+#	include "tb_revision_show_final.xpm"
+#	include "tb_revision_find_prev.xpm"
+#	include "tb_revision_find_next.xpm"
+
+
 	// ... add new icons here (don't forget to add below the #else) ...
 
 #	include "menu_copy.xpm"
@@ -289,6 +296,11 @@
 	DefineToolbarIcon(tb_print_xpm)
 	DefineToolbarIcon(tb_redo_xpm)
 	DefineToolbarIcon(tb_remove_graphic_xpm)
+	DefineToolbarIcon(tb_revision_find_next_xpm)
+	DefineToolbarIcon(tb_revision_find_prev_xpm)
+	DefineToolbarIcon(tb_revision_new_xpm)
+	DefineToolbarIcon(tb_revision_select_xpm)
+	DefineToolbarIcon(tb_revision_show_final_xpm)
 	DefineToolbarIcon(tb_save_as_xpm)
 	DefineToolbarIcon(tb_save_xpm)
 	DefineToolbarIcon(tb_script_play_xpm)

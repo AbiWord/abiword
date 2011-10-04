@@ -168,6 +168,16 @@ public:
 									   UT_uint32 length, fd_Field * pField = NULL,
 									   bool bAddChangeRec = true);
 
+    pf_Frag* getEndOfBlock( PT_DocPosition currentpos, PT_DocPosition endpos );
+    // bool deleteSpanChangeTrackingAreWeMarkingDeltaMerge( PT_DocPosition startpos,
+    //                                                      PT_DocPosition endpos );
+    pf_Frag_Strux* inSameBlock( PT_DocPosition startpos, PT_DocPosition endpos );
+    // bool changeTrackingAddParaAttribute( pf_Frag_Strux* pfs,
+    //                                      const char* attr,
+    //                                      std::string v );
+    // bool deleteSpanChangeTrackingMaybeMarkParagraphEndDeletion( PT_DocPosition currentpos,
+    //                                                             PT_DocPosition endpos );
+    
 	bool					deleteSpan(PT_DocPosition dpos1,
 									   PT_DocPosition dpos2,
 									   PP_AttrProp *p_AttrProp_Before,
@@ -308,10 +318,13 @@ public:
 
 	bool					getBlockBuf(PL_StruxDocHandle sdh, UT_GrowBuf * pgb) const;
 
+    PT_DocPosition          getPosEnd();
 	bool					getBounds(bool bEnd, PT_DocPosition & docPos) const;
 	PT_DocPosition			getStruxPosition(PL_StruxDocHandle sdh) const;
 	PT_DocPosition			getFragPosition(const pf_Frag * pfToFind) const;
 
+    bool dumpDoc( const char* msg, PT_DocPosition currentpos, PT_DocPosition endpos );
+    
 	bool					getFragFromPosition(PT_DocPosition docPos,
 												pf_Frag ** ppf,
 												PT_BlockOffset * pOffset) const;
@@ -321,6 +334,7 @@ public:
 													   PTStruxType pts,
 													   PL_StruxFmtHandle * psfh) const;
 
+    PL_StruxDocHandle       getBlockFromPosition(PT_DocPosition pos) const;
 
 	bool					getStruxOfTypeFromPosition(PT_DocPosition docPos,
 													   PTStruxType pts,
@@ -371,7 +385,11 @@ public:
 
 protected:
 
-	pf_Frag *               _findLastStruxOfType(pf_Frag * pfStart, PTStruxType pst, bool bSkipEmbeded);
+    pf_Frag_Strux*          _findLastStruxOfType(pf_Frag * pfStart,
+                                                 PTStruxType pst,
+                                                 PTStruxType* stopConditions,
+                                                 bool bSkipEmbededSections );
+    pf_Frag_Strux*          _findLastStruxOfType(pf_Frag * pfStart, PTStruxType pst, bool bSkipEmbeded);
 	pf_Frag *               _findPrevHyperlink(pf_Frag * pfStart);
 	pf_Frag *               _findNextHyperlink(pf_Frag * pfStart);
 
@@ -418,7 +436,8 @@ protected:
 	bool					_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 														PTStruxType pts,
 														pf_Frag_Strux ** ppfs) const;
-	bool					_doTheDo(const PX_ChangeRecord * pcr, bool bUndo);
+    pf_Frag_Strux*          _getBlockFromPosition(PT_DocPosition pos) const;
+    bool					_doTheDo(const PX_ChangeRecord * pcr, bool bUndo);
 	bool					_struxHasContent(pf_Frag_Strux * pfs) const;
 	bool					_struxIsEmpty(pf_Frag_Strux * pfs) const;
 	bool					_unlinkStrux(pf_Frag_Strux * pfs,

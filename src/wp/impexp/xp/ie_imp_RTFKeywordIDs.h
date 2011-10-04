@@ -309,6 +309,7 @@ typedef enum {
 	RTF_KW_deftab,
 	RTF_KW_deleted,
 	RTF_KW_delrsid,
+    RTF_KW_deltamoveid,
 	RTF_KW_dfrauth,
 	RTF_KW_dfrdate,
 	RTF_KW_dfrmtxtx,

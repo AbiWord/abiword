@@ -57,4 +57,11 @@ BeginLayout(FileEditOps, AP_STRING_ID_TB_Standard, AP_PREF_KEY_StandardBarVisibl
 	Spacer()
 #endif
 	ToolbarItem(AP_TOOLBAR_ID_ZOOM)
+
+	ToolbarItem(AP_TOOLBAR_ID_REVISIONS_NEW)
+	ToolbarItem(AP_TOOLBAR_ID_REVISIONS_SELECT)
+	ToolbarItem(AP_TOOLBAR_ID_REVISIONS_SHOW_FINAL)
+	ToolbarItem(AP_TOOLBAR_ID_REVISIONS_FIND_PREV)
+	ToolbarItem(AP_TOOLBAR_ID_REVISIONS_FIND_NEXT)
+
 EndLayout()

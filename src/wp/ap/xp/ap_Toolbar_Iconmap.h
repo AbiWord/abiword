@@ -33,7 +33,13 @@
 //
 // SAMPLE: toolbariconmap(LISTS_BULLETS_fi-FI,tb_lists_xpm)
 
-// Keep this list alphabetically sorted
+///////////////////////////////////////////
+// !!!!
+// 
+// NB: Keep this list alphabetically sorted
+//
+// !!!!!
+///////////////////////////////////////////
 
 
 toolbariconmap(1COLUMN,tb_1column_xpm)
@@ -161,6 +167,11 @@ toolbariconmap(MIDDLE_SPACE,tb_line_middle_space_xpm)
 toolbariconmap(OPTIONSDLG, tb_LineLeft_xpm)
 toolbariconmap(PARA_0BEFORE,tb_para_0before_xpm)
 toolbariconmap(PARA_12BEFORE,tb_para_12before_xpm)
+toolbariconmap(REVISIONS_FIND_NEXT,tb_revision_find_next_xpm)
+toolbariconmap(REVISIONS_FIND_PREV,tb_revision_find_prev_xpm)
+toolbariconmap(REVISIONS_NEW,tb_revision_new_xpm)
+toolbariconmap(REVISIONS_SELECT,tb_revision_select_xpm)
+toolbariconmap(REVISIONS_SHOW_FINAL,tb_revision_show_final_xpm)
 toolbariconmap(SCRIPT_PLAY,tb_script_play_xpm)
 toolbariconmap(SINGLE_SPACE,tb_line_single_space_xpm)
 toolbariconmap(SPELLCHECK,tb_spellcheck_xpm)

@@ -24,6 +24,7 @@
 #include "ut_types.h"
 #include "pt_Types.h"
 #include "pf_Frag.h"
+#include <string>
 
 /*!
  pf_Frag_Text represents a fragment of text in the document.
@@ -65,6 +66,8 @@ public:
 	virtual void			__dump(FILE * fp) const;
 #endif
 
+    std::string            toString() const;
+    
 protected:
 	virtual bool            _isContentEqual(const pf_Frag & f2) const;
 	PT_BufIndex				m_bufIndex;

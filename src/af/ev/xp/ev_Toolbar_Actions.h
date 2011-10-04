@@ -51,7 +51,8 @@ typedef enum _ev_Toolbar_ItemState			/* values may be ORed */
 	EV_TIS_ZERO				= 0x00,
 	EV_TIS_Gray				= 0x01,			/* should be grayed */
 	EV_TIS_Toggled			= 0x02,			/* should be pressed down */
-	EV_TIS_UseString		= 0x04			/* should reference pszState */
+	EV_TIS_UseString		= 0x04,			/* should reference pszState */
+	EV_TIS_Hidden           = 0x08          /* stronger version of Gray, you want to hide if possible */
 	
 } EV_Toolbar_ItemState;
 
@@ -64,6 +65,7 @@ typedef EV_Toolbar_ItemState (*EV_GetToolbarItemState_pFn)(AV_View * pAV_View, X
 #endif
 
 #define EV_TIS_ShouldBeGray(tis)		(((tis) & EV_TIS_Gray)!=0)
+#define EV_TIS_ShouldBeHidden(tis)		(((tis) & EV_TIS_Hidden)!=0)
 #define EV_TIS_ShouldBeToggled(tis)		(((tis) & EV_TIS_Toggled)!=0)
 #define EV_TIS_ShouldUseString(tis)		(((tis) & EV_TIS_UseString)!=0)
 

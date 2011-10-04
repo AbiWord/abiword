@@ -23,8 +23,12 @@
 #include "pd_Document.h"
 #include "ut_debugmsg.h"
 #include "ut_misc.h"
+#include "ut_std_map.h"
 
 //#include <limits.h>
+
+#include <sstream>
+
 
 PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const gchar * props, const gchar * attrs):
 	m_iID(Id), m_eType(eType), m_bDirty(true)
@@ -245,6 +249,72 @@ void PP_Revision::_refreshString() const
 	m_bDirty = false;
 }
 
+std::string PP_Revision::toString() const
+{
+    std::stringstream ret;
+    PP_RevisionType r_type = getType();
+
+    if(r_type == PP_REVISION_FMT_CHANGE)
+        ret << "!";
+
+    // print the id with appropriate sign
+    ret << (int)(getId()* ((r_type == PP_REVISION_DELETION)?-1:1));
+    
+    if(r_type != PP_REVISION_DELETION)
+    {
+        // if we have no props but have attribs, we have to issue empty braces so as not to
+        // confuse attribs with props
+        if(hasProperties() || hasAttributes())
+            ret << "{";
+        
+        if(hasProperties())
+            ret << getPropsString();
+        
+        if(hasProperties() || hasAttributes())
+            ret << "}";
+			
+        if(hasAttributes())
+        {
+            ret << "{" << getAttrsString() << "}";
+        }
+    }
+    
+    return ret.str();
+}
+
+bool PP_Revision::onlyContainsAbiwordChangeTrackingMarkup() const
+{
+    UT_DEBUGMSG(("onlyContainsAbiwordChangeTrackingMarkup(top) ac:%d pc:%d\n", getAttributeCount(), getPropertyCount() ));
+
+    if( !getAttributeCount() )
+        return false;
+    if( getPropertyCount() )
+        return false;
+    
+    bool ret = true;
+	UT_uint32 i;
+	UT_uint32 iCount = getAttributeCount();
+	const gchar * n, *v;
+
+	for(i = 0; i < iCount; i++)
+	{
+		if(!getNthAttribute(i,n,v))
+		{
+			// UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+			continue;
+		}
+        UT_DEBUGMSG(("onlyContainsAbiwordChangeTrackingMarkup() n:%s\n", n ));
+        
+        if( n != strstr( n, "abi-para" ) )
+        {
+            return false;
+        }
+    }
+    
+    return ret;
+}
+
+
 bool PP_Revision::operator == (const PP_Revision &op2) const
 {
 	// this is quite involved, but we will start with the simple
@@ -294,6 +364,14 @@ bool PP_Revision::operator == (const PP_Revision &op2) const
 }
 
 
+// PP_Revision*
+// PP_Revision::clone() const
+// {
+//     PP_Revision* ret = new PP_Revision( *this );
+//     return ret;
+// }
+
+
 /************************************************************
  ************************************************************/
 
@@ -326,6 +404,13 @@ void PP_RevisionAttr::setRevision(const gchar * r)
 	_clear();
 	_init(r);
 }
+
+void
+PP_RevisionAttr::setRevision(std::string&  r)
+{
+    setRevision( r.c_str() );
+}
+
 
 /*! destroys all internal data */
 void PP_RevisionAttr::_clear()
@@ -521,6 +606,8 @@ void PP_RevisionAttr::pruneForCumulativeResult(PD_Document * pDoc)
 	{
 		return;
 	}
+
+    m_bDirty = true;
 	
 	for(i = m_vRev.getItemCount()-1; i >=0; --i)
 	{
@@ -701,7 +788,7 @@ const PP_Revision * PP_RevisionAttr::getLowestGreaterOrEqualRevision(UT_uint32 i
  */
 const PP_Revision * PP_RevisionAttr::getLastRevision() const
 {
-	// since this is rather involved, we will chache the result and
+	// since this is rather involved, we will cache the result and
 	// use the cache if it is uptodate
 	if(m_pLastRevision)
 		return m_pLastRevision;
@@ -726,6 +813,19 @@ const PP_Revision * PP_RevisionAttr::getLastRevision() const
 	// cumulative effect and the last revision was a deletion.
 	return m_pLastRevision;
 }
+
+
+UT_uint32 PP_RevisionAttr::getHighestId() const
+{
+    UT_uint32 ret = 0;
+	for(UT_sint32 i = 0; i < m_vRev.getItemCount(); i++)
+	{
+		const PP_Revision * t = (const PP_Revision *)m_vRev.getNthItem(i);
+        ret = std::max( ret, t->getId() );
+    }
+    return ret;
+}
+
 
 /*!
    find revision with id == iId; if revision is not found minId
@@ -926,6 +1026,254 @@ void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType,
 	m_pLastRevision = NULL;
 }
 
+
+/**
+ * Logically Performs addRevision( iId, eType, 0, 0 ). This method is
+ * mainly useful for loading an ODT+GCT file where you want to add and
+ * delete revisions but don't actually care about the attrs/props for
+ * that action.
+ */
+void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType )
+{
+    const gchar ** pAttrs = 0;
+    const gchar ** pProps = 0;
+    addRevision( iId, eType, pAttrs, pProps );
+}
+
+
+void
+PP_RevisionAttr::addRevision( const PP_Revision* r )
+{
+    std::stringstream ss;
+    if(r->getType() & PP_REVISION_FMT_CHANGE)
+        ss << "!";
+    
+    ss << (r->getId() * ((r->getType() == PP_REVISION_DELETION)?-1:1));
+
+    if(r->hasProperties())
+    {
+        ss << "{" << r->getPropsString() << "}";
+    }
+    if(r->hasAttributes())
+    {
+        ss << "{" << r->getAttrsString() << "}";
+    }
+
+    PP_RevisionAttr us( getXMLstring() );
+    _clear();
+    std::string tmp = (std::string)us.getXMLstring() + "," + ss.str();
+    setRevision( tmp.c_str() );
+}
+
+void PP_RevisionAttr::mergeAttr( UT_uint32 iId, PP_RevisionType t,
+                                 const gchar* pzName, const gchar* pzValue )
+{
+    PP_RevisionAttr ra;
+    const gchar* ppAtts[10];
+    ppAtts[0] = pzName;
+    ppAtts[1] = pzValue;
+    ppAtts[2] = 0;
+    ra.addRevision(iId,t,ppAtts,NULL);
+
+    mergeAll( ra );
+}
+
+/**
+ * Do not replace the attribute/value if it exists in the given revision already.
+ */
+void PP_RevisionAttr::mergeAttrIfNotAlreadyThere( UT_uint32 iId,
+                                                  PP_RevisionType t,
+                                                  const gchar* pzName,
+                                                  const gchar* pzValue )
+{
+	for(UT_sint32 i = 0; i < m_vRev.getItemCount(); i++)
+	{
+		const PP_Revision * tr = (const PP_Revision *)m_vRev.getNthItem(i);
+		UT_uint32 tid = tr->getId();
+
+        if( tid == iId )
+        {
+            if( t == PP_REVISION_NONE || t == tr->getType() )
+            {
+                const gchar * tattrs = tr->getAttrsString();
+                if( strstr( tattrs, pzName ))
+                {
+                    return;
+                }
+            }
+        }
+    }
+    
+    return mergeAttr( iId, t, pzName, pzValue );
+}
+
+
+
+//
+//                           getId()    getType()                rev
+typedef std::map< std::pair< UT_uint32, PP_RevisionType >, const PP_Revision* > revidx_t;
+
+static revidx_t toIndex( const PP_RevisionAttr& ra )
+{
+    revidx_t ret;
+    for( UT_uint32 i=0; i < ra.getRevisionsCount(); ++i )
+    {
+        const PP_Revision* r = ra.getNthRevision( i );
+        ret[ std::make_pair( r->getId(), r->getType() ) ] = r;
+    }
+    return ret;
+}
+
+static std::string mergeAPStrings( const std::string& a, const std::string& b )
+{
+    if( b.empty() )
+        return a;
+    if( a.empty() )
+        return b;
+    std::stringstream ss;
+    ss << a << ";" << b;
+    return ss.str();
+}
+
+
+#define DEBUG_MERGEALL false
+
+void PP_RevisionAttr::mergeAll( const PP_RevisionAttr& ra )
+{
+    PP_RevisionAttr us( getXMLstring() );
+    _clear();
+    std::string tmp = (std::string)us.getXMLstring() + "," + ra.getXMLstring();
+
+    /*
+     * This is a heavy debug block for testing.
+     */
+    if( DEBUG_MERGEALL )
+    {
+        UT_DEBUGMSG(("ODTCT ra::merge() ===================\n" ));
+        UT_DEBUGMSG(("ODTCT ra::merge() old:%s\n", us.getXMLstring() ));
+        UT_DEBUGMSG(("ODTCT ra::merge() new:%s\n", ra.getXMLstring() ));
+        UT_DEBUGMSG(("ODTCT ra::merge() ret:%s\n", tmp.c_str()  ));
+        for( int i=0; i < us.getRevisionsCount(); ++i )
+        {
+            const PP_Revision* r = us.getNthRevision( i );
+            UT_DEBUGMSG(("ODTCT ra::merge() old r:%d id:%d t:%d attr:%s\n", i, r->getId(), r->getType(), r->getAttrsString() ));
+            UT_DEBUGMSG(("ODTCT ra::merge() old r:%d id:%d t:%d prop:%s\n", i, r->getId(), r->getType(), r->getPropsString() ));
+        }
+        for( int i=0; i < ra.getRevisionsCount(); ++i )
+        {
+            const PP_Revision* r = ra.getNthRevision( i );
+            UT_DEBUGMSG(("ODTCT ra::merge() new r:%d id:%d t:%d attr:%s\n", i, r->getId(), r->getType(), r->getAttrsString() ));
+            UT_DEBUGMSG(("ODTCT ra::merge() new r:%d id:%d t:%d prop:%s\n", i, r->getId(), r->getType(), r->getPropsString() ));
+        }
+    }
+    
+    revidx_t oldidx = toIndex( us );
+    revidx_t newidx = toIndex( ra );
+
+    /*
+     * Iterate over the entries in the oldidx merging the data from
+     * newidx if found whenever a entry from newidx is used it is
+     * removed from newidx too. This way, we can then just iterate
+     * over newidx to add the entries which are in newidx but not in
+     * oldidx.
+     */
+    revidx_t output;
+    for( revidx_t::iterator iter = oldidx.begin(); iter != oldidx.end(); ++iter )
+    {
+        const PP_Revision* r = iter->second;
+        revidx_t::iterator niter = newidx.find( iter->first );
+        // UT_DEBUGMSG(("ODTCT ra::merge() id:%d attrs:%s props:%s\n",
+        //              r->getId(), r->getAttrsString(), r->getPropsString() ));
+
+        /*
+         * If there is an entry in oldidx and newidx then merge them
+         */
+        if( niter != newidx.end() )
+        {
+            const PP_Revision* nr = niter->second;
+            
+            std::string attrs = mergeAPStrings( r->getAttrsString(), nr->getAttrsString() );
+            std::string props = mergeAPStrings( r->getPropsString(), nr->getPropsString() );
+            output[ iter->first ] = new PP_Revision( iter->first.first,
+                                                     iter->first.second,
+                                                     props.c_str(), attrs.c_str() );
+            newidx.erase( niter );
+        }
+        else
+        {
+            /*
+             * disregard entries without anything to tell
+             */
+            if( r->getType() != PP_REVISION_DELETION
+                && !strlen(r->getAttrsString())
+                && !strlen(r->getPropsString()) )
+            {
+                // UT_DEBUGMSG(("ODTCT ra::merge() rev as no attr/props, skipping old id:%d type:%d\n",
+                //              r->getId(), r->getType() ));
+                
+                continue;
+            }
+
+            /*
+             * no matching entry in the newidx, just copy the data
+             */
+            output[ iter->first ] = new PP_Revision( iter->first.first,
+                                                     iter->first.second,
+                                                     r->getPropsString(),
+                                                     r->getAttrsString() );
+        }
+    }
+    
+    /*
+     * copy over new revisions which didn't have a matching entry in the oldidx
+     */
+    for( revidx_t::iterator iter = newidx.begin(); iter != newidx.end(); ++iter )
+    {
+            output[ iter->first ] = new PP_Revision( iter->first.first,
+                                                     iter->first.second,
+                                                     iter->second->getPropsString(),
+                                                     iter->second->getAttrsString() );
+    }
+
+    /*
+     * Build the XML string for the merged revision attribute from the output index
+     */
+    bool outputssVirgin = true;
+    std::stringstream outputss;
+    for( revidx_t::iterator iter = output.begin(); iter != output.end(); ++iter )
+    {
+        const PP_Revision* r = iter->second;
+
+        if( DEBUG_MERGEALL )
+        {
+            UT_DEBUGMSG(("ODTCT ra::merge() output id:%d t:%d attr:%s\n",
+                         r->getId(), r->getType(), r->getAttrsString() ));
+            UT_DEBUGMSG(("ODTCT ra::merge() output id:%d t:%d prop:%s\n",
+                         r->getId(), r->getType(), r->getPropsString() ));
+        }
+        
+        if( outputssVirgin ) outputssVirgin = false;
+        else                 outputss << ",";
+        
+        outputss << r->toString();
+    }
+    UT_map_delete_all_second( output );
+    
+
+    
+    setRevision( outputss.str().c_str() );
+
+    if( DEBUG_MERGEALL )
+    {
+        UT_DEBUGMSG(("ODTCT ra::merge() outputss::%s\n", outputss.str().c_str() ));
+        UT_DEBUGMSG(("ODTCT ra::merge() ret:%s\n", getXMLstring() ));
+    }
+    return;
+}
+
+
+
+
 /*! removes id from this revision, respecting the sign, i.e., it will
   not remove -5 if given 5
  */
@@ -1040,41 +1388,48 @@ void PP_RevisionAttr::_refreshString() const
 	for(UT_uint32 i = 0; i < iCount; i++)
 	{
 		PP_Revision * r = (PP_Revision *)m_vRev.getNthItem(i);
-		PP_RevisionType r_type = r->getType();
 
-		if(r_type == PP_REVISION_FMT_CHANGE)
-			m_sXMLstring += "!";
+        if( !m_sXMLstring.empty() )
+            m_sXMLstring += ",";
+        
+        m_sXMLstring += r->toString();
+            
+		// PP_Revision * r = (PP_Revision *)m_vRev.getNthItem(i);
+		// PP_RevisionType r_type = r->getType();
 
-		// print the id with appropriate sign
-		sprintf(buf,"%d",r->getId()* ((r_type == PP_REVISION_DELETION)?-1:1));
-		m_sXMLstring += buf;
+		// if(r_type == PP_REVISION_FMT_CHANGE)
+		// 	m_sXMLstring += "!";
 
-		if(r_type != PP_REVISION_DELETION)
-		{
-			// if we have no props but have attribs, we have to issue empty braces so as not to
-			// confuse attribs with props
-			if(r->hasProperties() || r->hasAttributes())
-				m_sXMLstring += "{";
+		// // print the id with appropriate sign
+		// sprintf(buf,"%d",r->getId()* ((r_type == PP_REVISION_DELETION)?-1:1));
+		// m_sXMLstring += buf;
+
+		// if(r_type != PP_REVISION_DELETION)
+		// {
+		// 	// if we have no props but have attribs, we have to issue empty braces so as not to
+		// 	// confuse attribs with props
+		// 	if(r->hasProperties() || r->hasAttributes())
+		// 		m_sXMLstring += "{";
 			
-			if(r->hasProperties())
-				m_sXMLstring += r->getPropsString();
+        // if(r->hasProperties())
+        // 	m_sXMLstring += r->getPropsString();
 			
-			if(r->hasProperties() || r->hasAttributes())
-				m_sXMLstring += "}";
+        // if(r->hasProperties() || r->hasAttributes())
+        // 	m_sXMLstring += "}";
 			
-			if(r->hasAttributes())
-			{
-				m_sXMLstring += "{";
-				m_sXMLstring += r->getAttrsString();
-				m_sXMLstring += "}";
-			}
-		};
+		// 	if(r->hasAttributes())
+		// 	{
+		// 		m_sXMLstring += "{";
+		// 		m_sXMLstring += r->getAttrsString();
+		// 		m_sXMLstring += "}";
+		// 	}
+		// };
 
-		if(i != iCount - 1)
-		{
-			//not the last itteration, append ','
-			m_sXMLstring += ",";
-		}
+		// if(i != iCount - 1)
+		// {
+		// 	//not the last itteration, append ','
+		// 	m_sXMLstring += ",";
+		// }
 
 	}
 	m_bDirty = false;
@@ -1091,6 +1446,27 @@ const gchar * PP_RevisionAttr::getXMLstring() const
 
 	return (const gchar*) m_sXMLstring.c_str();
 }
+
+std::string
+PP_RevisionAttr::getXMLstringUpTo( UT_uint32 iId ) const
+{
+    PP_RevisionAttr rat;
+    rat.setRevision( getXMLstring() );
+    UT_DEBUGMSG(("PP_RevisionAttr::getXMLstringUpTo() id:%d before:%s\n", iId, rat.getXMLstring() ));
+    rat.removeAllHigherOrEqualIds( iId );
+    UT_DEBUGMSG(("PP_RevisionAttr::getXMLstringUpTo() id:%d  after:%s\n", iId, rat.getXMLstring() ));
+    // PP_RevisionAttr rat;
+    // const PP_Revision* r = 0;
+    // for( int raIdx = 0;
+    //      raIdx < iId && (r = ra.getNthRevision( raIdx ));
+    //      raIdx++ )
+    // {
+    //     rat.addRevision( r );
+    // }
+    return rat.getXMLstring();
+}
+
+
 
 /*! returns true if the fragment marked by this attribute is
     superfluous, i.e, it was created in the process of the present
@@ -1110,7 +1486,7 @@ bool PP_RevisionAttr::isFragmentSuperfluous() const
 		return false;
 }
 
-bool PP_RevisionAttr::operator == (const PP_RevisionAttr &op2) const
+bool PP_RevisionAttr::operator== (const PP_RevisionAttr &op2) const
 {
 	for(UT_sint32 i = 0; i < m_vRev.getItemCount(); i++)
 	{
@@ -1126,6 +1502,14 @@ bool PP_RevisionAttr::operator == (const PP_RevisionAttr &op2) const
 	}
 	return true;
 }
+
+// PP_RevisionAttr&
+// PP_RevisionAttr::operator=(const PP_RevisionAttr &rhs)
+// {
+//     setRevision( rhs.getXMLstring() );
+//     return *this;
+// }
+
 
 /*! returns true if after revision iId this fragment carries revised
     property pName, the value of which will be stored in pValue; see
@@ -1174,4 +1558,94 @@ PP_RevisionType PP_RevisionAttr::getType() const
 {
 	const PP_Revision * r = getLastRevision();
 	return r->getType();
+}
+
+
+UT_uint32 PP_RevisionAttr::getHighestRevisionNumberWithAttribute( const gchar * attrName ) const
+{
+    const PP_Revision* r = 0;
+
+    for( int raIdx = 0;
+         raIdx < getRevisionsCount() && (r = getNthRevision( raIdx ));
+         raIdx++ )
+    {
+        if( UT_getAttribute( r, attrName, 0 ))
+            return r->getId();
+    }
+    return 0;
+}
+
+
+const char* UT_getAttribute( const PP_AttrProp* pAP, const char* name, const char* def  )
+{
+    const gchar* pValue;
+    bool ok;
+    
+    ok = pAP->getAttribute( name, pValue );
+    if (!ok)
+    {
+        pValue = def;
+    }
+    return pValue;
+}
+
+const PP_Revision *
+PP_RevisionAttr::getLowestDeletionRevision() const
+{
+    if( !getRevisionsCount() )
+        return 0;
+
+    UT_uint32 rmax = getRevisionsCount();
+    const PP_Revision* last  = getNthRevision( rmax-1 );
+    if( last->getType() != PP_REVISION_DELETION )
+        return 0;
+    
+    for( long idx = rmax - 1; idx >= 0; --idx )
+    {
+        const PP_Revision* p = getNthRevision( idx );
+        if( p->getType() != PP_REVISION_DELETION )
+        {
+            return last;
+        }
+        last = p;
+    }
+    return 0;
+}
+
+
+std::string UT_getLatestAttribute( const PP_AttrProp* pAP,
+                                   const char* name,
+                                   const char* def )
+{
+    const char* t = 0;
+    std::string ret = def;
+    bool ok = false;
+    
+    if( const char* revisionString = UT_getAttribute( pAP, "revision", 0 ))
+    {
+        PP_RevisionAttr ra( revisionString );
+        const PP_Revision* r = 0;
+            
+        for( int raIdx = ra.getRevisionsCount()-1;
+             raIdx >= 0 && (r = ra.getNthRevision( raIdx ));
+             --raIdx )
+        {
+            ok = r->getAttribute( name, t );
+            if (ok)
+            {
+                ret = t;
+                return ret;
+            }
+        }
+    }
+
+    ok = pAP->getAttribute( name, t );
+    if (ok)
+    {
+        ret = t;
+        return ret;
+    }
+    ret = def;
+    
+    return ret;
 }

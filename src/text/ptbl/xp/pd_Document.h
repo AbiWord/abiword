@@ -456,6 +456,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 													   PTStruxType pts,
 													   PL_StruxFmtHandle * psfh) const;
 	bool					getStruxOfTypeFromPosition(PT_DocPosition, PTStruxType pts, PL_StruxDocHandle * sdh) const;
+    PL_StruxDocHandle       getBlockFromPosition( PT_DocPosition pos ) const;
 
 	pf_Frag *				getFragFromPosition(PT_DocPosition docPos) const;
 
@@ -507,6 +508,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	// styles
 	void                    getAllUsedStyles(UT_GenericVector<PD_Style*> * pVecStyles);
 	PL_StruxFmtHandle       getNthFmtHandle(PL_StruxDocHandle sdh, UT_uint32 n);
+    const char *            getDefaultStyle() const;
 	bool					getStyle(const char * szName, PD_Style ** ppStyle) const;
 	PD_Style *				getStyleFromSDH(PL_StruxDocHandle sdh);
 	PL_StruxDocHandle       getPrevNumberedHeadingStyle(PL_StruxDocHandle sdh);
@@ -571,6 +573,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 												 UT_sint32 row, 
 												 UT_sint32 col);
 	void                    miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes);
+    bool                    dumpDoc( const char* msg, PT_DocPosition currentpos, PT_DocPosition endpos );
 
 	bool                    isInsertHyperLinkValid(PT_DocPosition pos) const;
 

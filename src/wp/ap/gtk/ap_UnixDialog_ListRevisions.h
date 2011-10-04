@@ -60,10 +60,20 @@ class AP_UnixDialog_ListRevisions: public AP_Dialog_ListRevisions
 	
 	void constructWindowContents ( GtkWidget * container ) ;
 
-	void select_Row (gint which) ;
+	void select_Row (GtkTreeIter iter) ;
 	void unselect_Row () ;
 
-	GtkWidget * m_mainWindow;
+	GtkWidget* m_mainWindow;
+    GtkWidget* m_treeModel;
+
+    enum 
+    {
+        COL_REVID = 0,
+        COL_DATE_STRING,
+        COL_COMMENT,
+        COL_DATE_AS_TIMET,
+        COL_MAX
+    };
 } ;
 
 #endif /* AP_UNIXDIALOG_LISTREVISIONS_H */

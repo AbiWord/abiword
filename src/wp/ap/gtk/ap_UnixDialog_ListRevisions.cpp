@@ -45,14 +45,10 @@ AP_UnixDialog_ListRevisions::select_row_cb(GtkTreeSelection * select,
 {
 	GtkTreeIter iter;
 	GtkTreeModel *model;
-	if(gtk_tree_selection_get_selected(select, &model, &iter)) {
-		GtkTreePath * path = gtk_tree_model_get_path(model, &iter);
-		gint* rows = gtk_tree_path_get_indices(path);
-		if(rows) {
-			me->select_Row (*rows);
-		}
-		gtk_tree_path_free(path);
-	}
+	if(gtk_tree_selection_get_selected(select, &model, &iter))
+    {
+        me->select_Row (iter);
+    }
 }
 
 
@@ -80,6 +76,7 @@ AP_UnixDialog_ListRevisions::AP_UnixDialog_ListRevisions(XAP_DialogFactory * pDl
 							 XAP_Dialog_Id id)
   : AP_Dialog_ListRevisions(pDlgFactory,id)
   , m_mainWindow(NULL)
+  , m_treeModel(NULL)
 {
 }
 
@@ -115,10 +112,12 @@ void AP_UnixDialog_ListRevisions::event_OK ()
   m_answer = AP_Dialog_ListRevisions::a_OK ;
 }
 
-void AP_UnixDialog_ListRevisions::select_Row (gint which)
+void AP_UnixDialog_ListRevisions::select_Row (GtkTreeIter iter)
 {
-  m_iId = getNthItemId ( which ) ;
-  UT_DEBUGMSG(("DOM: select row: %d, %d\n", which, m_iId));
+    guint t = 0;
+    gtk_tree_model_get (GTK_TREE_MODEL(m_treeModel), &iter, COL_REVID, &t, -1);
+    m_iId = t;
+    UT_DEBUGMSG(("DOM: select row: %d\n", m_iId));  
 }
 
 void AP_UnixDialog_ListRevisions::unselect_Row()
@@ -136,7 +135,7 @@ GtkWidget * AP_UnixDialog_ListRevisions::constructWindow ()
   ap_UnixDialog_ListRevisions = abiDialogNew ( "list revisions dialog", TRUE, getTitle());	
 	
   gtk_window_set_modal (GTK_WINDOW (ap_UnixDialog_ListRevisions), TRUE);
-  gtk_window_set_default_size ( GTK_WINDOW(ap_UnixDialog_ListRevisions), 250, 250 ) ;
+  gtk_window_set_default_size ( GTK_WINDOW(ap_UnixDialog_ListRevisions), 800, 450 ) ;
 
   vbDialog = GTK_DIALOG (ap_UnixDialog_ListRevisions)->vbox;
   gtk_widget_show (vbDialog);
@@ -175,29 +174,53 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * vbDialog
   gtk_container_add (GTK_CONTAINER (vbContent), swExistingRevisions);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (swExistingRevisions), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 
-  GtkListStore * list_store = gtk_list_store_new(3, G_TYPE_STRING, 
-												 G_TYPE_STRING, G_TYPE_STRING);
+  GtkListStore * list_store = gtk_list_store_new(4,
+                                                 G_TYPE_UINT,
+                                                 G_TYPE_STRING, 
+												 G_TYPE_STRING,
+                                                 G_TYPE_LONG );
+  m_treeModel = GTK_WIDGET(list_store);
+  
 
   clExistingRevisions = gtk_tree_view_new_with_model (GTK_TREE_MODEL(list_store));
   gtk_widget_show (clExistingRevisions);
   gtk_container_add (GTK_CONTAINER (swExistingRevisions), clExistingRevisions);
-  
+
+  // Note that columns are displayed in a different order to the model,
+  // data from col2 is shown in the first column in the view.
   GtkCellRenderer *renderer = gtk_cell_renderer_text_new ();
   GtkTreeViewColumn *col;
-  col = gtk_tree_view_column_new_with_attributes(getColumn1Label(),
-												 renderer, "text", 0, NULL);
-  gtk_tree_view_column_set_fixed_width(col, 80);
-  gtk_tree_view_append_column(GTK_TREE_VIEW(clExistingRevisions), col);
-  col = gtk_tree_view_column_new_with_attributes(getColumn2Label(),
-												 renderer, "text", 1, NULL);
-  gtk_tree_view_column_set_fixed_width(col, 80);
-  gtk_tree_view_append_column(GTK_TREE_VIEW(clExistingRevisions), col);
+
+  // comment column
   col = gtk_tree_view_column_new_with_attributes(getColumn3Label(),
-												 renderer, "text", 2, NULL);
+												 renderer, "text", COL_COMMENT, NULL);
+  gtk_tree_view_column_set_sort_column_id(col, COL_COMMENT);
   gtk_tree_view_append_column(GTK_TREE_VIEW(clExistingRevisions), col);
 
+  // revision date column
+  col = gtk_tree_view_column_new_with_attributes(getColumn2Label(),
+												 renderer, "text", COL_DATE_STRING, NULL);
+  // we sort on the numerical tt column instead of the human readable text
+  gtk_tree_view_column_set_sort_column_id(col, COL_DATE_AS_TIMET);
+  // later we sort on date desc.
+  gtk_tree_view_column_set_sort_order( col, GTK_SORT_DESCENDING);
+  gtk_tree_view_column_set_fixed_width(col, 80);
+  gtk_tree_view_append_column(GTK_TREE_VIEW(clExistingRevisions), col);
+
+  
+  // revision # column
+  col = gtk_tree_view_column_new_with_attributes(getColumn1Label(),
+												 renderer, "text", COL_REVID, NULL);
+  gtk_tree_view_column_set_fixed_width(col, 80);
+  gtk_tree_view_column_set_sort_column_id(col, COL_REVID);
+  gtk_tree_view_append_column(GTK_TREE_VIEW(clExistingRevisions), col);
+
+
+  
   gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(clExistingRevisions), TRUE);
 
+
+  
 //  g_object_freeze_notify(G_OBJECT(list_store));
 
   UT_uint32 itemCnt = getItemCount () ;
@@ -215,9 +238,10 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * vbDialog
 	gchar * txt = getNthItemText(i);
 	const gchar * itemtime = getNthItemTime(i);
 	gtk_list_store_set(list_store, &iter, 
-					   0, buf, 
-					   1, itemtime?itemtime:"",
-					   2, txt, 
+					   COL_REVID,         getNthItemId(i), 
+					   COL_DATE_STRING,   itemtime?itemtime:"",
+					   COL_COMMENT,       txt,
+                       COL_DATE_AS_TIMET, getNthItemTimeT(i),
 					   -1);
 
     UT_DEBUGMSG(("appending revision %s : %s, %s\n", itemtime, buf, txt));
@@ -237,4 +261,8 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * vbDialog
 		   "row-activated",
 		   G_CALLBACK(row_activated_cb),
 		   static_cast<gpointer>(this));
+
+  gtk_tree_sortable_set_sort_column_id( GTK_TREE_SORTABLE(list_store),
+                                        3, GTK_SORT_DESCENDING );
+  
 }

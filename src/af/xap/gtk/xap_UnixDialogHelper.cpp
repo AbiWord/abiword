@@ -849,3 +849,23 @@ GdkWindow * getRootWindow(GtkWidget * widget)
 	UT_return_val_if_fail(widget, NULL);
 	return gdk_get_default_root_window() ;
 }
+
+
+static void activate_button( GtkEntry *entry, gpointer user_data )
+{
+//    UT_DEBUGMSG(("activate_button() ud:%x\n", user_data ));
+    GtkWidget* w = GTK_WIDGET(user_data);
+    gtk_widget_activate(w);
+}
+
+/**
+ * When the source widget gets the activate signal, sent activate to the button.
+ * This allows GtkEntry widgets to explicitly close the dialog with the OK button
+ * when the user presses return while leaving the default dialog action to be CANCEL.
+ */
+void abiSetActivateOnWidgetToActivateButton( GtkWidget* source, GtkWidget* button )
+{
+    g_signal_connect( G_OBJECT( source ), "activate",
+                      G_CALLBACK(activate_button), button );
+}
+

@@ -754,6 +754,7 @@ private:
 	bool HandleRDFAnchor (RTFBookmarkType type);
 	bool HandleListTag(long id);
 
+	bool HandleDeltaMoveID();
 	bool HandleRevisedText(PP_RevisionType eType, UT_uint32 iId);
 	bool HandleRevisedTextTimestamp(UT_uint32 iDttm);
 
@@ -990,6 +991,8 @@ private:
 	bool                  m_bParaActive;
 	bool                  m_bCellActive;
 
+	std::string           m_ctMoveID;
+	
 	PD_XMLIDCreatorHandle  m_XMLIDCreatorHandle;
 	std::map< std::string, std::string > m_rdfAnchorCloseXMLIDs;
 	

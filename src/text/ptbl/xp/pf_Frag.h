@@ -31,6 +31,7 @@
 class pt_PieceTable;
 class PX_ChangeRecord;
 class fd_Field;
+class pf_Frag_Strux;
 
 
 /*!
@@ -56,6 +57,8 @@ public:
 	inline PFType			getType(void) const		{ return m_type; }
 	pf_Frag *                       getNext(void) const;
 	pf_Frag *                       getPrev(void) const;
+	pf_Frag_Strux*          getNextStrux(PTStruxType t) const;
+    pf_Frag_Strux*          tryDownCastStrux(PTStruxType t) const;
 
 	inline UT_uint32		getLength(void) const	{ return m_length; }
 	inline void                     zero(void)
@@ -141,5 +144,9 @@ private:
 	UT_uint32               m_iXID;
 	pf_Fragments::Node *    m_pMyNode;
 };
+
+// This is like pf->tryDownCastStrux() but you can pass a null pf as arg1
+// safely.
+pf_Frag_Strux* tryDownCastStrux( pf_Frag* pf, PTStruxType t);
 
 #endif /* PF_FRAG_H */

@@ -92,16 +92,30 @@ UT_uint32 AP_Dialog_ListRevisions::getNthItemId(UT_uint32 n) const
 	return ((AD_Revision *)(m_pDoc->getRevisions()).getNthItem(n-1))->getId();
 }
 
+time_t
+AP_Dialog_ListRevisions::getNthItemTimeT(UT_uint32 n) const
+{
+	UT_return_val_if_fail(m_pDoc,0);
+
+    time_t tT = 0;
+	if(n == 0)
+    {
+        time(&tT);
+    }
+    else
+    {
+        tT = ((AD_Revision *)(m_pDoc->getRevisions()).getNthItem(n-1))->getStartTime();
+    }
+	return tT;
+}
+
 const char * AP_Dialog_ListRevisions::getNthItemTime(UT_uint32 n) const
 {
 	UT_return_val_if_fail(m_pDoc,0);
 
-	if(n == 0)
-		return NULL;
-
 	// TODO the date should be properly localised
+    time_t tT = getNthItemTimeT(n);
 	static char s[30];
-	time_t tT = ((AD_Revision *)(m_pDoc->getRevisions()).getNthItem(n-1))->getStartTime();
 
 	if(tT != 0)
 	{

@@ -1300,6 +1300,9 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 				const char * szState = 0;
 				EV_Toolbar_ItemState tis = pAction->getToolbarItemState(pView,&szState);
 
+                if( tis & EV_TIS_Hidden )
+                    tis = (EV_Toolbar_ItemState)(tis | EV_TIS_Gray);
+                
 				switch (pAction->getItemType())
 				{
 				case EV_TBIT_PushButton:
@@ -1309,6 +1312,7 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					_wd * wd = m_vecToolbarWidgets.getNthItem(k);
 					UT_ASSERT(wd && wd->m_widget);
 					gtk_widget_set_sensitive(wd->m_widget, !bGrayed);     					
+					gtk_widget_set_visible(wd->m_widget, !EV_TIS_ShouldBeHidden(tis));
 				}
 				break;
 			

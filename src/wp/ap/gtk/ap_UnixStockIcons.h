@@ -116,6 +116,12 @@
 #define ABIWORD_FMT_CHOOSE              "abiword-fmt-choose"
 #define ABIWORD_VIEW_FULL_SCREEN        "abiword-view-full-screen"
 
+#define ABIWORD_REVISIONS_NEW			"abiword-revisions-new"
+#define ABIWORD_REVISIONS_SELECT		"abiword-revisions-select"
+#define ABIWORD_REVISIONS_SHOW_FINAL	"abiword-revisions-show-final"
+#define ABIWORD_REVISIONS_FIND_PREV  	"abiword-revisions-find-prev"
+#define ABIWORD_REVISIONS_FIND_NEXT  	"abiword-revisions-find-next"
+
 void		  abi_stock_init 				(void);
 const gchar * abi_stock_from_menu_id 		(XAP_Menu_Id menu_id);
 gchar * 	  abi_stock_from_toolbar_id 	(const gchar *toolbar_id);

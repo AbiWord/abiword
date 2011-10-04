@@ -1079,7 +1079,15 @@ UT_Error PD_Document::newDocument(void)
 	setDocVersion(0);
 	setEditTime(0);
 	setLastOpenedTime(time(NULL));
-	
+
+    // set document metadata from context
+    {
+        const gchar* name = g_get_real_name();
+        if( !strcmp( name, "Unknown" ))
+            name = g_get_user_name();
+        setMetaDataProp( PD_META_KEY_CREATOR, name );
+    }
+    
 	// mark the document as not-dirty
 	_setClean();
 	UT_ASSERT(isOrigUUID());
@@ -3377,6 +3385,11 @@ void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
 #endif
 }
 		
+bool
+PD_Document::dumpDoc( const char* msg, PT_DocPosition currentpos, PT_DocPosition endpos )
+{
+    return m_pPieceTable->dumpDoc( msg, currentpos, endpos );
+}
 
 /*!
  * The method returns the SDH of the cell at the location given by (rows,columns) in table 
@@ -4770,6 +4783,11 @@ bool PD_Document::getStruxOfTypeFromPosition(PL_ListenerId listenerId,
 	return m_pPieceTable->getStruxOfTypeFromPosition(listenerId,docPos,pts,psfh);
 }
 
+PL_StruxDocHandle PD_Document::getBlockFromPosition( PT_DocPosition pos ) const
+{
+    return m_pPieceTable->getBlockFromPosition( pos );
+}
+
 
 ///
 ///  return the SDH of the last strux of the given type
@@ -5281,6 +5299,11 @@ bool PD_Document::_syncFileTypes(bool bReadSaveWriteOpen)
 
 ///////////////////////////////////////////////////////////////////
 // Styles represent named collections of formatting properties.
+
+const char * PD_Document::getDefaultStyle() const
+{
+    return "Normal";
+}
 
 bool PD_Document::getStyle(const char * szName, PD_Style ** ppStyle) const
 {
@@ -6214,7 +6237,7 @@ bool PD_Document::setAttrProp(const gchar ** ppAttr)
 
 		// now set standard attributes
 		UT_uint32 i = 0;
-		const UT_uint32 iSize = 21;
+		const UT_uint32 iSize = 23;
 		const gchar * attr[iSize];
 
 		attr[i++] = "xmlns";
@@ -6241,6 +6264,9 @@ bool PD_Document::setAttrProp(const gchar ** ppAttr)
 		attr[i++] = "xmlns:dc";
 		attr[i++] = "http://purl.org/dc/elements/1.1/";
 
+		attr[i++] = "xmlns:ct";
+		attr[i++] = "http://www.abisource.com/changetracking.dtd";
+        
 		attr[i++] = "fileformat";
 		attr[i++] = ABIWORD_FILEFORMAT_VERSION;
 

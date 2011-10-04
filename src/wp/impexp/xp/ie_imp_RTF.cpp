@@ -1526,7 +1526,8 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_bInAnnotation(false),
 	m_bFrameTextBox(false),
 	m_bParaActive(false),
-	m_bCellActive(false)
+	m_bCellActive(false),
+	m_ctMoveID("")
 {
 	UT_DEBUGMSG(("New ie_imp_RTF %p \n",this));
 	m_sImageName.clear();
@@ -2761,7 +2762,8 @@ bool IE_Imp_RTF::HandleParKeyword()
 		m_bSectionHasPara = true;
 	}
 	UT_String sProps;
-	const gchar * attrs[3] = {NULL, NULL, NULL};
+	int attrsIdx = 0;
+	const gchar * attrs[7] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL};
 	const gchar * props = NULL;
 	UT_String rev;
 
@@ -2780,8 +2782,8 @@ bool IE_Imp_RTF::HandleParKeyword()
 		}
 
 		_formRevisionAttr(rev, sProps, pStyle);
-		attrs[0] = "revision";
-		attrs[1] = rev.c_str();
+		attrs[attrsIdx++] = "revision";
+		attrs[attrsIdx++] = rev.c_str();
 		props = NULL;
 	}
 
@@ -5909,6 +5911,8 @@ bool IE_Imp_RTF::HandleStarKeyword()
 					break;
 				case RTF_KW_rdfanchorend:
 					return HandleRDFAnchor (RBT_END);
+				case RTF_KW_deltamoveid:
+					return HandleDeltaMoveID();
 				case RTF_KW_cs:
 					UT_DEBUGMSG(("Found cs in readword stream just ignore \n"));
 					return true;
@@ -11358,6 +11362,27 @@ bool IE_Imp_RTF::HandleRDFAnchor (RTFBookmarkType type)
 			m_posSavedDocPosition++;
 	}
 	
+	return true;
+}
+
+bool IE_Imp_RTF::HandleDeltaMoveID()
+{
+	std::string moveid;
+	HandlePCData(moveid);
+	
+	UT_DEBUGMSG(("HandleDeltaMoveID() of t %d\n", 1 ));
+	UT_DEBUGMSG(("HandleDeltaMoveID() of dposPaste %d\n", m_dposPaste ));
+	UT_DEBUGMSG(("HandleDeltaMoveID() move-id %s\n", moveid.c_str() ));
+	if( !moveid.empty() )
+	{
+//		m_ctMoveID = moveid;
+		PL_StruxDocHandle sdh;
+		bool rc = getDoc()->getStruxOfTypeFromPosition( m_dposPaste, PTX_Block, &sdh);
+		if( rc )
+		{
+			getDoc()->changeStruxAttsNoUpdate( sdh, "delta:move-idref", moveid.c_str() );
+		}
+	}
 	return true;
 }
 

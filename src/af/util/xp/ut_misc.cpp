@@ -292,6 +292,13 @@ gchar ** UT_cloneAndDecodeAttributes (const gchar ** attrs)
     return attrs2;
 }
 
+const gchar* UT_getAttribute( const gchar* name,
+                              const gchar** atts, const gchar* def )
+{
+    const gchar* p = UT_getAttribute ( name, atts );
+    return p ? p : def;
+}
+
 const gchar* UT_getAttribute(const gchar* name, const gchar** atts)
 {
 	UT_return_val_if_fail( atts, NULL );
@@ -309,6 +316,17 @@ const gchar* UT_getAttribute(const gchar* name, const gchar** atts)
 		return p[1];
 	else
 		return NULL;
+}
+
+bool isTrue( const char* s )
+{
+    if( !s )
+        return false;
+    if( !strcmp(s,"0"))
+        return false;
+    if( !strcmp(s,"false"))
+        return false;
+    return true;
 }
 
 //////////////////////////////////////////////////////////////////
@@ -721,3 +739,9 @@ UT_uint32 UT_hash32(const char * p, UT_uint32 bytelen)
 }
 
 #undef MYZERO
+
+
+
+
+
+

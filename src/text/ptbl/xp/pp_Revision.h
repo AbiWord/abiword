@@ -27,6 +27,16 @@
 
 class PD_Document;
 
+ABI_EXPORT const char* UT_getAttribute( const PP_AttrProp* pAP, const char* name, const char* def = 0 );
+/**
+ * Like UT_getAttribute(name,atts,def) but check for a revision attribute and
+ * if found first look for the most recent value of atts in the revision.
+ */
+ABI_EXPORT std::string UT_getLatestAttribute( const PP_AttrProp* pAP,
+                                              const char* name,
+                                              const char* def );
+
+
 typedef enum {
 	PP_REVISION_NONE             = 0,
 	PP_REVISION_ADDITION         = 0x01,
@@ -69,6 +79,11 @@ class ABI_EXPORT PP_Revision: public PP_AttrProp
 	
 	bool operator == (const PP_Revision &op2) const;
 
+//    PP_Revision* clone() const;
+
+    std::string toString() const;
+    bool onlyContainsAbiwordChangeTrackingMarkup() const;
+    
   private:
 	void             _refreshString() const;
 	bool             _handleNestedRevAttr();
@@ -129,12 +144,16 @@ class ABI_EXPORT PP_RevisionAttr
 	~PP_RevisionAttr();
 
 	void                  setRevision(const gchar * r);
+	void                  setRevision(std::string&  r);
 
 	void                  addRevision(UT_uint32 iId,
 									  PP_RevisionType eType,
 									  const gchar ** pAttrs,
 									  const gchar ** pProps);
-
+	void                  addRevision(UT_uint32 iId, PP_RevisionType eType );
+    // No ownership of the given revision is taken. 
+    void                  addRevision( const PP_Revision* r );
+    
 	bool                  changeRevisionType(UT_uint32 iId, PP_RevisionType eType);
 	bool                  changeRevisionId(UT_uint32 iOldId, UT_uint32 iNewId);
 
@@ -150,8 +169,10 @@ class ABI_EXPORT PP_RevisionAttr
 	
 	const PP_Revision *   getLastRevision() const;
 	const PP_Revision *   getRevisionWithId(UT_uint32 iId, UT_uint32 & iMinId) const;
+    UT_uint32             getHighestId() const;
 
 	UT_uint32             getRevisionsCount() const {return m_vRev.getItemCount();}
+    bool                  empty() const { return !getRevisionsCount(); }
 	const PP_Revision *   getNthRevision(UT_uint32 n) const {return (const PP_Revision*)m_vRev.getNthItem(n);}
 	
 	void                  pruneForCumulativeResult(PD_Document * pDoc);
@@ -159,22 +180,36 @@ class ABI_EXPORT PP_RevisionAttr
 	/*! please note that the following are convenience functions; if
 	    you need to make repeated enqueries, it is better to call
 	    getGreatestLesserOrEqualRevision() or getLastRevision() and
-	    querie the returned PP_Revision object.
+	    query the returned PP_Revision object.
     */
 	bool                  isVisible(UT_uint32 id) const;
 	bool                  hasProperty(UT_uint32 iId, const gchar * pName, const gchar * &pValue) const;
 	bool                  hasProperty(const gchar * pName, const gchar * &pValue) const;
 	PP_RevisionType       getType(UT_uint32 iId) const;
 	PP_RevisionType       getType() const;
+    UT_uint32             getHighestRevisionNumberWithAttribute( const gchar * pName ) const;
 #if 0
 	const UT_Vector *     getProps(UT_uint32 iId);
 	const UT_Vector *     getProps();
 #endif
 	const gchar *      getXMLstring() const;
+    std::string        getXMLstringUpTo( UT_uint32 iId ) const;
 	void                  forceDirty() {m_bDirty = true;}
 	bool                  isFragmentSuperfluous() const;
 
-	bool operator == (const PP_RevisionAttr &op2) const;
+	bool operator== (const PP_RevisionAttr &op2) const;
+
+    // MIQ: This would be nice, but there are ownership issues I don't know about with M
+//    PP_RevisionAttr& operator=(const PP_RevisionAttr &rhs);
+    
+    void mergeAll( const PP_RevisionAttr& ra );
+    void mergeAttr( UT_uint32 iId, PP_RevisionType t,
+                    const gchar* pzName, const gchar* pzValue );
+    void mergeAttrIfNotAlreadyThere( UT_uint32 iId, PP_RevisionType t,
+                                     const gchar* pzName, const gchar* pzValue );
+ 
+	const PP_Revision *   getLowestDeletionRevision() const;
+    
 
   private:
 	void _init(const gchar *r);

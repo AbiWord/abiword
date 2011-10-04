@@ -41,6 +41,7 @@
 class UT_Rect;
 class UT_String;
 class UT_UTF8String;
+class PP_AttrProp;
 
 
 // ----------------------------------------------------------------
@@ -77,8 +78,29 @@ std::string UT_pathSuffix(std::string path);
 bool         UT_addOrReplacePathSuffix(std::string & sPath, const char* sSuffix);
  
 bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar, UT_UCSChar prevChar);
+
+/**
+ * Get the attribute "name" from atts or NULL if no such attribute is in atts
+ */
 ABI_EXPORT const gchar* UT_getAttribute(const gchar* name,
-					   const gchar** atts);
+                                        const gchar** atts);
+
+/**
+ * Like UT_getAttribute(name,atts) but return the def value
+ * if there is no attibute name in atts.
+ */
+ABI_EXPORT const gchar* UT_getAttribute( const gchar* name,
+                                         const gchar** atts, const gchar* def );
+
+
+
+/**
+ * s is not null and is not a string that is "0" or false or something
+ * sane that indicates "false".
+ */
+ABI_EXPORT bool isTrue( const char* s );
+
+
 
 ABI_EXPORT gchar ** UT_cloneAndDecodeAttributes (const gchar ** attrs);
 
@@ -116,6 +138,7 @@ class ABI_EXPORT UT_UniqueId
 		Image,
 		Math,
 		Embed,
+        ODTCTSplit,
 
 		/* must be last; for internal use only !*/
 		_Last

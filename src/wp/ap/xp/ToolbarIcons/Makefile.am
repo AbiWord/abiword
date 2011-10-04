@@ -154,6 +154,11 @@ tb_transparent.png\
 tb_undo.png\
 tb_view_full_screen.png\
 tb_view_showpara.png\
+tb_revision_new.png\
+tb_revision_select.png\
+tb_revision_show_final.png\
+tb_revision_find_prev.png\
+tb_revision_find_next.png\
 $(NULL)
 
 CLEANFILES=$(PNG_FILES)
@@ -313,5 +318,10 @@ EXTRA_DIST = \
 	tb_undo.xpm \
 	tb_view_full_screen.xpm \
 	tb_view_showpara.xpm \
-	tb_WrapButton.xpm
+	tb_WrapButton.xpm \
+	tb_revision_new.xpm \
+	tb_revision_select.xpm \
+	tb_revision_show_final.xpm \
+	tb_revision_find_prev.xpm \
+	tb_revision_find_next.xpm
 

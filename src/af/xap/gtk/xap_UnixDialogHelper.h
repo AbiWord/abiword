@@ -116,4 +116,6 @@ void setLabelMarkup(GtkWidget * widget, const gchar * str);
 // pointer or coordinate measurement on an absolute scale.
 GdkWindow * getRootWindow(GtkWidget * widget);
 
+void abiSetActivateOnWidgetToActivateButton( GtkWidget* source, GtkWidget* button );
+
 #endif /* UT_DIALOGHELPER_H */

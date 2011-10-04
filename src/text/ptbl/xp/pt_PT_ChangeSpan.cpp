@@ -527,6 +527,7 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 	bool bSimple = (pf_First == pf_End);
 	if (!bSimple)
 		beginMultiStepGlob();
+    // UT_DEBUGMSG(("ODTCT: realChangeSpanFmt() bSimple:%d\n", bSimple ));
 
 	pf_Frag_Strux * pfsContainer = NULL;
 	pf_Frag * pfNewEnd;
@@ -590,11 +591,13 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 					}
 				}
 
+                // UT_DEBUGMSG(("ODTCT: realChangeSpanFmt() text...A\n" ));
 				bool bResult;
 				bResult	= _fmtChangeSpanWithNotify(ptc,static_cast<pf_Frag_Text *>(pf_First),
 											   fragOffset_First,dpos1,lengthThisStep,
 											   attributes,lProps,
 											   pfsContainer,&pfNewEnd,&fragOffsetNewEnd,bRevisionDelete);
+                // UT_DEBUGMSG(("ODTCT: realChangeSpanFmt() text...B\n" ));
 				UT_return_val_if_fail (bResult,false);
 			}
 			break;

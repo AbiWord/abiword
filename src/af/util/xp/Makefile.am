@@ -103,5 +103,6 @@ libxp_la_SOURCES = \
 	ut_worker.h \
 	ut_xml.cpp \
 	ut_xml.h \
-	ut_xml_libxml2.cpp
+	ut_xml_libxml2.cpp \
+	ut_conversion.h
 

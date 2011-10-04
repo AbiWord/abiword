@@ -654,6 +654,20 @@ UT_sint32 AD_Document::getRevisionIndxFromId(UT_uint32 iId) const
 	return -1;
 }
 
+/**
+ * Should we pay attention to change tracking?
+ */
+bool AD_Document::usingChangeTracking() const
+{
+    bool ret = false;
+    
+    ret |= isMarkRevisions();
+    ret |= ( getHighestRevisionId() > 1 );
+
+    return ret;
+}
+
+
 
 UT_uint32 AD_Document::getHighestRevisionId() const
 {

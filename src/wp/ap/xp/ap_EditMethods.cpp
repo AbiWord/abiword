@@ -464,6 +464,9 @@ public:
 	static EV_EditMethod_Fn removeHeader;
 	static EV_EditMethod_Fn removeFooter;
 
+	static EV_EditMethod_Fn revisionNew;
+	static EV_EditMethod_Fn revisionSelect;
+
 	static EV_EditMethod_Fn viewStd;
 	static EV_EditMethod_Fn viewFormat;
 	static EV_EditMethod_Fn viewExtra;
@@ -1101,7 +1104,9 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(revisionCompareDocuments),	0,  ""),
 	EV_EditMethod(NF(revisionFindNext),		0,  ""),
 	EV_EditMethod(NF(revisionFindPrev),		0,  ""),
+	EV_EditMethod(NF(revisionNew),   		0,	""),
 	EV_EditMethod(NF(revisionReject),		0,  ""),
+	EV_EditMethod(NF(revisionSelect),       0,	""),
 	EV_EditMethod(NF(revisionSetViewLevel),	0,  ""),
 	EV_EditMethod(NF(rotateCase),			0,	""),
 
@@ -14588,6 +14593,42 @@ Defun1(revisionSetViewLevel)
 	PD_Document * pDoc = pView->getDocument();
 	UT_return_val_if_fail(pDoc,false);
 
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_return_val_if_fail(pFrame,false);
+
+	s_doListRevisions(pFrame, pDoc, pView);
+
+	return true;
+}
+
+Defun(revisionNew)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
+
+	PD_Document * pDoc = pView->getDocument();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_return_val_if_fail( pDoc && pFrame, false );
+
+	s_doMarkRevisions(pFrame, pDoc, pView, false, true);
+	pDoc->setMarkRevisions( true );
+	
+	return true;
+}
+
+Defun(revisionSelect)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
+
+	PD_Document * pDoc = pView->getDocument();
+	UT_return_val_if_fail(pDoc,false);
+
+	pDoc->setMarkRevisions( false );
+	pView->setShowRevisions( true );
+	
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame,false);
 

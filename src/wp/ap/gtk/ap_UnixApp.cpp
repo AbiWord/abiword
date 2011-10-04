@@ -29,11 +29,11 @@
 //#define DUMP_CLIPBOARD_PASTE 1
 //#define DUMP_CLIPBOARD_COPY  1
 
-#ifdef DUMP_CLIPBOARD_PASTE
-#include <fstream>
-#endif
 #ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
+#ifdef DUMP_CLIPBOARD_PASTE
+#include <fstream>
 #endif
 
 #include <stdio.h>

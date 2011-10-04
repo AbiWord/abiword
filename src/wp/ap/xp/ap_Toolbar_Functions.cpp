@@ -960,3 +960,15 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_AlwaysDisabled)
   UT_UNUSED(pszState);
   return EV_TIS_Gray;
 }
+
+Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_HasRevisions)
+{
+	ABIWORD_VIEW;
+ 	UT_return_val_if_fail (pView, EV_TIS_Gray);
+
+	if(pView->getDocument()->getHighestRevisionId() == 0)
+		return EV_TIS_Hidden;
+	
+	return EV_TIS_ZERO;
+   
+}

@@ -80,6 +80,7 @@ class AP_UnixDialog_MarkRevisions: public AP_Dialog_MarkRevisions
 
 	GtkWidget * mEntryLbl ;
 	GtkWidget * mComment ;
+	GtkWidget * mButtonOK ;
 };
 
 #endif /* AP_UNIXDIALOG_MARKREVISIONS_H */

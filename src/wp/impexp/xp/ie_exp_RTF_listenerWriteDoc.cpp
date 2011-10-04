@@ -1440,6 +1440,49 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan,  const PP_AttrP
 	m_bBlankLine = false;
 	m_bInSpan = true;
 	m_apiLastSpan = apiSpan;
+
+
+	// export the generated ODT+CT move identifier
+    if ( pBlockAP )
+	{
+		const gchar * szDeltaMoveID = 0;
+		bool haveAttr = pBlockAP->getAttribute("delta:move-id", szDeltaMoveID );
+		if ( haveAttr )
+		{
+			UT_DEBUGMSG(("DOM: szDeltaMoveID = %s\n", szDeltaMoveID ));
+			m_pie->_rtf_open_brace();
+			m_pie->_rtf_keyword("*");
+			m_pie->_rtf_keyword("deltamoveid" );
+			m_pie->_rtf_chardata( szDeltaMoveID, strlen(szDeltaMoveID) );
+			m_pie->_rtf_close_brace();
+		}
+		else
+		{
+			UT_DEBUGMSG(("DOM: szDeltaMoveID = %s\n", "NOT FOUND..." ));
+		}
+	}
+#ifdef DEBUG
+	{
+		const gchar * t = 0;
+		if( pBlockAP )
+		{
+			if( pBlockAP->getAttribute("baz", t ) )
+			{
+				UT_DEBUGMSG(("DOM: b have baz value:%s\n", t ));
+			}
+		}
+		if(pBlockAP)
+			UT_DEBUGMSG(("DOM: b have baz:%d\n", pBlockAP->getAttribute("baz", t )));
+		if(pSpanAP)
+			UT_DEBUGMSG(("DOM: s have baz:%d\n", pSpanAP->getAttribute("baz", t )));
+		if(pBlockAP)
+			UT_DEBUGMSG(("DOM: b have baz2:%d\n", pBlockAP->getAttribute("baz2", t )));
+		if(pSpanAP)
+			UT_DEBUGMSG(("DOM: s have baz2:%d\n", pSpanAP->getAttribute("baz2", t )));
+		
+	}
+#endif
+	
 }
 
 void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 length, PT_DocPosition pos, bool bIgnorePosition)

@@ -168,6 +168,77 @@ pf_Frag* pf_Frag::getPrev(void) const
 	return it.value();
 }
 
+#include "pf_Frag_Strux.h"
+
+static bool isStuxType( const pf_Frag* const pf, PTStruxType t )
+{
+    if( pf->getType() != pf_Frag::PFT_Strux )
+        return false;
+
+    const pf_Frag_Strux* const pfs = static_cast<const pf_Frag_Strux* const>(pf);
+    return pfs->getStruxType() == t;
+}
+
+/**
+ * Get the next strux of the given type from the document. Note that
+ * the return value can never be this fragment even if this fragment
+ * is also a strux of the sought type.
+ * 
+ * This way, you can skip from on PTX_Block to the next in a loop using
+ * pf_Frag* pf = getFragOfType( PTX_Block );
+ * for( ; pf; pf = pf->getNextStrux(PTX_Block) )
+ * {
+ *   ...
+ * }
+ */
+pf_Frag_Strux* pf_Frag::getNextStrux(PTStruxType t) const
+{
+    UT_return_val_if_fail(m_pMyNode,NULL);
+    pf_Fragments& fragments = m_pPieceTable->getFragments();
+ 	pf_Fragments::Iterator it(&(fragments),m_pMyNode);
+    // If we are the desired type, move ahead already.
+    if( isStuxType( this, t ))
+    {
+        it++;
+    }
+    for( pf_Fragments::Iterator e = fragments.end(); it != e; ++it )
+    {
+        pf_Frag* pf = it.value();
+        if( !pf )
+            return 0;
+        if( isStuxType( pf, t ))
+        {
+            return static_cast<pf_Frag_Strux*>(pf);
+        }
+    }
+    return 0;
+}
+
+pf_Frag_Strux*
+pf_Frag::tryDownCastStrux(PTStruxType t) const
+{
+    if( getType() == pf_Frag::PFT_Strux )
+    {
+        pf_Fragments& fragments = m_pPieceTable->getFragments();
+        pf_Fragments::Iterator it(&(fragments),m_pMyNode);
+        pf_Frag* pf = it.value();
+        pf_Frag_Strux* pfs = static_cast<pf_Frag_Strux*>(pf);
+        PTStruxType eStruxType = pfs->getStruxType();
+        if( eStruxType == t )
+            return pfs;
+    }
+    return 0;
+}
+
+pf_Frag_Strux* tryDownCastStrux( pf_Frag* pf, PTStruxType t)
+{
+    if( !pf )
+        return 0;
+    return pf->tryDownCastStrux( t );
+}
+
+
+
 #include "pf_Frag_Object.h"
 #include "pf_Frag_Strux.h"
 #include "pd_DocumentRDF.h"

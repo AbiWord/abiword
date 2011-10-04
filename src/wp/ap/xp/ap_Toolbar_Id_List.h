@@ -121,4 +121,9 @@ toolbaritem(MERGEBELOW)
 #ifdef ENABLE_MENUBUTTON
 toolbaritem(MENU)
 #endif
+toolbaritem(REVISIONS_NEW)
+toolbaritem(REVISIONS_SELECT)
+toolbaritem(REVISIONS_SHOW_FINAL)
+toolbaritem(REVISIONS_FIND_PREV)
+toolbaritem(REVISIONS_FIND_NEXT)
 

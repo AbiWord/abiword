@@ -80,20 +80,54 @@ bool pt_PieceTable::appendStrux(PTStruxType pts, const gchar ** attributes, pf_F
 	return true;
 }
 
-pf_Frag * pt_PieceTable::_findLastStruxOfType(pf_Frag * pfStart, PTStruxType pst, bool bSkipEmbededSections)
+/**
+ * MIQ11: Extends the old _findLastStruxOfType adding a stopCondition
+ * for failure and returning a Strux* directly in the case of success.
+ * This is like a findBackwards() from a fragment.
+ * 
+ * stopConditions must be terminated with a PTX_StruxDummy entry like:
+ * PTStruxType stopCondition[] = { PTX_SectionTable, PTX_StruxDummy };
+ * 
+ * Find a fragment of strux type pst looking backwards from pfStart.
+ * If a strux fragment matching the stopCondition is found first then
+ * the function stops and returns 0. If no fragment with pst is found
+ * then 0 is returned.
+ *
+ * MAYBE: extend this again to take yes() and no() functors so a
+ *    function can call _findLastStruxOfType() and decide what is ok
+ *    and what is not using those.
+ *    boost::lambda would be handy to simplify the functors?
+ */
+pf_Frag_Strux* pt_PieceTable::_findLastStruxOfType( pf_Frag * pfStart,
+                                                    PTStruxType pst,
+                                                    PTStruxType* stopConditions,
+                                                    bool bSkipEmbededSections )
 {
 	UT_return_val_if_fail( pfStart, NULL );
 
 	pf_Frag * pf = pfStart;
-	while(pf)
+    PTStruxType* stopConditionsBegin = stopConditions;
+    PTStruxType* stopConditionsEnd   = stopConditions;
+    while( *stopConditionsEnd != PTX_StruxDummy )
+        ++stopConditionsEnd;
+
+    while(pf)
 	{
 		if(pf->getType() == pf_Frag::PFT_Strux)
 		{
 			pf_Frag_Strux * pfs2 = static_cast<pf_Frag_Strux*>(pf);
 
-			if(pfs2->getStruxType() == pst)
-				break;
+            PTStruxType eStruxType = pfs2->getStruxType();
 
+			if( eStruxType == pst)
+                return pfs2;
+            
+            if( stopConditionsEnd !=
+                std::find( stopConditionsBegin, stopConditionsEnd, eStruxType ))
+            {
+                return 0;
+            }
+            
 			if(bSkipEmbededSections)
 			{
 				if(pfs2->getStruxType() == PTX_EndTOC)
@@ -178,7 +212,18 @@ pf_Frag * pt_PieceTable::_findLastStruxOfType(pf_Frag * pfStart, PTStruxType pst
 			pf = pf->getPrev();
 	}
 
-	return pf;
+	return 0;
+}
+
+
+
+pf_Frag_Strux* pt_PieceTable::_findLastStruxOfType( pf_Frag * pfStart,
+                                                    PTStruxType pst,
+                                                    bool bSkipEmbededSections )
+{
+	UT_return_val_if_fail( pfStart, NULL );
+    PTStruxType stopCondition[] = { PTX_StruxDummy };
+    return _findLastStruxOfType( pfStart, pst, stopCondition, bSkipEmbededSections );
 }
 
 

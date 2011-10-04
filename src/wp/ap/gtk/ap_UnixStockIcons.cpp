@@ -60,6 +60,11 @@
 #include "../xp/ToolbarIcons/tb_edit_editfooter.xpm"
 #include "../xp/ToolbarIcons/tb_edit_removeheader.xpm"
 #include "../xp/ToolbarIcons/tb_edit_removefooter.xpm"
+#include "../xp/ToolbarIcons/tb_revision_new.xpm"
+#include "../xp/ToolbarIcons/tb_revision_select.xpm"
+#include "../xp/ToolbarIcons/tb_revision_show_final.xpm"
+#include "../xp/ToolbarIcons/tb_revision_find_prev.xpm"
+#include "../xp/ToolbarIcons/tb_revision_find_next.xpm"
 
 /*
  * Built-in stock icon definitions.
@@ -158,6 +163,18 @@ static struct AbiStockEntry {
 	AP_STRING_ID_TOOLBAR_LABEL_EDIT_REMOVEHEADER,	(const gchar **) tb_edit_removeheader_xpm },
   { ABIWORD_EDIT_REMOVEFOOTER,						AP_MENU_ID_EDIT_REMOVEFOOTER, 
 	AP_STRING_ID_TOOLBAR_LABEL_EDIT_REMOVEFOOTER,	(const gchar **) tb_edit_removefooter_xpm },
+
+  { ABIWORD_REVISIONS_NEW,							0,
+	AP_STRING_ID_TOOLBAR_LABEL_REVISIONS_NEW,		(const gchar **) tb_revision_new_xpm }, 
+  { ABIWORD_REVISIONS_SELECT,						0,
+	AP_STRING_ID_TOOLBAR_LABEL_REVISIONS_SELECT,	(const gchar **) tb_revision_select_xpm }, 
+  { ABIWORD_REVISIONS_SHOW_FINAL,					  0,
+	AP_STRING_ID_TOOLBAR_LABEL_REVISIONS_SHOW_FINAL,  (const gchar **) tb_revision_show_final_xpm }, 
+  { ABIWORD_REVISIONS_FIND_PREV,					  0,
+	AP_STRING_ID_TOOLBAR_LABEL_REVISIONS_FIND_PREV,  (const gchar **) tb_revision_find_prev_xpm }, 
+  { ABIWORD_REVISIONS_FIND_NEXT,					  0,
+	AP_STRING_ID_TOOLBAR_LABEL_REVISIONS_FIND_NEXT,  (const gchar **) tb_revision_find_next_xpm }, 
+
   { NULL,											0,
 	0, 											NULL }
 };
