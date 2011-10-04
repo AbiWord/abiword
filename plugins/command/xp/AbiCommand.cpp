@@ -1542,12 +1542,17 @@ AbiCommand::movePoint (const UT_GenericVector<const UT_UTF8String*> * pToks)
 			PT_DocPosition pos = static_cast < PT_DocPosition > (amt);
 
 			static_cast < FV_View * >(m_pCurView)->getEditableBounds (true, posEOD);
-			static_cast < FV_View * >(m_pCurView)->getEditableBounds (false, posBOD);
+            static_cast < FV_View * >(m_pCurView)->getEditableBounds (false, posBOD);
 
+            UT_DEBUGMSG(("pos:%d bod:%d eod:%d\n", pos, posBOD, posEOD ));
 			if (amt >= static_cast<UT_sint32>(posBOD) && amt <= static_cast<UT_sint32>(posEOD))
 				static_cast < FV_View * >(m_pCurView)->setPoint (pos);
 			else
 				return false;
+
+            // we really don't want to move to a symbolic position after this
+            // explicit movement.
+            return true;
 		}
 		else if (amt < 0)
 			return false;
