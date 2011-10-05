@@ -185,14 +185,7 @@ void AP_UnixDialog_Replace::runModeless(XAP_Frame * pFrame)
 static UT_UCS4String
 get_combobox_text(GtkWidget* combo)
 {
-	UT_UCS4String ucs;
-	GtkTreeIter iter;
-	char *str = NULL;
-	if (gtk_combo_box_get_active_iter(GTK_COMBO_BOX(combo), &iter))
-		gtk_tree_model_get(gtk_combo_box_get_model(GTK_COMBO_BOX(combo)),
-				           &iter, 0, &str, -1);
-	ucs = str;
-	g_free(str);
+	UT_UCS4String ucs = gtk_entry_get_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(combo))));
 
 	return ucs;
 }
