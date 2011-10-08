@@ -174,8 +174,8 @@ GtkWidget * AP_UnixDialog_EpubExportOptions::_constructWindow ()
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
 
-	const char * title   = static_cast<const char *>(pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpTitle));
-	const char * label   = static_cast<const char *>(pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpLabel));
+	const char * title   = "EPUB Export Options";
+	const char * label   = "Select EPUB export options:";
 	const char * save    = static_cast<const char *>(pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpSave));
 	const char * restore = static_cast<const char *>(pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpRestore));
 

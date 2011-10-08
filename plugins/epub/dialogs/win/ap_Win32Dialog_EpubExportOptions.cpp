@@ -85,7 +85,7 @@ BOOL AP_Win32Dialog_EpubExportOptions::_onInitDialog(HWND hWnd, WPARAM wParam, L
 
 	m_hDlg = hWnd;
 
-	str.fromUTF8("EPUB Export Properties");
+	str.fromUTF8("EPUB Export Options");
 	SetWindowTextW(hWnd,str.c_str());
 
 	str.fromUTF8(pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpSave));
