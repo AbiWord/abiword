@@ -1,15 +1,12 @@
-itex2MML[1] transforms itex (a dialect of latex) into MathML. We have
-modified itex2MML slightly to integrate better with AbiWord, and to make 
-it compile with gcc4. We hope to move (most of) these patches upstream soon.
+itex2MML[1] transforms itex (a dialect of latex) into MathML.
 
 The initial version used by AbiWord 2.4 was a rewrite of the then latest source 
 (dated June '05) of itexToMML [2] (the original maintainer stopped maintaining
 it). Our changes were accepted 'upstream', followed by a new release dubbed 
 itex2MLL 1.0 [3].
 
-Currently, we include itex2MML 1.4.5, without any modifications.
-Some documentation can be found here [4].
-
+Currently, we include itex2MML 1.4.8, with slight modifications to avoid
+compilation warnings. Some documentation can be found here [4].
 
 [1] http://pear.math.pitt.edu/mathzilla/itex2mml.html
 [2] http://golem.ph.utexas.edu/~distler/blog/

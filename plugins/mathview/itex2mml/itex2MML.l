@@ -1,11 +1,11 @@
-/*             itex2MML 1.4.5
- *   itex2MML.l last modified 10/2/2010
+/*             itex2MML 1.4.8
+ *   itex2MML.l last modified 9/21/2011
  */
 
 %{
 %}
 %option noyywrap
-%x MATH ATTRIBUTELIST BBOLD FRAKTUR CALLIGRAPHIC ROMAN PLAINTEXT INT1 INT2 INT3 MATHENV SVGENV SVGEND OPTARG ARRAYOPTIONS COLOPTS
+%x MATH ATTRIBUTELIST BBOLD FRAKTUR CALLIGRAPHIC ROMAN PLAINTEXT INT1 INT2 INT3 MATHENV SVGENV SVGEND OPTARG ARRAYOPTIONS COLOPTS TEXTOPTARG TEXTOPTARG1 RAISEBOX1 RAISEBOX2
 %{
 #include <string.h>
 
@@ -97,7 +97,9 @@ int itex2MML_displaymode = 0;
 
 [a-zA-Z]+       {yylval=itex2MML_copy_string(yytext); return MI;}
 
-[0-9,.]*[0-9]+          {yylval=itex2MML_copy_string(yytext); return MN;}
+[0-9]{1,3}(,[0-9]{3,3})*(\.[0-9]+)? |
+[0-9]*[\.][0-9]+                   |
+[0-9]+           {yylval=itex2MML_copy_string(yytext); return MN;}
 "\\infty"   |
 "\\infinity"     {yylval=itex2MML_copy_string("&infin;"); return MN;}
 
@@ -813,6 +815,8 @@ int itex2MML_displaymode = 0;
 
 "\\toggle"        {return TOGGLE;}
 
+"\\mathraisebox"  {BEGIN(RAISEBOX1); return RAISEBOX;}
+
 "\\fghilight" |
 "\\fghighlight"   {BEGIN(ATTRIBUTELIST); return FGHIGHLIGHT;}
 
@@ -822,9 +826,9 @@ int itex2MML_displaymode = 0;
 "\\color"        {BEGIN(ATTRIBUTELIST); return COLOR;}
 "\\bgcolor"        {BEGIN(ATTRIBUTELIST); return BGCOLOR;}
 
-"\\displaystyle"  {itex2MML_rowposn=2; return DISPLAY;}
+"\\displaystyle"  {itex2MML_displaymode=1; itex2MML_rowposn=2; return DISPLAY;}
 
-"\\textstyle"     {itex2MML_rowposn=2; return TEXTSTY;}
+"\\textstyle"     {itex2MML_displaymode=0; itex2MML_rowposn=2; return TEXTSTY;}
 
 "\\textsize"     {return TEXTSIZE;}
 
@@ -911,6 +915,7 @@ int itex2MML_displaymode = 0;
 "\\mathop"        {BEGIN(PLAINTEXT); return MATHOP;}
 "\\mathbin"       {BEGIN(PLAINTEXT); return MATHBIN;}
 "\\mathrel"       {BEGIN(PLAINTEXT); return MATHREL;}
+"\\itexnum"       {BEGIN(PLAINTEXT); return ITEXNUM;}
 
 "\\includegraphics"(\[[^\]]*\])?\{[^}]*\}	;
 
@@ -932,6 +937,26 @@ int itex2MML_displaymode = 0;
 <OPTARG>{
 "[" {if(itex2MML_optarg_ind < itex2MML_optarg_depth - 1 && itex2MML_inoptarg[itex2MML_optarg_ind] !=1 ){itex2MML_optarg_ind++; itex2MML_inoptarg[itex2MML_optarg_ind]=1;}; BEGIN(MATH); return OPTARGOPEN;}
 .   {BEGIN(MATH); unput(yytext[0]);}
+}
+
+<RAISEBOX1>{
+\{[\n\r\t ]*- {BEGIN(RAISEBOX2); return NEG;}
+\{[\n\r\t ]* {BEGIN(RAISEBOX2);}
+}
+
+<RAISEBOX2>{
+[^\}]*?\}  {yylval=itex2MML_copy_string(yytext); if ((yyleng > 1) && (yylval != itex2MML_empty_string)) yylval[yyleng-1]='\0'; BEGIN(TEXTOPTARG1); return TEXTSTRING;}
+}
+
+
+<TEXTOPTARG1>{
+\[[^\]]*?\] {yylval=itex2MML_copy_string(yytext+1); if ((yyleng > 1) && (yylval != itex2MML_empty_string)) yylval[yyleng-2]='\0'; BEGIN(TEXTOPTARG); return TEXTSTRING;}
+. {BEGIN(MATH); unput(yytext[0]);}
+}
+
+<TEXTOPTARG>{
+\[[^\]]*?\] {yylval=itex2MML_copy_string(yytext+1); if ((yyleng > 1) && (yylval != itex2MML_empty_string)) yylval[yyleng-2]='\0'; BEGIN(MATH); return TEXTSTRING;}
+. {BEGIN(MATH); unput(yytext[0]);}
 }
 
 <MATHENV>{
