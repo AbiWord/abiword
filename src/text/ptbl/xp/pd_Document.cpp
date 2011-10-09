@@ -75,6 +75,7 @@
 #include "ap_FrameData.h"
 
 #include "ut_go_file.h"
+#include "ut_std_string.h"
 
 /*! 
  * Helper class to import Page Referenced Images
@@ -8377,6 +8378,7 @@ STREAM& operator<<( STREAM& oss, const UT_UTF8String& s )
 std::string
 PD_XMLIDCreator::createUniqueXMLID( const std::string& desiredID, bool deepCopyRDF )
 {
+   
     if( m_impl->m_cacheIsVirgin )
         rebuildCache();
     
@@ -8396,9 +8398,26 @@ PD_XMLIDCreator::createUniqueXMLID( const std::string& desiredID, bool deepCopyR
     UT_UTF8String uuid;
 	uuido->toString(uuid);
     delete uuido;
+
+    std::string trimmedID = desiredID;
+    
+    //
+    // Check to see if desiredID is already an ID which has x-ID-uuid
+    // and if so, remove the old uuid so that we do not end up making
+    // hugely long xml:id strings as copy and paste is repeated.
+    //
+    if( starts_with( desiredID, "x-" )
+        && std::count( desiredID.begin(), desiredID.end(), '-' ) > 2 )
+    {
+        const int preambleLength = 2;
+        int epos  = desiredID.find( '-', preambleLength );
+        trimmedID = desiredID.substr( preambleLength, epos-preambleLength );
+        UT_DEBUGMSG(("createUniqueXMLID() epos:%d trimmedID:%s desired:%s\n",
+                     epos, trimmedID.c_str(), desiredID.c_str() ));
+    }
     
     std::stringstream ss;
-    ss << "x-" << desiredID << "-" << uuid;
+    ss << "x-" << trimmedID << "-" << uuid;
     std::string xmlid = ss.str();
     m_cache.insert( xmlid );
     UT_DEBUGMSG(("createUniqueXMLID() xmlid is in use! updated:%s\n", xmlid.c_str() ));
