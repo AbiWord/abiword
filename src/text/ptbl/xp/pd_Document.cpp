@@ -8363,7 +8363,7 @@ PD_XMLIDCreator::rebuildCache()
         }
     }
 
-	UT_DEBUGMSG(("PD_XMLIDCreator::rebuildCache() cache.sz:%d \n", m_cache.size() ));
+	UT_DEBUGMSG(("PD_XMLIDCreator::rebuildCache() cache.sz:%lu \n", m_cache.size() ));
     
 }
 
@@ -8374,7 +8374,6 @@ STREAM& operator<<( STREAM& oss, UT_UTF8String s )
     return oss;
 }
 
-    
 std::string
 PD_XMLIDCreator::createUniqueXMLID( const std::string& desiredID, bool deepCopyRDF )
 {
