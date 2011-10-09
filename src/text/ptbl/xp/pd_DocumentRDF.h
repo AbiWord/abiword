@@ -291,8 +291,9 @@ class ABI_EXPORT PD_RDFModel
     virtual std::string uriToPrefixed( const std::string& uri );
     virtual std::string prefixedToURI( const std::string& prefixed );
     
-    inline long size() { return getTripleCount(); }
-
+    inline long size()  { return getTripleCount(); }
+    inline bool empty() { return size() == 0; }
+    
     long getVersion() const { return m_version; }
     
 };

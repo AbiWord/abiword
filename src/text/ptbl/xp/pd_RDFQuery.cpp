@@ -605,6 +605,13 @@ PD_RDFQuery::executeQuery( const std::string& sparql_query_string )
 {
     PD_ResultBindings_t ret;
 
+    if( m_model->empty() )
+    {
+        // The redland backend assumes there are 1+ triples
+        // to avoid the edge case where there is nothing to query
+        return ret;
+    }
+    
     librdf_model* rdfmodel = getRedlandModel( m_model );
     librdf_uri*   base_uri = 0;
     librdf_query* query = librdf_new_query( getWorld(),
