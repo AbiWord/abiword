@@ -59,6 +59,7 @@
 #include "xap_Dlg_Print.h"
 #include "ap_Dialog_Id.h"
 #include "ut_std_string.h"
+#include "ut_conversion.h"
 
 #include "pd_DocumentRDF.h"
 #include "pd_RDFSupport.h"
@@ -563,7 +564,30 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
 			return -1;
 		}
 	}
+	else if (strcmp (pCom0->utf8_str (), "insertnewline") == 0)
+	{
+		if (count >= 1)
+		{
+            const UT_UTF8String *pText = new UT_UTF8String("\n");
+            UT_UCS4Char *pUCSText =
+                static_cast < UT_UCS4Char * >(UT_calloc (pText->size () + 1, sizeof (UT_UCS4Char)));
+            UT_UCS4_strcpy_char (pUCSText, pText->utf8_str ());
+            static_cast < FV_View * >(m_pCurView)->cmdCharInsert (pUCSText, pText->size ());
+            FREEP (pUCSText);
+            return 0;
+		}
+	}
+	else if (strcmp (pCom0->utf8_str (), "startnewparagraph") == 0)
+	{
+		if (count >= 1)
+		{
+            static_cast < FV_View * >(m_pCurView)->insertParagraphBreak();
+            return 0;
+        }
+    }
+    
 
+    
 	//
 	// delete
 	//
@@ -651,7 +675,55 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
 		else
 			return -1;
 	}
-
+	else if (strcmp (pCom0->utf8_str (), "selectcopy") == 0)
+	{
+		if (m_pCurView)
+		{
+			m_pCurView->cmdCopy ();
+			return 0;
+		}
+        return -1;
+    }
+	else if (strcmp (pCom0->utf8_str (), "run") == 0)
+	{
+        int runForSeconds = 0;
+        
+        if( pToks->getItemCount () > 1 )
+        {
+            int runForSeconds = toType<int>( pToks->getNthItem (1)->utf8_str());
+            while( runForSeconds >= 0 )
+            {
+                cerr << "runForSeconds:" << runForSeconds << endl;
+                while(gtk_events_pending())
+                    gtk_main_iteration ();
+                sleep( 1 );
+                --runForSeconds;
+            }
+        }
+        else
+        {
+            gtk_main ();
+        }
+        
+        return 0;
+    }
+	else if (strcmp (pCom0->utf8_str (), "paste") == 0)
+	{
+        bool bHonorFormatting = true;
+        
+        if( pToks->getItemCount () > 1 )
+		{
+            bHonorFormatting = isTrue(pToks->getNthItem (1)->utf8_str());
+        }
+        
+        if (m_pCurView)
+		{
+			m_pCurView->cmdPaste( bHonorFormatting );
+			return 0;
+		}
+        return -1;
+    }
+    
 	//
 	// findnext
 	//
@@ -1280,6 +1352,8 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
 		printf ("                              in the current document.\n");
 		printf ("inserttext <target>         - Insert <target> at the current point in the\n");
 		printf ("                              document.\n");
+		printf ("insertnewline               - Insert a newline at the current point in the doc\n");
+		printf ("startnewparagraph           - Create a new paragraph\n");
 		printf ("delete <args>               - Delete <args> characters at the current point\n");
 		printf ("                              in the document.\n");
 		printf ("replacenext <find> <target> - Replace the next occurrence of <find> with <target>\n");
@@ -1291,6 +1365,7 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
 		printf ("showpt                      - Show current point location\n");
 		printf ("selectstart                 - Start a selection at the current point\n");
 		printf ("selectclear                 - Clear the current selection.\n");
+		printf ("selectcopy                  - Copy selection.\n");
 		printf ("findnext <target>           - Find the next occurrence of target and select it.\n");
 		printf ("save <filename>             - Save the current document.\n");
 		printf ("                              If filename is omitted the file is saved to its\n");
@@ -1605,13 +1680,30 @@ AbiCommand::insertText (const UT_GenericVector<const UT_UTF8String*> * pToks)
 {
 	if (m_pCurView != NULL && pToks->getItemCount () > 1)
 	{
-		const UT_UTF8String *pText = pToks->getNthItem (1);
-		UT_UCS4Char *pUCSText =
-			static_cast < UT_UCS4Char * >(UT_calloc (pText->size () + 1, sizeof (UT_UCS4Char)));
-		UT_UCS4_strcpy_char (pUCSText, pText->utf8_str ());
-		static_cast < FV_View * >(m_pCurView)->cmdCharInsert (pUCSText, pText->size ());
-		FREEP (pUCSText);
+        cerr << "tokens:" << pToks->getItemCount () << endl;
+        
+        for (UT_sint32 i = 1; i < pToks->getItemCount (); )
+        {
+            const UT_UTF8String *pText = pToks->getNthItem (i);
+            UT_UCS4Char *pUCSText =
+                static_cast < UT_UCS4Char * >(UT_calloc (pText->size () + 1, sizeof (UT_UCS4Char)));
+            UT_UCS4_strcpy_char (pUCSText, pText->utf8_str ());
+            static_cast < FV_View * >(m_pCurView)->cmdCharInsert (pUCSText, pText->size ());
+            FREEP (pUCSText);
 
+            i++;
+            if( i < pToks->getItemCount() )
+            {
+                const UT_UTF8String text(" ");
+                const UT_UTF8String* pText = &text;
+                UT_UCS4Char *pUCSText =
+                    static_cast < UT_UCS4Char * >(UT_calloc (pText->size () + 1, sizeof (UT_UCS4Char)));
+                UT_UCS4_strcpy_char (pUCSText, pText->utf8_str ());
+                static_cast < FV_View * >(m_pCurView)->cmdCharInsert (pUCSText, pText->size ());
+                FREEP (pUCSText);
+            }
+        }
+        
 		return true;
 	}
 

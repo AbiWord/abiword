@@ -3005,7 +3005,8 @@ void IE_Exp_HTML_Listener::_makeStylesheet(PT_AttrPropIndex api)
     m_pStyleTree->print(&styleListener);
     
     m_stylesheet = sStyleSheet; // Stylesheet for TOC`s and so on
-    m_stylesheet += reinterpret_cast<const char*>(buffer.getPointer(0));
+	if( const char* p = reinterpret_cast<const char*>(buffer.getPointer(0)))
+		m_stylesheet += p;
 
 	UT_UTF8String bodyStyle = "body{\n";
 	const gchar* szName = NULL;

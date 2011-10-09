@@ -8368,7 +8368,7 @@ PD_XMLIDCreator::rebuildCache()
 }
 
 template <class STREAM>
-STREAM& operator<<( STREAM& oss, UT_UTF8String s )
+STREAM& operator<<( STREAM& oss, const UT_UTF8String& s )
 {
     oss << s.utf8_str();
     return oss;

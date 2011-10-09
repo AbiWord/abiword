@@ -37,7 +37,9 @@ using std::endl;
 using std::make_pair;
 using std::string;
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
 #include "pd_RDFQuery.h"
 
 
