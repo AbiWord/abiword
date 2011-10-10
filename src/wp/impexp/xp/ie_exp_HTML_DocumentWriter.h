@@ -47,7 +47,7 @@ AWML 2.2//EN\" \"http://www.abisource.com/2004/xhtml-awml/xhtml-awml.mod\">"
 #define XML_DECLARATION "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"
 
 class IE_Exp_HTML_ListenerImpl;
-class IE_Exp_HTML_DocumentWriter : public IE_Exp_HTML_ListenerImpl
+class ABI_EXPORT IE_Exp_HTML_DocumentWriter : public IE_Exp_HTML_ListenerImpl
 {
 public:
     IE_Exp_HTML_DocumentWriter(IE_Exp_HTML_OutputWriter* pOutputWriter);
@@ -151,7 +151,7 @@ protected:
 /*
  * Writer class for XHTML document creation
  */
-class IE_Exp_HTML_XHTMLWriter : public IE_Exp_HTML_DocumentWriter
+class ABI_EXPORT IE_Exp_HTML_XHTMLWriter : public IE_Exp_HTML_DocumentWriter
 {
 public:
     IE_Exp_HTML_XHTMLWriter(IE_Exp_HTML_OutputWriter* pOutputWriter);
@@ -171,7 +171,7 @@ private:
     
 };
 
-class IE_Exp_HTML_HTML4Writer : public IE_Exp_HTML_DocumentWriter
+class ABI_EXPORT IE_Exp_HTML_HTML4Writer : public IE_Exp_HTML_DocumentWriter
 {
 public:
     IE_Exp_HTML_HTML4Writer(IE_Exp_HTML_OutputWriter* pOutputWriter);
@@ -182,7 +182,7 @@ public:
  * This factory class gives ability to customize HTML exporter using 
  * different content generators
  */
-class IE_Exp_HTML_WriterFactory
+class ABI_EXPORT IE_Exp_HTML_WriterFactory
 {
 public:
     virtual IE_Exp_HTML_DocumentWriter *constructDocumentWriter(
@@ -191,7 +191,7 @@ public:
 };
 
 
-class IE_Exp_HTML_DefaultWriterFactory : public IE_Exp_HTML_WriterFactory
+class ABI_EXPORT IE_Exp_HTML_DefaultWriterFactory : public IE_Exp_HTML_WriterFactory
 {
 public:
     IE_Exp_HTML_DefaultWriterFactory(PD_Document *pDocument,

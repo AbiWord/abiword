@@ -34,7 +34,7 @@ class PX_ChangeRecord;
  * the caller that it doesn't need to keep walking the document
  * anymore.
  */
-struct PL_FinishingListener : public PL_Listener
+struct ABI_EXPORT PL_FinishingListener : public PL_Listener
 {
     virtual bool isFinished() = 0;
         
@@ -136,7 +136,7 @@ class ABI_EXPORT PL_ListenerCoupleCloser : public PL_Listener
                          stringlist_t& unclosed, stringlist_t& unopened );
     
     
-    struct AfterContentListener : public PL_FinishingListener
+    struct ABI_EXPORT AfterContentListener : public PL_FinishingListener
     {
         PL_ListenerCoupleCloser* m_self;
         AfterContentListener( PL_ListenerCoupleCloser* self )
@@ -152,7 +152,7 @@ class ABI_EXPORT PL_ListenerCoupleCloser : public PL_Listener
     };
     AfterContentListener m_AfterContentListener;
 
-    struct BeforeContentListener : public PL_FinishingListener
+    struct ABI_EXPORT BeforeContentListener : public PL_FinishingListener
     {
         PL_ListenerCoupleCloser* m_self;
         BeforeContentListener( PL_ListenerCoupleCloser* self )
@@ -168,7 +168,7 @@ class ABI_EXPORT PL_ListenerCoupleCloser : public PL_Listener
     };
     BeforeContentListener m_BeforeContentListener;
 
-    struct NullContentListener : public PL_FinishingListener
+    struct ABI_EXPORT NullContentListener : public PL_FinishingListener
     {
         PL_ListenerCoupleCloser* m_self;
         NullContentListener( PL_ListenerCoupleCloser* self )

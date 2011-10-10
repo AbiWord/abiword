@@ -19,6 +19,10 @@
  * 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "pd_RDFQuery.h"
 #include "pd_Document.h"
 #include "pt_PieceTable.h"
@@ -33,6 +37,8 @@
 using std::cerr;
 using std::endl;
 using std::make_pair;
+
+#ifdef WITH_REDLAND
 
 // RDF support
 #include <redland.h>
@@ -580,6 +586,10 @@ static librdf_model* getRedlandModel( PD_RDFModelHandle abimodel )
     return model;
 }
 
+#endif // ifdef WITH_REDLAND
+
+
+
 /**
  * Perpare to execute a SPARQL query on the submodel 'm' of the whole
  * document RDF 'rdf'. If you want to execute the query against all
@@ -605,6 +615,10 @@ PD_RDFQuery::executeQuery( const std::string& sparql_query_string )
 {
     PD_ResultBindings_t ret;
 
+#ifndef WITH_REDLAND
+        return ret;
+#else
+        
     if( m_model->empty() )
     {
         // The redland backend assumes there are 1+ triples
@@ -660,6 +674,8 @@ PD_RDFQuery::executeQuery( const std::string& sparql_query_string )
     }
     
     return ret;
+
+#endif
 }
 
 

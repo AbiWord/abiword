@@ -8,7 +8,7 @@ AM_CPPFLAGS = \
 	$(WP_CPPFLAGS)
 
 if HAVE_REDLAND
-REDLANDSOURCES = pd_RDFQuery.h pd_RDFQuery.cpp pd_RDFSupportRed.h
+REDLANDSOURCES = pd_RDFSupportRed.h
 endif
 
 libxp_la_SOURCES = \
@@ -19,6 +19,8 @@ libxp_la_SOURCES = \
 	pd_Document_TestRoutines.cpp \
 	pd_DocumentRDF.h \
 	pd_DocumentRDF.cpp \
+	pd_RDFQuery.h \
+	pd_RDFQuery.cpp \
 	$(REDLANDSOURCES) \
 	pd_RDFSupport.h \
 	pd_RDFSupport.cpp \

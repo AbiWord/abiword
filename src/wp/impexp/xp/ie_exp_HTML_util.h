@@ -127,7 +127,7 @@ private:
 
 
 
-class IE_Exp_HTML_MultipartExporter : public IE_Exp_HTML_DataExporter
+class ABI_EXPORT IE_Exp_HTML_MultipartExporter : public IE_Exp_HTML_DataExporter
 {
 public:
     IE_Exp_HTML_MultipartExporter(PD_Document* pDocument,
@@ -156,7 +156,7 @@ public:
     virtual void write(const UT_UTF8String &str) = 0;
  };
 
-class IE_Exp_HTML_FileWriter : public IE_Exp_HTML_OutputWriter
+class ABI_EXPORT IE_Exp_HTML_FileWriter : public IE_Exp_HTML_OutputWriter
 {
 public:
     IE_Exp_HTML_FileWriter(GsfOutput *output);
@@ -165,7 +165,7 @@ private:
     GsfOutput *m_output;
 };
 
-class IE_Exp_HTML_StringWriter: public IE_Exp_HTML_OutputWriter
+class ABI_EXPORT IE_Exp_HTML_StringWriter: public IE_Exp_HTML_OutputWriter
 {
 public:
     IE_Exp_HTML_StringWriter();
@@ -178,7 +178,7 @@ private:
 /**
  * Utility class that gives simple interface to create HTML and XML documents
  */
-class IE_Exp_HTML_TagWriter
+class ABI_EXPORT IE_Exp_HTML_TagWriter
 {
 public:
     IE_Exp_HTML_TagWriter(IE_Exp_HTML_OutputWriter *pOutputWriter);
