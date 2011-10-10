@@ -8368,12 +8368,13 @@ PD_XMLIDCreator::rebuildCache()
     
 }
 
-template <class STREAM>
-STREAM& operator<<( STREAM& oss, const UT_UTF8String& s )
-{
-    oss << s.utf8_str();
-    return oss;
-}
+// msvc doesn't like this
+// template <class STREAM>
+// STREAM& operator<<( STREAM& oss, const UT_UTF8String& s )
+// {
+//     oss << s.utf8_str();
+//     return oss;
+// }
 
 std::string
 PD_XMLIDCreator::createUniqueXMLID( const std::string& desiredID, bool deepCopyRDF )
@@ -8417,7 +8418,7 @@ PD_XMLIDCreator::createUniqueXMLID( const std::string& desiredID, bool deepCopyR
     }
     
     std::stringstream ss;
-    ss << "x-" << trimmedID << "-" << uuid;
+    ss << "x-" << trimmedID << "-" << uuid.utf8_str();
     std::string xmlid = ss.str();
     m_cache.insert( xmlid );
     UT_DEBUGMSG(("createUniqueXMLID() xmlid is in use! updated:%s\n", xmlid.c_str() ));
