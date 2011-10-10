@@ -164,8 +164,8 @@
 	DeclareDialog(AP_DIALOG_ID_STYLIST,			AP_Win32Dialog_Stylist)
 	DeclareDialog(AP_DIALOG_ID_LATEX,			AP_Win32Dialog_Latex)
 	DeclareDialog(AP_DIALOG_ID_ANNOTATION_PREVIEW,	AP_Win32Preview_Annotation)
-	DeclareDialog(AP_DIALOG_ID_RDF_QUERY,			AP_Win32Dialog_RDFQuery)
-	DeclareDialog(AP_DIALOG_ID_RDF_EDITOR,			AP_Win32Dialog_RDFEditor)
+    // DeclareDialog(AP_DIALOG_ID_RDF_QUERY,			AP_Win32Dialog_RDFQuery)
+	// DeclareDialog(AP_DIALOG_ID_RDF_EDITOR,			AP_Win32Dialog_RDFEditor)
  	// ... also add new dialogs here ...
 
 	//	Maleesh 6/8/2010 - 
