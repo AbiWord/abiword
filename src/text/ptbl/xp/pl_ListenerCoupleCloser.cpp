@@ -150,7 +150,7 @@ PL_ListenerCoupleCloser::populateStrux( PL_StruxDocHandle /*sdh*/,
     return true;
 }
 
-bool
+void
 PL_ListenerCoupleCloser::trackOpenClose( const std::string& id,
                                          bool isEnd,
                                          stringlist_t& unclosed,
@@ -239,6 +239,8 @@ PL_ListenerCoupleCloser::populate(PL_StruxFmtHandle /* sfh */,
                     
                     break;
                 }
+                default:
+                    break;
             }
             
             return true;
@@ -314,6 +316,8 @@ PL_ListenerCoupleCloser::populateAfter( PL_StruxFmtHandle sfh,
                         }
                         break;
                     }
+                default:
+                    break;
             }
             
             return true;
@@ -423,6 +427,8 @@ PL_ListenerCoupleCloser::populateBefore( PL_StruxFmtHandle sfh,
                         // }
                         break;
                     }
+                default:
+                    break;
             }
             
             return true;

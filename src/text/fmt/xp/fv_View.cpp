@@ -12991,6 +12991,7 @@ FV_View_BubbleBlocker::operator=( const FV_View_BubbleBlocker& r )
 		if( m_pView )
 			m_pView->incremenetBubbleBlockerCount();
 	}
+	return *this;
 }
 
 

@@ -132,7 +132,7 @@ class ABI_EXPORT PL_ListenerCoupleCloser : public PL_Listener
 
     bool shouldClose( const std::string& id, bool isEnd, stringlist_t& sl );
     bool shouldOpen( const std::string& id,  bool isEnd, stringlist_t& sl );
-    bool trackOpenClose( const std::string& id, bool isEnd,
+    void trackOpenClose( const std::string& id, bool isEnd,
                          stringlist_t& unclosed, stringlist_t& unopened );
     
     
@@ -179,14 +179,14 @@ class ABI_EXPORT PL_ListenerCoupleCloser : public PL_Listener
         {
             return true;
         }
-        virtual bool populate( PL_StruxFmtHandle sfh,
-                               const PX_ChangeRecord * pcr )
+        virtual bool populate( PL_StruxFmtHandle,
+                               const PX_ChangeRecord* )
         {
             return false;
         }
-        virtual bool populateStrux( PL_StruxDocHandle sdh,
-                                    const PX_ChangeRecord * pcr,
-                                    PL_StruxFmtHandle * psfh)
+        virtual bool populateStrux( PL_StruxDocHandle,
+                                    const PX_ChangeRecord*,
+                                    PL_StruxFmtHandle*)
         {
             return false;
         }            
