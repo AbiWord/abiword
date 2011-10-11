@@ -48,18 +48,18 @@
 class IE_Exp_HTML_ListenerImpl {
 public:
 
-    virtual void openSpan(const gchar */*szStyleName*/, const UT_UTF8String& /*style*/) {}
+    virtual void openSpan(const gchar * /*szStyleName*/, const UT_UTF8String& /*style*/) {}
     virtual void closeSpan() {}
     
     virtual void openHeading(size_t /*level*/, const gchar * /*id*/, 
-        const gchar */*szStyleName*/, const PP_AttrProp* /*pAP*/) {}
+        const gchar * /*szStyleName*/, const PP_AttrProp* /*pAP*/) {}
     virtual void closeHeading() {}
     
-    virtual void openBlock(const gchar */*szStyleName*/, 
+    virtual void openBlock(const gchar * /*szStyleName*/, 
         const UT_UTF8String & /*style*/, const PP_AttrProp* /*pAP*/) {}
     virtual void closeBlock() {}
     
-    virtual void openSection(const gchar */*szStyleName*/) {}
+    virtual void openSection(const gchar * /*szStyleName*/) {}
     virtual void closeSection() {}
     
     virtual void openField(const UT_UTF8String& /*fieldType*/, 
@@ -83,14 +83,14 @@ public:
     virtual void openTextbox(const UT_UTF8String &style) {}
     virtual void closeTextbox() {}
 
-    virtual void openBookmark(const gchar */*szBookmarkName*/) {}
+    virtual void openBookmark(const gchar * /*szBookmarkName*/) {}
     virtual void closeBookmark() {}
 
-    virtual void openHyperlink(const gchar */*szUri*/, 
-        const gchar */*szStyleName*/, const gchar */*szId*/) {}
+    virtual void openHyperlink(const gchar * /*szUri*/, 
+        const gchar * /*szStyleName*/, const gchar * /*szId*/) {}
     virtual void closeHyperlink() {}
 
-    virtual void openList(bool /*ordered*/, const gchar */*szStyleName*/,
+    virtual void openList(bool /*ordered*/, const gchar * /*szStyleName*/,
         const PP_AttrProp* /*pAP*/) {}
     virtual void closeList() {}
 
@@ -120,7 +120,7 @@ public:
         
     virtual void insertText(const UT_UTF8String &/*text*/) {}
     
-    virtual void insertTOC(const gchar */*title*/, 
+    virtual void insertTOC(const gchar * /*title*/, 
         const std::vector<UT_UTF8String> &/*items*/,
         const std::vector<UT_UTF8String> &/*itemUri*/){}
      
@@ -131,7 +131,7 @@ public:
         const std::vector<UT_UTF8String> &/*annotations*/) {}
     
     virtual void insertStyle(const UT_UTF8String &/*style*/) {}
-    virtual void insertJavaScript(const gchar */*src*/, const gchar* /*script*/) {}
+    virtual void insertJavaScript(const gchar * /*src*/, const gchar* /*script*/) {}
     virtual void insertTitle(const UT_UTF8String &/*title*/) {};
     virtual ~IE_Exp_HTML_ListenerImpl() {}
 };
