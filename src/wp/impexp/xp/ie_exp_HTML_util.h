@@ -83,7 +83,7 @@ class IE_Exp_HTML_OutputWriter;
  * This class allows to control creation of files (like CSS, JS and images) 
  * while exporting to {X,P}HTML 
  */ 
-class IE_Exp_HTML_DataExporter{
+class ABI_EXPORT IE_Exp_HTML_DataExporter{
 public:
     IE_Exp_HTML_DataExporter(PD_Document* pDocument, 
             const UT_UTF8String &baseName);
@@ -149,7 +149,7 @@ private:
 /**
  * Utility class that allows write character data or UTF8 strings
  */
-class IE_Exp_HTML_OutputWriter
+class ABI_EXPORT IE_Exp_HTML_OutputWriter
 {
 public:
     virtual ~IE_Exp_HTML_OutputWriter() {}
