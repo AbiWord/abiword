@@ -50,7 +50,10 @@ using std::cerr;
 using std::endl;
 
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
+
 #if WITH_REDLAND
 #include "pd_RDFQuery.h"
 #endif

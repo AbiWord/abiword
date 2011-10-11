@@ -42,7 +42,9 @@
 #include "pt_PieceTable.h"
 #include "pf_Frag_Strux.h"
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
 
 #include <sstream>
 #include <list>
