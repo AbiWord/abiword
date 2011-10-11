@@ -45,7 +45,7 @@
  * Listener for the {X,P}HTML and MHT document generators. Contains all methods
  * that can be handled to generate complete document.
  */
-class IE_Exp_HTML_ListenerImpl {
+class ABI_EXPORT IE_Exp_HTML_ListenerImpl {
 public:
 
     virtual void openSpan(const gchar * /*szStyleName*/, const UT_UTF8String& /*style*/) {}
