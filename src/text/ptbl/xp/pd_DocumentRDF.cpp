@@ -1199,7 +1199,7 @@ PD_RDFModelIterator::operator++()
 }
 
 bool
-PD_RDFModelIterator::operator==( const self_reference other )
+PD_RDFModelIterator::operator==( self_constref other )
 {
     if( m_end && other.m_end )
         return true;

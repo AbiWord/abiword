@@ -203,6 +203,7 @@ class ABI_EXPORT PD_RDFModelIterator
     void setup_pocol();
     
   public:
+    typedef const PD_RDFModelIterator& self_constref;
     typedef PD_RDFModelIterator& self_reference;
     typedef PD_RDFModelIterator  self_type;
     
@@ -211,7 +212,7 @@ class ABI_EXPORT PD_RDFModelIterator
     PD_RDFModelIterator( PD_RDFModelHandle model, const PP_AttrProp* AP );
     
     self_reference operator++();
-    bool operator==( const self_reference other );
+    bool operator==( self_constref other );
     PD_RDFModelIterator& operator=( const PD_RDFModelIterator& other );
 
     self_type operator++(int)
