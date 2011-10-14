@@ -70,7 +70,6 @@ cairo_t *GR_Win32CairoGraphics::_createCairo(HWND win)
 
 void GR_Win32CairoGraphics::_beginPaint()
 {
-	GR_CairoGraphics::_beginPaint(); // needed?
 	m_cr = _createCairo(m_hwnd);
 	_initCairo();
 }
@@ -80,7 +79,6 @@ void GR_Win32CairoGraphics::_endPaint()
 {
 	cairo_destroy(m_cr);
 	m_cr = NULL;
-	GR_CairoGraphics::_endPaint(); // needed?
 }
 
 GR_Graphics *GR_Win32CairoGraphics::graphicsAllocator(GR_AllocInfo& info)
