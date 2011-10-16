@@ -416,20 +416,16 @@ void AP_CocoaFrameImpl::_createDocView(GR_Graphics* &pG)
 	XAP_Frame*	pFrame = getFrame();
 	NSView*		docArea = [_getController() getMainView];
 	NSArray*	docAreaSubviews;
-	
-	docAreaSubviews = [docArea subviews];
-	if ([docAreaSubviews count] != 0) {
-		NSEnumerator *enumerator = [docAreaSubviews objectEnumerator];
-		NSView* aSubview;
-	
-		while ((aSubview = [enumerator nextObject])) {
-			[aSubview removeFromSuperviewWithoutNeedingDisplay];
-		}
-		
-		m_hScrollbar = NULL;
-		m_vScrollbar = NULL;
-		m_docAreaGRView = NULL;
-	}
+
+    docAreaSubviews = [docArea subviews];
+    if ([docAreaSubviews count] > 0) {
+        for (NSView *aSubview in [docAreaSubviews copy])
+            [aSubview removeFromSuperviewWithoutNeedingDisplay];
+        m_hScrollbar = NULL;
+        m_vScrollbar = NULL;
+        m_docAreaGRView = NULL;
+    }
+
 	NSRect frame = [docArea bounds];
 	NSRect controlFrame;
 	

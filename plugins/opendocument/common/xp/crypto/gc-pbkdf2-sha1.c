@@ -22,9 +22,9 @@
 
 // #include "gc.h"
 
+#include "gc-pbkdf2-sha1.h"
 #include "hmac.h"
 
-#include <stdlib.h>
 #include <string.h>
 
 /* Implement PKCS#5 PBKDF2 as per RFC 2898.  The PRF to use is hard

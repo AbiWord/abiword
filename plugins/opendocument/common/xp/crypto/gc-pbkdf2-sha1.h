@@ -21,6 +21,8 @@
 #ifndef __PBKDF2_SHA1__
 #define __PBKDF2_SHA1__
 
+#include <stdlib.h>
+
 # ifdef __cplusplus
 extern "C" {
 # endif
