@@ -20,9 +20,8 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <gdk/gdk.h>
+#include <gtk/gtk.h>
 #include <gdk/gdkx.h>
-#include <gdk/gdkkeysyms.h>
 
 #include "ut_types.h"
 #include "ut_assert.h"
@@ -85,7 +84,7 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 
 		// Gdk does us the favour of working out a translated keyvalue for us,
 		// but with the Ctrl keys, we do not want that -- see bug 9545
-		Display * display = GDK_DISPLAY();
+		Display * display = GDK_DISPLAY_XDISPLAY(gdk_window_get_display(e->window));
 		KeySym sym = XKeycodeToKeysym(display,
 									  e->hardware_keycode,
 									  e->state & GDK_SHIFT_MASK ? 1 : 0);
@@ -436,7 +435,7 @@ static bool s_isVirtualKeyCode(guint keyval)
 		return false; // was true before CJK patch
 
 	// Causes immediate on keypress segfault??
-	if (keyval >= GDK_KP_0 && keyval <= GDK_KP_9 && keyval != GDK_KP_Enter) // number pad keys
+	if (keyval >= GDK_KEY_KP_0 && keyval <= GDK_KEY_KP_9 && keyval != GDK_KEY_KP_Enter) // number pad keys
 		return false;
 
 	if (keyval > 0xFE00)				// see the above table
@@ -487,7 +486,8 @@ static GdkModifierType s_getAltMask(void)
 
 	int alt_mask = 0;
 
-	Display * display = GDK_DISPLAY();
+	//note that it might be better to use th current event to retrieve the display
+	Display * display = GDK_DISPLAY_XDISPLAY(gdk_display_get_default());
 
 	KeyCode kcAltL = XKeysymToKeycode(display,XK_Alt_L);
 	KeyCode kcAltR = XKeysymToKeycode(display,XK_Alt_R);

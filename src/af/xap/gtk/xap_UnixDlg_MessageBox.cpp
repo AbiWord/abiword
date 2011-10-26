@@ -151,7 +151,7 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 			
 			gtk_label_set_markup(GTK_LABEL(label), labelText.c_str());
 
-            GtkWidget * hbox = gtk_hbox_new(FALSE, 12);
+            GtkWidget * hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
   
 			gtk_box_pack_start (GTK_BOX (hbox), 
 					    gtk_image_new_from_stock(GTK_STOCK_DIALOG_WARNING, 
@@ -161,17 +161,15 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 			gtk_box_pack_start (GTK_BOX (hbox), label,
 					    TRUE, TRUE, 0);
 
-			gtk_box_pack_start (GTK_BOX (GTK_DIALOG (message)->vbox),
-					    hbox,
-					    FALSE, FALSE, 0);
+			GtkBox *content_area = GTK_BOX (gtk_dialog_get_content_area(GTK_DIALOG(message)));
+			gtk_box_pack_start (content_area, hbox, FALSE, FALSE, 0);
 
-			gtk_box_set_spacing(GTK_BOX(GTK_DIALOG (message)->vbox), 12);
+			gtk_box_set_spacing(content_area, 12);
 			gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
 			gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
 			
 			gtk_widget_show_all (hbox);
 
-			gtk_dialog_set_has_separator(GTK_DIALOG(message), FALSE);
 #else
 			message = gtk_message_dialog_new (toplevel, 
 							  GTK_DIALOG_MODAL,

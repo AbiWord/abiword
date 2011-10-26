@@ -114,15 +114,9 @@ static inline bool label_button_with_abi_pixmap( GtkWidget * button, const char 
 		return false;
 	}
 	UT_DEBUGMSG(("SEVIOR: found icon name %s \n",szIconName));
-	GdkBitmap * mask;
-	GdkColormap * colormap =  gtk_widget_get_colormap (button);
-	GdkPixmap * pixmap
-		= gdk_pixmap_colormap_create_from_xpm_d(button->window,colormap,
-							&mask, NULL,
-							(char **)pIconData);
-	if (!pixmap)
-		return false;
-	GtkWidget * wpixmap = gtk_image_new_from_pixmap(pixmap,mask);
+	GdkPixbuf *pixbuf = gdk_pixbuf_new_from_xpm_data(pIconData);
+	GtkWidget * wpixmap = gtk_image_new_from_pixbuf(pixbuf);
+	g_object_unref(pixbuf);
 	if (!wpixmap)
 		return false;
 	gtk_widget_show(wpixmap);
@@ -194,12 +188,12 @@ protected:
 	guint m_iSpaceAfterID;
 	GtkWidget * m_wSpaceAfterSpin;
 	GtkWidget * m_wSpaceAfterEntry;
-	GtkObject * m_oSpaceAfter_adj;
+	GtkAdjustment * m_oSpaceAfter_adj;
 	UT_sint32 m_iMaxColumnHeight;
 	guint m_iMaxColumnHeightID;
 	GtkWidget * m_wMaxColumnHeightSpin;
 	GtkWidget * m_wMaxColumnHeightEntry;
-	GtkObject * m_oSpinSize_adj;
+	GtkAdjustment * m_oSpinSize_adj;
 	UT_sint32 m_iSizeHeight;
     GtkWidget * m_checkOrder;
 };

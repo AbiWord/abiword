@@ -184,13 +184,11 @@ GtkWidget * AP_UnixDialog_Annotation::_constructWindow ()
 	GtkWidget * wReplace = GTK_WIDGET(gtk_builder_get_object(builder, "btReplace"));
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Annotation_Replace_LBL,s);
 	gtk_button_set_label(GTK_BUTTON(wReplace),s.c_str()); 
-#if GTK_CHECK_VERSION(2,12,0)
 	GtkWidget * wOK = GTK_WIDGET(gtk_builder_get_object(builder, "btOK"));
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Annotation_OK_tooltip,s);
 	gtk_widget_set_tooltip_text (wOK,s.c_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Annotation_Replace_tooltip,s);
 	gtk_widget_set_tooltip_text (wReplace,s.c_str());
-#endif
 
 
 	SET_ENTRY_TXT(Title)

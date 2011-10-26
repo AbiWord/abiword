@@ -135,14 +135,14 @@ void AP_UnixDialog_InsertBookmark::_setList(void)
 		bookmarks.push_back(getNthExistingBookmark(i));
 	}
 	
-	GtkComboBox * combo = GTK_COMBO_BOX(m_comboBookmark);
+	GtkComboBoxText * combo = GTK_COMBO_BOX_TEXT(m_comboBookmark);
 
 	if (bookmarks.size())
 	{
 		bookmarks.sort();
 		std::list<std::string>::iterator iter(bookmarks.begin());
 		for( ; iter != bookmarks.end(); ++iter) {
-			gtk_combo_box_append_text(combo, iter->c_str());
+			gtk_combo_box_text_append_text(combo, iter->c_str());
 		}
 	}
 	
@@ -172,7 +172,7 @@ void  AP_UnixDialog_InsertBookmark::_constructWindowContents(GtkWidget * contain
   gtk_widget_show (label1);
   gtk_box_pack_start (GTK_BOX (container), label1, FALSE, FALSE, 0);
 
-  m_comboBookmark = gtk_combo_box_entry_new_text();
+  m_comboBookmark = gtk_combo_box_text_new_with_entry();
   gtk_widget_show (m_comboBookmark);
   gtk_box_pack_start (GTK_BOX (container), m_comboBookmark, FALSE, FALSE, 0);
 }
@@ -188,9 +188,9 @@ GtkWidget*  AP_UnixDialog_InsertBookmark::_constructWindow(void)
   m_windowMain = abiDialogNew("insert bookmark dialog", TRUE, s.utf8_str());
 
   
-  vbox = gtk_vbox_new (FALSE, 6);
+  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
   gtk_widget_show (vbox);
-  gtk_container_add (GTK_CONTAINER (GTK_DIALOG (m_windowMain)->vbox), vbox);
+  gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area(GTK_DIALOG (m_windowMain))), vbox);
   gtk_container_set_border_width (GTK_CONTAINER (vbox), 5);
 
   _constructWindowContents ( vbox );

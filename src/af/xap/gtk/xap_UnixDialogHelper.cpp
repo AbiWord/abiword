@@ -228,11 +228,12 @@ void connectFocusModeless(GtkWidget *widget,const XAP_App * pApp)
 
 bool isTransientWindow(GtkWindow *window,GtkWindow *parent)
 {
+  GtkWindow *transient;
   if(window)
 	{
-	  while(window->transient_parent)
+	  while((transient=gtk_window_get_transient_for(window)))
 		{
-		  window=window->transient_parent;
+		  window=transient;
 		  if(window==parent)
 			return true;
 		}
@@ -271,7 +272,7 @@ static gint modal_keypress_cb ( GtkWidget * /*wid*/, GdkEventKey * event,
 								XAP_Dialog * pDlg )
 {
 	// propegate keypress up if not F1
-	if ( event->keyval == GDK_F1 || event->keyval == GDK_Help )
+	if ( event->keyval == GDK_KEY_F1 || event->keyval == GDK_KEY_Help )
 	{
 		sDoHelp( pDlg ) ;
 
@@ -289,7 +290,7 @@ static gint nonmodal_keypress_cb ( GtkWidget * /*wid*/, GdkEventKey * event,
 								   XAP_Dialog * pDlg )
 {
 	// propegate keypress up if not F1
-	if ( event->keyval == GDK_F1 || event->keyval == GDK_Help )
+	if ( event->keyval == GDK_KEY_F1 || event->keyval == GDK_KEY_Help )
 	{
 		sDoHelp( pDlg ) ;
 		return TRUE ;
@@ -330,9 +331,9 @@ static void sAddHelpButton (GtkDialog * me, XAP_Dialog * pDlg)
 	GtkWidget * alignment = gtk_button_new_from_stock (GTK_STOCK_HELP);
 	GtkWidget * button = alignment;
 #endif
-    gtk_box_pack_start(GTK_BOX(me->action_area),
+    gtk_box_pack_start(GTK_BOX(gtk_dialog_get_action_area(me)),
 		       alignment, FALSE, FALSE, 0);
-    gtk_button_box_set_child_secondary (GTK_BUTTON_BOX(me->action_area),
+    gtk_button_box_set_child_secondary (GTK_BUTTON_BOX(gtk_dialog_get_action_area(me)),
 					alignment, TRUE);
     g_signal_connect (G_OBJECT (button), "clicked",
 		      G_CALLBACK(help_button_cb), pDlg);
@@ -491,9 +492,8 @@ GtkWidget * abiDialogNew(const char * role, gboolean resizable)
   if ( role )
     gtk_window_set_role ( GTK_WINDOW(dlg), role ) ;
   gtk_window_set_resizable ( GTK_WINDOW(dlg), resizable ) ;
-  gtk_dialog_set_has_separator ( GTK_DIALOG (dlg), false ) ;
   gtk_container_set_border_width ( GTK_CONTAINER (dlg), 5 ) ;
-  gtk_box_set_spacing ( GTK_BOX ( GTK_DIALOG (dlg)->vbox), 2 ) ;
+  gtk_box_set_spacing ( GTK_BOX ( gtk_dialog_get_content_area(GTK_DIALOG (dlg))), 2 ) ;
   return dlg ;
 }
 
@@ -767,40 +767,6 @@ void setLabelMarkup(GtkWidget * widget, const gchar * str)
 {
 	UT_String markupStr = UT_String_sprintf(gtk_label_get_label (GTK_LABEL(widget)), str);
 	gtk_label_set_markup (GTK_LABEL(widget), markupStr.c_str());
-}
-
-
-/*!
- * For a parented/displayed widget, this will just return
- * gtk_widget_ensure_style(w). For a non-displayed widgets,
- * This will return a valid GtkStyle for that widget
- */
-GtkStyle *
-get_ensured_style (GtkWidget * w)
-{
-	GtkStyle  * style = NULL;
-	GtkWidget * hidden_window = NULL;
-
-	if (w->parent == NULL)
-	{
-		hidden_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-		gtk_container_add (GTK_CONTAINER (hidden_window), w);
-	}
-
-	gtk_widget_ensure_style (w);
-	gtk_widget_realize (w);
-
-	style = gtk_widget_get_style (w);
-	UT_ASSERT(style);
-
-	if (hidden_window)
-	{
-		// now we destroy the hidden window
-		gtk_container_remove (GTK_CONTAINER(hidden_window), w);
-		gtk_widget_destroy (hidden_window);
-	}
-
-	return style;
 }
 
 /*!

@@ -31,7 +31,7 @@ std::string tostr( GtkEntry* e );
 std::string getSelectedText( GtkTreeView* tv, int colnum = 0 );
 void selectNext( GtkTreeView* tv );
 void selectPrev( GtkTreeView* tv );
-void append( GtkComboBox* combo, const std::list< std::string >& data );
+void append( GtkComboBoxText* combo, const std::list< std::string >& data );
 std::string tostr( GtkComboBox* combo );
 
 

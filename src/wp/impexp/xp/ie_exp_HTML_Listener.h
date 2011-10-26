@@ -80,7 +80,7 @@ public:
     virtual void openAnnotation() {}
     virtual void closeAnnotation() {}
 
-    virtual void openTextbox(const UT_UTF8String &style) {}
+    virtual void openTextbox(const UT_UTF8String &/*style*/) {}
     virtual void closeTextbox() {}
 
     virtual void openBookmark(const gchar * /*szBookmarkName*/) {}

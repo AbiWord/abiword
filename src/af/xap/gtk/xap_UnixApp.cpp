@@ -29,9 +29,7 @@
 #endif
 
 #include <glib.h>
-#include <gtk/gtkwidget.h>
-#include <gtk/gtkmain.h>
-#include <gdk/gdkrgb.h>
+#include <gtk/gtk.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -61,7 +59,6 @@
 #include <glib/gstdio.h>
 #include <gsf/gsf-utils.h>
 #include <goffice/goffice.h>
-#include "gr_UnixPangoPixmapGraphics.h"
 
 #ifdef WITH_GNOMEVFS
   #include <libgnomevfs/gnome-vfs.h>
@@ -109,17 +106,6 @@ XAP_UnixApp::XAP_UnixApp(const char * szAppName)
 		bSuccess = pGF->registerClass(CairoNull_Graphics::graphicsAllocator,
 									  CairoNull_Graphics::graphicsDescriptor,
 									  CairoNull_Graphics::s_getClassId());
-		UT_ASSERT( bSuccess );
-		
-		bSuccess = pGF->registerClass(GR_UnixPangoPixmapGraphics::graphicsAllocator,
-									  GR_UnixPangoPixmapGraphics::graphicsDescriptor,
-									  GR_UnixPangoPixmapGraphics::s_getClassId());
-
-		if(bSuccess)
-		{
-			pGF->registerAsDefault(GR_UnixPangoPixmapGraphics::s_getClassId(), false);
-		}
-
 		UT_ASSERT( bSuccess );
 
 		/* We need to link CairoNull_Graphics because the AbiCommand

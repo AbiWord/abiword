@@ -120,11 +120,11 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	GtkWidget * m_wPreviewArea;
 	GtkWidget * m_wDelimEntry;
 	GtkWidget * m_wDecimalEntry;
-	GtkObject * m_oAlignList_adj;
+	GtkAdjustment * m_oAlignList_adj;
 	GtkWidget * m_wAlignListSpin;
-	GtkObject * m_oIndentAlign_adj;
+	GtkAdjustment * m_oIndentAlign_adj;
 	GtkWidget * m_wIndentAlignSpin;
-	GtkObject * m_oLevelSpin_adj;
+	GtkAdjustment * m_oLevelSpin_adj;
 	GtkComboBox * m_wFontOptions;
 	GtkListStore * m_wFontOptions_menu;
 	GtkWidget * m_wCustomFrame;
@@ -137,7 +137,7 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	XAP_GtkObjectHolder<GtkListStore> m_wListStyle_menu;
 	GtkComboBox * m_wListTypeBox;
 	XAP_GtkObjectHolder<GtkListStore> m_wListType_menu;
-	GtkObject * m_oStartSpin_adj;
+	GtkAdjustment * m_oStartSpin_adj;
 	GtkWidget * m_wStartSpin;
 	GtkWidget * m_wStartSub_label;
 	GtkWidget * m_wStartNew_label;

@@ -113,7 +113,7 @@ void XAP_UnixClipboard::common_get_func(GtkClipboard * /*clipboard*/,
 	
 	guint ntargets = m_vecFormat_GdkAtom.getItemCount();
 	
-	GdkAtom needle = selection_data->target;
+	GdkAtom needle = gtk_selection_data_get_target(selection_data);
 	for (guint i = 0 ; i < ntargets ; i++)
 	{
 		if (needle == m_vecFormat_GdkAtom.getNthItem(i))
@@ -191,9 +191,7 @@ void XAP_UnixClipboard::finishedAddingData(void)
 			       s_clipboard_clear_func,
 			       this);
 
-#if GTK_CHECK_VERSION(2,6,0)
   gtk_clipboard_set_can_store (gtkClipboardForTarget(TAG_ClipboardOnly), m_Targets, m_nTargets);
-#endif
 }
 
 void XAP_UnixClipboard::clearData(bool bClipboard, bool bPrimary)
@@ -322,13 +320,14 @@ bool XAP_UnixClipboard::_getDataFromServer(T_AllowGet tFrom, const char** format
 		UT_DEBUGMSG(("Looking for %s on clipbaord \n",formatList[i]));
 		if(selection)
 		{
-			if (selection->data && (selection->length > 0))
+			if (gtk_selection_data_get_target(selection) && (gtk_selection_data_get_length(selection) > 0))
 			{
 			  if(!rval)
 			    {
 				m_databuf.truncate(0);
-				m_databuf.append(static_cast<UT_Byte *>(selection->data), static_cast<UT_uint32>(selection->length));
-				*pLen = selection->length;
+				*pLen = gtk_selection_data_get_length(selection);
+				m_databuf.append(static_cast<const UT_Byte *>(gtk_selection_data_get_data(selection)),
+				                 *pLen);
 				*ppData = (void *)(m_databuf.getPointer(0));
 				*pszFormatFound = formatList[i];
 				rval = true;

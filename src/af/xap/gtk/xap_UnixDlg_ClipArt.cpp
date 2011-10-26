@@ -142,8 +142,8 @@ void XAP_UnixDialog_ClipArt::runModal(XAP_Frame * pFrame)
 	abiAddStockButton(GTK_DIALOG(this->dlg), GTK_STOCK_OK, GTK_RESPONSE_OK);
 	connectFocus(GTK_WIDGET(this->dlg), pFrame);
 
-	GtkWidget *vbox = gtk_vbox_new (FALSE, 10);
-	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(this->dlg)->vbox), vbox);
+	GtkWidget *vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 10);
+	gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area(GTK_DIALOG(this->dlg))), vbox);
 	
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_CLIPART_Loading, s);
 	this->progress = gtk_progress_bar_new ();

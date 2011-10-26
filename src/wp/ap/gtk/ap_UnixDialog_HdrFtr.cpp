@@ -132,7 +132,7 @@ void AP_UnixDialog_HdrFtr::runModal(XAP_Frame * pFrame)
 void AP_UnixDialog_HdrFtr::CheckChanged(HdrFtr_Control which)
 {
 	bool value = false;
-	if(GTK_TOGGLE_BUTTON (m_wHdrFtrCheck[which])->active)
+	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON (m_wHdrFtrCheck[which])))
 	{
 		value = true;
 	}
@@ -155,7 +155,7 @@ void AP_UnixDialog_HdrFtr::RestartSpinChanged(void)
 void AP_UnixDialog_HdrFtr::RestartChanged(void)
 {
 	UT_sint32 RestartValue = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_wSpin));
-	if(GTK_TOGGLE_BUTTON (m_wRestartButton)->active)
+	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON (m_wRestartButton)))
 	{
 		gtk_widget_set_sensitive(m_wRestartLabel,TRUE);
 		gtk_widget_set_sensitive(m_wSpin,TRUE);

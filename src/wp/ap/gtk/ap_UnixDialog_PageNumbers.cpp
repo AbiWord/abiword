@@ -44,8 +44,8 @@
 
 /*****************************************************************/
 
-static gint s_preview_exposed(GtkWidget * /*w*/,
-			      GdkEventExpose * /*e*/,
+static gint s_preview_draw(GtkWidget * /*w*/,
+			      cairo_t * /*cr*/,
 			      AP_UnixDialog_PageNumbers * dlg)
 {
 	UT_ASSERT(dlg);
@@ -116,7 +116,7 @@ void AP_UnixDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
 	
 	UT_return_if_fail(unixapp);
-	UT_return_if_fail(m_previewArea && m_previewArea->window);
+	UT_return_if_fail(m_previewArea && gtk_widget_get_window(m_previewArea));
 	DELETEP (m_unixGraphics);
 	
 	// make a new Unix GC
@@ -126,14 +126,16 @@ void AP_UnixDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 	
 	
 	// let the widget materialize
+	GtkAllocation allocation;
+	gtk_widget_get_allocation(m_previewArea, &allocation);
 	_createPreviewFromGC(m_unixGraphics,
-		   static_cast<UT_uint32>(m_previewArea->allocation.width),
-		   static_cast<UT_uint32>(m_previewArea->allocation.height));
+		   static_cast<UT_uint32>(allocation.width),
+		   static_cast<UT_uint32>(allocation.height));
 		   
 	// Todo: we need a good widget to query with a probable
 	// Todo: non-white (i.e. gray, or a similar bgcolor as our parent widget)
 	// Todo: background. This should be fine
-	m_unixGraphics->init3dColors(m_previewArea->style);
+	m_unixGraphics->init3dColors(gtk_widget_get_style_context(m_previewArea));
 
 	// hack in a quick draw here
 	_updatePreview(m_recentAlign, m_recentControl);
@@ -221,7 +223,7 @@ GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
 	g_signal_connect(G_OBJECT(radioRight),  "clicked", G_CALLBACK(s_alignment_changed), static_cast<gpointer>(this));
 
 	// the expose event off the preview
-	g_signal_connect(G_OBJECT(m_previewArea), "expose_event", G_CALLBACK(s_preview_exposed), static_cast<gpointer>(this));	
+	g_signal_connect(G_OBJECT(m_previewArea), "draw", G_CALLBACK(s_preview_draw), static_cast<gpointer>(this));	
 
 	g_object_unref(G_OBJECT(builder));
 

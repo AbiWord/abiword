@@ -81,8 +81,10 @@ void AP_UnixFrame::setXScrollRange(void)
 		width = static_cast<AP_FrameData*>(m_pData)->m_pDocLayout->getWidth();
 
 	int windowWidth = 0;
+	GtkAllocation allocation;
+	gtk_widget_get_allocation(GTK_WIDGET(pFrameImpl->m_dArea),&allocation);
 	if(pFrameImpl->m_dArea) //this isn't guaranteed in AbiCommand
-		windowWidth = static_cast<int>(pGr->tluD (GTK_WIDGET(pFrameImpl->m_dArea)->allocation.width));
+		windowWidth = static_cast<int>(pGr->tluD (allocation.width));
 	
 	int newvalue = ((m_pView) ? m_pView->getXScrollOffset() : 0);
 	int newmax = width - windowWidth; /* upper - page_size */
@@ -95,9 +97,9 @@ void AP_UnixFrame::setXScrollRange(void)
 	bool bDifferentLimits = false;
 	if(pFrameImpl->m_pHadj) //this isn't guaranteed in AbiCommand
 	{
-		bDifferentPosition = (newvalue != pFrameImpl->m_pHadj->value);
-		bDifferentLimits = ((width-windowWidth) != pFrameImpl->m_pHadj->upper-
-						                        pFrameImpl->m_pHadj->page_size);
+		bDifferentPosition = (newvalue != gtk_adjustment_get_value(pFrameImpl->m_pHadj));
+		bDifferentLimits = ((width-windowWidth) != gtk_adjustment_get_upper(pFrameImpl->m_pHadj)-
+						                        gtk_adjustment_get_page_size(pFrameImpl->m_pHadj));
 	}
 		
 	pFrameImpl->_setScrollRange(apufi_scrollX, newvalue, static_cast<gfloat>(width), static_cast<gfloat>(windowWidth));
@@ -105,8 +107,8 @@ void AP_UnixFrame::setXScrollRange(void)
 	if (m_pView && (bDifferentPosition || bDifferentLimits))
 		m_pView->sendHorizontalScrollEvent(newvalue, 
 										   static_cast<UT_sint32>
-												(pFrameImpl->m_pHadj->upper-
-												 pFrameImpl->m_pHadj->page_size));
+												(gtk_adjustment_get_upper(pFrameImpl->m_pHadj)-
+												 gtk_adjustment_get_page_size(pFrameImpl->m_pHadj)));
 }
 
 void AP_UnixFrame::setYScrollRange(void)
@@ -120,8 +122,10 @@ void AP_UnixFrame::setYScrollRange(void)
 		height = static_cast<AP_FrameData*>(m_pData)->m_pDocLayout->getHeight();
 
 	int windowHeight = 0;
+	GtkAllocation allocation;
+	gtk_widget_get_allocation(GTK_WIDGET(pFrameImpl->m_dArea),&allocation);
 	if(pFrameImpl->m_dArea) //this isn't guaranteed in AbiCommand
-		windowHeight = static_cast<int>(pGr->tluD (GTK_WIDGET(pFrameImpl->m_dArea)->allocation.height));
+		windowHeight = static_cast<int>(pGr->tluD (allocation.height));
 
 	int newvalue = ((m_pView) ? m_pView->getYScrollOffset() : 0);
 	int newmax = height - windowHeight;	/* upper - page_size */
@@ -134,19 +138,19 @@ void AP_UnixFrame::setYScrollRange(void)
 	UT_sint32 diff = 0;
 	if(pFrameImpl->m_pVadj) //this isn't guaranteed in AbiCommand
 	{
-		bDifferentPosition = (newvalue != static_cast<UT_sint32>(pFrameImpl->m_pVadj->value +0.5));
-		diff = static_cast<UT_sint32>(pFrameImpl->m_pVadj->upper-
-										pFrameImpl->m_pVadj->page_size +0.5);
+		bDifferentPosition = (newvalue != static_cast<UT_sint32>(gtk_adjustment_get_value(pFrameImpl->m_pVadj) +0.5));
+		diff = static_cast<UT_sint32>(gtk_adjustment_get_upper(pFrameImpl->m_pVadj)-
+		                              gtk_adjustment_get_page_size(pFrameImpl->m_pVadj) +0.5);
 	}
 
 
 	if(bDifferentPosition)
 	{
-		UT_sint32 iDU = pGr->tdu( static_cast<UT_sint32>(pFrameImpl->m_pVadj->value +0.5) - newvalue);
+		UT_sint32 iDU = pGr->tdu( static_cast<UT_sint32>(gtk_adjustment_get_value(pFrameImpl->m_pVadj) +0.5) - newvalue);
 		if(iDU == 0)
 		{
 			bDifferentPosition = false;
-			pFrameImpl->m_pVadj->value = static_cast<gdouble>(newvalue);
+			gtk_adjustment_set_value(pFrameImpl->m_pVadj, static_cast<gdouble>(newvalue));
 		}
 	}
 	bool bDifferentLimits = ((height-windowHeight) != diff);
@@ -156,8 +160,8 @@ void AP_UnixFrame::setYScrollRange(void)
 		pFrameImpl->_setScrollRange(apufi_scrollY, newvalue, static_cast<gfloat>(height), static_cast<gfloat>(windowHeight));
 		m_pView->sendVerticalScrollEvent(newvalue, 
 										 static_cast<UT_sint32>
-											   (pFrameImpl->m_pVadj->upper -
-												pFrameImpl->m_pVadj->page_size));
+											   (gtk_adjustment_get_upper(pFrameImpl->m_pVadj) -
+												gtk_adjustment_get_page_size(pFrameImpl->m_pVadj)));
 	}
 }
 
@@ -267,8 +271,8 @@ void AP_UnixFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange
 	// (with clamping).  then cause the view to scroll.
 	
 	gfloat yoffNew = yoff;
-	gfloat yoffMax = pFrameImpl->m_pVadj->upper - 
-		pFrameImpl->m_pVadj->page_size;
+	gfloat yoffMax = gtk_adjustment_get_upper(pFrameImpl->m_pVadj) - 
+		gtk_adjustment_get_page_size(pFrameImpl->m_pVadj);
 	if (yoffMax <= 0)
 		yoffNew = 0;
 	else if (yoffNew > yoffMax)
@@ -314,8 +318,8 @@ void AP_UnixFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrange
 	// (with clamping).  then cause the view to scroll.
 
 	gfloat xoffNew = xoff;
-	gfloat xoffMax = pFrameImpl->m_pHadj->upper - 
-		pFrameImpl->m_pHadj->page_size;
+	gfloat xoffMax = gtk_adjustment_get_upper(pFrameImpl->m_pVadj) - 
+		gtk_adjustment_get_page_size(pFrameImpl->m_pHadj);
 	if (xoffMax <= 0)
 		xoffNew = 0;
 	else if (xoffNew > xoffMax)
@@ -380,9 +384,9 @@ void AP_UnixFrame::toggleTopRuler(bool bRulerOn)
 	{
 		if(pFrameData->m_pTopRuler)
 		{
-			if(pFrameImpl->m_topRuler && GTK_IS_OBJECT(pFrameImpl->m_topRuler))
+			if(pFrameImpl->m_topRuler && GTK_IS_WIDGET(pFrameImpl->m_topRuler))
 			{
-				gtk_object_destroy( GTK_OBJECT(pFrameImpl->m_topRuler) );
+				gtk_widget_destroy( GTK_WIDGET(pFrameImpl->m_topRuler) );
 			}			
 			DELETEP(pFrameData->m_pTopRuler);
 		}
@@ -394,11 +398,8 @@ void AP_UnixFrame::toggleTopRuler(bool bRulerOn)
 		pFrameImpl->m_topRuler = pUnixTopRuler->createWidget();
 
 		// attach everything	
-		gtk_table_attach(GTK_TABLE(pFrameImpl->m_innertable), 
-				 pFrameImpl->m_topRuler, 0, 2, 0, 1, 
-				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-				 (GtkAttachOptions)(GTK_FILL),
-				 0, 0);
+		gtk_grid_attach(GTK_GRID(pFrameImpl->m_innergrid), 
+				 pFrameImpl->m_topRuler, 0, 0, 2, 1);
 
 		static_cast<AP_TopRuler *>(pUnixTopRuler)->setView(m_pView,iZoom);
 
@@ -412,9 +413,9 @@ void AP_UnixFrame::toggleTopRuler(bool bRulerOn)
 	else
 	{
 		// delete the actual widgets
-		if(pFrameImpl->m_topRuler && GTK_IS_OBJECT(pFrameImpl->m_topRuler))
+		if(pFrameImpl->m_topRuler && GTK_IS_WIDGET(pFrameImpl->m_topRuler))
 		{
-			gtk_object_destroy( GTK_OBJECT(pFrameImpl->m_topRuler) );
+			gtk_widget_destroy( GTK_WIDGET(pFrameImpl->m_topRuler) );
 		}
 		DELETEP(pFrameData->m_pTopRuler);
 		pFrameImpl->m_topRuler = NULL;
@@ -438,9 +439,9 @@ void AP_UnixFrame::toggleLeftRuler(bool bRulerOn)
 //
 		if(pFrameData->m_pLeftRuler)
 		{
-			if (pFrameImpl->m_leftRuler && GTK_IS_OBJECT(pFrameImpl->m_leftRuler))
+			if (pFrameImpl->m_leftRuler && GTK_IS_WIDGET(pFrameImpl->m_leftRuler))
 			{
-				gtk_object_destroy(GTK_OBJECT(pFrameImpl->m_leftRuler) );
+				gtk_widget_destroy(GTK_WIDGET(pFrameImpl->m_leftRuler) );
 			}		
 			DELETEP(pFrameData->m_pLeftRuler);
 		} 
@@ -451,19 +452,16 @@ void AP_UnixFrame::toggleLeftRuler(bool bRulerOn)
 		pFrameData->m_pLeftRuler = pUnixLeftRuler;		
 		pFrameImpl->m_leftRuler = pUnixLeftRuler->createWidget();
 
-		gtk_table_attach(GTK_TABLE(pFrameImpl->m_innertable), 
-				 pFrameImpl->m_leftRuler, 0, 1, 1, 2,
-				 (GtkAttachOptions)(GTK_FILL),
-				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-				 0,0);
+		gtk_grid_attach(GTK_GRID(pFrameImpl->m_innergrid), 
+				 pFrameImpl->m_leftRuler, 0, 1, 1, 1);
 		static_cast<AP_LeftRuler *>(pUnixLeftRuler)->setView(m_pView,iZoom);
 		setYScrollRange();
 	}
 	else
 	{
-	    if (pFrameImpl->m_leftRuler && GTK_IS_OBJECT(pFrameImpl->m_leftRuler))
+	    if (pFrameImpl->m_leftRuler && GTK_IS_WIDGET(pFrameImpl->m_leftRuler))
 		{
-			gtk_object_destroy(GTK_OBJECT(pFrameImpl->m_leftRuler) );
+			gtk_widget_destroy(GTK_WIDGET(pFrameImpl->m_leftRuler) );
 		}
 	    DELETEP(pFrameData->m_pLeftRuler);
 	    pFrameImpl->m_leftRuler = NULL;
@@ -519,7 +517,7 @@ bool AP_UnixFrame::_createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom)
 
 	GtkWidget *widget = GTK_WIDGET(static_cast<AP_UnixFrameImpl *>(getFrameImpl())->m_dArea);
 	GR_UnixCairoGraphics *pUnixGraphics = static_cast<GR_UnixCairoGraphics *>(pG);
-	pUnixGraphics->init3dColors(widget->style);
+	pUnixGraphics->init3dColors(gtk_widget_get_style_context(widget));
 	pUnixGraphics->initWidget(widget);
 
 	ENSUREP_RF(pG);
@@ -592,21 +590,29 @@ bool AP_UnixFrame::_createScrollBarListeners(AV_View * pView, AV_ScrollObj *& pS
 
 UT_sint32 AP_UnixFrame::_getDocumentAreaWidth()
 {
-	return static_cast<UT_sint32>(GTK_WIDGET(static_cast<AP_UnixFrameImpl *>(getFrameImpl())->m_dArea)->allocation.width);
+	GtkAllocation allocation;
+	gtk_widget_get_allocation(GTK_WIDGET(static_cast<AP_UnixFrameImpl *>(getFrameImpl())->m_dArea), &allocation);
+	return static_cast<UT_sint32>(allocation.width);
 }
 
 UT_sint32 AP_UnixFrame::_getDocumentAreaHeight()
 {
-	return static_cast<UT_sint32>(GTK_WIDGET(static_cast<AP_UnixFrameImpl *>(getFrameImpl())->m_dArea)->allocation.height);
+	GtkAllocation allocation;
+	gtk_widget_get_allocation(GTK_WIDGET(static_cast<AP_UnixFrameImpl *>(getFrameImpl())->m_dArea), &allocation);
+	return static_cast<UT_sint32>(allocation.height);
 }
 
 
 UT_sint32 AP_UnixFrame::getDocumentAreaXoff()
 {
-	return static_cast<UT_sint32>(GTK_WIDGET(static_cast<AP_UnixFrameImpl *>(getFrameImpl())->m_dArea)->allocation.x);
+	GtkAllocation allocation;
+	gtk_widget_get_allocation(GTK_WIDGET(static_cast<AP_UnixFrameImpl *>(getFrameImpl())->m_dArea), &allocation);
+	return static_cast<UT_sint32>(allocation.x);
 }
 
 UT_sint32 AP_UnixFrame::getDocumentAreaYoff()
 {
-	return static_cast<UT_sint32>(GTK_WIDGET(static_cast<AP_UnixFrameImpl *>(getFrameImpl())->m_dArea)->allocation.y);
+	GtkAllocation allocation;
+	gtk_widget_get_allocation(GTK_WIDGET(static_cast<AP_UnixFrameImpl *>(getFrameImpl())->m_dArea), &allocation);
+	return static_cast<UT_sint32>(allocation.y);
 }

@@ -156,12 +156,12 @@ void selectPrev( GtkTreeView* tv )
 	gtk_tree_selection_select_iter (selection, &last);
 }
 
-void append( GtkComboBox* combo, const std::list< std::string >& data )
+void append( GtkComboBoxText* combo, const std::list< std::string >& data )
 {
     std::list<std::string>::const_iterator iter(data.begin());
     for( ; iter != data.end(); ++iter)
     {
-        gtk_combo_box_append_text( combo, iter->c_str() );
+        gtk_combo_box_text_append_text( combo, iter->c_str() );
     }
 }
 

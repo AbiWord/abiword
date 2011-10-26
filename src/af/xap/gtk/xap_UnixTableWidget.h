@@ -48,12 +48,10 @@ typedef struct _AbiTable
 	GtkWidget* icon;
 
 	GtkWindow* window;
-	GtkVBox* window_vbox;
+	GtkBox* window_vbox;
 	GtkDrawingArea* area;
 	GtkLabel* window_label;
 	GSList* handlers;
-	
-	GdkGC* selected_gc;
 	
 	guint selected_rows;
 	guint selected_cols;

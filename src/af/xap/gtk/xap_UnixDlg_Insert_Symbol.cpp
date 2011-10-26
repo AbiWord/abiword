@@ -98,7 +98,7 @@ void XAP_UnixDialog_Insert_Symbol::activate(void)
 	UT_return_if_fail(m_windowMain);
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
-	gdk_window_raise(m_windowMain->window);
+	gdk_window_raise(gtk_widget_get_window(m_windowMain));
 }
 
 void   XAP_UnixDialog_Insert_Symbol::notifyActiveFrame(XAP_Frame *)
@@ -122,7 +122,7 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	//XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
 	//UT_ASSERT(unixapp);
 	
-	UT_ASSERT(m_SymbolMap && m_SymbolMap->window);
+	UT_ASSERT(m_SymbolMap && gtk_widget_get_window(m_SymbolMap));
 
 	// make a new Unix GC
 	DELETEP (m_unixGraphics);
@@ -133,12 +133,14 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 			(GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 	}
 	// let the widget materialize
+	GtkAllocation alloc;
+	gtk_widget_get_allocation(m_SymbolMap, &alloc);
 	_createSymbolFromGC(m_unixGraphics,
-						static_cast<UT_uint32>(m_SymbolMap->allocation.width),
-						static_cast<UT_uint32>(m_SymbolMap->allocation.height));
+						static_cast<UT_uint32>(alloc.width),
+						static_cast<UT_uint32>(alloc.height));
 	
 	// *** Re use the code to draw into the selected symbol area.
-	UT_ASSERT(m_areaCurrentSym && m_areaCurrentSym->window);
+	UT_ASSERT(m_areaCurrentSym && gtk_widget_get_window(m_areaCurrentSym));
 	
 	// make a new Unix GC
 	DELETEP (m_unixarea);
@@ -148,9 +150,10 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 			(GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 	}
 	// let the widget materialize
+	gtk_widget_get_allocation(m_areaCurrentSym, &alloc);
 	_createSymbolareaFromGC(m_unixarea,
-							static_cast<UT_uint32>(m_areaCurrentSym->allocation.width),
-							static_cast<UT_uint32>(m_areaCurrentSym->allocation.height));
+							static_cast<UT_uint32>(alloc.width),
+							static_cast<UT_uint32>(alloc.height));
 
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
 	UT_return_if_fail(iDrawSymbol);
@@ -252,7 +255,7 @@ void XAP_UnixDialog_Insert_Symbol::New_Row(void)
 	UT_return_if_fail(iDrawSymbol);
 
 	// FIXME rounding is better
-	UT_uint32 row = UT_uint32 (m_vadjust->value);
+	UT_uint32 row = UT_uint32 (gtk_adjustment_get_value(m_vadjust));
 
 	iDrawSymbol->setRow (row);
 }
@@ -261,16 +264,15 @@ void XAP_UnixDialog_Insert_Symbol::Scroll_Event (int direction)
 {
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
 	UT_return_if_fail(iDrawSymbol);
+	double value = gtk_adjustment_get_value(m_vadjust);
 
-	if (direction && m_vadjust->upper > m_vadjust->value + 1)
+	if (direction && gtk_adjustment_get_upper(m_vadjust) > value)
 	{
-		m_vadjust->value += 1;
-        gtk_adjustment_value_changed (m_vadjust);
+		gtk_adjustment_set_value(m_vadjust, value + 1);
 	}
-	else if (!direction && m_vadjust->lower <= m_vadjust->value - 1)
+	else if (!direction && gtk_adjustment_get_lower(m_vadjust) <= value - 1)
  	{
-		m_vadjust->value -= 1;
-        gtk_adjustment_value_changed (m_vadjust);
+		gtk_adjustment_set_value(m_vadjust, value - 1);
     }
 }
 
@@ -322,7 +324,7 @@ static void  s_scroll_event(GtkWidget * /*widget*/, GdkEventScroll * event, XAP_
 	dlg->Scroll_Event (static_cast <int> (event->direction));
 }
 
-static gboolean s_sym_SymbolMap_exposed(GtkWidget * /*widget*/, GdkEvent * /*e*/, XAP_UnixDialog_Insert_Symbol * dlg)
+static gboolean s_sym_SymbolMap_draw(GtkWidget * /*widget*/, cairo_t * /*cr*/, XAP_UnixDialog_Insert_Symbol * dlg)
 {
 	dlg->SymbolMap_exposed();
 	return FALSE;
@@ -335,7 +337,7 @@ static gboolean s_size_request(GtkWidget *, GtkAllocation* req, XAP_UnixDialog_I
 }
 
 
-static gboolean s_Symbolarea_exposed(GtkWidget * , GdkEvent * , XAP_UnixDialog_Insert_Symbol * dlg)
+static gboolean s_Symbolarea_draw(GtkWidget * , GdkEvent * , XAP_UnixDialog_Insert_Symbol * dlg)
 {
 	dlg->Symbolarea_exposed();
 	return FALSE;
@@ -393,12 +395,15 @@ void XAP_UnixDialog_Insert_Symbol::setSymbolMap_size(UT_uint32 width, UT_uint32 
 
 	// only in the beginnig we can measure the difference
 	// between window and drawingarea this show stay constant
+	GtkRequisition diff;
+	GtkAllocation alloc;
+	gtk_widget_get_requisition (m_windowMain, &diff);
+	gtk_widget_get_allocation (m_SymbolMap, &alloc);
 	if (!diff_width || !diff_height)
 	{
-		diff_width = m_windowMain->requisition.width - m_SymbolMap->allocation.width;
-		diff_height = m_windowMain->requisition.height - m_SymbolMap->allocation.height;
+		diff_width = diff.width - alloc.width;
+		diff_height = diff.height - alloc.height;
 	}
-	GtkRequisition diff;
 	diff.width = width - diff_width;
 	diff.height = height - diff_height;
 
@@ -420,7 +425,7 @@ gboolean XAP_UnixDialog_Insert_Symbol::Key_Pressed(GdkEventKey * e)
 	UT_DEBUGMSG(("Current Symbol %x \n",m_CurrentSymbol));
 	switch (e->keyval)
 	{
-	case GDK_Up:
+	case GDK_KEY_Up:
 		if(iy > 0)
 		{
 			iy--;
@@ -431,7 +436,7 @@ gboolean XAP_UnixDialog_Insert_Symbol::Key_Pressed(GdkEventKey * e)
 		}
 		move = -32;
 		break;
-	case GDK_Down:
+	case GDK_KEY_Down:
 		if(iy < 6)
 		{
 			iy++;
@@ -442,7 +447,7 @@ gboolean XAP_UnixDialog_Insert_Symbol::Key_Pressed(GdkEventKey * e)
 		}
 		move = 32;
 		break;
-	case GDK_Left:
+	case GDK_KEY_Left:
 		if(ix > 0)
 		{
 			ix--;
@@ -460,7 +465,7 @@ gboolean XAP_UnixDialog_Insert_Symbol::Key_Pressed(GdkEventKey * e)
 		}
 		move = -1;
 		break;
-	case GDK_Right:
+	case GDK_KEY_Right:
 		if(ix < 31)
 		{
 			ix++;
@@ -478,7 +483,7 @@ gboolean XAP_UnixDialog_Insert_Symbol::Key_Pressed(GdkEventKey * e)
 		}
 		move = 1;
 		break;
-	case GDK_Return:
+	case GDK_KEY_Return:
 		g_signal_stop_emission (G_OBJECT(m_windowMain), 
 			g_signal_lookup ("key_press_event", 
 			G_OBJECT_TYPE (m_windowMain)), 0);
@@ -580,9 +585,9 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 
 	// Now put in a Vbox to hold our 3 widgets (Font Selector, Symbol Table
 	// and OK -Selected Symbol- Cancel
-	tmp = GTK_DIALOG(m_windowMain)->vbox ;
+	tmp = gtk_dialog_get_content_area(GTK_DIALOG(m_windowMain));
 
-	GtkWidget * hbox = gtk_hbox_new (FALSE, 4);
+	GtkWidget * hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 4);
 	gtk_widget_show (hbox);
 	gtk_box_pack_start(GTK_BOX(tmp), hbox, FALSE, FALSE, 0);
 
@@ -595,7 +600,7 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	// Now the Symbol Map. 
 	// TODO: 32 * x (19) = 608, 7 * y (21) = 147  FIXME!
 	//
-	GtkWidget * hbox1 = gtk_hbox_new (FALSE, 4);
+	GtkWidget * hbox1 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 4);
 	gtk_widget_show (hbox1);
 	gtk_box_pack_start(GTK_BOX(tmp), hbox1, TRUE, TRUE, 0);
 
@@ -605,7 +610,7 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	gtk_box_pack_start (GTK_BOX (hbox1), m_SymbolMap, TRUE, TRUE, 0);
 
 	m_vadjust = GTK_ADJUSTMENT (gtk_adjustment_new (0, 0, 7, 0, 0, 7));
-	GtkWidget *vscroll = gtk_vscrollbar_new (m_vadjust);
+	GtkWidget *vscroll = gtk_scrollbar_new (GTK_ORIENTATION_VERTICAL, m_vadjust);
 	gtk_widget_show (vscroll);
 	gtk_box_pack_start (GTK_BOX (hbox1), vscroll, FALSE, FALSE, 0);
 
@@ -666,7 +671,7 @@ void XAP_UnixDialog_Insert_Symbol::_getGlistFonts (std::list<std::string> & glFo
 
 GtkWidget *XAP_UnixDialog_Insert_Symbol::_createComboboxWithFonts (void)
 {
-	GtkWidget *fontcombo = gtk_combo_box_entry_new_text();
+	GtkWidget *fontcombo = gtk_combo_box_text_new_with_entry();
 	gtk_widget_show(fontcombo);
 
 	// ensure we don't override this without freeing...
@@ -675,7 +680,7 @@ GtkWidget *XAP_UnixDialog_Insert_Symbol::_createComboboxWithFonts (void)
 	for(std::list<std::string>::const_iterator iter = m_InsertS_Font_list.begin();
         iter != m_InsertS_Font_list.end(); ++iter)
 	{
-		gtk_combo_box_append_text(GTK_COMBO_BOX(fontcombo), iter->c_str());
+		gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(fontcombo), iter->c_str());
 	}
 
 	// Turn off keyboard entry in the font selection box
@@ -694,7 +699,7 @@ void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
 	// Look for "changed" signal on the entry part of the combo box.
 	// Code stolen from ev_UnixGnomeToolbar.cpp
 	GtkEntry * blah = GTK_ENTRY(gtk_bin_get_child(GTK_BIN(m_fontcombo)));
-	g_signal_connect(G_OBJECT(&blah->widget),
+	g_signal_connect(G_OBJECT(blah),
 					 "changed",
 					 G_CALLBACK(s_new_font),
 					 static_cast<gpointer>(this));
@@ -736,13 +741,13 @@ void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
 	
 	// the expose event of the m_SymbolMap
 	g_signal_connect(G_OBJECT(m_SymbolMap),
-					 "expose_event",
-					 G_CALLBACK(s_sym_SymbolMap_exposed),
+					 "draw",
+					 G_CALLBACK(s_sym_SymbolMap_draw),
 					 static_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_areaCurrentSym),
-					   "expose_event",
-					   G_CALLBACK(s_Symbolarea_exposed),
+					   "draw",
+					   G_CALLBACK(s_Symbolarea_draw),
 					   static_cast<gpointer>(this));
         // VScrollbar events
 	g_signal_connect(G_OBJECT(m_vadjust),
@@ -766,12 +771,10 @@ void XAP_UnixDialog_Insert_Symbol::_setScrolledWindow (void)
 
 	UT_uint32 rows = iDrawSymbol->getSymbolRows () + 1;
 	rows = (rows <= 7? 1: rows - 7);
-	m_vadjust->lower = 0;
-	m_vadjust->upper = gdouble (rows);
-	m_vadjust->page_size = 1 + rows / 7;
-	m_vadjust->page_increment = 1;
-	m_vadjust->step_increment = 1;
-	gtk_adjustment_changed (m_vadjust);
-	m_vadjust->value = 0;
-	gtk_adjustment_value_changed (m_vadjust);
+	gtk_adjustment_set_lower(m_vadjust, 0);
+	gtk_adjustment_set_upper(m_vadjust, gdouble (rows));
+	gtk_adjustment_set_page_size(m_vadjust, 1 + rows / 7);
+	gtk_adjustment_set_page_increment(m_vadjust, 1);
+	gtk_adjustment_set_step_increment(m_vadjust, 1);
+	gtk_adjustment_set_value(m_vadjust, 0);
 }

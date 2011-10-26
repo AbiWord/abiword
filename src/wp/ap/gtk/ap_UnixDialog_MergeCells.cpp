@@ -154,7 +154,7 @@ void AP_UnixDialog_MergeCells::activate(void)
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
 	setAllSensitivities();
-	gdk_window_raise (m_windowMain->window);
+	gdk_window_raise (gtk_widget_get_window(m_windowMain));
 }
 
 void AP_UnixDialog_MergeCells::notifyActiveFrame(XAP_Frame * /*pFrame*/)
@@ -174,7 +174,7 @@ GtkWidget * AP_UnixDialog_MergeCells::_constructWindow(void)
 	ConstructWindowName();
 	windowMergeCells = abiDialogNew ( "merge cell dialog", TRUE, static_cast<char *>(m_WindowName));
 	
-	vboxMain = GTK_DIALOG(windowMergeCells)->vbox ;
+	vboxMain = gtk_dialog_get_content_area(GTK_DIALOG(windowMergeCells));
 	gtk_container_set_border_width (GTK_CONTAINER (vboxMain), 10);	
 	_constructWindowContents();
 	gtk_box_pack_start (GTK_BOX (vboxMain), m_wContents, FALSE, FALSE, 0);
@@ -192,7 +192,7 @@ GtkWidget * AP_UnixDialog_MergeCells::_constructWindowContents(void)
 {
 	GtkWidget *wContents;
 
-	wContents = gtk_vbox_new (FALSE, 0);
+	wContents = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
     gtk_widget_show (wContents);
 	GtkWidget *frame1;
 	GtkWidget *table1;

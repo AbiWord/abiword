@@ -329,6 +329,7 @@ public:
 					 GR_Graphics::CapStyle inCapStyle   = CAP_BUTT,
 					 GR_Graphics::LineStyle inLineStyle = LINE_SOLID);
 	cairo_t* getCairo ();
+	void setCairo(cairo_t *cr);
 
 	static UT_uint32 getDefaultDeviceResolution();
 

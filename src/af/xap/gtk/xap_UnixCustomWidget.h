@@ -21,7 +21,7 @@
 #define XAP_UNIXCUSTOMWIDGET_H
 
 #include "xap_CustomWidget.h"
-#include <gtk/gtkwidget.h>
+#include <gtk/gtk.h>
 
 class XAP_UnixCustomWidget: virtual public XAP_CustomWidget
 {
@@ -33,9 +33,10 @@ protected:
 	class _fe
 	{
 	public:
-		static void expose(XAP_UnixCustomWidget *self, GdkEventExpose *ev);
+		static void draw(XAP_UnixCustomWidget *self, cairo_t *cr);
 	};
 	friend class _fe;
+	cairo_t *m_cr;
 };
 
 #endif

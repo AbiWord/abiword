@@ -29,26 +29,6 @@
 #include "xap_App.h"
 #include "xap_EncodingManager.h"
 
-#define GTK_CHECK_VERSION(major,minor,micro) \
-	(GTK_MAJOR_VERSION > (major) || \
-	(GTK_MAJOR_VERSION == (major) && GTK_MINOR_VERSION > (minor)) || \
-	(GTK_MAJOR_VERSION == (major) && GTK_MINOR_VERSION == (minor) && \
-	GTK_MICRO_VERSION >= (micro)))
-
-// remove this define and our own gdk_cairo_reset_clip function when gtk 2.18 is released
-#define GTK_2_17_DEV_VERSION_WITHOUT_RESET_CLIP \
-	(GTK_MAJOR_VERSION == 2 && GTK_MINOR_VERSION == 17 && \
-    (GTK_MICRO_VERSION >= 0 && GTK_MICRO_VERSION <= 10))
-
-#if GTK_2_17_DEV_VERSION_WITHOUT_RESET_CLIP
-void gdk_cairo_reset_clip (cairo_t *cr, GdkDrawable *drawable)
-{
-	cairo_reset_clip (cr);
-	if (GDK_DRAWABLE_GET_CLASS (drawable)->set_cairo_clip)
-		GDK_DRAWABLE_GET_CLASS (drawable)->set_cairo_clip (drawable, cr);
-}
-#endif
-
 GR_UnixCairoGraphicsBase::~GR_UnixCairoGraphicsBase()
 {
 }
@@ -91,14 +71,16 @@ GR_UnixCairoGraphicsBase::GR_UnixCairoGraphicsBase(cairo_t *cr, UT_uint32 iDevic
 {
 }
 
-GR_UnixCairoGraphics::GR_UnixCairoGraphics(GdkDrawable * win, bool double_buffered)
+GR_UnixCairoGraphics::GR_UnixCairoGraphics(GdkWindow * win, bool double_buffered)
 	: GR_UnixCairoGraphicsBase(),
 	  m_pWin(win),
-	  m_double_buffered(double_buffered)
+	  m_double_buffered(double_buffered),
+	  m_CairoCreated(false),
+	  m_Painting(false)
 {
-	if (_getDrawable())
+	m_cr = NULL;
+	if (_getWindow())
 	{
-		m_cr = NULL;
 		// Set GraphicsExposes so that XCopyArea() causes an expose on
 		// obscured regions rather than just tiling in the default background.
 		// TODO: is this still needed with cairo, and if yes can it be emulated
@@ -128,49 +110,51 @@ GR_Graphics *   GR_UnixCairoGraphics::graphicsAllocator(GR_AllocInfo& info)
 	UT_return_val_if_fail(info.getType() == GRID_UNIX, NULL);
 	xxx_UT_DEBUGMSG(("GR_CairoGraphics::graphicsAllocator\n"));
 
-	UT_return_val_if_fail(!info.isPrinterGraphics(), NULL);
+//	UT_return_val_if_fail(!info.isPrinterGraphics(), NULL);
 	GR_UnixCairoAllocInfo &AI = (GR_UnixCairoAllocInfo&)info;
 
 	return new GR_UnixCairoGraphics(AI.m_win, AI.m_double_buffered);
 }
 
-inline UT_RGBColor _convertGdkColor(const GdkColor &c)
+inline UT_RGBColor _convertGdkRGBA(const GdkRGBA &c)
 {
 	UT_RGBColor color;
-	color.m_red = c.red >> 8;
-	color.m_grn = c.green >> 8;
-	color.m_blu = c.blue >> 8;
+	color.m_red = c.red * 255;
+	color.m_grn = c.green * 255;
+	color.m_blu = c.blue * 255;
 	return color;
 }
 
 void GR_UnixCairoGraphics::widget_size_allocate(GtkWidget* /*widget*/, GtkAllocation* /*allocation*/, GR_UnixCairoGraphics* me)
 {
-#if GTK_CHECK_VERSION(2,17,11) || GTK_2_17_DEV_VERSION_WITHOUT_RESET_CLIP
 	UT_return_if_fail(me);
 	me->m_clipRectDirty = TRUE;
-#else
-	UT_UNUSED(me);
-#endif
 }
 
 void GR_UnixCairoGraphics::initWidget(GtkWidget* widget)
 {
-#if GTK_CHECK_VERSION(2,17,11) || GTK_2_17_DEV_VERSION_WITHOUT_RESET_CLIP
 	UT_return_if_fail(widget);
 	g_signal_connect_after(G_OBJECT(widget), "size_allocate", G_CALLBACK(widget_size_allocate), this);
-#else
-	UT_UNUSED(widget);
-#endif
 }
 
-void GR_UnixCairoGraphics::init3dColors(GtkStyle * pStyle)
+void GR_UnixCairoGraphics::init3dColors(GtkStyleContext * pCtxt)
 {
-	m_3dColors[CLR3D_Foreground] = _convertGdkColor(pStyle->text[GTK_STATE_NORMAL]);
-	m_3dColors[CLR3D_Background] = _convertGdkColor(pStyle->bg[GTK_STATE_NORMAL]);
-	m_3dColors[CLR3D_BevelUp]    = _convertGdkColor(pStyle->light[GTK_STATE_NORMAL]);
-	m_3dColors[CLR3D_BevelDown]  = _convertGdkColor(pStyle->dark[GTK_STATE_NORMAL]);
-	m_3dColors[CLR3D_Highlight]  = _convertGdkColor(pStyle->bg[GTK_STATE_PRELIGHT]);
-
+	GdkRGBA rgba, rgba_;
+	gtk_style_context_get_color (pCtxt, GTK_STATE_FLAG_NORMAL, &rgba);
+	m_3dColors[CLR3D_Foreground] = _convertGdkRGBA(rgba);
+	gtk_style_context_get_background_color (pCtxt, GTK_STATE_FLAG_PRELIGHT, &rgba);
+	m_3dColors[CLR3D_Highlight]  = _convertGdkRGBA(rgba);
+	gtk_style_context_get_background_color (pCtxt, GTK_STATE_FLAG_NORMAL, &rgba);
+	m_3dColors[CLR3D_Background] = _convertGdkRGBA(rgba);
+	rgba_.red = rgba.red / 2. + .5; // light color at midway between background and white
+	rgba_.green =rgba.green / 2. + .5;
+	rgba_.blue = rgba.blue / 2. + .5;
+	rgba_.alpha = 1.;   // we don't really care, abiword does not use transparency
+	m_3dColors[CLR3D_BevelUp]    = _convertGdkRGBA(rgba_);
+	rgba_.red = rgba.red / 2.; // dark color at midway between background and black
+	rgba_.green = rgba.green / 2.;
+	rgba_.blue = rgba.blue / 2.;
+	m_3dColors[CLR3D_BevelDown]  = _convertGdkRGBA(rgba_);
 	m_bHave3DColors = true;
 }
 
@@ -179,8 +163,12 @@ GR_Font * GR_UnixCairoGraphics::getGUIFont(void)
 	if (!m_pPFontGUI)
 	{
 		// get the font resource
-		GtkStyle *tempStyle = gtk_style_new();
-		const char *guiFontName = pango_font_description_get_family(tempStyle->font_desc);
+		GtkStyleContext *tempCtxt = gtk_style_context_new();
+		GtkWidgetPath *path = gtk_widget_path_new();
+		gtk_widget_path_append_type (path, GTK_TYPE_WINDOW);
+		gtk_style_context_set_path(tempCtxt, path);
+		gtk_widget_path_free(path);
+		const char *guiFontName = pango_font_description_get_family(gtk_style_context_get_font(tempCtxt, GTK_STATE_FLAG_NORMAL));
 		if (!guiFontName)
 			guiFontName = "'Times New Roman'";
 
@@ -197,7 +185,7 @@ GR_Font * GR_UnixCairoGraphics::getGUIFont(void)
 		
 		m_pPFontGUI = new GR_PangoFont(guiFontName, 11.0, this, s.utf8_str(), true);
 
-		g_object_unref(G_OBJECT(tempStyle));
+		g_object_unref(G_OBJECT(tempCtxt));
 		
 		UT_ASSERT(m_pPFontGUI);
 	}
@@ -379,37 +367,16 @@ void GR_UnixCairoGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 
 void GR_UnixCairoGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						  UT_sint32 x_src, UT_sint32 y_src,
-						  UT_sint32 width, UT_sint32 height)
+						  G_GNUC_UNUSED UT_sint32 width, G_GNUC_UNUSED UT_sint32 height)
 {
-	GdkGC *gc;
-
-	disableAllCarets();
-	gc = gdk_gc_new(_getDrawable());
-   	gdk_draw_drawable(_getDrawable(), gc, _getDrawable(), tdu(x_src), tdu(y_src),
-					  tdu(x_dest), tdu(y_dest), tdu(width), tdu(height));
-	g_object_unref(G_OBJECT(gc)), gc = NULL;
-	enableAllCarets();
-}
-
-void GR_UnixCairoGraphics::createPixmapFromXPM( char ** pXPM,GdkPixmap *source,
-										   GdkBitmap * mask)
-{
-	source
-		= gdk_pixmap_colormap_create_from_xpm_d(_getDrawable(),NULL,
-							&mask, NULL,
-							pXPM);
+	scroll(x_src - x_dest, y_src - y_dest);
 }
 
 void GR_UnixCairoGraphics::_resetClip(void)
 {
 	
-#if GTK_CHECK_VERSION(2,17,11) || GTK_2_17_DEV_VERSION_WITHOUT_RESET_CLIP
-	gdk_cairo_reset_clip (m_cr, _getDrawable());
-	xxx_UT_DEBUGMSG(("!!!!!! gdk Reset clip in gtk cairo \n"));
-#else
 	cairo_reset_clip (m_cr);
 	xxx_UT_DEBUGMSG(("Reset clip in gtk cairo \n"));
-#endif
 }
 
 void GR_UnixCairoGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
@@ -429,11 +396,9 @@ void GR_UnixCairoGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 	UT_sint32 idh = _tduR(r.height);
 	cairo_surface_flush ( cairo_get_target(m_cr));
 
-	GdkPixbuf * pix = gdk_pixbuf_get_from_drawable(NULL,
-												   _getDrawable(),
-												   NULL,
-												   idx, idy, 0, 0,
-												   idw, idh);
+	GdkPixbuf * pix = gdk_pixbuf_get_from_window(_getWindow(),
+	                                             idx, idy,
+	                                             idw, idh);
 	m_vSaveRectBuf.setNthItem(iIndx, pix, &oldC);
 
 	if(oldC)
@@ -445,16 +410,20 @@ void GR_UnixCairoGraphics::restoreRectangle(UT_uint32 iIndx)
 {
 	cairo_save(m_cr);
 	cairo_reset_clip(m_cr);
+	cairo_identity_matrix(m_cr);
 	UT_Rect * r = m_vSaveRect.getNthItem(iIndx);
 	GdkPixbuf *p = m_vSaveRectBuf.getNthItem(iIndx);
 	UT_sint32 idx = _tduX(r->left);
 	UT_sint32 idy = _tduY(r->top);
+	UT_sint32 idw = _tduR(r->width);
+	UT_sint32 idh = _tduR(r->height);
 	cairo_surface_flush ( cairo_get_target(m_cr));
 
-	if (p && r)
-		gdk_draw_pixbuf (_getDrawable(), NULL, p, 0, 0,
-						 idx, idy,
-						 -1, -1, GDK_RGB_DITHER_NONE, 0, 0);
+	if (p && r) {
+		gdk_cairo_set_source_pixbuf(m_cr, p, idx, idy);
+		cairo_rectangle(m_cr, idx, idy, idw, idh);
+		cairo_fill(m_cr);
+	}
 	cairo_restore(m_cr);
 }
 
@@ -469,13 +438,10 @@ GR_Image * GR_UnixCairoGraphics::genImageFromRectangle(const UT_Rect &rec)
 	UT_sint32 idh = _tduR(rec.height);
 	UT_return_val_if_fail (idw > 0 && idh > 0 && idx >= 0, NULL);
 	cairo_surface_flush ( cairo_get_target(m_cr));
-	GdkColormap* cmp = gdk_colormap_get_system();
-	GdkPixbuf * pix = gdk_pixbuf_get_from_drawable(NULL,
-												   _getDrawable(),
-												   cmp,
-												   idx, idy, 0, 0,
-												   idw, idh);
-	
+	GdkPixbuf * pix = gdk_pixbuf_get_from_window(getWindow(),
+	                                             idx, idy,
+	                                             idw, idh);
+
 	UT_return_val_if_fail(pix, NULL);
 
 	GR_UnixImage * pImg = new GR_UnixImage("ScreenShot");
@@ -486,10 +452,15 @@ GR_Image * GR_UnixCairoGraphics::genImageFromRectangle(const UT_Rect &rec)
 
 void GR_UnixCairoGraphics::_beginPaint()
 {
+	UT_ASSERT(m_Painting == false);
 	GR_CairoGraphics::_beginPaint();
 
-	UT_ASSERT(m_pWin);
-	UT_ASSERT(!m_cr);
+	if (m_cr == NULL)
+	{
+		UT_ASSERT(m_pWin);
+		m_cr = gdk_cairo_create (m_pWin);
+		m_CairoCreated = true;
+	}
 
 #ifndef NDEBUG
 	/* should only be called inside an expose event, messes up
@@ -511,26 +482,35 @@ void GR_UnixCairoGraphics::_beginPaint()
 	}
 #endif
 
-	m_cr = gdk_cairo_create(GDK_DRAWABLE(m_pWin));
 	UT_ASSERT(m_cr);
+	m_Painting = true;
 	_initCairo();
 }
 
 void GR_UnixCairoGraphics::_endPaint()
 {
-	UT_return_if_fail(m_cr);
-
-	cairo_destroy(m_cr);
+	if (m_CairoCreated)
+		cairo_destroy (m_cr);
 	m_cr = NULL;
+
+	m_Painting = false;
+	m_CairoCreated = false;
 
 	GR_CairoGraphics::_endPaint();
 }
 
-cairo_t *GR_UnixCairoAllocInfo::createCairo()
+bool GR_UnixCairoGraphics::queryProperties(GR_Graphics::Properties gp) const
 {
-	if(m_win) {
-		return gdk_cairo_create (GDK_DRAWABLE (m_win));
+	switch (gp)
+	{
+		case DGP_SCREEN:
+		case DGP_OPAQUEOVERLAY:
+			return m_pWin != NULL;
+		case DGP_PAPER:
+			return false;
+		default:
+			UT_ASSERT(0);
+			return false;
 	}
-	return NULL;
 }
 

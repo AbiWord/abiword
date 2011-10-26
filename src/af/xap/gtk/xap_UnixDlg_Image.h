@@ -101,8 +101,8 @@ class XAP_UnixDialog_Image: public XAP_Dialog_Image
 
 
 
-	GtkObject * m_oHeightSpin_adj;
-	GtkObject * m_oWidthSpin_adj;
+	GtkAdjustment * m_oHeightSpin_adj;
+	GtkAdjustment * m_oWidthSpin_adj;
 	guint m_iHeightID;
 	guint m_iWidthID;
 	UT_sint32 m_iHeight;

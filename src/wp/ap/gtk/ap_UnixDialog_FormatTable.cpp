@@ -96,7 +96,7 @@ static void s_border_thickness(GtkWidget *widget, gpointer data )
 	dlg->event_BorderThicknessChanged();
 }
 
-static gboolean s_preview_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_FormatTable * dlg)
+static gboolean s_preview_draw(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_FormatTable * dlg)
 {
 	UT_return_val_if_fail(widget && dlg, FALSE);
 	dlg->event_previewExposed();
@@ -147,7 +147,7 @@ AP_UnixDialog_FormatTable__onBorderColorClicked (GtkWidget 		*button,
 
 	GtkWidget *colordlg = gtk_color_selection_dialog_new  ("");
 	gtk_window_set_transient_for (GTK_WINDOW (colordlg), GTK_WINDOW (dlg->getWindow ()));
-	GtkColorSelection *colorsel = GTK_COLOR_SELECTION ((GTK_COLOR_SELECTION_DIALOG (colordlg))->colorsel);
+	GtkColorSelection *colorsel = GTK_COLOR_SELECTION (gtk_color_selection_dialog_get_color_selection(GTK_COLOR_SELECTION_DIALOG (colordlg)));
 	gtk_color_selection_set_has_palette (colorsel, TRUE);
 	
 	gint result = gtk_dialog_run (GTK_DIALOG (colordlg));
@@ -190,7 +190,7 @@ AP_UnixDialog_FormatTable__onBackgroundColorClicked (GtkWidget 		*button,
 
 	GtkWidget *colordlg = gtk_color_selection_dialog_new  ("");
 	gtk_window_set_transient_for (GTK_WINDOW (colordlg), GTK_WINDOW (dlg->getWindow ()));
-	GtkColorSelection *colorsel = GTK_COLOR_SELECTION ((GTK_COLOR_SELECTION_DIALOG (colordlg))->colorsel);
+	GtkColorSelection *colorsel = GTK_COLOR_SELECTION (gtk_color_selection_dialog_get_color_selection(GTK_COLOR_SELECTION_DIALOG (colordlg)));
 	gtk_color_selection_set_has_palette (colorsel, TRUE);
 	
 	gint result = gtk_dialog_run (GTK_DIALOG (colordlg));
@@ -265,7 +265,7 @@ void AP_UnixDialog_FormatTable::runModeless(XAP_Frame * pFrame)
 	
 	// *** this is how we add the gc for Column Preview ***
 	// attach a new graphics context to the drawing area
-	UT_return_if_fail(m_wPreviewArea && m_wPreviewArea->window);
+	UT_return_if_fail(m_wPreviewArea && gtk_widget_get_window(m_wPreviewArea));
 
 	// make a new Unix GC
 	DELETEP (m_pPreviewWidget);
@@ -276,13 +276,15 @@ void AP_UnixDialog_FormatTable::runModeless(XAP_Frame * pFrame)
 	// Todo: we need a good widget to query with a probable
 	// Todo: non-white (i.e. gray, or a similar bgcolor as our parent widget)
 	// Todo: background. This should be fine
-	m_pPreviewWidget->init3dColors(m_wPreviewArea->style);
+	m_pPreviewWidget->init3dColors(gtk_widget_get_style_context(m_wPreviewArea));
 
 	// let the widget materialize
 
+	GtkAllocation allocation;
+	gtk_widget_get_allocation(m_wPreviewArea, &allocation);
 	_createPreviewFromGC(m_pPreviewWidget,
-						 static_cast<UT_uint32>(m_wPreviewArea->allocation.width),
-						 static_cast<UT_uint32>(m_wPreviewArea->allocation.height));	
+						 static_cast<UT_uint32>(allocation.width),
+						 static_cast<UT_uint32>(allocation.height));	
 	
 	m_pFormatTablePreview->draw();
 	
@@ -388,7 +390,7 @@ void AP_UnixDialog_FormatTable::activate(void)
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
 	setAllSensitivities();
-	gdk_window_raise (m_windowMain->window);
+	gdk_window_raise (gtk_widget_get_window(m_windowMain));
 }
 
 void AP_UnixDialog_FormatTable::notifyActiveFrame(XAP_Frame */*pFrame*/)
@@ -475,36 +477,34 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 // Now the Border Thickness Option menu
 // 
 	m_wBorderThickness = GTK_WIDGET(gtk_builder_get_object(builder, "omBorderThickness"));
-	GtkComboBox *combo = GTK_COMBO_BOX(m_wBorderThickness);
-	XAP_makeGtkComboBoxText(combo, G_TYPE_NONE);
-	gtk_combo_box_append_text(combo, "1/2 pt");
-	gtk_combo_box_append_text(combo, "3/4 pt");
-	gtk_combo_box_append_text(combo, "1 pt");
-	gtk_combo_box_append_text(combo, "1 1/2 pt");
-	gtk_combo_box_append_text(combo, "2 1/4 pt");
-	gtk_combo_box_append_text(combo, "3 pt");
-	gtk_combo_box_append_text(combo, "4 1/2 pt");
-	gtk_combo_box_append_text(combo, "6 pt");
-	gtk_combo_box_set_active(combo, 0);
+	GtkComboBoxText *combo = GTK_COMBO_BOX_TEXT(m_wBorderThickness);
+	gtk_combo_box_text_append_text(combo, "1/2 pt");
+	gtk_combo_box_text_append_text(combo, "3/4 pt");
+	gtk_combo_box_text_append_text(combo, "1 pt");
+	gtk_combo_box_text_append_text(combo, "1 1/2 pt");
+	gtk_combo_box_text_append_text(combo, "2 1/4 pt");
+	gtk_combo_box_text_append_text(combo, "3 pt");
+	gtk_combo_box_text_append_text(combo, "4 1/2 pt");
+	gtk_combo_box_text_append_text(combo, "6 pt");
+	gtk_combo_box_set_active(GTK_COMBO_BOX(combo), 0);
 
 	// add the options to the "Apply to" menu
 	// NOTE: if you change this order, make sure to adjust event_ApplyToChanged as well!
 	// FIXME: PLEASE ADD A "localizeMenuItem" HELPER FUNCTION OR SOMETHING LIKE THAT
 	m_wApplyToMenu = GTK_WIDGET(gtk_builder_get_object(builder, "omApplyTo"));
-	combo = GTK_COMBO_BOX(m_wApplyToMenu);
-	XAP_makeGtkComboBoxText(combo, G_TYPE_NONE);
+	combo = GTK_COMBO_BOX_TEXT(m_wApplyToMenu);
 	
 	UT_UTF8String s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Selection,s);
-	gtk_combo_box_append_text(combo, s.utf8_str());
+	gtk_combo_box_text_append_text(combo, s.utf8_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Row,s);
-	gtk_combo_box_append_text(combo, s.utf8_str());
+	gtk_combo_box_text_append_text(combo, s.utf8_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Column,s);
-	gtk_combo_box_append_text(combo, s.utf8_str());
+	gtk_combo_box_text_append_text(combo, s.utf8_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Table,s);
-	gtk_combo_box_append_text(combo, s.utf8_str());
+	gtk_combo_box_text_append_text(combo, s.utf8_str());
 
-	gtk_combo_box_set_active(combo, 0);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(combo), 0);
 
 	// add the apply and ok buttons to the dialog
 	m_wCloseButton = GTK_WIDGET(gtk_builder_get_object(builder, "btClose"));
@@ -534,11 +534,11 @@ void AP_UnixDialog_FormatTable::_connectSignals(void)
 {
 	// the catch-alls
 	// Dont use gtk_signal_connect_after for modeless dialogs
-	g_signal_connect(GTK_OBJECT(m_windowMain),
+	g_signal_connect(G_OBJECT(m_windowMain),
 							"destroy",
 							G_CALLBACK(s_destroy_clicked),
 							reinterpret_cast<gpointer>(this));
-	g_signal_connect(GTK_OBJECT(m_windowMain),
+	g_signal_connect(G_OBJECT(m_windowMain),
 							"delete_event",
 							G_CALLBACK(s_delete_clicked),
 							reinterpret_cast<gpointer>(this));
@@ -591,8 +591,8 @@ void AP_UnixDialog_FormatTable::_connectSignals(void)
 							reinterpret_cast<gpointer>(this));
 						   
 	g_signal_connect(G_OBJECT(m_wPreviewArea),
-							"expose_event",
-							G_CALLBACK(s_preview_exposed),
+							"draw",
+							G_CALLBACK(s_preview_draw),
 							reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wApplyToMenu),

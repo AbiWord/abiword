@@ -60,7 +60,7 @@
 #include "fv_FrameEdit.h"
 #include "fl_DocLayout.h"
 #include "xad_Document.h"
-#include "gr_Graphics.h"
+#include "gr_CairoGraphics.h"
 #include "xap_UnixDialogHelper.h"
 #include "xap_UnixClipboard.h"
 #include "xap_Strings.h"
@@ -427,7 +427,8 @@ s_drag_data_get_cb (GtkWidget        * /*widget*/,
 	UT_uint32 dataLen = 0;
 	const char * formatFound = NULL;
 
-	char *targetName = gdk_atom_name(selection->target);
+	GdkAtom target = gtk_selection_data_get_target(selection);
+	char *targetName = gdk_atom_name(target);
 	char *formatList[2];
 
 	formatList[0] = targetName;
@@ -449,7 +450,7 @@ s_drag_data_get_cb (GtkWidget        * /*widget*/,
 		UT_sint32 iLen = strlen(szName);
 		UT_DEBUGMSG(("Gave name %s to Nautilus \n",szName));
 		gtk_selection_data_set (selection,
-								selection->target,
+								target,
 								8,
 								(guchar *) szName,
 								iLen);
@@ -467,7 +468,7 @@ s_drag_data_get_cb (GtkWidget        * /*widget*/,
 				UT_DEBUGMSG((" data length %p \n", pBuf->getPointer(0)));
 			}
 		gtk_selection_data_set (selection,
-								selection->target,
+								target,
 								8,
 								(guchar *) pBuf->getPointer(0),
 								pBuf->getLength());
@@ -486,7 +487,7 @@ s_drag_data_get_cb (GtkWidget        * /*widget*/,
 		{
 			UT_DEBUGMSG(("Got data of length %d \n",pBuf->getLength()));
 				gtk_selection_data_set (selection,
-										selection->target,
+										target,
 										8,
 										(guchar *) pBuf->getPointer(0),
 										pBuf->getLength());
@@ -498,7 +499,7 @@ s_drag_data_get_cb (GtkWidget        * /*widget*/,
 		{
 			UT_DEBUGMSG(("DOM: s_drag_data_get_cb SUCCESS!\n"));
 			gtk_selection_data_set (selection,
-									selection->target,
+									target,
 									8,
 									(guchar *)data,
 									dataLen);
@@ -524,12 +525,12 @@ s_dndDropEvent(GtkWidget        *widget,
 	XAP_Frame * pFrame = pFrameImpl->getFrame ();
 	FV_View   * pView  = static_cast<FV_View*>(pFrame->getCurrentView ());
 
-	char *targetName = gdk_atom_name(selection_data->target);
+	char *targetName = gdk_atom_name(gtk_selection_data_get_target(selection_data));
 	UT_DEBUGMSG(("JK: target in selection = %s \n", targetName));
 
 	if (info == TARGET_URI_LIST)
 	{
-		const char * rawChar = reinterpret_cast<const char *>(selection_data->data);
+		const char * rawChar = reinterpret_cast<const char *>(gtk_selection_data_get_data(selection_data));
 		UT_DEBUGMSG(("DOM: text in selection = %s \n", rawChar));
 		s_loadUriList (pFrame,rawChar,x,y);
 	}
@@ -540,25 +541,28 @@ s_dndDropEvent(GtkWidget        *widget,
             UT_DEBUGMSG(("MIQ: Document target is a vcard/contact\n"));
             
 //            pView->cmdCharInsert( "fred" );
-            s_pasteText (pFrame, targetName, selection_data->data, selection_data->length);
+            s_pasteText (pFrame, targetName, gtk_selection_data_get_data(selection_data),
+                         gtk_selection_data_get_length(selection_data));
         }
         else
         {
             UT_DEBUGMSG(("JK: Document target as data buffer\n"));
-            s_pasteText (pFrame, targetName, selection_data->data, selection_data->length);
+            s_pasteText (pFrame, targetName, gtk_selection_data_get_data(selection_data),
+                         gtk_selection_data_get_length(selection_data));
         }
 	}
 	else if (info == TARGET_IMAGE)
 	{
-		UT_ByteBuf bytes( selection_data->length );
+		UT_ByteBuf bytes(gtk_selection_data_get_length(selection_data));
 
 		UT_DEBUGMSG(("JK: Image target\n"));
-		bytes.append (selection_data->data, selection_data->length);
+		bytes.append (gtk_selection_data_get_data(selection_data),
+		              gtk_selection_data_get_length(selection_data));
 		s_loadImage (bytes, pView,pFrame,x,y);
 	}
 	else if (info == TARGET_URL)
 	{
-		const char * uri = reinterpret_cast<const char *>(selection_data->data);
+		const char * uri = reinterpret_cast<const char *>(gtk_selection_data_get_data(selection_data));
 		UT_DEBUGMSG(("DOM: hyperlink: %s\n", uri));
 		//
 		// Look to see if this is actually an image.
@@ -1005,6 +1009,11 @@ gint XAP_UnixFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 	AV_View * pView = pFrame->getCurrentView();
 	if (pView)
 	{
+		if (pUnixFrameImpl->m_iNewWidth == e->width &&
+		    pUnixFrameImpl->m_iNewHeight == e->height &&
+		    pUnixFrameImpl->m_iNewY == e->y &&
+		    pUnixFrameImpl->m_iNewX == e->x)
+			return 1;
 		pUnixFrameImpl->m_iNewWidth = e->width;
 		pUnixFrameImpl->m_iNewHeight = e->height;
 		pUnixFrameImpl->m_iNewY = e->y;
@@ -1028,7 +1037,7 @@ gint XAP_UnixFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 		if(pFrame->getFrameMode() == XAP_NormalFrame) {
 			pWin = GTK_WINDOW(pUnixFrameImpl->m_wTopLevelWindow);
 			// worth remembering size?
-			GdkWindowState state = gdk_window_get_state (GTK_WIDGET(pWin)->window);
+			GdkWindowState state = gdk_window_get_state (gtk_widget_get_window(GTK_WIDGET(pWin)));
 			if (!(state & GDK_WINDOW_STATE_ICONIFIED ||
 				  state & GDK_WINDOW_STATE_MAXIMIZED ||
 				  state & GDK_WINDOW_STATE_FULLSCREEN)) {
@@ -1149,7 +1158,7 @@ gint XAP_UnixFrameImpl::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 
 	// stop emission for keys that would take the focus away from the document widget
 	switch (e->keyval) {
-	case GDK_Tab: case GDK_Left: case GDK_Up: case GDK_Right: case GDK_Down: 
+	case GDK_KEY_Tab: case GDK_KEY_Left: case GDK_KEY_Up: case GDK_KEY_Right: case GDK_KEY_Down: 
 		return TRUE;
 		break;
 	}
@@ -1191,14 +1200,17 @@ gint XAP_UnixFrameImpl::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, g
 	return TRUE;
 }
 
-gint XAP_UnixFrameImpl::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
+gint XAP_UnixFrameImpl::_fe::draw(GtkWidget * w, cairo_t * cr)
 {
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
 	FV_View * pView = static_cast<FV_View *>(pUnixFrameImpl->getFrame()->getCurrentView());
-	if((pUnixFrameImpl->m_bDoZoomUpdate) || (pUnixFrameImpl->m_iZoomUpdateID != 0))
-	{
-		return TRUE;
-	}
+	GdkEventExpose *pExposeEvent = reinterpret_cast<GdkEventExpose *>(gtk_get_current_event());
+/* Jean: commenting out next lines since the zoom update code does draw only
+ * part of what needs to be updated. */
+//	if((pUnixFrameImpl->m_bDoZoomUpdate) || (pUnixFrameImpl->m_iZoomUpdateID != 0))
+//	{
+//		return TRUE;
+//	}
 	if(pView)
 	{
 		GR_Graphics * pGr = pView->getGraphics ();
@@ -1208,6 +1220,7 @@ gint XAP_UnixFrameImpl::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 		rClip.top = pGr->tlu(pExposeEvent->area.y);
 		rClip.width = pGr->tlu(pExposeEvent->area.width)+1;
 		rClip.height = pGr->tlu(pExposeEvent->area.height)+1;
+		static_cast<GR_CairoGraphics *>(pGr)->setCairo(cr);
 		pView->draw(&rClip);
 	}
 	return FALSE;
@@ -1248,7 +1261,7 @@ void XAP_UnixFrameImpl::_fe::vScrollChanged(GtkAdjustment * w, gpointer /*data*/
 	}
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
 	AV_View * pView = pFrame->getCurrentView();
-	_ViewScroll * pVS = new  _ViewScroll(pView,static_cast<UT_sint32>(w->value));
+	_ViewScroll * pVS = new  _ViewScroll(pView,static_cast<UT_sint32>(gtk_adjustment_get_value(w)));
 	bScrollWait = true;
 	g_idle_add(_actualScroll, (gpointer) pVS);
 }
@@ -1260,7 +1273,7 @@ void XAP_UnixFrameImpl::_fe::hScrollChanged(GtkAdjustment * w, gpointer /*data*/
 	AV_View * pView = pFrame->getCurrentView();
 
 	if (pView)
-		pView->sendHorizontalScrollEvent(static_cast<UT_sint32>(w->value));
+		pView->sendHorizontalScrollEvent(static_cast<UT_sint32>(gtk_adjustment_get_value(w)));
 }
 
 void XAP_UnixFrameImpl::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
@@ -1419,13 +1432,13 @@ void XAP_UnixFrameImpl::_setCursor(GR_Graphics::Cursor c)
 	}
 	xxx_UT_DEBUGMSG(("Set cursor number in Frame %d to %d \n",c,cursor_number));
 	GdkCursor * cursor = gdk_cursor_new(cursor_number);
-	gdk_window_set_cursor(getTopLevelWindow()->window, cursor);
-	gdk_window_set_cursor(getVBoxWidget()->window, cursor);
+	gdk_window_set_cursor(gtk_widget_get_window(getTopLevelWindow()), cursor);
+	gdk_window_set_cursor(gtk_widget_get_window(getVBoxWidget()), cursor);
 
-	gdk_window_set_cursor(m_wSunkenBox->window, cursor);
+	gdk_window_set_cursor(gtk_widget_get_window(m_wSunkenBox), cursor);
 
 	if (m_wStatusBar)
-		gdk_window_set_cursor(m_wStatusBar->window, cursor);
+		gdk_window_set_cursor(gtk_widget_get_window(m_wStatusBar), cursor);
 
 	gdk_cursor_unref(cursor);
 }
@@ -1555,7 +1568,7 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 
 	// create a VBox inside it.
 
-	m_wVBox = gtk_vbox_new(FALSE,0);
+	m_wVBox = gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
 	g_object_set_data(G_OBJECT(m_wTopLevelWindow), "vbox", m_wVBox);
 	g_object_set_data(G_OBJECT(m_wVBox),"user_data", this);
 	gtk_container_add(GTK_CONTAINER(m_wTopLevelWindow), m_wVBox);
@@ -1576,7 +1589,7 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 	if(m_iFrameMode == XAP_NormalFrame)
 		gtk_widget_realize(m_wTopLevelWindow);
 
-	_createIMContext(m_wTopLevelWindow->window);
+	_createIMContext(gtk_widget_get_window(m_wTopLevelWindow));
 
 	/* If refactoring the toolbars code, please make sure that toolbars
 	 * are created AFTER the main menu bar has been synthesized, otherwise

@@ -142,8 +142,8 @@ static void s_delete_clicked(GtkWidget 	* /*widget*/,
 	gtk_main_quit();
 }
 
-static gint s_preview_exposed(GtkWidget * /* widget */,
-			      GdkEventExpose * /* pExposeEvent */,
+static gint s_preview_draw(GtkWidget * /* widget */,
+			      cairo_t * /* cr */,
 			      gpointer ptr)
 {
         XAP_UnixDialog_FileOpenSaveAs * dlg = static_cast<XAP_UnixDialog_FileOpenSaveAs *> (ptr);
@@ -161,7 +161,7 @@ static void s_filetypechanged(GtkWidget * w, gpointer p)
 static gint
 fsel_key_event (GtkWidget * widget, GdkEventKey * event, XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
 {
-	if (event->keyval == GDK_Escape) {
+	if (event->keyval == GDK_KEY_Escape) {
 		g_signal_stop_emission_by_name (G_OBJECT (widget), "key_press_event");
 		s_dialog_response(widget, GTK_RESPONSE_CANCEL, answer);
 		return TRUE;
@@ -181,7 +181,7 @@ static void s_file_activated(GtkWidget * w, XAP_Dialog_FileOpenSaveAs::tAnswer *
 }
 
 static void file_selection_changed  (GtkTreeSelection  * /*selection*/,
-				     gpointer           ptr)
+                                    gpointer           ptr)
 {
   XAP_UnixDialog_FileOpenSaveAs * dlg = static_cast<XAP_UnixDialog_FileOpenSaveAs *> (ptr);
 
@@ -476,7 +476,7 @@ void XAP_UnixDialog_FileOpenSaveAs::fileTypeChanged(GtkWidget * w)
 
 void XAP_UnixDialog_FileOpenSaveAs::onDeleteCancel() 
 {
-	if (m_FC != NULL && GTK_WIDGET_HAS_GRAB(GTK_WIDGET (m_FC))) {
+	if (m_FC != NULL && gtk_widget_has_grab(GTK_WIDGET (m_FC))) {
 		gtk_grab_remove (GTK_WIDGET (m_FC));
 	}
 	m_FC = NULL;
@@ -586,7 +586,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
 	GtkWidget * parent = pUnixFrameImpl->getTopLevelWindow();
 
-	if(parent && (GTK_WIDGET_TOPLEVEL(parent) != TRUE))
+	if(parent && (gtk_widget_is_toplevel(parent) != TRUE))
 	{
         parent = gtk_widget_get_toplevel (parent);
 	}
@@ -626,7 +626,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		gtk_widget_set_size_request (preview, PREVIEW_WIDTH, PREVIEW_HEIGHT);
 		
 		// place the preview area inside a container to get a nice border
-		GtkWidget * preview_hbox = gtk_hbox_new(FALSE, 0);
+		GtkWidget * preview_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
 		gtk_container_set_border_width  (GTK_CONTAINER(preview_hbox), 4);
 		gtk_box_pack_start(GTK_BOX(preview_hbox), preview, TRUE, TRUE, 0);
 		
@@ -638,8 +638,8 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		g_signal_connect (m_FC, "update_preview",
 								G_CALLBACK (file_selection_changed), static_cast<gpointer>(this));
 		
-		g_signal_connect (preview, "expose_event",
-								G_CALLBACK (s_preview_exposed), static_cast<gpointer>(this));
+		g_signal_connect (preview, "draw",
+								G_CALLBACK (s_preview_draw), static_cast<gpointer>(this));
 	}
 
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
@@ -648,7 +648,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	GtkWidget * pulldown_hbox = filetypes_pulldown;
 #else
 	// hbox for our pulldown menu (GTK does its pulldown this way */
-	GtkWidget * pulldown_hbox = gtk_hbox_new(FALSE, 15);
+	GtkWidget * pulldown_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 15);
 	gtk_widget_show(pulldown_hbox);
 
 	// pulldown label
@@ -905,11 +905,13 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 
 	{
 	GR_Painter painter(pGr);
-	painter.clearArea(0, 0, pGr->tlu(m_preview->allocation.width), pGr->tlu(m_preview->allocation.height));
+	GtkAllocation alloc;
+	gtk_widget_get_allocation(m_preview, &alloc);
+	painter.clearArea(0, 0, pGr->tlu(alloc.width), pGr->tlu(alloc.height));
 
 	if (!file_name)
 	{
-		painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(m_preview->allocation.height / 2)) - pGr->getFontHeight(fnt)/2);
+		painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(alloc.height / 2)) - pGr->getFontHeight(fnt)/2);
 	    goto Cleanup;
 	}
 
@@ -919,7 +921,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	{
 		if (!S_ISREG(st.st_mode)) 
 		{
-			painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(m_preview->allocation.height / 2)) - pGr->getFontHeight(fnt)/2);
+			painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(alloc.height / 2)) - pGr->getFontHeight(fnt)/2);
 			goto Cleanup;
 		}
 	}
@@ -937,7 +939,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	IEGraphicFileType ief = IE_ImpGraphic::fileTypeForContents(Buf,4096);
 	if((ief == IEGFT_Unknown) || (ief == IEGFT_Bogus))
 	{
-		    painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(m_preview->allocation.height / 2)) - pGr->getFontHeight(fnt)/2);
+		    painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(alloc.height / 2)) - pGr->getFontHeight(fnt)/2);
 			g_object_unref (G_OBJECT (input));
 			goto Cleanup;
 	}
@@ -947,7 +949,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	UT_Byte * bytes = (UT_Byte *) gsf_input_read(input, num_bytes,NULL );
 	if(bytes == NULL)
 	{
-		    painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(m_preview->allocation.height / 2)) - pGr->getFontHeight(fnt)/2);
+		    painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(alloc.height / 2)) - pGr->getFontHeight(fnt)/2);
 			g_object_unref (G_OBJECT (input));
 			goto Cleanup;
 	}
@@ -957,7 +959,8 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	//
 	// OK load the data into a GdkPixbuf
 	//
-	bool bLoadFailed = false;
+	// Jean: comented out next line (and an other one below), we don't use it
+	// bool bLoadFailed = false;
 	//
 	GdkPixbuf * pixbuf = pixbufForByteBuf ( pBB);
 	delete pBB;
@@ -966,8 +969,8 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 		//
 		// Try a fallback loader here.
 		//
-		painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(m_preview->allocation.height / 2)) - pGr->getFontHeight(fnt)/2);
-		bLoadFailed = true;
+		painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(alloc.height / 2)) - pGr->getFontHeight(fnt)/2);
+		// bLoadFailed = true;
 	    goto Cleanup;
 	}
 
@@ -975,19 +978,19 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 
 	iImageWidth = gdk_pixbuf_get_width (pixbuf);
 	iImageHeight = gdk_pixbuf_get_height (pixbuf);
-	if (m_preview->allocation.width >= iImageWidth && m_preview->allocation.height >= iImageHeight)
+	if (alloc.width >= iImageWidth && alloc.height >= iImageHeight)
 		scale_factor = 1.0;
 	else
-		scale_factor = MIN( static_cast<double>(m_preview->allocation.width)/iImageWidth,
-							static_cast<double>(m_preview->allocation.height)/iImageHeight);
+		scale_factor = MIN( static_cast<double>(alloc.width)/iImageWidth,
+							static_cast<double>(alloc.height)/iImageHeight);
 		
 	scaled_width  = static_cast<int>(scale_factor * iImageWidth);
 	scaled_height = static_cast<int>(scale_factor * iImageHeight);
 
 	static_cast<GR_UnixImage *>(pImage)->scale(scaled_width,scaled_height);	
 	painter.drawImage(pImage,
-					  pGr->tlu(static_cast<int>((m_preview->allocation.width  - scaled_width ) / 2)),
-					  pGr->tlu(static_cast<int>((m_preview->allocation.height - scaled_height) / 2)));
+					  pGr->tlu(static_cast<int>((alloc.width  - scaled_width ) / 2)),
+					  pGr->tlu(static_cast<int>((alloc.height - scaled_height) / 2)));
 		
 	answer = 1;
 	}

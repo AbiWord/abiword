@@ -98,10 +98,10 @@ GtkWidget * AP_UnixDialog_MarkRevisions::constructWindow ()
   dialog1 = abiDialogNew ( "mark revisions", TRUE, s.utf8_str());
   gtk_window_set_default_size ( GTK_WINDOW(dialog1), 250, 150 ) ;
 
-  dialog_vbox1 = GTK_DIALOG (dialog1)->vbox;
+  dialog_vbox1 = gtk_dialog_get_content_area(GTK_DIALOG (dialog1));
   gtk_widget_show (dialog_vbox1);
 
-  dialog_action_area1 = GTK_DIALOG (dialog1)->action_area;
+  dialog_action_area1 = gtk_dialog_get_action_area(GTK_DIALOG (dialog1));
   gtk_widget_show (dialog_action_area1);
   gtk_container_set_border_width (GTK_CONTAINER (dialog_action_area1), 10);
 
@@ -127,7 +127,7 @@ void AP_UnixDialog_MarkRevisions::constructWindowContents ( GtkWidget * containe
    GtkWidget *lbl2;
    GtkWidget *entry1;
    
-   vbox1 = gtk_vbox_new (FALSE, 0);
+   vbox1 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
    gtk_widget_show (vbox1);
    gtk_box_pack_start (GTK_BOX (container), vbox1, TRUE, TRUE, 0);
    gtk_container_set_border_width (GTK_CONTAINER (vbox1), 3);

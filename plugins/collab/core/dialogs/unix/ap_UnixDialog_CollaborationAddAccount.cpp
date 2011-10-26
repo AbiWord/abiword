@@ -94,7 +94,7 @@ GtkWidget * AP_UnixDialog_CollaborationAddAccount::_constructWindow(void)
 	// might need to be queried or altered later
 	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_CollaborationAddAccount"));
 	m_wAccountType = GTK_WIDGET(gtk_builder_get_object(builder, "cbAccountType"));
-	m_wEmbeddingParent = GTK_VBOX(GTK_WIDGET(gtk_builder_get_object(builder, "vbWidgetEmbedding")));
+	m_wEmbeddingParent = GTK_BOX(gtk_builder_get_object(builder, "vbWidgetEmbedding"));
 	m_wOk = GTK_WIDGET(gtk_builder_get_object(builder, "btOK"));
 
 	// set the dialog title

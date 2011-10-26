@@ -41,7 +41,7 @@ private:
 
 
 	GtkWidget*					m_wWindowMain;
-	GtkVBox*					m_wEmbeddingParent;
+	GtkBox*						m_wEmbeddingParent;
 	GtkWidget*					m_wOk;
 };
 

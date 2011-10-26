@@ -1,6 +1,6 @@
 /* vim: set sw=8: -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * go-cmd-context.h: 
+ * go-cmd-context.h:
  *
  * Copyright (C) 2004 Jody Goldberg (jody@gnome.org)
  *
@@ -26,9 +26,9 @@
 
 G_BEGIN_DECLS
 
-#define GO_CMD_CONTEXT_TYPE        (go_cmd_context_get_type ())
-#define GO_CMD_CONTEXT(o)          (G_TYPE_CHECK_INSTANCE_CAST ((o), GO_CMD_CONTEXT_TYPE, GOCmdContext))
-#define IS_GO_CMD_CONTEXT(o)       (G_TYPE_CHECK_INSTANCE_TYPE ((o), GO_CMD_CONTEXT_TYPE))
+#define GO_TYPE_CMD_CONTEXT        (go_cmd_context_get_type ())
+#define GO_CMD_CONTEXT(o)          (G_TYPE_CHECK_INSTANCE_CAST ((o), GO_TYPE_CMD_CONTEXT, GOCmdContext))
+#define GO_IS_CMD_CONTEXT(o)       (G_TYPE_CHECK_INSTANCE_TYPE ((o), GO_TYPE_CMD_CONTEXT))
 
 GType  go_cmd_context_get_type (void);
 
@@ -42,7 +42,8 @@ void   go_cmd_context_error_import  (GOCmdContext *cc, char const *msg);
 void   go_cmd_context_error_export  (GOCmdContext *cc, char const *msg);
 void   go_cmd_context_error_invalid (GOCmdContext *cc,
 				     char const *msg, char const *val);
-void   go_cmd_context_error_info    (GOCmdContext *cc, ErrorInfo *stack);
+void   go_cmd_context_error_info    (GOCmdContext *cc, GOErrorInfo *stack);
+void   go_cmd_context_error_info_list (GOCmdContext *cc, GSList *stack);
 
 /* An initial set of std errors */
 GQuark go_error_system  (void);

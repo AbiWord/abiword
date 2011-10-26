@@ -30,17 +30,14 @@
 #ifndef _GO_COMBO_COLOR_H_
 #define _GO_COMBO_COLOR_H_
 
-#include <glib-object.h>
-#include <goffice/gtk/go-color-group.h>
-#include <goffice/utils/go-color.h>
-#include <gtk/gtkwidget.h>
+#include <goffice/goffice.h>
 
 G_BEGIN_DECLS
 
-#define GO_COMBO_COLOR_TYPE	(go_combo_color_get_type ())
-#define GO_COMBO_COLOR(o)	(G_TYPE_CHECK_INSTANCE_CAST((o), GO_COMBO_COLOR_TYPE, GOComboColor))
-#define IS_GO_COMBO_COLOR(o)	(G_TYPE_CHECK_INSTANCE_TYPE((o), GO_COMBO_COLOR_TYPE))
-#define GO_COMBO_COLOR_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST(k), GO_COMBO_COLOR_TYPE)
+#define GO_TYPE_COMBO_COLOR	(go_combo_color_get_type ())
+#define GO_COMBO_COLOR(o)	(G_TYPE_CHECK_INSTANCE_CAST((o), GO_TYPE_COMBO_COLOR, GOComboColor))
+#define GO_IS_COMBO_COLOR(o)	(G_TYPE_CHECK_INSTANCE_TYPE((o), GO_TYPE_COMBO_COLOR))
+#define GO_COMBO_COLOR_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST(k), GO_TYPE_COMBO_COLOR)
 
 typedef struct _GOComboColor GOComboColor;
 
@@ -52,7 +49,7 @@ GtkWidget *go_combo_color_new        (GdkPixbuf   *icon,
 GOColor go_combo_color_get_color (GOComboColor  *cc, gboolean *is_default);
 void    go_combo_color_set_color (GOComboColor  *cc, GOColor   color);
 void    go_combo_color_set_color_to_default (GOComboColor *cc);
-void    go_combo_color_set_color_gdk (GOComboColor *cc, GdkColor *color);
+void    go_combo_color_set_color_gdk (GOComboColor *cc, GdkRGBA *color);
 
 void go_combo_color_set_allow_alpha    (GOComboColor *cc, gboolean allow_alpha);
 void go_combo_color_set_instant_apply  (GOComboColor *cc, gboolean active);

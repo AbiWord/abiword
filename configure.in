@@ -11,6 +11,8 @@ AC_CONFIG_HEADERS(config.h)
 
 AM_INIT_AUTOMAKE([1.9 tar-ustar])
 
+m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
+
 dnl we use AM_MAINTAINER_MODE and enable it to allow to disable it.
 dnl very usefull to build in scratchbox where the maintainer mode is used for the PC
 dnl build but the embedded build just use pregenerated one (with a different version)
@@ -24,7 +26,7 @@ AM_MAINTAINER_MODE([enable])
 #
 # versions requested.
 #
-GTK_VERSION_REQ=2.12.0
+GTK_VERSION_REQ=3.0.8
 
 
 
@@ -48,7 +50,7 @@ AC_ARG_ENABLE([embedded],
 	case "$enableval" in
 	hildon) 
 		abi_cv_embedded_target=EMBEDDED_TARGET_HILDON 
-		GTK_VERSION_REQ=2.10.0
+		GTK_VERSION_REQ=3.0.8
 		;;
 	poky)
 		abi_cv_embedded_target=EMBEDDED_TARGET_POKY ;;
@@ -86,19 +88,9 @@ xp_pkgs="
 
 # optional deps
 enchant_req='enchant >= 1.2.0'
-gnomevfs_req='gnome-vfs-2.0 >= 2.2.0 libgsf-gnome-1 >= 1.12.0'
 gio_req='gio-2.0'
-goffice_req=
-for ver in 0.8 0.6 ; do
-  if test "x$goffice_req" = x; then
-    if pkg-config --exists libgoffice-$ver; then
-      goffice_req=libgoffice-$ver
-    fi
-  fi
-done
-if test "x$goffice_req" = x; then
-  goffice_req=libgoffice-0.6
-fi
+goffice_req='libgoffice-0.10 >= 0.9.0'
+
 hildon_pkgs='hildon-1 hildon-fm-2 dbus-1 libosso'
 dnl libosso-gsf-1'
 # placeholder for accumulated optional deps
@@ -106,7 +98,7 @@ opt_pkgs=''
 
 # gtk deps
 cairo_req='cairo-pdf cairo-ps pangocairo'
-gtk_req="gtk+-2.0 >= $GTK_VERSION_REQ gtk+-unix-print-2.0 librsvg-2.0 >= 2.16.0"
+gtk_req="gtk+-3.0 >= $GTK_VERSION_REQ gtk+-unix-print-3.0 librsvg-2.0 >= 2.16.0"
 gtk_pkgs="
   ${cairo_req}
   ${gtk_req}
@@ -327,28 +319,6 @@ AC_ARG_ENABLE([debug],
 #
 # Optional packages
 #
-
-AC_ARG_WITH([gnomevfs], 
-	[AS_HELP_STRING([--with-gnomevfs], [(Gtk+ only) use gnome-vfs library])], 
-[
-	abi_cv_gnomevfs="$withval"
-],[
-	# use gnomevfs if detected
-	if test "$TOOLKIT" = "gtk"; then
-		PKG_CHECK_EXISTS([ $gnomevfs_req ],
-		[
-			abi_cv_gnomevfs="yes"
-		], [
-			abi_cv_gnomevfs="no"
-		])
-	else
-		abi_cv_gnomevfs="no"
-	fi
-])
-
-if test "$abi_cv_gnomevfs" = "yes"; then
-	opt_pkgs="$opt_pkgs $gnomevfs_req"
-fi
 
 AC_ARG_WITH([gio], 
 	[AS_HELP_STRING([--with-gio], [use GIO library])], 
@@ -600,14 +570,6 @@ else
 fi
 
 PKG_CHECK_MODULES(DEPS,[$deps_pkgs])
-dnl specific gtk214 test.
-if test "$TOOLKIT" = "gtk"; then
-	PKG_CHECK_MODULES(GTK214, gtk+-2.0 > 2.14, [abi_cv_gtk214=yes], 
-                 [abi_cv_gtk214=no])
-	if test "$abi_cv_gtk214" = "yes" ; then
-		AC_DEFINE([HAVE_GTK214], [1], [GTK is at least 2.14])
-	fi
-fi
 
 dnl make that for all.
 if test "$TOOLKIT" = "gtk" -o "$TOOLKIT" = "cocoa"; then
@@ -846,10 +808,6 @@ AM_PATH_LIBGCRYPT( 1.4.5,
 		   ] )
 AM_CONDITIONAL(HAVE_GCRYPT, test "$abi_cv_gcrypt" = "yes")
 
-if test "$abi_cv_gnomevfs" = "yes"; then
-	AC_DEFINE([WITH_GNOMEVFS], [1], [Define if using gnome-vfs])
-fi
-
 if test "$abi_cv_gio" = "yes"; then
 	AC_DEFINE([WITH_GIO], [1], [Define if using GIO])
 fi
@@ -1018,8 +976,6 @@ Optional features:
   templates             ${abi_cv_templates}
 
 Optional dependencies:
-  gtk2 > 2.14           ${abi_cv_gtk214}
-  gnome-vfs             ${abi_cv_gnomevfs}
   gio			${abi_cv_gio}
   gsf-gio               ${abi_cv_gsf_gio}
   goffice               ${abi_cv_goffice}

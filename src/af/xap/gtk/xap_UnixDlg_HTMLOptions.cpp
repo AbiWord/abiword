@@ -286,7 +286,7 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 
 	/* This is the top level organization widget, which packs things vertically
 	 */
-	GtkWidget * vboxMain = GTK_DIALOG(m_windowMain)->vbox;
+	GtkWidget * vboxMain = gtk_dialog_get_content_area(GTK_DIALOG(m_windowMain));
 
 	/* The top item in the vbox is a simple label
 	 */

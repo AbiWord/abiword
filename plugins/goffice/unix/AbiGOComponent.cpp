@@ -268,8 +268,8 @@ AbiGOComponent_Create (G_GNUC_UNUSED AV_View* v, G_GNUC_UNUSED EV_EditMethodCall
 		}
 		l = l->next;
 	}
-	gtk_box_pack_start (GTK_BOX (dialog->vbox), w, false, false, 0);
-	gtk_widget_show_all (dialog->vbox);
+	gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area(dialog)), w, false, false, 0);
+	gtk_widget_show_all (GTK_WIDGET(dialog));
 	gint result = gtk_dialog_run (dialog);
 	if (result == GTK_RESPONSE_OK &&
 		gtk_tree_selection_get_selected (sel, NULL, &iter)) {

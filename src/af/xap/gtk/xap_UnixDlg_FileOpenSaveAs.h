@@ -22,7 +22,6 @@
 #ifndef XAP_UNIXDIALOG_FILEOPENSAVEAS_H
 #define XAP_UNIXDIALOG_FILEOPENSAVEAS_H
 #include <gtk/gtk.h>
-#include <gtk/gtkfilesel.h>
 #include "xap_Dlg_FileOpenSaveAs.h"
 #include "xap_Strings.h"
 #include "ut_vector.h"
@@ -41,7 +40,7 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	gint previewPicture (void);
+	gint previewPicture ();
 
 	void fileTypeChanged(GtkWidget * w);
 	void onDeleteCancel (void);

@@ -39,6 +39,7 @@
 
 #include <gtk/gtk.h>
 #include <gsf/gsf-impl-utils.h>
+#include <gsf/gsf-input-memory.h>
 #include <gsf/gsf-output-memory.h>
 #include <gsf/gsf-libxml.h>
 #include <cairo-svg.h>
@@ -129,15 +130,17 @@ cb_graph_dim_editor_update (GtkEntry *gee,
 	/* Ignore changes while we are insensitive. useful for displaying
 	 * values, without storing then as Data.  Also ignore updates if the
 	 * dataset has been cleared via the weakref handler  */
-	if (!GTK_WIDGET_SENSITIVE (gee) || editor->dataset == NULL)
+	if (!gtk_widget_get_sensitive (GTK_WIDGET(gee)) || editor->dataset == NULL)
 		return;
 
 	GOData *data = NULL;
 	double val;
-	char sep[2], col_sep[2], *end;
+	char *end;
+#if 0
 	sep[0] = go_locale_get_arg_sep ();
 	col_sep[0] = go_locale_get_col_sep ();
 	sep[1] = col_sep[1]= 0;
+#endif
 	char const* str = gtk_entry_get_text (gee);
 	if (str == NULL)
 		return;
@@ -776,11 +779,12 @@ void GOChartView::loadBuffer(UT_UTF8String & sGOChartXML)
 {
 	if (m_Graph)
 		g_object_unref (m_Graph);
+	m_Graph = NULL;
 	AbiGO_LocaleTransactor tn(LC_NUMERIC, "C");
 	AbiGO_LocaleTransactor tm(LC_MONETARY, "C");
-	xmlDocPtr xml = xmlParseMemory((const char*)sGOChartXML.utf8_str(), sGOChartXML.byteLength());
-	m_Graph = GOG_GRAPH (gog_object_new_from_xml (NULL, xml->children, NULL));
-	xmlFreeDoc(xml);
+	GsfInput *input = gsf_input_memory_new(reinterpret_cast<const guint8*>(sGOChartXML.utf8_str()), sGOChartXML.byteLength(), FALSE);
+	m_Graph = GOG_GRAPH(gog_object_new_from_input(input, NULL));
+	g_object_unref(G_OBJECT(input));
 	if (m_Graph)
 		g_object_set (G_OBJECT (m_Renderer), "model", m_Graph, NULL);
 	pix_width = pix_height = 0; // force pixbuf update

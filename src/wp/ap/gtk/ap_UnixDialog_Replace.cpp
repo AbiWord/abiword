@@ -157,7 +157,7 @@ void AP_UnixDialog_Replace::activate(void)
 	UT_ASSERT(m_windowMain);
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
-	gdk_window_raise(m_windowMain->window);
+	gdk_window_raise(gtk_widget_get_window(m_windowMain));
 }
 
 void AP_UnixDialog_Replace::notifyActiveFrame(XAP_Frame * /*pFrame*/)
@@ -185,12 +185,9 @@ void AP_UnixDialog_Replace::runModeless(XAP_Frame * pFrame)
 static UT_UCS4String
 get_combobox_text(GtkWidget* combo)
 {
-  UT_UCS4String ucs;
-  char *str = gtk_combo_box_get_active_text(GTK_COMBO_BOX(combo));
-  ucs = str;
-  g_free(str);
+	UT_UCS4String ucs = gtk_entry_get_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(combo))));
 
-  return ucs;
+	return ucs;
 }
 
 void AP_UnixDialog_Replace::event_Find(void)
@@ -310,8 +307,10 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 
 	GtkListStore* comboFind_model = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_POINTER);
 	gtk_combo_box_set_model(GTK_COMBO_BOX(m_comboFind), GTK_TREE_MODEL(comboFind_model));
+	g_object_set(G_OBJECT(m_comboFind), "entry-text-column", 0, NULL);
 	GtkListStore* comboReplace_model = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_POINTER);
 	gtk_combo_box_set_model(GTK_COMBO_BOX(m_comboReplace), GTK_TREE_MODEL(comboReplace_model));
+	g_object_set(G_OBJECT(m_comboReplace), "entry-text-column", 0, NULL);
 
 	GtkWidget * labelFind = GTK_WIDGET(gtk_builder_get_object(builder, "lblFind"));
 	GtkWidget * labelReplace = GTK_WIDGET(gtk_builder_get_object(builder, "lblReplace"));

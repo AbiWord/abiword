@@ -26,16 +26,14 @@
 #ifndef GO_COLOR_H
 #define GO_COLOR_H
 
-#include <glib.h>
-#include <goffice/goffice-features.h>
-#include <goffice/utils/goffice-utils.h>
-#include <pango/pango.h>
-
-#ifdef GOFFICE_WITH_GTK
-#include <gdk/gdktypes.h>
-#endif
+#include <goffice/goffice.h>
 
 G_BEGIN_DECLS
+
+typedef struct {
+	GOColor		 color;
+	char const 	*name;	/* english name - eg. "white" */
+} GONamedColor;
 
 /*
   Some convenient macros for drawing into an RGB buffer.
@@ -43,82 +41,51 @@ G_BEGIN_DECLS
   cpp-perils...
 */
 
-#define GDK_TO_UINT(c)	RGBA_TO_UINT(((c).red>>8), ((c).green>>8), ((c).blue>>8), 0xff)
+#define GO_COLOR_FROM_GDK_RGBA(c)	GO_COLOR_FROM_RGBA((int)((c).red * 255.), (int)((c).green * 255.), (int)((c).blue * 255.), (int)((c).alpha * 255.))
 
-#define RGB_TO_UINT(r,g,b)	((((guint)(r))<<16)|(((guint)(g))<<8)|((guint)(b)))
-#define RGB_TO_RGBA(x,a)	(((x) << 8) | ((((guint)a) & 0xff)))
-#define RGB_WHITE   RGB_TO_UINT(0xff, 0xff, 0xff)
-#define RGB_BLACK   RGB_TO_UINT(0x00, 0x00, 0x00)
-#define RGB_RED     RGB_TO_UINT(0xff, 0x00, 0x00)
-#define RGB_GREEN   RGB_TO_UINT(0x00, 0xff, 0x00)
-#define RGB_BLUE    RGB_TO_UINT(0x00, 0x00, 0xff)
-#define RGB_YELLOW  RGB_TO_UINT(0xff, 0xff, 0x00)
-#define RGB_VIOLET  RGB_TO_UINT(0xff, 0x00, 0xff)
-#define RGB_CYAN    RGB_TO_UINT(0x00, 0xff, 0xff)
-#define RGB_GREY(x) RGB_TO_UINT(x,x,x)
+#define GO_COLOR_FROM_RGB(r,g,b)	((((guint)(r&0xff))<<24)|(((guint)(g&0xff))<<16)|((guint)(b&0xff)<<8)|0xff)
+#define GO_COLOR_FROM_RGBA(r,g,b,a)	((((guint)(r&0xff))<<24)|(((guint)(g&0xff))<<16)|((guint)(b&0xff)<<8)|(guint)(a&0xff))
+#define GO_COLOR_WHITE  GO_COLOR_FROM_RGB(0xff, 0xff, 0xff)
+#define GO_COLOR_BLACK   GO_COLOR_FROM_RGB(0x00, 0x00, 0x00)
+#define GO_COLOR_RED     GO_COLOR_FROM_RGB(0xff, 0x00, 0x00)
+#define GO_COLOR_GREEN   GO_COLOR_FROM_RGB(0x00, 0xff, 0x00)
+#define GO_COLOR_BLUE   GO_COLOR_FROM_RGB(0x00, 0x00, 0xff)
+#define GO_COLOR_YELLOW  GO_COLOR_FROM_RGB(0xff, 0xff, 0x00)
+#define GO_COLOR_VIOLET  GO_COLOR_FROM_RGB(0xff, 0x00, 0xff)
+#define GO_COLOR_CYAN    GO_COLOR_FROM_RGB(0x00, 0xff, 0xff)
+#define GO_COLOR_GREY(x) GO_COLOR_FROM_RGB(x,x,x)
 
-#define RGBA_TO_UINT(r,g,b,a)	((((guint)(r))<<24)|(((guint)(g))<<16)|(((guint)(b))<<8)|(guint)(a))
-#define RGBA_WHITE  RGB_TO_RGBA(RGB_WHITE, 0xff)
-#define RGBA_BLACK  RGB_TO_RGBA(RGB_BLACK, 0xff)
-#define RGBA_RED    RGB_TO_RGBA(RGB_RED, 0xff)
-#define RGBA_GREEN  RGB_TO_RGBA(RGB_GREEN, 0xff)
-#define RGBA_BLUE   RGB_TO_RGBA(RGB_BLUE, 0xff)
-#define RGBA_YELLOW RGB_TO_RGBA(RGB_YELLOW, 0xff)
-#define RGBA_VIOLET RGB_TO_RGBA(RGB_VIOLET, 0xff)
-#define RGBA_CYAN   RGB_TO_RGBA(RGB_CYAN, 0xff)
-#define RGBA_GREY(x) RGB_TO_RGBA(RGB_GREY(x), 0xff)
+#define GO_COLOR_UINT_R(x) (((guint)(x))>>24)
+#define GO_COLOR_UINT_G(x) ((((guint)(x))>>16)&0xff)
+#define GO_COLOR_UINT_B(x) ((((guint)(x))>>8)&0xff)
+#define GO_COLOR_UINT_A(x) (((guint)(x))&0xff)
+#define GO_COLOR_CHANGE_R(x, r) (((x)&(~(0xff<<24)))|(((r)&0xff)<<24))
+#define GO_COLOR_CHANGE_G(x, g) (((x)&(~(0xff<<16)))|(((g)&0xff)<<16))
+#define GO_COLOR_CHANGE_B(x, b) (((x)&(~(0xff<<8)))|(((b)&0xff)<<8))
+#define GO_COLOR_CHANGE_A(x, a) (((x)&(~0xff))|((a)&0xff))
+#define GO_COLOR_TO_RGB(u,r,g,b) \
+{ (*(r)) = ((u)>>24)&0xff; (*(g)) = ((u)>>16)&0xff; (*(b)) = ((u)>>8)&0xff; }
+#define GO_COLOR_TO_RGBA(u,r,g,b,a) \
+{GO_COLOR_TO_RGB((u),r,g,b); (*(a)) = (u)&0xff; }
+#define GO_COLOR_MONO_INTERPOLATE(v1, v2, t) ((gint)go_rint((v2)*(t)+(v1)*(1-(t))))
+#define GO_COLOR_INTERPOLATE(c1, c2, t) \
+  GO_COLOR_FROM_RGBA( GO_COLOR_MONO_INTERPOLATE(GO_COLOR_UINT_R(c1), GO_COLOR_UINT_R(c2), t), \
+		GO_COLOR_MONO_INTERPOLATE(GO_COLOR_UINT_G(c1), GO_COLOR_UINT_G(c2), t), \
+		GO_COLOR_MONO_INTERPOLATE(GO_COLOR_UINT_B(c1), GO_COLOR_UINT_B(c2), t), \
+		GO_COLOR_MONO_INTERPOLATE(GO_COLOR_UINT_A(c1), GO_COLOR_UINT_A(c2), t) )
 
-#define UINT_RGBA_R(x) (((guint)(x))>>24)
-#define UINT_RGBA_G(x) ((((guint)(x))>>16)&0xff)
-#define UINT_RGBA_B(x) ((((guint)(x))>>8)&0xff)
-#define UINT_RGBA_A(x) (((guint)(x))&0xff)
-#define UINT_RGBA_CHANGE_R(x, r) (((x)&(~(0xff<<24)))|(((r)&0xff)<<24))
-#define UINT_RGBA_CHANGE_G(x, g) (((x)&(~(0xff<<16)))|(((g)&0xff)<<16))
-#define UINT_RGBA_CHANGE_B(x, b) (((x)&(~(0xff<<8)))|(((b)&0xff)<<8))
-#define UINT_RGBA_CHANGE_A(x, a) (((x)&(~0xff))|((a)&0xff))
-#define UINT_TO_RGB(u,r,g,b) \
-{ (*(r)) = ((u)>>16)&0xff; (*(g)) = ((u)>>8)&0xff; (*(b)) = (u)&0xff; }
-#define UINT_TO_RGBA(u,r,g,b,a) \
-{ UINT_TO_RGB(((u)>>8),r,g,b); (*(a)) = (u)&0xff; }
-#define MONO_INTERPOLATE(v1, v2, t) ((gint)go_rint((v2)*(t)+(v1)*(1-(t))))
-#define UINT_INTERPOLATE(c1, c2, t) \
-  RGBA_TO_UINT( MONO_INTERPOLATE(UINT_RGBA_R(c1), UINT_RGBA_R(c2), t), \
-		MONO_INTERPOLATE(UINT_RGBA_G(c1), UINT_RGBA_G(c2), t), \
-		MONO_INTERPOLATE(UINT_RGBA_B(c1), UINT_RGBA_B(c2), t), \
-		MONO_INTERPOLATE(UINT_RGBA_A(c1), UINT_RGBA_A(c2), t) )
-#define PIXEL_RGB(p, r, g, b) \
-{((guchar*)(p))[0]=(r); ((guchar*)(p))[1]=(g); ((guchar*)(p))[2]=(b);}
-#define PIXEL_RGBA(p, r, g, b, a) \
-{ if ((a)>=0xff) { PIXEL_RGB(p,r,g,b) } \
-  else if ((a)>0) { \
-    guint pixel_tmp; \
-    pixel_tmp = ((guchar*)(p))[0]; \
-    ((guchar*)(p))[0] = pixel_tmp + ((((r)-pixel_tmp)*(a)+0x80) >> 8); \
-    pixel_tmp = ((guchar*)(p))[1]; \
-    ((guchar*)(p))[1] = pixel_tmp + ((((g)-pixel_tmp)*(a)+0x80) >> 8); \
-    pixel_tmp = ((guchar*)(p))[2]; \
-    ((guchar*)(p))[2] = pixel_tmp + ((((b)-pixel_tmp)*(a)+0x80) >> 8); }}
-#define PIXEL_RGB_UINT(p, i) \
-UINT_TO_RGB((i), ((guchar*)p), ((guchar*)p)+1, ((guchar*)p)+2)
-#define PIXEL_RGBA_UINT(p, i) \
-  PIXEL_RGBA((p), ((i)>>24)&0xff, ((i)>>16)&0xff, ((i)>>8)&0xff, (i)&0xff)
-#define PIXEL_BLACK(p) PIXEL_RGB(p,0,0,0)
-#define PIXEL_WHITE(p) PIXEL_RGB(p,0xff,0xff,0xff)
-#define PIXEL_GREY(p,g) PIXEL_RGB(p,g,g,g)
-#define PIXEL_GREYA(p,g,a) PIXEL_RGBA(p,g,g,g,a)
+#define GO_COLOR_DOUBLE_R(x) (GO_COLOR_UINT_R(x)/255.0)
+#define GO_COLOR_DOUBLE_G(x) (GO_COLOR_UINT_G(x)/255.0)
+#define GO_COLOR_DOUBLE_B(x) (GO_COLOR_UINT_B(x)/255.0)
+#define GO_COLOR_DOUBLE_A(x) (GO_COLOR_UINT_A(x)/255.0)
 
-#define DOUBLE_RGBA_R(x) (double)UINT_RGBA_R(x)/255.0
-#define DOUBLE_RGBA_G(x) (double)UINT_RGBA_G(x)/255.0
-#define DOUBLE_RGBA_B(x) (double)UINT_RGBA_B(x)/255.0
-#define DOUBLE_RGBA_A(x) (double)UINT_RGBA_A(x)/255.0
-
-#define GO_COLOR_TO_CAIRO(x) DOUBLE_RGBA_R(x),DOUBLE_RGBA_G(x),DOUBLE_RGBA_B(x),DOUBLE_RGBA_A(x)
+#define GO_COLOR_TO_CAIRO(x) GO_COLOR_DOUBLE_R(x),GO_COLOR_DOUBLE_G(x),GO_COLOR_DOUBLE_B(x),GO_COLOR_DOUBLE_A(x)
 
 gboolean  go_color_from_str (char const *str, GOColor *res);
 gchar    *go_color_as_str   (GOColor color);
 PangoAttribute *go_color_to_pango (GOColor color, gboolean is_fore);
 #ifdef GOFFICE_WITH_GTK
-GdkColor *go_color_to_gdk   (GOColor color, GdkColor *res);
+GdkRGBA *go_color_to_gdk_rgba   (GOColor color, GdkRGBA *res);
 #endif
 
 G_END_DECLS

@@ -34,15 +34,15 @@ public:
 		m_win(win)
 		{}
 	GR_UnixCairoAllocInfo(GtkWidget *widget)
-		: GR_CairoAllocInfo(false, false, GTK_WIDGET_DOUBLE_BUFFERED(widget)),
-		  m_win(GTK_WIDGET(widget)->window)
+		: GR_CairoAllocInfo(false, false, gtk_widget_get_double_buffered(widget)),
+		  m_win(gtk_widget_get_window(GTK_WIDGET(widget)))
 	{}
 	
 	GR_UnixCairoAllocInfo(bool bPreview)
 		: GR_CairoAllocInfo(bPreview, true, false),
 		  m_win(NULL){}
-	virtual cairo_t *createCairo();
 
+	cairo_t *createCairo() {return NULL;} // we need this since otherwise the class would be abstract
 	GdkWindow     * m_win;
 };
 
@@ -80,8 +80,6 @@ public:
 	virtual GR_Font * getGUIFont(void);
 	
 	virtual void		setCursor(GR_Graphics::Cursor c);
-	void                createPixmapFromXPM(char ** pXPM,GdkPixmap *source,
-											GdkBitmap * mask);
 	virtual void		scroll(UT_sint32, UT_sint32);
 	virtual void		scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						   UT_sint32 x_src, UT_sint32 y_src,
@@ -90,17 +88,18 @@ public:
 	virtual void	    restoreRectangle(UT_uint32 iIndx);
 	virtual GR_Image *  genImageFromRectangle(const UT_Rect & r);
 
-	void				init3dColors(GtkStyle * pStyle);
+	void				init3dColors(GtkStyleContext * pCtxt);
 	void				initWidget(GtkWidget *widget);
+	virtual bool		queryProperties(GR_Graphics::Properties gp) const;
 
 protected:
 	virtual void		_resetClip(void);
 	static void		widget_size_allocate (GtkWidget        *widget,
 									  GtkAllocation    *allocation,
 									  GR_UnixCairoGraphics *me);
-	GR_UnixCairoGraphics(GdkDrawable * win = NULL, bool double_buffered=false);
-	virtual GdkDrawable * _getDrawable(void)
-	{  return static_cast<GdkDrawable *>(m_pWin);}
+	GR_UnixCairoGraphics(GdkWindow * win = NULL, bool double_buffered=false);
+	virtual GdkWindow * _getWindow(void)
+	{  return m_pWin;}
 
 	UT_GenericVector<UT_Rect*>     m_vSaveRect;
 	UT_GenericVector<GdkPixbuf *>  m_vSaveRectBuf;
@@ -111,6 +110,8 @@ protected:
 private:
 	GdkWindow *m_pWin;
 	bool m_double_buffered;
+	bool m_CairoCreated;
+	bool m_Painting;
 };
 
 

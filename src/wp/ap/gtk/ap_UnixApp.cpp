@@ -121,7 +121,6 @@
 #include "ap_Preview_Abi.h"
 #include "xap_UnixDialogHelper.h"
 #include "gr_UnixCairoGraphics.h"
-#include "gr_UnixPangoPixmapGraphics.h"
 #include "ie_exp_DocRangeListener.h"
 
 #ifdef GTK_WIN_POS_CENTER_ALWAYS
@@ -1183,11 +1182,14 @@ bool AP_UnixApp::getCurrentSelection(const char** formatList,
 
 bool AP_UnixApp:: makePngPreview(const char * pszInFile, const char * pszPNGFile, UT_sint32 iWidth, UT_sint32 iHeight)
 {
-	GdkPixmap*  pPixmap = gdk_pixmap_new(NULL,iWidth,iHeight,24);
+	cairo_surface_t *surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, iWidth, iHeight);
+	cairo_t *cr = cairo_create (surface);
 
-	GR_UnixPixmapAllocInfo ai(pPixmap);
+	GR_UnixCairoAllocInfo ai(NULL, false);
 
-	GR_UnixPangoPixmapGraphics * pG = (GR_UnixPangoPixmapGraphics*) GR_UnixPangoPixmapGraphics::graphicsAllocator(ai);
+	GR_CairoGraphics * pG = static_cast<GR_CairoGraphics*>(GR_UnixCairoGraphics::graphicsAllocator(ai));
+	pG->setCairo(cr);
+	pG->beginPaint(); // needed to avoid cairo reference loss
 
 	UT_Error error = UT_OK;
 	PD_Document * pNewDoc = new PD_Document();
@@ -1204,15 +1206,11 @@ bool AP_UnixApp:: makePngPreview(const char * pszInFile, const char * pszPNGFile
 	GR_Painter * pPaint = new GR_Painter(pG);
 	pPaint->clearArea(0,0,pG->tlu(iWidth),pG->tlu(iHeight));
 	pPrevAbi->getView()->draw(0, &da);
-	UT_Rect r;
-	r.left = 0;
-	r.top = 0;
-	r.width = pG->tlu(iWidth);
-	r.height = pG->tlu(iHeight);
-	GR_Image * pImage = pPaint->genImageFromRectangle(r);
+	pG->endPaint();
+	cairo_destroy(cr);
 	DELETEP(pPaint);
-	static_cast<GR_UnixImage *>(pImage)->saveToPNG( pszPNGFile);
-	DELETEP(pImage);
+	cairo_surface_write_to_png(surface, pszPNGFile);
+	cairo_surface_destroy(surface);
 	DELETEP(pG);
 	DELETEP(pPrevAbi); // This deletes pNewDoc
 	return true;
@@ -1264,7 +1262,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 #endif
 		// Step 1: Initialize GTK and create the APP.
 		// hack needed to intialize gtk before ::initialize
-		gtk_set_locale();
+		setlocale(LC_ALL, "");
 		gboolean have_display = gtk_init_check(&argc, &argv);
 #ifdef LOGFILE
 		fprintf(logfile,"Got display %d \n",have_display);

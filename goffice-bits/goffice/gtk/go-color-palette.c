@@ -26,22 +26,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
  * USA.
  */
-
+#include <gtk/gtk.h>
 #include <goffice/goffice-config.h>
-#include "go-color-palette.h"
-#include "goffice-gtk.h"
+#include <goffice/goffice.h>
 #include <goffice/utils/go-marshalers.h>
 
-#include <goffice/utils/go-color.h>
-#include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
-#include <gdk/gdkcolor.h>
+#include <gdk/gdk.h>
 #include <glib/gi18n-lib.h>
 #include <gsf/gsf-impl-utils.h>
 
 #include <string.h>
 
-typedef struct _ColorNamePair ColorNamePair;
 struct _GOColorPalette {
 	GtkVBox	base;
 
@@ -53,10 +49,9 @@ struct _GOColorPalette {
 
 	/* only for custom colours */
 	GtkWidget   *swatches [GO_COLOR_GROUP_HISTORY_SIZE];
-	GtkTooltips *tip;
 
 	/* The table with our default color names */
-	ColorNamePair const *default_set;
+	GONamedColor const *default_set;
 };
 
 typedef struct {
@@ -77,77 +72,72 @@ enum {
 	LAST_SIGNAL
 };
 
-struct _ColorNamePair {
-	GOColor	color;
-	char const *name;	/* english name - eg. "white" */
-};
+GONamedColor const default_color_set [] = {
+	{ GO_COLOR_FROM_RGBA (0x00, 0x00, 0x00, 0xff), N_("black")},
+	{ GO_COLOR_FROM_RGBA (0x99, 0x33, 0x00, 0xff), N_("light brown")},
+	{ GO_COLOR_FROM_RGBA (0x33, 0x33, 0x00, 0xff), N_("brown gold")},
+	{ GO_COLOR_FROM_RGBA (0x00, 0x33, 0x00, 0xff), N_("dark green #2")},
+	{ GO_COLOR_FROM_RGBA (0x00, 0x33, 0x66, 0xff), N_("navy")},
+	{ GO_COLOR_FROM_RGBA (0x00, 0x00, 0x80, 0xff), N_("dark blue")},
+	{ GO_COLOR_FROM_RGBA (0x33, 0x33, 0x99, 0xff), N_("purple #2")},
+	{ GO_COLOR_FROM_RGBA (0x33, 0x33, 0x33, 0xff), N_("very dark gray")},
 
-static ColorNamePair const default_color_set [] = {
-	{ RGBA_TO_UINT (0x00, 0x00, 0x00, 0xff), N_("black")},
-	{ RGBA_TO_UINT (0x99, 0x33, 0x00, 0xff), N_("light brown")},
-	{ RGBA_TO_UINT (0x33, 0x33, 0x00, 0xff), N_("brown gold")},
-	{ RGBA_TO_UINT (0x00, 0x33, 0x00, 0xff), N_("dark green #2")},
-	{ RGBA_TO_UINT (0x00, 0x33, 0x66, 0xff), N_("navy")},
-	{ RGBA_TO_UINT (0x00, 0x00, 0x80, 0xff), N_("dark blue")},
-	{ RGBA_TO_UINT (0x33, 0x33, 0x99, 0xff), N_("purple #2")},
-	{ RGBA_TO_UINT (0x33, 0x33, 0x33, 0xff), N_("very dark gray")},
+	{ GO_COLOR_FROM_RGBA (0x80, 0x00, 0x00, 0xff), N_("dark red")},
+	{ GO_COLOR_FROM_RGBA (0xFF, 0x66, 0x00, 0xff), N_("red-orange")},
+	{ GO_COLOR_FROM_RGBA (0x80, 0x80, 0x00, 0xff), N_("gold")},
+	{ GO_COLOR_FROM_RGBA (0x00, 0x80, 0x00, 0xff), N_("dark green")},
+	{ GO_COLOR_FROM_RGBA (0x00, 0x80, 0x80, 0xff), N_("dull blue")},
+	{ GO_COLOR_FROM_RGBA (0x00, 0x00, 0xFF, 0xff), N_("blue")},
+	{ GO_COLOR_FROM_RGBA (0x66, 0x66, 0x99, 0xff), N_("dull purple")},
+	{ GO_COLOR_FROM_RGBA (0x80, 0x80, 0x80, 0xff), N_("dark gray")},
 
-	{ RGBA_TO_UINT (0x80, 0x00, 0x00, 0xff), N_("dark red")},
-	{ RGBA_TO_UINT (0xFF, 0x66, 0x00, 0xff), N_("red-orange")},
-	{ RGBA_TO_UINT (0x80, 0x80, 0x00, 0xff), N_("gold")},
-	{ RGBA_TO_UINT (0x00, 0x80, 0x00, 0xff), N_("dark green")},
-	{ RGBA_TO_UINT (0x00, 0x80, 0x80, 0xff), N_("dull blue")},
-	{ RGBA_TO_UINT (0x00, 0x00, 0xFF, 0xff), N_("blue")},
-	{ RGBA_TO_UINT (0x66, 0x66, 0x99, 0xff), N_("dull purple")},
-	{ RGBA_TO_UINT (0x80, 0x80, 0x80, 0xff), N_("dark gray")},
+	{ GO_COLOR_FROM_RGBA (0xFF, 0x00, 0x00, 0xff), N_("red")},
+	{ GO_COLOR_FROM_RGBA (0xFF, 0x99, 0x00, 0xff), N_("orange")},
+	{ GO_COLOR_FROM_RGBA (0x99, 0xCC, 0x00, 0xff), N_("lime")},
+	{ GO_COLOR_FROM_RGBA (0x33, 0x99, 0x66, 0xff), N_("dull green")},
+	{ GO_COLOR_FROM_RGBA (0x33, 0xCC, 0xCC, 0xff), N_("dull blue #2")},
+	{ GO_COLOR_FROM_RGBA (0x33, 0x66, 0xFF, 0xff), N_("sky blue #2")},
+	{ GO_COLOR_FROM_RGBA (0x80, 0x00, 0x80, 0xff), N_("purple")},
+	{ GO_COLOR_FROM_RGBA (0x96, 0x96, 0x96, 0xff), N_("gray")},
 
-	{ RGBA_TO_UINT (0xFF, 0x00, 0x00, 0xff), N_("red")},
-	{ RGBA_TO_UINT (0xFF, 0x99, 0x00, 0xff), N_("orange")},
-	{ RGBA_TO_UINT (0x99, 0xCC, 0x00, 0xff), N_("lime")},
-	{ RGBA_TO_UINT (0x33, 0x99, 0x66, 0xff), N_("dull green")},
-	{ RGBA_TO_UINT (0x33, 0xCC, 0xCC, 0xff), N_("dull blue #2")},
-	{ RGBA_TO_UINT (0x33, 0x66, 0xFF, 0xff), N_("sky blue #2")},
-	{ RGBA_TO_UINT (0x80, 0x00, 0x80, 0xff), N_("purple")},
-	{ RGBA_TO_UINT (0x96, 0x96, 0x96, 0xff), N_("gray")},
+	{ GO_COLOR_FROM_RGBA (0xFF, 0x00, 0xFF, 0xff), N_("magenta")},
+	{ GO_COLOR_FROM_RGBA (0xFF, 0xCC, 0x00, 0xff), N_("bright orange")},
+	{ GO_COLOR_FROM_RGBA (0xFF, 0xFF, 0x00, 0xff), N_("yellow")},
+	{ GO_COLOR_FROM_RGBA (0x00, 0xFF, 0x00, 0xff), N_("green")},
+	{ GO_COLOR_FROM_RGBA (0x00, 0xFF, 0xFF, 0xff), N_("cyan")},
+	{ GO_COLOR_FROM_RGBA (0x00, 0xCC, 0xFF, 0xff), N_("bright blue")},
+	{ GO_COLOR_FROM_RGBA (0x99, 0x33, 0x66, 0xff), N_("red purple")},
+	{ GO_COLOR_FROM_RGBA (0xC0, 0xC0, 0xC0, 0xff), N_("light gray")},
 
-	{ RGBA_TO_UINT (0xFF, 0x00, 0xFF, 0xff), N_("magenta")},
-	{ RGBA_TO_UINT (0xFF, 0xCC, 0x00, 0xff), N_("bright orange")},
-	{ RGBA_TO_UINT (0xFF, 0xFF, 0x00, 0xff), N_("yellow")},
-	{ RGBA_TO_UINT (0x00, 0xFF, 0x00, 0xff), N_("green")},
-	{ RGBA_TO_UINT (0x00, 0xFF, 0xFF, 0xff), N_("cyan")},
-	{ RGBA_TO_UINT (0x00, 0xCC, 0xFF, 0xff), N_("bright blue")},
-	{ RGBA_TO_UINT (0x99, 0x33, 0x66, 0xff), N_("red purple")},
-	{ RGBA_TO_UINT (0xC0, 0xC0, 0xC0, 0xff), N_("light gray")},
-
-	{ RGBA_TO_UINT (0xFF, 0x99, 0xCC, 0xff), N_("pink")},
-	{ RGBA_TO_UINT (0xFF, 0xCC, 0x99, 0xff), N_("light orange")},
-	{ RGBA_TO_UINT (0xFF, 0xFF, 0x99, 0xff), N_("light yellow")},
-	{ RGBA_TO_UINT (0xCC, 0xFF, 0xCC, 0xff), N_("light green")},
-	{ RGBA_TO_UINT (0xCC, 0xFF, 0xFF, 0xff), N_("light cyan")},
-	{ RGBA_TO_UINT (0x99, 0xCC, 0xFF, 0xff), N_("light blue")},
-	{ RGBA_TO_UINT (0xCC, 0x99, 0xFF, 0xff), N_("light purple")},
-	{ RGBA_TO_UINT (0xFF, 0xFF, 0xFF, 0xff), N_("white")},
+	{ GO_COLOR_FROM_RGBA (0xFF, 0x99, 0xCC, 0xff), N_("pink")},
+	{ GO_COLOR_FROM_RGBA (0xFF, 0xCC, 0x99, 0xff), N_("light orange")},
+	{ GO_COLOR_FROM_RGBA (0xFF, 0xFF, 0x99, 0xff), N_("light yellow")},
+	{ GO_COLOR_FROM_RGBA (0xCC, 0xFF, 0xCC, 0xff), N_("light green")},
+	{ GO_COLOR_FROM_RGBA (0xCC, 0xFF, 0xFF, 0xff), N_("light cyan")},
+	{ GO_COLOR_FROM_RGBA (0x99, 0xCC, 0xFF, 0xff), N_("light blue")},
+	{ GO_COLOR_FROM_RGBA (0xCC, 0x99, 0xFF, 0xff), N_("light purple")},
+	{ GO_COLOR_FROM_RGBA (0xFF, 0xFF, 0xFF, 0xff), N_("white")},
 
 	{ 0, NULL},
 
 	/* Disable these for now, they are mostly repeats */
-	{ RGBA_TO_UINT (0x99, 0x99, 0xFF, 0xff), N_("purplish blue")},
-	{ RGBA_TO_UINT (0x99, 0x33, 0x66, 0xff), N_("red purple")},
-	{ RGBA_TO_UINT (0xFF, 0xFF, 0xCC, 0xff), N_("light yellow")},
-	{ RGBA_TO_UINT (0xCC, 0xFF, 0xFF, 0xff), N_("light blue")},
-	{ RGBA_TO_UINT (0x66, 0x00, 0x66, 0xff), N_("dark purple")},
-	{ RGBA_TO_UINT (0xFF, 0x80, 0x80, 0xff), N_("pink")},
-	{ RGBA_TO_UINT (0x00, 0x66, 0xCC, 0xff), N_("sky blue")},
-	{ RGBA_TO_UINT (0xCC, 0xCC, 0xFF, 0xff), N_("light purple")},
+	{ GO_COLOR_FROM_RGBA (0x99, 0x99, 0xFF, 0xff), N_("purplish blue")},
+	{ GO_COLOR_FROM_RGBA (0x99, 0x33, 0x66, 0xff), N_("red purple")},
+	{ GO_COLOR_FROM_RGBA (0xFF, 0xFF, 0xCC, 0xff), N_("light yellow")},
+	{ GO_COLOR_FROM_RGBA (0xCC, 0xFF, 0xFF, 0xff), N_("light blue")},
+	{ GO_COLOR_FROM_RGBA (0x66, 0x00, 0x66, 0xff), N_("dark purple")},
+	{ GO_COLOR_FROM_RGBA (0xFF, 0x80, 0x80, 0xff), N_("pink")},
+	{ GO_COLOR_FROM_RGBA (0x00, 0x66, 0xCC, 0xff), N_("sky blue")},
+	{ GO_COLOR_FROM_RGBA (0xCC, 0xCC, 0xFF, 0xff), N_("light purple")},
 
-	{ RGBA_TO_UINT (0x00, 0x00, 0x80, 0xff), N_("dark blue")},
-	{ RGBA_TO_UINT (0xFF, 0x00, 0xFF, 0xff), N_("magenta")},
-	{ RGBA_TO_UINT (0xFF, 0xFF, 0x00, 0xff), N_("yellow")},
-	{ RGBA_TO_UINT (0x00, 0xFF, 0xFF, 0xff), N_("cyan")},
-	{ RGBA_TO_UINT (0x80, 0x00, 0x80, 0xff), N_("purple")},
-	{ RGBA_TO_UINT (0x80, 0x00, 0x00, 0xff), N_("dark red")},
-	{ RGBA_TO_UINT (0x00, 0x80, 0x80, 0xff), N_("dull blue")},
-	{ RGBA_TO_UINT (0x00, 0x00, 0xFF, 0xff), N_("blue")},
+	{ GO_COLOR_FROM_RGBA (0x00, 0x00, 0x80, 0xff), N_("dark blue")},
+	{ GO_COLOR_FROM_RGBA (0xFF, 0x00, 0xFF, 0xff), N_("magenta")},
+	{ GO_COLOR_FROM_RGBA (0xFF, 0xFF, 0x00, 0xff), N_("yellow")},
+	{ GO_COLOR_FROM_RGBA (0x00, 0xFF, 0xFF, 0xff), N_("cyan")},
+	{ GO_COLOR_FROM_RGBA (0x80, 0x00, 0x80, 0xff), N_("purple")},
+	{ GO_COLOR_FROM_RGBA (0x80, 0x00, 0x00, 0xff), N_("dark red")},
+	{ GO_COLOR_FROM_RGBA (0x00, 0x80, 0x80, 0xff), N_("dull blue")},
+	{ GO_COLOR_FROM_RGBA (0x00, 0x00, 0xFF, 0xff), N_("blue")},
 
 	{ 0, NULL},
 };
@@ -160,17 +150,16 @@ static GtkWidget *
 create_color_sel (GObject *action_proxy, GOColor c, GCallback handler, gboolean allow_alpha)
 {
 	char *title = g_object_get_data (G_OBJECT (action_proxy), "title");
-	GtkWidget *w = gtk_color_selection_dialog_new (title);
+	GtkWidget *w = gtk_color_selection_dialog_new (title), *hb;
 	GtkColorSelectionDialog *dialog = GTK_COLOR_SELECTION_DIALOG (w);
-	GtkColorSelection *colorsel = GTK_COLOR_SELECTION (dialog->colorsel);
-	GdkColor gdk;
+	GtkColorSelection *colorsel = GTK_COLOR_SELECTION (gtk_color_selection_dialog_get_color_selection (dialog));
+	GdkRGBA gdk;
 
-	gtk_widget_hide (dialog->help_button);
-	gtk_color_selection_set_current_color (colorsel,
-		go_color_to_gdk (c, &gdk));
+	g_object_get (G_OBJECT (w), "help-button", &hb, NULL);
+	gtk_widget_hide (hb);
 	gtk_color_selection_set_has_opacity_control (colorsel, allow_alpha);
-	if (allow_alpha)
-		gtk_color_selection_set_current_alpha (colorsel, UINT_RGBA_A(c) * 257);
+	gtk_color_selection_set_current_rgba (colorsel,
+		go_color_to_gdk_rgba (c, &gdk));
 
 	g_signal_connect_object (dialog,
 		"response", handler, action_proxy, 0);
@@ -184,17 +173,14 @@ handle_color_sel (GtkColorSelectionDialog *dialog,
 		  gint response_id, GOColor *res)
 {
 	if (response_id == GTK_RESPONSE_OK) {
-		GdkColor gdk;
-		GtkColorSelection *colorsel = GTK_COLOR_SELECTION (dialog->colorsel);
-		guint16 alpha = gtk_color_selection_get_current_alpha (colorsel);
+		GdkRGBA gdk;
+		GtkColorSelection *colorsel = GTK_COLOR_SELECTION (gtk_color_selection_dialog_get_color_selection (dialog));
 
-		gtk_color_selection_get_current_color (colorsel, &gdk);
-		*res = GDK_TO_UINT (gdk);
-		alpha >>= 8;
-		*res = UINT_RGBA_CHANGE_A (*res, alpha);
+		gtk_color_selection_get_current_rgba (colorsel, &gdk);
+		*res = GO_COLOR_FROM_GDK_RGBA (gdk);
 	}
 	/* destroy _before_ we emit */
-	gtk_object_destroy (GTK_OBJECT (dialog));
+	gtk_widget_destroy (GTK_WIDGET (dialog));
 	return response_id == GTK_RESPONSE_OK;
 }
 
@@ -202,11 +188,6 @@ static void
 go_color_palette_finalize (GObject *object)
 {
 	GOColorPalette *pal = GO_COLOR_PALETTE (object);
-
-	if (pal->tip) {
-		g_object_unref (pal->tip);
-		pal->tip = NULL;
-	}
 
 	go_color_palette_set_group (pal, NULL);
 
@@ -249,7 +230,7 @@ GSF_CLASS (GOColorPalette, go_color_palette,
  * Utility function
  */
 static gboolean
-color_in_palette (ColorNamePair const *set, GOColor color)
+color_in_palette (GONamedColor const *set, GOColor color)
 {
 	int i;
 
@@ -278,12 +259,12 @@ static void
 cb_history_changed (GOColorPalette *pal)
 {
 	int i;
-	GdkColor gdk;
+	GdkRGBA gdk;
 	GOColorGroup *group = pal->group;
 
 	for (i = 0 ; i < GO_COLOR_GROUP_HISTORY_SIZE ; i++)
-		gtk_widget_modify_bg (pal->swatches [i], GTK_STATE_NORMAL,
-			go_color_to_gdk (group->history[i], &gdk));
+		gtk_widget_override_background_color (pal->swatches [i], GTK_STATE_NORMAL,
+			go_color_to_gdk_rgba (group->history[i], &gdk));
 #if 0
 	if (next_swatch != NULL) {
 		next_swatch->style->bg[GTK_STATE_NORMAL] = *new_color;
@@ -305,12 +286,16 @@ swatch_activated (GOColorPalette *pal, GtkBin *button)
 {
 	GList *tmp = gtk_container_get_children (GTK_CONTAINER (gtk_bin_get_child (button)));
 	GtkWidget *swatch = (tmp != NULL) ? tmp->data : NULL;
+	GtkStyleContext *style_ctx;
+	GdkRGBA rgba;
 
 	g_list_free (tmp);
 
 	g_return_if_fail (swatch != NULL);
 
-	set_color (pal, GDK_TO_UINT (swatch->style->bg[GTK_STATE_NORMAL]),
+	style_ctx = gtk_widget_get_style_context (swatch);
+	gtk_style_context_get_background_color (style_ctx, GTK_STATE_NORMAL, &rgba);
+	set_color (pal, GO_COLOR_FROM_GDK_RGBA (rgba),
 		   FALSE, TRUE, FALSE);
 }
 
@@ -325,13 +310,25 @@ cb_swatch_release_event (GtkBin *button, GdkEventButton *event, GOColorPalette *
 static gboolean
 cb_swatch_key_press (GtkBin *button, GdkEventKey *event, GOColorPalette *pal)
 {
-	if (event->keyval == GDK_Return ||
-	    event->keyval == GDK_KP_Enter ||
-	    event->keyval == GDK_space) {
+	if (event->keyval == GDK_KEY_Return ||
+	    event->keyval == GDK_KEY_KP_Enter ||
+	    event->keyval == GDK_KEY_space) {
 		swatch_activated (pal, button);
 		return TRUE;
 	} else
 		return FALSE;
+}
+
+static gboolean
+draw_color_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
+{
+	GtkAllocation allocation;
+	GOColor color = GPOINTER_TO_UINT (data);
+	gtk_widget_get_allocation (widget, &allocation);
+	cairo_set_source_rgba (cr, GO_COLOR_TO_CAIRO (color));
+	cairo_rectangle (cr, 0, 0, allocation.width, allocation.height);
+	cairo_fill (cr);
+	return TRUE;
 }
 
 /*
@@ -340,15 +337,18 @@ cb_swatch_key_press (GtkBin *button, GdkEventKey *event, GOColorPalette *pal)
  * Utility function
  */
 static GtkWidget *
-go_color_palette_button_new (GOColorPalette *pal, GtkTable* table, GtkTooltips *tip,
-			  ColorNamePair const * color_name, gint col, gint row)
+go_color_palette_button_new (GOColorPalette *pal, GtkTable* table,
+			     GONamedColor const *color_name,
+			     gint col, gint row)
 {
         GtkWidget *button, *swatch, *box;
-	GdkColor   gdk;
+	GdkRGBA   gdk;
 
 	swatch = gtk_drawing_area_new ();
-	gtk_widget_modify_bg (swatch, GTK_STATE_NORMAL,
-		go_color_to_gdk (color_name->color, &gdk));
+	g_signal_connect (G_OBJECT (swatch), "draw", G_CALLBACK (draw_color_cb), 
+	                  GUINT_TO_POINTER (color_name->color));
+	gtk_widget_override_background_color (swatch, GTK_STATE_NORMAL,
+	        go_color_to_gdk_rgba (color_name->color, &gdk));
 	gtk_widget_set_size_request (swatch, COLOR_PREVIEW_WIDTH, COLOR_PREVIEW_HEIGHT);
 
 	/* Wrap inside a vbox with a border so that we can see the focus indicator */
@@ -359,7 +359,7 @@ go_color_palette_button_new (GOColorPalette *pal, GtkTable* table, GtkTooltips *
 	button = gtk_button_new ();
 	gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
 	gtk_container_add (GTK_CONTAINER (button), box);
-	gtk_tooltips_set_tip (tip, button, _(color_name->name), "");
+	gtk_widget_set_tooltip_text (button, _(color_name->name));
 
 	gtk_table_attach (table, button, col, col+1, row, row+1,
 		GTK_FILL, GTK_FILL, 0, 0);
@@ -393,44 +393,45 @@ cb_combo_custom_clicked (GtkWidget *button, GOColorPalette *pal)
 void
 go_color_palette_set_title (GOColorPalette *pal, char const *title)
 {
-	g_object_set_data_full (G_OBJECT (pal), "title", 
+	g_object_set_data_full (G_OBJECT (pal), "title",
 		g_strdup (title), g_free);
 }
 
 /**
  * go_color_palette_set_group :
+ * @p : #GOColorPalette
  * @cg : #GOColorGroup
  *
- * Absorb the reference to the group
- */
+ **/
 void
-go_color_palette_set_group (GOColorPalette *pal, GOColorGroup *cg)
+go_color_palette_set_group (GOColorPalette *p, GOColorGroup *cg)
 {
-	if (pal->group == cg)
+	if (p->group == cg)
 		return;
 
-	if (pal->group) {
+	if (p->group) {
 		g_signal_handlers_disconnect_by_func (
-			G_OBJECT (pal->group),
-			G_CALLBACK (cb_history_changed), pal);
-		g_object_unref (G_OBJECT (pal->group));
-		pal->group = NULL;
+			G_OBJECT (p->group),
+			G_CALLBACK (cb_history_changed), p);
+		g_object_unref (G_OBJECT (p->group));
+		p->group = NULL;
 	}
 	if (cg != NULL) {
-		pal->group = cg;
+		g_object_ref (cg);
+		p->group = cg;
 		g_signal_connect_swapped (G_OBJECT (cg),
 			"history-changed",
-			G_CALLBACK (cb_history_changed), pal);
+			G_CALLBACK (cb_history_changed), p);
 	}
 }
+
 static GtkWidget *
 go_color_palette_setup (GOColorPalette *pal,
 		     char const *no_color_label,
 		     int cols, int rows,
-		     ColorNamePair const *color_names)
+		     GONamedColor const *color_names)
 {
 	GtkWidget	*w, *table;
-	GtkTooltips	*tip;
 	int pos, row, col = 0;
 
 	table = gtk_table_new (cols, rows, FALSE);
@@ -444,21 +445,13 @@ go_color_palette_setup (GOColorPalette *pal,
 			G_CALLBACK (cb_default_release_event), pal);
 	}
 
-	pal->tip = tip = gtk_tooltips_new ();
-#if GLIB_CHECK_VERSION(2,10,0) && GTK_CHECK_VERSION(2,8,14)
-	g_object_ref_sink (pal->tip);
-#else
-	g_object_ref (pal->tip);
-	gtk_object_sink (GTK_OBJECT (pal->tip));
-#endif
-
 	for (row = 0; row < rows; row++)
 		for (col = 0; col < cols; col++) {
 			pos = row * cols + col;
 			if (color_names [pos].name == NULL)
 				goto custom_colors;
 			go_color_palette_button_new ( pal,
-				GTK_TABLE (table), GTK_TOOLTIPS (tip),
+				GTK_TABLE (table),
 				&(color_names [pos]), col, row + 1);
 		}
 
@@ -466,10 +459,10 @@ custom_colors :
 	if (col > 0)
 		row++;
 	for (col = 0; col < cols && col < GO_COLOR_GROUP_HISTORY_SIZE; col++) {
-		ColorNamePair color_name = { 0, N_("custom") };
+		GONamedColor color_name = { 0, N_("custom") };
 		color_name.color = pal->group->history [col];
 		pal->swatches [col] = go_color_palette_button_new (pal,
-			GTK_TABLE (table), GTK_TOOLTIPS (tip),
+			GTK_TABLE (table),
 			&color_name, col, row + 1);
 	}
 
@@ -516,17 +509,25 @@ go_color_palette_set_allow_alpha (GOColorPalette *pal, gboolean allow_alpha)
 	pal->allow_alpha = allow_alpha;
 }
 
+/**
+ * go_color_palette_new:
+ * @no_color_label: color label
+ * @default_color: #GOColor
+ * @cg: #GOColorGroup
+ *
+ * Returns: A new palette
+ **/
 GtkWidget *
 go_color_palette_new (char const *no_color_label,
-		   GOColor default_color,
-		   GOColorGroup *cg)
+		      GOColor default_color,
+		      GOColorGroup *cg)
 {
 	GOColorPalette *pal;
 	int const cols = 8;
 	int const rows = 6;
-	ColorNamePair const *color_names = default_color_set;
+	GONamedColor const *color_names = default_color_set;
 
-	pal = g_object_new (GO_COLOR_PALETTE_TYPE, NULL);
+	pal = g_object_new (GO_TYPE_COLOR_PALETTE, NULL);
 
 	pal->default_set   = color_names;
 	pal->default_color = default_color;
@@ -585,6 +586,12 @@ static GSF_CLASS (GOMenuColor, go_menu_color,
 		  go_menu_color_class_init, NULL,
 		  GTK_TYPE_MENU)
 
+static void
+cb_menu_item_toggle_size_request (GtkWidget *item, gint *requitision)
+{
+	*requitision = 1;
+}
+
 static GtkWidget *
 make_colored_menu_item (char const *label, GOColor c)
 {
@@ -593,13 +600,24 @@ make_colored_menu_item (char const *label, GOColor c)
 		COLOR_PREVIEW_WIDTH, COLOR_PREVIEW_HEIGHT);
 	gdk_pixbuf_fill (pixbuf, c);
 
-	button = gtk_image_menu_item_new_with_label (label);
-	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (button),
-		gtk_image_new_from_pixbuf (pixbuf));
+	if (label && 0 == strcmp (label, " ")) {
+		/* color buttons are created with a label of " " */
+		button = gtk_menu_item_new ();
+		gtk_container_add (GTK_CONTAINER (button),
+			gtk_image_new_from_pixbuf (pixbuf));
+	} else {
+		button = gtk_image_menu_item_new_with_label (label);
+		gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (button),
+			gtk_image_new_from_pixbuf (pixbuf));
+	}
 	g_object_unref (pixbuf);
 	gtk_widget_show_all (button);
 
 	g_object_set_data (G_OBJECT (button), "go_color", GINT_TO_POINTER (c));
+
+	/* Workaround for bug http://bugzilla.gnome.org/show_bug.cgi?id=585421 */
+	g_signal_connect (button, "toggle-size-request", G_CALLBACK (cb_menu_item_toggle_size_request), NULL);
+
 	return button;
 }
 
@@ -644,14 +662,14 @@ cb_menu_custom_activate (GtkWidget *button, GOMenuColor *menu)
 
 /**
  * go_color_palette_make_menu:
- * @no_color_labe :
- * default_color: #GOColor
- * @cg : #GOColorGroup
- * @custom_dialog_title :
+ * @no_color_label: color label
+ * @default_color: #GOColor
+ * @cg: #GOColorGroup
+ * @custom_dialog_title : optional string
  * @current_color : #GOColor
  *
- * Create a submenu with a palette of colours.  Caller is responsible for
- * creating an item to point to the submenu.
+ * Returns:  a submenu with a palette of colours.  Caller is responsible for
+ * 	creating an item to point to the submenu.
  **/
 GtkWidget *
 go_color_palette_make_menu (char const *no_color_label,
@@ -663,7 +681,7 @@ go_color_palette_make_menu (char const *no_color_label,
 	int cols = 8;
 	int rows = 6;
 	int col, row, pos, table_row = 0;
-	ColorNamePair const *color_names = default_color_set;
+	GONamedColor const *color_names = default_color_set;
         GtkWidget *w, *submenu;
 
 	submenu = g_object_new (go_menu_color_get_type (), NULL);
@@ -703,8 +721,11 @@ custom_colors :
 			G_CALLBACK (cb_menu_color_activate), submenu);
 	}
 	w = gtk_image_menu_item_new_with_label (_("Custom Color..."));
-	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (w),
-		gtk_image_new_from_stock (GTK_STOCK_SELECT_COLOR, GTK_ICON_SIZE_MENU));
+	/* Workaround for bug http://bugzilla.gnome.org/show_bug.cgi?id=585421 */
+	/* We can't have an image in one of the gtk_menu_item, it would lead to an
+	   ugly item spacing. */
+	/* gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (w),*/
+	/* 	gtk_image_new_from_stock (GTK_STOCK_SELECT_COLOR, GTK_ICON_SIZE_MENU));*/
 	gtk_widget_show_all (w);
 	gtk_menu_attach (GTK_MENU (submenu), w, 0, cols, row + 2, row + 3);
 	g_signal_connect (G_OBJECT (w),
@@ -713,7 +734,7 @@ custom_colors :
 
 	((GOMenuColor *)submenu)->selection = current_color;
 	((GOMenuColor *)submenu)->default_color = default_color;
-	g_object_set_data_full (G_OBJECT (submenu), "title", 
+	g_object_set_data_full (G_OBJECT (submenu), "title",
 		g_strdup (custom_dialog_title), g_free);
 
 	gtk_widget_show (submenu);

@@ -52,9 +52,9 @@ using std::endl;
 
 #define BUTTON_INSERT 1
 #include <gdk/gdkkeysyms.h>
-static gboolean __onKeyPressed( GtkWidget*   widget,
-                                GdkEventKey* event,
-                                gpointer     user_data )
+static gboolean __onKeyPressed(G_GNUC_UNUSED GtkWidget* widget,
+                               GdkEventKey* event,
+                               G_GNUC_UNUSED gpointer user_data )
 {
     guint32 uc = gdk_keyval_to_unicode(event->keyval);
     cerr << "__onKeyPressed() uc:" << uc << endl;
@@ -170,7 +170,7 @@ AP_UnixDialog_InsertXMLID::_setList(void)
 	// 	bookmarks.push_back(getNthExistingBookmark(i));
 	// }
 	
-	GtkComboBox * combo = GTK_COMBO_BOX(m_combo);
+	GtkComboBoxText * combo = GTK_COMBO_BOX_TEXT(m_combo);
     bookmarks.sort();
     append( combo, bookmarks );
 	
@@ -203,7 +203,7 @@ AP_UnixDialog_InsertXMLID::_constructWindowContents(GtkWidget * container )
     gtk_widget_show (label1);
     gtk_box_pack_start (GTK_BOX (container), label1, FALSE, FALSE, 0);
 
-    m_combo = GTK_COMBO_BOX(gtk_combo_box_entry_new_text());
+    m_combo = GTK_COMBO_BOX(gtk_combo_box_text_new_with_entry());
     gtk_widget_show (GTK_WIDGET(m_combo));
     gtk_box_pack_start (GTK_BOX (container), GTK_WIDGET(m_combo), FALSE, FALSE, 0);
 
@@ -228,9 +228,9 @@ AP_UnixDialog_InsertXMLID::_constructWindow(void)
     m_window = abiDialogNew("insert RDF link dialog", TRUE, s.utf8_str());
 
   
-    vbox = gtk_vbox_new (FALSE, 6);
+    vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
     gtk_widget_show (vbox);
-    gtk_container_add (GTK_CONTAINER (GTK_DIALOG (m_window)->vbox), vbox);
+    gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area(GTK_DIALOG (m_window))), vbox);
     gtk_container_set_border_width (GTK_CONTAINER (vbox), 5);
 
     _constructWindowContents ( vbox );

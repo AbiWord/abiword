@@ -152,7 +152,7 @@ static void s_line_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
 
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
-static gboolean s_preview_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Columns * dlg)
+static gboolean s_preview_draw(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Columns * dlg)
 {
 	UT_return_val_if_fail(widget && dlg, FALSE);
 	dlg->event_previewExposed();
@@ -160,7 +160,7 @@ static gboolean s_preview_exposed(GtkWidget * widget, gpointer /* data */, AP_Un
 }
 #endif
 
-static gboolean s_window_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Columns * dlg)
+static gboolean s_window_draw(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Columns * dlg)
 {
 	UT_return_val_if_fail(widget && dlg, FALSE);
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
@@ -204,7 +204,7 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 #else
 	// *** this is how we add the gc for Column Preview ***
 	// attach a new graphics context to the drawing area
-	UT_return_if_fail(m_wpreviewArea && m_wpreviewArea->window);
+	UT_return_if_fail(m_wpreviewArea && gtk_widget_get_window(m_wpreviewArea));
 
 	// make a new Unix GC
 	DELETEP (m_pPreviewWidget);
@@ -216,13 +216,15 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 	// Todo: we need a good widget to query with a probable
 	// Todo: non-white (i.e. gray, or a similar bgcolor as our parent widget)
 	// Todo: background. This should be fine
-	m_pPreviewWidget->init3dColors(m_wpreviewArea->style);
+	m_pPreviewWidget->init3dColors(gtk_widget_get_style_context(m_wpreviewArea));
 
 	// let the widget materialize
 
+	GtkAllocation alloc;
+	gtk_widget_get_allocation(m_wpreviewArea, &alloc);
 	_createPreviewFromGC(m_pPreviewWidget,
-						 (UT_uint32) m_wpreviewArea->allocation.width,
-						 (UT_uint32) m_wpreviewArea->allocation.height);
+						 (UT_uint32) alloc.width,
+						 (UT_uint32) alloc.height);
 #endif 	
 	
 	setLineBetween(getLineBetween());
@@ -258,7 +260,7 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 
 void AP_UnixDialog_Columns::checkLineBetween(void)
 {
-  if (GTK_TOGGLE_BUTTON (m_wlineBetween)->active)
+  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON (m_wlineBetween)))
       setLineBetween(true);
   else
       setLineBetween(false);
@@ -442,7 +444,7 @@ GtkWidget * AP_UnixDialog_Columns::_constructWindow(void)
 	
 	windowColumns = abiDialogNew ( "column dialog", TRUE, s.utf8_str() ) ;
 
-	_constructWindowContents(GTK_DIALOG(windowColumns)->vbox);
+	_constructWindowContents(gtk_dialog_get_content_area(GTK_DIALOG(windowColumns)));
 
 	abiAddStockButton ( GTK_DIALOG(windowColumns), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
 	abiAddStockButton ( GTK_DIALOG(windowColumns), GTK_STOCK_OK, BUTTON_OK ) ;
@@ -490,7 +492,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_table_attach (GTK_TABLE (tableTop), wColumnFrame, 0, 1, 0, 1,
 				  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
 
-	hboxColumns = gtk_hbox_new (FALSE, 0);
+	hboxColumns = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
 	gtk_widget_show(hboxColumns);
 	gtk_container_set_border_width(GTK_CONTAINER (hboxColumns), 6);
 	gtk_container_add (GTK_CONTAINER (wColumnFrame), hboxColumns);
@@ -502,7 +504,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	wToggleOne = gtk_toggle_button_new();
 	gtk_widget_show(wToggleOne );
         label_button_with_abi_pixmap(wToggleOne, "tb_1column_xpm");
-	GTK_WIDGET_SET_FLAGS (wToggleOne, GTK_CAN_DEFAULT);
+	gtk_widget_set_can_default(wToggleOne, true);
 	gtk_table_attach (GTK_TABLE (tableColumns), wToggleOne, 0, 1, 0, 1,
 				  (GtkAttachOptions) (0), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Column_One,s);
@@ -515,7 +517,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	wToggleTwo = gtk_toggle_button_new ();
 	gtk_widget_show(wToggleTwo);
         label_button_with_abi_pixmap(wToggleTwo, "tb_2column_xpm");
-	GTK_WIDGET_SET_FLAGS (wToggleTwo, GTK_CAN_DEFAULT);
+	gtk_widget_set_can_default(wToggleTwo, true);
 	gtk_table_attach (GTK_TABLE (tableColumns), wToggleTwo, 0, 1, 1, 2,
 				  (GtkAttachOptions) (0), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
 
@@ -529,7 +531,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	wToggleThree = gtk_toggle_button_new ();
 	gtk_widget_show(wToggleThree);
         label_button_with_abi_pixmap(wToggleThree, "tb_3column_xpm");
-	GTK_WIDGET_SET_FLAGS (wToggleThree, GTK_CAN_DEFAULT);
+	gtk_widget_set_can_default(wToggleThree, true);
 	gtk_table_attach (GTK_TABLE (tableColumns), wToggleThree, 0, 1, 2, 3,
 				  (GtkAttachOptions) (0), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
 
@@ -607,7 +609,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 // Spin Button for Columns
 /////////////////////////////////////////////////////////
 
-	hseparator = gtk_hseparator_new ();
+	hseparator = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
 	gtk_widget_show(hseparator);
 	gtk_table_attach (GTK_TABLE (table), hseparator, 0, 3, 2, 3,
 				  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 6);
@@ -635,7 +637,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 				  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 3);
 	gtk_misc_set_alignment (GTK_MISC (SpinLabelAfter), 0, 0.5);
 	
-	GtkObject * SpinAfterAdj = gtk_adjustment_new( 1, -1000, 1000, 1, 1, 10);
+	GtkAdjustment * SpinAfterAdj = gtk_adjustment_new( 1, -1000, 1000, 1, 1, 10);
 	GtkWidget * SpinAfter = gtk_entry_new();
 	gtk_widget_show (SpinAfter);
 	gtk_table_attach (GTK_TABLE (table), SpinAfter, 1, 2, 4, 5,
@@ -657,7 +659,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 				  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 7);
 	gtk_misc_set_alignment (GTK_MISC (SpinLabelColumnSize), 0, 0.5);
 	
-	GtkObject * SpinSizeAdj = gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
+	GtkAdjustment * SpinSizeAdj = gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
 	GtkWidget * SpinSize = gtk_entry_new();
 	gtk_widget_show (SpinSize);
 	gtk_table_attach (GTK_TABLE (table), SpinSize, 1, 2, 5, 6,
@@ -685,11 +687,11 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	m_wSpaceAfterSpin = SpinAfter_dum;
 	m_wSpaceAfterEntry = SpinAfter;
 	m_oSpaceAfter_adj =  SpinAfterAdj;
-	m_iSpaceAfter = (UT_sint32) GTK_ADJUSTMENT(SpinAfterAdj)->value;
+	m_iSpaceAfter = (UT_sint32) gtk_adjustment_get_value(SpinAfterAdj);
 	m_wMaxColumnHeightSpin = SpinSize_dum;
 	m_wMaxColumnHeightEntry = SpinSize;
 	m_oSpinSize_adj = SpinSizeAdj;
-	m_iSizeHeight = (UT_sint32) GTK_ADJUSTMENT(SpinSizeAdj)->value;
+	m_iSizeHeight = (UT_sint32) gtk_adjustment_get_value(SpinSizeAdj);
 }
 
 void AP_UnixDialog_Columns::_connectsignals(void)
@@ -752,14 +754,14 @@ void AP_UnixDialog_Columns::_connectsignals(void)
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 	             g_signal_connect(G_OBJECT(m_wpreviewArea),
-					   "expose_event",
-					   G_CALLBACK(s_preview_exposed),
+					   "draw",
+					   G_CALLBACK(s_preview_draw),
 					   reinterpret_cast<gpointer>(this));
 #endif
 
 		     g_signal_connect_after(G_OBJECT(m_windowMain),
-		     					 "expose_event",
-		     				 G_CALLBACK(s_window_exposed),
+		     					 "draw",
+		     				 G_CALLBACK(s_window_draw),
 		    					 reinterpret_cast<gpointer>(this));
 }
 

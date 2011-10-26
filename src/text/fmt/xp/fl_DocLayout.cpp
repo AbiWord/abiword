@@ -2156,7 +2156,7 @@ UT_sint32 FL_DocLayout::getWidth()
 	{
 		// add page view dimensions
 		if(getView())
-			iWidth += getView()->getPageViewLeftMargin();
+			iWidth += getView()->getPageViewLeftMargin() * 2;
 		else
 			iWidth += fl_PAGEVIEW_MARGIN_X * 2;
 	}

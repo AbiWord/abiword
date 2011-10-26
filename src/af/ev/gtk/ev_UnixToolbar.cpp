@@ -76,12 +76,6 @@
 
 #define PROP_HANDLER_ID "handler-id"
 
-#ifndef UINT_RGBA_R
-#	define UINT_RGBA_R GO_COLOR_UINT_R
-#	define UINT_RGBA_G GO_COLOR_UINT_G
-#	define UINT_RGBA_B GO_COLOR_UINT_B
-#endif
-
 class _wd;
 
 static void s_proxy_activated(GtkAction * action, _wd * wd);
@@ -110,18 +104,14 @@ toolbar_append_item (GtkToolbar *toolbar,
 
 	if (GTK_IS_TOOL_ITEM (widget)) {
 		tool_item = GTK_TOOL_ITEM (widget);
-#if GTK_CHECK_VERSION(2,12,0)
 		gtk_tool_item_set_tooltip_text(tool_item, text);
-#endif
 	}
 	else {
 		tool_item = gtk_tool_item_new ();
 		GtkWidget *box = gtk_event_box_new ();
 		gtk_container_add (GTK_CONTAINER (tool_item), box);
 		gtk_container_add (GTK_CONTAINER (box), widget);
-#if GTK_CHECK_VERSION(2,12,0)
 		gtk_tool_item_set_tooltip_text(tool_item, text);
-#endif
 		if (action_name && data) {
 			GtkAction	*proxy_action;
 			GtkWidget 	*menu_item;
@@ -445,7 +435,7 @@ public:									// we create...
 	{
 		GtkComboBox *combo;
 
-		if (event->keyval == GDK_Return) {
+		if (event->keyval == GDK_KEY_Return) {
 			combo = GTK_COMBO_BOX (gtk_widget_get_parent (widget));
 			s_combo_apply_changes (combo, wd);
 		}
@@ -479,14 +469,16 @@ public:									// we create...
 			!wd->m_pUnixToolbar->m_pFontPreview) {
 
 			widget = GTK_WIDGET(combo);
-			gdk_window_get_origin(widget->window, &x,&y);
+			GtkAllocation alloc;
+			gtk_widget_get_allocation(widget, &alloc);
+			gdk_window_get_origin(gtk_widget_get_window(widget), &x,&y);
 			if (wd->m_pUnixToolbar->m_pFontPreviewPositionX > -1) {
 				x = wd->m_pUnixToolbar->m_pFontPreviewPositionX;
 			}
 			else {
-				x += widget->allocation.x + widget->allocation.width;
+				x += alloc.x + alloc.width;
 			}
-			y += widget->allocation.y + widget->allocation.height;
+			y += alloc.y + alloc.height;
 			XAP_Frame * pFrame = static_cast<XAP_Frame *>(wd->m_pUnixToolbar->getFrame());
 			wd->m_pUnixToolbar->m_pFontPreview = new XAP_UnixFontPreview(pFrame, x, y);
 			UT_DEBUGMSG(("ev_UnixToolbar - building new FontPreview %p \n",wd->m_pUnixToolbar));
@@ -533,7 +525,7 @@ public:									// we create...
 			// no updates of the font size while the entry is being edited
 			GtkWidget *entry;
 			entry = gtk_bin_get_child (GTK_BIN(combo));
-			if (GTK_WIDGET_HAS_FOCUS(entry)) {
+			if (gtk_widget_has_focus(entry)) {
 				return;
 			}
 		}
@@ -563,7 +555,7 @@ public:									// we create...
 			GtkTreeModel *store = gtk_tree_model_sort_get_model (GTK_TREE_MODEL_SORT (model));
 			gtk_tree_model_get (store, &iter, 0, &buffer, -1);
 		} else {
-			buffer = gtk_combo_box_get_active_text(combo);
+			buffer = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(combo));
 		}
 
 		if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT) {
@@ -606,9 +598,9 @@ s_fore_color_changed (GOComboColor 	* /*cc*/,
 	UT_return_if_fail (wd);
 
 	str = UT_UTF8String_sprintf ("%02x%02x%02x", 
-								 UINT_RGBA_R (color),
-								 UINT_RGBA_G (color),
-								 UINT_RGBA_B (color));
+								 GO_COLOR_UINT_R (color),
+								 GO_COLOR_UINT_G (color),
+								 GO_COLOR_UINT_B (color));
 	wd->m_pUnixToolbar->toolbarEvent(wd, str.ucs4_str().ucs4_str(), str.size());
 }
 
@@ -628,9 +620,9 @@ s_back_color_changed (GOComboColor 	* /*cc*/,
 		str = "transparent";
 	} else {
 		str = UT_UTF8String_sprintf ("%02x%02x%02x", 
-									 UINT_RGBA_R (color),
-									 UINT_RGBA_G (color),
-									 UINT_RGBA_B (color));
+								 GO_COLOR_UINT_R (color),
+								 GO_COLOR_UINT_G (color),
+								 GO_COLOR_UINT_B (color));
 	}
 
 	wd->m_pUnixToolbar->toolbarEvent(wd, str.ucs4_str().ucs4_str(), str.size());
@@ -747,17 +739,16 @@ bool EV_UnixToolbar::toolbarEvent(_wd 				* wd,
  */
 UT_sint32 EV_UnixToolbar::destroy(void)
 {
-	GtkBox * wBox = _getContainer();
+	GtkContainer * wBox = GTK_CONTAINER(_getContainer());
 	UT_sint32  pos = 0;
 //
 // Code gratutiously stolen from gtkbox.c
 //
 	GList *list = NULL;
 	bool bFound = false;
-	for( list = wBox->children; !bFound && list; list = list->next)
+	for( list = gtk_container_get_children(wBox); !bFound && list; list = list->next)
 	{
-		GtkBoxChild * child = static_cast<GtkBoxChild *>(list->data);
-		if(child->widget == m_wHandleBox)
+		if(GTK_WIDGET (list->data) == m_wHandleBox)
 		{
 			bFound = true;
 			break;
@@ -808,15 +799,7 @@ void EV_UnixToolbar::rebuildToolbar(UT_sint32 oldpos)
 
 static void setDragIcon(GtkWidget * wwd, GtkImage * img)
 {
-  if (GTK_IMAGE_PIXMAP == gtk_image_get_storage_type(img))
-    {
-      GdkPixmap * pixmap = NULL ;
-      GdkBitmap * bitmap = NULL ;
-      GdkColormap * clrmap = gtk_widget_get_colormap (wwd);
-      gtk_image_get_pixmap ( img, &pixmap, &bitmap ) ;
-      gtk_drag_source_set_icon(wwd,clrmap,pixmap,NULL);
-    }
-  else if (GTK_IMAGE_PIXBUF == gtk_image_get_storage_type(img))
+  if (GTK_IMAGE_PIXBUF == gtk_image_get_storage_type(img))
     {
       GdkPixbuf * pixbuf = gtk_image_get_pixbuf ( img ) ;
       gtk_drag_source_set_icon_pixbuf ( wwd, pixbuf ) ;
@@ -1013,7 +996,7 @@ bool EV_UnixToolbar::synthesize(void)
 				const gchar *proxy_action_name;
 				const gchar *proxy_action_stock = NULL;
 				if (wd->m_id == AP_TOOLBAR_ID_FMT_SIZE) {
-					combo = gtk_combo_box_entry_new_text();
+					combo = gtk_combo_box_text_new_with_entry();
 					GtkEntry *entry = GTK_ENTRY(gtk_bin_get_child(GTK_BIN(combo)));
 					g_object_set (G_OBJECT(entry), "can-focus", TRUE, NULL);
 					gtk_entry_set_width_chars (entry, 4);
@@ -1046,12 +1029,12 @@ bool EV_UnixToolbar::synthesize(void)
 					proxy_action_stock = GTK_STOCK_SELECT_FONT;
 				}
 				else if (wd->m_id == AP_TOOLBAR_ID_ZOOM) {
-					combo = gtk_combo_box_new_text();
+					combo = gtk_combo_box_text_new();
 					gtk_widget_set_name (combo, "AbiZoomCombo");
 					proxy_action_name = "dlgZoom";
 				}
 				else if (wd->m_id == AP_TOOLBAR_ID_FMT_STYLE) {
-					combo = gtk_combo_box_new_text();
+					combo = gtk_combo_box_text_new();
 					gtk_widget_set_name (combo, "AbiStyleCombo");
 					proxy_action_name = "dlgStyle";
 				}
@@ -1080,7 +1063,7 @@ bool EV_UnixToolbar::synthesize(void)
 					else {
 						for (gint m=0; m < items; m++) {
 							const char * sz = v->getNthItem(m);
-							gtk_combo_box_append_text (GTK_COMBO_BOX (combo), sz);
+							gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo), sz);
 						}
 					}
 				}
@@ -1371,7 +1354,7 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 #define BUILTIN_INDEX "builtin-index"
 						gint idx = GPOINTER_TO_INT(g_object_steal_data(G_OBJECT(combo), BUILTIN_INDEX));
 						if (idx > 0) {
-							gtk_combo_box_remove_text(combo, idx);
+							gtk_combo_box_text_remove(GTK_COMBO_BOX_TEXT(combo), idx);
 						}
 						gboolean ret = combo_box_set_active_text(combo, szState, wd->m_handlerId);
 						if (!ret) {
@@ -1381,7 +1364,7 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 							if (!ret) {
 								// still not, hmm, this seems to be an internal style
 								// we'll just display it and remove the entry when the carent moves away
-								gtk_combo_box_append_text (combo, szState);
+								gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT(combo), szState);
 								combo_box_set_active_text(combo, szState, wd->m_handlerId);
 								g_object_set_data (G_OBJECT (combo), BUILTIN_INDEX, 
 												   GINT_TO_POINTER(gtk_combo_box_get_active(combo)));
@@ -1460,7 +1443,7 @@ void EV_UnixToolbar::show(void)
 #else
 		GtkWidget *widget = gtk_bin_get_child(GTK_BIN(m_wHandleBox));
 		gtk_widget_show(m_wHandleBox);
-		gtk_widget_show (m_wToolbar->parent);
+		gtk_widget_show (gtk_widget_get_parent (m_wToolbar));
 		if (getDetachable()) {
 			gtk_widget_show(widget);
 
@@ -1479,7 +1462,7 @@ void EV_UnixToolbar::hide(void)
 #else
 		GtkWidget *widget = gtk_bin_get_child(GTK_BIN(m_wHandleBox));
 		gtk_widget_hide(m_wHandleBox);
-		gtk_widget_hide (m_wToolbar->parent);
+		gtk_widget_hide (gtk_widget_get_parent(m_wToolbar));
 		if (getDetachable()) {
 			gtk_widget_hide(widget);
 		}		
@@ -1555,7 +1538,7 @@ bool EV_UnixToolbar::repopulateStyles(void)
 	else {
 		for (gint m=0; m < items; m++) {
 			const char * sz = v->getNthItem(m);
-			gtk_combo_box_append_text (GTK_COMBO_BOX (combo), sz);
+			gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo), sz);
 		}
 	}
 

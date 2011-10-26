@@ -15,7 +15,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-
+#include <gtk/gtk.h>
 #include <string.h>
 #include "ut_assert.h"
 #include "ev_UnixFontCombo.h"
@@ -44,7 +44,7 @@ struct _AbiCellRendererFontClass {
 	GtkCellRendererTextClass parent;
 
 	void (* popup_position) (GtkCellRenderer *cell, 
-				 GdkRectangle	 *position);
+				 cairo_rectangle_int_t	 *position);
 	void (* prelight_popup) (GtkCellRenderer *cell, 
 				 const gchar 	 *text);
 	void (* render_closed)  (GtkCellRenderer *cell);
@@ -72,11 +72,10 @@ static GtkCellRendererTextClass *abi_cell_renderer_font_parent_class = NULL;
 
 void
 abi_cell_renderer_font_render (GtkCellRenderer      *cell,
-			       GdkDrawable          *window,
+			       cairo_t              *cr,
 			       GtkWidget            *widget,
-			       GdkRectangle         *background_area,
-			       GdkRectangle         *cell_area,
-			       GdkRectangle         *expose_area,
+			       const GdkRectangle         *background_area,
+			       const GdkRectangle         *cell_area,
 			       GtkCellRendererState  flags)
 {
 	AbiCellRendererFont	*self;
@@ -88,8 +87,8 @@ abi_cell_renderer_font_render (GtkCellRenderer      *cell,
 	text = NULL;
 
 	GTK_CELL_RENDERER_CLASS (abi_cell_renderer_font_parent_class)->render (
-					cell, window, widget, background_area, 
-					cell_area, expose_area, flags);
+					cell, cr, widget, background_area, 
+					cell_area,flags);
 
 	if ((GTK_CELL_RENDERER_PRELIT | GTK_CELL_RENDERER_PRELIT) & flags) {
 
@@ -98,16 +97,21 @@ abi_cell_renderer_font_render (GtkCellRenderer      *cell,
 
 			if (!self->is_popped_up) {
 				gint x, y;
+				GtkAllocation allocation;
+				cairo_rectangle_int_t area;
 
 				/* open_popup (self->parent_widget); */
 				self->is_popped_up = TRUE;
 
-				gdk_window_get_origin(widget->window, &x, &y);
-				background_area->x += x + widget->allocation.width;
-				background_area->y += y;
+				gdk_window_get_origin(gtk_widget_get_window(widget), &x, &y);
+				gtk_widget_get_allocation(widget, &allocation);
+				area.x = background_area->x + x + allocation.width;
+				area.y = background_area->y + y;
+				area.width = background_area->width;
+				area.height = background_area->height;
 				g_signal_emit (G_OBJECT (cell), 
 					       cell_renderer_font_signals[RENDERER_POPUP_OPENED],
-					       0, background_area);
+					       0, &area);
 			}
 
 			g_object_get (G_OBJECT (cell), 
@@ -149,20 +153,11 @@ abi_cell_renderer_font_instance_init (AbiCellRendererFont *self)
 }
 
 static void
-abi_cell_renderer_font_instance_destroy (GtkObject *instance)
-{
-	GTK_OBJECT_CLASS (abi_cell_renderer_font_parent_class)->destroy (instance);
-}
-
-static void
 abi_cell_renderer_font_class_init (AbiCellRendererFontClass *klass)
 {
-	GtkObjectClass *gtk_object_class = GTK_OBJECT_CLASS (klass);
 	GtkCellRendererClass *cell_renderer_class = GTK_CELL_RENDERER_CLASS (klass);
 
 	abi_cell_renderer_font_parent_class = (GtkCellRendererTextClass*) g_type_class_ref (GTK_TYPE_CELL_RENDERER_TEXT);
-
-	gtk_object_class->destroy = abi_cell_renderer_font_instance_destroy;
 
 	cell_renderer_class->render = abi_cell_renderer_font_render;
 
@@ -248,7 +243,7 @@ static GtkComboBoxClass *abi_font_combo_parent_class = NULL;
 
 static void
 renderer_popup_opened_cb (AbiFontCombo		*self, 
-		   GdkRectangle		*position, 
+		   cairo_rectangle_int_t		*position, 
 		   GtkCellRenderer 	* /*renderer*/)
 {
 	g_signal_emit (G_OBJECT (self), font_combo_signals[POPUP_OPENED],

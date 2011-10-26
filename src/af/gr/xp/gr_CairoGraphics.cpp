@@ -1231,11 +1231,9 @@ PangoFont *  GR_CairoGraphics::_adjustedLayoutPangoFont (GR_PangoFont * pFont, P
 */
 void GR_CairoGraphics::renderChars(GR_RenderInfo & ri)
 {
-    if( XAP_App::getApp()->getNoGUI() ) 
+	if (m_cr == NULL)
 		return;
-	
 	UT_return_if_fail(ri.getType() == GRRI_CAIRO_PANGO);
-	UT_ASSERT(m_cr);
 	GR_PangoRenderInfo & RI = (GR_PangoRenderInfo &)ri;
 	GR_PangoFont * pFont = (GR_PangoFont *)RI.m_pFont;
 	GR_CairoPangoItem * pItem = (GR_CairoPangoItem *)RI.m_pItem;
@@ -1474,13 +1472,16 @@ static cairo_line_join_t mapJoinStyle(GR_Graphics::JoinStyle in)
 
 void GR_CairoGraphics::_resetClip(void)
 {
+	if (m_cr == NULL)
+		return;
 	xxx_UT_DEBUGMSG(("Reset clip in cairo xp!!! \n"));
 	cairo_reset_clip(m_cr);
 }
 
 void GR_CairoGraphics::_setProps()
 {
-	UT_ASSERT(m_cr);
+	if (m_cr == NULL)
+		return;
 
 	if(m_curColorDirty) 
 	{
@@ -2174,6 +2175,8 @@ void GR_CairoGraphics::drawChars(const UT_UCSChar* pChars,
 									UT_sint32 xoff, UT_sint32 yoff,
 									 int * pCharWidth)
 {
+	if (m_cr == NULL)
+		return;
 	_setProps();
 	UT_UTF8String utf8;
 	xxx_UT_DEBUGMSG(("isDingBat %d \n",isDingbat()));
@@ -2424,6 +2427,8 @@ cleanup:
 void GR_CairoGraphics::drawImage(GR_Image* pImg,
 									 UT_sint32 xDest, UT_sint32 yDest)
 {
+	if (m_cr == NULL)
+		return;
 	_setProps();
 	UT_ASSERT(pImg);
 
@@ -2964,6 +2969,8 @@ void GR_CairoGraphics::setColor(const UT_RGBColor& clr)
 void GR_CairoGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 							   UT_sint32 x2, UT_sint32 y2)
 {
+	if (m_cr == NULL)
+		return;
 	_setProps();
 
 	UT_sint32 idx1 = _tduX(x1);
@@ -3009,6 +3016,8 @@ void GR_CairoGraphics::setLineProperties ( double inWidth,
 void GR_CairoGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 							  UT_sint32 y2)
 {
+	if (m_cr == NULL)
+		return;
 	_setProps();
 
 	UT_sint32 idx1 = _tduX(x1);
@@ -3070,6 +3079,8 @@ void GR_CairoGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 
 void GR_CairoGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
+	if (m_cr == NULL)
+		return;
 	_setProps();
 
 	UT_uint32 i;
@@ -3128,6 +3139,8 @@ void GR_CairoGraphics::setClipRect(const UT_Rect* pRect)
 void GR_CairoGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 							   UT_sint32 w, UT_sint32 h)
 {
+	if (m_cr == NULL)
+		return;
 	_setProps();
 
 	cairo_save(m_cr);
@@ -3228,6 +3241,8 @@ void GR_CairoGraphics::fillRect(GR_Color3D c, UT_Rect &r)
  */
 void GR_CairoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
+	if (m_cr == NULL)
+		return;
 	_setProps();
 //	UT_ASSERT(m_bHave3DColors && c < COUNT_3D_COLORS);
 
@@ -3249,6 +3264,8 @@ void GR_CairoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint3
 void GR_CairoGraphics::polygon(UT_RGBColor& c, UT_Point *pts,
 								   UT_uint32 nPoints)
 {
+	if (m_cr == NULL)
+		return;
 	_setProps();
 	UT_uint32 i;
 
@@ -3290,6 +3307,11 @@ cairo_t *GR_CairoGraphics::getCairo()
 	}
 	UT_ASSERT(m_cr);
 	return m_cr;
+}
+
+void GR_CairoGraphics::setCairo(cairo_t *cr)
+{
+	m_cr = cr;
 }
 
 void GR_CairoGraphics::_DeviceContext_SwitchToBuffer()

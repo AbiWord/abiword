@@ -22,7 +22,6 @@
 
 #include "xap_Dlg_Print.h"
 #include <gtk/gtk.h>
-#include <gtk/gtkprintunixdialog.h>
 
 class FV_View;
 class FL_DocLayout;

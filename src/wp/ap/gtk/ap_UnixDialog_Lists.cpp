@@ -151,7 +151,7 @@ static void s_closeClicked (GtkWidget * /*widget*/, AP_UnixDialog_Lists * me)
 	me->closeClicked();
 }
 
-static gboolean s_preview_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Lists * me)
+static gboolean s_preview_draw(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Lists * me)
 {
 	UT_ASSERT(widget && me);
 	me->previewExposed();
@@ -200,7 +200,7 @@ void AP_UnixDialog_Lists::runModal( XAP_Frame * pFrame)
 
 	// Now Display the dialog, so m_wPreviewArea->window exists
 	gtk_widget_show(m_wMainWindow);	
-	UT_ASSERT(m_wPreviewArea && m_wPreviewArea->window);
+	UT_ASSERT(m_wPreviewArea && gtk_widget_get_window(m_wPreviewArea));
 
 	// make a new Unix GC
 	GR_UnixCairoAllocInfo ai(m_wPreviewArea);
@@ -208,9 +208,11 @@ void AP_UnixDialog_Lists::runModal( XAP_Frame * pFrame)
 	    (GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 	// let the widget materialize
+	GtkAllocation allocation;
+	gtk_widget_get_allocation(m_wPreviewArea, &allocation);
 	_createPreviewFromGC(m_pPreviewWidget,
-						 static_cast<UT_uint32>(m_wPreviewArea->allocation.width),
-						 static_cast<UT_uint32>(m_wPreviewArea->allocation.height));
+						 static_cast<UT_uint32>(allocation.width),
+						 static_cast<UT_uint32>(allocation.height));
 
 	// Restore our value
 	setNewListType(savedListType);
@@ -249,18 +251,20 @@ void AP_UnixDialog_Lists::runModeless (XAP_Frame * pFrame)
 	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
 	UT_ASSERT(unixapp);
 
-	UT_ASSERT(m_wPreviewArea && m_wPreviewArea->window);
+	UT_ASSERT(m_wPreviewArea && gtk_widget_get_window(m_wPreviewArea));
 
 	// make a new Unix GC
-	GR_UnixCairoAllocInfo ai(m_wPreviewArea->window);
+	GR_UnixCairoAllocInfo ai(gtk_widget_get_window(m_wPreviewArea));
 	m_pPreviewWidget =
 	    (GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 	// let the widget materialize
 
+	GtkAllocation allocation;
+	gtk_widget_get_allocation(m_wPreviewArea, &allocation);
 	_createPreviewFromGC(m_pPreviewWidget,
-						 static_cast<UT_uint32>(m_wPreviewArea->allocation.width),
-						 static_cast<UT_uint32>(m_wPreviewArea->allocation.height));
+						 static_cast<UT_uint32>(allocation.width),
+						 static_cast<UT_uint32>(allocation.height));
 
 	// Next construct a timer for auto-updating the dialog
 	m_pAutoUpdateLists = UT_Timer::static_constructor(autoupdateLists,this);
@@ -401,7 +405,7 @@ void AP_UnixDialog_Lists::activate (void)
 	gtk_window_set_title (GTK_WINDOW (m_wMainWindow), getWindowName());
 	m_bDontUpdate = false;
 	updateDialog();
-	gdk_window_raise (m_wMainWindow->window);
+	gdk_window_raise (gtk_widget_get_window(m_wMainWindow));
 }
 
 void AP_UnixDialog_Lists::notifyActiveFrame(XAP_Frame * /*pFrame*/)
@@ -511,19 +515,19 @@ void  AP_UnixDialog_Lists::setXPFromLocal(void)
 //
 // Now read the toggle button state and set the member variables from them
 //
-	if (GTK_TOGGLE_BUTTON (m_wStartNewList)->active)
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON (m_wStartNewList)))
 	{
 		setbStartNewList(true);
 		setbApplyToCurrent(false);
 		setbResumeList(false);
 	}
-	else if (GTK_TOGGLE_BUTTON (m_wApplyCurrent)->active)
+	else if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON (m_wApplyCurrent)))
 	{
 		setbStartNewList(false);
 		setbApplyToCurrent(true);
 		setbResumeList(false);
 	}
-	else if (GTK_TOGGLE_BUTTON (m_wStartSubList)->active)
+	else if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON (m_wStartSubList)))
 	{
 		setbStartNewList(false);
 		setbApplyToCurrent(false);
@@ -585,7 +589,7 @@ GtkWidget * AP_UnixDialog_Lists::_constructWindow(void)
 
 	ConstructWindowName();
 	m_wMainWindow = abiDialogNew ( "list dialog", TRUE, getWindowName() );	
-	vbox1 = GTK_DIALOG(m_wMainWindow)->vbox ;
+	vbox1 = gtk_dialog_get_content_area(GTK_DIALOG(m_wMainWindow));
 
 	contents = _constructWindowContents();
 	gtk_widget_show (contents);
@@ -661,11 +665,11 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	GtkListStore *font_om_menu;
 	GtkWidget *format_en;
 	GtkWidget *decimal_en;
-	GtkObject *start_sb_adj;
+	GtkAdjustment *start_sb_adj;
 	GtkWidget *start_sb;
-	GtkObject *text_align_sb_adj;
+	GtkAdjustment *text_align_sb_adj;
 	GtkWidget *text_align_sb;
-	GtkObject *label_align_sb_adj;
+	GtkAdjustment *label_align_sb_adj;
 	GtkWidget *label_align_sb;
 	GtkWidget *format_lb;
 	GtkWidget *font_lb;
@@ -687,7 +691,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	UT_UTF8String s;
 	GtkWidget * wNoteBook = NULL;
 
-	vbox2 = gtk_vbox_new (FALSE, 0);
+	vbox2 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_widget_show (vbox2);
 	if(!isModal())
 	{
@@ -808,11 +812,11 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 // List Page
 	gtk_container_set_border_width (GTK_CONTAINER (vbox2), 8);
 
-	hbox2 = gtk_hbox_new (FALSE, 8);
+	hbox2 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 8);
 	gtk_widget_show (hbox2);
 	gtk_box_pack_start (GTK_BOX (vbox2), hbox2, TRUE, TRUE, 0);
 
-	vbox4 = gtk_vbox_new (FALSE, 4);
+	vbox4 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 4);
 	gtk_widget_show (vbox4);
 	gtk_box_pack_start (GTK_BOX (hbox2), vbox4, FALSE, TRUE, 0);
 
@@ -821,7 +825,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	gtk_box_pack_start (GTK_BOX (vbox4), table1, FALSE, TRUE, 0);
 	gtk_table_set_row_spacings (GTK_TABLE (table1), 4);
 
-	style_om = gtk_combo_box_new_text();
+	style_om = gtk_combo_box_text_new();
 	gtk_widget_show (style_om);
 	gtk_table_attach (GTK_TABLE (table1), style_om, 1, 2, 1, 2,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
@@ -844,18 +848,18 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	gtk_combo_box_set_model(GTK_COMBO_BOX (style_om), 
 							GTK_TREE_MODEL(m_wListStyleNumbered_menu.obj()));
 
-	type_om = gtk_combo_box_new_text();
+	type_om = gtk_combo_box_text_new();
 	gtk_widget_show (type_om);
 	gtk_table_attach (GTK_TABLE (table1), type_om, 1, 2, 0, 1,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
 	
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type_none,s);
-	gtk_combo_box_append_text(GTK_COMBO_BOX(type_om), s.utf8_str());
+	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(type_om), s.utf8_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type_bullet,s);
-	gtk_combo_box_append_text(GTK_COMBO_BOX(type_om), s.utf8_str());
+	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(type_om), s.utf8_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type_numbered,s);
-	gtk_combo_box_append_text(GTK_COMBO_BOX(type_om), s.utf8_str());
+	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(type_om), s.utf8_str());
 	gtk_combo_box_set_active(GTK_COMBO_BOX(type_om), 0);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type,s);
@@ -899,7 +903,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	font_om_menu = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_INT);
 	_fillFontMenu(font_om_menu);
 
-	font_om = GTK_COMBO_BOX(gtk_combo_box_new_text());
+	font_om = GTK_COMBO_BOX(gtk_combo_box_new());
 	gtk_combo_box_set_model(font_om, GTK_TREE_MODEL(font_om_menu));
 	gtk_widget_show (GTK_WIDGET(font_om));
 	gtk_table_attach (GTK_TABLE (table2), GTK_WIDGET(font_om), 1, 2, 1, 2,
@@ -989,7 +993,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment (GTK_MISC (label_align_lb), 0.0, 0.5);
 
-	vbox3 = gtk_vbox_new (FALSE, 0);
+	vbox3 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_widget_show (vbox3);
 	gtk_box_pack_start (GTK_BOX (hbox2), vbox3, TRUE, TRUE, 0);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Preview,s);
@@ -1009,7 +1013,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	gtk_widget_show (preview_area);
 	gtk_container_add (GTK_CONTAINER (preview_frame), preview_area);
 
-	hbox1 = gtk_hbox_new (FALSE, 0);
+	hbox1 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
 	if(!isModal())
 		gtk_widget_show (hbox1);
 	gtk_box_pack_start (GTK_BOX (vbox2), hbox1, FALSE, FALSE, 0);
@@ -1043,10 +1047,10 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 		m_wContents = wNoteBook;
 	}
 	m_wStartNewList = start_list_rb;
-	m_wStartNew_label = GTK_BIN(start_list_rb)->child;
+	m_wStartNew_label = gtk_bin_get_child(GTK_BIN(start_list_rb));
 	m_wApplyCurrent = apply_list_rb;
 	m_wStartSubList = resume_list_rb;
-	m_wStartSub_label = GTK_BIN(resume_list_rb)->child;
+	m_wStartSub_label = gtk_bin_get_child(GTK_BIN(resume_list_rb));
 	m_wRadioGroup = action_group;
 	m_wPreviewArea = preview_area;
 	m_wDelimEntry = format_en;
@@ -1235,8 +1239,8 @@ void AP_UnixDialog_Lists::_connectSignals(void)
 					    this);
 	// the expose event of the preview
 	g_signal_connect(G_OBJECT(m_wPreviewArea),
-					   "expose_event",
-					   G_CALLBACK(s_preview_exposed),
+					   "draw",
+					   G_CALLBACK(s_preview_draw),
 					   static_cast<gpointer>(this));
 	g_signal_connect(G_OBJECT(m_wMainWindow),
 					 "destroy",

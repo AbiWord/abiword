@@ -19,11 +19,10 @@
 #ifndef GO_IMAGE_H
 #define GO_IMAGE_H
 
-#include <glib-object.h>
-#include <goffice/utils/goffice-utils.h>
-#ifdef GOFFICE_WITH_CAIRO
-#	include <cairo.h>
-#endif
+#include <goffice/goffice.h>
+#include <gsf/gsf-libxml.h>
+#include <cairo.h>
+
 #ifdef GOFFICE_WITH_GTK
 #	include <gdk-pixbuf/gdk-pixbuf.h>
 #endif
@@ -38,6 +37,7 @@ typedef enum {
 	GO_IMAGE_FORMAT_PS,
 	GO_IMAGE_FORMAT_EMF,
 	GO_IMAGE_FORMAT_WMF,
+	GO_IMAGE_FORMAT_EPS,
 	GO_IMAGE_FORMAT_UNKNOWN
 } GOImageFormat;
 
@@ -47,7 +47,7 @@ typedef struct {
 	char *desc;
 	char *ext;
 	gboolean has_pixbuf_saver;
-	gboolean is_dpi_useful; 
+	gboolean is_dpi_useful;
 	gboolean alpha_support;
 } GOImageFormatInfo;
 
@@ -62,26 +62,34 @@ GSList 			*go_image_get_formats_with_pixbuf_saver (void);
  * GOImage object *
  ******************/
 
-#define GO_IMAGE_TYPE	(go_image_get_type ())
-#define GO_IMAGE(o)	(G_TYPE_CHECK_INSTANCE_CAST ((o), GO_IMAGE_TYPE, GOImage))
-#define IS_GO_IMAGE(o)	(G_TYPE_CHECK_INSTANCE_TYPE ((o), GO_IMAGE_TYPE))
+#define GO_TYPE_IMAGE	(go_image_get_type ())
+#define GO_IMAGE(o)	(G_TYPE_CHECK_INSTANCE_CAST ((o), GO_TYPE_IMAGE, GOImage))
+#define GO_IS_IMAGE(o)	(G_TYPE_CHECK_INSTANCE_TYPE ((o), GO_TYPE_IMAGE))
 
 GType go_image_get_type (void);
 
-#ifdef GOFFICE_WITH_CAIRO
-cairo_t *go_image_get_cairo (GOImage *image);
-cairo_pattern_t *go_image_create_cairo_pattern (GOImage *image);
-#endif
+cairo_t 	*go_image_get_cairo 		(GOImage *image);
+cairo_pattern_t *go_image_create_cairo_pattern 	(GOImage *image);
 
 #ifdef GOFFICE_WITH_GTK
-GOImage *go_image_new_from_pixbuf (GdkPixbuf *pixbuf);
-GdkPixbuf *go_image_get_pixbuf (GOImage *image);
+GOImage 	*go_image_new_from_pixbuf 	(GdkPixbuf *pixbuf);
+GdkPixbuf 	*go_image_get_pixbuf 		(GOImage *image);
+GdkPixbuf 	*go_image_get_thumbnail		(GOImage *image);
 #endif
 
-GOImage *go_image_new_from_file (const char *filename, GError **error);
-guint8 *go_image_get_pixels (GOImage *image);
-int go_image_get_rowstride (GOImage *image);
-void go_image_fill (GOImage *image, GOColor color);
+GOImage 	*go_image_new_from_file 	(const char *filename, GError **error);
+guint8 		*go_image_get_pixels 		(GOImage *image);
+int 		 go_image_get_rowstride 	(GOImage *image);
+void 		 go_image_fill 			(GOImage *image, GOColor color);
+
+void		 go_image_set_name		(GOImage *image, char const *name);
+char const	*go_image_get_name 		(GOImage *image);
+
+gboolean	 go_image_same_pixbuf		(GOImage *first, GOImage *second);
+
+void		 go_image_save			(GOImage *image, GsfXMLOut *output);
+void		 go_image_load_attrs		(GOImage *image, GsfXMLIn *xin, xmlChar const **attrs);
+void		 go_image_load_data		(GOImage *image, GsfXMLIn *xin);
 
 G_END_DECLS
 

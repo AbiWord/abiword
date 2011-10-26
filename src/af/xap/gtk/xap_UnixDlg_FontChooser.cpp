@@ -207,8 +207,8 @@ static void s_select_row_size(GtkTreeSelection * /* widget */, XAP_UnixDialog_Fo
 	dlg->sizeRowChanged();
 }
 
-static gboolean s_drawing_area_expose(GtkWidget * w,
-								  GdkEventExpose * /* pExposeEvent */)
+static gboolean s_drawing_area_draw(GtkWidget * w,
+								  cairo_t * /* pExposeEvent */)
 {
 	XAP_UnixDialog_FontChooser * dlg = 
 		(XAP_UnixDialog_FontChooser *)g_object_get_data(G_OBJECT(w), "user-data");
@@ -491,7 +491,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindow(void)
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_FontTitle,s);
 	windowFontSelection = abiDialogNew ( "font dialog", TRUE, s.utf8_str() ) ;
 
-	vboxOuter = GTK_DIALOG(windowFontSelection)->vbox;
+	vboxOuter = gtk_dialog_get_content_area(GTK_DIALOG(windowFontSelection));
 
 	vboxMain = constructWindowContents(vboxOuter);
 	gtk_box_pack_start (GTK_BOX (vboxOuter), vboxMain, TRUE, TRUE, 0);
@@ -539,7 +539,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	vboxMain = gtk_vbox_new (FALSE, 0);
+	vboxMain = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_widget_show (vboxMain);
 
 	notebookMain = gtk_notebook_new ();
@@ -575,7 +575,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 //
 	gtk_notebook_append_page(GTK_NOTEBOOK(notebookMain), table1,labelTabFont);
 
-	vbox1 = gtk_vbox_new (FALSE, 0);
+	vbox1 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_widget_set_name (vbox1, "vbox1");
 	g_object_ref (G_OBJECT(vbox1));
 	g_object_set_data_full (G_OBJECT (window1), "vbox1", vbox1,
@@ -613,7 +613,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	gtk_widget_show (listFonts);
 	gtk_container_add (GTK_CONTAINER (scrolledwindow1), listFonts);
 
-	vbox2 = gtk_vbox_new (FALSE, 0);
+	vbox2 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_widget_set_name (vbox2, "vbox2");
 	g_object_ref (vbox2);
 	g_object_set_data_full (G_OBJECT (window1), "vbox2", vbox2,
@@ -651,7 +651,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	gtk_widget_show (listStyles);
 	gtk_container_add (GTK_CONTAINER (scrolledwindow2), listStyles);
 
-	vbox3 = gtk_vbox_new (FALSE, 0);
+	vbox3 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_widget_set_name (vbox3, "vbox3");
 	g_object_ref (vbox3);
 	g_object_set_data_full (G_OBJECT (window1), "vbox3", vbox3,
@@ -689,7 +689,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	gtk_widget_show (listSizes);
 	gtk_container_add (GTK_CONTAINER (scrolledwindow3), listSizes);
 
-	vboxmisc = gtk_vbox_new (FALSE, 0);
+	vboxmisc = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_widget_set_name (vboxmisc, "vboxmisc");
 	g_object_ref (vboxmisc);
 	g_object_set_data_full (G_OBJECT (window1), "vboxmisc", vboxmisc,
@@ -705,11 +705,11 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	gtk_widget_show (frameEffects);
 	gtk_box_pack_start(GTK_BOX (vboxmisc), frameEffects, 0,0, 2);
 
-	vboxEffectRows = gtk_vbox_new (FALSE, 0);
+	vboxEffectRows = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_widget_show (vboxEffectRows);
 	gtk_container_add (GTK_CONTAINER (frameEffects), vboxEffectRows);
 
-	hboxDecorations = gtk_hbox_new (FALSE, 0);
+	hboxDecorations = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
 	gtk_widget_show (hboxDecorations);
 	gtk_box_pack_start (GTK_BOX (vboxEffectRows), hboxDecorations, FALSE, FALSE, 0);
 
@@ -739,7 +739,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 
 	/* subscript/superscript */
 
-	hboxAdvDecorations = gtk_hbox_new (FALSE, 0);
+	hboxAdvDecorations = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
 	gtk_widget_show (hboxAdvDecorations);
 	gtk_box_pack_start (GTK_BOX (vboxEffectRows), hboxAdvDecorations, FALSE, FALSE, 0);
 
@@ -757,7 +757,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 
 	/* Notebook page for ForeGround Color Selector */
 
-	hbox1 = gtk_hbox_new (FALSE, 0);
+	hbox1 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
 	gtk_widget_show (hbox1);
 
     // Label for second page of the notebook
@@ -778,7 +778,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 
 	/*Notebook page for Background Color Selector*/
 
-	GtkWidget * vboxBG = gtk_vbox_new (FALSE, 0);
+	GtkWidget * vboxBG = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_widget_show (vboxBG);
 
     // Label for third page of the notebook
@@ -817,8 +817,8 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 
 	entryArea = createDrawingArea ();
 	gtk_widget_set_events(entryArea, GDK_EXPOSURE_MASK);
-	g_signal_connect(G_OBJECT(entryArea), "expose_event",
-					   G_CALLBACK(s_drawing_area_expose), NULL);
+	g_signal_connect(G_OBJECT(entryArea), "draw",
+					   G_CALLBACK(s_drawing_area_draw), NULL);
 	gtk_widget_set_size_request (entryArea, -1, PREVIEW_BOX_HEIGHT_PIXELS);
 	gtk_widget_show (entryArea);
 	gtk_container_add (GTK_CONTAINER (frame4), entryArea);
@@ -909,9 +909,9 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 			 G_CALLBACK(s_bgcolor_update),
 			 static_cast<gpointer>(this));
 
-	GTK_WIDGET_SET_FLAGS(listFonts, GTK_CAN_FOCUS);
-	GTK_WIDGET_SET_FLAGS(listStyles, GTK_CAN_FOCUS);
-	GTK_WIDGET_SET_FLAGS(listSizes, GTK_CAN_FOCUS);
+	gtk_widget_set_can_focus(listFonts, true);
+	gtk_widget_set_can_focus(listStyles, true);
+	gtk_widget_set_can_focus(listSizes, true);
 
 	// Make the tab focus list more sensible
 	// font -> syle -> size -> other options ...
@@ -1132,8 +1132,10 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	
 	GR_UnixCairoAllocInfo ai(m_preview);
 	m_gc = (GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
+	GtkAllocation alloc;
 
-	_createFontPreviewFromGC(m_gc,m_preview->allocation.width,m_preview->allocation.height);
+	gtk_widget_get_allocation(m_preview, &alloc);
+	_createFontPreviewFromGC(m_gc,alloc.width,alloc.height);
 //
 // This enables callbacks on the preview area with a widget pointer to
 // access this dialog.
