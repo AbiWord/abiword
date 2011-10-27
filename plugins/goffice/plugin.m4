@@ -11,7 +11,7 @@ if test "x$goffice_req" = x; then
   goffice_req=libgoffice-0.10
 fi
 
-goffice_pkgs="$goffice_req >= 0.9.0"
+goffice_pkgs="$goffice_req >= 0.10.0"
 goffice_deps="no"
 
 if test "$enable_goffice" != ""; then

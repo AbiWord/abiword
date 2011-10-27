@@ -89,7 +89,7 @@ xp_pkgs="
 # optional deps
 enchant_req='enchant >= 1.2.0'
 gio_req='gio-2.0'
-goffice_req='libgoffice-0.10 >= 0.9.0'
+goffice_req='libgoffice-0.10 >= 0.10.0'
 
 hildon_pkgs='hildon-1 hildon-fm-2 dbus-1 libosso'
 dnl libosso-gsf-1'
