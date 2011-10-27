@@ -68,10 +68,6 @@ void FV_ViewDoubleBuffering::endDoubleBuffering()
 
 	if(!m_pView->unregisterDoubleBufferingObject(this))
 		return;
-    
-	// We will need to direct calls through a painter since it may initialize
-	// the device context on some platforms
-	m_pPainter = new GR_Painter(m_pView->getGraphics());
 
 	if(m_bSuspendDirectDrawing)
 		m_pPainter->resumeDrawing();
