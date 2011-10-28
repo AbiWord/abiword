@@ -43,7 +43,7 @@
 #include <ut_go_file.h>
 
 
-class IE_Exp_HTML_NavigationHelper : public IE_TOCHelper {
+class ABI_EXPORT IE_Exp_HTML_NavigationHelper : public IE_TOCHelper {
 public:
     IE_Exp_HTML_NavigationHelper(PD_Document *pDocument, 
             const UT_UTF8String &baseName);
