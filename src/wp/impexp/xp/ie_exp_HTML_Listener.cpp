@@ -649,7 +649,7 @@ bool IE_Exp_HTML_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
                                        const PX_ChangeRecord * /*pcr*/,
                                        PL_StruxDocHandle /*sdh*/,
                                        PL_ListenerId /*lid*/,
-                                       void (*/*pfnBindHandles*/) 
+                                       void (* /*pfnBindHandles*/) 
 									   (PL_StruxDocHandle sdhNew,
                                        PL_ListenerId lid,
                                        PL_StruxFmtHandle sfhNew))
