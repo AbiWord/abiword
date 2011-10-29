@@ -30,7 +30,10 @@
 #include "ut_debugmsg.h"
 #include "ODc_Crypto.h"
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
+
 #ifdef HAVE_GCRYPT
 #include "gcrypt.h"
 #endif

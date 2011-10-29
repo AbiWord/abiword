@@ -48,7 +48,9 @@
 
 #include <boost/shared_array.hpp>
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
 
 // RDF support
 #include "pd_RDFSupportRed.h"
