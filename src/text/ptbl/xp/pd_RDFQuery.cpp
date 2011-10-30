@@ -463,8 +463,9 @@ abiword_storage_context_add_statement( librdf_storage* storage,
                                        librdf_node* context_node,
                                        librdf_statement* statement )
 {
-    cerr << "abiword_storage_context_add_statement() FIXME!" << endl;
+    // storage models are read-only and used for queries only.
     abiwordContext* c = abiwordContext::get( storage );
+    return 0;
 }
 
 static int
