@@ -29,6 +29,7 @@ TFTEST_MAIN("xap_UnixWidget-toggle_button")
 	GtkWidget *gtkw = gtk_toggle_button_new();
 	XAP_Widget *w = new XAP_UnixWidget(gtkw);
 
+	g_object_ref_sink(G_OBJECT(gtkw));
 
 	w->setState(true);
 	TFPASS(w->getState());
@@ -39,5 +40,5 @@ TFTEST_MAIN("xap_UnixWidget-toggle_button")
 	TFPASS(w->getValueInt() == 1);
 
 	delete w;
-	gtk_object_sink(GTK_OBJECT(gtkw));
+	g_object_unref(G_OBJECT(gtkw));
 }
