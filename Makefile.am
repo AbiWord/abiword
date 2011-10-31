@@ -1,16 +1,22 @@
 
 ACLOCAL_AMFLAGS = -I .
 
-DIST_SUBDIRS = goffice-bits src plugins user
+DIST_SUBDIRS = goffice-bits goffice-bits2 src plugins user
 
 if WITH_GOFFICE_BUILTIN
+
+if TOOLKIT_GTK2
+SUBDIRS = goffice-bits2
+else
 SUBDIRS = goffice-bits
+endif
+
 else 
 SUBDIRS =
 endif
 SUBDIRS += src plugins user
 
-if TOOLKIT_GTK
+if TOOLKIT_GTK_ALL
 
 if !EMBEDDED_HILDON
 desktopdir = $(datadir)/applications

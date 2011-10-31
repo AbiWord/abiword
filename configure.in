@@ -27,7 +27,13 @@ AM_MAINTAINER_MODE([enable])
 # versions requested.
 #
 GTK_VERSION_REQ=3.0.8
+GTK2_VERSION_REQ=2.12.0
 
+AC_ARG_WITH([gtk2], 
+	[AS_HELP_STRING([--with-gtk2], [use Gtk library version 2.x])], 
+[
+	abi_cv_gtk2="$withval"
+])
 
 
 # This check MUST be done early.
@@ -50,7 +56,7 @@ AC_ARG_ENABLE([embedded],
 	case "$enableval" in
 	hildon) 
 		abi_cv_embedded_target=EMBEDDED_TARGET_HILDON 
-		GTK_VERSION_REQ=3.0.8
+		GTK2_VERSION_REQ=2.12.0
 		;;
 	poky)
 		abi_cv_embedded_target=EMBEDDED_TARGET_POKY ;;
@@ -98,7 +104,11 @@ opt_pkgs=''
 
 # gtk deps
 cairo_req='cairo-pdf cairo-ps pangocairo'
+if test "x$abi_cv_gtk2" = "xyes"; then
+gtk_req="gtk+-2.0 >= $GTK2_VERSION_REQ gtk+-unix-print-2.0 librsvg-2.0 >= 2.16.0"
+else
 gtk_req="gtk+-3.0 >= $GTK_VERSION_REQ gtk+-unix-print-3.0 librsvg-2.0 >= 2.16.0"
+fi
 gtk_pkgs="
   ${cairo_req}
   ${gtk_req}
@@ -136,7 +146,11 @@ case ${host_os} in
     ;;
   *)
     PLATFORM="unix"
-    TOOLKIT="gtk"
+    if test "x$abi_cv_gtk2" = "xyes"; then
+      TOOLKIT="gtk2"
+    else
+      TOOLKIT="gtk"
+    fi
     ;;
 esac
 AC_MSG_RESULT([$PLATFORM / $TOOLKIT])
@@ -241,7 +255,7 @@ AC_ARG_ENABLE([spell],
 	abi_cv_spell="$enableval"
 ],[
 	# autodetect
-	if test "$TOOLKIT" = "gtk"; then
+	if test "$PLATFORM" = "unix"; then
 		PKG_CHECK_EXISTS([ $enchant_req ],
 		[
 			abi_cv_spell="yes"
@@ -319,6 +333,29 @@ AC_ARG_ENABLE([debug],
 #
 # Optional packages
 #
+if test "x$abi_cv_gtk2" = "xyes"; then
+AC_ARG_WITH([gnomevfs], 	 
+         [AS_HELP_STRING([--with-gnomevfs], [(Gtk+-2 only) use gnome-vfs library])], 	 
+	[ 	 
+	        abi_cv_gnomevfs="$withval" 	 
+	],[ 	 
+	        # use gnomevfs if detected 	 
+	        if test "$TOOLKIT" = "gtk2"; then 	 
+	                PKG_CHECK_EXISTS([ $gnomevfs_req ], 	 
+	                [ 	 
+	                        abi_cv_gnomevfs="yes" 	 
+	                ], [ 	 
+	                        abi_cv_gnomevfs="no" 	 
+	                ]) 	 
+	        else 	 
+	                abi_cv_gnomevfs="no" 	 
+	        fi 	 
+	]) 	 
+ 	 
+	if test "$abi_cv_gnomevfs" = "yes"; then 	 
+	        opt_pkgs="$opt_pkgs $gnomevfs_req" 	 
+	fi 	 
+fi
 
 AC_ARG_WITH([gio], 
 	[AS_HELP_STRING([--with-gio], [use GIO library])], 
@@ -356,7 +393,12 @@ AC_ARG_WITH([goffice],
 
 GOFFICE_BUILTIN_CPPFLAGS=
 GOFFICE_BUILTIN_LIBS=
-if test "$PLATFORM" = "unix" && \
+if test "$TOOLKIT" = "gtk2"; then
+	GOFFICE_BUILTIN_CPPFLAGS='-I${top_srcdir}/goffice-bits2'
+	GOFFICE_BUILTIN_LIBS='${top_builddir}/goffice-bits2/libgoffice.la'
+	AC_SUBST(GOFFICE_BUILTIN_CPPFLAGS)
+	AC_SUBST(GOFFICE_BUILTIN_LIBS)
+elif test "$PLATFORM" = "unix" && \
    test "$abi_cv_goffice" = "yes"; then
 	opt_pkgs="$opt_pkgs $goffice_req"
 else
@@ -570,9 +612,17 @@ else
 fi
 
 PKG_CHECK_MODULES(DEPS,[$deps_pkgs])
+dnl specific gtk214 test. 	 
+	if test "$TOOLKIT" = "gtk2"; then 	 
+	        PKG_CHECK_MODULES(GTK214, gtk+-2.0 > 2.14, [abi_cv_gtk214=yes], 	 
+	                 [abi_cv_gtk214=no]) 	 
+	        if test "$abi_cv_gtk214" = "yes" ; then 	 
+	                AC_DEFINE([HAVE_GTK214], [1], [GTK is at least 2.14]) 	 
+	        fi 	 
+	fi 	 
 
 dnl make that for all.
-if test "$TOOLKIT" = "gtk" -o "$TOOLKIT" = "cocoa"; then
+if test "$TOOLKIT" = "gtk" -o "$TOOLKIT" = "gtk2" -o "$TOOLKIT" = "cocoa"; then
 	dnl move away
 	AC_DEFINE([WITH_CAIRO], [1], [Using Cairo])
 	WITH_CAIRO=1
@@ -689,6 +739,7 @@ fi
 # also for embedded, e.g. hildon would set TOOLKIT_GTK and TOOLKIT_HILDON
 AM_CONDITIONAL([TOOLKIT_COCOA], test "$TOOLKIT" = "cocoa")
 AM_CONDITIONAL([TOOLKIT_GTK], test "$TOOLKIT" = "gtk")
+AM_CONDITIONAL([TOOLKIT_GTK2], test "$TOOLKIT" = "gtk2")
 AM_CONDITIONAL([TOOLKIT_WIN], test "$TOOLKIT" = "win")
 
 if test "$enable_shared" = ""; then
@@ -715,8 +766,12 @@ elif test "$TOOLKIT" = "cocoa"; then
 	# override static/shared, on cocoa. shared only
 	enable_shared="yes"
 	enable_static="no"
+elif test "$TOOLKIT" = "gtk2"; then
+	AC_DEFINE([TOOLKIT_GTK2], [1], [Build gtk+ user interface])
+	AC_DEFINE([TOOLKIT_GTK_ALL], [1], [Build gtk+ user interface])
 else
 	AC_DEFINE([TOOLKIT_GTK], [1], [Build gtk+ user interface])
+	AC_DEFINE([TOOLKIT_GTK_ALL], [1], [Build gtk+ user interface])
 dnl We have no reason to mess with that.
 dnl	# build static binary by default
 dnl	if test "$enable_shared" = "no" && \
@@ -808,6 +863,10 @@ AM_PATH_LIBGCRYPT( 1.4.5,
 		   ] )
 AM_CONDITIONAL(HAVE_GCRYPT, test "$abi_cv_gcrypt" = "yes")
 
+if test "$abi_cv_gnomevfs" = "yes"; then 	 
+    AC_DEFINE([WITH_GNOMEVFS], [1], [Define if using gnome-vfs]) 	 
+fi 	 
+	
 if test "$abi_cv_gio" = "yes"; then
 	AC_DEFINE([WITH_GIO], [1], [Define if using GIO])
 fi
@@ -815,7 +874,8 @@ fi
 if test "$abi_cv_goffice" = "yes"; then
 	AC_DEFINE([WITH_GOFFICE], [1], [Define if using goffice])
 fi
-AM_CONDITIONAL([WITH_GOFFICE_BUILTIN], test "$TOOLKIT" = "gtk" && test "$abi_cv_goffice" != "yes")
+AM_CONDITIONAL([TOOLKIT_GTK_ALL], test "$TOOLKIT" = "gtk" || test "$TOOLKIT" = "gtk2")
+AM_CONDITIONAL([WITH_GOFFICE_BUILTIN], (test "$TOOLKIT" = "gtk" || test "$TOOLKIT" = "gtk2") && test "$abi_cv_goffice" != "yes")
 AC_SUBST([GOFFICE_BUILTIN_LIBS])
 
 ALL_PLUGINS_="\
@@ -891,17 +951,20 @@ AC_OUTPUT(
   libabiword.pc
   Makefile
   goffice-bits/Makefile
+  goffice-bits2/Makefile
   src/Makefile
   src/af/Makefile
   src/af/ev/Makefile
   src/af/ev/cocoa/Makefile
   src/af/ev/gtk/Makefile
+  src/af/ev/gtk2/Makefile
   src/af/ev/win/bmp/Makefile
   src/af/ev/win/Makefile
   src/af/ev/xp/Makefile
   src/af/gr/Makefile
   src/af/gr/cocoa/Makefile
   src/af/gr/gtk/Makefile
+  src/af/gr/gtk2/Makefile
   src/af/gr/win/Makefile
   src/af/gr/xp/Makefile
   src/af/tf/Makefile
@@ -915,6 +978,8 @@ AC_OUTPUT(
   src/af/xap/cocoa/Makefile
   src/af/xap/gtk/Makefile
   src/af/xap/gtk/t/Makefile
+  src/af/xap/gtk2/Makefile
+  src/af/xap/gtk2/t/Makefile
   src/af/xap/win/Makefile
   src/af/xap/xp/Makefile
   src/plugins/Makefile
@@ -932,6 +997,9 @@ AC_OUTPUT(
   src/wp/ap/gtk/Makefile
   src/wp/ap/gtk/hildon/abiword.desktop
   src/wp/ap/gtk/hildon/com.abisource.abiword.service
+  src/wp/ap/gtk2/Makefile
+  src/wp/ap/gtk2/hildon/abiword.desktop
+  src/wp/ap/gtk2/hildon/com.abisource.abiword.service
   src/wp/ap/win/Makefile
   src/wp/ap/xp/Makefile
   src/wp/ap/xp/ToolbarIcons/Makefile

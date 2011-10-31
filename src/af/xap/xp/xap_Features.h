@@ -34,7 +34,7 @@
 # include "xap_CocoaFeatures.h"
 #elif defined(TOOLKIT_WIN)
 # include "xap_Win32Features.h"
-#elif defined(TOOLKIT_GTK)
+#elif defined(TOOLKIT_GTK_ALL)
 # include "xap_UnixFeatures.h"
 #endif
 

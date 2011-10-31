@@ -1,11 +1,11 @@
 
-noinst_LTLIBRARIES = libgtk.la
+noinst_LTLIBRARIES = libgtk2.la
 
 # TODO: refactor so we can get away using only AF_CPPFLAGS here
 AM_CPPFLAGS = \
 	$(WP_CPPFLAGS)
 
-libgtk_la_SOURCES = \
+libgtk2_la_SOURCES = \
 	ev_UnixFontCombo.cpp \
 	ev_UnixFontCombo.h \
 	ev_UnixKeyboard.cpp \

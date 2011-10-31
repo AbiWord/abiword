@@ -126,7 +126,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_CursorBlink, _gatherViewCursorBlink() );
 	
 // Not implemented for UNIX or Win32. No need for it.
-#if !defined(TOOLKIT_GTK) && !defined(TOOLKIT_COCOA) && !defined (TOOLKIT_WIN) 
+#if !defined(TOOLKIT_GTK_ALL) && !defined(TOOLKIT_COCOA) && !defined (TOOLKIT_WIN) 
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_RulerVisible, _gatherViewShowRuler() );
 	UT_uint32 i;
 	for (i = 0; i < m_pApp->getToolbarFactory()->countToolbars(); i++) {
@@ -137,7 +137,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 #endif
 
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_ParaVisible, _gatherViewUnprintable() );
-#if defined(TOOLKIT_GTK)
+#if defined(TOOLKIT_GTK_ALL)
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_EnableSmoothScrolling, _gatherEnableSmoothScrolling() );
 #endif
     Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_InsertModeToggle, _gatherEnableOverwrite() );
@@ -172,7 +172,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 	// If we changed whether the ruler is to be visible
 	// or hidden, then update the current window:
 	// (If we didn't change anything, leave it alone)
-#if !defined(TOOLKIT_GTK) && !defined(TOOLKIT_COCOA) && !defined (TOOLKIT_WIN) 
+#if !defined(TOOLKIT_GTK_ALL) && !defined(TOOLKIT_COCOA) && !defined (TOOLKIT_WIN) 
 	if (pFrameData && _gatherViewShowRuler() != pFrameData->m_bShowRuler )
 	{
 		pFrameData->m_bShowRuler = _gatherViewShowRuler() ;
@@ -218,7 +218,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 		pView->setShowPara(pFrameData->m_bShowPara);
 	}
 
-#if defined(TOOLKIT_GTK)
+#if defined(TOOLKIT_GTK_ALL)
 	if ( _gatherEnableSmoothScrolling() != XAP_App::getApp()->isSmoothScrollingEnabled() )
 	{
 		XAP_App::getApp()->setEnableSmoothScrolling(_gatherEnableSmoothScrolling());
@@ -342,7 +342,7 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 			break;
 
 		case id_CHECK_VIEW_SHOW_RULER:
-#if !defined(TOOLKIT_GTK) && !defined(TOOLKIT_COCOA) && !defined (TOOLKIT_WIN) 
+#if !defined(TOOLKIT_GTK_ALL) && !defined(TOOLKIT_COCOA) && !defined (TOOLKIT_WIN) 
 			{
 				bool tmpbool = _gatherViewShowRuler();
 				Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_RulerVisible, tmpbool);
@@ -367,7 +367,7 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 			break;
 
 		case id_CHECK_VIEW_SHOW_STATUS_BAR:
-#if !defined(TOOLKIT_GTK) && !defined(TOOLKIT_COCOA) && !defined (TOOLKIT_WIN) 
+#if !defined(TOOLKIT_GTK_ALL) && !defined(TOOLKIT_COCOA) && !defined (TOOLKIT_WIN) 
 			{
 				bool tmpbool = _gatherViewShowStatusBar();
 				Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_StatusBarVisible, tmpbool);
@@ -392,7 +392,7 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 			break;
 
 		case id_CHECK_ENABLE_SMOOTH_SCROLLING:
-#if defined(TOOLKIT_GTK)
+#if defined(TOOLKIT_GTK_ALL)
 			Save_Pref_Bool (pPrefsScheme, XAP_PREF_KEY_EnableSmoothScrolling,
 					_gatherEnableSmoothScrolling());
 #endif
@@ -522,7 +522,7 @@ void AP_Dialog_Options::_populateWindowData(void)
 		_setViewRulerUnits (UT_determineDimension(pszBuffer));
 
 
-#if !defined(TOOLKIT_GTK) && !defined(TOOLKIT_COCOA) && !defined (TOOLKIT_WIN) 
+#if !defined(TOOLKIT_GTK_ALL) && !defined(TOOLKIT_COCOA) && !defined (TOOLKIT_WIN) 
 	if (pPrefs->getPrefsValueBool((gchar*)AP_PREF_KEY_RulerVisible,&b))
 		_setViewShowRuler (b);
 	UT_uint32 i;
@@ -546,7 +546,7 @@ void AP_Dialog_Options::_populateWindowData(void)
 	if (pPrefs->getPrefsValueBool((gchar*)AP_PREF_KEY_CursorBlink,&b))
 		_setViewCursorBlink (b);
 
-#if defined(TOOLKIT_GTK)
+#if defined(TOOLKIT_GTK_ALL)
 	if (pPrefs->getPrefsValueBool((gchar*)XAP_PREF_KEY_EnableSmoothScrolling,&b))
 		_setEnableSmoothScrolling(b);
 #endif
@@ -672,7 +672,7 @@ void AP_Dialog_Options::_initEnableControls()
 	// If the prefs color for transparent is white initially disable the choose
 	// color button
 	// On UNIX/GTK, we have a nice color chooser and ignore this setting.
-#ifndef TOOLKIT_GTK
+#ifndef TOOLKIT_GTK_ALL
 	if(strcmp(m_CurrentTransparentColor,"ffffff") == 0)
 	{
 		_controlEnable( id_PUSH_CHOOSE_COLOR_FOR_TRANSPARENT, false);

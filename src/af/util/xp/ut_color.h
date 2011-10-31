@@ -165,7 +165,7 @@ public:
 
 
 // Hack so we get AbiNativeWidget with an xp include
-#ifdef TOOLKIT_GTK
+#ifdef TOOLKIT_GTK_ALL
 #include "ut_unixColor.h"
 #else
 // TODO maintainers please fix their platform

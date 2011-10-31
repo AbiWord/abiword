@@ -26,7 +26,7 @@
 #include "config.h"
 #endif
 
-#ifdef TOOLKIT_GTK
+#ifdef TOOLKIT_GTK_ALL
 #include <gdk/gdk.h>
 
 #ifndef UTCOLOR_H

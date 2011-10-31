@@ -19,7 +19,7 @@ install-data-hook:
 		$(DESTDIR)/$(macosdir)/AbiWord
 endif
 
-if TOOLKIT_GTK
+if TOOLKIT_GTK_ALL
 libabiword_cpp += $(top_srcdir)/src/wp/main/gtk/libabiword.cpp
 main_cpp = $(top_srcdir)/src/wp/main/gtk/UnixMain.cpp
 opt_libs += $(GOFFICE_BUILTIN_LIBS)
@@ -64,7 +64,6 @@ libabiword_@ABIWORD_SERIES@_la_LIBADD = \
 	text/ptbl/xp/libxp.la \
 	wp/ap/$(TOOLKIT)/lib$(TOOLKIT).la \
 	wp/ap/xp/libxp.la \
-	wp/impexp/$(TOOLKIT)/lib$(TOOLKIT).la \
 	wp/impexp/xp/libxp.la \
 	af/xap/$(TOOLKIT)/lib$(TOOLKIT).la \
 	af/xap/xp/libxp.la \
@@ -75,8 +74,10 @@ libabiword_@ABIWORD_SERIES@_la_LIBADD = \
 	af/ev/$(TOOLKIT)/lib$(TOOLKIT).la \
 	af/ev/xp/libxp.la
 
-if TOOLKIT_GTK
-libabiword_@ABIWORD_SERIES@_la_LIBADD += text/fmt/gtk/libgtk.la
+if TOOLKIT_GTK_ALL
+libabiword_@ABIWORD_SERIES@_la_LIBADD += \
+	wp/impexp/gtk/libgtk.la \
+	text/fmt/gtk/libgtk.la
 
 # headers are GTK only.
 libabiword_@ABIWORD_SERIES@_includedir = @ABIWORD_HEADERSDIR@
@@ -84,6 +85,9 @@ libabiword_@ABIWORD_SERIES@_include_HEADERS = \
 	wp/ap/gtk/abiwidget.h \
 	wp/main/gtk/libabiword.h \
 	af/xap/gtk/xap_UnixTableWidget.h
+else
+libabiword_@ABIWORD_SERIES@_la_LIBADD += \
+	wp/impexp/$(TOOLKIT)/lib$(TOOLKIT).la
 endif
 
 libabiword_@ABIWORD_SERIES@_la_DEPENDENCIES = \

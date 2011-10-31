@@ -252,7 +252,7 @@ UT_uint64 UT_hash64(const char * p, UT_uint32 bytelen = 0);
 UT_uint32 UT_hash32(const char * p, UT_uint32 bytelen = 0);
 
 // Hack so we get AbiNativeWidget with an xp include
-#ifdef TOOLKIT_GTK
+#ifdef TOOLKIT_GTK_ALL
 #include <gtk/gtk.h>
 typedef GtkWidget AbiNativeWidget;
 #else

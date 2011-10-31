@@ -1,5 +1,5 @@
 
-noinst_LTLIBRARIES = libgtk.la
+noinst_LTLIBRARIES = libgtk2.la
 
 AM_CPPFLAGS = 						\
 	$(WP_CPPFLAGS) 						\
@@ -42,7 +42,7 @@ conditional_ui = \
 	$(NULL)
 
 
-libgtk_la_SOURCES = \
+libgtk2_la_SOURCES = \
 	GTKCommon.h \
 	GTKCommon.cpp \
 	abiwidget.cpp \
@@ -195,17 +195,17 @@ ui_DATA = \
 
 
 if ENABLE_SPELL
-libgtk_la_SOURCES += $(spell_src)
+libgtk2_la_SOURCES += $(spell_src)
 ui_DATA += $(spell_ui)
 endif
 
 if ENABLE_STATUSBAR
-libgtk_la_SOURCES += $(statusbar_src)
+libgtk2_la_SOURCES += $(statusbar_src)
 endif
 
 if EMBEDDED_HILDON
 
-libgtk_la_SOURCES += $(hildon_src)
+libgtk2_la_SOURCES += $(hildon_src)
 ui_DATA += $(hildon_ui)
 
 hildondesktopdir = @datadir@/applications/hildon

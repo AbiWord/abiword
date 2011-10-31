@@ -1,7 +1,7 @@
 
 SUBDIRS = t
 
-noinst_LTLIBRARIES = libgtk.la
+noinst_LTLIBRARIES = libgtk2.la
 
 # TODO: fix the wp include, needed because of ap_Features.h
 AM_CPPFLAGS = \
@@ -27,7 +27,7 @@ conditional_src = $(hildon_src) $(altgtk_src)
 
 conditional_ui = $(hildon_ui) $(altgtk_ui)
 
-libgtk_la_SOURCES = \
+libgtk2_la_SOURCES = \
 	xap_GtkObjectHolder.h \
 	xap_GtkSignalBlocker.h \
 	xap_GtkComboBoxHelpers.h \
@@ -110,10 +110,10 @@ ui_DATA = \
 	$(NULL)
 
 if EMBEDDED_HILDON
-libgtk_la_SOURCES += $(hildon_src)
+libgtk2_la_SOURCES += $(hildon_src)
 ui_DATA += $(hildon_ui)
 else
-libgtk_la_SOURCES += $(altgtk_src)
+libgtk2_la_SOURCES += $(altgtk_src)
 ui_DATA += $(altgtk_ui)	
 endif
 

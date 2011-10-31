@@ -151,7 +151,7 @@ class ABI_EXPORT AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 	SET_GATHER			(PrefsAutoSave, 	bool);
     SET_GATHER          (EnableOverwrite,   bool);
 
-#if !defined (TOOLKIT_GTK) && !defined(TOOLKIT_COCOA)
+#if !defined (TOOLKIT_GTK_ALL) && !defined(TOOLKIT_COCOA)
 	SET_GATHER			(ViewShowRuler, 	bool);
 	virtual bool _gatherViewShowToolbar(UT_uint32 t) = 0;
 	virtual void _setViewShowToolbar(UT_uint32 row, bool b) = 0;
@@ -165,7 +165,7 @@ class ABI_EXPORT AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 	SET_GATHER			(ViewAll,			bool);
 	SET_GATHER			(ViewHiddenText,	bool);
 	SET_GATHER			(ViewUnprintable,	bool);
-#if defined(TOOLKIT_GTK)
+#if defined(TOOLKIT_GTK_ALL)
 	SET_GATHER			(EnableSmoothScrolling, bool);
 #endif
 	SET_GATHER			(AutoLoadPlugins, bool);
