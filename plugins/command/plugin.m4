@@ -1,7 +1,7 @@
 command_deps="no"
 
 if test "$enable_command" != ""; then
-    if test "$TOOLKIT" != "gtk"; then
+    if test "$TOOLKIT" != "gtk" && test "$TOOLKIT" != "gtk2"; then
 		command_deps="no"
 		AC_MSG_WARN([command plugin: only supported on UNIX/gtk platforms])
 	else 

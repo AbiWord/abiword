@@ -6,7 +6,7 @@ gdict_deps="no"
 if test "$enable_gdict" != ""; then
 
 AC_MSG_CHECKING([for unix/gtk platform])
-if test "$TOOLKIT" = "gtk"; then
+if test "$TOOLKIT" = "gtk" || test "$TOOLKIT" = "gtk2"; then
   AC_MSG_RESULT([yes])
   gdict_deps="yes"
 else

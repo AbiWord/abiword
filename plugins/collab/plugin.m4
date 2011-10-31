@@ -33,7 +33,7 @@ test "$enable_collab_backend_telepathy" = "yes" && collab_pkgs="$collab_pkgs $co
 AC_MSG_CHECKING([for collab telepathy backend])
 AC_MSG_RESULT([$enable_collab_backend_telepathy])
 
-
+if test "$TOOLKIT" = "gtk2"; then
 AC_ARG_ENABLE([collab-backend-xmpp], 
     [AS_HELP_STRING([--enable-collab-backend-xmpp], [Jabber backend (default: auto)])], 
 [
@@ -49,6 +49,7 @@ AC_ARG_ENABLE([collab-backend-xmpp],
 test "$enable_collab_backend_xmpp" = "yes" && collab_pkgs="$collab_pkgs $collab_xmpp_req"
 AC_MSG_CHECKING([for collab xmpp backend])
 AC_MSG_RESULT([$enable_collab_backend_xmpp])
+fi
 
 AC_ARG_ENABLE([collab-backend-tcp], 
     [AS_HELP_STRING([--enable-collab-backend-tcp], [TCP backend (default: auto)])], 
