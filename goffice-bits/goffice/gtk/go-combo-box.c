@@ -203,7 +203,7 @@ cb_arrow_pressed (GOComboBox *combo_box)
 }
 
 static gboolean
-go_combo_box_mnemonic_activate (GtkWidget *w, gboolean group_cycling)
+go_combo_box_mnemonic_activate (GtkWidget *w, G_GNUC_UNUSED gboolean group_cycling)
 {
 	GOComboBox *combo_box = GO_COMBO_BOX (w);
 	cb_arrow_pressed (combo_box);
@@ -274,7 +274,7 @@ _go_combo_is_updating (GOComboBox const *combo_box)
 }
 
 static  gint
-cb_combo_keypress (GtkWidget *widget, GdkEventKey *event,
+cb_combo_keypress (G_GNUC_UNUSED GtkWidget *widget, GdkEventKey *event,
 		   GOComboBox *combo_box)
 {
 	if (event->keyval == GDK_KEY_Escape) {
@@ -402,7 +402,7 @@ go_combo_box_get_pos (GOComboBox *combo_box, int *x, int *y)
  * Copy popup window image to the tearoff window.
  */
 static void
-go_combo_tearoff_bg_copy (GOComboBox *combo)
+go_combo_tearoff_bg_copy (G_GNUC_UNUSED GOComboBox *combo)
 {
 #if 0
 	/* FIXME: is this function really needed? seems things work without it */
@@ -501,7 +501,7 @@ go_combo_box_button_press (GtkWidget *widget, GdkEventButton *event, GOComboBox 
 }
 
 static void
-cb_state_change (GtkWidget *widget, GtkStateType old_state, GOComboBox *combo_box)
+cb_state_change (GtkWidget *widget, G_GNUC_UNUSED GtkStateType old_state, GOComboBox *combo_box)
 {
 	GtkStateType const new_state = gtk_widget_get_state (widget);
 	if (combo_box->priv->display_widget)
@@ -595,7 +595,7 @@ go_combo_box_set_display (GOComboBox *combo_box, GtkWidget *display_widget)
 }
 
 static gboolean
-cb_tearable_enter_leave (GtkWidget *w, GdkEventCrossing *event, gpointer data)
+cb_tearable_enter_leave (GtkWidget *w, G_GNUC_UNUSED GdkEventCrossing *event, gpointer data)
 {
 	gboolean const flag = GPOINTER_TO_INT(data);
 	gtk_widget_set_state (w, flag ? GTK_STATE_PRELIGHT : GTK_STATE_NORMAL);
@@ -641,15 +641,12 @@ cb_popup_delete (GOComboBox *combo)
 }
 
 static gboolean
-cb_tearable_button_release (GtkWidget *w, GdkEventButton *event,
+cb_tearable_button_release (GtkWidget *w, G_GNUC_UNUSED GdkEventButton *event,
 			    GOComboBox *combo)
 {
-	GtkTearoffMenuItem *tearable;
-
 	g_return_val_if_fail (w != NULL, FALSE);
 	g_return_val_if_fail (GTK_IS_TEAROFF_MENU_ITEM (w), FALSE);
 
-	tearable = GTK_TEAROFF_MENU_ITEM (w);
 	/* FIXME: should we notify the parent menu? */
 
 	if (!combo->priv->torn_off) {
@@ -668,7 +665,7 @@ cb_tearable_button_release (GtkWidget *w, GdkEventButton *event,
 }
 
 static void
-cb_tearoff_state_changed (GtkMenu *menu, GParamSpec *pspec, GOComboBox *combo)
+cb_tearoff_state_changed (GtkMenu *menu, G_GNUC_UNUSED GParamSpec *pspec, GOComboBox *combo)
 {
 	combo->priv->torn_off = gtk_menu_get_tearoff_state (menu);
 }
@@ -694,7 +691,7 @@ void
 go_combo_box_construct (GOComboBox *combo,
 			GtkWidget *display_widget,
 			GtkWidget *popdown_container,
-			GtkWidget *popdown_focus)
+			G_GNUC_UNUSED GtkWidget *popdown_focus)
 {
 	GtkWidget *tearable;
 	GtkWidget *vbox;

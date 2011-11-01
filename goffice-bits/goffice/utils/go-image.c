@@ -212,8 +212,7 @@ go_image_get_format_info (GOImageFormat format)
 	if (format > GO_IMAGE_FORMAT_UNKNOWN)
 		go_image_build_pixbuf_format_infos ();
 
-	g_return_val_if_fail (format >= 0 &&
-			      format != GO_IMAGE_FORMAT_UNKNOWN &&
+	g_return_val_if_fail (format != GO_IMAGE_FORMAT_UNKNOWN &&
 			      format <= GO_IMAGE_FORMAT_UNKNOWN + pixbuf_format_nbr, NULL);
 	if (format < GO_IMAGE_FORMAT_UNKNOWN)
 		return &image_format_infos[format];
@@ -729,24 +728,24 @@ go_image_save (GOImage *image, GsfXMLOut *output)
 }
 
 void
-go_image_load_attrs (GOImage *image, GsfXMLIn *xin, xmlChar const **attrs)
+go_image_load_attrs (GOImage *image, G_GNUC_UNUSED GsfXMLIn *xin, xmlChar const **attrs)
 {
 	xmlChar const **attr;
 	g_return_if_fail (image != NULL);
 	for (attr = attrs; attr != NULL && attr[0] && attr[1] ; attr += 2)
-		if (0 == strcmp (attr[0], "width"))
-			image->width = strtol (attr[1], NULL, 10);
-		else if (0 == strcmp (attr[0], "height"))
-			image->height= strtol (attr[1], NULL, 10);
-		else if (0 == strcmp (attr[0], "rowstride"))
-			image->rowstride = strtol (attr[1], NULL, 10);
+		if (0 == strcmp ((const char*)attr[0], "width"))
+			image->width = strtol ((const char*)attr[1], NULL, 10);
+		else if (0 == strcmp ((const char*)attr[0], "height"))
+			image->height= strtol ((const char*)attr[1], NULL, 10);
+		else if (0 == strcmp ((const char*)attr[0], "rowstride"))
+			image->rowstride = strtol ((const char*)attr[1], NULL, 10);
 }
 
 void
 go_image_load_data (GOImage *image, GsfXMLIn *xin)
 {
 	int length;
-	length = gsf_base64_decode_simple (xin->content->str, strlen(xin->content->str));
+	length = gsf_base64_decode_simple ((guint8*) xin->content->str, strlen(xin->content->str));
 	image->data = g_memdup (xin->content->str, length);
 	image->target_cairo = TRUE;
 }

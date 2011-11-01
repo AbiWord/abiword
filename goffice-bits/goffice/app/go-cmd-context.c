@@ -162,7 +162,6 @@ go_cmd_context_error_info_list_default 	(GOCmdContext *gcc, GSList *errs)
 static void
 go_cmd_context_base_init (GOCmdContextClass *class)
 {
-#warning class->error_info_list should really be class->error.error_info_list
 	class->error_info_list = go_cmd_context_error_info_list_default;
 }
 
@@ -176,6 +175,7 @@ go_cmd_context_get_type (void)
 			sizeof (GOCmdContextClass),	/* class_size */
 			(GBaseInitFunc) go_cmd_context_base_init, /* base_init */
 			NULL,				/* base_finalize */
+			NULL, NULL, NULL, 0, 0, NULL, NULL
 		};
 
 		go_cmd_context_type = g_type_register_static (G_TYPE_INTERFACE,

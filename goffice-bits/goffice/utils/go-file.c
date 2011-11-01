@@ -279,7 +279,7 @@ go_url_simplify (char const *uri)
 
 	if (g_ascii_strncasecmp (uri, "file:///", 8) == 0) {
 		char *filename = go_filename_from_uri (uri);
-		char *simp = filename ? go_filename_to_uri (filename) : NULL;
+		simp = filename ? go_filename_to_uri (filename) : NULL;
 		g_free (filename);
 		return simp;
 	}
@@ -653,6 +653,7 @@ go_file_split_urls (char const *data)
   return uris;
 }
 
+#if 0
 /*
  * Return the real name of the owner of a URI.  The result will be in
  * UTF-8 and the caller must free the result.
@@ -704,6 +705,7 @@ go_file_get_group_name (char const *uri)
 				  NULL, &nameutf8);
 	return nameutf8;
 }
+#endif
 
 GOFilePermissions *
 go_get_file_permissions (char const *uri)
@@ -998,6 +1000,7 @@ go_url_show (gchar const *url)
 #endif
 }
 
+#if 0
 /**
  * go_url_check_extension
  * @uri     : Uri
@@ -1039,6 +1042,7 @@ go_url_check_extension (gchar const *uri,
 
 	return res;
 }
+#endif
 
 /**
  * go_get_mime_type_for_data:
@@ -1168,7 +1172,7 @@ static gchar **saved_args;
 #endif
 
 gchar const **
-go_shell_argv_to_glib_encoding (gint argc, gchar const **argv)
+go_shell_argv_to_glib_encoding (G_GNUC_UNUSED gint argc, gchar const **argv)
 {
 #ifdef G_OS_WIN32
 	gchar **args;

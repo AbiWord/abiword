@@ -275,7 +275,7 @@ cb_history_changed (GOColorPalette *pal)
 }
 
 static gboolean
-cb_default_release_event (GtkWidget *button, GdkEventButton *event, GOColorPalette *pal)
+cb_default_release_event (G_GNUC_UNUSED GtkWidget *button, G_GNUC_UNUSED GdkEventButton *event, GOColorPalette *pal)
 {
 	set_color (pal, pal->default_color, FALSE, TRUE, TRUE);
 	return TRUE;
@@ -300,7 +300,7 @@ swatch_activated (GOColorPalette *pal, GtkBin *button)
 }
 
 static gboolean
-cb_swatch_release_event (GtkBin *button, GdkEventButton *event, GOColorPalette *pal)
+cb_swatch_release_event (GtkBin *button, G_GNUC_UNUSED GdkEventButton *event, GOColorPalette *pal)
 {
 /* FIXME FIXME FIXME TODO do I want to check for which button ? */
 	swatch_activated (pal, button);
@@ -381,7 +381,7 @@ cb_combo_custom_response (GtkColorSelectionDialog *dialog,
 }
 
 static void
-cb_combo_custom_clicked (GtkWidget *button, GOColorPalette *pal)
+cb_combo_custom_clicked (G_GNUC_UNUSED GtkWidget *button, GOColorPalette *pal)
 {
 	GtkWidget *dialog = create_color_sel (G_OBJECT (pal), pal->selection,
 		G_CALLBACK (cb_combo_custom_response), pal->allow_alpha);
@@ -587,7 +587,7 @@ static GSF_CLASS (GOMenuColor, go_menu_color,
 		  GTK_TYPE_MENU)
 
 static void
-cb_menu_item_toggle_size_request (GtkWidget *item, gint *requitision)
+cb_menu_item_toggle_size_request (G_GNUC_UNUSED GtkWidget *item, gint *requitision)
 {
 	*requitision = 1;
 }
@@ -622,7 +622,7 @@ make_colored_menu_item (char const *label, GOColor c)
 }
 
 static void
-cb_menu_default_activate (GtkWidget *button, GOMenuColor *menu)
+cb_menu_default_activate (G_GNUC_UNUSED GtkWidget *button, GOMenuColor *menu)
 {
 	menu->selection = menu->default_color;
 	g_signal_emit (menu, go_menu_color_signals [COLOR_CHANGED], 0,
@@ -651,7 +651,7 @@ cb_menu_custom_response (GtkColorSelectionDialog *dialog,
 }
 
 static void
-cb_menu_custom_activate (GtkWidget *button, GOMenuColor *menu)
+cb_menu_custom_activate (G_GNUC_UNUSED GtkWidget *button, GOMenuColor *menu)
 {
 	GtkWidget *dialog = create_color_sel (G_OBJECT (menu), menu->selection,
 		G_CALLBACK (cb_menu_custom_response), menu->allow_alpha);

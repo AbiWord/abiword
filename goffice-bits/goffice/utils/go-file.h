@@ -74,8 +74,10 @@ GsfInput  *go_file_open		(char const *uri, GError **err);
 GsfOutput *go_file_create	(char const *uri, GError **err);
 GSList	  *go_file_split_urls	(char const *data);
 
+#if 0
 gchar     *go_file_get_owner_name (char const *uri);
 gchar     *go_file_get_group_name (char const *uri);
+#endif
 
 GOFilePermissions *go_get_file_permissions (char const *uri);
 void go_set_file_permissions (char const *uri, GOFilePermissions * file_permissions);
@@ -89,9 +91,11 @@ gint	 go_file_access (char const *uri, gint mode);
 gchar	*go_url_decode		(gchar const *text);
 gchar	*go_url_encode		(gchar const *text, int type);
 GError	*go_url_show		(gchar const *url);
+#if 0
 gboolean go_url_check_extension (gchar const *uri,
 				 gchar const *std_ext,
 				 gchar **new_uri);
+#endif
 gchar	*go_get_mime_type	(gchar const *uri);
 gchar	*go_get_mime_type_for_data	(gconstpointer data, int data_size);
 gchar	*go_mime_type_get_description	(gchar const *mime_type);
