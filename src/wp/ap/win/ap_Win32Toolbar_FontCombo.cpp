@@ -105,7 +105,11 @@ int CALLBACK AP_Win32Toolbar_FontCombo::_EnumFontsProc(LPLOGFONTW lplf,
 	// here.  Perhaps use EnumFontFamiliesEx instead?
 	if (lplf->lfCharSet != ANSI_CHARSET)
 		return 1 ;
-#endif	
+#endif
+
+	// filter out vertical fonts which aren't supported
+	if (lplf->lfFaceName[0]=='@')
+		return 1;
 
 	UT_Win32LocaleString str;
 	str.fromLocale (lplf->lfFaceName);
