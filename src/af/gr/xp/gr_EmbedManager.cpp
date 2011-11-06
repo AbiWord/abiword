@@ -22,6 +22,7 @@
 #include "gr_Painter.h"
 #include "xad_Document.h"
 #include "ut_png.h"
+#include "ut_svg.h"
 #include "ut_bytebuf.h"
 
 /*!
@@ -84,7 +85,7 @@ bool GR_EmbedView::getSnapShots(void)
     m_PNGBuf->ins(0,pPNG->getPointer(0),pPNG->getLength());
     m_bHasPNGSnapshot = true;    
   }
-  UT_UTF8String sPNGName = "snapshot-svg-";
+  sName = "snapshot-svg-";
   sName += m_sDataID;
   bFound = m_pDoc->getDataItemDataByName(sName.utf8_str(),&pSVG,NULL,&pHandle);
   if(!bFound)
@@ -410,16 +411,24 @@ void GR_EmbedManager::render(UT_sint32 uid ,UT_Rect & rec )
       painter.drawImage(pEView->m_pPreview,rec.left,rec.top);
       return;
   }
-  else if( pEView->m_bHasSVGSnapshot)
+ else if( pEView->m_bHasSVGSnapshot)
   {
-    /*
-      // FIXME need this constructor...
+    UT_sint32 iWidth,iHeight = 0, iLayoutWidth, iLayoutHeight;
+    if((rec.height <= 0) || (rec.width <= 0))
+    { 
+      UT_SVG_getDimensions(pEView->m_SVGBuf, getGraphics(), iWidth, iHeight, iLayoutWidth, iLayoutHeight);
+      iHeight = getGraphics()->tlu(iHeight);
+      iWidth = getGraphics()->tlu(iWidth);
+    }
+    else
+    {
+      iHeight = rec.height;
+      iWidth = rec.width;
+    }
 
-    pEView->m_pPreview = new GR_VectorImage();
-    pEView->m_pPreview->convertFromBuffer(reinterpret_cast<const UT_ByteBuf*>(p->Eview->m_SVGBuf),getGraphics()->tdu(rec.width),getGraphics()->tdu(rec.height));
+    pEView->m_pPreview = getGraphics()->createNewImage(pEView->m_sDataID.utf8_str(),pEView->m_SVGBuf,"image/svg+xml",iWidth,iHeight);
     GR_Painter painter(getGraphics());
     painter.drawImage(pEView->m_pPreview,rec.top,rec.left);
-    */
     return;
   }
   else if( pEView->m_bHasPNGSnapshot)

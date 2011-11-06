@@ -5859,18 +5859,11 @@ bool FV_View::cmdInsertEmbed(const UT_ByteBuf * pBuf,PT_DocPosition pos,const ch
 {
 
 	const gchar * atts[7]={"dataid",NULL,"props",NULL,NULL,NULL,NULL};
-	bool bRepeat = true;
-	UT_UTF8String sUID;
-	UT_uint32 uid = 0;
-	while(bRepeat)
-	{
-	  uid = m_pDoc->getUID(UT_UniqueId::Image);
-	  UT_UTF8String_sprintf(sUID,"%d",uid);
-	  //
-	  // Make sure data item is unique!
-	  //
-	  bRepeat = m_pDoc->getDataItemDataByName(sUID.utf8_str(),NULL,NULL,NULL);
-	}
+	UT_UTF8String sUID="obj-", s;
+	UT_UUID *uuid = m_pDoc->getNewUUID();
+	UT_return_val_if_fail(uuid != NULL, false);
+	uuid->toString(s);
+	sUID += s;
 	atts[1] = sUID.utf8_str();
 	const gchar *cur_style = NULL;
 	UT_String sBuf(reinterpret_cast<const char *>(pBuf->getPointer(0)),pBuf->getLength());
@@ -5980,18 +5973,11 @@ bool FV_View::cmdUpdateEmbed(const UT_ByteBuf * pBuf, const char * szMime, const
 	  return false;
 	}
 	const gchar * atts[7]={"dataid",NULL,"props",NULL,NULL,NULL,NULL};
-	bool bRepeat = true;
-	UT_UTF8String sUID;
-	UT_uint32 uid = 0;
-	while(bRepeat)
-	{
-	  uid = m_pDoc->getUID(UT_UniqueId::Image);
-	  UT_UTF8String_sprintf(sUID,"%d",uid);
-	  //
-	  // Make sure data item is unique!
-	  //
-	  bRepeat = m_pDoc->getDataItemDataByName(sUID.utf8_str(),NULL,NULL,NULL);
-	}
+	UT_UTF8String sUID="obj-", s;
+	UT_UUID *uuid = m_pDoc->getNewUUID();
+	UT_return_val_if_fail(uuid != NULL, false);
+	uuid->toString(s);
+	sUID += s;
 	atts[1] = sUID.utf8_str();
 	bool bres = m_pDoc->createDataItem(sUID.utf8_str(),false,pBuf, szMime, NULL);
 	UT_return_val_if_fail(bres,false)
@@ -6058,18 +6044,11 @@ bool FV_View::cmdUpdateEmbed(fp_Run * pRun, const UT_ByteBuf * pBuf, const char 
 	pRun->mapXYToPosition(0, 0, pos, flag, flag, flag);
 	cmdSelect (pos, pos+1);
 	const gchar * atts[7]={"dataid",NULL,"props",NULL,NULL,NULL,NULL};
-	bool bRepeat = true;
-	UT_UTF8String sUID;
-	UT_uint32 uid = 0;
-	while(bRepeat)
-	{
-	  uid = m_pDoc->getUID(UT_UniqueId::Image);
-	  UT_UTF8String_sprintf(sUID,"%d",uid);
-	  //
-	  // Make sure data item is unique!
-	  //
-	  bRepeat = m_pDoc->getDataItemDataByName(sUID.utf8_str(),NULL,NULL,NULL);
-	}
+	UT_UTF8String sUID="obj-", s;
+	UT_UUID *uuid = m_pDoc->getNewUUID();
+	UT_return_val_if_fail(uuid != NULL, false);
+	uuid->toString(s);
+	sUID += s;
 	atts[1] = sUID.utf8_str();
 	bool bres = m_pDoc->createDataItem(sUID.utf8_str(),false,pBuf, szMime, NULL);
 	UT_return_val_if_fail(bres,false)

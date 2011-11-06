@@ -877,6 +877,14 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	UT_return_val_if_fail( pSS, 0 );
+
+	/* do not try to scale an image to a 1x1 pibuf, this might happen when
+	   the widget size has notbeen allocated or if there is no room for it,
+	   that might freeze gdk_pixbuf */
+	GtkAllocation allocation;
+	gtk_widget_get_allocation (m_preview, &allocation);
+	if (allocation.width <= 1)
+		return 0;
 	
 	// attach and clear the area immediately
 	GR_UnixCairoAllocInfo ai(m_preview);

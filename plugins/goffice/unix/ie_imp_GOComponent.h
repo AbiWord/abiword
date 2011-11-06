@@ -72,7 +72,7 @@ protected:
 class IE_Imp_Component : public IE_Imp
 {
 public:
-	IE_Imp_Component(PD_Document * pDocument);
+	IE_Imp_Component(PD_Document * pDocument, char *mime_type = NULL);
 	virtual	~IE_Imp_Component();
 
 	virtual bool		pasteFromBuffer(PD_DocumentRange * pDocRange,
@@ -85,6 +85,7 @@ protected:
 
  private:
 	UT_ByteBuf *        m_pByteBuf;
+	std::string			m_MimeType;
 };
 
 #endif /* IE_IMP_Component_H */

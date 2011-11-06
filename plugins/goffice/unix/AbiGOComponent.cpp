@@ -211,8 +211,10 @@ AbiGOComponent_FileInsert(G_GNUC_UNUSED AV_View* v, G_GNUC_UNUSED EV_EditMethodC
 
 
     UT_DEBUGMSG(("fileInsertObject: loading [%s]\n",sNewFile.utf8_str()));
-   
-    IE_Imp_Component * pImpComponent = new IE_Imp_Component(pDoc);
+
+	char *mime_type = go_get_mime_type(sNewFile.utf8_str());
+    IE_Imp_Component * pImpComponent = new IE_Imp_Component(pDoc, mime_type);
+	g_free(mime_type);
     UT_Error errorCode = pImpComponent->importFile(sNewFile.utf8_str());
 
   DELETEP(pImpComponent);
@@ -388,9 +390,10 @@ void GR_GOComponentManager::makeSnapShot(UT_sint32 uid, G_GNUC_UNUSED UT_Rect & 
 	const char * pszDataID = NULL;
 	pSpanAP->getAttribute("dataid", pszDataID);
 	UT_ByteBuf *pBuf = NULL;
-	if ((pBuf = pGOComponentView->exportToSVG ()))
+	std::string mime_type;
+	if ((pBuf = pGOComponentView->getSnapShot (mime_type)))
 	  {
-		UT_UTF8String sID = "snapshot-svg-";
+		UT_UTF8String sID = (mime_type == "image/svg")? "snapshot-svg-":  "snapshot-png-";
 		sID += pszDataID;
 		if(pItem->m_bHasSnapshot)
 		  {
@@ -398,24 +401,7 @@ void GR_GOComponentManager::makeSnapShot(UT_sint32 uid, G_GNUC_UNUSED UT_Rect & 
 		  }
 		else
 		  {
-			const std::string mimetypeSVG = "image/svg";
-			m_pDoc->createDataItem(sID.utf8_str(),false,reinterpret_cast< const UT_ByteBuf *>(pBuf),mimetypeSVG,NULL);
-			pItem->m_bHasSnapshot = true;
-		  }
-		delete pBuf;
-	  }
-	else if ((pBuf = pGOComponentView->exportToPNG ()))
-	  {
-		UT_UTF8String sID = "snapshot-png-";
-		sID += pszDataID;
-		if(pItem->m_bHasSnapshot)
-		  {
-			m_pDoc->replaceDataItem(sID.utf8_str(),reinterpret_cast< const UT_ByteBuf *>(pBuf));
-		  }
-		else
-		  {
-			const std::string mimetypePNG = "image/png";
-			m_pDoc->createDataItem(sID.utf8_str(),false,reinterpret_cast< const UT_ByteBuf *>(pBuf),mimetypePNG,NULL);
+			m_pDoc->createDataItem(sID.utf8_str(),false,reinterpret_cast< const UT_ByteBuf *>(pBuf),mime_type,NULL);
 			pItem->m_bHasSnapshot = true;
 		  }
 		delete pBuf;
@@ -552,7 +538,6 @@ GOComponentView::GOComponentView(GR_GOComponentManager * pGOMan): m_pGOMan(pGOMa
 	m_Image = NULL;
 	width = ascent = descent = 0;
 	pix_width = pix_height = 0;
-	window = NULL;
 	pixbuf = NULL;
 	m_pRun = NULL;
 	component = NULL;
@@ -574,8 +559,7 @@ void GOComponentView::render(UT_Rect & rec)
 	GR_CairoGraphics *pUGG = static_cast<GR_CairoGraphics*>(m_pGOMan->getGraphics());
 	UT_sint32 myWidth = pUGG->tdu(rec.width);
 	UT_sint32 myHeight = pUGG->tdu(rec.height);
-	UT_sint32 x = pUGG->tdu(rec.left);
-	UT_sint32 y = pUGG->tdu(rec.top - ascent);
+	UT_sint32 x = pUGG->tdu(rec.left), y;
 	if ((width != rec.width || ascent + descent != rec.height) && go_component_is_resizable (component))
 	{
 		double _ascent, _descent;
@@ -584,31 +568,15 @@ void GOComponentView::render(UT_Rect & rec)
 		ascent =  (UT_sint32) rint (_ascent * UT_LAYOUT_RESOLUTION);
 		descent =  (UT_sint32) rint (_descent * UT_LAYOUT_RESOLUTION);
 	}
-	if (window != NULL)
-	{
-		y -= myHeight;
-		if (x != attributes.x || y != attributes.y) {
-			gdk_window_move (window, x, y);
-			attributes.x = x;
-			attributes.y = y;
-		}
-		if (myWidth != attributes.width || myHeight != attributes.height) {
-			gdk_window_resize (window, myWidth, myHeight);
-			attributes.width = myWidth;
-			attributes.height = myHeight;
-		}
-	}
-	else
-	{
-		pUGG->beginPaint();
-		cairo_t *cr = pUGG->getCairo ();
-		cairo_save (cr);
-		cairo_translate (cr, x, y);
-		go_component_render (component, cr, myWidth, myHeight);
-		cairo_new_path (cr); // just in case a path has not been ended
-		cairo_restore (cr);
-		pUGG->endPaint();
-	}
+	y = pUGG->tdu(rec.top - ascent);
+	pUGG->beginPaint();
+	cairo_t *cr = pUGG->getCairo ();
+	cairo_save (cr);
+	cairo_translate (cr, x, y);
+	go_component_render (component, cr, myWidth, myHeight);
+	cairo_new_path (cr); // just in case a path has not been ended
+	cairo_restore (cr);
+	pUGG->endPaint();
 }
 
 static void
@@ -639,7 +607,7 @@ changed_cb (GOComponent *component, gpointer data)
 				GParamSpec **specs = g_object_class_list_properties (
 							G_OBJECT_GET_CLASS (component), &nbprops);
 				for (i = 0; i < nbprops; i++) {
-					if (specs[i]->flags & GOC_PARAM_PERSISTENT) {
+					if (specs[i]->flags & GO_PARAM_PERSISTENT) {
 						prop_type = G_PARAM_SPEC_VALUE_TYPE (specs[i]);
 						memset(&value, 0, sizeof(value));
 						g_value_init (&value, prop_type);
@@ -706,32 +674,17 @@ void GOComponentView::loadBuffer(UT_ByteBuf const *sGOComponentData, const char 
 		return;
 	}
 	go_component_set_default_size (component, 2.5, 2.5, 0.);
-	if (go_component_needs_window (component)) {
-		GR_UnixCairoGraphics *pUGG = static_cast<GR_UnixCairoGraphics*>(m_pGOMan->getGraphics());
-		GdkWindow *parent = pUGG->getWindow ();
-		attributes.x = 0; // we do not know where the window should be at the moment
-		attributes.y = 0;
-		attributes.width = pUGG->tdu ((UT_sint32)(2.5 * UT_LAYOUT_RESOLUTION));
-		attributes.height = pUGG->tdu ((UT_sint32)(2.5 * UT_LAYOUT_RESOLUTION));
-		attributes.window_type = GDK_WINDOW_CHILD;
-		attributes.wclass = GDK_INPUT_OUTPUT;
-		attributes.event_mask = GDK_ALL_EVENTS_MASK;
-		window = gdk_window_new (parent,
-				&attributes, GDK_WA_X | GDK_WA_Y);
-		gdk_window_show (window);
-		go_component_set_window (component, window);
-	}
 	if (sGOComponentData->getLength () > 0) {
 		if (m_pRun) {
 			PP_AttrProp const *Props = m_pRun->getSpanAP ();
 			GParamSpec *prop_spec;
 			int i = 0;
-			GValue res;
+			GValue res = {0,{{0},{0}}};
 			gchar const *szName, *szValue;
 			while (Props->getNthProperty (i++, szName, szValue)) {
 				prop_spec = g_object_class_find_property (
 						G_OBJECT_GET_CLASS (component), szName);
-				if (prop_spec && (prop_spec->flags & GOC_PARAM_PERSISTENT) &&
+				if (prop_spec && (prop_spec->flags & GO_PARAM_PERSISTENT) &&
 					gsf_xml_gvalue_from_str (&res,
 						G_TYPE_FUNDAMENTAL (G_PARAM_SPEC_VALUE_TYPE (prop_spec)),
 						szValue)) {
@@ -784,7 +737,7 @@ void GOComponentView::update ()
 		GParamSpec **specs = g_object_class_list_properties (
 					G_OBJECT_GET_CLASS (component), &nbprops);
 		for (i = 0; i < nbprops; i++) {
-			if (specs[i]->flags & GOC_PARAM_PERSISTENT) {
+			if (specs[i]->flags & GO_PARAM_PERSISTENT) {
 				prop_type = G_PARAM_SPEC_VALUE_TYPE (specs[i]);
 				g_value_init (&value, prop_type);
 				g_object_get_property  (G_OBJECT (component), specs[i]->name, &value);
@@ -832,33 +785,28 @@ void GOComponentView::update ()
 	}
 }
 
-UT_ByteBuf *GOComponentView::exportToPNG ()
+UT_ByteBuf *GOComponentView::getSnapShot (std::string &snap_mime_type)
 {
 	UT_return_val_if_fail (component, NULL);
 	int height = ascent + descent;
 	if (height == 0 || (int) width == 0)
 		return NULL;
-	int w = width * 300 / UT_LAYOUT_RESOLUTION, h = height * 300 / UT_LAYOUT_RESOLUTION;
+	size_t length;
+	GOSnapshotType type;
+	const UT_Byte *buf = reinterpret_cast <const UT_Byte*> (go_component_get_snapshot (component, &type, &length));
+	if (!buf || !length)
+		return NULL;
+	switch (type) {
+		case GO_SNAPSHOT_PNG:
+			snap_mime_type = "image/png";
+			break;
+		case GO_SNAPSHOT_SVG:
+			snap_mime_type = "image/svg";
+			break;
+		default:
+			return NULL;
+	}
 	UT_ByteBuf *pBuf = new UT_ByteBuf ();
-	cairo_surface_t *surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, w, h);
-	cairo_t *cr = cairo_create (surface);
-	go_component_render (component, cr, w, h);
-	cairo_destroy (cr);
-	cairo_surface_write_to_png_stream (surface,
-	    reinterpret_cast<cairo_write_func_t>(abi_CairoWrite), pBuf);
-	cairo_surface_destroy (surface);
-	return pBuf;
-}
-
-UT_ByteBuf *GOComponentView::exportToSVG ()
-{
-	UT_return_val_if_fail (component, NULL);
-//	char *svg = go_component_export_to_svg (component);
-	UT_ByteBuf *pBuf = NULL;
-/*	if (svg) {
-		pBuf = new UT_ByteBuf ();
-		pBuf->append (reinterpret_cast<UT_Byte*> (svg), strlen (svg));
-		g_free (svg);
-	}*/
+	pBuf->append (buf, length);
 	return pBuf;
 }

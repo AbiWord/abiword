@@ -938,7 +938,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 	
 	bool bResult = false;
 	AV_ChangeMask chgMask = AV_CHG_NONE;
-	
+
 	switch (pcr->getType())
 	{
 	case PX_ChangeRecord::PXT_GlobMarker:
@@ -1352,7 +1352,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 				fl_HdrFtrSectionLayout * pHdr = pCLSL->getHdrFtrSectionLayout();
 				bResult = pHdr->bl_doclistener_changeStrux( pCL, pcrxc);
 			}
-			else 
+			else
 				bResult = pCLSL->bl_doclistener_changeStrux(pCL, pcrxc);
 			goto finish_up;
 		}

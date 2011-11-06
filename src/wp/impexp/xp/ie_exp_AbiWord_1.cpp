@@ -636,13 +636,16 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 		pAP->getAttribute("dataid",szPropVal);
 		if(szPropVal != NULL)
 		{
+			bool has_svg;
 			tag = ">";
 			if (bNewLineAfter) tag += "\n";
+			std::string sID = std::string("snapshot-svg-") + szPropVal;
+			has_svg = m_pDocument->getDataItemDataByName(sID.c_str (), NULL, NULL, NULL);
 			m_pie->write (tag.utf8_str (), tag.byteLength());
 			tag.clear();
 			tag = "<image dataid=";
 			tag += "\"";
-			tag += "snapshot-png-";
+			tag += (has_svg)? "snapshot-svg-": "snapshot-png-";
 			tag += szPropVal;
 			tag += "\"";
 			tag += " ";
@@ -965,9 +968,11 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 					{
 						UT_DEBUGMSG(("resource name #%s# recorded \n",image_name));
 						m_pUsedImages.insert(image_name);
-						UT_UTF8String * sPNGname = new UT_UTF8String("snapshot-png-");
+						UT_UTF8String * sPNGname = new UT_UTF8String("snapshot-svg-");
 						m_vecSnapNames.addItem(sPNGname);
 						*sPNGname += image_name;
+						if (!m_pDocument->getDataItemDataByName(sPNGname->utf8_str(), NULL, NULL, NULL))
+							*sPNGname = UT_UTF8String("snapshot-png-") + image_name;
 						UT_DEBUGMSG(("resource name #%s# recorded \n",sPNGname->utf8_str()));
 						m_pUsedImages.insert(sPNGname->utf8_str());
 					}

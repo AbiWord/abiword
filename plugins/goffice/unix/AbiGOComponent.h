@@ -97,8 +97,7 @@ public:
 	GOComponent *getComponent (void) {return component;}
 	bool IsEdittable () {return go_component_is_editable (component);}
 	bool IsResizable () {return go_component_is_resizable (component);}
-	UT_ByteBuf *exportToPNG ();
-	UT_ByteBuf *exportToSVG ();
+	UT_ByteBuf *getSnapShot (std::string &mime_type);
 	void SetRun (fp_Run *pRun) {m_pRun = pRun;}
 
 private:
@@ -108,7 +107,6 @@ private:
 	GR_Image *m_Image;
 	UT_sint32 width, ascent, descent;
 	UT_sint32 pix_width, pix_height;
-	GdkWindow *window;
 	GdkPixbuf *pixbuf;
 	GdkWindowAttr attributes;
 	fp_Run *m_pRun;

@@ -66,7 +66,6 @@ IE_Imp_Component_Sniffer::~IE_Imp_Component_Sniffer ()
 static UT_Confidence_t 
 supports_mime (const char * szMIME)
 {
-#warning should return PERFECT only when priority is high
 	if (g_slist_find_custom (mime_types, szMIME, (GCompareFunc) strcmp) != NULL)
 	{
 		 switch (go_components_get_priority (szMIME))
@@ -157,7 +156,6 @@ UT_Error IE_Imp_Component::_loadFile(GsfInput * fp)
 	ImportStreamFile * pStream = new ImportStreamFile(fp);
 	UT_Error error;
 
-
 	pStream->init(NULL);
 	X_CleanupIfError(error,_parseStream(pStream));
 	error = UT_OK;
@@ -179,8 +177,9 @@ Cleanup:
 
  Uses current document's encoding if it is set
 */
-IE_Imp_Component::IE_Imp_Component(PD_Document * pDocument)
-	: IE_Imp(pDocument),m_pByteBuf(NULL)
+IE_Imp_Component::IE_Imp_Component(PD_Document * pDocument, char *mime_type)
+	: IE_Imp(pDocument),m_pByteBuf(NULL),
+	m_MimeType (mime_type)
 {
 	m_pByteBuf = new UT_ByteBuf;
 
@@ -216,14 +215,19 @@ UT_Error IE_Imp_Component::_parseStream(ImportStream * pStream)
 		uc = static_cast<unsigned char>(c);
 		m_pByteBuf->append(&uc,1);
 	}
-	const char *mime_type = go_get_mime_type_for_data(m_pByteBuf->getPointer(0), m_pByteBuf->getLength());
- 	if (g_slist_find_custom (mime_types, mime_type,
+	if (m_MimeType.length() == 0)
+	{
+		char *mime_type = go_get_mime_type_for_data(m_pByteBuf->getPointer(0), m_pByteBuf->getLength());
+		m_MimeType = mime_type;
+		g_free (mime_type);
+	}
+	if (g_slist_find_custom (mime_types, m_MimeType.c_str (),
 				(gint (*)(const void*, const void*))strcmp) == NULL) {
 		return UT_IE_UNSUPTYPE;
 	}
-	UT_String Props=UT_String ("embed-type: GOComponent//") + mime_type;
+	UT_String Props=UT_String("embed-type: GOComponent//") + m_MimeType;
 	PT_DocPosition pos = pView->getPoint();
-	pView->cmdInsertEmbed(m_pByteBuf,pos,mime_type,Props.c_str());
+	pView->cmdInsertEmbed(m_pByteBuf,pos,m_MimeType.c_str(),Props.c_str());
 	pView->cmdSelect(pos,pos+1);
 
 	return UT_OK;
