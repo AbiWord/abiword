@@ -147,7 +147,7 @@ void XAP_UnixDialog_Language::_populateWindowData()
 								G_TYPE_INT);
 	
 	for (UT_uint32 i = 0; i < m_iLangCount; i++)
-    {		
+	{		
 		// Add a new row to the model
 		gtk_list_store_append (model, &iter);
 		
@@ -155,7 +155,7 @@ void XAP_UnixDialog_Language::_populateWindowData()
 							0, m_ppLanguages[i],
 							1, i,
 							-1);
-    } 
+	}
 	
 	gtk_tree_view_set_model(GTK_TREE_VIEW(m_pLanguageList), reinterpret_cast<GtkTreeModel *>(model));
 	
@@ -182,6 +182,9 @@ void XAP_UnixDialog_Language::_populateWindowData()
 									 path, 
 									 gtk_tree_view_get_column (GTK_TREE_VIEW(m_pLanguageList), 0), 
 									 FALSE);
+			gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(m_pLanguageList),
+						     path, NULL, TRUE, 0.5, 0.0);
+			gtk_widget_grab_focus (m_pLanguageList);
 			
 			gtk_tree_path_free (path);
 		}
