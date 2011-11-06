@@ -336,9 +336,11 @@ void AP_UnixDialog_Border_Shading::event_previewExposed(void)
 
 void AP_UnixDialog_Border_Shading::_setShadingEnable(bool enable)
 {
-	UT_DEBUGMSG(("Maleesh =============== Setting shading enable: \n"));
+	xxx_UT_DEBUGMSG(("Maleesh =============== Setting shading enable: \n"));
 
+	gtk_widget_set_sensitive(m_wShadingOffsetLabel, enable);
 	gtk_widget_set_sensitive(m_wShadingOffset, enable);
+	gtk_widget_set_sensitive(m_wShadingColorLabel, enable);
 	gtk_widget_set_sensitive(m_wShadingColorButton, enable);
 
 	XAP_GtkSignalBlocker b1(G_OBJECT(m_wShadingEnable), m_iShadingEnableConnect);
@@ -347,7 +349,7 @@ void AP_UnixDialog_Border_Shading::_setShadingEnable(bool enable)
 
 void AP_UnixDialog_Border_Shading::setBorderThicknessInGUI(UT_UTF8String & sThick)
 {
-	UT_DEBUGMSG(("Maleesh =============== Setup the border thickness in the GUI: %s \n", sThick.utf8_str()));
+	xxx_UT_DEBUGMSG(("Maleesh =============== Setup the border thickness in the GUI: %s \n", sThick.utf8_str()));
 
 	guint closest = _findClosestThickness(sThick.utf8_str());
 	XAP_GtkSignalBlocker b(G_OBJECT(m_wBorderThickness),m_iBorderThicknessConnect);
@@ -356,7 +358,7 @@ void AP_UnixDialog_Border_Shading::setBorderThicknessInGUI(UT_UTF8String & sThic
 
 void AP_UnixDialog_Border_Shading::setBorderStyleInGUI(UT_UTF8String & sStyle)
 {
-	UT_DEBUGMSG(("Maleesh =============== Setup the border style in the GUI: %s \n", sStyle.utf8_str()));
+	xxx_UT_DEBUGMSG(("Maleesh =============== Setup the border style in the GUI: %s \n", sStyle.utf8_str()));
 
 	PP_PropertyMap::TypeLineStyle style = PP_PropertyMap::linestyle_type(sStyle.utf8_str());
 	gint index = style - 1;
@@ -370,7 +372,7 @@ void AP_UnixDialog_Border_Shading::setBorderStyleInGUI(UT_UTF8String & sStyle)
 
 void AP_UnixDialog_Border_Shading::setBorderColorInGUI(UT_RGBColor clr)
 {
-	UT_DEBUGMSG(("Maleesh =============== Setup the border color in the GUI: %d|%d|%d \n", clr.m_red, clr.m_grn, clr.m_blu));
+	xxx_UT_DEBUGMSG(("Maleesh =============== Setup the border color in the GUI: %d|%d|%d \n", clr.m_red, clr.m_grn, clr.m_blu));
 
 	GdkColor* color = UT_UnixRGBColorToGdkColor(clr);
 	gtk_color_button_set_color (GTK_COLOR_BUTTON (m_wBorderColorButton), color);
@@ -379,7 +381,7 @@ void AP_UnixDialog_Border_Shading::setBorderColorInGUI(UT_RGBColor clr)
 
 void AP_UnixDialog_Border_Shading::setShadingColorInGUI(UT_RGBColor clr)
 {
-	UT_DEBUGMSG(("Maleesh =============== Setup the shading color in the GUI: %d|%d|%d \n", clr.m_red, clr.m_grn, clr.m_blu));
+	xxx_UT_DEBUGMSG(("Maleesh =============== Setup the shading color in the GUI: %d|%d|%d \n", clr.m_red, clr.m_grn, clr.m_blu));
 
 	GdkColor* color = UT_UnixRGBColorToGdkColor(clr);
 	gtk_color_button_set_color (GTK_COLOR_BUTTON (m_wShadingColorButton), color);
@@ -388,7 +390,7 @@ void AP_UnixDialog_Border_Shading::setShadingColorInGUI(UT_RGBColor clr)
 
 void AP_UnixDialog_Border_Shading::setShadingPatternInGUI(UT_UTF8String & sPattern)
 {
-	UT_DEBUGMSG(("Maleesh =============== Setup the shading pattern in the GUI: %s \n", sPattern.utf8_str()));
+	xxx_UT_DEBUGMSG(("Maleesh =============== Setup the shading pattern in the GUI: %s \n", sPattern.utf8_str()));
 
 	// 8/8/2010 Maleesh - TODO: Change this, when there are more shading patterns.
 	bool shading_enabled = !(sPattern == BORDER_SHADING_SHADING_DISABLE);
@@ -397,7 +399,7 @@ void AP_UnixDialog_Border_Shading::setShadingPatternInGUI(UT_UTF8String & sPatte
 
 void AP_UnixDialog_Border_Shading::setShadingOffsetInGUI(UT_UTF8String & sOffset)
 {
-	UT_DEBUGMSG(("Maleesh =============== Setup the shading offset in the GUI: %s \n", sOffset.utf8_str()));
+	xxx_UT_DEBUGMSG(("Maleesh =============== Setup the shading offset in the GUI: %s \n", sOffset.utf8_str()));
 
 	guint closest = _findClosestOffset(sOffset.utf8_str());
 	XAP_GtkSignalBlocker b(G_OBJECT(m_wShadingOffset),m_iShadingOffsetConnect);
@@ -456,7 +458,7 @@ void AP_UnixDialog_Border_Shading::event_ShadingOffsetChanged(void)
 
 void AP_UnixDialog_Border_Shading::event_shadingPatternChange(void)
 {
-	UT_DEBUGMSG(("========================= Changed the state of the cb \n"));
+	xxx_UT_DEBUGMSG(("========================= Changed the state of the cb \n"));
 
 	// 8/8/2010 Maleesh - TODO: Change this, when there are more shading patterns.
 	gboolean bEnable = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wShadingEnable));
@@ -543,8 +545,10 @@ GtkWidget * AP_UnixDialog_Border_Shading::_constructWindow(void)
 	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lblBorderStyle")), pSS, AP_STRING_ID_DLG_BorderShading_Border_Style);
 
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbShading")), pSS, AP_STRING_ID_DLG_BorderShading_Shading);
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbShadingColor")), pSS, AP_STRING_ID_DLG_BorderShading_Shading_Color);
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lblShadingOffset")), pSS, AP_STRING_ID_DLG_BorderShading_Offset);
+	m_wShadingColorLabel = GTK_WIDGET(gtk_builder_get_object(builder, "lbShadingColor"));
+	localizeLabel(m_wShadingColorLabel, pSS, AP_STRING_ID_DLG_BorderShading_Shading_Color);
+	m_wShadingOffsetLabel = GTK_WIDGET(gtk_builder_get_object(builder, "lblShadingOffset"));
+	localizeLabel(m_wShadingOffsetLabel, pSS, AP_STRING_ID_DLG_BorderShading_Offset);
 
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbPreview")), pSS, AP_STRING_ID_DLG_FormatTable_Preview);
 

@@ -78,6 +78,7 @@ protected:
 	GtkWidget * m_wCloseButton;
 
 	GtkWidget * m_wBorderColorButton;
+	GtkWidget * m_wShadingColorLabel;
 	GtkWidget * m_wShadingColorButton;
 	GtkWidget * m_wLineLeft;
 	GtkWidget * m_wLineRight;
@@ -87,6 +88,7 @@ protected:
 	GtkWidget * m_wPreviewArea;
 	GtkWidget * m_wBorderThickness;
 	GtkWidget * m_wBorderStyle;
+	GtkWidget * m_wShadingOffsetLabel;
 	GtkWidget * m_wShadingOffset;
 	GtkWidget * m_wShadingEnable;
 
