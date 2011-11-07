@@ -1,5 +1,6 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiSource Application Framework
- * Copyright (C) 2005 Hubert Figuiere
+ * Copyright (C) 2005,2011 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,9 +29,7 @@ class XAP_UnixWidget
 	: public XAP_Widget
 {
 public:
-	XAP_UnixWidget(GtkWidget * w)
-		: XAP_Widget(), m_widget(w)
-		{  }
+  XAP_UnixWidget(GtkWidget * w);
 
 	/** The destructor just clean up. Must not destroy the real widget. */
 	virtual ~XAP_UnixWidget()
@@ -63,8 +62,15 @@ public:
 
 	/** set the widget label */
 	virtual void setLabel(const UT_UTF8String &val);
+
+	void setData(const std::string & data)
+	{
+		m_data = data;
+	}
 private:
 	GtkWidget *m_widget;
+	// used to store the markup for a GtkLabel
+	std::string m_data;
 };
 
 

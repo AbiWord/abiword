@@ -163,8 +163,12 @@ XAP_Widget *AP_UnixDialog_WordCount::getWidget(xap_widget_id wid)
 		return new XAP_UnixWidget(NULL);
 		break;
 	case TITLE_LBL_WID:
-		return new XAP_UnixWidget(m_labelTitle);
+	  {
+		XAP_UnixWidget *w = new XAP_UnixWidget(m_labelTitle);
+		w->setData(m_labelTitleMarkupFormat);
+		return w;
 		break;
+	  }
 	case PAGES_LBL_WID:
 		return new XAP_UnixWidget(m_labelLabelPgCount);
 		break;
@@ -226,6 +230,9 @@ void AP_UnixDialog_WordCount::constructDialog(void)
 	m_labelLCount  = GTK_WIDGET(gtk_builder_get_object(builder, "lbLinesVal"));
 	m_labelPgCount = GTK_WIDGET(gtk_builder_get_object(builder, "lbPagesVal"));
 	m_labelTitle   = GTK_WIDGET(gtk_builder_get_object(builder, "lbTitle"));
+	if(gtk_label_get_use_markup(GTK_LABEL(m_labelTitle))) {
+	  m_labelTitleMarkupFormat = gtk_label_get_label(GTK_LABEL(m_labelTitle));
+	}
 
 	m_labelLabelWCount  = GTK_WIDGET(gtk_builder_get_object(builder, "lbWords"));
  	m_labelWNFCount     = GTK_WIDGET(gtk_builder_get_object(builder, "lbWordsNoFootnotes"));

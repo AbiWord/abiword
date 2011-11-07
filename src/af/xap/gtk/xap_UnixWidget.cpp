@@ -1,5 +1,6 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiSource Application Framework
- * Copyright (C) 2005 Hubert Figuiere
+ * Copyright (C) 2005,2011 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,15 +18,20 @@
  * 02111-1307, USA.
  */
 
-
-
 #include <gtk/gtk.h>
 
 #include "ut_assert.h"
+#include "ut_debugmsg.h"
 #include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_string_class.h"
 #include "xap_UnixWidget.h"
 
+XAP_UnixWidget::XAP_UnixWidget(GtkWidget * w)
+	: XAP_Widget()
+	, m_widget(w)
+{
+}
 
 /** set the widget enabled/disabled state */
 void XAP_UnixWidget::setState(bool enabled)
@@ -146,7 +152,14 @@ void XAP_UnixWidget::setLabel(const UT_UTF8String &val)
 		gtk_button_set_label(GTK_BUTTON(m_widget), val.utf8_str());
 	}
 	else if (GTK_IS_LABEL(m_widget)) {
-		gtk_label_set_text(GTK_LABEL(m_widget), val.utf8_str());
+	  if(!gtk_label_get_use_markup(GTK_LABEL(m_widget))) {
+	    gtk_label_set_text(GTK_LABEL(m_widget), val.utf8_str());
+	  }
+	  else {
+	    std::string markup = UT_std_string_sprintf(m_data.c_str(), val.utf8_str());
+		xxx_UT_DEBUGMSG(("data is %s - markup is %s\n", m_data.c_str(), markup.c_str()));
+	    gtk_label_set_label(GTK_LABEL(m_widget), markup.c_str());
+	  }
 	}
 	else if (GTK_IS_WINDOW(m_widget)) {
 		gtk_window_set_title(GTK_WINDOW(m_widget), val.utf8_str());

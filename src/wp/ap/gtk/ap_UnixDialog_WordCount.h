@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
- * Copyright (C) 2005 Hubert Figuiere
+ * Copyright (C) 2005,2011 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,6 +20,8 @@
 
 #ifndef AP_UNIXDIALOG_WORDCOUNT_H
 #define AP_UNIXDIALOG_WORDCOUNT_H
+
+#include <string>
 
 #include "ap_Dialog_WordCount.h"
 #include "ut_timer.h"
@@ -74,8 +76,9 @@ protected:
 	GtkWidget * m_labelLabelCCount;
 	GtkWidget * m_labelLabelCNCount;
 	GtkWidget * m_labelLabelLCount;	
-	GtkWidget * m_labelLabelPgCount;	
+	GtkWidget * m_labelLabelPgCount;
 	GtkWidget * m_labelTitle;
+	std::string m_labelTitleMarkupFormat;
 
 	UT_Timer * m_pAutoUpdateWC;
 
