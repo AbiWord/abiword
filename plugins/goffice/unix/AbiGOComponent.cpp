@@ -602,7 +602,7 @@ changed_cb (GOComponent *component, gpointer data)
 				UT_String Props=UT_String ("embed-type: GOComponent//") + component->mime_type;
 				guint i, nbprops;
 				GType    prop_type;
-				GValue	 value;
+				GValue	 value = {0, {{0}, {0}}};
 				char *prop = NULL;
 				GParamSpec **specs = g_object_class_list_properties (
 							G_OBJECT_GET_CLASS (component), &nbprops);
@@ -732,7 +732,7 @@ void GOComponentView::update ()
 		UT_String Props=UT_String ("embed-type: GOComponent//") + mime_type;
 		guint i, nbprops;
 		GType    prop_type;
-		GValue	 value;
+		GValue	 value = {0, {{0}, {0}}};
 		char *prop = NULL;
 		GParamSpec **specs = g_object_class_list_properties (
 					G_OBJECT_GET_CLASS (component), &nbprops);
