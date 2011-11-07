@@ -69,14 +69,12 @@ void XAP_UnixWidget::setValueInt(int val)
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_widget), (val?TRUE:FALSE));
 	}
 	else if (GTK_IS_LABEL(m_widget)) {
-	  UT_UTF8String str;
-	  UT_UTF8String_sprintf(str,"%d",val);
-	  gtk_label_set_text(GTK_LABEL(m_widget), str.utf8_str());
+		std::string str = UT_std_string_sprintf("%d",val);
+		gtk_label_set_text(GTK_LABEL(m_widget), str.c_str());
 	}
 	else if (GTK_IS_ENTRY(m_widget)) {
-	  UT_UTF8String str;
-	  UT_UTF8String_sprintf(str,"%d",val);
-	  gtk_entry_set_text(GTK_ENTRY(m_widget), str.utf8_str());
+		std::string str = UT_std_string_sprintf("%d", val);
+		gtk_entry_set_text(GTK_ENTRY(m_widget), str.c_str());
 	}
 	else {
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
@@ -131,9 +129,8 @@ void XAP_UnixWidget::getValueString(UT_UTF8String &val)
 void XAP_UnixWidget::setValueFloat(float val)
 {
 	if (GTK_IS_ENTRY(m_widget)) {
-        UT_UTF8String str;
-	UT_UTF8String_sprintf(str,"%f",val);
-	gtk_entry_set_text(GTK_ENTRY(m_widget), str.utf8_str());
+		std::string str = UT_std_string_sprintf("%f", val);
+		gtk_entry_set_text(GTK_ENTRY(m_widget), str.c_str());
 	}
 }
 
@@ -152,14 +149,14 @@ void XAP_UnixWidget::setLabel(const UT_UTF8String &val)
 		gtk_button_set_label(GTK_BUTTON(m_widget), val.utf8_str());
 	}
 	else if (GTK_IS_LABEL(m_widget)) {
-	  if(!gtk_label_get_use_markup(GTK_LABEL(m_widget))) {
-	    gtk_label_set_text(GTK_LABEL(m_widget), val.utf8_str());
-	  }
-	  else {
-	    std::string markup = UT_std_string_sprintf(m_data.c_str(), val.utf8_str());
-		xxx_UT_DEBUGMSG(("data is %s - markup is %s\n", m_data.c_str(), markup.c_str()));
-	    gtk_label_set_label(GTK_LABEL(m_widget), markup.c_str());
-	  }
+		if(!gtk_label_get_use_markup(GTK_LABEL(m_widget))) {
+			gtk_label_set_text(GTK_LABEL(m_widget), val.utf8_str());
+		}
+		else {
+			std::string markup = UT_std_string_sprintf(m_data.c_str(), 
+													   val.utf8_str());
+			gtk_label_set_label(GTK_LABEL(m_widget), markup.c_str());
+		}
 	}
 	else if (GTK_IS_WINDOW(m_widget)) {
 		gtk_window_set_title(GTK_WINDOW(m_widget), val.utf8_str());
