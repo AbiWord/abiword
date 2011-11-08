@@ -53,11 +53,12 @@
 #endif
 
 // RDF support
+#ifdef WITH_REDLAND
 #include "pd_RDFSupportRed.h"
 #include <redland.h>
 #include <rasqal.h>
 #define DEBUG_RDF_IO 1
-
+#endif
 
 /**
  * Constructor
@@ -403,7 +404,10 @@ UT_Error IE_Imp_OpenDocument::_loadRDFFromFile ( GsfInput* pInput,
                                                  RDFArguments* args )
 {
     UT_return_val_if_fail(pInput, UT_ERROR);
-
+#ifndef WITH_REDLAND
+    return(UT_OK);
+#else
+    
     int sz = gsf_input_size (pInput);
     if (sz > 0)
     {
@@ -444,13 +448,17 @@ UT_Error IE_Imp_OpenDocument::_loadRDFFromFile ( GsfInput* pInput,
     }
 
     return UT_OK;
+#endif
 }
 
                       
 UT_Error IE_Imp_OpenDocument::_handleRDFStreams ()
 {
+#ifndef WITH_REDLAND
+    return UT_OK;
+#else
     UT_Error error = UT_OK;
-
+    
     UT_DEBUGMSG(("IE_Imp_OpenDocument::_handleRDFStreams()\n"));
 
     // // DEBUG.
@@ -608,6 +616,7 @@ UT_Error IE_Imp_OpenDocument::_handleRDFStreams ()
         getDoc()->getDocumentRDF()->dumpModel("Loaded RDF from ODF file");
     }
     return error;
+#endif
 }
 
 

@@ -34,10 +34,13 @@
 // Internal includes
 #include "ODe_Common.h"
 
+#include "config.h"
+
 // RDF support
+#ifdef WITH_REDLAND
 #include "pd_RDFSupportRed.h"
 #define DEBUG_RDF_IO 1
- 
+#endif
 
 
 
@@ -49,6 +52,9 @@
  */
 bool ODe_RDFWriter::writeRDF(PD_Document* pDoc, GsfOutfile* pODT)
 {
+#ifndef WITH_REDLAND
+    return true;
+#else
     UT_DEBUGMSG(("writeRDF() \n"));
     GsfOutput* oss = gsf_outfile_new_child(GSF_OUTFILE(pODT), "manifest.rdf", FALSE);
 
@@ -186,4 +192,5 @@ bool ODe_RDFWriter::writeRDF(PD_Document* pDoc, GsfOutfile* pODT)
 
     UT_DEBUGMSG(("writeRDF() complete\n"));
     return true;
+#endif
 }
