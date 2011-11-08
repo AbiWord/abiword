@@ -34,7 +34,9 @@
 // Internal includes
 #include "ODe_Common.h"
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
 
 // RDF support
 #ifdef WITH_REDLAND
