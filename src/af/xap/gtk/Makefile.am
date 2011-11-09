@@ -10,22 +10,15 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/src/wp/ap/xp \
 	-DDATADIR="\"$(datadir)\""
 
-hildon_src = hildon/xap_UnixHildonApp.cpp \
-	hildon/xap_UnixHildonApp.h \
-	hildon/xap_UnixHildonDlg_FontChooser.cpp    \
-	hildon/xap_UnixHildonDlg_FontChooser.h	\
-	$(NULL)
-hildon_ui = hildon/xap_UnixHildonDlg_Image.xml \
-	$(NULL)
 altgtk_src = xap_UnixDlg_FontChooser.cpp \
 	xap_UnixDlg_FontChooser.h \
 	$(NULL)
 altgtk_ui = xap_UnixDlg_Image.xml \
 	$(NULL)
 # list all conditional source files here so they end up in the dist tarball
-conditional_src = $(hildon_src) $(altgtk_src)
+conditional_src = $(altgtk_src)
 
-conditional_ui = $(hildon_ui) $(altgtk_ui)
+conditional_ui = $(altgtk_ui)
 
 libgtk_la_SOURCES = \
 	xap_GtkObjectHolder.h \
@@ -109,13 +102,8 @@ ui_DATA = \
 	xap_UnixDlg_ListDocuments.xml \
 	$(NULL)
 
-if EMBEDDED_HILDON
-libgtk_la_SOURCES += $(hildon_src)
-ui_DATA += $(hildon_ui)
-else
 libgtk_la_SOURCES += $(altgtk_src)
 ui_DATA += $(altgtk_ui)	
-endif
 
 
 EXTRA_DIST = \

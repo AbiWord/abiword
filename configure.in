@@ -995,8 +995,6 @@ AC_OUTPUT(
   src/wp/ap/Makefile
   src/wp/ap/cocoa/Makefile
   src/wp/ap/gtk/Makefile
-  src/wp/ap/gtk/hildon/abiword.desktop
-  src/wp/ap/gtk/hildon/com.abisource.abiword.service
   src/wp/ap/gtk2/Makefile
   src/wp/ap/gtk2/hildon/abiword.desktop
   src/wp/ap/gtk2/hildon/com.abisource.abiword.service

@@ -10,11 +10,6 @@ AM_CPPFLAGS = 						\
 	-DDATADIR="\"$(datadir)\""
 
 
-# source and ui files for Hildon
-hildon_src = hildon/ap_UnixHildonFrameImpl.cpp \
-	hildon/ap_UnixHildonFrameImpl.h
-hildon_ui = hildon/ap_UnixHildonDialog_HdrFtr.xml \
-	hildon/ap_UnixHildonDialog_Options.xml
 # these are alternate file for a plain Gtk build.
 altgtk_ui = ap_UnixDialog_Options.xml \
 	ap_UnixDialog_HdrFtr.xml \
@@ -29,14 +24,12 @@ statusbar_src = ap_UnixStatusBar.cpp
 
 # list all conditional source files here so they end up in the dist tarball
 conditional_src = \
-	$(hildon_src) \
 	$(spell_src) \
 	$(statusbar_src) \
 	$(NULL)
 
 
 conditional_ui = \
-	$(hildon_ui) \
 	$(altgtk_ui) \
 	$(spell_ui) \
 	$(NULL)
@@ -203,34 +196,13 @@ if ENABLE_STATUSBAR
 libgtk_la_SOURCES += $(statusbar_src)
 endif
 
-if EMBEDDED_HILDON
-
-libgtk_la_SOURCES += $(hildon_src)
-ui_DATA += $(hildon_ui)
-
-hildondesktopdir = @datadir@/applications/hildon
-hildondesktop_DATA = hildon/abiword.desktop
-
-hildondbusdir = @datadir@/dbus-1/services
-hildondbus_DATA = hildon/com.abisource.abiword.service
-
-hildonicondir = @datadir@/pixmaps
-hildonicon_DATA = hildon/qgn_list_abiword.png
-
-else 
 
 ui_DATA += $(altgtk_ui)
-
-endif
-
 
 
 EXTRA_DIST = \
 	$(conditional_src) \
 	$(conditional_ui) \
 	$(ui_DATA) \
-	hildon/qgn_list_abiword.png \
-	hildon/com.abisource.abiword.service.in \
-	hildon/abiword.desktop.in \
 	$(NULL)
 
