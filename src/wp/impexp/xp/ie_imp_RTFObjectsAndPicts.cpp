@@ -28,6 +28,7 @@
 */
 
 #include <utility>
+#include <string>
 
 #include "ut_locale.h"
 
@@ -576,7 +577,7 @@ bool IE_Imp_RTF::HandlePicture()
 class ABI_EXPORT RTFProps_FrameProps
 {
 public:
-	typedef std::pair<UT_UTF8String*,UT_UTF8String*> PropertyPair;
+	typedef std::pair<std::string, std::string> PropertyPair;
 
 	RTFProps_FrameProps();
 	virtual ~RTFProps_FrameProps()
@@ -647,53 +648,53 @@ void RTFProps_FrameProps::_setProperty(const PropertyPair *pair)
 {
 	UT_return_if_fail(pair);
 
-	const UT_UTF8String *propName = pair->first;
-	const UT_UTF8String *propValue = pair->second;
+	const std::string &propName = pair->first;
+	const std::string &propValue = pair->second;
 
-	if(!propName)
+	if(!propName.empty())
 		return;
 
 	UT_sint32 ival = 0;
-	if(strcmp(propName->utf8_str(),"dxTextLeft")== 0)
+	if(propName == "dxTextLeft")
 	{
-		if(propValue)
-			ival = atoi(propValue->utf8_str());
+		if(!propValue.empty())
+			ival = atoi(propValue.c_str());
 		m_iLeftPad = ival;
 	}
-	else if(strcmp(propName->utf8_str(),"dxTextRight")== 0)
+	else if(propName == "dxTextRight")
 	{
-		if(propValue)
-			ival = atoi(propValue->utf8_str());
+		if(!propValue.empty())
+			ival = atoi(propValue.c_str());
 		m_iRightPad = ival;
 	}
-	else if(strcmp(propName->utf8_str(),"dxTextTop")== 0)
+	else if(propName == "dxTextTop")
 	{
-		if(propValue)
-			ival = atoi(propValue->utf8_str());
+		if(!propValue.empty())
+			ival = atoi(propValue.c_str());
 		m_iTopPad = ival;
 	}
-	else if(strcmp(propName->utf8_str(),"dxTextBottom")== 0)
+	else if(propName == "dxTextBottom")
 	{
-		if(propValue)
-			ival = atoi(propValue->utf8_str());
+		if(!propValue.empty())
+			ival = atoi(propValue.c_str());
 		m_iBotPad = ival;
 	}
-	else if(strcmp(propName->utf8_str(),"fillColor")== 0)
+	else if(propName == "fillColor")
 	{
-		if(propValue)
-			ival = atoi(propValue->utf8_str());
+		if(!propValue.empty())
+			ival = atoi(propValue.c_str());
 		m_iBackgroundColor = ival;
 	}
-	else if(strcmp(propName->utf8_str(),"fillType")== 0)
+	else if(propName == "fillType")
 	{
-		if(propValue)
-			ival = atoi(propValue->utf8_str());
+		if(!propValue.empty())
+			ival = atoi(propValue.c_str());
 		m_iFillType = ival;
 	}
-	else if(strcmp(propName->utf8_str(),"shapeType")== 0)
+	else if(propName == "shapeType")
 	{
-		if(propValue)
-			ival = atoi(propValue->utf8_str());
+		if(!propValue.empty())
+			ival = atoi(propValue.c_str());
 		m_iFrameType = 0; // no others implemented
 		if(ival == 202)
 		{
@@ -704,17 +705,17 @@ void RTFProps_FrameProps::_setProperty(const PropertyPair *pair)
 			m_iFrameType =1 ; // Image??
 		}
 	}
-	else if(strcmp(propName->utf8_str(),"pib")== 0)
+	else if(propName == "pib")
 	{
 //
 // We have a positioned image. This has been processed elsewhere.
 //
 		UT_DEBUGMSG(("Found positioned Image \n"));
 	}
-	else if(propValue)
+	else if(!propValue.empty())
 	{
-		UT_DEBUGMSG(("unknown property %s with value %s\n", propName->utf8_str(),
-					 propValue->utf8_str() ));
+		UT_DEBUGMSG(("unknown property %s with value %s\n", propName.c_str(),
+					 propValue.c_str() ));
 	}
 }
 
@@ -737,7 +738,8 @@ public:
 		  m_last_kwID(RTF_UNKNOWN_KEYWORD),
 		  m_name(NULL),
 		  m_value(NULL), 
-		  m_lastData(NULL)
+		  m_lastData(NULL),
+		  m_found_image(false)
 		{}
 	~IE_Imp_ShpPropParser()
 		{ 
@@ -768,8 +770,9 @@ private:
 	int m_last_grp;
 	RTF_KEYWORD_ID m_last_kwID;
 	
-	UT_UTF8String *m_name, *m_value;
-	UT_UTF8String *m_lastData;
+	std::string *m_name, *m_value;
+	std::string *m_lastData;
+	bool m_found_image;
 };
 
 
@@ -778,12 +781,15 @@ bool IE_Imp_ShpPropParser::tokenKeyword(IE_Imp_RTF * ie, RTF_KEYWORD_ID kwID,
 {
 	switch(kwID) {
 	case RTF_KW_sn:
+		m_found_image = false;
+		// fall through
 	case RTF_KW_sv:
 		UT_DEBUGMSG(("IE_Imp_ShpPropParser: found keyword %d\n", kwID));
 		m_last_grp = nested();
 		m_last_kwID = kwID;
 		break;
 	case RTF_KW_pict:
+		m_found_image = true;
 		ie->setStruxImage(true);
 		ie->clearImageName();
 		ie->HandlePicture();
@@ -813,7 +819,7 @@ bool IE_Imp_ShpPropParser::tokenCloseBrace(IE_Imp_RTF * ie)
 			m_lastData = NULL;
 			break;
 		case RTF_KW_sv:
-			UT_ASSERT(m_lastData);
+			UT_ASSERT(m_lastData || m_found_image);
 			DELETEP(m_value);
 			m_value = m_lastData;
 			m_lastData = NULL;
@@ -830,7 +836,7 @@ bool IE_Imp_ShpPropParser::tokenCloseBrace(IE_Imp_RTF * ie)
 bool IE_Imp_ShpPropParser::tokenData(IE_Imp_RTF * /*ie*/, UT_UTF8String & data)
 {
 	DELETEP(m_lastData);
-	m_lastData = new UT_UTF8String(data);
+	m_lastData = new std::string(data.utf8_str());
 	return true;
 }
 
@@ -838,8 +844,11 @@ bool IE_Imp_ShpPropParser::tokenData(IE_Imp_RTF * /*ie*/, UT_UTF8String & data)
 bool IE_Imp_ShpPropParser::finalizeParse(void)
 {
 	UT_ASSERT(m_name);
-	UT_ASSERT(m_value);
-	m_propPair = new RTFProps_FrameProps::PropertyPair(m_name, m_value);
+	UT_ASSERT(m_value || m_found_image);
+	if(m_name) 
+	{
+		m_propPair = new RTFProps_FrameProps::PropertyPair(*m_name, m_value?*m_value:"");
+	}
 	return true;
 }
 

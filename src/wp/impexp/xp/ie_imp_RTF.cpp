@@ -107,6 +107,16 @@ static const UT_uint32 PT_MAX_ATTRIBUTES = 20;
 static char g_dbgLastKeyword [256];
 static UT_sint32 g_dbgLastParam; 
 
+
+UT_sint32 ABI_RTF_Annotation::sAnnotationNumber = 0;
+
+UT_sint32 ABI_RTF_Annotation::newNumber()
+{
+	++sAnnotationNumber;
+	return sAnnotationNumber;
+}
+
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -2432,7 +2442,10 @@ void IE_Imp_RTF::HandleAnnotation(void)
 	}
 	if(!bUseInsertNotAppend())
 	{
+		PD_Document * doc = getDoc();
 		m_pDelayedFrag = m_pAnnotation->m_pInsertFrag->getNext();
+		if(!m_pDelayedFrag)
+			m_pDelayedFrag = doc->getLastFrag();
 		UT_DEBUGMSG(("Delayed Frag set to %p \n",m_pDelayedFrag));
 		ann_attrs[2] = PT_PROPS_ATTRIBUTE_NAME;
 		UT_sint32 k = 0;
@@ -2450,8 +2463,10 @@ void IE_Imp_RTF::HandleAnnotation(void)
 		ann_attrs[3] = sProperties.utf8_str();
 		UT_DEBUGMSG(("Appending annotation strux, props are %s \n", sProperties.utf8_str()));
 		FlushStoredChars();
-		getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_SectionAnnotation,ann_attrs);
-		getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,NULL);
+		if(!m_pDelayedFrag)
+			m_pDelayedFrag = doc->getLastFrag();
+		doc->insertStruxBeforeFrag(m_pDelayedFrag,PTX_SectionAnnotation,ann_attrs);
+		doc->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,NULL);
 	}
 	else
 	{
@@ -3010,6 +3025,7 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 				m_dposPaste++;
 
 			}
+			EndAnnotation();
 			DELETEP(m_pAnnotation);
 			m_pDelayedFrag = NULL;
 			xxx_UT_DEBUGMSG(("After complete annotation Saved doc Postion %d \n",m_posSavedDocPosition));
@@ -5993,6 +6009,20 @@ bool IE_Imp_RTF::HandleStarKeyword()
 				}
 				case RTF_KW_revtbl:
 					return ReadRevisionTable();
+					
+				case RTF_KW_atnid:
+				{
+					if(NULL == m_pAnnotation)
+					{
+						StartAnnotation();
+						UT_DEBUGMSG(("found atnid without annotation\n"));
+					}
+					UT_UTF8String sContent;
+					ReadContentFromFile(sContent);
+					UT_DEBUGMSG(("atnid content %s \n", sContent.utf8_str()));
+					m_pAnnotation->m_sAuthorId = sContent;
+					return true;
+				}
 				case RTF_KW_rdf:
 					return ReadRDFTriples();
 						
@@ -6003,63 +6033,18 @@ bool IE_Imp_RTF::HandleStarKeyword()
 					UT_DEBUGMSG(("Handling atnauthor keyword \n"));
 					if(NULL == m_pAnnotation)
 					{
-						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-						return true;
+						StartAnnotation();
+						UT_DEBUGMSG(("found atnauthor without annotation\n"));
 					}
 					UT_UTF8String sContent;
 					ReadContentFromFile(sContent);
 					UT_DEBUGMSG(("atnauthor content %s \n", sContent.utf8_str()));
-					m_pAnnotation->m_sAuthor = sContent.utf8_str();
+					m_pAnnotation->m_sAuthor = sContent;
 					return true;
 				}
 				case RTF_KW_atrfend:
-				{
-					//
-					// End of Annotated region
-					UT_DEBUGMSG(("found annotation end \n"));
-					if(NULL == m_pAnnotation)
-					{
-						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-						return false;
-					}
-					if(m_pAnnotation->m_iAnnNumber != parameter_star)
-					{
-						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-						return false;
-					}
-					UT_String sAnnNum;
-					UT_String_sprintf(sAnnNum,"%d",m_pAnnotation->m_iAnnNumber);
-					const gchar * attr[3] = {PT_ANNOTATION_NUMBER,NULL,NULL};
-					attr[1] = sAnnNum.c_str();
-					UT_DEBUGMSG(("found annotation end id %d  \n",m_pAnnotation->m_iAnnNumber));
-
-					if(!bUseInsertNotAppend())
-					{
-						FlushStoredChars();
-						getDoc()->appendObject(PTO_Annotation, NULL);
-					}
-					else
-					{
-						UT_DEBUGMSG(("Pasting EndAnnotation at %d  \n",m_dposPaste));
-						bool bRet = getDoc()->insertObject(m_dposPaste, PTO_Annotation, NULL,NULL);
-						
-						if(bRet)
-						{
-							UT_DEBUGMSG(("Pasting End Annotation at %d saved pos %d \n",m_dposPaste,m_posSavedDocPosition));
-							if(m_posSavedDocPosition >m_dposPaste )
-								m_posSavedDocPosition++;
-							m_dposPaste++;
-							UT_DEBUGMSG(("Pasting Begin Annotation at %d dposPaste %d saved pos %d \n",m_pAnnotation->m_Annpos,m_dposPaste,m_posSavedDocPosition));
-
-							bRet = getDoc()->insertObject(m_pAnnotation->m_Annpos, PTO_Annotation, attr, NULL);
-							if(m_posSavedDocPosition >m_dposPaste )
-								m_posSavedDocPosition++;
-							m_dposPaste++;
-						}
-						
-					}
+					//return EndAnnotation();
 					return true;
-				}
 				case RTF_KW_atndate:
 				{
 					//
@@ -6067,13 +6052,13 @@ bool IE_Imp_RTF::HandleStarKeyword()
 					UT_DEBUGMSG(("Found annotation date %p \n",m_pAnnotation));
 					if(NULL == m_pAnnotation)
 					{
-						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-						return false;
+						UT_DEBUGMSG(("found atndate without annotation"));
+						return true;
 					}
 					UT_UTF8String sContent;
 					ReadContentFromFile(sContent);
 					UT_DEBUGMSG(("annotation date is %s \n",sContent.utf8_str()));
-					m_pAnnotation->m_sDate = sContent.utf8_str();
+					m_pAnnotation->m_sDate = sContent;
 					return true;
 				}
 				case RTF_KW_annotation:
@@ -6083,7 +6068,7 @@ bool IE_Imp_RTF::HandleStarKeyword()
 					UT_DEBUGMSG(("Found annotation content m_pAnnotation %p \n",m_pAnnotation));
 					if(m_pAnnotation == NULL)
 					{
-						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+						UT_DEBUGMSG(("found annotation without annotation"));
 						return true;
 					}
 					//					if(m_pAnnotation->m_iAnnNumber != parameter_star)
@@ -6106,32 +6091,7 @@ bool IE_Imp_RTF::HandleStarKeyword()
 				break;
 				case RTF_KW_atrfstart:
 				{
-					//
-					// Start of Annotated region
-					if(m_pAnnotation == NULL)
-						m_pAnnotation = new ABI_RTF_Annotation();
-					UT_DEBUGMSG(("created m_pAnnotation %p \n",m_pAnnotation));
-					m_pAnnotation->m_iAnnNumber = parameter_star;
-					UT_String sAnnNum;
-					UT_String_sprintf(sAnnNum,"%d",parameter_star);
-					const gchar * attr[3] = {PT_ANNOTATION_NUMBER,NULL,NULL};
-					attr[1] = sAnnNum.c_str();
-					UT_DEBUGMSG(("Handling atrfstart number %d \n",parameter_star));
-					if(!bUseInsertNotAppend())
-					{
-						FlushStoredChars();
-						getDoc()->appendObject(PTO_Annotation, attr);
-						//
-						// Remember the annotation field frag. We'll insert
-						// the annotation content after this
-						//
-						m_pAnnotation->m_pInsertFrag = getDoc()->getLastFrag();
-					}
-					else
-					{
-						m_pAnnotation->m_Annpos = m_dposPaste;
-						
-					}
+					//StartAnnotation();
 					return true;
 				}
 				default:
@@ -6149,6 +6109,85 @@ bool IE_Imp_RTF::HandleStarKeyword()
 	//m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip; was this
 	SkipCurrentGroup();
 	return true;
+}
+
+void IE_Imp_RTF::StartAnnotation()
+{
+	//
+	// Start of Annotated region
+	if(m_pAnnotation == NULL)
+		m_pAnnotation = new ABI_RTF_Annotation();
+	UT_DEBUGMSG(("created m_pAnnotation %p \n",m_pAnnotation));
+	m_pAnnotation->m_iAnnNumber = ABI_RTF_Annotation::newNumber();
+	std::string sAnnNum;
+	sAnnNum = UT_std_string_sprintf("%d",m_pAnnotation->m_iAnnNumber);
+	const gchar * attr[3] = {PT_ANNOTATION_NUMBER,NULL,NULL};
+	attr[1] = sAnnNum.c_str();
+	UT_DEBUGMSG(("Handling atrfstart number %d \n",m_pAnnotation->m_iAnnNumber));
+	if(!bUseInsertNotAppend())
+	{
+		FlushStoredChars();
+		getDoc()->appendObject(PTO_Annotation, attr);
+		//
+		// Remember the annotation field frag. We'll insert
+		// the annotation content after this
+		//
+		m_pAnnotation->m_pInsertFrag = getDoc()->getLastFrag();
+	}
+	else
+	{
+		m_pAnnotation->m_Annpos = m_dposPaste;
+		
+	}
+}
+
+
+void IE_Imp_RTF::EndAnnotation()
+{
+	//
+	// End of Annotated region
+	UT_DEBUGMSG(("found annotation end \n"));
+	if(NULL == m_pAnnotation)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return;
+	}
+	//if(m_pAnnotation->m_iAnnNumber != number)
+	//{
+	//	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	//	return false;
+	//}
+	std::string sAnnNum;
+	sAnnNum = UT_std_string_sprintf("%d",m_pAnnotation->m_iAnnNumber);
+	const gchar * attr[3] = {PT_ANNOTATION_NUMBER,NULL,NULL};
+	attr[1] = sAnnNum.c_str();
+	UT_DEBUGMSG(("found annotation end id %d  \n",m_pAnnotation->m_iAnnNumber));
+	
+	if(!bUseInsertNotAppend())
+	{
+		FlushStoredChars();
+		getDoc()->appendObject(PTO_Annotation, NULL);
+	}
+	else
+	{
+		UT_DEBUGMSG(("Pasting EndAnnotation at %d  \n",m_dposPaste));
+		bool bRet = getDoc()->insertObject(m_dposPaste, PTO_Annotation, NULL,NULL);
+		
+		if(bRet)
+		{
+			UT_DEBUGMSG(("Pasting End Annotation at %d saved pos %d \n",m_dposPaste,m_posSavedDocPosition));
+			if(m_posSavedDocPosition >m_dposPaste )
+				m_posSavedDocPosition++;
+			m_dposPaste++;
+			UT_DEBUGMSG(("Pasting Begin Annotation at %d dposPaste %d saved pos %d \n",m_pAnnotation->m_Annpos,m_dposPaste,m_posSavedDocPosition));
+			
+			bRet = getDoc()->insertObject(m_pAnnotation->m_Annpos, PTO_Annotation, attr, NULL);
+			if(m_posSavedDocPosition >m_dposPaste )
+				m_posSavedDocPosition++;
+			m_dposPaste++;
+		}
+		
+	}
 }
 
 void IE_Imp_RTF::_formRevisionAttr(UT_String & attr, UT_String & props, const gchar * style)
@@ -7689,7 +7728,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 		}
 		else
 		{
-			UT_DEBUGMSG(("SEVIOR: Apply Para's atributes append strux -2 \n"));
+			//UT_DEBUGMSG(("SEVIOR: Apply Para's atributes append strux -2 \n"));
 			bool ok = false;
 			if(m_pDelayedFrag)
 			{

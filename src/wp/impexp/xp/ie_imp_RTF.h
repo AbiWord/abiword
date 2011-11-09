@@ -557,11 +557,15 @@ class ABI_EXPORT ABI_RTF_Annotation
 	virtual ~ABI_RTF_Annotation() {}
 	UT_sint32          m_iAnnNumber;
 	UT_UTF8String      m_sAuthor;
+	UT_UTF8String      m_sAuthorId;
 	UT_UTF8String      m_sDate;
 	UT_UTF8String      m_sTitle;
 	pf_Frag *          m_pInsertFrag;
 	PT_DocPosition     m_Annpos;
 	UT_sint32          m_iRTFLevel;
+	static UT_sint32   newNumber();
+private:
+	static UT_sint32 sAnnotationNumber;
 };
 
 // The importer/reader for Rich Text Format files
@@ -812,6 +816,8 @@ private:
  private:
 
 	void           HandleNote();
+	void           StartAnnotation();
+	void           EndAnnotation();
 	void           HandleAnnotation();
 	void           HandleNoteReference();
 // Shape handlers in ie_imp_RTFObjectsAndPicts.cpp
